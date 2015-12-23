@@ -1,0 +1,855 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"set",
+				"setCursor"
+			],
+			[
+				"inter",
+				"inters"
+			],
+			[
+				"lon",
+				"longFilename"
+			],
+			[
+				"long",
+				"longFilenameOLD"
+			],
+			[
+				"LCD",
+				"LCD_WIDTH"
+			],
+			[
+				"sc",
+				"scrollstuff"
+			],
+			[
+				"pr",
+				"printthatshit"
+			],
+			[
+				"print",
+				"printthatshit"
+			],
+			[
+				"LCD_cl",
+				"LCD_CLICKED"
+			],
+			[
+				"temp",
+				"tempScrool"
+			],
+			[
+				"tem",
+				"tempScrool"
+			],
+			[
+				"int",
+				"int8_t"
+			],
+			[
+				"SD",
+				"SDscrool"
+			],
+			[
+				"lcd_impl",
+				"lcd_implementation_clear"
+			],
+			[
+				"data",
+				"_data_pins"
+			],
+			[
+				"lcd",
+				"lcd_status_message"
+			],
+			[
+				"marg",
+				"margin-right"
+			],
+			[
+				"mar",
+				"margin-bottom"
+			],
+			[
+				"le",
+				"length-1"
+			],
+			[
+				"lay",
+				"Layers"
+			],
+			[
+				"len",
+				"length"
+			],
+			[
+				"sli",
+				"slic3r"
+			],
+			[
+				"err",
+				"error"
+			],
+			[
+				"Lay",
+				"Layers"
+			],
+			[
+				"leng",
+				"length-1"
+			],
+			[
+				"Layer",
+				"LayersH"
+			],
+			[
+				"Laye",
+				"LayersH"
+			],
+			[
+				"Line",
+				"LineNumber"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "Firmware.ino",
+			"settings":
+			{
+				"buffer_size": 1877,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Configuration.h",
+			"settings":
+			{
+				"buffer_size": 31837,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Configuration_prusa.h",
+			"settings":
+			{
+				"buffer_size": 6362,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Marlin_main.cpp",
+			"settings":
+			{
+				"buffer_size": 167814,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ultralcd.cpp",
+			"settings":
+			{
+				"buffer_size": 46240,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "variants/300-1a-cz.h",
+			"settings":
+			{
+				"buffer_size": 6389,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "variants/300-1a-en.h",
+			"settings":
+			{
+				"buffer_size": 6389,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "variants/300-2a-cz.h",
+			"settings":
+			{
+				"buffer_size": 6389,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "variants/300-2a-en.h",
+			"settings":
+			{
+				"buffer_size": 6388,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pins.h",
+			"settings":
+			{
+				"buffer_size": 10841,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/C++/C++.sublime-build",
+	"command_palette":
+	{
+		"height": 367.0,
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 174.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/boards.h",
+		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/language_cz.h",
+		"/Users/prusam/Library/Caches/Cleanup At Startup/Transmit/9DB93710-9561-46CC-AD89-F118A176707C/library.properties",
+		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/Marlin_main.cpp",
+		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/cardreader.h",
+		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/cardreader.cpp",
+		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/SdFatConfig.h",
+		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/LiquidCrystal.h",
+		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/LiquidCrystal.cpp",
+		"/Volumes/C/Users/Michal/Desktop/Prusa.gcode",
+		"/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN/ultralcd.h",
+		"/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN/ultralcd.cpp",
+		"/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN/pins.h",
+		"/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN/language.h",
+		"/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN/Marlin1-0-3_RamboMini1-3_EN.ino",
+		"/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN/language_en.h",
+		"/Applications/arduino.app/Contents/Resources/Java/libraries/Robot_Control/SdCard.h",
+		"/Applications/arduino.app/Contents/Resources/Java/libraries/Robot_Control/ArduinoRobot.cpp",
+		"/Users/prusam/Downloads/watch.gcode",
+		"/Users/prusam/Documents/eagle/HomeAutom/windowctntr.gcode",
+		"/Users/prusam/Downloads/motors.html",
+		"/Users/prusam/Documents/MotorsEmail",
+		"/Volumes/Common/adent/server/mystylesheet.css",
+		"/Volumes/C/Users/Michal/AppData/Roaming/OBS/scenes.xconfig",
+		"/Volumes/Common/FWupdater/app/js/main.js",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-0_CZ/pins.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-0_CZ/Configuration_adv.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-0_EN/language.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-0_EN/ultralcd.cpp",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-0_EN/Configuration.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-0_EN/language_en.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-0_EN/pins.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-0_EN/Configuration_adv.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-3_CZ/Configuration.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-3_CZ/language.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-3_CZ/ultralcd.cpp",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-3_CZ/pins.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-3_CZ/Configuration_adv.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-3_EN/Configuration_adv.h",
+		"/Volumes/Production/git/Prusa i3 Plus 1.75mm/Firmware/Marlin1-0-3_RamboMini1-3_EN/pins.h",
+		"/Volumes/Common/Michal/pipe/pipe-2.gcode",
+		"/Volumes/Production/git/Prusa i3 Plus 3mm/.git/index",
+		"/Volumes/NO NAME/Body.par.gcode",
+		"/Volumes/Common/dualcolo/layerchange",
+		"/Volumes/Common/dualcolo/cube.gcode",
+		"/Volumes/Common/filchanger_pepa/AW-stand.gcode",
+		"/Volumes/Common/filchanger_pepa/title.gcode",
+		"/Volumes/NO NAME/gopro_handler_v2.gcode",
+		"/Volumes/Common/Vit/PineappleMan.gcode",
+		"/Users/prusam/Documents/test-30r.gcode",
+		"/Users/prusam/Library/Caches/Cleanup At Startup/Transmit/FEFA6CB9-4596-4F8F-8CFF-45D2E80094A3/system.js",
+		"/Volumes/MichalData/filchanger/jquery-ui/jquery-ui.css",
+		"/Volumes/NO NAME/Zlift.gcode",
+		"/Volumes/Production/Firmware/Marlin-RAMBO-MINI13-e3d-newmenu/example_configurations/filchange"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"FAN",
+			"tune",
+			"PRUSA",
+			"support",
+			"P",
+			"119",
+			"FR_SENS",
+			"FR",
+			"board",
+			"steps",
+			"pulseEnable",
+			"command",
+			"23",
+			"lcd_set_status",
+			"109",
+			"lcd_setstatus",
+			"lcd_status_message",
+			"filename",
+			"fname",
+			"openfile",
+			"printing",
+			"M109",
+			"card.longFilename",
+			"card.LongFileName",
+			"openfile",
+			"23",
+			"sd",
+			"lcd_setstatus",
+			"lcd_status_message",
+			"LCD_HEIGHT",
+			"lcd_status_message",
+			"status",
+			"sdfile",
+			"startFileprint",
+			"24",
+			"LCD_MESSAGEPGM",
+			"M109",
+			"longfilename",
+			"Filename",
+			"600",
+			"M600",
+			"MENU_ITEM",
+			"sd",
+			"sdfile_selected",
+			"lcd_implementation_drawmenu_sdfile_selected",
+			"LCD_CLICKED",
+			"LCD_clicked",
+			"MENU_ITEM",
+			"LONG_FILENAME_LENGTH",
+			"card",
+			"sd",
+			"display",
+			"D7",
+			"lcd_status_message",
+			"lcdDrawUpdate",
+			"lcd_quick_feedback",
+			"kill",
+			"display",
+			"Z",
+			"liquidCrystal.h",
+			"liquidCrystal",
+			"nocl",
+			"liquid",
+			"begin",
+			"init",
+			"read",
+			"lcd_implementation_init",
+			"ini",
+			"lcd_status_screen()",
+			"lcd_implementation_status_screen()",
+			"lcd_control_temperature_menu",
+			"lcd_move_e()",
+			"move_x",
+			"lcd_move_menu_axis()",
+			"clear",
+			"lcd_implementation_status_screen",
+			"lcd_prepare_menu",
+			"M600",
+			"filament",
+			"max",
+			"stan",
+			"\n\n",
+			"\n",
+			"alert",
+			"ex",
+			"path",
+			"G1 Z",
+			"syntax",
+			"change",
+			"arduino",
+			"stk500v2",
+			"G1 Z1.5",
+			"M600",
+			"G1 Z1.5",
+			"G1 Z1.15",
+			"M600",
+			"G1 Z",
+			"M600",
+			"data",
+			"}\n",
+			"M600",
+			"Simpli",
+			"Z",
+			"M600",
+			"alert",
+			"m600",
+			"alert",
+			".leng",
+			"Layers",
+			"Heig",
+			"round",
+			"M600",
+			"alert",
+			"M600",
+			"G1 Z6",
+			"M600",
+			"G1 Z",
+			"M600",
+			" Z",
+			"Z",
+			"M600",
+			"G1 Z",
+			"G1 Z16",
+			"M600",
+			"chan",
+			"addElement",
+			"function roundNumber",
+			"round"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"\"},\n{\"",
+			",",
+			":)"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 5,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "Firmware.ino",
+					"settings":
+					{
+						"buffer_size": 1877,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/User/Stino/Arduino.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Configuration.h",
+					"settings":
+					{
+						"buffer_size": 31837,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								131,
+								141
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "Configuration_prusa.h",
+					"settings":
+					{
+						"buffer_size": 6362,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Marlin_main.cpp",
+					"settings":
+					{
+						"buffer_size": 167814,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								129463,
+								129463
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 83792.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "ultralcd.cpp",
+					"settings":
+					{
+						"buffer_size": 46240,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								16028,
+								16028
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "variants/300-1a-cz.h",
+					"settings":
+					{
+						"buffer_size": 6389,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								231,
+								231
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "variants/300-1a-en.h",
+					"settings":
+					{
+						"buffer_size": 6389,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								231,
+								231
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "variants/300-2a-cz.h",
+					"settings":
+					{
+						"buffer_size": 6389,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								231,
+								231
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "variants/300-2a-en.h",
+					"settings":
+					{
+						"buffer_size": 6388,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								231,
+								231
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "pins.h",
+					"settings":
+					{
+						"buffer_size": 10841,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7690,
+								7690
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5792.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 38.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.build|/Applications/arduino.app/Contents/Resources/Java/libraries/Robot_Control|1449489553.26":
+	{
+		"height": 0.0
+	},
+	"output.build|/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN|1449489469.39":
+	{
+		"height": 142.0
+	},
+	"output.build|/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN|1449489481.83":
+	{
+		"height": 142.0
+	},
+	"output.build|/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN|1449489571.95":
+	{
+		"height": 142.0
+	},
+	"output.build|/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN|1449489902.68":
+	{
+		"height": 142.0
+	},
+	"output.build|/Volumes/Production/Firmware/175-shortY/Marlin1-0-3_RamboMini1-3_CZ|1449773572.73":
+	{
+		"height": 142.0
+	},
+	"output.build|/Volumes/Production/Firmware/175-shortY/Marlin1-0-3_RamboMini1-3_CZ|1449773644.14":
+	{
+		"height": 142.0
+	},
+	"output.build|/Volumes/Production/Firmware/175-shortY/Marlin1-0-3_RamboMini1-3_CZ|1449773671.76":
+	{
+		"height": 142.0
+	},
+	"output.exec":
+	{
+		"height": 142.0
+	},
+	"output.upload|/Volumes/MichalData/Epic Byt/WindowClient/WindowClient|1449273233.47":
+	{
+		"height": 142.0
+	},
+	"output.upload|/Volumes/MichalData/Epic Byt/WindowClient/WindowClient|1449273256.26":
+	{
+		"height": 142.0
+	},
+	"output.upload|/Volumes/MichalData/Epic Byt/WindowClient/WindowClient|1449273276.42":
+	{
+		"height": 142.0
+	},
+	"output.upload|/Volumes/Production/Firmware/175-shortY/Marlin1-0-3_RamboMini1-3_CZ|1449772851.6":
+	{
+		"height": 142.0
+	},
+	"output.upload|/Volumes/Production/Firmware/175-shortY/Marlin1-0-3_RamboMini1-3_CZ|1449773351.61":
+	{
+		"height": 142.0
+	},
+	"output.upload|/Volumes/Production/Firmware/175-shortY/Marlin1-0-3_RamboMini1-3_CZ|1449773547.29":
+	{
+		"height": 142.0
+	},
+	"replace":
+	{
+		"height": 70.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 304.0,
+	"status_bar_visible": true
+}
