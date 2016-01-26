@@ -17,6 +17,7 @@
 #define DIGIPOTSS_PIN -1
 #endif
 
+#define LARGE_FLASH true
 
 /*****************************************************************
 * Rambo Pin Assignments 1.3
@@ -29,7 +30,7 @@
   #ifndef __AVR_ATmega2560__
     #error Oops!  Make sure you have 'Arduino Mega 2560' selected from the 'Tools -> Boards' menu.
   #endif
-  #define LARGE_FLASH true
+  
 
   #define FR_SENS 21
 
@@ -112,34 +113,10 @@
     #define HEATER_BED_PIN 4
     #define FAN_1_PIN -1 //6
     #define PS_ON_PIN 71
-    #define MOTOR_CURRENT_PWM_XY_PIN 44
+    #define MOTOR_CURRENT_PWM_XY_PIN 46
     #define MOTOR_CURRENT_PWM_Z_PIN 45
-    #define MOTOR_CURRENT_PWM_E_PIN 46
+    #define MOTOR_CURRENT_PWM_E_PIN 44
     
-    #ifdef MIREGLI
-      // Pins for DOGM SPI LCD Support
-      #define DOGLCD_A0  38
-      #define DOGLCD_CS  14
-      // GLCD features
-      #define LCD_CONTRAST 62
-      //Set Screen Rotation = 0; 90; 180; or 270. Define one here.
-      #define LCD_SCREEN_ROT_0
-      #define LCD_PIN_BL 15
-      #define BEEPER 78
-      #define BTN_EN1 80
-      #define BTN_EN2 73
-      #define BTN_ENC 63  //the click
-      #define BLEN_C 2
-      #define BLEN_B 1
-      #define BLEN_A 0
-      #define SDCARDDETECT -1 //53
-      #define SDSS 72
-      //encoder rotation values
-      #define encrot0 0
-      #define encrot1 2
-      #define encrot2 3
-      #define encrot3 1
-    #endif //DOGLCD
   #else //RAMBo
     #define E1_STEP_PIN         33
     #define E1_DIR_PIN          42
@@ -156,7 +133,7 @@
       #define KILL_PIN 80
       #ifdef NEWPANEL
         //arduino pin which triggers an piezzo beeper
-        #define BEEPER 79      // Beeper on AUX-4
+        #define BEEPER 84      // Beeper on AUX-4
         #define LCD_PINS_RS 82
         #define LCD_PINS_ENABLE 18
         #define LCD_PINS_D4 19
@@ -178,7 +155,7 @@
         #define encrot3 1
       #else //old style panel with shift register
         //arduino pin witch triggers an piezzo beeper
-        #define BEEPER 33    //No Beeper added
+        #define BEEPER 84    //No Beeper added
         //buttons are attached to a shift register
         // Not wired this yet
         // #define SHIFT_CLK 38
@@ -210,6 +187,10 @@
     #endif //ULTRA_LCD
   #endif //RAMBo/MiniRambo option
 #endif
+
+
+
+
 
 
 
@@ -263,7 +244,7 @@
   #define MOSI_PIN         51
 #endif
   
-    #define BEEPER 84
+    #define BEEPER 78
 
         #define BTN_EN1 80
         #define BTN_EN2 73
@@ -304,34 +285,10 @@
     #define HEATER_BED_PIN 4
     #define FAN_1_PIN -1 //6
     #define PS_ON_PIN 71
-    #define MOTOR_CURRENT_PWM_XY_PIN 44
+    #define MOTOR_CURRENT_PWM_XY_PIN 46
     #define MOTOR_CURRENT_PWM_Z_PIN 45
-    #define MOTOR_CURRENT_PWM_E_PIN 46
+    #define MOTOR_CURRENT_PWM_E_PIN 44
     
-    #ifdef MIREGLI
-      // Pins for DOGM SPI LCD Support
-      #define DOGLCD_A0  38
-      #define DOGLCD_CS  14
-      // GLCD features
-      #define LCD_CONTRAST 62
-      //Set Screen Rotation = 0; 90; 180; or 270. Define one here.
-      #define LCD_SCREEN_ROT_0
-      #define LCD_PIN_BL 15
-      #define BEEPER 78
-      #define BTN_EN1 80
-      #define BTN_EN2 73
-      #define BTN_ENC 63  //the click
-      #define BLEN_C 2
-      #define BLEN_B 1
-      #define BLEN_A 0
-      #define SDCARDDETECT -1 //53
-      #define SDSS 72
-      //encoder rotation values
-      #define encrot0 0
-      #define encrot1 2
-      #define encrot2 3
-      #define encrot3 1
-    #endif //DOGLCD
 
 #endif
 

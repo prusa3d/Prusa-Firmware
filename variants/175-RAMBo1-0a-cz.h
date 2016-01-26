@@ -43,6 +43,19 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_MAX_POS 201
 #define Z_MIN_POS 0.23
 
+#define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
+#define HOMING_FEEDRATE {3000, 3000, 240, 0}  // set the homing speeds (mm/min)
+
+#define DEFAULT_MAX_FEEDRATE          {500, 500, 3, 25}    // (mm/sec)
+#define DEFAULT_MAX_ACCELERATION      {9000,9000,30,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+
+#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
+
+
+#define MANUAL_FEEDRATE {3000, 3000, 240, 60}   // set the speeds for manual moves (mm/min)
+
+
 /*------------------------------------
     EXTRUDER SETTINGS
 *------------------------------------*/
@@ -128,7 +141,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
 #if MOTHERBOARD == 102 || MOTHERBOARD == 302
   #define MOTOR_CURRENT_PWM_RANGE 2000
-  #define DEFAULT_PWM_MOTOR_CURRENT  {450, 450, 270} // {E,Z,XY}
+  #define DEFAULT_PWM_MOTOR_CURRENT  {270, 450, 450} // {XY,Z,E}
 #endif
 
 /*------------------------------------

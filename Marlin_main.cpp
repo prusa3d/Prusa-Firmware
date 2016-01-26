@@ -1400,12 +1400,12 @@ void process_commands()
 
   // PRUSA GCODES
 
-  if(code_seen('P')){
-    if(code_seen('F')){
+  if(code_seen('PRUSA')){
+    if(code_seen('Fir')){
 
       SERIAL_PROTOCOLLN(FW_version);
 
-    } else if(code_seen('R')){
+    } else if(code_seen('Rev')){
 
       SERIAL_PROTOCOLLN(REVISION);
 

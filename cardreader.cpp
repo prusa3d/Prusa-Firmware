@@ -459,14 +459,21 @@ void CardReader::removeFile(char* name)
 
 void CardReader::getStatus()
 {
-  if(cardOK){
+  if(sdprinting){
+    SERIAL_PROTOCOL(longFilename);
+    SERIAL_PROTOCOLPGM("\n");
     SERIAL_PROTOCOLPGM(MSG_SD_PRINTING_BYTE);
     SERIAL_PROTOCOL(sdpos);
     SERIAL_PROTOCOLPGM("/");
     SERIAL_PROTOCOLLN(filesize);
+    uint16_t time = millis()/60000 - starttime/60000;
+    SERIAL_PROTOCOL(itostr2(time/60));
+    SERIAL_PROTOCOL(':');
+    SERIAL_PROTOCOL(itostr2(time%60));
+    SERIAL_PROTOCOLPGM("\n");
   }
   else{
-    SERIAL_PROTOCOLLNPGM(MSG_SD_NOT_PRINTING);
+    SERIAL_PROTOCOLLNPGM("Not printing");
   }
 }
 void CardReader::write_command(char *buf)

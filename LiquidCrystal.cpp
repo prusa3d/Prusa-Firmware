@@ -142,18 +142,19 @@ void LiquidCrystal::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 
   // finally, set # lines, font size, etc.
   command(LCD_FUNCTIONSET | _displayfunction);  
-
+  delayMicroseconds(60);
   // turn the display on with no cursor or blinking default
   _displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;  
   display();
-
+  delayMicroseconds(60);
   // clear it off
   clear();
-
+  delayMicroseconds(3000);
   // Initialize to default text direction (for romance languages)
   _displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
   // set the entry mode
   command(LCD_ENTRYMODESET | _displaymode);
+  delayMicroseconds(60);
 
 }
 
@@ -219,20 +220,22 @@ void LiquidCrystal::begin_noclear(uint8_t cols, uint8_t lines, uint8_t dotsize) 
 
   // finally, set # lines, font size, etc.
   command(LCD_FUNCTIONSET | _displayfunction);  
+  delayMicroseconds(60);
 
   // turn the display on with no cursor or blinking default
   _displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;  
   display();
-
+  delayMicroseconds(60);
   // clear it off
   //clear();
 
   home();
-
+  delayMicroseconds(1600);
   // Initialize to default text direction (for romance languages)
   _displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
   // set the entry mode
   command(LCD_ENTRYMODESET | _displaymode);
+  delayMicroseconds(60);
 
   setCursor(8,0);
   print("    ");

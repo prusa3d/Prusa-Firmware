@@ -648,7 +648,7 @@ void lcd_alright(){
         manage_heater();
           manage_inactivity(true);
           
-          if( enc_dif != encoderDiff ){
+          if( abs((enc_dif - encoderDiff))>4 ){
             
             if ( (abs(enc_dif-encoderDiff)) > 1 ){
             if (enc_dif > encoderDiff ){

@@ -228,9 +228,7 @@
 #define DEFAULT_MINTRAVELFEEDRATE     0.0
 
 // Feedrates for manual moves along X, Y, Z, E from panel
-#ifdef ULTIPANEL
-#define MANUAL_FEEDRATE {50*60, 50*60, 4*60, 60}  // set the speeds for manual moves (mm/min)
-#endif
+
 
 //Comment to disable setting feedrate multiplier via encoder
 #ifdef ULTIPANEL

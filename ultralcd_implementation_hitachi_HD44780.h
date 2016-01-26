@@ -751,6 +751,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
         filename = longFilename;
         //longFilename[LCD_WIDTH-1] = '\0';
     }
+
     int i = 1;
     int j = 0;
     int inter = 0;
@@ -771,7 +772,8 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
           n = LCD_WIDTH - 1;
           for(int g = 0; ((g<300)&&(inter == 0)) ;g++){
             if(LCD_CLICKED || ( enc_dif != encoderDiff )){
-              inter = 1;
+                
+            //  inter = 1;
             }else{
               delay(1);
             }
