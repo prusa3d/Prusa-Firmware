@@ -74,6 +74,8 @@ bool abort_on_endstop_hit = false;
 #endif
 #ifdef MOTOR_CURRENT_PWM_XY_PIN
   int motor_current_setting[3] = DEFAULT_PWM_MOTOR_CURRENT;
+  int motor_current_setting_silent[3] = DEFAULT_PWM_MOTOR_CURRENT;
+  int motor_current_setting_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 #endif
 
 static bool old_x_min_endstop=false;
@@ -84,6 +86,8 @@ static bool old_z_min_endstop=false;
 static bool old_z_max_endstop=false;
 
 static bool check_endstops = true;
+
+int8_t SilentMode;
 
 volatile long count_position[NUM_AXIS] = { 0, 0, 0, 0};
 volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
@@ -1243,11 +1247,28 @@ void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl e
   #endif
 }
 
+void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
+{
+    do
+    {
+        *value = eeprom_read_byte((unsigned char*)pos);
+        pos++;
+        value++;
+    }while(--size);
+}
+
+
 void digipot_init() //Initialize Digipot Motor Current
 {
-  #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
-    const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT;
 
+  EEPROM_read_st(4095,(uint8_t*)&SilentMode,sizeof(SilentMode));
+
+  #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
+    if(SilentMode == 0){
+    const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT_LOUD;
+    }else{
+      const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT;
+    }
     SPI.begin();
     pinMode(DIGIPOTSS_PIN, OUTPUT);
     for(int i=0;i<=4;i++)
@@ -1258,6 +1279,19 @@ void digipot_init() //Initialize Digipot Motor Current
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_Z_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_E_PIN, OUTPUT);
+    if(SilentMode == 0){
+
+     motor_current_setting[0] = motor_current_setting_loud[0];
+     motor_current_setting[1] = motor_current_setting_loud[1];
+     motor_current_setting[2] = motor_current_setting_loud[2];
+
+    }else{
+
+     motor_current_setting[0] = motor_current_setting_silent[0];
+     motor_current_setting[1] = motor_current_setting_silent[1];
+     motor_current_setting[2] = motor_current_setting_silent[2];
+
+    }
     digipot_current(0, motor_current_setting[0]);
     digipot_current(1, motor_current_setting[1]);
     digipot_current(2, motor_current_setting[2]);
@@ -1265,6 +1299,9 @@ void digipot_init() //Initialize Digipot Motor Current
     TCCR5B = (TCCR5B & ~(_BV(CS50) | _BV(CS51) | _BV(CS52))) | _BV(CS50);
   #endif
 }
+
+
+
 
 void digipot_current(uint8_t driver, int current)
 {

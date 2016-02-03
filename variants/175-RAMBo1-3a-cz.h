@@ -117,7 +117,14 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
     
     #define FILAMENTCHANGE_FIRSTFEED 70
     #define FILAMENTCHANGE_FINALFEED 50
-    
+    #define FILAMENTCHANGE_RECFEED 5
+
+    #define FILAMENTCHANGE_XYFEED 70
+    #define FILAMENTCHANGE_EFEED 20
+    #define FILAMENTCHANGE_RFEED 400
+    #define FILAMENTCHANGE_EXFEED 2
+    #define FILAMENTCHANGE_ZFEED 300
+
 #endif
 
 /*------------------------------------
@@ -137,11 +144,13 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 // Motor Current setting for BIG RAMBo
 #define DIGIPOT_MOTOR_CURRENT {135,135,135,135,135} // Values 0-255 (RAMBO 135 = ~0.75A, 185 = ~1A)
+#define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
 #if MOTHERBOARD == 102 || MOTHERBOARD == 302
   #define MOTOR_CURRENT_PWM_RANGE 2000
   #define DEFAULT_PWM_MOTOR_CURRENT  {270, 450, 450} // {XY,Z,E}
+  #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 450, 500} // {XY,Z,E}
 #endif
 
 /*------------------------------------

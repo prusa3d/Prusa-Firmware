@@ -11,6 +11,7 @@
 //#include "Configuration.h"
 
 
+
 #define _STRINGIFY(s) #s
 
 
@@ -18,11 +19,19 @@ int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added t
 
 extern int lcd_change_fil_state;
 
+int babystepMem[3];
+
+union Data
+{
+byte b[2];
+int value;
+};
 
 int8_t ReInitLCD = 0;
 
 int8_t SDscrool = 0;
 
+int8_t SilentModeMenu = 0;
 
 /* Configuration settings */
 int plaPreheatHotendTemp;
@@ -781,9 +790,149 @@ static void lcd_move_e()
 }
 
 
+void EEPROM_save_B(int pos, int* value)
+{
+   union Data data;
+   data.value = *value;
+
+   eeprom_write_byte((unsigned char*)pos, data.b[0]);
+   eeprom_write_byte((unsigned char*)pos+1, data.b[1]);
+
+   
+}
+
+void EEPROM_read_B(int pos, int* value)
+{
+    union Data data;
+    data.b[0] = eeprom_read_byte((unsigned char*)pos);
+    data.b[1] = eeprom_read_byte((unsigned char*)pos+1);
+    *value = data.value;
+
+}
+
+
+
 static void lcd_move_x() { _lcd_move(PSTR("X"), X_AXIS, X_MIN_POS, X_MAX_POS); }
 static void lcd_move_y() { _lcd_move(PSTR("Y"), Y_AXIS, Y_MIN_POS, Y_MAX_POS); }
 static void lcd_move_z() { _lcd_move(PSTR("Z"), Z_AXIS, Z_MIN_POS, Z_MAX_POS); }
+
+
+
+ static void _lcd_babystep(int axis, const char *msg) {
+    if (encoderPosition != 0) {
+      babystepsTodo[axis] += (int)encoderPosition;
+      babystepMem[axis] += (int)encoderPosition;
+      encoderPosition = 0;
+      lcdDrawUpdate = 1;
+    }
+    if (lcdDrawUpdate) lcd_implementation_drawedit_2(msg, ftostr51(babystepMem[axis]));
+    if (LCD_CLICKED) lcd_goto_menu(lcd_tune_menu);
+    EEPROM_save_B(4093,&babystepMem[0]);
+    EEPROM_save_B(4091,&babystepMem[1]);
+    EEPROM_save_B(4089,&babystepMem[2]);
+  }
+  static void lcd_babystep_x() { _lcd_babystep(X_AXIS, PSTR(MSG_BABYSTEPPING_X)); }
+  static void lcd_babystep_y() { _lcd_babystep(Y_AXIS, PSTR(MSG_BABYSTEPPING_Y)); }
+  static void lcd_babystep_z() { _lcd_babystep(Z_AXIS, PSTR(MSG_BABYSTEPPING_Z)); }
+
+
+void lcd_adjust_z(){
+  int enc_dif = 0;
+  int cursor_pos = 1;
+  int fsm = 0;
+
+  
+  
+  
+   lcd_implementation_clear();
+      
+      lcd.setCursor(0, 0);
+     
+      lcd.print(MSG_ADJUSTZ);
+      
+      lcd.setCursor(1, 1);
+     
+      lcd.print(MSG_YES);
+      
+      lcd.setCursor(1, 2);
+     
+      lcd.print(MSG_NO);
+      
+      lcd.setCursor(0, 1);
+     
+      lcd.print(">");
+      
+     
+      enc_dif = encoderDiff;
+      
+      while(fsm == 0){
+        
+        manage_heater();
+          manage_inactivity(true);
+          
+          if( abs((enc_dif - encoderDiff))>4 ){
+            
+            if ( (abs(enc_dif-encoderDiff)) > 1 ){
+            if (enc_dif > encoderDiff ){
+                  cursor_pos --;
+              }
+              
+              if (enc_dif < encoderDiff  ){
+                  cursor_pos ++;
+              }
+              
+              if(cursor_pos >2){
+              cursor_pos = 2;
+            }
+            
+            if(cursor_pos <1){
+              cursor_pos = 1;
+            }
+            lcd.setCursor(0, 1);
+            lcd.print(" ");
+            lcd.setCursor(0, 2);
+            lcd.print(" ");
+            lcd.setCursor(0, cursor_pos);
+            lcd.print(">");
+              enc_dif = encoderDiff;
+              delay(100);
+            }
+            
+          }
+          
+
+          if(lcd_clicked()){
+            fsm = cursor_pos;
+            if(fsm == 1){
+                EEPROM_read_B(4093,&babystepMem[0]);
+                EEPROM_read_B(4091,&babystepMem[1]);
+                EEPROM_read_B(4089,&babystepMem[2]);
+                babystepsTodo[Z_AXIS] = babystepMem[2];
+            }else{
+                babystepMem[0] = 0;
+                babystepMem[1] = 0;
+                babystepMem[2] = 0;
+
+                EEPROM_save_B(4093,&babystepMem[0]);
+                EEPROM_save_B(4091,&babystepMem[1]);
+                EEPROM_save_B(4089,&babystepMem[2]);
+            }
+            delay(500);
+              
+          }
+          
+          
+          
+        };
+      
+      
+       lcd_implementation_clear();
+  lcd_return_to_status();
+  
+}
+
+
+
 
 void lcd_move_menu_axis()
 {
@@ -806,8 +955,38 @@ static void lcd_move_menu_1mm()
 }
 
 
+void EEPROM_save(int pos, uint8_t* value, uint8_t size)
+{
+    do
+    {
+        eeprom_write_byte((unsigned char*)pos, *value);
+        pos++;
+        value++;
+    }while(--size);
+}
+
+void EEPROM_read(int pos, uint8_t* value, uint8_t size)
+{
+    do
+    {
+        *value = eeprom_read_byte((unsigned char*)pos);
+        pos++;
+        value++;
+    }while(--size);
+}
+
+
+
+static void lcd_silent_mode_set(){
+    SilentModeMenu = !SilentModeMenu;
+    EEPROM_save(4095,(uint8_t*)&SilentModeMenu,sizeof(SilentModeMenu));
+      digipot_init();
+    lcd_goto_menu(lcd_settings_menu, 7);
+}
+
 static void lcd_settings_menu()
 {
+    EEPROM_read(4095,(uint8_t*)&SilentModeMenu,sizeof(SilentModeMenu));
     START_MENU();
     
     MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
@@ -824,10 +1003,12 @@ static void lcd_settings_menu()
     
     MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28"));
     
+    if(SilentModeMenu == 0){
+        MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
+    }else{
+        MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
+    }
     
-    
-    
-
     END_MENU();
 }
 
@@ -913,29 +1094,39 @@ static void lcd_autostart_sd()
 
 
 
+static void lcd_silent_mode_set_tune(){
+    SilentModeMenu = !SilentModeMenu;
+    EEPROM_save(4095,(uint8_t*)&SilentModeMenu,sizeof(SilentModeMenu));
+      digipot_init();
+    lcd_goto_menu(lcd_tune_menu, 9);
+}
 
 static void lcd_tune_menu()
 {
+    EEPROM_read(4095,(uint8_t*)&SilentModeMenu,sizeof(SilentModeMenu));
+
+    EEPROM_read_B(4093,&babystepMem[0]);
+    EEPROM_read_B(4091,&babystepMem[1]);
+    EEPROM_read_B(4089,&babystepMem[2]);
+
     START_MENU();
-    MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
-    MENU_ITEM_EDIT(int3, MSG_SPEED, &feedmultiply, 10, 999);
-#if TEMP_SENSOR_0 != 0
-    MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 3);
-#endif
-#if TEMP_SENSOR_1 != 0
-    MENU_ITEM_EDIT(int3, MSG_NOZZLE1, &target_temperature[1], 0, HEATER_1_MAXTEMP - 3);
-#endif
-#if TEMP_SENSOR_2 != 0
-    MENU_ITEM_EDIT(int3, MSG_NOZZLE2, &target_temperature[2], 0, HEATER_2_MAXTEMP - 3);
-#endif
-#if TEMP_SENSOR_BED != 0
-    MENU_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 3);
-#endif
-    MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);
-    MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);
+    MENU_ITEM(back, MSG_MAIN, lcd_main_menu); //1
+    MENU_ITEM_EDIT(int3, MSG_SPEED, &feedmultiply, 10, 999);//2
+
+    MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 3);//3
+    MENU_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 3);//4
+
+    MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);//5
+    MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);//6
 #ifdef FILAMENTCHANGEENABLE
-     MENU_ITEM(gcode, MSG_FILAMENTCHANGE, PSTR("M600"));
+     MENU_ITEM(gcode, MSG_FILAMENTCHANGE, PSTR("M600"));//7
 #endif
+    MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
+    if(SilentModeMenu == 0){
+        MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune);
+    }else{
+        MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set_tune);
+    }
     END_MENU();
 }
 

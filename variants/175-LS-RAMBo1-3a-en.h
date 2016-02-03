@@ -6,17 +6,16 @@
 *------------------------------------*/
 
 // Printer revision
-#define REVISION "300-1a"
-#define THREEMM_PRINTER   
+#define REVISION "175-2a"
 
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3"
 
 // Electronics
-#define MOTHERBOARD BOARD_RAMBO_MINI_1_0
+#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
 
 // Language setting
-#define LANGUAGE_INCLUDE GENERATE_LANGUAGE_INCLUDE(cz)
+#define LANGUAGE_INCLUDE GENERATE_LANGUAGE_INCLUDE(en)
 
 
 /*------------------------------------
@@ -24,7 +23,7 @@
 *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/0.8,350*1.5} 
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,174.2}  
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -45,16 +44,16 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_MIN_POS 0.23
 
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
-#define HOMING_FEEDRATE {3000, 3000, 240, 0}  // set the homing speeds (mm/min)
+#define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
 
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 3, 25}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {9000,9000,30,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_MAX_FEEDRATE          {500, 500, 1800, 25}    // (mm/sec)
+#define DEFAULT_MAX_ACCELERATION      {9000,9000,1000,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
 #define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 
-#define MANUAL_FEEDRATE {3000, 3000, 240, 60}   // set the speeds for manual moves (mm/min)
+#define MANUAL_FEEDRATE {3000, 3000, 2000, 100}  // set the speeds for manual moves (mm/min)
 
 
 /*------------------------------------
@@ -68,21 +67,21 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define BED_MINTEMP 15
 
 // Maxtemps
-#define HEATER_0_MAXTEMP 315
-#define HEATER_1_MAXTEMP 275
-#define HEATER_2_MAXTEMP 275
+#define HEATER_0_MAXTEMP 259
+#define HEATER_1_MAXTEMP 259
+#define HEATER_2_MAXTEMP 259
 #define BED_MAXTEMP 150
 
 // Define PID constants for extruder
-#define  DEFAULT_Kp 12.7
-#define  DEFAULT_Ki 1.09
-#define  DEFAULT_Kd 37.4
+#define  DEFAULT_Kp 40.925
+#define  DEFAULT_Ki 4.875
+#define  DEFAULT_Kd 86.085
 
 // Extrude mintemp
 #define EXTRUDE_MINTEMP 190
 
 // Extruder cooling fans
-#define EXTRUDER_0_AUTO_FAN_PIN   6
+#define EXTRUDER_0_AUTO_FAN_PIN   8
 #define EXTRUDER_1_AUTO_FAN_PIN   -1
 #define EXTRUDER_2_AUTO_FAN_PIN   -1
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
@@ -96,7 +95,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 // Load filament commands
 #define LOAD_FILAMENT_0 "M83"
-#define LOAD_FILAMENT_1 "G1 E65 F400"
+#define LOAD_FILAMENT_1 "G1 E70 F400"
 #define LOAD_FILAMENT_2 "G1 E40 F100"
 
 // Unload filament commands
@@ -124,8 +123,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
     #define FILAMENTCHANGE_EFEED 20
     #define FILAMENTCHANGE_RFEED 400
     #define FILAMENTCHANGE_EXFEED 2
-    #define FILAMENTCHANGE_ZFEED 300
-    
+    #define FILAMENTCHANGE_ZFEED 15
+
 #endif
 
 /*------------------------------------
@@ -150,7 +149,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
 #if MOTHERBOARD == 102 || MOTHERBOARD == 302
   #define MOTOR_CURRENT_PWM_RANGE 2000
-  #define DEFAULT_PWM_MOTOR_CURRENT  {270, 450, 850} // {XY,Z,E}
+  #define DEFAULT_PWM_MOTOR_CURRENT  {270, 450, 450} // {XY,Z,E}
   #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 450, 500} // {XY,Z,E}
 #endif
 
@@ -158,13 +157,13 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
     PREHEAT SETTINGS
 *------------------------------------*/  
 
-#define PLA_PREHEAT_HOTEND_TEMP 220
+#define PLA_PREHEAT_HOTEND_TEMP 210
 #define PLA_PREHEAT_HPB_TEMP 50
-#define PLA_PREHEAT_FAN_SPEED 255
+#define PLA_PREHEAT_FAN_SPEED 0  
 
-#define ABS_PREHEAT_HOTEND_TEMP 285
+#define ABS_PREHEAT_HOTEND_TEMP 255
 #define ABS_PREHEAT_HPB_TEMP 100
-#define ABS_PREHEAT_FAN_SPEED 255
+#define ABS_PREHEAT_FAN_SPEED 0 
 
 #define HIPS_PREHEAT_HOTEND_TEMP 220
 #define HIPS_PREHEAT_HPB_TEMP 100
@@ -178,7 +177,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define PET_PREHEAT_HPB_TEMP 90
 #define PET_PREHEAT_FAN_SPEED 0 
 
-#define FLEX_PREHEAT_HOTEND_TEMP 250
+#define FLEX_PREHEAT_HOTEND_TEMP 230
 #define FLEX_PREHEAT_HPB_TEMP 50
 #define FLEX_PREHEAT_FAN_SPEED 0 
 
@@ -222,7 +221,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // 147 is Pt100 with 4k7 pullup
 // 110 is Pt100 with 1k pullup (non standard)
 
-#define TEMP_SENSOR_0 1
+#define TEMP_SENSOR_0 5
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_BED 1

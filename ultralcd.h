@@ -11,9 +11,10 @@
   void lcd_setstatuspgm(const char* message);
   void lcd_setalertstatuspgm(const char* message);
   void lcd_reset_alert_level();
-
+  void lcd_adjust_z();
   void lcd_alright();
-
+  void EEPROM_save_B(int pos, int* value);
+  void EEPROM_read_B(int pos, int* value);
   void lcd_wait_interact();
   void lcd_change_filament();
   void lcd_loading_filament();

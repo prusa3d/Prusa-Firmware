@@ -227,6 +227,13 @@ CardReader card;
 #endif
 
 
+union Data
+{
+byte b[2];
+int value;
+};
+
+int babystepLoad[3];
 
 float homing_feedrate[] = HOMING_FEEDRATE;
 bool axis_relative_modes[] = AXIS_RELATIVE_MODES;
@@ -466,6 +473,9 @@ void serial_echopair_P(const char *s_P, unsigned long v)
     }
   }
 #endif //!SDSUPPORT
+
+
+
 
 //adds an command to the main command buffer
 //thats really done in a non-safe way.
@@ -1888,6 +1898,20 @@ void process_commands()
       feedmultiply = saved_feedmultiply;
       previous_millis_cmd = millis();
       endstops_hit_on_purpose();
+
+      if(card.sdprinting) {
+        EEPROM_read_B(4089,&babystepLoad[2]);
+
+        if(babystepLoad[2] != 0){
+
+          lcd_adjust_z();
+
+        }
+
+      }
+      
+      
+
       break;
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -3791,6 +3815,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
     {
         feedmultiplyBckp=feedmultiply;
+        int8_t TooLowZ = 0;
         float target[4];
         float lastpos[4];
         target[X_AXIS]=current_position[X_AXIS];
@@ -3801,7 +3826,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lastpos[Y_AXIS]=current_position[Y_AXIS];
         lastpos[Z_AXIS]=current_position[Z_AXIS];
         lastpos[E_AXIS]=current_position[E_AXIS];
-        //retract by E
+
+        //Restract extruder
         if(code_seen('E'))
         {
           target[E_AXIS]+= code_value();
@@ -3812,9 +3838,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             target[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT ;
           #endif
         }
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
 
-        //lift Z
+        //Lift Z
         if(code_seen('Z'))
         {
           target[Z_AXIS]+= code_value();
@@ -3823,16 +3849,19 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         {
           #ifdef FILAMENTCHANGE_ZADD
             target[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
+            if(target[Z_AXIS] < 10){
+              target[Z_AXIS]+= 10 ;
+              TooLowZ = 1;
+            }else{
+              TooLowZ = 0;
+            }
           #endif
      
-          if(target[Z_AXIS] < 10){
-      
-            target[Z_AXIS]+= 10 ;
-          }
+          
         }
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 300, active_extruder);
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
 
-        //move xy
+        //Move XY to side
         if(code_seen('X'))
         {
           target[X_AXIS]+= code_value();
@@ -3853,9 +3882,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             target[Y_AXIS]= FILAMENTCHANGE_YPOS ;
           #endif
         }
- 
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 70, active_extruder);
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
 
+        // Unload filament
         if(code_seen('L'))
         {
           target[E_AXIS]+= code_value();
@@ -3866,8 +3895,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             target[E_AXIS]+= FILAMENTCHANGE_FINALRETRACT ;
           #endif
         }
-
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 20, active_extruder);
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
 
         //finish moves
         st_synchronize();
@@ -3877,7 +3905,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         disable_e2();
         delay(100);
         
-        //LCD_ALERTMESSAGEPGM(MSG_FILAMENTCHANGE);
+        //Wait for user to insert filament
         uint8_t cnt=0;
         int counterBeep = 0;
         lcd_wait_interact();
@@ -3885,78 +3913,71 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           cnt++;
           manage_heater();
           manage_inactivity(true);
-          //lcd_update();
           if(cnt==0)
           {
           #if BEEPER > 0
-          
             if (counterBeep== 500){
-              counterBeep = 0;
-              
+              counterBeep = 0;  
             }
-          
-            
             SET_OUTPUT(BEEPER);
             if (counterBeep== 0){
               WRITE(BEEPER,HIGH);
             }
-            
             if (counterBeep== 20){
               WRITE(BEEPER,LOW);
             }
-            
-            
-            
-          
             counterBeep++;
           #else
-			#if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
+			   #if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
               lcd_buzz(1000/6,100);
-			#else
-			  lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS,LCD_FEEDBACK_FREQUENCY_HZ);
-			#endif
+			   #else
+			     lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS,LCD_FEEDBACK_FREQUENCY_HZ);
+			   #endif
           #endif
           }
         }
+        //Filament inserted
         
         WRITE(BEEPER,LOW);
         
+        //Feed the filament to the end of nozzle quickly
         target[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 20, active_extruder); 
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
         
-        
+        //Extrude some filament
         target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 2, active_extruder); 
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
         
  
         
         
-        
+        //Wait for user to check the state
         lcd_change_fil_state = 0;
         lcd_loading_filament();
         while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
-        
           lcd_change_fil_state = 0;
           lcd_alright();
           switch(lcd_change_fil_state){
-          
+            
+             // Filament failed to load so load it again
              case 2:
                      target[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 20, active_extruder); 
-        
-        
+                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
+                
                      target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 2, active_extruder); 
-                      
-                     
+                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
+
                      lcd_loading_filament();
                      break;
+
+             // Filament loaded properly but color is not clear
              case 3:
                      target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
                      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 2, active_extruder); 
                      lcd_loading_color();
                      break;
-                          
+                 
+             // Everything good             
              default:
                      lcd_change_success();
                      break;
@@ -3965,38 +3986,41 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         }
         
 
+      //Not let's go back to print
+
+      //Feed a little of filament to stabilize pressure
+      target[E_AXIS]+= FILAMENTCHANGE_RECFEED;
+      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder);
         
-      target[E_AXIS]+= 5;
-      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 2, active_extruder);
-        
+      //Retract
       target[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT;
-      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
+      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
         
 
-        //current_position[E_AXIS]=target[E_AXIS]; //the long retract of L is compensated by manual filament feeding
-        //plan_set_e_position(current_position[E_AXIS]);
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 70, active_extruder); //should do nothing
-        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], target[Z_AXIS], target[E_AXIS], 70, active_extruder); //move xy back
-        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], 200, active_extruder); //move z back
         
-        
-        target[E_AXIS]= target[E_AXIS] - FILAMENTCHANGE_FIRSTRETRACT;
-        
+      //plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 70, active_extruder); //should do nothing
       
-             
-        plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], 5, active_extruder); //final untretract
+      //Move XY back
+      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+      
+      //Move Z back
+      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
         
         
-        plan_set_e_position(lastpos[E_AXIS]);
+      target[E_AXIS]= target[E_AXIS] - FILAMENTCHANGE_FIRSTRETRACT;
         
-        feedmultiply=feedmultiplyBckp;
+      //Unretract       
+      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
         
-     
+      //Set E position to original  
+      plan_set_e_position(lastpos[E_AXIS]);
+       
+      //Recover feed rate 
+      feedmultiply=feedmultiplyBckp;
+      char cmd[9];
+      sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
+      enquecommand(cmd);
         
-        char cmd[9];
-
-        sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
-        enquecommand(cmd);
         
     }
     break;

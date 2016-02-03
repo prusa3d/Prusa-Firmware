@@ -127,8 +127,9 @@
 #define MSG_ZPROBE_ZOFFSET                  "Z Offset"
 #define MSG_BABYSTEP_X                      "Babystep X"
 #define MSG_BABYSTEP_Y                      "Babystep Y"
-#define MSG_BABYSTEP_Z                      "Babystep Z"
+#define MSG_BABYSTEP_Z                      "Live adjust Z"
 #define MSG_ENDSTOP_ABORT                   "Endstop abort"
+#define MSG_ADJUSTZ							"Auto adjust Z ?"
 
 #define MSG_HOMEYZ                          "Calibrate Z"
 #define MSG_SETTINGS                         "Settings"
@@ -142,6 +143,7 @@
 #define MSG_SUPPORT "Support"
 #define MSG_CORRECTLY			"Changed correctly?"
 #define MSG_YES					"Yes"
+#define MSG_NO					"No"
 #define MSG_NOT_LOADED 			"Filament not loaded"
 #define MSG_NOT_COLOR 			"Color not clear"
 #define MSG_LOADING_FILAMENT	"Loading filament"
@@ -152,6 +154,11 @@
 #define MSG_INSERT_FILAMENT		"Insert filament"
 #define MSG_CHANGING_FILAMENT	"Changing filament!"
 
+
+#define MSG_SILENT_MODE_ON					"Mode     [silent]"
+#define MSG_SILENT_MODE_OFF					"Mode [high power]" 
+#define MSG_REBOOT							"Reboot the printer"
+#define MSG_TAKE_EFFECT						" for take effect"											
 
 #define MSG_Enqueing                        "enqueing \""
 #define MSG_POWERUP                         "PowerUp"
@@ -224,7 +231,7 @@
 #define MSG_ERR_LONG_EXTRUDE_STOP           " too long extrusion prevented"
 #define MSG_BABYSTEPPING_X                  "Babystepping X"
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-#define MSG_BABYSTEPPING_Z                  "Babystepping Z"
+#define MSG_BABYSTEPPING_Z                  "Adjusting Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
 

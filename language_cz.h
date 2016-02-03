@@ -127,9 +127,9 @@
 #define MSG_ZPROBE_ZOFFSET                  "Z Offset"
 #define MSG_BABYSTEP_X                      "Babystep X"
 #define MSG_BABYSTEP_Y                      "Babystep Y"
-#define MSG_BABYSTEP_Z                      "Babystep Z"
+#define MSG_BABYSTEP_Z                      "Doladeni osy Z"
 #define MSG_ENDSTOP_ABORT                   "Endstop abort"
-
+#define MSG_ADJUSTZ							"Auto doladit Z ?"
 
 #define MSG_HOMEYZ                          "Kalibrovat Z"
 #define MSG_SETTINGS                         "Nastaveni"
@@ -143,6 +143,7 @@
 #define MSG_SUPPORT                     "Podpora"
 #define MSG_CORRECTLY			"Vymena ok?"
 #define MSG_YES					"Ano"
+#define MSG_NO					"Ne"
 #define MSG_NOT_LOADED 			"Filament nezaveden"
 #define MSG_NOT_COLOR 			"Barva neni cista"
 #define MSG_LOADING_FILAMENT	        "Zavadeni filamentu"
@@ -153,7 +154,10 @@
 #define MSG_INSERT_FILAMENT		"Vlozte filament"
 #define MSG_CHANGING_FILAMENT	"Vymena filamentu!"
 
-
+#define MSG_SILENT_MODE_ON					"Mod       [tichy]"
+#define MSG_SILENT_MODE_OFF					"Mod  [vys. vykon]" 
+#define MSG_REBOOT							"Restartujte tiskarnu"
+#define MSG_TAKE_EFFECT						" pro projeveni zmen"	
 
 #define MSG_Enqueing                        "enqueing \""
 #define MSG_POWERUP                         "PowerUp"
@@ -226,7 +230,7 @@
 #define MSG_ERR_LONG_EXTRUDE_STOP           " too long extrusion prevented"
 #define MSG_BABYSTEPPING_X                  "Babystepping X"
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-#define MSG_BABYSTEPPING_Z                  "Babystepping Z"
+#define MSG_BABYSTEPPING_Z                  "Dostavovani Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
 

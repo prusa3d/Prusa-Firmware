@@ -5,6 +5,8 @@
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
 
+#include "Configuration_prusa.h"
+
 /**
 * Implementation of the LCD display routines for a Hitachi HD44780 display. These are common LCD character displays.
 * When selecting the Russian language, a slightly different LCD implementation is used to handle UTF8 characters.
@@ -297,6 +299,7 @@ static void lcd_set_custom_characters(
     B00000,
     B00000
   }; //thanks joris
+  #ifdef LANGUAGE_EN_H
   byte feedrate[8] = {
     B11100,
     B10000,
@@ -307,6 +310,19 @@ static void lcd_set_custom_characters(
     B00101,
     B00000
   }; //thanks Sonny Mounicou
+  #else
+  byte feedrate[8] = {
+        B11100,
+        B10100,
+        B11000,
+        B10100,
+        B00000,
+        B00111,
+        B00010,
+        B00010
+  };
+  #endif
+
   byte clock[8] = {
     B00000,
     B01110,
@@ -733,6 +749,18 @@ void lcd_implementation_drawedit(const char* pstr, char* value)
    #endif
     lcd.print(value);
 }
+
+void lcd_implementation_drawedit_2(const char* pstr, char* value)
+{
+    lcd.setCursor(0, 1);
+    lcd_printPGM(pstr);
+    lcd.print(':');
+
+    lcd.setCursor((LCD_WIDTH - strlen(value))/2, 3);
+
+    lcd.print(value);
+}
+
 static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* pstr, const char* filename, char* longFilename)
 {
     char c;
