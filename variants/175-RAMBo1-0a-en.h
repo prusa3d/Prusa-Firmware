@@ -67,9 +67,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define BED_MINTEMP 15
 
 // Maxtemps
-#define HEATER_0_MAXTEMP 259
-#define HEATER_1_MAXTEMP 259
-#define HEATER_2_MAXTEMP 259
+#define HEATER_0_MAXTEMP 265
+#define HEATER_1_MAXTEMP 265
+#define HEATER_2_MAXTEMP 265
 #define BED_MAXTEMP 150
 
 // Define PID constants for extruder

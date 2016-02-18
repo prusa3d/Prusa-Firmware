@@ -1113,8 +1113,8 @@ static void lcd_tune_menu()
     MENU_ITEM(back, MSG_MAIN, lcd_main_menu); //1
     MENU_ITEM_EDIT(int3, MSG_SPEED, &feedmultiply, 10, 999);//2
 
-    MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 3);//3
-    MENU_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 3);//4
+    MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
+    MENU_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 10);//4
 
     MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);//5
     MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);//6
