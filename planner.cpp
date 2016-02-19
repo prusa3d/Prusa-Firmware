@@ -566,7 +566,7 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
       SERIAL_ECHO_START;
-      SERIAL_ECHOLNPGM(MSG_ERR_COLD_EXTRUDE_STOP);
+      SERIAL_ECHOLNRPGM(MSG_ERR_COLD_EXTRUDE_STOP);
     }
     
     #ifdef PREVENT_LENGTHY_EXTRUDE
@@ -574,7 +574,7 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
       SERIAL_ECHO_START;
-      SERIAL_ECHOLNPGM(MSG_ERR_LONG_EXTRUDE_STOP);
+      SERIAL_ECHOLNRPGM(MSG_ERR_LONG_EXTRUDE_STOP);
     }
     #endif
   }

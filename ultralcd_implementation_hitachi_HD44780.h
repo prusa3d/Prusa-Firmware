@@ -232,6 +232,8 @@ extern volatile uint16_t buttons;  //an extended version of the last checked but
 #define LCD_STR_FOLDER      "\x05"
 #define LCD_STR_FEEDRATE    "\x06"
 #define LCD_STR_CLOCK       "\x07"
+#define LCD_STR_ARROW_UP    "\x0B"
+#define LCD_STR_ARROW_DOWN  "\x01"
 #define LCD_STR_ARROW_RIGHT "\x7E"  /* from the default character set */
 
 static void lcd_set_custom_characters(
@@ -311,6 +313,7 @@ static void lcd_set_custom_characters(
     B00000
   }; //thanks Sonny Mounicou
   #else
+ /*
   byte feedrate[8] = {
         B11100,
         B10100,
@@ -320,6 +323,29 @@ static void lcd_set_custom_characters(
         B00111,
         B00010,
         B00010
+  };
+  */
+  /*
+  byte feedrate[8] = {
+        B01100,
+        B10011,
+        B00000,
+        B01100,
+        B10011,
+        B00000,
+        B01100,
+        B10011
+  };
+  */
+  byte feedrate[8] = {
+        B00000,
+        B00100,
+        B10010,
+        B01001,
+        B10010,
+        B00100,
+        B00000,
+        B00000
   };
   #endif
 
@@ -333,6 +359,29 @@ static void lcd_set_custom_characters(
     B00000,
     B00000
   }; //thanks Sonny Mounicou
+
+  byte arrup[8] = {
+    B00100,
+    B01110,
+    B11111,
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B00000
+  }; 
+
+  byte arrdown[8] = {
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B10001,
+    B01010,
+    B00100
+  }; 
+
 
   #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
     static bool char_mode = false;
@@ -391,8 +440,43 @@ static void lcd_set_custom_characters(
     lcd.createChar(LCD_STR_FOLDER[0], folder);
     lcd.createChar(LCD_STR_FEEDRATE[0], feedrate);
     lcd.createChar(LCD_STR_CLOCK[0], clock);
+    //lcd.createChar(LCD_STR_ARROW_UP[0], arrup);
+    //lcd.createChar(LCD_STR_ARROW_DOWN[0], arrdown);
   #endif
 }
+
+void lcd_set_custom_characters_arrows()
+ {
+
+  byte arrdown[8] = {
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B00000,
+    B10001,
+    B01010,
+    B00100
+  }; 
+
+    lcd.createChar(1, arrdown);
+}
+void lcd_set_custom_characters_degree()
+ {
+  byte degree[8] = {
+    B01100,
+    B10010,
+    B10010,
+    B01100,
+    B00000,
+    B00000,
+    B00000,
+    B00000
+  };
+
+    lcd.createChar(1, degree);
+}
+
 
 static void lcd_implementation_init(
   #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
@@ -889,6 +973,8 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* pst
 #define lcd_implementation_drawmenu_gcode(row, pstr, gcode) lcd_implementation_drawmenu_generic(row, pstr, ' ', ' ')
 #define lcd_implementation_drawmenu_function_selected(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, '>', ' ')
 #define lcd_implementation_drawmenu_function(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, ' ', ' ')
+#define lcd_implementation_drawmenu_setlang_selected(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, '>', ' ')
+#define lcd_implementation_drawmenu_setlang(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, ' ', ' ')
 
 static void lcd_implementation_quick_feedback()
 {

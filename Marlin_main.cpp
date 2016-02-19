@@ -190,6 +190,7 @@
 // M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
 // M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
 // M503 - print the current settings (from memory not from EEPROM)
+// M509 - force language selection on next restart
 // M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
 // M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 // M665 - set delta configurations
@@ -252,6 +253,7 @@ int extruder_multiply[EXTRUDERS] = {100
 
 int lcd_change_fil_state = 0;
 int feedmultiplyBckp = 100;
+unsigned char lang_selected = 0;
 
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
@@ -487,7 +489,7 @@ void enquecommand(const char *cmd)
     //this is dangerous if a mixing of serial and this happens
     strcpy(&(cmdbuffer[bufindw][0]),cmd);
     SERIAL_ECHO_START;
-    SERIAL_ECHOPGM(MSG_Enqueing);
+    SERIAL_ECHORPGM(MSG_Enqueing);
     SERIAL_ECHO(cmdbuffer[bufindw]);
     SERIAL_ECHOLNPGM("\"");
     bufindw= (bufindw + 1)%BUFSIZE;
@@ -502,7 +504,7 @@ void enquecommand_P(const char *cmd)
     //this is dangerous if a mixing of serial and this happens
     strcpy_P(&(cmdbuffer[bufindw][0]),cmd);
     SERIAL_ECHO_START;
-    SERIAL_ECHOPGM(MSG_Enqueing);
+    SERIAL_ECHORPGM(MSG_Enqueing);
     SERIAL_ECHO(cmdbuffer[bufindw]);
     SERIAL_ECHOLNPGM("\"");
     bufindw= (bufindw + 1)%BUFSIZE;
@@ -594,7 +596,7 @@ void servo_init()
   #endif
 }
 
-
+static void lcd_language_menu();
 void setup()
 {
   setup_killpin();
@@ -605,30 +607,30 @@ void setup()
 
   // Check startup - does nothing if bootloader sets MCUSR to 0
   byte mcu = MCUSR;
-  if(mcu & 1) SERIAL_ECHOLNPGM(MSG_POWERUP);
-  if(mcu & 2) SERIAL_ECHOLNPGM(MSG_EXTERNAL_RESET);
-  if(mcu & 4) SERIAL_ECHOLNPGM(MSG_BROWNOUT_RESET);
-  if(mcu & 8) SERIAL_ECHOLNPGM(MSG_WATCHDOG_RESET);
-  if(mcu & 32) SERIAL_ECHOLNPGM(MSG_SOFTWARE_RESET);
+  if(mcu & 1) SERIAL_ECHOLNRPGM(MSG_POWERUP);
+  if(mcu & 2) SERIAL_ECHOLNRPGM(MSG_EXTERNAL_RESET);
+  if(mcu & 4) SERIAL_ECHOLNRPGM(MSG_BROWNOUT_RESET);
+  if(mcu & 8) SERIAL_ECHOLNRPGM(MSG_WATCHDOG_RESET);
+  if(mcu & 32) SERIAL_ECHOLNRPGM(MSG_SOFTWARE_RESET);
   MCUSR=0;
 
-  SERIAL_ECHOPGM(MSG_MARLIN);
-  SERIAL_ECHOLNPGM(VERSION_STRING);
+  SERIAL_ECHORPGM(MSG_MARLIN);
+  SERIAL_ECHOLNRPGM(VERSION_STRING);
   #ifdef STRING_VERSION_CONFIG_H
     #ifdef STRING_CONFIG_H_AUTHOR
       SERIAL_ECHO_START;
-      SERIAL_ECHOPGM(MSG_CONFIGURATION_VER);
+      SERIAL_ECHORPGM(MSG_CONFIGURATION_VER);
       SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
-      SERIAL_ECHOPGM(MSG_AUTHOR);
+      SERIAL_ECHORPGM(MSG_AUTHOR);
       SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
       SERIAL_ECHOPGM("Compiled: ");
       SERIAL_ECHOLNPGM(__DATE__);
     #endif
   #endif
   SERIAL_ECHO_START;
-  SERIAL_ECHOPGM(MSG_FREE_MEMORY);
+  SERIAL_ECHORPGM(MSG_FREE_MEMORY);
   SERIAL_ECHO(freeMemory());
-  SERIAL_ECHOPGM(MSG_PLANNER_BUFFER_BYTES);
+  SERIAL_ECHORPGM(MSG_PLANNER_BUFFER_BYTES);
   SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
   for(int8_t i = 0; i < BUFSIZE; i++)
   {
@@ -647,7 +649,23 @@ void setup()
   
 
   lcd_init();
-  _delay_ms(1000);	// wait 1sec to display the splash screen
+  if(!READ(BTN_ENC) ){
+    _delay_ms(1000);
+    if(!READ(BTN_ENC) ){
+    SET_OUTPUT(BEEPER);
+
+    WRITE(BEEPER,HIGH);
+    
+    lcd_force_language_selection();
+    while(!READ(BTN_ENC));
+
+    WRITE(BEEPER,LOW);
+
+    }
+  }else{
+    _delay_ms(1000);  // wait 1sec to display the splash screen
+  }
+  
 
   #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
     SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
@@ -663,9 +681,11 @@ void setup()
   setup_homepin();
 }
 
-
+//unsigned char first_run_ever=1;
+//void first_time_menu();
 void loop()
 {
+
   if(buflen < (BUFSIZE-1))
     get_command();
   #ifdef SDSUPPORT
@@ -685,13 +705,13 @@ void loop()
           }
           else
           {
-            SERIAL_PROTOCOLLNPGM(MSG_OK);
+            SERIAL_PROTOCOLLNRPGM(MSG_OK);
           }
         }
         else
         {
           card.closefile();
-          SERIAL_PROTOCOLLNPGM(MSG_FILE_SAVED);
+          SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
         }
       }
       else
@@ -734,7 +754,7 @@ void get_command()
           gcode_N = (strtol(&cmdbuffer[bufindw][strchr_pointer - cmdbuffer[bufindw] + 1], NULL, 10));
           if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer[bufindw], PSTR("M110")) == NULL) ) {
             SERIAL_ERROR_START;
-            SERIAL_ERRORPGM(MSG_ERR_LINE_NO);
+            SERIAL_ERRORRPGM(MSG_ERR_LINE_NO);
             SERIAL_ERRORLN(gcode_LastN);
             //Serial.println(gcode_N);
             FlushSerialRequestResend();
@@ -751,7 +771,7 @@ void get_command()
 
             if( (int)(strtod(&cmdbuffer[bufindw][strchr_pointer - cmdbuffer[bufindw] + 1], NULL)) != checksum) {
               SERIAL_ERROR_START;
-              SERIAL_ERRORPGM(MSG_ERR_CHECKSUM_MISMATCH);
+              SERIAL_ERRORRPGM(MSG_ERR_CHECKSUM_MISMATCH);
               SERIAL_ERRORLN(gcode_LastN);
               FlushSerialRequestResend();
               serial_count = 0;
@@ -762,7 +782,7 @@ void get_command()
           else
           {
             SERIAL_ERROR_START;
-            SERIAL_ERRORPGM(MSG_ERR_NO_CHECKSUM);
+            SERIAL_ERRORRPGM(MSG_ERR_NO_CHECKSUM);
             SERIAL_ERRORLN(gcode_LastN);
             FlushSerialRequestResend();
             serial_count = 0;
@@ -777,7 +797,7 @@ void get_command()
           if((strchr(cmdbuffer[bufindw], '*') != NULL))
           {
             SERIAL_ERROR_START;
-            SERIAL_ERRORPGM(MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM);
+            SERIAL_ERRORRPGM(MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM);
             SERIAL_ERRORLN(gcode_LastN);
             serial_count = 0;
             return;
@@ -791,8 +811,8 @@ void get_command()
           case 2:
           case 3:
             if (Stopped == true) {
-              SERIAL_ERRORLNPGM(MSG_ERR_STOPPED);
-              LCD_MESSAGEPGM(MSG_STOPPED);
+              SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
+              LCD_MESSAGERPGM(MSG_STOPPED);
             }
             break;
           default:
@@ -838,7 +858,7 @@ void get_command()
        serial_count >= (MAX_CMD_SIZE - 1)||n==-1)
     {
       if(card.eof()){
-        SERIAL_PROTOCOLLNPGM(MSG_FILE_PRINTED);
+        SERIAL_PROTOCOLLNRPGM(MSG_FILE_PRINTED);
         stoptime=millis();
         char time[30];
         unsigned long t=(stoptime-starttime)/1000;
@@ -1205,7 +1225,7 @@ static float probe_pt(float x, float y, float z_before) {
   retract_z_probe();
 #endif // Z_PROBE_SLED
 
-  SERIAL_PROTOCOLPGM(MSG_BED);
+  SERIAL_PROTOCOLRPGM(MSG_BED);
   SERIAL_PROTOCOLPGM(" x: ");
   SERIAL_PROTOCOL(x);
   SERIAL_PROTOCOLPGM(" y: ");
@@ -1370,9 +1390,9 @@ static void dock_sled(bool dock, int offset=0) {
  int z_loc;
  
  if (!((axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]))) {
-   LCD_MESSAGEPGM(MSG_POSITION_UNKNOWN);
+   LCD_MESSAGERPGM(MSG_POSITION_UNKNOWN);
    SERIAL_ECHO_START;
-   SERIAL_ECHOLNPGM(MSG_POSITION_UNKNOWN);
+   SERIAL_ECHOLNRPGM(MSG_POSITION_UNKNOWN);
    return;
  }
 
@@ -1417,8 +1437,10 @@ void process_commands()
 
     } else if(code_seen('Rev')){
 
-      SERIAL_PROTOCOLLN(REVISION);
+      SERIAL_PROTOCOLLN(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
+    } else if(code_seen('Lang')) {
+      lcd_force_language_selection();
     }
 
   }
@@ -1639,7 +1661,7 @@ void process_commands()
       break;
 #endif
     case 4: // G4 dwell
-      LCD_MESSAGEPGM(MSG_DWELL);
+      LCD_MESSAGERPGM(MSG_DWELL);
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
@@ -1858,13 +1880,13 @@ void process_commands()
 
               HOMEAXIS(Z);
             } else if (!((axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]))) {
-                LCD_MESSAGEPGM(MSG_POSITION_UNKNOWN);
+                LCD_MESSAGERPGM(MSG_POSITION_UNKNOWN);
                 SERIAL_ECHO_START;
-                SERIAL_ECHOLNPGM(MSG_POSITION_UNKNOWN);
+                SERIAL_ECHOLNRPGM(MSG_POSITION_UNKNOWN);
             } else {
-                LCD_MESSAGEPGM(MSG_ZPROBE_OUT);
+                LCD_MESSAGERPGM(MSG_ZPROBE_OUT);
                 SERIAL_ECHO_START;
-                SERIAL_ECHOLNPGM(MSG_ZPROBE_OUT);
+                SERIAL_ECHOLNRPGM(MSG_ZPROBE_OUT);
             }
           }
         #endif
@@ -1924,9 +1946,9 @@ void process_commands()
             // Prevent user from running a G29 without first homing in X and Y
             if (! (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) )
             {
-                LCD_MESSAGEPGM(MSG_POSITION_UNKNOWN);
+                LCD_MESSAGERPGM(MSG_POSITION_UNKNOWN);
                 SERIAL_ECHO_START;
-                SERIAL_ECHOLNPGM(MSG_POSITION_UNKNOWN);
+                SERIAL_ECHOLNRPGM(MSG_POSITION_UNKNOWN);
                 break; // abort G29, since we don't know where we are
             }
 
@@ -2157,7 +2179,7 @@ void process_commands()
       if (!hasP && !hasS && *src != '\0') {
         lcd_setstatus(src);
       } else {
-        LCD_MESSAGEPGM(MSG_USERWAIT);
+        LCD_MESSAGERPGM(MSG_USERWAIT);
       }
 
       lcd_ignore_click();
@@ -2181,14 +2203,14 @@ void process_commands()
         }
       }
       if (IS_SD_PRINTING)
-        LCD_MESSAGEPGM(MSG_RESUMING);
+        LCD_MESSAGERPGM(MSG_RESUMING);
       else
-        LCD_MESSAGEPGM(WELCOME_MSG);
+        LCD_MESSAGERPGM(WELCOME_MSG);
     }
     break;
 #endif
     case 17:
-        LCD_MESSAGEPGM(MSG_NO_MOVE);
+        LCD_MESSAGERPGM(MSG_NO_MOVE);
         enable_x();
         enable_y();
         enable_z();
@@ -2199,9 +2221,9 @@ void process_commands()
 
 #ifdef SDSUPPORT
     case 20: // M20 - list SD card
-      SERIAL_PROTOCOLLNPGM(MSG_BEGIN_FILE_LIST);
+      SERIAL_PROTOCOLLNRPGM(MSG_BEGIN_FILE_LIST);
       card.ls();
-      SERIAL_PROTOCOLLNPGM(MSG_END_FILE_LIST);
+      SERIAL_PROTOCOLLNRPGM(MSG_END_FILE_LIST);
       break;
     case 21: // M21 - init SD card
 
@@ -2663,7 +2685,7 @@ Sigma_Exit:
         }
       #else
         SERIAL_ERROR_START;
-        SERIAL_ERRORLNPGM(MSG_ERR_NO_THERMISTORS);
+        SERIAL_ERRORLNRPGM(MSG_ERR_NO_THERMISTORS);
       #endif
 
         SERIAL_PROTOCOLPGM(" @:");
@@ -2707,7 +2729,7 @@ Sigma_Exit:
       if(setTargetedHotend(109)){
         break;
       }
-      LCD_MESSAGEPGM(MSG_HEATING);
+      LCD_MESSAGERPGM(MSG_HEATING);
       #ifdef AUTOTEMP
         autotemp_enabled=false;
       #endif
@@ -2790,7 +2812,7 @@ Sigma_Exit:
           }
         #endif //TEMP_RESIDENCY_TIME
         }
-        LCD_MESSAGEPGM(MSG_HEATING_COMPLETE);
+        LCD_MESSAGERPGM(MSG_HEATING_COMPLETE);
 
         if(IS_SD_PRINTING){
          
@@ -2803,7 +2825,7 @@ Sigma_Exit:
       break;
     case 190: // M190 - Wait for bed heater to reach target.
     #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
-        LCD_MESSAGEPGM(MSG_BED_HEATING);
+        LCD_MESSAGERPGM(MSG_BED_HEATING);
         if (code_seen('S')) {
           setTargetBed(code_value());
           CooldownNoWait = true;
@@ -2834,7 +2856,7 @@ Sigma_Exit:
           manage_inactivity();
           lcd_update();
         }
-        LCD_MESSAGEPGM(MSG_BED_DONE);
+        LCD_MESSAGERPGM(MSG_BED_DONE);
         if(IS_SD_PRINTING){
          
           lcd_setstatus("SD-PRINTING         ");
@@ -2903,7 +2925,7 @@ Sigma_Exit:
 
         #ifdef ULTIPANEL
           powersupply = true;
-          LCD_MESSAGEPGM(WELCOME_MSG);
+          LCD_MESSAGERPGM(WELCOME_MSG);
           lcd_update();
         #endif
         break;
@@ -2927,7 +2949,15 @@ Sigma_Exit:
       #endif
       #ifdef ULTIPANEL
         powersupply = false;
-        LCD_MESSAGEPGM(MACHINE_NAME" "MSG_OFF".");
+        LCD_MESSAGERPGM(CAT4(MACHINE_NAME,PSTR(" "),MSG_OFF,PSTR("."))); //!!!!!!!!!!!!!!
+        
+        /*
+        MACHNAME = "Prusa i3"
+        MSGOFF = "Vypnuto"
+        "Prusai3"" ""vypnuto""."
+        
+        "Prusa i3"" "MSG_ALL[lang_selected][50]"."
+        */
         lcd_update();
       #endif
 	  break;
@@ -2997,7 +3027,7 @@ Sigma_Exit:
       }
       break;
     case 115: // M115
-      SERIAL_PROTOCOLPGM(MSG_M115_REPORT);
+      SERIAL_PROTOCOLRPGM(MSG_M115_REPORT);
       break;
     case 117: // M117 display message
       starpos = (strchr(strchr_pointer + 5,'*'));
@@ -3015,7 +3045,7 @@ Sigma_Exit:
       SERIAL_PROTOCOLPGM(" E:");
       SERIAL_PROTOCOL(current_position[E_AXIS]);
 
-      SERIAL_PROTOCOLPGM(MSG_COUNT_X);
+      SERIAL_PROTOCOLRPGM(MSG_COUNT_X);
       SERIAL_PROTOCOL(float(st_get_position(X_AXIS))/axis_steps_per_unit[X_AXIS]);
       SERIAL_PROTOCOLPGM(" Y:");
       SERIAL_PROTOCOL(float(st_get_position(Y_AXIS))/axis_steps_per_unit[Y_AXIS]);
@@ -3053,27 +3083,27 @@ Sigma_Exit:
     case 119: // M119
     SERIAL_PROTOCOLLN(MSG_M119_REPORT);
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
-        SERIAL_PROTOCOLPGM(MSG_X_MIN);
+        SERIAL_PROTOCOLRPGM(MSG_X_MIN);
         SERIAL_PROTOCOLLN(((READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
       #endif
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
-        SERIAL_PROTOCOLPGM(MSG_X_MAX);
+        SERIAL_PROTOCOLRPGM(MSG_X_MAX);
         SERIAL_PROTOCOLLN(((READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
       #endif
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
-        SERIAL_PROTOCOLPGM(MSG_Y_MIN);
+        SERIAL_PROTOCOLRPGM(MSG_Y_MIN);
         SERIAL_PROTOCOLLN(((READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
       #endif
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
-        SERIAL_PROTOCOLPGM(MSG_Y_MAX);
+        SERIAL_PROTOCOLRPGM(MSG_Y_MAX);
         SERIAL_PROTOCOLLN(((READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
       #endif
       #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
-        SERIAL_PROTOCOLPGM(MSG_Z_MIN);
+        SERIAL_PROTOCOLRPGM(MSG_Z_MIN);
         SERIAL_PROTOCOLLN(((READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
       #endif
       #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
-        SERIAL_PROTOCOLPGM(MSG_Z_MAX);
+        SERIAL_PROTOCOLRPGM(MSG_Z_MAX);
         SERIAL_PROTOCOLLN(((READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
       #endif
       break;
@@ -3267,7 +3297,7 @@ Sigma_Exit:
           }break;
           default:
             SERIAL_ECHO_START;
-            SERIAL_ECHOPGM(MSG_UNKNOWN_COMMAND);
+            SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
             SERIAL_ECHO(cmdbuffer[bufindr]);
             SERIAL_ECHOLNPGM("\"");
         }
@@ -3296,7 +3326,7 @@ Sigma_Exit:
       }
       #endif
       SERIAL_ECHO_START;
-      SERIAL_ECHOPGM(MSG_HOTEND_OFFSET);
+      SERIAL_ECHORPGM(MSG_HOTEND_OFFSET);
       for(tmp_extruder = 0; tmp_extruder < EXTRUDERS; tmp_extruder++)
       {
          SERIAL_ECHO(" ");
@@ -3767,6 +3797,13 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         Config_PrintSettings();
     }
     break;
+    case 509: //M509 Force language selection
+    {
+        lcd_force_language_selection();
+        SERIAL_ECHO_START;
+        SERIAL_PROTOCOLPGM(("LANG SEL FORCED"));
+    }
+    break;
     #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
     case 540:
     {
@@ -3786,16 +3823,16 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         {
           zprobe_zoffset = -value; // compare w/ line 278 of ConfigurationStore.cpp
           SERIAL_ECHO_START;
-          SERIAL_ECHOLNPGM(MSG_ZPROBE_ZOFFSET " " MSG_OK);
+          SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", MSG_OK,PSTR("")));
           SERIAL_PROTOCOLLN("");
         }
         else
         {
           SERIAL_ECHO_START;
-          SERIAL_ECHOPGM(MSG_ZPROBE_ZOFFSET);
-          SERIAL_ECHOPGM(MSG_Z_MIN);
+          SERIAL_ECHORPGM(MSG_ZPROBE_ZOFFSET);
+          SERIAL_ECHORPGM(MSG_Z_MIN);
           SERIAL_ECHO(Z_PROBE_OFFSET_RANGE_MIN);
-          SERIAL_ECHOPGM(MSG_Z_MAX);
+          SERIAL_ECHORPGM(MSG_Z_MAX);
           SERIAL_ECHO(Z_PROBE_OFFSET_RANGE_MAX);
           SERIAL_PROTOCOLLN("");
         }
@@ -3803,7 +3840,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       else
       {
           SERIAL_ECHO_START;
-          SERIAL_ECHOLNPGM(MSG_ZPROBE_ZOFFSET " : ");
+          SERIAL_ECHOLNRPGM(CAT2(MSG_ZPROBE_ZOFFSET, PSTR(" : ")));
           SERIAL_ECHO(-zprobe_zoffset);
           SERIAL_PROTOCOLLN("");
       }
@@ -4050,7 +4087,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             duplicate_extruder_temp_offset = code_value();
 
           SERIAL_ECHO_START;
-          SERIAL_ECHOPGM(MSG_HOTEND_OFFSET);
+          SERIAL_ECHORPGM(MSG_HOTEND_OFFSET);
           SERIAL_ECHO(" ");
           SERIAL_ECHO(extruder_offset[X_AXIS][0]);
           SERIAL_ECHO(",");
@@ -4251,7 +4288,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
   else
   {
     SERIAL_ECHO_START;
-    SERIAL_ECHOPGM(MSG_UNKNOWN_COMMAND);
+    SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
     SERIAL_ECHO(cmdbuffer[bufindr]);
     SERIAL_ECHOLNPGM("\"");
   }
@@ -4263,7 +4300,7 @@ void FlushSerialRequestResend()
 {
   //char cmdbuffer[bufindr][100]="Resend:";
   MYSERIAL.flush();
-  SERIAL_PROTOCOLPGM(MSG_RESEND);
+  SERIAL_PROTOCOLRPGM(MSG_RESEND);
   SERIAL_PROTOCOLLN(gcode_LastN + 1);
   ClearToSend();
 }
@@ -4275,7 +4312,7 @@ void ClearToSend()
   if(fromsd[bufindr])
     return;
   #endif //SDSUPPORT
-  SERIAL_PROTOCOLLNPGM(MSG_OK);
+  SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
 void get_coordinates()
@@ -4753,7 +4790,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
        {
           enquecommand_P((PSTR("G28")));
           homeDebounceCount++;
-          LCD_ALERTMESSAGEPGM(MSG_AUTO_HOME);
+          LCD_ALERTMESSAGERPGM(MSG_AUTO_HOME);
        }
        else if (homeDebounceCount < HOME_DEBOUNCE_DELAY)
        {
@@ -4820,8 +4857,8 @@ void kill()
   pinMode(PS_ON_PIN,INPUT);
 #endif
   SERIAL_ERROR_START;
-  SERIAL_ERRORLNPGM(MSG_ERR_KILLED);
-  LCD_ALERTMESSAGEPGM(MSG_KILLED);
+  SERIAL_ERRORLNRPGM(MSG_ERR_KILLED);
+  LCD_ALERTMESSAGERPGM(MSG_KILLED);
   
   // FMC small patch to update the LCD before ending
   sei();   // enable interrupts
@@ -4841,8 +4878,8 @@ void Stop()
     Stopped = true;
     Stopped_gcode_LastN = gcode_LastN; // Save last g_code for restart
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNPGM(MSG_ERR_STOPPED);
-    LCD_MESSAGEPGM(MSG_STOPPED);
+    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
+    LCD_MESSAGERPGM(MSG_STOPPED);
   }
 }
 

@@ -163,23 +163,23 @@ void CardReader::initsd()
   {
     //if (!card.init(SPI_HALF_SPEED,SDSS))
     SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM(MSG_SD_INIT_FAIL);
+    SERIAL_ECHOLNRPGM(MSG_SD_INIT_FAIL);
   }
   else if (!volume.init(&card))
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNPGM(MSG_SD_VOL_INIT_FAIL);
+    SERIAL_ERRORLNRPGM(MSG_SD_VOL_INIT_FAIL);
   }
   else if (!root.openRoot(&volume)) 
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNPGM(MSG_SD_OPENROOT_FAIL);
+    SERIAL_ERRORLNRPGM(MSG_SD_OPENROOT_FAIL);
   }
   else 
   {
     cardOK = true;
     SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM(MSG_SD_CARD_OK);
+    SERIAL_ECHOLNRPGM(MSG_SD_CARD_OK);
   }
   workDir=root;
   curDir=&root;
@@ -317,7 +317,7 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
         SERIAL_ECHOLN(subdirname);
         if(!myDir.open(curDir,subdirname,O_READ))
         {
-          SERIAL_PROTOCOLPGM(MSG_SD_OPEN_FILE_FAIL);
+          SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
           SERIAL_PROTOCOL(subdirname);
           SERIAL_PROTOCOLLNPGM(".");
           return;
@@ -349,20 +349,20 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
     if (file.open(curDir, fname, O_READ)) 
     {
       filesize = file.fileSize();
-      SERIAL_PROTOCOLPGM(MSG_SD_FILE_OPENED);
+      SERIAL_PROTOCOLRPGM(MSG_SD_FILE_OPENED);
       SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLPGM(MSG_SD_SIZE);
+      SERIAL_PROTOCOLRPGM(MSG_SD_SIZE);
       SERIAL_PROTOCOLLN(filesize);
       sdpos = 0;
       
-      SERIAL_PROTOCOLLNPGM(MSG_SD_FILE_SELECTED);
+      SERIAL_PROTOCOLLNRPGM(MSG_SD_FILE_SELECTED);
       getfilename(0, fname);
       lcd_setstatus(longFilename[0] ? longFilename : fname);
       lcd_setstatus("SD-PRINTING         ");
     }
     else
     {
-      SERIAL_PROTOCOLPGM(MSG_SD_OPEN_FILE_FAIL);
+      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLLNPGM(".");
     }
@@ -371,14 +371,14 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
   { //write
     if (!file.open(curDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC))
     {
-      SERIAL_PROTOCOLPGM(MSG_SD_OPEN_FILE_FAIL);
+      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLLNPGM(".");
     }
     else
     {
       saving = true;
-      SERIAL_PROTOCOLPGM(MSG_SD_WRITE_TO_FILE);
+      SERIAL_PROTOCOLRPGM(MSG_SD_WRITE_TO_FILE);
       SERIAL_PROTOCOLLN(name);
       lcd_setstatus(fname);
     }
@@ -415,7 +415,7 @@ void CardReader::removeFile(char* name)
         SERIAL_ECHOLN(subdirname);
         if(!myDir.open(curDir,subdirname,O_READ))
         {
-          SERIAL_PROTOCOLPGM("open failed, File: ");
+          SERIAL_PROTOCOLRPGM("open failed, File: ");
           SERIAL_PROTOCOL(subdirname);
           SERIAL_PROTOCOLLNPGM(".");
           return;
@@ -462,7 +462,7 @@ void CardReader::getStatus()
   if(sdprinting){
     SERIAL_PROTOCOL(longFilename);
     SERIAL_PROTOCOLPGM("\n");
-    SERIAL_PROTOCOLPGM(MSG_SD_PRINTING_BYTE);
+    SERIAL_PROTOCOLRPGM(MSG_SD_PRINTING_BYTE);
     SERIAL_PROTOCOL(sdpos);
     SERIAL_PROTOCOLPGM("/");
     SERIAL_PROTOCOLLN(filesize);
@@ -473,7 +473,7 @@ void CardReader::getStatus()
     SERIAL_PROTOCOLPGM("\n");
   }
   else{
-    SERIAL_PROTOCOLLNPGM("Not printing");
+    SERIAL_PROTOCOLLNRPGM("Not printing");
   }
 }
 void CardReader::write_command(char *buf)
@@ -495,7 +495,7 @@ void CardReader::write_command(char *buf)
   if (file.writeError)
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNPGM(MSG_SD_ERR_WRITE_TO_FILE);
+    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
   }
 }
 
@@ -599,7 +599,7 @@ void CardReader::chdir(const char * relpath)
   if(!newfile.open(*parent,relpath, O_READ))
   {
    SERIAL_ECHO_START;
-   SERIAL_ECHOPGM(MSG_SD_CANT_ENTER_SUBDIR);
+   SERIAL_ECHORPGM(MSG_SD_CANT_ENTER_SUBDIR);
    SERIAL_ECHOLN(relpath);
   }
   else

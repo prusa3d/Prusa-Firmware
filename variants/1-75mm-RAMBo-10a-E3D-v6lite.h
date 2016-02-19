@@ -6,16 +6,15 @@
 *------------------------------------*/
 
 // Printer revision
-#define REVISION "175-2a"
+#define FILAMENT_SIZE "1-75mm"
+#define NOZZLE_TYPE "E3D-v6lite"
 
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3"
 
 // Electronics
-#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
+#define MOTHERBOARD BOARD_RAMBO_MINI_1_0
 
-// Language setting
-#define LANGUAGE_INCLUDE GENERATE_LANGUAGE_INCLUDE(en)
 
 
 /*------------------------------------

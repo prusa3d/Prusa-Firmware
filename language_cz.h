@@ -233,5 +233,10 @@
 #define MSG_BABYSTEPPING_Z                  "Dostavovani Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
+#define MSG_LANGUAGE_NAME					"Cestina"
+#define MSG_LANGUAGE_SELECT					"Vyber jazyka        "
+ #define MSG_PRUSA3D					"prusa3d.cz"
+ #define MSG_PRUSA3D_FORUM					"forum.prusa3d.cz"
+ #define MSG_PRUSA3D_HOWTO					"howto.prusa3d.cz"
 
 #endif // LANGUAGE_EN_H

@@ -6,7 +6,8 @@
 *------------------------------------*/
 
 // Printer revision
-#define REVISION "175-2b"
+#define FILAMENT_SIZE "1-75mm"
+#define NOZZLE_TYPE "E3D-v6lite"
 
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3"
@@ -14,8 +15,6 @@
 // Electronics
 #define MOTHERBOARD BOARD_RAMBO_MINI_1_3
 
-// Language setting
-#define LANGUAGE_INCLUDE GENERATE_LANGUAGE_INCLUDE(cz)
 
 
 /*------------------------------------
@@ -67,9 +66,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define BED_MINTEMP 15
 
 // Maxtemps
-#define HEATER_0_MAXTEMP 310
-#define HEATER_1_MAXTEMP 310
-#define HEATER_2_MAXTEMP 310
+#define HEATER_0_MAXTEMP 265
+#define HEATER_1_MAXTEMP 265
+#define HEATER_2_MAXTEMP 265
 #define BED_MAXTEMP 150
 
 // Define PID constants for extruder

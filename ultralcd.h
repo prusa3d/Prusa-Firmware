@@ -3,6 +3,12 @@
 
 #include "Marlin.h"
 
+#define EEPROM_SILENT 4095
+#define EEPROM_BABYSTEP_X 4093
+#define EEPROM_BABYSTEP_Y 4091
+#define EEPROM_BABYSTEP_Z 4089
+#define EEPROM_LANG 4088
+
 #ifdef ULTRA_LCD
 
   void lcd_update();
@@ -20,7 +26,7 @@
   void lcd_loading_filament();
   void lcd_change_success();
   void lcd_loading_color();
-  
+  void lcd_force_language_selection();
   
   bool lcd_detected(void);
 
@@ -33,6 +39,8 @@
 
   #define LCD_MESSAGEPGM(x) lcd_setstatuspgm(PSTR(x))
   #define LCD_ALERTMESSAGEPGM(x) lcd_setalertstatuspgm(PSTR(x))
+  #define LCD_MESSAGERPGM(x) lcd_setstatuspgm((x))
+  #define LCD_ALERTMESSAGERPGM(x) lcd_setalertstatuspgm((x))
 
   #define LCD_UPDATE_INTERVAL 100
   #define LCD_TIMEOUT_TO_STATUS 15000

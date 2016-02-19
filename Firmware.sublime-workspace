@@ -119,91 +119,16 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "Firmware.ino",
-			"settings":
-			{
-				"buffer_size": 1877,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Configuration.h",
-			"settings":
-			{
-				"buffer_size": 31837,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Configuration_prusa.h",
-			"settings":
-			{
-				"buffer_size": 6362,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Marlin_main.cpp",
-			"settings":
-			{
-				"buffer_size": 167814,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ultralcd.cpp",
-			"settings":
-			{
-				"buffer_size": 46240,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "variants/300-1a-cz.h",
-			"settings":
-			{
-				"buffer_size": 6389,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "variants/300-1a-en.h",
-			"settings":
-			{
-				"buffer_size": 6389,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "variants/300-2a-cz.h",
-			"settings":
-			{
-				"buffer_size": 6389,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "variants/300-2a-en.h",
-			"settings":
-			{
-				"buffer_size": 6388,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "pins.h",
-			"settings":
-			{
-				"buffer_size": 10841,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "Packages/C++/C++.sublime-build",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
 	"command_palette":
 	{
 		"height": 367.0,
+		"last_filter": "",
 		"selected_items":
 		[
 			[
@@ -215,7 +140,11 @@
 	},
 	"console":
 	{
-		"height": 174.0
+		"height": 174.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
 	},
 	"distraction_free":
 	{
@@ -226,8 +155,31 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/Users/prusam/Documents/Firmware"
+	],
 	"file_history":
 	[
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware.old/language_all.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware.old/language_all.cpp",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/Marlin.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/pins.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/language.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/language_cz.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/ultralcd.cpp",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/Marlin_main.cpp",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/Configuration.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/Firmware.ino",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/langtool.php",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/language_all.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/language_all.cpp",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/langflash.cpp",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/variants/300-2a-en.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/variants/300-2a-cz.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/variants/300-1a-en.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/Configuration_prusa.h",
+		"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware/variants/300-1a-cz.h",
 		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/boards.h",
 		"/Volumes/Production/Firmware/fvrun/Marlin1-0-3_RamboMini1-3_EN/language_cz.h",
 		"/Users/prusam/Library/Caches/Cleanup At Startup/Transmit/9DB93710-9561-46CC-AD89-F118A176707C/library.properties",
@@ -285,13 +237,16 @@
 	],
 	"find":
 	{
-		"height": 38.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 93.0,
 		"where_history":
 		[
+			"/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware",
+			"/Users/prusam/Documents/Firmware/*",
+			"/Users/prusam/Documents/Firmware",
 			""
 		]
 	},
@@ -300,6 +255,21 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"MESSAGEPG",
+			"SD_INS",
+			"CARD_R",
+			"PSTR",
+			"MENU_ITEM",
+			"LANGUAGE_INCLUDE",
+			"GENERATE_LANGUAGE_INCLUDE",
+			"LCD_MESSAGEPGM",
+			"PROGMEM",
+			" PROGMEM",
+			"MSG_SD_INSERTED",
+			"LCD_MESSAGEPGM",
+			"WELCOME_MSG",
+			"msg",
+			"MSG",
 			"FAN",
 			"tune",
 			"PRUSA",
@@ -412,22 +382,7 @@
 			"Heig",
 			"round",
 			"M600",
-			"alert",
-			"M600",
-			"G1 Z6",
-			"M600",
-			"G1 Z",
-			"M600",
-			" Z",
-			"Z",
-			"M600",
-			"G1 Z",
-			"G1 Z16",
-			"M600",
-			"chan",
-			"addElement",
-			"function roundNumber",
-			"round"
+			"alert"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -448,289 +403,8 @@
 	"groups":
 	[
 		{
-			"selected": 5,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "Firmware.ino",
-					"settings":
-					{
-						"buffer_size": 1877,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/User/Stino/Arduino.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "Configuration.h",
-					"settings":
-					{
-						"buffer_size": 31837,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								131,
-								141
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "Configuration_prusa.h",
-					"settings":
-					{
-						"buffer_size": 6362,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "Marlin_main.cpp",
-					"settings":
-					{
-						"buffer_size": 167814,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								129463,
-								129463
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 83792.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "ultralcd.cpp",
-					"settings":
-					{
-						"buffer_size": 46240,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								16028,
-								16028
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "variants/300-1a-cz.h",
-					"settings":
-					{
-						"buffer_size": 6389,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								231,
-								231
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "variants/300-1a-en.h",
-					"settings":
-					{
-						"buffer_size": 6389,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								231,
-								231
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "variants/300-2a-cz.h",
-					"settings":
-					{
-						"buffer_size": 6389,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								231,
-								231
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "variants/300-2a-en.h",
-					"settings":
-					{
-						"buffer_size": 6388,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								231,
-								231
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "pins.h",
-					"settings":
-					{
-						"buffer_size": 10841,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7690,
-								7690
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 5792.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -769,6 +443,230 @@
 	{
 		"height": 0.0
 	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454501927.050906":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454502159.909254":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454594612.847963":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454594654.626412":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454594744.458258":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454594772.710838":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454594823.707428":
+	{
+		"height": 221.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454594856.068521":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454594915.498809":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454594942.54873":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595063.385966":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595090.780118":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595247.811671":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595266.196437":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595297.646923":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595333.420665":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595357.726906":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595373.232416":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595390.153945":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595405.345637":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595456.020675":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595469.617035":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595514.098043":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595545.959903":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595561.50064":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595589.043196":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595613.859749":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595629.306247":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595701.767134":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454595742.267242":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454596935.037274":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454596978.034418":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597037.160686":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597043.046399":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597057.688696":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597116.866266":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597180.29106":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597194.459602":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597242.000331":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597263.577497":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597287.457838":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597332.419943":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597345.118943":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597357.590899":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597518.474991":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597772.107424":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454597805.772709":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454664605.262775":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454664760.508266":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454664863.717464":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454664891.123219":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454664915.144783":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454665285.810392":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454669438.455389":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454669498.95813":
+	{
+		"height": 100.0
+	},
+	"output.build|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454676431.393399":
+	{
+		"height": 100.0
+	},
 	"output.build|/Users/prusam/Documents/FW cleanup/Marlin1-0-3_RamboMini1-3_EN|1449489469.39":
 	{
 		"height": 142.0
@@ -801,6 +699,22 @@
 	{
 		"height": 142.0
 	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.upload|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454669687.583954":
+	{
+		"height": 100.0
+	},
+	"output.upload|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454669734.803268":
+	{
+		"height": 100.0
+	},
+	"output.upload|/Users/adent/Desktop/git/Prusa-i3-Plus/Firmware|1454669765.594459":
+	{
+		"height": 100.0
+	},
 	"output.upload|/Volumes/MichalData/Epic Byt/WindowClient/WindowClient|1449273233.47":
 	{
 		"height": 142.0
@@ -825,6 +739,8 @@
 	{
 		"height": 142.0
 	},
+	"pinned_build_system": "",
+	"project": "Firmware.sublime-project",
 	"replace":
 	{
 		"height": 70.0
@@ -833,6 +749,7 @@
 	"select_file":
 	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
 		],
@@ -841,15 +758,32 @@
 	"select_project":
 	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
 		],
 		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
 	},
 	"show_minimap": true,
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
 	"side_bar_width": 304.0,
-	"status_bar_visible": true
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
 }

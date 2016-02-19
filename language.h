@@ -78,6 +78,8 @@
 
 // LCD Menu Messages
 
-#include LANGUAGE_INCLUDE
+//#include LANGUAGE_INCLUDE
+
+#include "language_all.h"
 
 #endif //__LANGUAGE_H

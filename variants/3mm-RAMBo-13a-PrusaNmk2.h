@@ -6,17 +6,16 @@
 *------------------------------------*/
 
 // Printer revision
-#define REVISION "300-1a"
-#define THREEMM_PRINTER   
+#define FILAMENT_SIZE "3mm"
+#define NOZZLE_TYPE "PrusaNmk2"
+#define THREEMM_PRINTER  
 
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3"
 
 // Electronics
-#define MOTHERBOARD BOARD_RAMBO_MINI_1_0
+#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
 
-// Language setting
-#define LANGUAGE_INCLUDE GENERATE_LANGUAGE_INCLUDE(cz)
 
 
 /*------------------------------------

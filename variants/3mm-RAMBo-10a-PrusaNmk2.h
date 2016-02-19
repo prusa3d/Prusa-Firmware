@@ -6,7 +6,8 @@
 *------------------------------------*/
 
 // Printer revision
-#define REVISION "300-1a"
+#define FILAMENT_SIZE "3mm"
+#define NOZZLE_TYPE "PrusaNmk2"
 #define THREEMM_PRINTER   
 
 // Printer name
@@ -15,8 +16,6 @@
 // Electronics
 #define MOTHERBOARD BOARD_RAMBO_MINI_1_0
 
-// Language setting
-#define LANGUAGE_INCLUDE GENERATE_LANGUAGE_INCLUDE(en)
 
 
 /*------------------------------------

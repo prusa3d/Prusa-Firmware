@@ -24,6 +24,7 @@
 ******************************************************************/
 #if MOTHERBOARD == 302
   #define MINI-RAMBO
+  
 #endif
 #if MOTHERBOARD == 301 || MOTHERBOARD == 302
   #define KNOWN_BOARD
@@ -109,6 +110,9 @@
     #define HEATER_2_PIN -1
   #endif
   #ifdef MINI-RAMBO
+
+    #define ELECTRONICS "RAMBo-13a"
+
     #define HEATER_0_PIN 3
     #define HEATER_BED_PIN 4
     #define FAN_1_PIN -1 //6
@@ -118,6 +122,8 @@
     #define MOTOR_CURRENT_PWM_E_PIN 44
     
   #else //RAMBo
+    #define ELECTRONICS "RAMBo-big"
+
     #define E1_STEP_PIN         33
     #define E1_DIR_PIN          42
     #define E1_ENABLE_PIN       25
@@ -199,6 +205,7 @@
 * Rambo mini Pin Assignments 1.0
 ******************************************************************/
 #if MOTHERBOARD == 102
+  #define ELECTRONICS "RAMBo-10a"
   #define KNOWN_BOARD
   #ifndef __AVR_ATmega2560__
     #error Oops!  Make sure you have 'Arduino Mega 2560' selected from the 'Tools -> Boards' menu.
