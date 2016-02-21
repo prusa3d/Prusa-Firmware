@@ -7,8 +7,8 @@
 
 // Printer revision
 #define FILAMENT_SIZE "3mm"
-#define NOZZLE_TYPE "PrusaNmk2"
-#define THREEMM_PRINTER   
+#define NOZZLE_TYPE "PrusaNmk2"  
+#define THREEMM_PRINTER  
 
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3"
