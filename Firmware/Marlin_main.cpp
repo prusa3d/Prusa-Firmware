@@ -1441,6 +1441,8 @@ void process_commands()
 
     } else if(code_seen('Lang')) {
       lcd_force_language_selection();
+    } else if(code_seen('LiveZ')) {
+      EEPROM_save_B(4089,0);
     }
 
   }
@@ -3081,30 +3083,61 @@ Sigma_Exit:
       enable_endstops(true) ;
       break;
     case 119: // M119
-    SERIAL_PROTOCOLLN(MSG_M119_REPORT);
+    SERIAL_PROTOCOLRPGM(MSG_M119_REPORT);
+    SERIAL_PROTOCOLLN("");
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_X_MIN);
-        SERIAL_PROTOCOLLN(((READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_X_MAX);
-        SERIAL_PROTOCOLLN(((READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        if(READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Y_MIN);
-        SERIAL_PROTOCOLLN(((READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        if(READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Y_MAX);
-        SERIAL_PROTOCOLLN(((READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        if(READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MIN);
-        SERIAL_PROTOCOLLN(((READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        if(READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+        SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MAX);
-        SERIAL_PROTOCOLLN(((READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING)?MSG_ENDSTOP_HIT:MSG_ENDSTOP_OPEN));
+        if(READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+        SERIAL_PROTOCOLLN("");
       #endif
       break;
       //TODO: update for all axis, use for loop
