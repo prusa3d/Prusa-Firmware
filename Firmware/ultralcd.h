@@ -3,12 +3,6 @@
 
 #include "Marlin.h"
 
-#define EEPROM_SILENT 4095
-#define EEPROM_BABYSTEP_X 4093
-#define EEPROM_BABYSTEP_Y 4091
-#define EEPROM_BABYSTEP_Z 4089
-#define EEPROM_LANG 4088
-
 #ifdef ULTRA_LCD
 
   void lcd_update();

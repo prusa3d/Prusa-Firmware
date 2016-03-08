@@ -5,8 +5,15 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "2.2.3"
+#define FW_version "2.2.4a"
 
+
+
+#define EEPROM_SILENT 4095
+#define EEPROM_BABYSTEP_X 4093
+#define EEPROM_BABYSTEP_Y 4091
+#define EEPROM_BABYSTEP_Z 4089
+#define EEPROM_LANG 4088
 
 
 // This configuration file contains the basic settings.

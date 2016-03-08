@@ -1441,8 +1441,8 @@ void process_commands()
 
     } else if(code_seen('Lang')) {
       lcd_force_language_selection();
-    } else if(code_seen('LiveZ')) {
-      EEPROM_save_B(4089,0);
+    } else if(code_seen('Lz')) {
+      EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
     }
 
   }
@@ -1924,7 +1924,7 @@ void process_commands()
       endstops_hit_on_purpose();
 
       if(card.sdprinting) {
-        EEPROM_read_B(4089,&babystepLoad[2]);
+        EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoad[2]);
 
         if(babystepLoad[2] != 0){
 
