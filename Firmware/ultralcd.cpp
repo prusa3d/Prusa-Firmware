@@ -1225,7 +1225,7 @@ void lcd_mylang() {
 
   enc_dif = encoderDiff;
 
-  while (lang_selected == 255) {
+  while ( (lang_selected == 255) && (MYSERIAL.available() < 2) ) {
 
     manage_heater();
     manage_inactivity(true);
@@ -1273,6 +1273,11 @@ void lcd_mylang() {
     }
     */
   };
+
+  if(MYSERIAL.available() > 1){
+    lang_selected = 0;
+    firstrun = 0;
+  }
 
   lcd_set_custom_characters_degree();
   lcd_implementation_clear();
