@@ -15,6 +15,7 @@
 #define MSG_DISABLE_STEPPERS                "Wylaczyc silniki"
 #define MSG_AUTO_HOME                       "Auto home"
 #define MSG_COOLDOWN                        "Wychlodzic" 
+#define MSG_MOVE_AXIS                       "Ruch osi"
 #define MSG_MOVE_X                          "Przesunac X"
 #define MSG_MOVE_Y                          "Przesunac Y"
 #define MSG_MOVE_Z                          "Przesunac Z"
