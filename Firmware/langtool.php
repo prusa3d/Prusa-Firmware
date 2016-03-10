@@ -73,6 +73,7 @@ foreach ($cz as $k=>$v) {
 	foreach ($langs as $lang) {
 		$out .= "const char MSG".strtoupper($lang)."${counter}[] PROGMEM = { ".${$lang}[$k]." }; //$k\n";
 		$outa[$lang].="MSG".strtoupper($lang)."$counter, //$k\n";
+		if (${$lang}[$k] == "") echo "ERR: In language: ".strtoupper($lang)." string \"".$k."\" NOT FOUND !\n";
 	}
 	//$out .= "const char MSGCZ${counter}[] PROGMEM = { $v }; //$k\n";
 	//$out .= "const char MSGEN${counter}[] PROGMEM = {".$en[$k]."}; //$k\n";
