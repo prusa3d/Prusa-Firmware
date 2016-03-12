@@ -44,6 +44,10 @@
   #endif
 #endif // ENABLE_AUTO_BED_LEVELING
 
+#ifdef MESH_BED_LEVELING
+  #include "mesh_bed_leveling.h"
+#endif
+
 #include "ultralcd.h"
 #include "Configuration_prusa.h"
 #include "planner.h"
@@ -79,6 +83,10 @@
 
 #include "ultralcd.h"
 
+// Macros for bit masks
+#define BIT(b) (1<<(b))
+#define TEST(n,b) (((n)&BIT(b))!=0)
+#define SET_BIT(n,b,value) (n) ^= ((-value)^(n)) & (BIT(b))
 
 
 // look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
@@ -103,6 +111,8 @@
 // G30 - Single Z Probe, probes bed at current XY location.
 // G31 - Dock sled (Z_PROBE_SLED only)
 // G32 - Undock sled (Z_PROBE_SLED only)
+// G80 - Automatic mesh bed leveling
+// G81 - Print bed profile
 // G90 - Use Absolute Coordinates
 // G91 - Use Relative Coordinates
 // G92 - Set current position to coordinates given
@@ -597,6 +607,13 @@ void servo_init()
 }
 
 static void lcd_language_menu();
+
+
+#ifdef MESH_BED_LEVELING
+   enum MeshLevelingState { MeshReport, MeshStart, MeshNext, MeshSet };
+#endif
+
+
 void setup()
 {
   setup_killpin();
@@ -912,6 +929,10 @@ long code_value_long()
   return (strtol(&cmdbuffer[bufindr][strchr_pointer - cmdbuffer[bufindr] + 1], NULL, 10));
 }
 
+int16_t code_value_short() {
+    return (int16_t)(strtol(&cmdbuffer[bufindr][strchr_pointer - cmdbuffer[bufindr] + 1], NULL, 10));
+}
+
 bool code_seen(char code)
 {
   strchr_pointer = strchr(cmdbuffer[bufindr], code);
@@ -1050,6 +1071,10 @@ static void axis_is_at_home(int axis) {
   max_pos[axis] =          base_max_pos(axis) + add_homing[axis];
 #endif
 }
+
+
+inline void set_current_to_destination() { memcpy(current_position, destination, sizeof(current_position)); }
+inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 #ifdef AUTO_BED_LEVELING_GRID
@@ -1251,6 +1276,8 @@ static void homeaxis(int axis) {
     if (axis == X_AXIS)
       axis_home_dir = x_home_dir(active_extruder);
 #endif
+      
+
 
     current_position[axis] = 0;
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -1698,6 +1725,11 @@ void process_commands()
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
 #endif //ENABLE_AUTO_BED_LEVELING
+            
+            // For mesh bed leveling deactivate the matrix temporarily
+        #ifdef MESH_BED_LEVELING
+            mbl.active = 0;
+        #endif
 
       saved_feedrate = feedrate;
       saved_feedmultiply = feedmultiply;
@@ -1847,7 +1879,24 @@ void process_commands()
               plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
               st_synchronize();
             #endif
+            #ifdef MESH_BED_LEVELING // If Mesh bed leveling, moxve X&Y to safe position for home
+              destination[X_AXIS] = MESH_MIN_X - X_PROBE_OFFSET_FROM_EXTRUDER;
+              destination[Y_AXIS] = MESH_MIN_Y - Y_PROBE_OFFSET_FROM_EXTRUDER;
+              destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
+              feedrate = homing_feedrate[Z_AXIS]/10;
+              current_position[Z_AXIS] = 0;
+              
+              plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
+              st_synchronize();
+              current_position[X_AXIS] = destination[X_AXIS];
+              current_position[Y_AXIS] = destination[Y_AXIS];
+              HOMEAXIS(Z);
+          
+            
+            #else
             HOMEAXIS(Z);
+            #endif
           }
         #else                      // Z Safe mode activated.
           if(home_all_axis) {
@@ -1906,6 +1955,8 @@ void process_commands()
           current_position[Z_AXIS] += zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
         }
       #endif
+    
+  
       plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 #endif // else DELTA
 
@@ -1922,7 +1973,7 @@ void process_commands()
       feedmultiply = saved_feedmultiply;
       previous_millis_cmd = millis();
       endstops_hit_on_purpose();
-
+#ifndef MESH_BED_LEVELING
       if(card.sdprinting) {
         EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoad[2]);
 
@@ -1933,6 +1984,7 @@ void process_commands()
         }
 
       }
+#endif
       
       
 
@@ -2120,6 +2172,124 @@ void process_commands()
         break;
 #endif // Z_PROBE_SLED
 #endif // ENABLE_AUTO_BED_LEVELING
+            
+#ifdef MESH_BED_LEVELING
+            /**
+             * G80: Mesh-based Z probe, probes a grid and produces a
+             *      mesh to compensate for variable bed height
+             *
+             * The S0 report the points as below
+             *
+             *  +----> X-axis
+             *  |
+             *  |
+             *  v Y-axis
+             *
+             */
+    case 80:
+        {
+            // Firstly check if we know where we are
+            if ( !( axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS] ) ){
+                // We don't know where we are!!! HOME!
+                enquecommand_P((PSTR("G28")));
+                enquecommand_P((PSTR("G80")));
+                break;
+            }
+            
+            mbl.reset();
+           
+            
+            // Cycle through all points and probe them
+            current_position[X_AXIS] = MESH_MIN_X - X_PROBE_OFFSET_FROM_EXTRUDER;
+            current_position[Y_AXIS] = MESH_MIN_Y - Y_PROBE_OFFSET_FROM_EXTRUDER;
+            
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS]/30, active_extruder);
+            
+            current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS]/60, active_extruder);
+            st_synchronize();
+            
+            int mesh_point = 0;
+            
+            int ix = 0;
+            int iy = 0;
+            
+            int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS]/20;
+            int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS]/60;
+            int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS]/40;
+            
+            while (!(mesh_point == ((MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS)) )) {
+            
+                // Move Z to proper distance
+                current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+                
+                st_synchronize();
+                
+                // Get cords of measuring point
+                ix = mesh_point % MESH_NUM_X_POINTS;
+                iy = mesh_point / MESH_NUM_X_POINTS;
+                if (iy & 1) ix = (MESH_NUM_X_POINTS - 1) - ix; // Zig zag
+                
+                current_position[X_AXIS] = mbl.get_x(ix);
+                current_position[Y_AXIS] = mbl.get_y(iy);
+                
+                current_position[X_AXIS] -= X_PROBE_OFFSET_FROM_EXTRUDER;
+                current_position[Y_AXIS] -= Y_PROBE_OFFSET_FROM_EXTRUDER;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
+                
+                st_synchronize();
+                
+                // Go down until endstop is hit
+            while ((READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING ) == 0) {
+
+                current_position[Z_AXIS] -= MBL_Z_STEP;
+                
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_PROBE_FEEDRATE, active_extruder);
+                st_synchronize();
+                delay(1);
+            }
+                
+                
+                mbl.set_z(ix, iy, current_position[Z_AXIS]);
+                
+                mesh_point++;
+                
+            }
+            current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+            mbl.active = 1;
+            current_position[X_AXIS] = X_MIN_POS+0.2;
+            current_position[Y_AXIS] = Y_MIN_POS+0.2;
+            current_position[Z_AXIS] = Z_MIN_POS;
+            plan_buffer_line(current_position[X_AXIS], current_position[X_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
+            st_synchronize();
+            
+        }
+        break;
+            
+        case 81:
+            if (mbl.active) {
+                SERIAL_PROTOCOLPGM("Num X,Y: ");
+                SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
+                SERIAL_PROTOCOLPGM(",");
+                SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
+                SERIAL_PROTOCOLPGM("\nZ search height: ");
+                SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
+                SERIAL_PROTOCOLLNPGM("\nMeasured points:");
+                for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
+                    for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
+                        SERIAL_PROTOCOLPGM("  ");
+                        SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
+                    }
+                    SERIAL_PROTOCOLPGM("\n");
+                }
+            }
+            else
+                SERIAL_PROTOCOLLNPGM("Mesh bed leveling not active.");
+            break;
+#endif  // ENABLE_MESH_BED_LEVELING
+
     case 90: // G90
       relative_mode = false;
       break;
@@ -4450,6 +4620,79 @@ void calculate_delta(float cartesian[3])
 }
 #endif
 
+
+#ifdef MESH_BED_LEVELING
+    
+// This function is used to split lines on mesh borders so each segment is only part of one mesh area
+    void mesh_plan_buffer_line(float x, float y, float z, const float e, float feed_rate, const uint8_t& extruder, uint8_t x_splits = 0xff, uint8_t y_splits = 0xff) {
+        if (!mbl.active) {
+            plan_buffer_line(x, y, z, e, feed_rate, extruder);
+            set_current_to_destination();
+            return;
+        }
+        int pix = mbl.select_x_index(current_position[X_AXIS]);
+        int piy = mbl.select_y_index(current_position[Y_AXIS]);
+        int ix = mbl.select_x_index(x);
+        int iy = mbl.select_y_index(y);
+        pix = min(pix, MESH_NUM_X_POINTS - 2);
+        piy = min(piy, MESH_NUM_Y_POINTS - 2);
+        ix = min(ix, MESH_NUM_X_POINTS - 2);
+        iy = min(iy, MESH_NUM_Y_POINTS - 2);
+        if (pix == ix && piy == iy) {
+            // Start and end on same mesh square
+            plan_buffer_line(x, y, z, e, feed_rate, extruder);
+            set_current_to_destination();
+            return;
+        }
+        float nx, ny, ne, normalized_dist;
+        if (ix > pix && (x_splits) & BIT(ix)) {
+            nx = mbl.get_x(ix);
+            normalized_dist = (nx - current_position[X_AXIS]) / (x - current_position[X_AXIS]);
+            ny = current_position[Y_AXIS] + (y - current_position[Y_AXIS]) * normalized_dist;
+            ne = current_position[E_AXIS] + (e - current_position[E_AXIS]) * normalized_dist;
+            x_splits ^= BIT(ix);
+        }
+        else if (ix < pix && (x_splits) & BIT(pix)) {
+            nx = mbl.get_x(pix);
+            normalized_dist = (nx - current_position[X_AXIS]) / (x - current_position[X_AXIS]);
+            ny = current_position[Y_AXIS] + (y - current_position[Y_AXIS]) * normalized_dist;
+            ne = current_position[E_AXIS] + (e - current_position[E_AXIS]) * normalized_dist;
+            x_splits ^= BIT(pix);
+        }
+        else if (iy > piy && (y_splits) & BIT(iy)) {
+            ny = mbl.get_y(iy);
+            normalized_dist = (ny - current_position[Y_AXIS]) / (y - current_position[Y_AXIS]);
+            nx = current_position[X_AXIS] + (x - current_position[X_AXIS]) * normalized_dist;
+            ne = current_position[E_AXIS] + (e - current_position[E_AXIS]) * normalized_dist;
+            y_splits ^= BIT(iy);
+        }
+        else if (iy < piy && (y_splits) & BIT(piy)) {
+            ny = mbl.get_y(piy);
+            normalized_dist = (ny - current_position[Y_AXIS]) / (y - current_position[Y_AXIS]);
+            nx = current_position[X_AXIS] + (x - current_position[X_AXIS]) * normalized_dist;
+            ne = current_position[E_AXIS] + (e - current_position[E_AXIS]) * normalized_dist;
+            y_splits ^= BIT(piy);
+        }
+        else {
+            // Already split on a border
+            plan_buffer_line(x, y, z, e, feed_rate, extruder);
+            set_current_to_destination();
+            return;
+        }
+        // Do the split and look for more borders
+        destination[X_AXIS] = nx;
+        destination[Y_AXIS] = ny;
+        destination[E_AXIS] = ne;
+        mesh_plan_buffer_line(nx, ny, z, ne, feed_rate, extruder, x_splits, y_splits);
+        destination[X_AXIS] = x;
+        destination[Y_AXIS] = y;
+        destination[E_AXIS] = e;
+        mesh_plan_buffer_line(x, y, z, e, feed_rate, extruder, x_splits, y_splits);
+    }
+#endif  // MESH_BED_LEVELING
+    
+    
+    
 void prepare_move()
 {
   clamp_to_software_endstops(destination);
@@ -4565,10 +4808,18 @@ for (int s = 1; s <= steps; s++) {
 #if ! (defined DELTA || defined SCARA)
   // Do not use feedmultiply for E or Z only moves
   if( (current_position[X_AXIS] == destination [X_AXIS]) && (current_position[Y_AXIS] == destination [Y_AXIS])) {
+#ifdef MESH_BED_LEVELING
+      mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+#else
       plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+#endif
   }
   else {
-    plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply/60/100.0, active_extruder);
+#ifdef MESH_BED_LEVELING
+    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply/60/100.0, active_extruder);
+#else
+     plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply/60/100.0, active_extruder);
+#endif
   }
 #endif // !(DELTA || SCARA)
 

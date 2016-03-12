@@ -1084,9 +1084,12 @@ static void lcd_settings_menu()
 
 
   MENU_ITEM(submenu, MSG_MOVE_AXIS, lcd_move_menu_1mm);
-
+    
+#ifndef MESH_BED_LEVELING
   MENU_ITEM(gcode, MSG_HOMEYZ, PSTR("G28 Z"));
-
+#else
+  MENU_ITEM(gcode, MSG_HOMEYZ, PSTR("G80"));
+#endif
   MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
 
 

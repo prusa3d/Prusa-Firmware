@@ -5,6 +5,10 @@
 #include "ConfigurationStore.h"
 #include "Configuration_prusa.h"
 
+#ifdef MESH_BED_LEVELING
+#include "mesh_bed_leveling.h"
+#endif
+
 void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
 {
     do
