@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "2.2.4"
+#define FW_version "2.2.4d"
 
 
 
