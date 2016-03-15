@@ -78,6 +78,12 @@ bool abort_on_endstop_hit = false;
   int motor_current_setting_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 #endif
 
+#if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
+    uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT;
+const uint8_t digipot_motor_current_loud[] = DIGIPOT_MOTOR_CURRENT_LOUD;
+    const uint8_t digipot_motor_current_silent[] = DIGIPOT_MOTOR_CURRENT;
+#endif
+
 static bool old_x_min_endstop=false;
 static bool old_x_max_endstop=false;
 static bool old_y_min_endstop=false;
@@ -173,6 +179,7 @@ asm volatile ( \
 #define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIMSK1 |= (1<<OCIE1A)
 #define DISABLE_STEPPER_DRIVER_INTERRUPT() TIMSK1 &= ~(1<<OCIE1A)
 
+void digipot_current(uint8_t driver, int current);
 
 void checkHitEndstops()
 {
@@ -1265,15 +1272,25 @@ void digipot_init() //Initialize Digipot Motor Current
 
   #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
     if(SilentMode == 0){
-    const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT_LOUD;
+        for(int i=0;i<=4;i++){
+            //digitalPotWrite(digipot_ch[i], digipot_motor_current[i]);
+            digipot_motor_current[i] = digipot_motor_current_loud[i];
+        }
     }else{
-      const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT;
+        for(int i=0;i<=4;i++){
+            //digitalPotWrite(digipot_ch[i], digipot_motor_current[i]);
+            digipot_motor_current[i] = digipot_motor_current_silent[i];
+        }
+        
     }
     SPI.begin();
     pinMode(DIGIPOTSS_PIN, OUTPUT);
-    for(int i=0;i<=4;i++)
+    for(int i=0;i<=4;i++){
       //digitalPotWrite(digipot_ch[i], digipot_motor_current[i]);
       digipot_current(i,digipot_motor_current[i]);
+    }
+    
+    
   #endif
   #ifdef MOTOR_CURRENT_PWM_XY_PIN
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
