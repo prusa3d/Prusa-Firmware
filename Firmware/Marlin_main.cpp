@@ -4624,74 +4624,62 @@ void calculate_delta(float cartesian[3])
 #ifdef MESH_BED_LEVELING
     
 // This function is used to split lines on mesh borders so each segment is only part of one mesh area
-    void mesh_plan_buffer_line(float x, float y, float z, const float e, float feed_rate, const uint8_t& extruder, uint8_t x_splits = 0xff, uint8_t y_splits = 0xff) {
-        if (!mbl.active) {
-            plan_buffer_line(x, y, z, e, feed_rate, extruder);
-            set_current_to_destination();
-            return;
+#define X_MID_POS (0.5f*(X_MIN_POS+X_MAX_POS))
+#define Y_MID_POS (0.5f*(Y_MIN_POS+Y_MAX_POS))
+    
+    void mesh_plan_buffer_line(float x, float y, float z, const float e, float feed_rate, const uint8_t& extruder) {
+        int tileDiff = 0;
+        if (mbl.active) {
+            // In which of the four tiles the start and the end points fall?
+            // tileDiff is a bitmask,
+            // 1st bit indicates a crossing of the tile boundary in the X axis,
+            // 2nd bit indicates a crossing of the tile boundary in the Y axis.
+            tileDiff =
+            ((current_position[X_AXIS] > X_MID_POS) | ((current_position[Y_AXIS] > Y_MID_POS) << 1)) ^
+            ((x > X_MID_POS) | ((y > Y_MID_POS) << 1));
         }
-        int pix = mbl.select_x_index(current_position[X_AXIS]);
-        int piy = mbl.select_y_index(current_position[Y_AXIS]);
-        int ix = mbl.select_x_index(x);
-        int iy = mbl.select_y_index(y);
-        pix = min(pix, MESH_NUM_X_POINTS - 2);
-        piy = min(piy, MESH_NUM_Y_POINTS - 2);
-        ix = min(ix, MESH_NUM_X_POINTS - 2);
-        iy = min(iy, MESH_NUM_Y_POINTS - 2);
-        if (pix == ix && piy == iy) {
-            // Start and end on same mesh square
-            plan_buffer_line(x, y, z, e, feed_rate, extruder);
-            set_current_to_destination();
-            return;
+        
+        // Normalized parameters for the crossing of the tile boundary.
+        float s1, s2;
+        // Interpolate a linear movement at the tile boundary, in X, Y and E axes.
+#define INRPL_X(u) (current_position[X_AXIS] + (x - current_position[X_AXIS]) * u)
+#define INRPL_Y(u) (current_position[Y_AXIS] + (y - current_position[Y_AXIS]) * u)
+#define INRPL_E(u) (current_position[E_AXIS] + (e - current_position[E_AXIS]) * u)
+        switch (tileDiff) {
+            case 0:
+                // The start and end points on same tile, or the mesh bed leveling is not active.
+                break;
+            case 1:
+                // The start and end tiles differ in X only.
+                s1 = (X_MID_POS - current_position[X_AXIS]) / (x - current_position[X_AXIS]);
+                plan_buffer_line(X_MID_POS, INRPL_Y(s1), z, INRPL_E(s1), feed_rate, extruder);
+                break;
+            case 2:
+                // The start and end tiles differ in Y only.
+                s1 = (Y_MID_POS - current_position[Y_AXIS]) / (y - current_position[Y_AXIS]);
+                plan_buffer_line(INRPL_X(s1), Y_MID_POS, z, INRPL_E(s1), feed_rate, extruder);
+                break;
+            default:
+                // The start and end tiles differ in both coordinates.
+                // assert(tileDiff == 3);
+                s1 = (X_MID_POS - current_position[X_AXIS]) / (x - current_position[X_AXIS]);
+                s2 = (Y_MID_POS - current_position[Y_AXIS]) / (y - current_position[Y_AXIS]);
+                if (s1 < s2) {
+                    plan_buffer_line(X_MID_POS, INRPL_Y(s1), z, INRPL_E(s1), feed_rate, extruder);
+                    plan_buffer_line(INRPL_X(s2), Y_MID_POS, z, INRPL_E(s2), feed_rate, extruder);
+                } else {
+                    plan_buffer_line(INRPL_X(s1), Y_MID_POS, z, INRPL_E(s1), feed_rate, extruder);
+                    plan_buffer_line(X_MID_POS, INRPL_Y(s2), z, INRPL_E(s2), feed_rate, extruder);
+                }
         }
-        float nx, ny, ne, normalized_dist;
-        if (ix > pix && (x_splits) & BIT(ix)) {
-            nx = mbl.get_x(ix);
-            normalized_dist = (nx - current_position[X_AXIS]) / (x - current_position[X_AXIS]);
-            ny = current_position[Y_AXIS] + (y - current_position[Y_AXIS]) * normalized_dist;
-            ne = current_position[E_AXIS] + (e - current_position[E_AXIS]) * normalized_dist;
-            x_splits ^= BIT(ix);
-        }
-        else if (ix < pix && (x_splits) & BIT(pix)) {
-            nx = mbl.get_x(pix);
-            normalized_dist = (nx - current_position[X_AXIS]) / (x - current_position[X_AXIS]);
-            ny = current_position[Y_AXIS] + (y - current_position[Y_AXIS]) * normalized_dist;
-            ne = current_position[E_AXIS] + (e - current_position[E_AXIS]) * normalized_dist;
-            x_splits ^= BIT(pix);
-        }
-        else if (iy > piy && (y_splits) & BIT(iy)) {
-            ny = mbl.get_y(iy);
-            normalized_dist = (ny - current_position[Y_AXIS]) / (y - current_position[Y_AXIS]);
-            nx = current_position[X_AXIS] + (x - current_position[X_AXIS]) * normalized_dist;
-            ne = current_position[E_AXIS] + (e - current_position[E_AXIS]) * normalized_dist;
-            y_splits ^= BIT(iy);
-        }
-        else if (iy < piy && (y_splits) & BIT(piy)) {
-            ny = mbl.get_y(piy);
-            normalized_dist = (ny - current_position[Y_AXIS]) / (y - current_position[Y_AXIS]);
-            nx = current_position[X_AXIS] + (x - current_position[X_AXIS]) * normalized_dist;
-            ne = current_position[E_AXIS] + (e - current_position[E_AXIS]) * normalized_dist;
-            y_splits ^= BIT(piy);
-        }
-        else {
-            // Already split on a border
-            plan_buffer_line(x, y, z, e, feed_rate, extruder);
-            set_current_to_destination();
-            return;
-        }
-        // Do the split and look for more borders
-        destination[X_AXIS] = nx;
-        destination[Y_AXIS] = ny;
-        destination[E_AXIS] = ne;
-        mesh_plan_buffer_line(nx, ny, z, ne, feed_rate, extruder, x_splits, y_splits);
-        destination[X_AXIS] = x;
-        destination[Y_AXIS] = y;
-        destination[E_AXIS] = e;
-        mesh_plan_buffer_line(x, y, z, e, feed_rate, extruder, x_splits, y_splits);
+#undef INRPL_X
+#undef INRPL_Y
+#undef INRPL_E
+        // The rest of the path.
+        plan_buffer_line(x, y, z, e, feed_rate, extruder);
+        set_current_to_destination();
     }
 #endif  // MESH_BED_LEVELING
-    
-    
     
 void prepare_move()
 {
