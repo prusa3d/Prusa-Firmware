@@ -538,7 +538,21 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder)
 #endif  //ENABLE_AUTO_BED_LEVELING
 {
-  // Calculate the buffer head after we push this byte
+
+#ifdef DEVELOPER
+    SERIAL_PROTOCOLPGM("MESHING TO:");
+    SERIAL_PROTOCOLPGM(" X:");
+    SERIAL_PROTOCOL(x);
+    SERIAL_PROTOCOLPGM(" Y:");
+    SERIAL_PROTOCOL(y);
+    SERIAL_PROTOCOLPGM(" Z:");
+    SERIAL_PROTOCOL(z);
+    SERIAL_PROTOCOLPGM(" E:");
+    SERIAL_PROTOCOL(e);
+    SERIAL_PROTOCOLPGM("\n");
+#endif
+    
+    // Calculate the buffer head after we push this byte
   int next_buffer_head = next_block_index(block_buffer_head);
 
   // If the buffer is full: good! That means we are well ahead of the robot. 

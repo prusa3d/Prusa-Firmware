@@ -9,6 +9,9 @@
 #define FILAMENT_SIZE "1_7dev"
 #define NOZZLE_TYPE "E3Dv6lite"
 
+// Developer flag
+#define DEVELOPER
+
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3 dev"
 
@@ -148,7 +151,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #if MOTHERBOARD == 102 || MOTHERBOARD == 302
   #define MOTOR_CURRENT_PWM_RANGE 2000
   #define DEFAULT_PWM_MOTOR_CURRENT  {270, 450, 450} // {XY,Z,E}
-  #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 450, 500} // {XY,Z,E}
+  #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 530, 500} // {XY,Z,E}
 #endif
 
 /*------------------------------------
