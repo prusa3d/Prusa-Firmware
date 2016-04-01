@@ -538,20 +538,6 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder)
 #endif  //ENABLE_AUTO_BED_LEVELING
 {
-
-#ifdef DEVELOPER
-    SERIAL_PROTOCOLPGM("MESHING TO:");
-    SERIAL_PROTOCOLPGM(" X:");
-    SERIAL_PROTOCOL(x);
-    SERIAL_PROTOCOLPGM(" Y:");
-    SERIAL_PROTOCOL(y);
-    SERIAL_PROTOCOLPGM(" Z:");
-    SERIAL_PROTOCOL(z);
-    SERIAL_PROTOCOLPGM(" E:");
-    SERIAL_PROTOCOL(e);
-    SERIAL_PROTOCOLPGM("\n");
-#endif
-    
     // Calculate the buffer head after we push this byte
   int next_buffer_head = next_block_index(block_buffer_head);
 
@@ -576,7 +562,7 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
   target[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
 #ifdef MESH_BED_LEVELING
     if (mbl.active){
-        target[Z_AXIS] += lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]);
+        target[Z_AXIS] = lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]);
     }else{
         target[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
     }
@@ -584,7 +570,6 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
     target[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
 #endif // ENABLE_MESH_BED_LEVELING
   target[E_AXIS] = lround(e*axis_steps_per_unit[E_AXIS]);
-
   #ifdef PREVENT_DANGEROUS_EXTRUDE
   if(target[E_AXIS]!=position[E_AXIS])
   {
@@ -1090,7 +1075,7 @@ void plan_set_position(const float &x, const float &y, const float &z, const flo
   position[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
 #ifdef MESH_BED_LEVELING
     if (mbl.active){
-      position[Z_AXIS] += lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]);
+      position[Z_AXIS] = lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]);
     }else{
         position[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
     }

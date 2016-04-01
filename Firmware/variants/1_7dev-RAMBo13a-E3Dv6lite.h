@@ -151,7 +151,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #if MOTHERBOARD == 102 || MOTHERBOARD == 302
   #define MOTOR_CURRENT_PWM_RANGE 2000
   #define DEFAULT_PWM_MOTOR_CURRENT  {270, 450, 450} // {XY,Z,E}
-  #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 530, 500} // {XY,Z,E}
+  #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
 #endif
 
 /*------------------------------------
@@ -170,8 +170,13 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
     #define MESH_MIN_Y 7
     #define MESH_MAX_Y 203
 
-    #define MESH_NUM_X_POINTS 3  // Don't use more than 7 points per axis, implementation limited.
-    #define MESH_NUM_Y_POINTS 3
+    // Mesh upsample definition
+    #define MESH_NUM_X_POINTS 7
+    #define MESH_NUM_Y_POINTS 7
+    // Mesh measure definition
+    #define MESH_MEAS_NUM_X_POINTS 3
+    #define MESH_MEAS_NUM_Y_POINTS 3
+
     #define MESH_HOME_Z_CALIB 0.2
     #define MESH_HOME_Z_SEARCH 5
 

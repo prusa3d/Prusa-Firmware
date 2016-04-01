@@ -486,7 +486,9 @@ void serial_echopair_P(const char *s_P, unsigned long v)
   }
 #endif //!SDSUPPORT
 
-
+#ifdef MESH_BED_LEVELING
+static void find_bed();
+#endif
 
 
 //adds an command to the main command buffer
@@ -1076,6 +1078,28 @@ static void axis_is_at_home(int axis) {
 inline void set_current_to_destination() { memcpy(current_position, destination, sizeof(current_position)); }
 inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
 
+
+static void setup_for_endstop_move() {
+    saved_feedrate = feedrate;
+    saved_feedmultiply = feedmultiply;
+    feedmultiply = 100;
+    previous_millis_cmd = millis();
+    
+    enable_endstops(true);
+}
+
+static void clean_up_after_endstop_move() {
+#ifdef ENDSTOPS_ONLY_FOR_HOMING
+    enable_endstops(false);
+#endif
+    
+    feedrate = saved_feedrate;
+    feedmultiply = saved_feedmultiply;
+    previous_millis_cmd = millis();
+}
+
+
+
 #ifdef ENABLE_AUTO_BED_LEVELING
 #ifdef AUTO_BED_LEVELING_GRID
 static void set_bed_level_equation_lsq(double *plane_equation_coefficients)
@@ -1184,24 +1208,6 @@ static void do_blocking_move_relative(float offset_x, float offset_y, float offs
     do_blocking_move_to(current_position[X_AXIS] + offset_x, current_position[Y_AXIS] + offset_y, current_position[Z_AXIS] + offset_z);
 }
 
-static void setup_for_endstop_move() {
-    saved_feedrate = feedrate;
-    saved_feedmultiply = feedmultiply;
-    feedmultiply = 100;
-    previous_millis_cmd = millis();
-
-    enable_endstops(true);
-}
-
-static void clean_up_after_endstop_move() {
-#ifdef ENDSTOPS_ONLY_FOR_HOMING
-    enable_endstops(false);
-#endif
-
-    feedrate = saved_feedrate;
-    feedmultiply = saved_feedmultiply;
-    previous_millis_cmd = millis();
-}
 
 static void engage_z_probe() {
     // Engage Z Servo endstop if enabled
@@ -2174,18 +2180,18 @@ void process_commands()
 #endif // ENABLE_AUTO_BED_LEVELING
             
 #ifdef MESH_BED_LEVELING
-            /**
-             * G80: Mesh-based Z probe, probes a grid and produces a
-             *      mesh to compensate for variable bed height
-             *
-             * The S0 report the points as below
-             *
-             *  +----> X-axis
-             *  |
-             *  |
-             *  v Y-axis
-             *
-             */
+    /**
+     * G80: Mesh-based Z probe, probes a grid and produces a
+     *      mesh to compensate for variable bed height
+     *
+     * The S0 report the points as below
+     *
+     *  +----> X-axis
+     *  |
+     *  |
+     *  v Y-axis
+     *
+     */
     case 80:
         {
             // Firstly check if we know where we are
@@ -2217,8 +2223,8 @@ void process_commands()
             int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS]/20;
             int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS]/60;
             int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS]/40;
-            
-            while (!(mesh_point == ((MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS)) )) {
+            setup_for_endstop_move();
+            while (!(mesh_point == ((MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) ))) {
             
                 // Move Z to proper distance
                 current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -2227,12 +2233,12 @@ void process_commands()
                 st_synchronize();
                 
                 // Get cords of measuring point
-                ix = mesh_point % MESH_NUM_X_POINTS;
-                iy = mesh_point / MESH_NUM_X_POINTS;
-                if (iy & 1) ix = (MESH_NUM_X_POINTS - 1) - ix; // Zig zag
+                ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
+                iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
+                if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix; // Zig zag
                 
-                current_position[X_AXIS] = mbl.get_x(ix);
-                current_position[Y_AXIS] = mbl.get_y(iy);
+                current_position[X_AXIS] = mbl.get_meas_x(ix);
+                current_position[Y_AXIS] = mbl.get_meas_y(iy);
                 
                 current_position[X_AXIS] -= X_PROBE_OFFSET_FROM_EXTRUDER;
                 current_position[Y_AXIS] -= Y_PROBE_OFFSET_FROM_EXTRUDER;
@@ -2241,14 +2247,9 @@ void process_commands()
                 st_synchronize();
                 
                 // Go down until endstop is hit
-            while ((READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING ) == 0) {
-
-                current_position[Z_AXIS] -= MBL_Z_STEP;
                 
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_PROBE_FEEDRATE, active_extruder);
-                st_synchronize();
-                delay(1);
-            }
+                find_bed();
+                
                 
                 
                 mbl.set_z(ix, iy, current_position[Z_AXIS]);
@@ -2256,8 +2257,10 @@ void process_commands()
                 mesh_point++;
                 
             }
+            clean_up_after_endstop_move();
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+            mbl.upsample_3x3();
             mbl.active = 1;
             current_position[X_AXIS] = X_MIN_POS+0.2;
             current_position[Y_AXIS] = Y_MIN_POS+0.2;
@@ -2267,7 +2270,10 @@ void process_commands()
             
         }
         break;
-            
+        
+        /**
+         * G81: Print mesh bed leveling status and bed profile if activated
+         */
         case 81:
             if (mbl.active) {
                 SERIAL_PROTOCOLPGM("Num X,Y: ");
@@ -2287,6 +2293,21 @@ void process_commands()
             }
             else
                 SERIAL_PROTOCOLLNPGM("Mesh bed leveling not active.");
+            break;
+        /**
+         * G82: Single Z probe at current location
+         *
+         * WARNING! USE WITH CAUTION! If you'll try to probe where is no leveling pad, nasty things can happen!
+         *
+         */
+        case 82:
+            SERIAL_PROTOCOLLNPGM("Finding bed ");
+            setup_for_endstop_move();
+            find_bed();
+            clean_up_after_endstop_move();
+            SERIAL_PROTOCOLPGM("Bed found at: ");
+            SERIAL_PROTOCOL_F(current_position[Z_AXIS], 5);
+            SERIAL_PROTOCOLPGM("\n");
             break;
 #endif  // ENABLE_MESH_BED_LEVELING
 
@@ -4623,58 +4644,58 @@ void calculate_delta(float cartesian[3])
 
 #ifdef MESH_BED_LEVELING
     
-// This function is used to split lines on mesh borders so each segment is only part of one mesh area
-#define X_MID_POS (0.5f*(X_MIN_POS+X_MAX_POS))
-#define Y_MID_POS (0.5f*(Y_MIN_POS+Y_MAX_POS))
+    static void find_bed() {
+        feedrate = homing_feedrate[Z_AXIS];
+        
+        // move down until you find the bed
+        float zPosition = -10;
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        
+        // we have to let the planner know where we are right now as it is not where we said to go.
+        zPosition = st_get_position_mm(Z_AXIS);
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS]);
+        
+        // move up the retract distance
+        zPosition += home_retract_mm(Z_AXIS);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        
+        // move back down slowly to find bed
+        feedrate = homing_feedrate[Z_AXIS]/4;
+        zPosition -= home_retract_mm(Z_AXIS) * 2;
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], zPosition, current_position[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        
+        current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
+        // make sure the planner knows where we are as it may be a bit different than we last said to move to
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+    }
     
-    void mesh_plan_buffer_line(float x, float y, float z, const float e, float feed_rate, const uint8_t& extruder) {
-        int tileDiff = 0;
+    
+    void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
+        float dx = x - current_position[X_AXIS];
+        float dy = y - current_position[Y_AXIS];
+        float dz = z - current_position[Z_AXIS];
+        int n_segments = 0;
         if (mbl.active) {
-            // In which of the four tiles the start and the end points fall?
-            // tileDiff is a bitmask,
-            // 1st bit indicates a crossing of the tile boundary in the X axis,
-            // 2nd bit indicates a crossing of the tile boundary in the Y axis.
-            tileDiff =
-            ((current_position[X_AXIS] > X_MID_POS) | ((current_position[Y_AXIS] > Y_MID_POS) << 1)) ^
-            ((x > X_MID_POS) | ((y > Y_MID_POS) << 1));
+            float len = abs(dx) + abs(dy) + abs(dz);
+            if (len > 0)
+                n_segments = int(floor(len / 30.f));
         }
         
-        // Normalized parameters for the crossing of the tile boundary.
-        float s1, s2;
-        // Interpolate a linear movement at the tile boundary, in X, Y and E axes.
-#define INRPL_X(u) (current_position[X_AXIS] + (x - current_position[X_AXIS]) * u)
-#define INRPL_Y(u) (current_position[Y_AXIS] + (y - current_position[Y_AXIS]) * u)
-#define INRPL_E(u) (current_position[E_AXIS] + (e - current_position[E_AXIS]) * u)
-        switch (tileDiff) {
-            case 0:
-                // The start and end points on same tile, or the mesh bed leveling is not active.
-                break;
-            case 1:
-                // The start and end tiles differ in X only.
-                s1 = (X_MID_POS - current_position[X_AXIS]) / (x - current_position[X_AXIS]);
-                plan_buffer_line(X_MID_POS, INRPL_Y(s1), z, INRPL_E(s1), feed_rate, extruder);
-                break;
-            case 2:
-                // The start and end tiles differ in Y only.
-                s1 = (Y_MID_POS - current_position[Y_AXIS]) / (y - current_position[Y_AXIS]);
-                plan_buffer_line(INRPL_X(s1), Y_MID_POS, z, INRPL_E(s1), feed_rate, extruder);
-                break;
-            default:
-                // The start and end tiles differ in both coordinates.
-                // assert(tileDiff == 3);
-                s1 = (X_MID_POS - current_position[X_AXIS]) / (x - current_position[X_AXIS]);
-                s2 = (Y_MID_POS - current_position[Y_AXIS]) / (y - current_position[Y_AXIS]);
-                if (s1 < s2) {
-                    plan_buffer_line(X_MID_POS, INRPL_Y(s1), z, INRPL_E(s1), feed_rate, extruder);
-                    plan_buffer_line(INRPL_X(s2), Y_MID_POS, z, INRPL_E(s2), feed_rate, extruder);
-                } else {
-                    plan_buffer_line(INRPL_X(s1), Y_MID_POS, z, INRPL_E(s1), feed_rate, extruder);
-                    plan_buffer_line(X_MID_POS, INRPL_Y(s2), z, INRPL_E(s2), feed_rate, extruder);
-                }
+        if (n_segments > 1) {
+            float de = e - current_position[E_AXIS];
+            for (int i = 1; i < n_segments; ++ i) {
+                float t = float(i) / float(n_segments);
+                plan_buffer_line(
+                                 current_position[X_AXIS] + t * dx,
+                                 current_position[Y_AXIS] + t * dy,
+                                 current_position[Z_AXIS] + t * dz,
+                                 current_position[E_AXIS] + t * de,
+                                 feed_rate, extruder);
+            }
         }
-#undef INRPL_X
-#undef INRPL_Y
-#undef INRPL_E
         // The rest of the path.
         plan_buffer_line(x, y, z, e, feed_rate, extruder);
         set_current_to_destination();
