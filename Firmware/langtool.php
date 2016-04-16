@@ -1,6 +1,6 @@
 <?php 
 
-$langs = array("en","cz","it","es","pl");
+$langs = array("en","cz","it","es","pl","pt");
 
 function parselang($a) {
 	$out=array();
