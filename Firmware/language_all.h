@@ -228,7 +228,7 @@ extern const char** MSG_ALL[];
 #define MSG_PRUSA3D_HOWTO MSG_ALL[lang_selected][222]
 #define LANGUAGE_NAME 218 
 #define LANGUAGE_SELECT 219 
-#define LANG_NUM 5 
+#define LANG_NUM 6 
 char* CAT2(const char *s1,const char *s2);
 char* CAT4(const char *s1,const char *s2,const char *s3,const char *s4);
 
