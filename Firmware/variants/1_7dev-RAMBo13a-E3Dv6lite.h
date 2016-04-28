@@ -166,7 +166,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
     // Mesh definitions
     #define MESH_MIN_X 35
-    #define MESH_MAX_X 238
+    #define MESH_MAX_X 239
     #define MESH_MIN_Y 7
     #define MESH_MAX_Y 203
 
@@ -180,7 +180,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
     #define MESH_HOME_Z_CALIB 0.2
     #define MESH_HOME_Z_SEARCH 5
 
-    #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
+    #define X_PROBE_OFFSET_FROM_EXTRUDER 22.5     // Z probe to nozzle X offset: -left  +right
     #define Y_PROBE_OFFSET_FROM_EXTRUDER 8     // Z probe to nozzle Y offset: -front +behind
     #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
