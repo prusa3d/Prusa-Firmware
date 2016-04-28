@@ -996,7 +996,112 @@ void lcd_adjust_z() {
 }
 
 
+void lcd_pick_babystep(){
+    int enc_dif = 0;
+    int cursor_pos = 1;
+    int fsm = 0;
+    
+    
+    
+    
+    lcd_implementation_clear();
+    
+    lcd.setCursor(0, 0);
+    
+    lcd_printPGM(MSG_PICK_Z);
+    
+    
+    lcd.setCursor(3, 2);
+    
+    lcd.print("1");
+    
+    lcd.setCursor(3, 3);
+    
+    lcd.print("2");
+    
+    lcd.setCursor(12, 2);
+    
+    lcd.print("3");
+    
+    lcd.setCursor(12, 3);
+    
+    lcd.print("4");
+    
+    lcd.setCursor(1, 2);
+    
+    lcd.print(">");
+    
+    
+    enc_dif = encoderDiff;
+    
+    while (fsm == 0) {
+        
+        manage_heater();
+        manage_inactivity(true);
+        
+        if ( abs((enc_dif - encoderDiff)) > 4 ) {
+            
+            if ( (abs(enc_dif - encoderDiff)) > 1 ) {
+                if (enc_dif > encoderDiff ) {
+                    cursor_pos --;
+                }
+                
+                if (enc_dif < encoderDiff  ) {
+                    cursor_pos ++;
+                }
+                
+                if (cursor_pos > 4) {
+                    cursor_pos = 4;
+                }
+                
+                if (cursor_pos < 1) {
+                    cursor_pos = 1;
+                }
 
+                
+                lcd.setCursor(1, 2);
+                lcd.print(" ");
+                lcd.setCursor(1, 3);
+                lcd.print(" ");
+                lcd.setCursor(10, 2);
+                lcd.print(" ");
+                lcd.setCursor(10, 3);
+                lcd.print(" ");
+                
+                if (cursor_pos < 3) {
+                    lcd.setCursor(1, cursor_pos+1);
+                    lcd.print(">");
+                }else{
+                    lcd.setCursor(10, cursor_pos-1);
+                    lcd.print(">");
+                }
+                
+   
+                enc_dif = encoderDiff;
+                delay(100);
+            }
+            
+        }
+        
+        
+        if (lcd_clicked()) {
+            fsm = cursor_pos;
+            
+            EEPROM_read_B(EEPROM_BABYSTEP_Z0+((fsm-1)*2),&babystepMem[2]);
+            EEPROM_save_B(EEPROM_BABYSTEP_Z,&babystepMem[2]);
+            eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
+            delay(500);
+            
+        }
+        
+        
+        
+    };
+    
+    
+    lcd_implementation_clear();
+    lcd_return_to_status();
+}
 
 void lcd_move_menu_axis()
 {

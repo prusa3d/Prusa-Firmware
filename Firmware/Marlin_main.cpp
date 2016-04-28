@@ -2268,6 +2268,18 @@ void process_commands()
             plan_buffer_line(current_position[X_AXIS], current_position[X_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
             st_synchronize();
             
+            if(card.sdprinting) {
+                
+                if(eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x01){
+                    
+                    EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoad[2]);
+                    babystepsTodo[Z_AXIS] = babystepLoad[2];
+                    //lcd_adjust_z();
+                    
+                }
+                
+            }
+            
         }
         break;
         
@@ -2309,8 +2321,54 @@ void process_commands()
             SERIAL_PROTOCOL_F(current_position[Z_AXIS], 5);
             SERIAL_PROTOCOLPGM("\n");
             break;
+            
+            /**
+             * G83: Babystep in Z and store to EEPROM
+             */
+        case 83:
+        {
+            int babystepz = code_seen('S') ? code_value() : 0;
+            int BabyPosition = code_seen('P') ? code_value() : 0;
+            
+            if (babystepz != 0) {
+                
+                if (BabyPosition > 4) {
+                    SERIAL_PROTOCOLLNPGM("Index out of bounds");
+                }else{
+                    // Save it to the eeprom
+                    babystepLoad[2] = babystepz;
+                    EEPROM_save_B(EEPROM_BABYSTEP_Z0+(BabyPosition*2),&babystepLoad[2]);
+                    // adjist the Z
+                    babystepsTodo[Z_AXIS] = babystepLoad[2];
+                }
+            
+            }
+            
+        }
+        break;
+            /**
+             * G84: UNDO Babystep Z (move Z axis back)
+             */
+        case 84:
+            babystepsTodo[Z_AXIS] = -babystepLoad[2];
+            break;
+            
+            /**
+             * G85: Pick best babystep
+             */
+        case 85:
+            lcd_pick_babystep();
+            break;
+            
+            /**
+             * G86: Babystep in Z and store to EEPROM
+             */
+        case 86:
+            eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0xFF);
+            break;
 #endif  // ENABLE_MESH_BED_LEVELING
-
+            
+            
     case 90: // G90
       relative_mode = false;
       break;

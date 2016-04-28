@@ -130,6 +130,7 @@
 #define MSG_BABYSTEP_Z                      "Doladeni osy Z"
 #define MSG_ENDSTOP_ABORT                   "Endstop abort"
 #define MSG_ADJUSTZ							"Auto doladit Z ?"
+#define MSG_PICK_Z							"Vyberte vytisk"
 
 #define MSG_HOMEYZ                          "Kalibrovat Z"
 #define MSG_SETTINGS                         "Nastaveni"

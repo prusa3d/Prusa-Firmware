@@ -43,6 +43,7 @@
 #define MSG_FILAMENTCHANGE                  "Wymienic filament"
 #define MSG_BABYSTEP_Z                      "Dostrojenie osy Z" 
 #define MSG_ADJUSTZ                                         "Autodostroic Z?"
+#define MSG_PICK_Z							"Vyberte vytisk"
 #define MSG_HOMEYZ                          "Kalibrowac Z"
 #define MSG_SETTINGS                         "Ustawienia"
 #define MSG_PREHEAT                         "Grzanie"

@@ -130,6 +130,7 @@
 #define MSG_BABYSTEP_Z                      "Live adjust Z"
 #define MSG_ENDSTOP_ABORT                   "Endstop abort"
 #define MSG_ADJUSTZ							"Auto adjust Z ?"
+#define MSG_PICK_Z							"Pick print"
 
 #define MSG_HOMEYZ                          "Calibrate Z"
 #define MSG_SETTINGS                         "Settings"

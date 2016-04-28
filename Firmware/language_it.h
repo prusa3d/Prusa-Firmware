@@ -43,6 +43,7 @@
 #define MSG_FILAMENTCHANGE                  "Cambiare filamento"
 #define MSG_BABYSTEP_Z                      "Babystep Z"
 #define MSG_ADJUSTZ							"Auto regolare Z ?"
+#define MSG_PICK_Z							"Vyberte vytisk"
 #define MSG_HOMEYZ                          "Calibrate Z"
 #define MSG_SETTINGS                         "Impostazioni"
 #define MSG_PREHEAT                         "Preriscalda"

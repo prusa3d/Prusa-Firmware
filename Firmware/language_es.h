@@ -43,6 +43,7 @@
 #define MSG_FILAMENTCHANGE                  "Cambiar filamento"
 #define MSG_BABYSTEP_Z                      "Micropaso Z"
 #define MSG_ADJUSTZ							"Auto Micropaso Z?"
+#define MSG_PICK_Z							"Vyberte vytisk"
 #define MSG_HOMEYZ                          "Graduar Z"
 #define MSG_SETTINGS                         "Ajuste"
 #define MSG_PREHEAT                         "Precalentar"

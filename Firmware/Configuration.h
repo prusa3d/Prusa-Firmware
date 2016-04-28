@@ -10,10 +10,13 @@
 
 
 #define EEPROM_SILENT 4095
-#define EEPROM_BABYSTEP_X 4093
-#define EEPROM_BABYSTEP_Y 4091
-#define EEPROM_BABYSTEP_Z 4089
-#define EEPROM_LANG 4088
+#define EEPROM_LANG 4094
+#define EEPROM_BABYSTEP_X 4092
+#define EEPROM_BABYSTEP_Y 4090
+#define EEPROM_BABYSTEP_Z 4088
+#define EEPROM_BABYSTEP_Z_SET 4087
+#define EEPROM_BABYSTEP_Z0 4085
+
 
 
 // This configuration file contains the basic settings.
