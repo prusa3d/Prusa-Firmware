@@ -2361,10 +2361,16 @@ void process_commands()
             break;
             
             /**
-             * G86: Babystep in Z and store to EEPROM
+             * G86: Disable babystep correction after home
              */
         case 86:
             eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0xFF);
+            break;
+            /**
+             * G87: Enable babystep correction after home
+             */
+        case 87:
+            eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
             break;
 #endif  // ENABLE_MESH_BED_LEVELING
             

@@ -21,7 +21,7 @@
 *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/0.8,174.2}  
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/0.8,161.3}  
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.

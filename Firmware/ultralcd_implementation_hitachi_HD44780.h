@@ -843,6 +843,7 @@ void lcd_implementation_drawedit_2(const char* pstr, char* value)
     lcd.setCursor((LCD_WIDTH - strlen(value))/2, 3);
 
     lcd.print(value);
+    lcd.print(" mm");
 }
 
 static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* pstr, const char* filename, char* longFilename)

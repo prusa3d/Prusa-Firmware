@@ -20,6 +20,7 @@ int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added t
 extern int lcd_change_fil_state;
 
 int babystepMem[3];
+float babystepMemMM[3];
 
 union Data
 {
@@ -880,10 +881,11 @@ static void _lcd_babystep(int axis, const char *msg) {
   if (encoderPosition != 0) {
     babystepsTodo[axis] += (int)encoderPosition;
     babystepMem[axis] += (int)encoderPosition;
+    babystepMemMM[axis] = babystepMem[axis]/axis_steps_per_unit[Z_AXIS];
     encoderPosition = 0;
     lcdDrawUpdate = 1;
   }
-  if (lcdDrawUpdate) lcd_implementation_drawedit_2(msg, ftostr51(babystepMem[axis]));
+  if (lcdDrawUpdate) lcd_implementation_drawedit_2(msg, ftostr13ns(babystepMemMM[axis]));
   if (LCD_CLICKED) lcd_goto_menu(lcd_main_menu);
   EEPROM_save_B(EEPROM_BABYSTEP_X, &babystepMem[0]);
   EEPROM_save_B(EEPROM_BABYSTEP_Y, &babystepMem[1]);
@@ -1206,6 +1208,13 @@ static void lcd_settings_menu()
     MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
   }
 
+    EEPROM_read_B(EEPROM_BABYSTEP_X, &babystepMem[0]);
+    EEPROM_read_B(EEPROM_BABYSTEP_Y, &babystepMem[1]);
+    EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepMem[2]);
+    babystepMemMM[2] = babystepMem[2]/axis_steps_per_unit[Z_AXIS];
+    
+    MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
+    
   MENU_ITEM(submenu, MSG_LANGUAGE_SELECT, lcd_language_menu);
 
   END_MENU();
@@ -2168,6 +2177,24 @@ char *ftostr12ns(const float &x)
   conv[3] = (xx) % 10 + '0';
   conv[4] = 0;
   return conv;
+}
+
+//Float to string with 1.234 format
+char *ftostr13ns(const float &x)
+{
+    long xx = x * 1000;
+    if (xx >= 0)
+        conv[0] = ' ';
+    else
+        conv[0] = '-';
+    xx = abs(xx);
+    conv[1] = (xx / 1000) % 10 + '0';
+    conv[2] = '.';
+    conv[3] = (xx / 100) % 10 + '0';
+    conv[4] = (xx / 10) % 10 + '0';
+    conv[5] = (xx) % 10 + '0';
+    conv[6] = 0;
+    return conv;
 }
 
 //  convert float to space-padded string with -_23.4_ format

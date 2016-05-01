@@ -24,7 +24,7 @@
 *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,174.2}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -33,16 +33,16 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 // Home position
 #define MANUAL_X_HOME_POS 0
-#define MANUAL_Y_HOME_POS -1.2
-#define MANUAL_Z_HOME_POS 0.25
+#define MANUAL_Y_HOME_POS -2.2
+#define MANUAL_Z_HOME_POS 0.2
 
 // Travel limits after homing
 #define X_MAX_POS 255
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
-#define Y_MIN_POS -1.2
+#define Y_MIN_POS -4
 #define Z_MAX_POS 210
-#define Z_MIN_POS 0.25
+#define Z_MIN_POS 0.2
 
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
@@ -167,8 +167,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
     // Mesh definitions
     #define MESH_MIN_X 35
     #define MESH_MAX_X 239
-    #define MESH_MIN_Y 7
-    #define MESH_MAX_Y 203
+    #define MESH_MIN_Y 6
+    #define MESH_MAX_Y 202
 
     // Mesh upsample definition
     #define MESH_NUM_X_POINTS 7
@@ -180,8 +180,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
     #define MESH_HOME_Z_CALIB 0.2
     #define MESH_HOME_Z_SEARCH 5
 
-    #define X_PROBE_OFFSET_FROM_EXTRUDER 22.5     // Z probe to nozzle X offset: -left  +right
-    #define Y_PROBE_OFFSET_FROM_EXTRUDER 8     // Z probe to nozzle Y offset: -front +behind
+    #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
+    #define Y_PROBE_OFFSET_FROM_EXTRUDER 9     // Z probe to nozzle Y offset: -front +behind
     #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
 
