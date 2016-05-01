@@ -78,7 +78,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define  DEFAULT_Kd 37.4
 
 // Extrude mintemp
-#define EXTRUDE_MINTEMP 190
+#define EXTRUDE_MINTEMP 130
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   6
