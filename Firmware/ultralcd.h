@@ -22,8 +22,19 @@
   void lcd_change_success();
   void lcd_loading_color();
   void lcd_force_language_selection();
+  void lcd_sdcard_stop();
+  void lcd_calibration();
   
   bool lcd_detected(void);
+
+  static void lcd_selftest();
+  static bool lcd_selfcheck_endstops();
+  static bool lcd_selfcheck_axis(int _axis, int _travel);
+  static bool lcd_selfcheck_check_heater(bool _isbed);
+  static int  lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay);
+  static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
+  static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
+  static void lcd_menu_statistics();
 
 #ifdef DOGLCD
   extern int lcd_contrast;
@@ -68,7 +79,8 @@
   bool lcd_clicked();
 
   void lcd_ignore_click(bool b=true);
-
+  void lcd_commands();
+  
   #ifdef NEWPANEL
     #define EN_C (1<<BLEN_C)
     #define EN_B (1<<BLEN_B)
@@ -109,7 +121,8 @@
   #endif//NEWPANEL
 
 #else //no LCD
-  FORCE_INLINE void lcd_update() {}
+  FORCE_INLINE void 
+  {}
   FORCE_INLINE void lcd_init() {}
   FORCE_INLINE void lcd_setstatus(const char* message) {}
   FORCE_INLINE void lcd_buttons_update() {}
@@ -132,6 +145,7 @@ char *ftostr3(const float &x);
 char *ftostr31ns(const float &x); // float to string without sign character
 char *ftostr31(const float &x);
 char *ftostr32(const float &x);
+char *ftostr32ns(const float &x);
 char *ftostr43(const float &x);
 char *ftostr12ns(const float &x);
 char *ftostr13ns(const float &x);

@@ -8,7 +8,7 @@
 #ifndef LANGUAGE_PL_H
 #define LANGUAGE_PL_H
 
-#define WELCOME_MSG                         MACHINE_NAME " gotowa"
+#define WELCOME_MSG                         CUSTOM_MENDEL_NAME " gotowa"
 #define MSG_SD_INSERTED                     "Karta wlozona"
 #define MSG_SD_REMOVED                      "Karta wyjeta"
 #define MSG_MAIN                            "Menu glowne" 
@@ -44,7 +44,6 @@
 #define MSG_BABYSTEP_Z                      "Dostrojenie osy Z" 
 #define MSG_ADJUSTZ                                         "Autodostroic Z?"
 #define MSG_PICK_Z							"Vyberte vytisk"
-#define MSG_HOMEYZ                          "Kalibrowac Z"
 #define MSG_SETTINGS                         "Ustawienia"
 #define MSG_PREHEAT                         "Grzanie"
 #define MSG_UNLOAD_FILAMENT                 "Wyjac filament"
@@ -107,7 +106,7 @@
 #define MSG_M221_INVALID_EXTRUDER           "M221 Invalid extruder "
 #define MSG_ERR_NO_THERMISTORS              "No thermistors - no temperature"
 #define MSG_M109_INVALID_EXTRUDER           "M109 Invalid extruder "
-#define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" MACHINE_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
+#define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" CUSTOM_MENDEL_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
 #define MSG_COUNT_X                         " Count X: "
 #define MSG_ERR_KILLED                      "Printer halted. kill() called!"
 #define MSG_ERR_STOPPED                     "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
@@ -253,5 +252,41 @@
  #define MSG_ENDSTOP_ABORT                   "Endstop abort"
 
  #define MSG_RECTRACT                        "Rectract"
+
+#define MSG_HOMEYZ                          "Kalibruj Z"
+#define MSG_HOMEYZ_PROGRESS                 "Kalibruje Z"
+#define MSG_HOMEYZ_DONE                     "Kalibracja OK"
+
+#define MSG_SELFTEST_ERROR                  "Selftest error !"
+#define MSG_SELFTEST_PLEASECHECK            "Skontroluj :"   
+#define MSG_SELFTEST_NOTCONNECTED           "Nie podlaczono   "
+#define MSG_SELFTEST_HEATERTHERMISTOR       "Heater/Thermistor"
+#define MSG_SELFTEST_BEDHEATER              "Bed / Heater"
+#define MSG_SELFTEST_WIRINGERROR            "Blad polaczenia"
+#define MSG_SELFTEST_ENDSTOPS               "Endstops"
+#define MSG_SELFTEST_MOTOR                  "Silnik"
+#define MSG_SELFTEST_ENDSTOP                "Endstop"
+#define MSG_SELFTEST_ENDSTOP_NOTHIT         "Endstop not hit"
+#define MSG_SELFTEST_OK                     "Self test OK"
+
+#define MSG_STATS_TOTALFILAMENT             "Filament lacznie :"
+#define MSG_STATS_TOTALPRINTTIME            "Czas calkowity :"
+#define MSG_STATS_FILAMENTUSED              "Filament :  "
+#define MSG_STATS_PRINTTIME                 "Czas druku :  "
+
+#define MSG_SELFTEST_START                  "Self test start  "
+#define MSG_SELFTEST_CHECK_ENDSTOPS         "Kontrola endstops"
+#define MSG_SELFTEST_CHECK_HOTEND           "Kontrola hotend  " 
+#define MSG_SELFTEST_CHECK_X                "Kontrola X axis  "
+#define MSG_SELFTEST_CHECK_Y                "Kontrola Y axis  "
+#define MSG_SELFTEST_CHECK_Z                "Kontrola Z axis  "
+#define MSG_SELFTEST_CHECK_BED              "Kontrola bed     "
+#define MSG_SELFTEST_CHECK_ALLCORRECT       "Wszystko OK      "
+#define MSG_SELFTEST                        "Selftest         "
+#define MSG_SELFTEST_FAILED                 "Selftest nieudany"
+
+#define MSG_STATISTICS                      "Statystyka  "
+#define MSG_USB_PRINTING                    "Druk z USB  "
+
 
 #endif // LANGUAGE_EN_H

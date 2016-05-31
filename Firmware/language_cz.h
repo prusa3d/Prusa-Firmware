@@ -8,7 +8,7 @@
 #ifndef LANGUAGE_CZ_H
 #define LANGUAGE_CZ_H
 
-#define WELCOME_MSG                         MACHINE_NAME " pripravena"
+#define WELCOME_MSG                         CUSTOM_MENDEL_NAME " ok"
 #define MSG_SD_INSERTED                     "Karta vlozena"
 #define MSG_SD_REMOVED                      "Karta vyjmuta"
 #define MSG_MAIN                            "Hlavni nabidka"
@@ -133,6 +133,9 @@
 #define MSG_PICK_Z							"Vyberte vytisk"
 
 #define MSG_HOMEYZ                          "Kalibrovat Z"
+#define MSG_HOMEYZ_PROGRESS                 "Kalibruji Z"
+#define MSG_HOMEYZ_DONE		                "Kalibrace OK"
+
 #define MSG_SETTINGS                         "Nastaveni"
 #define MSG_PREHEAT                         "Predehrev"
 #define MSG_UNLOAD_FILAMENT                 "Vyjmout filament"
@@ -186,11 +189,11 @@
 #define MSG_M221_INVALID_EXTRUDER           "M221 Invalid extruder "
 #define MSG_ERR_NO_THERMISTORS              "No thermistors - no temperature"
 #define MSG_M109_INVALID_EXTRUDER           "M109 Invalid extruder "
-#define MSG_HEATING                         "Zahrivani..."
+#define MSG_HEATING                         "Zahrivani"
 #define MSG_HEATING_COMPLETE                "Zahrivani OK."
-#define MSG_BED_HEATING                     "Zahrivani bed..."
+#define MSG_BED_HEATING                     "Zahrivani bed"
 #define MSG_BED_DONE                        "Bed OK."
-#define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" MACHINE_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
+#define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" CUSTOM_MENDEL_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
 #define MSG_COUNT_X                         " Count X: "
 #define MSG_ERR_KILLED                      "Printer halted. kill() called!"
 #define MSG_ERR_STOPPED                     "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
@@ -236,8 +239,43 @@
 
 #define MSG_LANGUAGE_NAME					"Cestina"
 #define MSG_LANGUAGE_SELECT					"Vyber jazyka        "
- #define MSG_PRUSA3D					"prusa3d.cz"
+ #define MSG_PRUSA3D						"prusa3d.cz"
  #define MSG_PRUSA3D_FORUM					"forum.prusa3d.cz"
  #define MSG_PRUSA3D_HOWTO					"howto.prusa3d.cz"
+
+#define MSG_HOMEYZ                          "Kalibrovat Z"
+#define MSG_HOMEYZ_PROGRESS                 "Kalibruji Z"
+#define MSG_HOMEYZ_DONE		                "Kalibrace OK"
+
+#define MSG_SELFTEST_ERROR					"Selftest error !"
+#define MSG_SELFTEST_PLEASECHECK			"Zkontrolujte :"	
+#define MSG_SELFTEST_NOTCONNECTED			"Nezapojeno    "
+#define MSG_SELFTEST_HEATERTHERMISTOR		"Heater/Thermistor"
+#define MSG_SELFTEST_BEDHEATER				"Bed / Heater"
+#define MSG_SELFTEST_WIRINGERROR			"Chyba zapojeni"
+#define MSG_SELFTEST_ENDSTOPS				"Endstops"
+#define MSG_SELFTEST_MOTOR					"Motor"
+#define MSG_SELFTEST_ENDSTOP				"Endstop"
+#define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
+#define MSG_SELFTEST_OK						"Self test OK"
+
+#define MSG_STATS_TOTALFILAMENT				"Filament celkem :"
+#define MSG_STATS_TOTALPRINTTIME			"Celkovy cas :"
+#define MSG_STATS_FILAMENTUSED				"Filament :  "
+#define MSG_STATS_PRINTTIME					"Cas tisku :  "
+
+#define MSG_SELFTEST_START					"Self test start  "
+#define MSG_SELFTEST_CHECK_ENDSTOPS			"Kontrola endstops"
+#define MSG_SELFTEST_CHECK_HOTEND			"Kontrola hotend  "  
+#define MSG_SELFTEST_CHECK_X				"Kontrola X axis  "
+#define MSG_SELFTEST_CHECK_Y				"Kontrola Y axis  "
+#define MSG_SELFTEST_CHECK_Z				"Kontrola Z axis  "
+#define MSG_SELFTEST_CHECK_BED				"Kontrola bed     "
+#define MSG_SELFTEST_CHECK_ALLCORRECT		"Vse OK           "
+#define MSG_SELFTEST						"Selftest         "
+#define MSG_SELFTEST_FAILED					"Selftest selhal  "
+
+#define MSG_STATISTICS						"Statistika  "
+#define MSG_USB_PRINTING					"Tisk z USB  "
 
 #endif // LANGUAGE_EN_H

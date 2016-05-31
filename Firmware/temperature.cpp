@@ -33,6 +33,7 @@
 #include "ultralcd.h"
 #include "temperature.h"
 #include "watchdog.h"
+#include "cardreader.h"
 
 #include "Sd2PinMap.h"
 
@@ -438,12 +439,16 @@ void manage_heater()
 
   updateTemperaturesFromRawValues();
 
+#ifdef TEMP_RUNAWAY_BED_HYSTERESIS
+  temp_runaway_check(0, target_temperature_bed, current_temperature_bed, (int)soft_pwm_bed, true);
+#endif
+
   for(int e = 0; e < EXTRUDERS; e++) 
   {
 
-#if defined (THERMAL_RUNAWAY_PROTECTION_PERIOD) && THERMAL_RUNAWAY_PROTECTION_PERIOD > 0
-    thermal_runaway_protection(&thermal_runaway_state_machine[e], &thermal_runaway_timer[e], current_temperature[e], target_temperature[e], e, THERMAL_RUNAWAY_PROTECTION_PERIOD, THERMAL_RUNAWAY_PROTECTION_HYSTERESIS);
-  #endif
+#ifdef TEMP_RUNAWAY_EXTRUDER_HYSTERESIS
+	  temp_runaway_check(e+1, target_temperature[e], current_temperature[e], (int)soft_pwm[e], false);
+#endif
 
   #ifdef PIDTEMP
     pid_input = current_temperature[e];
@@ -561,10 +566,6 @@ void manage_heater()
   #endif
 
   #if TEMP_SENSOR_BED != 0
-  
-    #ifdef THERMAL_RUNAWAY_PROTECTION_BED_PERIOD && THERMAL_RUNAWAY_PROTECTION_BED_PERIOD > 0
-      thermal_runaway_protection(&thermal_runaway_bed_state_machine, &thermal_runaway_bed_timer, current_temperature_bed, target_temperature_bed, 9, THERMAL_RUNAWAY_PROTECTION_BED_PERIOD, THERMAL_RUNAWAY_PROTECTION_BED_HYSTERESIS);
-    #endif
 
   #ifdef PIDTEMPBED
     pid_input = current_temperature_bed;
@@ -735,6 +736,31 @@ static float analog2tempBed(int raw) {
     // Overflow: Set to last value in the table
     if (i == BEDTEMPTABLE_LEN) celsius = PGM_RD_W(BEDTEMPTABLE[i-1][1]);
 
+
+	// temperature offset adjustment
+#ifdef BED_OFFSET
+	float _offset = BED_OFFSET;
+	float _offset_center = BED_OFFSET_CENTER;
+	float _offset_start = BED_OFFSET_START;
+	float _first_koef = (_offset / 2) / (_offset_center - _offset_start);
+	float _second_koef = (_offset / 2) / (100 - _offset_center);
+
+
+	if (celsius >= _offset_start && celsius <= _offset_center)
+	{
+		celsius = celsius + (_first_koef * (celsius - _offset_start));
+	}
+	else if (celsius > _offset_center && celsius <= 100)
+	{
+		celsius = celsius + (_first_koef * (_offset_center - _offset_start)) + ( _second_koef * ( celsius - ( 100 - _offset_center ) )) ;
+	}
+	else if (celsius > 100)
+	{
+		celsius = celsius + _offset;
+	}
+#endif
+
+
     return celsius;
   #elif defined BED_USES_AD595
     return ((raw * ((5.0 * 100.0) / 1024.0) / OVERSAMPLENR) * TEMP_SENSOR_AD595_GAIN) + TEMP_SENSOR_AD595_OFFSET;
@@ -751,7 +777,9 @@ static void updateTemperaturesFromRawValues()
     {
         current_temperature[e] = analog2temp(current_temperature_raw[e], e);
     }
-    current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
+    
+	current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
+
     #ifdef TEMP_SENSOR_1_AS_REDUNDANT
       redundant_temperature = analog2temp(redundant_temperature_raw, 1);
     #endif
@@ -1013,66 +1041,115 @@ void setWatch()
 #endif 
 }
 
-#if (defined (THERMAL_RUNAWAY_PROTECTION_PERIOD) && THERMAL_RUNAWAY_PROTECTION_PERIOD > 0) || (defined (THERMAL_RUNAWAY_PROTECTION_BED_PERIOD) && THERMAL_RUNAWAY_PROTECTION_BED_PERIOD > 0)
-void thermal_runaway_protection(int *state, unsigned long *timer, float temperature, float target_temperature, int heater_id, int period_seconds, int hysteresis_degc)
+#if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
+void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
 {
-/*
-      SERIAL_ECHO_START;
-      SERIAL_ECHO("Thermal Thermal Runaway Running. Heater ID:");
-      SERIAL_ECHO(heater_id);
-      SERIAL_ECHO(" ;  State:");
-      SERIAL_ECHO(*state);
-      SERIAL_ECHO(" ;  Timer:");
-      SERIAL_ECHO(*timer);
-      SERIAL_ECHO(" ;  Temperature:");
-      SERIAL_ECHO(temperature);
-      SERIAL_ECHO(" ;  Target Temp:");
-      SERIAL_ECHO(target_temperature);
-      SERIAL_ECHOLN("");    
-*/
-  if ((target_temperature == 0) || thermal_runaway)
-  {
-    *state = 0;
-    *timer = 0;
-    return;
-  }
-  switch (*state)
-  {
-    case 0: // "Heater Inactive" state
-      if (target_temperature > 0) *state = 1;
-      break;
-    case 1: // "First Heating" state
-      if (temperature >= target_temperature) *state = 2;
-      break;
-    case 2: // "Temperature Stable" state
-      if (temperature >= (target_temperature - hysteresis_degc))
-      {
-        *timer = millis();
-      } 
-      else if ( (millis() - *timer) > ((unsigned long) period_seconds) * 1000)
-      {
-        SERIAL_ERROR_START;
-        SERIAL_ERRORLNPGM("Thermal Runaway, system stopped! Heater_ID: ");
-        SERIAL_ERRORLN((int)heater_id);
-        LCD_ALERTMESSAGEPGM("THERMAL RUNAWAY");
-        thermal_runaway = true;
-        while(1)
-        {
-          disable_heater();
-          disable_x();
-          disable_y();
-          disable_z();
-          disable_e0();
-          disable_e1();
-          disable_e2();
-          manage_heater();
-          lcd_update();
-        }
-      }
-      break;
-  }
+	float __hysteresis = 0;
+	int __timeout = 0;
+	bool temp_runaway_check_active = false;
+
+	_heater_id = (_isbed) ? _heater_id++ : _heater_id;
+
+#ifdef 	TEMP_RUNAWAY_BED_TIMEOUT
+	if (_isbed)
+	{
+		__hysteresis = TEMP_RUNAWAY_BED_HYSTERESIS;
+		__timeout = TEMP_RUNAWAY_BED_TIMEOUT;
+	}
+#endif
+#ifdef 	TEMP_RUNAWAY_EXTRUDER_TIMEOUT
+	if (!_isbed)
+	{
+		__hysteresis = TEMP_RUNAWAY_EXTRUDER_HYSTERESIS;
+		__timeout = TEMP_RUNAWAY_EXTRUDER_TIMEOUT;
+	}
+#endif
+
+	if (millis() - temp_runaway_timer[_heater_id] > 2000)
+	{
+		temp_runaway_timer[_heater_id] = millis();
+
+		if (_output == 0)
+		{
+			temp_runaway_check_active = false;
+			temp_runaway_error_counter[_heater_id] = 0;
+		}
+
+		if (temp_runaway_target[_heater_id] != _target_temperature)
+		{
+			if (_target_temperature > 0)
+			{
+				temp_runaway_status[_heater_id] = 1;
+				temp_runaway_target[_heater_id] = _target_temperature;
+			}
+			else
+			{
+				temp_runaway_status[_heater_id] = 0;
+				temp_runaway_target[_heater_id] = _target_temperature;
+			}
+		}
+
+		if (_current_temperature >= _target_temperature  && temp_runaway_status[_heater_id] == 1)
+		{
+			temp_runaway_status[_heater_id] = 2;
+			temp_runaway_check_active = false;
+		}
+
+		if (!temp_runaway_check_active && _output > 0)
+		{
+			temp_runaway_check_active = true;
+		}
+
+
+		if (temp_runaway_check_active)
+		{
+			//	we are in range
+			if (_target_temperature - __hysteresis < _current_temperature && _current_temperature < _target_temperature + __hysteresis)
+			{
+				temp_runaway_check_active = false;
+			}
+			else
+			{
+				if (temp_runaway_status[_heater_id] > 1)
+				{
+					temp_runaway_error_counter[_heater_id]++;
+
+					if (temp_runaway_error_counter[_heater_id] * 2 > __timeout)
+					{
+						temp_runaway_stop();
+					}
+				}
+			}
+		}
+
+	}
+}
+
+void temp_runaway_stop()
+{
+	cancel_heatup = true;
+	quickStop();
+	if (card.sdprinting)
+	{
+		card.sdprinting = false;
+		card.closefile();
+	}
+	LCD_ALERTMESSAGEPGM("THERMAL RUNAWAY");
+	disable_heater();
+	disable_x();
+	disable_y();
+	disable_e0();
+	disable_e1();
+	disable_e2();
+	manage_heater();
+	lcd_update();
+	WRITE(BEEPER, HIGH);
+	delayMicroseconds(500);
+	WRITE(BEEPER, LOW);
+	delayMicroseconds(100);
 }
 #endif
+
 
 void disable_heater()
 {
@@ -1144,7 +1221,7 @@ void bed_max_temp_error(void) {
 #endif
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNPGM("Temperature heated bed switched off. MAXTEMP triggered !!");
+    SERIAL_ERRORLNPGM("Temperature heated bed switched off. MAXTEMP triggered !");
     LCD_ALERTMESSAGEPGM("Err: MAXTEMP BED");
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE

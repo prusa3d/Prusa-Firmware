@@ -132,7 +132,7 @@ extern block_t block_buffer[BLOCK_BUFFER_SIZE];            // A ring buffer for 
 extern volatile unsigned char block_buffer_head;           // Index of the next block to be pushed
 extern volatile unsigned char block_buffer_tail; 
 // Called when the current block is no longer needed. Discards the block and makes the memory
-// availible for new blocks.    
+// available for new blocks.    
 FORCE_INLINE void plan_discard_current_block()  
 {
   if (block_buffer_head != block_buffer_tail) {

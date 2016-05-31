@@ -155,23 +155,21 @@ FORCE_INLINE bool isCoolingBed() {
 #error Invalid number of extruders
 #endif
 
+#if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
+static float temp_runaway_status[4];
+static float temp_runaway_target[4];
+static float temp_runaway_timer[4];
+static int temp_runaway_error_counter[4];
 
+void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
+void temp_runaway_stop();
+#endif
 
 int getHeaterPower(int heater);
 void disable_heater();
 void setWatch();
 void updatePID();
 
-#if (defined (THERMAL_RUNAWAY_PROTECTION_PERIOD) && THERMAL_RUNAWAY_PROTECTION_PERIOD > 0) || (defined (THERMAL_RUNAWAY_PROTECTION_BED_PERIOD) && THERMAL_RUNAWAY_PROTECTION_BED_PERIOD > 0)
-void thermal_runaway_protection(int *state, unsigned long *timer, float temperature, float target_temperature, int heater_id, int period_seconds, int hysteresis_degc);
-static int thermal_runaway_state_machine[3]; // = {0,0,0};
-static unsigned long thermal_runaway_timer[3]; // = {0,0,0};
-static bool thermal_runaway = false;
-  #if TEMP_SENSOR_BED != 0
-    static int thermal_runaway_bed_state_machine;
-    static unsigned long thermal_runaway_bed_timer;
-  #endif
-#endif
 
 FORCE_INLINE void autotempShutdown(){
  #ifdef AUTOTEMP

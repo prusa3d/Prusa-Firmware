@@ -46,7 +46,7 @@
   #define FIRMWARE_URL "https://github.com/fmalpartida/Marlin/tree/SAV-MkI-config"
 #else
   #ifdef CUSTOM_MENDEL_NAME
-    #define MACHINE_NAME CUSTOM_MENDEL_NAME
+   // #define CUSTOM_MENDEL_NAME CUSTOM_MENDEL_NAME
   #else
     #define MACHINE_NAME "Mendel"
   #endif

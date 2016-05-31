@@ -8,7 +8,7 @@
 #ifndef LANGUAGE_IT_H
 #define LANGUAGE_IT_H
 
-#define WELCOME_MSG                         MACHINE_NAME " pronto."
+#define WELCOME_MSG                         CUSTOM_MENDEL_NAME " pronto."
 #define MSG_SD_INSERTED                     "SD Card inserita"
 #define MSG_SD_REMOVED                      "SD Card rimossa"
 #define MSG_MAIN                            "Menu principale"
@@ -44,7 +44,6 @@
 #define MSG_BABYSTEP_Z                      "Babystep Z"
 #define MSG_ADJUSTZ							"Auto regolare Z ?"
 #define MSG_PICK_Z							"Vyberte vytisk"
-#define MSG_HOMEYZ                          "Calibrate Z"
 #define MSG_SETTINGS                         "Impostazioni"
 #define MSG_PREHEAT                         "Preriscalda"
 #define MSG_UNLOAD_FILAMENT                 "Scaricare fil."
@@ -107,7 +106,7 @@
 #define MSG_M221_INVALID_EXTRUDER           "M221 Invalid extruder "
 #define MSG_ERR_NO_THERMISTORS              "No thermistors - no temperature"
 #define MSG_M109_INVALID_EXTRUDER           "M109 Invalid extruder "
-#define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" MACHINE_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
+#define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" CUSTOM_MENDEL_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
 #define MSG_COUNT_X                         " Count X: "
 #define MSG_ERR_KILLED                      "Printer halted. kill() called!"
 #define MSG_ERR_STOPPED                     "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
@@ -236,5 +235,41 @@
 #define MSG_BABYSTEP_Y                      "Babystep Y"
 #define MSG_ENDSTOP_ABORT                   "Endstop abort"
 #define MSG_RECTRACT                        "Rectract"
+
+#define MSG_HOMEYZ                          "Calibra Z"
+#define MSG_HOMEYZ_PROGRESS                 "Calibrando Z"
+#define MSG_HOMEYZ_DONE                     "Calibratura OK"
+
+#define MSG_SELFTEST_ERROR                  "Autotest negativo"
+#define MSG_SELFTEST_PLEASECHECK            "Verifica:"   
+#define MSG_SELFTEST_NOTCONNECTED           "Non connesso"
+#define MSG_SELFTEST_HEATERTHERMISTOR       "Riscald./Termistore"
+#define MSG_SELFTEST_BEDHEATER              "Piastra/Riscaldatore"
+#define MSG_SELFTEST_WIRINGERROR            "Errore cablaggio"
+#define MSG_SELFTEST_ENDSTOPS               "Limiti corsa"
+#define MSG_SELFTEST_MOTOR                  "Motore"
+#define MSG_SELFTEST_ENDSTOP                "Limite corsa"
+#define MSG_SELFTEST_ENDSTOP_NOTHIT         "Lim. fuoriportata"
+#define MSG_SELFTEST_OK                     "Autotest OK"
+
+#define MSG_STATS_TOTALFILAMENT             "Filamento tot:"
+#define MSG_STATS_TOTALPRINTTIME            "Tempo stampa tot:"
+#define MSG_STATS_FILAMENTUSED              "Filamento:"
+#define MSG_STATS_PRINTTIME                 "Tempo stampa:"
+
+#define MSG_SELFTEST_START                  "Inizia autotest"
+#define MSG_SELFTEST_CHECK_ENDSTOPS         "Verifica limiti"
+#define MSG_SELFTEST_CHECK_HOTEND           "Verifica lim temp" 
+#define MSG_SELFTEST_CHECK_X                "Verifica asse X"
+#define MSG_SELFTEST_CHECK_Y                "Verifica asse Y"
+#define MSG_SELFTEST_CHECK_Z                "Verifica asse Z"
+#define MSG_SELFTEST_CHECK_BED              "Verifica piastra"
+#define MSG_SELFTEST_CHECK_ALLCORRECT       "Nessun errore"
+#define MSG_SELFTEST                        "Autotest"
+#define MSG_SELFTEST_FAILED                 "Autotest fallito"
+
+#define MSG_STATISTICS                      "Statistiche"
+#define MSG_USB_PRINTING                    "Stampa da USB"
+
 
 #endif // LANGUAGE_EN_H

@@ -6,7 +6,7 @@ int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 #include "Configuration_prusa.h"
-
+#include "Marlin.h"
 /**
 * Implementation of the LCD display routines for a Hitachi HD44780 display. These are common LCD character displays.
 * When selecting the Russian language, a slightly different LCD implementation is used to handle UTF8 characters.
@@ -628,15 +628,35 @@ static void lcd_implementation_status_screen()
     lcd.print('%');
     lcd.print("     ");
 
+
+	
     //Print SD status
     lcd.setCursor(0, 2);
-    lcd_printPGM(PSTR("SD"));
-
-    if (IS_SD_PRINTING)
-        lcd.print(itostr3(card.percentDone()));
-    else
-        lcd_printPGM(PSTR("---"));
-    lcd.print('%');
+	if (is_usb_printing)
+	{
+		lcd_printPGM(PSTR("--"));
+	}
+	else
+	{
+		lcd_printPGM(PSTR("SD"));
+	}
+	if (IS_SD_PRINTING)
+	{
+		lcd.print(itostr3(card.percentDone()));
+		lcd.print('%');
+	}
+	else
+	{
+		if (is_usb_printing)
+		{
+			lcd_printPGM(PSTR(">USB"));
+		}
+		else
+		{
+			lcd_printPGM(PSTR("---"));
+			lcd.print('%');
+		}
+	}
     lcd.print("      ");
 
     //Print time elapsed
@@ -658,27 +678,36 @@ static void lcd_implementation_status_screen()
     //Print status line
     lcd.setCursor(0, 3);
 
-    if(strcmp(lcd_status_message, "SD-PRINTING         ") == 0){
+	if (heating_status != 0) { custom_message = true; }
 
-      if(strcmp(longFilenameOLD, card.longFilename) != 0){
+	if ((IS_SD_PRINTING) && !custom_message)
+	{
+
+      if(strcmp(longFilenameOLD, card.longFilename) != 0)
+	  {
         memset(longFilenameOLD,'\0',strlen(longFilenameOLD));
         sprintf(longFilenameOLD, "%s", card.longFilename);
         scrollstuff = 0;
       }
 
-      if(strlen(card.longFilename) > LCD_WIDTH){
+      if(strlen(card.longFilename) > LCD_WIDTH)
+	  {
+
         int inters = 0;
         int gh = scrollstuff;
-        while( ((gh-scrollstuff)<LCD_WIDTH) && (inters == 0)  ){
+        while( ((gh-scrollstuff)<LCD_WIDTH) && (inters == 0)  )
+		{
           
-          if(card.longFilename[gh] == '\0'){
+          if(card.longFilename[gh] == '\0')
+		  {
             lcd.setCursor(gh-scrollstuff, 3);
             lcd.print(card.longFilename[gh-1]);
             scrollstuff = 0;
             gh = scrollstuff;
             inters = 1;
-
-          }else{
+          }
+		  else
+		  {
             lcd.setCursor(gh-scrollstuff, 3);
             lcd.print(card.longFilename[gh-1]);
             gh++;
@@ -687,30 +716,129 @@ static void lcd_implementation_status_screen()
           
         }
         scrollstuff++;
-
-      }else{
+      }
+	  else
+	  {
         lcd.print(longFilenameOLD);
       }
 
 
-    }else{
-
-      lcd.print(lcd_status_message);
-
     }
+	else
+	{
+		if (custom_message)
+		{
+			if (heating_status != 0)
+			{
+				heating_status_counter++;
+				if (heating_status_counter > 13)
+				{
+					heating_status_counter = 0;
+				}
+				lcd.setCursor(7, 3);
+				lcd_printPGM(PSTR("             "));
 
-    for(int fillspace = 0; fillspace<20;fillspace++){
-      if((lcd_status_message[fillspace] > 31 )){
+				for (int dots = 0; dots < heating_status_counter; dots++)
+				{
+					lcd.setCursor(7 + dots, 3);
+					lcd_printPGM(PSTR("."));
+				}
 
-      }else{
+				switch (heating_status)
+				{
+				case 1:
+					lcd.setCursor(0, 3);
+					lcd_printPGM(MSG_HEATING);
+					break;
+				case 2:
+					lcd.setCursor(0, 3);
+					lcd_printPGM(MSG_HEATING_COMPLETE);
+					heating_status = 0;
+					heating_status_counter = 0;
+					custom_message = false;
+					break;
+				case 3:
+					lcd.setCursor(0, 3);
+					lcd_printPGM(MSG_BED_HEATING);
+					break;
+				case 4:
+					lcd.setCursor(0, 3);
+					lcd_printPGM(MSG_BED_DONE);
+					heating_status = 0;
+					heating_status_counter = 0;
+					custom_message = false;
+					break;
+				default:
+					break;
+				}
+			}
 
+			if (custom_message_type == 1)  //// Z calibration G80 mesh bed leveling
+			{
+				if (custom_message_state > 10)
+				{
+					lcd.setCursor(0, 3);
+					lcd.print("                    ");
+					lcd.setCursor(0, 3);
+					lcd_printPGM(MSG_HOMEYZ_PROGRESS);
+					lcd.print(" : ");
+					lcd.print(custom_message_state-10);
+				}
+				else
+				{
+					if (custom_message_state == 3)
+					{
+						lcd_printPGM(WELCOME_MSG);
+						lcd_setstatuspgm(WELCOME_MSG);
+						custom_message = false;
+						custom_message_type = 0;
+					}
+					if (custom_message_state > 3 && custom_message_state < 10 )
+					{
+						lcd.setCursor(0, 3);
+						lcd.print("                   ");
+						lcd.setCursor(0, 3);
+						lcd_printPGM(MSG_HOMEYZ_DONE);
+						custom_message_state--;
+					}
+					if (custom_message_state == 10)
+					{
+						lcd_printPGM(MSG_HOMEYZ_DONE);
+						custom_message_state = 9;
+					}
+				}
+
+			}
+
+			if (custom_message_type == 2)  //// load filament
+			{
+				lcd.print(lcd_status_message);
+			}
+		}
+	else
+		{
+			lcd.print(lcd_status_message);
+		}
+	}
+
+    for(int fillspace = 0; fillspace<20;fillspace++)
+	{
+      if((lcd_status_message[fillspace] > 31 ))
+	  {
+      }
+	  else
+	  {
         lcd.print(' ');
-
       }
     }
 
-
-
+	if (is_usb_printing==1 && custom_message==0)
+	{
+		lcd.setCursor(0, 3);
+		lcd.print("                    ");
+		lcd.setCursor(0, 3);
+		lcd_printPGM(MSG_USB_PRINTING);
+	}
 
 }
 

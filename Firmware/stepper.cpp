@@ -1083,8 +1083,7 @@ void finishAndDisableSteppers()
 void quickStop()
 {
   DISABLE_STEPPER_DRIVER_INTERRUPT();
-  while(blocks_queued())
-    plan_discard_current_block();
+  while (blocks_queued()) plan_discard_current_block(); 
   current_block = NULL;
   ENABLE_STEPPER_DRIVER_INTERRUPT();
 }

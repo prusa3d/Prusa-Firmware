@@ -139,18 +139,45 @@ void manage_inactivity(bool ignore_stepper_queue=false);
   #define disable_y() ;
 #endif
 
-#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1
-  #ifdef Z_DUAL_STEPPER_DRIVERS
-    #define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-    #define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-  #else
-    #define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-    #define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-  #endif
+#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1 
+	#if defined(Z_AXIS_ALWAYS_ON)
+		  #ifdef Z_DUAL_STEPPER_DRIVERS
+			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+		  #else
+			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+			#define  disable_z() ;
+		  #endif
+	#else
+		#ifdef Z_DUAL_STEPPER_DRIVERS
+			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+		#else
+			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+		#endif
+	#endif
 #else
   #define enable_z() ;
   #define disable_z() ;
 #endif
+
+
+
+
+//#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1
+//#ifdef Z_DUAL_STEPPER_DRIVERS
+//#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+//#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+//#else
+//#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+//#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+//#endif
+//#else
+//#define enable_z() ;
+//#define disable_z() ;
+//#endif
+
 
 #if defined(E0_ENABLE_PIN) && (E0_ENABLE_PIN > -1)
   #define enable_e0() WRITE(E0_ENABLE_PIN, E_ENABLE_ON)
@@ -267,6 +294,17 @@ extern float retract_recover_length, retract_recover_length_swap, retract_recove
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
+extern bool is_usb_printing;
+extern unsigned int usb_printing_counter;
+
+extern unsigned long total_filament_used;
+void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
+extern unsigned int heating_status;
+extern unsigned int heating_status_counter;
+extern bool custom_message;
+extern unsigned int custom_message_type;
+extern unsigned int custom_message_state;
+
 
 // Handling multiple extruders pins
 extern uint8_t active_extruder;

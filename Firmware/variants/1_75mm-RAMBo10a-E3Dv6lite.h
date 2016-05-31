@@ -41,6 +41,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_MAX_POS 201
 #define Z_MIN_POS 0.23
 
+// Canceled home position
+#define X_CANCEL_POS 50
+#define Y_CANCEL_POS 180
+
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 240, 0}  // set the homing speeds (mm/min)
 
@@ -179,6 +183,18 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define FLEX_PREHEAT_HPB_TEMP 50
 #define FLEX_PREHEAT_FAN_SPEED 0 
 
+// This sets the max power delivered to the bed, and replaces the HEATER_BED_DUTY_CYCLE_DIVIDER option.
+// all forms of bed control obey this (PID, bang-bang, bang-bang with hysteresis)
+// setting this to anything other than 255 enables a form of PWM to the bed just like HEATER_BED_DUTY_CYCLE_DIVIDER did,
+// so you shouldn't use it unless you are OK with PWM on your bed.  (see the comment on enabling PIDTEMPBED)
+#define MAX_BED_POWER 255 // limits duty cycle to bed; 255=full current
+
+// temperature runaway
+//#define TEMP_RUNAWAY_BED_HYSTERESIS 5
+//#define TEMP_RUNAWAY_BED_TIMEOUT 360
+
+#define TEMP_RUNAWAY_EXTRUDER_HYSTERESIS 15
+#define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
 /*------------------------------------
     THERMISTORS SETTINGS

@@ -12,7 +12,7 @@ function parselang($a) {
 		if (!$a[1]) continue;
 		$v = trim($a[2]);
 
-		$v = str_replace('MACHINE_NAME "','"Prusa i3',$v);
+		//$v = str_replace('MACHINE_NAME "','"Prusa i3',$v);
 		$v = str_replace('" FIRMWARE_URL "','https://github.com/prusa3d/Prusa-i3-Plus/',$v);
 		$v = str_replace('" PROTOCOL_VERSION "','1.0',$v);
 		$v = str_replace('" STRINGIFY(EXTRUDERS) "','1',$v);
@@ -62,7 +62,7 @@ file_put_contents("language_all.h",$out);
 echo ".h created\n";
 
 
-$out="#include <avr/pgmspace.h>\n#define LCD_WIDTH 20\nextern unsigned char lang_selected;\n";
+$out="#include <avr/pgmspace.h>\n#include \"configuration_prusa.h\"\n#define LCD_WIDTH 20\nextern unsigned char lang_selected;\n";
 foreach ($langs as $lang) {
 	$outa[$lang]="const char* MSG".strtoupper($lang)."[]  = {";
 }

@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "2.2.4d"
+#define FW_version "3.0.1"
 
 
 
@@ -16,6 +16,8 @@
 #define EEPROM_BABYSTEP_Z 4088
 #define EEPROM_BABYSTEP_Z_SET 4087
 #define EEPROM_BABYSTEP_Z0 4085
+#define EEPROM_FILAMENTUSED 4081
+#define EEPROM_TOTALTIME 4077
 
 
 
@@ -260,8 +262,9 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 
 
 #define X_MAX_LENGTH (X_MAX_POS - X_MIN_POS)
-#define Y_MAX_LENGTH (Y_MAX_POS - Y_MIN_POS)
+#define Y_MAX_LENGTH (Y_MAX_POS - Y_MIN_POS) 
 #define Z_MAX_LENGTH (Z_MAX_POS - Z_MIN_POS)
+
 //============================= Bed Auto Leveling ===========================
 
 //#define ENABLE_AUTO_BED_LEVELING // Delete the comment to enable (remove // at the start of the line)
@@ -338,7 +341,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 
 
 //If you have enabled the Bed Auto Leveling and are using the same Z Probe for Z Homing,
-//it is highly recommended you let this Z_SAFE_HOMING enabled!!!
+//it is highly recommended you let this Z_SAFE_HOMING enabled!
 
   //#define Z_SAFE_HOMING   // This feature is meant to avoid Z homing with probe outside the bed area.
                           // When defined, it will:

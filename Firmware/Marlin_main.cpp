@@ -260,10 +260,21 @@ int extruder_multiply[EXTRUDERS] = {100
   #endif
 };
 
+bool is_usb_printing;
+bool _doMeshL;
+unsigned int  usb_printing_counter;
 
 int lcd_change_fil_state = 0;
 int feedmultiplyBckp = 100;
 unsigned char lang_selected = 0;
+
+
+unsigned long total_filament_used;
+unsigned int heating_status;
+unsigned int heating_status_counter;
+bool custom_message;
+unsigned int custom_message_type;
+unsigned int custom_message_state;
 
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
@@ -431,6 +442,7 @@ static unsigned long stepper_inactive_time = DEFAULT_STEPPER_DEACTIVE_TIME*1000l
 
 unsigned long starttime=0;
 unsigned long stoptime=0;
+unsigned long _usb_timer = 0;
 
 static uint8_t tmp_extruder;
 
@@ -633,19 +645,21 @@ void setup()
   if(mcu & 32) SERIAL_ECHOLNRPGM(MSG_SOFTWARE_RESET);
   MCUSR=0;
 
-  SERIAL_ECHORPGM(MSG_MARLIN);
-  SERIAL_ECHOLNRPGM(VERSION_STRING);
-  #ifdef STRING_VERSION_CONFIG_H
-    #ifdef STRING_CONFIG_H_AUTHOR
-      SERIAL_ECHO_START;
-      SERIAL_ECHORPGM(MSG_CONFIGURATION_VER);
-      SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
-      SERIAL_ECHORPGM(MSG_AUTHOR);
-      SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
-      SERIAL_ECHOPGM("Compiled: ");
-      SERIAL_ECHOLNPGM(__DATE__);
-    #endif
-  #endif
+  //SERIAL_ECHORPGM(MSG_MARLIN);
+  //SERIAL_ECHOLNRPGM(VERSION_STRING);
+  
+	#ifdef STRING_VERSION_CONFIG_H
+		#ifdef STRING_CONFIG_H_AUTHOR
+		  SERIAL_ECHO_START;
+		  SERIAL_ECHORPGM(MSG_CONFIGURATION_VER);
+		  SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
+		  SERIAL_ECHORPGM(MSG_AUTHOR);
+		  SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
+		  SERIAL_ECHOPGM("Compiled: ");
+		  SERIAL_ECHOLNPGM(__DATE__);
+		#endif
+	#endif
+  
   SERIAL_ECHO_START;
   SERIAL_ECHORPGM(MSG_FREE_MEMORY);
   SERIAL_ECHO(freeMemory());
@@ -656,6 +670,9 @@ void setup()
     fromsd[i] = false;
   }
 
+
+	  
+  
   // loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
   Config_RetrieveSettings();
 
@@ -698,12 +715,29 @@ void setup()
   digitalWrite(SERVO0_PIN, LOW); // turn it off
 #endif // Z_PROBE_SLED
   setup_homepin();
+
+#if defined(Z_AXIS_ALWAYS_ON)
+  enable_z();
+#endif
 }
 
 //unsigned char first_run_ever=1;
 //void first_time_menu();
 void loop()
 {
+
+	if (usb_printing_counter > 0 && millis()-_usb_timer > 1000)
+	{
+		is_usb_printing = true;
+		usb_printing_counter--;
+		_usb_timer = millis();
+	}
+	if (usb_printing_counter == 0)
+	{
+		is_usb_printing = false;
+	}
+
+
 
   if(buflen < (BUFSIZE-1))
     get_command();
@@ -724,7 +758,7 @@ void loop()
           }
           else
           {
-            SERIAL_PROTOCOLLNRPGM(MSG_OK);
+           SERIAL_PROTOCOLLNRPGM(MSG_OK);
           }
         }
         else
@@ -824,16 +858,25 @@ void get_command()
         }
         if((strchr(cmdbuffer[bufindw], 'G') != NULL)){
           strchr_pointer = strchr(cmdbuffer[bufindw], 'G');
-          switch((int)((strtod(&cmdbuffer[bufindw][strchr_pointer - cmdbuffer[bufindw] + 1], NULL)))){
-          case 0:
-          case 1:
-          case 2:
-          case 3:
-            if (Stopped == true) {
-              SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
-              LCD_MESSAGERPGM(MSG_STOPPED);
-            }
-            break;
+
+		  if (!IS_SD_PRINTING)
+		  {
+			  usb_printing_counter = 10;
+			  is_usb_printing = true;
+		  }
+
+          switch((int)((strtod(&cmdbuffer[bufindw][strchr_pointer - cmdbuffer[bufindw] + 1], NULL))))
+		  {
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+				if (Stopped == true) 
+				{
+				  SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
+				  LCD_MESSAGERPGM(MSG_STOPPED);
+				}
+				break;
           default:
             break;
           }
@@ -884,7 +927,8 @@ void get_command()
         int hours, minutes;
         minutes=(t/60)%60;
         hours=t/60/60;
-        sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
+		save_statistics(total_filament_used, t);
+		sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
         SERIAL_ECHO_START;
         SERIAL_ECHOLN(time);
         lcd_setstatus(time);
@@ -1454,7 +1498,6 @@ void process_commands()
     SET_INPUT(FR_SENS);
   #endif
   
-  
   unsigned long codenum; //throw away variable
   char *starpos = NULL;
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -1476,7 +1519,9 @@ void process_commands()
       lcd_force_language_selection();
     } else if(code_seen('Lz')) {
       EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
-    }
+    } else if (code_seen('Cal')) {
+		lcd_calibration();
+	}
 
   }
   else if(code_seen('G'))
@@ -1662,6 +1707,8 @@ void process_commands()
 
 
         get_coordinates(); // For X Y Z E F
+		total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS])*100);
+
           #ifdef FWRETRACT
             if(autoretract_enabled)
             if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
@@ -1728,14 +1775,17 @@ void process_commands()
       break;
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
+
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
 #endif //ENABLE_AUTO_BED_LEVELING
             
-            // For mesh bed leveling deactivate the matrix temporarily
+	      _doMeshL = false;
+        // For mesh bed leveling deactivate the matrix temporarily
         #ifdef MESH_BED_LEVELING
             mbl.active = 0;
         #endif
+
 
       saved_feedrate = feedrate;
       saved_feedmultiply = feedmultiply;
@@ -1832,6 +1882,11 @@ void process_commands()
       }
       #endif
 
+	  if (home_all_axis)
+	  {
+		  _doMeshL = true;
+	  }
+
       if((home_all_axis) || (code_seen(axis_codes[X_AXIS])))
       {
       #ifdef DUAL_X_CARRIAGE
@@ -1886,6 +1941,11 @@ void process_commands()
               st_synchronize();
             #endif
             #ifdef MESH_BED_LEVELING // If Mesh bed leveling, moxve X&Y to safe position for home
+			  if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] )) 
+			  {
+				  HOMEAXIS(X);
+				  HOMEAXIS(Y);
+			  } 
               destination[X_AXIS] = MESH_MIN_X - X_PROBE_OFFSET_FROM_EXTRUDER;
               destination[Y_AXIS] = MESH_MIN_Y - Y_PROBE_OFFSET_FROM_EXTRUDER;
               destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
@@ -1898,9 +1958,8 @@ void process_commands()
               current_position[X_AXIS] = destination[X_AXIS];
               current_position[Y_AXIS] = destination[Y_AXIS];
               HOMEAXIS(Z);
-          
-            
-            #else
+  		        _doMeshL = true;
+        #else
             HOMEAXIS(Z);
             #endif
           }
@@ -1982,17 +2041,23 @@ void process_commands()
 #ifndef MESH_BED_LEVELING
       if(card.sdprinting) {
         EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoad[2]);
-
         if(babystepLoad[2] != 0){
-
           lcd_adjust_z();
-
         }
-
       }
 #endif
-      
-      
+#ifdef MESH_BED_LEVELING
+	  if (code_seen('W'))
+	  {
+		  _doMeshL = false;
+		  SERIAL_ECHOLN("G80 disabled");
+	  }
+
+	  if ( _doMeshL)
+	  {
+		  enquecommand_P((PSTR("G80")));
+	  }
+#endif
 
       break;
 
@@ -2000,7 +2065,7 @@ void process_commands()
     case 29: // G29 Detailed Z-Probe, probes the bed at 3 or more points.
         {
             #if Z_MIN_PIN == -1
-            #error "You must have a Z_MIN endstop in order to enable Auto Bed Leveling feature!!! Z_MIN_PIN must point to a valid hardware pin."
+            #error "You must have a Z_MIN endstop in order to enable Auto Bed Leveling feature! Z_MIN_PIN must point to a valid hardware pin."
             #endif
 
             // Prevent user from running a G29 without first homing in X and Y
@@ -2194,17 +2259,24 @@ void process_commands()
      */
     case 80:
         {
+			if (!IS_SD_PRINTING)
+			{
+				custom_message = true;
+				custom_message_type = 1;
+				custom_message_state = (MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) + 10;
+			}
+			
+
             // Firstly check if we know where we are
             if ( !( axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS] ) ){
-                // We don't know where we are!!! HOME!
+                // We don't know where we are! HOME!
                 enquecommand_P((PSTR("G28")));
                 enquecommand_P((PSTR("G80")));
                 break;
             }
             
             mbl.reset();
-           
-            
+			            
             // Cycle through all points and probe them
             current_position[X_AXIS] = MESH_MIN_X - X_PROBE_OFFSET_FROM_EXTRUDER;
             current_position[Y_AXIS] = MESH_MIN_Y - Y_PROBE_OFFSET_FROM_EXTRUDER;
@@ -2253,7 +2325,10 @@ void process_commands()
                 
                 
                 mbl.set_z(ix, iy, current_position[Z_AXIS]);
-                
+				if (!IS_SD_PRINTING)
+				{
+					custom_message_state--;
+				}
                 mesh_point++;
                 
             }
@@ -2267,19 +2342,17 @@ void process_commands()
             current_position[Z_AXIS] = Z_MIN_POS;
             plan_buffer_line(current_position[X_AXIS], current_position[X_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
             st_synchronize();
-            
-            if(card.sdprinting) {
-                
-                if(eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x01){
-                    
+			
+			if(card.sdprinting || is_usb_printing ) 
+			{
+                if(eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x01)
+				{
                     EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoad[2]);
                     babystepsTodo[Z_AXIS] = babystepLoad[2];
-                    //lcd_adjust_z();
-                    
                 }
-                
             }
-            
+
+
         }
         break;
         
@@ -2372,6 +2445,11 @@ void process_commands()
         case 87:
             eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
             break;
+
+		case 88:
+			break;
+
+
 #endif  // ENABLE_MESH_BED_LEVELING
             
             
@@ -2987,7 +3065,9 @@ Sigma_Exit:
         break;
       }
       LCD_MESSAGERPGM(MSG_HEATING);
-      #ifdef AUTOTEMP
+	  heating_status = 1;
+
+#ifdef AUTOTEMP
         autotemp_enabled=false;
       #endif
       if (code_seen('S')) {
@@ -3039,6 +3119,7 @@ Sigma_Exit:
             SERIAL_PROTOCOL_F(degHotend(tmp_extruder),1);
             SERIAL_PROTOCOLPGM(" E:");
             SERIAL_PROTOCOL((int)tmp_extruder);
+			
             #ifdef TEMP_RESIDENCY_TIME
               SERIAL_PROTOCOLPGM(" W:");
               if(residencyStart > -1)
@@ -3064,18 +3145,14 @@ Sigma_Exit:
           if ((residencyStart == -1 &&  target_direction && (degHotend(tmp_extruder) >= (degTargetHotend(tmp_extruder)-TEMP_WINDOW))) ||
               (residencyStart == -1 && !target_direction && (degHotend(tmp_extruder) <= (degTargetHotend(tmp_extruder)+TEMP_WINDOW))) ||
               (residencyStart > -1 && labs(degHotend(tmp_extruder) - degTargetHotend(tmp_extruder)) > TEMP_HYSTERESIS) )
-          {
-            residencyStart = millis();
-          }
+			  {
+				residencyStart = millis();
+			  }
         #endif //TEMP_RESIDENCY_TIME
         }
         LCD_MESSAGERPGM(MSG_HEATING_COMPLETE);
-
-        if(IS_SD_PRINTING){
-         
-          lcd_setstatus("SD-PRINTING         ");
-        }
-
+		heating_status = 2;
+        
         starttime=millis();
         previous_millis_cmd = millis();
       }
@@ -3083,10 +3160,15 @@ Sigma_Exit:
     case 190: // M190 - Wait for bed heater to reach target.
     #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
         LCD_MESSAGERPGM(MSG_BED_HEATING);
-        if (code_seen('S')) {
+		heating_status = 3;
+
+        if (code_seen('S')) 
+		{
           setTargetBed(code_value());
           CooldownNoWait = true;
-        } else if (code_seen('R')) {
+        } 
+		else if (code_seen('R')) 
+		{
           setTargetBed(code_value());
           CooldownNoWait = false;
         }
@@ -3114,10 +3196,8 @@ Sigma_Exit:
           lcd_update();
         }
         LCD_MESSAGERPGM(MSG_BED_DONE);
-        if(IS_SD_PRINTING){
-         
-          lcd_setstatus("SD-PRINTING         ");
-        }
+		heating_status = 4;
+
         previous_millis_cmd = millis();
     #endif
         break;
@@ -3206,7 +3286,7 @@ Sigma_Exit:
       #endif
       #ifdef ULTIPANEL
         powersupply = false;
-        LCD_MESSAGERPGM(CAT4(MACHINE_NAME,PSTR(" "),MSG_OFF,PSTR("."))); //!!!!!!!!!!!!!!
+        LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR("."))); //!!
         
         /*
         MACHNAME = "Prusa i3"
@@ -4139,6 +4219,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     #ifdef FILAMENTCHANGEENABLE
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
     {
+		st_synchronize();
+
         feedmultiplyBckp=feedmultiply;
         int8_t TooLowZ = 0;
         float target[4];
@@ -4742,6 +4824,7 @@ void calculate_delta(float cartesian[3])
         float dy = y - current_position[Y_AXIS];
         float dz = z - current_position[Z_AXIS];
         int n_segments = 0;
+		
         if (mbl.active) {
             float len = abs(dx) + abs(dy) + abs(dz);
             if (len > 0)
@@ -5342,6 +5425,23 @@ bool setTargetedHotend(int code){
   return false;
 }
 
+void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time)
+{
+	if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
+	{
+		eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+		eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+	}
+
+	unsigned long _previous_filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED);
+	unsigned long _previous_time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME);
+
+	eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + (_total_print_time/60));
+	eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, _previous_filament + (_total_filament_used / 1000));
+
+	total_filament_used = 0;
+
+}
 
 float calculate_volumetric_multiplier(float diameter) {
 	float area = .0;
