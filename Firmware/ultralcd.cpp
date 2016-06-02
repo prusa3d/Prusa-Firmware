@@ -500,7 +500,8 @@ void lcd_commands()
 		if (lcd_commands_step == 4 && !blocks_queued())
 		{
 			enquecommand_P(PSTR("G90"));
-			#ifdef X_CANCEL_POS 
+			enquecommand_P(PSTR("M83"));
+			#ifdef X_CANCEL_POS
 			enquecommand_P(PSTR("G1 X"  STRINGIFY(X_CANCEL_POS) " Y" STRINGIFY(Y_CANCEL_POS) " E0 F7000"));
 			#else
 			enquecommand_P(PSTR("G1 X50 Y" STRINGIFY(Y_MAX_POS) " E0 F7000"));
