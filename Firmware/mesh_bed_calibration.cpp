@@ -448,8 +448,8 @@ bool find_bed_offset_and_skew()
     for (int k = 0; k < 4; ++ k) {
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         lcd_print_at_PGM(0, 1, MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
-        lcd_implementation_print(k+1);
-        lcd_print_at_PGM(0, 2, MSG_FIND_BED_OFFSET_AND_SKEW_LINE3);
+        lcd_implementation_print_at(0, 2, k+1);
+        lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE3);
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         int i, j;
@@ -568,8 +568,8 @@ bool improve_bed_offset_and_skew(int8_t method)
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         lcd_print_at_PGM(0, 1, MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2);
-        lcd_implementation_print_at(7, 1, mesh_point+1);
-        lcd_print_at_PGM(0, 2, MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3);
+        lcd_implementation_print_at(0, 2, mesh_point+1);
+        lcd_printPGM(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3);
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.
@@ -674,6 +674,7 @@ void reset_bed_offset_and_skew()
     eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_VEC_Y +4), 0x0FFFFFFFF);
 }
 
+#if 0
 static const float[9][2] PROGMEM bed_points = {
 };
 
@@ -759,3 +760,4 @@ bool calculate_machine_skew_and_offset_LS(
     // Invert the transformation matrix made of vec_x, vec_y and cntr.
 
 }
+#endif

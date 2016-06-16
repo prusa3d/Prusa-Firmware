@@ -274,19 +274,19 @@
 #define MSG_CALIBRATE_BED					"Calibrate bed"
 #define MSG_CALIBRATE_BED_RESET				"Reset bed calibration"
 
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1	"Calibrating the machine."
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2	"Please move the Z carriage up"
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1	"Calibrating bed."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2	"Move Z carriage up"
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3	"to the end stoppers."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4	"Click when done."
 
-#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1	"Are both left and right Z carriages"
-#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2	"touching the end stops?"
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1	"Are left and right"
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2	"Z carriages all up?"
 
-#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Searching calibration"
-#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	"point "
-#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE3	"of 4"
-#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Improving calibration"
-#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	"point "
-#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3	"of 9"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Searching bed"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	"calibration point"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE3	" of 4"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Improving bed"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	"calibration point"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3	" of 9"
 
 #endif // LANGUAGE_EN_H

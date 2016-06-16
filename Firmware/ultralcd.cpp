@@ -1227,21 +1227,22 @@ bool lcd_calibrate_z_end_stop_manual()
         lcd.setCursor(0, 3);
         lcd_printPGM(MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4);
         // Until the user finishes the z up movement.
-        enc_dif = encoderDiff;
+        encoderDiff = 0;
+        encoderPosition = 0;
         for (;;) {
             if (millis() - previous_millis_cmd >  max_inactive_time)
                 goto canceled;
             manage_heater();
             manage_inactivity(true);
-            if (abs((enc_dif - encoderDiff)) > 4) {
-                if (abs(enc_dif - encoderDiff) > 1) {
-                    previous_millis_cmd = millis();
-                    // Only move up, whatever the user does.
-                    current_position[Z_AXIS] += fabs(enc_dif - encoderDiff);
-                    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS] / 60, active_extruder);
-        //            delay(10);
-                    enc_dif = encoderDiff;
-                }
+            if (abs(encoderDiff) >= ENCODER_PULSES_PER_STEP) {
+                delay(50);
+                previous_millis_cmd = millis();
+                encoderPosition += abs(encoderDiff / ENCODER_PULSES_PER_STEP);
+                encoderDiff = 0;
+                // Only move up, whatever the user does.
+                current_position[Z_AXIS] += fabs(encoderPosition);
+                encoderPosition = 0;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS] / 60, active_extruder);
             }
             if (lcd_clicked()) {
                 // Wait until the Z up movement is finished.
