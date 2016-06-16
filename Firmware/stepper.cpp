@@ -86,6 +86,7 @@ static bool old_z_min_endstop=false;
 static bool old_z_max_endstop=false;
 
 static bool check_endstops = true;
+static bool check_z_endstop = false;
 
 int8_t SilentMode;
 
@@ -209,16 +210,35 @@ void checkHitEndstops()
  }
 }
 
-void endstops_hit_on_purpose()
+bool endstops_hit_on_purpose()
 {
+  bool hit = endstop_x_hit || endstop_y_hit || endstop_z_hit;
   endstop_x_hit=false;
   endstop_y_hit=false;
   endstop_z_hit=false;
+  return hit;
 }
 
-void enable_endstops(bool check)
+bool endstop_z_hit_on_purpose()
 {
+  bool hit = endstop_z_hit;
+  endstop_z_hit=false;
+  return hit;
+}
+
+bool enable_endstops(bool check)
+{
+  bool old = check_endstops;
   check_endstops = check;
+  return old;
+}
+
+bool enable_z_endstop(bool check)
+{
+  bool old = check_z_endstop;
+  check_z_endstop = check;
+  endstop_z_hit=false;
+  return old;
 }
 
 //         __________________________
@@ -496,7 +516,7 @@ ISR(TIMER1_COMPA_vect)
       #endif
 
       count_direction[Z_AXIS]=-1;
-      CHECK_ENDSTOPS
+      if(check_endstops && ! check_z_endstop)
       {
         #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
           bool z_min_endstop=(READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
@@ -530,6 +550,21 @@ ISR(TIMER1_COMPA_vect)
         #endif
       }
     }
+
+    // Supporting stopping on a trigger of the Z-stop induction sensor, not only for the Z-minus movements.
+    #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
+    if(check_z_endstop) {
+        // Check the Z min end-stop no matter what.
+        // Good for searching for the center of an induction target.
+        bool z_min_endstop=(READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
+        if(z_min_endstop && old_z_min_endstop) {
+          endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
+          endstop_z_hit=true;
+          step_events_completed = current_block->step_event_count;
+        }
+        old_z_min_endstop = z_min_endstop;
+    }
+    #endif
 
     #ifndef ADVANCE
       if ((out_bits & (1<<E_AXIS)) != 0) {  // -direction

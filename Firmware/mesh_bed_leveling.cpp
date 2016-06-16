@@ -1,4 +1,5 @@
 #include "mesh_bed_leveling.h"
+#include "Configuration.h"
 
 #ifdef MESH_BED_LEVELING
 
@@ -11,6 +12,77 @@ void mesh_bed_leveling::reset() {
     for (int y = 0; y < MESH_NUM_Y_POINTS; y++)
         for (int x = 0; x < MESH_NUM_X_POINTS; x++)
             z_values[y][x] = 0;
+}
+
+static inline bool vec_undef(const float v[2])
+{
+    const uint32_t *vx = (const uint32_t*)v;
+    return vx[0] == 0x0FFFFFFFF || vx[1] == 0x0FFFFFFFF;
+}
+
+void mesh_bed_leveling::get_meas_xy(int ix, int iy, float &x, float &y, bool use_default)
+{
+    float cntr[2] = {
+        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0)),
+        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4))
+    };
+    float vec_x[2] = {
+        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0)),
+        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4))
+    };
+    float vec_y[2] = {
+        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0)),
+        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4))
+    };
+
+    if (use_default || vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y)) {
+        // Default, uncorrected positions of the calibration points. Works well for correctly built printers.
+        x = float(MESH_MIN_X) + float(MEAS_NUM_X_DIST) * float(ix) - X_PROBE_OFFSET_FROM_EXTRUDER;
+        //FIXME
+        //x -= 5.f;
+        y = float(MESH_MIN_Y) + float(MEAS_NUM_Y_DIST) * float(iy) - Y_PROBE_OFFSET_FROM_EXTRUDER;
+    } else {
+#if 0
+        SERIAL_ECHO("Running bed leveling. Calibration data: ");
+        SERIAL_ECHO(cntr[0]);
+        SERIAL_ECHO(",");
+        SERIAL_ECHO(cntr[1]);
+        SERIAL_ECHO(", x: ");
+        SERIAL_ECHO(vec_x[0]);
+        SERIAL_ECHO(",");
+        SERIAL_ECHO(vec_x[1]);
+        SERIAL_ECHO(", y: ");
+        SERIAL_ECHO(vec_y[0]);
+        SERIAL_ECHO(",");
+        SERIAL_ECHO(vec_y[1]);
+        SERIAL_ECHOLN("");
+#endif
+
+        x = cntr[0];
+        y = cntr[1];
+        if (ix < 1) {
+            x -= vec_x[0];
+            y -= vec_x[1];
+        } else if (ix > 1) {
+            x += vec_x[0];
+            y += vec_x[1];
+        }
+        if (iy < 1) {
+            x -= vec_y[0];
+            y -= vec_y[1];
+        } else if (iy > 1) {
+            x += vec_y[0];
+            y += vec_y[1];
+        }
+
+#if 0
+        SERIAL_ECHO("Calibration point position: ");
+        SERIAL_ECHO(x);
+        SERIAL_ECHO(",");
+        SERIAL_ECHO(y);
+        SERIAL_ECHOLN("");
+#endif
+    }
 }
 
 #if MESH_NUM_X_POINTS>=5 && MESH_NUM_Y_POINTS>=5 && (MESH_NUM_X_POINTS&1)==1 && (MESH_NUM_Y_POINTS&1)==1

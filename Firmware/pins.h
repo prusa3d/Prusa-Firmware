@@ -23,7 +23,7 @@
 * Rambo Pin Assignments 1.3
 ******************************************************************/
 #if MOTHERBOARD == 302
-  #define MINI-RAMBO
+  #define MINI_RAMBO
   
 #endif
 #if MOTHERBOARD == 301 || MOTHERBOARD == 302
@@ -109,7 +109,7 @@
   #else
     #define HEATER_2_PIN -1
   #endif
-  #ifdef MINI-RAMBO
+  #ifdef MINI_RAMBO
 
     #define ELECTRONICS "RAMBo13a"
 

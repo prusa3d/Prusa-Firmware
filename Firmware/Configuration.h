@@ -5,10 +5,12 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.1"
+#define FW_version "3.0.2"
 
 
 
+// The total size of the EEPROM is
+// 4096 for the Atmega2560
 #define EEPROM_SILENT 4095
 #define EEPROM_LANG 4094
 #define EEPROM_BABYSTEP_X 4092
@@ -17,8 +19,12 @@
 #define EEPROM_BABYSTEP_Z_SET 4087
 #define EEPROM_BABYSTEP_Z0 4085
 #define EEPROM_FILAMENTUSED 4081
+// uint32_t
 #define EEPROM_TOTALTIME 4077
 
+#define EEPROM_BED_CALIBRATION_CENTER    (EEPROM_TOTALTIME-2*4)
+#define EEPROM_BED_CALIBRATION_VEC_X     (EEPROM_BED_CALIBRATION_CENTER-2*4)
+#define EEPROM_BED_CALIBRATION_VEC_Y     (EEPROM_BED_CALIBRATION_VEC_X-2*4)
 
 
 // This configuration file contains the basic settings.

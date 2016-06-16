@@ -6,6 +6,8 @@
 #ifdef ULTRA_LCD
 
   void lcd_update();
+  // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
+  void lcd_update_enable(bool enable);
   void lcd_init();
   void lcd_setstatus(const char* message);
   void lcd_setstatuspgm(const char* message);
@@ -23,7 +25,6 @@
   void lcd_loading_color();
   void lcd_force_language_selection();
   void lcd_sdcard_stop();
-  void lcd_calibration();
   
   bool lcd_detected(void);
 
@@ -35,6 +36,9 @@
   static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
   static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
   static void lcd_menu_statistics();
+
+  extern bool lcd_calibrate_z_end_stop_manual();
+  extern void lcd_diag_show_end_stops();
 
 #ifdef DOGLCD
   extern int lcd_contrast;
@@ -153,5 +157,17 @@ char *ftostr32sp(const float &x); // remove zero-padding from ftostr32
 char *ftostr5(const float &x);
 char *ftostr51(const float &x);
 char *ftostr52(const float &x);
+
+
+extern void lcd_implementation_clear();
+extern void lcd_printPGM(const char* str);
+extern void lcd_print_at_PGM(uint8_t x, uint8_t y, const char* str);
+extern void lcd_implementation_print(const char *str);
+extern void lcd_implementation_print(int8_t i);
+extern void lcd_implementation_print_at(uint8_t x, uint8_t y, int8_t i);
+extern void lcd_implementation_print(int i);
+extern void lcd_implementation_print_at(uint8_t x, uint8_t y, int i);
+extern void lcd_implementation_print(float f);
+extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 
 #endif //ULTRALCD_H

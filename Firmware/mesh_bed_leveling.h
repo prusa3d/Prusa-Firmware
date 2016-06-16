@@ -21,11 +21,13 @@ public:
     void upsample_3x3();
 #endif
     
-    float get_x(int i) { return float(MESH_MIN_X) + float(MESH_X_DIST) * float(i); }
-    float get_y(int i) { return float(MESH_MIN_Y) + float(MESH_Y_DIST) * float(i); }
+    static float get_x(int i) { return float(MESH_MIN_X) + float(MESH_X_DIST) * float(i); }
+    static float get_y(int i) { return float(MESH_MIN_Y) + float(MESH_Y_DIST) * float(i); }
     
-    float get_meas_x(int i) { return float(MESH_MIN_X) + float(MEAS_NUM_X_DIST) * float(i); }
-    float get_meas_y(int i) { return float(MESH_MIN_Y) + float(MEAS_NUM_Y_DIST) * float(i); }
+    // Measurement point for the Z probe.
+    // If use_default=true, then the default positions for a correctly built printer are used.
+    // Otherwise a correction matrix is pulled from the EEPROM if available.
+    static void get_meas_xy(int ix, int iy, float &x, float &y, bool use_default);
     
     void set_z(int ix, int iy, float z) { z_values[iy][ix] = z; }
     

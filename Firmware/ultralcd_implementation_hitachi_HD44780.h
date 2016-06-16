@@ -567,12 +567,12 @@ static void lcd_implementation_display()
     lcd.display();
 }
 
-static void lcd_implementation_clear()
+void lcd_implementation_clear()
 {
     lcd.clear();
 }
 /* Arduino < 1.0.0 is missing a function to print PROGMEM strings, so we need to implement our own */
-static void lcd_printPGM(const char* str)
+void lcd_printPGM(const char* str)
 {
     char c;
     while((c = pgm_read_byte(str++)) != '\0')
@@ -580,6 +580,55 @@ static void lcd_printPGM(const char* str)
         lcd.write(c);
     }
 }
+
+void lcd_print_at_PGM(uint8_t x, uint8_t y, const char* str)
+{
+    lcd.setCursor(x, y);
+    char c;
+    while((c = pgm_read_byte(str++)) != '\0')
+    {
+        lcd.write(c);
+    }
+}
+
+void lcd_implementation_print(int8_t i)
+{
+    lcd.print(i);
+}
+
+void lcd_implementation_print_at(uint8_t x, uint8_t y, int8_t i)
+{
+    lcd.setCursor(x, y);
+    lcd.print(i);
+}
+
+void lcd_implementation_print(int i)
+{
+    lcd.print(i);
+}
+
+void lcd_implementation_print_at(uint8_t x, uint8_t y, int i)
+{
+    lcd.setCursor(x, y);
+    lcd.print(i);
+}
+
+void lcd_implementation_print(float f)
+{
+    lcd.print(f);
+}
+
+void lcd_implementation_print(const char *str)
+{
+    lcd.print(str);
+}
+
+void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str)
+{
+    lcd.setCursor(x, y);
+    lcd.print(str);
+}
+
 /*
 
 20x4   |01234567890123456789|

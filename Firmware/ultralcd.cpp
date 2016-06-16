@@ -1113,10 +1113,8 @@ static void lcd_babystep_x() {
 static void lcd_babystep_y() {
   _lcd_babystep(Y_AXIS, (MSG_BABYSTEPPING_Y));
 }
-
-
 static void lcd_babystep_z() {
-  _lcd_babystep(Z_AXIS, (MSG_BABYSTEPPING_Z));
+	_lcd_babystep(Z_AXIS, (MSG_BABYSTEPPING_Z));
 }
 
 
@@ -1206,10 +1204,143 @@ void lcd_adjust_z() {
 
 }
 
-void lcd_calibration() {
+// Lets the user move the Z carriage up to the end stoppers.
+// When done, it sets the current Z to Z_MAX_POS and returns true.
+// Otherwise the Z calibration is not changed and false is returned.
+bool lcd_calibrate_z_end_stop_manual()
+{
+    const unsigned long max_inactive_time = 60 * 1000; // 60 seconds
+    unsigned long previous_millis_cmd = millis();
+    int8_t        cursor_pos;
+    int8_t        enc_dif = 0;
+
+    // Until confirmed by the confirmation dialog.
+    for (;;) {
+        previous_millis_cmd = millis();
+        lcd_implementation_clear();
+        lcd.setCursor(0, 0);
+        lcd_printPGM(MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1);
+        lcd.setCursor(0, 1);
+        lcd_printPGM(MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2);
+        lcd.setCursor(0, 2);
+        lcd_printPGM(MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3);
+        lcd.setCursor(0, 3);
+        lcd_printPGM(MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4);
+        // Until the user finishes the z up movement.
+        enc_dif = encoderDiff;
+        for (;;) {
+            if (millis() - previous_millis_cmd >  max_inactive_time)
+                goto canceled;
+            manage_heater();
+            manage_inactivity(true);
+            if (abs((enc_dif - encoderDiff)) > 4) {
+                if (abs(enc_dif - encoderDiff) > 1) {
+                    previous_millis_cmd = millis();
+                    // Only move up, whatever the user does.
+                    current_position[Z_AXIS] += fabs(enc_dif - encoderDiff);
+                    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS] / 60, active_extruder);
+        //            delay(10);
+                    enc_dif = encoderDiff;
+                }
+            }
+            if (lcd_clicked()) {
+                // Wait until the Z up movement is finished.
+                st_synchronize();
+                while (lcd_clicked()) ;
+                delay(10);
+                while (lcd_clicked()) ;
+                break;
+            }
+        }
+
+        // Let the user confirm, that the Z carriage is at the top end stoppers.
+        lcd_implementation_clear();
+        lcd.setCursor(0, 0);
+        lcd_printPGM(MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1);
+        lcd.setCursor(0, 1);
+        lcd_printPGM(MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2);
+        lcd.setCursor(1, 2);
+        lcd_printPGM(MSG_YES);
+        lcd.setCursor(1, 3);
+        lcd_printPGM(MSG_NO);
+        cursor_pos = 3;
+        lcd.setCursor(0, cursor_pos);
+        lcd_printPGM(PSTR(">"));
+
+        previous_millis_cmd = millis();
+        enc_dif = encoderDiff;
+        for (;;) {
+            if (millis() - previous_millis_cmd >  max_inactive_time)
+                goto canceled;
+            manage_heater();
+            manage_inactivity(true);
+            if (abs((enc_dif - encoderDiff)) > 4) {
+                if (abs(enc_dif - encoderDiff) > 1) {
+                    lcd.setCursor(0, 2);
+                    if (enc_dif > encoderDiff && cursor_pos == 4) {
+                        lcd_printPGM((PSTR(" ")));
+                        lcd.setCursor(0, 3);
+                        lcd_printPGM((PSTR(">")));
+                        -- cursor_pos;
+                    } else if (enc_dif < encoderDiff && cursor_pos == 3) {
+                        ++ cursor_pos;
+                        lcd_printPGM((PSTR(">")));
+                        lcd.setCursor(0, 3);
+                        lcd_printPGM((PSTR(" ")));
+                    }
+                    enc_dif = encoderDiff;
+                }
+            }
+            if (lcd_clicked()) {
+                while (lcd_clicked()) ;
+                delay(10);
+                while (lcd_clicked()) ;
+                if (cursor_pos == 3) {
+                    // Perform another round of the Z up dialog.
+                    break;
+                }
+                goto calibrated;
+            }
+        }
+    }
+
+calibrated:
+    current_position[Z_AXIS] = Z_MAX_POS;
+    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+    return true;
+
+canceled:
+    return false;
 }
 
-
+// Lets the user move the Z carriage up to the end stoppers.
+// When done, it sets the current Z to Z_MAX_POS and returns true.
+// Otherwise the Z calibration is not changed and false is returned.
+void lcd_diag_show_end_stops()
+{
+    int enc_dif = encoderDiff;
+    lcd_implementation_clear();
+    lcd.setCursor(0, 0);
+    lcd_printPGM((PSTR("End stops diag")));
+    for (;;) {
+        manage_heater();
+        manage_inactivity(true);
+        lcd.setCursor(0, 1);
+        lcd_printPGM((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("X1")) : (PSTR("X0")));
+        lcd.setCursor(0, 2);
+        lcd_printPGM((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Y1")) : (PSTR("Y0")));
+        lcd.setCursor(0, 3);
+        lcd_printPGM((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Z1")) : (PSTR("Z0")));
+        if (lcd_clicked()) {
+            while (lcd_clicked()) ;
+            delay(10);
+            while (lcd_clicked()) ;
+            break;
+        }
+    }
+    lcd_implementation_clear();
+    lcd_return_to_status();
+}
 
 void lcd_pick_babystep(){
     int enc_dif = 0;
@@ -1390,9 +1521,9 @@ static void lcd_language_menu()
     MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
   }
   for (int i=0;i<LANG_NUM;i++){
-    MENU_ITEM(setlang, MSG_ALL[i][LANGUAGE_NAME], i);
+    MENU_ITEM(setlang, MSG_LANGUAGE_NAME_EXPLICIT(i), i);
   }
-  //MENU_ITEM(setlang, MSG_ALL[1][LANGUAGE_NAME], 1);
+  //MENU_ITEM(setlang, MSG_LANGUAGE_NAME_EXPLICIT(1), 1);
   END_MENU();
 }
 
@@ -1403,6 +1534,17 @@ void lcd_mesh_bedleveling()
 	lcd_return_to_status();
 }
 
+void lcd_mesh_calibration()
+{
+  enquecommand_P(PSTR("M46"));
+  lcd_return_to_status();
+}
+
+void lcd_mesh_calibration_reset()
+{
+  enquecommand_P(PSTR("M44"));
+  lcd_return_to_status();
+}
 
 static void lcd_settings_menu()
 {
@@ -1448,6 +1590,8 @@ static void lcd_settings_menu()
 	if (!isPrintPaused)
 	{
 		MENU_ITEM(submenu, MSG_SELFTEST, lcd_selftest);
+    MENU_ITEM(submenu, MSG_CALIBRATE_BED, lcd_mesh_calibration);
+    MENU_ITEM(submenu, MSG_CALIBRATE_BED_RESET, lcd_mesh_calibration_reset);
 	}
   
 	END_MENU();
@@ -1506,26 +1650,26 @@ void lcd_mylang_drawmenu(int cursor) {
   lcd.setCursor(0, 0);
   lcd.print("                    ");
   lcd.setCursor(1, 0);
-  lcd_printPGM(MSG_ALL[first+0][LANGUAGE_NAME]);
+  lcd_printPGM(MSG_LANGUAGE_NAME_EXPLICIT(first+0));
 
   lcd.setCursor(0, 1);
   lcd.print("                    ");
   lcd.setCursor(1, 1);
-  lcd_printPGM(MSG_ALL[first+1][LANGUAGE_NAME]);
+  lcd_printPGM(MSG_LANGUAGE_NAME_EXPLICIT(first+1));
 
   lcd.setCursor(0, 2);
   lcd.print("                    ");
 
   if (LANG_NUM > 2){
     lcd.setCursor(1, 2);
-    lcd_printPGM(MSG_ALL[first+2][LANGUAGE_NAME]);
+    lcd_printPGM(MSG_LANGUAGE_NAME_EXPLICIT(first+2));
   }
 
   lcd.setCursor(0, 3);
   lcd.print("                    ");
   if (LANG_NUM>3) {
     lcd.setCursor(1, 3);
-    lcd_printPGM(MSG_ALL[first+3][LANGUAGE_NAME]);
+    lcd_printPGM(MSG_LANGUAGE_NAME_EXPLICIT(first+3));
   }
   
   if (cursor==1) lcd.setCursor(0, 0);
@@ -1660,7 +1804,6 @@ static void lcd_main_menu()
     EEPROM_read_B(EEPROM_BABYSTEP_X, &babystepMem[0]);
 	EEPROM_read_B(EEPROM_BABYSTEP_Y, &babystepMem[1]);
 	EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepMem[2]);
-	
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
 
@@ -2471,11 +2614,19 @@ void lcd_init()
 
 //#include <avr/pgmspace.h>
 
+static volatile bool lcd_update_enabled = true;
+
+void lcd_update_enable(bool enabled)
+{
+    lcd_update_enabled = enabled;
+}
 
 void lcd_update()
 {
 	static unsigned long timeoutToStatus = 0;
 
+  if (! lcd_update_enabled)
+      return;
 
 #ifdef LCD_HAS_SLOW_BUTTONS
   slow_buttons = lcd_implementation_read_slow_buttons(); // buttons which take too long to read in interrupt context
