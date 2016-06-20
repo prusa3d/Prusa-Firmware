@@ -95,7 +95,7 @@
 #define MSG_STORE_EPROM                     "Store memory"
 #define MSG_LOAD_EPROM                      "Ulozit pamet"
 #define MSG_RESTORE_FAILSAFE                "Obnovit vychozi"
-#define MSG_REFRESH                         "Obnovit"
+#define MSG_REFRESH                         "\xF8" "Obnovit"
 #define MSG_WATCH                           "Informace"
 #define MSG_PREPARE                         "Priprava"
 #define MSG_TUNE                            "Ladit"

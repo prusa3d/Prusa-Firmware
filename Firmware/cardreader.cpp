@@ -99,6 +99,8 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
       if (lf0 == '.' || lf0 == '_') continue;
 
       if (!DIR_IS_FILE_OR_SUBDIR(&p)) continue;
+      // Ignore the files and directories with hidden or system attribute.
+      if ((p.attributes & (DIR_ATT_HIDDEN | DIR_ATT_SYSTEM)) != 0) continue;
       filenameIsDir=DIR_IS_SUBDIR(&p);
       
       

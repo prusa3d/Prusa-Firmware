@@ -216,7 +216,7 @@
 #define MSG_STORE_EPROM                     "Store memory"
 #define MSG_LOAD_EPROM                      "Load memory"
 #define MSG_RESTORE_FAILSAFE                "Restore failsafe"
-#define MSG_REFRESH                         "Refresh"
+#define MSG_REFRESH                         "\xF8" "Refresh"
 #define MSG_PREPARE                         "Prepare"
 #define MSG_CONTROL_RETRACT                 "Retract mm"
 #define MSG_CONTROL_RETRACT_SWAP            "Swap Re.mm"

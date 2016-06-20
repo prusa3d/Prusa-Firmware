@@ -2215,11 +2215,11 @@ const char * const MSG_RECTRACT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RECTRACT_PL
 };
 
-const char MSG_REFRESH_EN[] PROGMEM = "Refresh";
-const char MSG_REFRESH_CZ[] PROGMEM = "Obnovit";
-const char MSG_REFRESH_IT[] PROGMEM = "Refresh";
-const char MSG_REFRESH_ES[] PROGMEM = "Refresh";
-const char MSG_REFRESH_PL[] PROGMEM = "Obnovit";
+const char MSG_REFRESH_EN[] PROGMEM = "\xF8" "Refresh";
+const char MSG_REFRESH_CZ[] PROGMEM = "\xF8" "Obnovit";
+const char MSG_REFRESH_IT[] PROGMEM = "\xF8" "Refresh";
+const char MSG_REFRESH_ES[] PROGMEM = "\xF8" "Refresh";
+const char MSG_REFRESH_PL[] PROGMEM = "\xF8" "Obnovit";
 const char * const MSG_REFRESH_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_REFRESH_EN,
 	MSG_REFRESH_CZ,

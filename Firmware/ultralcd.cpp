@@ -2036,10 +2036,10 @@ void lcd_sdcard_menu()
   if (card.filename[0] == '/')
   {
 #if SDCARDDETECT == -1
-    MENU_ITEM(function, LCD_STR_REFRESH MSG_REFRESH, lcd_sd_refresh);
+    MENU_ITEM(function, MSG_REFRESH, lcd_sd_refresh);
 #endif
   } else {
-    MENU_ITEM(function, LCD_STR_FOLDER "..", lcd_sd_updir);
+    MENU_ITEM(function, PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir);
   }
 
   for (uint16_t i = 0; i < fileCnt; i++)
