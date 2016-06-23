@@ -104,11 +104,7 @@
   #define KILL_PIN           -1 //80 with Smart Controller LCD
   #define SUICIDE_PIN        -1  //PIN that has to be turned on right after start, to keep power flowing.
   #define SDPOWER            -1
-  #ifdef BARICUDA
-    #define HEATER_2_PIN 6
-  #else
-    #define HEATER_2_PIN -1
-  #endif
+  #define HEATER_2_PIN -1
   #ifdef MINI_RAMBO
 
     #define ELECTRONICS "RAMBo13a"
@@ -282,11 +278,7 @@
   #define KILL_PIN           -1 //80 with Smart Controller LCD
   #define SUICIDE_PIN        -1  //PIN that has to be turned on right after start, to keep power flowing.
   #define SDPOWER            -1
-  #ifdef BARICUDA
-    #define HEATER_2_PIN 6
-  #else
-    #define HEATER_2_PIN -1
-  #endif
+  #define HEATER_2_PIN -1
 
     #define HEATER_0_PIN 3
     #define HEATER_BED_PIN 4

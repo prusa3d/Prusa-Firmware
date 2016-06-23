@@ -211,22 +211,21 @@ void FlushSerialRequestResend();
 void ClearToSend();
 
 void get_coordinates();
-#ifdef DELTA
-void calculate_delta(float cartesian[3]);
-extern float delta[3];
-#endif
-#ifdef SCARA
-void calculate_delta(float cartesian[3]);
-void calculate_SCARA_forward_Transform(float f_scara[3]);
-#endif
 void prepare_move();
 void kill();
 void Stop();
 
 bool IsStopped();
 
-void enquecommand(const char *cmd); //put an ASCII command at the end of the current buffer.
-void enquecommand_P(const char *cmd); //put an ASCII command at the end of the current buffer, read from flash
+//put an ASCII command at the end of the current buffer.
+void enquecommand(const char *cmd, bool from_progmem = false);
+//put an ASCII command at the end of the current buffer, read from flash
+#define enquecommand_P(cmd) enquecommand(cmd, true)
+void enquecommand_front(const char *cmd, bool from_progmem = false);
+//put an ASCII command at the end of the current buffer, read from flash
+#define enquecommand_P(cmd) enquecommand(cmd, true)
+#define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
+
 void prepare_arc_move(char isclockwise);
 void clamp_to_software_endstops(float target[3]);
 
@@ -252,25 +251,11 @@ extern float volumetric_multiplier[EXTRUDERS]; // reciprocal of cross-sectional 
 extern float current_position[NUM_AXIS] ;
 extern float destination[NUM_AXIS] ;
 extern float add_homing[3];
-#ifdef DELTA
-extern float endstop_adj[3];
-extern float delta_radius;
-extern float delta_diagonal_rod;
-extern float delta_segments_per_second;
-void recalc_delta_settings(float radius, float diagonal_rod);
-#endif
-#ifdef SCARA
-extern float axis_scaling[3];  // Build size scaling
-#endif
 extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
 extern float zprobe_zoffset;
 extern int fanSpeed;
-#ifdef BARICUDA
-extern int ValvePressure;
-extern int EtoPPressure;
-#endif
 
 #ifdef FAN_SOFT_PWM
 extern unsigned char fanSpeedSoftPwm;

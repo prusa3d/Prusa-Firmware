@@ -63,12 +63,6 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i,max_z_jerk);
   EEPROM_WRITE_VAR(i,max_e_jerk);
   EEPROM_WRITE_VAR(i,add_homing);
-  #ifdef DELTA
-  EEPROM_WRITE_VAR(i,endstop_adj);
-  EEPROM_WRITE_VAR(i,delta_radius);
-  EEPROM_WRITE_VAR(i,delta_diagonal_rod);
-  EEPROM_WRITE_VAR(i,delta_segments_per_second);
-  #endif
   #ifndef ULTIPANEL
   int plaPreheatHotendTemp = PLA_PREHEAT_HOTEND_TEMP, plaPreheatHPBTemp = PLA_PREHEAT_HPB_TEMP, plaPreheatFanSpeed = PLA_PREHEAT_FAN_SPEED;
   int absPreheatHotendTemp = ABS_PREHEAT_HOTEND_TEMP, absPreheatHPBTemp = ABS_PREHEAT_HPB_TEMP, absPreheatFanSpeed = ABS_PREHEAT_FAN_SPEED;
@@ -99,9 +93,6 @@ void Config_StoreSettings()
     int lcd_contrast = 32;
   #endif
   EEPROM_WRITE_VAR(i,lcd_contrast);
-  #ifdef SCARA
-  EEPROM_WRITE_VAR(i,axis_scaling);        // Add scaling for SCARA
-  #endif
   #ifdef FWRETRACT
   EEPROM_WRITE_VAR(i,autoretract_enabled);
   EEPROM_WRITE_VAR(i,retract_length);
@@ -149,16 +140,6 @@ void Config_PrintSettings()
     SERIAL_ECHOLN("");
       
     SERIAL_ECHO_START;
-#ifdef SCARA
-SERIAL_ECHOLNPGM("Scaling factors:");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("  M365 X",axis_scaling[X_AXIS]);
-    SERIAL_ECHOPAIR(" Y",axis_scaling[Y_AXIS]);
-    SERIAL_ECHOPAIR(" Z",axis_scaling[Z_AXIS]);
-    SERIAL_ECHOLN("");
-      
-    SERIAL_ECHO_START;
-#endif
     SERIAL_ECHOLNPGM("Maximum feedrates (mm/s):");
     SERIAL_ECHO_START;
     SERIAL_ECHOPAIR("  M203 X", max_feedrate[X_AXIS]);
@@ -200,22 +181,6 @@ SERIAL_ECHOLNPGM("Scaling factors:");
     SERIAL_ECHOPAIR(" Y" ,add_homing[Y_AXIS] );
     SERIAL_ECHOPAIR(" Z" ,add_homing[Z_AXIS] );
     SERIAL_ECHOLN("");
-#ifdef DELTA
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Endstop adjustement (mm):");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("  M666 X",endstop_adj[X_AXIS] );
-    SERIAL_ECHOPAIR(" Y" ,endstop_adj[Y_AXIS] );
-    SERIAL_ECHOPAIR(" Z" ,endstop_adj[Z_AXIS] );
-	SERIAL_ECHOLN("");
-	SERIAL_ECHO_START;
-	SERIAL_ECHOLNPGM("Delta settings: L=delta_diagonal_rod, R=delta_radius, S=delta_segments_per_second");
-	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR("  M665 L",delta_diagonal_rod );
-	SERIAL_ECHOPAIR(" R" ,delta_radius );
-	SERIAL_ECHOPAIR(" S" ,delta_segments_per_second );
-	SERIAL_ECHOLN("");
-#endif
 #ifdef PIDTEMP
     SERIAL_ECHO_START;
     SERIAL_ECHOLNPGM("PID settings:");
@@ -305,12 +270,6 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,max_z_jerk);
         EEPROM_READ_VAR(i,max_e_jerk);
         EEPROM_READ_VAR(i,add_homing);
-        #ifdef DELTA
-		EEPROM_READ_VAR(i,endstop_adj);
-		EEPROM_READ_VAR(i,delta_radius);
-		EEPROM_READ_VAR(i,delta_diagonal_rod);
-		EEPROM_READ_VAR(i,delta_segments_per_second);
-        #endif
         #ifndef ULTIPANEL
         int plaPreheatHotendTemp, plaPreheatHPBTemp, plaPreheatFanSpeed;
         int absPreheatHotendTemp, absPreheatHPBTemp, absPreheatFanSpeed;
@@ -337,9 +296,6 @@ void Config_RetrieveSettings()
         int lcd_contrast;
         #endif
         EEPROM_READ_VAR(i,lcd_contrast);
-		#ifdef SCARA
-		EEPROM_READ_VAR(i,axis_scaling);
-		#endif
 
 		#ifdef FWRETRACT
 		EEPROM_READ_VAR(i,autoretract_enabled);
@@ -390,9 +346,6 @@ void Config_ResetDefault()
         axis_steps_per_unit[i]=tmp1[i];  
         max_feedrate[i]=tmp2[i];  
         max_acceleration_units_per_sq_second[i]=tmp3[i];
-		#ifdef SCARA
-		axis_scaling[i]=1;
-		#endif
     }
     
     // steps per sq second need to be updated to agree with the units per sq second
@@ -407,13 +360,6 @@ void Config_ResetDefault()
     max_z_jerk=DEFAULT_ZJERK;
     max_e_jerk=DEFAULT_EJERK;
     add_homing[X_AXIS] = add_homing[Y_AXIS] = add_homing[Z_AXIS] = 0;
-#ifdef DELTA
-	endstop_adj[X_AXIS] = endstop_adj[Y_AXIS] = endstop_adj[Z_AXIS] = 0;
-	delta_radius= DELTA_RADIUS;
-	delta_diagonal_rod= DELTA_DIAGONAL_ROD;
-	delta_segments_per_second= DELTA_SEGMENTS_PER_SECOND;
-	recalc_delta_settings(delta_radius, delta_diagonal_rod);
-#endif
 #ifdef ULTIPANEL
     plaPreheatHotendTemp = PLA_PREHEAT_HOTEND_TEMP;
     plaPreheatHPBTemp = PLA_PREHEAT_HPB_TEMP;

@@ -53,8 +53,16 @@ FORCE_INLINE void store_char(unsigned char c)
   //SIGNAL(SIG_USART_RECV)
   SIGNAL(M_USARTx_RX_vect)
   {
-    unsigned char c  =  M_UDRx;
-    store_char(c);
+      // Test for a framing error.
+      if (M_UCSRxA & (1<<M_FEx)) {
+          // Characters received with the framing errors will be ignored.
+          // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
+          volatile unsigned char c = M_UDRx;
+      } else {
+          // Read the input register.
+          unsigned char c = M_UDRx;
+          store_char(c);
+      }
   }
 #endif
 

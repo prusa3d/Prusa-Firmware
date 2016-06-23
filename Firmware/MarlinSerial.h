@@ -53,6 +53,7 @@
 #define M_UBRRxH SERIAL_REGNAME(UBRR,SERIAL_PORT,H)
 #define M_UBRRxL SERIAL_REGNAME(UBRR,SERIAL_PORT,L)
 #define M_RXCx SERIAL_REGNAME(RXC,SERIAL_PORT,)
+#define M_FEx SERIAL_REGNAME(FE,SERIAL_PORT,)
 #define M_USARTx_RX_vect SERIAL_REGNAME(USART,SERIAL_PORT,_RX_vect)
 #define M_U2Xx SERIAL_REGNAME(U2X,SERIAL_PORT,)
 
@@ -111,19 +112,25 @@ class MarlinSerial //: public Stream
     
     FORCE_INLINE void checkRx(void)
     {
-      if((M_UCSRxA & (1<<M_RXCx)) != 0) {
-        unsigned char c  =  M_UDRx;
-        int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
-
-        // if we should be storing the received character into the location
-        // just before the tail (meaning that the head would advance to the
-        // current location of the tail), we're about to overflow the buffer
-        // and so we don't write the character or advance the head.
-        if (i != rx_buffer.tail) {
-          rx_buffer.buffer[rx_buffer.head] = c;
-          rx_buffer.head = i;
+        if((M_UCSRxA & (1<<M_RXCx)) != 0) {
+            // Test for a framing error.
+            if (M_UCSRxA & (1<<M_FEx)) {
+                // Characters received with the framing errors will be ignored.
+                // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
+                volatile unsigned char c = M_UDRx;
+            } else {
+                unsigned char c  =  M_UDRx;
+                int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
+                // if we should be storing the received character into the location
+                // just before the tail (meaning that the head would advance to the
+                // current location of the tail), we're about to overflow the buffer
+                // and so we don't write the character or advance the head.
+                if (i != rx_buffer.tail) {
+                    rx_buffer.buffer[rx_buffer.head] = c;
+                    rx_buffer.head = i;
+                }
+            }
         }
-      }
     }
     
     

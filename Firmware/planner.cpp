@@ -60,6 +60,7 @@
 
 #ifdef MESH_BED_LEVELING
 #include "mesh_bed_leveling.h"
+#include "mesh_bed_calibration.h"
 #endif
 
 //===========================================================================
@@ -458,20 +459,12 @@ void check_axes_activity()
   unsigned char z_active = 0;
   unsigned char e_active = 0;
   unsigned char tail_fan_speed = fanSpeed;
-  #ifdef BARICUDA
-  unsigned char tail_valve_pressure = ValvePressure;
-  unsigned char tail_e_to_p_pressure = EtoPPressure;
-  #endif
   block_t *block;
 
   if(block_buffer_tail != block_buffer_head)
   {
     uint8_t block_index = block_buffer_tail;
     tail_fan_speed = block_buffer[block_index].fan_speed;
-    #ifdef BARICUDA
-    tail_valve_pressure = block_buffer[block_index].valve_pressure;
-    tail_e_to_p_pressure = block_buffer[block_index].e_to_p_pressure;
-    #endif
     while(block_index != block_buffer_head)
     {
       block = &block_buffer[block_index];
@@ -515,16 +508,6 @@ void check_axes_activity()
 #ifdef AUTOTEMP
   getHighESpeed();
 #endif
-
-#ifdef BARICUDA
-  #if defined(HEATER_1_PIN) && HEATER_1_PIN > -1
-      analogWrite(HEATER_1_PIN,tail_valve_pressure);
-  #endif
-
-  #if defined(HEATER_2_PIN) && HEATER_2_PIN > -1
-      analogWrite(HEATER_2_PIN,tail_e_to_p_pressure);
-  #endif
-#endif
 }
 
 
@@ -532,11 +515,7 @@ float junction_deviation = 0.1;
 // Add a new linear movement to the buffer. steps_x, _y and _z is the absolute position in 
 // mm. Microseconds specify how many microseconds the move should take to perform. To aid acceleration
 // calculation the caller must also provide the physical length of the line in millimeters.
-#ifdef ENABLE_AUTO_BED_LEVELING
 void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const uint8_t &extruder)
-#else
-void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder)
-#endif  //ENABLE_AUTO_BED_LEVELING
 {
     // Calculate the buffer head after we push this byte
   int next_buffer_head = next_block_index(block_buffer_head);
@@ -553,6 +532,53 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
 #ifdef ENABLE_AUTO_BED_LEVELING
   apply_rotation_xyz(plan_bed_level_matrix, x, y, z);
 #endif // ENABLE_AUTO_BED_LEVELING
+
+    // Apply the machine correction matrix.
+    {
+      #if 0
+        SERIAL_ECHOPGM("Planner, current position - servos: ");
+        MYSERIAL.print(st_get_position_mm(X_AXIS), 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(st_get_position_mm(Y_AXIS), 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(st_get_position_mm(Z_AXIS), 5);
+        SERIAL_ECHOLNPGM("");
+
+        SERIAL_ECHOPGM("Planner, target position, initial: ");
+        MYSERIAL.print(x, 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(y, 5);
+        SERIAL_ECHOLNPGM("");
+
+        SERIAL_ECHOPGM("Planner, world2machine: ");
+        MYSERIAL.print(world2machine_rotation_and_skew[0][0], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(world2machine_rotation_and_skew[0][1], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(world2machine_rotation_and_skew[1][0], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(world2machine_rotation_and_skew[1][1], 5);
+        SERIAL_ECHOLNPGM("");
+        SERIAL_ECHOPGM("Planner, offset: ");
+        MYSERIAL.print(world2machine_shift[0], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(world2machine_shift[1], 5);
+        SERIAL_ECHOLNPGM("");
+      #endif
+
+        float tmpx = x;
+        float tmpy = y;
+        x = world2machine_rotation_and_skew[0][0] * tmpx + world2machine_rotation_and_skew[0][1] * tmpy + world2machine_shift[0];
+        y = world2machine_rotation_and_skew[1][0] * tmpx + world2machine_rotation_and_skew[1][1] * tmpy + world2machine_shift[1];
+
+      #if 0
+        SERIAL_ECHOPGM("Planner, target position, corrected: ");
+        MYSERIAL.print(x, 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(y, 5);
+        SERIAL_ECHOLNPGM("");
+      #endif
+    }
 
   // The target position of the tool in absolute steps
   // Calculate target position in absolute steps
@@ -622,10 +648,6 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
   }
 
   block->fan_speed = fanSpeed;
-  #ifdef BARICUDA
-  block->valve_pressure = ValvePressure;
-  block->e_to_p_pressure = EtoPPressure;
-  #endif
 
   // Compute direction bits for this block 
   block->direction_bits = 0;
@@ -1061,16 +1083,20 @@ vector_3 plan_get_position() {
 }
 #endif // ENABLE_AUTO_BED_LEVELING
 
-#ifdef ENABLE_AUTO_BED_LEVELING
 void plan_set_position(float x, float y, float z, const float &e)
 {
-  apply_rotation_xyz(plan_bed_level_matrix, x, y, z);
-#else
-void plan_set_position(const float &x, const float &y, const float &z, const float &e)
-{
+#ifdef ENABLE_AUTO_BED_LEVELING
+    apply_rotation_xyz(plan_bed_level_matrix, x, y, z);
 #endif // ENABLE_AUTO_BED_LEVELING
-    
-    
+
+    // Apply the machine correction matrix.
+    {
+        float tmpx = x;
+        float tmpy = y;
+        x = world2machine_rotation_and_skew[0][0] * tmpx + world2machine_rotation_and_skew[0][1] * tmpy + world2machine_shift[0];
+        y = world2machine_rotation_and_skew[1][0] * tmpx + world2machine_rotation_and_skew[1][1] * tmpy + world2machine_shift[1];
+    }
+
   position[X_AXIS] = lround(x*axis_steps_per_unit[X_AXIS]);
   position[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
 #ifdef MESH_BED_LEVELING
@@ -1089,6 +1115,13 @@ void plan_set_position(const float &x, const float &y, const float &z, const flo
   previous_speed[1] = 0.0;
   previous_speed[2] = 0.0;
   previous_speed[3] = 0.0;
+}
+
+// Only useful in the bed leveling routine, when the mesh bed leveling is off.
+void plan_set_z_position(float z)
+{
+    position[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
+    st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
 }
 
 void plan_set_e_position(const float &e)

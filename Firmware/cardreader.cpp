@@ -539,9 +539,10 @@ void CardReader::checkautostart(bool force)
     if(strncmp((char*)p.name,autoname,5)==0)
     {
       char cmd[30];
-
+      // M23: Select SD file
       sprintf_P(cmd, PSTR("M23 %s"), autoname);
       enquecommand(cmd);
+      // M24: Start/resume SD print
       enquecommand_P(PSTR("M24"));
       found=true;
     }

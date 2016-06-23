@@ -64,10 +64,6 @@ typedef struct {
   unsigned long final_rate;                          // The minimal rate at exit
   unsigned long acceleration_st;                     // acceleration steps/sec^2
   unsigned long fan_speed;
-  #ifdef BARICUDA
-  unsigned long valve_pressure;
-  unsigned long e_to_p_pressure;
-  #endif
   volatile char busy;
 } block_t;
 
@@ -88,16 +84,18 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 // Get the position applying the bed level matrix if enabled
 vector_3 plan_get_position();
 #else
-void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const uint8_t &extruder);
+//void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
 #endif // ENABLE_AUTO_BED_LEVELING
 
 // Set position. Used for G92 instructions.
-#ifdef ENABLE_AUTO_BED_LEVELING
+//#ifdef ENABLE_AUTO_BED_LEVELING
 void plan_set_position(float x, float y, float z, const float &e);
-#else
-void plan_set_position(const float &x, const float &y, const float &z, const float &e);
-#endif // ENABLE_AUTO_BED_LEVELING
+//#else
+//void plan_set_position(const float &x, const float &y, const float &z, const float &e);
+//#endif // ENABLE_AUTO_BED_LEVELING
 
+void plan_set_z_position(const float z);
 void plan_set_e_position(const float &e);
 
 
