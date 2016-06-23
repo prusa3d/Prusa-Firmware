@@ -95,7 +95,7 @@ void plan_set_position(float x, float y, float z, const float &e);
 //void plan_set_position(const float &x, const float &y, const float &z, const float &e);
 //#endif // ENABLE_AUTO_BED_LEVELING
 
-void plan_set_z_position(const float z);
+void plan_set_z_position(const float &z);
 void plan_set_e_position(const float &e);
 
 

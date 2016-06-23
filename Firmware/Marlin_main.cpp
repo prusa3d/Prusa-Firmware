@@ -730,6 +730,15 @@ void setup_killpin()
   #endif
 }
 
+// Set home pin
+void setup_homepin(void)
+{
+#if defined(HOME_PIN) && HOME_PIN > -1
+   SET_INPUT(HOME_PIN);
+   WRITE(HOME_PIN,HIGH);
+#endif
+}
+
 void setup_photpin()
 {
   #if defined(PHOTOGRAPH_PIN) && PHOTOGRAPH_PIN > -1

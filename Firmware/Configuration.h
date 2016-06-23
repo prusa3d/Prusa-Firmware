@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.2-bedcalib"
+#define FW_version "3.0.5"
 
 
 

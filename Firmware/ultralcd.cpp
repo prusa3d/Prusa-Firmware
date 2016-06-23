@@ -38,6 +38,8 @@ int lcd_commands_type=0;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
 
+bool menuExiting = false;
+
 /* Configuration settings */
 int plaPreheatHotendTemp;
 int plaPreheatHPBTemp;
@@ -125,8 +127,10 @@ static void lcd_quick_feedback();//Cause an LCD refresh, and give the user visua
 /* Different types of actions that can be used in menu items. */
 static void menu_action_back(menuFunc_t data);
 static void menu_action_submenu(menuFunc_t data);
+static void menu_action_gcode(const char* pgcode);
 static void menu_action_function(menuFunc_t data);
 static void menu_action_setlang(unsigned char lang);
+static void menu_action_sdfile(const char* filename, char* longFilename);
 static void menu_action_sddirectory(const char* filename, char* longFilename);
 static void menu_action_setting_edit_bool(const char* pstr, bool* ptr);
 static void menu_action_setting_edit_int3(const char* pstr, int* ptr, int minValue, int maxValue);
@@ -1044,26 +1048,24 @@ static void lcd_move_e()
 }
 
 
+// Save a single axis babystep value.
 void EEPROM_save_B(int pos, int* value)
 {
   union Data data;
   data.value = *value;
 
-  eeprom_write_byte((unsigned char*)pos, data.b[0]);
-  eeprom_write_byte((unsigned char*)pos + 1, data.b[1]);
-
-
+  eeprom_update_byte((unsigned char*)pos, data.b[0]);
+  eeprom_update_byte((unsigned char*)pos + 1, data.b[1]);
 }
 
+// Read a single axis babystep value.
 void EEPROM_read_B(int pos, int* value)
 {
   union Data data;
   data.b[0] = eeprom_read_byte((unsigned char*)pos);
   data.b[1] = eeprom_read_byte((unsigned char*)pos + 1);
   *value = data.value;
-
 }
-
 
 
 static void lcd_move_x() {
@@ -1084,15 +1086,18 @@ static void _lcd_babystep(int axis, const char *msg) {
     babystepsTodo[axis] += (int)encoderPosition;
     babystepMem[axis] += (int)encoderPosition;
     babystepMemMM[axis] = babystepMem[axis]/axis_steps_per_unit[Z_AXIS];
-	delay(50);
-	encoderPosition = 0;
+	  delay(50);
+	  encoderPosition = 0;
     lcdDrawUpdate = 1;
   }
   if (lcdDrawUpdate) lcd_implementation_drawedit_2(msg, ftostr13ns(babystepMemMM[axis]));
+  if (LCD_CLICKED || menuExiting) {
+    // Only update the EEPROM when leaving the menu.
+    EEPROM_save_B(
+      (axis == 0) ? EEPROM_BABYSTEP_X : ((axis == 1) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z), 
+      &babystepMem[axis]);
+  }
   if (LCD_CLICKED) lcd_goto_menu(lcd_main_menu);
-  EEPROM_save_B(EEPROM_BABYSTEP_X, &babystepMem[0]);
-  EEPROM_save_B(EEPROM_BABYSTEP_Y, &babystepMem[1]);
-  EEPROM_save_B(EEPROM_BABYSTEP_Z, &babystepMem[2]);
 }
 
 static void lcd_babystep_x() {
@@ -2508,11 +2513,25 @@ static void menu_action_back(menuFunc_t data) {
 static void menu_action_submenu(menuFunc_t data) {
   lcd_goto_menu(data);
 }
+static void menu_action_gcode(const char* pgcode) {
+  enquecommand_P(pgcode);
+}
 static void menu_action_setlang(unsigned char lang) {
   lcd_set_lang(lang);
 }
 static void menu_action_function(menuFunc_t data) {
   (*data)();
+}
+static void menu_action_sdfile(const char* filename, char* longFilename)
+{
+  char cmd[30];
+  char* c;
+  sprintf_P(cmd, PSTR("M23 %s"), filename);
+  for (c = &cmd[4]; *c; c++)
+    *c = tolower(*c);
+  enquecommand(cmd);
+  enquecommand_P(PSTR("M24"));
+  lcd_return_to_status();
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)
 {
@@ -2694,6 +2713,14 @@ void lcd_update()
 #ifdef ULTIPANEL
 	  if (timeoutToStatus < millis() && currentMenu != lcd_status_screen)
 	  {
+      // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
+      // to give it a chance to save its state.
+      // This is useful for example, when the babystep value has to be written into EEPROM.
+      if (currentMenu != NULL) {
+        menuExiting = true;
+        (*currentMenu)();
+        menuExiting = false;
+      }
 		  lcd_return_to_status();
 		  lcdDrawUpdate = 2;
 	  }
