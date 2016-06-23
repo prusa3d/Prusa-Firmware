@@ -50,48 +50,51 @@ bool calculate_machine_skew_and_offset_LS(
     // Resulting correction matrix.
     float        *vec_x,
     float        *vec_y,
-    float        *cntr
+    float        *cntr,
     // Temporary values, 49-18-(2*3)=25 floats
 //    , float *temp
+    int8_t        verbosity_level
     )
 {
-    SERIAL_ECHOPGM("X vector, initial: ");
-    MYSERIAL.print(vec_x[0], 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(vec_x[1], 5);
-    SERIAL_ECHOLNPGM("");
-
-    SERIAL_ECHOPGM("Y vector, initial: ");
-    MYSERIAL.print(vec_y[0], 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(vec_y[1], 5);
-    SERIAL_ECHOLNPGM("");
-
-    SERIAL_ECHOPGM("center, initial: ");
-    MYSERIAL.print(cntr[0], 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(cntr[1], 5);
-    SERIAL_ECHOLNPGM("");
-
-    for (uint8_t i = 0; i < npts; ++ i) {
-        SERIAL_ECHOPGM("point #");
-        MYSERIAL.print(int(i));
-        SERIAL_ECHOPGM(" measured: (");
-        MYSERIAL.print(measured_pts[i*2], 5);
+    if (verbosity_level >= 10) {
+        // Show the initial state, before the fitting.
+        SERIAL_ECHOPGM("X vector, initial: ");
+        MYSERIAL.print(vec_x[0], 5);
         SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(measured_pts[i*2+1], 5);
-        SERIAL_ECHOPGM("); target: (");
-        MYSERIAL.print(pgm_read_float(true_pts+i*2  ), 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(pgm_read_float(true_pts+i*2+1), 5);
-        SERIAL_ECHOPGM("), error: ");
-        MYSERIAL.print(sqrt(
-            sqr(pgm_read_float(true_pts+i*2  ) - measured_pts[i*2  ]) +
-            sqr(pgm_read_float(true_pts+i*2+1) - measured_pts[i*2+1])), 5);
+        MYSERIAL.print(vec_x[1], 5);
         SERIAL_ECHOLNPGM("");
-    }
-    delay_keep_alive(100);
 
+        SERIAL_ECHOPGM("Y vector, initial: ");
+        MYSERIAL.print(vec_y[0], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(vec_y[1], 5);
+        SERIAL_ECHOLNPGM("");
+
+        SERIAL_ECHOPGM("center, initial: ");
+        MYSERIAL.print(cntr[0], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(cntr[1], 5);
+        SERIAL_ECHOLNPGM("");
+
+        for (uint8_t i = 0; i < npts; ++ i) {
+            SERIAL_ECHOPGM("point #");
+            MYSERIAL.print(int(i));
+            SERIAL_ECHOPGM(" measured: (");
+            MYSERIAL.print(measured_pts[i*2], 5);
+            SERIAL_ECHOPGM(", ");
+            MYSERIAL.print(measured_pts[i*2+1], 5);
+            SERIAL_ECHOPGM("); target: (");
+            MYSERIAL.print(pgm_read_float(true_pts+i*2  ), 5);
+            SERIAL_ECHOPGM(", ");
+            MYSERIAL.print(pgm_read_float(true_pts+i*2+1), 5);
+            SERIAL_ECHOPGM("), error: ");
+            MYSERIAL.print(sqrt(
+                sqr(pgm_read_float(true_pts+i*2  ) - measured_pts[i*2  ]) +
+                sqr(pgm_read_float(true_pts+i*2+1) - measured_pts[i*2+1])), 5);
+            SERIAL_ECHOLNPGM("");
+        }
+        delay_keep_alive(100);
+    }
 
     {
         // Create covariance matrix for A, collect the right hand side b.
@@ -165,47 +168,50 @@ bool calculate_machine_skew_and_offset_LS(
         cntr[1] = x[2];
     }
 
-    SERIAL_ECHOLNPGM("Error after correction: ");
-    for (uint8_t i = 0; i < npts; ++ i) {
-        float x = vec_x[0] * measured_pts[i*2] + vec_y[0] * measured_pts[i*2+1] + cntr[0];
-        float y = vec_x[1] * measured_pts[i*2] + vec_y[1] * measured_pts[i*2+1] + cntr[1];
-        SERIAL_ECHOPGM("point #");
-        MYSERIAL.print(int(i));
-        SERIAL_ECHOPGM(" measured: (");
-        MYSERIAL.print(measured_pts[i*2], 5);
+    if (verbosity_level >= 10) {
+        // Show the adjusted state, before the fitting.
+        SERIAL_ECHOPGM("X vector new, inverted: ");
+        MYSERIAL.print(vec_x[0], 5);
         SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(measured_pts[i*2+1], 5);
-        SERIAL_ECHOPGM("); corrected: (");
-        MYSERIAL.print(x, 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(y, 5);
-        SERIAL_ECHOPGM("); target: (");
-        MYSERIAL.print(pgm_read_float(true_pts+i*2  ), 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(pgm_read_float(true_pts+i*2+1), 5);
-        SERIAL_ECHOPGM("), error: ");
-        MYSERIAL.print(sqrt(sqr(pgm_read_float(true_pts+i*2)-x)+sqr(pgm_read_float(true_pts+i*2+1)-y)));
+        MYSERIAL.print(vec_x[1], 5);
         SERIAL_ECHOLNPGM("");
+
+        SERIAL_ECHOPGM("Y vector new, inverted: ");
+        MYSERIAL.print(vec_y[0], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(vec_y[1], 5);
+        SERIAL_ECHOLNPGM("");
+
+        SERIAL_ECHOPGM("center new, inverted: ");
+        MYSERIAL.print(cntr[0], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(cntr[1], 5);
+        SERIAL_ECHOLNPGM("");
+        delay_keep_alive(100);
+
+        SERIAL_ECHOLNPGM("Error after correction: ");
+        for (uint8_t i = 0; i < npts; ++ i) {
+            float x = vec_x[0] * measured_pts[i*2] + vec_y[0] * measured_pts[i*2+1] + cntr[0];
+            float y = vec_x[1] * measured_pts[i*2] + vec_y[1] * measured_pts[i*2+1] + cntr[1];
+            SERIAL_ECHOPGM("point #");
+            MYSERIAL.print(int(i));
+            SERIAL_ECHOPGM(" measured: (");
+            MYSERIAL.print(measured_pts[i*2], 5);
+            SERIAL_ECHOPGM(", ");
+            MYSERIAL.print(measured_pts[i*2+1], 5);
+            SERIAL_ECHOPGM("); corrected: (");
+            MYSERIAL.print(x, 5);
+            SERIAL_ECHOPGM(", ");
+            MYSERIAL.print(y, 5);
+            SERIAL_ECHOPGM("); target: (");
+            MYSERIAL.print(pgm_read_float(true_pts+i*2  ), 5);
+            SERIAL_ECHOPGM(", ");
+            MYSERIAL.print(pgm_read_float(true_pts+i*2+1), 5);
+            SERIAL_ECHOPGM("), error: ");
+            MYSERIAL.print(sqrt(sqr(pgm_read_float(true_pts+i*2)-x)+sqr(pgm_read_float(true_pts+i*2+1)-y)));
+            SERIAL_ECHOLNPGM("");
+        }
     }
-
-    SERIAL_ECHOPGM("X vector new, inverted: ");
-    MYSERIAL.print(vec_x[0], 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(vec_x[1], 5);
-    SERIAL_ECHOLNPGM("");
-
-    SERIAL_ECHOPGM("Y vector new, inverted: ");
-    MYSERIAL.print(vec_y[0], 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(vec_y[1], 5);
-    SERIAL_ECHOLNPGM("");
-
-    SERIAL_ECHOPGM("center new, inverted: ");
-    MYSERIAL.print(cntr[0], 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(cntr[1], 5);
-    SERIAL_ECHOLNPGM("");
-    delay_keep_alive(100);
 
 #if 0
     // Normalize the vectors. We expect, that the machine axes may be skewed a bit, but the distances are correct.
@@ -273,47 +279,53 @@ bool calculate_machine_skew_and_offset_LS(
         cntr[1] = cntrInv[1];
     }
 
-    SERIAL_ECHOPGM("X vector, adjusted: ");
-    MYSERIAL.print(vec_x[0], 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(vec_x[1], 5);
-    SERIAL_ECHOLNPGM("");
-
-    SERIAL_ECHOPGM("Y vector, adjusted: ");
-    MYSERIAL.print(vec_y[0], 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(vec_y[1], 5);
-    SERIAL_ECHOLNPGM("");
-
-    SERIAL_ECHOPGM("center, adjusted: ");
-    MYSERIAL.print(cntr[0], 5);
-    SERIAL_ECHOPGM(", ");
-    MYSERIAL.print(cntr[1], 5);
-    SERIAL_ECHOLNPGM("");
-
-    SERIAL_ECHOLNPGM("Difference after correction: ");
-    for (uint8_t i = 0; i < npts; ++ i) {
-        float x = vec_x[0] * pgm_read_float(true_pts+i*2) + vec_y[0] * pgm_read_float(true_pts+i*2+1) + cntr[0];
-        float y = vec_x[1] * pgm_read_float(true_pts+i*2) + vec_y[1] * pgm_read_float(true_pts+i*2+1) + cntr[1];
-        SERIAL_ECHOPGM("point #");
-        MYSERIAL.print(int(i));
-        SERIAL_ECHOPGM("measured: (");
-        MYSERIAL.print(measured_pts[i*2], 5);
+    if (verbosity_level >= 1) {
+        // Show the adjusted state, before the fitting.
+        SERIAL_ECHOPGM("X vector, adjusted: ");
+        MYSERIAL.print(vec_x[0], 5);
         SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(measured_pts[i*2+1], 5);
-        SERIAL_ECHOPGM("); measured-corrected: (");
-        MYSERIAL.print(x, 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(y, 5);
-        SERIAL_ECHOPGM("); target: (");
-        MYSERIAL.print(pgm_read_float(true_pts+i*2  ), 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(pgm_read_float(true_pts+i*2+1), 5);
-        SERIAL_ECHOPGM("), error: ");
-        MYSERIAL.print(sqrt(sqr(measured_pts[i*2]-x)+sqr(measured_pts[i*2+1]-y)));
+        MYSERIAL.print(vec_x[1], 5);
         SERIAL_ECHOLNPGM("");
+
+        SERIAL_ECHOPGM("Y vector, adjusted: ");
+        MYSERIAL.print(vec_y[0], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(vec_y[1], 5);
+        SERIAL_ECHOLNPGM("");
+
+        SERIAL_ECHOPGM("center, adjusted: ");
+        MYSERIAL.print(cntr[0], 5);
+        SERIAL_ECHOPGM(", ");
+        MYSERIAL.print(cntr[1], 5);
+        SERIAL_ECHOLNPGM("");
+        delay_keep_alive(100);
     }
-    delay_keep_alive(100);
+
+    if (verbosity_level >= 2) {
+        SERIAL_ECHOLNPGM("Difference after correction: ");
+        for (uint8_t i = 0; i < npts; ++ i) {
+            float x = vec_x[0] * pgm_read_float(true_pts+i*2) + vec_y[0] * pgm_read_float(true_pts+i*2+1) + cntr[0];
+            float y = vec_x[1] * pgm_read_float(true_pts+i*2) + vec_y[1] * pgm_read_float(true_pts+i*2+1) + cntr[1];
+            SERIAL_ECHOPGM("point #");
+            MYSERIAL.print(int(i));
+            SERIAL_ECHOPGM("measured: (");
+            MYSERIAL.print(measured_pts[i*2], 5);
+            SERIAL_ECHOPGM(", ");
+            MYSERIAL.print(measured_pts[i*2+1], 5);
+            SERIAL_ECHOPGM("); measured-corrected: (");
+            MYSERIAL.print(x, 5);
+            SERIAL_ECHOPGM(", ");
+            MYSERIAL.print(y, 5);
+            SERIAL_ECHOPGM("); target: (");
+            MYSERIAL.print(pgm_read_float(true_pts+i*2  ), 5);
+            SERIAL_ECHOPGM(", ");
+            MYSERIAL.print(pgm_read_float(true_pts+i*2+1), 5);
+            SERIAL_ECHOPGM("), error: ");
+            MYSERIAL.print(sqrt(sqr(measured_pts[i*2]-x)+sqr(measured_pts[i*2+1]-y)));
+            SERIAL_ECHOLNPGM("");
+        }
+        delay_keep_alive(100);
+    }
 
     return true;
 }
@@ -362,8 +374,10 @@ void world2machine_initialize()
     };
 
     bool reset = false;
-    if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y))
+    if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y)) {
+        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
         reset = true;
+    }
     else {
         // Length of the vec_x shall be close to unity.
         float l = sqrt(vec_x[0] * vec_x[0] + vec_x[1] * vec_x[1]);
@@ -392,7 +406,7 @@ void world2machine_initialize()
     }
 
     if (reset) {
-        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
+        // SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
         reset_bed_offset_and_skew();
         world2machine_reset();
     } else {
@@ -864,7 +878,7 @@ canceled:
 
 #define MESH_BED_CALIBRATION_SHOW_LCD
 
-bool find_bed_offset_and_skew()
+bool find_bed_offset_and_skew(int8_t verbosity_level)
 {
     // Reusing the z_values memory for the measurement cache.
     // 7x7=49 floats, good for 16 (x,y,z) vectors.
@@ -873,9 +887,6 @@ bool find_bed_offset_and_skew()
     float *vec_y = vec_x + 2;
     float *cntr  = vec_y + 2;
     memset(pts, 0, sizeof(float) * 7 * 7);
-
-    // Let the planner use the uncorrected coordinates.
-    world2machine_reset();
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     lcd_implementation_clear();
@@ -908,71 +919,7 @@ bool find_bed_offset_and_skew()
         cntr[1] += pt[1];
     }
 
-#if 0
-    // Average the X and Y vectors. They may not be perpendicular, if the printer is built incorrectly.
-    {
-        float  len;
-        // Average the center point.
-        cntr[0] *= 1.f/4.f;
-        cntr[1] *= 1.f/4.f;
-        cntr[2] *= 1.f/4.f;
-        // Average the X vector.
-        vec_x[0] = (pts[2 * 1 + 0] - pts[2 * 3 + 0]) / 2.f;
-        vec_x[1] = (pts[2 * 1 + 1] - pts[2 * 3 + 1]) / 2.f;
-        len = sqrt(vec_x[0]*vec_x[0] + vec_x[1]*vec_x[1]);
-        if (0) {
-        // if (len < MEAS_NUM_X_DIST) {
-            // Scale the vector up to MEAS_NUM_X_DIST lenght.
-            float factor = MEAS_NUM_X_DIST / len;
-            vec_x[0] *= factor;
-            vec_x[0] *= factor;
-        } else {
-            // The vector is longer than MEAS_NUM_X_DIST. The X/Y axes are skewed.
-            // Verify the maximum skew?
-        }
-        // Average the Y vector.
-        vec_y[0] = (pts[2 * 2 + 0] - pts[2 * 0 + 0]) / 2.f;
-        vec_y[1] = (pts[2 * 2 + 1] - pts[2 * 0 + 1]) / 2.f;
-        len = sqrt(vec_y[0]*vec_y[0] + vec_y[1]*vec_y[1]);
-        if (0) {
-        // if (len < MEAS_NUM_Y_DIST) {
-            // Scale the vector up to MEAS_NUM_X_DIST lenght.
-            float factor = MEAS_NUM_Y_DIST / len;
-            vec_y[1] *= factor;
-            vec_y[1] *= factor;
-        } else {
-            // The vector is longer than MEAS_NUM_X_DIST. The X/Y axes are skewed.
-            // Verify the maximum skew?
-        }
-
-        // Fearlessly store the calibration values into the eeprom.
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0), cntr [0]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4), cntr [1]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0), vec_x[0]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4), vec_x[1]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0), vec_y[0]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4), vec_y[1]);
-
-#if 0
-        SERIAL_ECHOLN("Calibration done.");
-        SERIAL_ECHO("Center: ");
-        SERIAL_ECHO(cntr[0]);
-        SERIAL_ECHO(",");
-        SERIAL_ECHO(cntr[1]);
-        SERIAL_ECHO(", x: ");
-        SERIAL_ECHO(vec_x[0]);
-        SERIAL_ECHO(",");
-        SERIAL_ECHO(vec_x[1]);
-        SERIAL_ECHO(", y: ");
-        SERIAL_ECHO(vec_y[0]);
-        SERIAL_ECHO(",");
-        SERIAL_ECHO(vec_y[1]);
-        SERIAL_ECHOLN("");
-#endif
-    }
-#endif
-
-    calculate_machine_skew_and_offset_LS(pts, 4, bed_ref_points_4, vec_x, vec_y, cntr);
+    calculate_machine_skew_and_offset_LS(pts, 4, bed_ref_points_4, vec_x, vec_y, cntr, verbosity_level);
     world2machine_rotation_and_skew[0][0] = vec_x[0];
     world2machine_rotation_and_skew[1][0] = vec_x[1];
     world2machine_rotation_and_skew[0][1] = vec_y[0];
@@ -989,10 +936,12 @@ bool find_bed_offset_and_skew()
     eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4), vec_y[1]);
 #endif
 
+    // Correct the current_position to match the transformed coordinate system after world2machine_rotation_and_skew and world2machine_shift were set.
+    world2machine_update_current();
     return true;
 }
 
-bool improve_bed_offset_and_skew(int8_t method)
+bool improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level)
 {
     // Reusing the z_values memory for the measurement cache.
     // 7x7=49 floats, good for 16 (x,y,z) vectors.
@@ -1003,6 +952,7 @@ bool improve_bed_offset_and_skew(int8_t method)
     memset(pts, 0, sizeof(float) * 7 * 7);
 
     // Cache the current correction matrix.
+    world2machine_initialize();
     vec_x[0] = world2machine_rotation_and_skew[0][0];
     vec_x[1] = world2machine_rotation_and_skew[1][0];
     vec_y[0] = world2machine_rotation_and_skew[0][1];
@@ -1043,9 +993,11 @@ bool improve_bed_offset_and_skew(int8_t method)
             current_position[Y_AXIS] = Y_MIN_POS;
         go_to_current(homing_feedrate[X_AXIS]/60);
         // Find its Z position by running the normal vertical search.
-//        delay_keep_alive(3000);
+        if (verbosity_level >= 10)
+            delay_keep_alive(3000);
         find_bed_induction_sensor_point_z();
-//        delay_keep_alive(3000);
+        if (verbosity_level >= 10)
+            delay_keep_alive(3000);
         // Improve the point position by searching its center in a current plane.
         int8_t n_errors = 3;
         for (int8_t iter = 0; iter < 8; ) {
@@ -1073,49 +1025,30 @@ bool improve_bed_offset_and_skew(int8_t method)
                 go_to_current(homing_feedrate[Z_AXIS]);
             }
         }
-        delay_keep_alive(3000);
+        if (verbosity_level >= 10)
+            delay_keep_alive(3000);
     }
 
     // Average the last 4 measurements.
     for (int8_t i = 0; i < 18; ++ i)
         pts[i] *= (1.f/4.f);
 
-// Test the positions. Are the positions reproducible?
-#if 1
     enable_endstops(false);
     enable_z_endstop(false);
-    for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
-        // Go to the measurement point.
-        // Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
-        current_position[X_AXIS] = pts[mesh_point*2];
-        current_position[Y_AXIS] = pts[mesh_point*2+1];
-        go_to_current(homing_feedrate[X_AXIS]/60);
-        delay_keep_alive(3000);
-    }
-#endif
 
-#if 0
-    // Average the X and Y vectors. They may not be perpendicular, if the printer is built incorrectly.
-    // Average the center point.
-    cntr[0] *= 1.f/9.f;
-    cntr[1] *= 1.f/9.f;
-    // Average the X vector.
-    vec_x[0] = (pts[2 * 2 + 0] - pts[2 * 0 + 0] + pts[2 * 5 + 0] - pts[2 * 3 + 0] + pts[2 * 8 + 0] - pts[2 * 6 + 0]) / 6.f;
-    vec_x[1] = (pts[2 * 2 + 1] - pts[2 * 0 + 1] + pts[2 * 5 + 1] - pts[2 * 3 + 1] + pts[2 * 8 + 1] - pts[2 * 6 + 1]) / 6.f;
-    // Average the Y vector.
-    vec_y[0] = (pts[2 * 6 + 0] - pts[2 * 0 + 0] + pts[2 * 7 + 0] - pts[2 * 1 + 0] + pts[2 * 8 + 0] - pts[2 * 2 + 0]) / 6.f;
-    vec_y[1] = (pts[2 * 6 + 1] - pts[2 * 0 + 1] + pts[2 * 7 + 1] - pts[2 * 1 + 1] + pts[2 * 8 + 1] - pts[2 * 2 + 1]) / 6.f;
-#if 1
-    // Fearlessly store the calibration values into the eeprom.
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0), cntr [0]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4), cntr [1]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0), vec_x[0]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4), vec_x[1]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0), vec_y[0]);
-    eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4), vec_y[1]);
-#endif
-#else
-    calculate_machine_skew_and_offset_LS(pts, 9, bed_ref_points, vec_x, vec_y, cntr);
+    if (verbosity_level >= 10) {
+        // Test the positions. Are the positions reproducible?
+        for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
+            // Go to the measurement point.
+            // Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+            current_position[X_AXIS] = pts[mesh_point*2];
+            current_position[Y_AXIS] = pts[mesh_point*2+1];
+            go_to_current(homing_feedrate[X_AXIS]/60);
+            delay_keep_alive(3000);
+        }
+    }
+
+    calculate_machine_skew_and_offset_LS(pts, 9, bed_ref_points, vec_x, vec_y, cntr, verbosity_level);
     world2machine_rotation_and_skew[0][0] = vec_x[0];
     world2machine_rotation_and_skew[1][0] = vec_x[1];
     world2machine_rotation_and_skew[0][1] = vec_y[0];
@@ -1131,40 +1064,25 @@ bool improve_bed_offset_and_skew(int8_t method)
     eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0), vec_y[0]);
     eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4), vec_y[1]);
 #endif
-#endif
 
-// Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
-#if 1
+    // Correct the current_position to match the transformed coordinate system after world2machine_rotation_and_skew and world2machine_shift were set.
+    world2machine_update_current();
+
     enable_endstops(false);
     enable_z_endstop(false);
-    delay_keep_alive(3000);
-    for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
-        // Go to the measurement point.
-        // Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
-        current_position[X_AXIS] = pgm_read_float(bed_ref_points+mesh_point*2);
-        current_position[Y_AXIS] = pgm_read_float(bed_ref_points+mesh_point*2+1);
-        go_to_current(homing_feedrate[X_AXIS]/60);
-        delay_keep_alive(3000);
-    }
-#endif
 
-#if 0
-    // and let us know the result.
-    SERIAL_ECHOLN("Calibration done.");
-    SERIAL_ECHO("Center: ");
-    SERIAL_ECHO(cntr[0]);
-    SERIAL_ECHO(",");
-    SERIAL_ECHO(cntr[1]);
-    SERIAL_ECHO(", x: ");
-    SERIAL_ECHO(vec_x[0]);
-    SERIAL_ECHO(",");
-    SERIAL_ECHO(vec_x[1]);
-    SERIAL_ECHO(", y: ");
-    SERIAL_ECHO(vec_y[0]);
-    SERIAL_ECHO(",");
-    SERIAL_ECHO(vec_y[1]);
-    SERIAL_ECHOLN("");
-#endif
+    if (verbosity_level >= 10) {
+        // Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
+        delay_keep_alive(3000);
+        for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
+            // Go to the measurement point.
+            // Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+            current_position[X_AXIS] = pgm_read_float(bed_ref_points+mesh_point*2);
+            current_position[Y_AXIS] = pgm_read_float(bed_ref_points+mesh_point*2+1);
+            go_to_current(homing_feedrate[X_AXIS]/60);
+            delay_keep_alive(3000);
+        }
+    }
 
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);

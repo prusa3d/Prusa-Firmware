@@ -1207,6 +1207,10 @@ bool lcd_calibrate_z_end_stop_manual()
     int8_t        cursor_pos;
     int8_t        enc_dif = 0;
 
+    // Don't know where we are. Let's claim we are Z=0, so the soft end stops will not be triggered when moving up.
+    current_position[Z_AXIS] = 0;
+    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+
     // Until confirmed by the confirmation dialog.
     for (;;) {
         previous_millis_cmd = millis();
@@ -1236,6 +1240,11 @@ bool lcd_calibrate_z_end_stop_manual()
                 current_position[Z_AXIS] += fabs(encoderPosition);
                 encoderPosition = 0;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS] / 60, active_extruder);
+                // Wait for the motors to stop.
+                st_synchronize();
+                // Claim we are at Z=0, so the soft end stop will not trigger.
+                current_position[Z_AXIS] = 0;
+                plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
             }
             if (lcd_clicked()) {
                 // Wait until the Z up movement is finished.
@@ -1307,6 +1316,22 @@ canceled:
     return false;
 }
 
+static void lcd_show_end_stops() {
+    lcd.setCursor(0, 0);
+    lcd_printPGM((PSTR("End stops diag")));
+    lcd.setCursor(0, 1);
+    lcd_printPGM((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("X1")) : (PSTR("X0")));
+    lcd.setCursor(0, 2);
+    lcd_printPGM((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Y1")) : (PSTR("Y0")));
+    lcd.setCursor(0, 3);
+    lcd_printPGM((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Z1")) : (PSTR("Z0")));
+}
+
+static void menu_show_end_stops() {
+    lcd_show_end_stops();
+    if (LCD_CLICKED) lcd_goto_menu(lcd_settings_menu);
+}
+
 // Lets the user move the Z carriage up to the end stoppers.
 // When done, it sets the current Z to Z_MAX_POS and returns true.
 // Otherwise the Z calibration is not changed and false is returned.
@@ -1314,17 +1339,10 @@ void lcd_diag_show_end_stops()
 {
     int enc_dif = encoderDiff;
     lcd_implementation_clear();
-    lcd.setCursor(0, 0);
-    lcd_printPGM((PSTR("End stops diag")));
     for (;;) {
         manage_heater();
         manage_inactivity(true);
-        lcd.setCursor(0, 1);
-        lcd_printPGM((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("X1")) : (PSTR("X0")));
-        lcd.setCursor(0, 2);
-        lcd_printPGM((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Y1")) : (PSTR("Y0")));
-        lcd.setCursor(0, 3);
-        lcd_printPGM((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Z1")) : (PSTR("Z0")));
+        lcd_show_end_stops();
         if (lcd_clicked()) {
             while (lcd_clicked()) ;
             delay(10);
@@ -1530,12 +1548,6 @@ void lcd_mesh_bedleveling()
 
 void lcd_mesh_calibration()
 {
-  enquecommand_P(PSTR("M46"));
-  lcd_return_to_status();
-}
-
-void lcd_mesh_calibration_reset()
-{
   enquecommand_P(PSTR("M45"));
   lcd_return_to_status();
 }
@@ -1584,8 +1596,9 @@ static void lcd_settings_menu()
 	if (!isPrintPaused)
 	{
 		MENU_ITEM(submenu, MSG_SELFTEST, lcd_selftest);
+    MENU_ITEM(submenu, PSTR("Show end stops"), menu_show_end_stops);
     MENU_ITEM(submenu, MSG_CALIBRATE_BED, lcd_mesh_calibration);
-    MENU_ITEM(submenu, MSG_CALIBRATE_BED_RESET, lcd_mesh_calibration_reset);
+    MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 	}
   
 	END_MENU();

@@ -418,6 +418,10 @@ static bool cmdbuffer_front_already_processed = false;
 // String of a command, which is to be executed right now.
 #define CMDBUFFER_CURRENT_STRING (cmdbuffer+bufindr+1)
 
+// Enable debugging of the command buffer.
+// Debugging information will be sent to serial line.
+// #define CMDBUFFER_DEBUG
+
 static int serial_count = 0;
 static boolean comment_mode = false;
 static char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
@@ -495,6 +499,7 @@ void serial_echopair_P(const char *s_P, unsigned long v)
 void cmdqueue_pop_front()
 {
     if (buflen > 0) {
+#ifdef CMDBUFFER_DEBUG
         SERIAL_ECHOPGM("Dequeing ");
         SERIAL_ECHO(cmdbuffer+bufindr+1);
         SERIAL_ECHOLNPGM("");
@@ -509,6 +514,7 @@ void cmdqueue_pop_front()
         SERIAL_ECHOPGM(", bufsize ");
         SERIAL_ECHO(sizeof(cmdbuffer));
         SERIAL_ECHOLNPGM("");
+#endif /* CMDBUFFER_DEBUG */
         if (-- buflen == 0) {
             // Empty buffer.
             if (serial_count == 0)
@@ -526,6 +532,7 @@ void cmdqueue_pop_front()
                 // skip to the start and find the nonzero command.
                 for (bufindr = 0; cmdbuffer[bufindr] == 0; ++ bufindr) ;
             }
+#ifdef CMDBUFFER_DEBUG
             SERIAL_ECHOPGM("New indices: buflen ");
             SERIAL_ECHO(buflen);
             SERIAL_ECHOPGM(", bufindr ");
@@ -537,6 +544,7 @@ void cmdqueue_pop_front()
             SERIAL_ECHOPGM(" new command on the top: ");
             SERIAL_ECHO(cmdbuffer+bufindr+1);
             SERIAL_ECHOLNPGM("");
+#endif /* CMDBUFFER_DEBUG */
         }
     }
 }
@@ -559,20 +567,26 @@ bool cmdqueue_could_enqueue_front(int len_asked)
         return false;
     // Adjust the end of the write buffer based on whether a partial line is in the receive buffer.
     int endw = (serial_count > 0) ? (bufindw + MAX_CMD_SIZE + 1) : bufindw;
-    if (bufindw < bufindr)
+    if (bufindw < bufindr) {
+        int bufindr_new = bufindr - len_asked - 2;
         // Simple case. There is a contiguous space between the write buffer and the read buffer.
-        return endw + len_asked + 2 < bufindr;
-    // Otherwise the free space is split between the start and end.
-    if (len_asked + 2 <= bufindr) {
-        // Could fit at the start.
-        bufindr -= len_asked + 2;
-        return true;
-    }
-    int bufindr_new = sizeof(cmdbuffer) - len_asked - 2;
-    if (endw <= bufindr_new) {
-        memset(cmdbuffer, 0, bufindr);
-        bufindr = bufindr_new;
-        return true;
+        if (endw <= bufindr_new) {
+            bufindr = bufindr_new;
+            return true;
+        }
+    } else {
+        // Otherwise the free space is split between the start and end.
+        if (len_asked + 2 <= bufindr) {
+            // Could fit at the start.
+            bufindr -= len_asked + 2;
+            return true;
+        }
+        int bufindr_new = sizeof(cmdbuffer) - len_asked - 2;
+        if (endw <= bufindr_new) {
+            memset(cmdbuffer, 0, bufindr);
+            bufindr = bufindr_new;
+            return true;
+        }
     }
     return false;
 }
@@ -640,24 +654,59 @@ bool cmdqueue_could_enqueue_back(int len_asked)
     return false;
 }
 
-void cmdqueue_dump_to_serial()
+#ifdef CMDBUFFER_DEBUG
+static void cmdqueue_dump_to_serial_single_line(int nr, const char *p)
 {
-    SERIAL_ECHOLNPGM("Content of the buffer: ");
+    SERIAL_ECHOPGM("Entry nr: ");
+    SERIAL_ECHO(nr);
+    SERIAL_ECHOPGM(", type: ");
+    SERIAL_ECHO(int(*p));
+    SERIAL_ECHOPGM(", cmd: ");
+    SERIAL_ECHO(p+1);  
+    SERIAL_ECHOLNPGM("");
+}
+
+static void cmdqueue_dump_to_serial()
+{
     if (buflen == 0) {
         SERIAL_ECHOLNPGM("The command buffer is empty.");
     } else {
-        SERIAL_ECHOPGM("Number of entries: ");
+        SERIAL_ECHOPGM("Content of the buffer: entries ");
         SERIAL_ECHO(buflen);
+        SERIAL_ECHOPGM(", indr ");
+        SERIAL_ECHO(bufindr);
+        SERIAL_ECHOPGM(", indw ");
+        SERIAL_ECHO(bufindw);
         SERIAL_ECHOLNPGM("");
+        int nr = 0;
+        if (bufindr < bufindw) {
+            for (const char *p = cmdbuffer + bufindr; p < cmdbuffer + bufindw; ++ nr) {
+                cmdqueue_dump_to_serial_single_line(nr, p);
+                // Skip the command.
+                for (++p; *p != 0; ++ p);
+                // Skip the gaps.
+                for (++p; p < cmdbuffer + bufindw && *p == 0; ++ p);
+            }
+        } else {
+            for (const char *p = cmdbuffer + bufindr; p < cmdbuffer + sizeof(cmdbuffer); ++ nr) {
+                cmdqueue_dump_to_serial_single_line(nr, p);
+                // Skip the command.
+                for (++p; *p != 0; ++ p);
+                // Skip the gaps.
+                for (++p; p < cmdbuffer + sizeof(cmdbuffer) && *p == 0; ++ p);
+            }
+            for (const char *p = cmdbuffer; p < cmdbuffer + bufindw; ++ nr) {
+                cmdqueue_dump_to_serial_single_line(nr, p);
+                // Skip the command.
+                for (++p; *p != 0; ++ p);
+                // Skip the gaps.
+                for (++p; p < cmdbuffer + bufindw && *p == 0; ++ p);
+            }
+        }
+        SERIAL_ECHOLNPGM("End of the buffer.");
     }
-    if (bufindr < bufindw) {
-
-    } else {
-//        for (uint8_t i = 0; i < BUFSIZE; ++ i)
-//            SERIAL_ECHO(cmdbuffer[(i+bufindw)%BUFSIZE]);
-    }
-    SERIAL_ECHOLNPGM("End of the buffer.");
 }
+#endif /* CMDBUFFER_DEBUG */
 
 //adds an command to the main command buffer
 //thats really done in a non-safe way.
@@ -684,6 +733,9 @@ void enquecommand(const char *cmd, bool from_progmem)
         if (bufindw == sizeof(cmdbuffer))
             bufindw = 0;
         ++ buflen;
+#ifdef CMDBUFFER_DEBUG
+        cmdqueue_dump_to_serial();
+#endif /* CMDBUFFER_DEBUG */
     } else {
         SERIAL_ECHO_START;
         SERIAL_ECHORPGM(MSG_Enqueing);
@@ -692,7 +744,9 @@ void enquecommand(const char *cmd, bool from_progmem)
         else
             SERIAL_ECHO(cmd);
         SERIAL_ECHOLNPGM("\" failed: Buffer full!");
+#ifdef CMDBUFFER_DEBUG
         cmdqueue_dump_to_serial();
+#endif /* CMDBUFFER_DEBUG */
     }
 }
 
@@ -706,10 +760,14 @@ void enquecommand_front(const char *cmd, bool from_progmem)
             strcpy_P(cmdbuffer + bufindr + 1, cmd);
         else
             strcpy(cmdbuffer + bufindr + 1, cmd);
+        ++ buflen;
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Enqueing to the front: \"");
         SERIAL_ECHO(cmdbuffer + bufindr + 1);
         SERIAL_ECHOLNPGM("\"");
+#ifdef CMDBUFFER_DEBUG
+        cmdqueue_dump_to_serial();
+#endif /* CMDBUFFER_DEBUG */
     } else {
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Enqueing to the front: \"");
@@ -718,9 +776,19 @@ void enquecommand_front(const char *cmd, bool from_progmem)
         else
             SERIAL_ECHO(cmd);
         SERIAL_ECHOLNPGM("\" failed: Buffer full!");
+#ifdef CMDBUFFER_DEBUG
         cmdqueue_dump_to_serial();
+#endif /* CMDBUFFER_DEBUG */
     }
 }
+
+// Mark the command at the top of the command queue as new.
+// Therefore it will not be removed from the queue.
+void repeatcommand_front()
+{
+    cmdbuffer_front_already_processed = true;
+} 
+
 
 void setup_killpin()
 {
@@ -1051,14 +1119,21 @@ void get_command()
         
         // Store the current line into buffer, move to the next line.
         cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_USB;
+#ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Storing a command line to buffer: ");
         SERIAL_ECHO(cmdbuffer+bufindw+1);
         SERIAL_ECHOLNPGM("");
+#endif /* CMDBUFFER_DEBUG */
         bufindw += strlen(cmdbuffer+bufindw+1) + 2;
         if (bufindw == sizeof(cmdbuffer))
             bufindw = 0;
         ++ buflen;
+#ifdef CMDBUFFER_DEBUG
+        SERIAL_ECHOPGM("Number of commands in the buffer: ");
+        SERIAL_ECHO(buflen);
+        SERIAL_ECHOLNPGM("");
+#endif /* CMDBUFFER_DEBUG */
       } // end of 'not comment mode'
       serial_count = 0; //clear buffer
       // Don't call cmdqueue_could_enqueue_back if there are no characters waiting
@@ -1434,6 +1509,15 @@ static void homeaxis(int axis) {
   }
 }
 
+void home_xy()
+{
+    set_destination_to_current();
+    homeaxis(X_AXIS);
+    homeaxis(Y_AXIS);
+    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+    endstops_hit_on_purpose();
+}
+
 void refresh_cmd_timeout(void)
 {
   previous_millis_cmd = millis();
@@ -1488,6 +1572,15 @@ void process_commands()
   #ifdef FILAMENT_RUNOUT_SUPPORT
     SET_INPUT(FR_SENS);
   #endif
+
+#ifdef CMDBUFFER_DEBUG
+  SERIAL_ECHOPGM("Processing a GCODE command: ");
+  SERIAL_ECHO(cmdbuffer+bufindr+1);
+  SERIAL_ECHOLNPGM("");
+  SERIAL_ECHOPGM("In cmdqueue: ");
+  SERIAL_ECHO(buflen);
+  SERIAL_ECHOLNPGM("");
+#endif /* CMDBUFFER_DEBUG */
   
   unsigned long codenum; //throw away variable
   char *starpos = NULL;
@@ -1903,12 +1996,9 @@ void process_commands()
       			  } 
               // 1st mesh bed leveling measurement point, corrected.
               world2machine_initialize();
-              current_position[X_AXIS] = world2machine_rotation_and_skew[0][0] * pgm_read_float(bed_ref_points) + world2machine_rotation_and_skew[0][1] * pgm_read_float(bed_ref_points+1) + world2machine_shift[0];
-              current_position[Y_AXIS] = world2machine_rotation_and_skew[1][0] * pgm_read_float(bed_ref_points) + world2machine_rotation_and_skew[1][1] * pgm_read_float(bed_ref_points+1) + world2machine_shift[1];
+              destination[X_AXIS] = world2machine_rotation_and_skew[0][0] * pgm_read_float(bed_ref_points) + world2machine_rotation_and_skew[0][1] * pgm_read_float(bed_ref_points+1) + world2machine_shift[0];
+              destination[Y_AXIS] = world2machine_rotation_and_skew[1][0] * pgm_read_float(bed_ref_points) + world2machine_rotation_and_skew[1][1] * pgm_read_float(bed_ref_points+1) + world2machine_shift[1];
               world2machine_reset();
-//              mbl.get_meas_xy(0, 0, destination[X_AXIS], destination[Y_AXIS], false);
-              // destination[X_AXIS] = MESH_MIN_X - X_PROBE_OFFSET_FROM_EXTRUDER;
-              // destination[Y_AXIS] = MESH_MIN_Y - Y_PROBE_OFFSET_FROM_EXTRUDER;
               destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
               feedrate = homing_feedrate[Z_AXIS]/10;
               current_position[Z_AXIS] = 0;
@@ -2225,7 +2315,7 @@ void process_commands()
                 // We don't know where we are! HOME!
                 // Push the commands to the front of the message queue in the reverse order!
                 // There shall be always enough space reserved for these commands.
-                enquecommand_front_P((PSTR("G80")));
+                repeatcommand_front(); // repeat G80 with all its parameters
                 enquecommand_front_P((PSTR("G28 W0")));
                 break;
             }
@@ -2645,79 +2735,75 @@ void process_commands()
       }
      break;
 
-    case 45:
+    case 44: // M45: Reset the bed skew and offset calibration.
+        // Reset the skew and offset in both RAM and EEPROM.
         reset_bed_offset_and_skew();
         world2machine_reset();
+        // Wait for the motors to stop and update the current position with the absolute values.
+        st_synchronize();
+        current_position[X_AXIS] = st_get_position_mm(X_AXIS);
+        current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
         break;
 
-    case 46: // M46: mesh_bed_calibration with manual Z up
-        {
-            // Firstly check if we know where we are
-            if ( !( axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) ){
-                // We don't know where we are! HOME!
-                // Push the commands to the front of the message queue in the reverse order!
-                // There shall be always enough space reserved for these commands.
-                enquecommand_front_P((PSTR("M46")));
-                enquecommand_front_P((PSTR("G28 X Y")));
-                break;
-            }
-
-            lcd_update_enable(false);
-            if (lcd_calibrate_z_end_stop_manual()) {
-                mbl.reset();
-                setup_for_endstop_move();
-                find_bed_offset_and_skew();
-                clean_up_after_endstop_move();
-                // Print head up.
-                current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
-                st_synchronize();
-                // Push the commands to the front of the message queue in the reverse order!
-                // There shall be always enough space reserved for these commands.
-                enquecommand_front_P((PSTR("M47")));
-                enquecommand_front_P((PSTR("G28 X Y")));
-              } else {
-                // User canceled the operation. Give up.
-                lcd_update_enable(true);
-                lcd_implementation_clear();
-                // lcd_return_to_status();
-                lcd_update();
-            }
-        }
-    break;
-
-    case 47:
+    case 45: // M46: bed skew and offset with manual Z up
     {
-          // Firstly check if we know where we are
-          if ( !( axis_known_position[X_AXIS] && axis_known_position[Y_AXIS]) ) {
-              // We don't know where we are! HOME!
-              // Push the commands to the front of the message queue in the reverse order!
-              // There shall be always enough space reserved for these commands.
-              enquecommand_front_P((PSTR("M47")));
-              enquecommand_front_P((PSTR("G28 X Y")));
-              break;
-          }
-          lcd_update_enable(false);
-          mbl.reset();
-          setup_for_endstop_move();
-          bool success = improve_bed_offset_and_skew(1);
-          clean_up_after_endstop_move();
-          // Print head up.
-          current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-          plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
-          st_synchronize();
-          lcd_update_enable(true);
-          lcd_update();
-          if (success) {
-              // Mesh bed leveling.
-              // Push the commands to the front of the message queue in the reverse order!
-              // There shall be always enough space reserved for these commands.
-              enquecommand_front_P((PSTR("G80")));
-          }
-          break;
+        // Disable the default update procedure of the display. We will do a modal dialog.
+        lcd_update_enable(false);
+        // Let the planner use the uncorrected coordinates.
+        mbl.reset();
+        world2machine_reset();
+        // Let the user move the Z axes up to the end stoppers.
+        if (lcd_calibrate_z_end_stop_manual()) {
+            // Move the print head close to the bed.
+            current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+            st_synchronize();
+            // Home in the XY plane.
+            set_destination_to_current();
+            setup_for_endstop_move();
+            home_xy();
+            int8_t verbosity_level = 0;
+            if (code_seen('V')) {
+                // Just 'V' without a number counts as V1.
+                char c = strchr_pointer[1];
+                verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
+            }
+            bool success = find_bed_offset_and_skew(verbosity_level);
+            clean_up_after_endstop_move();
+            // Print head up.
+            current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+            st_synchronize();
+
+            // Second half: The fine adjustment.
+            // Let the planner use the uncorrected coordinates.
+            mbl.reset();
+            world2machine_reset();
+            // Home in the XY plane.
+            setup_for_endstop_move();
+            home_xy();
+            success = improve_bed_offset_and_skew(1, verbosity_level);
+            clean_up_after_endstop_move();
+            // Print head up.
+            current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+            st_synchronize();
+            if (success) {
+                // Mesh bed leveling.
+                // Push the commands to the front of the message queue in the reverse order!
+                // There shall be always enough space reserved for these commands.
+                enquecommand_front_P((PSTR("G80")));
+            }
+
+            lcd_update_enable(true);
+            lcd_implementation_clear();
+            // lcd_return_to_status();
+            lcd_update();
+        }
+        break;
     }
 
-    case 48:
+    case 47:
         lcd_diag_show_end_stops();
         break;
 
