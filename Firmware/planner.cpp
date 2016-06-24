@@ -525,7 +525,8 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   while(block_buffer_tail == next_buffer_head)
   {
     manage_heater(); 
-    manage_inactivity(); 
+    // Vojtech: Don't disable motors inside the planner!
+    manage_inactivity(false); 
     lcd_update();
   }
 

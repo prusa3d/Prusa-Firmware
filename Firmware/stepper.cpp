@@ -1065,7 +1065,8 @@ void st_synchronize()
 {
     while( blocks_queued()) {
     manage_heater();
-    manage_inactivity();
+    // Vojtech: Don't disable motors inside the planner!
+    manage_inactivity(true);
     lcd_update();
   }
 }

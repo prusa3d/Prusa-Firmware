@@ -2754,6 +2754,7 @@ void process_commands()
         world2machine_reset();
         // Let the user move the Z axes up to the end stoppers.
         if (lcd_calibrate_z_end_stop_manual()) {
+            refresh_cmd_timeout();
             // Move the print head close to the bed.
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
@@ -2800,6 +2801,46 @@ void process_commands()
             // lcd_return_to_status();
             lcd_update();
         }
+        break;
+    }
+
+    case 46: // M46: bed skew and offset with manual Z up
+    {
+        // Disable the default update procedure of the display. We will do a modal dialog.
+        lcd_update_enable(false);
+        // Let the planner use the uncorrected coordinates.
+        mbl.reset();
+        world2machine_reset();
+        // Move the print head close to the bed.
+        current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+        st_synchronize();
+        // Home in the XY plane.
+        set_destination_to_current();
+        setup_for_endstop_move();
+        home_xy();
+        int8_t verbosity_level = 0;
+        if (code_seen('V')) {
+            // Just 'V' without a number counts as V1.
+            char c = strchr_pointer[1];
+            verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
+        }
+        bool success = improve_bed_offset_and_skew(1, verbosity_level);
+        clean_up_after_endstop_move();
+        // Print head up.
+        current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+        st_synchronize();
+        if (success) {
+            // Mesh bed leveling.
+            // Push the commands to the front of the message queue in the reverse order!
+            // There shall be always enough space reserved for these commands.
+            enquecommand_front_P((PSTR("G80")));
+        }
+        lcd_update_enable(true);
+        lcd_implementation_clear();
+        // lcd_return_to_status();
+        lcd_update();
         break;
     }
 
@@ -4841,6 +4882,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
     {
       if(blocks_queued() == false && ignore_stepper_queue == false) {
         disable_x();
+//        SERIAL_ECHOLNPGM("manage_inactivity - disable Y");
         disable_y();
         disable_z();
         disable_e0();
@@ -4924,6 +4966,7 @@ void kill()
   disable_heater();
 
   disable_x();
+//  SERIAL_ECHOLNPGM("kill - disable Y");
   disable_y();
   disable_z();
   disable_e0();
@@ -5109,7 +5152,8 @@ void delay_keep_alive(int ms)
 {
     for (;;) {
         manage_heater();
-        manage_inactivity();
+        // Manage inactivity, but don't disable steppers on timeout.
+        manage_inactivity(true);
         lcd_update();
         if (ms == 0)
             break;
