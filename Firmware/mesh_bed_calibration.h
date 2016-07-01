@@ -31,4 +31,9 @@ extern bool find_bed_offset_and_skew(int8_t verbosity_level);
 extern bool improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level);
 extern void reset_bed_offset_and_skew();
 
+// Scan the mesh bed induction points one by one by a left-right zig-zag movement,
+// write the trigger coordinates to the serial line.
+// Useful for visualizing the behavior of the bed induction detector.
+extern bool scan_bed_induction_points(int8_t verbosity_level);
+
 #endif /* MESH_BED_CALIBRATION_H */
