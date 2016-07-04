@@ -2,6 +2,7 @@
 #define ULTRALCD_H
 
 #include "Marlin.h"
+#include "mesh_bed_calibration.h"
 
 #ifdef ULTRA_LCD
 
@@ -37,7 +38,14 @@
   static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
   static void lcd_menu_statistics();
 
+  extern void lcd_display_message_fullscreen_P(const char *msg);
+
+  // Ask the user to move the Z axis up to the end stoppers and let
+  // the user confirm that it has been done.
   extern bool lcd_calibrate_z_end_stop_manual();
+  // Show the result of the calibration process on the LCD screen.
+  extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result);
+
   extern void lcd_diag_show_end_stops();
 
 #ifdef DOGLCD

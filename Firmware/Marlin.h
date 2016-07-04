@@ -212,7 +212,7 @@ void ClearToSend();
 
 void get_coordinates();
 void prepare_move();
-void kill();
+void kill(const char *full_screen_message = NULL);
 void Stop();
 
 bool IsStopped();
@@ -257,6 +257,8 @@ extern float max_pos[3];
 extern bool axis_known_position[3];
 extern float zprobe_zoffset;
 extern int fanSpeed;
+extern void homeaxis(int axis);
+
 
 #ifdef FAN_SOFT_PWM
 extern unsigned char fanSpeedSoftPwm;

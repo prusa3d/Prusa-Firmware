@@ -252,6 +252,110 @@ const char * const MSG_BED_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_HEATING_PL
 };
 
+const char MSG_BED_LEVELING_FAILED_POINT_HIGH_EN[] PROGMEM = "Bed leveling failed. Sensor triggered too high. Waiting for reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_HIGH_CZ[] PROGMEM = "Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_HIGH_IT[] PROGMEM = "Bed leveling failed. Sensor triggered too high. Waiting for reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_HIGH_ES[] PROGMEM = "Bed leveling failed. Sensor triggered too high. Waiting for reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_HIGH_PL[] PROGMEM = "Bed leveling failed. Sensor triggered too high. Waiting for reset.";
+const char * const MSG_BED_LEVELING_FAILED_POINT_HIGH_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_LEVELING_FAILED_POINT_HIGH_EN,
+	MSG_BED_LEVELING_FAILED_POINT_HIGH_CZ,
+	MSG_BED_LEVELING_FAILED_POINT_HIGH_IT,
+	MSG_BED_LEVELING_FAILED_POINT_HIGH_ES,
+	MSG_BED_LEVELING_FAILED_POINT_HIGH_PL
+};
+
+const char MSG_BED_LEVELING_FAILED_POINT_LOW_EN[] PROGMEM = "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_LOW_CZ[] PROGMEM = "Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_LOW_IT[] PROGMEM = "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_LOW_ES[] PROGMEM = "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_LOW_PL[] PROGMEM = "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset.";
+const char * const MSG_BED_LEVELING_FAILED_POINT_LOW_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_LEVELING_FAILED_POINT_LOW_EN,
+	MSG_BED_LEVELING_FAILED_POINT_LOW_CZ,
+	MSG_BED_LEVELING_FAILED_POINT_LOW_IT,
+	MSG_BED_LEVELING_FAILED_POINT_LOW_ES,
+	MSG_BED_LEVELING_FAILED_POINT_LOW_PL
+};
+
+const char MSG_BED_SKEW_OFFSET_DETECTION_FAILED_EN[] PROGMEM = "X/Y calibration failed. Please consult manual.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FAILED_CZ[] PROGMEM = "Kalibrace X/Y selhala. Nahlednete do manualu.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FAILED_IT[] PROGMEM = "X/Y calibration failed. Please consult manual.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FAILED_ES[] PROGMEM = "X/Y calibration failed. Please consult manual.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FAILED_PL[] PROGMEM = "X/Y calibration failed. Please consult manual.";
+const char * const MSG_BED_SKEW_OFFSET_DETECTION_FAILED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_SKEW_OFFSET_DETECTION_FAILED_EN,
+	MSG_BED_SKEW_OFFSET_DETECTION_FAILED_CZ,
+	MSG_BED_SKEW_OFFSET_DETECTION_FAILED_IT,
+	MSG_BED_SKEW_OFFSET_DETECTION_FAILED_ES,
+	MSG_BED_SKEW_OFFSET_DETECTION_FAILED_PL
+};
+
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_EN[] PROGMEM = "X/Y calibration bad. Left front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_CZ[] PROGMEM = "Kalibrace selhala. Levy predni bod moc vpredu. Srovnejte tiskarnu.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_IT[] PROGMEM = "X/Y calibration bad. Left front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_ES[] PROGMEM = "X/Y calibration bad. Left front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_PL[] PROGMEM = "X/Y calibration bad. Left front corner not reachable. Fix the printer.";
+const char * const MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_EN,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_CZ,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_IT,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_ES,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_PL
+};
+
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_EN[] PROGMEM = "X/Y calibration bad. Right front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_CZ[] PROGMEM = "Kalibrace selhala. Pravy predni bod moc vpredu. Srovnejte tiskarnu.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_IT[] PROGMEM = "X/Y calibration bad. Right front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_ES[] PROGMEM = "X/Y calibration bad. Right front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_PL[] PROGMEM = "X/Y calibration bad. Right front corner not reachable. Fix the printer.";
+const char * const MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_EN,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_CZ,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_IT,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_ES,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_PL
+};
+
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_EN[] PROGMEM = "X/Y calibration ok. X/Y axes are perpendicular.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_CZ[] PROGMEM = "Kalibrace X/Y perfektni. X/Y osy jsou kolme.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_IT[] PROGMEM = "X/Y calibration ok. X/Y axes are perpendicular.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_ES[] PROGMEM = "X/Y calibration ok. X/Y axes are perpendicular.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_PL[] PROGMEM = "X/Y calibration ok. X/Y axes are perpendicular.";
+const char * const MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_EN,
+	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_CZ,
+	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_IT,
+	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_ES,
+	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_PL
+};
+
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_EN[] PROGMEM = "X/Y skewed severly. Skew will be corrected automatically.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_CZ[] PROGMEM = "X/Y osy jsou silne zkosene. Zkoseni bude automaticky vyrovnano pri tisku.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_IT[] PROGMEM = "X/Y skewed severly. Skew will be corrected automatically.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_ES[] PROGMEM = "X/Y skewed severly. Skew will be corrected automatically.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_PL[] PROGMEM = "X/Y skewed severly. Skew will be corrected automatically.";
+const char * const MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_EN,
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_CZ,
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_IT,
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_ES,
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_PL
+};
+
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_EN[] PROGMEM = "X/Y calibration all right. X/Y axes are slightly skewed.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_CZ[] PROGMEM = "Kalibrace X/Y v poradku. X/Y osy mirne zkosene.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_IT[] PROGMEM = "X/Y calibration all right. X/Y axes are slightly skewed.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_ES[] PROGMEM = "X/Y calibration all right. X/Y axes are slightly skewed.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_PL[] PROGMEM = "X/Y calibration all right. X/Y axes are slightly skewed.";
+const char * const MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_EN,
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_CZ,
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_IT,
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_ES,
+	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_PL
+};
+
 const char MSG_BEGIN_FILE_LIST_EN[] PROGMEM = "Begin file list";
 const char MSG_BEGIN_FILE_LIST_CZ[] PROGMEM = "Begin file list";
 const char MSG_BEGIN_FILE_LIST_IT[] PROGMEM = "Begin file list";
@@ -278,11 +382,11 @@ const char * const MSG_BROWNOUT_RESET_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BROWNOUT_RESET_PL
 };
 
-const char MSG_CALIBRATE_BED_EN[] PROGMEM = "Calibrate bed";
-const char MSG_CALIBRATE_BED_CZ[] PROGMEM = "Calibrate bed";
-const char MSG_CALIBRATE_BED_IT[] PROGMEM = "Calibrate bed";
-const char MSG_CALIBRATE_BED_ES[] PROGMEM = "Calibrate bed";
-const char MSG_CALIBRATE_BED_PL[] PROGMEM = "Calibrate bed";
+const char MSG_CALIBRATE_BED_EN[] PROGMEM = "Calibrate X/Y";
+const char MSG_CALIBRATE_BED_CZ[] PROGMEM = "Kalibrace X/Y";
+const char MSG_CALIBRATE_BED_IT[] PROGMEM = "Calibrate X/Y";
+const char MSG_CALIBRATE_BED_ES[] PROGMEM = "Calibrate X/Y";
+const char MSG_CALIBRATE_BED_PL[] PROGMEM = "Calibrate X/Y";
 const char * const MSG_CALIBRATE_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_BED_EN,
 	MSG_CALIBRATE_BED_CZ,
@@ -291,11 +395,11 @@ const char * const MSG_CALIBRATE_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_BED_PL
 };
 
-const char MSG_CALIBRATE_BED_RESET_EN[] PROGMEM = "Reset bed calibration";
-const char MSG_CALIBRATE_BED_RESET_CZ[] PROGMEM = "Reset bed calibration";
-const char MSG_CALIBRATE_BED_RESET_IT[] PROGMEM = "Reset bed calibration";
-const char MSG_CALIBRATE_BED_RESET_ES[] PROGMEM = "Reset bed calibration";
-const char MSG_CALIBRATE_BED_RESET_PL[] PROGMEM = "Reset bed calibration";
+const char MSG_CALIBRATE_BED_RESET_EN[] PROGMEM = "Reset X/Y calibr.";
+const char MSG_CALIBRATE_BED_RESET_CZ[] PROGMEM = "Reset X/Y kalibr.";
+const char MSG_CALIBRATE_BED_RESET_IT[] PROGMEM = "Reset X/Y calibr.";
+const char MSG_CALIBRATE_BED_RESET_ES[] PROGMEM = "Reset X/Y calibr.";
+const char MSG_CALIBRATE_BED_RESET_PL[] PROGMEM = "Reset X/Y calibr.";
 const char * const MSG_CALIBRATE_BED_RESET_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_BED_RESET_EN,
 	MSG_CALIBRATE_BED_RESET_CZ,
@@ -370,7 +474,7 @@ const char * const MSG_CONFIGURATION_VER_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1_EN[] PROGMEM = "Are left and right";
-const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1_CZ[] PROGMEM = "Are left and right";
+const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1_CZ[] PROGMEM = "Dojely oba Z voziky";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1_IT[] PROGMEM = "Are left and right";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1_ES[] PROGMEM = "Are left and right";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1_PL[] PROGMEM = "Are left and right";
@@ -383,7 +487,7 @@ const char * const MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1_LANG_TABLE[LANG_NUM] PR
 };
 
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2_EN[] PROGMEM = "Z carriages all up?";
-const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2_CZ[] PROGMEM = "Z carriages all up?";
+const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2_CZ[] PROGMEM = "k hornimu dorazu?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2_IT[] PROGMEM = "Z carriages all up?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2_ES[] PROGMEM = "Z carriages all up?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2_PL[] PROGMEM = "Z carriages all up?";
@@ -942,7 +1046,7 @@ const char * const MSG_FILE_SAVED_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_EN[] PROGMEM = "Searching bed";
-const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Searching bed";
+const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Hledam kalibracni";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Searching bed";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_ES[] PROGMEM = "Searching bed";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_PL[] PROGMEM = "Searching bed";
@@ -955,7 +1059,7 @@ const char * const MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_LANG_TABLE[LANG_NUM] PROGM
 };
 
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_EN[] PROGMEM = "calibration point";
-const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_CZ[] PROGMEM = "calibration point";
+const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_CZ[] PROGMEM = "bod podlozky";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_IT[] PROGMEM = "calibration point";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_ES[] PROGMEM = "calibration point";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_PL[] PROGMEM = "calibration point";
@@ -968,7 +1072,7 @@ const char * const MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_LANG_TABLE[LANG_NUM] PROGM
 };
 
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE3_EN[] PROGMEM = " of 4";
-const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE3_CZ[] PROGMEM = " of 4";
+const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE3_CZ[] PROGMEM = " z 4";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE3_IT[] PROGMEM = " of 4";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE3_ES[] PROGMEM = " of 4";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE3_PL[] PROGMEM = " of 4";
@@ -1124,7 +1228,7 @@ const char * const MSG_HOTEND_OFFSET_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_EN[] PROGMEM = "Improving bed";
-const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Improving bed";
+const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Zlepsuji presnost";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Improving bed";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_ES[] PROGMEM = "Improving bed";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_PL[] PROGMEM = "Improving bed";
@@ -1137,7 +1241,7 @@ const char * const MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_LANG_TABLE[LANG_NUM] PR
 };
 
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_EN[] PROGMEM = "calibration point";
-const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_CZ[] PROGMEM = "calibration point";
+const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_CZ[] PROGMEM = "kalibracniho bodu";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_IT[] PROGMEM = "calibration point";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_ES[] PROGMEM = "calibration point";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_PL[] PROGMEM = "calibration point";
@@ -1150,7 +1254,7 @@ const char * const MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_LANG_TABLE[LANG_NUM] PR
 };
 
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3_EN[] PROGMEM = " of 9";
-const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3_CZ[] PROGMEM = " of 9";
+const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3_CZ[] PROGMEM = " z 9";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3_IT[] PROGMEM = " of 9";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3_ES[] PROGMEM = " of 9";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3_PL[] PROGMEM = " of 9";
@@ -1500,11 +1604,11 @@ const char * const MSG_MOVE_AXIS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_AXIS_PL
 };
 
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_EN[] PROGMEM = "Calibrating bed.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_CZ[] PROGMEM = "Calibrating bed.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_IT[] PROGMEM = "Calibrating bed.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_ES[] PROGMEM = "Calibrating bed.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_PL[] PROGMEM = "Calibrating bed.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_EN[] PROGMEM = "Calibrating X/Y.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_CZ[] PROGMEM = "Kalibrace X/Y";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_IT[] PROGMEM = "Calibrating X/Y.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_ES[] PROGMEM = "Calibrating X/Y.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_PL[] PROGMEM = "Calibrating X/Y.";
 const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_EN,
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_CZ,
@@ -1514,7 +1618,7 @@ const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1_LANG_TABLE[LANG_NUM] PROGM
 };
 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2_EN[] PROGMEM = "Move Z carriage up";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2_CZ[] PROGMEM = "Move Z carriage up";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2_CZ[] PROGMEM = "Posunte prosim Z osu";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2_IT[] PROGMEM = "Move Z carriage up";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2_ES[] PROGMEM = "Move Z carriage up";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2_PL[] PROGMEM = "Move Z carriage up";
@@ -1527,7 +1631,7 @@ const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2_LANG_TABLE[LANG_NUM] PROGM
 };
 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3_EN[] PROGMEM = "to the end stoppers.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3_CZ[] PROGMEM = "to the end stoppers.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3_CZ[] PROGMEM = "az k hornimu dorazu.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3_IT[] PROGMEM = "to the end stoppers.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3_ES[] PROGMEM = "to the end stoppers.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3_PL[] PROGMEM = "to the end stoppers.";
@@ -1540,7 +1644,7 @@ const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3_LANG_TABLE[LANG_NUM] PROGM
 };
 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4_EN[] PROGMEM = "Click when done.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4_CZ[] PROGMEM = "Click when done.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4_CZ[] PROGMEM = "Potvrdte tlacitkem.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4_IT[] PROGMEM = "Click when done.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4_ES[] PROGMEM = "Click when done.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4_PL[] PROGMEM = "Click when done.";
@@ -2837,6 +2941,19 @@ const char * const MSG_SET_ORIGIN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SET_ORIGIN_IT,
 	MSG_SET_ORIGIN_ES,
 	MSG_SET_ORIGIN_PL
+};
+
+const char MSG_SHOW_END_STOPS_EN[] PROGMEM = "Show end stops";
+const char MSG_SHOW_END_STOPS_CZ[] PROGMEM = "Zobraz konc. spinace";
+const char MSG_SHOW_END_STOPS_IT[] PROGMEM = "Show end stops";
+const char MSG_SHOW_END_STOPS_ES[] PROGMEM = "Show end stops";
+const char MSG_SHOW_END_STOPS_PL[] PROGMEM = "Show end stops";
+const char * const MSG_SHOW_END_STOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SHOW_END_STOPS_EN,
+	MSG_SHOW_END_STOPS_CZ,
+	MSG_SHOW_END_STOPS_IT,
+	MSG_SHOW_END_STOPS_ES,
+	MSG_SHOW_END_STOPS_PL
 };
 
 const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode [high power]";

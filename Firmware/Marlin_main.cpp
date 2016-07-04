@@ -1469,7 +1469,7 @@ static float probe_pt(float x, float y, float z_before) {
 
 #endif // #ifdef ENABLE_AUTO_BED_LEVELING
 
-static void homeaxis(int axis) {
+void homeaxis(int axis) {
 #define HOMEAXIS_DO(LETTER) \
   ((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
 
@@ -1996,18 +1996,19 @@ void process_commands()
       			  } 
               // 1st mesh bed leveling measurement point, corrected.
               world2machine_initialize();
-              destination[X_AXIS] = world2machine_rotation_and_skew[0][0] * pgm_read_float(bed_ref_points) + world2machine_rotation_and_skew[0][1] * pgm_read_float(bed_ref_points+1) + world2machine_shift[0];
-              destination[Y_AXIS] = world2machine_rotation_and_skew[1][0] * pgm_read_float(bed_ref_points) + world2machine_rotation_and_skew[1][1] * pgm_read_float(bed_ref_points+1) + world2machine_shift[1];
+              world2machine(pgm_read_float(bed_ref_points), pgm_read_float(bed_ref_points+1), destination[X_AXIS], destination[Y_AXIS]);
               world2machine_reset();
               destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
               feedrate = homing_feedrate[Z_AXIS]/10;
               current_position[Z_AXIS] = 0;
-              
+              enable_endstops(false);
               plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
               plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
               st_synchronize();
               current_position[X_AXIS] = destination[X_AXIS];
               current_position[Y_AXIS] = destination[Y_AXIS];
+              enable_endstops(true);
+              endstops_hit_on_purpose();
               homeaxis(Z_AXIS);
   		        _doMeshL = true;
             #else // MESH_BED_LEVELING
@@ -2342,19 +2343,32 @@ void process_commands()
             int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS]/20;
             int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS]/60;
             int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS]/40;
+            bool has_z = is_bed_z_jitter_data_valid();
             setup_for_endstop_move();
+            const char *kill_message = NULL;
             while (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
+                // Get coords of a measuring point.
+                ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
+                iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
+                if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix; // Zig zag
+                float z0 = 0.f;
+                if (has_z && mesh_point > 0) {
+                    uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
+                    z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
+                    #if 0
+                    SERIAL_ECHOPGM("Bed leveling, point: ");
+                    MYSERIAL.print(mesh_point);
+                    SERIAL_ECHOPGM(", calibration z: ");
+                    MYSERIAL.print(z0, 5);
+                    SERIAL_ECHOLNPGM("");
+                    #endif
+                }
             
                 // Move Z to proper distance
                 current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
                 st_synchronize();
-                
-                // Get cords of measuring point
-                ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
-                iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
-                if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix; // Zig zag
-                
+
                 current_position[X_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point);
                 current_position[Y_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point+1);
 //                mbl.get_meas_xy(ix, iy, current_position[X_AXIS], current_position[Y_AXIS], false);
@@ -2363,9 +2377,18 @@ void process_commands()
                 st_synchronize();
                 
                 // Go down until endstop is hit
-                find_bed_induction_sensor_point_z();
-                                
+                const float Z_CALIBRATION_THRESHOLD = 0.5f;
+                if (! find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f)) {
+                    kill_message = MSG_BED_LEVELING_FAILED_POINT_LOW;
+                    break;
+                }
+                if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) {
+                    kill_message = MSG_BED_LEVELING_FAILED_POINT_HIGH;
+                    break;
+                }
+
                 mbl.set_z(ix, iy, current_position[Z_AXIS]);
+
         				if (!IS_SD_PRINTING)
         				{
         					custom_message_state--;
@@ -2373,9 +2396,13 @@ void process_commands()
                 mesh_point++;
                 
             }
-            clean_up_after_endstop_move();
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+            if (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
+                st_synchronize();
+                kill(kill_message);
+            }
+            clean_up_after_endstop_move();
             mbl.upsample_3x3();
             mbl.active = 1;
             current_position[X_AXIS] = X_MIN_POS+0.2;
@@ -2769,33 +2796,36 @@ void process_commands()
                 char c = strchr_pointer[1];
                 verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
             }
-            bool success = find_bed_offset_and_skew(verbosity_level);
+            BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level);
             clean_up_after_endstop_move();
             // Print head up.
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
             st_synchronize();
-
-            // Second half: The fine adjustment.
-            // Let the planner use the uncorrected coordinates.
-            mbl.reset();
-            world2machine_reset();
-            // Home in the XY plane.
-            setup_for_endstop_move();
-            home_xy();
-            success = improve_bed_offset_and_skew(1, verbosity_level);
-            clean_up_after_endstop_move();
-            // Print head up.
-            current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
-            st_synchronize();
-            if (success) {
+            if (result != BED_SKEW_OFFSET_DETECTION_FAILED) {
+                // Second half: The fine adjustment.
+                // Let the planner use the uncorrected coordinates.
+                mbl.reset();
+                world2machine_reset();
+                // Home in the XY plane.
+                setup_for_endstop_move();
+                home_xy();
+                result = improve_bed_offset_and_skew(1, verbosity_level);
+                clean_up_after_endstop_move();
+                // Print head up.
+                current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+                st_synchronize();
+            }
+            lcd_bed_calibration_show_result(result);
+            /*
+            if (result != BED_SKEW_OFFSET_DETECTION_FAILED) {
                 // Mesh bed leveling.
                 // Push the commands to the front of the message queue in the reverse order!
                 // There shall be always enough space reserved for these commands.
                 enquecommand_front_P((PSTR("G80")));
             }
-
+            */
             lcd_update_enable(true);
             lcd_implementation_clear();
             // lcd_return_to_status();
@@ -2844,7 +2874,7 @@ void process_commands()
         break;
     }
 
-#if 0
+#if 1
     case 48: // M48: scan the bed induction sensor points, print the sensor trigger coordinates to the serial line for visualization on the PC.
     {
         // Disable the default update procedure of the display. We will do a modal dialog.
@@ -4686,24 +4716,66 @@ void get_arc_coordinates()
 
 void clamp_to_software_endstops(float target[3])
 {
-  if (min_software_endstops) {
-    if (target[X_AXIS] < min_pos[X_AXIS]) target[X_AXIS] = min_pos[X_AXIS];
-    if (target[Y_AXIS] < min_pos[Y_AXIS]) target[Y_AXIS] = min_pos[Y_AXIS];
-    
-    float negative_z_offset = 0;
-    #ifdef ENABLE_AUTO_BED_LEVELING
-      if (Z_PROBE_OFFSET_FROM_EXTRUDER < 0) negative_z_offset = negative_z_offset + Z_PROBE_OFFSET_FROM_EXTRUDER;
-      if (add_homing[Z_AXIS] < 0) negative_z_offset = negative_z_offset + add_homing[Z_AXIS];
-    #endif
-    
-    if (target[Z_AXIS] < min_pos[Z_AXIS]+negative_z_offset) target[Z_AXIS] = min_pos[Z_AXIS]+negative_z_offset;
-  }
+    if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE || world2machine_correction_mode == WORLD2MACHINE_CORRECTION_SHIFT) {
+        // No correction or only a shift correction.
+        // Save computational cycles by not performing the skew correction.
+        if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_SHIFT) {
+            target[0] += world2machine_shift[0];
+            target[1] += world2machine_shift[1];
+        }
+        if (min_software_endstops) {
+            if (target[X_AXIS] < min_pos[X_AXIS]) target[X_AXIS] = min_pos[X_AXIS];
+            if (target[Y_AXIS] < min_pos[Y_AXIS]) target[Y_AXIS] = min_pos[Y_AXIS];
+        }
+        if (max_software_endstops) {
+            if (target[X_AXIS] > max_pos[X_AXIS]) target[X_AXIS] = max_pos[X_AXIS];
+            if (target[Y_AXIS] > max_pos[Y_AXIS]) target[Y_AXIS] = max_pos[Y_AXIS];
+        }
+        if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_SHIFT) {
+            target[0] -= world2machine_shift[0];
+            target[1] -= world2machine_shift[1];
+        }
+    } else {
+        // Skew correction is in action.
+        float x, y;
+        world2machine(target[0], target[1], x, y);
+        bool clamped = false;
+        if (min_software_endstops) {
+            if (x < min_pos[X_AXIS]) {
+                x = min_pos[X_AXIS];
+                clamped = true;
+            }
+            if (y < min_pos[Y_AXIS]) {
+                y = min_pos[Y_AXIS];
+                clamped = true;
+            }
+        }
+        if (max_software_endstops) {
+            if (x > max_pos[X_AXIS]) {
+                x = max_pos[X_AXIS];
+                clamped = true;
+            }
+            if (y > max_pos[Y_AXIS]) {
+                y = max_pos[Y_AXIS];
+                clamped = true;
+            }
+        }
+        if (clamped)
+            machine2world(x, y, target[X_AXIS], target[Y_AXIS]);
+    }
 
-  if (max_software_endstops) {
-    if (target[X_AXIS] > max_pos[X_AXIS]) target[X_AXIS] = max_pos[X_AXIS];
-    if (target[Y_AXIS] > max_pos[Y_AXIS]) target[Y_AXIS] = max_pos[Y_AXIS];
-    if (target[Z_AXIS] > max_pos[Z_AXIS]) target[Z_AXIS] = max_pos[Z_AXIS];
-  }
+    // Clamp the Z coordinate.
+    if (min_software_endstops) {
+        float negative_z_offset = 0;
+        #ifdef ENABLE_AUTO_BED_LEVELING
+            if (Z_PROBE_OFFSET_FROM_EXTRUDER < 0) negative_z_offset = negative_z_offset + Z_PROBE_OFFSET_FROM_EXTRUDER;
+            if (add_homing[Z_AXIS] < 0) negative_z_offset = negative_z_offset + add_homing[Z_AXIS];
+        #endif
+        if (target[Z_AXIS] < min_pos[Z_AXIS]+negative_z_offset) target[Z_AXIS] = min_pos[Z_AXIS]+negative_z_offset;
+    }
+    if (max_software_endstops) {
+        if (target[Z_AXIS] > max_pos[Z_AXIS]) target[Z_AXIS] = max_pos[Z_AXIS];
+    }
 }
 
 #ifdef MESH_BED_LEVELING
@@ -4996,7 +5068,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
   check_axes_activity();
 }
 
-void kill()
+void kill(const char *full_screen_message)
 {
   cli(); // Stop interrupts
   disable_heater();
@@ -5014,8 +5086,13 @@ void kill()
 #endif
   SERIAL_ERROR_START;
   SERIAL_ERRORLNRPGM(MSG_ERR_KILLED);
-  LCD_ALERTMESSAGERPGM(MSG_KILLED);
-  
+  if (full_screen_message != NULL) {
+      SERIAL_ERRORLNRPGM(full_screen_message);
+      lcd_display_message_fullscreen_P(full_screen_message);
+  } else {
+      LCD_ALERTMESSAGERPGM(MSG_KILLED);
+  }
+
   // FMC small patch to update the LCD before ending
   sei();   // enable interrupts
   for ( int i=5; i--; lcd_update())

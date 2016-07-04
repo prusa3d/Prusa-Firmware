@@ -278,4 +278,33 @@
 #define MSG_STATISTICS						"Statistika  "
 #define MSG_USB_PRINTING					"Tisk z USB  "
 
+#define MSG_SHOW_END_STOPS					"Zobraz konc. spinace"
+#define MSG_CALIBRATE_BED					"Kalibrace X/Y"
+#define MSG_CALIBRATE_BED_RESET				"Reset X/Y kalibr."
+
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1	"Kalibrace X/Y"
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2	"Posunte prosim Z osu"
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3	"az k hornimu dorazu."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4	"Potvrdte tlacitkem."
+
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1	"Dojely oba Z voziky"
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2	"k hornimu dorazu?"
+
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Hledam kalibracni"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	"bod podlozky"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE3	" z 4"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Zlepsuji presnost"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	"kalibracniho bodu"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3	" z 9"
+
+#define MSG_BED_SKEW_OFFSET_DETECTION_FAILED			"Kalibrace X/Y selhala. Nahlednete do manualu."
+#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT			"Kalibrace X/Y perfektni. X/Y osy jsou kolme."
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD			"Kalibrace X/Y v poradku. X/Y osy mirne zkosene."
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		"X/Y osy jsou silne zkosene. Zkoseni bude automaticky vyrovnano pri tisku."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR	"Kalibrace selhala. Levy predni bod moc vpredu. Srovnejte tiskarnu."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR	"Kalibrace selhala. Pravy predni bod moc vpredu. Srovnejte tiskarnu."
+
+#define MSG_BED_LEVELING_FAILED_POINT_LOW				"Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
+#define MSG_BED_LEVELING_FAILED_POINT_HIGH				"Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset."
+
 #endif // LANGUAGE_EN_H

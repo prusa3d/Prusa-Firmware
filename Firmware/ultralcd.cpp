@@ -1316,6 +1316,82 @@ canceled:
     return false;
 }
 
+static inline bool pgm_is_whitespace(const char *c)
+{
+    return pgm_read_byte(c) == ' ' || pgm_read_byte(c) == '\t' || pgm_read_byte(c) == '\r' || pgm_read_byte(c) == '\n';
+}
+
+void lcd_display_message_fullscreen_P(const char *msg)
+{
+    // Disable update of the screen by the usual lcd_update() routine. 
+    lcd_update_enable(false);
+    lcd_implementation_clear();
+    lcd.setCursor(0, 0);
+    for (int8_t row = 0; row < 4; ++ row) {
+        while (pgm_is_whitespace(msg))
+            ++ msg;
+        if (pgm_read_byte(msg) == 0)
+            // End of the message.
+            break;
+        lcd.setCursor(0, row);
+        const char *msgend2 = msg + min(strlen_P(msg), 20);
+        const char *msgend = msgend2;
+        if (pgm_read_byte(msgend) != 0 && ! pgm_is_whitespace(msgend)) {
+              // Splitting a word. Find the start of the current word.
+            while (msgend > msg && ! pgm_is_whitespace(msgend - 1))
+                 -- msgend;
+            if (msgend == msg)
+                // Found a single long word, which cannot be split. Just cut it.
+                msgend = msgend2;
+        }
+        for (; msg < msgend; ++ msg) {
+            char c = char(pgm_read_byte(msg));
+            if (c == '~')
+                c = ' ';
+            lcd.print(c);
+        }
+    }
+}
+
+void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result)
+{
+    const char *msg = NULL;
+    switch (result) {
+        case BED_SKEW_OFFSET_DETECTION_FAILED:
+        default:
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_FAILED;
+            break;
+        case BED_SKEW_OFFSET_DETECTION_PERFECT:
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_PERFECT;
+            break;
+        case BED_SKEW_OFFSET_DETECTION_SKEW_MILD:
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD;
+            break;
+        case BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME:
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME;
+            break;
+        case BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR:
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR;
+            break;
+        case BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR:
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR;
+            break;
+    }
+
+    lcd_display_message_fullscreen_P(msg);
+
+    // Until confirmed by a button click.
+    for (;;) {
+        delay_keep_alive(50);
+        if (lcd_clicked()) {
+            while (lcd_clicked()) ;
+            delay(10);
+            while (lcd_clicked()) ;
+            break;
+        }
+    }
+}
+
 static void lcd_show_end_stops() {
     lcd.setCursor(0, 0);
     lcd_printPGM((PSTR("End stops diag")));
@@ -1596,7 +1672,7 @@ static void lcd_settings_menu()
 	if (!isPrintPaused)
 	{
 		MENU_ITEM(submenu, MSG_SELFTEST, lcd_selftest);
-    MENU_ITEM(submenu, PSTR("Show end stops"), menu_show_end_stops);
+    MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
     MENU_ITEM(submenu, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 	}

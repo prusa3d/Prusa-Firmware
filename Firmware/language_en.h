@@ -271,10 +271,11 @@
 #define MSG_HOMEYZ_PROGRESS                 "Calibrating Z"
 #define MSG_HOMEYZ_DONE		                "Calibration done"
 
-#define MSG_CALIBRATE_BED					"Calibrate bed"
-#define MSG_CALIBRATE_BED_RESET				"Reset bed calibration"
+#define MSG_SHOW_END_STOPS					"Show end stops"
+#define MSG_CALIBRATE_BED					"Calibrate X/Y"
+#define MSG_CALIBRATE_BED_RESET				"Reset X/Y calibr."
 
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1	"Calibrating bed."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1	"Calibrating X/Y."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2	"Move Z carriage up"
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3	"to the end stoppers."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4	"Click when done."
@@ -288,5 +289,15 @@
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Improving bed"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	"calibration point"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3	" of 9"
+
+#define MSG_BED_SKEW_OFFSET_DETECTION_FAILED			"X/Y calibration failed. Please consult manual."
+#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT			"X/Y calibration ok. X/Y axes are perpendicular."
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD			"X/Y calibration all right. X/Y axes are slightly skewed."
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		"X/Y skewed severly. Skew will be corrected automatically."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR	"X/Y calibration bad. Left front corner not reachable. Fix the printer."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR	"X/Y calibration bad. Right front corner not reachable. Fix the printer."
+
+#define MSG_BED_LEVELING_FAILED_POINT_LOW				"Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
+#define MSG_BED_LEVELING_FAILED_POINT_HIGH				"Bed leveling failed. Sensor triggered too high. Waiting for reset."
 
 #endif // LANGUAGE_EN_H

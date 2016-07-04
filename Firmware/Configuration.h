@@ -22,10 +22,13 @@
 // uint32_t
 #define EEPROM_TOTALTIME 4077
 
-#define EEPROM_BED_CALIBRATION_CENTER    (EEPROM_TOTALTIME-2*4)
-#define EEPROM_BED_CALIBRATION_VEC_X     (EEPROM_BED_CALIBRATION_CENTER-2*4)
-#define EEPROM_BED_CALIBRATION_VEC_Y     (EEPROM_BED_CALIBRATION_VEC_X-2*4)
+#define EEPROM_BED_CALIBRATION_CENTER     (EEPROM_TOTALTIME-2*4)
+#define EEPROM_BED_CALIBRATION_VEC_X      (EEPROM_BED_CALIBRATION_CENTER-2*4)
+#define EEPROM_BED_CALIBRATION_VEC_Y      (EEPROM_BED_CALIBRATION_VEC_X-2*4)
 
+// Offsets of the Z heiths of the calibration points from the first point.
+// The offsets are saved as 16bit signed int, scaled to tenths of microns.
+#define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
 
 // This configuration file contains the basic settings.
 // Advanced settings can be found in Configuration_adv.h

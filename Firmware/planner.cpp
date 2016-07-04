@@ -567,10 +567,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
         SERIAL_ECHOLNPGM("");
       #endif
 
-        float tmpx = x;
-        float tmpy = y;
-        x = world2machine_rotation_and_skew[0][0] * tmpx + world2machine_rotation_and_skew[0][1] * tmpy + world2machine_shift[0];
-        y = world2machine_rotation_and_skew[1][0] * tmpx + world2machine_rotation_and_skew[1][1] * tmpy + world2machine_shift[1];
+        world2machine(x, y);
 
       #if 0
         SERIAL_ECHOPGM("Planner, target position, corrected: ");
