@@ -913,7 +913,7 @@ static void lcd_menu_statistics()
 		int _t = (millis() - starttime) / 1000;
 
 		int _h = _t / 3600;
-		int _m = (_t - (_h * 60)) / 60;
+		int _m = (_t - (_h * 3600)) / 60;
 		int _s = _t - ((_h * 3600) + (_m * 60));
 		
 		lcd.setCursor(0, 0);
