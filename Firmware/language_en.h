@@ -294,8 +294,9 @@
 #define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT			"X/Y calibration ok. X/Y axes are perpendicular."
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD			"X/Y calibration all right. X/Y axes are slightly skewed."
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		"X/Y skewed severly. Skew will be corrected automatically."
-#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR	"X/Y calibration bad. Left front corner not reachable. Fix the printer."
-#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR	"X/Y calibration bad. Right front corner not reachable. Fix the printer."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR	"X/Y calibration bad. Left front calibration point not reachable. Fix the printer."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR	"X/Y calibration bad. Right front calibration point not reachable. Fix the printer."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR	"X/Y calibration bad. Front calibration points not reachable. Fix the printer."
 
 #define MSG_BED_LEVELING_FAILED_POINT_LOW				"Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 #define MSG_BED_LEVELING_FAILED_POINT_HIGH				"Bed leveling failed. Sensor triggered too high. Waiting for reset."

@@ -2371,6 +2371,7 @@ void process_commands()
 
                 current_position[X_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point);
                 current_position[Y_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point+1);
+                world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 //                mbl.get_meas_xy(ix, iy, current_position[X_AXIS], current_position[Y_AXIS], false);
                 enable_endstops(false);
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
@@ -2802,7 +2803,7 @@ void process_commands()
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
             st_synchronize();
-            if (result != BED_SKEW_OFFSET_DETECTION_FAILED) {
+            if (result >= 0) {
                 // Second half: The fine adjustment.
                 // Let the planner use the uncorrected coordinates.
                 mbl.reset();
@@ -2817,7 +2818,12 @@ void process_commands()
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
                 st_synchronize();
             }
-            lcd_bed_calibration_show_result(result);
+            if (result >= BED_SKEW_OFFSET_DETECTION_FAILED) {
+                lcd_bed_calibration_show_result(result);
+            } else {
+                lcd_bed_calibration_show_result(BED_SKEW_OFFSET_DETECTION_FAILED);
+                lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType(- int8_t(result)));
+            }
             /*
             if (result != BED_SKEW_OFFSET_DETECTION_FAILED) {
                 // Mesh bed leveling.
@@ -4716,53 +4722,7 @@ void get_arc_coordinates()
 
 void clamp_to_software_endstops(float target[3])
 {
-    if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE || world2machine_correction_mode == WORLD2MACHINE_CORRECTION_SHIFT) {
-        // No correction or only a shift correction.
-        // Save computational cycles by not performing the skew correction.
-        if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_SHIFT) {
-            target[0] += world2machine_shift[0];
-            target[1] += world2machine_shift[1];
-        }
-        if (min_software_endstops) {
-            if (target[X_AXIS] < min_pos[X_AXIS]) target[X_AXIS] = min_pos[X_AXIS];
-            if (target[Y_AXIS] < min_pos[Y_AXIS]) target[Y_AXIS] = min_pos[Y_AXIS];
-        }
-        if (max_software_endstops) {
-            if (target[X_AXIS] > max_pos[X_AXIS]) target[X_AXIS] = max_pos[X_AXIS];
-            if (target[Y_AXIS] > max_pos[Y_AXIS]) target[Y_AXIS] = max_pos[Y_AXIS];
-        }
-        if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_SHIFT) {
-            target[0] -= world2machine_shift[0];
-            target[1] -= world2machine_shift[1];
-        }
-    } else {
-        // Skew correction is in action.
-        float x, y;
-        world2machine(target[0], target[1], x, y);
-        bool clamped = false;
-        if (min_software_endstops) {
-            if (x < min_pos[X_AXIS]) {
-                x = min_pos[X_AXIS];
-                clamped = true;
-            }
-            if (y < min_pos[Y_AXIS]) {
-                y = min_pos[Y_AXIS];
-                clamped = true;
-            }
-        }
-        if (max_software_endstops) {
-            if (x > max_pos[X_AXIS]) {
-                x = max_pos[X_AXIS];
-                clamped = true;
-            }
-            if (y > max_pos[Y_AXIS]) {
-                y = max_pos[Y_AXIS];
-                clamped = true;
-            }
-        }
-        if (clamped)
-            machine2world(x, y, target[X_AXIS], target[Y_AXIS]);
-    }
+    world2machine_clamp(target[0], target[1]);
 
     // Clamp the Z coordinate.
     if (min_software_endstops) {

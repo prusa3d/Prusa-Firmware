@@ -291,11 +291,24 @@ const char * const MSG_BED_SKEW_OFFSET_DETECTION_FAILED_LANG_TABLE[LANG_NUM] PRO
 	MSG_BED_SKEW_OFFSET_DETECTION_FAILED_PL
 };
 
-const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_EN[] PROGMEM = "X/Y calibration bad. Left front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_EN[] PROGMEM = "X/Y calibration bad. Front calibration points not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_CZ[] PROGMEM = "Kalibrace selhala. Predni kalibracni body moc vpredu. Srovnejte tiskarnu.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_IT[] PROGMEM = "X/Y calibration bad. Front calibration points not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_ES[] PROGMEM = "X/Y calibration bad. Front calibration points not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_PL[] PROGMEM = "X/Y calibration bad. Front calibration points not reachable. Fix the printer.";
+const char * const MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_EN,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_CZ,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_IT,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_ES,
+	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR_PL
+};
+
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_EN[] PROGMEM = "X/Y calibration bad. Left front calibration point not reachable. Fix the printer.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_CZ[] PROGMEM = "Kalibrace selhala. Levy predni bod moc vpredu. Srovnejte tiskarnu.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_IT[] PROGMEM = "X/Y calibration bad. Left front corner not reachable. Fix the printer.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_ES[] PROGMEM = "X/Y calibration bad. Left front corner not reachable. Fix the printer.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_PL[] PROGMEM = "X/Y calibration bad. Left front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_IT[] PROGMEM = "X/Y calibration bad. Left front calibration point not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_ES[] PROGMEM = "X/Y calibration bad. Left front calibration point not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_PL[] PROGMEM = "X/Y calibration bad. Left front calibration point not reachable. Fix the printer.";
 const char * const MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_EN,
 	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_CZ,
@@ -304,11 +317,11 @@ const char * const MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_LANG_TABLE[LANG_
 	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR_PL
 };
 
-const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_EN[] PROGMEM = "X/Y calibration bad. Right front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_EN[] PROGMEM = "X/Y calibration bad. Right front calibration point not reachable. Fix the printer.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_CZ[] PROGMEM = "Kalibrace selhala. Pravy predni bod moc vpredu. Srovnejte tiskarnu.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_IT[] PROGMEM = "X/Y calibration bad. Right front corner not reachable. Fix the printer.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_ES[] PROGMEM = "X/Y calibration bad. Right front corner not reachable. Fix the printer.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_PL[] PROGMEM = "X/Y calibration bad. Right front corner not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_IT[] PROGMEM = "X/Y calibration bad. Right front calibration point not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_ES[] PROGMEM = "X/Y calibration bad. Right front calibration point not reachable. Fix the printer.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_PL[] PROGMEM = "X/Y calibration bad. Right front calibration point not reachable. Fix the printer.";
 const char * const MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_EN,
 	MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR_CZ,

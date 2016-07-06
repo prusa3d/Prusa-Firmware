@@ -303,6 +303,7 @@
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		"X/Y osy jsou silne zkosene. Zkoseni bude automaticky vyrovnano pri tisku."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR	"Kalibrace selhala. Levy predni bod moc vpredu. Srovnejte tiskarnu."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR	"Kalibrace selhala. Pravy predni bod moc vpredu. Srovnejte tiskarnu."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR	"Kalibrace selhala. Predni kalibracni body moc vpredu. Srovnejte tiskarnu."
 
 #define MSG_BED_LEVELING_FAILED_POINT_LOW				"Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
 #define MSG_BED_LEVELING_FAILED_POINT_HIGH				"Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset."

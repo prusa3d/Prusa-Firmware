@@ -112,7 +112,33 @@ inline void machine2world(float &x, float &y)
 	}
 }
 
-extern bool find_bed_induction_sensor_point_z(float minimum_z = -10.f);
+inline bool world2machine_clamp(float &x, float &y)
+{
+	bool clamped = false;
+	float tmpx, tmpy;
+    world2machine(x, y, tmpx, tmpy);
+    if (tmpx < X_MIN_POS) {
+        tmpx = X_MIN_POS;
+        clamped = true;
+    }
+    if (tmpy < Y_MIN_POS) {
+        tmpy = Y_MIN_POS;
+        clamped = true;
+    }
+    if (tmpx > X_MAX_POS) {
+        tmpx = X_MAX_POS;
+        clamped = true;
+    }
+    if (tmpy > Y_MAX_POS) {
+        tmpy = Y_MAX_POS;
+        clamped = true;
+    }
+    if (clamped)
+        machine2world(tmpx, tmpy, x, y);
+    return clamped;
+}
+
+extern bool find_bed_induction_sensor_point_z(float minimum_z = -10.f, uint8_t n_iter = 3);
 extern bool find_bed_induction_sensor_point_xy();
 
 // Positive or zero: ok
@@ -122,12 +148,13 @@ enum BedSkewOffsetDetectionResultType {
 	BED_SKEW_OFFSET_DETECTION_FAILED = -1,
 
 	// Detection finished with success.
-	BED_SKEW_OFFSET_DETECTION_PERFECT = 0,
-	BED_SKEW_OFFSET_DETECTION_SKEW_MILD,
-	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME,
+	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,
+	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,
+	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2,
 	// Detection finished with success, but it is recommended to fix the printer mechanically.
-	BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR,
-	BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR
+	BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR	= 4,
+	BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR	= 8,
+	BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR	= BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR | BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR,
 };
 
 extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level);

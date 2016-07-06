@@ -1376,6 +1376,9 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result)
         case BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR:
             msg = MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR;
             break;
+        case BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR:
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR;
+            break;
     }
 
     lcd_display_message_fullscreen_P(msg);
