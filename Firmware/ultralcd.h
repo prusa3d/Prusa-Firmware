@@ -44,7 +44,7 @@
   // the user confirm that it has been done.
   extern bool lcd_calibrate_z_end_stop_manual();
   // Show the result of the calibration process on the LCD screen.
-  extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result);
+  extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
 
   extern void lcd_diag_show_end_stops();
 

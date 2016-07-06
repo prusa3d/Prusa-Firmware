@@ -145,21 +145,17 @@ extern bool find_bed_induction_sensor_point_xy();
 // Negative: failed
 enum BedSkewOffsetDetectionResultType {
 	// Detection failed, some point was not found.
-	BED_SKEW_OFFSET_DETECTION_FAILED = -1,
+	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1,
+	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2,
 
 	// Detection finished with success.
 	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,
 	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,
-	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2,
-	// Detection finished with success, but it is recommended to fix the printer mechanically.
-	BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR	= 4,
-	BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR	= 8,
-	BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR	= BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR | BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR,
+	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2
 };
 
 extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level);
-extern BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level);
-
+extern BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level, uint8_t &too_far_mask);
 
 extern void reset_bed_offset_and_skew();
 extern bool is_bed_z_jitter_data_valid();

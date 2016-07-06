@@ -1223,6 +1223,7 @@ void get_command()
 
 // Return True if a character was found
 static inline bool    code_seen(char code) { return (strchr_pointer = strchr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
+static inline bool    code_seen(const char *code) { return (strchr_pointer = strstr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
 static inline float   code_value()         { return strtod(strchr_pointer+1, NULL); }
 static inline long    code_value_long()    { return strtol(strchr_pointer+1, NULL, 10); }
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
@@ -1590,19 +1591,18 @@ void process_commands()
 
   // PRUSA GCODES
 
-/*
-  if(code_seen('PRUSA')){
-    if(code_seen('Fir')){
+  if(code_seen("PRUSA")){
+    if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_version);
 
-    } else if(code_seen('Rev')){
+    } else if(code_seen("Rev")){
 
       SERIAL_PROTOCOLLN(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
-    } else if(code_seen('Lang')) {
+    } else if(code_seen("Lang")) {
       lcd_force_language_selection();
-    } else if(code_seen('Lz')) {
+    } else if(code_seen("Lz")) {
       EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
     } 
     //else if (code_seen('Cal')) {
@@ -1611,7 +1611,6 @@ void process_commands()
 
   }
   else 
-*/
   if(code_seen('G'))
   {
     switch((int)code_value())
@@ -2798,6 +2797,7 @@ void process_commands()
                 verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
             }
             BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level);
+            uint8_t point_too_far_mask = 0;
             clean_up_after_endstop_move();
             // Print head up.
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -2811,72 +2811,19 @@ void process_commands()
                 // Home in the XY plane.
                 setup_for_endstop_move();
                 home_xy();
-                result = improve_bed_offset_and_skew(1, verbosity_level);
+                result = improve_bed_offset_and_skew(1, verbosity_level, point_too_far_mask);
                 clean_up_after_endstop_move();
                 // Print head up.
                 current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
                 st_synchronize();
             }
-            if (result >= BED_SKEW_OFFSET_DETECTION_FAILED) {
-                lcd_bed_calibration_show_result(result);
-            } else {
-                lcd_bed_calibration_show_result(BED_SKEW_OFFSET_DETECTION_FAILED);
-                lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType(- int8_t(result)));
-            }
-            /*
-            if (result != BED_SKEW_OFFSET_DETECTION_FAILED) {
-                // Mesh bed leveling.
-                // Push the commands to the front of the message queue in the reverse order!
-                // There shall be always enough space reserved for these commands.
-                enquecommand_front_P((PSTR("G80")));
-            }
-            */
+            lcd_bed_calibration_show_result(result, point_too_far_mask);
             lcd_update_enable(true);
             lcd_implementation_clear();
             // lcd_return_to_status();
             lcd_update();
         }
-        break;
-    }
-
-    case 46: // M46: bed skew and offset with manual Z up
-    {
-        // Disable the default update procedure of the display. We will do a modal dialog.
-        lcd_update_enable(false);
-        // Let the planner use the uncorrected coordinates.
-        mbl.reset();
-        world2machine_reset();
-        // Move the print head close to the bed.
-        current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
-        st_synchronize();
-        // Home in the XY plane.
-        set_destination_to_current();
-        setup_for_endstop_move();
-        home_xy();
-        int8_t verbosity_level = 0;
-        if (code_seen('V')) {
-            // Just 'V' without a number counts as V1.
-            char c = strchr_pointer[1];
-            verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
-        }
-        bool success = improve_bed_offset_and_skew(1, verbosity_level);
-        clean_up_after_endstop_move();
-        // Print head up.
-        current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
-        st_synchronize();
-        if (success) {
-            // Mesh bed leveling.
-            // Push the commands to the front of the message queue in the reverse order!
-            // There shall be always enough space reserved for these commands.
-            enquecommand_front_P((PSTR("G80")));
-        }
-        lcd_update_enable(true);
-        lcd_implementation_clear();
-        // lcd_return_to_status();
-        lcd_update();
         break;
     }
 

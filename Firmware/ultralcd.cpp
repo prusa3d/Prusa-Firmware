@@ -1353,34 +1353,8 @@ void lcd_display_message_fullscreen_P(const char *msg)
     }
 }
 
-void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result)
+static void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 {
-    const char *msg = NULL;
-    switch (result) {
-        case BED_SKEW_OFFSET_DETECTION_FAILED:
-        default:
-            msg = MSG_BED_SKEW_OFFSET_DETECTION_FAILED;
-            break;
-        case BED_SKEW_OFFSET_DETECTION_PERFECT:
-            msg = MSG_BED_SKEW_OFFSET_DETECTION_PERFECT;
-            break;
-        case BED_SKEW_OFFSET_DETECTION_SKEW_MILD:
-            msg = MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD;
-            break;
-        case BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME:
-            msg = MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME;
-            break;
-        case BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR:
-            msg = MSG_BED_SKEW_OFFSET_DETECTION_FRONT_LEFT_FAR;
-            break;
-        case BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR:
-            msg = MSG_BED_SKEW_OFFSET_DETECTION_FRONT_RIGHT_FAR;
-            break;
-        case BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR:
-            msg = MSG_BED_SKEW_OFFSET_DETECTION_FRONT_BOTH_FAR;
-            break;
-    }
-
     lcd_display_message_fullscreen_P(msg);
 
     // Until confirmed by a button click.
@@ -1391,6 +1365,58 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result)
             delay(10);
             while (lcd_clicked()) ;
             break;
+        }
+    }
+}
+
+void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask)
+{
+    const char *msg = NULL;
+    if (result == BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND) {
+        lcd_show_fullscreen_message_and_wait_P(MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND);
+    } else if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED) {
+        if (point_too_far_mask == 0)
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED;
+        else if (point_too_far_mask == 2 || point_too_far_mask == 7)
+            // Only the center point or all the three front points.
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR;
+        else if (point_too_far_mask & 1 == 0)
+            // The right and maybe the center point out of reach.
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR;
+        else
+            // The left and maybe the center point out of reach.
+            msg = MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR;
+        lcd_show_fullscreen_message_and_wait_P(msg);
+    } else {
+        if (point_too_far_mask != 0) {
+            if (point_too_far_mask == 2 || point_too_far_mask == 7)
+                // Only the center point or all the three front points.
+                msg = MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR;
+            else if (point_too_far_mask & 1 == 0)
+                // The right and maybe the center point out of reach.
+                msg = MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR;
+            else
+                // The left and maybe the center point out of reach.
+                msg = MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR;
+            lcd_show_fullscreen_message_and_wait_P(msg);
+        }
+        if (point_too_far_mask == 0 || result > 0) {
+            switch (result) {
+                default:
+                    // should not happen
+                    msg = MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED;
+                    break;
+                case BED_SKEW_OFFSET_DETECTION_PERFECT:
+                    msg = MSG_BED_SKEW_OFFSET_DETECTION_PERFECT;
+                    break;
+                case BED_SKEW_OFFSET_DETECTION_SKEW_MILD:
+                    msg = MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD;
+                    break;
+                case BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME:
+                    msg = MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME;
+                    break;
+            }
+            lcd_show_fullscreen_message_and_wait_P(msg);
         }
     }
 }
