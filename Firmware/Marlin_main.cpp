@@ -966,10 +966,16 @@ void setup()
   enable_z();
 #endif
 
-  if (eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x0ff) {
-      lang_selected = eeprom_read_byte((unsigned char*)EEPROM_LANG);
+  if (eeprom_read_byte((uint8_t*)EEPROM_BABYSTEP_Z_SET) == 0x0ff) {
+      // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
+      // eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_X, 0x0ff);
+      // eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_Y, 0x0ff);
+      eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_Z, 0x0ff);
+      // Get the selected laugnage index before display update.
+      lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
       if (lang_selected >= LANG_NUM)
           lang_selected = 1;
+      // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
       lcd_update_enable(true);
       lcd_implementation_clear();
