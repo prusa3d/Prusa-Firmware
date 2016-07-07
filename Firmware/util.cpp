@@ -2,6 +2,7 @@
 
 #include "ultralcd.h"
 #include "language.h"
+#include "util.h"
 
 // Allocate the version string in the program memory. Otherwise the string lands either on the stack or in the global RAM.
 const char FW_VERSION_STR[] PROGMEM = FW_version;
@@ -10,19 +11,6 @@ const char* FW_VERSION_STR_P()
 {
     return FW_VERSION_STR;
 }
-
-enum RevisionType
-{
-    REVISION_DEV = 0,
-    REVISION_ALPHA = 1,
-    REVISION_BETA = 2,
-    REVISION_RC,
-    REVISION_RC2,
-    REVISION_RC3,
-    REVISION_RC4,
-    REVISION_RC5,
-    REVISION_RELEASED = 127
-};
 
 const char STR_REVISION_DEV  [] PROGMEM = "dev";
 const char STR_REVISION_ALPHA[] PROGMEM = "alpha";
@@ -79,24 +67,24 @@ inline bool parse_version(const char *str, uint16_t version[4])
     if (endptr != p)
         return false;
 
-    version[3] = REVISION_RELEASED;
+    version[3] = FIRMWARE_REVISION_RELEASED;
     if (*p ++ == '-') {
         const char *q = p;
         while (! is_whitespace_or_nl_or_eol(*q))
             ++ q;
         uint8_t n = q - p;
         if (n == strlen_P(STR_REVISION_DEV) && strncmp_P(p, STR_REVISION_DEV, n) == 0)
-            version[3] = REVISION_DEV;
+            version[3] = FIRMWARE_REVISION_DEV;
         else if (n == strlen_P(STR_REVISION_ALPHA) && strncmp_P(p, STR_REVISION_ALPHA, n) == 0)
-            version[3] = REVISION_ALPHA;
+            version[3] = FIRMWARE_REVISION_ALPHA;
         else if (n == strlen_P(STR_REVISION_BETA) && strncmp_P(p, STR_REVISION_BETA, n) == 0)
-            version[3] = REVISION_BETA;
+            version[3] = FIRMWARE_REVISION_BETA;
         else if ((n == 2 || n == 3) && p[0] == 'r' && p[1] == 'c') {
             if (n == 2)
-                version[3] = REVISION_RC;
+                version[3] = FIRMWARE_REVISION_RC;
             else {
                 if (is_digit(p[2]))
-                    version[3] = REVISION_RC + p[2] - '1';
+                    version[3] = FIRMWARE_REVISION_RC + p[2] - '1';
                 else
                     return false;
             }
@@ -180,25 +168,25 @@ inline bool parse_version_P(const char *str, uint16_t version[4])
     if (*endptr != 0)
         return false;
 
-    version[3] = REVISION_RELEASED;
+    version[3] = FIRMWARE_REVISION_RELEASED;
     if (pgm_read_byte(p ++) == '-') {
         const char *q = p;
         while (! is_whitespace_or_nl_or_eol(char(pgm_read_byte(q))))
             ++ q;
         n = q - p;
         if (n == strlen_P(STR_REVISION_DEV) && strncmp_PP(p, STR_REVISION_DEV, n) == 0)
-            version[3] = REVISION_DEV;
+            version[3] = FIRMWARE_REVISION_DEV;
         else if (n == strlen_P(STR_REVISION_ALPHA) && strncmp_PP(p, STR_REVISION_ALPHA, n) == 0)
-            version[3] = REVISION_ALPHA;
+            version[3] = FIRMWARE_REVISION_ALPHA;
         else if (n == strlen_P(STR_REVISION_BETA) && strncmp_PP(p, STR_REVISION_BETA, n) == 0)
-            version[3] = REVISION_BETA;
+            version[3] = FIRMWARE_REVISION_BETA;
         else if ((n == 2 || n == 3) && strncmp_PP(p, STR_REVISION_RC, 2) == 0) {
             if (n == 2)
-                version[3] = REVISION_RC;
+                version[3] = FIRMWARE_REVISION_RC;
             else {
                 p += 2;
                 if (is_digit(pgm_read_byte(p)))
-                    version[3] = REVISION_RC + pgm_read_byte(p) - '1';
+                    version[3] = FIRMWARE_REVISION_RC + pgm_read_byte(p) - '1';
                 else
                     return false;
             }
@@ -276,4 +264,16 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
 
     // Succeeded.
     return true;
+}
+
+void update_current_firmware_version_to_eeprom()
+{
+    uint16_t ver_current[4];
+    if (parse_version_P(FW_VERSION_STR, ver_current)) {
+        eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR,    ver_current[0]);
+        eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR,    ver_current[1]);
+        eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION, ver_current[2]);
+        // See FirmwareRevisionFlavorType for the definition of firmware flavors.
+        eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR,   ver_current[3]);
+    }
 }

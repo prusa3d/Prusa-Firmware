@@ -966,6 +966,10 @@ void setup()
   enable_z();
 #endif
 
+  // In the future, somewhere here would one compare the current firmware version against the firmware version stored in the EEPROM.
+  // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
+  // is being written into the EEPROM, so the update procedure will be triggered only once.
+
   if (eeprom_read_byte((uint8_t*)EEPROM_BABYSTEP_Z_SET) == 0x0ff) {
       // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
       // eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_X, 0x0ff);
@@ -980,6 +984,10 @@ void setup()
       lcd_update_enable(true);
       lcd_implementation_clear();
   }
+
+  // Store the currently running firmware into an eeprom,
+  // so the next time the firmware gets updated, it will know from which version it has been updated.
+  update_current_firmware_version_to_eeprom();
 }
 
 // The loop() function is called in an endless loop by the Arduino framework from the default main() routine.
