@@ -39,6 +39,7 @@
   static void lcd_menu_statistics();
 
   extern void lcd_display_message_fullscreen_P(const char *msg);
+  extern void lcd_wait_for_click();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
   // 0: no, 1: yes, -1: timeouted
   extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true);
@@ -173,6 +174,7 @@ char *ftostr52(const float &x);
 extern void lcd_implementation_clear();
 extern void lcd_printPGM(const char* str);
 extern void lcd_print_at_PGM(uint8_t x, uint8_t y, const char* str);
+extern void lcd_implementation_write(char c);
 extern void lcd_implementation_print(const char *str);
 extern void lcd_implementation_print(int8_t i);
 extern void lcd_implementation_print_at(uint8_t x, uint8_t y, int8_t i);

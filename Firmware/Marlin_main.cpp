@@ -61,6 +61,7 @@
 #include "language.h"
 #include "pins_arduino.h"
 #include "math.h"
+#include "util.h"
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -1227,6 +1228,7 @@ static inline bool    code_seen(const char *code) { return (strchr_pointer = str
 static inline float   code_value()         { return strtod(strchr_pointer+1, NULL); }
 static inline long    code_value_long()    { return strtol(strchr_pointer+1, NULL, 10); }
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
+static inline uint8_t code_value_uint8()   { return uint8_t(strtol(strchr_pointer+1, NULL, 10)); };
 
 #define DEFINE_PGM_READ_ANY(type, reader)       \
     static inline type pgm_read_any(const type *p)  \
@@ -2766,7 +2768,7 @@ void process_commands()
       }
      break;
 
-    case 44: // M45: Reset the bed skew and offset calibration.
+    case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
         // Reset the skew and offset in both RAM and EEPROM.
         reset_bed_offset_and_skew();
         // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
@@ -2775,7 +2777,7 @@ void process_commands()
         world2machine_revert_to_uncorrected();
         break;
 
-    case 45: // M46: bed skew and offset with manual Z up
+    case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
         // Disable the default update procedure of the display. We will do a modal dialog.
         lcd_update_enable(false);
@@ -2835,7 +2837,12 @@ void process_commands()
         break;
     }
 
-#if 1
+    case 47:
+        // M47: Prusa3D: Show end stops dialog on the display.
+        lcd_diag_show_end_stops();
+        break;
+
+#if 0
     case 48: // M48: scan the bed induction sensor points, print the sensor trigger coordinates to the serial line for visualization on the PC.
     {
         // Disable the default update procedure of the display. We will do a modal dialog.
@@ -2873,10 +2880,6 @@ void process_commands()
         break;
     }
 #endif
-
-    case 47:
-        lcd_diag_show_end_stops();
-        break;
 
 // M48 Z-Probe repeatability measurement function.
 //
@@ -3488,7 +3491,16 @@ Sigma_Exit:
       }
       break;
     case 115: // M115
-      SERIAL_PROTOCOLRPGM(MSG_M115_REPORT);
+      if (code_seen('V')) {
+          // Report the Prusa version number.
+          SERIAL_PROTOCOLLNRPGM(FW_VERSION_STR_P());
+      } else if (code_seen('U')) {
+          // Check the firmware version provided. If the firmware version provided by the U code is higher than the currently running firmware,
+          // pause the print and ask the user to upgrade the firmware.
+          show_upgrade_dialog_if_version_newer(++ strchr_pointer);
+      } else {
+          SERIAL_PROTOCOLRPGM(MSG_M115_REPORT);
+      }
       break;
     case 117: // M117 display message
       starpos = (strchr(strchr_pointer + 5,'*'));

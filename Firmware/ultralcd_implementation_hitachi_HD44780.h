@@ -591,6 +591,11 @@ void lcd_print_at_PGM(uint8_t x, uint8_t y, const char* str)
     }
 }
 
+void lcd_implementation_write(char c)
+{
+    lcd.write(c);
+}
+
 void lcd_implementation_print(int8_t i)
 {
     lcd.print(i);
