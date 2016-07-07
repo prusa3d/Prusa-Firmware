@@ -1030,6 +1030,12 @@ void get_command()
 
   while (MYSERIAL.available() > 0) {
     char serial_char = MYSERIAL.read();
+    if (serial_char < 0)
+        // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
+        // and Marlin does not support such file names anyway.
+        // Serial characters with a highest bit set to 1 are generated when the USB cable is unplugged, leading
+        // to a hang-up of the print process from an SD card.
+        continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
        (serial_char == ':' && comment_mode == false) ||
