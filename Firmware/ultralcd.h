@@ -39,6 +39,9 @@
   static void lcd_menu_statistics();
 
   extern void lcd_display_message_fullscreen_P(const char *msg);
+  extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
+  // 0: no, 1: yes, -1: timeouted
+  extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true);
 
   // Ask the user to move the Z axis up to the end stoppers and let
   // the user confirm that it has been done.

@@ -24,6 +24,8 @@ extern float world2machine_shift[2];
 
 // Resets the transformation to identity.
 extern void world2machine_reset();
+// Resets the transformation to identity and update current_position[X,Y] from the servos.
+extern void world2machine_revert_to_uncorrected();
 // Loads the transformation from the EEPROM, if available.
 extern void world2machine_initialize();
 

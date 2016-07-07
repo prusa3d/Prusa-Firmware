@@ -433,7 +433,7 @@ const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
 
 //Inactivity shutdown variables
 static unsigned long previous_millis_cmd = 0;
-static unsigned long max_inactive_time = 0;
+unsigned long max_inactive_time = 0;
 static unsigned long stepper_inactive_time = DEFAULT_STEPPER_DEACTIVE_TIME*1000l;
 
 unsigned long starttime=0;
@@ -1873,7 +1873,8 @@ void process_commands()
 
       // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
       // the planner will not perform any adjustments in the XY plane. 
-      world2machine_reset();
+      // Wait for the motors to stop and update the current position with the absolute values.
+      world2machine_revert_to_uncorrected();
 
       saved_feedrate = feedrate;
       saved_feedmultiply = feedmultiply;
@@ -1882,9 +1883,8 @@ void process_commands()
 
       enable_endstops(true);
 
-      for(int8_t i=0; i < NUM_AXIS; i++) {
-        destination[i] = current_position[i];
-      }
+      for(int8_t i=0; i < NUM_AXIS; i++)
+          destination[i] = current_position[i];
       feedrate = 0.0;
 
       home_all_axis = !((code_seen(axis_codes[X_AXIS])) || (code_seen(axis_codes[Y_AXIS])) || (code_seen(axis_codes[Z_AXIS])));
@@ -1997,6 +1997,8 @@ void process_commands()
               world2machine_initialize();
               world2machine(pgm_read_float(bed_ref_points), pgm_read_float(bed_ref_points+1), destination[X_AXIS], destination[Y_AXIS]);
               world2machine_reset();
+              if (destination[Y_AXIS] < Y_MIN_POS)
+                  destination[Y_AXIS] = Y_MIN_POS;
               destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
               feedrate = homing_feedrate[Z_AXIS]/10;
               current_position[Z_AXIS] = 0;
@@ -2329,6 +2331,7 @@ void process_commands()
             // The move to the first calibration point.
             current_position[X_AXIS] = pgm_read_float(bed_ref_points);
             current_position[Y_AXIS] = pgm_read_float(bed_ref_points+1);
+            world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 //            mbl.get_meas_xy(0, 0, current_position[X_AXIS], current_position[Y_AXIS], false);            
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS]/30, active_extruder);
             // Wait until the move is finished.
@@ -2408,6 +2411,7 @@ void process_commands()
             current_position[X_AXIS] = X_MIN_POS+0.2;
             current_position[Y_AXIS] = Y_MIN_POS+0.2;
             current_position[Z_AXIS] = Z_MIN_POS;
+            world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
             plan_buffer_line(current_position[X_AXIS], current_position[X_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
             st_synchronize();
 			
@@ -2765,11 +2769,10 @@ void process_commands()
     case 44: // M45: Reset the bed skew and offset calibration.
         // Reset the skew and offset in both RAM and EEPROM.
         reset_bed_offset_and_skew();
-        world2machine_reset();
+        // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
+        // the planner will not perform any adjustments in the XY plane. 
         // Wait for the motors to stop and update the current position with the absolute values.
-        st_synchronize();
-        current_position[X_AXIS] = st_get_position_mm(X_AXIS);
-        current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
+        world2machine_revert_to_uncorrected();
         break;
 
     case 45: // M46: bed skew and offset with manual Z up
@@ -2778,7 +2781,10 @@ void process_commands()
         lcd_update_enable(false);
         // Let the planner use the uncorrected coordinates.
         mbl.reset();
-        world2machine_reset();
+        // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
+        // the planner will not perform any adjustments in the XY plane. 
+        // Wait for the motors to stop and update the current position with the absolute values.
+        world2machine_revert_to_uncorrected();
         // Let the user move the Z axes up to the end stoppers.
         if (lcd_calibrate_z_end_stop_manual()) {
             refresh_cmd_timeout();
@@ -2819,11 +2825,13 @@ void process_commands()
                 st_synchronize();
             }
             lcd_bed_calibration_show_result(result, point_too_far_mask);
-            lcd_update_enable(true);
-            lcd_implementation_clear();
-            // lcd_return_to_status();
-            lcd_update();
+        } else {
+            // Timeouted.
         }
+        lcd_update_enable(true);
+        lcd_implementation_clear();
+        // lcd_return_to_status();
+        lcd_update();
         break;
     }
 
@@ -2834,7 +2842,10 @@ void process_commands()
         lcd_update_enable(false);
         // Let the planner use the uncorrected coordinates.
         mbl.reset();
-        world2machine_reset();
+        // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
+        // the planner will not perform any adjustments in the XY plane. 
+        // Wait for the motors to stop and update the current position with the absolute values.
+        world2machine_revert_to_uncorrected();
         // Move the print head close to the bed.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);

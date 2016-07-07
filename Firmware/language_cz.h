@@ -282,13 +282,9 @@
 #define MSG_CALIBRATE_BED					"Kalibrace X/Y"
 #define MSG_CALIBRATE_BED_RESET				"Reset X/Y kalibr."
 
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1	"Kalibrace X/Y"
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2	"Posunte prosim Z osu"
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3	"az k hornimu dorazu."
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4	"Potvrdte tlacitkem."
-
-#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1	"Dojely oba Z voziky"
-#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2	"k hornimu dorazu?"
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP		"Kalibrace X/Y. Posunte prosim Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
+#define MSG_CONFIRM_NOZZLE_CLEAN			"Pro uspesnou kalibraci ocistete prosim tiskovou trysku. Potvrdte tlacitkem."
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Dojely oba Z voziky k~hornimu dorazu?"
 
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Hledam kalibracni"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	"bod podlozky"

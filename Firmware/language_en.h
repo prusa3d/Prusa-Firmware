@@ -275,13 +275,9 @@
 #define MSG_CALIBRATE_BED					"Calibrate X/Y"
 #define MSG_CALIBRATE_BED_RESET				"Reset X/Y calibr."
 
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1	"Calibrating X/Y."
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2	"Move Z carriage up"
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3	"to the end stoppers."
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4	"Click when done."
-
-#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1	"Are left and right"
-#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2	"Z carriages all up?"
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP 		"Calibrating X/Y. Move Z carriage up to the end stoppers. Click when done."
+#define MSG_CONFIRM_NOZZLE_CLEAN			"Please clean the nozzle for calibration. Click when done."
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Are left and right Z~carriages all up?"
 
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Searching bed"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	"calibration point"

@@ -557,6 +557,21 @@ void world2machine_reset()
     world2machine_update(vx, vy, cntr);
 }
 
+void world2machine_revert_to_uncorrected()
+{
+    if (world2machine_correction_mode != WORLD2MACHINE_CORRECTION_NONE) {
+        // Reset the machine correction matrix.
+        const float vx[] = { 1.f, 0.f };
+        const float vy[] = { 0.f, 1.f };
+        const float cntr[] = { 0.f, 0.f };
+        world2machine_update(vx, vy, cntr);
+        // Wait for the motors to stop and update the current position with the absolute values.
+        st_synchronize();
+        current_position[X_AXIS] = st_get_position_mm(X_AXIS);
+        current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
+    }
+}
+
 static inline bool vec_undef(const float v[2])
 {
     const uint32_t *vx = (const uint32_t*)v;
@@ -1150,13 +1165,12 @@ canceled:
 
 // Searching the front points, where one cannot move the sensor head in front of the sensor point.
 // Searching in a zig-zag movement in a plane for the maximum width of the response.
+// This function may set the current_position[Y_AXIS] below Y_MIN_POS, if the function succeeded.
+// If this function failed, the Y coordinate will never be outside the working space.
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS (4.f)
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y (0.1f)
 inline bool improve_bed_induction_sensor_point3(int verbosity_level)
 {
-    if (current_position[Y_AXIS] < Y_MIN_POS_FOR_BED_CALIBRATION)
-        current_position[Y_AXIS] = Y_MIN_POS_FOR_BED_CALIBRATION;
-
     float center_old_x = current_position[X_AXIS];
     float center_old_y = current_position[Y_AXIS];
     float a, b;
@@ -1411,7 +1425,10 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
                 // the induction sensor is probably too high. Returning false will force
                 // the sensor to be lowered a tiny bit.
                 result = xmax >= MIN_BED_SENSOR_POINT_RESPONSE_DMR;
-                ymax = 0.5f * (y0 + y1);
+                if (y0 > Y_MIN_POS_FOR_BED_CALIBRATION + 0.2f)
+                    // Only in case both left and right y tangents are known, use them.
+                    // If y0 is close to the bed edge, it may not be symmetric to the right tangent.
+                    ymax = 0.5f * ymax + 0.25f * (y0 + y1);
             }
         }
 
@@ -1426,15 +1443,22 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
             SERIAL_ECHO(current_position[Y_AXIS]);
             SERIAL_ECHOLNPGM("");
         }
-        go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
+
+        // Don't clamp current_position[Y_AXIS], because the out-of-reach Y coordinate may actually be true.
+        // Only clamp the coordinate to go.
+        go_xy(current_position[X_AXIS], max(Y_MIN_POS, current_position[Y_AXIS]), homing_feedrate[X_AXIS] / 60.f);
         // delay_keep_alive(3000);
     }
 
-    return result;
+    if (result)
+        return true;
+    // otherwise clamp the Y coordinate
 
 canceled:
     // Go back to the center.
     enable_z_endstop(false);
+    if (current_position[Y_AXIS] < Y_MIN_POS)
+        current_position[Y_AXIS] = Y_MIN_POS;
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
     return false;
 }
@@ -1563,8 +1587,12 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 #endif
         if (verbosity_level >= 10)
             delay_keep_alive(3000);
+        // Save the detected point position and then clamp the Y coordinate, which may have been estimated
+        // to lie outside the machine working space.
         pt[0] = current_position[X_AXIS];
         pt[1] = current_position[Y_AXIS];
+        if (current_position[Y_AXIS] < Y_MIN_POS)
+            current_position[Y_AXIS] = Y_MIN_POS;
         // Start searching for the other points at 3mm above the last point.
         current_position[Z_AXIS] += 3.f;
         cntr[0] += pt[0];
@@ -1738,6 +1766,8 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
                     pts[mesh_point*2  ] += current_position[X_AXIS];
                     pts[mesh_point*2+1] += current_position[Y_AXIS];
                 }
+                if (current_position[Y_AXIS] < Y_MIN_POS)
+                    current_position[Y_AXIS] = Y_MIN_POS;
                 ++ iter;
             } else if (n_errors -- == 0) {
                 // Give up.

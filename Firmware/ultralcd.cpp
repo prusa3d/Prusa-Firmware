@@ -1023,6 +1023,7 @@ static void _lcd_move(const char *name, int axis, int min, int max) {
     if (min_software_endstops && current_position[axis] < min) current_position[axis] = min;
     if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
     encoderPosition = 0;
+    world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[axis] / 60, active_extruder);
     lcdDrawUpdate = 1;
   }
@@ -1202,10 +1203,7 @@ void lcd_adjust_z() {
 // Otherwise the Z calibration is not changed and false is returned.
 bool lcd_calibrate_z_end_stop_manual()
 {
-    const unsigned long max_inactive_time = 60 * 1000; // 60 seconds
-    unsigned long previous_millis_cmd = millis();
-    int8_t        cursor_pos;
-    int8_t        enc_dif = 0;
+    bool clean_nozzle_asked = false;
 
     // Don't know where we are. Let's claim we are Z=0, so the soft end stops will not be triggered when moving up.
     current_position[Z_AXIS] = 0;
@@ -1213,21 +1211,13 @@ bool lcd_calibrate_z_end_stop_manual()
 
     // Until confirmed by the confirmation dialog.
     for (;;) {
-        previous_millis_cmd = millis();
-        lcd_implementation_clear();
-        lcd.setCursor(0, 0);
-        lcd_printPGM(MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE1);
-        lcd.setCursor(0, 1);
-        lcd_printPGM(MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE2);
-        lcd.setCursor(0, 2);
-        lcd_printPGM(MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE3);
-        lcd.setCursor(0, 3);
-        lcd_printPGM(MSG_MOVE_CARRIAGE_TO_THE_TOP_LINE4);
+        unsigned long previous_millis_cmd = millis();
+        lcd_display_message_fullscreen_P(MSG_MOVE_CARRIAGE_TO_THE_TOP);
         // Until the user finishes the z up movement.
         encoderDiff = 0;
         encoderPosition = 0;
         for (;;) {
-            if (millis() - previous_millis_cmd >  max_inactive_time)
+            if (millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
                 goto canceled;
             manage_heater();
             manage_inactivity(true);
@@ -1256,59 +1246,24 @@ bool lcd_calibrate_z_end_stop_manual()
             }
         }
 
-        // Let the user confirm, that the Z carriage is at the top end stoppers.
-        lcd_implementation_clear();
-        lcd.setCursor(0, 0);
-        lcd_printPGM(MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE1);
-        lcd.setCursor(0, 1);
-        lcd_printPGM(MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LINE2);
-        lcd.setCursor(1, 2);
-        lcd_printPGM(MSG_YES);
-        lcd.setCursor(1, 3);
-        lcd_printPGM(MSG_NO);
-        cursor_pos = 3;
-        lcd.setCursor(0, cursor_pos);
-        lcd_printPGM(PSTR(">"));
-
-        previous_millis_cmd = millis();
-        enc_dif = encoderDiff;
-        for (;;) {
-            if (millis() - previous_millis_cmd >  max_inactive_time)
-                goto canceled;
-            manage_heater();
-            manage_inactivity(true);
-            if (abs((enc_dif - encoderDiff)) > 4) {
-                if (abs(enc_dif - encoderDiff) > 1) {
-                    lcd.setCursor(0, 2);
-                    if (enc_dif > encoderDiff && cursor_pos == 4) {
-                        lcd_printPGM((PSTR(" ")));
-                        lcd.setCursor(0, 3);
-                        lcd_printPGM((PSTR(">")));
-                        -- cursor_pos;
-                    } else if (enc_dif < encoderDiff && cursor_pos == 3) {
-                        ++ cursor_pos;
-                        lcd_printPGM((PSTR(">")));
-                        lcd.setCursor(0, 3);
-                        lcd_printPGM((PSTR(" ")));
-                    }
-                    enc_dif = encoderDiff;
-                }
-            }
-            if (lcd_clicked()) {
-                while (lcd_clicked()) ;
-                delay(10);
-                while (lcd_clicked()) ;
-                if (cursor_pos == 3) {
-                    // Perform another round of the Z up dialog.
-                    break;
-                }
-                goto calibrated;
-            }
+        if (! clean_nozzle_asked) {
+            lcd_show_fullscreen_message_and_wait_P(MSG_CONFIRM_NOZZLE_CLEAN);
+            clean_nozzle_asked = true;
         }
+
+        // Let the user confirm, that the Z carriage is at the top end stoppers.
+        int8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_CONFIRM_CARRIAGE_AT_THE_TOP);
+        if (result == -1)
+            goto canceled;
+        else if (result == 1)
+            goto calibrated;
+        // otherwise perform another round of the Z up dialog.
     }
 
 calibrated:
-    current_position[Z_AXIS] = Z_MAX_POS;
+    // Let the machine think the Z axis is a bit higher than it is, so it will not home into the bed
+    // during the search for the induction points.
+    current_position[Z_AXIS] = Z_MAX_POS-3.f;
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
     return true;
 
@@ -1353,7 +1308,7 @@ void lcd_display_message_fullscreen_P(const char *msg)
     }
 }
 
-static void lcd_show_fullscreen_message_and_wait_P(const char *msg)
+void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 {
     lcd_display_message_fullscreen_P(msg);
 
@@ -1365,6 +1320,51 @@ static void lcd_show_fullscreen_message_and_wait_P(const char *msg)
             delay(10);
             while (lcd_clicked()) ;
             break;
+        }
+    }
+}
+
+int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting)
+{
+    lcd_display_message_fullscreen_P(msg);
+
+    lcd.setCursor(1, 2);
+    lcd_printPGM(MSG_YES);
+    lcd.setCursor(0, 3);
+    lcd_printPGM(PSTR(">"));
+    lcd_printPGM(MSG_NO);
+    bool yes = false;
+
+    // Wait for user confirmation or a timeout.
+    unsigned long previous_millis_cmd = millis();
+    int8_t        enc_dif = encoderDiff;
+    for (;;) {
+        if (allow_timeouting && millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
+            return -1;
+        manage_heater();
+        manage_inactivity(true);
+        if (abs((enc_dif - encoderDiff)) > 4) {
+            if (abs(enc_dif - encoderDiff) > 1) {
+                lcd.setCursor(0, 2);
+                if (enc_dif > encoderDiff && yes) {
+                    lcd_printPGM((PSTR(" ")));
+                    lcd.setCursor(0, 3);
+                    lcd_printPGM((PSTR(">")));
+                    yes = false;
+                } else if (enc_dif < encoderDiff && ! yes) {
+                    lcd_printPGM((PSTR(">")));
+                    lcd.setCursor(0, 3);
+                    lcd_printPGM((PSTR(" ")));
+                    yes = true;
+                }
+                enc_dif = encoderDiff;
+            }
+        }
+        if (lcd_clicked()) {
+            while (lcd_clicked()) ;
+            delay(10);
+            while (lcd_clicked()) ;
+            return yes;
         }
     }
 }
