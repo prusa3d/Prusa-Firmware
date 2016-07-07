@@ -965,6 +965,15 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
   enable_z();
 #endif
+
+  if (eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x0ff) {
+      lang_selected = eeprom_read_byte((unsigned char*)EEPROM_LANG);
+      if (lang_selected >= LANG_NUM)
+          lang_selected = 1;
+      lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
+      lcd_update_enable(true);
+      lcd_implementation_clear();
+  }
 }
 
 // The loop() function is called in an endless loop by the Arduino framework from the default main() routine.

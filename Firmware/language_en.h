@@ -304,4 +304,6 @@
 #define MSG_NEW_FIRMWARE_AVAILABLE								"New firmware version available:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Please upgrade."
 
+#define MSG_BABYSTEP_Z_NOT_SET									"Printer has not been calibrated yet. Run calibration G-code to adjust Z height."
+
 #endif // LANGUAGE_EN_H

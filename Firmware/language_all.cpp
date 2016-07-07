@@ -213,6 +213,19 @@ const char * const MSG_BABYSTEP_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BABYSTEP_Z_PL
 };
 
+const char MSG_BABYSTEP_Z_NOT_SET_EN[] PROGMEM = "Printer has not been calibrated yet. Run calibration G-code to adjust Z height.";
+const char MSG_BABYSTEP_Z_NOT_SET_CZ[] PROGMEM = "Tiskarna nebyla jeste zkalibrovana. Spustte kalibracni G-kod a doladte Z.";
+const char MSG_BABYSTEP_Z_NOT_SET_IT[] PROGMEM = "Printer has not been calibrated yet. Run calibration G-code to adjust Z height.";
+const char MSG_BABYSTEP_Z_NOT_SET_ES[] PROGMEM = "Printer has not been calibrated yet. Run calibration G-code to adjust Z height.";
+const char MSG_BABYSTEP_Z_NOT_SET_PL[] PROGMEM = "Printer has not been calibrated yet. Run calibration G-code to adjust Z height.";
+const char * const MSG_BABYSTEP_Z_NOT_SET_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BABYSTEP_Z_NOT_SET_EN,
+	MSG_BABYSTEP_Z_NOT_SET_CZ,
+	MSG_BABYSTEP_Z_NOT_SET_IT,
+	MSG_BABYSTEP_Z_NOT_SET_ES,
+	MSG_BABYSTEP_Z_NOT_SET_PL
+};
+
 const char MSG_BED_EN[] PROGMEM = "Bed";
 const char MSG_BED_CZ[] PROGMEM = "Bed";
 const char MSG_BED_IT[] PROGMEM = "Piatto";

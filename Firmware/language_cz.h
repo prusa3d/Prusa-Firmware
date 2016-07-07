@@ -305,10 +305,11 @@
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR	"Kalibrace X/Y nepresna. Pravy predni bod moc vpredu."
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR	"Kalibrace X/Y nepresna. Predni kalibracni body moc vpredu."
 
-#define MSG_BED_LEVELING_FAILED_POINT_LOW				"Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
-#define MSG_BED_LEVELING_FAILED_POINT_HIGH				"Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset."
+#define MSG_BED_LEVELING_FAILED_POINT_LOW						"Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
+#define MSG_BED_LEVELING_FAILED_POINT_HIGH						"Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset."
 
 #define MSG_NEW_FIRMWARE_AVAILABLE								"Vysla nova verze firmware:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Prosim aktualizujte."
+#define MSG_BABYSTEP_Z_NOT_SET                          		"Tiskarna nebyla jeste zkalibrovana. Spustte kalibracni G-kod a doladte Z."
 
 #endif // LANGUAGE_EN_H
