@@ -12,6 +12,13 @@ const char* FW_VERSION_STR_P()
     return FW_VERSION_STR;
 }
 
+const char FW_PRUSA3D_MAGIC_STR[] PROGMEM = FW_PRUSA3D_MAGIC;
+
+const char* FW_PRUSA3D_MAGIC_STR_P()
+{
+    return FW_PRUSA3D_MAGIC_STR;
+}
+
 const char STR_REVISION_DEV  [] PROGMEM = "dev";
 const char STR_REVISION_ALPHA[] PROGMEM = "alpha";
 const char STR_REVISION_BETA [] PROGMEM = "beta";
@@ -268,6 +275,8 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
 
 void update_current_firmware_version_to_eeprom()
 {
+    for (int8_t i = 0; i < FW_PRUSA3D_MAGIC_LEN; ++ i)
+        eeprom_update_byte((uint8_t*)(EEPROM_FIRMWARE_PRUSA_MAGIC+i), pgm_read_byte(FW_PRUSA3D_MAGIC_STR+i));
     uint16_t ver_current[4];
     if (parse_version_P(FW_VERSION_STR, ver_current)) {
         eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR,    ver_current[0]);

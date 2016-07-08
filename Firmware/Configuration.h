@@ -7,7 +7,8 @@
 // Firmware version
 #define FW_version "3.0.5"
 
-
+#define FW_PRUSA3D_MAGIC "PRUSA3DFW"
+#define FW_PRUSA3D_MAGIC_LEN 10
 
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
@@ -29,6 +30,16 @@
 // Offsets of the Z heiths of the calibration points from the first point.
 // The offsets are saved as 16bit signed int, scaled to tenths of microns.
 #define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
+
+
+// Currently running firmware, each digit stored as uint16_t.
+// The flavor differentiates a dev, alpha, beta, release candidate or a release version.
+#define EEPROM_FIRMWARE_VERSION_FLAVOR    (FW_PRUSA3D_MAGIC_LEN+6)
+#define EEPROM_FIRMWARE_VERSION_REVISION  (FW_PRUSA3D_MAGIC_LEN+4)
+#define EEPROM_FIRMWARE_VERSION_MINOR     (FW_PRUSA3D_MAGIC_LEN+2)
+#define EEPROM_FIRMWARE_VERSION_MAJOR     FW_PRUSA3D_MAGIC_LEN
+// Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
+#define EEPROM_FIRMWARE_PRUSA_MAGIC
 
 // This configuration file contains the basic settings.
 // Advanced settings can be found in Configuration_adv.h
