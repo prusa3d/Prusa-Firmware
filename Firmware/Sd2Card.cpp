@@ -500,10 +500,14 @@ bool Sd2Card::readData(uint8_t* dst, uint16_t count) {
   spiRec();
 #endif
   chipSelectHigh();
+  // Toshiba FlashAir Patch. Purge pending status byte.
+  spiSend(0XFF);
   return true;
 
  fail:
   chipSelectHigh();
+  // Toshiba FlashAir Patch. Purge pending status byte.
+  spiSend(0XFF);       
   return false;
 }
 //------------------------------------------------------------------------------

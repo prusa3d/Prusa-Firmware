@@ -1093,7 +1093,9 @@ static void lcd_move_z() {
 static void _lcd_babystep(int axis, const char *msg) {
   if (encoderPosition != 0) 
   {
+    CRITICAL_SECTION_START
     babystepsTodo[axis] += (int)encoderPosition;
+    CRITICAL_SECTION_END
     babystepMem[axis] += (int)encoderPosition;
     babystepMemMM[axis] = babystepMem[axis]/axis_steps_per_unit[Z_AXIS];
 	  delay(50);
@@ -1188,7 +1190,9 @@ void lcd_adjust_z() {
         EEPROM_read_B(EEPROM_BABYSTEP_X, &babystepMem[0]);
         EEPROM_read_B(EEPROM_BABYSTEP_Y, &babystepMem[1]);
         EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepMem[2]);
+        CRITICAL_SECTION_START
         babystepsTodo[Z_AXIS] = babystepMem[2];
+        CRITICAL_SECTION_END
       } else {
         babystepMem[0] = 0;
         babystepMem[1] = 0;

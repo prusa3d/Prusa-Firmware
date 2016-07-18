@@ -580,7 +580,7 @@ static inline bool vec_undef(const float v[2])
 
 void world2machine_initialize()
 {
-    SERIAL_ECHOLNPGM("world2machine_initialize()");
+//    SERIAL_ECHOLNPGM("world2machine_initialize()");
     float cntr[2] = {
         eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0)),
         eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4))
@@ -596,7 +596,7 @@ void world2machine_initialize()
 
     bool reset = false;
     if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y)) {
-        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
+        // SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
         reset = true;
     }
     else {
@@ -632,6 +632,7 @@ void world2machine_initialize()
         world2machine_reset();
     } else {
         world2machine_update(vec_x, vec_y, cntr);
+        /*
         SERIAL_ECHOPGM("world2machine_initialize() loaded: ");
         MYSERIAL.print(world2machine_rotation_and_skew[0][0], 5);
         SERIAL_ECHOPGM(", ");
@@ -645,6 +646,7 @@ void world2machine_initialize()
         SERIAL_ECHOPGM(", ");
         MYSERIAL.print(world2machine_shift[1], 5);
         SERIAL_ECHOLNPGM("");
+        */
     }
 }
 
@@ -695,7 +697,7 @@ static inline void update_current_position_z()
 // At the current position, find the Z stop.
 inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter) 
 {
-    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 1");
+//    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 1");
     bool endstops_enabled  = enable_endstops(true);
     bool endstop_z_enabled = enable_z_endstop(false);
     float z = 0.f;
@@ -720,9 +722,9 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter)
         update_current_position_z();
         if (! endstop_z_hit_on_purpose())
             goto error;
-        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
-        MYSERIAL.print(current_position[Z_AXIS], 5);
-        SERIAL_ECHOLNPGM("");
+//        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
+//        MYSERIAL.print(current_position[Z_AXIS], 5);
+//        SERIAL_ECHOLNPGM("");
         z += current_position[Z_AXIS];
     }
     current_position[Z_AXIS] = z;
@@ -731,11 +733,11 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter)
 
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
-    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 3");
+//    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 3");
     return true;
 
 error:
-    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 4");
+//    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 4");
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
     return false;

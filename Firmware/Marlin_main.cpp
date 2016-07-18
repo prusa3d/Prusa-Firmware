@@ -235,7 +235,8 @@ byte b[2];
 int value;
 };
 
-int babystepLoad[3];
+// Number of baby steps applied
+int babystepLoadZ = 0;
 
 float homing_feedrate[] = HOMING_FEEDRATE;
 // Currently only the extruder axis may be switched to a relative mode.
@@ -738,7 +739,7 @@ void enquecommand(const char *cmd, bool from_progmem)
         cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
     } else {
-        SERIAL_ECHO_START;
+        SERIAL_ERROR_START;
         SERIAL_ECHORPGM(MSG_Enqueing);
         if (from_progmem)
             SERIAL_PROTOCOLRPGM(cmd);
@@ -770,7 +771,7 @@ void enquecommand_front(const char *cmd, bool from_progmem)
         cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
     } else {
-        SERIAL_ECHO_START;
+        SERIAL_ERROR_START;
         SERIAL_ECHOPGM("Enqueing to the front: \"");
         if (from_progmem)
             SERIAL_PROTOCOLRPGM(cmd);
@@ -1907,6 +1908,11 @@ void process_commands()
       // Wait for the motors to stop and update the current position with the absolute values.
       world2machine_revert_to_uncorrected();
 
+      // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
+      // consumed during the first movements following this statement.
+      babystepsTodoZsubtract(babystepLoadZ);
+      babystepLoadZ = 0;
+
       saved_feedrate = feedrate;
       saved_feedmultiply = feedmultiply;
       feedmultiply = 100;
@@ -2114,11 +2120,12 @@ void process_commands()
       previous_millis_cmd = millis();
       endstops_hit_on_purpose();
 #ifndef MESH_BED_LEVELING
+      // If MESH_BED_LEVELING is not active, then it is the original Prusa i3.
+      // Offer the user to load the baby step value, which has been adjusted at the previous print session.
       if(card.sdprinting) {
-        EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoad[2]);
-        if(babystepLoad[2] != 0){
+        EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
+        if(babystepLoadZ != 0)
           lcd_adjust_z();
-        }
       }
 #endif
 
@@ -2139,7 +2146,8 @@ void process_commands()
 		  st_synchronize();
       // Push the commands to the front of the message queue in the reverse order!
       // There shall be always enough space reserved for these commands.
-		  enquecommand_front_P((PSTR("G80")));
+		  // enquecommand_front_P((PSTR("G80")));
+      goto case_G80;
 	  }
 #endif
 
@@ -2334,6 +2342,7 @@ void process_commands()
      *
      */
     case 80:
+    case_G80:
         {
 			if (!IS_SD_PRINTING)
 			{
@@ -2354,9 +2363,14 @@ void process_commands()
             }
             
             mbl.reset();
-			            
+
+            // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
+            // consumed during the first movements following this statement.
+            babystepsTodoZsubtract(babystepLoadZ);
+            babystepLoadZ = 0;
+
             // Cycle through all points and probe them
-            // First move up.
+            // First move up. During this first movement, the babystepping will be reverted.
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS]/60, active_extruder);
             // The move to the first calibration point.
@@ -2450,8 +2464,9 @@ void process_commands()
 			      {
                 if(eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x01)
 				        {
-                    EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoad[2]);
-                    babystepsTodo[Z_AXIS] = babystepLoad[2];
+                    // End of G80: Apply the baby stepping value.
+                    EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
+                    babystepsTodoZadd(babystepLoadZ);
                 }
             }
         }
@@ -2497,7 +2512,7 @@ void process_commands()
             break;
             
             /**
-             * G83: Babystep in Z and store to EEPROM
+             * G83: Prusa3D specific: Babystep in Z and store to EEPROM
              */
         case 83:
         {
@@ -2505,15 +2520,16 @@ void process_commands()
             int BabyPosition = code_seen('P') ? code_value() : 0;
             
             if (babystepz != 0) {
-                
+                //FIXME Vojtech: What shall be the index of the axis Z: 3 or 4?
+                // Is the axis indexed starting with zero or one?
                 if (BabyPosition > 4) {
                     SERIAL_PROTOCOLLNPGM("Index out of bounds");
                 }else{
                     // Save it to the eeprom
-                    babystepLoad[2] = babystepz;
-                    EEPROM_save_B(EEPROM_BABYSTEP_Z0+(BabyPosition*2),&babystepLoad[2]);
-                    // adjist the Z
-                    babystepsTodo[Z_AXIS] = babystepLoad[2];
+                    babystepLoadZ = babystepz;
+                    EEPROM_save_B(EEPROM_BABYSTEP_Z0+(BabyPosition*2),&babystepLoadZ);
+                    // adjust the Z
+                    babystepsTodoZadd(babystepLoadZ);
                 }
             
             }
@@ -2521,27 +2537,30 @@ void process_commands()
         }
         break;
             /**
-             * G84: UNDO Babystep Z (move Z axis back)
+             * G84: Prusa3D specific: UNDO Babystep Z (move Z axis back)
              */
         case 84:
-            babystepsTodo[Z_AXIS] = -babystepLoad[2];
+            babystepsTodoZsubtract(babystepLoadZ);
+            // babystepLoadZ = 0;
             break;
             
             /**
-             * G85: Pick best babystep
+             * G85: Prusa3D specific: Pick best babystep
              */
         case 85:
             lcd_pick_babystep();
             break;
             
             /**
-             * G86: Disable babystep correction after home
+             * G86: Prusa3D specific: Disable babystep correction after home.
+             * This G-code will be performed at the start of a calibration script.
              */
         case 86:
             eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0xFF);
             break;
             /**
-             * G87: Enable babystep correction after home
+             * G87: Prusa3D specific: Enable babystep correction after home
+             * This G-code will be performed at the end of a calibration script.
              */
         case 87:
             eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
