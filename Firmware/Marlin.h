@@ -114,11 +114,7 @@ void process_commands();
 
 void manage_inactivity(bool ignore_stepper_queue=false);
 
-#if defined(DUAL_X_CARRIAGE) && defined(X_ENABLE_PIN) && X_ENABLE_PIN > -1 \
-    && defined(X2_ENABLE_PIN) && X2_ENABLE_PIN > -1
-  #define  enable_x() do { WRITE(X_ENABLE_PIN, X_ENABLE_ON); WRITE(X2_ENABLE_PIN, X_ENABLE_ON); } while (0)
-  #define disable_x() do { WRITE(X_ENABLE_PIN,!X_ENABLE_ON); WRITE(X2_ENABLE_PIN,!X_ENABLE_ON); axis_known_position[X_AXIS] = false; } while (0)
-#elif defined(X_ENABLE_PIN) && X_ENABLE_PIN > -1
+#if defined(X_ENABLE_PIN) && X_ENABLE_PIN > -1
   #define  enable_x() WRITE(X_ENABLE_PIN, X_ENABLE_ON)
   #define disable_x() { WRITE(X_ENABLE_PIN,!X_ENABLE_ON); axis_known_position[X_AXIS] = false; }
 #else
