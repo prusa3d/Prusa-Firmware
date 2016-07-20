@@ -26,6 +26,8 @@
   void lcd_loading_color();
   void lcd_force_language_selection();
   void lcd_sdcard_stop();
+  void prusa_statistics(int _message);
+  void lcd_confirm_print();
   
   bool lcd_detected(void);
 
@@ -76,6 +78,7 @@
   #else
   FORCE_INLINE void lcd_buttons_update() {}
   #endif
+  extern int lcd_commands_type;
 
   extern int plaPreheatHotendTemp;
   extern int plaPreheatHPBTemp;
@@ -85,6 +88,11 @@
   extern int absPreheatHPBTemp;
   extern int absPreheatFanSpeed;
   
+  extern bool farm_mode;
+  extern int farm_no;
+  extern int farm_timer;
+  extern int farm_status;
+
   extern bool cancel_heatup;
   
   #ifdef FILAMENT_LCD_DISPLAY

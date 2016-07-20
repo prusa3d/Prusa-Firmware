@@ -711,7 +711,12 @@ static void lcd_implementation_status_screen()
 			lcd.print('%');
 		}
 	}
-    lcd.print("      ");
+	if (farm_mode)
+	{
+		lcd.print(" F");
+		lcd.print(farm_no);
+		lcd.print("  ");
+	}
 
     //Print time elapsed
     lcd.setCursor(LCD_WIDTH - 8 -2, 2);
@@ -885,15 +890,7 @@ static void lcd_implementation_status_screen()
         lcd.print(' ');
       }
     }
-
-	if (is_usb_printing==1 && custom_message==0)
-	{
-		lcd.setCursor(0, 3);
-		lcd.print("                    ");
-		lcd.setCursor(0, 3);
-		lcd_printPGM(MSG_USB_PRINTING);
-	}
-
+	
 }
 
 

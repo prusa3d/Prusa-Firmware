@@ -31,6 +31,7 @@
 // The offsets are saved as 16bit signed int, scaled to tenths of microns.
 #define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
 
+#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-4)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.

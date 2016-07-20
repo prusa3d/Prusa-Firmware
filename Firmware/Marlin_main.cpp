@@ -255,7 +255,7 @@ int extruder_multiply[EXTRUDERS] = {100
 };
 
 bool is_usb_printing = false;
-bool _doMeshL = false;
+
 unsigned int  usb_printing_counter;
 
 int lcd_change_fil_state = 0;
@@ -933,22 +933,58 @@ void setup()
   world2machine_reset();
 
   lcd_init();
-  if(!READ(BTN_ENC) ){
-    _delay_ms(1000);
-    if(!READ(BTN_ENC) ){
-    SET_OUTPUT(BEEPER);
+  if (!READ(BTN_ENC))
+  {
+	  _delay_ms(1000);
+	  if (!READ(BTN_ENC))
+	  {
+		  SET_OUTPUT(BEEPER);
+		  WRITE(BEEPER, HIGH);
 
-    WRITE(BEEPER,HIGH);
-    
-    lcd_force_language_selection();
-    while(!READ(BTN_ENC));
+		  lcd_force_language_selection();
+		  farm_no = 0;
+		  EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
+		  farm_mode = false;
 
-    WRITE(BEEPER,LOW);
+		  while (!READ(BTN_ENC));
 
-    }
-  }else{
-    _delay_ms(1000);  // wait 1sec to display the splash screen
+		  WRITE(BEEPER, LOW);
+
+#ifdef MESH_BED_LEVELING
+		  _delay_ms(2000);
+
+		  if (!READ(BTN_ENC))
+		  {
+			  WRITE(BEEPER, HIGH);
+			  _delay_ms(100);
+			  WRITE(BEEPER, LOW);
+			  _delay_ms(200);
+			  WRITE(BEEPER, HIGH);
+			  _delay_ms(100);
+			  WRITE(BEEPER, LOW);
+
+			  int _z = 0;
+			  eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
+			  EEPROM_save_B(EEPROM_BABYSTEP_X, &_z);
+			  EEPROM_save_B(EEPROM_BABYSTEP_Y, &_z);
+			  EEPROM_save_B(EEPROM_BABYSTEP_Z, &_z);
+		  }
+		  else
+		  {
+
+			  WRITE(BEEPER, HIGH);
+			  _delay_ms(100);
+			  WRITE(BEEPER, LOW);
+		  }
+#endif // mesh
+
+	  }
   }
+  else
+  {
+	  _delay_ms(1000);  // wait 1sec to display the splash screen
+  }
+
   
 
   #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
@@ -963,6 +999,20 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
   enable_z();
 #endif
+
+  EEPROM_read_B(EEPROM_FARM_MODE, &farm_no);
+  if (farm_no > 0)
+  {
+	  farm_mode = true;
+	  farm_no = farm_no;
+	  prusa_statistics(8);
+  }
+  else
+  {
+	  farm_mode = false;
+	  farm_no = 0;
+  }
+
 
   // In the future, somewhere here would one compare the current firmware version against the firmware version stored in the EEPROM.
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
@@ -1216,6 +1266,12 @@ void get_command()
         lcd_setstatus(time);
         card.printingHasFinished();
         card.checkautostart(true);
+
+		if (farm_mode)
+		{
+			prusa_statistics(6);
+			lcd_commands_type = 4;
+		}
 
       }
       if(serial_char=='#')
@@ -1833,7 +1889,7 @@ void process_commands()
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
 #endif //ENABLE_AUTO_BED_LEVELING
             
-	      _doMeshL = false;
+	      
         // For mesh bed leveling deactivate the matrix temporarily
         #ifdef MESH_BED_LEVELING
             mbl.active = 0;
@@ -1905,11 +1961,7 @@ void process_commands()
       }
       #endif /* QUICK_HOME */
 
-	  if (home_all_axis)
-	  {
-		  _doMeshL = true;
-	  }
-
+	 
       if((home_all_axis) || (code_seen(axis_codes[X_AXIS])))
         homeaxis(X_AXIS);
 
@@ -1955,7 +2007,6 @@ void process_commands()
               enable_endstops(true);
               endstops_hit_on_purpose();
               homeaxis(Z_AXIS);
-  		        _doMeshL = true;
             #else // MESH_BED_LEVELING
               homeaxis(Z_AXIS);
             #endif // MESH_BED_LEVELING
@@ -2042,21 +2093,20 @@ void process_commands()
     world2machine_update_current();
 
 #ifdef MESH_BED_LEVELING
-	  if (code_seen('W'))
-	  {
-		  _doMeshL = false;
-      SERIAL_ECHOLN("G80 disabled");
-	  }
-
-	  if ( _doMeshL)
-	  {
-		  st_synchronize();
-      // Push the commands to the front of the message queue in the reverse order!
-      // There shall be always enough space reserved for these commands.
-		  // enquecommand_front_P((PSTR("G80")));
-      goto case_G80;
+	if (code_seen(axis_codes[X_AXIS]) || code_seen(axis_codes[Y_AXIS]) || code_seen('W') || code_seen(axis_codes[Z_AXIS]))
+		{
+		}
+	else
+		{
+			st_synchronize();
+			// Push the commands to the front of the message queue in the reverse order!
+			// There shall be always enough space reserved for these commands.
+			// enquecommand_front_P((PSTR("G80")));
+			goto case_G80;
 	  }
 #endif
+
+	  if (farm_mode) { prusa_statistics(20); };
 
       break;
 
@@ -2502,6 +2552,25 @@ void process_commands()
         }
       }
       break;
+
+	case 98:
+		farm_no = 21;
+		EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
+		farm_mode = true;
+		break;
+
+	case 99:
+		farm_no = 0;
+		EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
+		farm_mode = false;
+		break;
+
+
+
+
+
+
+
     }
   } // end if(code_seen('G'))
 
@@ -3175,6 +3244,7 @@ Sigma_Exit:
       }
       LCD_MESSAGERPGM(MSG_HEATING);
 	  heating_status = 1;
+	  if (farm_mode) { prusa_statistics(1); };
 
 #ifdef AUTOTEMP
         autotemp_enabled=false;
@@ -3253,6 +3323,7 @@ Sigma_Exit:
         }
         LCD_MESSAGERPGM(MSG_HEATING_COMPLETE);
 		heating_status = 2;
+		if (farm_mode) { prusa_statistics(2); };
         
         starttime=millis();
         previous_millis_cmd = millis();
@@ -3262,7 +3333,7 @@ Sigma_Exit:
     #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
         LCD_MESSAGERPGM(MSG_BED_HEATING);
 		heating_status = 3;
-
+		if (farm_mode) { prusa_statistics(1); };
         if (code_seen('S')) 
 		{
           setTargetBed(code_value());

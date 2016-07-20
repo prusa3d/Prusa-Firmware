@@ -39,6 +39,10 @@ int8_t SilentModeMenu = 0;
 int lcd_commands_type=0;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
+bool farm_mode = false;
+int farm_no = 0;
+int farm_timer = 30;
+int farm_status = 0;
 
 bool menuExiting = false;
 
@@ -113,6 +117,11 @@ static void lcd_control_temperature_preheat_pla_settings_menu();
 static void lcd_control_temperature_preheat_abs_settings_menu();
 static void lcd_control_motion_menu();
 static void lcd_control_volumetric_menu();
+
+static void prusa_stat_printerstatus(int _status);
+static void prusa_stat_temperatures();
+static void prusa_stat_printinfo();
+static void lcd_farm_no();
 
 #ifdef DOGLCD
 static void lcd_set_contrast();
@@ -340,7 +349,27 @@ static void lcd_status_screen()
     lcd_implementation_status_screen();
     //lcd_implementation_clear();
 
-
+	if (farm_mode)
+	{
+		farm_timer--;
+		if (farm_timer < 1)
+		{
+			farm_timer = 90;
+			prusa_statistics(0);
+		}
+		switch (farm_timer)
+		{
+		case 45:
+			prusa_statistics(21);
+			break;
+		case 10:
+			if (IS_SD_PRINTING)
+			{
+				prusa_statistics(20);
+			}
+			break;
+		}
+	}
 
 
 
@@ -504,6 +533,7 @@ void lcd_commands()
 		if (lcd_commands_step == 4 && !blocks_queued())
 		{
 			enquecommand_P(PSTR("G90"));
+			enquecommand_P(PSTR("M83"));
 			#ifdef X_CANCEL_POS 
 			enquecommand_P(PSTR("G1 X"  STRINGIFY(X_CANCEL_POS) " Y" STRINGIFY(Y_CANCEL_POS) " E0 F7000"));
 			#else
@@ -924,7 +954,7 @@ static void lcd_menu_statistics()
 		int _t = (millis() - starttime) / 1000;
 
 		int _h = _t / 3600;
-		int _m = (_t - (_h * 60)) / 60;
+		int _m = (_t - (_h * 3600)) / 60;
 		int _s = _t - ((_h * 3600) + (_m * 60));
 		
 		lcd.setCursor(0, 0);
@@ -1486,6 +1516,148 @@ void lcd_diag_show_end_stops()
     lcd_return_to_status();
 }
 
+
+
+void prusa_statistics(int _message) {
+
+	switch (_message)
+	{
+
+	case 0: // default message
+		if (IS_SD_PRINTING)
+		{
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(4);
+			prusa_stat_printinfo();
+			SERIAL_ECHOLN("}");
+		}
+		else
+		{
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(1);
+			SERIAL_ECHOLN("}");
+		}
+		break;
+
+	case 1:		// 1 heating
+		farm_status = 2;
+		SERIAL_ECHO("{");
+		prusa_stat_printerstatus(2);
+		SERIAL_ECHOLN("}");
+		farm_timer = 1;
+		break;
+
+	case 2:		// heating done
+		farm_status = 3;
+		SERIAL_ECHO("{");
+		prusa_stat_printerstatus(3);
+		SERIAL_ECHOLN("}");
+		farm_timer = 1;
+
+		if (IS_SD_PRINTING)
+		{
+			farm_status = 4;
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(4);
+			SERIAL_ECHOLN("}");
+		}
+		else
+		{
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(3);
+			SERIAL_ECHOLN("}");;
+		}
+		farm_timer = 1;
+		break;
+
+	case 3:		// filament change
+
+		break;
+	case 4:		// print succesfull
+		SERIAL_ECHOLN("{[RES:1]}");
+		farm_timer = 2;
+		break;
+	case 5:		// print not succesfull
+		SERIAL_ECHOLN("{[RES:0]}");
+		farm_timer = 2;
+		break;
+	case 6:		// print done
+		SERIAL_ECHOLN("{[PRN:8]}");
+		farm_timer = 2;
+		break;
+	case 7:		// print done - stopped
+		SERIAL_ECHOLN("{[PRN:9]}");
+		farm_timer = 2;
+		break;
+	case 8:		// printer started
+		SERIAL_ECHO("{[PRN:0][PFN:");
+		SERIAL_ECHO(farm_no);
+		SERIAL_ECHOLN("]}");
+		farm_timer = 2;
+		break;
+	case 20:		// echo farm no
+		SERIAL_ECHO("{[PFN:");
+		SERIAL_ECHO(farm_no);
+		SERIAL_ECHOLN("]}");
+		farm_timer = 5;
+		break;
+	case 21: // temperatures
+		SERIAL_ECHO("{");
+		prusa_stat_temperatures();
+		SERIAL_ECHOLN("}");
+		break;
+	case 99:		// heartbeat
+		SERIAL_ECHOLN("{[PRN:99]}");
+		break;
+	}
+
+}
+
+static void prusa_stat_printerstatus(int _status)
+{
+	SERIAL_ECHO("[PRN:");
+	SERIAL_ECHO(_status);
+	SERIAL_ECHO("]");
+}
+
+static void prusa_stat_temperatures()
+{
+	SERIAL_ECHO("[ST0:");
+	SERIAL_ECHO(target_temperature[0]);
+	SERIAL_ECHO("][STB:");
+	SERIAL_ECHO(target_temperature_bed);
+	SERIAL_ECHO("][AT0:");
+	SERIAL_ECHO(current_temperature[0]);
+	SERIAL_ECHO("][ATB:");
+	SERIAL_ECHO(current_temperature_bed);
+	SERIAL_ECHO("]");
+}
+
+static void prusa_stat_printinfo()
+{
+	SERIAL_ECHO("[TFU:");
+	SERIAL_ECHO(total_filament_used);
+	SERIAL_ECHO("][PCD:");
+	SERIAL_ECHO(itostr3(card.percentDone()));
+	SERIAL_ECHO("][FEM:");
+	SERIAL_ECHO(itostr3(feedmultiply));
+	SERIAL_ECHO("][FNM:");
+	SERIAL_ECHO(longFilenameOLD);
+	SERIAL_ECHO("][TIM:");
+	if (starttime != 0)
+	{
+		SERIAL_ECHO(millis() / 1000 - starttime / 1000);
+	}
+	else
+	{
+		SERIAL_ECHO(0);
+	}
+	SERIAL_ECHO("][FWR:");
+	SERIAL_ECHO(FW_version);
+	SERIAL_ECHO("]");
+}
+
+
 void lcd_pick_babystep(){
     int enc_dif = 0;
     int cursor_pos = 1;
@@ -1732,7 +1904,10 @@ static void lcd_settings_menu()
     MENU_ITEM(submenu, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 	}
-  
+	if (farm_mode)
+	{
+		MENU_ITEM(submenu, PSTR("Farm number"), lcd_farm_no);
+	}
 	END_MENU();
 }
 /*
@@ -1918,6 +2093,123 @@ void lcd_mylang() {
 
 }
 
+
+
+static void lcd_farm_no()
+{
+	int enc_dif = 0;
+	int _farmno = farm_no;
+	int _ret = 0;
+	lcd_implementation_clear();
+
+	lcd.setCursor(0, 0);
+	lcd.print("Farm no");
+
+	do
+	{
+
+		if (abs((enc_dif - encoderDiff)) > 2) {
+			if (enc_dif > encoderDiff) {
+				_farmno--;
+			}
+
+			if (enc_dif < encoderDiff) {
+				_farmno++;
+			}
+			enc_dif = 0;
+			encoderDiff = 0;
+		}
+
+		if (_farmno > 254) { _farmno = 1; }
+		if (_farmno < 1) { _farmno = 254; }
+
+
+		lcd.setCursor(0, 2);
+		lcd.print(_farmno);
+		lcd.print("  ");
+		delay(100);
+
+		if (lcd_clicked())
+		{
+			_ret = 1;
+			farm_no = _farmno;
+			EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
+			prusa_statistics(20);
+			lcd_return_to_status();
+		}
+
+		manage_heater();
+	} while (_ret == 0);
+
+}
+
+void lcd_confirm_print()
+{
+	int enc_dif = 0;
+	int cursor_pos = 1;
+	int _ret = 0;
+	int _t = 0;
+
+
+	lcd_implementation_clear();
+
+	lcd.setCursor(0, 0);
+	lcd.print("Print ok ?");
+
+	do
+	{
+
+		if (abs((enc_dif - encoderDiff)) > 2) {
+			if (enc_dif > encoderDiff) {
+				cursor_pos--;
+			}
+
+			if (enc_dif < encoderDiff) {
+				cursor_pos++;
+			}
+		}
+
+		if (cursor_pos > 2) { cursor_pos = 2; }
+		if (cursor_pos < 1) { cursor_pos = 1; }
+
+		lcd.setCursor(0, 2); lcd.print("          ");
+		lcd.setCursor(0, 3); lcd.print("          ");
+		lcd.setCursor(2, 2);
+		lcd_printPGM(MSG_YES);
+		lcd.setCursor(2, 3);
+		lcd_printPGM(MSG_NO);
+		lcd.setCursor(0, 1 + cursor_pos);
+		lcd.print(">");
+		delay(100);
+
+		_t = _t + 1;
+		if (_t>100)
+		{
+			prusa_statistics(99);
+			_t = 0;
+		}
+		if (lcd_clicked())
+		{
+			if (cursor_pos == 1)
+			{
+				_ret = 1;
+				prusa_statistics(20);
+				prusa_statistics(4);
+			}
+			if (cursor_pos == 2)
+			{
+				_ret = 2;
+				prusa_statistics(20);
+				prusa_statistics(5);
+			}
+		}
+
+		manage_heater();
+		manage_inactivity();
+
+	} while (_ret == 0);
+
+}
 
 
 
