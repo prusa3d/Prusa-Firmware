@@ -724,4 +724,88 @@ bool Sd2Card::writeStop() {
   return false;
 }
 
+//------------------------------------------------------------------------------
+/** Wait for start block token */
+//FIXME Vojtech: Copied from a current version of Sd2Card Arduino code.
+// We shall likely upgrade the rest of the Sd2Card.
+uint8_t Sd2Card::waitStartBlock(void) {
+  uint16_t t0 = millis();
+  while ((status_ = spiRec()) == 0XFF) {
+    if (((uint16_t)millis() - t0) > SD_READ_TIMEOUT) {
+      error(SD_CARD_ERROR_READ_TIMEOUT);
+      goto fail;
+    }
+  }
+  if (status_ != DATA_START_BLOCK) {
+    error(SD_CARD_ERROR_READ);
+    goto fail;
+  }
+  return true;
+
+ fail:
+  chipSelectHigh();
+  return false;
+}
+
+// Toshiba FlashAir support, copied from 
+// https://flashair-developers.com/en/documents/tutorials/arduino/
+
+//------------------------------------------------------------------------------
+/** Perform Extention Read. */
+uint8_t Sd2Card::readExt(uint32_t arg, uint8_t* dst, uint16_t count) {
+  uint16_t i;
+
+  // send command and argument.
+  if (cardCommand(CMD48, arg)) {
+    error(SD_CARD_ERROR_CMD48);
+    goto fail;
+  }
+  
+  // wait for start block token.
+  if (!waitStartBlock()) {
+    goto fail;
+  }
+
+  // receive data
+  for (i = 0; i < count; ++i) {
+    dst[i] = spiRec();
+  }
+  
+  // skip dummy bytes and 16-bit crc.
+  for (; i < 514; ++i) {
+    spiRec();
+  }
+
+  chipSelectHigh();
+  spiSend(0xFF); // dummy clock to force FlashAir finish the command.
+  return true;
+
+ fail:
+  chipSelectHigh();
+  return false;
+}
+
+//------------------------------------------------------------------------------
+/**
+ * Read an extension register space.
+ *
+ * \return The value one, true, is returned for success and
+ * the value zero, false, is returned for failure.
+ */
+uint8_t Sd2Card::readExtMemory(uint8_t mio, uint8_t func, 
+    uint32_t addr, uint16_t count, uint8_t* dst) {
+  uint32_t offset = addr & 0x1FF;
+  if (offset + count > 512) count = 512 - offset;
+  
+  if (count == 0) return true;
+  
+  uint32_t arg = 
+      (((uint32_t)mio & 0x1) << 31) | 
+    (mio ? (((uint32_t)func & 0x7) << 28) : (((uint32_t)func & 0xF) << 27)) |
+    ((addr & 0x1FFFF) << 9) |
+    ((count - 1) & 0x1FF);
+  
+  return readExt(arg, dst, count);
+}
+
 #endif

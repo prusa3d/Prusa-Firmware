@@ -653,4 +653,11 @@ void CardReader::printingHasFinished()
       autotempShutdown();
     }
 }
+
+bool CardReader::ToshibaFlashAir_GetIP(uint8_t *ip)
+{
+    memset(ip, 0, 4);
+    return card.readExtMemory(1, 1, 0x400+0x150, 4, ip);
+}
+
 #endif //SDSUPPORT

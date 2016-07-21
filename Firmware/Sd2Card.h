@@ -105,6 +105,12 @@ uint8_t const SD_CARD_ERROR_SCK_RATE = 0X18;
 uint8_t const SD_CARD_ERROR_INIT_NOT_CALLED = 0X19;
 /** crc check error */
 uint8_t const SD_CARD_ERROR_CRC = 0X20;
+
+/** Toshiba FlashAir: iSDIO */
+uint8_t const SD_CARD_ERROR_CMD48 = 0x80;
+/** Toshiba FlashAir: iSDIO */
+uint8_t const SD_CARD_ERROR_CMD49 = 0x81;
+
 //------------------------------------------------------------------------------
 // card types
 /** Standard capacity V1 SD card */
@@ -215,6 +221,10 @@ class Sd2Card {
   bool writeData(const uint8_t* src);
   bool writeStart(uint32_t blockNumber, uint32_t eraseCount);
   bool writeStop();
+
+  // Toshiba FlashAir support
+  uint8_t readExtMemory(uint8_t mio, uint8_t func, uint32_t addr, uint16_t count, uint8_t* dst);
+
  private:
   //----------------------------------------------------------------------------
   uint8_t chipSelectPin_;
@@ -236,6 +246,11 @@ class Sd2Card {
   void type(uint8_t value) {type_ = value;}
   bool waitNotBusy(uint16_t timeoutMillis);
   bool writeData(uint8_t token, const uint8_t* src);
+
+
+  // Toshiba FlashAir support
+  uint8_t waitStartBlock(void);
+  uint8_t readExt(uint32_t arg, uint8_t* dst, uint16_t count);
 };
 #endif  // Sd2Card_h
 

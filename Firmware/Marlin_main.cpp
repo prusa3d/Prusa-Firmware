@@ -2792,6 +2792,27 @@ void process_commands()
         break;
     }
 
+    case 46:
+    {
+        // M46: Prusa3D: Show the assigned IP address.
+        uint8_t ip[4];
+        bool hasIP = card.ToshibaFlashAir_GetIP(ip);
+        if (hasIP) {
+            SERIAL_ECHOPGM("Toshiba FlashAir current IP: ");
+            SERIAL_ECHO(int(ip[0]));
+            SERIAL_ECHOPGM(".");
+            SERIAL_ECHO(int(ip[1]));
+            SERIAL_ECHOPGM(".");
+            SERIAL_ECHO(int(ip[2]));
+            SERIAL_ECHOPGM(".");
+            SERIAL_ECHO(int(ip[3]));
+            SERIAL_ECHOLNPGM("");
+        } else {
+            SERIAL_ECHOLNPGM("Toshiba FlashAir GetIP failed");          
+        }
+        break;
+    }
+
     case 47:
         // M47: Prusa3D: Show end stops dialog on the display.
         lcd_diag_show_end_stops();
