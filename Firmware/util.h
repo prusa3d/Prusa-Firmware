@@ -1,0 +1,24 @@
+#ifndef UTIL_H
+#define UTIL_H
+
+extern const char* FW_VERSION_STR_P();
+
+// Definition of a firmware flavor numerical values.
+enum FirmwareRevisionFlavorType
+{
+    FIRMWARE_REVISION_DEV = 0,
+    FIRMWARE_REVISION_ALPHA = 1,
+    FIRMWARE_REVISION_BETA = 2,
+    FIRMWARE_REVISION_RC,
+    FIRMWARE_REVISION_RC2,
+    FIRMWARE_REVISION_RC3,
+    FIRMWARE_REVISION_RC4,
+    FIRMWARE_REVISION_RC5,
+    FIRMWARE_REVISION_RELEASED = 127
+};
+
+extern bool show_upgrade_dialog_if_version_newer(const char *version_string);
+
+extern void update_current_firmware_version_to_eeprom();
+
+#endif /* UTIL_H */
