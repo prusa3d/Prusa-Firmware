@@ -343,7 +343,8 @@ ISR(TIMER1_COMPA_vect)
     // Anything in the buffer?
     current_block = plan_get_current_block();
     if (current_block != NULL) {
-      current_block->busy = true;
+      // The busy flag is set by the plan_get_current_block() call.
+      // current_block->busy = true;
       trapezoid_generator_reset();
       counter_x = -(current_block->step_event_count >> 1);
       counter_y = counter_x;

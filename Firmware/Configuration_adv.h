@@ -190,16 +190,6 @@
 // If defined the movements slow down when the look ahead buffer is only half full
 #define SLOWDOWN
 
-// Frequency limit
-// See nophead's blog for more info
-// Not working O
-//#define XY_FREQUENCY_LIMIT  15
-
-// Minimum planner junction speed. Sets the default minimum speed the planner plans for at the end
-// of the buffer and all stops. This should not be much greater than zero and should only be changed
-// if unwanted behavior is observed on a user's machine when running at very slow speeds.
-#define MINIMUM_PLANNER_SPEED 0.05// (mm/sec)
-
 // MS1 MS2 Stepper Driver Microstepping mode table
 #define MICROSTEP1 LOW,LOW
 #define MICROSTEP2 HIGH,LOW

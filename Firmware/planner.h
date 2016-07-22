@@ -30,17 +30,34 @@
 #include "vector_3.h"
 #endif // ENABLE_AUTO_BED_LEVELING
 
+enum BlockFlag {
+    // Planner flag to recalculate trapezoids on entry junction.
+    // This flag has an optimization purpose only.
+    BLOCK_FLAG_RECALCULATE = 1,
+    // Planner flag for nominal speed always reached. That means, the segment is long enough, that the nominal speed
+    // may be reached if accelerating from a safe speed (in the regard of jerking from zero speed).
+    BLOCK_FLAG_NOMINAL_LENGTH = 2,
+    // If set, the machine will stop to a full halt at the end of this block,
+    // respecting the maximum allowed jerk.
+    BLOCK_FLAG_FULL_HALT_AT_END = 4,
+    // If set, the machine will start from a halt at the start of this block,
+    // respecting the maximum allowed jerk.
+    BLOCK_FLAG_START_FROM_FULL_HALT = 8,
+};
+
 // This struct is used when buffering the setup for each linear movement "nominal" values are as specified in 
 // the source g-code and may never actually be reached if acceleration management is active.
 typedef struct {
   // Fields used by the bresenham algorithm for tracing the line
+  // steps_x.y,z, step_event_count, acceleration_rate, direction_bits and active_extruder are set by plan_buffer_line().
   long steps_x, steps_y, steps_z, steps_e;  // Step count along each axis
   unsigned long step_event_count;           // The number of step events required to complete this block
-  long accelerate_until;                    // The index of the step event on which to stop acceleration
-  long decelerate_after;                    // The index of the step event on which to start decelerating
   long acceleration_rate;                   // The acceleration rate used for acceleration calculation
   unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
   unsigned char active_extruder;            // Selects the active extruder
+  // accelerate_until and decelerate_after are set by calculate_trapezoid_for_block() and they need to be synchronized with the stepper interrupt controller.
+  long accelerate_until;                    // The index of the step event on which to stop acceleration
+  long decelerate_after;                    // The index of the step event on which to start decelerating
   #ifdef ADVANCE
     long advance_rate;
     volatile long initial_advance;
@@ -50,15 +67,24 @@ typedef struct {
 
   // Fields used by the motion planner to manage acceleration
 //  float speed_x, speed_y, speed_z, speed_e;        // Nominal mm/sec for each axis
-  float nominal_speed;                               // The nominal speed for this block in mm/sec 
-  float entry_speed;                                 // Entry speed at previous-current junction in mm/sec
-  float max_entry_speed;                             // Maximum allowable junction entry speed in mm/sec
-  float millimeters;                                 // The total travel of this block in mm
-  float acceleration;                                // acceleration mm/sec^2
-  unsigned char recalculate_flag;                    // Planner flag to recalculate trapezoids on entry junction
-  unsigned char nominal_length_flag;                 // Planner flag for nominal speed always reached
+  // The nominal speed for this block in mm/sec.
+  // This speed may or may not be reached due to the jerk and acceleration limits.
+  float nominal_speed;
+  // Entry speed at previous-current junction in mm/sec, respecting the acceleration and jerk limits.
+  // The entry speed limit of the current block equals the exit speed of the preceding block.
+  float entry_speed;
+  // Maximum allowable junction entry speed in mm/sec. This value is also a maximum exit speed of the previous block.
+  float max_entry_speed;
+  // The total travel of this block in mm
+  float millimeters;
+  // acceleration mm/sec^2
+  float acceleration;
 
-  // Settings for the trapezoid generator
+  // Bit flags defined by the BlockFlag enum.
+  bool flag;
+
+  // Settings for the trapezoid generator (runs inside an interrupt handler).
+  // Changing the following values in the planner needs to be synchronized with the interrupt handler by disabling the interrupts.
   unsigned long nominal_rate;                        // The nominal step rate for this block in step_events/sec 
   unsigned long initial_rate;                        // The jerk-adjusted step rate at start of block  
   unsigned long final_rate;                          // The minimal rate at exit
@@ -101,7 +127,6 @@ void plan_set_e_position(const float &e);
 
 
 void check_axes_activity();
-uint8_t movesplanned(); //return the nr of buffered moves
 
 extern unsigned long minsegmenttime;
 extern float max_feedrate[NUM_AXIS]; // set the max speeds
@@ -151,6 +176,11 @@ FORCE_INLINE block_t *plan_get_current_block()
 
 // Returns true if the buffer has a queued block, false otherwise
 FORCE_INLINE bool blocks_queued() { return (block_buffer_head != block_buffer_tail); }
+
+//return the nr of buffered moves
+FORCE_INLINE uint8_t moves_planned() {
+    return (block_buffer_head + BLOCK_BUFFER_SIZE - block_buffer_tail) & (BLOCK_BUFFER_SIZE - 1);
+}
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
 void set_extrude_min_temp(float temp);

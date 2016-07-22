@@ -2861,6 +2861,7 @@ void process_commands()
         break;
     }
 
+    /*
     case 46:
     {
         // M46: Prusa3D: Show the assigned IP address.
@@ -2881,6 +2882,7 @@ void process_commands()
         }
         break;
     }
+    */
 
     case 47:
         // M47: Prusa3D: Show end stops dialog on the display.

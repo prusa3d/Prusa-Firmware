@@ -116,13 +116,6 @@ volatile unsigned char block_buffer_tail;           // Index of the block to pro
 #ifdef PREVENT_DANGEROUS_EXTRUDE
 float extrude_min_temp=EXTRUDE_MINTEMP;
 #endif
-#ifdef XY_FREQUENCY_LIMIT
-#define MAX_FREQ_TIME (1000000.0/XY_FREQUENCY_LIMIT)
-// Used for the frequency limit
-static unsigned char old_direction_bits = 0;               // Old direction bits. Used for speed calculations
-static long x_segment_time[3]={MAX_FREQ_TIME + 1,0,0};     // Segment times (in us). Used for speed calculations
-static long y_segment_time[3]={MAX_FREQ_TIME + 1,0,0};
-#endif
 
 #ifdef FILAMENT_SENSOR
  static char meas_sample; //temporary variable to hold filament measurement sample
@@ -130,22 +123,19 @@ static long y_segment_time[3]={MAX_FREQ_TIME + 1,0,0};
 
 // Returns the index of the next block in the ring buffer
 // NOTE: Removed modulo (%) operator, which uses an expensive divide and multiplication.
-static int8_t next_block_index(int8_t block_index) {
-  block_index++;
-  if (block_index == BLOCK_BUFFER_SIZE) { 
+static inline int8_t next_block_index(int8_t block_index) {
+  if (++ block_index == BLOCK_BUFFER_SIZE)
     block_index = 0; 
-  }
-  return(block_index);
+  return block_index;
 }
 
 
 // Returns the index of the previous block in the ring buffer
-static int8_t prev_block_index(int8_t block_index) {
-  if (block_index == 0) { 
+static inline int8_t prev_block_index(int8_t block_index) {
+  if (block_index == 0)
     block_index = BLOCK_BUFFER_SIZE; 
-  }
-  block_index--;
-  return(block_index);
+  -- block_index;
+  return block_index;
 }
 
 //===========================================================================
@@ -222,7 +212,7 @@ void calculate_trapezoid_for_block(block_t *block, float entry_factor, float exi
   // block->accelerate_until = accelerate_steps;
   // block->decelerate_after = accelerate_steps+plateau_steps;
   CRITICAL_SECTION_START;  // Fill variables used by the stepper in a critical section
-  if(block->busy == false) { // Don't update variables if block is busy.
+  if (! block->busy) { // Don't update variables if block is busy.
     block->accelerate_until = accelerate_steps;
     block->decelerate_after = accelerate_steps+plateau_steps;
     block->initial_rate = initial_rate;
@@ -235,141 +225,12 @@ void calculate_trapezoid_for_block(block_t *block, float entry_factor, float exi
   CRITICAL_SECTION_END;
 }                    
 
-// Calculates the maximum allowable speed at this point when you must be able to reach target_velocity using the 
-// acceleration within the allotted distance.
-FORCE_INLINE float max_allowable_speed(float acceleration, float target_velocity, float distance) {
-  return  sqrt(target_velocity*target_velocity-2*acceleration*distance);
-}
-
-// "Junction jerk" in this context is the immediate change in speed at the junction of two blocks.
-// This method will calculate the junction jerk as the euclidean distance between the nominal 
-// velocities of the respective blocks.
-//inline float junction_jerk(block_t *before, block_t *after) {
-//  return sqrt(
-//    pow((before->speed_x-after->speed_x), 2)+pow((before->speed_y-after->speed_y), 2));
-//}
-
-
-// The kernel called by planner_recalculate() when scanning the plan from last to first entry.
-void planner_reverse_pass_kernel(block_t *previous, block_t *current, block_t *next) {
-  if(!current) { 
-    return; 
-  }
-
-  if (next) {
-    // If entry speed is already at the maximum entry speed, no need to recheck. Block is cruising.
-    // If not, block in state of acceleration or deceleration. Reset entry speed to maximum and
-    // check for maximum allowable speed reductions to ensure maximum possible planned speed.
-    if (current->entry_speed != current->max_entry_speed) {
-
-      // If nominal length true, max junction speed is guaranteed to be reached. Only compute
-      // for max allowable speed if block is decelerating and nominal length is false.
-      if ((!current->nominal_length_flag) && (current->max_entry_speed > next->entry_speed)) {
-        current->entry_speed = min( current->max_entry_speed,
-        max_allowable_speed(-current->acceleration,next->entry_speed,current->millimeters));
-      } 
-      else {
-        current->entry_speed = current->max_entry_speed;
-      }
-      current->recalculate_flag = true;
-
-    }
-  } // Skip last block. Already initialized and set for recalculation.
-}
-
-// planner_recalculate() needs to go over the current plan twice. Once in reverse and once forward. This 
-// implements the reverse pass.
-void planner_reverse_pass() {
-  uint8_t block_index = block_buffer_head;
-  
-  //Make a local copy of block_buffer_tail, because the interrupt can alter it
-  CRITICAL_SECTION_START;
-  unsigned char tail = block_buffer_tail;
-  CRITICAL_SECTION_END
-  
-  if(((block_buffer_head-tail + BLOCK_BUFFER_SIZE) & (BLOCK_BUFFER_SIZE - 1)) > 3) {
-    block_index = (block_buffer_head - 3) & (BLOCK_BUFFER_SIZE - 1);
-    block_t *block[3] = { 
-      NULL, NULL, NULL         };
-    while(block_index != tail) { 
-      block_index = prev_block_index(block_index); 
-      block[2]= block[1];
-      block[1]= block[0];
-      block[0] = &block_buffer[block_index];
-      planner_reverse_pass_kernel(block[0], block[1], block[2]);
-    }
-  }
-}
-
-// The kernel called by planner_recalculate() when scanning the plan from first to last entry.
-void planner_forward_pass_kernel(block_t *previous, block_t *current, block_t *next) {
-  if(!previous) { 
-    return; 
-  }
-
-  // If the previous block is an acceleration block, but it is not long enough to complete the
-  // full speed change within the block, we need to adjust the entry speed accordingly. Entry
-  // speeds have already been reset, maximized, and reverse planned by reverse planner.
-  // If nominal length is true, max junction speed is guaranteed to be reached. No need to recheck.
-  if (!previous->nominal_length_flag) {
-    if (previous->entry_speed < current->entry_speed) {
-      double entry_speed = min( current->entry_speed,
-      max_allowable_speed(-previous->acceleration,previous->entry_speed,previous->millimeters) );
-
-      // Check for junction speed change
-      if (current->entry_speed != entry_speed) {
-        current->entry_speed = entry_speed;
-        current->recalculate_flag = true;
-      }
-    }
-  }
-}
-
-// planner_recalculate() needs to go over the current plan twice. Once in reverse and once forward. This 
-// implements the forward pass.
-void planner_forward_pass() {
-  uint8_t block_index = block_buffer_tail;
-  block_t *block[3] = { 
-    NULL, NULL, NULL   };
-
-  while(block_index != block_buffer_head) {
-    block[0] = block[1];
-    block[1] = block[2];
-    block[2] = &block_buffer[block_index];
-    planner_forward_pass_kernel(block[0],block[1],block[2]);
-    block_index = next_block_index(block_index);
-  }
-  planner_forward_pass_kernel(block[1], block[2], NULL);
-}
-
-// Recalculates the trapezoid speed profiles for all blocks in the plan according to the 
-// entry_factor for each junction. Must be called by planner_recalculate() after 
-// updating the blocks.
-void planner_recalculate_trapezoids() {
-  int8_t block_index = block_buffer_tail;
-  block_t *current;
-  block_t *next = NULL;
-
-  while(block_index != block_buffer_head) {
-    current = next;
-    next = &block_buffer[block_index];
-    if (current) {
-      // Recalculate if current block entry or exit junction speed has changed.
-      if (current->recalculate_flag || next->recalculate_flag) {
-        // NOTE: Entry and exit factors always > 0 by all previous logic operations.
-        calculate_trapezoid_for_block(current, current->entry_speed/current->nominal_speed,
-        next->entry_speed/current->nominal_speed);
-        current->recalculate_flag = false; // Reset current only to ensure next trapezoid is computed
-      }
-    }
-    block_index = next_block_index( block_index );
-  }
-  // Last/newest block in buffer. Exit speed is set with MINIMUM_PLANNER_SPEED. Always recalculated.
-  if(next != NULL) {
-    calculate_trapezoid_for_block(next, next->entry_speed/next->nominal_speed,
-    MINIMUM_PLANNER_SPEED/next->nominal_speed);
-    next->recalculate_flag = false;
-  }
+// Calculates the maximum allowable entry speed, when you must be able to reach target_velocity using the 
+// decceleration within the allotted distance.
+FORCE_INLINE float max_allowable_entry_speed(float decceleration, float target_velocity, float distance) 
+{
+    // assert(decceleration < 0);
+    return  sqrt(target_velocity*target_velocity-2*decceleration*distance);
 }
 
 // Recalculates the motion plan according to the following algorithm:
@@ -388,11 +249,99 @@ void planner_recalculate_trapezoids() {
 // the set limit. Finally it will:
 //
 //   3. Recalculate trapezoids for all blocks.
+void planner_recalculate(const float &safe_final_speed) 
+{
+    // Reverse pass
+    // Make a local copy of block_buffer_tail, because the interrupt can alter it
+    // by consuming the blocks, therefore shortening the queue.
+    unsigned char tail = block_buffer_tail;
+    uint8_t block_index;
+    block_t *prev, *current, *next;
 
-void planner_recalculate() {   
-  planner_reverse_pass();
-  planner_forward_pass();
-  planner_recalculate_trapezoids();
+//    SERIAL_ECHOLNPGM("planner_recalculate - 1");
+
+    // At least three blocks are in the queue?
+    unsigned char n_blocks = (block_buffer_head + BLOCK_BUFFER_SIZE - tail) & (BLOCK_BUFFER_SIZE - 1);
+    if (n_blocks >= 3) {
+        // Initialize the last tripple of blocks.
+        block_index = prev_block_index(block_buffer_head);
+        next        = block_buffer + block_index;
+        current     = block_buffer + (block_index = prev_block_index(block_index));
+        // No need to recalculate the last block, it has already been set by the plan_buffer_line() function.
+        // Vojtech thinks, that one shall not touch the entry speed of the very first block as well, because
+        // 1) it may already be running at the stepper interrupt,
+        // 2) there is no way to limit it when going in the forward direction.
+        while (block_index != tail) {
+            if (current->flag & BLOCK_FLAG_START_FROM_FULL_HALT) {
+                // Don't modify the entry velocity of the starting block.
+                // Also don't modify the trapezoids before this block, they are finalized already, prepared
+                // for the stepper interrupt routine to use them.
+                tail = block_index;
+                // Update the number of blocks to process.
+                n_blocks = (block_buffer_head + BLOCK_BUFFER_SIZE - tail) & (BLOCK_BUFFER_SIZE - 1);
+                SERIAL_ECHOLNPGM("BLOCK_FLAG_START_FROM_FULL_HALT");
+                break;
+            }
+            // If entry speed is already at the maximum entry speed, no need to recheck. Block is cruising.
+            // If not, block in state of acceleration or deceleration. Reset entry speed to maximum and
+            // check for maximum allowable speed reductions to ensure maximum possible planned speed.
+            if (current->entry_speed != current->max_entry_speed) {
+                // assert(current->entry_speed < current->max_entry_speed);
+                // Entry speed could be increased up to the max_entry_speed, limited by the length of the current
+                // segment and the maximum acceleration allowed for this segment.
+                // If nominal length true, max junction speed is guaranteed to be reached even if decelerating to a jerk-from-zero velocity.
+                // Only compute for max allowable speed if block is decelerating and nominal length is false.
+                current->entry_speed = ((current->flag & BLOCK_FLAG_NOMINAL_LENGTH) || current->max_entry_speed <= next->entry_speed) ?
+                    current->max_entry_speed :
+                    min(current->max_entry_speed, max_allowable_entry_speed(-current->acceleration,next->entry_speed,current->millimeters));
+                current->flag |= BLOCK_FLAG_RECALCULATE;
+            }
+            next = current;
+            current = block_buffer + (block_index = prev_block_index(block_index));
+        }
+    }
+
+//    SERIAL_ECHOLNPGM("planner_recalculate - 2");
+
+    // Forward pass and recalculate the trapezoids.
+    if (n_blocks >= 2) {
+        // Better to limit the velocities using the already processed block, if it is available, so rather use the saved tail.
+        block_index = tail;
+        prev    = block_buffer + block_index;
+        current = block_buffer + (block_index = next_block_index(block_index));
+        do {
+            // If the previous block is an acceleration block, but it is not long enough to complete the
+            // full speed change within the block, we need to adjust the entry speed accordingly. Entry
+            // speeds have already been reset, maximized, and reverse planned by reverse planner.
+            // If nominal length is true, max junction speed is guaranteed to be reached. No need to recheck.
+            if (! (prev->flag & BLOCK_FLAG_NOMINAL_LENGTH) && prev->entry_speed < current->entry_speed) {
+                float entry_speed = min(current->entry_speed, max_allowable_entry_speed(-prev->acceleration,prev->entry_speed,prev->millimeters));
+                // Check for junction speed change
+                if (current->entry_speed != entry_speed) {
+                    current->entry_speed = entry_speed;
+                    current->flag |= BLOCK_FLAG_RECALCULATE;
+                }
+            }
+            // Recalculate if current block entry or exit junction speed has changed.
+            if ((prev->flag | current->flag) & BLOCK_FLAG_RECALCULATE) {
+                // NOTE: Entry and exit factors always > 0 by all previous logic operations.
+                calculate_trapezoid_for_block(prev, prev->entry_speed/prev->nominal_speed, current->entry_speed/prev->nominal_speed);
+                // Reset current only to ensure next trapezoid is computed.
+                prev->flag &= ~BLOCK_FLAG_RECALCULATE;
+            }
+            prev = current;
+            current = block_buffer + (block_index = next_block_index(block_index));
+        } while (block_index != block_buffer_head);
+    }
+
+//    SERIAL_ECHOLNPGM("planner_recalculate - 3");
+
+    // Last/newest block in buffer. Exit speed is set with safe_final_speed. Always recalculated.
+    current = block_buffer + prev_block_index(block_buffer_head);
+    calculate_trapezoid_for_block(current, current->entry_speed/current->nominal_speed, safe_final_speed/current->nominal_speed);
+    current->flag &= ~BLOCK_FLAG_RECALCULATE;
+
+//    SERIAL_ECHOLNPGM("planner_recalculate - 4");
 }
 
 void plan_init() {
@@ -618,7 +567,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Prepare to set up new block
   block_t *block = &block_buffer[block_buffer_head];
 
-  // Mark block as not busy (Not executed by the stepper interrupt)
+  // Mark block as not busy (Not executed by the stepper interrupt, could be still tinkered with.)
   block->busy = false;
 
   // Number of steps for each axis
@@ -783,30 +732,20 @@ Having the real displacement of the head, we can calculate the total movement le
     // Calculate speed in mm/second for each axis. No divide by zero due to previous checks.
   float inverse_second = feed_rate * inverse_millimeters;
 
-  int moves_queued=(block_buffer_head-block_buffer_tail + BLOCK_BUFFER_SIZE) & (BLOCK_BUFFER_SIZE - 1);
+  int moves_queued = moves_planned();
 
   // slow down when de buffer starts to empty, rather than wait at the corner for a buffer refill
-#ifdef OLD_SLOWDOWN
-  if(moves_queued < (BLOCK_BUFFER_SIZE * 0.5) && moves_queued > 1)
-    feed_rate = feed_rate*moves_queued / (BLOCK_BUFFER_SIZE * 0.5); 
-#endif
-
 #ifdef SLOWDOWN
-  //  segment time im micro seconds
-  unsigned long segment_time = lround(1000000.0/inverse_second);
-  if ((moves_queued > 1) && (moves_queued < (BLOCK_BUFFER_SIZE * 0.5)))
-  {
-    if (segment_time < minsegmenttime)
-    { // buffer is draining, add extra time.  The amount of time added increases if the buffer is still emptied more.
-      inverse_second=1000000.0/(segment_time+lround(2*(minsegmenttime-segment_time)/moves_queued));
-      #ifdef XY_FREQUENCY_LIMIT
-         segment_time = lround(1000000.0/inverse_second);
-      #endif
-    }
+  //FIXME Vojtech: Why moves_queued > 1? Why not >=1?
+  // Can we somehow differentiate the filling of the buffer at the start of a g-code from a buffer draining situation?
+  if (moves_queued > 1 && moves_queued < (BLOCK_BUFFER_SIZE >> 1)) {
+      // segment time in micro seconds
+      unsigned long segment_time = lround(1000000.0/inverse_second);
+      if (segment_time < minsegmenttime)
+          // buffer is draining, add extra time.  The amount of time added increases if the buffer is still emptied more.
+          inverse_second=1000000.0/(segment_time+lround(2*(minsegmenttime-segment_time)/moves_queued));
   }
-#endif
-  //  END OF SLOW DOWN SECTION    
-
+#endif // SLOWDOWN
 
   block->nominal_speed = block->millimeters * inverse_second; // (mm/sec) Always > 0
   block->nominal_rate = ceil(block->step_event_count * inverse_second); // (step/sec) Always > 0
@@ -864,41 +803,6 @@ Having the real displacement of the head, we can calculate the total movement le
       speed_factor = min(speed_factor, max_feedrate[i] / fabs(current_speed[i]));
   }
 
-  // Max segement time in us.
-#ifdef XY_FREQUENCY_LIMIT
-#define MAX_FREQ_TIME (1000000.0/XY_FREQUENCY_LIMIT)
-  // Check and limit the xy direction change frequency
-  unsigned char direction_change = block->direction_bits ^ old_direction_bits;
-  old_direction_bits = block->direction_bits;
-  segment_time = lround((float)segment_time / speed_factor);
-  
-  if((direction_change & (1<<X_AXIS)) == 0)
-  {
-    x_segment_time[0] += segment_time;
-  }
-  else
-  {
-    x_segment_time[2] = x_segment_time[1];
-    x_segment_time[1] = x_segment_time[0];
-    x_segment_time[0] = segment_time;
-  }
-  if((direction_change & (1<<Y_AXIS)) == 0)
-  {
-    y_segment_time[0] += segment_time;
-  }
-  else
-  {
-    y_segment_time[2] = y_segment_time[1];
-    y_segment_time[1] = y_segment_time[0];
-    y_segment_time[0] = segment_time;
-  }
-  long max_x_segment_time = max(x_segment_time[0], max(x_segment_time[1], x_segment_time[2]));
-  long max_y_segment_time = max(y_segment_time[0], max(y_segment_time[1], y_segment_time[2]));
-  long min_xy_segment_time =min(max_x_segment_time, max_y_segment_time);
-  if(min_xy_segment_time < MAX_FREQ_TIME)
-    speed_factor = min(speed_factor, speed_factor * (float)min_xy_segment_time / (float)MAX_FREQ_TIME);
-#endif
-
   // Correct the speed  
   if( speed_factor < 1.0)
   {
@@ -920,6 +824,7 @@ Having the real displacement of the head, we can calculate the total movement le
   {
     block->acceleration_st = ceil(acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
     // Limit acceleration per axis
+    //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
     if(((float)block->acceleration_st * (float)block->steps_x / (float)block->step_event_count) > axis_steps_per_sqr_second[X_AXIS])
       block->acceleration_st = axis_steps_per_sqr_second[X_AXIS];
     if(((float)block->acceleration_st * (float)block->steps_y / (float)block->step_event_count) > axis_steps_per_sqr_second[Y_AXIS])
@@ -972,36 +877,126 @@ Having the real displacement of the head, we can calculate the total movement le
     }
   }
 #endif
-  // Start with a safe speed
-  float vmax_junction = max_xy_jerk/2; 
-  float vmax_junction_factor = 1.0; 
-  if(fabs(current_speed[Z_AXIS]) > max_z_jerk/2) 
-    vmax_junction = min(vmax_junction, max_z_jerk/2);
-  if(fabs(current_speed[E_AXIS]) > max_e_jerk/2) 
-    vmax_junction = min(vmax_junction, max_e_jerk/2);
+  // Start with a safe speed.
+  //Vojtech: This code tries to limit the initial jerk to half of the maximum jerk value.
+  //The code is not quite correct. It is pessimistic as it shall limit a projection of the jerk into each axis,
+  //but when the current code clamps, it clamps as if the movement is done in a single axis only.
+  float vmax_junction = max_xy_jerk/2.f;
+  if(fabs(current_speed[Z_AXIS]) > max_z_jerk/2.f)
+    vmax_junction = min(vmax_junction, max_z_jerk/2.f);
+  if(fabs(current_speed[E_AXIS]) > max_e_jerk/2.f)
+    vmax_junction = min(vmax_junction, max_e_jerk/2.f);
   vmax_junction = min(vmax_junction, block->nominal_speed);
+  // Safe speed is the speed, from which the machine may halt to stop immediately.
   float safe_speed = vmax_junction;
 
-  if ((moves_queued > 1) && (previous_nominal_speed > 0.0001)) {
-    float jerk = sqrt(pow((current_speed[X_AXIS]-previous_speed[X_AXIS]), 2)+pow((current_speed[Y_AXIS]-previous_speed[Y_AXIS]), 2));
-    //    if((fabs(previous_speed[X_AXIS]) > 0.0001) || (fabs(previous_speed[Y_AXIS]) > 0.0001)) {
-    vmax_junction = block->nominal_speed;
-    //    }
-    if (jerk > max_xy_jerk) {
-      vmax_junction_factor = (max_xy_jerk/jerk);
-    } 
-    if(fabs(current_speed[Z_AXIS] - previous_speed[Z_AXIS]) > max_z_jerk) {
-      vmax_junction_factor= min(vmax_junction_factor, (max_z_jerk/fabs(current_speed[Z_AXIS] - previous_speed[Z_AXIS])));
-    } 
-    if(fabs(current_speed[E_AXIS] - previous_speed[E_AXIS]) > max_e_jerk) {
-      vmax_junction_factor = min(vmax_junction_factor, (max_e_jerk/fabs(current_speed[E_AXIS] - previous_speed[E_AXIS])));
-    } 
-    vmax_junction = min(previous_nominal_speed, vmax_junction * vmax_junction_factor); // Limit speed to max previous speed
+  //FIXME Vojtech: Why only if at least two lines are planned in the queue?
+  // Is it because we don't want to tinker with the first buffer line, which
+  // is likely to be executed by the stepper interrupt routine soon?
+  if (moves_queued > 1 && previous_nominal_speed > 0.0001f) {
+#if 1
+      float jerk;
+      {
+          float dx = current_speed[X_AXIS]-previous_speed[X_AXIS];
+          float dy = current_speed[Y_AXIS]-previous_speed[Y_AXIS];
+          jerk = sqrt(dx*dx+dy*dy);
+      }
+      float vmax_junction_factor = 1.0; 
+      //    if((fabs(previous_speed[X_AXIS]) > 0.0001) || (fabs(previous_speed[Y_AXIS]) > 0.0001)) {
+      vmax_junction = block->nominal_speed;
+      //    }
+      if (jerk > max_xy_jerk)
+          vmax_junction_factor = max_xy_jerk/jerk;
+      jerk = fabs(current_speed[Z_AXIS] - previous_speed[Z_AXIS]);
+      if (jerk > max_z_jerk)
+          vmax_junction_factor = min(vmax_junction_factor, max_z_jerk/jerk);
+      jerk = fabs(current_speed[E_AXIS] - previous_speed[E_AXIS]);
+      if (jerk > max_e_jerk)
+          vmax_junction_factor = min(vmax_junction_factor, max_e_jerk/jerk);
+      //FIXME Vojtech: Why is this asymmetric in regard to the previous nominal speed and the current nominal speed?
+      vmax_junction = min(previous_nominal_speed, vmax_junction * vmax_junction_factor); // Limit speed to max previous speed
+#else
+      // Estimate a maximum velocity allowed at a joint of two successive segments.
+      // If this maximum velocity allowed is lower than the minimum of the entry / exit safe velocities,
+      // then the machine is not coasting anymore and the safe entry / exit velocities shall be used.
+
+      // The junction velocity will be shared between successive segments. Limit the junction velocity to their minimum.
+      bool prev_speed_larger = previous_nominal_speed > block->nominal_speed;
+      float smaller_speed_factor = prev_speed_larger ? (block->nominal_speed / previous_nominal_speed) : (previous_nominal_speed / block->nominal_speed);
+      // Pick the smaller of the nominal speeds. Higher speed shall not be achieved at the junction during coasting.
+      vmax_junction = prev_speed_larger ? block->nominal_speed : previous_nominal_speed;
+      // Factor to multiply the previous / current nominal velocities to get componentwise limited velocities.
+      float v_factor_exit  = prev_speed_larger ? smaller_speed_factor : 1.f;
+      float v_factor_entry = prev_speed_larger ? 1.f : smaller_speed_factor;
+      // First limit the jerk in the XY plane.
+      float jerk;
+      {
+          // Estimate the jerk as if the entry / exit velocity of the two successive segment was limited to the minimum of their nominal velocities.
+          // If coasting, then the segment transition velocity will define the exit / entry velocities of the successive segments
+          // and the jerk defined by the following formula will be always lower.
+          float dx = prev_speed_larger ? (current_speed[X_AXIS] - smaller_speed_factor * previous_speed[X_AXIS]) : (smaller_speed_factor * current_speed[X_AXIS] - previous_speed[X_AXIS]);
+          float dy = prev_speed_larger ? (current_speed[Y_AXIS] - smaller_speed_factor * previous_speed[Y_AXIS]) : (smaller_speed_factor * current_speed[Y_AXIS] - previous_speed[Y_AXIS]);
+          jerk = sqrt(dx*dx+dy*dy);
+      }
+      if (jerk > max_xy_jerk) {
+          // Limit the entry / exit velocities to respect the XY jerk limits.
+          v_factor_exit = v_factor_entry = max_xy_jerk / jerk;
+          if (prev_speed_larger)
+              v_factor_exit *= smaller_speed_factor;
+          else
+              v_factor_entry *= smaller_speed_factor;
+      }
+      // Now limit the Z and E axes. We have to differentiate coasting from the reversal of an axis movement, or a full stop.
+      float v_exit  = previous_speed[Z_AXIS] * v_factor_exit;
+      float v_entry = current_speed [Z_AXIS] * v_factor_entry;
+      jerk = (v_exit > v_entry) ?
+          ((v_entry > 0.f || v_exit < 0.f) ?
+              // coasting
+              (v_exit - v_entry) : 
+              // axis reversal
+              max(v_exit, - v_entry)) :
+          // v_exit <= v_entry
+          ((v_entry < 0.f || v_exit > 0.f) ?
+              // coasting
+              (v_entry - v_exit) :
+              // axis reversal
+              max(- v_exit, v_entry));
+      if (jerk > max_z_jerk / 2.f) {
+          float c = (max_z_jerk / 2.f) / jerk;
+          v_factor_exit *= c;
+          v_factor_entry *= c;
+      }
+      // Limit the E axis.
+      v_exit  = previous_speed[E_AXIS] * v_factor_exit;
+      v_entry = current_speed [E_AXIS] * v_factor_entry;
+      jerk = (v_exit > v_entry) ?
+          ((v_entry > 0.f || v_exit < 0.f) ?
+              // coasting
+              (v_exit - v_entry) : 
+              // axis reversal
+              max(v_exit, - v_entry)) :
+          // v_exit <= v_entry
+          ((v_entry < 0.f || v_exit > 0.f) ?
+              // coasting
+              (v_entry - v_exit) :
+              // axis reversal
+              max(- v_exit, v_entry));
+      if (jerk > max_e_jerk / 2.f) {
+          float c = (max_e_jerk / 2.f) / jerk;
+          v_factor_exit *= c;
+          v_factor_entry *= c;
+      }
+
+      // Now the transition velocity is known as nominal * v_factor. Compare the transition velocity against the "safe" velocoties.
+      // If the transition velocity is below the exit / enter safe velocity, the machine is no more cruising, therefore
+      // the safe velocities shall be used.
+#endif
   }
+  // Max entry speed of this block equals the max exit speed of the previous block.
   block->max_entry_speed = vmax_junction;
 
-  // Initialize block entry speed. Compute based on deceleration to user-defined MINIMUM_PLANNER_SPEED.
-  double v_allowable = max_allowable_speed(-block->acceleration,MINIMUM_PLANNER_SPEED,block->millimeters);
+  // Initialize block entry speed. Compute based on deceleration to safe_speed.
+  double v_allowable = max_allowable_entry_speed(-block->acceleration,safe_speed,block->millimeters);
   block->entry_speed = min(vmax_junction, v_allowable);
 
   // Initialize planner efficiency flags
@@ -1012,13 +1007,8 @@ Having the real displacement of the head, we can calculate the total movement le
   // block nominal speed limits both the current and next maximum junction speeds. Hence, in both
   // the reverse and forward planners, the corresponding block junction speed will always be at the
   // the maximum junction speed and may always be ignored for any speed reduction checks.
-  if (block->nominal_speed <= v_allowable) { 
-    block->nominal_length_flag = true; 
-  }
-  else { 
-    block->nominal_length_flag = false; 
-  }
-  block->recalculate_flag = true; // Always calculate trapezoid for new block
+  // Always calculate trapezoid for new block
+  block->flag = (block->nominal_speed <= v_allowable) ? (BLOCK_FLAG_NOMINAL_LENGTH | BLOCK_FLAG_RECALCULATE) : BLOCK_FLAG_RECALCULATE;
 
   // Update previous path unit_vector and nominal speed
   memcpy(previous_speed, current_speed, sizeof(previous_speed)); // previous_speed[] = current_speed[]
@@ -1052,16 +1042,19 @@ Having the real displacement of the head, we can calculate the total movement le
    */
 #endif // ADVANCE
 
-  calculate_trapezoid_for_block(block, block->entry_speed/block->nominal_speed,
-  safe_speed/block->nominal_speed);
+  calculate_trapezoid_for_block(block, block->entry_speed/block->nominal_speed, safe_speed/block->nominal_speed);
 
-  // Move buffer head
+  // Move the buffer head. From now the block may be picked up by the stepper interrupt controller.
   block_buffer_head = next_buffer_head;
 
   // Update position
   memcpy(position, target, sizeof(target)); // position[] = target[]
 
-  planner_recalculate();
+  // Recalculate the trapezoids to maximize speed at the segment transitions while respecting
+  // the machine limits (maximum acceleration and maximum jerk).
+  // This runs asynchronously with the stepper interrupt controller, which may
+  // interfere with the process.
+  planner_recalculate(safe_speed);
 
   st_wake_up();
 }
@@ -1126,11 +1119,6 @@ void plan_set_e_position(const float &e)
 {
   position[E_AXIS] = lround(e*axis_steps_per_unit[E_AXIS]);  
   st_set_e_position(position[E_AXIS]);
-}
-
-uint8_t movesplanned()
-{
-  return (block_buffer_head-block_buffer_tail + BLOCK_BUFFER_SIZE) & (BLOCK_BUFFER_SIZE - 1);
 }
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
