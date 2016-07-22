@@ -3515,7 +3515,7 @@ Sigma_Exit:
             float value = code_value();
             if(value < 20.0) {
               float factor = axis_steps_per_unit[i] / value; // increase e constants if M92 E14 is given for netfab.
-              max_e_jerk *= factor;
+              max_jerk[E_AXIS] *= factor;
               max_feedrate[i] *= factor;
               axis_steps_per_sqr_second[i] *= factor;
             }
@@ -3718,9 +3718,10 @@ Sigma_Exit:
       if(code_seen('S')) minimumfeedrate = code_value();
       if(code_seen('T')) mintravelfeedrate = code_value();
       if(code_seen('B')) minsegmenttime = code_value() ;
-      if(code_seen('X')) max_xy_jerk = code_value() ;
-      if(code_seen('Z')) max_z_jerk = code_value() ;
-      if(code_seen('E')) max_e_jerk = code_value() ;
+      if(code_seen('X')) max_jerk[X_AXIS] = max_jerk[Y_AXIS] = code_value();
+      if(code_seen('Y')) max_jerk[Y_AXIS] = code_value();
+      if(code_seen('Z')) max_jerk[Z_AXIS] = code_value();
+      if(code_seen('E')) max_jerk[E_AXIS] = code_value();
     }
     break;
     case 206: // M206 additional homing offset

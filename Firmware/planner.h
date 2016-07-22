@@ -37,12 +37,9 @@ enum BlockFlag {
     // Planner flag for nominal speed always reached. That means, the segment is long enough, that the nominal speed
     // may be reached if accelerating from a safe speed (in the regard of jerking from zero speed).
     BLOCK_FLAG_NOMINAL_LENGTH = 2,
-    // If set, the machine will stop to a full halt at the end of this block,
-    // respecting the maximum allowed jerk.
-    BLOCK_FLAG_FULL_HALT_AT_END = 4,
     // If set, the machine will start from a halt at the start of this block,
     // respecting the maximum allowed jerk.
-    BLOCK_FLAG_START_FROM_FULL_HALT = 8,
+    BLOCK_FLAG_START_FROM_FULL_HALT = 4,
 };
 
 // This struct is used when buffering the setup for each linear movement "nominal" values are as specified in 
@@ -135,9 +132,8 @@ extern unsigned long max_acceleration_units_per_sq_second[NUM_AXIS]; // Use M201
 extern float minimumfeedrate;
 extern float acceleration;         // Normal acceleration mm/s^2  THIS IS THE DEFAULT ACCELERATION for all moves. M204 SXXXX
 extern float retract_acceleration; //  mm/s^2   filament pull-pack and push-forward  while standing still in the other axis M204 TXXXX
-extern float max_xy_jerk; //speed than can be stopped at once, if i understand correctly.
-extern float max_z_jerk;
-extern float max_e_jerk;
+// Jerk is a maximum immediate velocity change.
+extern float max_jerk[NUM_AXIS];
 extern float mintravelfeedrate;
 extern unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
