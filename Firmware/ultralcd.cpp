@@ -137,6 +137,7 @@ static void lcd_quick_feedback();//Cause an LCD refresh, and give the user visua
 
 /* Different types of actions that can be used in menu items. */
 static void menu_action_back(menuFunc_t data);
+#define menu_action_back_RAM menu_action_back
 static void menu_action_submenu(menuFunc_t data);
 static void menu_action_gcode(const char* pgcode);
 static void menu_action_function(menuFunc_t data);
@@ -749,6 +750,16 @@ static void lcd_support_menu()
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
   MENU_ITEM(back, PSTR("Date: "), lcd_main_menu);
   MENU_ITEM(back, PSTR(__DATE__), lcd_main_menu);
+
+  // Show the FlashAir IP address, if the card is available.
+  uint8_t ip[4];
+  bool hasIP = card.ToshibaFlashAir_GetIP(ip);
+  if (hasIP) {
+      MENU_ITEM(back, PSTR("FlashAir IP Addr:"), lcd_main_menu);
+      char buf[30];
+      sprintf_P(buf, PSTR("%d.%d.%d.%d"), ip[0], ip[1], ip[2], ip[3]);
+      MENU_ITEM(back_RAM, buf, lcd_main_menu);
+  }
 
   END_MENU();
 }
@@ -2279,7 +2290,7 @@ static void lcd_main_menu()
   }
 
 
-  if ( movesplanned() || IS_SD_PRINTING || is_usb_printing )
+  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing )
   {
     MENU_ITEM(submenu, MSG_TUNE, lcd_tune_menu);
   } else 
