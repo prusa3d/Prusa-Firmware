@@ -749,7 +749,7 @@ error:
 #define FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS (8.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS (6.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP  (1.f)
-#define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.5f)
+#define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.2f)
 inline bool find_bed_induction_sensor_point_xy()
 {
     float feedrate = homing_feedrate[X_AXIS] / 60.f;
@@ -1039,6 +1039,7 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
     float center_old_x = current_position[X_AXIS];
     float center_old_y = current_position[Y_AXIS];
     float a, b;
+    bool  point_small = false;
 
     enable_endstops(false);
 
@@ -1078,8 +1079,14 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
                 SERIAL_ECHOLNPGM("");
             }
             // We force the calibration routine to move the Z axis slightly down to make the response more pronounced.
-            current_position[X_AXIS] = center_old_x;
-            goto canceled;            
+            if (b - a < 0.5f * MIN_BED_SENSOR_POINT_RESPONSE_DMR) {
+                // Don't use the new X value.
+                current_position[X_AXIS] = center_old_x;
+                goto canceled;
+            } else {
+                // Use the new value, but force the Z axis to go a bit lower.
+                point_small = true;
+            }
         }
         if (verbosity_level >= 5) {
             debug_output_point(PSTR("left" ), a, current_position[Y_AXIS], current_position[Z_AXIS]);
@@ -1142,8 +1149,14 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
                 SERIAL_ECHO(b - a);
                 SERIAL_ECHOLNPGM("");
             }
-            current_position[Y_AXIS] = center_old_y;
-            goto canceled;
+            if (b - a < 0.5f * MIN_BED_SENSOR_POINT_RESPONSE_DMR) {
+                // Don't use the new Y value.
+                current_position[Y_AXIS] = center_old_y;
+                goto canceled;
+            } else {
+                // Use the new value, but force the Z axis to go a bit lower.
+                point_small = true;
+            }
         }
         if (verbosity_level >= 5) {
             debug_output_point(PSTR("top" ), current_position[X_AXIS], a, current_position[Z_AXIS]);
@@ -1156,7 +1169,11 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
         go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
     }
 
-    return true;
+    // If point is small but not too small, then force the Z axis to be lowered a bit,
+    // but use the new value. This is important when the initial position was off in one axis,
+    // for example if the initial calibration was shifted in the Y axis systematically.
+    // Then this first step will center.
+    return ! point_small;
 
 canceled:
     // Go back to the center.

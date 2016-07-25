@@ -1370,12 +1370,18 @@ static inline bool pgm_is_whitespace(const char *c)
     return pgm_read_byte(c) == ' ' || pgm_read_byte(c) == '\t' || pgm_read_byte(c) == '\r' || pgm_read_byte(c) == '\n';
 }
 
-void lcd_display_message_fullscreen_P(const char *msg)
+static inline bool pgm_is_interpunction(const char *c)
+{
+    return pgm_read_byte(c) == '.' || pgm_read_byte(c) == ',' || pgm_read_byte(c) == ';' || pgm_read_byte(c) == '?' || pgm_read_byte(c) == '!';
+}
+
+const char* lcd_display_message_fullscreen_P(const char *msg)
 {
     // Disable update of the screen by the usual lcd_update() routine. 
     lcd_update_enable(false);
     lcd_implementation_clear();
     lcd.setCursor(0, 0);
+    const char *msgend = msg;
     for (int8_t row = 0; row < 4; ++ row) {
         while (pgm_is_whitespace(msg))
             ++ msg;
@@ -1384,8 +1390,8 @@ void lcd_display_message_fullscreen_P(const char *msg)
             break;
         lcd.setCursor(0, row);
         const char *msgend2 = msg + min(strlen_P(msg), 20);
-        const char *msgend = msgend2;
-        if (pgm_read_byte(msgend) != 0 && ! pgm_is_whitespace(msgend)) {
+        msgend = msgend2;
+        if (pgm_read_byte(msgend) != 0 && ! pgm_is_whitespace(msgend) && ! pgm_is_interpunction(msgend)) {
               // Splitting a word. Find the start of the current word.
             while (msgend > msg && ! pgm_is_whitespace(msgend - 1))
                  -- msgend;
@@ -1400,6 +1406,8 @@ void lcd_display_message_fullscreen_P(const char *msg)
             lcd.print(c);
         }
     }
+
+    return (pgm_read_byte(msgend) == 0) ? NULL : msgend;
 }
 
 void lcd_show_fullscreen_message_and_wait_P(const char *msg)

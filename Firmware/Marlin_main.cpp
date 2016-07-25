@@ -2382,7 +2382,7 @@ void process_commands()
                 st_synchronize();
                 
                 // Go down until endstop is hit
-                const float Z_CALIBRATION_THRESHOLD = 0.5f;
+                const float Z_CALIBRATION_THRESHOLD = 1.f;
                 if (! find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f)) {
                     kill_message = MSG_BED_LEVELING_FAILED_POINT_LOW;
                     break;
