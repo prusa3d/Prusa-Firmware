@@ -1412,16 +1412,25 @@ const char* lcd_display_message_fullscreen_P(const char *msg)
 
 void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 {
-    lcd_display_message_fullscreen_P(msg);
+    const char *msg_next = lcd_display_message_fullscreen_P(msg);
+    bool multi_screen = msg_next != NULL;
 
     // Until confirmed by a button click.
     for (;;) {
-        delay_keep_alive(50);
-        if (lcd_clicked()) {
-            while (lcd_clicked()) ;
-            delay(10);
-            while (lcd_clicked()) ;
-            break;
+        // Wait for 5 seconds before displaying the next text.
+        for (uint8_t i = 0; i < 100; ++ i) {
+            delay_keep_alive(50);
+            if (lcd_clicked()) {
+                while (lcd_clicked()) ;
+                delay(10);
+                while (lcd_clicked()) ;
+                return;
+            }
+        }
+        if (multi_screen) {
+            if (msg_next == NULL)
+                msg_next = msg;
+            msg_next = lcd_display_message_fullscreen_P(msg_next);
         }
     }
 }
