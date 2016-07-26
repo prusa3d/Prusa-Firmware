@@ -755,6 +755,7 @@ static void lcd_support_menu()
   uint8_t ip[4];
   bool hasIP = card.ToshibaFlashAir_GetIP(ip);
   if (hasIP) {
+      MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
       MENU_ITEM(back, PSTR("FlashAir IP Addr:"), lcd_main_menu);
       char buf[30];
       sprintf_P(buf, PSTR("%d.%d.%d.%d"), ip[0], ip[1], ip[2], ip[3]);

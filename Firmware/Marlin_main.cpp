@@ -2387,6 +2387,10 @@ void process_commands()
                     kill_message = MSG_BED_LEVELING_FAILED_POINT_LOW;
                     break;
                 }
+                if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
+                    kill_message = MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED;
+                    break;
+                }
                 if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) {
                     kill_message = MSG_BED_LEVELING_FAILED_POINT_HIGH;
                     break;

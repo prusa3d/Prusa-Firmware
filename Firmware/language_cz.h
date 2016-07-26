@@ -307,6 +307,7 @@
 
 #define MSG_BED_LEVELING_FAILED_POINT_LOW						"Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
 #define MSG_BED_LEVELING_FAILED_POINT_HIGH						"Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset."
+#define MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED				"Kalibrace Z selhala. Sensor je odpojeny nebo preruseny kabel. Cekam na reset."
 
 #define MSG_NEW_FIRMWARE_AVAILABLE								"Vysla nova verze firmware:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Prosim aktualizujte."

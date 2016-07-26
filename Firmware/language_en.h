@@ -300,6 +300,7 @@
 
 #define MSG_BED_LEVELING_FAILED_POINT_LOW						"Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 #define MSG_BED_LEVELING_FAILED_POINT_HIGH						"Bed leveling failed. Sensor triggered too high. Waiting for reset."
+#define MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED				"Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
 
 #define MSG_NEW_FIRMWARE_AVAILABLE								"New firmware version available:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Please upgrade."
