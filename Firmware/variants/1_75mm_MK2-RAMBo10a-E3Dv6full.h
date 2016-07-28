@@ -51,11 +51,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
 
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 24, 25}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {9000,9000,1000,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 25}    // (mm/sec)
+#define DEFAULT_MAX_ACCELERATION      {9000,9000,500,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
-#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
+#define DEFAULT_ACCELERATION          1500    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  1500   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 
 #define MANUAL_FEEDRATE {3000, 3000, 1000, 100}   // set the speeds for manual moves (mm/min)
