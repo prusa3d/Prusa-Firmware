@@ -6,7 +6,7 @@
 
 #ifdef ULTRA_LCD
 
-  void lcd_update();
+  void lcd_update(uint8_t lcdDrawUpdateOverride = 0);
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
   void lcd_update_enable(bool enable);
   void lcd_init();

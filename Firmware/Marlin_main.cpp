@@ -2328,14 +2328,6 @@ void process_commands()
     case 80:
     case_G80:
         {
-			if (!IS_SD_PRINTING)
-			{
-				custom_message = true;
-				custom_message_type = 1;
-				custom_message_state = (MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) + 10;
-			}
-			
-
             // Firstly check if we know where we are
             if ( !( axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS] ) ){
                 // We don't know where we are! HOME!
@@ -2345,6 +2337,15 @@ void process_commands()
                 enquecommand_front_P((PSTR("G28 W0")));
                 break;
             }
+
+            // Save custom message state, set a new custom message state to display: Calibrating point 9.
+            bool custom_message_old = custom_message;
+            unsigned int custom_message_type_old = custom_message_type;
+            unsigned int custom_message_state_old = custom_message_state;
+            custom_message = true;
+            custom_message_type = 1;
+            custom_message_state = (MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) + 10;
+            lcd_update(1);
             
             mbl.reset();
 
@@ -2429,12 +2430,9 @@ void process_commands()
 
                 mbl.set_z(ix, iy, current_position[Z_AXIS]);
 
-        				if (!IS_SD_PRINTING)
-        				{
-        					custom_message_state--;
-        				}
+        				custom_message_state--;
                 mesh_point++;
-                
+                lcd_update(1);
             }
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
@@ -2526,6 +2524,12 @@ void process_commands()
             world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
             plan_buffer_line(current_position[X_AXIS], current_position[X_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
             st_synchronize();
+
+            // Restore custom message state
+            custom_message       = custom_message_old;
+            custom_message_type  = custom_message_type_old;
+            custom_message_state = custom_message_state_old;
+            lcd_update(1);
         }
         break;
 

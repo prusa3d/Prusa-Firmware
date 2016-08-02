@@ -397,7 +397,7 @@ static void lcd_status_screen()
 			}
 			break;
 		}
-	}
+	} // end of farm_mode
 
 
 
@@ -410,7 +410,7 @@ static void lcd_status_screen()
 	}
 	
 
-  }
+  } // end of lcdDrawUpdate
 #ifdef ULTIPANEL
 
   bool current_click = LCD_CLICKED;
@@ -755,8 +755,8 @@ static void lcd_preheat_menu()
 
 static void lcd_support_menu()
 {
-    if (menuData.supportMenu.status == 0) {
-        // Menu was entered.
+    if (menuData.supportMenu.status == 0 || lcdDrawUpdate == 2) {
+        // Menu was entered or SD card status has changed (plugged in or removed).
         // Initialize its status.
         menuData.supportMenu.status = 1;
         menuData.supportMenu.is_flash_air = card.ToshibaFlashAir_GetIP(menuData.supportMenu.ip);
@@ -1224,7 +1224,7 @@ static void _lcd_babystep(int axis, const char *msg)
         menuData.babyStep.babystepMemMM[0] = menuData.babyStep.babystepMem[0]/axis_steps_per_unit[X_AXIS];
         menuData.babyStep.babystepMemMM[1] = menuData.babyStep.babystepMem[1]/axis_steps_per_unit[Y_AXIS];
         menuData.babyStep.babystepMemMM[2] = menuData.babyStep.babystepMem[2]/axis_steps_per_unit[Z_AXIS];
-        lcdDrawUpdate = true;
+        lcdDrawUpdate = 1;
     }
 
   if (encoderPosition != 0) 
@@ -1236,7 +1236,7 @@ static void _lcd_babystep(int axis, const char *msg)
     menuData.babyStep.babystepMemMM[axis] = menuData.babyStep.babystepMem[axis]/axis_steps_per_unit[Z_AXIS];
 	  delay(50);
 	  encoderPosition = 0;
-    lcdDrawUpdate = true;
+    lcdDrawUpdate = 1;
   }
   if (lcdDrawUpdate)
     lcd_implementation_drawedit_2(msg, ftostr13ns(menuData.babyStep.babystepMemMM[axis]));
@@ -1300,7 +1300,7 @@ static void lcd_adjust_bed()
             menuData.adjustBed.front2 = 0;
             menuData.adjustBed.rear2  = 0;
         }
-        lcdDrawUpdate = true;
+        lcdDrawUpdate = 1;
         eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
     }
 
@@ -3230,8 +3230,11 @@ void lcd_update_enable(bool enabled)
     lcd_update_enabled = enabled;
 }
 
-void lcd_update()
+void lcd_update(uint8_t lcdDrawUpdateOverride)
 {
+  if (lcdDrawUpdate < lcdDrawUpdateOverride)
+    lcdDrawUpdate = lcdDrawUpdateOverride;
+
 	static unsigned long timeoutToStatus = 0;
 
   if (! lcd_update_enabled)
