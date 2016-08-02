@@ -178,6 +178,13 @@ FORCE_INLINE uint8_t moves_planned() {
     return (block_buffer_head + BLOCK_BUFFER_SIZE - block_buffer_tail) & (BLOCK_BUFFER_SIZE - 1);
 }
 
+FORCE_INLINE bool planner_queue_full() {
+    unsigned char next_block_index = block_buffer_head;
+    if (++ next_block_index == BLOCK_BUFFER_SIZE)
+        next_block_index = 0; 
+    return block_buffer_tail == next_block_index;
+}
+
 #ifdef PREVENT_DANGEROUS_EXTRUDE
 void set_extrude_min_temp(float temp);
 #endif

@@ -1150,13 +1150,15 @@ static void lcd_menu_statistics()
 static void _lcd_move(const char *name, int axis, int min, int max) {
   if (encoderPosition != 0) {
     refresh_cmd_timeout();
-    current_position[axis] += float((int)encoderPosition) * move_menu_scale;
-    if (min_software_endstops && current_position[axis] < min) current_position[axis] = min;
-    if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
-    encoderPosition = 0;
-    world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[axis] / 60, active_extruder);
-    lcdDrawUpdate = 1;
+    if (! planner_queue_full()) {
+      current_position[axis] += float((int)encoderPosition) * move_menu_scale;
+      if (min_software_endstops && current_position[axis] < min) current_position[axis] = min;
+      if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
+      encoderPosition = 0;
+      world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[axis] / 60, active_extruder);
+      lcdDrawUpdate = 1;
+    }
   }
   if (lcdDrawUpdate) lcd_implementation_drawedit(name, ftostr31(current_position[axis]));
   if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis);
@@ -1167,10 +1169,13 @@ static void lcd_move_e()
 {
   if (encoderPosition != 0)
   {
-    current_position[E_AXIS] += float((int)encoderPosition) * move_menu_scale;
-    encoderPosition = 0;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[E_AXIS] / 60, active_extruder);
-    lcdDrawUpdate = 1;
+    refresh_cmd_timeout();
+    if (! planner_queue_full()) {
+      current_position[E_AXIS] += float((int)encoderPosition) * move_menu_scale;
+      encoderPosition = 0;
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[E_AXIS] / 60, active_extruder);
+      lcdDrawUpdate = 1;
+    }
   }
   if (lcdDrawUpdate)
   {
