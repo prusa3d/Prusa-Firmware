@@ -307,4 +307,11 @@
 
 #define MSG_BABYSTEP_Z_NOT_SET									"Printer has not been calibrated yet. Run calibration G-code to adjust Z height."
 
+#define MSG_BED_CORRECTION_MENU									"Bed level correct"
+#define MSG_BED_CORRECTION_LEFT									"Left side  um"
+#define MSG_BED_CORRECTION_RIGHT								"Right side um"
+#define MSG_BED_CORRECTION_FRONT								"Front side um"
+#define MSG_BED_CORRECTION_REAR									"Rear side  um"
+#define MSG_BED_CORRECTION_RESET								"Reset"
+
 #endif // LANGUAGE_EN_H

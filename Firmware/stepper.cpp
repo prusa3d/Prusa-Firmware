@@ -1030,7 +1030,7 @@ void babystep(const uint8_t axis,const bool direction)
     //perform step 
     WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); 
     {
-    float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
+    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
     }
     WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
 
@@ -1049,7 +1049,7 @@ void babystep(const uint8_t axis,const bool direction)
     //perform step 
     WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); 
     {
-    float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
+    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
     }
     WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
 
@@ -1075,7 +1075,7 @@ void babystep(const uint8_t axis,const bool direction)
     #endif
     //wait a tiny bit
     {
-    float x=1./float(axis+1); //absolutely useless
+    volatile float x=1./float(axis+1); //absolutely useless
     }
     WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
     #ifdef Z_DUAL_STEPPER_DRIVERS

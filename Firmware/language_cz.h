@@ -313,4 +313,11 @@
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Prosim aktualizujte."
 #define MSG_BABYSTEP_Z_NOT_SET                          		"Tiskarna nebyla jeste zkalibrovana. Spustte kalibracni G-kod a doladte Z."
 
+#define MSG_BED_CORRECTION_MENU									"Korekce podlozky"
+#define MSG_BED_CORRECTION_LEFT									"Vlevo  [um]"
+#define MSG_BED_CORRECTION_RIGHT								"Vpravo [um]"
+#define MSG_BED_CORRECTION_FRONT								"Vpredu [um]"
+#define MSG_BED_CORRECTION_REAR									"Vzadu  [um]"
+#define MSG_BED_CORRECTION_RESET								"Reset"
+
 #endif // LANGUAGE_EN_H

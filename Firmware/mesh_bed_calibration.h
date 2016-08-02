@@ -167,4 +167,7 @@ extern bool is_bed_z_jitter_data_valid();
 // Useful for visualizing the behavior of the bed induction detector.
 extern bool scan_bed_induction_points(int8_t verbosity_level);
 
+// To replace loading of the babystep correction.
+extern void shift_z(float delta);
+
 #endif /* MESH_BED_CALIBRATION_H */

@@ -2081,3 +2081,11 @@ bool scan_bed_induction_points(int8_t verbosity_level)
     enable_z_endstop(endstop_z_enabled);
     return true;
 }
+
+// Shift a Z axis by a given delta.
+void shift_z(float delta)
+{
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - delta, current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+    st_synchronize();
+    plan_set_z_position(current_position[Z_AXIS]);
+}

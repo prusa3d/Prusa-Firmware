@@ -79,14 +79,6 @@
   FORCE_INLINE void lcd_buttons_update() {}
   #endif
   extern int lcd_commands_type;
-
-  extern int plaPreheatHotendTemp;
-  extern int plaPreheatHPBTemp;
-  extern int plaPreheatFanSpeed;
-
-  extern int absPreheatHotendTemp;
-  extern int absPreheatHPBTemp;
-  extern int absPreheatFanSpeed;
   
   extern bool farm_mode;
   extern int farm_no;

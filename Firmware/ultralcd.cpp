@@ -21,8 +21,60 @@ int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added t
 
 extern int lcd_change_fil_state;
 
-int babystepMem[3];
-float babystepMemMM[3];
+//Function pointer to menu functions.
+typedef void (*menuFunc_t)();
+
+struct EditMenuParentState
+{
+    //prevMenu and prevEncoderPosition are used to store the previous menu location when editing settings.
+    menuFunc_t prevMenu;
+    uint16_t prevEncoderPosition;
+};
+
+union MenuData
+{ 
+    struct BabyStep
+    {
+        // 29B total
+        int8_t status;
+        int babystepMem[3];
+        float babystepMemMM[3];
+    } babyStep;
+
+    struct SupportMenu
+    {
+        // 6B+16B=22B total
+        int8_t status;
+        bool is_flash_air;
+        uint8_t ip[4];
+        char ip_str[3*4+3+1];
+    } supportMenu;
+
+    struct AdjustBed
+    {
+        // 6+13=19B
+        // editMenuParentState is used when an edit menu is entered, so it knows
+        // the return menu and encoder state.
+        struct EditMenuParentState editMenuParentState;
+        int8_t status;
+        int8_t left;
+        int8_t right;
+        int8_t front;
+        int8_t rear;
+        int    left2;
+        int    right2;
+        int    front2;
+        int    rear2;
+    } adjustBed;
+
+    // editMenuParentState is used when an edit menu is entered, so it knows
+    // the return menu and encoder state.
+    struct EditMenuParentState editMenuParentState;
+};
+
+// State of the currently active menu.
+// C Union manages sharing of the static memory by all the menus.
+union MenuData menuData = { 0 };
 
 union Data
 {
@@ -46,33 +98,6 @@ int farm_status = 0;
 
 bool menuExiting = false;
 
-/* Configuration settings */
-int plaPreheatHotendTemp;
-int plaPreheatHPBTemp;
-int plaPreheatFanSpeed;
-
-int absPreheatHotendTemp;
-int absPreheatHPBTemp;
-int absPreheatFanSpeed;
-
-int ppPreheatHotendTemp = PP_PREHEAT_HOTEND_TEMP;
-int ppPreheatHPBTemp = PP_PREHEAT_HPB_TEMP;
-int ppPreheatFanSpeed = PP_PREHEAT_FAN_SPEED;
-
-int petPreheatHotendTemp = PET_PREHEAT_HOTEND_TEMP;
-int petPreheatHPBTemp = PET_PREHEAT_HPB_TEMP;
-int petPreheatFanSpeed = PET_PREHEAT_FAN_SPEED;
-
-int hipsPreheatHotendTemp = HIPS_PREHEAT_HOTEND_TEMP;
-int hipsPreheatHPBTemp = HIPS_PREHEAT_HPB_TEMP;
-int hipsPreheatFanSpeed = HIPS_PREHEAT_FAN_SPEED;
-
-int flexPreheatHotendTemp = FLEX_PREHEAT_HOTEND_TEMP;
-int flexPreheatHPBTemp = FLEX_PREHEAT_HPB_TEMP;
-int flexPreheatFanSpeed = FLEX_PREHEAT_FAN_SPEED;
-
-
-
 #ifdef FILAMENT_LCD_DISPLAY
 unsigned long message_millis = 0;
 #endif
@@ -82,9 +107,6 @@ static float manual_feedrate[] = MANUAL_FEEDRATE;
 #endif // ULTIPANEL
 
 /* !Configuration settings */
-
-//Function pointer to menu functions.
-typedef void (*menuFunc_t)();
 
 uint8_t lcd_status_message_level;
 char lcd_status_message[LCD_WIDTH + 1] = ""; //////WELCOME!
@@ -153,6 +175,8 @@ static void menu_action_setting_edit_float5(const char* pstr, float* ptr, float 
 static void menu_action_setting_edit_float51(const char* pstr, float* ptr, float minValue, float maxValue);
 static void menu_action_setting_edit_float52(const char* pstr, float* ptr, float minValue, float maxValue);
 static void menu_action_setting_edit_long5(const char* pstr, unsigned long* ptr, unsigned long minValue, unsigned long maxValue);
+
+/*
 static void menu_action_setting_edit_callback_bool(const char* pstr, bool* ptr, menuFunc_t callbackFunc);
 static void menu_action_setting_edit_callback_int3(const char* pstr, int* ptr, int minValue, int maxValue, menuFunc_t callbackFunc);
 static void menu_action_setting_edit_callback_float3(const char* pstr, float* ptr, float minValue, float maxValue, menuFunc_t callbackFunc);
@@ -162,6 +186,7 @@ static void menu_action_setting_edit_callback_float5(const char* pstr, float* pt
 static void menu_action_setting_edit_callback_float51(const char* pstr, float* ptr, float minValue, float maxValue, menuFunc_t callbackFunc);
 static void menu_action_setting_edit_callback_float52(const char* pstr, float* ptr, float minValue, float maxValue, menuFunc_t callbackFunc);
 static void menu_action_setting_edit_callback_long5(const char* pstr, unsigned long* ptr, unsigned long minValue, unsigned long maxValue, menuFunc_t callbackFunc);
+*/
 
 #define ENCODER_FEEDRATE_DEADZONE 10
 
@@ -243,9 +268,6 @@ bool ignore_click = false;
 bool wait_for_unclick;
 uint8_t lcdDrawUpdate = 2;                  /* Set to none-zero when the LCD needs to draw, decreased after every draw. Set to 2 in LCD routines so the LCD gets at least 1 full redraw (first redraw is partial) */
 
-//prevMenu and prevEncoderPosition are used to store the previous menu location when editing settings.
-menuFunc_t prevMenu = NULL;
-uint16_t prevEncoderPosition;
 //Variables used when editing values.
 const char* editLabel;
 void* editValue;
@@ -255,10 +277,15 @@ menuFunc_t callbackFunc;
 // place-holders for Ki and Kd edits
 float raw_Ki, raw_Kd;
 
-static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true) {
+static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true, bool reset_menu_state = true) {
   if (currentMenu != menu) {
     currentMenu = menu;
     encoderPosition = encoder;
+    if (reset_menu_state) {
+        // Resets the global shared C union.
+        // This ensures, that the menu entered will find out, that it shall initialize itself.
+        memset(&menuData, 0, sizeof(menuData));
+    }
     if (feedback) lcd_quick_feedback();
 
     // For LCD_PROGRESS_BAR re-initialize the custom characters
@@ -643,8 +670,8 @@ static void lcd_move_menu_axis();
 
 void lcd_preheat_pla()
 {
-  setTargetHotend0(plaPreheatHotendTemp);
-  setTargetBed(plaPreheatHPBTemp);
+  setTargetHotend0(PLA_PREHEAT_HOTEND_TEMP);
+  setTargetBed(PLA_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
@@ -652,8 +679,8 @@ void lcd_preheat_pla()
 
 void lcd_preheat_abs()
 {
-  setTargetHotend0(absPreheatHotendTemp);
-  setTargetBed(absPreheatHPBTemp);
+  setTargetHotend0(ABS_PREHEAT_HOTEND_TEMP);
+  setTargetBed(ABS_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
@@ -661,8 +688,8 @@ void lcd_preheat_abs()
 
 void lcd_preheat_pp()
 {
-  setTargetHotend0(ppPreheatHotendTemp);
-  setTargetBed(ppPreheatHPBTemp);
+  setTargetHotend0(PP_PREHEAT_HOTEND_TEMP);
+  setTargetBed(PP_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
@@ -670,8 +697,8 @@ void lcd_preheat_pp()
 
 void lcd_preheat_pet()
 {
-  setTargetHotend0(petPreheatHotendTemp);
-  setTargetBed(petPreheatHPBTemp);
+  setTargetHotend0(PET_PREHEAT_HOTEND_TEMP);
+  setTargetBed(PET_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
@@ -679,8 +706,8 @@ void lcd_preheat_pet()
 
 void lcd_preheat_hips()
 {
-  setTargetHotend0(hipsPreheatHotendTemp);
-  setTargetBed(hipsPreheatHPBTemp);
+  setTargetHotend0(HIPS_PREHEAT_HOTEND_TEMP);
+  setTargetBed(HIPS_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
@@ -688,8 +715,8 @@ void lcd_preheat_hips()
 
 void lcd_preheat_flex()
 {
-  setTargetHotend0(flexPreheatHotendTemp);
-  setTargetBed(flexPreheatHPBTemp);
+  setTargetHotend0(FLEX_PREHEAT_HOTEND_TEMP);
+  setTargetBed(FLEX_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
@@ -728,6 +755,23 @@ static void lcd_preheat_menu()
 
 static void lcd_support_menu()
 {
+    if (menuData.supportMenu.status == 0) {
+        // Menu was entered.
+        // Initialize its status.
+        menuData.supportMenu.status = 1;
+        menuData.supportMenu.is_flash_air = card.ToshibaFlashAir_GetIP(menuData.supportMenu.ip);
+        if (menuData.supportMenu.is_flash_air)
+            sprintf_P(menuData.supportMenu.ip_str, PSTR("%d.%d.%d.%d"), 
+                menuData.supportMenu.ip[0], menuData.supportMenu.ip[1], 
+                menuData.supportMenu.ip[2], menuData.supportMenu.ip[3]);
+    } else if (menuData.supportMenu.is_flash_air && 
+        menuData.supportMenu.ip[0] == 0 && menuData.supportMenu.ip[1] == 0 && 
+        menuData.supportMenu.ip[2] == 0 && menuData.supportMenu.ip[3] == 0 &&
+        ++ menuData.supportMenu.status == 16) {
+        // Waiting for the FlashAir card to get an IP address from a router. Force an update.
+        menuData.supportMenu.status = 0;
+    }
+
   START_MENU();
 
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
@@ -752,14 +796,10 @@ static void lcd_support_menu()
   MENU_ITEM(back, PSTR(__DATE__), lcd_main_menu);
 
   // Show the FlashAir IP address, if the card is available.
-  uint8_t ip[4];
-  bool hasIP = card.ToshibaFlashAir_GetIP(ip);
-  if (hasIP) {
+  if (menuData.supportMenu.is_flash_air) {
       MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
       MENU_ITEM(back, PSTR("FlashAir IP Addr:"), lcd_main_menu);
-      char buf[30];
-      sprintf_P(buf, PSTR("%d.%d.%d.%d"), ip[0], ip[1], ip[2], ip[3]);
-      MENU_ITEM(back_RAM, buf, lcd_main_menu);
+      MENU_ITEM(back_RAM, menuData.supportMenu.ip_str, lcd_main_menu);
   }
 
   END_MENU();
@@ -1172,24 +1212,39 @@ static void lcd_move_z() {
 
 
 
-static void _lcd_babystep(int axis, const char *msg) {
+static void _lcd_babystep(int axis, const char *msg) 
+{
+    if (menuData.babyStep.status == 0) {
+        // Menu was entered.
+        // Initialize its status.
+        menuData.babyStep.status = 1;
+        EEPROM_read_B(EEPROM_BABYSTEP_X, &menuData.babyStep.babystepMem[0]);
+        EEPROM_read_B(EEPROM_BABYSTEP_Y, &menuData.babyStep.babystepMem[1]);
+        EEPROM_read_B(EEPROM_BABYSTEP_Z, &menuData.babyStep.babystepMem[2]);
+        menuData.babyStep.babystepMemMM[0] = menuData.babyStep.babystepMem[0]/axis_steps_per_unit[X_AXIS];
+        menuData.babyStep.babystepMemMM[1] = menuData.babyStep.babystepMem[1]/axis_steps_per_unit[Y_AXIS];
+        menuData.babyStep.babystepMemMM[2] = menuData.babyStep.babystepMem[2]/axis_steps_per_unit[Z_AXIS];
+        lcdDrawUpdate = true;
+    }
+
   if (encoderPosition != 0) 
   {
     CRITICAL_SECTION_START
     babystepsTodo[axis] += (int)encoderPosition;
     CRITICAL_SECTION_END
-    babystepMem[axis] += (int)encoderPosition;
-    babystepMemMM[axis] = babystepMem[axis]/axis_steps_per_unit[Z_AXIS];
+    menuData.babyStep.babystepMem[axis] += (int)encoderPosition;
+    menuData.babyStep.babystepMemMM[axis] = menuData.babyStep.babystepMem[axis]/axis_steps_per_unit[Z_AXIS];
 	  delay(50);
 	  encoderPosition = 0;
-    lcdDrawUpdate = 1;
+    lcdDrawUpdate = true;
   }
-  if (lcdDrawUpdate) lcd_implementation_drawedit_2(msg, ftostr13ns(babystepMemMM[axis]));
+  if (lcdDrawUpdate)
+    lcd_implementation_drawedit_2(msg, ftostr13ns(menuData.babyStep.babystepMemMM[axis]));
   if (LCD_CLICKED || menuExiting) {
     // Only update the EEPROM when leaving the menu.
     EEPROM_save_B(
       (axis == 0) ? EEPROM_BABYSTEP_X : ((axis == 1) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z), 
-      &babystepMem[axis]);
+      &menuData.babyStep.babystepMem[axis]);
   }
   if (LCD_CLICKED) lcd_goto_menu(lcd_main_menu);
 }
@@ -1204,6 +1259,69 @@ static void lcd_babystep_z() {
 	_lcd_babystep(Z_AXIS, (MSG_BABYSTEPPING_Z));
 }
 
+static void lcd_adjust_bed();
+
+static void lcd_adjust_bed_reset()
+{
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR , 0);
+    lcd_goto_menu(lcd_adjust_bed, 0, false);
+    // Because we did not leave the menu, the menuData did not reset.
+    // Force refresh of the bed leveling data.
+    menuData.adjustBed.status = 0;
+}
+
+#define BED_ADJUSTMENT_UM_MAX 50
+
+static void lcd_adjust_bed()
+{
+    if (menuData.adjustBed.status == 0) {
+        // Menu was entered.
+        // Initialize its status.
+        menuData.adjustBed.status = 1;
+        bool valid = false;
+        menuData.adjustBed.left  = menuData.adjustBed.left2  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT);
+        menuData.adjustBed.right = menuData.adjustBed.right2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT);
+        menuData.adjustBed.front = menuData.adjustBed.front2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT);
+        menuData.adjustBed.rear  = menuData.adjustBed.rear2  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR);
+        if (eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1 && 
+            menuData.adjustBed.left  >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.left  < BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.right >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.right < BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.front >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.front < BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.rear  >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.rear  < BED_ADJUSTMENT_UM_MAX)
+            valid = true;
+        if (! valid) {
+            // Reset the values: simulate an edit.
+            menuData.adjustBed.left2  = 0;
+            menuData.adjustBed.right2 = 0;
+            menuData.adjustBed.front2 = 0;
+            menuData.adjustBed.rear2  = 0;
+        }
+        lcdDrawUpdate = true;
+        eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
+    }
+
+    if (menuData.adjustBed.left  != menuData.adjustBed.left2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT,  menuData.adjustBed.left  = menuData.adjustBed.left2);
+    if (menuData.adjustBed.right != menuData.adjustBed.right2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, menuData.adjustBed.right = menuData.adjustBed.right2);
+    if (menuData.adjustBed.front != menuData.adjustBed.front2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT, menuData.adjustBed.front = menuData.adjustBed.front2);
+    if (menuData.adjustBed.rear  != menuData.adjustBed.rear2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR,  menuData.adjustBed.rear  = menuData.adjustBed.rear2);
+
+    START_MENU();
+    MENU_ITEM(back, MSG_SETTINGS, lcd_settings_menu);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_LEFT,  &menuData.adjustBed.left2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_RIGHT, &menuData.adjustBed.right2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_FRONT, &menuData.adjustBed.front2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_REAR,  &menuData.adjustBed.rear2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM(function, MSG_BED_CORRECTION_RESET, lcd_adjust_bed_reset);
+    END_MENU();
+}
 
 void lcd_adjust_z() {
   int enc_dif = 0;
@@ -1269,20 +1387,16 @@ void lcd_adjust_z() {
     if (lcd_clicked()) {
       fsm = cursor_pos;
       if (fsm == 1) {
-        EEPROM_read_B(EEPROM_BABYSTEP_X, &babystepMem[0]);
-        EEPROM_read_B(EEPROM_BABYSTEP_Y, &babystepMem[1]);
-        EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepMem[2]);
+        int babystepLoadZ = 0;
+        EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepLoadZ);
         CRITICAL_SECTION_START
-        babystepsTodo[Z_AXIS] = babystepMem[2];
+        babystepsTodo[Z_AXIS] = babystepLoadZ;
         CRITICAL_SECTION_END
       } else {
-        babystepMem[0] = 0;
-        babystepMem[1] = 0;
-        babystepMem[2] = 0;
-
-        EEPROM_save_B(EEPROM_BABYSTEP_X, &babystepMem[0]);
-        EEPROM_save_B(EEPROM_BABYSTEP_Y, &babystepMem[1]);
-        EEPROM_save_B(EEPROM_BABYSTEP_Z, &babystepMem[2]);
+        int zero = 0;
+        EEPROM_save_B(EEPROM_BABYSTEP_X, &zero);
+        EEPROM_save_B(EEPROM_BABYSTEP_Y, &zero);
+        EEPROM_save_B(EEPROM_BABYSTEP_Z, &zero);
       }
       delay(500);
     }
@@ -1817,9 +1931,9 @@ void lcd_pick_babystep(){
         
         if (lcd_clicked()) {
             fsm = cursor_pos;
-            
-            EEPROM_read_B(EEPROM_BABYSTEP_Z0+((fsm-1)*2),&babystepMem[2]);
-            EEPROM_save_B(EEPROM_BABYSTEP_Z,&babystepMem[2]);
+            int babyStepZ;
+            EEPROM_read_B(EEPROM_BABYSTEP_Z0+((fsm-1)*2),&babyStepZ);
+            EEPROM_save_B(EEPROM_BABYSTEP_Z,&babyStepZ);
             eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
             delay(500);
             
@@ -1947,7 +2061,7 @@ static void lcd_settings_menu()
   if (!isPrintPaused)
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
-	  MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28"));
+	  MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
   }
 
   if (SilentModeMenu == 0) {
@@ -1955,15 +2069,11 @@ static void lcd_settings_menu()
   } else {
     MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
   }
-
-    EEPROM_read_B(EEPROM_BABYSTEP_X, &babystepMem[0]);
-    EEPROM_read_B(EEPROM_BABYSTEP_Y, &babystepMem[1]);
-    EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepMem[2]);
-    babystepMemMM[2] = babystepMem[2]/axis_steps_per_unit[Z_AXIS];
   
 	if (!isPrintPaused)
 	{
 		MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
+    MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
 	}
 	MENU_ITEM(submenu, MSG_LANGUAGE_SELECT, lcd_language_menu);
 	if (!isPrintPaused)
@@ -2301,9 +2411,6 @@ static void lcd_main_menu()
 
   if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < 0.5) ) 
   {
-    EEPROM_read_B(EEPROM_BABYSTEP_X, &babystepMem[0]);
-	EEPROM_read_B(EEPROM_BABYSTEP_Y, &babystepMem[1]);
-	EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepMem[2]);
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
 
@@ -2578,7 +2685,7 @@ void lcd_sdcard_menu()
     if (LCD_CLICKED) \
     { \
       *((_type*)editValue) = ((_type)((int32_t)encoderPosition + minEditValue)) / scale; \
-      lcd_goto_menu(prevMenu, prevEncoderPosition); \
+      lcd_goto_menu(menuData.editMenuParentState.prevMenu, menuData.editMenuParentState.prevEncoderPosition, true, false); \
     } \
   } \
   void menu_edit_callback_ ## _name () { \
@@ -2587,33 +2694,33 @@ void lcd_sdcard_menu()
   } \
   static void menu_action_setting_edit_ ## _name (const char* pstr, _type* ptr, _type minValue, _type maxValue) \
   { \
-    prevMenu = currentMenu; \
-    prevEncoderPosition = encoderPosition; \
+    menuData.editMenuParentState.prevMenu = currentMenu; \
+    menuData.editMenuParentState.prevEncoderPosition = encoderPosition; \
     \
     lcdDrawUpdate = 2; \
-    currentMenu = menu_edit_ ## _name; \
+    lcd_goto_menu(menu_edit_ ## _name, (*ptr) * scale - minEditValue, true, false); \
     \
     editLabel = pstr; \
     editValue = ptr; \
     minEditValue = minValue * scale; \
     maxEditValue = maxValue * scale - minEditValue; \
-    encoderPosition = (*ptr) * scale - minEditValue; \
   }\
+  /*
   static void menu_action_setting_edit_callback_ ## _name (const char* pstr, _type* ptr, _type minValue, _type maxValue, menuFunc_t callback) \
   { \
-    prevMenu = currentMenu; \
-    prevEncoderPosition = encoderPosition; \
+    menuData.editMenuParentState.prevMenu = currentMenu; \
+    menuData.editMenuParentState.prevEncoderPosition = encoderPosition; \
     \
     lcdDrawUpdate = 2; \
-    currentMenu = menu_edit_callback_ ## _name; \
+    lcd_goto_menu(menu_edit_callback_ ## _name, (*ptr) * scale - minEditValue, true, false); \
     \
     editLabel = pstr; \
     editValue = ptr; \
     minEditValue = minValue * scale; \
     maxEditValue = maxValue * scale - minEditValue; \
-    encoderPosition = (*ptr) * scale - minEditValue; \
     callbackFunc = callback;\
   }
+  */
 menu_edit_type(int, int3, itostr3, 1)
 menu_edit_type(float, float3, ftostr3, 1)
 menu_edit_type(float, float32, ftostr32, 100)
@@ -3048,11 +3155,13 @@ static void menu_action_setting_edit_bool(const char* pstr, bool* ptr)
 {
   *ptr = !(*ptr);
 }
+/*
 static void menu_action_setting_edit_callback_bool(const char* pstr, bool* ptr, menuFunc_t callback)
 {
   menu_action_setting_edit_bool(pstr, ptr);
   (*callback)();
 }
+*/
 #endif//ULTIPANEL
 
 /** LCD API **/

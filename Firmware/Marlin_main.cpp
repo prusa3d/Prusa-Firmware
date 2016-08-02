@@ -235,6 +235,8 @@ byte b[2];
 int value;
 };
 
+#define BABYSTEP_LOADZ_BY_PLANNER
+
 // Number of baby steps applied
 int babystepLoadZ = 0;
 
@@ -1902,7 +1904,11 @@ void process_commands()
 
       // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
       // consumed during the first movements following this statement.
+#ifdef BABYSTEP_LOADZ_BY_PLANNER
+      shift_z(float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+#else
       babystepsTodoZsubtract(babystepLoadZ);
+#endif /* BABYSTEP_LOADZ_BY_PLANNER */
       babystepLoadZ = 0;
 
       saved_feedrate = feedrate;
@@ -2286,6 +2292,27 @@ void process_commands()
 #endif // ENABLE_AUTO_BED_LEVELING
             
 #ifdef MESH_BED_LEVELING
+    case 30: // G30 Single Z Probe
+        {
+            st_synchronize();
+            // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
+            setup_for_endstop_move();
+
+            feedrate = homing_feedrate[Z_AXIS];
+
+            find_bed_induction_sensor_point_z(-10.f, 3);
+            SERIAL_PROTOCOLRPGM(MSG_BED);
+            SERIAL_PROTOCOLPGM(" X: ");
+            MYSERIAL.print(current_position[X_AXIS], 5);
+            SERIAL_PROTOCOLPGM(" Y: ");
+            MYSERIAL.print(current_position[Y_AXIS], 5);
+            SERIAL_PROTOCOLPGM(" Z: ");
+            MYSERIAL.print(current_position[Z_AXIS], 5);
+            SERIAL_PROTOCOLPGM("\n");
+            clean_up_after_endstop_move();
+        }
+        break;
+
     /**
      * G80: Mesh-based Z probe, probes a grid and produces a
      *      mesh to compensate for variable bed height
@@ -2323,7 +2350,11 @@ void process_commands()
 
             // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
             // consumed during the first movements following this statement.
+#ifdef BABYSTEP_LOADZ_BY_PLANNER
+            shift_z(float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+#else
             babystepsTodoZsubtract(babystepLoadZ);
+#endif /* BABYSTEP_LOADZ_BY_PLANNER */
             babystepLoadZ = 0;
 
             // Cycle through all points and probe them
@@ -2412,6 +2443,81 @@ void process_commands()
                 kill(kill_message);
             }
             clean_up_after_endstop_move();
+
+            // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
+            if(card.sdprinting || is_usb_printing ) 
+            {
+                if(eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x01)
+                {
+                    // End of G80: Apply the baby stepping value.
+                    EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
+                #if 0
+                    SERIAL_ECHO("Z baby step: ");
+                    SERIAL_ECHO(babystepLoadZ);
+                    SERIAL_ECHO(", current Z: ");
+                    SERIAL_ECHO(current_position[Z_AXIS]);
+                    SERIAL_ECHO("correction: ");
+                    SERIAL_ECHO(float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+                    SERIAL_ECHOLN("");
+                #endif
+                #ifdef BABYSTEP_LOADZ_BY_PLANNER
+                    shift_z(- float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+                #else
+                    babystepsTodoZadd(babystepLoadZ);
+                #endif /* BABYSTEP_LOADZ_BY_PLANNER */
+                }
+            }
+
+            bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
+            for (uint8_t i = 0; i < 4; ++ i) {
+                unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
+                long correction = 0;
+                if (code_seen(codes[i]))
+                    correction = code_value_long();
+                else if (eeprom_bed_correction_valid) {
+                    unsigned char *addr = (i < 2) ? 
+                        ((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT  : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
+                        ((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
+                    correction = eeprom_read_int8(addr);
+                }
+                if (correction == 0)
+                    continue;
+                float offset = float(correction) * 0.001f;
+                if (fabs(offset) > 0.101f) {
+                    SERIAL_ERROR_START;
+                    SERIAL_ECHOPGM("Excessive bed leveling correction: ");
+                    SERIAL_ECHO(offset);
+                    SERIAL_ECHOLNPGM(" microns");
+                } else {
+                    switch (i) {
+                    case 0:
+                        for (uint8_t row = 0; row < 3; ++ row) {
+                            mbl.z_values[row][1] += 0.5f * offset;
+                            mbl.z_values[row][0] += offset;
+                        }
+                        break;
+                    case 1:
+                        for (uint8_t row = 0; row < 3; ++ row) {
+                            mbl.z_values[row][1] += 0.5f * offset;
+                            mbl.z_values[row][2] += offset;
+                        }
+                        break;
+                    case 2:
+                        for (uint8_t col = 0; col < 3; ++ col) {
+                            mbl.z_values[1][col] += 0.5f * offset;
+                            mbl.z_values[0][col] += offset;
+                        }
+                        break;
+                    case 3:
+                        for (uint8_t col = 0; col < 3; ++ col) {
+                            mbl.z_values[1][col] += 0.5f * offset;
+                            mbl.z_values[2][col] += offset;
+                        }
+                        break;
+                    }
+                }
+            }
+
             mbl.upsample_3x3();
             mbl.active = 1;
             current_position[X_AXIS] = X_MIN_POS+0.2;
@@ -2420,19 +2526,9 @@ void process_commands()
             world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
             plan_buffer_line(current_position[X_AXIS], current_position[X_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
             st_synchronize();
-			
-			      if(card.sdprinting || is_usb_printing ) 
-			      {
-                if(eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x01)
-				        {
-                    // End of G80: Apply the baby stepping value.
-                    EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
-                    babystepsTodoZadd(babystepLoadZ);
-                }
-            }
         }
         break;
-        
+
         /**
          * G81: Print mesh bed leveling status and bed profile if activated
          */
@@ -4650,9 +4746,10 @@ void clamp_to_software_endstops(float target[3])
         int n_segments = 0;
 		
         if (mbl.active) {
-            float len = abs(dx) + abs(dy) + abs(dz);
+            float len = abs(dx) + abs(dy);
             if (len > 0)
-                n_segments = int(floor(len / 30.f));
+                // Split to 3cm segments or shorter.
+                n_segments = int(ceil(len / 30.f));
         }
         
         if (n_segments > 1) {
@@ -4669,7 +4766,10 @@ void clamp_to_software_endstops(float target[3])
         }
         // The rest of the path.
         plan_buffer_line(x, y, z, e, feed_rate, extruder);
-        set_current_to_destination();
+        current_position[X_AXIS] = x;
+        current_position[Y_AXIS] = y;
+        current_position[Z_AXIS] = z;
+        current_position[E_AXIS] = e;
     }
 #endif  // MESH_BED_LEVELING
     
@@ -4688,9 +4788,9 @@ void prepare_move()
   }
   else {
 #ifdef MESH_BED_LEVELING
-    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply/60/100.0, active_extruder);
+    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #else
-     plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply/60/100.0, active_extruder);
+     plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #endif
   }
 

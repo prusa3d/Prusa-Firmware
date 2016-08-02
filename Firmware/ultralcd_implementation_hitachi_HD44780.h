@@ -658,10 +658,13 @@ static void lcd_implementation_status_screen()
     lcd.print("  ");
 
     //Print the Z coordinates
+    // if (custom_message_type != 1) {
+        // Not in a bed calibration mode.
     lcd.setCursor(LCD_WIDTH - 8-2, 0);
     lcd.print("  Z");
     lcd.print(ftostr32sp(current_position[Z_AXIS] + 0.00001));
     lcd.print(' ');
+    //}
 
     //Print the Bedtemperature
     lcd.setCursor(0, 1);
