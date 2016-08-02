@@ -2556,6 +2556,8 @@ void process_commands()
             else
                 SERIAL_PROTOCOLLNPGM("Mesh bed leveling not active.");
             break;
+            
+#if 0
         /**
          * G82: Single Z probe at current location
          *
@@ -2571,7 +2573,7 @@ void process_commands()
             SERIAL_PROTOCOL_F(current_position[Z_AXIS], 5);
             SERIAL_PROTOCOLPGM("\n");
             break;
-            
+
             /**
              * G83: Prusa3D specific: Babystep in Z and store to EEPROM
              */
@@ -2611,6 +2613,7 @@ void process_commands()
         case 85:
             lcd_pick_babystep();
             break;
+#endif
             
             /**
              * G86: Prusa3D specific: Disable babystep correction after home.
@@ -2627,8 +2630,11 @@ void process_commands()
             eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
             break;
 
-		case 88:
-			break;
+            /**
+             * G88: Prusa3D specific: Don't know what it is for, it is in V2Calibration.gcode
+             */
+		    case 88:
+			      break;
 
 
 #endif  // ENABLE_MESH_BED_LEVELING
