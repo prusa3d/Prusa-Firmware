@@ -1085,6 +1085,11 @@ const char * const MSG_MAX_LANG_TABLE[1] PROGMEM = {
 	MSG_MAX_EN
 };
 
+const char MSG_MESH_BED_LEVELING_EN[] PROGMEM = "Mesh Bed Leveling";
+const char * const MSG_MESH_BED_LEVELING_LANG_TABLE[1] PROGMEM = {
+	MSG_MESH_BED_LEVELING_EN
+};
+
 const char MSG_MIN_EN[] PROGMEM = " \002 Min";
 const char * const MSG_MIN_LANG_TABLE[1] PROGMEM = {
 	MSG_MIN_EN

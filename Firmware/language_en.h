@@ -314,4 +314,8 @@
 #define MSG_BED_CORRECTION_REAR									"Rear side  um"
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
+
+
+#define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
+
 #endif // LANGUAGE_EN_H

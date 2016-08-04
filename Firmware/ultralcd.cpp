@@ -1446,19 +1446,16 @@ bool lcd_calibrate_z_end_stop_manual()
                 previous_millis_cmd = millis();
                 encoderPosition += abs(encoderDiff / ENCODER_PULSES_PER_STEP);
                 encoderDiff = 0;
-                // Only move up, whatever the user does.
-                current_position[Z_AXIS] += fabs(encoderPosition);
-                encoderPosition = 0;
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS] / 60, active_extruder);
-                // Wait for the motors to stop.
-                st_synchronize();
-                // Claim we are at Z=0, so the soft end stop will not trigger.
-                current_position[Z_AXIS] = 0;
-                plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+                if (! planner_queue_full()) {
+                    // Only move up, whatever direction the user rotates the encoder.
+                    current_position[Z_AXIS] += fabs(encoderPosition);
+                    encoderPosition = 0;
+                    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS] / 60, active_extruder);
+                }
             }
             if (lcd_clicked()) {
-                // Wait until the Z up movement is finished.
-                st_synchronize();
+                // Abort a move if in progress.
+                planner_abort_hard();
                 while (lcd_clicked()) ;
                 delay(10);
                 while (lcd_clicked()) ;
@@ -2022,7 +2019,7 @@ static void lcd_set_lang(unsigned char lang) {
 }
 
 void lcd_force_language_selection() {
-  eeprom_update_byte((unsigned char *)EEPROM_LANG, LANGUAGE_ID_FORCE_SELECTION);
+  eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
 }
 
 static void lcd_language_menu()
@@ -2052,6 +2049,12 @@ void lcd_mesh_calibration()
   lcd_return_to_status();
 }
 
+void lcd_mesh_calibration_z()
+{
+  enquecommand_P(PSTR("M45 Z"));
+  lcd_return_to_status();
+}
+
 static void lcd_settings_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -2065,9 +2068,13 @@ static void lcd_settings_menu()
   if (!isPrintPaused)
   {
 #ifndef MESH_BED_LEVELING
+    // "Calibrate Z"
 	  MENU_ITEM(gcode, MSG_HOMEYZ, PSTR("G28 Z"));
 #else
-	  MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_bedleveling);
+    // "Calibrate Z" with storing the reference values to EEPROM.
+    MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
+    // "Mesh Bed Leveling"
+	  MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
 #endif
   }
 
