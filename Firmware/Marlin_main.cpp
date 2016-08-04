@@ -497,7 +497,7 @@ void serial_echopair_P(const char *s_P, unsigned long v)
 
 // Pop the currently processed command from the queue.
 // It is expected, that there is at least one command in the queue.
-void cmdqueue_pop_front()
+bool cmdqueue_pop_front()
 {
     if (buflen > 0) {
 #ifdef CMDBUFFER_DEBUG
@@ -547,7 +547,14 @@ void cmdqueue_pop_front()
             SERIAL_ECHOLNPGM("");
 #endif /* CMDBUFFER_DEBUG */
         }
+        return true;
     }
+    return false;
+}
+
+void cmdqueue_reset()
+{
+    while (cmdqueue_pop_front()) ;
 }
 
 // How long a string could be pushed to the front of the command queue?
@@ -1015,6 +1022,16 @@ void setup()
 	  farm_no = 0;
   }
 
+  if (eeprom_read_dword((uint32_t*)(EEPROM_TOP-4)) == 0x0ffffffff && 
+      eeprom_read_dword((uint32_t*)(EEPROM_TOP-8)) == 0x0ffffffff &&
+      eeprom_read_dword((uint32_t*)(EEPROM_TOP-12)) == 0x0ffffffff) {
+      // Maiden startup. The firmware has been loaded and first started on a virgin RAMBo board,
+      // where all the EEPROM entries are set to 0x0ff.
+      // Once a firmware boots up, it forces at least a language selection, which changes
+      // EEPROM_LANG to number lower than 0x0ff.
+      // 1) Set a high power mode.
+      eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
+  }
 
   // In the future, somewhere here would one compare the current firmware version against the firmware version stored in the EEPROM.
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
@@ -1028,7 +1045,7 @@ void setup()
       // Get the selected laugnage index before display update.
       lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
       if (lang_selected >= LANG_NUM)
-          lang_selected = 1;
+          lang_selected = LANG_ID_DEFAULT; // Czech language
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
       lcd_update_enable(true);
@@ -1272,7 +1289,7 @@ void get_command()
 		if (farm_mode)
 		{
 			prusa_statistics(6);
-			lcd_commands_type = 4;
+			lcd_commands_type = LCD_COMMAND_FARM_MODE_CONFIRM;
 		}
 
       }

@@ -29,6 +29,11 @@ struct EditMenuParentState
     //prevMenu and prevEncoderPosition are used to store the previous menu location when editing settings.
     menuFunc_t prevMenu;
     uint16_t prevEncoderPosition;
+    //Variables used when editing values.
+    const char* editLabel;
+    void* editValue;
+    int32_t minEditValue, maxEditValue;
+    // menuFunc_t callbackFunc;
 };
 
 union MenuData
@@ -52,7 +57,7 @@ union MenuData
 
     struct AdjustBed
     {
-        // 6+13=19B
+        // 6+13+16=35B
         // editMenuParentState is used when an edit menu is entered, so it knows
         // the return menu and encoder state.
         struct EditMenuParentState editMenuParentState;
@@ -88,7 +93,7 @@ int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = 0;
 
-int lcd_commands_type=0;
+int lcd_commands_type=LCD_COMMAND_IDLE;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
 bool farm_mode = false;
@@ -120,8 +125,8 @@ unsigned char firstrun = 1;
 
 /** forward declarations **/
 
-void copy_and_scalePID_i();
-void copy_and_scalePID_d();
+// void copy_and_scalePID_i();
+// void copy_and_scalePID_d();
 
 /* Different menus */
 static void lcd_status_screen();
@@ -268,14 +273,10 @@ bool ignore_click = false;
 bool wait_for_unclick;
 uint8_t lcdDrawUpdate = 2;                  /* Set to none-zero when the LCD needs to draw, decreased after every draw. Set to 2 in LCD routines so the LCD gets at least 1 full redraw (first redraw is partial) */
 
-//Variables used when editing values.
-const char* editLabel;
-void* editValue;
-int32_t minEditValue, maxEditValue;
-menuFunc_t callbackFunc;
-
 // place-holders for Ki and Kd edits
-float raw_Ki, raw_Kd;
+#ifdef PIDTEMP
+// float raw_Ki, raw_Kd;
+#endif
 
 static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true, bool reset_menu_state = true) {
   if (currentMenu != menu) {
@@ -296,26 +297,30 @@ static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const boo
 }
 
 /* Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent */
-/*
-extern char langbuffer[];
-void lcd_printPGM(const char *s1) {
-  strncpy_P(langbuffer,s1,LCD_WIDTH);
-  lcd.print(langbuffer);
-}
-*/
-unsigned char langsel;
+
+// Language selection dialog not active.
+#define LANGSEL_OFF 0
+// Language selection dialog modal, entered from the info screen. This is the case on firmware boot up,
+// if the language index stored in the EEPROM is not valid.
+#define LANGSEL_MODAL 1
+// Language selection dialog entered from the Setup menu.
+#define LANGSEL_ACTIVE 2
+// Language selection dialog status
+unsigned char langsel = LANGSEL_OFF;
 
 void set_language_from_EEPROM() {
   unsigned char eep = eeprom_read_byte((unsigned char*)EEPROM_LANG);
   if (eep < LANG_NUM)
   {
     lang_selected = eep;
-    langsel = 0;
+    // Language is valid, no need to enter the language selection screen.
+    langsel = LANGSEL_OFF;
   }
   else
   {
-    lang_selected = 1;
-    langsel = 1;
+    lang_selected = LANG_ID_DEFAULT;
+    // Invalid language, enter the language selection screen in a modal mode.
+    langsel = LANGSEL_MODAL;
   }
 }
 
@@ -337,6 +342,7 @@ static void lcd_status_screen()
 	
 	if (langsel) {
       //strncpy_P(lcd_status_message, PSTR(">>>>>>>>>>>> PRESS v"), LCD_WIDTH);
+      // Entering the language selection screen in a modal mode.
       lcd_mylang();
     }
   }
@@ -404,7 +410,7 @@ static void lcd_status_screen()
 
 
     lcd_status_update_delay = 10;   /* redraw the main screen every second. This is easier then trying keep track of all things that change on the screen */
-	if (lcd_commands_type != 0)
+	if (lcd_commands_type != LCD_COMMAND_IDLE)
 	{
 		lcd_commands();
 	}
@@ -485,7 +491,7 @@ static void lcd_status_screen()
 
 void lcd_commands()
 {
-	if (lcd_commands_type == 1)   //// load filament sequence
+	if (lcd_commands_type == LCD_COMMAND_LOAD_FILAMENT)   //// load filament sequence
 	{
 		if (lcd_commands_step == 0) { lcd_commands_step = 5; custom_message = true; }
 			if (lcd_commands_step == 1 && !blocks_queued())
@@ -522,14 +528,9 @@ void lcd_commands()
 				custom_message_type = 2;
 				lcd_commands_step = 4;
 			}
-
- 
-		
-		
-		
 	}
 
-	if (lcd_commands_type == 2)   /// stop print
+	if (lcd_commands_type == LCD_COMMAND_STOP_PRINT)   /// stop print
 	{
 
 		if (lcd_commands_step == 0) { lcd_commands_step = 6; custom_message = true;	}
@@ -554,13 +555,16 @@ void lcd_commands()
 		}
 		if (lcd_commands_step == 3 && !blocks_queued())
 		{
+      // M84: Disable steppers.
 			enquecommand_P(PSTR("M84"));
 			autotempShutdown();
 			lcd_commands_step = 2;
 		}
 		if (lcd_commands_step == 4 && !blocks_queued())
 		{
+      // G90: Absolute positioning.
 			enquecommand_P(PSTR("G90"));
+      // M83: Set extruder to relative mode.
 			enquecommand_P(PSTR("M83"));
 			#ifdef X_CANCEL_POS 
 			enquecommand_P(PSTR("G1 X"  STRINGIFY(X_CANCEL_POS) " Y" STRINGIFY(Y_CANCEL_POS) " E0 F7000"));
@@ -573,7 +577,9 @@ void lcd_commands()
 		if (lcd_commands_step == 5 && !blocks_queued())
 		{
 			lcd_setstatuspgm(MSG_PRINT_ABORTED);
+      // G91: Set to relative positioning.
 			enquecommand_P(PSTR("G91"));
+      // Lift up.
 			enquecommand_P(PSTR("G1 Z15 F1500"));
 			lcd_commands_step = 4;
 		}
@@ -596,7 +602,7 @@ void lcd_commands()
 		lcd_commands_type = 0;
 	}
 
-	if (lcd_commands_type == 4)   /// farm mode confirm
+	if (lcd_commands_type == LCD_COMMAND_FARM_MODE_CONFIRM)   /// farm mode confirm
 	{
 
 		if (lcd_commands_step == 0) { lcd_commands_step = 6; custom_message = true; }
@@ -1016,7 +1022,7 @@ void lcd_LoadFilament()
   if (degHotend0() > EXTRUDE_MINTEMP) 
   {
 	  custom_message = true;
-	  lcd_commands_type = 1;
+	  lcd_commands_type = LCD_COMMAND_LOAD_FILAMENT;
 	  SERIAL_ECHOLN("Loading filament");
 	  // commands() will handle the rest
   } 
@@ -2001,33 +2007,35 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
 
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
-  EEPROM_save(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
+  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
   digipot_init();
   lcd_goto_menu(lcd_settings_menu, 7);
 }
 static void lcd_set_lang(unsigned char lang) {
   lang_selected = lang;
   firstrun = 1;
-  eeprom_write_byte((unsigned char *)EEPROM_LANG, lang);/*langsel=0;*/if (langsel == 1)langsel = 2;
+  eeprom_update_byte((unsigned char *)EEPROM_LANG, lang);
+  /*langsel=0;*/
+  if (langsel == LANGSEL_MODAL)
+    // From modal mode to an active mode? This forces the menu to return to the setup menu.
+    langsel = LANGSEL_ACTIVE;
 }
 
 void lcd_force_language_selection() {
-  eeprom_write_byte((unsigned char *)EEPROM_LANG, 255);
+  eeprom_update_byte((unsigned char *)EEPROM_LANG, LANGUAGE_ID_FORCE_SELECTION);
 }
 
 static void lcd_language_menu()
 {
   START_MENU();
-  if (!langsel) {
+  if (langsel == LANGSEL_OFF) {
     MENU_ITEM(back, MSG_SETTINGS, lcd_settings_menu);
-  }
-  if (langsel == 2) {
+  } else if (langsel == LANGSEL_ACTIVE) {
     MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
   }
   for (int i=0;i<LANG_NUM;i++){
     MENU_ITEM(setlang, MSG_LANGUAGE_NAME_EXPLICIT(i), i);
   }
-  //MENU_ITEM(setlang, MSG_LANGUAGE_NAME_EXPLICIT(1), 1);
   END_MENU();
 }
 
@@ -2401,12 +2409,6 @@ static void lcd_main_menu()
 {
 
   SDscrool = 0;
-  /*
-  if (langsel == 1)
-  {
-    lcd_goto_menu(lcd_language_menu);
-  }
-  */
   START_MENU();
 
   // Majkl superawesome menu
@@ -2497,7 +2499,7 @@ static void lcd_autostart_sd()
 
 static void lcd_silent_mode_set_tune() {
   SilentModeMenu = !SilentModeMenu;
-  EEPROM_save(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
+  eeprom_update_byte((unsigned char*)EEPROM_SILENT, SilentModeMenu);
   digipot_init();
   lcd_goto_menu(lcd_tune_menu, 9);
 }
@@ -2542,8 +2544,8 @@ static void lcd_control_temperature_menu()
 {
 #ifdef PIDTEMP
   // set up temp variables - undo the default scaling
-  raw_Ki = unscalePID_i(Ki);
-  raw_Kd = unscalePID_d(Kd);
+//  raw_Ki = unscalePID_i(Ki);
+//  raw_Kd = unscalePID_d(Kd);
 #endif
 
   START_MENU();
@@ -2615,7 +2617,10 @@ void lcd_sdcard_stop()
 		if ((int32_t)encoderPosition == 2)
 		{
 				cancel_heatup = true;
-				quickStop();
+        // Stop the stoppers, update the position from the stoppers.
+        planner_abort_hard();
+        // Clean the input command queue.
+        cmdqueue_reset();
 				lcd_setstatuspgm(MSG_PRINT_ABORTED);
 				card.sdprinting = false;
 				card.closefile();
@@ -2626,7 +2631,7 @@ void lcd_sdcard_stop()
 
 				lcd_return_to_status();
 				lcd_ignore_click(true);
-				lcd_commands_type = 2;
+				lcd_commands_type = LCD_COMMAND_STOP_PRINT;
 		}
 	}
 
@@ -2684,18 +2689,14 @@ void lcd_sdcard_menu()
   void menu_edit_ ## _name () \
   { \
     if ((int32_t)encoderPosition < 0) encoderPosition = 0; \
-    if ((int32_t)encoderPosition > maxEditValue) encoderPosition = maxEditValue; \
+    if ((int32_t)encoderPosition > menuData.editMenuParentState.maxEditValue) encoderPosition = menuData.editMenuParentState.maxEditValue; \
     if (lcdDrawUpdate) \
-      lcd_implementation_drawedit(editLabel, _strFunc(((_type)((int32_t)encoderPosition + minEditValue)) / scale)); \
+      lcd_implementation_drawedit(menuData.editMenuParentState.editLabel, _strFunc(((_type)((int32_t)encoderPosition + menuData.editMenuParentState.minEditValue)) / scale)); \
     if (LCD_CLICKED) \
     { \
-      *((_type*)editValue) = ((_type)((int32_t)encoderPosition + minEditValue)) / scale; \
+      *((_type*)menuData.editMenuParentState.editValue) = ((_type)((int32_t)encoderPosition + menuData.editMenuParentState.minEditValue)) / scale; \
       lcd_goto_menu(menuData.editMenuParentState.prevMenu, menuData.editMenuParentState.prevEncoderPosition, true, false); \
     } \
-  } \
-  void menu_edit_callback_ ## _name () { \
-    menu_edit_ ## _name (); \
-    if (LCD_CLICKED) (*callbackFunc)(); \
   } \
   static void menu_action_setting_edit_ ## _name (const char* pstr, _type* ptr, _type minValue, _type maxValue) \
   { \
@@ -2703,29 +2704,34 @@ void lcd_sdcard_menu()
     menuData.editMenuParentState.prevEncoderPosition = encoderPosition; \
     \
     lcdDrawUpdate = 2; \
-    lcd_goto_menu(menu_edit_ ## _name, (*ptr) * scale - minEditValue, true, false); \
+    menuData.editMenuParentState.editLabel = pstr; \
+    menuData.editMenuParentState.editValue = ptr; \
+    menuData.editMenuParentState.minEditValue = minValue * scale; \
+    menuData.editMenuParentState.maxEditValue = maxValue * scale - menuData.editMenuParentState.minEditValue; \
+    lcd_goto_menu(menu_edit_ ## _name, (*ptr) * scale - menuData.editMenuParentState.minEditValue, true, false); \
     \
-    editLabel = pstr; \
-    editValue = ptr; \
-    minEditValue = minValue * scale; \
-    maxEditValue = maxValue * scale - minEditValue; \
   }\
   /*
+  void menu_edit_callback_ ## _name () { \
+    menu_edit_ ## _name (); \
+    if (LCD_CLICKED) (*callbackFunc)(); \
+  } \
   static void menu_action_setting_edit_callback_ ## _name (const char* pstr, _type* ptr, _type minValue, _type maxValue, menuFunc_t callback) \
   { \
     menuData.editMenuParentState.prevMenu = currentMenu; \
     menuData.editMenuParentState.prevEncoderPosition = encoderPosition; \
     \
     lcdDrawUpdate = 2; \
-    lcd_goto_menu(menu_edit_callback_ ## _name, (*ptr) * scale - minEditValue, true, false); \
+    lcd_goto_menu(menu_edit_callback_ ## _name, (*ptr) * scale - menuData.editMenuParentState.minEditValue, true, false); \
     \
-    editLabel = pstr; \
-    editValue = ptr; \
-    minEditValue = minValue * scale; \
-    maxEditValue = maxValue * scale - minEditValue; \
+    menuData.editMenuParentState.editLabel = pstr; \
+    menuData.editMenuParentState.editValue = ptr; \
+    menuData.editMenuParentState.minEditValue = minValue * scale; \
+    menuData.editMenuParentState.maxEditValue = maxValue * scale - menuData.editMenuParentState.minEditValue; \
     callbackFunc = callback;\
   }
   */
+
 menu_edit_type(int, int3, itostr3, 1)
 menu_edit_type(float, float3, ftostr3, 1)
 menu_edit_type(float, float32, ftostr32, 100)
@@ -3806,6 +3812,7 @@ char *ftostr52(const float &x)
   return conv;
 }
 
+/*
 // Callback for after editing PID i value
 // grab the PID i value out of the temp variable; scale it; then update the PID driver
 void copy_and_scalePID_i()
@@ -3825,5 +3832,6 @@ void copy_and_scalePID_d()
   updatePID();
 #endif
 }
+*/
 
 #endif //ULTRA_LCD

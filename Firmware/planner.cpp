@@ -459,6 +459,54 @@ void check_axes_activity()
 #endif
 }
 
+bool waiting_inside_plan_buffer_line_print_aborted = false;
+/*
+void planner_abort_soft()
+{
+    // Empty the queue.
+    while (blocks_queued()) plan_discard_current_block();
+    // Relay to planner wait routine, that the current line shall be canceled.
+    waiting_inside_plan_buffer_line_print_aborted = true;
+    //current_position[i]
+}
+*/
+
+void planner_abort_hard()
+{
+    // Abort the stepper routine and flush the planner queue.
+    quickStop();
+
+    // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
+    // First update the planner's current position in the physical motor steps.
+    position[X_AXIS] = st_get_position(X_AXIS);
+    position[Y_AXIS] = st_get_position(Y_AXIS);
+    position[Z_AXIS] = st_get_position(Z_AXIS);
+    position[E_AXIS] = st_get_position(E_AXIS);
+
+    // Second update the current position of the front end.
+    current_position[X_AXIS] = st_get_position_mm(X_AXIS);
+    current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
+    current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
+    current_position[E_AXIS] = st_get_position_mm(E_AXIS);
+    // Apply the mesh bed leveling correction to the Z axis.
+#ifdef MESH_BED_LEVELING
+    if (mbl.active)
+        current_position[Z_AXIS] -= mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]);
+#endif
+    // Apply inverse world correction matrix.
+    machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
+    memcpy(destination, current_position, sizeof(destination));
+
+    // Resets planner junction speeds. Assumes start from rest.
+    previous_nominal_speed = 0.0;
+    previous_speed[0] = 0.0;
+    previous_speed[1] = 0.0;
+    previous_speed[2] = 0.0;
+    previous_speed[3] = 0.0;
+
+    // Relay to planner wait routine, that the current line shall be canceled.
+    waiting_inside_plan_buffer_line_print_aborted = true;
+}
 
 float junction_deviation = 0.1;
 // Add a new linear movement to the buffer. steps_x, _y and _z is the absolute position in 
@@ -471,12 +519,18 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 
   // If the buffer is full: good! That means we are well ahead of the robot. 
   // Rest here until there is room in the buffer.
-  while(block_buffer_tail == next_buffer_head)
-  {
-    manage_heater(); 
-    // Vojtech: Don't disable motors inside the planner!
-    manage_inactivity(false); 
-    lcd_update();
+  if (block_buffer_tail == next_buffer_head) {
+      waiting_inside_plan_buffer_line_print_aborted = false;
+      do {
+          manage_heater(); 
+          // Vojtech: Don't disable motors inside the planner!
+          manage_inactivity(false); 
+          lcd_update();
+      } while (block_buffer_tail == next_buffer_head);
+      if (waiting_inside_plan_buffer_line_print_aborted)
+          // Inside the lcd_update() routine the print has been aborted.
+          // Cancel the print, do not plan the current line this routine is waiting on.
+          return;
   }
 
 #ifdef ENABLE_AUTO_BED_LEVELING

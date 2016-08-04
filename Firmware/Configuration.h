@@ -12,6 +12,7 @@
 
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
+#define EEPROM_TOP 4096
 #define EEPROM_SILENT 4095
 #define EEPROM_LANG 4094
 #define EEPROM_BABYSTEP_X 4092

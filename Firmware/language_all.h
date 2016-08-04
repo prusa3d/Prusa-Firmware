@@ -1,8 +1,24 @@
 #ifndef LANGUAGE_ALL_H
 #define LANGUAGE_ALL_H
 
-#define LANG_NUM (5)
+// Language indices into their particular symbol tables.
+#define LANG_ID_EN 0
+#define LANG_ID_CZ 1
+#define LANG_ID_IT 2
+#define LANG_ID_ES 3
+#define LANG_ID_PL 4
+// Language is not defined and it shall be selected from the menu.
+#define LANG_ID_FORCE_SELECTION 254
+// Language is not defined on a virgin RAMBo board.
+#define LANG_ID_UNDEFINED 255
 
+// Default language ID, if no language is selected.
+#define LANG_ID_DEFAULT LANG_ID_CZ
+
+// Number of languages available in the language table.
+#define LANG_NUM 5
+
+// Currectly active language selection.
 extern unsigned char lang_selected;
 
 #define LANG_TABLE_SELECT_EXPLICIT(TABLE, LANG) ((const char*)(pgm_read_ptr(TABLE + (LANG))))

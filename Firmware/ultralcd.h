@@ -78,6 +78,14 @@
   #else
   FORCE_INLINE void lcd_buttons_update() {}
   #endif
+
+
+  // To be used in lcd_commands_type.
+  #define LCD_COMMAND_IDLE 0
+  #define LCD_COMMAND_LOAD_FILAMENT 1
+  #define LCD_COMMAND_STOP_PRINT 2
+  #define LCD_COMMAND_FARM_MODE_CONFIRM 4
+
   extern int lcd_commands_type;
   
   extern bool farm_mode;

@@ -185,6 +185,11 @@ FORCE_INLINE bool planner_queue_full() {
     return block_buffer_tail == next_block_index;
 }
 
+// Abort the stepper routine, clean up the block queue,
+// wait for the steppers to stop,
+// update planner's current position and the current_position of the front end.
+extern void planner_abort_hard();
+
 #ifdef PREVENT_DANGEROUS_EXTRUDE
 void set_extrude_min_temp(float temp);
 #endif
