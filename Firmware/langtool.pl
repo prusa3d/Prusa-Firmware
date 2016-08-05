@@ -62,13 +62,13 @@ sub pgm_is_whitespace
 sub pgm_is_interpunction
 {
 	my ($c) = @_;
-    return $c == ord('.') || $c == ord(',') || $c == ord(';') || $c == ord('?') || $c == ord('!');
+    return $c == ord('.') || $c == ord(',') || $c == ord(':') || $c == ord(';') || $c == ord('?') || $c == ord('!') || $c == ord('/');
 }
 
 sub break_text_fullscreen
 {
     my $lines = [];
-    my ($text_str) = @_;
+    my ($text_str, $max_linelen) = @_;
     if (! defined($text_str) || length($text_str) < 2) {
     	return $lines;
 	}
@@ -90,7 +90,7 @@ sub break_text_fullscreen
             # End of the message.
             last LINE;
         }
-        my $msgend2 = $i + ((20 > $len) ? $len : 20);
+        my $msgend2 = $i + (($max_linelen > $len) ? $len : $max_linelen);
         my $msgend = $msgend2;
         if ($msgend < $len && ! pgm_is_whitespace($msg[$msgend]) && ! pgm_is_interpunction($msg[$msgend])) {
             # Splitting a word. Find the start of the current word.
@@ -128,6 +128,9 @@ if (1)
 			delete ${$symbol_value}{value};
 			# Store an "is common" attribute.
 			${$symbol_value}{common} = 1;
+			# 4x 80 characters, 4 lines sent over serial line.
+			${$symbol_value}{length} = 320;
+			${$symbol_value}{lines} = 1;
  			$attributes{$key} = $symbol_value;
  		} else {
  			print "Duplicate key in language_common.h: $key\n";
@@ -160,7 +163,8 @@ foreach my $lang (@langs) {
  		my $strings = $texts{$key};
  		if (scalar(@$strings) < $num_languages) {
  			# die "Symbol $key undefined in $lang."
- 			print "Symbol $key undefined in language \"$lang\". Using the english variant.\n";
+ 			print "Symbol $key undefined in language \"$lang\". Using the english variant:\n";
+ 			print "\t", ${$strings}[0], "\n";
  			push @$strings, ${$strings}[0];
  		}
  	}
@@ -313,18 +317,31 @@ for my $lang (0 .. $#langs) {
 		my $strings = $texts{$key};
 		my %attrib = %{$attributes{$key}};
 		my $message = ${$strings}[$lang];
+		$message =~ /\S*"(.*)"\S*/;
+		$message = $1;
 		if ($lang == 0 || ${$strings}[0] ne $message) {
 			# If the language is not English, don't show the non-translated message.
-			my $lines = break_text_fullscreen($message);
-			my $nlines = @{$lines};
-			if (! $verify_only) {
-				if ($nlines > 1) {
-					print "Multi-line message: $message. Breaking to $nlines lines:\n";
+			my $max_nlines = $attrib{lines} // 1;
+			my $max_linelen = $attrib{length} // (($max_nlines > 1) ? 20 : 17);
+#			if (! $verify_only) {
+#				if ($nlines > 1) {
+#					print "Multi-line message: $message. Breaking to $nlines lines:\n";
+#					print "\t$_\n" foreach (@{$lines});
+#				}
+#			}
+			if ($max_nlines <= 1) {
+				my $linelen = length($message);
+				if ($linelen > $max_linelen) {
+					print "Key $key, language $langs[$lang], line length: $linelen, max length: $max_linelen\n";
+					print "\t$message\n";
+				}
+			} else {
+				my $lines = break_text_fullscreen($message, $max_linelen);
+				my $nlines = @{$lines};
+				if ($nlines > $max_nlines) {
+					print "Key $key, language $langs[$lang], lines: $nlines, max lines: $max_nlines\n";
 					print "\t$_\n" foreach (@{$lines});
 				}
-			}
-			if (defined $attrib{lines} && $nlines > $attrib{lines}) {
-				print "Key $key, language $langs[$lang], lines: $nlines, max lines: $attrib{lines}\n";
 			}
 		}
 	}

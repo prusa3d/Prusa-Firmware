@@ -150,7 +150,7 @@
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
 #define MSG_LANGUAGE_NAME					"Cestina"
-#define MSG_LANGUAGE_SELECT					"Vyber jazyka        "
+#define MSG_LANGUAGE_SELECT					"Vyber jazyka"
  #define MSG_PRUSA3D						"prusa3d.cz"
  #define MSG_PRUSA3D_FORUM					"forum.prusa3d.cz"
  #define MSG_PRUSA3D_HOWTO					"howto.prusa3d.cz"
@@ -190,7 +190,7 @@
 #define MSG_STATISTICS						"Statistika  "
 #define MSG_USB_PRINTING					"Tisk z USB  "
 
-#define MSG_SHOW_END_STOPS					"Zobraz konc. spinace"
+#define MSG_SHOW_END_STOPS					"Stav konc. spin."
 #define MSG_CALIBRATE_BED					"Kalibrace XYZ"
 #define MSG_CALIBRATE_BED_RESET				"Reset XYZ kalibr."
 
