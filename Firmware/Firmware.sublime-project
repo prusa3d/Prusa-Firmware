@@ -19,7 +19,7 @@
   			// avrdude -F -v -pm168 -cstk500v1 -P\\.\COM4 -b19200 -D -Uflash:w:"file.hex":i
   			// may need add path to avrdude config file: -C"c:\utils\arduino-0016\hardware\tools\avr\etc\avrdude.conf" if Arduino IDE installed in "c:\utils\arduino-0016\"
   			// https://typeunsafe.wordpress.com/2011/07/22/programming-arduino-with-avrdude/
-			"shell_cmd": "\"c:\\Program Files (x86)\\Arduino\\arduino_debug.exe\" --pref build.path=..\\output --upload --port COM6 --board marlinAddon:avr:rambo -v --preserve-temp-files Firmware.ino"
+			"shell_cmd": "\"c:\\Program Files (x86)\\Arduino\\arduino_debug.exe\" --pref build.path=..\\output --upload --port COM9 --board marlinAddon:avr:rambo -v --preserve-temp-files Firmware.ino"
 		},
 		{
 			"name": "map-data",

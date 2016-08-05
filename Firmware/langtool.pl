@@ -16,18 +16,23 @@ sub parselang
 	my $out = {};
 	while (my $line = <$fh>) {
 		chomp $line;
-		next if (index($line, '#define') == -1 || index($line, 'MSG') == -1);
+		next if (index($line, 'define') == -1 || index($line, 'MSG') == -1);
 		my $modifiers = {};
     	my $symbol = '';
     	my $value = '';
-		if (index($line, '#define(') == -1) {
+		if (index($line, 'define(') == -1) {
 			# Extended definition, which specifies the string formatting.
-	    	$line =~ /(?is)\#define\s*(\S*)\s*(.*)/;
+	    	$line =~ /(?is)define\s*(\S*)\s*(.*)/;
 	    	$symbol = "$1";
 	    	$value = $2;
 		} else {
-			$line =~ /(?is)\#define\((.*)\)\s*(\S*)\s*(.*)/;
+			$line =~ /(?is)define\((.*)\)\s*(\S*)\s*(.*)/;
 			my $options = $1;
+			foreach my $key_value (split /,/, $options) {
+				if ($key_value =~ /\s*(\S*)\s*=\s*(\S*)\s*/) {
+					${$modifiers}{$1} = $2;
+				}
+			}
 	    	$symbol = "$2";
 	    	$value = $3;
 		}
@@ -110,6 +115,25 @@ sub break_text_fullscreen
 my %texts;
 my %attributes;
 my $num_languages = 0;
+if (1)
+{
+	# First load the common strings.
+	my $symbols = parselang("language_common.h");
+ 	foreach my $key (keys %{$symbols}) {
+ 		if (! (exists $texts{$key})) {
+	 		my $symbol_value = ${$symbols}{$key};
+	 		# Store the symbol value for each language.
+	 		$texts{$key} = [ (${$symbol_value}{value}) x ($#langs+1) ];
+	 		# Store the possible attributes.
+			delete ${$symbol_value}{value};
+			# Store an "is common" attribute.
+			${$symbol_value}{common} = 1;
+ 			$attributes{$key} = $symbol_value;
+ 		} else {
+ 			print "Duplicate key in language_common.h: $key\n";
+ 		}
+ 	}
+}
 foreach my $lang (@langs) {
 	my $symbols = parselang("language_$lang.h");
  	foreach my $key (keys %{$symbols}) {
@@ -118,14 +142,23 @@ foreach my $lang (@langs) {
  		}
  		my $symbol_value = ${$symbols}{$key};
  		my $strings = $texts{$key};
- 		die "Symbol $key defined first in $lang, undefined in the preceding language files."
- 			if (scalar(@$strings) != $num_languages);
- 		push @$strings, ${$symbol_value}{value};
+ 		if (defined $attributes{$key} && defined ${$attributes{$key}}{common} && ${$attributes{$key}}{common} == 1) {
+ 			# Common overrides the possible definintions in the language specific files.
+ 		} else {
+	 		die "Symbol $key defined first in $lang, undefined in the preceding language files."
+	 			if (scalar(@$strings) != $num_languages);
+	 		push @$strings, ${$symbol_value}{value};
+	 		if ($lang eq 'en') {
+	 			# The english texts may contain attributes. Store them into %attributes.
+	 			delete ${$symbol_value}{value};
+	 			$attributes{$key} = $symbol_value;
+	 		}
+	 	}
  	}
  	$num_languages += 1;
  	foreach my $key (keys %texts) {
  		my $strings = $texts{$key};
- 		if (scalar(@$strings) != $num_languages) {
+ 		if (scalar(@$strings) < $num_languages) {
  			# die "Symbol $key undefined in $lang."
  			print "Symbol $key undefined in language \"$lang\". Using the english variant.\n";
  			push @$strings, ${$strings}[0];
@@ -272,21 +305,27 @@ END
 
 print ".cpp created.\nDone!\n";
 
+my $verify_only = 1;
+
 for my $lang (0 .. $#langs) {
 	print "Language: $langs[$lang]\n";
 	foreach my $key (@keys) {
 		my $strings = $texts{$key};
+		my %attrib = %{$attributes{$key}};
 		my $message = ${$strings}[$lang];
 		if ($lang == 0 || ${$strings}[0] ne $message) {
 			# If the language is not English, don't show the non-translated message.
 			my $lines = break_text_fullscreen($message);
 			my $nlines = @{$lines};
-			if ($nlines > 1) {
-				print "Multi-line message: $message. Breaking to $nlines lines:\n";
-				print "\t$_\n" foreach (@{$lines});
+			if (! $verify_only) {
+				if ($nlines > 1) {
+					print "Multi-line message: $message. Breaking to $nlines lines:\n";
+					print "\t$_\n" foreach (@{$lines});
+				}
+			}
+			if (defined $attrib{lines} && $nlines > $attrib{lines}) {
+				print "Key $key, language $langs[$lang], lines: $nlines, max lines: $attrib{lines}\n";
 			}
 		}
 	}
 }
-
-sub break_text_fullscreen

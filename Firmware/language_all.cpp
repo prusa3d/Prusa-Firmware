@@ -5,11 +5,6 @@
 #define LCD_WIDTH 20
 extern unsigned char lang_selected;
 
-const char MSG_ACC_EN[] PROGMEM = "Accel";
-const char * const MSG_ACC_LANG_TABLE[1] PROGMEM = {
-	MSG_ACC_EN
-};
-
 const char MSG_ACTIVE_EXTRUDER_EN[] PROGMEM = "Active Extruder: ";
 const char * const MSG_ACTIVE_EXTRUDER_LANG_TABLE[1] PROGMEM = {
 	MSG_ACTIVE_EXTRUDER_EN
@@ -36,21 +31,6 @@ const char * const MSG_AMAX_LANG_TABLE[1] PROGMEM = {
 const char MSG_AUTHOR_EN[] PROGMEM = " | Author: ";
 const char * const MSG_AUTHOR_LANG_TABLE[1] PROGMEM = {
 	MSG_AUTHOR_EN
-};
-
-const char MSG_AUTORETRACT_EN[] PROGMEM = "AutoRetr.";
-const char * const MSG_AUTORETRACT_LANG_TABLE[1] PROGMEM = {
-	MSG_AUTORETRACT_EN
-};
-
-const char MSG_AUTOSTART_EN[] PROGMEM = "Autostart";
-const char * const MSG_AUTOSTART_LANG_TABLE[1] PROGMEM = {
-	MSG_AUTOSTART_EN
-};
-
-const char MSG_AUTOTEMP_EN[] PROGMEM = "Autotemp";
-const char * const MSG_AUTOTEMP_LANG_TABLE[1] PROGMEM = {
-	MSG_AUTOTEMP_EN
 };
 
 const char MSG_AUTO_HOME_EN[] PROGMEM = "Auto home";
@@ -80,14 +60,8 @@ const char * const MSG_BABYSTEPPING_Y_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_BABYSTEPPING_Z_EN[] PROGMEM = "Adjusting Z";
-const char MSG_BABYSTEPPING_Z_CZ[] PROGMEM = "Dostavovani Z";
-const char MSG_BABYSTEPPING_Z_PL[] PROGMEM = "Dostavovani Z";
-const char * const MSG_BABYSTEPPING_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_BABYSTEPPING_Z_EN,
-	MSG_BABYSTEPPING_Z_CZ,
-	MSG_BABYSTEPPING_Z_EN,
-	MSG_BABYSTEPPING_Z_EN,
-	MSG_BABYSTEPPING_Z_PL
+const char * const MSG_BABYSTEPPING_Z_LANG_TABLE[1] PROGMEM = {
+	MSG_BABYSTEPPING_Z_EN
 };
 
 const char MSG_BABYSTEP_X_EN[] PROGMEM = "Babystep X";
@@ -335,7 +309,7 @@ const char * const MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND_LANG_TABLE[LANG
 	MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND_PL
 };
 
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_EN[] PROGMEM = "X/Y skewed severly. Skew will be corrected automatically.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_EN[] PROGMEM = "X/Z skewed severly. Skew will be corrected automatically.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_CZ[] PROGMEM = "X/Y osy jsou silne zkosene. Zkoseni bude automaticky vyrovnano pri tisku.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_ES[] PROGMEM = "X/Y muy distorsionado. La distorsion sera corregida automaticamente.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_PL[] PROGMEM = "Osie X/Y sa mocno skosne. Skos bedzie automatycznie wyrownany przy druku.";
@@ -468,14 +442,8 @@ const char * const MSG_CHANGING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_CNG_SDCARD_EN[] PROGMEM = "Change SD card";
-const char MSG_CNG_SDCARD_CZ[] PROGMEM = "Vymenit SD";
-const char MSG_CNG_SDCARD_PL[] PROGMEM = "Vymenit SD";
-const char * const MSG_CNG_SDCARD_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_CNG_SDCARD_EN,
-	MSG_CNG_SDCARD_CZ,
-	MSG_CNG_SDCARD_EN,
-	MSG_CNG_SDCARD_EN,
-	MSG_CNG_SDCARD_PL
+const char * const MSG_CNG_SDCARD_LANG_TABLE[1] PROGMEM = {
+	MSG_CNG_SDCARD_EN
 };
 
 const char MSG_CONFIGURATION_VER_EN[] PROGMEM = " Last Updated: ";
@@ -507,55 +475,9 @@ const char * const MSG_CONFIRM_NOZZLE_CLEAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CONFIRM_NOZZLE_CLEAN_PL
 };
 
-const char MSG_CONTRAST_EN[] PROGMEM = "LCD contrast";
-const char * const MSG_CONTRAST_LANG_TABLE[1] PROGMEM = {
-	MSG_CONTRAST_EN
-};
-
 const char MSG_CONTROL_EN[] PROGMEM = "Control";
-const char MSG_CONTROL_CZ[] PROGMEM = "Kontrola";
-const char MSG_CONTROL_PL[] PROGMEM = "Kontrola";
-const char * const MSG_CONTROL_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_CONTROL_EN,
-	MSG_CONTROL_CZ,
-	MSG_CONTROL_EN,
-	MSG_CONTROL_EN,
-	MSG_CONTROL_PL
-};
-
-const char MSG_CONTROL_RETRACT_EN[] PROGMEM = "Retract mm";
-const char * const MSG_CONTROL_RETRACT_LANG_TABLE[1] PROGMEM = {
-	MSG_CONTROL_RETRACT_EN
-};
-
-const char MSG_CONTROL_RETRACTF_EN[] PROGMEM = "Retract  V";
-const char * const MSG_CONTROL_RETRACTF_LANG_TABLE[1] PROGMEM = {
-	MSG_CONTROL_RETRACTF_EN
-};
-
-const char MSG_CONTROL_RETRACT_RECOVER_EN[] PROGMEM = "UnRet +mm";
-const char * const MSG_CONTROL_RETRACT_RECOVER_LANG_TABLE[1] PROGMEM = {
-	MSG_CONTROL_RETRACT_RECOVER_EN
-};
-
-const char MSG_CONTROL_RETRACT_RECOVERF_EN[] PROGMEM = "UnRet  V";
-const char * const MSG_CONTROL_RETRACT_RECOVERF_LANG_TABLE[1] PROGMEM = {
-	MSG_CONTROL_RETRACT_RECOVERF_EN
-};
-
-const char MSG_CONTROL_RETRACT_RECOVER_SWAP_EN[] PROGMEM = "S UnRet+mm";
-const char * const MSG_CONTROL_RETRACT_RECOVER_SWAP_LANG_TABLE[1] PROGMEM = {
-	MSG_CONTROL_RETRACT_RECOVER_SWAP_EN
-};
-
-const char MSG_CONTROL_RETRACT_SWAP_EN[] PROGMEM = "Swap Re.mm";
-const char * const MSG_CONTROL_RETRACT_SWAP_LANG_TABLE[1] PROGMEM = {
-	MSG_CONTROL_RETRACT_SWAP_EN
-};
-
-const char MSG_CONTROL_RETRACT_ZLIFT_EN[] PROGMEM = "Hop mm";
-const char * const MSG_CONTROL_RETRACT_ZLIFT_LANG_TABLE[1] PROGMEM = {
-	MSG_CONTROL_RETRACT_ZLIFT_EN
+const char * const MSG_CONTROL_LANG_TABLE[1] PROGMEM = {
+	MSG_CONTROL_EN
 };
 
 const char MSG_COOLDOWN_EN[] PROGMEM = "Cooldown";
@@ -613,19 +535,9 @@ const char * const MSG_DWELL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DWELL_EN
 };
 
-const char MSG_E_EN[] PROGMEM = "e";
-const char * const MSG_E_LANG_TABLE[1] PROGMEM = {
-	MSG_E_EN
-};
-
 const char MSG_ENDSTOPS_HIT_EN[] PROGMEM = "endstops hit: ";
 const char * const MSG_ENDSTOPS_HIT_LANG_TABLE[1] PROGMEM = {
 	MSG_ENDSTOPS_HIT_EN
-};
-
-const char MSG_ENDSTOP_ABORT_EN[] PROGMEM = "Endstop abort";
-const char * const MSG_ENDSTOP_ABORT_LANG_TABLE[1] PROGMEM = {
-	MSG_ENDSTOP_ABORT_EN
 };
 
 const char MSG_ENDSTOP_HIT_EN[] PROGMEM = "TRIGGERED";
@@ -699,25 +611,9 @@ const char * const MSG_ERR_STOPPED_LANG_TABLE[1] PROGMEM = {
 	MSG_ERR_STOPPED_EN
 };
 
-const char MSG_ESTEPS_EN[] PROGMEM = "Esteps/mm";
-const char * const MSG_ESTEPS_LANG_TABLE[1] PROGMEM = {
-	MSG_ESTEPS_EN
-};
-
 const char MSG_EXTERNAL_RESET_EN[] PROGMEM = " External Reset";
 const char * const MSG_EXTERNAL_RESET_LANG_TABLE[1] PROGMEM = {
 	MSG_EXTERNAL_RESET_EN
-};
-
-const char MSG_EXTRUDE_EN[] PROGMEM = "Extrude";
-const char MSG_EXTRUDE_CZ[] PROGMEM = "Extrudovat";
-const char MSG_EXTRUDE_PL[] PROGMEM = "Extrudovat";
-const char * const MSG_EXTRUDE_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_EXTRUDE_EN,
-	MSG_EXTRUDE_CZ,
-	MSG_EXTRUDE_EN,
-	MSG_EXTRUDE_EN,
-	MSG_EXTRUDE_PL
 };
 
 const char MSG_Enqueing_EN[] PROGMEM = "enqueing \"";
@@ -754,21 +650,6 @@ const char * const MSG_FILAMENTCHANGE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENTCHANGE_IT,
 	MSG_FILAMENTCHANGE_ES,
 	MSG_FILAMENTCHANGE_PL
-};
-
-const char MSG_FILAMENT_SIZE_EXTRUDER_0_EN[] PROGMEM = "Fil. Dia. 1";
-const char * const MSG_FILAMENT_SIZE_EXTRUDER_0_LANG_TABLE[1] PROGMEM = {
-	MSG_FILAMENT_SIZE_EXTRUDER_0_EN
-};
-
-const char MSG_FILAMENT_SIZE_EXTRUDER_1_EN[] PROGMEM = "Fil. Dia. 2";
-const char * const MSG_FILAMENT_SIZE_EXTRUDER_1_LANG_TABLE[1] PROGMEM = {
-	MSG_FILAMENT_SIZE_EXTRUDER_1_EN
-};
-
-const char MSG_FILAMENT_SIZE_EXTRUDER_2_EN[] PROGMEM = "Fil. Dia. 3";
-const char * const MSG_FILAMENT_SIZE_EXTRUDER_2_LANG_TABLE[1] PROGMEM = {
-	MSG_FILAMENT_SIZE_EXTRUDER_2_EN
 };
 
 const char MSG_FILE_PRINTED_EN[] PROGMEM = "Done printing file";
@@ -831,36 +712,18 @@ const char * const MSG_FLOW_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_FLOW0_EN[] PROGMEM = "Flow 0";
-const char MSG_FLOW0_CZ[] PROGMEM = "Prutok 0";
-const char MSG_FLOW0_PL[] PROGMEM = "Prutok 0";
-const char * const MSG_FLOW0_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_FLOW0_EN,
-	MSG_FLOW0_CZ,
-	MSG_FLOW0_EN,
-	MSG_FLOW0_EN,
-	MSG_FLOW0_PL
+const char * const MSG_FLOW0_LANG_TABLE[1] PROGMEM = {
+	MSG_FLOW0_EN
 };
 
 const char MSG_FLOW1_EN[] PROGMEM = "Flow 1";
-const char MSG_FLOW1_CZ[] PROGMEM = "Prutok 1";
-const char MSG_FLOW1_PL[] PROGMEM = "Prutok 1";
-const char * const MSG_FLOW1_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_FLOW1_EN,
-	MSG_FLOW1_CZ,
-	MSG_FLOW1_EN,
-	MSG_FLOW1_EN,
-	MSG_FLOW1_PL
+const char * const MSG_FLOW1_LANG_TABLE[1] PROGMEM = {
+	MSG_FLOW1_EN
 };
 
 const char MSG_FLOW2_EN[] PROGMEM = "Flow 2";
-const char MSG_FLOW2_CZ[] PROGMEM = "Prutok 2";
-const char MSG_FLOW2_PL[] PROGMEM = "Prutok 2";
-const char * const MSG_FLOW2_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_FLOW2_EN,
-	MSG_FLOW2_CZ,
-	MSG_FLOW2_EN,
-	MSG_FLOW2_EN,
-	MSG_FLOW2_PL
+const char * const MSG_FLOW2_LANG_TABLE[1] PROGMEM = {
+	MSG_FLOW2_EN
 };
 
 const char MSG_FREE_MEMORY_EN[] PROGMEM = " Free Memory: ";
@@ -975,14 +838,8 @@ const char * const MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3_LANG_TABLE[LANG_NUM] PR
 };
 
 const char MSG_INIT_SDCARD_EN[] PROGMEM = "Init. SD card";
-const char MSG_INIT_SDCARD_CZ[] PROGMEM = "Inic. SD";
-const char MSG_INIT_SDCARD_PL[] PROGMEM = "Inic. SD";
-const char * const MSG_INIT_SDCARD_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_INIT_SDCARD_EN,
-	MSG_INIT_SDCARD_CZ,
-	MSG_INIT_SDCARD_EN,
-	MSG_INIT_SDCARD_EN,
-	MSG_INIT_SDCARD_PL
+const char * const MSG_INIT_SDCARD_LANG_TABLE[1] PROGMEM = {
+	MSG_INIT_SDCARD_EN
 };
 
 const char MSG_INSERT_FILAMENT_EN[] PROGMEM = "Insert filament";
@@ -1067,14 +924,8 @@ const char * const MSG_LOADING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_LOAD_EPROM_EN[] PROGMEM = "Load memory";
-const char MSG_LOAD_EPROM_CZ[] PROGMEM = "Ulozit pamet";
-const char MSG_LOAD_EPROM_PL[] PROGMEM = "Ulozit pamet";
-const char * const MSG_LOAD_EPROM_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_LOAD_EPROM_EN,
-	MSG_LOAD_EPROM_CZ,
-	MSG_LOAD_EPROM_EN,
-	MSG_LOAD_EPROM_EN,
-	MSG_LOAD_EPROM_PL
+const char * const MSG_LOAD_EPROM_LANG_TABLE[1] PROGMEM = {
+	MSG_LOAD_EPROM_EN
 };
 
 const char MSG_LOAD_FILAMENT_EN[] PROGMEM = "Load filament";
@@ -1169,47 +1020,23 @@ const char * const MSG_MIN_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_MOTION_EN[] PROGMEM = "Motion";
-const char MSG_MOTION_CZ[] PROGMEM = "Pohyb";
-const char MSG_MOTION_PL[] PROGMEM = "Pohyb";
-const char * const MSG_MOTION_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_MOTION_EN,
-	MSG_MOTION_CZ,
-	MSG_MOTION_EN,
-	MSG_MOTION_EN,
-	MSG_MOTION_PL
+const char * const MSG_MOTION_LANG_TABLE[1] PROGMEM = {
+	MSG_MOTION_EN
 };
 
 const char MSG_MOVE_01MM_EN[] PROGMEM = "Move 0.1mm";
-const char MSG_MOVE_01MM_CZ[] PROGMEM = "Posunout o 0.1mm";
-const char MSG_MOVE_01MM_PL[] PROGMEM = "Posunout o 0.1mm";
-const char * const MSG_MOVE_01MM_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_MOVE_01MM_EN,
-	MSG_MOVE_01MM_CZ,
-	MSG_MOVE_01MM_EN,
-	MSG_MOVE_01MM_EN,
-	MSG_MOVE_01MM_PL
+const char * const MSG_MOVE_01MM_LANG_TABLE[1] PROGMEM = {
+	MSG_MOVE_01MM_EN
 };
 
 const char MSG_MOVE_10MM_EN[] PROGMEM = "Move 10mm";
-const char MSG_MOVE_10MM_CZ[] PROGMEM = "Posunout o 10mm";
-const char MSG_MOVE_10MM_PL[] PROGMEM = "Posunout o 10mm";
-const char * const MSG_MOVE_10MM_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_MOVE_10MM_EN,
-	MSG_MOVE_10MM_CZ,
-	MSG_MOVE_10MM_EN,
-	MSG_MOVE_10MM_EN,
-	MSG_MOVE_10MM_PL
+const char * const MSG_MOVE_10MM_LANG_TABLE[1] PROGMEM = {
+	MSG_MOVE_10MM_EN
 };
 
 const char MSG_MOVE_1MM_EN[] PROGMEM = "Move 1mm";
-const char MSG_MOVE_1MM_CZ[] PROGMEM = "Posunout o 1mm";
-const char MSG_MOVE_1MM_PL[] PROGMEM = "Posunout o 1mm";
-const char * const MSG_MOVE_1MM_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_MOVE_1MM_EN,
-	MSG_MOVE_1MM_CZ,
-	MSG_MOVE_1MM_EN,
-	MSG_MOVE_1MM_EN,
-	MSG_MOVE_1MM_PL
+const char * const MSG_MOVE_1MM_LANG_TABLE[1] PROGMEM = {
+	MSG_MOVE_1MM_EN
 };
 
 const char MSG_MOVE_AXIS_EN[] PROGMEM = "Move axis";
@@ -1246,16 +1073,6 @@ const char * const MSG_MOVE_E_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_E_IT,
 	MSG_MOVE_E_ES,
 	MSG_MOVE_E_EN
-};
-
-const char MSG_MOVE_E1_EN[] PROGMEM = "Extruder2";
-const char * const MSG_MOVE_E1_LANG_TABLE[1] PROGMEM = {
-	MSG_MOVE_E1_EN
-};
-
-const char MSG_MOVE_E2_EN[] PROGMEM = "Extruder3";
-const char * const MSG_MOVE_E2_LANG_TABLE[1] PROGMEM = {
-	MSG_MOVE_E2_EN
 };
 
 const char MSG_MOVE_X_EN[] PROGMEM = "Move X";
@@ -1372,25 +1189,13 @@ const char * const MSG_NOZZLE_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_NOZZLE1_EN[] PROGMEM = "Nozzle2";
-const char MSG_NOZZLE1_CZ[] PROGMEM = "Tryska2";
-const char MSG_NOZZLE1_PL[] PROGMEM = "Tryska2";
-const char * const MSG_NOZZLE1_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_NOZZLE1_EN,
-	MSG_NOZZLE1_CZ,
-	MSG_NOZZLE1_EN,
-	MSG_NOZZLE1_EN,
-	MSG_NOZZLE1_PL
+const char * const MSG_NOZZLE1_LANG_TABLE[1] PROGMEM = {
+	MSG_NOZZLE1_EN
 };
 
 const char MSG_NOZZLE2_EN[] PROGMEM = "Nozzle3";
-const char MSG_NOZZLE2_CZ[] PROGMEM = "Tryska3";
-const char MSG_NOZZLE2_PL[] PROGMEM = "Tryska3";
-const char * const MSG_NOZZLE2_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_NOZZLE2_EN,
-	MSG_NOZZLE2_CZ,
-	MSG_NOZZLE2_EN,
-	MSG_NOZZLE2_EN,
-	MSG_NOZZLE2_PL
+const char * const MSG_NOZZLE2_LANG_TABLE[1] PROGMEM = {
+	MSG_NOZZLE2_EN
 };
 
 const char MSG_NO_CARD_EN[] PROGMEM = "No SD card";
@@ -1458,26 +1263,6 @@ const char * const MSG_PICK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PICK_Z_PL
 };
 
-const char MSG_PID_C_EN[] PROGMEM = "PID-C";
-const char * const MSG_PID_C_LANG_TABLE[1] PROGMEM = {
-	MSG_PID_C_EN
-};
-
-const char MSG_PID_D_EN[] PROGMEM = "PID-D";
-const char * const MSG_PID_D_LANG_TABLE[1] PROGMEM = {
-	MSG_PID_D_EN
-};
-
-const char MSG_PID_I_EN[] PROGMEM = "PID-I";
-const char * const MSG_PID_I_LANG_TABLE[1] PROGMEM = {
-	MSG_PID_I_EN
-};
-
-const char MSG_PID_P_EN[] PROGMEM = "PID-P";
-const char * const MSG_PID_P_LANG_TABLE[1] PROGMEM = {
-	MSG_PID_P_EN
-};
-
 const char MSG_PLANNER_BUFFER_BYTES_EN[] PROGMEM = "  PlannerBufferBytes: ";
 const char * const MSG_PLANNER_BUFFER_BYTES_LANG_TABLE[1] PROGMEM = {
 	MSG_PLANNER_BUFFER_BYTES_EN
@@ -1519,83 +1304,6 @@ const char * const MSG_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PREHEAT_PL
 };
 
-const char MSG_PREHEAT_ABS_EN[] PROGMEM = "Preheat ABS";
-const char MSG_PREHEAT_ABS_CZ[] PROGMEM = "Predehrev ABS";
-const char MSG_PREHEAT_ABS_PL[] PROGMEM = "Predehrev ABS";
-const char * const MSG_PREHEAT_ABS_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_ABS_EN,
-	MSG_PREHEAT_ABS_CZ,
-	MSG_PREHEAT_ABS_EN,
-	MSG_PREHEAT_ABS_EN,
-	MSG_PREHEAT_ABS_PL
-};
-
-const char MSG_PREHEAT_ABS0_EN[] PROGMEM = "Preheat ABS 1";
-const char MSG_PREHEAT_ABS0_CZ[] PROGMEM = "Predehrev ABS 1";
-const char MSG_PREHEAT_ABS0_PL[] PROGMEM = "Predehrev ABS 1";
-const char * const MSG_PREHEAT_ABS0_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_ABS0_EN,
-	MSG_PREHEAT_ABS0_CZ,
-	MSG_PREHEAT_ABS0_EN,
-	MSG_PREHEAT_ABS0_EN,
-	MSG_PREHEAT_ABS0_PL
-};
-
-const char MSG_PREHEAT_ABS012_EN[] PROGMEM = "Preheat ABS All";
-const char MSG_PREHEAT_ABS012_CZ[] PROGMEM = "Predehrev ABS All";
-const char MSG_PREHEAT_ABS012_PL[] PROGMEM = "Predehrev ABS All";
-const char * const MSG_PREHEAT_ABS012_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_ABS012_EN,
-	MSG_PREHEAT_ABS012_CZ,
-	MSG_PREHEAT_ABS012_EN,
-	MSG_PREHEAT_ABS012_EN,
-	MSG_PREHEAT_ABS012_PL
-};
-
-const char MSG_PREHEAT_ABS1_EN[] PROGMEM = "Preheat ABS 2";
-const char MSG_PREHEAT_ABS1_CZ[] PROGMEM = "Predehrev ABS 2";
-const char MSG_PREHEAT_ABS1_PL[] PROGMEM = "Predehrev ABS 2";
-const char * const MSG_PREHEAT_ABS1_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_ABS1_EN,
-	MSG_PREHEAT_ABS1_CZ,
-	MSG_PREHEAT_ABS1_EN,
-	MSG_PREHEAT_ABS1_EN,
-	MSG_PREHEAT_ABS1_PL
-};
-
-const char MSG_PREHEAT_ABS2_EN[] PROGMEM = "Preheat ABS 3";
-const char MSG_PREHEAT_ABS2_CZ[] PROGMEM = "Predehrev ABS 3";
-const char MSG_PREHEAT_ABS2_PL[] PROGMEM = "Predehrev ABS 3";
-const char * const MSG_PREHEAT_ABS2_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_ABS2_EN,
-	MSG_PREHEAT_ABS2_CZ,
-	MSG_PREHEAT_ABS2_EN,
-	MSG_PREHEAT_ABS2_EN,
-	MSG_PREHEAT_ABS2_PL
-};
-
-const char MSG_PREHEAT_ABS_BEDONLY_EN[] PROGMEM = "Preheat ABS Bed";
-const char MSG_PREHEAT_ABS_BEDONLY_CZ[] PROGMEM = "Predehrev ABS Bed";
-const char MSG_PREHEAT_ABS_BEDONLY_PL[] PROGMEM = "Predehrev ABS Bed";
-const char * const MSG_PREHEAT_ABS_BEDONLY_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_ABS_BEDONLY_EN,
-	MSG_PREHEAT_ABS_BEDONLY_CZ,
-	MSG_PREHEAT_ABS_BEDONLY_EN,
-	MSG_PREHEAT_ABS_BEDONLY_EN,
-	MSG_PREHEAT_ABS_BEDONLY_PL
-};
-
-const char MSG_PREHEAT_ABS_SETTINGS_EN[] PROGMEM = "Preheat ABS conf";
-const char MSG_PREHEAT_ABS_SETTINGS_CZ[] PROGMEM = "Predehrev ABS conf";
-const char MSG_PREHEAT_ABS_SETTINGS_PL[] PROGMEM = "Predehrev ABS conf";
-const char * const MSG_PREHEAT_ABS_SETTINGS_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_ABS_SETTINGS_EN,
-	MSG_PREHEAT_ABS_SETTINGS_CZ,
-	MSG_PREHEAT_ABS_SETTINGS_EN,
-	MSG_PREHEAT_ABS_SETTINGS_EN,
-	MSG_PREHEAT_ABS_SETTINGS_PL
-};
-
 const char MSG_PREHEAT_NOZZLE_EN[] PROGMEM = "Preheat the nozzle!";
 const char MSG_PREHEAT_NOZZLE_CZ[] PROGMEM = "Predehrejte trysku!";
 const char MSG_PREHEAT_NOZZLE_IT[] PROGMEM = "Preris. ugello!";
@@ -1607,94 +1315,6 @@ const char * const MSG_PREHEAT_NOZZLE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PREHEAT_NOZZLE_IT,
 	MSG_PREHEAT_NOZZLE_ES,
 	MSG_PREHEAT_NOZZLE_PL
-};
-
-const char MSG_PREHEAT_PLA_EN[] PROGMEM = "Preheat PLA";
-const char MSG_PREHEAT_PLA_CZ[] PROGMEM = "Predehrev PLA";
-const char MSG_PREHEAT_PLA_PL[] PROGMEM = "Predehrev PLA";
-const char * const MSG_PREHEAT_PLA_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_PLA_EN,
-	MSG_PREHEAT_PLA_CZ,
-	MSG_PREHEAT_PLA_EN,
-	MSG_PREHEAT_PLA_EN,
-	MSG_PREHEAT_PLA_PL
-};
-
-const char MSG_PREHEAT_PLA0_EN[] PROGMEM = "Preheat PLA 1";
-const char MSG_PREHEAT_PLA0_CZ[] PROGMEM = "Predehrev PLA 1";
-const char MSG_PREHEAT_PLA0_PL[] PROGMEM = "Predehrev PLA 1";
-const char * const MSG_PREHEAT_PLA0_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_PLA0_EN,
-	MSG_PREHEAT_PLA0_CZ,
-	MSG_PREHEAT_PLA0_EN,
-	MSG_PREHEAT_PLA0_EN,
-	MSG_PREHEAT_PLA0_PL
-};
-
-const char MSG_PREHEAT_PLA012_EN[] PROGMEM = "Preheat PLA All";
-const char MSG_PREHEAT_PLA012_CZ[] PROGMEM = "Predehrev PLA All";
-const char MSG_PREHEAT_PLA012_PL[] PROGMEM = "Predehrev PLA All";
-const char * const MSG_PREHEAT_PLA012_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_PLA012_EN,
-	MSG_PREHEAT_PLA012_CZ,
-	MSG_PREHEAT_PLA012_EN,
-	MSG_PREHEAT_PLA012_EN,
-	MSG_PREHEAT_PLA012_PL
-};
-
-const char MSG_PREHEAT_PLA1_EN[] PROGMEM = "Preheat PLA 2";
-const char MSG_PREHEAT_PLA1_CZ[] PROGMEM = "Predehrev PLA 2";
-const char MSG_PREHEAT_PLA1_PL[] PROGMEM = "Predehrev PLA 2";
-const char * const MSG_PREHEAT_PLA1_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_PLA1_EN,
-	MSG_PREHEAT_PLA1_CZ,
-	MSG_PREHEAT_PLA1_EN,
-	MSG_PREHEAT_PLA1_EN,
-	MSG_PREHEAT_PLA1_PL
-};
-
-const char MSG_PREHEAT_PLA2_EN[] PROGMEM = "Preheat PLA 3";
-const char MSG_PREHEAT_PLA2_CZ[] PROGMEM = "Predehrev PLA 3";
-const char MSG_PREHEAT_PLA2_PL[] PROGMEM = "Predehrev PLA 3";
-const char * const MSG_PREHEAT_PLA2_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_PLA2_EN,
-	MSG_PREHEAT_PLA2_CZ,
-	MSG_PREHEAT_PLA2_EN,
-	MSG_PREHEAT_PLA2_EN,
-	MSG_PREHEAT_PLA2_PL
-};
-
-const char MSG_PREHEAT_PLA_BEDONLY_EN[] PROGMEM = "Preheat PLA Bed";
-const char MSG_PREHEAT_PLA_BEDONLY_CZ[] PROGMEM = "Predehrev PLA Bed";
-const char MSG_PREHEAT_PLA_BEDONLY_PL[] PROGMEM = "Predehrev PLA Bed";
-const char * const MSG_PREHEAT_PLA_BEDONLY_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_PLA_BEDONLY_EN,
-	MSG_PREHEAT_PLA_BEDONLY_CZ,
-	MSG_PREHEAT_PLA_BEDONLY_EN,
-	MSG_PREHEAT_PLA_BEDONLY_EN,
-	MSG_PREHEAT_PLA_BEDONLY_PL
-};
-
-const char MSG_PREHEAT_PLA_SETTINGS_EN[] PROGMEM = "Preheat PLA conf";
-const char MSG_PREHEAT_PLA_SETTINGS_CZ[] PROGMEM = "Predehrev PLA conf";
-const char MSG_PREHEAT_PLA_SETTINGS_PL[] PROGMEM = "Predehrev PLA conf";
-const char * const MSG_PREHEAT_PLA_SETTINGS_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREHEAT_PLA_SETTINGS_EN,
-	MSG_PREHEAT_PLA_SETTINGS_CZ,
-	MSG_PREHEAT_PLA_SETTINGS_EN,
-	MSG_PREHEAT_PLA_SETTINGS_EN,
-	MSG_PREHEAT_PLA_SETTINGS_PL
-};
-
-const char MSG_PREPARE_EN[] PROGMEM = "Prepare";
-const char MSG_PREPARE_CZ[] PROGMEM = "Priprava";
-const char MSG_PREPARE_PL[] PROGMEM = "Priprava";
-const char * const MSG_PREPARE_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_PREPARE_EN,
-	MSG_PREPARE_CZ,
-	MSG_PREPARE_EN,
-	MSG_PREPARE_EN,
-	MSG_PREPARE_PL
 };
 
 const char MSG_PRESS_EN[] PROGMEM = "And press the knob";
@@ -1774,14 +1394,8 @@ const char * const MSG_RECTRACT_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_REFRESH_EN[] PROGMEM = "\xF8" "Refresh";
-const char MSG_REFRESH_CZ[] PROGMEM = "\xF8" "Obnovit";
-const char MSG_REFRESH_PL[] PROGMEM = "\xF8" "Obnovit";
-const char * const MSG_REFRESH_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_REFRESH_EN,
-	MSG_REFRESH_CZ,
-	MSG_REFRESH_EN,
-	MSG_REFRESH_EN,
-	MSG_REFRESH_PL
+const char * const MSG_REFRESH_LANG_TABLE[1] PROGMEM = {
+	MSG_REFRESH_EN
 };
 
 const char MSG_RESEND_EN[] PROGMEM = "Resend: ";
@@ -1790,14 +1404,8 @@ const char * const MSG_RESEND_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_RESTORE_FAILSAFE_EN[] PROGMEM = "Restore failsafe";
-const char MSG_RESTORE_FAILSAFE_CZ[] PROGMEM = "Obnovit vychozi";
-const char MSG_RESTORE_FAILSAFE_PL[] PROGMEM = "Obnovit vychozi";
-const char * const MSG_RESTORE_FAILSAFE_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_RESTORE_FAILSAFE_EN,
-	MSG_RESTORE_FAILSAFE_CZ,
-	MSG_RESTORE_FAILSAFE_EN,
-	MSG_RESTORE_FAILSAFE_EN,
-	MSG_RESTORE_FAILSAFE_PL
+const char * const MSG_RESTORE_FAILSAFE_LANG_TABLE[1] PROGMEM = {
+	MSG_RESTORE_FAILSAFE_EN
 };
 
 const char MSG_RESUME_PRINT_EN[] PROGMEM = "Resume print";
@@ -1824,11 +1432,6 @@ const char * const MSG_RESUMING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RESUMING_IT,
 	MSG_RESUMING_ES,
 	MSG_RESUMING_PL
-};
-
-const char MSG_RETRACT_EN[] PROGMEM = "Retract";
-const char * const MSG_RETRACT_LANG_TABLE[1] PROGMEM = {
-	MSG_RETRACT_EN
 };
 
 const char MSG_SD_CANT_ENTER_SUBDIR_EN[] PROGMEM = "Cannot enter subdir: ";
@@ -2203,25 +1806,13 @@ const char * const MSG_SETTINGS_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_SET_HOME_OFFSETS_EN[] PROGMEM = "Set home offsets";
-const char MSG_SET_HOME_OFFSETS_CZ[] PROGMEM = "Nastav pocatek home";
-const char MSG_SET_HOME_OFFSETS_PL[] PROGMEM = "Nastav pocatek home";
-const char * const MSG_SET_HOME_OFFSETS_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_SET_HOME_OFFSETS_EN,
-	MSG_SET_HOME_OFFSETS_CZ,
-	MSG_SET_HOME_OFFSETS_EN,
-	MSG_SET_HOME_OFFSETS_EN,
-	MSG_SET_HOME_OFFSETS_PL
+const char * const MSG_SET_HOME_OFFSETS_LANG_TABLE[1] PROGMEM = {
+	MSG_SET_HOME_OFFSETS_EN
 };
 
 const char MSG_SET_ORIGIN_EN[] PROGMEM = "Set origin";
-const char MSG_SET_ORIGIN_CZ[] PROGMEM = "Nastav pocatek";
-const char MSG_SET_ORIGIN_PL[] PROGMEM = "Nastav pocatek";
-const char * const MSG_SET_ORIGIN_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_SET_ORIGIN_EN,
-	MSG_SET_ORIGIN_CZ,
-	MSG_SET_ORIGIN_EN,
-	MSG_SET_ORIGIN_EN,
-	MSG_SET_ORIGIN_PL
+const char * const MSG_SET_ORIGIN_LANG_TABLE[1] PROGMEM = {
+	MSG_SET_ORIGIN_EN
 };
 
 const char MSG_SHOW_END_STOPS_EN[] PROGMEM = "Show end stops";
@@ -2503,16 +2094,6 @@ const char * const MSG_USERWAIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_USERWAIT_EN
 };
 
-const char MSG_VE_JERK_EN[] PROGMEM = "Ve-jerk";
-const char * const MSG_VE_JERK_LANG_TABLE[1] PROGMEM = {
-	MSG_VE_JERK_EN
-};
-
-const char MSG_VMAX_EN[] PROGMEM = "Vmax ";
-const char * const MSG_VMAX_LANG_TABLE[1] PROGMEM = {
-	MSG_VMAX_EN
-};
-
 const char MSG_VMIN_EN[] PROGMEM = "Vmin";
 const char * const MSG_VMIN_LANG_TABLE[1] PROGMEM = {
 	MSG_VMIN_EN
@@ -2533,16 +2114,6 @@ const char * const MSG_VTRAV_MIN_LANG_TABLE[1] PROGMEM = {
 	MSG_VTRAV_MIN_EN
 };
 
-const char MSG_VXY_JERK_EN[] PROGMEM = "Vxy-jerk";
-const char * const MSG_VXY_JERK_LANG_TABLE[1] PROGMEM = {
-	MSG_VXY_JERK_EN
-};
-
-const char MSG_VZ_JERK_EN[] PROGMEM = "Vz-jerk";
-const char * const MSG_VZ_JERK_LANG_TABLE[1] PROGMEM = {
-	MSG_VZ_JERK_EN
-};
-
 const char MSG_WATCH_EN[] PROGMEM = "Info screen";
 const char MSG_WATCH_CZ[] PROGMEM = "Informace";
 const char MSG_WATCH_IT[] PROGMEM = "Guarda";
@@ -2561,16 +2132,6 @@ const char * const MSG_WATCHDOG_RESET_LANG_TABLE[1] PROGMEM = {
 	MSG_WATCHDOG_RESET_EN
 };
 
-const char MSG_X_EN[] PROGMEM = "x";
-const char * const MSG_X_LANG_TABLE[1] PROGMEM = {
-	MSG_X_EN
-};
-
-const char MSG_XSTEPS_EN[] PROGMEM = "Xsteps/mm";
-const char * const MSG_XSTEPS_LANG_TABLE[1] PROGMEM = {
-	MSG_XSTEPS_EN
-};
-
 const char MSG_X_MAX_EN[] PROGMEM = "x_max: ";
 const char * const MSG_X_MAX_LANG_TABLE[1] PROGMEM = {
 	MSG_X_MAX_EN
@@ -2579,11 +2140,6 @@ const char * const MSG_X_MAX_LANG_TABLE[1] PROGMEM = {
 const char MSG_X_MIN_EN[] PROGMEM = "x_min: ";
 const char * const MSG_X_MIN_LANG_TABLE[1] PROGMEM = {
 	MSG_X_MIN_EN
-};
-
-const char MSG_Y_EN[] PROGMEM = "y";
-const char * const MSG_Y_LANG_TABLE[1] PROGMEM = {
-	MSG_Y_EN
 };
 
 const char MSG_YES_EN[] PROGMEM = "Yes";
@@ -2599,11 +2155,6 @@ const char * const MSG_YES_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_YES_PL
 };
 
-const char MSG_YSTEPS_EN[] PROGMEM = "Ysteps/mm";
-const char * const MSG_YSTEPS_LANG_TABLE[1] PROGMEM = {
-	MSG_YSTEPS_EN
-};
-
 const char MSG_Y_MAX_EN[] PROGMEM = "y_max: ";
 const char * const MSG_Y_MAX_LANG_TABLE[1] PROGMEM = {
 	MSG_Y_MAX_EN
@@ -2614,11 +2165,6 @@ const char * const MSG_Y_MIN_LANG_TABLE[1] PROGMEM = {
 	MSG_Y_MIN_EN
 };
 
-const char MSG_Z_EN[] PROGMEM = "z";
-const char * const MSG_Z_LANG_TABLE[1] PROGMEM = {
-	MSG_Z_EN
-};
-
 const char MSG_ZPROBE_OUT_EN[] PROGMEM = "Z probe out. bed";
 const char * const MSG_ZPROBE_OUT_LANG_TABLE[1] PROGMEM = {
 	MSG_ZPROBE_OUT_EN
@@ -2627,11 +2173,6 @@ const char * const MSG_ZPROBE_OUT_LANG_TABLE[1] PROGMEM = {
 const char MSG_ZPROBE_ZOFFSET_EN[] PROGMEM = "Z Offset";
 const char * const MSG_ZPROBE_ZOFFSET_LANG_TABLE[1] PROGMEM = {
 	MSG_ZPROBE_ZOFFSET_EN
-};
-
-const char MSG_ZSTEPS_EN[] PROGMEM = "Zsteps/mm";
-const char * const MSG_ZSTEPS_LANG_TABLE[1] PROGMEM = {
-	MSG_ZSTEPS_EN
 };
 
 const char MSG_Z_MAX_EN[] PROGMEM = "z_max: ";
