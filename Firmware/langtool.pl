@@ -16,19 +16,30 @@ sub parselang
 	my $out = {};
 	while (my $line = <$fh>) {
 		chomp $line;
-		next if (index($line, 'MSG') == -1);
-    	$line =~ /(?is)\#define\s*(\S*)\s*(.*)/;
-    	my $symbol = $1;
-    	my $v = $2;
+		next if (index($line, '#define') == -1 || index($line, 'MSG') == -1);
+		my $modifiers = {};
+    	my $symbol = '';
+    	my $value = '';
+		if (index($line, '#define(') == -1) {
+			# Extended definition, which specifies the string formatting.
+	    	$line =~ /(?is)\#define\s*(\S*)\s*(.*)/;
+	    	$symbol = "$1";
+	    	$value = $2;
+		} else {
+			$line =~ /(?is)\#define\((.*)\)\s*(\S*)\s*(.*)/;
+			my $options = $1;
+	    	$symbol = "$2";
+	    	$value = $3;
+		}
     	next if (! defined $symbol or length($symbol) == 0);
     	# Trim whitespaces from both sides
-    	$v =~ s/^\s+|\s+$//g;
+    	$value =~ s/^\s+|\s+$//g;
 		#$string =~ s/" MACHINE_NAME "/Prusa i3/;
-		$v =~ s/" FIRMWARE_URL "/https:\/\/github.com\/prusa3d\/Prusa-i3-Plus\//;
-		$v =~ s/" PROTOCOL_VERSION "/1.0/;
-		$v =~ s/" STRINGIFY\(EXTRUDERS\) "/1/;
-		$v =~ s/" MACHINE_UUID "/00000000-0000-0000-0000-000000000000/;
-		${$out}{$symbol} = $v;
+		$value =~ s/" FIRMWARE_URL "/https:\/\/github.com\/prusa3d\/Prusa-i3-Plus\//;
+		$value =~ s/" PROTOCOL_VERSION "/1.0/;
+		$value =~ s/" STRINGIFY\(EXTRUDERS\) "/1/;
+		$value =~ s/" MACHINE_UUID "/00000000-0000-0000-0000-000000000000/;
+		${$out}{$symbol} = { value=>$value, %$modifiers };
 	}
 	return $out;
 }
@@ -97,6 +108,7 @@ sub break_text_fullscreen
 }
 
 my %texts;
+my %attributes;
 my $num_languages = 0;
 foreach my $lang (@langs) {
 	my $symbols = parselang("language_$lang.h");
@@ -104,10 +116,11 @@ foreach my $lang (@langs) {
  		if (! (exists $texts{$key})) {
 	 		$texts{$key} = [];
  		}
+ 		my $symbol_value = ${$symbols}{$key};
  		my $strings = $texts{$key};
  		die "Symbol $key defined first in $lang, undefined in the preceding language files."
  			if (scalar(@$strings) != $num_languages);
- 		push @$strings, ${$symbols}{$key};
+ 		push @$strings, ${$symbol_value}{value};
  	}
  	$num_languages += 1;
  	foreach my $key (keys %texts) {

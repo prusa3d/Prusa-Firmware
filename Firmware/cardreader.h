@@ -47,6 +47,8 @@ public:
   FORCE_INLINE uint8_t percentDone(){if(!isFileOpen()) return 0; if(filesize) return sdpos/((filesize+99)/100); else return 0;};
   FORCE_INLINE char* getWorkDirName(){workDir.getFilename(filename);return filename;};
 
+  bool ToshibaFlashAir_isEnabled() const { return card.getFlashAirCompatible(); }
+  void ToshibaFlashAir_enable(bool enable) { card.setFlashAirCompatible(enable); }
   bool ToshibaFlashAir_GetIP(uint8_t *ip);
 
 public:

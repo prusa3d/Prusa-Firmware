@@ -288,5 +288,46 @@
 #define MSG_STATISTICS                      "Statystyka  "
 #define MSG_USB_PRINTING                    "Druk z USB  "
 
+#define MSG_SHOW_END_STOPS					"Pokaz krancowki"
+#define MSG_CALIBRATE_BED					"Kalibracja XYZ"
+#define MSG_CALIBRATE_BED_RESET				"Reset kalibr. XYZ"
+
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP		"Kalibracja XYZ. Prosze przesunac os Z do gornej ramy. Potwierdzic guzikiem."
+#define MSG_CONFIRM_NOZZLE_CLEAN			"Dla prawidlowej kalibracji prosze oczyscic dysze. Potwierdzic guzikiem."
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Oba wozki Z dojechaly do gornej ramy?"
+
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Szukam kalibracyjnego"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	"punktu podkladki"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE3	" z 4"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Ulepszam dokladnosc"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	"punktu kalibracyjnego"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3	" z 9"
+
+#define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"Kalibracja XYZ niepowiedziona. Kalibracyjny punkt podkladki nieznaleziony."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED			"Kalibracja XYZ niepowiedziona. Sprawdzic w instrukcji."
+#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"Kalibracja XYZ ok. Osie X/Y sa prostopadle."
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"Kalibracja XYZ w porzadku. Osie X/Y lekko skosne."
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"Osie X/Y sa mocno skosne. Skos bedzie automatycznie wyrownany przy druku."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR		"Kalibracja XYZ niepowiedziona. Lewy przedni punkt zbyt wysuniety do przodu. Wyrownac drukarke."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR	"Kalibracja XYZ niepowiedziona. Prawy przedni punkt zbyt wysuniety do przodu. Wyrownac drukarke."
+#define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR		"Kalibracja XYZ niepowiedziona. Przednie punkty kalibracyjne zbyt wysuniete do przodu. Wyrownac drukarke."
+#define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR	"Kalibracja XYZ niedokladna. Lewy przedni punkt zbyt wysuniety do przodu."
+#define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR	"Kalibracja XYZ niedokladna. Prawy przedni punkt zbyt wysuniety do przodu."
+#define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR	"Kalibracja XYZ niedokladna. Przednie punkty kalibracyjne zbyt wysuniete do przodu."
+
+#define MSG_BED_LEVELING_FAILED_POINT_LOW						"Kalibracja Z niepowiedziona. Sensor nie dotknal. Zanieczyszczona dysza? Czekam na reset."
+#define MSG_BED_LEVELING_FAILED_POINT_HIGH						"Kalibracja Z niepowiedziona. Sensor dotknal zbyt wysoko. Czekam na reset."
+#define MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED				"Kalibracja Z niepowiedziona. Sensor jest odlaczony lub uszkodzony kabel. Czekam na reset."
+
+#define MSG_NEW_FIRMWARE_AVAILABLE								"Wyszla nowa wersja firmware:"
+#define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Prosze zaktualizowac."
+#define MSG_BABYSTEP_Z_NOT_SET                          		"Drukarka nie byla kalibrowana. Wlaczyc kalibracyjny G-kod i dostroic Z."
+
+#define MSG_BED_CORRECTION_MENU									"Korekta podkladki"
+#define MSG_BED_CORRECTION_LEFT									"W lewo  [um]"
+#define MSG_BED_CORRECTION_RIGHT								"W prawo [um]"
+#define MSG_BED_CORRECTION_FRONT								"Do przodu [um]"
+#define MSG_BED_CORRECTION_REAR									"Do tylu  [um]"
+#define MSG_BED_CORRECTION_RESET								"Reset"
 
 #endif // LANGUAGE_EN_H

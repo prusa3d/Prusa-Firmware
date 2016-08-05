@@ -162,7 +162,7 @@ uint8_t const SPI_SCK_PIN = SOFT_SPI_SCK_PIN;
 class Sd2Card {
  public:
   /** Construct an instance of Sd2Card. */
-  Sd2Card() : errorCode_(SD_CARD_ERROR_INIT_NOT_CALLED), type_(0) {}
+  Sd2Card() : errorCode_(SD_CARD_ERROR_INIT_NOT_CALLED), type_(0), flash_air_compatible_(false) {}
   uint32_t cardSize();
   bool erase(uint32_t firstBlock, uint32_t lastBlock);
   bool eraseSingleBlockEnable();
@@ -225,6 +225,9 @@ class Sd2Card {
   // Toshiba FlashAir support
   uint8_t readExtMemory(uint8_t mio, uint8_t func, uint32_t addr, uint16_t count, uint8_t* dst);
 
+  void setFlashAirCompatible(bool flashAirCompatible) { flash_air_compatible_ = flashAirCompatible; }
+  bool getFlashAirCompatible() const { return flash_air_compatible_; }
+
  private:
   //----------------------------------------------------------------------------
   uint8_t chipSelectPin_;
@@ -232,6 +235,7 @@ class Sd2Card {
   uint8_t spiRate_;
   uint8_t status_;
   uint8_t type_;
+  bool    flash_air_compatible_;
   // private functions
   uint8_t cardAcmd(uint8_t cmd, uint32_t arg) {
     cardCommand(CMD55, 0);

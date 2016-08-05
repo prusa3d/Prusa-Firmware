@@ -1017,6 +1017,9 @@ void setup()
 	  farm_no = 0;
   }
 
+  // Enable Toshiba FlashAir SD card / WiFi enahanced card.
+  card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
+
   if (eeprom_read_dword((uint32_t*)(EEPROM_TOP-4)) == 0x0ffffffff && 
       eeprom_read_dword((uint32_t*)(EEPROM_TOP-8)) == 0x0ffffffff &&
       eeprom_read_dword((uint32_t*)(EEPROM_TOP-12)) == 0x0ffffffff) {

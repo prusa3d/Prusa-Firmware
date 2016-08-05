@@ -136,8 +136,8 @@ static void lcd_main_menu();
 static void lcd_tune_menu();
 static void lcd_prepare_menu();
 static void lcd_move_menu();
-static void lcd_control_menu();
 static void lcd_settings_menu();
+static void lcd_calibration_menu();
 static void lcd_language_menu();
 static void lcd_control_temperature_menu();
 static void lcd_control_temperature_preheat_pla_settings_menu();
@@ -765,7 +765,7 @@ static void lcd_support_menu()
         // Menu was entered or SD card status has changed (plugged in or removed).
         // Initialize its status.
         menuData.supportMenu.status = 1;
-        menuData.supportMenu.is_flash_air = card.ToshibaFlashAir_GetIP(menuData.supportMenu.ip);
+        menuData.supportMenu.is_flash_air = card.ToshibaFlashAir_isEnabled() && card.ToshibaFlashAir_GetIP(menuData.supportMenu.ip);
         if (menuData.supportMenu.is_flash_air)
             sprintf_P(menuData.supportMenu.ip_str, PSTR("%d.%d.%d.%d"), 
                 menuData.supportMenu.ip[0], menuData.supportMenu.ip[1], 
@@ -1325,7 +1325,7 @@ static void lcd_adjust_bed()
         eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR,  menuData.adjustBed.rear  = menuData.adjustBed.rear2);
 
     START_MENU();
-    MENU_ITEM(back, MSG_SETTINGS, lcd_settings_menu);
+    MENU_ITEM(back, MSG_SETTINGS, lcd_calibration_menu);
     MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_LEFT,  &menuData.adjustBed.left2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
     MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_RIGHT, &menuData.adjustBed.right2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
     MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_FRONT, &menuData.adjustBed.front2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
@@ -1682,7 +1682,7 @@ static void lcd_show_end_stops() {
 
 static void menu_show_end_stops() {
     lcd_show_end_stops();
-    if (LCD_CLICKED) lcd_goto_menu(lcd_settings_menu);
+    if (LCD_CLICKED) lcd_goto_menu(lcd_calibration_menu);
 }
 
 // Lets the user move the Z carriage up to the end stoppers.
@@ -2055,6 +2055,12 @@ void lcd_mesh_calibration_z()
   lcd_return_to_status();
 }
 
+void lcd_toshiba_flash_air_compatibility_toggle()
+{
+   card.ToshibaFlashAir_enable(! card.ToshibaFlashAir_isEnabled());
+   eeprom_update_byte((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
+}
+
 static void lcd_settings_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -2067,21 +2073,7 @@ static void lcd_settings_menu()
   
   if (!isPrintPaused)
   {
-#ifndef MESH_BED_LEVELING
-    // "Calibrate Z"
-	  MENU_ITEM(gcode, MSG_HOMEYZ, PSTR("G28 Z"));
-#else
-    // "Calibrate Z" with storing the reference values to EEPROM.
-    MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
-    // "Mesh Bed Leveling"
-	  MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
-#endif
-  }
-
-  if (!isPrintPaused)
-  {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
-	  MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
   }
 
   if (SilentModeMenu == 0) {
@@ -2093,21 +2085,47 @@ static void lcd_settings_menu()
 	if (!isPrintPaused)
 	{
 		MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
-    MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
 	}
 	MENU_ITEM(submenu, MSG_LANGUAGE_SELECT, lcd_language_menu);
-	if (!isPrintPaused)
-	{
-		MENU_ITEM(submenu, MSG_SELFTEST, lcd_selftest);
-    MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
-    MENU_ITEM(submenu, MSG_CALIBRATE_BED, lcd_mesh_calibration);
-    MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
-	}
-	if (farm_mode)
-	{
-		MENU_ITEM(submenu, PSTR("Farm number"), lcd_farm_no);
-	}
+
+  if (card.ToshibaFlashAir_isEnabled()) {
+    MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON, lcd_toshiba_flash_air_compatibility_toggle);
+  } else {
+    MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF, lcd_toshiba_flash_air_compatibility_toggle);
+  }
+
 	END_MENU();
+}
+
+static void lcd_calibration_menu()
+{
+  START_MENU();
+  MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+  if (!isPrintPaused)
+  {
+    MENU_ITEM(submenu, MSG_SELFTEST, lcd_selftest);
+#ifndef MESH_BED_LEVELING
+    // MK1
+    // "Calibrate Z"
+    MENU_ITEM(gcode, MSG_HOMEYZ, PSTR("G28 Z"));
+#else
+    // MK2
+    MENU_ITEM(submenu, MSG_CALIBRATE_BED, lcd_mesh_calibration);
+    // "Calibrate Z" with storing the reference values to EEPROM.
+    MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
+    // "Mesh Bed Leveling"
+    MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
+#endif
+    MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
+    MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
+    MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
+    MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
+  }
+  if (farm_mode)
+  {
+    MENU_ITEM(submenu, PSTR("Farm number"), lcd_farm_no);
+  }
+  END_MENU();
 }
 /*
 void lcd_mylang_top(int hlaska) {
@@ -2423,7 +2441,7 @@ static void lcd_main_menu()
   
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
 
-  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < 0.5) ) 
+  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) ) 
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
@@ -2480,6 +2498,7 @@ static void lcd_main_menu()
     MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
     MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
     MENU_ITEM(submenu, MSG_SETTINGS, lcd_settings_menu);
+    MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);
   }
 
   if (!is_usb_printing)
@@ -2557,7 +2576,6 @@ static void lcd_control_temperature_menu()
 
   START_MENU();
   MENU_ITEM(back, MSG_SETTINGS, lcd_settings_menu);
-  //MENU_ITEM(back, MSG_CONTROL, lcd_control_menu);
 #if TEMP_SENSOR_0 != 0
   MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);
 #endif
