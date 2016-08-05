@@ -153,7 +153,7 @@ const char * const MSG_BED_CORRECTION_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_BED_CORRECTION_REAR_EN[] PROGMEM = "Rear side  um";
 const char MSG_BED_CORRECTION_REAR_CZ[] PROGMEM = "Vzadu  [um]";
-const char MSG_BED_CORRECTION_REAR_IT[] PROGMEM = "Lato posteriore um";
+const char MSG_BED_CORRECTION_REAR_IT[] PROGMEM = "Lato posteriore";
 const char MSG_BED_CORRECTION_REAR_ES[] PROGMEM = "Atras     [um]";
 const char MSG_BED_CORRECTION_REAR_PL[] PROGMEM = "Do tylu  [um]";
 const char * const MSG_BED_CORRECTION_REAR_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -210,7 +210,7 @@ const char * const MSG_BED_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_EN[] PROGMEM = "Bed leveling failed. Sensor triggered too high. Waiting for reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_CZ[] PROGMEM = "Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset.";
-const char MSG_BED_LEVELING_FAILED_POINT_HIGH_IT[] PROGMEM = "Livellamento letto fallito. Sensore scoccato troppo presto. In attesa di reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_HIGH_IT[] PROGMEM = "Livellamento letto fallito. Sensore scocc. troppo presto In attesa di reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_ES[] PROGMEM = "Nivelacion fallada. Sensor funciona demasiado temprano. Esperando reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_PL[] PROGMEM = "Kalibracja Z nieudana. Sensor dotk. za wysoko. Czekam na reset.";
 const char * const MSG_BED_LEVELING_FAILED_POINT_HIGH_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -223,7 +223,7 @@ const char * const MSG_BED_LEVELING_FAILED_POINT_HIGH_LANG_TABLE[LANG_NUM] PROGM
 
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_EN[] PROGMEM = "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_CZ[] PROGMEM = "Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset.";
-const char MSG_BED_LEVELING_FAILED_POINT_LOW_IT[] PROGMEM = "Livellamento letto fallito. Sensore non scoccato. Detriti sull'ugello? In attesa di reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_LOW_IT[] PROGMEM = "Livellamento letto fallito. Sensore non scocc.DetritiUgello? In attesa di reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_ES[] PROGMEM = "Nivelacion fallada. Sensor no funciona. Escombros en Boqui.? Esperando reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_PL[] PROGMEM = "Kalibracja nieudana. Sensor nie dotknal. Zanieczysz. dysza? Czekam na reset.";
 const char * const MSG_BED_LEVELING_FAILED_POINT_LOW_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -236,7 +236,7 @@ const char * const MSG_BED_LEVELING_FAILED_POINT_LOW_LANG_TABLE[LANG_NUM] PROGME
 
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_EN[] PROGMEM = "Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.";
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_CZ[] PROGMEM = "Kalibrace Z selhala. Sensor je odpojeny nebo preruseny kabel. Cekam na reset.";
-const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_IT[] PROGMEM = "Livellamento letto fallito. Sensore disconnesso o con cavo danneggiato. In attesa di reset.";
+const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_IT[] PROGMEM = "Livellamento letto fallito. Sensore disc. oCavoDanneggi. In attesa di reset.";
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_ES[] PROGMEM = "Nivelacion fallada. Sensor desconectado o cables danados. Esperando reset.";
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_PL[] PROGMEM = "Kalibracja nieudana. Sensor odlaczony lub uszkodz. kabel. Czekam na reset.";
 const char * const MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -474,7 +474,7 @@ const char * const MSG_CONFIGURATION_VER_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_EN[] PROGMEM = "Are left and right Z~carriages all up?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_CZ[] PROGMEM = "Dojely oba Z voziky k~hornimu dorazu?";
-const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_IT[] PROGMEM = "I carrelli Z sinistro/destro sono alla massima atezza?";
+const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_IT[] PROGMEM = "I carrelli Z sin/des sono massima atezza?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_ES[] PROGMEM = "Carros Z izq./der. estan arriba maximo?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_PL[] PROGMEM = "Oba wozki dojechaly do gornej ramy?";
 const char * const MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -536,7 +536,7 @@ const char * const MSG_COUNT_X_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
 const char MSG_DISABLE_STEPPERS_CZ[] PROGMEM = "Vypnout motory";
-const char MSG_DISABLE_STEPPERS_IT[] PROGMEM = "Disablilita motori";
+const char MSG_DISABLE_STEPPERS_IT[] PROGMEM = "Disablilit motori";
 const char MSG_DISABLE_STEPPERS_ES[] PROGMEM = "Apagar motores";
 const char MSG_DISABLE_STEPPERS_PL[] PROGMEM = "Wylaczyc silniki";
 const char * const MSG_DISABLE_STEPPERS_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -664,7 +664,7 @@ const char * const MSG_FAN_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_FILAMENTCHANGE_EN[] PROGMEM = "Change filament";
 const char MSG_FILAMENTCHANGE_CZ[] PROGMEM = "Vymenit filament";
-const char MSG_FILAMENTCHANGE_IT[] PROGMEM = "Cambiare filamento";
+const char MSG_FILAMENTCHANGE_IT[] PROGMEM = "Camb. filamento";
 const char MSG_FILAMENTCHANGE_ES[] PROGMEM = "Cambiar filamento";
 const char MSG_FILAMENTCHANGE_PL[] PROGMEM = "Wymienic filament";
 const char * const MSG_FILAMENTCHANGE_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -700,7 +700,7 @@ const char * const MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_LANG_TABLE[LANG_NUM] PROGM
 
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_EN[] PROGMEM = "calibration point";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_CZ[] PROGMEM = "bod podlozky";
-const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_IT[] PROGMEM = "punto di calibrazione";
+const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_IT[] PROGMEM = "punto di calibraz.";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_ES[] PROGMEM = "punto de calibracion";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_PL[] PROGMEM = "punktu podkladki";
 const char * const MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -829,7 +829,7 @@ const char * const MSG_HOTEND_OFFSET_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_EN[] PROGMEM = "Improving bed";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Zlepsuji presnost";
-const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Perfezionando il letto";
+const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Perfezion. il letto";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_ES[] PROGMEM = "Mejorando cama";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_PL[] PROGMEM = "Ulepszam dokladnosc";
 const char * const MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -842,7 +842,7 @@ const char * const MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_LANG_TABLE[LANG_NUM] PR
 
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_EN[] PROGMEM = "calibration point";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_CZ[] PROGMEM = "kalibracniho bodu";
-const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_IT[] PROGMEM = "punto di calibrazione";
+const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_IT[] PROGMEM = "punto di calibraz.";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_ES[] PROGMEM = "punto de calibracion";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_PL[] PROGMEM = "punktu kalibracyj.";
 const char * const MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1091,7 +1091,7 @@ const char * const MSG_MOVE_AXIS_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_EN[] PROGMEM = "Calibrating XYZ. Move Z carriage up to the end stoppers. Click when done.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_CZ[] PROGMEM = "Kalibrace XYZ. Posunte prosim Z osu az k~hornimu dorazu. Potvrdte tlacitkem.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_IT[] PROGMEM = "Calibrando X/Y. Muovere carrello Z fino alla massima altezza, poi fare clik.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_IT[] PROGMEM = "Calibrando X/Y. Muovere Z fino massima altezza, poi fare clik.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_ES[] PROGMEM = "Calibrando XYZ. Subir carro Z hasta maximo. Click cuando acabes.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_PL[] PROGMEM = "Kalibracja XYZ. Prosze przesunac os Z do gornej ramy. Potw. guzikiem.";
 const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1167,7 +1167,7 @@ const char * const MSG_NEW_FIRMWARE_AVAILABLE_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_NEW_FIRMWARE_PLEASE_UPGRADE_EN[] PROGMEM = "Please upgrade.";
 const char MSG_NEW_FIRMWARE_PLEASE_UPGRADE_CZ[] PROGMEM = "Prosim aktualizujte.";
-const char MSG_NEW_FIRMWARE_PLEASE_UPGRADE_IT[] PROGMEM = "Si prega di effettuare aggiornamento.";
+const char MSG_NEW_FIRMWARE_PLEASE_UPGRADE_IT[] PROGMEM = "Prega aggiorna.";
 const char MSG_NEW_FIRMWARE_PLEASE_UPGRADE_ES[] PROGMEM = "Actualizar por favor";
 const char MSG_NEW_FIRMWARE_PLEASE_UPGRADE_PL[] PROGMEM = "Prosze zaktualizowac";
 const char * const MSG_NEW_FIRMWARE_PLEASE_UPGRADE_LANG_TABLE[LANG_NUM] PROGMEM = {

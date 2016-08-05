@@ -1488,14 +1488,16 @@ canceled:
     return false;
 }
 
-static inline bool pgm_is_whitespace(const char *c)
+static inline bool pgm_is_whitespace(const char *c_addr)
 {
-    return pgm_read_byte(c) == ' ' || pgm_read_byte(c) == '\t' || pgm_read_byte(c) == '\r' || pgm_read_byte(c) == '\n';
+    const char c = pgm_read_byte(c_addr);
+    return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 }
 
-static inline bool pgm_is_interpunction(const char *c)
+static inline bool pgm_is_interpunction(const char *c_addr)
 {
-    return pgm_read_byte(c) == '.' || pgm_read_byte(c) == ',' || pgm_read_byte(c) == ';' || pgm_read_byte(c) == '?' || pgm_read_byte(c) == '!';
+    const char c = pgm_read_byte(c_addr);
+    return c == '.' || c == ',' || c == ':'|| c == ';' || c == '?' || c == '!' || c == '/';
 }
 
 const char* lcd_display_message_fullscreen_P(const char *msg)
