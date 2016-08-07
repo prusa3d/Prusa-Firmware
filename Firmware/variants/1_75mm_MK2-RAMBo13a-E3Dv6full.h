@@ -42,7 +42,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Y_MAX_POS 210
 #define Y_MIN_POS -4
 #define Z_MAX_POS 210
-#define Z_MIN_POS 0.2
+#define Z_MIN_POS 0.15
 
 // Canceled home position
 #define X_CANCEL_POS 50
@@ -51,7 +51,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
 
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 25}    // (mm/sec)
+#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
 #define DEFAULT_MAX_ACCELERATION      {9000,9000,500,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
 #define DEFAULT_ACCELERATION          1500    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
@@ -106,7 +106,7 @@ LOAD/UNLOAD FILAMENT SETTINGS
 
 // Unload filament commands
 #define UNLOAD_FILAMENT_0 "M83"
-#define UNLOAD_FILAMENT_1 "G1 E-80 F400"
+#define UNLOAD_FILAMENT_1 "G1 E-80 F7000"
 
 /*------------------------------------
 CHANGE FILAMENT SETTINGS

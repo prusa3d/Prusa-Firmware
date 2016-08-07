@@ -229,4 +229,4 @@
 
 #define MSG_MENU_CALIBRATION									"Kalibracja"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"karta SD [normal]"
-#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"karta SD [FlshAir]"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"karta SD[FlshAir]"

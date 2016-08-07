@@ -101,6 +101,8 @@ int farm_no = 0;
 int farm_timer = 30;
 int farm_status = 0;
 
+
+
 bool menuExiting = false;
 
 #ifdef FILAMENT_LCD_DISPLAY
@@ -332,8 +334,10 @@ static void lcd_status_screen()
   {
     firstrun = 0;
     set_language_from_EEPROM();
-    strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
-	
+     
+      if(lcd_status_message_level == 0){
+          strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
+      }
 	if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
 	{
 		eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
@@ -502,6 +506,7 @@ void lcd_commands()
 				disable_z();
 				custom_message = false;
 				custom_message_type = 0;
+   
 			}
 			if (lcd_commands_step == 2 && !blocks_queued())
 			{
@@ -512,13 +517,18 @@ void lcd_commands()
 			if (lcd_commands_step == 3 && !blocks_queued())
 			{
 				enquecommand_P(PSTR(LOAD_FILAMENT_1));
+                enquecommand_P(PSTR("G4"));
+                st_synchronize();
 				lcd_commands_step = 2;
 			}
 			if (lcd_commands_step == 4 && !blocks_queued())
 			{
 				lcd_setstatuspgm(MSG_INSERT_FILAMENT);
 				enquecommand_P(PSTR(LOAD_FILAMENT_0));
+                enquecommand_P(PSTR("G1 E0.1 F400"));
 				lcd_commands_step = 3;
+                st_synchronize();
+
 			}
 			if (lcd_commands_step == 5 && !blocks_queued())
 			{
@@ -1025,7 +1035,8 @@ void lcd_LoadFilament()
 	  lcd_commands_type = LCD_COMMAND_LOAD_FILAMENT;
 	  SERIAL_ECHOLN("Loading filament");
 	  // commands() will handle the rest
-  } 
+    
+    }
   else 
   {
 
@@ -2095,6 +2106,11 @@ static void lcd_settings_menu()
   } else {
     MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF, lcd_toshiba_flash_air_compatibility_toggle);
   }
+    
+    if (farm_mode)
+    {
+        MENU_ITEM(submenu, PSTR("Farm number"), lcd_farm_no);
+    }
 
 	END_MENU();
 }
@@ -2123,10 +2139,7 @@ static void lcd_calibration_menu()
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
   }
-  if (farm_mode)
-  {
-    MENU_ITEM(submenu, PSTR("Farm number"), lcd_farm_no);
-  }
+  
   END_MENU();
 }
 /*

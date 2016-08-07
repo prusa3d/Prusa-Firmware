@@ -1,5 +1,5 @@
 #include <avr/pgmspace.h>
-#include "configuration_prusa.h"
+#include "Configuration_prusa.h"
 #include "language_all.h"
 
 #define LCD_WIDTH 20
@@ -140,7 +140,7 @@ const char * const MSG_BED_CORRECTION_LEFT_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_BED_CORRECTION_MENU_EN[] PROGMEM = "Bed level correct";
 const char MSG_BED_CORRECTION_MENU_CZ[] PROGMEM = "Korekce podlozky";
-const char MSG_BED_CORRECTION_MENU_IT[] PROGMEM = "Correz. liv. letto";
+const char MSG_BED_CORRECTION_MENU_IT[] PROGMEM = "Correz. liv.letto";
 const char MSG_BED_CORRECTION_MENU_ES[] PROGMEM = "Corr. de la cama";
 const char MSG_BED_CORRECTION_MENU_PL[] PROGMEM = "Korekta podkladki";
 const char * const MSG_BED_CORRECTION_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -210,7 +210,7 @@ const char * const MSG_BED_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_EN[] PROGMEM = "Bed leveling failed. Sensor triggered too high. Waiting for reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_CZ[] PROGMEM = "Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset.";
-const char MSG_BED_LEVELING_FAILED_POINT_HIGH_IT[] PROGMEM = "Livellamento letto fallito. Sensore scocc. troppo presto In attesa di reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_HIGH_IT[] PROGMEM = "Livellamento letto fallito.Risp sensore troppo prestoIn attesa di reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_ES[] PROGMEM = "Nivelacion fallada. Sensor funciona demasiado temprano. Esperando reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_PL[] PROGMEM = "Kalibracja Z nieudana. Sensor dotk. za wysoko. Czekam na reset.";
 const char * const MSG_BED_LEVELING_FAILED_POINT_HIGH_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -223,7 +223,7 @@ const char * const MSG_BED_LEVELING_FAILED_POINT_HIGH_LANG_TABLE[LANG_NUM] PROGM
 
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_EN[] PROGMEM = "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_CZ[] PROGMEM = "Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset.";
-const char MSG_BED_LEVELING_FAILED_POINT_LOW_IT[] PROGMEM = "Livellamento letto fallito. Sensore non scocc.DetritiUgello? In attesa di reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_LOW_IT[] PROGMEM = "Livellamento letto fallito.NoRispSensor Residui su ugello? In attesa di reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_ES[] PROGMEM = "Nivelacion fallada. Sensor no funciona. Escombros en Boqui.? Esperando reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_PL[] PROGMEM = "Kalibracja nieudana. Sensor nie dotknal. Zanieczysz. dysza? Czekam na reset.";
 const char * const MSG_BED_LEVELING_FAILED_POINT_LOW_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -236,7 +236,7 @@ const char * const MSG_BED_LEVELING_FAILED_POINT_LOW_LANG_TABLE[LANG_NUM] PROGME
 
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_EN[] PROGMEM = "Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.";
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_CZ[] PROGMEM = "Kalibrace Z selhala. Sensor je odpojeny nebo preruseny kabel. Cekam na reset.";
-const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_IT[] PROGMEM = "Livellamento letto fallito. Sensore disc. oCavoDanneggi. In attesa di reset.";
+const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_IT[] PROGMEM = "Livellamento letto fallito. Sensore discon. o Cavo Dann. In attesa di reset.";
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_ES[] PROGMEM = "Nivelacion fallada. Sensor desconectado o cables danados. Esperando reset.";
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_PL[] PROGMEM = "Kalibracja nieudana. Sensor odlaczony lub uszkodz. kabel. Czekam na reset.";
 const char * const MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -474,7 +474,7 @@ const char * const MSG_CONFIGURATION_VER_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_EN[] PROGMEM = "Are left and right Z~carriages all up?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_CZ[] PROGMEM = "Dojely oba Z voziky k~hornimu dorazu?";
-const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_IT[] PROGMEM = "I carrelli Z sin/des sono massima atezza?";
+const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_IT[] PROGMEM = "I carrelli Z sin/des sono altezza max?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_ES[] PROGMEM = "Carros Z izq./der. estan arriba maximo?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_PL[] PROGMEM = "Oba wozki dojechaly do gornej ramy?";
 const char * const MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -536,7 +536,7 @@ const char * const MSG_COUNT_X_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
 const char MSG_DISABLE_STEPPERS_CZ[] PROGMEM = "Vypnout motory";
-const char MSG_DISABLE_STEPPERS_IT[] PROGMEM = "Disablilit motori";
+const char MSG_DISABLE_STEPPERS_IT[] PROGMEM = "Disabilit motori";
 const char MSG_DISABLE_STEPPERS_ES[] PROGMEM = "Apagar motores";
 const char MSG_DISABLE_STEPPERS_PL[] PROGMEM = "Wylaczyc silniki";
 const char * const MSG_DISABLE_STEPPERS_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -651,7 +651,7 @@ const char * const MSG_FACTOR_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_FAN_SPEED_EN[] PROGMEM = "Fan speed";
 const char MSG_FAN_SPEED_CZ[] PROGMEM = "Rychlost vent.";
-const char MSG_FAN_SPEED_IT[] PROGMEM = "Velocit‡ ventola";
+const char MSG_FAN_SPEED_IT[] PROGMEM = "Velocit√† ventola";
 const char MSG_FAN_SPEED_ES[] PROGMEM = "Ventilador";
 const char MSG_FAN_SPEED_PL[] PROGMEM = "Predkosc went.";
 const char * const MSG_FAN_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1091,7 +1091,7 @@ const char * const MSG_MOVE_AXIS_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_EN[] PROGMEM = "Calibrating XYZ. Move Z carriage up to the end stoppers. Click when done.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_CZ[] PROGMEM = "Kalibrace XYZ. Posunte prosim Z osu az k~hornimu dorazu. Potvrdte tlacitkem.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_IT[] PROGMEM = "Calibrando X/Y. Muovere Z fino massima altezza, poi fare clik.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_IT[] PROGMEM = "Calibrando X/Y. Muovere Z fino altezza max, poi fare clik.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_ES[] PROGMEM = "Calibrando XYZ. Subir carro Z hasta maximo. Click cuando acabes.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_PL[] PROGMEM = "Kalibracja XYZ. Prosze przesunac os Z do gornej ramy. Potw. guzikiem.";
 const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1816,7 +1816,7 @@ const char * const MSG_SELFTEST_START_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_SELFTEST_WIRINGERROR_EN[] PROGMEM = "Wiring error";
 const char MSG_SELFTEST_WIRINGERROR_CZ[] PROGMEM = "Chyba zapojeni";
 const char MSG_SELFTEST_WIRINGERROR_IT[] PROGMEM = "Errore cablaggio";
-const char MSG_SELFTEST_WIRINGERROR_ES[] PROGMEM = "Error de conexiÛn";
+const char MSG_SELFTEST_WIRINGERROR_ES[] PROGMEM = "Error de conexi√≥n";
 const char MSG_SELFTEST_WIRINGERROR_PL[] PROGMEM = "Blad polaczenia";
 const char * const MSG_SELFTEST_WIRINGERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_WIRINGERROR_EN,
@@ -1900,7 +1900,7 @@ const char * const MSG_SOFTWARE_RESET_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_SPEED_EN[] PROGMEM = "Speed";
 const char MSG_SPEED_CZ[] PROGMEM = "Rychlost";
-const char MSG_SPEED_IT[] PROGMEM = "Velocit‡";
+const char MSG_SPEED_IT[] PROGMEM = "Velocit√†";
 const char MSG_SPEED_ES[] PROGMEM = "Velocidad";
 const char MSG_SPEED_PL[] PROGMEM = "Predkosc";
 const char * const MSG_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -2080,7 +2080,7 @@ const char * const MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_LANG_TABLE[LANG_NUM] 
 };
 
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON_EN[] PROGMEM = "SD card [FlshAir]";
-const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON_PL[] PROGMEM = "karta SD [FlshAir]";
+const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON_PL[] PROGMEM = "karta SD[FlshAir]";
 const char * const MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON_EN,
 	MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON_EN,

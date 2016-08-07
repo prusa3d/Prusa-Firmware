@@ -139,7 +139,9 @@ static int minttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_RAW_LO_TEMP , 
 static int maxttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_RAW_HI_TEMP , HEATER_1_RAW_HI_TEMP , HEATER_2_RAW_HI_TEMP );
 static int minttemp[EXTRUDERS] = ARRAY_BY_EXTRUDERS( 0, 0, 0 );
 static int maxttemp[EXTRUDERS] = ARRAY_BY_EXTRUDERS( 16383, 16383, 16383 );
-//static int bed_minttemp_raw = HEATER_BED_RAW_LO_TEMP; /* No bed mintemp error implemented?!? */
+#ifdef BED_MINTEMP
+static int bed_minttemp_raw = HEATER_BED_RAW_LO_TEMP;
+#endif
 #ifdef BED_MAXTEMP
 static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 #endif
@@ -1006,7 +1008,7 @@ void tp_init()
 #endif //MAXTEMP 2
 
 #ifdef BED_MINTEMP
-  /* No bed MINTEMP error implemented?!? */ /*
+  /* No bed MINTEMP error implemented?!? */
   while(analog2tempBed(bed_minttemp_raw) < BED_MINTEMP) {
 #if HEATER_BED_RAW_LO_TEMP < HEATER_BED_RAW_HI_TEMP
     bed_minttemp_raw += OVERSAMPLENR;
@@ -1014,7 +1016,7 @@ void tp_init()
     bed_minttemp_raw -= OVERSAMPLENR;
 #endif
   }
-  */
+  
 #endif //BED_MINTEMP
 #ifdef BED_MAXTEMP
   while(analog2tempBed(bed_maxttemp_raw) > BED_MAXTEMP) {
@@ -1199,7 +1201,17 @@ void max_temp_error(uint8_t e) {
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
+    
+
+    
   #endif
+    SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+    SET_OUTPUT(FAN_PIN);
+    SET_OUTPUT(BEEPER);
+    WRITE(FAN_PIN, 1);
+    WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
+    WRITE(BEEPER, 1);
+    fanSpeed=255;
 }
 
 void min_temp_error(uint8_t e) {
@@ -1227,6 +1239,20 @@ void bed_max_temp_error(void) {
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
   #endif
+}
+
+void bed_min_temp_error(void) {
+#if HEATER_BED_PIN > -1
+    WRITE(HEATER_BED_PIN, 0);
+#endif
+    if(IsStopped() == false) {
+        SERIAL_ERROR_START;
+        SERIAL_ERRORLNPGM("Temperature heated bed switched off. MINTEMP triggered !");
+        LCD_ALERTMESSAGEPGM("Err: MINTEMP BED");
+    }
+#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+    Stop();
+#endif
 }
 
 #ifdef HEATER_0_USES_MAX6675
@@ -1800,6 +1826,8 @@ ISR(TIMER0_COMPB_vect)
 #endif
   
   /* No bed MINTEMP error? */
+        
+        
 #if defined(BED_MAXTEMP) && (TEMP_SENSOR_BED != 0)
 # if HEATER_BED_RAW_LO_TEMP > HEATER_BED_RAW_HI_TEMP
     if(current_temperature_bed_raw <= bed_maxttemp_raw) {
@@ -1809,8 +1837,17 @@ ISR(TIMER0_COMPB_vect)
        target_temperature_bed = 0;
        bed_max_temp_error();
     }
-#endif
   }
+        
+# if HEATER_BED_RAW_LO_TEMP > HEATER_BED_RAW_HI_TEMP
+        if(current_temperature_bed_raw >= bed_minttemp_raw) {
+#else
+            if(current_temperature_bed_raw <= bed_minttemp_raw) {
+#endif
+                bed_min_temp_error();
+            }
+            
+#endif
   
 #ifdef BABYSTEPPING
   for(uint8_t axis=0;axis<3;axis++)

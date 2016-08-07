@@ -243,7 +243,7 @@ open($fh, '>', $filename) or die "Could not open file '$filename' $!";
 
 print $fh <<'END'
 #include <avr/pgmspace.h>
-#include "configuration_prusa.h"
+#include "Configuration_prusa.h"
 #include "language_all.h"
 
 #define LCD_WIDTH 20

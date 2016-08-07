@@ -2,7 +2,7 @@
 #define MSG_SD_INSERTED                     "SD inserita"
 #define MSG_SD_REMOVED                      "SD rimossa"
 #define MSG_MAIN                            "Menu principale"
-#define MSG_DISABLE_STEPPERS                "Disablilit motori"
+#define MSG_DISABLE_STEPPERS                "Disabilit motori"
 #define MSG_AUTO_HOME                       "Trova origine"
 #define MSG_SET_HOME_OFFSETS                "Set home offsets"
 #define MSG_SET_ORIGIN                      "Set origin"
@@ -177,10 +177,10 @@
 #define MSG_CALIBRATE_BED					"Calibra XYZ"
 #define MSG_CALIBRATE_BED_RESET					"Reset XYZ calibr."
 
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP 				"Calibrando X/Y. Muovere Z fino massima altezza, poi fare clik."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP 				"Calibrando X/Y. Muovere Z fino altezza max, poi fare clik."
 
 #define MSG_CONFIRM_NOZZLE_CLEAN					"Pulire l'ugello per la calibrazione, poi fare click."
-#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP				"I carrelli Z sin/des sono massima atezza?"
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP				"I carrelli Z sin/des sono altezza max?"
 
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1			"Ricerca del letto"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2			"punto di calibraz."
@@ -201,16 +201,16 @@
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR	"Calibrazione XYZ compromessa. Punto anteriore destro non raggiungibile."
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR	"Calibrazione XYZ compromessa. Punti anteriori non raggiungibili."
 
-#define MSG_BED_LEVELING_FAILED_POINT_LOW				"Livellamento letto fallito. Sensore non scocc.DetritiUgello? In attesa di reset."
-#define MSG_BED_LEVELING_FAILED_POINT_HIGH				"Livellamento letto fallito. Sensore scocc. troppo presto In attesa di reset."
-#define MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED		"Livellamento letto fallito. Sensore disc. oCavoDanneggi. In attesa di reset."
+#define MSG_BED_LEVELING_FAILED_POINT_LOW				"Livellamento letto fallito.NoRispSensor Residui su ugello? In attesa di reset."
+#define MSG_BED_LEVELING_FAILED_POINT_HIGH				"Livellamento letto fallito.Risp sensore troppo prestoIn attesa di reset."
+#define MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED		"Livellamento letto fallito. Sensore discon. o Cavo Dann. In attesa di reset."
 
 #define MSG_NEW_FIRMWARE_AVAILABLE						"Nuova versione del firmware disponibile"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE					"Prega aggiorna."
 
 #define MSG_BABYSTEP_Z_NOT_SET							"Stampante non ancora calibrata. Eseguire il G-code di calibrazione per regolare l'altezza Z."
 
-#define MSG_BED_CORRECTION_MENU							"Correz. liv. letto"
+#define MSG_BED_CORRECTION_MENU							"Correz. liv.letto"
 #define MSG_BED_CORRECTION_LEFT							"Lato sinistro um"
 #define MSG_BED_CORRECTION_RIGHT						"Lato destro um"
 #define MSG_BED_CORRECTION_FRONT						"Lato ateriore um"
