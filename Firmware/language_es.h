@@ -189,6 +189,8 @@
 #define MSG_CALIBRATE_BED                   "Calibra XYZ"
 #define MSG_CALIBRATE_BED_RESET             "Reset XYZ calibr."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP        "Calibrando XYZ. Subir carro Z hasta maximo. Click cuando acabes."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z        "Calibrando Z. Subir carro Z hasta maximo. Click cuando acabes."
+
 #define MSG_CONFIRM_NOZZLE_CLEAN            "Limpiar boquilla para calibracion. Click cuando acabes."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP     "Carros Z izq./der. estan arriba maximo?"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1  "Buscando cama"

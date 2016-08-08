@@ -177,7 +177,8 @@
 #define MSG_CALIBRATE_BED					"Calibra XYZ"
 #define MSG_CALIBRATE_BED_RESET					"Reset XYZ calibr."
 
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP 				"Calibrando X/Y. Muovere Z fino altezza max, poi fare clik."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP 				"Calibrando XYZ. Muovere Z fino altezza max, poi fare clik."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 				"Calibrando Z. Muovere Z fino altezza max, poi fare clik."
 
 #define MSG_CONFIRM_NOZZLE_CLEAN					"Pulire l'ugello per la calibrazione, poi fare click."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP				"I carrelli Z sin/des sono altezza max?"

@@ -189,6 +189,8 @@
 #define MSG_CALIBRATE_BED_RESET				"Reset XYZ calibr."
 
 #define(length=20,lines=4) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Calibrating XYZ. Move Z carriage up to the end stoppers. Click when done."
+#define(length=20,lines=4) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Calibrating Z. Move Z carriage up to the end stoppers. Click when done."
+
 #define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN			"Please clean the nozzle for calibration. Click when done."
 #define(length=20,lines=2) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Are left and right Z~carriages all up?"
 

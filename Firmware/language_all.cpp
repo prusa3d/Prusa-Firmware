@@ -300,12 +300,13 @@ const char * const MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED_LANG_TABLE[LANG_
 };
 
 const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_EN[] PROGMEM = "XYZ calibration ok. X/Y axes are perpendicular.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_CZ[] PROGMEM = "Kalibrace XYZ v poradku. X/Y osy jsou kolme.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_IT[] PROGMEM = "Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_ES[] PROGMEM = "Calibracion XYZ ok. Ejes X/Y perpendiculares.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_PL[] PROGMEM = "Kalibracja XYZ ok. Osie X/Y sa prostopadle.";
 const char * const MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_EN,
-	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_EN,
+	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_CZ,
 	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_IT,
 	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_ES,
 	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_PL
@@ -1091,7 +1092,7 @@ const char * const MSG_MOVE_AXIS_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_EN[] PROGMEM = "Calibrating XYZ. Move Z carriage up to the end stoppers. Click when done.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_CZ[] PROGMEM = "Kalibrace XYZ. Posunte prosim Z osu az k~hornimu dorazu. Potvrdte tlacitkem.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_IT[] PROGMEM = "Calibrando X/Y. Muovere Z fino altezza max, poi fare clik.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_IT[] PROGMEM = "Calibrando XYZ. Muovere Z fino altezza max, poi fare clik.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_ES[] PROGMEM = "Calibrando XYZ. Subir carro Z hasta maximo. Click cuando acabes.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_PL[] PROGMEM = "Kalibracja XYZ. Prosze przesunac os Z do gornej ramy. Potw. guzikiem.";
 const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1100,6 +1101,19 @@ const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_IT,
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_ES,
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_PL
+};
+
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_EN[] PROGMEM = "Calibrating Z. Move Z carriage up to the end stoppers. Click when done.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_CZ[] PROGMEM = "Kalibrace Z. Posunte prosim Z osu az k~hornimu dorazu. Potvrdte tlacitkem.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_IT[] PROGMEM = "Calibrando Z. Muovere Z fino altezza max, poi fare clik.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_ES[] PROGMEM = "Calibrando Z. Subir carro Z hasta maximo. Click cuando acabes.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_PL[] PROGMEM = "Kalibracja Z. Prosze przesunac os Z do gornej ramy. Potw. guzikiem.";
+const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_EN,
+	MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_CZ,
+	MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_IT,
+	MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_ES,
+	MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_PL
 };
 
 const char MSG_MOVE_E_EN[] PROGMEM = "Extruder";

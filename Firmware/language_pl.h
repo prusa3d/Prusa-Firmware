@@ -195,6 +195,8 @@
 #define MSG_CALIBRATE_BED                   "Kalibracja XYZ"
 #define MSG_CALIBRATE_BED_RESET             "Reset kalibr. XYZ"
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP        "Kalibracja XYZ. Prosze przesunac os Z do gornej ramy. Potw. guzikiem."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z        "Kalibracja Z. Prosze przesunac os Z do gornej ramy. Potw. guzikiem."
+
 #define MSG_CONFIRM_NOZZLE_CLEAN            "Dla prawidl. kalibracji prosze oczyscic dysze. Potw. guzikiem."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP     "Oba wozki dojechaly do gornej ramy?"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1  "Szukam kalibracyj."

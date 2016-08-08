@@ -48,7 +48,7 @@
 
   // Ask the user to move the Z axis up to the end stoppers and let
   // the user confirm that it has been done.
-  extern bool lcd_calibrate_z_end_stop_manual();
+  extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
   // Show the result of the calibration process on the LCD screen.
   extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
 
