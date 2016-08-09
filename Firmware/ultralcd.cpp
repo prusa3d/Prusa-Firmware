@@ -1429,7 +1429,7 @@ void lcd_adjust_z() {
 // Lets the user move the Z carriage up to the end stoppers.
 // When done, it sets the current Z to Z_MAX_POS and returns true.
 // Otherwise the Z calibration is not changed and false is returned.
-bool lcd_calibrate_z_end_stop_manual()
+bool lcd_calibrate_z_end_stop_manual(bool only_z)
 {
     bool clean_nozzle_asked = false;
 
@@ -1440,7 +1440,11 @@ bool lcd_calibrate_z_end_stop_manual()
     // Until confirmed by the confirmation dialog.
     for (;;) {
         unsigned long previous_millis_cmd = millis();
-        lcd_display_message_fullscreen_P(MSG_MOVE_CARRIAGE_TO_THE_TOP);
+        if (only_z) {
+            lcd_display_message_fullscreen_P(MSG_MOVE_CARRIAGE_TO_THE_TOP_Z);
+        }else{
+            lcd_display_message_fullscreen_P(MSG_MOVE_CARRIAGE_TO_THE_TOP);
+        }
         // Until the user finishes the z up movement.
         encoderDiff = 0;
         encoderPosition = 0;
