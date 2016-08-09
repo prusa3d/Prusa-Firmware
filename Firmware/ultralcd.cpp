@@ -518,7 +518,6 @@ void lcd_commands()
 			{
 				enquecommand_P(PSTR(LOAD_FILAMENT_1));
                 enquecommand_P(PSTR("G4"));
-                st_synchronize();
 				lcd_commands_step = 2;
 			}
 			if (lcd_commands_step == 4 && !blocks_queued())
@@ -527,8 +526,6 @@ void lcd_commands()
 				enquecommand_P(PSTR(LOAD_FILAMENT_0));
                 enquecommand_P(PSTR("G1 E0.1 F400"));
 				lcd_commands_step = 3;
-                st_synchronize();
-
 			}
 			if (lcd_commands_step == 5 && !blocks_queued())
 			{
@@ -1310,10 +1307,10 @@ static void lcd_adjust_bed()
         menuData.adjustBed.front = menuData.adjustBed.front2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT);
         menuData.adjustBed.rear  = menuData.adjustBed.rear2  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR);
         if (eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1 && 
-            menuData.adjustBed.left  >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.left  < BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.right >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.right < BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.front >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.front < BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.rear  >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.rear  < BED_ADJUSTMENT_UM_MAX)
+            menuData.adjustBed.left  >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.left  <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.right >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.right <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.front >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.front <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.rear  >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.rear  <= BED_ADJUSTMENT_UM_MAX)
             valid = true;
         if (! valid) {
             // Reset the values: simulate an edit.
@@ -1432,7 +1429,7 @@ void lcd_adjust_z() {
 // Lets the user move the Z carriage up to the end stoppers.
 // When done, it sets the current Z to Z_MAX_POS and returns true.
 // Otherwise the Z calibration is not changed and false is returned.
-bool lcd_calibrate_z_end_stop_manual(bool only_z)
+bool lcd_calibrate_z_end_stop_manual()
 {
     bool clean_nozzle_asked = false;
 
@@ -1443,11 +1440,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
     // Until confirmed by the confirmation dialog.
     for (;;) {
         unsigned long previous_millis_cmd = millis();
-        if (only_z) {
-            lcd_display_message_fullscreen_P(MSG_MOVE_CARRIAGE_TO_THE_TOP_Z);
-        }else{
-            lcd_display_message_fullscreen_P(MSG_MOVE_CARRIAGE_TO_THE_TOP);
-        }
+        lcd_display_message_fullscreen_P(MSG_MOVE_CARRIAGE_TO_THE_TOP);
         // Until the user finishes the z up movement.
         encoderDiff = 0;
         encoderPosition = 0;
