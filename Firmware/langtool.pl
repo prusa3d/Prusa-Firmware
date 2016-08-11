@@ -16,19 +16,35 @@ sub parselang
 	my $out = {};
 	while (my $line = <$fh>) {
 		chomp $line;
-		next if (index($line, 'MSG') == -1);
-    	$line =~ /(?is)\#define\s*(\S*)\s*(.*)/;
-    	my $symbol = $1;
-    	my $v = $2;
+		next if (index($line, 'define') == -1 || index($line, 'MSG') == -1);
+		my $modifiers = {};
+    	my $symbol = '';
+    	my $value = '';
+		if (index($line, 'define(') == -1) {
+			# Extended definition, which specifies the string formatting.
+	    	$line =~ /(?is)define\s*(\S*)\s*(.*)/;
+	    	$symbol = "$1";
+	    	$value = $2;
+		} else {
+			$line =~ /(?is)define\((.*)\)\s*(\S*)\s*(.*)/;
+			my $options = $1;
+			foreach my $key_value (split /,/, $options) {
+				if ($key_value =~ /\s*(\S*)\s*=\s*(\S*)\s*/) {
+					${$modifiers}{$1} = $2;
+				}
+			}
+	    	$symbol = "$2";
+	    	$value = $3;
+		}
     	next if (! defined $symbol or length($symbol) == 0);
     	# Trim whitespaces from both sides
-    	$v =~ s/^\s+|\s+$//g;
+    	$value =~ s/^\s+|\s+$//g;
 		#$string =~ s/" MACHINE_NAME "/Prusa i3/;
-		$v =~ s/" FIRMWARE_URL "/https:\/\/github.com\/prusa3d\/Prusa-i3-Plus\//;
-		$v =~ s/" PROTOCOL_VERSION "/1.0/;
-		$v =~ s/" STRINGIFY\(EXTRUDERS\) "/1/;
-		$v =~ s/" MACHINE_UUID "/00000000-0000-0000-0000-000000000000/;
-		${$out}{$symbol} = $v;
+		$value =~ s/" FIRMWARE_URL "/https:\/\/github.com\/prusa3d\/Prusa-i3-Plus\//;
+		$value =~ s/" PROTOCOL_VERSION "/1.0/;
+		$value =~ s/" STRINGIFY\(EXTRUDERS\) "/1/;
+		$value =~ s/" MACHINE_UUID "/00000000-0000-0000-0000-000000000000/;
+		${$out}{$symbol} = { value=>$value, %$modifiers };
 	}
 	return $out;
 }
@@ -46,13 +62,13 @@ sub pgm_is_whitespace
 sub pgm_is_interpunction
 {
 	my ($c) = @_;
-    return $c == ord('.') || $c == ord(',') || $c == ord(';') || $c == ord('?') || $c == ord('!');
+    return $c == ord('.') || $c == ord(',') || $c == ord(':') || $c == ord(';') || $c == ord('?') || $c == ord('!') || $c == ord('/');
 }
 
 sub break_text_fullscreen
 {
     my $lines = [];
-    my ($text_str) = @_;
+    my ($text_str, $max_linelen) = @_;
     if (! defined($text_str) || length($text_str) < 2) {
     	return $lines;
 	}
@@ -74,7 +90,7 @@ sub break_text_fullscreen
             # End of the message.
             last LINE;
         }
-        my $msgend2 = $i + ((20 > $len) ? $len : 20);
+        my $msgend2 = $i + (($max_linelen > $len) ? $len : $max_linelen);
         my $msgend = $msgend2;
         if ($msgend < $len && ! pgm_is_whitespace($msg[$msgend]) && ! pgm_is_interpunction($msg[$msgend])) {
             # Splitting a word. Find the start of the current word.
@@ -97,24 +113,58 @@ sub break_text_fullscreen
 }
 
 my %texts;
+my %attributes;
 my $num_languages = 0;
+if (1)
+{
+	# First load the common strings.
+	my $symbols = parselang("language_common.h");
+ 	foreach my $key (keys %{$symbols}) {
+ 		if (! (exists $texts{$key})) {
+	 		my $symbol_value = ${$symbols}{$key};
+	 		# Store the symbol value for each language.
+	 		$texts{$key} = [ (${$symbol_value}{value}) x ($#langs+1) ];
+	 		# Store the possible attributes.
+			delete ${$symbol_value}{value};
+			# Store an "is common" attribute.
+			${$symbol_value}{common} = 1;
+			# 4x 80 characters, 4 lines sent over serial line.
+			${$symbol_value}{length} = 320;
+			${$symbol_value}{lines} = 1;
+ 			$attributes{$key} = $symbol_value;
+ 		} else {
+ 			print "Duplicate key in language_common.h: $key\n";
+ 		}
+ 	}
+}
 foreach my $lang (@langs) {
 	my $symbols = parselang("language_$lang.h");
  	foreach my $key (keys %{$symbols}) {
  		if (! (exists $texts{$key})) {
 	 		$texts{$key} = [];
  		}
+ 		my $symbol_value = ${$symbols}{$key};
  		my $strings = $texts{$key};
- 		die "Symbol $key defined first in $lang, undefined in the preceding language files."
- 			if (scalar(@$strings) != $num_languages);
- 		push @$strings, ${$symbols}{$key};
+ 		if (defined $attributes{$key} && defined ${$attributes{$key}}{common} && ${$attributes{$key}}{common} == 1) {
+ 			# Common overrides the possible definintions in the language specific files.
+ 		} else {
+	 		die "Symbol $key defined first in $lang, undefined in the preceding language files."
+	 			if (scalar(@$strings) != $num_languages);
+	 		push @$strings, ${$symbol_value}{value};
+	 		if ($lang eq 'en') {
+	 			# The english texts may contain attributes. Store them into %attributes.
+	 			delete ${$symbol_value}{value};
+	 			$attributes{$key} = $symbol_value;
+	 		}
+	 	}
  	}
  	$num_languages += 1;
  	foreach my $key (keys %texts) {
  		my $strings = $texts{$key};
- 		if (scalar(@$strings) != $num_languages) {
+ 		if (scalar(@$strings) < $num_languages) {
  			# die "Symbol $key undefined in $lang."
- 			print "Symbol $key undefined in language \"$lang\". Using the english variant.\n";
+ 			print "Symbol $key undefined in language \"$lang\". Using the english variant:\n";
+ 			print "\t", ${$strings}[0], "\n";
  			push @$strings, ${$strings}[0];
  		}
  	}
@@ -193,7 +243,7 @@ open($fh, '>', $filename) or die "Could not open file '$filename' $!";
 
 print $fh <<'END'
 #include <avr/pgmspace.h>
-#include "configuration_prusa.h"
+#include "Configuration_prusa.h"
 #include "language_all.h"
 
 #define LCD_WIDTH 20
@@ -259,21 +309,40 @@ END
 
 print ".cpp created.\nDone!\n";
 
+my $verify_only = 1;
+
 for my $lang (0 .. $#langs) {
 	print "Language: $langs[$lang]\n";
 	foreach my $key (@keys) {
 		my $strings = $texts{$key};
+		my %attrib = %{$attributes{$key}};
 		my $message = ${$strings}[$lang];
+		$message =~ /\S*"(.*)"\S*/;
+		$message = $1;
 		if ($lang == 0 || ${$strings}[0] ne $message) {
 			# If the language is not English, don't show the non-translated message.
-			my $lines = break_text_fullscreen($message);
-			my $nlines = @{$lines};
-			if ($nlines > 1) {
-				print "Multi-line message: $message. Breaking to $nlines lines:\n";
-				print "\t$_\n" foreach (@{$lines});
+			my $max_nlines = $attrib{lines} // 1;
+			my $max_linelen = $attrib{length} // (($max_nlines > 1) ? 20 : 17);
+#			if (! $verify_only) {
+#				if ($nlines > 1) {
+#					print "Multi-line message: $message. Breaking to $nlines lines:\n";
+#					print "\t$_\n" foreach (@{$lines});
+#				}
+#			}
+			if ($max_nlines <= 1) {
+				my $linelen = length($message);
+				if ($linelen > $max_linelen) {
+					print "Key $key, language $langs[$lang], line length: $linelen, max length: $max_linelen\n";
+					print "\t$message\n";
+				}
+			} else {
+				my $lines = break_text_fullscreen($message, $max_linelen);
+				my $nlines = @{$lines};
+				if ($nlines > $max_nlines) {
+					print "Key $key, language $langs[$lang], lines: $nlines, max lines: $max_nlines\n";
+					print "\t$_\n" foreach (@{$lines});
+				}
 			}
 		}
 	}
 }
-
-sub break_text_fullscreen

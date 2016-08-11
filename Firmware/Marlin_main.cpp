@@ -1017,6 +1017,9 @@ void setup()
 	  farm_no = 0;
   }
 
+  // Enable Toshiba FlashAir SD card / WiFi enahanced card.
+  card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
+
   if (eeprom_read_dword((uint32_t*)(EEPROM_TOP-4)) == 0x0ffffffff && 
       eeprom_read_dword((uint32_t*)(EEPROM_TOP-8)) == 0x0ffffffff &&
       eeprom_read_dword((uint32_t*)(EEPROM_TOP-12)) == 0x0ffffffff) {
@@ -2903,8 +2906,11 @@ void process_commands()
         babystep_reset();
         // Mark all axes as in a need for homing.
         memset(axis_known_position, 0, sizeof(axis_known_position));
+        // Only Z calibration?
+        bool onlyZ = code_seen('Z');
+        
         // Let the user move the Z axes up to the end stoppers.
-        if (lcd_calibrate_z_end_stop_manual()) {
+        if (lcd_calibrate_z_end_stop_manual( onlyZ )) {
             refresh_cmd_timeout();
 
             // Move the print head close to the bed.
@@ -2924,7 +2930,7 @@ void process_commands()
                 verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
             }
             
-            if (code_seen('Z')) {
+            if (onlyZ) {
                 clean_up_after_endstop_move();
                 // Z only calibration.
                 // Load the machine correction matrix

@@ -716,6 +716,8 @@ static void lcd_implementation_status_screen()
 			lcd.print('%');
 		}
 	}
+    
+    // Farm number display
 	if (farm_mode)
 	{
 		lcd_printPGM(PSTR(" F"));
@@ -742,8 +744,10 @@ static void lcd_implementation_status_screen()
     //Print status line
     lcd.setCursor(0, 3);
 
+    // If heating in progress, set flag
 	if (heating_status != 0) { custom_message = true; }
 
+    // If printing from SD, show what we are printing
 	if ((IS_SD_PRINTING) && !custom_message)
 	{
 
@@ -788,10 +792,13 @@ static void lcd_implementation_status_screen()
 
 
     }
+    // If not, check for other special events
 	else
 	{
+        
 		if (custom_message)
 		{
+            // If heating flag, show progress of heating.
 			if (heating_status != 0)
 			{
 				heating_status_counter++;
@@ -836,8 +843,10 @@ static void lcd_implementation_status_screen()
 					break;
 				}
 			}
-
-			if (custom_message_type == 1)  //// Z calibration G80 mesh bed leveling
+            
+            // If mesh bed leveling in progress, show the status
+            
+			if (custom_message_type == 1)
 			{
 				if (custom_message_state > 10)
 				{
@@ -873,18 +882,20 @@ static void lcd_implementation_status_screen()
 				}
 
 			}
-
-			if (custom_message_type == 2)  //// load filament
+            // If loading filament, print status
+			if (custom_message_type == 2)
 			{
 				lcd.print(lcd_status_message);
 			}
 		}
 	else
 		{
+            // Nothing special, print status message normally
 			lcd.print(lcd_status_message);
 		}
 	}
-
+    
+    // Fill the rest of line to have nice and clean output
     for(int fillspace = 0; fillspace<20;fillspace++)
 	{
       if((lcd_status_message[fillspace] > 31 ))
