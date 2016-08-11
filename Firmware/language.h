@@ -1,32 +1,6 @@
 #ifndef LANGUAGE_H
 #define LANGUAGE_H
 
-#define LANGUAGE_CONCAT(M)       #M
-#define GENERATE_LANGUAGE_INCLUDE(M)  LANGUAGE_CONCAT(language_##M.h)
-
-
-// NOTE: IF YOU CHANGE LANGUAGE FILES OR MERGE A FILE WITH CHANGES
-//
-//   ==> ALWAYS TRY TO COMPILE MARLIN WITH/WITHOUT "ULTIPANEL" / "ULTRALCD" / "SDSUPPORT" #define IN "Configuration.h"
-//   ==> ALSO TRY ALL AVAILABLE LANGUAGE OPTIONS
-
-// Languages
-// en English
-// pl Polish
-// fr French
-// de German
-// es Spanish
-// ru Russian
-// it Italian
-// pt Portuguese
-// fi Finnish
-// an Aragonese
-// nl Dutch
-// ca Catalan
-// eu Basque-Euskera
-
-
-
 #define PROTOCOL_VERSION "1.0"
 
 #if MB(ULTIMAKER)|| MB(ULTIMAKER_OLD)|| MB(ULTIMAIN_2)
@@ -66,10 +40,6 @@
 #define STRINGIFY(n) STRINGIFY_(n)
 
 
-// Common LCD messages
-
-  /* nothing here yet */
-
 // Common serial messages
 #define MSG_MARLIN "Marlin"
 
@@ -77,9 +47,6 @@
 
 
 // LCD Menu Messages
-
-//#include LANGUAGE_INCLUDE
-
 #include "language_all.h"
 
 #endif //__LANGUAGE_H

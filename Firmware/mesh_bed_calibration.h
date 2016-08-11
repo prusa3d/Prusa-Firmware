@@ -159,6 +159,8 @@ enum BedSkewOffsetDetectionResultType {
 extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level);
 extern BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level, uint8_t &too_far_mask);
 
+extern bool sample_mesh_and_store_reference();
+
 extern void reset_bed_offset_and_skew();
 extern bool is_bed_z_jitter_data_valid();
 
@@ -166,5 +168,14 @@ extern bool is_bed_z_jitter_data_valid();
 // write the trigger coordinates to the serial line.
 // Useful for visualizing the behavior of the bed induction detector.
 extern bool scan_bed_induction_points(int8_t verbosity_level);
+
+// Apply Z babystep value from the EEPROM through the planner.
+extern void babystep_apply();
+
+// Undo the current Z babystep value.
+extern void babystep_undo();
+
+// Reset the current babystep counter without moving the axes.
+extern void babystep_reset();
 
 #endif /* MESH_BED_CALIBRATION_H */

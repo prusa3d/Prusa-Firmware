@@ -74,9 +74,8 @@ unsigned long max_acceleration_units_per_sq_second[NUM_AXIS]; // Use M201 to ove
 float minimumfeedrate;
 float acceleration;         // Normal acceleration mm/s^2  THIS IS THE DEFAULT ACCELERATION for all moves. M204 SXXXX
 float retract_acceleration; //  mm/s^2   filament pull-pack and push-forward  while standing still in the other axis M204 TXXXX
-float max_xy_jerk; //speed than can be stopped at once, if i understand correctly.
-float max_z_jerk;
-float max_e_jerk;
+// Jerk is a maximum immediate velocity change.
+float max_jerk[NUM_AXIS];
 float mintravelfeedrate;
 unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
@@ -93,6 +92,7 @@ matrix_3x3 plan_bed_level_matrix = {
 long position[NUM_AXIS];   //rescaled from extern when axis_steps_per_unit are changed by gcode
 static float previous_speed[NUM_AXIS]; // Speed of previous path line segment
 static float previous_nominal_speed; // Nominal speed of previous path line segment
+static float previous_safe_speed; // Exit speed limited by a jerk to full halt of a previous last segment.
 
 #ifdef AUTOTEMP
 float autotemp_max=250;
@@ -279,7 +279,7 @@ void planner_recalculate(const float &safe_final_speed)
                 tail = block_index;
                 // Update the number of blocks to process.
                 n_blocks = (block_buffer_head + BLOCK_BUFFER_SIZE - tail) & (BLOCK_BUFFER_SIZE - 1);
-                SERIAL_ECHOLNPGM("BLOCK_FLAG_START_FROM_FULL_HALT");
+                // SERIAL_ECHOLNPGM("START");
                 break;
             }
             // If entry speed is already at the maximum entry speed, no need to recheck. Block is cruising.
@@ -459,6 +459,54 @@ void check_axes_activity()
 #endif
 }
 
+bool waiting_inside_plan_buffer_line_print_aborted = false;
+/*
+void planner_abort_soft()
+{
+    // Empty the queue.
+    while (blocks_queued()) plan_discard_current_block();
+    // Relay to planner wait routine, that the current line shall be canceled.
+    waiting_inside_plan_buffer_line_print_aborted = true;
+    //current_position[i]
+}
+*/
+
+void planner_abort_hard()
+{
+    // Abort the stepper routine and flush the planner queue.
+    quickStop();
+
+    // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
+    // First update the planner's current position in the physical motor steps.
+    position[X_AXIS] = st_get_position(X_AXIS);
+    position[Y_AXIS] = st_get_position(Y_AXIS);
+    position[Z_AXIS] = st_get_position(Z_AXIS);
+    position[E_AXIS] = st_get_position(E_AXIS);
+
+    // Second update the current position of the front end.
+    current_position[X_AXIS] = st_get_position_mm(X_AXIS);
+    current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
+    current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
+    current_position[E_AXIS] = st_get_position_mm(E_AXIS);
+    // Apply the mesh bed leveling correction to the Z axis.
+#ifdef MESH_BED_LEVELING
+    if (mbl.active)
+        current_position[Z_AXIS] -= mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]);
+#endif
+    // Apply inverse world correction matrix.
+    machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
+    memcpy(destination, current_position, sizeof(destination));
+
+    // Resets planner junction speeds. Assumes start from rest.
+    previous_nominal_speed = 0.0;
+    previous_speed[0] = 0.0;
+    previous_speed[1] = 0.0;
+    previous_speed[2] = 0.0;
+    previous_speed[3] = 0.0;
+
+    // Relay to planner wait routine, that the current line shall be canceled.
+    waiting_inside_plan_buffer_line_print_aborted = true;
+}
 
 float junction_deviation = 0.1;
 // Add a new linear movement to the buffer. steps_x, _y and _z is the absolute position in 
@@ -471,12 +519,18 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 
   // If the buffer is full: good! That means we are well ahead of the robot. 
   // Rest here until there is room in the buffer.
-  while(block_buffer_tail == next_buffer_head)
-  {
-    manage_heater(); 
-    // Vojtech: Don't disable motors inside the planner!
-    manage_inactivity(false); 
-    lcd_update();
+  if (block_buffer_tail == next_buffer_head) {
+      waiting_inside_plan_buffer_line_print_aborted = false;
+      do {
+          manage_heater(); 
+          // Vojtech: Don't disable motors inside the planner!
+          manage_inactivity(false); 
+          lcd_update();
+      } while (block_buffer_tail == next_buffer_head);
+      if (waiting_inside_plan_buffer_line_print_aborted)
+          // Inside the lcd_update() routine the print has been aborted.
+          // Cancel the print, do not plan the current line this routine is waiting on.
+          return;
   }
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -878,44 +932,40 @@ Having the real displacement of the head, we can calculate the total movement le
   }
 #endif
   // Start with a safe speed.
-  //Vojtech: This code tries to limit the initial jerk to half of the maximum jerk value.
-  //The code is not quite correct. It is pessimistic as it shall limit a projection of the jerk into each axis,
-  //but when the current code clamps, it clamps as if the movement is done in a single axis only.
-  float vmax_junction = max_xy_jerk/2.f;
-  if(fabs(current_speed[Z_AXIS]) > max_z_jerk/2.f)
-    vmax_junction = min(vmax_junction, max_z_jerk/2.f);
-  if(fabs(current_speed[E_AXIS]) > max_e_jerk/2.f)
-    vmax_junction = min(vmax_junction, max_e_jerk/2.f);
-  vmax_junction = min(vmax_junction, block->nominal_speed);
   // Safe speed is the speed, from which the machine may halt to stop immediately.
-  float safe_speed = vmax_junction;
+  float safe_speed = block->nominal_speed;
+  bool  limited = false;
+  for (uint8_t axis = 0; axis < 4; ++ axis) {
+      float jerk = fabs(current_speed[axis]);
+      if (jerk > max_jerk[axis]) {
+          // The actual jerk is lower, if it has been limited by the XY jerk.
+          if (limited) {
+              // Spare one division by a following gymnastics:
+              // Instead of jerk *= safe_speed / block->nominal_speed,
+              // multiply max_jerk[axis] by the divisor.
+              jerk *= safe_speed;
+              float mjerk = max_jerk[axis] * block->nominal_speed;
+              if (jerk > mjerk) {
+                  safe_speed *= mjerk / jerk;
+                  limited = true;
+              }
+          } else {
+              safe_speed = max_jerk[axis];
+              limited = true;
+          }
+      }
+  }
+
+  // Reset the block flag.
+  block->flag = 0;
+
+  // Initial limit on the segment entry velocity.
+  float vmax_junction;
 
   //FIXME Vojtech: Why only if at least two lines are planned in the queue?
   // Is it because we don't want to tinker with the first buffer line, which
   // is likely to be executed by the stepper interrupt routine soon?
   if (moves_queued > 1 && previous_nominal_speed > 0.0001f) {
-#if 1
-      float jerk;
-      {
-          float dx = current_speed[X_AXIS]-previous_speed[X_AXIS];
-          float dy = current_speed[Y_AXIS]-previous_speed[Y_AXIS];
-          jerk = sqrt(dx*dx+dy*dy);
-      }
-      float vmax_junction_factor = 1.0; 
-      //    if((fabs(previous_speed[X_AXIS]) > 0.0001) || (fabs(previous_speed[Y_AXIS]) > 0.0001)) {
-      vmax_junction = block->nominal_speed;
-      //    }
-      if (jerk > max_xy_jerk)
-          vmax_junction_factor = max_xy_jerk/jerk;
-      jerk = fabs(current_speed[Z_AXIS] - previous_speed[Z_AXIS]);
-      if (jerk > max_z_jerk)
-          vmax_junction_factor = min(vmax_junction_factor, max_z_jerk/jerk);
-      jerk = fabs(current_speed[E_AXIS] - previous_speed[E_AXIS]);
-      if (jerk > max_e_jerk)
-          vmax_junction_factor = min(vmax_junction_factor, max_e_jerk/jerk);
-      //FIXME Vojtech: Why is this asymmetric in regard to the previous nominal speed and the current nominal speed?
-      vmax_junction = min(previous_nominal_speed, vmax_junction * vmax_junction_factor); // Limit speed to max previous speed
-#else
       // Estimate a maximum velocity allowed at a joint of two successive segments.
       // If this maximum velocity allowed is lower than the minimum of the entry / exit safe velocities,
       // then the machine is not coasting anymore and the safe entry / exit velocities shall be used.
@@ -926,72 +976,54 @@ Having the real displacement of the head, we can calculate the total movement le
       // Pick the smaller of the nominal speeds. Higher speed shall not be achieved at the junction during coasting.
       vmax_junction = prev_speed_larger ? block->nominal_speed : previous_nominal_speed;
       // Factor to multiply the previous / current nominal velocities to get componentwise limited velocities.
-      float v_factor_exit  = prev_speed_larger ? smaller_speed_factor : 1.f;
-      float v_factor_entry = prev_speed_larger ? 1.f : smaller_speed_factor;
-      // First limit the jerk in the XY plane.
-      float jerk;
-      {
-          // Estimate the jerk as if the entry / exit velocity of the two successive segment was limited to the minimum of their nominal velocities.
-          // If coasting, then the segment transition velocity will define the exit / entry velocities of the successive segments
-          // and the jerk defined by the following formula will be always lower.
-          float dx = prev_speed_larger ? (current_speed[X_AXIS] - smaller_speed_factor * previous_speed[X_AXIS]) : (smaller_speed_factor * current_speed[X_AXIS] - previous_speed[X_AXIS]);
-          float dy = prev_speed_larger ? (current_speed[Y_AXIS] - smaller_speed_factor * previous_speed[Y_AXIS]) : (smaller_speed_factor * current_speed[Y_AXIS] - previous_speed[Y_AXIS]);
-          jerk = sqrt(dx*dx+dy*dy);
-      }
-      if (jerk > max_xy_jerk) {
-          // Limit the entry / exit velocities to respect the XY jerk limits.
-          v_factor_exit = v_factor_entry = max_xy_jerk / jerk;
+      float v_factor = 1.f;
+      limited = false;
+      // Now limit the jerk in all axes.
+      for (uint8_t axis = 0; axis < 4; ++ axis) {
+          // Limit an axis. We have to differentiate coasting from the reversal of an axis movement, or a full stop.
+          float v_exit  = previous_speed[axis];
+          float v_entry = current_speed [axis];
           if (prev_speed_larger)
-              v_factor_exit *= smaller_speed_factor;
-          else
-              v_factor_entry *= smaller_speed_factor;
+              v_exit *= smaller_speed_factor;
+          if (limited) {
+              v_exit  *= v_factor;
+              v_entry *= v_factor;
+          }
+          // Calculate the jerk depending on whether the axis is coasting in the same direction or reversing a direction.
+          float jerk = 
+              (v_exit > v_entry) ?
+                  ((v_entry > 0.f || v_exit < 0.f) ?
+                      // coasting
+                      (v_exit - v_entry) : 
+                      // axis reversal
+                      max(v_exit, - v_entry)) :
+                  // v_exit <= v_entry
+                  ((v_entry < 0.f || v_exit > 0.f) ?
+                      // coasting
+                      (v_entry - v_exit) :
+                      // axis reversal
+                      max(- v_exit, v_entry));
+          if (jerk > max_jerk[axis]) {
+              v_factor *= max_jerk[axis] / jerk;
+              limited = true;
+          }
       }
-      // Now limit the Z and E axes. We have to differentiate coasting from the reversal of an axis movement, or a full stop.
-      float v_exit  = previous_speed[Z_AXIS] * v_factor_exit;
-      float v_entry = current_speed [Z_AXIS] * v_factor_entry;
-      jerk = (v_exit > v_entry) ?
-          ((v_entry > 0.f || v_exit < 0.f) ?
-              // coasting
-              (v_exit - v_entry) : 
-              // axis reversal
-              max(v_exit, - v_entry)) :
-          // v_exit <= v_entry
-          ((v_entry < 0.f || v_exit > 0.f) ?
-              // coasting
-              (v_entry - v_exit) :
-              // axis reversal
-              max(- v_exit, v_entry));
-      if (jerk > max_z_jerk / 2.f) {
-          float c = (max_z_jerk / 2.f) / jerk;
-          v_factor_exit *= c;
-          v_factor_entry *= c;
+      if (limited)
+          vmax_junction *= v_factor;
+      // Now the transition velocity is known, which maximizes the shared exit / entry velocity while
+      // respecting the jerk factors, it may be possible, that applying separate safe exit / entry velocities will achieve faster prints.
+      float vmax_junction_threshold = vmax_junction * 0.99f;
+      if (previous_safe_speed > vmax_junction_threshold && safe_speed > vmax_junction_threshold) {
+          // Not coasting. The machine will stop and start the movements anyway,
+          // better to start the segment from start.
+          block->flag |= BLOCK_FLAG_START_FROM_FULL_HALT;
+          vmax_junction = safe_speed;
       }
-      // Limit the E axis.
-      v_exit  = previous_speed[E_AXIS] * v_factor_exit;
-      v_entry = current_speed [E_AXIS] * v_factor_entry;
-      jerk = (v_exit > v_entry) ?
-          ((v_entry > 0.f || v_exit < 0.f) ?
-              // coasting
-              (v_exit - v_entry) : 
-              // axis reversal
-              max(v_exit, - v_entry)) :
-          // v_exit <= v_entry
-          ((v_entry < 0.f || v_exit > 0.f) ?
-              // coasting
-              (v_entry - v_exit) :
-              // axis reversal
-              max(- v_exit, v_entry));
-      if (jerk > max_e_jerk / 2.f) {
-          float c = (max_e_jerk / 2.f) / jerk;
-          v_factor_exit *= c;
-          v_factor_entry *= c;
-      }
-
-      // Now the transition velocity is known as nominal * v_factor. Compare the transition velocity against the "safe" velocoties.
-      // If the transition velocity is below the exit / enter safe velocity, the machine is no more cruising, therefore
-      // the safe velocities shall be used.
-#endif
+  } else {
+      block->flag |= BLOCK_FLAG_START_FROM_FULL_HALT;
+      vmax_junction = safe_speed;
   }
+
   // Max entry speed of this block equals the max exit speed of the previous block.
   block->max_entry_speed = vmax_junction;
 
@@ -1008,12 +1040,12 @@ Having the real displacement of the head, we can calculate the total movement le
   // the reverse and forward planners, the corresponding block junction speed will always be at the
   // the maximum junction speed and may always be ignored for any speed reduction checks.
   // Always calculate trapezoid for new block
-  block->flag = (block->nominal_speed <= v_allowable) ? (BLOCK_FLAG_NOMINAL_LENGTH | BLOCK_FLAG_RECALCULATE) : BLOCK_FLAG_RECALCULATE;
+  block->flag |= (block->nominal_speed <= v_allowable) ? (BLOCK_FLAG_NOMINAL_LENGTH | BLOCK_FLAG_RECALCULATE) : BLOCK_FLAG_RECALCULATE;
 
   // Update previous path unit_vector and nominal speed
   memcpy(previous_speed, current_speed, sizeof(previous_speed)); // previous_speed[] = current_speed[]
   previous_nominal_speed = block->nominal_speed;
-
+  previous_safe_speed = safe_speed;
 
 #ifdef ADVANCE
   // Calculate advance rate
@@ -1055,6 +1087,10 @@ Having the real displacement of the head, we can calculate the total movement le
   // This runs asynchronously with the stepper interrupt controller, which may
   // interfere with the process.
   planner_recalculate(safe_speed);
+
+//  SERIAL_ECHOPGM("Q");
+//  SERIAL_ECHO(int(moves_planned()));
+//  SERIAL_ECHOLNPGM("");
 
   st_wake_up();
 }

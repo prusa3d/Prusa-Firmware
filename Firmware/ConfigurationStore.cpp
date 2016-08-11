@@ -169,9 +169,10 @@ void Config_PrintSettings()
     SERIAL_ECHOPAIR("  M205 S",minimumfeedrate ); 
     SERIAL_ECHOPAIR(" T" ,mintravelfeedrate ); 
     SERIAL_ECHOPAIR(" B" ,minsegmenttime ); 
-    SERIAL_ECHOPAIR(" X" ,max_xy_jerk ); 
-    SERIAL_ECHOPAIR(" Z" ,max_z_jerk);
-    SERIAL_ECHOPAIR(" E" ,max_e_jerk);
+    SERIAL_ECHOPAIR(" X" ,max_jerk[X_AXIS] ); 
+    SERIAL_ECHOPAIR(" Y" ,max_jerk[Y_AXIS] ); 
+    SERIAL_ECHOPAIR(" Z" ,max_jerk[Z_AXIS] ); 
+    SERIAL_ECHOPAIR(" E" ,max_jerk[E_AXIS] ); 
     SERIAL_ECHOLN(""); 
 
     SERIAL_ECHO_START;
@@ -356,20 +357,12 @@ void Config_ResetDefault()
     minimumfeedrate=DEFAULT_MINIMUMFEEDRATE;
     minsegmenttime=DEFAULT_MINSEGMENTTIME;       
     mintravelfeedrate=DEFAULT_MINTRAVELFEEDRATE;
-    max_xy_jerk=DEFAULT_XYJERK;
-    max_z_jerk=DEFAULT_ZJERK;
-    max_e_jerk=DEFAULT_EJERK;
+    max_jerk[X_AXIS] = DEFAULT_XJERK;
+    max_jerk[Y_AXIS] = DEFAULT_YJERK;
+    max_jerk[Z_AXIS] = DEFAULT_ZJERK;
+    max_jerk[E_AXIS] = DEFAULT_EJERK;
     add_homing[X_AXIS] = add_homing[Y_AXIS] = add_homing[Z_AXIS] = 0;
-#ifdef ULTIPANEL
-    plaPreheatHotendTemp = PLA_PREHEAT_HOTEND_TEMP;
-    plaPreheatHPBTemp = PLA_PREHEAT_HPB_TEMP;
-    plaPreheatFanSpeed = PLA_PREHEAT_FAN_SPEED;
-    absPreheatHotendTemp = ABS_PREHEAT_HOTEND_TEMP;
-    absPreheatHPBTemp = ABS_PREHEAT_HPB_TEMP;
-    absPreheatFanSpeed = ABS_PREHEAT_FAN_SPEED;
-    
 
-#endif
 #ifdef ENABLE_AUTO_BED_LEVELING
     zprobe_zoffset = -Z_PROBE_OFFSET_FROM_EXTRUDER;
 #endif

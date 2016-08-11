@@ -6,7 +6,7 @@
 
 #ifdef ULTRA_LCD
 
-  void lcd_update();
+  void lcd_update(uint8_t lcdDrawUpdateOverride = 0);
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
   void lcd_update_enable(bool enable);
   void lcd_init();
@@ -40,7 +40,7 @@
   static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
   static void lcd_menu_statistics();
 
-  extern void lcd_display_message_fullscreen_P(const char *msg);
+  extern const char* lcd_display_message_fullscreen_P(const char *msg);
   extern void lcd_wait_for_click();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
   // 0: no, 1: yes, -1: timeouted
@@ -48,7 +48,7 @@
 
   // Ask the user to move the Z axis up to the end stoppers and let
   // the user confirm that it has been done.
-  extern bool lcd_calibrate_z_end_stop_manual();
+  extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
   // Show the result of the calibration process on the LCD screen.
   extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
 
@@ -78,15 +78,15 @@
   #else
   FORCE_INLINE void lcd_buttons_update() {}
   #endif
+
+
+  // To be used in lcd_commands_type.
+  #define LCD_COMMAND_IDLE 0
+  #define LCD_COMMAND_LOAD_FILAMENT 1
+  #define LCD_COMMAND_STOP_PRINT 2
+  #define LCD_COMMAND_FARM_MODE_CONFIRM 4
+
   extern int lcd_commands_type;
-
-  extern int plaPreheatHotendTemp;
-  extern int plaPreheatHPBTemp;
-  extern int plaPreheatFanSpeed;
-
-  extern int absPreheatHotendTemp;
-  extern int absPreheatHPBTemp;
-  extern int absPreheatFanSpeed;
   
   extern bool farm_mode;
   extern int farm_no;

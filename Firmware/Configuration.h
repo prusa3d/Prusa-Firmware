@@ -5,13 +5,14 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.5"
+#define FW_version "3.0.6"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
 
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
+#define EEPROM_TOP 4096
 #define EEPROM_SILENT 4095
 #define EEPROM_LANG 4094
 #define EEPROM_BABYSTEP_X 4092
@@ -32,6 +33,16 @@
 #define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
 
 #define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-4)
+
+// Correction of the bed leveling, in micrometers.
+// Maximum 50 micrometers allowed.
+// Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
+#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_MODE-1)
+#define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
+#define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
+#define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
+#define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
+#define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
@@ -272,6 +283,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define Y_MAX_LENGTH (Y_MAX_POS - Y_MIN_POS) 
 #define Z_MAX_LENGTH (Z_MAX_POS - Z_MIN_POS)
 
+#define Z_HEIGHT_HIDE_LIVE_ADJUST_MENU 2.0f
+
 //============================= Bed Auto Leveling ===========================
 
 //#define ENABLE_AUTO_BED_LEVELING // Delete the comment to enable (remove // at the start of the line)
@@ -405,9 +418,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // #define EXTRUDER_OFFSET_Y {0.0, 5.00}  // (in mm) for each extruder, offset of the hotend on the Y axis
 
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
-#define DEFAULT_XYJERK                20.0    // (mm/sec)
-#define DEFAULT_ZJERK                 0.4     // (mm/sec)
-#define DEFAULT_EJERK                 5.0    // (mm/sec)
+#define DEFAULT_XJERK                10.0    // (mm/sec)
+#define DEFAULT_YJERK                10.0    // (mm/sec)
+#define DEFAULT_ZJERK                 0.2    // (mm/sec)
+#define DEFAULT_EJERK                 2.5    // (mm/sec)
 
 //===========================================================================
 //=============================Additional Features===========================

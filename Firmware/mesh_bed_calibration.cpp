@@ -749,7 +749,7 @@ error:
 #define FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS (8.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS (6.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP  (1.f)
-#define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.5f)
+#define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.2f)
 inline bool find_bed_induction_sensor_point_xy()
 {
     float feedrate = homing_feedrate[X_AXIS] / 60.f;
@@ -1039,6 +1039,7 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
     float center_old_x = current_position[X_AXIS];
     float center_old_y = current_position[Y_AXIS];
     float a, b;
+    bool  point_small = false;
 
     enable_endstops(false);
 
@@ -1078,8 +1079,14 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
                 SERIAL_ECHOLNPGM("");
             }
             // We force the calibration routine to move the Z axis slightly down to make the response more pronounced.
-            current_position[X_AXIS] = center_old_x;
-            goto canceled;            
+            if (b - a < 0.5f * MIN_BED_SENSOR_POINT_RESPONSE_DMR) {
+                // Don't use the new X value.
+                current_position[X_AXIS] = center_old_x;
+                goto canceled;
+            } else {
+                // Use the new value, but force the Z axis to go a bit lower.
+                point_small = true;
+            }
         }
         if (verbosity_level >= 5) {
             debug_output_point(PSTR("left" ), a, current_position[Y_AXIS], current_position[Z_AXIS]);
@@ -1142,8 +1149,14 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
                 SERIAL_ECHO(b - a);
                 SERIAL_ECHOLNPGM("");
             }
-            current_position[Y_AXIS] = center_old_y;
-            goto canceled;
+            if (b - a < 0.5f * MIN_BED_SENSOR_POINT_RESPONSE_DMR) {
+                // Don't use the new Y value.
+                current_position[Y_AXIS] = center_old_y;
+                goto canceled;
+            } else {
+                // Use the new value, but force the Z axis to go a bit lower.
+                point_small = true;
+            }
         }
         if (verbosity_level >= 5) {
             debug_output_point(PSTR("top" ), current_position[X_AXIS], a, current_position[Z_AXIS]);
@@ -1156,7 +1169,11 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
         go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
     }
 
-    return true;
+    // If point is small but not too small, then force the Z axis to be lowered a bit,
+    // but use the new value. This is important when the initial position was off in one axis,
+    // for example if the initial calibration was shifted in the Y axis systematically.
+    // Then this first step will center.
+    return ! point_small;
 
 canceled:
     // Go back to the center.
@@ -1893,6 +1910,42 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
 
     // Sample Z heights for the mesh bed leveling.
     // In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
+    if (! sample_mesh_and_store_reference())
+        goto canceled;
+
+    enable_endstops(endstops_enabled);
+    enable_z_endstop(endstop_z_enabled);
+    // Don't let the manage_inactivity() function remove power from the motors.
+    refresh_cmd_timeout();
+    return result;
+
+canceled:
+    // Don't let the manage_inactivity() function remove power from the motors.
+    refresh_cmd_timeout();
+    // Print head up.
+    current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+    go_to_current(homing_feedrate[Z_AXIS]/60);
+    // Store the identity matrix to EEPROM.
+    reset_bed_offset_and_skew();
+    enable_endstops(endstops_enabled);
+    enable_z_endstop(endstop_z_enabled);
+    return result;
+}
+
+// Sample the 9 points of the bed and store them into the EEPROM as a reference.
+// When calling this function, the X, Y, Z axes should be already homed,
+// and the world2machine correction matrix should be active.
+// Returns false if the reference values are more than 3mm far away.
+bool sample_mesh_and_store_reference()
+{
+    bool endstops_enabled  = enable_endstops(false);
+    bool endstop_z_enabled = enable_z_endstop(false);
+
+    // Don't let the manage_inactivity() function remove power from the motors.
+    refresh_cmd_timeout();
+
+    // Sample Z heights for the mesh bed leveling.
+    // In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
     {
         // The first point defines the reference.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -1935,7 +1988,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
             // The span of the Z offsets is extreme. Give up.
             // Homing failed on some of the points.
             SERIAL_PROTOCOLLNPGM("Exreme span of the Z values!");
-            goto canceled;
+            return false;
         }
     }
 
@@ -1986,21 +2039,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
 
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
-    // Don't let the manage_inactivity() function remove power from the motors.
-    refresh_cmd_timeout();
-    return result;
-
-canceled:
-    // Don't let the manage_inactivity() function remove power from the motors.
-    refresh_cmd_timeout();
-    // Print head up.
-    current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-    go_to_current(homing_feedrate[Z_AXIS]/60);
-    // Store the identity matrix to EEPROM.
-    reset_bed_offset_and_skew();
-    enable_endstops(endstops_enabled);
-    enable_z_endstop(endstop_z_enabled);
-    return result;
+    return true;
 }
 
 bool scan_bed_induction_points(int8_t verbosity_level)
@@ -2063,4 +2102,57 @@ bool scan_bed_induction_points(int8_t verbosity_level)
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
     return true;
+}
+
+// Shift a Z axis by a given delta.
+// To replace loading of the babystep correction.
+static void shift_z(float delta)
+{
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - delta, current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
+    st_synchronize();
+    plan_set_z_position(current_position[Z_AXIS]);
+}
+
+#define BABYSTEP_LOADZ_BY_PLANNER
+
+// Number of baby steps applied
+static int babystepLoadZ = 0;
+
+void babystep_apply()
+{
+    // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
+    if(eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x01)
+    {
+        // End of G80: Apply the baby stepping value.
+        EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
+    #if 0
+        SERIAL_ECHO("Z baby step: ");
+        SERIAL_ECHO(babystepLoadZ);
+        SERIAL_ECHO(", current Z: ");
+        SERIAL_ECHO(current_position[Z_AXIS]);
+        SERIAL_ECHO("correction: ");
+        SERIAL_ECHO(float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+        SERIAL_ECHOLN("");
+    #endif
+    #ifdef BABYSTEP_LOADZ_BY_PLANNER
+        shift_z(- float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+    #else
+        babystepsTodoZadd(babystepLoadZ);
+    #endif /* BABYSTEP_LOADZ_BY_PLANNER */
+    }
+}
+
+void babystep_undo()
+{
+#ifdef BABYSTEP_LOADZ_BY_PLANNER
+      shift_z(float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+#else
+      babystepsTodoZsubtract(babystepLoadZ);
+#endif /* BABYSTEP_LOADZ_BY_PLANNER */
+      babystepLoadZ = 0;
+}
+
+void babystep_reset()
+{
+      babystepLoadZ = 0;    
 }

@@ -655,13 +655,18 @@ static void lcd_implementation_status_screen()
     lcd.print('/');
     lcd.print(itostr3left(tTarget));
     lcd_printPGM(PSTR(LCD_STR_DEGREE " "));
-    lcd.print("  ");
+    lcd_printPGM(PSTR("  "));
 
     //Print the Z coordinates
     lcd.setCursor(LCD_WIDTH - 8-2, 0);
-    lcd.print("  Z");
-    lcd.print(ftostr32sp(current_position[Z_AXIS] + 0.00001));
-    lcd.print(' ');
+    lcd_printPGM(PSTR("  Z"));
+    if (custom_message_type == 1) {
+        // In a bed calibration mode.
+        lcd_printPGM(PSTR("   --- "));
+    } else {
+        lcd.print(ftostr32sp(current_position[Z_AXIS] + 0.00001));
+        lcd.print(' ');
+    }
 
     //Print the Bedtemperature
     lcd.setCursor(0, 1);
@@ -672,15 +677,15 @@ static void lcd_implementation_status_screen()
     lcd.print('/');
     lcd.print(itostr3left(tTarget));
     lcd_printPGM(PSTR(LCD_STR_DEGREE " "));
-    lcd.print("  ");
+    lcd_printPGM(PSTR("  "));
 
     //Print Feedrate
     lcd.setCursor(LCD_WIDTH - 8-2, 1);
-    lcd.print("  ");
+    lcd_printPGM(PSTR("  "));
     lcd.print(LCD_STR_FEEDRATE[0]);
     lcd.print(itostr3(feedmultiply));
     lcd.print('%');
-    lcd.print("     ");
+    lcd_printPGM(PSTR("     "));
 
 
 	
@@ -711,16 +716,18 @@ static void lcd_implementation_status_screen()
 			lcd.print('%');
 		}
 	}
+    
+    // Farm number display
 	if (farm_mode)
 	{
-		lcd.print(" F");
+		lcd_printPGM(PSTR(" F"));
 		lcd.print(farm_no);
-		lcd.print("  ");
+		lcd_printPGM(PSTR("  "));
 	}
 
     //Print time elapsed
     lcd.setCursor(LCD_WIDTH - 8 -2, 2);
-    lcd.print("  ");
+    lcd_printPGM(PSTR("  "));
     lcd.print(LCD_STR_CLOCK[0]);
     if(starttime != 0)
     {
@@ -731,21 +738,23 @@ static void lcd_implementation_status_screen()
     }else{
         lcd_printPGM(PSTR("--:--"));
     }
-    lcd.print("  ");
+    lcd_printPGM(PSTR("  "));
 
 
     //Print status line
     lcd.setCursor(0, 3);
 
+    // If heating in progress, set flag
 	if (heating_status != 0) { custom_message = true; }
 
+    // If printing from SD, show what we are printing
 	if ((IS_SD_PRINTING) && !custom_message)
 	{
 
       if(strcmp(longFilenameOLD, card.longFilename) != 0)
 	  {
         memset(longFilenameOLD,'\0',strlen(longFilenameOLD));
-        sprintf(longFilenameOLD, "%s", card.longFilename);
+        sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
         scrollstuff = 0;
       }
 
@@ -783,10 +792,13 @@ static void lcd_implementation_status_screen()
 
 
     }
+    // If not, check for other special events
 	else
 	{
+        
 		if (custom_message)
 		{
+            // If heating flag, show progress of heating.
 			if (heating_status != 0)
 			{
 				heating_status_counter++;
@@ -800,7 +812,7 @@ static void lcd_implementation_status_screen()
 				for (int dots = 0; dots < heating_status_counter; dots++)
 				{
 					lcd.setCursor(7 + dots, 3);
-					lcd_printPGM(PSTR("."));
+					lcd.print('.');
 				}
 
 				switch (heating_status)
@@ -831,16 +843,18 @@ static void lcd_implementation_status_screen()
 					break;
 				}
 			}
-
-			if (custom_message_type == 1)  //// Z calibration G80 mesh bed leveling
+            
+            // If mesh bed leveling in progress, show the status
+            
+			if (custom_message_type == 1)
 			{
 				if (custom_message_state > 10)
 				{
 					lcd.setCursor(0, 3);
-					lcd.print("                    ");
+					lcd_printPGM(PSTR("                    "));
 					lcd.setCursor(0, 3);
 					lcd_printPGM(MSG_HOMEYZ_PROGRESS);
-					lcd.print(" : ");
+					lcd_printPGM(PSTR(" : "));
 					lcd.print(custom_message_state-10);
 				}
 				else
@@ -855,7 +869,7 @@ static void lcd_implementation_status_screen()
 					if (custom_message_state > 3 && custom_message_state < 10 )
 					{
 						lcd.setCursor(0, 3);
-						lcd.print("                   ");
+						lcd_printPGM(PSTR("                   "));
 						lcd.setCursor(0, 3);
 						lcd_printPGM(MSG_HOMEYZ_DONE);
 						custom_message_state--;
@@ -868,18 +882,20 @@ static void lcd_implementation_status_screen()
 				}
 
 			}
-
-			if (custom_message_type == 2)  //// load filament
+            // If loading filament, print status
+			if (custom_message_type == 2)
 			{
 				lcd.print(lcd_status_message);
 			}
 		}
 	else
 		{
+            // Nothing special, print status message normally
 			lcd.print(lcd_status_message);
 		}
 	}
-
+    
+    // Fill the rest of line to have nice and clean output
     for(int fillspace = 0; fillspace<20;fillspace++)
 	{
       if((lcd_status_message[fillspace] > 31 ))
