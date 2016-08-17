@@ -194,7 +194,7 @@
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED		"Calibrazione XYZ fallita. Si prega di consultare il manuale."
 #define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT			"Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari."
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD			"Calibrazione XYZ compiuta. Gli assi X/Y sono leggermente distorti."
-#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		"XYZ fortemente distorto. La distorsione verra' corretta automaticamente."
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		"X/Y fortemente distorto. La distorsione verra' corretta automaticamente."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR	"Calibrazione XYZ fallita. Punto anteriore sinistro non raggiungibile."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR	"Calibrazione XYZ fallita. Punto anteriore destro non raggiungibile."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR	"Calibrazione XYZ fallita. Punti anteriori non raggiungibili."
