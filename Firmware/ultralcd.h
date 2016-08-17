@@ -28,7 +28,7 @@
   void lcd_sdcard_stop();
   void prusa_statistics(int _message);
   void lcd_confirm_print();
-  
+void lcd_mylang();
   bool lcd_detected(void);
 
   static void lcd_selftest();

@@ -347,7 +347,7 @@ static void lcd_status_screen()
 	if (langsel) {
       //strncpy_P(lcd_status_message, PSTR(">>>>>>>>>>>> PRESS v"), LCD_WIDTH);
       // Entering the language selection screen in a modal mode.
-      lcd_mylang();
+      
     }
   }
 
@@ -2266,7 +2266,7 @@ void lcd_mylang() {
 
   enc_dif = encoderDiff;
 
-  while ( (lang_selected == 255) && (MYSERIAL.available() < 2) ) {
+  while ( (lang_selected == 255)  ) {
 
     manage_heater();
     manage_inactivity(true);
