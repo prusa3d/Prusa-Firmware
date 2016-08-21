@@ -228,6 +228,8 @@
 CardReader card;
 #endif
 
+unsigned long TimeSent = millis();
+unsigned long TimeNow = millis();
 
 union Data
 {
@@ -1122,6 +1124,9 @@ void get_command()
 
   while (MYSERIAL.available() > 0) {
     char serial_char = MYSERIAL.read();
+      TimeSent = millis();
+      TimeNow = millis();
+
     if (serial_char < 0)
         // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
         // and Marlin does not support such file names anyway.
@@ -1247,6 +1252,23 @@ void get_command()
     }
   } // end of serial line processing loop
 
+    if(farm_mode){
+        TimeNow = millis();
+        if ( ((TimeNow - TimeSent) > 800) && (serial_count > 0) ) {
+            cmdbuffer[bufindw+serial_count+1] = 0;
+            
+            bufindw += strlen(cmdbuffer+bufindw+1) + 2;
+            if (bufindw == sizeof(cmdbuffer))
+                bufindw = 0;
+            ++ buflen;
+            
+            serial_count = 0;
+            
+            SERIAL_ECHOPGM("TIMEOUT:");
+            //memset(cmdbuffer, 0 , sizeof(cmdbuffer));
+            return;
+        }
+    }
 
   #ifdef SDSUPPORT
   if(!card.sdprinting || serial_count!=0){
@@ -4342,6 +4364,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     {
 		st_synchronize();
 
+        if (farm_mode)
+            
+        {
+            
+            prusa_statistics(22);
+            
+        }
+        
         feedmultiplyBckp=feedmultiply;
         int8_t TooLowZ = 0;
         float target[4];
@@ -4922,8 +4952,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
    const int KILL_DELAY = 10000;
 #endif
 	
-  if(buflen < (BUFSIZE-1))
-    get_command();
+    if(buflen < (BUFSIZE-1)){
+        get_command();
+    }
 
   if( (millis() - previous_millis_cmd) >  max_inactive_time )
     if(max_inactive_time)

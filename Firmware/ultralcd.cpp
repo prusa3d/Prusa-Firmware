@@ -1811,9 +1811,16 @@ void prusa_statistics(int _message) {
 		prusa_stat_temperatures();
 		SERIAL_ECHOLN("}");
 		break;
-	case 99:		// heartbeat
-		SERIAL_ECHOLN("{[PRN:99]}");
-		break;
+    case 22: // waiting for filament change
+        SERIAL_ECHOLN("{[PRN:5]}");
+        break;
+            
+    case 99:		// heartbeat
+        SERIAL_ECHO("{[PRN:99]");
+        prusa_stat_temperatures();
+        SERIAL_ECHOLN("}");
+            
+        break;
 	}
 
 }
