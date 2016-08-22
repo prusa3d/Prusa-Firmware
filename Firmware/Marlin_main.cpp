@@ -1389,13 +1389,13 @@ inline void set_current_to_destination() { memcpy(current_position, destination,
 inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
 
 
-static void setup_for_endstop_move() {
+static void setup_for_endstop_move(bool enable_endstops_now = true) {
     saved_feedrate = feedrate;
     saved_feedmultiply = feedmultiply;
     feedmultiply = 100;
     previous_millis_cmd = millis();
     
-    enable_endstops(true);
+    enable_endstops(enable_endstops_now);
 }
 
 static void clean_up_after_endstop_move() {
@@ -2408,7 +2408,7 @@ void process_commands()
             int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS]/60;
             int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS]/40;
             bool has_z = is_bed_z_jitter_data_valid();
-            setup_for_endstop_move();
+            setup_for_endstop_move(false);
             const char *kill_message = NULL;
             while (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
                 // Get coords of a measuring point.
@@ -2428,16 +2428,15 @@ void process_commands()
                     #endif
                 }
             
-                // Move Z to proper distance
+                // Move Z up to MESH_HOME_Z_SEARCH.
                 current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
                 st_synchronize();
 
+                // Move to XY position of the sensor point.
                 current_position[X_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point);
                 current_position[Y_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point+1);
                 world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-//                mbl.get_meas_xy(ix, iy, current_position[X_AXIS], current_position[Y_AXIS], false);
-                enable_endstops(false);
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
                 st_synchronize();
                 
@@ -2464,8 +2463,8 @@ void process_commands()
             }
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+            st_synchronize();
             if (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
-                st_synchronize();
                 kill(kill_message);
             }
             clean_up_after_endstop_move();
@@ -2525,12 +2524,7 @@ void process_commands()
 
             mbl.upsample_3x3();
             mbl.active = 1;
-            current_position[X_AXIS] = X_MIN_POS+0.2;
-            current_position[Y_AXIS] = Y_MIN_POS+0.2;
-            current_position[Z_AXIS] = Z_MIN_POS;
-            world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-            plan_buffer_line(current_position[X_AXIS], current_position[X_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
-            st_synchronize();
+            go_home_with_z_lift();
 
             // Restore custom message state
             custom_message       = custom_message_old;

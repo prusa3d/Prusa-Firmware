@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "util.h"
+#include "mesh_bed_leveling.h"
 //#include "Configuration.h"
 
 
@@ -2665,8 +2666,14 @@ void lcd_sdcard_stop()
 		if ((int32_t)encoderPosition == 2)
 		{
 				cancel_heatup = true;
+        #ifdef MESH_BED_LEVELING
+        mbl.active = false;
+        #endif
         // Stop the stoppers, update the position from the stoppers.
         planner_abort_hard();
+        // Because the planner_abort_hard() initialized current_position[Z] from the stepper,
+        // Z baystep is no more applied. Reset it.
+        babystep_reset();
         // Clean the input command queue.
         cmdqueue_reset();
 				lcd_setstatuspgm(MSG_PRINT_ABORTED);
