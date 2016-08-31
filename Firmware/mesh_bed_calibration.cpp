@@ -1932,6 +1932,25 @@ canceled:
     return result;
 }
 
+void go_home_with_z_lift()
+{
+    // Don't let the manage_inactivity() function remove power from the motors.
+    refresh_cmd_timeout();
+    // Go home.
+    // First move up to a safe height.
+    current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+    go_to_current(homing_feedrate[Z_AXIS]/60);
+    // Second move to XY [0, 0].
+    current_position[X_AXIS] = X_MIN_POS+0.2;
+    current_position[Y_AXIS] = Y_MIN_POS+0.2;
+    // Clamp to the physical coordinates.
+    world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+    go_to_current(homing_feedrate[X_AXIS]/60);
+    // Third move up to a safe height.
+    current_position[Z_AXIS] = Z_MIN_POS;
+    go_to_current(homing_feedrate[Z_AXIS]/60);    
+}
+
 // Sample the 9 points of the bed and store them into the EEPROM as a reference.
 // When calling this function, the X, Y, Z axes should be already homed,
 // and the world2machine correction matrix should be active.
@@ -2025,17 +2044,7 @@ bool sample_mesh_and_store_reference()
     mbl.upsample_3x3();
     mbl.active = true;
 
-    // Don't let the manage_inactivity() function remove power from the motors.
-    refresh_cmd_timeout();
-
-    // Go home.
-    current_position[Z_AXIS] = Z_MIN_POS;
-    go_to_current(homing_feedrate[Z_AXIS]/60);
-    current_position[X_AXIS] = X_MIN_POS+0.2;
-    current_position[Y_AXIS] = Y_MIN_POS+0.2;
-    // Clamp to the physical coordinates.
-    world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-    go_to_current(homing_feedrate[X_AXIS]/60);
+    go_home_with_z_lift();
 
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);

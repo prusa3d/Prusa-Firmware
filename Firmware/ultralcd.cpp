@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "util.h"
+#include "mesh_bed_leveling.h"
 //#include "Configuration.h"
 
 
@@ -347,7 +348,7 @@ static void lcd_status_screen()
 	if (langsel) {
       //strncpy_P(lcd_status_message, PSTR(">>>>>>>>>>>> PRESS v"), LCD_WIDTH);
       // Entering the language selection screen in a modal mode.
-      lcd_mylang();
+      
     }
   }
 
@@ -1811,9 +1812,16 @@ void prusa_statistics(int _message) {
 		prusa_stat_temperatures();
 		SERIAL_ECHOLN("}");
 		break;
-	case 99:		// heartbeat
-		SERIAL_ECHOLN("{[PRN:99]}");
-		break;
+    case 22: // waiting for filament change
+        SERIAL_ECHOLN("{[PRN:5]}");
+        break;
+            
+    case 99:		// heartbeat
+        SERIAL_ECHO("{[PRN:99]");
+        prusa_stat_temperatures();
+        SERIAL_ECHOLN("}");
+            
+        break;
 	}
 
 }
@@ -2266,7 +2274,7 @@ void lcd_mylang() {
 
   enc_dif = encoderDiff;
 
-  while ( (lang_selected == 255) && (MYSERIAL.available() < 2) ) {
+  while ( (lang_selected == 255)  ) {
 
     manage_heater();
     manage_inactivity(true);
@@ -2658,8 +2666,14 @@ void lcd_sdcard_stop()
 		if ((int32_t)encoderPosition == 2)
 		{
 				cancel_heatup = true;
+        #ifdef MESH_BED_LEVELING
+        mbl.active = false;
+        #endif
         // Stop the stoppers, update the position from the stoppers.
         planner_abort_hard();
+        // Because the planner_abort_hard() initialized current_position[Z] from the stepper,
+        // Z baystep is no more applied. Reset it.
+        babystep_reset();
         // Clean the input command queue.
         cmdqueue_reset();
 				lcd_setstatuspgm(MSG_PRINT_ABORTED);
