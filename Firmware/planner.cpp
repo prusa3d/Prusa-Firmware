@@ -110,6 +110,11 @@ block_t block_buffer[BLOCK_BUFFER_SIZE];            // A ring buffer for motion 
 volatile unsigned char block_buffer_head;           // Index of the next block to be pushed
 volatile unsigned char block_buffer_tail;           // Index of the block to process now
 
+#ifdef PLANNER_DIAGNOSTICS
+// Diagnostic function: Minimum number of planned moves since the last 
+static uint8_t g_cntr_planner_queue_min = 0;
+#endif /* PLANNER_DIAGNOSTICS */
+
 //===========================================================================
 //=============================private variables ============================
 //===========================================================================
@@ -171,59 +176,92 @@ FORCE_INLINE float intersection_distance(float initial_rate, float final_rate, f
   }
 }
 
-// Calculates trapezoid parameters so that the entry- and exit-speed is compensated by the provided factors.
+#define MINIMAL_STEP_RATE 120
 
-void calculate_trapezoid_for_block(block_t *block, float entry_factor, float exit_factor) {
-  unsigned long initial_rate = ceil(block->nominal_rate*entry_factor); // (step/min)
-  unsigned long final_rate = ceil(block->nominal_rate*exit_factor); // (step/min)
+// Calculates trapezoid parameters so that the entry- and exit-speed is compensated by the provided factors.
+void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit_speed) 
+{
+  // These two lines are the only floating point calculations performed in this routine.
+  uint32_t initial_rate = ceil(entry_speed * block->speed_factor); // (step/min)
+  uint32_t final_rate   = ceil(exit_speed  * block->speed_factor); // (step/min)
 
   // Limit minimal step rate (Otherwise the timer will overflow.)
-  if(initial_rate <120) {
-    initial_rate=120; 
-  }
-  if(final_rate < 120) {
-    final_rate=120;  
-  }
+  if (initial_rate < MINIMAL_STEP_RATE)
+      initial_rate = MINIMAL_STEP_RATE;
+  if (initial_rate > block->nominal_rate)
+      initial_rate = block->nominal_rate;
+  if (final_rate < MINIMAL_STEP_RATE)
+      final_rate = MINIMAL_STEP_RATE;
+  if (final_rate > block->nominal_rate)
+      final_rate = block->nominal_rate;
 
-  long acceleration = block->acceleration_st;
-  int32_t accelerate_steps =
-    ceil(estimate_acceleration_distance(initial_rate, block->nominal_rate, acceleration));
-  int32_t decelerate_steps =
-    floor(estimate_acceleration_distance(block->nominal_rate, final_rate, -acceleration));
-
-  // Calculate the size of Plateau of Nominal Rate.
-  int32_t plateau_steps = block->step_event_count-accelerate_steps-decelerate_steps;
+  uint32_t acceleration      = block->acceleration_st;
+  if (acceleration == 0)
+      // Don't allow zero acceleration.
+      acceleration = 1;
+  // estimate_acceleration_distance(float initial_rate, float target_rate, float acceleration)
+  // (target_rate*target_rate-initial_rate*initial_rate)/(2.0*acceleration));
+  uint32_t initial_rate_sqr  = initial_rate*initial_rate;
+  //FIXME assert that this result fits a 64bit unsigned int.
+  uint32_t nominal_rate_sqr  = block->nominal_rate*block->nominal_rate;
+  uint32_t final_rate_sqr    = final_rate*final_rate;
+  uint32_t acceleration_x2   = acceleration << 1;
+  // ceil(estimate_acceleration_distance(initial_rate, block->nominal_rate, acceleration));
+  uint32_t accelerate_steps  = (nominal_rate_sqr - initial_rate_sqr + acceleration_x2 - 1) / acceleration_x2;
+  // floor(estimate_acceleration_distance(block->nominal_rate, final_rate, -acceleration));
+  uint32_t decelerate_steps  = (nominal_rate_sqr - final_rate_sqr) / acceleration_x2;
+  uint32_t accel_decel_steps = accelerate_steps + decelerate_steps;
+  // Size of Plateau of Nominal Rate.
+  uint32_t plateau_steps     = 0;
 
   // Is the Plateau of Nominal Rate smaller than nothing? That means no cruising, and we will
   // have to use intersection_distance() to calculate when to abort acceleration and start braking
   // in order to reach the final_rate exactly at the end of this block.
-  if (plateau_steps < 0) {
-    accelerate_steps = ceil(intersection_distance(initial_rate, final_rate, acceleration, block->step_event_count));
-    accelerate_steps = max(accelerate_steps,0); // Check limits due to numerical round-off
-    accelerate_steps = min((uint32_t)accelerate_steps,block->step_event_count);//(We can cast here to unsigned, because the above line ensures that we are above zero)
-    plateau_steps = 0;
+  if (accel_decel_steps < block->step_event_count) {
+    plateau_steps = block->step_event_count - accel_decel_steps;
+  } else {
+    uint32_t acceleration_x4  = acceleration << 2;
+    // Avoid negative numbers
+    if (final_rate_sqr >= initial_rate_sqr) {
+        // accelerate_steps = ceil(intersection_distance(initial_rate, final_rate, acceleration, block->step_event_count));
+        // intersection_distance(float initial_rate, float final_rate, float acceleration, float distance) 
+        // (2.0*acceleration*distance-initial_rate*initial_rate+final_rate*final_rate)/(4.0*acceleration);
+#if 0
+        accelerate_steps = (block->step_event_count >> 1) + (final_rate_sqr - initial_rate_sqr + acceleration_x4 - 1 + (block->step_event_count & 1) * acceleration_x2) / acceleration_x4;
+#else
+        accelerate_steps = final_rate_sqr - initial_rate_sqr + acceleration_x4 - 1;
+        if (block->step_event_count & 1)
+            accelerate_steps += acceleration_x2;
+        accelerate_steps /= acceleration_x4;
+        accelerate_steps += (block->step_event_count >> 1);
+#endif
+        if (accelerate_steps > block->step_event_count)
+            accelerate_steps = block->step_event_count;
+    } else {
+#if 0
+        decelerate_steps = (block->step_event_count >> 1) + (initial_rate_sqr - final_rate_sqr + (block->step_event_count & 1) * acceleration_x2) / acceleration_x4;
+#else
+        decelerate_steps = initial_rate_sqr - final_rate_sqr;
+        if (block->step_event_count & 1)
+            decelerate_steps += acceleration_x2;
+        decelerate_steps /= acceleration_x4;
+        decelerate_steps += (block->step_event_count >> 1);
+#endif
+        if (decelerate_steps > block->step_event_count)
+            decelerate_steps = block->step_event_count;
+        accelerate_steps = block->step_event_count - decelerate_steps;
+    }
   }
 
-#ifdef ADVANCE
-  volatile long initial_advance = block->advance*entry_factor*entry_factor; 
-  volatile long final_advance = block->advance*exit_factor*exit_factor;
-#endif // ADVANCE
-
-  // block->accelerate_until = accelerate_steps;
-  // block->decelerate_after = accelerate_steps+plateau_steps;
   CRITICAL_SECTION_START;  // Fill variables used by the stepper in a critical section
   if (! block->busy) { // Don't update variables if block is busy.
     block->accelerate_until = accelerate_steps;
     block->decelerate_after = accelerate_steps+plateau_steps;
     block->initial_rate = initial_rate;
     block->final_rate = final_rate;
-#ifdef ADVANCE
-    block->initial_advance = initial_advance;
-    block->final_advance = final_advance;
-#endif //ADVANCE
   }
   CRITICAL_SECTION_END;
-}                    
+}
 
 // Calculates the maximum allowable entry speed, when you must be able to reach target_velocity using the 
 // decceleration within the allotted distance.
@@ -249,6 +287,27 @@ FORCE_INLINE float max_allowable_entry_speed(float decceleration, float target_v
 // the set limit. Finally it will:
 //
 //   3. Recalculate trapezoids for all blocks.
+//
+//FIXME This routine is called 15x every time a new line is added to the planner,
+// therefore it is a bottle neck and it shall be rewritten into a Fixed Point arithmetics,
+// if the CPU is found lacking computational power.
+//
+// Following sources may be used to optimize the 8-bit AVR code:
+// http://www.mikrocontroller.net/articles/AVR_Arithmetik
+// http://darcy.rsgc.on.ca/ACES/ICE4M/FixedPoint/avrfix.pdf
+// 
+// https://github.com/gcc-mirror/gcc/blob/master/libgcc/config/avr/lib1funcs-fixed.S
+// https://gcc.gnu.org/onlinedocs/gcc/Fixed-Point.html
+// https://gcc.gnu.org/onlinedocs/gccint/Fixed-point-fractional-library-routines.html
+// 
+// https://ucexperiment.wordpress.com/2015/04/04/arduino-s15-16-fixed-point-math-routines/
+// https://mekonik.wordpress.com/2009/03/18/arduino-avr-gcc-multiplication/
+// https://github.com/rekka/avrmultiplication
+// 
+// https://people.ece.cornell.edu/land/courses/ece4760/Math/Floating_point/
+// https://courses.cit.cornell.edu/ee476/Math/
+// https://courses.cit.cornell.edu/ee476/Math/GCC644/fixedPt/multASM.S
+//
 void planner_recalculate(const float &safe_final_speed) 
 {
     // Reverse pass
@@ -291,8 +350,12 @@ void planner_recalculate(const float &safe_final_speed)
                 // segment and the maximum acceleration allowed for this segment.
                 // If nominal length true, max junction speed is guaranteed to be reached even if decelerating to a jerk-from-zero velocity.
                 // Only compute for max allowable speed if block is decelerating and nominal length is false.
+                // entry_speed is uint16_t, 24 bits would be sufficient for block->acceleration and block->millimiteres, if scaled to um.
+                // therefore an optimized assembly 24bit x 24bit -> 32bit multiply would be more than sufficient
+                // together with an assembly 32bit->16bit sqrt function.
                 current->entry_speed = ((current->flag & BLOCK_FLAG_NOMINAL_LENGTH) || current->max_entry_speed <= next->entry_speed) ?
                     current->max_entry_speed :
+                    // min(current->max_entry_speed, sqrt(next->entry_speed*next->entry_speed+2*current->acceleration*current->millimeters));
                     min(current->max_entry_speed, max_allowable_entry_speed(-current->acceleration,next->entry_speed,current->millimeters));
                 current->flag |= BLOCK_FLAG_RECALCULATE;
             }
@@ -325,7 +388,7 @@ void planner_recalculate(const float &safe_final_speed)
             // Recalculate if current block entry or exit junction speed has changed.
             if ((prev->flag | current->flag) & BLOCK_FLAG_RECALCULATE) {
                 // NOTE: Entry and exit factors always > 0 by all previous logic operations.
-                calculate_trapezoid_for_block(prev, prev->entry_speed/prev->nominal_speed, current->entry_speed/prev->nominal_speed);
+                calculate_trapezoid_for_block(prev, prev->entry_speed, current->entry_speed);
                 // Reset current only to ensure next trapezoid is computed.
                 prev->flag &= ~BLOCK_FLAG_RECALCULATE;
             }
@@ -338,7 +401,7 @@ void planner_recalculate(const float &safe_final_speed)
 
     // Last/newest block in buffer. Exit speed is set with safe_final_speed. Always recalculated.
     current = block_buffer + prev_block_index(block_buffer_head);
-    calculate_trapezoid_for_block(current, current->entry_speed/current->nominal_speed, safe_final_speed/current->nominal_speed);
+    calculate_trapezoid_for_block(current, current->entry_speed, safe_final_speed);
     current->flag &= ~BLOCK_FLAG_RECALCULATE;
 
 //    SERIAL_ECHOLNPGM("planner_recalculate - 4");
@@ -471,6 +534,15 @@ void planner_abort_soft()
 }
 */
 
+#ifdef PLANNER_DIAGNOSTICS
+static inline void planner_update_queue_min_counter()
+{
+  uint8_t new_counter = moves_planned();
+  if (new_counter < g_cntr_planner_queue_min)
+    g_cntr_planner_queue_min = new_counter;
+}
+#endif /* PLANNER_DIAGNOSTICS */
+
 void planner_abort_hard()
 {
     // Abort the stepper routine and flush the planner queue.
@@ -527,11 +599,18 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
           manage_inactivity(false); 
           lcd_update();
       } while (block_buffer_tail == next_buffer_head);
-      if (waiting_inside_plan_buffer_line_print_aborted)
+      if (waiting_inside_plan_buffer_line_print_aborted) {
           // Inside the lcd_update() routine the print has been aborted.
           // Cancel the print, do not plan the current line this routine is waiting on.
+#ifdef PLANNER_DIAGNOSTICS
+          planner_update_queue_min_counter();
+#endif /* PLANNER_DIAGNOSTICS */
           return;
+      }
   }
+#ifdef PLANNER_DIAGNOSTICS
+  planner_update_queue_min_counter();
+#endif /* PLANNER_DIAGNOSTICS */
 
 #ifdef ENABLE_AUTO_BED_LEVELING
   apply_rotation_xyz(plan_bed_level_matrix, x, y, z);
@@ -637,14 +716,20 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
 #endif
   block->steps_z = labs(target[Z_AXIS]-position[Z_AXIS]);
   block->steps_e = labs(target[E_AXIS]-position[E_AXIS]);
-  block->steps_e *= volumetric_multiplier[active_extruder];
-  block->steps_e *= extrudemultiply;
-  block->steps_e /= 100;
+  if (volumetric_multiplier[active_extruder] != 1.f)
+    block->steps_e *= volumetric_multiplier[active_extruder];
+  if (extrudemultiply != 100) {
+    block->steps_e *= extrudemultiply;
+    block->steps_e /= 100;
+  }
   block->step_event_count = max(block->steps_x, max(block->steps_y, max(block->steps_z, block->steps_e)));
 
   // Bail if this is a zero-length block
   if (block->step_event_count <= dropsegments)
   { 
+#ifdef PLANNER_DIAGNOSTICS
+    planner_update_queue_min_counter();
+#endif /* PLANNER_DIAGNOSTICS */
     return; 
   }
 
@@ -869,6 +954,8 @@ Having the real displacement of the head, we can calculate the total movement le
   }
 
   // Compute and limit the acceleration rate for the trapezoid generator.  
+  // block->step_event_count ... event count of the fastest axis
+  // block->millimeters ... Euclidian length of the XYZ movement or the E length, if no XYZ movement.
   float steps_per_mm = block->step_event_count/block->millimeters;
   if(block->steps_x == 0 && block->steps_y == 0 && block->steps_z == 0)
   {
@@ -888,49 +975,27 @@ Having the real displacement of the head, we can calculate the total movement le
     if(((float)block->acceleration_st * (float)block->steps_z / (float)block->step_event_count ) > axis_steps_per_sqr_second[Z_AXIS])
       block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
   }
+  // Acceleration of the segment, in mm/sec^2
   block->acceleration = block->acceleration_st / steps_per_mm;
+
+#if 1
+  // Oversample diagonal movements by a power of 2 up to 8x
+  // to achieve more accurate diagonal movements.
+  uint8_t bresenham_oversample = 1;
+  for (uint8_t i = 0; i < 3; ++ i) {
+    if (block->nominal_rate >= 5000) // 5kHz
+      break;
+    block->nominal_rate << 1;
+    bresenham_oversample << 1;
+    block->step_event_count << 1;
+  }
+  if (bresenham_oversample > 1)
+    // Lower the acceleration steps/sec^2 to account for the oversampling.
+    block->acceleration_st = (block->acceleration_st + (bresenham_oversample >> 1)) / bresenham_oversample;
+#endif
+
   block->acceleration_rate = (long)((float)block->acceleration_st * (16777216.0 / (F_CPU / 8.0)));
 
-#if 0  // Use old jerk for now
-  // Compute path unit vector
-  double unit_vec[3];
-
-  unit_vec[X_AXIS] = delta_mm[X_AXIS]*inverse_millimeters;
-  unit_vec[Y_AXIS] = delta_mm[Y_AXIS]*inverse_millimeters;
-  unit_vec[Z_AXIS] = delta_mm[Z_AXIS]*inverse_millimeters;
-
-  // Compute maximum allowable entry speed at junction by centripetal acceleration approximation.
-  // Let a circle be tangent to both previous and current path line segments, where the junction
-  // deviation is defined as the distance from the junction to the closest edge of the circle,
-  // colinear with the circle center. The circular segment joining the two paths represents the
-  // path of centripetal acceleration. Solve for max velocity based on max acceleration about the
-  // radius of the circle, defined indirectly by junction deviation. This may be also viewed as
-  // path width or max_jerk in the previous grbl version. This approach does not actually deviate
-  // from path, but used as a robust way to compute cornering speeds, as it takes into account the
-  // nonlinearities of both the junction angle and junction velocity.
-  double vmax_junction = MINIMUM_PLANNER_SPEED; // Set default max junction speed
-
-  // Skip first block or when previous_nominal_speed is used as a flag for homing and offset cycles.
-  if ((block_buffer_head != block_buffer_tail) && (previous_nominal_speed > 0.0)) {
-    // Compute cosine of angle between previous and current path. (prev_unit_vec is negative)
-    // NOTE: Max junction velocity is computed without sin() or acos() by trig half angle identity.
-    double cos_theta = - previous_unit_vec[X_AXIS] * unit_vec[X_AXIS]
-      - previous_unit_vec[Y_AXIS] * unit_vec[Y_AXIS]
-      - previous_unit_vec[Z_AXIS] * unit_vec[Z_AXIS] ;
-
-    // Skip and use default max junction speed for 0 degree acute junction.
-    if (cos_theta < 0.95) {
-      vmax_junction = min(previous_nominal_speed,block->nominal_speed);
-      // Skip and avoid divide by zero for straight junctions at 180 degrees. Limit to min() of nominal speeds.
-      if (cos_theta > -0.95) {
-        // Compute maximum junction velocity based on maximum acceleration and junction deviation
-        double sin_theta_d2 = sqrt(0.5*(1.0-cos_theta)); // Trig half angle identity. Always positive.
-        vmax_junction = min(vmax_junction,
-        sqrt(block->acceleration * junction_deviation * sin_theta_d2/(1.0-sin_theta_d2)) );
-      }
-    }
-  }
-#endif
   // Start with a safe speed.
   // Safe speed is the speed, from which the machine may halt to stop immediately.
   float safe_speed = block->nominal_speed;
@@ -1047,34 +1112,9 @@ Having the real displacement of the head, we can calculate the total movement le
   previous_nominal_speed = block->nominal_speed;
   previous_safe_speed = safe_speed;
 
-#ifdef ADVANCE
-  // Calculate advance rate
-  if((block->steps_e == 0) || (block->steps_x == 0 && block->steps_y == 0 && block->steps_z == 0)) {
-    block->advance_rate = 0;
-    block->advance = 0;
-  }
-  else {
-    long acc_dist = estimate_acceleration_distance(0, block->nominal_rate, block->acceleration_st);
-    float advance = (STEPS_PER_CUBIC_MM_E * EXTRUDER_ADVANCE_K) * 
-      (current_speed[E_AXIS] * current_speed[E_AXIS] * EXTRUSION_AREA * EXTRUSION_AREA)*256;
-    block->advance = advance;
-    if(acc_dist == 0) {
-      block->advance_rate = 0;
-    } 
-    else {
-      block->advance_rate = advance / (float)acc_dist;
-    }
-  }
-  /*
-    SERIAL_ECHO_START;
-   SERIAL_ECHOPGM("advance :");
-   SERIAL_ECHO(block->advance/256.0);
-   SERIAL_ECHOPGM("advance rate :");
-   SERIAL_ECHOLN(block->advance_rate/256.0);
-   */
-#endif // ADVANCE
-
-  calculate_trapezoid_for_block(block, block->entry_speed/block->nominal_speed, safe_speed/block->nominal_speed);
+  // Precalculate the division, so when all the trapezoids in the planner queue get recalculated, the division is not repeated.
+  block->speed_factor = block->nominal_rate / block->nominal_speed;
+  calculate_trapezoid_for_block(block, block->entry_speed, safe_speed);
 
   // Move the buffer head. From now the block may be picked up by the stepper interrupt controller.
   block_buffer_head = next_buffer_head;
@@ -1092,6 +1132,9 @@ Having the real displacement of the head, we can calculate the total movement le
 //  SERIAL_ECHO(int(moves_planned()));
 //  SERIAL_ECHOLNPGM("");
 
+#ifdef PLANNER_DIAGNOSTICS
+  planner_update_queue_min_counter();
+#endif /* PLANNER_DIAGNOSTIC */
   st_wake_up();
 }
 
@@ -1172,3 +1215,15 @@ void reset_acceleration_rates()
         axis_steps_per_sqr_second[i] = max_acceleration_units_per_sq_second[i] * axis_steps_per_unit[i];
         }
 }
+
+#ifdef PLANNER_DIAGNOSTICS
+uint8_t planner_queue_min()
+{
+  return g_cntr_planner_queue_min;
+}
+
+void planner_queue_min_reset()
+{
+  g_cntr_planner_queue_min = moves_planned();
+}
+#endif /* PLANNER_DIAGNOSTICS */

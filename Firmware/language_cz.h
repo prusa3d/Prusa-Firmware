@@ -194,18 +194,18 @@
 #define MSG_CALIBRATE_BED					"Kalibrace XYZ"
 #define MSG_CALIBRATE_BED_RESET				"Reset XYZ kalibr."
 
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP		"Kalibrace XYZ. Posunte prosim Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z		"Kalibrace Z. Posunte prosim Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP		"Kalibrace XYZ. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z		"Kalibrace Z. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
 
 #define MSG_CONFIRM_NOZZLE_CLEAN			"Pro uspesnou kalibraci ocistete prosim tiskovou trysku. Potvrdte tlacitkem."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Dojely oba Z voziky k~hornimu dorazu?"
 
-#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Hledam kalibracni"
-#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	"bod podlozky"
-#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE3	" z 4"
-#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Zlepsuji presnost"
-#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	"kalibracniho bodu"
-#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3	" z 9"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Hledam kalibracni bod podlozky"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	" z 4"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Zlepsuji presnost kalibracniho bodu"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" z 9"
+#define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Merim referencni vysku kalibracniho bodu"
+#define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" z 9"
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"Kalibrace XYZ selhala. Kalibracni bod podlozky nenalezen."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED			"Kalibrace XYZ selhala. Nahlednete do manualu."
@@ -225,7 +225,7 @@
 
 #define MSG_NEW_FIRMWARE_AVAILABLE								"Vysla nova verze firmware:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Prosim aktualizujte."
-#define MSG_BABYSTEP_Z_NOT_SET                          		"Tiskarna nebyla jeste zkalibrovana. Spustte kalibracni G-kod a doladte Z."
+#define MSG_BABYSTEP_Z_NOT_SET                          		"Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace."
 
 #define MSG_BED_CORRECTION_MENU									"Korekce podlozky"
 #define MSG_BED_CORRECTION_LEFT									"Vlevo  [um]"

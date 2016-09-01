@@ -1021,6 +1021,9 @@ void setup()
 
   // Enable Toshiba FlashAir SD card / WiFi enahanced card.
   card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
+  // Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
+  // but this times out if a blocking dialog is shown in setup().
+  card.initsd();
 
   if (eeprom_read_dword((uint32_t*)(EEPROM_TOP-4)) == 0x0ffffffff && 
       eeprom_read_dword((uint32_t*)(EEPROM_TOP-8)) == 0x0ffffffff &&
@@ -1038,22 +1041,15 @@ void setup()
   // is being written into the EEPROM, so the update procedure will be triggered only once.
     lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
     if (lang_selected >= LANG_NUM){
-    lcd_mylang();
+      lcd_mylang();
     }
     
   if (eeprom_read_byte((uint8_t*)EEPROM_BABYSTEP_Z_SET) == 0x0ff) {
       // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
-      // eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_X, 0x0ff);
-      // eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_Y, 0x0ff);
-      eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_Z, 0x0ff);
-      // Get the selected laugnage index before display update.
-      lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
-      if (lang_selected >= LANG_NUM)
-          lang_selected = LANG_ID_DEFAULT; // Czech language
+      eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
       lcd_update_enable(true);
-      lcd_implementation_clear();
   }
 
   // Store the currently running firmware into an eeprom,
@@ -2961,6 +2957,9 @@ void process_commands()
                 bool result = sample_mesh_and_store_reference();
                 // if (result) babystep_apply();
             } else {
+                // Reset the baby step value and the baby step applied flag.
+                eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0xFF);
+                eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
                 // Complete XYZ calibration.
                 BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level);
                 uint8_t point_too_far_mask = 0;
@@ -2991,9 +2990,6 @@ void process_commands()
             // Timeouted.
         }
         lcd_update_enable(true);
-        lcd_implementation_clear();
-        // lcd_return_to_status();
-        lcd_update();
         break;
     }
 
@@ -3057,9 +3053,6 @@ void process_commands()
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
         st_synchronize();
         lcd_update_enable(true);
-        lcd_implementation_clear();
-        // lcd_return_to_status();
-        lcd_update();
         break;
     }
 #endif
@@ -4824,11 +4817,7 @@ void prepare_move()
 
   // Do not use feedmultiply for E or Z only moves
   if( (current_position[X_AXIS] == destination [X_AXIS]) && (current_position[Y_AXIS] == destination [Y_AXIS])) {
-#ifdef MESH_BED_LEVELING
-      mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-#else
       plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-#endif
   }
   else {
 #ifdef MESH_BED_LEVELING

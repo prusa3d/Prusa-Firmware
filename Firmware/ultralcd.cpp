@@ -327,7 +327,6 @@ void set_language_from_EEPROM() {
   }
 }
 
-void lcd_mylang();
 static void lcd_status_screen()
 {
 	
@@ -1441,17 +1440,16 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
     // Until confirmed by the confirmation dialog.
     for (;;) {
         unsigned long previous_millis_cmd = millis();
-        if (only_z) {
-            lcd_display_message_fullscreen_P(MSG_MOVE_CARRIAGE_TO_THE_TOP_Z);
-        }else{
-            lcd_display_message_fullscreen_P(MSG_MOVE_CARRIAGE_TO_THE_TOP);
-        }
+        const char   *msg                 = only_z ? MSG_MOVE_CARRIAGE_TO_THE_TOP_Z : MSG_MOVE_CARRIAGE_TO_THE_TOP;
+        const char   *msg_next            = lcd_display_message_fullscreen_P(msg);
+        const bool    multi_screen        = msg_next != NULL;
+        unsigned long previous_millis_msg = millis();
         // Until the user finishes the z up movement.
         encoderDiff = 0;
         encoderPosition = 0;
         for (;;) {
-            if (millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
-                goto canceled;
+//          if (millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
+//             goto canceled;
             manage_heater();
             manage_inactivity(true);
             if (abs(encoderDiff) >= ENCODER_PULSES_PER_STEP) {
@@ -1474,6 +1472,12 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
                 while (lcd_clicked()) ;
                 break;
             }
+            if (multi_screen && millis() - previous_millis_msg > 5000) {
+                if (msg_next == NULL)
+                    msg_next = msg;
+                msg_next = lcd_display_message_fullscreen_P(msg_next);
+                previous_millis_msg = millis();
+            }
         }
 
         if (! clean_nozzle_asked) {
@@ -1482,7 +1486,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
         }
 
         // Let the user confirm, that the Z carriage is at the top end stoppers.
-        int8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_CONFIRM_CARRIAGE_AT_THE_TOP);
+        int8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_CONFIRM_CARRIAGE_AT_THE_TOP, false);
         if (result == -1)
             goto canceled;
         else if (result == 1)
@@ -1513,24 +1517,36 @@ static inline bool pgm_is_interpunction(const char *c_addr)
     return c == '.' || c == ',' || c == ':'|| c == ';' || c == '?' || c == '!' || c == '/';
 }
 
-const char* lcd_display_message_fullscreen_P(const char *msg)
+const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
 {
     // Disable update of the screen by the usual lcd_update() routine. 
     lcd_update_enable(false);
     lcd_implementation_clear();
     lcd.setCursor(0, 0);
     const char *msgend = msg;
-    for (int8_t row = 0; row < 4; ++ row) {
+    uint8_t row = 0;
+    bool multi_screen = false;
+    for (; row < 4; ++ row) {
         while (pgm_is_whitespace(msg))
             ++ msg;
         if (pgm_read_byte(msg) == 0)
             // End of the message.
             break;
         lcd.setCursor(0, row);
-        const char *msgend2 = msg + min(strlen_P(msg), 20);
+        uint8_t linelen = min(strlen_P(msg), 20);
+        const char *msgend2 = msg + linelen;
         msgend = msgend2;
+        if (row == 3 && linelen == 20) {
+            // Last line of the display, full line shall be displayed.
+            // Find out, whether this message will be split into multiple screens.
+            while (pgm_is_whitespace(msgend))
+                ++ msgend;
+            multi_screen = pgm_read_byte(msgend) != 0;
+            if (multi_screen)
+                msgend = (msgend2 -= 2);
+        }
         if (pgm_read_byte(msgend) != 0 && ! pgm_is_whitespace(msgend) && ! pgm_is_interpunction(msgend)) {
-              // Splitting a word. Find the start of the current word.
+            // Splitting a word. Find the start of the current word.
             while (msgend > msg && ! pgm_is_whitespace(msgend - 1))
                  -- msgend;
             if (msgend == msg)
@@ -1545,7 +1561,17 @@ const char* lcd_display_message_fullscreen_P(const char *msg)
         }
     }
 
-    return (pgm_read_byte(msgend) == 0) ? NULL : msgend;
+    if (multi_screen) {
+        // Display the "next screen" indicator character.
+        // lcd_set_custom_characters_arrows();
+        lcd_set_custom_characters_nextpage();
+        lcd.setCursor(19, 3);
+        // Display the down arrow.
+        lcd.print(char(1));
+    }
+
+    nlines = row;
+    return multi_screen ? msgend : NULL;
 }
 
 void lcd_show_fullscreen_message_and_wait_P(const char *msg)
@@ -2244,9 +2270,6 @@ void lcd_mylang_drawmenu(int cursor) {
   }  
 }
  
-void lcd_set_custom_characters_arrows();
-void lcd_set_custom_characters_degree();
-
 void lcd_mylang_drawcursor(int cursor) {
   
   if (cursor==1) lcd.setCursor(0, 1);
@@ -3290,18 +3313,42 @@ void lcd_init()
 //#include <avr/pgmspace.h>
 
 static volatile bool lcd_update_enabled = true;
+static unsigned long lcd_timeoutToStatus = 0;
 
 void lcd_update_enable(bool enabled)
 {
-    lcd_update_enabled = enabled;
+    if (lcd_update_enabled != enabled) {
+        lcd_update_enabled = enabled;
+        if (enabled) {
+            // Reset encoder position. This is equivalent to re-entering a menu.
+            encoderPosition = 0;
+            encoderDiff = 0;
+            // Enabling the normal LCD update procedure.
+            // Reset the timeout interval.
+            lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+            // Force the keypad update now.
+            lcd_next_update_millis = millis() - 1;
+            // Full update.
+            lcd_implementation_clear();
+      #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
+            lcd_set_custom_characters(currentMenu == lcd_status_screen);
+      #else
+            if (currentMenu == lcd_status_screen)
+                lcd_set_custom_characters_degree();
+            else
+                lcd_set_custom_characters_arrows();
+      #endif
+            lcd_update(2);
+        } else {
+            // Clear the LCD always, or let it to the caller?
+        }
+    }
 }
 
 void lcd_update(uint8_t lcdDrawUpdateOverride)
 {
   if (lcdDrawUpdate < lcdDrawUpdateOverride)
     lcdDrawUpdate = lcdDrawUpdateOverride;
-
-	static unsigned long timeoutToStatus = 0;
 
   if (! lcd_update_enabled)
       return;
@@ -3364,13 +3411,14 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 #endif
 	  if (abs(encoderDiff) >= ENCODER_PULSES_PER_STEP)
 	  {
-		  lcdDrawUpdate = 1;
+      if (lcdDrawUpdate == 0)
+		    lcdDrawUpdate = 1;
 		  encoderPosition += encoderDiff / ENCODER_PULSES_PER_STEP;
 		  encoderDiff = 0;
-		  timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 	  }
 	  if (LCD_CLICKED)
-		  timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 #endif//ULTIPANEL
 
 #ifdef DOGLCD        // Changes due to different driver architecture of the DOGM display
@@ -3395,7 +3443,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 #endif
 
 #ifdef ULTIPANEL
-	  if (timeoutToStatus < millis() && currentMenu != lcd_status_screen)
+	  if (lcd_timeoutToStatus < millis() && currentMenu != lcd_status_screen)
 	  {
       // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
       // to give it a chance to save its state.
