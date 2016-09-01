@@ -691,7 +691,7 @@ static void lcd_implementation_status_screen()
     lcd_printPGM(PSTR("  "));
     lcd.print(LCD_STR_FEEDRATE[0]);
     lcd.print(itostr3(feedmultiply));
-    lcd_printPGM(PSTR("%%     "));
+    lcd_printPGM(PSTR("%     "));
 #else
     //Print Feedrate
     lcd.setCursor(LCD_WIDTH - 8-2, 1);

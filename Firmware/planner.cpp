@@ -226,21 +226,27 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
         // accelerate_steps = ceil(intersection_distance(initial_rate, final_rate, acceleration, block->step_event_count));
         // intersection_distance(float initial_rate, float final_rate, float acceleration, float distance) 
         // (2.0*acceleration*distance-initial_rate*initial_rate+final_rate*final_rate)/(4.0*acceleration);
-//        accelerate_steps = (block->step_event_count >> 1) + (final_rate_sqr - initial_rate_sqr + acceleration_x4 - 1 + (block->step_event_count & 1) * acceleration_x2) / acceleration_x4;
+#if 0
+        accelerate_steps = (block->step_event_count >> 1) + (final_rate_sqr - initial_rate_sqr + acceleration_x4 - 1 + (block->step_event_count & 1) * acceleration_x2) / acceleration_x4;
+#else
         accelerate_steps = final_rate_sqr - initial_rate_sqr + acceleration_x4 - 1;
         if (block->step_event_count & 1)
             accelerate_steps += acceleration_x2;
-        accelerate_steps += block->step_event_count >> 1;
         accelerate_steps /= acceleration_x4;
+        accelerate_steps += (block->step_event_count >> 1);
+#endif
         if (accelerate_steps > block->step_event_count)
             accelerate_steps = block->step_event_count;
     } else {
-//        decelerate_steps = (block->step_event_count >> 1) + (initial_rate_sqr - final_rate_sqr + (block->step_event_count & 1) * acceleration_x2) / acceleration_x4;
+#if 0
+        decelerate_steps = (block->step_event_count >> 1) + (initial_rate_sqr - final_rate_sqr + (block->step_event_count & 1) * acceleration_x2) / acceleration_x4;
+#else
         decelerate_steps = initial_rate_sqr - final_rate_sqr;
         if (block->step_event_count & 1)
             decelerate_steps += acceleration_x2;
-        decelerate_steps += block->step_event_count >> 1;
         decelerate_steps /= acceleration_x4;
+        decelerate_steps += (block->step_event_count >> 1);
+#endif
         if (decelerate_steps > block->step_event_count)
             decelerate_steps = block->step_event_count;
         accelerate_steps = block->step_event_count - decelerate_steps;
