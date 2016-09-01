@@ -659,6 +659,7 @@ static void lcd_implementation_status_screen()
 
     //Print the Z coordinates
     lcd.setCursor(LCD_WIDTH - 8-2, 0);
+#if 1
     lcd_printPGM(PSTR("  Z"));
     if (custom_message_type == 1) {
         // In a bed calibration mode.
@@ -667,6 +668,11 @@ static void lcd_implementation_status_screen()
         lcd.print(ftostr32sp(current_position[Z_AXIS] + 0.00001));
         lcd.print(' ');
     }
+#else
+    lcd_printPGM(PSTR(" Queue:"));
+    lcd.print(int(moves_planned()));
+    lcd.print(' ');
+#endif
 
     //Print the Bedtemperature
     lcd.setCursor(0, 1);
@@ -679,15 +685,31 @@ static void lcd_implementation_status_screen()
     lcd_printPGM(PSTR(LCD_STR_DEGREE " "));
     lcd_printPGM(PSTR("  "));
 
+#if 1
     //Print Feedrate
     lcd.setCursor(LCD_WIDTH - 8-2, 1);
     lcd_printPGM(PSTR("  "));
     lcd.print(LCD_STR_FEEDRATE[0]);
     lcd.print(itostr3(feedmultiply));
-    lcd.print('%');
-    lcd_printPGM(PSTR("     "));
-
-
+    lcd_printPGM(PSTR("%%     "));
+#else
+    //Print Feedrate
+    lcd.setCursor(LCD_WIDTH - 8-2, 1);
+    lcd.print(LCD_STR_FEEDRATE[0]);
+    lcd.print(itostr3(feedmultiply));
+    lcd_printPGM(PSTR("%  Q"));
+    {
+      uint8_t queue = planner_queue_min();
+      if (queue < (BLOCK_BUFFER_SIZE >> 1)) {
+        lcd.print('!');
+      } else {
+        lcd.print((char)(queue / 10) + '0');
+        queue %= 10;
+      }
+      lcd.print((char)queue + '0');
+      planner_queue_min_reset();
+    }
+#endif
 	
     //Print SD status
     lcd.setCursor(0, 2);

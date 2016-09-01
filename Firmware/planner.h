@@ -55,12 +55,6 @@ typedef struct {
   // accelerate_until and decelerate_after are set by calculate_trapezoid_for_block() and they need to be synchronized with the stepper interrupt controller.
   long accelerate_until;                    // The index of the step event on which to stop acceleration
   long decelerate_after;                    // The index of the step event on which to start decelerating
-  #ifdef ADVANCE
-    long advance_rate;
-    volatile long initial_advance;
-    volatile long final_advance;
-    float advance;
-  #endif
 
   // Fields used by the motion planner to manage acceleration
 //  float speed_x, speed_y, speed_z, speed_e;        // Nominal mm/sec for each axis
@@ -82,12 +76,18 @@ typedef struct {
 
   // Settings for the trapezoid generator (runs inside an interrupt handler).
   // Changing the following values in the planner needs to be synchronized with the interrupt handler by disabling the interrupts.
+  //FIXME nominal_rate, initial_rate and final_rate are limited to uint16_t by MultiU24X24toH16 in the stepper interrupt anyway!
   unsigned long nominal_rate;                        // The nominal step rate for this block in step_events/sec 
   unsigned long initial_rate;                        // The jerk-adjusted step rate at start of block  
   unsigned long final_rate;                          // The minimal rate at exit
   unsigned long acceleration_st;                     // acceleration steps/sec^2
+  //FIXME does it have to be unsigned long? Probably uint8_t would be just fine.
   unsigned long fan_speed;
   volatile char busy;
+
+
+  // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
+  float speed_factor;
 } block_t;
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -196,3 +196,11 @@ void set_extrude_min_temp(float temp);
 
 void reset_acceleration_rates();
 #endif
+
+// #define PLANNER_DIAGNOSTICS
+#ifdef PLANNER_DIAGNOSTICS
+// Diagnostic functions to display planner buffer underflow on the display.
+extern uint8_t planner_queue_min();
+// Diagnostic function: Reset the minimum planner segments.
+extern void planner_queue_min_reset();
+#endif /* PLANNER_DIAGNOSTICS */

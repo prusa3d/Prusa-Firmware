@@ -47,22 +47,17 @@ block_t *current_block;  // A pointer to the block currently being traced
 
 // Variables used by The Stepper Driver Interrupt
 static unsigned char out_bits;        // The next stepping-bits to be output
-static long counter_x,       // Counter variables for the bresenham line tracer
-            counter_y,
-            counter_z,
-            counter_e;
-volatile static unsigned long step_events_completed; // The number of step events executed in the current block
-#ifdef ADVANCE
-  static long advance_rate, advance, final_advance = 0;
-  static long old_advance = 0;
-  static long e_steps[3];
-#endif
-static long acceleration_time, deceleration_time;
+static int32_t counter_x,       // Counter variables for the bresenham line tracer
+               counter_y,
+               counter_z,
+               counter_e;
+volatile static uint32_t step_events_completed; // The number of step events executed in the current block
+static int32_t  acceleration_time, deceleration_time;
 //static unsigned long accelerate_until, decelerate_after, acceleration_rate, initial_rate, final_rate, nominal_rate;
-static unsigned short acc_step_rate; // needed for deccelaration start point
-static char step_loops;
-static unsigned short OCR1A_nominal;
-static unsigned short step_loops_nominal;
+static uint16_t acc_step_rate; // needed for deccelaration start point
+static uint8_t  step_loops;
+static uint16_t OCR1A_nominal;
+static uint8_t  step_loops_nominal;
 
 volatile long endstops_trigsteps[3]={0,0,0};
 volatile long endstops_stepsTotal,endstops_stepsDone;
@@ -306,13 +301,6 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
 // Initializes the trapezoid generator from the current block. Called whenever a new
 // block begins.
 FORCE_INLINE void trapezoid_generator_reset() {
-  #ifdef ADVANCE
-    advance = current_block->initial_advance;
-    final_advance = current_block->final_advance;
-    // Do E steps + advance steps
-    e_steps[current_block->active_extruder] += ((advance >>8) - old_advance);
-    old_advance = advance >>8;
-  #endif
   deceleration_time = 0;
   // step_rate to timer interval
   OCR1A_nominal = calc_timer(current_block->nominal_rate);
@@ -359,10 +347,6 @@ ISR(TIMER1_COMPA_vect)
           return;
         }
       #endif
-
-//      #ifdef ADVANCE
-//      e_steps[current_block->active_extruder] = 0;
-//      #endif
     }
     else {
         OCR1A=2000; // 1kHz.
@@ -531,36 +515,19 @@ ISR(TIMER1_COMPA_vect)
     }
     #endif
 
-    #ifndef ADVANCE
-      if ((out_bits & (1<<E_AXIS)) != 0) {  // -direction
-        REV_E_DIR();
-        count_direction[E_AXIS]=-1;
-      }
-      else { // +direction
-        NORM_E_DIR();
-        count_direction[E_AXIS]=1;
-      }
-    #endif //!ADVANCE
+    if ((out_bits & (1<<E_AXIS)) != 0) {  // -direction
+      REV_E_DIR();
+      count_direction[E_AXIS]=-1;
+    }
+    else { // +direction
+      NORM_E_DIR();
+      count_direction[E_AXIS]=1;
+    }
 
-
-
-    for(int8_t i=0; i < step_loops; i++) { // Take multiple steps per interrupt (For high speed moves)
+    for(uint8_t i=0; i < step_loops; i++) { // Take multiple steps per interrupt (For high speed moves)
       #ifndef AT90USB
       MSerial.checkRx(); // Check for serial chars.
       #endif
-
-      #ifdef ADVANCE
-      counter_e += current_block->steps_e;
-      if (counter_e > 0) {
-        counter_e -= current_block->step_event_count;
-        if ((out_bits & (1<<E_AXIS)) != 0) { // - direction
-          e_steps[current_block->active_extruder]--;
-        }
-        else {
-          e_steps[current_block->active_extruder]++;
-        }
-      }
-      #endif //ADVANCE
 
         counter_x += current_block->steps_x;
         if (counter_x > 0) {
@@ -604,7 +571,6 @@ ISR(TIMER1_COMPA_vect)
         #endif
       }
 
-      #ifndef ADVANCE
         counter_e += current_block->steps_e;
         if (counter_e > 0) {
           WRITE_E_STEP(!INVERT_E_STEP_PIN);
@@ -612,7 +578,6 @@ ISR(TIMER1_COMPA_vect)
           count_position[E_AXIS]+=count_direction[E_AXIS];
           WRITE_E_STEP(INVERT_E_STEP_PIN);
         }
-      #endif //!ADVANCE
       step_events_completed += 1;
       if(step_events_completed >= current_block->step_event_count) break;
     }
@@ -620,7 +585,7 @@ ISR(TIMER1_COMPA_vect)
     unsigned short timer;
     unsigned short step_rate;
     if (step_events_completed <= (unsigned long int)current_block->accelerate_until) {
-
+      // v = t * a   ->   acc_step_rate = acceleration_time * current_block->acceleration_rate
       MultiU24X24toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
       acc_step_rate += current_block->initial_rate;
 
@@ -632,16 +597,6 @@ ISR(TIMER1_COMPA_vect)
       timer = calc_timer(acc_step_rate);
       OCR1A = timer;
       acceleration_time += timer;
-      #ifdef ADVANCE
-        for(int8_t i=0; i < step_loops; i++) {
-          advance += advance_rate;
-        }
-        //if(advance > current_block->advance) advance = current_block->advance;
-        // Do E steps + advance steps
-        e_steps[current_block->active_extruder] += ((advance >>8) - old_advance);
-        old_advance = advance >>8;
-
-      #endif // ADVANCE
     }
     else if (step_events_completed > (unsigned long int)current_block->decelerate_after) {
       MultiU24X24toH16(step_rate, deceleration_time, current_block->acceleration_rate);
@@ -661,15 +616,6 @@ ISR(TIMER1_COMPA_vect)
       timer = calc_timer(step_rate);
       OCR1A = timer;
       deceleration_time += timer;
-      #ifdef ADVANCE
-        for(int8_t i=0; i < step_loops; i++) {
-          advance -= advance_rate;
-        }
-        if(advance < final_advance) advance = final_advance;
-        // Do E steps + advance steps
-        e_steps[current_block->active_extruder] += ((advance >>8) - old_advance);
-        old_advance = advance >>8;
-      #endif //ADVANCE
     }
     else {
       OCR1A = OCR1A_nominal;
@@ -684,63 +630,6 @@ ISR(TIMER1_COMPA_vect)
     }
   }
 }
-
-#ifdef ADVANCE
-  unsigned char old_OCR0A;
-  // Timer interrupt for E. e_steps is set in the main routine;
-  // Timer 0 is shared with millies
-  ISR(TIMER0_COMPA_vect)
-  {
-    old_OCR0A += 52; // ~10kHz interrupt (250000 / 26 = 9615kHz)
-    OCR0A = old_OCR0A;
-    // Set E direction (Depends on E direction + advance)
-    for(unsigned char i=0; i<4;i++) {
-      if (e_steps[0] != 0) {
-        WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
-        if (e_steps[0] < 0) {
-          WRITE(E0_DIR_PIN, INVERT_E0_DIR);
-          e_steps[0]++;
-          WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
-        }
-        else if (e_steps[0] > 0) {
-          WRITE(E0_DIR_PIN, !INVERT_E0_DIR);
-          e_steps[0]--;
-          WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
-        }
-      }
- #if EXTRUDERS > 1
-      if (e_steps[1] != 0) {
-        WRITE(E1_STEP_PIN, INVERT_E_STEP_PIN);
-        if (e_steps[1] < 0) {
-          WRITE(E1_DIR_PIN, INVERT_E1_DIR);
-          e_steps[1]++;
-          WRITE(E1_STEP_PIN, !INVERT_E_STEP_PIN);
-        }
-        else if (e_steps[1] > 0) {
-          WRITE(E1_DIR_PIN, !INVERT_E1_DIR);
-          e_steps[1]--;
-          WRITE(E1_STEP_PIN, !INVERT_E_STEP_PIN);
-        }
-      }
- #endif
- #if EXTRUDERS > 2
-      if (e_steps[2] != 0) {
-        WRITE(E2_STEP_PIN, INVERT_E_STEP_PIN);
-        if (e_steps[2] < 0) {
-          WRITE(E2_DIR_PIN, INVERT_E2_DIR);
-          e_steps[2]++;
-          WRITE(E2_STEP_PIN, !INVERT_E_STEP_PIN);
-        }
-        else if (e_steps[2] > 0) {
-          WRITE(E2_DIR_PIN, !INVERT_E2_DIR);
-          e_steps[2]--;
-          WRITE(E2_STEP_PIN, !INVERT_E_STEP_PIN);
-        }
-      }
- #endif
-    }
-  }
-#endif // ADVANCE
 
 void st_init()
 {
@@ -929,17 +818,6 @@ void st_init()
   OCR1A = 0x4000;
   TCNT1 = 0;
   ENABLE_STEPPER_DRIVER_INTERRUPT();
-
-  #ifdef ADVANCE
-  #if defined(TCCR0A) && defined(WGM01)
-    TCCR0A &= ~(1<<WGM01);
-    TCCR0A &= ~(1<<WGM00);
-  #endif
-    e_steps[0] = 0;
-    e_steps[1] = 0;
-    e_steps[2] = 0;
-    TIMSK0 |= (1<<OCIE0A);
-  #endif //ADVANCE
 
   enable_endstops(true); // Start with endstops active. After homing they can be disabled
   sei();

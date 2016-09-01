@@ -327,7 +327,6 @@ void set_language_from_EEPROM() {
   }
 }
 
-void lcd_mylang();
 static void lcd_status_screen()
 {
 	
