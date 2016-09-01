@@ -188,8 +188,8 @@
 #define MSG_SHOW_END_STOPS                  "Ensena tope final"
 #define MSG_CALIBRATE_BED                   "Calibra XYZ"
 #define MSG_CALIBRATE_BED_RESET             "Reset XYZ calibr."
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP        "Calibrando XYZ. Subir carro Z hasta maximo. Click cuando acabes."
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z        "Calibrando Z. Subir carro Z hasta maximo. Click cuando acabes."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP        "Calibrando XYZ. Gira el boton para subir el carro Z hasta golpe piezas superioras. Despues haz clic."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z       "Calibrando Z. Gira el boton para subir el carro Z hasta golpe piezas superioras. Despues haz clic."
 
 #define MSG_CONFIRM_NOZZLE_CLEAN            "Limpiar boquilla para calibracion. Click cuando acabes."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP     "Carros Z izq./der. estan arriba maximo?"
@@ -197,7 +197,7 @@
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2  " de 4"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1   "Mejorando cama punto de calibracion"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2   " de 9"
-#define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Measuring reference height of calibration point"
+#define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Medir la altura del punto de la calibracion"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" de 9"
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Calibracion XYZ fallada. Puntos de calibracion en la cama no encontrados."
@@ -216,7 +216,7 @@
 #define MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED      			"Nivelacion fallada. Sensor desconectado o cables danados. Esperando reset."
 #define MSG_NEW_FIRMWARE_AVAILABLE                  				"Nuevo firmware disponible:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE                 			"Actualizar por favor"
-#define MSG_BABYSTEP_Z_NOT_SET                      			"Impresora aun no calibrada. Ejecutar el G-code de calibracion para ajustar la altura de Z."
+#define MSG_BABYSTEP_Z_NOT_SET                      			"Impresora no esta calibrada todavia. Por favor usar el manual, el capitulo First steps, seleccion Calibration flow."
 #define MSG_BED_CORRECTION_MENU                                 "Corr. de la cama"
 #define MSG_BED_CORRECTION_LEFT                                 "Izquierda [um]"
 #define MSG_BED_CORRECTION_RIGHT                                "Derecha   [um]"
