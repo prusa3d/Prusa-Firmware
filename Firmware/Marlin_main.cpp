@@ -1021,6 +1021,9 @@ void setup()
 
   // Enable Toshiba FlashAir SD card / WiFi enahanced card.
   card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
+  // Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
+  // but this times out if a blocking dialog is shown in setup().
+  card.initsd();
 
   if (eeprom_read_dword((uint32_t*)(EEPROM_TOP-4)) == 0x0ffffffff && 
       eeprom_read_dword((uint32_t*)(EEPROM_TOP-8)) == 0x0ffffffff &&
