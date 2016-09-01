@@ -1525,6 +1525,7 @@ const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
     lcd.setCursor(0, 0);
     const char *msgend = msg;
     uint8_t row = 0;
+    bool multi_screen = false;
     for (; row < 4; ++ row) {
         while (pgm_is_whitespace(msg))
             ++ msg;
@@ -1532,10 +1533,20 @@ const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
             // End of the message.
             break;
         lcd.setCursor(0, row);
-        const char *msgend2 = msg + min(strlen_P(msg), 20);
+        uint8_t linelen = min(strlen_P(msg), 20);
+        const char *msgend2 = msg + linelen;
         msgend = msgend2;
+        if (row == 3 && linelen == 20) {
+            // Last line of the display, full line shall be displayed.
+            // Find out, whether this message will be split into multiple screens.
+            while (pgm_is_whitespace(msgend))
+                ++ msgend;
+            multi_screen = pgm_read_byte(msgend) != 0;
+            if (multi_screen)
+                msgend = (msgend2 -= 2);
+        }
         if (pgm_read_byte(msgend) != 0 && ! pgm_is_whitespace(msgend) && ! pgm_is_interpunction(msgend)) {
-              // Splitting a word. Find the start of the current word.
+            // Splitting a word. Find the start of the current word.
             while (msgend > msg && ! pgm_is_whitespace(msgend - 1))
                  -- msgend;
             if (msgend == msg)
@@ -1550,8 +1561,17 @@ const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
         }
     }
 
+    if (multi_screen) {
+        // Display the "next screen" indicator character.
+        // lcd_set_custom_characters_arrows();
+        lcd_set_custom_characters_nextpage();
+        lcd.setCursor(19, 3);
+        // Display the down arrow.
+        lcd.print(char(1));
+    }
+
     nlines = row;
-    return (pgm_read_byte(msgend) == 0) ? NULL : msgend;
+    return multi_screen ? msgend : NULL;
 }
 
 void lcd_show_fullscreen_message_and_wait_P(const char *msg)
@@ -2250,9 +2270,6 @@ void lcd_mylang_drawmenu(int cursor) {
   }  
 }
  
-void lcd_set_custom_characters_arrows();
-void lcd_set_custom_characters_degree();
-
 void lcd_mylang_drawcursor(int cursor) {
   
   if (cursor==1) lcd.setCursor(0, 1);
@@ -3313,6 +3330,14 @@ void lcd_update_enable(bool enabled)
             lcd_next_update_millis = millis() - 1;
             // Full update.
             lcd_implementation_clear();
+      #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
+            lcd_set_custom_characters(currentMenu == lcd_status_screen);
+      #else
+            if (currentMenu == lcd_status_screen)
+                lcd_set_custom_characters_degree();
+            else
+                lcd_set_custom_characters_arrows();
+      #endif
             lcd_update(2);
         } else {
             // Clear the LCD always, or let it to the caller?

@@ -461,6 +461,24 @@ void lcd_set_custom_characters_arrows()
 
     lcd.createChar(1, arrdown);
 }
+
+void lcd_set_custom_characters_nextpage()
+ {
+
+  byte arrdown[8] = {
+    B00000,
+    B00000,
+    B10001,
+    B01010,
+    B00100,
+    B10001,
+    B01010,
+    B00100
+  }; 
+
+    lcd.createChar(1, arrdown);
+}
+
 void lcd_set_custom_characters_degree()
  {
   byte degree[8] = {
