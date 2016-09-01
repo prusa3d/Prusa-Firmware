@@ -177,8 +177,8 @@
 #define MSG_CALIBRATE_BED					"Calibra XYZ"
 #define MSG_CALIBRATE_BED_RESET					"Reset XYZ calibr."
 
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP 				"Calibrando XYZ. Muovere Z fino altezza max, poi fare clik."
-#define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 				"Calibrando Z. Muovere Z fino altezza max, poi fare clik."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP 				"Calibrazione XYZ. Ruotare la manopola per alzare il carrello Z fino all'altezza massima. Click per terminare."
+#define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 				"Calibrazione Z. Ruotare la manopola per alzare il carrello Z fino all'altezza massima. Click per terminare."
 
 #define MSG_CONFIRM_NOZZLE_CLEAN					"Pulire l'ugello per la calibrazione, poi fare click."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP				"I carrelli Z sin/des sono altezza max?"
@@ -187,7 +187,7 @@
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2			" su 4"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1		"Perfezion. il letto punto di calibraz."
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2		" su 9"
-#define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1		"Measuring reference height of calibration point"
+#define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1		"Misurare l'altezza di riferimento del punto di calibrazione"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2		" su 9"
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND		"Calibrazione XYZ fallita. Il punto di calibrazione sul letto non e' stato trovato."
@@ -209,7 +209,7 @@
 #define MSG_NEW_FIRMWARE_AVAILABLE						"Nuova versione del firmware disponibile"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE					"Prega aggiorna."
 
-#define MSG_BABYSTEP_Z_NOT_SET							"Stampante non ancora calibrata. Eseguire il G-code di calibrazione per regolare l'altezza Z."
+#define MSG_BABYSTEP_Z_NOT_SET							"Stampante ancora non calibrata. Si prega di seguire il manuale, capitolo PRIMI PASSI, sezione della calibrazione."
 
 #define MSG_BED_CORRECTION_MENU							"Correz. liv.letto"
 #define MSG_BED_CORRECTION_LEFT							"Lato sinistro um"
