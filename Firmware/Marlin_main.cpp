@@ -1053,7 +1053,7 @@ void setup()
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
       lcd_update_enable(true);
-      lcd_implementation_clear();
+      // lcd_implementation_clear();
   }
 
   // Store the currently running firmware into an eeprom,
@@ -2961,6 +2961,8 @@ void process_commands()
                 bool result = sample_mesh_and_store_reference();
                 // if (result) babystep_apply();
             } else {
+                // Reset the baby step value.
+                eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0xFF);
                 // Complete XYZ calibration.
                 BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level);
                 uint8_t point_too_far_mask = 0;
@@ -2991,9 +2993,6 @@ void process_commands()
             // Timeouted.
         }
         lcd_update_enable(true);
-        lcd_implementation_clear();
-        // lcd_return_to_status();
-        lcd_update();
         break;
     }
 
@@ -3057,9 +3056,6 @@ void process_commands()
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
         st_synchronize();
         lcd_update_enable(true);
-        lcd_implementation_clear();
-        // lcd_return_to_status();
-        lcd_update();
         break;
     }
 #endif
