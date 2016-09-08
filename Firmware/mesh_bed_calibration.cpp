@@ -1547,8 +1547,10 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 //    SERIAL_ECHOPGM("");
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-    lcd_implementation_clear();
-    lcd_print_at_PGM(0, 0, MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
+    uint8_t next_line;
+    lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1, next_line);
+    if (next_line > 3)
+        next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Collect the rear 2x3 points.
@@ -1557,9 +1559,8 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
         // Don't let the manage_inactivity() function remove power from the motors.
         refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-        lcd_print_at_PGM(0, 1, MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
-        lcd_implementation_print_at(0, 2, k+1);
-        lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE3);
+        lcd_implementation_print_at(0, next_line, k+1);
+        lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
         float *pt = pts + k * 2;
         // Go up to z_initial.
@@ -1705,8 +1706,10 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
     bool endstop_z_enabled = enable_z_endstop(false);
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-    lcd_implementation_clear();
-    lcd_print_at_PGM(0, 0, MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1);
+    uint8_t next_line;
+    lcd_display_message_fullscreen_P(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1, next_line);
+    if (next_line > 3)
+        next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Collect a matrix of 9x9 points.
@@ -1716,9 +1719,8 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         refresh_cmd_timeout();
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-        lcd_print_at_PGM(0, 1, MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2);
-        lcd_implementation_print_at(0, 2, mesh_point+1);
-        lcd_printPGM(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3);
+        lcd_implementation_print_at(0, next_line, mesh_point+1);
+        lcd_printPGM(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2);
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.
@@ -1932,6 +1934,25 @@ canceled:
     return result;
 }
 
+void go_home_with_z_lift()
+{
+    // Don't let the manage_inactivity() function remove power from the motors.
+    refresh_cmd_timeout();
+    // Go home.
+    // First move up to a safe height.
+    current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+    go_to_current(homing_feedrate[Z_AXIS]/60);
+    // Second move to XY [0, 0].
+    current_position[X_AXIS] = X_MIN_POS+0.2;
+    current_position[Y_AXIS] = Y_MIN_POS+0.2;
+    // Clamp to the physical coordinates.
+    world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+    go_to_current(homing_feedrate[X_AXIS]/60);
+    // Third move up to a safe height.
+    current_position[Z_AXIS] = Z_MIN_POS;
+    go_to_current(homing_feedrate[Z_AXIS]/60);    
+}
+
 // Sample the 9 points of the bed and store them into the EEPROM as a reference.
 // When calling this function, the X, Y, Z axes should be already homed,
 // and the world2machine correction matrix should be active.
@@ -1943,6 +1964,16 @@ bool sample_mesh_and_store_reference()
 
     // Don't let the manage_inactivity() function remove power from the motors.
     refresh_cmd_timeout();
+
+#ifdef MESH_BED_CALIBRATION_SHOW_LCD
+    uint8_t next_line;
+    lcd_display_message_fullscreen_P(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1, next_line);
+    if (next_line > 3)
+        next_line = 3;
+    // display "point xx of yy"
+    lcd_implementation_print_at(0, next_line, 1);
+    lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
+#endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Sample Z heights for the mesh bed leveling.
     // In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
@@ -1962,12 +1993,20 @@ bool sample_mesh_and_store_reference()
         mbl.set_z(0, 0, current_position[Z_AXIS]);
     }
     for (int8_t mesh_point = 1; mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS; ++ mesh_point) {
+        // Don't let the manage_inactivity() function remove power from the motors.
+        refresh_cmd_timeout();
+        // Print the decrasing ID of the measurement point.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         go_to_current(homing_feedrate[Z_AXIS]/60);
         current_position[X_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point);
         current_position[Y_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point+1);
         world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
         go_to_current(homing_feedrate[X_AXIS]/60);
+#ifdef MESH_BED_CALIBRATION_SHOW_LCD
+        // display "point xx of yy"
+        lcd_implementation_print_at(0, next_line, mesh_point+1);
+        lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
+#endif /* MESH_BED_CALIBRATION_SHOW_LCD */
         find_bed_induction_sensor_point_z();
         // Get cords of measuring point
         int8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
@@ -2004,6 +2043,7 @@ bool sample_mesh_and_store_reference()
                 float dif = mbl.z_values[j][i] - mbl.z_values[0][0];
                 int16_t dif_quantized = int16_t(floor(dif * 100.f + 0.5f));
                 eeprom_update_word((uint16_t*)addr, *reinterpret_cast<uint16_t*>(&dif_quantized));
+                #if 0
                 {
                     uint16_t z_offset_u = eeprom_read_word((uint16_t*)addr);
                     float dif2 = *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
@@ -2018,6 +2058,7 @@ bool sample_mesh_and_store_reference()
                     MYSERIAL.print(dif2, 5);
                     SERIAL_ECHOLNPGM("");
                 }
+                #endif
                 addr += 2;
             }
     }
@@ -2025,17 +2066,7 @@ bool sample_mesh_and_store_reference()
     mbl.upsample_3x3();
     mbl.active = true;
 
-    // Don't let the manage_inactivity() function remove power from the motors.
-    refresh_cmd_timeout();
-
-    // Go home.
-    current_position[Z_AXIS] = Z_MIN_POS;
-    go_to_current(homing_feedrate[Z_AXIS]/60);
-    current_position[X_AXIS] = X_MIN_POS+0.2;
-    current_position[Y_AXIS] = Y_MIN_POS+0.2;
-    // Clamp to the physical coordinates.
-    world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-    go_to_current(homing_feedrate[X_AXIS]/60);
+    go_home_with_z_lift();
 
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);

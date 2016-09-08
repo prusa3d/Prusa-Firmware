@@ -188,24 +188,24 @@
 #define MSG_CALIBRATE_BED					"Calibrate XYZ"
 #define MSG_CALIBRATE_BED_RESET				"Reset XYZ calibr."
 
-#define(length=20,lines=4) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Calibrating XYZ. Move Z carriage up to the end stoppers. Click when done."
-#define(length=20,lines=4) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Calibrating Z. Move Z carriage up to the end stoppers. Click when done."
+#define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
+#define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 
 #define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN			"Please clean the nozzle for calibration. Click when done."
 #define(length=20,lines=2) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Are left and right Z~carriages all up?"
 
-#define(length=20) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Searching bed"
-#define(length=20) MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	"calibration point"
-#define(length=14) MSG_FIND_BED_OFFSET_AND_SKEW_LINE3	" of 4"
-#define(length=20) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Improving bed"
-#define(length=20) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	"calibration point"
-#define(length=14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE3	" of 9"
+#define(length=60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Searching bed calibration point"
+#define(length=14) MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" of 4"
+#define(length=60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Improving bed calibration point"
+#define(length=14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" of 9"
+#define(length=60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Measuring reference height of calibration point"
+#define(length=14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" of 9"
 
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ calibration failed. Bed calibration point was not found."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED				"XYZ calibration failed. Please consult the manual."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"XYZ calibration ok. X/Y axes are perpendicular."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"XYZ calibration all right. X/Y axes are slightly skewed."
-#define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"X/Z skewed severly. Skew will be corrected automatically."
+#define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"X/Y skewed severly. Skew will be corrected automatically."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR		"XYZ calibration failed. Left front calibration point not reachable."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR		"XYZ calibration failed. Right front calibration point not reachable."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR		"XYZ calibration failed. Front calibration points not reachable."
@@ -218,9 +218,9 @@
 #define(length=20,lines=4) MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED				"Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
 
 #define(length=20,lines=2) MSG_NEW_FIRMWARE_AVAILABLE								"New firmware version available:"
-#define(length=20) MSG_NEW_FIRMWARE_PLEASE_UPGRADE												"Please upgrade."
+#define(length=20) MSG_NEW_FIRMWARE_PLEASE_UPGRADE									"Please upgrade."
 
-#define(length=20,lines=8) MSG_BABYSTEP_Z_NOT_SET									"Printer has not been calibrated yet. Run calibration G-code to adjust Z height."
+#define(length=20,lines=8) MSG_BABYSTEP_Z_NOT_SET									"Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
 #define MSG_BED_CORRECTION_LEFT									"Left side  um"

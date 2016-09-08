@@ -28,7 +28,7 @@
   void lcd_sdcard_stop();
   void prusa_statistics(int _message);
   void lcd_confirm_print();
-  
+void lcd_mylang();
   bool lcd_detected(void);
 
   static void lcd_selftest();
@@ -40,7 +40,10 @@
   static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
   static void lcd_menu_statistics();
 
-  extern const char* lcd_display_message_fullscreen_P(const char *msg);
+  extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
+  inline const char* lcd_display_message_fullscreen_P(const char *msg) 
+    { uint8_t nlines; return lcd_display_message_fullscreen_P(msg, nlines); }
+
   extern void lcd_wait_for_click();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
   // 0: no, 1: yes, -1: timeouted

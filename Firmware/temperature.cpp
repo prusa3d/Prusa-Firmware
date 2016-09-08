@@ -1211,6 +1211,7 @@ void max_temp_error(uint8_t e) {
     WRITE(FAN_PIN, 1);
     WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
     WRITE(BEEPER, 1);
+    // fanSpeed will consumed by the check_axes_activity() routine.
     fanSpeed=255;
 }
 

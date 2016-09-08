@@ -228,6 +228,8 @@
 CardReader card;
 #endif
 
+unsigned long TimeSent = millis();
+unsigned long TimeNow = millis();
 
 union Data
 {
@@ -1019,6 +1021,9 @@ void setup()
 
   // Enable Toshiba FlashAir SD card / WiFi enahanced card.
   card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
+  // Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
+  // but this times out if a blocking dialog is shown in setup().
+  card.initsd();
 
   if (eeprom_read_dword((uint32_t*)(EEPROM_TOP-4)) == 0x0ffffffff && 
       eeprom_read_dword((uint32_t*)(EEPROM_TOP-8)) == 0x0ffffffff &&
@@ -1034,20 +1039,17 @@ void setup()
   // In the future, somewhere here would one compare the current firmware version against the firmware version stored in the EEPROM.
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
   // is being written into the EEPROM, so the update procedure will be triggered only once.
-
+    lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
+    if (lang_selected >= LANG_NUM){
+      lcd_mylang();
+    }
+    
   if (eeprom_read_byte((uint8_t*)EEPROM_BABYSTEP_Z_SET) == 0x0ff) {
       // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
-      // eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_X, 0x0ff);
-      // eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_Y, 0x0ff);
-      eeprom_update_byte((uint8_t*)EEPROM_BABYSTEP_Z, 0x0ff);
-      // Get the selected laugnage index before display update.
-      lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
-      if (lang_selected >= LANG_NUM)
-          lang_selected = LANG_ID_DEFAULT; // Czech language
+      eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
       lcd_update_enable(true);
-      lcd_implementation_clear();
   }
 
   // Store the currently running firmware into an eeprom,
@@ -1118,6 +1120,9 @@ void get_command()
 
   while (MYSERIAL.available() > 0) {
     char serial_char = MYSERIAL.read();
+      TimeSent = millis();
+      TimeNow = millis();
+
     if (serial_char < 0)
         // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
         // and Marlin does not support such file names anyway.
@@ -1243,6 +1248,23 @@ void get_command()
     }
   } // end of serial line processing loop
 
+    if(farm_mode){
+        TimeNow = millis();
+        if ( ((TimeNow - TimeSent) > 800) && (serial_count > 0) ) {
+            cmdbuffer[bufindw+serial_count+1] = 0;
+            
+            bufindw += strlen(cmdbuffer+bufindw+1) + 2;
+            if (bufindw == sizeof(cmdbuffer))
+                bufindw = 0;
+            ++ buflen;
+            
+            serial_count = 0;
+            
+            SERIAL_ECHOPGM("TIMEOUT:");
+            //memset(cmdbuffer, 0 , sizeof(cmdbuffer));
+            return;
+        }
+    }
 
   #ifdef SDSUPPORT
   if(!card.sdprinting || serial_count!=0){
@@ -1363,13 +1385,13 @@ inline void set_current_to_destination() { memcpy(current_position, destination,
 inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
 
 
-static void setup_for_endstop_move() {
+static void setup_for_endstop_move(bool enable_endstops_now = true) {
     saved_feedrate = feedrate;
     saved_feedmultiply = feedmultiply;
     feedmultiply = 100;
     previous_millis_cmd = millis();
     
-    enable_endstops(true);
+    enable_endstops(enable_endstops_now);
 }
 
 static void clean_up_after_endstop_move() {
@@ -2382,7 +2404,7 @@ void process_commands()
             int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS]/60;
             int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS]/40;
             bool has_z = is_bed_z_jitter_data_valid();
-            setup_for_endstop_move();
+            setup_for_endstop_move(false);
             const char *kill_message = NULL;
             while (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
                 // Get coords of a measuring point.
@@ -2402,16 +2424,15 @@ void process_commands()
                     #endif
                 }
             
-                // Move Z to proper distance
+                // Move Z up to MESH_HOME_Z_SEARCH.
                 current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
                 st_synchronize();
 
+                // Move to XY position of the sensor point.
                 current_position[X_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point);
                 current_position[Y_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point+1);
                 world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-//                mbl.get_meas_xy(ix, iy, current_position[X_AXIS], current_position[Y_AXIS], false);
-                enable_endstops(false);
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
                 st_synchronize();
                 
@@ -2438,8 +2459,8 @@ void process_commands()
             }
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+            st_synchronize();
             if (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
-                st_synchronize();
                 kill(kill_message);
             }
             clean_up_after_endstop_move();
@@ -2499,12 +2520,7 @@ void process_commands()
 
             mbl.upsample_3x3();
             mbl.active = 1;
-            current_position[X_AXIS] = X_MIN_POS+0.2;
-            current_position[Y_AXIS] = Y_MIN_POS+0.2;
-            current_position[Z_AXIS] = Z_MIN_POS;
-            world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-            plan_buffer_line(current_position[X_AXIS], current_position[X_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
-            st_synchronize();
+            go_home_with_z_lift();
 
             // Restore custom message state
             custom_message       = custom_message_old;
@@ -2941,6 +2957,9 @@ void process_commands()
                 bool result = sample_mesh_and_store_reference();
                 // if (result) babystep_apply();
             } else {
+                // Reset the baby step value and the baby step applied flag.
+                eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0xFF);
+                eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
                 // Complete XYZ calibration.
                 BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level);
                 uint8_t point_too_far_mask = 0;
@@ -2971,9 +2990,6 @@ void process_commands()
             // Timeouted.
         }
         lcd_update_enable(true);
-        lcd_implementation_clear();
-        // lcd_return_to_status();
-        lcd_update();
         break;
     }
 
@@ -3037,9 +3053,6 @@ void process_commands()
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
         st_synchronize();
         lcd_update_enable(true);
-        lcd_implementation_clear();
-        // lcd_return_to_status();
-        lcd_update();
         break;
     }
 #endif
@@ -4338,6 +4351,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     {
 		st_synchronize();
 
+        if (farm_mode)
+            
+        {
+            
+            prusa_statistics(22);
+            
+        }
+        
         feedmultiplyBckp=feedmultiply;
         int8_t TooLowZ = 0;
         float target[4];
@@ -4796,11 +4817,7 @@ void prepare_move()
 
   // Do not use feedmultiply for E or Z only moves
   if( (current_position[X_AXIS] == destination [X_AXIS]) && (current_position[Y_AXIS] == destination [Y_AXIS])) {
-#ifdef MESH_BED_LEVELING
-      mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-#else
       plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-#endif
   }
   else {
 #ifdef MESH_BED_LEVELING
@@ -4918,8 +4935,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
    const int KILL_DELAY = 10000;
 #endif
 	
-  if(buflen < (BUFSIZE-1))
-    get_command();
+    if(buflen < (BUFSIZE-1)){
+        get_command();
+    }
 
   if( (millis() - previous_millis_cmd) >  max_inactive_time )
     if(max_inactive_time)
