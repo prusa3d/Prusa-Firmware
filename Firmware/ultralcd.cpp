@@ -825,7 +825,7 @@ void lcd_unLoadFilament()
 
     enquecommand_P(PSTR(UNLOAD_FILAMENT_0));
     enquecommand_P(PSTR(UNLOAD_FILAMENT_1));
-
+    enquecommand_P(PSTR(UNLOAD_FILAMENT_2)); 
   } else {
 
     lcd_implementation_clear();
