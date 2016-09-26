@@ -1293,7 +1293,7 @@ static void lcd_adjust_bed_reset()
     menuData.adjustBed.status = 0;
 }
 
-#define BED_ADJUSTMENT_UM_MAX 50
+#define BED_ADJUSTMENT_UM_MAX 150
 
 static void lcd_adjust_bed()
 {
