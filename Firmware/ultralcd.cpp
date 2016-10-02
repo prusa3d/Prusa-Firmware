@@ -413,7 +413,7 @@ static void lcd_status_screen()
 
 
 
-    lcd_status_update_delay = 10;   /* redraw the main screen every second. This is easier then trying keep track of all things that change on the screen */
+  lcd_status_update_delay = 10;   /* redraw the main screen every second. This is easier then trying keep track of all things that change on the screen */
 	if (lcd_commands_type != LCD_COMMAND_IDLE)
 	{
 		lcd_commands();
@@ -497,43 +497,47 @@ void lcd_commands()
 {
 	if (lcd_commands_type == LCD_COMMAND_LOAD_FILAMENT)   //// load filament sequence
 	{
-		if (lcd_commands_step == 0) { lcd_commands_step = 5; custom_message = true; }
-			if (lcd_commands_step == 1 && !blocks_queued())
+  		if (lcd_commands_step == LOAD_FILAMENT_IDLE) 
+      {   
+          lcd_commands_step = LOAD_FILAMENT_START; 
+          custom_message = true; 
+      }
+			if (lcd_commands_step == LOAD_FILAMENT_END && !blocks_queued())
 			{
-				lcd_commands_step = 0;
-				lcd_commands_type = 0;
+				lcd_commands_step = LOAD_FILAMENT_IDLE;
+				lcd_commands_type = LCD_COMMAND_IDLE;
 				lcd_setstatuspgm(WELCOME_MSG);
 				disable_z();
 				custom_message = false;
 				custom_message_type = 0;
    
 			}
-			if (lcd_commands_step == 2 && !blocks_queued())
+			if (lcd_commands_step == LOAD_FILAMENT_FEEDSLOW && !blocks_queued())
 			{
 				lcd_setstatuspgm(MSG_LOADING_FILAMENT);
 				enquecommand_P(PSTR(LOAD_FILAMENT_2));
-				lcd_commands_step = 1;
+				lcd_commands_step = LOAD_FILAMENT_END;
 			}
-			if (lcd_commands_step == 3 && !blocks_queued())
+			if (lcd_commands_step == LOAD_FILAMENT_FEEDFAST && !blocks_queued())
 			{
 				enquecommand_P(PSTR(LOAD_FILAMENT_1));
                 enquecommand_P(PSTR("G4"));
-				lcd_commands_step = 2;
+				lcd_commands_step = LOAD_FILAMENT_FEEDSLOW;
 			}
-			if (lcd_commands_step == 4 && !blocks_queued())
+			if (lcd_commands_step == LOAD_FILAMENT_CHANGEMODE && !blocks_queued())
 			{
 				lcd_setstatuspgm(MSG_INSERT_FILAMENT);
 				enquecommand_P(PSTR(LOAD_FILAMENT_0));
                 enquecommand_P(PSTR("G1 E0.1 F400"));
-				lcd_commands_step = 3;
+				lcd_commands_step = LOAD_FILAMENT_FEEDFAST;
 			}
-			if (lcd_commands_step == 5 && !blocks_queued())
+			if (lcd_commands_step == LOAD_FILAMENT_START && !blocks_queued())
 			{
 				lcd_setstatuspgm(MSG_PLEASE_WAIT);
 				enable_z();
 				custom_message = true;
 				custom_message_type = 2;
-				lcd_commands_step = 4;
+				lcd_commands_step = LOAD_FILAMENT_CHANGEMODE;
 			}
 	}
 
@@ -545,7 +549,7 @@ void lcd_commands()
 		if (lcd_commands_step == 1 && !blocks_queued())
 		{
 			lcd_commands_step = 0;
-			lcd_commands_type = 0;
+			lcd_commands_type = LCD_COMMAND_IDLE;
 			lcd_setstatuspgm(WELCOME_MSG);
 			custom_message = false;
 		}
@@ -604,7 +608,7 @@ void lcd_commands()
 
 	}
 
-	if (lcd_commands_type == 3)
+	if (lcd_commands_type == 3)//3 Doesn't exist
 	{
 		lcd_commands_type = 0;
 	}
@@ -1022,32 +1026,28 @@ void lcd_alright() {
 
 }
 
-
-
 void lcd_LoadFilament()
 {
   if (degHotend0() > EXTRUDE_MINTEMP) 
   {
 	  custom_message = true;
 	  lcd_commands_type = LCD_COMMAND_LOAD_FILAMENT;
+    lcd_commands_step = LOAD_FILAMENT_START;
 	  SERIAL_ECHOLN("Loading filament");
-	  // commands() will handle the rest
-    
-    }
+	  // commands() will handle the rest  
+  }
   else 
   {
-
     lcd_implementation_clear();
     lcd.setCursor(0, 0);
     lcd_printPGM(MSG_ERROR);
     lcd.setCursor(0, 2);
-	lcd_printPGM(MSG_PREHEAT_NOZZLE);
+	  lcd_printPGM(MSG_PREHEAT_NOZZLE);
     delay(2000);
     lcd_implementation_clear();
   }
   lcd_return_to_status();
 }
-
 
 static void lcd_menu_statistics()
 {
