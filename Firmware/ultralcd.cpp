@@ -1244,6 +1244,8 @@ static void _lcd_babystep(int axis, const char *msg)
         menuData.babyStep.babystepMemMM[1] = menuData.babyStep.babystepMem[1]/axis_steps_per_unit[Y_AXIS];
         menuData.babyStep.babystepMemMM[2] = menuData.babyStep.babystepMem[2]/axis_steps_per_unit[Z_AXIS];
         lcdDrawUpdate = 1;
+        // Wait 90 seconds before closing the live adjust dialog.
+        lcd_timeoutToStatus = millis() + 90000;
     }
 
   if (encoderPosition != 0) 
@@ -1984,21 +1986,16 @@ void lcd_pick_babystep(){
             
         }
         
-        
         if (lcd_clicked()) {
             fsm = cursor_pos;
             int babyStepZ;
             EEPROM_read_B(EEPROM_BABYSTEP_Z0+((fsm-1)*2),&babyStepZ);
             EEPROM_save_B(EEPROM_BABYSTEP_Z,&babyStepZ);
-            eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
+            calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
             delay(500);
             
         }
-        
-        
-        
     };
-    
     
     lcd_implementation_clear();
     lcd_return_to_status();
@@ -3313,7 +3310,7 @@ void lcd_init()
 //#include <avr/pgmspace.h>
 
 static volatile bool lcd_update_enabled = true;
-static unsigned long lcd_timeoutToStatus = 0;
+unsigned long lcd_timeoutToStatus = 0;
 
 void lcd_update_enable(bool enabled)
 {

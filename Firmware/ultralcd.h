@@ -89,6 +89,7 @@ void lcd_mylang();
   #define LCD_COMMAND_STOP_PRINT 2
   #define LCD_COMMAND_FARM_MODE_CONFIRM 4
 
+  extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
   
   extern bool farm_mode;

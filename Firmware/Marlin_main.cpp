@@ -947,7 +947,10 @@ void setup()
 		  SET_OUTPUT(BEEPER);
 		  WRITE(BEEPER, HIGH);
 
+      // Force language selection at the next boot up.
 		  lcd_force_language_selection();
+      // Force the "Follow calibration flow" message at the next boot up.
+      calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
 		  farm_no = 0;
 		  EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
 		  farm_mode = false;
@@ -970,7 +973,7 @@ void setup()
 			  WRITE(BEEPER, LOW);
 
 			  int _z = 0;
-			  eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
+			  calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 			  EEPROM_save_B(EEPROM_BABYSTEP_X, &_z);
 			  EEPROM_save_B(EEPROM_BABYSTEP_Y, &_z);
 			  EEPROM_save_B(EEPROM_BABYSTEP_Z, &_z);
@@ -1044,9 +1047,15 @@ void setup()
       lcd_mylang();
     }
     
-  if (eeprom_read_byte((uint8_t*)EEPROM_BABYSTEP_Z_SET) == 0x0ff) {
+  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
+      calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION ||
+      calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
       // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
       eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+      // Show the message.
+      lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
+      lcd_update_enable(true);
+  } else if (calibration_status() == CALIBRATION_STATUS_LIVE_ADJUST) {
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
       lcd_update_enable(true);
@@ -2617,14 +2626,14 @@ void process_commands()
              * This G-code will be performed at the start of a calibration script.
              */
         case 86:
-            eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0xFF);
+            calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
             break;
             /**
              * G87: Prusa3D specific: Enable babystep correction after home
              * This G-code will be performed at the end of a calibration script.
              */
         case 87:
-            eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0x01);
+            calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
             break;
 
             /**
@@ -2955,10 +2964,15 @@ void process_commands()
                 world2machine_update_current();
                 //FIXME
                 bool result = sample_mesh_and_store_reference();
-                // if (result) babystep_apply();
+                if (result) {
+                    if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION)
+                        // Shipped, the nozzle height has been set already. The user can start printing now.
+                        calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+                    // babystep_apply();
+                }
             } else {
                 // Reset the baby step value and the baby step applied flag.
-                eeprom_write_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET, 0xFF);
+                calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
                 eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
                 // Complete XYZ calibration.
                 BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level);
@@ -2985,6 +2999,11 @@ void process_commands()
                     // if (result >= 0) babystep_apply();
                 }
                 lcd_bed_calibration_show_result(result, point_too_far_mask);
+                if (result >= 0) {
+                    // Calibration valid, the machine should be able to print. Advise the user to run the V2Calibration.gcode.
+                    calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+                    lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
+                }
             }
         } else {
             // Timeouted.
