@@ -1,5 +1,6 @@
 #include "Marlin.h"
 #include "Configuration.h"
+#include "ConfigurationStore.h"
 #include "language_all.h"
 #include "mesh_bed_calibration.h"
 #include "mesh_bed_leveling.h"
@@ -2152,7 +2153,7 @@ static int babystepLoadZ = 0;
 void babystep_apply()
 {
     // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
-    if(eeprom_read_byte((unsigned char*)EEPROM_BABYSTEP_Z_SET) == 0x01)
+    if(calibration_status() == CALIBRATION_STATUS_CALIBRATED)
     {
         // End of G80: Apply the baby stepping value.
         EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);

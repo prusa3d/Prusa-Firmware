@@ -18,7 +18,7 @@
 #define EEPROM_BABYSTEP_X 4092
 #define EEPROM_BABYSTEP_Y 4090
 #define EEPROM_BABYSTEP_Z 4088
-#define EEPROM_BABYSTEP_Z_SET 4087
+#define EEPROM_CALIBRATION_STATUS 4087
 #define EEPROM_BABYSTEP_Z0 4085
 #define EEPROM_FILAMENTUSED 4081
 // uint32_t
@@ -692,9 +692,30 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 //#define FILAMENT_LCD_DISPLAY
 
 
+// Calibration status of the machine, to be stored into the EEPROM,
+// (unsigned char*)EEPROM_CALIBRATION_STATUS
+enum CalibrationStatus
+{
+    // Freshly assembled, needs to peform a self-test and the XYZ calibration.
+    CALIBRATION_STATUS_ASSEMBLED = 255,
 
+    // For the wizard: self test has been performed, now the XYZ calibration is needed.
+    // CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
 
+    // For the wizard: factory assembled, needs to run Z calibration.
+    CALIBRATION_STATUS_Z_CALIBRATION = 240,
 
+    // The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
+    CALIBRATION_STATUS_LIVE_ADJUST = 230,
+
+    // Calibrated, ready to print.
+    CALIBRATION_STATUS_CALIBRATED = 1,
+
+    // Legacy: resetted by issuing a G86 G-code.
+    // This value can only be expected after an upgrade from the initial MK2 firmware releases.
+    // Currently the G86 sets the calibration status to 
+    CALIBRATION_STATUS_UNKNOWN = 0,
+};
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"

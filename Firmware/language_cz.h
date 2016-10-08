@@ -225,7 +225,8 @@
 
 #define MSG_NEW_FIRMWARE_AVAILABLE								"Vysla nova verze firmware:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Prosim aktualizujte."
-#define MSG_BABYSTEP_Z_NOT_SET                          		"Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace."
+#define MSG_FOLLOW_CALIBRATION_FLOW                        		"Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace."
+#define MSG_BABYSTEP_Z_NOT_SET                          		"Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy."
 
 #define MSG_BED_CORRECTION_MENU									"Korekce podlozky"
 #define MSG_BED_CORRECTION_LEFT									"Vlevo  [um]"

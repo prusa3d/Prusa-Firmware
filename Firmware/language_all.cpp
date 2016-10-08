@@ -87,17 +87,16 @@ const char * const MSG_BABYSTEP_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BABYSTEP_Z_PL
 };
 
-const char MSG_BABYSTEP_Z_NOT_SET_EN[] PROGMEM = "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow.";
-const char MSG_BABYSTEP_Z_NOT_SET_CZ[] PROGMEM = "Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace.";
-const char MSG_BABYSTEP_Z_NOT_SET_IT[] PROGMEM = "Stampante ancora non calibrata. Si prega di seguire il manuale, capitolo PRIMI PASSI, sezione della calibrazione.";
-const char MSG_BABYSTEP_Z_NOT_SET_ES[] PROGMEM = "Impresora no esta calibrada todavia. Por favor usar el manual, el capitulo First steps, seleccion Calibration flow.";
-const char MSG_BABYSTEP_Z_NOT_SET_PL[] PROGMEM = "Drukarka nie zostala jeszcze skalibrowana. Prosze kierowac sie instrukcja, rozdzial Zaczynamy, podrozdzial Selftest.";
+const char MSG_BABYSTEP_Z_NOT_SET_EN[] PROGMEM = "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration.";
+const char MSG_BABYSTEP_Z_NOT_SET_CZ[] PROGMEM = "Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy.";
+const char MSG_BABYSTEP_Z_NOT_SET_IT[] PROGMEM = "Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo First steps, sezione First layer calibration.";
+const char MSG_BABYSTEP_Z_NOT_SET_ES[] PROGMEM = "Distancia entre la punta de la boquilla y la superficie de la cama no fijada aun. Por favor siga el manual, capitulo First steps, seccion First layer calibration.";
 const char * const MSG_BABYSTEP_Z_NOT_SET_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BABYSTEP_Z_NOT_SET_EN,
 	MSG_BABYSTEP_Z_NOT_SET_CZ,
 	MSG_BABYSTEP_Z_NOT_SET_IT,
 	MSG_BABYSTEP_Z_NOT_SET_ES,
-	MSG_BABYSTEP_Z_NOT_SET_PL
+	MSG_BABYSTEP_Z_NOT_SET_EN
 };
 
 const char MSG_BED_EN[] PROGMEM = "Bed";
@@ -738,6 +737,19 @@ const char * const MSG_FLOW1_LANG_TABLE[1] PROGMEM = {
 const char MSG_FLOW2_EN[] PROGMEM = "Flow 2";
 const char * const MSG_FLOW2_LANG_TABLE[1] PROGMEM = {
 	MSG_FLOW2_EN
+};
+
+const char MSG_FOLLOW_CALIBRATION_FLOW_EN[] PROGMEM = "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow.";
+const char MSG_FOLLOW_CALIBRATION_FLOW_CZ[] PROGMEM = "Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace.";
+const char MSG_FOLLOW_CALIBRATION_FLOW_IT[] PROGMEM = "Stampante ancora non calibrata. Si prega di seguire il manuale, capitolo PRIMI PASSI, sezione della calibrazione.";
+const char MSG_FOLLOW_CALIBRATION_FLOW_ES[] PROGMEM = "Impresora no esta calibrada todavia. Por favor usar el manual, el capitulo First steps, seleccion Calibration flow.";
+const char MSG_FOLLOW_CALIBRATION_FLOW_PL[] PROGMEM = "Drukarka nie zostala jeszcze skalibrowana. Prosze kierowac sie instrukcja, rozdzial Zaczynamy, podrozdzial Selftest.";
+const char * const MSG_FOLLOW_CALIBRATION_FLOW_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FOLLOW_CALIBRATION_FLOW_EN,
+	MSG_FOLLOW_CALIBRATION_FLOW_CZ,
+	MSG_FOLLOW_CALIBRATION_FLOW_IT,
+	MSG_FOLLOW_CALIBRATION_FLOW_ES,
+	MSG_FOLLOW_CALIBRATION_FLOW_PL
 };
 
 const char MSG_FREE_MEMORY_EN[] PROGMEM = " Free Memory: ";

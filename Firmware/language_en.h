@@ -220,7 +220,8 @@
 #define(length=20,lines=2) MSG_NEW_FIRMWARE_AVAILABLE								"New firmware version available:"
 #define(length=20) MSG_NEW_FIRMWARE_PLEASE_UPGRADE									"Please upgrade."
 
-#define(length=20,lines=8) MSG_BABYSTEP_Z_NOT_SET									"Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
+#define(length=20,lines=8) MSG_FOLLOW_CALIBRATION_FLOW								"Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
+#define(length=20,lines=12) MSG_BABYSTEP_Z_NOT_SET									"Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
 #define MSG_BED_CORRECTION_LEFT									"Left side  um"
