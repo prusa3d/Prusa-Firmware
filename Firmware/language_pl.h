@@ -223,7 +223,7 @@
 #define MSG_NEW_FIRMWARE_AVAILABLE                              "Wyszla nowa wersja firmware:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE                         "Prosze zaktualizowac"
 #define MSG_FOLLOW_CALIBRATION_FLOW                             "Drukarka nie zostala jeszcze skalibrowana. Prosze kierowac sie instrukcja, rozdzial Zaczynamy, podrozdzial Selftest."
-#define MSG_BABYSTEP_Z_NOT_SET                                  "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
+#define MSG_BABYSTEP_Z_NOT_SET                                  "Odleglosc dyszy od podkladki nie jest skalibrowana. Postepuj zgodnie z instrukcja rozdzial Zaczynamy, podrozdzial Kalibracja pierwszej warstwy."
 #define MSG_BED_CORRECTION_MENU                                 "Korekta podkladki"
 #define MSG_BED_CORRECTION_LEFT                                 "W lewo  [um]"
 #define MSG_BED_CORRECTION_RIGHT                                "W prawo [um]"
