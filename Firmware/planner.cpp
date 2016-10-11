@@ -448,62 +448,58 @@ void getHighESpeed()
 }
 #endif
 
-void check_axes_activity()
-{
-  unsigned char x_active = 0;
-  unsigned char y_active = 0;  
-  unsigned char z_active = 0;
-  unsigned char e_active = 0;
-  unsigned char tail_fan_speed = fanSpeed;
+void check_axes_activity() {
+  uint8_t x_active = 0,
+          y_active = 0,
+          z_active = 0,
+          e_active = 0,
+          tail_fan_speed = fanSpeed;
   block_t *block;
 
-  if(block_buffer_tail != block_buffer_head)
-  {
+  if (block_buffer_tail != block_buffer_head) {
     uint8_t block_index = block_buffer_tail;
     tail_fan_speed = block_buffer[block_index].fan_speed;
-    while(block_index != block_buffer_head)
-    {
+    while (block_index != block_buffer_head) {
       block = &block_buffer[block_index];
-      if(block->steps[X_AXIS] != 0) x_active++;
-      if(block->steps[Y_AXIS] != 0) y_active++;
-      if(block->steps[Z_AXIS] != 0) z_active++;
-      if(block->steps[E_AXIS] != 0) e_active++;
+      if (block->steps[X_AXIS]) x_active++;
+      if (block->steps[Y_AXIS]) y_active++;
+      if (block->steps[Z_AXIS]) z_active++;
+      if (block->steps[E_AXIS]) e_active++;
       block_index = (block_index+1) & (BLOCK_BUFFER_SIZE - 1);
     }
   }
-  if((DISABLE_X) && (x_active == 0)) disable_x();
-  if((DISABLE_Y) && (y_active == 0)) disable_y();
-  if((DISABLE_Z) && (z_active == 0)) disable_z();
-  if((DISABLE_E) && (e_active == 0))
-  {
+  if ((DISABLE_X) && !x_active) disable_x();
+  if ((DISABLE_Y) && !y_active) disable_y();
+  if ((DISABLE_Z) && !z_active) disable_z();
+  if ((DISABLE_E) && !e_active) {
     disable_e0();
     disable_e1();
     disable_e2(); 
   }
-#if defined(FAN_PIN) && FAN_PIN > -1
-  #ifdef FAN_KICKSTART_TIME
-    static unsigned long fan_kick_end;
-    if (tail_fan_speed) {
-      if (fan_kick_end == 0) {
-        // Just starting up fan - run at full power.
-        fan_kick_end = millis() + FAN_KICKSTART_TIME;
-        tail_fan_speed = 255;
-      } else if (fan_kick_end > millis())
-        // Fan still spinning up.
-        tail_fan_speed = 255;
-    } else {
-      fan_kick_end = 0;
-    }
-  #endif//FAN_KICKSTART_TIME
-  #ifdef FAN_SOFT_PWM
-  fanSpeedSoftPwm = tail_fan_speed;
-  #else
-  analogWrite(FAN_PIN,tail_fan_speed);
-  #endif//!FAN_SOFT_PWM
-#endif//FAN_PIN > -1
-#ifdef AUTOTEMP
-  getHighESpeed();
-#endif
+  #if defined(FAN_PIN) && FAN_PIN > -1
+    #ifdef FAN_KICKSTART_TIME
+      static unsigned long fan_kick_end;
+      if (tail_fan_speed) {
+        if (fan_kick_end == 0) {
+          // Just starting up fan - run at full power.
+          fan_kick_end = millis() + FAN_KICKSTART_TIME;
+          tail_fan_speed = 255;
+        } else if (fan_kick_end > millis())
+          // Fan still spinning up.
+          tail_fan_speed = 255;
+      } else {
+        fan_kick_end = 0;
+      }
+    #endif//FAN_KICKSTART_TIME
+    #ifdef FAN_SOFT_PWM
+    fanSpeedSoftPwm = tail_fan_speed;
+    #else
+    analogWrite(FAN_PIN,tail_fan_speed);
+    #endif//!FAN_SOFT_PWM
+  #endif//FAN_PIN > -1
+  #ifdef AUTOTEMP
+    getHighESpeed();
+  #endif
 }
 
 bool waiting_inside_plan_buffer_line_print_aborted = false;
@@ -545,20 +541,17 @@ void planner_abort_hard()
     current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
     current_position[E_AXIS] = st_get_position_mm(E_AXIS);
     // Apply the mesh bed leveling correction to the Z axis.
-#ifdef MESH_BED_LEVELING
+  #ifdef MESH_BED_LEVELING
     if (mbl.active)
         current_position[Z_AXIS] -= mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]);
-#endif
+  #endif
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
     memcpy(destination, current_position, sizeof(destination));
 
     // Resets planner junction speeds. Assumes start from rest.
     previous_nominal_speed = 0.0;
-    previous_speed[0] = 0.0;
-    previous_speed[1] = 0.0;
-    previous_speed[2] = 0.0;
-    previous_speed[3] = 0.0;
+    memset(previous_speed, 0, sizeof(previous_speed));
 
     // Relay to planner wait routine, that the current line shall be canceled.
     waiting_inside_plan_buffer_line_print_aborted = true;
@@ -1004,14 +997,15 @@ Having the real displacement of the head, we can calculate the total movement le
       // respecting the jerk factors, it may be possible, that applying separate safe exit / entry velocities will achieve faster prints.
       float vmax_junction_threshold = vmax_junction * 0.99f;
       if (previous_safe_speed > vmax_junction_threshold && safe_speed > vmax_junction_threshold) {
-          // Not coasting. The machine will stop and start the movements anyway,
-          // better to start the segment from start.
-          block->flag |= BLOCK_FLAG_START_FROM_FULL_HALT;
-          vmax_junction = safe_speed;
+        // Not coasting. The machine will stop and start the movements anyway,
+        // better to start the segment from start.
+        block->flag |= BLOCK_FLAG_START_FROM_FULL_HALT;
+        vmax_junction = safe_speed;
       }
-  } else {
-      block->flag |= BLOCK_FLAG_START_FROM_FULL_HALT;
-      vmax_junction = safe_speed;
+  }
+  else {
+    block->flag |= BLOCK_FLAG_START_FROM_FULL_HALT;
+    vmax_junction = safe_speed;
   }
 
   // Max entry speed of this block equals the max exit speed of the previous block.
