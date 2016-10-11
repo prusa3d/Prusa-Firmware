@@ -2822,7 +2822,24 @@ static void lcd_selftest()
 	int _progress = 0;
 	bool _result = false;
 
-	_progress = lcd_selftest_screen(-1, _progress, 4, true, 2000);
+	lcd_implementation_clear();
+	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST);
+	delay(2000);
+
+
+	_result = lcd_selftest_fan_dialog(1);
+
+	if (_result)
+	{
+		_result = lcd_selftest_fan_dialog(2);
+	}
+
+	if (_result)
+	{
+		_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(-1, _progress, 4, true, 3000);
+		_result = lcd_selfcheck_endstops();
+	}
 
 	_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
 	_result = lcd_selfcheck_endstops();
@@ -3124,6 +3141,102 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 	lcd_return_to_status();
 
 }
+
+static bool lcd_selftest_fan_dialog(int _fan)
+{
+	bool _result = false;
+	lcd_implementation_clear();
+
+	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST);
+	switch (_fan)
+	{
+	case 1:
+		// extruder cooling fan
+		lcd.setCursor(0, 1); lcd_printPGM(MSG_SELFTEST_EXTRUDER_FAN);
+		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
+		break;
+	case 2:
+		// object cooling fan
+		lcd.setCursor(0, 1); lcd_printPGM(MSG_SELFTEST_COOLING_FAN);
+		SET_OUTPUT(FAN_PIN);
+		analogWrite(FAN_PIN, 255);
+		break;
+	}
+	delay(500);
+
+	lcd.setCursor(1, 2); lcd_printPGM(MSG_YES);
+	lcd.setCursor(0, 3); lcd.print(">");
+	lcd.setCursor(1, 3); lcd_printPGM(MSG_NO);
+
+
+
+
+
+	int8_t enc_dif = 0;
+	bool _response = false;
+	do
+	{
+
+		switch (_fan)
+		{
+		case 1:
+			// extruder cooling fan
+			SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+			WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
+			break;
+		case 2:
+			// object cooling fan
+			SET_OUTPUT(FAN_PIN);
+			analogWrite(FAN_PIN, 255);
+			break;
+		}
+
+
+		if (abs((enc_dif - encoderDiff)) > 2) {
+			if (enc_dif > encoderDiff) {
+				_result = true;
+				lcd.setCursor(0, 2); lcd.print(">");
+				lcd.setCursor(1, 2); lcd_printPGM(MSG_YES);
+				lcd.setCursor(0, 3); lcd.print(" ");
+				lcd.setCursor(1, 3); lcd_printPGM(MSG_NO);
+			}
+
+			if (enc_dif < encoderDiff) {
+				_result = false;
+				lcd.setCursor(0, 2); lcd.print(" ");
+				lcd.setCursor(1, 2); lcd_printPGM(MSG_YES);
+				lcd.setCursor(0, 3); lcd.print(">");
+				lcd.setCursor(1, 3); lcd_printPGM(MSG_NO);
+			}
+			enc_dif = 0;
+			encoderDiff = 0;
+		}
+
+
+		manage_heater();
+		delay(100);
+
+		if (lcd_clicked())
+		{
+			_response = true;
+		}
+
+
+	} while (!_response);
+
+	SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+	WRITE(EXTRUDER_0_AUTO_FAN_PIN, 0);
+	SET_OUTPUT(FAN_PIN);
+	analogWrite(FAN_PIN, 0);
+
+	fanSpeed = 0;
+	manage_heater();
+
+	return _result;
+
+}
+
 static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay)
 {
 	lcd_next_update_millis = millis() + (LCD_UPDATE_INTERVAL * 10000);
@@ -3149,21 +3262,23 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	lcd.setCursor(0, 1);
 	lcd.print("--------------------");
 
-	_step_block = 1;
-	lcd_selftest_screen_step(3, 9, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Hotend", _indicator);
+	if (_step != 7)
+	{
+		_step_block = 1;
+		lcd_selftest_screen_step(3, 9, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Hotend", _indicator);
 
-	_step_block = 2;
-	lcd_selftest_screen_step(2, 2, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "X", _indicator);
+		_step_block = 2;
+		lcd_selftest_screen_step(2, 2, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "X", _indicator);
 
-	_step_block = 3;
-	lcd_selftest_screen_step(2, 8, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Y", _indicator);
+		_step_block = 3;
+		lcd_selftest_screen_step(2, 8, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Y", _indicator);
 
-	_step_block = 4;
-	lcd_selftest_screen_step(2, 14, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Z", _indicator);
+		_step_block = 4;
+		lcd_selftest_screen_step(2, 14, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Z", _indicator);
 
-	_step_block = 5;
-	lcd_selftest_screen_step(3, 0, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Bed", _indicator);
-
+		_step_block = 5;
+		lcd_selftest_screen_step(3, 0, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Bed", _indicator);
+	}
 
 	if (_delay > 0) delay(_delay);
 	_progress++;
