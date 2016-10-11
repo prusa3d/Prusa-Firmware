@@ -341,7 +341,7 @@ ISR(TIMER1_COMPA_vect)
       step_events_completed = 0;
 
       #ifdef Z_LATE_ENABLE
-        if(current_block->steps_z > 0) {
+        if(current_block->steps[Z_AXIS] > 0) {
           enable_z();
           OCR1A = 2000; //1ms wait
           return;
@@ -397,7 +397,7 @@ ISR(TIMER1_COMPA_vect)
         {
           #if defined(X_MIN_PIN) && X_MIN_PIN > -1
             bool x_min_endstop=(READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
-            if(x_min_endstop && old_x_min_endstop && (current_block->steps_x > 0)) {
+            if(x_min_endstop && old_x_min_endstop && (current_block->steps[X_AXIS] > 0)) {
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
               step_events_completed = current_block->step_event_count;
@@ -413,7 +413,7 @@ ISR(TIMER1_COMPA_vect)
         {
           #if defined(X_MAX_PIN) && X_MAX_PIN > -1
             bool x_max_endstop=(READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
-            if(x_max_endstop && old_x_max_endstop && (current_block->steps_x > 0)){
+            if(x_max_endstop && old_x_max_endstop && (current_block->steps[X_AXIS] > 0)){
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
               step_events_completed = current_block->step_event_count;
@@ -433,7 +433,7 @@ ISR(TIMER1_COMPA_vect)
       {
         #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
           bool y_min_endstop=(READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
-          if(y_min_endstop && old_y_min_endstop && (current_block->steps_y > 0)) {
+          if(y_min_endstop && old_y_min_endstop && (current_block->steps[Y_AXIS] > 0)) {
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
             step_events_completed = current_block->step_event_count;
@@ -447,7 +447,7 @@ ISR(TIMER1_COMPA_vect)
       {
         #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
           bool y_max_endstop=(READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
-          if(y_max_endstop && old_y_max_endstop && (current_block->steps_y > 0)){
+          if(y_max_endstop && old_y_max_endstop && (current_block->steps[Y_AXIS] > 0)){
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
             step_events_completed = current_block->step_event_count;
@@ -469,7 +469,7 @@ ISR(TIMER1_COMPA_vect)
       {
         #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
           bool z_min_endstop=(READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
-          if(z_min_endstop && old_z_min_endstop && (current_block->steps_z > 0)) {
+          if(z_min_endstop && old_z_min_endstop && (current_block->steps[Z_AXIS] > 0)) {
             endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
             endstop_z_hit=true;
             step_events_completed = current_block->step_event_count;
@@ -490,7 +490,7 @@ ISR(TIMER1_COMPA_vect)
       {
         #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
           bool z_max_endstop=(READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING);
-          if(z_max_endstop && old_z_max_endstop && (current_block->steps_z > 0)) {
+          if(z_max_endstop && old_z_max_endstop && (current_block->steps[Z_AXIS] > 0)) {
             endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
             endstop_z_hit=true;
             step_events_completed = current_block->step_event_count;
@@ -529,7 +529,7 @@ ISR(TIMER1_COMPA_vect)
       MSerial.checkRx(); // Check for serial chars.
       #endif
 
-        counter_x += current_block->steps_x;
+        counter_x += current_block->steps[X_AXIS];
         if (counter_x > 0) {
           WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
           counter_x -= current_block->step_event_count;
@@ -537,7 +537,7 @@ ISR(TIMER1_COMPA_vect)
           WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
         }
 
-        counter_y += current_block->steps_y;
+        counter_y += current_block->steps[Y_AXIS];
         if (counter_y > 0) {
           WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
 		  
@@ -554,7 +554,7 @@ ISR(TIMER1_COMPA_vect)
 		  #endif
         }
 
-      counter_z += current_block->steps_z;
+      counter_z += current_block->steps[Z_AXIS];
       if (counter_z > 0) {
         WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
         
@@ -571,7 +571,7 @@ ISR(TIMER1_COMPA_vect)
         #endif
       }
 
-        counter_e += current_block->steps_e;
+        counter_e += current_block->steps[E_AXIS];
         if (counter_e > 0) {
           WRITE_E_STEP(!INVERT_E_STEP_PIN);
           counter_e -= current_block->step_event_count;

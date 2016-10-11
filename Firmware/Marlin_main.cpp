@@ -3665,7 +3665,7 @@ Sigma_Exit:
               float factor = axis_steps_per_unit[i] / value; // increase e constants if M92 E14 is given for netfab.
               max_jerk[E_AXIS] *= factor;
               max_feedrate[i] *= factor;
-              axis_steps_per_sqr_second[i] *= factor;
+              max_acceleration_steps_per_s2[i] *= factor;
             }
             axis_steps_per_unit[i] = value;
           }

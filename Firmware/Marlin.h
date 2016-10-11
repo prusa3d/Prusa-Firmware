@@ -239,6 +239,17 @@ void setPwmFrequency(uint8_t pin, int val);
   #define CRITICAL_SECTION_END    SREG = _sreg;
 #endif //CRITICAL_SECTION_START
 
+// Array sizes
+#define ABC  3
+#define XYZ  3
+#define ABCE 4
+#define ABZE 4
+#define XYZE 4
+
+// Macros to contrain values
+#define NOLESS(v,n) do{ if (v < n) v = n; }while(0)
+#define NOMORE(v,n) do{ if (v > n) v = n; }while(0)
+
 extern float homing_feedrate[];
 extern bool axis_relative_modes[];
 extern int feedmultiply;
