@@ -2823,7 +2823,7 @@ static void lcd_selftest()
 	bool _result = false;
 
 	lcd_implementation_clear();
-	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST);
+	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_START);
 	delay(2000);
 
 
@@ -2837,13 +2837,9 @@ static void lcd_selftest()
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
-		_progress = lcd_selftest_screen(-1, _progress, 4, true, 3000);
 		_result = lcd_selfcheck_endstops();
 	}
-
-	_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
-	_result = lcd_selfcheck_endstops();
-
+		
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(1, _progress, 3, true, 1000);
@@ -3125,6 +3121,22 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd.setCursor(18, 3);
 		lcd.print(_error_1);
 		break;
+	case 6:
+		lcd.setCursor(0, 2);
+		lcd_printPGM(MSG_SELFTEST_COOLING_FAN);
+		lcd.setCursor(0, 3);
+		lcd_printPGM(MSG_SELFTEST_WIRINGERROR);
+		lcd.setCursor(18, 3);
+		lcd.print(_error_1);
+		break;
+	case 7:
+		lcd.setCursor(0, 2);
+		lcd_printPGM(MSG_SELFTEST_EXTRUDER_FAN);
+		lcd.setCursor(0, 3);
+		lcd_printPGM(MSG_SELFTEST_WIRINGERROR);
+		lcd.setCursor(18, 3);
+		lcd.print(_error_1);
+		break;
 
 	}
 
@@ -3145,9 +3157,10 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 static bool lcd_selftest_fan_dialog(int _fan)
 {
 	bool _result = false;
+	int _errno = 0;
 	lcd_implementation_clear();
 
-	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST);
+	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_FAN);
 	switch (_fan)
 	{
 	case 1:
@@ -3155,19 +3168,21 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		lcd.setCursor(0, 1); lcd_printPGM(MSG_SELFTEST_EXTRUDER_FAN);
 		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
+		_errno = 7;
 		break;
 	case 2:
 		// object cooling fan
 		lcd.setCursor(0, 1); lcd_printPGM(MSG_SELFTEST_COOLING_FAN);
 		SET_OUTPUT(FAN_PIN);
 		analogWrite(FAN_PIN, 255);
+		_errno = 6;
 		break;
 	}
 	delay(500);
 
-	lcd.setCursor(1, 2); lcd_printPGM(MSG_YES);
+	lcd.setCursor(1, 2); lcd_printPGM(MSG_SELFTEST_FAN_YES);
 	lcd.setCursor(0, 3); lcd.print(">");
-	lcd.setCursor(1, 3); lcd_printPGM(MSG_NO);
+	lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
 
 
 
@@ -3197,17 +3212,17 @@ static bool lcd_selftest_fan_dialog(int _fan)
 			if (enc_dif > encoderDiff) {
 				_result = true;
 				lcd.setCursor(0, 2); lcd.print(">");
-				lcd.setCursor(1, 2); lcd_printPGM(MSG_YES);
+				lcd.setCursor(1, 2); lcd_printPGM(MSG_SELFTEST_FAN_YES);
 				lcd.setCursor(0, 3); lcd.print(" ");
-				lcd.setCursor(1, 3); lcd_printPGM(MSG_NO);
+				lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
 			}
 
 			if (enc_dif < encoderDiff) {
 				_result = false;
 				lcd.setCursor(0, 2); lcd.print(" ");
-				lcd.setCursor(1, 2); lcd_printPGM(MSG_YES);
+				lcd.setCursor(1, 2); lcd_printPGM(MSG_SELFTEST_FAN_YES);
 				lcd.setCursor(0, 3); lcd.print(">");
-				lcd.setCursor(1, 3); lcd_printPGM(MSG_NO);
+				lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
 			}
 			enc_dif = 0;
 			encoderDiff = 0;
@@ -3232,6 +3247,12 @@ static bool lcd_selftest_fan_dialog(int _fan)
 
 	fanSpeed = 0;
 	manage_heater();
+
+	if (!_result)
+	{
+		const char *_err;
+		lcd_selftest_error(_errno, _err, _err);
+	}
 
 	return _result;
 

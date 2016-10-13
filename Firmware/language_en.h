@@ -164,8 +164,11 @@
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
-#define MSG_SELFTEST_COOLING_FAN			"Print fan ok ?";
-#define MSG_SELFTEST_EXTRUDER_FAN			"Fan ok ?";
+#define MSG_SELFTEST_FAN					"Fan test";
+#define MSG_SELFTEST_COOLING_FAN			"Front print";
+#define MSG_SELFTEST_EXTRUDER_FAN			"Left hotend";
+#define MSG_SELFTEST_FAN_YES				"Spinning";
+#define MSG_SELFTEST_FAN_NO					"Not spinning";
 #define(length=20) MSG_STATS_TOTALFILAMENT	"Total filament :"
 #define(length=20) MSG_STATS_TOTALPRINTTIME "Total print time :"
 #define(length=20) MSG_STATS_FILAMENTUSED	"Filament used:  "

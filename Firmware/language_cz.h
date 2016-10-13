@@ -170,6 +170,11 @@
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
+#define MSG_SELFTEST_FAN					"Test ventilatoru";
+#define MSG_SELFTEST_COOLING_FAN			"Predni tiskovy";
+#define MSG_SELFTEST_EXTRUDER_FAN			"Levy na trysce";
+#define MSG_SELFTEST_FAN_YES				"Toci se";
+#define MSG_SELFTEST_FAN_NO					"Netoci se";
 
 #define MSG_STATS_TOTALFILAMENT				"Filament celkem :"
 #define MSG_STATS_TOTALPRINTTIME			"Celkovy cas :"
