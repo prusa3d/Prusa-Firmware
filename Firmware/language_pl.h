@@ -172,6 +172,12 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT         "Endstop not hit"
 #define MSG_SELFTEST_OK                     "Self test OK"
 
+#define(length=20) MSG_SELFTEST_FAN					"Test wentylatora";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Przodni went. druku";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze";
+#define MSG_SELFTEST_FAN_YES				"Kreci sie";
+#define MSG_SELFTEST_FAN_NO					"Nekreci sie";
+
 #define MSG_STATS_TOTALFILAMENT             "Filament lacznie :"
 #define MSG_STATS_TOTALPRINTTIME            "Czas calkowity :"
 #define MSG_STATS_FILAMENTUSED              "Filament :  "
@@ -208,7 +214,7 @@
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Kalibr. XYZ nieudana. Kalibracyjny punkt podkladki nieznaleziony."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED            "Kalibracja XYZ niepowiedziona. Sprawdzic w instrukcji."
-#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT                   "Kalibracja XYZ ok. Osie X/Y sa prostopadle."
+#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT                   "Kalibracja XYZ ok. Osie X/Y sa prostopadle. Gratulacje!"
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD                 "Kalibracja XYZ w porzadku. Osie X/Y lekko skosne."
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME              "Osie X/Y sa mocno skosne. Skos bedzie aut. wyrownany przy druku."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR     "Kalibr. XYZ nieudana. Lewy przedni punkt zbyt do przodu. Wyrownac drukarke."
@@ -231,6 +237,7 @@
 #define MSG_BED_CORRECTION_REAR                                 "Do tylu  [um]"
 #define MSG_BED_CORRECTION_RESET                                "Reset"
 
+#define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Kalibracja"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"karta SD [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"karta SD[FlshAir]"
