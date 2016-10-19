@@ -2720,6 +2720,11 @@ void lcd_sdcard_stop()
 				lcd_return_to_status();
 				lcd_ignore_click(true);
 				lcd_commands_type = LCD_COMMAND_STOP_PRINT;
+            
+                // Turn off the print fan
+                SET_OUTPUT(FAN_PIN);
+                WRITE(FAN_PIN, 0);
+                fanSpeed=0;
 		}
 	}
 
