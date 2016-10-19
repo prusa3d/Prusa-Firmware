@@ -153,10 +153,10 @@
 #define MSG_SELFTEST_OK			    "Autotest OK"
 
 #define(length=20) MSG_SELFTEST_FAN					"Prova del ventilator";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Left hotend fan";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Vent di stampa ant.";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Vent SX sull'ugello";
 #define MSG_SELFTEST_FAN_YES				"Gira";
-#define MSG_SELFTEST_FAN_NO					"Non gira";
+#define MSG_SELFTEST_FAN_NO					"Non si gira";
 
 #define MSG_STATS_TOTALFILAMENT		    "Filamento tot:"
 #define MSG_STATS_TOTALPRINTTIME	    "Tempo stampa tot:"
