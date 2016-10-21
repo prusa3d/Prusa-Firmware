@@ -167,8 +167,8 @@
 #define MSG_SELFTEST_OK                     "Self test OK"
 
 #define(length=20) MSG_SELFTEST_FAN					"Test del ventilador";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Ventilador al frente";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Ventilador en la izg";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Vent. al frente?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Vent. en la izg?";
 #define MSG_SELFTEST_FAN_YES				"Ventilador gira";
 #define MSG_SELFTEST_FAN_NO					"Ventilador no gira";
 

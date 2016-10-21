@@ -1714,11 +1714,11 @@ const char * const MSG_SELFTEST_CHECK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_Z_PL
 };
 
-const char MSG_SELFTEST_COOLING_FAN_EN[] PROGMEM = "Front print fan";;
-const char MSG_SELFTEST_COOLING_FAN_CZ[] PROGMEM = "Predni tiskovy vent";;
-const char MSG_SELFTEST_COOLING_FAN_IT[] PROGMEM = "Vent di stampa ant.";;
-const char MSG_SELFTEST_COOLING_FAN_ES[] PROGMEM = "Ventilador al frente";;
-const char MSG_SELFTEST_COOLING_FAN_PL[] PROGMEM = "Przodni went. druku";;
+const char MSG_SELFTEST_COOLING_FAN_EN[] PROGMEM = "Front print fan?";;
+const char MSG_SELFTEST_COOLING_FAN_CZ[] PROGMEM = "Predni tiskovy vent?";;
+const char MSG_SELFTEST_COOLING_FAN_IT[] PROGMEM = "Vent di stampa ant.?";;
+const char MSG_SELFTEST_COOLING_FAN_ES[] PROGMEM = "Vent. al frente?";;
+const char MSG_SELFTEST_COOLING_FAN_PL[] PROGMEM = "Przodni went. druku?";;
 const char * const MSG_SELFTEST_COOLING_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_COOLING_FAN_EN,
 	MSG_SELFTEST_COOLING_FAN_CZ,
@@ -1771,11 +1771,11 @@ const char * const MSG_SELFTEST_ERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_ERROR_EN
 };
 
-const char MSG_SELFTEST_EXTRUDER_FAN_EN[] PROGMEM = "Left hotend fan";;
-const char MSG_SELFTEST_EXTRUDER_FAN_CZ[] PROGMEM = "Levy vent na trysce";;
-const char MSG_SELFTEST_EXTRUDER_FAN_IT[] PROGMEM = "Vent SX sull'ugello";;
-const char MSG_SELFTEST_EXTRUDER_FAN_ES[] PROGMEM = "Ventilador en la izg";;
-const char MSG_SELFTEST_EXTRUDER_FAN_PL[] PROGMEM = "Lewy went na dysze";;
+const char MSG_SELFTEST_EXTRUDER_FAN_EN[] PROGMEM = "Left hotend fan?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_CZ[] PROGMEM = "Levy vent na trysce?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_IT[] PROGMEM = "Vent SX sull'ugello?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_ES[] PROGMEM = "Vent. en la izg?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_PL[] PROGMEM = "Lewy went na dysze?";;
 const char * const MSG_SELFTEST_EXTRUDER_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_EXTRUDER_FAN_EN,
 	MSG_SELFTEST_EXTRUDER_FAN_CZ,

@@ -173,8 +173,8 @@
 #define MSG_SELFTEST_OK                     "Self test OK"
 
 #define(length=20) MSG_SELFTEST_FAN					"Test wentylatora";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Przodni went. druku";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Przodni went. druku?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze?";
 #define MSG_SELFTEST_FAN_YES				"Kreci sie";
 #define MSG_SELFTEST_FAN_NO					"Nekreci sie";
 

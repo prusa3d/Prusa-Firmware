@@ -172,8 +172,8 @@
 #define MSG_SELFTEST_OK						"Self test OK"
 
 #define(length=20) MSG_SELFTEST_FAN					"Test ventilatoru";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Predni tiskovy vent";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Levy vent na trysce";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Predni tiskovy vent?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Levy vent na trysce?";
 #define MSG_SELFTEST_FAN_YES				"Toci se";
 #define MSG_SELFTEST_FAN_NO					"Netoci se";
 
