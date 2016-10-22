@@ -166,6 +166,12 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT         "Tope fin. no toc."
 #define MSG_SELFTEST_OK                     "Self test OK"
 
+#define(length=20) MSG_SELFTEST_FAN					"Test del ventilador";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Vent. al frente?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Vent. en la izg?";
+#define MSG_SELFTEST_FAN_YES				"Ventilador gira";
+#define MSG_SELFTEST_FAN_NO					"Ventilador no gira";
+
 #define MSG_STATS_TOTALFILAMENT             "Filamento total:"
 #define MSG_STATS_TOTALPRINTTIME            "Tiempo total :"
 #define MSG_STATS_FILAMENTUSED              "Filamento :  "
@@ -202,7 +208,7 @@
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Calibracion XYZ fallada. Puntos de calibracion en la cama no encontrados."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED            "Calibracion XYZ fallada. Consultar el manual por favor."
-#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT               "Calibracion XYZ ok. Ejes X/Y perpendiculares."
+#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT               "Calibracion XYZ ok. Ejes X/Y perpendiculares. Felicitaciones!"
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD             "Calibracion XYZ conseguida. Ejes X/Y un poco torcidos."
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME          "X/Y muy distorsionado. La distorsion sera corregida automaticamente."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR     "Calibracion XYZ fallad. Punto delantero izquierdo no alcanzable."
@@ -225,4 +231,7 @@
 #define MSG_BED_CORRECTION_REAR                                 "Atras     [um]"
 #define MSG_BED_CORRECTION_RESET                                "Reset"
 
+#define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Calibracion"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"

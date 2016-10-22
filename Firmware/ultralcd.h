@@ -37,6 +37,7 @@ void lcd_mylang();
   static bool lcd_selfcheck_check_heater(bool _isbed);
   static int  lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay);
   static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
+  static bool lcd_selftest_fan_dialog(int _fan);
   static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
   static void lcd_menu_statistics();
 

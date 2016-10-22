@@ -91,12 +91,13 @@ const char MSG_BABYSTEP_Z_NOT_SET_EN[] PROGMEM = "Distance between tip of the no
 const char MSG_BABYSTEP_Z_NOT_SET_CZ[] PROGMEM = "Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy.";
 const char MSG_BABYSTEP_Z_NOT_SET_IT[] PROGMEM = "Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo First steps, sezione First layer calibration.";
 const char MSG_BABYSTEP_Z_NOT_SET_ES[] PROGMEM = "Distancia entre la punta de la boquilla y la superficie de la cama no fijada aun. Por favor siga el manual, capitulo First steps, seccion First layer calibration.";
+const char MSG_BABYSTEP_Z_NOT_SET_PL[] PROGMEM = "Odleglosc dyszy od podkladki nie jest skalibrowana. Postepuj zgodnie z instrukcja rozdzial Zaczynamy, podrozdzial Kalibracja pierwszej warstwy.";
 const char * const MSG_BABYSTEP_Z_NOT_SET_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BABYSTEP_Z_NOT_SET_EN,
 	MSG_BABYSTEP_Z_NOT_SET_CZ,
 	MSG_BABYSTEP_Z_NOT_SET_IT,
 	MSG_BABYSTEP_Z_NOT_SET_ES,
-	MSG_BABYSTEP_Z_NOT_SET_EN
+	MSG_BABYSTEP_Z_NOT_SET_PL
 };
 
 const char MSG_BED_EN[] PROGMEM = "Bed";
@@ -298,11 +299,11 @@ const char * const MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED_LANG_TABLE[LANG_
 	MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED_PL
 };
 
-const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_EN[] PROGMEM = "XYZ calibration ok. X/Y axes are perpendicular.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_CZ[] PROGMEM = "Kalibrace XYZ v poradku. X/Y osy jsou kolme.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_IT[] PROGMEM = "Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_ES[] PROGMEM = "Calibracion XYZ ok. Ejes X/Y perpendiculares.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_PL[] PROGMEM = "Kalibracja XYZ ok. Osie X/Y sa prostopadle.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_EN[] PROGMEM = "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_CZ[] PROGMEM = "Kalibrace XYZ v poradku. X/Y osy jsou kolme. Gratuluji!";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_IT[] PROGMEM = "Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari. Complimenti!";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_ES[] PROGMEM = "Calibracion XYZ ok. Ejes X/Y perpendiculares. Felicitaciones!";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_PL[] PROGMEM = "Kalibracja XYZ ok. Osie X/Y sa prostopadle. Gratulacje!";
 const char * const MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_EN,
 	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_CZ,
@@ -1713,6 +1714,19 @@ const char * const MSG_SELFTEST_CHECK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_Z_PL
 };
 
+const char MSG_SELFTEST_COOLING_FAN_EN[] PROGMEM = "Front print fan?";;
+const char MSG_SELFTEST_COOLING_FAN_CZ[] PROGMEM = "Predni tiskovy vent?";;
+const char MSG_SELFTEST_COOLING_FAN_IT[] PROGMEM = "Vent di stampa ant.?";;
+const char MSG_SELFTEST_COOLING_FAN_ES[] PROGMEM = "Vent. al frente?";;
+const char MSG_SELFTEST_COOLING_FAN_PL[] PROGMEM = "Przodni went. druku?";;
+const char * const MSG_SELFTEST_COOLING_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SELFTEST_COOLING_FAN_EN,
+	MSG_SELFTEST_COOLING_FAN_CZ,
+	MSG_SELFTEST_COOLING_FAN_IT,
+	MSG_SELFTEST_COOLING_FAN_ES,
+	MSG_SELFTEST_COOLING_FAN_PL
+};
+
 const char MSG_SELFTEST_ENDSTOP_EN[] PROGMEM = "Endstop";
 const char MSG_SELFTEST_ENDSTOP_IT[] PROGMEM = "Finecorsa";
 const char MSG_SELFTEST_ENDSTOP_ES[] PROGMEM = "Tope final";
@@ -1757,6 +1771,19 @@ const char * const MSG_SELFTEST_ERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_ERROR_EN
 };
 
+const char MSG_SELFTEST_EXTRUDER_FAN_EN[] PROGMEM = "Left hotend fan?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_CZ[] PROGMEM = "Levy vent na trysce?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_IT[] PROGMEM = "Vent SX sull'ugello?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_ES[] PROGMEM = "Vent. en la izg?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_PL[] PROGMEM = "Lewy went na dysze?";;
+const char * const MSG_SELFTEST_EXTRUDER_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SELFTEST_EXTRUDER_FAN_EN,
+	MSG_SELFTEST_EXTRUDER_FAN_CZ,
+	MSG_SELFTEST_EXTRUDER_FAN_IT,
+	MSG_SELFTEST_EXTRUDER_FAN_ES,
+	MSG_SELFTEST_EXTRUDER_FAN_PL
+};
+
 const char MSG_SELFTEST_FAILED_EN[] PROGMEM = "Selftest failed  ";
 const char MSG_SELFTEST_FAILED_CZ[] PROGMEM = "Selftest selhal  ";
 const char MSG_SELFTEST_FAILED_IT[] PROGMEM = "Autotest fallito";
@@ -1768,6 +1795,45 @@ const char * const MSG_SELFTEST_FAILED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAILED_IT,
 	MSG_SELFTEST_FAILED_ES,
 	MSG_SELFTEST_FAILED_PL
+};
+
+const char MSG_SELFTEST_FAN_EN[] PROGMEM = "Fan test";;
+const char MSG_SELFTEST_FAN_CZ[] PROGMEM = "Test ventilatoru";;
+const char MSG_SELFTEST_FAN_IT[] PROGMEM = "Prova del ventilator";;
+const char MSG_SELFTEST_FAN_ES[] PROGMEM = "Test del ventilador";;
+const char MSG_SELFTEST_FAN_PL[] PROGMEM = "Test wentylatora";;
+const char * const MSG_SELFTEST_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SELFTEST_FAN_EN,
+	MSG_SELFTEST_FAN_CZ,
+	MSG_SELFTEST_FAN_IT,
+	MSG_SELFTEST_FAN_ES,
+	MSG_SELFTEST_FAN_PL
+};
+
+const char MSG_SELFTEST_FAN_NO_EN[] PROGMEM = "Not spinning";;
+const char MSG_SELFTEST_FAN_NO_CZ[] PROGMEM = "Netoci se";;
+const char MSG_SELFTEST_FAN_NO_IT[] PROGMEM = "Non si gira";;
+const char MSG_SELFTEST_FAN_NO_ES[] PROGMEM = "Ventilador no gira";;
+const char MSG_SELFTEST_FAN_NO_PL[] PROGMEM = "Nekreci sie";;
+const char * const MSG_SELFTEST_FAN_NO_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SELFTEST_FAN_NO_EN,
+	MSG_SELFTEST_FAN_NO_CZ,
+	MSG_SELFTEST_FAN_NO_IT,
+	MSG_SELFTEST_FAN_NO_ES,
+	MSG_SELFTEST_FAN_NO_PL
+};
+
+const char MSG_SELFTEST_FAN_YES_EN[] PROGMEM = "Spinning";;
+const char MSG_SELFTEST_FAN_YES_CZ[] PROGMEM = "Toci se";;
+const char MSG_SELFTEST_FAN_YES_IT[] PROGMEM = "Gira";;
+const char MSG_SELFTEST_FAN_YES_ES[] PROGMEM = "Ventilador gira";;
+const char MSG_SELFTEST_FAN_YES_PL[] PROGMEM = "Kreci sie";;
+const char * const MSG_SELFTEST_FAN_YES_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SELFTEST_FAN_YES_EN,
+	MSG_SELFTEST_FAN_YES_CZ,
+	MSG_SELFTEST_FAN_YES_IT,
+	MSG_SELFTEST_FAN_YES_ES,
+	MSG_SELFTEST_FAN_YES_PL
 };
 
 const char MSG_SELFTEST_HEATERTHERMISTOR_EN[] PROGMEM = "Heater/Thermistor";

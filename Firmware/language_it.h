@@ -151,6 +151,13 @@
 #define MSG_SELFTEST_ENDSTOP		    "Finecorsa"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT	    "Finec. fuori por."
 #define MSG_SELFTEST_OK			    "Autotest OK"
+
+#define(length=20) MSG_SELFTEST_FAN					"Prova del ventilator";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Vent di stampa ant.?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN        "Vent SX sull'ugello?";
+#define MSG_SELFTEST_FAN_YES				"Gira";
+#define MSG_SELFTEST_FAN_NO					"Non si gira";
+
 #define MSG_STATS_TOTALFILAMENT		    "Filamento tot:"
 #define MSG_STATS_TOTALPRINTTIME	    "Tempo stampa tot:"
 #define MSG_STATS_FILAMENTUSED		    "Filamento usato:"
@@ -192,7 +199,7 @@
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND		"Calibrazione XYZ fallita. Il punto di calibrazione sul letto non e' stato trovato."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED		"Calibrazione XYZ fallita. Si prega di consultare il manuale."
-#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT			"Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari."
+#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT			"Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari. Complimenti!"
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD			"Calibrazione XYZ compiuta. Gli assi X/Y sono leggermente distorti."
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		"X/Y fortemente distorto. La distorsione verra' corretta automaticamente."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR	"Calibrazione XYZ fallita. Punto anteriore sinistro non raggiungibile."
@@ -221,3 +228,5 @@
 
 #define MSG_MESH_BED_LEVELING							"Mesh livel. letto"
 #define MSG_MENU_CALIBRATION							"Calibrazione"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"

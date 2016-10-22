@@ -171,6 +171,12 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
 
+#define(length=20) MSG_SELFTEST_FAN					"Test ventilatoru";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Predni tiskovy vent?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Levy vent na trysce?";
+#define MSG_SELFTEST_FAN_YES				"Toci se";
+#define MSG_SELFTEST_FAN_NO					"Netoci se";
+
 #define MSG_STATS_TOTALFILAMENT				"Filament celkem :"
 #define MSG_STATS_TOTALPRINTTIME			"Celkovy cas :"
 #define MSG_STATS_FILAMENTUSED				"Filament :  "
@@ -209,7 +215,7 @@
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"Kalibrace XYZ selhala. Kalibracni bod podlozky nenalezen."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED			"Kalibrace XYZ selhala. Nahlednete do manualu."
-#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"Kalibrace XYZ v poradku. X/Y osy jsou kolme."
+#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"Kalibrace XYZ v poradku. X/Y osy jsou kolme. Gratuluji!"
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"Kalibrace XYZ v poradku. X/Y osy mirne zkosene."
 #define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"X/Y osy jsou silne zkosene. Zkoseni bude automaticky vyrovnano pri tisku."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR		"Kalibrace XYZ selhala. Levy predni bod moc vpredu. Srovnejte tiskarnu."
@@ -235,5 +241,7 @@
 #define MSG_BED_CORRECTION_REAR									"Vzadu  [um]"
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
-
+#define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Kalibrace"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"

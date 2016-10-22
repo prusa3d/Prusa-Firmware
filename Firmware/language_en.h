@@ -164,6 +164,13 @@
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
+
+#define MSG_SELFTEST_FAN					"Fan test";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Left hotend fan?";
+#define MSG_SELFTEST_FAN_YES				"Spinning";
+#define MSG_SELFTEST_FAN_NO					"Not spinning";
+
 #define(length=20) MSG_STATS_TOTALFILAMENT	"Total filament :"
 #define(length=20) MSG_STATS_TOTALPRINTTIME "Total print time :"
 #define(length=20) MSG_STATS_FILAMENTUSED	"Filament used:  "
@@ -203,7 +210,7 @@
 
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ calibration failed. Bed calibration point was not found."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED				"XYZ calibration failed. Please consult the manual."
-#define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"XYZ calibration ok. X/Y axes are perpendicular."
+#define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"XYZ calibration all right. X/Y axes are slightly skewed."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"X/Y skewed severly. Skew will be corrected automatically."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR		"XYZ calibration failed. Left front calibration point not reachable."
