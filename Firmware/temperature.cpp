@@ -1105,23 +1105,26 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 
 		if (temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
 		{
-			__preheat_counter++;
-			if (__preheat_counter > 4)
+			if (_current_temperature < 150)
 			{
-
-				if (_current_temperature - __preheat_start < 2){
-					__preheat_errors++;}
-				else{
-					__preheat_errors = 0;}
-
-				if (__preheat_errors > 5)
+				__preheat_counter++;
+				if (__preheat_counter > 8)
 				{
-					temp_runaway_stop(true);
-				}
-				__preheat_start = _current_temperature;
-				__preheat_counter = 0;
-			}
+					if (_current_temperature - __preheat_start < 2) {
+						__preheat_errors++;
+					}
+					else {
+						__preheat_errors = 0;
+					}
 
+					if (__preheat_errors > 5)
+					{
+						temp_runaway_stop(true);
+					}
+					__preheat_start = _current_temperature;
+					__preheat_counter = 0;
+				}
+			}
 		}
 
 		if (_current_temperature >= _target_temperature  && temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
