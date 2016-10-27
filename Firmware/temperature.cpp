@@ -1119,7 +1119,9 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 
 					if (__preheat_errors > 5)
 					{
+						if (farm_mode) { prusa_statistics(0); }
 						temp_runaway_stop(true);
+						if (farm_mode) { prusa_statistics(91); }
 					}
 					__preheat_start = _current_temperature;
 					__preheat_counter = 0;
@@ -1154,7 +1156,9 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 					temp_runaway_error_counter[_heater_id]++;
 					if (temp_runaway_error_counter[_heater_id] * 2 > __timeout)
 					{
+						if (farm_mode) { prusa_statistics(0); }
 						temp_runaway_stop(false);
+						if (farm_mode) { prusa_statistics(90); }
 					}
 				}
 			}
@@ -1269,6 +1273,7 @@ void max_temp_error(uint8_t e) {
     WRITE(BEEPER, 1);
     // fanSpeed will consumed by the check_axes_activity() routine.
     fanSpeed=255;
+	if (farm_mode) { prusa_statistics(93); }
 }
 
 void min_temp_error(uint8_t e) {
@@ -1282,6 +1287,8 @@ void min_temp_error(uint8_t e) {
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
   #endif
+  if (farm_mode) { prusa_statistics(92); }
+
 }
 
 void bed_max_temp_error(void) {
@@ -1296,6 +1303,7 @@ void bed_max_temp_error(void) {
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
   #endif
+
 }
 
 void bed_min_temp_error(void) {

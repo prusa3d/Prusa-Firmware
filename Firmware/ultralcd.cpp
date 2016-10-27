@@ -392,7 +392,7 @@ static void lcd_status_screen()
 		farm_timer--;
 		if (farm_timer < 1)
 		{
-			farm_timer = 90;
+			farm_timer = 180;
 			prusa_statistics(0);
 		}
 		switch (farm_timer)
@@ -1856,7 +1856,20 @@ void prusa_statistics(int _message) {
     case 22: // waiting for filament change
         SERIAL_ECHOLN("{[PRN:5]}");
         break;
-            
+	
+	case 90: // Error - Thermal Runaway
+		SERIAL_ECHOLN("{[ERR:1]}");
+		break;
+	case 91: // Error - Thermal Runaway Preheat
+		SERIAL_ECHOLN("{[ERR:2]}");
+		break;
+	case 92: // Error - Min temp
+		SERIAL_ECHOLN("{[ERR:3]}");
+		break;
+	case 93: // Error - Max temp
+		SERIAL_ECHOLN("{[ERR:4]}");
+		break;
+
     case 99:		// heartbeat
         SERIAL_ECHO("{[PRN:99]");
         prusa_stat_temperatures();
