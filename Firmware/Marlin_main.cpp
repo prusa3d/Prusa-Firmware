@@ -1048,7 +1048,6 @@ void setup()
     }
     
   if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
-      calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION ||
       calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
       // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
       eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
@@ -1058,6 +1057,10 @@ void setup()
   } else if (calibration_status() == CALIBRATION_STATUS_LIVE_ADJUST) {
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
+      lcd_update_enable(true);
+  } else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
+      // Show the message.
+      lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
       lcd_update_enable(true);
   }
 
