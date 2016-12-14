@@ -255,6 +255,8 @@ int extruder_multiply[EXTRUDERS] = {100
 
 bool is_usb_printing = false;
 
+unsigned long kicktime = millis()+100000;
+
 unsigned int  usb_printing_counter;
 
 int lcd_change_fil_state = 0;
@@ -1789,6 +1791,7 @@ void process_commands()
       lcd_force_language_selection();
     } else if(code_seen("Lz")) {
       EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
+      
     } else if (code_seen("SERIAL LOW")) {
         MYSERIAL.println("SERIAL LOW");
         MYSERIAL.begin(BAUDRATE);
@@ -1797,6 +1800,10 @@ void process_commands()
         MYSERIAL.println("SERIAL HIGH");
         MYSERIAL.begin(1152000);
         return;
+    } else if(code_seen("Beat")) {
+        // Kick farm link timer
+        kicktime = millis();
+
     }
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
