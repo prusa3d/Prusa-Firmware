@@ -1239,53 +1239,55 @@ void get_command()
       cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
       if(!comment_mode){
         comment_mode = false; //for new command
-        if ((strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL)
-        {
-          // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
-          // and Marlin tests, whether the successive lines are stamped with an increasing line number ID.
-          gcode_N = (strtol(strchr_pointer+1, NULL, 10));
-          if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+1, PSTR("M110")) == NULL) ) {
-            // M110 - set current line number.
-            // Line numbers not sent in succession.
-            SERIAL_ERROR_START;
-            SERIAL_ERRORRPGM(MSG_ERR_LINE_NO);
-            SERIAL_ERRORLN(gcode_LastN);
-            //Serial.println(gcode_N);
-            FlushSerialRequestResend();
-            serial_count = 0;
-            return;
-          }
-
-          if((strchr_pointer = strchr(cmdbuffer+bufindw+1, '*')) != NULL)
-          {
-            byte checksum = 0;
-            char *p = cmdbuffer+bufindw+1;
-            while (p != strchr_pointer)
-                checksum = checksum^(*p++);
-            if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
-              SERIAL_ERROR_START;
-              SERIAL_ERRORRPGM(MSG_ERR_CHECKSUM_MISMATCH);
-              SERIAL_ERRORLN(gcode_LastN);
-              FlushSerialRequestResend();
-              serial_count = 0;
-              return;
+        if ((strchr_pointer = strstr(cmdbuffer+bufindw+1, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL) {
+            if ((strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL)
+            {
+            // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
+            // and Marlin tests, whether the successive lines are stamped with an increasing line number ID.
+            gcode_N = (strtol(strchr_pointer+1, NULL, 10));
+            if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+1, PSTR("M110")) == NULL) ) {
+                // M110 - set current line number.
+                // Line numbers not sent in succession.
+                SERIAL_ERROR_START;
+                SERIAL_ERRORRPGM(MSG_ERR_LINE_NO);
+                SERIAL_ERRORLN(gcode_LastN);
+                //Serial.println(gcode_N);
+                FlushSerialRequestResend();
+                serial_count = 0;
+                return;
             }
-            // If no errors, remove the checksum and continue parsing.
-            *strchr_pointer = 0;
-          }
-          else
-          {
-            SERIAL_ERROR_START;
-            SERIAL_ERRORRPGM(MSG_ERR_NO_CHECKSUM);
-            SERIAL_ERRORLN(gcode_LastN);
-            FlushSerialRequestResend();
-            serial_count = 0;
-            return;
-          }
 
-          gcode_LastN = gcode_N;
-          //if no errors, continue parsing
-        } // end of 'N' command
+            if((strchr_pointer = strchr(cmdbuffer+bufindw+1, '*')) != NULL)
+            {
+                byte checksum = 0;
+                char *p = cmdbuffer+bufindw+1;
+                while (p != strchr_pointer)
+                    checksum = checksum^(*p++);
+                if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
+                SERIAL_ERROR_START;
+                SERIAL_ERRORRPGM(MSG_ERR_CHECKSUM_MISMATCH);
+                SERIAL_ERRORLN(gcode_LastN);
+                FlushSerialRequestResend();
+                serial_count = 0;
+                return;
+                }
+                // If no errors, remove the checksum and continue parsing.
+                *strchr_pointer = 0;
+            }
+            else
+            {
+                SERIAL_ERROR_START;
+                SERIAL_ERRORRPGM(MSG_ERR_NO_CHECKSUM);
+                SERIAL_ERRORLN(gcode_LastN);
+                FlushSerialRequestResend();
+                serial_count = 0;
+                return;
+            }
+
+            gcode_LastN = gcode_N;
+            //if no errors, continue parsing
+            } // end of 'N' command
+        }
         else  // if we don't receive 'N' but still see '*'
         {
           if((strchr(cmdbuffer+bufindw+1, '*') != NULL))
