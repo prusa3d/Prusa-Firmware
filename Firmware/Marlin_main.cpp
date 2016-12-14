@@ -1200,6 +1200,7 @@ void loop()
           cmdqueue_pop_front();
       cmdbuffer_front_already_processed = false;
   }
+}
   //check heater every n milliseconds
   manage_heater();
   manage_inactivity();
@@ -1772,20 +1773,10 @@ void process_commands()
 
         #endif // SDSUPPORT
 
-    } else if(code_seen("fd")) {
-        char description[30];
-        memset(description, ' ', 30);
-        getFileDescription(strchr_pointer + 3, description);
-        MYSERIAL.print(">");
-        MYSERIAL.println(description);
-        MYSERIAL.print("<");
-
     } else if (code_seen("M28")) {
         trace();
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
-    } else if (code_seen("mkdir")) {
-        card.mkdir(strchr_pointer+6);
     } else if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_version);
