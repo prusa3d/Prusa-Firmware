@@ -14,6 +14,7 @@ public:
   
   void initsd();
   void write_command(char *buf);
+  void write_command_no_newline(char *buf);
   //files auto[0-9].g on the sd card are performed in a row
   //this is to delay autostart and hence the initialisaiton of the sd card to some seconds after the normal init, so the device is available quick after a reset
 

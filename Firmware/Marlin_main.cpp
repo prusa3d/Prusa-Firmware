@@ -261,6 +261,8 @@ int lcd_change_fil_state = 0;
 int feedmultiplyBckp = 100;
 unsigned char lang_selected = 0;
 
+bool prusa_sd_card_upload = false;
+
 
 unsigned long total_filament_used;
 unsigned int heating_status;
@@ -1069,6 +1071,80 @@ void setup()
   update_current_firmware_version_to_eeprom();
 }
 
+void trace();
+
+#define CHUNK_SIZE 64 // bytes
+#define SAFETY_MARGIN 1
+char chunk[CHUNK_SIZE+SAFETY_MARGIN];
+int chunkHead = 0;
+
+int serial_read_stream() {
+
+    setTargetHotend(0, 0);
+    setTargetBed(0);
+
+    lcd_implementation_clear();
+    lcd_printPGM(PSTR(" Upload in progress"));
+
+    // first wait for how many bytes we will receive
+    uint32_t bytesToReceive;
+
+    // receive the four bytes
+    char bytesToReceiveBuffer[4];
+    for (int i=0; i<4; i++) {
+        int data;
+        while ((data = MYSERIAL.read()) == -1) {};
+        bytesToReceiveBuffer[i] = data;
+
+    }
+
+    // make it a uint32
+    memcpy(&bytesToReceive, &bytesToReceiveBuffer, 4);
+
+    // we're ready, notify the sender
+    MYSERIAL.write('+');
+
+    // lock in the routine
+    uint32_t receivedBytes = 0;
+    while (prusa_sd_card_upload) {
+        int i;
+        for (i=0; i<CHUNK_SIZE; i++) {
+            int data;
+
+            // check if we're not done
+            if (receivedBytes == bytesToReceive) {
+                break;
+            }
+
+            // read the next byte
+            while ((data = MYSERIAL.read()) == -1) {};
+            receivedBytes++;
+
+            // save it to the chunk
+            chunk[i] = data;
+        }
+
+        // write the chunk to SD
+        card.write_command_no_newline(&chunk[0]);
+
+        // notify the sender we're ready for more data
+        MYSERIAL.write('+');
+
+        // for safety
+        manage_heater();
+
+        // check if we're done
+        if(receivedBytes == bytesToReceive) {
+            trace(); // beep
+            card.closefile();
+            prusa_sd_card_upload = false;
+            SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
+            return 0;
+        }
+
+    }
+}
+
 // The loop() function is called in an endless loop by the Arduino framework from the default main() routine.
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
@@ -1085,7 +1161,14 @@ void loop()
 		is_usb_printing = false;
 	}
 
-  get_command();
+    if (prusa_sd_card_upload)
+    {
+        //we read byte-by byte
+        serial_read_stream();
+    } else 
+    {
+
+        get_command();
 
   #ifdef SDSUPPORT
   card.checkautostart(false);
@@ -1643,6 +1726,13 @@ void refresh_cmd_timeout(void)
   } //retract
 #endif //FWRETRACT
 
+void trace() {
+    tone(BEEPER, 440);
+    delay(25);
+    noTone(BEEPER);
+    delay(20);
+}
+
 void process_commands()
 {
   #ifdef FILAMENT_RUNOUT_SUPPORT
@@ -1667,7 +1757,36 @@ void process_commands()
   // PRUSA GCODES
 
   if(code_seen("PRUSA")){
-    if(code_seen("Fir")){
+    if (code_seen("fv")) {
+        // get file version
+        #ifdef SDSUPPORT
+        card.openFile(strchr_pointer + 3,true);
+        while (true) {
+            uint16_t readByte = card.get();
+            MYSERIAL.write(readByte);
+            if (readByte=='\n') {
+                break;
+            }
+        }
+        card.closefile();
+
+        #endif // SDSUPPORT
+
+    } else if(code_seen("fd")) {
+        char description[30];
+        memset(description, ' ', 30);
+        getFileDescription(strchr_pointer + 3, description);
+        MYSERIAL.print(">");
+        MYSERIAL.println(description);
+        MYSERIAL.print("<");
+
+    } else if (code_seen("M28")) {
+        trace();
+        prusa_sd_card_upload = true;
+        card.openFile(strchr_pointer+4,false);
+    } else if (code_seen("mkdir")) {
+        card.mkdir(strchr_pointer+6);
+    } else if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_version);
 
@@ -1679,14 +1798,23 @@ void process_commands()
       lcd_force_language_selection();
     } else if(code_seen("Lz")) {
       EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
-    } 
+    } else if (code_seen("SERIAL LOW")) {
+        MYSERIAL.println("SERIAL LOW");
+        MYSERIAL.begin(BAUDRATE);
+        return;
+    } else if (code_seen("SERIAL HIGH")) {
+        MYSERIAL.println("SERIAL HIGH");
+        MYSERIAL.begin(1152000);
+        return;
+    }
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
 	  // }
 
   }
-  else 
-  if(code_seen('G'))
+  else if (code_seen('^')) {
+    // nothing, this is a version line
+  } else if(code_seen('G'))
   {
     switch((int)code_value())
     {
