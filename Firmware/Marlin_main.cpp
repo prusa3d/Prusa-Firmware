@@ -1767,12 +1767,16 @@ void process_commands()
         #ifdef SDSUPPORT
         card.openFile(strchr_pointer + 3,true);
         while (true) {
-            uint16_t readByte = card.get();
-            MYSERIAL.write(readByte);
-            if (readByte=='\n') {
-                break;
+                uint16_t readByte = card.get();
+                if (readByte == -1) {
+                    MYSERIAL.println("FILE EMPTY");
+                    break;
+                }
+                MYSERIAL.write(readByte);
+                if (readByte=='\n') {
+                    break;
+                }
             }
-        }
         card.closefile();
 
         #endif // SDSUPPORT
