@@ -1059,6 +1059,93 @@ const short temptable_147[][2] PROGMEM = {
   PtLine(200,100,4700)
   PtLine(250,100,4700)
   PtLine(300,100,4700)
+  PtLine(350,100,4700)
+  PtLine(400,100,4700)
+  PtLine(450,100,4700)
+  PtLine(500,100,4700)
+  PtLine(550,100,4700)
+  PtLine(600,100,4700)
+  PtLine(650,100,4700)
+  PtLine(700,100,4700)
+  PtLine(750,100,4700)
+  PtLine(800,100,4700)
+  PtLine(850,100,4700)
+  PtLine(900,100,4700)
+  PtLine(950,100,4700)
+  PtLine(1000,100,4700)
+  PtLine(1050,100,4700)
+  PtLine(1100,100,4700)
+};
+#endif
+#if (THERMISTORHEATER_0 == 148) || (THERMISTORHEATER_1 == 148) || (THERMISTORHEATER_2 == 148) || (THERMISTORBED == 148) // Pt100 with 4k7 MiniRambo pullup, no Amp.
+const short temptable_148[][2] PROGMEM = {
+// More raw data values avaliable via http://www.micropik.com/PDF/pt100.pdf
+// This information is taken from http://shop.prusa3d.com/forum/improvements-f14/mini-rambo-1-3-and-e3d-with-pt100-t700-s40.html#p20938
+{0,0}, // first two entries are bogus, just to get the heater running
+{286,50},
+{469,100},
+{531,150},
+{590,200},
+{649,250},
+{708,300},
+{763,350},
+{819,400},
+{872,450},
+};
+#endif
+#if (THERMISTORHEATER_0 == 247) || (THERMISTORHEATER_1 == 247) || (THERMISTORHEATER_2 == 247) || (THERMISTORBED == 247) // Pt100 with 4k7 MiniRambo pullup & PT100 Amplifier
+const short temptable_247[][2] PROGMEM = {
+// Calculated from Bob-the-Kuhn's PT100 calculator listed in https://github.com/MarlinFirmware/Marlin/issues/5543
+// and the table provided by E3D at http://wiki.e3d-online.com/wiki/E3D_PT100_Amplifier_Documentation#Output_Characteristics.
+{   0 * OVERSAMPLENR,    0 },
+{ 244 * OVERSAMPLENR,    1 },
+{ 252 * OVERSAMPLENR,   10 },
+{ 262 * OVERSAMPLENR,   20 },
+{ 270 * OVERSAMPLENR,   30 },
+{ 278 * OVERSAMPLENR,   40 },
+{ 286 * OVERSAMPLENR,   50 },
+{ 294 * OVERSAMPLENR,   60 },
+{ 302 * OVERSAMPLENR,   70 },
+{ 310 * OVERSAMPLENR,   80 },
+{ 318 * OVERSAMPLENR,   90 },
+{ 326 * OVERSAMPLENR,  100 },
+{ 334 * OVERSAMPLENR,  110 },
+{ 344 * OVERSAMPLENR,  120 },
+{ 352 * OVERSAMPLENR,  130 },
+{ 358 * OVERSAMPLENR,  140 },
+{ 366 * OVERSAMPLENR,  150 },
+{ 374 * OVERSAMPLENR,  160 },
+{ 382 * OVERSAMPLENR,  170 },
+{ 390 * OVERSAMPLENR,  180 },
+{ 398 * OVERSAMPLENR,  190 },
+{ 406 * OVERSAMPLENR,  200 },
+{ 414 * OVERSAMPLENR,  210 },
+{ 422 * OVERSAMPLENR,  220 },
+{ 430 * OVERSAMPLENR,  230 },
+{ 436 * OVERSAMPLENR,  240 },
+{ 444 * OVERSAMPLENR,  250 },
+{ 452 * OVERSAMPLENR,  260 },
+{ 458 * OVERSAMPLENR,  270 },
+{ 466 * OVERSAMPLENR,  280 },
+{ 474 * OVERSAMPLENR,  290 },
+{ 480 * OVERSAMPLENR,  300 },
+{ 488 * OVERSAMPLENR,  310 },
+{ 496 * OVERSAMPLENR,  320 },
+{ 504 * OVERSAMPLENR,  330 },
+{ 510 * OVERSAMPLENR,  340 },
+{ 518 * OVERSAMPLENR,  350 },
+{ 524 * OVERSAMPLENR,  360 },
+{ 532 * OVERSAMPLENR,  370 },
+{ 538 * OVERSAMPLENR,  380 },
+{ 546 * OVERSAMPLENR,  390 },
+{ 554 * OVERSAMPLENR,  400 },
+{ 622 * OVERSAMPLENR,  500 },
+{ 688 * OVERSAMPLENR,  600 },
+{ 749 * OVERSAMPLENR,  700 },
+{ 809 * OVERSAMPLENR,  800 },
+{ 865 * OVERSAMPLENR,  900 },
+{ 919 * OVERSAMPLENR, 1000 },
+{ 969 * OVERSAMPLENR, 1100 },
 };
 #endif
 #if (THERMISTORHEATER_0 == 1010) || (THERMISTORHEATER_1 == 1010) || (THERMISTORHEATER_2 == 1010) || (THERMISTORBED == 1010) // Pt1000 with 1k0 pullup
