@@ -1081,8 +1081,8 @@ const short temptable_147[][2] PROGMEM = {
 const short temptable_148[][2] PROGMEM = {
 // More raw data values avaliable via http://www.micropik.com/PDF/pt100.pdf
 // This information is taken from http://shop.prusa3d.com/forum/improvements-f14/mini-rambo-1-3-and-e3d-with-pt100-t700-s40.html#p20938
-{0,0}, // first two entries are bogus, just to get the heater running
-{286,50},
+{292,0}, // first two entries are bogus, just to get the heater running
+{356,50},
 {469,100},
 {531,150},
 {590,200},
