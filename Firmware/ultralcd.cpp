@@ -97,6 +97,7 @@ int8_t SilentModeMenu = 0;
 int lcd_commands_type=LCD_COMMAND_IDLE;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
+int oldFanSpeed = 0;
 bool farm_mode = false;
 int farm_no = 0;
 int farm_timer = 30;
@@ -662,12 +663,19 @@ static void lcd_return_to_status() {
 }
 
 static void lcd_sdcard_pause() {
+  oldFanSpeed = fanSpeed;
   card.pauseSDPrint();
   isPrintPaused = true;
   lcdDrawUpdate = 3;
 }
 
 static void lcd_sdcard_resume() {
+  if (oldFanSpeed) {
+    fanSpeed = oldFanSpeed;
+    SET_OUTPUT(FAN_PIN);
+    WRITE(FAN_PIN, fanSpeed);
+    oldFanSpeed = 0;
+  }
 	card.startFileprint();
 	isPrintPaused = false;
 	lcdDrawUpdate = 3;
