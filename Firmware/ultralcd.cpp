@@ -2147,7 +2147,7 @@ static void lcd_settings_menu()
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
 
-  if (SilentModeMenu == 0) {
+  if ((SilentModeMenu == 0) || (farm_mode) ) {
     MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
   } else {
     MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
