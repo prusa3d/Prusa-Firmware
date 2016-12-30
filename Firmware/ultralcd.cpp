@@ -25,6 +25,8 @@ extern int lcd_change_fil_state;
 //Function pointer to menu functions.
 typedef void (*menuFunc_t)();
 
+static void lcd_sd_updir();
+
 struct EditMenuParentState
 {
     //prevMenu and prevEncoderPosition are used to store the previous menu location when editing settings.
@@ -2510,7 +2512,57 @@ static void lcd_main_menu()
 
   
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
-
+    if (farm_mode && !IS_SD_PRINTING )
+    {
+    
+        int tempScrool = 0;
+        if (lcdDrawUpdate == 0 && LCD_CLICKED == 0)
+            //delay(100);
+            return; // nothing to do (so don't thrash the SD card)
+        uint16_t fileCnt = card.getnrfilenames();
+        
+        card.getWorkDirName();
+        if (card.filename[0] == '/')
+        {
+#if SDCARDDETECT == -1
+            MENU_ITEM(function, MSG_REFRESH, lcd_sd_refresh);
+#endif
+        } else {
+            MENU_ITEM(function, PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir);
+        }
+        
+        for (uint16_t i = 0; i < fileCnt; i++)
+        {
+            if (_menuItemNr == _lineNr)
+            {
+#ifndef SDCARD_RATHERRECENTFIRST
+                card.getfilename(i);
+#else
+                card.getfilename(fileCnt - 1 - i);
+#endif
+                if (card.filenameIsDir)
+                {
+                    MENU_ITEM(sddirectory, MSG_CARD_MENU, card.filename, card.longFilename);
+                } else {
+                    
+                    MENU_ITEM(sdfile, MSG_CARD_MENU, card.filename, card.longFilename);
+                    
+                    
+                    
+                    
+                }
+            } else {
+                MENU_ITEM_DUMMY();
+            }
+        }
+        
+        MENU_ITEM(back, PSTR("- - - - - - - - -"), lcd_status_screen);
+    
+        
+    }
+    
+    
+    
   if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) ) 
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
