@@ -59,9 +59,10 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i,minimumfeedrate);
   EEPROM_WRITE_VAR(i,mintravelfeedrate);
   EEPROM_WRITE_VAR(i,minsegmenttime);
-  EEPROM_WRITE_VAR(i,max_xy_jerk);
-  EEPROM_WRITE_VAR(i,max_z_jerk);
-  EEPROM_WRITE_VAR(i,max_e_jerk);
+  EEPROM_WRITE_VAR(i,max_jerk[X_AXIS]);
+  EEPROM_WRITE_VAR(i,max_jerk[Y_AXIS]);
+  EEPROM_WRITE_VAR(i,max_jerk[Z_AXIS]);
+  EEPROM_WRITE_VAR(i,max_jerk[E_AXIS]);
   EEPROM_WRITE_VAR(i,add_homing);
   #ifndef ULTIPANEL
   int plaPreheatHotendTemp = PLA_PREHEAT_HOTEND_TEMP, plaPreheatHPBTemp = PLA_PREHEAT_HPB_TEMP, plaPreheatFanSpeed = PLA_PREHEAT_FAN_SPEED;
@@ -267,9 +268,10 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,minimumfeedrate);
         EEPROM_READ_VAR(i,mintravelfeedrate);
         EEPROM_READ_VAR(i,minsegmenttime);
-        EEPROM_READ_VAR(i,max_xy_jerk);
-        EEPROM_READ_VAR(i,max_z_jerk);
-        EEPROM_READ_VAR(i,max_e_jerk);
+        EEPROM_READ_VAR(i,max_jerk[X_AXIS]);
+        EEPROM_READ_VAR(i,max_jerk[Y_AXIS]);
+        EEPROM_READ_VAR(i,max_jerk[Z_AXIS]);
+        EEPROM_READ_VAR(i,max_jerk[E_AXIS]);
         EEPROM_READ_VAR(i,add_homing);
         #ifndef ULTIPANEL
         int plaPreheatHotendTemp, plaPreheatHPBTemp, plaPreheatFanSpeed;
