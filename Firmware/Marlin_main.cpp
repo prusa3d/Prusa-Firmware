@@ -874,6 +874,88 @@ static void lcd_language_menu();
    enum MeshLevelingState { MeshReport, MeshStart, MeshNext, MeshSet };
 #endif
 
+
+// Factory reset function
+// This function is used to erase parts or whole EEPROM memory which is used for storing calibration and and so on.
+// Level input parameter sets depth of reset
+// Quiet parameter masks all waitings for user interact.
+int  er_progress = 0;
+void factory_reset(char level, bool quiet)
+{
+    
+    switch (level) {
+        
+        // Level 0: erase everything, whole EEPROM will be set to 0xFF
+        case 0:
+            
+            lcd_print_at_PGM(1,2,PSTR("ERASING all data"));
+            
+            WRITE(BEEPER, HIGH);
+            _delay_ms(100);
+            WRITE(BEEPER, LOW);
+            _delay_ms(100);
+            WRITE(BEEPER, HIGH);
+            _delay_ms(100);
+            WRITE(BEEPER, LOW);
+            _delay_ms(200);
+            
+            er_progress = 0;
+            lcd_print_at_PGM(3,3,PSTR("      "));
+            lcd_implementation_print_at(3,3, er_progress);
+            
+            // Erase EEPROM
+            for (int i = 0; i < 4096; i++) {
+                eeprom_write_byte((uint8_t*)i, 0xFF);
+                
+                if (i % 41 == 0) {
+                    er_progress++;
+                    lcd_print_at_PGM(3,3,PSTR("      "));
+                    lcd_implementation_print_at(3,3, er_progress);
+                    lcd_printPGM(PSTR("%"));
+                }
+                
+            }
+            
+        
+            break;
+            
+            
+        // Level 1: Language reset
+        case 1:
+            WRITE(BEEPER, HIGH);
+            _delay_ms(100);
+            WRITE(BEEPER, LOW);
+            
+            lcd_force_language_selection();
+            break;
+            
+            
+        // Level 2: Prepare for shipping
+        case 2:
+            lcd_print_at_PGM(1,2,PSTR("Shipping prep"));
+            
+            // Force language selection at the next boot up.
+            lcd_force_language_selection();
+            // Force the "Follow calibration flow" message at the next boot up.
+            calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
+            farm_no = 0;
+            EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
+            farm_mode = false;
+            
+            WRITE(BEEPER, HIGH);
+            _delay_ms(100);
+            WRITE(BEEPER, LOW);
+            
+            break;
+        
+        default:
+            break;
+    }
+    
+
+}
+
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -948,21 +1030,33 @@ void setup()
 	  _delay_ms(1000);
 	  if (!READ(BTN_ENC))
 	  {
+          lcd_implementation_clear();
+          lcd_printPGM(PSTR("Factory RESET"));
+          
 		  SET_OUTPUT(BEEPER);
 		  WRITE(BEEPER, HIGH);
+        
+          while (!READ(BTN_ENC));
+          
+          WRITE(BEEPER, LOW);
+          
+          
 
-      // Force language selection at the next boot up.
-		  lcd_force_language_selection();
-      // Force the "Follow calibration flow" message at the next boot up.
-      calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
-		  farm_no = 0;
-		  EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
-		  farm_mode = false;
-
-		  while (!READ(BTN_ENC));
-
-		  WRITE(BEEPER, LOW);
-
+		  _delay_ms(2000);
+          if (!READ(BTN_ENC))
+          {
+          
+              factory_reset(0,false);
+          }
+          else
+          {
+              factory_reset(2,false);
+              
+          }
+          
+          _delay_ms(2000);
+          
+/*
 #ifdef MESH_BED_LEVELING
 		  _delay_ms(2000);
 
@@ -989,8 +1083,8 @@ void setup()
 			  _delay_ms(100);
 			  WRITE(BEEPER, LOW);
 		  }
-#endif // mesh
-
+#endif // mesh */
+         
 	  }
   }
   else
@@ -1806,6 +1900,10 @@ void process_commands()
         // Kick farm link timer
         kicktime = millis();
 
+    } else if(code_seen("FR")) {
+        // Factory full reset
+        factory_reset(0,true);
+        
     }
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
