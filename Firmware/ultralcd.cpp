@@ -1266,6 +1266,10 @@ static void _lcd_babystep(int axis, const char *msg)
     EEPROM_save_B(
       (axis == 0) ? EEPROM_BABYSTEP_X : ((axis == 1) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z), 
       &menuData.babyStep.babystepMem[axis]);
+
+    // We need to update our calibration status to calibrated
+    // Previously this was done at the end of lcd_pick_babystep()
+    calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
   }
   if (LCD_CLICKED) lcd_goto_menu(lcd_main_menu);
 }
