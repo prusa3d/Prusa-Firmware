@@ -37,7 +37,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_Z_HOME_POS 0.15
 
 // Travel limits after homing
-#define X_MAX_POS 255
+#define X_MAX_POS 250
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
 #define Y_MIN_POS -2.2
@@ -93,7 +93,18 @@ EXTRUDER SETTINGS
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
+// Prusa Single extruder multiple material suport
+//#define SNMM
 
+#ifdef SNMM
+//#define BOWDEN_LENGTH	408
+#define BOWDEN_LENGTH 457 //total length for filament fast loading part; max length for extrusion is 465 mm!
+#define FIL_LOAD_LENGTH 102 //length for loading filament into the nozzle
+#define FIL_RETURN_LENGTH 30.5 //for filament adjusting (PRUSAY code)
+#define E_MOTOR_LOW_CURRENT 350 // current for PRUSAY code
+#define E_MOTOR_HIGH_CURRENT 700 //current for unloading filament, stop print, PRUSAY ramming
+
+#endif
 
 /*------------------------------------
 LOAD/UNLOAD FILAMENT SETTINGS
@@ -311,6 +322,8 @@ THERMISTORS SETTINGS
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_BED 1
+
+#define STACK_GUARD_TEST_VALUE 0xA2A2
 
 
 #endif //__CONFIGURATION_PRUSA_H
