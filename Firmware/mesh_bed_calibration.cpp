@@ -2152,7 +2152,7 @@ static int babystepLoadZ = 0;
 
 void babystep_apply()
 {
-    // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
+    // Apply Z height correction aka baby stepping before mesh bed leveling gets activated.
     if(calibration_status() == CALIBRATION_STATUS_CALIBRATED)
     {
         // End of G80: Apply the baby stepping value.

@@ -424,6 +424,11 @@ const char * const MSG_CALIBRATE_BED_RESET_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_BED_RESET_PL
 };
 
+const char MSG_CALIBRATE_E_EN[] PROGMEM = "Calibrate E";
+const char * const MSG_CALIBRATE_E_LANG_TABLE[1] PROGMEM = {
+	MSG_CALIBRATE_E_EN
+};
+
 const char MSG_CARD_MENU_EN[] PROGMEM = "Print from SD";
 const char MSG_CARD_MENU_CZ[] PROGMEM = "Tisk z SD";
 const char MSG_CARD_MENU_IT[] PROGMEM = "Stampa da SD";
@@ -437,6 +442,10 @@ const char * const MSG_CARD_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CARD_MENU_PL
 };
 
+const char MSG_CHANGE_EXTR_EN[] PROGMEM = "Change extruder";
+const char * const MSG_CHANGE_EXTR_LANG_TABLE[1] PROGMEM = {
+	MSG_CHANGE_EXTR_EN
+};
 const char MSG_CHANGE_SUCCESS_EN[] PROGMEM = "Change success!";
 const char MSG_CHANGE_SUCCESS_CZ[] PROGMEM = "Zmena uspesna!";
 const char MSG_CHANGE_SUCCESS_IT[] PROGMEM = "Cambia. riuscito!";
@@ -463,6 +472,10 @@ const char * const MSG_CHANGING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CHANGING_FILAMENT_PL
 };
 
+const char MSG_CLEAN_NOZZLE_E_EN[] PROGMEM = "E calibration finished. Please clean the nozzle. Click when done.";
+const char * const MSG_CLEAN_NOZZLE_E_LANG_TABLE[1] PROGMEM = {
+	MSG_CLEAN_NOZZLE_E_EN
+};
 const char MSG_CNG_SDCARD_EN[] PROGMEM = "Change SD card";
 const char * const MSG_CNG_SDCARD_LANG_TABLE[1] PROGMEM = {
 	MSG_CNG_SDCARD_EN
@@ -497,6 +510,11 @@ const char * const MSG_CONFIRM_NOZZLE_CLEAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CONFIRM_NOZZLE_CLEAN_IT,
 	MSG_CONFIRM_NOZZLE_CLEAN_ES,
 	MSG_CONFIRM_NOZZLE_CLEAN_PL
+};
+
+const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_EN[] PROGMEM = "Filaments are now adjusted. Please clean the nozzle for calibration. Click when done.";
+const char * const MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_LANG_TABLE[1] PROGMEM = {
+	MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_EN
 };
 
 const char MSG_CONTROL_EN[] PROGMEM = "Control";
@@ -640,6 +658,10 @@ const char * const MSG_EXTERNAL_RESET_LANG_TABLE[1] PROGMEM = {
 	MSG_EXTERNAL_RESET_EN
 };
 
+const char MSG_E_CAL_KNOB_EN[] PROGMEM = "Rotate knob until mark reaches extruder body. Click when done.";
+const char * const MSG_E_CAL_KNOB_LANG_TABLE[1] PROGMEM = {
+	MSG_E_CAL_KNOB_EN
+};
 const char MSG_Enqueing_EN[] PROGMEM = "enqueing \"";
 const char * const MSG_Enqueing_LANG_TABLE[1] PROGMEM = {
 	MSG_Enqueing_EN
@@ -663,6 +685,10 @@ const char * const MSG_FAN_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FAN_SPEED_PL
 };
 
+const char MSG_FARM_CARD_MENU_EN[] PROGMEM = "Farm mode print";
+const char * const MSG_FARM_CARD_MENU_LANG_TABLE[1] PROGMEM = {
+	MSG_FARM_CARD_MENU_EN
+};
 const char MSG_FILAMENTCHANGE_EN[] PROGMEM = "Change filament";
 const char MSG_FILAMENTCHANGE_CZ[] PROGMEM = "Vymenit filament";
 const char MSG_FILAMENTCHANGE_IT[] PROGMEM = "Camb. filamento";
@@ -676,6 +702,29 @@ const char * const MSG_FILAMENTCHANGE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENTCHANGE_PL
 };
 
+const char MSG_FILAMENT_CLEAN_EN[] PROGMEM = "Is color clear?";
+const char * const MSG_FILAMENT_CLEAN_LANG_TABLE[1] PROGMEM = {
+	MSG_FILAMENT_CLEAN_EN
+};
+const char MSG_FILAMENT_LOADING_T0_EN[] PROGMEM = "Insert filament into extruder 1. Click when done.";
+const char * const MSG_FILAMENT_LOADING_T0_LANG_TABLE[1] PROGMEM = {
+	MSG_FILAMENT_LOADING_T0_EN
+};
+
+const char MSG_FILAMENT_LOADING_T1_EN[] PROGMEM = "Insert filament into extruder 2. Click when done.";
+const char * const MSG_FILAMENT_LOADING_T1_LANG_TABLE[1] PROGMEM = {
+	MSG_FILAMENT_LOADING_T1_EN
+};
+
+const char MSG_FILAMENT_LOADING_T2_EN[] PROGMEM = "Insert filament into extruder 3. Click when done.";
+const char * const MSG_FILAMENT_LOADING_T2_LANG_TABLE[1] PROGMEM = {
+	MSG_FILAMENT_LOADING_T2_EN
+};
+
+const char MSG_FILAMENT_LOADING_T3_EN[] PROGMEM = "Insert filament into extruder 4. Click when done.";
+const char * const MSG_FILAMENT_LOADING_T3_LANG_TABLE[1] PROGMEM = {
+	MSG_FILAMENT_LOADING_T3_EN
+};
 const char MSG_FILE_PRINTED_EN[] PROGMEM = "Done printing file";
 const char * const MSG_FILE_PRINTED_LANG_TABLE[1] PROGMEM = {
 	MSG_FILE_PRINTED_EN
@@ -686,6 +735,19 @@ const char * const MSG_FILE_SAVED_LANG_TABLE[1] PROGMEM = {
 	MSG_FILE_SAVED_EN
 };
 
+const char MSG_FIL_ADJUSTING_EN[] PROGMEM = "Adjusting filaments. Please wait.";
+const char * const MSG_FIL_ADJUSTING_LANG_TABLE[1] PROGMEM = {
+	MSG_FIL_ADJUSTING_EN
+};
+const char MSG_FIL_LOADED_CHECK_EN[] PROGMEM = "Is filament loaded?";
+const char * const MSG_FIL_LOADED_CHECK_LANG_TABLE[1] PROGMEM = {
+	MSG_FIL_LOADED_CHECK_EN
+};
+
+const char MSG_FIL_TUNING_EN[] PROGMEM = "Rotate the knob to adjust filament.";
+const char * const MSG_FIL_TUNING_LANG_TABLE[1] PROGMEM = {
+	MSG_FIL_TUNING_EN
+};
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_EN[] PROGMEM = "Searching bed calibration point";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Hledam kalibracni bod podlozky";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Ricerca del letto punto di calibraz.";
@@ -958,6 +1020,10 @@ const char * const MSG_LOAD_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_LOAD_FILAMENT_PL
 };
 
+const char MSG_LOOSE_PULLEY_EN[] PROGMEM = "Loose pulley";
+const char * const MSG_LOOSE_PULLEY_LANG_TABLE[1] PROGMEM = {
+	MSG_LOOSE_PULLEY_EN
+};
 const char MSG_M104_INVALID_EXTRUDER_EN[] PROGMEM = "M104 Invalid extruder ";
 const char * const MSG_M104_INVALID_EXTRUDER_LANG_TABLE[1] PROGMEM = {
 	MSG_M104_INVALID_EXTRUDER_EN
@@ -1011,6 +1077,10 @@ const char * const MSG_MAIN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MAIN_PL
 };
 
+const char MSG_MARK_FIL_EN[] PROGMEM = "Mark filament 100mm from extruder body. Click when done.";
+const char * const MSG_MARK_FIL_LANG_TABLE[1] PROGMEM = {
+	MSG_MARK_FIL_EN
+};
 const char MSG_MAX_EN[] PROGMEM = " \002 Max";
 const char * const MSG_MAX_LANG_TABLE[1] PROGMEM = {
 	MSG_MAX_EN
@@ -2003,6 +2073,11 @@ const char * const MSG_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SPEED_PL
 };
 
+const char MSG_STACK_ERROR_EN[] PROGMEM = "Error - static memory has been overwritten";
+const char * const MSG_STACK_ERROR_LANG_TABLE[1] PROGMEM = {
+	MSG_STACK_ERROR_EN
+};
+
 const char MSG_STATISTICS_EN[] PROGMEM = "Statistics  ";
 const char MSG_STATISTICS_CZ[] PROGMEM = "Statistika  ";
 const char MSG_STATISTICS_IT[] PROGMEM = "Statistiche";
@@ -2256,6 +2331,10 @@ const char * const MSG_VTRAV_MIN_LANG_TABLE[1] PROGMEM = {
 	MSG_VTRAV_MIN_EN
 };
 
+const char MSG_WAITING_TEMP_EN[] PROGMEM = "Waiting for heater and bed cooling";
+const char * const MSG_WAITING_TEMP_LANG_TABLE[1] PROGMEM = {
+	MSG_WAITING_TEMP_EN
+};
 const char MSG_WATCH_EN[] PROGMEM = "Info screen";
 const char MSG_WATCH_CZ[] PROGMEM = "Informace";
 const char MSG_WATCH_IT[] PROGMEM = "Schermata info";

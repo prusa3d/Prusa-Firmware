@@ -164,6 +164,7 @@
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
+#define MSG_LOOSE_PULLEY					"Loose pulley"
 
 #define MSG_SELFTEST_FAN					"Fan test";
 #define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?";
@@ -229,6 +230,25 @@
 
 #define(length=20,lines=8) MSG_FOLLOW_CALIBRATION_FLOW								"Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 #define(length=20,lines=12) MSG_BABYSTEP_Z_NOT_SET									"Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
+
+#define(length=20, lines=4) MSG_FILAMENT_LOADING_T0							"Insert filament into extruder 1. Click when done."
+#define(length=20, lines=4) MSG_FILAMENT_LOADING_T1							"Insert filament into extruder 2. Click when done."
+#define(length=20, lines=4) MSG_FILAMENT_LOADING_T2							"Insert filament into extruder 3. Click when done."
+#define(length=20, lines=4) MSG_FILAMENT_LOADING_T3							"Insert filament into extruder 4. Click when done."
+#define(length=20, lines=1) MSG_CHANGE_EXTR									"Change extruder"
+
+#define(length=20, lines=1) MSG_FIL_LOADED_CHECK								"Is filament loaded?"
+#define(length=20, lines=2) MSG_FIL_TUNING										"Rotate the knob to adjust filament."
+#define(length=20, lines=4) MSG_FIL_ADJUSTING								"Adjusting filaments. Please wait."
+#define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ			"Filaments are now adjusted. Please clean the nozzle for calibration. Click when done."
+#define(length=20, lines=4) MSG_STACK_ERROR						"Error - static memory has been overwritten"
+#define(length=20, lines=1) MSG_CALIBRATE_E						"Calibrate E"
+#define(length=20, lines=4) MSG_E_CAL_KNOB						"Rotate knob until mark reaches extruder body. Click when done."
+//#define(length=20, lines=1) MSG_FARM_CARD_MENU					"Farm mode print"
+#define(length=20, lines=4) MSG_MARK_FIL						"Mark filament 100mm from extruder body. Click when done."
+#define(length=20, lines=4) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
+#define(length=20, lines=2) MSG_WAITING_TEMP				"Waiting for heater and bed cooling"
+#define(length=20, lines=1) MSG_FILAMENT_CLEAN				"Is color clear?"
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
 #define MSG_BED_CORRECTION_LEFT									"Left side  um"

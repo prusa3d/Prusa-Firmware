@@ -100,6 +100,7 @@
 // PRUSA CODES
 // P F - Returns FW versions
 // P R - Returns revision of printer
+// P Y - Starts filament allignment process for multicolor
 
 // G0  -> G1
 // G1  - Coordinated Movement X Y Z E
@@ -254,6 +255,7 @@ int extruder_multiply[EXTRUDERS] = {100
 };
 
 bool is_usb_printing = false;
+bool homing_flag = false;
 
 unsigned long kicktime = millis()+100000;
 
@@ -881,58 +883,35 @@ static void lcd_language_menu();
 // Quiet parameter masks all waitings for user interact.
 int  er_progress = 0;
 void factory_reset(char level, bool quiet)
-{
-    
+{	
+	lcd_implementation_clear();
+	    
     switch (level) {
-        
-        // Level 0: erase everything, whole EEPROM will be set to 0xFF
+                   
+        // Level 0: Language reset
         case 0:
-            
-            lcd_print_at_PGM(1,2,PSTR("ERASING all data"));
-            
-            WRITE(BEEPER, HIGH);
-            _delay_ms(100);
-            WRITE(BEEPER, LOW);
-            _delay_ms(100);
-            WRITE(BEEPER, HIGH);
-            _delay_ms(100);
-            WRITE(BEEPER, LOW);
-            _delay_ms(200);
-            
-            er_progress = 0;
-            lcd_print_at_PGM(3,3,PSTR("      "));
-            lcd_implementation_print_at(3,3, er_progress);
-            
-            // Erase EEPROM
-            for (int i = 0; i < 4096; i++) {
-                eeprom_write_byte((uint8_t*)i, 0xFF);
-                
-                if (i % 41 == 0) {
-                    er_progress++;
-                    lcd_print_at_PGM(3,3,PSTR("      "));
-                    lcd_implementation_print_at(3,3, er_progress);
-                    lcd_printPGM(PSTR("%"));
-                }
-                
-            }
-            
-        
-            break;
-            
-            
-        // Level 1: Language reset
-        case 1:
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
             
             lcd_force_language_selection();
             break;
+         
+		//Level 1: Reset statistics
+		case 1:
+			WRITE(BEEPER, HIGH);
+			_delay_ms(100);
+			WRITE(BEEPER, LOW);
+			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+			lcd_menu_statistics();
             
-            
+			break;
+
         // Level 2: Prepare for shipping
         case 2:
-            lcd_print_at_PGM(1,2,PSTR("Shipping prep"));
+			//lcd_printPGM(PSTR("Factory RESET"));
+            //lcd_print_at_PGM(1,2,PSTR("Shipping prep"));
             
             // Force language selection at the next boot up.
             lcd_force_language_selection();
@@ -945,8 +924,38 @@ void factory_reset(char level, bool quiet)
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
-            
+			//_delay_ms(2000);
             break;
+
+			// Level 3: erase everything, whole EEPROM will be set to 0xFF
+
+		case 3:
+			lcd_printPGM(PSTR("Factory RESET"));
+			lcd_print_at_PGM(1, 2, PSTR("ERASING all data"));
+
+			WRITE(BEEPER, HIGH);
+			_delay_ms(100);
+			WRITE(BEEPER, LOW);
+
+			er_progress = 0;
+			lcd_print_at_PGM(3, 3, PSTR("      "));
+			lcd_implementation_print_at(3, 3, er_progress);
+
+			// Erase EEPROM
+			for (int i = 0; i < 4096; i++) {
+				eeprom_write_byte((uint8_t*)i, 0xFF);
+
+				if (i % 41 == 0) {
+					er_progress++;
+					lcd_print_at_PGM(3, 3, PSTR("      "));
+					lcd_implementation_print_at(3, 3, er_progress);
+					lcd_printPGM(PSTR("%"));
+				}
+
+			}
+
+
+			break;
         
         default:
             break;
@@ -1013,7 +1022,7 @@ void setup()
   
   // loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
   Config_RetrieveSettings();
-
+  SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
   tp_init();    // Initialize temperature loop
   plan_init();  // Initialize planner;
   watchdog_init();
@@ -1031,7 +1040,10 @@ void setup()
 	  if (!READ(BTN_ENC))
 	  {
           lcd_implementation_clear();
-          lcd_printPGM(PSTR("Factory RESET"));
+          
+		  
+		  lcd_printPGM(PSTR("Factory RESET"));
+		  
           
 		  SET_OUTPUT(BEEPER);
 		  WRITE(BEEPER, HIGH);
@@ -1043,19 +1055,17 @@ void setup()
           
 
 		  _delay_ms(2000);
-          if (!READ(BTN_ENC))
-          {
           
-              factory_reset(0,false);
-          }
-          else
-          {
-              factory_reset(2,false);
-              
-          }
+		  char level = reset_menu();
+		  factory_reset(level, false);
           
-          _delay_ms(2000);
-          
+		  switch (level) {
+				case 0: _delay_ms(0); break;
+				case 1: _delay_ms(0); break;
+				case 2: _delay_ms(0); break;
+				case 3: _delay_ms(0); break;
+		  }
+		  // _delay_ms(100);
 /*
 #ifdef MESH_BED_LEVELING
 		  _delay_ms(2000);
@@ -1245,6 +1255,7 @@ int serial_read_stream() {
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
 {
+	bool stack_integrity = true;
 
 	if (usb_printing_counter > 0 && millis()-_usb_timer > 1000)
 	{
@@ -1832,6 +1843,89 @@ void trace() {
     delay(20);
 }
 
+void ramming() {
+//	  float tmp[4] = DEFAULT_MAX_FEEDRATE;
+	if (current_temperature[0] < 230) {
+		//PLA
+
+		max_feedrate[E_AXIS] = 50;
+		//current_position[E_AXIS] -= 8;
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2100 / 60, active_extruder);
+		//current_position[E_AXIS] += 8;
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2100 / 60, active_extruder);
+		current_position[E_AXIS] += 5.4;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2800 / 60, active_extruder);
+		current_position[E_AXIS] += 3.2;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+		current_position[E_AXIS] += 3;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3400 / 60, active_extruder);
+		st_synchronize();
+		max_feedrate[E_AXIS] = 80;
+		current_position[E_AXIS] -= 82;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 9500 / 60, active_extruder);
+		max_feedrate[E_AXIS] = 50;//tmp[E_AXIS];
+		current_position[E_AXIS] -= 20;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1200 / 60, active_extruder);
+		current_position[E_AXIS] += 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
+		current_position[E_AXIS] += 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		current_position[E_AXIS] -= 10;
+		st_synchronize();
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		current_position[E_AXIS] += 10;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		current_position[E_AXIS] -= 10;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
+		current_position[E_AXIS] += 10;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
+		current_position[E_AXIS] -= 10;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
+		st_synchronize();
+	}
+	else {
+		//ABS
+		max_feedrate[E_AXIS] = 50;
+		//current_position[E_AXIS] -= 8;
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2100 / 60, active_extruder);
+		//current_position[E_AXIS] += 8;
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2100 / 60, active_extruder);
+		current_position[E_AXIS] += 3.1;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
+		current_position[E_AXIS] += 3.1;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
+		current_position[E_AXIS] += 4;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+		st_synchronize();
+		/*current_position[X_AXIS] += 23; //delay
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
+		current_position[X_AXIS] -= 23; //delay
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay*/
+		delay(4700);
+		max_feedrate[E_AXIS] = 80;
+		current_position[E_AXIS] -= 92;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 9900 / 60, active_extruder);
+		max_feedrate[E_AXIS] = 50;//tmp[E_AXIS];
+		current_position[E_AXIS] -= 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
+		current_position[E_AXIS] += 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
+		current_position[E_AXIS] -= 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		st_synchronize();
+		current_position[E_AXIS] += 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		current_position[E_AXIS] -= 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		current_position[E_AXIS] += 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		current_position[E_AXIS] -= 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+		st_synchronize();
+
+	}
+  }
+
 void process_commands()
 {
   #ifdef FILAMENT_RUNOUT_SUPPORT
@@ -1855,6 +1949,11 @@ void process_commands()
 
   // PRUSA GCODES
 
+#ifdef SNMM
+  float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
+  float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
+  int8_t SilentMode;
+#endif
   if(code_seen("PRUSA")){
     if (code_seen("fv")) {
         // get file version
@@ -1904,7 +2003,54 @@ void process_commands()
         // Factory full reset
         factory_reset(0,true);
         
-    }
+    }else if(code_seen("Y")) { //filaments adjustment at the beginning of print (for SNMM)
+	#ifdef SNMM
+		int extr;
+		SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT); //is silent mode or loud mode set
+		lcd_implementation_clear();
+		lcd_display_message_fullscreen_P(MSG_FIL_ADJUSTING);
+		current_position[Z_AXIS] = 100; 
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder); 
+		digipot_current(2, E_MOTOR_HIGH_CURRENT);
+		for (extr = 1; extr < 4; extr++) { //we dont know which filament is in nozzle, but we want to load filament0, so all other filaments must unloaded 
+			change_extr(extr);
+			ramming();			
+		}
+		change_extr(0);
+		current_position[E_AXIS] += FIL_LOAD_LENGTH; //loading filament0 into the nozzle
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+		st_synchronize();
+				
+		for (extr = 1; extr < 4; extr++) {	
+			digipot_current(2, E_MOTOR_LOW_CURRENT); //set lower current for extruder motors
+			change_extr(extr);
+			current_position[E_AXIS] += (FIL_LOAD_LENGTH + 3 * FIL_RETURN_LENGTH); //adjusting filaments
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000, active_extruder);
+			st_synchronize();
+			digipot_current(2, tmp_motor_loud[2]); //set back to normal operation currents
+			current_position[E_AXIS] -= FIL_RETURN_LENGTH;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+			st_synchronize();
+		}
+
+		change_extr(0);
+		current_position[E_AXIS] += 25;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 10, active_extruder);
+		digipot_current(2, E_MOTOR_HIGH_CURRENT);
+		ramming();
+		if (SilentMode == 1) digipot_current(2, tmp_motor[2]); //set back to normal operation currents
+		else digipot_current(2, tmp_motor_loud[2]);
+		st_synchronize();
+		lcd_show_fullscreen_message_and_wait_P(MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ);
+		lcd_implementation_clear();
+		lcd_printPGM(MSG_PLEASE_WAIT);
+		current_position[Z_AXIS] = 0;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+		st_synchronize();
+		lcd_update_enable(true);
+
+	#endif
+	}
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
 	  // }
@@ -2095,8 +2241,9 @@ void process_commands()
 
 
         get_coordinates(); // For X Y Z E F
-		total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS])*100);
-
+		if (total_filament_used > ((current_position[E_AXIS] - destination[E_AXIS]) * 100)) { //protection against total_filament_used overflow
+			total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS]) * 100);
+		}
           #ifdef FWRETRACT
             if(autoretract_enabled)
             if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
@@ -2161,6 +2308,7 @@ void process_commands()
       break;
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
+		homing_flag = true;
 
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
@@ -2380,6 +2528,8 @@ void process_commands()
 #endif
 
 	  if (farm_mode) { prusa_statistics(20); };
+
+	  homing_flag = false;
 
       break;
 
@@ -2721,7 +2871,7 @@ void process_commands()
                 if (correction == 0)
                     continue;
                 float offset = float(correction) * 0.001f;
-                if (fabs(offset) > 0.101f) {
+                if (fabs(offset) > 0.101f) {				
                     SERIAL_ERROR_START;
                     SERIAL_ECHOPGM("Excessive bed leveling correction: ");
                     SERIAL_ECHO(offset);
@@ -3148,6 +3298,12 @@ void process_commands()
 
     case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
+		setTargetBed(0);
+		setTargetHotend(0, 0);
+		setTargetHotend(0, 1);
+		setTargetHotend(0, 2);
+				
+		adjust_bed_reset(); //reset bed level correction
         // Disable the default update procedure of the display. We will do a modal dialog.
         lcd_update_enable(false);
         // Let the planner use the uncorrected coordinates.
@@ -3166,6 +3322,10 @@ void process_commands()
         // Let the user move the Z axes up to the end stoppers.
         if (lcd_calibrate_z_end_stop_manual( onlyZ )) {
             refresh_cmd_timeout();
+			if ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) lcd_wait_for_cool_down();
+			lcd_display_message_fullscreen_P(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1);
+			lcd_implementation_print_at(0, 3, 1);
+			lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
 
             // Move the print head close to the bed.
             current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -4354,7 +4514,7 @@ Sigma_Exit:
         #endif
 
         updatePID();
-        SERIAL_PROTOCOL(MSG_OK);
+        SERIAL_PROTOCOLRPGM(MSG_OK);
         SERIAL_PROTOCOL(" p:");
         SERIAL_PROTOCOL(Kp);
         SERIAL_PROTOCOL(" i:");
@@ -4378,7 +4538,7 @@ Sigma_Exit:
         if(code_seen('D')) bedKd = scalePID_d(code_value());
 
         updatePID();
-        SERIAL_PROTOCOL(MSG_OK);
+       	SERIAL_PROTOCOLRPGM(MSG_OK);
         SERIAL_PROTOCOL(" p:");
         SERIAL_PROTOCOL(bedKp);
         SERIAL_PROTOCOL(" i:");
@@ -4893,6 +5053,52 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
   else if(code_seen('T'))
   {
     tmp_extruder = code_value();
+#ifdef SNMM
+          
+          st_synchronize();
+          delay(100);
+          
+          disable_e0();
+          disable_e1();
+          disable_e2();
+          
+          pinMode(E_MUX0_PIN,OUTPUT);
+          pinMode(E_MUX1_PIN,OUTPUT);
+          pinMode(E_MUX2_PIN,OUTPUT);
+          
+          delay(100);
+          SERIAL_ECHO_START;
+          SERIAL_ECHO("T:");
+          SERIAL_ECHOLN((int)tmp_extruder);
+          switch (tmp_extruder) {
+              case 1:
+                  WRITE(E_MUX0_PIN, HIGH);
+                  WRITE(E_MUX1_PIN, LOW);
+                  WRITE(E_MUX2_PIN, LOW);
+				  
+                  break;
+              case 2:
+                  WRITE(E_MUX0_PIN, LOW);
+                  WRITE(E_MUX1_PIN, HIGH);
+                  WRITE(E_MUX2_PIN, LOW);
+				  
+                  break;
+              case 3:
+                  WRITE(E_MUX0_PIN, HIGH);
+                  WRITE(E_MUX1_PIN, HIGH);
+                  WRITE(E_MUX2_PIN, LOW);
+				  
+                  break;
+              default:
+                  WRITE(E_MUX0_PIN, LOW);
+                  WRITE(E_MUX1_PIN, LOW);
+                  WRITE(E_MUX2_PIN, LOW);
+		
+                  break;
+          }
+          delay(100);
+          
+#else
     if(tmp_extruder >= EXTRUDERS) {
       SERIAL_ECHO_START;
       SERIAL_ECHO("T");
@@ -4932,6 +5138,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       SERIAL_ECHO(MSG_ACTIVE_EXTRUDER);
       SERIAL_PROTOCOLLN((int)active_extruder);
     }
+#endif
   } // end if(code_seen('T')) (end of T codes)
 
   else
@@ -5413,7 +5620,7 @@ bool setTargetedHotend(int code){
   return false;
 }
 
-void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time)
+void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time) //_total_filament_used unit: mm/100
 {
 	if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
 	{
@@ -5421,7 +5628,7 @@ void save_statistics(unsigned long _total_filament_used, unsigned long _total_pr
 		eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
 	}
 
-	unsigned long _previous_filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED);
+	unsigned long _previous_filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED); //_previous_filament unit: cm
 	unsigned long _previous_time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME);
 
 	eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, _previous_time + (_total_print_time/60));
