@@ -329,14 +329,14 @@ THERMISTORS SETTINGS
 // 1047 is Pt1000 with 4k7 pullup
 // 1010 is Pt1000 with 1k pullup (non standard)
 // 147 is Pt100 with 4k7 pullup
-// 148 is Pt100 with 4k7 pullup and no PT100 Amplifier (in case type 147 doesn't work)
+// 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.3a
 // 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
 
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP)
 #define TEMP_SENSOR_0 247
 #elif defined(E3D_PT100_EXTRUDER_NO_AMP)
-#define TEMP_SENSOR_0 147
+#define TEMP_SENSOR_0 148
 #else
 #define TEMP_SENSOR_0 5
 #endif
@@ -345,7 +345,7 @@ THERMISTORS SETTINGS
 #if defined(E3D_PT100_BED_WITH_AMP)
 #define TEMP_SENSOR_BED 247
 #elif defined(E3D_PT100_BED_NO_AMP)
-#define TEMP_SENSOR_BED 147
+#define TEMP_SENSOR_BED 148
 #else
 #define TEMP_SENSOR_BED 1
 #endif
