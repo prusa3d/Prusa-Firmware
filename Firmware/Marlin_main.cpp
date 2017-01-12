@@ -3520,11 +3520,18 @@ Sigma_Exit:
       #endif
 
         #ifdef SHOW_TEMP_ADC_VALUES
+          {float raw = 0.0;
+
           #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
             SERIAL_PROTOCOLPGM("    ADC B:");
             SERIAL_PROTOCOL_F(degBed(),1);
             SERIAL_PROTOCOLPGM("C->");
-            SERIAL_PROTOCOL_F(rawBedTemp()/OVERSAMPLENR,0);
+            raw = rawBedTemp();
+            SERIAL_PROTOCOL_F(raw/OVERSAMPLENR,5);
+            SERIAL_PROTOCOLPGM(" Rb->");
+            SERIAL_PROTOCOL_F(100 * (1 + (PtA * (raw/OVERSAMPLENR)) + (PtB * sq((raw/OVERSAMPLENR)))), 5);
+            SERIAL_PROTOCOLPGM(" Rxb->");
+            SERIAL_PROTOCOL_F(raw, 5);
           #endif
           for (int8_t cur_extruder = 0; cur_extruder < EXTRUDERS; ++cur_extruder) {
             SERIAL_PROTOCOLPGM("  T");
@@ -3532,8 +3539,17 @@ Sigma_Exit:
             SERIAL_PROTOCOLPGM(":");
             SERIAL_PROTOCOL_F(degHotend(cur_extruder),1);
             SERIAL_PROTOCOLPGM("C->");
-            SERIAL_PROTOCOL_F(rawHotendTemp(cur_extruder)/OVERSAMPLENR,0);
-          }
+            raw = rawHotendTemp(cur_extruder);
+            SERIAL_PROTOCOL_F(raw/OVERSAMPLENR,5);
+            SERIAL_PROTOCOLPGM(" Rt");
+            SERIAL_PROTOCOL(cur_extruder);
+            SERIAL_PROTOCOLPGM("->");
+            SERIAL_PROTOCOL_F(100 * (1 + (PtA * (raw/OVERSAMPLENR)) + (PtB * sq((raw/OVERSAMPLENR)))), 5);
+            SERIAL_PROTOCOLPGM(" Rx");
+            SERIAL_PROTOCOL(cur_extruder);
+            SERIAL_PROTOCOLPGM("->");
+            SERIAL_PROTOCOL_F(raw, 5);
+          }}
         #endif
 
         SERIAL_PROTOCOLLN("");
