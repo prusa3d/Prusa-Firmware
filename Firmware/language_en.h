@@ -244,6 +244,7 @@
 #define(length=20, lines=4) MSG_STACK_ERROR						"Error - static memory has been overwritten"
 #define(length=20, lines=1) MSG_CALIBRATE_E						"Calibrate E"
 #define(length=20, lines=4) MSG_E_CAL_KNOB						"Rotate knob until mark reaches extruder body. Click when done."
+
 //#define(length=20, lines=1) MSG_FARM_CARD_MENU					"Farm mode print"
 #define(length=20, lines=4) MSG_MARK_FIL						"Mark filament 100mm from extruder body. Click when done."
 #define(length=20, lines=4) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
