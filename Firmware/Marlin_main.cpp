@@ -3289,6 +3289,11 @@ void process_commands()
      break;
 
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
+
+		// Reset the baby step value and the baby step applied flag.
+		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
+		eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+
         // Reset the skew and offset in both RAM and EEPROM.
         reset_bed_offset_and_skew();
         // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
