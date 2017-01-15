@@ -2520,6 +2520,7 @@ void process_commands()
 	else
 		{
 			st_synchronize();
+			homing_flag = false;
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
 			// enquecommand_front_P((PSTR("G80")));

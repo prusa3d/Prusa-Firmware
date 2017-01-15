@@ -1355,6 +1355,7 @@ static void _lcd_babystep(int axis, const char *msg)
 
   if (encoderPosition != 0) 
   {
+	if (homing_flag) encoderPosition = 0;
     CRITICAL_SECTION_START
     babystepsTodo[axis] += (int)encoderPosition;
     CRITICAL_SECTION_END
@@ -1549,13 +1550,13 @@ void lcd_wait_for_cool_down() {
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(MSG_WAITING_TEMP);
 
-		lcd.setCursor(0, 2);
+		lcd.setCursor(0, 4);
 		lcd.print(LCD_STR_THERMOMETER[0]);
 		lcd.print(ftostr3(degHotend(0)));
 		lcd.print("/0");		
 		lcd.print(LCD_STR_DEGREE);
 
-		lcd.setCursor(0, 3);
+		lcd.setCursor(9, 4);
 		lcd.print(LCD_STR_BEDTEMP[0]);
 		lcd.print(ftostr3(degBed()));
 		lcd.print("/0");		
@@ -2271,6 +2272,10 @@ void lcd_calibrate_extruder() {
 		float e_steps_per_unit;
 		float feedrate = (180 / axis_steps_per_unit[E_AXIS]) * 5;
 		float e_shift_calibration = (axis_steps_per_unit[E_AXIS] > 180 ) ? ((180 / axis_steps_per_unit[E_AXIS]) * 70): 70;
+		const char   *msg_e_cal_knob = MSG_E_CAL_KNOB;
+		const char   *msg_next_e_cal_knob = lcd_display_message_fullscreen_P(msg_e_cal_knob);
+		const bool    multi_screen = msg_next_e_cal_knob != NULL;
+		unsigned long msg_millis;
 
 		lcd_show_fullscreen_message_and_wait_P(MSG_MARK_FIL);
 		lcd_implementation_clear();
@@ -2281,8 +2286,16 @@ void lcd_calibrate_extruder() {
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder);
 		st_synchronize();
 
-		lcd_display_message_fullscreen_P(MSG_E_CAL_KNOB);
+		lcd_display_message_fullscreen_P(msg_e_cal_knob);
+		msg_millis = millis();
 		while (!LCD_CLICKED) {
+			if (multi_screen && millis() - msg_millis > 5000) {
+				if (msg_next_e_cal_knob == NULL)
+					msg_next_e_cal_knob = msg_e_cal_knob;
+					msg_next_e_cal_knob = lcd_display_message_fullscreen_P(msg_next_e_cal_knob);
+					msg_millis = millis();
+			}
+
 			//manage_inactivity(true);
 			manage_heater();
 			if (abs(encoderDiff) >= ENCODER_PULSES_PER_STEP) {
@@ -3107,7 +3120,7 @@ static void lcd_main_menu()
     
     
     
-  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) ) 
+  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag) 
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
