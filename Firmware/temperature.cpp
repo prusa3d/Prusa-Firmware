@@ -386,9 +386,9 @@ void setExtruderAutoFanState(int pin, bool state)
 {
   unsigned char newFanSpeed = (state != 0) ? EXTRUDER_AUTO_FAN_SPEED : 0;
   // this idiom allows both digital and PWM fan outputs (see M42 handling).
-  pinMode(pin, OUTPUT);
-  digitalWrite(pin, newFanSpeed);
-  analogWrite(pin, newFanSpeed);
+  //pinMode(pin, OUTPUT);
+  //digitalWrite(pin, newFanSpeed);
+  //analogWrite(pin, newFanSpeed);
 }
 
 void checkExtruderAutoFans()
@@ -1959,5 +1959,3 @@ float unscalePID_d(float d)
 }
 
 #endif //PIDTEMP
-
-
