@@ -723,8 +723,4 @@ enum CalibrationStatus
 #include "Configuration_adv.h"
 #include "thermistortables.h"
 
-
-#define MAX_HOTEND_TEMP_CALIBRATION 50
-#define MAX_BED_TEMP_CALIBRATION 50
-
 #endif //__CONFIGURATION_H
