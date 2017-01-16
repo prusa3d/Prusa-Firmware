@@ -3307,7 +3307,7 @@ void process_commands()
 		// Only Z calibration?
 		bool onlyZ = code_seen('Z');
 
-		if (!only_z) {
+		if (!onlyZ) {
 			setTargetBed(0);
 			setTargetHotend(0, 0);
 			setTargetHotend(0, 1);
