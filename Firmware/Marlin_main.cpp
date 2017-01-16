@@ -3304,11 +3304,15 @@ void process_commands()
 
     case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
-		setTargetBed(0);
-		setTargetHotend(0, 0);
-		setTargetHotend(0, 1);
-		setTargetHotend(0, 2);
-				
+		// Only Z calibration?
+		bool onlyZ = code_seen('Z');
+
+		if (!only_z) {
+			setTargetBed(0);
+			setTargetHotend(0, 0);
+			setTargetHotend(0, 1);
+			setTargetHotend(0, 2);
+		}
 		adjust_bed_reset(); //reset bed level correction
         // Disable the default update procedure of the display. We will do a modal dialog.
         lcd_update_enable(false);
@@ -3322,9 +3326,7 @@ void process_commands()
         babystep_reset();
         // Mark all axes as in a need for homing.
         memset(axis_known_position, 0, sizeof(axis_known_position));
-        // Only Z calibration?
-        bool onlyZ = code_seen('Z');
-        
+                
         // Let the user move the Z axes up to the end stoppers.
         if (lcd_calibrate_z_end_stop_manual( onlyZ )) {
             refresh_cmd_timeout();
