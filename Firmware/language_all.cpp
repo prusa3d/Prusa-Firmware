@@ -326,10 +326,10 @@ const char * const MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND_LANG_TABLE[LANG
 };
 
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_EN[] PROGMEM = "X/Y skewed severly. Skew will be corrected automatically.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_CZ[] PROGMEM = "X/Y osy jsou silne zkosene. Zkoseni bude automaticky vyrovnano pri tisku.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_IT[] PROGMEM = "X/Y fortemente distorto. La distorsione verra' corretta automaticamente.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_ES[] PROGMEM = "X/Y muy distorsionado. La distorsion sera corregida automaticamente.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_PL[] PROGMEM = "Osie X/Y sa mocno skosne. Skos bedzie aut. wyrownany przy druku.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_CZ[] PROGMEM = "Kalibrace XYZ v poradku. Zkoseni bude automaticky vyrovnano pri tisku.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_IT[] PROGMEM = "Calibrazion XYZ corretta. La distorsione verra' automaticamente compensata.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_ES[] PROGMEM = "Calibracion XYZ correcta. La inclinacion se corregira automaticamente.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_PL[] PROGMEM = "Kalibracja XYZ prawidlowa. Skosy beda automatycznie wyrownane przy druku.";
 const char * const MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_EN,
 	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_CZ,
@@ -339,10 +339,10 @@ const char * const MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_LANG_TABLE[LANG_NU
 };
 
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_EN[] PROGMEM = "XYZ calibration all right. X/Y axes are slightly skewed.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_CZ[] PROGMEM = "Kalibrace XYZ v poradku. X/Y osy mirne zkosene.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_IT[] PROGMEM = "Calibrazione XYZ compiuta. Gli assi X/Y sono leggermente distorti.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_ES[] PROGMEM = "Calibracion XYZ conseguida. Ejes X/Y un poco torcidos.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_PL[] PROGMEM = "Kalibracja XYZ w porzadku. Osie X/Y lekko skosne.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_CZ[] PROGMEM = "Kalibrace XYZ v poradku. X/Y osy mirne zkosene. Dobra prace!";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_IT[] PROGMEM = "Calibrazion XYZ corretta. Assi X/Y leggermente storti. Ben fatto!";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_ES[] PROGMEM = "Calibracion XYZ correcta. Los ejes X / Y estan ligeramente inclinados. Buen trabajo!";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_PL[] PROGMEM = "Kalibracja XYZ prawidlowa. Osie X/Y lekko skosne. Dobra robota!";
 const char * const MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_EN,
 	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_CZ,
@@ -425,8 +425,16 @@ const char * const MSG_CALIBRATE_BED_RESET_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_CALIBRATE_E_EN[] PROGMEM = "Calibrate E";
-const char * const MSG_CALIBRATE_E_LANG_TABLE[1] PROGMEM = {
-	MSG_CALIBRATE_E_EN
+const char MSG_CALIBRATE_E_CZ[] PROGMEM = "Kalibrovat E";
+const char MSG_CALIBRATE_E_IT[] PROGMEM = "Calibra E";
+const char MSG_CALIBRATE_E_ES[] PROGMEM = "Calibrar E";
+const char MSG_CALIBRATE_E_PL[] PROGMEM = "Kalibruj E";
+const char * const MSG_CALIBRATE_E_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CALIBRATE_E_EN,
+	MSG_CALIBRATE_E_CZ,
+	MSG_CALIBRATE_E_IT,
+	MSG_CALIBRATE_E_ES,
+	MSG_CALIBRATE_E_PL
 };
 
 const char MSG_CARD_MENU_EN[] PROGMEM = "Print from SD";
@@ -443,9 +451,18 @@ const char * const MSG_CARD_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_CHANGE_EXTR_EN[] PROGMEM = "Change extruder";
-const char * const MSG_CHANGE_EXTR_LANG_TABLE[1] PROGMEM = {
-	MSG_CHANGE_EXTR_EN
+const char MSG_CHANGE_EXTR_CZ[] PROGMEM = "Zmenit extruder";
+const char MSG_CHANGE_EXTR_IT[] PROGMEM = "Cambio estrusore.";
+const char MSG_CHANGE_EXTR_ES[] PROGMEM = "Cambiar extrusor.";
+const char MSG_CHANGE_EXTR_PL[] PROGMEM = "Zmienic ekstruder";
+const char * const MSG_CHANGE_EXTR_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CHANGE_EXTR_EN,
+	MSG_CHANGE_EXTR_CZ,
+	MSG_CHANGE_EXTR_IT,
+	MSG_CHANGE_EXTR_ES,
+	MSG_CHANGE_EXTR_PL
 };
+
 const char MSG_CHANGE_SUCCESS_EN[] PROGMEM = "Change success!";
 const char MSG_CHANGE_SUCCESS_CZ[] PROGMEM = "Zmena uspesna!";
 const char MSG_CHANGE_SUCCESS_IT[] PROGMEM = "Cambia. riuscito!";
@@ -473,9 +490,18 @@ const char * const MSG_CHANGING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_CLEAN_NOZZLE_E_EN[] PROGMEM = "E calibration finished. Please clean the nozzle. Click when done.";
-const char * const MSG_CLEAN_NOZZLE_E_LANG_TABLE[1] PROGMEM = {
-	MSG_CLEAN_NOZZLE_E_EN
+const char MSG_CLEAN_NOZZLE_E_CZ[] PROGMEM = "E kalibrace ukoncena. Prosim ocistete trysku. Po te potvrdte tlacitkem.";
+const char MSG_CLEAN_NOZZLE_E_IT[] PROGMEM = "Calibrazione E terminata. Si prega di pulire l'ugello. Click per continuare.";
+const char MSG_CLEAN_NOZZLE_E_ES[] PROGMEM = "E calibrado. Limpiar la boquilla. Haga clic una vez terminado.";
+const char MSG_CLEAN_NOZZLE_E_PL[] PROGMEM = "Kalibracja E skonczona. Prosze oczyscic dysze. Potem potwierdzic przyciskiem. ";
+const char * const MSG_CLEAN_NOZZLE_E_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CLEAN_NOZZLE_E_EN,
+	MSG_CLEAN_NOZZLE_E_CZ,
+	MSG_CLEAN_NOZZLE_E_IT,
+	MSG_CLEAN_NOZZLE_E_ES,
+	MSG_CLEAN_NOZZLE_E_PL
 };
+
 const char MSG_CNG_SDCARD_EN[] PROGMEM = "Change SD card";
 const char * const MSG_CNG_SDCARD_LANG_TABLE[1] PROGMEM = {
 	MSG_CNG_SDCARD_EN
@@ -513,8 +539,16 @@ const char * const MSG_CONFIRM_NOZZLE_CLEAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_EN[] PROGMEM = "Filaments are now adjusted. Please clean the nozzle for calibration. Click when done.";
-const char * const MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_LANG_TABLE[1] PROGMEM = {
-	MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_EN
+const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_CZ[] PROGMEM = "Filamenty jsou srovnany. Pro uspesnou kalibraci prosim ocistete trysku. Po te potvrdte tlacitkem.";
+const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_IT[] PROGMEM = "I filamenti sono regolati. Si prega di pulire l'ugello per la calibrazione. Click per continuare.";
+const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_ES[] PROGMEM = "Filamentos ajustados. Limpie la boquilla para calibracion. Haga clic una vez terminado.";
+const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_PL[] PROGMEM = "Dla prawidlowej kalibracji prosze oczyscic dysze. Potem potwierdzic przyciskiem.";
+const char * const MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_EN,
+	MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_CZ,
+	MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_IT,
+	MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_ES,
+	MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_PL
 };
 
 const char MSG_CONTROL_EN[] PROGMEM = "Control";
@@ -659,9 +693,18 @@ const char * const MSG_EXTERNAL_RESET_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_E_CAL_KNOB_EN[] PROGMEM = "Rotate knob until mark reaches extruder body. Click when done.";
-const char * const MSG_E_CAL_KNOB_LANG_TABLE[1] PROGMEM = {
-	MSG_E_CAL_KNOB_EN
+const char MSG_E_CAL_KNOB_CZ[] PROGMEM = "Otacejte tlacitkem dokud znacka nedosahne tela extruderu. Potvrdte tlacitkem.";
+const char MSG_E_CAL_KNOB_IT[] PROGMEM = "Girare la manopola affinche' il segno raggiunga il corpo dell'estrusore. Click per continuare.";
+const char MSG_E_CAL_KNOB_ES[] PROGMEM = "Rotar el mando hasta que la marca llegue al cuerpo del extrusor. Haga clic una vez terminado.";
+const char MSG_E_CAL_KNOB_PL[] PROGMEM = "Prosze otaczac przycisk poki znacznik nie dosiegnie ciala ekstrudera. Potwierdzic przyciskiem.";
+const char * const MSG_E_CAL_KNOB_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_E_CAL_KNOB_EN,
+	MSG_E_CAL_KNOB_CZ,
+	MSG_E_CAL_KNOB_IT,
+	MSG_E_CAL_KNOB_ES,
+	MSG_E_CAL_KNOB_PL
 };
+
 const char MSG_Enqueing_EN[] PROGMEM = "enqueing \"";
 const char * const MSG_Enqueing_LANG_TABLE[1] PROGMEM = {
 	MSG_Enqueing_EN
@@ -689,6 +732,7 @@ const char MSG_FARM_CARD_MENU_EN[] PROGMEM = "Farm mode print";
 const char * const MSG_FARM_CARD_MENU_LANG_TABLE[1] PROGMEM = {
 	MSG_FARM_CARD_MENU_EN
 };
+
 const char MSG_FILAMENTCHANGE_EN[] PROGMEM = "Change filament";
 const char MSG_FILAMENTCHANGE_CZ[] PROGMEM = "Vymenit filament";
 const char MSG_FILAMENTCHANGE_IT[] PROGMEM = "Camb. filamento";
@@ -703,28 +747,70 @@ const char * const MSG_FILAMENTCHANGE_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_FILAMENT_CLEAN_EN[] PROGMEM = "Is color clear?";
-const char * const MSG_FILAMENT_CLEAN_LANG_TABLE[1] PROGMEM = {
-	MSG_FILAMENT_CLEAN_EN
+const char MSG_FILAMENT_CLEAN_CZ[] PROGMEM = "Je barva cista?";
+const char MSG_FILAMENT_CLEAN_IT[] PROGMEM = "Il colore e' nitido?";
+const char MSG_FILAMENT_CLEAN_ES[] PROGMEM = "Es el nuevo color nitido?";
+const char MSG_FILAMENT_CLEAN_PL[] PROGMEM = "Czy kolor jest czysty?";
+const char * const MSG_FILAMENT_CLEAN_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FILAMENT_CLEAN_EN,
+	MSG_FILAMENT_CLEAN_CZ,
+	MSG_FILAMENT_CLEAN_IT,
+	MSG_FILAMENT_CLEAN_ES,
+	MSG_FILAMENT_CLEAN_PL
 };
+
 const char MSG_FILAMENT_LOADING_T0_EN[] PROGMEM = "Insert filament into extruder 1. Click when done.";
-const char * const MSG_FILAMENT_LOADING_T0_LANG_TABLE[1] PROGMEM = {
-	MSG_FILAMENT_LOADING_T0_EN
+const char MSG_FILAMENT_LOADING_T0_CZ[] PROGMEM = "Vlo\x9Ete filament do extruderu 1. Potvrdte tlacitkem.";
+const char MSG_FILAMENT_LOADING_T0_IT[] PROGMEM = "Inserire filamento nell'estrusore 1. Click per continuare.";
+const char MSG_FILAMENT_LOADING_T0_ES[] PROGMEM = "Insertar filamento en el extrusor 1. Haga clic una vez terminado.";
+const char MSG_FILAMENT_LOADING_T0_PL[] PROGMEM = "Wloz filament do ekstrudera 1. Potwierdz przyciskiem.";
+const char * const MSG_FILAMENT_LOADING_T0_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FILAMENT_LOADING_T0_EN,
+	MSG_FILAMENT_LOADING_T0_CZ,
+	MSG_FILAMENT_LOADING_T0_IT,
+	MSG_FILAMENT_LOADING_T0_ES,
+	MSG_FILAMENT_LOADING_T0_PL
 };
 
 const char MSG_FILAMENT_LOADING_T1_EN[] PROGMEM = "Insert filament into extruder 2. Click when done.";
-const char * const MSG_FILAMENT_LOADING_T1_LANG_TABLE[1] PROGMEM = {
-	MSG_FILAMENT_LOADING_T1_EN
+const char MSG_FILAMENT_LOADING_T1_CZ[] PROGMEM = "Vlo\x9Ete filament do extruderu 2. Potvrdte tlacitkem.";
+const char MSG_FILAMENT_LOADING_T1_IT[] PROGMEM = "Inserire filamento nell'estrusore 2. Click per continuare.";
+const char MSG_FILAMENT_LOADING_T1_ES[] PROGMEM = "Insertar filamento en el extrusor 2. Haga clic una vez terminado.";
+const char MSG_FILAMENT_LOADING_T1_PL[] PROGMEM = "Wloz filament do ekstrudera 2. Potwierdz przyciskiem.";
+const char * const MSG_FILAMENT_LOADING_T1_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FILAMENT_LOADING_T1_EN,
+	MSG_FILAMENT_LOADING_T1_CZ,
+	MSG_FILAMENT_LOADING_T1_IT,
+	MSG_FILAMENT_LOADING_T1_ES,
+	MSG_FILAMENT_LOADING_T1_PL
 };
 
 const char MSG_FILAMENT_LOADING_T2_EN[] PROGMEM = "Insert filament into extruder 3. Click when done.";
-const char * const MSG_FILAMENT_LOADING_T2_LANG_TABLE[1] PROGMEM = {
-	MSG_FILAMENT_LOADING_T2_EN
+const char MSG_FILAMENT_LOADING_T2_CZ[] PROGMEM = "Vlo\x9Ete filament do extruderu 3. Potvrdte tlacitkem.";
+const char MSG_FILAMENT_LOADING_T2_IT[] PROGMEM = "Inserire filamento nell'estrusore 3. Click per continuare.";
+const char MSG_FILAMENT_LOADING_T2_ES[] PROGMEM = "Insertar filamento en el extrusor 3. Haga clic una vez terminado.";
+const char MSG_FILAMENT_LOADING_T2_PL[] PROGMEM = "Wloz filament do ekstrudera 3. Potwierdz przyciskiem.";
+const char * const MSG_FILAMENT_LOADING_T2_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FILAMENT_LOADING_T2_EN,
+	MSG_FILAMENT_LOADING_T2_CZ,
+	MSG_FILAMENT_LOADING_T2_IT,
+	MSG_FILAMENT_LOADING_T2_ES,
+	MSG_FILAMENT_LOADING_T2_PL
 };
 
 const char MSG_FILAMENT_LOADING_T3_EN[] PROGMEM = "Insert filament into extruder 4. Click when done.";
-const char * const MSG_FILAMENT_LOADING_T3_LANG_TABLE[1] PROGMEM = {
-	MSG_FILAMENT_LOADING_T3_EN
+const char MSG_FILAMENT_LOADING_T3_CZ[] PROGMEM = "Vlo\x9Ete filament do extruderu 4. Potvrdte tlacitkem.";
+const char MSG_FILAMENT_LOADING_T3_IT[] PROGMEM = "Inserire filamento nell'estrusore 4. Click per continuare.";
+const char MSG_FILAMENT_LOADING_T3_ES[] PROGMEM = "Insertar filamento en el extrusor 4. Haga clic una vez terminado.";
+const char MSG_FILAMENT_LOADING_T3_PL[] PROGMEM = "Wloz filament do ekstrudera 4. Potwierdz przyciskiem.";
+const char * const MSG_FILAMENT_LOADING_T3_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FILAMENT_LOADING_T3_EN,
+	MSG_FILAMENT_LOADING_T3_CZ,
+	MSG_FILAMENT_LOADING_T3_IT,
+	MSG_FILAMENT_LOADING_T3_ES,
+	MSG_FILAMENT_LOADING_T3_PL
 };
+
 const char MSG_FILE_PRINTED_EN[] PROGMEM = "Done printing file";
 const char * const MSG_FILE_PRINTED_LANG_TABLE[1] PROGMEM = {
 	MSG_FILE_PRINTED_EN
@@ -736,18 +822,44 @@ const char * const MSG_FILE_SAVED_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_FIL_ADJUSTING_EN[] PROGMEM = "Adjusting filaments. Please wait.";
-const char * const MSG_FIL_ADJUSTING_LANG_TABLE[1] PROGMEM = {
-	MSG_FIL_ADJUSTING_EN
+const char MSG_FIL_ADJUSTING_CZ[] PROGMEM = "Probiha srovnani filamentu. Prosim cekejte.";
+const char MSG_FIL_ADJUSTING_IT[] PROGMEM = "Filamento in fase di regolazione. Attendere prego.";
+const char MSG_FIL_ADJUSTING_ES[] PROGMEM = "Ajustando filamentos. Esperar por favor.";
+const char MSG_FIL_ADJUSTING_PL[] PROGMEM = "Przebiega wyrownanie filamentow. Prosze czekac.";
+const char * const MSG_FIL_ADJUSTING_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FIL_ADJUSTING_EN,
+	MSG_FIL_ADJUSTING_CZ,
+	MSG_FIL_ADJUSTING_IT,
+	MSG_FIL_ADJUSTING_ES,
+	MSG_FIL_ADJUSTING_PL
 };
+
 const char MSG_FIL_LOADED_CHECK_EN[] PROGMEM = "Is filament loaded?";
-const char * const MSG_FIL_LOADED_CHECK_LANG_TABLE[1] PROGMEM = {
-	MSG_FIL_LOADED_CHECK_EN
+const char MSG_FIL_LOADED_CHECK_CZ[] PROGMEM = "Je filament zaveden?";
+const char MSG_FIL_LOADED_CHECK_IT[] PROGMEM = "Filamento caricato?";
+const char MSG_FIL_LOADED_CHECK_ES[] PROGMEM = "Esta cargado el filamento?";
+const char MSG_FIL_LOADED_CHECK_PL[] PROGMEM = "Czy filament jest wprowadzony?";
+const char * const MSG_FIL_LOADED_CHECK_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FIL_LOADED_CHECK_EN,
+	MSG_FIL_LOADED_CHECK_CZ,
+	MSG_FIL_LOADED_CHECK_IT,
+	MSG_FIL_LOADED_CHECK_ES,
+	MSG_FIL_LOADED_CHECK_PL
 };
 
 const char MSG_FIL_TUNING_EN[] PROGMEM = "Rotate the knob to adjust filament.";
-const char * const MSG_FIL_TUNING_LANG_TABLE[1] PROGMEM = {
-	MSG_FIL_TUNING_EN
+const char MSG_FIL_TUNING_CZ[] PROGMEM = "Otacenim tlacitka doladte pozici filamentu.";
+const char MSG_FIL_TUNING_IT[] PROGMEM = "Girare la manopola per regolare il filamento";
+const char MSG_FIL_TUNING_ES[] PROGMEM = "Rotar el mando para ajustar el filamento.";
+const char MSG_FIL_TUNING_PL[] PROGMEM = "Obrotem przycisku dostroj pozycje filamentu.";
+const char * const MSG_FIL_TUNING_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FIL_TUNING_EN,
+	MSG_FIL_TUNING_CZ,
+	MSG_FIL_TUNING_IT,
+	MSG_FIL_TUNING_ES,
+	MSG_FIL_TUNING_PL
 };
+
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_EN[] PROGMEM = "Searching bed calibration point";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Hledam kalibracni bod podlozky";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Ricerca del letto punto di calibraz.";
@@ -1021,9 +1133,18 @@ const char * const MSG_LOAD_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_LOOSE_PULLEY_EN[] PROGMEM = "Loose pulley";
-const char * const MSG_LOOSE_PULLEY_LANG_TABLE[1] PROGMEM = {
-	MSG_LOOSE_PULLEY_EN
+const char MSG_LOOSE_PULLEY_CZ[] PROGMEM = "Uvolnena remenicka";
+const char MSG_LOOSE_PULLEY_IT[] PROGMEM = "Puleggia lenta";
+const char MSG_LOOSE_PULLEY_ES[] PROGMEM = "Polea suelta";
+const char MSG_LOOSE_PULLEY_PL[] PROGMEM = "Kolo pasowe";
+const char * const MSG_LOOSE_PULLEY_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_LOOSE_PULLEY_EN,
+	MSG_LOOSE_PULLEY_CZ,
+	MSG_LOOSE_PULLEY_IT,
+	MSG_LOOSE_PULLEY_ES,
+	MSG_LOOSE_PULLEY_PL
 };
+
 const char MSG_M104_INVALID_EXTRUDER_EN[] PROGMEM = "M104 Invalid extruder ";
 const char * const MSG_M104_INVALID_EXTRUDER_LANG_TABLE[1] PROGMEM = {
 	MSG_M104_INVALID_EXTRUDER_EN
@@ -1078,9 +1199,18 @@ const char * const MSG_MAIN_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_MARK_FIL_EN[] PROGMEM = "Mark filament 100mm from extruder body. Click when done.";
-const char * const MSG_MARK_FIL_LANG_TABLE[1] PROGMEM = {
-	MSG_MARK_FIL_EN
+const char MSG_MARK_FIL_CZ[] PROGMEM = "Oznacte filament 100 mm od tela extruderu. Potvrdte tlacitkem.";
+const char MSG_MARK_FIL_IT[] PROGMEM = "Segnare il filamento a 100 mm di distanza dal corpo dell'estrusore. Click per continuare.";
+const char MSG_MARK_FIL_ES[] PROGMEM = "Marque el filamento 100 mm por encima del final del extrusor. Hacer clic una vez terminado.";
+const char MSG_MARK_FIL_PL[] PROGMEM = "Prosze oznaczyc filament 100 mm od ciala ekstrudera. Potwierdzic przyciskiem.";
+const char * const MSG_MARK_FIL_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_MARK_FIL_EN,
+	MSG_MARK_FIL_CZ,
+	MSG_MARK_FIL_IT,
+	MSG_MARK_FIL_ES,
+	MSG_MARK_FIL_PL
 };
+
 const char MSG_MAX_EN[] PROGMEM = " \002 Max";
 const char * const MSG_MAX_LANG_TABLE[1] PROGMEM = {
 	MSG_MAX_EN
@@ -2332,9 +2462,18 @@ const char * const MSG_VTRAV_MIN_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_WAITING_TEMP_EN[] PROGMEM = "Waiting for heater and bed cooling";
-const char * const MSG_WAITING_TEMP_LANG_TABLE[1] PROGMEM = {
-	MSG_WAITING_TEMP_EN
+const char MSG_WAITING_TEMP_CZ[] PROGMEM = "Cekani na zchladnuti trysky a podlozky.";
+const char MSG_WAITING_TEMP_IT[] PROGMEM = "In attesa del raffreddamento della testina e del piatto.";
+const char MSG_WAITING_TEMP_ES[] PROGMEM = "Esperando enfriamiento de la cama y del extrusor.";
+const char MSG_WAITING_TEMP_PL[] PROGMEM = "Oczekiwanie na wychlodzenie dyszy i podkladki.";
+const char * const MSG_WAITING_TEMP_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_WAITING_TEMP_EN,
+	MSG_WAITING_TEMP_CZ,
+	MSG_WAITING_TEMP_IT,
+	MSG_WAITING_TEMP_ES,
+	MSG_WAITING_TEMP_PL
 };
+
 const char MSG_WATCH_EN[] PROGMEM = "Info screen";
 const char MSG_WATCH_CZ[] PROGMEM = "Informace";
 const char MSG_WATCH_IT[] PROGMEM = "Schermata info";

@@ -1355,6 +1355,7 @@ static void _lcd_babystep(int axis, const char *msg)
 
   if (encoderPosition != 0) 
   {
+	if (homing_flag) encoderPosition = 0;
     CRITICAL_SECTION_START
     babystepsTodo[axis] += (int)encoderPosition;
     CRITICAL_SECTION_END
@@ -1549,13 +1550,13 @@ void lcd_wait_for_cool_down() {
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(MSG_WAITING_TEMP);
 
-		lcd.setCursor(0, 2);
+		lcd.setCursor(0, 4);
 		lcd.print(LCD_STR_THERMOMETER[0]);
 		lcd.print(ftostr3(degHotend(0)));
 		lcd.print("/0");		
 		lcd.print(LCD_STR_DEGREE);
 
-		lcd.setCursor(0, 3);
+		lcd.setCursor(9, 4);
 		lcd.print(LCD_STR_BEDTEMP[0]);
 		lcd.print(ftostr3(degBed()));
 		lcd.print("/0");		
@@ -2271,6 +2272,10 @@ void lcd_calibrate_extruder() {
 		float e_steps_per_unit;
 		float feedrate = (180 / axis_steps_per_unit[E_AXIS]) * 5;
 		float e_shift_calibration = (axis_steps_per_unit[E_AXIS] > 180 ) ? ((180 / axis_steps_per_unit[E_AXIS]) * 70): 70;
+		const char   *msg_e_cal_knob = MSG_E_CAL_KNOB;
+		const char   *msg_next_e_cal_knob = lcd_display_message_fullscreen_P(msg_e_cal_knob);
+		const bool    multi_screen = msg_next_e_cal_knob != NULL;
+		unsigned long msg_millis;
 
 		lcd_show_fullscreen_message_and_wait_P(MSG_MARK_FIL);
 		lcd_implementation_clear();
@@ -2281,8 +2286,16 @@ void lcd_calibrate_extruder() {
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder);
 		st_synchronize();
 
-		lcd_display_message_fullscreen_P(MSG_E_CAL_KNOB);
+		lcd_display_message_fullscreen_P(msg_e_cal_knob);
+		msg_millis = millis();
 		while (!LCD_CLICKED) {
+			if (multi_screen && millis() - msg_millis > 5000) {
+				if (msg_next_e_cal_knob == NULL)
+					msg_next_e_cal_knob = msg_e_cal_knob;
+					msg_next_e_cal_knob = lcd_display_message_fullscreen_P(msg_next_e_cal_knob);
+					msg_millis = millis();
+			}
+
 			//manage_inactivity(true);
 			manage_heater();
 			if (abs(encoderDiff) >= ENCODER_PULSES_PER_STEP) {
@@ -3107,7 +3120,7 @@ static void lcd_main_menu()
     
     
     
-  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) ) 
+  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag) 
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
@@ -3636,44 +3649,21 @@ static void lcd_selftest()
 	{
 		_progress = lcd_selftest_screen(7, _progress, 3, true, 5000);
 	}
-
+	lcd_reset_alert_level();
+	enquecommand_P(PSTR("M84"));
 	lcd_implementation_clear();
 	lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
 
 	if (_result)
 	{
-		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_OK);
+		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_OK);				
 	}
 	else
 	{
 		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_FAILED);
 	}
 }
-/*static bool lcd_selfcheck_endstops()
-{
-	bool _result = true;
 
-	if (READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1 || READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1 || READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1)
-	{
-		current_position[0] = (READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? current_position[0] = current_position[0] + 10 : current_position[0];
-		current_position[1] = (READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? current_position[1] = current_position[1] + 10 : current_position[1];
-		current_position[2] = (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? current_position[2] = current_position[2] + 10 : current_position[2];
-	}
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[0] / 60, active_extruder);
-	delay(500);
-
-	if (READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1 || READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1 || READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1)
-	{
-		_result = false;
-		String  _error = String((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? "X" : "") +
-			String((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? "Y" : "") +
-			String((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? "Z" : "");
-		lcd_selftest_error(3, _error.c_str(), "");
-	}
-	manage_heater();
-	manage_inactivity();
-	return _result;
-}*/
 static bool lcd_selfcheck_axis(int _axis, int _travel)
 {
 	bool _stepdone = false;
@@ -3778,55 +3768,33 @@ static bool lcd_selfcheck_pulleys(int axis)
 	bool endstop_triggered = false;
 	bool result = true;
 	int i;
-	unsigned long timeout_counter;// = 20000 + millis();
+	unsigned long timeout_counter;
 	refresh_cmd_timeout();
 
 
-	if (axis == 0) move = 50; //230;
-		else move = 50; //190
+	if (axis == 0) move = 50; //X_AXIS 
+		else move = 50; //Y_AXIS
 
-
-		
-		/*while (!endstop_triggered) {
-			if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) || (READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1)) {
-				endstop_triggered = true;*/
-				current_position_init = current_position[axis];
-				timeout_counter = millis() + 2500; 
-			/*}
-			else {
-				current_position[axis] -= 1;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-				st_synchronize();
-				if (millis() > timeout_counter) return(false);
-			}
-		}*/
+		current_position_init = current_position[axis];
+				
 		current_position[axis] += 2;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		for (i = 0; i < 5; i++) {
 			refresh_cmd_timeout();
 			current_position[axis] = current_position[axis] + move;
-			digipot_current(axis, 850); //set motor current higher
-			//max_jerk[X_AXIS] = 20;
+			digipot_current(0, 850); //set motor current higher
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 200, active_extruder);
-			//max_jerk[X_AXIS] = DEFAULT_XJERK;
-			//digipot_current(axis, tmp_motor_loud[0]);
-			/*if (SilentMode == 1) digipot_current(2, tmp_motor[2]); //set back to normal operation currents
-			else */digipot_current(2, tmp_motor_loud[2]); //set motor current back			
+			if (SilentModeMenu == 1) digipot_current(0, tmp_motor[0]); //set back to normal operation currents
+			else digipot_current(0, tmp_motor_loud[0]); //set motor current back			
 			current_position[axis] = current_position[axis] - move;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 50, active_extruder);
 			st_synchronize();
 			if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) || (READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1)) {
-				//current_position[axis] += 15;
-				//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
-			if (millis() > timeout_counter) {
-				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
-				return(false);
-			}else timeout_counter = millis() + 2500;
 		}
-		
+		timeout_counter = millis() + 2500;
 		endstop_triggered = false;
 		
 		while (!endstop_triggered) {

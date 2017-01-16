@@ -2520,6 +2520,7 @@ void process_commands()
 	else
 		{
 			st_synchronize();
+			homing_flag = false;
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
 			// enquecommand_front_P((PSTR("G80")));
@@ -3288,6 +3289,11 @@ void process_commands()
      break;
 
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
+
+		// Reset the baby step value and the baby step applied flag.
+		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
+		eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+
         // Reset the skew and offset in both RAM and EEPROM.
         reset_bed_offset_and_skew();
         // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
@@ -3298,12 +3304,17 @@ void process_commands()
 
     case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
-		setTargetBed(0);
-		setTargetHotend(0, 0);
-		setTargetHotend(0, 1);
-		setTargetHotend(0, 2);
-				
-		adjust_bed_reset(); //reset bed level correction
+		// Only Z calibration?
+		bool onlyZ = code_seen('Z');
+
+		if (!onlyZ) {
+			setTargetBed(0);
+			setTargetHotend(0, 0);
+			setTargetHotend(0, 1);
+			setTargetHotend(0, 2);
+			adjust_bed_reset(); //reset bed level correction
+		}
+		
         // Disable the default update procedure of the display. We will do a modal dialog.
         lcd_update_enable(false);
         // Let the planner use the uncorrected coordinates.
@@ -3316,9 +3327,7 @@ void process_commands()
         babystep_reset();
         // Mark all axes as in a need for homing.
         memset(axis_known_position, 0, sizeof(axis_known_position));
-        // Only Z calibration?
-        bool onlyZ = code_seen('Z');
-        
+                
         // Let the user move the Z axes up to the end stoppers.
         if (lcd_calibrate_z_end_stop_manual( onlyZ )) {
             refresh_cmd_timeout();
