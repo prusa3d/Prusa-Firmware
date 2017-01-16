@@ -3312,8 +3312,9 @@ void process_commands()
 			setTargetHotend(0, 0);
 			setTargetHotend(0, 1);
 			setTargetHotend(0, 2);
+			adjust_bed_reset(); //reset bed level correction
 		}
-		adjust_bed_reset(); //reset bed level correction
+		
         // Disable the default update procedure of the display. We will do a modal dialog.
         lcd_update_enable(false);
         // Let the planner use the uncorrected coordinates.
