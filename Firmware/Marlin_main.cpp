@@ -2051,6 +2051,18 @@ void process_commands()
 
 	#endif
 	}
+	else if (code_seen("SetF")) {
+#ifdef SNMM
+		bool not_finished = (eeprom_read_byte((unsigned char*)EEPROM_PRINT_FLAG) != PRINT_FINISHED);
+		eeprom_update_byte((unsigned char*)EEPROM_PRINT_FLAG, PRINT_STARTED);
+		if (not_finished) enquecommand_front_P(PSTR("PRUSA Y"));
+#endif
+	}
+	else if (code_seen("ResF")) {
+#ifdef SNMM
+		eeprom_update_byte((unsigned char*)EEPROM_PRINT_FLAG, PRINT_FINISHED);
+#endif
+	}
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
 	  // }

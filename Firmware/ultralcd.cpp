@@ -582,6 +582,9 @@ void lcd_commands()
 		{
       // M84: Disable steppers.
 			enquecommand_P(PSTR("M84"));
+#ifdef SNMM
+			enquecommand_P(PSTR("PRUSA ResF")); //resets flag at the end of the print (used for SNMM)
+#endif
 			autotempShutdown();
 			lcd_commands_step = 2;
 		}
