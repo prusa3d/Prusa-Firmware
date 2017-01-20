@@ -272,6 +272,7 @@ unsigned long total_filament_used;
 unsigned int heating_status;
 unsigned int heating_status_counter;
 bool custom_message;
+bool loading_flag = false;
 unsigned int custom_message_type;
 unsigned int custom_message_state;
 
@@ -2067,7 +2068,7 @@ void process_commands()
 		//  lcd_calibration();
 	  // }
 
-  }
+  }  
   else if (code_seen('^')) {
     // nothing, this is a version line
   } else if(code_seen('G'))
@@ -5062,6 +5063,43 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       #endif
     }
     break;
+	case 701: //M701: load filament
+	{
+		enable_z();
+		custom_message = true;
+		custom_message_type = 2;
+		axis_relative_modes[3] = true;
+
+		lcd_setstatuspgm(MSG_LOADING_FILAMENT);
+		current_position[E_AXIS] += 70;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+
+		current_position[E_AXIS] += 40;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
+		st_synchronize();
+
+		if (!farm_mode && loading_flag) {
+			bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN);
+
+			while (!clean) {
+				lcd_update_enable(true);
+				lcd_update(2);
+				current_position[E_AXIS] += 40;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
+				st_synchronize();
+				clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN);
+			}
+		}
+		lcd_update_enable(true);
+		lcd_update(2);
+		lcd_setstatuspgm(WELCOME_MSG);
+		disable_z();
+		loading_flag = false;
+		custom_message = false;
+		custom_message_type = 0;
+	}
+	break;
+
     case 999: // M999: Restart after being stopped
       Stopped = false;
       lcd_reset_alert_level();

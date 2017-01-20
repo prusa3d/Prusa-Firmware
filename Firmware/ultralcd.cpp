@@ -497,62 +497,6 @@ static void lcd_status_screen()
 
 void lcd_commands()
 {
-	if (lcd_commands_type == LCD_COMMAND_LOAD_FILAMENT)   //// load filament sequence
-	{
-		if (lcd_commands_step == 0) { lcd_commands_step = 7; custom_message = true;}
-			if (lcd_commands_step == 1 && !blocks_queued())
-			{
-				lcd_commands_step = 0;
-				lcd_commands_type = 0;
-				lcd_setstatuspgm(WELCOME_MSG);
-				disable_z();
-				custom_message = false;
-				custom_message_type = 0;
-   
-			}
-
-
-			if (lcd_commands_step == 2 && !blocks_queued())
-			{				
-				lcd_commands_step = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN) ? 1 : 4;
-				lcd_update_enable(true);
-				lcdDrawUpdate = 2;
-
-			}
-			if (lcd_commands_step == 3 && !blocks_queued()) {
-				lcd_commands_step = farm_mode ? 1:2; //don't show question about clear color if we are in farm mode
-			}
-
-			if (lcd_commands_step == 4 && !blocks_queued())
-			{
-				//lcd_setstatuspgm(MSG_LOADING_FILAMENT);
-				enquecommand_P(PSTR(LOAD_FILAMENT_2)); //slow_sequence
-				lcd_commands_step = 3;
-			}
-			if (lcd_commands_step == 5 && !blocks_queued())
-			{
-				enquecommand_P(PSTR(LOAD_FILAMENT_1)); //fast sequence
-				lcd_setstatuspgm(MSG_LOADING_FILAMENT);
-                //enquecommand_P(PSTR("G4")); //dwell
-				lcd_commands_step = 4;
-			}
-			if (lcd_commands_step == 6 && !blocks_queued())
-			{
-				lcd_setstatuspgm(MSG_INSERT_FILAMENT);
-				enquecommand_P(PSTR(LOAD_FILAMENT_0)); //set E relative
-                enquecommand_P(PSTR("G1 E0.1 F400"));
-				lcd_commands_step = 5;
-			}
-			if (lcd_commands_step == 7 && !blocks_queued())
-			{
-				lcd_setstatuspgm(MSG_PLEASE_WAIT);
-				enable_z();
-				custom_message = true;
-				custom_message_type = 2;
-				lcd_commands_step = 6;
-			}
-	}
-
 	if (lcd_commands_type == LCD_COMMAND_STOP_PRINT)   /// stop print
 	{
 
@@ -1125,10 +1069,9 @@ void lcd_LoadFilament()
   if (degHotend0() > EXTRUDE_MINTEMP) 
   {
 	  custom_message = true;
-	  lcd_commands_type = LCD_COMMAND_LOAD_FILAMENT;
-	  SERIAL_ECHOLN("Loading filament");
-	  // commands() will handle the rest
-    
+	  loading_flag = true;
+	  enquecommand_P(PSTR("M701"));
+	  SERIAL_ECHOLN("Loading filament");	    
     }
   else 
   {
@@ -4206,6 +4149,8 @@ static void menu_action_function(menuFunc_t data) {
 }
 static void menu_action_sdfile(const char* filename, char* longFilename)
 {
+	loading_flag = false;
+	
   char cmd[30];
   char* c;
   sprintf_P(cmd, PSTR("M23 %s"), filename);
