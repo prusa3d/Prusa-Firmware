@@ -5068,10 +5068,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		enable_z();
 		custom_message = true;
 		custom_message_type = 2;
-		axis_relative_modes[3] = true;
-
+		
 		lcd_setstatuspgm(MSG_LOADING_FILAMENT);
-		current_position[E_AXIS] += 70;
+		current_position[E_AXIS] += 65;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
 
 		current_position[E_AXIS] += 40;
@@ -5097,6 +5096,19 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		loading_flag = false;
 		custom_message = false;
 		custom_message_type = 0;
+	}
+	break;
+	case 702:
+	{
+		/*custom_message = true;
+		custom_message_type = 2;
+		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); //need to be tranlated to other languages
+		*/
+		current_position[E_AXIS] -= 80;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7000 / 60, active_extruder);
+		/*custom_message = false;
+		custom_message_type = 0;
+		*/
 	}
 	break;
 

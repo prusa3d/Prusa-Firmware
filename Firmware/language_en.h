@@ -250,6 +250,7 @@
 #define(length=20, lines=8) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for heater and bed cooling"
 #define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
+//#define(lenght=20, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
 #define MSG_BED_CORRECTION_LEFT									"Left side  um"

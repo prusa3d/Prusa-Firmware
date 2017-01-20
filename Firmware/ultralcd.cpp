@@ -859,9 +859,8 @@ void lcd_unLoadFilament()
 {
 
   if (degHotend0() > EXTRUDE_MINTEMP) {
-
-    enquecommand_P(PSTR(UNLOAD_FILAMENT_0));
-    enquecommand_P(PSTR(UNLOAD_FILAMENT_1));
+	
+	  enquecommand_P(PSTR("M702")); //unload filament
 
   } else {
 
@@ -1070,7 +1069,7 @@ void lcd_LoadFilament()
   {
 	  custom_message = true;
 	  loading_flag = true;
-	  enquecommand_P(PSTR("M701"));
+	  enquecommand_P(PSTR("M701")); //load filament
 	  SERIAL_ECHOLN("Loading filament");	    
     }
   else 
