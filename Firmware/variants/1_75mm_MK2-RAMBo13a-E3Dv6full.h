@@ -92,6 +92,9 @@ EXTRUDER SETTINGS
 #define EXTRUDER_2_AUTO_FAN_PIN   -1
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
+// If the requested temperature is more than 200, use a slow fan.
+#define EXTRUDER_AUTO_FAN_HIGH_TEMPERATURE 200
+#define EXTRUDER_AUTO_FAN_SLOW_SPEED   96
 
 
 
