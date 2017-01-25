@@ -88,7 +88,7 @@
 #define MSG_PLEASE_WAIT			"Prosim cekejte"
 #define MSG_LOADING_COLOR		"Cisteni barvy"
 #define MSG_CHANGE_SUCCESS		"Zmena uspesna!"
-#define MSG_PRESS				"A stisknete tlacitko"
+#define MSG_PRESS				"a stisknete tlacitko"
 #define MSG_INSERT_FILAMENT		"Vlozte filament"
 #define MSG_CHANGING_FILAMENT	"Vymena filamentu!"
 
@@ -258,7 +258,8 @@
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ				"Filamenty jsou srovnany. Pro uspesnou kalibraci prosim ocistete trysku. Po te potvrdte tlacitkem."
 #define MSG_CALIBRATE_E									"Kalibrovat E"
 #define MSG_E_CAL_KNOB									"Otacejte tlacitkem dokud znacka nedosahne tela extruderu. Potvrdte tlacitkem."
-#define MSG_MARK_FIL									"Oznacte filament 100 mm od tela extruderu. Potvrdte tlacitkem."
+#define MSG_MARK_FIL									"Oznacte filament 100 mm od tela extruderu a po te potvrdte tlacitkem."
 #define MSG_CLEAN_NOZZLE_E								"E kalibrace ukoncena. Prosim ocistete trysku. Po te potvrdte tlacitkem."
 #define MSG_WAITING_TEMP								"Cekani na zchladnuti trysky a podlozky."
 #define MSG_FILAMENT_CLEAN								"Je barva cista?" 
+#define MSG_UNLOADING_FILAMENT							"Vysouvam filament"

@@ -284,6 +284,7 @@ extern unsigned long starttime;
 extern unsigned long stoptime;
 extern bool is_usb_printing;
 extern bool homing_flag;
+extern bool loading_flag;
 extern unsigned int usb_printing_counter;
 
 extern unsigned long kicktime;

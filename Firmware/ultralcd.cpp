@@ -497,62 +497,6 @@ static void lcd_status_screen()
 
 void lcd_commands()
 {
-	if (lcd_commands_type == LCD_COMMAND_LOAD_FILAMENT)   //// load filament sequence
-	{
-		if (lcd_commands_step == 0) { lcd_commands_step = 7; custom_message = true;}
-			if (lcd_commands_step == 1 && !blocks_queued())
-			{
-				lcd_commands_step = 0;
-				lcd_commands_type = 0;
-				lcd_setstatuspgm(WELCOME_MSG);
-				disable_z();
-				custom_message = false;
-				custom_message_type = 0;
-   
-			}
-
-
-			if (lcd_commands_step == 2 && !blocks_queued())
-			{				
-				lcd_commands_step = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN) ? 1 : 4;
-				lcd_update_enable(true);
-				lcdDrawUpdate = 2;
-
-			}
-			if (lcd_commands_step == 3 && !blocks_queued()) {
-				lcd_commands_step = farm_mode ? 1:2; //don't show question about clear color if we are in farm mode
-			}
-
-			if (lcd_commands_step == 4 && !blocks_queued())
-			{
-				//lcd_setstatuspgm(MSG_LOADING_FILAMENT);
-				enquecommand_P(PSTR(LOAD_FILAMENT_2)); //slow_sequence
-				lcd_commands_step = 3;
-			}
-			if (lcd_commands_step == 5 && !blocks_queued())
-			{
-				enquecommand_P(PSTR(LOAD_FILAMENT_1)); //fast sequence
-				lcd_setstatuspgm(MSG_LOADING_FILAMENT);
-                //enquecommand_P(PSTR("G4")); //dwell
-				lcd_commands_step = 4;
-			}
-			if (lcd_commands_step == 6 && !blocks_queued())
-			{
-				lcd_setstatuspgm(MSG_INSERT_FILAMENT);
-				enquecommand_P(PSTR(LOAD_FILAMENT_0)); //set E relative
-                enquecommand_P(PSTR("G1 E0.1 F400"));
-				lcd_commands_step = 5;
-			}
-			if (lcd_commands_step == 7 && !blocks_queued())
-			{
-				lcd_setstatuspgm(MSG_PLEASE_WAIT);
-				enable_z();
-				custom_message = true;
-				custom_message_type = 2;
-				lcd_commands_step = 6;
-			}
-	}
-
 	if (lcd_commands_type == LCD_COMMAND_STOP_PRINT)   /// stop print
 	{
 
@@ -582,6 +526,9 @@ void lcd_commands()
 		{
       // M84: Disable steppers.
 			enquecommand_P(PSTR("M84"));
+#ifdef SNMM
+			enquecommand_P(PSTR("PRUSA ResF")); //resets flag at the end of the print (used for SNMM)
+#endif
 			autotempShutdown();
 			lcd_commands_step = 2;
 		}
@@ -912,9 +859,8 @@ void lcd_unLoadFilament()
 {
 
   if (degHotend0() > EXTRUDE_MINTEMP) {
-
-    enquecommand_P(PSTR(UNLOAD_FILAMENT_0));
-    enquecommand_P(PSTR(UNLOAD_FILAMENT_1));
+	
+	  enquecommand_P(PSTR("M702")); //unload filament
 
   } else {
 
@@ -1122,10 +1068,9 @@ void lcd_LoadFilament()
   if (degHotend0() > EXTRUDE_MINTEMP) 
   {
 	  custom_message = true;
-	  lcd_commands_type = LCD_COMMAND_LOAD_FILAMENT;
-	  SERIAL_ECHOLN("Loading filament");
-	  // commands() will handle the rest
-    
+	  loading_flag = true;
+	  enquecommand_P(PSTR("M701")); //load filament
+	  SERIAL_ECHOLN("Loading filament");	    
     }
   else 
   {
@@ -1767,49 +1712,58 @@ void lcd_wait_for_click()
     }
 }
 
-int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting)
+int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
 {
-    lcd_display_message_fullscreen_P(msg);
 
-    lcd.setCursor(1, 2);
-    lcd_printPGM(MSG_YES);
-    lcd.setCursor(0, 3);
-    lcd_printPGM(PSTR(">"));
-    lcd_printPGM(MSG_NO);
-    bool yes = false;
+	lcd_display_message_fullscreen_P(msg);
+	
+	if (default_yes) {
+		lcd.setCursor(0, 2);
+		lcd_printPGM(PSTR(">"));
+		lcd_printPGM(MSG_YES);
+		lcd.setCursor(1, 3);
+		lcd_printPGM(MSG_NO);
+	}
+	else {
+		lcd.setCursor(1, 2);
+		lcd_printPGM(MSG_YES);
+		lcd.setCursor(0, 3);
+		lcd_printPGM(PSTR(">"));
+		lcd_printPGM(MSG_NO);
+	}
+	bool yes = default_yes ? true : false;
 
-    // Wait for user confirmation or a timeout.
-    unsigned long previous_millis_cmd = millis();
-    int8_t        enc_dif = encoderDiff;
-    for (;;) {
-        if (allow_timeouting && millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
-            return -1;
-        manage_heater();
-        manage_inactivity(true);
-        if (abs((enc_dif - encoderDiff)) > 4) {
-            if (abs(enc_dif - encoderDiff) > 1) {
-                lcd.setCursor(0, 2);
-                if (enc_dif > encoderDiff && yes) {
-                    lcd_printPGM((PSTR(" ")));
-                    lcd.setCursor(0, 3);
-                    lcd_printPGM((PSTR(">")));
-                    yes = false;
-                } else if (enc_dif < encoderDiff && ! yes) {
-                    lcd_printPGM((PSTR(">")));
-                    lcd.setCursor(0, 3);
-                    lcd_printPGM((PSTR(" ")));
-                    yes = true;
-                }
-                enc_dif = encoderDiff;
-            }
-        }
-        if (lcd_clicked()) {
-            while (lcd_clicked()) ;
-            delay(10);
-            while (lcd_clicked()) ;
-            return yes;
-        }
-    }
+	// Wait for user confirmation or a timeout.
+	unsigned long previous_millis_cmd = millis();
+	int8_t        enc_dif = encoderDiff;
+	for (;;) {
+		if (allow_timeouting && millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
+			return -1;
+		manage_heater();
+		manage_inactivity(true);
+		if (abs(enc_dif - encoderDiff) > 4) {
+			lcd.setCursor(0, 2);
+				if (enc_dif > encoderDiff && yes) {
+					lcd_printPGM((PSTR(" ")));
+					lcd.setCursor(0, 3);
+					lcd_printPGM((PSTR(">")));
+					yes = false;
+				}
+				else if (enc_dif < encoderDiff && !yes) {
+					lcd_printPGM((PSTR(">")));
+					lcd.setCursor(0, 3);
+					lcd_printPGM((PSTR(" ")));
+					yes = true;
+				}
+				enc_dif = encoderDiff;
+		}
+		if (lcd_clicked()) {
+			while (lcd_clicked());
+			delay(10);
+			while (lcd_clicked());
+			return yes;
+		}
+	}
 }
 
 void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask)
@@ -2264,14 +2218,15 @@ void lcd_mesh_calibration_z()
 void lcd_calibrate_extruder() {
 	if (degHotend0() > EXTRUDE_MINTEMP)
 	{
-		current_position[E_AXIS] = 0;
+		current_position[E_AXIS] = 0;									//set initial position to zero
 		plan_set_e_position(current_position[E_AXIS]);
-			
-		long steps_start = current_position[E_AXIS]*axis_steps_per_unit[E_AXIS];
+		
+		//long steps_start = st_get_position(E_AXIS);
+
 		long steps_final;
 		float e_steps_per_unit;
-		float feedrate = (180 / axis_steps_per_unit[E_AXIS]) * 5;
-		float e_shift_calibration = (axis_steps_per_unit[E_AXIS] > 180 ) ? ((180 / axis_steps_per_unit[E_AXIS]) * 70): 70;
+		float feedrate = (180 / axis_steps_per_unit[E_AXIS]) * 3;		//initial automatic extrusion feedrate (depends on current value of axis_steps_per_unit to avoid too fast extrusion)
+		float e_shift_calibration = (axis_steps_per_unit[E_AXIS] > 180 ) ? ((180 / axis_steps_per_unit[E_AXIS]) * 70): 70; //length of initial automatic extrusion sequence
 		const char   *msg_e_cal_knob = MSG_E_CAL_KNOB;
 		const char   *msg_next_e_cal_knob = lcd_display_message_fullscreen_P(msg_e_cal_knob);
 		const bool    multi_screen = msg_next_e_cal_knob != NULL;
@@ -2298,7 +2253,7 @@ void lcd_calibrate_extruder() {
 
 			//manage_inactivity(true);
 			manage_heater();
-			if (abs(encoderDiff) >= ENCODER_PULSES_PER_STEP) {
+			if (abs(encoderDiff) >= ENCODER_PULSES_PER_STEP) {						//adjusting mark by knob rotation
 				delay_keep_alive(50);
 				//previous_millis_cmd = millis();
 				encoderPosition += (encoderDiff / ENCODER_PULSES_PER_STEP);
@@ -2313,9 +2268,10 @@ void lcd_calibrate_extruder() {
 		}
 		
 		steps_final = current_position[E_AXIS] * axis_steps_per_unit[E_AXIS];
+		//steps_final = st_get_position(E_AXIS);
 		lcdDrawUpdate = 1;
-		e_steps_per_unit = ((float)(steps_final - steps_start)) / 100.f;
-		if (e_steps_per_unit < MIN_E_STEPS_PER_UNIT) e_steps_per_unit = MIN_E_STEPS_PER_UNIT;
+		e_steps_per_unit = ((float)(steps_final)) / 100.0f;
+		if (e_steps_per_unit < MIN_E_STEPS_PER_UNIT) e_steps_per_unit = MIN_E_STEPS_PER_UNIT;				
 		if (e_steps_per_unit > MAX_E_STEPS_PER_UNIT) e_steps_per_unit = MAX_E_STEPS_PER_UNIT;
 
 		lcd_implementation_clear();
@@ -4203,6 +4159,8 @@ static void menu_action_function(menuFunc_t data) {
 }
 static void menu_action_sdfile(const char* filename, char* longFilename)
 {
+	loading_flag = false;
+	
   char cmd[30];
   char* c;
   sprintf_P(cmd, PSTR("M23 %s"), filename);

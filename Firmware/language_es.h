@@ -59,7 +59,7 @@
 #define MSG_PLEASE_WAIT						"Espera"
 #define MSG_LOADING_COLOR					"Cargando color"
 #define MSG_CHANGE_SUCCESS					"Cambiar bien!"
-#define MSG_PRESS							"Y pulse el mando"
+#define MSG_PRESS							"y pulse el mando"
 #define MSG_INSERT_FILAMENT					"Inserta filamento"
 #define MSG_CHANGING_FILAMENT				"Cambiando fil.!"
 #define MSG_SILENT_MODE_ON					"Modo   [silencio]"
@@ -252,3 +252,4 @@
 #define MSG_CLEAN_NOZZLE_E								"E calibrado. Limpiar la boquilla. Haga clic una vez terminado."
 #define MSG_WAITING_TEMP								"Esperando enfriamiento de la cama y del extrusor."
 #define MSG_FILAMENT_CLEAN								"Es el nuevo color nitido?"
+#define MSG_UNLOADING_FILAMENT							"Soltando filamento"

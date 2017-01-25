@@ -197,7 +197,7 @@ const char * const MSG_BED_DONE_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_BED_HEATING_EN[] PROGMEM = "Bed Heating";
 const char MSG_BED_HEATING_CZ[] PROGMEM = "Zahrivani bed";
-const char MSG_BED_HEATING_IT[] PROGMEM = "Piatto riscaldam.";
+const char MSG_BED_HEATING_IT[] PROGMEM = "Riscald. letto";
 const char MSG_BED_HEATING_ES[] PROGMEM = "Base Calentando";
 const char MSG_BED_HEATING_PL[] PROGMEM = "Grzanie stolika..";
 const char * const MSG_BED_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -465,7 +465,7 @@ const char * const MSG_CHANGE_EXTR_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_CHANGE_SUCCESS_EN[] PROGMEM = "Change success!";
 const char MSG_CHANGE_SUCCESS_CZ[] PROGMEM = "Zmena uspesna!";
-const char MSG_CHANGE_SUCCESS_IT[] PROGMEM = "Cambia. riuscito!";
+const char MSG_CHANGE_SUCCESS_IT[] PROGMEM = "Cambio riuscito!";
 const char MSG_CHANGE_SUCCESS_ES[] PROGMEM = "Cambiar bien!";
 const char MSG_CHANGE_SUCCESS_PL[] PROGMEM = "Wymiana ok!";
 const char * const MSG_CHANGE_SUCCESS_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -478,7 +478,7 @@ const char * const MSG_CHANGE_SUCCESS_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_CHANGING_FILAMENT_EN[] PROGMEM = "Changing filament!";
 const char MSG_CHANGING_FILAMENT_CZ[] PROGMEM = "Vymena filamentu!";
-const char MSG_CHANGING_FILAMENT_IT[] PROGMEM = "Mutevole fil.!";
+const char MSG_CHANGING_FILAMENT_IT[] PROGMEM = "Cambiando filam.";
 const char MSG_CHANGING_FILAMENT_ES[] PROGMEM = "Cambiando fil.!";
 const char MSG_CHANGING_FILAMENT_PL[] PROGMEM = "Wymiana filamentu";
 const char * const MSG_CHANGING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -633,11 +633,12 @@ const char * const MSG_END_FILE_LIST_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_ERROR_EN[] PROGMEM = "ERROR:";
 const char MSG_ERROR_CZ[] PROGMEM = "CHYBA:";
+const char MSG_ERROR_IT[] PROGMEM = "ERRORE:";
 const char MSG_ERROR_PL[] PROGMEM = "BLAD:";
 const char * const MSG_ERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_ERROR_EN,
 	MSG_ERROR_CZ,
-	MSG_ERROR_EN,
+	MSG_ERROR_IT,
 	MSG_ERROR_EN,
 	MSG_ERROR_PL
 };
@@ -947,7 +948,7 @@ const char * const MSG_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_HEATING_COMPLETE_EN[] PROGMEM = "Heating done.";
 const char MSG_HEATING_COMPLETE_CZ[] PROGMEM = "Zahrivani OK.";
-const char MSG_HEATING_COMPLETE_IT[] PROGMEM = "Riscaldamento fatto.";
+const char MSG_HEATING_COMPLETE_IT[] PROGMEM = "Riscald. completo";
 const char MSG_HEATING_COMPLETE_ES[] PROGMEM = "Calentando listo.";
 const char MSG_HEATING_COMPLETE_PL[] PROGMEM = "Grzanie OK.";
 const char * const MSG_HEATING_COMPLETE_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1090,7 +1091,7 @@ const char * const MSG_LANGUAGE_SELECT_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_LOADING_COLOR_EN[] PROGMEM = "Loading color";
 const char MSG_LOADING_COLOR_CZ[] PROGMEM = "Cisteni barvy";
-const char MSG_LOADING_COLOR_IT[] PROGMEM = "Cargando color";
+const char MSG_LOADING_COLOR_IT[] PROGMEM = "Caricando colore";
 const char MSG_LOADING_COLOR_ES[] PROGMEM = "Cargando color";
 const char MSG_LOADING_COLOR_PL[] PROGMEM = "Czyszcz. koloru";
 const char * const MSG_LOADING_COLOR_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1103,7 +1104,7 @@ const char * const MSG_LOADING_COLOR_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_LOADING_FILAMENT_EN[] PROGMEM = "Loading filament";
 const char MSG_LOADING_FILAMENT_CZ[] PROGMEM = "Zavadeni filamentu";
-const char MSG_LOADING_FILAMENT_IT[] PROGMEM = "Cargando fil.";
+const char MSG_LOADING_FILAMENT_IT[] PROGMEM = "Caricando filam.";
 const char MSG_LOADING_FILAMENT_ES[] PROGMEM = "Cargando fil.";
 const char MSG_LOADING_FILAMENT_PL[] PROGMEM = "Wprow. filamentu";
 const char * const MSG_LOADING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1199,7 +1200,7 @@ const char * const MSG_MAIN_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_MARK_FIL_EN[] PROGMEM = "Mark filament 100mm from extruder body. Click when done.";
-const char MSG_MARK_FIL_CZ[] PROGMEM = "Oznacte filament 100 mm od tela extruderu. Potvrdte tlacitkem.";
+const char MSG_MARK_FIL_CZ[] PROGMEM = "Oznacte filament 100 mm od tela extruderu a po te potvrdte tlacitkem.";
 const char MSG_MARK_FIL_IT[] PROGMEM = "Segnare il filamento a 100 mm di distanza dal corpo dell'estrusore. Click per continuare.";
 const char MSG_MARK_FIL_ES[] PROGMEM = "Marque el filamento 100 mm por encima del final del extrusor. Hacer clic una vez terminado.";
 const char MSG_MARK_FIL_PL[] PROGMEM = "Prosze oznaczyc filament 100 mm od ciala ekstrudera. Potwierdzic przyciskiem.";
@@ -1418,7 +1419,7 @@ const char * const MSG_NO_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_NOT_COLOR_EN[] PROGMEM = "Color not clear";
 const char MSG_NOT_COLOR_CZ[] PROGMEM = "Barva neni cista";
-const char MSG_NOT_COLOR_IT[] PROGMEM = "Color no claro";
+const char MSG_NOT_COLOR_IT[] PROGMEM = "Colore non puro";
 const char MSG_NOT_COLOR_ES[] PROGMEM = "Color no claro";
 const char MSG_NOT_COLOR_PL[] PROGMEM = "Kolor zanieczysz.";
 const char * const MSG_NOT_COLOR_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1431,7 +1432,7 @@ const char * const MSG_NOT_COLOR_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_NOT_LOADED_EN[] PROGMEM = "Filament not loaded";
 const char MSG_NOT_LOADED_CZ[] PROGMEM = "Filament nezaveden";
-const char MSG_NOT_LOADED_IT[] PROGMEM = "Fil. no cargado";
+const char MSG_NOT_LOADED_IT[] PROGMEM = "Fil. non caricato";
 const char MSG_NOT_LOADED_ES[] PROGMEM = "Fil. no cargado";
 const char MSG_NOT_LOADED_PL[] PROGMEM = "Brak filamentu";
 const char * const MSG_NOT_LOADED_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1583,10 +1584,10 @@ const char * const MSG_PREHEAT_NOZZLE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PREHEAT_NOZZLE_PL
 };
 
-const char MSG_PRESS_EN[] PROGMEM = "And press the knob";
-const char MSG_PRESS_CZ[] PROGMEM = "A stisknete tlacitko";
-const char MSG_PRESS_IT[] PROGMEM = "Y pulse el mando";
-const char MSG_PRESS_ES[] PROGMEM = "Y pulse el mando";
+const char MSG_PRESS_EN[] PROGMEM = "and press the knob";
+const char MSG_PRESS_CZ[] PROGMEM = "a stisknete tlacitko";
+const char MSG_PRESS_IT[] PROGMEM = "e cliccare manopola";
+const char MSG_PRESS_ES[] PROGMEM = "y pulse el mando";
 const char MSG_PRESS_PL[] PROGMEM = "Nacisnij przycisk";
 const char * const MSG_PRESS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PRESS_EN,
@@ -2161,7 +2162,7 @@ const char * const MSG_SHOW_END_STOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode [high power]";
 const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod  [vys. vykon]";
-const char MSG_SILENT_MODE_OFF_IT[] PROGMEM = "Mode [prestante]";
+const char MSG_SILENT_MODE_OFF_IT[] PROGMEM = "Mode [forte]";
 const char MSG_SILENT_MODE_OFF_ES[] PROGMEM = "Modo [mas fuerza]";
 const char MSG_SILENT_MODE_OFF_PL[] PROGMEM = "Mod [w wydajnosc]";
 const char * const MSG_SILENT_MODE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -2402,6 +2403,19 @@ const char * const MSG_TUNE_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_UNKNOWN_COMMAND_EN[] PROGMEM = "Unknown command: \"";
 const char * const MSG_UNKNOWN_COMMAND_LANG_TABLE[1] PROGMEM = {
 	MSG_UNKNOWN_COMMAND_EN
+};
+
+const char MSG_UNLOADING_FILAMENT_EN[] PROGMEM = "Unloading filament";
+const char MSG_UNLOADING_FILAMENT_CZ[] PROGMEM = "Vysouvam filament";
+const char MSG_UNLOADING_FILAMENT_IT[] PROGMEM = "Rilasc. filamento";
+const char MSG_UNLOADING_FILAMENT_ES[] PROGMEM = "Soltando filamento";
+const char MSG_UNLOADING_FILAMENT_PL[] PROGMEM = "Wysuwam filament";
+const char * const MSG_UNLOADING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_UNLOADING_FILAMENT_EN,
+	MSG_UNLOADING_FILAMENT_CZ,
+	MSG_UNLOADING_FILAMENT_IT,
+	MSG_UNLOADING_FILAMENT_ES,
+	MSG_UNLOADING_FILAMENT_PL
 };
 
 const char MSG_UNLOAD_FILAMENT_EN[] PROGMEM = "Unload filament";
