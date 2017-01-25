@@ -107,19 +107,6 @@ EXTRUDER SETTINGS
 #endif
 
 /*------------------------------------
-LOAD/UNLOAD FILAMENT SETTINGS
-*------------------------------------*/
-
-// Load filament commands
-#define LOAD_FILAMENT_0 "M83"
-#define LOAD_FILAMENT_1 "G1 E70 F400"
-#define LOAD_FILAMENT_2 "G1 E40 F100"
-
-// Unload filament commands
-#define UNLOAD_FILAMENT_0 "M83"
-#define UNLOAD_FILAMENT_1 "G1 E-80 F7000"
-
-/*------------------------------------
 CHANGE FILAMENT SETTINGS
 *------------------------------------*/
 
@@ -330,5 +317,8 @@ THERMISTORS SETTINGS
 
 #define MAX_E_STEPS_PER_UNIT 250
 #define MIN_E_STEPS_PER_UNIT 100
+
+#define PRINT_STARTED 0xFE
+#define PRINT_FINISHED 0xFF
 
 #endif //__CONFIGURATION_PRUSA_H
