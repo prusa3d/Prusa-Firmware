@@ -275,8 +275,8 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,minsegmenttime);
         EEPROM_READ_VAR(i,max_jerk[X_AXIS]);
         EEPROM_READ_VAR(i,max_jerk[Y_AXIS]);
-	EEPROM_READ_VAR(i,max_jerk[Z_AXIS]);
-	EEPROM_READ_VAR(i,max_jerk[E_AXIS]);
+		EEPROM_READ_VAR(i,max_jerk[Z_AXIS]);
+		EEPROM_READ_VAR(i,max_jerk[E_AXIS]);
         EEPROM_READ_VAR(i,add_homing);
         #ifndef ULTIPANEL
         int plaPreheatHotendTemp, plaPreheatHPBTemp, plaPreheatFanSpeed;

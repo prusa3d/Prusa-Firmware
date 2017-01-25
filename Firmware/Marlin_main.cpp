@@ -5078,7 +5078,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		st_synchronize();
 
 		if (!farm_mode && loading_flag) {
-			bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN);
+			bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN, false, true);
 
 			while (!clean) {
 				lcd_update_enable(true);
@@ -5086,7 +5086,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 				current_position[E_AXIS] += 40;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
 				st_synchronize();
-				clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN);
+				clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN, false, true);
 			}
 		}
 		lcd_update_enable(true);
@@ -5100,15 +5100,17 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	break;
 	case 702:
 	{
-		/*custom_message = true;
+		custom_message = true;
 		custom_message_type = 2;
-		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); //need to be tranlated to other languages
-		*/
+		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); //need to be tranlated to spanish language
+		
 		current_position[E_AXIS] -= 80;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7000 / 60, active_extruder);
-		/*custom_message = false;
+		st_synchronize();
+		lcd_setstatuspgm(WELCOME_MSG);
+		custom_message = false;
 		custom_message_type = 0;
-		*/
+		
 	}
 	break;
 
