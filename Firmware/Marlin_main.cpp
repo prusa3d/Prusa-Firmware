@@ -3174,7 +3174,7 @@ void process_commands()
     case 24: //M24 - Start SD print
       card.startFileprint();
       starttime=millis();
-      break;
+	  break;
     case 25: //M25 - Pause SD print
       card.pauseSDPrint();
       break;

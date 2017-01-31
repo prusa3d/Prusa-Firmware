@@ -2216,6 +2216,7 @@ void lcd_mesh_calibration_z()
 #ifndef SNMM
 
 void lcd_calibrate_extruder() {
+	
 	if (degHotend0() > EXTRUDE_MINTEMP)
 	{
 		current_position[E_AXIS] = 0;									//set initial position to zero
@@ -2225,7 +2226,7 @@ void lcd_calibrate_extruder() {
 
 		long steps_final;
 		float e_steps_per_unit;
-		float feedrate = (180 / axis_steps_per_unit[E_AXIS]) * 3;		//initial automatic extrusion feedrate (depends on current value of axis_steps_per_unit to avoid too fast extrusion)
+		float feedrate = (180 / axis_steps_per_unit[E_AXIS]) * 1;	//3	//initial automatic extrusion feedrate (depends on current value of axis_steps_per_unit to avoid too fast extrusion)
 		float e_shift_calibration = (axis_steps_per_unit[E_AXIS] > 180 ) ? ((180 / axis_steps_per_unit[E_AXIS]) * 70): 70; //length of initial automatic extrusion sequence
 		const char   *msg_e_cal_knob = MSG_E_CAL_KNOB;
 		const char   *msg_next_e_cal_knob = lcd_display_message_fullscreen_P(msg_e_cal_knob);
@@ -2259,7 +2260,7 @@ void lcd_calibrate_extruder() {
 				encoderPosition += (encoderDiff / ENCODER_PULSES_PER_STEP);
 				encoderDiff = 0;
 				if (!planner_queue_full()) {
-					current_position[E_AXIS] += float(abs((int)encoderPosition)) * 0.05;
+					current_position[E_AXIS] += float(abs((int)encoderPosition)) * 0.01; //0.05
 					encoderPosition = 0;
 					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder);
 					
@@ -2298,6 +2299,13 @@ void lcd_calibrate_extruder() {
 		lcd_implementation_clear();
 	}
 	lcd_return_to_status();
+}
+
+void lcd_extr_cal_reset() {
+	float tmp1[] = DEFAULT_AXIS_STEPS_PER_UNIT;
+	axis_steps_per_unit[E_AXIS] = tmp1[3];
+	//extrudemultiply = 100;
+	enquecommand_P(PSTR("M500"));
 }
 
 #endif
@@ -2377,6 +2385,9 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
+#ifndef SNMM
+	MENU_ITEM(function, MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
+#endif
   }
   
   END_MENU();
@@ -4159,8 +4170,7 @@ static void menu_action_function(menuFunc_t data) {
 }
 static void menu_action_sdfile(const char* filename, char* longFilename)
 {
-	loading_flag = false;
-	
+  loading_flag = false;
   char cmd[30];
   char* c;
   sprintf_P(cmd, PSTR("M23 %s"), filename);
