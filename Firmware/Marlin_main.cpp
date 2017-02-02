@@ -2756,6 +2756,8 @@ void process_commands()
      *  v Y-axis
      *
      */
+	
+	
     case 80:
     case_G80:
         {
@@ -3113,14 +3115,14 @@ void process_commands()
         LCD_MESSAGERPGM(MSG_USERWAIT);
       }
 
-      lcd_ignore_click();
+      lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
       st_synchronize();
       previous_millis_cmd = millis();
       if (codenum > 0){
         codenum += millis();  // keep track of when we started waiting
         while(millis() < codenum && !lcd_clicked()){
           manage_heater();
-          manage_inactivity();
+          manage_inactivity(true);
           lcd_update();
         }
         lcd_ignore_click(false);
@@ -3129,7 +3131,7 @@ void process_commands()
             break;
         while(!lcd_clicked()){
           manage_heater();
-          manage_inactivity();
+          manage_inactivity(true);
           lcd_update();
         }
       }
@@ -3174,7 +3176,7 @@ void process_commands()
     case 24: //M24 - Start SD print
       card.startFileprint();
       starttime=millis();
-      break;
+	  break;
     case 25: //M25 - Pause SD print
       card.pauseSDPrint();
       break;

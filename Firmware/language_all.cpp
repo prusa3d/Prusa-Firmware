@@ -325,7 +325,7 @@ const char * const MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND_LANG_TABLE[LANG
 	MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND_PL
 };
 
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_EN[] PROGMEM = "X/Y skewed severly. Skew will be corrected automatically.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_EN[] PROGMEM = "XYZ callibration all right. Skew will be corrected automatically.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_CZ[] PROGMEM = "Kalibrace XYZ v poradku. Zkoseni bude automaticky vyrovnano pri tisku.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_IT[] PROGMEM = "Calibrazion XYZ corretta. La distorsione verra' automaticamente compensata.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_ES[] PROGMEM = "Calibracion XYZ correcta. La inclinacion se corregira automaticamente.";
@@ -338,7 +338,7 @@ const char * const MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_LANG_TABLE[LANG_NU
 	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_PL
 };
 
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_EN[] PROGMEM = "XYZ calibration all right. X/Y axes are slightly skewed.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_EN[] PROGMEM = "XYZ calibration all right. X/Y axes are slightly skewed. Good job!";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_CZ[] PROGMEM = "Kalibrace XYZ v poradku. X/Y osy mirne zkosene. Dobra prace!";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_IT[] PROGMEM = "Calibrazion XYZ corretta. Assi X/Y leggermente storti. Ben fatto!";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_ES[] PROGMEM = "Calibracion XYZ correcta. Los ejes X / Y estan ligeramente inclinados. Buen trabajo!";
@@ -1505,6 +1505,16 @@ const char * const MSG_ON_LANG_TABLE[1] PROGMEM = {
 	MSG_ON_EN
 };
 
+const char MSG_PAPER_EN[] PROGMEM = "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately.";
+const char MSG_PAPER_CZ[] PROGMEM = "Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, vypnete tiskarnu.";
+const char * const MSG_PAPER_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PAPER_EN,
+	MSG_PAPER_CZ,
+	MSG_PAPER_EN,
+	MSG_PAPER_EN,
+	MSG_PAPER_EN
+};
+
 const char MSG_PAUSE_PRINT_EN[] PROGMEM = "Pause print";
 const char MSG_PAUSE_PRINT_CZ[] PROGMEM = "Pozastavit tisk";
 const char MSG_PAUSE_PRINT_IT[] PROGMEM = "Metti in pausa";
@@ -1668,6 +1678,11 @@ const char * const MSG_REFRESH_LANG_TABLE[1] PROGMEM = {
 const char MSG_RESEND_EN[] PROGMEM = "Resend: ";
 const char * const MSG_RESEND_LANG_TABLE[1] PROGMEM = {
 	MSG_RESEND_EN
+};
+
+const char MSG_RESET_CALIBRATE_E_EN[] PROGMEM = "Reset E Cal.";
+const char * const MSG_RESET_CALIBRATE_E_LANG_TABLE[1] PROGMEM = {
+	MSG_RESET_CALIBRATE_E_EN
 };
 
 const char MSG_RESTORE_FAILSAFE_EN[] PROGMEM = "Restore failsafe";
@@ -2475,7 +2490,7 @@ const char * const MSG_VTRAV_MIN_LANG_TABLE[1] PROGMEM = {
 	MSG_VTRAV_MIN_EN
 };
 
-const char MSG_WAITING_TEMP_EN[] PROGMEM = "Waiting for heater and bed cooling";
+const char MSG_WAITING_TEMP_EN[] PROGMEM = "Waiting for nozzle and bed cooling";
 const char MSG_WAITING_TEMP_CZ[] PROGMEM = "Cekani na zchladnuti trysky a podlozky.";
 const char MSG_WAITING_TEMP_IT[] PROGMEM = "In attesa del raffreddamento della testina e del piatto.";
 const char MSG_WAITING_TEMP_ES[] PROGMEM = "Esperando enfriamiento de la cama y del extrusor.";
