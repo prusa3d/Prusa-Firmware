@@ -652,6 +652,29 @@ void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str)
     lcd.print(str);
 }
 
+inline uint8_t hex2uint8(const char *str)
+{
+    uint8_t value = 0;
+    if (str[0] >= '0' && str[0] <= '9')
+        value = str[0] - '0';
+    else if (str[0] >= 'A' && str[0] <= 'F')
+        value = 10 + str[0] - 'A';
+    else if (str[0] >= 'a' && str[0] <= 'f')
+        value = 10 + str[0] - 'a';
+    else
+        return 255;
+    value <<= 4;
+    if (str[1] >= '0' && str[1] <= '9')
+        value += str[1] - '0';
+    else if (str[1] >= 'A' && str[1] <= 'F')
+        value += 10 + str[1] - 'A';
+    else if (str[1] >= 'a' && str[1] <= 'f')
+        value += 10 + str[1] - 'a';
+    else
+        return 255;
+    return value;
+}
+
 /*
 
 20x4   |01234567890123456789|
@@ -665,6 +688,10 @@ static void lcd_implementation_status_screen()
    
     int tHotend=int(degHotend(0) + 0.5);
     int tTarget=int(degTargetHotend(0) + 0.5);
+#ifdef TOSHIBA_FLASH_AIR_COMMUNICATION
+    menuData.statusToFlashAir.tHotendCurrent = tHotend;
+    menuData.statusToFlashAir.tHotendTarget  = tTarget;
+#endif /* TOSHIBA_FLASH_AIR_COMMUNICATION */
 
     //Print the hotend temperature
     lcd.setCursor(0, 0);
@@ -694,8 +721,10 @@ static void lcd_implementation_status_screen()
 
     //Print the Bedtemperature
     lcd.setCursor(0, 1);
-    tHotend=int(degBed() + 0.5);
-    tTarget=int(degTargetBed() + 0.5);
+#ifdef TOSHIBA_FLASH_AIR_COMMUNICATION
+    menuData.statusToFlashAir.tBedCurrent = tHotend = int(degBed() + 0.5);
+    menuData.statusToFlashAir.tBedTarget  = tTarget = int(degTargetBed() + 0.5);
+#endif TOSHIBA_FLASH_AIR_COMMUNICATION
     lcd.print(LCD_STR_BEDTEMP[0]);
     lcd.print(itostr3(tHotend));
     lcd.print('/');
@@ -709,6 +738,9 @@ static void lcd_implementation_status_screen()
     lcd_printPGM(PSTR("  "));
     lcd.print(LCD_STR_FEEDRATE[0]);
     lcd.print(itostr3(feedmultiply));
+#ifdef TOSHIBA_FLASH_AIR_COMMUNICATION
+    menuData.statusToFlashAir.feedmultiply = feedmultiply;
+#endif TOSHIBA_FLASH_AIR_COMMUNICATION
     lcd_printPGM(PSTR("%     "));
 #else
     //Print Feedrate
@@ -728,6 +760,40 @@ static void lcd_implementation_status_screen()
       planner_queue_min_reset();
     }
 #endif
+
+#ifdef TOSHIBA_FLASH_AIR_COMMUNICATION
+    if (card.ToshibaFlashAir_isEnabled()) {
+      static uint8_t cntr = 0;
+      if (++ cntr == 2) {
+//          SERIAL_ECHOPGM("Writing status to FlashAir: ");
+          if (card.ToshibaFlashAir_WriteSharedMemoryBCD(0, sizeof(MenuData::StatusToFlashAir), (const uint8_t*)&menuData.statusToFlashAir.tHotendCurrent)) {
+//              SERIAL_ECHOLNPGM("OK");
+          } else {
+//              SERIAL_ECHOLNPGM("Failed");
+          }
+//      } else if (cntr == 6) {
+//          SERIAL_ECHOPGM("Reading command from FlashAir");
+          if (card.ToshibaFlashAir_ReadSharedMemory(128, sizeof(MenuData::FlashAirCommandBuffer), (uint8_t*)menuData.flashAirCommandBuffer.buffer)) {
+//              SERIAL_ECHOPGM("Command read. Command length: ");
+              uint8_t len = hex2uint8(menuData.flashAirCommandBuffer.buffer);
+//            MYSERIAL.print((int)len);
+//            SERIAL_ECHOLNPGM("");
+              if (len > 0 && len <= sizeof(MenuData::FlashAirCommandBuffer) - 2) {
+                  menuData.flashAirCommandBuffer.buffer[len + 2] = 0;
+//                SERIAL_ECHOPGM("Enque command: ");
+//                SERIAL_ECHO(menuData.flashAirCommandBuffer.buffer + 2);
+//                SERIAL_ECHOLNPGM("");
+                  enquecommand(menuData.flashAirCommandBuffer.buffer + 2);
+                  memset(menuData.flashAirCommandBuffer.buffer, 0, sizeof(MenuData::FlashAirCommandBuffer));
+                  card.ToshibaFlashAir_WriteSharedMemory(128, sizeof(MenuData::FlashAirCommandBuffer), (const uint8_t*)menuData.flashAirCommandBuffer.buffer);
+              }
+          } else {
+              SERIAL_ECHOLNPGM(" Reading command from FlashAir Failed");
+          }
+          cntr = 0;
+      }
+    }
+#endif /* TOSHIBA_FLASH_AIR_COMMUNICATION */
 	
     //Print SD status
     lcd.setCursor(0, 2);
