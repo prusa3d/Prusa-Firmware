@@ -252,6 +252,7 @@
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
 #define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
 #define(lenght=20, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
+#define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
 #define MSG_BED_CORRECTION_LEFT									"Left side  um"

@@ -1570,6 +1570,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
             lcd_show_fullscreen_message_and_wait_P(MSG_CONFIRM_NOZZLE_CLEAN);
             clean_nozzle_asked = true;
         }
+		
 
         // Let the user confirm, that the Z carriage is at the top end stoppers.
         int8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_CONFIRM_CARRIAGE_AT_THE_TOP, false);
@@ -1592,6 +1593,7 @@ calibrated:
         lcd_implementation_print_at(0, 3, 1);
         lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);*/
     }else{
+		lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
         lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
         lcd_implementation_print_at(0, 2, 1);
         lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
@@ -2215,7 +2217,7 @@ void lcd_mesh_calibration_z()
 
 #ifndef SNMM
 
-void lcd_calibrate_extruder() {
+/*void lcd_calibrate_extruder() {
 	
 	if (degHotend0() > EXTRUDE_MINTEMP)
 	{
@@ -2306,7 +2308,7 @@ void lcd_extr_cal_reset() {
 	axis_steps_per_unit[E_AXIS] = tmp1[3];
 	//extrudemultiply = 100;
 	enquecommand_P(PSTR("M500"));
-}
+}*/
 
 #endif
 
@@ -2376,7 +2378,7 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     // "Calibrate Z" with storing the reference values to EEPROM.
     MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
 #ifndef SNMM
-	MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
+	//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
 #endif
     // "Mesh Bed Leveling"
     MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
@@ -2386,7 +2388,7 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 #ifndef SNMM
-	MENU_ITEM(function, MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
+	//MENU_ITEM(function, MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
 #endif
   }
   

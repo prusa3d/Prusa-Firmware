@@ -263,3 +263,5 @@
 #define MSG_WAITING_TEMP								"Cekani na zchladnuti trysky a podlozky."
 #define MSG_FILAMENT_CLEAN								"Je barva cista?" 
 #define MSG_UNLOADING_FILAMENT							"Vysouvam filament"
+
+#define MSG_PAPER										"Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, vypnete tiskarnu."

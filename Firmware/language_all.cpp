@@ -1505,6 +1505,16 @@ const char * const MSG_ON_LANG_TABLE[1] PROGMEM = {
 	MSG_ON_EN
 };
 
+const char MSG_PAPER_EN[] PROGMEM = "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately.";
+const char MSG_PAPER_CZ[] PROGMEM = "Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, vypnete tiskarnu.";
+const char * const MSG_PAPER_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PAPER_EN,
+	MSG_PAPER_CZ,
+	MSG_PAPER_EN,
+	MSG_PAPER_EN,
+	MSG_PAPER_EN
+};
+
 const char MSG_PAUSE_PRINT_EN[] PROGMEM = "Pause print";
 const char MSG_PAUSE_PRINT_CZ[] PROGMEM = "Pozastavit tisk";
 const char MSG_PAUSE_PRINT_IT[] PROGMEM = "Metti in pausa";

@@ -215,7 +215,7 @@ static void stack_test();
 static int test();
 
 void stack_error();
-//void lcd_calibrate_extruder();
+
 void lcd_calibrate_extruder();
 void lcd_farm_sdcard_menu();
 
