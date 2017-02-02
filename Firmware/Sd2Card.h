@@ -224,6 +224,8 @@ class Sd2Card {
 
   // Toshiba FlashAir support
   uint8_t readExtMemory(uint8_t mio, uint8_t func, uint32_t addr, uint16_t count, uint8_t* dst);
+  uint8_t writeExtMemory(uint8_t mio, uint8_t func, uint32_t addr, uint16_t count, const uint8_t* src);
+  uint8_t writeExtMemoryBCD(uint8_t mio, uint8_t func, uint32_t addr, uint16_t count, const uint8_t* src);
 
   void setFlashAirCompatible(bool flashAirCompatible) { flash_air_compatible_ = flashAirCompatible; }
   bool getFlashAirCompatible() const { return flash_air_compatible_; }
@@ -255,6 +257,7 @@ class Sd2Card {
   // Toshiba FlashAir support
   uint8_t waitStartBlock(void);
   uint8_t readExt(uint32_t arg, uint8_t* dst, uint16_t count);
+  uint8_t writeExt(uint32_t arg, const uint8_t* src, uint16_t count);
 };
 #endif  // Sd2Card_h
 
