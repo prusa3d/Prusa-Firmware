@@ -120,7 +120,7 @@
 #define (length=36) MSG_ERR_KILLED          "Printer gestoppt. kill() aufgerufen!"
 #define MSG_ERR_STOPPED                     "Der Drucker wurde aufgrund von Fehlern gestoppt. Beheben Sie den Fehler und verwenden Sie M999, um neu zu starten. (Temperatur wird reset. Stellen Sie es nach dem Neustart ein)"
 #define MSG_RESEND                          "Resend: "
-#define MSG_M119_REPORT                     "Reporting endstop status"
+#define MSG_M119_REPORT                     "Endstop status anzeigen"
 #define MSG_ENDSTOP_HIT                     "AUSGELOEST"
 #define MSG_ENDSTOP_OPEN                    "offen"
 
