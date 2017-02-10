@@ -53,7 +53,7 @@ const char MSG_AUTO_HOME_EN[] PROGMEM = "Auto home";
 const char MSG_AUTO_HOME_IT[] PROGMEM = "Trova origine";
 const char MSG_AUTO_HOME_ES[] PROGMEM = "Llevar al origen";
 const char MSG_AUTO_HOME_DE[] PROGMEM = "Startposition";
-const char MSG_AUTO_HOME_NL[] PROGMEM = "Starpositie";
+const char MSG_AUTO_HOME_NL[] PROGMEM = "Startpositie";
 const char * const MSG_AUTO_HOME_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_AUTO_HOME_EN,
 	MSG_AUTO_HOME_EN,
@@ -139,8 +139,8 @@ const char MSG_BABYSTEP_Z_CZ[] PROGMEM = "Doladeni osy Z";
 const char MSG_BABYSTEP_Z_IT[] PROGMEM = "Compensazione Z";
 const char MSG_BABYSTEP_Z_ES[] PROGMEM = "Micropaso Z";
 const char MSG_BABYSTEP_Z_PL[] PROGMEM = "Dostrojenie osy Z";
-const char MSG_BABYSTEP_Z_DE[] PROGMEM = "Live einstellen Z";
-const char MSG_BABYSTEP_Z_NL[] PROGMEM = "Live instellen Z";
+const char MSG_BABYSTEP_Z_DE[] PROGMEM = "Live Z einstellen";
+const char MSG_BABYSTEP_Z_NL[] PROGMEM = "Live Z aanpassen";
 const char * const MSG_BABYSTEP_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BABYSTEP_Z_EN,
 	MSG_BABYSTEP_Z_CZ,
@@ -303,7 +303,7 @@ const char MSG_BED_HEATING_IT[] PROGMEM = "Riscald. letto";
 const char MSG_BED_HEATING_ES[] PROGMEM = "Base Calentando";
 const char MSG_BED_HEATING_PL[] PROGMEM = "Grzanie stolika..";
 const char MSG_BED_HEATING_DE[] PROGMEM = "Bed aufwaermen";
-const char MSG_BED_HEATING_NL[] PROGMEM = "Bed verhittend";
+const char MSG_BED_HEATING_NL[] PROGMEM = "Bed opwarmen";
 const char * const MSG_BED_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_HEATING_EN,
 	MSG_BED_HEATING_CZ,
@@ -665,7 +665,7 @@ const char MSG_CHANGE_SUCCESS_IT[] PROGMEM = "Cambio riuscito!";
 const char MSG_CHANGE_SUCCESS_ES[] PROGMEM = "Cambiar bien!";
 const char MSG_CHANGE_SUCCESS_PL[] PROGMEM = "Wymiana ok!";
 const char MSG_CHANGE_SUCCESS_DE[] PROGMEM = "Wechsel erfolgreich!";
-const char MSG_CHANGE_SUCCESS_NL[] PROGMEM = "Wisseling succesvol!";
+const char MSG_CHANGE_SUCCESS_NL[] PROGMEM = "Wissel succesvol!";
 const char * const MSG_CHANGE_SUCCESS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CHANGE_SUCCESS_EN,
 	MSG_CHANGE_SUCCESS_CZ,
@@ -725,7 +725,7 @@ const char * const MSG_CNG_SDCARD_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_CONFIGURATION_VER_EN[] PROGMEM = " Last Updated: ";
 const char MSG_CONFIGURATION_VER_DE[] PROGMEM = " Letzes Updated: ";
-const char MSG_CONFIGURATION_VER_NL[] PROGMEM = " Laaste Updated: ";
+const char MSG_CONFIGURATION_VER_NL[] PROGMEM = " Laaste geupdatet: ";
 const char * const MSG_CONFIGURATION_VER_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CONFIGURATION_VER_EN,
 	MSG_CONFIGURATION_VER_EN,
@@ -849,7 +849,7 @@ const char MSG_DISABLE_STEPPERS_IT[] PROGMEM = "Disabilit motori";
 const char MSG_DISABLE_STEPPERS_ES[] PROGMEM = "Apagar motores";
 const char MSG_DISABLE_STEPPERS_PL[] PROGMEM = "Wylaczyc silniki";
 const char MSG_DISABLE_STEPPERS_DE[] PROGMEM = "Deaktiviere Motoren";
-const char MSG_DISABLE_STEPPERS_NL[] PROGMEM = "Deactiveren motors";
+const char MSG_DISABLE_STEPPERS_NL[] PROGMEM = "Deactiveren motoren";
 const char * const MSG_DISABLE_STEPPERS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DISABLE_STEPPERS_EN,
 	MSG_DISABLE_STEPPERS_CZ,
@@ -890,15 +890,15 @@ const char * const MSG_ENDSTOPS_HIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_ENDSTOP_HIT_EN[] PROGMEM = "TRIGGERED";
 const char MSG_ENDSTOP_HIT_DE[] PROGMEM = "AUSGELOEST";
-const char MSG_ENDSTOP_HIT_NL[] PROGMEM = "GETRIGGERD";
+const char MSG_ENDSTOP_HIT_NL[] PROGMEM = "GESLOTEN";
 const char * const MSG_ENDSTOP_HIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_ENDSTOP_HIT_EN,
 	MSG_ENDSTOP_HIT_EN,
 	MSG_ENDSTOP_HIT_EN,
 	MSG_ENDSTOP_HIT_EN,
 	MSG_ENDSTOP_HIT_EN,
-	MSG_ENDSTOP_HIT_EN,
-	MSG_ENDSTOP_HIT_EN
+	MSG_ENDSTOP_HIT_DE,
+	MSG_ENDSTOP_HIT_NL
 };
 
 const char MSG_ENDSTOP_OPEN_EN[] PROGMEM = "open";
@@ -1451,7 +1451,7 @@ const char MSG_HEATING_IT[] PROGMEM = "Riscaldamento...";
 const char MSG_HEATING_ES[] PROGMEM = "Calentando...";
 const char MSG_HEATING_PL[] PROGMEM = "Grzanie...";
 const char MSG_HEATING_DE[] PROGMEM = "Aufheizen";
-const char MSG_HEATING_NL[] PROGMEM = "Verhitten";
+const char MSG_HEATING_NL[] PROGMEM = "Opwarmen";
 const char * const MSG_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_HEATING_EN,
 	MSG_HEATING_CZ,
@@ -1468,7 +1468,7 @@ const char MSG_HEATING_COMPLETE_IT[] PROGMEM = "Riscald. completo";
 const char MSG_HEATING_COMPLETE_ES[] PROGMEM = "Calentando listo.";
 const char MSG_HEATING_COMPLETE_PL[] PROGMEM = "Grzanie OK.";
 const char MSG_HEATING_COMPLETE_DE[] PROGMEM = "Aufgeheizen klar.";
-const char MSG_HEATING_COMPLETE_NL[] PROGMEM = "Verhitten klaar.";
+const char MSG_HEATING_COMPLETE_NL[] PROGMEM = "Opwarmen klaar.";
 const char * const MSG_HEATING_COMPLETE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_HEATING_COMPLETE_EN,
 	MSG_HEATING_COMPLETE_CZ,
@@ -1672,7 +1672,7 @@ const char MSG_LOADING_COLOR_IT[] PROGMEM = "Caricando colore";
 const char MSG_LOADING_COLOR_ES[] PROGMEM = "Cargando color";
 const char MSG_LOADING_COLOR_PL[] PROGMEM = "Czyszcz. koloru";
 const char MSG_LOADING_COLOR_DE[] PROGMEM = "Lade Farbe";
-const char MSG_LOADING_COLOR_NL[] PROGMEM = "Loading kleur";
+const char MSG_LOADING_COLOR_NL[] PROGMEM = "Kleur wordt geladen";
 const char * const MSG_LOADING_COLOR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_LOADING_COLOR_EN,
 	MSG_LOADING_COLOR_CZ,
@@ -1702,7 +1702,7 @@ const char * const MSG_LOADING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_LOAD_EPROM_EN[] PROGMEM = "Load memory";
 const char MSG_LOAD_EPROM_DE[] PROGMEM = "Lade Speicher";
-const char MSG_LOAD_EPROM_NL[] PROGMEM = "Load memory";
+const char MSG_LOAD_EPROM_NL[] PROGMEM = "Geheugen laden";
 const char * const MSG_LOAD_EPROM_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_LOAD_EPROM_EN,
 	MSG_LOAD_EPROM_EN,
@@ -1792,14 +1792,16 @@ const char * const MSG_M115_REPORT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_M119_REPORT_EN[] PROGMEM = "Reporting endstop status";
+const char MSG_M119_REPORT_DE[] PROGMEM = "Endstop status anzeigen";
+const char MSG_M119_REPORT_NL[] PROGMEM = "Endstop status weergeven";
 const char * const MSG_M119_REPORT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_M119_REPORT_EN,
 	MSG_M119_REPORT_EN,
 	MSG_M119_REPORT_EN,
 	MSG_M119_REPORT_EN,
 	MSG_M119_REPORT_EN,
-	MSG_M119_REPORT_EN,
-	MSG_M119_REPORT_EN
+	MSG_M119_REPORT_DE,
+	MSG_M119_REPORT_NL
 };
 
 const char MSG_M200_INVALID_EXTRUDER_EN[] PROGMEM = "M200 Invalid extruder ";
@@ -1955,6 +1957,7 @@ const char * const MSG_MIN_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_MOTION_EN[] PROGMEM = "Motion";
+const char MSG_MOTION_NL[] PROGMEM = "Beweging";
 const char * const MSG_MOTION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOTION_EN,
 	MSG_MOTION_EN,
@@ -1962,7 +1965,7 @@ const char * const MSG_MOTION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOTION_EN,
 	MSG_MOTION_EN,
 	MSG_MOTION_EN,
-	MSG_MOTION_EN
+	MSG_MOTION_NL
 };
 
 const char MSG_MOVE_01MM_EN[] PROGMEM = "Move 0.1mm";
@@ -2168,7 +2171,7 @@ const char MSG_NOT_COLOR_IT[] PROGMEM = "Colore non puro";
 const char MSG_NOT_COLOR_ES[] PROGMEM = "Color no claro";
 const char MSG_NOT_COLOR_PL[] PROGMEM = "Kolor zanieczysz.";
 const char MSG_NOT_COLOR_DE[] PROGMEM = "Farbe nicht klar.";
-const char MSG_NOT_COLOR_NL[] PROGMEM = "Kleur niet klaar.";
+const char MSG_NOT_COLOR_NL[] PROGMEM = "Kleur niet duidelijk.";
 const char * const MSG_NOT_COLOR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_NOT_COLOR_EN,
 	MSG_NOT_COLOR_CZ,
@@ -2516,7 +2519,7 @@ const char MSG_REBOOT_IT[] PROGMEM = "Riavvia stampante";
 const char MSG_REBOOT_ES[] PROGMEM = "Reiniciar la imp.";
 const char MSG_REBOOT_PL[] PROGMEM = "Restart drukarki";
 const char MSG_REBOOT_DE[] PROGMEM = "Reboot den Printer";
-const char MSG_REBOOT_NL[] PROGMEM = "Reboot de printer";
+const char MSG_REBOOT_NL[] PROGMEM = "Herstart de printer";
 const char * const MSG_REBOOT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_REBOOT_EN,
 	MSG_REBOOT_CZ,
@@ -2539,6 +2542,7 @@ const char * const MSG_RECTRACT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_REFRESH_EN[] PROGMEM = "\xF8" "Refresh";
+const char MSG_REFRESH_NL[] PROGMEM = "\xF8" "Herladen";
 const char * const MSG_REFRESH_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_REFRESH_EN,
 	MSG_REFRESH_EN,
@@ -2546,7 +2550,7 @@ const char * const MSG_REFRESH_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_REFRESH_EN,
 	MSG_REFRESH_EN,
 	MSG_REFRESH_EN,
-	MSG_REFRESH_EN
+	MSG_REFRESH_NL
 };
 
 const char MSG_RESEND_EN[] PROGMEM = "Resend: ";
@@ -2571,6 +2575,7 @@ const char * const MSG_RESET_CALIBRATE_E_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RESET_CALIBRATE_E_EN
 };
 const char MSG_RESTORE_FAILSAFE_EN[] PROGMEM = "Restore failsafe";
+const char MSG_RESTORE_FAILSAFE_NL[] PROGMEM = "Backup terugzetten";
 const char * const MSG_RESTORE_FAILSAFE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RESTORE_FAILSAFE_EN,
 	MSG_RESTORE_FAILSAFE_EN,
@@ -2578,7 +2583,7 @@ const char * const MSG_RESTORE_FAILSAFE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RESTORE_FAILSAFE_EN,
 	MSG_RESTORE_FAILSAFE_EN,
 	MSG_RESTORE_FAILSAFE_EN,
-	MSG_RESTORE_FAILSAFE_EN
+	MSG_RESTORE_FAILSAFE_NL
 };
 
 const char MSG_RESUME_PRINT_EN[] PROGMEM = "Resume print";
@@ -2630,7 +2635,7 @@ const char * const MSG_SD_CANT_ENTER_SUBDIR_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_SD_CANT_OPEN_SUBDIR_EN[] PROGMEM = "Cannot open subdir";
 const char MSG_SD_CANT_OPEN_SUBDIR_DE[] PROGMEM = "Kann Unterverz. nicht oeffnen";
-const char MSG_SD_CANT_OPEN_SUBDIR_NL[] PROGMEM = "Kan subdir openen";
+const char MSG_SD_CANT_OPEN_SUBDIR_NL[] PROGMEM = "Kan map niet openen";
 const char * const MSG_SD_CANT_OPEN_SUBDIR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_CANT_OPEN_SUBDIR_EN,
 	MSG_SD_CANT_OPEN_SUBDIR_EN,
@@ -2654,7 +2659,7 @@ const char * const MSG_SD_CARD_OK_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_SD_ERR_WRITE_TO_FILE_EN[] PROGMEM = "error writing to file";
 const char MSG_SD_ERR_WRITE_TO_FILE_DE[] PROGMEM = "Fehler beim Schreiben in Datei";
-const char MSG_SD_ERR_WRITE_TO_FILE_NL[] PROGMEM = "fout bij schrijven naar file";
+const char MSG_SD_ERR_WRITE_TO_FILE_NL[] PROGMEM = "fout bij schrijven naar bestand";
 const char * const MSG_SD_ERR_WRITE_TO_FILE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_ERR_WRITE_TO_FILE_EN,
 	MSG_SD_ERR_WRITE_TO_FILE_EN,
@@ -2667,7 +2672,7 @@ const char * const MSG_SD_ERR_WRITE_TO_FILE_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_SD_FILE_OPENED_EN[] PROGMEM = "File opened: ";
 const char MSG_SD_FILE_OPENED_DE[] PROGMEM = "Datei geoeffnet: ";
-const char MSG_SD_FILE_OPENED_NL[] PROGMEM = "File geopend: ";
+const char MSG_SD_FILE_OPENED_NL[] PROGMEM = "Bestand geopend: ";
 const char * const MSG_SD_FILE_OPENED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_FILE_OPENED_EN,
 	MSG_SD_FILE_OPENED_EN,
@@ -2680,7 +2685,7 @@ const char * const MSG_SD_FILE_OPENED_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_SD_FILE_SELECTED_EN[] PROGMEM = "File selected";
 const char MSG_SD_FILE_SELECTED_DE[] PROGMEM = "Datei ausgewoehlt";
-const char MSG_SD_FILE_SELECTED_NL[] PROGMEM = "File geselecteerd";
+const char MSG_SD_FILE_SELECTED_NL[] PROGMEM = "Bestand geselecteerd";
 const char * const MSG_SD_FILE_SELECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_FILE_SELECTED_EN,
 	MSG_SD_FILE_SELECTED_EN,
@@ -2692,6 +2697,7 @@ const char * const MSG_SD_FILE_SELECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_SD_INIT_FAIL_EN[] PROGMEM = "SD init fail";
+const char MSG_SD_INIT_FAIL_NL[] PROGMEM = "SD opstarten mislukt";
 const char * const MSG_SD_INIT_FAIL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_INIT_FAIL_EN,
 	MSG_SD_INIT_FAIL_EN,
@@ -2699,7 +2705,7 @@ const char * const MSG_SD_INIT_FAIL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_INIT_FAIL_EN,
 	MSG_SD_INIT_FAIL_EN,
 	MSG_SD_INIT_FAIL_EN,
-	MSG_SD_INIT_FAIL_EN
+	MSG_SD_INIT_FAIL_NL
 };
 
 const char MSG_SD_INSERTED_EN[] PROGMEM = "Card inserted";
@@ -2733,6 +2739,7 @@ const char * const MSG_SD_NOT_PRINTING_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_SD_OPENROOT_FAIL_EN[] PROGMEM = "openRoot failed";
+const char MSG_SD_OPENROOT_FAIL_NL[] PROGMEM = "openRoot mislukt";
 const char * const MSG_SD_OPENROOT_FAIL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_OPENROOT_FAIL_EN,
 	MSG_SD_OPENROOT_FAIL_EN,
@@ -2794,6 +2801,7 @@ const char * const MSG_SD_SIZE_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_SD_VOL_INIT_FAIL_EN[] PROGMEM = "volume.init failed";
+const char MSG_SD_VOL_INIT_FAIL_NL[] PROGMEM = "volume.init mislukt";
 const char * const MSG_SD_VOL_INIT_FAIL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_VOL_INIT_FAIL_EN,
 	MSG_SD_VOL_INIT_FAIL_EN,
@@ -2801,7 +2809,7 @@ const char * const MSG_SD_VOL_INIT_FAIL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_VOL_INIT_FAIL_EN,
 	MSG_SD_VOL_INIT_FAIL_EN,
 	MSG_SD_VOL_INIT_FAIL_EN,
-	MSG_SD_VOL_INIT_FAIL_EN
+	MSG_SD_VOL_INIT_FAIL_NL
 };
 
 const char MSG_SD_WORKDIR_FAIL_EN[] PROGMEM = "workDir open failed";
@@ -2816,6 +2824,7 @@ const char * const MSG_SD_WORKDIR_FAIL_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_SD_WRITE_TO_FILE_EN[] PROGMEM = "Writing to file: ";
+const char MSG_SD_WRITE_TO_FILE_NL[] PROGMEM = "Naar bestand schrijven: ";
 const char * const MSG_SD_WRITE_TO_FILE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_WRITE_TO_FILE_EN,
 	MSG_SD_WRITE_TO_FILE_EN,
@@ -2823,7 +2832,7 @@ const char * const MSG_SD_WRITE_TO_FILE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SD_WRITE_TO_FILE_EN,
 	MSG_SD_WRITE_TO_FILE_EN,
 	MSG_SD_WRITE_TO_FILE_EN,
-	MSG_SD_WRITE_TO_FILE_EN
+	MSG_SD_WRITE_TO_FILE_NL
 };
 
 const char MSG_SELFTEST_EN[] PROGMEM = "Selftest         ";
@@ -3277,6 +3286,7 @@ const char * const MSG_SET_HOME_OFFSETS_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_SET_ORIGIN_EN[] PROGMEM = "Set origin";
+const char MSG_SET_ORIGIN_NL[] PROGMEM = "Oorsprong instellen";
 const char * const MSG_SET_ORIGIN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SET_ORIGIN_EN,
 	MSG_SET_ORIGIN_EN,
@@ -3284,7 +3294,7 @@ const char * const MSG_SET_ORIGIN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SET_ORIGIN_EN,
 	MSG_SET_ORIGIN_EN,
 	MSG_SET_ORIGIN_EN,
-	MSG_SET_ORIGIN_EN
+	MSG_SET_ORIGIN_NL
 };
 
 const char MSG_SHOW_END_STOPS_EN[] PROGMEM = "Show end stops";
@@ -3500,6 +3510,7 @@ const char * const MSG_STOP_PRINT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_STORE_EPROM_EN[] PROGMEM = "Store memory";
+const char MSG_STORE_EPROM_NL[] PROGMEM = "Opslaan in geheugen";
 const char * const MSG_STORE_EPROM_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_STORE_EPROM_EN,
 	MSG_STORE_EPROM_EN,
@@ -3507,7 +3518,7 @@ const char * const MSG_STORE_EPROM_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_STORE_EPROM_EN,
 	MSG_STORE_EPROM_EN,
 	MSG_STORE_EPROM_EN,
-	MSG_STORE_EPROM_EN
+	MSG_STORE_EPROM_NL
 };
 
 const char MSG_SUPPORT_EN[] PROGMEM = "Support";
@@ -3527,7 +3538,7 @@ const char MSG_SWITCH_PS_OFF_EN[] PROGMEM = "Switch power off";
 const char MSG_SWITCH_PS_OFF_CZ[] PROGMEM = "Zapnout zdroj";
 const char MSG_SWITCH_PS_OFF_PL[] PROGMEM = "Zapnout zdroj";
 const char MSG_SWITCH_PS_OFF_DE[] PROGMEM = "Schalte AUS";
-const char MSG_SWITCH_PS_OFF_NL[] PROGMEM = "Schakel UIT";
+const char MSG_SWITCH_PS_OFF_NL[] PROGMEM = "Uitschakelen";
 const char * const MSG_SWITCH_PS_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SWITCH_PS_OFF_EN,
 	MSG_SWITCH_PS_OFF_CZ,
@@ -3542,7 +3553,7 @@ const char MSG_SWITCH_PS_ON_EN[] PROGMEM = "Switch power on";
 const char MSG_SWITCH_PS_ON_CZ[] PROGMEM = "Vypnout zdroj";
 const char MSG_SWITCH_PS_ON_PL[] PROGMEM = "Vypnout zdroj";
 const char MSG_SWITCH_PS_ON_DE[] PROGMEM = "Schalte EIN";
-const char MSG_SWITCH_PS_ON_NL[] PROGMEM = "Schakel IN";
+const char MSG_SWITCH_PS_ON_NL[] PROGMEM = "Opstarten";
 const char * const MSG_SWITCH_PS_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SWITCH_PS_ON_EN,
 	MSG_SWITCH_PS_ON_CZ,
@@ -3617,7 +3628,7 @@ const char MSG_TUNE_IT[] PROGMEM = "Regola";
 const char MSG_TUNE_ES[] PROGMEM = "Ajustar";
 const char MSG_TUNE_PL[] PROGMEM = "Nastroic";
 const char MSG_TUNE_DE[] PROGMEM = "Feineinstellen";
-const char MSG_TUNE_NL[] PROGMEM = "Tune";
+const char MSG_TUNE_NL[] PROGMEM = "Aanpassen";
 const char * const MSG_TUNE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TUNE_EN,
 	MSG_TUNE_CZ,
@@ -3692,7 +3703,7 @@ const char MSG_USERWAIT_EN[] PROGMEM = "Wait for user...";
 const char MSG_USERWAIT_IT[] PROGMEM = "Attendendo utente";
 const char MSG_USERWAIT_ES[] PROGMEM = "Esperando ordenes";
 const char MSG_USERWAIT_DE[] PROGMEM = "Warte auf user...";
-const char MSG_USERWAIT_NL[] PROGMEM = "Wacht voor user...";
+const char MSG_USERWAIT_NL[] PROGMEM = "Wachten op gebruiker...";
 const char * const MSG_USERWAIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_USERWAIT_EN,
 	MSG_USERWAIT_EN,
