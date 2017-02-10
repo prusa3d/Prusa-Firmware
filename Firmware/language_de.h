@@ -69,13 +69,13 @@
 #define MSG_PICK_Z							"Waehle print"
 
 #define MSG_SETTINGS                        "Einstellungen"
-#define MSG_PREHEAT                         "Vorwaermen"
+#define MSG_PREHEAT                         "Vorheizen"
 #define MSG_UNLOAD_FILAMENT                 "Entnehm filament"
 #define MSG_LOAD_FILAMENT                 "Lege Filament ein"
 
 #define MSG_RECTRACT                        "Rectract"
 #define MSG_ERROR                        "FEHLER:"
-#define(length=20) MSG_PREHEAT_NOZZLE       "Duese vorwaermen!"
+#define(length=20) MSG_PREHEAT_NOZZLE       "Duese vorheizen!"
 #define MSG_SUPPORT "Support"
 #define(length=20) MSG_CORRECTLY			"Wechsel ok?"
 #define MSG_YES					"Ja"
@@ -331,8 +331,8 @@
 #define MSG_CNG_SDCARD                      "Wechsel SD Karte"
 #define MSG_BABYSTEP_X                      "Babystep X"
 #define MSG_BABYSTEP_Y                      "Babystep Y"
-#define MSG_BABYSTEP_Z                      "Live einstellen Z"
-#define (length=20) MSG_ADJUSTZ				"Auto einstellen Z ?"
+#define MSG_BABYSTEP_Z                      "Live Z einstellen"
+#define (length=20) MSG_ADJUSTZ				"Auto Z einstellen?"
 #define MSG_PICK_Z							"Waehle print"
 
 #define MSG_SETTINGS                        "Einstellungen"

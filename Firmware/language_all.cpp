@@ -2413,7 +2413,7 @@ const char MSG_PREHEAT_CZ[] PROGMEM = "Predehrev";
 const char MSG_PREHEAT_IT[] PROGMEM = "Preriscalda";
 const char MSG_PREHEAT_ES[] PROGMEM = "Precalentar";
 const char MSG_PREHEAT_PL[] PROGMEM = "Grzanie";
-const char MSG_PREHEAT_DE[] PROGMEM = "Vorwaermen";
+const char MSG_PREHEAT_DE[] PROGMEM = "Vorheizen";
 const char MSG_PREHEAT_NL[] PROGMEM = "Voorverwarmen";
 const char * const MSG_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PREHEAT_EN,
@@ -2430,7 +2430,7 @@ const char MSG_PREHEAT_NOZZLE_CZ[] PROGMEM = "Predehrejte trysku!";
 const char MSG_PREHEAT_NOZZLE_IT[] PROGMEM = "Preris. ugello!";
 const char MSG_PREHEAT_NOZZLE_ES[] PROGMEM = "Precal. extrusor!";
 const char MSG_PREHEAT_NOZZLE_PL[] PROGMEM = "Nagrzej dysze!";
-const char MSG_PREHEAT_NOZZLE_DE[] PROGMEM = "Duese vorwaermen!";
+const char MSG_PREHEAT_NOZZLE_DE[] PROGMEM = "Duese vorheizen!";
 const char MSG_PREHEAT_NOZZLE_NL[] PROGMEM = "Tuit voorverwarmen!";
 const char * const MSG_PREHEAT_NOZZLE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PREHEAT_NOZZLE_EN,
@@ -6361,7 +6361,7 @@ const char MSG_PREHEAT_CZ[] PROGMEM = "Predehrev";
 const char MSG_PREHEAT_IT[] PROGMEM = "Preriscalda";
 const char MSG_PREHEAT_ES[] PROGMEM = "Precalentar";
 const char MSG_PREHEAT_PL[] PROGMEM = "Grzanie";
-const char MSG_PREHEAT_DE[] PROGMEM = "Vorwaermen";
+const char MSG_PREHEAT_DE[] PROGMEM = "Vorheizen";
 const char MSG_PREHEAT_NL[] PROGMEM = "Voorverwarmen";
 const char * const MSG_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PREHEAT_EN,
@@ -6378,7 +6378,7 @@ const char MSG_PREHEAT_NOZZLE_CZ[] PROGMEM = "Predehrejte trysku!";
 const char MSG_PREHEAT_NOZZLE_IT[] PROGMEM = "Preris. ugello!";
 const char MSG_PREHEAT_NOZZLE_ES[] PROGMEM = "Precal. extrusor!";
 const char MSG_PREHEAT_NOZZLE_PL[] PROGMEM = "Nagrzej dysze!";
-const char MSG_PREHEAT_NOZZLE_DE[] PROGMEM = "Duese vorwaermen!";
+const char MSG_PREHEAT_NOZZLE_DE[] PROGMEM = "Duese vorheizen!";
 const char MSG_PREHEAT_NOZZLE_NL[] PROGMEM = "Tuit voorverwarmen!";
 const char * const MSG_PREHEAT_NOZZLE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PREHEAT_NOZZLE_EN,
