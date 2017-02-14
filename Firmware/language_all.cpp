@@ -2324,6 +2324,7 @@ const char * const MSG_PAPER_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PAPER_DE,
 	MSG_PAPER_NL
 };
+
 const char MSG_PAUSE_PRINT_EN[] PROGMEM = "Pause print";
 const char MSG_PAUSE_PRINT_CZ[] PROGMEM = "Pozastavit tisk";
 const char MSG_PAUSE_PRINT_IT[] PROGMEM = "Metti in pausa";
@@ -2574,6 +2575,7 @@ const char * const MSG_RESET_CALIBRATE_E_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RESET_CALIBRATE_E_EN,
 	MSG_RESET_CALIBRATE_E_EN
 };
+
 const char MSG_RESTORE_FAILSAFE_EN[] PROGMEM = "Restore failsafe";
 const char MSG_RESTORE_FAILSAFE_NL[] PROGMEM = "Backup terugzetten";
 const char * const MSG_RESTORE_FAILSAFE_LANG_TABLE[LANG_NUM] PROGMEM = {
