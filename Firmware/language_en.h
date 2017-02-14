@@ -27,7 +27,7 @@
 #define MSG_NOZZLE1                         "Nozzle2"
 #define MSG_NOZZLE2                         "Nozzle3"
 #define MSG_BED                             "Bed"
-#define MSG_FAN_SPEED                       "Fan speed"
+#define(length=14) MSG_FAN_SPEED                       "Fan speed"
 #define MSG_FLOW                            "Flow"
 #define MSG_FLOW0                           "Flow 0"
 #define MSG_FLOW1                           "Flow 1"
@@ -64,7 +64,7 @@
 #define MSG_BABYSTEP_X                      "Babystep X"
 #define MSG_BABYSTEP_Y                      "Babystep Y"
 #define MSG_BABYSTEP_Z                      "Live adjust Z"
-#define MSG_ADJUSTZ							"Auto adjust Z ?"
+#define MSG_ADJUSTZ							"Auto adjust Z?"
 #define MSG_PICK_Z							"Pick print"
 
 #define MSG_SETTINGS                         "Settings"
@@ -166,7 +166,7 @@
 #define MSG_SELFTEST_OK						"Self test OK"
 #define MSG_LOOSE_PULLEY					"Loose pulley"
 
-#define MSG_SELFTEST_FAN					"Fan test";
+#define(length=20) MSG_SELFTEST_FAN					"Fan test";
 #define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?";
 #define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Left hotend fan?";
 #define MSG_SELFTEST_FAN_YES				"Spinning";
@@ -251,7 +251,7 @@
 #define(length=20, lines=8) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
 #define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
-#define(lenght=20, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
+#define(lenght=20) MSG_UNLOADING_FILAMENT			"Unloading filament"
 #define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"

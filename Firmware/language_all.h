@@ -8,7 +8,10 @@
 #define LANG_ID_ES 3
 #define LANG_ID_PL 4
 #define LANG_ID_DE 5
+<<<<<<< HEAD
 #define LANG_ID_NL 6
+=======
+>>>>>>> refs/remotes/prusa3d/MK2
 // Language is not defined and it shall be selected from the menu.
 #define LANG_ID_FORCE_SELECTION 254
 // Language is not defined on a virgin RAMBo board.
@@ -18,8 +21,12 @@
 #define LANG_ID_DEFAULT LANG_ID_EN
 
 // Number of languages available in the language table.
+<<<<<<< HEAD
 //#define LANG_NUM 5
 #define LANG_NUM 7
+=======
+#define LANG_NUM 6
+>>>>>>> refs/remotes/prusa3d/MK2
 
 // Currectly active language selection.
 extern unsigned char lang_selected;
