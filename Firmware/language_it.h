@@ -1,4 +1,4 @@
-#define WELCOME_MSG                         CUSTOM_MENDEL_NAME "pronta."
+#define WELCOME_MSG                         CUSTOM_MENDEL_NAME " pronta."
 #define MSG_SD_INSERTED                     "SD inserita"
 #define MSG_SD_REMOVED                      "SD rimossa"
 #define MSG_MAIN                            "Menu principale"
@@ -22,7 +22,7 @@
 #define MSG_NOZZLE1                         "Nozzle2"
 #define MSG_NOZZLE2                         "Nozzle3"
 #define MSG_BED                             "Letto"
-#define MSG_FAN_SPEED                       "Velocita ventola"
+#define MSG_FAN_SPEED                       "Velocita vent."
 #define MSG_FLOW                            "Flusso"
 #define MSG_TEMPERATURE                     "Temperatura"
 #define MSG_MOTION                          "Motion"
@@ -84,7 +84,7 @@
 #define MSG_LOAD_FILAMENT                   "Carica filamento"
 
 #define MSG_SILENT_MODE_ON		    "Modo [silenzioso]"
-#define MSG_SILENT_MODE_OFF		    "Mode [forte]" 
+#define MSG_SILENT_MODE_OFF		    "Mode      [forte]" 
 #define MSG_REBOOT			    "Riavvia stampante"
 #define MSG_TAKE_EFFECT			    " per attualizzare"
 
@@ -220,9 +220,9 @@
 #define MSG_BABYSTEP_Z_NOT_SET							"Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo First steps, sezione First layer calibration."
 
 #define MSG_BED_CORRECTION_MENU							"Correz. liv.letto"
-#define MSG_BED_CORRECTION_LEFT							"Lato sinistro um"
-#define MSG_BED_CORRECTION_RIGHT						"Lato destro um"
-#define MSG_BED_CORRECTION_FRONT						"Lato ateriore um"
+#define MSG_BED_CORRECTION_LEFT							"Lato sinistro"
+#define MSG_BED_CORRECTION_RIGHT						"Lato destro"
+#define MSG_BED_CORRECTION_FRONT						"Lato ateriore"
 #define MSG_BED_CORRECTION_REAR							"Lato posteriore"
 #define MSG_BED_CORRECTION_RESET						"Reset"			
 
@@ -245,6 +245,7 @@
 #define MSG_E_CAL_KNOB									"Girare la manopola affinche' il segno raggiunga il corpo dell'estrusore. Click per continuare."
 #define MSG_MARK_FIL									"Segnare il filamento a 100 mm di distanza dal corpo dell'estrusore. Click per continuare."
 #define MSG_CLEAN_NOZZLE_E								"Calibrazione E terminata. Si prega di pulire l'ugello. Click per continuare."
-#define MSG_WAITING_TEMP								"In attesa del raffreddamento della testina e del piatto."
+#define MSG_WAITING_TEMP								"In attesa del raffreddamento della testina e del piatto"
 #define MSG_FILAMENT_CLEAN								"Il colore e' nitido?"
 #define MSG_UNLOADING_FILAMENT							"Rilasc. filamento"
+#define MSG_PAPER										"Porre un foglio sotto l'ugello durante la calibrazione dei primi 4 punti. In caso l'ugello muova il foglio spegnere prontamente la stampante."

@@ -64,7 +64,7 @@
 #define MSG_SILENT_MODE_ON                                      "Mod       [cichy]"
 #define MSG_SILENT_MODE_OFF                                     "Mod [w wydajnosc]" 
 #define MSG_REBOOT                                                      "Restart drukarki"
-#define MSG_TAKE_EFFECT                                         "wprow. zmian"   
+#define MSG_TAKE_EFFECT                                         " wprow. zmian"   
 #define MSG_HEATING                         "Grzanie..."
 #define MSG_HEATING_COMPLETE                "Grzanie OK."
 #define MSG_BED_HEATING                     "Grzanie stolika.."
@@ -259,3 +259,4 @@
 #define MSG_WAITING_TEMP										"Oczekiwanie na wychlodzenie dyszy i podkladki."
 #define MSG_FILAMENT_CLEAN										"Czy kolor jest czysty?"
 #define MSG_UNLOADING_FILAMENT									"Wysuwam filament"
+#define MSG_PAPER												"Umiesc kartke papieru na podkladce i trzymaj pod dysza podczas pomiaru pierwszych 4 punktow. Jesli dysza zahaczy o papier, wylacz drukarke."
