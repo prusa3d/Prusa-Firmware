@@ -156,8 +156,8 @@ const char MSG_BABYSTEP_Z_NOT_SET_CZ[] PROGMEM = "Neni zkalibrovana vzdalenost t
 const char MSG_BABYSTEP_Z_NOT_SET_IT[] PROGMEM = "Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo First steps, sezione First layer calibration.";
 const char MSG_BABYSTEP_Z_NOT_SET_ES[] PROGMEM = "Distancia entre la punta de la boquilla y la superficie de la cama no fijada aun. Por favor siga el manual, capitulo First steps, seccion First layer calibration.";
 const char MSG_BABYSTEP_Z_NOT_SET_PL[] PROGMEM = "Odleglosc dyszy od podkladki nie jest skalibrowana. Postepuj zgodnie z instrukcja rozdzial Zaczynamy, podrozdzial Kalibracja pierwszej warstwy.";
-const char MSG_BABYSTEP_Z_NOT_SET_DE[] PROGMEM = "Der Abstand zwischen der Spitze der Duese und der Druckoberflaeche/Bed ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, section First layer calibration.";
-const char MSG_BABYSTEP_Z_NOT_SET_NL[] PROGMEM = "Afstand tussen tip van het tuit en het print oppervlak nog niet vastgesteld. Volg de handleiding, First steps, section First layer calibration.";
+const char MSG_BABYSTEP_Z_NOT_SET_DE[] PROGMEM = "Der Abstand zwischen der Spitze der Duese und der Druckoberflaeche / Bed ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, Abschnitt First layer calibration.";
+const char MSG_BABYSTEP_Z_NOT_SET_NL[] PROGMEM = "Afstand tussen tip van het tuit en het print oppervlak nog niet vastgesteld. Volg de handleiding, First steps, sectie First layer calibration.";
 const char * const MSG_BABYSTEP_Z_NOT_SET_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BABYSTEP_Z_NOT_SET_EN,
 	MSG_BABYSTEP_Z_NOT_SET_CZ,
@@ -302,7 +302,7 @@ const char MSG_BED_HEATING_CZ[] PROGMEM = "Zahrivani bed";
 const char MSG_BED_HEATING_IT[] PROGMEM = "Riscald. letto";
 const char MSG_BED_HEATING_ES[] PROGMEM = "Base Calentando";
 const char MSG_BED_HEATING_PL[] PROGMEM = "Grzanie stolika..";
-const char MSG_BED_HEATING_DE[] PROGMEM = "Bed aufwaermen";
+const char MSG_BED_HEATING_DE[] PROGMEM = "Bed aufheizen";
 const char MSG_BED_HEATING_NL[] PROGMEM = "Bed opwarmen";
 const char * const MSG_BED_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_HEATING_EN,
@@ -741,8 +741,8 @@ const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_CZ[] PROGMEM = "Dojely oba Z voziky k
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_IT[] PROGMEM = "I carrelli Z sin/des sono altezza max?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_ES[] PROGMEM = "Carros Z izq./der. estan arriba maximo?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_PL[] PROGMEM = "Oba wozki dojechaly do gornej ramy?";
-const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_DE[] PROGMEM = "Sind linke und rechte Z-Schlitten ganz oben?";
-const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_NL[] PROGMEM = "Zijn linkse en rechtse Z-wagen heelemaal boven?";
+const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_DE[] PROGMEM = "Sind beide Z Schlitten ganz oben?";
+const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_NL[] PROGMEM = "Zijn beide Z wagen heelemaal boven?";
 const char * const MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CONFIRM_CARRIAGE_AT_THE_TOP_EN,
 	MSG_CONFIRM_CARRIAGE_AT_THE_TOP_CZ,
@@ -1330,8 +1330,8 @@ const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Hledam kalibracni 
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Ricerca del letto punto di calibraz.";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_ES[] PROGMEM = "Buscando cama punto de calibracion";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_PL[] PROGMEM = "Szukam punktu kalibracyjnego podkladki";
-const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_DE[] PROGMEM = "Suche Bed Kalibrierpunkt";
-const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_NL[] PROGMEM = "Zoeken bed kalibratiepunt";
+const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_DE[] PROGMEM = "Suche Bed Kalibrierungspunkt";
+const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_NL[] PROGMEM = "Zoeke bed kalibratiepunt";
 const char * const MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_EN,
 	MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ,
@@ -1546,8 +1546,8 @@ const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Zlepsuji presno
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Perfezion. il letto punto di calibraz.";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_ES[] PROGMEM = "Mejorando cama punto de calibracion";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_PL[] PROGMEM = "Poprawiam precyzyjnosc punktu kalibracyjnego";
-const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_DE[] PROGMEM = "Verbesserung Bed Kalibrierpunkt";
-const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_NL[] PROGMEM = "Verbetering bed kalibratiepunt";
+const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_DE[] PROGMEM = "Genauigkeit verbessern bei Kalibrierpunkt";
+const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_NL[] PROGMEM = "Nauwkeurigheid verbeteren bij kalibratiepunt";
 const char * const MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_EN,
 	MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_CZ,
@@ -1718,8 +1718,8 @@ const char MSG_LOAD_FILAMENT_CZ[] PROGMEM = "Zavest filament";
 const char MSG_LOAD_FILAMENT_IT[] PROGMEM = "Carica filamento";
 const char MSG_LOAD_FILAMENT_ES[] PROGMEM = "Poner filamento";
 const char MSG_LOAD_FILAMENT_PL[] PROGMEM = "Wprowadz filament";
-const char MSG_LOAD_FILAMENT_DE[] PROGMEM = "Filament laden";
-const char MSG_LOAD_FILAMENT_NL[] PROGMEM = "Filament laden";
+const char MSG_LOAD_FILAMENT_DE[] PROGMEM = "Lade Filament";
+const char MSG_LOAD_FILAMENT_NL[] PROGMEM = "Laad Filament";
 const char * const MSG_LOAD_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_LOAD_FILAMENT_EN,
 	MSG_LOAD_FILAMENT_CZ,
@@ -2023,7 +2023,7 @@ const char MSG_MOVE_CARRIAGE_TO_THE_TOP_CZ[] PROGMEM = "Kalibrace XYZ. Otacenim 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_IT[] PROGMEM = "Calibrazione XYZ. Ruotare la manopola per alzare il carrello Z fino all'altezza massima. Click per terminare.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_ES[] PROGMEM = "Calibrando XYZ. Gira el boton para subir el carro Z hasta golpe piezas superioras. Despues haz clic.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_PL[] PROGMEM = "Kalibracja XYZ. Przekrec galke, aby przesunac os Z do gornych krancowek. Nacisnij, by potwierdzic.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_DE[] PROGMEM = "Kalibrieren von XYZ. Drehen Sie den Knopf, um den Z-Schlitten bis zum Anschlag zu bewegen. Klicken wenn fertig.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_DE[] PROGMEM = "Kalibrieren von XYZ. Drehen Sie den Knopf, um die Z-Schlitten bis zum Anschlag zu bewegen. Klicken wenn fertig.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_NL[] PROGMEM = "Kalibreren van XYZ. Draai de knop om de Z-wagen omhoog te gaan tot het einde stoppers. Klik als klaar.";
 const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_EN,
@@ -2040,7 +2040,7 @@ const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_CZ[] PROGMEM = "Kalibrace Z. Otacenim 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_IT[] PROGMEM = "Calibrazione Z. Ruotare la manopola per alzare il carrello Z fino all'altezza massima. Click per terminare.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_ES[] PROGMEM = "Calibrando Z. Gira el boton para subir el carro Z hasta golpe piezas superioras. Despues haz clic.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_PL[] PROGMEM = "Kalibracja Z. Przekrec galke, aby przesunac os Z do gornych krancowek. Nacisnij, by potwierdzic.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_DE[] PROGMEM = "Kalibrieren von Z. Drehen Sie den Knopf, um den Z-Schlitten bis zum Anschlag zu bewegen. Klicken wenn fertig.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_DE[] PROGMEM = "Kalibrieren von Z. Drehen Sie den Knopf, um die Z-Schlitten bis zum Anschlag zu bewegen. Klicken wenn fertig.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_NL[] PROGMEM = "Kalibreren van XYZ. Draai de knop om de Z-wagen omhoog te gaan tot het einde stoppers. Klik als klaar.";
 const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_EN,
@@ -3676,8 +3676,8 @@ const char MSG_UNLOAD_FILAMENT_CZ[] PROGMEM = "Vyjmout filament";
 const char MSG_UNLOAD_FILAMENT_IT[] PROGMEM = "Scarica filamento";
 const char MSG_UNLOAD_FILAMENT_ES[] PROGMEM = "Sacar filamento";
 const char MSG_UNLOAD_FILAMENT_PL[] PROGMEM = "Wyjac filament";
-const char MSG_UNLOAD_FILAMENT_DE[] PROGMEM = "Filament entnehmen";
-const char MSG_UNLOAD_FILAMENT_NL[] PROGMEM = "Filament uithalen";
+const char MSG_UNLOAD_FILAMENT_DE[] PROGMEM = "Entnehme Filament";
+const char MSG_UNLOAD_FILAMENT_NL[] PROGMEM = "Haal Filament uit";
 const char * const MSG_UNLOAD_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_EN,
 	MSG_UNLOAD_FILAMENT_CZ,

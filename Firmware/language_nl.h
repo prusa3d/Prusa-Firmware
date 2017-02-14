@@ -69,8 +69,8 @@
 
 #define MSG_SETTINGS                        "Instellingen"
 #define MSG_PREHEAT                         "Voorverwarmen"
-#define MSG_UNLOAD_FILAMENT                 "Filament uithalen"
-#define MSG_LOAD_FILAMENT                 	"Filament laden"
+#define MSG_UNLOAD_FILAMENT                 "Haal Filament uit"
+#define MSG_LOAD_FILAMENT                 	"Laad Filament"
 
 #define MSG_RECTRACT                        "Rectract"
 #define MSG_ERROR                        	"FOUT:"
@@ -200,11 +200,11 @@
 #define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Kalibreren van XYZ. Draai de knop om de Z-wagen omhoog te gaan tot het einde stoppers. Klik als klaar."
 
 #define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN			"Reinig het tuit voor de kalibratie aub. Klik als klaar."
-#define(length=20,lines=2) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Zijn linkse en rechtse Z-wagen heelemaal boven?"
+#define(length=20,lines=2) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Zijn beide Z wagen heelemaal boven?"
 
-#define(length=60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Zoeken bed kalibratiepunt"
+#define(length=60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Zoeke bed kalibratiepunt"
 #define(length=14) MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" van 4"
-#define(length=60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Verbetering bed kalibratiepunt"
+#define(length=60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Nauwkeurigheid verbeteren bij kalibratiepunt"
 #define(length=14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" van 9"
 #define(length=60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Meten van reference hoogte van de kalibratiepunt"
 #define(length=14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" van 9"
@@ -229,7 +229,7 @@
 #define(length=20) MSG_NEW_FIRMWARE_PLEASE_UPGRADE									"Upgraden aub."
 
 #define(length=20,lines=8) MSG_FOLLOW_CALIBRATION_FLOW								"Printer is nog niet gekalibreerd. Volg de handleiding, hoofdstuk First steps, sectie Calibration flow."
-#define(length=20,lines=12) MSG_BABYSTEP_Z_NOT_SET									"Afstand tussen tip van het tuit en het print oppervlak nog niet vastgesteld. Volg de handleiding, First steps, section First layer calibration."
+#define(length=20,lines=12) MSG_BABYSTEP_Z_NOT_SET									"Afstand tussen tip van het tuit en het print oppervlak nog niet vastgesteld. Volg de handleiding, First steps, sectie First layer calibration."
 
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T0							"Steek filament in de extruder 1. Klik als klaar."
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T1							"Steek filament in de extruder 2. Klik als klaar."

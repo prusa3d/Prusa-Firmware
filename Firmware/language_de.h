@@ -70,8 +70,8 @@
 
 #define MSG_SETTINGS                        "Einstellungen"
 #define MSG_PREHEAT                         "Vorheizen"
-#define MSG_UNLOAD_FILAMENT                 "Filament entnehmen"
-#define MSG_LOAD_FILAMENT                 "Filament laden"
+#define MSG_UNLOAD_FILAMENT                 "Entnehme Filament"
+#define MSG_LOAD_FILAMENT                   "Lade Filament"
 
 #define MSG_RECTRACT                        "Rectract"
 #define MSG_ERROR                        "FEHLER:"
@@ -115,7 +115,7 @@
 #define MSG_M109_INVALID_EXTRUDER           "M109 Invalid extruder "
 #define MSG_HEATING                         "Aufheizen"
 #define(length=20) MSG_HEATING_COMPLETE     "Aufgeheizen klar."
-#define MSG_BED_HEATING                     "Bed aufwaermen"
+#define MSG_BED_HEATING                     "Bed aufheizen"
 #define MSG_BED_DONE                        "Bed OK"
 #define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" CUSTOM_MENDEL_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
 #define (length=36) MSG_ERR_KILLED          "Drucker gestoppt. kill() aufgerufen!"
@@ -196,15 +196,15 @@
 #define MSG_CALIBRATE_BED					"Kalibrierung XYZ"
 #define MSG_CALIBRATE_BED_RESET				"Reset XYZ Kalibr."
 
-#define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Kalibrieren von XYZ. Drehen Sie den Knopf, um den Z-Schlitten bis zum Anschlag zu bewegen. Klicken wenn fertig."
-#define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Kalibrieren von Z. Drehen Sie den Knopf, um den Z-Schlitten bis zum Anschlag zu bewegen. Klicken wenn fertig."
+#define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Kalibrieren von XYZ. Drehen Sie den Knopf, um die Z-Schlitten bis zum Anschlag zu bewegen. Klicken wenn fertig."
+#define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Kalibrieren von Z. Drehen Sie den Knopf, um die Z-Schlitten bis zum Anschlag zu bewegen. Klicken wenn fertig."
 
 #define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN			"Bitte reinigen Sie die Duese zur Kalibrierung. Klicken wenn fertig."
-#define(length=20,lines=2) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Sind linke und rechte Z-Schlitten ganz oben?"
+#define(length=20,lines=2) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Sind beide Z Schlitten ganz oben?"
 
-#define(length=60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Suche Bed Kalibrierpunkt"
+#define(length=60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Suche Bed Kalibrierungspunkt"
 #define(length=14) MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" von 4"
-#define(length=60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Verbesserung Bed Kalibrierpunkt"
+#define(length=60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Genauigkeit verbessern bei Kalibrierpunkt"
 #define(length=14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" von 9"
 #define(length=60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Messen der Referenzhoehe des Kalibrierpunktes"
 #define(length=14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" von 9"
@@ -229,7 +229,7 @@
 #define(length=20) MSG_NEW_FIRMWARE_PLEASE_UPGRADE									"Bitte aktualisieren."
 
 #define(length=20,lines=8) MSG_FOLLOW_CALIBRATION_FLOW								"Der Drucker wurde noch nicht kalibriert. Bitte folgen Sie dem Handbuch, Kapitel First steps, Abschnitt Calibration flow."
-#define(length=20,lines=12) MSG_BABYSTEP_Z_NOT_SET									"Der Abstand zwischen der Spitze der Duese und der Druckoberflaeche/Bed ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, section First layer calibration."
+#define(length=20,lines=12) MSG_BABYSTEP_Z_NOT_SET									"Der Abstand zwischen der Spitze der Duese und der Druckoberflaeche / Bed ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, Abschnitt First layer calibration."
 
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T0							"Filament in extruder 1 einlegen. Klicken wenn fertig."
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T1							"Filament in extruder 2 einlegen. Klicken wenn fertig."
