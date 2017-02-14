@@ -317,3 +317,13 @@ extern void calculate_volumetric_multipliers();
 // Similar to the default Arduino delay function, 
 // but it keeps the background tasks running.
 extern void delay_keep_alive(int ms);
+
+extern void check_babystep();
+
+#ifdef DIS
+
+void d_setup();
+float d_ReadData();
+void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
+
+#endif

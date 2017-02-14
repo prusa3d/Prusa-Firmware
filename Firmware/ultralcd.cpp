@@ -1096,7 +1096,6 @@ void lcd_menu_statistics()
 		int _cm = (total_filament_used - (_met * 100000))/10;
 		
 		int _t = (millis() - starttime) / 1000;
-
 		int _h = _t / 3600;
 		int _m = (_t - (_h * 3600)) / 60;
 		int _s = _t - ((_h * 3600) + (_m * 60));
@@ -1130,8 +1129,10 @@ void lcd_menu_statistics()
 	else
 	{
 		unsigned long _filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED);
-		unsigned long _time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME);
-		uint8_t _days, _hours, _minutes;
+		unsigned long _time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME); //in minutes
+		
+		uint8_t _hours, _minutes;
+		uint32_t _days;
 
 		float _filament_m = (float)_filament;
 		int _filament_km = (_filament >= 100000) ? _filament / 100000 : 0;
@@ -1287,13 +1288,18 @@ static void _lcd_babystep(int axis, const char *msg)
         // Menu was entered.
         // Initialize its status.
         menuData.babyStep.status = 1;
-        EEPROM_read_B(EEPROM_BABYSTEP_X, &menuData.babyStep.babystepMem[0]);
+		check_babystep();
+
+		EEPROM_read_B(EEPROM_BABYSTEP_X, &menuData.babyStep.babystepMem[0]);
         EEPROM_read_B(EEPROM_BABYSTEP_Y, &menuData.babyStep.babystepMem[1]);
         EEPROM_read_B(EEPROM_BABYSTEP_Z, &menuData.babyStep.babystepMem[2]);
+		
         menuData.babyStep.babystepMemMM[0] = menuData.babyStep.babystepMem[0]/axis_steps_per_unit[X_AXIS];
         menuData.babyStep.babystepMemMM[1] = menuData.babyStep.babystepMem[1]/axis_steps_per_unit[Y_AXIS];
         menuData.babyStep.babystepMemMM[2] = menuData.babyStep.babystepMem[2]/axis_steps_per_unit[Z_AXIS];
         lcdDrawUpdate = 1;
+		//SERIAL_ECHO("Z baby step: ");
+		//SERIAL_ECHO(menuData.babyStep.babystepMem[2]);
         // Wait 90 seconds before closing the live adjust dialog.
         lcd_timeoutToStatus = millis() + 90000;
     }
@@ -1301,11 +1307,18 @@ static void _lcd_babystep(int axis, const char *msg)
   if (encoderPosition != 0) 
   {
 	if (homing_flag) encoderPosition = 0;
-    CRITICAL_SECTION_START
-    babystepsTodo[axis] += (int)encoderPosition;
-    CRITICAL_SECTION_END
+
     menuData.babyStep.babystepMem[axis] += (int)encoderPosition;
-    menuData.babyStep.babystepMemMM[axis] = menuData.babyStep.babystepMem[axis]/axis_steps_per_unit[Z_AXIS];
+	if (axis == 2) {
+		if (menuData.babyStep.babystepMem[axis] < Z_BABYSTEP_MIN) menuData.babyStep.babystepMem[axis] = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
+		else  if (menuData.babyStep.babystepMem[axis] > Z_BABYSTEP_MAX) menuData.babyStep.babystepMem[axis] = Z_BABYSTEP_MAX; //0
+		else {
+			CRITICAL_SECTION_START
+				babystepsTodo[axis] += (int)encoderPosition;
+			CRITICAL_SECTION_END		
+		}
+	}
+    menuData.babyStep.babystepMemMM[axis] = menuData.babyStep.babystepMem[axis]/axis_steps_per_unit[axis]; 
 	  delay(50);
 	  encoderPosition = 0;
     lcdDrawUpdate = 1;
@@ -1745,13 +1758,13 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 		manage_inactivity(true);
 		if (abs(enc_dif - encoderDiff) > 4) {
 			lcd.setCursor(0, 2);
-				if (enc_dif > encoderDiff && yes) {
+				if (enc_dif < encoderDiff && yes) {
 					lcd_printPGM((PSTR(" ")));
 					lcd.setCursor(0, 3);
 					lcd_printPGM((PSTR(">")));
 					yes = false;
 				}
-				else if (enc_dif < encoderDiff && !yes) {
+				else if (enc_dif > encoderDiff && !yes) {
 					lcd_printPGM((PSTR(">")));
 					lcd.setCursor(0, 3);
 					lcd_printPGM((PSTR(" ")));
@@ -2343,7 +2356,7 @@ static void lcd_settings_menu()
   
 	if (!isPrintPaused && !homing_flag)
 	{
-		MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
+		MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);
 	}
 	MENU_ITEM(submenu, MSG_LANGUAGE_SELECT, lcd_language_menu);
 
@@ -3038,7 +3051,7 @@ static void lcd_main_menu()
 
   
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
-    if (farm_mode && !IS_SD_PRINTING )
+   /* if (farm_mode && !IS_SD_PRINTING )
     {
     
         int tempScrool = 0;
@@ -3085,7 +3098,7 @@ static void lcd_main_menu()
         MENU_ITEM(back, PSTR("- - - - - - - - -"), lcd_status_screen);
     
         
-    }
+    }*/
     
     
     
@@ -3321,7 +3334,7 @@ void lcd_sdcard_stop()
 				card.closefile();
 
 				stoptime = millis();
-				unsigned long t = (stoptime - starttime) / 1000;
+				unsigned long t = (stoptime - starttime) / 1000; //time in s
 				save_statistics(total_filament_used, t);
 
 				lcd_return_to_status();
@@ -3577,7 +3590,7 @@ static void lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(2, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(2, _progress, 3, true, 0);
 		_result = lcd_selfcheck_pulleys(X_AXIS);
 	}
 
@@ -3590,7 +3603,7 @@ static void lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(3, _progress, 3, true, 1500);
+		_progress = lcd_selftest_screen(3, _progress, 3, true, 0);
 		_result = lcd_selfcheck_pulleys(Y_AXIS);
 	}
 
@@ -3601,8 +3614,7 @@ static void lcd_selftest()
 		current_position[Y_AXIS] = current_position[Y_AXIS] - 14;
 		_progress = lcd_selftest_screen(4, _progress, 3, true, 1500);
 		_result = lcd_selfcheck_axis(2, Z_MAX_POS);
-		current_position[Z_AXIS] = current_position[Z_AXIS] + 15;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+		enquecommand_P(PSTR("G28 W"));
 	}
 
 	if (_result)
@@ -3644,15 +3656,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 	_travel = _travel + (_travel / 10);
 
 	do {
-
-		/*if (_axis == 2)
-		{*/
-			current_position[_axis] = current_position[_axis] - 1;
-		/*}
-		else
-		{
-			current_position[_axis] = current_position[_axis] - 3;
-		}*/
+		current_position[_axis] = current_position[_axis] - 1;
 
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
@@ -3663,19 +3667,21 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 			{
 				_stepresult = (READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? true : false;
 				_err_endstop = (READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? 1 : 2;
-				disable_x();
+				
 			}
 			if (_axis == 1)
 			{
 				_stepresult = (READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? true : false;
 				_err_endstop = (READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? 0 : 2;
-				disable_y();
+				
 			}
 			if (_axis == 2)
 			{
 				_stepresult = (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? true : false;
 				_err_endstop = (READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? 0 : 1;
-				disable_z();
+				/*disable_x();
+				disable_y();
+				disable_z();*/
 			}
 			_stepdone = true;
 		}
@@ -3691,7 +3697,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 
 		manage_heater();
-		manage_inactivity();
+		manage_inactivity(true);
 
 		//delay(100);
 		(_travel_done <= _travel) ? _travel_done++ : _stepdone = true;
@@ -3739,7 +3745,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 	int i;
 	unsigned long timeout_counter;
 	refresh_cmd_timeout();
-
+	manage_inactivity(true);
 
 	if (axis == 0) move = 50; //X_AXIS 
 		else move = 50; //Y_AXIS
@@ -3753,6 +3759,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 			current_position[axis] = current_position[axis] + move;
 			digipot_current(0, 850); //set motor current higher
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 200, active_extruder);
+			st_synchronize();
 			if (SilentModeMenu == 1) digipot_current(0, tmp_motor[0]); //set back to normal operation currents
 			else digipot_current(0, tmp_motor_loud[0]); //set motor current back			
 			current_position[axis] = current_position[axis] - move;
@@ -3765,13 +3772,14 @@ static bool lcd_selfcheck_pulleys(int axis)
 		}
 		timeout_counter = millis() + 2500;
 		endstop_triggered = false;
-		
+		manage_inactivity(true);
 		while (!endstop_triggered) {
 			if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) || (READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1)) {
 				endstop_triggered = true;
 				if (current_position_init - 1 <= current_position[axis] && current_position_init + 1 >= current_position[axis]) {
 					current_position[axis] += 15;
 					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+					st_synchronize();
 					return(true);
 				}
 				else {
@@ -3813,7 +3821,7 @@ static bool lcd_selfcheck_endstops()
 		lcd_selftest_error(3, _error.c_str(), "");
 	}
 	manage_heater();
-	manage_inactivity();
+	manage_inactivity(true);
 	return _result;
 }
 
@@ -3831,14 +3839,14 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	target_temperature[0] = (_isbed) ? 0 : 100;
 	target_temperature_bed = (_isbed) ? 100 : 0;
 	manage_heater();
-	manage_inactivity();
+	manage_inactivity(true);
 
 	do {
 		_counter++;
 		(_counter < _cycles) ? _docycle = true : _docycle = false;
 
 		manage_heater();
-		manage_inactivity();
+		manage_inactivity(true);
 		_progress = (_isbed) ? lcd_selftest_screen(5, _progress, 2, false, 400) : lcd_selftest_screen(1, _progress, 2, false, 400);
 
 	} while (_docycle);
@@ -3867,7 +3875,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	}
 
 	manage_heater();
-	manage_inactivity();
+	manage_inactivity(true);
 	return _stepresult;
 
 }
@@ -4073,6 +4081,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 
 static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay)
 {
+	
 	lcd_next_update_millis = millis() + (LCD_UPDATE_INTERVAL * 10000);
 
 	int _step_block = 0;

@@ -71,7 +71,15 @@
 
 
 #endif
-  // The SDSS pin uses a different pin mapping from file Sd2PinMap.h
+ 
+#ifdef DIS
+#define D_REQUIRE 30
+#define D_DATA 20
+#define D_DATACLOCK 21
+
+#endif
+
+// The SDSS pin uses a different pin mapping from file Sd2PinMap.h
 #define SDSS               53
 
 #ifndef SDSUPPORT
