@@ -2313,7 +2313,7 @@ const char * const MSG_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_PAPER_EN[] PROGMEM = "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately.";
 const char MSG_PAPER_CZ[] PROGMEM = "Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, vypnete tiskarnu.";
-const char MSG_PAPER_DE[] PROGMEM = "Legen ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier einfaengt, Drucker sofort ausschalten!";
+const char MSG_PAPER_DE[] PROGMEM = "Lege ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier einfaengt, Drucker sofort ausschalten!";
 const char MSG_PAPER_NL[] PROGMEM = "Leg een vel papier onder het tuit tijdens de kalibratie van de eerste 4 punten. Als het tuit het papier vangt, Printer onmiddellijk uitschakelen.";
 const char * const MSG_PAPER_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PAPER_EN,

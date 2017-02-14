@@ -252,7 +252,7 @@
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Warten auf Abkuehlung von Heater und Bed."
 #define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Ist Farbe klar?"
 #define(lenght=20, lines=1) MSG_UNLOADING_FILAMENT			"Filament auswerfen"
-#define(length=20, lines=8) MSG_PAPER						"Legen ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier einfaengt, Drucker sofort ausschalten"
+#define(length=20, lines=8) MSG_PAPER						"Lege ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier einfaengt, Drucker sofort ausschalten"
 
 #define MSG_BED_CORRECTION_MENU									"Bed level korrekt"
 #define MSG_BED_CORRECTION_LEFT									"Links  [um]"
