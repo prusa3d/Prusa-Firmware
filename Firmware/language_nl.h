@@ -255,10 +255,10 @@
 #define(length=20, lines=8) MSG_PAPER						"Leg een vel papier onder het tuit tijdens de kalibratie van de eerste 4 punten. Als het tuit het papier vangt, Printer onmiddellijk uitschakelen."
 
 #define MSG_BED_CORRECTION_MENU									"Bed juist"
-#define MSG_BED_CORRECTION_LEFT									"Linkerkant  [um]"
-#define MSG_BED_CORRECTION_RIGHT								"Rechterkant [um]"
-#define MSG_BED_CORRECTION_FRONT								"Voorkant [um]"
-#define MSG_BED_CORRECTION_REAR									"Achterkant  [um]"
+#define MSG_BED_CORRECTION_LEFT									"Links  [um]"
+#define MSG_BED_CORRECTION_RIGHT								"Rechts [um]"
+#define MSG_BED_CORRECTION_FRONT								"Vooruit[um]"
+#define MSG_BED_CORRECTION_REAR									"Achter [um]"
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"

@@ -255,10 +255,10 @@
 #define(length=20, lines=8) MSG_PAPER						"Legen ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier einfaengt, Drucker sofort ausschalten"
 
 #define MSG_BED_CORRECTION_MENU									"Bed level korrekt"
-#define MSG_BED_CORRECTION_LEFT									"Linke Seite  [um]"
-#define MSG_BED_CORRECTION_RIGHT								"Rechte Seite [um]"
-#define MSG_BED_CORRECTION_FRONT								"Vorderseite [um]"
-#define MSG_BED_CORRECTION_REAR									"Rueckseite  [um]"
+#define MSG_BED_CORRECTION_LEFT									"Links  [um]"
+#define MSG_BED_CORRECTION_RIGHT								"Rechts [um]"
+#define MSG_BED_CORRECTION_FRONT								"Vorne  [um]"
+#define MSG_BED_CORRECTION_REAR									"Hinten [um]"
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"

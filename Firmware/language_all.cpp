@@ -189,8 +189,8 @@ const char MSG_BED_CORRECTION_FRONT_CZ[] PROGMEM = "Vpredu [um]";
 const char MSG_BED_CORRECTION_FRONT_IT[] PROGMEM = "Lato ateriore[um]";
 const char MSG_BED_CORRECTION_FRONT_ES[] PROGMEM = "Adelante  [um]";
 const char MSG_BED_CORRECTION_FRONT_PL[] PROGMEM = "Do przodu [um]";
-const char MSG_BED_CORRECTION_FRONT_DE[] PROGMEM = "Vorderseite [um]";
-const char MSG_BED_CORRECTION_FRONT_NL[] PROGMEM = "Voorkant [um]";
+const char MSG_BED_CORRECTION_FRONT_DE[] PROGMEM = "Vorne  [um]";
+const char MSG_BED_CORRECTION_FRONT_NL[] PROGMEM = "Vooruit[um]";
 const char * const MSG_BED_CORRECTION_FRONT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_CORRECTION_FRONT_EN,
 	MSG_BED_CORRECTION_FRONT_CZ,
@@ -206,8 +206,8 @@ const char MSG_BED_CORRECTION_LEFT_CZ[] PROGMEM = "Vlevo  [um]";
 const char MSG_BED_CORRECTION_LEFT_IT[] PROGMEM = "Lato sinistro[um]";
 const char MSG_BED_CORRECTION_LEFT_ES[] PROGMEM = "Izquierda [um]";
 const char MSG_BED_CORRECTION_LEFT_PL[] PROGMEM = "W lewo  [um]";
-const char MSG_BED_CORRECTION_LEFT_DE[] PROGMEM = "Linke Seite  [um]";
-const char MSG_BED_CORRECTION_LEFT_NL[] PROGMEM = "Linkerkant  [um]";
+const char MSG_BED_CORRECTION_LEFT_DE[] PROGMEM = "Links  [um]";
+const char MSG_BED_CORRECTION_LEFT_NL[] PROGMEM = "Links  [um]";
 const char * const MSG_BED_CORRECTION_LEFT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_CORRECTION_LEFT_EN,
 	MSG_BED_CORRECTION_LEFT_CZ,
@@ -223,7 +223,7 @@ const char MSG_BED_CORRECTION_MENU_CZ[] PROGMEM = "Korekce podlozky";
 const char MSG_BED_CORRECTION_MENU_IT[] PROGMEM = "Correz. liv.letto";
 const char MSG_BED_CORRECTION_MENU_ES[] PROGMEM = "Corr. de la cama";
 const char MSG_BED_CORRECTION_MENU_PL[] PROGMEM = "Korekta podkladki";
-const char MSG_BED_CORRECTION_MENU_DE[] PROGMEM = "Oberflaeche korrekt";
+const char MSG_BED_CORRECTION_MENU_DE[] PROGMEM = "Bed level korrekt";
 const char MSG_BED_CORRECTION_MENU_NL[] PROGMEM = "Bed juist";
 const char * const MSG_BED_CORRECTION_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_CORRECTION_MENU_EN,
@@ -240,8 +240,8 @@ const char MSG_BED_CORRECTION_REAR_CZ[] PROGMEM = "Vzadu  [um]";
 const char MSG_BED_CORRECTION_REAR_IT[] PROGMEM = "Lato posteriore";
 const char MSG_BED_CORRECTION_REAR_ES[] PROGMEM = "Atras     [um]";
 const char MSG_BED_CORRECTION_REAR_PL[] PROGMEM = "Do tylu  [um]";
-const char MSG_BED_CORRECTION_REAR_DE[] PROGMEM = "Rueckseite  [um]";
-const char MSG_BED_CORRECTION_REAR_NL[] PROGMEM = "Achterkant  [um]";
+const char MSG_BED_CORRECTION_REAR_DE[] PROGMEM = "Hinten [um]";
+const char MSG_BED_CORRECTION_REAR_NL[] PROGMEM = "Achter [um]";
 const char * const MSG_BED_CORRECTION_REAR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_CORRECTION_REAR_EN,
 	MSG_BED_CORRECTION_REAR_CZ,
@@ -268,8 +268,8 @@ const char MSG_BED_CORRECTION_RIGHT_CZ[] PROGMEM = "Vpravo [um]";
 const char MSG_BED_CORRECTION_RIGHT_IT[] PROGMEM = "Lato destro[um]";
 const char MSG_BED_CORRECTION_RIGHT_ES[] PROGMEM = "Derecha   [um]";
 const char MSG_BED_CORRECTION_RIGHT_PL[] PROGMEM = "W prawo [um]";
-const char MSG_BED_CORRECTION_RIGHT_DE[] PROGMEM = "Rechte Seite [um]";
-const char MSG_BED_CORRECTION_RIGHT_NL[] PROGMEM = "Rechterkant [um]";
+const char MSG_BED_CORRECTION_RIGHT_DE[] PROGMEM = "Rechts [um]";
+const char MSG_BED_CORRECTION_RIGHT_NL[] PROGMEM = "Rechts [um]";
 const char * const MSG_BED_CORRECTION_RIGHT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_CORRECTION_RIGHT_EN,
 	MSG_BED_CORRECTION_RIGHT_CZ,
