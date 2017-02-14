@@ -28,7 +28,7 @@
 #define MSG_NOZZLE1                         "Duese2"
 #define MSG_NOZZLE2                         "Duese3"
 #define MSG_BED                             "Bed"
-#define (length=23) MSG_FAN_SPEED           "Lueftergeschwindingkeit"
+#define (length=23) MSG_FAN_SPEED           "Lueftergeschw."
 #define MSG_FLOW                            "Durchfluss"
 #define MSG_FLOW0                           "Durchfluss 0"
 #define MSG_FLOW1                           "Durchfluss 1"
@@ -70,8 +70,8 @@
 
 #define MSG_SETTINGS                        "Einstellungen"
 #define MSG_PREHEAT                         "Vorheizen"
-#define MSG_UNLOAD_FILAMENT                 "Entnehm filament"
-#define MSG_LOAD_FILAMENT                 "Lege Filament ein"
+#define MSG_UNLOAD_FILAMENT                 "Filament entnehmen"
+#define MSG_LOAD_FILAMENT                 "Filament laden"
 
 #define MSG_RECTRACT                        "Rectract"
 #define MSG_ERROR                        "FEHLER:"
@@ -115,7 +115,7 @@
 #define MSG_M109_INVALID_EXTRUDER           "M109 Invalid extruder "
 #define MSG_HEATING                         "Aufheizen"
 #define(length=20) MSG_HEATING_COMPLETE     "Aufgeheizen klar."
-#define MSG_BED_HEATING                     "Bed aufwaermen
+#define MSG_BED_HEATING                     "Bed aufwaermen"
 #define MSG_BED_DONE                        "Bed OK"
 #define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" CUSTOM_MENDEL_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
 #define (length=36) MSG_ERR_KILLED          "Drucker gestoppt. kill() aufgerufen!"

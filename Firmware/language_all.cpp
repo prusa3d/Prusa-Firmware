@@ -1121,8 +1121,8 @@ const char MSG_FAN_SPEED_CZ[] PROGMEM = "Rychlost vent.";
 const char MSG_FAN_SPEED_IT[] PROGMEM = "Velocita ventola";
 const char MSG_FAN_SPEED_ES[] PROGMEM = "Ventilador";
 const char MSG_FAN_SPEED_PL[] PROGMEM = "Predkosc went.";
-const char MSG_FAN_SPEED_DE[] PROGMEM = "Lueftergeschwindingkeit";
-const char MSG_FAN_SPEED_NL[] PROGMEM = "Ventilator snelheid";
+const char MSG_FAN_SPEED_DE[] PROGMEM = "Lueftergeschw.";
+const char MSG_FAN_SPEED_NL[] PROGMEM = "Fan snelheid";
 const char * const MSG_FAN_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FAN_SPEED_EN,
 	MSG_FAN_SPEED_CZ,
@@ -1718,8 +1718,8 @@ const char MSG_LOAD_FILAMENT_CZ[] PROGMEM = "Zavest filament";
 const char MSG_LOAD_FILAMENT_IT[] PROGMEM = "Carica filamento";
 const char MSG_LOAD_FILAMENT_ES[] PROGMEM = "Poner filamento";
 const char MSG_LOAD_FILAMENT_PL[] PROGMEM = "Wprowadz filament";
-const char MSG_LOAD_FILAMENT_DE[] PROGMEM = "Lege Filament ein";
-const char MSG_LOAD_FILAMENT_NL[] PROGMEM = "Steek filament in";
+const char MSG_LOAD_FILAMENT_DE[] PROGMEM = "Filament laden";
+const char MSG_LOAD_FILAMENT_NL[] PROGMEM = "Filament laden";
 const char * const MSG_LOAD_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_LOAD_FILAMENT_EN,
 	MSG_LOAD_FILAMENT_CZ,
@@ -2007,7 +2007,7 @@ const char MSG_MOVE_AXIS_IT[] PROGMEM = "Muovi asse";
 const char MSG_MOVE_AXIS_ES[] PROGMEM = "Mover ejes";
 const char MSG_MOVE_AXIS_PL[] PROGMEM = "Ruch osi";
 const char MSG_MOVE_AXIS_DE[] PROGMEM = "Bewege Achse";
-const char MSG_MOVE_AXIS_NL[] PROGMEM = "Bewegen as";
+const char MSG_MOVE_AXIS_NL[] PROGMEM = "Beweeg as";
 const char * const MSG_MOVE_AXIS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_AXIS_EN,
 	MSG_MOVE_AXIS_CZ,
@@ -2071,7 +2071,7 @@ const char MSG_MOVE_X_IT[] PROGMEM = "Muovi X";
 const char MSG_MOVE_X_ES[] PROGMEM = "Mover X";
 const char MSG_MOVE_X_PL[] PROGMEM = "Przesunac X";
 const char MSG_MOVE_X_DE[] PROGMEM = "Bewege X";
-const char MSG_MOVE_X_NL[] PROGMEM = "Bewegen X";
+const char MSG_MOVE_X_NL[] PROGMEM = "Beweeg X";
 const char * const MSG_MOVE_X_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_X_EN,
 	MSG_MOVE_X_CZ,
@@ -2088,7 +2088,7 @@ const char MSG_MOVE_Y_IT[] PROGMEM = "Muovi Y";
 const char MSG_MOVE_Y_ES[] PROGMEM = "Mover Y";
 const char MSG_MOVE_Y_PL[] PROGMEM = "Przesunac Y";
 const char MSG_MOVE_Y_DE[] PROGMEM = "Bewege Y";
-const char MSG_MOVE_Y_NL[] PROGMEM = "Bewegen Y";
+const char MSG_MOVE_Y_NL[] PROGMEM = "Beweeg Y";
 const char * const MSG_MOVE_Y_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_Y_EN,
 	MSG_MOVE_Y_CZ,
@@ -2105,7 +2105,7 @@ const char MSG_MOVE_Z_IT[] PROGMEM = "Muovi Z";
 const char MSG_MOVE_Z_ES[] PROGMEM = "Mover Z";
 const char MSG_MOVE_Z_PL[] PROGMEM = "Przesunac Z";
 const char MSG_MOVE_Z_DE[] PROGMEM = "Bewege Z";
-const char MSG_MOVE_Z_NL[] PROGMEM = "Bewegen Z";
+const char MSG_MOVE_Z_NL[] PROGMEM = "Beweeg Z";
 const char * const MSG_MOVE_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_Z_EN,
 	MSG_MOVE_Z_CZ,
@@ -3676,8 +3676,8 @@ const char MSG_UNLOAD_FILAMENT_CZ[] PROGMEM = "Vyjmout filament";
 const char MSG_UNLOAD_FILAMENT_IT[] PROGMEM = "Scarica filamento";
 const char MSG_UNLOAD_FILAMENT_ES[] PROGMEM = "Sacar filamento";
 const char MSG_UNLOAD_FILAMENT_PL[] PROGMEM = "Wyjac filament";
-const char MSG_UNLOAD_FILAMENT_DE[] PROGMEM = "Entnehm filament";
-const char MSG_UNLOAD_FILAMENT_NL[] PROGMEM = "Haal filament uit";
+const char MSG_UNLOAD_FILAMENT_DE[] PROGMEM = "Filament entnehmen";
+const char MSG_UNLOAD_FILAMENT_NL[] PROGMEM = "Filament uithalen";
 const char * const MSG_UNLOAD_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_EN,
 	MSG_UNLOAD_FILAMENT_CZ,
