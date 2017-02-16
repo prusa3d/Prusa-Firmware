@@ -673,4 +673,24 @@ bool CardReader::ToshibaFlashAir_GetIP(uint8_t *ip)
     return card.readExtMemory(1, 1, 0x400+0x150, 4, ip);
 }
 
+// Access a maximum of 512 bytes shared memory stored on the FlashAir card.
+// Address is from 0 to 511, length is 1 to (512-address).
+bool CardReader::ToshibaFlashAir_ReadSharedMemory(int address, int length, uint8_t *target)
+{
+    memset(target, 0, length);
+    return card.readExtMemory(1, 1, 0x01000+address, length, target);
+}
+
+// Access a maximum of 512 bytes shared memory stored on the FlashAir card.
+// Address is from 0 to 511, length is 1 to (512-address).
+bool CardReader::ToshibaFlashAir_WriteSharedMemory(int address, int length, const uint8_t *data)
+{
+    return card.writeExtMemory(1, 1, 0x01000+address, length, data);
+}
+
+bool CardReader::ToshibaFlashAir_WriteSharedMemoryBCD(int address, int length, const uint8_t *data)
+{
+    return card.writeExtMemoryBCD(1, 1, 0x01000+address, length, data);
+}
+
 #endif //SDSUPPORT

@@ -75,6 +75,20 @@ union MenuData
         int    rear2;
     } adjustBed;
 
+#ifdef TOSHIBA_FLASH_AIR_COMMUNICATION
+    struct StatusToFlashAir {
+        int    tHotendCurrent;
+        int    tHotendTarget;
+        int    tBedCurrent;
+        int    tBedTarget;
+        int    feedmultiply;
+    } statusToFlashAir;
+
+    struct FlashAirCommandBuffer {
+        char   buffer[80];
+    } flashAirCommandBuffer;
+#endif /* TOSHIBA_FLASH_AIR_COMMUNICATION */
+
     // editMenuParentState is used when an edit menu is entered, so it knows
     // the return menu and encoder state.
     struct EditMenuParentState editMenuParentState;

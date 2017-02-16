@@ -51,6 +51,9 @@ public:
   bool ToshibaFlashAir_isEnabled() const { return card.getFlashAirCompatible(); }
   void ToshibaFlashAir_enable(bool enable) { card.setFlashAirCompatible(enable); }
   bool ToshibaFlashAir_GetIP(uint8_t *ip);
+  bool ToshibaFlashAir_ReadSharedMemory(int address, int length, uint8_t *target);
+  bool ToshibaFlashAir_WriteSharedMemory(int address, int length, const uint8_t *data);
+  bool ToshibaFlashAir_WriteSharedMemoryBCD(int address, int length, const uint8_t *data);
 
 public:
   bool saving;

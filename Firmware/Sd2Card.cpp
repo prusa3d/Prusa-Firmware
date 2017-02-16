@@ -784,6 +784,59 @@ uint8_t Sd2Card::readExt(uint32_t arg, uint8_t* dst, uint16_t count) {
 
  fail:
   chipSelectHigh();
+  spiSend(0xFF); // dummy clock to force FlashAir finish the command.
+  return false;
+}
+
+//------------------------------------------------------------------------------
+/** Perform Extention Write. */
+uint8_t Sd2Card::writeExt(uint32_t arg, const uint8_t* src, uint16_t count) {
+  uint16_t i;
+  uint8_t status;
+  
+  // send command and argument.
+  if (cardCommand(CMD49, arg)) {
+    error(SD_CARD_ERROR_CMD49);
+    goto fail;
+  }
+
+  // send start block token.
+  spiSend(DATA_START_BLOCK);
+
+  // send data
+  for (i = 0; i < count; ++i) {
+    spiSend(src[i]);
+  }
+
+  // send dummy bytes until 512 bytes.
+  for (; i < 512; ++i) {
+    spiSend(0xFF);
+  }
+
+  // dummy 16-bit crc
+  spiSend(0xFF);
+  spiSend(0xFF);
+
+  // wait a data response token
+  status = spiRec();
+  if ((status & DATA_RES_MASK) != DATA_RES_ACCEPTED) {
+    error(SD_CARD_ERROR_WRITE);
+    goto fail;
+  }
+
+  // wait for flash programming to complete
+  if (!waitNotBusy(SD_WRITE_TIMEOUT)) {
+    error(SD_CARD_ERROR_WRITE_TIMEOUT);
+    goto fail;
+  }
+
+  chipSelectHigh();
+  spiSend(0XFF); // dummy clock to force FlashAir finish the command.
+  return true;
+
+ fail:
+  chipSelectHigh();
+  spiSend(0xFF); // dummy clock to force FlashAir finish the command.
   return false;
 }
 
@@ -808,6 +861,84 @@ uint8_t Sd2Card::readExtMemory(uint8_t mio, uint8_t func,
     ((count - 1) & 0x1FF);
   
   return readExt(arg, dst, count);
+}
+
+//------------------------------------------------------------------------------
+/**
+ * Write an extension register space.
+ *
+ * \return The value one, true, is returned for success and
+ * the value zero, false, is returned for failure.
+ */
+uint8_t Sd2Card::writeExtMemory(uint8_t mio, uint8_t func, 
+    uint32_t addr, uint16_t count, const uint8_t* src) {
+  uint32_t arg =
+      (((uint32_t)mio & 0x1) << 31) | 
+    (mio ? (((uint32_t)func & 0x7) << 28) : (((uint32_t)func & 0xF) << 27)) |
+    ((addr & 0x1FFFF) << 9) |
+    ((count - 1) & 0x1FF);
+      
+  return writeExt(arg, src, count);
+}
+
+uint8_t Sd2Card::writeExtMemoryBCD(uint8_t mio, uint8_t func, uint32_t addr, uint16_t count, const uint8_t* src) {
+  uint32_t arg =
+      (((uint32_t)mio & 0x1) << 31) | 
+    (mio ? (((uint32_t)func & 0x7) << 28) : (((uint32_t)func & 0xF) << 27)) |
+    ((addr & 0x1FFFF) << 9) |
+    ((count * 2 - 1) & 0x1FF);
+  uint16_t i;
+  uint8_t status;
+  
+  // send command and argument.
+  if (cardCommand(CMD49, arg)) {
+    error(SD_CARD_ERROR_CMD49);
+    goto fail;
+  }
+
+  // send start block token.
+  spiSend(DATA_START_BLOCK);
+
+  // send data
+  for (i = 0; i < count; ++i) {
+    uint8_t c = src[i] >> 4;
+    c += (c > 9) ? ('A' - 10) : '0';
+    spiSend(c);
+    c = src[i] & 0x0f;
+    c += (c > 9) ? ('A' - 10) : '0';
+    spiSend(c);
+  }
+
+  // send dummy bytes until 512 bytes.
+  for (i *= 2; i < 512; ++i) {
+    spiSend(0xFF);
+  }
+
+  // dummy 16-bit crc
+  spiSend(0xFF);
+  spiSend(0xFF);
+
+  // wait a data response token
+  status = spiRec();
+  if ((status & DATA_RES_MASK) != DATA_RES_ACCEPTED) {
+    error(SD_CARD_ERROR_WRITE);
+    goto fail;
+  }
+
+  // wait for flash programming to complete
+  if (!waitNotBusy(SD_WRITE_TIMEOUT)) {
+    error(SD_CARD_ERROR_WRITE_TIMEOUT);
+    goto fail;
+  }
+
+  chipSelectHigh();
+  spiSend(0xFF); // dummy clock to force FlashAir finish the command.
+  return true;
+
+ fail:
+  chipSelectHigh();
+  spiSend(0xFF); // dummy clock to force FlashAir finish the command.
+  return false;
 }
 
 #endif

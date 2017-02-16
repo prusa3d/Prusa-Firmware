@@ -691,6 +691,9 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 //defines used in the code
 #define DEFAULT_MEASURED_FILAMENT_DIA  DEFAULT_NOMINAL_FILAMENT_DIA  //set measured to nominal initially 
 
+// Enable reporting of the printer status and control of the printer through the Toshiba FlashAir
+#define TOSHIBA_FLASH_AIR_COMMUNICATION
+
 //When using an LCD, uncomment the line below to display the Filament sensor data on the last line instead of status.  Status will appear for 5 sec.
 //#define FILAMENT_LCD_DISPLAY
 
