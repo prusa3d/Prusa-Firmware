@@ -2607,3 +2607,4 @@ char* CAT4(const char *s1,const char *s2,const char *s3,const char *s4) {
   strncpy_P(langbuffer+len,s4,LCD_WIDTH-len);
   return langbuffer;
 }
+

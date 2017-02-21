@@ -33,3 +33,4 @@ inline void eeprom_update_int8(unsigned char* addr, int8_t v) {
 }
 
 #endif /* UTIL_H */
+

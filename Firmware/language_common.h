@@ -108,3 +108,4 @@ define MSG_ZPROBE_ZOFFSET                  "Z Offset"
 +define MSG_BABYSTEP_X                      "Babystep X"
 +define MSG_BABYSTEP_Y                      "Babystep Y"
 +define MSG_RECTRACT                        "Rectract"
+

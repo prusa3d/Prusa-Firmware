@@ -248,3 +248,4 @@
 #define MSG_WAITING_TEMP								"In attesa del raffreddamento della testina e del piatto."
 #define MSG_FILAMENT_CLEAN								"Il colore e' nitido?"
 #define MSG_UNLOADING_FILAMENT							"Rilasc. filamento"
+

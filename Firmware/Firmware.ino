@@ -54,3 +54,4 @@
 #if defined(DIGIPOT_I2C)
   #include <Wire.h>
 #endif
+

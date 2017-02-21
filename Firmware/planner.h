@@ -204,3 +204,4 @@ extern uint8_t planner_queue_min();
 // Diagnostic function: Reset the minimum planner segments.
 extern void planner_queue_min_reset();
 #endif /* PLANNER_DIAGNOSTICS */
+

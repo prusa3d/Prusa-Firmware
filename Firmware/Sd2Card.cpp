@@ -942,3 +942,4 @@ uint8_t Sd2Card::writeExtMemoryBCD(uint8_t mio, uint8_t func, uint32_t addr, uin
 }
 
 #endif
+

@@ -259,3 +259,4 @@
 #define MSG_WAITING_TEMP										"Oczekiwanie na wychlodzenie dyszy i podkladki."
 #define MSG_FILAMENT_CLEAN										"Czy kolor jest czysty?"
 #define MSG_UNLOADING_FILAMENT									"Wysuwam filament"
+

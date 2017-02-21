@@ -106,15 +106,15 @@ static void lcd_implementation_init()
 	   } while( u8g.nextPage() );
 
 #ifdef LCD_SCREEN_ROT_90
-	u8g.setRot90();	// Rotate screen by 90°
+	u8g.setRot90();	// Rotate screen by 90Â°
 #endif
 
 #ifdef LCD_SCREEN_ROT_180
-	u8g.setRot180();	// Rotate screen by 180°
+	u8g.setRot180();	// Rotate screen by 180Â°
 #endif
 
 #ifdef LCD_SCREEN_ROT_270
-	u8g.setRot270();	// Rotate screen by 270°
+	u8g.setRot270();	// Rotate screen by 270Â°
 #endif
 
    
@@ -468,5 +468,6 @@ static void lcd_implementation_quick_feedback()
 #endif
 }
 #endif//ULTRA_LCD_IMPLEMENTATION_DOGM_H
+
 
 

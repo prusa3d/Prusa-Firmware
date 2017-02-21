@@ -253,3 +253,4 @@
 #define MSG_WAITING_TEMP								"Esperando enfriamiento de la cama y del extrusor."
 #define MSG_FILAMENT_CLEAN								"Es el nuevo color nitido?"
 #define MSG_UNLOADING_FILAMENT							"Soltando filamento"
+
