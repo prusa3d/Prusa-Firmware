@@ -31,6 +31,8 @@
 void lcd_mylang();
   bool lcd_detected(void);
 
+  static void belt_test();
+  
   static void lcd_selftest();
   static bool lcd_selfcheck_endstops();
   static bool lcd_selfcheck_axis(int _axis, int _travel);

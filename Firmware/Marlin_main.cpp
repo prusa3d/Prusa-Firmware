@@ -267,6 +267,7 @@ unsigned char lang_selected = 0;
 
 bool prusa_sd_card_upload = false;
 
+unsigned int status_number = 0;
 
 unsigned long total_filament_used;
 unsigned int heating_status;
@@ -1958,7 +1959,10 @@ void process_commands()
   int8_t SilentMode;
 #endif
   if(code_seen("PRUSA")){
-	  if (code_seen("fn")) {
+		if (code_seen("PRN")) {
+		  MYSERIAL.println(status_number);
+
+		}else if (code_seen("fn")) {
 		  if (farm_mode) {
 			  MYSERIAL.println(farm_no);
 		  }
@@ -1966,7 +1970,7 @@ void process_commands()
 			  MYSERIAL.println("Not in farm mode.");
 		  }
 		  
-	}else if (code_seen("fv")) {
+		}else if (code_seen("fv")) {
         // get file version
         #ifdef SDSUPPORT
         card.openFile(strchr_pointer + 3,true);
@@ -2017,7 +2021,7 @@ void process_commands()
     }else if(code_seen("Y")) { //filaments adjustment at the beginning of print (for SNMM)
 	#ifdef SNMM
 		int extr;
-		SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT); //is silent mode or loud mode set
+		SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT); //is  e or loud mode set
 		lcd_implementation_clear();
 		lcd_display_message_fullscreen_P(MSG_FIL_ADJUSTING);
 		current_position[Z_AXIS] = 100; 
@@ -3917,22 +3921,24 @@ Sigma_Exit:
       #endif //TEMP_RESIDENCY_TIME
           if( (millis() - codenum) > 1000UL )
           { //Print Temp Reading and remaining time every 1 second while heating up/cooling down
-            SERIAL_PROTOCOLPGM("T:");
-            SERIAL_PROTOCOL_F(degHotend(tmp_extruder),1);
-            SERIAL_PROTOCOLPGM(" E:");
-            SERIAL_PROTOCOL((int)tmp_extruder);
-			
-            #ifdef TEMP_RESIDENCY_TIME
-              SERIAL_PROTOCOLPGM(" W:");
-              if(residencyStart > -1)
-              {
-                 codenum = ((TEMP_RESIDENCY_TIME * 1000UL) - (millis() - residencyStart)) / 1000UL;
-                 SERIAL_PROTOCOLLN( codenum );
-              }
-              else
-              {
-                 SERIAL_PROTOCOLLN( "?" );
-              }
+			  if (!farm_mode) {
+				  SERIAL_PROTOCOLPGM("T:");
+				  SERIAL_PROTOCOL_F(degHotend(tmp_extruder), 1);
+				  SERIAL_PROTOCOLPGM(" E:");
+				  SERIAL_PROTOCOL((int)tmp_extruder);
+
+			#ifdef TEMP_RESIDENCY_TIME
+				  SERIAL_PROTOCOLPGM(" W:");
+				  if (residencyStart > -1)
+				  {
+					  codenum = ((TEMP_RESIDENCY_TIME * 1000UL) - (millis() - residencyStart)) / 1000UL;
+					  SERIAL_PROTOCOLLN(codenum);
+				  }
+				  else
+				  {
+					  SERIAL_PROTOCOLLN("?");
+				  }
+			  }
             #else
               SERIAL_PROTOCOLLN("");
             #endif
@@ -3984,15 +3990,18 @@ Sigma_Exit:
         {
           if(( millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
           {
-            float tt=degHotend(active_extruder);
-            SERIAL_PROTOCOLPGM("T:");
-            SERIAL_PROTOCOL(tt);
-            SERIAL_PROTOCOLPGM(" E:");
-            SERIAL_PROTOCOL((int)active_extruder);
-            SERIAL_PROTOCOLPGM(" B:");
-            SERIAL_PROTOCOL_F(degBed(),1);
-            SERIAL_PROTOCOLLN("");
-            codenum = millis();
+			  if (!farm_mode) {
+				  float tt = degHotend(active_extruder);
+				  SERIAL_PROTOCOLPGM("T:");
+				  SERIAL_PROTOCOL(tt);
+				  SERIAL_PROTOCOLPGM(" E:");
+				  SERIAL_PROTOCOL((int)active_extruder);
+				  SERIAL_PROTOCOLPGM(" B:");
+				  SERIAL_PROTOCOL_F(degBed(), 1);
+				  SERIAL_PROTOCOLLN("");
+			  }
+				  codenum = millis();
+			  
           }
           manage_heater();
           manage_inactivity();
