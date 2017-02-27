@@ -757,7 +757,7 @@ static void lcd_implementation_status_screen()
 		}
 	}
     
-    // Farm number display
+	// Farm number display
 	if (farm_mode)
 	{
 		lcd_printPGM(PSTR(" F"));
@@ -775,6 +775,10 @@ static void lcd_implementation_status_screen()
         }
         
 	}
+	else {
+		lcd.setCursor(LCD_WIDTH - 8 - 2, 2);
+		lcd_printPGM(PSTR(" "));
+	}
 
 #ifdef SNMM
 		lcd_printPGM(PSTR(" E"));
@@ -783,8 +787,8 @@ static void lcd_implementation_status_screen()
 #endif
 
     //Print time elapsed
-    lcd.setCursor(LCD_WIDTH - 8 -2, 2);
-    lcd_printPGM(PSTR("  "));
+    lcd.setCursor(LCD_WIDTH - 8 -1, 2);
+    lcd_printPGM(PSTR(" "));
     lcd.print(LCD_STR_CLOCK[0]);
     if(starttime != 0)
     {
