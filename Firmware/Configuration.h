@@ -34,6 +34,8 @@
 
 #define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-4)
 
+#define EEPROM_PROBE_TEMP_SHIFT (EEPROM_FARM_MODE - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
+
 // Correction of the bed leveling, in micrometers.
 // Maximum 50 micrometers allowed.
 // Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.

@@ -2767,6 +2767,87 @@ void process_commands()
      *
      */
 
+	case 76: //PINDA probe temperature compensation
+	{
+		setTargetBed(PINDA_MIN_T);
+		float zero_z;
+		int z_shift = 0; //unit: steps
+		int t_c; // temperature
+
+		if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
+			// We don't know where we are! HOME!
+			// Push the commands to the front of the message queue in the reverse order!
+			// There shall be always enough space reserved for these commands.
+			repeatcommand_front(); // repeat G76 with all its parameters
+			enquecommand_front_P((PSTR("G28 W0")));
+			break;
+		}	
+		current_position[X_AXIS] = PINDA_PREHEAT_X;
+		current_position[Y_AXIS] = PINDA_PREHEAT_Y;
+		current_position[Z_AXIS] = 0;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+		st_synchronize();
+
+		while (degBed() < PINDA_MIN_T) delay_keep_alive(1000);
+		
+		//enquecommand_P(PSTR("M190 S50"));
+
+		delay_keep_alive(PINDA_HEAT_T * 1000);
+
+		current_position[Z_AXIS] = 5;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+
+		current_position[X_AXIS] = pgm_read_float(bed_ref_points);
+		current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+		st_synchronize();
+		
+		find_bed_induction_sensor_point_z(-1.f);
+		zero_z = current_position[Z_AXIS];
+
+		//current_position[Z_AXIS]
+		SERIAL_ECHOLNPGM("");
+		SERIAL_ECHOPGM("ZERO: ");
+		MYSERIAL.print(current_position[Z_AXIS]);
+		SERIAL_ECHOLNPGM("");
+
+		for (int i = 0; i<5; i++) {
+
+			t_c = 60 + i * 10;
+
+			setTargetBed(t_c);
+			current_position[X_AXIS] = PINDA_PREHEAT_X;
+			current_position[Y_AXIS] = PINDA_PREHEAT_Y;
+			current_position[Z_AXIS] = 0;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			st_synchronize();
+			while (degBed() < t_c) delay_keep_alive(1000);
+			delay_keep_alive(PINDA_HEAT_T * 1000);
+			current_position[Z_AXIS] = 5;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			current_position[X_AXIS] = pgm_read_float(bed_ref_points);
+			current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			st_synchronize();
+			find_bed_induction_sensor_point_z(-1.f);
+			z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
+
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOPGM("Temperature: ");
+			MYSERIAL.print(t_c);
+			SERIAL_ECHOPGM(" Z shift (mm):");
+			MYSERIAL.print(current_position[Z_AXIS] - zero_z);
+			SERIAL_ECHOLNPGM("");
+
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i*2, &z_shift);
+			
+		
+		}
+		setTargetBed(0); //set bed target temperature back to 0
+
+	}
+	break;
+
 #ifdef DIS
 	case 77:
 	{
@@ -2907,6 +2988,9 @@ void process_commands()
                 kill(kill_message);
             }
             clean_up_after_endstop_move();
+
+
+			temp_compensation_apply(); //apply PINDA temperature compensation
 
             // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
             babystep_apply();
@@ -6062,5 +6146,98 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	card.closefile();
 
 }
+
+void temp_compensation_apply() {
+	int i_add;
+	int compensation_value;
+	int z_shift = 0;
+	float z_shift_mm;
+
+	current_position[X_AXIS] = PINDA_PREHEAT_X;
+	current_position[Y_AXIS] = PINDA_PREHEAT_Y;
+	current_position[Z_AXIS] = 0;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+	st_synchronize();
+
+	while (fabs(degBed() - target_temperature_bed) > 3) delay_keep_alive(1000);
+
+	delay_keep_alive(PINDA_HEAT_T * 1000);
+
+	if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 60 && target_temperature_bed <= 100) {
+		i_add = (target_temperature_bed - 60) / 10;
+		EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i_add * 2, &z_shift);
+		z_shift_mm = z_shift / axis_steps_per_unit[Z_AXIS];
+	}
+	else {
+		//interpolation
+		z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
+	}
+	SERIAL_PROTOCOLPGM("\n");
+	SERIAL_PROTOCOLPGM("Z shift applied:");
+	MYSERIAL.print(z_shift_mm);
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+	st_synchronize();
+	plan_set_z_position(current_position[Z_AXIS]);
+}
+
+float temp_comp_interpolation(float temperature) {
+	//cubic spline interpolation
+	
+	int i;
+	int shift[6];
+	float shift_f[6];
+	float temp_C[6];
+	
+	shift[0] = 0; //shift for 50 C is 0
+
+	int n, j, k;
+	float h[10], a, b, c, d, sum, s[10] = { 0 }, x[10], F[10], f[10], p, m[10][10] = { 0 }, temp;
+
+
+	for (i = 0; i < 6; i++) {
+		EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &shift[i + 1]); //read shift in steps from EEPROM
+		temp_C[i] = 50 + i * 10; //temperature in C
+		shift_f[i] = (float)shift[i];
+	
+	}
+	for (i = 5; i > 0; i--) {
+		F[i] = (shift_f[i] - shift_f[i - 1]) / (temp_C[i] - temp_C[i - 1]);
+		h[i - 1] = temp_C[i] - temp_C[i - 1];
+	}
+
+	//*********** formation of h, s , f matrix **************//
+	for (i = 1; i<5; i++) {
+		m[i][i] = 2 * (h[i - 1] + h[i]);
+		if (i != 1) {
+			m[i][i - 1] = h[i - 1];
+			m[i - 1][i] = h[i - 1];
+		}
+		m[i][5] = 6 * (F[i + 1] - F[i]);
+	}
+	//*********** forward elimination **************//
+	for (i = 1; i<4; i++) {
+		temp = (m[i + 1][i] / m[i][i]);
+		for (j = 1; j <= 5; j++)
+			m[i + 1][j] -= temp*m[i][j];
+	}
+	//*********** backward substitution *********//
+	for (i = 4; i>0; i--) {
+		sum = 0;
+		for (j = i; j <= 4; j++)
+			sum += m[i][j] * s[j];
+		s[i] = (m[i][n - 1] - sum) / m[i][i];
+	}
+
+	for (i = 0; i<5; i++)
+		if (temp_C[i] <= temperature&&temperature <= temp_C[i + 1]) {
+			a = (s[i + 1] - s[i]) / (6 * h[i]);
+			b = s[i] / 2;
+			c = (shift[i + 1] - shift[i]) / h[i] - (2 * h[i] * s[i] + s[i + 1] * h[i]) / 6;
+			d = shift[i];
+			sum = a*pow((p - temp_C[i]), 3) + b*pow((p - temp_C[i]), 2) + c*(p - temp_C[i]) + d;
+		}
+	return(sum);
+}
+
 
 #endif
