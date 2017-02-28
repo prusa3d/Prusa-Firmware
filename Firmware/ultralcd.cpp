@@ -3165,6 +3165,10 @@ static void lcd_main_menu()
 
   if (IS_SD_PRINTING || is_usb_printing)
   {
+	  if (farm_mode)
+	  {
+		  MENU_ITEM(submenu, PSTR("Farm number"), lcd_farm_no);
+	  }
   } 
   else 
   {
