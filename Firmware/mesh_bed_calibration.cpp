@@ -412,18 +412,55 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
         cntr[1] = 0.f;
         float wx = 0.f;
         float wy = 0.f;
-        for (int8_t i = 0; i < 9; ++ i) {
+        for (int8_t i = 0; i < npts; ++ i) {
             float x = vec_x[0] * measured_pts[i * 2] + vec_y[0] * measured_pts[i * 2 + 1];
             float y = vec_x[1] * measured_pts[i * 2] + vec_y[1] * measured_pts[i * 2 + 1];
             float w = point_weight_x(i, y);
-            cntr[0] += w * (pgm_read_float(true_pts + i * 2) - x);
-            wx += w;
+			cntr[0] += w * (pgm_read_float(true_pts + i * 2) - x);
+			wx += w;
+			if (verbosity_level >= 20) {
+				MYSERIAL.print(i);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOLNPGM("Weight_x:");
+				MYSERIAL.print(w);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOLNPGM("cntr[0]:");
+				MYSERIAL.print(cntr[0]);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOLNPGM("wx:");
+				MYSERIAL.print(wx);
+			}
             w = point_weight_y(i, y);
-            cntr[1] += w * (pgm_read_float(true_pts + i * 2 + 1) - y);
-            wy += w;
-        }
+			cntr[1] += w * (pgm_read_float(true_pts + i * 2 + 1) - y);
+			wy += w;
+
+			if (verbosity_level >= 20) {
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOLNPGM("Weight_y:");
+				MYSERIAL.print(w);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOLNPGM("cntr[1]:");
+				MYSERIAL.print(cntr[1]);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOLNPGM("wy:");
+				MYSERIAL.print(wy);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOLNPGM("");
+			}
+		}
         cntr[0] /= wx;
         cntr[1] /= wy;
+		if (verbosity_level >= 20) {
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("Final cntr values:");
+			SERIAL_ECHOLNPGM("cntr[0]:");
+			MYSERIAL.print(cntr[0]);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("cntr[1]:");
+			MYSERIAL.print(cntr[1]);
+			SERIAL_ECHOLNPGM("");
+		}
+
     }
     #endif
 
@@ -605,18 +642,24 @@ void world2machine_initialize()
         // Length of the vec_x shall be close to unity.
         float l = sqrt(vec_x[0] * vec_x[0] + vec_x[1] * vec_x[1]);
         if (l < 0.9 || l > 1.1) {
+			SERIAL_ECHOLNPGM("X vector length:");
+			MYSERIAL.println(l);
             SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
             reset = true;
         }
         // Length of the vec_y shall be close to unity.
         l = sqrt(vec_y[0] * vec_y[0] + vec_y[1] * vec_y[1]);
         if (l < 0.9 || l > 1.1) {
-            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
+			SERIAL_ECHOLNPGM("Y vector length:");
+			MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the Y vector out of range.");
             reset = true;
         }
         // Correction of the zero point shall be reasonably small.
         l = sqrt(cntr[0] * cntr[0] + cntr[1] * cntr[1]);
         if (l > 15.f) {
+			SERIAL_ECHOLNPGM("Zero point correction:");
+			MYSERIAL.println(l);
             SERIAL_ECHOLNPGM("Invalid bed correction matrix. Shift out of range.");
             reset = true;
         }
@@ -1654,7 +1697,27 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
         eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0), vec_y[0]);
         eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4), vec_y[1]);
     #endif
+		if (verbosity_level >= 10) {
+			// Length of the vec_x
+			float l = sqrt(vec_x[0] * vec_x[0] + vec_x[1] * vec_x[1]);
+			SERIAL_ECHOLNPGM("X vector length:");
+			MYSERIAL.println(l);
 
+			// Length of the vec_y
+			l = sqrt(vec_y[0] * vec_y[0] + vec_y[1] * vec_y[1]);
+			SERIAL_ECHOLNPGM("Y vector length:");
+			MYSERIAL.println(l);
+			// Zero point correction
+			l = sqrt(cntr[0] * cntr[0] + cntr[1] * cntr[1]);
+			SERIAL_ECHOLNPGM("Zero point correction:");
+			MYSERIAL.println(l);
+
+			// vec_x and vec_y shall be nearly perpendicular.
+			l = vec_x[0] * vec_y[0] + vec_x[1] * vec_y[1];
+			SERIAL_ECHOLNPGM("Perpendicularity");
+			MYSERIAL.println(fabs(l));
+			SERIAL_ECHOLNPGM("Saving bed calibration vectors to EEPROM");
+		}
         // Correct the current_position to match the transformed coordinate system after world2machine_rotation_and_skew and world2machine_shift were set.
         world2machine_update_current();
 

@@ -1874,6 +1874,7 @@ void lcd_diag_show_end_stops()
 
 
 void prusa_statistics(int _message) {
+	
 
 	switch (_message)
 	{
@@ -1883,6 +1884,7 @@ void prusa_statistics(int _message) {
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(4);
+			status_number = 4;
 			prusa_stat_printinfo();
 			SERIAL_ECHOLN("}");
 		}
@@ -1890,6 +1892,7 @@ void prusa_statistics(int _message) {
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(1);
+			status_number = 1;
 			SERIAL_ECHOLN("}");
 		}
 		break;
@@ -1898,6 +1901,7 @@ void prusa_statistics(int _message) {
 		farm_status = 2;
 		SERIAL_ECHO("{");
 		prusa_stat_printerstatus(2);
+		status_number = 2;
 		SERIAL_ECHOLN("}");
 		farm_timer = 1;
 		break;
@@ -1906,6 +1910,7 @@ void prusa_statistics(int _message) {
 		farm_status = 3;
 		SERIAL_ECHO("{");
 		prusa_stat_printerstatus(3);
+		status_number = 3;
 		SERIAL_ECHOLN("}");
 		farm_timer = 1;
 
@@ -1914,12 +1919,14 @@ void prusa_statistics(int _message) {
 			farm_status = 4;
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(4);
+			status_number = 4;
 			SERIAL_ECHOLN("}");
 		}
 		else
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(3);
+			status_number = 3;
 			SERIAL_ECHOLN("}");;
 		}
 		farm_timer = 1;
@@ -1938,14 +1945,17 @@ void prusa_statistics(int _message) {
 		break;
 	case 6:		// print done
 		SERIAL_ECHOLN("{[PRN:8]}");
+		status_number = 8;
 		farm_timer = 2;
 		break;
 	case 7:		// print done - stopped
 		SERIAL_ECHOLN("{[PRN:9]}");
+		status_number = 9;
 		farm_timer = 2;
 		break;
 	case 8:		// printer started
 		SERIAL_ECHO("{[PRN:0][PFN:");
+		status_number = 0;
 		SERIAL_ECHO(farm_no);
 		SERIAL_ECHOLN("]}");
 		farm_timer = 2;
@@ -1963,6 +1973,7 @@ void prusa_statistics(int _message) {
 		break;
     case 22: // waiting for filament change
         SERIAL_ECHOLN("{[PRN:5]}");
+		status_number = 5;
         break;
 	
 	case 90: // Error - Thermal Runaway
@@ -3166,7 +3177,7 @@ static void lcd_main_menu()
 	MENU_ITEM(submenu, MSG_UNLOAD_FILAMENT, fil_unload_menu);
 	MENU_ITEM(submenu, MSG_CHANGE_EXTR, change_extr_menu);
 	#endif
-    MENU_ITEM(submenu, MSG_SETTINGS, lcd_settings_menu);
+	MENU_ITEM(submenu, MSG_SETTINGS, lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);
   }
 
@@ -3549,7 +3560,6 @@ menu_edit_type(float, float5, ftostr5, 0.01)
 menu_edit_type(float, float51, ftostr51, 10)
 menu_edit_type(float, float52, ftostr52, 100)
 menu_edit_type(unsigned long, long5, ftostr5, 0.01)
-
 
 static void lcd_selftest()
 {
