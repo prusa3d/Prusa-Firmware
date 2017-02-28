@@ -2021,7 +2021,7 @@ void process_commands()
     }else if(code_seen("Y")) { //filaments adjustment at the beginning of print (for SNMM)
 	#ifdef SNMM
 		int extr;
-		SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT); //is  e or loud mode set
+		SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT); //is  silent mode or loud mode set
 		lcd_implementation_clear();
 		lcd_display_message_fullscreen_P(MSG_FIL_ADJUSTING);
 		current_position[Z_AXIS] = 100; 
