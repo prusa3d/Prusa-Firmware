@@ -316,7 +316,7 @@ extern void calculate_volumetric_multipliers();
 
 // Similar to the default Arduino delay function, 
 // but it keeps the background tasks running.
-extern void delay_keep_alive(int ms);
+extern void delay_keep_alive(unsigned int ms);
 
 extern void check_babystep();
 
@@ -329,3 +329,4 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 #endif
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
+void temp_compensation_start();

@@ -2791,8 +2791,7 @@ void process_commands()
 		while (degBed() < PINDA_MIN_T) delay_keep_alive(1000);
 		
 		//enquecommand_P(PSTR("M190 S50"));
-
-		delay_keep_alive(PINDA_HEAT_T * 1000);
+		for (int i = 0; i < PINDA_HEAT_T; i++)	delay_keep_alive(1000);
 
 		current_position[Z_AXIS] = 5;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
@@ -2822,7 +2821,7 @@ void process_commands()
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			st_synchronize();
 			while (degBed() < t_c) delay_keep_alive(1000);
-			delay_keep_alive(PINDA_HEAT_T * 1000);
+			for (int i = 0; i < PINDA_HEAT_T; i++)	delay_keep_alive(1000);
 			current_position[Z_AXIS] = 5;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			current_position[X_AXIS] = pgm_read_float(bed_ref_points);
@@ -2890,7 +2889,7 @@ void process_commands()
                 enquecommand_front_P((PSTR("G28 W0")));
                 break;
             }
-
+			temp_compensation_start();
             // Save custom message state, set a new custom message state to display: Calibrating point 9.
             bool custom_message_old = custom_message;
             unsigned int custom_message_type_old = custom_message_type;
@@ -5880,7 +5879,7 @@ void calculate_volumetric_multipliers() {
 #endif
 }
 
-void delay_keep_alive(int ms)
+void delay_keep_alive(unsigned int ms)
 {
     for (;;) {
         manage_heater();
@@ -6147,12 +6146,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 
 }
 
-void temp_compensation_apply() {
-	int i_add;
-	int compensation_value;
-	int z_shift = 0;
-	float z_shift_mm;
-
+void temp_compensation_start() {
 	current_position[X_AXIS] = PINDA_PREHEAT_X;
 	current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 	current_position[Z_AXIS] = 0;
@@ -6161,7 +6155,16 @@ void temp_compensation_apply() {
 
 	while (fabs(degBed() - target_temperature_bed) > 3) delay_keep_alive(1000);
 
-	delay_keep_alive(PINDA_HEAT_T * 1000);
+	for(int i = 0; i < PINDA_HEAT_T; i++) delay_keep_alive(1000);
+	
+
+}
+
+void temp_compensation_apply() {
+	int i_add;
+	int compensation_value;
+	int z_shift = 0;
+	float z_shift_mm;
 
 	if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 60 && target_temperature_bed <= 100) {
 		i_add = (target_temperature_bed - 60) / 10;
@@ -6170,7 +6173,7 @@ void temp_compensation_apply() {
 	}
 	else {
 		//interpolation
-		z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
+		//z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
 	}
 	SERIAL_PROTOCOLPGM("\n");
 	SERIAL_PROTOCOLPGM("Z shift applied:");
