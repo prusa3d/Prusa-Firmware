@@ -99,7 +99,7 @@ int8_t SilentModeMenu = 0;
 int lcd_commands_type=LCD_COMMAND_IDLE;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
-bool farm_mode = false;
+uint8_t farm_mode = 0;
 int farm_no = 0;
 int farm_timer = 30;
 int farm_status = 0;
@@ -2380,6 +2380,7 @@ static void lcd_settings_menu()
     if (farm_mode)
     {
         MENU_ITEM(submenu, PSTR("Farm number"), lcd_farm_no);
+		MENU_ITEM(function, PSTR("Disable farm mode"), lcd_disable_farm_mode);
     }
 
 	END_MENU();
@@ -2679,6 +2680,13 @@ char reset_menu() {
 
 }
 
+static void lcd_disable_farm_mode() {
+	farm_mode = 0;
+	eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+	lcd_return_to_status();	
+}
+
+
 #ifdef SNMM
 
 static void extr_mov(float shift, float feed_rate) { //move extruder no matter what the current heater temperature is
@@ -2896,6 +2904,7 @@ static void extr_unload_3() {
 	extr_unload();
 }
 
+
 static void fil_load_menu()
 {
 	START_MENU();
@@ -2936,6 +2945,7 @@ static void change_extr_menu(){
 
 static void lcd_farm_no()
 {
+	char step = 0;
 	int enc_dif = 0;
 	int _farmno = farm_no;
 	int _ret = 0;
@@ -2949,32 +2959,50 @@ static void lcd_farm_no()
 
 		if (abs((enc_dif - encoderDiff)) > 2) {
 			if (enc_dif > encoderDiff) {
-				_farmno--;
+				switch (step) {
+				case(0): if (_farmno >= 100) _farmno -= 100; break;
+				case(1): if (_farmno % 100 >= 10) _farmno -= 10; break;
+				case(2): if (_farmno % 10 >= 1) _farmno--; break;
+				default: break;
+				}
 			}
 
 			if (enc_dif < encoderDiff) {
-				_farmno++;
+				switch (step) {
+				case(0): if (_farmno < 900) _farmno += 100; break;
+				case(1): if (_farmno % 100 < 90) _farmno += 10; break;
+				case(2): if (_farmno % 10 <= 8)_farmno++; break;
+				default: break;
+				}
 			}
 			enc_dif = 0;
 			encoderDiff = 0;
 		}
 
-		if (_farmno > 254) { _farmno = 1; }
-		if (_farmno < 1) { _farmno = 254; }
-
-
 		lcd.setCursor(0, 2);
+		if (_farmno < 100) lcd.print("0");
+		if (_farmno < 10) lcd.print("0");
 		lcd.print(_farmno);
 		lcd.print("  ");
+		lcd.setCursor(0, 3);
+		lcd.print("   ");
+
+
+		lcd.setCursor(step, 3);
+		lcd.print("^");
 		delay(100);
 
 		if (lcd_clicked())
 		{
-			_ret = 1;
-			farm_no = _farmno;
-			EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
-			prusa_statistics(20);
-			lcd_return_to_status();
+			delay(200);
+			step++;
+			if(step == 3) {
+				_ret = 1;
+				farm_no = _farmno;
+				EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
+				prusa_statistics(20);
+				lcd_return_to_status();
+			}
 		}
 
 		manage_heater();

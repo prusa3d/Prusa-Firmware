@@ -95,7 +95,7 @@ void lcd_mylang();
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
   
-  extern bool farm_mode;
+  extern uint8_t farm_mode;
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
@@ -212,8 +212,7 @@ static void extr_unload_0();
 static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
-static void stack_test();
-static int test();
+static void lcd_disable_farm_mode();
 
 void stack_error();
 

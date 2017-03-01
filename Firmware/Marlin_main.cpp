@@ -264,6 +264,7 @@ unsigned int  usb_printing_counter;
 int lcd_change_fil_state = 0;
 int feedmultiplyBckp = 100;
 unsigned char lang_selected = 0;
+int8_t FarmMode = 0;
 
 bool prusa_sd_card_upload = false;
 
@@ -920,9 +921,10 @@ void factory_reset(char level, bool quiet)
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
             farm_no = 0;
-            EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
-            farm_mode = false;
-            
+			farm_mode == false;
+			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
+            EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
+                       
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
@@ -1118,18 +1120,11 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
   enable_z();
 #endif
-
-  EEPROM_read_B(EEPROM_FARM_MODE, &farm_no);
-  if (farm_no > 0)
+  farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
+  EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
+  if (farm_mode)
   {
-	  farm_mode = true;
-	  farm_no = farm_no;
 	  prusa_statistics(8);
-  }
-  else
-  {
-	  farm_mode = false;
-	  farm_no = 0;
   }
 
   // Enable Toshiba FlashAir SD card / WiFi enahanced card.
@@ -3107,16 +3102,14 @@ void process_commands()
       }
       break;
 
-	case 98:
-		farm_no = 21;
-		EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
-		farm_mode = true;
+	case 98: //activate farm mode
+		farm_mode = 1;
+		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
 		break;
 
-	case 99:
-		farm_no = 0;
-		EEPROM_save_B(EEPROM_FARM_MODE, &farm_no);
-		farm_mode = false;
+	case 99: //deactivate farm mode
+		farm_mode = 0;
+		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
 		break;
 
 
