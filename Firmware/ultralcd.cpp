@@ -2681,9 +2681,17 @@ char reset_menu() {
 }
 
 static void lcd_disable_farm_mode() {
-	farm_mode = 0;
-	eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
-	lcd_return_to_status();	
+	int8_t disable = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Disable farm mode?"), true, false); //allow timeouting, default no
+	if (disable) {
+		farm_mode = 0;
+		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+	}
+	else {
+		lcd_goto_menu(lcd_settings_menu);
+	}
+	lcd_update_enable(true);
+	lcdDrawUpdate = 2;
+	
 }
 
 
