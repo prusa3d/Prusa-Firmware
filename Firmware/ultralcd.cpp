@@ -1992,6 +1992,9 @@ void prusa_statistics(int _message) {
     case 99:		// heartbeat
         SERIAL_ECHO("{[PRN:99]");
         prusa_stat_temperatures();
+		SERIAL_ECHO("[PFN:");
+		SERIAL_ECHO(farm_no);
+		SERIAL_ECHO("]");
         SERIAL_ECHOLN("}");
             
         break;
@@ -2681,9 +2684,18 @@ char reset_menu() {
 }
 
 static void lcd_disable_farm_mode() {
-	farm_mode = 0;
-	eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
-	lcd_return_to_status();	
+	int8_t disable = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Disable farm mode?"), true, false); //allow timeouting, default no
+	if (disable) {
+		farm_mode = 0;
+		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+		lcd_return_to_status();
+	}
+	else {
+		lcd_goto_menu(lcd_settings_menu);
+	}
+	lcd_update_enable(true);
+	lcdDrawUpdate = 2;
+	
 }
 
 
