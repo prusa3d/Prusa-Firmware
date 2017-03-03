@@ -1992,6 +1992,9 @@ void prusa_statistics(int _message) {
     case 99:		// heartbeat
         SERIAL_ECHO("{[PRN:99]");
         prusa_stat_temperatures();
+		SERIAL_ECHO("[PFN:");
+		SERIAL_ECHO(farm_no);
+		SERIAL_ECHO("]");
         SERIAL_ECHOLN("}");
             
         break;
