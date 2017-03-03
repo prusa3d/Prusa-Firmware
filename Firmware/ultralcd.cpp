@@ -2688,6 +2688,7 @@ static void lcd_disable_farm_mode() {
 	if (disable) {
 		farm_mode = 0;
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+		lcd_return_to_status();
 	}
 	else {
 		lcd_goto_menu(lcd_settings_menu);
