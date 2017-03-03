@@ -27,14 +27,6 @@
     http://reprap.org/pipermail/reprap-dev/2011-May/003323.html
  */
 
-
-
-
-
-
-
-
-
 #include "Marlin.h"
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -62,6 +54,7 @@
 #include "pins_arduino.h"
 #include "math.h"
 #include "util.h"
+//#include "spline.h"
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -2767,6 +2760,25 @@ void process_commands()
      *
      */
 
+	case 73:
+	{
+		int i, read;
+		for (i = 0; i < 5; i++) {
+			EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &read);
+			MYSERIAL.print(read);
+			SERIAL_ECHOLNPGM(" ");
+		}
+	}break;
+
+	case 74:
+	{
+		float result, temp;
+		if (code_seen('X')) temp = code_value();
+		result = temp_comp_interpolation(temp);
+		MYSERIAL.print(result);
+
+	}break;
+
 	case 76: //PINDA probe temperature compensation
 	{
 		setTargetBed(PINDA_MIN_T);
@@ -2847,6 +2859,12 @@ void process_commands()
 	}
 	break;
 
+	case 75:
+	{
+		temp_compensation_start();
+	}
+	break;
+
 #ifdef DIS
 	case 77:
 	{
@@ -2877,184 +2895,236 @@ void process_commands()
 	
 #endif
 
-    case 80:
-    case_G80:
-        {
-            // Firstly check if we know where we are
-            if ( !( axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS] ) ){
-                // We don't know where we are! HOME!
-                // Push the commands to the front of the message queue in the reverse order!
-                // There shall be always enough space reserved for these commands.
-                repeatcommand_front(); // repeat G80 with all its parameters
-                enquecommand_front_P((PSTR("G28 W0")));
-                break;
-            }
-			temp_compensation_start();
-            // Save custom message state, set a new custom message state to display: Calibrating point 9.
-            bool custom_message_old = custom_message;
-            unsigned int custom_message_type_old = custom_message_type;
-            unsigned int custom_message_state_old = custom_message_state;
-            custom_message = true;
-            custom_message_type = 1;
-            custom_message_state = (MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) + 10;
-            lcd_update(1);
-            
-            mbl.reset();
 
-            // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
-            // consumed during the first movements following this statement.
-            babystep_undo();
+	case 80:
+	case_G80:
+	{
+		int8_t verbosity_level = 0;
+		if (code_seen('V')) {
+			// Just 'V' without a number counts as V1.
+			char c = strchr_pointer[1];
+			verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
+		}
+		// Firstly check if we know where we are
+		if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
+			// We don't know where we are! HOME!
+			// Push the commands to the front of the message queue in the reverse order!
+			// There shall be always enough space reserved for these commands.
+			repeatcommand_front(); // repeat G80 with all its parameters
+			enquecommand_front_P((PSTR("G28 W0")));
+			break;
+		}
 
-            // Cycle through all points and probe them
-            // First move up. During this first movement, the babystepping will be reverted.
-            current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS]/60, active_extruder);
-            // The move to the first calibration point.
-            current_position[X_AXIS] = pgm_read_float(bed_ref_points);
-            current_position[Y_AXIS] = pgm_read_float(bed_ref_points+1);
-            world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-//            mbl.get_meas_xy(0, 0, current_position[X_AXIS], current_position[Y_AXIS], false);            
-            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS]/30, active_extruder);
-            // Wait until the move is finished.
-            st_synchronize();
-            
-            int mesh_point = 0;
-            
-            int ix = 0;
-            int iy = 0;
-            
-            int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS]/20;
-            int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS]/60;
-            int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS]/40;
-            bool has_z = is_bed_z_jitter_data_valid();
-            setup_for_endstop_move(false);
-            const char *kill_message = NULL;
-            while (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
-                // Get coords of a measuring point.
-                ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
-                iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
-                if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix; // Zig zag
-                float z0 = 0.f;
-                if (has_z && mesh_point > 0) {
-                    uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
-                    z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
-                    #if 0
-                    SERIAL_ECHOPGM("Bed leveling, point: ");
-                    MYSERIAL.print(mesh_point);
-                    SERIAL_ECHOPGM(", calibration z: ");
-                    MYSERIAL.print(z0, 5);
-                    SERIAL_ECHOLNPGM("");
-                    #endif
-                }
-            
-                // Move Z up to MESH_HOME_Z_SEARCH.
-                current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
-                st_synchronize();
+		// Save custom message state, set a new custom message state to display: Calibrating point 9.
+		bool custom_message_old = custom_message;
+		unsigned int custom_message_type_old = custom_message_type;
+		unsigned int custom_message_state_old = custom_message_state;
+		custom_message = true;
+		custom_message_type = 1;
+		custom_message_state = (MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) + 10;
+		lcd_update(1);
 
-                // Move to XY position of the sensor point.
-                current_position[X_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point);
-                current_position[Y_AXIS] = pgm_read_float(bed_ref_points+2*mesh_point+1);
-                world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
-                st_synchronize();
-                
-                // Go down until endstop is hit
-                const float Z_CALIBRATION_THRESHOLD = 1.f;
-                if (! find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f)) {
-                    kill_message = MSG_BED_LEVELING_FAILED_POINT_LOW;
-                    break;
-                }
-                if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
-                    kill_message = MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED;
-                    break;
-                }
-                if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) {
-                    kill_message = MSG_BED_LEVELING_FAILED_POINT_HIGH;
-                    break;
-                }
+		mbl.reset(); //reset mesh bed leveling
 
-                mbl.set_z(ix, iy, current_position[Z_AXIS]);
+					 // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
+					 // consumed during the first movements following this statement.
+		babystep_undo();
 
-        				custom_message_state--;
-                mesh_point++;
-                lcd_update(1);
-            }
-            current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
-            st_synchronize();
-            if (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
-                kill(kill_message);
-            }
-            clean_up_after_endstop_move();
+		// Cycle through all points and probe them
+		// First move up. During this first movement, the babystepping will be reverted.
+		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
+		// The move to the first calibration point.
+		current_position[X_AXIS] = pgm_read_float(bed_ref_points);
+		current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
+		bool clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+
+		if (verbosity_level >= 1) {
+			clamped ? SERIAL_PROTOCOLPGM("First calibration point clamped.\n") : SERIAL_PROTOCOLPGM("No clamping for first calibration point.\n");
+		}
+		//            mbl.get_meas_xy(0, 0, current_position[X_AXIS], current_position[Y_AXIS], false);            
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS] / 30, active_extruder);
+		// Wait until the move is finished.
+		st_synchronize();
+
+		int mesh_point = 0; //index number of calibration point
+
+		int ix = 0;
+		int iy = 0;
+
+		int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
+		int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS] / 60;
+		int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
+		bool has_z = is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
+		if (verbosity_level >= 1) {
+			has_z ? SERIAL_PROTOCOLPGM("Z jitter data from Z cal. valid.\n") : SERIAL_PROTOCOLPGM("Z jitter data from Z cal. not valid.\n");
+		}
+		setup_for_endstop_move(false); //save feedrate and feedmultiply, sets feedmultiply to 100
+		const char *kill_message = NULL;
+		while (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
+			if (verbosity_level >= 1) SERIAL_ECHOLNPGM("");
+			// Get coords of a measuring point.
+			ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
+			iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
+			if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix; // Zig zag
+			float z0 = 0.f;
+			if (has_z && mesh_point > 0) {
+				uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
+				z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
+				//#if 0
+				if (verbosity_level >= 1) {
+					SERIAL_ECHOPGM("Bed leveling, point: ");
+					MYSERIAL.print(mesh_point);
+					SERIAL_ECHOPGM(", calibration z: ");
+					MYSERIAL.print(z0, 5);
+					SERIAL_ECHOLNPGM("");
+				}
+				//#endif
+			}
+
+			// Move Z up to MESH_HOME_Z_SEARCH.
+			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+			st_synchronize();
+
+			// Move to XY position of the sensor point.
+			current_position[X_AXIS] = pgm_read_float(bed_ref_points + 2 * mesh_point);
+			current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 2 * mesh_point + 1);
 
 
-			temp_compensation_apply(); //apply PINDA temperature compensation
 
-            // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
-            babystep_apply();
+			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+			if (verbosity_level >= 1) {
 
-            bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
-            for (uint8_t i = 0; i < 4; ++ i) {
-                unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
-                long correction = 0;
-                if (code_seen(codes[i]))
-                    correction = code_value_long();
-                else if (eeprom_bed_correction_valid) {
-                    unsigned char *addr = (i < 2) ? 
-                        ((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT  : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
-                        ((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
-                    correction = eeprom_read_int8(addr);
-                }
-                if (correction == 0)
-                    continue;
-                float offset = float(correction) * 0.001f;
-                if (fabs(offset) > 0.101f) {				
-                    SERIAL_ERROR_START;
-                    SERIAL_ECHOPGM("Excessive bed leveling correction: ");
-                    SERIAL_ECHO(offset);
-                    SERIAL_ECHOLNPGM(" microns");
-                } else {
-                    switch (i) {
-                    case 0:
-                        for (uint8_t row = 0; row < 3; ++ row) {
-                            mbl.z_values[row][1] += 0.5f * offset;
-                            mbl.z_values[row][0] += offset;
-                        }
-                        break;
-                    case 1:
-                        for (uint8_t row = 0; row < 3; ++ row) {
-                            mbl.z_values[row][1] += 0.5f * offset;
-                            mbl.z_values[row][2] += offset;
-                        }
-                        break;
-                    case 2:
-                        for (uint8_t col = 0; col < 3; ++ col) {
-                            mbl.z_values[1][col] += 0.5f * offset;
-                            mbl.z_values[0][col] += offset;
-                        }
-                        break;
-                    case 3:
-                        for (uint8_t col = 0; col < 3; ++ col) {
-                            mbl.z_values[1][col] += 0.5f * offset;
-                            mbl.z_values[2][col] += offset;
-                        }
-                        break;
-                    }
-                }
-            }
+				SERIAL_PROTOCOL(mesh_point);
+				clamped ? SERIAL_PROTOCOLPGM(": xy clamped.\n") : SERIAL_PROTOCOLPGM(": no xy clamping\n");
+			}
 
-            mbl.upsample_3x3();
-            mbl.active = 1;
-            go_home_with_z_lift();
 
-            // Restore custom message state
-            custom_message       = custom_message_old;
-            custom_message_type  = custom_message_type_old;
-            custom_message_state = custom_message_state_old;
-            lcd_update(1);
-        }
-        break;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
+			st_synchronize();
+
+			// Go down until endstop is hit
+			const float Z_CALIBRATION_THRESHOLD = 1.f;
+			if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
+				kill_message = MSG_BED_LEVELING_FAILED_POINT_LOW;
+				break;
+			}
+			if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
+				kill_message = MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED;
+				break;
+			}
+			if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) { //if we have data from z calibration, max. allowed difference is 1mm for each point
+				kill_message = MSG_BED_LEVELING_FAILED_POINT_HIGH;
+				break;
+			}
+
+			if (verbosity_level >= 10) {
+				SERIAL_ECHOPGM("X: ");
+				MYSERIAL.print(current_position[X_AXIS], 5);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOPGM("Y: ");
+				MYSERIAL.print(current_position[Y_AXIS], 5);
+				SERIAL_PROTOCOLPGM("\n");
+			}
+
+			if (verbosity_level >= 1) {
+				SERIAL_ECHOPGM("mesh bed leveling: ");
+				MYSERIAL.print(current_position[Z_AXIS], 5);
+				SERIAL_ECHOLNPGM("");
+			}
+			mbl.set_z(ix, iy, current_position[Z_AXIS]); //store measured z values z_values[iy][ix] = z;
+
+			custom_message_state--;
+			mesh_point++;
+			lcd_update(1);
+		}
+		if (verbosity_level >= 20) SERIAL_ECHOLNPGM("Mesh bed leveling while loop finished.");
+		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+		if (verbosity_level >= 20) {
+			SERIAL_ECHOLNPGM("MESH_HOME_Z_SEARCH: ");
+			MYSERIAL.print(current_position[Z_AXIS], 5);
+		}
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+		st_synchronize();
+		if (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
+			kill(kill_message);
+			SERIAL_ECHOLNPGM("killed");
+		}
+		clean_up_after_endstop_move();
+		SERIAL_ECHOLNPGM("clean up finished ");
+		temp_compensation_apply(); //apply PINDA temperature compensation
+		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
+		SERIAL_ECHOLNPGM("babystep applied");
+		bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
+
+		if (verbosity_level >= 1) {
+			eeprom_bed_correction_valid ? SERIAL_PROTOCOLPGM("Bed correction data valid\n") : SERIAL_PROTOCOLPGM("Bed correction data not valid\n");
+		}
+
+		for (uint8_t i = 0; i < 4; ++i) {
+			unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
+			long correction = 0;
+			if (code_seen(codes[i]))
+				correction = code_value_long();
+			else if (eeprom_bed_correction_valid) {
+				unsigned char *addr = (i < 2) ?
+					((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
+					((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
+				correction = eeprom_read_int8(addr);
+			}
+			if (correction == 0)
+				continue;
+			float offset = float(correction) * 0.001f;
+			if (fabs(offset) > 0.101f) {
+				SERIAL_ERROR_START;
+				SERIAL_ECHOPGM("Excessive bed leveling correction: ");
+				SERIAL_ECHO(offset);
+				SERIAL_ECHOLNPGM(" microns");
+			}
+			else {
+				switch (i) {
+				case 0:
+					for (uint8_t row = 0; row < 3; ++row) {
+						mbl.z_values[row][1] += 0.5f * offset;
+						mbl.z_values[row][0] += offset;
+					}
+					break;
+				case 1:
+					for (uint8_t row = 0; row < 3; ++row) {
+						mbl.z_values[row][1] += 0.5f * offset;
+						mbl.z_values[row][2] += offset;
+					}
+					break;
+				case 2:
+					for (uint8_t col = 0; col < 3; ++col) {
+						mbl.z_values[1][col] += 0.5f * offset;
+						mbl.z_values[0][col] += offset;
+					}
+					break;
+				case 3:
+					for (uint8_t col = 0; col < 3; ++col) {
+						mbl.z_values[1][col] += 0.5f * offset;
+						mbl.z_values[2][col] += offset;
+					}
+					break;
+				}
+			}
+		}
+		SERIAL_ECHOLNPGM("Bed leveling correction finished");
+		mbl.upsample_3x3(); //bilinear interpolation from 3x3 to 7x7 points while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
+		SERIAL_ECHOLNPGM("Upsample finished");
+		mbl.active = 1; //activate mesh bed leveling
+		SERIAL_ECHOLNPGM("Mesh bed leveling activated");
+		go_home_with_z_lift();
+		SERIAL_ECHOLNPGM("Go home finished");
+		// Restore custom message state
+		custom_message = custom_message_old;
+		custom_message_type = custom_message_type_old;
+		custom_message_state = custom_message_state_old;
+		lcd_update(1);
+	}
+	break;
 
         /**
          * G81: Print mesh bed leveling status and bed profile if activated
@@ -6166,14 +6236,14 @@ void temp_compensation_apply() {
 	int z_shift = 0;
 	float z_shift_mm;
 
-	if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 60 && target_temperature_bed <= 100) {
+	if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 50 && target_temperature_bed <= 100) {
 		i_add = (target_temperature_bed - 60) / 10;
 		EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i_add * 2, &z_shift);
 		z_shift_mm = z_shift / axis_steps_per_unit[Z_AXIS];
 	}
 	else {
 		//interpolation
-		//z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
+		z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
 	}
 	SERIAL_PROTOCOLPGM("\n");
 	SERIAL_PROTOCOLPGM("Z shift applied:");
@@ -6182,6 +6252,12 @@ void temp_compensation_apply() {
 	st_synchronize();
 	plan_set_z_position(current_position[Z_AXIS]);
 }
+
+/*float temp_comp_interpolation(float temperature) {
+	
+}*/
+
+
 
 float temp_comp_interpolation(float temperature) {
 	//cubic spline interpolation
@@ -6196,19 +6272,24 @@ float temp_comp_interpolation(float temperature) {
 	int n, j, k;
 	float h[10], a, b, c, d, sum, s[10] = { 0 }, x[10], F[10], f[10], p, m[10][10] = { 0 }, temp;
 
-
-	for (i = 0; i < 6; i++) {
+	/*SERIAL_ECHOLNPGM("Reading shift data:");
+	MYSERIAL.print(shift[i]);*/
+	for (i = 0; i < 5; i++) {
 		EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &shift[i + 1]); //read shift in steps from EEPROM
+
+		//SERIAL_ECHOLNPGM(" ");
+		//MYSERIAL.print(shift[i + 1]);
 		temp_C[i] = 50 + i * 10; //temperature in C
 		shift_f[i] = (float)shift[i];
 	
 	}
+
 	for (i = 5; i > 0; i--) {
 		F[i] = (shift_f[i] - shift_f[i - 1]) / (temp_C[i] - temp_C[i - 1]);
 		h[i - 1] = temp_C[i] - temp_C[i - 1];
 	}
 
-	//*********** formation of h, s , f matrix **************//
+	//*********** formation of h, s , f matrix *************
 	for (i = 1; i<5; i++) {
 		m[i][i] = 2 * (h[i - 1] + h[i]);
 		if (i != 1) {
@@ -6217,13 +6298,13 @@ float temp_comp_interpolation(float temperature) {
 		}
 		m[i][5] = 6 * (F[i + 1] - F[i]);
 	}
-	//*********** forward elimination **************//
+	//*********** forward elimination **************
 	for (i = 1; i<4; i++) {
 		temp = (m[i + 1][i] / m[i][i]);
 		for (j = 1; j <= 5; j++)
 			m[i + 1][j] -= temp*m[i][j];
 	}
-	//*********** backward substitution *********//
+	//*********** backward substitution *********
 	for (i = 4; i>0; i--) {
 		sum = 0;
 		for (j = i; j <= 4; j++)

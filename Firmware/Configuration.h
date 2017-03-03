@@ -34,8 +34,6 @@
 
 #define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-4)
 
-#define EEPROM_PROBE_TEMP_SHIFT (EEPROM_FARM_MODE - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
-
 // Correction of the bed leveling, in micrometers.
 // Maximum 50 micrometers allowed.
 // Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
@@ -46,6 +44,7 @@
 #define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
 #define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
 #define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1)
+#define EEPROM_PROBE_TEMP_SHIFT (EEPROM_PRINT_FLAG - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
