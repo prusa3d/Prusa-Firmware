@@ -2879,6 +2879,8 @@ void process_commands()
 	case_G80:
 	{
 		int8_t verbosity_level = 0;
+		static bool run = false;
+
 		if (code_seen('V')) {
 			// Just 'V' without a number counts as V1.
 			char c = strchr_pointer[1];
@@ -2893,7 +2895,15 @@ void process_commands()
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
-		temp_compensation_start();
+		
+		if (run == false) {
+			temp_compensation_start();
+			run = true;
+			repeatcommand_front(); // repeat G80 with all its parameters
+			enquecommand_front_P((PSTR("G28 W0")));
+			break;
+		}
+		run = false;
 
 		// Save custom message state, set a new custom message state to display: Calibrating point 9.
 		bool custom_message_old = custom_message;
