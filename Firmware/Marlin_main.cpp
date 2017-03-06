@@ -231,7 +231,7 @@ CardReader card;
 
 unsigned long TimeSent = millis();
 unsigned long TimeNow = millis();
-
+unsigned long PingTime = millis();
 union Data
 {
 byte b[2];
@@ -1954,7 +1954,13 @@ void process_commands()
   int8_t SilentMode;
 #endif
   if(code_seen("PRUSA")){
-		if (code_seen("PRN")) {
+		if (code_seen("Ping")) {
+			if (farm_mode) {
+				PingTime = millis();
+				MYSERIAL.print(farm_no); MYSERIAL.println(" : OK");
+			}	  
+		}
+		else if (code_seen("PRN")) {
 		  MYSERIAL.println(status_number);
 
 		}else if (code_seen("fn")) {

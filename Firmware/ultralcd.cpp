@@ -4473,6 +4473,9 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 	  lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
 	  }
 	if (!SdFatUtil::test_stack_integrity()) stack_error();
+	if (farm_mode && ((millis() - PingTime) > PING_TIME * 1000)) {
+		// beep once per minute
+	}
 }
 
 void lcd_ignore_click(bool b)
