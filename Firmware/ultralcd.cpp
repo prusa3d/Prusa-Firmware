@@ -2230,7 +2230,7 @@ void lcd_mesh_calibration_z()
 
 void lcd_pinda_calibration()
 {
-	enquecommand_P(PSTR("M76"));
+	enquecommand_P(PSTR("G76"));
 	lcd_return_to_status();
 }
 
