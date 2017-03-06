@@ -94,10 +94,10 @@ int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = 0;
 
+uint8_t oldFanSpeed = 0;
 int lcd_commands_type=LCD_COMMAND_IDLE;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
-uint8_t oldFanSpeed = 0;
 uint8_t farm_mode = 0;
 int farm_no = 0;
 int farm_timer = 30;
