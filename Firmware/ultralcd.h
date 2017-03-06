@@ -231,4 +231,6 @@ void lcd_extr_cal_reset();
 union MenuData;
 
 char reset_menu();
+
+void lcd_pinda_calibration();
 #endif //ULTRALCD_H

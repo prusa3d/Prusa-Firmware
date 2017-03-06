@@ -1162,6 +1162,9 @@ void setup()
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
       lcd_update_enable(true);
+  } else if (calibration_status() == CALIBRATION_STATUS_PINDA) {
+	  lcd_show_fullscreen_message_and_wait_P(MSG_PINDA_NOT_CALIBRATED);
+	  lcd_update_enable(true);
   } else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
@@ -2760,26 +2763,7 @@ void process_commands()
      *
      */
 
-	case 73:
-	{
-		int i, read;
-		for (i = 0; i < 5; i++) {
-			EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &read);
-			MYSERIAL.print(read);
-			SERIAL_ECHOLNPGM(" ");
-		}
-	}break;
-
-	case 74:
-	{
-		float result, temp;
-		if (code_seen('X')) temp = code_value();
-		result = temp_comp_interpolation(temp);
-		MYSERIAL.print(result);
-
-	}break;
-
-	case 76: //PINDA probe temperature compensation
+	case 76: //PINDA probe temperature calibration
 	{
 		setTargetBed(PINDA_MIN_T);
 		float zero_z;
@@ -2854,14 +2838,9 @@ void process_commands()
 			
 		
 		}
+		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 		setTargetBed(0); //set bed target temperature back to 0
 
-	}
-	break;
-
-	case 75:
-	{
-		temp_compensation_start();
 	}
 	break;
 
@@ -2914,6 +2893,7 @@ void process_commands()
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
+		temp_compensation_start();
 
 		// Save custom message state, set a new custom message state to display: Calibrating point 9.
 		bool custom_message_old = custom_message;
@@ -3220,7 +3200,7 @@ void process_commands()
              * This G-code will be performed at the end of a calibration script.
              */
         case 87:
-            calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+            calibration_status_store(CALIBRATION_STATUS_PINDA);
             break;
 
             /**
@@ -6215,6 +6195,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	card.closefile();
 
 }
+#endif
 
 void temp_compensation_start() {
 	current_position[X_AXIS] = PINDA_PREHEAT_X;
@@ -6236,92 +6217,89 @@ void temp_compensation_apply() {
 	int z_shift = 0;
 	float z_shift_mm;
 
-	if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 50 && target_temperature_bed <= 100) {
-		i_add = (target_temperature_bed - 60) / 10;
-		EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i_add * 2, &z_shift);
-		z_shift_mm = z_shift / axis_steps_per_unit[Z_AXIS];
+	if (calibration_status() == CALIBRATION_STATUS_CALIBRATED) {
+		if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 50 && target_temperature_bed <= 100) {
+			i_add = (target_temperature_bed - 60) / 10;
+			EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i_add * 2, &z_shift);
+			z_shift_mm = z_shift / axis_steps_per_unit[Z_AXIS];
+		}
+		else {
+			//interpolation
+			z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
+		}
+		SERIAL_PROTOCOLPGM("\n");
+		SERIAL_PROTOCOLPGM("Z shift applied:");
+		MYSERIAL.print(z_shift_mm);
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+		st_synchronize();
+		plan_set_z_position(current_position[Z_AXIS]);
 	}
 	else {
-		//interpolation
-		z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
+		//message that we have no temp compensation data
 	}
-	SERIAL_PROTOCOLPGM("\n");
-	SERIAL_PROTOCOLPGM("Z shift applied:");
-	MYSERIAL.print(z_shift_mm);
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
-	st_synchronize();
-	plan_set_z_position(current_position[Z_AXIS]);
 }
 
-/*float temp_comp_interpolation(float temperature) {
-	
-}*/
+float temp_comp_interpolation(float inp_temperature) {
 
-
-
-float temp_comp_interpolation(float temperature) {
 	//cubic spline interpolation
-	
-	int i;
-	int shift[6];
-	float shift_f[6];
-	float temp_C[6];
-	
-	shift[0] = 0; //shift for 50 C is 0
 
-	int n, j, k;
+	int n, i, j, k;
 	float h[10], a, b, c, d, sum, s[10] = { 0 }, x[10], F[10], f[10], p, m[10][10] = { 0 }, temp;
+	int shift[10];
+	int temp_C[10];
 
-	/*SERIAL_ECHOLNPGM("Reading shift data:");
-	MYSERIAL.print(shift[i]);*/
-	for (i = 0; i < 5; i++) {
-		EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &shift[i + 1]); //read shift in steps from EEPROM
+	p = inp_temperature;
+	n = 6; //number of measured points
 
-		//SERIAL_ECHOLNPGM(" ");
-		//MYSERIAL.print(shift[i + 1]);
+	shift[0] = 0;
+	for (i = 0; i < n; i++) {
+		//scanf_s("%f%f", &x[i], &f[i]);
+		if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &shift[i]); //read shift in steps from EEPROM
 		temp_C[i] = 50 + i * 10; //temperature in C
-		shift_f[i] = (float)shift[i];
-	
+		
+		x[i] = (float)temp_C[i];
+		f[i] = (float)shift[i];
 	}
 
-	for (i = 5; i > 0; i--) {
-		F[i] = (shift_f[i] - shift_f[i - 1]) / (temp_C[i] - temp_C[i - 1]);
-		h[i - 1] = temp_C[i] - temp_C[i - 1];
-	}
 
-	//*********** formation of h, s , f matrix *************
-	for (i = 1; i<5; i++) {
+
+	for (i = n - 1; i>0; i--) {
+		F[i] = (f[i] - f[i - 1]) / (x[i] - x[i - 1]);
+		h[i - 1] = x[i] - x[i - 1];
+	}
+	//*********** formation of h, s , f matrix **************
+	for (i = 1; i<n - 1; i++) {
 		m[i][i] = 2 * (h[i - 1] + h[i]);
 		if (i != 1) {
 			m[i][i - 1] = h[i - 1];
 			m[i - 1][i] = h[i - 1];
 		}
-		m[i][5] = 6 * (F[i + 1] - F[i]);
+		m[i][n - 1] = 6 * (F[i + 1] - F[i]);
 	}
 	//*********** forward elimination **************
-	for (i = 1; i<4; i++) {
+	for (i = 1; i<n - 2; i++) {
 		temp = (m[i + 1][i] / m[i][i]);
-		for (j = 1; j <= 5; j++)
+		for (j = 1; j <= n - 1; j++)
 			m[i + 1][j] -= temp*m[i][j];
 	}
 	//*********** backward substitution *********
-	for (i = 4; i>0; i--) {
+	for (i = n - 2; i>0; i--) {
 		sum = 0;
-		for (j = i; j <= 4; j++)
+		for (j = i; j <= n - 2; j++)
 			sum += m[i][j] * s[j];
 		s[i] = (m[i][n - 1] - sum) / m[i][i];
 	}
 
-	for (i = 0; i<5; i++)
-		if (temp_C[i] <= temperature&&temperature <= temp_C[i + 1]) {
-			a = (s[i + 1] - s[i]) / (6 * h[i]);
-			b = s[i] / 2;
-			c = (shift[i + 1] - shift[i]) / h[i] - (2 * h[i] * s[i] + s[i + 1] * h[i]) / 6;
-			d = shift[i];
-			sum = a*pow((p - temp_C[i]), 3) + b*pow((p - temp_C[i]), 2) + c*(p - temp_C[i]) + d;
-		}
-	return(sum);
+		for (i = 0; i<n - 1; i++)
+			if (x[i] <= p&&p <= x[i + 1]) {
+				a = (s[i + 1] - s[i]) / (6 * h[i]);
+				b = s[i] / 2;
+				c = (f[i + 1] - f[i]) / h[i] - (2 * h[i] * s[i] + s[i + 1] * h[i]) / 6;
+				d = f[i];
+				sum = a*pow((p - x[i]), 3) + b*pow((p - x[i]), 2) + c*(p - x[i]) + d;
+			}
+
+		return sum;
+
 }
 
-
-#endif

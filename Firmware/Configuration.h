@@ -700,17 +700,20 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // (unsigned char*)EEPROM_CALIBRATION_STATUS
 enum CalibrationStatus
 {
-    // Freshly assembled, needs to peform a self-test and the XYZ calibration.
-    CALIBRATION_STATUS_ASSEMBLED = 255,
+	// Freshly assembled, needs to peform a self-test and the XYZ calibration.
+	CALIBRATION_STATUS_ASSEMBLED = 255,
 
-    // For the wizard: self test has been performed, now the XYZ calibration is needed.
-    // CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
+	// For the wizard: self test has been performed, now the XYZ calibration is needed.
+	// CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
 
-    // For the wizard: factory assembled, needs to run Z calibration.
-    CALIBRATION_STATUS_Z_CALIBRATION = 240,
+	// For the wizard: factory assembled, needs to run Z calibration.
+	CALIBRATION_STATUS_Z_CALIBRATION = 240,
 
-    // The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
-    CALIBRATION_STATUS_LIVE_ADJUST = 230,
+	// The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
+	CALIBRATION_STATUS_LIVE_ADJUST = 230,
+
+	//V2 calibration has been run, now run PINDA probe temperature calibration
+	CALIBRATION_STATUS_PINDA = 220,
 
     // Calibrated, ready to print.
     CALIBRATION_STATUS_CALIBRATED = 1,

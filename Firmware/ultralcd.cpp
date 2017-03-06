@@ -2228,6 +2228,12 @@ void lcd_mesh_calibration_z()
   lcd_return_to_status();
 }
 
+void lcd_pinda_calibration()
+{
+	enquecommand_P(PSTR("M76"));
+	lcd_return_to_status();
+}
+
 #ifndef SNMM
 
 /*void lcd_calibrate_extruder() {
@@ -2390,6 +2396,7 @@ static void lcd_calibration_menu()
 MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     // "Calibrate Z" with storing the reference values to EEPROM.
     MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
+	MENU_ITEM(submenu, MSG_CALIBRATE_PINDA, lcd_pinda_calibration);
 #ifndef SNMM
 	//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
 #endif

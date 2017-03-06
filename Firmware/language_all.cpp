@@ -494,6 +494,11 @@ const char * const MSG_CALIBRATE_E_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_E_DE
 };
 
+const char MSG_CALIBRATE_PINDA_EN[] PROGMEM = "Calibrate PINDA";
+const char * const MSG_CALIBRATE_PINDA_LANG_TABLE[1] PROGMEM = {
+	MSG_CALIBRATE_PINDA_EN
+};
+
 const char MSG_CARD_MENU_EN[] PROGMEM = "Print from SD";
 const char MSG_CARD_MENU_CZ[] PROGMEM = "Tisk z SD";
 const char MSG_CARD_MENU_IT[] PROGMEM = "Stampa da SD";
@@ -1729,6 +1734,11 @@ const char * const MSG_PICK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PICK_Z_ES,
 	MSG_PICK_Z_PL,
 	MSG_PICK_Z_DE
+};
+
+const char MSG_PINDA_NOT_CALIBRATED_EN[] PROGMEM = "PINDA probe has not been calibrated";
+const char * const MSG_PINDA_NOT_CALIBRATED_LANG_TABLE[1] PROGMEM = {
+	MSG_PINDA_NOT_CALIBRATED_EN
 };
 
 const char MSG_PLANNER_BUFFER_BYTES_EN[] PROGMEM = "  PlannerBufferBytes: ";

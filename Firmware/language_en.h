@@ -265,3 +265,6 @@
 #define MSG_MENU_CALIBRATION									"Calibration"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
+
+#define MSG_CALIBRATE_PINDA										"Calibrate PINDA"
+#define MSG_PINDA_NOT_CALIBRATED								"PINDA probe has not been calibrated"
