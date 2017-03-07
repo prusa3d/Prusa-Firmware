@@ -1806,6 +1806,11 @@ const char * const MSG_PRESS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PRESS_DE
 };
 
+const char MSG_PRINTER_DISCONNECTED_EN[] PROGMEM = "Printer disconnected";
+const char * const MSG_PRINTER_DISCONNECTED_LANG_TABLE[1] PROGMEM = {
+	MSG_PRINTER_DISCONNECTED_EN
+};
+
 const char MSG_PRINT_ABORTED_EN[] PROGMEM = "Print aborted";
 const char MSG_PRINT_ABORTED_CZ[] PROGMEM = "Tisk prerusen";
 const char MSG_PRINT_ABORTED_IT[] PROGMEM = "Stampa abortita";

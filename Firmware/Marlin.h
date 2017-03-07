@@ -108,7 +108,7 @@ FORCE_INLINE void serialprintPGM(const char *str)
   }
 }
 
-
+bool is_buffer_empty();
 void get_command();
 void process_commands();
 void ramming();
@@ -297,6 +297,7 @@ extern unsigned int heating_status_counter;
 extern bool custom_message;
 extern unsigned int custom_message_type;
 extern unsigned int custom_message_state;
+extern unsigned long PingTime;
 
 
 // Handling multiple extruders pins

@@ -103,7 +103,8 @@ uint8_t farm_mode = 0;
 int farm_no = 0;
 int farm_timer = 30;
 int farm_status = 0;
-
+unsigned long allert_timer = millis();
+bool printer_connected = true;
 
 
 bool menuExiting = false;
@@ -491,6 +492,12 @@ static void lcd_status_screen()
   else if (feedmultiply > 999)
     feedmultiply = 999;
 #endif //ULTIPANEL
+
+  if (farm_mode && !printer_connected) {
+	  lcd.setCursor(0, 3);
+	  lcd_printPGM(MSG_PRINTER_DISCONNECTED);
+  }
+
 }
 
 #ifdef ULTIPANEL
@@ -1893,6 +1900,9 @@ void prusa_statistics(int _message) {
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(1);
 			status_number = 1;
+			SERIAL_ECHO("[PFN:");
+			SERIAL_ECHO(farm_no);
+			SERIAL_ECHO("]");
 			SERIAL_ECHOLN("}");
 		}
 		break;
@@ -2686,8 +2696,7 @@ char reset_menu() {
 static void lcd_disable_farm_mode() {
 	int8_t disable = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Disable farm mode?"), true, false); //allow timeouting, default no
 	if (disable) {
-		farm_mode = 0;
-		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+		enquecommand_P(PSTR("G99"));
 		lcd_return_to_status();
 	}
 	else {
@@ -2697,6 +2706,20 @@ static void lcd_disable_farm_mode() {
 	lcdDrawUpdate = 2;
 	
 }
+
+static void lcd_ping_allert() {
+	if ((abs(millis() - allert_timer)*0.001) > PING_ALLERT_PERIOD) {
+		allert_timer = millis();
+		SET_OUTPUT(BEEPER);
+		for (int i = 0; i < 2; i++) {
+			WRITE(BEEPER, HIGH);
+			delay(50);
+			WRITE(BEEPER, LOW);
+			delay(100);
+		}
+	}
+
+};
 
 
 #ifdef SNMM
@@ -4473,11 +4496,27 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 	  lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
 	  }
 	if (!SdFatUtil::test_stack_integrity()) stack_error();
-	if (farm_mode && ((millis() - PingTime) > PING_TIME * 1000)) {
-		// beep once per minute
-	}
+	lcd_ping(); //check that we have received ping command if we are in farm mode
 }
 
+void lcd_printer_connected() {
+	printer_connected = true;
+}
+
+void lcd_ping() {
+	if (farm_mode) {
+		bool empty = is_buffer_empty();
+		if ((millis() - PingTime) * 0.001 > (empty ? PING_TIME : PING_TIME_LONG)) { //if commands buffer is empty use shorter time period
+																							  //if there are comamnds in buffer, some long gcodes can delay execution of ping command
+																							  //therefore longer period is used
+			printer_connected = false;
+			lcd_ping_allert();
+		}
+		else {
+			lcd_printer_connected();
+		}
+	}
+}
 void lcd_ignore_click(bool b)
 {
   ignore_click = b;
