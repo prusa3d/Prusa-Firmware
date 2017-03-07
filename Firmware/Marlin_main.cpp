@@ -231,7 +231,7 @@ CardReader card;
 
 unsigned long TimeSent = millis();
 unsigned long TimeNow = millis();
-
+unsigned long PingTime = millis();
 union Data
 {
 byte b[2];
@@ -803,6 +803,11 @@ void repeatcommand_front()
     cmdbuffer_front_already_processed = true;
 } 
 
+bool is_buffer_empty()
+{
+	if (buflen == 0) return true;
+	else return false;
+}
 
 void setup_killpin()
 {
@@ -1954,7 +1959,13 @@ void process_commands()
   int8_t SilentMode;
 #endif
   if(code_seen("PRUSA")){
-		if (code_seen("PRN")) {
+		if (code_seen("Ping")) {  //PRUSA Ping
+			if (farm_mode) {
+				PingTime = millis();
+				MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
+			}	  
+		}
+		else if (code_seen("PRN")) {
 		  MYSERIAL.println(status_number);
 
 		}else if (code_seen("fn")) {
@@ -3104,11 +3115,13 @@ void process_commands()
 
 	case 98: //activate farm mode
 		farm_mode = 1;
+		PingTime = millis();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
 		break;
 
 	case 99: //deactivate farm mode
 		farm_mode = 0;
+		lcd_printer_connected();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
 		break;
 

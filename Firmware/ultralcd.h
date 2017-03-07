@@ -215,6 +215,9 @@ static void extr_unload_3();
 static void lcd_disable_farm_mode();
 
 void stack_error();
+static void lcd_ping_allert();
+void lcd_printer_connected();
+void lcd_ping();
 
 void lcd_calibrate_extruder();
 void lcd_farm_sdcard_menu();
