@@ -152,6 +152,7 @@ static void lcd_control_motion_menu();
 static void lcd_control_volumetric_menu();
 
 static void prusa_stat_printerstatus(int _status);
+static void prusa_stat_farm_number();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
@@ -1891,19 +1892,18 @@ void prusa_statistics(int _message) {
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(4);
-			status_number = 4;
+			prusa_stat_farm_number();
 			prusa_stat_printinfo();
 			SERIAL_ECHOLN("}");
+			status_number = 4;
 		}
 		else
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(1);
-			status_number = 1;
-			SERIAL_ECHO("[PFN:");
-			SERIAL_ECHO(farm_no);
-			SERIAL_ECHO("]");
+			prusa_stat_farm_number();
 			SERIAL_ECHOLN("}");
+			status_number = 1;
 		}
 		break;
 
@@ -1911,8 +1911,9 @@ void prusa_statistics(int _message) {
 		farm_status = 2;
 		SERIAL_ECHO("{");
 		prusa_stat_printerstatus(2);
-		status_number = 2;
+		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
+		status_number = 2;
 		farm_timer = 1;
 		break;
 
@@ -1920,8 +1921,9 @@ void prusa_statistics(int _message) {
 		farm_status = 3;
 		SERIAL_ECHO("{");
 		prusa_stat_printerstatus(3);
-		status_number = 3;
+		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
+		status_number = 3;
 		farm_timer = 1;
 
 		if (IS_SD_PRINTING)
@@ -1929,15 +1931,17 @@ void prusa_statistics(int _message) {
 			farm_status = 4;
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(4);
-			status_number = 4;
+			prusa_stat_farm_number();
 			SERIAL_ECHOLN("}");
+			status_number = 4;
 		}
 		else
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(3);
+			prusa_stat_farm_number();
+			SERIAL_ECHOLN("}");
 			status_number = 3;
-			SERIAL_ECHOLN("}");;
 		}
 		farm_timer = 1;
 		break;
@@ -1946,20 +1950,30 @@ void prusa_statistics(int _message) {
 
 		break;
 	case 4:		// print succesfull
-		SERIAL_ECHOLN("{[RES:1]}");
+		SERIAL_ECHOLN("{[RES:1]");
+		prusa_stat_printerstatus(status_number);
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 5:		// print not succesfull
-		SERIAL_ECHOLN("{[RES:0]}");
+		SERIAL_ECHOLN("{[RES:0]");
+		prusa_stat_printerstatus(status_number);
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 6:		// print done
-		SERIAL_ECHOLN("{[PRN:8]}");
+		SERIAL_ECHOLN("{[PRN:8]");
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		status_number = 8;
 		farm_timer = 2;
 		break;
 	case 7:		// print done - stopped
-		SERIAL_ECHOLN("{[PRN:9]}");
+		SERIAL_ECHOLN("{[PRN:9]");
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		status_number = 9;
 		farm_timer = 2;
 		break;
@@ -1971,32 +1985,45 @@ void prusa_statistics(int _message) {
 		farm_timer = 2;
 		break;
 	case 20:		// echo farm no
-		SERIAL_ECHO("{[PFN:");
-		SERIAL_ECHO(farm_no);
-		SERIAL_ECHOLN("]}");
+		SERIAL_ECHOLN("{");
+		prusa_stat_printerstatus(status_number);
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		farm_timer = 5;
 		break;
 	case 21: // temperatures
 		SERIAL_ECHO("{");
 		prusa_stat_temperatures();
+		prusa_stat_farm_number();
+		prusa_stat_printerstatus(status_number);
 		SERIAL_ECHOLN("}");
 		break;
     case 22: // waiting for filament change
-        SERIAL_ECHOLN("{[PRN:5]}");
+        SERIAL_ECHOLN("{[PRN:5]");
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		status_number = 5;
         break;
 	
 	case 90: // Error - Thermal Runaway
-		SERIAL_ECHOLN("{[ERR:1]}");
+		SERIAL_ECHOLN("{[ERR:1]");
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		break;
 	case 91: // Error - Thermal Runaway Preheat
-		SERIAL_ECHOLN("{[ERR:2]}");
+		SERIAL_ECHOLN("{[ERR:2]");
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		break;
 	case 92: // Error - Min temp
-		SERIAL_ECHOLN("{[ERR:3]}");
+		SERIAL_ECHOLN("{[ERR:3]");
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		break;
 	case 93: // Error - Max temp
-		SERIAL_ECHOLN("{[ERR:4]}");
+		SERIAL_ECHOLN("{[ERR:4]");
+		prusa_stat_farm_number();
+		SERIAL_ECHOLN("}");
 		break;
 
     case 99:		// heartbeat
@@ -2016,6 +2043,12 @@ static void prusa_stat_printerstatus(int _status)
 {
 	SERIAL_ECHO("[PRN:");
 	SERIAL_ECHO(_status);
+	SERIAL_ECHO("]");
+}
+
+static void prusa_stat_farm_number() {
+	SERIAL_ECHO("[PFN:");
+	SERIAL_ECHO(farm_no);
 	SERIAL_ECHO("]");
 }
 
@@ -4503,14 +4536,14 @@ void lcd_printer_connected() {
 	printer_connected = true;
 }
 
-void lcd_ping() {
+void lcd_ping() { //chceck if printer is connected to monitoring when in farm mode
 	if (farm_mode) {
 		bool empty = is_buffer_empty();
 		if ((millis() - PingTime) * 0.001 > (empty ? PING_TIME : PING_TIME_LONG)) { //if commands buffer is empty use shorter time period
 																							  //if there are comamnds in buffer, some long gcodes can delay execution of ping command
 																							  //therefore longer period is used
 			printer_connected = false;
-			lcd_ping_allert();
+			//lcd_ping_allert(); //acustic signals
 		}
 		else {
 			lcd_printer_connected();
