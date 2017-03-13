@@ -324,7 +324,7 @@ THERMISTORS SETTINGS
 #define Z_BABYSTEP_MIN -3999
 #define Z_BABYSTEP_MAX 0
 
-#define PING_TIME 25 //time in s
+#define PING_TIME 60 //time in s
 #define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
 #define PING_ALLERT_PERIOD 60 //time in s
 
