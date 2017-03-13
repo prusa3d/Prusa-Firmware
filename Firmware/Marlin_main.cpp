@@ -1962,7 +1962,7 @@ void process_commands()
 		if (code_seen("Ping")) {  //PRUSA Ping
 			if (farm_mode) {
 				PingTime = millis();
-				MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
+				//MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
 			}	  
 		}
 		else if (code_seen("PRN")) {
