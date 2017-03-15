@@ -1127,6 +1127,7 @@ void setup()
 #endif
   farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
   EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
+  if (farm_mode == 0xFF && farm_no == 0) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero, deactivate farm mode
   if (farm_mode)
   {
 	  prusa_statistics(8);
