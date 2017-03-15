@@ -119,7 +119,7 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i, filament_size[2]);
   #endif
   #endif
-  
+
   /*MYSERIAL.print("Top address used:\n");
   MYSERIAL.print(i);
   MYSERIAL.print("\n");
