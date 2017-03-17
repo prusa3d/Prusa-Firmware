@@ -2765,19 +2765,6 @@ void process_commands()
         }
         break;
 
-    /**
-     * G80: Mesh-based Z probe, probes a grid and produces a
-     *      mesh to compensate for variable bed height
-     *
-     * The S0 report the points as below
-     *
-     *  +----> X-axis
-     *  |
-     *  |
-     *  v Y-axis
-     *
-     */
-
 #ifdef DIS
 	case 77:
 	{
@@ -2808,6 +2795,18 @@ void process_commands()
 	
 #endif
 
+	/**
+	* G80: Mesh-based Z probe, probes a grid and produces a
+	*      mesh to compensate for variable bed height
+	*
+	* The S0 report the points as below
+	*
+	*  +----> X-axis
+	*  |
+	*  |
+	*  v Y-axis
+	*
+	*/
     case 80:
     case_G80:
         {

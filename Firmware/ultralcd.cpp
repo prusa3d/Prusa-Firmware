@@ -106,6 +106,8 @@ int farm_status = 0;
 unsigned long allert_timer = millis();
 bool printer_connected = true;
 
+bool long_press = false;
+long long_press_timer = millis();
 
 bool menuExiting = false;
 
@@ -4413,11 +4415,12 @@ void lcd_update_enable(bool enabled)
 
 void lcd_update(uint8_t lcdDrawUpdateOverride)
 {
-  if (lcdDrawUpdate < lcdDrawUpdateOverride)
-    lcdDrawUpdate = lcdDrawUpdateOverride;
 
-  if (! lcd_update_enabled)
-      return;
+	if (lcdDrawUpdate < lcdDrawUpdateOverride)
+		lcdDrawUpdate = lcdDrawUpdateOverride;
+
+	if (!lcd_update_enabled)
+		return;
 
 #ifdef LCD_HAS_SLOW_BUTTONS
   slow_buttons = lcd_implementation_read_slow_buttons(); // buttons which take too long to read in interrupt context
@@ -4484,8 +4487,41 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		  encoderDiff = 0;
 		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 	  }
-	  if (LCD_CLICKED)
+
+	  if (LCD_CLICKED) {
 		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	  }/*
+		  for (int i = 0; i < 500; i++) {
+			  //lcd_buttons_update();
+			  if (!LCD_CLICKED) i = 1000;
+			  else delay(50);
+
+
+		//	  if (i >= 500) lcd_goto_menu(lcd_calibration_menu);
+		  }
+		  
+	  }
+	  */
+	 /*if(LCD_CLICKED){
+		  SERIAL_ECHOLNPGM("ok");
+		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		  if (long_press == false) {
+			  long_press = true;
+			  long_press_timer = millis();
+			  SERIAL_ECHOLNPGM("Su zde!");
+		  }
+		  else {
+			  if ((millis() - long_press_timer) > LONG_PRESS_TIME) {
+				  SERIAL_ECHOLNPGM("Su tady!");
+				  lcd_goto_menu(lcd_settings_menu);
+				  long_press = false;
+			  }
+		  }
+	  }
+	  else {
+		  long_press = false;
+		  SERIAL_ECHOLNPGM("Jaj!");
+	  }*/
 #endif//ULTIPANEL
 
 #ifdef DOGLCD        // Changes due to different driver architecture of the DOGM display
