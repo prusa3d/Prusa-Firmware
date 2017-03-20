@@ -3123,6 +3123,7 @@ void process_commands()
 		farm_mode = 0;
 		lcd_printer_connected();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+		lcd_update(2);
 		break;
 
 

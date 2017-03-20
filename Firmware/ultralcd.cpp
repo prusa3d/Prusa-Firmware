@@ -107,7 +107,13 @@ unsigned long allert_timer = millis();
 bool printer_connected = true;
 
 bool long_press = false;
+bool long_press_active = false;
 long long_press_timer = millis();
+long long_press_delay = millis();
+int long_press_count = 0;
+bool goto_move_z = false;
+bool move_z_flag = false;
+bool button_pressed = false;
 
 bool menuExiting = false;
 
@@ -1211,7 +1217,7 @@ void lcd_menu_statistics()
 
 
 static void _lcd_move(const char *name, int axis, int min, int max) {
-  if (encoderPosition != 0) {
+	if (encoderPosition != 0) {
     refresh_cmd_timeout();
     if (! planner_queue_full()) {
       current_position[axis] += float((int)encoderPosition) * move_menu_scale;
@@ -1224,7 +1230,13 @@ static void _lcd_move(const char *name, int axis, int min, int max) {
     }
   }
   if (lcdDrawUpdate) lcd_implementation_drawedit(name, ftostr31(current_position[axis]));
-  if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis);
+  if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis); {
+	  /*if(!long_press_active) lcd_goto_menu(lcd_move_menu_axis);
+	  else {
+		  long_press_active = false;
+		  lcd_return_to_status();
+	  }*/
+  }
 }
 
 
@@ -4272,6 +4284,27 @@ static void lcd_quick_feedback()
 {
   lcdDrawUpdate = 2;
   blocking_enc = millis() + 500;
+  if (button_pressed && long_press_active) long_press_active = false;
+  button_pressed = false;
+	  /*button_pressed = false;
+		else if (button_pressed) {
+			if (long_press_active == false) {
+				newbutton |= EN_C;
+			}
+			else {
+				long_press_active = false;
+			}
+		}*/
+	 /* if (long_press_active)
+	  {
+		  long_press_active = false;
+	  }
+	  else {
+		  newbutton |= EN_C;
+	  }
+  }*/
+  //button_pressed = false;
+ // long_press_count = 0;
   lcd_implementation_quick_feedback();
 }
 
@@ -4425,7 +4458,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 #ifdef LCD_HAS_SLOW_BUTTONS
   slow_buttons = lcd_implementation_read_slow_buttons(); // buttons which take too long to read in interrupt context
 #endif
-
+  
   lcd_buttons_update();
 
 #if (SDCARDDETECT > 0)
@@ -4488,40 +4521,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 	  }
 
-	  if (LCD_CLICKED) {
-		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-	  }/*
-		  for (int i = 0; i < 500; i++) {
-			  //lcd_buttons_update();
-			  if (!LCD_CLICKED) i = 1000;
-			  else delay(50);
-
-
-		//	  if (i >= 500) lcd_goto_menu(lcd_calibration_menu);
-		  }
-		  
-	  }
-	  */
-	 /*if(LCD_CLICKED){
-		  SERIAL_ECHOLNPGM("ok");
-		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-		  if (long_press == false) {
-			  long_press = true;
-			  long_press_timer = millis();
-			  SERIAL_ECHOLNPGM("Su zde!");
-		  }
-		  else {
-			  if ((millis() - long_press_timer) > LONG_PRESS_TIME) {
-				  SERIAL_ECHOLNPGM("Su tady!");
-				  lcd_goto_menu(lcd_settings_menu);
-				  long_press = false;
-			  }
-		  }
-	  }
-	  else {
-		  long_press = false;
-		  SERIAL_ECHOLNPGM("Jaj!");
-	  }*/
+	  /*if (LCD_CLICKED)*/ lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 #endif//ULTIPANEL
 
 #ifdef DOGLCD        // Changes due to different driver architecture of the DOGM display
@@ -4656,9 +4656,55 @@ void lcd_buttons_update()
   if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
   if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
 #if BTN_ENC > 0
-  if ((blocking_enc < millis()) && (READ(BTN_ENC) == 0))
-    newbutton |= EN_C;
-#endif
+ /* if (READ(BTN_ENC) == 0) { //button pressed
+	  if (button_pressed == false) {
+		  button_pressed = true;
+		  long_press_delay = millis();
+	  }
+	  if (((millis() - long_press_delay) > 2000) && long_press_active == false) {
+		  long_press_active = true;
+		  lcd_goto_menu(lcd_move_z);
+	  }
+  }
+  else { //button not pressed
+	  if (button_pressed) {
+		  button_pressed = false;
+		  if (long_press_active)
+		  {
+			  long_press_active = false;
+		  }
+		  else {
+			  newbutton |= EN_C;
+		  }
+	  }
+
+  }*/
+  if (READ(BTN_ENC) == 0) {
+	  if (button_pressed == false) {
+		  long_press_delay = millis();
+		  //long_press_count = 0;
+		  //if (blocking_enc < millis()) 
+			  button_pressed = true;
+	  }
+	  if (((millis() - long_press_delay) > 2000) && long_press_active == false) {
+
+	//	  blocking_enc = millis() + 500;
+		  long_press_active = true;
+		  //lcd_ignore_click(true);
+		  lcd_goto_menu(lcd_move_z);		  
+	  }
+	  
+  }
+  else if(button_pressed){
+	  if (long_press_active == false) {
+		  newbutton |= EN_C;
+	  }
+	  /*else {
+		  long_press_active = false;
+	  }*/
+  }
+
+#endif  
   buttons = newbutton;
 #ifdef LCD_HAS_SLOW_BUTTONS
   buttons |= slow_buttons;
