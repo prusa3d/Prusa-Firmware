@@ -4284,27 +4284,9 @@ static void lcd_quick_feedback()
 {
   lcdDrawUpdate = 2;
   blocking_enc = millis() + 500;
-  if (button_pressed && long_press_active) long_press_active = false;
+  //if (button_pressed && long_press_active) long_press_active = false;
   button_pressed = false;
-	  /*button_pressed = false;
-		else if (button_pressed) {
-			if (long_press_active == false) {
-				newbutton |= EN_C;
-			}
-			else {
-				long_press_active = false;
-			}
-		}*/
-	 /* if (long_press_active)
-	  {
-		  long_press_active = false;
-	  }
-	  else {
-		  newbutton |= EN_C;
-	  }
-  }*/
-  //button_pressed = false;
- // long_press_count = 0;
+
   lcd_implementation_quick_feedback();
 }
 
