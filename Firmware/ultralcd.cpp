@@ -106,13 +106,9 @@ int farm_status = 0;
 unsigned long allert_timer = millis();
 bool printer_connected = true;
 
-bool long_press = false;
+
 bool long_press_active = false;
 long long_press_timer = millis();
-long long_press_delay = millis();
-int long_press_count = 0;
-bool goto_move_z = false;
-bool move_z_flag = false;
 bool button_pressed = false;
 
 bool menuExiting = false;
@@ -282,6 +278,7 @@ bool lcd_oldcardstatus;
 #endif //ULTIPANEL
 
 menuFunc_t currentMenu = lcd_status_screen; /* function pointer to the currently active menu */
+menuFunc_t savedMenu;
 uint32_t lcd_next_update_millis;
 uint8_t lcd_status_update_delay;
 bool ignore_click = false;
@@ -1231,11 +1228,6 @@ static void _lcd_move(const char *name, int axis, int min, int max) {
   }
   if (lcdDrawUpdate) lcd_implementation_drawedit(name, ftostr31(current_position[axis]));
   if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis); {
-	  /*if(!long_press_active) lcd_goto_menu(lcd_move_menu_axis);
-	  else {
-		  long_press_active = false;
-		  lcd_return_to_status();
-	  }*/
   }
 }
 
@@ -4284,9 +4276,8 @@ static void lcd_quick_feedback()
 {
   lcdDrawUpdate = 2;
   blocking_enc = millis() + 500;
-  //if (button_pressed && long_press_active) long_press_active = false;
-  button_pressed = false;
 
+  button_pressed = false;
   lcd_implementation_quick_feedback();
 }
 
@@ -4638,54 +4629,47 @@ void lcd_buttons_update()
   if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
   if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
 #if BTN_ENC > 0
- /* if (READ(BTN_ENC) == 0) { //button pressed
-	  if (button_pressed == false) {
-		  button_pressed = true;
-		  long_press_delay = millis();
-	  }
-	  if (((millis() - long_press_delay) > 2000) && long_press_active == false) {
-		  long_press_active = true;
-		  lcd_goto_menu(lcd_move_z);
-	  }
-  }
-  else { //button not pressed
-	  if (button_pressed) {
-		  button_pressed = false;
-		  if (long_press_active)
-		  {
-			  long_press_active = false;
+  if (lcd_update_enabled == true) { //if we are in non-modal mode, long press can be used and short press triggers with button release
+	  if (READ(BTN_ENC) == 0) { //button is pressed	  
+
+		  if (button_pressed == false && long_press_active == false) {
+			  long_press_timer = millis();
+			  button_pressed = true;
 		  }
 		  else {
-			  newbutton |= EN_C;
+			  if (millis() - long_press_timer > 500) { //long press activated
+				  long_press_active = true;
+				  move_menu_scale = 1.0;
+				  savedMenu = currentMenu;
+				  lcd_goto_menu(lcd_move_z);
+			  }
 		  }
 	  }
-
-  }*/
-  if (READ(BTN_ENC) == 0) {
-	  if (button_pressed == false) {
-		  long_press_delay = millis();
-		  //long_press_count = 0;
-		  //if (blocking_enc < millis()) 
-			  button_pressed = true;
+	  else { //button not pressed
+		  if (button_pressed) { //button was released
+			  if (long_press_active == false) { //button released before long press gets activated
+				  if (currentMenu == lcd_move_z) {
+					  //return to previously active menu
+					  //lcd_goto_menu(savedMenu);
+					  lcd_goto_menu(lcd_main_menu);
+					  lcd_return_to_status();
+				  }
+				  else {
+					  newbutton |= EN_C;
+				  }
+			  }
+			  //button_pressed is set back to false via lcd_quick_feedback function
+		  }
+		  else {
+			  long_press_active = false;
+		  }
 	  }
-	  if (((millis() - long_press_delay) > 2000) && long_press_active == false) {
-
-	//	  blocking_enc = millis() + 500;
-		  long_press_active = true;
-		  //lcd_ignore_click(true);
-		  lcd_goto_menu(lcd_move_z);		  
-	  }
-	  
   }
-  else if(button_pressed){
-	  if (long_press_active == false) {
+  else { //we are in modal mode
+	  if (READ(BTN_ENC) == 0)
 		  newbutton |= EN_C;
-	  }
-	  /*else {
-		  long_press_active = false;
-	  }*/
   }
-
+  
 #endif  
   buttons = newbutton;
 #ifdef LCD_HAS_SLOW_BUTTONS
