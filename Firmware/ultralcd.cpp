@@ -4637,7 +4637,7 @@ void lcd_buttons_update()
 			  button_pressed = true;
 		  }
 		  else {
-			  if (millis() - long_press_timer > 500) { //long press activated
+			  if (millis() - long_press_timer > 1000) { //long press activated
 				  long_press_active = true;
 				  move_menu_scale = 1.0;
 				  savedMenu = currentMenu;
@@ -4651,7 +4651,7 @@ void lcd_buttons_update()
 				  if (currentMenu == lcd_move_z) {
 					  //return to previously active menu
 					  //lcd_goto_menu(savedMenu);
-					  lcd_goto_menu(lcd_main_menu);
+					  //lcd_goto_menu(lcd_main_menu);
 					  lcd_return_to_status();
 				  }
 				  else {

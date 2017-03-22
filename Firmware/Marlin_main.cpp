@@ -429,7 +429,7 @@ static bool cmdbuffer_front_already_processed = false;
 // Debugging information will be sent to serial line.
 // #define CMDBUFFER_DEBUG
 
-static int serial_count = 0;
+static int serial_count = 0;  //index of character read from serial line
 static boolean comment_mode = false;
 static char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
@@ -576,8 +576,8 @@ bool cmdqueue_could_enqueue_front(int len_asked)
         cmdqueue_pop_front();
         cmdbuffer_front_already_processed = true;
     }
-    if (bufindr == bufindw && buflen > 0)
-        // Full buffer.
+	if (bufindr == bufindw && buflen > 0)
+		// Full buffer.
         return false;
     // Adjust the end of the write buffer based on whether a partial line is in the receive buffer.
     int endw = (serial_count > 0) ? (bufindw + MAX_CMD_SIZE + 1) : bufindw;
@@ -615,9 +615,9 @@ bool cmdqueue_could_enqueue_back(int len_asked)
     if (len_asked >= MAX_CMD_SIZE)
         return false;
 
-    if (bufindr == bufindw && buflen > 0)
-        // Full buffer.
-        return false;
+	if (bufindr == bufindw && buflen > 0)
+		// Full buffer.
+		return false;
 
     if (serial_count > 0) {
         // If there is some data stored starting at bufindw, len_asked is certainly smaller than
@@ -1323,10 +1323,16 @@ void loop()
 void get_command()
 {
     // Test and reserve space for the new command string.
-    if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))
-        return;
+	if (!cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1)) 
+		return;
+	
+	bool rx_buffer_full = false; //flag that serial rx buffer is full
 
   while (MYSERIAL.available() > 0) {
+	  if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
+		  SERIAL_ECHOLNPGM("Full RX Buffer");   //if buffer was full, there is danger that reading of last gcode will not be completed
+		  rx_buffer_full = true;				//sets flag that buffer was full	
+	  }
     char serial_char = MYSERIAL.read();
       TimeSent = millis();
       TimeNow = millis();
@@ -1476,11 +1482,18 @@ void get_command()
         }
     }
 
+	//add comment
+	if (rx_buffer_full == true && serial_count > 0) {   //if rx buffer was full and string was not properly terminated
+		rx_buffer_full = false;
+		bufindw = bufindw - serial_count;				//adjust tail of the buffer to prepare buffer for writing new command
+		serial_count = 0;
+	}
+
   #ifdef SDSUPPORT
   if(!card.sdprinting || serial_count!=0){
     // If there is a half filled buffer from serial line, wait until return before
     // continuing with the serial line.
-    return;
+     return;
   }
 
   //'#' stops reading from SD to the buffer prematurely, so procedural macro calls are possible
@@ -3878,8 +3891,7 @@ Sigma_Exit:
             SERIAL_PROTOCOL_F(rawHotendTemp(cur_extruder)/OVERSAMPLENR,0);
           }
         #endif
-
-        SERIAL_PROTOCOLLN("");
+		SERIAL_PROTOCOLLN("");
       return;
       break;
     case 109:
