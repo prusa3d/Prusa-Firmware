@@ -328,4 +328,6 @@ THERMISTORS SETTINGS
 #define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
 #define PING_ALLERT_PERIOD 60 //time in s
 
+#define LONG_PRESS_TIME 1000 //time in ms for button long press
+
 #endif //__CONFIGURATION_PRUSA_H
