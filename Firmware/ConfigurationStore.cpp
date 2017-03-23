@@ -43,7 +43,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
-#define EEPROM_VERSION "V0"
+#define EEPROM_VERSION "V1"
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings() 
@@ -91,6 +91,11 @@ void Config_StoreSettings()
     EEPROM_WRITE_VAR(i,dummy);
     EEPROM_WRITE_VAR(i,dummy);
   #endif
+  #ifdef PIDTEMPBED
+	EEPROM_WRITE_VAR(i, bedKp);
+	EEPROM_WRITE_VAR(i, bedKi);
+	EEPROM_WRITE_VAR(i, bedKd);
+  #endif
   #ifndef DOGLCD
     int lcd_contrast = 32;
   #endif
@@ -119,7 +124,6 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i, filament_size[2]);
   #endif
   #endif
-  
   /*MYSERIAL.print("Top address used:\n");
   MYSERIAL.print(i);
   MYSERIAL.print("\n");
@@ -196,6 +200,15 @@ void Config_PrintSettings()
     SERIAL_ECHOPAIR(" I" ,unscalePID_i(Ki)); 
     SERIAL_ECHOPAIR(" D" ,unscalePID_d(Kd));
     SERIAL_ECHOLN(""); 
+#endif
+#ifdef PIDTEMPBED
+	SERIAL_ECHO_START;
+	SERIAL_ECHOLNPGM("PID heatbed settings:");
+	SERIAL_ECHO_START;
+	SERIAL_ECHOPAIR("   M304 P", bedKp);
+	SERIAL_ECHOPAIR(" I", unscalePID_i(bedKi));
+	SERIAL_ECHOPAIR(" D", unscalePID_d(bedKd));
+	SERIAL_ECHOLN("");
 #endif
 #ifdef FWRETRACT
     SERIAL_ECHO_START;
@@ -301,7 +314,12 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,Kp);
         EEPROM_READ_VAR(i,Ki);
         EEPROM_READ_VAR(i,Kd);
-        #ifndef DOGLCD
+		#ifdef PIDTEMPBED
+		EEPROM_READ_VAR(i, bedKp);
+		EEPROM_READ_VAR(i, bedKi);
+		EEPROM_READ_VAR(i, bedKd);
+		#endif
+		#ifndef DOGLCD
         int lcd_contrast;
         #endif
         EEPROM_READ_VAR(i,lcd_contrast);
