@@ -269,7 +269,6 @@ volatile uint8_t buttons_reprapworld_keypad; // to store the reprapworld_keypad 
 volatile uint8_t slow_buttons;//Contains the bits of the currently pressed buttons.
 #endif
 uint8_t currentMenuViewOffset;              /* scroll offset in the current menu */
-uint32_t blocking_enc;
 uint8_t lastEncoderBits;
 uint32_t encoderPosition;
 uint32_t savedEncoderPosition;
@@ -4276,8 +4275,6 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 static void lcd_quick_feedback()
 {
   lcdDrawUpdate = 2;
-  blocking_enc = millis() + 500;
-
   button_pressed = false;
   lcd_implementation_quick_feedback();
 }
@@ -4329,6 +4326,7 @@ static void menu_action_setting_edit_callback_bool(const char* pstr, bool* ptr, 
 #endif//ULTIPANEL
 
 /** LCD API **/
+
 void lcd_init()
 {
   lcd_implementation_init();
@@ -4657,7 +4655,7 @@ void lcd_buttons_update()
 					  //return to previously active menu and previous encoder position
 					  lcd_goto_menu(savedMenu, savedEncoderPosition);
 				  }
-				  else {					  
+				  else {
 					  newbutton |= EN_C;
 				  }
 			  }
@@ -4670,7 +4668,7 @@ void lcd_buttons_update()
   }
   else { //we are in modal mode
 	  if (READ(BTN_ENC) == 0)
-		  newbutton |= EN_C;
+		  newbutton |= EN_C; 
   }
   
 #endif  

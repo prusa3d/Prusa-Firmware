@@ -230,7 +230,6 @@ void lcd_farm_sdcard_menu_w();
 void lcd_wait_for_cool_down();
 void adjust_bed_reset();
 void lcd_extr_cal_reset();
-//static void _lcd_move(const char *name, int axis, int min, int max, bool called_from_move_menu = true);
 
 union MenuData;
 

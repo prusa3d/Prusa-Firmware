@@ -1028,7 +1028,7 @@ void setup()
   SERIAL_ECHO(freeMemory());
   SERIAL_ECHORPGM(MSG_PLANNER_BUFFER_BYTES);
   SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
-  
+  lcd_update_enable(false);
   // loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
   Config_RetrieveSettings();
   SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
@@ -1041,7 +1041,7 @@ void setup()
   // Reset the machine correction matrix.
   // It does not make sense to load the correction matrix until the machine is homed.
   world2machine_reset();
-
+  
   lcd_init();
   if (!READ(BTN_ENC))
   {
@@ -1166,16 +1166,14 @@ void setup()
       eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
-      lcd_update_enable(true);
   } else if (calibration_status() == CALIBRATION_STATUS_LIVE_ADJUST) {
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
-      lcd_update_enable(true);
   } else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
-      lcd_update_enable(true);
   }
+  lcd_update_enable(true);
 
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
