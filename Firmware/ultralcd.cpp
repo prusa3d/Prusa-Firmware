@@ -272,6 +272,7 @@ uint8_t currentMenuViewOffset;              /* scroll offset in the current menu
 uint32_t blocking_enc;
 uint8_t lastEncoderBits;
 uint32_t encoderPosition;
+uint32_t savedEncoderPosition;
 #if (SDCARDDETECT > 0)
 bool lcd_oldcardstatus;
 #endif
@@ -4633,14 +4634,18 @@ void lcd_buttons_update()
 	  if (READ(BTN_ENC) == 0) { //button is pressed	  
 
 		  if (button_pressed == false && long_press_active == false) {
+			  if (currentMenu != lcd_move_z) {
+				  savedMenu = currentMenu;
+				  savedEncoderPosition = encoderPosition;
+			  }
 			  long_press_timer = millis();
 			  button_pressed = true;
 		  }
 		  else {
-			  if (millis() - long_press_timer > 1000) { //long press activated
+			  if (millis() - long_press_timer > LONG_PRESS_TIME) { //long press activated
+				   
 				  long_press_active = true;
 				  move_menu_scale = 1.0;
-				  savedMenu = currentMenu;
 				  lcd_goto_menu(lcd_move_z);
 			  }
 		  }
@@ -4649,18 +4654,16 @@ void lcd_buttons_update()
 		  if (button_pressed) { //button was released
 			  if (long_press_active == false) { //button released before long press gets activated
 				  if (currentMenu == lcd_move_z) {
-					  //return to previously active menu
-					  //lcd_goto_menu(savedMenu);
-					  //lcd_goto_menu(lcd_main_menu);
-					  lcd_return_to_status();
+					  //return to previously active menu and previous encoder position
+					  lcd_goto_menu(savedMenu, savedEncoderPosition);
 				  }
-				  else {
+				  else {					  
 					  newbutton |= EN_C;
 				  }
 			  }
 			  //button_pressed is set back to false via lcd_quick_feedback function
 		  }
-		  else {
+		  else {			  
 			  long_press_active = false;
 		  }
 	  }
