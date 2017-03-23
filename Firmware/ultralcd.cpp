@@ -107,6 +107,10 @@ unsigned long allert_timer = millis();
 bool printer_connected = true;
 
 
+bool long_press_active = false;
+long long_press_timer = millis();
+bool button_pressed = false;
+
 bool menuExiting = false;
 
 #ifdef FILAMENT_LCD_DISPLAY
@@ -265,15 +269,16 @@ volatile uint8_t buttons_reprapworld_keypad; // to store the reprapworld_keypad 
 volatile uint8_t slow_buttons;//Contains the bits of the currently pressed buttons.
 #endif
 uint8_t currentMenuViewOffset;              /* scroll offset in the current menu */
-uint32_t blocking_enc;
 uint8_t lastEncoderBits;
 uint32_t encoderPosition;
+uint32_t savedEncoderPosition;
 #if (SDCARDDETECT > 0)
 bool lcd_oldcardstatus;
 #endif
 #endif //ULTIPANEL
 
 menuFunc_t currentMenu = lcd_status_screen; /* function pointer to the currently active menu */
+menuFunc_t savedMenu;
 uint32_t lcd_next_update_millis;
 uint8_t lcd_status_update_delay;
 bool ignore_click = false;
@@ -1209,7 +1214,7 @@ void lcd_menu_statistics()
 
 
 static void _lcd_move(const char *name, int axis, int min, int max) {
-  if (encoderPosition != 0) {
+	if (encoderPosition != 0) {
     refresh_cmd_timeout();
     if (! planner_queue_full()) {
       current_position[axis] += float((int)encoderPosition) * move_menu_scale;
@@ -1222,7 +1227,8 @@ static void _lcd_move(const char *name, int axis, int min, int max) {
     }
   }
   if (lcdDrawUpdate) lcd_implementation_drawedit(name, ftostr31(current_position[axis]));
-  if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis);
+  if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis); {
+  }
 }
 
 
@@ -4269,7 +4275,7 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 static void lcd_quick_feedback()
 {
   lcdDrawUpdate = 2;
-  blocking_enc = millis() + 500;
+  button_pressed = false;
   lcd_implementation_quick_feedback();
 }
 
@@ -4320,6 +4326,7 @@ static void menu_action_setting_edit_callback_bool(const char* pstr, bool* ptr, 
 #endif//ULTIPANEL
 
 /** LCD API **/
+
 void lcd_init()
 {
   lcd_implementation_init();
@@ -4413,16 +4420,17 @@ void lcd_update_enable(bool enabled)
 
 void lcd_update(uint8_t lcdDrawUpdateOverride)
 {
-  if (lcdDrawUpdate < lcdDrawUpdateOverride)
-    lcdDrawUpdate = lcdDrawUpdateOverride;
 
-  if (! lcd_update_enabled)
-      return;
+	if (lcdDrawUpdate < lcdDrawUpdateOverride)
+		lcdDrawUpdate = lcdDrawUpdateOverride;
+
+	if (!lcd_update_enabled)
+		return;
 
 #ifdef LCD_HAS_SLOW_BUTTONS
   slow_buttons = lcd_implementation_read_slow_buttons(); // buttons which take too long to read in interrupt context
 #endif
-
+  
   lcd_buttons_update();
 
 #if (SDCARDDETECT > 0)
@@ -4484,8 +4492,8 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		  encoderDiff = 0;
 		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 	  }
-	  if (LCD_CLICKED)
-		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+
+	  /*if (LCD_CLICKED)*/ lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 #endif//ULTIPANEL
 
 #ifdef DOGLCD        // Changes due to different driver architecture of the DOGM display
@@ -4620,9 +4628,50 @@ void lcd_buttons_update()
   if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
   if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
 #if BTN_ENC > 0
-  if ((blocking_enc < millis()) && (READ(BTN_ENC) == 0))
-    newbutton |= EN_C;
-#endif
+  if (lcd_update_enabled == true) { //if we are in non-modal mode, long press can be used and short press triggers with button release
+	  if (READ(BTN_ENC) == 0) { //button is pressed	  
+
+		  if (button_pressed == false && long_press_active == false) {
+			  if (currentMenu != lcd_move_z) {
+				  savedMenu = currentMenu;
+				  savedEncoderPosition = encoderPosition;
+			  }
+			  long_press_timer = millis();
+			  button_pressed = true;
+		  }
+		  else {
+			  if (millis() - long_press_timer > LONG_PRESS_TIME) { //long press activated
+				   
+				  long_press_active = true;
+				  move_menu_scale = 1.0;
+				  lcd_goto_menu(lcd_move_z);
+			  }
+		  }
+	  }
+	  else { //button not pressed
+		  if (button_pressed) { //button was released
+			  if (long_press_active == false) { //button released before long press gets activated
+				  if (currentMenu == lcd_move_z) {
+					  //return to previously active menu and previous encoder position
+					  lcd_goto_menu(savedMenu, savedEncoderPosition);
+				  }
+				  else {
+					  newbutton |= EN_C;
+				  }
+			  }
+			  //button_pressed is set back to false via lcd_quick_feedback function
+		  }
+		  else {			  
+			  long_press_active = false;
+		  }
+	  }
+  }
+  else { //we are in modal mode
+	  if (READ(BTN_ENC) == 0)
+		  newbutton |= EN_C; 
+  }
+  
+#endif  
   buttons = newbutton;
 #ifdef LCD_HAS_SLOW_BUTTONS
   buttons |= slow_buttons;
