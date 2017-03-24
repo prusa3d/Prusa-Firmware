@@ -158,6 +158,13 @@ static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
 static void updateTemperaturesFromRawValues();
 
+enum TempRunawayStates
+{
+	TempRunaway_INACTIVE = 0,
+	TempRunaway_PREHEAT = 1,
+	TempRunaway_ACTIVE = 2,
+};
+
 #ifdef WATCH_TEMP_PERIOD
 int watch_start_temp[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
@@ -1049,6 +1056,9 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 	float __hysteresis = 0;
 	int __timeout = 0;
 	bool temp_runaway_check_active = false;
+	static float __preheat_start = 0;
+	static int __preheat_counter = 0;
+	static int __preheat_errors = 0;
 
 	_heater_id = (_isbed) ? _heater_id++ : _heater_id;
 
@@ -1069,8 +1079,8 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 
 	if (millis() - temp_runaway_timer[_heater_id] > 2000)
 	{
-		temp_runaway_timer[_heater_id] = millis();
 
+		temp_runaway_timer[_heater_id] = millis();
 		if (_output == 0)
 		{
 			temp_runaway_check_active = false;
@@ -1081,19 +1091,47 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 		{
 			if (_target_temperature > 0)
 			{
-				temp_runaway_status[_heater_id] = 1;
+				temp_runaway_status[_heater_id] = TempRunaway_PREHEAT;
 				temp_runaway_target[_heater_id] = _target_temperature;
+				__preheat_start = _current_temperature;
+				__preheat_counter = 0;
 			}
 			else
 			{
-				temp_runaway_status[_heater_id] = 0;
+				temp_runaway_status[_heater_id] = TempRunaway_INACTIVE;
 				temp_runaway_target[_heater_id] = _target_temperature;
 			}
 		}
 
-		if (_current_temperature >= _target_temperature  && temp_runaway_status[_heater_id] == 1)
+		if (temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
 		{
-			temp_runaway_status[_heater_id] = 2;
+			if (_current_temperature < 150)
+			{
+				__preheat_counter++;
+				if (__preheat_counter > 8)
+				{
+					if (_current_temperature - __preheat_start < 2) {
+						__preheat_errors++;
+					}
+					else {
+						__preheat_errors = 0;
+					}
+
+					if (__preheat_errors > 5)
+					{
+						if (farm_mode) { prusa_statistics(0); }
+						temp_runaway_stop(true);
+						if (farm_mode) { prusa_statistics(91); }
+					}
+					__preheat_start = _current_temperature;
+					__preheat_counter = 0;
+				}
+			}
+		}
+
+		if (_current_temperature >= _target_temperature  && temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
+		{
+			temp_runaway_status[_heater_id] = TempRunaway_ACTIVE;
 			temp_runaway_check_active = false;
 		}
 
@@ -1109,16 +1147,18 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 			if (_target_temperature - __hysteresis < _current_temperature && _current_temperature < _target_temperature + __hysteresis)
 			{
 				temp_runaway_check_active = false;
+				temp_runaway_error_counter[_heater_id] = 0;
 			}
 			else
 			{
-				if (temp_runaway_status[_heater_id] > 1)
+				if (temp_runaway_status[_heater_id] > TempRunaway_PREHEAT)
 				{
 					temp_runaway_error_counter[_heater_id]++;
-
 					if (temp_runaway_error_counter[_heater_id] * 2 > __timeout)
 					{
-						temp_runaway_stop();
+						if (farm_mode) { prusa_statistics(0); }
+						temp_runaway_stop(false);
+						if (farm_mode) { prusa_statistics(90); }
 					}
 				}
 			}
@@ -1127,7 +1167,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 	}
 }
 
-void temp_runaway_stop()
+void temp_runaway_stop(bool isPreheat)
 {
 	cancel_heatup = true;
 	quickStop();
@@ -1136,7 +1176,7 @@ void temp_runaway_stop()
 		card.sdprinting = false;
 		card.closefile();
 	}
-	LCD_ALERTMESSAGEPGM("THERMAL RUNAWAY");
+	
 	disable_heater();
 	disable_x();
 	disable_y();
@@ -1149,6 +1189,26 @@ void temp_runaway_stop()
 	delayMicroseconds(500);
 	WRITE(BEEPER, LOW);
 	delayMicroseconds(100);
+
+	if (isPreheat)
+	{
+		Stop();
+		LCD_ALERTMESSAGEPGM("   PREHEAT ERROR");
+		SERIAL_ERROR_START;
+		SERIAL_ERRORLNPGM(": THERMAL RUNAWAY ( PREHEAT )");
+		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+		SET_OUTPUT(FAN_PIN);
+		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
+		analogWrite(FAN_PIN, 255);
+		fanSpeed = 255;
+		delayMicroseconds(2000);
+	}
+	else
+	{
+		LCD_ALERTMESSAGEPGM("THERMAL RUNAWAY");
+		SERIAL_ERROR_START;
+		SERIAL_ERRORLNPGM(": THERMAL RUNAWAY");
+	}
 }
 #endif
 
@@ -1213,6 +1273,7 @@ void max_temp_error(uint8_t e) {
     WRITE(BEEPER, 1);
     // fanSpeed will consumed by the check_axes_activity() routine.
     fanSpeed=255;
+	if (farm_mode) { prusa_statistics(93); }
 }
 
 void min_temp_error(uint8_t e) {
@@ -1226,6 +1287,8 @@ void min_temp_error(uint8_t e) {
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
   #endif
+  if (farm_mode) { prusa_statistics(92); }
+
 }
 
 void bed_max_temp_error(void) {
@@ -1240,6 +1303,7 @@ void bed_max_temp_error(void) {
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
   Stop();
   #endif
+
 }
 
 void bed_min_temp_error(void) {

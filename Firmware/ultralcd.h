@@ -31,14 +31,17 @@
 void lcd_mylang();
   bool lcd_detected(void);
 
+  
   static void lcd_selftest();
   static bool lcd_selfcheck_endstops();
   static bool lcd_selfcheck_axis(int _axis, int _travel);
   static bool lcd_selfcheck_check_heater(bool _isbed);
   static int  lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay);
   static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
+  static bool lcd_selftest_fan_dialog(int _fan);
   static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
-  static void lcd_menu_statistics();
+  void lcd_menu_statistics();
+  static bool lcd_selfcheck_pulleys(int axis);
 
   extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
   inline const char* lcd_display_message_fullscreen_P(const char *msg) 
@@ -47,7 +50,7 @@ void lcd_mylang();
   extern void lcd_wait_for_click();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
   // 0: no, 1: yes, -1: timeouted
-  extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true);
+  extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 
   // Ask the user to move the Z axis up to the end stoppers and let
   // the user confirm that it has been done.
@@ -89,9 +92,10 @@ void lcd_mylang();
   #define LCD_COMMAND_STOP_PRINT 2
   #define LCD_COMMAND_FARM_MODE_CONFIRM 4
 
+  extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
   
-  extern bool farm_mode;
+  extern uint8_t farm_mode;
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
@@ -194,4 +198,40 @@ extern void lcd_implementation_print_at(uint8_t x, uint8_t y, int i);
 extern void lcd_implementation_print(float f);
 extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 
+
+void change_extr(int extr);
+static int get_ext_nr();
+static void extr_adj(int extruder);
+static void extr_adj_0();
+static void extr_adj_1();
+static void extr_adj_2();
+static void extr_adj_3();
+static void fil_load_menu();
+static void fil_unload_menu();
+static void extr_unload_0();
+static void extr_unload_1();
+static void extr_unload_2();
+static void extr_unload_3();
+static void lcd_disable_farm_mode();
+
+void stack_error();
+static void lcd_ping_allert();
+void lcd_printer_connected();
+void lcd_ping();
+
+void lcd_calibrate_extruder();
+void lcd_farm_sdcard_menu();
+
+//void getFileDescription(char *name, char *description);
+
+void lcd_farm_sdcard_menu_w();
+//void get_description();
+
+void lcd_wait_for_cool_down();
+void adjust_bed_reset();
+void lcd_extr_cal_reset();
+
+union MenuData;
+
+char reset_menu();
 #endif //ULTRALCD_H

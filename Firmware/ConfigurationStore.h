@@ -1,5 +1,6 @@
 #ifndef CONFIG_STORE_H
 #define CONFIG_STORE_H
+#define EEPROM_SETTINGS
 
 #include "Configuration.h"
 
@@ -18,5 +19,8 @@ void Config_RetrieveSettings();
 FORCE_INLINE void Config_StoreSettings() {}
 FORCE_INLINE void Config_RetrieveSettings() { Config_ResetDefault(); Config_PrintSettings(); }
 #endif
+
+inline uint8_t calibration_status() { return eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS); }
+inline uint8_t calibration_status_store(uint8_t status) { eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS, status); }
 
 #endif//CONFIG_STORE_H

@@ -88,7 +88,7 @@
 #define MSG_PLEASE_WAIT			"Prosim cekejte"
 #define MSG_LOADING_COLOR		"Cisteni barvy"
 #define MSG_CHANGE_SUCCESS		"Zmena uspesna!"
-#define MSG_PRESS				"A stisknete tlacitko"
+#define MSG_PRESS				"a stisknete tlacitko"
 #define MSG_INSERT_FILAMENT		"Vlozte filament"
 #define MSG_CHANGING_FILAMENT	"Vymena filamentu!"
 
@@ -171,6 +171,12 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
 
+#define(length=20) MSG_SELFTEST_FAN					"Test ventilatoru";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Predni tiskovy vent?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Levy vent na trysce?";
+#define MSG_SELFTEST_FAN_YES				"Toci se";
+#define MSG_SELFTEST_FAN_NO					"Netoci se";
+
 #define MSG_STATS_TOTALFILAMENT				"Filament celkem :"
 #define MSG_STATS_TOTALPRINTTIME			"Celkovy cas :"
 #define MSG_STATS_FILAMENTUSED				"Filament :  "
@@ -209,9 +215,9 @@
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"Kalibrace XYZ selhala. Kalibracni bod podlozky nenalezen."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED			"Kalibrace XYZ selhala. Nahlednete do manualu."
-#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"Kalibrace XYZ v poradku. X/Y osy jsou kolme."
-#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"Kalibrace XYZ v poradku. X/Y osy mirne zkosene."
-#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"X/Y osy jsou silne zkosene. Zkoseni bude automaticky vyrovnano pri tisku."
+#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"Kalibrace XYZ v poradku. X/Y osy jsou kolme. Gratuluji!"
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"Kalibrace XYZ v poradku. X/Y osy mirne zkosene. Dobra prace!"
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"Kalibrace XYZ v poradku. Zkoseni bude automaticky vyrovnano pri tisku."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR		"Kalibrace XYZ selhala. Levy predni bod moc vpredu. Srovnejte tiskarnu."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR	"Kalibrace XYZ selhala. Pravy predni bod moc vpredu. Srovnejte tiskarnu."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR		"Kalibrace XYZ selhala. Predni kalibracni body moc vpredu. Srovnejte tiskarnu."
@@ -225,7 +231,8 @@
 
 #define MSG_NEW_FIRMWARE_AVAILABLE								"Vysla nova verze firmware:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Prosim aktualizujte."
-#define MSG_BABYSTEP_Z_NOT_SET                          		"Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace."
+#define MSG_FOLLOW_CALIBRATION_FLOW                        		"Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace."
+#define MSG_BABYSTEP_Z_NOT_SET                          		"Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy."
 
 #define MSG_BED_CORRECTION_MENU									"Korekce podlozky"
 #define MSG_BED_CORRECTION_LEFT									"Vlevo  [um]"
@@ -234,5 +241,27 @@
 #define MSG_BED_CORRECTION_REAR									"Vzadu  [um]"
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
-
+#define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Kalibrace"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
+
+#define MSG_LOOSE_PULLEY								"Uvolnena remenicka"
+#define MSG_FILAMENT_LOADING_T0							"Vložte filament do extruderu 1. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T1							"Vložte filament do extruderu 2. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T2							"Vložte filament do extruderu 3. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T3							"Vložte filament do extruderu 4. Potvrdte tlacitkem."
+#define MSG_CHANGE_EXTR									"Zmenit extruder"
+#define MSG_FIL_LOADED_CHECK							"Je filament zaveden?"
+#define MSG_FIL_TUNING									"Otacenim tlacitka doladte pozici filamentu."
+#define MSG_FIL_ADJUSTING								"Probiha srovnani filamentu. Prosim cekejte."
+#define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ				"Filamenty jsou srovnany. Pro uspesnou kalibraci prosim ocistete trysku. Po te potvrdte tlacitkem."
+#define MSG_CALIBRATE_E									"Kalibrovat E"
+#define MSG_E_CAL_KNOB									"Otacejte tlacitkem dokud znacka nedosahne tela extruderu. Potvrdte tlacitkem."
+#define MSG_MARK_FIL									"Oznacte filament 100 mm od tela extruderu a po te potvrdte tlacitkem."
+#define MSG_CLEAN_NOZZLE_E								"E kalibrace ukoncena. Prosim ocistete trysku. Po te potvrdte tlacitkem."
+#define MSG_WAITING_TEMP								"Cekani na zchladnuti trysky a podlozky."
+#define MSG_FILAMENT_CLEAN								"Je barva cista?" 
+#define MSG_UNLOADING_FILAMENT							"Vysouvam filament"
+
+#define MSG_PAPER										"Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, vypnete tiskarnu."

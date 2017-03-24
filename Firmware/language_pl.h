@@ -64,7 +64,7 @@
 #define MSG_SILENT_MODE_ON                                      "Mod       [cichy]"
 #define MSG_SILENT_MODE_OFF                                     "Mod [w wydajnosc]" 
 #define MSG_REBOOT                                                      "Restart drukarki"
-#define MSG_TAKE_EFFECT                                         "wprow. zmian"   
+#define MSG_TAKE_EFFECT                                         " wprow. zmian"   
 #define MSG_HEATING                         "Grzanie..."
 #define MSG_HEATING_COMPLETE                "Grzanie OK."
 #define MSG_BED_HEATING                     "Grzanie stolika.."
@@ -172,6 +172,12 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT         "Endstop not hit"
 #define MSG_SELFTEST_OK                     "Self test OK"
 
+#define(length=20) MSG_SELFTEST_FAN					"Test wentylatora";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Przodni went. druku?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze?";
+#define MSG_SELFTEST_FAN_YES				"Kreci sie";
+#define MSG_SELFTEST_FAN_NO					"Nekreci sie";
+
 #define MSG_STATS_TOTALFILAMENT             "Filament lacznie :"
 #define MSG_STATS_TOTALPRINTTIME            "Czas calkowity :"
 #define MSG_STATS_FILAMENTUSED              "Filament :  "
@@ -208,9 +214,9 @@
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Kalibr. XYZ nieudana. Kalibracyjny punkt podkladki nieznaleziony."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED            "Kalibracja XYZ niepowiedziona. Sprawdzic w instrukcji."
-#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT                   "Kalibracja XYZ ok. Osie X/Y sa prostopadle."
-#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD                 "Kalibracja XYZ w porzadku. Osie X/Y lekko skosne."
-#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME              "Osie X/Y sa mocno skosne. Skos bedzie aut. wyrownany przy druku."
+#define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT                   "Kalibracja XYZ ok. Osie X/Y sa prostopadle. Gratulacje!"
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD                 "Kalibracja XYZ prawidlowa. Osie X/Y lekko skosne. Dobra robota!"
+#define MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME              "Kalibracja XYZ prawidlowa. Skosy beda automatycznie wyrownane przy druku."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR     "Kalibr. XYZ nieudana. Lewy przedni punkt zbyt do przodu. Wyrownac drukarke."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR    "Kalibr. XYZ nieudana. Prawy przedni punkt zbyt do przodu. Wyrownac drukarke."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR     "Kalibr. XYZ nieudana. Przed. punkty kalibr. zbyt do przodu. Wyrownac drukarke."
@@ -222,7 +228,8 @@
 #define MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED              "Kalibracja nieudana. Sensor odlaczony lub uszkodz. kabel. Czekam na reset."
 #define MSG_NEW_FIRMWARE_AVAILABLE                              "Wyszla nowa wersja firmware:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE                         "Prosze zaktualizowac"
-#define MSG_BABYSTEP_Z_NOT_SET                                  "Drukarka nie zostala jeszcze skalibrowana. Prosze kierowac sie instrukcja, rozdzial Zaczynamy, podrozdzial Selftest."
+#define MSG_FOLLOW_CALIBRATION_FLOW                             "Drukarka nie zostala jeszcze skalibrowana. Prosze kierowac sie instrukcja, rozdzial Zaczynamy, podrozdzial Selftest."
+#define MSG_BABYSTEP_Z_NOT_SET                                  "Odleglosc dyszy od podkladki nie jest skalibrowana. Postepuj zgodnie z instrukcja rozdzial Zaczynamy, podrozdzial Kalibracja pierwszej warstwy."
 #define MSG_BED_CORRECTION_MENU                                 "Korekta podkladki"
 #define MSG_BED_CORRECTION_LEFT                                 "W lewo  [um]"
 #define MSG_BED_CORRECTION_RIGHT                                "W prawo [um]"
@@ -230,6 +237,26 @@
 #define MSG_BED_CORRECTION_REAR                                 "Do tylu  [um]"
 #define MSG_BED_CORRECTION_RESET                                "Reset"
 
+#define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Kalibracja"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"karta SD [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"karta SD[FlshAir]"
+
+#define MSG_LOOSE_PULLEY										"Kolo pasowe"
+#define MSG_FILAMENT_LOADING_T0									"Wloz filament do ekstrudera 1. Potwierdz przyciskiem."
+#define MSG_FILAMENT_LOADING_T1									"Wloz filament do ekstrudera 2. Potwierdz przyciskiem."
+#define MSG_FILAMENT_LOADING_T2									"Wloz filament do ekstrudera 3. Potwierdz przyciskiem."
+#define MSG_FILAMENT_LOADING_T3									"Wloz filament do ekstrudera 4. Potwierdz przyciskiem."
+#define MSG_CHANGE_EXTR											"Zmienic ekstruder"
+#define MSG_FIL_LOADED_CHECK									"Czy filament jest wprowadzony?"
+#define MSG_FIL_TUNING											"Obrotem przycisku dostroj pozycje filamentu."
+#define MSG_FIL_ADJUSTING										"Przebiega wyrownanie filamentow. Prosze czekac."
+#define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ						"Dla prawidlowej kalibracji prosze oczyscic dysze. Potem potwierdzic przyciskiem."
+#define MSG_CALIBRATE_E											"Kalibruj E"
+#define MSG_E_CAL_KNOB											"Prosze otaczac przycisk poki znacznik nie dosiegnie ciala ekstrudera. Potwierdzic przyciskiem."
+#define MSG_MARK_FIL											"Prosze oznaczyc filament 100 mm od ciala ekstrudera. Potwierdzic przyciskiem."
+#define MSG_CLEAN_NOZZLE_E										"Kalibracja E skonczona. Prosze oczyscic dysze. Potem potwierdzic przyciskiem. "
+#define MSG_WAITING_TEMP										"Oczekiwanie na wychlodzenie dyszy i podkladki."
+#define MSG_FILAMENT_CLEAN										"Czy kolor jest czysty?"
+#define MSG_UNLOADING_FILAMENT									"Wysuwam filament"
+#define MSG_PAPER												"Umiesc kartke papieru na podkladce i trzymaj pod dysza podczas pomiaru pierwszych 4 punktow. Jesli dysza zahaczy o papier, wylacz drukarke."

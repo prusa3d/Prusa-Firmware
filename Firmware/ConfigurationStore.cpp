@@ -34,7 +34,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 
 
 
-#define EEPROM_OFFSET 100
+#define EEPROM_OFFSET 20
 
 
 // IMPORTANT:  Whenever there are changes made to the variables stored in EEPROM
@@ -43,7 +43,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
-#define EEPROM_VERSION "V13"
+#define EEPROM_VERSION "V1"
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings() 
@@ -59,9 +59,10 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i,minimumfeedrate);
   EEPROM_WRITE_VAR(i,mintravelfeedrate);
   EEPROM_WRITE_VAR(i,minsegmenttime);
-  EEPROM_WRITE_VAR(i,max_xy_jerk);
-  EEPROM_WRITE_VAR(i,max_z_jerk);
-  EEPROM_WRITE_VAR(i,max_e_jerk);
+  EEPROM_WRITE_VAR(i,max_jerk[X_AXIS]);
+  EEPROM_WRITE_VAR(i,max_jerk[Y_AXIS]);
+  EEPROM_WRITE_VAR(i,max_jerk[Z_AXIS]);
+  EEPROM_WRITE_VAR(i,max_jerk[E_AXIS]);
   EEPROM_WRITE_VAR(i,add_homing);
   #ifndef ULTIPANEL
   int plaPreheatHotendTemp = PLA_PREHEAT_HOTEND_TEMP, plaPreheatHPBTemp = PLA_PREHEAT_HPB_TEMP, plaPreheatFanSpeed = PLA_PREHEAT_FAN_SPEED;
@@ -70,12 +71,13 @@ void Config_StoreSettings()
 
   
   #endif
-  EEPROM_WRITE_VAR(i,plaPreheatHotendTemp);
+/*  EEPROM_WRITE_VAR(i,plaPreheatHotendTemp);
   EEPROM_WRITE_VAR(i,plaPreheatHPBTemp);
   EEPROM_WRITE_VAR(i,plaPreheatFanSpeed);
   EEPROM_WRITE_VAR(i,absPreheatHotendTemp);
   EEPROM_WRITE_VAR(i,absPreheatHPBTemp);
   EEPROM_WRITE_VAR(i,absPreheatFanSpeed);
+*/
   
   EEPROM_WRITE_VAR(i,zprobe_zoffset);
   #ifdef PIDTEMP
@@ -88,6 +90,11 @@ void Config_StoreSettings()
 		dummy = 0.0f;
     EEPROM_WRITE_VAR(i,dummy);
     EEPROM_WRITE_VAR(i,dummy);
+  #endif
+  #ifdef PIDTEMPBED
+	EEPROM_WRITE_VAR(i, bedKp);
+	EEPROM_WRITE_VAR(i, bedKi);
+	EEPROM_WRITE_VAR(i, bedKd);
   #endif
   #ifndef DOGLCD
     int lcd_contrast = 32;
@@ -117,7 +124,10 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i, filament_size[2]);
   #endif
   #endif
-  
+  /*MYSERIAL.print("Top address used:\n");
+  MYSERIAL.print(i);
+  MYSERIAL.print("\n");
+  */
   char ver2[4]=EEPROM_VERSION;
   i=EEPROM_OFFSET;
   EEPROM_WRITE_VAR(i,ver2); // validate data
@@ -190,6 +200,15 @@ void Config_PrintSettings()
     SERIAL_ECHOPAIR(" I" ,unscalePID_i(Ki)); 
     SERIAL_ECHOPAIR(" D" ,unscalePID_d(Kd));
     SERIAL_ECHOLN(""); 
+#endif
+#ifdef PIDTEMPBED
+	SERIAL_ECHO_START;
+	SERIAL_ECHOLNPGM("PID heatbed settings:");
+	SERIAL_ECHO_START;
+	SERIAL_ECHOPAIR("   M304 P", bedKp);
+	SERIAL_ECHOPAIR(" I", unscalePID_i(bedKi));
+	SERIAL_ECHOPAIR(" D", unscalePID_d(bedKd));
+	SERIAL_ECHOLN("");
 #endif
 #ifdef FWRETRACT
     SERIAL_ECHO_START;
@@ -267,22 +286,24 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,minimumfeedrate);
         EEPROM_READ_VAR(i,mintravelfeedrate);
         EEPROM_READ_VAR(i,minsegmenttime);
-        EEPROM_READ_VAR(i,max_xy_jerk);
-        EEPROM_READ_VAR(i,max_z_jerk);
-        EEPROM_READ_VAR(i,max_e_jerk);
+        EEPROM_READ_VAR(i,max_jerk[X_AXIS]);
+        EEPROM_READ_VAR(i,max_jerk[Y_AXIS]);
+		EEPROM_READ_VAR(i,max_jerk[Z_AXIS]);
+		EEPROM_READ_VAR(i,max_jerk[E_AXIS]);
         EEPROM_READ_VAR(i,add_homing);
         #ifndef ULTIPANEL
         int plaPreheatHotendTemp, plaPreheatHPBTemp, plaPreheatFanSpeed;
         int absPreheatHotendTemp, absPreheatHPBTemp, absPreheatFanSpeed;
 
         #endif
+	/*
         EEPROM_READ_VAR(i,plaPreheatHotendTemp);
         EEPROM_READ_VAR(i,plaPreheatHPBTemp);
         EEPROM_READ_VAR(i,plaPreheatFanSpeed);
         EEPROM_READ_VAR(i,absPreheatHotendTemp);
         EEPROM_READ_VAR(i,absPreheatHPBTemp);
         EEPROM_READ_VAR(i,absPreheatFanSpeed);
-        
+        */
 
         
         EEPROM_READ_VAR(i,zprobe_zoffset);
@@ -293,7 +314,12 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,Kp);
         EEPROM_READ_VAR(i,Ki);
         EEPROM_READ_VAR(i,Kd);
-        #ifndef DOGLCD
+		#ifdef PIDTEMPBED
+		EEPROM_READ_VAR(i, bedKp);
+		EEPROM_READ_VAR(i, bedKi);
+		EEPROM_READ_VAR(i, bedKd);
+		#endif
+		#ifndef DOGLCD
         int lcd_contrast;
         #endif
         EEPROM_READ_VAR(i,lcd_contrast);

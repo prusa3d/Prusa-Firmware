@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.8"
+#define FW_version "3.0.10-8"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -18,7 +18,7 @@
 #define EEPROM_BABYSTEP_X 4092
 #define EEPROM_BABYSTEP_Y 4090
 #define EEPROM_BABYSTEP_Z 4088
-#define EEPROM_BABYSTEP_Z_SET 4087
+#define EEPROM_CALIBRATION_STATUS 4087
 #define EEPROM_BABYSTEP_Z0 4085
 #define EEPROM_FILAMENTUSED 4081
 // uint32_t
@@ -31,27 +31,30 @@
 // Offsets of the Z heiths of the calibration points from the first point.
 // The offsets are saved as 16bit signed int, scaled to tenths of microns.
 #define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
-
-#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-4)
+#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-1)
+#define EEPROM_FARM_NUMBER (EEPROM_FARM_MODE-3)
 
 // Correction of the bed leveling, in micrometers.
 // Maximum 50 micrometers allowed.
 // Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
-#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_MODE-1)
+#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
 #define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
 #define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
 #define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
 #define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
 #define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
+#define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
+#define EEPROM_FIRMWARE_VERSION_END       (FW_PRUSA3D_MAGIC_LEN+8)
 #define EEPROM_FIRMWARE_VERSION_FLAVOR    (FW_PRUSA3D_MAGIC_LEN+6)
 #define EEPROM_FIRMWARE_VERSION_REVISION  (FW_PRUSA3D_MAGIC_LEN+4)
 #define EEPROM_FIRMWARE_VERSION_MINOR     (FW_PRUSA3D_MAGIC_LEN+2)
 #define EEPROM_FIRMWARE_VERSION_MAJOR     FW_PRUSA3D_MAGIC_LEN
 // Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
-#define EEPROM_FIRMWARE_PRUSA_MAGIC
+#define EEPROM_FIRMWARE_PRUSA_MAGIC 0
+
 
 // This configuration file contains the basic settings.
 // Advanced settings can be found in Configuration_adv.h
@@ -692,14 +695,32 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 //#define FILAMENT_LCD_DISPLAY
 
 
+// Calibration status of the machine, to be stored into the EEPROM,
+// (unsigned char*)EEPROM_CALIBRATION_STATUS
+enum CalibrationStatus
+{
+    // Freshly assembled, needs to peform a self-test and the XYZ calibration.
+    CALIBRATION_STATUS_ASSEMBLED = 255,
 
+    // For the wizard: self test has been performed, now the XYZ calibration is needed.
+    // CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
 
+    // For the wizard: factory assembled, needs to run Z calibration.
+    CALIBRATION_STATUS_Z_CALIBRATION = 240,
 
+    // The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
+    CALIBRATION_STATUS_LIVE_ADJUST = 230,
+
+    // Calibrated, ready to print.
+    CALIBRATION_STATUS_CALIBRATED = 1,
+
+    // Legacy: resetted by issuing a G86 G-code.
+    // This value can only be expected after an upgrade from the initial MK2 firmware releases.
+    // Currently the G86 sets the calibration status to 
+    CALIBRATION_STATUS_UNKNOWN = 0,
+};
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"
-
-
-
 
 #endif //__CONFIGURATION_H

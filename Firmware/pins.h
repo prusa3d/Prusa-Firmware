@@ -39,21 +39,21 @@
   #define X_STEP_PIN 37
   #define X_DIR_PIN 48
   #define X_MIN_PIN 12
-  #define X_MAX_PIN 24
+  #define X_MAX_PIN 30
   #define X_ENABLE_PIN 29
   #define X_MS1_PIN 40
   #define X_MS2_PIN 41
   #define Y_STEP_PIN 36
   #define Y_DIR_PIN 49
   #define Y_MIN_PIN 11
-  #define Y_MAX_PIN 23
+  #define Y_MAX_PIN 24
   #define Y_ENABLE_PIN 28
   #define Y_MS1_PIN 69
   #define Y_MS2_PIN 39
   #define Z_STEP_PIN 35
   #define Z_DIR_PIN 47
   #define Z_MIN_PIN 10
-  #define Z_MAX_PIN 30
+  #define Z_MAX_PIN 23
   #define Z_ENABLE_PIN 27
   #define Z_MS1_PIN 68
   #define Z_MS2_PIN 67
@@ -63,7 +63,23 @@
   #define TEMP_1_PIN 1
   #define TEMP_2_PIN -1
   
-  // The SDSS pin uses a different pin mapping from file Sd2PinMap.h
+#ifdef SNMM 
+
+#define E_MUX0_PIN 17
+#define E_MUX1_PIN 16
+#define E_MUX2_PIN 84
+
+
+#endif
+ 
+#ifdef DIS
+#define D_REQUIRE 30
+#define D_DATA 20
+#define D_DATACLOCK 21
+
+#endif
+
+// The SDSS pin uses a different pin mapping from file Sd2PinMap.h
 #define SDSS               53
 
 #ifndef SDSUPPORT
@@ -209,25 +225,33 @@
 
   #define FR_SENS 21
 
+#ifdef SNMM
+
+#define E_MUX0_PIN 17
+#define E_MUX1_PIN 16
+#define E_MUX2_PIN 84
+
+
+#endif
   #define LARGE_FLASH true
   #define X_STEP_PIN 37
   #define X_DIR_PIN 48
   #define X_MIN_PIN 12
-  #define X_MAX_PIN 24
+  #define X_MAX_PIN 30
   #define X_ENABLE_PIN 29
   #define X_MS1_PIN 40
   #define X_MS2_PIN 41
   #define Y_STEP_PIN 36
   #define Y_DIR_PIN 49
   #define Y_MIN_PIN 11
-  #define Y_MAX_PIN 23
+  #define Y_MAX_PIN 24
   #define Y_ENABLE_PIN 28
   #define Y_MS1_PIN 69
   #define Y_MS2_PIN 39
   #define Z_STEP_PIN 35
   #define Z_DIR_PIN 47
   #define Z_MIN_PIN 10
-  #define Z_MAX_PIN 30
+  #define Z_MAX_PIN 23
   #define Z_ENABLE_PIN 27
   #define Z_MS1_PIN 68
   #define Z_MS2_PIN 67

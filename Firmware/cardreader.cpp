@@ -81,7 +81,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
         if(lsAction==LS_SerialPrint)
         {
           SERIAL_ECHO_START;
-          SERIAL_ECHOLN(MSG_SD_CANT_OPEN_SUBDIR);
+          SERIAL_ECHORPGM(MSG_SD_CANT_ENTER_SUBDIR);
           SERIAL_ECHOLN(lfilename);
         }
       }
@@ -498,6 +498,19 @@ void CardReader::write_command(char *buf)
   {
     SERIAL_ERROR_START;
     SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
+  }
+}
+
+#define CHUNK_SIZE 64
+
+void CardReader::write_command_no_newline(char *buf)
+{
+  file.write(buf, CHUNK_SIZE);
+  if (file.writeError)
+  {
+    SERIAL_ERROR_START;
+    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
+    MYSERIAL.println("An error while writing to the SD Card.");
   }
 }
 
