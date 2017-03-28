@@ -322,6 +322,8 @@ extern void delay_keep_alive(int ms);
 
 extern void check_babystep();
 
+extern void long_pause();
+
 #ifdef DIS
 
 void d_setup();
@@ -329,3 +331,5 @@ float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
 
 #endif
+
+void wait_for_heater(long codenum);

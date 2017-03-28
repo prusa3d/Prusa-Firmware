@@ -509,7 +509,27 @@ static void lcd_status_screen()
 #ifdef ULTIPANEL
 
 void lcd_commands()
-{
+{	
+	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
+	{
+		if(lcd_commands_step == 0) { 
+			lcd_commands_step = 2;
+		}
+		if (lcd_commands_step == 2 & !blocks_queued()) {
+			//lcd_return_to_status();
+			lcd_setstatuspgm(PSTR("print paused"));
+			
+			lcd_commands_step = 1;
+		}
+		if (lcd_commands_step == 1 && !blocks_queued()) {
+			long_pause();
+			lcd_commands_type = 0;
+			lcd_commands_step = 0;
+		}
+
+	}
+
+
 	if (lcd_commands_type == LCD_COMMAND_STOP_PRINT)   /// stop print
 	{
 
@@ -711,16 +731,20 @@ static void lcd_return_to_status() {
     lcd_goto_menu(lcd_status_screen, 0, false);
 }
 
+
 static void lcd_sdcard_pause() {
-  card.pauseSDPrint();
-  isPrintPaused = true;
-  lcdDrawUpdate = 3;
+	card.pauseSDPrint();
+	isPrintPaused = true;
+	lcd_return_to_status();
+	lcdDrawUpdate = 3;
+	lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
+
 }
 
 static void lcd_sdcard_resume() {
-	card.startFileprint();
+	/*enquecommand_P(PSTR("M602"));
 	isPrintPaused = false;
-	lcdDrawUpdate = 3;
+	lcdDrawUpdate = 3;*/
 }
 
 float move_menu_scale;

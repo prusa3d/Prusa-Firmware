@@ -91,6 +91,8 @@ void lcd_mylang();
   #define LCD_COMMAND_LOAD_FILAMENT 1
   #define LCD_COMMAND_STOP_PRINT 2
   #define LCD_COMMAND_FARM_MODE_CONFIRM 4
+  #define LCD_COMMAND_LONG_PAUSE 5
+  #define LCD_COMMAND_LONG_PAUSE_RESUME 6
 
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
