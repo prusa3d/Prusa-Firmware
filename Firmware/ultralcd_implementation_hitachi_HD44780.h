@@ -763,7 +763,24 @@ static void lcd_implementation_status_screen()
 		lcd_printPGM(PSTR(" F"));
 		lcd.print(farm_no);
 		lcd_printPGM(PSTR("  "));
+        
+        // Beat display
+        lcd.setCursor(LCD_WIDTH - 1, 0);
+        if ( (millis() - kicktime) < 60000 ) {
+        
+            lcd_printPGM(PSTR("L"));
+        
+        }else{
+            lcd_printPGM(PSTR(" "));
+        }
+        
 	}
+
+#ifdef SNMM
+		lcd_printPGM(PSTR(" E"));
+		lcd.print(get_ext_nr()+1);
+	
+#endif
 
     //Print time elapsed
     lcd.setCursor(LCD_WIDTH - 8 -2, 2);

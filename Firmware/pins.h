@@ -63,7 +63,23 @@
   #define TEMP_1_PIN 1
   #define TEMP_2_PIN -1
   
-  // The SDSS pin uses a different pin mapping from file Sd2PinMap.h
+#ifdef SNMM 
+
+#define E_MUX0_PIN 17
+#define E_MUX1_PIN 16
+#define E_MUX2_PIN 84
+
+
+#endif
+ 
+#ifdef DIS
+#define D_REQUIRE 30
+#define D_DATA 20
+#define D_DATACLOCK 21
+
+#endif
+
+// The SDSS pin uses a different pin mapping from file Sd2PinMap.h
 #define SDSS               53
 
 #ifndef SDSUPPORT
@@ -209,6 +225,14 @@
 
   #define FR_SENS 21
 
+#ifdef SNMM
+
+#define E_MUX0_PIN 17
+#define E_MUX1_PIN 16
+#define E_MUX2_PIN 84
+
+
+#endif
   #define LARGE_FLASH true
   #define X_STEP_PIN 37
   #define X_DIR_PIN 48

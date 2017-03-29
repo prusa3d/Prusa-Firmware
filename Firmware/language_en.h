@@ -27,7 +27,7 @@
 #define MSG_NOZZLE1                         "Nozzle2"
 #define MSG_NOZZLE2                         "Nozzle3"
 #define MSG_BED                             "Bed"
-#define MSG_FAN_SPEED                       "Fan speed"
+#define(length=14) MSG_FAN_SPEED                       "Fan speed"
 #define MSG_FLOW                            "Flow"
 #define MSG_FLOW0                           "Flow 0"
 #define MSG_FLOW1                           "Flow 1"
@@ -64,7 +64,7 @@
 #define MSG_BABYSTEP_X                      "Babystep X"
 #define MSG_BABYSTEP_Y                      "Babystep Y"
 #define MSG_BABYSTEP_Z                      "Live adjust Z"
-#define MSG_ADJUSTZ							"Auto adjust Z ?"
+#define MSG_ADJUSTZ							"Auto adjust Z?"
 #define MSG_PICK_Z							"Pick print"
 
 #define MSG_SETTINGS                         "Settings"
@@ -85,7 +85,7 @@
 #define(length=20) MSG_PLEASE_WAIT			"Please wait"
 #define MSG_LOADING_COLOR		"Loading color"
 #define MSG_CHANGE_SUCCESS		"Change success!"
-#define(length=20) MSG_PRESS				"And press the knob"
+#define(length=20) MSG_PRESS				"and press the knob"
 #define(length=20) MSG_INSERT_FILAMENT		"Insert filament"
 #define(length=20) MSG_CHANGING_FILAMENT	"Changing filament!"
 
@@ -164,8 +164,9 @@
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
+#define MSG_LOOSE_PULLEY					"Loose pulley"
 
-#define MSG_SELFTEST_FAN					"Fan test";
+#define(length=20) MSG_SELFTEST_FAN					"Fan test";
 #define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?";
 #define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Left hotend fan?";
 #define MSG_SELFTEST_FAN_YES				"Spinning";
@@ -211,8 +212,8 @@
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ calibration failed. Bed calibration point was not found."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED				"XYZ calibration failed. Please consult the manual."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-#define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"XYZ calibration all right. X/Y axes are slightly skewed."
-#define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"X/Y skewed severly. Skew will be corrected automatically."
+#define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+#define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"XYZ callibration all right. Skew will be corrected automatically."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR		"XYZ calibration failed. Left front calibration point not reachable."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR		"XYZ calibration failed. Right front calibration point not reachable."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR		"XYZ calibration failed. Front calibration points not reachable."
@@ -229,6 +230,29 @@
 
 #define(length=20,lines=8) MSG_FOLLOW_CALIBRATION_FLOW								"Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 #define(length=20,lines=12) MSG_BABYSTEP_Z_NOT_SET									"Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
+
+#define(length=20, lines=4) MSG_FILAMENT_LOADING_T0							"Insert filament into extruder 1. Click when done."
+#define(length=20, lines=4) MSG_FILAMENT_LOADING_T1							"Insert filament into extruder 2. Click when done."
+#define(length=20, lines=4) MSG_FILAMENT_LOADING_T2							"Insert filament into extruder 3. Click when done."
+#define(length=20, lines=4) MSG_FILAMENT_LOADING_T3							"Insert filament into extruder 4. Click when done."
+#define(length=20, lines=1) MSG_CHANGE_EXTR									"Change extruder"
+
+#define(length=20, lines=1) MSG_FIL_LOADED_CHECK								"Is filament loaded?"
+#define(length=20, lines=2) MSG_FIL_TUNING										"Rotate the knob to adjust filament."
+#define(length=20, lines=4) MSG_FIL_ADJUSTING								"Adjusting filaments. Please wait."
+#define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ			"Filaments are now adjusted. Please clean the nozzle for calibration. Click when done."
+#define(length=20, lines=4) MSG_STACK_ERROR						"Error - static memory has been overwritten"
+#define(length=20, lines=1) MSG_CALIBRATE_E						"Calibrate E"
+//#define(length=20, lines=1) MSG_RESET_CALIBRATE_E				"Reset E Cal."
+#define(length=20, lines=8) MSG_E_CAL_KNOB						"Rotate knob until mark reaches extruder body. Click when done."
+
+//#define(length=20, lines=1) MSG_FARM_CARD_MENU					"Farm mode print"
+#define(length=20, lines=8) MSG_MARK_FIL						"Mark filament 100mm from extruder body. Click when done."
+#define(length=20, lines=8) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
+#define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
+#define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
+#define(lenght=20) MSG_UNLOADING_FILAMENT			"Unloading filament"
+#define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
 #define MSG_BED_CORRECTION_LEFT									"Left side  um"

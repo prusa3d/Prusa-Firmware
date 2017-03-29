@@ -501,6 +501,19 @@ void CardReader::write_command(char *buf)
   }
 }
 
+#define CHUNK_SIZE 64
+
+void CardReader::write_command_no_newline(char *buf)
+{
+  file.write(buf, CHUNK_SIZE);
+  if (file.writeError)
+  {
+    SERIAL_ERROR_START;
+    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
+    MYSERIAL.println("An error while writing to the SD Card.");
+  }
+}
+
 
 void CardReader::checkautostart(bool force)
 {

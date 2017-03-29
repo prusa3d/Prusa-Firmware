@@ -1017,7 +1017,7 @@ void digipot_init() //Initialize Digipot Motor Current
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_Z_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_E_PIN, OUTPUT);
-    if(SilentMode == 0){
+    if((SilentMode == 0) || (farm_mode) ){
 
      motor_current_setting[0] = motor_current_setting_loud[0];
      motor_current_setting[1] = motor_current_setting_loud[1];

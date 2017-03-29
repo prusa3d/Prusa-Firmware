@@ -512,6 +512,7 @@ void reset_bed_offset_and_skew()
 }
 
 bool is_bed_z_jitter_data_valid()
+// offsets of the Z heiths of the calibration points from the first point are saved as 16bit signed int, scaled to tenths of microns
 {
     for (int8_t i = 0; i < 8; ++ i)
         if (eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER+i*2)) == 0x0FFFF)
@@ -2152,11 +2153,14 @@ static int babystepLoadZ = 0;
 
 void babystep_apply()
 {
-    // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
+    // Apply Z height correction aka baby stepping before mesh bed leveling gets activated.
     if(calibration_status() == CALIBRATION_STATUS_CALIBRATED)
     {
-        // End of G80: Apply the baby stepping value.
+		check_babystep(); //checking if babystep is in allowed range, otherwise setting babystep to 0
+		
+		// End of G80: Apply the baby stepping value.
         EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
+							
     #if 0
         SERIAL_ECHO("Z baby step: ");
         SERIAL_ECHO(babystepLoadZ);

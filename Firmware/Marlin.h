@@ -111,6 +111,7 @@ FORCE_INLINE void serialprintPGM(const char *str)
 
 void get_command();
 void process_commands();
+void ramming();
 
 void manage_inactivity(bool ignore_stepper_queue=false);
 
@@ -282,7 +283,11 @@ extern float retract_recover_length, retract_recover_length_swap, retract_recove
 extern unsigned long starttime;
 extern unsigned long stoptime;
 extern bool is_usb_printing;
+extern bool homing_flag;
+extern bool loading_flag;
 extern unsigned int usb_printing_counter;
+
+extern unsigned long kicktime;
 
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
@@ -312,3 +317,13 @@ extern void calculate_volumetric_multipliers();
 // Similar to the default Arduino delay function, 
 // but it keeps the background tasks running.
 extern void delay_keep_alive(int ms);
+
+extern void check_babystep();
+
+#ifdef DIS
+
+void d_setup();
+float d_ReadData();
+void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
+
+#endif

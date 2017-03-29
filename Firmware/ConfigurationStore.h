@@ -1,5 +1,6 @@
 #ifndef CONFIG_STORE_H
 #define CONFIG_STORE_H
+#define EEPROM_SETTINGS
 
 #include "Configuration.h"
 
