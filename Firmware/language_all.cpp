@@ -996,6 +996,11 @@ const char * const MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_LANG_TABLE[LANG_NUM] PROGM
 	MSG_FIND_BED_OFFSET_AND_SKEW_LINE2_DE
 };
 
+const char MSG_FINISHING_MOVEMENTS_EN[] PROGMEM = "Finishing movements";
+const char * const MSG_FINISHING_MOVEMENTS_LANG_TABLE[1] PROGMEM = {
+	MSG_FINISHING_MOVEMENTS_EN
+};
+
 const char MSG_FLOW_EN[] PROGMEM = "Flow";
 const char MSG_FLOW_CZ[] PROGMEM = "Prutok";
 const char MSG_FLOW_IT[] PROGMEM = "Flusso";
@@ -1826,6 +1831,11 @@ const char * const MSG_PRINT_ABORTED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PRINT_ABORTED_DE
 };
 
+const char MSG_PRINT_PAUSED_EN[] PROGMEM = "Print paused";
+const char * const MSG_PRINT_PAUSED_LANG_TABLE[1] PROGMEM = {
+	MSG_PRINT_PAUSED_EN
+};
+
 const char MSG_PRUSA3D_EN[] PROGMEM = "prusa3d.com";
 const char MSG_PRUSA3D_CZ[] PROGMEM = "prusa3d.cz";
 const char MSG_PRUSA3D_PL[] PROGMEM = "prusa3d.cz";
@@ -1930,6 +1940,11 @@ const char * const MSG_RESUMING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RESUMING_ES,
 	MSG_RESUMING_PL,
 	MSG_RESUMING_DE
+};
+
+const char MSG_RESUMING_PRINT_EN[] PROGMEM = "Resuming print";
+const char * const MSG_RESUMING_PRINT_LANG_TABLE[1] PROGMEM = {
+	MSG_RESUMING_PRINT_EN
 };
 
 const char MSG_SD_CANT_ENTER_SUBDIR_EN[] PROGMEM = "Cannot enter subdir: ";

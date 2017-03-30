@@ -262,9 +262,14 @@ unsigned long kicktime = millis()+100000;
 unsigned int  usb_printing_counter;
 
 int lcd_change_fil_state = 0;
+
 int feedmultiplyBckp = 100;
 float HotendTempBckp = 0;
 int fanSpeedBckp = 0;
+float pause_lastpos[4];
+unsigned long pause_time = 0;
+
+bool mesh_bed_leveling_flag = false;
 
 unsigned char lang_selected = 0;
 int8_t FarmMode = 0;
@@ -1316,7 +1321,7 @@ void loop()
 }
   //check heater every n milliseconds
   manage_heater();
-  manage_inactivity();
+  isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update();
 }
@@ -2824,7 +2829,9 @@ void process_commands()
     case 80:
     case_G80:
         {
-            // Firstly check if we know where we are
+		mesh_bed_leveling_flag = true;
+
+			// Firstly check if we know where we are
             if ( !( axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS] ) ){
                 // We don't know where we are! HOME!
                 // Push the commands to the front of the message queue in the reverse order!
@@ -2902,7 +2909,7 @@ void process_commands()
                 world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
                 st_synchronize();
-                
+  
                 // Go down until endstop is hit
                 const float Z_CALIBRATION_THRESHOLD = 1.f;
                 if (! find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f)) {
@@ -2993,7 +3000,8 @@ void process_commands()
             custom_message       = custom_message_old;
             custom_message_type  = custom_message_type_old;
             custom_message_state = custom_message_state_old;
-            lcd_update(1);
+			mesh_bed_leveling_flag = false;
+            lcd_update(2);			
         }
         break;
 
@@ -4809,177 +4817,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       break;
     }
     #endif // CUSTOM_M_CODE_SET_Z_PROBE_OFFSET
-/*	case 602: //resume long pause print
-	{
-		//set hotend temp back
-		setTargetHotend(HotendTempBckp, active_extruder);
-		//set fan speed back
-		fanSpeed = fanSpeedBckp;
-
-		//go back to print
-		
-		//Move XY back
-		plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-
-		//wait for hotend to reach target temp -> see M109
-		//while (abs(degHotend(active_extruder) - target_temperature(active_extruder)) > 3) delay_keep_alive;
-		wait_for_heater(millis());
-
-		//Move Z back
-		plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], 15, active_extruder);
-		
-		//Unretract
-		target[E_AXIS] = target[E_AXIS] - PAUSE_RETRACT;
-		plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
-
-		//Set E position to original  (should be original in this case)
-		plan_set_e_position(lastpos[E_AXIS]);
-
-		//Recover feed rate 
-		feedmultiply = feedmultiplyBckp;
-		char cmd[9];
-		sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
-		enquecommand(cmd);
-		
-		card.startFileprint();
-
-	}break;*/
-
-	case 601: //long pause print
-	{
-		//M601 E-2 X50 Y190 Z20
-	//	if (IS_SD_PRINTING) {
-			// We don't know where we are! HOME!
-			// Push the commands to the front of the message queue in the reverse order!
-			// There shall be always enough space reserved for these commands.
-		//	repeatcommand_front(); // repeat G80 with all its parameters
-		//	enquecommand_front_P((PSTR("G25")));
-		//	break;
-		//}
-
-
-		float target[4];
-		float lastpos[4];
-		//statistics - need to save print time???
-		//keep motor currents and bed temperature and pause print
-		//stop_buffering = true;
-		//while (blocks_queued()) delay_keep_alive(50);
-		//tuurn off print ventilator
-		card.pauseSDPrint();
-		while (blocks_queued()) delay_keep_alive(50); //wait for empty buffer
-		st_synchronize();
-
-		feedmultiplyBckp = feedmultiply;
-		HotendTempBckp = degTargetHotend(active_extruder); 
-		fanSpeedBckp = fanSpeed;
-
-		target[X_AXIS] = current_position[X_AXIS];
-		target[Y_AXIS] = current_position[Y_AXIS];
-		target[Z_AXIS] = current_position[Z_AXIS];
-		target[E_AXIS] = current_position[E_AXIS];
-		lastpos[X_AXIS] = current_position[X_AXIS];
-		lastpos[Y_AXIS] = current_position[Y_AXIS];
-		lastpos[Z_AXIS] = current_position[Z_AXIS];
-		lastpos[E_AXIS] = current_position[E_AXIS];
-
-		if (code_seen('E'))
-		{
-			target[E_AXIS] += code_value();
-		}
-		else
-		{
-			#ifdef PAUSE_RETRACT
-			target[E_AXIS] += PAUSE_RETRACT;
-			#endif
-		}
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
-		
-		//Lift Z
-		if (code_seen('Z'))
-		{
-			target[Z_AXIS] += code_value();
-		}
-		else
-		{
-			#ifdef Z_PAUSE_LIFT
-			target[Z_AXIS] += Z_PAUSE_LIFT;
-			if (target[Z_AXIS] > Z_MAX_POS) target[Z_AXIS] = Z_MAX_POS;
-			#endif
-		}
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 15, active_extruder);
-		
-		//set nozzle target temperature to 0
-		setTargetHotend(0, 0);
-		setTargetHotend(0, 1);
-		setTargetHotend(0, 2);
-
-		//Move XY to side
-		if (code_seen('X'))
-		{
-			target[X_AXIS] += code_value();
-		}
-		else
-		{
-		#ifdef X_PAUSE_POS
-			target[X_AXIS] = X_PAUSE_POS;
-		#endif
-		}
-		if (code_seen('Y'))
-		{
-			target[Y_AXIS] = code_value();
-		}
-		else
-		{
-		#ifdef Y_PAUSE_POS
-			target[Y_AXIS] = Y_PAUSE_POS;
-		#endif
-		}
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-
-		// Turn off the print fan
-		//SET_OUTPUT(FAN_PIN);
-		//WRITE(FAN_PIN, 0);
-		fanSpeed = 0;
-
-		st_synchronize();
-		
-		/*while (!lcd_clicked()) {
-			delay_keep_alive(100);
-		}
-
-		//set hotend temp back
-		setTargetHotend(HotendTempBckp, active_extruder);
-
-		//go back to print
-
-		//Move XY back
-		plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
-
-		//wait for hotend to reach target temp -> see M109
-		//while (abs(degHotend(active_extruder) - target_temperature(active_extruder)) > 3) delay_keep_alive;
-		wait_for_heater(millis());
-
-		//Move Z back
-		plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
-
-		target[E_AXIS] = target[E_AXIS] - FILAMENTCHANGE_FIRSTRETRACT;
-
-		//Unretract       
-		plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
-
-		//Set E position to original  (shoulb be original in this case)
-		plan_set_e_position(lastpos[E_AXIS]);
-
-		//Recover feed rate 
-		feedmultiply = feedmultiplyBckp;
-		char cmd[9];
-		sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
-		enquecommand(cmd);
-
-		//card.startFileprint();*/
-
-	}
-	break;
 
     #ifdef FILAMENTCHANGEENABLE
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
@@ -5206,7 +5043,16 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     }
     break;
     #endif //FILAMENTCHANGEENABLE
-	
+	case 601: {
+		if(lcd_commands_type == 0)  lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
+	}
+	break;
+
+	case 602: {
+		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
+	}
+	break;
+
     case 907: // M907 Set digital trimpot motor current using axis codes.
     {
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
@@ -6278,65 +6124,29 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 
 void long_pause() //long pause print
 {
-	//M601 E-2 X50 Y190 Z20
-	//	if (IS_SD_PRINTING) {
-	// We don't know where we are! HOME!
-	// Push the commands to the front of the message queue in the reverse order!
-	// There shall be always enough space reserved for these commands.
-	//	repeatcommand_front(); // repeat G80 with all its parameters
-	//	enquecommand_front_P((PSTR("G25")));
-	//	break;
-	//}
-
-
-	float target[4];
-	float lastpos[4];
-	//statistics - need to save print time???
-	//keep motor currents and bed temperature and pause print
-	//stop_buffering = true;
-	//while (blocks_queued()) delay_keep_alive(50);
-	//tuurn off print ventilator
-	
 	st_synchronize();
-
-	feedmultiplyBckp = feedmultiply;
+	
+	//save currently set parameters to global variables
+	saved_feedmultiply = feedmultiply; 
 	HotendTempBckp = degTargetHotend(active_extruder);
 	fanSpeedBckp = fanSpeed;
+	pause_time += (millis() - starttime);
+	
 
-	target[X_AXIS] = current_position[X_AXIS];
-	target[Y_AXIS] = current_position[Y_AXIS];
-	target[Z_AXIS] = current_position[Z_AXIS];
-	target[E_AXIS] = current_position[E_AXIS];
-	lastpos[X_AXIS] = current_position[X_AXIS];
-	lastpos[Y_AXIS] = current_position[Y_AXIS];
-	lastpos[Z_AXIS] = current_position[Z_AXIS];
-	lastpos[E_AXIS] = current_position[E_AXIS];
+	//save position
+	pause_lastpos[X_AXIS] = current_position[X_AXIS];
+	pause_lastpos[Y_AXIS] = current_position[Y_AXIS];
+	pause_lastpos[Z_AXIS] = current_position[Z_AXIS];
+	pause_lastpos[E_AXIS] = current_position[E_AXIS];
 
-	if (code_seen('E'))
-	{
-		target[E_AXIS] += code_value();
-	}
-	else
-	{
-#ifdef PAUSE_RETRACT
-		target[E_AXIS] += PAUSE_RETRACT;
-#endif
-	}
-	plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
+	//retract
+	current_position[E_AXIS] -= PAUSE_RETRACT;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 
-	//Lift Z
-	if (code_seen('Z'))
-	{
-		target[Z_AXIS] += code_value();
-	}
-	else
-	{
-#ifdef Z_PAUSE_LIFT
-		target[Z_AXIS] += Z_PAUSE_LIFT;
-		if (target[Z_AXIS] > Z_MAX_POS) target[Z_AXIS] = Z_MAX_POS;
-#endif
-	}
-	plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 15, active_extruder);
+	//lift z
+	current_position[Z_AXIS] += Z_PAUSE_LIFT;
+	if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
 
 	//set nozzle target temperature to 0
 	setTargetHotend(0, 0);
@@ -6344,219 +6154,12 @@ void long_pause() //long pause print
 	setTargetHotend(0, 2);
 
 	//Move XY to side
-	if (code_seen('X'))
-	{
-		target[X_AXIS] += code_value();
-	}
-	else
-	{
-#ifdef X_PAUSE_POS
-		target[X_AXIS] = X_PAUSE_POS;
-#endif
-	}
-	if (code_seen('Y'))
-	{
-		target[Y_AXIS] = code_value();
-	}
-	else
-	{
-#ifdef Y_PAUSE_POS
-		target[Y_AXIS] = Y_PAUSE_POS;
-#endif
-	}
-	plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+	current_position[X_AXIS] = X_PAUSE_POS;
+	current_position[Y_AXIS] = Y_PAUSE_POS;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
 
 	// Turn off the print fan
-	//SET_OUTPUT(FAN_PIN);
-	//WRITE(FAN_PIN, 0);
 	fanSpeed = 0;
 
 	st_synchronize();
-
-	/*while (!lcd_clicked()) {
-	delay_keep_alive(100);
-	}
-
-	//set hotend temp back
-	setTargetHotend(HotendTempBckp, active_extruder);
-
-	//go back to print
-
-	//Move XY back
-	plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
-
-	//wait for hotend to reach target temp -> see M109
-	//while (abs(degHotend(active_extruder) - target_temperature(active_extruder)) > 3) delay_keep_alive;
-	wait_for_heater(millis());
-
-	//Move Z back
-	plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
-
-	target[E_AXIS] = target[E_AXIS] - FILAMENTCHANGE_FIRSTRETRACT;
-
-	//Unretract
-	plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
-
-	//Set E position to original  (shoulb be original in this case)
-	plan_set_e_position(lastpos[E_AXIS]);
-
-	//Recover feed rate
-	feedmultiply = feedmultiplyBckp;
-	char cmd[9];
-	sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
-	enquecommand(cmd);
-
-	//card.startFileprint();*/
-
 }
-
-
-
-/*void bootloader_display() {
-	char i;
-	unsigned char lcd_rows = 4;
-	unsigned char lcd_cols = 20;
-	unsigned char display_func = 0;
-	unsigned char current_row = 0;
-	unsigned char rs_pin = 82;
-	unsigned char enable_pin = 18;
-	unsigned char d4 = 19;
-	unsigned char d5 = 70;
-	unsigned char d6 = 85;
-	unsigned char d7 = 71;
-
-	//initialize display
-
-	for (i = 0; i < 100; i++) delay(500); //we need at least 40ms delay after power up
-	display_func |= 0x08; //2 lines
-						  // Now we pull both RS and R/W low to begin commands
-
-
-		// Now we pull both RS and R/W low to begin commands
-		
-		digitalWrite(rs_pin, LOW);
-		digitalWrite(_enable_pin, LOW);
-		if (_rw_pin != 255) {
-			digitalWrite(_rw_pin, LOW);
-		}
-
-		//put the LCD into 4 bit or 8 bit mode
-		if (!(_displayfunction & LCD_8BITMODE)) {
-			// this is according to the hitachi HD44780 datasheet
-			// figure 24, pg 46
-
-			// we start in 8bit mode, try to set 4 bit mode
-			write4bits(0x03);
-			delayMicroseconds(4500); // wait min 4.1ms
-
-									 // second try
-			write4bits(0x03);
-			delayMicroseconds(4500); // wait min 4.1ms
-
-									 // third go!
-			write4bits(0x03);
-			delayMicroseconds(150);
-
-			// finally, set to 4-bit interface
-			write4bits(0x02);
-		}
-		else {
-			// this is according to the hitachi HD44780 datasheet
-			// page 45 figure 23
-
-			// Send function set command sequence
-			command(LCD_FUNCTIONSET | _displayfunction);
-			delayMicroseconds(4500);  // wait more than 4.1ms
-
-									  // second try
-			command(LCD_FUNCTIONSET | _displayfunction);
-			delayMicroseconds(150);
-
-			// third go
-			command(LCD_FUNCTIONSET | _displayfunction);
-		}
-
-		// finally, set # lines, font size, etc.
-		command(LCD_FUNCTIONSET | _displayfunction);
-		delayMicroseconds(60);
-		// turn the display on with no cursor or blinking default
-		_displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
-		display();
-		delayMicroseconds(60);
-		// clear it off
-		clear();
-		delayMicroseconds(3000);
-		// Initialize to default text direction (for romance languages)
-		_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
-		// set the entry mode
-		command(LCD_ENTRYMODESET | _displaymode);
-		delayMicroseconds(60);
-
-	}
-
-
-
-
-	void lcd_init()
-	{
-		lcd_implementation_init();
-
-#ifdef NEWPANEL
-		SET_INPUT(BTN_EN1);
-		SET_INPUT(BTN_EN2);
-		WRITE(BTN_EN1, HIGH);
-		WRITE(BTN_EN2, HIGH);
-#if BTN_ENC > 0
-		SET_INPUT(BTN_ENC);
-		WRITE(BTN_ENC, HIGH);
-#endif
-#ifdef REPRAPWORLD_KEYPAD
-		pinMode(SHIFT_CLK, OUTPUT);
-		pinMode(SHIFT_LD, OUTPUT);
-		pinMode(SHIFT_OUT, INPUT);
-		WRITE(SHIFT_OUT, HIGH);
-		WRITE(SHIFT_LD, HIGH);
-#endif
-#else  // Not NEWPANEL
-#ifdef SR_LCD_2W_NL // Non latching 2 wire shift register
-		pinMode(SR_DATA_PIN, OUTPUT);
-		pinMode(SR_CLK_PIN, OUTPUT);
-#elif defined(SHIFT_CLK)
-		pinMode(SHIFT_CLK, OUTPUT);
-		pinMode(SHIFT_LD, OUTPUT);
-		pinMode(SHIFT_EN, OUTPUT);
-		pinMode(SHIFT_OUT, INPUT);
-		WRITE(SHIFT_OUT, HIGH);
-		WRITE(SHIFT_LD, HIGH);
-		WRITE(SHIFT_EN, LOW);
-#else
-#ifdef ULTIPANEL
-#error ULTIPANEL requires an encoder
-#endif
-#endif // SR_LCD_2W_NL
-#endif//!NEWPANEL
-
-#if defined (SDSUPPORT) && defined(SDCARDDETECT) && (SDCARDDETECT > 0)
-		pinMode(SDCARDDETECT, INPUT);
-		WRITE(SDCARDDETECT, HIGH);
-		lcd_oldcardstatus = IS_SD_INSERTED;
-#endif//(SDCARDDETECT > 0)
-#ifdef LCD_HAS_SLOW_BUTTONS
-		slow_buttons = 0;
-#endif
-		lcd_buttons_update();
-#ifdef ULTIPANEL
-		encoderDiff = 0;
-#endif
-	}
-
-
-
-	//clear the display
-
-	//write message
-
-
-
-	LCD_CLASS lcd(LCD_PINS_RS, LCD_PINS_ENABLE, LCD_PINS_D4, LCD_PINS_D5, LCD_PINS_D6, LCD_PINS_D7);  //RS,Enable,D4,D5,D6,D7
-}*/

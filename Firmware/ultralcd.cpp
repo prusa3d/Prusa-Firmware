@@ -510,18 +510,19 @@ static void lcd_status_screen()
 
 void lcd_commands()
 {	
+	char cmd1[25];
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
 	{
 		if(lcd_commands_step == 0) { 
-			lcd_commands_step = 2;
-		}
-		if (lcd_commands_step == 2 & !blocks_queued()) {
-			//lcd_return_to_status();
-			lcd_setstatuspgm(PSTR("print paused"));
-			
+			card.pauseSDPrint();
+			lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
+
+			lcdDrawUpdate = 3;
 			lcd_commands_step = 1;
 		}
 		if (lcd_commands_step == 1 && !blocks_queued()) {
+			lcd_setstatuspgm(MSG_PRINT_PAUSED);
+			isPrintPaused = true;
 			long_pause();
 			lcd_commands_type = 0;
 			lcd_commands_step = 0;
@@ -529,11 +530,67 @@ void lcd_commands()
 
 	}
 
+	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE_RESUME) {
+		char cmd1[30];
+		if (lcd_commands_step == 0) {
+
+			lcdDrawUpdate = 3;
+			lcd_commands_step = 4;
+		}
+		if (lcd_commands_step == 1 && !blocks_queued()) {	//recover feedmultiply, current 
+			
+			sprintf_P(cmd1, PSTR("M220 S%d"), saved_feedmultiply);
+			enquecommand(cmd1);
+			isPrintPaused = false;
+			card.startFileprint();
+			starttime = pause_time;
+			lcd_commands_step = 0;
+			lcd_commands_type = 0;
+		}
+		if (lcd_commands_step == 2 && !blocks_queued()) {	//turn on fan, move Z and unretract
+			
+			sprintf_P(cmd1, PSTR("M106 S%d"), fanSpeedBckp);
+			enquecommand(cmd1);
+			strcpy(cmd1, "G1 Z");
+			strcat(cmd1, ftostr32(pause_lastpos[Z_AXIS]));
+			enquecommand(cmd1);
+			enquecommand_P(PSTR("M83")); // set extruder to relative mode.
+			enquecommand_P(PSTR("G1 E"  STRINGIFY(PAUSE_RETRACT))); //unretract
+			enquecommand_P(PSTR("G90")); //absolute positioning
+			lcd_commands_step = 1;
+		}
+		if (lcd_commands_step == 3 && !blocks_queued()) {	//wait for nozzle to reach target temp
+			
+			strcpy(cmd1, "M109 S");
+			strcat(cmd1, ftostr3(HotendTempBckp));
+			enquecommand(cmd1);			
+			lcd_commands_step = 2;
+		}
+		if (lcd_commands_step == 4 && !blocks_queued()) {	//set temperature back and move xy
+			
+			strcpy(cmd1, "M104 S");
+			strcat(cmd1, ftostr3(HotendTempBckp));
+			enquecommand(cmd1);
+			
+			strcpy(cmd1, "G1 X");
+			strcat(cmd1, ftostr32(pause_lastpos[X_AXIS]));
+			strcat(cmd1, " Y");
+			strcat(cmd1, ftostr32(pause_lastpos[Y_AXIS]));
+			enquecommand(cmd1);
+
+			lcd_setstatuspgm(MSG_RESUMING_PRINT);
+			lcd_commands_step = 3;
+		}
+	}
 
 	if (lcd_commands_type == LCD_COMMAND_STOP_PRINT)   /// stop print
 	{
 
-		if (lcd_commands_step == 0) { lcd_commands_step = 6; custom_message = true;	}
+		if (lcd_commands_step == 0) 
+		{ 
+			lcd_commands_step = 6; 
+			custom_message = true;	
+		}
 
 		if (lcd_commands_step == 1 && !blocks_queued())
 		{
@@ -733,18 +790,14 @@ static void lcd_return_to_status() {
 
 
 static void lcd_sdcard_pause() {
-	card.pauseSDPrint();
-	isPrintPaused = true;
 	lcd_return_to_status();
-	lcdDrawUpdate = 3;
 	lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
 
 }
 
 static void lcd_sdcard_resume() {
-	/*enquecommand_P(PSTR("M602"));
-	isPrintPaused = false;
-	lcdDrawUpdate = 3;*/
+	lcd_return_to_status();
+	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
 }
 
 float move_menu_scale;
@@ -3237,9 +3290,7 @@ static void lcd_main_menu()
         
     }*/
     
-    
-    
-  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag) 
+  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
@@ -3258,15 +3309,17 @@ static void lcd_main_menu()
   {
     if (card.isFileOpen())
     {
-		if (card.sdprinting)
-		{
-			MENU_ITEM(function, MSG_PAUSE_PRINT, lcd_sdcard_pause);
+		if (mesh_bed_leveling_flag == false && homing_flag == false) {
+			if (card.sdprinting)
+			{
+				MENU_ITEM(function, MSG_PAUSE_PRINT, lcd_sdcard_pause);
+			}
+			else
+			{
+				MENU_ITEM(function, MSG_RESUME_PRINT, lcd_sdcard_resume);
+			}
+			MENU_ITEM(submenu, MSG_STOP_PRINT, lcd_sdcard_stop);
 		}
-		else
-		{
-			MENU_ITEM(function, MSG_RESUME_PRINT, lcd_sdcard_resume);
-		}
-		MENU_ITEM(submenu, MSG_STOP_PRINT, lcd_sdcard_stop);
 	}
 	else
 	{
@@ -3983,7 +4036,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 	do {
 		_counter++;
-		(_counter < _cycles) ? _docycle = true : _docycle = false;
+		_docycle = (_counter < _cycles) ? true : false;
 
 		manage_heater();
 		manage_inactivity(true);
@@ -3998,9 +4051,9 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	int _checked_result = (_isbed) ? degBed() - _checked_snapshot : degHotend(0) - _checked_snapshot;
 	int _opposite_result = (_isbed) ? degHotend(0) - _opposite_snapshot : degBed() - _opposite_snapshot;
 
-	if (_opposite_result < (_isbed) ? 10 : 3)
+	if (_opposite_result < ((_isbed) ? 10 : 3))
 	{
-		if (_checked_result >= (_isbed) ? 3 : 10)
+		if (_checked_result >= ((_isbed) ? 3 : 10))
 		{
 			_stepresult = true;
 		}
@@ -4145,15 +4198,10 @@ static bool lcd_selftest_fan_dialog(int _fan)
 	lcd.setCursor(0, 3); lcd.print(">");
 	lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
 
-
-
-
-
 	int8_t enc_dif = 0;
 	bool _response = false;
 	do
 	{
-
 		switch (_fan)
 		{
 		case 1:
@@ -4167,8 +4215,6 @@ static bool lcd_selftest_fan_dialog(int _fan)
 			analogWrite(FAN_PIN, 255);
 			break;
 		}
-
-
 		if (abs((enc_dif - encoderDiff)) > 2) {
 			if (enc_dif > encoderDiff) {
 				_result = true;
@@ -4785,7 +4831,9 @@ void lcd_buzz(long duration, uint16_t freq)
 
 bool lcd_clicked()
 {
-  return LCD_CLICKED;
+	bool clicked = LCD_CLICKED;
+	button_pressed = false;
+    return clicked;
 }
 #endif//ULTIPANEL
 

@@ -266,3 +266,6 @@
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
 #define MSG_PRINTER_DISCONNECTED								"Printer disconnected"
+#define MSG_FINISHING_MOVEMENTS									"Finishing movements"
+#define MSG_PRINT_PAUSED										"Print paused"
+#define MSG_RESUMING_PRINT										"Resuming print"

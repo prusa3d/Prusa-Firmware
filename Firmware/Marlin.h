@@ -310,9 +310,14 @@ extern void digipot_i2c_init();
 
 #endif
 
+//Long pause
+extern int saved_feedmultiply;
+extern float HotendTempBckp;
+extern int fanSpeedBckp;
+extern float pause_lastpos[4];
+extern unsigned long pause_time;
 
-
-
+extern bool mesh_bed_leveling_flag;
 
 extern void calculate_volumetric_multipliers();
 

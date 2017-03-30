@@ -103,6 +103,7 @@ void lcd_mylang();
   extern int farm_status;
 
   extern bool cancel_heatup;
+  extern bool isPrintPaused;
   
   #ifdef FILAMENT_LCD_DISPLAY
         extern unsigned long message_millis;
