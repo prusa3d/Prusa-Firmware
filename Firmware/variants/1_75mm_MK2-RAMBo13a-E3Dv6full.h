@@ -18,6 +18,12 @@ GENERAL SETTINGS
 // Electronics
 #define MOTHERBOARD BOARD_RAMBO_MINI_1_3
 
+// Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
+//#define E3D_PT100_EXTRUDER_WITH_AMP
+//#define E3D_PT100_EXTRUDER_NO_AMP
+//#define E3D_PT100_BED_WITH_AMP
+//#define E3D_PT100_BED_NO_AMP
+
 
 /*------------------------------------
 AXIS SETTINGS
@@ -73,15 +79,26 @@ EXTRUDER SETTINGS
 #define BED_MINTEMP 15
 
 // Maxtemps
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
+#define HEATER_0_MAXTEMP 410
+#else
 #define HEATER_0_MAXTEMP 305
+#endif
 #define HEATER_1_MAXTEMP 305
 #define HEATER_2_MAXTEMP 305
 #define BED_MAXTEMP 150
 
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
+// Define PID constants for extruder with PT100
+#define  DEFAULT_Kp 21.70
+#define  DEFAULT_Ki 1.60
+#define  DEFAULT_Kd 73.76
+#else
 // Define PID constants for extruder
 #define  DEFAULT_Kp 40.925
 #define  DEFAULT_Ki 4.875
 #define  DEFAULT_Kd 86.085
+#endif
 
 // Extrude mintemp
 #define EXTRUDE_MINTEMP 130
@@ -224,9 +241,16 @@ BED SETTINGS
 #ifdef PIDTEMPBED
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
 //from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
+#if defined(E3D_PT100_BED_WITH_AMP) || defined(E3D_PT100_BED_NO_AMP)
+// Define PID constants for extruder with PT100
+#define  DEFAULT_bedKp 21.70
+#define  DEFAULT_bedKi 1.60
+#define  DEFAULT_bedKd 73.76
+#else
 #define  DEFAULT_bedKp 126.13
 #define  DEFAULT_bedKi 4.30
 #define  DEFAULT_bedKd 924.76
+#endif
 
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
 //from pidautotune
@@ -303,12 +327,26 @@ THERMISTORS SETTINGS
 // 1047 is Pt1000 with 4k7 pullup
 // 1010 is Pt1000 with 1k pullup (non standard)
 // 147 is Pt100 with 4k7 pullup
+// 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.3a
+// 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
 
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP)
+#define TEMP_SENSOR_0 247
+#elif defined(E3D_PT100_EXTRUDER_NO_AMP)
+#define TEMP_SENSOR_0 148
+#else
 #define TEMP_SENSOR_0 5
+#endif
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
+#if defined(E3D_PT100_BED_WITH_AMP)
+#define TEMP_SENSOR_BED 247
+#elif defined(E3D_PT100_BED_NO_AMP)
+#define TEMP_SENSOR_BED 148
+#else
 #define TEMP_SENSOR_BED 1
+#endif
 
 #define STACK_GUARD_TEST_VALUE 0xA2A2
 
