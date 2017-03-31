@@ -106,6 +106,7 @@ int farm_status = 0;
 unsigned long allert_timer = millis();
 bool printer_connected = true;
 
+unsigned long display_time; //just timer for showing pid finished message on lcd;
 float pid_temp = DEFAULT_PID_TEMP;
 
 bool long_press_active = false;
@@ -777,7 +778,7 @@ void lcd_commands()
 	}
 	if (lcd_commands_type == LCD_COMMAND_PID_EXTRUDER) {
 		char cmd1[30];
-		unsigned long display_time; //just timer for showing pid finished message on lcd;
+		
 		if (lcd_commands_step == 0) {
 			custom_message_type = 3;
 			custom_message_state = 1;
