@@ -51,7 +51,12 @@ float current_temperature_bed = 0.0;
   int redundant_temperature_raw = 0;
   float redundant_temperature = 0.0;
 #endif
+  
+
 #ifdef PIDTEMP
+  float _Kp, _Ki, _Kd;
+  int pid_cycle, pid_number_of_cycles;
+  bool pid_tuning_finished = false;
   float Kp=DEFAULT_Kp;
   float Ki=(DEFAULT_Ki*PID_dT);
   float Kd=(DEFAULT_Kd/PID_dT);
@@ -181,10 +186,12 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 //=============================   functions      ============================
 //===========================================================================
 
-void PID_autotune(float temp, int extruder, int ncycles)
-{
+  void PID_autotune(float temp, int extruder, int ncycles)
+  {
+  pid_number_of_cycles = ncycles;
+  pid_tuning_finished = false;
   float input = 0.0;
-  int cycles=0;
+  pid_cycle=0;
   bool heating = true;
 
   unsigned long temp_millis = millis();
@@ -195,7 +202,6 @@ void PID_autotune(float temp, int extruder, int ncycles)
 
   long bias, d;
   float Ku, Tu;
-  float Kp, Ki, Kd;
   float max = 0, min = 10000;
 
 #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
@@ -210,6 +216,8 @@ void PID_autotune(float temp, int extruder, int ncycles)
   #endif
        ){
           SERIAL_ECHOLN("PID Autotune failed. Bad extruder number.");
+		  pid_tuning_finished = true;
+		  pid_cycle = 0;
           return;
         }
 	
@@ -267,7 +275,7 @@ void PID_autotune(float temp, int extruder, int ncycles)
           heating=true;
           t2=millis();
           t_low=t2 - t1;
-          if(cycles > 0) {
+          if(pid_cycle > 0) {
             bias += (d*(t_high - t_low))/(t_low + t_high);
             bias = constrain(bias, 20 ,(extruder<0?(MAX_BED_POWER):(PID_MAX))-20);
             if(bias > (extruder<0?(MAX_BED_POWER):(PID_MAX))/2) d = (extruder<0?(MAX_BED_POWER):(PID_MAX)) - 1 - bias;
@@ -277,33 +285,33 @@ void PID_autotune(float temp, int extruder, int ncycles)
             SERIAL_PROTOCOLPGM(" d: "); SERIAL_PROTOCOL(d);
             SERIAL_PROTOCOLPGM(" min: "); SERIAL_PROTOCOL(min);
             SERIAL_PROTOCOLPGM(" max: "); SERIAL_PROTOCOLLN(max);
-            if(cycles > 2) {
+            if(pid_cycle > 2) {
               Ku = (4.0*d)/(3.14159*(max-min)/2.0);
               Tu = ((float)(t_low + t_high)/1000.0);
               SERIAL_PROTOCOLPGM(" Ku: "); SERIAL_PROTOCOL(Ku);
               SERIAL_PROTOCOLPGM(" Tu: "); SERIAL_PROTOCOLLN(Tu);
-              Kp = 0.6*Ku;
-              Ki = 2*Kp/Tu;
-              Kd = Kp*Tu/8;
+              _Kp = 0.6*Ku;
+              _Ki = 2*_Kp/Tu;
+              _Kd = _Kp*Tu/8;
               SERIAL_PROTOCOLLNPGM(" Classic PID ");
-              SERIAL_PROTOCOLPGM(" Kp: "); SERIAL_PROTOCOLLN(Kp);
-              SERIAL_PROTOCOLPGM(" Ki: "); SERIAL_PROTOCOLLN(Ki);
-              SERIAL_PROTOCOLPGM(" Kd: "); SERIAL_PROTOCOLLN(Kd);
+              SERIAL_PROTOCOLPGM(" Kp: "); SERIAL_PROTOCOLLN(_Kp);
+              SERIAL_PROTOCOLPGM(" Ki: "); SERIAL_PROTOCOLLN(_Ki);
+              SERIAL_PROTOCOLPGM(" Kd: "); SERIAL_PROTOCOLLN(_Kd);
               /*
-              Kp = 0.33*Ku;
-              Ki = Kp/Tu;
-              Kd = Kp*Tu/3;
+              _Kp = 0.33*Ku;
+              _Ki = _Kp/Tu;
+              _Kd = _Kp*Tu/3;
               SERIAL_PROTOCOLLNPGM(" Some overshoot ");
-              SERIAL_PROTOCOLPGM(" Kp: "); SERIAL_PROTOCOLLN(Kp);
-              SERIAL_PROTOCOLPGM(" Ki: "); SERIAL_PROTOCOLLN(Ki);
-              SERIAL_PROTOCOLPGM(" Kd: "); SERIAL_PROTOCOLLN(Kd);
-              Kp = 0.2*Ku;
-              Ki = 2*Kp/Tu;
-              Kd = Kp*Tu/3;
+              SERIAL_PROTOCOLPGM(" Kp: "); SERIAL_PROTOCOLLN(_Kp);
+              SERIAL_PROTOCOLPGM(" Ki: "); SERIAL_PROTOCOLLN(_Ki);
+              SERIAL_PROTOCOLPGM(" Kd: "); SERIAL_PROTOCOLLN(_Kd);
+              _Kp = 0.2*Ku;
+              _Ki = 2*_Kp/Tu;
+              _Kd = _Kp*Tu/3;
               SERIAL_PROTOCOLLNPGM(" No overshoot ");
-              SERIAL_PROTOCOLPGM(" Kp: "); SERIAL_PROTOCOLLN(Kp);
-              SERIAL_PROTOCOLPGM(" Ki: "); SERIAL_PROTOCOLLN(Ki);
-              SERIAL_PROTOCOLPGM(" Kd: "); SERIAL_PROTOCOLLN(Kd);
+              SERIAL_PROTOCOLPGM(" Kp: "); SERIAL_PROTOCOLLN(_Kp);
+              SERIAL_PROTOCOLPGM(" Ki: "); SERIAL_PROTOCOLLN(_Ki);
+              SERIAL_PROTOCOLPGM(" Kd: "); SERIAL_PROTOCOLLN(_Kd);
               */
             }
           }
@@ -311,13 +319,15 @@ void PID_autotune(float temp, int extruder, int ncycles)
             soft_pwm_bed = (bias + d) >> 1;
           else
             soft_pwm[extruder] = (bias + d) >> 1;
-          cycles++;
+          pid_cycle++;
           min=temp;
         }
       } 
     }
     if(input > (temp + 20)) {
       SERIAL_PROTOCOLLNPGM("PID Autotune failed! Temperature too high");
+	  pid_tuning_finished = true;
+	  pid_cycle = 0;
       return;
     }
     if(millis() - temp_millis > 2000) {
@@ -338,10 +348,14 @@ void PID_autotune(float temp, int extruder, int ncycles)
     }
     if(((millis() - t1) + (millis() - t2)) > (10L*60L*1000L*2L)) {
       SERIAL_PROTOCOLLNPGM("PID Autotune failed! timeout");
+	  pid_tuning_finished = true;
+	  pid_cycle = 0;
       return;
     }
-    if(cycles > ncycles) {
+    if(pid_cycle > ncycles) {
       SERIAL_PROTOCOLLNPGM("PID Autotune finished! Put the last Kp, Ki and Kd constants from above into Configuration.h");
+	  pid_tuning_finished = true;
+	  pid_cycle = 0;
       return;
     }
     lcd_update();

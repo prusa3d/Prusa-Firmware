@@ -948,6 +948,17 @@ static void lcd_implementation_status_screen()
 			{
 				lcd.print(lcd_status_message);
 			}
+			// PID tuning in progress
+			if (custom_message_type == 3) {
+				lcd.print(lcd_status_message);
+				if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0) {
+					lcd.setCursor(10, 3);
+					lcd.print(itostr3(pid_cycle));
+					
+					lcd.print('/');
+					lcd.print(itostr3left(pid_number_of_cycles));
+				}
+			}
 		}
 	else
 		{

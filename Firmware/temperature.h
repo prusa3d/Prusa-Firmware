@@ -58,7 +58,9 @@ extern float current_temperature_bed;
 #endif
 
 #ifdef PIDTEMP
-  extern float Kp,Ki,Kd,Kc;
+  extern int pid_cycle, pid_number_of_cycles;
+  extern float Kp,Ki,Kd,Kc,_Kp,_Ki,_Kd;
+  extern bool pid_tuning_finished;
   float scalePID_i(float i);
   float scalePID_d(float d);
   float unscalePID_i(float i);

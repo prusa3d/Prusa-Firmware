@@ -106,6 +106,7 @@ int farm_status = 0;
 unsigned long allert_timer = millis();
 bool printer_connected = true;
 
+float pid_temp = DEFAULT_PID_TEMP;
 
 bool long_press_active = false;
 long long_press_timer = millis();
@@ -773,6 +774,47 @@ void lcd_commands()
 			#endif
 		}
 
+	}
+	if (lcd_commands_type == LCD_COMMAND_PID_EXTRUDER) {
+		char cmd1[30];
+		unsigned long display_time; //just timer for showing pid finished message on lcd;
+		if (lcd_commands_step == 0) {
+			custom_message_type = 3;
+			custom_message_state = 1;
+			custom_message = true;
+			lcdDrawUpdate = 3;
+			lcd_commands_step = 3;
+		}
+		if (lcd_commands_step == 3 && !blocks_queued()) { //PID calibration
+			strcpy(cmd1, "M303 E0 S");
+			strcat(cmd1, ftostr3(pid_temp));
+			enquecommand(cmd1);
+			lcd_setstatuspgm(MSG_PID_RUNNING);
+			lcd_commands_step = 2;
+		}
+		if (lcd_commands_step == 2 && pid_tuning_finished) { //saving to eeprom
+			pid_tuning_finished = false;
+			custom_message_state = 0;
+			lcd_setstatuspgm(MSG_PID_FINISHED);
+			strcpy(cmd1, "M301 P");
+			strcat(cmd1, ftostr32(_Kp));
+			strcat(cmd1, " I");
+			strcat(cmd1, ftostr32(_Ki));
+			strcat(cmd1, " D");
+			strcat(cmd1, ftostr32(_Kd));
+			enquecommand(cmd1);
+			enquecommand_P(PSTR("M500"));
+			display_time = millis();
+			lcd_commands_step = 1;
+		}
+		if ((lcd_commands_step == 1) && ((millis()- display_time)>2000)) { //calibration finished message
+			lcd_setstatuspgm(WELCOME_MSG);
+			custom_message_type = 0;
+			custom_message = false;
+			pid_temp = DEFAULT_PID_TEMP;
+			lcd_commands_step = 0;
+			lcd_commands_type = 0;
+		}
 	}
 
 
@@ -1508,6 +1550,25 @@ static void lcd_adjust_bed()
     MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_REAR,  &menuData.adjustBed.rear2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
     MENU_ITEM(function, MSG_BED_CORRECTION_RESET, lcd_adjust_bed_reset);
     END_MENU();
+}
+
+void pid_extruder() {
+
+	lcd_implementation_clear();
+	lcd.setCursor(1, 0);
+	lcd_printPGM(MSG_SET_TEMPERATURE);
+	pid_temp += int(encoderPosition);
+	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
+	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
+	encoderPosition = 0;
+	lcd.setCursor(1, 2);
+	lcd.print(ftostr3(pid_temp));
+	if (lcd_clicked()) {
+		lcd_commands_type = LCD_COMMAND_PID_EXTRUDER;
+		lcd_return_to_status();
+		lcd_update(2);
+	}
+
 }
 
 void lcd_adjust_z() {
@@ -2539,6 +2600,7 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
 #endif
     MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
     MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
+	MENU_ITEM(submenu, MSG_PID_EXTRUDER, pid_extruder);
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 #ifndef SNMM

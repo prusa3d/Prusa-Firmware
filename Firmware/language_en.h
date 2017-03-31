@@ -269,3 +269,8 @@
 #define MSG_FINISHING_MOVEMENTS									"Finishing movements"
 #define MSG_PRINT_PAUSED										"Print paused"
 #define MSG_RESUMING_PRINT										"Resuming print"
+#define MSG_PID_EXTRUDER										"PID calibration"
+#define MSG_SET_TEMPERATURE										"Set temperature"
+#define MSG_PID_FINISHED										"PID cal. finished"
+#define MSG_PID_RUNNING											"PID cal.           "
+#define MSG_EEPROM_SAVING										"Saving"

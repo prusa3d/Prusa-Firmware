@@ -692,6 +692,11 @@ const char * const MSG_DWELL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DWELL_DE
 };
 
+const char MSG_EEPROM_SAVING_EN[] PROGMEM = "Saving";
+const char * const MSG_EEPROM_SAVING_LANG_TABLE[1] PROGMEM = {
+	MSG_EEPROM_SAVING_EN
+};
+
 const char MSG_ENDSTOPS_HIT_EN[] PROGMEM = "endstops hit: ";
 const char * const MSG_ENDSTOPS_HIT_LANG_TABLE[1] PROGMEM = {
 	MSG_ENDSTOPS_HIT_EN
@@ -1736,6 +1741,21 @@ const char * const MSG_PICK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PICK_Z_DE
 };
 
+const char MSG_PID_EXTRUDER_EN[] PROGMEM = "PID calibration";
+const char * const MSG_PID_EXTRUDER_LANG_TABLE[1] PROGMEM = {
+	MSG_PID_EXTRUDER_EN
+};
+
+const char MSG_PID_FINISHED_EN[] PROGMEM = "PID cal. finished";
+const char * const MSG_PID_FINISHED_LANG_TABLE[1] PROGMEM = {
+	MSG_PID_FINISHED_EN
+};
+
+const char MSG_PID_RUNNING_EN[] PROGMEM = "PID cal.           ";
+const char * const MSG_PID_RUNNING_LANG_TABLE[1] PROGMEM = {
+	MSG_PID_RUNNING_EN
+};
+
 const char MSG_PLANNER_BUFFER_BYTES_EN[] PROGMEM = "  PlannerBufferBytes: ";
 const char * const MSG_PLANNER_BUFFER_BYTES_LANG_TABLE[1] PROGMEM = {
 	MSG_PLANNER_BUFFER_BYTES_EN
@@ -2444,6 +2464,11 @@ const char * const MSG_SET_HOME_OFFSETS_LANG_TABLE[1] PROGMEM = {
 const char MSG_SET_ORIGIN_EN[] PROGMEM = "Set origin";
 const char * const MSG_SET_ORIGIN_LANG_TABLE[1] PROGMEM = {
 	MSG_SET_ORIGIN_EN
+};
+
+const char MSG_SET_TEMPERATURE_EN[] PROGMEM = "Set temperature";
+const char * const MSG_SET_TEMPERATURE_LANG_TABLE[1] PROGMEM = {
+	MSG_SET_TEMPERATURE_EN
 };
 
 const char MSG_SHOW_END_STOPS_EN[] PROGMEM = "Show end stops";
