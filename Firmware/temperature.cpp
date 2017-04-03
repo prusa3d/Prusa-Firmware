@@ -1134,7 +1134,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 					if (__preheat_errors > 5)
 					{
 						if (farm_mode) { prusa_statistics(0); }
-						temp_runaway_stop(true);
+						temp_runaway_stop(true, _isbed);
 						if (farm_mode) { prusa_statistics(91); }
 					}
 					__preheat_start = _current_temperature;
@@ -1171,7 +1171,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 					if (temp_runaway_error_counter[_heater_id] * 2 > __timeout)
 					{
 						if (farm_mode) { prusa_statistics(0); }
-						temp_runaway_stop(false);
+						temp_runaway_stop(false, _isbed);
 						if (farm_mode) { prusa_statistics(90); }
 					}
 				}
@@ -1181,7 +1181,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 	}
 }
 
-void temp_runaway_stop(bool isPreheat)
+void temp_runaway_stop(bool isPreheat, bool isBed)
 {
 	cancel_heatup = true;
 	quickStop();
@@ -1207,9 +1207,9 @@ void temp_runaway_stop(bool isPreheat)
 	if (isPreheat)
 	{
 		Stop();
-		LCD_ALERTMESSAGEPGM("   PREHEAT ERROR");
+		isBed ? LCD_ALERTMESSAGEPGM("BED PREHEAT ERROR") : LCD_ALERTMESSAGEPGM("PREHEAT ERROR");
 		SERIAL_ERROR_START;
-		SERIAL_ERRORLNPGM(": THERMAL RUNAWAY ( PREHEAT )");
+		isBed ? SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HEATBED)") : SERIAL_ERRORLNPGM(" THERMAL RUNAWAY ( PREHEAT HOTEND)");
 		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 		SET_OUTPUT(FAN_PIN);
 		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
@@ -1219,9 +1219,9 @@ void temp_runaway_stop(bool isPreheat)
 	}
 	else
 	{
-		LCD_ALERTMESSAGEPGM("THERMAL RUNAWAY");
+		isBed ? LCD_ALERTMESSAGEPGM("BED THERMAL RUNAWAY") : LCD_ALERTMESSAGEPGM("THERMAL RUNAWAY");
 		SERIAL_ERROR_START;
-		SERIAL_ERRORLNPGM(": THERMAL RUNAWAY");
+		isBed ? SERIAL_ERRORLNPGM(" HEATBED THERMAL RUNAWAY") : SERIAL_ERRORLNPGM(" HOTEND THERMAL RUNAWAY");
 	}
 }
 #endif

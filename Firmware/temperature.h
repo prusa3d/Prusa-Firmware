@@ -182,7 +182,7 @@ static float temp_runaway_timer[4];
 static int temp_runaway_error_counter[4];
 
 void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
-void temp_runaway_stop(bool isPreheat);
+void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
 int getHeaterPower(int heater);
