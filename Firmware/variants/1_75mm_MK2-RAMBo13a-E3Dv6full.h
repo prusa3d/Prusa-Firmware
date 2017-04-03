@@ -54,6 +54,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define X_CANCEL_POS 50
 #define Y_CANCEL_POS 190
 
+//Pause print position
+#define X_PAUSE_POS 50
+#define Y_PAUSE_POS 190
+#define Z_PAUSE_LIFT 20
+
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
 
@@ -110,6 +115,9 @@ EXTRUDER SETTINGS
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
+
+
+
 // Prusa Single extruder multiple material suport
 //#define SNMM
 
@@ -122,6 +130,9 @@ EXTRUDER SETTINGS
 #define E_MOTOR_HIGH_CURRENT 700 //current for unloading filament, stop print, PRUSAY ramming
 
 #endif
+
+//#define DIS //for measuring bed heigth and PINDa detection heigth relative to auto home point, experimental function
+
 
 /*------------------------------------
 CHANGE FILAMENT SETTINGS
@@ -205,7 +216,7 @@ BED SETTINGS
 #define MESH_MEAS_NUM_Y_POINTS 3
 
 #define MESH_HOME_Z_CALIB 0.2
-#define MESH_HOME_Z_SEARCH 5
+#define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.
 
 #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
 #define Y_PROBE_OFFSET_FROM_EXTRUDER 9     // Z probe to nozzle Y offset: -front +behind
@@ -365,5 +376,11 @@ THERMISTORS SETTINGS
 #define PING_TIME 60 //time in s
 #define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
 #define PING_ALLERT_PERIOD 60 //time in s
+
+#define LONG_PRESS_TIME 1000 //time in ms for button long press 
+
+#define PAUSE_RETRACT 2 
+
+#define DEFAULT_PID_TEMP 210;
 
 #endif //__CONFIGURATION_PRUSA_H
