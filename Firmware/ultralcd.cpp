@@ -545,7 +545,7 @@ void lcd_commands()
 			enquecommand(cmd1);
 			isPrintPaused = false;
 			card.startFileprint();
-			starttime = pause_time;
+			//starttime = pause_time;
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
 		}
