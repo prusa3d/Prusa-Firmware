@@ -383,6 +383,10 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
             MYSERIAL.print(pgm_read_float(true_pts + i * 2 + 1), 5);
             SERIAL_ECHOPGM("), error: ");
             MYSERIAL.print(err);
+			SERIAL_ECHOPGM(", error X: ");
+			MYSERIAL.print(errX);
+			SERIAL_ECHOPGM(", error Y: ");
+			MYSERIAL.print(errY);
             SERIAL_ECHOLNPGM("");
         }
     }
@@ -1586,10 +1590,50 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
     float *vec_y = vec_x + 2;
     float *cntr  = vec_y + 2;
     memset(pts, 0, sizeof(float) * 7 * 7);
+	uint8_t iteration = 0; 
+	BedSkewOffsetDetectionResultType result;
 
 //    SERIAL_ECHOLNPGM("find_bed_offset_and_skew verbosity level: ");
 //    SERIAL_ECHO(int(verbosity_level));
 //    SERIAL_ECHOPGM("");
+
+	while (iteration < 3) {
+
+		SERIAL_ECHOPGM("Iteration: ");
+		MYSERIAL.println(int(iteration + 1));
+
+		if (iteration > 0) {
+			// Cache the current correction matrix.
+			world2machine_initialize();
+			vec_x[0] = world2machine_rotation_and_skew[0][0];
+			vec_x[1] = world2machine_rotation_and_skew[1][0];
+			vec_y[0] = world2machine_rotation_and_skew[0][1];
+			vec_y[1] = world2machine_rotation_and_skew[1][1];
+			cntr[0] = world2machine_shift[0];
+			cntr[1] = world2machine_shift[1];
+			if (verbosity_level >= 20) {
+				SERIAL_ECHOPGM("vec_x[0]:");
+				MYSERIAL.print(vec_x[0], 5);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOPGM("vec_x[1]:");
+				MYSERIAL.print(vec_x[1], 5);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOPGM("vec_y[0]:");
+				MYSERIAL.print(vec_y[0], 5);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOPGM("vec_y[1]:");
+				MYSERIAL.print(vec_y[1], 5);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOPGM("cntr[0]:");
+				MYSERIAL.print(cntr[0], 5);
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOPGM("cntr[1]:");
+				MYSERIAL.print(cntr[1], 5);
+				SERIAL_ECHOLNPGM("");
+			}
+			// and reset the correction matrix, so the planner will not do anything.
+			world2machine_reset();
+		}
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
@@ -1600,144 +1644,192 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 
     // Collect the rear 2x3 points.
     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-    for (int k = 0; k < 4; ++ k) {
-        // Don't let the manage_inactivity() function remove power from the motors.
-        refresh_cmd_timeout();
+	for (int k = 0; k < 4; ++k) {
+		// Don't let the manage_inactivity() function remove power from the motors.
+		refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-        lcd_implementation_print_at(0, next_line, k+1);
-        lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
-#endif /* MESH_BED_CALIBRATION_SHOW_LCD */
-        float *pt = pts + k * 2;
-        // Go up to z_initial.
-        go_to_current(homing_feedrate[Z_AXIS] / 60.f);
-        if (verbosity_level >= 20) {
-            // Go to Y0, wait, then go to Y-4.
-            current_position[Y_AXIS] = 0.f;
-            go_to_current(homing_feedrate[X_AXIS] / 60.f);
-            SERIAL_ECHOLNPGM("At Y0");
-            delay_keep_alive(5000);
-            current_position[Y_AXIS] = Y_MIN_POS;
-            go_to_current(homing_feedrate[X_AXIS] / 60.f);
-            SERIAL_ECHOLNPGM("At Y-4");
-            delay_keep_alive(5000);
-        }
-        // Go to the measurement point position.
-        current_position[X_AXIS] = pgm_read_float(bed_ref_points_4+k*2);
-        current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4+k*2+1);
-        go_to_current(homing_feedrate[X_AXIS] / 60.f);
-        if (verbosity_level >= 10)
-            delay_keep_alive(3000);
-        if (! find_bed_induction_sensor_point_xy())
-            return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-#if 1
-        if (k == 0) {
-            // Improve the position of the 1st row sensor points by a zig-zag movement.
-            find_bed_induction_sensor_point_z();
-            int8_t i = 4;
-            for (;;) {
-                if (improve_bed_induction_sensor_point3(verbosity_level))
-                    break;
-                if (-- i == 0)
-                    return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-                // Try to move the Z axis down a bit to increase a chance of the sensor to trigger.
-                current_position[Z_AXIS] -= 0.025f;
-                enable_endstops(false);
-                enable_z_endstop(false);
-                go_to_current(homing_feedrate[Z_AXIS]);
-            }
-            if (i == 0)
-                // not found
-                return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-        }
-#endif
-        if (verbosity_level >= 10)
-            delay_keep_alive(3000);
-        // Save the detected point position and then clamp the Y coordinate, which may have been estimated
-        // to lie outside the machine working space.
-        pt[0] = current_position[X_AXIS];
-        pt[1] = current_position[Y_AXIS];
-        if (current_position[Y_AXIS] < Y_MIN_POS)
-            current_position[Y_AXIS] = Y_MIN_POS;
-        // Start searching for the other points at 3mm above the last point.
-        current_position[Z_AXIS] += 3.f;
-        cntr[0] += pt[0];
-        cntr[1] += pt[1];
-        if (verbosity_level >= 10 && k == 0) {
-            // Show the zero. Test, whether the Y motor skipped steps.
-            current_position[Y_AXIS] = MANUAL_Y_HOME_POS;
-            go_to_current(homing_feedrate[X_AXIS] / 60.f);
-            delay_keep_alive(3000);
-        }
-    }
+		lcd_implementation_print_at(0, next_line, k + 1);
+		lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
 
-    if (verbosity_level >= 20) {
-        // Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
-        delay_keep_alive(3000);
-        for (int8_t mesh_point = 0; mesh_point < 4; ++ mesh_point) {
-            // Don't let the manage_inactivity() function remove power from the motors.
-            refresh_cmd_timeout();
-            // Go to the measurement point.
-            // Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
-            current_position[X_AXIS] = pts[mesh_point*2];
-            current_position[Y_AXIS] = pts[mesh_point*2+1];
-            go_to_current(homing_feedrate[X_AXIS]/60);
-            delay_keep_alive(3000);
-        }
-    }
-
-    BedSkewOffsetDetectionResultType result = calculate_machine_skew_and_offset_LS(pts, 4, bed_ref_points_4, vec_x, vec_y, cntr, verbosity_level);
-    if (result >= 0) {
-        world2machine_update(vec_x, vec_y, cntr);
-    #if 1
-        // Fearlessly store the calibration values into the eeprom.
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0), cntr [0]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4), cntr [1]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0), vec_x[0]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4), vec_x[1]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0), vec_y[0]);
-        eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4), vec_y[1]);
-    #endif
-		if (verbosity_level >= 10) {
-			// Length of the vec_x
-			float l = sqrt(vec_x[0] * vec_x[0] + vec_x[1] * vec_x[1]);
-			SERIAL_ECHOLNPGM("X vector length:");
-			MYSERIAL.println(l);
-
-			// Length of the vec_y
-			l = sqrt(vec_y[0] * vec_y[0] + vec_y[1] * vec_y[1]);
-			SERIAL_ECHOLNPGM("Y vector length:");
-			MYSERIAL.println(l);
-			// Zero point correction
-			l = sqrt(cntr[0] * cntr[0] + cntr[1] * cntr[1]);
-			SERIAL_ECHOLNPGM("Zero point correction:");
-			MYSERIAL.println(l);
-
-			// vec_x and vec_y shall be nearly perpendicular.
-			l = vec_x[0] * vec_y[0] + vec_x[1] * vec_y[1];
-			SERIAL_ECHOLNPGM("Perpendicularity");
-			MYSERIAL.println(fabs(l));
-			SERIAL_ECHOLNPGM("Saving bed calibration vectors to EEPROM");
+		if (iteration > 0) {
+			lcd_print_at_PGM(0, next_line + 1, MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION);
+			lcd_implementation_print(int(iteration + 1));
 		}
-        // Correct the current_position to match the transformed coordinate system after world2machine_rotation_and_skew and world2machine_shift were set.
-        world2machine_update_current();
+#endif /* MESH_BED_CALIBRATION_SHOW_LCD */
+		float *pt = pts + k * 2;
+		// Go up to z_initial.
 
-        if (verbosity_level >= 20) {
-            // Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
-            delay_keep_alive(3000);
-            for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
-                // Don't let the manage_inactivity() function remove power from the motors.
-                refresh_cmd_timeout();
-                // Go to the measurement point.
-                // Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
-                current_position[X_AXIS] = pgm_read_float(bed_ref_points+mesh_point*2);
-                current_position[Y_AXIS] = pgm_read_float(bed_ref_points+mesh_point*2+1);
-                go_to_current(homing_feedrate[X_AXIS]/60);
-                delay_keep_alive(3000);
-            }
-        }
-    }
+		go_to_current(homing_feedrate[Z_AXIS] / 60.f);
+		if (verbosity_level >= 20) {
+			// Go to Y0, wait, then go to Y-4.
+			current_position[Y_AXIS] = 0.f;
+			go_to_current(homing_feedrate[X_AXIS] / 60.f);
+			SERIAL_ECHOLNPGM("At Y0");
+			delay_keep_alive(5000);
+			current_position[Y_AXIS] = Y_MIN_POS;
+			go_to_current(homing_feedrate[X_AXIS] / 60.f);
+			SERIAL_ECHOLNPGM("At Y-4");
+			delay_keep_alive(5000);
+		}
+		// Go to the measurement point position.
+		if (iteration == 0) {
+			current_position[X_AXIS] = pgm_read_float(bed_ref_points_4 + k * 2);
+			current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + k * 2 + 1);
+		}
+		else {
+			// if first iteration failed, count corrected point coordinates as initial
+			// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+			
+			current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[0] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[0];
+			current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[1] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[1];
 
-    return result;
+			// The calibration points are very close to the min Y.
+			if (current_position[Y_AXIS] < Y_MIN_POS_FOR_BED_CALIBRATION)
+				current_position[Y_AXIS] = Y_MIN_POS_FOR_BED_CALIBRATION;
+
+		}
+		if (verbosity_level >= 20) {
+			SERIAL_ECHOPGM("corrected current_position[X_AXIS]:");
+			MYSERIAL.print(current_position[X_AXIS], 5);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOPGM("corrected current_position[Y_AXIS]:");
+			MYSERIAL.print(current_position[Y_AXIS], 5);
+			SERIAL_ECHOLNPGM("");
+		}
+
+
+		go_to_current(homing_feedrate[X_AXIS] / 60.f);
+		if (verbosity_level >= 10)
+			delay_keep_alive(3000);
+		if (!find_bed_induction_sensor_point_xy())
+			return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
+#if 1
+		
+			if (k == 0) {
+				// Improve the position of the 1st row sensor points by a zig-zag movement.
+				find_bed_induction_sensor_point_z();
+				int8_t i = 4;
+				for (;;) {
+					if (improve_bed_induction_sensor_point3(verbosity_level))
+						break;
+					if (--i == 0)
+						return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
+					// Try to move the Z axis down a bit to increase a chance of the sensor to trigger.
+					current_position[Z_AXIS] -= 0.025f;
+					enable_endstops(false);
+					enable_z_endstop(false);
+					go_to_current(homing_feedrate[Z_AXIS]);
+				}
+				if (i == 0)
+					// not found
+					return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
+			}
+#endif
+			if (verbosity_level >= 10)
+				delay_keep_alive(3000);
+			// Save the detected point position and then clamp the Y coordinate, which may have been estimated
+			// to lie outside the machine working space.
+			if (verbosity_level >= 20) {
+				SERIAL_ECHOLNPGM("Measured:");
+				MYSERIAL.println(current_position[X_AXIS]);
+				MYSERIAL.println(current_position[Y_AXIS]);
+			}
+			//pt[0] = (pt[0] * iteration) / (iteration + 1);
+			//pt[0] += (current_position[X_AXIS]/(iteration + 1)); //count average
+			//pt[1] = (pt[1] * iteration) / (iteration + 1);
+			//pt[1] += (current_position[Y_AXIS] / (iteration + 1));
+			
+			
+			pt[0] += current_position[X_AXIS];
+			if(iteration > 0) pt[0] = pt[0] / 2;
+			
+			pt[1] += current_position[Y_AXIS];
+			if (iteration > 0) pt[1] = pt[1] / 2;
+
+			if (current_position[Y_AXIS] < Y_MIN_POS)
+				current_position[Y_AXIS] = Y_MIN_POS;
+			// Start searching for the other points at 3mm above the last point.
+			current_position[Z_AXIS] += 3.f;
+			//cntr[0] += pt[0];
+			//cntr[1] += pt[1];
+			if (verbosity_level >= 10 && k == 0) {
+				// Show the zero. Test, whether the Y motor skipped steps.
+				current_position[Y_AXIS] = MANUAL_Y_HOME_POS;
+				go_to_current(homing_feedrate[X_AXIS] / 60.f);
+				delay_keep_alive(3000);
+			}
+		}
+
+		if (verbosity_level >= 20) {
+			// Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
+			delay_keep_alive(3000);
+			for (int8_t mesh_point = 0; mesh_point < 4; ++mesh_point) {
+				// Don't let the manage_inactivity() function remove power from the motors.
+				refresh_cmd_timeout();
+				// Go to the measurement point.
+				// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+				current_position[X_AXIS] = pts[mesh_point * 2];
+				current_position[Y_AXIS] = pts[mesh_point * 2 + 1];
+				go_to_current(homing_feedrate[X_AXIS] / 60);
+				delay_keep_alive(3000);
+			}
+		}
+
+		result = calculate_machine_skew_and_offset_LS(pts, 4, bed_ref_points_4, vec_x, vec_y, cntr, verbosity_level);
+		if (result >= 0) {
+			world2machine_update(vec_x, vec_y, cntr);
+#if 1
+			// Fearlessly store the calibration values into the eeprom.
+			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 0), cntr[0]);
+			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 4), cntr[1]);
+			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X + 0), vec_x[0]);
+			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_X + 4), vec_x[1]);
+			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 0), vec_y[0]);
+			eeprom_update_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 4), vec_y[1]);
+#endif
+			if (verbosity_level >= 10) {
+				// Length of the vec_x
+				float l = sqrt(vec_x[0] * vec_x[0] + vec_x[1] * vec_x[1]);
+				SERIAL_ECHOLNPGM("X vector length:");
+				MYSERIAL.println(l);
+
+				// Length of the vec_y
+				l = sqrt(vec_y[0] * vec_y[0] + vec_y[1] * vec_y[1]);
+				SERIAL_ECHOLNPGM("Y vector length:");
+				MYSERIAL.println(l);
+				// Zero point correction
+				l = sqrt(cntr[0] * cntr[0] + cntr[1] * cntr[1]);
+				SERIAL_ECHOLNPGM("Zero point correction:");
+				MYSERIAL.println(l);
+
+				// vec_x and vec_y shall be nearly perpendicular.
+				l = vec_x[0] * vec_y[0] + vec_x[1] * vec_y[1];
+				SERIAL_ECHOLNPGM("Perpendicularity");
+				MYSERIAL.println(fabs(l));
+				SERIAL_ECHOLNPGM("Saving bed calibration vectors to EEPROM");
+			}
+			// Correct the current_position to match the transformed coordinate system after world2machine_rotation_and_skew and world2machine_shift were set.
+			world2machine_update_current();
+
+			if (verbosity_level >= 20) {
+				// Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
+				delay_keep_alive(3000);
+				for (int8_t mesh_point = 0; mesh_point < 9; ++mesh_point) {
+					// Don't let the manage_inactivity() function remove power from the motors.
+					refresh_cmd_timeout();
+					// Go to the measurement point.
+					// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
+					current_position[X_AXIS] = pgm_read_float(bed_ref_points + mesh_point * 2);
+					current_position[Y_AXIS] = pgm_read_float(bed_ref_points + mesh_point * 2 + 1);
+					go_to_current(homing_feedrate[X_AXIS] / 60);
+					delay_keep_alive(3000);
+				}
+			}
+			return result;
+		}
+		iteration++;
+	}
+	return result;    
 }
 
 BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level, uint8_t &too_far_mask)

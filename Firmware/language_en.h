@@ -208,6 +208,7 @@
 #define(length=14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" of 9"
 #define(length=60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Measuring reference height of calibration point"
 #define(length=14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" of 9"
+#define(length=20) MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteration "
 
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ calibration failed. Bed calibration point was not found."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED				"XYZ calibration failed. Please consult the manual."

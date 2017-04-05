@@ -971,6 +971,11 @@ const char * const MSG_FIL_TUNING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FIL_TUNING_DE
 };
 
+const char MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_EN[] PROGMEM = "Iteration ";
+const char * const MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_LANG_TABLE[1] PROGMEM = {
+	MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_EN
+};
+
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_EN[] PROGMEM = "Searching bed calibration point";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Hledam kalibracni bod podlozky";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Ricerca del letto punto di calibraz.";
