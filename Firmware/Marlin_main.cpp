@@ -250,6 +250,8 @@ int extruder_multiply[EXTRUDERS] = {100
 bool is_usb_printing = false;
 bool homing_flag = false;
 
+bool temp_cal_active = false;
+
 unsigned long kicktime = millis()+100000;
 
 unsigned int  usb_printing_counter;
@@ -2750,18 +2752,6 @@ void process_commands()
         }
         break;
 
-    /**
-     * G80: Mesh-based Z probe, probes a grid and produces a
-     *      mesh to compensate for variable bed height
-     *
-     * The S0 report the points as below
-     *
-     *  +----> X-axis
-     *  |
-     *  |
-     *  v Y-axis
-     *
-     */
 
 	case 76: //PINDA probe temperature calibration
 	{
@@ -2777,7 +2767,11 @@ void process_commands()
 			repeatcommand_front(); // repeat G76 with all its parameters
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
-		}	
+		}
+		custom_message = true;
+		custom_message_type = 4;
+		custom_message_state = 1;
+		custom_message = MSG_TEMP_CALIBRATION;
 		current_position[X_AXIS] = PINDA_PREHEAT_X;
 		current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 		current_position[Z_AXIS] = 0;
@@ -2807,7 +2801,7 @@ void process_commands()
 		SERIAL_ECHOLNPGM("");
 
 		for (int i = 0; i<5; i++) {
-
+			custom_message_state = i + 2;
 			t_c = 60 + i * 10;
 
 			setTargetBed(t_c);
@@ -2838,7 +2832,14 @@ void process_commands()
 			
 		
 		}
+		custom_message_type = 0;
+		custom_message = false;
+
 		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+		lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
+		lcd_update_enable(true);
+		lcd_update(2);		
+
 		setTargetBed(0); //set bed target temperature back to 0
 
 	}
@@ -2874,6 +2875,18 @@ void process_commands()
 	
 #endif
 
+	/**
+	* G80: Mesh-based Z probe, probes a grid and produces a
+	*      mesh to compensate for variable bed height
+	*
+	* The S0 report the points as below
+	*
+	*  +----> X-axis
+	*  |
+	*  |
+	*  v Y-axis
+	*
+	*/
 
 	case 80:
 	case_G80:
@@ -2896,7 +2909,7 @@ void process_commands()
 			break;
 		} 
 		
-		if (run == false && card.sdprinting == true) {
+		if (run == false && card.sdprinting == true && temp_cal_active == true) {
 			temp_compensation_start();
 			run = true;
 			repeatcommand_front(); // repeat G80 with all its parameters
@@ -3043,7 +3056,7 @@ void process_commands()
 		}
 		clean_up_after_endstop_move();
 		SERIAL_ECHOLNPGM("clean up finished ");
-		temp_compensation_apply(); //apply PINDA temperature compensation
+		if(temp_cal_active == true) temp_compensation_apply(); //apply PINDA temperature compensation
 		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
 		SERIAL_ECHOLNPGM("babystep applied");
 		bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
@@ -3109,7 +3122,7 @@ void process_commands()
 		go_home_with_z_lift();
 		SERIAL_ECHOLNPGM("Go home finished");
 		//unretract (after PINDA preheat retraction)
-		if (card.sdprinting == true && degHotend(active_extruder) > EXTRUDE_MINTEMP) {
+		if (card.sdprinting == true && degHotend(active_extruder) > EXTRUDE_MINTEMP && temp_cal_active == true) {
 			current_position[E_AXIS] += DEFAULT_RETRACTION;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 		}
@@ -6213,6 +6226,8 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 #endif
 
 void temp_compensation_start() {
+	custom_message = true;
+	custom_message_type = 5;
 	if (degHotend(active_extruder)>EXTRUDE_MINTEMP) current_position[E_AXIS] -= DEFAULT_RETRACTION;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 	
@@ -6225,6 +6240,9 @@ void temp_compensation_start() {
 	while (fabs(degBed() - target_temperature_bed) > 3) delay_keep_alive(1000);
 
 	for(int i = 0; i < PINDA_HEAT_T; i++) delay_keep_alive(1000);
+
+	custom_message_type = 0;
+	custom_message = false;
 }
 
 void temp_compensation_apply() {

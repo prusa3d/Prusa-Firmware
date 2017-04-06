@@ -944,6 +944,22 @@ static void lcd_implementation_status_screen()
 			{
 				lcd.print(lcd_status_message);
 			}
+			// PINDA temp calibration in progress
+			if (custom_message_type == 4) {
+				char progress[4];
+				lcd.setCursor(0, 3);
+				lcd_printPGM(MSG_TEMP_CALIBRATION);
+				lcd.setCursor(17, 3);
+				sprintf(progress, "%d/6", custom_message_state);
+				lcd.print(progress);
+			}
+			// temp compensation preheat
+			if (custom_message_type == 5) {
+				lcd.setCursor(0, 3);
+				lcd_printPGM(MSG_PINDA_PREHEAT);
+			}
+
+
 		}
 	else
 		{

@@ -232,5 +232,7 @@ union MenuData;
 
 char reset_menu();
 
-void lcd_pinda_calibration();
+void lcd_pinda_calibration_menu();
+void lcd_calibrate_pinda();
+void lcd_temp_calibration_set();
 #endif //ULTRALCD_H

@@ -266,6 +266,11 @@
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
 
-#define MSG_CALIBRATE_PINDA										"Calibrate PINDA"
-#define MSG_PINDA_NOT_CALIBRATED								"PINDA probe has not been calibrated"
+#define MSG_CALIBRATE_PINDA										"Temp. calibration"
+#define MSG_CALIBRATION_PINDA_MENU								"Temp. calibration"
+#define MSG_PINDA_NOT_CALIBRATED								"Temperature calibration has not been run yet"
 #define MSG_PINDA_PREHEAT										"Preheating"
+#define MSG_TEMP_CALIBRATION									"Temp. calibration   "
+#define MSG_TEMP_CALIBRATION_DONE								"Temperature calibration is finished. Click to continue."
+#define MSG_TEMP_CALIBRATION_ON									"Temp. cal. [ON]"
+#define MSG_TEMP_CALIBRATION_OFF								"Temp. cal. [OFF]"

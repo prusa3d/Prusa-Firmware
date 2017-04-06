@@ -494,9 +494,14 @@ const char * const MSG_CALIBRATE_E_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_E_DE
 };
 
-const char MSG_CALIBRATE_PINDA_EN[] PROGMEM = "Calibrate PINDA";
+const char MSG_CALIBRATE_PINDA_EN[] PROGMEM = "Temp. calibration";
 const char * const MSG_CALIBRATE_PINDA_LANG_TABLE[1] PROGMEM = {
 	MSG_CALIBRATE_PINDA_EN
+};
+
+const char MSG_CALIBRATION_PINDA_MENU_EN[] PROGMEM = "Temp. calibration";
+const char * const MSG_CALIBRATION_PINDA_MENU_LANG_TABLE[1] PROGMEM = {
+	MSG_CALIBRATION_PINDA_MENU_EN
 };
 
 const char MSG_CARD_MENU_EN[] PROGMEM = "Print from SD";
@@ -1736,7 +1741,7 @@ const char * const MSG_PICK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PICK_Z_DE
 };
 
-const char MSG_PINDA_NOT_CALIBRATED_EN[] PROGMEM = "PINDA probe has not been calibrated";
+const char MSG_PINDA_NOT_CALIBRATED_EN[] PROGMEM = "Temperature calibration has not been run yet";
 const char * const MSG_PINDA_NOT_CALIBRATED_LANG_TABLE[1] PROGMEM = {
 	MSG_PINDA_NOT_CALIBRATED_EN
 };
@@ -2691,6 +2696,26 @@ const char * const MSG_TEMPERATURE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMPERATURE_ES,
 	MSG_TEMPERATURE_PL,
 	MSG_TEMPERATURE_DE
+};
+
+const char MSG_TEMP_CALIBRATION_EN[] PROGMEM = "Temp. calibration   ";
+const char * const MSG_TEMP_CALIBRATION_LANG_TABLE[1] PROGMEM = {
+	MSG_TEMP_CALIBRATION_EN
+};
+
+const char MSG_TEMP_CALIBRATION_DONE_EN[] PROGMEM = "Temperature calibration is finished. Click to continue.";
+const char * const MSG_TEMP_CALIBRATION_DONE_LANG_TABLE[1] PROGMEM = {
+	MSG_TEMP_CALIBRATION_DONE_EN
+};
+
+const char MSG_TEMP_CALIBRATION_OFF_EN[] PROGMEM = "Temp. cal. [OFF]";
+const char * const MSG_TEMP_CALIBRATION_OFF_LANG_TABLE[1] PROGMEM = {
+	MSG_TEMP_CALIBRATION_OFF_EN
+};
+
+const char MSG_TEMP_CALIBRATION_ON_EN[] PROGMEM = "Temp. cal. [ON]";
+const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_TEMP_CALIBRATION_ON_EN
 };
 
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_EN[] PROGMEM = "SD card [normal]";
