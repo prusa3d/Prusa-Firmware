@@ -2894,9 +2894,9 @@ void process_commands()
 			repeatcommand_front(); // repeat G80 with all its parameters
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
-		}
+		} 
 		
-		if (run == false) {
+		if (run == false && card.sdprinting == true) {
 			temp_compensation_start();
 			run = true;
 			repeatcommand_front(); // repeat G80 with all its parameters
@@ -3108,6 +3108,11 @@ void process_commands()
 		SERIAL_ECHOLNPGM("Mesh bed leveling activated");
 		go_home_with_z_lift();
 		SERIAL_ECHOLNPGM("Go home finished");
+		//unretract (after PINDA preheat retraction)
+		if (card.sdprinting == true && degHotend(active_extruder) > EXTRUDE_MINTEMP) {
+			current_position[E_AXIS] += DEFAULT_RETRACTION;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
+		}
 		// Restore custom message state
 		custom_message = custom_message_old;
 		custom_message_type = custom_message_type_old;
@@ -6208,6 +6213,9 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 #endif
 
 void temp_compensation_start() {
+	if (degHotend(active_extruder)>EXTRUDE_MINTEMP) current_position[E_AXIS] -= DEFAULT_RETRACTION;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
+	
 	current_position[X_AXIS] = PINDA_PREHEAT_X;
 	current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 	current_position[Z_AXIS] = 0;
@@ -6217,8 +6225,6 @@ void temp_compensation_start() {
 	while (fabs(degBed() - target_temperature_bed) > 3) delay_keep_alive(1000);
 
 	for(int i = 0; i < PINDA_HEAT_T; i++) delay_keep_alive(1000);
-	
-
 }
 
 void temp_compensation_apply() {

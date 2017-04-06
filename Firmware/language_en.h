@@ -268,3 +268,4 @@
 
 #define MSG_CALIBRATE_PINDA										"Calibrate PINDA"
 #define MSG_PINDA_NOT_CALIBRATED								"PINDA probe has not been calibrated"
+#define MSG_PINDA_PREHEAT										"Preheating"

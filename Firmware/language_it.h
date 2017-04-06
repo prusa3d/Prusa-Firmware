@@ -249,3 +249,4 @@
 #define MSG_FILAMENT_CLEAN								"Il colore e' nitido?"
 #define MSG_UNLOADING_FILAMENT							"Rilasc. filamento"
 #define MSG_PAPER										"Porre un foglio sotto l'ugello durante la calibrazione dei primi 4 punti. In caso l'ugello muova il foglio spegnere prontamente la stampante."
+
