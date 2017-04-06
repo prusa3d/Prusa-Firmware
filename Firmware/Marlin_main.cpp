@@ -1164,7 +1164,7 @@ void setup()
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
       lcd_update_enable(true);
-  } else if (calibration_status() == CALIBRATION_STATUS_PINDA) {
+  } else if (calibration_status() == CALIBRATION_STATUS_PINDA && temp_cal_active == true) {
 	  lcd_show_fullscreen_message_and_wait_P(MSG_PINDA_NOT_CALIBRATED);
 	  lcd_update_enable(true);
   } else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
@@ -3228,7 +3228,7 @@ void process_commands()
              * This G-code will be performed at the end of a calibration script.
              */
         case 87:
-            calibration_status_store(CALIBRATION_STATUS_PINDA);
+			calibration_status_store(CALIBRATION_STATUS_PINDA);
             break;
 
             /**
@@ -6268,8 +6268,8 @@ void temp_compensation_apply() {
 		st_synchronize();
 		plan_set_z_position(current_position[Z_AXIS]);
 	}
-	else {
-		//message that we have no temp compensation data
+	else {		
+		//message that we have no temp compensation data ?
 	}
 }
 
