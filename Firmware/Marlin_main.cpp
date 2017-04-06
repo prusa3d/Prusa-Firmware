@@ -1141,6 +1141,7 @@ void setup()
       // EEPROM_LANG to number lower than 0x0ff.
       // 1) Set a high power mode.
       eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
+	  eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
   }
 
   // In the future, somewhere here would one compare the current firmware version against the firmware version stored in the EEPROM.
@@ -1150,7 +1151,7 @@ void setup()
     if (lang_selected >= LANG_NUM){
       lcd_mylang();
     }
-
+	temp_cal_active = eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE);
 	check_babystep(); //checking if Z babystep is in allowed range
 	
   if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
