@@ -545,7 +545,6 @@ void lcd_commands()
 			enquecommand(cmd1);
 			isPrintPaused = false;
 			card.startFileprint();
-			//starttime = pause_time;
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
 		}
@@ -3591,7 +3590,8 @@ void lcd_sdcard_stop()
 				card.closefile();
 
 				stoptime = millis();
-				unsigned long t = (stoptime - starttime) / 1000; //time in s
+				unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
+				pause_time = 0;
 				save_statistics(total_filament_used, t);
 
 				lcd_return_to_status();

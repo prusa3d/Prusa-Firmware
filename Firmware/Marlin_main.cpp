@@ -1523,7 +1523,8 @@ void get_command()
         SERIAL_PROTOCOLLNRPGM(MSG_FILE_PRINTED);
         stoptime=millis();
         char time[30];
-        unsigned long t=(stoptime-starttime)/1000;
+        unsigned long t=(stoptime-starttime-pause_time)/1000;
+		pause_time = 0;
         int hours, minutes;
         minutes=(t/60)%60;
         hours=t/60/60;
@@ -3962,7 +3963,7 @@ Sigma_Exit:
 		heating_status = 2;
 		if (farm_mode) { prusa_statistics(2); };
         
-        starttime=millis();
+        //starttime=millis();
         previous_millis_cmd = millis();
       }
       break;

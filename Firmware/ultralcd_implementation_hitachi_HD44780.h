@@ -792,7 +792,7 @@ static void lcd_implementation_status_screen()
     lcd.print(LCD_STR_CLOCK[0]);
     if(starttime != 0)
     {
-        uint16_t time = (isPrintPaused || (!heating_status))? pause_time/60000 : (millis() + pause_time /*- start_time*/)/60000; //is print is paused, pause also print time
+		uint16_t time = millis() / 60000 - starttime / 60000;
         lcd.print(itostr2(time/60));
         lcd.print(':');
         lcd.print(itostr2(time%60));
