@@ -2429,6 +2429,33 @@ void lcd_mesh_calibration_z()
   lcd_return_to_status();
 }
 
+void lcd_pinda_calibration_menu()
+{
+	START_MENU();
+		MENU_ITEM(back, MSG_MENU_CALIBRATION, lcd_calibration_menu);
+		MENU_ITEM(submenu, MSG_CALIBRATE_PINDA, lcd_calibrate_pinda);
+		//MENU_ITEM(back, MSG_SETTINGS, lcd_settings_menu);
+		if (temp_cal_active == false) {
+			MENU_ITEM(function, MSG_TEMP_CALIBRATION_OFF, lcd_temp_calibration_set);
+		}
+		else {
+			MENU_ITEM(function, MSG_TEMP_CALIBRATION_ON, lcd_temp_calibration_set);
+		}
+	END_MENU();
+}
+
+void lcd_temp_calibration_set() {
+	temp_cal_active = !temp_cal_active;
+	eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
+	digipot_init();
+	lcd_goto_menu(lcd_pinda_calibration_menu, 2);
+}
+
+void lcd_calibrate_pinda() {
+	enquecommand_P(PSTR("G76"));
+	lcd_return_to_status();
+}
+
 #ifndef SNMM
 
 /*void lcd_calibrate_extruder() {
@@ -2592,6 +2619,7 @@ static void lcd_calibration_menu()
 MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     // "Calibrate Z" with storing the reference values to EEPROM.
     MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
+	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
 #ifndef SNMM
 	//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
 #endif

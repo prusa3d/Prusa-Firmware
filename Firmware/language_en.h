@@ -275,3 +275,12 @@
 #define MSG_PID_FINISHED										"PID cal. finished"
 #define MSG_PID_RUNNING											"PID cal.           "
 #define MSG_EEPROM_SAVING										"Saving"
+
+#define MSG_CALIBRATE_PINDA										"Temp. calibration"
+#define MSG_CALIBRATION_PINDA_MENU								"Temp. calibration"
+#define MSG_PINDA_NOT_CALIBRATED								"Temperature calibration has not been run yet"
+#define MSG_PINDA_PREHEAT										"Preheating"
+#define MSG_TEMP_CALIBRATION									"Temp. calibration   "
+#define MSG_TEMP_CALIBRATION_DONE								"Temperature calibration is finished. Click to continue."
+#define MSG_TEMP_CALIBRATION_ON									"Temp. cal. [ON]"
+#define MSG_TEMP_CALIBRATION_OFF								"Temp. cal. [OFF]"

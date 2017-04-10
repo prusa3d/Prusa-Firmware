@@ -284,6 +284,7 @@ extern unsigned long starttime;
 extern unsigned long stoptime;
 extern bool is_usb_printing;
 extern bool homing_flag;
+extern bool temp_cal_active;
 extern bool loading_flag;
 extern unsigned int usb_printing_counter;
 
@@ -323,7 +324,7 @@ extern void calculate_volumetric_multipliers();
 
 // Similar to the default Arduino delay function, 
 // but it keeps the background tasks running.
-extern void delay_keep_alive(int ms);
+extern void delay_keep_alive(unsigned int ms);
 
 extern void check_babystep();
 
@@ -336,5 +337,7 @@ float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
 
 #endif
-
+float temp_comp_interpolation(float temperature);
+void temp_compensation_apply();
+void temp_compensation_start();
 void wait_for_heater(long codenum);

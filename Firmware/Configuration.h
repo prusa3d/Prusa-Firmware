@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.10-9"
+#define FW_version "3.0.11-alpha"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -44,6 +44,8 @@
 #define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
 #define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
 #define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1)
+#define EEPROM_PROBE_TEMP_SHIFT (EEPROM_PRINT_FLAG - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
+#define EEPROM_TEMP_CAL_ACTIVE (EEPROM_PROBE_TEMP_SHIFT - 1)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
@@ -699,17 +701,20 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // (unsigned char*)EEPROM_CALIBRATION_STATUS
 enum CalibrationStatus
 {
-    // Freshly assembled, needs to peform a self-test and the XYZ calibration.
-    CALIBRATION_STATUS_ASSEMBLED = 255,
+	// Freshly assembled, needs to peform a self-test and the XYZ calibration.
+	CALIBRATION_STATUS_ASSEMBLED = 255,
 
-    // For the wizard: self test has been performed, now the XYZ calibration is needed.
-    // CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
+	// For the wizard: self test has been performed, now the XYZ calibration is needed.
+	// CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
 
-    // For the wizard: factory assembled, needs to run Z calibration.
-    CALIBRATION_STATUS_Z_CALIBRATION = 240,
+	// For the wizard: factory assembled, needs to run Z calibration.
+	CALIBRATION_STATUS_Z_CALIBRATION = 240,
 
-    // The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
-    CALIBRATION_STATUS_LIVE_ADJUST = 230,
+	// The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
+	CALIBRATION_STATUS_LIVE_ADJUST = 230,
+
+	//V2 calibration has been run, now run PINDA probe temperature calibration
+	CALIBRATION_STATUS_PINDA = 220,
 
     // Calibrated, ready to print.
     CALIBRATION_STATUS_CALIBRATED = 1,
