@@ -6411,9 +6411,6 @@ float temp_comp_interpolation(float inp_temperature) {
 
 }
 
-#endif
-
-
 void long_pause() //long pause print
 {
 	st_synchronize();
