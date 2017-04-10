@@ -54,7 +54,7 @@
 #include "pins_arduino.h"
 #include "math.h"
 #include "util.h"
-//#include "spline.h"
+
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -2924,6 +2924,7 @@ void process_commands()
 	case 80:
 	case_G80:
 	{
+		mesh_bed_leveling_flag = true;
 		int8_t verbosity_level = 0;
 		static bool run = false;
 
@@ -3163,7 +3164,9 @@ void process_commands()
 		custom_message = custom_message_old;
 		custom_message_type = custom_message_type_old;
 		custom_message_state = custom_message_state_old;
-		lcd_update(1);
+		mesh_bed_leveling_flag = false;
+		lcd_update(2);
+		
 	}
 	break;
 
