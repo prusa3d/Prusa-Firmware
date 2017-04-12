@@ -111,6 +111,7 @@ float pid_temp = DEFAULT_PID_TEMP;
 
 bool long_press_active = false;
 long long_press_timer = millis();
+long button_blanking_time = millis();
 bool button_pressed = false;
 
 bool menuExiting = false;
@@ -4290,7 +4291,6 @@ static bool lcd_selftest_fan_dialog(int _fan)
 	lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
 
 	int8_t enc_dif = 0;
-	bool _response = false;
 	do
 	{
 		switch (_fan)
@@ -4330,13 +4330,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		manage_heater();
 		delay(100);
 
-		if (lcd_clicked())
-		{
-			_response = true;
-		}
-
-
-	} while (!_response);
+	} while (!lcd_clicked());
 
 	SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 	WRITE(EXTRUDER_0_AUTO_FAN_PIN, 0);
@@ -4436,7 +4430,7 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 static void lcd_quick_feedback()
 {
   lcdDrawUpdate = 2;
-  button_pressed = false;
+  button_pressed = false;  
   lcd_implementation_quick_feedback();
 }
 
@@ -4791,36 +4785,42 @@ void lcd_buttons_update()
 #if BTN_ENC > 0
   if (lcd_update_enabled == true) { //if we are in non-modal mode, long press can be used and short press triggers with button release
 	  if (READ(BTN_ENC) == 0) { //button is pressed	  
-
-		  if (button_pressed == false && long_press_active == false) {
-			  if (currentMenu != lcd_move_z) {
-				  savedMenu = currentMenu;
-				  savedEncoderPosition = encoderPosition;
+		  if (millis() > button_blanking_time) {
+			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
+			  if (button_pressed == false && long_press_active == false) {
+				  if (currentMenu != lcd_move_z) {
+					  savedMenu = currentMenu;
+					  savedEncoderPosition = encoderPosition;
+				  }
+				  long_press_timer = millis();
+				  button_pressed = true;
 			  }
-			  long_press_timer = millis();
-			  button_pressed = true;
-		  }
-		  else {
-			  if (millis() - long_press_timer > LONG_PRESS_TIME) { //long press activated
-				   
-				  long_press_active = true;
-				  move_menu_scale = 1.0;
-				  lcd_goto_menu(lcd_move_z);
+			  else {
+				  if (millis() - long_press_timer > LONG_PRESS_TIME) { //long press activated
+
+					  long_press_active = true;
+					  move_menu_scale = 1.0;
+					  lcd_goto_menu(lcd_move_z);
+				  }
 			  }
 		  }
 	  }
 	  else { //button not pressed
 		  if (button_pressed) { //button was released
+			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
+
 			  if (long_press_active == false) { //button released before long press gets activated
 				  if (currentMenu == lcd_move_z) {
 					  //return to previously active menu and previous encoder position
-					  lcd_goto_menu(savedMenu, savedEncoderPosition);
+					  lcd_goto_menu(savedMenu, savedEncoderPosition);					  
 				  }
 				  else {
 					  newbutton |= EN_C;
 				  }
 			  }
+			  else if (currentMenu == lcd_move_z) lcd_quick_feedback(); 
 			  //button_pressed is set back to false via lcd_quick_feedback function
+			  
 		  }
 		  else {			  
 			  long_press_active = false;
@@ -4830,6 +4830,7 @@ void lcd_buttons_update()
   else { //we are in modal mode
 	  if (READ(BTN_ENC) == 0)
 		  newbutton |= EN_C; 
+  
   }
   
 #endif  
@@ -4923,7 +4924,7 @@ void lcd_buzz(long duration, uint16_t freq)
 bool lcd_clicked()
 {
 	bool clicked = LCD_CLICKED;
-	button_pressed = false;
+	if(clicked) button_pressed = false;
     return clicked;
 }
 #endif//ULTIPANEL
