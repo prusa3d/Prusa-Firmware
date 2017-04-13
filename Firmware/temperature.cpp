@@ -1070,11 +1070,10 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 	float __hysteresis = 0;
 	int __timeout = 0;
 	bool temp_runaway_check_active = false;
-	static float __preheat_start = 0;
-	static int __preheat_counter = 0;
-	static int __preheat_errors = 0;
-
-	_heater_id = (_isbed) ? _heater_id++ : _heater_id;
+	static float __preheat_start[2] = { 0,0}; //currently just bed and one extruder
+	static int __preheat_counter[2] = { 0,0};
+	static int __preheat_errors[2] = { 0,0};
+		
 
 #ifdef 	TEMP_RUNAWAY_BED_TIMEOUT
 	if (_isbed)
@@ -1107,8 +1106,8 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 			{
 				temp_runaway_status[_heater_id] = TempRunaway_PREHEAT;
 				temp_runaway_target[_heater_id] = _target_temperature;
-				__preheat_start = _current_temperature;
-				__preheat_counter = 0;
+				__preheat_start[_heater_id] = _current_temperature;
+				__preheat_counter[_heater_id] = 0;
 			}
 			else
 			{
@@ -1119,26 +1118,36 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 
 		if (temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
 		{
-			if (_current_temperature < 150)
+			if (_current_temperature < ((_isbed) ? (0.8 * _target_temperature) : 150)) //check only in area where temperature is changing fastly for heater, check to 0.8 x target temperature for bed
 			{
-				__preheat_counter++;
-				if (__preheat_counter > 8)
+				__preheat_counter[_heater_id]++;
+				if (__preheat_counter[_heater_id] > ((_isbed) ? 16 : 8)) // periodicaly check if current temperature changes
 				{
-					if (_current_temperature - __preheat_start < 2) {
-						__preheat_errors++;
+					/*SERIAL_ECHOPGM("Heater:");
+					MYSERIAL.print(_heater_id);
+					SERIAL_ECHOPGM(" T:");
+					MYSERIAL.print(_current_temperature);
+					SERIAL_ECHOPGM(" Tstart:");
+					MYSERIAL.print(__preheat_start[_heater_id]);*/
+					
+					if (_current_temperature - __preheat_start[_heater_id] < 2) {
+						__preheat_errors[_heater_id]++;
+						/*SERIAL_ECHOPGM(" Preheat errors:");
+						MYSERIAL.println(__preheat_errors[_heater_id]);*/
 					}
 					else {
-						__preheat_errors = 0;
+						//SERIAL_ECHOLNPGM("");
+						__preheat_errors[_heater_id] = 0;
 					}
 
-					if (__preheat_errors > 5)
+					if (__preheat_errors[_heater_id] > ((_isbed) ? 2 : 5)) 
 					{
 						if (farm_mode) { prusa_statistics(0); }
 						temp_runaway_stop(true, _isbed);
 						if (farm_mode) { prusa_statistics(91); }
 					}
-					__preheat_start = _current_temperature;
-					__preheat_counter = 0;
+					__preheat_start[_heater_id] = _current_temperature;
+					__preheat_counter[_heater_id] = 0;
 				}
 			}
 		}
@@ -1156,7 +1165,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 
 
 		if (temp_runaway_check_active)
-		{
+		{			
 			//	we are in range
 			if (_target_temperature - __hysteresis < _current_temperature && _current_temperature < _target_temperature + __hysteresis)
 			{
