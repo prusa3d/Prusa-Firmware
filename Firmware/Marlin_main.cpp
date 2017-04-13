@@ -2816,7 +2816,7 @@ void process_commands()
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 		st_synchronize();
 
-		while (degBed() < PINDA_MIN_T) delay_keep_alive(1000);
+		while (abs(degBed() - PINDA_MIN_T) > 1 ) delay_keep_alive(1000);
 		
 		//enquecommand_P(PSTR("M190 S50"));
 		for (int i = 0; i < PINDA_HEAT_T; i++)	delay_keep_alive(1000);
