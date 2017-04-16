@@ -19,7 +19,7 @@ Just clone the repo and flash it to the firmware.
 Download and install Arduino; suggested and verified version is the 1.6.8 from:
 https://www.arduino.cc/en/Main/OldSoftwareReleases#previous
 
-If you also use Arduino for other purposes, it is suggested to use a stand-alone version rather than a system-wide install (e.g., use the \"Windows\" version instead of \"Windows Installer\"), and use it only for Prusa i3 MK2 firmware generation.
+If you also use Arduino for other purposes, it is suggested to use a stand-alone version rather than a system-wide install (e.g., use the "Windows" version instead of "Windows Installer"), and use it only for Prusa i3 MK2 firmware generation.
 
 
 
@@ -37,7 +37,7 @@ https://github.com/prusa3d/Prusa-Firmware/tree/MK2
 
 #### Step 3a - Remove the LiquidCrystal library
 
-Due to name collision, you have to remove the Liquid Crystal library of the original Arduino installation. To do so, you may rename the \"Arduino\\libraries\\LiquidCrystal\" directory to \"Arduino\\libraries\\LiquidCrystal_\", or remove it altogether.
+Due to name collision, you have to remove the Liquid Crystal library of the original Arduino installation. To do so, you may rename the "Arduino\\libraries\\LiquidCrystal" directory to "Arduino\\libraries\\LiquidCrystal_", or remove it altogether.
 
 
 #### Step 3b - Add RAMBo hardware / library support
@@ -89,9 +89,9 @@ You will find the exported binary in the Prusa-Firmware/Firmware directory:
 
 
 #### Step 7a - Known errors
-If you encounter the \"using typedef-name 'fpos_t' after 'struct'\" problem, you either have a wrong Arduino version (need 1.6.8 - check Step 1) or need to manually modify fpos_t to fpos_t2 in the files SDBasefile.cpp and SDBasefile.h.
+If you encounter the "using typedef-name 'fpos_t' after 'struct'" problem, you either have a wrong Arduino version (need 1.6.8 - check Step 1) or need to manually modify fpos_t to fpos_t2 in the files SDBasefile.cpp and SDBasefile.h.
 
-If you are using Linux AND using a cloned git repo, you'll encounter the \"generate_version_header_for_marlin execute file not found in $path\" error; download and install the script from the following website:
+If you are using Linux AND using a cloned git repo, you'll encounter the "generate_version_header_for_marlin execute file not found in $path" error; download and install the script from the following website:
 https://github.com/Wackerbarth/Marlin/issues/1
 You'll also have to make the script executable (chmod a+x path/to/file)
 
