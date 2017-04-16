@@ -1,7 +1,5 @@
 # Original Prusa i3 MK2 Firmware
 
-# Original Prusa i3 MK2 Firmware
-
 ## General instructions
 
 Pre-compiled hex files for all printers by PRUSA RESEARCH are available in hex_files folder.
