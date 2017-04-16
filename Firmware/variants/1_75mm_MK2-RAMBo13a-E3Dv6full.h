@@ -107,19 +107,6 @@ EXTRUDER SETTINGS
 #endif
 
 /*------------------------------------
-LOAD/UNLOAD FILAMENT SETTINGS
-*------------------------------------*/
-
-// Load filament commands
-#define LOAD_FILAMENT_0 "M83"
-#define LOAD_FILAMENT_1 "G1 E70 F400"
-#define LOAD_FILAMENT_2 "G1 E40 F100"
-
-// Unload filament commands
-#define UNLOAD_FILAMENT_0 "M83"
-#define UNLOAD_FILAMENT_1 "G1 E-80 F7000"
-
-/*------------------------------------
 CHANGE FILAMENT SETTINGS
 *------------------------------------*/
 
@@ -325,7 +312,22 @@ THERMISTORS SETTINGS
 
 #define STACK_GUARD_TEST_VALUE 0xA2A2
 
+#define MAX_BED_TEMP_CALIBRATION 50
+#define MAX_HOTEND_TEMP_CALIBRATION 50
+
 #define MAX_E_STEPS_PER_UNIT 250
 #define MIN_E_STEPS_PER_UNIT 100
+
+#define PRINT_STARTED 0xFE
+#define PRINT_FINISHED 0xFF
+
+#define Z_BABYSTEP_MIN -3999
+#define Z_BABYSTEP_MAX 0
+
+#define PING_TIME 60 //time in s
+#define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
+#define PING_ALLERT_PERIOD 60 //time in s
+
+#define LONG_PRESS_TIME 1000 //time in ms for button long press
 
 #endif //__CONFIGURATION_PRUSA_H

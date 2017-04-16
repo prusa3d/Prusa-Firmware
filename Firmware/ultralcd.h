@@ -31,6 +31,7 @@
 void lcd_mylang();
   bool lcd_detected(void);
 
+  
   static void lcd_selftest();
   static bool lcd_selfcheck_endstops();
   static bool lcd_selfcheck_axis(int _axis, int _travel);
@@ -49,7 +50,7 @@ void lcd_mylang();
   extern void lcd_wait_for_click();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
   // 0: no, 1: yes, -1: timeouted
-  extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true);
+  extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 
   // Ask the user to move the Z axis up to the end stoppers and let
   // the user confirm that it has been done.
@@ -94,7 +95,7 @@ void lcd_mylang();
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
   
-  extern bool farm_mode;
+  extern uint8_t farm_mode;
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
@@ -211,11 +212,13 @@ static void extr_unload_0();
 static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
-static void stack_test();
-static int test();
+static void lcd_disable_farm_mode();
 
 void stack_error();
-//void lcd_calibrate_extruder();
+static void lcd_ping_allert();
+void lcd_printer_connected();
+void lcd_ping();
+
 void lcd_calibrate_extruder();
 void lcd_farm_sdcard_menu();
 
@@ -226,6 +229,7 @@ void lcd_farm_sdcard_menu_w();
 
 void lcd_wait_for_cool_down();
 void adjust_bed_reset();
+void lcd_extr_cal_reset();
 
 union MenuData;
 

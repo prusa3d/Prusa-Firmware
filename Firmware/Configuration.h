@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.10-alpha-2"
+#define FW_version "3.0.10-8"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -31,19 +31,19 @@
 // Offsets of the Z heiths of the calibration points from the first point.
 // The offsets are saved as 16bit signed int, scaled to tenths of microns.
 #define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
-
-#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-4)
+#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-1)
+#define EEPROM_FARM_NUMBER (EEPROM_FARM_MODE-3)
 
 // Correction of the bed leveling, in micrometers.
 // Maximum 50 micrometers allowed.
 // Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
-#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_MODE-1)
+#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
 #define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
 #define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
 #define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
 #define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
 #define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
-#define EEPROM_STEPS_PER_UNIT_E (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-4)
+#define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
@@ -722,9 +722,5 @@ enum CalibrationStatus
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"
-
-
-#define MAX_HOTEND_TEMP_CALIBRATION 50
-#define MAX_BED_TEMP_CALIBRATION 50
 
 #endif //__CONFIGURATION_H
