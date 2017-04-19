@@ -168,8 +168,8 @@ ADDITIONAL FEATURES SETTINGS
 #endif
 
 // temperature runaway
-//#define TEMP_RUNAWAY_BED_HYSTERESIS 5
-//#define TEMP_RUNAWAY_BED_TIMEOUT 360
+#define TEMP_RUNAWAY_BED_HYSTERESIS 5
+#define TEMP_RUNAWAY_BED_TIMEOUT 360
 
 #define TEMP_RUNAWAY_EXTRUDER_HYSTERESIS 15
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
@@ -370,14 +370,25 @@ THERMISTORS SETTINGS
 #define Z_BABYSTEP_MIN -3999
 #define Z_BABYSTEP_MAX 0
 
+#define PINDA_PREHEAT_X 75
+#define PINDA_PREHEAT_Y 75
+#define PINDA_HEAT_T 120 //time in s
+
+#define PINDA_MIN_T 50
+#define PINDA_STEP_T 10
+#define PINDA_MAX_T 100
+
 #define PING_TIME 60 //time in s
 #define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
 #define PING_ALLERT_PERIOD 60 //time in s
 
 #define LONG_PRESS_TIME 1000 //time in ms for button long press 
+#define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
 #define PAUSE_RETRACT 2 
 
-#define DEFAULT_PID_TEMP 210;
+#define DEFAULT_PID_TEMP 210
+
+#define DEFAULT_RETRACTION 1 //used for PINDA temp compensation
 
 #endif //__CONFIGURATION_PRUSA_H
