@@ -208,6 +208,7 @@
 #define(length=14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" of 9"
 #define(length=60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Measuring reference height of calibration point"
 #define(length=14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" of 9"
+#define(length=20) MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteration "
 
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ calibration failed. Bed calibration point was not found."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED				"XYZ calibration failed. Please consult the manual."
@@ -266,3 +267,20 @@
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
 #define MSG_PRINTER_DISCONNECTED								"Printer disconnected"
+#define(length=20, lines=1) MSG_FINISHING_MOVEMENTS				"Finishing movements"
+#define(length=20, lines=1) MSG_PRINT_PAUSED					"Print paused"
+#define(length=20, lines=1) MSG_RESUMING_PRINT					"Resuming print"
+#define(length=17, lines=1) MSG_PID_EXTRUDER					"PID calibration"
+#define(length=19, lines=1) MSG_SET_TEMPERATURE					"Set temperature:"
+#define(length=20, lines=1) MSG_PID_FINISHED					"PID cal. finished"
+#define(length=20, lines=1) MSG_PID_RUNNING						"PID cal.           "
+
+#define(length=17, lines=1) MSG_CALIBRATE_PINDA					"Calibrate"
+#define(length=17, lines=1) MSG_CALIBRATION_PINDA_MENU			"Temp. calibration"
+#define(length=20, lines=4) MSG_PINDA_NOT_CALIBRATED			"Temperature calibration has not been run yet"
+#define(length=20, lines=1) MSG_PINDA_PREHEAT					"Preheating"
+#define(length=20, lines=1) MSG_TEMP_CALIBRATION				"Temp. cal.          "
+#define(length=20, lines=4) MSG_TEMP_CALIBRATION_DONE			"Temperature calibration is finished. Click to continue."
+#define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"Temp. cal. [ON]"
+#define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF			"Temp. cal. [OFF]"
+

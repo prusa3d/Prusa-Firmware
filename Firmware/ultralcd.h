@@ -91,6 +91,9 @@ void lcd_mylang();
   #define LCD_COMMAND_LOAD_FILAMENT 1
   #define LCD_COMMAND_STOP_PRINT 2
   #define LCD_COMMAND_FARM_MODE_CONFIRM 4
+  #define LCD_COMMAND_LONG_PAUSE 5
+  #define LCD_COMMAND_LONG_PAUSE_RESUME 6
+  #define LCD_COMMAND_PID_EXTRUDER 7 
 
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
@@ -101,6 +104,7 @@ void lcd_mylang();
   extern int farm_status;
 
   extern bool cancel_heatup;
+  extern bool isPrintPaused;
   
   #ifdef FILAMENT_LCD_DISPLAY
         extern unsigned long message_millis;
@@ -234,4 +238,8 @@ void lcd_extr_cal_reset();
 union MenuData;
 
 char reset_menu();
+
+void lcd_pinda_calibration_menu();
+void lcd_calibrate_pinda();
+void lcd_temp_calibration_set();
 #endif //ULTRALCD_H

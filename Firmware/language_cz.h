@@ -265,3 +265,20 @@
 #define MSG_UNLOADING_FILAMENT							"Vysouvam filament"
 
 #define MSG_PAPER										"Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, vypnete tiskarnu."
+
+#define MSG_FINISHING_MOVEMENTS							"Dokoncovani pohybu"
+#define MSG_PRINT_PAUSED								"Tisk pozastaven"
+#define MSG_RESUMING_PRINT								"Obnovovani tisku"
+#define MSG_PID_EXTRUDER								"PID kalibrace"
+#define MSG_SET_TEMPERATURE								"Nastavte teplotu:"
+#define MSG_PID_FINISHED								"PID kal. ukoncena"
+#define MSG_PID_RUNNING									"PID kal.           "
+
+#define MSG_CALIBRATE_PINDA								"Zkalibrovat"
+#define MSG_CALIBRATION_PINDA_MENU						"Teplotni kalibrace"
+#define MSG_PINDA_NOT_CALIBRATED						"Tiskarna nebyla teplotne zkalibrovana"
+#define MSG_PINDA_PREHEAT								"Predehrivani"
+#define MSG_TEMP_CALIBRATION							"Tepl. kal.          "
+#define MSG_TEMP_CALIBRATION_DONE						"Teplotni kalibrace dokoncena. Pokracujte stiskem tlacitka."
+#define MSG_TEMP_CALIBRATION_ON							"Tepl. kal. [ON]"
+#define MSG_TEMP_CALIBRATION_OFF						"Tepl. kal. [OFF]"
