@@ -964,7 +964,7 @@ static void lcd_implementation_status_screen()
 				char progress[4];
 				lcd.setCursor(0, 3);
 				lcd_printPGM(MSG_TEMP_CALIBRATION);
-				lcd.setCursor(17, 3);
+				lcd.setCursor(12, 3);
 				sprintf(progress, "%d/6", custom_message_state);
 				lcd.print(progress);
 			}

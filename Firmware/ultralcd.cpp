@@ -556,7 +556,8 @@ void lcd_commands()
 			strcpy(cmd1, "G1 Z");
 			strcat(cmd1, ftostr32(pause_lastpos[Z_AXIS]));
 			enquecommand(cmd1);
-			enquecommand_P(PSTR("M83")); // set extruder to relative mode.
+			if (axis_relative_modes[3] == true) enquecommand_P(PSTR("M83")); // set extruder to relative mode.
+			else enquecommand_P(PSTR("M82")); // set extruder to absolute mode
 			enquecommand_P(PSTR("G1 E"  STRINGIFY(PAUSE_RETRACT))); //unretract
 			enquecommand_P(PSTR("G90")); //absolute positioning
 			lcd_commands_step = 1;
@@ -2620,7 +2621,7 @@ static void lcd_calibration_menu()
 MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     // "Calibrate Z" with storing the reference values to EEPROM.
     MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
-	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
+	
 #ifndef SNMM
 	//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
 #endif
@@ -2629,6 +2630,7 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
 #endif
     MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
     MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
+	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
 	MENU_ITEM(submenu, MSG_PID_EXTRUDER, pid_extruder);
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
@@ -3900,6 +3902,7 @@ static void lcd_selftest()
 		_progress = lcd_selftest_screen(4, _progress, 3, true, 1500);
 		_result = lcd_selfcheck_axis(2, Z_MAX_POS);
 		enquecommand_P(PSTR("G28 W"));
+		enquecommand_P(PSTR("G1 Z15"));
 	}
 
 	if (_result)

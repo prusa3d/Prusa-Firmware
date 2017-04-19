@@ -1162,11 +1162,12 @@ void setup()
     if (lang_selected >= LANG_NUM){
       lcd_mylang();
     }
-	temp_cal_active = eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE);
-	if (temp_cal_active == 0xFF) {
+	
+	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
-		temp_cal_active = 0;
-	}
+		temp_cal_active = false;
+	} else temp_cal_active = eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE);
+
 	check_babystep(); //checking if Z babystep is in allowed range
 	
   if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
@@ -2948,7 +2949,7 @@ void process_commands()
 			break;
 		} 
 		
-		if (run == false && card.sdprinting == true && temp_cal_active == true) {
+		if (run == false && card.sdprinting == true && temp_cal_active == true && calibration_status() < CALIBRATION_STATUS_PINDA) {
 			temp_compensation_start();
 			run = true;
 			repeatcommand_front(); // repeat G80 with all its parameters
@@ -3095,7 +3096,7 @@ void process_commands()
 		}
 		clean_up_after_endstop_move();
 		SERIAL_ECHOLNPGM("clean up finished ");
-		if(temp_cal_active == true) temp_compensation_apply(); //apply PINDA temperature compensation
+		if(temp_cal_active == true && calibration_status() < CALIBRATION_STATUS_PINDA) temp_compensation_apply(); //apply PINDA temperature compensation
 		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
 		SERIAL_ECHOLNPGM("babystep applied");
 		bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
