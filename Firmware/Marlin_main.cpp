@@ -2791,7 +2791,6 @@ void process_commands()
         }
         break;
 
-
 	case 76: //PINDA probe temperature calibration
 	{
 		setTargetBed(PINDA_MIN_T);
@@ -2927,7 +2926,7 @@ void process_commands()
 	*
 	*/
 
-	case 80:
+  case 80:
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;

@@ -114,6 +114,10 @@ long long_press_timer = millis();
 long button_blanking_time = millis();
 bool button_pressed = false;
 
+bool long_press_active = false;
+long long_press_timer = millis();
+bool button_pressed = false;
+
 bool menuExiting = false;
 
 #ifdef FILAMENT_LCD_DISPLAY
@@ -4823,7 +4827,6 @@ void lcd_buttons_update()
 			  }
 			  else if (currentMenu == lcd_move_z) lcd_quick_feedback(); 
 			  //button_pressed is set back to false via lcd_quick_feedback function
-			  
 		  }
 		  else {			  
 			  long_press_active = false;
@@ -4833,7 +4836,6 @@ void lcd_buttons_update()
   else { //we are in modal mode
 	  if (READ(BTN_ENC) == 0)
 		  newbutton |= EN_C; 
-  
   }
   
 #endif  
