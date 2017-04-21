@@ -263,6 +263,7 @@ float HotendTempBckp = 0;
 int fanSpeedBckp = 0;
 float pause_lastpos[4];
 unsigned long pause_time = 0;
+unsigned long start_pause_print = millis();
 
 bool mesh_bed_leveling_flag = false;
 
@@ -6320,7 +6321,7 @@ void temp_compensation_start() {
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 	st_synchronize();
 
-	while (fabs(degBed() - target_temperature_bed) > 3) delay_keep_alive(1000);
+	while (fabs(degBed() - target_temperature_bed) > 1) delay_keep_alive(1000);
 
 	for(int i = 0; i < PINDA_HEAT_T; i++) delay_keep_alive(1000);
 
@@ -6428,8 +6429,8 @@ void long_pause() //long pause print
 	saved_feedmultiply = feedmultiply; 
 	HotendTempBckp = degTargetHotend(active_extruder);
 	fanSpeedBckp = fanSpeed;
-	pause_time += (millis() - starttime);
-	
+	start_pause_print = millis();
+		
 
 	//save position
 	pause_lastpos[X_AXIS] = current_position[X_AXIS];
