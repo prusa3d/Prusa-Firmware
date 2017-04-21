@@ -100,9 +100,17 @@ EXTRUDER SETTINGS
 #define  DEFAULT_Kd 73.76
 #else
 // Define PID constants for extruder
-#define  DEFAULT_Kp 40.925
-#define  DEFAULT_Ki 4.875
-#define  DEFAULT_Kd 86.085
+//#define  DEFAULT_Kp 40.925	//orig
+//#define  DEFAULT_Ki 4.875		//orig
+//#define  DEFAULT_Kd 86.085	//orig
+
+#define  DEFAULT_Kp 22.39	//205C
+#define  DEFAULT_Ki 1.98	//205C	
+#define  DEFAULT_Kd 63.27	//205C
+
+//#define  DEFAULT_Kp 23.68	//255C
+//#define  DEFAULT_Ki 1.98	//255C
+//#define  DEFAULT_Kd 70.80	//255C
 #endif
 
 // Extrude mintemp
@@ -141,7 +149,7 @@ CHANGE FILAMENT SETTINGS
 // Filament change configuration
 #define FILAMENTCHANGEENABLE
 #ifdef FILAMENTCHANGEENABLE
-#define FILAMENTCHANGE_XPOS 211
+#define FILAMENTCHANGE_XPOS 0
 #define FILAMENTCHANGE_YPOS 0
 #define FILAMENTCHANGE_ZADD 2
 #define FILAMENTCHANGE_FIRSTRETRACT -2
@@ -164,7 +172,7 @@ ADDITIONAL FEATURES SETTINGS
 *------------------------------------*/
 
 // Define Prusa filament runout sensor
-//#define FILAMENT_RUNOUT_SUPPORT
+#define FILAMENT_RUNOUT_SUPPORT
 
 #ifdef FILAMENT_RUNOUT_SUPPORT
 #define FILAMENT_RUNOUT_SENSOR 1
@@ -258,9 +266,17 @@ BED SETTINGS
 #define  DEFAULT_bedKi 1.60
 #define  DEFAULT_bedKd 73.76
 #else
-#define  DEFAULT_bedKp 126.13
-#define  DEFAULT_bedKi 4.30
-#define  DEFAULT_bedKd 924.76
+//#define  DEFAULT_bedKp 126.13	//orig
+//#define  DEFAULT_bedKi 4.30	//orig
+//#define  DEFAULT_bedKd 924.76	//orig
+
+#define  DEFAULT_bedKp 63.31	//55C
+#define  DEFAULT_bedKi 2.93		//55C
+#define  DEFAULT_bedKd 342.28	//55C
+
+//#define  DEFAULT_bedKp 107.61	//100C
+//#define  DEFAULT_bedKi 4.7	//100C
+//#define  DEFAULT_bedKd 609.26	//100C
 #endif
 
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
