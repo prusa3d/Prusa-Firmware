@@ -114,10 +114,6 @@ long long_press_timer = millis();
 long button_blanking_time = millis();
 bool button_pressed = false;
 
-bool long_press_active = false;
-long long_press_timer = millis();
-bool button_pressed = false;
-
 bool menuExiting = false;
 
 #ifdef FILAMENT_LCD_DISPLAY
