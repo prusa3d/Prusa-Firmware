@@ -1813,8 +1813,8 @@ const char * const MSG_PINDA_NOT_CALIBRATED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PINDA_NOT_CALIBRATED_EN
 };
 
-const char MSG_PINDA_PREHEAT_EN[] PROGMEM = "Preheating";
-const char MSG_PINDA_PREHEAT_CZ[] PROGMEM = "Predehrivani";
+const char MSG_PINDA_PREHEAT_EN[] PROGMEM = "PINDA Heating       ";
+const char MSG_PINDA_PREHEAT_CZ[] PROGMEM = "Predehrivani        ";
 const char * const MSG_PINDA_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PINDA_PREHEAT_EN,
 	MSG_PINDA_PREHEAT_CZ,

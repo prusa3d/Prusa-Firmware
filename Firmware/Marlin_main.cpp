@@ -2818,6 +2818,7 @@ void process_commands()
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
+		
 		custom_message = true;
 		custom_message_type = 4;
 		custom_message_state = 1;
@@ -6322,6 +6323,8 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 void temp_compensation_start() {
 	custom_message = true;
 	custom_message_type = 5;
+	custom_message_state = PINDA_HEAT_T + 1;
+	lcd_update(2);
 	if (degHotend(active_extruder)>EXTRUDE_MINTEMP) current_position[E_AXIS] -= DEFAULT_RETRACTION;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 	
@@ -6330,12 +6333,15 @@ void temp_compensation_start() {
 	current_position[Z_AXIS] = PINDA_PREHEAT_Z;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 	st_synchronize();
-
 	while (fabs(degBed() - target_temperature_bed) > 1) delay_keep_alive(1000);
 
-	for(int i = 0; i < PINDA_HEAT_T; i++) delay_keep_alive(1000);
+	for (int i = 0; i < PINDA_HEAT_T*2; i++) {
+		delay_keep_alive(500);
+		custom_message_state = PINDA_HEAT_T - i*0.5;
+	}
 
 	custom_message_type = 0;
+	custom_message_state = 0;
 	custom_message = false;
 }
 
