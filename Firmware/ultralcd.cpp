@@ -4651,7 +4651,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 	  }
 
-	  if (LCD_CLICKED) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	  if (lcd_clicked()) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 #endif//ULTIPANEL
 
 #ifdef DOGLCD        // Changes due to different driver architecture of the DOGM display
@@ -4788,6 +4788,7 @@ void lcd_buttons_update()
 #if BTN_ENC > 0
   if (lcd_update_enabled == true) { //if we are in non-modal mode, long press can be used and short press triggers with button release
 	  if (READ(BTN_ENC) == 0) { //button is pressed	  
+		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 		  if (millis() > button_blanking_time) {
 			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
 			  if (button_pressed == false && long_press_active == false) {
