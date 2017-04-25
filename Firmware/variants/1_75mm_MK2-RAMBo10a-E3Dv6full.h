@@ -370,8 +370,9 @@ THERMISTORS SETTINGS
 #define Z_BABYSTEP_MIN -3999
 #define Z_BABYSTEP_MAX 0
 
-#define PINDA_PREHEAT_X 75
-#define PINDA_PREHEAT_Y 75
+#define PINDA_PREHEAT_X 70
+#define PINDA_PREHEAT_Y -3
+#define PINDA_PREHEAT_Z 1
 #define PINDA_HEAT_T 120 //time in s
 
 #define PINDA_MIN_T 50
@@ -385,10 +386,10 @@ THERMISTORS SETTINGS
 #define LONG_PRESS_TIME 1000 //time in ms for button long press 
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
-#define PAUSE_RETRACT 2 
+#define PAUSE_RETRACT 1 
 
 #define DEFAULT_PID_TEMP 210
 
-#define DEFAULT_RETRACTION 1 //used for PINDA temp compensation
+#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration
 
 #endif //__CONFIGURATION_PRUSA_H
