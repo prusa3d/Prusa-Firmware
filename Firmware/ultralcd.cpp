@@ -4651,7 +4651,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 	  }
 
-	  if (lcd_clicked()) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	  if (LCD_CLICKED) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 #endif//ULTIPANEL
 
 #ifdef DOGLCD        // Changes due to different driver architecture of the DOGM display
