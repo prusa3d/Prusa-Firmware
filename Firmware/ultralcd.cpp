@@ -540,11 +540,12 @@ void lcd_commands()
 			lcdDrawUpdate = 3;
 			lcd_commands_step = 4;
 		}
-		if (lcd_commands_step == 1 && !blocks_queued()) {	//recover feedmultiply, current 
+		if (lcd_commands_step == 1 && !blocks_queued()) {	//recover feedmultiply
 			
 			sprintf_P(cmd1, PSTR("M220 S%d"), saved_feedmultiply);
 			enquecommand(cmd1);
 			isPrintPaused = false;
+			pause_time += (millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
 			card.startFileprint();
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
@@ -580,7 +581,7 @@ void lcd_commands()
 			strcat(cmd1, " Y");
 			strcat(cmd1, ftostr32(pause_lastpos[Y_AXIS]));
 			enquecommand(cmd1);
-
+			
 			lcd_setstatuspgm(MSG_RESUMING_PRINT);
 			lcd_commands_step = 3;
 		}
@@ -2436,7 +2437,6 @@ void lcd_pinda_calibration_menu()
 	START_MENU();
 		MENU_ITEM(back, MSG_MENU_CALIBRATION, lcd_calibration_menu);
 		MENU_ITEM(submenu, MSG_CALIBRATE_PINDA, lcd_calibrate_pinda);
-		//MENU_ITEM(back, MSG_SETTINGS, lcd_settings_menu);
 		if (temp_cal_active == false) {
 			MENU_ITEM(function, MSG_TEMP_CALIBRATION_OFF, lcd_temp_calibration_set);
 		}
@@ -4651,7 +4651,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 	  }
 
-	  /*if (LCD_CLICKED)*/ lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	  if (LCD_CLICKED) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 #endif//ULTIPANEL
 
 #ifdef DOGLCD        // Changes due to different driver architecture of the DOGM display
@@ -4788,6 +4788,7 @@ void lcd_buttons_update()
 #if BTN_ENC > 0
   if (lcd_update_enabled == true) { //if we are in non-modal mode, long press can be used and short press triggers with button release
 	  if (READ(BTN_ENC) == 0) { //button is pressed	  
+		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 		  if (millis() > button_blanking_time) {
 			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
 			  if (button_pressed == false && long_press_active == false) {

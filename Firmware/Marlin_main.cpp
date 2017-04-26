@@ -263,6 +263,7 @@ float HotendTempBckp = 0;
 int fanSpeedBckp = 0;
 float pause_lastpos[4];
 unsigned long pause_time = 0;
+unsigned long start_pause_print = millis();
 
 bool mesh_bed_leveling_flag = false;
 
@@ -2791,6 +2792,17 @@ void process_commands()
         }
         break;
 
+
+	case 75:
+	{
+		for (int i = 40; i <= 110; i++) {
+			MYSERIAL.print(i);
+			MYSERIAL.print("  ");
+			MYSERIAL.println(temp_comp_interpolation(i));// / axis_steps_per_unit[Z_AXIS]);
+		}
+	}
+	break;
+
 	case 76: //PINDA probe temperature calibration
 	{
 		setTargetBed(PINDA_MIN_T);
@@ -2806,13 +2818,14 @@ void process_commands()
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
+		
 		custom_message = true;
 		custom_message_type = 4;
 		custom_message_state = 1;
 		custom_message = MSG_TEMP_CALIBRATION;
 		current_position[X_AXIS] = PINDA_PREHEAT_X;
 		current_position[Y_AXIS] = PINDA_PREHEAT_Y;
-		current_position[Z_AXIS] = 0;
+		current_position[Z_AXIS] = PINDA_PREHEAT_Z;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 		st_synchronize();
 
@@ -2845,7 +2858,7 @@ void process_commands()
 			setTargetBed(t_c);
 			current_position[X_AXIS] = PINDA_PREHEAT_X;
 			current_position[Y_AXIS] = PINDA_PREHEAT_Y;
-			current_position[Z_AXIS] = 0;
+			current_position[Z_AXIS] = PINDA_PREHEAT_Z;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			st_synchronize();
 			while (degBed() < t_c) delay_keep_alive(1000);
@@ -2926,7 +2939,7 @@ void process_commands()
 	*
 	*/
 
-  case 80:
+	case 80:
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
@@ -6310,20 +6323,25 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 void temp_compensation_start() {
 	custom_message = true;
 	custom_message_type = 5;
+	custom_message_state = PINDA_HEAT_T + 1;
+	lcd_update(2);
 	if (degHotend(active_extruder)>EXTRUDE_MINTEMP) current_position[E_AXIS] -= DEFAULT_RETRACTION;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 	
 	current_position[X_AXIS] = PINDA_PREHEAT_X;
 	current_position[Y_AXIS] = PINDA_PREHEAT_Y;
-	current_position[Z_AXIS] = 0;
+	current_position[Z_AXIS] = PINDA_PREHEAT_Z;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 	st_synchronize();
+	while (fabs(degBed() - target_temperature_bed) > 1) delay_keep_alive(1000);
 
-	while (fabs(degBed() - target_temperature_bed) > 3) delay_keep_alive(1000);
-
-	for(int i = 0; i < PINDA_HEAT_T; i++) delay_keep_alive(1000);
+	for (int i = 0; i < PINDA_HEAT_T*2; i++) {
+		delay_keep_alive(500);
+		custom_message_state = PINDA_HEAT_T - i*0.5;
+	}
 
 	custom_message_type = 0;
+	custom_message_state = 0;
 	custom_message = false;
 }
 
@@ -6334,12 +6352,11 @@ void temp_compensation_apply() {
 	float z_shift_mm;
 
 	if (calibration_status() == CALIBRATION_STATUS_CALIBRATED) {
-		if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 50 && target_temperature_bed <= 100) {
+		if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 60 && target_temperature_bed <= 100) {
 			i_add = (target_temperature_bed - 60) / 10;
 			EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i_add * 2, &z_shift);
 			z_shift_mm = z_shift / axis_steps_per_unit[Z_AXIS];
-		}
-		else {
+		}else {
 			//interpolation
 			z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
 		}
@@ -6351,7 +6368,7 @@ void temp_compensation_apply() {
 		plan_set_z_position(current_position[Z_AXIS]);
 	}
 	else {		
-		//message that we have no temp compensation data ?
+		//we have no temp compensation data
 	}
 }
 
@@ -6360,23 +6377,21 @@ float temp_comp_interpolation(float inp_temperature) {
 	//cubic spline interpolation
 
 	int n, i, j, k;
-	float h[10], a, b, c, d, sum, s[10] = { 0 }, x[10], F[10], f[10], p, m[10][10] = { 0 }, temp;
+	float h[10], a, b, c, d, sum, s[10] = { 0 }, x[10], F[10], f[10], m[10][10] = { 0 }, temp;
 	int shift[10];
 	int temp_C[10];
 
-	p = inp_temperature;
 	n = 6; //number of measured points
 
 	shift[0] = 0;
 	for (i = 0; i < n; i++) {
-		//scanf_s("%f%f", &x[i], &f[i]);
 		if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &shift[i]); //read shift in steps from EEPROM
 		temp_C[i] = 50 + i * 10; //temperature in C
 		
 		x[i] = (float)temp_C[i];
 		f[i] = (float)shift[i];
 	}
-
+	if (inp_temperature < x[0]) return 0;
 
 
 	for (i = n - 1; i>0; i--) {
@@ -6407,12 +6422,12 @@ float temp_comp_interpolation(float inp_temperature) {
 	}
 
 		for (i = 0; i<n - 1; i++)
-			if (x[i] <= p&&p <= x[i + 1]) {
+			if ((x[i] <= inp_temperature && inp_temperature <= x[i + 1]) || (i == n-2 && inp_temperature > x[i + 1])) {
 				a = (s[i + 1] - s[i]) / (6 * h[i]);
 				b = s[i] / 2;
 				c = (f[i + 1] - f[i]) / h[i] - (2 * h[i] * s[i] + s[i + 1] * h[i]) / 6;
 				d = f[i];
-				sum = a*pow((p - x[i]), 3) + b*pow((p - x[i]), 2) + c*(p - x[i]) + d;
+				sum = a*pow((inp_temperature - x[i]), 3) + b*pow((inp_temperature - x[i]), 2) + c*(inp_temperature - x[i]) + d;
 			}
 
 		return sum;
@@ -6427,8 +6442,8 @@ void long_pause() //long pause print
 	saved_feedmultiply = feedmultiply; 
 	HotendTempBckp = degTargetHotend(active_extruder);
 	fanSpeedBckp = fanSpeed;
-	pause_time += (millis() - starttime);
-	
+	start_pause_print = millis();
+		
 
 	//save position
 	pause_lastpos[X_AXIS] = current_position[X_AXIS];

@@ -317,6 +317,7 @@ extern float HotendTempBckp;
 extern int fanSpeedBckp;
 extern float pause_lastpos[4];
 extern unsigned long pause_time;
+extern unsigned long start_pause_print;
 
 extern bool mesh_bed_leveling_flag;
 
