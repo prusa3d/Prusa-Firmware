@@ -2030,10 +2030,10 @@ const char * const MSG_PINDA_NOT_CALIBRATED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PINDA_NOT_CALIBRATED_NL
 };
 
-const char MSG_PINDA_PREHEAT_EN[] PROGMEM = "Preheating";
-const char MSG_PINDA_PREHEAT_CZ[] PROGMEM = "Predehrivani";
-const char MSG_PINDA_PREHEAT_DE[] PROGMEM = "Vorwaermen";
-const char MSG_PINDA_PREHEAT_NL[] PROGMEM = "Voorverwarmen";
+const char MSG_PINDA_PREHEAT_EN[] PROGMEM = "PINDA Heating       ";
+const char MSG_PINDA_PREHEAT_CZ[] PROGMEM = "Predehrivani        ";
+const char MSG_PINDA_PREHEAT_DE[] PROGMEM = "PINDA heizt auf     ";
+const char MSG_PINDA_PREHEAT_NL[] PROGMEM = "PINDA warmt op      ";
 const char * const MSG_PINDA_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PINDA_PREHEAT_EN,
 	MSG_PINDA_PREHEAT_CZ,
@@ -3146,9 +3146,9 @@ const char * const MSG_TEMPERATURE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMPERATURE_NL
 };
 
-const char MSG_TEMP_CALIBRATION_EN[] PROGMEM = "PINDA Temp.cal.";
+const char MSG_TEMP_CALIBRATION_EN[] PROGMEM = "PINDA Temp.cal.     ";
 const char MSG_TEMP_CALIBRATION_CZ[] PROGMEM = "Tepl. kal.          ";
-const char MSG_TEMP_CALIBRATION_DE[] PROGMEM = "PINDA Temp.Kal.";
+const char MSG_TEMP_CALIBRATION_DE[] PROGMEM = "PINDA Temp.Kal.     ";
 const char MSG_TEMP_CALIBRATION_NL[] PROGMEM = "PINDA Temp.kal.";
 const char * const MSG_TEMP_CALIBRATION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_EN,
