@@ -6321,6 +6321,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 #endif
 
 void temp_compensation_start() {
+	mesh_bed_leveling_flag = false;
 	custom_message = true;
 	custom_message_type = 5;
 	custom_message_state = PINDA_HEAT_T + 1;
@@ -6335,11 +6336,13 @@ void temp_compensation_start() {
 	st_synchronize();
 	while (fabs(degBed() - target_temperature_bed) > 1) delay_keep_alive(1000);
 
-	for (int i = 0; i < PINDA_HEAT_T*2; i++) {
-		delay_keep_alive(500);
-		custom_message_state = PINDA_HEAT_T - i*0.5;
+	for (int i = 0; i < PINDA_HEAT_T; i++) {
+		delay_keep_alive(1000);
+		custom_message_state = PINDA_HEAT_T - i;
+		if (custom_message_state == 99 || custom_message_state == 9) lcd_update(2); //force whole display redraw if number of digits changed
+		else lcd_update(1);
 	}
-
+	mesh_bed_leveling_flag = true;
 	custom_message_type = 0;
 	custom_message_state = 0;
 	custom_message = false;

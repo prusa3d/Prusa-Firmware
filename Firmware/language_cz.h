@@ -277,7 +277,7 @@
 #define MSG_CALIBRATE_PINDA								"Zkalibrovat"
 #define MSG_CALIBRATION_PINDA_MENU						"Teplotni kalibrace"
 #define MSG_PINDA_NOT_CALIBRATED						"Tiskarna nebyla teplotne zkalibrovana"
-#define MSG_PINDA_PREHEAT								"Predehrivani        "
+#define MSG_PINDA_PREHEAT								"Nahrivani PINDA"
 #define MSG_TEMP_CALIBRATION							"Tepl. kal.          "
 #define MSG_TEMP_CALIBRATION_DONE						"Teplotni kalibrace dokoncena. Pokracujte stiskem tlacitka."
 #define MSG_TEMP_CALIBRATION_ON							"Tepl. kal. [ON]"

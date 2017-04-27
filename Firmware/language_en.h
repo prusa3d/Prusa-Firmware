@@ -278,7 +278,7 @@
 #define(length=17, lines=1) MSG_CALIBRATE_PINDA					"Calibrate"
 #define(length=17, lines=1) MSG_CALIBRATION_PINDA_MENU			"Temp. calibration"
 #define(length=20, lines=4) MSG_PINDA_NOT_CALIBRATED			"Temperature calibration has not been run yet"
-#define(length=20, lines=1) MSG_PINDA_PREHEAT					"PINDA Heating       "
+#define(length=20, lines=1) MSG_PINDA_PREHEAT					"PINDA Heating"
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION				"Temp. cal.          "
 #define(length=20, lines=4) MSG_TEMP_CALIBRATION_DONE			"Temperature calibration is finished. Click to continue."
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"Temp. cal. [ON]"
