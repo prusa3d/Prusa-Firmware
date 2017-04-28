@@ -56,8 +56,10 @@
   #define Z_MAX_PIN 23
   #define Z_ENABLE_PIN 27
   #define Z_MS1_PIN 68
+  #error not right
   #define Z_MS2_PIN 67
   #define TEMP_BED_PIN 2
+  #error not here!!
   #define TEMP_0_PIN 0
   #define HEATER_1_PIN 7
   #define TEMP_1_PIN 1
@@ -254,8 +256,10 @@
   #define Z_MAX_PIN 23
   #define Z_ENABLE_PIN 27
   #define Z_MS1_PIN 68
+  #error not here
   #define Z_MS2_PIN 67
   #define TEMP_BED_PIN 2
+    #error not here!!
   #define TEMP_0_PIN 0
   #define HEATER_1_PIN 7
   #define TEMP_1_PIN 1
@@ -361,15 +365,15 @@
   #define Z_ENABLE_PIN 62
   
 
-  // no pins for microstepping on ramps - TODO disable
-  #define X_MS1_PIN 40
-  #define X_MS2_PIN 41
-  #define Y_MS1_PIN 69
-  #define Y_MS2_PIN 39
-  #define Z_MS1_PIN 68
-  #define Z_MS2_PIN 67
-  #define E0_MS1_PIN 65
-  #define E0_MS2_PIN 66
+  // no pins for microstepping on ramps - must be disabled because some map to pins RAMPS uses for thermistors.
+ // #define X_MS1_PIN 40
+ // #define X_MS2_PIN 41
+ // #define Y_MS1_PIN 69
+ // #define Y_MS2_PIN 39
+ // #define Z_MS1_PIN 68
+ // #define Z_MS2_PIN 67
+ // #define E0_MS1_PIN 65
+ // #define E0_MS2_PIN 66
   
   // The SDSS pin uses a different pin mapping from file Sd2PinMap.h
   #define SDSS               53
@@ -400,7 +404,7 @@
   #define E0_DIR_PIN          28
   #define E0_ENABLE_PIN       24
 
-  #define LED_PIN            13 // TODO what is this for?
+  #define LED_PIN            -1 // TODO what is this for?
   #define KILL_PIN           41 //80 with Smart Controller LCD
   #define SUICIDE_PIN        -1  //PIN that has to be turned on right after start, to keep power flowing.
   #define SDPOWER            -1
@@ -417,11 +421,20 @@
   #define TEMP_1_PIN 15
   #define TEMP_2_PIN -1
 
+
   // TODO figure out fans
   #define FAN_PIN 9
-  #define FAN_1_PIN -1 //6
+  #define FAN_1_PIN 7
   #define PS_ON_PIN 71
 
+// The Z2 axis, if any, should be the next open extruder port
+#if ENABLED(Z_DUAL_STEPPER_DRIVERS)
+
+    #define Z2_STEP_PIN   36
+    #define Z2_DIR_PIN    34
+    #define Z2_ENABLE_PIN 30
+ 
+#endif
   // TODO to find out how to disable the motor PWM
   // looks like digitpot stuff all hangs off #ifdef MOTOR_CURRENT_PWM_XY_PIN
   //#define MOTOR_CURRENT_PWM_XY_PIN 46

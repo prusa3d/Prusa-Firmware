@@ -1,6 +1,6 @@
 #ifndef CONFIGURATION_PRUSA_H
 #define CONFIGURATION_PRUSA_H
-
+#include "macros.h"
 /*------------------------------------
 GENERAL SETTINGS
 *------------------------------------*/
@@ -109,7 +109,7 @@ EXTRUDER SETTINGS
 #define EXTRUDE_MINTEMP 130
 
 // Extruder cooling fans
-#define EXTRUDER_0_AUTO_FAN_PIN   8
+#define EXTRUDER_0_AUTO_FAN_PIN   7
 #define EXTRUDER_1_AUTO_FAN_PIN   -1
 #define EXTRUDER_2_AUTO_FAN_PIN   -1
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
@@ -244,9 +244,9 @@ BED SETTINGS
 #define MAX_BED_POWER 255 // limits duty cycle to bed; 255=full current
 
 // Bed temperature compensation settings
-#define BED_OFFSET 10
-#define BED_OFFSET_START 40
-#define BED_OFFSET_CENTER 50
+//#define BED_OFFSET 10
+//#define BED_OFFSET_START 40
+//#define BED_OFFSET_CENTER 50
 
 
 #ifdef PIDTEMPBED
@@ -347,7 +347,7 @@ THERMISTORS SETTINGS
 #elif defined(E3D_PT100_EXTRUDER_NO_AMP)
 #define TEMP_SENSOR_0 148
 #else
-#define TEMP_SENSOR_0 5
+#define TEMP_SENSOR_0 1
 #endif
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
