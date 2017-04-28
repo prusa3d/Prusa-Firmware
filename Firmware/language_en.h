@@ -238,8 +238,6 @@
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T3							"Insert filament into extruder 4. Click when done."
 #define(length=20, lines=1) MSG_CHANGE_EXTR									"Change extruder"
 
-#define(length=20, lines=1) MSG_FIL_LOADED_CHECK								"Is filament loaded?"
-#define(length=20, lines=2) MSG_FIL_TUNING										"Rotate the knob to adjust filament."
 #define(length=20, lines=4) MSG_FIL_ADJUSTING								"Adjusting filaments. Please wait."
 #define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ			"Filaments are now adjusted. Please clean the nozzle for calibration. Click when done."
 #define(length=20, lines=4) MSG_STACK_ERROR						"Error - static memory has been overwritten"
@@ -278,7 +276,7 @@
 #define(length=17, lines=1) MSG_CALIBRATE_PINDA					"Calibrate"
 #define(length=17, lines=1) MSG_CALIBRATION_PINDA_MENU			"Temp. calibration"
 #define(length=20, lines=4) MSG_PINDA_NOT_CALIBRATED			"Temperature calibration has not been run yet"
-#define(length=20, lines=1) MSG_PINDA_PREHEAT					"Preheating          "
+#define(length=20, lines=1) MSG_PINDA_PREHEAT					"PINDA Heating"
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION				"Temp. cal.          "
 #define(length=20, lines=4) MSG_TEMP_CALIBRATION_DONE			"Temperature calibration is finished. Click to continue."
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"Temp. cal. [ON]"

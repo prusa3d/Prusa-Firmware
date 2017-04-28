@@ -212,6 +212,7 @@
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" z 9"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Merim referencni vysku kalibracniho bodu"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" z 9"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iterace "
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"Kalibrace XYZ selhala. Kalibracni bod podlozky nenalezen."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED			"Kalibrace XYZ selhala. Nahlednete do manualu."
@@ -252,8 +253,7 @@
 #define MSG_FILAMENT_LOADING_T2							"Vložte filament do extruderu 3. Potvrdte tlacitkem."
 #define MSG_FILAMENT_LOADING_T3							"Vložte filament do extruderu 4. Potvrdte tlacitkem."
 #define MSG_CHANGE_EXTR									"Zmenit extruder"
-#define MSG_FIL_LOADED_CHECK							"Je filament zaveden?"
-#define MSG_FIL_TUNING									"Otacenim tlacitka doladte pozici filamentu."
+
 #define MSG_FIL_ADJUSTING								"Probiha srovnani filamentu. Prosim cekejte."
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ				"Filamenty jsou srovnany. Pro uspesnou kalibraci prosim ocistete trysku. Po te potvrdte tlacitkem."
 #define MSG_CALIBRATE_E									"Kalibrovat E"
@@ -275,9 +275,9 @@
 #define MSG_PID_RUNNING									"PID kal.           "
 
 #define MSG_CALIBRATE_PINDA								"Zkalibrovat"
-#define MSG_CALIBRATION_PINDA_MENU						"Teplotni kalibrace"
+#define MSG_CALIBRATION_PINDA_MENU						"Teplot. kalibrace"
 #define MSG_PINDA_NOT_CALIBRATED						"Tiskarna nebyla teplotne zkalibrovana"
-#define MSG_PINDA_PREHEAT								"Predehrivani        "
+#define MSG_PINDA_PREHEAT								"Nahrivani PINDA"
 #define MSG_TEMP_CALIBRATION							"Tepl. kal.          "
 #define MSG_TEMP_CALIBRATION_DONE						"Teplotni kalibrace dokoncena. Pokracujte stiskem tlacitka."
 #define MSG_TEMP_CALIBRATION_ON							"Tepl. kal. [ON]"

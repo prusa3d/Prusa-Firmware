@@ -3131,6 +3131,13 @@ static void extr_change_3() {
 }
 
 //wrapper functions for unloading filament
+static void extr_unload_all() {
+	for (int i = 0; i < 4; i++) {
+		change_extr(i);
+		extr_unload();
+	}
+}
+
 static void extr_unload_0() {
 	change_extr(0);
 	extr_unload();
@@ -3166,6 +3173,7 @@ static void fil_unload_menu()
 {
 	START_MENU();
 	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+	MENU_ITEM(function, PSTR("Unload all"), extr_unload_all);
 	MENU_ITEM(function, PSTR("Unload filament 1"), extr_unload_0);
 	MENU_ITEM(function, PSTR("Unload filament 2"), extr_unload_1);
 	MENU_ITEM(function, PSTR("Unload filament 3"), extr_unload_2);
