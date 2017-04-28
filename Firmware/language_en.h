@@ -238,8 +238,6 @@
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T3							"Insert filament into extruder 4. Click when done."
 #define(length=20, lines=1) MSG_CHANGE_EXTR									"Change extruder"
 
-#define(length=20, lines=1) MSG_FIL_LOADED_CHECK								"Is filament loaded?"
-#define(length=20, lines=2) MSG_FIL_TUNING										"Rotate the knob to adjust filament."
 #define(length=20, lines=4) MSG_FIL_ADJUSTING								"Adjusting filaments. Please wait."
 #define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ			"Filaments are now adjusted. Please clean the nozzle for calibration. Click when done."
 #define(length=20, lines=4) MSG_STACK_ERROR						"Error - static memory has been overwritten"
