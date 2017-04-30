@@ -972,8 +972,10 @@ static void lcd_implementation_status_screen()
 			if (custom_message_type == 5) {
 				lcd.setCursor(0, 3);
 				lcd_printPGM(MSG_PINDA_PREHEAT);
-				lcd.setCursor(15, 3);
-				if(custom_message_state <= PINDA_HEAT_T) lcd.print(custom_message_state);
+				if (custom_message_state <= PINDA_HEAT_T) {
+					lcd_printPGM(PSTR(": "));
+					lcd.print(custom_message_state); //seconds
+				}
 			}
 
 
