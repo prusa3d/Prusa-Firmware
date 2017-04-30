@@ -273,8 +273,11 @@
 #define MSG_RESUMING_PRINT										"Druck fortsetzen"
 #define MSG_PID_EXTRUDER										"PID Kalibrierung"
 #define MSG_SET_TEMPERATURE										"Temp.einstellen"
-#define MSG_PID_FINISHED										"PID Kal. fertig"
-#define MSG_PID_RUNNING											"PID Kal.         "
+#define MSG_PID_FINISHED										"PID Kal. fertig     "
+#define MSG_PID_RUNNING											"PID Kal.     "
+#define(length=20, lines=1) MSG_PID_BED							"PID Bett Kalibrier. "
+#define(length=20, lines=1) MSG_PID_BED_FINISHED				"PID Bett Kal. fertig"
+#define(length=20, lines=1) MSG_PID_BED_RUNNING					"PID Bett Kal."
 
 #define MSG_CALIBRATE_PINDA										"PINDA Temp. Kal."
 #define MSG_CALIBRATION_PINDA_MENU								"PINDA Temp. Kal."

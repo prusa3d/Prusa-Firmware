@@ -408,6 +408,7 @@ THERMISTORS SETTINGS
 #define PAUSE_RETRACT 1 
 
 #define DEFAULT_PID_TEMP 210
+#define DEFAULT_PID_BED_TEMP 55
 
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration
 

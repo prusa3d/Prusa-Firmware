@@ -4869,7 +4869,7 @@ Sigma_Exit:
     {
       float temp = 150.0;
       int e=0;
-      int c=5;
+      int c=8;
       if (code_seen('E')) e=code_value();
         if (e<0)
           temp=70;

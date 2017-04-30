@@ -1977,13 +1977,52 @@ const char * const MSG_PICK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PICK_Z_EN
 };
 
+const char MSG_PID_BED_EN[] PROGMEM = "PID bed cal.        ";
+const char MSG_PID_BED_DE[] PROGMEM = "PID Bett Kalibrier. ";
+const char MSG_PID_BED_NL[] PROGMEM = "PID bed kalibratie  ";
+const char * const MSG_PID_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PID_BED_EN,
+	MSG_PID_BED_EN,
+	MSG_PID_BED_EN,
+	MSG_PID_BED_EN,
+	MSG_PID_BED_EN,
+	MSG_PID_BED_DE,
+	MSG_PID_BED_NL
+};
+
+const char MSG_PID_BED_FINISHED_EN[] PROGMEM = "PID bed cal. done   ";
+const char MSG_PID_BED_FINISHED_DE[] PROGMEM = "PID Bett Kal. fertig";
+const char MSG_PID_BED_FINISHED_NL[] PROGMEM = "PID bed kal. klaar  ";
+const char * const MSG_PID_BED_FINISHED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PID_BED_FINISHED_EN,
+	MSG_PID_BED_FINISHED_EN,
+	MSG_PID_BED_FINISHED_EN,
+	MSG_PID_BED_FINISHED_EN,
+	MSG_PID_BED_FINISHED_EN,
+	MSG_PID_BED_FINISHED_DE,
+	MSG_PID_BED_FINISHED_NL
+};
+
+const char MSG_PID_BED_RUNNING_EN[] PROGMEM = "PID bed cal. ";
+const char MSG_PID_BED_RUNNING_DE[] PROGMEM = "PID Bett Kal.";
+const char MSG_PID_BED_RUNNING_NL[] PROGMEM = "PID bed kal. ";
+const char * const MSG_PID_BED_RUNNING_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PID_BED_RUNNING_EN,
+	MSG_PID_BED_RUNNING_EN,
+	MSG_PID_BED_RUNNING_EN,
+	MSG_PID_BED_RUNNING_EN,
+	MSG_PID_BED_RUNNING_EN,
+	MSG_PID_BED_RUNNING_DE,
+	MSG_PID_BED_RUNNING_NL
+};
+
 const char MSG_PID_EXTRUDER_EN[] PROGMEM = "PID calibration";
 const char MSG_PID_EXTRUDER_CZ[] PROGMEM = "PID kalibrace";
 const char MSG_PID_EXTRUDER_IT[] PROGMEM = "Calibrazione PID";
 const char MSG_PID_EXTRUDER_ES[] PROGMEM = "Calibracion PID";
 const char MSG_PID_EXTRUDER_PL[] PROGMEM = "Kalibracja PID";
 const char MSG_PID_EXTRUDER_DE[] PROGMEM = "PID Kalibrierung";
-const char MSG_PID_EXTRUDER_NL[] PROGMEM = "PID Kalibratie";
+const char MSG_PID_EXTRUDER_NL[] PROGMEM = "PID kalibratie";
 const char * const MSG_PID_EXTRUDER_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PID_EXTRUDER_EN,
 	MSG_PID_EXTRUDER_CZ,
@@ -1994,13 +2033,13 @@ const char * const MSG_PID_EXTRUDER_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PID_EXTRUDER_NL
 };
 
-const char MSG_PID_FINISHED_EN[] PROGMEM = "PID cal. finished";
+const char MSG_PID_FINISHED_EN[] PROGMEM = "PID cal. done       ";
 const char MSG_PID_FINISHED_CZ[] PROGMEM = "PID kal. ukoncena";
 const char MSG_PID_FINISHED_IT[] PROGMEM = "Cal. PID completa";
 const char MSG_PID_FINISHED_ES[] PROGMEM = "Cal. PID terminada";
 const char MSG_PID_FINISHED_PL[] PROGMEM = "Kal. PID zakonczona";
-const char MSG_PID_FINISHED_DE[] PROGMEM = "PID Kal. fertig";
-const char MSG_PID_FINISHED_NL[] PROGMEM = "PID kal. klaar";
+const char MSG_PID_FINISHED_DE[] PROGMEM = "PID Kal. fertig     ";
+const char MSG_PID_FINISHED_NL[] PROGMEM = "PID kal. klaar      ";
 const char * const MSG_PID_FINISHED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PID_FINISHED_EN,
 	MSG_PID_FINISHED_CZ,
@@ -2011,13 +2050,13 @@ const char * const MSG_PID_FINISHED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PID_FINISHED_NL
 };
 
-const char MSG_PID_RUNNING_EN[] PROGMEM = "PID cal.           ";
+const char MSG_PID_RUNNING_EN[] PROGMEM = "PID cal.     ";
 const char MSG_PID_RUNNING_CZ[] PROGMEM = "PID kal.           ";
 const char MSG_PID_RUNNING_IT[] PROGMEM = "Cal. PID";
 const char MSG_PID_RUNNING_ES[] PROGMEM = "Cal. PID           ";
 const char MSG_PID_RUNNING_PL[] PROGMEM = "Kal. PID";
-const char MSG_PID_RUNNING_DE[] PROGMEM = "PID Kal.         ";
-const char MSG_PID_RUNNING_NL[] PROGMEM = "PID kal.         ";
+const char MSG_PID_RUNNING_DE[] PROGMEM = "PID Kal.     ";
+const char MSG_PID_RUNNING_NL[] PROGMEM = "PID kal.     ";
 const char * const MSG_PID_RUNNING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PID_RUNNING_EN,
 	MSG_PID_RUNNING_CZ,
