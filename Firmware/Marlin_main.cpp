@@ -5109,11 +5109,35 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         }
         else
         {
-          #ifdef FILAMENTCHANGE_FINALRETRACT
-            target[E_AXIS]+= FILAMENTCHANGE_FINALRETRACT ;
-          #endif
+			#ifdef SNMM
+
+			#else
+				#ifdef FILAMENTCHANGE_FINALRETRACT
+							target[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
+				#endif
+			#endif // SNMM
         }
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+
+#ifdef SNMM
+		target[E_AXIS] += 12;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500, active_extruder);
+		target[E_AXIS] += 6;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
+		target[E_AXIS] += (FIL_LOAD_LENGTH * -1);
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
+		st_synchronize();
+		target[E_AXIS] += (FIL_COOLING);
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+		target[E_AXIS] += (FIL_COOLING*-1);
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+		target[E_AXIS] += (BOWDEN_LENGTH*-1);
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
+		st_synchronize();
+
+#else
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+#endif // SNMM
+		     
 
         //finish moves
         st_synchronize();
@@ -5389,6 +5413,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  else {
 		  tmp_extruder = code_value();
 #ifdef SNMM
+		  snmm_extruder = tmp_extruder;
 
 		  st_synchronize();
 		  delay(100);

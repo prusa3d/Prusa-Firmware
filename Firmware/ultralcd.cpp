@@ -96,6 +96,10 @@ int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = 0;
 
+#ifdef SNMM
+uint8_t snmm_extruder = 0;
+#endif
+
 int lcd_commands_type=LCD_COMMAND_IDLE;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
@@ -2949,9 +2953,14 @@ void change_extr(int extr) { //switches multiplexer for extruders
 	disable_e1();
 	disable_e2();
 
+#ifdef SNMM
+	snmm_extruder = extr;
+#endif
+
 	pinMode(E_MUX0_PIN, OUTPUT);
 	pinMode(E_MUX1_PIN, OUTPUT);
 	pinMode(E_MUX2_PIN, OUTPUT);
+
 	switch (extr) {
 	case 1:
 		WRITE(E_MUX0_PIN, HIGH);
