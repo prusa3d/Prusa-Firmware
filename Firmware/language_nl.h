@@ -278,7 +278,7 @@
 #define MSG_CALIBRATE_PINDA										"PINDA Temp. kal."
 #define MSG_CALIBRATION_PINDA_MENU								"PINDA Temp. kal."
 #define(length=20, lines=3) MSG_PINDA_NOT_CALIBRATED								"PINDA temperatuur calibratie was nog niet uitgevoerd"
-#define MSG_PINDA_PREHEAT										"PINDA warmt op      "
+#define MSG_PINDA_PREHEAT										"PINDA warmt op"
 #define(length=20) MSG_TEMP_CALIBRATION									"PINDA Temp.kal."
 #define(length=20, lines=3) MSG_TEMP_CALIBRATION_DONE								"PINDA temperatuur calibratie is klaar. Klik om door te gaan."
 #define(length=20) MSG_TEMP_CALIBRATION_ON								"PINDA T.kal. [ON]"
