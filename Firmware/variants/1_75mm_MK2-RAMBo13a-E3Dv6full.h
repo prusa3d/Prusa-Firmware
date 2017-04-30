@@ -390,7 +390,7 @@ THERMISTORS SETTINGS
 #define Z_BABYSTEP_MAX 0
 
 #define PINDA_PREHEAT_X 70
-#define PINDA_PREHEAT_Y -2.2
+#define PINDA_PREHEAT_Y -3
 #define PINDA_PREHEAT_Z 1
 #define PINDA_HEAT_T 120 //time in s
 
