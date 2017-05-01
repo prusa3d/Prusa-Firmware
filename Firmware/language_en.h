@@ -237,6 +237,7 @@
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T2							"Insert filament into extruder 3. Click when done."
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T3							"Insert filament into extruder 4. Click when done."
 #define(length=20, lines=1) MSG_CHANGE_EXTR									"Change extruder"
+
 #define(length=20, lines=2) MSG_FIL_LOADED_CHECK								"Is filament loaded?"
 #define(length=20, lines=3) MSG_FIL_TUNING										"Rotate the knob to adjust filament."
 #define(length=20, lines=4) MSG_FIL_ADJUSTING								"Adjusting filaments. Please wait."
@@ -278,6 +279,7 @@
 #define(length=20, lines=1) MSG_PID_BED_RUNNING					"PID bed cal. "
 
 
+
 #define(length=20, lines=1) MSG_CALIBRATE_PINDA					"PINDA Temp. cal."
 #define(length=20, lines=1) MSG_CALIBRATION_PINDA_MENU			"PINDA Temp. cal."
 #define(length=20, lines=4) MSG_PINDA_NOT_CALIBRATED			"PINDA temperature calibration has not been run yet"
@@ -286,4 +288,3 @@
 #define(length=20, lines=5) MSG_TEMP_CALIBRATION_DONE			"PINDA temperature calibration is finished. Click to continue."
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"PINDA T.cal. [ON]"
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF			"PINDA T.cal.[OFF]"
-

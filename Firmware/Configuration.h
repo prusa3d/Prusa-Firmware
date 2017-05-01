@@ -5,6 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
+
 #define FW_version "3.0.10-12"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
