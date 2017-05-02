@@ -241,6 +241,7 @@ void lcd_extr_cal_reset();
 
 union MenuData;
 
+void bowden_menu();
 char reset_menu();
 
 void lcd_pinda_calibration_menu();

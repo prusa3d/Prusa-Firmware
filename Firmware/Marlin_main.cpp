@@ -247,6 +247,8 @@ int extruder_multiply[EXTRUDERS] = {100
   #endif
 };
 
+int bowden_length[4];
+
 bool is_usb_printing = false;
 bool homing_flag = false;
 
@@ -264,6 +266,8 @@ int fanSpeedBckp = 0;
 float pause_lastpos[4];
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
+
+unsigned long load_filament_time;
 
 bool mesh_bed_leveling_flag = false;
 
@@ -897,7 +901,7 @@ int  er_progress = 0;
 void factory_reset(char level, bool quiet)
 {	
 	lcd_implementation_clear();
-	    
+	int cursor_pos = 0;
     switch (level) {
                    
         // Level 0: Language reset
@@ -969,6 +973,9 @@ void factory_reset(char level, bool quiet)
 
 
 			break;
+		case 4:
+			bowden_menu();
+			break;
         
         default:
             break;
@@ -983,178 +990,182 @@ void factory_reset(char level, bool quiet)
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
-  setup_killpin();
-  setup_powerhold();
-  MYSERIAL.begin(BAUDRATE);
-  SERIAL_PROTOCOLLNPGM("start");
-  SERIAL_ECHO_START;
+	setup_killpin();
+	setup_powerhold();
+	MYSERIAL.begin(BAUDRATE);
+	SERIAL_PROTOCOLLNPGM("start");
+	SERIAL_ECHO_START;
 
 #if 0
-  SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
-  for (int i = 0; i < 4096; ++ i) {
-      int b = eeprom_read_byte((unsigned char*)i);
-      if (b != 255) {
-          SERIAL_ECHO(i);
-          SERIAL_ECHO(":");
-          SERIAL_ECHO(b);
-          SERIAL_ECHOLN("");
-      }
-  }
-  SERIAL_ECHOLN("Reading eeprom from 0 to 100: done");
-  #endif
+	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
+	for (int i = 0; i < 4096; ++i) {
+		int b = eeprom_read_byte((unsigned char*)i);
+		if (b != 255) {
+			SERIAL_ECHO(i);
+			SERIAL_ECHO(":");
+			SERIAL_ECHO(b);
+			SERIAL_ECHOLN("");
+		}
+	}
+	SERIAL_ECHOLN("Reading eeprom from 0 to 100: done");
+#endif
 
-  // Check startup - does nothing if bootloader sets MCUSR to 0
-  byte mcu = MCUSR;
-  if(mcu & 1) SERIAL_ECHOLNRPGM(MSG_POWERUP);
-  if(mcu & 2) SERIAL_ECHOLNRPGM(MSG_EXTERNAL_RESET);
-  if(mcu & 4) SERIAL_ECHOLNRPGM(MSG_BROWNOUT_RESET);
-  if(mcu & 8) SERIAL_ECHOLNRPGM(MSG_WATCHDOG_RESET);
-  if(mcu & 32) SERIAL_ECHOLNRPGM(MSG_SOFTWARE_RESET);
-  MCUSR=0;
+	// Check startup - does nothing if bootloader sets MCUSR to 0
+	byte mcu = MCUSR;
+	if (mcu & 1) SERIAL_ECHOLNRPGM(MSG_POWERUP);
+	if (mcu & 2) SERIAL_ECHOLNRPGM(MSG_EXTERNAL_RESET);
+	if (mcu & 4) SERIAL_ECHOLNRPGM(MSG_BROWNOUT_RESET);
+	if (mcu & 8) SERIAL_ECHOLNRPGM(MSG_WATCHDOG_RESET);
+	if (mcu & 32) SERIAL_ECHOLNRPGM(MSG_SOFTWARE_RESET);
+	MCUSR = 0;
 
-  //SERIAL_ECHORPGM(MSG_MARLIN);
-  //SERIAL_ECHOLNRPGM(VERSION_STRING);
-  
-	#ifdef STRING_VERSION_CONFIG_H
-		#ifdef STRING_CONFIG_H_AUTHOR
-		  SERIAL_ECHO_START;
-		  SERIAL_ECHORPGM(MSG_CONFIGURATION_VER);
-		  SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
-		  SERIAL_ECHORPGM(MSG_AUTHOR);
-		  SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
-		  SERIAL_ECHOPGM("Compiled: ");
-		  SERIAL_ECHOLNPGM(__DATE__);
-		#endif
-	#endif
-  
-  SERIAL_ECHO_START;
-  SERIAL_ECHORPGM(MSG_FREE_MEMORY);
-  SERIAL_ECHO(freeMemory());
-  SERIAL_ECHORPGM(MSG_PLANNER_BUFFER_BYTES);
-  SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
-  lcd_update_enable(false);
-  // loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
-  Config_RetrieveSettings();
-  SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
-  tp_init();    // Initialize temperature loop
-  plan_init();  // Initialize planner;
-  watchdog_init();
-  st_init();    // Initialize stepper, this enables interrupts!
-  setup_photpin();
-  servo_init();
-  // Reset the machine correction matrix.
-  // It does not make sense to load the correction matrix until the machine is homed.
-  world2machine_reset();
-  
-  lcd_init();
-  if (!READ(BTN_ENC))
-  {
-	  _delay_ms(1000);
-	  if (!READ(BTN_ENC))
-	  {
-          lcd_implementation_clear();
-          
-		  
-		  lcd_printPGM(PSTR("Factory RESET"));
-		  
-          
-		  SET_OUTPUT(BEEPER);
-		  WRITE(BEEPER, HIGH);
-        
-          while (!READ(BTN_ENC));
-          
-          WRITE(BEEPER, LOW);
-          
-          
+	//SERIAL_ECHORPGM(MSG_MARLIN);
+	//SERIAL_ECHOLNRPGM(VERSION_STRING);
 
-		  _delay_ms(2000);
-          
-		  char level = reset_menu();
-		  factory_reset(level, false);
-          
-		  switch (level) {
-				case 0: _delay_ms(0); break;
-				case 1: _delay_ms(0); break;
-				case 2: _delay_ms(0); break;
-				case 3: _delay_ms(0); break;
-		  }
-		  // _delay_ms(100);
-/*
-#ifdef MESH_BED_LEVELING
-		  _delay_ms(2000);
+#ifdef STRING_VERSION_CONFIG_H
+#ifdef STRING_CONFIG_H_AUTHOR
+	SERIAL_ECHO_START;
+	SERIAL_ECHORPGM(MSG_CONFIGURATION_VER);
+	SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
+	SERIAL_ECHORPGM(MSG_AUTHOR);
+	SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
+	SERIAL_ECHOPGM("Compiled: ");
+	SERIAL_ECHOLNPGM(__DATE__);
+#endif
+#endif
 
-		  if (!READ(BTN_ENC))
-		  {
-			  WRITE(BEEPER, HIGH);
-			  _delay_ms(100);
-			  WRITE(BEEPER, LOW);
-			  _delay_ms(200);
-			  WRITE(BEEPER, HIGH);
-			  _delay_ms(100);
-			  WRITE(BEEPER, LOW);
+	SERIAL_ECHO_START;
+	SERIAL_ECHORPGM(MSG_FREE_MEMORY);
+	SERIAL_ECHO(freeMemory());
+	SERIAL_ECHORPGM(MSG_PLANNER_BUFFER_BYTES);
+	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
+	lcd_update_enable(false);
+	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
+	Config_RetrieveSettings();
+	SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
+	tp_init();    // Initialize temperature loop
+	plan_init();  // Initialize planner;
+	watchdog_init();
+	st_init();    // Initialize stepper, this enables interrupts!
+	setup_photpin();
+	servo_init();
+	// Reset the machine correction matrix.
+	// It does not make sense to load the correction matrix until the machine is homed.
+	world2machine_reset();
 
-			  int _z = 0;
-			  calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-			  EEPROM_save_B(EEPROM_BABYSTEP_X, &_z);
-			  EEPROM_save_B(EEPROM_BABYSTEP_Y, &_z);
-			  EEPROM_save_B(EEPROM_BABYSTEP_Z, &_z);
-		  }
-		  else
-		  {
+	lcd_init();
+	if (!READ(BTN_ENC))
+	{
+		_delay_ms(1000);
+		if (!READ(BTN_ENC))
+		{
+			lcd_implementation_clear();
 
-			  WRITE(BEEPER, HIGH);
-			  _delay_ms(100);
-			  WRITE(BEEPER, LOW);
-		  }
-#endif // mesh */
-         
-	  }
-  }
-  else
-  {
-	  _delay_ms(1000);  // wait 1sec to display the splash screen
-  }
 
-  
+			lcd_printPGM(PSTR("Factory RESET"));
 
-  #if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
-    SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
-  #endif
 
-  #ifdef DIGIPOT_I2C
-    digipot_i2c_init();
-  #endif
-  setup_homepin();
+			SET_OUTPUT(BEEPER);
+			WRITE(BEEPER, HIGH);
+
+			while (!READ(BTN_ENC));
+
+			WRITE(BEEPER, LOW);
+
+
+
+			_delay_ms(2000);
+
+			char level = reset_menu();
+			factory_reset(level, false);
+
+			switch (level) {
+			case 0: _delay_ms(0); break;
+			case 1: _delay_ms(0); break;
+			case 2: _delay_ms(0); break;
+			case 3: _delay_ms(0); break;
+			}
+			// _delay_ms(100);
+  /*
+  #ifdef MESH_BED_LEVELING
+			_delay_ms(2000);
+
+			if (!READ(BTN_ENC))
+			{
+				WRITE(BEEPER, HIGH);
+				_delay_ms(100);
+				WRITE(BEEPER, LOW);
+				_delay_ms(200);
+				WRITE(BEEPER, HIGH);
+				_delay_ms(100);
+				WRITE(BEEPER, LOW);
+
+				int _z = 0;
+				calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+				EEPROM_save_B(EEPROM_BABYSTEP_X, &_z);
+				EEPROM_save_B(EEPROM_BABYSTEP_Y, &_z);
+				EEPROM_save_B(EEPROM_BABYSTEP_Z, &_z);
+			}
+			else
+			{
+
+				WRITE(BEEPER, HIGH);
+				_delay_ms(100);
+				WRITE(BEEPER, LOW);
+			}
+  #endif // mesh */
+
+		}
+	}
+	else
+	{
+		_delay_ms(1000);  // wait 1sec to display the splash screen
+	}
+
+
+
+#if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
+	SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
+#endif
+
+#ifdef DIGIPOT_I2C
+	digipot_i2c_init();
+#endif
+	setup_homepin();
 
 #if defined(Z_AXIS_ALWAYS_ON)
-  enable_z();
+	enable_z();
 #endif
-  farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
-  EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-  if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
-  if (farm_no == 0xFFFF) farm_no = 0;
-  if (farm_mode)
-  {
-	  prusa_statistics(8);
-  }
+	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
+	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
+	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
+	if (farm_no == 0xFFFF) farm_no = 0;
+	if (farm_mode)
+	{
+		prusa_statistics(8);
+	}
 
-  // Enable Toshiba FlashAir SD card / WiFi enahanced card.
-  card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
-  // Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
-  // but this times out if a blocking dialog is shown in setup().
-  card.initsd();
+	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
+	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
+	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
+	// but this times out if a blocking dialog is shown in setup().
+	card.initsd();
 
-  if (eeprom_read_dword((uint32_t*)(EEPROM_TOP-4)) == 0x0ffffffff && 
-      eeprom_read_dword((uint32_t*)(EEPROM_TOP-8)) == 0x0ffffffff &&
-      eeprom_read_dword((uint32_t*)(EEPROM_TOP-12)) == 0x0ffffffff) {
-      // Maiden startup. The firmware has been loaded and first started on a virgin RAMBo board,
-      // where all the EEPROM entries are set to 0x0ff.
-      // Once a firmware boots up, it forces at least a language selection, which changes
-      // EEPROM_LANG to number lower than 0x0ff.
-      // 1) Set a high power mode.
-      eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);	  
-  }
+	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
+		eeprom_read_dword((uint32_t*)(EEPROM_TOP - 8)) == 0x0ffffffff &&
+		eeprom_read_dword((uint32_t*)(EEPROM_TOP - 12)) == 0x0ffffffff) {
+		// Maiden startup. The firmware has been loaded and first started on a virgin RAMBo board,
+		// where all the EEPROM entries are set to 0x0ff.
+		// Once a firmware boots up, it forces at least a language selection, which changes
+		// EEPROM_LANG to number lower than 0x0ff.
+		// 1) Set a high power mode.
+		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
+	}
 
+	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
+	  int _z = BOWDEN_LENGTH;
+	  for(int i = 0; i<4; i++) EEPROM_save_B(EEPROM_BOWDEN_LENGTH + i * 2, &_z);
+	}
 
   // In the future, somewhere here would one compare the current firmware version against the firmware version stored in the EEPROM.
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
@@ -5151,8 +5162,10 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         uint8_t cnt=0;
         int counterBeep = 0;
         lcd_wait_interact();
+		load_filament_time = millis();
         while(!lcd_clicked()){
-          cnt++;
+
+		  cnt++;
           manage_heater();
           manage_inactivity(true);
           if(cnt==0)
@@ -5164,7 +5177,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             SET_OUTPUT(BEEPER);
             if (counterBeep== 0){
               WRITE(BEEPER,HIGH);
-            }
+            }			
             if (counterBeep== 20){
               WRITE(BEEPER,LOW);
             }
@@ -5177,14 +5190,34 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			   #endif
           #endif
           }
+#ifdef SNMM
+		  if (millis() - load_filament_time > 2) {
+			  load_filament_time = millis();
+			  target[E_AXIS] += 0.001;
+			  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
+		  }		  
+#endif
         }
         //Filament inserted
         
         WRITE(BEEPER,LOW);
-        
-        //Feed the filament to the end of nozzle quickly
-        target[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
+
+		//Feed the filament to the end of nozzle quickly        
+#ifdef SNMM
+		
+		st_synchronize();
+		target[E_AXIS] += BOWDEN_LENGTH;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
+		target[E_AXIS] += FIL_LOAD_LENGTH - 60;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
+		target[E_AXIS] += 40;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
+		target[E_AXIS] += 10;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+#else
+		target[E_AXIS] += FILAMENTCHANGE_FIRSTFEED;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder);
+#endif // SNMM
         
         //Extrude some filament
         target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;

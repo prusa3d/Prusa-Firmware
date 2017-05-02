@@ -2825,38 +2825,103 @@ void lcd_mylang() {
 
 }
 
+void bowden_menu() {
+	int enc_dif = encoderDiff;
+	int cursor_pos = 0;
+	lcd_implementation_clear();
+	lcd.setCursor(0, 0);
+	lcd.print(">");
+	for (int i = 0; i < 4; i++) {
+		lcd.setCursor(1, i);
+		lcd.print("Extruder ");
+		lcd.print(i);
+		lcd.print(": ");
+		EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+		lcd.print(bowden_length[i]);
+
+	}
+	enc_dif = encoderDiff;
+	while (1) {
+		
+		manage_heater();
+		manage_inactivity(true);
+
+				lcd.setCursor(0, 0);
+				lcd.print(" ");
+				lcd.setCursor(0, 1);
+				lcd.print(" ");
+				lcd.setCursor(0, 2);
+				lcd.print(" ");
+				lcd.setCursor(0, 3);
+				lcd.print(" ");
+				lcd.setCursor(0, cursor_pos);
+				lcd.print(">");
+				
+				
+				if (abs((enc_dif - encoderDiff)) > 4) {
+
+					if ((abs(enc_dif - encoderDiff)) > 1) {
+						if (enc_dif > encoderDiff) {
+							bowden_length[cursor_pos]--;
+							lcd.setCursor(13, cursor_pos);
+							lcd.print(bowden_length[cursor_pos]);
+							enc_dif = encoderDiff;
+						}
+
+						if (enc_dif < encoderDiff) {
+							bowden_length[cursor_pos]++;
+							lcd.setCursor(13, cursor_pos);
+							lcd.print(bowden_length[cursor_pos]);
+							enc_dif = encoderDiff;
+						}
+					}
+				}
+				delay(100);
+				if (lcd_clicked()) {
+					while (lcd_clicked());
+					delay(10);
+					while (lcd_clicked());
+					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
+					if (cursor_pos == 3) return;
+					else {
+						cursor_pos++;
+					}
+				}
+				
+		
+	}
+}
+
 char reset_menu() {
+#ifdef SNMM
+	int items_no = 5;
+#else
+	int items_no = 4;
+#endif
+	static int first = 0;
 	int enc_dif = 0;
 	char cursor_pos = 0;
-
-	lcd_implementation_clear();
-
-	lcd.setCursor(1, 0);
-
-	lcd_printPGM(PSTR("Language"));
-		
-
-	lcd.setCursor(1, 1);
-
-	lcd_printPGM(PSTR("Statistics"));
-
-
-	lcd.setCursor(1, 2);
+	const char *item [items_no];
 	
-	lcd_printPGM(PSTR("Shiping prep"));
-
-	lcd.setCursor(1, 3);
-	
-	lcd_printPGM(PSTR("All data"));
-
-	lcd.setCursor(0, 0);
-
-	lcd.print(">");
-
+	item[0] = "Language";
+	item[1] = "Statistics";
+	item[2] = "Shipping prep";
+	item[3] = "All Data";
+#ifdef SNMM
+	item[4] = "Bowden length";
+#endif // SNMM
 
 	enc_dif = encoderDiff;
+	lcd_implementation_clear();
+	lcd.setCursor(0, 0);
+	lcd.print(">");
 
-	while (1) {
+	while (1) {		
+
+		for (int i = 0; i < 4; i++) {
+			lcd.setCursor(1, i);
+			lcd.print(item[first + i]);
+		}
 
 		manage_heater();
 		manage_inactivity(true);
@@ -2874,10 +2939,18 @@ char reset_menu() {
 
 				if (cursor_pos > 3) {
 					cursor_pos = 3;
+					if (first < items_no - 4) {
+						first++;
+						lcd_implementation_clear();
+					}
 				}
 
 				if (cursor_pos < 0) {
 					cursor_pos = 0;
+					if (first > 0) {
+						first--;
+						lcd_implementation_clear();
+					}
 				}
 				lcd.setCursor(0, 0);
 				lcd.print(" ");
@@ -2899,7 +2972,7 @@ char reset_menu() {
 			while (lcd_clicked());
 			delay(10);
 			while (lcd_clicked());
-			return(cursor_pos);
+			return(cursor_pos + first);
 		}
 
 	}
@@ -3141,9 +3214,21 @@ static void extr_change_3() {
 
 //wrapper functions for unloading filament
 static void extr_unload_all() {
-	for (int i = 0; i < 4; i++) {
-		change_extr(i);
-		extr_unload();
+	if (degHotend0() > EXTRUDE_MINTEMP) {
+		for (int i = 0; i < 4; i++) {
+			change_extr(i);
+			extr_unload();
+		}
+	}
+	else {
+		lcd_implementation_clear();
+		lcd.setCursor(0, 0);
+		lcd_printPGM(MSG_ERROR);
+		lcd.setCursor(0, 2);
+		lcd_printPGM(MSG_PREHEAT_NOZZLE);
+		delay(2000);
+		lcd_implementation_clear();
+		lcd_return_to_status();
 	}
 }
 
@@ -3169,10 +3254,10 @@ static void fil_load_menu()
 {
 	START_MENU();
 	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
-	MENU_ITEM(function, PSTR("Load filament 1"), extr_adj_0);
-	MENU_ITEM(function, PSTR("Load filament 2 "), extr_adj_1);
-	MENU_ITEM(function, PSTR("Load filament 3"), extr_adj_2);
-	MENU_ITEM(function, PSTR("Load filament 4"), extr_adj_3);
+	MENU_ITEM(function, MSG_LOAD_FILAMENT_1, extr_adj_0);
+	MENU_ITEM(function, MSG_LOAD_FILAMENT_2, extr_adj_1);
+	MENU_ITEM(function, MSG_LOAD_FILAMENT_3, extr_adj_2);
+	MENU_ITEM(function, MSG_LOAD_FILAMENT_4, extr_adj_3);
 	
 	END_MENU();
 }
@@ -3182,16 +3267,16 @@ static void fil_unload_menu()
 {
 	START_MENU();
 	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
-	MENU_ITEM(function, PSTR("Unload all"), extr_unload_all);
-	MENU_ITEM(function, PSTR("Unload filament 1"), extr_unload_0);
-	MENU_ITEM(function, PSTR("Unload filament 2"), extr_unload_1);
-	MENU_ITEM(function, PSTR("Unload filament 3"), extr_unload_2);
-	MENU_ITEM(function, PSTR("Unload filament 4"), extr_unload_3);
+	MENU_ITEM(function, MSG_UNLOAD_ALL, extr_unload_all);
+	MENU_ITEM(function, MSG_UNLOAD_FILAMENT_1, extr_unload_0);
+	MENU_ITEM(function, MSG_UNLOAD_FILAMENT_2, extr_unload_1);
+	MENU_ITEM(function, MSG_UNLOAD_FILAMENT_3, extr_unload_2);
+	MENU_ITEM(function, MSG_UNLOAD_FILAMENT_4, extr_unload_3);
 
 	END_MENU();
 }
 
-static void change_extr_menu(){
+/*static void change_extr_menu(){
 	START_MENU();
 	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
 	MENU_ITEM(function, PSTR("Extruder 1"), extr_change_0);
@@ -3200,7 +3285,7 @@ static void change_extr_menu(){
 	MENU_ITEM(function, PSTR("Extruder 4"), extr_change_3);
 
 	END_MENU();
-}
+}*/
 
 #endif
 
@@ -3468,7 +3553,7 @@ static void lcd_main_menu()
 	#ifdef SNMM
 	MENU_ITEM(submenu, MSG_LOAD_FILAMENT, fil_load_menu);
 	MENU_ITEM(submenu, MSG_UNLOAD_FILAMENT, fil_unload_menu);
-	MENU_ITEM(submenu, MSG_CHANGE_EXTR, change_extr_menu);
+	//MENU_ITEM(submenu, MSG_CHANGE_EXTR, change_extr_menu);
 	#endif
 	MENU_ITEM(submenu, MSG_SETTINGS, lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);
