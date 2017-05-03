@@ -221,6 +221,7 @@ static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
 static void lcd_disable_farm_mode();
+static void extr_unload_all();
 
 void stack_error();
 static void lcd_ping_allert();

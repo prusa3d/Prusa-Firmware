@@ -515,6 +515,43 @@ static void lcd_status_screen()
 
 #ifdef ULTIPANEL
 
+void unload_fil() {
+	char cmd1[10];
+	float unload_l = ((BOWDEN_LENGTH + 60 + FIL_LOAD_LENGTH) / 2);
+
+	sprintf_P(cmd1, PSTR("M106 S%d"), fanSpeedBckp);
+	enquecommand(cmd1);
+	strcpy(cmd1, "G1 Z");
+	strcat(cmd1, ftostr32(pause_lastpos[Z_AXIS]));
+	enquecommand(cmd1);
+
+	enquecommand_P(PSTR("M907 E700")); //set extruder current higher
+	enquecommand_P(PSTR("M203 E50")); //set max. feedrate
+	st_synchronize();
+	if (current_temperature[0] < 230) {
+		// PLA
+		enquecommand_P(PSTR("G1 E5.4 F2800.000000"));
+		enquecommand_P(PSTR("G1 E3.2 F3000.000000"));
+		enquecommand_P(PSTR("G1 E3 F3400.000000"));
+		st_synchronize();
+	}
+	else {
+		// ABS
+		enquecommand_P(PSTR("G1 E3.1 F2000.000000"));
+		enquecommand_P(PSTR("G1 E3.1 F2500.000000"));
+		enquecommand_P(PSTR("G1 E4 F3000.000000"));
+		st_synchronize();
+	}
+	enquecommand_P(PSTR("M203 E80")); //set max. feedrate
+	enquecommand_P(PSTR("M907 E550")); //set extruder current
+	st_synchronize();
+	strcpy(cmd1, "G1 E-");
+	strcat(cmd1, ftostr32(unload_l));
+	enquecommand(cmd1);
+	enquecommand(cmd1);
+	st_synchronize();
+}
+
 void lcd_commands()
 {	
 	char cmd1[25];
@@ -593,6 +630,7 @@ void lcd_commands()
 
 	if (lcd_commands_type == LCD_COMMAND_STOP_PRINT)   /// stop print
 	{
+		uint8_t stopped_extruder;
 
 		if (lcd_commands_step == 0) 
 		{ 
@@ -624,9 +662,6 @@ void lcd_commands()
 		{
       // M84: Disable steppers.
 			enquecommand_P(PSTR("M84"));
-#ifdef SNMM
-			enquecommand_P(PSTR("PRUSA ResF")); //resets flag at the end of the print (used for SNMM)
-#endif
 			autotempShutdown();
 			lcd_commands_step = 2;
 		}
@@ -675,62 +710,41 @@ void lcd_commands()
 			lcd_commands_step = 5;
 		}
 		if (lcd_commands_step == 7 && !blocks_queued()) {
-			/*ramming();
-			st_synchronize();
-			change_extr(0);*/
-			st_synchronize();
-			enquecommand_P(PSTR("M907 E700")); //set extruder current higher
-			enquecommand_P(PSTR("M203 E50"));
-			st_synchronize();
-			if (current_temperature[0] < 230) {
-				// PLA
-								
-				//enquecommand_P(PSTR("G1 E-8 F2100.000000"));
-				//enquecommand_P(PSTR("G1 E8 F2100.000000"));
-				enquecommand_P(PSTR("G1 E5.4 F2800.000000"));
-				enquecommand_P(PSTR("G1 E3.2 F3000.000000"));
-				enquecommand_P(PSTR("G1 E3 F3400.000000"));
-				enquecommand_P(PSTR("M203 E80"));
-				st_synchronize();
-				enquecommand_P(PSTR("G1 E-82 F9500.000000"));
-				enquecommand_P(PSTR("M203 E50"));
-				enquecommand_P(PSTR("G1 E-20 F1200.000000"));
-				enquecommand_P(PSTR("G1 E5 F400.000000"));
-				enquecommand_P(PSTR("G1 E5 F600.000000"));
-				st_synchronize();
-				enquecommand_P(PSTR("G1 E-10 F600.000000"));
-				enquecommand_P(PSTR("G1 E+10 F600.000000"));
-				enquecommand_P(PSTR("G1 E-10 F800.000000"));
-				enquecommand_P(PSTR("G1 E+10 F800.000000"));
-				enquecommand_P(PSTR("G1 E-10 F800.000000"));
-				st_synchronize();
-			}else {
-				// ABS
-				
-				//enquecommand_P(PSTR("G1 E-8 F2100.000000"));
-				//enquecommand_P(PSTR("G1 E8 F2100.000000"));
-				enquecommand_P(PSTR("G1 E3.1 F2000.000000"));
-				enquecommand_P(PSTR("G1 E3.1 F2500.000000"));
-				enquecommand_P(PSTR("G1 E4 F3000.000000"));
-				st_synchronize();
-				enquecommand_P(PSTR("G4 P4700"));
-				enquecommand_P(PSTR("M203 E80"));
-				enquecommand_P(PSTR("G1 E-92 F9900.000000"));
-				enquecommand_P(PSTR("M203 E50"));
-				enquecommand_P(PSTR("G1 E-5 F800.000000"));
-				enquecommand_P(PSTR("G1 E5 F400.000000"));
-				st_synchronize();
-				enquecommand_P(PSTR("G1 E-5 F600.000000"));
-				enquecommand_P(PSTR("G1 E5 F600.000000"));
-				enquecommand_P(PSTR("G1 E-5 F600.000000"));
-				enquecommand_P(PSTR("G1 E5 F600.000000"));
-				enquecommand_P(PSTR("G1 E5 F600.000000"));
-				st_synchronize();
+			MYSERIAL.print("7");
+			stopped_extruder = snmm_extruder;
+			unload_fil();
+			lcd_commands_step = 8;
+		}
+		if (lcd_commands_step == 8 && !blocks_queued()) {
+			MYSERIAL.print("8");
+			if (stopped_extruder != 0) {
+				change_extr(0);
+				unload_fil();
 			}
-			enquecommand_P(PSTR("T0"));
-			enquecommand_P(PSTR("M907 E550")); //set extruder current to 500
-			//digipot_init();
-			
+			lcd_commands_step = 9;
+		}
+		if (lcd_commands_step == 9 && !blocks_queued()) {
+			MYSERIAL.print("9");
+			if (stopped_extruder != 1) {
+				change_extr(1);
+				unload_fil();
+			}
+			lcd_commands_step = 10;
+		}
+		if (lcd_commands_step == 10 && !blocks_queued()) {
+			MYSERIAL.print("10");
+			if (stopped_extruder != 2) {
+				change_extr(2);
+				unload_fil();
+			}
+			lcd_commands_step = 11;
+		}
+		if (lcd_commands_step == 11 && !blocks_queued()) {
+			MYSERIAL.print("11");
+			if (stopped_extruder != 3) {
+				change_extr(3);
+				unload_fil();
+			}
 			lcd_commands_step = 3;
 		}
 	}
