@@ -776,15 +776,17 @@ static void lcd_implementation_status_screen()
         
 	}
 	else {
-		lcd.setCursor(LCD_WIDTH - 8 - 2, 2);
-		lcd_printPGM(PSTR(" "));
-	}
-
 #ifdef SNMM
 		lcd_printPGM(PSTR(" E"));
-		lcd.print(get_ext_nr()+1);
-	
+		lcd.print(get_ext_nr() + 1);
+
+#else
+		lcd.setCursor(LCD_WIDTH - 8 - 2, 2);
+		lcd_printPGM(PSTR(" "));
 #endif
+	}
+
+
 
     //Print time elapsed
     lcd.setCursor(LCD_WIDTH - 8 -1, 2);

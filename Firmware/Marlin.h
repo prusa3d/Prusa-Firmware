@@ -282,6 +282,7 @@ extern float retract_recover_length, retract_recover_length_swap, retract_recove
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
+extern int bowden_length[4];
 extern bool is_usb_printing;
 extern bool homing_flag;
 extern bool temp_cal_active;
