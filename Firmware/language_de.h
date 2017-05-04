@@ -40,7 +40,7 @@
 #define MSG_MOTION                          "Bewegung"
 #define MSG_VOLUMETRIC                      "Filament"
 #define MSG_VOLUMETRIC_ENABLED		        "E in mm3"
-#define MSG_STORE_EPROM                     "EPROM spichern"
+#define MSG_STORE_EPROM                     "EPROM speichern"
 #define MSG_LOAD_EPROM                      "EPROM laden"
 #define MSG_RESTORE_FAILSAFE                "Standardkonfiguration"
 #define MSG_REFRESH                         "Aktualisieren"
