@@ -515,43 +515,6 @@ static void lcd_status_screen()
 
 #ifdef ULTIPANEL
 
-void unload_fil() {
-	char cmd1[10];
-	float unload_l = ((BOWDEN_LENGTH + 60 + FIL_LOAD_LENGTH) / 2);
-
-	sprintf_P(cmd1, PSTR("M106 S%d"), fanSpeedBckp);
-	enquecommand(cmd1);
-	strcpy(cmd1, "G1 Z");
-	strcat(cmd1, ftostr32(pause_lastpos[Z_AXIS]));
-	enquecommand(cmd1);
-
-	enquecommand_P(PSTR("M907 E700")); //set extruder current higher
-	enquecommand_P(PSTR("M203 E50")); //set max. feedrate
-	st_synchronize();
-	if (current_temperature[0] < 230) {
-		// PLA
-		enquecommand_P(PSTR("G1 E5.4 F2800.000000"));
-		enquecommand_P(PSTR("G1 E3.2 F3000.000000"));
-		enquecommand_P(PSTR("G1 E3 F3400.000000"));
-		st_synchronize();
-	}
-	else {
-		// ABS
-		enquecommand_P(PSTR("G1 E3.1 F2000.000000"));
-		enquecommand_P(PSTR("G1 E3.1 F2500.000000"));
-		enquecommand_P(PSTR("G1 E4 F3000.000000"));
-		st_synchronize();
-	}
-	enquecommand_P(PSTR("M203 E80")); //set max. feedrate
-	enquecommand_P(PSTR("M907 E550")); //set extruder current
-	st_synchronize();
-	strcpy(cmd1, "G1 E-");
-	strcat(cmd1, ftostr32(unload_l));
-	enquecommand(cmd1);
-	enquecommand(cmd1);
-	st_synchronize();
-}
-
 void lcd_commands()
 {	
 	char cmd1[25];
@@ -650,9 +613,8 @@ void lcd_commands()
 		if (lcd_commands_step == 2 && !blocks_queued())
 		{
 			setTargetBed(0);
-			setTargetHotend(0, 0);
-			setTargetHotend(0, 1);
-			setTargetHotend(0, 2);
+			enquecommand_P(PSTR("M104 S0")); //set hotend temp to 0
+
 			manage_heater();
 			lcd_setstatuspgm(WELCOME_MSG);
 			cancel_heatup = false;
@@ -710,41 +672,7 @@ void lcd_commands()
 			lcd_commands_step = 5;
 		}
 		if (lcd_commands_step == 7 && !blocks_queued()) {
-			MYSERIAL.print("7");
-			stopped_extruder = snmm_extruder;
-			unload_fil();
-			lcd_commands_step = 8;
-		}
-		if (lcd_commands_step == 8 && !blocks_queued()) {
-			MYSERIAL.print("8");
-			if (stopped_extruder != 0) {
-				change_extr(0);
-				unload_fil();
-			}
-			lcd_commands_step = 9;
-		}
-		if (lcd_commands_step == 9 && !blocks_queued()) {
-			MYSERIAL.print("9");
-			if (stopped_extruder != 1) {
-				change_extr(1);
-				unload_fil();
-			}
-			lcd_commands_step = 10;
-		}
-		if (lcd_commands_step == 10 && !blocks_queued()) {
-			MYSERIAL.print("10");
-			if (stopped_extruder != 2) {
-				change_extr(2);
-				unload_fil();
-			}
-			lcd_commands_step = 11;
-		}
-		if (lcd_commands_step == 11 && !blocks_queued()) {
-			MYSERIAL.print("11");
-			if (stopped_extruder != 3) {
-				change_extr(3);
-				unload_fil();
-			}
+			enquecommand_P(PSTR("M702"));
 			lcd_commands_step = 3;
 		}
 	}
@@ -2851,10 +2779,19 @@ void bowden_menu() {
 		lcd.print(i);
 		lcd.print(": ");
 		EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
-		lcd.print(bowden_length[i]);
+		lcd.print(bowden_length[i] - 48);
 
 	}
 	enc_dif = encoderDiff;
+	/*while (1) {
+		if (lcd_clicked()) {
+			while (lcd_clicked());
+			delay(10);
+			while (lcd_clicked());
+			break;
+		}
+	}*/
+
 	while (1) {
 		
 		manage_heater();
@@ -2878,14 +2815,14 @@ void bowden_menu() {
 						if (enc_dif > encoderDiff) {
 							bowden_length[cursor_pos]--;
 							lcd.setCursor(13, cursor_pos);
-							lcd.print(bowden_length[cursor_pos]);
+							lcd.print(bowden_length[cursor_pos] -48);
 							enc_dif = encoderDiff;
 						}
 
 						if (enc_dif < encoderDiff) {
 							bowden_length[cursor_pos]++;
 							lcd.setCursor(13, cursor_pos);
-							lcd.print(bowden_length[cursor_pos]);
+							lcd.print(bowden_length[cursor_pos] -48);
 							enc_dif = encoderDiff;
 						}
 					}
@@ -3082,6 +3019,15 @@ static int get_ext_nr() { //reads multiplexer input pins and return current extr
 }
 
 
+void display_loading() {
+	switch (snmm_extruder) {
+	case 1: (MSG_FILAMENT_LOADING_T1); break;
+	case 2: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T2); break;
+	case 3: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T3); break;
+	default: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T0); break;
+	}
+}
+
 static void extr_adj(int extruder) //loading filament for SNMM
 {
 	bool correct;
@@ -3108,7 +3054,7 @@ static void extr_adj(int extruder) //loading filament for SNMM
 	//if (!correct) goto	START;
 	//extr_mov(BOWDEN_LENGTH/2.f, 500); //dividing by 2 is there because of max. extrusion length limitation (x_max + y_max)
 	//extr_mov(BOWDEN_LENGTH/2.f, 500);
-	extr_mov(BOWDEN_LENGTH, 500);
+	extr_mov(bowden_length[extruder], 500);
 	lcd_implementation_clear();
 	lcd.setCursor(0, 1); lcd_printPGM(MSG_PLEASE_WAIT);
 	st_synchronize();
@@ -3129,9 +3075,10 @@ static void extr_unload() { //unloads filament
 		lcd_display_message_fullscreen_P(PSTR(""));
 		max_feedrate[E_AXIS] = 50;
 		lcd.setCursor(0, 1); lcd_printPGM(MSG_PLEASE_WAIT);
-		current_position[Z_AXIS] += 15; //lifting in Z direction to make space for extrusion
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 25, active_extruder);
-
+		if (current_position[Z_AXIS] < 15) {
+			current_position[Z_AXIS] += 15; //lifting in Z direction to make space for extrusion
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 25, active_extruder);
+		}
 		
 		current_position[E_AXIS] += 10; //extrusion
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 10, active_extruder);
@@ -3159,9 +3106,9 @@ static void extr_unload() { //unloads filament
 		}
 	
 		max_feedrate[E_AXIS] = 80;
-		current_position[E_AXIS] -= (BOWDEN_LENGTH + 60 + FIL_LOAD_LENGTH) / 2;   
+		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
-		current_position[E_AXIS] -= (BOWDEN_LENGTH + 60 + FIL_LOAD_LENGTH) / 2;
+		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
 		st_synchronize();
 		//digipot_init();
@@ -3208,6 +3155,13 @@ static void extr_adj_3() {
 	extr_adj(3);
 }
 
+static void load_all() {
+	for (int i = 0; i < 4; i++) {
+		change_extr(i);
+		extr_adj(i);
+	}
+}
+
 //wrapper functions for changing extruders
 static void extr_change_0() {
 	change_extr(0);
@@ -3227,7 +3181,7 @@ static void extr_change_3() {
 }
 
 //wrapper functions for unloading filament
-static void extr_unload_all() {
+void extr_unload_all() {
 	if (degHotend0() > EXTRUDE_MINTEMP) {
 		for (int i = 0; i < 4; i++) {
 			change_extr(i);
@@ -3245,6 +3199,8 @@ static void extr_unload_all() {
 		lcd_return_to_status();
 	}
 }
+
+
 
 static void extr_unload_0() {
 	change_extr(0);
@@ -3268,6 +3224,7 @@ static void fil_load_menu()
 {
 	START_MENU();
 	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+	MENU_ITEM(function, MSG_LOAD_ALL, load_all);
 	MENU_ITEM(function, MSG_LOAD_FILAMENT_1, extr_adj_0);
 	MENU_ITEM(function, MSG_LOAD_FILAMENT_2, extr_adj_1);
 	MENU_ITEM(function, MSG_LOAD_FILAMENT_3, extr_adj_2);

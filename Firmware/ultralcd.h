@@ -221,7 +221,8 @@ static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
 static void lcd_disable_farm_mode();
-static void extr_unload_all();
+void extr_unload_all();
+static void extr_unload();
 
 void stack_error();
 static void lcd_ping_allert();
@@ -248,5 +249,7 @@ char reset_menu();
 void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();
 void lcd_temp_calibration_set();
+
+void display_loading();
 
 #endif //ULTRALCD_H

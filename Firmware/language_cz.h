@@ -83,6 +83,7 @@
 #define MSG_UNLOAD_FILAMENT_3				"Vyjmout filament 3"
 #define MSG_UNLOAD_FILAMENT_4				"Vyjmout filament 4"
 #define MSG_UNLOAD_ALL						"Vyjmout vse"
+#define MSG_LOAD_ALL						"Zavest vse"
 
 #define MSG_RECTRACT                        "Rectract"
 #define MSG_ERROR                       "CHYBA:"

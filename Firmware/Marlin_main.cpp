@@ -1200,6 +1200,7 @@ void setup()
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
   }
+  for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   lcd_update_enable(true);
 
   // Store the currently running firmware into an eeprom,
@@ -5082,7 +5083,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
 		target[E_AXIS] += (FIL_COOLING*-1);
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-		target[E_AXIS] += (BOWDEN_LENGTH*-1);
+		target[E_AXIS] += (bowden_length[snmm_extruder] *-1);
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
 		st_synchronize();
 
@@ -5109,6 +5110,13 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  cnt++;
           manage_heater();
           manage_inactivity(true);
+
+/*#ifdef SNMM
+		  target[E_AXIS] += 0.002;
+		  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
+
+#endif // SNMM*/
+
           if(cnt==0)
           {
           #if BEEPER > 0
@@ -5131,14 +5139,21 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			   #endif
           #endif
           }
-#ifdef SNMM
-		  if (millis() - load_filament_time > 2) {
-			  load_filament_time = millis();
-			  target[E_AXIS] += 0.001;
-			  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
-		  }		  
-#endif
+
         }
+#ifdef SNMM
+		display_loading();
+		do {
+			target[E_AXIS] += 0.002;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
+			delay_keep_alive(2);
+		} while (!lcd_clicked());		
+		/*if (millis() - load_filament_time > 2) {
+			load_filament_time = millis();
+			target[E_AXIS] += 0.001;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
+		}*/
+#endif
         //Filament inserted
         
         WRITE(BEEPER,LOW);
@@ -5147,7 +5162,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #ifdef SNMM
 		
 		st_synchronize();
-		target[E_AXIS] += BOWDEN_LENGTH;
+		target[E_AXIS] += bowden_length[snmm_extruder];
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
 		target[E_AXIS] += FIL_LOAD_LENGTH - 60;
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
@@ -5196,6 +5211,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
              // Everything good             
              default:
                      lcd_change_success();
+					 lcd_update_enable(true);
                      break;
           }
           
@@ -5350,6 +5366,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	break;
 	case 702:
 	{
+#ifdef SNMM
+		extr_unload_all();
+#else
 		custom_message = true;
 		custom_message_type = 2;
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
@@ -5361,7 +5380,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		lcd_setstatuspgm(WELCOME_MSG);
 		custom_message = false;
 		custom_message_type = 0;
-		
+#endif	
 	}
 	break;
 

@@ -80,6 +80,7 @@
 #define MSG_UNLOAD_FILAMENT_3				"Unload filament 3"
 #define MSG_UNLOAD_FILAMENT_4				"Unload filament 4"
 #define MSG_UNLOAD_ALL						"Unload all"
+#define MSG_LOAD_ALL						"Load all"
 
 
 #define MSG_RECTRACT                        "Rectract"

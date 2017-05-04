@@ -211,6 +211,7 @@
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2   	" z 9"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1		"Okreslam wysokosc odniesienia punktu kalibracyjnego"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2		" z 9"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteracja "
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Kalibr. XYZ nieudana. Kalibracyjny punkt podkladki nieznaleziony."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED            "Kalibracja XYZ niepowiedziona. Sprawdzic w instrukcji."

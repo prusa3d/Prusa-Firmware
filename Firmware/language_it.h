@@ -196,6 +196,7 @@
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2		" su 9"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1		"Misurare l'altezza di riferimento del punto di calibrazione"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2		" su 9"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Reiterazione "
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND		"Calibrazione XYZ fallita. Il punto di calibrazione sul letto non e' stato trovato."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED		"Calibrazione XYZ fallita. Si prega di consultare il manuale."
