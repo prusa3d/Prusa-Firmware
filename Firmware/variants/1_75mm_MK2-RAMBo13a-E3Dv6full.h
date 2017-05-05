@@ -270,9 +270,9 @@ BED SETTINGS
 //#define  DEFAULT_bedKi 4.30	//orig
 //#define  DEFAULT_bedKd 924.76	//orig
 
-#define  DEFAULT_bedKp 63.31	//55C
-#define  DEFAULT_bedKi 2.93		//55C
-#define  DEFAULT_bedKd 342.28	//55C
+#define  DEFAULT_bedKp 59.24	//55C
+#define  DEFAULT_bedKi 2.62		//55C
+#define  DEFAULT_bedKd 334.88	//55C
 
 //#define  DEFAULT_bedKp 107.61	//100C
 //#define  DEFAULT_bedKi 4.7	//100C
