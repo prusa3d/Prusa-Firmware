@@ -286,5 +286,3 @@
 #define(length=20, lines=5) MSG_TEMP_CALIBRATION_DONE			"PINDA temperature calibration is finished. Click to continue."
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"PINDA T.cal. [ON]"
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF			"PINDA T.cal.[OFF]"
-
-
