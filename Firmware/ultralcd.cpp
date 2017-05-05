@@ -2783,19 +2783,29 @@ void bowden_menu() {
 
 	}
 	enc_dif = encoderDiff;
-	/*while (1) {
-		if (lcd_clicked()) {
-			while (lcd_clicked());
-			delay(10);
-			while (lcd_clicked());
-			break;
-		}
-	}*/
 
 	while (1) {
-		
+
 		manage_heater();
 		manage_inactivity(true);
+
+		if (abs((enc_dif - encoderDiff)) > 1) {
+
+			if (enc_dif > encoderDiff) {
+					cursor_pos--;
+				}
+
+				if (enc_dif < encoderDiff) {
+					cursor_pos++;
+				}
+
+				if (cursor_pos > 3) {
+					cursor_pos = 3;
+				}
+
+				if (cursor_pos < 0) {
+					cursor_pos = 0;
+				}
 
 				lcd.setCursor(0, 0);
 				lcd.print(" ");
@@ -2807,25 +2817,43 @@ void bowden_menu() {
 				lcd.print(" ");
 				lcd.setCursor(0, cursor_pos);
 				lcd.print(">");
-				
-				
-				if (abs((enc_dif - encoderDiff)) > 4) {
 
-					if ((abs(enc_dif - encoderDiff)) > 1) {
+				enc_dif = encoderDiff;
+				delay(100);
+		}
+
+		if (lcd_clicked()) {
+			while (lcd_clicked());
+			delay(10);
+			while (lcd_clicked());
+
+			lcd_implementation_clear();
+			while (1) {
+
+				manage_heater();
+				manage_inactivity(true);
+
+				lcd.setCursor(1, 1);
+				lcd.print("Extruder ");
+				lcd.print(cursor_pos);
+				lcd.print(": ");
+				lcd.setCursor(13, 1);
+				lcd.print(bowden_length[cursor_pos] - 48);
+
+				if (abs((enc_dif - encoderDiff)) > 2) {
 						if (enc_dif > encoderDiff) {
 							bowden_length[cursor_pos]--;
-							lcd.setCursor(13, cursor_pos);
-							lcd.print(bowden_length[cursor_pos] -48);
+							lcd.setCursor(13, 1);
+							lcd.print(bowden_length[cursor_pos] - 48);
 							enc_dif = encoderDiff;
 						}
 
 						if (enc_dif < encoderDiff) {
 							bowden_length[cursor_pos]++;
-							lcd.setCursor(13, cursor_pos);
-							lcd.print(bowden_length[cursor_pos] -48);
+							lcd.setCursor(13, 1);
+							lcd.print(bowden_length[cursor_pos] - 48);
 							enc_dif = encoderDiff;
 						}
-					}
 				}
 				delay(100);
 				if (lcd_clicked()) {
@@ -2833,13 +2861,27 @@ void bowden_menu() {
 					delay(10);
 					while (lcd_clicked());
 					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
-					if (cursor_pos == 3) return;
-					else {
-						cursor_pos++;
+					if (lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Continue with another bowden?"))) {
+						lcd_update_enable(true);
+						lcd_implementation_clear();
+						enc_dif = encoderDiff;
+						lcd.setCursor(0, cursor_pos);
+						lcd.print(">");
+						for (int i = 0; i < 4; i++) {
+							lcd.setCursor(1, i);
+							lcd.print("Extruder ");
+							lcd.print(i);
+							lcd.print(": ");
+							EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+							lcd.print(bowden_length[i] - 48);
+
+						}
+						break;
 					}
+					else return;
 				}
-				
-		
+			}
+		}
 	}
 }
 
