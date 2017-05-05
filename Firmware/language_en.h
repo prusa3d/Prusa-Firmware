@@ -71,6 +71,17 @@
 #define MSG_PREHEAT                         "Preheat"
 #define MSG_UNLOAD_FILAMENT                 "Unload filament"
 #define MSG_LOAD_FILAMENT                 "Load filament"
+#define MSG_LOAD_FILAMENT_1					"Load filament 1"
+#define MSG_LOAD_FILAMENT_2					"Load filament 2"
+#define MSG_LOAD_FILAMENT_3					"Load filament 3"
+#define MSG_LOAD_FILAMENT_4					"Load filament 4"
+#define MSG_UNLOAD_FILAMENT_1				"Unload filament 1"
+#define MSG_UNLOAD_FILAMENT_2				"Unload filament 2"
+#define MSG_UNLOAD_FILAMENT_3				"Unload filament 3"
+#define MSG_UNLOAD_FILAMENT_4				"Unload filament 4"
+#define MSG_UNLOAD_ALL						"Unload all"
+#define MSG_LOAD_ALL						"Load all"
+
 
 #define MSG_RECTRACT                        "Rectract"
 #define MSG_ERROR                        "ERROR:"
