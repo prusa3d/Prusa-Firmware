@@ -103,6 +103,10 @@ void lcd_mylang();
   extern int farm_timer;
   extern int farm_status;
 
+#ifdef SNMM
+  extern uint8_t snmm_extruder;
+#endif // SNMM
+
   extern bool cancel_heatup;
   extern bool isPrintPaused;
   
@@ -217,6 +221,8 @@ static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
 static void lcd_disable_farm_mode();
+void extr_unload_all();
+static void extr_unload();
 
 void stack_error();
 static void lcd_ping_allert();
@@ -237,9 +243,13 @@ void lcd_extr_cal_reset();
 
 union MenuData;
 
+void bowden_menu();
 char reset_menu();
 
 void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();
 void lcd_temp_calibration_set();
+
+void display_loading();
+
 #endif //ULTRALCD_H

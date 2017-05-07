@@ -211,6 +211,7 @@
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2   	" z 9"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1		"Okreslam wysokosc odniesienia punktu kalibracyjnego"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2		" z 9"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteracja "
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Kalibr. XYZ nieudana. Kalibracyjny punkt podkladki nieznaleziony."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED            "Kalibracja XYZ niepowiedziona. Sprawdzic w instrukcji."
@@ -248,8 +249,7 @@
 #define MSG_FILAMENT_LOADING_T2									"Wloz filament do ekstrudera 3. Potwierdz przyciskiem."
 #define MSG_FILAMENT_LOADING_T3									"Wloz filament do ekstrudera 4. Potwierdz przyciskiem."
 #define MSG_CHANGE_EXTR											"Zmienic ekstruder"
-#define MSG_FIL_LOADED_CHECK									"Czy filament jest wprowadzony?"
-#define MSG_FIL_TUNING											"Obrotem przycisku dostroj pozycje filamentu."
+
 #define MSG_FIL_ADJUSTING										"Przebiega wyrownanie filamentow. Prosze czekac."
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ						"Dla prawidlowej kalibracji prosze oczyscic dysze. Potem potwierdzic przyciskiem."
 #define MSG_CALIBRATE_E											"Kalibruj E"
@@ -260,3 +260,20 @@
 #define MSG_FILAMENT_CLEAN										"Czy kolor jest czysty?"
 #define MSG_UNLOADING_FILAMENT									"Wysuwam filament"
 #define MSG_PAPER												"Umiesc kartke papieru na podkladce i trzymaj pod dysza podczas pomiaru pierwszych 4 punktow. Jesli dysza zahaczy o papier, wylacz drukarke."
+
+#define MSG_FINISHING_MOVEMENTS									"Konczenie druku"
+#define MSG_PRINT_PAUSED										"Druk zatrzymany"
+#define MSG_RESUMING_PRINT										"Wznawianie druku"
+#define MSG_PID_EXTRUDER										"Kalibracja PID"
+#define MSG_SET_TEMPERATURE										"Ustawic temperature"
+#define MSG_PID_FINISHED										"Kal. PID zakonczona"
+#define MSG_PID_RUNNING											"Kal. PID"
+
+#define MSG_CALIBRATE_PINDA										"Skalibrowac"
+#define MSG_CALIBRATION_PINDA_MENU								"Cieplna kalibr."
+#define MSG_PINDA_NOT_CALIBRATED								"Cieplna kalibracja nie byla przeprowadzona"
+#define MSG_PINDA_PREHEAT										"Grzanie PINDA"
+#define MSG_TEMP_CALIBRATION									"Ciepl. kal.         "
+#define MSG_TEMP_CALIBRATION_DONE								"Cieplna kalibracja zakonczona. Kontynuuj przyciskiem"
+#define MSG_TEMP_CALIBRATION_ON									"Ciepl. kal. [ON]"
+#define MSG_TEMP_CALIBRATION_OFF								"Ciepl. kal. [OFF]"

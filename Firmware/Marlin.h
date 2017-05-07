@@ -282,6 +282,7 @@ extern float retract_recover_length, retract_recover_length_swap, retract_recove
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
+extern int bowden_length[4];
 extern bool is_usb_printing;
 extern bool homing_flag;
 extern bool temp_cal_active;
@@ -317,6 +318,7 @@ extern float HotendTempBckp;
 extern int fanSpeedBckp;
 extern float pause_lastpos[4];
 extern unsigned long pause_time;
+extern unsigned long start_pause_print;
 
 extern bool mesh_bed_leveling_flag;
 
