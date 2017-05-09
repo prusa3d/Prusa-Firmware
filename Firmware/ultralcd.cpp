@@ -975,8 +975,11 @@ void lcd_wait_interact() {
   lcd_implementation_clear();
 
   lcd.setCursor(0, 1);
-
+#ifdef SNMM 
+  lcd_printPGM(MSG_PREPARE_FILAMENT);
+#else
   lcd_printPGM(MSG_INSERT_FILAMENT);
+#endif
   lcd.setCursor(0, 2);
   lcd_printPGM(MSG_PRESS);
 
@@ -2789,7 +2792,7 @@ void bowden_menu() {
 		manage_heater();
 		manage_inactivity(true);
 
-		if (abs((enc_dif - encoderDiff)) > 1) {
+		if (abs((enc_dif - encoderDiff)) > 2) {
 
 			if (enc_dif > encoderDiff) {
 					cursor_pos--;

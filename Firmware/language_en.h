@@ -292,5 +292,6 @@
 #define(length=20, lines=4) MSG_TEMP_CALIBRATION_DONE			"Temperature calibration is finished. Click to continue."
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"Temp. cal. [ON]"
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF			"Temp. cal. [OFF]"
+#define(length=20, lines=1) MSG_PREPARE_FILAMENT				"Prepare new filament"
 
 
