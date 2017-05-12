@@ -2309,7 +2309,7 @@ static int babystepLoadZ = 0;
 void babystep_apply()
 {
     // Apply Z height correction aka baby stepping before mesh bed leveling gets activated.
-    if(calibration_status() <= CALIBRATION_STATUS_PINDA)
+    if(calibration_status() == CALIBRATION_STATUS_CALIBRATED)
 	{
 		check_babystep(); //checking if babystep is in allowed range, otherwise setting babystep to 0
 		

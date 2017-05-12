@@ -47,6 +47,7 @@
 #define EEPROM_PROBE_TEMP_SHIFT (EEPROM_PRINT_FLAG - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
 #define EEPROM_TEMP_CAL_ACTIVE (EEPROM_PROBE_TEMP_SHIFT - 1)
 #define EEPROM_BOWDEN_LENGTH (EEPROM_TEMP_CAL_ACTIVE - 2*4) //4 x int for bowden lengths for multimaterial
+#define EEPROM_CALIBRATION_STATUS_PINDA (EEPROM_BOWDEN_LENGTH - 1) //0 - not calibrated; 1 - calibrated
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
@@ -713,9 +714,6 @@ enum CalibrationStatus
 
 	// The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
 	CALIBRATION_STATUS_LIVE_ADJUST = 230,
-
-	//V2 calibration has been run, now run PINDA probe temperature calibration
-	CALIBRATION_STATUS_PINDA = 220,
 
     // Calibrated, ready to print.
     CALIBRATION_STATUS_CALIBRATED = 1,
