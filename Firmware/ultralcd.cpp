@@ -563,7 +563,7 @@ void lcd_commands()
 			enquecommand(cmd1);
 			if (axis_relative_modes[3] == true) enquecommand_P(PSTR("M83")); // set extruder to relative mode.
 			else enquecommand_P(PSTR("M82")); // set extruder to absolute mode
-			enquecommand_P(PSTR("G1 E"  STRINGIFY(PAUSE_RETRACT))); //unretract
+			enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
 			enquecommand_P(PSTR("G90")); //absolute positioning
 			lcd_commands_step = 1;
 		}
@@ -1037,7 +1037,6 @@ void lcd_loading_filament() {
   lcd.setCursor(0, 2);
   lcd_printPGM(MSG_PLEASE_WAIT);
 
-
   for (int i = 0; i < 20; i++) {
 
     lcd.setCursor(i, 3);
@@ -1045,7 +1044,11 @@ void lcd_loading_filament() {
     for (int j = 0; j < 10 ; j++) {
       manage_heater();
       manage_inactivity(true);
-      delay(110);
+#ifdef SNMM
+      delay(153);
+#else
+	  delay(137);
+#endif
 
     }
 
@@ -3066,7 +3069,7 @@ static int get_ext_nr() { //reads multiplexer input pins and return current extr
 
 void display_loading() {
 	switch (snmm_extruder) {
-	case 1: (MSG_FILAMENT_LOADING_T1); break;
+	case 1: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T1); break;
 	case 2: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T2); break;
 	case 3: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T3); break;
 	default: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T0); break;
@@ -3612,6 +3615,17 @@ static void lcd_silent_mode_set_tune() {
   lcd_goto_menu(lcd_tune_menu, 9);
 }
 
+static void lcd_colorprint_change() {
+	
+	enquecommand_P(PSTR("M600"));
+	
+	custom_message = true;
+	custom_message_type = 2; //just print status message
+	lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
+	lcd_return_to_status();
+	lcdDrawUpdate = 3;
+}
+
 static void lcd_tune_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -3628,7 +3642,7 @@ static void lcd_tune_menu()
   MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);//5
   MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);//6
 #ifdef FILAMENTCHANGEENABLE
-  MENU_ITEM(gcode, MSG_FILAMENTCHANGE, PSTR("M600"));//7
+  MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
   
   if (SilentModeMenu == 0) {

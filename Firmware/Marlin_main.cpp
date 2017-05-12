@@ -5180,7 +5180,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
         
  
-        
+
         
         //Wait for user to check the state
         lcd_change_fil_state = 0;
@@ -5192,13 +5192,33 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             
              // Filament failed to load so load it again
              case 2:
+#ifdef SNMM
+				 display_loading();
+				 do {
+					 target[E_AXIS] += 0.002;
+					 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
+					 delay_keep_alive(2);
+				 } while (!lcd_clicked());
+
+				 st_synchronize();
+				 target[E_AXIS] += bowden_length[snmm_extruder];
+				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
+				 target[E_AXIS] += FIL_LOAD_LENGTH - 60;
+				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
+				 target[E_AXIS] += 40;
+				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
+				 target[E_AXIS] += 10;
+				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+
+#else
                      target[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
                      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
-                
+#endif                
                      target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
                      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
 
                      lcd_loading_filament();
+
                      break;
 
              // Filament loaded properly but color is not clear
@@ -5252,7 +5272,10 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       char cmd[9];
       sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
       enquecommand(cmd);
-        
+      
+	  lcd_setstatuspgm(WELCOME_MSG);
+	  custom_message = false;
+	  custom_message_type = 0;
         
     }
     break;
@@ -6345,7 +6368,9 @@ void temp_compensation_start() {
 	custom_message_type = 5;
 	custom_message_state = PINDA_HEAT_T + 1;
 	lcd_update(2);
-	if (degHotend(active_extruder)>EXTRUDE_MINTEMP) current_position[E_AXIS] -= DEFAULT_RETRACTION;
+	if (degHotend(active_extruder) > EXTRUDE_MINTEMP) {
+		current_position[E_AXIS] -= DEFAULT_RETRACTION;
+	}
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 	
 	current_position[X_AXIS] = PINDA_PREHEAT_X;
@@ -6473,7 +6498,7 @@ void long_pause() //long pause print
 	pause_lastpos[E_AXIS] = current_position[E_AXIS];
 
 	//retract
-	current_position[E_AXIS] -= PAUSE_RETRACT;
+	current_position[E_AXIS] -= DEFAULT_RETRACTION;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 
 	//lift z

@@ -258,10 +258,10 @@
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
 
 #define MSG_LOOSE_PULLEY								"Uvolnena remenicka"
-#define MSG_FILAMENT_LOADING_T0							"Vložte filament do extruderu 1. Potvrdte tlacitkem."
-#define MSG_FILAMENT_LOADING_T1							"Vložte filament do extruderu 2. Potvrdte tlacitkem."
-#define MSG_FILAMENT_LOADING_T2							"Vložte filament do extruderu 3. Potvrdte tlacitkem."
-#define MSG_FILAMENT_LOADING_T3							"Vložte filament do extruderu 4. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T0							"Vlozte filament do extruderu 1. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T1							"Vlozte filament do extruderu 2. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T2							"Vlozte filament do extruderu 3. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T3							"Vlozte filament do extruderu 4. Potvrdte tlacitkem."
 #define MSG_CHANGE_EXTR									"Zmenit extruder"
 
 #define MSG_FIL_ADJUSTING								"Probiha srovnani filamentu. Prosim cekejte."
