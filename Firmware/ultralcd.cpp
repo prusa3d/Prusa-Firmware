@@ -3122,7 +3122,10 @@ static void extr_unload() { //unloads filament
 		lcd_implementation_clear();
 		lcd_display_message_fullscreen_P(PSTR(""));
 		max_feedrate[E_AXIS] = 50;
-		lcd.setCursor(0, 1); lcd_printPGM(MSG_PLEASE_WAIT);
+		lcd.setCursor(0, 0); lcd_printPGM(MSG_UNLOADING_FILAMENT);
+		lcd.print(" ");
+		lcd.print(snmm_extruder + 1);
+		lcd.setCursor(0, 2); lcd_printPGM(MSG_PLEASE_WAIT);
 		if (current_position[Z_AXIS] < 15) {
 			current_position[Z_AXIS] += 15; //lifting in Z direction to make space for extrusion
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 25, active_extruder);

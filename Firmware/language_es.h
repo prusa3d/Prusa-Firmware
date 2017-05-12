@@ -271,3 +271,5 @@
 #define MSG_TEMP_CALIBRATION_DONE						"Calibracon temperatura terminada. Presionar para continuar."
 #define MSG_TEMP_CALIBRATION_ON							"Cal. temp. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Cal. temp. [OFF]"
+
+#define MSG_PREPARE_FILAMENT							"Preparar filamento"

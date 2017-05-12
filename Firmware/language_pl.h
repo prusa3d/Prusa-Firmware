@@ -277,3 +277,4 @@
 #define MSG_TEMP_CALIBRATION_DONE								"Cieplna kalibracja zakonczona. Kontynuuj przyciskiem"
 #define MSG_TEMP_CALIBRATION_ON									"Ciepl. kal. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF								"Ciepl. kal. [OFF]"
+#define MSG_PREPARE_FILAMENT									"Przygotuj filament"

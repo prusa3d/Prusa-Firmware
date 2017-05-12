@@ -4978,6 +4978,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     #ifdef FILAMENTCHANGEENABLE
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
     {
+
 		st_synchronize();
 		float target[4];
 		float lastpos[4];
@@ -5058,6 +5059,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           #endif
         }
         plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+		st_synchronize();
+		custom_message = true;
+		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
 
         // Unload filament
         if(code_seen('L'))

@@ -1959,7 +1959,7 @@ const char MSG_PRESS_EN[] PROGMEM = "and press the knob";
 const char MSG_PRESS_CZ[] PROGMEM = "a stisknete tlacitko";
 const char MSG_PRESS_IT[] PROGMEM = "e cliccare manopola";
 const char MSG_PRESS_ES[] PROGMEM = "Pulsar el mando";
-const char MSG_PRESS_PL[] PROGMEM = "Nacisnij przycisk";
+const char MSG_PRESS_PL[] PROGMEM = "i nacisnij przycisk";
 const char MSG_PRESS_DE[] PROGMEM = "und Knopf druecken";
 const char * const MSG_PRESS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PRESS_EN,
