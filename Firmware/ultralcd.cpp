@@ -3104,7 +3104,11 @@ static void extr_adj(int extruder) //loading filament for SNMM
 	//extr_mov(BOWDEN_LENGTH/2.f, 500);
 	extr_mov(bowden_length[extruder], 500);
 	lcd_implementation_clear();
-	lcd.setCursor(0, 1); lcd_printPGM(MSG_PLEASE_WAIT);
+	lcd.setCursor(0, 0); lcd_printPGM(MSG_LOADING_FILAMENT);
+	if(strlen(MSG_LOADING_FILAMENT)>18) lcd.setCursor(0, 1);
+	else lcd.print(" ");
+	lcd.print(snmm_extruder + 1);
+	lcd.setCursor(0, 2); lcd_printPGM(MSG_PLEASE_WAIT);
 	st_synchronize();
 	max_feedrate[E_AXIS] = 50;
 	lcd_update_enable(true);
