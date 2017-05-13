@@ -16,11 +16,11 @@ GENERAL SETTINGS
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK2"
 
 // Electronics
-#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
-//#define MOTHERBOARD BOARD_EINSY_MINI_0_3
+//#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
+#define MOTHERBOARD BOARD_RAMBO_EINSY_0 
 
 // Prusa Single extruder multiple material suport
-//#define SNMM
+#define SNMM
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 #define E3D_PT100_EXTRUDER_WITH_AMP
@@ -181,7 +181,7 @@ EXTRUDER SETTINGS
 #define E_MOTOR_HIGH_CURRENT 700 //current for unloading filament, stop print, PRUSAY ramming
 #endif //SNMM
 
-//#define DIS //for measuring bed heigth and PINDa detection heigth relative to auto home point, experimental function
+#define DIS //for measuring bed heigth and PINDa detection heigth relative to auto home point, experimental function
 
 
 /*------------------------------------
@@ -353,15 +353,14 @@ MOTOR CURRENT SETTINGS
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
 #if MOTHERBOARD == 102 || MOTHERBOARD == 302 
-#define MOTOR_CURRENT_PWM_RANGE 2000
-#define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
-#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
+	#define MOTOR_CURRENT_PWM_RANGE 2000
+	#define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
+	#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
 
-#elif MOTHERBOARD == 202
-#define MOTOR_CURRENT_PWM_RANGE 2000
-#define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
-#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
-
+#elif MOTHERBOARD == 304
+	#define MOTOR_CURRENT_PWM_RANGE 2000
+	#define DEFAULT_PWM_MOTOR_CURRENT  {1000, 1100, 1100}
+	#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {1000, 1100, 1100}
 #endif
 
 /*------------------------------------
