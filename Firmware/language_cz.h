@@ -258,10 +258,10 @@
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
 
 #define MSG_LOOSE_PULLEY								"Uvolnena remenicka"
-#define MSG_FILAMENT_LOADING_T0							"Vlo엝e filament do extruderu 1. Potvrdte tlacitkem."
-#define MSG_FILAMENT_LOADING_T1							"Vlo엝e filament do extruderu 2. Potvrdte tlacitkem."
-#define MSG_FILAMENT_LOADING_T2							"Vlo엝e filament do extruderu 3. Potvrdte tlacitkem."
-#define MSG_FILAMENT_LOADING_T3							"Vlo엝e filament do extruderu 4. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T0							"Vlo탑te filament do extruderu 1. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T1							"Vlo탑te filament do extruderu 2. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T2							"Vlo탑te filament do extruderu 3. Potvrdte tlacitkem."
+#define MSG_FILAMENT_LOADING_T3							"Vlo탑te filament do extruderu 4. Potvrdte tlacitkem."
 #define MSG_CHANGE_EXTR									"Zmenit extruder"
 
 #define MSG_FIL_ADJUSTING								"Probiha srovnani filamentu. Prosim cekejte."
@@ -292,3 +292,4 @@
 #define MSG_TEMP_CALIBRATION_DONE						"Teplotni kalibrace dokoncena. Pokracujte stiskem tlacitka."
 #define MSG_TEMP_CALIBRATION_ON							"Tepl. kal. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Tepl. kal. [OFF]"
+

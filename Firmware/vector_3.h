@@ -60,3 +60,4 @@ void apply_rotation_xyz(matrix_3x3 rotationMatrix, float &x, float& y, float& z)
 #endif // ENABLE_AUTO_BED_LEVELING
 
 #endif // VECTOR_3_H
+

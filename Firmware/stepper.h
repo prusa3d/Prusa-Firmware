@@ -22,6 +22,7 @@
 #define stepper_h 
 
 #include "planner.h"
+#include "stepper_indirection.h"
 
 #if EXTRUDERS > 2
   #define WRITE_E_STEP(v) { if(current_block->active_extruder == 2) { WRITE(E2_STEP_PIN, v); } else { if(current_block->active_extruder == 1) { WRITE(E1_STEP_PIN, v); } else { WRITE(E0_STEP_PIN, v); }}}
@@ -95,3 +96,4 @@ void microstep_readings();
 
 
 #endif
+

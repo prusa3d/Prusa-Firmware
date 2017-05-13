@@ -30,6 +30,10 @@
 #include "vector_3.h"
 #endif // ENABLE_AUTO_BED_LEVELING
 
+#if defined(LIN_ADVANCE)
+	static float extruder_advance_k, advance_ed_ratio;
+#endif
+
 enum BlockFlag {
     // Planner flag to recalculate trapezoids on entry junction.
     // This flag has an optimization purpose only.
@@ -206,3 +210,4 @@ extern uint8_t planner_queue_min();
 // Diagnostic function: Reset the minimum planner segments.
 extern void planner_queue_min_reset();
 #endif /* PLANNER_DIAGNOSTICS */
+

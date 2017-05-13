@@ -286,3 +286,4 @@ void update_current_firmware_version_to_eeprom()
         eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR,   ver_current[3]);
     }
 }
+

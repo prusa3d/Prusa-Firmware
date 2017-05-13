@@ -75,6 +75,10 @@
 
 #define VERSION_STRING  "1.0.2"
 
+#ifdef AUTOMATIC_CURRENT_CONTROL
+  bool auto_current_control = 0;
+#endif
+
 
 #include "ultralcd.h"
 
@@ -208,11 +212,13 @@
 // M928 - Start SD logging (M928 filename.g) - ended by M29
 // M999 - Restart after being stopped by error
 
-//Stepper Movement Variables
+// M906 - Set or get motor current in milliamps using axis codes X, Y, Z, E. Report values if no axis codes given. (Requires HAVE_TMC2130)
+// M911 - Report stepper driver overtemperature pre-warn condition. (Requires HAVE_TMC2130)
+// M912 - Clear stepper driver overtemperature pre-warn condition flag. (Requires HAVE_TMC2130)
+// M913 - Set HYBRID_THRESHOLD speed. (Requires HAVE_TMC2130 && Requires HYBRID_THRESHOLD)
+// M914 - Set SENSORLESS_HOMING sensitivity. (Requires HAVE_TMC2130 && Requires SENSORLESS_HOMING)
 
-//===========================================================================
-//=============================imported variables============================
-//===========================================================================
+// M900 - Set and/or Get advance K factor and WH/D ratio (Requires LIN_ADVANCE)
 
 
 //===========================================================================
@@ -1593,6 +1599,22 @@ void get_command()
   #endif //SDSUPPORT
 }
 
+#define WITHIN(V,L,H) ((V) >= (L) && (V) <= (H))
+#define NUMERIC(a) WITHIN(a, '0', '9')
+#define NUMERIC_SIGNED(a) (NUMERIC(a) || (a) == '-')
+
+static char *current_command,      // The command currently being executed
+            *current_command_args, // The address where arguments begin
+            *seen_pointer;         // Set by code_seen(), used by the code_value functions
+
+inline bool code_has_value() {
+  int i = 1;
+  char c = seen_pointer[i];
+  while (c == ' ') c = seen_pointer[++i];
+  if (c == '-' || c == '+') c = seen_pointer[++i];
+  if (c == '.') c = seen_pointer[++i];
+  return NUMERIC(c);
+}
 
 // Return True if a character was found
 static inline bool    code_seen(char code) { return (strchr_pointer = strchr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
@@ -1601,6 +1623,7 @@ static inline float   code_value()      { return strtod(strchr_pointer+1, NULL);
 static inline long    code_value_long()    { return strtol(strchr_pointer+1, NULL, 10); }
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
 static inline uint8_t code_value_uint8()   { return uint8_t(strtol(strchr_pointer+1, NULL, 10)); };
+static inline bool code_value_bool() { return !code_has_value() || code_value_uint8() > 0; }
 
 #define DEFINE_PGM_READ_ANY(type, reader)       \
     static inline type pgm_read_any(const type *p)  \
@@ -1969,6 +1992,59 @@ void ramming() {
 		st_synchronize();
 
 	}
+  }
+  
+static void tmc2130_get_current(TMC2130Stepper &st, const char name) 
+{
+    SERIAL_ECHO(name);
+    SERIAL_ECHOPGM(" axis driver current: ");
+    SERIAL_ECHOLN(st.getCurrent());
+  }
+  
+  static void tmc2130_set_current(TMC2130Stepper &st, const char name, const int mA) 
+  {
+    st.setCurrent(mA, R_SENSE, HOLD_MULTIPLIER);
+    tmc2130_get_current(st, name);
+  }
+
+  static void tmc2130_report_otpw(TMC2130Stepper &st, const char name) 
+  {
+    SERIAL_ECHO(name);
+    SERIAL_ECHOPGM(" axis temperature prewarn triggered: ");
+    serialprintPGM(st.getOTPW() ? PSTR("true") : PSTR("false"));
+    SERIAL_ECHO('\n');
+  }
+  
+  static void tmc2130_clear_otpw(TMC2130Stepper &st, const char name) 
+  {
+    st.clear_otpw();
+    SERIAL_ECHO(name);
+    SERIAL_ECHOLNPGM(" prewarn flag cleared");
+  }
+
+  static void tmc2130_get_pwmthrs(TMC2130Stepper &st, const char name, const uint16_t spmm) 
+  {
+    SERIAL_ECHO(name);
+    SERIAL_ECHOPGM(" stealthChop max speed set to ");
+    SERIAL_ECHOLN(12650000UL * st.microsteps() / (256 * st.stealth_max_speed() * spmm));
+  }
+  
+  static void tmc2130_set_pwmthrs(TMC2130Stepper &st, const char name, const int32_t thrs, const uint32_t spmm) 
+  {
+    st.stealth_max_speed(12650000UL * st.microsteps() / (256 * thrs * spmm));
+    tmc2130_get_pwmthrs(st, name, spmm);
+  }
+
+  static void tmc2130_get_sgt(TMC2130Stepper &st, const char name) 
+  {
+    SERIAL_ECHO(name);
+    SERIAL_ECHOPGM(" driver homing sensitivity set to ");
+    SERIAL_ECHOLN(st.sgt());
+  }
+  
+  static void tmc2130_set_sgt(TMC2130Stepper &st, const char name, const int8_t sgt_val) {
+    st.sgt(sgt_val);
+    tmc2130_get_sgt(st, name);
   }
 
 void process_commands()
@@ -5266,6 +5342,69 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
 	}
 	break;
+	
+	case 900: {
+
+    st_synchronize();
+
+    const float newK = code_seen('K') ? code_value() : -1;
+    if (newK >= 0) extruder_advance_k = newK;
+
+    float newR = code_seen('R') ? code_value() : -1;
+    if (newR < 0) {
+      const float newD = code_seen('D') ? code_value() : -1,
+                  newW = code_seen('W') ? code_value() : -1,
+                  newH = code_seen('H') ? code_value() : -1;
+      if (newD >= 0 && newW >= 0 && newH >= 0)
+        newR = newD ? (newW * newH) / (sq(newD * 0.5) * M_PI) : 0;
+    }
+    if (newR >= 0) advance_ed_ratio = newR;
+
+    SERIAL_ECHO_START;
+    SERIAL_ECHOPAIR("Advance K=", extruder_advance_k);
+    SERIAL_ECHOPGM(" E/D=");
+    const float ratio = advance_ed_ratio;
+    if (ratio) SERIAL_ECHO(ratio); else SERIAL_ECHOPGM("Auto");
+    SERIAL_ECHO('\n');
+
+	}
+	break;
+	
+	
+	case 906: {
+	/**
+		* M906: Set motor current in milliamps using axis codes X, Y, Z, E
+		* Report driver currents when no axis specified
+		*
+		* S1: Enable automatic current control
+		* S0: Disable
+	**/
+		uint16_t values[4]; //XYZE from Marlin 1.1.0
+		for (uint8_t VAR=X_AXIS; VAR<=E_AXIS; VAR++) //LOOP_XYZE(i) from Marlin 1.1.0
+			values[VAR] = code_seen(axis_codes[VAR]) ? code_value() : 0;
+
+		#if defined(X_IS_TMC2130)
+			if (values[X_AXIS]) tmc2130_set_current(stepperX, 'X', values[X_AXIS]);
+			else tmc2130_get_current(stepperX, 'X');
+		#endif
+		#if defined(Y_IS_TMC2130)
+			if (values[Y_AXIS]) tmc2130_set_current(stepperY, 'Y', values[Y_AXIS]);
+			else tmc2130_get_current(stepperY, 'Y');
+		#endif
+		#if defined(Z_IS_TMC2130)
+			if (values[Z_AXIS]) tmc2130_set_current(stepperZ, 'Z', values[Z_AXIS]);
+			else tmc2130_get_current(stepperZ, 'Z');
+		#endif
+		#if defined(E0_IS_TMC2130)
+			if (values[E_AXIS]) tmc2130_set_current(stepperE0, 'E', values[E_AXIS]);
+			else tmc2130_get_current(stepperE0, 'E');
+		#endif
+
+		#if defined(AUTOMATIC_CURRENT_CONTROL)
+			if (code_seen('S')) auto_current_control = code_value_bool();
+		#endif
+	}
+	break;
 
     case 907: // M907 Set digital trimpot motor current using axis codes.
     {
@@ -5301,6 +5440,90 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       #endif
     }
     break;
+	
+	case 911: // Report stepper driver overtemperature pre-warn condition. 
+    {
+    const bool reportX = code_seen('X'), reportY = code_seen('Y'), reportZ = code_seen('Z'), reportE = code_seen('E'),
+             reportAll = (!reportX && !reportY && !reportZ && !reportE) || (reportX && reportY && reportZ && reportE);
+    #if defined(X_IS_TMC2130)
+      if (reportX || reportAll) tmc2130_report_otpw(stepperX, 'X');
+    #endif
+    #if defined(Y_IS_TMC2130)
+      if (reportY || reportAll) tmc2130_report_otpw(stepperY, 'Y');
+    #endif
+    #if defined(Z_IS_TMC2130)
+      if (reportZ || reportAll) tmc2130_report_otpw(stepperZ, 'Z');
+    #endif
+    #if defined(E0_IS_TMC2130)
+      if (reportE || reportAll) tmc2130_report_otpw(stepperE0, 'E');
+    #endif
+
+    }
+    break;
+	
+	case 912: // M912 Clear TMC2130 stepper driver overtemperature pre-warn flag held by the library
+    {
+    const bool clearX = code_seen('X'), clearY = code_seen('Y'), clearZ = code_seen('Z'), clearE = code_seen('E'),
+             clearAll = (!clearX && !clearY && !clearZ && !clearE) || (clearX && clearY && clearZ && clearE);
+    #if defined(X_IS_TMC2130)
+      if (clearX || clearAll) tmc2130_clear_otpw(stepperX, 'X');
+    #endif
+    #if defined(Y_IS_TMC2130)
+      if (clearY || clearAll) tmc2130_clear_otpw(stepperY, 'Y');
+    #endif
+    #if defined(Z_IS_TMC2130)
+      if (clearZ || clearAll) tmc2130_clear_otpw(stepperZ, 'Z');
+    #endif
+    #if defined(E0_IS_TMC2130)
+      if (clearE || clearAll) tmc2130_clear_otpw(stepperE0, 'E');
+    #endif
+    }
+    break;
+	
+	case 913: // M913 Set HYBRID_THRESHOLD speed.
+    {
+		uint16_t values[4]; //XYZE from Marlin 1.1.0
+		for (uint8_t VAR=X_AXIS; VAR<=E_AXIS; VAR++) //LOOP_XYZE(i) from Marlin 1.1.0
+        values[VAR] = code_seen(axis_codes[VAR]) ? code_value() : 0;
+		
+		float tmp[]=DEFAULT_AXIS_STEPS_PER_UNIT;
+		float stepsX = tmp[0]; //X Axis
+		float stepsY = tmp[1]; //Y Axis
+		float stepsZ = tmp[2]; //Z Axis
+		float stepsE = tmp[3]; //E Axis
+
+      #if defined(X_IS_TMC2130)
+        if (values[X_AXIS]) tmc2130_set_pwmthrs(stepperX, 'X', values[X_AXIS], stepsX);
+        else tmc2130_get_pwmthrs(stepperX, 'X', stepsX);
+      #endif
+      #if defined(Y_IS_TMC2130)
+        if (values[Y_AXIS]) tmc2130_set_pwmthrs(stepperY, 'Y', values[Y_AXIS], stepsY);
+        else tmc2130_get_pwmthrs(stepperY, 'Y', stepsY);
+      #endif
+      #if defined(Z_IS_TMC2130)
+        if (values[Z_AXIS]) tmc2130_set_pwmthrs(stepperZ, 'Z', values[Z_AXIS], stepsZ);
+        else tmc2130_get_pwmthrs(stepperZ, 'Z', stepsZ);
+      #endif
+      #if defined(E0_IS_TMC2130)
+        if (values[E_AXIS]) tmc2130_set_pwmthrs(stepperE0, 'E', values[E_AXIS], stepsE);
+        else tmc2130_get_pwmthrs(stepperE0, 'E', stepsE);
+      #endif
+    }
+    break;
+	
+	case 914: // M914: Set SENSORLESS_HOMING sensitivity.
+    {
+      #if defined(X_IS_TMC2130)
+        if (code_seen(axis_codes[X_AXIS])) tmc2130_set_sgt(stepperX, 'X', code_value());
+        else tmc2130_get_sgt(stepperX, 'X');
+      #endif
+      #if defined(Y_IS_TMC2130)
+        if (code_seen(axis_codes[Y_AXIS])) tmc2130_set_sgt(stepperY, 'Y', code_value());
+        else tmc2130_get_sgt(stepperY, 'Y');
+      #endif
+    }
+    break;
+	
     case 350: // M350 Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {
       #if defined(X_MS1_PIN) && X_MS1_PIN > -1
@@ -6496,3 +6719,4 @@ void long_pause() //long pause print
 
 	st_synchronize();
 }
+

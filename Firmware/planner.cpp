@@ -1227,3 +1227,4 @@ void planner_queue_min_reset()
   g_cntr_planner_queue_min = moves_planned();
 }
 #endif /* PLANNER_DIAGNOSTICS */
+
