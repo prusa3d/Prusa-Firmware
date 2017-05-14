@@ -270,6 +270,7 @@ unsigned long start_pause_print = millis();
 unsigned long load_filament_time;
 
 bool mesh_bed_leveling_flag = false;
+bool mesh_bed_run_from_menu = false;
 
 unsigned char lang_selected = 0;
 int8_t FarmMode = 0;
@@ -2775,7 +2776,7 @@ void process_commands()
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
-		
+		SERIAL_ECHOLNPGM("PINDA probe calibration start");
 		custom_message = true;
 		custom_message_type = 4;
 		custom_message_state = 1;
@@ -2786,10 +2787,16 @@ void process_commands()
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 		st_synchronize();
 		
-		while (abs(degBed() - PINDA_MIN_T) > 1 ) delay_keep_alive(1000);
+		while (abs(degBed() - PINDA_MIN_T) > 1) {
+			delay_keep_alive(1000);
+			serialecho_temperatures();
+		}
 		
 		//enquecommand_P(PSTR("M190 S50"));
-		for (int i = 0; i < PINDA_HEAT_T; i++)	delay_keep_alive(1000);
+		for (int i = 0; i < PINDA_HEAT_T; i++) {
+			delay_keep_alive(1000);
+			serialecho_temperatures();
+		}
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process 
 
 		current_position[Z_AXIS] = 5;
@@ -2810,6 +2817,9 @@ void process_commands()
 		SERIAL_ECHOLNPGM("");
 
 		for (int i = 0; i<5; i++) {
+			SERIAL_ECHOPGM("Step: ");
+			MYSERIAL.print(i+2);
+			SERIAL_ECHOLNPGM("/6");
 			custom_message_state = i + 2;
 			t_c = 60 + i * 10;
 
@@ -2819,8 +2829,14 @@ void process_commands()
 			current_position[Z_AXIS] = PINDA_PREHEAT_Z;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			st_synchronize();
-			while (degBed() < t_c) delay_keep_alive(1000);
-			for (int i = 0; i < PINDA_HEAT_T; i++)	delay_keep_alive(1000);
+			while (degBed() < t_c) {
+				delay_keep_alive(1000);
+				serialecho_temperatures();
+			}
+			for (int i = 0; i < PINDA_HEAT_T; i++) {
+				delay_keep_alive(1000);
+				serialecho_temperatures();
+			}
 			current_position[Z_AXIS] = 5;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			current_position[X_AXIS] = pgm_read_float(bed_ref_points);
@@ -2845,6 +2861,13 @@ void process_commands()
 		custom_message = false;
 
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+		SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
+			disable_x();
+			disable_y();
+			disable_z();
+			disable_e0();
+			disable_e1();
+			disable_e2();
 		lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
 		lcd_update_enable(true);
 		lcd_update(2);		
@@ -2919,7 +2942,7 @@ void process_commands()
 			break;
 		} 
 		
-		if (run == false && card.sdprinting == true && temp_cal_active == true && calibration_status_pinda() == true) {
+		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
 			temp_compensation_start();
 			run = true;
 			repeatcommand_front(); // repeat G80 with all its parameters
@@ -3132,7 +3155,7 @@ void process_commands()
 		go_home_with_z_lift();
 		SERIAL_ECHOLNPGM("Go home finished");
 		//unretract (after PINDA preheat retraction)
-		if (card.sdprinting == true && degHotend(active_extruder) > EXTRUDE_MINTEMP && temp_cal_active == true && calibration_status_pinda() == true) {
+		if (degHotend(active_extruder) > EXTRUDE_MINTEMP && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
 			current_position[E_AXIS] += DEFAULT_RETRACTION;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 		}
@@ -3141,6 +3164,7 @@ void process_commands()
 		custom_message_type = custom_message_type_old;
 		custom_message_state = custom_message_state_old;
 		mesh_bed_leveling_flag = false;
+		mesh_bed_run_from_menu = false;
 		lcd_update(2);
 		
 	}
@@ -4246,14 +4270,14 @@ Sigma_Exit:
         else
         {
           st_synchronize();
-          if(code_seen('X')) disable_x();
-          if(code_seen('Y')) disable_y();
-          if(code_seen('Z')) disable_z();
-          #if ((E0_ENABLE_PIN != X_ENABLE_PIN) && (E1_ENABLE_PIN != Y_ENABLE_PIN)) // Only enable on boards that have seperate ENABLE_PINS
-            if(code_seen('E')) {
-              disable_e0();
-              disable_e1();
-              disable_e2();
+		  if (code_seen('X')) disable_x();
+		  if (code_seen('Y')) disable_y();
+		  if (code_seen('Z')) disable_z();
+#if ((E0_ENABLE_PIN != X_ENABLE_PIN) && (E1_ENABLE_PIN != Y_ENABLE_PIN)) // Only enable on boards that have seperate ENABLE_PINS
+		  if (code_seen('E')) {
+			  disable_e0();
+			  disable_e1();
+			  disable_e2();
             }
           #endif
         }
@@ -6528,4 +6552,15 @@ void long_pause() //long pause print
 	fanSpeed = 0;
 
 	st_synchronize();
+}
+
+void serialecho_temperatures() {
+	float tt = degHotend(active_extruder);
+	SERIAL_PROTOCOLPGM("T:");
+	SERIAL_PROTOCOL(tt);
+	SERIAL_PROTOCOLPGM(" E:");
+	SERIAL_PROTOCOL((int)active_extruder);
+	SERIAL_PROTOCOLPGM(" B:");
+	SERIAL_PROTOCOL_F(degBed(), 1);
+	SERIAL_PROTOCOLLN("");
 }

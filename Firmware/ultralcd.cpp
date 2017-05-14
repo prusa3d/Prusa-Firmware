@@ -523,7 +523,6 @@ void lcd_commands()
 		if(lcd_commands_step == 0) { 
 			card.pauseSDPrint();
 			lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
-
 			lcdDrawUpdate = 3;
 			lcd_commands_step = 1;
 		}
@@ -2367,7 +2366,7 @@ static void lcd_language_menu()
 
 void lcd_mesh_bedleveling()
 {
-
+	mesh_bed_run_from_menu = true;
 	enquecommand_P(PSTR("G80"));
 	lcd_return_to_status();
 }

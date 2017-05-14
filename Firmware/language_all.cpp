@@ -882,7 +882,7 @@ const char * const MSG_FILAMENT_CLEAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_FILAMENT_LOADING_T0_EN[] PROGMEM = "Insert filament into extruder 1. Click when done.";
-const char MSG_FILAMENT_LOADING_T0_CZ[] PROGMEM = "Vlo\x9Ete filament do extruderu 1. Potvrdte tlacitkem.";
+const char MSG_FILAMENT_LOADING_T0_CZ[] PROGMEM = "Vlozte filament do extruderu 1. Potvrdte tlacitkem.";
 const char MSG_FILAMENT_LOADING_T0_IT[] PROGMEM = "Inserire filamento nell'estrusore 1. Click per continuare.";
 const char MSG_FILAMENT_LOADING_T0_ES[] PROGMEM = "Insertar filamento en el extrusor 1. Haga clic una vez terminado.";
 const char MSG_FILAMENT_LOADING_T0_PL[] PROGMEM = "Wloz filament do ekstrudera 1. Potwierdz przyciskiem.";
@@ -897,7 +897,7 @@ const char * const MSG_FILAMENT_LOADING_T0_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_FILAMENT_LOADING_T1_EN[] PROGMEM = "Insert filament into extruder 2. Click when done.";
-const char MSG_FILAMENT_LOADING_T1_CZ[] PROGMEM = "Vlo\x9Ete filament do extruderu 2. Potvrdte tlacitkem.";
+const char MSG_FILAMENT_LOADING_T1_CZ[] PROGMEM = "Vlozte filament do extruderu 2. Potvrdte tlacitkem.";
 const char MSG_FILAMENT_LOADING_T1_IT[] PROGMEM = "Inserire filamento nell'estrusore 2. Click per continuare.";
 const char MSG_FILAMENT_LOADING_T1_ES[] PROGMEM = "Insertar filamento en el extrusor 2. Haga clic una vez terminado.";
 const char MSG_FILAMENT_LOADING_T1_PL[] PROGMEM = "Wloz filament do ekstrudera 2. Potwierdz przyciskiem.";
@@ -912,7 +912,7 @@ const char * const MSG_FILAMENT_LOADING_T1_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_FILAMENT_LOADING_T2_EN[] PROGMEM = "Insert filament into extruder 3. Click when done.";
-const char MSG_FILAMENT_LOADING_T2_CZ[] PROGMEM = "Vlo\x9Ete filament do extruderu 3. Potvrdte tlacitkem.";
+const char MSG_FILAMENT_LOADING_T2_CZ[] PROGMEM = "Vlozte filament do extruderu 3. Potvrdte tlacitkem.";
 const char MSG_FILAMENT_LOADING_T2_IT[] PROGMEM = "Inserire filamento nell'estrusore 3. Click per continuare.";
 const char MSG_FILAMENT_LOADING_T2_ES[] PROGMEM = "Insertar filamento en el extrusor 3. Haga clic una vez terminado.";
 const char MSG_FILAMENT_LOADING_T2_PL[] PROGMEM = "Wloz filament do ekstrudera 3. Potwierdz przyciskiem.";
@@ -927,7 +927,7 @@ const char * const MSG_FILAMENT_LOADING_T2_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_FILAMENT_LOADING_T3_EN[] PROGMEM = "Insert filament into extruder 4. Click when done.";
-const char MSG_FILAMENT_LOADING_T3_CZ[] PROGMEM = "Vlo\x9Ete filament do extruderu 4. Potvrdte tlacitkem.";
+const char MSG_FILAMENT_LOADING_T3_CZ[] PROGMEM = "Vlozte filament do extruderu 4. Potvrdte tlacitkem.";
 const char MSG_FILAMENT_LOADING_T3_IT[] PROGMEM = "Inserire filamento nell'estrusore 4. Click per continuare.";
 const char MSG_FILAMENT_LOADING_T3_ES[] PROGMEM = "Insertar filamento en el extrusor 4. Haga clic una vez terminado.";
 const char MSG_FILAMENT_LOADING_T3_PL[] PROGMEM = "Wloz filament do ekstrudera 4. Potwierdz przyciskiem.";
@@ -1951,7 +1951,14 @@ const char * const MSG_PREHEAT_NOZZLE_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_PREPARE_FILAMENT_EN[] PROGMEM = "Prepare new filament";
-const char * const MSG_PREPARE_FILAMENT_LANG_TABLE[1] PROGMEM = {
+const char MSG_PREPARE_FILAMENT_ES[] PROGMEM = "Preparar filamento";
+const char MSG_PREPARE_FILAMENT_PL[] PROGMEM = "Przygotuj filament";
+const char * const MSG_PREPARE_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PREPARE_FILAMENT_EN,
+	MSG_PREPARE_FILAMENT_EN,
+	MSG_PREPARE_FILAMENT_EN,
+	MSG_PREPARE_FILAMENT_ES,
+	MSG_PREPARE_FILAMENT_PL,
 	MSG_PREPARE_FILAMENT_EN
 };
 
@@ -1959,7 +1966,7 @@ const char MSG_PRESS_EN[] PROGMEM = "and press the knob";
 const char MSG_PRESS_CZ[] PROGMEM = "a stisknete tlacitko";
 const char MSG_PRESS_IT[] PROGMEM = "e cliccare manopola";
 const char MSG_PRESS_ES[] PROGMEM = "Pulsar el mando";
-const char MSG_PRESS_PL[] PROGMEM = "i nacisnij przycisk";
+const char MSG_PRESS_PL[] PROGMEM = "Nacisnij przycisk";
 const char MSG_PRESS_DE[] PROGMEM = "und Knopf druecken";
 const char * const MSG_PRESS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PRESS_EN,
@@ -3036,7 +3043,7 @@ const char * const MSG_UNLOAD_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_UNLOAD_FILAMENT_1_EN[] PROGMEM = "Unload filament 1";
-const char MSG_UNLOAD_FILAMENT_1_CZ[] PROGMEM = "Vyjmout filament 1";
+const char MSG_UNLOAD_FILAMENT_1_CZ[] PROGMEM = "Vyjmout filam. 1";
 const char * const MSG_UNLOAD_FILAMENT_1_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_1_EN,
 	MSG_UNLOAD_FILAMENT_1_CZ,
@@ -3047,7 +3054,7 @@ const char * const MSG_UNLOAD_FILAMENT_1_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_UNLOAD_FILAMENT_2_EN[] PROGMEM = "Unload filament 2";
-const char MSG_UNLOAD_FILAMENT_2_CZ[] PROGMEM = "Vyjmout filament 2";
+const char MSG_UNLOAD_FILAMENT_2_CZ[] PROGMEM = "Vyjmout filam. 2";
 const char * const MSG_UNLOAD_FILAMENT_2_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_2_EN,
 	MSG_UNLOAD_FILAMENT_2_CZ,
@@ -3058,7 +3065,7 @@ const char * const MSG_UNLOAD_FILAMENT_2_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_UNLOAD_FILAMENT_3_EN[] PROGMEM = "Unload filament 3";
-const char MSG_UNLOAD_FILAMENT_3_CZ[] PROGMEM = "Vyjmout filament 3";
+const char MSG_UNLOAD_FILAMENT_3_CZ[] PROGMEM = "Vyjmout filam. 3";
 const char * const MSG_UNLOAD_FILAMENT_3_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_3_EN,
 	MSG_UNLOAD_FILAMENT_3_CZ,
@@ -3069,7 +3076,7 @@ const char * const MSG_UNLOAD_FILAMENT_3_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_UNLOAD_FILAMENT_4_EN[] PROGMEM = "Unload filament 4";
-const char MSG_UNLOAD_FILAMENT_4_CZ[] PROGMEM = "Vyjmout filament 4";
+const char MSG_UNLOAD_FILAMENT_4_CZ[] PROGMEM = "Vyjmout filam. 4";
 const char * const MSG_UNLOAD_FILAMENT_4_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_4_EN,
 	MSG_UNLOAD_FILAMENT_4_CZ,
