@@ -730,3 +730,4 @@ enum CalibrationStatus
 #include "thermistortables.h"
 
 #endif //__CONFIGURATION_H
+

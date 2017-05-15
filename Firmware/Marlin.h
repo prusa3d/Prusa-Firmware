@@ -343,3 +343,4 @@ float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
 void wait_for_heater(long codenum);
+

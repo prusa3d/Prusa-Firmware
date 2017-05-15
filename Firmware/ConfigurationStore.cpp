@@ -9,6 +9,10 @@
 #include "mesh_bed_leveling.h"
 #endif
 
+#if defined(HAVE_TMC2130)
+  #include "stepper_indirection.h"
+#endif
+
 void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
 {
     do
@@ -124,6 +128,53 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i, filament_size[2]);
   #endif
   #endif
+  
+  // Save TMC2130 Configuration, and placeholder values
+  uint16_t val;
+  
+  #if defined(HAVE_TMC2130)
+      #if defined(X_IS_TMC2130)
+        val = stepperX.getCurrent();
+      #else
+        val = 0;
+      #endif
+      EEPROM_WRITE_VAR(i, val);
+      #if defined(Y_IS_TMC2130)
+        val = stepperY.getCurrent();
+      #else
+        val = 0;
+      #endif
+      EEPROM_WRITE_VAR(i, val);
+      #if defined(Z_IS_TMC2130)
+        val = stepperZ.getCurrent();
+      #else
+        val = 0;
+      #endif
+      EEPROM_WRITE_VAR(i, val);
+      #if defined(E0_IS_TMC2130)
+        val = stepperE0.getCurrent();
+      #else
+        val = 0;
+      #endif
+      EEPROM_WRITE_VAR(i, val);
+    #else
+      val = 0;
+      for (uint8_t q = 0; q < 11; ++q) EEPROM_WRITE_VAR(i, val);
+    #endif
+	
+	//
+    // Linear Advance
+    //
+
+    #if defined(LIN_ADVANCE)
+      EEPROM_WRITE_VAR(i, extruder_advance_k);
+      EEPROM_WRITE_VAR(i, advance_ed_ratio);
+    #else
+      dummy = 0.0f;
+      EEPROM_WRITE_VAR(i, dummy);
+      EEPROM_WRITE_VAR(i, dummy);
+    #endif
+  
   /*MYSERIAL.print("Top address used:\n");
   MYSERIAL.print(i);
   MYSERIAL.print("\n");
@@ -259,6 +310,14 @@ void Config_PrintSettings()
         SERIAL_ECHOLNPGM("Filament settings: Disabled");
     }
 #endif
+
+    #if defined(LIN_ADVANCE)
+      SERIAL_ECHO_START;
+      SERIAL_ECHOLNPGM("Linear Advance:");
+      SERIAL_ECHOPAIR("  M900 K", extruder_advance_k);
+      SERIAL_ECHOPAIR(" R", advance_ed_ratio);
+	  SERIAL_ECHO('\n');
+    #endif
 }
 #endif
 
@@ -349,6 +408,42 @@ void Config_RetrieveSettings()
 #endif
 		calculate_volumetric_multipliers();
 		// Call updatePID (similar to when we have processed M301)
+		
+		uint16_t val;
+        #if defined(HAVE_TMC2130)
+        EEPROM_READ_VAR(i, val);
+        #if defined(X_IS_TMC2130)
+          stepperX.setCurrent(val, R_SENSE, HOLD_MULTIPLIER);
+        #endif
+        EEPROM_READ_VAR(i, val);
+        #if defined(Y_IS_TMC2130)
+          stepperY.setCurrent(val, R_SENSE, HOLD_MULTIPLIER);
+        #endif
+        EEPROM_READ_VAR(i, val);
+        #if defined(Z_IS_TMC2130)
+          stepperZ.setCurrent(val, R_SENSE, HOLD_MULTIPLIER);
+        #endif
+        EEPROM_READ_VAR(i, val);
+        #if defined(E0_IS_TMC2130)
+          stepperE0.setCurrent(val, R_SENSE, HOLD_MULTIPLIER);
+        #endif
+        EEPROM_READ_VAR(i, val);
+       #else
+        for (uint8_t q = 0; q < 11; q++) EEPROM_READ_VAR(i, val);
+       #endif
+	   
+	  //
+      // Linear Advance
+      //
+
+      #if defined(LIN_ADVANCE)
+        EEPROM_READ_VAR(i, extruder_advance_k);
+        EEPROM_READ_VAR(i, advance_ed_ratio);
+      #else
+        EEPROM_READ_VAR(i, dummy);
+        EEPROM_READ_VAR(i, dummy);
+      #endif
+		
 		updatePID();
         SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("Stored settings retrieved");
@@ -432,8 +527,29 @@ void Config_ResetDefault()
 #endif
 #endif
 	calculate_volumetric_multipliers();
+	
+	#if defined(HAVE_TMC2130)
+    #if defined(X_IS_TMC2130)
+      stepperX.setCurrent(X_CURRENT, R_SENSE, HOLD_MULTIPLIER);
+    #endif
+    #if defined(Y_IS_TMC2130)
+      stepperY.setCurrent(Y_CURRENT, R_SENSE, HOLD_MULTIPLIER);
+    #endif
+    #if defined(Z_IS_TMC2130)
+      stepperZ.setCurrent(Z_CURRENT, R_SENSE, HOLD_MULTIPLIER);
+    #endif
+    #if defined(E0_IS_TMC2130)
+      stepperE0.setCurrent(E0_CURRENT, R_SENSE, HOLD_MULTIPLIER);
+    #endif
+  #endif
+  
+    #if defined(LIN_ADVANCE)
+    extruder_advance_k = LIN_ADVANCE_K;
+    advance_ed_ratio = LIN_ADVANCE_E_D_RATIO;
+  #endif
 
 SERIAL_ECHO_START;
 SERIAL_ECHOLNPGM("Hardcoded Default Settings Loaded");
 
 }
+

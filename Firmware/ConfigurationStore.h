@@ -24,3 +24,4 @@ inline uint8_t calibration_status() { return eeprom_read_byte((uint8_t*)EEPROM_C
 inline uint8_t calibration_status_store(uint8_t status) { eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS, status); }
 
 #endif//CONFIG_STORE_H
+

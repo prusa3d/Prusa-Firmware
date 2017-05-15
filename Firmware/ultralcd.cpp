@@ -2406,7 +2406,7 @@ void lcd_calibrate_pinda() {
 
 #ifndef SNMM
 
-/*void lcd_calibrate_extruder() {
+void lcd_calibrate_extruder() {
 	
 	if (degHotend0() > EXTRUDE_MINTEMP)
 	{
@@ -2497,7 +2497,7 @@ void lcd_extr_cal_reset() {
 	axis_steps_per_unit[E_AXIS] = tmp1[3];
 	//extrudemultiply = 100;
 	enquecommand_P(PSTR("M500"));
-}*/
+}
 
 #endif
 
@@ -2569,7 +2569,7 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
 	
 #ifndef SNMM
-	//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
+	MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
 #endif
     // "Mesh Bed Leveling"
     MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
@@ -3591,6 +3591,11 @@ static void lcd_tune_menu()
   } else {
     MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set_tune);
   }
+  
+      #if defined(LIN_ADVANCE)
+	MENU_ITEM_EDIT(float3, MSG_ADVANCE_K, &extruder_advance_k, 0, 999);
+	MENU_ITEM_EDIT(float3, MSG_E_D_RATIO, &advance_ed_ratio, 0, 999);	  
+    #endif
   END_MENU();
 }
 
@@ -5312,3 +5317,4 @@ void copy_and_scalePID_d()
 */
 
 #endif //ULTRA_LCD
+

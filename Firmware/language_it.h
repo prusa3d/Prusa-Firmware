@@ -266,3 +266,4 @@
 #define MSG_TEMP_CALIBRATION_DONE						"Taratura temperatura terminata. Fare click per continuare."
 #define MSG_TEMP_CALIBRATION_ON							"Cal. temp. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Cal. temp. [OFF]"
+
