@@ -88,6 +88,48 @@ int8_t SilentMode;
 volatile long count_position[NUM_AXIS] = { 0, 0, 0, 0};
 volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 
+
+#if defined(LIN_ADVANCE)
+
+  constexpr uint16_t ADV_NEVER = 65535;
+
+  uint16_t nextMainISR = 0,
+           nextAdvanceISR = ADV_NEVER,
+           eISR_Rate = ADV_NEVER;
+
+  #if defined(LIN_ADVANCE)
+    volatile int e_steps[EXTRUDERS];
+    int final_estep_rate,
+        current_estep_rate[EXTRUDERS],
+        current_adv_steps[EXTRUDERS];
+  #endif
+
+  #define ADV_RATE(T, L) (e_steps[TOOL_E_INDEX] ? (T) * (L) / abs(e_steps[TOOL_E_INDEX]) : ADV_NEVER)
+
+#endif
+
+// Macros for bit masks
+#define TEST(n,b) (((n)&_BV(b))!=0)
+#define SBI(n,b) (n |= _BV(b))
+#define CBI(n,b) (n &= ~_BV(b))
+#define SET_BIT(n,b,value) (n) ^= ((-value)^(n)) & (_BV(b))
+
+unsigned char last_direction_bits = 0;
+
+//
+// The direction of a single motor
+//
+static FORCE_INLINE bool motor_direction(AxisEnum axis) { return TEST(last_direction_bits, axis); }
+
+#define TOOL_E_INDEX current_block->active_extruder	
+
+// Macros to contrain values
+#define NOLESS(v,n) do{ if (v < n) v = n; }while(0)
+#define NOMORE(v,n) do{ if (v > n) v = n; }while(0)
+
+
+#define _ENABLE_ISRs() do { cli(); SBI(TIMSK0, OCIE0B); ENABLE_STEPPER_DRIVER_INTERRUPT(); } while(0)
+
 //===========================================================================
 //=============================functions         ============================
 //===========================================================================
@@ -320,12 +362,50 @@ FORCE_INLINE void trapezoid_generator_reset() {
 //    SERIAL_ECHOPGM("final advance :");
 //    SERIAL_ECHOLN(current_block->final_advance/256.0);
 
+      #if defined(LIN_ADVANCE)
+        if (current_block->use_advance_lead) {
+          current_estep_rate[current_block->active_extruder] = ((unsigned long)acc_step_rate * current_block->abs_adv_steps_multiplier8) >> 17;
+          final_estep_rate = (current_block->nominal_rate * current_block->abs_adv_steps_multiplier8) >> 17;
+        }
+      #endif
+
 }
+
+/**
+ * Stepper Driver Interrupt
+ *
+ * Directly pulses the stepper motors at high frequency.
+ * Timer 1 runs at a base frequency of 2MHz, with this ISR using OCR1A compare mode.
+ *
+ * OCR1A   Frequency
+ *     1     2 MHz
+ *    50    40 KHz
+ *   100    20 KHz - capped max rate
+ *   200    10 KHz - nominal max rate
+ *  2000     1 KHz - sleep rate
+ *  4000   500  Hz - init rate
+ */
+ISR(TIMER1_COMPA_vect) {
+  #if defined(LIN_ADVANCE)
+    advance_isr_scheduler();
+  #else
+    isr();
+  #endif
+}
+
 
 // "The Stepper Driver Interrupt" - This timer interrupt is the workhorse.
 // It pops blocks from the block_buffer and executes them by pulsing the stepper pins appropriately.
-ISR(TIMER1_COMPA_vect)
+void isr()
 {
+
+#ifndef LIN_ADVANCE
+    // Disable Timer0 ISRs and enable global ISR again to capture UART events (incoming chars)
+    CBI(TIMSK0, OCIE0B); // Temperature ISR
+    DISABLE_STEPPER_DRIVER_INTERRUPT();
+    sei();
+  #endif
+  
   // If there is no current block, attempt to pop one from the buffer
   if (current_block == NULL) {
     // Anything in the buffer?
@@ -344,12 +424,15 @@ ISR(TIMER1_COMPA_vect)
         if(current_block->steps_z > 0) {
           enable_z();
           OCR1A = 2000; //1ms wait
+		  _ENABLE_ISRs(); 
           return;
         }
       #endif
     }
     else {
         OCR1A=2000; // 1kHz.
+		_ENABLE_ISRs(); 
+		return;
     }
   }
 
@@ -515,10 +598,11 @@ ISR(TIMER1_COMPA_vect)
     }
     #endif
 
+#ifndef LIN_ADVANCE
 	if ((out_bits & (1 << E_AXIS)) != 0)
 	{	// -direction
 		//AKU
-#ifdef SNMM
+	#ifdef SNMM
 		if (snmm_extruder == 0 || snmm_extruder == 2)
 		{
 			NORM_E_DIR();
@@ -527,14 +611,14 @@ ISR(TIMER1_COMPA_vect)
 		{
 			REV_E_DIR();
 		}
-#else
+	#else
 		REV_E_DIR();
-#endif // SNMM
+	#endif // SNMM
 		count_direction[E_AXIS] = -1;
 	}
 	else
 	{	// +direction
-#ifdef SNMM
+	#ifdef SNMM
 		if (snmm_extruder == 0 || snmm_extruder == 2)
 		{
 			REV_E_DIR();
@@ -543,16 +627,29 @@ ISR(TIMER1_COMPA_vect)
 		{
 			NORM_E_DIR();
 		}
-#else
+	#else
 		NORM_E_DIR();
-#endif // SNMM
+	#endif // SNMM
 		count_direction[E_AXIS] = 1;
 	}
+#endif	
 
-    for(uint8_t i=0; i < step_loops; i++) { // Take multiple steps per interrupt (For high speed moves)
+for(uint8_t i=0; i < step_loops; i++) { // Take multiple steps per interrupt (For high speed moves)
       #ifndef AT90USB
       MSerial.checkRx(); // Check for serial chars.
       #endif
+	  
+      #if defined(LIN_ADVANCE)		
+		counter_e += current_block->steps_e;
+		if (counter_e > 0) {
+			counter_e -= current_block->step_event_count;
+			#ifndef MIXING_EXTRUDER
+			// Don't step E here for mixing extruder
+			count_position[E_AXIS] += count_direction[E_AXIS];
+			motor_direction(E_AXIS) ? --e_steps[TOOL_E_INDEX] : ++e_steps[TOOL_E_INDEX];
+        #endif
+		}
+      #endif //LIN_ADVANCE	  
 
         counter_x += current_block->steps_x;
         if (counter_x > 0) {
@@ -596,6 +693,7 @@ ISR(TIMER1_COMPA_vect)
         #endif
       }
 
+      #ifndef LIN_ADVANCE
         counter_e += current_block->steps_e;
         if (counter_e > 0) {
           WRITE_E_STEP(!INVERT_E_STEP_PIN);
@@ -603,9 +701,11 @@ ISR(TIMER1_COMPA_vect)
           count_position[E_AXIS]+=count_direction[E_AXIS];
           WRITE_E_STEP(INVERT_E_STEP_PIN);
         }
+	#endif
       step_events_completed += 1;
       if(step_events_completed >= current_block->step_event_count) break;
     }
+	
     // Calculare new timer value
     unsigned short timer;
     unsigned short step_rate;
@@ -622,6 +722,15 @@ ISR(TIMER1_COMPA_vect)
       timer = calc_timer(acc_step_rate);
       OCR1A = timer;
       acceleration_time += timer;
+	  
+    #if defined(LIN_ADVANCE)
+
+      if (current_block->use_advance_lead) 
+	  {
+        current_estep_rate[TOOL_E_INDEX] = ((uint32_t)acc_step_rate * current_block->abs_adv_steps_multiplier8) >> 17;
+      }
+      eISR_Rate = ADV_RATE(timer, step_loops);
+    #endif
     }
     else if (step_events_completed > (unsigned long int)current_block->decelerate_after) {
       MultiU24X24toH16(step_rate, deceleration_time, current_block->acceleration_rate);
@@ -641,25 +750,170 @@ ISR(TIMER1_COMPA_vect)
       timer = calc_timer(step_rate);
       OCR1A = timer;
       deceleration_time += timer;
+	  
+    #if defined(LIN_ADVANCE)
+
+      if (current_block->use_advance_lead) 
+	  {
+        current_estep_rate[TOOL_E_INDEX] = ((uint32_t)step_rate * current_block->abs_adv_steps_multiplier8) >> 17;
+      }
+      eISR_Rate = ADV_RATE(timer, step_loops);
+    #endif
     }
     else {
       OCR1A = OCR1A_nominal;
       // ensure we're running at the correct step rate, even if we just came off an acceleration
       step_loops = step_loops_nominal;
     }
+	
+	  #ifndef LIN_ADVANCE
+    NOLESS(OCR1A, TCNT1 + 16);
+  #endif
 
     // If current block is finished, reset pointer
     if (step_events_completed >= current_block->step_event_count) {
       current_block = NULL;
       plan_discard_current_block();
     }
+	
+	  #ifndef LIN_ADVANCE
+    _ENABLE_ISRs(); // re-enable ISRs
+  #endif
   }
 }
+
+
+#if defined LIN_ADVANCE
+
+  #define CYCLES_EATEN_E (E_STEPPERS * 5)
+  #define EXTRA_CYCLES_E (STEP_PULSE_CYCLES - (CYCLES_EATEN_E))
+
+  // Timer interrupt for E. e_steps is set in the main routine;
+
+  void advance_isr() 
+  {
+
+    nextAdvanceISR = eISR_Rate;
+
+    #define SET_E_STEP_DIR(INDEX) \
+      if (e_steps[INDEX]) E## INDEX ##_DIR_WRITE(e_steps[INDEX] < 0 ? INVERT_E## INDEX ##_DIR : !INVERT_E## INDEX ##_DIR)
+
+    #define START_E_PULSE(INDEX) \
+      if (e_steps[INDEX]) E## INDEX ##_STEP_WRITE(!INVERT_E_STEP_PIN)
+
+    #define STOP_E_PULSE(INDEX) \
+      if (e_steps[INDEX]) { \
+        e_steps[INDEX] < 0 ? ++e_steps[INDEX] : --e_steps[INDEX]; \
+        E## INDEX ##_STEP_WRITE(INVERT_E_STEP_PIN); \
+      }
+
+    SET_E_STEP_DIR(0);
+    #if E_STEPPERS > 1
+      SET_E_STEP_DIR(1);
+      #if E_STEPPERS > 2
+        SET_E_STEP_DIR(2);
+        #if E_STEPPERS > 3
+          SET_E_STEP_DIR(3);
+        #endif
+      #endif
+    #endif
+
+    // Step all E steppers that have steps
+    for (uint8_t i = step_loops; i--;) {
+
+      #if EXTRA_CYCLES_E > 20
+        uint32_t pulse_start = TCNT0;
+      #endif
+
+      START_E_PULSE(0);
+      #if E_STEPPERS > 1
+        START_E_PULSE(1);
+        #if E_STEPPERS > 2
+          START_E_PULSE(2);
+          #if E_STEPPERS > 3
+            START_E_PULSE(3);
+          #endif
+        #endif
+      #endif
+
+      // For minimum pulse time wait before stopping pulses
+      #if EXTRA_CYCLES_E > 20
+        while (EXTRA_CYCLES_E > (uint32_t)(TCNT0 - pulse_start) * (INT0_PRESCALER)) { /* nada */ }
+        pulse_start = TCNT0;
+      #elif EXTRA_CYCLES_E > 0
+        DELAY_NOPS(EXTRA_CYCLES_E);
+      #endif
+
+      STOP_E_PULSE(0);
+      #if E_STEPPERS > 1
+        STOP_E_PULSE(1);
+        #if E_STEPPERS > 2
+          STOP_E_PULSE(2);
+          #if E_STEPPERS > 3
+            STOP_E_PULSE(3);
+          #endif
+        #endif
+      #endif
+
+      // For minimum pulse time wait before looping
+      #if EXTRA_CYCLES_E > 20
+        if (i) while (EXTRA_CYCLES_E > (uint32_t)(TCNT0 - pulse_start) * (INT0_PRESCALER)) { /* nada */ }
+      #elif EXTRA_CYCLES_E > 0
+        if (i) DELAY_NOPS(EXTRA_CYCLES_E);
+      #endif
+
+    } // steps_loop
+  }
+
+  void advance_isr_scheduler() {
+    // Disable Timer0 ISRs and enable global ISR again to capture UART events (incoming chars)
+    CBI(TIMSK0, OCIE0B); // Temperature ISR
+    DISABLE_STEPPER_DRIVER_INTERRUPT();
+    sei();
+
+    // Run main stepping ISR if flagged
+    if (!nextMainISR) isr();
+
+    // Run Advance stepping ISR if flagged
+    if (!nextAdvanceISR) advance_isr();
+
+    // Is the next advance ISR scheduled before the next main ISR?
+    if (nextAdvanceISR <= nextMainISR) {
+      // Set up the next interrupt
+      OCR1A = nextAdvanceISR;
+      // New interval for the next main ISR
+      if (nextMainISR) nextMainISR -= nextAdvanceISR;
+      // Will call Stepper::advance_isr on the next interrupt
+      nextAdvanceISR = 0;
+    }
+    else {
+      // The next main ISR comes first
+      OCR1A = nextMainISR;
+      // New interval for the next advance ISR, if any
+      if (nextAdvanceISR && nextAdvanceISR != ADV_NEVER)
+        nextAdvanceISR -= nextMainISR;
+      // Will call Stepper::isr on the next interrupt
+      nextMainISR = 0;
+    }
+
+    // Don't run the ISR faster than possible
+    NOLESS(OCR1A, TCNT1 + 16);
+
+    // Restore original ISR settings
+    _ENABLE_ISRs();
+  }
+
+#endif // ADVANCE or LIN_ADVANCE
 
 void st_init()
 {
   digipot_init(); //Initialize Digipot Motor Current
   microstep_init(); //Initialize Microstepping Pins
+  
+  // Init TMC2130 Steppers
+  #if defined(HAVE_TMC2130)
+    tmc2130_init();
+  #endif
 
   //Initialize Dir Pins
   #if defined(X_DIR_PIN) && X_DIR_PIN > -1
@@ -843,6 +1097,17 @@ void st_init()
   OCR1A = 0x4000;
   TCNT1 = 0;
   ENABLE_STEPPER_DRIVER_INTERRUPT();
+  
+    #ifdef LIN_ADVANCE
+  #if defined(TCCR0A) && defined(WGM01)
+    TCCR0A &= ~(1<<WGM01);
+    TCCR0A &= ~(1<<WGM00);
+  #endif
+    e_steps[0] = 0;
+    e_steps[1] = 0;
+    e_steps[2] = 0;
+    TIMSK0 |= (1<<OCIE0A);
+  #endif //ADVANCE
 
   enable_endstops(true); // Start with endstops active. After homing they can be disabled
   sei();

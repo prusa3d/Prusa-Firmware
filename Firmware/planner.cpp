@@ -57,11 +57,21 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #include "language.h"
+#include "Configuration_prusa.h"
 
 #ifdef MESH_BED_LEVELING
 #include "mesh_bed_leveling.h"
 #include "mesh_bed_calibration.h"
 #endif
+
+#define UNEAR_ZERO(x) ((x) < 0.000001)
+
+#if defined(LIN_ADVANCE)
+  float extruder_advance_k = LIN_ADVANCE_K,
+  advance_ed_ratio = LIN_ADVANCE_E_D_RATIO,
+  position_float[NUM_AXIS] = { 0 };	
+#endif
+
 
 //===========================================================================
 //=============================public variables ============================
@@ -411,6 +421,11 @@ void plan_init() {
   block_buffer_head = 0;
   block_buffer_tail = 0;
   memset(position, 0, sizeof(position)); // clear position
+  
+  #if defined(LIN_ADVANCE)
+    memset(position_float, 0, sizeof(position_float));
+  #endif
+  
   previous_speed[0] = 0.0;
   previous_speed[1] = 0.0;
   previous_speed[2] = 0.0;
@@ -675,13 +690,32 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 #else
     target[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
 #endif // ENABLE_MESH_BED_LEVELING
+
+  #if defined(LIN_ADVANCE)
+    const float mm_D_float = sqrt(sq(target[X_AXIS] - position_float[X_AXIS]) + sq(target[Y_AXIS] - position_float[Y_AXIS]));
+  #endif
+  
+  long de = target[E_AXIS] - position[E_AXIS];
+
   target[E_AXIS] = lround(e*axis_steps_per_unit[E_AXIS]);
+  
+  #if defined(LIN_ADVANCE)
+    float de_float = target[E_AXIS] - position_float[E_AXIS];
+  #endif
+  
   #ifdef PREVENT_DANGEROUS_EXTRUDE
   if(target[E_AXIS]!=position[E_AXIS])
   {
     if(degHotend(active_extruder)<extrude_min_temp)
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
+	  
+	  de = 0; // no difference
+      #if defined(LIN_ADVANCE)
+        position_float[E_AXIS] = e;
+        de_float = 0;
+      #endif
+	  
       SERIAL_ECHO_START;
       SERIAL_ECHOLNRPGM(MSG_ERR_COLD_EXTRUDE_STOP);
     }
@@ -690,6 +724,12 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
     if(labs(target[E_AXIS]-position[E_AXIS])>axis_steps_per_unit[E_AXIS]*EXTRUDE_MAXLENGTH)
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
+	  
+	  #if defined(LIN_ADVANCE)
+        position_float[E_AXIS] = e;
+        de_float = 0;
+      #endif
+	  
       SERIAL_ECHO_START;
       SERIAL_ECHOLNRPGM(MSG_ERR_LONG_EXTRUDE_STOP);
     }
@@ -1111,6 +1151,41 @@ Having the real displacement of the head, we can calculate the total movement le
   memcpy(previous_speed, current_speed, sizeof(previous_speed)); // previous_speed[] = current_speed[]
   previous_nominal_speed = block->nominal_speed;
   previous_safe_speed = safe_speed;
+  
+    #if defined(LIN_ADVANCE)
+
+    //
+    // Use LIN_ADVANCE for blocks if all these are true:
+    //
+    // esteps                                          : We have E steps todo (a printing move)
+    //
+    // block->steps[X_AXIS] || block->steps[Y_AXIS]    : We have a movement in XY direction (i.e., not retract / prime).
+    //
+    // extruder_advance_k                              : There is an advance factor set.
+    //
+    // block->steps[E_AXIS] != block->step_event_count : A problem occurs if the move before a retract is too small.
+    //                                                   In that case, the retract and move will be executed together.
+    //                                                   This leads to too many advance steps due to a huge e_acceleration.
+    //                                                   The math is good, but we must avoid retract moves with advance!
+    // de_float > 0.0                                  : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
+    //
+	
+	float tmp1[] = DEFAULT_AXIS_STEPS_PER_UNIT;
+	
+	
+    block->use_advance_lead =  delta_mm[E_AXIS]
+                            && (block->steps_x || block->steps_y)
+                            && extruder_advance_k
+                            && (uint32_t)delta_mm[E_AXIS] != block->step_event_count
+                            && de_float > 0.0;
+    if (block->use_advance_lead)
+      block->abs_adv_steps_multiplier8 = lround(
+        extruder_advance_k
+        * (UNEAR_ZERO(advance_ed_ratio) ? de_float / mm_D_float : advance_ed_ratio) // Use the fixed ratio, if set
+        * (block->nominal_speed / (float)block->nominal_rate)
+        * tmp1[E_AXIS] * 256.0
+      );
+	  #endif
 
   // Precalculate the division, so when all the trapezoids in the planner queue get recalculated, the division is not repeated.
   block->speed_factor = block->nominal_rate / block->nominal_speed;
@@ -1121,6 +1196,13 @@ Having the real displacement of the head, we can calculate the total movement le
 
   // Update position
   memcpy(position, target, sizeof(target)); // position[] = target[]
+  
+  #if defined(LIN_ADVANCE)
+    position_float[X_AXIS] = target[X_AXIS];
+    position_float[Y_AXIS] = target[Y_AXIS];
+    position_float[Z_AXIS] = target[Z_AXIS];
+    position_float[E_AXIS] = target[E_AXIS];
+  #endif
 
   // Recalculate the trapezoids to maximize speed at the segment transitions while respecting
   // the machine limits (maximum acceleration and maximum jerk).
@@ -1179,7 +1261,15 @@ void plan_set_position(float x, float y, float z, const float &e)
   position[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
 #endif // ENABLE_MESH_BED_LEVELING
   position[E_AXIS] = lround(e*axis_steps_per_unit[E_AXIS]);  
-  st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
+  
+  #if defined(LIN_ADVANCE)
+    position_float[X_AXIS] = position[X_AXIS];
+    position_float[Y_AXIS] = position[Y_AXIS];
+    position_float[Z_AXIS] = position[Z_AXIS];
+    position_float[E_AXIS] = position[E_AXIS];
+  #endif
+  
+  st_set_position(position_float[X_AXIS], position_float[Y_AXIS], position_float[Z_AXIS], position_float[E_AXIS]);
   previous_nominal_speed = 0.0; // Resets planner junction speeds. Assumes start from rest.
   previous_speed[0] = 0.0;
   previous_speed[1] = 0.0;
@@ -1197,7 +1287,12 @@ void plan_set_z_position(const float &z)
 void plan_set_e_position(const float &e)
 {
   position[E_AXIS] = lround(e*axis_steps_per_unit[E_AXIS]);  
+  
+  #if defined(LIN_ADVANCE)
+    position_float[E_AXIS] = e;
+  #endif
   st_set_e_position(position[E_AXIS]);
+  previous_speed[E_AXIS] = 0.0;
 }
 
 #ifdef PREVENT_DANGEROUS_EXTRUDE
@@ -1227,3 +1322,4 @@ void planner_queue_min_reset()
   g_cntr_planner_queue_min = moves_planned();
 }
 #endif /* PLANNER_DIAGNOSTICS */
+

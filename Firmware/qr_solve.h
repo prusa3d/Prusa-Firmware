@@ -20,3 +20,4 @@ void dswap ( int n, double x[], int incx, double y[], int incy );
 double *qr_solve ( int m, int n, double a[], double b[] );
 
 #endif
+

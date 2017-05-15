@@ -22,6 +22,7 @@
 #define stepper_h 
 
 #include "planner.h"
+#include "stepper_indirection.h"
 
 #if EXTRUDERS > 2
   #define WRITE_E_STEP(v) { if(current_block->active_extruder == 2) { WRITE(E2_STEP_PIN, v); } else { if(current_block->active_extruder == 1) { WRITE(E1_STEP_PIN, v); } else { WRITE(E0_STEP_PIN, v); }}}
@@ -40,6 +41,28 @@
 #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 extern bool abort_on_endstop_hit;
 #endif
+
+ #if defined(LIN_ADVANCE)
+      extern uint16_t nextMainISR, nextAdvanceISR, eISR_Rate;
+      #define _NEXT_ISR(T) nextMainISR = T
+      #if defined(LIN_ADVANCE)
+        extern volatile int e_steps[EXTRUDERS];
+        extern int final_estep_rate;
+        extern int current_estep_rate[EXTRUDERS]; // Actual extruder speed [steps/s]
+        extern int current_adv_steps[EXTRUDERS];  // The amount of current added esteps due to advance.
+                                                   // i.e., the current amount of pressure applied
+                                                   // to the spring (=filament).
+      #endif
+#else
+      #define _NEXT_ISR(T) OCR1A = T
+#endif // ADVANCE or LIN_ADVANCE
+
+#if defined(LIN_ADVANCE)
+	extern void advance_isr();
+    extern void advance_isr_scheduler();
+#endif
+    extern unsigned char last_direction_bits;        // The next stepping-bits to be output
+
 
 // Initialize and start the stepper motor subsystem
 void st_init();

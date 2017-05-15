@@ -403,3 +403,4 @@ void LiquidCrystal::write8bits(uint8_t value) {
   
   pulseEnable();
 }
+
