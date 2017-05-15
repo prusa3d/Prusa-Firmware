@@ -42,6 +42,28 @@
 extern bool abort_on_endstop_hit;
 #endif
 
+ #if defined(LIN_ADVANCE)
+      extern uint16_t nextMainISR, nextAdvanceISR, eISR_Rate;
+      #define _NEXT_ISR(T) nextMainISR = T
+      #if defined(LIN_ADVANCE)
+        extern volatile int e_steps[EXTRUDERS];
+        extern int final_estep_rate;
+        extern int current_estep_rate[EXTRUDERS]; // Actual extruder speed [steps/s]
+        extern int current_adv_steps[EXTRUDERS];  // The amount of current added esteps due to advance.
+                                                   // i.e., the current amount of pressure applied
+                                                   // to the spring (=filament).
+      #endif
+#else
+      #define _NEXT_ISR(T) OCR1A = T
+#endif // ADVANCE or LIN_ADVANCE
+
+#if defined(LIN_ADVANCE)
+	extern void advance_isr();
+    extern void advance_isr_scheduler();
+#endif
+    extern unsigned char last_direction_bits;        // The next stepping-bits to be output
+
+
 // Initialize and start the stepper motor subsystem
 void st_init();
 
@@ -96,4 +118,3 @@ void microstep_readings();
 
 
 #endif
-

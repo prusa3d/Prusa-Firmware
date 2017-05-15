@@ -41,6 +41,11 @@
   #include "mesh_bed_calibration.h"
 #endif
 
+#if defined(HAVE_TMC2130)
+  #include <SPI.h>
+  #include <TMC2130Stepper.h>
+#endif
+
 #include "ultralcd.h"
 #include "Configuration_prusa.h"
 #include "planner.h"

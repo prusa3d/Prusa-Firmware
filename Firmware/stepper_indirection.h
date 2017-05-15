@@ -45,7 +45,7 @@
 #define STEPPER_INDIRECTION_H
 
 #if defined(HAVE_TMC2130)
-  #include <TMC2130Stepper.h>
+  #include "TMC2130Stepper.h"
   void tmc2130_init();
 #endif
 

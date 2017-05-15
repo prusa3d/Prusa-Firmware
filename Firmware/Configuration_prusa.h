@@ -10,7 +10,7 @@ GENERAL SETTINGS
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Developer flag
-//#define DEVELOPER
+#define DEVELOPER
 
 // Printer name
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK2"
