@@ -5,7 +5,6 @@
  * Please note these are limited to 17 characters!
  *
  */
-
 #define(length=20) WELCOME_MSG              CUSTOM_MENDEL_NAME " ready."
 #define MSG_SD_INSERTED                     "Card inserted"
 #define MSG_SD_REMOVED                      "Card removed"
@@ -27,7 +26,7 @@
 #define MSG_NOZZLE1                         "Nozzle2"
 #define MSG_NOZZLE2                         "Nozzle3"
 #define MSG_BED                             "Bed"
-#define(length=14) MSG_FAN_SPEED                       "Fan speed"
+#define(length=14) MSG_FAN_SPEED            "Fan speed"
 #define MSG_FLOW                            "Flow"
 #define MSG_FLOW0                           "Flow 0"
 #define MSG_FLOW1                           "Flow 1"
@@ -46,6 +45,11 @@
 #define MSG_REFRESH                         "\xF8" "Refresh"
 #define MSG_WATCH                           "Info screen"
 #define MSG_TUNE                            "Tune"
+
+//Linear Advance option
+#define MSG_ADVANCE_K						"Advance K"
+#define MSG_E_D_RATIO						"E-D Ratio"
+
 #define MSG_PAUSE_PRINT                     "Pause print"
 #define MSG_RESUME_PRINT                    "Resume print"
 #define MSG_STOP_PRINT                      "Stop print"
