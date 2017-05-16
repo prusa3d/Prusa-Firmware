@@ -520,7 +520,7 @@ void lcd_commands()
 	char cmd1[25];
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
 	{
-		if(lcd_commands_step == 0) { 
+		if(lcd_commands_step == 0) {
 			card.pauseSDPrint();
 			lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
 			lcdDrawUpdate = 3;
@@ -3301,7 +3301,7 @@ static void fil_unload_menu()
 	END_MENU();
 }
 
-/*static void change_extr_menu(){
+static void change_extr_menu(){
 	START_MENU();
 	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
 	MENU_ITEM(function, PSTR("Extruder 1"), extr_change_0);
@@ -3310,7 +3310,7 @@ static void fil_unload_menu()
 	MENU_ITEM(function, PSTR("Extruder 4"), extr_change_3);
 
 	END_MENU();
-}*/
+}
 
 #endif
 
@@ -3578,7 +3578,7 @@ static void lcd_main_menu()
 	#ifdef SNMM
 	MENU_ITEM(submenu, MSG_LOAD_FILAMENT, fil_load_menu);
 	MENU_ITEM(submenu, MSG_UNLOAD_FILAMENT, fil_unload_menu);
-	//MENU_ITEM(submenu, MSG_CHANGE_EXTR, change_extr_menu);
+	MENU_ITEM(submenu, MSG_CHANGE_EXTR, change_extr_menu);
 	#endif
 	MENU_ITEM(submenu, MSG_SETTINGS, lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);

@@ -173,9 +173,9 @@
 #define MSG_SELFTEST_ENDSTOPS				"Endstops"
 #define MSG_SELFTEST_MOTOR					"Motor"
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
-#define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
+#define(length=20,lines=1) MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
-#define MSG_LOOSE_PULLEY					"Loose pulley"
+#define(length=20,lines=1) MSG_LOOSE_PULLEY					"Loose pulley"
 
 #define(length=20) MSG_SELFTEST_FAN					"Fan test";
 #define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?";
@@ -203,7 +203,7 @@
 #define MSG_HOMEYZ_PROGRESS                 "Calibrating Z"
 #define MSG_HOMEYZ_DONE		                "Calibration done"
 
-#define MSG_SHOW_END_STOPS					"Show end stops"
+#define(length=17,lines=1) MSG_SHOW_END_STOPS					"Show end stops"
 #define MSG_CALIBRATE_BED					"Calibrate XYZ"
 #define MSG_CALIBRATE_BED_RESET				"Reset XYZ calibr."
 
@@ -261,14 +261,14 @@
 #define(length=20, lines=8) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
 #define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
-#define(lenght=20) MSG_UNLOADING_FILAMENT			"Unloading filament"
+#define(lenght=18, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
 #define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
-#define MSG_BED_CORRECTION_LEFT									"Left side  um"
-#define MSG_BED_CORRECTION_RIGHT								"Right side um"
-#define MSG_BED_CORRECTION_FRONT								"Front side um"
-#define MSG_BED_CORRECTION_REAR									"Rear side  um"
+#define(length=14,lines=1) MSG_BED_CORRECTION_LEFT								"Left side [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_RIGHT								"Right side[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT								"Front side[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR								"Rear side [um]"
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"

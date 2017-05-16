@@ -292,3 +292,4 @@
 #define MSG_TEMP_CALIBRATION_DONE						"Teplotni kalibrace dokoncena. Pokracujte stiskem tlacitka."
 #define MSG_TEMP_CALIBRATION_ON							"Tepl. kal. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Tepl. kal. [OFF]"
+#define MSG_PREPARE_FILAMENT							"Pripravte filament"
