@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.10"
+#define FW_version "3.0.11-RC1"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -31,19 +31,22 @@
 // Offsets of the Z heiths of the calibration points from the first point.
 // The offsets are saved as 16bit signed int, scaled to tenths of microns.
 #define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
-
-#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-4)
+#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-1)
+#define EEPROM_FARM_NUMBER (EEPROM_FARM_MODE-3)
 
 // Correction of the bed leveling, in micrometers.
 // Maximum 50 micrometers allowed.
 // Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
-#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_MODE-1)
+#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
 #define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
 #define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
 #define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
 #define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
 #define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
 #define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1)
+#define EEPROM_PROBE_TEMP_SHIFT (EEPROM_PRINT_FLAG - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
+#define EEPROM_TEMP_CAL_ACTIVE (EEPROM_PROBE_TEMP_SHIFT - 1)
+#define EEPROM_BOWDEN_LENGTH (EEPROM_TEMP_CAL_ACTIVE - 2*4) //4 x int for bowden lengths for multimaterial
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
@@ -458,8 +461,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define SDSUPPORT // Enable SD Card Support in Hardware Console
 //#define SDSLOW // Use slower SD transfer mode (not normally needed - uncomment if you're getting volume init error)
 #define SD_CHECK_AND_RETRY // Use CRC checks and retries on the SD communication
-#define ENCODER_PULSES_PER_STEP 2 // Increase if you have a high resolution encoder
-#define ENCODER_STEPS_PER_MENU_ITEM 2 // Set according to ENCODER_PULSES_PER_STEP or your liking
+#define ENCODER_PULSES_PER_STEP 4 // Increase if you have a high resolution encoder
+#define ENCODER_STEPS_PER_MENU_ITEM 1 // Set according to ENCODER_PULSES_PER_STEP or your liking
 //#define ULTIMAKERCONTROLLER //as available from the Ultimaker online store.
 //#define ULTIPANEL  //the UltiPanel as on Thingiverse
 //#define LCD_FEEDBACK_FREQUENCY_HZ 1000	// this is the tone frequency the buzzer plays when on UI feedback. ie Screen Click
@@ -699,17 +702,20 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // (unsigned char*)EEPROM_CALIBRATION_STATUS
 enum CalibrationStatus
 {
-    // Freshly assembled, needs to peform a self-test and the XYZ calibration.
-    CALIBRATION_STATUS_ASSEMBLED = 255,
+	// Freshly assembled, needs to peform a self-test and the XYZ calibration.
+	CALIBRATION_STATUS_ASSEMBLED = 255,
 
-    // For the wizard: self test has been performed, now the XYZ calibration is needed.
-    // CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
+	// For the wizard: self test has been performed, now the XYZ calibration is needed.
+	// CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
 
-    // For the wizard: factory assembled, needs to run Z calibration.
-    CALIBRATION_STATUS_Z_CALIBRATION = 240,
+	// For the wizard: factory assembled, needs to run Z calibration.
+	CALIBRATION_STATUS_Z_CALIBRATION = 240,
 
-    // The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
-    CALIBRATION_STATUS_LIVE_ADJUST = 230,
+	// The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
+	CALIBRATION_STATUS_LIVE_ADJUST = 230,
+
+	//V2 calibration has been run, now run PINDA probe temperature calibration
+	CALIBRATION_STATUS_PINDA = 220,
 
     // Calibrated, ready to print.
     CALIBRATION_STATUS_CALIBRATED = 1,

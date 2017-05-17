@@ -108,7 +108,7 @@ FORCE_INLINE void serialprintPGM(const char *str)
   }
 }
 
-
+bool is_buffer_empty();
 void get_command();
 void process_commands();
 void ramming();
@@ -282,8 +282,10 @@ extern float retract_recover_length, retract_recover_length_swap, retract_recove
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
+extern int bowden_length[4];
 extern bool is_usb_printing;
 extern bool homing_flag;
+extern bool temp_cal_active;
 extern bool loading_flag;
 extern unsigned int usb_printing_counter;
 
@@ -292,10 +294,12 @@ extern unsigned long kicktime;
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
 extern unsigned int heating_status;
+extern unsigned int status_number;
 extern unsigned int heating_status_counter;
 extern bool custom_message;
 extern unsigned int custom_message_type;
 extern unsigned int custom_message_state;
+extern unsigned long PingTime;
 
 
 // Handling multiple extruders pins
@@ -308,17 +312,25 @@ extern void digipot_i2c_init();
 
 #endif
 
+//Long pause
+extern int saved_feedmultiply;
+extern float HotendTempBckp;
+extern int fanSpeedBckp;
+extern float pause_lastpos[4];
+extern unsigned long pause_time;
+extern unsigned long start_pause_print;
 
-
-
+extern bool mesh_bed_leveling_flag;
 
 extern void calculate_volumetric_multipliers();
 
 // Similar to the default Arduino delay function, 
 // but it keeps the background tasks running.
-extern void delay_keep_alive(int ms);
+extern void delay_keep_alive(unsigned int ms);
 
 extern void check_babystep();
+
+extern void long_pause();
 
 #ifdef DIS
 
@@ -327,3 +339,7 @@ float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
 
 #endif
+float temp_comp_interpolation(float temperature);
+void temp_compensation_apply();
+void temp_compensation_start();
+void wait_for_heater(long codenum);

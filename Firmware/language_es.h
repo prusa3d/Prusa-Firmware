@@ -206,6 +206,7 @@
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Medir la altura del punto de la calibracion"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" de 9"
 
+#define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Reiteracion "
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Calibracion XYZ fallada. Puntos de calibracion en la cama no encontrados."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED            "Calibracion XYZ fallada. Consultar el manual por favor."
 #define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT               "Calibracion XYZ ok. Ejes X/Y perpendiculares. Felicitaciones!"
@@ -242,8 +243,7 @@
 #define MSG_FILAMENT_LOADING_T2							"Insertar filamento en el extrusor 3. Haga clic una vez terminado."
 #define MSG_FILAMENT_LOADING_T3							"Insertar filamento en el extrusor 4. Haga clic una vez terminado."
 #define MSG_CHANGE_EXTR									"Cambiar extrusor."
-#define MSG_FIL_LOADED_CHECK							"Esta cargado el filamento?"
-#define MSG_FIL_TUNING									"Rotar el mando para ajustar el filamento."
+
 #define MSG_FIL_ADJUSTING								"Ajustando filamentos. Esperar por favor."
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ				"Filamentos ajustados. Limpie la boquilla para calibracion. Haga clic una vez terminado."
 #define MSG_CALIBRATE_E									"Calibrar E"
@@ -254,3 +254,20 @@
 #define MSG_FILAMENT_CLEAN								"Es el nuevo color nitido?"
 #define MSG_UNLOADING_FILAMENT							"Soltando filamento"
 #define MSG_PAPER										"Colocar una hoja de papel sobre la superficie de impresion durante la calibracion de los primeros 4 puntos. Si la boquilla mueve el papel, apagar impresora inmediatamente."
+
+#define MSG_FINISHING_MOVEMENTS							"Term. movimientos"
+#define MSG_PRINT_PAUSED								"Impresion en pausa"
+#define MSG_RESUMING_PRINT								"Reanudar impresion"
+#define MSG_PID_EXTRUDER								"Calibracion PID"
+#define MSG_SET_TEMPERATURE								"Establecer temp.:"
+#define MSG_PID_FINISHED								"Cal. PID terminada"
+#define MSG_PID_RUNNING									"Cal. PID           "
+
+#define MSG_CALIBRATE_PINDA								"Calibrar"
+#define MSG_CALIBRATION_PINDA_MENU						"Calibracion temp."
+#define MSG_PINDA_NOT_CALIBRATED						"La temperatura de calibracion no ha sido ajustada"
+#define MSG_PINDA_PREHEAT								"Calentando PINDA"
+#define MSG_TEMP_CALIBRATION							"Cal. temp.          "
+#define MSG_TEMP_CALIBRATION_DONE						"Calibracon temperatura terminada. Presionar para continuar."
+#define MSG_TEMP_CALIBRATION_ON							"Cal. temp. [ON]"
+#define MSG_TEMP_CALIBRATION_OFF						"Cal. temp. [OFF]"

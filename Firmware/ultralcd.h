@@ -31,6 +31,7 @@
 void lcd_mylang();
   bool lcd_detected(void);
 
+  
   static void lcd_selftest();
   static bool lcd_selfcheck_endstops();
   static bool lcd_selfcheck_axis(int _axis, int _travel);
@@ -90,16 +91,24 @@ void lcd_mylang();
   #define LCD_COMMAND_LOAD_FILAMENT 1
   #define LCD_COMMAND_STOP_PRINT 2
   #define LCD_COMMAND_FARM_MODE_CONFIRM 4
+  #define LCD_COMMAND_LONG_PAUSE 5
+  #define LCD_COMMAND_LONG_PAUSE_RESUME 6
+  #define LCD_COMMAND_PID_EXTRUDER 7 
 
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
   
-  extern bool farm_mode;
+  extern uint8_t farm_mode;
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
 
+#ifdef SNMM
+  extern uint8_t snmm_extruder;
+#endif // SNMM
+
   extern bool cancel_heatup;
+  extern bool isPrintPaused;
   
   #ifdef FILAMENT_LCD_DISPLAY
         extern unsigned long message_millis;
@@ -211,10 +220,14 @@ static void extr_unload_0();
 static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
-static void stack_test();
-static int test();
+static void lcd_disable_farm_mode();
+void extr_unload_all();
+static void extr_unload();
 
 void stack_error();
+static void lcd_ping_allert();
+void lcd_printer_connected();
+void lcd_ping();
 
 void lcd_calibrate_extruder();
 void lcd_farm_sdcard_menu();
@@ -230,5 +243,13 @@ void lcd_extr_cal_reset();
 
 union MenuData;
 
+void bowden_menu();
 char reset_menu();
+
+void lcd_pinda_calibration_menu();
+void lcd_calibrate_pinda();
+void lcd_temp_calibration_set();
+
+void display_loading();
+
 #endif //ULTRALCD_H

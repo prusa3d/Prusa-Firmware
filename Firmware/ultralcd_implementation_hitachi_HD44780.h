@@ -757,7 +757,7 @@ static void lcd_implementation_status_screen()
 		}
 	}
     
-    // Farm number display
+	// Farm number display
 	if (farm_mode)
 	{
 		lcd_printPGM(PSTR(" F"));
@@ -775,20 +775,26 @@ static void lcd_implementation_status_screen()
         }
         
 	}
-
+	else {
 #ifdef SNMM
 		lcd_printPGM(PSTR(" E"));
-		lcd.print(get_ext_nr()+1);
-	
+		lcd.print(get_ext_nr() + 1);
+
+#else
+		lcd.setCursor(LCD_WIDTH - 8 - 2, 2);
+		lcd_printPGM(PSTR(" "));
 #endif
+	}
+
+
 
     //Print time elapsed
-    lcd.setCursor(LCD_WIDTH - 8 -2, 2);
-    lcd_printPGM(PSTR("  "));
+    lcd.setCursor(LCD_WIDTH - 8 -1, 2);
+    lcd_printPGM(PSTR(" "));
     lcd.print(LCD_STR_CLOCK[0]);
     if(starttime != 0)
     {
-        uint16_t time = millis()/60000 - starttime/60000;
+		uint16_t time = millis() / 60000 - starttime / 60000;
         lcd.print(itostr2(time/60));
         lcd.print(':');
         lcd.print(itostr2(time%60));
@@ -944,6 +950,37 @@ static void lcd_implementation_status_screen()
 			{
 				lcd.print(lcd_status_message);
 			}
+			// PID tuning in progress
+			if (custom_message_type == 3) {
+				lcd.print(lcd_status_message);
+				if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0) {
+					lcd.setCursor(10, 3);
+					lcd.print(itostr3(pid_cycle));
+					
+					lcd.print('/');
+					lcd.print(itostr3left(pid_number_of_cycles));
+				}
+			}
+			// PINDA temp calibration in progress
+			if (custom_message_type == 4) {
+				char progress[4];
+				lcd.setCursor(0, 3);
+				lcd_printPGM(MSG_TEMP_CALIBRATION);
+				lcd.setCursor(12, 3);
+				sprintf(progress, "%d/6", custom_message_state);
+				lcd.print(progress);
+			}
+			// temp compensation preheat
+			if (custom_message_type == 5) {
+				lcd.setCursor(0, 3);
+				lcd_printPGM(MSG_PINDA_PREHEAT);
+				if (custom_message_state <= PINDA_HEAT_T) {
+					lcd_printPGM(PSTR(": "));
+					lcd.print(custom_message_state); //seconds
+				}
+			}
+
+
 		}
 	else
 		{
