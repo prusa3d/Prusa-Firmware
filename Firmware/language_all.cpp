@@ -123,7 +123,7 @@ const char * const MSG_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_BED_CORRECTION_FRONT_EN[] PROGMEM = "Front side[um]";
 const char MSG_BED_CORRECTION_FRONT_CZ[] PROGMEM = "Vpredu [um]";
-const char MSG_BED_CORRECTION_FRONT_IT[] PROGMEM = "Lato ateriore";
+const char MSG_BED_CORRECTION_FRONT_IT[] PROGMEM = "Fronte    [um]";
 const char MSG_BED_CORRECTION_FRONT_ES[] PROGMEM = "Adelante  [um]";
 const char MSG_BED_CORRECTION_FRONT_PL[] PROGMEM = "Do przodu [um]";
 const char MSG_BED_CORRECTION_FRONT_DE[] PROGMEM = "Vorne     [um]";
@@ -138,7 +138,7 @@ const char * const MSG_BED_CORRECTION_FRONT_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_BED_CORRECTION_LEFT_EN[] PROGMEM = "Left side [um]";
 const char MSG_BED_CORRECTION_LEFT_CZ[] PROGMEM = "Vlevo  [um]";
-const char MSG_BED_CORRECTION_LEFT_IT[] PROGMEM = "Lato sinistro";
+const char MSG_BED_CORRECTION_LEFT_IT[] PROGMEM = "Sinistra  [um]";
 const char MSG_BED_CORRECTION_LEFT_ES[] PROGMEM = "Izquierda [um]";
 const char MSG_BED_CORRECTION_LEFT_PL[] PROGMEM = "W lewo  [um]";
 const char MSG_BED_CORRECTION_LEFT_DE[] PROGMEM = "Links     [um]";
@@ -168,7 +168,7 @@ const char * const MSG_BED_CORRECTION_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_BED_CORRECTION_REAR_EN[] PROGMEM = "Rear side [um]";
 const char MSG_BED_CORRECTION_REAR_CZ[] PROGMEM = "Vzadu  [um]";
-const char MSG_BED_CORRECTION_REAR_IT[] PROGMEM = "Lato posteriore";
+const char MSG_BED_CORRECTION_REAR_IT[] PROGMEM = "Retro     [um]";
 const char MSG_BED_CORRECTION_REAR_ES[] PROGMEM = "Atras     [um]";
 const char MSG_BED_CORRECTION_REAR_PL[] PROGMEM = "Do tylu  [um]";
 const char MSG_BED_CORRECTION_REAR_DE[] PROGMEM = "Hinten    [um]";
@@ -194,7 +194,7 @@ const char * const MSG_BED_CORRECTION_RESET_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_BED_CORRECTION_RIGHT_EN[] PROGMEM = "Right side[um]";
 const char MSG_BED_CORRECTION_RIGHT_CZ[] PROGMEM = "Vpravo [um]";
-const char MSG_BED_CORRECTION_RIGHT_IT[] PROGMEM = "Lato destro";
+const char MSG_BED_CORRECTION_RIGHT_IT[] PROGMEM = "Destra    [um]";
 const char MSG_BED_CORRECTION_RIGHT_ES[] PROGMEM = "Derecha   [um]";
 const char MSG_BED_CORRECTION_RIGHT_PL[] PROGMEM = "W prawo [um]";
 const char MSG_BED_CORRECTION_RIGHT_DE[] PROGMEM = "Rechts    [um]";

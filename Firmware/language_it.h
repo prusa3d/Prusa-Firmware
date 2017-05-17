@@ -221,10 +221,10 @@
 #define MSG_BABYSTEP_Z_NOT_SET							"Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo First steps, sezione First layer calibration."
 
 #define MSG_BED_CORRECTION_MENU							"Correz. liv.letto"
-#define MSG_BED_CORRECTION_LEFT							"Lato sinistro"
-#define MSG_BED_CORRECTION_RIGHT						"Lato destro"
-#define MSG_BED_CORRECTION_FRONT						"Lato ateriore"
-#define MSG_BED_CORRECTION_REAR							"Lato posteriore"
+#define MSG_BED_CORRECTION_LEFT							"Sinistra  [um]"
+#define MSG_BED_CORRECTION_RIGHT						"Destra    [um]"
+#define MSG_BED_CORRECTION_FRONT						"Fronte    [um]"
+#define MSG_BED_CORRECTION_REAR							"Retro     [um]"
 #define MSG_BED_CORRECTION_RESET						"Reset"			
 
 #define MSG_MESH_BED_LEVELING							"Mesh livel. letto"

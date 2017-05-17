@@ -1892,7 +1892,7 @@ void trace() {
     noTone(BEEPER);
     delay(20);
 }
-
+/*
 void ramming() {
 //	  float tmp[4] = DEFAULT_MAX_FEEDRATE;
 	if (current_temperature[0] < 230) {
@@ -1947,10 +1947,10 @@ void ramming() {
 		current_position[E_AXIS] += 4;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 		st_synchronize();
-		/*current_position[X_AXIS] += 23; //delay
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
-		current_position[X_AXIS] -= 23; //delay
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay*/
+		//current_position[X_AXIS] += 23; //delay
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
+		//current_position[X_AXIS] -= 23; //delay
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
 		delay(4700);
 		max_feedrate[E_AXIS] = 80;
 		current_position[E_AXIS] -= 92;
@@ -1975,7 +1975,7 @@ void ramming() {
 
 	}
   }
-
+*/
 void process_commands()
 {
   #ifdef FILAMENT_RUNOUT_SUPPORT
