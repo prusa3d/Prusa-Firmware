@@ -95,7 +95,7 @@ void lcd_mylang();
   #define LCD_COMMAND_LONG_PAUSE_RESUME 6
   #define LCD_COMMAND_PID_EXTRUDER 7 
   #define LCD_COMMAND_PID_BED 8
-  
+
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
   
@@ -103,6 +103,10 @@ void lcd_mylang();
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
+
+#ifdef SNMM
+  extern uint8_t snmm_extruder;
+#endif // SNMM
 
   extern bool cancel_heatup;
   extern bool isPrintPaused;
@@ -205,6 +209,7 @@ extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 
 
 void change_extr(int extr);
+static void lcd_colorprint_change();
 static int get_ext_nr();
 static void extr_adj(int extruder);
 static void extr_adj_0();
@@ -218,6 +223,8 @@ static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
 static void lcd_disable_farm_mode();
+void extr_unload_all();
+static void extr_unload();
 
 void stack_error();
 static void lcd_ping_allert();
@@ -238,10 +245,13 @@ void lcd_extr_cal_reset();
 
 union MenuData;
 
+void bowden_menu();
 char reset_menu();
 
 void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();
 void lcd_temp_calibration_set();
+
+void display_loading();
 
 #endif //ULTRALCD_H

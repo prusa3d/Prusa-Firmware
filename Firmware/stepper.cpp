@@ -515,14 +515,39 @@ ISR(TIMER1_COMPA_vect)
     }
     #endif
 
-    if ((out_bits & (1<<E_AXIS)) != 0) {  // -direction
-      REV_E_DIR();
-      count_direction[E_AXIS]=-1;
-    }
-    else { // +direction
-      NORM_E_DIR();
-      count_direction[E_AXIS]=1;
-    }
+	if ((out_bits & (1 << E_AXIS)) != 0)
+	{	// -direction
+		//AKU
+#ifdef SNMM
+		if (snmm_extruder == 0 || snmm_extruder == 2)
+		{
+			NORM_E_DIR();
+		}
+		else
+		{
+			REV_E_DIR();
+		}
+#else
+		REV_E_DIR();
+#endif // SNMM
+		count_direction[E_AXIS] = -1;
+	}
+	else
+	{	// +direction
+#ifdef SNMM
+		if (snmm_extruder == 0 || snmm_extruder == 2)
+		{
+			REV_E_DIR();
+		}
+		else
+		{
+			NORM_E_DIR();
+		}
+#else
+		NORM_E_DIR();
+#endif // SNMM
+		count_direction[E_AXIS] = 1;
+	}
 
     for(uint8_t i=0; i < step_loops; i++) { // Take multiple steps per interrupt (For high speed moves)
       #ifndef AT90USB

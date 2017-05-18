@@ -196,6 +196,7 @@
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2		" su 9"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1		"Misurare l'altezza di riferimento del punto di calibrazione"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2		" su 9"
+#define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Reiterazione "
 
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND		"Calibrazione XYZ fallita. Il punto di calibrazione sul letto non e' stato trovato."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED		"Calibrazione XYZ fallita. Si prega di consultare il manuale."
@@ -220,10 +221,10 @@
 #define MSG_BABYSTEP_Z_NOT_SET							"Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo First steps, sezione First layer calibration."
 
 #define MSG_BED_CORRECTION_MENU							"Correz. liv.letto"
-#define MSG_BED_CORRECTION_LEFT							"Lato sinistro"
-#define MSG_BED_CORRECTION_RIGHT						"Lato destro"
-#define MSG_BED_CORRECTION_FRONT						"Lato ateriore"
-#define MSG_BED_CORRECTION_REAR							"Lato posteriore"
+#define MSG_BED_CORRECTION_LEFT							"Sinistra  [um]"
+#define MSG_BED_CORRECTION_RIGHT						"Destra    [um]"
+#define MSG_BED_CORRECTION_FRONT						"Fronte    [um]"
+#define MSG_BED_CORRECTION_REAR							"Retro     [um]"
 #define MSG_BED_CORRECTION_RESET						"Reset"			
 
 #define MSG_MESH_BED_LEVELING							"Mesh livel. letto"
@@ -265,3 +266,15 @@
 #define MSG_TEMP_CALIBRATION_DONE						"Taratura temperatura terminata. Fare click per continuare."
 #define MSG_TEMP_CALIBRATION_ON							"Cal. temp. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Cal. temp. [OFF]"
+
+#define MSG_LOAD_ALL									"Caricare tutti"
+#define MSG_LOAD_FILAMENT_1								"Caricare fil. 1"
+#define MSG_LOAD_FILAMENT_2								"Caricare fil. 2"
+#define MSG_LOAD_FILAMENT_3								"Caricare fil. 3"
+#define MSG_LOAD_FILAMENT_4								"Caricare fil. 4"
+#define MSG_UNLOAD_FILAMENT_1							"Rilasciare fil. 1"
+#define MSG_UNLOAD_FILAMENT_2							"Rilasciare fil. 1"
+#define MSG_UNLOAD_FILAMENT_3							"Rilasciare fil. 1"
+#define MSG_UNLOAD_FILAMENT_4							"Rilasciare fil. 1"
+#define MSG_UNLOAD_ALL									"Rilasciare tutti"
+#define MSG_PREPARE_FILAMENT							"Preparare filamento"

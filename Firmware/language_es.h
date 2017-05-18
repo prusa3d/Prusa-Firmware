@@ -206,7 +206,7 @@
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Medir la altura del punto de la calibracion"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" de 9"
 
-#define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteracion "
+#define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Reiteracion "
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Calibracion XYZ fallada. Puntos de calibracion en la cama no encontrados."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED            "Calibracion XYZ fallada. Consultar el manual por favor."
 #define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT               "Calibracion XYZ ok. Ejes X/Y perpendiculares. Felicitaciones!"
@@ -271,3 +271,19 @@
 #define MSG_TEMP_CALIBRATION_DONE						"Calibracon temperatura terminada. Presionar para continuar."
 #define MSG_TEMP_CALIBRATION_ON							"Cal. temp. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Cal. temp. [OFF]"
+
+#define MSG_PREPARE_FILAMENT							"Preparar filamento"
+
+
+
+#define MSG_LOAD_ALL									"Intr. todos fil."
+#define MSG_LOAD_FILAMENT_1								"Introducir fil. 1"
+#define MSG_LOAD_FILAMENT_2								"Introducir fil. 2"
+#define MSG_LOAD_FILAMENT_3								"Introducir fil. 3"
+#define MSG_LOAD_FILAMENT_4								"Introducir fil. 4"
+#define MSG_UNLOAD_FILAMENT_1							"Soltar fil. 1"
+#define MSG_UNLOAD_FILAMENT_2							"Soltar fil. 2"
+#define MSG_UNLOAD_FILAMENT_3							"Soltar fil. 3"
+#define MSG_UNLOAD_FILAMENT_4							"Soltar fil. 4"
+#define MSG_UNLOAD_ALL									"Soltar todos fil."
+#define MSG_PREPARE_FILAMENT							"Preparar filamento"

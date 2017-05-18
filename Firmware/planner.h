@@ -171,7 +171,9 @@ FORCE_INLINE block_t *plan_get_current_block()
 }
 
 // Returns true if the buffer has a queued block, false otherwise
-FORCE_INLINE bool blocks_queued() { return (block_buffer_head != block_buffer_tail); }
+FORCE_INLINE bool blocks_queued() { 
+	return (block_buffer_head != block_buffer_tail); 
+}
 
 //return the nr of buffered moves
 FORCE_INLINE uint8_t moves_planned() {

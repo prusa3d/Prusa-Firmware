@@ -282,6 +282,7 @@ extern float retract_recover_length, retract_recover_length_swap, retract_recove
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
+extern int bowden_length[4];
 extern bool is_usb_printing;
 extern bool homing_flag;
 extern bool temp_cal_active;
@@ -320,6 +321,7 @@ extern unsigned long pause_time;
 extern unsigned long start_pause_print;
 
 extern bool mesh_bed_leveling_flag;
+extern bool mesh_bed_run_from_menu;
 
 extern void calculate_volumetric_multipliers();
 
@@ -342,3 +344,4 @@ float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
 void wait_for_heater(long codenum);
+void serialecho_temperatures();
