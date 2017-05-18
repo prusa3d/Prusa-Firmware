@@ -298,5 +298,3 @@
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"PINDA T.cal. [ON]"
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF			"PINDA T.cal.[OFF]"
 #define(length=20, lines=1) MSG_PREPARE_FILAMENT				"Prepare new filament"
-
-
