@@ -94,6 +94,7 @@ void lcd_mylang();
   #define LCD_COMMAND_LONG_PAUSE 5
   #define LCD_COMMAND_LONG_PAUSE_RESUME 6
   #define LCD_COMMAND_PID_EXTRUDER 7 
+  #define LCD_COMMAND_PID_BED 8
 
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
@@ -208,6 +209,7 @@ extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 
 
 void change_extr(int extr);
+static void lcd_colorprint_change();
 static int get_ext_nr();
 static void extr_adj(int extruder);
 static void extr_adj_0();
