@@ -392,10 +392,12 @@ THERMISTORS SETTINGS
 #define LONG_PRESS_TIME 1000 //time in ms for button long press 
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
-#define PAUSE_RETRACT 1 
-
 #define DEFAULT_PID_TEMP 210
 
-#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration
+#ifdef SNMM
+#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
+#else
+#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
+#endif
 
 #endif //__CONFIGURATION_PRUSA_H
