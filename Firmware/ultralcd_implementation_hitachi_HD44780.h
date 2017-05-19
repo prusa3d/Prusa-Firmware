@@ -978,6 +978,7 @@ static void lcd_implementation_status_screen()
 					lcd_printPGM(PSTR(": "));
 					lcd.print(custom_message_state); //seconds
 					lcd.print(' ');
+					
 				}
 			}
 

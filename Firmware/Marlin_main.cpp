@@ -1892,7 +1892,6 @@ void trace() {
     noTone(BEEPER);
     delay(20);
 }
-
 /*
 void ramming() {
 //	  float tmp[4] = DEFAULT_MAX_FEEDRATE;
@@ -1949,9 +1948,9 @@ void ramming() {
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 		st_synchronize();
 		//current_position[X_AXIS] += 23; //delay
-		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], //current_position[E_AXIS], 600/60, active_extruder); //delay
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
 		//current_position[X_AXIS] -= 23; //delay
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
 		delay(4700);
 		max_feedrate[E_AXIS] = 80;
 		current_position[E_AXIS] -= 92;
@@ -2875,6 +2874,7 @@ void process_commands()
 		lcd_update(2);		
 
 		
+
 	}
 	break;
 
@@ -2938,20 +2938,33 @@ void process_commands()
 			// We don't know where we are! HOME!
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
-			repeatcommand_front(); // repeat G80 with all its parameters
-			enquecommand_front_P((PSTR("G28 W0")));
+			if (lcd_commands_type != LCD_COMMAND_STOP_PRINT) {
+				repeatcommand_front(); // repeat G80 with all its parameters
+				enquecommand_front_P((PSTR("G28 W0")));
+			}
+			else {
+				mesh_bed_leveling_flag = false;
+			}
 			break;
 		} 
 		
 		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
-			temp_compensation_start();
-			run = true;
-			repeatcommand_front(); // repeat G80 with all its parameters
-			enquecommand_front_P((PSTR("G28 W0")));
+			if (lcd_commands_type != LCD_COMMAND_STOP_PRINT) {
+				temp_compensation_start();
+				run = true;
+				repeatcommand_front(); // repeat G80 with all its parameters
+				enquecommand_front_P((PSTR("G28 W0")));
+			}
+			else {
+				mesh_bed_leveling_flag = false;
+			}
 			break;
 		}
 		run = false;
-
+		if (lcd_commands_type == LCD_COMMAND_STOP_PRINT) {
+			mesh_bed_leveling_flag = false;
+			break;
+		}
 		// Save custom message state, set a new custom message state to display: Calibrating point 9.
 		bool custom_message_old = custom_message;
 		unsigned int custom_message_type_old = custom_message_type;
