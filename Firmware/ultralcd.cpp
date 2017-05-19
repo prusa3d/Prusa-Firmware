@@ -661,7 +661,7 @@ void lcd_commands()
 			cancel_heatup = true;
 			setTargetBed(0);
 			#ifndef SNMM
-			setTargetHotend(0, 0);	//to heating when changing filament for multicolor
+			setTargetHotend(0, 0);	//heating when changing filament for multicolor
 			setTargetHotend(0, 1);
 			setTargetHotend(0, 2);
 			#endif
@@ -3743,18 +3743,21 @@ void lcd_sdcard_stop()
 		}
 		if ((int32_t)encoderPosition == 2)
 		{
-				cancel_heatup = true;
+		cancel_heatup = true;
         #ifdef MESH_BED_LEVELING
         mbl.active = false;
         #endif
         // Stop the stoppers, update the position from the stoppers.
-        planner_abort_hard();
-        // Because the planner_abort_hard() initialized current_position[Z] from the stepper,
-        // Z baystep is no more applied. Reset it.
-        babystep_reset();
+		if (mesh_bed_leveling_flag == false && homing_flag == false) {
+			planner_abort_hard();
+			// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
+			// Z baystep is no more applied. Reset it.
+			babystep_reset();
+		}
         // Clean the input command queue.
         cmdqueue_reset();
 				lcd_setstatuspgm(MSG_PRINT_ABORTED);
+				lcd_update(2);
 				card.sdprinting = false;
 				card.closefile();
 
