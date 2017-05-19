@@ -7,7 +7,7 @@
  */
 
 #define(length=20) WELCOME_MSG              CUSTOM_MENDEL_NAME " ready."
-#define MSG_SD_INSERTED                     "Card inserted"
+#define(length=20) MSG_SD_INSERTED          "Card inserted"
 #define MSG_SD_REMOVED                      "Card removed"
 #define MSG_MAIN                            "Main"
 #define(length=20) MSG_DISABLE_STEPPERS                "Disable steppers"
@@ -79,8 +79,8 @@
 #define(length=20) MSG_UNLOAD_FILAMENT_2				"Unload filament 2"
 #define(length=20) MSG_UNLOAD_FILAMENT_3				"Unload filament 3"
 #define(length=20) MSG_UNLOAD_FILAMENT_4				"Unload filament 4"
-#define MSG_UNLOAD_ALL						"Unload all"
-#define MSG_LOAD_ALL						"Load all"
+#define(length=20) MSG_UNLOAD_ALL						"Unload all"
+#define(length=20) MSG_LOAD_ALL							"Load all"
 
 
 #define MSG_RECTRACT                        "Rectract"
@@ -282,8 +282,8 @@
 #define(length=20, lines=1) MSG_RESUMING_PRINT					"Resuming print"
 #define(length=20, lines=1) MSG_PID_EXTRUDER					"PID calibration"
 #define(length=20, lines=1) MSG_SET_TEMPERATURE					"Set temperature:"
-#define(length=20, lines=1) MSG_PID_FINISHED					"PID cal. finished"
-#define(length=20, lines=1) MSG_PID_RUNNING						"PID cal.         "
+#define(length=20, lines=1) MSG_PID_FINISHED					"PID cal. finished   "
+#define(length=20, lines=1) MSG_PID_RUNNING						"PID cal.            "
 #define(length=20, lines=1) MSG_PID_BED							"PID bed cal.        "
 #define(length=20, lines=1) MSG_PID_BED_FINISHED				"PID bed cal. done   "
 #define(length=20, lines=1) MSG_PID_BED_RUNNING					"PID bed cal. "

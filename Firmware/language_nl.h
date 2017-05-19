@@ -45,7 +45,7 @@
 #define MSG_RESTORE_FAILSAFE                "Backup terugzetten"
 #define MSG_REFRESH                         "\xF8" "Herladen"
 #define MSG_WATCH                           "Info scherm"
-#define MSG_TUNE                            "Aanpassen"
+#define MSG_TUNE                            "Fijninstellingen"
 #define MSG_PAUSE_PRINT                     "Print pauzeren"
 #define MSG_RESUME_PRINT                    "Print hervatten"
 #define MSG_STOP_PRINT                      "Print stoppen"
@@ -69,18 +69,18 @@
 
 #define MSG_SETTINGS                        "Instellingen"
 #define MSG_PREHEAT                         "Voorverwarmen"
-#define MSG_UNLOAD_FILAMENT                 "Haal Filament uit"
-#define MSG_LOAD_FILAMENT                 	"Laad Filament"
-#define(length=20)  MSG_LOAD_FILAMENT_1					"Laad filament 1"
-#define(length=20)  MSG_LOAD_FILAMENT_2					"Laad filament 2"
-#define(length=20)  MSG_LOAD_FILAMENT_3					"Laad filament 3"
-#define(length=20)  MSG_LOAD_FILAMENT_4					"Laad filament 4"
-#define(length=20)  MSG_UNLOAD_FILAMENT_1				"Haal filament 1 uit"
-#define(length=20)  MSG_UNLOAD_FILAMENT_2				"Haal filament 2 uit"
-#define(length=20)  MSG_UNLOAD_FILAMENT_3				"Haal filament 3 uit"
-#define(length=20)  MSG_UNLOAD_FILAMENT_4				"Haal filament 4 uit"
-#define MSG_UNLOAD_ALL						"Haal alle uit"
-#define MSG_LOAD_ALL						"Laad alle"
+#define MSG_UNLOAD_FILAMENT                 "Filament uithalen"
+#define MSG_LOAD_FILAMENT                 	"Filament laden"
+#define(length=20)  MSG_LOAD_FILAMENT_1					"Filament 1 laden"
+#define(length=20)  MSG_LOAD_FILAMENT_2					"Filament 2 laden"
+#define(length=20)  MSG_LOAD_FILAMENT_3					"Filament 3 laden"
+#define(length=20)  MSG_LOAD_FILAMENT_4					"Filament 4 laden"
+#define(length=20)  MSG_UNLOAD_FILAMENT_1				"Filament 1 uithalen"
+#define(length=20)  MSG_UNLOAD_FILAMENT_2				"Filament 2 uithalen"
+#define(length=20)  MSG_UNLOAD_FILAMENT_3				"Filament 3 uithalen"
+#define(length=20)  MSG_UNLOAD_FILAMENT_4				"Filament 4 uithalen"
+#define(length=20) MSG_UNLOAD_ALL						"Alle uithalen"
+#define(length=20) MSG_LOAD_ALL						"Alle laden"
 
 #define MSG_RECTRACT                        "Rectract"
 #define MSG_ERROR                        	"FOUT:"
@@ -177,15 +177,15 @@
 #define(length=20) MSG_LOOSE_PULLEY					"Loose pulley"
 
 #define MSG_SELFTEST_FAN					"Fan test";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Frontprint fan?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Linke Hotend fan?";
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Voordere fan?";
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Linke fan?";
 #define MSG_SELFTEST_FAN_YES				"Roteert";
 #define(length=20) MSG_SELFTEST_FAN_NO					"Roteert niet";
 
 #define(length=20) MSG_STATS_TOTALFILAMENT	"Filament total: "
-#define(length=20) MSG_STATS_TOTALPRINTTIME "Total print tijd:"
+#define(length=20) MSG_STATS_TOTALPRINTTIME "Total printtijd:"
 #define(length=20) MSG_STATS_FILAMENTUSED	"Filamentverbruik:"
-#define(length=20) MSG_STATS_PRINTTIME		"Print tijd:  "
+#define(length=20) MSG_STATS_PRINTTIME		"Printtijd:   "
 #define(length=20) MSG_SELFTEST_START				"Zelftest  start  "
 #define(length=20) MSG_SELFTEST_CHECK_ENDSTOPS		"Controleer endstops"
 #define(length=20) MSG_SELFTEST_CHECK_HOTEND		"Controleer hotend  "  
@@ -223,8 +223,8 @@
 #define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ kalibratie mislukt. Bed kalibratiepunt niet gevonden."
 #define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED				"XYZ kalibratie mislukt. Raadpleeg de handleiding."
 #define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"XYZ kalibratie ok. X/Y-assen staan perpendiculair. Gefeliciteerd!"
-#define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"XYZ kalibratie in orde. X/Y-assen zijn iets scheef. Good Job!"
-#define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"X/Y heel scheef. Scheefheid wordt automatisch gecorrigeerd."
+#define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"XYZ kalibratie ok. X/Y-assen zijn iets scheef. Scheefheid wordt automatisch gecorrigeerd. Goed gedaan!"
+#define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME				"XYZ kalibratie ok. X/Y-assen zijn heel scheef. Scheefheid wordt automatisch gecorrigeerd."
 #define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR		"XYZ kalibratie mislukt. Linksvoor kalibratiepunt niet bereikbaar."
 #define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR		"XYZ kalibratie mislukt. Rechtsvoor kalibratiepunt niet bereikbaar."
 #define(length=20, lines=8) MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR		"XYZ kalibratie mislukt. Voorzijde kalibratiepunten niet bereikbaar."
@@ -266,10 +266,10 @@
 #define(length=20, lines=10) MSG_PAPER						"Leg een vel papier onder het tuit tijdens de kalibratie van de eerste 4 punten. Als het tuit het papier vangt, Printer onmiddellijk uitschakelen."
 
 #define(length=20) MSG_BED_CORRECTION_MENU									"Bed juist"
-#define MSG_BED_CORRECTION_LEFT									"Links  [um]"
-#define MSG_BED_CORRECTION_RIGHT								"Rechts [um]"
-#define MSG_BED_CORRECTION_FRONT								"Vooruit[um]"
-#define MSG_BED_CORRECTION_REAR									"Achter [um]"
+#define MSG_BED_CORRECTION_LEFT									"Links     [um]"
+#define MSG_BED_CORRECTION_RIGHT								"Rechts    [um]"
+#define MSG_BED_CORRECTION_FRONT								"Voorruit  [um]"
+#define MSG_BED_CORRECTION_REAR									"Achter    [um]"
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
