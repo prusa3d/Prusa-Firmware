@@ -977,6 +977,7 @@ static void lcd_implementation_status_screen()
 				if (custom_message_state <= PINDA_HEAT_T) {
 					lcd_printPGM(PSTR(": "));
 					lcd.print(custom_message_state); //seconds
+					lcd.print(' ');
 				}
 			}
 
