@@ -520,10 +520,9 @@ void lcd_commands()
 	char cmd1[25];
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
 	{
-		if(lcd_commands_step == 0) { 
+		if(lcd_commands_step == 0) {
 			card.pauseSDPrint();
 			lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
-
 			lcdDrawUpdate = 3;
 			lcd_commands_step = 1;
 		}
@@ -563,7 +562,7 @@ void lcd_commands()
 			enquecommand(cmd1);
 			if (axis_relative_modes[3] == true) enquecommand_P(PSTR("M83")); // set extruder to relative mode.
 			else enquecommand_P(PSTR("M82")); // set extruder to absolute mode
-			enquecommand_P(PSTR("G1 E"  STRINGIFY(PAUSE_RETRACT))); //unretract
+			enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
 			enquecommand_P(PSTR("G90")); //absolute positioning
 			lcd_commands_step = 1;
 		}
@@ -662,7 +661,7 @@ void lcd_commands()
 			cancel_heatup = true;
 			setTargetBed(0);
 			#ifndef SNMM
-			setTargetHotend(0, 0);	//to heating when changing filament for multicolor
+			setTargetHotend(0, 0);	//heating when changing filament for multicolor
 			setTargetHotend(0, 1);
 			setTargetHotend(0, 2);
 			#endif
@@ -975,8 +974,11 @@ void lcd_wait_interact() {
   lcd_implementation_clear();
 
   lcd.setCursor(0, 1);
-
+#ifdef SNMM 
+  lcd_printPGM(MSG_PREPARE_FILAMENT);
+#else
   lcd_printPGM(MSG_INSERT_FILAMENT);
+#endif
   lcd.setCursor(0, 2);
   lcd_printPGM(MSG_PRESS);
 
@@ -1034,7 +1036,6 @@ void lcd_loading_filament() {
   lcd.setCursor(0, 2);
   lcd_printPGM(MSG_PLEASE_WAIT);
 
-
   for (int i = 0; i < 20; i++) {
 
     lcd.setCursor(i, 3);
@@ -1042,7 +1043,11 @@ void lcd_loading_filament() {
     for (int j = 0; j < 10 ; j++) {
       manage_heater();
       manage_inactivity(true);
-      delay(110);
+#ifdef SNMM
+      delay(153);
+#else
+	  delay(137);
+#endif
 
     }
 
@@ -2361,7 +2366,7 @@ static void lcd_language_menu()
 
 void lcd_mesh_bedleveling()
 {
-
+	mesh_bed_run_from_menu = true;
 	enquecommand_P(PSTR("G80"));
 	lcd_return_to_status();
 }
@@ -2783,19 +2788,29 @@ void bowden_menu() {
 
 	}
 	enc_dif = encoderDiff;
-	/*while (1) {
-		if (lcd_clicked()) {
-			while (lcd_clicked());
-			delay(10);
-			while (lcd_clicked());
-			break;
-		}
-	}*/
 
 	while (1) {
-		
+
 		manage_heater();
 		manage_inactivity(true);
+
+		if (abs((enc_dif - encoderDiff)) > 2) {
+
+			if (enc_dif > encoderDiff) {
+					cursor_pos--;
+				}
+
+				if (enc_dif < encoderDiff) {
+					cursor_pos++;
+				}
+
+				if (cursor_pos > 3) {
+					cursor_pos = 3;
+				}
+
+				if (cursor_pos < 0) {
+					cursor_pos = 0;
+				}
 
 				lcd.setCursor(0, 0);
 				lcd.print(" ");
@@ -2807,25 +2822,43 @@ void bowden_menu() {
 				lcd.print(" ");
 				lcd.setCursor(0, cursor_pos);
 				lcd.print(">");
-				
-				
-				if (abs((enc_dif - encoderDiff)) > 4) {
 
-					if ((abs(enc_dif - encoderDiff)) > 1) {
+				enc_dif = encoderDiff;
+				delay(100);
+		}
+
+		if (lcd_clicked()) {
+			while (lcd_clicked());
+			delay(10);
+			while (lcd_clicked());
+
+			lcd_implementation_clear();
+			while (1) {
+
+				manage_heater();
+				manage_inactivity(true);
+
+				lcd.setCursor(1, 1);
+				lcd.print("Extruder ");
+				lcd.print(cursor_pos);
+				lcd.print(": ");
+				lcd.setCursor(13, 1);
+				lcd.print(bowden_length[cursor_pos] - 48);
+
+				if (abs((enc_dif - encoderDiff)) > 2) {
 						if (enc_dif > encoderDiff) {
 							bowden_length[cursor_pos]--;
-							lcd.setCursor(13, cursor_pos);
-							lcd.print(bowden_length[cursor_pos] -48);
+							lcd.setCursor(13, 1);
+							lcd.print(bowden_length[cursor_pos] - 48);
 							enc_dif = encoderDiff;
 						}
 
 						if (enc_dif < encoderDiff) {
 							bowden_length[cursor_pos]++;
-							lcd.setCursor(13, cursor_pos);
-							lcd.print(bowden_length[cursor_pos] -48);
+							lcd.setCursor(13, 1);
+							lcd.print(bowden_length[cursor_pos] - 48);
 							enc_dif = encoderDiff;
 						}
-					}
 				}
 				delay(100);
 				if (lcd_clicked()) {
@@ -2833,13 +2866,27 @@ void bowden_menu() {
 					delay(10);
 					while (lcd_clicked());
 					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
-					if (cursor_pos == 3) return;
-					else {
-						cursor_pos++;
+					if (lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Continue with another bowden?"))) {
+						lcd_update_enable(true);
+						lcd_implementation_clear();
+						enc_dif = encoderDiff;
+						lcd.setCursor(0, cursor_pos);
+						lcd.print(">");
+						for (int i = 0; i < 4; i++) {
+							lcd.setCursor(1, i);
+							lcd.print("Extruder ");
+							lcd.print(i);
+							lcd.print(": ");
+							EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+							lcd.print(bowden_length[i] - 48);
+
+						}
+						break;
 					}
+					else return;
 				}
-				
-		
+			}
+		}
 	}
 }
 
@@ -3021,7 +3068,7 @@ static int get_ext_nr() { //reads multiplexer input pins and return current extr
 
 void display_loading() {
 	switch (snmm_extruder) {
-	case 1: (MSG_FILAMENT_LOADING_T1); break;
+	case 1: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T1); break;
 	case 2: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T2); break;
 	case 3: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T3); break;
 	default: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T0); break;
@@ -3056,7 +3103,11 @@ static void extr_adj(int extruder) //loading filament for SNMM
 	//extr_mov(BOWDEN_LENGTH/2.f, 500);
 	extr_mov(bowden_length[extruder], 500);
 	lcd_implementation_clear();
-	lcd.setCursor(0, 1); lcd_printPGM(MSG_PLEASE_WAIT);
+	lcd.setCursor(0, 0); lcd_printPGM(MSG_LOADING_FILAMENT);
+	if(strlen(MSG_LOADING_FILAMENT)>18) lcd.setCursor(0, 1);
+	else lcd.print(" ");
+	lcd.print(snmm_extruder + 1);
+	lcd.setCursor(0, 2); lcd_printPGM(MSG_PLEASE_WAIT);
 	st_synchronize();
 	max_feedrate[E_AXIS] = 50;
 	lcd_update_enable(true);
@@ -3074,7 +3125,10 @@ static void extr_unload() { //unloads filament
 		lcd_implementation_clear();
 		lcd_display_message_fullscreen_P(PSTR(""));
 		max_feedrate[E_AXIS] = 50;
-		lcd.setCursor(0, 1); lcd_printPGM(MSG_PLEASE_WAIT);
+		lcd.setCursor(0, 0); lcd_printPGM(MSG_UNLOADING_FILAMENT);
+		lcd.print(" ");
+		lcd.print(snmm_extruder + 1);
+		lcd.setCursor(0, 2); lcd_printPGM(MSG_PLEASE_WAIT);
 		if (current_position[Z_AXIS] < 15) {
 			current_position[Z_AXIS] += 15; //lifting in Z direction to make space for extrusion
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 25, active_extruder);
@@ -3247,7 +3301,7 @@ static void fil_unload_menu()
 	END_MENU();
 }
 
-/*static void change_extr_menu(){
+static void change_extr_menu(){
 	START_MENU();
 	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
 	MENU_ITEM(function, PSTR("Extruder 1"), extr_change_0);
@@ -3256,7 +3310,7 @@ static void fil_unload_menu()
 	MENU_ITEM(function, PSTR("Extruder 4"), extr_change_3);
 
 	END_MENU();
-}*/
+}
 
 #endif
 
@@ -3524,7 +3578,7 @@ static void lcd_main_menu()
 	#ifdef SNMM
 	MENU_ITEM(submenu, MSG_LOAD_FILAMENT, fil_load_menu);
 	MENU_ITEM(submenu, MSG_UNLOAD_FILAMENT, fil_unload_menu);
-	//MENU_ITEM(submenu, MSG_CHANGE_EXTR, change_extr_menu);
+	MENU_ITEM(submenu, MSG_CHANGE_EXTR, change_extr_menu);
 	#endif
 	MENU_ITEM(submenu, MSG_SETTINGS, lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);
@@ -3567,6 +3621,17 @@ static void lcd_silent_mode_set_tune() {
   lcd_goto_menu(lcd_tune_menu, 9);
 }
 
+static void lcd_colorprint_change() {
+	
+	enquecommand_P(PSTR("M600"));
+	
+	custom_message = true;
+	custom_message_type = 2; //just print status message
+	lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
+	lcd_return_to_status();
+	lcdDrawUpdate = 3;
+}
+
 static void lcd_tune_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -3583,7 +3648,7 @@ static void lcd_tune_menu()
   MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);//5
   MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);//6
 #ifdef FILAMENTCHANGEENABLE
-  MENU_ITEM(gcode, MSG_FILAMENTCHANGE, PSTR("M600"));//7
+  MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
   
   if (SilentModeMenu == 0) {
@@ -3678,18 +3743,21 @@ void lcd_sdcard_stop()
 		}
 		if ((int32_t)encoderPosition == 2)
 		{
-				cancel_heatup = true;
+		cancel_heatup = true;
         #ifdef MESH_BED_LEVELING
         mbl.active = false;
         #endif
         // Stop the stoppers, update the position from the stoppers.
-        planner_abort_hard();
-        // Because the planner_abort_hard() initialized current_position[Z] from the stepper,
-        // Z baystep is no more applied. Reset it.
-        babystep_reset();
+		if (mesh_bed_leveling_flag == false && homing_flag == false) {
+			planner_abort_hard();
+			// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
+			// Z baystep is no more applied. Reset it.
+			babystep_reset();
+		}
         // Clean the input command queue.
         cmdqueue_reset();
 				lcd_setstatuspgm(MSG_PRINT_ABORTED);
+				lcd_update(2);
 				card.sdprinting = false;
 				card.closefile();
 

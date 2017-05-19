@@ -321,6 +321,7 @@ extern unsigned long pause_time;
 extern unsigned long start_pause_print;
 
 extern bool mesh_bed_leveling_flag;
+extern bool mesh_bed_run_from_menu;
 
 extern void calculate_volumetric_multipliers();
 
@@ -343,3 +344,4 @@ float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
 void wait_for_heater(long codenum);
+void serialecho_temperatures();
