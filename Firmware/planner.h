@@ -42,6 +42,12 @@ enum BlockFlag {
     BLOCK_FLAG_START_FROM_FULL_HALT = 4,
 };
 
+#if defined(LIN_ADVANCE)
+  extern float extruder_advance_k;
+  extern float advance_ed_ratio;
+  extern float position_float[NUM_AXIS];
+#endif
+
 // This struct is used when buffering the setup for each linear movement "nominal" values are as specified in 
 // the source g-code and may never actually be reached if acceleration management is active.
 typedef struct {
@@ -55,6 +61,12 @@ typedef struct {
   // accelerate_until and decelerate_after are set by calculate_trapezoid_for_block() and they need to be synchronized with the stepper interrupt controller.
   long accelerate_until;                    // The index of the step event on which to stop acceleration
   long decelerate_after;                    // The index of the step event on which to start decelerating
+  
+// Advance extrusion
+#if defined(LIN_ADVANCE)
+  bool use_advance_lead;
+  uint32_t abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
+#endif
 
   // Fields used by the motion planner to manage acceleration
 //  float speed_x, speed_y, speed_z, speed_e;        // Nominal mm/sec for each axis

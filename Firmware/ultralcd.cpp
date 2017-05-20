@@ -3656,6 +3656,11 @@ static void lcd_tune_menu()
   } else {
     MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set_tune);
   }
+  
+#if defined(LIN_ADVANCE)
+  MENU_ITEM_EDIT(float3, MSG_ADVANCE_K, &extruder_advance_k, 0, 999);
+  MENU_ITEM_EDIT(float3, MSG_E_D_RATIO, &advance_ed_ratio, 0, 999);	  
+#endif
   END_MENU();
 }
 
