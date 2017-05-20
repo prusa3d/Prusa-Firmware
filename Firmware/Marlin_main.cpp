@@ -75,6 +75,10 @@
 
 #define VERSION_STRING  "1.0.2"
 
+#ifdef AUTOMATIC_CURRENT_CONTROL
+  bool auto_current_control = 0;
+#endif
+
 
 #include "ultralcd.h"
 
@@ -208,6 +212,7 @@
 // M928 - Start SD logging (M928 filename.g) - ended by M29
 // M999 - Restart after being stopped by error
 
+// M900 - Set and/or Get advance K factor and WH/D ratio (Requires LIN_ADVANCE)
 //Stepper Movement Variables
 
 //===========================================================================
@@ -1598,6 +1603,22 @@ void get_command()
   #endif //SDSUPPORT
 }
 
+#define WITHIN(V,L,H) ((V) >= (L) && (V) <= (H))
+#define NUMERIC(a) WITHIN(a, '0', '9')
+#define NUMERIC_SIGNED(a) (NUMERIC(a) || (a) == '-')
+
+static char *current_command,      // The command currently being executed
+            *current_command_args, // The address where arguments begin
+            *seen_pointer;         // Set by code_seen(), used by the code_value functions
+
+inline bool code_has_value() {
+  int i = 1;
+  char c = seen_pointer[i];
+  while (c == ' ') c = seen_pointer[++i];
+  if (c == '-' || c == '+') c = seen_pointer[++i];
+  if (c == '.') c = seen_pointer[++i];
+  return NUMERIC(c);
+}
 
 // Return True if a character was found
 static inline bool    code_seen(char code) { return (strchr_pointer = strchr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
@@ -1606,6 +1627,7 @@ static inline float   code_value()      { return strtod(strchr_pointer+1, NULL);
 static inline long    code_value_long()    { return strtol(strchr_pointer+1, NULL, 10); }
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
 static inline uint8_t code_value_uint8()   { return uint8_t(strtol(strchr_pointer+1, NULL, 10)); };
+static inline bool code_value_bool() { return !code_has_value() || code_value_uint8() > 0; }
 
 #define DEFINE_PGM_READ_ANY(type, reader)       \
     static inline type pgm_read_any(const type *p)  \
@@ -5333,6 +5355,33 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 	case 602: {
 		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
+	}
+	break;
+	
+	case 900: {
+
+    st_synchronize();
+
+    const float newK = code_seen('K') ? code_value() : -1;
+    if (newK >= 0) extruder_advance_k = newK;
+
+    float newR = code_seen('R') ? code_value() : -1;
+    if (newR < 0) {
+      const float newD = code_seen('D') ? code_value() : -1,
+                  newW = code_seen('W') ? code_value() : -1,
+                  newH = code_seen('H') ? code_value() : -1;
+      if (newD >= 0 && newW >= 0 && newH >= 0)
+        newR = newD ? (newW * newH) / (sq(newD * 0.5) * M_PI) : 0;
+    }
+    if (newR >= 0) advance_ed_ratio = newR;
+
+    SERIAL_ECHO_START;
+    SERIAL_ECHOPAIR("Advance K=", extruder_advance_k);
+    SERIAL_ECHOPGM(" E/D=");
+    const float ratio = advance_ed_ratio;
+    if (ratio) SERIAL_ECHO(ratio); else SERIAL_ECHOPGM("Auto");
+    SERIAL_ECHO('\n');
+
 	}
 	break;
 

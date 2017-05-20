@@ -46,6 +46,11 @@
 #define MSG_REFRESH                         "\xF8" "Refresh"
 #define MSG_WATCH                           "Info screen"
 #define MSG_TUNE                            "Tune"
+
+//Linear Advance option
+#define MSG_ADVANCE_K						"Advance K"
+#define MSG_E_D_RATIO						"E-D Ratio"
+
 #define MSG_PAUSE_PRINT                     "Pause print"
 #define MSG_RESUME_PRINT                    "Resume print"
 #define MSG_STOP_PRINT                      "Stop print"

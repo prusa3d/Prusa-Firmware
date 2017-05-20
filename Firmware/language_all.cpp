@@ -27,6 +27,11 @@ const char * const MSG_ADJUSTZ_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_ADJUSTZ_NL
 };
 
+const char MSG_ADVANCE_K_EN[] PROGMEM = "Advance K";
+const char * const MSG_ADVANCE_K_LANG_TABLE[1] PROGMEM = {
+	MSG_ADVANCE_K_EN
+};
+
 const char MSG_AMAX_EN[] PROGMEM = "Amax ";
 const char * const MSG_AMAX_LANG_TABLE[1] PROGMEM = {
 	MSG_AMAX_EN
@@ -916,6 +921,11 @@ const char * const MSG_E_CAL_KNOB_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_E_CAL_KNOB_PL,
 	MSG_E_CAL_KNOB_DE,
 	MSG_E_CAL_KNOB_NL
+};
+
+const char MSG_E_D_RATIO_EN[] PROGMEM = "E-D Ratio";
+const char * const MSG_E_D_RATIO_LANG_TABLE[1] PROGMEM = {
+	MSG_E_D_RATIO_EN
 };
 
 const char MSG_Enqueing_EN[] PROGMEM = "enqueing \"";
