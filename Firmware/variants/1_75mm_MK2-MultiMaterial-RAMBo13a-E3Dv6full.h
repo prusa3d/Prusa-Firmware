@@ -6,7 +6,7 @@ GENERAL SETTINGS
 *------------------------------------*/
 
 // Printer revision
-#define FILAMENT_SIZE "1_75mm_MK2"
+#define FILAMENT_SIZE "1_75mm_MK2_MM"
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Developer flag
