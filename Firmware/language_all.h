@@ -1,6 +1,7 @@
 #ifndef LANGUAGE_ALL_H
 #define LANGUAGE_ALL_H
 
+#include <avr/pgmspace.h>
 // Language indices into their particular symbol tables.
 #define LANG_ID_EN 0
 #define LANG_ID_CZ 1
