@@ -93,7 +93,6 @@
 // PRUSA CODES
 // P F - Returns FW versions
 // P R - Returns revision of printer
-// P Y - Starts filament allignment process for multicolor
 
 // G0  -> G1
 // G1  - Coordinated Movement X Y Z E
