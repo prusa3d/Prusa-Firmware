@@ -2003,7 +2003,13 @@ void process_commands()
   float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
   int8_t SilentMode;
 #endif
-  if(code_seen("PRUSA")){
+  if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
+	  starpos = (strchr(strchr_pointer + 5, '*'));
+	  if (starpos != NULL)
+		  *(starpos) = '\0';
+	  lcd_setstatus(strchr_pointer + 5);
+  }
+  else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
 			if (farm_mode) {
 				PingTime = millis();
@@ -4334,12 +4340,12 @@ Sigma_Exit:
           SERIAL_PROTOCOLRPGM(MSG_M115_REPORT);
       }
       break;
-    case 117: // M117 display message
+/*    case 117: // M117 display message
       starpos = (strchr(strchr_pointer + 5,'*'));
       if(starpos!=NULL)
         *(starpos)='\0';
       lcd_setstatus(strchr_pointer + 5);
-      break;
+      break;*/
     case 114: // M114
       SERIAL_PROTOCOLPGM("X:");
       SERIAL_PROTOCOL(current_position[X_AXIS]);
