@@ -299,6 +299,7 @@ extern unsigned int heating_status_counter;
 extern bool custom_message;
 extern unsigned int custom_message_type;
 extern unsigned int custom_message_state;
+extern char snmm_filaments_used;
 extern unsigned long PingTime;
 
 

@@ -671,7 +671,7 @@ void lcd_commands()
 			lcd_commands_step = 5;
 		}
 		if (lcd_commands_step == 7 && !blocks_queued()) {
-			enquecommand_P(PSTR("M702"));
+			enquecommand_P(PSTR("M702 U"));
 			lcd_commands_step = 3;
 		}
 	}
@@ -3241,6 +3241,30 @@ void extr_unload_all() {
 			change_extr(i);
 			extr_unload();
 		}
+	}
+	else {
+		lcd_implementation_clear();
+		lcd.setCursor(0, 0);
+		lcd_printPGM(MSG_ERROR);
+		lcd.setCursor(0, 2);
+		lcd_printPGM(MSG_PREHEAT_NOZZLE);
+		delay(2000);
+		lcd_implementation_clear();
+		lcd_return_to_status();
+	}
+}
+
+//unloading just used filament (for snmm)
+
+void extr_unload_used() {
+	if (degHotend0() > EXTRUDE_MINTEMP) {
+		for (int i = 0; i < 4; i++) {
+			if (snmm_filaments_used & (1 << i)) {
+				change_extr(i);
+				extr_unload();
+			}
+		}
+		snmm_filaments_used = 0;
 	}
 	else {
 		lcd_implementation_clear();

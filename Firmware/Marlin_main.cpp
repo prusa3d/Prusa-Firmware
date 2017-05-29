@@ -285,6 +285,7 @@ bool custom_message;
 bool loading_flag = false;
 unsigned int custom_message_type;
 unsigned int custom_message_state;
+char snmm_filaments_used = 0;
 
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
@@ -4301,6 +4302,7 @@ Sigma_Exit:
           #endif
         }
       }
+	  snmm_filaments_used = 0;
       break;
     case 85: // M85
       if(code_seen('S')) {
@@ -4451,7 +4453,7 @@ Sigma_Exit:
         tmp_extruder = active_extruder;
         if(code_seen('T')) {
           tmp_extruder = code_value();
-          if(tmp_extruder >= EXTRUDERS) {
+		  if(tmp_extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
             SERIAL_ECHO(MSG_M200_INVALID_EXTRUDER);
             break;
@@ -5441,7 +5443,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	case 702:
 	{
 #ifdef SNMM
-		extr_unload_all();
+		if (code_seen('U')) {
+			extr_unload_used();
+		}
+		else {
+			extr_unload_all();
+		}
 #else
 		custom_message = true;
 		custom_message_type = 2;
@@ -5479,6 +5486,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  }
 	  else {
 		  tmp_extruder = code_value();
+		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 #ifdef SNMM
 		  snmm_extruder = tmp_extruder;
 
