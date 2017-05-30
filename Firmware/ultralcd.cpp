@@ -640,7 +640,7 @@ void lcd_commands()
 			#endif
 			lcd_ignore_click(false);
 			#ifdef SNMM
-			lcd_commands_step = 7;
+			lcd_commands_step = 8;
 			#else
 			lcd_commands_step = 3;
 			#endif
@@ -671,8 +671,16 @@ void lcd_commands()
 			lcd_commands_step = 5;
 		}
 		if (lcd_commands_step == 7 && !blocks_queued()) {
-			enquecommand_P(PSTR("M702 U"));
+			switch(snmm_stop_print_menu()) {
+				case 0: enquecommand_P(PSTR("M702")); break;//all 
+				case 1: enquecommand_P(PSTR("M702 U")); break; //used
+				case 2: enquecommand_P(PSTR("M702 C")); break; //current
+				default: enquecommand_P(PSTR("M702")); break;
+			}
 			lcd_commands_step = 3;
+		}
+		if (lcd_commands_step == 8 && !blocks_queued()) { //step 8 is here for delay (going to next step after execution of all gcodes from step 4)
+			lcd_commands_step = 7; 
 		}
 	}
 
@@ -2890,6 +2898,50 @@ void bowden_menu() {
 	}
 }
 
+static char snmm_stop_print_menu() { //menu for choosing which filaments will be unloaded in stop print
+	lcd_implementation_clear();
+	lcd_print_at_PGM(0,0,MSG_UNLOAD_FILAMENT); lcd.print(":");
+	lcd.setCursor(0, 1); lcd.print(">");
+	lcd_print_at_PGM(1,1,MSG_ALL);
+	lcd_print_at_PGM(1,2,MSG_USED);
+	lcd_print_at_PGM(1,3,MSG_CURRENT);
+	char cursor_pos = 1;
+	int enc_dif = 0;
+
+	while (1) {
+		manage_heater();
+		manage_inactivity(true);
+		if (abs((enc_dif - encoderDiff)) > 4) {
+
+			if ((abs(enc_dif - encoderDiff)) > 1) {
+				if (enc_dif > encoderDiff) cursor_pos--;
+				if (enc_dif < encoderDiff) cursor_pos++;
+				if (cursor_pos > 3) cursor_pos = 3;
+				if (cursor_pos < 1) cursor_pos = 1;
+
+				lcd.setCursor(0, 1);
+				lcd.print(" ");
+				lcd.setCursor(0, 2);
+				lcd.print(" ");
+				lcd.setCursor(0, 3);
+				lcd.print(" ");
+				lcd.setCursor(0, cursor_pos);
+				lcd.print(">");
+				enc_dif = encoderDiff;
+				delay(100);
+			}
+		}
+		if (lcd_clicked()) {
+			while (lcd_clicked());
+			delay(10);
+			while (lcd_clicked());
+			return(cursor_pos - 1);
+		}
+	}
+	
+}
+
+
 char reset_menu() {
 #ifdef SNMM
 	int items_no = 5;
@@ -3116,7 +3168,7 @@ static void extr_adj(int extruder) //loading filament for SNMM
 }
 
 
-static void extr_unload() { //unloads filament
+void extr_unload() { //unloads filament
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 	int8_t SilentMode;
@@ -3310,7 +3362,6 @@ static void fil_load_menu()
 	
 	END_MENU();
 }
-
 
 static void fil_unload_menu()
 {

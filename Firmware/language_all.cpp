@@ -25,6 +25,11 @@ const char * const MSG_ADJUSTZ_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_ADJUSTZ_DE
 };
 
+const char MSG_ALL_EN[] PROGMEM = "All";
+const char * const MSG_ALL_LANG_TABLE[1] PROGMEM = {
+	MSG_ALL_EN
+};
+
 const char MSG_AMAX_EN[] PROGMEM = "Amax ";
 const char * const MSG_AMAX_LANG_TABLE[1] PROGMEM = {
 	MSG_AMAX_EN
@@ -698,6 +703,11 @@ const char * const MSG_CORRECTLY_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_COUNT_X_EN[] PROGMEM = " Count X: ";
 const char * const MSG_COUNT_X_LANG_TABLE[1] PROGMEM = {
 	MSG_COUNT_X_EN
+};
+
+const char MSG_CURRENT_EN[] PROGMEM = "Current";
+const char * const MSG_CURRENT_LANG_TABLE[1] PROGMEM = {
+	MSG_CURRENT_EN
 };
 
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
@@ -3152,6 +3162,11 @@ const char * const MSG_USB_PRINTING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_USB_PRINTING_ES,
 	MSG_USB_PRINTING_PL,
 	MSG_USB_PRINTING_DE
+};
+
+const char MSG_USED_EN[] PROGMEM = "Used";
+const char * const MSG_USED_LANG_TABLE[1] PROGMEM = {
+	MSG_USED_EN
 };
 
 const char MSG_USERWAIT_EN[] PROGMEM = "Wait for user...";

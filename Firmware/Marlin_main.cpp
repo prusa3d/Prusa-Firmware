@@ -5444,10 +5444,13 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	{
 #ifdef SNMM
 		if (code_seen('U')) {
-			extr_unload_used();
+			extr_unload_used(); //unload all filaments which were used in current print
+		}
+		else if (code_seen('C')) {
+			extr_unload(); //unload just current filament 
 		}
 		else {
-			extr_unload_all();
+			extr_unload_all(); //unload all filaments
 		}
 #else
 		custom_message = true;

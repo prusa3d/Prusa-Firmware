@@ -224,8 +224,8 @@ static void extr_unload_3();
 static void lcd_disable_farm_mode();
 void extr_unload_all(); 
 void extr_unload_used();
-static void extr_unload();
-
+void extr_unload();
+static char snmm_stop_print_menu();
 
 void stack_error();
 static void lcd_ping_allert();
