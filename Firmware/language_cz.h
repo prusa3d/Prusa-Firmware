@@ -293,3 +293,6 @@
 #define MSG_TEMP_CALIBRATION_ON							"Tepl. kal. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Tepl. kal. [OFF]"
 #define MSG_PREPARE_FILAMENT							"Pripravte filament"
+#define MSG_ALL											"Vse"
+#define MSG_USED										"Pouzite behem tisku"
+#define MSG_CURRENT										"Pouze aktualni"

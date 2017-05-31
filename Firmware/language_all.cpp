@@ -26,7 +26,13 @@ const char * const MSG_ADJUSTZ_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_ALL_EN[] PROGMEM = "All";
-const char * const MSG_ALL_LANG_TABLE[1] PROGMEM = {
+const char MSG_ALL_CZ[] PROGMEM = "Vse";
+const char * const MSG_ALL_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_ALL_EN,
+	MSG_ALL_CZ,
+	MSG_ALL_EN,
+	MSG_ALL_EN,
+	MSG_ALL_EN,
 	MSG_ALL_EN
 };
 
@@ -706,7 +712,13 @@ const char * const MSG_COUNT_X_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_CURRENT_EN[] PROGMEM = "Current";
-const char * const MSG_CURRENT_LANG_TABLE[1] PROGMEM = {
+const char MSG_CURRENT_CZ[] PROGMEM = "Pouze aktualni";
+const char * const MSG_CURRENT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CURRENT_EN,
+	MSG_CURRENT_CZ,
+	MSG_CURRENT_EN,
+	MSG_CURRENT_EN,
+	MSG_CURRENT_EN,
 	MSG_CURRENT_EN
 };
 
@@ -3164,8 +3176,14 @@ const char * const MSG_USB_PRINTING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_USB_PRINTING_DE
 };
 
-const char MSG_USED_EN[] PROGMEM = "Used";
-const char * const MSG_USED_LANG_TABLE[1] PROGMEM = {
+const char MSG_USED_EN[] PROGMEM = "Used during print";
+const char MSG_USED_CZ[] PROGMEM = "Pouzite behem tisku";
+const char * const MSG_USED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_USED_EN,
+	MSG_USED_CZ,
+	MSG_USED_EN,
+	MSG_USED_EN,
+	MSG_USED_EN,
 	MSG_USED_EN
 };
 
