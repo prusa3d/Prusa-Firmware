@@ -46,8 +46,8 @@ enum BlockFlag {
 // the source g-code and may never actually be reached if acceleration management is active.
 typedef struct {
   // Fields used by the bresenham algorithm for tracing the line
-  // steps_x.y,z, step_event_count, acceleration_rate, direction_bits and active_extruder are set by plan_buffer_line().
-  long steps_x, steps_y, steps_z, steps_e;  // Step count along each axis
+  // steps, step_event_count, acceleration_rate, direction_bits and active_extruder are set by plan_buffer_line().
+  long steps[XYZE];                         // Step count along each axis
   unsigned long step_event_count;           // The number of step events required to complete this block
   long acceleration_rate;                   // The acceleration rate used for acceleration calculation
   unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
@@ -80,7 +80,7 @@ typedef struct {
   unsigned long nominal_rate;                        // The nominal step rate for this block in step_events/sec 
   unsigned long initial_rate;                        // The jerk-adjusted step rate at start of block  
   unsigned long final_rate;                          // The minimal rate at exit
-  unsigned long acceleration_st;                     // acceleration steps/sec^2
+  unsigned long acceleration_steps_per_s2;           // acceleration steps/sec^2
   //FIXME does it have to be unsigned long? Probably uint8_t would be just fine.
   unsigned long fan_speed;
   volatile char busy;
@@ -135,7 +135,7 @@ extern float retract_acceleration; //  mm/s^2   filament pull-pack and push-forw
 // Jerk is a maximum immediate velocity change.
 extern float max_jerk[NUM_AXIS];
 extern float mintravelfeedrate;
-extern unsigned long axis_steps_per_sqr_second[NUM_AXIS];
+extern unsigned long max_acceleration_steps_per_s2[NUM_AXIS];
 
 #ifdef AUTOTEMP
     extern bool autotemp_enabled;
