@@ -396,57 +396,66 @@ int getHeaterPower(int heater) {
     #endif
   #endif 
 
-void setExtruderAutoFanState(int pin, bool state)
+void setExtruderAutoFanSpeed(int pin, uint8_t fanSpeed)
 {
-  unsigned char newFanSpeed = (state != 0) ? EXTRUDER_AUTO_FAN_SPEED : 0;
   // this idiom allows both digital and PWM fan outputs (see M42 handling).
   pinMode(pin, OUTPUT);
-  digitalWrite(pin, newFanSpeed);
-  analogWrite(pin, newFanSpeed);
+  digitalWrite(pin, fanSpeed);
+  analogWrite(pin, fanSpeed);
+}
+
+uint8_t getNewFanSpeed(uint8_t old_fan_speed, int target_temperature) {
+  if (target_temperature > EXTRUDER_AUTO_FAN_HIGH_TEMPERATURE) {
+    // Use a slower fan so that the heater can keep up.
+    return max(old_fan_speed, EXTRUDER_AUTO_FAN_SLOW_SPEED);
+  } else {
+    return max(old_fan_speed, EXTRUDER_AUTO_FAN_SPEED);
+  }
 }
 
 void checkExtruderAutoFans()
 {
-  uint8_t fanState = 0;
+  uint8_t fanSpeed[3] = {0,0,0};
 
   // which fan pins need to be turned on?      
   #if defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1
     if (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE) 
-      fanState |= 1;
+      fanSpeed[0] = getNewFanSpeed(fanSpeed[0], target_temperature[0]);
   #endif
   #if defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1
     if (current_temperature[1] > EXTRUDER_AUTO_FAN_TEMPERATURE) 
     {
       if (EXTRUDER_1_AUTO_FAN_PIN == EXTRUDER_0_AUTO_FAN_PIN) 
-        fanState |= 1;
+        fanSpeed[0] = getNewFanSpeed(fanSpeed[0], target_temperature[1]);
       else
-        fanState |= 2;
+        fanSpeed[1] = getNewFanSpeed(fanSpeed[1], target_temperature[1]);
     }
   #endif
   #if defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1
     if (current_temperature[2] > EXTRUDER_AUTO_FAN_TEMPERATURE) 
     {
       if (EXTRUDER_2_AUTO_FAN_PIN == EXTRUDER_0_AUTO_FAN_PIN) 
-        fanState |= 1;
+        fanSpeed[0] = getNewFanSpeed(fanSpeed[0], target_temperature[2]);
       else if (EXTRUDER_2_AUTO_FAN_PIN == EXTRUDER_1_AUTO_FAN_PIN) 
-        fanState |= 2;
+        fanSpeed[1] = getNewFanSpeed(fanSpeed[1], target_temperature[2]);
       else
-        fanState |= 4;
+        fanSpeed[2] = getNewFanSpeed(fanSpeed[2], target_temperature[2]);
+      }
     }
   #endif
   
   // update extruder auto fan states
   #if defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1
-    setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, (fanState & 1) != 0);
+    setExtruderAutoFanSpeed(EXTRUDER_0_AUTO_FAN_PIN, fanSpeed[0]);
   #endif 
   #if defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1
     if (EXTRUDER_1_AUTO_FAN_PIN != EXTRUDER_0_AUTO_FAN_PIN) 
-      setExtruderAutoFanState(EXTRUDER_1_AUTO_FAN_PIN, (fanState & 2) != 0);
+      setExtruderAutoFanSpeed(EXTRUDER_1_AUTO_FAN_PIN, fanSpeed[1]);
   #endif 
   #if defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1
     if (EXTRUDER_2_AUTO_FAN_PIN != EXTRUDER_0_AUTO_FAN_PIN 
         && EXTRUDER_2_AUTO_FAN_PIN != EXTRUDER_1_AUTO_FAN_PIN)
-      setExtruderAutoFanState(EXTRUDER_2_AUTO_FAN_PIN, (fanState & 4) != 0);
+      setExtruderAutoFanSpeed(EXTRUDER_2_AUTO_FAN_PIN, fanSpeed[2]);
   #endif 
 }
 
@@ -1982,5 +1991,3 @@ float unscalePID_d(float d)
 }
 
 #endif //PIDTEMP
-
-
