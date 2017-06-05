@@ -1001,7 +1001,7 @@ Having the real displacement of the head, we can calculate the total movement le
   float safe_speed = block->nominal_speed;
   bool  limited = false;
   for (uint8_t axis = 0; axis < 4; ++ axis) {
-      float jerk = fabs(current_speed[axis]);
+      float jerk = fabs(current_speed[axis] - previous_speed[axis]);
       if (jerk > max_jerk[axis]) {
           // The actual jerk is lower, if it has been limited by the XY jerk.
           if (limited) {
