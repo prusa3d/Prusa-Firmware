@@ -2300,12 +2300,11 @@ void process_commands()
         prepare_arc_move(false);
       }
       break;
-    case 4: // G4 dwell
-      LCD_MESSAGERPGM(MSG_DWELL);
+    case 4: // G4 dwell      
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-
+	  if(codenum != 0) LCD_MESSAGERPGM(MSG_DWELL);
       st_synchronize();
       codenum += millis();  // keep track of when we started waiting
       previous_millis_cmd = millis();
