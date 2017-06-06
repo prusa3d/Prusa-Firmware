@@ -4122,7 +4122,7 @@ static void lcd_selftest()
 	}
 
 	if (_result)
-	{
+	{		
 		_progress = lcd_selftest_screen(5, _progress, 3, true, 2000);
 		_result = lcd_selfcheck_check_heater(true);
 	}
@@ -4339,9 +4339,9 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 	int _checked_snapshot = (_isbed) ? degBed() : degHotend(0);
 	int _opposite_snapshot = (_isbed) ? degHotend(0) : degBed();
-	int _cycles = (_isbed) ? 120 : 30;
+	int _cycles = (_isbed) ? 180 : 60; //~ 90s / 30s
 
-	target_temperature[0] = (_isbed) ? 0 : 100;
+	target_temperature[0] = (_isbed) ? 0 : 200;
 	target_temperature_bed = (_isbed) ? 100 : 0;
 	manage_heater();
 	manage_inactivity(true);
@@ -4353,8 +4353,16 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 		manage_heater();
 		manage_inactivity(true);
 		_progress = (_isbed) ? lcd_selftest_screen(5, _progress, 2, false, 400) : lcd_selftest_screen(1, _progress, 2, false, 400);
+		/*if (_isbed) {
+			MYSERIAL.print("Bed temp:");
+			MYSERIAL.println(degBed());
+		}
+		else {
+			MYSERIAL.print("Hotend temp:");
+			MYSERIAL.println(degHotend(0));
+		}*/
 
-	} while (_docycle);
+	} while (_docycle); 
 
 	target_temperature[0] = 0;
 	target_temperature_bed = 0;
@@ -4362,7 +4370,13 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 	int _checked_result = (_isbed) ? degBed() - _checked_snapshot : degHotend(0) - _checked_snapshot;
 	int _opposite_result = (_isbed) ? degHotend(0) - _opposite_snapshot : degBed() - _opposite_snapshot;
-
+	/*
+	MYSERIAL.println("");
+	MYSERIAL.print("Checked result:");
+	MYSERIAL.println(_checked_result);
+	MYSERIAL.print("Opposite result:");
+	MYSERIAL.println(_opposite_result);
+	*/
 	if (_opposite_result < ((_isbed) ? 10 : 3))
 	{
 		if (_checked_result >= ((_isbed) ? 3 : 10))
