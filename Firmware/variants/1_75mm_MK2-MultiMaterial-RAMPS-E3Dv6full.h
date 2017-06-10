@@ -6,7 +6,7 @@ GENERAL SETTINGS
 *------------------------------------*/
 
 // Printer revision
-#define FILAMENT_SIZE "1_75mm_MK2"
+#define FILAMENT_SIZE "1_75mm_MK2_MM"
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Developer flag
@@ -19,7 +19,7 @@ GENERAL SETTINGS
 #define MOTHERBOARD BOARD_RAMPS_1_4
 
 // Prusa Single extruder multiple material suport
-//#define SNMM
+#define SNMM
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
