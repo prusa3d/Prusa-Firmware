@@ -1,6 +1,7 @@
 #ifndef LANGUAGE_ALL_H
 #define LANGUAGE_ALL_H
 
+#include <avr/pgmspace.h>
 // Language indices into their particular symbol tables.
 #define LANG_ID_EN 0
 #define LANG_ID_CZ 1
@@ -28,7 +29,7 @@ extern unsigned char lang_selected;
 extern const char* const MSG_ACTIVE_EXTRUDER_LANG_TABLE[1];
 #define MSG_ACTIVE_EXTRUDER LANG_TABLE_SELECT_EXPLICIT(MSG_ACTIVE_EXTRUDER_LANG_TABLE, 0)
 extern const char* const MSG_ADJUSTZ_LANG_TABLE[LANG_NUM];
-#define MSG_ADJUSTZ LANG_TABLE_SELECT(MSG_ADJUSTZ_LANG_TABLE)
+#define MSG_ADJUSTZ LANG_TABLE_SELECT(MSG_ADJUSTZ_LANG_TABLE) 
 extern const char* const MSG_AMAX_LANG_TABLE[1];
 #define MSG_AMAX LANG_TABLE_SELECT_EXPLICIT(MSG_AMAX_LANG_TABLE, 0)
 extern const char* const MSG_AUTHOR_LANG_TABLE[1];

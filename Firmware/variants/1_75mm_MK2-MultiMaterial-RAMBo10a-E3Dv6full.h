@@ -6,7 +6,7 @@ GENERAL SETTINGS
 *------------------------------------*/
 
 // Printer revision
-#define FILAMENT_SIZE "1_75mm_MK2"
+#define FILAMENT_SIZE "1_75mm_MK2_MM"
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Developer flag
@@ -16,10 +16,10 @@ GENERAL SETTINGS
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK2"
 
 // Electronics
-#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
+#define MOTHERBOARD BOARD_RAMBO_MINI_1_0
 
 // Prusa Single extruder multiple material suport
-//#define SNMM
+#define SNMM
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
@@ -123,10 +123,8 @@ EXTRUDER SETTINGS
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
-
-
-
-
+// Prusa Single extruder multiple material suport
+//#define SNMM
 
 #ifdef SNMM
 //#define BOWDEN_LENGTH	408
@@ -344,7 +342,7 @@ THERMISTORS SETTINGS
 // 1047 is Pt1000 with 4k7 pullup
 // 1010 is Pt1000 with 1k pullup (non standard)
 // 147 is Pt100 with 4k7 pullup
-// 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.3a
+// 148 is Pt100 with 4k7 pullup and no PT100 Amplifier (in case type 147 doesn't work)
 // 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
 
