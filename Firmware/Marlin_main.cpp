@@ -907,18 +907,18 @@ void factory_reset(char level, bool quiet)
                    
         // Level 0: Language reset
         case 0:
-            WRITE(BEEPER, HIGH);
+            WRITE(BEEPER_PIN, HIGH);
             _delay_ms(100);
-            WRITE(BEEPER, LOW);
+            WRITE(BEEPER_PIN, LOW);
             
             lcd_force_language_selection();
             break;
          
 		//Level 1: Reset statistics
 		case 1:
-			WRITE(BEEPER, HIGH);
+			WRITE(BEEPER_PIN, HIGH);
 			_delay_ms(100);
-			WRITE(BEEPER, LOW);
+			WRITE(BEEPER_PIN, LOW);
 			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
 			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
 			lcd_menu_statistics();
@@ -939,9 +939,9 @@ void factory_reset(char level, bool quiet)
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
                        
-            WRITE(BEEPER, HIGH);
+            WRITE(BEEPER_PIN, HIGH);
             _delay_ms(100);
-            WRITE(BEEPER, LOW);
+            WRITE(BEEPER_PIN, LOW);
 			//_delay_ms(2000);
             break;
 
@@ -951,9 +951,9 @@ void factory_reset(char level, bool quiet)
 			lcd_printPGM(PSTR("Factory RESET"));
 			lcd_print_at_PGM(1, 2, PSTR("ERASING all data"));
 
-			WRITE(BEEPER, HIGH);
+			WRITE(BEEPER_PIN, HIGH);
 			_delay_ms(100);
-			WRITE(BEEPER, LOW);
+			WRITE(BEEPER_PIN, LOW);
 
 			er_progress = 0;
 			lcd_print_at_PGM(3, 3, PSTR("      "));
@@ -1066,12 +1066,12 @@ void setup()
 			lcd_printPGM(PSTR("Factory RESET"));
 
 
-			SET_OUTPUT(BEEPER);
-			WRITE(BEEPER, HIGH);
+			SET_OUTPUT(BEEPER_PIN);
+			WRITE(BEEPER_PIN, HIGH);
 
 			while (!READ(BTN_ENC));
 
-			WRITE(BEEPER, LOW);
+			WRITE(BEEPER_PIN, LOW);
 
 
 
@@ -1093,13 +1093,13 @@ void setup()
 
 			if (!READ(BTN_ENC))
 			{
-				WRITE(BEEPER, HIGH);
+				WRITE(BEEPER_PIN, HIGH);
 				_delay_ms(100);
-				WRITE(BEEPER, LOW);
+				WRITE(BEEPER_PIN, LOW);
 				_delay_ms(200);
-				WRITE(BEEPER, HIGH);
+				WRITE(BEEPER_PIN, HIGH);
 				_delay_ms(100);
-				WRITE(BEEPER, LOW);
+				WRITE(BEEPER_PIN, LOW);
 
 				int _z = 0;
 				calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
@@ -1110,9 +1110,9 @@ void setup()
 			else
 			{
 
-				WRITE(BEEPER, HIGH);
+				WRITE(BEEPER_PIN, HIGH);
 				_delay_ms(100);
-				WRITE(BEEPER, LOW);
+				WRITE(BEEPER_PIN, LOW);
 			}
   #endif // mesh */
 
@@ -1887,9 +1887,9 @@ void refresh_cmd_timeout(void)
 #endif //FWRETRACT
 
 void trace() {
-    tone(BEEPER, 440);
+    tone(BEEPER_PIN, 440);
     delay(25);
-    noTone(BEEPER);
+    noTone(BEEPER_PIN);
     delay(20);
 }
 /*
@@ -2142,7 +2142,7 @@ void process_commands()
                           //lcd_update();
                           if(cnt==0)
                           {
-                          #if BEEPER > 0
+                          #if BEEPER_PIN > 0
                           
                             if (counterBeep== 500){
                               counterBeep = 0;
@@ -2150,13 +2150,13 @@ void process_commands()
                             }
                           
                             
-                            SET_OUTPUT(BEEPER);
+                            SET_OUTPUT(BEEPER_PIN);
                             if (counterBeep== 0){
-                              WRITE(BEEPER,HIGH);
+                              WRITE(BEEPER_PIN,HIGH);
                             }
                             
                             if (counterBeep== 20){
-                              WRITE(BEEPER,LOW);
+                              WRITE(BEEPER_PIN,LOW);
                             }
                             
                             
@@ -2173,7 +2173,7 @@ void process_commands()
                           }
                         }
                         
-                        WRITE(BEEPER,LOW);
+                        WRITE(BEEPER_PIN,LOW);
                         
                         target[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
                         plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 20, active_extruder); 
@@ -4736,17 +4736,17 @@ Sigma_Exit:
       break;
     #endif // NUM_SERVOS > 0
 
-    #if (LARGE_FLASH == true && ( BEEPER > 0 || defined(ULTRALCD) || defined(LCD_USE_I2C_BUZZER)))
+    #if (LARGE_FLASH == true && ( BEEPER_PIN > 0 || defined(ULTRALCD) || defined(LCD_USE_I2C_BUZZER)))
     case 300: // M300
     {
       int beepS = code_seen('S') ? code_value() : 110;
       int beepP = code_seen('P') ? code_value() : 1000;
       if (beepS > 0)
       {
-        #if BEEPER > 0
-          tone(BEEPER, beepS);
+        #if BEEPER_PIN > 0
+          tone(BEEPER_PIN, beepS);
           delay(beepP);
-          noTone(BEEPER);
+          noTone(BEEPER_PIN);
         #elif defined(ULTRALCD)
 		  lcd_buzz(beepS, beepP);
 		#elif defined(LCD_USE_I2C_BUZZER)
@@ -5165,16 +5165,16 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
           if(cnt==0)
           {
-          #if BEEPER > 0
+          #if BEEPER_PIN > 0
             if (counterBeep== 500){
               counterBeep = 0;  
             }
-            SET_OUTPUT(BEEPER);
+            SET_OUTPUT(BEEPER_PIN);
             if (counterBeep== 0){
-              WRITE(BEEPER,HIGH);
+              WRITE(BEEPER_PIN,HIGH);
             }			
             if (counterBeep== 20){
-              WRITE(BEEPER,LOW);
+              WRITE(BEEPER_PIN,LOW);
             }
             counterBeep++;
           #else
@@ -5202,7 +5202,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif
         //Filament inserted
         
-        WRITE(BEEPER,LOW);
+        WRITE(BEEPER_PIN,LOW);
 
 		//Feed the filament to the end of nozzle quickly        
 #ifdef SNMM

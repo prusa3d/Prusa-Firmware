@@ -456,13 +456,13 @@ static void _drawmenu_sd(uint8_t row, const char* pstr, const char* filename, ch
 static void lcd_implementation_quick_feedback()
 {
 
-#if BEEPER > -1
-    SET_OUTPUT(BEEPER);
+#if BEEPER_PIN > -1
+    SET_OUTPUT(BEEPER_PIN);
     for(int8_t i=0;i<10;i++)
     {
-		WRITE(BEEPER,HIGH);
+		WRITE(BEEPER_PIN,HIGH);
 		delay(3);
-		WRITE(BEEPER,LOW);
+		WRITE(BEEPER_PIN,LOW);
 		delay(3);
     }
 #endif
