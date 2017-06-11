@@ -256,13 +256,13 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
         for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
             lcd_implementation_write(*c);
         lcd_print_at_PGM(0, 3, MSG_NEW_FIRMWARE_PLEASE_UPGRADE);
-        tone(BEEPER, 1000);
+        tone(BEEPER_PIN, 1000);
         delay_keep_alive(50);
-        noTone(BEEPER);
+        noTone(BEEPER_PIN);
         delay_keep_alive(500);
-        tone(BEEPER, 1000);
+        tone(BEEPER_PIN, 1000);
         delay_keep_alive(50);
-        noTone(BEEPER);
+        noTone(BEEPER_PIN);
         lcd_wait_for_click();
         lcd_update_enable(true);
         lcd_implementation_clear();

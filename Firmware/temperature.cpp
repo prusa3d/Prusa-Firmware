@@ -1208,9 +1208,9 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 	disable_e2();
 	manage_heater();
 	lcd_update();
-	WRITE(BEEPER, HIGH);
+	WRITE(BEEPER_PIN, HIGH);
 	delayMicroseconds(500);
-	WRITE(BEEPER, LOW);
+	WRITE(BEEPER_PIN, LOW);
 	delayMicroseconds(100);
 
 	if (isPreheat)
@@ -1290,10 +1290,10 @@ void max_temp_error(uint8_t e) {
   #endif
     SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
     SET_OUTPUT(FAN_PIN);
-    SET_OUTPUT(BEEPER);
+    SET_OUTPUT(BEEPER_PIN);
     WRITE(FAN_PIN, 1);
     WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
-    WRITE(BEEPER, 1);
+    WRITE(BEEPER_PIN, 1);
     // fanSpeed will consumed by the check_axes_activity() routine.
     fanSpeed=255;
 	if (farm_mode) { prusa_statistics(93); }
