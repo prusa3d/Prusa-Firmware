@@ -44,6 +44,15 @@ extern bool abort_on_endstop_hit;
 // Initialize and start the stepper motor subsystem
 void st_init();
 
+// Interrupt Service Routines
+
+void isr();
+
+#ifdef LIN_ADVANCE
+  void advance_isr();
+  void advance_isr_scheduler();
+#endif
+
 // Block until all buffered steps are executed
 void st_synchronize();
 
