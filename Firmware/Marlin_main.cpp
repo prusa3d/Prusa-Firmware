@@ -3655,14 +3655,15 @@ void process_commands()
                 calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
                 eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
                 // Complete XYZ calibration.
-                BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level);
-                uint8_t point_too_far_mask = 0;
-                clean_up_after_endstop_move();
+				uint8_t point_too_far_mask = 0;
+                BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level, point_too_far_mask);
+				clean_up_after_endstop_move();
                 // Print head up.
                 current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
                 st_synchronize();
                 if (result >= 0) {
+					point_too_far_mask = 0;
                     // Second half: The fine adjustment.
                     // Let the planner use the uncorrected coordinates.
                     mbl.reset();
@@ -3671,6 +3672,8 @@ void process_commands()
                     setup_for_endstop_move();
                     home_xy();
                     result = improve_bed_offset_and_skew(1, verbosity_level, point_too_far_mask);
+					SERIAL_ECHOLNPGM("world2machine_shift:");
+					MYSERIAL.print(world2machine_shift[0]);
                     clean_up_after_endstop_move();
                     // Print head up.
                     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;

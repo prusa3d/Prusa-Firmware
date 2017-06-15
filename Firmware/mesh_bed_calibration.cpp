@@ -75,15 +75,21 @@ const float bed_ref_points_4[] PROGMEM = {
 
 static inline float sqr(float x) { return x * x; }
 
+static inline bool point_on_1st_row(const uint8_t i, const uint8_t npts)
+{
+	if (npts == 4) return (i == 0);
+	else return (i < 3);
+}
+
 // Weight of a point coordinate in a least squares optimization.
 // The first row of points may not be fully reachable
 // and the y values may be shortened a bit by the bed carriage
 // pulling the belt up.
-static inline float point_weight_x(const uint8_t i, const float &y)
+static inline float point_weight_x(const uint8_t i, const uint8_t npts, const float &y)
 {
     float w = 1.f;
-    if (i < 3) {
-        if (y >= Y_MIN_POS_CALIBRATION_POINT_ACCURATE) {
+    if (point_on_1st_row(i, npts)) {
+		if (y >= Y_MIN_POS_CALIBRATION_POINT_ACCURATE) {
             w = WEIGHT_FIRST_ROW_X_HIGH;
         } else if (y < Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH) {
             // If the point is fully outside, give it some weight.
@@ -101,10 +107,10 @@ static inline float point_weight_x(const uint8_t i, const float &y)
 // The first row of points may not be fully reachable
 // and the y values may be shortened a bit by the bed carriage
 // pulling the belt up.
-static inline float point_weight_y(const uint8_t i, const float &y)
+static inline float point_weight_y(const uint8_t i, const uint8_t npts, const float &y)
 {
     float w = 1.f;
-    if (i < 3) {
+    if (point_on_1st_row(i, npts)) {
         if (y >= Y_MIN_POS_CALIBRATION_POINT_ACCURATE) {
             w = WEIGHT_FIRST_ROW_Y_HIGH;
         } else if (y < Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH) {
@@ -138,6 +144,8 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     )
 {
     if (verbosity_level >= 10) {
+		SERIAL_ECHOLNPGM("calculate machine skew and offset LS");
+
         // Show the initial state, before the fitting.
         SERIAL_ECHOPGM("X vector, initial: ");
         MYSERIAL.print(vec_x[0], 5);
@@ -210,7 +218,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                              (c == 0) ? 1.f :
                             ((c == 2) ? (-s1 * measured_pts[2 * i]) :
                                         (-c2 * measured_pts[2 * i + 1]));
-                        float w = point_weight_x(i, measured_pts[2 * i + 1]);
+                        float w = point_weight_x(i, npts, measured_pts[2 * i + 1]);
                         acc += a * b * w;
                     }
                     // Second for the residuum in the y axis. 
@@ -225,7 +233,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                              (c == 1) ? 1.f :
                             ((c == 2) ? ( c1 * measured_pts[2 * i]) :
                                         (-s2 * measured_pts[2 * i + 1]));
-                        float w = point_weight_y(i, measured_pts[2 * i + 1]);
+                        float w = point_weight_y(i, npts, measured_pts[2 * i + 1]);
                         acc += a * b * w;
                     }
                 }
@@ -241,7 +249,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                         ((r == 2) ? (-s1 * measured_pts[2 * i]) :
                                     (-c2 * measured_pts[2 * i + 1])));
                     float fx = c1 * measured_pts[2 * i] - s2 * measured_pts[2 * i + 1] + cntr[0] - pgm_read_float(true_pts + i * 2);
-                    float w = point_weight_x(i, measured_pts[2 * i + 1]);
+                    float w = point_weight_x(i, npts, measured_pts[2 * i + 1]);
                     acc += j * fx * w;
                 }
                 {
@@ -251,7 +259,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                         ((r == 2) ? ( c1 * measured_pts[2 * i]) :
                                     (-s2 * measured_pts[2 * i + 1])));
                     float fy = s1 * measured_pts[2 * i] + c2 * measured_pts[2 * i + 1] + cntr[1] - pgm_read_float(true_pts + i * 2 + 1);
-                    float w = point_weight_y(i, measured_pts[2 * i + 1]);
+                    float w = point_weight_y(i, npts, measured_pts[2 * i + 1]);
                     acc += j * fy * w;
                 }
             }
@@ -278,8 +286,8 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
 
         if (verbosity_level >= 20) {
             SERIAL_ECHOPGM("iteration: ");
-            MYSERIAL.print(iter, 0);
-            SERIAL_ECHOPGM("correction vector: ");
+            MYSERIAL.print(int(iter));
+			SERIAL_ECHOPGM("; correction vector: ");
             MYSERIAL.print(h[0], 5);
             SERIAL_ECHOPGM(", ");
             MYSERIAL.print(h[1], 5);
@@ -357,19 +365,36 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
         float errX = sqr(pgm_read_float(true_pts + i * 2) - x);
         float errY = sqr(pgm_read_float(true_pts + i * 2 + 1) - y);
         float err = sqrt(errX + errY);
-        if (i < 3) {
-            float w = point_weight_y(i, measured_pts[2 * i + 1]);
-            if (sqrt(errX) > BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_X ||
-                (w != 0.f && sqrt(errY) > BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_Y))
-                result = BED_SKEW_OFFSET_DETECTION_FITTING_FAILED;
-        } else {
-            if (err > BED_CALIBRATION_POINT_OFFSET_MAX_EUCLIDIAN)
-                result = BED_SKEW_OFFSET_DETECTION_FITTING_FAILED;
+		if (verbosity_level >= 10) {
+			SERIAL_ECHOPGM("point #");
+			MYSERIAL.print(int(i));
+			SERIAL_ECHOLNPGM(":");
+		}
+
+		if (point_on_1st_row(i, npts)) {
+				if(verbosity_level >= 20) SERIAL_ECHOPGM("Point on first row");
+				float w = point_weight_y(i, npts, measured_pts[2 * i + 1]);
+				if (sqrt(errX) > BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_X ||
+					(w != 0.f && sqrt(errY) > BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_Y)) {
+					result = BED_SKEW_OFFSET_DETECTION_FITTING_FAILED;
+					if (verbosity_level >= 20) {
+						SERIAL_ECHOPGM(", weigth Y: ");
+						MYSERIAL.print(w);
+						if (sqrt(errX) > BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_X) SERIAL_ECHOPGM(", error X > max. error X");
+						if (w != 0.f && sqrt(errY) > BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_Y) SERIAL_ECHOPGM(", error Y > max. error Y");
+					}
+				}
+		}
+		else {
+			if(verbosity_level >=20 ) SERIAL_ECHOPGM("Point not on first row");
+			if (err > BED_CALIBRATION_POINT_OFFSET_MAX_EUCLIDIAN) {
+				result = BED_SKEW_OFFSET_DETECTION_FITTING_FAILED;
+				if(verbosity_level >= 20) SERIAL_ECHOPGM(", error > max. error euclidian"); 
+			}
         }
         if (verbosity_level >= 10) {
-            SERIAL_ECHOPGM("point #");
-            MYSERIAL.print(int(i));
-            SERIAL_ECHOPGM(" measured: (");
+			SERIAL_ECHOLNPGM("");
+            SERIAL_ECHOPGM("measured: (");
             MYSERIAL.print(measured_pts[i * 2], 5);
             SERIAL_ECHOPGM(", ");
             MYSERIAL.print(measured_pts[i * 2 + 1], 5);
@@ -381,15 +406,27 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
             MYSERIAL.print(pgm_read_float(true_pts + i * 2), 5);
             SERIAL_ECHOPGM(", ");
             MYSERIAL.print(pgm_read_float(true_pts + i * 2 + 1), 5);
-            SERIAL_ECHOPGM("), error: ");
+			SERIAL_ECHOLNPGM(")");
+			SERIAL_ECHOPGM("error: ");
             MYSERIAL.print(err);
 			SERIAL_ECHOPGM(", error X: ");
-			MYSERIAL.print(errX);
+			MYSERIAL.print(sqrt(errX));
 			SERIAL_ECHOPGM(", error Y: ");
-			MYSERIAL.print(errY);
-            SERIAL_ECHOLNPGM("");
+			MYSERIAL.print(sqrt(errY));
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("");
         }
     }
+	if (verbosity_level >= 20) {
+		SERIAL_ECHOLNPGM("Max. errors:");
+		SERIAL_ECHOPGM("Max. error X:");
+		MYSERIAL.println(BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_X);
+		SERIAL_ECHOPGM("Max. error Y:");
+		MYSERIAL.println(BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_Y);
+		SERIAL_ECHOPGM("Max. error euclidian:");
+		MYSERIAL.println(BED_CALIBRATION_POINT_OFFSET_MAX_EUCLIDIAN);
+		SERIAL_ECHOLNPGM("");
+	}
 
     #if 0
     if (result == BED_SKEW_OFFSET_DETECTION_PERFECT && fabs(a1) < BED_SKEW_ANGLE_MILD && fabs(a2) < BED_SKEW_ANGLE_MILD) {
@@ -419,7 +456,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
         for (int8_t i = 0; i < npts; ++ i) {
             float x = vec_x[0] * measured_pts[i * 2] + vec_y[0] * measured_pts[i * 2 + 1];
             float y = vec_x[1] * measured_pts[i * 2] + vec_y[1] * measured_pts[i * 2 + 1];
-            float w = point_weight_x(i, y);
+            float w = point_weight_x(i, npts, y);
 			cntr[0] += w * (pgm_read_float(true_pts + i * 2) - x);
 			wx += w;
 			if (verbosity_level >= 20) {
@@ -434,7 +471,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
 				SERIAL_ECHOLNPGM("wx:");
 				MYSERIAL.print(wx);
 			}
-            w = point_weight_y(i, y);
+            w = point_weight_y(i, npts, y);
 			cntr[1] += w * (pgm_read_float(true_pts + i * 2 + 1) - y);
 			wy += w;
 
@@ -532,6 +569,13 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
             MYSERIAL.print(sqrt(sqr(measured_pts[i * 2] - x) + sqr(measured_pts[i * 2 + 1] - y)));
             SERIAL_ECHOLNPGM("");
         }
+		if (verbosity_level >= 20) {
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("Calculate offset and skew returning result:");
+			MYSERIAL.print(int(result));
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("");
+		}
         delay_keep_alive(100);
     }
 
@@ -623,7 +667,7 @@ static inline bool vec_undef(const float v[2])
 
 void world2machine_initialize()
 {
-//    SERIAL_ECHOLNPGM("world2machine_initialize()");
+    SERIAL_ECHOLNPGM("world2machine_initialize");
     float cntr[2] = {
         eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0)),
         eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4))
@@ -639,7 +683,7 @@ void world2machine_initialize()
 
     bool reset = false;
     if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y)) {
-        // SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
+        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
         reset = true;
     }
     else {
@@ -746,7 +790,7 @@ static inline void update_current_position_z()
 // At the current position, find the Z stop.
 inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter) 
 {
-//    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 1");
+    SERIAL_ECHOLNPGM("find bed induction sensor point z");
     bool endstops_enabled  = enable_endstops(true);
     bool endstop_z_enabled = enable_z_endstop(false);
     float z = 0.f;
@@ -801,6 +845,7 @@ error:
 #define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.2f)
 inline bool find_bed_induction_sensor_point_xy()
 {
+	MYSERIAL.println("find bed induction sensor point xy");
     float feedrate = homing_feedrate[X_AXIS] / 60.f;
     bool found = false;
 
@@ -1238,12 +1283,13 @@ canceled:
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS (4.f)
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y (0.1f)
 inline bool improve_bed_induction_sensor_point3(int verbosity_level)
-{
+{	
     float center_old_x = current_position[X_AXIS];
     float center_old_y = current_position[Y_AXIS];
     float a, b;
     bool  result = true;
 
+	if (verbosity_level >= 20) MYSERIAL.println("Improve bed induction sensor point3");
     // Was the sensor point detected too far in the minus Y axis?
     // If yes, the center of the induction point cannot be reached by the machine.
     {
@@ -1578,8 +1624,8 @@ inline void scan_bed_induction_sensor_point()
 
 #define MESH_BED_CALIBRATION_SHOW_LCD
 
-BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level)
-{
+BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level, uint8_t &too_far_mask)
+{	
     // Don't let the manage_inactivity() function remove power from the motors.
     refresh_cmd_timeout();
 
@@ -1596,45 +1642,33 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 //    SERIAL_ECHOLNPGM("find_bed_offset_and_skew verbosity level: ");
 //    SERIAL_ECHO(int(verbosity_level));
 //    SERIAL_ECHOPGM("");
-
+	
 	while (iteration < 3) {
 
 		SERIAL_ECHOPGM("Iteration: ");
 		MYSERIAL.println(int(iteration + 1));
-
-		if (iteration > 0) {
-			// Cache the current correction matrix.
-			world2machine_initialize();
-			vec_x[0] = world2machine_rotation_and_skew[0][0];
-			vec_x[1] = world2machine_rotation_and_skew[1][0];
-			vec_y[0] = world2machine_rotation_and_skew[0][1];
-			vec_y[1] = world2machine_rotation_and_skew[1][1];
-			cntr[0] = world2machine_shift[0];
-			cntr[1] = world2machine_shift[1];
-			if (verbosity_level >= 20) {
-				SERIAL_ECHOPGM("vec_x[0]:");
-				MYSERIAL.print(vec_x[0], 5);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOPGM("vec_x[1]:");
-				MYSERIAL.print(vec_x[1], 5);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOPGM("vec_y[0]:");
-				MYSERIAL.print(vec_y[0], 5);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOPGM("vec_y[1]:");
-				MYSERIAL.print(vec_y[1], 5);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOPGM("cntr[0]:");
-				MYSERIAL.print(cntr[0], 5);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOPGM("cntr[1]:");
-				MYSERIAL.print(cntr[1], 5);
-				SERIAL_ECHOLNPGM("");
-			}
-			// and reset the correction matrix, so the planner will not do anything.
-			world2machine_reset();
+		if (verbosity_level >= 20) {
+		SERIAL_ECHOLNPGM("Vectors: ");
+		
+			SERIAL_ECHOPGM("vec_x[0]:");
+			MYSERIAL.print(vec_x[0], 5);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOPGM("vec_x[1]:");
+			MYSERIAL.print(vec_x[1], 5);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOPGM("vec_y[0]:");
+			MYSERIAL.print(vec_y[0], 5);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOPGM("vec_y[1]:");
+			MYSERIAL.print(vec_y[1], 5);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOPGM("cntr[0]:");
+			MYSERIAL.print(cntr[0], 5);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOPGM("cntr[1]:");
+			MYSERIAL.print(cntr[1], 5);
+			SERIAL_ECHOLNPGM("");
 		}
-
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
     lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1, next_line);
@@ -1643,7 +1677,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Collect the rear 2x3 points.
-    current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+	current_position[Z_AXIS] = MESH_HOME_Z_SEARCH + FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP * iteration * 0.3;
 	for (int k = 0; k < 4; ++k) {
 		// Don't let the manage_inactivity() function remove power from the motors.
 		refresh_cmd_timeout();
@@ -1672,10 +1706,10 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			delay_keep_alive(5000);
 		}
 		// Go to the measurement point position.
-		if (iteration == 0) {
+		//if (iteration == 0) {
 			current_position[X_AXIS] = pgm_read_float(bed_ref_points_4 + k * 2);
 			current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + k * 2 + 1);
-		}
+		/*}
 		else {
 			// if first iteration failed, count corrected point coordinates as initial
 			// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
@@ -1687,13 +1721,16 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			if (current_position[Y_AXIS] < Y_MIN_POS_FOR_BED_CALIBRATION)
 				current_position[Y_AXIS] = Y_MIN_POS_FOR_BED_CALIBRATION;
 
-		}
+		}*/
 		if (verbosity_level >= 20) {
-			SERIAL_ECHOPGM("corrected current_position[X_AXIS]:");
+			SERIAL_ECHOPGM("current_position[X_AXIS]:");
 			MYSERIAL.print(current_position[X_AXIS], 5);
 			SERIAL_ECHOLNPGM("");
-			SERIAL_ECHOPGM("corrected current_position[Y_AXIS]:");
+			SERIAL_ECHOPGM("current_position[Y_AXIS]:");
 			MYSERIAL.print(current_position[Y_AXIS], 5);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOPGM("current_position[Z_AXIS]:");
+			MYSERIAL.print(current_position[Z_AXIS], 5);
 			SERIAL_ECHOLNPGM("");
 		}
 
@@ -1734,22 +1771,30 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				MYSERIAL.println(current_position[X_AXIS]);
 				MYSERIAL.println(current_position[Y_AXIS]);
 			}
-			//pt[0] = (pt[0] * iteration) / (iteration + 1);
-			//pt[0] += (current_position[X_AXIS]/(iteration + 1)); //count average
-			//pt[1] = (pt[1] * iteration) / (iteration + 1);
-			//pt[1] += (current_position[Y_AXIS] / (iteration + 1));
+			pt[0] = (pt[0] * iteration) / (iteration + 1);
+			pt[0] += (current_position[X_AXIS]/(iteration + 1)); //count average
+			pt[1] = (pt[1] * iteration) / (iteration + 1);
+			pt[1] += (current_position[Y_AXIS] / (iteration + 1));
 			
 			
-			pt[0] += current_position[X_AXIS];
-			if(iteration > 0) pt[0] = pt[0] / 2;
-			
-			pt[1] += current_position[Y_AXIS];
-			if (iteration > 0) pt[1] = pt[1] / 2;
+			//pt[0] += current_position[X_AXIS];
+			//if(iteration > 0) pt[0] = pt[0] / 2;
+						
+			//pt[1] += current_position[Y_AXIS];
+			//if (iteration > 0) pt[1] = pt[1] / 2;
+
+			if (verbosity_level >= 20) {
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOPGM("pt[0]:");
+				MYSERIAL.println(pt[0]);
+				SERIAL_ECHOPGM("pt[1]:");
+				MYSERIAL.println(pt[1]);
+			}
 
 			if (current_position[Y_AXIS] < Y_MIN_POS)
 				current_position[Y_AXIS] = Y_MIN_POS;
 			// Start searching for the other points at 3mm above the last point.
-			current_position[Z_AXIS] += 3.f;
+			current_position[Z_AXIS] += 3.f + FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP * iteration * 0.3;
 			//cntr[0] += pt[0];
 			//cntr[1] += pt[1];
 			if (verbosity_level >= 10 && k == 0) {
@@ -1773,6 +1818,15 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				go_to_current(homing_feedrate[X_AXIS] / 60);
 				delay_keep_alive(3000);
 			}
+		}
+
+		if (pts[1] < Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH) {
+			too_far_mask |= 1 << 1; //front center point is out of reach
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOPGM("WARNING: Front point not reachable. Y coordinate:");
+				MYSERIAL.print(pts[1]);
+				SERIAL_ECHOPGM(" < ");
+				MYSERIAL.println(Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 		}
 
 		result = calculate_machine_skew_and_offset_LS(pts, 4, bed_ref_points_4, vec_x, vec_y, cntr, verbosity_level);
@@ -1811,6 +1865,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			// Correct the current_position to match the transformed coordinate system after world2machine_rotation_and_skew and world2machine_shift were set.
 			world2machine_update_current();
 
+			
 			if (verbosity_level >= 20) {
 				// Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
 				delay_keep_alive(3000);
@@ -1826,7 +1881,8 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				}
 			}
 			return result;
-		}
+		}		
+		if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED && too_far_mask == 2) return result; //if fitting failed and front center point is out of reach, terminate calibration and inform user
 		iteration++;
 	}
 	return result;    
@@ -1983,6 +2039,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
 
     if (verbosity_level >= 5) {
         // Test the positions. Are the positions reproducible?
+		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
             // Don't let the manage_inactivity() function remove power from the motors.
             refresh_cmd_timeout();
@@ -2042,6 +2099,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
     if (verbosity_level >= 5) {
         // Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
         delay_keep_alive(3000);
+		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
             // Don't let the manage_inactivity() function remove power from the motors.
             refresh_cmd_timeout();

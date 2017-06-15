@@ -150,14 +150,14 @@ enum BedSkewOffsetDetectionResultType {
 	// Detection failed, some point was not found.
 	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1,
 	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2,
-
+	
 	// Detection finished with success.
 	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,
 	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,
 	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2
 };
 
-extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level);
+extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level, uint8_t &too_far_mask);
 extern BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level, uint8_t &too_far_mask);
 
 extern bool sample_mesh_and_store_reference();
