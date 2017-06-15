@@ -278,3 +278,6 @@
 #define MSG_UNLOAD_FILAMENT_4							"Rilasciare fil. 1"
 #define MSG_UNLOAD_ALL									"Rilasciare tutti"
 #define MSG_PREPARE_FILAMENT							"Preparare filamento"
+#define MSG_ALL											"Tutti"
+#define MSG_USED										"Usati nella stampa"
+#define MSG_CURRENT										"Attuale"

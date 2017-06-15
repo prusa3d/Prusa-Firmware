@@ -287,3 +287,6 @@
 #define MSG_UNLOAD_FILAMENT_4							"Soltar fil. 4"
 #define MSG_UNLOAD_ALL									"Soltar todos fil."
 #define MSG_PREPARE_FILAMENT							"Preparar filamento"
+#define MSG_ALL											"Todos"
+#define MSG_USED										"Usado en impresion"
+#define MSG_CURRENT										"Actual"

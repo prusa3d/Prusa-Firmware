@@ -306,3 +306,6 @@
 #define MSG_UNLOAD_FILAMENT_4									"Filam. 4 entladen"
 #define MSG_UNLOAD_ALL											"Alles entladen"
 #define MSG_PREPARE_FILAMENT									"Filam. bereithalten"
+#define MSG_ALL													"Alle"
+#define MSG_USED												"Beim Druck benutzte"
+#define MSG_CURRENT												"Aktuelles"

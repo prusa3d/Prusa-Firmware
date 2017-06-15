@@ -290,3 +290,6 @@
 #define MSG_UNLOAD_FILAMENT_4									"Wyjac filament 4"
 #define MSG_UNLOAD_ALL											"Wyjac wszystkie"
 #define MSG_PREPARE_FILAMENT									"Przygotuj filament"
+#define MSG_ALL													"Wszystko"
+#define MSG_USED												"Uzyte przy druku"
+#define MSG_CURRENT												"Tylko aktualne"

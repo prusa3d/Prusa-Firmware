@@ -27,13 +27,17 @@ const char * const MSG_ADJUSTZ_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_ALL_EN[] PROGMEM = "All";
 const char MSG_ALL_CZ[] PROGMEM = "Vse";
+const char MSG_ALL_IT[] PROGMEM = "Tutti";
+const char MSG_ALL_ES[] PROGMEM = "Todos";
+const char MSG_ALL_PL[] PROGMEM = "Wszystko";
+const char MSG_ALL_DE[] PROGMEM = "Alle";
 const char * const MSG_ALL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_ALL_EN,
 	MSG_ALL_CZ,
-	MSG_ALL_EN,
-	MSG_ALL_EN,
-	MSG_ALL_EN,
-	MSG_ALL_EN
+	MSG_ALL_IT,
+	MSG_ALL_ES,
+	MSG_ALL_PL,
+	MSG_ALL_DE
 };
 
 const char MSG_AMAX_EN[] PROGMEM = "Amax ";
@@ -713,13 +717,17 @@ const char * const MSG_COUNT_X_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_CURRENT_EN[] PROGMEM = "Current";
 const char MSG_CURRENT_CZ[] PROGMEM = "Pouze aktualni";
+const char MSG_CURRENT_IT[] PROGMEM = "Attuale";
+const char MSG_CURRENT_ES[] PROGMEM = "Actual";
+const char MSG_CURRENT_PL[] PROGMEM = "Tylko aktualne";
+const char MSG_CURRENT_DE[] PROGMEM = "Aktuelles";
 const char * const MSG_CURRENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CURRENT_EN,
 	MSG_CURRENT_CZ,
-	MSG_CURRENT_EN,
-	MSG_CURRENT_EN,
-	MSG_CURRENT_EN,
-	MSG_CURRENT_EN
+	MSG_CURRENT_IT,
+	MSG_CURRENT_ES,
+	MSG_CURRENT_PL,
+	MSG_CURRENT_DE
 };
 
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
@@ -3178,13 +3186,17 @@ const char * const MSG_USB_PRINTING_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_USED_EN[] PROGMEM = "Used during print";
 const char MSG_USED_CZ[] PROGMEM = "Pouzite behem tisku";
+const char MSG_USED_IT[] PROGMEM = "Usati nella stampa";
+const char MSG_USED_ES[] PROGMEM = "Usado en impresion";
+const char MSG_USED_PL[] PROGMEM = "Uzyte przy druku";
+const char MSG_USED_DE[] PROGMEM = "Beim Druck benutzte";
 const char * const MSG_USED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_USED_EN,
 	MSG_USED_CZ,
-	MSG_USED_EN,
-	MSG_USED_EN,
-	MSG_USED_EN,
-	MSG_USED_EN
+	MSG_USED_IT,
+	MSG_USED_ES,
+	MSG_USED_PL,
+	MSG_USED_DE
 };
 
 const char MSG_USERWAIT_EN[] PROGMEM = "Wait for user...";
