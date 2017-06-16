@@ -5458,8 +5458,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		custom_message = true;
 		custom_message_type = 2;
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
-		current_position[E_AXIS] += 3;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
 		current_position[E_AXIS] -= 80;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7000 / 60, active_extruder);
 		st_synchronize();
