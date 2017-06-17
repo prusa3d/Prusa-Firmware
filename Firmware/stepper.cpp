@@ -633,6 +633,61 @@ ISR(TIMER1_COMPA_vect)
   }
 }
 #ifdef HAVE_TMC2130_DRIVERS
+      uint32_t tmc2130_read(uint8_t chipselect, uint8_t address)
+      {
+          uint32_t val32;
+          uint8_t val0;
+          uint8_t val1;
+          uint8_t val2;
+          uint8_t val3;
+          uint8_t val4;
+
+          //datagram1 - read request (address + dummy write)
+          SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE3));
+          digitalWrite(chipselect,LOW);
+          SPI.transfer(address);
+          SPI.transfer(0);
+          SPI.transfer(0);
+          SPI.transfer(0);
+          SPI.transfer(0);
+          digitalWrite(chipselect, HIGH);
+          SPI.endTransaction();
+
+          //datagram2 - response
+          SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE3));
+          digitalWrite(chipselect,LOW);
+          val0 = SPI.transfer(0);
+          val1 = SPI.transfer(0);
+          val2 = SPI.transfer(0);
+          val3 = SPI.transfer(0);
+          val4 = SPI.transfer(0);
+          digitalWrite(chipselect, HIGH);
+          SPI.endTransaction();
+
+#ifdef TMC_DBG_READS
+          MYSERIAL.print("SPIRead 0x");
+          MYSERIAL.print(address,HEX);
+          MYSERIAL.print(" Status:");
+          MYSERIAL.print(val0 & 0b00000111,BIN);
+          MYSERIAL.print("  ");
+          MYSERIAL.print(val1,BIN);
+          MYSERIAL.print("  ");
+          MYSERIAL.print(val2,BIN);
+          MYSERIAL.print("  ");
+          MYSERIAL.print(val3,BIN);
+          MYSERIAL.print("  ");
+          MYSERIAL.print(val4,BIN);
+#endif
+
+          val32 = (uint32_t)val1<<24 | (uint32_t)val2<<16 | (uint32_t)val3<<8 | (uint32_t)val4;
+
+#ifdef TMC_DBG_READS
+          MYSERIAL.print(" 0x");
+          MYSERIAL.println(val32,HEX);
+#endif
+          return val32;
+      }
+
       void tmc2130_write(uint8_t chipselect, uint8_t address,uint8_t wval1,uint8_t wval2,uint8_t wval3,uint8_t wval4)
       {
           uint32_t val32;
@@ -737,6 +792,36 @@ ISR(TIMER1_COMPA_vect)
       void tmc2130_PWMthreshold(uint8_t cs)
       {
           tmc2130_write(cs,0x13,0x00,0x00,0x00,0x00); // TMC LJ -> Adds possibility to swtich from stealthChop to spreadCycle automatically
+      }
+
+      void tmc2130_disable_motor(uint8_t driver)
+      {
+          uint8_t cs[4] = { X_TMC2130_CS, Y_TMC2130_CS, Z_TMC2130_CS, E0_TMC2130_CS };
+          tmc2130_write(cs[driver],0x6C,0,01,0,0);
+      }
+
+      void tmc2130_check_overtemp()
+      {
+        const static char TMC_OVERTEMP_MSG[] PROGMEM = "TMC DRIVER OVERTEMP ";
+        uint8_t cs[4] = { X_TMC2130_CS, Y_TMC2130_CS, Z_TMC2130_CS, E0_TMC2130_CS };
+        static uint32_t checktime = 0;
+        //drivers_disabled[0] = 1; //TEST
+
+        if( millis() - checktime > 1000 ) {
+          for(int i=0;i<4;i++) {
+              uint32_t drv_status = tmc2130_read(cs[i], 0x6F); //0x6F DRV_STATUS
+
+              if(drv_status & ((uint32_t)1<<26)) { // BIT 26 - over temp prewarning ~120C (+-20C)
+                SERIAL_ERRORRPGM(TMC_OVERTEMP_MSG);
+                SERIAL_ECHOLN(i);
+
+                for(int x=0; x<4;x++) tmc2130_disable_motor(x);
+                kill(TMC_OVERTEMP_MSG);
+              }
+          }
+
+          checktime = millis();
+        }
       }
       
 #endif //HAVE_TMC2130_DRIVERS

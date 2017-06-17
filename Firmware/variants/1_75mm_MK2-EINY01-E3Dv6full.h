@@ -24,7 +24,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3*16}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -186,8 +186,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
 #if MOTHERBOARD == 102 || MOTHERBOARD == 302 || MOTHERBOARD == 300
 #define MOTOR_CURRENT_PWM_RANGE 2000
-#define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
-#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
+#define DEFAULT_PWM_MOTOR_CURRENT  {650, 750, 750} // {XY,Z,E}
+#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {650, 750, 750} // {XY,Z,E}
 #endif
 
 /*------------------------------------

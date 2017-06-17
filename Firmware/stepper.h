@@ -88,6 +88,10 @@ void digipot_current(uint8_t driver, int current);
 void microstep_init();
 void microstep_readings();
 
+#ifdef HAVE_TMC2130_DRIVERS
+void tmc2130_check_overtemp();
+#endif
+
 #ifdef BABYSTEPPING
   void babystep(const uint8_t axis,const bool direction); // perform a short step with a single stepper motor, outside of any convention
 #endif

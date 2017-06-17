@@ -1316,6 +1316,8 @@ void loop()
   manage_inactivity();
   checkHitEndstops();
   lcd_update();
+
+  tmc2130_check_overtemp();
 }
 
 void get_command()
