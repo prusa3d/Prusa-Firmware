@@ -24,10 +24,10 @@ int pat9125_init(unsigned char xres, unsigned char yres)
 	ucPID2 = pat9125_rd_reg(PAT9125_PID2);
 	if ((ucPID1 != 0x31) || (ucPID2 != 0x91))
 	{
-		pat9125_wr_reg(PAT9125_RES_X, xres);
-		pat9125_wr_reg(PAT9125_RES_Y, yres);
 		return 0;
 	}
+    pat9125_wr_reg(PAT9125_RES_X, xres);
+    pat9125_wr_reg(PAT9125_RES_Y, yres);
 	return 1;
 }
 
