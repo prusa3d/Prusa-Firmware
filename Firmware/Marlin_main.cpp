@@ -1762,39 +1762,89 @@ static float probe_pt(float x, float y, float z_before) {
 
 void homeaxis(int axis) {
 #define HOMEAXIS_DO(LETTER) \
-  ((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
-
-  if (axis==X_AXIS ? HOMEAXIS_DO(X) :
-      axis==Y_AXIS ? HOMEAXIS_DO(Y) :
-      axis==Z_AXIS ? HOMEAXIS_DO(Z) :
-      0) {
-    int axis_home_dir = home_dir(axis);
-
-    current_position[axis] = 0;
-    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-
-    destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
-    feedrate = homing_feedrate[axis];
-    plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-
-    current_position[axis] = 0;
-    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-    destination[axis] = -home_retract_mm(axis) * axis_home_dir;
-    plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-
-    destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
-    feedrate = homing_feedrate[axis]/2 ;
-    plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-    axis_is_at_home(axis);
-    destination[axis] = current_position[axis];
-    feedrate = 0.0;
-    endstops_hit_on_purpose();
-    axis_known_position[axis] = true;
-  }
+((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
+    
+    if (axis==X_AXIS ? HOMEAXIS_DO(X) :
+        axis==Y_AXIS ? HOMEAXIS_DO(Y) :
+        0) {
+        int axis_home_dir = home_dir(axis);
+        
+        #ifdef HAVE_TMC2130_DRIVERS
+            st_setSGHoming(axis);
+            
+            // Configuration to spreadCycle
+            tmc2130_write((axis == X_AXIS)? X_TMC2130_CS : Y_TMC2130_CS,0x0,0,0,0,0x01);
+            
+            tmc2130_write((axis == X_AXIS)? X_TMC2130_CS : Y_TMC2130_CS,0x6D,0,SG_THRESHOLD,0,0);
+            
+            tmc2130_write((axis == X_AXIS)? X_TMC2130_CS : Y_TMC2130_CS,0x14,0,0,0,TCOOLTHRS);
+        #endif
+        
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        
+        destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
+        feedrate = homing_feedrate[axis];
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[axis] = -home_retract_mm(axis) * axis_home_dir;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        
+        destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
+        if(st_didLastHomingStall())
+            feedrate = homing_feedrate[axis];
+        else
+            feedrate = homing_feedrate[axis]/2 ;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        axis_is_at_home(axis);
+        destination[axis] = current_position[axis];
+        feedrate = 0.0;
+        endstops_hit_on_purpose();
+        axis_known_position[axis] = true;
+        
+        #ifdef HAVE_TMC2130_DRIVERS
+            // Configuration back to stealthChop
+            tmc2130_write((axis == X_AXIS)? X_TMC2130_CS : Y_TMC2130_CS,0x0,0,0,0,0x05);
+            
+            st_setSGHoming(0xFF);
+            st_resetSGflags();
+        #endif
+    }
+    else if (axis==Z_AXIS ? HOMEAXIS_DO(Z) :
+             0) {
+        int axis_home_dir = home_dir(axis);
+        
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        
+        destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
+        feedrate = homing_feedrate[axis];
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[axis] = -home_retract_mm(axis) * axis_home_dir;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        
+        destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
+        feedrate = homing_feedrate[axis]/2 ;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        axis_is_at_home(axis);
+        destination[axis] = current_position[axis];
+        feedrate = 0.0;
+        endstops_hit_on_purpose();
+        axis_known_position[axis] = true;
+    }
 }
+
 
 void home_xy()
 {

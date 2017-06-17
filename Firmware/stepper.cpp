@@ -82,8 +82,17 @@ static bool old_y_max_endstop=false;
 static bool old_z_min_endstop=false;
 static bool old_z_max_endstop=false;
 
-static bool check_endstops = true;
+#ifdef SG_HOMING
+    static bool check_endstops = false;
+#else
+    static bool check_endstops = true;
+#endif
+
 static bool check_z_endstop = false;
+
+static uint8_t sg_homing_axis = 0xFF;
+static uint8_t sg_axis_stalled[2] = {0, 0};
+static uint8_t sg_lastHomingStalled = false;
 
 int8_t SilentMode;
 
@@ -399,6 +408,11 @@ ISR(TIMER1_COMPA_vect)
         {
           #if defined(X_MIN_PIN) && X_MIN_PIN > -1
             bool x_min_endstop=(READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
+            #ifdef SG_HOMING
+                x_min_endstop=false;
+            #endif
+            if(sg_homing_axis == X_AXIS && !x_min_endstop)
+                x_min_endstop = sg_axis_stalled[X_AXIS];
             if(x_min_endstop && old_x_min_endstop && (current_block->steps_x > 0)) {
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
@@ -415,6 +429,8 @@ ISR(TIMER1_COMPA_vect)
         {
           #if defined(X_MAX_PIN) && X_MAX_PIN > -1
             bool x_max_endstop=(READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
+            if(sg_homing_axis == X_AXIS && !x_max_endstop)
+                x_max_endstop = sg_axis_stalled[X_AXIS];
             if(x_max_endstop && old_x_max_endstop && (current_block->steps_x > 0)){
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
@@ -435,6 +451,11 @@ ISR(TIMER1_COMPA_vect)
       {
         #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
           bool y_min_endstop=(READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
+            #ifdef SG_HOMING
+                      y_min_endstop=false;
+            #endif
+          if(sg_homing_axis == Y_AXIS && !y_min_endstop)
+              y_min_endstop = sg_axis_stalled[Y_AXIS];
           if(y_min_endstop && old_y_min_endstop && (current_block->steps_y > 0)) {
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
@@ -449,6 +470,8 @@ ISR(TIMER1_COMPA_vect)
       {
         #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
           bool y_max_endstop=(READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
+          if(sg_homing_axis == Y_AXIS && !y_max_endstop)
+              y_max_endstop = sg_axis_stalled[Y_AXIS];
           if(y_max_endstop && old_y_max_endstop && (current_block->steps_y > 0)){
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
@@ -765,6 +788,66 @@ ISR(TIMER1_COMPA_vect)
           
       }
       
+      uint32_t tmc2130_readRegister(uint8_t chipselect, uint8_t address){
+          
+          //datagram1 - write
+          SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
+          digitalWrite(chipselect,LOW);
+          SPI.transfer(address);
+          SPI.transfer(0x00);
+          SPI.transfer(0x00);
+          SPI.transfer(0x00);
+          SPI.transfer(0x00);
+          digitalWrite(chipselect, HIGH);
+          SPI.endTransaction();
+          
+          uint32_t val0;
+          
+          //datagram2 - response
+          SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
+          digitalWrite(chipselect,LOW);
+          
+          SPI.transfer(0); // ignore status bits
+          
+          val0 = SPI.transfer(0); // MSB
+          val0 = (val0 << 8) | SPI.transfer(0);
+          val0 = (val0 << 8) | SPI.transfer(0);
+          val0 = (val0 << 8) | SPI.transfer(0); //LSB
+          
+          digitalWrite(chipselect, HIGH);
+          SPI.endTransaction();
+          
+          return val0;
+      }
+      
+      uint16_t tmc2130_readSG(uint8_t chipselect){
+          
+          uint8_t address = 0x6F;
+          
+          uint32_t registerValue = tmc2130_readRegister(chipselect, address);
+          
+          uint16_t val0 = registerValue & 0x3ff;
+          
+          return val0;
+      }
+      
+      uint16_t tmc2130_readTStep(uint8_t chipselect){
+          
+          
+          uint8_t address = 0x12;
+          
+          uint32_t registerValue = tmc2130_readRegister(chipselect, address);
+          
+          uint16_t val0 = 0;
+          if(registerValue & 0x000f0000)
+              val0 = 0xffff;
+          else
+              val0 = registerValue & 0xffff;
+          
+          return val0;
+      }
+
+      
       void tmc2130_chopconf(uint8_t cs, bool extrapolate256 = 0, uint16_t microstep_resolution = 16)
       {
           uint8_t mres=0b0100;
@@ -793,6 +876,23 @@ ISR(TIMER1_COMPA_vect)
       {
           tmc2130_write(cs,0x13,0x00,0x00,0x00,0x00); // TMC LJ -> Adds possibility to swtich from stealthChop to spreadCycle automatically
       }
+      
+      
+      void st_setSGHoming(uint8_t axis){
+          sg_homing_axis = axis;
+      }
+      
+      void st_resetSGflags(){
+          sg_axis_stalled[X_AXIS] = false;
+          sg_axis_stalled[Y_AXIS] = false;
+      }
+      
+      uint8_t st_didLastHomingStall(){
+          uint8_t returnValue = sg_lastHomingStalled;
+          sg_lastHomingStalled = false;
+          return returnValue;
+      }
+
 
       void tmc2130_disable_motor(uint8_t driver)
       {
@@ -1063,11 +1163,53 @@ void st_init()
 // Block until all buffered steps are executed
 void st_synchronize()
 {
-    while( blocks_queued()) {
-    manage_heater();
-    // Vojtech: Don't disable motors inside the planner!
-    manage_inactivity(true);
-    lcd_update();
+  uint8_t delay = 0;
+  while( blocks_queued()) {
+      manage_heater();
+      // Vojtech: Don't disable motors inside the planner!
+      manage_inactivity(true);
+      lcd_update();
+      
+      if(sg_homing_axis == X_AXIS || sg_homing_axis == Y_AXIS)
+      {
+          uint8_t axis;
+          if(sg_homing_axis == X_AXIS)
+              axis = X_TMC2130_CS;
+          else
+              axis = Y_TMC2130_CS;
+          
+          uint16_t tstep = tmc2130_readTStep(axis);
+          //    	SERIAL_PROTOCOLLN(tstep);
+          
+          if(tstep < TCOOLTHRS)
+          {
+              if(delay < 255) // wait for a few tens microsteps until stallGuard is used //todo: read out microsteps directly, instead of delay counter
+                  delay++;
+              else
+              {
+                  uint16_t sg = tmc2130_readSG(axis);
+                  if(sg==0)
+                  {
+                      sg_axis_stalled[sg_homing_axis] = true;
+                      sg_lastHomingStalled = true;
+                  }
+                  else
+                      sg_axis_stalled[sg_homing_axis] = false;
+                  //            	SERIAL_PROTOCOLLN(sg);
+              }
+          }
+          else
+          {
+              sg_axis_stalled[sg_homing_axis] = false;
+              delay = 0;
+          }
+          
+      }
+      else
+      {
+          sg_axis_stalled[X_AXIS] = false;
+          sg_axis_stalled[Y_AXIS] = false;
+      }
   }
 }
 
