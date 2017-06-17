@@ -14,6 +14,7 @@
 //#include "Configuration.h"
 
 #include "SdFatUtil.h"
+#include "pat9125.h"
 
 #define _STRINGIFY(s) #s
 
@@ -503,6 +504,11 @@ static void lcd_status_screen()
 	  lcd.setCursor(0, 3);
 	  lcd_printPGM(MSG_PRINTER_DISCONNECTED);
   }
+    
+    lcd.setCursor(0, 3);
+    lcd_implementation_print(pat9125_x);
+    lcd.setCursor(10, 3);
+    lcd_implementation_print(pat9125_y);
 
 }
 

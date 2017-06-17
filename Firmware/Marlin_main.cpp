@@ -50,6 +50,7 @@
 #endif
 
 #include "ultralcd.h"
+#include "pat9125.h"
 #include "Configuration_prusa.h"
 #include "planner.h"
 #include "stepper.h"
@@ -1043,6 +1044,9 @@ void setup()
   world2machine_reset();
   
   lcd_init();
+    
+  pat9125_init(200, 200);
+    
   if (!READ(BTN_ENC))
   {
 	  _delay_ms(1000);
@@ -1317,6 +1321,8 @@ void loop()
   checkHitEndstops();
   lcd_update();
 
+  pat9125_update();
+    
   tmc2130_check_overtemp();
 }
 
