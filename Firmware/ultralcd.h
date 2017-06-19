@@ -248,6 +248,7 @@ union MenuData;
 
 void bowden_menu();
 char reset_menu();
+char choose_extruder_menu();
 
 void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();

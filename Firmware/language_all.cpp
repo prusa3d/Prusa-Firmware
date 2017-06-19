@@ -605,6 +605,11 @@ const char * const MSG_CHANGING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CHANGING_FILAMENT_DE
 };
 
+const char MSG_CHOOSE_EXTRUDER_EN[] PROGMEM = "Choose extruder:";
+const char * const MSG_CHOOSE_EXTRUDER_LANG_TABLE[1] PROGMEM = {
+	MSG_CHOOSE_EXTRUDER_EN
+};
+
 const char MSG_CLEAN_NOZZLE_E_EN[] PROGMEM = "E calibration finished. Please clean the nozzle. Click when done.";
 const char MSG_CLEAN_NOZZLE_E_CZ[] PROGMEM = "E kalibrace ukoncena. Prosim ocistete trysku. Po te potvrdte tlacitkem.";
 const char MSG_CLEAN_NOZZLE_E_IT[] PROGMEM = "Calibrazione E terminata. Si prega di pulire l'ugello. Click per continuare.";

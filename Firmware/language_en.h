@@ -296,5 +296,6 @@
 #define(length=19, lines=1) MSG_ALL								"All"
 #define(length=19, lines=1) MSG_USED							"Used during print"
 #define(length=19, lines=1) MSG_CURRENT							"Current"
+#define(length=20, lines=1)	MSG_CHOOSE_EXTRUDER					"Choose extruder:"
 
 

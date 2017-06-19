@@ -2941,6 +2941,94 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	
 }
 
+char choose_extruder_menu() {
+
+	int items_no = 4;
+	int first = 0;
+	int enc_dif = 0;
+	char cursor_pos = 1;
+	
+	enc_dif = encoderDiff;
+	lcd_implementation_clear();
+	
+	lcd_printPGM(MSG_CHOOSE_EXTRUDER);
+	lcd.setCursor(0, 1);
+	lcd.print(">");
+	for (int i = 0; i < 3; i++) {
+		lcd_print_at_PGM(1, i + 1, PSTR("Extruder"));
+	}
+
+	while (1) {
+
+		for (int i = 0; i < 3; i++) {
+			lcd.setCursor(10, i+1);
+			lcd.print(first + i + 1);
+		}
+
+		manage_heater();
+		manage_inactivity(true);
+
+		if (abs((enc_dif - encoderDiff)) > 4) {
+
+			if ((abs(enc_dif - encoderDiff)) > 1) {
+				if (enc_dif > encoderDiff) {
+					cursor_pos--;
+				}
+
+				if (enc_dif < encoderDiff) {
+					cursor_pos++;
+				}
+
+				if (cursor_pos > 3) {
+					cursor_pos = 3;
+					if (first < items_no - 3) {
+						first++;
+						lcd_implementation_clear();
+						lcd_printPGM(MSG_CHOOSE_EXTRUDER);
+						for (int i = 0; i < 3; i++) {
+							lcd_print_at_PGM(1, i + 1, PSTR("Extruder"));
+						}
+					}
+				}
+
+				if (cursor_pos < 1) {
+					cursor_pos = 1;
+					if (first > 0) {
+						first--;
+						lcd_implementation_clear();
+						lcd_printPGM(MSG_CHOOSE_EXTRUDER);
+						for (int i = 0; i < 3; i++) {
+							lcd_print_at_PGM(1, i + 1, PSTR("Extruder"));
+						}
+					}
+				}
+				lcd.setCursor(0, 1);
+				lcd.print(" ");
+				lcd.setCursor(0, 2);
+				lcd.print(" ");
+				lcd.setCursor(0, 3);
+				lcd.print(" ");
+				lcd.setCursor(0, cursor_pos);
+				lcd.print(">");
+				enc_dif = encoderDiff;
+				delay(100);
+			}
+
+		}
+
+		if (lcd_clicked()) {
+			lcd_update(2);
+			while (lcd_clicked());
+			delay(10);
+			while (lcd_clicked());
+			return(cursor_pos + first - 1);
+			
+		}
+
+	}
+
+}
+
 
 char reset_menu() {
 #ifdef SNMM

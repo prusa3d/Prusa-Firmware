@@ -5484,11 +5484,16 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  int index;
 	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 	   
-	  if (*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') {
+	  if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
 		  SERIAL_ECHOLNPGM("Invalid T code.");
 	  }
 	  else {
-		  tmp_extruder = code_value();
+		  if (*(strchr_pointer + index) == '?') {
+			  tmp_extruder = choose_extruder_menu();
+		  }
+		  else {
+			  tmp_extruder = code_value();
+		  }
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 #ifdef SNMM
 		  snmm_extruder = tmp_extruder;
