@@ -6,6 +6,9 @@
 // is built properly, the end stops are at the correct positions and the axes are perpendicular.
 extern const float bed_ref_points[] PROGMEM;
 
+extern const float bed_skew_angle_mild;
+extern const float bed_skew_angle_extreme;
+
 // Is the world2machine correction activated?
 enum World2MachineCorrectionMode
 {
@@ -140,8 +143,8 @@ inline bool world2machine_clamp(float &x, float &y)
     return clamped;
 }
 
-extern bool find_bed_induction_sensor_point_z(float minimum_z = -10.f, uint8_t n_iter = 3);
-extern bool find_bed_induction_sensor_point_xy();
+extern bool find_bed_induction_sensor_point_z(float minimum_z = -10.f, uint8_t n_iter = 3, int verbosity_level = 0);
+extern bool find_bed_induction_sensor_point_xy(int verbosity_level = 0);
 extern void go_home_with_z_lift();
 
 // Positive or zero: ok
@@ -178,5 +181,6 @@ extern void babystep_undo();
 
 // Reset the current babystep counter without moving the axes.
 extern void babystep_reset();
+extern void count_xyz_details();
 
 #endif /* MESH_BED_CALIBRATION_H */

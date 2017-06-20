@@ -287,6 +287,9 @@ unsigned int custom_message_type;
 unsigned int custom_message_state;
 char snmm_filaments_used = 0;
 
+float distance_from_min[3];
+float angleDiff;
+
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
   #if EXTRUDERS > 1
@@ -3672,8 +3675,6 @@ void process_commands()
                     setup_for_endstop_move();
                     home_xy();
                     result = improve_bed_offset_and_skew(1, verbosity_level, point_too_far_mask);
-					SERIAL_ECHOLNPGM("world2machine_shift:");
-					MYSERIAL.print(world2machine_shift[0]);
                     clean_up_after_endstop_move();
                     // Print head up.
                     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;

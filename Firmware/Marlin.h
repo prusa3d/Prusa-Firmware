@@ -324,6 +324,9 @@ extern unsigned long start_pause_print;
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
+extern float distance_from_min[3];
+extern float angleDiff;
+
 extern void calculate_volumetric_multipliers();
 
 // Similar to the default Arduino delay function, 

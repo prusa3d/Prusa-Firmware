@@ -256,4 +256,6 @@ void lcd_temp_calibration_set();
 
 void display_loading();
 
+void lcd_service_mode_show_result();
+
 #endif //ULTRALCD_H

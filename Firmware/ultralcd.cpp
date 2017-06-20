@@ -939,6 +939,8 @@ static void lcd_support_menu()
       MENU_ITEM(back, PSTR("FlashAir IP Addr:"), lcd_main_menu);
       MENU_ITEM(back_RAM, menuData.supportMenu.ip_str, lcd_main_menu);
   }
+  MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
+  MENU_ITEM(function, PSTR("XYZ cal. details"), lcd_service_mode_show_result);
 
   END_MENU();
 }
@@ -1343,6 +1345,57 @@ static void lcd_move_e()
 		lcd_return_to_status();
 	}
 }
+
+void lcd_service_mode_show_result() {
+	lcd_set_custom_characters_degree();
+	count_xyz_details();
+	lcd_update_enable(false);
+	lcd_implementation_clear();
+	lcd_printPGM(PSTR("Y distance from min:"));
+	lcd_print_at_PGM(0, 1, PSTR("Left:"));
+	lcd_print_at_PGM(0, 2, PSTR("Center:"));
+	lcd_print_at_PGM(0, 3, PSTR("Right:"));
+	for (int i = 0; i < 3; i++) {
+		if(distance_from_min[i] < 200) {
+			lcd_print_at_PGM(8, i + 1, PSTR(""));
+			lcd.print(distance_from_min[i]);
+			lcd_print_at_PGM(13, i + 1, PSTR("mm"));
+		} else lcd_print_at_PGM(8, i + 1, PSTR("N/A"));
+	}
+	delay_keep_alive(500);
+	while (!lcd_clicked()) {
+		delay_keep_alive(100);
+	}
+	delay_keep_alive(500);
+	lcd_implementation_clear();
+	
+
+	lcd_printPGM(PSTR("Angle diff: "));
+	if (angleDiff < 100) {
+		lcd.print(angleDiff * 180 / M_PI);
+		lcd.print(LCD_STR_DEGREE);
+	}else lcd_print_at_PGM(12, 0, PSTR("N/A"));
+	lcd_print_at_PGM(0, 1, PSTR("--------------------"));
+	lcd_print_at_PGM(0, 2, PSTR("Mild:"));
+	lcd_print_at_PGM(12, 2, PSTR(""));
+	lcd.print(bed_skew_angle_mild * 180 / M_PI);
+	lcd.print(LCD_STR_DEGREE);
+	lcd_print_at_PGM(0, 3, PSTR("Extreme:"));
+	lcd_print_at_PGM(12, 3, PSTR(""));
+	lcd.print(bed_skew_angle_extreme * 180 / M_PI);
+	lcd.print(LCD_STR_DEGREE);
+	delay_keep_alive(500);
+	while (!lcd_clicked()) {
+		delay_keep_alive(100);
+	}
+	delay_keep_alive(500);
+	lcd_set_custom_characters_arrows();
+	lcd_return_to_status();
+	lcd_update_enable(true);
+	lcd_update(2);
+}
+
+
 
 
 // Save a single axis babystep value.
