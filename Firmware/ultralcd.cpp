@@ -562,7 +562,7 @@ void lcd_commands()
 			enquecommand(cmd1);
 			if (axis_relative_modes[3] == true) enquecommand_P(PSTR("M83")); // set extruder to relative mode.
 			else enquecommand_P(PSTR("M82")); // set extruder to absolute mode
-			enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
+			enquecommand_P(PSTR("G1 E"  STRINGIFY((is_multi_material) ? DEFAULT_RETRACTION_MM : DEFAULT_RETRACTION_SM))); //unretract
 			enquecommand_P(PSTR("G90")); //absolute positioning
 			lcd_commands_step = 1;
 		}
@@ -2506,8 +2506,15 @@ void lcd_multi_material_toggle() {
 }
 
 void lcd_extr_cal_reset() {
-	float tmp1[] = DEFAULT_AXIS_STEPS_PER_UNIT;
-	axis_steps_per_unit[E_AXIS] = tmp1[3];
+	float tmp1_mm[]=DEFAULT_AXIS_STEPS_PER_UNIT_MM;
+	float tmp1_sm[]=DEFAULT_AXIS_STEPS_PER_UNIT_SM;
+
+	if (is_multi_material) {
+		axis_steps_per_unit[E_AXIS] = tmp1_mm[3];
+	} else {
+		axis_steps_per_unit[E_AXIS] = tmp1_sm[3];
+	}
+
 	//extrudemultiply = 100;
 	enquecommand_P(PSTR("M500"));
 }*/

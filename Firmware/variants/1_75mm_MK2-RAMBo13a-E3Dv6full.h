@@ -33,12 +33,8 @@ AXIS SETTINGS
 *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#ifdef SNMM
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
-#else
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
-#endif
-
+#define DEFAULT_AXIS_STEPS_PER_UNIT_MM   {100,100,3200/8,140}
+#define DEFAULT_AXIS_STEPS_PER_UNIT_SM   {100,100,3200/8,161.3}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -394,10 +390,7 @@ THERMISTORS SETTINGS
 
 #define DEFAULT_PID_TEMP 210
 
-#ifdef SNMM
-#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
-#else
-#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
-#endif
+#define DEFAULT_RETRACTION_MM 4 //used for PINDA temp calibration and pause print
+#define DEFAULT_RETRACTION_SM 1 //used for PINDA temp calibration and pause print
 
 #endif //__CONFIGURATION_PRUSA_H

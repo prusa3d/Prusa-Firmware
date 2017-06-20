@@ -365,12 +365,18 @@ void Config_RetrieveSettings()
 
 void Config_ResetDefault()
 {
-    float tmp1[]=DEFAULT_AXIS_STEPS_PER_UNIT;
+    float tmp1_mm[]=DEFAULT_AXIS_STEPS_PER_UNIT_MM;
+	float tmp1_sm[]=DEFAULT_AXIS_STEPS_PER_UNIT_SM;
     float tmp2[]=DEFAULT_MAX_FEEDRATE;
     long tmp3[]=DEFAULT_MAX_ACCELERATION;
     for (short i=0;i<4;i++) 
     {
-        axis_steps_per_unit[i]=tmp1[i];  
+		if (is_multi_material) {
+			axis_steps_per_unit[i] = tmp1_mm[i];
+		} else {
+			axis_steps_per_unit[i] = tmp1_sm[i];
+		}
+
         max_feedrate[i]=tmp2[i];  
         max_acceleration_units_per_sq_second[i]=tmp3[i];
     }

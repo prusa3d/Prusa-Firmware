@@ -3181,7 +3181,7 @@ void process_commands()
 		SERIAL_ECHOLNPGM("Go home finished");
 		//unretract (after PINDA preheat retraction)
 		if (degHotend(active_extruder) > EXTRUDE_MINTEMP && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
-			current_position[E_AXIS] += DEFAULT_RETRACTION;
+			current_position[E_AXIS] += (is_multi_material) ? DEFAULT_RETRACTION_MM : DEFAULT_RETRACTION_SM;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 		}
 		// Restore custom message state
@@ -6426,7 +6426,7 @@ void temp_compensation_start() {
 	custom_message_state = PINDA_HEAT_T + 1;
 	lcd_update(2);
 	if (degHotend(active_extruder) > EXTRUDE_MINTEMP) {
-		current_position[E_AXIS] -= DEFAULT_RETRACTION;
+		current_position[E_AXIS] -= (is_multi_material) ? DEFAULT_RETRACTION_MM : DEFAULT_RETRACTION_SM;
 	}
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 	
@@ -6555,7 +6555,7 @@ void long_pause() //long pause print
 	pause_lastpos[E_AXIS] = current_position[E_AXIS];
 
 	//retract
-	current_position[E_AXIS] -= DEFAULT_RETRACTION;
+	current_position[E_AXIS] -= (is_multi_material) ? DEFAULT_RETRACTION_MM : DEFAULT_RETRACTION_SM;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 
 	//lift z
