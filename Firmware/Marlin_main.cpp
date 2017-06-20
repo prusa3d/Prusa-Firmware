@@ -1162,12 +1162,13 @@ void setup()
 		// 1) Set a high power mode.
 		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
 	}
-#ifdef SNMM
-	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
-	  int _z = BOWDEN_LENGTH;
-	  for(int i = 0; i<4; i++) EEPROM_save_B(EEPROM_BOWDEN_LENGTH + i * 2, &_z);
+
+	if (is_multi_material) {
+		if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
+			int _z = BOWDEN_LENGTH;
+			for (int i = 0; i < 4; i++) EEPROM_save_B(EEPROM_BOWDEN_LENGTH + i * 2, &_z);
+		}
 	}
-#endif
 
   // In the future, somewhere here would one compare the current firmware version against the firmware version stored in the EEPROM.
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
@@ -2004,11 +2005,10 @@ void process_commands()
 
   // PRUSA GCODES
 
-#ifdef SNMM
   float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
   float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
   int8_t SilentMode;
-#endif
+
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  starpos = (strchr(strchr_pointer + 5, '*'));
 	  if (starpos != NULL)
@@ -5119,35 +5119,31 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         }
         else
         {
-			#ifdef SNMM
-
-			#else
+			if (!is_multi_material) {
 				#ifdef FILAMENTCHANGE_FINALRETRACT
-							target[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
+					target[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
 				#endif
-			#endif // SNMM
+			}
         }
 
-#ifdef SNMM
-		target[E_AXIS] += 12;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500, active_extruder);
-		target[E_AXIS] += 6;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
-		target[E_AXIS] += (FIL_LOAD_LENGTH * -1);
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
-		st_synchronize();
-		target[E_AXIS] += (FIL_COOLING);
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-		target[E_AXIS] += (FIL_COOLING*-1);
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-		target[E_AXIS] += (bowden_length[snmm_extruder] *-1);
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
-		st_synchronize();
-
-#else
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
-#endif // SNMM
-		     
+		if (is_multi_material) {
+			target[E_AXIS] += 12;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500, active_extruder);
+			target[E_AXIS] += 6;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
+			target[E_AXIS] += (FIL_LOAD_LENGTH * -1);
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
+			st_synchronize();
+			target[E_AXIS] += (FIL_COOLING);
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+			target[E_AXIS] += (FIL_COOLING*-1);
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+			target[E_AXIS] += (bowden_length[snmm_extruder] * -1);
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
+			st_synchronize();
+		} else {
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+		}
 
         //finish moves
         st_synchronize();
@@ -5168,11 +5164,13 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           manage_heater();
           manage_inactivity(true);
 
-/*#ifdef SNMM
-		  target[E_AXIS] += 0.002;
-		  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
-
-#endif // SNMM*/
+		  
+/*
+          if (is_multi_material) {
+			target[E_AXIS] += 0.002;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
+          }
+*/
 
           if(cnt==0)
           {
@@ -5198,39 +5196,40 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           }
 
         }
-#ifdef SNMM
-		display_loading();
-		do {
-			target[E_AXIS] += 0.002;
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
-			delay_keep_alive(2);
-		} while (!lcd_clicked());		
-		/*if (millis() - load_filament_time > 2) {
-			load_filament_time = millis();
-			target[E_AXIS] += 0.001;
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
-		}*/
-#endif
-        //Filament inserted
+
+		if (is_multi_material) {
+			display_loading();
+			do {
+				target[E_AXIS] += 0.002;
+				plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
+				delay_keep_alive(2);
+			} while (!lcd_clicked());
+			/*if (millis() - load_filament_time > 2) {
+				load_filament_time = millis();
+				target[E_AXIS] += 0.001;
+				plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
+			}*/
+		}
+
+		//Filament inserted
         
         WRITE(BEEPER,LOW);
 
 		//Feed the filament to the end of nozzle quickly        
-#ifdef SNMM
-		
-		st_synchronize();
-		target[E_AXIS] += bowden_length[snmm_extruder];
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
-		target[E_AXIS] += FIL_LOAD_LENGTH - 60;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
-		target[E_AXIS] += 40;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
-		target[E_AXIS] += 10;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-#else
-		target[E_AXIS] += FILAMENTCHANGE_FIRSTFEED;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder);
-#endif // SNMM
+		if (is_multi_material) {
+			st_synchronize();
+			target[E_AXIS] += bowden_length[snmm_extruder];
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
+			target[E_AXIS] += FIL_LOAD_LENGTH - 60;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
+			target[E_AXIS] += 40;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
+			target[E_AXIS] += 10;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+		} else {
+			target[E_AXIS] += FILAMENTCHANGE_FIRSTFEED;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder);
+		}
         
         //Extrude some filament
         target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
@@ -5249,34 +5248,34 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             
              // Filament failed to load so load it again
              case 2:
-#ifdef SNMM
-				 display_loading();
-				 do {
-					 target[E_AXIS] += 0.002;
-					 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
-					 delay_keep_alive(2);
-				 } while (!lcd_clicked());
+				 if (is_multi_material) {
+					 display_loading();
+					 do {
+						 target[E_AXIS] += 0.002;
+						 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
+						 delay_keep_alive(2);
+					 } while (!lcd_clicked());
 
-				 st_synchronize();
-				 target[E_AXIS] += bowden_length[snmm_extruder];
-				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
-				 target[E_AXIS] += FIL_LOAD_LENGTH - 60;
-				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
-				 target[E_AXIS] += 40;
-				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
-				 target[E_AXIS] += 10;
-				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+					 st_synchronize();
+					 target[E_AXIS] += bowden_length[snmm_extruder];
+					 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
+					 target[E_AXIS] += FIL_LOAD_LENGTH - 60;
+					 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
+					 target[E_AXIS] += 40;
+					 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
+					 target[E_AXIS] += 10;
+					 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+				 } else {
+					 target[E_AXIS] += FILAMENTCHANGE_FIRSTFEED;
+					 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder);
+				 }
 
-#else
-                     target[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
-#endif                
-                     target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
+                 target[E_AXIS]+= FILAMENTCHANGE_FINALFEED;
+                 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
 
-                     lcd_loading_filament();
+                 lcd_loading_filament();
 
-                     break;
+                 break;
 
              // Filament loaded properly but color is not clear
              case 3:
@@ -5446,21 +5445,21 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	break;
 	case 702:
 	{
-#ifdef SNMM
-		extr_unload_all();
-#else
-		custom_message = true;
-		custom_message_type = 2;
-		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
-		current_position[E_AXIS] += 3;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
-		current_position[E_AXIS] -= 80;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7000 / 60, active_extruder);
-		st_synchronize();
-		lcd_setstatuspgm(WELCOME_MSG);
-		custom_message = false;
-		custom_message_type = 0;
-#endif	
+		if (is_multi_material) {
+			extr_unload_all();
+		} else {
+			custom_message = true;
+			custom_message_type = 2;
+			lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
+			current_position[E_AXIS] += 3;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
+			current_position[E_AXIS] -= 80;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7000 / 60, active_extruder);
+			st_synchronize();
+			lcd_setstatuspgm(WELCOME_MSG);
+			custom_message = false;
+			custom_message_type = 0;
+		}
 	}
 	break;
 
@@ -5485,94 +5484,93 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  }
 	  else {
 		  tmp_extruder = code_value();
-#ifdef SNMM
-		  snmm_extruder = tmp_extruder;
 
-		  st_synchronize();
-		  delay(100);
+		  if (is_multi_material) {
+			  snmm_extruder = tmp_extruder;
 
-		  disable_e0();
-		  disable_e1();
-		  disable_e2();
+			  st_synchronize();
+			  delay(100);
 
-		  pinMode(E_MUX0_PIN, OUTPUT);
-		  pinMode(E_MUX1_PIN, OUTPUT);
-		  pinMode(E_MUX2_PIN, OUTPUT);
+			  disable_e0();
+			  disable_e1();
+			  disable_e2();
 
-		  delay(100);
-		  SERIAL_ECHO_START;
-		  SERIAL_ECHO("T:");
-		  SERIAL_ECHOLN((int)tmp_extruder);
-		  switch (tmp_extruder) {
-		  case 1:
-			  WRITE(E_MUX0_PIN, HIGH);
-			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
+			  pinMode(E_MUX0_PIN, OUTPUT);
+			  pinMode(E_MUX1_PIN, OUTPUT);
+			  pinMode(E_MUX2_PIN, OUTPUT);
 
-			  break;
-		  case 2:
-			  WRITE(E_MUX0_PIN, LOW);
-			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
-
-			  break;
-		  case 3:
-			  WRITE(E_MUX0_PIN, HIGH);
-			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
-
-			  break;
-		  default:
-			  WRITE(E_MUX0_PIN, LOW);
-			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
-
-			  break;
-		  }
-		  delay(100);
-
-#else
-		  if (tmp_extruder >= EXTRUDERS) {
+			  delay(100);
 			  SERIAL_ECHO_START;
-			  SERIAL_ECHOPGM("T");
-			  SERIAL_PROTOCOLLN((int)tmp_extruder);
-			  SERIAL_ECHOLNRPGM(MSG_INVALID_EXTRUDER);
-		  }
-		  else {
-			  boolean make_move = false;
-			  if (code_seen('F')) {
-				  make_move = true;
-				  next_feedrate = code_value();
-				  if (next_feedrate > 0.0) {
-					  feedrate = next_feedrate;
-				  }
+			  SERIAL_ECHO("T:");
+			  SERIAL_ECHOLN((int)tmp_extruder);
+			  switch (tmp_extruder) {
+			  case 1:
+				  WRITE(E_MUX0_PIN, HIGH);
+				  WRITE(E_MUX1_PIN, LOW);
+				  WRITE(E_MUX2_PIN, LOW);
+
+				  break;
+			  case 2:
+				  WRITE(E_MUX0_PIN, LOW);
+				  WRITE(E_MUX1_PIN, HIGH);
+				  WRITE(E_MUX2_PIN, LOW);
+
+				  break;
+			  case 3:
+				  WRITE(E_MUX0_PIN, HIGH);
+				  WRITE(E_MUX1_PIN, HIGH);
+				  WRITE(E_MUX2_PIN, LOW);
+
+				  break;
+			  default:
+				  WRITE(E_MUX0_PIN, LOW);
+				  WRITE(E_MUX1_PIN, LOW);
+				  WRITE(E_MUX2_PIN, LOW);
+
+				  break;
 			  }
+			  delay(100);
+		  } else {
+			  if (tmp_extruder >= EXTRUDERS) {
+				  SERIAL_ECHO_START;
+				  SERIAL_ECHOPGM("T");
+				  SERIAL_PROTOCOLLN((int)tmp_extruder);
+				  SERIAL_ECHOLNRPGM(MSG_INVALID_EXTRUDER);
+			  }
+			  else {
+				  boolean make_move = false;
+				  if (code_seen('F')) {
+					  make_move = true;
+					  next_feedrate = code_value();
+					  if (next_feedrate > 0.0) {
+						  feedrate = next_feedrate;
+					  }
+				  }
 #if EXTRUDERS > 1
-			  if (tmp_extruder != active_extruder) {
-				  // Save current position to return to after applying extruder offset
-				  memcpy(destination, current_position, sizeof(destination));
-				  // Offset extruder (only by XY)
-				  int i;
-				  for (i = 0; i < 2; i++) {
-					  current_position[i] = current_position[i] -
-						  extruder_offset[i][active_extruder] +
-						  extruder_offset[i][tmp_extruder];
+				  if (tmp_extruder != active_extruder) {
+					  // Save current position to return to after applying extruder offset
+					  memcpy(destination, current_position, sizeof(destination));
+					  // Offset extruder (only by XY)
+					  int i;
+					  for (i = 0; i < 2; i++) {
+						  current_position[i] = current_position[i] -
+							  extruder_offset[i][active_extruder] +
+							  extruder_offset[i][tmp_extruder];
+					  }
+					  // Set the new active extruder and position
+					  active_extruder = tmp_extruder;
+					  plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+					  // Move to the old position if 'F' was in the parameters
+					  if (make_move && Stopped == false) {
+						  prepare_move();
+					  }
 				  }
-				  // Set the new active extruder and position
-				  active_extruder = tmp_extruder;
-				  plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-				  // Move to the old position if 'F' was in the parameters
-				  if (make_move && Stopped == false) {
-					  prepare_move();
-				  }
+#endif
+				  SERIAL_ECHO_START;
+				  SERIAL_ECHORPGM(MSG_ACTIVE_EXTRUDER);
+				  SERIAL_PROTOCOLLN((int)active_extruder);
 			  }
-#endif
-			  SERIAL_ECHO_START;
-			  SERIAL_ECHORPGM(MSG_ACTIVE_EXTRUDER);
-			  SERIAL_PROTOCOLLN((int)active_extruder);
 		  }
-
-#endif
 	  }
   } // end if(code_seen('T')) (end of T codes)
 

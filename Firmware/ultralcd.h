@@ -103,9 +103,7 @@ void lcd_mylang();
   extern int farm_timer;
   extern int farm_status;
 
-#ifdef SNMM
   extern uint8_t snmm_extruder;
-#endif // SNMM
 
   extern bool cancel_heatup;
   extern bool isPrintPaused;
