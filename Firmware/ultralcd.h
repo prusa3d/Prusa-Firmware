@@ -251,6 +251,8 @@ void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();
 void lcd_temp_calibration_set();
 
+void lcd_multi_material_toggle();
+
 void display_loading();
 
 #endif //ULTRALCD_H

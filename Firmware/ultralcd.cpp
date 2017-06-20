@@ -2409,6 +2409,14 @@ void lcd_calibrate_pinda() {
 	lcd_return_to_status();
 }
 
+void lcd_multi_material_toggle() {
+	is_multi_material = !is_multi_material;
+	eeprom_update_byte((unsigned char *)EEPROM_IS_MULTI_MATERIAL, is_multi_material);
+	digipot_init();
+	// TODO: WHAT IS THE CORRECT VALUE HERE?
+	lcd_goto_menu(lcd_settings_menu, 4);
+}
+
 #ifndef SNMM
 
 /*void lcd_calibrate_extruder() {
@@ -2535,6 +2543,12 @@ static void lcd_settings_menu()
     MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
   }
   
+  if (is_multi_material) {
+	  MENU_ITEM(function, MSG_IS_MULTI_MATERIAL_ON, lcd_multi_material_toggle);
+  } else {
+	  MENU_ITEM(function, MSG_IS_MULTI_MATERIAL_OFF, lcd_multi_material_toggle);
+  }
+
 	if (!isPrintPaused && !homing_flag)
 	{
 		MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);
