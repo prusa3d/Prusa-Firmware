@@ -278,3 +278,6 @@
 #define MSG_UNLOAD_FILAMENT_4							"Rilasciare fil. 1"
 #define MSG_UNLOAD_ALL									"Rilasciare tutti"
 #define MSG_PREPARE_FILAMENT							"Preparare filamento"
+
+#define MSG_IS_MULTI_MATERIAL_ON						"Multi Material [YES]"
+#define MSG_IS_MULTI_MATERIAL_OFF						"Multi Material [NO]"

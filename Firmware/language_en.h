@@ -294,4 +294,5 @@
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF			"Temp. cal. [OFF]"
 #define(length=20, lines=1) MSG_PREPARE_FILAMENT				"Prepare new filament"
 
-
+#define(length=20, lines=1) MSG_IS_MULTI_MATERIAL_ON			"Multi Material [YES]"
+#define(length=20, lines=1) MSG_IS_MULTI_MATERIAL_OFF			"Multi Material [NO]"

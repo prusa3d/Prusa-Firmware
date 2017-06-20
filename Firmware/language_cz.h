@@ -293,3 +293,6 @@
 #define MSG_TEMP_CALIBRATION_ON							"Tepl. kal. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Tepl. kal. [OFF]"
 #define MSG_PREPARE_FILAMENT							"Pripravte filament"
+
+#define MSG_IS_MULTI_MATERIAL_ON						"Multi Material [YES]"
+#define MSG_IS_MULTI_MATERIAL_OFF						"Multi Material [NO]"
