@@ -2563,11 +2563,11 @@ static void lcd_calibration_menu()
   if (!isPrintPaused)
   {
     MENU_ITEM(function, MSG_SELFTEST, lcd_selftest);
-#ifndef MESH_BED_LEVELING
+#ifdef MK1BP
     // MK1
     // "Calibrate Z"
     MENU_ITEM(gcode, MSG_HOMEYZ, PSTR("G28 Z"));
-#else
+#else //MK1BP
     // MK2
 MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     // "Calibrate Z" with storing the reference values to EEPROM.
@@ -2578,13 +2578,17 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
 #endif
     // "Mesh Bed Leveling"
     MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
-#endif
+#endif //MK1BP
     MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
     MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
+#ifndef MK1BP
 	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
+#endif //MK1BP
 	MENU_ITEM(submenu, MSG_PID_EXTRUDER, pid_extruder);
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
+#ifndef MK1BP
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
+#endif //MK1BP
 #ifndef SNMM
 	//MENU_ITEM(function, MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
 #endif
