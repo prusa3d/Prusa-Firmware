@@ -252,6 +252,7 @@ bool is_usb_printing = false;
 bool homing_flag = false;
 
 bool temp_cal_active = false;
+bool is_multi_material = false;
 
 unsigned long kicktime = millis()+100000;
 
@@ -1184,6 +1185,11 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 	}
+
+	if (eeprom_read_byte((uint8_t*)EEPROM_IS_MULTI_MATERIAL) == 255) {
+		eeprom_write_byte((uint8_t*)EEPROM_IS_MULTI_MATERIAL, 0);
+		is_multi_material = false;
+	} else is_multi_material = eeprom_read_byte((uint8_t*)EEPROM_IS_MULTI_MATERIAL);
 
 	check_babystep(); //checking if Z babystep is in allowed range
 	
