@@ -606,8 +606,18 @@ const char * const MSG_CHANGING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_CHOOSE_EXTRUDER_EN[] PROGMEM = "Choose extruder:";
-const char * const MSG_CHOOSE_EXTRUDER_LANG_TABLE[1] PROGMEM = {
-	MSG_CHOOSE_EXTRUDER_EN
+const char MSG_CHOOSE_EXTRUDER_CZ[] PROGMEM = "Vyberte extruder:";
+const char MSG_CHOOSE_EXTRUDER_IT[] PROGMEM = "Seleziona estrusore:";
+const char MSG_CHOOSE_EXTRUDER_ES[] PROGMEM = "Elegir extrusor:";
+const char MSG_CHOOSE_EXTRUDER_PL[] PROGMEM = "Wybierz ekstruder";
+const char MSG_CHOOSE_EXTRUDER_DE[] PROGMEM = "Waehlen Sie Extruder";
+const char * const MSG_CHOOSE_EXTRUDER_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CHOOSE_EXTRUDER_EN,
+	MSG_CHOOSE_EXTRUDER_CZ,
+	MSG_CHOOSE_EXTRUDER_IT,
+	MSG_CHOOSE_EXTRUDER_ES,
+	MSG_CHOOSE_EXTRUDER_PL,
+	MSG_CHOOSE_EXTRUDER_DE
 };
 
 const char MSG_CLEAN_NOZZLE_E_EN[] PROGMEM = "E calibration finished. Please clean the nozzle. Click when done.";
@@ -845,6 +855,71 @@ const char * const MSG_ERR_STOPPED_LANG_TABLE[1] PROGMEM = {
 const char MSG_EXTERNAL_RESET_EN[] PROGMEM = " External Reset";
 const char * const MSG_EXTERNAL_RESET_LANG_TABLE[1] PROGMEM = {
 	MSG_EXTERNAL_RESET_EN
+};
+
+const char MSG_EXTRUDER_EN[] PROGMEM = "Extruder";
+const char MSG_EXTRUDER_IT[] PROGMEM = "Estrusore";
+const char MSG_EXTRUDER_ES[] PROGMEM = "Extrusor";
+const char MSG_EXTRUDER_PL[] PROGMEM = "Ekstruder";
+const char * const MSG_EXTRUDER_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_EXTRUDER_EN,
+	MSG_EXTRUDER_EN,
+	MSG_EXTRUDER_IT,
+	MSG_EXTRUDER_ES,
+	MSG_EXTRUDER_PL,
+	MSG_EXTRUDER_EN
+};
+
+const char MSG_EXTRUDER_1_EN[] PROGMEM = "Extruder 1";
+const char MSG_EXTRUDER_1_IT[] PROGMEM = "Estrusore 1";
+const char MSG_EXTRUDER_1_ES[] PROGMEM = "Extrusor 1";
+const char MSG_EXTRUDER_1_PL[] PROGMEM = "Ekstruder 1";
+const char * const MSG_EXTRUDER_1_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_EXTRUDER_1_EN,
+	MSG_EXTRUDER_1_EN,
+	MSG_EXTRUDER_1_IT,
+	MSG_EXTRUDER_1_ES,
+	MSG_EXTRUDER_1_PL,
+	MSG_EXTRUDER_1_EN
+};
+
+const char MSG_EXTRUDER_2_EN[] PROGMEM = "Extruder 2";
+const char MSG_EXTRUDER_2_IT[] PROGMEM = "Estrusore 2";
+const char MSG_EXTRUDER_2_ES[] PROGMEM = "Extrusor 2";
+const char MSG_EXTRUDER_2_PL[] PROGMEM = "Ekstruder 2";
+const char * const MSG_EXTRUDER_2_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_EXTRUDER_2_EN,
+	MSG_EXTRUDER_2_EN,
+	MSG_EXTRUDER_2_IT,
+	MSG_EXTRUDER_2_ES,
+	MSG_EXTRUDER_2_PL,
+	MSG_EXTRUDER_2_EN
+};
+
+const char MSG_EXTRUDER_3_EN[] PROGMEM = "Extruder 3";
+const char MSG_EXTRUDER_3_IT[] PROGMEM = "Estrusore 3";
+const char MSG_EXTRUDER_3_ES[] PROGMEM = "Extrusor 3";
+const char MSG_EXTRUDER_3_PL[] PROGMEM = "Ekstruder 3";
+const char * const MSG_EXTRUDER_3_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_EXTRUDER_3_EN,
+	MSG_EXTRUDER_3_EN,
+	MSG_EXTRUDER_3_IT,
+	MSG_EXTRUDER_3_ES,
+	MSG_EXTRUDER_3_PL,
+	MSG_EXTRUDER_3_EN
+};
+
+const char MSG_EXTRUDER_4_EN[] PROGMEM = "Extruder 4";
+const char MSG_EXTRUDER_4_IT[] PROGMEM = "Estrusore 4";
+const char MSG_EXTRUDER_4_ES[] PROGMEM = "Extrusor 4";
+const char MSG_EXTRUDER_4_PL[] PROGMEM = "Ekstruder 4";
+const char * const MSG_EXTRUDER_4_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_EXTRUDER_4_EN,
+	MSG_EXTRUDER_4_EN,
+	MSG_EXTRUDER_4_IT,
+	MSG_EXTRUDER_4_ES,
+	MSG_EXTRUDER_4_PL,
+	MSG_EXTRUDER_4_EN
 };
 
 const char MSG_E_CAL_KNOB_EN[] PROGMEM = "Rotate knob until mark reaches extruder body. Click when done.";

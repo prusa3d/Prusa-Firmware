@@ -3008,13 +3008,13 @@ char choose_extruder_menu() {
 	lcd.setCursor(0, 1);
 	lcd.print(">");
 	for (int i = 0; i < 3; i++) {
-		lcd_print_at_PGM(1, i + 1, PSTR("Extruder"));
+		lcd_print_at_PGM(1, i + 1, MSG_EXTRUDER);
 	}
 
 	while (1) {
 
 		for (int i = 0; i < 3; i++) {
-			lcd.setCursor(10, i+1);
+			lcd.setCursor(2 + strlen_P(MSG_EXTRUDER), i+1);
 			lcd.print(first + i + 1);
 		}
 
@@ -3039,7 +3039,7 @@ char choose_extruder_menu() {
 						lcd_implementation_clear();
 						lcd_printPGM(MSG_CHOOSE_EXTRUDER);
 						for (int i = 0; i < 3; i++) {
-							lcd_print_at_PGM(1, i + 1, PSTR("Extruder"));
+							lcd_print_at_PGM(1, i + 1, MSG_EXTRUDER);
 						}
 					}
 				}
@@ -3051,7 +3051,7 @@ char choose_extruder_menu() {
 						lcd_implementation_clear();
 						lcd_printPGM(MSG_CHOOSE_EXTRUDER);
 						for (int i = 0; i < 3; i++) {
-							lcd_print_at_PGM(1, i + 1, PSTR("Extruder"));
+							lcd_print_at_PGM(1, i + 1, MSG_EXTRUDER);
 						}
 					}
 				}
@@ -3520,10 +3520,10 @@ static void fil_unload_menu()
 static void change_extr_menu(){
 	START_MENU();
 	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
-	MENU_ITEM(function, PSTR("Extruder 1"), extr_change_0);
-	MENU_ITEM(function, PSTR("Extruder 2"), extr_change_1);
-	MENU_ITEM(function, PSTR("Extruder 3"), extr_change_2);
-	MENU_ITEM(function, PSTR("Extruder 4"), extr_change_3);
+	MENU_ITEM(function, MSG_EXTRUDER_1, extr_change_0);
+	MENU_ITEM(function, MSG_EXTRUDER_2, extr_change_1);
+	MENU_ITEM(function, MSG_EXTRUDER_3, extr_change_2);
+	MENU_ITEM(function, MSG_EXTRUDER_4, extr_change_3);
 
 	END_MENU();
 }
