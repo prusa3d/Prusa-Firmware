@@ -1359,7 +1359,7 @@ void lcd_service_mode_show_result() {
 		if(distance_from_min[i] < 200) {
 			lcd_print_at_PGM(8, i + 1, PSTR(""));
 			lcd.print(distance_from_min[i]);
-			lcd_print_at_PGM(13, i + 1, PSTR("mm"));
+			lcd_print_at_PGM((distance_from_min[i] < 0) ? 14 : 13, i + 1, PSTR("mm"));
 		} else lcd_print_at_PGM(8, i + 1, PSTR("N/A"));
 	}
 	delay_keep_alive(500);
