@@ -285,6 +285,10 @@ bool custom_message;
 bool loading_flag = false;
 unsigned int custom_message_type;
 unsigned int custom_message_state;
+char snmm_filaments_used = 0;
+
+float distance_from_min[3];
+float angleDiff;
 
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
@@ -2299,12 +2303,11 @@ void process_commands()
         prepare_arc_move(false);
       }
       break;
-    case 4: // G4 dwell
-      LCD_MESSAGERPGM(MSG_DWELL);
+    case 4: // G4 dwell      
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-
+	  if(codenum != 0) LCD_MESSAGERPGM(MSG_DWELL);
       st_synchronize();
       codenum += millis();  // keep track of when we started waiting
       previous_millis_cmd = millis();
@@ -2754,7 +2757,7 @@ void process_commands()
             clean_up_after_endstop_move();
         }
         break;
-
+	
 
 	case 75:
 	{
@@ -3655,14 +3658,15 @@ void process_commands()
                 calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
                 eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
                 // Complete XYZ calibration.
-                BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level);
-                uint8_t point_too_far_mask = 0;
-                clean_up_after_endstop_move();
+				uint8_t point_too_far_mask = 0;
+                BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level, point_too_far_mask);
+				clean_up_after_endstop_move();
                 // Print head up.
                 current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
                 st_synchronize();
                 if (result >= 0) {
+					point_too_far_mask = 0;
                     // Second half: The fine adjustment.
                     // Let the planner use the uncorrected coordinates.
                     mbl.reset();
@@ -4301,6 +4305,7 @@ Sigma_Exit:
           #endif
         }
       }
+	  snmm_filaments_used = 0;
       break;
     case 85: // M85
       if(code_seen('S')) {
@@ -4451,7 +4456,7 @@ Sigma_Exit:
         tmp_extruder = active_extruder;
         if(code_seen('T')) {
           tmp_extruder = code_value();
-          if(tmp_extruder >= EXTRUDERS) {
+		  if(tmp_extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
             SERIAL_ECHO(MSG_M200_INVALID_EXTRUDER);
             break;
@@ -5441,13 +5446,19 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	case 702:
 	{
 #ifdef SNMM
-		extr_unload_all();
+		if (code_seen('U')) {
+			extr_unload_used(); //unload all filaments which were used in current print
+		}
+		else if (code_seen('C')) {
+			extr_unload(); //unload just current filament 
+		}
+		else {
+			extr_unload_all(); //unload all filaments
+		}
 #else
 		custom_message = true;
 		custom_message_type = 2;
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
-		current_position[E_AXIS] += 3;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
 		current_position[E_AXIS] -= 80;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7000 / 60, active_extruder);
 		st_synchronize();
@@ -5474,11 +5485,17 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  int index;
 	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 	   
-	  if (*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') {
+	  if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
 		  SERIAL_ECHOLNPGM("Invalid T code.");
 	  }
 	  else {
-		  tmp_extruder = code_value();
+		  if (*(strchr_pointer + index) == '?') {
+			  tmp_extruder = choose_extruder_menu();
+		  }
+		  else {
+			  tmp_extruder = code_value();
+		  }
+		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 #ifdef SNMM
 		  snmm_extruder = tmp_extruder;
 
