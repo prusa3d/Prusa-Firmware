@@ -300,6 +300,7 @@ extern unsigned int heating_status_counter;
 extern bool custom_message;
 extern unsigned int custom_message_type;
 extern unsigned int custom_message_state;
+extern char snmm_filaments_used;
 extern unsigned long PingTime;
 
 
@@ -323,6 +324,9 @@ extern unsigned long start_pause_print;
 
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
+
+extern float distance_from_min[3];
+extern float angleDiff;
 
 extern void calculate_volumetric_multipliers();
 

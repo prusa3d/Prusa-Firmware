@@ -220,8 +220,10 @@ static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
 static void lcd_disable_farm_mode();
-void extr_unload_all();
-static void extr_unload();
+void extr_unload_all(); 
+void extr_unload_used();
+void extr_unload();
+static char snmm_stop_print_menu();
 
 void stack_error();
 static void lcd_ping_allert();
@@ -244,6 +246,7 @@ union MenuData;
 
 void bowden_menu();
 char reset_menu();
+char choose_extruder_menu();
 
 void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();
@@ -252,5 +255,7 @@ void lcd_temp_calibration_set();
 void lcd_multi_material_toggle();
 
 void display_loading();
+
+void lcd_service_mode_show_result();
 
 #endif //ULTRALCD_H
