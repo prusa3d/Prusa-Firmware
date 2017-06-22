@@ -2434,7 +2434,7 @@ void process_commands()
               plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
               st_synchronize();
             #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
-            #ifdef MESH_BED_LEVELING // If Mesh bed leveling, moxve X&Y to safe position for home
+            #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))  // If Mesh bed leveling, moxve X&Y to safe position for home
       			  if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] )) 
       			  {
                 homeaxis(X_AXIS);
@@ -2540,7 +2540,7 @@ void process_commands()
     // and correct the current_position to match the transformed coordinate system.
     world2machine_update_current();
 
-#ifdef MESH_BED_LEVELING
+#if (defined(MESH_BED_LEVELING) && !defined(MK1BP))
 	if (code_seen(axis_codes[X_AXIS]) || code_seen(axis_codes[Y_AXIS]) || code_seen('W') || code_seen(axis_codes[Z_AXIS]))
 		{
 		}
@@ -2930,6 +2930,9 @@ void process_commands()
 	*/
 
 	case 80:
+#ifdef MK1BP
+		break;
+#endif //MK1BP
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
