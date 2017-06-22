@@ -939,9 +939,10 @@ static void lcd_support_menu()
       MENU_ITEM(back, PSTR("FlashAir IP Addr:"), lcd_main_menu);
       MENU_ITEM(back_RAM, menuData.supportMenu.ip_str, lcd_main_menu);
   }
+  #ifndef MK1BP
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
   MENU_ITEM(function, PSTR("XYZ cal. details"), lcd_service_mode_show_result);
-
+  #endif //MK1BP
   END_MENU();
 }
 
