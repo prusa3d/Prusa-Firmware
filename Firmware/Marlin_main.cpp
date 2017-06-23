@@ -204,6 +204,8 @@
 // M350 - Set microstepping mode.
 // M351 - Toggle MS1 MS2 pins directly.
 
+// M900 - Set and/or Get advance K factor and WH/D ratio (Requires LIN_ADVANCE)
+
 // M928 - Start SD logging (M928 filename.g) - ended by M29
 // M999 - Restart after being stopped by error
 
@@ -5348,7 +5350,36 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
 	}
 	break;
+	
+#ifdef LIN_ADVANCE
+	case 900: {
 
+    st_synchronize();
+
+    const float newK = code_seen('K') ? code_value() : -1;
+    if (newK >= 0) extruder_advance_k = newK;
+
+    float newR = code_seen('R') ? code_value() : -1;
+    if (newR < 0) {
+      const float newD = code_seen('D') ? code_value() : -1,
+                  newW = code_seen('W') ? code_value() : -1,
+                  newH = code_seen('H') ? code_value() : -1;
+      if (newD >= 0 && newW >= 0 && newH >= 0)
+        newR = newD ? (newW * newH) / (sq(newD * 0.5) * M_PI) : 0;
+    }
+    if (newR >= 0) advance_ed_ratio = newR;
+
+    SERIAL_ECHO_START;
+    SERIAL_ECHOPAIR("Advance K=", extruder_advance_k);
+    SERIAL_ECHOPGM(" E/D=");
+    const float ratio = advance_ed_ratio;
+    if (ratio) SERIAL_ECHO(ratio); else SERIAL_ECHOPGM("Auto");
+    SERIAL_ECHO('\n');
+
+	}
+	break;
+#endif
+	
     case 907: // M907 Set digital trimpot motor current using axis codes.
     {
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
