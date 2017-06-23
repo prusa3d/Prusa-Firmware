@@ -96,9 +96,7 @@ int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = 0;
 
-#ifdef SNMM
 uint8_t snmm_extruder = 0;
-#endif
 
 int lcd_commands_type=LCD_COMMAND_IDLE;
 int lcd_commands_step=0;
@@ -562,7 +560,7 @@ void lcd_commands()
 			enquecommand(cmd1);
 			if (axis_relative_modes[3] == true) enquecommand_P(PSTR("M83")); // set extruder to relative mode.
 			else enquecommand_P(PSTR("M82")); // set extruder to absolute mode
-			enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
+			enquecommand_P(PSTR("G1 E"  STRINGIFY((is_multi_material) ? DEFAULT_RETRACTION_MM : DEFAULT_RETRACTION_SM))); //unretract
 			enquecommand_P(PSTR("G90")); //absolute positioning
 			lcd_commands_step = 1;
 		}
@@ -639,11 +637,12 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X50 Y" STRINGIFY(Y_MAX_POS) " E0 F7000"));
 			#endif
 			lcd_ignore_click(false);
-			#ifdef SNMM
-			lcd_commands_step = 8;
-			#else
-			lcd_commands_step = 3;
-			#endif
+
+			if (is_multi_material) {
+				lcd_commands_step = 8;
+			} else {
+				lcd_commands_step = 3;
+			}
 		}
 		if (lcd_commands_step == 5 && !blocks_queued())
 		{
@@ -660,11 +659,13 @@ void lcd_commands()
 			lcd_setstatuspgm(MSG_PRINT_ABORTED);
 			cancel_heatup = true;
 			setTargetBed(0);
-			#ifndef SNMM
-			setTargetHotend(0, 0);	//heating when changing filament for multicolor
-			setTargetHotend(0, 1);
-			setTargetHotend(0, 2);
-			#endif
+
+			if (!is_multi_material) {
+				setTargetHotend(0, 0);	//heating when changing filament for multicolor
+				setTargetHotend(0, 1);
+				setTargetHotend(0, 2);
+			}
+
 			manage_heater();
 			custom_message = true;
 			custom_message_type = 2;
@@ -723,11 +724,12 @@ void lcd_commands()
 			enquecommand_P(PSTR("G91"));
 			enquecommand_P(PSTR("G1 Z15 F1500"));
 			st_synchronize();
-			#ifdef SNMM
-			lcd_commands_step = 7;
-			#else
-			lcd_commands_step = 5;
-			#endif
+
+			if (is_multi_material) {
+				lcd_commands_step = 7;
+			} else {
+				lcd_commands_step = 5;
+			}
 		}
 
 	}
@@ -985,11 +987,13 @@ void lcd_wait_interact() {
   lcd_implementation_clear();
 
   lcd.setCursor(0, 1);
-#ifdef SNMM 
-  lcd_printPGM(MSG_PREPARE_FILAMENT);
-#else
-  lcd_printPGM(MSG_INSERT_FILAMENT);
-#endif
+
+  if (is_multi_material) {
+	  lcd_printPGM(MSG_PREPARE_FILAMENT);
+  } else {
+	  lcd_printPGM(MSG_INSERT_FILAMENT);
+  }
+
   lcd.setCursor(0, 2);
   lcd_printPGM(MSG_PRESS);
 
@@ -1054,12 +1058,12 @@ void lcd_loading_filament() {
     for (int j = 0; j < 10 ; j++) {
       manage_heater();
       manage_inactivity(true);
-#ifdef SNMM
-      delay(153);
-#else
-	  delay(137);
-#endif
 
+	  if (is_multi_material) {
+		  delay(153);
+	  } else {
+		  delay(137);
+	  }
     }
 
 
@@ -2471,7 +2475,13 @@ void lcd_calibrate_pinda() {
 	lcd_return_to_status();
 }
 
-#ifndef SNMM
+void lcd_multi_material_toggle() {
+	is_multi_material = !is_multi_material;
+	eeprom_update_byte((unsigned char *)EEPROM_IS_MULTI_MATERIAL, is_multi_material);
+	digipot_init();
+	// TODO: WHAT IS THE CORRECT VALUE HERE?
+	lcd_goto_menu(lcd_settings_menu, 4);
+}
 
 /*void lcd_calibrate_extruder() {
 	
@@ -2560,13 +2570,18 @@ void lcd_calibrate_pinda() {
 }
 
 void lcd_extr_cal_reset() {
-	float tmp1[] = DEFAULT_AXIS_STEPS_PER_UNIT;
-	axis_steps_per_unit[E_AXIS] = tmp1[3];
+	float tmp1_mm[]=DEFAULT_AXIS_STEPS_PER_UNIT_MM;
+	float tmp1_sm[]=DEFAULT_AXIS_STEPS_PER_UNIT_SM;
+
+	if (is_multi_material) {
+		axis_steps_per_unit[E_AXIS] = tmp1_mm[3];
+	} else {
+		axis_steps_per_unit[E_AXIS] = tmp1_sm[3];
+	}
+
 	//extrudemultiply = 100;
 	enquecommand_P(PSTR("M500"));
 }*/
-
-#endif
 
 void lcd_toshiba_flash_air_compatibility_toggle()
 {
@@ -2597,6 +2612,12 @@ static void lcd_settings_menu()
     MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
   }
   
+  if (is_multi_material) {
+	  MENU_ITEM(function, MSG_IS_MULTI_MATERIAL_ON, lcd_multi_material_toggle);
+  } else {
+	  MENU_ITEM(function, MSG_IS_MULTI_MATERIAL_OFF, lcd_multi_material_toggle);
+  }
+
 	if (!isPrintPaused && !homing_flag)
 	{
 		MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);
@@ -2635,9 +2656,10 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     // "Calibrate Z" with storing the reference values to EEPROM.
     MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
 	
-#ifndef SNMM
-	//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
-#endif
+	if (!is_multi_material) {
+		//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
+	}
+
     // "Mesh Bed Leveling"
     MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
 #endif //MK1BP
@@ -2651,9 +2673,10 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
 #ifndef MK1BP
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 #endif //MK1BP
-#ifndef SNMM
-	//MENU_ITEM(function, MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
-#endif
+
+	if (!is_multi_material) {
+		//MENU_ITEM(function, MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
+	}
   }
   
   END_MENU();
@@ -3089,11 +3112,7 @@ char choose_extruder_menu() {
 
 
 char reset_menu() {
-#ifdef SNMM
-	int items_no = 5;
-#else
-	int items_no = 4;
-#endif
+	int items_no = (is_multi_material) ? 5 : 4;
 	static int first = 0;
 	int enc_dif = 0;
 	char cursor_pos = 0;
@@ -3103,9 +3122,10 @@ char reset_menu() {
 	item[1] = "Statistics";
 	item[2] = "Shipping prep";
 	item[3] = "All Data";
-#ifdef SNMM
-	item[4] = "Bowden length";
-#endif // SNMM
+
+	if (is_multi_material) {
+		item[4] = "Bowden length";
+	}
 
 	enc_dif = encoderDiff;
 	lcd_implementation_clear();
@@ -3204,8 +3224,6 @@ static void lcd_ping_allert() {
 };
 
 
-#ifdef SNMM
-
 static void extr_mov(float shift, float feed_rate) { //move extruder no matter what the current heater temperature is
 	set_extrude_min_temp(.0);
 	current_position[E_AXIS] += shift;
@@ -3222,9 +3240,7 @@ void change_extr(int extr) { //switches multiplexer for extruders
 	disable_e1();
 	disable_e2();
 
-#ifdef SNMM
 	snmm_extruder = extr;
-#endif
 
 	pinMode(E_MUX0_PIN, OUTPUT);
 	pinMode(E_MUX1_PIN, OUTPUT);
@@ -3533,8 +3549,6 @@ static void change_extr_menu(){
 	END_MENU();
 }
 
-#endif
-
 static void lcd_farm_no()
 {
 	char step = 0;
@@ -3792,15 +3806,15 @@ static void lcd_main_menu()
   } 
   else 
   {
-	#ifndef SNMM
-    MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
-    MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
-	#endif
-	#ifdef SNMM
-	MENU_ITEM(submenu, MSG_LOAD_FILAMENT, fil_load_menu);
-	MENU_ITEM(submenu, MSG_UNLOAD_FILAMENT, fil_unload_menu);
-	MENU_ITEM(submenu, MSG_CHANGE_EXTR, change_extr_menu);
-	#endif
+	if (is_multi_material) {
+		MENU_ITEM(submenu, MSG_LOAD_FILAMENT, fil_load_menu);
+		MENU_ITEM(submenu, MSG_UNLOAD_FILAMENT, fil_unload_menu);
+		MENU_ITEM(submenu, MSG_CHANGE_EXTR, change_extr_menu);
+  } else {
+		MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
+		MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
+	}
+
 	MENU_ITEM(submenu, MSG_SETTINGS, lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);
   }

@@ -315,3 +315,6 @@
 #define MSG_EXTRUDER_2									"Extruder 2"
 #define MSG_EXTRUDER_3									"Extruder 3"
 #define MSG_EXTRUDER_4									"Extruder 4"
+
+#define MSG_IS_MULTI_MATERIAL_ON						"Multi Material [YES]"
+#define MSG_IS_MULTI_MATERIAL_OFF						"Multi Material [NO]"

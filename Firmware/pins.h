@@ -63,14 +63,9 @@
   #define TEMP_1_PIN 1
   #define TEMP_2_PIN -1
   
-#ifdef SNMM 
-
-#define E_MUX0_PIN 17
-#define E_MUX1_PIN 16
-#define E_MUX2_PIN 84
-
-
-#endif
+  #define E_MUX0_PIN 17
+  #define E_MUX1_PIN 16
+  #define E_MUX2_PIN 84
  
 #ifdef DIS
 #define D_REQUIRE 30
@@ -225,14 +220,10 @@
 
   #define FR_SENS 21
 
-#ifdef SNMM
+  #define E_MUX0_PIN 17
+  #define E_MUX1_PIN 16
+  #define E_MUX2_PIN 84
 
-#define E_MUX0_PIN 17
-#define E_MUX1_PIN 16
-#define E_MUX2_PIN 84
-
-
-#endif
   #define LARGE_FLASH true
   #define X_STEP_PIN 37
   #define X_DIR_PIN 48

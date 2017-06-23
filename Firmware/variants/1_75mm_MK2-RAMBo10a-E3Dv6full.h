@@ -18,9 +18,6 @@ GENERAL SETTINGS
 // Electronics
 #define MOTHERBOARD BOARD_RAMBO_MINI_1_0
 
-// Prusa Single extruder multiple material suport
-//#define SNMM
-
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
 //#define E3D_PT100_EXTRUDER_NO_AMP
@@ -33,12 +30,8 @@ AXIS SETTINGS
 *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#ifdef SNMM
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
-#else
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
-#endif
-
+#define DEFAULT_AXIS_STEPS_PER_UNIT_MM   {100,100,3200/8,140}
+#define DEFAULT_AXIS_STEPS_PER_UNIT_SM   {100,100,3200/8,161.3}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -123,17 +116,12 @@ EXTRUDER SETTINGS
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
-// Prusa Single extruder multiple material suport
-//#define SNMM
-
-#ifdef SNMM
 //#define BOWDEN_LENGTH	408
 #define BOWDEN_LENGTH 433 //default total length for filament fast loading part; max length for extrusion is 465 mm!; this length can be adjusted in service menu
 #define FIL_LOAD_LENGTH 102 //length for loading filament into the nozzle
 #define FIL_COOLING 10 //length for cooling moves
 #define E_MOTOR_LOW_CURRENT 350 // current for PRUSAY code
 #define E_MOTOR_HIGH_CURRENT 700 //current for unloading filament, stop print, PRUSAY ramming
-#endif //SNMM
 
 //#define DIS //for measuring bed heigth and PINDa detection heigth relative to auto home point, experimental function
 
@@ -392,10 +380,7 @@ THERMISTORS SETTINGS
 
 #define DEFAULT_PID_TEMP 210
 
-#ifdef SNMM
-#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
-#else
-#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
-#endif
+#define DEFAULT_RETRACTION_MM 4 //used for PINDA temp calibration and pause print
+#define DEFAULT_RETRACTION_SM 1 //used for PINDA temp calibration and pause print
 
 #endif //__CONFIGURATION_PRUSA_H

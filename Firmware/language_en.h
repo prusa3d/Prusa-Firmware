@@ -303,3 +303,5 @@
 #define(length=17, lines=1) MSG_EXTRUDER_3						"Extruder 3"
 #define(length=17, lines=1) MSG_EXTRUDER_4						"Extruder 4"
 
+#define(length=20, lines=1) MSG_IS_MULTI_MATERIAL_ON			"Multi Material [YES]"
+#define(length=20, lines=1) MSG_IS_MULTI_MATERIAL_OFF			"Multi Material [NO]"

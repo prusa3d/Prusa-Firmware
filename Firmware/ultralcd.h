@@ -103,9 +103,7 @@ void lcd_mylang();
   extern int farm_timer;
   extern int farm_status;
 
-#ifdef SNMM
   extern uint8_t snmm_extruder;
-#endif // SNMM
 
   extern bool cancel_heatup;
   extern bool isPrintPaused;
@@ -253,6 +251,8 @@ char choose_extruder_menu();
 void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();
 void lcd_temp_calibration_set();
+
+void lcd_multi_material_toggle();
 
 void display_loading();
 
