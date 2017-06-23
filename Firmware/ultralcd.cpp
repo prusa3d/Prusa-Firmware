@@ -1371,18 +1371,18 @@ void lcd_service_mode_show_result() {
 	lcd_implementation_clear();
 	
 
-	lcd_printPGM(PSTR("Angle diff: "));
+	lcd_printPGM(PSTR("Measured skew: "));
 	if (angleDiff < 100) {
 		lcd.print(angleDiff * 180 / M_PI);
 		lcd.print(LCD_STR_DEGREE);
-	}else lcd_print_at_PGM(12, 0, PSTR("N/A"));
+	}else lcd_print_at_PGM(15, 0, PSTR("N/A"));
 	lcd_print_at_PGM(0, 1, PSTR("--------------------"));
-	lcd_print_at_PGM(0, 2, PSTR("Mild:"));
-	lcd_print_at_PGM(12, 2, PSTR(""));
+	lcd_print_at_PGM(0, 2, PSTR("Slight skew:"));
+	lcd_print_at_PGM(15, 2, PSTR(""));
 	lcd.print(bed_skew_angle_mild * 180 / M_PI);
 	lcd.print(LCD_STR_DEGREE);
-	lcd_print_at_PGM(0, 3, PSTR("Extreme:"));
-	lcd_print_at_PGM(12, 3, PSTR(""));
+	lcd_print_at_PGM(0, 3, PSTR("Severe skew:"));
+	lcd_print_at_PGM(15, 3, PSTR(""));
 	lcd.print(bed_skew_angle_extreme * 180 / M_PI);
 	lcd.print(LCD_STR_DEGREE);
 	delay_keep_alive(500);
