@@ -391,6 +391,56 @@ void setExtruderAutoFanState(int pin, bool state)
   analogWrite(pin, newFanSpeed);
 }
 
+void countFanSpeed()
+{
+	fan_speed[0] =  (fan_edge_counter[0] * (float(250) / (millis() - extruder_autofan_last_check)));
+	fan_speed[1] =  (fan_edge_counter[1] * (float(250) / (millis() - extruder_autofan_last_check)));
+	
+	fan_edge_counter[0] = 0;
+	fan_edge_counter[1] = 0;
+}
+
+void checkFanSpeed()
+{
+	static unsigned char fan_speed_errors[2] = { 0,0 };
+
+	if (fan_speed[0] == 0 && current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE) fan_speed_errors[0]++;
+	else fan_speed_errors[0] = 0;
+
+	if (fan_speed[1] == 0 && fanSpeed > MIN_PRINT_FAN_SPEED) fan_speed_errors[1]++;
+	else fan_speed_errors[1] = 0;
+
+	if (fan_speed_errors[0] > 5) fanSpeedError(0);
+	if (fan_speed_errors[1] > 5) fanSpeedError(1);
+}
+
+void fanSpeedError(unsigned char _fan) {
+
+	if (card.sdprinting) {
+		card.pauseSDPrint();
+	}
+
+	setTargetHotend0(0);
+	/*lcd_update();
+	WRITE(BEEPER, HIGH);
+	delayMicroseconds(500);
+	WRITE(BEEPER, LOW);
+	delayMicroseconds(100);*/
+
+	
+	SERIAL_ERROR_START;
+	switch (_fan) {
+	case 0:
+		SERIAL_ERRORLNPGM("ERROR: Extruder fan speed is lower then expected");
+		LCD_ALERTMESSAGEPGM("Err: EXTR. FAN ERROR");
+		break;
+	case 1:
+		SERIAL_ERRORLNPGM("ERROR: Print fan speed is lower then expected");
+		LCD_ALERTMESSAGEPGM("Err: PRINT FAN ERROR");
+		break;
+	}
+}
+
 void checkExtruderAutoFans()
 {
   uint8_t fanState = 0;
@@ -561,8 +611,10 @@ void manage_heater()
   #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
       (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
       (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
-  if(millis() - extruder_autofan_last_check > 2500)  // only need to check fan state very infrequently
+  if(millis() - extruder_autofan_last_check > 1000)  // only need to check fan state very infrequently
   {
+	countFanSpeed();
+	checkFanSpeed();
     checkExtruderAutoFans();
     extruder_autofan_last_check = millis();
   }  

@@ -298,6 +298,9 @@ extern bool custom_message;
 extern unsigned int custom_message_type;
 extern unsigned int custom_message_state;
 extern unsigned long PingTime;
+extern bool fan_state[2];
+extern int fan_edge_counter[2];
+extern int fan_speed[2];
 
 
 // Handling multiple extruders pins

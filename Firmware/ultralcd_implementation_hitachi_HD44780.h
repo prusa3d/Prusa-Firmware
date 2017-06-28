@@ -709,7 +709,12 @@ static void lcd_implementation_status_screen()
     lcd_printPGM(PSTR("  "));
     lcd.print(LCD_STR_FEEDRATE[0]);
     lcd.print(itostr3(feedmultiply));
-    lcd_printPGM(PSTR("%     "));
+	lcd_printPGM(PSTR("%     "));
+
+	lcd.setCursor(8, 0);
+	lcd.print(itostr3(fan_speed[0]));
+	lcd.setCursor(8, 1);
+	lcd.print(itostr3(fan_speed[1]));
 #else
     //Print Feedrate
     lcd.setCursor(LCD_WIDTH - 8-2, 1);

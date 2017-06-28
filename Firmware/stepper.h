@@ -88,6 +88,8 @@ void digipot_current(uint8_t driver, int current);
 void microstep_init();
 void microstep_readings();
 
+static void check_fans();
+
 #ifdef HAVE_TMC2130_DRIVERS
 void tmc2130_check_overtemp();
 

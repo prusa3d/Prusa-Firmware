@@ -415,6 +415,9 @@
 
 #define SDCARDDETECT   15
 
+#define TACH_0 81
+#define TACH_1 80 
+
 #endif //NEWPANEL
 #endif //ULTRA_LCD
 

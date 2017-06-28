@@ -3158,8 +3158,6 @@ void lcd_confirm_print()
 
 }
 
-
-
 static void lcd_main_menu()
 {
 
@@ -3168,8 +3166,7 @@ static void lcd_main_menu()
 
   // Majkl superawesome menu
 
-  
- MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
+  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
    /* if (farm_mode && !IS_SD_PRINTING )
     {
     
@@ -3682,50 +3679,52 @@ static void lcd_selftest()
 	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_START);
 	delay(2000);
 
-
-	_result = lcd_selftest_fan_dialog(1);
-
-	if (_result)
-	{
-		_result = lcd_selftest_fan_dialog(2);
-	}
+	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
+	_result = lcd_selftest_fan_dialog(0);
 
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
-		_result = lcd_selfcheck_endstops();
+		_result = lcd_selftest_fan_dialog(1);
+	}
+	
+	if (_result)
+	{
+		_progress = lcd_selftest_screen(1, _progress, 3, true, 2000);
+		//_progress = lcd_selftest_screen(2, _progress, 3, true, 2000);
+		_result = true;// lcd_selfcheck_endstops();
 	}
 		
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(1, _progress, 3, true, 1000);
+		_progress = lcd_selftest_screen(3, _progress, 3, true, 1000);
 		_result = lcd_selfcheck_check_heater(false);
 	}
 
 	if (_result)
 	{
 		current_position[Z_AXIS] += 15;									//move Z axis higher to avoid false triggering of Z end stop in case that we are very low - just above heatbed
-		_progress = lcd_selftest_screen(2, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(4, _progress, 3, true, 2000);
 		_result = lcd_selfcheck_axis(X_AXIS, X_MAX_POS);
 		
 	}
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(2, _progress, 3, true, 0);
+		_progress = lcd_selftest_screen(4, _progress, 3, true, 0);
 		_result = lcd_selfcheck_pulleys(X_AXIS);
 	}
 
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(3, _progress, 3, true, 1500);
+		_progress = lcd_selftest_screen(5, _progress, 3, true, 1500);
 		_result = lcd_selfcheck_axis(Y_AXIS, Y_MAX_POS);
 	}
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(3, _progress, 3, true, 0);
+		_progress = lcd_selftest_screen(5, _progress, 3, true, 0);
 		_result = lcd_selfcheck_pulleys(Y_AXIS);
 	}
 
@@ -3734,23 +3733,23 @@ static void lcd_selftest()
 	{
 		current_position[X_AXIS] = current_position[X_AXIS] - 3;
 		current_position[Y_AXIS] = current_position[Y_AXIS] - 14;
-		_progress = lcd_selftest_screen(4, _progress, 3, true, 1500);
+		_progress = lcd_selftest_screen(6, _progress, 3, true, 1500);
 		_result = lcd_selfcheck_axis(2, Z_MAX_POS);
 		enquecommand_P(PSTR("G28 W"));
 	}
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(5, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(7, _progress, 3, true, 2000);
 		_result = lcd_selfcheck_check_heater(true);
 	}
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(6, _progress, 3, true, 5000);
+		_progress = lcd_selftest_screen(8, _progress, 3, true, 5000);
 	}
 	else
 	{
-		_progress = lcd_selftest_screen(7, _progress, 3, true, 5000);
+		_progress = lcd_selftest_screen(9, _progress, 3, true, 5000);
 	}
 	lcd_reset_alert_level();
 	enquecommand_P(PSTR("M84"));
@@ -3814,7 +3813,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 		else
 		{
-			_progress = lcd_selftest_screen(2 + _axis, _progress, 3, false, 0);
+			_progress = lcd_selftest_screen(4 + _axis, _progress, 3, false, 0);
 			_lcd_refresh = 0;
 		}
 
@@ -3937,10 +3936,11 @@ static bool lcd_selfcheck_endstops()
 	if (READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1 || READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1 || READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1)
 	{
 		_result = false;
-		String  _error = String((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? "X" : "") +
-			String((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? "Y" : "") +
-			String((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? "Z" : "");
-		lcd_selftest_error(3, _error.c_str(), "");
+		char _error[4] = "";
+		if (READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) strcat(_error, "X");
+		if (READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) strcat(_error, "Y");
+		if (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) strcat(_error, "Z");
+		lcd_selftest_error(3, _error, "");
 	}
 	manage_heater();
 	manage_inactivity(true);
@@ -3969,7 +3969,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 		manage_heater();
 		manage_inactivity(true);
-		_progress = (_isbed) ? lcd_selftest_screen(5, _progress, 2, false, 400) : lcd_selftest_screen(1, _progress, 2, false, 400);
+		_progress = (_isbed) ? lcd_selftest_screen(7, _progress, 2, false, 400) : lcd_selftest_screen(3, _progress, 2, false, 400);
 
 	} while (_docycle);
 
@@ -4099,110 +4099,52 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 
 static bool lcd_selftest_fan_dialog(int _fan)
 {
-	bool _result = false;
-	int _errno = 0;
-	lcd_implementation_clear();
-
-	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_FAN);
-	switch (_fan)
-	{
-	case 1:
-		// extruder cooling fan
-		lcd.setCursor(0, 1); lcd_printPGM(MSG_SELFTEST_EXTRUDER_FAN);
-		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
-		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
-		_errno = 7;
+	bool _result = true;
+	int _errno = 6;
+	
+	switch (_fan) {
+	case 0:
+		fanSpeed = 0;
+		manage_heater();			//turn off fan
+		setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, 1); //extruder fan
+		delay(2000);				//delay_keep_alive would turn off extruder fan, because temerature is too low
+		manage_heater();			//count average fan speed from 2s delay and turn off fans
+		if (!fan_speed[0]) _result = false; 
+		/*SERIAL_ECHOPGM("Extruder fan speed: ");
+		MYSERIAL.println(fan_speed[0]);
+		SERIAL_ECHOPGM("Print fan speed: ");
+		MYSERIAL.print(fan_speed[1]);*/
 		break;
-	case 2:
-		// object cooling fan
-		lcd.setCursor(0, 1); lcd_printPGM(MSG_SELFTEST_COOLING_FAN);
-		SET_OUTPUT(FAN_PIN);
-		analogWrite(FAN_PIN, 255);
-		_errno = 6;
+
+	case 1:
+		//will it work with Thotend > 50 C ?
+		fanSpeed = 255;				//print fan
+		delay_keep_alive(2000);
+		fanSpeed = 0;
+		manage_heater();			//turn off fan
+		manage_inactivity(true);	//to turn off print fan
+		if (!fan_speed[1]) {
+			_result = false; _errno = 7;
+		}
+		/*SERIAL_ECHOPGM("Extruder fan speed: ");
+		MYSERIAL.println(fan_speed[0]);
+		SERIAL_ECHOPGM("Print fan speed: ");
+		MYSERIAL.print(fan_speed[1]);*/
 		break;
 	}
-	delay(500);
-
-	lcd.setCursor(1, 2); lcd_printPGM(MSG_SELFTEST_FAN_YES);
-	lcd.setCursor(0, 3); lcd.print(">");
-	lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
-
-
-
-
-
-	int8_t enc_dif = 0;
-	bool _response = false;
-	do
-	{
-
-		switch (_fan)
-		{
-		case 1:
-			// extruder cooling fan
-			SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
-			WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
-			break;
-		case 2:
-			// object cooling fan
-			SET_OUTPUT(FAN_PIN);
-			analogWrite(FAN_PIN, 255);
-			break;
-		}
-
-
-		if (abs((enc_dif - encoderDiff)) > 2) {
-			if (enc_dif > encoderDiff) {
-				_result = true;
-				lcd.setCursor(0, 2); lcd.print(">");
-				lcd.setCursor(1, 2); lcd_printPGM(MSG_SELFTEST_FAN_YES);
-				lcd.setCursor(0, 3); lcd.print(" ");
-				lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
-			}
-
-			if (enc_dif < encoderDiff) {
-				_result = false;
-				lcd.setCursor(0, 2); lcd.print(" ");
-				lcd.setCursor(1, 2); lcd_printPGM(MSG_SELFTEST_FAN_YES);
-				lcd.setCursor(0, 3); lcd.print(">");
-				lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
-			}
-			enc_dif = 0;
-			encoderDiff = 0;
-		}
-
-
-		manage_heater();
-		delay(100);
-
-		if (lcd_clicked())
-		{
-			_response = true;
-		}
-
-
-	} while (!_response);
-
-	SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
-	WRITE(EXTRUDER_0_AUTO_FAN_PIN, 0);
-	SET_OUTPUT(FAN_PIN);
-	analogWrite(FAN_PIN, 0);
-
-	fanSpeed = 0;
-	manage_heater();
 
 	if (!_result)
 	{
 		const char *_err;
 		lcd_selftest_error(_errno, _err, _err);
 	}
-
 	return _result;
-
 }
 
 static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay)
 {
+	//SERIAL_ECHOPGM("Step:");
+	//MYSERIAL.println(_step);
 	
 	lcd_next_update_millis = millis() + (LCD_UPDATE_INTERVAL * 10000);
 
@@ -4214,34 +4156,45 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 
 	lcd.setCursor(0, 0);
 
-	if (_step == -1) lcd_printPGM(MSG_SELFTEST_START);
-	if (_step == 0) lcd_printPGM(MSG_SELFTEST_CHECK_ENDSTOPS);
-	if (_step == 1) lcd_printPGM(MSG_SELFTEST_CHECK_HOTEND);
-	if (_step == 2) lcd_printPGM(MSG_SELFTEST_CHECK_X);
-	if (_step == 3) lcd_printPGM(MSG_SELFTEST_CHECK_Y);
-	if (_step == 4) lcd_printPGM(MSG_SELFTEST_CHECK_Z);
-	if (_step == 5) lcd_printPGM(MSG_SELFTEST_CHECK_BED);
-	if (_step == 6) lcd_printPGM(MSG_SELFTEST_CHECK_ALLCORRECT);
-	if (_step == 7) lcd_printPGM(MSG_SELFTEST_FAILED);
+	if (_step == -1) lcd_printPGM(MSG_SELFTEST_FAN);
+	if (_step == 0) lcd_printPGM(MSG_SELFTEST_FAN);
+	if (_step == 1) lcd_printPGM(MSG_SELFTEST_FAN);
+	if (_step == 2) lcd_printPGM(MSG_SELFTEST_CHECK_ENDSTOPS);
+	if (_step == 3) lcd_printPGM(MSG_SELFTEST_CHECK_HOTEND);
+	if (_step == 4) lcd_printPGM(MSG_SELFTEST_CHECK_X);
+	if (_step == 5) lcd_printPGM(MSG_SELFTEST_CHECK_Y);
+	if (_step == 6) lcd_printPGM(MSG_SELFTEST_CHECK_Z);
+	if (_step == 7) lcd_printPGM(MSG_SELFTEST_CHECK_BED);
+	if (_step == 8) lcd_printPGM(MSG_SELFTEST_CHECK_ALLCORRECT);
+	if (_step == 9) lcd_printPGM(MSG_SELFTEST_FAILED);
 
 	lcd.setCursor(0, 1);
 	lcd.print("--------------------");
-
-	if (_step != 7)
+	if ((_step >= -1) && (_step <= 1))
 	{
-		_step_block = 1;
+		//SERIAL_ECHOLNPGM("Fan test");
+		lcd_print_at_PGM(0, 2, PSTR("Extruder fan:"));
+		lcd.setCursor(14, 2);
+		(_step < 0) ? lcd.print(_indicator) : lcd.print("OK");
+		lcd_print_at_PGM(0, 3, PSTR("Print fan:"));
+		lcd.setCursor(14, 3);
+		(_step < 1) ? lcd.print(_indicator) : lcd.print("OK");
+	} else if (_step != 9)
+	{
+		//SERIAL_ECHOLNPGM("Other tests");
+		_step_block = 3;
 		lcd_selftest_screen_step(3, 9, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Hotend", _indicator);
 
-		_step_block = 2;
+		_step_block = 4;
 		lcd_selftest_screen_step(2, 2, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "X", _indicator);
 
-		_step_block = 3;
+		_step_block = 5;
 		lcd_selftest_screen_step(2, 8, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Y", _indicator);
 
-		_step_block = 4;
+		_step_block = 6;
 		lcd_selftest_screen_step(2, 14, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Z", _indicator);
 
-		_step_block = 5;
+		_step_block = 7;
 		lcd_selftest_screen_step(3, 0, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Bed", _indicator);
 	}
 

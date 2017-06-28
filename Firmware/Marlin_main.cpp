@@ -279,6 +279,10 @@ bool loading_flag = false;
 unsigned int custom_message_type;
 unsigned int custom_message_state;
 
+bool fan_state[2];
+int fan_edge_counter[2];
+int fan_speed[2];
+
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
   #if EXTRUDERS > 1

@@ -205,5 +205,9 @@ void PID_autotune(float temp, int extruder, int ncycles);
 void setExtruderAutoFanState(int pin, bool state);
 void checkExtruderAutoFans();
 
+void countFanSpeed();
+void checkFanSpeed();
+void fanSpeedError(unsigned char _fan);
+
 #endif
 

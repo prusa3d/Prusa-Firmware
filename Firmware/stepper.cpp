@@ -654,6 +654,7 @@ ISR(TIMER1_COMPA_vect)
       plan_discard_current_block();
     }
   }
+  check_fans();
 }
 #ifdef HAVE_TMC2130_DRIVERS
       uint32_t tmc2130_read(uint8_t chipselect, uint8_t address)
@@ -1510,5 +1511,16 @@ void microstep_readings()
       SERIAL_PROTOCOL(   digitalRead(E1_MS1_PIN));
       SERIAL_PROTOCOLLN( digitalRead(E1_MS2_PIN));
       #endif
+}
+
+static void check_fans() {
+	if (READ(TACH_0) != fan_state[0]) {
+		fan_edge_counter[0] ++;
+		fan_state[0] = READ(TACH_0);
+	}
+	if (READ(TACH_1) != fan_state[1]){
+		fan_edge_counter[1] ++;
+		fan_state[1] = READ(TACH_1);
+	}
 }
 
