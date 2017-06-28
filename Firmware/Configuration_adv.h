@@ -275,7 +275,7 @@
 //#define LIN_ADVANCE
 
 #ifdef LIN_ADVANCE
-  #define LIN_ADVANCE_K 0 //Try around 45 for PLA
+  #define LIN_ADVANCE_K 0 //Try around 45 for PLA, around 25 for ABS.
 
   /**
    * Some Slicers produce Gcode with randomly jumping extrusion widths occasionally.

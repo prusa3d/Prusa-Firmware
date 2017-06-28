@@ -730,24 +730,21 @@ void isr() {
 
     nextAdvanceISR = eISR_Rate;
 
-    #define SET_E_STEP_DIR(INDEX) \
-      if (e_steps) WRITE(E## INDEX ##_DIR_PIN, e_steps < 0 ? INVERT_E## INDEX ##_DIR : !INVERT_E## INDEX ##_DIR)
-
-    #define START_E_PULSE(INDEX) \
-      if (e_steps) WRITE(E## INDEX ##_STEP_PIN, !INVERT_E_STEP_PIN)
-
-    #define STOP_E_PULSE(INDEX) \
-      if (e_steps) { \
-        e_steps < 0 ? ++e_steps : --e_steps; \
-        WRITE(E## INDEX ##_STEP_PIN, INVERT_E_STEP_PIN); \
+    if (e_steps) {
+      bool dir =
+      #ifdef SNMM
+        ((e_steps < 0) == (snmm_extruder & 1))
+      #else
+        (e_steps < 0)
+      #endif
+      ? INVERT_E0_DIR : !INVERT_E0_DIR; //If we have SNMM, reverse every second extruder.
+      WRITE(E0_DIR_PIN, dir);
+  
+      for (uint8_t i = step_loops; e_steps && i--;) {
+        WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
+        e_steps < 0 ? ++e_steps : --e_steps;
+        WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
       }
-
-    SET_E_STEP_DIR(0);
-
-    for (uint8_t i = step_loops; i--;) {
-      START_E_PULSE(0);
-
-      STOP_E_PULSE(0);
     }
   }
 
@@ -779,6 +776,11 @@ void isr() {
 
     // Don't run the ISR faster than possible
     if (OCR1A < TCNT1 + 16) OCR1A = TCNT1 + 16;
+  }
+  
+  void clear_current_adv_vars() {
+    e_steps = 0; //Should be already 0 at an filament change event, but just to be sure..
+    current_adv_steps = 0;
   }
 
 #endif // LIN_ADVANCE

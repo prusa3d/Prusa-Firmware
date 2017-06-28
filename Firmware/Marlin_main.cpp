@@ -5549,7 +5549,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  }
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 #ifdef SNMM
-		  snmm_extruder = tmp_extruder;
+      #ifdef LIN_ADVANCE
+        if (snmm_extruder != tmp_extruder)
+          clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
+      #endif
+      
+      snmm_extruder = tmp_extruder;
 
 		  st_synchronize();
 		  delay(100);
