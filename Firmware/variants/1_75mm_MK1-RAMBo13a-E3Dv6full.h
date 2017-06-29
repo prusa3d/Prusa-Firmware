@@ -235,6 +235,19 @@ BED SETTINGS
 #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
 
+// Enable 8 point Mesh Bed Correction offsets
+// 8 points of correction (a thru h) starting at the front / home position
+//
+//	B A C K
+//   +-----------+
+//   | f   g   h |
+//   | d   X   e |
+//   | a   b   c |
+//   +-----------+
+//     F R O N T
+//
+#define MBC_8POINT
+
 // Bed Temperature Control
 // Select PID or bang-bang with PIDTEMPBED. If bang-bang, BED_LIMIT_SWITCHING will enable hysteresis
 //

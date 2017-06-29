@@ -266,10 +266,21 @@
 #define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
-#define(length=14,lines=1) MSG_BED_CORRECTION_LEFT								"Left side [um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_RIGHT								"Right side[um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT								"Front side[um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_REAR								"Rear side [um]"
+#ifdef MBC_8POINT
+#define(length=13,lines=1) MSG_BED_CORRECTION_P1		"FrontLeft[um]"
+#define(length=13,lines=1) MSG_BED_CORRECTION_P2		"FrontCntr[um]"
+#define(length=13,lines=1) MSG_BED_CORRECTION_P3		"FrontRt  [um]"
+#define(length=13,lines=1) MSG_BED_CORRECTION_P4		"MidLeft  [um]"
+#define(length=13,lines=1) MSG_BED_CORRECTION_P5		"MidRight [um]"
+#define(length=13,lines=1) MSG_BED_CORRECTION_P6		"RearLeft [um]"
+#define(length=13,lines=1) MSG_BED_CORRECTION_P7		"RearCntr [um]"
+#define(length=13,lines=1) MSG_BED_CORRECTION_P8		"RearRight[um]"
+#else
+//#define(length=14,lines=1) MSG_BED_CORRECTION_LEFT								"Left side [um]"
+//#define(length=14,lines=1) MSG_BED_CORRECTION_RIGHT								"Right side[um]"
+//#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT								"Front side[um]"
+//#define(length=14,lines=1) MSG_BED_CORRECTION_REAR								"Rear side [um]"
+#endif
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
