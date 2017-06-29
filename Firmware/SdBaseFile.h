@@ -31,7 +31,7 @@
 #include "SdVolume.h"
 //------------------------------------------------------------------------------
 /**
- * \struct fpos_t
+ * \struct filepos_t
  * \brief internal type for istream
  * do not use in user apps
  */
