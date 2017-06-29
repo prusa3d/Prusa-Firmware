@@ -227,10 +227,21 @@
 #define MSG_FOLLOW_CALIBRATION_FLOW                    			"Impresora no esta calibrada todavia. Por favor usa el manual, capitulo First steps, Calibration flow."
 #define MSG_BABYSTEP_Z_NOT_SET                      			"Distancia entre la punta del nozzle y la superficie de la heatbed aun no fijada. Por favor siga el manual, capitulo First steps, First layer calibration."
 #define MSG_BED_CORRECTION_MENU                                 "Corr. de la cama"
-#define MSG_BED_CORRECTION_LEFT                                 "Izquierda [um]"
-#define MSG_BED_CORRECTION_RIGHT                                "Derecha   [um]"
-#define MSG_BED_CORRECTION_FRONT                                "Frontal   [um]"
-#define MSG_BED_CORRECTION_REAR                                 "Trasera   [um]"
+#ifdef MBC_8POINT
+#define MSG_BED_CORRECTION_P1		"Punto a [um]"
+#define MSG_BED_CORRECTION_P2		"Punto b [um]"
+#define MSG_BED_CORRECTION_P3		"Punto c [um]"
+#define MSG_BED_CORRECTION_P4		"Punto d [um]"
+#define MSG_BED_CORRECTION_P5		"Punto e [um]"
+#define MSG_BED_CORRECTION_P6		"Punto f [um]"
+#define MSG_BED_CORRECTION_P7		"Punto g [um]"
+#define MSG_BED_CORRECTION_P8		"Punto h [um]"
+#else
+//#define MSG_BED_CORRECTION_LEFT                                 "Izquierda [um]"
+//#define MSG_BED_CORRECTION_RIGHT                                "Derecha   [um]"
+//#define MSG_BED_CORRECTION_FRONT                                "Frontal   [um]"
+//#define MSG_BED_CORRECTION_REAR                                 "Trasera   [um]"
+#endif
 #define MSG_BED_CORRECTION_RESET                                "Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
