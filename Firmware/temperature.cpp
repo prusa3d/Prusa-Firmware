@@ -1074,7 +1074,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 	static int __preheat_counter[2] = { 0,0};
 	static int __preheat_errors[2] = { 0,0};
 		
-
+	
 #ifdef 	TEMP_RUNAWAY_BED_TIMEOUT
 	if (_isbed)
 	{
@@ -1121,11 +1121,14 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 			if (_current_temperature < ((_isbed) ? (0.8 * _target_temperature) : 150)) //check only in area where temperature is changing fastly for heater, check to 0.8 x target temperature for bed
 			{
 				__preheat_counter[_heater_id]++;
+				//SERIAL_ECHOPGM("counter[0]:");  MYSERIAL.println(__preheat_counter[0]);
+				//SERIAL_ECHOPGM("counter[1]:");  MYSERIAL.println(__preheat_counter[1]);
+				//SERIAL_ECHOPGM("_isbed"); MYSERIAL.println(_isbed);
 				if (__preheat_counter[_heater_id] > ((_isbed) ? 16 : 8)) // periodicaly check if current temperature changes
 				{
-					/*SERIAL_ECHOPGM("Heater:");
+					/*SERIAL_ECHOLNPGM("Heater:");
 					MYSERIAL.print(_heater_id);
-					SERIAL_ECHOPGM(" T:");
+					SERIAL_ECHOPGM(" Current temperature:");
 					MYSERIAL.print(_current_temperature);
 					SERIAL_ECHOPGM(" Tstart:");
 					MYSERIAL.print(__preheat_start[_heater_id]);*/
