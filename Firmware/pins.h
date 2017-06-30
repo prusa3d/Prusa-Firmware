@@ -391,7 +391,7 @@
   #define BTN_EN2 33
   #define BTN_ENC 35
 
-  #define SDCARDDETECT 72
+  #define SDCARDDETECT 49
   
   #define LCD_PINS_RS 16
   #define LCD_PINS_ENABLE 17
@@ -411,7 +411,7 @@
 
 
   #define HEATER_0_PIN 10
-  #define HEATER_1_PIN 7
+  #define HEATER_1_PIN -1 // was 7
   #define HEATER_2_PIN -1
   #define HEATER_BED_PIN 8
 
