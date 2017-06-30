@@ -181,7 +181,7 @@
 + #define(length = 20) MSG_SELFTEST_CHECK_X				"Pruefe X Achse    "
 + #define(length = 20) MSG_SELFTEST_CHECK_Y				"Pruefe Y Achse    "
 + #define(length = 20) MSG_SELFTEST_CHECK_Z				"Pruefe Z Achse    "
-+ #define(length = 20) MSG_SELFTEST_CHECK_BED			"Pr\x81fe Bed        "
++ #define(length = 20) MSG_SELFTEST_CHECK_BED			"Pr\x81""fe Bed        "
 + #define(length = 20) MSG_SELFTEST_CHECK_ALLCORRECT	"Alles richtig    "
 + #define MSG_SELFTEST						"Selbsttest       "
 + #define(length = 20) MSG_SELFTEST_FAILED		"Selbsttest misslung."
@@ -324,3 +324,4 @@
 #define MSG_MEASURED_SKEW					"Schraeglauf:"
 #define MSG_SLIGHT_SKEW						"Leichter Schr.:"
 #define MSG_SEVERE_SKEW						"Schwerer Schr.:"
+

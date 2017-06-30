@@ -182,6 +182,14 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 #ifdef FILAMENT_SENSOR
   static int meas_shift_index;  //used to point to a delayed sample in buffer for filament width sensor
 #endif
+
+#if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
+static float temp_runaway_status[4];
+static float temp_runaway_target[4];
+static float temp_runaway_timer[4];
+static int temp_runaway_error_counter[4];
+#endif
+
 //===========================================================================
 //=============================   functions      ============================
 //===========================================================================
@@ -1417,7 +1425,9 @@ ISR(TIMER0_COMPB_vect)
   static unsigned char temp_count = 0;
   static unsigned long raw_temp_0_value = 0;
   static unsigned long raw_temp_1_value = 0;
+#if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
   static unsigned long raw_temp_2_value = 0;
+#endif
   static unsigned long raw_temp_bed_value = 0;
   static unsigned char temp_state = 10;
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
@@ -1857,7 +1867,7 @@ ISR(TIMER0_COMPB_vect)
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
       redundant_temperature_raw = raw_temp_1_value;
 #endif
-#if EXTRUDERS > 2
+#if (EXTRUDERS > 2) && defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
       current_temperature_raw[2] = raw_temp_2_value;
 #endif
       current_temperature_bed_raw = raw_temp_bed_value;
@@ -1873,7 +1883,9 @@ ISR(TIMER0_COMPB_vect)
     temp_count = 0;
     raw_temp_0_value = 0;
     raw_temp_1_value = 0;
+#if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
     raw_temp_2_value = 0;
+#endif
     raw_temp_bed_value = 0;
 
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
