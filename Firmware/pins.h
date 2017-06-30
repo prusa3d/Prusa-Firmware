@@ -315,12 +315,9 @@
 
 #endif
 
-
-
-
 /*****************************************************************
- * EINY Rambo Pin Assignments 0.1a
- ******************************************************************/
+* EINY Rambo Pin Assignments 0.1a
+******************************************************************/
 #if MOTHERBOARD == 300
 #define ELECTRONICS "EINY_01a"
 #define KNOWN_BOARD
@@ -415,12 +412,14 @@
 
 #define SDCARDDETECT   15
 
+#define TACH_0 81
+#define TACH_1 80 
+
 #endif //NEWPANEL
 #endif //ULTRA_LCD
 
 
 #endif
-
 
 
 

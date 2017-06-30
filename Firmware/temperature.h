@@ -58,7 +58,9 @@ extern float current_temperature_bed;
 #endif
 
 #ifdef PIDTEMP
-  extern float Kp,Ki,Kd,Kc;
+  extern int pid_cycle, pid_number_of_cycles;
+  extern float Kp,Ki,Kd,Kc,_Kp,_Ki,_Kd;
+  extern bool pid_tuning_finished;
   float scalePID_i(float i);
   float scalePID_d(float d);
   float unscalePID_i(float i);
@@ -180,7 +182,7 @@ static float temp_runaway_timer[4];
 static int temp_runaway_error_counter[4];
 
 void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
-void temp_runaway_stop(bool isPreheat);
+void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
 int getHeaterPower(int heater);
@@ -204,6 +206,10 @@ void PID_autotune(float temp, int extruder, int ncycles);
 
 void setExtruderAutoFanState(int pin, bool state);
 void checkExtruderAutoFans();
+
+void countFanSpeed();
+void checkFanSpeed();
+void fanSpeedError(unsigned char _fan);
 
 #endif
 

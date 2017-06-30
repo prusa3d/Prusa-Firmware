@@ -6,6 +6,9 @@
 // is built properly, the end stops are at the correct positions and the axes are perpendicular.
 extern const float bed_ref_points[] PROGMEM;
 
+extern const float bed_skew_angle_mild;
+extern const float bed_skew_angle_extreme;
+
 // Is the world2machine correction activated?
 enum World2MachineCorrectionMode
 {
@@ -140,8 +143,8 @@ inline bool world2machine_clamp(float &x, float &y)
     return clamped;
 }
 
-extern bool find_bed_induction_sensor_point_z(float minimum_z = -10.f, uint8_t n_iter = 3);
-extern bool find_bed_induction_sensor_point_xy();
+extern bool find_bed_induction_sensor_point_z(float minimum_z = -10.f, uint8_t n_iter = 3, int verbosity_level = 0);
+extern bool find_bed_induction_sensor_point_xy(int verbosity_level = 0);
 extern void go_home_with_z_lift();
 
 // Positive or zero: ok
@@ -150,14 +153,14 @@ enum BedSkewOffsetDetectionResultType {
 	// Detection failed, some point was not found.
 	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1,
 	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2,
-
+	
 	// Detection finished with success.
 	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,
 	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,
 	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2
 };
 
-extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level);
+extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level, uint8_t &too_far_mask);
 extern BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level, uint8_t &too_far_mask);
 
 extern bool sample_mesh_and_store_reference();
@@ -178,5 +181,6 @@ extern void babystep_undo();
 
 // Reset the current babystep counter without moving the axes.
 extern void babystep_reset();
+extern void count_xyz_details();
 
 #endif /* MESH_BED_CALIBRATION_H */

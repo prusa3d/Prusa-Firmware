@@ -88,10 +88,12 @@ void digipot_current(uint8_t driver, int current);
 void microstep_init();
 void microstep_readings();
 
+static void check_fans();
+
 #ifdef HAVE_TMC2130_DRIVERS
 void tmc2130_check_overtemp();
 
-void tmc2130_write(uint8_t chipselect, uint8_t address,uint8_t wval1,uint8_t wval2,uint8_t wval3,uint8_t wval4);
+void tmc2130_write(uint8_t chipselect, uint8_t address, uint8_t wval1, uint8_t wval2, uint8_t wval3, uint8_t wval4);
 uint8_t tmc2130_read8(uint8_t chipselect, uint8_t address);
 uint16_t tmc2130_readSG(uint8_t chipselect);
 uint16_t tmc2130_readTStep(uint8_t chipselect);
@@ -102,6 +104,7 @@ void st_resetSGflags();
 uint8_t st_didLastHomingStall();
 
 #endif
+
 
 #ifdef BABYSTEPPING
   void babystep(const uint8_t axis,const bool direction); // perform a short step with a single stepper motor, outside of any convention
