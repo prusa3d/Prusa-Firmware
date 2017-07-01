@@ -1379,7 +1379,6 @@ void get_command()
         continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
-       (serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1) )
     {
       if(!serial_count) { //if empty line
@@ -1388,7 +1387,6 @@ void get_command()
       }
       cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
       if(!comment_mode){
-        comment_mode = false; //for new command
         if ((strchr_pointer = strstr(cmdbuffer+bufindw+1, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL) {
             if ((strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL)
             {
@@ -4335,6 +4333,12 @@ Sigma_Exit:
           }
         }
       }
+      break;
+    case 110:   // M110 - reset line pos
+      if (code_seen('N'))
+        gcode_LastN = code_value_long();
+      else
+        gcode_LastN = 0;
       break;
     case 115: // M115
       if (code_seen('V')) {

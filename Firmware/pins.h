@@ -3,20 +3,6 @@
 
 #include "boards.h"
 
-#if !MB(5DPRINT)
-#define X_MS1_PIN -1
-#define X_MS2_PIN -1
-#define Y_MS1_PIN -1
-#define Y_MS2_PIN -1
-#define Z_MS1_PIN -1
-#define Z_MS2_PIN -1
-#define E0_MS1_PIN -1
-#define E0_MS2_PIN -1
-#define E1_MS1_PIN -1
-#define E1_MS2_PIN -1
-#define DIGIPOTSS_PIN -1
-#endif
-
 #define LARGE_FLASH true
 
 /*****************************************************************
