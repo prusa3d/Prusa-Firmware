@@ -1197,6 +1197,9 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 	}
+	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
+		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
+	}
 
 	check_babystep(); //checking if Z babystep is in allowed range
 	
@@ -1217,12 +1220,18 @@ void setup()
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
   }
+  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
+	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT))	recover_print();
+  }
+
   for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   lcd_update_enable(true);
 
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
+
+  
 }
 
 void trace();
@@ -6619,3 +6628,41 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");
 }
+
+
+
+void uvlo() {
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
+	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
+	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
+	//current_position[Z_AXIS] += 3;
+
+
+
+	/*
+	st_synchronize();
+	while (1);*/
+	//WRITE(BEEPER, HIGH);
+
+	/*while (1) {
+		//first turn off heatbed
+		//DDRG |= (1 << DDG5); //set as output
+		PORTG &= ~(1 << 5); //set output low
+							//turn off nozzle
+							//DDRE |= (1 << DDE5);
+		PORTE &= ~(1 << 5);
+		WRITE(BEEPER, HIGH);
+	}*/
+}
+
+void recover_print() {
+	homeaxis(X_AXIS);
+	homeaxis(Y_AXIS);
+	current_position[X_AXIS] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 0));
+	current_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 4));
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS], active_extruder);
+	st_synchronize();
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
+
+}
+

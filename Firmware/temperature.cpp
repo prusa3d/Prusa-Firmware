@@ -407,6 +407,9 @@ void setExtruderAutoFanState(int pin, bool state)
 
 void countFanSpeed()
 {
+	SERIAL_ECHOPGM("UVLO:");
+	MYSERIAL.println(UVLO);
+
 	fan_speed[0] = (fan_edge_counter[0] * (float(250) / (millis() - extruder_autofan_last_check)));
 	fan_speed[1] = (fan_edge_counter[1] * (float(250) / (millis() - extruder_autofan_last_check)));
 
@@ -1456,6 +1459,7 @@ int read_max6675()
 // Timer 0 is shared with millies
 ISR(TIMER0_COMPB_vect)
 {
+	if (UVLO) uvlo();
   //these variables are only accesible from the ISR, but static, so they don't lose their value
   static unsigned char temp_count = 0;
   static unsigned long raw_temp_0_value = 0;

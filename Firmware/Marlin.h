@@ -352,3 +352,7 @@ void temp_compensation_apply();
 void temp_compensation_start();
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
+
+void uvlo();
+void recover_print();
+#define UVLO !(PINE & (1<<4))

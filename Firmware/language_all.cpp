@@ -2203,6 +2203,11 @@ const char * const MSG_REBOOT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_REBOOT_DE
 };
 
+const char MSG_RECOVER_PRINT_EN[] PROGMEM = "Blackout occured. Recover print?";
+const char * const MSG_RECOVER_PRINT_LANG_TABLE[1] PROGMEM = {
+	MSG_RECOVER_PRINT_EN
+};
+
 const char MSG_RECTRACT_EN[] PROGMEM = "Rectract";
 const char * const MSG_RECTRACT_LANG_TABLE[1] PROGMEM = {
 	MSG_RECTRACT_EN
