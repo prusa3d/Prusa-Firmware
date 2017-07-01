@@ -1202,6 +1202,7 @@ void setup()
 	}
 
 	check_babystep(); //checking if Z babystep is in allowed range
+	setup_uvlo_interrupt();
 	
   if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
       calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
@@ -1222,6 +1223,7 @@ void setup()
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
 	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT))	recover_print();
+	  else eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
   }
 
   for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
@@ -6745,38 +6747,56 @@ void serialecho_temperatures() {
 
 
 
-void uvlo() {
+void uvlo_() {
+	SERIAL_ECHOLNPGM("UVLO");	
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
 	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
-	//current_position[Z_AXIS] += 3;
-
-
-
-	/*
+	current_position[E_AXIS] -= DEFAULT_RETRACTION;
+	sei(); //enable stepper driver interrupt to move Z axis
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
 	st_synchronize();
-	while (1);*/
-	//WRITE(BEEPER, HIGH);
-
-	/*while (1) {
-		//first turn off heatbed
-		//DDRG |= (1 << DDG5); //set as output
-		PORTG &= ~(1 << 5); //set output low
-							//turn off nozzle
-							//DDRE |= (1 << DDE5);
-		PORTE &= ~(1 << 5);
-		WRITE(BEEPER, HIGH);
-	}*/
+	current_position[Z_AXIS] += UVLO_Z_AXIS_SHIFT;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
+	st_synchronize();
 }
 
 void recover_print() {
 	homeaxis(X_AXIS);
 	homeaxis(Y_AXIS);
-	current_position[X_AXIS] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 0));
-	current_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 4));
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS], active_extruder);
+	current_position[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
+	current_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
+	/*SERIAL_ECHOPGM("Current position [X_AXIS]:");
+	MYSERIAL.println(current_position[X_AXIS]);
+	SERIAL_ECHOPGM("Current position [Y_AXIS]:");
+	MYSERIAL.println(current_position[Y_AXIS]);*/
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
+	st_synchronize();
+	current_position[Z_AXIS] -= UVLO_Z_AXIS_SHIFT;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
+	st_synchronize();
+	current_position[E_AXIS] += DEFAULT_RETRACTION; //unretract
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
 	st_synchronize();
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 
+}
+
+void setup_uvlo_interrupt() {
+	DDRE &= ~(1 << 4); //input pin
+	PORTE &= ~(1 << 4); //no internal pull-up
+	
+	//sensing falling edge
+	EICRB |= (1 << 0);
+	EICRB &= ~(1 << 1);
+	
+	//enable INT4 interrupt
+	EIMSK |= (1 << 4);
+}
+
+ISR(INT4_vect) {
+	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
+	SERIAL_ECHOLNPGM("INT4");
+	uvlo_();
 }
 
