@@ -54,6 +54,8 @@ void st_set_e_position(const long &e);
 // Get current position in steps
 long st_get_position(uint8_t axis);
 
+// Get current x and y position in steps
+void st_get_position_xy(long &x, long &y);
 
 // Get current position in mm
 float st_get_position_mm(uint8_t axis);

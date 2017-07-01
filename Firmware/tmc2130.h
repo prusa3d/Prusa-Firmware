@@ -1,26 +1,33 @@
 #ifndef TMC2130_H
 #define TMC2130_H
 
-static uint8_t sg_homing_axis = 0xFF;
-static uint8_t sg_axis_stalled[2] = {0, 0};
-static uint8_t sg_lastHomingStalled = false;
+//holding and running currents
+extern uint8_t tmc2130_current_h[4];
+extern uint8_t tmc2130_current_r[4];
+//flags for axis stall detection
+extern uint8_t tmc2130_axis_stalled[4];
 
-void tmc2130_check_overtemp();
+extern uint8_t sg_homing_delay;
 
-void tmc2130_write(uint8_t chipselect, uint8_t address,uint8_t wval1,uint8_t wval2,uint8_t wval3,uint8_t wval4);
-uint8_t tmc2130_read8(uint8_t chipselect, uint8_t address);
-uint16_t tmc2130_readSG(uint8_t chipselect);
-uint16_t tmc2130_readTStep(uint8_t chipselect);
-void tmc2130_PWMconf(uint8_t cs, uint8_t PWMgrad, uint8_t PWMampl);
 
-uint8_t st_didLastHomingStall();
+//initialize tmc2130
+extern void tmc2130_init();
+//update stall guard (called from st_synchronize inside the loop)
+extern bool tmc2130_update_sg();
+//temperature watching (called from )
+extern void tmc2130_check_overtemp();
+//enter homing (called from homeaxis before homing starts)
+extern void tmc2130_home_enter(uint8_t axis);
+//exit homing (called from homeaxis after homing ends)
+extern void tmc2130_home_exit();
+//
+extern uint8_t tmc2130_didLastHomingStall();
 
-void tmc2130_st_synchronize();
+//set holding current for any axis (G911)
+extern void tmc2130_set_current_h(uint8_t axis, uint8_t current);
+//set running current for any axis (G912)
+extern void tmc2130_set_current_r(uint8_t axis, uint8_t current);
+//print currents
+extern void tmc2130_print_currents();
 
-void tmc2130_st_home_enter(uint8_t axis);
-
-void tmc2130_st_home_exit();
-
-void tmc2130_init();
-
-#endif TMC2130_H
+#endif //TMC2130_H

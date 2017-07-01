@@ -83,11 +83,12 @@ static bool old_y_max_endstop=false;
 static bool old_z_min_endstop=false;
 static bool old_z_max_endstop=false;
 
-#ifdef SG_HOMING
+#ifdef SG_HOMING_SW
 static bool check_endstops = false;
 #else
 static bool check_endstops = true;
 #endif
+
 static bool check_z_endstop = false;
 
 int8_t SilentMode;
@@ -404,7 +405,11 @@ ISR(TIMER1_COMPA_vect)
       {
         {
           #if defined(X_MIN_PIN) && X_MIN_PIN > -1
-            bool x_min_endstop=(READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
+			#ifndef SG_HOMING_SW
+				bool x_min_endstop = (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
+			#else //SG_HOMING_SW
+				bool x_min_endstop = tmc2130_axis_stalled[X_AXIS];
+			#endif //SG_HOMING_SW
             if(x_min_endstop && old_x_min_endstop && (current_block->steps_x > 0)) {
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
@@ -420,7 +425,11 @@ ISR(TIMER1_COMPA_vect)
       {
         {
           #if defined(X_MAX_PIN) && X_MAX_PIN > -1
-            bool x_max_endstop=(READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
+			#ifndef SG_HOMING_SW
+				bool x_max_endstop = (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
+			#else //SG_HOMING_SW
+				bool x_max_endstop = tmc2130_axis_stalled[X_AXIS];
+			#endif //SG_HOMING_SW
             if(x_max_endstop && old_x_max_endstop && (current_block->steps_x > 0)){
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
@@ -440,7 +449,11 @@ ISR(TIMER1_COMPA_vect)
       CHECK_ENDSTOPS
       {
         #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
-          bool y_min_endstop=(READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
+			#ifndef SG_HOMING_SW
+				bool y_min_endstop=(READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
+			#else //SG_HOMING_SW
+				bool y_min_endstop = tmc2130_axis_stalled[Y_AXIS];
+			#endif //SG_HOMING_SW
           if(y_min_endstop && old_y_min_endstop && (current_block->steps_y > 0)) {
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
@@ -454,7 +467,11 @@ ISR(TIMER1_COMPA_vect)
       CHECK_ENDSTOPS
       {
         #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
-          bool y_max_endstop=(READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
+			#ifndef SG_HOMING_SW
+				bool y_max_endstop=(READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
+			#else //SG_HOMING_SW
+				bool y_max_endstop = tmc2130_axis_stalled[Y_AXIS];
+			#endif //SG_HOMING_SW
           if(y_max_endstop && old_y_max_endstop && (current_block->steps_y > 0)){
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
@@ -865,15 +882,23 @@ void st_init()
 // Block until all buffered steps are executed
 void st_synchronize()
 {
-    while( blocks_queued()) {
-    manage_heater();
-    // Vojtech: Don't disable motors inside the planner!
-    manage_inactivity(true);
-    lcd_update();
+	while(blocks_queued())
+	{
 #ifdef HAVE_TMC2130_DRIVERS
-	tmc2130_st_synchronize();
+		manage_heater();
+		// Vojtech: Don't disable motors inside the planner!
+		if (!tmc2130_update_sg())
+		{
+			manage_inactivity(true);
+			lcd_update();
+		}
+#else //HAVE_TMC2130_DRIVERS
+		manage_heater();
+		// Vojtech: Don't disable motors inside the planner!
+		manage_inactivity(true);
+		lcd_update();
 #endif //HAVE_TMC2130_DRIVERS
-  }
+	}
 }
 
 void st_set_position(const long &x, const long &y, const long &z, const long &e)
@@ -902,6 +927,13 @@ long st_get_position(uint8_t axis)
   return count_pos;
 }
 
+void st_get_position_xy(long &x, long &y)
+{
+  CRITICAL_SECTION_START;
+  x = count_position[X_AXIS];
+  y = count_position[Y_AXIS];
+  CRITICAL_SECTION_END;
+}
 
 float st_get_position_mm(uint8_t axis)
 {
