@@ -1803,7 +1803,7 @@ static float probe_pt(float x, float y, float z_before) {
 }
 
 #endif // #ifdef ENABLE_AUTO_BED_LEVELING
-
+/*
 void homeaxis(int axis) {
 #define HOMEAXIS_DO(LETTER) \
   ((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
@@ -1814,7 +1814,8 @@ void homeaxis(int axis) {
       0) {
     int axis_home_dir = home_dir(axis);
 #ifdef HAVE_TMC2130_DRIVERS
-	tmc2130_st_home_enter(axis);
+	if ((axis == X_AXIS) || (axis == Y_AXIS))
+		tmc2130_home_enter(axis);
 #endif //HAVE_TMC2130_DRIVERS
 
     current_position[axis] = 0;
@@ -1832,7 +1833,7 @@ void homeaxis(int axis) {
     st_synchronize();
 
     destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
-    feedrate = homing_feedrate[axis]/2 ;
+//    feedrate = homing_feedrate[axis]/2 ;
     plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
     st_synchronize();
     axis_is_at_home(axis);
@@ -1842,11 +1843,93 @@ void homeaxis(int axis) {
     axis_known_position[axis] = true;
 
 #ifdef HAVE_TMC2130_DRIVERS
-	tmc2130_st_home_enter(axis);
+	if ((axis == X_AXIS) || (axis == Y_AXIS))
+		tmc2130_home_exit();
 #endif //HAVE_TMC2130_DRIVERS
   }
 }
+/**/
 
+void homeaxis(int axis) {
+#define HOMEAXIS_DO(LETTER) \
+((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
+    
+    if (axis==X_AXIS ? HOMEAXIS_DO(X) :
+        axis==Y_AXIS ? HOMEAXIS_DO(Y) :
+        0) {
+        int axis_home_dir = home_dir(axis);
+        
+#ifdef HAVE_TMC2130_DRIVERS
+		tmc2130_home_enter(axis);
+#endif
+        
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        
+        destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
+        feedrate = homing_feedrate[axis];
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+
+//		sg_homing_delay = 0;
+        st_synchronize();
+        
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[axis] = -home_retract_mm(axis) * axis_home_dir;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+//		sg_homing_delay = 0;
+        st_synchronize();
+        
+        destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
+#ifdef HAVE_TMC2130_DRIVERS
+        if (tmc2130_didLastHomingStall())
+            feedrate = homing_feedrate[axis];
+        else
+#endif
+		feedrate = homing_feedrate[axis] / 2;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+//		sg_homing_delay = 0;
+        st_synchronize();
+        axis_is_at_home(axis);
+        destination[axis] = current_position[axis];
+        feedrate = 0.0;
+        endstops_hit_on_purpose();
+        axis_known_position[axis] = true;
+        
+#ifdef HAVE_TMC2130_DRIVERS
+		tmc2130_home_exit();
+#endif
+    }
+    else if (axis==Z_AXIS ? HOMEAXIS_DO(Z) :
+             0) {
+        int axis_home_dir = home_dir(axis);
+        
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        
+        destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
+        feedrate = homing_feedrate[axis];
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[axis] = -home_retract_mm(axis) * axis_home_dir;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        
+        destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
+        feedrate = homing_feedrate[axis]/2 ;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        axis_is_at_home(axis);
+        destination[axis] = current_position[axis];
+        feedrate = 0.0;
+        endstops_hit_on_purpose();
+        axis_known_position[axis] = true;
+    }
+}
+/**/
 void home_xy()
 {
     set_destination_to_current();
@@ -5399,6 +5482,37 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       #endif
     }
     break;
+
+	case 910: // M910 TMC2130 init
+    {
+		tmc2130_init();
+    }
+    break;
+
+	case 911: // M911 Set TMC2130 holding currents
+    {
+		if (code_seen('X')) tmc2130_set_current_h(0, code_value());
+		if (code_seen('Y')) tmc2130_set_current_h(1, code_value());
+        if (code_seen('Z')) tmc2130_set_current_h(2, code_value());
+        if (code_seen('E')) tmc2130_set_current_h(3, code_value());
+    }
+    break;
+
+	case 912: // M912 Set TMC2130 running currents
+    {
+		if (code_seen('X')) tmc2130_set_current_r(0, code_value());
+		if (code_seen('Y')) tmc2130_set_current_r(1, code_value());
+        if (code_seen('Z')) tmc2130_set_current_r(2, code_value());
+        if (code_seen('E')) tmc2130_set_current_r(3, code_value());
+    }
+    break;
+
+	case 913: // M912 Print TMC2130 currents
+    {
+		tmc2130_print_currents();
+    }
+    break;
+
     case 350: // M350 Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {
       #if defined(X_MS1_PIN) && X_MS1_PIN > -1

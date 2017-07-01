@@ -6,14 +6,14 @@
  *------------------------------------*/
 
 // Printer revision
-#define FILAMENT_SIZE "1_75mm_MK2"
+#define FILAMENT_SIZE "1_75mm_MK3"
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Developer flag
 #define DEVELOPER
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK2"
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK3"
 
 // Electronics
 #define MOTHERBOARD BOARD_EINY_0_1a
@@ -32,7 +32,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -64,10 +64,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
 
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {300,300,300,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_MAX_FEEDRATE          {400, 400, 12, 120}    // (mm/sec)
+#define DEFAULT_MAX_ACCELERATION      {2000,2000,500,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
-#define DEFAULT_ACCELERATION          1500    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_ACCELERATION          1200    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  1500   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 
@@ -84,41 +84,17 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define PWM_AMPL 0xC8       // 0xFF - Sets PWM amplitude to 200 (max is 255)
 #define PWM_AUTOSCALE 0x04  // 0x04 since writing in PWM_CONF (Activates PWM autoscaling)
 #define PWM_FREQ 0x01       // 0x01 since writing in PWM_CONF (Sets PWM frequency to 2/683 fCLK)
-
-// Special configuration for XY axes for operation (during standstill, use same settings as for other axes) //todo
-#define PWM_GRAD_XY 156       // 0x0F - Sets gradient - (max 15 with PWM autoscale activated)
-#define PWM_AMPL_XY 63       // 0xFF - Sets PWM amplitude to 200 (max is 255)
-#define PWM_AUTOSCALE_XY 0x00  // 0x04 since writing in PWM_CONF (Activates PWM autoscaling)
-#define PWM_FREQ_XY 0x01       // 0x01 since writing in PWM_CONF (Sets PWM frequency to 2/683 fCLK)
-
 #define PWM_THRS 0x00       // TPWM_THRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
 
-#define SG_HOMING 1
-#define SG_THRESHOLD 13
-#define TCOOLTHRS 239
+#define SG_HOMING_SW 1      // stallguard "software" homing
+//#define SG_HOMING_HW 1      // stallguard "hardware" homing
+#define SG_THRESHOLD_X 8    // stallguard sensitivity for X axis
+#define SG_THRESHOLD_Y 8    // stallguard sensitivity for Y axis
+#define TCOOLTHRS 239       // coolstep treshold
 
-#define TMC_DEBUG
-
-// PWM register configuration
-#define PWM_GRAD 0x08       // 0x0F - Sets gradient - (max 15 with PWM autoscale activated)
-#define PWM_AMPL 0xC8       // 0xFF - Sets PWM amplitude to 200 (max is 255)
-#define PWM_AUTOSCALE 0x04  // 0x04 since writing in PWM_CONF (Activates PWM autoscaling)
-#define PWM_FREQ 0x01       // 0x01 since writing in PWM_CONF (Sets PWM frequency to 2/683 fCLK)
-
-// Special configuration for XY axes for operation (during standstill, use same settings as for other axes) //todo
-#define PWM_GRAD_XY 156       // 0x0F - Sets gradient - (max 15 with PWM autoscale activated)
-#define PWM_AMPL_XY 63       // 0xFF - Sets PWM amplitude to 200 (max is 255)
-#define PWM_AUTOSCALE_XY 0x00  // 0x04 since writing in PWM_CONF (Activates PWM autoscaling)
-#define PWM_FREQ_XY 0x01       // 0x01 since writing in PWM_CONF (Sets PWM frequency to 2/683 fCLK)
-
-#define PWM_THRS 0x00       // TPWM_THRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
-
-#define SG_HOMING 1
-#define SG_THRESHOLD_X 8
-#define SG_THRESHOLD_Y 8
-#define TCOOLTHRS 239
-
-#define TMC_DEBUG
+#define TMC2130_CURRENTS_H {2, 2, 2, 4}  // default holding currents for all axes
+#define TMC2130_CURRENTS_R {6, 6, 8, 8}  // default running currents for all axes
+#define TMC2130_DEBUG
 //#define TMC_DBG_READS
 //#define TMC_DBG_WRITE
 
