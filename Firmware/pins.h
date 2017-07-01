@@ -489,7 +489,7 @@
 #define MOTOR_CURRENT_PWM_Z_PIN  45
 #define MOTOR_CURRENT_PWM_E_PIN  44
 #define SDPOWER             -1
-#define SDSS                53
+#define SDSS                77
 #define LED_PIN             13
 #define FAN_PIN              6
 #define FAN_1_PIN            -1
@@ -520,8 +520,8 @@
 
 #define SDCARDDETECT   15
 
-#define TACH_0 81
-#define TACH_1 80 
+#define TACH_0 79
+#define TACH_1 80
 
 #endif //NEWPANEL
 #endif //ULTRA_LCD
