@@ -1,0 +1,35 @@
+# Compile Firmware on Travis CI
+# By Simon Peter
+# Roughly based on https://github.com/prusa3d/Prusa-Firmware/issues/29 and
+# https://learn.adafruit.com/continuous-integration-arduino-and-you/testing-your-project
+
+language: c
+
+before_install:
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
+  - sleep 3
+  - export DISPLAY=:1.0
+  - wget http://downloads.arduino.cc/arduino-1.6.8-linux64.tar.xz
+  - tar xf arduino-1.6.8-linux64.tar.xz
+  - rm -rf arduino-1.6.8/libraries/LiquidCrystal
+  - cp -Rf ArduinoAddons/Arduino_1.6.x/* arduino-1.6.8/
+  - wget -c "https://raw.githubusercontent.com/arduino/Arduino/master/hardware/arduino/avr/bootloaders/stk500v2/stk500boot_v2_mega2560.hex"
+  - cp stk500boot_v2_mega2560.hex arduino-1.6.8/hardware/arduino/avr/bootloaders/stk500v2/
+  - cp stk500boot_v2_mega2560.hex arduino-1.6.8/hardware/marlin/avr/bootloaders/
+  - find arduino-1.6.8/ -name platform.local.txt -delete
+  
+install:
+  - cp Firmware/variants/1_75mm_MK2-RAMBo13a-E3Dv6full.h Firmware/Configuration_prusa.h
+
+script:
+  - VARIANTS=$(ls Firmware/variants/)
+  - for VARIANT in $VARIANTS; do
+      arduino-1.6.8/arduino --pref build.path=. --verify --verbose-build --board marlin:avr:rambo $PWD/Firmware/Firmware.ino ;
+      cp Firmware.ino.hex "${VARIANT}"ex ;
+    done
+  - mkdir -p prusa3d_fw_$(git rev-parse --short HEAD)/MK1-175mm prusa3d_fw_$(git rev-parse --short HEAD)/MK2-MultiMaterial prusa3d_fw_$(git rev-parse --short HEAD)/MK2
+  - mv *_MK1-RAMBo* prusa3d_fw_$(git rev-parse --short HEAD)/MK1-175mm
+  - mv *_MK2-MultiMaterial-RAMBo* prusa3d_fw_$(git rev-parse --short HEAD)/MK2-MultiMaterial
+  - mv *_MK2-RAMBo* prusa3d_fw_$(git rev-parse --short HEAD)/MK2
+  - zip -r prusa3d_fw_$(git rev-parse --short HEAD).zip prusa3d_fw_* *.pdf
+  - curl --upload-file prusa3d_fw_$(git rev-parse --short HEAD).zip https://transfer.sh/prusa3d_fw_$(git rev-parse --short HEAD).zip
