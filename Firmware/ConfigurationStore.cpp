@@ -124,19 +124,6 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i, filament_size[2]);
   #endif
   #endif
-//
-    // Linear Advance
-    //
-
-    #if defined(LIN_ADVANCE)
-      EEPROM_WRITE_VAR(i, extruder_advance_k);
-      EEPROM_WRITE_VAR(i, advance_ed_ratio);
-    #else
-      dummy = 0.0f;
-      EEPROM_WRITE_VAR(i, dummy);
-      EEPROM_WRITE_VAR(i, dummy);
-    #endif
-  
   /*MYSERIAL.print("Top address used:\n");
   MYSERIAL.print(i);
   MYSERIAL.print("\n");
@@ -272,14 +259,6 @@ void Config_PrintSettings()
         SERIAL_ECHOLNPGM("Filament settings: Disabled");
     }
 #endif
-
-    #if defined(LIN_ADVANCE)
-      SERIAL_ECHO_START;
-      SERIAL_ECHOLNPGM("Linear Advance:");
-      SERIAL_ECHOPAIR("  M900 K", extruder_advance_k);
-      SERIAL_ECHOPAIR(" R", advance_ed_ratio);
-	  SERIAL_ECHO('\n');
-    #endif
 }
 #endif
 
@@ -370,18 +349,6 @@ void Config_RetrieveSettings()
 #endif
 		calculate_volumetric_multipliers();
 		// Call updatePID (similar to when we have processed M301)
-	  //
-      // Linear Advance
-      //
-
-      #if defined(LIN_ADVANCE)
-        EEPROM_READ_VAR(i, extruder_advance_k);
-        EEPROM_READ_VAR(i, advance_ed_ratio);
-      #else
-        EEPROM_READ_VAR(i, dummy);
-        EEPROM_READ_VAR(i, dummy);
-      #endif
-		
 		updatePID();
         SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("Stored settings retrieved");
@@ -465,11 +432,6 @@ void Config_ResetDefault()
 #endif
 #endif
 	calculate_volumetric_multipliers();
-  
-#if defined(LIN_ADVANCE)
-    extruder_advance_k = LIN_ADVANCE_K;
-    advance_ed_ratio = LIN_ADVANCE_E_D_RATIO;
-#endif
 
 SERIAL_ECHO_START;
 SERIAL_ECHOLNPGM("Hardcoded Default Settings Loaded");

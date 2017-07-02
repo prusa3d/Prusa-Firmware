@@ -6,7 +6,7 @@ GENERAL SETTINGS
 *------------------------------------*/
 
 // Printer revision
-#define FILAMENT_SIZE "1_75mm_MK2"
+#define FILAMENT_SIZE "1_75mm_MK2_MM"
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Developer flag
@@ -16,10 +16,10 @@ GENERAL SETTINGS
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK2"
 
 // Electronics
-#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
+#define MOTHERBOARD BOARD_RAMBO_MINI_1_0
 
 // Prusa Single extruder multiple material suport
-//#define SNMM
+#define SNMM
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
@@ -108,17 +108,9 @@ EXTRUDER SETTINGS
 #define  DEFAULT_Kd 73.76
 #else
 // Define PID constants for extruder
-//#define  DEFAULT_Kp 40.925	//orig
-//#define  DEFAULT_Ki 4.875		//orig
-//#define  DEFAULT_Kd 86.085	//orig
-
-#define  DEFAULT_Kp 22.39	//205C
-#define  DEFAULT_Ki 1.98	//205C	
-#define  DEFAULT_Kd 63.27	//205C
-
-//#define  DEFAULT_Kp 23.68	//255C
-//#define  DEFAULT_Ki 1.98	//255C
-//#define  DEFAULT_Kd 70.80	//255C
+#define  DEFAULT_Kp 40.925
+#define  DEFAULT_Ki 4.875
+#define  DEFAULT_Kd 86.085
 #endif
 
 // Extrude mintemp
@@ -131,10 +123,8 @@ EXTRUDER SETTINGS
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
-
-
-
-
+// Prusa Single extruder multiple material suport
+//#define SNMM
 
 #ifdef SNMM
 //#define BOWDEN_LENGTH	408
@@ -155,9 +145,9 @@ CHANGE FILAMENT SETTINGS
 // Filament change configuration
 #define FILAMENTCHANGEENABLE
 #ifdef FILAMENTCHANGEENABLE
-#define FILAMENTCHANGE_XPOS 0
-#define FILAMENTCHANGE_YPOS -2.2
-#define FILAMENTCHANGE_ZADD 20
+#define FILAMENTCHANGE_XPOS 211
+#define FILAMENTCHANGE_YPOS 0
+#define FILAMENTCHANGE_ZADD 2
 #define FILAMENTCHANGE_FIRSTRETRACT -2
 #define FILAMENTCHANGE_FINALRETRACT -80
 
@@ -178,7 +168,7 @@ ADDITIONAL FEATURES SETTINGS
 *------------------------------------*/
 
 // Define Prusa filament runout sensor
-#define FILAMENT_RUNOUT_SUPPORT
+//#define FILAMENT_RUNOUT_SUPPORT
 
 #ifdef FILAMENT_RUNOUT_SUPPORT
 #define FILAMENT_RUNOUT_SENSOR 1
@@ -272,17 +262,9 @@ BED SETTINGS
 #define  DEFAULT_bedKi 1.60
 #define  DEFAULT_bedKd 73.76
 #else
-//#define  DEFAULT_bedKp 126.13	//orig
-//#define  DEFAULT_bedKi 4.30	//orig
-//#define  DEFAULT_bedKd 924.76	//orig
-
-#define  DEFAULT_bedKp 59.24	//55C
-#define  DEFAULT_bedKi 2.62		//55C
-#define  DEFAULT_bedKd 334.88	//55C
-
-//#define  DEFAULT_bedKp 107.61	//100C
-//#define  DEFAULT_bedKi 4.7	//100C
-//#define  DEFAULT_bedKd 609.26	//100C
+#define  DEFAULT_bedKp 126.13
+#define  DEFAULT_bedKi 4.30
+#define  DEFAULT_bedKd 924.76
 #endif
 
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
@@ -360,7 +342,7 @@ THERMISTORS SETTINGS
 // 1047 is Pt1000 with 4k7 pullup
 // 1010 is Pt1000 with 1k pullup (non standard)
 // 147 is Pt100 with 4k7 pullup
-// 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.3a
+// 148 is Pt100 with 4k7 pullup and no PT100 Amplifier (in case type 147 doesn't work)
 // 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
 
@@ -409,11 +391,11 @@ THERMISTORS SETTINGS
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
 #define DEFAULT_PID_TEMP 210
-#define DEFAULT_PID_BED_TEMP 55
 
 #ifdef SNMM
 #define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
 #else
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
+
 #endif //__CONFIGURATION_PRUSA_H

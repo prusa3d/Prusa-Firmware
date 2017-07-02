@@ -5,11 +5,10 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.11-L01"
+#define FW_version "3.0.12-RC2"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
-
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096

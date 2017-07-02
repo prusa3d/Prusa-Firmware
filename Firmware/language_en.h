@@ -46,11 +46,6 @@
 #define MSG_REFRESH                         "\xF8" "Refresh"
 #define MSG_WATCH                           "Info screen"
 #define MSG_TUNE                            "Tune"
-
-//Linear Advance option
-#define MSG_ADVANCE_K						"Advance K"
-#define MSG_E_D_RATIO						"E-D Ratio"
-
 #define MSG_PAUSE_PRINT                     "Pause print"
 #define MSG_RESUME_PRINT                    "Resume print"
 #define MSG_STOP_PRINT                      "Stop print"
@@ -253,8 +248,7 @@
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T2							"Insert filament into extruder 3. Click when done."
 #define(length=20, lines=4) MSG_FILAMENT_LOADING_T3							"Insert filament into extruder 4. Click when done."
 #define(length=20, lines=1) MSG_CHANGE_EXTR									"Change extruder"
-#define(length=20, lines=2) MSG_FIL_LOADED_CHECK								"Is filament loaded?"
-#define(length=20, lines=3) MSG_FIL_TUNING										"Rotate the knob to adjust filament."
+
 #define(length=20, lines=4) MSG_FIL_ADJUSTING								"Adjusting filaments. Please wait."
 #define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ			"Filaments are now adjusted. Please clean the nozzle for calibration. Click when done."
 #define(length=20, lines=4) MSG_STACK_ERROR						"Error - static memory has been overwritten"
@@ -267,7 +261,7 @@
 #define(length=20, lines=8) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
 #define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
-#define(length=20) MSG_UNLOADING_FILAMENT			"Unloading filament"
+#define(length=20, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
 #define(length=20, lines=10) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define(length=20) MSG_BED_CORRECTION_MENU									"Bed level correct"
@@ -293,7 +287,6 @@
 #define(length=20, lines=1) MSG_PID_BED_FINISHED				"PID bed cal. done   "
 #define(length=20, lines=1) MSG_PID_BED_RUNNING					"PID bed cal. "
 
-
 #define(length=20, lines=1) MSG_CALIBRATE_PINDA					"PINDA Temp. cal."
 #define(length=20, lines=1) MSG_CALIBRATION_PINDA_MENU			"PINDA Temp. cal."
 #define(length=20, lines=4) MSG_PINDA_NOT_CALIBRATED			"PINDA temperature calibration has not been run yet"
@@ -303,3 +296,13 @@
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"PINDA T.cal. [ON]"
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF			"PINDA T.cal.[OFF]"
 #define(length=20, lines=1) MSG_PREPARE_FILAMENT				"Prepare new filament"
+#define(length=19, lines=1) MSG_ALL								"All"
+#define(length=19, lines=1) MSG_USED							"Used during print"
+#define(length=19, lines=1) MSG_CURRENT							"Current"
+#define(length=20, lines=1)	MSG_CHOOSE_EXTRUDER					"Choose extruder:"
+#define(length=17, lines=1) MSG_EXTRUDER						"Extruder"
+#define(length=17, lines=1) MSG_EXTRUDER_1						"Extruder 1"
+#define(length=17, lines=1) MSG_EXTRUDER_2						"Extruder 2"
+#define(length=17, lines=1) MSG_EXTRUDER_3						"Extruder 3"
+#define(length=17, lines=1) MSG_EXTRUDER_4						"Extruder 4"
+

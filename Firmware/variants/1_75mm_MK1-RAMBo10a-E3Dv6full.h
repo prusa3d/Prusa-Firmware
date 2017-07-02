@@ -6,17 +6,20 @@ GENERAL SETTINGS
 *------------------------------------*/
 
 // Printer revision
-#define FILAMENT_SIZE "1_75mm_MK2"
+#define FILAMENT_SIZE "1_75mm_MK1"
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Developer flag
 #define DEVELOPER
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK2"
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK1"
 
 // Electronics
-#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
+#define MOTHERBOARD BOARD_RAMBO_MINI_1_0
+
+// MK1 back port
+#define MK1BP
 
 // Prusa Single extruder multiple material suport
 //#define SNMM
@@ -34,9 +37,9 @@ AXIS SETTINGS
 
 // Steps per unit {X,Y,Z,E}
 #ifdef SNMM
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/0.8,140}
 #else
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/0.8,174.2}
 #endif
 
 
@@ -47,16 +50,16 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 // Home position
 #define MANUAL_X_HOME_POS 0
-#define MANUAL_Y_HOME_POS -2.2
-#define MANUAL_Z_HOME_POS 0.15
+#define MANUAL_Y_HOME_POS 0
+#define MANUAL_Z_HOME_POS 0.25
 
 // Travel limits after homing
-#define X_MAX_POS 250
+#define X_MAX_POS 214
 #define X_MIN_POS 0
-#define Y_MAX_POS 210
-#define Y_MIN_POS -2.2
-#define Z_MAX_POS 210
-#define Z_MIN_POS 0.15
+#define Y_MAX_POS 198
+#define Y_MIN_POS 0
+#define Z_MAX_POS 201
+#define Z_MIN_POS 0.23
 
 // Canceled home position
 #define X_CANCEL_POS 50
@@ -68,16 +71,16 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_PAUSE_LIFT 20
 
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
-#define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
+#define HOMING_FEEDRATE {3000, 3000, 240, 0}  // set the homing speeds (mm/min)
 
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {9000,9000,500,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_MAX_FEEDRATE          {500, 500, 3, 25}    // (mm/sec)
+#define DEFAULT_MAX_ACCELERATION      {9000,9000,30,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
-#define DEFAULT_ACCELERATION          1500    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  1500   // X, Y, Z and E max acceleration in mm/s^2 for retracts
+#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 
-#define MANUAL_FEEDRATE {3000, 3000, 1000, 100}   // set the speeds for manual moves (mm/min)
+#define MANUAL_FEEDRATE {3000, 3000, 240, 60}   // set the speeds for manual moves (mm/min)
 
 #define Z_AXIS_ALWAYS_ON 1
 
@@ -108,21 +111,13 @@ EXTRUDER SETTINGS
 #define  DEFAULT_Kd 73.76
 #else
 // Define PID constants for extruder
-//#define  DEFAULT_Kp 40.925	//orig
-//#define  DEFAULT_Ki 4.875		//orig
-//#define  DEFAULT_Kd 86.085	//orig
-
-#define  DEFAULT_Kp 22.39	//205C
-#define  DEFAULT_Ki 1.98	//205C	
-#define  DEFAULT_Kd 63.27	//205C
-
-//#define  DEFAULT_Kp 23.68	//255C
-//#define  DEFAULT_Ki 1.98	//255C
-//#define  DEFAULT_Kd 70.80	//255C
+#define  DEFAULT_Kp 40.925
+#define  DEFAULT_Ki 4.875
+#define  DEFAULT_Kd 86.085
 #endif
 
 // Extrude mintemp
-#define EXTRUDE_MINTEMP 130
+#define EXTRUDE_MINTEMP 190
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
@@ -155,9 +150,9 @@ CHANGE FILAMENT SETTINGS
 // Filament change configuration
 #define FILAMENTCHANGEENABLE
 #ifdef FILAMENTCHANGEENABLE
-#define FILAMENTCHANGE_XPOS 0
-#define FILAMENTCHANGE_YPOS -2.2
-#define FILAMENTCHANGE_ZADD 20
+#define FILAMENTCHANGE_XPOS 211
+#define FILAMENTCHANGE_YPOS 0
+#define FILAMENTCHANGE_ZADD 2
 #define FILAMENTCHANGE_FIRSTRETRACT -2
 #define FILAMENTCHANGE_FINALRETRACT -80
 
@@ -178,7 +173,7 @@ ADDITIONAL FEATURES SETTINGS
 *------------------------------------*/
 
 // Define Prusa filament runout sensor
-#define FILAMENT_RUNOUT_SUPPORT
+//#define FILAMENT_RUNOUT_SUPPORT
 
 #ifdef FILAMENT_RUNOUT_SUPPORT
 #define FILAMENT_RUNOUT_SENSOR 1
@@ -272,17 +267,9 @@ BED SETTINGS
 #define  DEFAULT_bedKi 1.60
 #define  DEFAULT_bedKd 73.76
 #else
-//#define  DEFAULT_bedKp 126.13	//orig
-//#define  DEFAULT_bedKi 4.30	//orig
-//#define  DEFAULT_bedKd 924.76	//orig
-
-#define  DEFAULT_bedKp 59.24	//55C
-#define  DEFAULT_bedKi 2.62		//55C
-#define  DEFAULT_bedKd 334.88	//55C
-
-//#define  DEFAULT_bedKp 107.61	//100C
-//#define  DEFAULT_bedKi 4.7	//100C
-//#define  DEFAULT_bedKd 609.26	//100C
+#define  DEFAULT_bedKp 126.13
+#define  DEFAULT_bedKi 4.30
+#define  DEFAULT_bedKd 924.76
 #endif
 
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
@@ -360,7 +347,7 @@ THERMISTORS SETTINGS
 // 1047 is Pt1000 with 4k7 pullup
 // 1010 is Pt1000 with 1k pullup (non standard)
 // 147 is Pt100 with 4k7 pullup
-// 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.3a
+// 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.0a
 // 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
 
@@ -408,12 +395,10 @@ THERMISTORS SETTINGS
 #define LONG_PRESS_TIME 1000 //time in ms for button long press 
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
-#define DEFAULT_PID_TEMP 210
-#define DEFAULT_PID_BED_TEMP 55
+#define PAUSE_RETRACT 1 
 
-#ifdef SNMM
-#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
-#else
-#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
-#endif
+#define DEFAULT_PID_TEMP 210
+
+#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration
+
 #endif //__CONFIGURATION_PRUSA_H

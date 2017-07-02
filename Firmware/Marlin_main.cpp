@@ -75,10 +75,6 @@
 
 #define VERSION_STRING  "1.0.2"
 
-#ifdef AUTOMATIC_CURRENT_CONTROL
-  bool auto_current_control = 0;
-#endif
-
 
 #include "ultralcd.h"
 
@@ -97,7 +93,6 @@
 // PRUSA CODES
 // P F - Returns FW versions
 // P R - Returns revision of printer
-// P Y - Starts filament allignment process for multicolor
 
 // G0  -> G1
 // G1  - Coordinated Movement X Y Z E
@@ -204,6 +199,7 @@
 // M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
 // M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 // M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
+// M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
 // M907 - Set digital trimpot motor current using axis codes.
 // M908 - Control digital trimpot directly.
 // M350 - Set microstepping mode.
@@ -212,7 +208,6 @@
 // M928 - Start SD logging (M928 filename.g) - ended by M29
 // M999 - Restart after being stopped by error
 
-// M900 - Set and/or Get advance K factor and WH/D ratio (Requires LIN_ADVANCE)
 //Stepper Movement Variables
 
 //===========================================================================
@@ -291,6 +286,10 @@ bool custom_message;
 bool loading_flag = false;
 unsigned int custom_message_type;
 unsigned int custom_message_state;
+char snmm_filaments_used = 0;
+
+float distance_from_min[3];
+float angleDiff;
 
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
@@ -1603,22 +1602,6 @@ void get_command()
   #endif //SDSUPPORT
 }
 
-#define WITHIN(V,L,H) ((V) >= (L) && (V) <= (H))
-#define NUMERIC(a) WITHIN(a, '0', '9')
-#define NUMERIC_SIGNED(a) (NUMERIC(a) || (a) == '-')
-
-static char *current_command,      // The command currently being executed
-            *current_command_args, // The address where arguments begin
-            *seen_pointer;         // Set by code_seen(), used by the code_value functions
-
-inline bool code_has_value() {
-  int i = 1;
-  char c = seen_pointer[i];
-  while (c == ' ') c = seen_pointer[++i];
-  if (c == '-' || c == '+') c = seen_pointer[++i];
-  if (c == '.') c = seen_pointer[++i];
-  return NUMERIC(c);
-}
 
 // Return True if a character was found
 static inline bool    code_seen(char code) { return (strchr_pointer = strchr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
@@ -1627,7 +1610,15 @@ static inline float   code_value()      { return strtod(strchr_pointer+1, NULL);
 static inline long    code_value_long()    { return strtol(strchr_pointer+1, NULL, 10); }
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
 static inline uint8_t code_value_uint8()   { return uint8_t(strtol(strchr_pointer+1, NULL, 10)); };
-static inline bool code_value_bool() { return !code_has_value() || code_value_uint8() > 0; }
+
+static inline float code_value_float() {
+  char* e = strchr(strchr_pointer, 'E');
+  if (!e) return strtod(strchr_pointer + 1, NULL);
+  *e = 0;
+  float ret = strtod(strchr_pointer + 1, NULL);
+  *e = 'E';
+  return ret;
+}
 
 #define DEFINE_PGM_READ_ANY(type, reader)       \
     static inline type pgm_read_any(const type *p)  \
@@ -1813,6 +1804,39 @@ static float probe_pt(float x, float y, float z_before) {
 }
 
 #endif // #ifdef ENABLE_AUTO_BED_LEVELING
+
+#ifdef LIN_ADVANCE
+  /**
+   * M900: Set and/or Get advance K factor and WH/D ratio
+   *
+   *  K<factor>                  Set advance K factor
+   *  R<ratio>                   Set ratio directly (overrides WH/D)
+   *  W<width> H<height> D<diam> Set ratio from WH/D
+   */
+  inline void gcode_M900() {
+    st_synchronize();
+
+    const float newK = code_seen('K') ? code_value_float() : -1;
+    if (newK >= 0) extruder_advance_k = newK;
+
+    float newR = code_seen('R') ? code_value_float() : -1;
+    if (newR < 0) {
+      const float newD = code_seen('D') ? code_value_float() : -1,
+                  newW = code_seen('W') ? code_value_float() : -1,
+                  newH = code_seen('H') ? code_value_float() : -1;
+      if (newD >= 0 && newW >= 0 && newH >= 0)
+        newR = newD ? (newW * newH) / (sq(newD * 0.5) * M_PI) : 0;
+    }
+    if (newR >= 0) advance_ed_ratio = newR;
+
+    SERIAL_ECHO_START;
+    SERIAL_ECHOPGM("Advance K=");
+    SERIAL_ECHOLN(extruder_advance_k);
+    SERIAL_ECHOPGM(" E/D=");
+    const float ratio = advance_ed_ratio;
+    if (ratio) SERIAL_ECHOLN(ratio); else SERIAL_ECHOLNPGM("Auto");
+  }
+#endif // LIN_ADVANCE
 
 void homeaxis(int axis) {
 #define HOMEAXIS_DO(LETTER) \
@@ -2026,7 +2050,13 @@ void process_commands()
   float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
   int8_t SilentMode;
 #endif
-  if(code_seen("PRUSA")){
+  if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
+	  starpos = (strchr(strchr_pointer + 5, '*'));
+	  if (starpos != NULL)
+		  *(starpos) = '\0';
+	  lcd_setstatus(strchr_pointer + 5);
+  }
+  else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
 			if (farm_mode) {
 				PingTime = millis();
@@ -2316,12 +2346,11 @@ void process_commands()
         prepare_arc_move(false);
       }
       break;
-    case 4: // G4 dwell
-      LCD_MESSAGERPGM(MSG_DWELL);
+    case 4: // G4 dwell      
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-
+	  if(codenum != 0) LCD_MESSAGERPGM(MSG_DWELL);
       st_synchronize();
       codenum += millis();  // keep track of when we started waiting
       previous_millis_cmd = millis();
@@ -2448,7 +2477,7 @@ void process_commands()
               plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
               st_synchronize();
             #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
-            #ifdef MESH_BED_LEVELING // If Mesh bed leveling, moxve X&Y to safe position for home
+            #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))  // If Mesh bed leveling, moxve X&Y to safe position for home
       			  if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] )) 
       			  {
                 homeaxis(X_AXIS);
@@ -2554,7 +2583,7 @@ void process_commands()
     // and correct the current_position to match the transformed coordinate system.
     world2machine_update_current();
 
-#ifdef MESH_BED_LEVELING
+#if (defined(MESH_BED_LEVELING) && !defined(MK1BP))
 	if (code_seen(axis_codes[X_AXIS]) || code_seen(axis_codes[Y_AXIS]) || code_seen('W') || code_seen(axis_codes[Z_AXIS]))
 		{
 		}
@@ -2771,7 +2800,7 @@ void process_commands()
             clean_up_after_endstop_move();
         }
         break;
-
+	
 
 	case 75:
 	{
@@ -2944,6 +2973,9 @@ void process_commands()
 	*/
 
 	case 80:
+#ifdef MK1BP
+		break;
+#endif //MK1BP
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
@@ -3672,14 +3704,15 @@ void process_commands()
                 calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
                 eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
                 // Complete XYZ calibration.
-                BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level);
-                uint8_t point_too_far_mask = 0;
-                clean_up_after_endstop_move();
+				uint8_t point_too_far_mask = 0;
+                BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level, point_too_far_mask);
+				clean_up_after_endstop_move();
                 // Print head up.
                 current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
                 st_synchronize();
                 if (result >= 0) {
+					point_too_far_mask = 0;
                     // Second half: The fine adjustment.
                     // Let the planner use the uncorrected coordinates.
                     mbl.reset();
@@ -4318,6 +4351,7 @@ Sigma_Exit:
           #endif
         }
       }
+	  snmm_filaments_used = 0;
       break;
     case 85: // M85
       if(code_seen('S')) {
@@ -4357,12 +4391,12 @@ Sigma_Exit:
           SERIAL_PROTOCOLRPGM(MSG_M115_REPORT);
       }
       break;
-    case 117: // M117 display message
+/*    case 117: // M117 display message
       starpos = (strchr(strchr_pointer + 5,'*'));
       if(starpos!=NULL)
         *(starpos)='\0';
       lcd_setstatus(strchr_pointer + 5);
-      break;
+      break;*/
     case 114: // M114
       SERIAL_PROTOCOLPGM("X:");
       SERIAL_PROTOCOL(current_position[X_AXIS]);
@@ -4468,7 +4502,7 @@ Sigma_Exit:
         tmp_extruder = active_extruder;
         if(code_seen('T')) {
           tmp_extruder = code_value();
-          if(tmp_extruder >= EXTRUDERS) {
+		  if(tmp_extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
             SERIAL_ECHO(MSG_M200_INVALID_EXTRUDER);
             break;
@@ -5357,34 +5391,13 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
 	}
 	break;
-	
-	case 900: {
 
-    st_synchronize();
-
-    const float newK = code_seen('K') ? code_value() : -1;
-    if (newK >= 0) extruder_advance_k = newK;
-
-    float newR = code_seen('R') ? code_value() : -1;
-    if (newR < 0) {
-      const float newD = code_seen('D') ? code_value() : -1,
-                  newW = code_seen('W') ? code_value() : -1,
-                  newH = code_seen('H') ? code_value() : -1;
-      if (newD >= 0 && newW >= 0 && newH >= 0)
-        newR = newD ? (newW * newH) / (sq(newD * 0.5) * M_PI) : 0;
-    }
-    if (newR >= 0) advance_ed_ratio = newR;
-
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("Advance K=", extruder_advance_k);
-    SERIAL_ECHOPGM(" E/D=");
-    const float ratio = advance_ed_ratio;
-    if (ratio) SERIAL_ECHO(ratio); else SERIAL_ECHOPGM("Auto");
-    SERIAL_ECHO('\n');
-
-	}
-	break;
-
+    #ifdef LIN_ADVANCE
+      case 900: // M900: Set LIN_ADVANCE options.
+        gcode_M900();
+        break;
+    #endif
+      
     case 907: // M907 Set digital trimpot motor current using axis codes.
     {
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
@@ -5485,13 +5498,19 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	case 702:
 	{
 #ifdef SNMM
-		extr_unload_all();
+		if (code_seen('U')) {
+			extr_unload_used(); //unload all filaments which were used in current print
+		}
+		else if (code_seen('C')) {
+			extr_unload(); //unload just current filament 
+		}
+		else {
+			extr_unload_all(); //unload all filaments
+		}
 #else
 		custom_message = true;
 		custom_message_type = 2;
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
-		current_position[E_AXIS] += 3;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
 		current_position[E_AXIS] -= 80;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7000 / 60, active_extruder);
 		st_synchronize();
@@ -5518,13 +5537,24 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  int index;
 	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 	   
-	  if (*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') {
+	  if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
 		  SERIAL_ECHOLNPGM("Invalid T code.");
 	  }
 	  else {
-		  tmp_extruder = code_value();
+		  if (*(strchr_pointer + index) == '?') {
+			  tmp_extruder = choose_extruder_menu();
+		  }
+		  else {
+			  tmp_extruder = code_value();
+		  }
+		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 #ifdef SNMM
-		  snmm_extruder = tmp_extruder;
+      #ifdef LIN_ADVANCE
+        if (snmm_extruder != tmp_extruder)
+          clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
+      #endif
+      
+      snmm_extruder = tmp_extruder;
 
 		  st_synchronize();
 		  delay(100);
@@ -5535,8 +5565,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 		  pinMode(E_MUX0_PIN, OUTPUT);
 		  pinMode(E_MUX1_PIN, OUTPUT);
-		  pinMode(E_MUX2_PIN, OUTPUT);
-
+		  
 		  delay(100);
 		  SERIAL_ECHO_START;
 		  SERIAL_ECHO("T:");
@@ -5545,26 +5574,22 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  case 1:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
-
+			  
 			  break;
 		  case 2:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
-
+			  
 			  break;
 		  case 3:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
-
+			  
 			  break;
 		  default:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
-
+			  
 			  break;
 		  }
 		  delay(100);
