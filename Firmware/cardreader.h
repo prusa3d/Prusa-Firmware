@@ -47,6 +47,7 @@ public:
   FORCE_INLINE void setIndex(long index) {sdpos = index;file.seekSet(index);};
   FORCE_INLINE uint8_t percentDone(){if(!isFileOpen()) return 0; if(filesize) return sdpos/((filesize+99)/100); else return 0;};
   FORCE_INLINE char* getWorkDirName(){workDir.getFilename(filename);return filename;};
+  FORCE_INLINE uint32_t get_sdpos() { if (!isFileOpen()) return 0; else return(sdpos); };
 
   bool ToshibaFlashAir_isEnabled() const { return card.getFlashAirCompatible(); }
   void ToshibaFlashAir_enable(bool enable) { card.setFlashAirCompatible(enable); }

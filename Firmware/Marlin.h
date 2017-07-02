@@ -356,4 +356,10 @@ void serialecho_temperatures();
 void uvlo_();
 void recover_print();
 void setup_uvlo_interrupt();
+
+extern void save_print_to_eeprom();
+extern void restore_print_from_eeprom();
+extern void position_menu();
+
+
 #define UVLO !(PINE & (1<<4))

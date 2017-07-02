@@ -3688,6 +3688,8 @@ static void lcd_main_menu()
 
   
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
+
+ MENU_ITEM(function, PSTR("restore_print"), restore_print_from_eeprom);
    /* if (farm_mode && !IS_SD_PRINTING )
     {
     
@@ -4818,6 +4820,9 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
   for (c = &cmd[4]; *c; c++)
     *c = tolower(*c);
   enquecommand(cmd);
+  for (int i = 0; i < 8; i++) {
+	  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, filename[i]);
+  }
   enquecommand_P(PSTR("M24"));
   lcd_return_to_status();
 }

@@ -6748,22 +6748,49 @@ void serialecho_temperatures() {
 
 
 void uvlo_() {
-	SERIAL_ECHOLNPGM("UVLO");	
-	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
+	//SERIAL_ECHOLNPGM("UVLO");	
+	save_print_to_eeprom();
 	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
 	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
+	disable_x();
+	disable_y();
+	planner_abort_hard();
+	// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
+	// Z baystep is no more applied. Reset it.
+	babystep_reset();
+	// Clean the input command queue.
+	cmdqueue_reset();
+	card.sdprinting = false;
+	card.closefile();
+
 	current_position[E_AXIS] -= DEFAULT_RETRACTION;
 	sei(); //enable stepper driver interrupt to move Z axis
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 	st_synchronize();
 	current_position[Z_AXIS] += UVLO_Z_AXIS_SHIFT;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
 	st_synchronize();
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1); 
 }
 
 void recover_print() {
+	//char cmd1[30];
+	setTargetHotend0(210); //need to change to stored temperature
+	setTargetBed(55);
 	homeaxis(X_AXIS);
 	homeaxis(Y_AXIS);
+	/*float x_rec, y_rec;
+	x_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
+	y_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
+	strcpy(cmd1, "G1 X");
+	strcat(cmd1, ftostr32(x_rec));
+	strcat(cmd1, " Y");
+	strcat(cmd1, ftostr32(y_rec));
+	enquecommand(cmd1);
+	enquecommand_P(PSTR("G1 Z"  STRINGIFY(-UVLO_Z_AXIS_SHIFT)));
+	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)));*/
+
+
 	current_position[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
 	current_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
 	/*SERIAL_ECHOPGM("Current position [X_AXIS]:");
@@ -6776,11 +6803,40 @@ void recover_print() {
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
 	st_synchronize();
 	current_position[E_AXIS] += DEFAULT_RETRACTION; //unretract
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 	st_synchronize();
+
+	restore_print_from_eeprom();
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 
 }
+
+void restore_print_from_eeprom() {
+	char cmd[30];
+	char* c;
+	char filename[13];
+	char str[5] = ".gco";
+	for (int i = 0; i < 8; i++) {
+		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
+		
+	}
+	filename[8] = '\0';
+	MYSERIAL.print(filename);
+	strcat(filename, str);
+	sprintf_P(cmd, PSTR("M23 %s"), filename);
+	for (c = &cmd[4]; *c; c++)
+		 *c = tolower(*c);
+	enquecommand(cmd);
+	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
+	SERIAL_ECHOPGM("Position read from eeprom:");
+	MYSERIAL.println(position);
+	
+		card.setIndex(position);
+	enquecommand_P(PSTR("M24"));
+	sprintf_P(cmd, PSTR("M26 S%d"), position);
+	enquecommand(cmd);
+}
+
 
 void setup_uvlo_interrupt() {
 	DDRE &= ~(1 << 4); //input pin
@@ -6800,3 +6856,7 @@ ISR(INT4_vect) {
 	uvlo_();
 }
 
+
+void save_print_to_eeprom() {
+		eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), card.get_sdpos());
+}
