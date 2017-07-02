@@ -1361,6 +1361,9 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update();
+#ifdef HAVE_TMC2130_DRIVERS
+	tmc2130_check_overtemp();
+#endif //HAVE_TMC2130_DRIVERS
 }
 
 void get_command()
@@ -5762,6 +5765,7 @@ void get_coordinates()
   }
   if(code_seen('F')) {
     next_feedrate = code_value();
+//	if (next_feedrate > 2500) next_feedrate = 2500;
     if(next_feedrate > 0.0) feedrate = next_feedrate;
   }
 }
