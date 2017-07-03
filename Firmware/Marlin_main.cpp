@@ -1059,6 +1059,12 @@ void setup()
 	tp_init();    // Initialize temperature loop
 	plan_init();  // Initialize planner;
 	watchdog_init();
+
+#ifdef HAVE_TMC2130_DRIVERS
+	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+#endif //HAVE_TMC2130_DRIVERS
+
 	st_init();    // Initialize stepper, this enables interrupts!
 	setup_photpin();
 	servo_init();
@@ -1372,6 +1378,9 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update();
+#ifdef HAVE_TMC2130_DRIVERS
+	tmc2130_check_overtemp();
+#endif //HAVE_TMC2130_DRIVERS
 }
 
 void get_command()
@@ -5522,9 +5531,34 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     }
     break;
 
-	case 913: // M912 Print TMC2130 currents
+	case 913: // M913 Print TMC2130 currents
     {
 		tmc2130_print_currents();
+    }
+    break;
+
+	case 914: // M914 Set normal mode
+    {
+		tmc2130_mode = TMC2130_MODE_NORMAL;
+		tmc2130_init();
+    }
+    break;
+
+	case 915: // M915 Set silent mode
+    {
+		tmc2130_mode = TMC2130_MODE_SILENT;
+		tmc2130_init();
+    }
+    break;
+
+	case 916: // M916 Set sg_thrs
+    {
+		if (code_seen('X')) sg_thrs_x = code_value();
+		if (code_seen('Y')) sg_thrs_y = code_value();
+		MYSERIAL.print("sg_thrs_x=");
+		MYSERIAL.print(sg_thrs_x, DEC);
+		MYSERIAL.print(" sg_thrs_y=");
+		MYSERIAL.println(sg_thrs_y, DEC);
     }
     break;
 
@@ -5777,6 +5811,10 @@ void get_coordinates()
   }
   if(code_seen('F')) {
     next_feedrate = code_value();
+#ifdef MAX_SILENT_FEEDRATE
+	if (tmc2130_mode == TMC2130_MODE_SILENT)
+		if (next_feedrate > MAX_SILENT_FEEDRATE) next_feedrate = MAX_SILENT_FEEDRATE;
+#endif //MAX_SILENT_FEEDRATE
     if(next_feedrate > 0.0) feedrate = next_feedrate;
   }
 }
