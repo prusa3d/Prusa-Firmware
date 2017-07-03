@@ -1059,6 +1059,12 @@ void setup()
 	tp_init();    // Initialize temperature loop
 	plan_init();  // Initialize planner;
 	watchdog_init();
+
+#ifdef HAVE_TMC2130_DRIVERS
+	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+#endif //HAVE_TMC2130_DRIVERS
+
 	st_init();    // Initialize stepper, this enables interrupts!
 	setup_photpin();
 	servo_init();
@@ -5516,6 +5522,20 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     }
     break;
 
+	case 914: // M914 Set normal mode
+    {
+		tmc2130_mode = TMC2130_MODE_NORMAL;
+		tmc2130_init();
+    }
+    break;
+
+	case 915: // M915 Set silent mode
+    {
+		tmc2130_mode = TMC2130_MODE_SILENT;
+		tmc2130_init();
+    }
+    break;
+
     case 350: // M350 Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {
       #if defined(X_MS1_PIN) && X_MS1_PIN > -1
@@ -5765,7 +5785,10 @@ void get_coordinates()
   }
   if(code_seen('F')) {
     next_feedrate = code_value();
-//	if (next_feedrate > 2500) next_feedrate = 2500;
+#ifdef MAX_SILENT_FEEDRATE
+	if (tmc2130_mode == TMC2130_MODE_SILENT)
+		if (next_feedrate > MAX_SILENT_FEEDRATE) next_feedrate = MAX_SILENT_FEEDRATE;
+#endif //MAX_SILENT_FEEDRATE
     if(next_feedrate > 0.0) feedrate = next_feedrate;
   }
 }

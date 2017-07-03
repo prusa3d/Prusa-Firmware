@@ -286,6 +286,7 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   else {
     step_loops = 1;
   }
+//    step_loops = 1;
 
   if(step_rate < (F_CPU/500000)) step_rate = (F_CPU/500000);
   step_rate -= (F_CPU/500000); // Correct for minimal speed

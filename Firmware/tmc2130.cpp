@@ -11,6 +11,8 @@ extern void st_get_position_xy(long &x, long &y);
 
 //chipselect pins
 uint8_t tmc2130_cs[4] = { X_TMC2130_CS, Y_TMC2130_CS, Z_TMC2130_CS, E0_TMC2130_CS };
+//mode
+uint8_t tmc2130_mode = TMC2130_MODE_NORMAL;
 //holding currents
 uint8_t tmc2130_current_h[4] = TMC2130_CURRENTS_H;
 //running currents
@@ -73,7 +75,8 @@ uint8_t tmc2130_rd(uint8_t cs, uint8_t addr, uint32_t* rval);
 
 void tmc2130_init()
 {
-	MYSERIAL.println("tmc2130_init");
+	MYSERIAL.print("tmc2130_init mode=");
+	MYSERIAL.println(tmc2130_mode, DEC);
 	WRITE(X_TMC2130_CS, HIGH);
 	WRITE(Y_TMC2130_CS, HIGH);
 	WRITE(Z_TMC2130_CS, HIGH);
@@ -85,31 +88,30 @@ void tmc2130_init()
 	SPI.begin();
 	for (int i = 0; i < 2; i++) // X Y axes
 	{
-		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, 0x00000004); //GCONF - bit 2 activate stealthChop
+		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?0x00000004:0x00000000);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
-//		tmc2130_wr_PWMCONF(tmc2130_cs[i], TMC2130_PWM_AUTO_XY, TMC2130_PWM_FREQ_XY, TMC2130_PWM_GRAD_XY, TMC2130_PWM_AMPL_XY); //PWM_CONF //reset default=0x00050480
 		tmc2130_wr_PWMCONF(tmc2130_cs[i]); //PWM_CONF //reset default=0x00050480
-		//tmc2130_wr_TPWMTHRS(tmc2130_cs[i], TMC2130_TPWMTHRS);
+		tmc2130_wr_TPWMTHRS(tmc2130_cs[i], TMC2130_TPWMTHRS);
 		//tmc2130_wr_THIGH(tmc2130_cs[i], TMC2130_THIGH);
-		tmc2130_wr_CHOPCONF(tmc2130_cs[i], 1, 16);
+		tmc2130_wr_CHOPCONF(tmc2130_cs[i], TMC2130_EXP256_XY, TMC2130_USTEPS_XY);
 	}
 	for (int i = 2; i < 3; i++) // Z axis
 	{
-		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, 0x00000004); //GCONF - bit 2 activate stealthChop
+		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?0x00000004:0x00000000);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
 		tmc2130_wr_PWMCONF(tmc2130_cs[i]); //PWM_CONF //reset default=0x00050480
-		//tmc2130_wr_TPWMTHRS(tmc2130_cs[i], TMC2130_TPWMTHRS);
+		tmc2130_wr_TPWMTHRS(tmc2130_cs[i], TMC2130_TPWMTHRS);
 		//tmc2130_wr_THIGH(tmc2130_cs[i], TMC2130_THIGH);
-		tmc2130_wr_CHOPCONF(tmc2130_cs[i], 1, 16);
+		tmc2130_wr_CHOPCONF(tmc2130_cs[i], TMC2130_EXP256_Z, TMC2130_USTEPS_Z);
 	}
 	for (int i = 3; i < 4; i++) // E axis
 	{
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, 0x00000004); //GCONF - bit 2 activate stealthChop
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
-		tmc2130_wr_CHOPCONF(tmc2130_cs[i], 1, 16);
+		tmc2130_wr_CHOPCONF(tmc2130_cs[i], TMC2130_EXP256_E, TMC2130_USTEPS_E);
 	}
 }
 
@@ -192,8 +194,11 @@ void tmc2130_home_exit()
 	MYSERIAL.println("tmc2130_home_exit");
 	if ((sg_homing_axis == X_AXIS) || (sg_homing_axis == Y_AXIS))
 	{
-		// Configuration back to stealthChop
-		tmc2130_wr(tmc2130_cs[sg_homing_axis], TMC2130_REG_GCONF, 0x00000004);
+		if (tmc2130_mode == TMC2130_MODE_SILENT)
+		{
+			// Configuration back to stealthChop
+			tmc2130_wr(tmc2130_cs[sg_homing_axis], TMC2130_REG_GCONF, 0x00000004);
+		}
 		sg_homing_axis = 0xff;
 	}
 }
@@ -284,7 +289,7 @@ void tmc2130_wr_CHOPCONF(uint8_t cs, bool extrapolate256, uint16_t microstep_res
 
 void tmc2130_wr_PWMCONF(uint8_t cs, uint8_t PWMautoScale, uint8_t PWMfreq, uint8_t PWMgrad, uint8_t PWMampl)
 {
-	tmc2130_wr(cs,0x70,((uint32_t)(PWMautoScale+PWMfreq) << 16) | ((uint32_t)PWMgrad << 8) | PWMampl); // TMC LJ -> For better readability changed to 0x00 and added PWMautoScale and PWMfreq
+	tmc2130_wr(cs, TMC2130_REG_PWMCONF, ((uint32_t)(PWMautoScale+PWMfreq) << 16) | ((uint32_t)PWMgrad << 8) | PWMampl); // TMC LJ -> For better readability changed to 0x00 and added PWMautoScale and PWMfreq
 }
 
 void tmc2130_wr_TPWMTHRS(uint8_t cs, uint32_t val32)

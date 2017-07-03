@@ -1,14 +1,18 @@
 #ifndef TMC2130_H
 #define TMC2130_H
 
+//mode
+extern uint8_t tmc2130_mode;
 //holding and running currents
 extern uint8_t tmc2130_current_h[4];
 extern uint8_t tmc2130_current_r[4];
 //flags for axis stall detection
 extern uint8_t tmc2130_axis_stalled[4];
 
-extern uint8_t sg_homing_delay;
+//extern uint8_t sg_homing_delay;
 
+#define TMC2130_MODE_NORMAL 0
+#define TMC2130_MODE_SILENT 1
 
 //initialize tmc2130
 extern void tmc2130_init();
