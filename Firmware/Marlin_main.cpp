@@ -5516,7 +5516,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     }
     break;
 
-	case 913: // M912 Print TMC2130 currents
+	case 913: // M913 Print TMC2130 currents
     {
 		tmc2130_print_currents();
     }
@@ -5533,6 +5533,17 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     {
 		tmc2130_mode = TMC2130_MODE_SILENT;
 		tmc2130_init();
+    }
+    break;
+
+	case 916: // M916 Set sg_thrs
+    {
+		if (code_seen('X')) sg_thrs_x = code_value();
+		if (code_seen('Y')) sg_thrs_y = code_value();
+		MYSERIAL.print("sg_thrs_x=");
+		MYSERIAL.print(sg_thrs_x, DEC);
+		MYSERIAL.print(" sg_thrs_y=");
+		MYSERIAL.println(sg_thrs_y, DEC);
     }
     break;
 
