@@ -16,6 +16,10 @@
 #include "SdFatUtil.h"
 #include "pat9125.h"
 
+#ifdef HAVE_TMC2130_DRIVERS
+#include "tmc2130.h"
+#endif //HAVE_TMC2130_DRIVERS
+
 #define _STRINGIFY(s) #s
 
 
@@ -2401,6 +2405,10 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+#ifdef HAVE_TMC2130_DRIVERS
+	tmc2130_mode = SilentModeMenu?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+	tmc2130_init();
+#endif //HAVE_TMC2130_DRIVERS
   digipot_init();
   lcd_goto_menu(lcd_settings_menu, 7);
 }
