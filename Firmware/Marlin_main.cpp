@@ -1601,7 +1601,11 @@ void get_command()
       }
       cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
       cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
+	  SERIAL_ECHOPGM("cmdbuffer:");
+	  MYSERIAL.print(cmdbuffer);
       ++ buflen;
+	  SERIAL_ECHOPGM("buflen:");
+	  MYSERIAL.print(buflen);
       bufindw += strlen(cmdbuffer+bufindw+1) + 2;
       if (bufindw == sizeof(cmdbuffer))
           bufindw = 0;
