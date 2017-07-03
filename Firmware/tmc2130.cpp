@@ -24,6 +24,9 @@ uint8_t tmc2130_LastHomingStalled = 0;
 
 uint8_t sg_homing_axis = 0xff;
 uint8_t sg_homing_delay = 0;
+uint8_t sg_thrs_x = TMC2130_SG_THRS_X;
+uint8_t sg_thrs_y = TMC2130_SG_THRS_Y;
+
 
 //TMC2130 registers
 #define TMC2130_REG_GCONF      0x00 // 17 bits
@@ -117,6 +120,7 @@ void tmc2130_init()
 
 bool tmc2130_update_sg()
 {
+#if (defined(TMC2130_SG_HOMING) && defined(TMC2130_SG_HOMING_SW))
 	if ((sg_homing_axis == X_AXIS) || (sg_homing_axis == Y_AXIS))
 	{
 		uint8_t cs = tmc2130_cs[sg_homing_axis];
@@ -146,6 +150,7 @@ bool tmc2130_update_sg()
 		tmc2130_axis_stalled[X_AXIS] = false;
 		tmc2130_axis_stalled[Y_AXIS] = false;
 	}
+#endif
 	return false;
 }
 
@@ -178,6 +183,7 @@ void tmc2130_home_enter(uint8_t axis)
 {
 	MYSERIAL.print("tmc2130_home_enter ");
 	MYSERIAL.println((int)axis);
+#ifdef TMC2130_SG_HOMING
 	uint8_t cs = tmc2130_cs[axis];
 	sg_homing_axis = axis;
 	sg_homing_delay = 0;
@@ -185,22 +191,28 @@ void tmc2130_home_enter(uint8_t axis)
 	tmc2130_axis_stalled[Y_AXIS] = false;
 	//Configuration to spreadCycle
 	tmc2130_wr(cs, TMC2130_REG_GCONF, 0x00000000);
-	tmc2130_wr(cs, TMC2130_REG_COOLCONF, ((axis == X_AXIS)?TMC2130_SG_THRS_X:TMC2130_SG_THRS_Y) << 16);
+	tmc2130_wr(cs, TMC2130_REG_COOLCONF, ((axis == X_AXIS)?sg_thrs_x:sg_thrs_y) << 16);
 	tmc2130_wr(cs, TMC2130_REG_TCOOLTHRS, TMC2130_TCOOLTHRS);
+#ifndef TMC2130_SG_HOMING_SW
+	tmc2130_wr(cs, TMC2130_REG_GCONF, 0x00000080); //stallguard output to DIAG0
+#endif
+#endif
 }
 
 void tmc2130_home_exit()
 {
-	MYSERIAL.println("tmc2130_home_exit");
+	MYSERIAL.println("tmc2130_home_exit ");
+	MYSERIAL.println((int)sg_homing_axis);
+#ifdef TMC2130_SG_HOMING
 	if ((sg_homing_axis == X_AXIS) || (sg_homing_axis == Y_AXIS))
 	{
 		if (tmc2130_mode == TMC2130_MODE_SILENT)
-		{
-			// Configuration back to stealthChop
-			tmc2130_wr(tmc2130_cs[sg_homing_axis], TMC2130_REG_GCONF, 0x00000004);
-		}
+			tmc2130_wr(tmc2130_cs[sg_homing_axis], TMC2130_REG_GCONF, 0x00000004); // Configuration back to stealthChop
+		else
+			tmc2130_wr(tmc2130_cs[sg_homing_axis], TMC2130_REG_GCONF, 0x00000000);
 		sg_homing_axis = 0xff;
 	}
+#endif
 }
 
 extern uint8_t tmc2130_didLastHomingStall()
