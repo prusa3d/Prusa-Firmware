@@ -1353,6 +1353,9 @@ void max_temp_error(uint8_t e) {
 }
 
 void min_temp_error(uint8_t e) {
+#ifdef DEBUG_DISABLE_MINTEMP
+	return;
+#endif
   disable_heater();
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
@@ -1383,7 +1386,10 @@ void bed_max_temp_error(void) {
 }
 
 void bed_min_temp_error(void) {
-/*#if HEATER_BED_PIN > -1
+#ifdef DEBUG_DISABLE_MINTEMP
+	return;
+#endif
+#if HEATER_BED_PIN > -1
     WRITE(HEATER_BED_PIN, 0);
 #endif
     if(IsStopped() == false) {
