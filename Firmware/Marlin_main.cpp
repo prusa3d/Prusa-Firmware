@@ -1204,6 +1204,7 @@ void setup()
 		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 	}
 
+#ifndef DEBUG_SKIP_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 	
   if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
@@ -1221,8 +1222,9 @@ void setup()
 	  lcd_update_enable(true);
   } else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
       // Show the message.
-      lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
+	  lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
   }
+#endif //DEBUG_SKIP_STARTMSGS
   for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   lcd_update_enable(true);
 

@@ -332,6 +332,8 @@
 #define X_DIR_PIN           49
 #define X_MIN_PIN           12
 #define X_MAX_PIN           30
+//#define X_MIN_PIN           64 //TMC2130 SG homing
+//#define X_MAX_PIN           64 //TMC2130 SG homing
 #define X_ENABLE_PIN        29
 #define X_MS1_PIN -1
 #define X_MS2_PIN -1
@@ -341,6 +343,8 @@
 #define Y_DIR_PIN           48
 #define Y_MIN_PIN           11
 #define Y_MAX_PIN           24
+//#define Y_MIN_PIN           69 //TMC2130 SG homing
+//#define Y_MAX_PIN           69 //TMC2130 SG homing
 #define Y_ENABLE_PIN        28
 #define Y_MS1_PIN -1
 #define Y_MS2_PIN -1
@@ -438,6 +442,8 @@
 #define X_DIR_PIN           49
 #define X_MIN_PIN           12
 #define X_MAX_PIN           30
+//#define X_MIN_PIN           64 //TMC2130 SG homing
+//#define X_MAX_PIN           64 //TMC2130 SG homing
 #define X_ENABLE_PIN        29
 #define X_MS1_PIN -1
 #define X_MS2_PIN -1
@@ -447,6 +453,8 @@
 #define Y_DIR_PIN           48
 #define Y_MIN_PIN           11
 #define Y_MAX_PIN           24
+//#define Y_MIN_PIN           69 //TMC2130 SG homing
+//#define Y_MAX_PIN           69 //TMC2130 SG homing
 #define Y_ENABLE_PIN        28
 #define Y_MS1_PIN -1
 #define Y_MS2_PIN -1
