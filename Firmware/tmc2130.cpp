@@ -162,10 +162,13 @@ void tmc2130_check_overtemp()
 	//drivers_disabled[0] = 1; //TEST
 	if( millis() - checktime > 1000 )
 	{
+		//SERIAL_ECHOLNPGM("drv_status:");
 		for(int i=0;i<4;i++)
 		{
 			uint32_t drv_status = 0;
 			tmc2130_rd(cs[i], TMC2130_REG_DRV_STATUS, &drv_status);
+			//MYSERIAL.print(drv_status);
+			//SERIAL_ECHOPGM(" ");
 			if (drv_status & ((uint32_t)1<<26))
 			{ // BIT 26 - over temp prewarning ~120C (+-20C)
 				SERIAL_ERRORRPGM(TMC_OVERTEMP_MSG);
@@ -175,6 +178,7 @@ void tmc2130_check_overtemp()
 				kill(TMC_OVERTEMP_MSG);
 			}
 		}
+		//SERIAL_ECHOLNPGM("");
 		checktime = millis();
 	}
 }

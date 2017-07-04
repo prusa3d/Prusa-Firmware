@@ -1227,18 +1227,21 @@ void setup()
       // Show the message.
       lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
   }
-  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
-	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT))	recover_print();
-	  else eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
-  }
-
   for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   lcd_update_enable(true);
 
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
-
+  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
+	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT))	recover_print();
+	  else {
+		  eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
+		  lcd_update_enable(true);
+		  lcd_update(2);
+		  lcd_setstatuspgm(WELCOME_MSG);
+	  }
+  }
   
 }
 
@@ -1494,7 +1497,7 @@ void get_command()
 
         //If command was e-stop process now
         if(strcmp(cmdbuffer+bufindw+1, "M112") == 0)
-          kill();
+          kill("", 2);
         
         // Store the current line into buffer, move to the next line.
         cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_USB;
@@ -4149,7 +4152,7 @@ Sigma_Exit:
       setWatch();
       break;
     case 112: //  M112 -Emergency Stop
-      kill();
+      kill("", 3);
       break;
     case 140: // M140 set bed temp
       if (code_seen('S')) setTargetBed(code_value());
@@ -6028,7 +6031,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 
   if( (millis() - previous_millis_cmd) >  max_inactive_time )
     if(max_inactive_time)
-      kill();
+      kill("", 4);
   if(stepper_inactive_time)  {
     if( (millis() - previous_millis_cmd) >  stepper_inactive_time )
     {
@@ -6070,7 +6073,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
     // ----------------------------------------------------------------
     if ( killCount >= KILL_DELAY)
     {
-       kill();
+       kill("", 5);
     }
   #endif
     
@@ -6102,8 +6105,11 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
   check_axes_activity();
 }
 
-void kill(const char *full_screen_message)
+void kill(const char *full_screen_message, unsigned char id)
 {
+	SERIAL_ECHOPGM("KILL: ");
+	MYSERIAL.println(int(id));
+	//return;
   cli(); // Stop interrupts
   disable_heater();
 
@@ -6790,37 +6796,70 @@ void serialecho_temperatures() {
 
 
 void uvlo_() {
-	//SERIAL_ECHOLNPGM("UVLO");	
-	save_print_to_eeprom();
-	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
-	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
-	disable_x();
-	disable_y();
-	planner_abort_hard();
-	// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
-	// Z baystep is no more applied. Reset it.
-	babystep_reset();
-	// Clean the input command queue.
-	cmdqueue_reset();
-	card.sdprinting = false;
-	card.closefile();
+		//SERIAL_ECHOLNPGM("UVLO");	
+		save_print_to_eeprom();
+		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
+		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
+		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
+		eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
+		eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
+		disable_x();
+		disable_y();
+		planner_abort_hard();
+		// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
+		// Z baystep is no more applied. Reset it.
+		babystep_reset();
+		// Clean the input command queue.
+		cmdqueue_reset();
+		card.sdprinting = false;
+		card.closefile();
 
-	current_position[E_AXIS] -= DEFAULT_RETRACTION;
-	sei(); //enable stepper driver interrupt to move Z axis
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
-	st_synchronize();
-	current_position[Z_AXIS] += UVLO_Z_AXIS_SHIFT;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
-	st_synchronize();
-	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1); 
+		current_position[E_AXIS] -= DEFAULT_RETRACTION;
+		sei(); //enable stepper driver interrupt to move Z axis
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
+		st_synchronize();
+		current_position[Z_AXIS] += UVLO_Z_AXIS_SHIFT;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
+		st_synchronize();
+		eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 }
 
 void recover_print() {
+	char cmd[30];
+	lcd_update_enable(true);
+	lcd_update(2);
+	lcd_setstatuspgm(WELCOME_MSG);
 	//char cmd1[30];
+	target_temperature[active_extruder] = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND);
+	target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
 	setTargetHotend0(210); //need to change to stored temperature
 	setTargetBed(55);
-	homeaxis(X_AXIS);
-	homeaxis(Y_AXIS);
+	//SERIAL_ECHOPGM("Target temperature:");
+	//MYSERIAL.println(target_temperature[0]);
+	//SERIAL_ECHOPGM("Target temp bed:");
+	//MYSERIAL.println(target_temperature_bed);
+	//homeaxis(X_AXIS);
+	//homeaxis(Y_AXIS);
+	//home_xy();
+	float z_pos = UVLO_Z_AXIS_SHIFT + eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z));
+	//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+
+	SERIAL_ECHOPGM("current_position[Z_AXIS]:");
+	MYSERIAL.println(current_position[Z_AXIS]);
+	SERIAL_ECHOPGM("z_pos");
+	MYSERIAL.println(z_pos);
+	enquecommand_P(PSTR("G28 X"));
+	enquecommand_P(PSTR("G28 Y"));
+	strcpy(cmd, "G92 Z");
+	strcat(cmd, ftostr43(z_pos));
+	//fprintf(cmd, PSTR("G92 Z3.3%f"), z_pos);
+	enquecommand(cmd);
+	//enquecommand_P(PSTR("G92 Z2.2"));
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
+	while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
+		delay_keep_alive(1000);
+	}
+	//enquecommand_P("G28 W");
 	/*float x_rec, y_rec;
 	x_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
 	y_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
@@ -6833,24 +6872,27 @@ void recover_print() {
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)));*/
 
 
-	current_position[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
-	current_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
+	//current_position[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
+	//current_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
+	
 	/*SERIAL_ECHOPGM("Current position [X_AXIS]:");
 	MYSERIAL.println(current_position[X_AXIS]);
 	SERIAL_ECHOPGM("Current position [Y_AXIS]:");
 	MYSERIAL.println(current_position[Y_AXIS]);*/
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
-	st_synchronize();
-	current_position[Z_AXIS] -= UVLO_Z_AXIS_SHIFT;
+	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
+	//st_synchronize();
+	/*current_position[Z_AXIS] -= UVLO_Z_AXIS_SHIFT;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
 	st_synchronize();
 	current_position[E_AXIS] += DEFAULT_RETRACTION; //unretract
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
-	st_synchronize();
+	st_synchronize();*/
 
+	//enquecommand_P(PSTR("G1 Z"  STRINGIFY(-UVLO_Z_AXIS_SHIFT)));
+	//enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)));
 	restore_print_from_eeprom();
-	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
-
+	SERIAL_ECHOPGM("current_position[Z_AXIS]:");
+	MYSERIAL.print(current_position[Z_AXIS]);
 }
 
 void restore_print_from_eeprom() {
@@ -6877,6 +6919,10 @@ void restore_print_from_eeprom() {
 	enquecommand_P(PSTR("M24"));
 	sprintf_P(cmd, PSTR("M26 S%d"), position);
 	enquecommand(cmd);
+	enquecommand_P(PSTR("M83"));
+	//SERIAL_ECHO(cmdbuffer + bufindr + 1);
+	enquecommand_P(PSTR("G1 Z"  STRINGIFY(-UVLO_Z_AXIS_SHIFT)));
+	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F2000"));
 }
 
 
@@ -6895,10 +6941,30 @@ void setup_uvlo_interrupt() {
 ISR(INT4_vect) {
 	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
 	SERIAL_ECHOLNPGM("INT4");
-	uvlo_();
+	if(IS_SD_PRINTING) uvlo_();
 }
 
 
 void save_print_to_eeprom() {
-		eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), card.get_sdpos());
+		//eeprom_update_word((uint16_t*)(EPROM_UVLO_CMD_QUEUE), bufindw - bufindr );
+		//BLOCK_BUFFER_SIZE: max. 16 linear moves in planner buffer
+#define TYP_GCODE_LENGTH 29 //G1 X117.489 Y22.814 E1.46695 + null
+	//card.get_sdpos() -> byte currently read from SD card
+	//bufindw -> position in circular buffer where to write
+	//bufindr -> position in circular buffer where to read
+	//bufflen -> number of lines in buffer -> for each line one special character??
+	//TYP_GCODE_LENGTH* BLOCK_BUFFER_SIZE -> worst case from planner
+		long sd_position = card.get_sdpos() - ((bufindw > bufindr) ? (bufindw - bufindr) : sizeof(cmdbuffer) - bufindr + bufindw) - buflen - TYP_GCODE_LENGTH* BLOCK_BUFFER_SIZE; 
+		if (sd_position < 0) sd_position = 0;
+		/*SERIAL_ECHOPGM("sd position before correction:");
+		MYSERIAL.println(card.get_sdpos());
+		SERIAL_ECHOPGM("bufindw:");
+		MYSERIAL.println(bufindw);
+		SERIAL_ECHOPGM("bufindr:");
+		MYSERIAL.println(bufindr);
+		SERIAL_ECHOPGM("sizeof(cmd_buffer):");
+		MYSERIAL.println(sizeof(cmdbuffer));
+		SERIAL_ECHOPGM("sd position after correction:");
+		MYSERIAL.println(sd_position);*/
+		eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
 }

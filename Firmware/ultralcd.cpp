@@ -3698,7 +3698,8 @@ static void lcd_main_menu()
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
 
  MENU_ITEM(function, PSTR("restore_print"), restore_print_from_eeprom);
-   /* if (farm_mode && !IS_SD_PRINTING )
+ MENU_ITEM(function, PSTR("recover print"), recover_print);
+ /* if (farm_mode && !IS_SD_PRINTING )
     {
     
         int tempScrool = 0;

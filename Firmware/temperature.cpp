@@ -406,10 +406,7 @@ void setExtruderAutoFanState(int pin, bool state)
 }
 
 void countFanSpeed()
-{
-	SERIAL_ECHOPGM("UVLO:");
-	MYSERIAL.println(UVLO);
-
+{	
 	fan_speed[0] = (fan_edge_counter[0] * (float(250) / (millis() - extruder_autofan_last_check)));
 	fan_speed[1] = (fan_edge_counter[1] * (float(250) / (millis() - extruder_autofan_last_check)));
 
@@ -757,7 +754,7 @@ static float analog2temp(int raw, uint8_t e) {
       SERIAL_ERROR_START;
       SERIAL_ERROR((int)e);
       SERIAL_ERRORLNPGM(" - Invalid extruder number !");
-      kill();
+      kill("", 6);
       return 0.0;
   } 
   #ifdef HEATER_0_USES_MAX6675
