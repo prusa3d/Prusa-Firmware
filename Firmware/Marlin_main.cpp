@@ -5054,7 +5054,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lastpos[Z_AXIS]=current_position[Z_AXIS];
         lastpos[E_AXIS]=current_position[E_AXIS];
 
-        //Restract extruder
+        //Retract extruder
         if(code_seen('E'))
         {
           target[E_AXIS]+= code_value();
@@ -5200,6 +5200,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           }
 
         }
+		WRITE(BEEPER, LOW);
 #ifdef SNMM
 		display_loading();
 		do {
@@ -5215,7 +5216,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif
         //Filament inserted
         
-        WRITE(BEEPER,LOW);
+        
 
 		//Feed the filament to the end of nozzle quickly        
 #ifdef SNMM
