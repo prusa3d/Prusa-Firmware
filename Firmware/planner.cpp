@@ -1215,7 +1215,9 @@ void reset_acceleration_rates()
         axis_steps_per_sqr_second[i] = max_acceleration_units_per_sq_second[i] * axis_steps_per_unit[i];
         }
 }
-
+unsigned char number_of_blocks() {
+	return (block_buffer_head + BLOCK_BUFFER_SIZE - block_buffer_tail) & (BLOCK_BUFFER_SIZE - 1);
+}
 #ifdef PLANNER_DIAGNOSTICS
 uint8_t planner_queue_min()
 {

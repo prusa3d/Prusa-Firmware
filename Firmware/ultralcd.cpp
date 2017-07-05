@@ -3684,7 +3684,6 @@ void lcd_confirm_print()
 
 }
 
-
 static void lcd_main_menu()
 {
 

@@ -425,7 +425,7 @@ void checkFanSpeed()
 	else fan_speed_errors[1] = 0;
 
 	if (fan_speed_errors[0] > 5) fanSpeedError(0);
-	if (fan_speed_errors[1] > 5) fanSpeedError(1);
+	if (fan_speed_errors[1] > 15) fanSpeedError(1);
 }
 
 void fanSpeedError(unsigned char _fan) {

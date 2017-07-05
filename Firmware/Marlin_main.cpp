@@ -6804,16 +6804,17 @@ void uvlo_() {
 		//SERIAL_ECHOLNPGM("UVLO");	
 		save_print_to_eeprom();
 		float current_position_bckp[2];
-
+		int feedrate_bckp = feedrate;
 		current_position_bckp[X_AXIS] = st_get_position_mm(X_AXIS);
 		current_position_bckp[Y_AXIS] = st_get_position_mm(Y_AXIS);
-
 
 		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position_bckp[X_AXIS]);
 		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position_bckp[Y_AXIS]);
 		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
+		EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
 		eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
 		eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
+		eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
 		disable_x();
 		disable_y();
 		planner_abort_hard();
@@ -6857,13 +6858,13 @@ ISR(INT4_vect) {
 void save_print_to_eeprom() {
 	//eeprom_update_word((uint16_t*)(EPROM_UVLO_CMD_QUEUE), bufindw - bufindr );
 	//BLOCK_BUFFER_SIZE: max. 16 linear moves in planner buffer
-#define TYP_GCODE_LENGTH 29 //G1 X117.489 Y22.814 E1.46695 + null
+#define TYP_GCODE_LENGTH 30 //G1 X117.489 Y22.814 E1.46695 + cr lf
 	//card.get_sdpos() -> byte currently read from SD card
 	//bufindw -> position in circular buffer where to write
 	//bufindr -> position in circular buffer where to read
 	//bufflen -> number of lines in buffer -> for each line one special character??
-	//TYP_GCODE_LENGTH* BLOCK_BUFFER_SIZE -> worst case from planner
-	long sd_position = card.get_sdpos() - ((bufindw > bufindr) ? (bufindw - bufindr) : sizeof(cmdbuffer) - bufindr + bufindw) - buflen - TYP_GCODE_LENGTH* BLOCK_BUFFER_SIZE;
+	//number_of_blocks() returns number of linear movements buffered in planner
+	long sd_position = card.get_sdpos() - ((bufindw > bufindr) ? (bufindw - bufindr) : sizeof(cmdbuffer) - bufindr + bufindw) - TYP_GCODE_LENGTH* number_of_blocks();
 	if (sd_position < 0) sd_position = 0;
 	/*SERIAL_ECHOPGM("sd position before correction:");
 	MYSERIAL.println(card.get_sdpos());
@@ -6886,8 +6887,6 @@ void recover_print() {
 
 	target_temperature[active_extruder] = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND);
 	target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
-	//x_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
-	//y_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
 	float z_pos = UVLO_Z_AXIS_SHIFT + eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z));
 
 	SERIAL_ECHOPGM("Target temperature:");
@@ -6912,16 +6911,18 @@ void recover_print() {
 
 void restore_print_from_eeprom() {
 	float x_rec, y_rec;
+	int feedrate_rec;
+	uint8_t fan_speed_rec;
 	char cmd[30];
 	char* c;
 	char filename[13];
 	char str[5] = ".gco";
 	x_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
 	y_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
-	//SERIAL_ECHOPGM("X pos read from EEPROM:");
-	//MYSERIAL.println(x_rec);
-	//SERIAL_ECHOPGM("Y pos read from EEPROM:");
-	//MYSERIAL.println(y_rec);
+	fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
+	EEPROM_read_B(EEPROM_UVLO_FEEDRATE, &feedrate_rec);
+	SERIAL_ECHOPGM("Feedrate:");
+	MYSERIAL.println(feedrate_rec);
 	for (int i = 0; i < 8; i++) {
 		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
 		
@@ -6939,13 +6940,6 @@ void restore_print_from_eeprom() {
 	MYSERIAL.println(position);
 	enquecommand_P(PSTR("M24")); //M24 - Start SD print
 	sprintf_P(cmd, PSTR("M26 S%lu"), position);
-	
-	//card.setIndex(long(position)); //set from which SD card byte we will start 
-	//if (card.cardOK && code_seen('S')) {
-	//	card.setIndex(code_value_long());
-	//}
-	
-	//delay?
 	enquecommand(cmd);	
 	enquecommand_P(PSTR("M83")); //E axis relative mode
 	strcpy(cmd, "G1 X");
@@ -6954,5 +6948,12 @@ void restore_print_from_eeprom() {
 	strcat(cmd, ftostr32(y_rec));
 	enquecommand(cmd);
 	enquecommand_P(PSTR("G1 Z"  STRINGIFY(-UVLO_Z_AXIS_SHIFT)));
-	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F2000"));
+	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F480"));
+	enquecommand_P(PSTR("G1 E0.5"));
+	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
+	enquecommand(cmd);
+	strcpy(cmd, "M106 S");
+	strcat(cmd, itostr3(int(fan_speed_rec)));
+	enquecommand(cmd);
+	
 }
