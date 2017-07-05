@@ -6835,6 +6835,49 @@ void uvlo_() {
 		eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 }
 
+void setup_uvlo_interrupt() {
+	DDRE &= ~(1 << 4); //input pin
+	PORTE &= ~(1 << 4); //no internal pull-up
+
+						//sensing falling edge
+	EICRB |= (1 << 0);
+	EICRB &= ~(1 << 1);
+
+	//enable INT4 interrupt
+	EIMSK |= (1 << 4);
+}
+
+ISR(INT4_vect) {
+	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
+	SERIAL_ECHOLNPGM("INT4");
+	if (IS_SD_PRINTING) uvlo_();
+}
+
+
+void save_print_to_eeprom() {
+	//eeprom_update_word((uint16_t*)(EPROM_UVLO_CMD_QUEUE), bufindw - bufindr );
+	//BLOCK_BUFFER_SIZE: max. 16 linear moves in planner buffer
+#define TYP_GCODE_LENGTH 29 //G1 X117.489 Y22.814 E1.46695 + null
+	//card.get_sdpos() -> byte currently read from SD card
+	//bufindw -> position in circular buffer where to write
+	//bufindr -> position in circular buffer where to read
+	//bufflen -> number of lines in buffer -> for each line one special character??
+	//TYP_GCODE_LENGTH* BLOCK_BUFFER_SIZE -> worst case from planner
+	long sd_position = card.get_sdpos() - ((bufindw > bufindr) ? (bufindw - bufindr) : sizeof(cmdbuffer) - bufindr + bufindw) - buflen - TYP_GCODE_LENGTH* BLOCK_BUFFER_SIZE;
+	if (sd_position < 0) sd_position = 0;
+	/*SERIAL_ECHOPGM("sd position before correction:");
+	MYSERIAL.println(card.get_sdpos());
+	SERIAL_ECHOPGM("bufindw:");
+	MYSERIAL.println(bufindw);
+	SERIAL_ECHOPGM("bufindr:");
+	MYSERIAL.println(bufindr);
+	SERIAL_ECHOPGM("sizeof(cmd_buffer):");
+	MYSERIAL.println(sizeof(cmdbuffer));
+	SERIAL_ECHOPGM("sd position after correction:");
+	MYSERIAL.println(sd_position);*/
+	eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
+}
+
 void recover_print() {
 	char cmd[30];
 	lcd_update_enable(true);
@@ -6846,12 +6889,11 @@ void recover_print() {
 	//x_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
 	//y_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
 	float z_pos = UVLO_Z_AXIS_SHIFT + eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z));
-	setTargetHotend0(210); //need to change to stored temperature
-	setTargetBed(55);
-	//SERIAL_ECHOPGM("Target temperature:");
-	//MYSERIAL.println(target_temperature[0]);
-	//SERIAL_ECHOPGM("Target temp bed:");
-	//MYSERIAL.println(target_temperature_bed);
+
+	SERIAL_ECHOPGM("Target temperature:");
+	MYSERIAL.println(target_temperature[0]);
+	SERIAL_ECHOPGM("Target temp bed:");
+	MYSERIAL.println(target_temperature_bed);
 
 	enquecommand_P(PSTR("G28 X"));
 	enquecommand_P(PSTR("G28 Y"));
@@ -6895,13 +6937,16 @@ void restore_print_from_eeprom() {
 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
 	SERIAL_ECHOPGM("Position read from eeprom:");
 	MYSERIAL.println(position);
-	sprintf_P(cmd, PSTR("M26 %lu"), position);
-	//card.setIndex(int32_t(position)); //set from which SD card byte we will start 
+	enquecommand_P(PSTR("M24")); //M24 - Start SD print
+	sprintf_P(cmd, PSTR("M26 S%lu"), position);
+	
+	//card.setIndex(long(position)); //set from which SD card byte we will start 
 	//if (card.cardOK && code_seen('S')) {
 	//	card.setIndex(code_value_long());
 	//}
 	
-	enquecommand_P(PSTR("M24")); //M24 - Start SD print
+	//delay?
+	enquecommand(cmd);	
 	enquecommand_P(PSTR("M83")); //E axis relative mode
 	strcpy(cmd, "G1 X");
 	strcat(cmd, ftostr32(x_rec));
@@ -6910,48 +6955,4 @@ void restore_print_from_eeprom() {
 	enquecommand(cmd);
 	enquecommand_P(PSTR("G1 Z"  STRINGIFY(-UVLO_Z_AXIS_SHIFT)));
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F2000"));
-}
-
-
-void setup_uvlo_interrupt() {
-	DDRE &= ~(1 << 4); //input pin
-	PORTE &= ~(1 << 4); //no internal pull-up
-	
-	//sensing falling edge
-	EICRB |= (1 << 0);
-	EICRB &= ~(1 << 1);
-	
-	//enable INT4 interrupt
-	EIMSK |= (1 << 4);
-}
-
-ISR(INT4_vect) {
-	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
-	SERIAL_ECHOLNPGM("INT4");
-	if(IS_SD_PRINTING) uvlo_();
-}
-
-
-void save_print_to_eeprom() {
-		//eeprom_update_word((uint16_t*)(EPROM_UVLO_CMD_QUEUE), bufindw - bufindr );
-		//BLOCK_BUFFER_SIZE: max. 16 linear moves in planner buffer
-#define TYP_GCODE_LENGTH 29 //G1 X117.489 Y22.814 E1.46695 + null
-	//card.get_sdpos() -> byte currently read from SD card
-	//bufindw -> position in circular buffer where to write
-	//bufindr -> position in circular buffer where to read
-	//bufflen -> number of lines in buffer -> for each line one special character??
-	//TYP_GCODE_LENGTH* BLOCK_BUFFER_SIZE -> worst case from planner
-		long sd_position = card.get_sdpos() - ((bufindw > bufindr) ? (bufindw - bufindr) : sizeof(cmdbuffer) - bufindr + bufindw) - buflen - TYP_GCODE_LENGTH* BLOCK_BUFFER_SIZE; 
-		if (sd_position < 0) sd_position = 0;
-		/*SERIAL_ECHOPGM("sd position before correction:");
-		MYSERIAL.println(card.get_sdpos());
-		SERIAL_ECHOPGM("bufindw:");
-		MYSERIAL.println(bufindw);
-		SERIAL_ECHOPGM("bufindr:");
-		MYSERIAL.println(bufindr);
-		SERIAL_ECHOPGM("sizeof(cmd_buffer):");
-		MYSERIAL.println(sizeof(cmdbuffer));
-		SERIAL_ECHOPGM("sd position after correction:");
-		MYSERIAL.println(sd_position);*/
-		eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
 }
