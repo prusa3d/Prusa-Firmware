@@ -41,8 +41,10 @@
 //=============================public variables  ============================
 //===========================================================================
 block_t *current_block;  // A pointer to the block currently being traced
-
-
+bool x_min_endstop = false;
+bool x_max_endstop = false;
+bool y_min_endstop = false;
+bool y_max_endstop = false;
 //===========================================================================
 //=============================private variables ============================
 //===========================================================================
@@ -407,9 +409,9 @@ ISR(TIMER1_COMPA_vect)
         {
           #if defined(X_MIN_PIN) && X_MIN_PIN > -1
 			#ifndef TMC2130_SG_HOMING_SW
-				bool x_min_endstop = (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
+				x_min_endstop = (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
 			#else //TMC2130_SG_HOMING_SW
-				bool x_min_endstop = tmc2130_axis_stalled[X_AXIS];
+				x_min_endstop = tmc2130_axis_stalled[X_AXIS];
 			#endif //TMC2130_SG_HOMING_SW
             if(x_min_endstop && old_x_min_endstop && (current_block->steps_x > 0)) {
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
@@ -427,9 +429,9 @@ ISR(TIMER1_COMPA_vect)
         {
           #if defined(X_MAX_PIN) && X_MAX_PIN > -1
 			#ifndef TMC2130_SG_HOMING_SW
-				bool x_max_endstop = (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
+				x_max_endstop = (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
 			#else //TMC2130_SG_HOMING_SW
-				bool x_max_endstop = tmc2130_axis_stalled[X_AXIS];
+				x_max_endstop = tmc2130_axis_stalled[X_AXIS];
 			#endif //TMC2130_SG_HOMING_SW
             if(x_max_endstop && old_x_max_endstop && (current_block->steps_x > 0)){
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
@@ -451,9 +453,9 @@ ISR(TIMER1_COMPA_vect)
       {
         #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
 			#ifndef TMC2130_SG_HOMING_SW
-				bool y_min_endstop=(READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
+				y_min_endstop=(READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
 			#else //TMC2130_SG_HOMING_SW
-				bool y_min_endstop = tmc2130_axis_stalled[Y_AXIS];
+				y_min_endstop = tmc2130_axis_stalled[Y_AXIS];
 			#endif //TMC2130_SG_HOMING_SW
           if(y_min_endstop && old_y_min_endstop && (current_block->steps_y > 0)) {
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
@@ -469,9 +471,9 @@ ISR(TIMER1_COMPA_vect)
       {
         #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
 			#ifndef TMC2130_SG_HOMING_SW
-				bool y_max_endstop=(READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
+				y_max_endstop=(READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
 			#else //TMC2130_SG_HOMING_SW
-				bool y_max_endstop = tmc2130_axis_stalled[Y_AXIS];
+				y_max_endstop = tmc2130_axis_stalled[Y_AXIS];
 			#endif //TMC2130_SG_HOMING_SW
           if(y_max_endstop && old_y_max_endstop && (current_block->steps_y > 0)){
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];

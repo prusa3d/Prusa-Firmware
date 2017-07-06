@@ -6910,34 +6910,36 @@ void recover_print() {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
-	lcd_setstatuspgm(WELCOME_MSG);
+	lcd_setstatuspgm(MSG_RECOVERING_PRINT);
 
 	target_temperature[active_extruder] = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND);
 	target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
-	float z_pos = UVLO_Z_AXIS_SHIFT + eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z));
+	float z_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z));
+	z_pos = z_pos + UVLO_Z_AXIS_SHIFT;
 
-	SERIAL_ECHOPGM("Target temperature:");
-	MYSERIAL.println(target_temperature[0]);
-	SERIAL_ECHOPGM("Target temp bed:");
-	MYSERIAL.println(target_temperature_bed);
+	current_position[Z_AXIS] = z_pos;
+	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+
 
 	enquecommand_P(PSTR("G28 X"));
 	enquecommand_P(PSTR("G28 Y"));
-	strcpy(cmd, "G92 Z");
-	strcat(cmd, ftostr43(z_pos));
-	enquecommand(cmd);
 
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 	while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
 		delay_keep_alive(1000);
 	}
+	SERIAL_ECHOPGM("After waiting for temp:");
+	SERIAL_ECHOPGM("Current position X_AXIS:");
+	MYSERIAL.println(current_position[X_AXIS]);
+	SERIAL_ECHOPGM("Current position Y_AXIS:");
+	MYSERIAL.println(current_position[Y_AXIS]);
 	restore_print_from_eeprom();
 	SERIAL_ECHOPGM("current_position[Z_AXIS]:");
 	MYSERIAL.print(current_position[Z_AXIS]);
 }
 
 void restore_print_from_eeprom() {
-	float x_rec, y_rec;
+	float x_rec, y_rec, z_pos;
 	int feedrate_rec;
 	uint8_t fan_speed_rec;
 	char cmd[30];
@@ -6946,6 +6948,7 @@ void restore_print_from_eeprom() {
 	char str[5] = ".gco";
 	x_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
 	y_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
+	z_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z));
 	fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
 	EEPROM_read_B(EEPROM_UVLO_FEEDRATE, &feedrate_rec);
 	SERIAL_ECHOPGM("Feedrate:");
@@ -6965,8 +6968,10 @@ void restore_print_from_eeprom() {
 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
 	SERIAL_ECHOPGM("Position read from eeprom:");
 	MYSERIAL.println(position);
+
 	enquecommand_P(PSTR("M24")); //M24 - Start SD print
 	sprintf_P(cmd, PSTR("M26 S%lu"), position);
+
 	enquecommand(cmd);	
 	enquecommand_P(PSTR("M83")); //E axis relative mode
 	strcpy(cmd, "G1 X");
@@ -6974,7 +6979,10 @@ void restore_print_from_eeprom() {
 	strcat(cmd, " Y");
 	strcat(cmd, ftostr32(y_rec));
 	enquecommand(cmd);
-	enquecommand_P(PSTR("G1 Z"  STRINGIFY(-UVLO_Z_AXIS_SHIFT)));
+	strcpy(cmd, "G1 Z");
+	strcat(cmd, ftostr32(z_pos));
+	enquecommand(cmd);
+	
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F480"));
 	enquecommand_P(PSTR("G1 E0.5"));
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);

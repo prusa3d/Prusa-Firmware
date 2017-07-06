@@ -2203,7 +2203,12 @@ const char * const MSG_REBOOT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_REBOOT_DE
 };
 
-const char MSG_RECOVER_PRINT_EN[] PROGMEM = "Blackout occured. Recover print?";
+const char MSG_RECOVERING_PRINT_EN[] PROGMEM = "Recovering print    ";
+const char * const MSG_RECOVERING_PRINT_LANG_TABLE[1] PROGMEM = {
+	MSG_RECOVERING_PRINT_EN
+};
+
+const char MSG_RECOVER_PRINT_EN[] PROGMEM = "Blackout occurred. Recover print?";
 const char * const MSG_RECOVER_PRINT_LANG_TABLE[1] PROGMEM = {
 	MSG_RECOVER_PRINT_EN
 };
@@ -2394,6 +2399,16 @@ const char * const MSG_SELFTEST_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_ES,
 	MSG_SELFTEST_EN,
 	MSG_SELFTEST_DE
+};
+
+const char MSG_SELFTEST_AXIS_EN[] PROGMEM = "Axis";
+const char * const MSG_SELFTEST_AXIS_LANG_TABLE[1] PROGMEM = {
+	MSG_SELFTEST_AXIS_EN
+};
+
+const char MSG_SELFTEST_AXIS_LENGTH_EN[] PROGMEM = "Axis length";
+const char * const MSG_SELFTEST_AXIS_LENGTH_LANG_TABLE[1] PROGMEM = {
+	MSG_SELFTEST_AXIS_LENGTH_EN
 };
 
 const char MSG_SELFTEST_BEDHEATER_EN[] PROGMEM = "Bed / Heater";
