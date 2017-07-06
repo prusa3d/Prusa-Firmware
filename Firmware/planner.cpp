@@ -978,7 +978,7 @@ Having the real displacement of the head, we can calculate the total movement le
   // Acceleration of the segment, in mm/sec^2
   block->acceleration = block->acceleration_st / steps_per_mm;
 
-#if 1
+#if 0
   // Oversample diagonal movements by a power of 2 up to 8x
   // to achieve more accurate diagonal movements.
   uint8_t bresenham_oversample = 1;

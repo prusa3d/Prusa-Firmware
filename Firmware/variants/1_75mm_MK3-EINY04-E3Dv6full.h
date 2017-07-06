@@ -66,25 +66,28 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
 
 //#define DEFAULT_MAX_FEEDRATE          {400, 400, 12, 120}    // (mm/sec)
-#define DEFAULT_MAX_FEEDRATE          {400, 400, 12, 120}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {1000, 1000, 100, 5000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
+#define DEFAULT_MAX_ACCELERATION      {2000, 2000, 250, 5000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
-#define DEFAULT_ACCELERATION          1250   // X, Y, Z and E max acceleration in mm/s^2 for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts
+#define DEFAULT_ACCELERATION          1500   // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  1500   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
-#define MAX_SILENT_FEEDRATE           2700   // 
+//#define MAX_SILENT_FEEDRATE           2700   // 
 
 #define Z_AXIS_ALWAYS_ON 1
 
 //DEBUG
-//#define DEBUG_DISABLE_MINTEMP
-//#define DEBUG_DISABLE_SWLIMITS
-//#define DEBUG_DISABLE_PREVENT_EXTRUDER
-#define DEBUG_BLINK_ACTIVE
-//#define DEBUG_SKIP_STARTMSGS
-
+#if 0
+#define DEBUG_DISABLE_STARTMSGS //no startup messages 
+#define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
+#define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
+#define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
+#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
+//#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
+//#define DEBUG_BLINK_ACTIVE
+#endif
 
 /*------------------------------------
  TMC2130 default settings
@@ -92,31 +95,32 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_FCLK 12000000       // fclk = 12MHz
 
-#define TMC2130_USTEPS_XY 16        // microstep resolution for XY axes
-#define TMC2130_USTEPS_Z  16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E  16        // microstep resolution for E axis
-#define TMC2130_EXP256_XY 1         // extrapolate 256 for XY axes
-#define TMC2130_EXP256_Z  1         // extrapolate 256 for Z axis
-#define TMC2130_EXP256_E  1         // extrapolate 256 for E axis
+#define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
+#define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
+#define TMC2130_USTEPS_E    16        // microstep resolution for E axis
+#define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
+#define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
+#define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
 
-// PWM register configuration
-//#define TMC2130_PWM_GRAD 0x08       // 0x0F - Sets gradient - (max 15 with PWM autoscale activated)
-//#define TMC2130_PWM_AMPL 0xC8       // 0xFF - Sets PWM amplitude to 200 (max is 255)
-#define TMC2130_PWM_GRAD 0x01       // 0x0F - Sets gradient - (max 15 with PWM autoscale activated)
-#define TMC2130_PWM_AMPL 0xc8       // 0xFF - Sets PWM amplitude to 200 (max is 255)
-#define TMC2130_PWM_AUTO 0x04       // 0x04 since writing in PWM_CONF (Activates PWM autoscaling)
-//#define TMC2130_PWM_FREQ 0x01       // 0x01 since writing in PWM_CONF (Sets PWM frequency to 2/683 fCLK) 35.1kHz
-#define TMC2130_PWM_FREQ 0x01       // 0x02 since writing in PWM_CONF (Sets PWM frequency to 2/683 fCLK) 46.9kHz
+#define TMC2130_PWM_GRAD_XY 15         // PWMCONF
+#define TMC2130_PWM_AMPL_XY 200       // PWMCONF
+#define TMC2130_PWM_AUTO_XY 1         // PWMCONF
+#define TMC2130_PWM_FREQ_XY 2         // PWMCONF
 
-#define TMC2130_PWM_DIV  683        // PWM frequency divider (1024, 683, 512, 410)
+/* //not used
+#define TMC2130_PWM_GRAD_Z  4         // PWMCONF
+#define TMC2130_PWM_AMPL_Z  200       // PWMCONF
+#define TMC2130_PWM_AUTO_Z  1         // PWMCONF
+#define TMC2130_PWM_FREQ_Z  2         // PWMCONF
+#define TMC2130_PWM_GRAD_E  4         // PWMCONF
+#define TMC2130_PWM_AMPL_E  200       // PWMCONF
+#define TMC2130_PWM_AUTO_E  1         // PWMCONF
+#define TMC2130_PWM_FREQ_E  2         // PWMCONF
+*/
+
+//#define TMC2130_PWM_DIV  683        // PWM frequency divider (1024, 683, 512, 410)
+#define TMC2130_PWM_DIV  512        // PWM frequency divider (1024, 683, 512, 410)
 #define TMC2130_PWM_CLK  (2 * TMC2130_FCLK / TMC2130_PWM_DIV) // PWM frequency (23.4kHz, 35.1kHz, 46.9kHz, 58.5kHz for 12MHz fclk)
-
-// Special configuration for XY axes for operation (during standstill, use same settings as for other axes) //todo
-// RP: this settings does not work (overtemp)
-//#define TMC2130_PWM_GRAD_XY 156     // 0x0F - Sets gradient - (max 15 with PWM autoscale activated)
-//#define TMC2130_PWM_AMPL_XY 63      // 0xFF - Sets PWM amplitude to 200 (max is 255)
-//#define TMC2130_PWM_AUTO_XY 0x00    // 0x04 since writing in PWM_CONF (Activates PWM autoscaling)
-//#define TMC2130_PWM_FREQ_XY 0x01    // 0x01 since writing in PWM_CONF (Sets PWM frequency to 2/683 fCLK)
 
 #define TMC2130_TPWMTHRS 0          // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
 #define TMC2130_THIGH 0             // THIGH - unused
@@ -125,15 +129,17 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_SG_HOMING     1     // stallguard homing
 #define TMC2130_SG_HOMING_SW  1     // stallguard "software" homing
-#define TMC2130_SG_THRS_X    12     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y    12     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_X    30     // stallguard sensitivity for X axis
+#define TMC2130_SG_THRS_Y    30     // stallguard sensitivity for Y axis
 #define TMC2130_SG_DELAY     10     // stallguard delay (temporary solution)
 
-#define TMC2130_CURRENTS_H {2, 2, 2, 4}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {6, 6, 8, 8}  // default running currents for all axes
+//new settings is possible for vsense = 1
+#define TMC2130_CURRENTS_H {3, 3, 5, 8}  // default holding currents for all axes
+#define TMC2130_CURRENTS_R {13, 13, 20, 20}  // default running currents for all axes
+
 #define TMC2130_DEBUG
-#define TMC2130_DEBUG_WR
-#define TMC2130_DEBUG_RD
+//#define TMC2130_DEBUG_WR
+//#define TMC2130_DEBUG_RD
 
 
 /*------------------------------------

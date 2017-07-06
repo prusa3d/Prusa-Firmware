@@ -18,15 +18,26 @@ uint8_t tmc2130_current_h[4] = TMC2130_CURRENTS_H;
 //running currents
 uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
 //axis stalled flags
-uint8_t tmc2130_axis_stalled[4] = {0, 0, 0, 0};
+uint8_t tmc2130_axis_stalled[2] = {0, 0};
 //last homing stalled
 uint8_t tmc2130_LastHomingStalled = 0;
+
+//pwm_ampl
+uint8_t tmc2130_pwm_ampl[2] = {TMC2130_PWM_AMPL_XY, TMC2130_PWM_AMPL_XY};
+//pwm_grad
+uint8_t tmc2130_pwm_grad[2] = {TMC2130_PWM_GRAD_XY, TMC2130_PWM_GRAD_XY};
+//pwm_auto
+uint8_t tmc2130_pwm_auto[2] = {TMC2130_PWM_AUTO_XY, TMC2130_PWM_AUTO_XY};
+//pwm_freq
+uint8_t tmc2130_pwm_freq[2] = {TMC2130_PWM_FREQ_XY, TMC2130_PWM_FREQ_XY};
+
 
 uint8_t sg_homing_axis = 0xff;
 uint8_t sg_homing_delay = 0;
 uint8_t sg_thrs_x = TMC2130_SG_THRS_X;
 uint8_t sg_thrs_y = TMC2130_SG_THRS_Y;
 
+bool skip_debug_msg = false;
 
 //TMC2130 registers
 #define TMC2130_REG_GCONF      0x00 // 17 bits
@@ -65,14 +76,17 @@ uint8_t sg_thrs_y = TMC2130_SG_THRS_Y;
 uint16_t tmc2130_rd_TSTEP(uint8_t cs);
 uint16_t tmc2130_rd_DRV_STATUS(uint8_t chipselect);
 
-void tmc2130_wr_CHOPCONF(uint8_t cs, bool extrapolate256 = 0, uint16_t microstep_resolution = 16);
-void tmc2130_wr_PWMCONF(uint8_t cs, uint8_t PWMautoScale = TMC2130_PWM_AUTO, uint8_t PWMfreq = TMC2130_PWM_FREQ, uint8_t PWMgrad = TMC2130_PWM_GRAD, uint8_t PWMampl = TMC2130_PWM_AMPL);
+void tmc2130_wr_CHOPCONF(uint8_t cs, uint8_t toff = 3, uint8_t hstrt = 4, uint8_t hend = 1, uint8_t fd3 = 0, uint8_t disfdcc = 0, uint8_t rndtf = 0, uint8_t chm = 0, uint8_t tbl = 2, uint8_t vsense = 0, uint8_t vhighfs = 0, uint8_t vhighchm = 0, uint8_t sync = 0, uint8_t mres = 0b0100, uint8_t intpol = 1, uint8_t dedge = 0, uint8_t diss2g = 0);
+void tmc2130_wr_PWMCONF(uint8_t cs, uint8_t pwm_ampl, uint8_t pwm_grad, uint8_t pwm_freq, uint8_t pwm_auto, uint8_t pwm_symm, uint8_t freewheel);
 void tmc2130_wr_TPWMTHRS(uint8_t cs, uint32_t val32);
 void tmc2130_wr_THIGH(uint8_t cs, uint32_t val32);
 
-uint8_t tmc2130_txrx(uint8_t cs, uint8_t addr, uint32_t wval, uint32_t* rval);
+uint8_t tmc2130_axis_by_cs(uint8_t cs);
+uint8_t tmc2130_mres(uint16_t microstep_resolution);
+
 uint8_t tmc2130_wr(uint8_t cs, uint8_t addr, uint32_t wval);
 uint8_t tmc2130_rd(uint8_t cs, uint8_t addr, uint32_t* rval);
+uint8_t tmc2130_txrx(uint8_t cs, uint8_t addr, uint32_t wval, uint32_t* rval);
 
 
 
@@ -91,30 +105,30 @@ void tmc2130_init()
 	SPI.begin();
 	for (int i = 0; i < 2; i++) // X Y axes
 	{
-		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?0x00000004:0x00000000);
+		uint8_t mres = tmc2130_mres(TMC2130_USTEPS_XY);
+		tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, TMC2130_INTPOL_XY, 0, 0);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
-		tmc2130_wr_PWMCONF(tmc2130_cs[i]); //PWM_CONF //reset default=0x00050480
+		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?0x00000004:0x00000000);
+		tmc2130_wr_PWMCONF(tmc2130_cs[i], tmc2130_pwm_ampl[i], tmc2130_pwm_grad[i], tmc2130_pwm_freq[i], tmc2130_pwm_auto[i], 0, 0);
 		tmc2130_wr_TPWMTHRS(tmc2130_cs[i], TMC2130_TPWMTHRS);
 		//tmc2130_wr_THIGH(tmc2130_cs[i], TMC2130_THIGH);
-		tmc2130_wr_CHOPCONF(tmc2130_cs[i], TMC2130_EXP256_XY, TMC2130_USTEPS_XY);
 	}
 	for (int i = 2; i < 3; i++) // Z axis
 	{
-		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?0x00000004:0x00000000);
+		uint8_t mres = tmc2130_mres(TMC2130_USTEPS_Z);
+		tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, TMC2130_INTPOL_Z, 0, 0);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
-		tmc2130_wr_PWMCONF(tmc2130_cs[i]); //PWM_CONF //reset default=0x00050480
-		tmc2130_wr_TPWMTHRS(tmc2130_cs[i], TMC2130_TPWMTHRS);
-		//tmc2130_wr_THIGH(tmc2130_cs[i], TMC2130_THIGH);
-		tmc2130_wr_CHOPCONF(tmc2130_cs[i], TMC2130_EXP256_Z, TMC2130_USTEPS_Z);
+		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, 0x00000000);
 	}
 	for (int i = 3; i < 4; i++) // E axis
 	{
-		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, 0x00000004); //GCONF - bit 2 activate stealthChop
+		uint8_t mres = tmc2130_mres(TMC2130_USTEPS_E);
+		tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, TMC2130_INTPOL_E, 0, 0);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
-		tmc2130_wr_CHOPCONF(tmc2130_cs[i], TMC2130_EXP256_E, TMC2130_USTEPS_E);
+		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, 0x00000000);
 	}
 }
 
@@ -165,6 +179,9 @@ void tmc2130_check_overtemp()
 		for(int i=0;i<4;i++)
 		{
 			uint32_t drv_status = 0;
+
+			skip_debug_msg = true;
+
 			tmc2130_rd(cs[i], TMC2130_REG_DRV_STATUS, &drv_status);
 			if (drv_status & ((uint32_t)1<<26))
 			{ // BIT 26 - over temp prewarning ~120C (+-20C)
@@ -215,7 +232,7 @@ void tmc2130_home_exit()
 #endif
 }
 
-extern uint8_t tmc2130_didLastHomingStall()
+uint8_t tmc2130_didLastHomingStall()
 {
 	uint8_t ret = tmc2130_LastHomingStalled;
 	tmc2130_LastHomingStalled = false;
@@ -228,7 +245,7 @@ void tmc2130_set_current_h(uint8_t axis, uint8_t current)
 	MYSERIAL.print((int)axis);
 	MYSERIAL.print(" ");
 	MYSERIAL.println((int)current);
-	if (current > 15) current = 15; //current>15 is unsafe
+//	if (current > 15) current = 15; //current>15 is unsafe
 	tmc2130_current_h[axis] = current;
 	tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[axis] & 0x1f) << 8) | (tmc2130_current_h[axis] & 0x1f));
 }
@@ -239,7 +256,7 @@ void tmc2130_set_current_r(uint8_t axis, uint8_t current)
 	MYSERIAL.print((int)axis);
 	MYSERIAL.print(" ");
 	MYSERIAL.println((int)current);
-	if (current > 15) current = 15; //current>15 is unsafe
+//	if (current > 15) current = 15; //current>15 is unsafe
 	tmc2130_current_r[axis] = current;
 	tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[axis] & 0x1f) << 8) | (tmc2130_current_h[axis] & 0x1f));
 }
@@ -266,6 +283,28 @@ void tmc2130_print_currents()
 	MYSERIAL.println((int)tmc2130_current_r[3]);
 }
 
+void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
+{
+	MYSERIAL.print("tmc2130_set_pwm_ampl ");
+	MYSERIAL.print((int)axis);
+	MYSERIAL.print(" ");
+	MYSERIAL.println((int)pwm_ampl);
+	tmc2130_pwm_ampl[axis] = pwm_ampl;
+	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
+		tmc2130_wr_PWMCONF(tmc2130_cs[axis], tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
+}
+
+void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_grad)
+{
+	MYSERIAL.print("tmc2130_set_pwm_grad ");
+	MYSERIAL.print((int)axis);
+	MYSERIAL.print(" ");
+	MYSERIAL.println((int)pwm_grad);
+	tmc2130_pwm_grad[axis] = pwm_grad;
+	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
+		tmc2130_wr_PWMCONF(tmc2130_cs[axis], tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
+}
+
 uint16_t tmc2130_rd_TSTEP(uint8_t cs)
 {
 	uint32_t val32 = 0;
@@ -281,27 +320,40 @@ uint16_t tmc2130_rd_DRV_STATUS(uint8_t cs)
 	return val32;
 }
 
-void tmc2130_wr_CHOPCONF(uint8_t cs, bool extrapolate256, uint16_t microstep_resolution)
+void tmc2130_wr_CHOPCONF(uint8_t cs, uint8_t toff, uint8_t hstrt, uint8_t hend, uint8_t fd3, uint8_t disfdcc, uint8_t rndtf, uint8_t chm, uint8_t tbl, uint8_t vsense, uint8_t vhighfs, uint8_t vhighchm, uint8_t sync, uint8_t mres, uint8_t intpol, uint8_t dedge, uint8_t diss2g)
 {
-	uint8_t mres=0b0100;
-	if(microstep_resolution == 256) mres = 0b0000;
-	if(microstep_resolution == 128) mres = 0b0001;
-	if(microstep_resolution == 64)  mres = 0b0010;
-	if(microstep_resolution == 32)  mres = 0b0011;
-	if(microstep_resolution == 16)  mres = 0b0100;
-	if(microstep_resolution == 8)   mres = 0b0101;
-	if(microstep_resolution == 4)   mres = 0b0110;
-	if(microstep_resolution == 2)   mres = 0b0111;
-	if(microstep_resolution == 1)   mres = 0b1000;
-	mres |= extrapolate256 << 4; //bit28 intpol
-	//tmc2130_write(cs,0x6C,mres,0x01,0x00,0xD3);
-//	tmc2130_write(cs,0x6C,mres,0x01,0x00,0xC3);
-	tmc2130_wr(cs,TMC2130_REG_CHOPCONF,((uint32_t)mres << 24) | 0x0100C3);
+	uint32_t val = 0;
+	val |= (uint32_t)(toff & 15);
+	val |= (uint32_t)(hstrt & 7) << 4;
+	val |= (uint32_t)(hend & 15) << 7;
+	val |= (uint32_t)(fd3 & 1) << 11;
+	val |= (uint32_t)(disfdcc & 1) << 12;
+	val |= (uint32_t)(rndtf & 1) << 13;
+	val |= (uint32_t)(chm & 1) << 14;
+	val |= (uint32_t)(tbl & 3) << 15;
+	val |= (uint32_t)(vsense & 1) << 17;
+	val |= (uint32_t)(vhighfs & 1) << 18;
+	val |= (uint32_t)(vhighchm & 1) << 19;
+	val |= (uint32_t)(sync & 15) << 20;
+	val |= (uint32_t)(mres & 15) << 24;
+	val |= (uint32_t)(intpol & 1) << 28;
+	val |= (uint32_t)(dedge & 1) << 29;
+	val |= (uint32_t)(diss2g & 1) << 30;
+	tmc2130_wr(cs, TMC2130_REG_CHOPCONF, val);
 }
 
-void tmc2130_wr_PWMCONF(uint8_t cs, uint8_t PWMautoScale, uint8_t PWMfreq, uint8_t PWMgrad, uint8_t PWMampl)
+//void tmc2130_wr_PWMCONF(uint8_t cs, uint8_t PWMautoScale, uint8_t PWMfreq, uint8_t PWMgrad, uint8_t PWMampl)
+void tmc2130_wr_PWMCONF(uint8_t cs, uint8_t pwm_ampl, uint8_t pwm_grad, uint8_t pwm_freq, uint8_t pwm_auto, uint8_t pwm_symm, uint8_t freewheel)
 {
-	tmc2130_wr(cs, TMC2130_REG_PWMCONF, ((uint32_t)(PWMautoScale+PWMfreq) << 16) | ((uint32_t)PWMgrad << 8) | PWMampl); // TMC LJ -> For better readability changed to 0x00 and added PWMautoScale and PWMfreq
+	uint32_t val = 0;
+	val |= (uint32_t)(pwm_ampl & 255);
+	val |= (uint32_t)(pwm_grad & 255) << 8;
+	val |= (uint32_t)(pwm_freq & 3) << 16;
+	val |= (uint32_t)(pwm_auto & 1) << 18;
+	val |= (uint32_t)(pwm_symm & 1) << 19;
+	val |= (uint32_t)(freewheel & 3) << 20;
+	tmc2130_wr(cs, TMC2130_REG_PWMCONF, val);
+//	tmc2130_wr(cs, TMC2130_REG_PWMCONF, ((uint32_t)(PWMautoScale+PWMfreq) << 16) | ((uint32_t)PWMgrad << 8) | PWMampl); // TMC LJ -> For better readability changed to 0x00 and added PWMautoScale and PWMfreq
 }
 
 void tmc2130_wr_TPWMTHRS(uint8_t cs, uint32_t val32)
@@ -327,6 +379,20 @@ uint8_t tmc2130_axis_by_cs(uint8_t cs)
 	return -1;
 }
 
+uint8_t tmc2130_mres(uint16_t microstep_resolution)
+{
+	if (microstep_resolution == 256) return 0b0000;
+	if (microstep_resolution == 128) return 0b0001;
+	if (microstep_resolution == 64)  return 0b0010;
+	if (microstep_resolution == 32)  return 0b0011;
+	if (microstep_resolution == 16)  return 0b0100;
+	if (microstep_resolution == 8)   return 0b0101;
+	if (microstep_resolution == 4)   return 0b0110;
+	if (microstep_resolution == 2)   return 0b0111;
+	if (microstep_resolution == 1)   return 0b1000;
+	return 0;
+}
+
 uint8_t tmc2130_wr(uint8_t cs, uint8_t addr, uint32_t wval)
 {
 	uint8_t stat = tmc2130_txrx(cs, addr | 0x80, wval, 0);
@@ -349,14 +415,18 @@ uint8_t tmc2130_rd(uint8_t cs, uint8_t addr, uint32_t* rval)
 	uint8_t stat = tmc2130_txrx(cs, addr, 0x00000000, &val32);
 	if (rval != 0) *rval = val32;
 #ifdef TMC2130_DEBUG_RD
-	MYSERIAL.print("tmc2130_rd(");
-	MYSERIAL.print((unsigned char)tmc2130_axis_by_cs(cs), DEC);
-	MYSERIAL.print(", 0x");
-	MYSERIAL.print((unsigned char)addr, HEX);
-	MYSERIAL.print(", 0x");
-	MYSERIAL.print((unsigned long)val32, HEX);
-	MYSERIAL.print(")=0x");
-	MYSERIAL.println((unsigned char)stat, HEX);
+	if (!skip_debug_msg)
+	{
+		MYSERIAL.print("tmc2130_rd(");
+		MYSERIAL.print((unsigned char)tmc2130_axis_by_cs(cs), DEC);
+		MYSERIAL.print(", 0x");
+		MYSERIAL.print((unsigned char)addr, HEX);
+		MYSERIAL.print(", 0x");
+		MYSERIAL.print((unsigned long)val32, HEX);
+		MYSERIAL.print(")=0x");
+		MYSERIAL.println((unsigned char)stat, HEX);
+	}
+	skip_debug_msg = false;
 #endif //TMC2130_DEBUG_RD
 	return stat;
 }
