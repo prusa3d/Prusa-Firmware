@@ -6923,11 +6923,17 @@ void recover_print() {
 
 	enquecommand_P(PSTR("G28 X"));
 	enquecommand_P(PSTR("G28 Y"));
-
+	sprintf_P(cmd, PSTR("M109 S%d"), target_temperature[active_extruder]);
+	enquecommand(cmd);
+	sprintf_P(cmd, PSTR("M190 S%d"), target_temperature_bed);
+	enquecommand(cmd);
+	enquecommand_P(PSTR("M83")); //E axis relative mode
+	enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure
+	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
-	while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
+	/*while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
 		delay_keep_alive(1000);
-	}
+	}*/
 	SERIAL_ECHOPGM("After waiting for temp:");
 	SERIAL_ECHOPGM("Current position X_AXIS:");
 	MYSERIAL.println(current_position[X_AXIS]);
@@ -6978,17 +6984,17 @@ void restore_print_from_eeprom() {
 	strcat(cmd, ftostr32(x_rec));
 	strcat(cmd, " Y");
 	strcat(cmd, ftostr32(y_rec));
+	strcat(cmd, " F2000");
 	enquecommand(cmd);
 	strcpy(cmd, "G1 Z");
 	strcat(cmd, ftostr32(z_pos));
 	enquecommand(cmd);
 	
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F480"));
-	enquecommand_P(PSTR("G1 E0.5"));
+	//enquecommand_P(PSTR("G1 E0.5"));
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
 	enquecommand(cmd);
 	strcpy(cmd, "M106 S");
 	strcat(cmd, itostr3(int(fan_speed_rec)));
-	enquecommand(cmd);
-	
+	enquecommand(cmd);	
 }
