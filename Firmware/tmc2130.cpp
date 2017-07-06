@@ -127,7 +127,7 @@ bool tmc2130_update_sg()
 		uint16_t tstep = tmc2130_rd_TSTEP(cs);
 		if (tstep < TMC2130_TCOOLTHRS)
 		{
-			if(sg_homing_delay < 10) // wait for a few tens microsteps until stallGuard is used //todo: read out microsteps directly, instead of delay counter
+			if(sg_homing_delay < TMC2130_SG_DELAY) // wait for a few tens microsteps until stallGuard is used //todo: read out microsteps directly, instead of delay counter
 				sg_homing_delay++;
 			else
 			{

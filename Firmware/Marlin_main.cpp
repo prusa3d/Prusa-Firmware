@@ -1003,6 +1003,9 @@ void factory_reset(char level, bool quiet)
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+    lcd_init();
+    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
+    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	setup_killpin();
 	setup_powerhold();
 	MYSERIAL.begin(BAUDRATE);
@@ -1052,7 +1055,7 @@ void setup()
 	SERIAL_ECHO(freeMemory());
 	SERIAL_ECHORPGM(MSG_PLANNER_BUFFER_BYTES);
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
-	lcd_update_enable(false);
+	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
 	Config_RetrieveSettings();
 	SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
@@ -1065,14 +1068,17 @@ void setup()
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 #endif //HAVE_TMC2130_DRIVERS
 
+    
 	st_init();    // Initialize stepper, this enables interrupts!
+    
 	setup_photpin();
+    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   ")); // we need to do this again for some reason, no time to research
+    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    ")); 
 	servo_init();
 	// Reset the machine correction matrix.
 	// It does not make sense to load the correction matrix until the machine is homed.
 	world2machine_reset();
-
-	lcd_init();
+    
 	if (!READ(BTN_ENC))
 	{
 		_delay_ms(1000);
@@ -1138,8 +1144,9 @@ void setup()
 	}
 	else
 	{
-		_delay_ms(1000);  // wait 1sec to display the splash screen
+		//_delay_ms(1000);  // wait 1sec to display the splash screen // what's this and why do we need it?? - andre
 	}
+    
 
 
 
@@ -1207,6 +1214,7 @@ void setup()
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
 	}
 
+#ifndef DEBUG_SKIP_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 	setup_uvlo_interrupt();
 	
@@ -1225,8 +1233,9 @@ void setup()
 	  lcd_update_enable(true);
   } else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
       // Show the message.
-      lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
+	  lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
   }
+#endif //DEBUG_SKIP_STARTMSGS
   for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   lcd_update_enable(true);
 

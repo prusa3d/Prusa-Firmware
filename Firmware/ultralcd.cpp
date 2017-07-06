@@ -4989,6 +4989,13 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 
   if (lcd_next_update_millis < millis())
   {
+#ifdef DEBUG_BLINK_ACTIVE
+	static bool active_led = false;
+	active_led = !active_led;
+	pinMode(LED_PIN, OUTPUT);
+	digitalWrite(LED_PIN, active_led?HIGH:LOW);
+#endif //DEBUG_BLINK_ACTIVE
+
 #ifdef ULTIPANEL
 #ifdef REPRAPWORLD_KEYPAD
 	  if (REPRAPWORLD_KEYPAD_MOVE_Z_UP) {
