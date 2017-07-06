@@ -727,7 +727,7 @@ void lcd_commands()
 			#ifdef SNMM
 			lcd_commands_step = 8;
 			#else
-			lcd_commands_step = 5;
+			lcd_commands_step = 6;
 			#endif
 		}
 
@@ -956,6 +956,8 @@ static void lcd_support_menu()
   START_MENU();
 
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+  MENU_ITEM(submenu, PSTR("restore"), restore_print_from_eeprom);
+  MENU_ITEM(submenu, PSTR("position"), position_menu);
 
   // Ideally this block would be optimized out by the compiler.
   const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
@@ -2710,7 +2712,8 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
 	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
 #endif //MK1BP
 	MENU_ITEM(submenu, MSG_PID_EXTRUDER, pid_extruder);
-    MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
+	MENU_ITEM(submenu, MSG_PID_BED, pid_bed);
+	MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
 #ifndef MK1BP
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 #endif //MK1BP
@@ -3740,8 +3743,6 @@ static void lcd_main_menu()
 
   
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
- MENU_ITEM(function, PSTR("restore"), restore_print_from_eeprom);
- MENU_ITEM(function, PSTR("position"), position_menu);
    /* if (farm_mode && !IS_SD_PRINTING )
     {
     
