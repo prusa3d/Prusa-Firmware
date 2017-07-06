@@ -33,7 +33,7 @@
 
 // Steps per unit {X,Y,Z,E}
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280*4}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -42,14 +42,14 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 // Home position
 #define MANUAL_X_HOME_POS 0
-#define MANUAL_Y_HOME_POS -2.2
+#define MANUAL_Y_HOME_POS -13
 #define MANUAL_Z_HOME_POS 0.2
 
 // Travel limits after homing
 #define X_MAX_POS 255
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
-#define Y_MIN_POS -4
+#define Y_MIN_POS -13
 #define Z_MAX_POS 210
 #define Z_MIN_POS 0.15
 
@@ -97,7 +97,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    16        // microstep resolution for E axis
+#define TMC2130_USTEPS_E    64        // microstep resolution for E axis
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
@@ -129,15 +129,15 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_SG_HOMING     1     // stallguard homing
 #define TMC2130_SG_HOMING_SW  1     // stallguard "software" homing
-#define TMC2130_SG_THRS_X    30     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y    30     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_X    40     // stallguard sensitivity for X axis
+#define TMC2130_SG_THRS_Y    40     // stallguard sensitivity for Y axis
 #define TMC2130_SG_DELAY     10     // stallguard delay (temporary solution)
 
 //new settings is possible for vsense = 1
-#define TMC2130_CURRENTS_H {3, 3, 5, 8}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {13, 13, 20, 20}  // default running currents for all axes
+#define TMC2130_CURRENTS_H {15, 15, 20, 30}  // default holding currents for all axes
+#define TMC2130_CURRENTS_R {15, 15, 30, 30}  // default running currents for all axes
 
-#define TMC2130_DEBUG
+//#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
 //#define TMC2130_DEBUG_RD
 
@@ -273,7 +273,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Mesh definitions
 #define MESH_MIN_X 35
 #define MESH_MAX_X 238
-#define MESH_MIN_Y 6
+#define MESH_MIN_Y 8
 #define MESH_MAX_Y 202
 
 // Mesh upsample definition
@@ -287,7 +287,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.
 
 #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
-#define Y_PROBE_OFFSET_FROM_EXTRUDER 9     // Z probe to nozzle Y offset: -front +behind
+#define Y_PROBE_OFFSET_FROM_EXTRUDER 8     // Z probe to nozzle Y offset: -front +behind
 #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
 
@@ -463,5 +463,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #else
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
+
+
+#define UVLO_Z_AXIS_SHIFT 2
 
 #endif //__CONFIGURATION_PRUSA_H
