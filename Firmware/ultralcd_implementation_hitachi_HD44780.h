@@ -742,6 +742,7 @@ static void lcd_implementation_status_screen()
 	if (IS_SD_PRINTING)
 	{
 		lcd.print(itostr3(card.percentDone()));
+		card.get_sdpos();
 		lcd.print('%');
 	}
 	else

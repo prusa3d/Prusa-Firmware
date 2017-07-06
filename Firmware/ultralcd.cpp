@@ -563,7 +563,7 @@ void lcd_commands()
 			enquecommand(cmd1);
 			if (axis_relative_modes[3] == true) enquecommand_P(PSTR("M83")); // set extruder to relative mode.
 			else enquecommand_P(PSTR("M82")); // set extruder to absolute mode
-			enquecommand_P(PSTR("G1 E"  STRINGIFY((is_multi_material) ? DEFAULT_RETRACTION_MM : DEFAULT_RETRACTION_SM))); //unretract
+			enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
 			enquecommand_P(PSTR("G90")); //absolute positioning
 			lcd_commands_step = 1;
 		}
@@ -3740,6 +3740,8 @@ static void lcd_main_menu()
 
   
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
+ MENU_ITEM(function, PSTR("restore"), restore_print_from_eeprom);
+ MENU_ITEM(function, PSTR("position"), position_menu);
    /* if (farm_mode && !IS_SD_PRINTING )
     {
     
@@ -4047,6 +4049,7 @@ void lcd_sdcard_stop()
 
 				lcd_return_to_status();
 				lcd_ignore_click(true);
+				
 				lcd_commands_type = LCD_COMMAND_STOP_PRINT;
             
                 // Turn off the print fan
@@ -4897,6 +4900,9 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
   for (c = &cmd[4]; *c; c++)
     *c = tolower(*c);
   enquecommand(cmd);
+  for (int i = 0; i < 8; i++) {
+	  eeprom_write_byte((uint8_t*)EEPROM_FILENAME+i, filename[i]);
+  }
   enquecommand_P(PSTR("M24"));
   lcd_return_to_status();
 }

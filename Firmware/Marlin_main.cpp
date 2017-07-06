@@ -1380,7 +1380,6 @@ void get_command()
         continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
-       (serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1) )
     {
       if(!serial_count) { //if empty line
@@ -3491,6 +3490,7 @@ void process_commands()
       starttime=millis();
 	  break;
     case 25: //M25 - Pause SD print
+	  save_print_to_eeprom();
       card.pauseSDPrint();
       break;
     case 26: //M26 - Set SD index
@@ -4379,6 +4379,12 @@ Sigma_Exit:
         }
       }
       break;
+	case 110:   // M110 - reset line pos
+	  if (code_seen('N'))
+	    gcode_LastN = code_value_long();
+	  else
+		gcode_LastN = 0;
+	  break;
     case 115: // M115
       if (code_seen('V')) {
           // Report the Prusa version number.
@@ -6652,3 +6658,41 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");
 }
+
+
+void save_print_to_eeprom() {
+ 
+ 	eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), card.get_sdpos());
+ }
+ 
+ void restore_print_from_eeprom() {
+ 	char cmd[30];
+ 	char* c;
+ 	char filename[13];
+ 	char str[5] = ".gco";
+ 	for (int i = 0; i < 8; i++) {
+ 		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
+ 	}
+ 	filename[8] = '\0';
+ 	MYSERIAL.print(filename);
+ 	strcat(filename, str);
+ 	sprintf_P(cmd, PSTR("M23 %s"), filename);
+ 	for (c = &cmd[4]; *c; c++)
+ 		*c = tolower(*c);
+ 	enquecommand(cmd);
+ 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
+ 	SERIAL_ECHOPGM("Position read from eeprom:");
+ 	MYSERIAL.println(position);
+ 
+ 	card.setIndex(position);
+ 	enquecommand_P(PSTR("M24"));
+ 	sprintf_P(cmd, PSTR("M26 S%d"), position);
+ 	enquecommand(cmd);
+ }
+ 
+ void position_menu() {
+ 	SERIAL_ECHOPGM("Percent done:");
+ 	MYSERIAL.println(card.percentDone());
+ 	SERIAL_ECHOPGM("sdpos:");
+ 	MYSERIAL.println(card.get_sdpos());
+ }

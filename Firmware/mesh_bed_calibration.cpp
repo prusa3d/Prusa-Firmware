@@ -2448,7 +2448,12 @@ void count_xyz_details() {
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 4))
 	};
 	a2 = -1 * asin(vec_y[0] / MACHINE_AXIS_SCALE_Y);
+/*	SERIAL_ECHOLNPGM("par:");
+	MYSERIAL.println(vec_y[0]);
+	MYSERIAL.println(a2);*/
 	a1 = asin(vec_x[1] / MACHINE_AXIS_SCALE_X);
+/*	MYSERIAL.println(vec_x[1]);
+	MYSERIAL.println(a1);*/
 	angleDiff = fabs(a2 - a1);
 	for (uint8_t mesh_point = 0; mesh_point < 3; ++mesh_point) {
 		float y = vec_x[1] * pgm_read_float(bed_ref_points + mesh_point * 2) + vec_y[1] * pgm_read_float(bed_ref_points + mesh_point * 2 + 1) + cntr[1];
