@@ -2396,6 +2396,16 @@ const char * const MSG_SELFTEST_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_DE
 };
 
+const char MSG_SELFTEST_AXIS_EN[] PROGMEM = "Axis";
+const char * const MSG_SELFTEST_AXIS_LANG_TABLE[1] PROGMEM = {
+	MSG_SELFTEST_AXIS_EN
+};
+
+const char MSG_SELFTEST_AXIS_LENGTH_EN[] PROGMEM = "Axis length";
+const char * const MSG_SELFTEST_AXIS_LENGTH_LANG_TABLE[1] PROGMEM = {
+	MSG_SELFTEST_AXIS_LENGTH_EN
+};
+
 const char MSG_SELFTEST_BEDHEATER_EN[] PROGMEM = "Bed / Heater";
 const char MSG_SELFTEST_BEDHEATER_IT[] PROGMEM = "Letto/Riscald.";
 const char MSG_SELFTEST_BEDHEATER_ES[] PROGMEM = "Cama/Calentador";

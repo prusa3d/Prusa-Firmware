@@ -173,6 +173,8 @@
 #define MSG_SELFTEST_ENDSTOPS				"Endstops"
 #define MSG_SELFTEST_MOTOR					"Motor"
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
+#define MSG_SELFTEST_AXIS					"Axis"
+#define MSG_SELFTEST_AXIS_LENGTH			"Axis length"
 #define(length=20,lines=1) MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
 #define(length=20,lines=1) MSG_LOOSE_PULLEY					"Loose pulley"
