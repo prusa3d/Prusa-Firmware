@@ -6931,6 +6931,11 @@ void recover_print() {
 	while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
 		delay_keep_alive(1000);
 	}
+	SERIAL_ECHOPGM("After waiting for temp:");
+	SERIAL_ECHOPGM("Current position X_AXIS:");
+	MYSERIAL.println(current_position[X_AXIS]);
+	SERIAL_ECHOPGM("Current position Y_AXIS:");
+	MYSERIAL.println(current_position[Y_AXIS]);
 	restore_print_from_eeprom();
 	SERIAL_ECHOPGM("current_position[Z_AXIS]:");
 	MYSERIAL.print(current_position[Z_AXIS]);
@@ -6967,14 +6972,18 @@ void restore_print_from_eeprom() {
 	MYSERIAL.println(position);
 	enquecommand_P(PSTR("M24")); //M24 - Start SD print
 	sprintf_P(cmd, PSTR("M26 S%lu"), position);
+
 	enquecommand(cmd);	
-	enquecommand_P(PSTR("M83")); //E axis relative mode
+	//enquecommand_P(PSTR("M83")); //E axis relative mode
 	strcpy(cmd, "G1 X");
 	strcat(cmd, ftostr32(x_rec));
 	strcat(cmd, " Y");
 	strcat(cmd, ftostr32(y_rec));
 	enquecommand(cmd);
+	enquecommand_P(PSTR("G91")); //use relative coordinates
 	enquecommand_P(PSTR("G1 Z"  STRINGIFY(-UVLO_Z_AXIS_SHIFT)));
+	enquecommand_P(PSTR("G90")); //use absolute coordinates
+	enquecommand_P(PSTR("M83")); //E axis relative mode
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F480"));
 	enquecommand_P(PSTR("G1 E0.5"));
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
