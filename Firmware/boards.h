@@ -3,8 +3,9 @@
 
 #define BOARD_UNKNOWN -1
 
-#define BOARD_EINY_0_4a         299 // EINY 0.4a
-#define BOARD_EINY_0_3a         300 // EINY 0.3a
+#define BOARD_EINY_0_3a         300  // EINY 0.3a
+#define BOARD_EINY_0_4a         299  // EINY 0.4a
+
 #define BOARD_RAMBO             301  // Rambo
 #define BOARD_RAMBO_MINI_1_3    302  // Rambo-mini 1.3
 #define BOARD_RAMBO_MINI_1_0    102  // Rambo-mini 1.0

@@ -7,10 +7,12 @@ extern uint8_t tmc2130_mode;
 extern uint8_t tmc2130_current_h[4];
 extern uint8_t tmc2130_current_r[4];
 //flags for axis stall detection
-extern uint8_t tmc2130_axis_stalled[4];
+extern uint8_t tmc2130_axis_stalled[2];
 
 extern uint8_t sg_thrs_x;
 extern uint8_t sg_thrs_y;
+
+extern uint8_t sg_homing_delay;
 
 #define TMC2130_MODE_NORMAL 0
 #define TMC2130_MODE_SILENT 1
@@ -34,6 +36,11 @@ extern void tmc2130_set_current_h(uint8_t axis, uint8_t current);
 extern void tmc2130_set_current_r(uint8_t axis, uint8_t current);
 //print currents (M913)
 extern void tmc2130_print_currents();
+
+//set PWM_AMPL for any axis (M917)
+extern void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl);
+//set PWM_GRAD for any axis (M918)
+extern void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_ampl);
 
 
 #endif //TMC2130_H

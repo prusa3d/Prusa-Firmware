@@ -181,6 +181,11 @@
 //if PREVENT_DANGEROUS_EXTRUDE is on, you can still disable (uncomment) very long bits of extrusion separately.
 #define PREVENT_LENGTHY_EXTRUDE
 
+#ifdef DEBUG_DISABLE_PREVENT_EXTRUDER
+#undef PREVENT_DANGEROUS_EXTRUDE
+#undef PREVENT_LENGTHY_EXTRUDE
+#endif //DEBUG_DISABLE_PREVENT_EXTRUDER
+
 
 #define EXTRUDE_MAXLENGTH (X_MAX_LENGTH+Y_MAX_LENGTH) //prevent extrusion of very large distances.
 
@@ -293,6 +298,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define min_software_endstops true // If true, axis won't move to coordinates less than HOME_POS.
 #define max_software_endstops true  // If true, axis won't move to coordinates greater than the defined lengths below.
 
+#ifdef DEBUG_DISABLE_SWLIMITS
+#define min_software_endstops false
+#define max_software_endstops false
+#endif //DEBUG_DISABLE_SWLIMITS
 
 
 #define X_MAX_LENGTH (X_MAX_POS - X_MIN_POS)
@@ -434,14 +443,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // #define EXTRUDER_OFFSET_Y {0.0, 5.00}  // (in mm) for each extruder, offset of the hotend on the Y axis
 
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
-//#define DEFAULT_XJERK                 5.0    // (mm/sec)
-//#define DEFAULT_YJERK                 5.0    // (mm/sec)
-//#define DEFAULT_ZJERK                 0.2    // (mm/sec)
-//#define DEFAULT_EJERK                 2.5    // (mm/sec)
-#define DEFAULT_XJERK                 0.5      // (mm/sec)
-#define DEFAULT_YJERK                 0.5      // (mm/sec)
-#define DEFAULT_ZJERK                 0.1      // (mm/sec)
-#define DEFAULT_EJERK                 0.5      // (mm/sec)
+#define DEFAULT_XJERK                15       // (mm/sec)
+#define DEFAULT_YJERK                15       // (mm/sec)
+#define DEFAULT_ZJERK                 0.4     // (mm/sec)
+#define DEFAULT_EJERK                 2.5     // (mm/sec)
 
 //===========================================================================
 //=============================Additional Features===========================

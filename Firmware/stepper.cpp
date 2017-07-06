@@ -585,14 +585,23 @@ ISR(TIMER1_COMPA_vect)
         counter_x += current_block->steps_x;
         if (counter_x > 0) {
           WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
+#ifdef DEBUG_XSTEP_DUP_PIN
+    WRITE(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
+#endif //DEBUG_XSTEP_DUP_PIN
           counter_x -= current_block->step_event_count;
           count_position[X_AXIS]+=count_direction[X_AXIS];   
           WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
+#ifdef DEBUG_XSTEP_DUP_PIN
+    WRITE(DEBUG_XSTEP_DUP_PIN,INVERT_X_STEP_PIN);
+#endif //DEBUG_XSTEP_DUP_PIN
         }
 
         counter_y += current_block->steps_y;
         if (counter_y > 0) {
           WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
+#ifdef DEBUG_YSTEP_DUP_PIN
+    WRITE(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
+#endif //DEBUG_YSTEP_DUP_PIN
 		  
 		  #ifdef Y_DUAL_STEPPER_DRIVERS
 			WRITE(Y2_STEP_PIN, !INVERT_Y_STEP_PIN);
@@ -601,6 +610,9 @@ ISR(TIMER1_COMPA_vect)
           counter_y -= current_block->step_event_count;
           count_position[Y_AXIS]+=count_direction[Y_AXIS];
           WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
+#ifdef DEBUG_YSTEP_DUP_PIN
+    WRITE(DEBUG_YSTEP_DUP_PIN,INVERT_Y_STEP_PIN);
+#endif //DEBUG_YSTEP_DUP_PIN
 		  
 		  #ifdef Y_DUAL_STEPPER_DRIVERS
 			WRITE(Y2_STEP_PIN, INVERT_Y_STEP_PIN);
@@ -812,9 +824,13 @@ void st_init()
 
 
   //Initialize Step Pins
-  #if defined(X_STEP_PIN) && (X_STEP_PIN > -1)
+#if defined(X_STEP_PIN) && (X_STEP_PIN > -1)
     SET_OUTPUT(X_STEP_PIN);
     WRITE(X_STEP_PIN,INVERT_X_STEP_PIN);
+#ifdef DEBUG_XSTEP_DUP_PIN
+    SET_OUTPUT(DEBUG_XSTEP_DUP_PIN);
+    WRITE(DEBUG_XSTEP_DUP_PIN,INVERT_X_STEP_PIN);
+#endif //DEBUG_XSTEP_DUP_PIN
     disable_x();
   #endif
   #if defined(X2_STEP_PIN) && (X2_STEP_PIN > -1)
@@ -825,6 +841,10 @@ void st_init()
   #if defined(Y_STEP_PIN) && (Y_STEP_PIN > -1)
     SET_OUTPUT(Y_STEP_PIN);
     WRITE(Y_STEP_PIN,INVERT_Y_STEP_PIN);
+#ifdef DEBUG_YSTEP_DUP_PIN
+    SET_OUTPUT(DEBUG_YSTEP_DUP_PIN);
+    WRITE(DEBUG_YSTEP_DUP_PIN,INVERT_Y_STEP_PIN);
+#endif //DEBUG_YSTEP_DUP_PIN
     #if defined(Y_DUAL_STEPPER_DRIVERS) && defined(Y2_STEP_PIN) && (Y2_STEP_PIN > -1)
       SET_OUTPUT(Y2_STEP_PIN);
       WRITE(Y2_STEP_PIN,INVERT_Y_STEP_PIN);
@@ -983,10 +1003,16 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); 
+#ifdef DEBUG_XSTEP_DUP_PIN
+    WRITE(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
+#endif //DEBUG_XSTEP_DUP_PIN
     {
     volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
     }
     WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
+#ifdef DEBUG_XSTEP_DUP_PIN
+    WRITE(DEBUG_XSTEP_DUP_PIN,INVERT_X_STEP_PIN);
+#endif //DEBUG_XSTEP_DUP_PIN
 
     //get old pin state back.
     WRITE(X_DIR_PIN,old_x_dir_pin);
@@ -1002,10 +1028,16 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); 
+#ifdef DEBUG_YSTEP_DUP_PIN
+    WRITE(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
+#endif //DEBUG_YSTEP_DUP_PIN
     {
     volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
     }
     WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
+#ifdef DEBUG_YSTEP_DUP_PIN
+    WRITE(DEBUG_YSTEP_DUP_PIN,INVERT_Y_STEP_PIN);
+#endif //DEBUG_YSTEP_DUP_PIN
 
     //get old pin state back.
     WRITE(Y_DIR_PIN,old_y_dir_pin);
