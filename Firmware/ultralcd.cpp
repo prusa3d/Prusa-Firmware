@@ -3694,7 +3694,11 @@ static void lcd_main_menu()
 
   
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
+
+#ifdef TMC2130_DEBUG
  MENU_ITEM(function, PSTR("recover print"), recover_print);
+ MENU_ITEM(function, PSTR("power panic"), uvlo_);
+#endif //TMC2130_DEBUG
 
  /* if (farm_mode && !IS_SD_PRINTING )
     {

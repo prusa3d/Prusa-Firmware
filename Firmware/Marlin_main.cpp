@@ -6917,17 +6917,12 @@ void recover_print() {
 	float z_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z));
 	z_pos = z_pos + UVLO_Z_AXIS_SHIFT;
 
+	current_position[Z_AXIS] = z_pos;
+	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
-	SERIAL_ECHOPGM("Target temperature:");
-	MYSERIAL.println(target_temperature[0]);
-	SERIAL_ECHOPGM("Target temp bed:");
-	MYSERIAL.println(target_temperature_bed);
 
 	enquecommand_P(PSTR("G28 X"));
 	enquecommand_P(PSTR("G28 Y"));
-	strcpy(cmd, "G92 Z");
-	strcat(cmd, ftostr43(z_pos));
-	enquecommand(cmd);
 
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 	while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
@@ -6973,6 +6968,7 @@ void restore_print_from_eeprom() {
 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
 	SERIAL_ECHOPGM("Position read from eeprom:");
 	MYSERIAL.println(position);
+
 	enquecommand_P(PSTR("M24")); //M24 - Start SD print
 	sprintf_P(cmd, PSTR("M26 S%lu"), position);
 
@@ -6984,7 +6980,7 @@ void restore_print_from_eeprom() {
 	strcat(cmd, ftostr32(y_rec));
 	enquecommand(cmd);
 	strcpy(cmd, "G1 Z");
-	strcat(cmd, ftostr43(z_pos));
+	strcat(cmd, ftostr32(z_pos));
 	enquecommand(cmd);
 	
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F480"));
