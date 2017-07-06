@@ -209,7 +209,7 @@ void ClearToSend();
 
 void get_coordinates();
 void prepare_move();
-void kill(const char *full_screen_message = NULL);
+void kill(const char *full_screen_message = NULL, unsigned char id = 0);
 void Stop();
 
 bool IsStopped();
@@ -352,3 +352,14 @@ void temp_compensation_apply();
 void temp_compensation_start();
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
+
+void uvlo_();
+void recover_print();
+void setup_uvlo_interrupt();
+
+extern void save_print_to_eeprom();
+extern void restore_print_from_eeprom();
+extern void position_menu();
+
+
+#define UVLO !(PINE & (1<<4))

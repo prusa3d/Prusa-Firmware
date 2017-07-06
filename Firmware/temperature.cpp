@@ -406,7 +406,7 @@ void setExtruderAutoFanState(int pin, bool state)
 }
 
 void countFanSpeed()
-{
+{	
 	fan_speed[0] = (fan_edge_counter[0] * (float(250) / (millis() - extruder_autofan_last_check)));
 	fan_speed[1] = (fan_edge_counter[1] * (float(250) / (millis() - extruder_autofan_last_check)));
 
@@ -425,7 +425,7 @@ void checkFanSpeed()
 	else fan_speed_errors[1] = 0;
 
 	if (fan_speed_errors[0] > 5) fanSpeedError(0);
-	if (fan_speed_errors[1] > 5) fanSpeedError(1);
+	if (fan_speed_errors[1] > 15) fanSpeedError(1);
 }
 
 void fanSpeedError(unsigned char _fan) {
@@ -754,7 +754,7 @@ static float analog2temp(int raw, uint8_t e) {
       SERIAL_ERROR_START;
       SERIAL_ERROR((int)e);
       SERIAL_ERRORLNPGM(" - Invalid extruder number !");
-      kill();
+      kill("", 6);
       return 0.0;
   } 
   #ifdef HEATER_0_USES_MAX6675
@@ -1462,6 +1462,7 @@ int read_max6675()
 // Timer 0 is shared with millies
 ISR(TIMER0_COMPB_vect)
 {
+//	if (UVLO) uvlo();
   //these variables are only accesible from the ISR, but static, so they don't lose their value
   static unsigned char temp_count = 0;
   static unsigned long raw_temp_0_value = 0;

@@ -507,16 +507,17 @@
 
 #ifdef ULTRA_LCD
 
-#define KILL_PIN          32
+//#define KILL_PIN          32
 
 #ifdef NEWPANEL
+
 
 #define BEEPER      84  // Beeper on AUX-4
 #define LCD_PINS_RS     82
 //#define LCD_PINS_ENABLE 18
 //#define LCD_PINS_D4     19
 #define LCD_PINS_ENABLE 61
-#define LCD_PINS_D4 59
+#define LCD_PINS_D4		59
 #define LCD_PINS_D5     70
 #define LCD_PINS_D6     85
 #define LCD_PINS_D7     71
@@ -529,7 +530,7 @@
 #define SDCARDDETECT   15
 
 #define TACH_0 79
-#define TACH_1 80
+#define TACH_1 80 
 
 #endif //NEWPANEL
 #endif //ULTRA_LCD

@@ -199,6 +199,8 @@ void set_extrude_min_temp(float temp);
 void reset_acceleration_rates();
 #endif
 
+unsigned char number_of_blocks();
+
 // #define PLANNER_DIAGNOSTICS
 #ifdef PLANNER_DIAGNOSTICS
 // Diagnostic functions to display planner buffer underflow on the display.
