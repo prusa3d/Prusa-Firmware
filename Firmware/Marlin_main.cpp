@@ -1214,7 +1214,7 @@ void setup()
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
 	}
 
-#ifndef DEBUG_SKIP_STARTMSGS
+#ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 	setup_uvlo_interrupt();
 	
@@ -1235,7 +1235,7 @@ void setup()
       // Show the message.
 	  lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
   }
-#endif //DEBUG_SKIP_STARTMSGS
+#endif //DEBUG_DISABLE_STARTMSGS
   for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   lcd_update_enable(true);
 
@@ -1906,14 +1906,14 @@ void homeaxis(int axis) {
         feedrate = homing_feedrate[axis];
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
 
-//		sg_homing_delay = 0;
+		sg_homing_delay = 0;
         st_synchronize();
         
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-//		sg_homing_delay = 0;
+		sg_homing_delay = 0;
         st_synchronize();
         
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
@@ -1924,7 +1924,7 @@ void homeaxis(int axis) {
 #endif
 		feedrate = homing_feedrate[axis] / 2;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-//		sg_homing_delay = 0;
+		sg_homing_delay = 0;
         st_synchronize();
         axis_is_at_home(axis);
         destination[axis] = current_position[axis];
@@ -5576,6 +5576,24 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		MYSERIAL.print(sg_thrs_x, DEC);
 		MYSERIAL.print(" sg_thrs_y=");
 		MYSERIAL.println(sg_thrs_y, DEC);
+    }
+    break;
+
+	case 917: // M917 Set TMC2130 pwm_ampl
+    {
+		if (code_seen('X')) tmc2130_set_pwm_ampl(0, code_value());
+		if (code_seen('Y')) tmc2130_set_pwm_ampl(1, code_value());
+        if (code_seen('Z')) tmc2130_set_pwm_ampl(2, code_value());
+        if (code_seen('E')) tmc2130_set_pwm_ampl(3, code_value());
+    }
+    break;
+
+	case 918: // M918 Set TMC2130 pwm_grad
+    {
+		if (code_seen('X')) tmc2130_set_pwm_grad(0, code_value());
+		if (code_seen('Y')) tmc2130_set_pwm_grad(1, code_value());
+        if (code_seen('Z')) tmc2130_set_pwm_grad(2, code_value());
+        if (code_seen('E')) tmc2130_set_pwm_grad(3, code_value());
     }
     break;
 

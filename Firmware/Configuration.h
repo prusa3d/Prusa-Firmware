@@ -443,14 +443,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // #define EXTRUDER_OFFSET_Y {0.0, 5.00}  // (in mm) for each extruder, offset of the hotend on the Y axis
 
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
-//#define DEFAULT_XJERK                 5.0    // (mm/sec)
-//#define DEFAULT_YJERK                 5.0    // (mm/sec)
-//#define DEFAULT_ZJERK                 0.2    // (mm/sec)
-//#define DEFAULT_EJERK                 2.5    // (mm/sec)
-#define DEFAULT_XJERK                 0.5      // (mm/sec)
-#define DEFAULT_YJERK                 0.5      // (mm/sec)
-#define DEFAULT_ZJERK                 0.1      // (mm/sec)
-#define DEFAULT_EJERK                 0.5      // (mm/sec)
+#define DEFAULT_XJERK                15       // (mm/sec)
+#define DEFAULT_YJERK                15       // (mm/sec)
+#define DEFAULT_ZJERK                 0.4     // (mm/sec)
+#define DEFAULT_EJERK                 2.5     // (mm/sec)
 
 //===========================================================================
 //=============================Additional Features===========================
