@@ -6910,7 +6910,7 @@ void recover_print() {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
-	lcd_setstatuspgm(WELCOME_MSG);
+	lcd_setstatuspgm(MSG_RECOVERING_PRINT);
 
 	target_temperature[active_extruder] = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND);
 	target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
