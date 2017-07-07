@@ -4365,10 +4365,10 @@ static void lcd_selftest()
 
 	if (_result)
 	{
-		//current_position[X_AXIS] = current_position[X_AXIS] + 14;
-		//current_position[Y_AXIS] = current_position[Y_AXIS] + 12;
 #ifdef HAVE_TMC2130_DRIVERS
 		tmc2130_home_exit();
+		sg_homing_delay = 0;
+		enable_endstops(false);
 #endif
 		current_position[X_AXIS] = current_position[X_AXIS] + 14;
 		current_position[Y_AXIS] = current_position[Y_AXIS] + 12;
@@ -4429,33 +4429,31 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	current_position[axis] = 0;
 	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
+#ifdef HAVE_TMC2130_DRIVERS
+	tmc2130_home_exit();
+	sg_homing_delay = 0;
+	tmc2130_axis_stalled[axis] = false;
+	enable_endstops(true);
+#endif
+
 	for (char i = 0; i < 2; i++) {
 		/*SERIAL_ECHOPGM("i = ");
 		MYSERIAL.println(int(i));
 		SERIAL_ECHOPGM("Current position 2:");
 		MYSERIAL.println(current_position[axis]);*/
-		if (i == 0) {
-			current_position[axis] -= (axis_length + margin);
-			/*SERIAL_ECHOPGM("Current position 3:");
-			MYSERIAL.println(current_position[axis]);*/
-
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-		}
-		else {
-			current_position[axis] -= margin;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-			st_synchronize();
-			current_position[axis] -= axis_length;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-		}
-
 
 #ifdef HAVE_TMC2130_DRIVERS
-		tmc2130_home_enter(axis);
+		tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
+
+
+			current_position[axis] -= (axis_length + margin);
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+
 		st_synchronize();
 
 #ifdef HAVE_TMC2130_DRIVERS
+		sg_homing_delay = 0;
 		tmc2130_home_exit();
 #endif
 		//current_position[axis] = st_get_position_mm(axis);
@@ -4463,17 +4461,18 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 
 		current_position_init = st_get_position_mm(axis);
-		if (i == 0) {
+		if (i < 1) {
 			current_position[axis] += margin;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 			st_synchronize();
 			current_position[axis] += axis_length;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 #ifdef HAVE_TMC2130_DRIVERS
-			tmc2130_home_enter(axis);
+			tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
 			st_synchronize();
 #ifdef HAVE_TMC2130_DRIVERS
+			sg_homing_delay = 0;
 			tmc2130_home_exit();
 #endif
 			//current_position[axis] = st_get_position_mm(axis);
@@ -4489,7 +4488,9 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
 			//axis length
 #ifdef HAVE_TMC2130_DRIVERS
+			sg_homing_delay = 0;
 			tmc2130_home_exit();
+			enable_endstops(false);
 #endif
 			const char *_error_1;
 			const char *_error_2;
