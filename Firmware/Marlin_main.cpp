@@ -2006,6 +2006,7 @@ void homeaxis(int axis) {
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
 
 #ifdef HAVE_TMC2130_DRIVERS
+		sg_homing_delay = 0;
 		tmc2130_axis_stalled[axis] = false;
 #endif
         st_synchronize();
@@ -2016,6 +2017,7 @@ void homeaxis(int axis) {
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
 
 #ifdef HAVE_TMC2130_DRIVERS
+		sg_homing_delay = 0;
 		tmc2130_axis_stalled[axis] = false;
 #endif
         st_synchronize();
@@ -2030,6 +2032,7 @@ void homeaxis(int axis) {
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
 
 #ifdef HAVE_TMC2130_DRIVERS
+		sg_homing_delay = 0;
 		tmc2130_axis_stalled[axis] = false;
 #endif
         st_synchronize();
