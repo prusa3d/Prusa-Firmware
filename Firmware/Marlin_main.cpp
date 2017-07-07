@@ -5996,10 +5996,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		}
 		break;
 	case 3:
+#ifdef HAVE_PAT9125_SENSOR
 		fsensor_enable();
+#endif
 		break;
 	case 4:
+#ifdef HAVE_PAT9125_SENSOR
 		fsensor_disable();
+#endif            
 		break;
 	}
   }
