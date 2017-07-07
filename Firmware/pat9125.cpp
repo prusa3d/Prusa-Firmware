@@ -16,6 +16,7 @@ unsigned char ucPID1 = 0;
 unsigned char ucPID2 = 0;
 int pat9125_x = 0;
 int pat9125_y = 0;
+int pat9125_b = 0;
 
 int pat9125_init(unsigned char xres, unsigned char yres)
 {
@@ -36,13 +37,17 @@ int pat9125_update()
 	if ((ucPID1 == 0x31) && (ucPID2 == 0x91))
 	{
 		unsigned char ucMotion = pat9125_rd_reg(PAT9125_MOTION);
+		pat9125_b = pat9125_rd_reg(PAT9125_FRAME);
 		if (ucMotion & 0x80)
 		{
-			int iDX = pat9125_rd_reg(PAT9125_DELTA_XL);
-			int iDY = pat9125_rd_reg(PAT9125_DELTA_YL);
-			if (iDX >= 0x80) iDX = iDX - 256;
-			if (iDY >= 0x80) iDY = iDY - 256;
-			pat9125_x += iDX;
+			unsigned char ucXL = pat9125_rd_reg(PAT9125_DELTA_XL);
+			unsigned char ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
+			unsigned char ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
+			int iDX = ucXL | ((ucXYH << 4) & 0xf00);
+			int iDY = ucYL | ((ucXYH << 8) & 0xf00);
+			if (iDX & 0x800) iDX -= 4096;
+			if (iDY & 0x800) iDY -= 4096;
+//			pat9125_x += iDX;
 			pat9125_y += iDY;
 			return 1;
 		}

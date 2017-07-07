@@ -2808,6 +2808,36 @@ const char * const MSG_SHOW_END_STOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SHOW_END_STOPS_DE
 };
 
+const char MSG_FSENSOR_OFF_EN[] PROGMEM = "Filam. probe [off]";
+const char MSG_FSENSOR_OFF_CZ[] PROGMEM = "Filam. probe [off]";
+const char MSG_FSENSOR_OFF_IT[] PROGMEM = "Filam. probe [off]";
+const char MSG_FSENSOR_OFF_ES[] PROGMEM = "Filam. probe [off]";
+const char MSG_FSENSOR_OFF_PL[] PROGMEM = "Filam. probe [off]";
+const char MSG_FSENSOR_OFF_DE[] PROGMEM = "Filam. probe [off]";
+const char * const MSG_FSENSOR_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FSENSOR_OFF_EN,
+	MSG_FSENSOR_OFF_CZ,
+	MSG_FSENSOR_OFF_IT,
+	MSG_FSENSOR_OFF_ES,
+	MSG_FSENSOR_OFF_PL,
+	MSG_FSENSOR_OFF_DE
+};
+
+const char MSG_FSENSOR_ON_EN[] PROGMEM = "Filam. probe  [on]";
+const char MSG_FSENSOR_ON_CZ[] PROGMEM = "Filam. probe  [on]";
+const char MSG_FSENSOR_ON_IT[] PROGMEM = "Filam. probe  [on]";
+const char MSG_FSENSOR_ON_ES[] PROGMEM = "Filam. probe  [on]";
+const char MSG_FSENSOR_ON_PL[] PROGMEM = "Filam. probe  [on]";
+const char MSG_FSENSOR_ON_DE[] PROGMEM = "Filam. probe  [on]";
+const char * const MSG_FSENSOR_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FSENSOR_ON_EN,
+	MSG_FSENSOR_ON_CZ,
+	MSG_FSENSOR_ON_IT,
+	MSG_FSENSOR_ON_ES,
+	MSG_FSENSOR_ON_PL,
+	MSG_FSENSOR_ON_DE
+};
+
 const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode [high power]";
 const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod  [vys. vykon]";
 const char MSG_SILENT_MODE_OFF_IT[] PROGMEM = "Mode      [forte]";
