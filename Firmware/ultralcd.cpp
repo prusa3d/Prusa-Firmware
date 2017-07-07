@@ -4462,10 +4462,8 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 		current_position_init = st_get_position_mm(axis);
 		if (i < 1) {
-			current_position[axis] += margin;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-			st_synchronize();
-			current_position[axis] += axis_length;
+
+			current_position[axis] += (axis_length + margin);
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 #ifdef HAVE_TMC2130_DRIVERS
 			tmc2130_home_enter(X_AXIS_MASK << axis);
