@@ -6916,7 +6916,10 @@ void uvlo_() {
 		current_position[Z_AXIS] += UVLO_Z_AXIS_SHIFT;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
 		st_synchronize();
+        disable_z();
 		eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
+        delay(10);
+    
 }
 
 void setup_uvlo_interrupt() {

@@ -172,7 +172,7 @@ static void prusa_stat_farm_number();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
-
+static void lcd_menu_extruder_info();
 #ifdef DOGLCD
 static void lcd_set_contrast();
 #endif
@@ -516,10 +516,10 @@ static void lcd_status_screen()
 	  lcd_printPGM(MSG_PRINTER_DISCONNECTED);
   }
 
-  lcd.setCursor(0, 3);
-  lcd_implementation_print(pat9125_x);
-  lcd.setCursor(10, 3);
-  lcd_implementation_print(pat9125_y);
+  //lcd.setCursor(0, 3);
+  //lcd_implementation_print(pat9125_x);
+  //lcd.setCursor(10, 3);
+  //lcd_implementation_print(pat9125_y);
 
 }
 
@@ -882,6 +882,61 @@ void lcd_cooldown()
 }
 
 
+static void lcd_menu_extruder_info()
+{
+    int fan_speed_RPM[2];
+    
+    fan_speed_RPM[0] = 60*fan_speed[0];
+    fan_speed_RPM[1] = 60*fan_speed[1];
+    
+    // Display Nozzle fan RPM
+    
+    lcd.setCursor(0, 0);
+    lcd_printPGM(MSG_INFO_NOZZLE_FAN);
+    
+    lcd.setCursor(11, 0);
+    lcd.print("         ");
+    lcd.setCursor(12, 0);
+    lcd.print(itostr4(fan_speed_RPM[0]));
+    lcd.print(" RPM");
+    
+    // Display Nozzle fan RPM
+    
+    lcd.setCursor(0, 1);
+    lcd_printPGM(MSG_INFO_PRINT_FAN);
+    
+    lcd.setCursor(11, 1);
+    lcd.print("         ");
+    lcd.setCursor(12, 1);
+    lcd.print(itostr4(fan_speed_RPM[1]));
+    lcd.print(" RPM");
+
+    
+    // Display X and Y difference from Filament sensor
+    
+    lcd.setCursor(0, 2);
+    lcd.print("Fil. Xd:");
+    lcd.print(itostr3(pat9125_x));
+    lcd.print("   ");
+    lcd.setCursor(12, 2);
+    lcd.print("Yd:");
+    lcd.print(itostr3(pat9125_y));
+    
+    // Display Light intensity from Filament sensor
+    lcd.setCursor(0, 3);
+    
+    lcd.print("Intensity:          ");
+    lcd.setCursor(12, 3);
+    //lcd.print(itostr3(pat9125_b));
+
+    
+    if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_return_to_status();
+    }
+}
+
 
 static void lcd_preheat_menu()
 {
@@ -951,7 +1006,11 @@ static void lcd_support_menu()
   }
   #ifndef MK1BP
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
+    if (!IS_SD_PRINTING)
+    {
   MENU_ITEM(function, PSTR("XYZ cal. details"), lcd_service_mode_show_result);
+    }
+  MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
   #endif //MK1BP
   END_MENU();
 }
