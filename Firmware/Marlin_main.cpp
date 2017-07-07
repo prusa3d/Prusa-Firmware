@@ -1164,7 +1164,8 @@ void setup()
 #endif //HAVE_TMC2130_DRIVERS
 
 #ifdef HAVE_PAT9125_SENSOR
-	pat9125_init(200, 200);
+    MYSERIAL.print("PAT9125_init:");
+    MYSERIAL.println(pat9125_init(200, 200));
 #endif //HAVE_PAT9125_SENSOR
     
 	st_init();    // Initialize stepper, this enables interrupts!
