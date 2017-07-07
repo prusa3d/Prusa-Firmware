@@ -101,6 +101,9 @@ int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = 0;
 
+int8_t FSensorStateMenu = 0;
+
+
 #ifdef SNMM
 uint8_t snmm_extruder = 0;
 #endif
@@ -516,10 +519,17 @@ static void lcd_status_screen()
 	  lcd_printPGM(MSG_PRINTER_DISCONNECTED);
   }
 
+
+//#define FSENS_FACTOR (2580.8/50) //filament sensor factor [steps / encoder counts]
+//#define FSENS_FACTOR (2580.8/45.3) //filament sensor factor [steps / encoder counts]
+  //lcd.setCursor(0, 3);
+  //lcd_implementation_print("                    ");
   //lcd.setCursor(0, 3);
   //lcd_implementation_print(pat9125_x);
-  //lcd.setCursor(10, 3);
+  //lcd.setCursor(6, 3);
   //lcd_implementation_print(pat9125_y);
+  //lcd.setCursor(12, 3);
+  //lcd_implementation_print(pat9125_b);
 
 }
 
@@ -927,7 +937,7 @@ static void lcd_menu_extruder_info()
     
     lcd.print("Intensity:          ");
     lcd.setCursor(12, 3);
-    //lcd.print(itostr3(pat9125_b));
+    lcd.print(itostr3(pat9125_b));
 
     
     if (lcd_clicked())
@@ -2111,8 +2121,9 @@ void lcd_diag_show_end_stops()
 
 
 void prusa_statistics(int _message) {
-	
-
+#ifdef DEBUG_DISABLE_PRUSA_STATISTICS
+	return;
+#endif //DEBUG_DISABLE_PRUSA_STATISTICS
 	switch (_message)
 	{
 
@@ -2459,7 +2470,11 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
   } while (--size);
 }
 
-
+static void lcd_fsensor_state_set()
+{
+	FSensorStateMenu = !FSensorStateMenu;
+	lcd_goto_menu(lcd_settings_menu, 7);
+}
 
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
@@ -2662,6 +2677,12 @@ static void lcd_settings_menu()
   if (!isPrintPaused)
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
+  }
+
+  if (FSensorStateMenu == 0) {
+    MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
+  } else {
+    MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
   }
 
   if ((SilentModeMenu == 0) || (farm_mode) ) {
