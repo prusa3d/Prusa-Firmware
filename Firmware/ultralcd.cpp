@@ -101,6 +101,9 @@ int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = 0;
 
+int8_t FSensorStateMenu = 0;
+
+
 #ifdef SNMM
 uint8_t snmm_extruder = 0;
 #endif
@@ -516,11 +519,16 @@ static void lcd_status_screen()
 	  lcd_printPGM(MSG_PRINTER_DISCONNECTED);
   }
 
+//#define FSENS_FACTOR (2580.8/50) //filament sensor factor [steps / encoder counts]
+//#define FSENS_FACTOR (2580.8/45.3) //filament sensor factor [steps / encoder counts]
+  lcd.setCursor(0, 3);
+  lcd_implementation_print("                    ");
   lcd.setCursor(0, 3);
   lcd_implementation_print(pat9125_x);
-  lcd.setCursor(10, 3);
+  lcd.setCursor(6, 3);
   lcd_implementation_print(pat9125_y);
-
+  lcd.setCursor(12, 3);
+  lcd_implementation_print(pat9125_b);
 }
 
 #ifdef ULTIPANEL
@@ -2052,8 +2060,9 @@ void lcd_diag_show_end_stops()
 
 
 void prusa_statistics(int _message) {
-	
-
+#ifdef DEBUG_DISABLE_PRUSA_STATISTICS
+	return;
+#endif //DEBUG_DISABLE_PRUSA_STATISTICS
 	switch (_message)
 	{
 
@@ -2400,7 +2409,11 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
   } while (--size);
 }
 
-
+static void lcd_fsensor_state_set()
+{
+	FSensorStateMenu = !FSensorStateMenu;
+	lcd_goto_menu(lcd_settings_menu, 7);
+}
 
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
@@ -2603,6 +2616,12 @@ static void lcd_settings_menu()
   if (!isPrintPaused)
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
+  }
+
+  if (FSensorStateMenu == 0) {
+    MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
+  } else {
+    MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
   }
 
   if ((SilentModeMenu == 0) || (farm_mode) ) {
@@ -4233,7 +4252,7 @@ static void lcd_selftest()
 
 	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
 	_result = lcd_selftest_fan_dialog(0);
-
+	
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
@@ -4320,7 +4339,7 @@ static void lcd_selftest()
 	enquecommand_P(PSTR("M84"));
 	lcd_implementation_clear();
 	lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
-
+	
 	if (_result)
 	{
 		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_OK);
@@ -4343,13 +4362,22 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	case 1: axis_length = Y_MAX_POS + 8; break;
 	default: axis_length = 210; break;
 	}
-	
+	/*SERIAL_ECHOPGM("Current position 1:");
+	MYSERIAL.println(current_position[axis]);*/
+
+	current_position[axis] = 0;
+	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
 	for (char i = 0; i < 2; i++) {
-		SERIAL_ECHOPGM("Current position:");
-		MYSERIAL.println(current_position[axis]);
+		/*SERIAL_ECHOPGM("i = ");
+		MYSERIAL.println(int(i));
+		SERIAL_ECHOPGM("Current position 2:");
+		MYSERIAL.println(current_position[axis]);*/
 		if (i == 0) {
 			current_position[axis] -= (axis_length + margin);
+			/*SERIAL_ECHOPGM("Current position 3:");
+			MYSERIAL.println(current_position[axis]);*/
+
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		}
 		else {
@@ -4365,14 +4393,14 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		tmc2130_home_enter(axis);
 #endif
 		st_synchronize();
+
 #ifdef HAVE_TMC2130_DRIVERS
 		tmc2130_home_exit();
 #endif
 		//current_position[axis] = st_get_position_mm(axis);
 		//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
-		SERIAL_ECHOPGM("Current position:");
-		MYSERIAL.println(current_position[axis]);
+
 		current_position_init = st_get_position_mm(axis);
 		if (i == 0) {
 			current_position[axis] += margin;
@@ -4389,8 +4417,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 #endif
 			//current_position[axis] = st_get_position_mm(axis);
 			//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-			SERIAL_ECHOPGM("Current position:");
-			MYSERIAL.println(current_position[axis]);
+
 			current_position_final = st_get_position_mm(axis);
 		}
 		measured_axis_length[i] = abs(current_position_final - current_position_init);

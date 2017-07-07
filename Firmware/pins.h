@@ -327,6 +327,7 @@
 
 #define LARGE_FLASH         true
 #define HAVE_TMC2130_DRIVERS
+#define HAVE_PAT9125_SENSOR
 
 #define X_STEP_PIN          37
 #define X_DIR_PIN           49
@@ -437,6 +438,7 @@
 
 #define LARGE_FLASH         true
 #define HAVE_TMC2130_DRIVERS
+#define HAVE_PAT9125_SENSOR
 
 #define X_STEP_PIN          37
 #define X_DIR_PIN           49
