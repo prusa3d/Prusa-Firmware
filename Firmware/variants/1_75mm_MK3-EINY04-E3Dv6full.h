@@ -134,8 +134,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_SG_DELAY     10     // stallguard delay (temporary solution)
 
 //new settings is possible for vsense = 1
-#define TMC2130_CURRENTS_H {15, 15, 20, 30}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {15, 15, 30, 30}  // default running currents for all axes
+#define TMC2130_CURRENTS_H {15, 15, 20, 28}  // default holding currents for all axes
+#define TMC2130_CURRENTS_R {15, 15, 40, 28}  // default running currents for all axes
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
