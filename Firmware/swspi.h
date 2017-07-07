@@ -14,10 +14,18 @@
 #endif //SWSPI_RPI
 
 #ifdef SWSPI_AVR
-#define SWSPI_MISO	16
-#define SWSPI_MOSI	16
-#define SWSPI_SCK	17
-#define SWSPI_CS	20
+#if (MOTHERBOARD == BOARD_EINY_0_3a)
+#define SWSPI_MISO	16 //RX2
+#define SWSPI_MOSI	16 //RX2
+#define SWSPI_SCK	17 //TX2
+#define SWSPI_CS	20 //SDA
+#endif //(MOTHERBOARD == BOARD_EINY_0_3a)
+#if (MOTHERBOARD == BOARD_EINY_0_4a)
+#define SWSPI_MISO	62 //PK0
+#define SWSPI_MOSI	62 //PK0
+#define SWSPI_SCK	21 //SCL
+#define SWSPI_CS	20 //SDA
+#endif //(MOTHERBOARD == BOARD_EINY_0_4a)
 #endif //SWSPI_AVR
 
 #define SWSPI_POL	1 //polarity
