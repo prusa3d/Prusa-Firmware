@@ -306,3 +306,10 @@
 #define(length=17, lines=1) MSG_EXTRUDER_4						"Extruder 4"
 #define(length=20, lines=2) MSG_RECOVER_PRINT					"Blackout occurred. Recover print?"
 #define(length=20, lines=1) MSG_RECOVERING_PRINT				"Recovering print    "
+
+#define(length=15, lines=1) MSG_INFO_EXTRUDER				"Extruder info"
+
+#define(length=11, lines=1) MSG_INFO_NOZZLE_FAN				"Nozzle FAN:"
+#define(length=11, lines=1) MSG_INFO_PRINT_FAN				"Print FAN: "
+#define(length=11, lines=1) MSG_INFO_FILAMENT_XDIFF				"Fil. Xd:"
+#define(length=11, lines=1) MSG_INFO_FILAMENT_YDIFF				"Fil. Ydiff:"
