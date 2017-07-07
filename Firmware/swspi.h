@@ -23,7 +23,7 @@
 #define SWSPI_POL	1 //polarity
 #define SWSPI_PHA	0 //phase
 #define SWSPI_DOR	0 //data order
-#define SWSPI_DEL	100 //delay
+#define SWSPI_DEL	2 //delay
 
 
 void swspi_init();

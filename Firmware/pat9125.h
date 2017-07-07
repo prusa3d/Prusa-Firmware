@@ -27,6 +27,7 @@ extern unsigned char ucPID2;
 
 extern int pat9125_x;
 extern int pat9125_y;
+extern int pat9125_b;
 
 int pat9125_init(unsigned char xres, unsigned char yres);
 int pat9125_update();
