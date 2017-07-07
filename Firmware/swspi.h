@@ -21,9 +21,9 @@
 #define SWSPI_CS	20 //SDA
 #endif //(MOTHERBOARD == BOARD_EINY_0_3a)
 #if (MOTHERBOARD == BOARD_EINY_0_4a)
-#define SWSPI_MISO	62 //PK0
-#define SWSPI_MOSI	62 //PK0
-#define SWSPI_SCK	21 //SCL
+#define SWSPI_MISO	21 //PK0
+#define SWSPI_MOSI	21 //PK0
+#define SWSPI_SCK	62 //SCL
 #define SWSPI_CS	20 //SDA
 #endif //(MOTHERBOARD == BOARD_EINY_0_4a)
 #endif //SWSPI_AVR

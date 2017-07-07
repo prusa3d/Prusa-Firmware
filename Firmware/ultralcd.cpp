@@ -102,6 +102,8 @@ int8_t SDscrool = 0;
 int8_t SilentModeMenu = 0;
 
 int8_t FSensorStateMenu = 0;
+extern void fsensor_enable();
+extern void fsensor_disable();
 
 
 #ifdef SNMM
@@ -2472,8 +2474,14 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
 
 static void lcd_fsensor_state_set()
 {
+    if (!FSensorStateMenu==0) {
+        fsensor_disable();
+    }else{
+        fsensor_enable();
+    }
 	FSensorStateMenu = !FSensorStateMenu;
 	lcd_goto_menu(lcd_settings_menu, 7);
+    
 }
 
 static void lcd_silent_mode_set() {
