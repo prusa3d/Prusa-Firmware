@@ -4233,7 +4233,7 @@ static void lcd_selftest()
 
 	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
 	_result = lcd_selftest_fan_dialog(0);
-
+	
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
@@ -4320,7 +4320,7 @@ static void lcd_selftest()
 	enquecommand_P(PSTR("M84"));
 	lcd_implementation_clear();
 	lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
-
+	
 	if (_result)
 	{
 		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_OK);
@@ -4343,13 +4343,22 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	case 1: axis_length = Y_MAX_POS + 8; break;
 	default: axis_length = 210; break;
 	}
-	
+	/*SERIAL_ECHOPGM("Current position 1:");
+	MYSERIAL.println(current_position[axis]);*/
+
+	current_position[axis] = 0;
+	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
 	for (char i = 0; i < 2; i++) {
-		SERIAL_ECHOPGM("Current position:");
-		MYSERIAL.println(current_position[axis]);
+		/*SERIAL_ECHOPGM("i = ");
+		MYSERIAL.println(int(i));
+		SERIAL_ECHOPGM("Current position 2:");
+		MYSERIAL.println(current_position[axis]);*/
 		if (i == 0) {
 			current_position[axis] -= (axis_length + margin);
+			/*SERIAL_ECHOPGM("Current position 3:");
+			MYSERIAL.println(current_position[axis]);*/
+
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		}
 		else {
@@ -4365,14 +4374,14 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		tmc2130_home_enter(axis);
 #endif
 		st_synchronize();
+
 #ifdef HAVE_TMC2130_DRIVERS
 		tmc2130_home_exit();
 #endif
 		//current_position[axis] = st_get_position_mm(axis);
 		//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
-		SERIAL_ECHOPGM("Current position:");
-		MYSERIAL.println(current_position[axis]);
+
 		current_position_init = st_get_position_mm(axis);
 		if (i == 0) {
 			current_position[axis] += margin;
@@ -4389,8 +4398,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 #endif
 			//current_position[axis] = st_get_position_mm(axis);
 			//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-			SERIAL_ECHOPGM("Current position:");
-			MYSERIAL.println(current_position[axis]);
+
 			current_position_final = st_get_position_mm(axis);
 		}
 		measured_axis_length[i] = abs(current_position_final - current_position_init);
