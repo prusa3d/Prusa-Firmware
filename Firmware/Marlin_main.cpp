@@ -911,14 +911,14 @@ static void lcd_language_menu();
 
 #ifdef HAVE_PAT9125_SENSOR
 
-bool fsensor_enabled = true;
+bool fsensor_enabled = false;
 bool fsensor_ignore_error = true;
 bool fsensor_M600 = false;
 long prev_pos_e = 0;
 long err_cnt = 0;
 
-#define FSENS_ESTEPS 140  //extruder resolution [steps/mm]
-#define FSENS_MINDEL 280  //filament sensor min delta [steps] (3mm)
+#define FSENS_ESTEPS 280  //extruder resolution [steps/mm]
+#define FSENS_MINDEL 560  //filament sensor min delta [steps] (3mm)
 #define FSENS_MINFAC 3    //filament sensor minimum factor [count/mm]
 #define FSENS_MAXFAC 50   //filament sensor maximum factor [count/mm]
 #define FSENS_MAXERR 2    //filament sensor max error count
