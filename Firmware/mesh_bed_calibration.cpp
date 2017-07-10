@@ -2083,12 +2083,21 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         for (uint8_t mesh_point = 0; mesh_point < 3; ++ mesh_point)
             if (pts[mesh_point * 2 + 1] < Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH)
                 too_far_mask |= 1 << mesh_point;
-        result = calculate_machine_skew_and_offset_LS(pts, 9, bed_ref_points, vec_x, vec_y, cntr, verbosity_level);
+		
+		if (verbosity_level >= 20) {
+			SERIAL_ECHOPGM("Distance from min before calculate_machine skew and offset LS:");
+			MYSERIAL.print(int(too_far_mask));
+		}
+		
+		result = calculate_machine_skew_and_offset_LS(pts, 9, bed_ref_points, vec_x, vec_y, cntr, verbosity_level);
         if (result < 0) {
             SERIAL_ECHOLNPGM("Calculation of the machine skew and offset failed.");
             goto canceled;
         }
         // In case of success, update the too_far_mask from the calculated points.
+		too_far_mask = 0;
+		if(verbosity_level >= 20) SERIAL_ECHOPGM("Reseting too far mask.");
+
         for (uint8_t mesh_point = 0; mesh_point < 3; ++ mesh_point) {
             float y = vec_x[1] * pgm_read_float(bed_ref_points+mesh_point*2) + vec_y[1] * pgm_read_float(bed_ref_points+mesh_point*2+1) + cntr[1];
 			distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
@@ -2447,6 +2456,19 @@ void count_xyz_details() {
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 0)),
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 4))
 	};
+	SERIAL_ECHOPGM("cntr[0]:");
+	MYSERIAL.println(cntr[0]);
+	SERIAL_ECHOPGM("cntr[1]:");
+	MYSERIAL.println(cntr[1]);
+	SERIAL_ECHOPGM("vec_x[0]:");
+	MYSERIAL.println(vec_x[0]);
+	SERIAL_ECHOPGM("vec_x[1]:");
+	MYSERIAL.println(vec_x[1]);
+	SERIAL_ECHOPGM("vec_y[0]:");
+	MYSERIAL.println(vec_y[0]);
+	SERIAL_ECHOPGM("vec_y[1]:");
+	MYSERIAL.println(vec_y[1]);
+
 	a2 = -1 * asin(vec_y[0] / MACHINE_AXIS_SCALE_Y);
 /*	SERIAL_ECHOLNPGM("par:");
 	MYSERIAL.println(vec_y[0]);
