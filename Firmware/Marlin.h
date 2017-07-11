@@ -349,7 +349,3 @@ void temp_compensation_apply();
 void temp_compensation_start();
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
-
-extern void save_print_to_eeprom();
-extern void restore_print_from_eeprom();
-extern void position_menu();

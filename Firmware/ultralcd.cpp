@@ -4051,7 +4051,6 @@ void lcd_sdcard_stop()
 
 				lcd_return_to_status();
 				lcd_ignore_click(true);
-				
 				lcd_commands_type = LCD_COMMAND_STOP_PRINT;
             
                 // Turn off the print fan
@@ -4902,9 +4901,6 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
   for (c = &cmd[4]; *c; c++)
     *c = tolower(*c);
   enquecommand(cmd);
-  for (int i = 0; i < 8; i++) {
-	  eeprom_write_byte((uint8_t*)EEPROM_FILENAME+i, filename[i]);
-  }
   enquecommand_P(PSTR("M24"));
   lcd_return_to_status();
 }
