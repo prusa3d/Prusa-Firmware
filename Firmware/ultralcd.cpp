@@ -956,8 +956,6 @@ static void lcd_support_menu()
   START_MENU();
 
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
-  MENU_ITEM(submenu, PSTR("restore"), restore_print_from_eeprom);
-  MENU_ITEM(submenu, PSTR("position"), position_menu);
 
   // Ideally this block would be optimized out by the compiler.
   const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
