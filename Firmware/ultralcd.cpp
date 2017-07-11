@@ -930,7 +930,7 @@ static void lcd_support_menu()
   MENU_ITEM(back, PSTR(ELECTRONICS),lcd_main_menu);
   MENU_ITEM(back, PSTR(NOZZLE_TYPE),lcd_main_menu);
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
-  MENU_ITEM(back, PSTR("Date: "), lcd_main_menu);
+  MENU_ITEM(back, MSG_DATE, lcd_main_menu);
   MENU_ITEM(back, PSTR(__DATE__), lcd_main_menu);
 
   // Show the FlashAir IP address, if the card is available.
@@ -941,7 +941,7 @@ static void lcd_support_menu()
   }
   #ifndef MK1BP
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
-  MENU_ITEM(function, PSTR("XYZ cal. details"), lcd_service_mode_show_result);
+  if(!IS_SD_PRINTING) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
   #endif //MK1BP
   END_MENU();
 }
@@ -1352,16 +1352,16 @@ void lcd_service_mode_show_result() {
 	count_xyz_details();
 	lcd_update_enable(false);
 	lcd_implementation_clear();
-	lcd_printPGM(PSTR("Y distance from min:"));
-	lcd_print_at_PGM(0, 1, PSTR("Left:"));
-	lcd_print_at_PGM(0, 2, PSTR("Center:"));
-	lcd_print_at_PGM(0, 3, PSTR("Right:"));
+	lcd_printPGM(MSG_Y_DISTANCE_FROM_MIN);
+	lcd_print_at_PGM(0, 1, MSG_LEFT);
+	lcd_print_at_PGM(0, 2, MSG_CENTER);
+	lcd_print_at_PGM(0, 3, MSG_RIGHT);
 	for (int i = 0; i < 3; i++) {
 		if(distance_from_min[i] < 200) {
-			lcd_print_at_PGM(8, i + 1, PSTR(""));
+			lcd_print_at_PGM(11, i + 1, PSTR(""));
 			lcd.print(distance_from_min[i]);
-			lcd_print_at_PGM((distance_from_min[i] < 0) ? 14 : 13, i + 1, PSTR("mm"));
-		} else lcd_print_at_PGM(8, i + 1, PSTR("N/A"));
+			lcd_print_at_PGM((distance_from_min[i] < 0) ? 17 : 16, i + 1, PSTR("mm"));
+		} else lcd_print_at_PGM(11, i + 1, PSTR("N/A"));
 	}
 	delay_keep_alive(500);
 	while (!lcd_clicked()) {
@@ -1371,17 +1371,18 @@ void lcd_service_mode_show_result() {
 	lcd_implementation_clear();
 	
 
-	lcd_printPGM(PSTR("Measured skew: "));
+	lcd_printPGM(MSG_MEASURED_SKEW);
 	if (angleDiff < 100) {
+		lcd.setCursor(15, 0);
 		lcd.print(angleDiff * 180 / M_PI);
 		lcd.print(LCD_STR_DEGREE);
-	}else lcd_print_at_PGM(15, 0, PSTR("N/A"));
+	}else lcd_print_at_PGM(16, 0, PSTR("N/A"));
 	lcd_print_at_PGM(0, 1, PSTR("--------------------"));
-	lcd_print_at_PGM(0, 2, PSTR("Slight skew:"));
+	lcd_print_at_PGM(0, 2, MSG_SLIGHT_SKEW);
 	lcd_print_at_PGM(15, 2, PSTR(""));
 	lcd.print(bed_skew_angle_mild * 180 / M_PI);
 	lcd.print(LCD_STR_DEGREE);
-	lcd_print_at_PGM(0, 3, PSTR("Severe skew:"));
+	lcd_print_at_PGM(0, 3, MSG_SEVERE_SKEW);
 	lcd_print_at_PGM(15, 3, PSTR(""));
 	lcd.print(bed_skew_angle_extreme * 180 / M_PI);
 	lcd.print(LCD_STR_DEGREE);

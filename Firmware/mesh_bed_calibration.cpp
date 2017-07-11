@@ -2468,6 +2468,8 @@ void count_xyz_details() {
 	MYSERIAL.println(vec_y[0]);
 	SERIAL_ECHOPGM("vec_y[1]:");
 	MYSERIAL.println(vec_y[1]);
+	SERIAL_ECHOPGM("Calibration status:");
+	MYSERIAL.println(int(calibration_status()));
 
 	a2 = -1 * asin(vec_y[0] / MACHINE_AXIS_SCALE_Y);
 /*	SERIAL_ECHOLNPGM("par:");

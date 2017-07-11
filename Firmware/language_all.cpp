@@ -560,6 +560,21 @@ const char * const MSG_CARD_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CARD_MENU_DE
 };
 
+const char MSG_CENTER_EN[] PROGMEM = "Center:";
+const char MSG_CENTER_CZ[] PROGMEM = "Stred:";
+const char MSG_CENTER_IT[] PROGMEM = "Centro:";
+const char MSG_CENTER_ES[] PROGMEM = "Centro:";
+const char MSG_CENTER_PL[] PROGMEM = "Srodek:";
+const char MSG_CENTER_DE[] PROGMEM = "Mitte:";
+const char * const MSG_CENTER_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CENTER_EN,
+	MSG_CENTER_CZ,
+	MSG_CENTER_IT,
+	MSG_CENTER_ES,
+	MSG_CENTER_PL,
+	MSG_CENTER_DE
+};
+
 const char MSG_CHANGE_EXTR_EN[] PROGMEM = "Change extruder";
 const char MSG_CHANGE_EXTR_CZ[] PROGMEM = "Zmenit extruder";
 const char MSG_CHANGE_EXTR_IT[] PROGMEM = "Cambio estrusore.";
@@ -743,6 +758,21 @@ const char * const MSG_CURRENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CURRENT_ES,
 	MSG_CURRENT_PL,
 	MSG_CURRENT_DE
+};
+
+const char MSG_DATE_EN[] PROGMEM = "Date:";
+const char MSG_DATE_CZ[] PROGMEM = "Datum:";
+const char MSG_DATE_IT[] PROGMEM = "Data";
+const char MSG_DATE_ES[] PROGMEM = "Fecha:";
+const char MSG_DATE_PL[] PROGMEM = "Data:";
+const char MSG_DATE_DE[] PROGMEM = "Datum";
+const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_DATE_EN,
+	MSG_DATE_CZ,
+	MSG_DATE_IT,
+	MSG_DATE_ES,
+	MSG_DATE_PL,
+	MSG_DATE_DE
 };
 
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
@@ -1369,6 +1399,21 @@ const char * const MSG_LANGUAGE_SELECT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_LANGUAGE_SELECT_DE
 };
 
+const char MSG_LEFT_EN[] PROGMEM = "Left:";
+const char MSG_LEFT_CZ[] PROGMEM = "Levy:";
+const char MSG_LEFT_IT[] PROGMEM = "Sinistra:";
+const char MSG_LEFT_ES[] PROGMEM = "Izquierda:";
+const char MSG_LEFT_PL[] PROGMEM = "Lewy:";
+const char MSG_LEFT_DE[] PROGMEM = "Links:";
+const char * const MSG_LEFT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_LEFT_EN,
+	MSG_LEFT_CZ,
+	MSG_LEFT_IT,
+	MSG_LEFT_ES,
+	MSG_LEFT_PL,
+	MSG_LEFT_DE
+};
+
 const char MSG_LOADING_COLOR_EN[] PROGMEM = "Loading color";
 const char MSG_LOADING_COLOR_CZ[] PROGMEM = "Cisteni barvy";
 const char MSG_LOADING_COLOR_IT[] PROGMEM = "Caricando colore";
@@ -1582,6 +1627,21 @@ const char * const MSG_MARK_FIL_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_MAX_EN[] PROGMEM = " \002 Max";
 const char * const MSG_MAX_LANG_TABLE[1] PROGMEM = {
 	MSG_MAX_EN
+};
+
+const char MSG_MEASURED_SKEW_EN[] PROGMEM = "Measured skew:";
+const char MSG_MEASURED_SKEW_CZ[] PROGMEM = "Merene zkoseni:";
+const char MSG_MEASURED_SKEW_IT[] PROGMEM = "Incl. misurata:";
+const char MSG_MEASURED_SKEW_ES[] PROGMEM = "Inclin. medida:";
+const char MSG_MEASURED_SKEW_PL[] PROGMEM = "Zmier. sciecie:";
+const char MSG_MEASURED_SKEW_DE[] PROGMEM = "Schraeglauf:";
+const char * const MSG_MEASURED_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_MEASURED_SKEW_EN,
+	MSG_MEASURED_SKEW_CZ,
+	MSG_MEASURED_SKEW_IT,
+	MSG_MEASURED_SKEW_ES,
+	MSG_MEASURED_SKEW_PL,
+	MSG_MEASURED_SKEW_DE
 };
 
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1_EN[] PROGMEM = "Measuring reference height of calibration point";
@@ -2273,6 +2333,21 @@ const char * const MSG_RESUMING_PRINT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RESUMING_PRINT_DE
 };
 
+const char MSG_RIGHT_EN[] PROGMEM = "Right:";
+const char MSG_RIGHT_CZ[] PROGMEM = "Pravy:";
+const char MSG_RIGHT_IT[] PROGMEM = "Destra:";
+const char MSG_RIGHT_ES[] PROGMEM = "Derecha:";
+const char MSG_RIGHT_PL[] PROGMEM = "Prawy:";
+const char MSG_RIGHT_DE[] PROGMEM = "Rechts:";
+const char * const MSG_RIGHT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_RIGHT_EN,
+	MSG_RIGHT_CZ,
+	MSG_RIGHT_IT,
+	MSG_RIGHT_ES,
+	MSG_RIGHT_PL,
+	MSG_RIGHT_DE
+};
+
 const char MSG_SD_CANT_ENTER_SUBDIR_EN[] PROGMEM = "Cannot enter subdir: ";
 const char * const MSG_SD_CANT_ENTER_SUBDIR_LANG_TABLE[1] PROGMEM = {
 	MSG_SD_CANT_ENTER_SUBDIR_EN
@@ -2788,6 +2863,21 @@ const char * const MSG_SET_TEMPERATURE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SET_TEMPERATURE_DE
 };
 
+const char MSG_SEVERE_SKEW_EN[] PROGMEM = "Severe skew:";
+const char MSG_SEVERE_SKEW_CZ[] PROGMEM = "Tezke zkoseni:";
+const char MSG_SEVERE_SKEW_IT[] PROGMEM = "Inc. rilevante:";
+const char MSG_SEVERE_SKEW_ES[] PROGMEM = "Inclin. severa:";
+const char MSG_SEVERE_SKEW_PL[] PROGMEM = "Ostre sciecie:";
+const char MSG_SEVERE_SKEW_DE[] PROGMEM = "Schwerer Schr.:";
+const char * const MSG_SEVERE_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SEVERE_SKEW_EN,
+	MSG_SEVERE_SKEW_CZ,
+	MSG_SEVERE_SKEW_IT,
+	MSG_SEVERE_SKEW_ES,
+	MSG_SEVERE_SKEW_PL,
+	MSG_SEVERE_SKEW_DE
+};
+
 const char MSG_SHOW_END_STOPS_EN[] PROGMEM = "Show end stops";
 const char MSG_SHOW_END_STOPS_CZ[] PROGMEM = "Stav konc. spin.";
 const char MSG_SHOW_END_STOPS_IT[] PROGMEM = "Stato finecorsa";
@@ -2831,6 +2921,21 @@ const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_ES,
 	MSG_SILENT_MODE_ON_PL,
 	MSG_SILENT_MODE_ON_DE
+};
+
+const char MSG_SLIGHT_SKEW_EN[] PROGMEM = "Slight skew:";
+const char MSG_SLIGHT_SKEW_CZ[] PROGMEM = "Lehke zkoseni:";
+const char MSG_SLIGHT_SKEW_IT[] PROGMEM = "Incl. leggera:";
+const char MSG_SLIGHT_SKEW_ES[] PROGMEM = "Inclin. ligera:";
+const char MSG_SLIGHT_SKEW_PL[] PROGMEM = "Lekkie sciecie:";
+const char MSG_SLIGHT_SKEW_DE[] PROGMEM = "Leichter Schr.:";
+const char * const MSG_SLIGHT_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SLIGHT_SKEW_EN,
+	MSG_SLIGHT_SKEW_CZ,
+	MSG_SLIGHT_SKEW_IT,
+	MSG_SLIGHT_SKEW_ES,
+	MSG_SLIGHT_SKEW_PL,
+	MSG_SLIGHT_SKEW_DE
 };
 
 const char MSG_SOFTWARE_RESET_EN[] PROGMEM = " Software Reset";
@@ -3347,6 +3452,21 @@ const char * const MSG_WATCHDOG_RESET_LANG_TABLE[1] PROGMEM = {
 	MSG_WATCHDOG_RESET_EN
 };
 
+const char MSG_XYZ_DETAILS_EN[] PROGMEM = "XYZ cal. details";
+const char MSG_XYZ_DETAILS_CZ[] PROGMEM = "Detaily XYZ kal.";
+const char MSG_XYZ_DETAILS_IT[] PROGMEM = "XYZ Cal. dettagli";
+const char MSG_XYZ_DETAILS_ES[] PROGMEM = "Inform. XYZ cal.";
+const char MSG_XYZ_DETAILS_PL[] PROGMEM = "Szczegoly kal.XYZ";
+const char MSG_XYZ_DETAILS_DE[] PROGMEM = "XYZ Kal. Details";
+const char * const MSG_XYZ_DETAILS_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_XYZ_DETAILS_EN,
+	MSG_XYZ_DETAILS_CZ,
+	MSG_XYZ_DETAILS_IT,
+	MSG_XYZ_DETAILS_ES,
+	MSG_XYZ_DETAILS_PL,
+	MSG_XYZ_DETAILS_DE
+};
+
 const char MSG_X_MAX_EN[] PROGMEM = "x_max: ";
 const char * const MSG_X_MAX_LANG_TABLE[1] PROGMEM = {
 	MSG_X_MAX_EN
@@ -3370,6 +3490,21 @@ const char * const MSG_YES_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_YES_ES,
 	MSG_YES_PL,
 	MSG_YES_DE
+};
+
+const char MSG_Y_DISTANCE_FROM_MIN_EN[] PROGMEM = "Y distance from min:";
+const char MSG_Y_DISTANCE_FROM_MIN_CZ[] PROGMEM = "Y vzdalenost od min:";
+const char MSG_Y_DISTANCE_FROM_MIN_IT[] PROGMEM = "Distanza Y da min:";
+const char MSG_Y_DISTANCE_FROM_MIN_ES[] PROGMEM = "Dist. Y desde min:";
+const char MSG_Y_DISTANCE_FROM_MIN_PL[] PROGMEM = "Odleglosc Y od min.:";
+const char MSG_Y_DISTANCE_FROM_MIN_DE[] PROGMEM = "Y Entfernung vom min";
+const char * const MSG_Y_DISTANCE_FROM_MIN_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_Y_DISTANCE_FROM_MIN_EN,
+	MSG_Y_DISTANCE_FROM_MIN_CZ,
+	MSG_Y_DISTANCE_FROM_MIN_IT,
+	MSG_Y_DISTANCE_FROM_MIN_ES,
+	MSG_Y_DISTANCE_FROM_MIN_PL,
+	MSG_Y_DISTANCE_FROM_MIN_DE
 };
 
 const char MSG_Y_MAX_EN[] PROGMEM = "y_max: ";

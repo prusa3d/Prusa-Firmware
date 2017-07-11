@@ -43,7 +43,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
-#define EEPROM_VERSION "V2"
+#define EEPROM_VERSION "V1"
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings() 
@@ -51,7 +51,7 @@ void Config_StoreSettings()
   char ver[4]= "000";
   int i=EEPROM_OFFSET;
   EEPROM_WRITE_VAR(i,ver); // invalidate data first 
-  //EEPROM_WRITE_VAR(i,axis_steps_per_unit);
+  EEPROM_WRITE_VAR(i,axis_steps_per_unit);
   EEPROM_WRITE_VAR(i,max_feedrate);  
   EEPROM_WRITE_VAR(i,max_acceleration_units_per_sq_second);
   EEPROM_WRITE_VAR(i,acceleration);
@@ -274,7 +274,7 @@ void Config_RetrieveSettings()
     if (strncmp(ver,stored_ver,3) == 0)
     {
         // version number match
-        //EEPROM_READ_VAR(i,axis_steps_per_unit);
+        EEPROM_READ_VAR(i,axis_steps_per_unit);
         EEPROM_READ_VAR(i,max_feedrate);  
         EEPROM_READ_VAR(i,max_acceleration_units_per_sq_second);
         
@@ -350,6 +350,9 @@ void Config_RetrieveSettings()
 		calculate_volumetric_multipliers();
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
+		float tmp1[] = DEFAULT_AXIS_STEPS_PER_UNIT;
+		axis_steps_per_unit[3] = tmp1[3];
+
         SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("Stored settings retrieved");
     }
