@@ -139,7 +139,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
-//#define TMC2130_DEBUG_RD
+#define TMC2130_DEBUG_RD
 
 
 /*------------------------------------
