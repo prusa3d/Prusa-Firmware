@@ -4375,7 +4375,6 @@ static void lcd_selftest()
 	{
 #ifdef HAVE_TMC2130_DRIVERS
 		tmc2130_home_exit();
-		sg_homing_delay = 0;
 		enable_endstops(false);
 #endif
 		current_position[X_AXIS] = current_position[X_AXIS] + 14;
@@ -4439,8 +4438,6 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 #ifdef HAVE_TMC2130_DRIVERS
 	tmc2130_home_exit();
-	sg_homing_delay = 0;
-	tmc2130_axis_stalled[axis] = false;
 	enable_endstops(true);
 #endif
 
@@ -4461,7 +4458,6 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		st_synchronize();
 
 #ifdef HAVE_TMC2130_DRIVERS
-		sg_homing_delay = 0;
 		tmc2130_home_exit();
 #endif
 		//current_position[axis] = st_get_position_mm(axis);
@@ -4480,7 +4476,6 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 #endif
 			st_synchronize();
 #ifdef HAVE_TMC2130_DRIVERS
-			sg_homing_delay = 0;
 			tmc2130_home_exit();
 #endif
 			//current_position[axis] = st_get_position_mm(axis);
@@ -4496,7 +4491,6 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
 			//axis length
 #ifdef HAVE_TMC2130_DRIVERS
-			sg_homing_delay = 0;
 			tmc2130_home_exit();
 			enable_endstops(false);
 #endif
