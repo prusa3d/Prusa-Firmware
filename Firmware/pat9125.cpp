@@ -47,7 +47,7 @@ int pat9125_update()
 			int iDY = ucYL | ((ucXYH << 8) & 0xf00);
 			if (iDX & 0x800) iDX -= 4096;
 			if (iDY & 0x800) iDY -= 4096;
-//			pat9125_x += iDX;
+			pat9125_x += iDX;
 			pat9125_y += iDY;
 			return 1;
 		}

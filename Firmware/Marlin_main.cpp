@@ -1985,55 +1985,43 @@ inline void gcode_M900() {
     }
 #endif // LIN_ADVANCE
 
-void homeaxis(int axis) {
+void homeaxis(int axis)
+{
+	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homming
 #define HOMEAXIS_DO(LETTER) \
 ((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
-    
-    if (axis==X_AXIS ? HOMEAXIS_DO(X) :
-        axis==Y_AXIS ? HOMEAXIS_DO(Y) :
-        0) {
+    if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
+	{
         int axis_home_dir = home_dir(axis);
-        
 #ifdef HAVE_TMC2130_DRIVERS
 		tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
-        
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        
         destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis];
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-
 #ifdef HAVE_TMC2130_DRIVERS
-		sg_homing_delay = 0;
-		tmc2130_axis_stalled[axis] = false;
+		tmc2130_home_restart(axis);
 #endif
         st_synchronize();
-        
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-
 #ifdef HAVE_TMC2130_DRIVERS
-		sg_homing_delay = 0;
-		tmc2130_axis_stalled[axis] = false;
+		tmc2130_home_restart(axis);
 #endif
         st_synchronize();
-        
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
 #ifdef HAVE_TMC2130_DRIVERS
-        if (tmc2130_didLastHomingStall())
-            feedrate = homing_feedrate[axis];
-        else
-#endif
+		feedrate = homing_feedrate[axis];
+#else
 		feedrate = homing_feedrate[axis] / 2;
+#endif
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-
 #ifdef HAVE_TMC2130_DRIVERS
-		sg_homing_delay = 0;
-		tmc2130_axis_stalled[axis] = false;
+		tmc2130_home_restart(axis);
 #endif
         st_synchronize();
         axis_is_at_home(axis);
@@ -2041,29 +2029,24 @@ void homeaxis(int axis) {
         feedrate = 0.0;
         endstops_hit_on_purpose();
         axis_known_position[axis] = true;
-        
 #ifdef HAVE_TMC2130_DRIVERS
 		tmc2130_home_exit();
 #endif
     }
-    else if (axis==Z_AXIS ? HOMEAXIS_DO(Z) :
-             0) {
+    else if ((axis==Z_AXIS)?HOMEAXIS_DO(Z):0)
+	{
         int axis_home_dir = home_dir(axis);
-        
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        
         destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis];
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
-        
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
-        
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis]/2 ;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
@@ -2074,7 +2057,9 @@ void homeaxis(int axis) {
         endstops_hit_on_purpose();
         axis_known_position[axis] = true;
     }
+    enable_endstops(endstops_enabled);
 }
+
 /**/
 void home_xy()
 {
@@ -5996,14 +5981,32 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		}
 		break;
 	case 3:
+		MYSERIAL.print("fsensor_enable()");
 #ifdef HAVE_PAT9125_SENSOR
 		fsensor_enable();
 #endif
 		break;
 	case 4:
+		MYSERIAL.print("fsensor_disable()");
 #ifdef HAVE_PAT9125_SENSOR
 		fsensor_disable();
 #endif            
+		break;
+	case 5:
+		{
+/*			MYSERIAL.print("tmc2130_rd_MSCNT(0)=");
+			int val = tmc2130_rd_MSCNT(tmc2130_cs[0]);
+			MYSERIAL.println(val);*/
+			homeaxis(0);
+		}
+		break;
+	case 6:
+		{
+/*			MYSERIAL.print("tmc2130_rd_MSCNT(1)=");
+			int val = tmc2130_rd_MSCNT(tmc2130_cs[1]);
+			MYSERIAL.println(val);*/
+			homeaxis(1);
+		}
 		break;
 	}
   }
