@@ -29,8 +29,6 @@ extern void tmc2130_home_enter(uint8_t axes_mask);
 extern void tmc2130_home_exit();
 //restart homing (called from homeaxis befor move)
 extern void tmc2130_home_restart(uint8_t axis);
-//
-extern uint8_t tmc2130_didLastHomingStall();
 
 //set holding current for any axis (M911)
 extern void tmc2130_set_current_h(uint8_t axis, uint8_t current);

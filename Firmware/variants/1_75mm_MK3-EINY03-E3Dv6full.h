@@ -67,11 +67,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 //#define DEFAULT_MAX_FEEDRATE          {400, 400, 12, 120}    // (mm/sec)
 #define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {2000, 2000, 250, 5000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_MAX_ACCELERATION      {1000, 1000, 200, 5000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
-#define DEFAULT_ACCELERATION          1500   // X, Y, Z and E max acceleration in mm/s^2 for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  1500   // X, Y, Z and E max acceleration in mm/s^2 for retracts
-
+#define DEFAULT_ACCELERATION          1250   // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 //#define MAX_SILENT_FEEDRATE           2700   // 
@@ -83,8 +82,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEBUG_DISABLE_STARTMSGS //no startup messages 
 #define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
 #define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
+#define DEBUG_DISABLE_LCD_STATUS_LINE  //sw limits ignored
 #define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
-#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
+#define DEBUG_DISABLE_PRUSA_STATISTICS //disable prusa_statistics() mesages
+//#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
 //#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
 //#define DEBUG_BLINK_ACTIVE
 #endif
@@ -118,22 +119,22 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_PWM_FREQ_E  2         // PWMCONF
 */
 
-//#define TMC2130_PWM_DIV  683        // PWM frequency divider (1024, 683, 512, 410)
-#define TMC2130_PWM_DIV  512        // PWM frequency divider (1024, 683, 512, 410)
-#define TMC2130_PWM_CLK  (2 * TMC2130_FCLK / TMC2130_PWM_DIV) // PWM frequency (23.4kHz, 35.1kHz, 46.9kHz, 58.5kHz for 12MHz fclk)
+//#define TMC2130_PWM_DIV   683         // PWM frequency divider (1024, 683, 512, 410)
+#define TMC2130_PWM_DIV   512         // PWM frequency divider (1024, 683, 512, 410)
+#define TMC2130_PWM_CLK   (2 * TMC2130_FCLK / TMC2130_PWM_DIV) // PWM frequency (23.4kHz, 35.1kHz, 46.9kHz, 58.5kHz for 12MHz fclk)
 
-#define TMC2130_TPWMTHRS 0          // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
-#define TMC2130_THIGH 0             // THIGH - unused
+#define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
+#define TMC2130_THIGH     0         // THIGH - unused
 
 #define TMC2130_TCOOLTHRS 239       // TCOOLTHRS - coolstep treshold
 
 #define TMC2130_SG_HOMING     1     // stallguard homing
-#define TMC2130_SG_HOMING_SW  1     // stallguard "software" homing
+//#define TMC2130_SG_HOMING_SW  1     // stallguard "software" homing
 #define TMC2130_SG_THRS_X    30     // stallguard sensitivity for X axis
 #define TMC2130_SG_THRS_Y    30     // stallguard sensitivity for Y axis
-#define TMC2130_SG_DELTA     128    // stallguard delta [usteps] (minimum usteps before stallguard readed)
+#define TMC2130_SG_DELTA     128    // stallguard delta [usteps] (minimum usteps before stallguard readed - SW homing)
 
-//new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right
+//new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {3, 3, 5, 8}  // default holding currents for all axes
 #define TMC2130_CURRENTS_R {13, 13, 20, 20}  // default running currents for all axes
 
@@ -463,5 +464,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #else
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
+
+#define UVLO_Z_AXIS_SHIFT 2
 
 #endif //__CONFIGURATION_PRUSA_H

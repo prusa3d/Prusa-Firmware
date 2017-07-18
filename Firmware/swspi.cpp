@@ -12,7 +12,8 @@
 #endif //SWSPI_RPI
 
 #ifdef SWSPI_AVR
-	#include "Arduino.h"
+	//#include "Arduino.h"
+	#include "Marlin.h"
 	#define GPIO_INP(gpio) pinMode(gpio, INPUT)
 	#define GPIO_OUT(gpio) pinMode(gpio, OUTPUT)
 	#define GPIO_SET(gpio) digitalWrite(gpio, HIGH)
