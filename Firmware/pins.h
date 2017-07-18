@@ -329,36 +329,45 @@
 #define HAVE_TMC2130_DRIVERS
 #define HAVE_PAT9125_SENSOR
 
+#define SWSPI_MISO          16 //RX2
+#define SWSPI_MOSI          16 //RX2
+#define SWSPI_SCK           17 //TX2
+#define SWSPI_CS            20 //SDA
+
+#define X_TMC2130_CS        41
+#define X_TMC2130_DIAG      40
 #define X_STEP_PIN          37
 #define X_DIR_PIN           49
-#define X_MIN_PIN           12
-#define X_MAX_PIN           30
-//#define X_MIN_PIN           64 //TMC2130 SG homing
-//#define X_MAX_PIN           64 //TMC2130 SG homing
+//#define X_MIN_PIN           12
+//#define X_MAX_PIN           30
+#define X_MIN_PIN           X_TMC2130_DIAG
+#define X_MAX_PIN           X_TMC2130_DIAG
 #define X_ENABLE_PIN        29
-#define X_MS1_PIN -1
-#define X_MS2_PIN -1
-#define X_TMC2130_CS 41
+#define X_MS1_PIN           -1
+#define X_MS2_PIN           -1
 
+#define Y_TMC2130_CS        39
+#define Y_TMC2130_DIAG      69
 #define Y_STEP_PIN          36
 #define Y_DIR_PIN           48
-#define Y_MIN_PIN           11
-#define Y_MAX_PIN           24
-//#define Y_MIN_PIN           69 //TMC2130 SG homing
-//#define Y_MAX_PIN           69 //TMC2130 SG homing
+//#define Y_MIN_PIN           11
+//#define Y_MAX_PIN           24
+#define Y_MIN_PIN           Y_TMC2130_DIAG
+#define Y_MAX_PIN           Y_TMC2130_DIAG
 #define Y_ENABLE_PIN        28
-#define Y_MS1_PIN -1
-#define Y_MS2_PIN -1
-#define Y_TMC2130_CS 39
+#define Y_MS1_PIN           -1
+#define Y_MS2_PIN           -1
 
+#define Z_TMC2130_CS        67
+#define Z_TMC2130_DIAG      68
 #define Z_STEP_PIN          35
 #define Z_DIR_PIN           47
 #define Z_MIN_PIN           10
 #define Z_MAX_PIN           23
+//#define Z_MAX_PIN           Z_TMC2130_DIAG
 #define Z_ENABLE_PIN        27
-#define Z_MS1_PIN -1
-#define Z_MS2_PIN -1
-#define Z_TMC2130_CS 67
+#define Z_MS1_PIN           -1
+#define Z_MS2_PIN           -1
 
 #define HEATER_BED_PIN       4
 #define TEMP_BED_PIN         2
@@ -370,19 +379,20 @@
 #define TEMP_1_PIN           1
 
 #ifdef BARICUDA
-#define HEATER_2_PIN       6
+#define HEATER_2_PIN         6
 #else
-#define HEATER_2_PIN      -1
+#define HEATER_2_PIN        -1
 #endif
 
 #define TEMP_2_PIN          -1
 
+#define E0_TMC2130_CS       66
+#define E0_TMC2130_DIAG     65
 #define E0_STEP_PIN         34
 #define E0_DIR_PIN          43
 #define E0_ENABLE_PIN       26
-#define E0_MS1_PIN -1
-#define E0_MS2_PIN -1
-#define E0_TMC2130_CS 66
+#define E0_MS1_PIN          -1
+#define E0_MS2_PIN          -1
 
 #define MOTOR_CURRENT_PWM_XY_PIN 46
 #define MOTOR_CURRENT_PWM_Z_PIN  45
@@ -391,34 +401,34 @@
 #define SDSS                53
 #define LED_PIN             13
 #define FAN_PIN              6
-#define FAN_1_PIN            -1
+#define FAN_1_PIN           -1
 #define PS_ON_PIN           -1
 #define KILL_PIN            -1  // 80 with Smart Controller LCD
 #define SUICIDE_PIN         -1  // PIN that has to be turned on right after start, to keep power flowing.
 
 #ifdef ULTRA_LCD
 
-#define KILL_PIN          32
+#define KILL_PIN            32
 
 #ifdef NEWPANEL
 
-#define BEEPER      84  // Beeper on AUX-4
-#define LCD_PINS_RS     82
-#define LCD_PINS_ENABLE 18
-#define LCD_PINS_D4     19
-#define LCD_PINS_D5     70
-#define LCD_PINS_D6     85
-#define LCD_PINS_D7     71
+#define BEEPER              84  // Beeper on AUX-4
+#define LCD_PINS_RS         82
+#define LCD_PINS_ENABLE     18
+#define LCD_PINS_D4         19
+#define LCD_PINS_D5         70
+#define LCD_PINS_D6         85
+#define LCD_PINS_D7         71
 
 //buttons are directly attached using AUX-2
-#define BTN_EN1         72
-#define BTN_EN2         14
-#define BTN_ENC          9  // the click
+#define BTN_EN1             72
+#define BTN_EN2             14
+#define BTN_ENC              9  // the click
 
-#define SDCARDDETECT   15
+#define SDCARDDETECT        15
 
-#define TACH_0 81
-#define TACH_1 80 
+#define TACH_0              81
+#define TACH_1              80 
 
 #endif //NEWPANEL
 #endif //ULTRA_LCD
@@ -440,36 +450,44 @@
 #define HAVE_TMC2130_DRIVERS
 #define HAVE_PAT9125_SENSOR
 
+#define SWSPI_MISO          21 //SCL
+#define SWSPI_MOSI          21 //SCL
+#define SWSPI_SCK           62 //PK0
+#define SWSPI_CS            20 //SDA
+
+#define X_TMC2130_CS        41
+#define X_TMC2130_DIAG      64 // !!! changed from 40 (EINY03)
 #define X_STEP_PIN          37
 #define X_DIR_PIN           49
-#define X_MIN_PIN           12
-#define X_MAX_PIN           30
-//#define X_MIN_PIN           64 //TMC2130 SG homing
-//#define X_MAX_PIN           64 //TMC2130 SG homing
+//#define X_MIN_PIN           12
+//#define X_MAX_PIN           30
+#define X_MIN_PIN           X_TMC2130_DIAG
+#define X_MAX_PIN           X_TMC2130_DIAG
 #define X_ENABLE_PIN        29
 #define X_MS1_PIN -1
 #define X_MS2_PIN -1
-#define X_TMC2130_CS 41
 
+#define Y_TMC2130_CS        39
+#define Y_TMC2130_DIAG      69
 #define Y_STEP_PIN          36
 #define Y_DIR_PIN           48
-#define Y_MIN_PIN           11
-#define Y_MAX_PIN           24
-//#define Y_MIN_PIN           69 //TMC2130 SG homing
-//#define Y_MAX_PIN           69 //TMC2130 SG homing
+//#define Y_MIN_PIN           11
+//#define Y_MAX_PIN           24
+#define Y_MIN_PIN           Y_TMC2130_DIAG
+#define Y_MAX_PIN           Y_TMC2130_DIAG
 #define Y_ENABLE_PIN        28
-#define Y_MS1_PIN -1
-#define Y_MS2_PIN -1
-#define Y_TMC2130_CS 39
+#define Y_MS1_PIN           -1
+#define Y_MS2_PIN           -1
 
+#define Z_TMC2130_CS        67
 #define Z_STEP_PIN          35
 #define Z_DIR_PIN           47
 #define Z_MIN_PIN           10
 #define Z_MAX_PIN           23
+//#define Z_MAX_PIN           Z_TMC2130_DIAG
 #define Z_ENABLE_PIN        27
-#define Z_MS1_PIN -1
-#define Z_MS2_PIN -1
-#define Z_TMC2130_CS 67
+#define Z_MS1_PIN           -1
+#define Z_MS2_PIN           -1
 
 #define HEATER_BED_PIN       4
 #define TEMP_BED_PIN         2
@@ -481,19 +499,19 @@
 #define TEMP_1_PIN           1
 
 #ifdef BARICUDA
-#define HEATER_2_PIN       6
+#define HEATER_2_PIN         6
 #else
-#define HEATER_2_PIN      -1
+#define HEATER_2_PIN        -1
 #endif
 
 #define TEMP_2_PIN          -1
 
+#define E0_TMC2130_CS       66
 #define E0_STEP_PIN         34
 #define E0_DIR_PIN          43
 #define E0_ENABLE_PIN       26
-#define E0_MS1_PIN -1
-#define E0_MS2_PIN -1
-#define E0_TMC2130_CS 66
+#define E0_MS1_PIN          -1
+#define E0_MS2_PIN          -1
 
 #define MOTOR_CURRENT_PWM_XY_PIN 46
 #define MOTOR_CURRENT_PWM_Z_PIN  45
@@ -502,7 +520,7 @@
 #define SDSS                77
 #define LED_PIN             13
 #define FAN_PIN              6
-#define FAN_1_PIN            -1
+#define FAN_1_PIN           -1
 #define PS_ON_PIN           -1
 #define KILL_PIN            -1  // 80 with Smart Controller LCD
 #define SUICIDE_PIN         -1  // PIN that has to be turned on right after start, to keep power flowing.
@@ -514,25 +532,25 @@
 #ifdef NEWPANEL
 
 
-#define BEEPER      84  // Beeper on AUX-4
-#define LCD_PINS_RS     82
-//#define LCD_PINS_ENABLE 18
-//#define LCD_PINS_D4     19
-#define LCD_PINS_ENABLE 61
-#define LCD_PINS_D4		59
-#define LCD_PINS_D5     70
-#define LCD_PINS_D6     85
-#define LCD_PINS_D7     71
+#define BEEPER              84  // Beeper on AUX-4
+#define LCD_PINS_RS         82
+//#define LCD_PINS_ENABLE   18
+//#define LCD_PINS_D4       19
+#define LCD_PINS_ENABLE     61
+#define LCD_PINS_D4	        59
+#define LCD_PINS_D5         70
+#define LCD_PINS_D6         85
+#define LCD_PINS_D7         71
 
 //buttons are directly attached using AUX-2
-#define BTN_EN1         72
-#define BTN_EN2         14
-#define BTN_ENC          9  // the click
+#define BTN_EN1             72
+#define BTN_EN2             14
+#define BTN_ENC              9  // the click
 
-#define SDCARDDETECT   15
+#define SDCARDDETECT        15
 
-#define TACH_0 79
-#define TACH_1 80 
+#define TACH_0              79
+#define TACH_1              80 
 
 #endif //NEWPANEL
 #endif //ULTRA_LCD
