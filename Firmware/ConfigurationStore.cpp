@@ -273,13 +273,12 @@ void Config_PrintSettings()
 bool Config_RetrieveSettings()
 {
     int i=EEPROM_OFFSET;
-	bool settings_from_eeprom;
+	bool previous_settings_retrieved = true; 
     char stored_ver[4];
     char ver[4]=EEPROM_VERSION;
     EEPROM_READ_VAR(i,stored_ver); //read stored version
-	SERIAL_ECHOLNPGM("Stored EEPROM version:");
-	MYSERIAL.println(stored_ver);
-    //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << stored_ver << "]");
+
+	//  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << stored_ver << "]");
     if (strncmp(ver,stored_ver,3) == 0)
     {
         // version number match
@@ -362,17 +361,23 @@ bool Config_RetrieveSettings()
 
 		SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("Stored settings retrieved");
-		settings_from_eeprom = true;
     }
     else
     {
         Config_ResetDefault();
-		settings_from_eeprom = false;
+
+		//Return false to inform user that eeprom version was changed and firmware is using default hardcoded settings now.
+		//In case that storing to eeprom was not used yet, do not inform user that hardcoded settings are used.
+		if (eeprom_read_byte((uint8_t *)EEPROM_OFFSET) != 0xFF ||
+			eeprom_read_byte((uint8_t *)EEPROM_OFFSET + 1) != 0xFF ||
+			eeprom_read_byte((uint8_t *)EEPROM_OFFSET + 2) != 0xFF) {
+			previous_settings_retrieved = false;
+		}
     }
     #ifdef EEPROM_CHITCHAT
       Config_PrintSettings();
     #endif
-	  return settings_from_eeprom;
+	  return previous_settings_retrieved;
 }
 #endif
 

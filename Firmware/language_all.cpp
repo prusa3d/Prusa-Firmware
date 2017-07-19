@@ -775,7 +775,7 @@ const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DATE_DE
 };
 
-const char MSG_DEFAULT_SETTINGS_LOADED_EN[] PROGMEM = "Hardcoded default settings loaded";
+const char MSG_DEFAULT_SETTINGS_LOADED_EN[] PROGMEM = "Default settings loaded";
 const char * const MSG_DEFAULT_SETTINGS_LOADED_LANG_TABLE[1] PROGMEM = {
 	MSG_DEFAULT_SETTINGS_LOADED_EN
 };
