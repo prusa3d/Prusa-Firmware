@@ -775,6 +775,11 @@ const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DATE_DE
 };
 
+const char MSG_DEFAULT_SETTINGS_LOADED_EN[] PROGMEM = "Hardcoded default settings loaded";
+const char * const MSG_DEFAULT_SETTINGS_LOADED_LANG_TABLE[1] PROGMEM = {
+	MSG_DEFAULT_SETTINGS_LOADED_EN
+};
+
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
 const char MSG_DISABLE_STEPPERS_CZ[] PROGMEM = "Vypnout motory";
 const char MSG_DISABLE_STEPPERS_IT[] PROGMEM = "Disabilit motori";

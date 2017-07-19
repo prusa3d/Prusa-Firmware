@@ -43,7 +43,13 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
-#define EEPROM_VERSION "V1"
+#ifdef SNMM
+	#define EEPROM_VERSION "V1M"
+#else
+	#define EEPROM_VERSION "V1"
+#endif 
+
+
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings() 
@@ -264,12 +270,15 @@ void Config_PrintSettings()
 
 
 #ifdef EEPROM_SETTINGS
-void Config_RetrieveSettings()
+bool Config_RetrieveSettings()
 {
     int i=EEPROM_OFFSET;
+	bool settings_from_eeprom;
     char stored_ver[4];
     char ver[4]=EEPROM_VERSION;
     EEPROM_READ_VAR(i,stored_ver); //read stored version
+	SERIAL_ECHOLNPGM("Stored EEPROM version:");
+	MYSERIAL.println(stored_ver);
     //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << stored_ver << "]");
     if (strncmp(ver,stored_ver,3) == 0)
     {
@@ -350,19 +359,20 @@ void Config_RetrieveSettings()
 		calculate_volumetric_multipliers();
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
-		float tmp1[] = DEFAULT_AXIS_STEPS_PER_UNIT;
-		axis_steps_per_unit[3] = tmp1[3];
 
-        SERIAL_ECHO_START;
+		SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("Stored settings retrieved");
+		settings_from_eeprom = true;
     }
     else
     {
         Config_ResetDefault();
+		settings_from_eeprom = false;
     }
     #ifdef EEPROM_CHITCHAT
       Config_PrintSettings();
     #endif
+	  return settings_from_eeprom;
 }
 #endif
 
