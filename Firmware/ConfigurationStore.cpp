@@ -44,7 +44,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
 #ifdef SNMM
-	#define EEPROM_VERSION "V1M"
+	#define EEPROM_VERSION "M1"
 #else
 	#define EEPROM_VERSION "V1"
 #endif 
