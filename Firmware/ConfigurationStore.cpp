@@ -43,7 +43,13 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
-#define EEPROM_VERSION "V1"
+#ifdef SNMM
+	#define EEPROM_VERSION "M1"
+#else
+	#define EEPROM_VERSION "V1"
+#endif 
+
+
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings() 
@@ -264,13 +270,15 @@ void Config_PrintSettings()
 
 
 #ifdef EEPROM_SETTINGS
-void Config_RetrieveSettings()
+bool Config_RetrieveSettings()
 {
     int i=EEPROM_OFFSET;
+	bool previous_settings_retrieved = true; 
     char stored_ver[4];
     char ver[4]=EEPROM_VERSION;
     EEPROM_READ_VAR(i,stored_ver); //read stored version
-    //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << stored_ver << "]");
+
+	//  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << stored_ver << "]");
     if (strncmp(ver,stored_ver,3) == 0)
     {
         // version number match
@@ -350,19 +358,26 @@ void Config_RetrieveSettings()
 		calculate_volumetric_multipliers();
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
-		float tmp1[] = DEFAULT_AXIS_STEPS_PER_UNIT;
-		axis_steps_per_unit[3] = tmp1[3];
 
-        SERIAL_ECHO_START;
+		SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("Stored settings retrieved");
     }
     else
     {
         Config_ResetDefault();
+
+		//Return false to inform user that eeprom version was changed and firmware is using default hardcoded settings now.
+		//In case that storing to eeprom was not used yet, do not inform user that hardcoded settings are used.
+		if (eeprom_read_byte((uint8_t *)EEPROM_OFFSET) != 0xFF ||
+			eeprom_read_byte((uint8_t *)EEPROM_OFFSET + 1) != 0xFF ||
+			eeprom_read_byte((uint8_t *)EEPROM_OFFSET + 2) != 0xFF) {
+			previous_settings_retrieved = false;
+		}
     }
     #ifdef EEPROM_CHITCHAT
       Config_PrintSettings();
     #endif
+	  return previous_settings_retrieved;
 }
 #endif
 
