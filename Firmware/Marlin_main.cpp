@@ -4341,7 +4341,13 @@ Sigma_Exit:
           }
         }
       }
-      break;
+	  break;
+	case 110:   // M110 - reset line pos
+		if (code_seen('N'))
+			gcode_LastN = code_value_long();
+		else
+			gcode_LastN = 0;
+		break;
     case 115: // M115
       if (code_seen('V')) {
           // Report the Prusa version number.
