@@ -30,7 +30,9 @@
   void lcd_sdcard_pause();
   void lcd_print_stop();
   void prusa_statistics(int _message);
+  void prusa_statistics(int _message, uint8_t _col_nr = 0);
   void lcd_confirm_print();
+  unsigned char lcd_choose_color();
 void lcd_mylang();
   bool lcd_detected(void);
 
