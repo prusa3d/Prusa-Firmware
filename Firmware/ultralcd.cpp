@@ -2042,7 +2042,7 @@ void lcd_diag_show_end_stops()
 
 
 
-void prusa_statistics(int _message) {
+void prusa_statistics(int _message, uint8_t _fil_nr) {
 	
 
 	switch (_message)
@@ -2111,14 +2111,18 @@ void prusa_statistics(int _message) {
 
 		break;
 	case 4:		// print succesfull
-		SERIAL_ECHOLN("{[RES:1]");
+		SERIAL_ECHO("{[RES:1][FIL:");
+		MYSERIAL.print(int(_fil_nr));
+		SERIAL_ECHO("]");
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 5:		// print not succesfull
-		SERIAL_ECHOLN("{[RES:0]");
+		SERIAL_ECHO("{[RES:0][FIL:");
+		MYSERIAL.print(int(_fil_nr));
+		SERIAL_ECHO("]");
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
@@ -3603,8 +3607,91 @@ static void lcd_farm_no()
 
 }
 
+
+unsigned char lcd_choose_color() {
+	//function returns index of currently chosen item
+	//following part can be modified from 2 to 255 items:
+	//-----------------------------------------------------
+	unsigned char items_no = 2;
+	const char *item[items_no];
+	item[0] = "Black";
+	item[1] = "Orange";
+	//-----------------------------------------------------
+	unsigned char active_rows;
+	static int first = 0;
+	int enc_dif = 0;
+	unsigned char cursor_pos = 1;
+	enc_dif = encoderDiff;
+	lcd_implementation_clear();
+	lcd.setCursor(0, 1);
+	lcd.print(">");
+
+	active_rows = items_no < 3 ? items_no : 3;
+
+	while (1) {
+		lcd_print_at_PGM(0, 0, PSTR("Choose color:"));
+		for (int i = 0; i < active_rows; i++) {
+			lcd.setCursor(1, i+1);
+			lcd.print(item[first + i]);
+		}
+
+		manage_heater();
+		manage_inactivity(true);
+
+		if (abs((enc_dif - encoderDiff)) > 4) {
+
+			if ((abs(enc_dif - encoderDiff)) > 1) {
+				if (enc_dif > encoderDiff) {
+					cursor_pos--;
+				}
+
+				if (enc_dif < encoderDiff) {
+					cursor_pos++;
+				}
+
+				if (cursor_pos > active_rows) {
+					cursor_pos = active_rows;
+					if (first < items_no - active_rows) {
+						first++;
+						lcd_implementation_clear();
+					}
+				}
+
+				if (cursor_pos < 1) {
+					cursor_pos = 1;
+					if (first > 0) {
+						first--;
+						lcd_implementation_clear();
+					}
+				}
+				lcd.setCursor(0, 1);
+				lcd.print(" ");
+				lcd.setCursor(0, 2);
+				lcd.print(" ");
+				lcd.setCursor(0, 3);
+				lcd.print(" ");
+				lcd.setCursor(0, cursor_pos);
+				lcd.print(">");
+				enc_dif = encoderDiff;
+				delay(100);
+			}
+
+		}
+
+		if (lcd_clicked()) {
+			while (lcd_clicked());
+			delay(10);
+			while (lcd_clicked());
+			return(cursor_pos + first - 1);
+		}
+
+	}
+
+}
+
 void lcd_confirm_print()
 {
+	uint8_t filament_type;
 	int enc_dif = 0;
 	int cursor_pos = 1;
 	int _ret = 0;
@@ -3653,14 +3740,14 @@ void lcd_confirm_print()
 			if (cursor_pos == 1)
 			{
 				_ret = 1;
-				prusa_statistics(20);
-				prusa_statistics(4);
+				filament_type = lcd_choose_color();
+				prusa_statistics(4, filament_type);
 			}
 			if (cursor_pos == 2)
 			{
 				_ret = 2;
-				prusa_statistics(20);
-				prusa_statistics(5);
+				filament_type = lcd_choose_color();
+				prusa_statistics(5, filament_type);
 			}
 		}
 
