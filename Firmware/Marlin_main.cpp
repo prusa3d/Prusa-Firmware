@@ -1385,7 +1385,7 @@ void get_command()
         continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
-       (serial_char == ':' && comment_mode == false) ||
+		(serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1) )
     {
       if(!serial_count) { //if empty line
@@ -1394,7 +1394,7 @@ void get_command()
       }
       cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
       if(!comment_mode){
-        comment_mode = false; //for new command
+		comment_mode = false; //for new command
         if ((strchr_pointer = strstr(cmdbuffer+bufindw+1, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL) {
             if ((strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL)
             {
