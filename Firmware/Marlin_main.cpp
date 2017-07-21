@@ -1394,8 +1394,7 @@ void get_command()
       }
       cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
       if(!comment_mode){
-		comment_mode = false; //for new command
-        if ((strchr_pointer = strstr(cmdbuffer+bufindw+1, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL) {
+		if ((strchr_pointer = strstr(cmdbuffer+bufindw+1, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL) {
             if ((strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL)
             {
             // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
