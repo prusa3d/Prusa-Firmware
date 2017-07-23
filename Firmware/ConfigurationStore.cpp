@@ -349,9 +349,12 @@ void Config_RetrieveSettings()
 #endif
 		calculate_volumetric_multipliers();
 		// Call updatePID (similar to when we have processed M301)
+
+ #ifdef SNMM
 		updatePID();
 		float tmp1[] = DEFAULT_AXIS_STEPS_PER_UNIT;
 		axis_steps_per_unit[3] = tmp1[3];
+#endif
 
         SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("Stored settings retrieved");
