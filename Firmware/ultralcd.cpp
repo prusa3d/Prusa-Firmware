@@ -975,6 +975,7 @@ static void lcd_support_menu()
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
   MENU_ITEM(back, MSG_DATE, lcd_main_menu);
   MENU_ITEM(back, PSTR(__DATE__), lcd_main_menu);
+  MENU_ITEM(back, PSTR(__TIME__), lcd_main_menu);
   MENU_ITEM(back, PSTR(STRING_CONFIG_H_AUTHOR), lcd_main_menu);
 
   // Show the FlashAir IP address, if the card is available.
@@ -2067,13 +2068,15 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
 
 static void lcd_show_end_stops() {
     lcd.setCursor(0, 0);
-    lcd_printPGM((PSTR("End stops diag")));
+    lcd_printPGM((PSTR("End stops/sens diag")));
     lcd.setCursor(0, 1);
     lcd_printPGM((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("X1")) : (PSTR("X0")));
     lcd.setCursor(0, 2);
     lcd_printPGM((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Y1")) : (PSTR("Y0")));
     lcd.setCursor(0, 3);
     lcd_printPGM((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Z1")) : (PSTR("Z0")));
+	lcd.setCursor(4, 1);
+	lcd_printPGM((READ(FR_SENS) ^ FR_SENS_INVERTING == 1) ? (PSTR("FR_S1")) : (PSTR("FR_S0")));
 }
 
 static void menu_show_end_stops() {
