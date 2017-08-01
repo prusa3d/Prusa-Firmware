@@ -199,6 +199,7 @@
 // M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
 // M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 // M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
+// M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
 // M907 - Set digital trimpot motor current using axis codes.
 // M908 - Control digital trimpot directly.
 // M350 - Set microstepping mode.
@@ -1615,6 +1616,15 @@ static inline long    code_value_long()    { return strtol(strchr_pointer+1, NUL
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
 static inline uint8_t code_value_uint8()   { return uint8_t(strtol(strchr_pointer+1, NULL, 10)); };
 
+static inline float code_value_float() {
+  char* e = strchr(strchr_pointer, 'E');
+  if (!e) return strtod(strchr_pointer + 1, NULL);
+  *e = 0;
+  float ret = strtod(strchr_pointer + 1, NULL);
+  *e = 'E';
+  return ret;
+}
+
 #define DEFINE_PGM_READ_ANY(type, reader)       \
     static inline type pgm_read_any(const type *p)  \
     { return pgm_read_##reader##_near(p); }
@@ -1799,6 +1809,39 @@ static float probe_pt(float x, float y, float z_before) {
 }
 
 #endif // #ifdef ENABLE_AUTO_BED_LEVELING
+
+#ifdef LIN_ADVANCE
+  /**
+   * M900: Set and/or Get advance K factor and WH/D ratio
+   *
+   *  K<factor>                  Set advance K factor
+   *  R<ratio>                   Set ratio directly (overrides WH/D)
+   *  W<width> H<height> D<diam> Set ratio from WH/D
+   */
+  inline void gcode_M900() {
+    st_synchronize();
+
+    const float newK = code_seen('K') ? code_value_float() : -1;
+    if (newK >= 0) extruder_advance_k = newK;
+
+    float newR = code_seen('R') ? code_value_float() : -1;
+    if (newR < 0) {
+      const float newD = code_seen('D') ? code_value_float() : -1,
+                  newW = code_seen('W') ? code_value_float() : -1,
+                  newH = code_seen('H') ? code_value_float() : -1;
+      if (newD >= 0 && newW >= 0 && newH >= 0)
+        newR = newD ? (newW * newH) / (sq(newD * 0.5) * M_PI) : 0;
+    }
+    if (newR >= 0) advance_ed_ratio = newR;
+
+    SERIAL_ECHO_START;
+    SERIAL_ECHOPGM("Advance K=");
+    SERIAL_ECHOLN(extruder_advance_k);
+    SERIAL_ECHOPGM(" E/D=");
+    const float ratio = advance_ed_ratio;
+    if (ratio) SERIAL_ECHOLN(ratio); else SERIAL_ECHOLNPGM("Auto");
+  }
+#endif // LIN_ADVANCE
 
 void homeaxis(int axis) {
 #define HOMEAXIS_DO(LETTER) \
@@ -5357,6 +5400,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	}
 	break;
 
+    #ifdef LIN_ADVANCE
+      case 900: // M900: Set LIN_ADVANCE options.
+        gcode_M900();
+        break;
+    #endif
+      
     case 907: // M907 Set digital trimpot motor current using axis codes.
     {
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
@@ -5508,7 +5557,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  }
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 #ifdef SNMM
-		  snmm_extruder = tmp_extruder;
+      #ifdef LIN_ADVANCE
+        if (snmm_extruder != tmp_extruder)
+          clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
+      #endif
+      
+      snmm_extruder = tmp_extruder;
 
 		  st_synchronize();
 		  delay(100);
