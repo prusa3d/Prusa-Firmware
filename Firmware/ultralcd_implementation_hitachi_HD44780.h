@@ -804,7 +804,11 @@ static void lcd_implementation_status_screen()
     lcd_printPGM(PSTR("  "));
 
 
-    //Print status line
+#ifdef DEBUG_DISABLE_LCD_STATUS_LINE
+	return;
+#endif //DEBUG_DISABLE_LCD_STATUS_LINE
+
+	//Print status line
     lcd.setCursor(0, 3);
 
     // If heating in progress, set flag

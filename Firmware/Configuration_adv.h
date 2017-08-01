@@ -68,7 +68,11 @@
 // When first starting the main fan, run it at full speed for the
 // given number of milliseconds.  This gets the fan spinning reliably
 // before setting a PWM value. (Does not work with software PWM for fan on Sanguinololu)
-#define FAN_KICKSTART_TIME 1000
+// RP: new implementation - long pulse at 100% when starting, short pulse  
+#define FAN_KICK_START_TIME 800  //when starting from zero (long kick time)
+#define FAN_KICK_RUN_MINPWM 25   //PWM treshold for short kicks
+#define FAN_KICK_IDLE_TIME  4000 //delay between short kicks
+#define FAN_KICK_RUN_TIME   50   //short kick time
 
 
 
