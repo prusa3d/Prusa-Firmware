@@ -1036,6 +1036,7 @@ void setup()
 	SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
 	SERIAL_ECHOPGM("Compiled: ");
 	SERIAL_ECHOLNPGM(__DATE__);
+	SERIAL_ECHOLNPGM(__TIME__);
 #endif
 #endif
 
@@ -4484,6 +4485,15 @@ Sigma_Exit:
       #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MAX);
         if(READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+        SERIAL_PROTOCOLLN("");
+      #endif
+	  #if defined(FR_SENS) && FR_SENS > -1
+        SERIAL_PROTOCOLRPGM(MSG_Y_MAX);
+        if(READ(FR_SENS)^FR_SENS_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);

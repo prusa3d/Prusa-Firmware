@@ -179,6 +179,7 @@ ADDITIONAL FEATURES SETTINGS
 
 // Define Prusa filament runout sensor
 #define FILAMENT_RUNOUT_SUPPORT
+const bool FR_SENS_INVERTING = true; // set to true to invert the logic of the filament runout.
 
 #ifdef FILAMENT_RUNOUT_SUPPORT
 #define FILAMENT_RUNOUT_SENSOR 1

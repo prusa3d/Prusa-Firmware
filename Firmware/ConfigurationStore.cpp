@@ -358,9 +358,8 @@ bool Config_RetrieveSettings()
 		calculate_volumetric_multipliers();
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
-		float tmp1[] = DEFAULT_AXIS_STEPS_PER_UNIT;
-		axis_steps_per_unit[3] = tmp1[3];
-        SERIAL_ECHO_START;
+
+		SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("Stored settings retrieved");
     }
     else

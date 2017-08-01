@@ -725,9 +725,12 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 Z15 F1500"));
 			st_synchronize();
 			#ifdef SNMM
-			lcd_commands_step = 8;
+			lcd_commands_step = 7;
 			#else
-			lcd_commands_step = 6;
+			lcd_commands_step = 5;
+			#endif
+			#ifdef DEFAULT_PID_BED_TEMP
+			lcd_commands_step = lcd_commands_step+1
 			#endif
 		}
 
@@ -773,7 +776,7 @@ void lcd_commands()
 			lcd_commands_type = 0;
 		}
 	}
-
+#ifdef DEFAULT_PID_BED_TEMP
 	if (lcd_commands_type == LCD_COMMAND_PID_BED) {
 		char cmd1[30];
 		
@@ -815,7 +818,7 @@ void lcd_commands()
 			lcd_commands_type = 0;
 		}
 	}
-
+#endif
 
 }
 
@@ -975,6 +978,7 @@ static void lcd_support_menu()
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
   MENU_ITEM(back, MSG_DATE, lcd_main_menu);
   MENU_ITEM(back, PSTR(__DATE__), lcd_main_menu);
+  MENU_ITEM(back, PSTR(__TIME__), lcd_main_menu);
   MENU_ITEM(back, PSTR(STRING_CONFIG_H_AUTHOR), lcd_main_menu);
 
   // Show the FlashAir IP address, if the card is available.
@@ -1631,7 +1635,7 @@ void pid_extruder() {
 	}
 
 }
-
+#ifdef DEFAULT_PID_BED_TEMP
 void pid_bed() {
 
 	lcd_implementation_clear();
@@ -1650,6 +1654,7 @@ void pid_bed() {
 	}
 
 }
+#endif
 
 void lcd_adjust_z() {
   int enc_dif = 0;
@@ -2067,13 +2072,17 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
 
 static void lcd_show_end_stops() {
     lcd.setCursor(0, 0);
-    lcd_printPGM((PSTR("End stops diag")));
+    lcd_printPGM((PSTR("End stops/sens diag")));
     lcd.setCursor(0, 1);
     lcd_printPGM((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("X1")) : (PSTR("X0")));
     lcd.setCursor(0, 2);
     lcd_printPGM((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Y1")) : (PSTR("Y0")));
     lcd.setCursor(0, 3);
     lcd_printPGM((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Z1")) : (PSTR("Z0")));
+#ifdef FR_SENS
+		lcd.setCursor(4, 1);
+		lcd_printPGM((READ(FR_SENS) ^ FR_SENS_INVERTING == 1) ? (PSTR("FR_S1")) : (PSTR("FR_S0")));
+#endif
 }
 
 static void menu_show_end_stops() {
@@ -2715,8 +2724,10 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
 	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
 #endif //MK1BP
 	MENU_ITEM(submenu, MSG_PID_EXTRUDER, pid_extruder);
+#ifdef DEFAULT_PID_BED_TEMP
 	MENU_ITEM(submenu, MSG_PID_BED, pid_bed);
-	MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
+#endif
+    MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
 #ifndef MK1BP
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 #endif //MK1BP
@@ -4136,7 +4147,6 @@ void lcd_sdcard_stop()
 
 				lcd_return_to_status();
 				lcd_ignore_click(true);
-			
 				lcd_commands_type = LCD_COMMAND_STOP_PRINT;
             
                 // Turn off the print fan

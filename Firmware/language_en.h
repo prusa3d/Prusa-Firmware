@@ -273,9 +273,9 @@
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Calibration"
-#define(length=19, lines=1) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
-#define(length=19, lines=1) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
-#define(length=20, lines=1) MSG_PRINTER_DISCONNECTED			"Printer disconnected"
+#define(length=20) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
+#define(length=20) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
+#define(length=20) MSG_PRINTER_DISCONNECTED								"Printer disconnected"
 #define(length=20, lines=1) MSG_FINISHING_MOVEMENTS				"Finishing movements"
 #define(length=20, lines=1) MSG_PRINT_PAUSED					"Print paused"
 #define(length=20, lines=1) MSG_RESUMING_PRINT					"Resuming print"
