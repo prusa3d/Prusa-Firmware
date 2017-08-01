@@ -1046,7 +1046,7 @@ void setup()
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	lcd_update_enable(false);
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
-	Config_RetrieveSettings();
+	bool previous_settings_retrieved = Config_RetrieveSettings();
 	SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
 	tp_init();    // Initialize temperature loop
 	plan_init();  // Initialize planner;
@@ -1210,6 +1210,12 @@ void setup()
       lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
   }
   for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+  
+  //If eeprom version for storing parameters to eeprom using M500 changed, default settings are used. Inform user in this case
+  if (!previous_settings_retrieved) {
+	  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED);
+  }
+  
   lcd_update_enable(true);
 
   // Store the currently running firmware into an eeprom,
@@ -1380,6 +1386,7 @@ void get_command()
         continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
+		(serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1) )
     {
       if(!serial_count) { //if empty line
@@ -1388,8 +1395,7 @@ void get_command()
       }
       cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
       if(!comment_mode){
-        comment_mode = false; //for new command
-        if ((strchr_pointer = strstr(cmdbuffer+bufindw+1, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL) {
+		if ((strchr_pointer = strstr(cmdbuffer+bufindw+1, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL) {
             if ((strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL)
             {
             // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
@@ -3490,7 +3496,6 @@ void process_commands()
       starttime=millis();
 	  break;
     case 25: //M25 - Pause SD print
-	  save_print_to_eeprom();
       card.pauseSDPrint();
       break;
     case 26: //M26 - Set SD index
@@ -4378,13 +4383,13 @@ Sigma_Exit:
           }
         }
       }
-      break;
-	case 110:   // M110 - reset line pos
-	  if (code_seen('N'))
-	    gcode_LastN = code_value_long();
-	  else
-		gcode_LastN = 0;
 	  break;
+	case 110:   // M110 - reset line pos
+		if (code_seen('N'))
+			gcode_LastN = code_value_long();
+		else
+			gcode_LastN = 0;
+		break;
     case 115: // M115
       if (code_seen('V')) {
           // Report the Prusa version number.
@@ -4999,10 +5004,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     } 
     break; 
     #endif
-    
-
-
-
 
     case 500: // M500 Store settings in EEPROM
     {
@@ -6659,41 +6660,3 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");
 }
-
-
-void save_print_to_eeprom() {
- 
- 	eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), card.get_sdpos());
- }
- 
- void restore_print_from_eeprom() {
- 	char cmd[30];
- 	char* c;
- 	char filename[13];
- 	char str[5] = ".gco";
- 	for (int i = 0; i < 8; i++) {
- 		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
- 	}
- 	filename[8] = '\0';
- 	MYSERIAL.print(filename);
- 	strcat(filename, str);
- 	sprintf_P(cmd, PSTR("M23 %s"), filename);
- 	for (c = &cmd[4]; *c; c++)
- 		*c = tolower(*c);
- 	enquecommand(cmd);
- 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
- 	SERIAL_ECHOPGM("Position read from eeprom:");
- 	MYSERIAL.println(position);
- 
- 	card.setIndex(position);
- 	enquecommand_P(PSTR("M24"));
- 	sprintf_P(cmd, PSTR("M26 S%d"), position);
- 	enquecommand(cmd);
- }
- 
- void position_menu() {
- 	SERIAL_ECHOPGM("Percent done:");
- 	MYSERIAL.println(card.percentDone());
- 	SERIAL_ECHOPGM("sdpos:");
- 	MYSERIAL.println(card.get_sdpos());
- }

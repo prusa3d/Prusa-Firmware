@@ -856,7 +856,7 @@ const char MSG_DATE_CZ[] PROGMEM = "Datum:";
 const char MSG_DATE_IT[] PROGMEM = "Data";
 const char MSG_DATE_ES[] PROGMEM = "Fecha:";
 const char MSG_DATE_PL[] PROGMEM = "Data:";
-const char MSG_DATE_DE[] PROGMEM = "Datum:";
+const char MSG_DATE_DE[] PROGMEM = "Datum";
 const char MSG_DATE_NL[] PROGMEM = "Datum:";
 const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DATE_EN,
@@ -866,6 +866,11 @@ const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DATE_PL,
 	MSG_DATE_DE,
 	MSG_DATE_NL
+};
+
+const char MSG_DEFAULT_SETTINGS_LOADED_EN[] PROGMEM = "Default settings loaded";
+const char * const MSG_DEFAULT_SETTINGS_LOADED_LANG_TABLE[1] PROGMEM = {
+	MSG_DEFAULT_SETTINGS_LOADED_EN
 };
 
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
@@ -1813,7 +1818,7 @@ const char MSG_MEASURED_SKEW_CZ[] PROGMEM = "Merene zkoseni:";
 const char MSG_MEASURED_SKEW_IT[] PROGMEM = "Incl. misurata:";
 const char MSG_MEASURED_SKEW_ES[] PROGMEM = "Inclin. medida:";
 const char MSG_MEASURED_SKEW_PL[] PROGMEM = "Zmier. sciecie:";
-const char MSG_MEASURED_SKEW_DE[] PROGMEM = "Symmetrie:";
+const char MSG_MEASURED_SKEW_DE[] PROGMEM = "Schraeglauf:";
 const char MSG_MEASURED_SKEW_NL[] PROGMEM = "Symmetrie:";
 const char * const MSG_MEASURED_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MEASURED_SKEW_EN,
@@ -3229,7 +3234,7 @@ const char MSG_SEVERE_SKEW_CZ[] PROGMEM = "Tezke zkoseni:";
 const char MSG_SEVERE_SKEW_IT[] PROGMEM = "Inc. rilevante:";
 const char MSG_SEVERE_SKEW_ES[] PROGMEM = "Inclin. severa:";
 const char MSG_SEVERE_SKEW_PL[] PROGMEM = "Ostre sciecie:";
-const char MSG_SEVERE_SKEW_DE[] PROGMEM = "Schwere Asym.:";
+const char MSG_SEVERE_SKEW_DE[] PROGMEM = "Schwerer Schr.:";
 const char MSG_SEVERE_SKEW_NL[] PROGMEM = "Hevige  Asym.:";
 const char * const MSG_SEVERE_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SEVERE_SKEW_EN,
@@ -3295,7 +3300,7 @@ const char MSG_SLIGHT_SKEW_CZ[] PROGMEM = "Lehke zkoseni:";
 const char MSG_SLIGHT_SKEW_IT[] PROGMEM = "Incl. leggera:";
 const char MSG_SLIGHT_SKEW_ES[] PROGMEM = "Inclin. ligera:";
 const char MSG_SLIGHT_SKEW_PL[] PROGMEM = "Lekkie sciecie:";
-const char MSG_SLIGHT_SKEW_DE[] PROGMEM = "Geringe Asym.:";
+const char MSG_SLIGHT_SKEW_DE[] PROGMEM = "Leichter Schr.:";
 const char MSG_SLIGHT_SKEW_NL[] PROGMEM = "Geringe Asym.:";
 const char * const MSG_SLIGHT_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SLIGHT_SKEW_EN,
@@ -3795,7 +3800,7 @@ const char MSG_USED_CZ[] PROGMEM = "Pouzite behem tisku";
 const char MSG_USED_IT[] PROGMEM = "Usati nella stampa";
 const char MSG_USED_ES[] PROGMEM = "Usado en impresion";
 const char MSG_USED_PL[] PROGMEM = "Uzyte przy druku";
-const char MSG_USED_DE[] PROGMEM = "Benutzt beim Druck";
+const char MSG_USED_DE[] PROGMEM = "Beim Druck benutzte";
 const char MSG_USED_NL[] PROGMEM = "Gebruikt bij print";
 const char * const MSG_USED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_USED_EN,
@@ -3930,7 +3935,7 @@ const char MSG_Y_DISTANCE_FROM_MIN_CZ[] PROGMEM = "Y vzdalenost od min:";
 const char MSG_Y_DISTANCE_FROM_MIN_IT[] PROGMEM = "Distanza Y da min:";
 const char MSG_Y_DISTANCE_FROM_MIN_ES[] PROGMEM = "Dist. Y desde min:";
 const char MSG_Y_DISTANCE_FROM_MIN_PL[] PROGMEM = "Odleglosc Y od min.:";
-const char MSG_Y_DISTANCE_FROM_MIN_DE[] PROGMEM = "Y Entfernung von min";
+const char MSG_Y_DISTANCE_FROM_MIN_DE[] PROGMEM = "Y Entfernung vom min";
 const char MSG_Y_DISTANCE_FROM_MIN_NL[] PROGMEM = "Y afstand van min";
 const char * const MSG_Y_DISTANCE_FROM_MIN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_Y_DISTANCE_FROM_MIN_EN,

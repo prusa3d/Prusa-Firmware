@@ -416,4 +416,5 @@ THERMISTORS SETTINGS
 #else
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
+
 #endif //__CONFIGURATION_PRUSA_H
