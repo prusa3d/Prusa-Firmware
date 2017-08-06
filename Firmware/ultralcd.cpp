@@ -4142,22 +4142,24 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-#ifndef SDCARD_RATHERRECENTFIRST
-      card.getfilename(i);
-#else
-      card.getfilename(fileCnt - 1 - i);
-#endif
-      if (card.filenameIsDir)
-      {
-        MENU_ITEM(sddirectory, MSG_CARD_MENU, card.filename, card.longFilename);
-      } else {
+		const uint16_t nr =
+		  #ifdef SDCARD_RATHERRECENTFIRST
+			#ifndef SDCARD_SORT_ALPHA
+				fileCnt - 1 -
+			#endif
+		  #endif
+		i;
 
-        MENU_ITEM(sdfile, MSG_CARD_MENU, card.filename, card.longFilename);
+		#ifdef SDCARD_SORT_ALPHA
+		  card.getfilename_sorted(nr);
+		#else
+		  card.getfilename(nr);
+		#endif
 
-
-
-
-      }
+		if (card.filenameIsDir)
+			MENU_ITEM(sddirectory, MSG_CARD_MENU, card.filename, card.longFilename);
+		else
+			MENU_ITEM(sdfile, MSG_CARD_MENU, card.filename, card.longFilename);
     } else {
       MENU_ITEM_DUMMY();
     }
