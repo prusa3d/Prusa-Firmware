@@ -183,6 +183,9 @@ ADDITIONAL FEATURES SETTINGS
 #define TEMP_RUNAWAY_EXTRUDER_HYSTERESIS 15
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
+// USB host keep alive
+#define HOST_KEEPALIVE_FEATURE
+
 /*------------------------------------
 MOTOR CURRENT SETTINGS
 *------------------------------------*/

@@ -368,6 +368,26 @@ int fanSpeed=0;
 
 bool cancel_heatup = false ;
 
+#ifdef HOST_KEEPALIVE_FEATURE
+  // States for managing Marlin and host communication
+  // Marlin sends messages if blocked or busy
+  enum MarlinBusyState {
+	NOT_BUSY,           // Not in a handler
+	IN_HANDLER,         // Processing a GCode
+	IN_PROCESS,         // Known to be blocking command input (as in G29)
+	PAUSED_FOR_USER,    // Blocking pending any input
+	PAUSED_FOR_INPUT    // Blocking pending text input (concept)
+  };
+
+  static MarlinBusyState busy_state = NOT_BUSY;
+  static long next_busy_signal_ms = -1;
+
+  #define KEEPALIVE_STATE(n) do { busy_state = n; } while (0)
+#else
+  #define host_keepalive();
+  #define KEEPALIVE_STATE(n);
+#endif
+
 #ifdef FILAMENT_SENSOR
   //Variables for Filament Sensor input 
   float filament_width_nominal=DEFAULT_NOMINAL_FILAMENT_DIA;  //Set nominal filament width, can be changed with M404 
@@ -1300,6 +1320,33 @@ int serial_read_stream() {
     }
 }
 
+#ifdef HOST_KEEPALIVE_FEATURE
+void host_keepalive() {
+  long ms = millis();
+  if (busy_state != NOT_BUSY) {
+    if (ms < next_busy_signal_ms) return;
+    switch (busy_state) {
+      case NOT_BUSY:
+        break;
+      case IN_HANDLER:
+      case IN_PROCESS:
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: processing");
+        break;
+      case PAUSED_FOR_USER:
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: paused for user");
+        break;
+      case PAUSED_FOR_INPUT:
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: paused for input");
+        break;
+    }
+  }
+  next_busy_signal_ms = ms + 2000UL;
+}
+#endif
+
 // The loop() function is called in an endless loop by the Arduino framework from the default main() routine.
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
@@ -1361,6 +1408,7 @@ void loop()
   manage_heater();
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
+  host_keepalive();
   lcd_update();
 }
 
@@ -2058,6 +2106,8 @@ void process_commands()
   float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
   int8_t SilentMode;
 #endif
+  KEEPALIVE_STATE(IN_HANDLER);
+
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  starpos = (strchr(strchr_pointer + 5, '*'));
 	  if (starpos != NULL)
@@ -2387,6 +2437,8 @@ void process_commands()
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
 		homing_flag = true;
+
+		KEEPALIVE_STATE(IN_HANDLER);
 
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
@@ -3441,20 +3493,24 @@ void process_commands()
       previous_millis_cmd = millis();
       if (codenum > 0){
         codenum += millis();  // keep track of when we started waiting
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(millis() < codenum && !lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
           lcd_update();
         }
+		KEEPALIVE_STATE(IN_HANDLER);
         lcd_ignore_click(false);
       }else{
           if (!lcd_detected())
             break;
+		  KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(!lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
           lcd_update();
         }
+		KEEPALIVE_STATE(IN_HANDLER);
       }
       if (IS_SD_PRINTING)
         LCD_MESSAGERPGM(MSG_RESUMING);
@@ -4940,6 +4996,8 @@ Sigma_Exit:
           temp=70;
       if (code_seen('S')) temp=code_value();
       if (code_seen('C')) c=code_value();
+	  
+	  KEEPALIVE_STATE(NOT_BUSY);
       PID_autotune(temp, e, c);
     }
     break;
@@ -5217,6 +5275,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         int counterBeep = 0;
         lcd_wait_interact();
 		load_filament_time = millis();
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(!lcd_clicked()){
 
 		  cnt++;
@@ -5253,6 +5312,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           }
 
         }
+		KEEPALIVE_STATE(IN_HANDLER);
 		WRITE(BEEPER, LOW);
 #ifdef SNMM
 		display_loading();
@@ -5716,6 +5776,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
     SERIAL_ECHOLNPGM("\"");
   }
+
+  KEEPALIVE_STATE(NOT_BUSY);
 
   ClearToSend();
 }
