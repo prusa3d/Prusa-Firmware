@@ -2043,8 +2043,9 @@ void lcd_diag_show_end_stops()
 
 
 void prusa_statistics(int _message, uint8_t _fil_nr) {
-	
-
+#ifdef DEBUG_DISABLE_PRUSA_STATISTICS
+	return;
+#endif //DEBUG_DISABLE_PRUSA_STATISTICS
 	switch (_message)
 	{
 

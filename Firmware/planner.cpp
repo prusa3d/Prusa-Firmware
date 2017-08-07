@@ -506,25 +506,53 @@ void check_axes_activity()
     disable_e2(); 
   }
 #if defined(FAN_PIN) && FAN_PIN > -1
-  #ifdef FAN_KICKSTART_TIME
-    static unsigned long fan_kick_end;
-    if (tail_fan_speed) {
-      if (fan_kick_end == 0) {
-        // Just starting up fan - run at full power.
-        fan_kick_end = millis() + FAN_KICKSTART_TIME;
-        tail_fan_speed = 255;
-      } else if (fan_kick_end > millis())
-        // Fan still spinning up.
-        tail_fan_speed = 255;
-    } else {
-      fan_kick_end = 0;
-    }
-  #endif//FAN_KICKSTART_TIME
-  #ifdef FAN_SOFT_PWM
-  fanSpeedSoftPwm = tail_fan_speed;
-  #else
-  analogWrite(FAN_PIN,tail_fan_speed);
-  #endif//!FAN_SOFT_PWM
+#ifdef FAN_KICK_START_TIME
+	static bool fan_kick = false;
+	static unsigned long fan_kick_timer = 0;
+	static unsigned char prev_fan_speed = 0;
+	if (tail_fan_speed)
+	{
+		if (prev_fan_speed != tail_fan_speed)
+		{ //speed changed
+			if (prev_fan_speed == 0) //prev speed == 0 (starting - long kick)
+				fan_kick_timer = millis() + FAN_KICK_START_TIME;
+			else if (tail_fan_speed <= FAN_KICK_RUN_MINPWM) //speed <= max kick speed (short kick)
+				fan_kick_timer = millis() + FAN_KICK_RUN_TIME;
+			else //speed > max kick speed (no kick)
+				fan_kick_timer = 0;
+			prev_fan_speed = tail_fan_speed; //store previous value
+			if (fan_kick_timer)
+				fan_kick = true;
+		}
+		else
+		{
+			if (fan_kick)
+			{
+				if (fan_kick_timer < millis())
+				{
+					fan_kick = false;
+					if (tail_fan_speed <= FAN_KICK_RUN_MINPWM)
+						fan_kick_timer = millis() + FAN_KICK_IDLE_TIME;
+				}
+			}
+			else if (tail_fan_speed <= FAN_KICK_RUN_MINPWM)
+			{
+				if (fan_kick_timer < millis())
+				{
+					fan_kick_timer = millis() + FAN_KICK_RUN_TIME;
+					fan_kick = true;
+				}
+			}
+		}
+		if (fan_kick)
+			tail_fan_speed = 255;
+	}
+#endif//FAN_KICKSTART_TIME
+#ifdef FAN_SOFT_PWM
+	fanSpeedSoftPwm = tail_fan_speed;
+#else
+	analogWrite(FAN_PIN,tail_fan_speed);
+#endif//!FAN_SOFT_PWM
 #endif//FAN_PIN > -1
 #ifdef AUTOTEMP
   getHighESpeed();

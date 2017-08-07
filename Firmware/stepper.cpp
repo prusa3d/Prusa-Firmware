@@ -418,7 +418,7 @@ void isr() {
       CHECK_ENDSTOPS
       {
         {
-          #if defined(X_MIN_PIN) && X_MIN_PIN > -1
+          #if defined(X_MIN_PIN) && (X_MIN_PIN > -1) && !defined(DEBUG_DISABLE_XMINLIMIT)
             bool x_min_endstop=(READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
             if(x_min_endstop && old_x_min_endstop && (current_block->steps_x > 0)) {
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
@@ -434,7 +434,7 @@ void isr() {
       CHECK_ENDSTOPS
       {
         {
-          #if defined(X_MAX_PIN) && X_MAX_PIN > -1
+          #if defined(X_MAX_PIN) && (X_MAX_PIN > -1) && !defined(DEBUG_DISABLE_XMAXLIMIT)
             bool x_max_endstop=(READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
             if(x_max_endstop && old_x_max_endstop && (current_block->steps_x > 0)){
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
@@ -454,7 +454,7 @@ void isr() {
     #endif
       CHECK_ENDSTOPS
       {
-        #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
+        #if defined(Y_MIN_PIN) && (Y_MIN_PIN > -1) && !defined(DEBUG_DISABLE_YMINLIMIT)
           bool y_min_endstop=(READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
           if(y_min_endstop && old_y_min_endstop && (current_block->steps_y > 0)) {
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
@@ -468,7 +468,7 @@ void isr() {
     else { // +direction
       CHECK_ENDSTOPS
       {
-        #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
+        #if defined(Y_MAX_PIN) && (Y_MAX_PIN > -1) && !defined(DEBUG_DISABLE_YMAXLIMIT)
           bool y_max_endstop=(READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
           if(y_max_endstop && old_y_max_endstop && (current_block->steps_y > 0)){
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
@@ -490,7 +490,7 @@ void isr() {
       count_direction[Z_AXIS]=-1;
       if(check_endstops && ! check_z_endstop)
       {
-        #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
+        #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
           bool z_min_endstop=(READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
           if(z_min_endstop && old_z_min_endstop && (current_block->steps_z > 0)) {
             endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
@@ -511,7 +511,7 @@ void isr() {
       count_direction[Z_AXIS]=1;
       CHECK_ENDSTOPS
       {
-        #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
+        #if defined(Z_MAX_PIN) && (Z_MAX_PIN > -1) && !defined(DEBUG_DISABLE_ZMAXLIMIT)
           bool z_max_endstop=(READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING);
           if(z_max_endstop && old_z_max_endstop && (current_block->steps_z > 0)) {
             endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
@@ -524,7 +524,7 @@ void isr() {
     }
 
     // Supporting stopping on a trigger of the Z-stop induction sensor, not only for the Z-minus movements.
-    #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
+    #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
     if(check_z_endstop) {
         // Check the Z min end-stop no matter what.
         // Good for searching for the center of an induction target.
