@@ -151,6 +151,7 @@
 //        Rxxx Wait for extruder current temp to reach target temp. Waits when heating and cooling
 //        IF AUTOTEMP is enabled, S<mintemp> B<maxtemp> F<factor>. Exit autotemp by any M109 without F
 // M112 - Emergency stop
+// M113 - Get or set the timeout interval for Host Keepalive "busy" messages
 // M114 - Output current position to serial port
 // M115 - Capabilities string
 // M117 - display message
@@ -380,8 +381,8 @@ bool cancel_heatup = false ;
   };
 
   static MarlinBusyState busy_state = NOT_BUSY;
-  static long next_busy_signal_ms = -1;
-
+  static long prev_busy_signal_ms = -1;
+  uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
   #define KEEPALIVE_STATE(n) do { busy_state = n; } while (0)
 #else
   #define host_keepalive();
@@ -1321,13 +1322,15 @@ int serial_read_stream() {
 }
 
 #ifdef HOST_KEEPALIVE_FEATURE
+/**
+* Output a "busy" message at regular intervals
+* while the machine is not accepting commands.
+*/
 void host_keepalive() {
   long ms = millis();
-  if (busy_state != NOT_BUSY) {
-    if (ms < next_busy_signal_ms) return;
+  if (host_keepalive_interval && busy_state != NOT_BUSY) {
+    if (ms - prev_busy_signal_ms < 1000UL * host_keepalive_interval) return;
     switch (busy_state) {
-      case NOT_BUSY:
-        break;
       case IN_HANDLER:
       case IN_PROCESS:
         SERIAL_ECHO_START;
@@ -1343,7 +1346,7 @@ void host_keepalive() {
         break;
     }
   }
-  next_busy_signal_ms = ms + 2000UL;
+  prev_busy_signal_ms = ms;
 }
 #endif
 
@@ -4215,6 +4218,7 @@ Sigma_Exit:
           }}
         #endif
 		SERIAL_PROTOCOLLN("");
+		KEEPALIVE_STATE(NOT_BUSY);
       return;
       break;
     case 109:
@@ -4252,11 +4256,14 @@ Sigma_Exit:
       /* See if we are heating up or cooling down */
       target_direction = isHeatingHotend(tmp_extruder); // true if heating, false if cooling
 
+	  KEEPALIVE_STATE(NOT_BUSY);
+
       cancel_heatup = false;
 
 	  wait_for_heater(codenum); //loops until target temperature is reached
 
         LCD_MESSAGERPGM(MSG_HEATING_COMPLETE);
+		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = 2;
 		if (farm_mode) { prusa_statistics(2); };
         
@@ -4284,6 +4291,7 @@ Sigma_Exit:
         cancel_heatup = false;
         target_direction = isHeatingBed(); // true if heating, false if cooling
 
+		KEEPALIVE_STATE(NOT_BUSY);
         while ( (target_direction)&&(!cancel_heatup) ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false)) )
         {
           if(( millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
@@ -4306,6 +4314,7 @@ Sigma_Exit:
           lcd_update();
         }
         LCD_MESSAGERPGM(MSG_BED_DONE);
+		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = 4;
 
         previous_millis_cmd = millis();
@@ -4449,6 +4458,17 @@ Sigma_Exit:
 		else
 			gcode_LastN = 0;
 		break;
+#ifdef HOST_KEEPALIVE_FEATURE
+	case 113: // M113 - Get or set Host Keepalive interval
+      if (code_seen('S')) {
+		host_keepalive_interval = (uint8_t)code_value_short();
+		NOMORE(host_keepalive_interval, 60);
+      } else {
+        SERIAL_ECHO_START;
+        SERIAL_ECHOPAIR("M113 S", (unsigned long)host_keepalive_interval);
+		SERIAL_PROTOCOLLN("");
+      }
+#endif
     case 115: // M115
       if (code_seen('V')) {
           // Report the Prusa version number.
