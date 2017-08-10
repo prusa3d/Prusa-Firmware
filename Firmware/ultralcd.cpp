@@ -2394,8 +2394,24 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
     value++;
   } while (--size);
 }
-
-
+#ifdef SDCARD_SORT_ALPHA
+static void lcd_sort_type_set() {
+	uint8_t sdSort;
+	
+	EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	switch (sdSort) {
+	case 0: sdSort = 1; break;
+	case 1: sdSort = 2; break;
+	default: sdSort = 0;
+	}
+	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
+	lcd_goto_menu(lcd_sdcard_menu, 1);
+	//lcd_update(2);
+	//delay(1000);
+	
+	card.presort();
+}
+#endif //SDCARD_SORT_ALPHA
 
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
@@ -2411,6 +2427,14 @@ static void lcd_set_lang(unsigned char lang) {
   if (langsel == LANGSEL_MODAL)
     // From modal mode to an active mode? This forces the menu to return to the setup menu.
     langsel = LANGSEL_ACTIVE;
+}
+
+void lcd_set_arrows() {
+	void lcd_set_custom_characters_arrows();
+}
+
+void lcd_set_progress() {
+	lcd_set_custom_characters_progress();
 }
 
 void lcd_force_language_selection() {
@@ -4118,16 +4142,24 @@ void getFileDescription(char *name, char *description) {
 */
 
 void lcd_sdcard_menu()
-{
-
-	int tempScrool = 0;
+{	
+  uint8_t sdSort;
+  int tempScrool = 0;
   if (lcdDrawUpdate == 0 && LCD_CLICKED == 0)
     //delay(100);
-    return; // nothing to do (so don't thrash the SD card)
+  return; // nothing to do (so don't thrash the SD card)
   uint16_t fileCnt = card.getnrfilenames();
-
+    
   START_MENU();
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+#ifdef SDCARD_SORT_ALPHA
+  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+  switch(sdSort){
+    case 0: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+    case 1: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+    default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
+  }
+#endif // SDCARD_SORT_ALPHA
   card.getWorkDirName();
   if (card.filename[0] == '/')
   {
@@ -4142,16 +4174,16 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-		const uint16_t nr =
-		  #ifdef SDCARD_RATHERRECENTFIRST
+		const uint16_t nr = (sdSort == 2) ? (fileCnt - 1 - i) : i;
+		 /* #ifdef SDCARD_RATHERRECENTFIRST
 			#ifndef SDCARD_SORT_ALPHA
 				fileCnt - 1 -
 			#endif
 		  #endif
-		i;
-
+		i;*/
 		#ifdef SDCARD_SORT_ALPHA
-		  card.getfilename_sorted(nr);
+		if (sdSort == 2) card.getfilename(nr);
+		else card.getfilename_sorted(nr);
 		#else
 		  card.getfilename(nr);
 		#endif

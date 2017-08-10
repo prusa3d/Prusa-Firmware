@@ -133,7 +133,23 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				break;
 
 			case LS_GetFilename:
+				//SERIAL_ECHOPGM("File: ");				
 				createFilename(filename, p);
+				/*MYSERIAL.println(filename);
+				SERIAL_ECHOPGM("Write date: ");
+				writeDate = p.lastWriteDate;
+				MYSERIAL.println(writeDate);
+				writeTime = p.lastWriteTime;
+				SERIAL_ECHOPGM("Creation date: ");
+				MYSERIAL.println(p.creationDate);
+				SERIAL_ECHOPGM("Access date: ");
+				MYSERIAL.println(p.lastAccessDate);
+				SERIAL_ECHOLNPGM("");*/
+				creationDate = p.creationDate;
+				creationTime = p.creationTime;
+				
+				//writeDate = p.lastAccessDate;
+				
 				if (match != NULL) {
 					if (strcasecmp(match, filename) == 0) return;
 				}
@@ -690,6 +706,14 @@ void CardReader::getfilename_sorted(const uint16_t nr) {
 */
 void CardReader::presort() {
 	
+	uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
+	
+	if (sdSort == 2) return; //sd sort is turned off
+
+	lcd_set_progress();
+	lcd_implementation_clear();
+	lcd_print_at_PGM(0, 1, MSG_SORTING);
+
 	#if SDSORT_GCODE
 	 if (!sort_alpha) return;
 	#endif
@@ -743,7 +767,6 @@ void CardReader::presort() {
 		#endif
 
 		if (fileCnt > 1) {
-			SERIAL_ECHOLNPGM("Sort order:");
 			// Init sort order.
 			for (uint16_t i = 0; i < fileCnt; i++) {
 				sort_order[i] = i;
@@ -775,15 +798,20 @@ void CardReader::presort() {
 					#endif
 				#endif
 			}
-		
-			SERIAL_ECHOPGM("FILE_CNT:");
-			MYSERIAL.println(int(fileCnt));
 			// Bubble Sort
-			
+			uint16_t counter = 0;
+			uint16_t cycles_count = 0;
+
+			for (int i = fileCnt; --i;) cycles_count += i;
+
 			for (uint16_t i = fileCnt; --i;) {
 				bool didSwap = false;
-				MYSERIAL.println(int(i));
+
+				//MYSERIAL.println(int(i));
 				for (uint16_t j = 0; j < i; ++j) {
+					int8_t percent = ((counter * 100) / cycles_count);
+					lcd_implementation_print_at(percent / 5, 2, "\x01"); //progress bar					
+					counter++;
 					const uint16_t o1 = sort_order[j], o2 = sort_order[j + 1];
 					
 					// Compare names from the array or just the two buffered names
@@ -810,25 +838,29 @@ void CardReader::presort() {
 					// The most economical method reads names as-needed
 					// throughout the loop. Slow if there are many.
 					#if !SDSORT_USES_RAM
-					SERIAL_ECHOPGM("o1 & o2: ");
+					/*SERIAL_ECHOPGM("o1 & o2: ");
 					MYSERIAL.println(int(o1));
-					MYSERIAL.println(int(o2));
+					MYSERIAL.println(int(o2));*/
 
 						getfilename(o1);
 						strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
+						uint16_t creation_date_bckp = creationDate;
+						uint16_t creation_time_bckp = creationTime;
 						#if HAS_FOLDER_SORTING
 							bool dir1 = filenameIsDir;
 						#endif
 						getfilename(o2);
 						char *name2 = LONGEST_FILENAME; // use the string in-place
 
-						SERIAL_ECHOLNPGM("Names:");
-						MYSERIAL.println(name1);
-						MYSERIAL.println(name2);
 					#endif // !SDSORT_USES_RAM
 
+
+
 					// Sort the current pair according to settings.
-					if (
+					/*if (
+						
+							//write_date_bckp < writeDate
+						
 						#if HAS_FOLDER_SORTING
 							#if SDSORT_GCODE
 								sort_folders ? _SORT_CMP_DIR(sort_folders) : _SORT_CMP_NODIR()
@@ -838,15 +870,25 @@ void CardReader::presort() {
 						#else
 							_SORT_CMP_NODIR()
 						#endif
-					) {
+						
+					)*/
+					//						o1				o2
+						bool swap = false;
+						if (creation_date_bckp == creationDate) {
+							if (creation_time_bckp < creationTime) swap = true;
+						}
+						else if (creation_date_bckp < creationDate) swap = true;
+
+					if((sdSort == 0 && swap) || (sdSort == 1 && _SORT_CMP_DIR(FOLDER_SORTING)))
+					{
 						sort_order[j] = o2;
 						sort_order[j + 1] = o1;
 						didSwap = true;
-						SERIAL_ECHOLNPGM("Did swap");
+						//SERIAL_ECHOLNPGM("did swap");
 					}
 				}
 				if (!didSwap) break;
-			}
+			} //end of bubble sort loop
 			
 			// Using RAM but not keeping names around
 			#if (SDSORT_USES_RAM && !SDSORT_CACHE_NAMES)
@@ -877,8 +919,8 @@ void CardReader::presort() {
 		}
 
 		sort_count = fileCnt;
-	}
-	
+	}	
+	lcd_set_arrows();
 }
 
 void CardReader::flush_presort() {

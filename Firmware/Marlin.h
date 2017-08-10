@@ -92,6 +92,12 @@ extern const char echomagic[] PROGMEM;
 
 #define SERIAL_ECHOPAIR(name,value) (serial_echopair_P(PSTR(name),(value)))
 
+typedef enum {
+	SDSORT_TIME,
+	SDSORT_ALPHA,
+	SDSORT_NONE
+} sdsort;
+
 void serial_echopair_P(const char *s_P, float v);
 void serial_echopair_P(const char *s_P, double v);
 void serial_echopair_P(const char *s_P, unsigned long v);
@@ -326,6 +332,8 @@ extern bool mesh_bed_run_from_menu;
 
 extern float distance_from_min[3];
 extern float angleDiff;
+
+extern bool sortAlpha;
 
 extern void calculate_volumetric_multipliers();
 
