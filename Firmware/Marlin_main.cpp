@@ -287,7 +287,6 @@ unsigned int custom_message_state;
 char snmm_filaments_used = 0;
 
 float distance_from_min[3];
-float angleDiff;
 
 bool sortAlpha = false;
 
