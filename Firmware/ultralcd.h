@@ -261,6 +261,9 @@ void display_loading();
 
 void lcd_service_mode_show_result();
 
+#if !SDSORT_USES_RAM
 void lcd_set_arrows();
 void lcd_set_progress();
+#endif
+
 #endif //ULTRALCD_H

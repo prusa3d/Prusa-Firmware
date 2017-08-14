@@ -105,6 +105,8 @@ private:
       #endif
     #elif !SDSORT_USES_STACK
       char sortnames[SDSORT_LIMIT][FILENAME_LENGTH];
+	  uint16_t creation_time[SDSORT_LIMIT];
+	  uint16_t creation_date[SDSORT_LIMIT];
     #endif
 
     // Folder sorting uses an isDir array when caching items.

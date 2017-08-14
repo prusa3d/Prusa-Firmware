@@ -2432,6 +2432,7 @@ static void lcd_set_lang(unsigned char lang) {
     langsel = LANGSEL_ACTIVE;
 }
 
+#if !SDSORT_USES_RAM
 void lcd_set_arrows() {
 	void lcd_set_custom_characters_arrows();
 }
@@ -2439,6 +2440,7 @@ void lcd_set_arrows() {
 void lcd_set_progress() {
 	lcd_set_custom_characters_progress();
 }
+#endif
 
 void lcd_force_language_selection() {
   eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
