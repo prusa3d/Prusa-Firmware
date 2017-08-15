@@ -55,6 +55,7 @@
 #include "math.h"
 #include "util.h"
 
+#include <avr/wdt.h>
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -198,6 +199,7 @@
 // M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
 // M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 // M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
+// M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
 // M907 - Set digital trimpot motor current using axis codes.
 // M908 - Control digital trimpot directly.
 // M350 - Set microstepping mode.
@@ -285,6 +287,8 @@ bool loading_flag = false;
 unsigned int custom_message_type;
 unsigned int custom_message_state;
 char snmm_filaments_used = 0;
+
+int selectedSerialPort;
 
 float distance_from_min[3];
 
@@ -994,8 +998,22 @@ void factory_reset(char level, bool quiet)
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+	lcd_init();
+    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
+    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	setup_killpin();
 	setup_powerhold();
+    farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
+	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
+	//if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
+	if (farm_no == 0xFFFF) farm_no = 0;
+	if (farm_mode)
+	{
+		prusa_statistics(8);
+        selectedSerialPort = 1;
+	} else {
+        selectedSerialPort = 0;
+    }
 	MYSERIAL.begin(BAUDRATE);
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
@@ -1050,6 +1068,8 @@ void setup()
 	tp_init();    // Initialize temperature loop
 	plan_init();  // Initialize planner;
 	watchdog_init();
+    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   ")); // we need to do this again for some reason, no time to research
+    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	st_init();    // Initialize stepper, this enables interrupts!
 	setup_photpin();
 	servo_init();
@@ -1123,7 +1143,7 @@ void setup()
 	}
 	else
 	{
-		_delay_ms(1000);  // wait 1sec to display the splash screen
+		//_delay_ms(1000);  // wait 1sec to display the splash screen // what's this and why do we need it?? - andre
 	}
 
 
@@ -1192,6 +1212,7 @@ void setup()
 		eeprom_write_byte((uint8_t*)EEPROM_SD_SORT, 0);
 	}
 
+#ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 	
   if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
@@ -1218,6 +1239,7 @@ void setup()
 	  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED);
   }
   
+#endif //DEBUG_DISABLE_STARTMSGS
   lcd_update_enable(true);
 
   // Store the currently running firmware into an eeprom,
@@ -1377,6 +1399,11 @@ void get_command()
 		  rx_buffer_full = true;				//sets flag that buffer was full	
 	  }
     char serial_char = MYSERIAL.read();
+    if (selectedSerialPort == 1) {
+        selectedSerialPort = 0;
+        MYSERIAL.write(serial_char);
+        selectedSerialPort = 1;
+    }
       TimeSent = millis();
       TimeNow = millis();
 
@@ -1618,6 +1645,15 @@ static inline long    code_value_long()    { return strtol(strchr_pointer+1, NUL
 static inline int16_t code_value_short()   { return int16_t(strtol(strchr_pointer+1, NULL, 10)); };
 static inline uint8_t code_value_uint8()   { return uint8_t(strtol(strchr_pointer+1, NULL, 10)); };
 
+static inline float code_value_float() {
+  char* e = strchr(strchr_pointer, 'E');
+  if (!e) return strtod(strchr_pointer + 1, NULL);
+  *e = 0;
+  float ret = strtod(strchr_pointer + 1, NULL);
+  *e = 'E';
+  return ret;
+}
+
 #define DEFINE_PGM_READ_ANY(type, reader)       \
     static inline type pgm_read_any(const type *p)  \
     { return pgm_read_##reader##_near(p); }
@@ -1802,6 +1838,39 @@ static float probe_pt(float x, float y, float z_before) {
 }
 
 #endif // #ifdef ENABLE_AUTO_BED_LEVELING
+
+#ifdef LIN_ADVANCE
+  /**
+   * M900: Set and/or Get advance K factor and WH/D ratio
+   *
+   *  K<factor>                  Set advance K factor
+   *  R<ratio>                   Set ratio directly (overrides WH/D)
+   *  W<width> H<height> D<diam> Set ratio from WH/D
+   */
+  inline void gcode_M900() {
+    st_synchronize();
+
+    const float newK = code_seen('K') ? code_value_float() : -1;
+    if (newK >= 0) extruder_advance_k = newK;
+
+    float newR = code_seen('R') ? code_value_float() : -1;
+    if (newR < 0) {
+      const float newD = code_seen('D') ? code_value_float() : -1,
+                  newW = code_seen('W') ? code_value_float() : -1,
+                  newH = code_seen('H') ? code_value_float() : -1;
+      if (newD >= 0 && newW >= 0 && newH >= 0)
+        newR = newD ? (newW * newH) / (sq(newD * 0.5) * M_PI) : 0;
+    }
+    if (newR >= 0) advance_ed_ratio = newR;
+
+    SERIAL_ECHO_START;
+    SERIAL_ECHOPGM("Advance K=");
+    SERIAL_ECHOLN(extruder_advance_k);
+    SERIAL_ECHOPGM(" E/D=");
+    const float ratio = advance_ed_ratio;
+    if (ratio) SERIAL_ECHOLN(ratio); else SERIAL_ECHOLNPGM("Auto");
+  }
+#endif // LIN_ADVANCE
 
 void homeaxis(int axis) {
 #define HOMEAXIS_DO(LETTER) \
@@ -2058,6 +2127,33 @@ void process_commands()
         trace();
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
+    } else if (code_seen("SN")) {
+        if (farm_mode) {
+            selectedSerialPort = 0;
+            MSerial.write(";S");
+            // S/N is:CZPX0917X003XC13518
+            int numbersRead = 0;
+
+            while (numbersRead < 19) {
+                while (MSerial.available() > 0) {
+                    uint8_t serial_char = MSerial.read();
+                    selectedSerialPort = 1;
+                    MSerial.write(serial_char);
+                    numbersRead++;
+                    selectedSerialPort = 0;
+                }
+            }
+            selectedSerialPort = 1;
+            MSerial.write('\n');
+            /*for (int b = 0; b < 3; b++) {
+                tone(BEEPER, 110);
+                delay(50);
+                noTone(BEEPER);
+                delay(50);
+            }*/
+        } else {
+            MYSERIAL.println("Not in farm mode.");
+        }
     } else if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_version);
@@ -5360,6 +5456,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	}
 	break;
 
+    #ifdef LIN_ADVANCE
+      case 900: // M900: Set LIN_ADVANCE options.
+        gcode_M900();
+        break;
+    #endif
+      
     case 907: // M907 Set digital trimpot motor current using axis codes.
     {
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
@@ -5511,7 +5613,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  }
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 #ifdef SNMM
-		  snmm_extruder = tmp_extruder;
+      #ifdef LIN_ADVANCE
+        if (snmm_extruder != tmp_extruder)
+          clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
+      #endif
+      
+      snmm_extruder = tmp_extruder;
 
 		  st_synchronize();
 		  delay(100);
@@ -5601,6 +5708,60 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  }
   } // end if(code_seen('T')) (end of T codes)
 
+#ifdef DEBUG_DCODES
+  else if (code_seen('D')) // D codes (debug)
+  {
+    switch((int)code_value_uint8())
+    {
+	case 0: // D0 - Reset
+		if (*(strchr_pointer + 1) == 0) break;
+		MYSERIAL.println("D0 - Reset");
+		asm volatile("jmp 0x00000");
+		break;
+	case 1: // D1 - Clear EEPROM
+		{
+			MYSERIAL.println("D1 - Clear EEPROM");
+			cli();
+			for (int i = 0; i < 4096; i++)
+				eeprom_write_byte((unsigned char*)i, (unsigned char)0);
+			sei();
+		}
+		break;
+	case 2: // D2 - Read/Write PIN
+		{
+			if (code_seen('P')) // Pin (0-255)
+			{
+				int pin = (int)code_value();
+				if ((pin >= 0) && (pin <= 255))
+				{
+					if (code_seen('F')) // Function in/out (0/1)
+					{
+						int fnc = (int)code_value();
+						if (fnc == 0) pinMode(pin, INPUT);
+						else if (fnc == 1) pinMode(pin, OUTPUT);
+					}
+					if (code_seen('V')) // Value (0/1)
+					{
+						int val = (int)code_value();
+						if (val == 0) digitalWrite(pin, LOW);
+						else if (val == 1) digitalWrite(pin, HIGH);
+					}
+					else
+					{
+						int val = (digitalRead(pin) != LOW)?1:0;
+						MYSERIAL.print("PIN");
+						MYSERIAL.print(pin);
+						MYSERIAL.print("=");
+						MYSERIAL.println(val);
+					}
+				}
+			}
+		}
+		break;
+	}
+  }
+#endif //DEBUG_DCODES
+
   else
   {
     SERIAL_ECHO_START;
@@ -5674,6 +5835,9 @@ void get_arc_coordinates()
 
 void clamp_to_software_endstops(float target[3])
 {
+#ifdef DEBUG_DISABLE_SWLIMITS
+	return;
+#endif //DEBUG_DISABLE_SWLIMITS
     world2machine_clamp(target[0], target[1]);
 
     // Clamp the Z coordinate.
