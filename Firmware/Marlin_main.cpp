@@ -289,6 +289,8 @@ unsigned int custom_message_type;
 unsigned int custom_message_state;
 char snmm_filaments_used = 0;
 
+int selectedSerialPort;
+
 float distance_from_min[3];
 float angleDiff;
 
@@ -996,8 +998,22 @@ void factory_reset(char level, bool quiet)
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+	lcd_init();
+    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
+    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	setup_killpin();
 	setup_powerhold();
+    farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
+	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
+	//if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
+	if (farm_no == 0xFFFF) farm_no = 0;
+	if (farm_mode)
+	{
+		prusa_statistics(8);
+        selectedSerialPort = 1;
+	} else {
+        selectedSerialPort = 0;
+    }
 	MYSERIAL.begin(BAUDRATE);
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
@@ -1052,6 +1068,8 @@ void setup()
 	tp_init();    // Initialize temperature loop
 	plan_init();  // Initialize planner;
 	watchdog_init();
+    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   ")); // we need to do this again for some reason, no time to research
+    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	st_init();    // Initialize stepper, this enables interrupts!
 	setup_photpin();
 	servo_init();
@@ -1125,7 +1143,7 @@ void setup()
 	}
 	else
 	{
-		_delay_ms(1000);  // wait 1sec to display the splash screen
+		//_delay_ms(1000);  // wait 1sec to display the splash screen // what's this and why do we need it?? - andre
 	}
 
 
@@ -1378,6 +1396,11 @@ void get_command()
 		  rx_buffer_full = true;				//sets flag that buffer was full	
 	  }
     char serial_char = MYSERIAL.read();
+    if (selectedSerialPort == 1) {
+        selectedSerialPort = 0;
+        MYSERIAL.write(serial_char);
+        selectedSerialPort = 1;
+    }
       TimeSent = millis();
       TimeNow = millis();
 
@@ -2101,6 +2124,33 @@ void process_commands()
         trace();
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
+    } else if (code_seen("SN")) {
+        if (farm_mode) {
+            selectedSerialPort = 0;
+            MSerial.write(";S");
+            // S/N is:CZPX0917X003XC13518
+            int numbersRead = 0;
+
+            while (numbersRead < 19) {
+                while (MSerial.available() > 0) {
+                    uint8_t serial_char = MSerial.read();
+                    selectedSerialPort = 1;
+                    MSerial.write(serial_char);
+                    numbersRead++;
+                    selectedSerialPort = 0;
+                }
+            }
+            selectedSerialPort = 1;
+            MSerial.write('\n');
+            /*for (int b = 0; b < 3; b++) {
+                tone(BEEPER, 110);
+                delay(50);
+                noTone(BEEPER);
+                delay(50);
+            }*/
+        } else {
+            MYSERIAL.println("Not in farm mode.");
+        }
     } else if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_version);
