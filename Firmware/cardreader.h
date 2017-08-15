@@ -7,7 +7,6 @@
 
 #include "SdFile.h"
 enum LsAction {LS_SerialPrint,LS_Count,LS_GetFilename};
-enum SdSort {sdSortTime, sdSortAlpha, sdSortNone};
 
 class CardReader
 {
@@ -139,7 +138,6 @@ private:
   bool autostart_stilltocheck; //the sd start is delayed, because otherwise the serial cannot answer fast enought to make contact with the hostsoftware.
   
   LsAction lsAction; //stored for recursion.
-  uint8_t sdSort;
   int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
   void lsDive(const char *prepend, SdFile parent, const char * const match=NULL);

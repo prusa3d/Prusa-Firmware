@@ -92,12 +92,6 @@ extern const char echomagic[] PROGMEM;
 
 #define SERIAL_ECHOPAIR(name,value) (serial_echopair_P(PSTR(name),(value)))
 
-typedef enum {
-	SDSORT_TIME,
-	SDSORT_ALPHA,
-	SDSORT_NONE
-} sdsort;
-
 void serial_echopair_P(const char *s_P, float v);
 void serial_echopair_P(const char *s_P, double v);
 void serial_echopair_P(const char *s_P, unsigned long v);

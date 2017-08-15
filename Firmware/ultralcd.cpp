@@ -2397,15 +2397,16 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
     value++;
   } while (--size);
 }
+
 #ifdef SDCARD_SORT_ALPHA
 static void lcd_sort_type_set() {
 	uint8_t sdSort;
 	
 	EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
 	switch (sdSort) {
-	case 0: sdSort = 1; break;
-	case 1: sdSort = 2; break;
-	default: sdSort = 0;
+	case SD_SORT_TIME: sdSort = SD_SORT_ALPHA; break;
+	case SD_SORT_ALPHA: sdSort = SD_SORT_NONE; break;
+	default: sdSort = SD_SORT_TIME;
 	}
 	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
 	lcd_goto_menu(lcd_sdcard_menu, 1);
@@ -4160,8 +4161,8 @@ void lcd_sdcard_menu()
 #ifdef SDCARD_SORT_ALPHA
   EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
   switch(sdSort){
-    case 0: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
-    case 1: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+    case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+    case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
     default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
   }
 #endif // SDCARD_SORT_ALPHA
@@ -4179,7 +4180,7 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-		const uint16_t nr = (sdSort == 2) ? (fileCnt - 1 - i) : i;
+		const uint16_t nr = (sdSort == SD_SORT_NONE) ? (fileCnt - 1 - i) : i;
 		 /* #ifdef SDCARD_RATHERRECENTFIRST
 			#ifndef SDCARD_SORT_ALPHA
 				fileCnt - 1 -
@@ -4187,7 +4188,7 @@ void lcd_sdcard_menu()
 		  #endif
 		i;*/
 		#ifdef SDCARD_SORT_ALPHA
-		if (sdSort == 2) card.getfilename(nr);
+		if (sdSort == SD_SORT_NONE) card.getfilename(nr);
 		else card.getfilename_sorted(nr);
 		#else
 		  card.getfilename(nr);

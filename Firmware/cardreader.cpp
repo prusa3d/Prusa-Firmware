@@ -708,7 +708,7 @@ void CardReader::presort() {
 	
 	uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 	
-	if (sdSort == 2) return; //sd sort is turned off
+	if (sdSort == SD_SORT_NONE) return; //sd sort is turned off
 	#if !SDSORT_USES_RAM
 	  lcd_set_progress();
 	#endif
@@ -870,9 +870,9 @@ void CardReader::presort() {
 					// Sort the current pair according to settings.
 					if(
 						#if HAS_FOLDER_SORTING
-	  					  (sdSort == 0 && _SORT_CMP_TIME_DIR(FOLDER_SORTING)) || (sdSort == 1 && _SORT_CMP_DIR(FOLDER_SORTING))
+	  					  (sdSort == SD_SORT_TIME && _SORT_CMP_TIME_DIR(FOLDER_SORTING)) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_DIR(FOLDER_SORTING))
 						#else
-						  (sdSort == 0 && _SORT_CMP_TIME_NODIR()) || (sdSort == 1 && _SORT_CMP_NODIR())
+						  (sdSort == SD_SORT_TIME && _SORT_CMP_TIME_NODIR()) || (sdSort == SD_SORT_ALPHA && _SORT_CMP_NODIR())
 						#endif
 					  )
 					{
