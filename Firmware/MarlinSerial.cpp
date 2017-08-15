@@ -64,6 +64,23 @@ FORCE_INLINE void store_char(unsigned char c)
           store_char(c);
       }
   }
+  
+  SIGNAL(USART2_RX_vect)
+  {
+      if (selectedSerialPort == 1) {
+        // Test for a framing error.
+        if (UCSR2A & (1<<FE2)) {
+            // Characters received with the framing errors will be ignored.
+            // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
+            volatile unsigned char c = UDR2;
+        } else {
+            // Read the input register.
+            unsigned char c = UDR2;
+            store_char(c);
+            
+        }
+      }
+  }
 #endif
 
 // Constructors ////////////////////////////////////////////////////////////////
@@ -88,7 +105,7 @@ void MarlinSerial::begin(long baud)
     useU2X = false;
   }
 #endif
-  
+// set up the first (original serial port)
   if (useU2X) {
     M_UCSRxA = 1 << M_U2Xx;
     baud_setting = (F_CPU / 4 / baud - 1) / 2;
@@ -104,13 +121,35 @@ void MarlinSerial::begin(long baud)
   sbi(M_UCSRxB, M_RXENx);
   sbi(M_UCSRxB, M_TXENx);
   sbi(M_UCSRxB, M_RXCIEx);
+  
+  
+// set up the second serial port
+  if (useU2X) {
+        UCSR2A = 1 << U2X2;
+        baud_setting = (F_CPU / 4 / baud - 1) / 2;
+    } else {
+        UCSR2A = 0;
+        baud_setting = (F_CPU / 8 / baud - 1) / 2;
+    }
+
+    // assign the baud_setting, a.k.a. ubbr (USART Baud Rate Register)
+    UBRR2H = baud_setting >> 8;
+    UBRR2L = baud_setting;
+
+    sbi(UCSR2B, RXEN2);
+    sbi(UCSR2B, TXEN2);
+    sbi(UCSR2B, RXCIE2);
 }
 
 void MarlinSerial::end()
 {
   cbi(M_UCSRxB, M_RXENx);
   cbi(M_UCSRxB, M_TXENx);
-  cbi(M_UCSRxB, M_RXCIEx);  
+  cbi(M_UCSRxB, M_RXCIEx);
+  
+  cbi(UCSR2B, RXEN2);
+  cbi(UCSR2B, TXEN2);
+  cbi(UCSR2B, RXCIE2); 
 }
 
 
