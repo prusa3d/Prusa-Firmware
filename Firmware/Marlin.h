@@ -109,6 +109,8 @@ FORCE_INLINE void serialprintPGM(const char *str)
   }
 }
 
+#define NOMORE(v,n) do{ if (v > n) v = n; }while(0)
+
 bool is_buffer_empty();
 void get_command();
 void process_commands();
@@ -279,6 +281,10 @@ extern bool autoretract_enabled;
 extern bool retracted[EXTRUDERS];
 extern float retract_length, retract_length_swap, retract_feedrate, retract_zlift;
 extern float retract_recover_length, retract_recover_length_swap, retract_recover_feedrate;
+#endif
+
+#ifdef HOST_KEEPALIVE_FEATURE
+extern uint8_t host_keepalive_interval;
 #endif
 
 extern unsigned long starttime;
