@@ -227,7 +227,9 @@ void extr_unload_all();
 void extr_unload_used();
 void extr_unload();
 static char snmm_stop_print_menu();
-
+#ifdef SDCARD_SORT_ALPHA
+static void lcd_sort_type_set();
+#endif
 void stack_error();
 static void lcd_ping_allert();
 void lcd_printer_connected();
@@ -258,5 +260,10 @@ void lcd_temp_calibration_set();
 void display_loading();
 
 void lcd_service_mode_show_result();
+
+#if !SDSORT_USES_RAM
+void lcd_set_arrows();
+void lcd_set_progress();
+#endif
 
 #endif //ULTRALCD_H

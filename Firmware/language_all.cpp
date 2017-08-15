@@ -2948,6 +2948,26 @@ const char * const MSG_SOFTWARE_RESET_LANG_TABLE[1] PROGMEM = {
 	MSG_SOFTWARE_RESET_EN
 };
 
+const char MSG_SORTING_EN[] PROGMEM = "Sorting files";
+const char * const MSG_SORTING_LANG_TABLE[1] PROGMEM = {
+	MSG_SORTING_EN
+};
+
+const char MSG_SORT_ALPHA_EN[] PROGMEM = "Sort: [Alphabet]";
+const char * const MSG_SORT_ALPHA_LANG_TABLE[1] PROGMEM = {
+	MSG_SORT_ALPHA_EN
+};
+
+const char MSG_SORT_NONE_EN[] PROGMEM = "Sort: [None]";
+const char * const MSG_SORT_NONE_LANG_TABLE[1] PROGMEM = {
+	MSG_SORT_NONE_EN
+};
+
+const char MSG_SORT_TIME_EN[] PROGMEM = "Sort: [Time]";
+const char * const MSG_SORT_TIME_LANG_TABLE[1] PROGMEM = {
+	MSG_SORT_TIME_EN
+};
+
 const char MSG_SPEED_EN[] PROGMEM = "Speed";
 const char MSG_SPEED_CZ[] PROGMEM = "Rychlost";
 const char MSG_SPEED_IT[] PROGMEM = "Velocita";

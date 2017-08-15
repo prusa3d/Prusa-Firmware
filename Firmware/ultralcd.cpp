@@ -1348,8 +1348,11 @@ static void lcd_move_e()
 }
 
 void lcd_service_mode_show_result() {
+	float angleDiff;
 	lcd_set_custom_characters_degree();
 	count_xyz_details();
+	angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
+	
 	lcd_update_enable(false);
 	lcd_implementation_clear();
 	lcd_printPGM(MSG_Y_DISTANCE_FROM_MIN);
@@ -2396,7 +2399,24 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
   } while (--size);
 }
 
-
+#ifdef SDCARD_SORT_ALPHA
+static void lcd_sort_type_set() {
+	uint8_t sdSort;
+	
+	EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	switch (sdSort) {
+	case SD_SORT_TIME: sdSort = SD_SORT_ALPHA; break;
+	case SD_SORT_ALPHA: sdSort = SD_SORT_NONE; break;
+	default: sdSort = SD_SORT_TIME;
+	}
+	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
+	lcd_goto_menu(lcd_sdcard_menu, 1);
+	//lcd_update(2);
+	//delay(1000);
+	
+	card.presort();
+}
+#endif //SDCARD_SORT_ALPHA
 
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
@@ -2413,6 +2433,16 @@ static void lcd_set_lang(unsigned char lang) {
     // From modal mode to an active mode? This forces the menu to return to the setup menu.
     langsel = LANGSEL_ACTIVE;
 }
+
+#if !SDSORT_USES_RAM
+void lcd_set_arrows() {
+	void lcd_set_custom_characters_arrows();
+}
+
+void lcd_set_progress() {
+	lcd_set_custom_characters_progress();
+}
+#endif
 
 void lcd_force_language_selection() {
   eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
@@ -4119,16 +4149,24 @@ void getFileDescription(char *name, char *description) {
 */
 
 void lcd_sdcard_menu()
-{
-
-	int tempScrool = 0;
+{	
+  uint8_t sdSort;
+  int tempScrool = 0;
   if (lcdDrawUpdate == 0 && LCD_CLICKED == 0)
     //delay(100);
-    return; // nothing to do (so don't thrash the SD card)
+  return; // nothing to do (so don't thrash the SD card)
   uint16_t fileCnt = card.getnrfilenames();
-
+    
   START_MENU();
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+#ifdef SDCARD_SORT_ALPHA
+  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+  switch(sdSort){
+    case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+    case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+    default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
+  }
+#endif // SDCARD_SORT_ALPHA
   card.getWorkDirName();
   if (card.filename[0] == '/')
   {
@@ -4143,22 +4181,24 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-#ifndef SDCARD_RATHERRECENTFIRST
-      card.getfilename(i);
-#else
-      card.getfilename(fileCnt - 1 - i);
-#endif
-      if (card.filenameIsDir)
-      {
-        MENU_ITEM(sddirectory, MSG_CARD_MENU, card.filename, card.longFilename);
-      } else {
+		const uint16_t nr = (sdSort == SD_SORT_NONE) ? (fileCnt - 1 - i) : i;
+		 /* #ifdef SDCARD_RATHERRECENTFIRST
+			#ifndef SDCARD_SORT_ALPHA
+				fileCnt - 1 -
+			#endif
+		  #endif
+		i;*/
+		#ifdef SDCARD_SORT_ALPHA
+		if (sdSort == SD_SORT_NONE) card.getfilename(nr);
+		else card.getfilename_sorted(nr);
+		#else
+		  card.getfilename(nr);
+		#endif
 
-        MENU_ITEM(sdfile, MSG_CARD_MENU, card.filename, card.longFilename);
-
-
-
-
-      }
+		if (card.filenameIsDir)
+			MENU_ITEM(sddirectory, MSG_CARD_MENU, card.filename, card.longFilename);
+		else
+			MENU_ITEM(sdfile, MSG_CARD_MENU, card.filename, card.longFilename);
     } else {
       MENU_ITEM_DUMMY();
     }

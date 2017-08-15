@@ -84,7 +84,6 @@
 #define TEST(n,b) (((n)&BIT(b))!=0)
 #define SET_BIT(n,b,value) (n) ^= ((-value)^(n)) & (BIT(b))
 
-
 // look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
 // http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
 
@@ -292,7 +291,8 @@ char snmm_filaments_used = 0;
 int selectedSerialPort;
 
 float distance_from_min[3];
-float angleDiff;
+
+bool sortAlpha = false;
 
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
@@ -1207,6 +1207,9 @@ void setup()
 
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
+	}
+	if (eeprom_read_byte((uint8_t*)EEPROM_SD_SORT) == 255) {
+		eeprom_write_byte((uint8_t*)EEPROM_SD_SORT, 0);
 	}
 
 #ifndef DEBUG_DISABLE_STARTMSGS

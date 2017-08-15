@@ -143,6 +143,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     int8_t        verbosity_level
     )
 {
+	float angleDiff;
     if (verbosity_level >= 10) {
 		SERIAL_ECHOLNPGM("calculate machine skew and offset LS");
 
@@ -317,6 +318,8 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     BedSkewOffsetDetectionResultType result = BED_SKEW_OFFSET_DETECTION_PERFECT;
     {
         angleDiff = fabs(a2 - a1);
+		eeprom_update_float((float*)(EEPROM_XYZ_CAL_SKEW), angleDiff);
+
         if (angleDiff > bed_skew_angle_mild)
             result = (angleDiff > bed_skew_angle_extreme) ?
                 BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME :
@@ -2478,7 +2481,7 @@ void count_xyz_details() {
 	a1 = asin(vec_x[1] / MACHINE_AXIS_SCALE_X);
 /*	MYSERIAL.println(vec_x[1]);
 	MYSERIAL.println(a1);*/
-	angleDiff = fabs(a2 - a1);
+	//angleDiff = fabs(a2 - a1);
 	for (uint8_t mesh_point = 0; mesh_point < 3; ++mesh_point) {
 		float y = vec_x[1] * pgm_read_float(bed_ref_points + mesh_point * 2) + vec_y[1] * pgm_read_float(bed_ref_points + mesh_point * 2 + 1) + cntr[1];
 		distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);

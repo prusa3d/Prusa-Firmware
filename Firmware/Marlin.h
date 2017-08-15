@@ -326,7 +326,8 @@ extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
 extern float distance_from_min[3];
-extern float angleDiff;
+
+extern bool sortAlpha;
 
 extern void calculate_volumetric_multipliers();
 
