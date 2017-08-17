@@ -186,7 +186,6 @@
 #undef PREVENT_LENGTHY_EXTRUDE
 #endif //DEBUG_DISABLE_PREVENT_EXTRUDER
 
-
 #define EXTRUDE_MAXLENGTH (X_MAX_LENGTH+Y_MAX_LENGTH) //prevent extrusion of very large distances.
 
 /*================== Thermal Runaway Protection ==============================
@@ -295,12 +294,12 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define Y_HOME_DIR -1
 #define Z_HOME_DIR -1
 
-#define min_software_endstops true // If true, axis won't move to coordinates less than HOME_POS.
-#define max_software_endstops true  // If true, axis won't move to coordinates greater than the defined lengths below.
-
 #ifdef DEBUG_DISABLE_SWLIMITS
 #define min_software_endstops false
 #define max_software_endstops false
+#else
+#define min_software_endstops true // If true, axis won't move to coordinates less than HOME_POS.
+#define max_software_endstops true  // If true, axis won't move to coordinates greater than the defined lengths below.
 #endif //DEBUG_DISABLE_SWLIMITS
 
 
