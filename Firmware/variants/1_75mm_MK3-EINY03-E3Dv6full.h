@@ -16,7 +16,6 @@
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK3"
 
 // Electronics
-//#define MOTHERBOARD BOARD_EINY_0_4a
 #define MOTHERBOARD BOARD_EINY_0_3a
 
 
@@ -49,7 +48,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define X_MAX_POS 255
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
-#define Y_MIN_POS -4
+#define Y_MIN_POS -12 //orig -4
 #define Z_MAX_POS 210
 #define Z_MIN_POS 0.15
 
@@ -79,10 +78,17 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 //DEBUG
 #if 0
+#define DEBUG_DCODES //D codes
+#define DEBUG_DISABLE_XMINLIMIT  //x min limit ignored
+#define DEBUG_DISABLE_XMAXLIMIT  //x max limit ignored
+#define DEBUG_DISABLE_YMINLIMIT  //y min limit ignored
+#define DEBUG_DISABLE_YMAXLIMIT  //y max limit ignored
+#define DEBUG_DISABLE_ZMINLIMIT  //z min limit ignored
+#define DEBUG_DISABLE_ZMAXLIMIT  //z max limit ignored
 #define DEBUG_DISABLE_STARTMSGS //no startup messages 
 #define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
 #define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
-#define DEBUG_DISABLE_LCD_STATUS_LINE  //sw limits ignored
+#define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
 #define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
 #define DEBUG_DISABLE_PRUSA_STATISTICS //disable prusa_statistics() mesages
 //#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
@@ -255,7 +261,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
-#if MOTHERBOARD == 102 || MOTHERBOARD == 302 || MOTHERBOARD == 300 || MOTHERBOARD == 299
+#if MOTHERBOARD == 200 || MOTHERBOARD == 203 || MOTHERBOARD == 303 || MOTHERBOARD == 304 || MOTHERBOARD == 305
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {400, 750, 750} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {400, 750, 750} // {XY,Z,E}

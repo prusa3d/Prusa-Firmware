@@ -57,14 +57,21 @@
 
 #include <avr/wdt.h>
 
-#ifdef HAVE_PAT9125_SENSOR
+#ifdef SWSPI
 #include "swspi.h"
-#include "pat9125.h"
-#endif //HAVE_PAT9125_SENSOR
+#endif //SWSPI
 
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef SWI2C
+#include "swi2c.h"
+#endif //SWI2C
+
+#ifdef PAT9125
+#include "pat9125.h"
+#endif //PAT9125
+
+#ifdef TMC2130
 #include "tmc2130.h"
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130
 
 
 #ifdef BLINKM
@@ -909,7 +916,7 @@ void servo_init()
 static void lcd_language_menu();
 
 
-#ifdef HAVE_PAT9125_SENSOR
+#ifdef PAT9125
 
 bool fsensor_enabled = false;
 bool fsensor_ignore_error = true;
@@ -993,7 +1000,7 @@ void fsensor_update()
 	}
 }
 
-#endif //HAVE_PAT9125_SENSOR
+#endif //PAT9125
 
 
 #ifdef MESH_BED_LEVELING
@@ -1158,15 +1165,15 @@ void setup()
 	plan_init();  // Initialize planner;
 	watchdog_init();
 
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130
 
-#ifdef HAVE_PAT9125_SENSOR
+#ifdef PAT9125
     MYSERIAL.print("PAT9125_init:");
     MYSERIAL.println(pat9125_init(200, 200));
-#endif //HAVE_PAT9125_SENSOR
+#endif //PAT9125
     
 	st_init();    // Initialize stepper, this enables interrupts!
     
@@ -1489,12 +1496,12 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update();
-#ifdef HAVE_PAT9125_SENSOR
+#ifdef PAT9125
 	fsensor_update();
-#endif //HAVE_PAT9125_SENSOR
-#ifdef HAVE_TMC2130_DRIVERS
+#endif //PAT9125
+#ifdef TMC2130
 	tmc2130_check_overtemp();
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130
 }
 
 void get_command()
@@ -1993,7 +2000,7 @@ void homeaxis(int axis)
     if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
 	{
         int axis_home_dir = home_dir(axis);
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
         current_position[axis] = 0;
@@ -2001,7 +2008,7 @@ void homeaxis(int axis)
         destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis];
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		tmc2130_home_restart(axis);
 #endif
         st_synchronize();
@@ -2009,18 +2016,18 @@ void homeaxis(int axis)
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		tmc2130_home_restart(axis);
 #endif
         st_synchronize();
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		feedrate = homing_feedrate[axis];
 #else
 		feedrate = homing_feedrate[axis] / 2;
 #endif
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		tmc2130_home_restart(axis);
 #endif
         st_synchronize();
@@ -2029,7 +2036,7 @@ void homeaxis(int axis)
         feedrate = 0.0;
         endstops_hit_on_purpose();
         axis_known_position[axis] = true;
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		tmc2130_home_exit();
 #endif
     }
@@ -3847,7 +3854,12 @@ void process_commands()
         babystep_reset();
         // Mark all axes as in a need for homing.
         memset(axis_known_position, 0, sizeof(axis_known_position));
-                
+
+        // Home in the XY plane.
+        //set_destination_to_current();
+        setup_for_endstop_move();
+        home_xy();
+
         // Let the user move the Z axes up to the end stoppers.
         if (lcd_calibrate_z_end_stop_manual( onlyZ )) {
             refresh_cmd_timeout();
@@ -3864,14 +3876,10 @@ void process_commands()
             plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
             st_synchronize();
 
-            // Home in the XY plane.
-            set_destination_to_current();
-            setup_for_endstop_move();
-            home_xy();
 
-#ifdef HAVE_TMC2130_DRIVERS
-		tmc2130_home_enter(X_AXIS_MASK | Y_AXIS_MASK);
-#endif
+//#ifdef TMC2130
+//		tmc2130_home_enter(X_AXIS_MASK | Y_AXIS_MASK);
+//#endif
 
             int8_t verbosity_level = 0;
             if (code_seen('V')) {
@@ -3931,7 +3939,7 @@ void process_commands()
                     lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
                 }
             }
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		tmc2130_home_exit();
 #endif
         } else {
@@ -5580,13 +5588,13 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  lcd_setstatuspgm(WELCOME_MSG);
 	  custom_message = false;
 	  custom_message_type = 0;
-#ifdef HAVE_PAT9125_SENSOR
+#ifdef PAT9125
 	  if (fsensor_M600)
 	  {
 		cmdqueue_pop_front(); //hack because M600 repeated 2x when enqueued to front
 		fsensor_enable();
 	  }
-#endif //HAVE_PAT9125_SENSOR
+#endif //PAT9125
         
     }
     break;
@@ -5928,18 +5936,22 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  }
   } // end if(code_seen('T')) (end of T codes)
 
+#ifdef DEBUG_DCODES
   else if (code_seen('D')) // D codes (debug)
   {
     switch((int)code_value())
     {
 	case 0: // D0 - Reset
+		if (*(strchr_pointer + 1) == 0) break;
 		MYSERIAL.println("D0 - Reset");
+		asm volatile("jmp 0x00000");
+		break;
+/*		MYSERIAL.println("D0 - Reset");
 		cli(); //disable interrupts
 		wdt_reset(); //reset watchdog
 		WDTCSR = (1<<WDCE) | (1<<WDE); //enable watchdog
 		WDTCSR = (1<<WDE) | (1<<WDP0); //30ms prescaler
-		while(1); //wait for reset
-		break;
+		while(1); //wait for reset*/
 	case 1: // D1 - Clear EEPROM
 		{
 			MYSERIAL.println("D1 - Clear EEPROM");
@@ -5949,7 +5961,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			sei();
 		}
 		break;
-	case 2: // D2 - read/write PIN
+	case 2: // D2 - Read/Write PIN
 		{
 			if (code_seen('P')) // Pin (0-255)
 			{
@@ -5982,13 +5994,13 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		break;
 	case 3:
 		MYSERIAL.print("fsensor_enable()");
-#ifdef HAVE_PAT9125_SENSOR
+#ifdef PAT9125
 		fsensor_enable();
 #endif
 		break;
 	case 4:
 		MYSERIAL.print("fsensor_disable()");
-#ifdef HAVE_PAT9125_SENSOR
+#ifdef PAT9125
 		fsensor_disable();
 #endif            
 		break;
@@ -6008,8 +6020,21 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			homeaxis(1);
 		}
 		break;
+	case 7:
+		{
+			MYSERIAL.print("pat9125_init=");
+			MYSERIAL.println(pat9125_init(200, 200));
+		}
+		break;
+	case 8:
+		{
+			MYSERIAL.print("swi2c_check=");
+			MYSERIAL.println(swi2c_check(0x75));
+		}
+		break;
 	}
   }
+#endif //DEBUG_DCODES
 
   else
   {
@@ -6088,6 +6113,9 @@ void get_arc_coordinates()
 
 void clamp_to_software_endstops(float target[3])
 {
+#ifdef DEBUG_DISABLE_SWLIMITS
+	return;
+#endif //DEBUG_DISABLE_SWLIMITS
     world2machine_clamp(target[0], target[1]);
 
     // Clamp the Z coordinate.

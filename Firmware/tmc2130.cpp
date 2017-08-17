@@ -1,6 +1,6 @@
 #include "Marlin.h"
 
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 
 #include "tmc2130.h"
 #include <SPI.h>
@@ -508,4 +508,4 @@ uint8_t tmc2130_txrx(uint8_t cs, uint8_t addr, uint32_t wval, uint32_t* rval)
 	return stat;
 }
 
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130

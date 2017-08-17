@@ -32,9 +32,9 @@
 #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
 #include <SPI.h>
 #endif
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 #include "tmc2130.h"
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130
 
 
 //===========================================================================
@@ -431,7 +431,7 @@ void isr() {
       CHECK_ENDSTOPS
       {
         {
-          #if defined(X_MIN_PIN) && X_MIN_PIN > -1
+          #if defined(X_MIN_PIN) && (X_MIN_PIN > -1) && !defined(DEBUG_DISABLE_XMINLIMIT)
 			#ifndef TMC2130_SG_HOMING_SW
 				x_min_endstop = (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
 			#else //TMC2130_SG_HOMING_SW
@@ -451,7 +451,7 @@ void isr() {
       CHECK_ENDSTOPS
       {
         {
-          #if defined(X_MAX_PIN) && X_MAX_PIN > -1
+          #if defined(X_MAX_PIN) && (X_MAX_PIN > -1) && !defined(DEBUG_DISABLE_XMAXLIMIT)
 			#ifndef TMC2130_SG_HOMING_SW
 				x_max_endstop = (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
 			#else //TMC2130_SG_HOMING_SW
@@ -475,7 +475,7 @@ void isr() {
     #endif
       CHECK_ENDSTOPS
       {
-        #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
+        #if defined(Y_MIN_PIN) && (Y_MIN_PIN > -1) && !defined(DEBUG_DISABLE_YMINLIMIT)
 			#ifndef TMC2130_SG_HOMING_SW
 				y_min_endstop=(READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
 			#else //TMC2130_SG_HOMING_SW
@@ -493,7 +493,7 @@ void isr() {
     else { // +direction
       CHECK_ENDSTOPS
       {
-        #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
+        #if defined(Y_MAX_PIN) && (Y_MAX_PIN > -1) && !defined(DEBUG_DISABLE_YMAXLIMIT)
 			#ifndef TMC2130_SG_HOMING_SW
 				y_max_endstop=(READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
 			#else //TMC2130_SG_HOMING_SW
@@ -519,7 +519,7 @@ void isr() {
       count_direction[Z_AXIS]=-1;
       if(check_endstops && ! check_z_endstop)
       {
-        #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
+        #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
           bool z_min_endstop=(READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
           if(z_min_endstop && old_z_min_endstop && (current_block->steps_z > 0)) {
             endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
@@ -540,7 +540,7 @@ void isr() {
       count_direction[Z_AXIS]=1;
       CHECK_ENDSTOPS
       {
-        #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
+        #if defined(Z_MAX_PIN) && (Z_MAX_PIN > -1) && !defined(DEBUG_DISABLE_ZMAXLIMIT)
           bool z_max_endstop=(READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING);
           if(z_max_endstop && old_z_max_endstop && (current_block->steps_z > 0)) {
             endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
@@ -553,7 +553,7 @@ void isr() {
     }
 
     // Supporting stopping on a trigger of the Z-stop induction sensor, not only for the Z-minus movements.
-    #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
+    #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
     if(check_z_endstop) {
         // Check the Z min end-stop no matter what.
         // Good for searching for the center of an induction target.
@@ -829,9 +829,9 @@ void clear_current_adv_vars() {
       
 void st_init()
 {
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 	tmc2130_init();
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130
 
   digipot_init(); //Initialize Digipot Motor Current
   microstep_init(); //Initialize Microstepping Pins
@@ -1042,7 +1042,7 @@ void st_synchronize()
 {
 	while(blocks_queued())
 	{
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		manage_heater();
 		// Vojtech: Don't disable motors inside the planner!
 		if (!tmc2130_update_sg())
@@ -1050,12 +1050,12 @@ void st_synchronize()
 			manage_inactivity(true);
 			lcd_update();
 		}
-#else //HAVE_TMC2130_DRIVERS
+#else //TMC2130
 		manage_heater();
 		// Vojtech: Don't disable motors inside the planner!
 		manage_inactivity(true);
 		lcd_update();
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130
 	}
 }
 
