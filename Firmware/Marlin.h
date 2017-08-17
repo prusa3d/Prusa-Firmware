@@ -318,8 +318,6 @@ extern void digipot_i2c_set_current( int channel, float current );
 extern void digipot_i2c_init();
 #endif
 
-#endif
-
 //Long pause
 extern int saved_feedmultiply;
 extern float HotendTempBckp;
@@ -352,8 +350,29 @@ float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
 
 #endif
+
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
+
+#ifdef HOST_KEEPALIVE_FEATURE
+
+// States for managing Marlin and host communication
+// Marlin sends messages if blocked or busy
+enum MarlinBusyState {
+	NOT_BUSY,           // Not in a handler
+	IN_HANDLER,         // Processing a GCode
+	IN_PROCESS,         // Known to be blocking command input (as in G29)
+	PAUSED_FOR_USER,    // Blocking pending any input
+	PAUSED_FOR_INPUT    // Blocking pending text input (concept)
+};
+
+#define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
+extern void host_keepalive();
+extern MarlinBusyState busy_state;
+
+#endif //HOST_KEEPALIVE_FEATURE
+
+#endif //ifndef marlin.h

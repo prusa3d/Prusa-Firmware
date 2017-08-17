@@ -372,20 +372,10 @@ int fanSpeed=0;
 bool cancel_heatup = false ;
 
 #ifdef HOST_KEEPALIVE_FEATURE
-  // States for managing Marlin and host communication
-  // Marlin sends messages if blocked or busy
-  enum MarlinBusyState {
-	NOT_BUSY,           // Not in a handler
-	IN_HANDLER,         // Processing a GCode
-	IN_PROCESS,         // Known to be blocking command input (as in G29)
-	PAUSED_FOR_USER,    // Blocking pending any input
-	PAUSED_FOR_INPUT    // Blocking pending text input (concept)
-  };
-
-  static MarlinBusyState busy_state = NOT_BUSY;
+  
+  MarlinBusyState busy_state = NOT_BUSY;
   static long prev_busy_signal_ms = -1;
   uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
-  #define KEEPALIVE_STATE(n) do { busy_state = n; } while (0)
 #else
   #define host_keepalive();
   #define KEEPALIVE_STATE(n);
@@ -1099,6 +1089,7 @@ void setup()
 	world2machine_reset();
 
 	lcd_init();
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	if (!READ(BTN_ENC))
 	{
 		_delay_ms(1000);
@@ -1120,7 +1111,7 @@ void setup()
 
 
 			_delay_ms(2000);
-
+			
 			char level = reset_menu();
 			factory_reset(level, false);
 
@@ -1266,6 +1257,7 @@ void setup()
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
+  KEEPALIVE_STATE(NOT_BUSY);
 }
 
 void trace();
@@ -1351,7 +1343,7 @@ void host_keepalive() {
   long ms = millis();
   if (host_keepalive_interval && busy_state != NOT_BUSY) {
     if (ms - prev_busy_signal_ms < 1000UL * host_keepalive_interval) return;
-    switch (busy_state) {
+	switch (busy_state) {
       case IN_HANDLER:
       case IN_PROCESS:
         SERIAL_ECHO_START;
@@ -1432,7 +1424,6 @@ void loop()
   manage_heater();
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
-  host_keepalive();
   lcd_update();
 }
 
@@ -2460,7 +2451,7 @@ void process_commands()
         prepare_arc_move(false);
       }
       break;
-    case 4: // G4 dwell      
+    case 4: // G4 dwell   
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
@@ -2493,10 +2484,7 @@ void process_commands()
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
 		homing_flag = true;
-
-		KEEPALIVE_STATE(IN_HANDLER);
-
-#ifdef ENABLE_AUTO_BED_LEVELING
+		#ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
 #endif //ENABLE_AUTO_BED_LEVELING
             
@@ -2943,6 +2931,7 @@ void process_commands()
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
+		KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
 		SERIAL_ECHOLNPGM("PINDA probe calibration start");
 		custom_message = true;
 		custom_message_type = 4;
@@ -3540,9 +3529,9 @@ void process_commands()
       while (*src == ' ') ++src;
       if (!hasP && !hasS && *src != '\0') {
         lcd_setstatus(src);
-      } else {
-        LCD_MESSAGERPGM(MSG_USERWAIT);
-      }
+	  } else {
+		  LCD_MESSAGERPGM(MSG_USERWAIT);
+	  }
 
       lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
       st_synchronize();
@@ -3754,7 +3743,6 @@ void process_commands()
     {
 		// Only Z calibration?
 		bool onlyZ = code_seen('Z');
-
 		if (!onlyZ) {
 			setTargetBed(0);
 			setTargetHotend(0, 0);
@@ -3777,7 +3765,9 @@ void process_commands()
         memset(axis_known_position, 0, sizeof(axis_known_position));
                 
         // Let the user move the Z axes up to the end stoppers.
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         if (lcd_calibrate_z_end_stop_manual( onlyZ )) {
+			KEEPALIVE_STATE(IN_HANDLER);
             refresh_cmd_timeout();
 			if (((degHotend(0) > MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) && (!onlyZ)) {
 				lcd_wait_for_cool_down();
@@ -3857,6 +3847,7 @@ void process_commands()
             }
         } else {
             // Timeouted.
+			KEEPALIVE_STATE(IN_HANDLER);
         }
         lcd_update_enable(true);
         break;
@@ -3887,8 +3878,10 @@ void process_commands()
 
     case 47:
         // M47: Prusa3D: Show end stops dialog on the display.
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         lcd_diag_show_end_stops();
-        break;
+		KEEPALIVE_STATE(IN_HANDLER);
+		break;
 
 #if 0
     case 48: // M48: scan the bed induction sensor points, print the sensor trigger coordinates to the serial line for visualization on the PC.
@@ -5070,8 +5063,7 @@ Sigma_Exit:
       if (code_seen('S')) temp=code_value();
       if (code_seen('C')) c=code_value();
 	  
-	  KEEPALIVE_STATE(NOT_BUSY);
-      PID_autotune(temp, e, c);
+	  PID_autotune(temp, e, c);
     }
     break;
     case 400: // M400 finish all moves
@@ -5433,7 +5425,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lcd_loading_filament();
         while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
           lcd_change_fil_state = 0;
+		  KEEPALIVE_STATE(PAUSED_FOR_USER);
           lcd_alright();
+		  KEEPALIVE_STATE(IN_HANDLER);
           switch(lcd_change_fil_state){
             
              // Filament failed to load so load it again
@@ -6095,7 +6089,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 	static int killCount = 0;   // make the inactivity button a bit less responsive
    const int KILL_DELAY = 10000;
 #endif
-	
+
     if(buflen < (BUFSIZE-1)){
         get_command();
     }
@@ -6371,7 +6365,7 @@ void calculate_volumetric_multipliers() {
 
 void delay_keep_alive(unsigned int ms)
 {
-    for (;;) {
+	for (;;) {
         manage_heater();
         // Manage inactivity, but don't disable steppers on timeout.
         manage_inactivity(true);
