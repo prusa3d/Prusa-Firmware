@@ -134,11 +134,13 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_TCOOLTHRS 239       // TCOOLTHRS - coolstep treshold
 
-#define TMC2130_SG_HOMING     1     // stallguard homing
-//#define TMC2130_SG_HOMING_SW  1     // stallguard "software" homing
-#define TMC2130_SG_THRS_X    30     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y    30     // stallguard sensitivity for Y axis
-#define TMC2130_SG_DELTA     128    // stallguard delta [usteps] (minimum usteps before stallguard readed - SW homing)
+#define TMC2130_SG_HOMING       1     // stallguard homing
+//#define TMC2130_SG_HOMING_SW_XY  1    // stallguard "software" homing for XY axes
+#define TMC2130_SG_HOMING_SW_Z  1     // stallguard "software" homing for Z axis
+#define TMC2130_SG_THRS_X       0     // stallguard sensitivity for X axis
+#define TMC2130_SG_THRS_Y       0     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_Z       2     // stallguard sensitivity for Z axis
+#define TMC2130_SG_DELTA      128    // stallguard delta [usteps] (minimum usteps before stallguard readed - SW homing)
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {3, 3, 5, 8}  // default holding currents for all axes
