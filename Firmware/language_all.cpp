@@ -1096,6 +1096,21 @@ const char * const MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_LANG_TABLE[LANG_NUM] P
 	MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_EN
 };
 
+const char MSG_CALIBRATE_Z_AUTO_EN[] PROGMEM = "Calibrating Z...";
+const char MSG_CALIBRATE_Z_AUTO_CZ[] PROGMEM = "Calibrating Z...";
+const char MSG_CALIBRATE_Z_AUTO_IT[] PROGMEM = "Calibrating Z...";
+const char MSG_CALIBRATE_Z_AUTO_ES[] PROGMEM = "Calibrating Z...";
+const char MSG_CALIBRATE_Z_AUTO_PL[] PROGMEM = "Calibrating Z...";
+const char MSG_CALIBRATE_Z_AUTO_DE[] PROGMEM = "Calibrating Z...";
+const char * const MSG_CALIBRATE_Z_AUTO_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CALIBRATE_Z_AUTO_EN,
+	MSG_CALIBRATE_Z_AUTO_CZ,
+	MSG_CALIBRATE_Z_AUTO_IT,
+	MSG_CALIBRATE_Z_AUTO_ES,
+	MSG_CALIBRATE_Z_AUTO_PL,
+	MSG_CALIBRATE_Z_AUTO_DE
+};
+
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_EN[] PROGMEM = "Searching bed calibration point";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Hledam kalibracni bod podlozky";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Ricerca del letto punto di calibraz.";

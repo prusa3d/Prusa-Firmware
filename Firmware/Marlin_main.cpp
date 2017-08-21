@@ -1992,6 +1992,39 @@ inline void gcode_M900() {
     }
 #endif // LIN_ADVANCE
 
+#ifdef TMC2130
+bool calibrate_z_auto()
+{
+	lcd_display_message_fullscreen_P(MSG_CALIBRATE_Z_AUTO);
+	bool endstops_enabled  = enable_endstops(true);
+	int axis_up_dir = -home_dir(Z_AXIS);
+	tmc2130_home_enter(Z_AXIS_MASK);
+	current_position[Z_AXIS] = 0;
+	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	set_destination_to_current();
+	destination[Z_AXIS] += (1.1 * max_length(Z_AXIS) * axis_up_dir);
+	feedrate = homing_feedrate[Z_AXIS];
+	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+	tmc2130_home_restart(Z_AXIS);
+	st_synchronize();
+//	current_position[axis] = 0;
+//	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	tmc2130_home_exit();
+    enable_endstops(false);
+	current_position[Z_AXIS] = 0;
+	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	set_destination_to_current();
+	destination[Z_AXIS] += 10 * axis_up_dir; //10mm up
+	feedrate = homing_feedrate[Z_AXIS] / 2;
+	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+	st_synchronize();
+    enable_endstops(endstops_enabled);
+    current_position[Z_AXIS] = Z_MAX_POS-3.f;
+    plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	return true;
+}
+#endif //TMC2130
+
 void homeaxis(int axis)
 {
 	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homming
@@ -3858,10 +3891,15 @@ void process_commands()
         // Home in the XY plane.
         //set_destination_to_current();
         setup_for_endstop_move();
-        home_xy();
+		lcd_display_message_fullscreen_P(MSG_AUTO_HOME);
+		home_xy();
 
         // Let the user move the Z axes up to the end stoppers.
+#ifdef TMC2130
+        if (calibrate_z_auto()) {
+#else //TMC2130
         if (lcd_calibrate_z_end_stop_manual( onlyZ )) {
+#endif //TMC2130
             refresh_cmd_timeout();
 			if (((degHotend(0) > MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) && (!onlyZ)) {
 				lcd_wait_for_cool_down();
@@ -5696,12 +5734,15 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 	case 916: // M916 Set sg_thrs
     {
-		if (code_seen('X')) sg_thrs_x = code_value();
-		if (code_seen('Y')) sg_thrs_y = code_value();
-		MYSERIAL.print("sg_thrs_x=");
-		MYSERIAL.print(sg_thrs_x, DEC);
-		MYSERIAL.print(" sg_thrs_y=");
-		MYSERIAL.println(sg_thrs_y, DEC);
+		if (code_seen('X')) tmc2131_axis_sg_thr[X_AXIS] = code_value();
+		if (code_seen('Y')) tmc2131_axis_sg_thr[Y_AXIS] = code_value();
+		if (code_seen('Z')) tmc2131_axis_sg_thr[Z_AXIS] = code_value();
+		MYSERIAL.print("tmc2131_axis_sg_thr[X]=");
+		MYSERIAL.print(tmc2131_axis_sg_thr[X_AXIS], DEC);
+		MYSERIAL.print("tmc2131_axis_sg_thr[Y]=");
+		MYSERIAL.print(tmc2131_axis_sg_thr[Y_AXIS], DEC);
+		MYSERIAL.print("tmc2131_axis_sg_thr[Z]=");
+		MYSERIAL.print(tmc2131_axis_sg_thr[Z_AXIS], DEC);
     }
     break;
 
@@ -5993,17 +6034,18 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		}
 		break;
 	case 3:
-		MYSERIAL.print("fsensor_enable()");
+		calibrate_z_auto();
+/*		MYSERIAL.print("fsensor_enable()");
 #ifdef PAT9125
 		fsensor_enable();
-#endif
+#endif*/
 		break;
 	case 4:
-		MYSERIAL.print("fsensor_disable()");
+/*		MYSERIAL.print("fsensor_disable()");
 #ifdef PAT9125
 		fsensor_disable();
 #endif            
-		break;
+		break;*/
 	case 5:
 		{
 /*			MYSERIAL.print("tmc2130_rd_MSCNT(0)=");
