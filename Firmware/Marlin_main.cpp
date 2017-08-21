@@ -1256,8 +1256,12 @@ void setup()
 
 
 
-#if defined(CONTROLLERFAN_PIN) && CONTROLLERFAN_PIN > -1
+#if defined(CONTROLLERFAN_PIN) && (CONTROLLERFAN_PIN > -1)
 	SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
+#endif
+
+#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
+	SET_OUTPUT(LCD_PWM_PIN); //Set pin used for driver cooling fan
 #endif
 
 #ifdef DIGIPOT_I2C
@@ -6034,18 +6038,28 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		}
 		break;
 	case 3:
-		calibrate_z_auto();
+		if (code_seen('L')) // lcd pwm (0-255)
+		{
+			lcdSoftPwm = (int)code_value();
+		}
+		if (code_seen('B')) // lcd blink delay (0-255)
+		{
+			lcdBlinkDelay = (int)code_value();
+		}
+//		calibrate_z_auto();
 /*		MYSERIAL.print("fsensor_enable()");
 #ifdef PAT9125
 		fsensor_enable();
 #endif*/
 		break;
 	case 4:
+//			lcdBlinkDelay = 10;
 /*		MYSERIAL.print("fsensor_disable()");
 #ifdef PAT9125
 		fsensor_disable();
 #endif            
 		break;*/
+		break;
 	case 5:
 		{
 /*			MYSERIAL.print("tmc2130_rd_MSCNT(0)=");
