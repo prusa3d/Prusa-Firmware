@@ -515,7 +515,7 @@ const char * const MSG_CALIBRATE_E_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_E_DE
 };
 
-const char MSG_CALIBRATE_PINDA_EN[] PROGMEM = "Calibrate";
+const char MSG_CALIBRATE_PINDA_EN[] PROGMEM = "PINDA Temp. cal.";
 const char MSG_CALIBRATE_PINDA_CZ[] PROGMEM = "Zkalibrovat";
 const char MSG_CALIBRATE_PINDA_IT[] PROGMEM = "Calibrare";
 const char MSG_CALIBRATE_PINDA_ES[] PROGMEM = "Calibrar";
@@ -530,7 +530,7 @@ const char * const MSG_CALIBRATE_PINDA_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_PINDA_DE
 };
 
-const char MSG_CALIBRATION_PINDA_MENU_EN[] PROGMEM = "Temp. calibration";
+const char MSG_CALIBRATION_PINDA_MENU_EN[] PROGMEM = "PINDA Temp. cal.";
 const char MSG_CALIBRATION_PINDA_MENU_CZ[] PROGMEM = "Teplot. kalibrace";
 const char MSG_CALIBRATION_PINDA_MENU_IT[] PROGMEM = "Taratura temp.";
 const char MSG_CALIBRATION_PINDA_MENU_ES[] PROGMEM = "Calibracion temp.";
@@ -806,6 +806,16 @@ const char * const MSG_DWELL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DWELL_ES,
 	MSG_DWELL_EN,
 	MSG_DWELL_DE
+};
+
+const char MSG_ENDSTOPPULLUP_FIL_RUNOUT_OFF_EN[] PROGMEM = "FR Pullup   [OFF]";
+const char * const MSG_ENDSTOPPULLUP_FIL_RUNOUT_OFF_LANG_TABLE[1] PROGMEM = {
+	MSG_ENDSTOPPULLUP_FIL_RUNOUT_OFF_EN
+};
+
+const char MSG_ENDSTOPPULLUP_FIL_RUNOUT_ON_EN[] PROGMEM = "FR Pullup    [ON]";
+const char * const MSG_ENDSTOPPULLUP_FIL_RUNOUT_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_ENDSTOPPULLUP_FIL_RUNOUT_ON_EN
 };
 
 const char MSG_ENDSTOPS_HIT_EN[] PROGMEM = "endstops hit: ";
@@ -1092,6 +1102,21 @@ const char * const MSG_FILAMENT_LOADING_T3_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENT_LOADING_T3_DE
 };
 
+const char MSG_FILAMENT_RUNOUT_SUPPORT_EN[] PROGMEM = "Fil.Runout S";
+const char * const MSG_FILAMENT_RUNOUT_SUPPORT_LANG_TABLE[1] PROGMEM = {
+	MSG_FILAMENT_RUNOUT_SUPPORT_EN
+};
+
+const char MSG_FILAMENT_RUNOUT_SUPPORT_HIT_EN[] PROGMEM = "Filament detected";
+const char * const MSG_FILAMENT_RUNOUT_SUPPORT_HIT_LANG_TABLE[1] PROGMEM = {
+	MSG_FILAMENT_RUNOUT_SUPPORT_HIT_EN
+};
+
+const char MSG_FILAMENT_RUNOUT_SUPPORT_OPEN_EN[] PROGMEM = "Filament runout";
+const char * const MSG_FILAMENT_RUNOUT_SUPPORT_OPEN_LANG_TABLE[1] PROGMEM = {
+	MSG_FILAMENT_RUNOUT_SUPPORT_OPEN_EN
+};
+
 const char MSG_FILE_PRINTED_EN[] PROGMEM = "Done printing file";
 const char * const MSG_FILE_PRINTED_LANG_TABLE[1] PROGMEM = {
 	MSG_FILE_PRINTED_EN
@@ -1115,6 +1140,31 @@ const char * const MSG_FIL_ADJUSTING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FIL_ADJUSTING_ES,
 	MSG_FIL_ADJUSTING_PL,
 	MSG_FIL_ADJUSTING_DE
+};
+
+const char MSG_FIL_RUNOUT_ACTIVE_OFF_EN[] PROGMEM = "Sens Runout [OFF]";
+const char * const MSG_FIL_RUNOUT_ACTIVE_OFF_LANG_TABLE[1] PROGMEM = {
+	MSG_FIL_RUNOUT_ACTIVE_OFF_EN
+};
+
+const char MSG_FIL_RUNOUT_ACTIVE_ON_EN[] PROGMEM = "Sens Runout  [ON]";
+const char * const MSG_FIL_RUNOUT_ACTIVE_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_FIL_RUNOUT_ACTIVE_ON_EN
+};
+
+const char MSG_FIL_RUNOUT_INVERTING_OFF_EN[] PROGMEM = "FR_Sens[S to VCC]";
+const char * const MSG_FIL_RUNOUT_INVERTING_OFF_LANG_TABLE[1] PROGMEM = {
+	MSG_FIL_RUNOUT_INVERTING_OFF_EN
+};
+
+const char MSG_FIL_RUNOUT_INVERTING_ON_EN[] PROGMEM = "FR_Sens[S to GND]";
+const char * const MSG_FIL_RUNOUT_INVERTING_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_FIL_RUNOUT_INVERTING_ON_EN
+};
+
+const char MSG_FIL_RUNOUT_SETTINGS_EN[] PROGMEM = "Filament Runout S";
+const char * const MSG_FIL_RUNOUT_SETTINGS_LANG_TABLE[1] PROGMEM = {
+	MSG_FIL_RUNOUT_SETTINGS_EN
 };
 
 const char MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_EN[] PROGMEM = "Iteration ";
@@ -2032,7 +2082,7 @@ const char * const MSG_PID_EXTRUDER_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PID_EXTRUDER_DE
 };
 
-const char MSG_PID_FINISHED_EN[] PROGMEM = "PID cal. finished";
+const char MSG_PID_FINISHED_EN[] PROGMEM = "PID cal. finished   ";
 const char MSG_PID_FINISHED_CZ[] PROGMEM = "PID kal. ukoncena";
 const char MSG_PID_FINISHED_IT[] PROGMEM = "Cal. PID completa";
 const char MSG_PID_FINISHED_ES[] PROGMEM = "Cal. PID terminada";
@@ -2062,7 +2112,7 @@ const char * const MSG_PID_RUNNING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PID_RUNNING_DE
 };
 
-const char MSG_PINDA_NOT_CALIBRATED_EN[] PROGMEM = "Temperature calibration has not been run yet";
+const char MSG_PINDA_NOT_CALIBRATED_EN[] PROGMEM = "PINDA temperature calibration has not been run yet";
 const char MSG_PINDA_NOT_CALIBRATED_CZ[] PROGMEM = "Tiskarna nebyla teplotne zkalibrovana";
 const char MSG_PINDA_NOT_CALIBRATED_IT[] PROGMEM = "Taratura della temperatura non ancora eseguita";
 const char MSG_PINDA_NOT_CALIBRATED_ES[] PROGMEM = "La temperatura de calibracion no ha sido ajustada";
@@ -3170,7 +3220,7 @@ const char * const MSG_TEMPERATURE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMPERATURE_DE
 };
 
-const char MSG_TEMP_CALIBRATION_EN[] PROGMEM = "Temp. cal.          ";
+const char MSG_TEMP_CALIBRATION_EN[] PROGMEM = "PINDA Temp.cal.     ";
 const char MSG_TEMP_CALIBRATION_CZ[] PROGMEM = "Tepl. kal.          ";
 const char MSG_TEMP_CALIBRATION_IT[] PROGMEM = "Cal. temp.          ";
 const char MSG_TEMP_CALIBRATION_ES[] PROGMEM = "Cal. temp.          ";
@@ -3185,7 +3235,7 @@ const char * const MSG_TEMP_CALIBRATION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_DE
 };
 
-const char MSG_TEMP_CALIBRATION_DONE_EN[] PROGMEM = "Temperature calibration is finished. Click to continue.";
+const char MSG_TEMP_CALIBRATION_DONE_EN[] PROGMEM = "PINDA temperature calibration is finished. Click to continue.";
 const char MSG_TEMP_CALIBRATION_DONE_CZ[] PROGMEM = "Teplotni kalibrace dokoncena. Pokracujte stiskem tlacitka.";
 const char MSG_TEMP_CALIBRATION_DONE_IT[] PROGMEM = "Taratura temperatura terminata. Fare click per continuare.";
 const char MSG_TEMP_CALIBRATION_DONE_ES[] PROGMEM = "Calibracon temperatura terminada. Presionar para continuar.";
@@ -3200,7 +3250,7 @@ const char * const MSG_TEMP_CALIBRATION_DONE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_DONE_DE
 };
 
-const char MSG_TEMP_CALIBRATION_OFF_EN[] PROGMEM = "Temp. cal. [OFF]";
+const char MSG_TEMP_CALIBRATION_OFF_EN[] PROGMEM = "PINDA T.cal.[OFF]";
 const char MSG_TEMP_CALIBRATION_OFF_CZ[] PROGMEM = "Tepl. kal. [OFF]";
 const char MSG_TEMP_CALIBRATION_OFF_IT[] PROGMEM = "Cal. temp. [OFF]";
 const char MSG_TEMP_CALIBRATION_OFF_ES[] PROGMEM = "Cal. temp. [OFF]";
@@ -3215,7 +3265,7 @@ const char * const MSG_TEMP_CALIBRATION_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_OFF_DE
 };
 
-const char MSG_TEMP_CALIBRATION_ON_EN[] PROGMEM = "Temp. cal. [ON]";
+const char MSG_TEMP_CALIBRATION_ON_EN[] PROGMEM = "PINDA T.cal. [ON]";
 const char MSG_TEMP_CALIBRATION_ON_CZ[] PROGMEM = "Tepl. kal. [ON]";
 const char MSG_TEMP_CALIBRATION_ON_IT[] PROGMEM = "Cal. temp. [ON]";
 const char MSG_TEMP_CALIBRATION_ON_ES[] PROGMEM = "Cal. temp. [ON]";
