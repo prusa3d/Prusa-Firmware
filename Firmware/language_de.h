@@ -285,6 +285,9 @@
 #define MSG_SET_TEMPERATURE								"Temp. einsetzen"
 #define MSG_PID_FINISHED								"PID Kalib. fertig"
 #define MSG_PID_RUNNING									"PID Kalib."
+#define(length=20, lines=1) MSG_PID_BED							"PID Bett Kalibrier. "
+#define(length=20, lines=1) MSG_PID_BED_FINISHED				"PID Bett Kal. fertig"
+#define(length=20, lines=1) MSG_PID_BED_RUNNING					"PID Bett Kal."
 
 #define MSG_CALIBRATE_PINDA								"Kalibrieren"
 #define MSG_CALIBRATION_PINDA_MENU						"Temp. kalibrieren"
