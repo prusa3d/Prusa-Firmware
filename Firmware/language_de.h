@@ -208,6 +208,16 @@
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP 		"Kalibrieren von XYZ. Drehen Sie den Knopf, bis beide Z-Schlitten obere Anschaege erreichen. Klicken wenn beide ganz oben sind."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 		"Kalibrieren von Z. Drehen Sie den Knopf, bis beide Z-Schlitten obere Anschaege erreichen. Klicken wenn beide ganz oben sind."
 
+#define MSG_FINISHING_MOVEMENTS							"Bewegung beenden"
+#define MSG_PRINT_PAUSED								"Druck pausiert"
+#define MSG_RESUMING_PRINT								"Druck weitergehen"
+#define MSG_PID_EXTRUDER								"PID Kalibrierung"
+#define MSG_SET_TEMPERATURE								"Temp. einsetzen"
+#define MSG_PID_FINISHED								"PID Kalib. fertig"
+#define MSG_PID_RUNNING									"PID Kalib."
+#define(length=20, lines=1) MSG_PID_BED							"PID Bett Kalibrier. "
+#define(length=20, lines=1) MSG_PID_BED_FINISHED				"PID Bett Kal. fertig"
+#define(length=20, lines=1) MSG_PID_BED_RUNNING					"PID Bett Kal."
 #define MSG_CONFIRM_NOZZLE_CLEAN			"Bitte reinigen Sie die Duese vor Kalibrierung. Klicken wenn sauber."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Sind beide Z Schlitten ganz oben?"
 

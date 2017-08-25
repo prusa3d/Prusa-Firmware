@@ -283,6 +283,9 @@
 #define(length=20, lines=1) MSG_SET_TEMPERATURE					"Set temperature:"
 #define(length=20, lines=1) MSG_PID_FINISHED					"PID cal. finished   "
 #define(length=20, lines=1) MSG_PID_RUNNING						"PID cal.           "
+#define(length=20, lines=1) MSG_PID_BED							"PID bed cal.        "
+#define(length=20, lines=1) MSG_PID_BED_FINISHED				"PID bed cal. done   "
+#define(length=20, lines=1) MSG_PID_BED_RUNNING					"PID bed cal. "
 
 #define(length=20, lines=1) MSG_CALIBRATE_PINDA					"Calibrate"
 #define(length=20, lines=1) MSG_CALIBRATION_PINDA_MENU			"Temp. calibration"

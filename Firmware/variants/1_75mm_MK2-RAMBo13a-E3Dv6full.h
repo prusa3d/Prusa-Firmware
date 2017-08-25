@@ -393,6 +393,7 @@ THERMISTORS SETTINGS
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
 #define DEFAULT_PID_TEMP 210
+#define DEFAULT_PID_BED_TEMP 55
 
 #ifdef SNMM
 #define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print

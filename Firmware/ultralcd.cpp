@@ -112,6 +112,7 @@ bool printer_connected = true;
 
 unsigned long display_time; //just timer for showing pid finished message on lcd;
 float pid_temp = DEFAULT_PID_TEMP;
+float pid_bed_temp = DEFAULT_PID_BED_TEMP;
 
 bool long_press_active = false;
 long long_press_timer = millis();
@@ -728,6 +729,9 @@ void lcd_commands()
 			#else
 			lcd_commands_step = 5;
 			#endif
+			#ifdef DEFAULT_PID_BED_TEMP
+			lcd_commands_step = lcd_commands_step+1;
+			#endif
 		}
 
 	}
@@ -772,7 +776,49 @@ void lcd_commands()
 			lcd_commands_type = 0;
 		}
 	}
-
+#ifdef DEFAULT_PID_BED_TEMP
+	if (lcd_commands_type == LCD_COMMAND_PID_BED) {
+		char cmd1[30];
+		
+		if (lcd_commands_step == 0) {
+			custom_message_type = 3;
+			custom_message_state = 1;
+			custom_message = true;
+			lcdDrawUpdate = 3;
+			lcd_commands_step = 3;
+		}
+		if (lcd_commands_step == 3 && !blocks_queued()) { //PID calibration
+			strcpy(cmd1, "M303 E-1 S");
+			strcat(cmd1, ftostr3(pid_bed_temp));
+			enquecommand(cmd1);
+			lcd_setstatuspgm(MSG_PID_BED_RUNNING);
+			lcd_commands_step = 2;
+		}
+		if (lcd_commands_step == 2 && pid_tuning_finished) { //saving to eeprom
+			pid_tuning_finished = false;
+			custom_message_state = 0;
+			lcd_setstatuspgm(MSG_PID_BED_FINISHED);
+			strcpy(cmd1, "M304 P");
+			strcat(cmd1, ftostr32(_Kp));
+			strcat(cmd1, " I");
+			strcat(cmd1, ftostr32(_Ki));
+			strcat(cmd1, " D");
+			strcat(cmd1, ftostr32(_Kd));
+			enquecommand(cmd1);
+			enquecommand_P(PSTR("M500"));
+			display_time = millis();
+			lcd_commands_step = 1;
+		}
+		if ((lcd_commands_step == 1) && ((millis()- display_time)>2000)) { //calibration finished message
+			lcd_setstatuspgm(WELCOME_MSG);
+			custom_message_type = 0;
+			custom_message = false;
+			pid_temp = DEFAULT_PID_BED_TEMP;
+			lcd_commands_step = 0;
+			lcd_commands_type = 0;
+		}
+	}
+#endif
 
 }
 
@@ -1590,6 +1636,26 @@ void pid_extruder() {
 	}
 
 }
+#ifdef DEFAULT_PID_BED_TEMP
+void pid_bed() {
+
+	lcd_implementation_clear();
+	lcd.setCursor(1, 0);
+	lcd_printPGM(MSG_SET_TEMPERATURE);
+	pid_bed_temp += int(encoderPosition);
+	if (pid_bed_temp > BED_MAXTEMP) pid_bed_temp = BED_MAXTEMP;
+	if (pid_bed_temp < BED_MINTEMP) pid_bed_temp = BED_MINTEMP;
+	encoderPosition = 0;
+	lcd.setCursor(1, 2);
+	lcd.print(ftostr3(pid_bed_temp));
+	if (lcd_clicked()) {
+		lcd_commands_type = LCD_COMMAND_PID_BED;
+		lcd_return_to_status();
+		lcd_update(2);
+	}
+
+}
+#endif
 
 void lcd_adjust_z() {
   int enc_dif = 0;
@@ -2683,6 +2749,9 @@ MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
 	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
 #endif //MK1BP
 	MENU_ITEM(submenu, MSG_PID_EXTRUDER, pid_extruder);
+#ifdef DEFAULT_PID_BED_TEMP
+	MENU_ITEM(submenu, MSG_PID_BED, pid_bed);
+#endif
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
 #ifndef MK1BP
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
