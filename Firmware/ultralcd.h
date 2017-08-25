@@ -95,6 +95,9 @@ void lcd_mylang();
   #define LCD_COMMAND_LONG_PAUSE 5
   #define LCD_COMMAND_LONG_PAUSE_RESUME 6
   #define LCD_COMMAND_PID_EXTRUDER 7 
+#ifdef DEFAULT_PID_BED_TEMP
+  #define LCD_COMMAND_PID_BED 8
+#endif
 
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
