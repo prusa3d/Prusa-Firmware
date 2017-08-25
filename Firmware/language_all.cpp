@@ -2450,11 +2450,6 @@ const char * const MSG_RIGHT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RIGHT_DE
 };
 
-const char MSG_SDCARD_SETTINGS_EN[] PROGMEM = "SD card settings";
-const char * const MSG_SDCARD_SETTINGS_LANG_TABLE[1] PROGMEM = {
-	MSG_SDCARD_SETTINGS_EN
-};
-
 const char MSG_SD_CANT_ENTER_SUBDIR_EN[] PROGMEM = "Cannot enter subdir: ";
 const char * const MSG_SD_CANT_ENTER_SUBDIR_LANG_TABLE[1] PROGMEM = {
 	MSG_SD_CANT_ENTER_SUBDIR_EN
