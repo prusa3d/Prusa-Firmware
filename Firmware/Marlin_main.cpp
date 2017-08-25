@@ -2096,11 +2096,18 @@ void process_commands()
 				PingTime = millis();
 				//MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
 			}	  
-		}
-		else if (code_seen("PRN")) {
+		} else if (code_seen("PRN")) {
 		  MYSERIAL.println(status_number);
 
-		}else if (code_seen("fn")) {
+		} else if (code_seen("RESET")) {
+            // careful!
+            if (farm_mode) {
+                asm volatile("  jmp 0x3E000");
+            }
+            else {
+                MYSERIAL.println("Not in farm mode.");
+            }
+        } else if (code_seen("fn")) {
 		  if (farm_mode) {
 			  MYSERIAL.println(farm_no);
 		  }
