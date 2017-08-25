@@ -324,6 +324,7 @@
 #define(length=17, lines=1) MSG_SORT_ALPHA						"Sort: [Alphabet]"
 #define(length=17, lines=1) MSG_SORT_NONE						"Sort: [None]"
 #define(length=20, lines=1) MSG_SORTING							"Sorting files"
+#define(length=20, lines=1) MSG_SDCARD_SETTINGS					"SD card settings"
 #define(length=20) MSG_FIL_RUNOUT_SETTINGS						"Filament Runout S"
 #define(length=20) MSG_FIL_RUNOUT_ACTIVE_ON						"Sens Runout  [ON]"
 #define(length=20) MSG_FIL_RUNOUT_ACTIVE_OFF					"Sens Runout [OFF]"
