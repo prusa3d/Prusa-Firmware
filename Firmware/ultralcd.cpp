@@ -2610,6 +2610,29 @@ void lcd_toshiba_flash_air_compatibility_toggle()
    eeprom_update_byte((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
 }
 
+void lcd_sdcard_settings_menu()
+{
+	START_MENU();
+		MENU_ITEM(back, MSG_SETTINGS, lcd_settings_menu);
+		if (card.ToshibaFlashAir_isEnabled()) {
+		MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON, lcd_toshiba_flash_air_compatibility_toggle);
+		} else {
+		MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF, lcd_toshiba_flash_air_compatibility_toggle);
+		}
+	#ifdef SDCARD_SORT_ALPHA
+		EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+		switch(sdSort){
+			case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+			case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+		default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
+		}
+	#endif // SDCARD_SORT_ALPHA		
+	END_MENU();
+}
+	
+
+
+
 static void lcd_settings_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -2639,11 +2662,13 @@ static void lcd_settings_menu()
 	}
 	MENU_ITEM(submenu, MSG_LANGUAGE_SELECT, lcd_language_menu);
 
-  if (card.ToshibaFlashAir_isEnabled()) {
-    MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON, lcd_toshiba_flash_air_compatibility_toggle);
-  } else {
-    MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF, lcd_toshiba_flash_air_compatibility_toggle);
-  }
+	MENU_ITEM(submenu, MSG_SDCARD_SETTINGS, lcd_sdcard_settings_menu);
+	
+//  if (card.ToshibaFlashAir_isEnabled()) {
+//    MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON, lcd_toshiba_flash_air_compatibility_toggle);
+//  } else {
+//    MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF, lcd_toshiba_flash_air_compatibility_toggle);
+//  }
     
     if (farm_mode)
     {
@@ -4159,14 +4184,14 @@ void lcd_sdcard_menu()
     
   START_MENU();
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
-#ifdef SDCARD_SORT_ALPHA
-  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
-  switch(sdSort){
-    case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
-    case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
-    default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
-  }
-#endif // SDCARD_SORT_ALPHA
+//#ifdef SDCARD_SORT_ALPHA
+//  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+//  switch(sdSort){
+//    case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+//    case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+//    default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
+//  }
+//#endif // SDCARD_SORT_ALPHA
   card.getWorkDirName();
   if (card.filename[0] == '/')
   {
