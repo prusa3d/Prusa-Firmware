@@ -3332,6 +3332,7 @@ void process_commands()
 			current_position[E_AXIS] += DEFAULT_RETRACTION;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 		}
+		KEEPALIVE_STATE(NOT_BUSY);
 		// Restore custom message state
 		custom_message = custom_message_old;
 		custom_message_type = custom_message_type_old;
@@ -5381,11 +5382,13 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		WRITE(BEEPER, LOW);
 #ifdef SNMM
 		display_loading();
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
 		do {
 			target[E_AXIS] += 0.002;
 			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
 			delay_keep_alive(2);
-		} while (!lcd_clicked());		
+		} while (!lcd_clicked());
+		KEEPALIVE_STATE(IN_HANDLER);
 		/*if (millis() - load_filament_time > 2) {
 			load_filament_time = millis();
 			target[E_AXIS] += 0.001;
@@ -5600,6 +5603,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     break;
 	case 701: //M701: load filament
 	{
+#ifdef SNMM
+		extr_adj(snmm_extruder);//loads current extruder
+#else
 		enable_z();
 		custom_message = true;
 		custom_message_type = 2;
@@ -5631,6 +5637,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		loading_flag = false;
 		custom_message = false;
 		custom_message_type = 0;
+#endif
 	}
 	break;
 	case 702:

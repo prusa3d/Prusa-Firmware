@@ -3009,7 +3009,7 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	lcd_print_at_PGM(1,3,MSG_CURRENT);
 	char cursor_pos = 1;
 	int enc_dif = 0;
-
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 		manage_heater();
 		manage_inactivity(true);
@@ -3037,10 +3037,10 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 			while (lcd_clicked());
 			delay(10);
 			while (lcd_clicked());
+			KEEPALIVE_STATE(IN_HANDLER);
 			return(cursor_pos - 1);
 		}
-	}
-	
+	}	
 }
 
 char choose_extruder_menu() {
@@ -3059,7 +3059,7 @@ char choose_extruder_menu() {
 	for (int i = 0; i < 3; i++) {
 		lcd_print_at_PGM(1, i + 1, MSG_EXTRUDER);
 	}
-
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 
 		for (int i = 0; i < 3; i++) {
@@ -3123,6 +3123,7 @@ char choose_extruder_menu() {
 			while (lcd_clicked());
 			delay(10);
 			while (lcd_clicked());
+			KEEPALIVE_STATE(IN_HANDLER);
 			return(cursor_pos + first - 1);
 			
 		}
@@ -3317,7 +3318,7 @@ void display_loading() {
 	}
 }
 
-static void extr_adj(int extruder) //loading filament for SNMM
+void extr_adj(int extruder) //loading filament for SNMM
 {
 	bool correct;
 	max_feedrate[E_AXIS] =80;
@@ -3331,13 +3332,13 @@ static void extr_adj(int extruder) //loading filament for SNMM
 	case 3: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T3); break;
 	default: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T0); break;   
 	}
-			
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	do{
 		extr_mov(0.001,1000);
 		delay_keep_alive(2);
 	} while (!lcd_clicked());
 	//delay_keep_alive(500);
-
+	KEEPALIVE_STATE(IN_HANDLER);
 	st_synchronize();
 	//correct = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FIL_LOADED_CHECK, false);
 	//if (!correct) goto	START;
