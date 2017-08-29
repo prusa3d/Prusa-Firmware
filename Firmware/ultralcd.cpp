@@ -3077,14 +3077,14 @@ void prusa_statistics(int _message) {
 		farm_timer = 2;
 		break;
 	case 6:		// print done
-		SERIAL_ECHOLN("{[PRN:8]");
+		SERIAL_ECHO("{[PRN:8]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		status_number = 8;
 		farm_timer = 2;
 		break;
 	case 7:		// print done - stopped
-		SERIAL_ECHOLN("{[PRN:9]");
+		SERIAL_ECHO("{[PRN:9]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		status_number = 9;
@@ -3098,7 +3098,7 @@ void prusa_statistics(int _message) {
 		farm_timer = 2;
 		break;
 	case 20:		// echo farm no
-		SERIAL_ECHOLN("{");
+		SERIAL_ECHO("{");
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
@@ -3112,19 +3112,19 @@ void prusa_statistics(int _message) {
 		SERIAL_ECHOLN("}");
 		break;
     case 22: // waiting for filament change
-        SERIAL_ECHOLN("{[PRN:5]");
+        SERIAL_ECHO("{[PRN:5]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		status_number = 5;
         break;
 	
 	case 90: // Error - Thermal Runaway
-		SERIAL_ECHOLN("{[ERR:1]");
+		SERIAL_ECHO("{[ERR:1]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
 	case 91: // Error - Thermal Runaway Preheat
-		SERIAL_ECHOLN("{[ERR:2]");
+		SERIAL_ECHO("{[ERR:2]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
@@ -3134,7 +3134,7 @@ void prusa_statistics(int _message) {
 		SERIAL_ECHOLN("}");
 		break;
 	case 93: // Error - Max temp
-		SERIAL_ECHOLN("{[ERR:4]");
+		SERIAL_ECHO("{[ERR:4]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
@@ -5220,14 +5220,22 @@ void lcd_confirm_print()
 			if (cursor_pos == 1)
 			{
 				_ret = 1;
-				prusa_statistics(20);
-				prusa_statistics(4);
+				filament_type = lcd_choose_color();
+				prusa_statistics(4, filament_type);
+				no_response = true; //we need confirmation by recieving PRUSA thx
+				important_status = 4;
+				saved_filament_type = filament_type;
+				NcTime = millis();
 			}
 			if (cursor_pos == 2)
 			{
 				_ret = 2;
-				prusa_statistics(20);
-				prusa_statistics(5);
+				filament_type = lcd_choose_color();
+				prusa_statistics(5, filament_type);
+				no_response = true; //we need confirmation by recieving PRUSA thx
+				important_status = 5;				
+				saved_filament_type = filament_type;
+				NcTime = millis();
 			}
 		}
 
@@ -7162,11 +7170,55 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
   if (stepper_timer_overflow_state) stepper_timer_overflow();
 #endif /* DEBUG_STEPPER_TIMER_MISSED */
 	lcd_ping(); //check that we have received ping command if we are in farm mode
+	lcd_send_status();
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL) lcd_commands();
 }
 
 void lcd_printer_connected() {
 	printer_connected = true;
+}
+
+static void lcd_send_status() {
+	if (farm_mode && no_response && ((millis() - NcTime) > (NC_TIME * 1000))) {
+		//send important status messages periodicaly
+		prusa_statistics(important_status, saved_filament_type);
+		NcTime = millis();
+		lcd_connect_printer();
+	}
+};
+
+static void lcd_connect_printer() {
+	lcd_update_enable(false);
+	lcd_implementation_clear();
+	
+	bool pressed = false;
+	int i = 0;
+	int t = 0;
+	lcd_set_custom_characters_progress();
+	lcd_implementation_print_at(0, 0, "Connect printer to"); 
+	lcd_implementation_print_at(0, 1, "monitoring or hold");
+	lcd_implementation_print_at(0, 2, "the knob to continue");
+	while (no_response) {
+		i++;
+		t++;		
+		delay_keep_alive(100);
+		process_commands();
+		if (t == 10) {
+			prusa_statistics(important_status, saved_filament_type);
+			t = 0;
+		}
+		if (READ(BTN_ENC)) { //if button is not pressed
+			i = 0; 
+			lcd_implementation_print_at(0, 3, "                    ");
+		}
+		if (i!=0) lcd_implementation_print_at((i * 20) / (NC_BUTTON_LONG_PRESS * 10), 3, "\x01");
+		if (i == NC_BUTTON_LONG_PRESS * 10) {
+			no_response = false;
+		}
+	}
+	lcd_set_custom_characters_degree();
+	lcd_update_enable(true);
+	lcd_update(2);
 }
 
 void lcd_ping() { //chceck if printer is connected to monitoring when in farm mode

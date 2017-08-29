@@ -285,4 +285,7 @@ void lcd_service_mode_show_result();
 void lcd_wizard();
 void lcd_wizard(int state);
 
+static void lcd_send_status();
+static void lcd_connect_printer();
+
 #endif //ULTRALCD_H

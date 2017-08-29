@@ -251,6 +251,8 @@ CardReader card;
 #endif
 
 unsigned long PingTime = millis();
+unsigned long NcTime;
+
 union Data
 {
 byte b[2];
@@ -413,6 +415,10 @@ bool cancel_heatup = false ;
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
+
+bool no_response = false;
+uint8_t important_status;
+uint8_t saved_filament_type;
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -2382,6 +2388,7 @@ void gcode_M701()
 
 void process_commands()
 {
+	if (!buflen) return; //empty command
   #ifdef FILAMENT_RUNOUT_SUPPORT
     SET_INPUT(FR_SENS);
   #endif
@@ -2455,6 +2462,9 @@ void process_commands()
 			  MYSERIAL.println("Not in farm mode.");
 		  }
 		  
+		}
+		else if (code_seen("thx")) {
+			no_response = false;
 		}else if (code_seen("fv")) {
         // get file version
         #ifdef SDSUPPORT

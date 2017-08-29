@@ -877,34 +877,35 @@ if (print_sd_status)
       if(strlen(card.longFilename) > LCD_WIDTH)
 	  {
 
-        int inters = 0;
-        int gh = scrollstuff;
-        while( ((gh-scrollstuff)<LCD_WIDTH) && (inters == 0)  )
-		{
-          
-          if(card.longFilename[gh] == '\0')
-		  {
-            lcd.setCursor(gh-scrollstuff, 3);
-            lcd.print(card.longFilename[gh-1]);
-            scrollstuff = 0;
-            gh = scrollstuff;
-            inters = 1;
-          }
+			  int inters = 0;
+			  int gh = scrollstuff;
+			  while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
+			  {
+
+				  if (card.longFilename[gh] == '\0')
+				  {
+					  lcd.setCursor(gh - scrollstuff, 3);
+					  lcd.print(card.longFilename[gh - 1]);
+					  scrollstuff = 0;
+					  gh = scrollstuff;
+					  inters = 1;
+				  }
+				  else
+				  {
+					  lcd.setCursor(gh - scrollstuff, 3);
+					  lcd.print(card.longFilename[gh - 1]);
+					  gh++;
+				  }
+
+
+			  }
+			  scrollstuff++;
+		  }
 		  else
 		  {
-            lcd.setCursor(gh-scrollstuff, 3);
-            lcd.print(card.longFilename[gh-1]);
-            gh++;
-          }
-
-          
-        }
-        scrollstuff++;
-      }
-	  else
-	  {
-        lcd.print(longFilenameOLD);
-      }
+			  lcd.print(longFilenameOLD);
+		  }
+	  }
 
 
     }
