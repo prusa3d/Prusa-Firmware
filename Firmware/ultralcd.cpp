@@ -506,10 +506,10 @@ static void lcd_status_screen()
     feedmultiply = 999;
 #endif //ULTIPANEL
 
-  if (farm_mode && !printer_connected) {
+  /*if (farm_mode && !printer_connected) {
 	  lcd.setCursor(0, 3);
 	  lcd_printPGM(MSG_PRINTER_DISCONNECTED);
-  }
+  }*/
 
 }
 
@@ -5243,7 +5243,7 @@ static void lcd_connect_printer() {
 		i++;
 		t++;		
 		delay_keep_alive(100);
-		process_command_small();
+		proc_commands();
 		if (t == 10) {
 			prusa_statistics(important_status, saved_filament_type);
 			t = 0;
