@@ -225,6 +225,8 @@ CardReader card;
 unsigned long TimeSent = millis();
 unsigned long TimeNow = millis();
 unsigned long PingTime = millis();
+unsigned long NcTime;
+
 union Data
 {
 byte b[2];
@@ -384,6 +386,10 @@ bool cancel_heatup = false ;
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
+
+bool no_response = false;
+uint8_t important_status;
+uint8_t saved_filament_type;
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -1010,6 +1016,8 @@ void setup()
 	if (farm_mode)
 	{
 		prusa_statistics(8);
+		no_response = true; //we need confirmation by recieving PRUSA thx
+		important_status = 8;
         selectedSerialPort = 1;
 	} else {
         selectedSerialPort = 0;
@@ -1167,6 +1175,8 @@ void setup()
 	if (farm_mode)
 	{
 		prusa_statistics(8);
+		no_response = true; //we need confirmation by recieving PRUSA thx
+		important_status = 8;
 	}
 
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
@@ -1383,6 +1393,16 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update();
+}
+
+void proc_commands() {
+	if (buflen)
+	{
+		process_commands();
+		if (!cmdbuffer_front_already_processed)
+			cmdqueue_pop_front();
+		cmdbuffer_front_already_processed = false;
+	}
 }
 
 void get_command()
@@ -2115,6 +2135,9 @@ void process_commands()
 			  MYSERIAL.println("Not in farm mode.");
 		  }
 		  
+		}
+		else if (code_seen("thx")) {
+			no_response = false;
 		}else if (code_seen("fv")) {
         // get file version
         #ifdef SDSUPPORT
