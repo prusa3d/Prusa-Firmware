@@ -7202,7 +7202,7 @@ static void lcd_connect_printer() {
 		i++;
 		t++;		
 		delay_keep_alive(100);
-		process_commands();
+		process_command_small();
 		if (t == 10) {
 			prusa_statistics(important_status, saved_filament_type);
 			t = 0;
