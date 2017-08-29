@@ -4167,14 +4167,16 @@ void lcd_sdcard_menu()
     
   START_MENU();
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+  if (!farm_mode) {
 #ifdef SDCARD_SORT_ALPHA
-  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
-  switch(sdSort){
-    case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
-    case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
-    default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
-  }
+	  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	  switch (sdSort) {
+	  case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+	  case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+	  default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
+	  }
 #endif // SDCARD_SORT_ALPHA
+  }
   card.getWorkDirName();
   if (card.filename[0] == '/')
   {
@@ -5241,7 +5243,7 @@ static void lcd_connect_printer() {
 		i++;
 		t++;		
 		delay_keep_alive(100);
-		process_commands();
+		process_command_small();
 		if (t == 10) {
 			prusa_statistics(important_status, saved_filament_type);
 			t = 0;

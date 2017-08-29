@@ -1016,6 +1016,8 @@ void setup()
 	if (farm_mode)
 	{
 		prusa_statistics(8);
+		no_response = true; //we need confirmation by recieving PRUSA thx
+		important_status = 8;
         selectedSerialPort = 1;
 	} else {
         selectedSerialPort = 0;
@@ -1173,6 +1175,8 @@ void setup()
 	if (farm_mode)
 	{
 		prusa_statistics(8);
+		no_response = true; //we need confirmation by recieving PRUSA thx
+		important_status = 8;
 	}
 
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
@@ -1389,6 +1393,16 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update();
+}
+
+void proc_commands() {
+	if (buflen)
+	{
+		process_commands();
+		if (!cmdbuffer_front_already_processed)
+			cmdqueue_pop_front();
+		cmdbuffer_front_already_processed = false;
+	}
 }
 
 void get_command()
@@ -2064,7 +2078,6 @@ void ramming() {
 */
 void process_commands()
 {
-	if (!buflen) return; //empty command
   #ifdef FILAMENT_RUNOUT_SUPPORT
     SET_INPUT(FR_SENS);
   #endif
