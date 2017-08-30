@@ -4516,6 +4516,7 @@ Sigma_Exit:
         SERIAL_ECHOPAIR("M113 S", (unsigned long)host_keepalive_interval);
 		SERIAL_PROTOCOLLN("");
       }
+	break;
 #endif
     case 115: // M115
       if (code_seen('V')) {
