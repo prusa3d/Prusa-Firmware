@@ -1418,6 +1418,7 @@ void loop()
       if (! cmdbuffer_front_already_processed)
           cmdqueue_pop_front();
       cmdbuffer_front_already_processed = false;
+	  host_keepalive();
   }
 }
   //check heater every n milliseconds
