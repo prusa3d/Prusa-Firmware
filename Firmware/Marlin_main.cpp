@@ -150,6 +150,7 @@
 //        Rxxx Wait for extruder current temp to reach target temp. Waits when heating and cooling
 //        IF AUTOTEMP is enabled, S<mintemp> B<maxtemp> F<factor>. Exit autotemp by any M109 without F
 // M112 - Emergency stop
+// M113 - Get or set the timeout interval for Host Keepalive "busy" messages
 // M114 - Output current position to serial port
 // M115 - Capabilities string
 // M117 - display message
@@ -371,6 +372,26 @@ int fanSpeed=0;
 #endif
 
 bool cancel_heatup = false ;
+
+#ifdef HOST_KEEPALIVE_FEATURE
+  // States for managing Marlin and host communication
+  // Marlin sends messages if blocked or busy
+  enum MarlinBusyState {
+	NOT_BUSY,           // Not in a handler
+	IN_HANDLER,         // Processing a GCode
+	IN_PROCESS,         // Known to be blocking command input (as in G29)
+	PAUSED_FOR_USER,    // Blocking pending any input
+	PAUSED_FOR_INPUT    // Blocking pending text input (concept)
+  };
+
+  static MarlinBusyState busy_state = NOT_BUSY;
+  static long prev_busy_signal_ms = -1;
+  uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
+  #define KEEPALIVE_STATE(n) do { busy_state = n; } while (0)
+#else
+  #define host_keepalive();
+  #define KEEPALIVE_STATE(n);
+#endif
 
 #ifdef FILAMENT_SENSOR
   //Variables for Filament Sensor input 
@@ -1331,6 +1352,35 @@ int serial_read_stream() {
     }
 }
 
+#ifdef HOST_KEEPALIVE_FEATURE
+/**
+* Output a "busy" message at regular intervals
+* while the machine is not accepting commands.
+*/
+void host_keepalive() {
+  long ms = millis();
+  if (host_keepalive_interval && busy_state != NOT_BUSY) {
+    if (ms - prev_busy_signal_ms < 1000UL * host_keepalive_interval) return;
+    switch (busy_state) {
+      case IN_HANDLER:
+      case IN_PROCESS:
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: processing");
+        break;
+      case PAUSED_FOR_USER:
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: paused for user");
+        break;
+      case PAUSED_FOR_INPUT:
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: paused for input");
+        break;
+    }
+  }
+  prev_busy_signal_ms = ms;
+}
+#endif
+
 // The loop() function is called in an endless loop by the Arduino framework from the default main() routine.
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
@@ -1392,6 +1442,7 @@ void loop()
   manage_heater();
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
+  host_keepalive();
   lcd_update();
 }
 
@@ -2104,6 +2155,8 @@ void process_commands()
   float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
   int8_t SilentMode;
 #endif
+  KEEPALIVE_STATE(IN_HANDLER);
+
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  starpos = (strchr(strchr_pointer + 5, '*'));
 	  if (starpos != NULL)
@@ -2470,6 +2523,8 @@ void process_commands()
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
 		homing_flag = true;
+
+		KEEPALIVE_STATE(IN_HANDLER);
 
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
@@ -3524,20 +3579,24 @@ void process_commands()
       previous_millis_cmd = millis();
       if (codenum > 0){
         codenum += millis();  // keep track of when we started waiting
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(millis() < codenum && !lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
           lcd_update();
         }
+		KEEPALIVE_STATE(IN_HANDLER);
         lcd_ignore_click(false);
       }else{
           if (!lcd_detected())
             break;
+		  KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(!lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
           lcd_update();
         }
+		KEEPALIVE_STATE(IN_HANDLER);
       }
       if (IS_SD_PRINTING)
         LCD_MESSAGERPGM(MSG_RESUMING);
@@ -4242,6 +4301,7 @@ Sigma_Exit:
           }}
         #endif
 		SERIAL_PROTOCOLLN("");
+		KEEPALIVE_STATE(NOT_BUSY);
       return;
       break;
     case 109:
@@ -4279,11 +4339,14 @@ Sigma_Exit:
       /* See if we are heating up or cooling down */
       target_direction = isHeatingHotend(tmp_extruder); // true if heating, false if cooling
 
+	  KEEPALIVE_STATE(NOT_BUSY);
+
       cancel_heatup = false;
 
 	  wait_for_heater(codenum); //loops until target temperature is reached
 
         LCD_MESSAGERPGM(MSG_HEATING_COMPLETE);
+		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = 2;
 		if (farm_mode) { prusa_statistics(2); };
         
@@ -4311,6 +4374,7 @@ Sigma_Exit:
         cancel_heatup = false;
         target_direction = isHeatingBed(); // true if heating, false if cooling
 
+		KEEPALIVE_STATE(NOT_BUSY);
         while ( (target_direction)&&(!cancel_heatup) ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false)) )
         {
           if(( millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
@@ -4333,6 +4397,7 @@ Sigma_Exit:
           lcd_update();
         }
         LCD_MESSAGERPGM(MSG_BED_DONE);
+		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = 4;
 
         previous_millis_cmd = millis();
@@ -4476,6 +4541,17 @@ Sigma_Exit:
 		else
 			gcode_LastN = 0;
 		break;
+#ifdef HOST_KEEPALIVE_FEATURE
+	case 113: // M113 - Get or set Host Keepalive interval
+      if (code_seen('S')) {
+		host_keepalive_interval = (uint8_t)code_value_short();
+		NOMORE(host_keepalive_interval, 60);
+      } else {
+        SERIAL_ECHO_START;
+        SERIAL_ECHOPAIR("M113 S", (unsigned long)host_keepalive_interval);
+		SERIAL_PROTOCOLLN("");
+      }
+#endif
     case 115: // M115
       if (code_seen('V')) {
           // Report the Prusa version number.
@@ -5023,6 +5099,8 @@ Sigma_Exit:
           temp=70;
       if (code_seen('S')) temp=code_value();
       if (code_seen('C')) c=code_value();
+	  
+	  KEEPALIVE_STATE(NOT_BUSY);
       PID_autotune(temp, e, c);
     }
     break;
@@ -5300,6 +5378,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         int counterBeep = 0;
         lcd_wait_interact();
 		load_filament_time = millis();
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(!lcd_clicked()){
 
 		  cnt++;
@@ -5336,6 +5415,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           }
 
         }
+		KEEPALIVE_STATE(IN_HANDLER);
 		WRITE(BEEPER, LOW);
 #ifdef SNMM
 		display_loading();
@@ -5794,6 +5874,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
     SERIAL_ECHOLNPGM("\"");
   }
+
+  KEEPALIVE_STATE(NOT_BUSY);
 
   ClearToSend();
 }
