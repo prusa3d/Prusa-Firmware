@@ -45,6 +45,10 @@ int target_temperature[EXTRUDERS] = { 0 };
 int target_temperature_bed = 0;
 int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
+#ifdef PINDA_THERMISTOR
+int current_temperature_raw_pinda =  0 ;
+float current_temperature_pinda = 0.0;
+#endif //PINDA_THERMISTOR
 int current_temperature_bed_raw = 0;
 float current_temperature_bed = 0.0;
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
@@ -864,6 +868,9 @@ static void updateTemperaturesFromRawValues()
     {
         current_temperature[e] = analog2temp(current_temperature_raw[e], e);
     }
+#ifdef PINDA_THERMISTOR
+	current_temperature_pinda = analog2tempBed(current_temperature_raw_pinda); //thermistor for pinda is the same as for bed
+#endif
     
 	current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
 
@@ -1944,16 +1951,20 @@ ISR(TIMER0_COMPB_vect)
     if (!temp_meas_ready) //Only update the raw values if they have been read. Else we could be updating them during reading.
     {
       current_temperature_raw[0] = raw_temp_0_value;
-#if EXTRUDERS > 1
+#ifdef PINDA_THERMISTOR
+		 current_temperature_raw_pinda = raw_temp_1_value;
+#else
+ #if EXTRUDERS > 1
       current_temperature_raw[1] = raw_temp_1_value;
-#endif
-#ifdef TEMP_SENSOR_1_AS_REDUNDANT
+ #endif
+ #ifdef TEMP_SENSOR_1_AS_REDUNDANT
       redundant_temperature_raw = raw_temp_1_value;
-#endif
-#if EXTRUDERS > 2
+ #endif
+ #if EXTRUDERS > 2
       current_temperature_raw[2] = raw_temp_2_value;
-#endif
-      current_temperature_bed_raw = raw_temp_bed_value;
+ #endif
+#endif //PINDA_THERMISTOR
+	  current_temperature_bed_raw = raw_temp_bed_value;
     }
 
 //Add similar code for Filament Sensor - can be read any time since IIR filtering is used 
