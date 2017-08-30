@@ -506,10 +506,10 @@ static void lcd_status_screen()
     feedmultiply = 999;
 #endif //ULTIPANEL
 
-  if (farm_mode && !printer_connected) {
+  /*if (farm_mode && !printer_connected) {
 	  lcd.setCursor(0, 3);
 	  lcd_printPGM(MSG_PRINTER_DISCONNECTED);
-  }
+  }*/
 
 }
 
@@ -2141,14 +2141,14 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		farm_timer = 2;
 		break;
 	case 6:		// print done
-		SERIAL_ECHOLN("{[PRN:8]");
+		SERIAL_ECHO("{[PRN:8]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		status_number = 8;
 		farm_timer = 2;
 		break;
 	case 7:		// print done - stopped
-		SERIAL_ECHOLN("{[PRN:9]");
+		SERIAL_ECHO("{[PRN:9]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		status_number = 9;
@@ -2162,7 +2162,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		farm_timer = 2;
 		break;
 	case 20:		// echo farm no
-		SERIAL_ECHOLN("{");
+		SERIAL_ECHO("{");
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
@@ -2176,19 +2176,19 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		SERIAL_ECHOLN("}");
 		break;
     case 22: // waiting for filament change
-        SERIAL_ECHOLN("{[PRN:5]");
+        SERIAL_ECHO("{[PRN:5]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		status_number = 5;
         break;
 	
 	case 90: // Error - Thermal Runaway
-		SERIAL_ECHOLN("{[ERR:1]");
+		SERIAL_ECHO("{[ERR:1]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
 	case 91: // Error - Thermal Runaway Preheat
-		SERIAL_ECHOLN("{[ERR:2]");
+		SERIAL_ECHO("{[ERR:2]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
@@ -2198,7 +2198,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		SERIAL_ECHOLN("}");
 		break;
 	case 93: // Error - Max temp
-		SERIAL_ECHOLN("{[ERR:4]");
+		SERIAL_ECHO("{[ERR:4]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
@@ -3273,31 +3273,26 @@ void change_extr(int extr) { //switches multiplexer for extruders
 
 	pinMode(E_MUX0_PIN, OUTPUT);
 	pinMode(E_MUX1_PIN, OUTPUT);
-	pinMode(E_MUX2_PIN, OUTPUT);
 
 	switch (extr) {
 	case 1:
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, LOW);
-		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	case 2:
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, HIGH);
-		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	case 3:
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, HIGH);
-		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	default:
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, LOW);
-		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	}
@@ -3305,7 +3300,7 @@ void change_extr(int extr) { //switches multiplexer for extruders
 }
 
 static int get_ext_nr() { //reads multiplexer input pins and return current extruder number (counted from 0)
-	return(4 * READ(E_MUX2_PIN) + 2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
+	return(2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
 }
 
 
@@ -3782,12 +3777,20 @@ void lcd_confirm_print()
 				_ret = 1;
 				filament_type = lcd_choose_color();
 				prusa_statistics(4, filament_type);
+				no_response = true; //we need confirmation by recieving PRUSA thx
+				important_status = 4;
+				saved_filament_type = filament_type;
+				NcTime = millis();
 			}
 			if (cursor_pos == 2)
 			{
 				_ret = 2;
 				filament_type = lcd_choose_color();
 				prusa_statistics(5, filament_type);
+				no_response = true; //we need confirmation by recieving PRUSA thx
+				important_status = 5;				
+				saved_filament_type = filament_type;
+				NcTime = millis();
 			}
 		}
 
@@ -3858,7 +3861,7 @@ static void lcd_main_menu()
     
         
     }*/
-    
+ 
   if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
@@ -4118,7 +4121,7 @@ void lcd_sdcard_stop()
 				lcd_return_to_status();
 				lcd_ignore_click(true);
 				lcd_commands_type = LCD_COMMAND_STOP_PRINT;
-            
+				if (farm_mode) prusa_statistics(7);
                 // Turn off the print fan
                 SET_OUTPUT(FAN_PIN);
                 WRITE(FAN_PIN, 0);
@@ -4168,14 +4171,16 @@ void lcd_sdcard_menu()
     
   START_MENU();
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+  if (!farm_mode) {
 #ifdef SDCARD_SORT_ALPHA
-  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
-  switch(sdSort){
-    case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
-    case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
-    default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
-  }
+	  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	  switch (sdSort) {
+	  case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+	  case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+	  default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
+	  }
 #endif // SDCARD_SORT_ALPHA
+  }
   card.getWorkDirName();
   if (card.filename[0] == '/')
   {
@@ -5212,10 +5217,54 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 	  }
 	if (!SdFatUtil::test_stack_integrity()) stack_error();
 	lcd_ping(); //check that we have received ping command if we are in farm mode
+	lcd_send_status();
 }
 
 void lcd_printer_connected() {
 	printer_connected = true;
+}
+
+static void lcd_send_status() {
+	if (farm_mode && no_response && ((millis() - NcTime) > (NC_TIME * 1000))) {
+		//send important status messages periodicaly
+		prusa_statistics(important_status, saved_filament_type);
+		NcTime = millis();
+		lcd_connect_printer();
+	}
+};
+
+static void lcd_connect_printer() {
+	lcd_update_enable(false);
+	lcd_implementation_clear();
+	
+	bool pressed = false;
+	int i = 0;
+	int t = 0;
+	lcd_set_custom_characters_progress();
+	lcd_implementation_print_at(0, 0, "Connect printer to"); 
+	lcd_implementation_print_at(0, 1, "monitoring or hold");
+	lcd_implementation_print_at(0, 2, "the knob to continue");
+	while (no_response) {
+		i++;
+		t++;		
+		delay_keep_alive(100);
+		proc_commands();
+		if (t == 10) {
+			prusa_statistics(important_status, saved_filament_type);
+			t = 0;
+		}
+		if (READ(BTN_ENC)) { //if button is not pressed
+			i = 0; 
+			lcd_implementation_print_at(0, 3, "                    ");
+		}
+		if (i!=0) lcd_implementation_print_at((i * 20) / (NC_BUTTON_LONG_PRESS * 10), 3, "\x01");
+		if (i == NC_BUTTON_LONG_PRESS * 10) {
+			no_response = false;
+		}
+	}
+	lcd_set_custom_characters_degree();
+	lcd_update_enable(true);
+	lcd_update(2);
 }
 
 void lcd_ping() { //chceck if printer is connected to monitoring when in farm mode

@@ -308,6 +308,10 @@ extern unsigned int custom_message_type;
 extern unsigned int custom_message_state;
 extern char snmm_filaments_used;
 extern unsigned long PingTime;
+extern unsigned long NcTime;
+extern bool no_response;
+extern uint8_t important_status;
+extern uint8_t saved_filament_type;
 
 
 // Handling multiple extruders pins
@@ -356,6 +360,7 @@ void temp_compensation_apply();
 void temp_compensation_start();
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
+void proc_commands();
 
 #ifdef HOST_KEEPALIVE_FEATURE
 

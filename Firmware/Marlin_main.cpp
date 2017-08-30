@@ -226,6 +226,8 @@ CardReader card;
 unsigned long TimeSent = millis();
 unsigned long TimeNow = millis();
 unsigned long PingTime = millis();
+unsigned long NcTime;
+
 union Data
 {
 byte b[2];
@@ -395,6 +397,10 @@ bool cancel_heatup = false ;
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
+
+bool no_response = false;
+uint8_t important_status;
+uint8_t saved_filament_type;
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -1021,6 +1027,8 @@ void setup()
 	if (farm_mode)
 	{
 		prusa_statistics(8);
+		no_response = true; //we need confirmation by recieving PRUSA thx
+		important_status = 8;
         selectedSerialPort = 1;
 	} else {
         selectedSerialPort = 0;
@@ -1179,6 +1187,8 @@ void setup()
 	if (farm_mode)
 	{
 		prusa_statistics(8);
+		no_response = true; //we need confirmation by recieving PRUSA thx
+		important_status = 8;
 	}
 
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
@@ -1426,6 +1436,16 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update();
+}
+
+void proc_commands() {
+	if (buflen)
+	{
+		process_commands();
+		if (!cmdbuffer_front_already_processed)
+			cmdqueue_pop_front();
+		cmdbuffer_front_already_processed = false;
+	}
 }
 
 void get_command()
@@ -2141,11 +2161,18 @@ void process_commands()
 				PingTime = millis();
 				//MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
 			}	  
-		}
-		else if (code_seen("PRN")) {
+		} else if (code_seen("PRN")) {
 		  MYSERIAL.println(status_number);
 
-		}else if (code_seen("fn")) {
+		} else if (code_seen("RESET")) {
+            // careful!
+            if (farm_mode) {
+                asm volatile("  jmp 0x3E000");
+            }
+            else {
+                MYSERIAL.println("Not in farm mode.");
+            }
+        } else if (code_seen("fn")) {
 		  if (farm_mode) {
 			  MYSERIAL.println(farm_no);
 		  }
@@ -2153,6 +2180,9 @@ void process_commands()
 			  MYSERIAL.println("Not in farm mode.");
 		  }
 		  
+		}
+		else if (code_seen("thx")) {
+			no_response = false;
 		}else if (code_seen("fv")) {
         // get file version
         #ifdef SDSUPPORT
@@ -5712,7 +5742,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 		  pinMode(E_MUX0_PIN, OUTPUT);
 		  pinMode(E_MUX1_PIN, OUTPUT);
-		  pinMode(E_MUX2_PIN, OUTPUT);
 
 		  delay(100);
 		  SERIAL_ECHO_START;
@@ -5722,25 +5751,21 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  case 1:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  case 2:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  case 3:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  default:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  }
