@@ -4186,7 +4186,8 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-		const uint16_t nr = (sdSort == SD_SORT_NONE) ? (fileCnt - 1 - i) : i;
+		const uint16_t nr = ((sdSort == SD_SORT_NONE) || farm_mode) ? (fileCnt - 1 - i) : i;
+
 		 /* #ifdef SDCARD_RATHERRECENTFIRST
 			#ifndef SDCARD_SORT_ALPHA
 				fileCnt - 1 -
