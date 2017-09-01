@@ -101,14 +101,22 @@ class MarlinSerial //: public Stream
     {
       return (unsigned int)(RX_BUFFER_SIZE + rx_buffer.head - rx_buffer.tail) % RX_BUFFER_SIZE;
     }
-    
-    FORCE_INLINE void write(uint8_t c)
-    {
-      while (!((M_UCSRxA) & (1 << M_UDREx)))
-        ;
 
-      M_UDRx = c;
-    }
+	void write(uint8_t c)
+	{
+		if (selectedSerialPort == 0) {
+			while (!((M_UCSRxA) & (1 << M_UDREx)))
+				;
+
+			M_UDRx = c;
+		}
+		else if (selectedSerialPort == 1) {
+			while (!((UCSR2A) & (1 << UDRE2)))
+				;
+
+			UDR2 = c;
+		}
+	}
     
     
     void checkRx(void)
