@@ -736,4 +736,6 @@ enum CalibrationStatus
 #include "Configuration_adv.h"
 #include "thermistortables.h"
 
+#define PINDA_THERMISTOR
+
 #endif //__CONFIGURATION_H

@@ -1160,7 +1160,7 @@ void digipot_init() //Initialize Digipot Motor Current
 
   EEPROM_read_st(EEPROM_SILENT,(uint8_t*)&SilentMode,sizeof(SilentMode));
 
-  #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
+#if defined(DIGIPOTSS_PIN) && (DIGIPOTSS_PIN > -1)
     if(SilentMode == 0){
     const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT_LOUD;
     }else{
@@ -1171,7 +1171,7 @@ void digipot_init() //Initialize Digipot Motor Current
     for(int i=0;i<=4;i++)
       //digitalPotWrite(digipot_ch[i], digipot_motor_current[i]);
       digipot_current(i,digipot_motor_current[i]);
-  #endif
+#endif
   #ifdef MOTOR_CURRENT_PWM_XY_PIN
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_Z_PIN, OUTPUT);

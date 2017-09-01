@@ -744,6 +744,21 @@ static void lcd_implementation_status_screen()
       planner_queue_min_reset();
     }
 #endif
+	bool print_sd_status = true;
+
+#ifdef PINDA_THERMISTOR
+	if (farm_mode && (custom_message_type == 4))
+	{
+		lcd.setCursor(0, 2);
+		lcd_printPGM(PSTR("P"));
+		lcd.print(ftostr3(current_temperature_pinda));
+		lcd_printPGM(PSTR(LCD_STR_DEGREE " "));
+		print_sd_status = false;
+	}
+#endif //PINDA_THERMISTOR
+
+if (print_sd_status)
+{
 	
     //Print SD status
     lcd.setCursor(0, 2);
@@ -772,6 +787,7 @@ static void lcd_implementation_status_screen()
 			lcd.print('%');
 		}
 	}
+}
     
 	// Farm number display
 	if (farm_mode)

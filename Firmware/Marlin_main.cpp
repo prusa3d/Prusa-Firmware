@@ -2882,6 +2882,139 @@ void process_commands()
 
 	case 76: //PINDA probe temperature calibration
 	{
+#ifdef PINDA_THERMISTOR
+		if (farm_mode && temp_cal_active)
+		{
+			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
+				// We don't know where we are! HOME!
+				// Push the commands to the front of the message queue in the reverse order!
+				// There shall be always enough space reserved for these commands.
+				repeatcommand_front(); // repeat G76 with all its parameters
+				enquecommand_front_P((PSTR("G28 W0")));
+				break;
+			}
+			SERIAL_ECHOLNPGM("PINDA probe calibration start");
+
+			float zero_z;
+			int z_shift = 0; //unit: steps
+			float start_temp = 5 * (int)(current_temperature_pinda / 5);
+			if (start_temp < 35) start_temp = 35;
+			if (start_temp < current_temperature_pinda) start_temp += 5;
+			SERIAL_ECHOPGM("start temperature: ");
+			MYSERIAL.println(start_temp);
+
+			setTargetHotend(200, 0);
+			setTargetBed(50 + 10 * (start_temp - 30) / 5);
+
+			custom_message = true;
+			custom_message_type = 4;
+			custom_message_state = 1;
+			custom_message = MSG_TEMP_CALIBRATION;
+			current_position[X_AXIS] = PINDA_PREHEAT_X;
+			current_position[Y_AXIS] = PINDA_PREHEAT_Y;
+			current_position[Z_AXIS] = PINDA_PREHEAT_Z;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			st_synchronize();
+
+			while (current_temperature_pinda < start_temp)
+			{
+				delay_keep_alive(1000);
+				serialecho_temperatures();
+			}
+
+			eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process 
+
+			current_position[Z_AXIS] = 5;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+
+			current_position[X_AXIS] = pgm_read_float(bed_ref_points);
+			current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			st_synchronize();
+
+			find_bed_induction_sensor_point_z(-1.f);
+			zero_z = current_position[Z_AXIS];
+
+			//current_position[Z_AXIS]
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOPGM("ZERO: ");
+			MYSERIAL.print(current_position[Z_AXIS]);
+			SERIAL_ECHOLNPGM("");
+
+			int i = -1; for (; i < 5; i++)
+			{
+				float temp = (40 + i * 5);
+				SERIAL_ECHOPGM("Step: ");
+				MYSERIAL.print(i + 2);
+				SERIAL_ECHOLNPGM("/6 (skipped)");
+				SERIAL_ECHOPGM("PINDA temperature: ");
+				MYSERIAL.print((40 + i*5));
+				SERIAL_ECHOPGM(" Z shift (mm):");
+				MYSERIAL.print(0);
+				SERIAL_ECHOLNPGM("");
+				if (i >= 0) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
+				if (start_temp <= temp) break;
+			}
+
+			for (i++; i < 5; i++)
+			{
+				float temp = (40 + i * 5);
+				SERIAL_ECHOPGM("Step: ");
+				MYSERIAL.print(i + 2);
+				SERIAL_ECHOLNPGM("/6");
+				custom_message_state = i + 2;
+				setTargetBed(50 + 10 * (temp - 30) / 5);
+				setTargetHotend(255, 0);
+				current_position[X_AXIS] = PINDA_PREHEAT_X;
+				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
+				current_position[Z_AXIS] = PINDA_PREHEAT_Z;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				st_synchronize();
+				while (current_temperature_pinda < temp)
+				{
+					delay_keep_alive(1000);
+					serialecho_temperatures();
+				}
+				current_position[Z_AXIS] = 5;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				current_position[X_AXIS] = pgm_read_float(bed_ref_points);
+				current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				st_synchronize();
+				find_bed_induction_sensor_point_z(-1.f);
+				z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
+
+				SERIAL_ECHOLNPGM("");
+				SERIAL_ECHOPGM("PINDA temperature: ");
+				MYSERIAL.print(current_temperature_pinda);
+				SERIAL_ECHOPGM(" Z shift (mm):");
+				MYSERIAL.print(current_position[Z_AXIS] - zero_z);
+				SERIAL_ECHOLNPGM("");
+
+				EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
+
+			}
+			custom_message_type = 0;
+			custom_message = false;
+
+			eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+			SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
+			disable_x();
+			disable_y();
+			disable_z();
+			disable_e0();
+			disable_e1();
+			disable_e2();
+			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
+			lcd_update_enable(true);
+			lcd_update(2);
+
+			setTargetBed(0); //set bed target temperature back to 0
+			setTargetHotend(0,0); //set hotend target temperature back to 0
+			break;
+		}
+#endif //PINDA_THERMISTOR
+
 		setTargetBed(PINDA_MIN_T);
 		float zero_z;
 		int z_shift = 0; //unit: steps
@@ -3070,6 +3203,15 @@ void process_commands()
 			break;
 		} 
 		
+		bool temp_comp_start = true;
+#ifdef PINDA_THERMISTOR
+		if (farm_mode && temp_cal_active)
+		{
+			temp_comp_start = false;
+		}
+#endif //PINDA_THERMISTOR
+
+		if (temp_comp_start)
 		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
 			if (lcd_commands_type != LCD_COMMAND_STOP_PRINT) {
 				temp_compensation_start();
@@ -3200,12 +3342,21 @@ void process_commands()
 				SERIAL_PROTOCOLPGM("\n");
 			}
 
+			float offset_z = 0;
+
+#ifdef PINDA_THERMISTOR
+			if (farm_mode && temp_cal_active)
+				offset_z = temp_compensation_pinda_thermistor_offset();
+#endif //PINDA_THERMISTOR
+
 			if (verbosity_level >= 1) {
 				SERIAL_ECHOPGM("mesh bed leveling: ");
 				MYSERIAL.print(current_position[Z_AXIS], 5);
+				SERIAL_ECHOPGM(" offset: ");
+				MYSERIAL.print(offset_z, 5);
 				SERIAL_ECHOLNPGM("");
 			}
-			mbl.set_z(ix, iy, current_position[Z_AXIS]); //store measured z values z_values[iy][ix] = z;
+			mbl.set_z(ix, iy, current_position[Z_AXIS] - offset_z); //store measured z values z_values[iy][ix] = z - offset_z;
 
 			custom_message_state--;
 			mesh_point++;
@@ -3225,6 +3376,15 @@ void process_commands()
 		}
 		clean_up_after_endstop_move();
 		SERIAL_ECHOLNPGM("clean up finished ");
+
+		bool apply_temp_comp = true;
+#ifdef PINDA_THERMISTOR
+		if (farm_mode && temp_cal_active)
+		{
+			apply_temp_comp = false;
+		}
+#endif
+		if (apply_temp_comp)
 		if(temp_cal_active == true && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
 		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
 		SERIAL_ECHOLNPGM("babystep applied");
@@ -4151,6 +4311,12 @@ Sigma_Exit:
         SERIAL_PROTOCOL_F(degHotend(tmp_extruder),1);
         SERIAL_PROTOCOLPGM(" /");
         SERIAL_PROTOCOL_F(degTargetHotend(tmp_extruder),1);
+#ifdef PINDA_THERMISTOR
+		SERIAL_PROTOCOLPGM(" T1:");
+		SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
+		SERIAL_PROTOCOLPGM(" /");
+		SERIAL_PROTOCOL_F(degTargetBed(), 1);
+#endif // PINDA_THERMISTOR
         #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
           SERIAL_PROTOCOLPGM(" B:");
           SERIAL_PROTOCOL_F(degBed(),1);
@@ -6685,8 +6851,11 @@ float temp_comp_interpolation(float inp_temperature) {
 	shift[0] = 0;
 	for (i = 0; i < n; i++) {
 		if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &shift[i]); //read shift in steps from EEPROM
+#ifdef PINDA_THERMISTOR
+		temp_C[i] = 35 + i * 5; //temperature in C
+#else
 		temp_C[i] = 50 + i * 10; //temperature in C
-		
+#endif
 		x[i] = (float)temp_C[i];
 		f[i] = (float)shift[i];
 	}
@@ -6732,6 +6901,15 @@ float temp_comp_interpolation(float inp_temperature) {
 		return sum;
 
 }
+
+#ifdef PINDA_THERMISTOR
+float temp_compensation_pinda_thermistor_offset()
+{
+	if (!temp_cal_active) return 0;
+	if (!calibration_status_pinda()) return 0;
+	return temp_comp_interpolation(current_temperature_pinda) / axis_steps_per_unit[Z_AXIS];
+}
+#endif //PINDA_THERMISTOR
 
 void long_pause() //long pause print
 {
@@ -6781,6 +6959,10 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOL(tt);
 	SERIAL_PROTOCOLPGM(" E:");
 	SERIAL_PROTOCOL((int)active_extruder);
+#ifdef PINDA_THERMISTOR
+	SERIAL_PROTOCOLPGM(" T1:");
+	SERIAL_PROTOCOL(current_temperature_pinda);
+#endif
 	SERIAL_PROTOCOLPGM(" B:");
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");
