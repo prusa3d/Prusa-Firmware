@@ -761,10 +761,12 @@ void enquecommand(const char *cmd, bool from_progmem)
             strcpy_P(cmdbuffer + bufindw + 1, cmd);
         else
             strcpy(cmdbuffer + bufindw + 1, cmd);
-        SERIAL_ECHO_START;
-        SERIAL_ECHORPGM(MSG_Enqueing);
-        SERIAL_ECHO(cmdbuffer + bufindw + 1);
-        SERIAL_ECHOLNPGM("\"");
+		if (!farm_mode) {
+			SERIAL_ECHO_START;
+			SERIAL_ECHORPGM(MSG_Enqueing);
+			SERIAL_ECHO(cmdbuffer + bufindw + 1);
+			SERIAL_ECHOLNPGM("\"");
+		}
         bufindw += len + 2;
         if (bufindw == sizeof(cmdbuffer))
             bufindw = 0;
@@ -797,10 +799,12 @@ void enquecommand_front(const char *cmd, bool from_progmem)
         else
             strcpy(cmdbuffer + bufindr + 1, cmd);
         ++ buflen;
-        SERIAL_ECHO_START;
-        SERIAL_ECHOPGM("Enqueing to the front: \"");
-        SERIAL_ECHO(cmdbuffer + bufindr + 1);
-        SERIAL_ECHOLNPGM("\"");
+		if (!farm_mode) {
+			SERIAL_ECHO_START;
+			SERIAL_ECHOPGM("Enqueing to the front: \"");
+			SERIAL_ECHO(cmdbuffer + bufindr + 1);
+			SERIAL_ECHOLNPGM("\"");
+		}
 #ifdef CMDBUFFER_DEBUG
         cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
