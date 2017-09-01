@@ -4775,8 +4775,12 @@ Sigma_Exit:
     {
       if(code_seen('S'))
       {
+		saved_feedmultiply = feedmultiply;
         feedmultiply = code_value() ;
       }
+	  if (code_seen('R')) { //restore
+		  feedmultiply = saved_feedmultiply;
+	  }
     }
     break;
     case 221: // M221 S<factor in percent>- set extrude factor override percentage
@@ -5659,6 +5663,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 		  pinMode(E_MUX0_PIN, OUTPUT);
 		  pinMode(E_MUX1_PIN, OUTPUT);
+		  pinMode(E_MUX2_PIN, OUTPUT);
 
 		  delay(100);
 		  SERIAL_ECHO_START;
@@ -5668,22 +5673,22 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  case 1:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, LOW);
-
+			  WRITE(E_MUX2_PIN, LOW);
 			  break;
 		  case 2:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, HIGH);
-
+			  WRITE(E_MUX2_PIN, LOW);
 			  break;
 		  case 3:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, HIGH);
-
+			  WRITE(E_MUX2_PIN, LOW);
 			  break;
 		  default:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, LOW);
-
+			  WRITE(E_MUX2_PIN, LOW);
 			  break;
 		  }
 		  delay(100);

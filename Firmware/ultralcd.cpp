@@ -3264,26 +3264,29 @@ void change_extr(int extr) { //switches multiplexer for extruders
 
 	pinMode(E_MUX0_PIN, OUTPUT);
 	pinMode(E_MUX1_PIN, OUTPUT);
+	pinMode(E_MUX2_PIN, OUTPUT);
 
 	switch (extr) {
 	case 1:
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, LOW);
-		
+		WRITE(E_MUX2_PIN, LOW);
 		break;
 	case 2:
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, HIGH);
-		
+		WRITE(E_MUX2_PIN, LOW);
 		break;
 	case 3:
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, HIGH);
+		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	default:
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, LOW);
+		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	}
@@ -3291,7 +3294,8 @@ void change_extr(int extr) { //switches multiplexer for extruders
 }
 
 static int get_ext_nr() { //reads multiplexer input pins and return current extruder number (counted from 0)
-	return(2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
+	return(4 * READ(E_MUX2_PIN) + 2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
+	//return(2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
 }
 
 

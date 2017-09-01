@@ -67,6 +67,7 @@
 
 #define E_MUX0_PIN 17
 #define E_MUX1_PIN 16
+#define E_MUX2_PIN 84
 
 
 #endif
@@ -228,6 +229,7 @@
 
 #define E_MUX0_PIN 17
 #define E_MUX1_PIN 16
+#define E_MUX2_PIN 84
 
 
 #endif
