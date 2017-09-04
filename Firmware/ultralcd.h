@@ -211,7 +211,7 @@ extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 void change_extr(int extr);
 static void lcd_colorprint_change();
 static int get_ext_nr();
-static void extr_adj(int extruder);
+void extr_adj(int extruder);
 static void extr_adj_0();
 static void extr_adj_1();
 static void extr_adj_2();
