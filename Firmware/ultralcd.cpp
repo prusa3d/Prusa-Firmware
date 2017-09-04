@@ -3268,32 +3268,44 @@ void change_extr(int extr) { //switches multiplexer for extruders
 
 	switch (extr) {
 	case 1:
+		SERIAL_ECHOPGM("extr2");
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, LOW);
 		WRITE(E_MUX2_PIN, LOW);
 		break;
 	case 2:
+		SERIAL_ECHOPGM("extr3");
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, HIGH);
 		WRITE(E_MUX2_PIN, LOW);
 		break;
 	case 3:
+		SERIAL_ECHOPGM("extr4");
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, HIGH);
 		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	default:
+		SERIAL_ECHOPGM("extr1");
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, LOW);
 		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
-	}
+	}	
 	delay(100);
+	get_ext_nr();
 }
 
 static int get_ext_nr() { //reads multiplexer input pins and return current extruder number (counted from 0)
+	SERIAL_ECHOPGM("E_MUX0_PIN:");
+	READ(E_MUX0_PIN) ? SERIAL_ECHOLNPGM(" true") : SERIAL_ECHOLNPGM(" false");
+	SERIAL_ECHOPGM("E_MUX1_PIN:");
+	READ(E_MUX1_PIN) ? SERIAL_ECHOLNPGM(" true") : SERIAL_ECHOLNPGM(" false");
+	SERIAL_ECHOPGM("E_MUX2_PIN:");
+	READ(E_MUX2_PIN) ? SERIAL_ECHOLNPGM(" true") : SERIAL_ECHOLNPGM(" false");
+
 	return(4 * READ(E_MUX2_PIN) + 2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
 	//return(2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
 }
