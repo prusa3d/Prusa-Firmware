@@ -963,7 +963,7 @@ void factory_reset(char level, bool quiet)
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
             farm_no = 0;
-			farm_mode == false;
+			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
                        
@@ -1026,7 +1026,7 @@ void setup()
 	setup_powerhold();
     farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-	//if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
+	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
 	if (farm_no == 0xFFFF) farm_no = 0;
 	if (farm_mode)
 	{
@@ -1040,6 +1040,7 @@ void setup()
 	MYSERIAL.begin(BAUDRATE);
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
+
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
@@ -1184,17 +1185,7 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
-	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
-	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
-	if (farm_no == 0xFFFF) farm_no = 0;
-	if (farm_mode)
-	{
-		prusa_statistics(8);
-		no_response = true; //we need confirmation by recieving PRUSA thx
-		important_status = 8;
-	}
-
+	
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
@@ -1354,6 +1345,7 @@ int serial_read_stream() {
 * while the machine is not accepting commands.
 */
 void host_keepalive() {
+  if (farm_mode) return;
   long ms = millis();
   if (host_keepalive_interval && busy_state != NOT_BUSY) {
     if (ms - prev_busy_signal_ms < 1000UL * host_keepalive_interval) return;
@@ -3512,7 +3504,9 @@ void process_commands()
 	case 98: //activate farm mode
 		farm_mode = 1;
 		PingTime = millis();
+		EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+		
 		break;
 
 	case 99: //deactivate farm mode
