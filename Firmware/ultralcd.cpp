@@ -2659,6 +2659,8 @@ static void lcd_settings_menu()
 		MENU_ITEM(function, PSTR("Disable farm mode"), lcd_disable_farm_mode);
     }
 
+	MENU_ITEM(function, MSG_WIZARD, lcd_wizard);
+
 	END_MENU();
 }
 
