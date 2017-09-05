@@ -746,4 +746,6 @@ enum CalibrationStatus
 
 #define PINDA_THERMISTOR
 
+#define AMBIENT_THERMISTOR
+
 #endif //__CONFIGURATION_H

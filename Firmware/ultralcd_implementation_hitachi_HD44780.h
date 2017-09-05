@@ -738,6 +738,7 @@ static void lcd_implementation_status_screen()
 	
 #ifdef PINDA_THERMISTOR
 //	if (farm_mode && (custom_message_type == 4))
+	if (false)
 	{
 		lcd.setCursor(0, 2);
 		lcd_printPGM(PSTR("P"));
@@ -746,6 +747,7 @@ static void lcd_implementation_status_screen()
 		print_sd_status = false;
 	}
 #endif //PINDA_THERMISTOR
+
 
 if (print_sd_status)
 {

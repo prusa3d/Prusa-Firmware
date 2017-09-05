@@ -3051,7 +3051,7 @@ void process_commands()
 	case 76: //PINDA probe temperature calibration
 	{
 #ifdef PINDA_THERMISTOR
-		if (farm_mode && temp_cal_active)
+		if (true)
 		{
 			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
 				// We don't know where we are! HOME!
@@ -3071,7 +3071,7 @@ void process_commands()
 			SERIAL_ECHOPGM("start temperature: ");
 			MYSERIAL.println(start_temp);
 
-			setTargetHotend(200, 0);
+//			setTargetHotend(200, 0);
 			setTargetBed(50 + 10 * (start_temp - 30) / 5);
 
 			custom_message = true;
@@ -3132,7 +3132,7 @@ void process_commands()
 				SERIAL_ECHOLNPGM("/6");
 				custom_message_state = i + 2;
 				setTargetBed(50 + 10 * (temp - 30) / 5);
-				setTargetHotend(255, 0);
+//				setTargetHotend(255, 0);
 				current_position[X_AXIS] = PINDA_PREHEAT_X;
 				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 				current_position[Z_AXIS] = PINDA_PREHEAT_Z;
@@ -3178,7 +3178,7 @@ void process_commands()
 			lcd_update(2);
 
 			setTargetBed(0); //set bed target temperature back to 0
-			setTargetHotend(0,0); //set hotend target temperature back to 0
+//			setTargetHotend(0,0); //set hotend target temperature back to 0
 			break;
 		}
 #endif //PINDA_THERMISTOR
@@ -3374,10 +3374,7 @@ void process_commands()
 		
 		bool temp_comp_start = true;
 #ifdef PINDA_THERMISTOR
-		if (farm_mode && temp_cal_active)
-		{
-			temp_comp_start = false;
-		}
+		temp_comp_start = false;
 #endif //PINDA_THERMISTOR
 
 		if (temp_comp_start)
@@ -3514,8 +3511,7 @@ void process_commands()
 			float offset_z = 0;
 
 #ifdef PINDA_THERMISTOR
-			if (farm_mode && temp_cal_active)
-				offset_z = temp_compensation_pinda_thermistor_offset();
+			offset_z = temp_compensation_pinda_thermistor_offset();
 #endif //PINDA_THERMISTOR
 
 			if (verbosity_level >= 1) {
@@ -3548,10 +3544,7 @@ void process_commands()
 
 		bool apply_temp_comp = true;
 #ifdef PINDA_THERMISTOR
-		if (farm_mode && temp_cal_active)
-		{
-			apply_temp_comp = false;
-		}
+		apply_temp_comp = false;
 #endif
 		if (apply_temp_comp)
 		if(temp_cal_active == true && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
@@ -4495,12 +4488,6 @@ Sigma_Exit:
         SERIAL_PROTOCOL_F(degHotend(tmp_extruder),1);
         SERIAL_PROTOCOLPGM(" /");
         SERIAL_PROTOCOL_F(degTargetHotend(tmp_extruder),1);
-#ifdef PINDA_THERMISTOR
-		SERIAL_PROTOCOLPGM(" T1:");
-		SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
-		SERIAL_PROTOCOLPGM(" /");
-		SERIAL_PROTOCOL_F(degTargetBed(), 1);
-#endif // PINDA_THERMISTOR
         #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
           SERIAL_PROTOCOLPGM(" B:");
           SERIAL_PROTOCOL_F(degBed(),1);
@@ -7291,10 +7278,6 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOL(tt);
 	SERIAL_PROTOCOLPGM(" E:");
 	SERIAL_PROTOCOL((int)active_extruder);
-#ifdef PINDA_THERMISTOR
-	SERIAL_PROTOCOLPGM(" T1:");
-	SERIAL_PROTOCOL(current_temperature_pinda);
-#endif
 	SERIAL_PROTOCOLPGM(" B:");
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");
