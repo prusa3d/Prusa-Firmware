@@ -45,10 +45,17 @@ int target_temperature[EXTRUDERS] = { 0 };
 int target_temperature_bed = 0;
 int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
+
 #ifdef PINDA_THERMISTOR
 int current_temperature_raw_pinda =  0 ;
 float current_temperature_pinda = 0.0;
 #endif //PINDA_THERMISTOR
+
+#ifdef AMBIENT_THERMISTOR
+int current_temperature_raw_ambient =  0 ;
+float current_temperature_ambient = 0.0;
+#endif //AMBIENT_THERMISTOR
+
 int current_temperature_bed_raw = 0;
 float current_temperature_bed = 0.0;
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
@@ -868,10 +875,15 @@ static void updateTemperaturesFromRawValues()
     {
         current_temperature[e] = analog2temp(current_temperature_raw[e], e);
     }
+
 #ifdef PINDA_THERMISTOR
 	current_temperature_pinda = analog2tempBed(current_temperature_raw_pinda); //thermistor for pinda is the same as for bed
 #endif
-    
+
+#ifdef AMBIENT_THERMISTOR
+	current_temperature_ambient = analog2tempBed(current_temperature_raw_ambient); //thermistor for ambient is the same as for bed
+#endif
+   
 	current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
 
     #ifdef TEMP_SENSOR_1_AS_REDUNDANT
@@ -1492,7 +1504,9 @@ ISR(TIMER0_COMPB_vect)
   static unsigned long raw_temp_1_value = 0;
   static unsigned long raw_temp_2_value = 0;
   static unsigned long raw_temp_bed_value = 0;
-  static unsigned char temp_state = 10;
+  static unsigned long raw_temp_pinda_value = 0;
+  static unsigned long raw_temp_ambient_value = 0;
+  static unsigned char temp_state = 14;
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
   static unsigned char soft_pwm_0;
 #ifdef SLOW_PWM_HEATERS
@@ -1922,7 +1936,7 @@ ISR(TIMER0_COMPB_vect)
      temp_state = 9; 
      break; 
     case 9:   //Measure FILWIDTH 
-     #if defined(FILWIDTH_PIN) &&(FILWIDTH_PIN > -1) 
+     #if defined(FILWIDTH_PIN) &&(FILWIDTH_PIN > -1)
      //raw_filwidth_value += ADC;  //remove to use an IIR filter approach 
       if(ADC>102)  //check that ADC is reading a voltage > 0.5 volts, otherwise don't take in the data.
         {
@@ -1930,14 +1944,53 @@ ISR(TIMER0_COMPB_vect)
         
         raw_filwidth_value= raw_filwidth_value + ((unsigned long)ADC<<7);  //add new ADC reading 
         }
-     #endif 
-     temp_state = 0;   
+     #endif
+      temp_state = 10;
+      break;
+    case 10: // Prepare TEMP_AMBIENT
+      #if defined(TEMP_AMBIENT_PIN) && (TEMP_AMBIENT_PIN > -1)
+        #if TEMP_AMBIENT_PIN > 7
+          ADCSRB = 1<<MUX5;
+        #else
+          ADCSRB = 0;
+        #endif
+        ADMUX = ((1 << REFS0) | (TEMP_AMBIENT_PIN & 0x07));
+        ADCSRA |= 1<<ADSC; // Start conversion
+      #endif
+      lcd_buttons_update();
+      temp_state = 11;
+      break;
+    case 11: // Measure TEMP_AMBIENT
+      #if defined(TEMP_AMBIENT_PIN) && (TEMP_AMBIENT_PIN > -1)
+        raw_temp_ambient_value += ADC;
+      #endif
+      temp_state = 12;
+      break;
+    case 12: // Prepare TEMP_PINDA
+      #if defined(TEMP_PINDA_PIN) && (TEMP_PINDA_PIN > -1)
+        #if TEMP_PINDA_PIN > 7
+          ADCSRB = 1<<MUX5;
+        #else
+          ADCSRB = 0;
+        #endif
+        ADMUX = ((1 << REFS0) | (TEMP_PINDA_PIN & 0x07));
+        ADCSRA |= 1<<ADSC; // Start conversion
+      #endif
+      lcd_buttons_update();
+      temp_state = 13;
+      break;
+    case 13: // Measure TEMP_PINDA
+      #if defined(TEMP_PINDA_PIN) && (TEMP_PINDA_PIN > -1)
+        raw_temp_pinda_value += ADC;
+      #endif
+
+	 temp_state = 0;   
       
      temp_count++;
      break;      
       
       
-    case 10: //Startup, delay initial temp reading a tiny bit so the hardware can settle.
+    case 14: //Startup, delay initial temp reading a tiny bit so the hardware can settle.
       temp_state = 0;
       break;
 //    default:
@@ -1950,21 +2003,23 @@ ISR(TIMER0_COMPB_vect)
   {
     if (!temp_meas_ready) //Only update the raw values if they have been read. Else we could be updating them during reading.
     {
-      current_temperature_raw[0] = raw_temp_0_value;
+		current_temperature_raw[0] = raw_temp_0_value;
+#if EXTRUDERS > 1
+		current_temperature_raw[1] = raw_temp_1_value;
+#endif
+#ifdef TEMP_SENSOR_1_AS_REDUNDANT
+		redundant_temperature_raw = raw_temp_1_value;
+#endif
+#if EXTRUDERS > 2
+		current_temperature_raw[2] = raw_temp_2_value;
+#endif
 #ifdef PINDA_THERMISTOR
-		 current_temperature_raw_pinda = raw_temp_1_value;
-#else
- #if EXTRUDERS > 1
-      current_temperature_raw[1] = raw_temp_1_value;
- #endif
- #ifdef TEMP_SENSOR_1_AS_REDUNDANT
-      redundant_temperature_raw = raw_temp_1_value;
- #endif
- #if EXTRUDERS > 2
-      current_temperature_raw[2] = raw_temp_2_value;
- #endif
+		current_temperature_raw_pinda = raw_temp_pinda_value;
 #endif //PINDA_THERMISTOR
-	  current_temperature_bed_raw = raw_temp_bed_value;
+#ifdef AMBIENT_THERMISTOR
+		current_temperature_raw_ambient = raw_temp_ambient_value;
+#endif //AMBIENT_THERMISTOR
+		current_temperature_bed_raw = raw_temp_bed_value;
     }
 
 //Add similar code for Filament Sensor - can be read any time since IIR filtering is used 
@@ -1979,6 +2034,8 @@ ISR(TIMER0_COMPB_vect)
     raw_temp_1_value = 0;
     raw_temp_2_value = 0;
     raw_temp_bed_value = 0;
+	raw_temp_pinda_value = 0;
+	raw_temp_ambient_value = 0;
 
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
     if(current_temperature_raw[0] <= maxttemp_raw[0]) {

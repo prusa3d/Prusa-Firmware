@@ -65,22 +65,21 @@
 #define Z_MS1_PIN           -1
 #define Z_MS2_PIN           -1
 
-#define HEATER_BED_PIN       4
-#define TEMP_BED_PIN         2
+#define HEATER_BED_PIN       4 //PG5
+#define TEMP_BED_PIN         2 //A2
 
-#define HEATER_0_PIN         3
-#define TEMP_0_PIN           0
+#define HEATER_0_PIN         3 //PE5
+#define TEMP_0_PIN           0 //A0
 
-#define HEATER_1_PIN         7
-#define TEMP_1_PIN           1
+#define HEATER_1_PIN        -1
+#define TEMP_1_PIN           1 //A1
 
-#ifdef BARICUDA
-#define HEATER_2_PIN         6
-#else
 #define HEATER_2_PIN        -1
-#endif
-
 #define TEMP_2_PIN          -1
+
+#define TEMP_AMBIENT_PIN     6 //A6
+
+#define TEMP_PINDA_PIN       3 //A3
 
 #define E0_TMC2130_CS       66
 #define E0_TMC2130_DIAG     65

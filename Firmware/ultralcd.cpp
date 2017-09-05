@@ -952,6 +952,24 @@ static void lcd_menu_extruder_info()
     }
 }
 
+static void lcd_menu_temperatures()
+{
+    lcd.setCursor(1, 1);
+    lcd.print("Ambient: ");
+    lcd.setCursor(12, 1);
+    lcd.print(ftostr31ns(current_temperature_ambient));
+	lcd.print(LCD_STR_DEGREE);
+    lcd.setCursor(1, 2);
+    lcd.print("PINDA: ");
+    lcd.setCursor(12, 2);
+    lcd.print(ftostr31ns(current_temperature_pinda));
+	lcd.print(LCD_STR_DEGREE);
+    if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_return_to_status();
+    }
+}
 
 static void lcd_preheat_menu()
 {
@@ -1026,6 +1044,7 @@ static void lcd_support_menu()
   MENU_ITEM(function, PSTR("XYZ cal. details"), lcd_service_mode_show_result);
     }
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
+  MENU_ITEM(submenu, PSTR("Temperatures"), lcd_menu_temperatures);
   #endif //MK1BP
   END_MENU();
 }
