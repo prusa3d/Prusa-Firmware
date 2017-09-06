@@ -4523,6 +4523,17 @@ Sigma_Exit:
         SERIAL_PROTOCOL(getHeaterPower(-1));
       #endif
 
+#ifdef PINDA_THERMISTOR
+		SERIAL_PROTOCOLPGM(" P:");
+		SERIAL_PROTOCOL_F(current_temperature_pinda,1);
+#endif //PINDA_THERMISTOR
+
+#ifdef AMBIENT_THERMISTOR
+		SERIAL_PROTOCOLPGM(" A:");
+		SERIAL_PROTOCOL_F(current_temperature_ambient,1);
+#endif //AMBIENT_THERMISTOR
+
+
         #ifdef SHOW_TEMP_ADC_VALUES
           {float raw = 0.0;
 
