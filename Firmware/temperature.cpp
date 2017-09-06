@@ -183,6 +183,7 @@ static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 
 static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
+static float analog2tempAmbient(int raw);
 static void updateTemperaturesFromRawValues();
 
 enum TempRunawayStates
@@ -867,6 +868,27 @@ static float analog2tempBed(int raw) {
   #endif
 }
 
+static float analog2tempAmbient(int raw)
+{
+    float celsius = 0;
+    byte i;
+
+    for (i=1; i<AMBIENTTEMPTABLE_LEN; i++)
+    {
+      if (PGM_RD_W(AMBIENTTEMPTABLE[i][0]) > raw)
+      {
+        celsius  = PGM_RD_W(AMBIENTTEMPTABLE[i-1][1]) + 
+          (raw - PGM_RD_W(AMBIENTTEMPTABLE[i-1][0])) * 
+          (float)(PGM_RD_W(AMBIENTTEMPTABLE[i][1]) - PGM_RD_W(AMBIENTTEMPTABLE[i-1][1])) /
+          (float)(PGM_RD_W(AMBIENTTEMPTABLE[i][0]) - PGM_RD_W(AMBIENTTEMPTABLE[i-1][0]));
+        break;
+      }
+    }
+    // Overflow: Set to last value in the table
+    if (i == AMBIENTTEMPTABLE_LEN) celsius = PGM_RD_W(AMBIENTTEMPTABLE[i-1][1]);
+    return celsius;
+}
+
 /* Called to get the raw values into the the actual temperatures. The raw values are created in interrupt context,
     and this function is called from normal context as it is too slow to run in interrupts and will block the stepper routine otherwise */
 static void updateTemperaturesFromRawValues()
@@ -881,7 +903,7 @@ static void updateTemperaturesFromRawValues()
 #endif
 
 #ifdef AMBIENT_THERMISTOR
-	current_temperature_ambient = analog2tempBed(current_temperature_raw_ambient); //thermistor for ambient is the same as for bed
+	current_temperature_ambient = analog2tempAmbient(current_temperature_raw_ambient); //thermistor for ambient is NTCG104LH104JT1 (2000)
 #endif
    
 	current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
