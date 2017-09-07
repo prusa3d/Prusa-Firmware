@@ -3422,6 +3422,11 @@ const char * const MSG_USERWAIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_USERWAIT_DE
 };
 
+const char MSG_V2_CALIBRATION_EN[] PROGMEM = "First layer cal.";
+const char * const MSG_V2_CALIBRATION_LANG_TABLE[1] PROGMEM = {
+	MSG_V2_CALIBRATION_EN
+};
+
 const char MSG_VMIN_EN[] PROGMEM = "Vmin";
 const char * const MSG_VMIN_LANG_TABLE[1] PROGMEM = {
 	MSG_VMIN_EN
@@ -3475,6 +3480,86 @@ const char * const MSG_WATCH_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_WATCHDOG_RESET_EN[] PROGMEM = " Watchdog Reset";
 const char * const MSG_WATCHDOG_RESET_LANG_TABLE[1] PROGMEM = {
 	MSG_WATCHDOG_RESET_EN
+};
+
+const char MSG_WIZARD_EN[] PROGMEM = "Wizard";
+const char * const MSG_WIZARD_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_EN
+};
+
+const char MSG_WIZARD_DONE_EN[] PROGMEM = "All is done. Happy printing!";
+const char * const MSG_WIZARD_DONE_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_DONE_EN
+};
+
+const char MSG_WIZARD_FILAMENT_LOADED_EN[] PROGMEM = "Is filament loaded?";
+const char * const MSG_WIZARD_FILAMENT_LOADED_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_FILAMENT_LOADED_EN
+};
+
+const char MSG_WIZARD_HEATING_EN[] PROGMEM = "Preheating nozzle. Please wait.";
+const char * const MSG_WIZARD_HEATING_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_HEATING_EN
+};
+
+const char MSG_WIZARD_LANGUAGE_EN[] PROGMEM = "Please choose your language";
+const char * const MSG_WIZARD_LANGUAGE_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_LANGUAGE_EN
+};
+
+const char MSG_WIZARD_LOAD_FILAMENT_EN[] PROGMEM = "Please insert PLA filament to the extruder, then press knob to load it.";
+const char * const MSG_WIZARD_LOAD_FILAMENT_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_LOAD_FILAMENT_EN
+};
+
+const char MSG_WIZARD_QUIT_EN[] PROGMEM = "You can always resume the Wizard from Setting->Wizard.";
+const char * const MSG_WIZARD_QUIT_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_QUIT_EN
+};
+
+const char MSG_WIZARD_RERUN_EN[] PROGMEM = "Running Wizard will delete current calibration results and start from the beginning. Continue?";
+const char * const MSG_WIZARD_RERUN_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_RERUN_EN
+};
+
+const char MSG_WIZARD_SELFTEST_EN[] PROGMEM = "First, I will run the selftest to check most common assembly problems.";
+const char * const MSG_WIZARD_SELFTEST_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_SELFTEST_EN
+};
+
+const char MSG_WIZARD_SELFTEST_FAILED_EN[] PROGMEM = "Wizard: selftest failed";
+const char * const MSG_WIZARD_SELFTEST_FAILED_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_SELFTEST_FAILED_EN
+};
+
+const char MSG_WIZARD_V2_CAL_EN[] PROGMEM = "Now I will calibrate distance between tip of the nozzle and heatbed surface.";
+const char * const MSG_WIZARD_V2_CAL_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_V2_CAL_EN
+};
+
+const char MSG_WIZARD_V2_CAL_2_EN[] PROGMEM = "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration.";
+const char * const MSG_WIZARD_V2_CAL_2_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_V2_CAL_2_EN
+};
+
+const char MSG_WIZARD_WELCOME_EN[] PROGMEM = "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?";
+const char * const MSG_WIZARD_WELCOME_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_WELCOME_EN
+};
+
+const char MSG_WIZARD_WILL_PREHEAT_EN[] PROGMEM = "No I will preheat nozzle for PLA.";
+const char * const MSG_WIZARD_WILL_PREHEAT_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_WILL_PREHEAT_EN
+};
+
+const char MSG_WIZARD_XYZ_CAL_EN[] PROGMEM = "I will run xyz calibration now\x85 It will take approx. 12 mins.";
+const char * const MSG_WIZARD_XYZ_CAL_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_XYZ_CAL_EN
+};
+
+const char MSG_WIZARD_Z_CAL_EN[] PROGMEM = "I will run z calibration now\x85";
+const char * const MSG_WIZARD_Z_CAL_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_Z_CAL_EN
 };
 
 const char MSG_XYZ_DETAILS_EN[] PROGMEM = "XYZ cal. details";

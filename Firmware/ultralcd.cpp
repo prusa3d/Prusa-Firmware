@@ -590,6 +590,109 @@ void lcd_commands()
 		}
 	}
 
+	if (lcd_commands_type == LCD_COMMAND_V2_CAL) 
+	{
+		lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		if (lcd_commands_step == 0)
+		{
+			lcd_commands_step = 5;
+		}
+		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
+		{
+			enquecommand_P(PSTR("M107"));
+			enquecommand_P(PSTR("M104 S210"));
+			enquecommand_P(PSTR("M140 S55"));
+			enquecommand_P(PSTR("M190 S55"));
+			enquecommand_P(PSTR("M109 S210"));
+			enquecommand_P(PSTR("M117 First layer cal."));
+			enquecommand_P(PSTR("G87")); //sets calibration status
+			enquecommand_P(PSTR("G28"));
+			enquecommand_P(PSTR("G92 E0.0"));
+			lcd_commands_step = 4;
+		}
+		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty())
+		{
+			
+			lcd_implementation_clear();
+			lcd_goto_menu(lcd_babystep_z, 0, false);
+			enquecommand_P(PSTR("G1 X60.0 E9.0  F1000.0")); //intro line
+			enquecommand_P(PSTR("G1 X100.0 E12.5  F1000.0")); //intro line			
+			enquecommand_P(PSTR("G92 E0.0"));
+			enquecommand_P(PSTR("G21")); //set units to millimeters
+			enquecommand_P(PSTR("G90")); //use absolute coordinates
+			enquecommand_P(PSTR("M83")); //use relative distances for extrusion
+			enquecommand_P(PSTR("G1 E - 1.50000 F2100.00000"));
+			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
+			enquecommand_P(PSTR("M204 S1000")); //set acceleration
+			enquecommand_P(PSTR("G1 F4000"));
+			lcd_commands_step = 3;
+		}
+		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty()) //draw meander
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			
+			
+			//just opposite direction
+			/*enquecommand_P(PSTR("G1 X50 Y55"));
+			enquecommand_P(PSTR("G1 F1080"));
+			enquecommand_P(PSTR("G1 X200 Y55 E3.62773"));
+			enquecommand_P(PSTR("G1 X200 Y75 E0.49386"));
+			enquecommand_P(PSTR("G1 X50 Y75 E3.62773"));
+			enquecommand_P(PSTR("G1 X50 Y95 E0.49386"));
+			enquecommand_P(PSTR("G1 X200 Y95 E3.62773"));
+			enquecommand_P(PSTR("G1 X200 Y115 E0.49386"));
+			enquecommand_P(PSTR("G1 X50 Y115 E3.62773"));
+			enquecommand_P(PSTR("G1 X50 Y135 E0.49386"));
+			enquecommand_P(PSTR("G1 X200 Y135 E3.62773"));
+			enquecommand_P(PSTR("G1 X200 Y155 E0.66174"));
+			enquecommand_P(PSTR("G1 X100 Y155 E2.62773"));
+			enquecommand_P(PSTR("G1 X75 Y155 E2"));
+			enquecommand_P(PSTR("G1 X50 Y155 E2.5"));
+			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));*/
+
+			
+			enquecommand_P(PSTR("G1 X50 Y155"));
+			enquecommand_P(PSTR("G1 F1080"));
+			enquecommand_P(PSTR("G1 X75 Y155 E2.5"));
+			enquecommand_P(PSTR("G1 X100 Y155 E2"));
+			enquecommand_P(PSTR("G1 X200 Y155 E2.62773"));
+			enquecommand_P(PSTR("G1 X200 Y135 E0.66174"));
+			enquecommand_P(PSTR("G1 X50 Y135 E3.62773"));
+			enquecommand_P(PSTR("G1 X50 Y115 E0.49386"));
+			enquecommand_P(PSTR("G1 X200 Y115 E3.62773"));
+			enquecommand_P(PSTR("G1 X200 Y95 E0.49386"));
+			enquecommand_P(PSTR("G1 X50 Y95 E3.62773"));
+			enquecommand_P(PSTR("G1 X50 Y75 E0.49386"));
+			enquecommand_P(PSTR("G1 X200 Y75 E3.62773"));
+			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
+			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
+			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));
+			lcd_commands_step = 2;
+		}
+
+		if (lcd_commands_step == 2 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			enquecommand_P(PSTR("M107")); //turn off printer fan
+			enquecommand_P(PSTR("M104 S0")); // turn off temperature
+			enquecommand_P(PSTR("M140 S0")); // turn off heatbed
+			enquecommand_P(PSTR("G1 Z10 F1300.000"));
+			enquecommand_P(PSTR("G1 X10 Y180 F4000")); //home X axis
+			enquecommand_P(PSTR("M84"));// disable motors
+			lcd_commands_step = 1;
+		}
+		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty())
+		{		
+			lcd_setstatuspgm(WELCOME_MSG);
+			lcd_commands_step = 0;
+			lcd_commands_type = 0;
+			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
+				lcd_wizard(9);
+			}
+		}
+
+	}
+
 	if (lcd_commands_type == LCD_COMMAND_STOP_PRINT)   /// stop print
 	{
 		uint8_t stopped_extruder;
@@ -1906,6 +2009,73 @@ void lcd_wait_for_click()
     }
 }
 
+int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes) //currently just max. n*4 + 3 lines supported (set in language header files)
+{
+	const char *msg_next = lcd_display_message_fullscreen_P(msg);
+	bool multi_screen = msg_next != NULL;
+	bool yes = default_yes ? true : false;
+
+	// Wait for user confirmation or a timeout.
+	unsigned long previous_millis_cmd = millis();
+	int8_t        enc_dif = encoderDiff;
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
+	for (;;) {
+		for (uint8_t i = 0; i < 100; ++i) {
+			delay_keep_alive(50);
+			if (allow_timeouting && millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
+				return -1;
+			manage_heater();
+			manage_inactivity(true);
+			
+			if (abs(enc_dif - encoderDiff) > 4) {
+				if (msg_next == NULL) {
+					lcd.setCursor(0, 3);
+					if (enc_dif < encoderDiff && yes) {
+						lcd_printPGM((PSTR(" ")));
+						lcd.setCursor(7, 3);
+						lcd_printPGM((PSTR(">")));
+						yes = false;
+					}
+					else if (enc_dif > encoderDiff && !yes) {
+						lcd_printPGM((PSTR(">")));
+						lcd.setCursor(7, 3);
+						lcd_printPGM((PSTR(" ")));
+						yes = true;
+					}
+					enc_dif = encoderDiff;
+				}
+				else {
+					break; //turning knob skips waiting loop
+				}
+			}
+			if (lcd_clicked()) {
+				while (lcd_clicked());
+				delay(10);
+				while (lcd_clicked());
+				KEEPALIVE_STATE(IN_HANDLER);
+				if(msg_next == NULL) return yes;
+				else break;
+			}
+		}
+		if (multi_screen) {
+			if (msg_next == NULL) {
+				msg_next = msg;
+			}
+			msg_next = lcd_display_message_fullscreen_P(msg_next);
+		}
+		if (msg_next == NULL){
+			lcd.setCursor(0, 3);
+			if (yes) lcd_printPGM(PSTR(">"));
+			lcd.setCursor(1, 3);
+			lcd_printPGM(MSG_YES);
+			lcd.setCursor(7, 3);
+			if (!yes) lcd_printPGM(PSTR(">"));
+			lcd.setCursor(8, 3);
+			lcd_printPGM(MSG_NO);
+		}
+	}
+}
+
 int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
 {
 	lcd_display_message_fullscreen_P(msg);
@@ -2618,6 +2788,185 @@ void lcd_toshiba_flash_air_compatibility_toggle()
    eeprom_update_byte((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
 }
 
+void lcd_v2_calibration() {
+	    lcd_commands_type = LCD_COMMAND_V2_CAL;
+		lcd_return_to_status();
+}
+
+void lcd_wizard() {
+	bool result = true;
+	if(calibration_status() != CALIBRATION_STATUS_ASSEMBLED){
+		result = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_RERUN, true ,false);
+	}
+	if (result) {
+		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
+		lcd_wizard(0);
+	}
+	else {
+		lcd_update_enable(true);
+		lcd_update(2);
+	}
+}
+
+void lcd_wizard(int state) {
+
+	/*
+	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
+		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
+	*/
+	eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
+
+#define WIZARD_END 255
+
+	//int state = 0;
+	bool end = false;
+	int wizard_event;
+	const char *msg = NULL;
+
+	while (!end) {
+		switch (state) { 
+		case 0: // run wizard?
+			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_WELCOME, false, true);
+			if (wizard_event) {
+				state = 1;
+				//eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
+			}else end = true;
+			break;
+		case 1: // restore calibration status
+
+			switch (calibration_status()) {
+			case CALIBRATION_STATUS_ASSEMBLED: state = 2; break; //run selftest
+			case CALIBRATION_STATUS_XYZ_CALIBRATION: state = 3; break; //run xyz cal.
+			case CALIBRATION_STATUS_Z_CALIBRATION: state = 4; break; //run z cal.
+			case CALIBRATION_STATUS_LIVE_ADJUST: state = 5; break; //run live adjust
+			case CALIBRATION_STATUS_CALIBRATED: end = true; break;
+			default: state = 2; break; //if calibration status is unknown, run wizard from the beginning
+			}
+		case 2: //selftest
+			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_SELFTEST);
+			wizard_event = lcd_selftest();
+			if (wizard_event) state = 3;
+			else end = true;
+			break;
+		case 3: //xyz cal.
+			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_XYZ_CAL);
+			wizard_event = gcode_M45(false);
+			if (wizard_event) state = 5;
+			else end = true;
+			break;
+		case 4: //z cal.
+			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_Z_CAL);
+			wizard_event = gcode_M45(true);
+			if (wizard_event) state = 9; //shipped, no need to set first layer, go to final message directly
+			else end = true;
+			break;
+		case 5: //is filament loaded?
+			//start to preheat nozzle and bed to save some time later
+			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
+			setTargetBed(PLA_PREHEAT_HPB_TEMP); 		
+			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_WIZARD_FILAMENT_LOADED, false);
+			if (wizard_event) state = 8;
+			else state = 6;
+			break;
+		case 6: //waiting for preheat nozzle for PLA;
+			lcd_display_message_fullscreen_P(MSG_WIZARD_WILL_PREHEAT);
+			delay_keep_alive(2000);
+			lcd_display_message_fullscreen_P(MSG_WIZARD_HEATING);
+			while (abs(degHotend(0) - PLA_PREHEAT_HOTEND_TEMP) > 3) {
+				lcd_display_message_fullscreen_P(MSG_WIZARD_HEATING);
+
+				lcd.setCursor(0, 4);
+				lcd.print(LCD_STR_THERMOMETER[0]);
+				lcd.print(ftostr3(degHotend(0)));
+				lcd.print("/");
+				lcd.print(PLA_PREHEAT_HOTEND_TEMP);
+				lcd.print(LCD_STR_DEGREE);
+				lcd_set_custom_characters();
+				delay_keep_alive(1000);
+			}
+			state = 7;
+			break;
+		case 7: //load filament 
+			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_LOAD_FILAMENT);
+			lcd_implementation_clear();
+			lcd_print_at_PGM(0,2,MSG_LOADING_FILAMENT);
+			loading_flag = true;
+			gcode_M701();
+			state = 8;
+			break;
+		case 8:
+			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_V2_CAL);
+			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_V2_CAL_2);
+			lcd_commands_type = LCD_COMMAND_V2_CAL;
+			end = true;
+			break;
+		case 9: //we are finished
+			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
+			end = true;
+			break;
+
+		/*
+			// Freshly assembled, needs to peform a self-test and the XYZ calibration.
+	CALIBRATION_STATUS_ASSEMBLED = 255,
+
+	// For the wizard: self test has been performed, now the XYZ calibration is needed.
+	CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
+
+	// For the wizard: factory assembled, needs to run Z calibration.
+	CALIBRATION_STATUS_Z_CALIBRATION = 240,
+
+	// The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
+	CALIBRATION_STATUS_LIVE_ADJUST = 230,
+
+    // Calibrated, ready to print.
+    CALIBRATION_STATUS_CALIBRATED = 1,
+
+    // Legacy: resetted by issuing a G86 G-code.
+    // This value can only be expected after an upgrade from the initial MK2 firmware releases.
+    // Currently the G86 sets the calibration status to 
+    CALIBRATION_STATUS_UNKNOWN = 0,
+		*/
+
+		default: break;
+		}
+	}
+
+	SERIAL_ECHOPGM("State: ");
+	MYSERIAL.println(state);
+	switch (state) { //final message
+	case 0: //user dont want to use wizard
+		msg = MSG_WIZARD_QUIT; 
+		break;
+
+	case 1: //printer was already calibrated
+		msg = MSG_WIZARD_DONE;
+		break; 
+	case 2: //selftest
+		msg = MSG_WIZARD_CALIBRATION_FAILED;
+		break;
+	case 3: //xyz cal.
+		msg = MSG_WIZARD_CALIBRATION_FAILED;
+	case 4: //z cal.
+		msg = MSG_WIZARD_CALIBRATION_FAILED;
+	case 8: break; //exit wizard for v2 calibration, which is implemted in lcd_commands (we need lcd_update running)
+	case 9: //we are finished
+
+		msg = MSG_WIZARD_DONE;
+		lcd_reset_alert_level();
+		lcd_setstatuspgm(WELCOME_MSG);
+		break;
+
+	default: 
+		lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_QUIT);
+		break;
+	
+	}
+	if(state != 8) lcd_show_fullscreen_message_and_wait_P(msg);
+	lcd_update_enable(true);
+	lcd_return_to_status();
+	lcd_update(2);
+}
+
 static void lcd_settings_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -2677,9 +3026,10 @@ static void lcd_calibration_menu()
     MENU_ITEM(gcode, MSG_HOMEYZ, PSTR("G28 Z"));
 #else //MK1BP
     // MK2
-MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
+	MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     // "Calibrate Z" with storing the reference values to EEPROM.
     MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
+	MENU_ITEM(submenu, MSG_V2_CALIBRATION, lcd_v2_calibration);
 	
 #ifndef SNMM
 	//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
@@ -4346,7 +4696,7 @@ menu_edit_type(float, float51, ftostr51, 10)
 menu_edit_type(float, float52, ftostr52, 100)
 menu_edit_type(unsigned long, long5, ftostr5, 0.01)
 
-static void lcd_selftest()
+static bool lcd_selftest()
 {
 	int _progress = 0;
 	bool _result = false;
@@ -4409,8 +4759,10 @@ static void lcd_selftest()
 		current_position[Y_AXIS] = current_position[Y_AXIS] - 14;
 		_progress = lcd_selftest_screen(4, _progress, 3, true, 1500);
 		_result = lcd_selfcheck_axis(2, Z_MAX_POS);
-		enquecommand_P(PSTR("G28 W"));
-		enquecommand_P(PSTR("G1 Z15"));
+		if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) {
+			enquecommand_P(PSTR("G28 W"));
+			enquecommand_P(PSTR("G1 Z15"));
+		}
 	}
 
 	if (_result)
@@ -4433,12 +4785,13 @@ static void lcd_selftest()
 
 	if (_result)
 	{
-		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_OK);				
+		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_OK);	
 	}
 	else
 	{
 		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_FAILED);
 	}
+	return(_result);
 }
 
 static bool lcd_selfcheck_axis(int _axis, int _travel)
@@ -5221,6 +5574,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 	if (!SdFatUtil::test_stack_integrity()) stack_error();
 	lcd_ping(); //check that we have received ping command if we are in farm mode
 	lcd_send_status();
+	if (lcd_commands_type == LCD_COMMAND_V2_CAL) lcd_commands();
 }
 
 void lcd_printer_connected() {

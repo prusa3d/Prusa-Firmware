@@ -33,7 +33,7 @@ void lcd_mylang();
   bool lcd_detected(void);
 
   
-  static void lcd_selftest();
+  static bool lcd_selftest();
   static bool lcd_selfcheck_endstops();
   static bool lcd_selfcheck_axis(int _axis, int _travel);
   static bool lcd_selfcheck_check_heater(bool _isbed);
@@ -44,6 +44,7 @@ void lcd_mylang();
   void lcd_menu_statistics();
   static bool lcd_selfcheck_pulleys(int axis);
 
+  
   extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
   inline const char* lcd_display_message_fullscreen_P(const char *msg) 
     { uint8_t nlines; return lcd_display_message_fullscreen_P(msg, nlines); }
@@ -52,7 +53,7 @@ void lcd_mylang();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
   // 0: no, 1: yes, -1: timeouted
   extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
-
+  extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
   // Ask the user to move the Z axis up to the end stoppers and let
   // the user confirm that it has been done.
   extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
@@ -95,6 +96,7 @@ void lcd_mylang();
   #define LCD_COMMAND_LONG_PAUSE 5
   #define LCD_COMMAND_LONG_PAUSE_RESUME 6
   #define LCD_COMMAND_PID_EXTRUDER 7 
+  #define LCD_COMMAND_V2_CAL 8
 
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
@@ -227,6 +229,7 @@ void extr_unload_all();
 void extr_unload_used();
 void extr_unload();
 static char snmm_stop_print_menu();
+static void lcd_babystep_z();
 #ifdef SDCARD_SORT_ALPHA
 static void lcd_sort_type_set();
 #endif
@@ -268,5 +271,8 @@ void lcd_set_progress();
 
 static void lcd_send_status();
 static void lcd_connect_printer();
+
+void lcd_wizard();
+void lcd_wizard(int state);
 
 #endif //ULTRALCD_H
