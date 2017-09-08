@@ -3487,6 +3487,11 @@ const char * const MSG_WIZARD_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_EN
 };
 
+const char MSG_WIZARD_CALIBRATION_FAILED_EN[] PROGMEM = "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer.";
+const char * const MSG_WIZARD_CALIBRATION_FAILED_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_CALIBRATION_FAILED_EN
+};
+
 const char MSG_WIZARD_DONE_EN[] PROGMEM = "All is done. Happy printing!";
 const char * const MSG_WIZARD_DONE_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_DONE_EN
@@ -3512,7 +3517,7 @@ const char * const MSG_WIZARD_LOAD_FILAMENT_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_LOAD_FILAMENT_EN
 };
 
-const char MSG_WIZARD_QUIT_EN[] PROGMEM = "You can always resume the Wizard from Setting->Wizard.";
+const char MSG_WIZARD_QUIT_EN[] PROGMEM = "You can always resume the Wizard from Calibration -> Wizard.";
 const char * const MSG_WIZARD_QUIT_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_QUIT_EN
 };
@@ -3525,11 +3530,6 @@ const char * const MSG_WIZARD_RERUN_LANG_TABLE[1] PROGMEM = {
 const char MSG_WIZARD_SELFTEST_EN[] PROGMEM = "First, I will run the selftest to check most common assembly problems.";
 const char * const MSG_WIZARD_SELFTEST_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_SELFTEST_EN
-};
-
-const char MSG_WIZARD_SELFTEST_FAILED_EN[] PROGMEM = "Wizard: selftest failed";
-const char * const MSG_WIZARD_SELFTEST_FAILED_LANG_TABLE[1] PROGMEM = {
-	MSG_WIZARD_SELFTEST_FAILED_EN
 };
 
 const char MSG_WIZARD_V2_CAL_EN[] PROGMEM = "Now I will calibrate distance between tip of the nozzle and heatbed surface.";
