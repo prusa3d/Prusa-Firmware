@@ -1245,7 +1245,8 @@ void setup()
   else if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
 
 	  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
-		  calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
+		  calibration_status() == CALIBRATION_STATUS_UNKNOWN ||
+	      calibration_status() == CALIBRATION_STATUS_XYZ_CALIBRATION){
 		  // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
 		  eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
 		  // Show the message.
@@ -3639,14 +3640,16 @@ void process_commands()
 			calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
             break;
 
-		case 88: //just for test
+		/*case 88: //just for test
 			SERIAL_ECHOPGM("Calibration status:");
 			MYSERIAL.println(int(calibration_status()));
 			if (code_seen('S')) codenum = code_value();
 			calibration_status_store(codenum);
 			SERIAL_ECHOPGM("Calibration status:");
 			MYSERIAL.println(int(calibration_status()));
+			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
 			break;
+		*/
 #endif  // ENABLE_MESH_BED_LEVELING
             
             

@@ -2810,30 +2810,25 @@ void lcd_wizard() {
 
 void lcd_wizard(int state) {
 
-	/*
-	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
-		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
-	*/
-	eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
 
-#define WIZARD_END 255
 
-	//int state = 0;
 	bool end = false;
 	int wizard_event;
 	const char *msg = NULL;
-
 	while (!end) {
 		switch (state) { 
 		case 0: // run wizard?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_WELCOME, false, true);
 			if (wizard_event) {
 				state = 1;
-				//eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
-			}else end = true;
+				eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
+			}
+			else {
+				eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
+				end = true;
+			}
 			break;
 		case 1: // restore calibration status
-
 			switch (calibration_status()) {
 			case CALIBRATION_STATUS_ASSEMBLED: state = 2; break; //run selftest
 			case CALIBRATION_STATUS_XYZ_CALIBRATION: state = 3; break; //run xyz cal.
@@ -2842,10 +2837,14 @@ void lcd_wizard(int state) {
 			case CALIBRATION_STATUS_CALIBRATED: end = true; break;
 			default: state = 2; break; //if calibration status is unknown, run wizard from the beginning
 			}
+			break;
 		case 2: //selftest
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_SELFTEST);
 			wizard_event = lcd_selftest();
-			if (wizard_event) state = 3;
+			if (wizard_event) {
+				calibration_status_store(CALIBRATION_STATUS_XYZ_CALIBRATION);
+				state = 3;
+			}
 			else end = true;
 			break;
 		case 3: //xyz cal.
@@ -2905,28 +2904,6 @@ void lcd_wizard(int state) {
 			end = true;
 			break;
 
-		/*
-			// Freshly assembled, needs to peform a self-test and the XYZ calibration.
-	CALIBRATION_STATUS_ASSEMBLED = 255,
-
-	// For the wizard: self test has been performed, now the XYZ calibration is needed.
-	CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
-
-	// For the wizard: factory assembled, needs to run Z calibration.
-	CALIBRATION_STATUS_Z_CALIBRATION = 240,
-
-	// The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
-	CALIBRATION_STATUS_LIVE_ADJUST = 230,
-
-    // Calibrated, ready to print.
-    CALIBRATION_STATUS_CALIBRATED = 1,
-
-    // Legacy: resetted by issuing a G86 G-code.
-    // This value can only be expected after an upgrade from the initial MK2 firmware releases.
-    // Currently the G86 sets the calibration status to 
-    CALIBRATION_STATUS_UNKNOWN = 0,
-		*/
-
 		default: break;
 		}
 	}
@@ -2957,7 +2934,7 @@ void lcd_wizard(int state) {
 		break;
 
 	default: 
-		lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_QUIT);
+		msg = MSG_WIZARD_QUIT;
 		break;
 	
 	}
