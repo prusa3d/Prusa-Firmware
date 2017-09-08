@@ -3649,8 +3649,8 @@ unsigned char lcd_choose_color() {
 	//-----------------------------------------------------
 	unsigned char items_no = 2;
 	const char *item[items_no];
-	item[0] = "Black";
-	item[1] = "Orange";
+	item[0] = "Orange";
+	item[1] = "Black";
 	//-----------------------------------------------------
 	unsigned char active_rows;
 	static int first = 0;
@@ -3673,9 +3673,8 @@ unsigned char lcd_choose_color() {
 		manage_heater();
 		manage_inactivity(true);
 
-		if (abs((enc_dif - encoderDiff)) > 4) {
-
-			if ((abs(enc_dif - encoderDiff)) > 1) {
+		if (abs((enc_dif - encoderDiff)) > 12) {
+					
 				if (enc_dif > encoderDiff) {
 					cursor_pos--;
 				}
@@ -3683,7 +3682,7 @@ unsigned char lcd_choose_color() {
 				if (enc_dif < encoderDiff) {
 					cursor_pos++;
 				}
-
+				
 				if (cursor_pos > active_rows) {
 					cursor_pos = active_rows;
 					if (first < items_no - active_rows) {
@@ -3709,7 +3708,6 @@ unsigned char lcd_choose_color() {
 				lcd.print(">");
 				enc_dif = encoderDiff;
 				delay(100);
-			}
 
 		}
 
@@ -3717,7 +3715,11 @@ unsigned char lcd_choose_color() {
 			while (lcd_clicked());
 			delay(10);
 			while (lcd_clicked());
-			return(cursor_pos + first - 1);
+			switch(cursor_pos + first - 1) {
+			case 0: return 1; break;
+			case 1: return 0; break;
+			default: return 99; break;
+			}
 		}
 
 	}
@@ -3732,7 +3734,7 @@ void lcd_confirm_print()
 	int _ret = 0;
 	int _t = 0;
 
-
+	enc_dif = encoderDiff;
 	lcd_implementation_clear();
 
 	lcd.setCursor(0, 0);
@@ -3741,7 +3743,7 @@ void lcd_confirm_print()
 	do
 	{
 
-		if (abs((enc_dif - encoderDiff)) > 2) {
+		if (abs(enc_dif - encoderDiff) > 12) {
 			if (enc_dif > encoderDiff) {
 				cursor_pos--;
 			}
@@ -3749,6 +3751,7 @@ void lcd_confirm_print()
 			if (enc_dif < encoderDiff) {
 				cursor_pos++;
 			}
+			enc_dif = encoderDiff;
 		}
 
 		if (cursor_pos > 2) { cursor_pos = 2; }
@@ -3793,7 +3796,7 @@ void lcd_confirm_print()
 				NcTime = millis();
 			}
 		}
-
+		
 		manage_heater();
 		manage_inactivity();
 
