@@ -2193,7 +2193,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		SERIAL_ECHOLN("}");
 		break;
 	case 92: // Error - Min temp
-		SERIAL_ECHOLN("{[ERR:3]");
+		SERIAL_ECHO("{[ERR:3]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
