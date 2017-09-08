@@ -109,7 +109,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
 
-#define TMC2130_PWM_GRAD_XY 15         // PWMCONF
+#define TMC2130_PWM_GRAD_XY 4         // PWMCONF
 #define TMC2130_PWM_AMPL_XY 200       // PWMCONF
 #define TMC2130_PWM_AUTO_XY 1         // PWMCONF
 #define TMC2130_PWM_FREQ_XY 2         // PWMCONF
@@ -144,7 +144,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {3, 3, 5, 8}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {13, 13, 20, 22}  // default running currents for all axes
+#define TMC2130_CURRENTS_R {13, 18, 20, 22}  // default running currents for all axes
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
