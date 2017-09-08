@@ -1206,6 +1206,8 @@ void setup()
 		// EEPROM_LANG to number lower than 0x0ff.
 		// 1) Set a high power mode.
 		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
+		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
+
 	}
 #ifdef SNMM
 	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
@@ -1237,8 +1239,7 @@ void setup()
 #ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 
-  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 255) {
-	  eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
+  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
   else if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
