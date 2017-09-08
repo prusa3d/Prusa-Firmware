@@ -105,7 +105,7 @@ int lcd_commands_step=0;
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
 int farm_no = 0;
-int farm_timer = 30;
+int farm_timer = 8;
 int farm_status = 0;
 unsigned long allert_timer = millis();
 bool printer_connected = true;
@@ -408,15 +408,15 @@ static void lcd_status_screen()
 		farm_timer--;
 		if (farm_timer < 1)
 		{
-			farm_timer = 180;
+			farm_timer = 10;
 			prusa_statistics(0);
 		}
 		switch (farm_timer)
 		{
-		case 45:
+		case 8:
 			prusa_statistics(21);
 			break;
-		case 10:
+		case 5:
 			if (IS_SD_PRINTING)
 			{
 				prusa_statistics(20);
@@ -2166,7 +2166,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
-		farm_timer = 5;
+		farm_timer = 4;
 		break;
 	case 21: // temperatures
 		SERIAL_ECHO("{");
@@ -3672,7 +3672,7 @@ unsigned char lcd_choose_color() {
 
 		manage_heater();
 		manage_inactivity(true);
-
+		proc_commands();
 		if (abs((enc_dif - encoderDiff)) > 12) {
 					
 				if (enc_dif > encoderDiff) {
@@ -3742,7 +3742,6 @@ void lcd_confirm_print()
 
 	do
 	{
-
 		if (abs(enc_dif - encoderDiff) > 12) {
 			if (enc_dif > encoderDiff) {
 				cursor_pos--;
@@ -3799,6 +3798,7 @@ void lcd_confirm_print()
 		
 		manage_heater();
 		manage_inactivity();
+		proc_commands();
 
 	} while (_ret == 0);
 
