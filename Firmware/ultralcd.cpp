@@ -2985,8 +2985,6 @@ static void lcd_settings_menu()
 		MENU_ITEM(function, PSTR("Disable farm mode"), lcd_disable_farm_mode);
     }
 
-	MENU_ITEM(function, MSG_WIZARD, lcd_wizard);
-
 	END_MENU();
 }
 
@@ -2996,6 +2994,7 @@ static void lcd_calibration_menu()
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
   if (!isPrintPaused)
   {
+	MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
     MENU_ITEM(function, MSG_SELFTEST, lcd_selftest);
 #ifdef MK1BP
     // MK1
@@ -3013,8 +3012,9 @@ static void lcd_calibration_menu()
 #endif
     // "Mesh Bed Leveling"
     MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
+	MENU_ITEM(function, MSG_WIZARD, lcd_wizard);
 #endif //MK1BP
-    MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
+    
     MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
 #ifndef MK1BP
 	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
