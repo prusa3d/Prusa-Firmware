@@ -64,7 +64,7 @@ FORCE_INLINE void store_char(unsigned char c)
           store_char(c);
       }
   }
-  
+#ifndef SNMM
   SIGNAL(USART2_RX_vect)
   {
       if (selectedSerialPort == 1) {
@@ -81,6 +81,7 @@ FORCE_INLINE void store_char(unsigned char c)
         }
       }
   }
+#endif
 #endif
 
 // Constructors ////////////////////////////////////////////////////////////////
@@ -122,7 +123,7 @@ void MarlinSerial::begin(long baud)
   sbi(M_UCSRxB, M_TXENx);
   sbi(M_UCSRxB, M_RXCIEx);
   
-  
+#ifndef SNMM
 // set up the second serial port
   if (useU2X) {
         UCSR2A = 1 << U2X2;
@@ -139,6 +140,7 @@ void MarlinSerial::begin(long baud)
     sbi(UCSR2B, RXEN2);
     sbi(UCSR2B, TXEN2);
     sbi(UCSR2B, RXCIE2);
+#endif
 }
 
 void MarlinSerial::end()
@@ -146,10 +148,12 @@ void MarlinSerial::end()
   cbi(M_UCSRxB, M_RXENx);
   cbi(M_UCSRxB, M_TXENx);
   cbi(M_UCSRxB, M_RXCIEx);
-  
+
+#ifndef SNMM
   cbi(UCSR2B, RXEN2);
   cbi(UCSR2B, TXEN2);
-  cbi(UCSR2B, RXCIE2); 
+  cbi(UCSR2B, RXCIE2);
+#endif
 }
 
 
