@@ -3547,17 +3547,17 @@ const char * const MSG_WIZARD_WELCOME_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_WELCOME_EN
 };
 
-const char MSG_WIZARD_WILL_PREHEAT_EN[] PROGMEM = "No I will preheat nozzle for PLA.";
+const char MSG_WIZARD_WILL_PREHEAT_EN[] PROGMEM = "Now I will preheat nozzle for PLA.";
 const char * const MSG_WIZARD_WILL_PREHEAT_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_WILL_PREHEAT_EN
 };
 
-const char MSG_WIZARD_XYZ_CAL_EN[] PROGMEM = "I will run xyz calibration now\x85 It will take approx. 12 mins.";
+const char MSG_WIZARD_XYZ_CAL_EN[] PROGMEM = "I will run xyz calibration now. It will take approx. 12 mins.";
 const char * const MSG_WIZARD_XYZ_CAL_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_XYZ_CAL_EN
 };
 
-const char MSG_WIZARD_Z_CAL_EN[] PROGMEM = "I will run z calibration now\x85";
+const char MSG_WIZARD_Z_CAL_EN[] PROGMEM = "I will run z calibration now.";
 const char * const MSG_WIZARD_Z_CAL_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_Z_CAL_EN
 };
