@@ -74,7 +74,6 @@ public:
   char longFilename[LONG_FILENAME_LENGTH];
   bool filenameIsDir;
   int lastnr; //last number of the autostart;
-  uint32_t sdpos;
 private:
   SdFile root,*curDir,workDir,workDirParents[MAX_DIR_DEPTH];
   uint16_t workDirDepth;
@@ -136,7 +135,7 @@ private:
   uint32_t filesize;
   //int16_t n;
   unsigned long autostart_atmillis;
-  //uint32_t sdpos ;
+  uint32_t sdpos ;
 
   bool autostart_stilltocheck; //the sd start is delayed, because otherwise the serial cannot answer fast enought to make contact with the hostsoftware.
   

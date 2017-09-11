@@ -970,7 +970,7 @@ void CardReader::printingHasFinished()
       if(SD_FINISHED_STEPPERRELEASE)
       {
           //finishAndDisableSteppers();
-          //enquecommand_P(PSTR(SD_FINISHED_RELEASECOMMAND));
+          enquecommand_P(PSTR(SD_FINISHED_RELEASECOMMAND));
       }
       autotempShutdown();
 	  #ifdef SDCARD_SORT_ALPHA
