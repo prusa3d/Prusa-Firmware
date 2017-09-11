@@ -214,7 +214,7 @@ extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 void change_extr(int extr);
 static void lcd_colorprint_change();
 static int get_ext_nr();
-static void extr_adj(int extruder);
+void extr_adj(int extruder);
 static void extr_adj_0();
 static void extr_adj_1();
 static void extr_adj_2();
@@ -268,5 +268,8 @@ void lcd_service_mode_show_result();
 void lcd_set_arrows();
 void lcd_set_progress();
 #endif
+
+static void lcd_send_status();
+static void lcd_connect_printer();
 
 #endif //ULTRALCD_H
