@@ -1406,33 +1406,20 @@ void proc_commands() {
 }
 
 bool check_commands() {
-	bool ret = false;
+	bool end_command_found = false;
 	
 	if (buflen)
 	{
-		//SERIAL_ECHOLNPGM("search_end ");
-		ret = search_end_command();
+		if ((code_seen("M84")) || (code_seen("M 84"))) end_command_found = true;
 		if (!cmdbuffer_front_already_processed)
 			cmdqueue_pop_front();
 		cmdbuffer_front_already_processed = false;
 	}
-	return ret;
-}
-
-void show_buffer() {
-	SERIAL_ECHOPGM("bufindr:");
-	MYSERIAL.println(bufindr);
-	SERIAL_ECHOPGM("bufindw:");
-	MYSERIAL.println(bufindw);
-}
-
-void empty_buffer() {
-	bufindr = bufindw;
+	return end_command_found;
 }
 
 void get_command()
 {
-	//show_buffer();
     // Test and reserve space for the new command string.
 	if (!cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1)) 
 		return;
@@ -2102,15 +2089,6 @@ void ramming() {
 	}
   }
 */
-
-bool search_end_command()
-{
-	//SERIAL_ECHOLNPGM("E");
-	bool return_value = false;
-	if (code_seen("M84")) return_value = true;
-	return return_value;
-
-}
 
 void process_commands()
 {

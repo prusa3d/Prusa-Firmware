@@ -4965,37 +4965,19 @@ static void menu_action_function(menuFunc_t data) {
   (*data)();
 }
 
-/*check_file() {
-	
-}*/
-
 static bool check_file(const char* filename) {
 	bool result = false;
 	card.openFile(filename, true);
 	card.getFileSize();
-	//SERIAL_ECHOPGM("Filesize my:");
-	//MYSERIAL.println(card.public_fileSize);
-	card.setIndex((card.public_fileSize) - 10000);
-	//SERIAL_ECHOPGM("Position:");
-	//MYSERIAL.println(card.sdpos);
+	if (card.public_fileSize > END_FILE_SECTION) {
+		card.setIndex((card.public_fileSize) - END_FILE_SECTION);
+	}
 
 	while (!card.eof() && !result) {
-		//show_buffer();
-
-//		SERIAL_ECHOPGM("Position prior:");
-//		MYSERIAL.println(card.sdpos);
 		card.sdprinting = true;
 		get_command();
-		//result = search_end_command();
 		result = check_commands();
-
-
-/*		SERIAL_ECHOPGM("Position after:");
-		MYSERIAL.println(card.sdpos);
-		SERIAL_ECHOPGM("Command find:");
-		MYSERIAL.println(int(result));*/
 	}
-	//empty_buffer();
 	return result;
 }
 
