@@ -830,50 +830,48 @@ static void lcd_implementation_status_screen()
     // If heating in progress, set flag
 	if (heating_status != 0) { custom_message = true; }
 
-    // If printing from SD, show what we are printing
-	if ((IS_SD_PRINTING) && !custom_message)
-	{
-
-      if(strcmp(longFilenameOLD, card.longFilename) != 0)
-	  {
-        memset(longFilenameOLD,'\0',strlen(longFilenameOLD));
-        sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
-        scrollstuff = 0;
-      }
-
-      if(strlen(card.longFilename) > LCD_WIDTH)
-	  {
-
-        int inters = 0;
-        int gh = scrollstuff;
-        while( ((gh-scrollstuff)<LCD_WIDTH) && (inters == 0)  )
+	if (IS_SD_PRINTING) {
+		if (strcmp(longFilenameOLD, card.longFilename) != 0)
 		{
-          
-          if(card.longFilename[gh] == '\0')
+			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
+			sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
+			scrollstuff = 0;
+		}
+	}
+
+    // If printing from SD, show what we are printing
+	if (IS_SD_PRINTING && !custom_message)
+	{
+		  if (strlen(card.longFilename) > LCD_WIDTH)
 		  {
-            lcd.setCursor(gh-scrollstuff, 3);
-            lcd.print(card.longFilename[gh-1]);
-            scrollstuff = 0;
-            gh = scrollstuff;
-            inters = 1;
-          }
+			  int inters = 0;
+			  int gh = scrollstuff;
+			  while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
+			  {
+
+				  if (card.longFilename[gh] == '\0')
+				  {
+					  lcd.setCursor(gh - scrollstuff, 3);
+					  lcd.print(card.longFilename[gh - 1]);
+					  scrollstuff = 0;
+					  gh = scrollstuff;
+					  inters = 1;
+				  }
+				  else
+				  {
+					  lcd.setCursor(gh - scrollstuff, 3);
+					  lcd.print(card.longFilename[gh - 1]);
+					  gh++;
+				  }
+
+
+			  }
+			  scrollstuff++;
+		  }
 		  else
 		  {
-            lcd.setCursor(gh-scrollstuff, 3);
-            lcd.print(card.longFilename[gh-1]);
-            gh++;
-          }
-
-          
-        }
-        scrollstuff++;
-      }
-	  else
-	  {
-        lcd.print(longFilenameOLD);
-      }
-
-
+			  lcd.print(longFilenameOLD);
+		  }
     }
     // If not, check for other special events
 	else

@@ -220,7 +220,7 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 		  pid_cycle = 0;
           return;
         }
-	
+
   SERIAL_ECHOLN("PID Autotune start");
   
   disable_heater(); // switch off all heaters.
@@ -336,13 +336,13 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
         p=soft_pwm_bed;       
         SERIAL_PROTOCOLPGM("ok B:");
       }else{
-        p=soft_pwm[extruder];       
-        SERIAL_PROTOCOLPGM("ok T:");
+        p=soft_pwm[extruder]; 		
+		SERIAL_PROTOCOLPGM("ok T:");
       }
-			
-      SERIAL_PROTOCOL(input);   
-      SERIAL_PROTOCOLPGM(" @:");
-      SERIAL_PROTOCOLLN(p);       
+	  
+		SERIAL_PROTOCOL(input);   
+		SERIAL_PROTOCOLPGM(" @:");
+		SERIAL_PROTOCOLLN(p);       
 
       temp_millis = millis();
     }
@@ -686,6 +686,7 @@ void manage_heater()
 		    	 volumetric_multiplier[FILAMENT_SENSOR_EXTRUDER_NUM]=0.01;
 	}
 #endif
+  host_keepalive();
 }
 
 #define PGM_RD_W(x)   (short)pgm_read_word(&x)

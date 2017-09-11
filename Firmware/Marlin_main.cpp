@@ -150,6 +150,7 @@
 //        Rxxx Wait for extruder current temp to reach target temp. Waits when heating and cooling
 //        IF AUTOTEMP is enabled, S<mintemp> B<maxtemp> F<factor>. Exit autotemp by any M109 without F
 // M112 - Emergency stop
+// M113 - Get or set the timeout interval for Host Keepalive "busy" messages
 // M114 - Output current position to serial port
 // M115 - Capabilities string
 // M117 - display message
@@ -225,6 +226,8 @@ CardReader card;
 unsigned long TimeSent = millis();
 unsigned long TimeNow = millis();
 unsigned long PingTime = millis();
+unsigned long NcTime;
+
 union Data
 {
 byte b[2];
@@ -370,6 +373,16 @@ int fanSpeed=0;
 
 bool cancel_heatup = false ;
 
+#ifdef HOST_KEEPALIVE_FEATURE
+  
+  MarlinBusyState busy_state = NOT_BUSY;
+  static long prev_busy_signal_ms = -1;
+  uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
+#else
+  #define host_keepalive();
+  #define KEEPALIVE_STATE(n);
+#endif
+
 #ifdef FILAMENT_SENSOR
   //Variables for Filament Sensor input 
   float filament_width_nominal=DEFAULT_NOMINAL_FILAMENT_DIA;  //Set nominal filament width, can be changed with M404 
@@ -384,6 +397,10 @@ bool cancel_heatup = false ;
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
+
+bool no_response = false;
+uint8_t important_status;
+uint8_t saved_filament_type;
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -755,10 +772,12 @@ void enquecommand(const char *cmd, bool from_progmem)
             strcpy_P(cmdbuffer + bufindw + 1, cmd);
         else
             strcpy(cmdbuffer + bufindw + 1, cmd);
-        SERIAL_ECHO_START;
-        SERIAL_ECHORPGM(MSG_Enqueing);
-        SERIAL_ECHO(cmdbuffer + bufindw + 1);
-        SERIAL_ECHOLNPGM("\"");
+		if (!farm_mode) {
+			SERIAL_ECHO_START;
+			SERIAL_ECHORPGM(MSG_Enqueing);
+			SERIAL_ECHO(cmdbuffer + bufindw + 1);
+			SERIAL_ECHOLNPGM("\"");
+		}
         bufindw += len + 2;
         if (bufindw == sizeof(cmdbuffer))
             bufindw = 0;
@@ -791,10 +810,12 @@ void enquecommand_front(const char *cmd, bool from_progmem)
         else
             strcpy(cmdbuffer + bufindr + 1, cmd);
         ++ buflen;
-        SERIAL_ECHO_START;
-        SERIAL_ECHOPGM("Enqueing to the front: \"");
-        SERIAL_ECHO(cmdbuffer + bufindr + 1);
-        SERIAL_ECHOLNPGM("\"");
+		if (!farm_mode) {
+			SERIAL_ECHO_START;
+			SERIAL_ECHOPGM("Enqueing to the front: \"");
+			SERIAL_ECHO(cmdbuffer + bufindr + 1);
+			SERIAL_ECHOLNPGM("\"");
+		}
 #ifdef CMDBUFFER_DEBUG
         cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
@@ -942,7 +963,7 @@ void factory_reset(char level, bool quiet)
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
             farm_no = 0;
-			farm_mode == false;
+			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
                        
@@ -1005,11 +1026,13 @@ void setup()
 	setup_powerhold();
     farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-	//if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
+	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
 	if (farm_no == 0xFFFF) farm_no = 0;
 	if (farm_mode)
 	{
 		prusa_statistics(8);
+		no_response = true; //we need confirmation by recieving PRUSA thx
+		important_status = 8;
         selectedSerialPort = 1;
 	} else {
         selectedSerialPort = 0;
@@ -1017,6 +1040,7 @@ void setup()
 	MYSERIAL.begin(BAUDRATE);
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
+
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
@@ -1078,6 +1102,7 @@ void setup()
 	world2machine_reset();
 
 	lcd_init();
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	if (!READ(BTN_ENC))
 	{
 		_delay_ms(1000);
@@ -1099,7 +1124,7 @@ void setup()
 
 
 			_delay_ms(2000);
-
+			
 			char level = reset_menu();
 			factory_reset(level, false);
 
@@ -1160,15 +1185,7 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
-	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
-	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
-	if (farm_no == 0xFFFF) farm_no = 0;
-	if (farm_mode)
-	{
-		prusa_statistics(8);
-	}
-
+	
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
@@ -1245,6 +1262,7 @@ void setup()
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
+  KEEPALIVE_STATE(NOT_BUSY);
 }
 
 void trace();
@@ -1321,6 +1339,36 @@ int serial_read_stream() {
     }
 }
 
+#ifdef HOST_KEEPALIVE_FEATURE
+/**
+* Output a "busy" message at regular intervals
+* while the machine is not accepting commands.
+*/
+void host_keepalive() {
+  if (farm_mode) return;
+  long ms = millis();
+  if (host_keepalive_interval && busy_state != NOT_BUSY) {
+    if (ms - prev_busy_signal_ms < 1000UL * host_keepalive_interval) return;
+	switch (busy_state) {
+      case IN_HANDLER:
+      case IN_PROCESS:
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: processing");
+        break;
+      case PAUSED_FOR_USER:
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: paused for user");
+        break;
+      case PAUSED_FOR_INPUT:
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: paused for input");
+        break;
+    }
+  }
+  prev_busy_signal_ms = ms;
+}
+#endif
+
 // The loop() function is called in an endless loop by the Arduino framework from the default main() routine.
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
@@ -1376,6 +1424,7 @@ void loop()
       if (! cmdbuffer_front_already_processed)
           cmdqueue_pop_front();
       cmdbuffer_front_already_processed = false;
+	  host_keepalive();
   }
 }
   //check heater every n milliseconds
@@ -1383,6 +1432,16 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update();
+}
+
+void proc_commands() {
+	if (buflen)
+	{
+		process_commands();
+		if (!cmdbuffer_front_already_processed)
+			cmdqueue_pop_front();
+		cmdbuffer_front_already_processed = false;
+	}
 }
 
 void get_command()
@@ -2084,6 +2143,8 @@ void process_commands()
   float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
   int8_t SilentMode;
 #endif
+  KEEPALIVE_STATE(IN_HANDLER);
+
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  starpos = (strchr(strchr_pointer + 5, '*'));
 	  if (starpos != NULL)
@@ -2096,11 +2157,18 @@ void process_commands()
 				PingTime = millis();
 				//MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
 			}	  
-		}
-		else if (code_seen("PRN")) {
+		} else if (code_seen("PRN")) {
 		  MYSERIAL.println(status_number);
 
-		}else if (code_seen("fn")) {
+		} else if (code_seen("RESET")) {
+            // careful!
+            if (farm_mode) {
+                asm volatile("  jmp 0x3E000");
+            }
+            else {
+                MYSERIAL.println("Not in farm mode.");
+            }
+        } else if (code_seen("fn")) {
 		  if (farm_mode) {
 			  MYSERIAL.println(farm_no);
 		  }
@@ -2108,6 +2176,9 @@ void process_commands()
 			  MYSERIAL.println("Not in farm mode.");
 		  }
 		  
+		}
+		else if (code_seen("thx")) {
+			no_response = false;
 		}else if (code_seen("fv")) {
         // get file version
         #ifdef SDSUPPORT
@@ -2407,7 +2478,7 @@ void process_commands()
         prepare_arc_move(false);
       }
       break;
-    case 4: // G4 dwell      
+    case 4: // G4 dwell   
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
@@ -2440,8 +2511,7 @@ void process_commands()
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
 		homing_flag = true;
-
-#ifdef ENABLE_AUTO_BED_LEVELING
+		#ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
 #endif //ENABLE_AUTO_BED_LEVELING
             
@@ -2888,6 +2958,7 @@ void process_commands()
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
+		KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
 		SERIAL_ECHOLNPGM("PINDA probe calibration start");
 		custom_message = true;
 		custom_message_type = 4;
@@ -3288,6 +3359,7 @@ void process_commands()
 			current_position[E_AXIS] += DEFAULT_RETRACTION;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 		}
+		KEEPALIVE_STATE(NOT_BUSY);
 		// Restore custom message state
 		custom_message = custom_message_old;
 		custom_message_type = custom_message_type_old;
@@ -3432,7 +3504,9 @@ void process_commands()
 	case 98: //activate farm mode
 		farm_mode = 1;
 		PingTime = millis();
+		EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+		
 		break;
 
 	case 99: //deactivate farm mode
@@ -3485,29 +3559,33 @@ void process_commands()
       while (*src == ' ') ++src;
       if (!hasP && !hasS && *src != '\0') {
         lcd_setstatus(src);
-      } else {
-        LCD_MESSAGERPGM(MSG_USERWAIT);
-      }
+	  } else {
+		  LCD_MESSAGERPGM(MSG_USERWAIT);
+	  }
 
       lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
       st_synchronize();
       previous_millis_cmd = millis();
       if (codenum > 0){
         codenum += millis();  // keep track of when we started waiting
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(millis() < codenum && !lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
           lcd_update();
         }
+		KEEPALIVE_STATE(IN_HANDLER);
         lcd_ignore_click(false);
       }else{
           if (!lcd_detected())
             break;
+		  KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(!lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
           lcd_update();
         }
+		KEEPALIVE_STATE(IN_HANDLER);
       }
       if (IS_SD_PRINTING)
         LCD_MESSAGERPGM(MSG_RESUMING);
@@ -3695,7 +3773,6 @@ void process_commands()
     {
 		// Only Z calibration?
 		bool onlyZ = code_seen('Z');
-
 		if (!onlyZ) {
 			setTargetBed(0);
 			setTargetHotend(0, 0);
@@ -3718,7 +3795,9 @@ void process_commands()
         memset(axis_known_position, 0, sizeof(axis_known_position));
                 
         // Let the user move the Z axes up to the end stoppers.
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         if (lcd_calibrate_z_end_stop_manual( onlyZ )) {
+			KEEPALIVE_STATE(IN_HANDLER);
             refresh_cmd_timeout();
 			if (((degHotend(0) > MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) && (!onlyZ)) {
 				lcd_wait_for_cool_down();
@@ -3798,6 +3877,7 @@ void process_commands()
             }
         } else {
             // Timeouted.
+			KEEPALIVE_STATE(IN_HANDLER);
         }
         lcd_update_enable(true);
         break;
@@ -3828,8 +3908,10 @@ void process_commands()
 
     case 47:
         // M47: Prusa3D: Show end stops dialog on the display.
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         lcd_diag_show_end_stops();
-        break;
+		KEEPALIVE_STATE(IN_HANDLER);
+		break;
 
 #if 0
     case 48: // M48: scan the bed induction sensor points, print the sensor trigger coordinates to the serial line for visualization on the PC.
@@ -4212,6 +4294,7 @@ Sigma_Exit:
           }}
         #endif
 		SERIAL_PROTOCOLLN("");
+		KEEPALIVE_STATE(NOT_BUSY);
       return;
       break;
     case 109:
@@ -4249,11 +4332,14 @@ Sigma_Exit:
       /* See if we are heating up or cooling down */
       target_direction = isHeatingHotend(tmp_extruder); // true if heating, false if cooling
 
+	  KEEPALIVE_STATE(NOT_BUSY);
+
       cancel_heatup = false;
 
 	  wait_for_heater(codenum); //loops until target temperature is reached
 
         LCD_MESSAGERPGM(MSG_HEATING_COMPLETE);
+		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = 2;
 		if (farm_mode) { prusa_statistics(2); };
         
@@ -4281,6 +4367,7 @@ Sigma_Exit:
         cancel_heatup = false;
         target_direction = isHeatingBed(); // true if heating, false if cooling
 
+		KEEPALIVE_STATE(NOT_BUSY);
         while ( (target_direction)&&(!cancel_heatup) ? (isHeatingBed()) : (isCoolingBed()&&(CooldownNoWait==false)) )
         {
           if(( millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while heating up.
@@ -4303,6 +4390,7 @@ Sigma_Exit:
           lcd_update();
         }
         LCD_MESSAGERPGM(MSG_BED_DONE);
+		KEEPALIVE_STATE(IN_HANDLER);
 		heating_status = 4;
 
         previous_millis_cmd = millis();
@@ -4446,6 +4534,18 @@ Sigma_Exit:
 		else
 			gcode_LastN = 0;
 		break;
+#ifdef HOST_KEEPALIVE_FEATURE
+	case 113: // M113 - Get or set Host Keepalive interval
+      if (code_seen('S')) {
+		host_keepalive_interval = (uint8_t)code_value_short();
+		NOMORE(host_keepalive_interval, 60);
+      } else {
+        SERIAL_ECHO_START;
+        SERIAL_ECHOPAIR("M113 S", (unsigned long)host_keepalive_interval);
+		SERIAL_PROTOCOLLN("");
+      }
+	break;
+#endif
     case 115: // M115
       if (code_seen('V')) {
           // Report the Prusa version number.
@@ -4993,7 +5093,8 @@ Sigma_Exit:
           temp=70;
       if (code_seen('S')) temp=code_value();
       if (code_seen('C')) c=code_value();
-      PID_autotune(temp, e, c);
+	  
+	  PID_autotune(temp, e, c);
     }
     break;
     case 400: // M400 finish all moves
@@ -5270,6 +5371,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         int counterBeep = 0;
         lcd_wait_interact();
 		load_filament_time = millis();
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(!lcd_clicked()){
 
 		  cnt++;
@@ -5306,14 +5408,17 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           }
 
         }
+		KEEPALIVE_STATE(IN_HANDLER);
 		WRITE(BEEPER, LOW);
 #ifdef SNMM
 		display_loading();
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
 		do {
 			target[E_AXIS] += 0.002;
 			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
 			delay_keep_alive(2);
-		} while (!lcd_clicked());		
+		} while (!lcd_clicked());
+		KEEPALIVE_STATE(IN_HANDLER);
 		/*if (millis() - load_filament_time > 2) {
 			load_filament_time = millis();
 			target[E_AXIS] += 0.001;
@@ -5353,7 +5458,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lcd_loading_filament();
         while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
           lcd_change_fil_state = 0;
+		  KEEPALIVE_STATE(PAUSED_FOR_USER);
           lcd_alright();
+		  KEEPALIVE_STATE(IN_HANDLER);
           switch(lcd_change_fil_state){
             
              // Filament failed to load so load it again
@@ -5526,6 +5633,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     break;
 	case 701: //M701: load filament
 	{
+#ifdef SNMM
+		extr_adj(snmm_extruder);//loads current extruder
+#else
 		enable_z();
 		custom_message = true;
 		custom_message_type = 2;
@@ -5557,6 +5667,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		loading_flag = false;
 		custom_message = false;
 		custom_message_type = 0;
+#endif
 	}
 	break;
 	case 702:
@@ -5629,7 +5740,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 		  pinMode(E_MUX0_PIN, OUTPUT);
 		  pinMode(E_MUX1_PIN, OUTPUT);
-		  pinMode(E_MUX2_PIN, OUTPUT);
 
 		  delay(100);
 		  SERIAL_ECHO_START;
@@ -5639,25 +5749,21 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  case 1:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  case 2:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  case 3:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  default:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  }
@@ -5769,6 +5875,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
     SERIAL_ECHOLNPGM("\"");
   }
+
+  KEEPALIVE_STATE(NOT_BUSY);
 
   ClearToSend();
 }
@@ -6013,7 +6121,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 	static int killCount = 0;   // make the inactivity button a bit less responsive
    const int KILL_DELAY = 10000;
 #endif
-	
+
     if(buflen < (BUFSIZE-1)){
         get_command();
     }
@@ -6289,7 +6397,7 @@ void calculate_volumetric_multipliers() {
 
 void delay_keep_alive(unsigned int ms)
 {
-    for (;;) {
+	for (;;) {
         manage_heater();
         // Manage inactivity, but don't disable steppers on timeout.
         manage_inactivity(true);
