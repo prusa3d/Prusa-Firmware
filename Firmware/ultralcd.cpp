@@ -4964,17 +4964,61 @@ static void menu_action_setlang(unsigned char lang) {
 static void menu_action_function(menuFunc_t data) {
   (*data)();
 }
+
+/*check_file() {
+	
+}*/
+
+static bool check_file(const char* filename) {
+	bool result = false;
+	card.openFile(filename, true);
+	card.getFileSize();
+	//SERIAL_ECHOPGM("Filesize my:");
+	//MYSERIAL.println(card.public_fileSize);
+	card.setIndex((card.public_fileSize) - 10000);
+	//SERIAL_ECHOPGM("Position:");
+	//MYSERIAL.println(card.sdpos);
+
+	while (!card.eof() && !result) {
+		//show_buffer();
+
+//		SERIAL_ECHOPGM("Position prior:");
+//		MYSERIAL.println(card.sdpos);
+		card.sdprinting = true;
+		get_command();
+		//result = search_end_command();
+		result = check_commands();
+
+
+/*		SERIAL_ECHOPGM("Position after:");
+		MYSERIAL.println(card.sdpos);
+		SERIAL_ECHOPGM("Command find:");
+		MYSERIAL.println(int(result));*/
+	}
+	//empty_buffer();
+	return result;
+}
+
 static void menu_action_sdfile(const char* filename, char* longFilename)
-{
+{	
   loading_flag = false;
   char cmd[30];
   char* c;
+  bool result = true;
   sprintf_P(cmd, PSTR("M23 %s"), filename);
   for (c = &cmd[4]; *c; c++)
-    *c = tolower(*c);
-  enquecommand(cmd);
-  enquecommand_P(PSTR("M24"));
-  lcd_return_to_status();
+	  *c = tolower(*c);
+  if (!check_file(filename)) {
+	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILE_INCOMPLETE, false, false);
+	  lcd_update_enable(true);
+  }
+  
+  if (!result) lcd_return_to_status();
+  else {	  
+	  enquecommand(cmd);
+	  enquecommand_P(PSTR("M24"));
+	  lcd_return_to_status();
+  }
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)
 {

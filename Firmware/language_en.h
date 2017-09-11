@@ -316,3 +316,4 @@
 #define(length=17, lines=1) MSG_SORT_ALPHA						"Sort: [Alphabet]"
 #define(length=17, lines=1) MSG_SORT_NONE						"Sort: [None]"
 #define(length=20, lines=1) MSG_SORTING							"Sorting files"
+#define MSG_FILE_INCOMPLETE										"File incomplete. Continue anyway?"

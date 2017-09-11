@@ -356,3 +356,7 @@ void temp_compensation_start();
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
 void proc_commands();
+bool check_commands();
+bool search_end_command();
+void empty_buffer();
+void show_buffer();
