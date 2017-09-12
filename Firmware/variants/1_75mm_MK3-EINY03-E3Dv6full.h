@@ -435,6 +435,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #else
 #define TEMP_SENSOR_BED 1
 #endif
+#define TEMP_SENSOR_PINDA 1
+#define TEMP_SENSOR_AMBIENT 2000
 
 #define STACK_GUARD_TEST_VALUE 0xA2A2
 
