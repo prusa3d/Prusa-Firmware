@@ -459,7 +459,7 @@ static bool cmdbuffer_front_already_processed = false;
 // Type of a command, which is to be executed right now.
 #define CMDBUFFER_CURRENT_TYPE   (cmdbuffer[bufindr])
 // String of a command, which is to be executed right now.
-#define CMDBUFFER_CURRENT_STRING (cmdbuffer+bufindr+1)
+#define CMDBUFFER_CURRENT_STRING (cmdbuffer+bufindr+CMDHDRSIZE)
 
 // Enable debugging of the command buffer.
 // Debugging information will be sent to serial line.
@@ -544,7 +544,7 @@ bool cmdqueue_pop_front()
     if (buflen > 0) {
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHOPGM("Dequeing ");
-        SERIAL_ECHO(cmdbuffer+bufindr+1);
+        SERIAL_ECHO(cmdbuffer+bufindr+CMDHDRSIZE);
         SERIAL_ECHOLNPGM("");
         SERIAL_ECHOPGM("Old indices: buflen ");
         SERIAL_ECHO(buflen);
@@ -567,7 +567,8 @@ bool cmdqueue_pop_front()
         } else {
             // There is at least one ready line in the buffer.
             // First skip the current command ID and iterate up to the end of the string.
-            for (++ bufindr; cmdbuffer[bufindr] != 0; ++ bufindr) ;
+//            for (++ bufindr; cmdbuffer[bufindr] != 0; ++ bufindr) ;
+            for (bufindr += CMDHDRSIZE; cmdbuffer[bufindr] != 0; ++ bufindr) ;
             // Second, skip the end of string null character and iterate until a nonzero command ID is found.
             for (++ bufindr; bufindr < sizeof(cmdbuffer) && cmdbuffer[bufindr] == 0; ++ bufindr) ;
             // If the end of the buffer was empty,
@@ -585,7 +586,7 @@ bool cmdqueue_pop_front()
             SERIAL_ECHOPGM(", serial_count ");
             SERIAL_ECHO(serial_count);
             SERIAL_ECHOPGM(" new command on the top: ");
-            SERIAL_ECHO(cmdbuffer+bufindr+1);
+            SERIAL_ECHO(cmdbuffer+bufindr+CMDHDRSIZE);
             SERIAL_ECHOLNPGM("");
 #endif /* CMDBUFFER_DEBUG */
         }
@@ -618,7 +619,7 @@ bool cmdqueue_could_enqueue_front(int len_asked)
     // Adjust the end of the write buffer based on whether a partial line is in the receive buffer.
     int endw = (serial_count > 0) ? (bufindw + MAX_CMD_SIZE + 1) : bufindw;
     if (bufindw < bufindr) {
-        int bufindr_new = bufindr - len_asked - 2;
+        int bufindr_new = bufindr - len_asked - (1 + CMDHDRSIZE);
         // Simple case. There is a contiguous space between the write buffer and the read buffer.
         if (endw <= bufindr_new) {
             bufindr = bufindr_new;
@@ -626,12 +627,12 @@ bool cmdqueue_could_enqueue_front(int len_asked)
         }
     } else {
         // Otherwise the free space is split between the start and end.
-        if (len_asked + 2 <= bufindr) {
+        if (len_asked + (1 + CMDHDRSIZE) <= bufindr) {
             // Could fit at the start.
-            bufindr -= len_asked + 2;
+            bufindr -= len_asked + (1 + CMDHDRSIZE);
             return true;
         }
-        int bufindr_new = sizeof(cmdbuffer) - len_asked - 2;
+        int bufindr_new = sizeof(cmdbuffer) - len_asked - (1 + CMDHDRSIZE);
         if (endw <= bufindr_new) {
             memset(cmdbuffer, 0, bufindr);
             bufindr = bufindr_new;
@@ -661,7 +662,7 @@ bool cmdqueue_could_enqueue_back(int len_asked)
         // serial data.
         // How much memory to reserve for the commands pushed to the front?
         // End of the queue, when pushing to the end.
-        int endw = bufindw + len_asked + 2;
+        int endw = bufindw + len_asked + (1 + CMDHDRSIZE);
         if (bufindw < bufindr)
             // Simple case. There is a contiguous space between the write buffer and the read buffer.
             return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
@@ -672,7 +673,7 @@ bool cmdqueue_could_enqueue_back(int len_asked)
             (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
             return true;
         // Could one fit both to the start?
-        if (len_asked + 2 + CMDBUFFER_RESERVE_FRONT <= bufindr) {
+        if (len_asked + (1 + CMDHDRSIZE) + CMDBUFFER_RESERVE_FRONT <= bufindr) {
             // Mark the rest of the buffer as used.
             memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
             // and point to the start.
@@ -682,7 +683,7 @@ bool cmdqueue_could_enqueue_back(int len_asked)
     } else {
         // How much memory to reserve for the commands pushed to the front?
         // End of the queue, when pushing to the end.
-        int endw = bufindw + len_asked + 2;
+        int endw = bufindw + len_asked + (1 + CMDHDRSIZE);
         if (bufindw < bufindr)
             // Simple case. There is a contiguous space between the write buffer and the read buffer.
             return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
@@ -693,7 +694,7 @@ bool cmdqueue_could_enqueue_back(int len_asked)
             (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
             return true;
         // Could one fit both to the start?
-        if (len_asked + 2 + CMDBUFFER_RESERVE_FRONT <= bufindr) {
+        if (len_asked + (1 + CMDHDRSIZE) + CMDBUFFER_RESERVE_FRONT <= bufindr) {
             // Mark the rest of the buffer as used.
             memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
             // and point to the start.
@@ -772,14 +773,14 @@ void enquecommand(const char *cmd, bool from_progmem)
         // This may easily be tested: If serial_count > 0, we have a problem.
         cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_UI;
         if (from_progmem)
-            strcpy_P(cmdbuffer + bufindw + 1, cmd);
+            strcpy_P(cmdbuffer + bufindw + CMDHDRSIZE, cmd);
         else
-            strcpy(cmdbuffer + bufindw + 1, cmd);
+            strcpy(cmdbuffer + bufindw + CMDHDRSIZE, cmd);
         SERIAL_ECHO_START;
         SERIAL_ECHORPGM(MSG_Enqueing);
-        SERIAL_ECHO(cmdbuffer + bufindw + 1);
+        SERIAL_ECHO(cmdbuffer + bufindw + CMDHDRSIZE);
         SERIAL_ECHOLNPGM("\"");
-        bufindw += len + 2;
+        bufindw += len + (CMDHDRSIZE + 1);
         if (bufindw == sizeof(cmdbuffer))
             bufindw = 0;
         ++ buflen;
@@ -807,13 +808,13 @@ void enquecommand_front(const char *cmd, bool from_progmem)
     if (cmdqueue_could_enqueue_front(len)) {
         cmdbuffer[bufindr] = CMDBUFFER_CURRENT_TYPE_UI;
         if (from_progmem)
-            strcpy_P(cmdbuffer + bufindr + 1, cmd);
+            strcpy_P(cmdbuffer + bufindr + CMDHDRSIZE, cmd);
         else
-            strcpy(cmdbuffer + bufindr + 1, cmd);
+            strcpy(cmdbuffer + bufindr + CMDHDRSIZE, cmd);
         ++ buflen;
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Enqueing to the front: \"");
-        SERIAL_ECHO(cmdbuffer + bufindr + 1);
+        SERIAL_ECHO(cmdbuffer + bufindr + CMDHDRSIZE);
         SERIAL_ECHOLNPGM("\"");
 #ifdef CMDBUFFER_DEBUG
         cmdqueue_dump_to_serial();
@@ -1540,16 +1541,16 @@ void get_command()
         comment_mode = false; //for new command
         return;
       }
-      cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
+      cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
       if(!comment_mode){
         comment_mode = false; //for new command
-        if ((strchr_pointer = strstr(cmdbuffer+bufindw+1, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL) {
-            if ((strchr_pointer = strchr(cmdbuffer+bufindw+1, 'N')) != NULL)
+        if ((strchr_pointer = strstr(cmdbuffer+bufindw+CMDHDRSIZE, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'N')) != NULL) {
+            if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'N')) != NULL)
             {
             // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
             // and Marlin tests, whether the successive lines are stamped with an increasing line number ID.
             gcode_N = (strtol(strchr_pointer+1, NULL, 10));
-            if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+1, PSTR("M110")) == NULL) ) {
+            if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("M110")) == NULL) ) {
                 // M110 - set current line number.
                 // Line numbers not sent in succession.
                 SERIAL_ERROR_START;
@@ -1561,10 +1562,10 @@ void get_command()
                 return;
             }
 
-            if((strchr_pointer = strchr(cmdbuffer+bufindw+1, '*')) != NULL)
+            if((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*')) != NULL)
             {
                 byte checksum = 0;
-                char *p = cmdbuffer+bufindw+1;
+                char *p = cmdbuffer+bufindw+CMDHDRSIZE;
                 while (p != strchr_pointer)
                     checksum = checksum^(*p++);
                 if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
@@ -1594,7 +1595,7 @@ void get_command()
         }
         else  // if we don't receive 'N' but still see '*'
         {
-          if((strchr(cmdbuffer+bufindw+1, '*') != NULL))
+          if((strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*') != NULL))
           {
             SERIAL_ERROR_START;
             SERIAL_ERRORRPGM(MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM);
@@ -1603,7 +1604,7 @@ void get_command()
             return;
           }
         } // end of '*' command
-        if ((strchr_pointer = strchr(cmdbuffer+bufindw+1, 'G')) != NULL) {
+        if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'G')) != NULL) {
       		  if (! IS_SD_PRINTING) {
         			  usb_printing_counter = 10;
         			  is_usb_printing = true;
@@ -1618,7 +1619,7 @@ void get_command()
         } // end of 'G' command
 
         //If command was e-stop process now
-        if(strcmp(cmdbuffer+bufindw+1, "M112") == 0)
+        if(strcmp(cmdbuffer+bufindw+CMDHDRSIZE, "M112") == 0)
           kill("", 2);
         
         // Store the current line into buffer, move to the next line.
@@ -1626,10 +1627,10 @@ void get_command()
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Storing a command line to buffer: ");
-        SERIAL_ECHO(cmdbuffer+bufindw+1);
+        SERIAL_ECHO(cmdbuffer+bufindw+CMDHDRSIZE);
         SERIAL_ECHOLNPGM("");
 #endif /* CMDBUFFER_DEBUG */
-        bufindw += strlen(cmdbuffer+bufindw+1) + 2;
+        bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
         if (bufindw == sizeof(cmdbuffer))
             bufindw = 0;
         ++ buflen;
@@ -1648,16 +1649,16 @@ void get_command()
     else {
       // Not an "end of line" symbol. Store the new character into a buffer.
       if(serial_char == ';') comment_mode = true;
-      if(!comment_mode) cmdbuffer[bufindw+1+serial_count++] = serial_char;
+      if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
     }
   } // end of serial line processing loop
 
     if(farm_mode){
         TimeNow = millis();
         if ( ((TimeNow - TimeSent) > 800) && (serial_count > 0) ) {
-            cmdbuffer[bufindw+serial_count+1] = 0;
+            cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0;
             
-            bufindw += strlen(cmdbuffer+bufindw+1) + 2;
+            bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
             if (bufindw == sizeof(cmdbuffer))
                 bufindw = 0;
             ++ buflen;
@@ -1690,10 +1691,11 @@ void get_command()
 
   static bool stop_buffering=false;
   if(buflen==0) stop_buffering=false;
-
+  unsigned char sd_count = 0;
   // Reads whole lines from the SD card. Never leaves a half-filled line in the cmdbuffer.
   while( !card.eof() && !stop_buffering) {
     int16_t n=card.get();
+	sd_count++;
     char serial_char = (char)n;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
@@ -1733,14 +1735,19 @@ void get_command()
         comment_mode = false; //for new command
         return; //if empty line
       }
-      cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
+      cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
       cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
-	  SERIAL_ECHOPGM("cmdbuffer:");
-	  MYSERIAL.print(cmdbuffer);
+      cmdbuffer[bufindw+1] = sd_count;
+/*	  SERIAL_ECHOPGM("SD cmd(");
+	  MYSERIAL.print(sd_count, DEC);
+	  SERIAL_ECHOPGM(") ");
+	  SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);*/
+//	  SERIAL_ECHOPGM("cmdbuffer:");
+//	  MYSERIAL.print(cmdbuffer);
       ++ buflen;
-	  SERIAL_ECHOPGM("buflen:");
-	  MYSERIAL.print(buflen);
-      bufindw += strlen(cmdbuffer+bufindw+1) + 2;
+//	  SERIAL_ECHOPGM("buflen:");
+//	  MYSERIAL.print(buflen);
+      bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
       if (bufindw == sizeof(cmdbuffer))
           bufindw = 0;
       comment_mode = false; //for new command
@@ -1752,7 +1759,7 @@ void get_command()
     else
     {
       if(serial_char == ';') comment_mode = true;
-      if(!comment_mode) cmdbuffer[bufindw+1+serial_count++] = serial_char;
+      if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
     }
   }
 
@@ -2261,7 +2268,7 @@ void process_commands()
 
 #ifdef CMDBUFFER_DEBUG
   SERIAL_ECHOPGM("Processing a GCODE command: ");
-  SERIAL_ECHO(cmdbuffer+bufindr+1);
+  SERIAL_ECHO(cmdbuffer+bufindr+CMDHDRSIZE);
   SERIAL_ECHOLNPGM("");
   SERIAL_ECHOPGM("In cmdqueue: ");
   SERIAL_ECHO(buflen);
@@ -5058,7 +5065,7 @@ Sigma_Exit:
             SERIAL_ECHO_START;
             SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
             SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
-            SERIAL_ECHOLNPGM("\"");
+            SERIAL_ECHOLNPGM("\"(1)");
         }
       }
 
@@ -6262,7 +6269,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     SERIAL_ECHO_START;
     SERIAL_ECHORPGM(MSG_UNKNOWN_COMMAND);
     SERIAL_ECHO(CMDBUFFER_CURRENT_STRING);
-    SERIAL_ECHOLNPGM("\"");
+    SERIAL_ECHOLNPGM("\"(2)");
   }
 
   ClearToSend();
