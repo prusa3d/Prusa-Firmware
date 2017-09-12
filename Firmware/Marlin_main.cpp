@@ -2318,10 +2318,14 @@ void process_commands()
   KEEPALIVE_STATE(IN_HANDLER);
 
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
+	  custom_message = true;
+	  custom_message_type = 2;
 	  starpos = (strchr(strchr_pointer + 5, '*'));
 	  if (starpos != NULL)
 		  *(starpos) = '\0';
 	  lcd_setstatus(strchr_pointer + 5);
+	  custom_message = false;
+	  custom_message_type = 0;
   }
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
@@ -3716,9 +3720,11 @@ void process_commands()
     case 0: // M0 - Unconditional stop - Wait for user button press on LCD
     case 1: // M1 - Conditional stop - Wait for user button press on LCD
     {
-      char *src = strchr_pointer + 2;
+	  custom_message = true;
+	  custom_message_type = 2;
 
-      codenum = 0;
+      char *src = strchr_pointer + 2;
+	  codenum = 0;
 
       bool hasP = false, hasS = false;
       if (code_seen('P')) {
@@ -3744,7 +3750,7 @@ void process_commands()
       if (codenum > 0){
         codenum += millis();  // keep track of when we started waiting
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
-        while(millis() < codenum && !lcd_clicked()){
+		while(millis() < codenum && !lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
           lcd_update();
@@ -3766,7 +3772,9 @@ void process_commands()
         LCD_MESSAGERPGM(MSG_RESUMING);
       else
         LCD_MESSAGERPGM(WELCOME_MSG);
-    }
+	  custom_message = false;
+	  custom_message_type = 0;
+	}
     break;
 #endif
     case 17:

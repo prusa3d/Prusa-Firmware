@@ -687,7 +687,7 @@ void lcd_commands()
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
-				lcd_wizard(9);
+				lcd_wizard(10);
 			}
 		}
 
@@ -2789,7 +2789,21 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 }
 
 void lcd_v2_calibration() {
-	    lcd_commands_type = LCD_COMMAND_V2_CAL;
+		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_PLA_FILAMENT_LOADED, true, false);
+		if (loaded) lcd_commands_type = LCD_COMMAND_V2_CAL;
+		else {
+			lcd_display_message_fullscreen_P(MSG_PLEASE_LOAD_PLA);
+			for (int i = 0; i < 20; i++) { //wait max. 2s
+				delay_keep_alive(100);
+				if (lcd_clicked()) {
+					while (lcd_clicked());
+					delay(10);
+					while (lcd_clicked());
+					break;
+				}
+			}
+		}
+		lcd_update_enable(true);
 		lcd_return_to_status();
 }
 
@@ -2891,15 +2905,33 @@ void lcd_wizard(int state) {
 			lcd_print_at_PGM(0,2,MSG_LOADING_FILAMENT);
 			loading_flag = true;
 			gcode_M701();
-			state = 8;
+			state = 9;
 			break;
 		case 8:
+			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_WIZARD_PLA_FILAMENT, false, true);
+			if (wizard_event) state = 9;
+			else end = true;
+			break;
+		case 9:
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_V2_CAL);
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_V2_CAL_2);
 			lcd_commands_type = LCD_COMMAND_V2_CAL;
 			end = true;
 			break;
-		case 9: //we are finished
+		case 10: //repeat firt layer cal.?
+			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_REPEAT_V2_CAL, false);
+			if (wizard_event) {
+				current_position[Z_AXIS] += 100;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS]/60, active_extruder);
+				current_position[Y_AXIS] = 205;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Y_AXIS]/60, active_extruder);
+				lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_CLEAN_HEATBED);
+				state = 9;
+			}
+			else {
+				state = 11;
+			}
+		case 11: //we are finished
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
 			end = true;
 			break;
@@ -2923,10 +2955,15 @@ void lcd_wizard(int state) {
 		break;
 	case 3: //xyz cal.
 		msg = MSG_WIZARD_CALIBRATION_FAILED;
+		break;
 	case 4: //z cal.
 		msg = MSG_WIZARD_CALIBRATION_FAILED;
-	case 8: break; //exit wizard for v2 calibration, which is implemted in lcd_commands (we need lcd_update running)
-	case 9: //we are finished
+		break;
+	case 8: 
+		msg = MSG_WIZARD_INSERT_CORRECT_FILAMENT;
+		break;
+	case 9: break; //exit wizard for v2 calibration, which is implemted in lcd_commands (we need lcd_update running)
+	case 11: //we are finished
 
 		msg = MSG_WIZARD_DONE;
 		lcd_reset_alert_level();

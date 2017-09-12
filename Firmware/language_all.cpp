@@ -2097,6 +2097,16 @@ const char * const MSG_PLANNER_BUFFER_BYTES_LANG_TABLE[1] PROGMEM = {
 	MSG_PLANNER_BUFFER_BYTES_EN
 };
 
+const char MSG_PLA_FILAMENT_LOADED_EN[] PROGMEM = "Is PLA filament loaded?";
+const char * const MSG_PLA_FILAMENT_LOADED_LANG_TABLE[1] PROGMEM = {
+	MSG_PLA_FILAMENT_LOADED_EN
+};
+
+const char MSG_PLEASE_LOAD_PLA_EN[] PROGMEM = "Please load PLA filament first.";
+const char * const MSG_PLEASE_LOAD_PLA_LANG_TABLE[1] PROGMEM = {
+	MSG_PLEASE_LOAD_PLA_EN
+};
+
 const char MSG_PLEASE_WAIT_EN[] PROGMEM = "Please wait";
 const char MSG_PLEASE_WAIT_CZ[] PROGMEM = "Prosim cekejte";
 const char MSG_PLEASE_WAIT_IT[] PROGMEM = "Aspetta";
@@ -3492,6 +3502,11 @@ const char * const MSG_WIZARD_CALIBRATION_FAILED_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_CALIBRATION_FAILED_EN
 };
 
+const char MSG_WIZARD_CLEAN_HEATBED_EN[] PROGMEM = "Please clean heatbed and then press the knob.";
+const char * const MSG_WIZARD_CLEAN_HEATBED_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_CLEAN_HEATBED_EN
+};
+
 const char MSG_WIZARD_DONE_EN[] PROGMEM = "All is done. Happy printing!";
 const char * const MSG_WIZARD_DONE_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_DONE_EN
@@ -3507,6 +3522,11 @@ const char * const MSG_WIZARD_HEATING_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_HEATING_EN
 };
 
+const char MSG_WIZARD_INSERT_CORRECT_FILAMENT_EN[] PROGMEM = "Please load PLA filament and then resume Wizard by rebooting the printer.";
+const char * const MSG_WIZARD_INSERT_CORRECT_FILAMENT_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_INSERT_CORRECT_FILAMENT_EN
+};
+
 const char MSG_WIZARD_LANGUAGE_EN[] PROGMEM = "Please choose your language";
 const char * const MSG_WIZARD_LANGUAGE_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_LANGUAGE_EN
@@ -3517,9 +3537,19 @@ const char * const MSG_WIZARD_LOAD_FILAMENT_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_LOAD_FILAMENT_EN
 };
 
+const char MSG_WIZARD_PLA_FILAMENT_EN[] PROGMEM = "Is it PLA filament?";
+const char * const MSG_WIZARD_PLA_FILAMENT_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_PLA_FILAMENT_EN
+};
+
 const char MSG_WIZARD_QUIT_EN[] PROGMEM = "You can always resume the Wizard from Calibration -> Wizard.";
 const char * const MSG_WIZARD_QUIT_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_QUIT_EN
+};
+
+const char MSG_WIZARD_REPEAT_V2_CAL_EN[] PROGMEM = "Do you want to repeat last step to readjust distance between nozzle and heatbed?";
+const char * const MSG_WIZARD_REPEAT_V2_CAL_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_REPEAT_V2_CAL_EN
 };
 
 const char MSG_WIZARD_RERUN_EN[] PROGMEM = "Running Wizard will delete current calibration results and start from the beginning. Continue?";
