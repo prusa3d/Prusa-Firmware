@@ -2096,13 +2096,13 @@ const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
     }
 
     if (multi_screen) {
-        // Display the "next screen" indicator character.
-        // lcd_set_custom_characters_arrows();
-        lcd_set_custom_characters_nextpage();
-        lcd.setCursor(19, 3);
+		// Display the "next screen" indicator character.
+		// lcd_set_custom_characters_arrows();
+		lcd_set_custom_characters_nextpage();
+		lcd.setCursor(19, 3);
         // Display the down arrow.
         lcd.print(char(1));
-    }
+	}
 
     nlines = row;
     return multi_screen ? msgend : NULL;
@@ -2123,15 +2123,30 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
                 while (lcd_clicked()) ;
                 delay(10);
                 while (lcd_clicked()) ;
+				lcd_set_custom_characters();
+				lcd_update_enable(true);
+				lcd_update(2);
 				KEEPALIVE_STATE(IN_HANDLER);
                 return;
             }
         }
         if (multi_screen) {
-            if (msg_next == NULL)
-                msg_next = msg;
+			if (msg_next == NULL) 
+				msg_next = msg;
             msg_next = lcd_display_message_fullscreen_P(msg_next);
-        }
+			if (msg_next == NULL) {
+				lcd_set_custom_characters_nextpage();
+				lcd.setCursor(19, 3);
+				// Display the confirm char.
+				lcd.print(char(2));
+			}
+		}
+		else {
+			lcd_set_custom_characters_nextpage();
+			lcd.setCursor(19, 3);
+			// Display the confirm char.
+			lcd.print(char(2));
+		}
     }
 }
 
