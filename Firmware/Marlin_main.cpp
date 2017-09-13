@@ -2321,8 +2321,8 @@ void process_commands()
   KEEPALIVE_STATE(IN_HANDLER);
 
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
-	  custom_message = true;
-	  custom_message_type = 2;
+	  custom_message = true; //fixes using M117 during SD print, but needs to be be updated in future
+	  custom_message_type = 2; //fixes using M117 during SD print, but needs to be be updated in future
 	  starpos = (strchr(strchr_pointer + 5, '*'));
 	  if (starpos != NULL)
 		  *(starpos) = '\0';
@@ -3723,8 +3723,8 @@ void process_commands()
     case 0: // M0 - Unconditional stop - Wait for user button press on LCD
     case 1: // M1 - Conditional stop - Wait for user button press on LCD
     {
-	  custom_message = true;
-	  custom_message_type = 2;
+	  custom_message = true;  //fixes using M1 during SD print, but needs to be be updated in future
+	  custom_message_type = 2; //fixes using M1 during SD print, but needs to be be updated in future
 
       char *src = strchr_pointer + 2;
 	  codenum = 0;
@@ -3775,7 +3775,7 @@ void process_commands()
         LCD_MESSAGERPGM(MSG_RESUMING);
       else
         LCD_MESSAGERPGM(WELCOME_MSG);
-	  custom_message = false;
+	  custom_message = false; 
 	  custom_message_type = 0;
 	}
     break;
