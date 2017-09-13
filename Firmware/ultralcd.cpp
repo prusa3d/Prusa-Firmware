@@ -589,6 +589,146 @@ void lcd_commands()
 			lcd_commands_step = 3;
 		}
 	}
+#ifdef SNMM
+	if (lcd_commands_type == LCD_COMMAND_V2_CAL)
+	{
+		lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		if (lcd_commands_step == 0)
+		{
+			lcd_commands_step = 6;
+		}
+		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
+		{
+			enquecommand_P(PSTR("M107"));
+			enquecommand_P(PSTR("M104 S210"));
+			enquecommand_P(PSTR("M140 S55"));
+			enquecommand_P(PSTR("M190 S55"));
+			enquecommand_P(PSTR("M109 S210"));
+			enquecommand_P(PSTR("T0"));
+			enquecommand_P(PSTR("M117 First layer cal."));
+			enquecommand_P(PSTR("G87")); //sets calibration status
+			enquecommand_P(PSTR("G28"));
+			enquecommand_P(PSTR("G21")); //set units to millimeters
+			enquecommand_P(PSTR("G90")); //use absolute coordinates
+			enquecommand_P(PSTR("M83")); //use relative distances for extrusion
+			enquecommand_P(PSTR("G92 E0"));
+			enquecommand_P(PSTR("M203 E100"));
+			enquecommand_P(PSTR("M92 E140"));
+			lcd_commands_step = 5;
+		}
+		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			enquecommand_P(PSTR("G1 Z0.250 F7200.000"));
+			enquecommand_P(PSTR("G1 X50.0 E80.0  F1000.0));
+			nquecommand_P(PSTR("G1 X160.0 E20.0  F1000.0));
+			enquecommand_P(PSTR("G1 Z0.200 F7200.000));
+			enquecommand_P(PSTR("G1 X220.0 E13 F1000.0"));
+			enquecommand_P(PSTR("G1 X240.0 E0 F1000.0"));
+			enquecommand_P(PSTR("G92 E0.0"));
+			enquecommand_P(PSTR("G21"));
+			enquecommand_P(PSTR("G90"));
+			enquecommand_P(PSTR("M83"));
+			enquecommand_P(PSTR("G1 E-4 F2100.00000"));
+			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
+			enquecommand_P(PSTR("M204 S1000"));
+			enquecommand_P(PSTR("G1 F4000"));
+
+			lcd_implementation_clear();
+			lcd_goto_menu(lcd_babystep_z, 0, false);
+
+
+			lcd_commands_step = 4;
+		}
+		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty()) //draw meander
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+
+			
+			enquecommand_P(PSTR("G1 X50 Y155"));
+			enquecommand_P(PSTR("G1 X60 Y155 E4"));
+			enquecommand_P(PSTR("G1 F1080"));
+			enquecommand_P(PSTR("G1 X75 Y155 E2.5"));
+			enquecommand_P(PSTR("G1 X100 Y155 E2"));
+			enquecommand_P(PSTR("G1 X200 Y155 E2.62773"));
+			enquecommand_P(PSTR("G1 X200 Y135 E0.66174"));
+			enquecommand_P(PSTR("G1 X50 Y135 E3.62773"));
+			enquecommand_P(PSTR("G1 X50 Y115 E0.49386"));
+			enquecommand_P(PSTR("G1 X200 Y115 E3.62773"));
+			enquecommand_P(PSTR("G1 X200 Y95 E0.49386"));
+			enquecommand_P(PSTR("G1 X50 Y95 E3.62773"));
+			enquecommand_P(PSTR("G1 X50 Y75 E0.49386"));
+			enquecommand_P(PSTR("G1 X200 Y75 E3.62773"));
+			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
+			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
+			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));
+			lcd_commands_step = 3;
+		}
+
+		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+
+			enquecommand_P(PSTR("G4 S0"));
+			enquecommand_P(PSTR("G1 E-4 F2100.00000"));
+			enquecommand_P(PSTR("G1 Z0.5 F7200.000"));
+			enquecommand_P(PSTR("G1 X245 Y1"));
+			enquecommand_P(PSTR("G1 X240 E4"));
+			enquecommand_P(PSTR("G1 F4000"));
+			enquecommand_P(PSTR("G1 X190 E2.7"));
+			enquecommand_P(PSTR("G1 F4600"));
+			enquecommand_P(PSTR("G1 X110 E2.8"));
+			enquecommand_P(PSTR("G1 F5200"));
+			enquecommand_P(PSTR("G1 X40 E3"));
+			enquecommand_P(PSTR("G1 E-15.0000 F5000"));
+			enquecommand_P(PSTR("G1 E-50.0000 F5400"));
+			enquecommand_P(PSTR("G1 E-15.0000 F3000"));
+			enquecommand_P(PSTR("G1 E-12.0000 F2000"));
+			enquecommand_P(PSTR("G1 F1600"));
+
+			lcd_commands_step = 2;
+		}
+		if (lcd_commands_step == 2 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			
+			enquecommand_P(PSTR("G1 X0 Y1 E3.0000"));
+			enquecommand_P(PSTR("G1 X50 Y1 E-5.0000"));
+			enquecommand_P(PSTR("G1 F2000"));
+			enquecommand_P(PSTR("G1 X0 Y1 E5.0000"));
+			enquecommand_P(PSTR("G1 X50 Y1 E-5.0000"));
+			enquecommand_P(PSTR("G1 F2400"));
+			enquecommand_P(PSTR("G1 X0 Y1 E5.0000"));
+			enquecommand_P(PSTR("G1 X50 Y1 E - 5.0000"));
+			enquecommand_P(PSTR("G1 F2400"));
+			enquecommand_P(PSTR("G1 X0 Y1 E5.0000"));
+			enquecommand_P(PSTR("G1 X50 Y1 E-3.0000"));
+			enquecommand_P(PSTR("G4 S0"));
+			enquecommand_P(PSTR("M107"));
+			enquecommand_P(PSTR("M104 S0"));
+			enquecommand_P(PSTR("M140 S0"));
+			enquecommand_P(PSTR("G1 X10 Y180 F4000"));
+			enquecommand_P(PSTR("G1 Z10 F1300.000"));
+			enquecommand_P(PSTR("M84"));
+
+			lcd_commands_step = 1;
+
+		}
+
+		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_setstatuspgm(WELCOME_MSG);
+			lcd_commands_step = 0;
+			lcd_commands_type = 0;
+			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
+				lcd_wizard(10);
+			}
+		}
+
+	}
+
+#else //if not SNMM
+
 
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL) 
 	{
@@ -614,7 +754,7 @@ void lcd_commands()
 		{
 			
 			lcd_implementation_clear();
-			lcd_goto_menu(lcd_babystep_z, 0, false);
+			lcd_goto_menu(lcd_babystep_z, 0, false);			
 			enquecommand_P(PSTR("G1 X60.0 E9.0  F1000.0")); //intro line
 			enquecommand_P(PSTR("G1 X100.0 E12.5  F1000.0")); //intro line			
 			enquecommand_P(PSTR("G92 E0.0"));
@@ -630,8 +770,8 @@ void lcd_commands()
 		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty()) //draw meander
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-			
-			
+		
+
 			//just opposite direction
 			/*enquecommand_P(PSTR("G1 X50 Y55"));
 			enquecommand_P(PSTR("G1 F1080"));
@@ -650,7 +790,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X50 Y155 E2.5"));
 			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));*/
 
-			
+
 			enquecommand_P(PSTR("G1 X50 Y155"));
 			enquecommand_P(PSTR("G1 F1080"));
 			enquecommand_P(PSTR("G1 X75 Y155 E2.5"));
@@ -692,6 +832,8 @@ void lcd_commands()
 		}
 
 	}
+
+#endif // not SNMM
 
 	if (lcd_commands_type == LCD_COMMAND_STOP_PRINT)   /// stop print
 	{
@@ -2789,8 +2931,10 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 }
 
 void lcd_v2_calibration() {
-		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_PLA_FILAMENT_LOADED, true, false);
-		if (loaded) lcd_commands_type = LCD_COMMAND_V2_CAL;
+		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_PLA_FILAMENT_LOADED, false, true);
+		if (loaded) {
+			lcd_commands_type = LCD_COMMAND_V2_CAL;
+		}
 		else {
 			lcd_display_message_fullscreen_P(MSG_PLEASE_LOAD_PLA);
 			for (int i = 0; i < 20; i++) { //wait max. 2s
@@ -2803,8 +2947,8 @@ void lcd_v2_calibration() {
 				}
 			}
 		}
-		lcd_update_enable(true);
 		lcd_return_to_status();
+		lcd_update_enable(true);		
 }
 
 void lcd_wizard() {
