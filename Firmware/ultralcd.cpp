@@ -3021,7 +3021,11 @@ void lcd_wizard(int state) {
 		case 3: //xyz cal.
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_XYZ_CAL);
 			wizard_event = gcode_M45(false);
-			if (wizard_event) state = 5;
+			if (wizard_event) {
+				current_position[Z_AXIS] += 100; //move in z axis to make space for loading filament
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
+				state = 5;
+			}
 			else end = true;
 			break;
 		case 4: //z cal.
@@ -3033,7 +3037,7 @@ void lcd_wizard(int state) {
 		case 5: //is filament loaded?
 			//start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
-			setTargetBed(PLA_PREHEAT_HPB_TEMP); 		
+			setTargetBed(PLA_PREHEAT_HPB_TEMP); 
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_WIZARD_FILAMENT_LOADED, false);
 			if (wizard_event) state = 8;
 			else state = 6;
@@ -3081,10 +3085,7 @@ void lcd_wizard(int state) {
 		case 10: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_REPEAT_V2_CAL, false);
 			if (wizard_event) {
-				current_position[Z_AXIS] += 100;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS]/60, active_extruder);
-				current_position[Y_AXIS] = 205;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Y_AXIS]/60, active_extruder);
+				calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST)
 				lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_CLEAN_HEATBED);
 				state = 9;
 			}
@@ -3136,7 +3137,7 @@ void lcd_wizard(int state) {
 		break;
 	
 	}
-	if(state != 8) lcd_show_fullscreen_message_and_wait_P(msg);
+	if(state != 9) lcd_show_fullscreen_message_and_wait_P(msg);
 	lcd_update_enable(true);
 	lcd_return_to_status();
 	lcd_update(2);
