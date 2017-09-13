@@ -4993,14 +4993,12 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
   if (!check_file(filename)) {
 	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILE_INCOMPLETE, false, false);
 	  lcd_update_enable(true);
-  }
-  
-  if (!result) lcd_return_to_status();
-  else {	  
+  }  
+  if (result) {	  
 	  enquecommand(cmd);
-	  enquecommand_P(PSTR("M24"));
-	  lcd_return_to_status();
+	  enquecommand_P(PSTR("M24"));	  
   }
+  lcd_return_to_status();
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)
 {
