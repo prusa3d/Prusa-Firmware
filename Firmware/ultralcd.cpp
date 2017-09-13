@@ -2968,8 +2968,6 @@ void lcd_wizard() {
 
 void lcd_wizard(int state) {
 
-
-
 	bool end = false;
 	int wizard_event;
 	const char *msg = NULL;
@@ -3048,6 +3046,9 @@ void lcd_wizard(int state) {
 			lcd_implementation_clear();
 			lcd_print_at_PGM(0,2,MSG_LOADING_FILAMENT);
 			loading_flag = true;
+#ifdef SNMM
+			change_extr(0);
+#endif
 			gcode_M701();
 			state = 9;
 			break;
@@ -3062,7 +3063,7 @@ void lcd_wizard(int state) {
 			lcd_commands_type = LCD_COMMAND_V2_CAL;
 			end = true;
 			break;
-		case 10: //repeat firt layer cal.?
+		case 10: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_REPEAT_V2_CAL, false);
 			if (wizard_event) {
 				current_position[Z_AXIS] += 100;
@@ -3075,6 +3076,7 @@ void lcd_wizard(int state) {
 			else {
 				state = 11;
 			}
+			break;
 		case 11: //we are finished
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
 			end = true;

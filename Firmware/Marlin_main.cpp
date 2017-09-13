@@ -2242,8 +2242,11 @@ bool gcode_M45(bool onlyZ) {
 			}
 		}
 		else {
+			//if wizard is active and selftest was succefully completed, we dont want to loose information about it
+			if (calibration_status() != 250 || eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) {				
+				calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
+			}
 			// Reset the baby step value and the baby step applied flag.
-			calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
 			eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
 			// Complete XYZ calibration.
 			uint8_t point_too_far_mask = 0;
