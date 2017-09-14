@@ -109,6 +109,8 @@ FORCE_INLINE void serialprintPGM(const char *str)
   }
 }
 
+#define NOMORE(v,n) do{ if (v > n) v = n; }while(0)
+
 bool is_buffer_empty();
 void get_command();
 void process_commands();
@@ -220,6 +222,7 @@ void enquecommand(const char *cmd, bool from_progmem = false);
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
 void enquecommand_front(const char *cmd, bool from_progmem = false);
+bool cmd_buffer_empty();
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
@@ -281,6 +284,10 @@ extern float retract_length, retract_length_swap, retract_feedrate, retract_zlif
 extern float retract_recover_length, retract_recover_length_swap, retract_recover_feedrate;
 #endif
 
+#ifdef HOST_KEEPALIVE_FEATURE
+extern uint8_t host_keepalive_interval;
+#endif
+
 extern unsigned long starttime;
 extern unsigned long stoptime;
 extern int bowden_length[4];
@@ -316,8 +323,6 @@ extern void digipot_i2c_set_current( int channel, float current );
 extern void digipot_i2c_init();
 #endif
 
-#endif
-
 //Long pause
 extern int saved_feedmultiply;
 extern float HotendTempBckp;
@@ -350,9 +355,36 @@ float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
 
 #endif
+
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
 void proc_commands();
+bool check_commands();
+
+#ifdef HOST_KEEPALIVE_FEATURE
+
+// States for managing Marlin and host communication
+// Marlin sends messages if blocked or busy
+enum MarlinBusyState {
+	NOT_BUSY,           // Not in a handler
+	IN_HANDLER,         // Processing a GCode
+	IN_PROCESS,         // Known to be blocking command input (as in G29)
+	PAUSED_FOR_USER,    // Blocking pending any input
+	PAUSED_FOR_INPUT    // Blocking pending text input (concept)
+};
+
+#define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
+extern void host_keepalive();
+extern MarlinBusyState busy_state;
+
+#endif //HOST_KEEPALIVE_FEATURE
+
+bool gcode_M45(bool onlyZ);
+void gcode_M701();
+
+
+#endif //ifndef marlin.h
+
