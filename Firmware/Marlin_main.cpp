@@ -394,6 +394,8 @@ static bool saved_extruder_relative_mode = false;
 static int saved_fanSpeed = 0; //!< Print fan speed
 //! @}
 
+static int saved_feedmultiply_mm = 100;
+
 //===========================================================================
 //=============================Routines======================================
 //===========================================================================
@@ -6082,8 +6084,12 @@ Sigma_Exit:
     {
       if(code_seen('S'))
       {
+		saved_feedmultiply_mm = feedmultiply;
         feedmultiply = code_value() ;
       }
+	  if (code_seen('R')) { //restore previous feedmultiply
+		  feedmultiply = saved_feedmultiply_mm;
+	  }
     }
     break;
     case 221: // M221 S<factor in percent>- set extrude factor override percentage
