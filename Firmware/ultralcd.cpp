@@ -105,7 +105,7 @@ int lcd_commands_step=0;
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
 int farm_no = 0;
-int farm_timer = 30;
+int farm_timer = 8;
 int farm_status = 0;
 unsigned long allert_timer = millis();
 bool printer_connected = true;
@@ -408,15 +408,15 @@ static void lcd_status_screen()
 		farm_timer--;
 		if (farm_timer < 1)
 		{
-			farm_timer = 180;
+			farm_timer = 10;
 			prusa_statistics(0);
 		}
 		switch (farm_timer)
 		{
-		case 45:
+		case 8:
 			prusa_statistics(21);
 			break;
-		case 10:
+		case 5:
 			if (IS_SD_PRINTING)
 			{
 				prusa_statistics(20);
@@ -1283,13 +1283,14 @@ void lcd_menu_statistics()
 		lcd.print(itostr3(_days));
 
 
-
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
 		while (!lcd_clicked())
 		{
 			manage_heater();
 			manage_inactivity(true);
 			delay(100);
 		}
+		KEEPALIVE_STATE(NOT_BUSY);
 
 		lcd_quick_feedback();
 		lcd_return_to_status();
@@ -1367,6 +1368,7 @@ void lcd_service_mode_show_result() {
 		} else lcd_print_at_PGM(11, i + 1, PSTR("N/A"));
 	}
 	delay_keep_alive(500);
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (!lcd_clicked()) {
 		delay_keep_alive(100);
 	}
@@ -1393,6 +1395,7 @@ void lcd_service_mode_show_result() {
 	while (!lcd_clicked()) {
 		delay_keep_alive(100);
 	}
+	KEEPALIVE_STATE(NOT_BUSY);
 	delay_keep_alive(500);
 	lcd_set_custom_characters_arrows();
 	lcd_return_to_status();
@@ -1865,6 +1868,7 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
     bool multi_screen = msg_next != NULL;
 
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
     // Until confirmed by a button click.
     for (;;) {
         // Wait for 5 seconds before displaying the next text.
@@ -1874,6 +1878,7 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
                 while (lcd_clicked()) ;
                 delay(10);
                 while (lcd_clicked()) ;
+				KEEPALIVE_STATE(IN_HANDLER);
                 return;
             }
         }
@@ -1887,6 +1892,7 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 
 void lcd_wait_for_click()
 {
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
     for (;;) {
         manage_heater();
         manage_inactivity(true);
@@ -1894,6 +1900,7 @@ void lcd_wait_for_click()
             while (lcd_clicked()) ;
             delay(10);
             while (lcd_clicked()) ;
+			KEEPALIVE_STATE(IN_HANDLER);
             return;
         }
     }
@@ -1901,7 +1908,6 @@ void lcd_wait_for_click()
 
 int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
 {
-
 	lcd_display_message_fullscreen_P(msg);
 	
 	if (default_yes) {
@@ -1923,6 +1929,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = millis();
 	int8_t        enc_dif = encoderDiff;
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
 		if (allow_timeouting && millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
 			return -1;
@@ -1948,6 +1955,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 			while (lcd_clicked());
 			delay(10);
 			while (lcd_clicked());
+			KEEPALIVE_STATE(IN_HANDLER);
 			return yes;
 		}
 	}
@@ -2158,7 +2166,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
-		farm_timer = 5;
+		farm_timer = 4;
 		break;
 	case 21: // temperatures
 		SERIAL_ECHO("{");
@@ -2185,7 +2193,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		SERIAL_ECHOLN("}");
 		break;
 	case 92: // Error - Min temp
-		SERIAL_ECHOLN("{[ERR:3]");
+		SERIAL_ECHO("{[ERR:3]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
@@ -3001,7 +3009,7 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	lcd_print_at_PGM(1,3,MSG_CURRENT);
 	char cursor_pos = 1;
 	int enc_dif = 0;
-
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 		manage_heater();
 		manage_inactivity(true);
@@ -3029,10 +3037,10 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 			while (lcd_clicked());
 			delay(10);
 			while (lcd_clicked());
+			KEEPALIVE_STATE(IN_HANDLER);
 			return(cursor_pos - 1);
 		}
-	}
-	
+	}	
 }
 
 char choose_extruder_menu() {
@@ -3051,7 +3059,7 @@ char choose_extruder_menu() {
 	for (int i = 0; i < 3; i++) {
 		lcd_print_at_PGM(1, i + 1, MSG_EXTRUDER);
 	}
-
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 
 		for (int i = 0; i < 3; i++) {
@@ -3115,6 +3123,7 @@ char choose_extruder_menu() {
 			while (lcd_clicked());
 			delay(10);
 			while (lcd_clicked());
+			KEEPALIVE_STATE(IN_HANDLER);
 			return(cursor_pos + first - 1);
 			
 		}
@@ -3304,7 +3313,7 @@ void display_loading() {
 	}
 }
 
-static void extr_adj(int extruder) //loading filament for SNMM
+void extr_adj(int extruder) //loading filament for SNMM
 {
 	bool correct;
 	max_feedrate[E_AXIS] =80;
@@ -3318,13 +3327,13 @@ static void extr_adj(int extruder) //loading filament for SNMM
 	case 3: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T3); break;
 	default: lcd_display_message_fullscreen_P(MSG_FILAMENT_LOADING_T0); break;   
 	}
-			
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	do{
 		extr_mov(0.001,1000);
 		delay_keep_alive(2);
 	} while (!lcd_clicked());
 	//delay_keep_alive(500);
-
+	KEEPALIVE_STATE(IN_HANDLER);
 	st_synchronize();
 	//correct = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FIL_LOADED_CHECK, false);
 	//if (!correct) goto	START;
@@ -3640,8 +3649,8 @@ unsigned char lcd_choose_color() {
 	//-----------------------------------------------------
 	unsigned char items_no = 2;
 	const char *item[items_no];
-	item[0] = "Black";
-	item[1] = "Orange";
+	item[0] = "Orange";
+	item[1] = "Black";
 	//-----------------------------------------------------
 	unsigned char active_rows;
 	static int first = 0;
@@ -3663,10 +3672,9 @@ unsigned char lcd_choose_color() {
 
 		manage_heater();
 		manage_inactivity(true);
-
-		if (abs((enc_dif - encoderDiff)) > 4) {
-
-			if ((abs(enc_dif - encoderDiff)) > 1) {
+		proc_commands();
+		if (abs((enc_dif - encoderDiff)) > 12) {
+					
 				if (enc_dif > encoderDiff) {
 					cursor_pos--;
 				}
@@ -3674,7 +3682,7 @@ unsigned char lcd_choose_color() {
 				if (enc_dif < encoderDiff) {
 					cursor_pos++;
 				}
-
+				
 				if (cursor_pos > active_rows) {
 					cursor_pos = active_rows;
 					if (first < items_no - active_rows) {
@@ -3700,7 +3708,6 @@ unsigned char lcd_choose_color() {
 				lcd.print(">");
 				enc_dif = encoderDiff;
 				delay(100);
-			}
 
 		}
 
@@ -3708,7 +3715,11 @@ unsigned char lcd_choose_color() {
 			while (lcd_clicked());
 			delay(10);
 			while (lcd_clicked());
-			return(cursor_pos + first - 1);
+			switch(cursor_pos + first - 1) {
+			case 0: return 1; break;
+			case 1: return 0; break;
+			default: return 99; break;
+			}
 		}
 
 	}
@@ -3723,7 +3734,7 @@ void lcd_confirm_print()
 	int _ret = 0;
 	int _t = 0;
 
-
+	enc_dif = encoderDiff;
 	lcd_implementation_clear();
 
 	lcd.setCursor(0, 0);
@@ -3731,8 +3742,7 @@ void lcd_confirm_print()
 
 	do
 	{
-
-		if (abs((enc_dif - encoderDiff)) > 2) {
+		if (abs(enc_dif - encoderDiff) > 12) {
 			if (enc_dif > encoderDiff) {
 				cursor_pos--;
 			}
@@ -3740,6 +3750,7 @@ void lcd_confirm_print()
 			if (enc_dif < encoderDiff) {
 				cursor_pos++;
 			}
+			enc_dif = encoderDiff;
 		}
 
 		if (cursor_pos > 2) { cursor_pos = 2; }
@@ -3784,9 +3795,10 @@ void lcd_confirm_print()
 				NcTime = millis();
 			}
 		}
-
+		
 		manage_heater();
 		manage_inactivity();
+		proc_commands();
 
 	} while (_ret == 0);
 
@@ -4186,7 +4198,8 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-		const uint16_t nr = (sdSort == SD_SORT_NONE) ? (fileCnt - 1 - i) : i;
+		const uint16_t nr = ((sdSort == SD_SORT_NONE) || farm_mode) ? (fileCnt - 1 - i) : i;
+
 		 /* #ifdef SDCARD_RATHERRECENTFIRST
 			#ifndef SDCARD_SORT_ALPHA
 				fileCnt - 1 -
@@ -4805,6 +4818,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 	lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
 
 	int8_t enc_dif = 0;
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	do
 	{
 		switch (_fan)
@@ -4845,7 +4859,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		delay(100);
 
 	} while (!lcd_clicked());
-
+	KEEPALIVE_STATE(IN_HANDLER);
 	SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 	WRITE(EXTRUDER_0_AUTO_FAN_PIN, 0);
 	SET_OUTPUT(FAN_PIN);

@@ -261,7 +261,7 @@
   #define SD_SORT_ALPHA 1
   #define SD_SORT_NONE 2
 
-  #define SDSORT_LIMIT       40    // Maximum number of sorted items (10-256).
+  #define SDSORT_LIMIT       20    // Maximum number of sorted items (10-256).
   #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
   #define SDSORT_GCODE       false  // Allow turning sorting on/off with LCD and M34 g-code.
   #define SDSORT_USES_RAM    true  // Pre-allocate a static array for faster pre-sorting.
@@ -323,7 +323,7 @@
  * K=0 means advance disabled.
  * See Marlin documentation for calibration instructions.
  */
-//#define LIN_ADVANCE
+#define LIN_ADVANCE
 
 #ifdef LIN_ADVANCE
   #define LIN_ADVANCE_K 0 //Try around 45 for PLA, around 25 for ABS.
