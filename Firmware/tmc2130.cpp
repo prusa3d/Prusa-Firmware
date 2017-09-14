@@ -28,13 +28,13 @@ uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
 uint8_t tmc2130_axis_stalled[3] = {0, 0, 0};
 
 //pwm_ampl
-uint8_t tmc2130_pwm_ampl[2] = {TMC2130_PWM_AMPL_XY, TMC2130_PWM_AMPL_XY};
+uint8_t tmc2130_pwm_ampl[2] = {TMC2130_PWM_AMPL_X, TMC2130_PWM_AMPL_Y};
 //pwm_grad
-uint8_t tmc2130_pwm_grad[2] = {TMC2130_PWM_GRAD_XY, TMC2130_PWM_GRAD_XY};
+uint8_t tmc2130_pwm_grad[2] = {TMC2130_PWM_GRAD_X, TMC2130_PWM_GRAD_Y};
 //pwm_auto
-uint8_t tmc2130_pwm_auto[2] = {TMC2130_PWM_AUTO_XY, TMC2130_PWM_AUTO_XY};
+uint8_t tmc2130_pwm_auto[2] = {TMC2130_PWM_AUTO_X, TMC2130_PWM_AUTO_Y};
 //pwm_freq
-uint8_t tmc2130_pwm_freq[2] = {TMC2130_PWM_FREQ_XY, TMC2130_PWM_FREQ_XY};
+uint8_t tmc2130_pwm_freq[2] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y};
 
 
 uint8_t tmc2131_axis_sg_thr[3] = {TMC2130_SG_THRS_X, TMC2130_SG_THRS_Y, TMC2130_SG_THRS_Z};
