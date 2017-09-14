@@ -498,6 +498,8 @@ unsigned long chdkHigh = 0;
 boolean chdkActive = false;
 #endif
 
+static int saved_feedmultiply_mm = 100;
+
 //===========================================================================
 //=============================Routines======================================
 //===========================================================================
@@ -4938,11 +4940,11 @@ Sigma_Exit:
     {
       if(code_seen('S'))
       {
-		saved_feedmultiply = feedmultiply;
+		saved_feedmultiply_mm = feedmultiply;
         feedmultiply = code_value() ;
       }
-	  if (code_seen('R')) { //restore
-		  feedmultiply = saved_feedmultiply;
+	  if (code_seen('R')) { //restore previous feedmultiply
+		  feedmultiply = saved_feedmultiply_mm;
 	  }
     }
     break;
