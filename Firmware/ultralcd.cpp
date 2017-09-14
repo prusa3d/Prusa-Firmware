@@ -4967,10 +4967,11 @@ static void menu_action_function(menuFunc_t data) {
 
 static bool check_file(const char* filename) {
 	bool result = false;
+	uint32_t filesize;
 	card.openFile(filename, true);
-	card.getFileSize();
-	if (card.public_fileSize > END_FILE_SECTION) {
-		card.setIndex((card.public_fileSize) - END_FILE_SECTION);
+	filesize = card.getFileSize();
+	if (fileSize > END_FILE_SECTION) {
+		card.setIndex(filesize - END_FILE_SECTION);
 	}
 
 	while (!card.eof() && !result) {

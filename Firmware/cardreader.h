@@ -27,7 +27,7 @@ public:
   void release();
   void startFileprint();
   void pauseSDPrint();
-  void getFileSize();
+  uint32_t getFileSize();
   void getStatus();
   void printingHasFinished();
 
@@ -70,7 +70,6 @@ public:
   bool cardOK ;
   char filename[13];
   uint16_t creationTime, creationDate;
-  uint32_t public_fileSize;
   char longFilename[LONG_FILENAME_LENGTH];
   bool filenameIsDir;
   int lastnr; //last number of the autostart;

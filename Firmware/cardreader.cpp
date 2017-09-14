@@ -501,9 +501,9 @@ void CardReader::removeFile(char* name)
   
 }
 
-void CardReader::getFileSize()
+uint32_t CardReader::getFileSize()
 {
-	public_fileSize = filesize;
+	return filesize;
 }
 
 void CardReader::getStatus()
