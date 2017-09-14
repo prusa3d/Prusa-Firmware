@@ -2113,9 +2113,15 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
     bool multi_screen = msg_next != NULL;
 
+	lcd_set_custom_characters_nextpage();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
     // Until confirmed by a button click.
     for (;;) {
+		if (!multi_screen) {
+			lcd.setCursor(19, 3);
+			// Display the confirm char.
+			lcd.print(char(2));
+		}
         // Wait for 5 seconds before displaying the next text.
         for (uint8_t i = 0; i < 100; ++ i) {
             delay_keep_alive(50);
@@ -2135,17 +2141,11 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 				msg_next = msg;
             msg_next = lcd_display_message_fullscreen_P(msg_next);
 			if (msg_next == NULL) {
-				lcd_set_custom_characters_nextpage();
+				
 				lcd.setCursor(19, 3);
 				// Display the confirm char.
 				lcd.print(char(2));
 			}
-		}
-		else {
-			lcd_set_custom_characters_nextpage();
-			lcd.setCursor(19, 3);
-			// Display the confirm char.
-			lcd.print(char(2));
 		}
     }
 }
@@ -3005,7 +3005,7 @@ void lcd_wizard(int state) {
 			case CALIBRATION_STATUS_XYZ_CALIBRATION: state = 3; break; //run xyz cal.
 			case CALIBRATION_STATUS_Z_CALIBRATION: state = 4; break; //run z cal.
 			case CALIBRATION_STATUS_LIVE_ADJUST: state = 5; break; //run live adjust
-			case CALIBRATION_STATUS_CALIBRATED: end = true; break;
+			case CALIBRATION_STATUS_CALIBRATED: end = true; eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0); break;
 			default: state = 2; break; //if calibration status is unknown, run wizard from the beginning
 			}
 			break;
@@ -3021,17 +3021,13 @@ void lcd_wizard(int state) {
 		case 3: //xyz cal.
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_XYZ_CAL);
 			wizard_event = gcode_M45(false);
-			if (wizard_event) {
-				current_position[Z_AXIS] += 100; //move in z axis to make space for loading filament
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
-				state = 5;
-			}
+			if (wizard_event) state = 5;
 			else end = true;
 			break;
 		case 4: //z cal.
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_Z_CAL);
 			wizard_event = gcode_M45(true);
-			if (wizard_event) state = 9; //shipped, no need to set first layer, go to final message directly
+			if (wizard_event) state = 11; //shipped, no need to set first layer, go to final message directly
 			else end = true;
 			break;
 		case 5: //is filament loaded?
@@ -3044,6 +3040,8 @@ void lcd_wizard(int state) {
 			break;
 		case 6: //waiting for preheat nozzle for PLA;
 			lcd_display_message_fullscreen_P(MSG_WIZARD_WILL_PREHEAT);
+			current_position[Z_AXIS] = 100; //move in z axis to make space for loading filament
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
 			delay_keep_alive(2000);
 			lcd_display_message_fullscreen_P(MSG_WIZARD_HEATING);
 			while (abs(degHotend(0) - PLA_PREHEAT_HOTEND_TEMP) > 3) {
@@ -3085,7 +3083,7 @@ void lcd_wizard(int state) {
 		case 10: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_REPEAT_V2_CAL, false);
 			if (wizard_event) {
-				calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST)
+				calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
 				lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_CLEAN_HEATBED);
 				state = 9;
 			}
