@@ -1947,6 +1947,19 @@ static float probe_pt(float x, float y, float z_before) {
   }
 #endif // LIN_ADVANCE
 
+bool check_commands() {
+	  bool end_command_found = false;
+
+	  if (buflen)
+	  {
+		  if ((code_seen("M84")) || (code_seen("M 84"))) end_command_found = true;
+		  if (!cmdbuffer_front_already_processed)
+			  cmdqueue_pop_front();
+		  cmdbuffer_front_already_processed = false;
+	  }
+	  return end_command_found;
+}
+
 void homeaxis(int axis) {
 #define HOMEAXIS_DO(LETTER) \
   ((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))

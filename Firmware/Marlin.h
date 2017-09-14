@@ -362,6 +362,7 @@ void temp_compensation_start();
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
 void proc_commands();
+bool check_commands();
 
 #ifdef HOST_KEEPALIVE_FEATURE
 
@@ -386,3 +387,4 @@ void gcode_M701();
 
 
 #endif //ifndef marlin.h
+

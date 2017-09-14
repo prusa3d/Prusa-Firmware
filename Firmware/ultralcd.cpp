@@ -105,7 +105,7 @@ int lcd_commands_step=0;
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
 int farm_no = 0;
-int farm_timer = 30;
+int farm_timer = 8;
 int farm_status = 0;
 unsigned long allert_timer = millis();
 bool printer_connected = true;
@@ -408,15 +408,15 @@ static void lcd_status_screen()
 		farm_timer--;
 		if (farm_timer < 1)
 		{
-			farm_timer = 180;
+			farm_timer = 10;
 			prusa_statistics(0);
 		}
 		switch (farm_timer)
 		{
-		case 45:
+		case 8:
 			prusa_statistics(21);
 			break;
-		case 10:
+		case 5:
 			if (IS_SD_PRINTING)
 			{
 				prusa_statistics(20);
@@ -2493,7 +2493,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
-		farm_timer = 5;
+		farm_timer = 4;
 		break;
 	case 21: // temperatures
 		SERIAL_ECHO("{");
@@ -2520,7 +2520,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		SERIAL_ECHOLN("}");
 		break;
 	case 92: // Error - Min temp
-		SERIAL_ECHOLN("{[ERR:3]");
+		SERIAL_ECHO("{[ERR:3]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
@@ -4175,8 +4175,8 @@ unsigned char lcd_choose_color() {
 	//-----------------------------------------------------
 	unsigned char items_no = 2;
 	const char *item[items_no];
-	item[0] = "Black";
-	item[1] = "Orange";
+	item[0] = "Orange";
+	item[1] = "Black";
 	//-----------------------------------------------------
 	unsigned char active_rows;
 	static int first = 0;
@@ -4198,10 +4198,9 @@ unsigned char lcd_choose_color() {
 
 		manage_heater();
 		manage_inactivity(true);
-
-		if (abs((enc_dif - encoderDiff)) > 4) {
-
-			if ((abs(enc_dif - encoderDiff)) > 1) {
+		proc_commands();
+		if (abs((enc_dif - encoderDiff)) > 12) {
+					
 				if (enc_dif > encoderDiff) {
 					cursor_pos--;
 				}
@@ -4209,7 +4208,7 @@ unsigned char lcd_choose_color() {
 				if (enc_dif < encoderDiff) {
 					cursor_pos++;
 				}
-
+				
 				if (cursor_pos > active_rows) {
 					cursor_pos = active_rows;
 					if (first < items_no - active_rows) {
@@ -4235,7 +4234,6 @@ unsigned char lcd_choose_color() {
 				lcd.print(">");
 				enc_dif = encoderDiff;
 				delay(100);
-			}
 
 		}
 
@@ -4243,7 +4241,11 @@ unsigned char lcd_choose_color() {
 			while (lcd_clicked());
 			delay(10);
 			while (lcd_clicked());
-			return(cursor_pos + first - 1);
+			switch(cursor_pos + first - 1) {
+			case 0: return 1; break;
+			case 1: return 0; break;
+			default: return 99; break;
+			}
 		}
 
 	}
@@ -4258,7 +4260,7 @@ void lcd_confirm_print()
 	int _ret = 0;
 	int _t = 0;
 
-
+	enc_dif = encoderDiff;
 	lcd_implementation_clear();
 
 	lcd.setCursor(0, 0);
@@ -4266,8 +4268,7 @@ void lcd_confirm_print()
 
 	do
 	{
-
-		if (abs((enc_dif - encoderDiff)) > 2) {
+		if (abs(enc_dif - encoderDiff) > 12) {
 			if (enc_dif > encoderDiff) {
 				cursor_pos--;
 			}
@@ -4275,6 +4276,7 @@ void lcd_confirm_print()
 			if (enc_dif < encoderDiff) {
 				cursor_pos++;
 			}
+			enc_dif = encoderDiff;
 		}
 
 		if (cursor_pos > 2) { cursor_pos = 2; }
@@ -4319,9 +4321,10 @@ void lcd_confirm_print()
 				NcTime = millis();
 			}
 		}
-
+		
 		manage_heater();
 		manage_inactivity();
+		proc_commands();
 
 	} while (_ret == 0);
 
@@ -5504,16 +5507,43 @@ static void menu_action_setlang(unsigned char lang) {
 static void menu_action_function(menuFunc_t data) {
   (*data)();
 }
+
+static bool check_file(const char* filename) {
+	bool result = false;
+	uint32_t filesize;
+	card.openFile(filename, true);
+	filesize = card.getFileSize();
+	if (filesize > END_FILE_SECTION) {
+		card.setIndex(filesize - END_FILE_SECTION);
+	}
+
+	while (!card.eof() && !result) {
+		card.sdprinting = true;
+		get_command();
+		result = check_commands();
+	}
+	card.printingHasFinished();
+	strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
+	return result;
+}
+
 static void menu_action_sdfile(const char* filename, char* longFilename)
-{
+{	
   loading_flag = false;
   char cmd[30];
   char* c;
+  bool result = true;
   sprintf_P(cmd, PSTR("M23 %s"), filename);
   for (c = &cmd[4]; *c; c++)
-    *c = tolower(*c);
-  enquecommand(cmd);
-  enquecommand_P(PSTR("M24"));
+	  *c = tolower(*c);
+  if (!check_file(filename)) {
+	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILE_INCOMPLETE, false, false);
+	  lcd_update_enable(true);
+  }  
+  if (result) {	  
+	  enquecommand(cmd);
+	  enquecommand_P(PSTR("M24"));	  
+  }
   lcd_return_to_status();
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)

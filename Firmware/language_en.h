@@ -316,6 +316,7 @@
 #define(length=17, lines=1) MSG_SORT_ALPHA						"Sort: [Alphabet]"
 #define(length=17, lines=1) MSG_SORT_NONE						"Sort: [None]"
 #define(length=20, lines=1) MSG_SORTING							"Sorting files"
+#define MSG_FILE_INCOMPLETE										"File incomplete. Continue anyway?"
 #define(length=17, lines=1) MSG_WIZARD							"Wizard"
 #define	MSG_WIZARD_LANGUAGE					"Please choose your language"
 #define	MSG_WIZARD_WELCOME					"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
