@@ -162,6 +162,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 	} // while readDir
 }
 
+
 void CardReader::ls() 
 {
   lsAction=LS_SerialPrint;
@@ -498,6 +499,11 @@ void CardReader::removeFile(char* name)
       SERIAL_PROTOCOLLNPGM(".");
     }
   
+}
+
+uint32_t CardReader::getFileSize()
+{
+	return filesize;
 }
 
 void CardReader::getStatus()
@@ -963,8 +969,8 @@ void CardReader::printingHasFinished()
       sdprinting = false;
       if(SD_FINISHED_STEPPERRELEASE)
       {
-          //finishAndDisableSteppers();
-          enquecommand_P(PSTR(SD_FINISHED_RELEASECOMMAND));
+          finishAndDisableSteppers();
+          //enquecommand_P(PSTR(SD_FINISHED_RELEASECOMMAND));
       }
       autotempShutdown();
 	  #ifdef SDCARD_SORT_ALPHA

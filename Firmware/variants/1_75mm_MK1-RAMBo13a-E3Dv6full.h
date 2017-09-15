@@ -403,4 +403,6 @@ THERMISTORS SETTINGS
 
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration
 
+#define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
+
 #endif //__CONFIGURATION_PRUSA_H
