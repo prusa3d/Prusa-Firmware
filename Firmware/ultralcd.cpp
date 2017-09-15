@@ -3412,7 +3412,12 @@ static void lcd_fsensor_fail()
 
 
 static void lcd_silent_mode_set() {
-  SilentModeMenu = !SilentModeMenu;
+	switch (SilentModeMenu) {
+	case 0: SilentModeMenu = 1; break;
+	case 1: SilentModeMenu = 2; break;
+	case 2: SilentModeMenu = 0; break;
+	default: SilentModeMenu = 0; break;
+	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
   // Wait until the planner queue is drained and the stepper routine achieves
@@ -3891,6 +3896,13 @@ static void lcd_settings_menu()
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
+  if (!farm_mode) { //dont show in menu if we are in farm mode
+	  switch (SilentModeMenu) {
+	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+  }
 
 #ifdef PAT9125
 #ifndef DEBUG_DISABLE_FSENSORCHECK
@@ -3950,6 +3962,7 @@ static void lcd_settings_menu()
   else {
 	  MENU_ITEM(function, MSG_SECOND_SERIAL_ON, lcd_second_serial_set);
   }
+
 
   if (!isPrintPaused && !homing_flag)
 	{
@@ -5281,24 +5294,10 @@ static void lcd_tune_menu()
   MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
   
-#ifdef PAT9125
-#ifndef DEBUG_DISABLE_FSENSORCHECK
-  if (FSensorStateMenu == 0) {
-    MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
+  if (SilentModeMenu == 0) {
+    MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune);
   } else {
-    MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
-  }
-#endif //DEBUG_DISABLE_FSENSORCHECK
-#endif //PAT9125
-
-#ifdef TMC2130
-  if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
-  else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
-
-  if (SilentModeMenu == 0)
-  {
-    if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
-    else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
+    MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set_tune);
   }
   else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
 #endif //TMC2130

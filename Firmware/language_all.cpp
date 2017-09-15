@@ -60,6 +60,11 @@ const char * const MSG_AUTO_HOME_LANG_TABLE[1] PROGMEM = {
 	MSG_AUTO_HOME_EN
 };
 
+const char MSG_AUTO_MODE_ON_EN[] PROGMEM = "Mode [auto power]";
+const char * const MSG_AUTO_MODE_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_AUTO_MODE_ON_EN
+};
+
 const char MSG_A_RETRACT_EN[] PROGMEM = "A-retract";
 const char * const MSG_A_RETRACT_LANG_TABLE[1] PROGMEM = {
 	MSG_A_RETRACT_EN
