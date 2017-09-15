@@ -3821,7 +3821,6 @@ void change_extr(int extr) { //switches multiplexer for extruders
 		break;
 	}	
 	delay(100);
-	get_ext_nr();
 }
 
 static int get_ext_nr() { //reads multiplexer input pins and return current extruder number (counted from 0)
