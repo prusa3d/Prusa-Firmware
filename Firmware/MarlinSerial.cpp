@@ -23,7 +23,7 @@
 #include "Marlin.h"
 #include "MarlinSerial.h"
 
-int selectedSerialPort; 
+int selectedSerialPort = 0; 
 
 #ifndef AT90USB
 // this next line disables the entire HardwareSerial.cpp, 

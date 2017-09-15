@@ -759,16 +759,16 @@ void setup()
 	setup_killpin();
 	setup_powerhold();
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
-	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no); 
-	//if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode  
-	if (farm_no == 0xFFFF) farm_no = 0; 
-	if (farm_mode) 
+	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
+	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
+	if (farm_no == 0xFFFF) farm_no = 0;
+	if (farm_mode)
 	{ 
-		prusa_statistics(8); 
-		selectedSerialPort = 1; 
+		prusa_statistics(8);
+		selectedSerialPort = 1;
 	}
 	else
-		selectedSerialPort = 0; 
+		selectedSerialPort = 0;
 	MYSERIAL.begin(BAUDRATE);
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
@@ -5582,6 +5582,13 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		dcode_3(); break;
 	case 4: // D4 - Read/Write PIN
 		dcode_4(); break;
+	case 5:
+		MYSERIAL.println("D5 - Test");
+		if (code_seen('P'))
+			selectedSerialPort = (int)code_value();
+		MYSERIAL.print("selectedSerialPort = ");
+		MYSERIAL.println(selectedSerialPort, DEC);
+		break;
 /*	case 4:
 		{
 			MYSERIAL.println("D4 - Test");
@@ -5619,14 +5626,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif            
 		break;*/
 //		break;
-	case 5:
+/*	case 5:
 		{
-/*			MYSERIAL.print("tmc2130_rd_MSCNT(0)=");
+			MYSERIAL.print("tmc2130_rd_MSCNT(0)=");
 			int val = tmc2130_rd_MSCNT(tmc2130_cs[0]);
-			MYSERIAL.println(val);*/
+			MYSERIAL.println(val);
 			homeaxis(0);
 		}
-		break;
+		break;*/
 	case 6:
 		{
 /*			MYSERIAL.print("tmc2130_rd_MSCNT(1)=");
@@ -6691,7 +6698,7 @@ void serialecho_temperatures() {
 
 
 void uvlo_() {
-		//SERIAL_ECHOLNPGM("UVLO");
+		SERIAL_ECHOLNPGM("UVLO");
 		save_print_to_eeprom();
 		float current_position_bckp[2];
 		int feedrate_bckp = feedrate;
