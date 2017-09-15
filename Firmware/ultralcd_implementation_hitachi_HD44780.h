@@ -498,6 +498,7 @@ void lcd_set_custom_characters_nextpage()
 	B10110,
 	B11100,
 	B01000,
+	B00000,
 	B00000
   };
 
