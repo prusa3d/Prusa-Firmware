@@ -356,7 +356,7 @@ void get_command()
 	if (selectedSerialPort == 1)
 	{
 		selectedSerialPort = 0; 
-		MYSERIAL.write(serial_char); 
+		MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
 		selectedSerialPort = 1; 
 	} 
       TimeSent = millis();
