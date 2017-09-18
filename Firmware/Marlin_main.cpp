@@ -6443,24 +6443,24 @@ update_currents() {
 	float current_low[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor[3];
 	
-	SERIAL_ECHOLNPGM("Currents updated: ");
+	//SERIAL_ECHOLNPGM("Currents updated: ");
 
 	if (destination[Z_AXIS] < Z_SILENT) {
-		SERIAL_ECHOLNPGM("LOW");
+		//SERIAL_ECHOLNPGM("LOW");
 		for (uint8_t i = 0; i < 3; i++) {
 			digipot_current(i, current_low[i]);		
-			MYSERIAL.print(int(i));
+			/*MYSERIAL.print(int(i));
 			SERIAL_ECHOPGM(": ");
-			MYSERIAL.println(current_low[i]);
+			MYSERIAL.println(current_low[i]);*/
 		}		
 	}
 	else if (destination[Z_AXIS] > Z_HIGH_POWER) {
-		SERIAL_ECHOLNPGM("HIGH");
+		//SERIAL_ECHOLNPGM("HIGH");
 		for (uint8_t i = 0; i < 3; i++) {
 			digipot_current(i, current_high[i]);
-			MYSERIAL.print(int(i));
+			/*MYSERIAL.print(int(i));
 			SERIAL_ECHOPGM(": ");
-			MYSERIAL.println(current_high[i]);
+			MYSERIAL.println(current_high[i]);*/
 		}		
 	}
 	else {
@@ -6468,9 +6468,9 @@ update_currents() {
 			float q = current_low[i] - Z_SILENT*((current_high[i] - current_low[i]) / (Z_HIGH_POWER - Z_SILENT));
 			tmp_motor[i] = ((current_high[i] - current_low[i]) / (Z_HIGH_POWER - Z_SILENT))*destination[Z_AXIS] + q;
 			digipot_current(i, tmp_motor[i]);			
-			MYSERIAL.print(int(i));
+			/*MYSERIAL.print(int(i));
 			SERIAL_ECHOPGM(": ");
-			MYSERIAL.println(tmp_motor[i]);
+			MYSERIAL.println(tmp_motor[i]);*/
 		}
 	}
 }
