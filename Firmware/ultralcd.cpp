@@ -4502,8 +4502,13 @@ static void lcd_autostart_sd()
 
 
 static void lcd_silent_mode_set_tune() {
-  SilentModeMenu = !SilentModeMenu;
-  eeprom_update_byte((unsigned char*)EEPROM_SILENT, SilentModeMenu);
+  switch (SilentModeMenu) {
+  case 0: SilentModeMenu = 1; break;
+  case 1: SilentModeMenu = 2; break;
+  case 2: SilentModeMenu = 0; break;
+  default: SilentModeMenu = 0; break;
+  }
+  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
   digipot_init();
   lcd_goto_menu(lcd_tune_menu, 9);
 }
