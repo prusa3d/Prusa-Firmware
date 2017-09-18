@@ -62,6 +62,7 @@ extern void enquecommand_front(const char *cmd, bool from_progmem);
 extern void repeatcommand_front();
 extern bool is_buffer_empty();
 extern void get_command();
+extern uint16_t cmdqueue_calc_sd_length();
 
 // Return True if a character was found
 static inline bool    code_seen(char code) { return (strchr_pointer = strchr(CMDBUFFER_CURRENT_STRING, code)) != NULL; }
