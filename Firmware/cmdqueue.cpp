@@ -601,3 +601,20 @@ void get_command()
 
   #endif //SDSUPPORT
 }
+
+uint16_t cmdqueue_calc_sd_length()
+{
+	int _buflen = buflen;
+	int _bufindr = bufindr;
+	uint16_t sdlen = 0;
+	while (_buflen--)
+	{
+		if (cmdbuffer[_bufindr] == CMDBUFFER_CURRENT_TYPE_SDCARD)
+			sdlen += cmdbuffer[_bufindr + 1];
+		//skip header, skip command
+		for (_bufindr += CMDHDRSIZE; cmdbuffer[_bufindr] != 0; ++ _bufindr) ;
+		//skip zeros
+		for (++ _bufindr; _bufindr < sizeof(cmdbuffer) && cmdbuffer[_bufindr] == 0; ++ _bufindr) ;
+	}
+    return sdlen;
+}
