@@ -214,7 +214,7 @@ void FlushSerialRequestResend();
 void ClearToSend();
 
 void get_coordinates();
-void prepare_move();
+void prepare_move(uint8_t sdlen = 0);
 void kill(const char *full_screen_message = NULL, unsigned char id = 0);
 void Stop();
 

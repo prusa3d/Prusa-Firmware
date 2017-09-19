@@ -971,6 +971,19 @@ static void lcd_menu_temperatures()
     }
 }
 
+extern void stop_and_save_print_to_ram();
+extern void restore_print_from_ram_and_continue();
+
+static void lcd_menu_test_save()
+{
+	stop_and_save_print_to_ram();
+}
+
+static void lcd_menu_test_restore()
+{
+	restore_print_from_ram_and_continue();
+}
+
 static void lcd_preheat_menu()
 {
   START_MENU();
@@ -3794,6 +3807,8 @@ void lcd_confirm_print()
 
 }
 
+extern bool saved_printing;
+
 static void lcd_main_menu()
 {
 
@@ -3802,8 +3817,13 @@ static void lcd_main_menu()
 
   // Majkl superawesome menu
 
-  
+
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
+
+ if (!saved_printing) 
+  MENU_ITEM(function, PSTR("tst - Save"), lcd_menu_test_save);
+ else
+  MENU_ITEM(function, PSTR("tst - Restore"), lcd_menu_test_restore);
 
 #ifdef TMC2130_DEBUG
  MENU_ITEM(function, PSTR("recover print"), recover_print);

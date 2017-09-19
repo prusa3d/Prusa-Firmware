@@ -1300,6 +1300,11 @@ void planner_queue_min_reset()
 }
 #endif /* PLANNER_DIAGNOSTICS */
 
+void planner_add_sd_length(uint8_t sdlen)
+{
+	block_buffer[block_buffer_tail].sdlen += sdlen;
+}
+
 uint16_t planner_calc_sd_length()
 {
 	unsigned char _block_buffer_head = block_buffer_head;
