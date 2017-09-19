@@ -94,7 +94,7 @@ typedef struct {
   unsigned long abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
 #endif
 
-  uint8_t sdlen;
+  uint16_t sdlen;
 } block_t;
 
 #ifdef LIN_ADVANCE
@@ -219,5 +219,7 @@ extern uint8_t planner_queue_min();
 // Diagnostic function: Reset the minimum planner segments.
 extern void planner_queue_min_reset();
 #endif /* PLANNER_DIAGNOSTICS */
+
+extern void planner_add_sd_length(uint8_t sdlen);
 
 extern uint16_t planner_calc_sd_length();
