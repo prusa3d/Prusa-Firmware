@@ -186,7 +186,6 @@
 #undef PREVENT_LENGTHY_EXTRUDE
 #endif //DEBUG_DISABLE_PREVENT_EXTRUDER
 
-
 #define EXTRUDE_MAXLENGTH (X_MAX_LENGTH+Y_MAX_LENGTH) //prevent extrusion of very large distances.
 
 /*================== Thermal Runaway Protection ==============================
@@ -258,8 +257,8 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 // The pullups are needed if you directly connect a mechanical endswitch between the signal and ground pins.
 
-const bool X_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of the endstop.
-const bool Y_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of the endstop.
+const bool X_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
+const bool Y_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of the endstop.
 //#define DISABLE_MAX_ENDSTOPS
 //#define DISABLE_MIN_ENDSTOPS
@@ -295,12 +294,12 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define Y_HOME_DIR -1
 #define Z_HOME_DIR -1
 
-#define min_software_endstops true // If true, axis won't move to coordinates less than HOME_POS.
-#define max_software_endstops true  // If true, axis won't move to coordinates greater than the defined lengths below.
-
 #ifdef DEBUG_DISABLE_SWLIMITS
 #define min_software_endstops false
 #define max_software_endstops false
+#else
+#define min_software_endstops true // If true, axis won't move to coordinates less than HOME_POS.
+#define max_software_endstops true  // If true, axis won't move to coordinates greater than the defined lengths below.
 #endif //DEBUG_DISABLE_SWLIMITS
 
 
@@ -744,5 +743,9 @@ enum CalibrationStatus
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"
+
+#define PINDA_THERMISTOR
+
+#define AMBIENT_THERMISTOR
 
 #endif //__CONFIGURATION_H

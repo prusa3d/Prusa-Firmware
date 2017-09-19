@@ -19,8 +19,8 @@ float   world2machine_shift[2];
 #define WEIGHT_FIRST_ROW_Y_HIGH (0.3f)
 #define WEIGHT_FIRST_ROW_Y_LOW  (0.0f)
 
-#define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER)
-#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER)
+#define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER) // -22 + 23 = 1
+#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER) // -0.6 + 9 = 8.4
 
 // Scaling of the real machine axes against the programmed dimensions in the firmware.
 // The correction is tiny, here around 0.5mm on 250mm length.

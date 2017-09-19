@@ -16,7 +16,7 @@
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK3"
 
 // Electronics
-#define MOTHERBOARD BOARD_EINY_0_3a
+#define MOTHERBOARD BOARD_EINY_0_4a
 
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
@@ -32,7 +32,7 @@
 
 // Steps per unit {X,Y,Z,E}
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280} //Extruder motor changed back to 200step type
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -77,8 +77,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_AXIS_ALWAYS_ON 1
 
 //DEBUG
-#if 0
 #define DEBUG_DCODES //D codes
+#if 0
 #define DEBUG_DISABLE_XMINLIMIT  //x min limit ignored
 #define DEBUG_DISABLE_XMAXLIMIT  //x max limit ignored
 #define DEBUG_DISABLE_YMINLIMIT  //y min limit ignored
@@ -104,7 +104,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    32        // microstep resolution for E axis (increased from 16 to 32)
+#define TMC2130_USTEPS_E    32        // microstep resolution for E axis
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
@@ -149,7 +149,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {3, 3, 5, 8}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {13, 18, 20, 22}  // default running currents for all axes
+#define TMC2130_CURRENTS_R {13, 13, 20, 20}  // default running currents for all axes
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR

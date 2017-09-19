@@ -269,6 +269,11 @@ extern void homeaxis(int axis);
 extern unsigned char fanSpeedSoftPwm;
 #endif
 
+#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
+extern unsigned char lcdSoftPwm;
+extern unsigned char lcdBlinkDelay;
+#endif
+
 #ifdef FILAMENT_SENSOR
   extern float filament_width_nominal;  //holds the theoretical filament diameter ie., 3.00 or 1.75
   extern bool filament_sensor;  //indicates that filament sensor readings should control extrusion
@@ -356,6 +361,11 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
+
+#ifdef PINDA_THERMISTOR
+float temp_compensation_pinda_thermistor_offset();
+#endif //PINDA_THERMISTOR
+
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
 

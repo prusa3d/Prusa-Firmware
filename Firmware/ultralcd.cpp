@@ -14,11 +14,14 @@
 //#include "Configuration.h"
 
 #include "SdFatUtil.h"
-#include "pat9125.h"
 
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef PAT9125
+#include "pat9125.h"
+#endif //PAT9125
+
+#ifdef TMC2130
 #include "tmc2130.h"
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130
 
 #define _STRINGIFY(s) #s
 
@@ -949,6 +952,24 @@ static void lcd_menu_extruder_info()
     }
 }
 
+static void lcd_menu_temperatures()
+{
+    lcd.setCursor(1, 1);
+    lcd.print("Ambient: ");
+    lcd.setCursor(12, 1);
+    lcd.print(ftostr31ns(current_temperature_ambient));
+	lcd.print(LCD_STR_DEGREE);
+    lcd.setCursor(1, 2);
+    lcd.print("PINDA: ");
+    lcd.setCursor(12, 2);
+    lcd.print(ftostr31ns(current_temperature_pinda));
+	lcd.print(LCD_STR_DEGREE);
+    if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_return_to_status();
+    }
+}
 
 static void lcd_preheat_menu()
 {
@@ -1023,6 +1044,7 @@ static void lcd_support_menu()
   MENU_ITEM(function, PSTR("XYZ cal. details"), lcd_service_mode_show_result);
     }
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
+  MENU_ITEM(submenu, PSTR("Temperatures"), lcd_menu_temperatures);
   #endif //MK1BP
   END_MENU();
 }
@@ -2487,10 +2509,10 @@ static void lcd_fsensor_state_set()
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 	tmc2130_mode = SilentModeMenu?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_init();
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130
   digipot_init();
   lcd_goto_menu(lcd_settings_menu, 7);
 }
@@ -3944,10 +3966,10 @@ static void lcd_autostart_sd()
 static void lcd_silent_mode_set_tune() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char*)EEPROM_SILENT, SilentModeMenu);
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 	tmc2130_mode = SilentModeMenu?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_init();
-#endif //HAVE_TMC2130_DRIVERS
+#endif //TMC2130
   digipot_init();
   lcd_goto_menu(lcd_tune_menu, 9);
 }
@@ -4373,9 +4395,8 @@ static void lcd_selftest()
 
 	if (_result)
 	{
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		tmc2130_home_exit();
-		sg_homing_delay = 0;
 		enable_endstops(false);
 #endif
 		current_position[X_AXIS] = current_position[X_AXIS] + 14;
@@ -4437,10 +4458,8 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	current_position[axis] = 0;
 	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 	tmc2130_home_exit();
-	sg_homing_delay = 0;
-	tmc2130_axis_stalled[axis] = false;
 	enable_endstops(true);
 #endif
 
@@ -4450,7 +4469,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		SERIAL_ECHOPGM("Current position 2:");
 		MYSERIAL.println(current_position[axis]);*/
 
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
 
@@ -4460,8 +4479,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 		st_synchronize();
 
-#ifdef HAVE_TMC2130_DRIVERS
-		sg_homing_delay = 0;
+#ifdef TMC2130
 		tmc2130_home_exit();
 #endif
 		//current_position[axis] = st_get_position_mm(axis);
@@ -4475,12 +4493,11 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			st_synchronize();
 			current_position[axis] += axis_length;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 			tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
 			st_synchronize();
-#ifdef HAVE_TMC2130_DRIVERS
-			sg_homing_delay = 0;
+#ifdef TMC2130
 			tmc2130_home_exit();
 #endif
 			//current_position[axis] = st_get_position_mm(axis);
@@ -4495,8 +4512,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
 			//axis length
-#ifdef HAVE_TMC2130_DRIVERS
-			sg_homing_delay = 0;
+#ifdef TMC2130
 			tmc2130_home_exit();
 			enable_endstops(false);
 #endif
@@ -4576,7 +4592,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 			}
 			_stepdone = true;
 		}
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 		tmc2130_home_exit();
 #endif
 
@@ -4658,8 +4674,8 @@ static bool lcd_selfcheck_pulleys(int axis)
 			//if (SilentModeMenu == 1) digipot_current(0, tmp_motor[0]); //set back to normal operation currents
 			//else digipot_current(0, tmp_motor_loud[0]); //set motor current back			
 			current_position[axis] = current_position[axis] - move;
-#ifdef HAVE_TMC2130_DRIVERS
-			tmc2130_home_enter(axis);
+#ifdef TMC2130
+			tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 50, active_extruder);
 			
@@ -4668,7 +4684,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 			tmc2130_home_exit();
 #endif
 		}
@@ -4677,7 +4693,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 		manage_inactivity(true);
 		while (!endstop_triggered) {
 			if ((x_min_endstop) || (y_min_endstop)) {
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 				tmc2130_home_exit();
 #endif
 				endstop_triggered = true;
@@ -4701,15 +4717,15 @@ static bool lcd_selfcheck_pulleys(int axis)
 				}
 			}
 			else {
-#ifdef HAVE_TMC2130_DRIVERS
+#ifdef TMC2130
 				tmc2130_home_exit();
 #endif
 				//current_position[axis] -= 1;
 				current_position[axis] += 50;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 				current_position[axis] -= 100;
-#ifdef HAVE_TMC2130_DRIVERS
-				tmc2130_home_enter(axis);
+#ifdef TMC2130
+				tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 				st_synchronize();

@@ -1211,6 +1211,47 @@ const short temptable_1047[][2] PROGMEM = {
 };
 #endif
 
+#if (THERMISTORAMBIENT == 2000) //100k thermistor NTCG104LH104JT1
+const short temptable_2000[][2] PROGMEM = {
+// Source: https://product.tdk.com/info/en/catalog/datasheets/503021/tpd_ntc-thermistor_ntcg_en.pdf
+// Calculated using 4.7kohm pullup, voltage divider math, and manufacturer provided temp/resistance
+{305*OVERSAMPLENR, 125},
+{338*OVERSAMPLENR, 120},
+{374*OVERSAMPLENR, 115},
+{412*OVERSAMPLENR, 110},
+{452*OVERSAMPLENR, 105},
+{494*OVERSAMPLENR, 100},
+{536*OVERSAMPLENR, 95},
+{580*OVERSAMPLENR, 90},
+{623*OVERSAMPLENR, 85},
+{665*OVERSAMPLENR, 80},
+{706*OVERSAMPLENR, 75},
+{744*OVERSAMPLENR, 70},
+{780*OVERSAMPLENR, 65},
+{813*OVERSAMPLENR, 60},
+{843*OVERSAMPLENR, 55},
+{869*OVERSAMPLENR, 50},
+{892*OVERSAMPLENR, 45},
+{912*OVERSAMPLENR, 40},
+{929*OVERSAMPLENR, 35},
+{943*OVERSAMPLENR, 30},
+{955*OVERSAMPLENR, 25},
+{965*OVERSAMPLENR, 20},
+{973*OVERSAMPLENR, 15},
+{979*OVERSAMPLENR, 10},
+{984*OVERSAMPLENR, 5},
+{988*OVERSAMPLENR, 0},
+{991*OVERSAMPLENR, -5},
+{993*OVERSAMPLENR, -10},
+{995*OVERSAMPLENR, -15},
+{996*OVERSAMPLENR, -20},
+{997*OVERSAMPLENR, -25},
+{998*OVERSAMPLENR, -30},
+{999*OVERSAMPLENR, -35},
+{999*OVERSAMPLENR, -40},
+};
+#endif
+
 #define _TT_NAME(_N) temptable_ ## _N
 #define TT_NAME(_N) _TT_NAME(_N)
 
@@ -1290,6 +1331,11 @@ const short temptable_1047[][2] PROGMEM = {
 # ifdef BED_USES_THERMISTOR
 #  error No bed thermistor table specified
 # endif // BED_USES_THERMISTOR
+#endif
+
+#ifdef THERMISTORAMBIENT
+# define AMBIENTTEMPTABLE TT_NAME(THERMISTORAMBIENT)
+# define AMBIENTTEMPTABLE_LEN (sizeof(AMBIENTTEMPTABLE)/sizeof(*AMBIENTTEMPTABLE))
 #endif
 
 //Set the high and low raw values for the heater, this indicates which raw value is a high or low temperature

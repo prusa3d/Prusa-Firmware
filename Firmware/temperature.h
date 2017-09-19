@@ -49,6 +49,17 @@ extern float current_temperature[EXTRUDERS];
 #endif
 extern int target_temperature_bed;
 extern float current_temperature_bed;
+
+#ifdef PINDA_THERMISTOR
+//extern int current_temperature_raw_pinda;
+extern float current_temperature_pinda;
+#endif
+
+#ifdef AMBIENT_THERMISTOR
+//extern int current_temperature_raw_ambient;
+extern float current_temperature_ambient;
+#endif
+
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
   extern float redundant_temperature;
 #endif

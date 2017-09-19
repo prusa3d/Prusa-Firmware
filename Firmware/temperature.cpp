@@ -45,6 +45,17 @@ int target_temperature[EXTRUDERS] = { 0 };
 int target_temperature_bed = 0;
 int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
+
+#ifdef PINDA_THERMISTOR
+int current_temperature_raw_pinda =  0 ;
+float current_temperature_pinda = 0.0;
+#endif //PINDA_THERMISTOR
+
+#ifdef AMBIENT_THERMISTOR
+int current_temperature_raw_ambient =  0 ;
+float current_temperature_ambient = 0.0;
+#endif //AMBIENT_THERMISTOR
+
 int current_temperature_bed_raw = 0;
 float current_temperature_bed = 0.0;
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
@@ -75,8 +86,13 @@ float current_temperature_bed = 0.0;
   unsigned char fanSpeedSoftPwm;
 #endif
 
+#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
+  unsigned char lcdSoftPwm = (LCD_PWM_MAX * 2 + 1); //set default value to maximum
+  unsigned char lcdBlinkDelay = 0; //lcd blinking delay (0 = no blink)
+#endif
+
 unsigned char soft_pwm_bed;
-  
+
 #ifdef BABYSTEPPING
   volatile int babystepsTodo[3]={0,0,0};
 #endif
@@ -129,6 +145,12 @@ static volatile bool temp_meas_ready = false;
   static unsigned long extruder_autofan_last_check;
 #endif  
 
+#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
+  static unsigned char soft_pwm_lcd = 0;
+  static unsigned char lcd_blink_delay = 0;
+  static bool lcd_blink_on = false;
+#endif
+
 #if EXTRUDERS > 3
   # error Unsupported number of extruders
 #elif EXTRUDERS > 2
@@ -161,6 +183,7 @@ static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 
 static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
+static float analog2tempAmbient(int raw);
 static void updateTemperaturesFromRawValues();
 
 enum TempRunawayStates
@@ -845,6 +868,27 @@ static float analog2tempBed(int raw) {
   #endif
 }
 
+static float analog2tempAmbient(int raw)
+{
+    float celsius = 0;
+    byte i;
+
+    for (i=1; i<AMBIENTTEMPTABLE_LEN; i++)
+    {
+      if (PGM_RD_W(AMBIENTTEMPTABLE[i][0]) > raw)
+      {
+        celsius  = PGM_RD_W(AMBIENTTEMPTABLE[i-1][1]) + 
+          (raw - PGM_RD_W(AMBIENTTEMPTABLE[i-1][0])) * 
+          (float)(PGM_RD_W(AMBIENTTEMPTABLE[i][1]) - PGM_RD_W(AMBIENTTEMPTABLE[i-1][1])) /
+          (float)(PGM_RD_W(AMBIENTTEMPTABLE[i][0]) - PGM_RD_W(AMBIENTTEMPTABLE[i-1][0]));
+        break;
+      }
+    }
+    // Overflow: Set to last value in the table
+    if (i == AMBIENTTEMPTABLE_LEN) celsius = PGM_RD_W(AMBIENTTEMPTABLE[i-1][1]);
+    return celsius;
+}
+
 /* Called to get the raw values into the the actual temperatures. The raw values are created in interrupt context,
     and this function is called from normal context as it is too slow to run in interrupts and will block the stepper routine otherwise */
 static void updateTemperaturesFromRawValues()
@@ -853,7 +897,15 @@ static void updateTemperaturesFromRawValues()
     {
         current_temperature[e] = analog2temp(current_temperature_raw[e], e);
     }
-    
+
+#ifdef PINDA_THERMISTOR
+	current_temperature_pinda = analog2tempBed(current_temperature_raw_pinda); //thermistor for pinda is the same as for bed
+#endif
+
+#ifdef AMBIENT_THERMISTOR
+	current_temperature_ambient = analog2tempAmbient(current_temperature_raw_ambient); //thermistor for ambient is NTCG104LH104JT1 (2000)
+#endif
+   
 	current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
 
     #ifdef TEMP_SENSOR_1_AS_REDUNDANT
@@ -942,7 +994,12 @@ void tp_init()
     #ifdef FAN_SOFT_PWM
     soft_pwm_fan = fanSpeedSoftPwm / 2;
     #endif
-  #endif  
+	#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
+    soft_pwm_lcd = lcdSoftPwm / 2;
+	lcd_blink_delay = lcdBlinkDelay;
+    lcd_blink_on = true;
+    #endif
+  #endif
 
   #ifdef HEATER_0_USES_MAX6675
     #ifndef SDSUPPORT
@@ -1469,7 +1526,9 @@ ISR(TIMER0_COMPB_vect)
   static unsigned long raw_temp_1_value = 0;
   static unsigned long raw_temp_2_value = 0;
   static unsigned long raw_temp_bed_value = 0;
-  static unsigned char temp_state = 10;
+  static unsigned long raw_temp_pinda_value = 0;
+  static unsigned long raw_temp_ambient_value = 0;
+  static unsigned char temp_state = 14;
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
   static unsigned char soft_pwm_0;
 #ifdef SLOW_PWM_HEATERS
@@ -1507,15 +1566,16 @@ ISR(TIMER0_COMPB_vect)
   /*
    * standard PWM modulation
    */
-  if(pwm_count == 0){
+  if (pwm_count == 0)
+  {
     soft_pwm_0 = soft_pwm[0];
-    if(soft_pwm_0 > 0) { 
+    if(soft_pwm_0 > 0)
+	{ 
       WRITE(HEATER_0_PIN,1);
 #ifdef HEATERS_PARALLEL
       WRITE(HEATER_1_PIN,1);
 #endif
     } else WRITE(HEATER_0_PIN,0);
-    
 #if EXTRUDERS > 1
     soft_pwm_1 = soft_pwm[1];
     if(soft_pwm_1 > 0) WRITE(HEATER_1_PIN,1); else WRITE(HEATER_1_PIN,0);
@@ -1533,12 +1593,35 @@ ISR(TIMER0_COMPB_vect)
     if(soft_pwm_fan > 0) WRITE(FAN_PIN,1); else WRITE(FAN_PIN,0);
 #endif
   }
-  if(soft_pwm_0 < pwm_count) { 
+  if(soft_pwm_0 < pwm_count)
+  { 
     WRITE(HEATER_0_PIN,0);
 #ifdef HEATERS_PARALLEL
     WRITE(HEATER_1_PIN,0);
 #endif
   }
+#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
+	if ((pwm_count & LCD_PWM_MAX) == 0)
+	{
+		if (lcd_blink_delay)
+		{
+			lcd_blink_delay--;
+			if (lcd_blink_delay == 0)
+			{
+				lcd_blink_delay = lcdBlinkDelay;
+				lcd_blink_on = !lcd_blink_on;
+			}
+		}
+		else
+		{
+			lcd_blink_delay = lcdBlinkDelay;
+			lcd_blink_on = true;
+		}
+		soft_pwm_lcd = (lcd_blink_on) ? (lcdSoftPwm / 2) : 0;
+		if (soft_pwm_lcd > 0) WRITE(LCD_PWM_PIN,1); else WRITE(LCD_PWM_PIN,0);
+	}
+#endif
+
 #if EXTRUDERS > 1
   if(soft_pwm_1 < pwm_count) WRITE(HEATER_1_PIN,0);
 #endif
@@ -1551,10 +1634,13 @@ ISR(TIMER0_COMPB_vect)
 #ifdef FAN_SOFT_PWM
   if(soft_pwm_fan < pwm_count) WRITE(FAN_PIN,0);
 #endif
+#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
+  if (soft_pwm_lcd < (pwm_count & LCD_PWM_MAX)) WRITE(LCD_PWM_PIN,0);
+#endif
   
   pwm_count += (1 << SOFT_PWM_SCALE);
   pwm_count &= 0x7f;
-  
+
 #else //ifndef SLOW_PWM_HEATERS
   /*
    * SLOW PWM HEATERS
@@ -1742,7 +1828,7 @@ ISR(TIMER0_COMPB_vect)
   }
   if (soft_pwm_fan < pwm_count) WRITE(FAN_PIN,0);
 #endif
-  
+
   pwm_count += (1 << SOFT_PWM_SCALE);
   pwm_count &= 0x7f;
   
@@ -1872,7 +1958,7 @@ ISR(TIMER0_COMPB_vect)
      temp_state = 9; 
      break; 
     case 9:   //Measure FILWIDTH 
-     #if defined(FILWIDTH_PIN) &&(FILWIDTH_PIN > -1) 
+     #if defined(FILWIDTH_PIN) &&(FILWIDTH_PIN > -1)
      //raw_filwidth_value += ADC;  //remove to use an IIR filter approach 
       if(ADC>102)  //check that ADC is reading a voltage > 0.5 volts, otherwise don't take in the data.
         {
@@ -1880,14 +1966,53 @@ ISR(TIMER0_COMPB_vect)
         
         raw_filwidth_value= raw_filwidth_value + ((unsigned long)ADC<<7);  //add new ADC reading 
         }
-     #endif 
-     temp_state = 0;   
+     #endif
+      temp_state = 10;
+      break;
+    case 10: // Prepare TEMP_AMBIENT
+      #if defined(TEMP_AMBIENT_PIN) && (TEMP_AMBIENT_PIN > -1)
+        #if TEMP_AMBIENT_PIN > 7
+          ADCSRB = 1<<MUX5;
+        #else
+          ADCSRB = 0;
+        #endif
+        ADMUX = ((1 << REFS0) | (TEMP_AMBIENT_PIN & 0x07));
+        ADCSRA |= 1<<ADSC; // Start conversion
+      #endif
+      lcd_buttons_update();
+      temp_state = 11;
+      break;
+    case 11: // Measure TEMP_AMBIENT
+      #if defined(TEMP_AMBIENT_PIN) && (TEMP_AMBIENT_PIN > -1)
+        raw_temp_ambient_value += ADC;
+      #endif
+      temp_state = 12;
+      break;
+    case 12: // Prepare TEMP_PINDA
+      #if defined(TEMP_PINDA_PIN) && (TEMP_PINDA_PIN > -1)
+        #if TEMP_PINDA_PIN > 7
+          ADCSRB = 1<<MUX5;
+        #else
+          ADCSRB = 0;
+        #endif
+        ADMUX = ((1 << REFS0) | (TEMP_PINDA_PIN & 0x07));
+        ADCSRA |= 1<<ADSC; // Start conversion
+      #endif
+      lcd_buttons_update();
+      temp_state = 13;
+      break;
+    case 13: // Measure TEMP_PINDA
+      #if defined(TEMP_PINDA_PIN) && (TEMP_PINDA_PIN > -1)
+        raw_temp_pinda_value += ADC;
+      #endif
+
+	 temp_state = 0;   
       
      temp_count++;
      break;      
       
       
-    case 10: //Startup, delay initial temp reading a tiny bit so the hardware can settle.
+    case 14: //Startup, delay initial temp reading a tiny bit so the hardware can settle.
       temp_state = 0;
       break;
 //    default:
@@ -1900,17 +2025,23 @@ ISR(TIMER0_COMPB_vect)
   {
     if (!temp_meas_ready) //Only update the raw values if they have been read. Else we could be updating them during reading.
     {
-      current_temperature_raw[0] = raw_temp_0_value;
+		current_temperature_raw[0] = raw_temp_0_value;
 #if EXTRUDERS > 1
-      current_temperature_raw[1] = raw_temp_1_value;
+		current_temperature_raw[1] = raw_temp_1_value;
 #endif
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
-      redundant_temperature_raw = raw_temp_1_value;
+		redundant_temperature_raw = raw_temp_1_value;
 #endif
 #if EXTRUDERS > 2
-      current_temperature_raw[2] = raw_temp_2_value;
+		current_temperature_raw[2] = raw_temp_2_value;
 #endif
-      current_temperature_bed_raw = raw_temp_bed_value;
+#ifdef PINDA_THERMISTOR
+		current_temperature_raw_pinda = raw_temp_pinda_value;
+#endif //PINDA_THERMISTOR
+#ifdef AMBIENT_THERMISTOR
+		current_temperature_raw_ambient = raw_temp_ambient_value;
+#endif //AMBIENT_THERMISTOR
+		current_temperature_bed_raw = raw_temp_bed_value;
     }
 
 //Add similar code for Filament Sensor - can be read any time since IIR filtering is used 
@@ -1925,6 +2056,8 @@ ISR(TIMER0_COMPB_vect)
     raw_temp_1_value = 0;
     raw_temp_2_value = 0;
     raw_temp_bed_value = 0;
+	raw_temp_pinda_value = 0;
+	raw_temp_ambient_value = 0;
 
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
     if(current_temperature_raw[0] <= maxttemp_raw[0]) {

@@ -356,6 +356,7 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 //The ASCII buffer for receiving from the serial:
 #define MAX_CMD_SIZE 96
 #define BUFSIZE 4
+#define CMDHDRSIZE 2
 
 
 // Firmware based and LCD controlled retract
@@ -412,6 +413,12 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 #if TEMP_SENSOR_BED > 0
   #define THERMISTORBED TEMP_SENSOR_BED
   #define BED_USES_THERMISTOR
+#endif
+#if TEMP_SENSOR_PINDA > 0
+  #define THERMISTORPINDA TEMP_SENSOR_PINDA
+#endif
+#if TEMP_SENSOR_AMBIENT > 0
+  #define THERMISTORAMBIENT TEMP_SENSOR_AMBIENT
 #endif
 #if TEMP_SENSOR_0 == -1
   #define HEATER_0_USES_AD595
