@@ -593,7 +593,7 @@ float junction_deviation = 0.1;
 // Add a new linear movement to the buffer. steps_x, _y and _z is the absolute position in 
 // mm. Microseconds specify how many microseconds the move should take to perform. To aid acceleration
 // calculation the caller must also provide the physical length of the line in millimeters.
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const uint8_t &extruder, uint8_t sdlen)
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const uint8_t &extruder)
 {
     // Calculate the buffer head after we push this byte
   int next_buffer_head = next_block_index(block_buffer_head);
@@ -724,7 +724,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   block_t *block = &block_buffer[block_buffer_head];
 
   // Set sdlen for calculating sd position
-  block->sdlen = sdlen;
+  block->sdlen = 0;
 
   // Mark block as not busy (Not executed by the stepper interrupt, could be still tinkered with.)
   block->busy = false;
