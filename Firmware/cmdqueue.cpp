@@ -29,6 +29,8 @@ long gcode_N = 0;
 long gcode_LastN = 0;
 long Stopped_gcode_LastN = 0;
 
+uint32_t sdpos_atomic = 0;
+
 
 // Pop the currently processed command from the queue.
 // It is expected, that there is at least one command in the queue.
@@ -572,7 +574,10 @@ void get_command()
         return; //if empty line
       }
       cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
-      cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
+	  uint8_t len = strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
+
+	  cli();
+	  cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
       cmdbuffer[bufindw+1] = sd_count;
 /*	  SERIAL_ECHOPGM("SD cmd(");
 	  MYSERIAL.print(sd_count, DEC);
@@ -583,10 +588,13 @@ void get_command()
       ++ buflen;
 //	  SERIAL_ECHOPGM("buflen:");
 //	  MYSERIAL.print(buflen);
-      bufindw += strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
+      bufindw += len;
+	  sdpos_atomic = card.get_sdpos();
       if (bufindw == sizeof(cmdbuffer))
           bufindw = 0;
-      comment_mode = false; //for new command
+	  sei();
+
+	  comment_mode = false; //for new command
       serial_count = 0; //clear buffer
       // The following line will reserve buffer space if available.
       if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))

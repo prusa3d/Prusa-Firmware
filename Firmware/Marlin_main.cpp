@@ -441,6 +441,8 @@ unsigned long _usb_timer = 0;
 
 static uint8_t tmp_extruder;
 
+bool extruder_under_pressure = true;
+
 
 bool Stopped=false;
 
@@ -1150,8 +1152,18 @@ void loop()
     #else
       process_commands();
     #endif //SDSUPPORT
+
       if (! cmdbuffer_front_already_processed)
-          cmdqueue_pop_front();
+	  {
+		cli();
+    	uint8_t sdlen = 0;
+		if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD)
+			sdlen = cmdbuffer[bufindr + 1];
+	    cmdqueue_pop_front();
+		if (sdlen)
+			planner_add_sd_length(sdlen);
+		sei();
+	  }
       cmdbuffer_front_already_processed = false;
   }
 }
@@ -1983,10 +1995,7 @@ void process_commands()
 
             }
           #endif //FWRETRACT
-		uint8_t sdlen = 0;
-		if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD)
-			sdlen = cmdbuffer[bufindr + 1];
-        prepare_move(sdlen);
+        prepare_move();
         //ClearToSend();
       }
       break;
@@ -5759,7 +5768,7 @@ void clamp_to_software_endstops(float target[3])
 }
 
 #ifdef MESH_BED_LEVELING
-    void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder, uint8_t sdlen) {
+    void mesh_plan_buffer_line(const float &x, const float &y, const float &z, const float &e, const float &feed_rate, const uint8_t extruder) {
         float dx = x - current_position[X_AXIS];
         float dy = y - current_position[Y_AXIS];
         float dz = z - current_position[Z_AXIS];
@@ -5793,20 +5802,20 @@ void clamp_to_software_endstops(float target[3])
     }
 #endif  // MESH_BED_LEVELING
     
-void prepare_move(uint8_t sdlen)
+void prepare_move()
 {
   clamp_to_software_endstops(destination);
   previous_millis_cmd = millis();
 
   // Do not use feedmultiply for E or Z only moves
   if( (current_position[X_AXIS] == destination [X_AXIS]) && (current_position[Y_AXIS] == destination [Y_AXIS])) {
-      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder, sdlen);
+      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
   }
   else {
 #ifdef MESH_BED_LEVELING
-    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder, sdlen);
+    mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #else
-     plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder, sdlen);
+     plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate*feedmultiply*(1./(60.f*100.f)), active_extruder);
 #endif
   }
 
@@ -6880,16 +6889,21 @@ void restore_print_from_eeprom() {
 ////////////////////////////////////////////////////////////////////////////////
 // new save/restore printing
 
+extern uint32_t sdpos_atomic;
+
 bool saved_printing = false;
 uint32_t saved_sdpos = 0;
 uint32_t saved_pos[4] = {0, 0, 0, 0};
+float saved_feedrate2 = 0;
+uint8_t saved_active_extruder = 0;
+bool saved_extruder_under_pressure = false;
+
 
 void stop_and_save_print_to_ram()
 {
 	if (saved_printing) return;
 	cli();
-	uint32_t sdpos = card.get_sdpos();
-	saved_sdpos = sdpos;
+	saved_sdpos = sdpos_atomic;
 	uint16_t sdlen_planner = planner_calc_sd_length();
 	saved_sdpos -= sdlen_planner;
 	uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length();
@@ -6898,14 +6912,19 @@ void stop_and_save_print_to_ram()
 //	babystep_reset();
 	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 		saved_pos[axis] = current_position[axis];
+	saved_feedrate2 = feedrate;
+	saved_active_extruder = active_extruder;
+	saved_extruder_under_pressure = extruder_under_pressure;
 	cmdqueue_reset();
 	card.sdprinting = false;
 //	card.closefile();
 	saved_printing = true;
 	sei();
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] + 10, current_position[E_AXIS], homing_feedrate[Z_AXIS], active_extruder);
+	float extruder_move = 0;
+	if (extruder_under_pressure) extruder_move -= 0.8;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] + 10, current_position[E_AXIS] + extruder_move, homing_feedrate[Z_AXIS], active_extruder);
     st_synchronize();
-	MYSERIAL.print("SDPOS="); MYSERIAL.println(sdpos, DEC);
+	MYSERIAL.print("SDPOS="); MYSERIAL.println(sdpos_atomic, DEC);
 	MYSERIAL.print("SDLEN_PLAN="); MYSERIAL.println(sdlen_planner, DEC);
 	MYSERIAL.print("SDLEN_CMDQ="); MYSERIAL.println(sdlen_cmdqueue, DEC);
 
@@ -6915,8 +6934,14 @@ void restore_print_from_ram_and_continue()
 {
 	if (!saved_printing) return;
 //	babystep_apply();
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS], active_extruder);
+	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
+	    current_position[axis] = st_get_position_mm(axis);
+	active_extruder = saved_active_extruder;
+	float extruder_move = 0;
+	if (saved_extruder_under_pressure) extruder_move += 0.8;
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], current_position[E_AXIS] + extruder_move, homing_feedrate[Z_AXIS], active_extruder);
     st_synchronize();
+	feedrate = saved_feedrate2;
 	card.setIndex(saved_sdpos);
 	card.sdprinting = true;
 	saved_printing = false;
