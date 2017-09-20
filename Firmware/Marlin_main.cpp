@@ -565,27 +565,45 @@ void servo_init()
 
 static void lcd_language_menu();
 
+void stop_and_save_print_to_ram(float z_move, float e_move);
+void restore_print_from_ram_and_continue(float e_move);
+
 
 #ifdef PAT9125
+
+void fsensor_stop_and_save_print()
+{
+//	stop_and_save_print_to_ram(10, -0.8); //XY - no change, Z 10mm up, E 0.8mm in
+	stop_and_save_print_to_ram(0, 0); //XY - no change, Z 10mm up, E 0.8mm in
+}
+
+void fsensor_restore_print_and_continue()
+{
+	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+}
+
 
 bool fsensor_enabled = true;
 bool fsensor_ignore_error = true;
 bool fsensor_M600 = false;
-long prev_pos_e = 0;
-long err_cnt = 0;
+long fsensor_prev_pos_e = 0;
+uint8_t fsensor_err_cnt = 0;
 
 #define FSENS_ESTEPS 280  //extruder resolution [steps/mm]
-#define FSENS_MINDEL 560  //filament sensor min delta [steps] (3mm)
+//#define FSENS_MINDEL 560  //filament sensor min delta [steps] (3mm)
+#define FSENS_MINDEL 280  //filament sensor min delta [steps] (3mm)
 #define FSENS_MINFAC 3    //filament sensor minimum factor [count/mm]
-#define FSENS_MAXFAC 50   //filament sensor maximum factor [count/mm]
-#define FSENS_MAXERR 2    //filament sensor max error count
+//#define FSENS_MAXFAC 50   //filament sensor maximum factor [count/mm]
+#define FSENS_MAXFAC 40   //filament sensor maximum factor [count/mm]
+//#define FSENS_MAXERR 2    //filament sensor max error count
+#define FSENS_MAXERR 5    //filament sensor max error count
 
 void fsensor_enable()
 {
 	MYSERIAL.println("fsensor_enable");
 	pat9125_y = 0;
-	prev_pos_e = st_get_position(E_AXIS);
-	err_cnt = 0;
+	fsensor_prev_pos_e = st_get_position(E_AXIS);
+	fsensor_err_cnt = 0;
 	fsensor_enabled = true;
 	fsensor_ignore_error = true;
 	fsensor_M600 = false;
@@ -602,24 +620,26 @@ void fsensor_update()
 	if (!fsensor_enabled) return;
 	long pos_e = st_get_position(E_AXIS); //current position
 	pat9125_update();
-	long del_e = pos_e - prev_pos_e; //delta
+	long del_e = pos_e - fsensor_prev_pos_e; //delta
 	if (abs(del_e) < FSENS_MINDEL) return;
 	float de = ((float)del_e / FSENS_ESTEPS);
 	int cmin = de * FSENS_MINFAC;
 	int cmax = de * FSENS_MAXFAC;
-	int cnt = pat9125_y;
-	prev_pos_e = pos_e;
+	int cnt = -pat9125_y;
+	fsensor_prev_pos_e = pos_e;
 	pat9125_y = 0;
 	bool err = false;
 	if ((del_e > 0) && ((cnt < cmin) || (cnt > cmax))) err = true;
 	if ((del_e < 0) && ((cnt > cmin) || (cnt < cmax))) err = true;
 	if (err)
-		err_cnt++;
+		fsensor_err_cnt++;
 	else
-		err_cnt = 0;
+		fsensor_err_cnt = 0;
 
 /**/
-	MYSERIAL.print("de=");
+	MYSERIAL.print("pos_e=");
+	MYSERIAL.print(pos_e);
+	MYSERIAL.print(" de=");
 	MYSERIAL.print(de);
 	MYSERIAL.print(" cmin=");
 	MYSERIAL.print((int)cmin);
@@ -628,13 +648,13 @@ void fsensor_update()
 	MYSERIAL.print(" cnt=");
 	MYSERIAL.print((int)cnt);
 	MYSERIAL.print(" err=");
-	MYSERIAL.println((int)err_cnt);/**/
+	MYSERIAL.println((int)fsensor_err_cnt);/**/
 
-	return;
+//	return;
 
-	if (err_cnt > FSENS_MAXERR)
+	if (fsensor_err_cnt > FSENS_MAXERR)
 	{
-		MYSERIAL.println("fsensor_update (err_cnt > FSENS_MAXERR)");
+		MYSERIAL.println("fsensor_update (fsensor_err_cnt > FSENS_MAXERR)");
 		if (fsensor_ignore_error)
 		{
 			MYSERIAL.println("fsensor_update - error ignored)");
@@ -643,10 +663,10 @@ void fsensor_update()
 		else
 		{
 			MYSERIAL.println("fsensor_update - ERROR!!!");
-			planner_abort_hard();
-//			enquecommand_front_P((PSTR("M600")));
-//			fsensor_M600 = true;
-//			fsensor_enabled = false;
+			fsensor_stop_and_save_print();
+			enquecommand_front_P((PSTR("M600")));
+			fsensor_M600 = true;
+			fsensor_enabled = false;
 		}
 	}
 }
@@ -5233,7 +5253,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  if (fsensor_M600)
 	  {
 		cmdqueue_pop_front(); //hack because M600 repeated 2x when enqueued to front
+		st_synchronize();
+		while (!is_buffer_empty())
+		{
+			process_commands();
+		    cmdqueue_pop_front();
+		}
 		fsensor_enable();
+		fsensor_restore_print_and_continue();
 	  }
 #endif //PAT9125
         
@@ -6898,50 +6925,49 @@ float saved_feedrate2 = 0;
 uint8_t saved_active_extruder = 0;
 bool saved_extruder_under_pressure = false;
 
-
-void stop_and_save_print_to_ram()
+void stop_and_save_print_to_ram(float z_move, float e_move)
 {
 	if (saved_printing) return;
 	cli();
-	saved_sdpos = sdpos_atomic;
-	uint16_t sdlen_planner = planner_calc_sd_length();
+	saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
+	uint16_t sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
 	saved_sdpos -= sdlen_planner;
-	uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length();
+	uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
 	saved_sdpos -= sdlen_cmdqueue;
-	planner_abort_hard();
-//	babystep_reset();
-	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
+	planner_abort_hard(); //abort printing
+	for (int axis = X_AXIS; axis <= E_AXIS; axis++) //save positions
 		saved_pos[axis] = current_position[axis];
-	saved_feedrate2 = feedrate;
-	saved_active_extruder = active_extruder;
-	saved_extruder_under_pressure = extruder_under_pressure;
-	cmdqueue_reset();
+//		saved_pos[axis] = st_get_position_mm(axis);
+	saved_feedrate2 = feedrate; //save feedrate
+	saved_active_extruder = active_extruder; //save active_extruder
+
+	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
+
+	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 //	card.closefile();
 	saved_printing = true;
 	sei();
-	float extruder_move = 0;
-	if (extruder_under_pressure) extruder_move -= 0.8;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] + 10, current_position[E_AXIS] + extruder_move, homing_feedrate[Z_AXIS], active_extruder);
-    st_synchronize();
+	if ((z_move != 0) || (e_move != 0)) // extruder and z move
+		plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS] + z_move, saved_pos[E_AXIS] + e_move, homing_feedrate[Z_AXIS], active_extruder);
+    st_synchronize(); //wait moving
 	MYSERIAL.print("SDPOS="); MYSERIAL.println(sdpos_atomic, DEC);
 	MYSERIAL.print("SDLEN_PLAN="); MYSERIAL.println(sdlen_planner, DEC);
 	MYSERIAL.print("SDLEN_CMDQ="); MYSERIAL.println(sdlen_cmdqueue, DEC);
 
 }
 
-void restore_print_from_ram_and_continue()
+void restore_print_from_ram_and_continue(float e_move)
 {
 	if (!saved_printing) return;
-//	babystep_apply();
-	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
-	    current_position[axis] = st_get_position_mm(axis);
-	active_extruder = saved_active_extruder;
-	float extruder_move = 0;
-	if (saved_extruder_under_pressure) extruder_move += 0.8;
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], current_position[E_AXIS] + extruder_move, homing_feedrate[Z_AXIS], active_extruder);
+//	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
+//	    current_position[axis] = st_get_position_mm(axis);
+	active_extruder = saved_active_extruder; //restore active_extruder
+	feedrate = saved_feedrate2; //restore feedrate
+	float e = saved_pos[E_AXIS] - e_move;
+	plan_set_e_position(e);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS], active_extruder);
     st_synchronize();
-	feedrate = saved_feedrate2;
 	card.setIndex(saved_sdpos);
 	card.sdprinting = true;
 	saved_printing = false;

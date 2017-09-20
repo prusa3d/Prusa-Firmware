@@ -277,13 +277,19 @@ void tmc2130_home_exit()
 			if (sg_homing_axes_mask & mask & (X_AXIS_MASK | Y_AXIS_MASK))
 			{
 				if (tmc2130_mode == TMC2130_MODE_SILENT)
+				{
 					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_SILENT); // Configuration back to stealthChop
+					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_TCOOLTHRS, 0);
+//					tmc2130_wr_PWMCONF(tmc2130_cs[i], tmc2130_pwm_ampl[i], tmc2130_pwm_grad[i], tmc2130_pwm_freq[i], tmc2130_pwm_auto[i], 0, 0);
+				}
 				else
+				{
 #ifdef TMC2130_SG_HOMING_SW_XY
 					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
 #else //TMC2130_SG_HOMING_SW_XY
 					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
 #endif //TMC2130_SG_HOMING_SW_XY
+				}
 			}
 			tmc2130_axis_stalled[axis] = false;
 		}

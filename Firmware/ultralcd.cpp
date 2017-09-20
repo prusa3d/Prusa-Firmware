@@ -971,17 +971,17 @@ static void lcd_menu_temperatures()
     }
 }
 
-extern void stop_and_save_print_to_ram();
-extern void restore_print_from_ram_and_continue();
+extern void stop_and_save_print_to_ram(float z_move, float e_move);
+extern void restore_print_from_ram_and_continue(float e_move);
 
 static void lcd_menu_test_save()
 {
-	stop_and_save_print_to_ram();
+	stop_and_save_print_to_ram(10, -0.8);
 }
 
 static void lcd_menu_test_restore()
 {
-	restore_print_from_ram_and_continue();
+	restore_print_from_ram_and_continue(0.8);
 }
 
 static void lcd_preheat_menu()
@@ -2523,8 +2523,11 @@ static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
+  st_synchronize();
+  cli();
 	tmc2130_mode = SilentModeMenu?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_init();
+  sei();
 #endif //TMC2130
   digipot_init();
   lcd_goto_menu(lcd_settings_menu, 7);
@@ -3987,8 +3990,11 @@ static void lcd_silent_mode_set_tune() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char*)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
+  st_synchronize();
+  cli();
 	tmc2130_mode = SilentModeMenu?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_init();
+  sei();
 #endif //TMC2130
   digipot_init();
   lcd_goto_menu(lcd_tune_menu, 9);

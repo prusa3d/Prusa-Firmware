@@ -36,6 +36,9 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
+#ifdef PAT9125
+extern uint8_t fsensor_err_cnt;
+#endif //PAT9125
 
 //===========================================================================
 //=============================public variables  ============================
@@ -759,6 +762,12 @@ void isr() {
 
     // If current block is finished, reset pointer
     if (step_events_completed >= current_block->step_event_count) {
+
+#ifdef PAT9125
+		if (current_block->steps_e < 0) //black magic - decrement filament sensor errors for negative extruder move
+			if (fsensor_err_cnt) fsensor_err_cnt--;
+#endif //PAT9125
+
       current_block = NULL;
       plan_discard_current_block();
     }

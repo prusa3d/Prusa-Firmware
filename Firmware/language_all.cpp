@@ -2863,12 +2863,12 @@ const char * const MSG_SHOW_END_STOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SHOW_END_STOPS_DE
 };
 
-const char MSG_FSENSOR_OFF_EN[] PROGMEM = "Filam. probe [off]";
-const char MSG_FSENSOR_OFF_CZ[] PROGMEM = "Filam. probe [off]";
-const char MSG_FSENSOR_OFF_IT[] PROGMEM = "Filam. probe [off]";
-const char MSG_FSENSOR_OFF_ES[] PROGMEM = "Filam. probe [off]";
-const char MSG_FSENSOR_OFF_PL[] PROGMEM = "Filam. probe [off]";
-const char MSG_FSENSOR_OFF_DE[] PROGMEM = "Filam. probe [off]";
+const char MSG_FSENSOR_OFF_EN[] PROGMEM = "Fil. sensor [off]";
+const char MSG_FSENSOR_OFF_CZ[] PROGMEM = "Fil. sensor [off]";
+const char MSG_FSENSOR_OFF_IT[] PROGMEM = "Fil. sensor [off]";
+const char MSG_FSENSOR_OFF_ES[] PROGMEM = "Fil. sensor [off]";
+const char MSG_FSENSOR_OFF_PL[] PROGMEM = "Fil. sensor [off]";
+const char MSG_FSENSOR_OFF_DE[] PROGMEM = "Fil. sensor [off]";
 const char * const MSG_FSENSOR_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FSENSOR_OFF_EN,
 	MSG_FSENSOR_OFF_CZ,
@@ -2878,12 +2878,12 @@ const char * const MSG_FSENSOR_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FSENSOR_OFF_DE
 };
 
-const char MSG_FSENSOR_ON_EN[] PROGMEM = "Filam. probe  [on]";
-const char MSG_FSENSOR_ON_CZ[] PROGMEM = "Filam. probe  [on]";
-const char MSG_FSENSOR_ON_IT[] PROGMEM = "Filam. probe  [on]";
-const char MSG_FSENSOR_ON_ES[] PROGMEM = "Filam. probe  [on]";
-const char MSG_FSENSOR_ON_PL[] PROGMEM = "Filam. probe  [on]";
-const char MSG_FSENSOR_ON_DE[] PROGMEM = "Filam. probe  [on]";
+const char MSG_FSENSOR_ON_EN[] PROGMEM = "Fil. sensor  [on]";
+const char MSG_FSENSOR_ON_CZ[] PROGMEM = "Fil. sensor  [on]";
+const char MSG_FSENSOR_ON_IT[] PROGMEM = "Fil. sensor  [on]";
+const char MSG_FSENSOR_ON_ES[] PROGMEM = "Fil. sensor  [on]";
+const char MSG_FSENSOR_ON_PL[] PROGMEM = "Fil. sensor  [on]";
+const char MSG_FSENSOR_ON_DE[] PROGMEM = "Fil. sensor  [on]";
 const char * const MSG_FSENSOR_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FSENSOR_ON_EN,
 	MSG_FSENSOR_ON_CZ,
