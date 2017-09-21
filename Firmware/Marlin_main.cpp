@@ -6781,7 +6781,10 @@ void uvlo_() {
         disable_z();
 		eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
         delay(10);
-    
+
+		SERIAL_ECHOLNPGM("UVLO - end");
+		cli();
+		while(1);
 }
 
 void setup_uvlo_interrupt() {
@@ -6802,6 +6805,8 @@ ISR(INT4_vect) {
 	if (IS_SD_PRINTING) uvlo_();
 }
 
+#define POWERPANIC_NEW_SD_POS
+extern uint32_t sdpos_atomic;
 
 void save_print_to_eeprom() {
 	//eeprom_update_word((uint16_t*)(EPROM_UVLO_CMD_QUEUE), bufindw - bufindr );
@@ -6812,7 +6817,15 @@ void save_print_to_eeprom() {
 	//bufindr -> position in circular buffer where to read
 	//bufflen -> number of lines in buffer -> for each line one special character??
 	//number_of_blocks() returns number of linear movements buffered in planner
+#ifdef POWERPANIC_NEW_SD_POS
+	long sd_position = sdpos_atomic; //atomic sd position of last command added in queue
+	uint16_t sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
+	sd_position -= sdlen_planner;
+	uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
+	sd_position -= sdlen_cmdqueue;
+#else //POWERPANIC_NEW_SD_POS
 	long sd_position = card.get_sdpos() - ((bufindw > bufindr) ? (bufindw - bufindr) : sizeof(cmdbuffer) - bufindr + bufindw) - TYP_GCODE_LENGTH* number_of_blocks();
+#endif //POWERPANIC_NEW_SD_POS
 	if (sd_position < 0) sd_position = 0;
 	/*SERIAL_ECHOPGM("sd position before correction:");
 	MYSERIAL.println(card.get_sdpos());
@@ -6924,7 +6937,7 @@ void restore_print_from_eeprom() {
 ////////////////////////////////////////////////////////////////////////////////
 // new save/restore printing
 
-extern uint32_t sdpos_atomic;
+//extern uint32_t sdpos_atomic;
 
 bool saved_printing = false;
 uint32_t saved_sdpos = 0;
