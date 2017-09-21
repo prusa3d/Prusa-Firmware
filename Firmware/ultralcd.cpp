@@ -29,6 +29,7 @@
 int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added to encoderPosition every LCD update */
 
 extern int lcd_change_fil_state;
+extern bool fans_check_enabled = true;
 
 //Function pointer to menu functions.
 typedef void (*menuFunc_t)();
@@ -1045,8 +1046,20 @@ static void lcd_support_menu()
     }
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
   MENU_ITEM(submenu, PSTR("Temperatures"), lcd_menu_temperatures);
+  if (fans_check_enabled == true) {
+	  MENU_ITEM(function, PSTR("Check fans [EN]"), lcd_set_fan_check);
+  }
+  else {
+	  MENU_ITEM(function, PSTR("Check fans [DIS]"), lcd_set_fan_check);
+  }
   #endif //MK1BP
   END_MENU();
+}
+
+void lcd_set_fan_check() {
+	fans_check_enabled = !fans_check_enabled;
+	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
+	lcd_goto_menu(lcd_support_menu, 15);
 }
 
 void lcd_unLoadFilament()

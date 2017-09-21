@@ -1379,15 +1379,6 @@ void microstep_readings()
       #endif
 }
 
-static void check_fans() {
-	if (READ(TACH_0) != fan_state[0]) {
-		fan_edge_counter[0] ++;
-		fan_state[0] = READ(TACH_0);
-	}
-	if (READ(TACH_1) != fan_state[1]) {
-		fan_edge_counter[1] ++;
-		fan_state[1] = READ(TACH_1);
-	}
-}
+
 
 

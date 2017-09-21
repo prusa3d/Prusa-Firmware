@@ -11,12 +11,22 @@
 
 void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
 {
-    do
-    {
-        eeprom_write_byte((unsigned char*)pos, *value);
-        pos++;
-        value++;
-    }while(--size);
+	while (size--) {
+		uint8_t * const p = (uint8_t * const)pos;
+		uint8_t v = *value;
+		// EEPROM has only ~100,000 write cycles,
+		// so only write bytes that have changed!
+		if (v != eeprom_read_byte(p)) {
+			eeprom_write_byte(p, v);
+			if (eeprom_read_byte(p) != v) {
+				//add error message			
+				return;
+			}
+		}
+		pos++;
+		value++;
+	};
+
 }
 #define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value))
 void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
@@ -30,13 +40,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 }
 #define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value))
 //======================================================================================
-
-
-
-
 #define EEPROM_OFFSET 20
-
-
 // IMPORTANT:  Whenever there are changes made to the variables stored in EEPROM
 // in the functions below, also increment the version number. This makes sure that
 // the default values are used whenever there is a change to the data, to prevent
@@ -46,10 +50,10 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 #define EEPROM_VERSION "V1"
 
 #ifdef EEPROM_SETTINGS
-void Config_StoreSettings() 
+void Config_StoreSettings(uint16_t offset, uint8_t level) 
 {
   char ver[4]= "000";
-  int i=EEPROM_OFFSET;
+  int i = offset;
   EEPROM_WRITE_VAR(i,ver); // invalidate data first 
   EEPROM_WRITE_VAR(i,axis_steps_per_unit);
   EEPROM_WRITE_VAR(i,max_feedrate);  
@@ -124,12 +128,17 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i, filament_size[2]);
   #endif
   #endif
+
+  if (level >= 10) {
+	  EEPROM_WRITE_VAR(i, extruder_advance_k);
+	  EEPROM_WRITE_VAR(i, advance_ed_ratio);
+  }
   /*MYSERIAL.print("Top address used:\n");
-  MYSERIAL.print(i);
+  MYSERIAL.print(i); 
   MYSERIAL.print("\n");
   */
   char ver2[4]=EEPROM_VERSION;
-  i=EEPROM_OFFSET;
+  i=offset;
   EEPROM_WRITE_VAR(i,ver2); // validate data
   SERIAL_ECHO_START;
   SERIAL_ECHOLNPGM("Settings Stored");
@@ -138,9 +147,10 @@ void Config_StoreSettings()
 
 
 #ifndef DISABLE_M503
-void Config_PrintSettings()
+void Config_PrintSettings(uint8_t level)
 {  // Always have this function, even with EEPROM_SETTINGS disabled, the current values will be shown
-    SERIAL_ECHO_START;
+	
+	SERIAL_ECHO_START;
     SERIAL_ECHOLNPGM("Steps per unit:");
     SERIAL_ECHO_START;
     SERIAL_ECHOPAIR("  M92 X",axis_steps_per_unit[X_AXIS]);
@@ -259,14 +269,22 @@ void Config_PrintSettings()
         SERIAL_ECHOLNPGM("Filament settings: Disabled");
     }
 #endif
+	if (level >= 10) {
+#ifdef LIN_ADVANCE
+		SERIAL_ECHO_START;
+		SERIAL_ECHOLNPGM("Linear advance settings:");
+		SERIAL_ECHOPAIR("   M900 K", extruder_advance_k);
+		SERIAL_ECHOPAIR("   E/D = ", advance_ed_ratio);
+#endif //LIN_ADVANCE
+	}
 }
 #endif
 
 
 #ifdef EEPROM_SETTINGS
-void Config_RetrieveSettings()
+void Config_RetrieveSettings(uint16_t offset, uint8_t level)
 {
-    int i=EEPROM_OFFSET;
+    int i=offset;
     char stored_ver[4];
     char ver[4]=EEPROM_VERSION;
     EEPROM_READ_VAR(i,stored_ver); //read stored version
@@ -347,6 +365,10 @@ void Config_RetrieveSettings()
 		EEPROM_READ_VAR(i, filament_size[2]);
 #endif
 #endif
+		if (level >= 10) {
+			EEPROM_READ_VAR(i, extruder_advance_k);
+			EEPROM_READ_VAR(i, advance_ed_ratio);
+		}
 		calculate_volumetric_multipliers();
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
