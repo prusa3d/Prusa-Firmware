@@ -19,7 +19,7 @@ void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
 		if (v != eeprom_read_byte(p)) {
 			eeprom_write_byte(p, v);
 			if (eeprom_read_byte(p) != v) {
-				//add error message			
+				SERIAL_ECHOLNPGM("EEPROM Error");
 				return;
 			}
 		}
