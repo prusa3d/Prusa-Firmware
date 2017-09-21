@@ -54,9 +54,11 @@ extern long Stopped_gcode_LastN;
 extern bool cmdqueue_pop_front();
 extern void cmdqueue_reset();
 extern bool cmdqueue_could_enqueue_front(int len_asked);
-extern bool cmdqueue_could_enqueue_back(int len_asked);
+extern bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update = false);
+#ifdef CMDBUFFER_DEBUG
 extern void cmdqueue_dump_to_serial_single_line(int nr, const char *p);
 extern void cmdqueue_dump_to_serial();
+#endif /* CMDBUFFER_DEBUG */
 extern void enquecommand(const char *cmd, bool from_progmem);
 extern void enquecommand_front(const char *cmd, bool from_progmem);
 extern void repeatcommand_front();

@@ -159,7 +159,11 @@ extern unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
 
 extern block_t block_buffer[BLOCK_BUFFER_SIZE];            // A ring buffer for motion instfructions
-extern volatile unsigned char block_buffer_head;           // Index of the next block to be pushed
+// Index of the next block to be pushed into the planner queue.
+extern volatile unsigned char block_buffer_head;
+// Index of the first block in the planner queue.
+// This is the block, which is being currently processed by the stepper routine, 
+// or which is first to be processed by the stepper routine.
 extern volatile unsigned char block_buffer_tail; 
 // Called when the current block is no longer needed. Discards the block and makes the memory
 // available for new blocks.    
@@ -170,7 +174,10 @@ FORCE_INLINE void plan_discard_current_block()
   }
 }
 
-// Gets the current block. Returns NULL if buffer empty
+// Gets the current block. This is the block to be exectuted by the stepper routine.
+// Mark this block as busy, so its velocities and acceperations will be no more recalculated
+// by the planner routine.
+// Returns NULL if buffer empty
 FORCE_INLINE block_t *plan_get_current_block() 
 {
   if (block_buffer_head == block_buffer_tail) { 
@@ -220,6 +227,6 @@ extern uint8_t planner_queue_min();
 extern void planner_queue_min_reset();
 #endif /* PLANNER_DIAGNOSTICS */
 
-extern void planner_add_sd_length(uint8_t sdlen);
+extern void planner_add_sd_length(uint16_t sdlen);
 
 extern uint16_t planner_calc_sd_length();

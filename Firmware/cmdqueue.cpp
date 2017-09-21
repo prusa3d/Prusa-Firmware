@@ -108,8 +108,8 @@ bool cmdqueue_could_enqueue_front(int len_asked)
         cmdqueue_pop_front();
         cmdbuffer_front_already_processed = true;
     }
-	if (bufindr == bufindw && buflen > 0)
-		// Full buffer.
+    if (bufindr == bufindw && buflen > 0)
+        // Full buffer.
         return false;
     // Adjust the end of the write buffer based on whether a partial line is in the receive buffer.
     int endw = (serial_count > 0) ? (bufindw + MAX_CMD_SIZE + 1) : bufindw;
@@ -137,19 +137,21 @@ bool cmdqueue_could_enqueue_front(int len_asked)
     return false;
 }
 
-// Could one enqueue a command of lenthg len_asked into the buffer,
+// Could one enqueue a command of length len_asked into the buffer,
 // while leaving CMDBUFFER_RESERVE_FRONT at the start?
 // If yes, adjust bufindw to the new position, where the new command could be enqued.
 // len_asked does not contain the zero terminator size.
-bool cmdqueue_could_enqueue_back(int len_asked)
+// This function may update bufindw, therefore for the power panic to work, this function must be called
+// with the interrupts disabled!
+bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update)
 {
     // MAX_CMD_SIZE has to accommodate the zero terminator.
     if (len_asked >= MAX_CMD_SIZE)
         return false;
 
-	if (bufindr == bufindw && buflen > 0)
-		// Full buffer.
-		return false;
+    if (bufindr == bufindw && buflen > 0)
+        // Full buffer.
+        return false;
 
     if (serial_count > 0) {
         // If there is some data stored starting at bufindw, len_asked is certainly smaller than
@@ -172,7 +174,12 @@ bool cmdqueue_could_enqueue_back(int len_asked)
             // Mark the rest of the buffer as used.
             memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
             // and point to the start.
+            // Be careful! The bufindw needs to be changed atomically for the power panic & filament panic to work.
+            if (atomic_update)
+                cli();
             bufindw = 0;
+            if (atomic_update)
+                sei();
             return true;
         }
     } else {
@@ -193,7 +200,12 @@ bool cmdqueue_could_enqueue_back(int len_asked)
             // Mark the rest of the buffer as used.
             memset(cmdbuffer+bufindw, 0, sizeof(cmdbuffer)-bufindw);
             // and point to the start.
+            // Be careful! The bufindw needs to be changed atomically for the power panic & filament panic to work.
+            if (atomic_update)
+                cli();
             bufindw = 0;
+            if (atomic_update)
+                sei();
             return true;
         }
     }
@@ -337,30 +349,30 @@ void repeatcommand_front()
 
 bool is_buffer_empty()
 {
-	if (buflen == 0) return true;
-	else return false;
+    if (buflen == 0) return true;
+    else return false;
 }
 
 void get_command()
 {
     // Test and reserve space for the new command string.
-	if (!cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1)) 
-		return;
-	
-	bool rx_buffer_full = false; //flag that serial rx buffer is full
+    if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1, true))
+      return;
+    
+    bool rx_buffer_full = false; //flag that serial rx buffer is full
 
   while (MYSERIAL.available() > 0) {
-	  if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
-		  SERIAL_ECHOLNPGM("Full RX Buffer");   //if buffer was full, there is danger that reading of last gcode will not be completed
-		  rx_buffer_full = true;				//sets flag that buffer was full	
-	  }
+      if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
+          SERIAL_ECHOLNPGM("Full RX Buffer");   //if buffer was full, there is danger that reading of last gcode will not be completed
+          rx_buffer_full = true;                //sets flag that buffer was full    
+      }
     char serial_char = MYSERIAL.read();
-	if (selectedSerialPort == 1)
-	{
-		selectedSerialPort = 0; 
-		MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
-		selectedSerialPort = 1; 
-	} 
+    if (selectedSerialPort == 1)
+    {
+        selectedSerialPort = 0; 
+        MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
+        selectedSerialPort = 1; 
+    } 
       TimeSent = millis();
       TimeNow = millis();
 
@@ -443,10 +455,10 @@ void get_command()
           }
         } // end of '*' command
         if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'G')) != NULL) {
-      		  if (! IS_SD_PRINTING) {
-        			  usb_printing_counter = 10;
-        			  is_usb_printing = true;
-      		  }
+              if (! IS_SD_PRINTING) {
+                      usb_printing_counter = 10;
+                      is_usb_printing = true;
+              }
             if (Stopped == true) {
                 int gcode = strtol(strchr_pointer+1, NULL, 10);
                 if (gcode >= 0 && gcode <= 3) {
@@ -481,7 +493,7 @@ void get_command()
       serial_count = 0; //clear buffer
       // Don't call cmdqueue_could_enqueue_back if there are no characters waiting
       // in the queue, as this function will reserve the memory.
-      if (MYSERIAL.available() == 0 || ! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))
+      if (MYSERIAL.available() == 0 || ! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
           return;
     } // end of "end of line" processing
     else {
@@ -509,12 +521,12 @@ void get_command()
         }
     }
 
-	//add comment
-	if (rx_buffer_full == true && serial_count > 0) {   //if rx buffer was full and string was not properly terminated
-		rx_buffer_full = false;
-		bufindw = bufindw - serial_count;				//adjust tail of the buffer to prepare buffer for writing new command
-		serial_count = 0;
-	}
+    //add comment
+    if (rx_buffer_full == true && serial_count > 0) {   //if rx buffer was full and string was not properly terminated
+        rx_buffer_full = false;
+        bufindw = bufindw - serial_count;               //adjust tail of the buffer to prepare buffer for writing new command
+        serial_count = 0;
+    }
 
   #ifdef SDSUPPORT
   if(!card.sdprinting || serial_count!=0){
@@ -529,40 +541,46 @@ void get_command()
 
   static bool stop_buffering=false;
   if(buflen==0) stop_buffering=false;
-  unsigned char sd_count = 0;
+  union {
+    struct {
+        char lo;
+        char hi;
+    } lohi;
+    uint16_t value;
+  } sd_count;
+  sd_count.value = 0;
   // Reads whole lines from the SD card. Never leaves a half-filled line in the cmdbuffer.
   while( !card.eof() && !stop_buffering) {
     int16_t n=card.get();
-	sd_count++;
+    ++ sd_count.value;
     char serial_char = (char)n;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
-       (serial_char == '#' && comment_mode == false) ||
-       (serial_char == ':' && comment_mode == false) ||
-       serial_count >= (MAX_CMD_SIZE - 1)||n==-1)
+       ((serial_char == '#' || serial_char == ':') && comment_mode == false) ||
+       serial_count >= (MAX_CMD_SIZE - 1) || n==-1)
     {
       if(card.eof()){
         SERIAL_PROTOCOLLNRPGM(MSG_FILE_PRINTED);
         stoptime=millis();
         char time[30];
         unsigned long t=(stoptime-starttime-pause_time)/1000;
-		pause_time = 0;
+        pause_time = 0;
         int hours, minutes;
         minutes=(t/60)%60;
         hours=t/60/60;
-		save_statistics(total_filament_used, t);
-		sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
+        save_statistics(total_filament_used, t);
+        sprintf_P(time, PSTR("%i hours %i minutes"),hours, minutes);
         SERIAL_ECHO_START;
         SERIAL_ECHOLN(time);
         lcd_setstatus(time);
         card.printingHasFinished();
         card.checkautostart(true);
 
-		if (farm_mode)
-		{
-			prusa_statistics(6);
-			lcd_commands_type = LCD_COMMAND_FARM_MODE_CONFIRM;
-		}
+        if (farm_mode)
+        {
+            prusa_statistics(6);
+            lcd_commands_type = LCD_COMMAND_FARM_MODE_CONFIRM;
+        }
 
       }
       if(serial_char=='#')
@@ -570,40 +588,50 @@ void get_command()
 
       if(!serial_count)
       {
-        comment_mode = false; //for new command
-        return; //if empty line
+        // This is either an empty line, or a line with just a comment.
+        // Continue to the following line, and continue accumulating the number of bytes
+        // read from the sdcard into sd_count, 
+        // so that the lenght of the already read empty lines and comments will be added
+        // to the following non-empty line. 
+        comment_mode = false;
+        continue; //if empty line
       }
+      // The new command buffer could be updated non-atomically, because it is not yet considered
+      // to be inside the active queue.
+      cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
+      cmdbuffer[bufindw+1] = sd_count.lohi.lo;
+      cmdbuffer[bufindw+2] = sd_count.lohi.hi;
       cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
-	  uint8_t len = strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
+      // Calculate the length before disabling the interrupts.
+      uint8_t len = strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
 
-	  cli();
-	  cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
-      cmdbuffer[bufindw+1] = sd_count;
-/*	  SERIAL_ECHOPGM("SD cmd(");
-	  MYSERIAL.print(sd_count, DEC);
-	  SERIAL_ECHOPGM(") ");
-	  SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);*/
-//	  SERIAL_ECHOPGM("cmdbuffer:");
-//	  MYSERIAL.print(cmdbuffer);
+/*    SERIAL_ECHOPGM("SD cmd(");
+      MYSERIAL.print(sd_count.value, DEC);
+      SERIAL_ECHOPGM(") ");
+      SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);*/
+//    SERIAL_ECHOPGM("cmdbuffer:");
+//    MYSERIAL.print(cmdbuffer);
+//    SERIAL_ECHOPGM("buflen:");
+//    MYSERIAL.print(buflen+1);
+
+      cli();
       ++ buflen;
-//	  SERIAL_ECHOPGM("buflen:");
-//	  MYSERIAL.print(buflen);
       bufindw += len;
-	  sdpos_atomic = card.get_sdpos();
+      sdpos_atomic = card.get_sdpos();
       if (bufindw == sizeof(cmdbuffer))
           bufindw = 0;
-	  sei();
+      sei();
 
-	  comment_mode = false; //for new command
+      comment_mode = false; //for new command
       serial_count = 0; //clear buffer
       // The following line will reserve buffer space if available.
-      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))
+      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1, true))
           return;
     }
     else
     {
       if(serial_char == ';') comment_mode = true;
-      if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
+      else if(!comment_mode) cmdbuffer[bufindw+CMDHDRSIZE+serial_count++] = serial_char;
     }
   }
 
@@ -612,17 +640,26 @@ void get_command()
 
 uint16_t cmdqueue_calc_sd_length()
 {
-	int _buflen = buflen;
-	int _bufindr = bufindr;
-	uint16_t sdlen = 0;
-	while (_buflen--)
-	{
-		if (cmdbuffer[_bufindr] == CMDBUFFER_CURRENT_TYPE_SDCARD)
-			sdlen += cmdbuffer[_bufindr + 1];
-		//skip header, skip command
-		for (_bufindr += CMDHDRSIZE; cmdbuffer[_bufindr] != 0; ++ _bufindr) ;
-		//skip zeros
-		for (++ _bufindr; _bufindr < sizeof(cmdbuffer) && cmdbuffer[_bufindr] == 0; ++ _bufindr) ;
-	}
-    return sdlen;
+    int _buflen = buflen;
+    int _bufindr = bufindr;
+    union {
+        struct {
+            char lo;
+            char hi;
+        } lohi;
+        uint16_t value;
+    } sdlen;
+    sdlen.value = 0;
+    while (_buflen--)
+    {
+        if (cmdbuffer[_bufindr] == CMDBUFFER_CURRENT_TYPE_SDCARD) {
+            sdlen.lohi.lo += cmdbuffer[_bufindr + 1];
+            sdlen.lohi.hi += cmdbuffer[_bufindr + 2];
+        }
+        //skip header, skip command
+        for (_bufindr += CMDHDRSIZE; cmdbuffer[_bufindr] != 0; ++ _bufindr) ;
+        //skip zeros
+        for (++ _bufindr; _bufindr < sizeof(cmdbuffer) && cmdbuffer[_bufindr] == 0; ++ _bufindr) ;
+    }
+    return sdlen.value;
 }

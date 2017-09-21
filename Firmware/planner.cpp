@@ -1300,9 +1300,17 @@ void planner_queue_min_reset()
 }
 #endif /* PLANNER_DIAGNOSTICS */
 
-void planner_add_sd_length(uint8_t sdlen)
+void planner_add_sd_length(uint16_t sdlen)
 {
-	block_buffer[block_buffer_tail].sdlen += sdlen;
+  if (block_buffer_head != block_buffer_tail) {
+    // The planner buffer is not empty. Get the index of the last buffer line entered,
+    // which is (block_buffer_head - 1) modulo BLOCK_BUFFER_SIZE.
+    unsigned char last = (block_buffer_head + BLOCK_BUFFER_SIZE - 1) & (BLOCK_BUFFER_SIZE - 1);
+    block_buffer[last].sdlen += sdlen;
+  } else {
+    // There is no line stored in the planner buffer, which means the last command does not need to be revertible,
+    // at a power panic, so the length of this command may be forgotten.
+  }
 }
 
 uint16_t planner_calc_sd_length()
