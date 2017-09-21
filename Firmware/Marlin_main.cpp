@@ -1467,18 +1467,18 @@ void homeaxis(int axis)
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis];
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
 #ifdef TMC2130
 		tmc2130_home_restart(axis);
 #endif
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
 #ifdef TMC2130
 		tmc2130_home_restart(axis);
 #endif
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
 #ifdef TMC2130
@@ -1486,15 +1486,23 @@ void homeaxis(int axis)
 #else
 		feedrate = homing_feedrate[axis] / 2;
 #endif
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
 #ifdef TMC2130
 		tmc2130_home_restart(axis);
 #endif
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
-        axis_is_at_home(axis);
-        destination[axis] = current_position[axis];
-        feedrate = 0.0;
-        endstops_hit_on_purpose();
+
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[axis] = -0.16 * axis_home_dir;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+
+		axis_is_at_home(axis);
+		destination[axis] = current_position[axis];
+		feedrate = 0.0;
+
+		endstops_hit_on_purpose();
         axis_known_position[axis] = true;
 #ifdef TMC2130
 		tmc2130_home_exit();
