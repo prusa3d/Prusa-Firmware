@@ -1030,6 +1030,11 @@ const char * const MSG_RECOVER_PRINT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RECOVER_PRINT_EN
 };
 
+const char MSG_CRASH_DETECTED_EN[] PROGMEM = "Crash detected. Continue printing?";
+const char * const MSG_CRASH_DETECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CRASH_DETECTED_EN
+};
+
 const char MSG_RECTRACT_EN[] PROGMEM = "Rectract";
 const char * const MSG_RECTRACT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RECTRACT_EN

@@ -569,6 +569,27 @@ void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_print_from_ram_and_continue(float e_move);
 
 
+void crashdet_enable()
+{
+	tmc2130_sg_stop_on_crash = true;
+}
+
+void crashdet_disable()
+{
+	tmc2130_sg_stop_on_crash = false;
+}
+
+void crashdet_stop_and_save_print()
+{
+	stop_and_save_print_to_ram(10, 0); //XY - no change, Z 10mm up, E - no change
+}
+
+void crashdet_restore_print_and_continue()
+{
+	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+}
+
+
 #ifdef PAT9125
 
 void fsensor_stop_and_save_print()
@@ -1206,6 +1227,12 @@ void loop()
 #endif //PAT9125
 #ifdef TMC2130
 	tmc2130_check_overtemp();
+	if (tmc2130_sg_crash)
+	{
+		tmc2130_sg_crash = false;
+		crashdet_stop_and_save_print();
+		enquecommand_P((PSTR("D999")));
+	}
 #endif //TMC2130
 }
 
@@ -5659,6 +5686,45 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		MYSERIAL.print("selectedSerialPort = ");
 		MYSERIAL.println(selectedSerialPort, DEC);
 		break;
+	case 999:
+	{
+		MYSERIAL.println("D999 - crash");
+
+/*		while (!is_buffer_empty())
+		{
+			process_commands();
+		    cmdqueue_pop_front();
+		}*/
+		st_synchronize();
+
+		lcd_update_enable(true);
+		lcd_implementation_clear();
+		lcd_update(2);
+		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_CRASH_DETECTED, false);
+		lcd_update_enable(true);
+		lcd_update(2);
+		lcd_setstatuspgm(WELCOME_MSG);
+		if (yesno)
+		{
+			enquecommand_P(PSTR("G28 X"));
+			enquecommand_P(PSTR("G28 Y"));
+			enquecommand_P(PSTR("D1000"));
+		}
+		else
+		{
+			enquecommand_P(PSTR("D1001"));
+		}
+	}
+		break;
+	case 1000:
+		crashdet_restore_print_and_continue();
+		tmc2130_sg_stop_on_crash = true;
+		break;
+	case 1001:
+		card.sdprinting = false;
+		card.closefile();
+		tmc2130_sg_stop_on_crash = true;
+		break;
 /*	case 4:
 		{
 			MYSERIAL.println("D4 - Test");
@@ -6963,26 +7029,6 @@ void restore_print_from_eeprom() {
 // new save/restore printing
 
 //extern uint32_t sdpos_atomic;
-
-void crashdet_enable()
-{
-	tmc2130_sg_stop_on_crash = true;
-}
-
-void crashdet_disable()
-{
-	tmc2130_sg_stop_on_crash = false;
-}
-
-void crashdet_stop_and_save_print()
-{
-	stop_and_save_print_to_ram(10, 0); //XY - no change, Z 10mm up, E - no change
-}
-
-void crashdet_restore_print_and_continue()
-{
-	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
-}
 
 bool saved_printing = false;
 uint32_t saved_sdpos = 0;
