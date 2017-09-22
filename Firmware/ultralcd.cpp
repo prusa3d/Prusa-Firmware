@@ -2855,7 +2855,7 @@ void lcd_mylang_drawmenu(int cursor) {
 }
 */
 
-void lcd_mylang_drawmenu(int cursor) {SG_LANGUAGE_NAME_EXPLICIT
+void lcd_mylang_drawmenu(int cursor) {
   int first = 0;
   if (cursor>3) first = cursor-3;
   if (cursor==LANG_NUM && LANG_NUM>4) first = LANG_NUM-4;

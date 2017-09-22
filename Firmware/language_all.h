@@ -4,24 +4,21 @@
 #include <avr/pgmspace.h>
 // Language indices into their particular symbol tables.
 #define LANG_ID_EN 0
-#define LANG_ID_CZ 1
-#define LANG_ID_IT 2
-#define LANG_ID_ES 3
-#define LANG_ID_PL 4
-#define LANG_ID_DE 5
 // Language is not defined and it shall be selected from the menu.
 #define LANG_ID_FORCE_SELECTION 254
 // Language is not defined on a virgin RAMBo board.
 #define LANG_ID_UNDEFINED 255
 
 // Default language ID, if no language is selected.
-#define LANG_ID_DEFAULT LANG_ID_CZ
+#define LANG_ID_DEFAULT LANG_ID_EN
 
 // Number of languages available in the language table.
-#define LANG_NUM 6
+#define LANG_NUM 1
 
 // Currectly active language selection.
 extern unsigned char lang_selected;
+
+#define MSG_LANGUAGE_NAME_EXPLICIT(LANG) "EN"
 
 #define LANG_TABLE_SELECT_EXPLICIT(TABLE, LANG) ((const char*)(pgm_read_ptr(TABLE + (LANG))))
 #define LANG_TABLE_SELECT(TABLE) LANG_TABLE_SELECT_EXPLICIT(TABLE, lang_selected)
@@ -146,6 +143,10 @@ extern const char* const MSG_CORRECTLY_LANG_TABLE[1];
 #define MSG_CORRECTLY LANG_TABLE_SELECT_EXPLICIT(MSG_CORRECTLY_LANG_TABLE, 0)
 extern const char* const MSG_COUNT_X_LANG_TABLE[1];
 #define MSG_COUNT_X LANG_TABLE_SELECT_EXPLICIT(MSG_COUNT_X_LANG_TABLE, 0)
+extern const char* const MSG_CRASHDETECT_OFF_LANG_TABLE[1];
+#define MSG_CRASHDETECT_OFF LANG_TABLE_SELECT_EXPLICIT(MSG_CRASHDETECT_OFF_LANG_TABLE, 0)
+extern const char* const MSG_CRASHDETECT_ON_LANG_TABLE[1];
+#define MSG_CRASHDETECT_ON LANG_TABLE_SELECT_EXPLICIT(MSG_CRASHDETECT_ON_LANG_TABLE, 0)
 extern const char* const MSG_CURRENT_LANG_TABLE[1];
 #define MSG_CURRENT LANG_TABLE_SELECT_EXPLICIT(MSG_CURRENT_LANG_TABLE, 0)
 extern const char* const MSG_DISABLE_STEPPERS_LANG_TABLE[1];
@@ -278,9 +279,8 @@ extern const char* const MSG_INVALID_EXTRUDER_LANG_TABLE[1];
 #define MSG_INVALID_EXTRUDER LANG_TABLE_SELECT_EXPLICIT(MSG_INVALID_EXTRUDER_LANG_TABLE, 0)
 extern const char* const MSG_KILLED_LANG_TABLE[1];
 #define MSG_KILLED LANG_TABLE_SELECT_EXPLICIT(MSG_KILLED_LANG_TABLE, 0)
-extern const char* const MSG_LANGUAGE_NAME_LANG_TABLE[LANG_NUM];
-#define MSG_LANGUAGE_NAME LANG_TABLE_SELECT(MSG_LANGUAGE_NAME_LANG_TABLE)
-#define MSG_LANGUAGE_NAME_EXPLICIT(LANG) LANG_TABLE_SELECT_EXPLICIT(MSG_LANGUAGE_NAME_LANG_TABLE, LANG)
+extern const char* const MSG_LANGUAGE_NAME_LANG_TABLE[1];
+#define MSG_LANGUAGE_NAME LANG_TABLE_SELECT_EXPLICIT(MSG_LANGUAGE_NAME_LANG_TABLE, 0)
 extern const char* const MSG_LANGUAGE_SELECT_LANG_TABLE[1];
 #define MSG_LANGUAGE_SELECT LANG_TABLE_SELECT_EXPLICIT(MSG_LANGUAGE_SELECT_LANG_TABLE, 0)
 extern const char* const MSG_LOADING_COLOR_LANG_TABLE[1];

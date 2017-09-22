@@ -463,22 +463,22 @@ void fanSpeedError(unsigned char _fan) {
 
 	if (card.sdprinting) {
 		if(heating_status != 0) lcd_print_stop();
-		//card.pauseSDPrint();
-		lcd_sdcard_pause();
+		else lcd_sdcard_pause();
 	}
 
 	setTargetHotend0(0);
-	
-	/*lcd_update();
+		
+	//lcd_update();
 	WRITE(BEEPER, HIGH);
-	delayMicroseconds(500);
+	delayMicroseconds(2000);
 	WRITE(BEEPER, LOW);
-	delayMicroseconds(100);*/
+	delayMicroseconds(100);
 
 
 	SERIAL_ERROR_START;
 	switch (_fan) {
 	case 0:
+		fanSpeed = 255;
 		//lcd_print_stop();
 		SERIAL_ERRORLNPGM("ERROR: Extruder fan speed is lower then expected");
 		LCD_ALERTMESSAGEPGM("Err: EXTR. FAN ERROR");
