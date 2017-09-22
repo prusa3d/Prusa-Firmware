@@ -456,13 +456,19 @@ void checkFanSpeed()
 	if ((fan_speed_errors[1] > 15) && fans_check_enabled) fanSpeedError(1); //print fan
 }
 
+extern void stop_and_save_print_to_ram(float z_move, float e_move);
+extern void restore_print_from_ram_and_continue(float e_move);
+
 void fanSpeedError(unsigned char _fan) {
 
 	if (card.sdprinting) {
-		card.pauseSDPrint();
+		if(heating_status != 0) lcd_print_stop();
+		//card.pauseSDPrint();
+		lcd_sdcard_pause();
 	}
 
 	setTargetHotend0(0);
+	
 	/*lcd_update();
 	WRITE(BEEPER, HIGH);
 	delayMicroseconds(500);
@@ -473,10 +479,12 @@ void fanSpeedError(unsigned char _fan) {
 	SERIAL_ERROR_START;
 	switch (_fan) {
 	case 0:
+		//lcd_print_stop();
 		SERIAL_ERRORLNPGM("ERROR: Extruder fan speed is lower then expected");
 		LCD_ALERTMESSAGEPGM("Err: EXTR. FAN ERROR");
 		break;
 	case 1:
+		//stop_and_save_print_to_ram(0, 0);
 		SERIAL_ERRORLNPGM("ERROR: Print fan speed is lower then expected");
 		LCD_ALERTMESSAGEPGM("Err: PRINT FAN ERROR");
 		break;

@@ -813,7 +813,7 @@ static void lcd_return_to_status() {
 }
 
 
-static void lcd_sdcard_pause() {
+void lcd_sdcard_pause() {
 	lcd_return_to_status();
 	lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
 
@@ -2855,7 +2855,7 @@ void lcd_mylang_drawmenu(int cursor) {
 }
 */
 
-void lcd_mylang_drawmenu(int cursor) {
+void lcd_mylang_drawmenu(int cursor) {SG_LANGUAGE_NAME_EXPLICIT
   int first = 0;
   if (cursor>3) first = cursor-3;
   if (cursor==LANG_NUM && LANG_NUM>4) first = LANG_NUM-4;
@@ -4108,6 +4108,39 @@ static void lcd_sd_updir()
   currentMenuViewOffset = 0;
 }
 
+void lcd_print_stop() {
+	cancel_heatup = true;
+#ifdef MESH_BED_LEVELING
+	mbl.active = false;
+#endif
+	// Stop the stoppers, update the position from the stoppers.
+	if (mesh_bed_leveling_flag == false && homing_flag == false) {
+		planner_abort_hard();
+		// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
+		// Z baystep is no more applied. Reset it.
+		babystep_reset();
+	}
+	// Clean the input command queue.
+	cmdqueue_reset();
+	lcd_setstatuspgm(MSG_PRINT_ABORTED);
+	lcd_update(2);
+	card.sdprinting = false;
+	card.closefile();
+
+	stoptime = millis();
+	unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
+	pause_time = 0;
+	save_statistics(total_filament_used, t);
+
+	lcd_return_to_status();
+	lcd_ignore_click(true);
+	lcd_commands_type = LCD_COMMAND_STOP_PRINT;
+
+	// Turn off the print fan
+	SET_OUTPUT(FAN_PIN);
+	WRITE(FAN_PIN, 0);
+	fanSpeed = 0;
+}
 
 void lcd_sdcard_stop()
 {
@@ -4135,37 +4168,7 @@ void lcd_sdcard_stop()
 		}
 		if ((int32_t)encoderPosition == 2)
 		{
-		cancel_heatup = true;
-        #ifdef MESH_BED_LEVELING
-        mbl.active = false;
-        #endif
-        // Stop the stoppers, update the position from the stoppers.
-		if (mesh_bed_leveling_flag == false && homing_flag == false) {
-			planner_abort_hard();
-			// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
-			// Z baystep is no more applied. Reset it.
-			babystep_reset();
-		}
-        // Clean the input command queue.
-        cmdqueue_reset();
-				lcd_setstatuspgm(MSG_PRINT_ABORTED);
-				lcd_update(2);
-				card.sdprinting = false;
-				card.closefile();
-
-				stoptime = millis();
-				unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
-				pause_time = 0;
-				save_statistics(total_filament_used, t);
-
-				lcd_return_to_status();
-				lcd_ignore_click(true);
-				lcd_commands_type = LCD_COMMAND_STOP_PRINT;
-            
-                // Turn off the print fan
-                SET_OUTPUT(FAN_PIN);
-                WRITE(FAN_PIN, 0);
-                fanSpeed=0;
+			lcd_print_stop();
 		}
 	}
 

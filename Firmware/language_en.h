@@ -313,3 +313,7 @@
 #define(length=11, lines=1) MSG_INFO_PRINT_FAN				"Print FAN: "
 #define(length=11, lines=1) MSG_INFO_FILAMENT_XDIFF				"Fil. Xd:"
 #define(length=11, lines=1) MSG_INFO_FILAMENT_YDIFF				"Fil. Ydiff:"
+
+#define MSG_CALIBRATE_Z_AUTO "msg calibrate z auto"
+#define MSG_FSENSOR_OFF "msg sensor off"
+#define MSG_FSENSOR_ON "msg sensor on"
