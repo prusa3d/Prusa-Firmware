@@ -6770,24 +6770,23 @@ void serialecho_temperatures() {
 void uvlo_() {
 		SERIAL_ECHOLNPGM("UVLO");
 		save_print_to_eeprom();
-		float current_position_bckp[2];
-		int feedrate_bckp = feedrate;
-		current_position_bckp[X_AXIS] = st_get_position_mm(X_AXIS);
-		current_position_bckp[Y_AXIS] = st_get_position_mm(Y_AXIS);
+    // feedrate in mm/min
+		int feedrate_bckp = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
 
-		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position_bckp[X_AXIS]);
-		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position_bckp[Y_AXIS]);
+    disable_x();
+    disable_y();
+    planner_abort_hard();
+
+		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
+		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
 		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
 		EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
 		eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
 		eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
 		eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
-		disable_x();
-		disable_y();
-		planner_abort_hard();
 		// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
 		// Z baystep is no more applied. Reset it.
-		babystep_reset();
+		//babystep_reset();
 		// Clean the input command queue.
 		cmdqueue_reset();
 		card.sdprinting = false;
@@ -6798,11 +6797,13 @@ void uvlo_() {
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 		st_synchronize();
 		current_position[Z_AXIS] += UVLO_Z_AXIS_SHIFT;
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
-		st_synchronize();
-        disable_z();
-		eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
-        delay(10);
+    // Move the print head to the side of the print until all the power stored in the power supply capacitors is depleted.
+    current_position[X_AXIS] = (current_position[X_AXIS] < 0.5f * (X_MIN_POS + X_MAX_POS)) ? X_MIN_POS : X_MAX_POS;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+    st_synchronize();
+//    disable_z();
 
 		SERIAL_ECHOLNPGM("UVLO - end");
 		cli();
@@ -6876,7 +6877,9 @@ void recover_print() {
 	current_position[Z_AXIS] = z_pos;
 	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
-
+  if (current_position[Z_AXIS] < 25)
+    // Lift the print head, so one may remove the excess priming material.
+    enquecommand_P(PSTR("G1 Z25 F800"));
 	enquecommand_P(PSTR("G28 X"));
 	enquecommand_P(PSTR("G28 Y"));
 	sprintf_P(cmd, PSTR("M109 S%d"), target_temperature[active_extruder]);
@@ -6931,10 +6934,10 @@ void restore_print_from_eeprom() {
 	SERIAL_ECHOPGM("Position read from eeprom:");
 	MYSERIAL.println(position);
 
-	enquecommand_P(PSTR("M24")); //M24 - Start SD print
 	sprintf_P(cmd, PSTR("M26 S%lu"), position);
-
 	enquecommand(cmd);	
+  enquecommand_P(PSTR("M24")); //M24 - Start SD print
+
 	enquecommand_P(PSTR("M83")); //E axis relative mode
 	strcpy(cmd, "G1 X");
 	strcat(cmd, ftostr32(x_rec));
