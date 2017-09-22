@@ -115,7 +115,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_PWM_FREQ_X  2         // PWMCONF
 
 #define TMC2130_PWM_GRAD_Y  4         // PWMCONF
-#define TMC2130_PWM_AMPL_Y  210       // PWMCONF
+#define TMC2130_PWM_AMPL_Y  215       // PWMCONF
 #define TMC2130_PWM_AUTO_Y  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Y  2         // PWMCONF
 
@@ -137,19 +137,19 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
 #define TMC2130_THIGH     0         // THIGH - unused
 
-#define TMC2130_TCOOLTHRS 239       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS 500       // TCOOLTHRS - coolstep treshold
 
 #define TMC2130_SG_HOMING       1     // stallguard homing
 //#define TMC2130_SG_HOMING_SW_XY  1    // stallguard "software" homing for XY axes
 #define TMC2130_SG_HOMING_SW_Z  1     // stallguard "software" homing for Z axis
-#define TMC2130_SG_THRS_X       0     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y       0     // stallguard sensitivity for Y axis
-#define TMC2130_SG_THRS_Z       2     // stallguard sensitivity for Z axis
+#define TMC2130_SG_THRS_X       4     // stallguard sensitivity for X axis
+#define TMC2130_SG_THRS_Y       4     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_Z       3     // stallguard sensitivity for Z axis
 #define TMC2130_SG_DELTA      128    // stallguard delta [usteps] (minimum usteps before stallguard readed - SW homing)
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {3, 3, 5, 8}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {13, 13, 20, 20}  // default running currents for all axes
+#define TMC2130_CURRENTS_R {13, 31, 20, 22}  // default running currents for all axes
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR

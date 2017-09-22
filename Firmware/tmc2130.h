@@ -9,15 +9,21 @@ extern uint8_t tmc2130_mode;
 extern uint8_t tmc2130_current_h[4];
 extern uint8_t tmc2130_current_r[4];
 //flags for axis stall detection
-extern uint8_t tmc2130_axis_stalled[3];
+extern uint8_t tmc2130_axis_stalled[4];
 
-extern uint8_t tmc2131_axis_sg_thr[3];
+extern uint8_t tmc2131_axis_sg_thr[4];
+
+extern bool tmc2130_sg_stop_on_crash;
+extern bool tmc2130_sg_crash;
+
 
 #define TMC2130_MODE_NORMAL 0
 #define TMC2130_MODE_SILENT 1
 
 //initialize tmc2130
 extern void tmc2130_init();
+//check diag pins (called from stepper isr)
+extern void tmc2130_st_isr(uint8_t last_step_mask);
 //update stall guard (called from st_synchronize inside the loop)
 extern bool tmc2130_update_sg();
 //temperature watching (called from )
