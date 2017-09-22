@@ -828,6 +828,7 @@ void lcd_sdcard_pause() {
 
 static void lcd_sdcard_resume() {
 	lcd_return_to_status();
+	lcd_reset_alert_level(); //for fan speed error
 	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
 }
 
@@ -5498,6 +5499,10 @@ void lcd_reset_alert_level()
   lcd_status_message_level = 0;
 }
 
+uint8_t get_message_level()
+{
+	return lcd_status_message_level;
+}
 #ifdef DOGLCD
 void lcd_setcontrast(uint8_t value)
 {

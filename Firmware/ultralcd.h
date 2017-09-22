@@ -14,6 +14,7 @@
   void lcd_setstatuspgm(const char* message);
   void lcd_setalertstatuspgm(const char* message);
   void lcd_reset_alert_level();
+  uint8_t get_message_level();
   void lcd_adjust_z();
   void lcd_pick_babystep();
   void lcd_alright();
