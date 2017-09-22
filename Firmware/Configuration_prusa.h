@@ -472,7 +472,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define DEFAULT_PID_TEMP 210
 
-#define MIN_PRINT_FAN_SPEED 50
+#define MIN_PRINT_FAN_SPEED 75
 
 #ifdef SNMM
 #define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
@@ -481,5 +481,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif
 
 #define UVLO_Z_AXIS_SHIFT 2
+
+#define HEATBED_V2
 
 #endif //__CONFIGURATION_PRUSA_H

@@ -841,7 +841,7 @@ void setup()
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
-	Config_RetrieveSettings();
+	Config_RetrieveSettings(EEPROM_OFFSET);
 	SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
 	tp_init();    // Initialize temperature loop
 	plan_init();  // Initialize planner;
@@ -1030,7 +1030,8 @@ void setup()
 #endif //DEBUG_DISABLE_STARTMSGS
   for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   lcd_update_enable(true);
-
+  lcd_implementation_clear();
+  lcd_update(2);
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
@@ -2797,6 +2798,19 @@ void process_commands()
 	} break;
 	
 #endif
+
+	case 79: {
+		for (int i = 255; i > 0; i = i - 5) {
+			fanSpeed = i;
+			//delay_keep_alive(2000);
+			for (int j = 0; j < 100; j++) {
+				delay_keep_alive(100);
+
+			}
+			fan_speed[1];
+			MYSERIAL.print(i); SERIAL_ECHOPGM(": "); MYSERIAL.println(fan_speed[1]);
+		}
+	}break;
 
 	/**
 	* G80: Mesh-based Z probe, probes a grid and produces a
@@ -4886,12 +4900,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
     case 500: // M500 Store settings in EEPROM
     {
-        Config_StoreSettings();
+        Config_StoreSettings(EEPROM_OFFSET);
     }
     break;
     case 501: // M501 Read settings from EEPROM
     {
-        Config_RetrieveSettings();
+        Config_RetrieveSettings(EEPROM_OFFSET);
     }
     break;
     case 502: // M502 Revert to default settings

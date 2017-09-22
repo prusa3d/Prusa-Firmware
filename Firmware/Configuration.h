@@ -56,6 +56,7 @@
 #define EEPROM_UVLO_TARGET_BED			(EEPROM_UVLO_TARGET_HOTEND - 1)
 #define EEPROM_UVLO_FEEDRATE			(EEPROM_UVLO_TARGET_BED - 2)
 #define EEPROM_UVLO_FAN_SPEED			(EEPROM_UVLO_FEEDRATE - 1) 
+#define EEPROM_FAN_CHECK_ENABLED		(EEPROM_UVLO_FAN_SPEED - 1)
 
 
 // Currently running firmware, each digit stored as uint16_t.
@@ -68,6 +69,8 @@
 // Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
 #define EEPROM_FIRMWARE_PRUSA_MAGIC 0
 
+#define EEPROM_OFFSET 20 //offset for storing settings using M500
+//#define EEPROM_OFFSET 
 
 // This configuration file contains the basic settings.
 // Advanced settings can be found in Configuration_adv.h

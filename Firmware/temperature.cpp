@@ -429,26 +429,31 @@ void setExtruderAutoFanState(int pin, bool state)
 }
 
 void countFanSpeed()
-{	
+{
+	//SERIAL_ECHOPGM("edge counter 1:"); MYSERIAL.println(fan_edge_counter[1]);
 	fan_speed[0] = (fan_edge_counter[0] * (float(250) / (millis() - extruder_autofan_last_check)));
 	fan_speed[1] = (fan_edge_counter[1] * (float(250) / (millis() - extruder_autofan_last_check)));
-
+	/*SERIAL_ECHOPGM("time interval: "); MYSERIAL.println(millis() - extruder_autofan_last_check);
+	SERIAL_ECHOPGM("extruder fan speed:"); MYSERIAL.print(fan_speed[0]); SERIAL_ECHOPGM("; edge counter:"); MYSERIAL.println(fan_edge_counter[0]);
+	SERIAL_ECHOPGM("print fan speed:"); MYSERIAL.print(fan_speed[1]); SERIAL_ECHOPGM("; edge counter:"); MYSERIAL.println(fan_edge_counter[1]);
+	SERIAL_ECHOLNPGM(" ");*/
 	fan_edge_counter[0] = 0;
 	fan_edge_counter[1] = 0;
 }
 
 void checkFanSpeed()
 {
+	bool fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 
-	if (fan_speed[0] == 0 && current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE) fan_speed_errors[0]++;
+	if (fan_speed[0] == 0 && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
 	else fan_speed_errors[0] = 0;
 
-	if (fan_speed[1] == 0 && fanSpeed > MIN_PRINT_FAN_SPEED) fan_speed_errors[1]++;
+	if ((fan_speed[1] == 0)&& (fanSpeed > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
 	else fan_speed_errors[1] = 0;
 
-	if (fan_speed_errors[0] > 5) fanSpeedError(0);
-	if (fan_speed_errors[1] > 15) fanSpeedError(1);
+	if ((fan_speed_errors[0] > 5) && fans_check_enabled) fanSpeedError(0); //extruder fan
+	if ((fan_speed_errors[1] > 15) && fans_check_enabled) fanSpeedError(1); //print fan
 }
 
 void fanSpeedError(unsigned char _fan) {
@@ -485,8 +490,8 @@ void checkExtruderAutoFans()
 
   // which fan pins need to be turned on?      
   #if defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1
-    if (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE) 
-      fanState |= 1;
+  if (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)
+	  fanState |= 1;
   #endif
   #if defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1
     if (current_temperature[1] > EXTRUDER_AUTO_FAN_TEMPERATURE) 
@@ -2148,6 +2153,19 @@ ISR(TIMER0_COMPB_vect)
     }
   }
 #endif //BABYSTEPPING
+
+  check_fans();
+}
+
+void check_fans() {
+	if (READ(TACH_0) != fan_state[0]) {
+		fan_edge_counter[0] ++;
+		fan_state[0] = !fan_state[0];
+	}
+	if (READ(TACH_1) != fan_state[1]) {
+		fan_edge_counter[1] ++;
+		fan_state[1] = !fan_state[1];
+	}
 }
 
 #ifdef PIDTEMP
