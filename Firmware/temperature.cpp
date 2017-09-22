@@ -460,11 +460,16 @@ extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
 
 void fanSpeedError(unsigned char _fan) {
+	if (get_message_level() != 0 && isPrintPaused) return; 
+	//to ensure that target temp. is not set to zero in case taht we are resuming print 
 	if (card.sdprinting) {
 		if (heating_status != 0) {
 			lcd_print_stop();
 		}
-		else lcd_sdcard_pause();
+		else {
+			isPrintPaused = true;
+			lcd_sdcard_pause();
+		}
 	}
 	else {
 		setTargetHotend0(0);
@@ -472,24 +477,24 @@ void fanSpeedError(unsigned char _fan) {
 	SERIAL_ERROR_START;
 	switch (_fan) {
 	case 0:
-		SERIAL_ERRORLNPGM("ERROR: Extruder fan speed is lower then expected");
-		if (get_message_level() == 0) {
-			WRITE(BEEPER, HIGH);
-			delayMicroseconds(200);
-			WRITE(BEEPER, LOW);
-			delayMicroseconds(100);
-			LCD_ALERTMESSAGEPGM("Err: EXTR. FAN ERROR");
-		}
+			SERIAL_ERRORLNPGM("ERROR: Extruder fan speed is lower then expected");
+			if (get_message_level() == 0) {
+				WRITE(BEEPER, HIGH);
+				delayMicroseconds(200);
+				WRITE(BEEPER, LOW);
+				delayMicroseconds(100);
+				LCD_ALERTMESSAGEPGM("Err: EXTR. FAN ERROR");
+			}
 		break;
 	case 1:
-		SERIAL_ERRORLNPGM("ERROR: Print fan speed is lower then expected");
-		if (get_message_level() == 0) {
-			WRITE(BEEPER, HIGH);
-			delayMicroseconds(200);
-			WRITE(BEEPER, LOW);
-			delayMicroseconds(100);
-			LCD_ALERTMESSAGEPGM("Err: PRINT FAN ERROR");
-		}
+			SERIAL_ERRORLNPGM("ERROR: Print fan speed is lower then expected");
+			if (get_message_level() == 0) {
+				WRITE(BEEPER, HIGH);
+				delayMicroseconds(200);
+				WRITE(BEEPER, LOW);
+				delayMicroseconds(100);
+				LCD_ALERTMESSAGEPGM("Err: PRINT FAN ERROR");
+			}
 		break;
 	}
 }
