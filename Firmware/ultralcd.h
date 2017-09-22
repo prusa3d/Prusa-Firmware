@@ -26,6 +26,8 @@
   void lcd_loading_color();
   void lcd_force_language_selection();
   void lcd_sdcard_stop();
+  void lcd_sdcard_pause();
+  void lcd_print_stop();
   void prusa_statistics(int _message);
   void lcd_confirm_print();
 void lcd_mylang();
