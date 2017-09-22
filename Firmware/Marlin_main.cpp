@@ -1151,6 +1151,7 @@ void loop()
   #endif
   if(buflen)
   {
+    cmdbuffer_front_already_processed = false;
     #ifdef SDSUPPORT
       if(card.saving)
       {
@@ -1173,18 +1174,25 @@ void loop()
       process_commands();
     #endif //SDSUPPORT
 
-      if (! cmdbuffer_front_already_processed)
+    if (! cmdbuffer_front_already_processed && buflen)
 	  {
-		cli();
-    	uint8_t sdlen = 0;
-		if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD)
-			sdlen = cmdbuffer[bufindr + 1];
-	    cmdqueue_pop_front();
-		if (sdlen)
-			planner_add_sd_length(sdlen);
-		sei();
+		    cli();
+        union {
+          struct {
+              char lo;
+              char hi;
+          } lohi;
+          uint16_t value;
+        } sdlen;
+        sdlen.value = 0;
+		    if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) {
+			      sdlen.lohi.lo = cmdbuffer[bufindr + 1];
+            sdlen.lohi.hi = cmdbuffer[bufindr + 2];
+        }
+	      cmdqueue_pop_front();
+		    planner_add_sd_length(sdlen.value);
+		    sei();
 	  }
-      cmdbuffer_front_already_processed = false;
   }
 }
   //check heater every n milliseconds
@@ -6941,7 +6949,8 @@ void restore_print_from_eeprom() {
 
 bool saved_printing = false;
 uint32_t saved_sdpos = 0;
-uint32_t saved_pos[4] = {0, 0, 0, 0};
+float saved_pos[4] = {0, 0, 0, 0};
+// Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
 float saved_feedrate2 = 0;
 uint8_t saved_active_extruder = 0;
 bool saved_extruder_under_pressure = false;
@@ -6950,16 +6959,112 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 {
 	if (saved_printing) return;
 	cli();
+  unsigned char nplanner_blocks = number_of_blocks();
 	saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
 	uint16_t sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
 	saved_sdpos -= sdlen_planner;
 	uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
 	saved_sdpos -= sdlen_cmdqueue;
+
+#if 0
+  SERIAL_ECHOPGM("SDPOS_ATOMIC="); MYSERIAL.println(sdpos_atomic, DEC);
+  SERIAL_ECHOPGM("SDPOS="); MYSERIAL.println(card.get_sdpos(), DEC);
+  SERIAL_ECHOPGM("SDLEN_PLAN="); MYSERIAL.println(sdlen_planner, DEC);
+  SERIAL_ECHOPGM("SDLEN_CMDQ="); MYSERIAL.println(sdlen_cmdqueue, DEC);
+  SERIAL_ECHOPGM("PLANNERBLOCKS="); MYSERIAL.println(int(nplanner_blocks), DEC);
+  SERIAL_ECHOPGM("SDSAVED="); MYSERIAL.println(saved_sdpos, DEC);
+  SERIAL_ECHOPGM("SDFILELEN="); MYSERIAL.println(card.fileSize(), DEC);
+
+  {
+    card.setIndex(saved_sdpos);
+    SERIAL_ECHOLNPGM("Content of planner buffer: ");
+    for (unsigned int idx = 0; idx < sdlen_planner; ++ idx)
+      MYSERIAL.print(char(card.get()));
+    SERIAL_ECHOLNPGM("Content of command buffer: ");
+    for (unsigned int idx = 0; idx < sdlen_cmdqueue; ++ idx)
+      MYSERIAL.print(char(card.get()));
+    SERIAL_ECHOLNPGM("End of command buffer");
+  }
+
+  {
+    // Print the content of the planner buffer, line by line:
+    card.setIndex(saved_sdpos);
+    int8_t iline = 0;
+    for (unsigned char idx = block_buffer_tail; idx != block_buffer_head; idx = (idx + 1) & (BLOCK_BUFFER_SIZE - 1), ++ iline) {
+      SERIAL_ECHOPGM("Planner line (from file): ");
+      MYSERIAL.print(int(iline), DEC);
+      SERIAL_ECHOPGM(", length: ");
+      MYSERIAL.print(block_buffer[idx].sdlen, DEC);
+      SERIAL_ECHOPGM(", steps: (");
+      MYSERIAL.print(block_buffer[idx].steps_x, DEC);
+      SERIAL_ECHOPGM(",");
+      MYSERIAL.print(block_buffer[idx].steps_y, DEC);
+      SERIAL_ECHOPGM(",");
+      MYSERIAL.print(block_buffer[idx].steps_z, DEC);
+      SERIAL_ECHOPGM(",");
+      MYSERIAL.print(block_buffer[idx].steps_e, DEC);
+      SERIAL_ECHOPGM("), events: ");
+      MYSERIAL.println(block_buffer[idx].step_event_count, DEC);
+      for (int len = block_buffer[idx].sdlen; len > 0; -- len)
+        MYSERIAL.print(char(card.get()));
+    }
+  }
+  {
+    // Print the content of the command buffer, line by line:
+    int8_t iline = 0;
+    union {
+        struct {
+            char lo;
+            char hi;
+        } lohi;
+        uint16_t value;
+    } sdlen_single;
+    int _bufindr = bufindr;
+    for (int _buflen  = buflen; _buflen > 0; ++ iline) {
+        if (cmdbuffer[_bufindr] == CMDBUFFER_CURRENT_TYPE_SDCARD) {
+            sdlen_single.lohi.lo = cmdbuffer[_bufindr + 1];
+            sdlen_single.lohi.hi = cmdbuffer[_bufindr + 2];
+        }
+        SERIAL_ECHOPGM("Buffer line (from buffer): ");
+        MYSERIAL.print(int(iline), DEC);
+        SERIAL_ECHOPGM(", type: ");
+        MYSERIAL.print(int(cmdbuffer[_bufindr]), DEC);
+        SERIAL_ECHOPGM(", len: ");
+        MYSERIAL.println(sdlen_single.value, DEC);
+        // Print the content of the buffer line.
+        MYSERIAL.println(cmdbuffer + _bufindr + CMDHDRSIZE);
+
+        SERIAL_ECHOPGM("Buffer line (from file): ");
+        MYSERIAL.print(int(iline), DEC);
+        MYSERIAL.println(int(iline), DEC);
+        for (; sdlen_single.value > 0; -- sdlen_single.value)
+          MYSERIAL.print(char(card.get()));
+
+        if (-- _buflen == 0)
+          break;
+        // First skip the current command ID and iterate up to the end of the string.
+        for (_bufindr += CMDHDRSIZE; cmdbuffer[_bufindr] != 0; ++ _bufindr) ;
+        // Second, skip the end of string null character and iterate until a nonzero command ID is found.
+        for (++ _bufindr; _bufindr < sizeof(cmdbuffer) && cmdbuffer[_bufindr] == 0; ++ _bufindr) ;
+        // If the end of the buffer was empty,
+        if (_bufindr == sizeof(cmdbuffer)) {
+            // skip to the start and find the nonzero command.
+            for (_bufindr = 0; cmdbuffer[_bufindr] == 0; ++ _bufindr) ;
+        }
+    }
+  }
+#endif
+
+#if 0
+  saved_feedrate2 = feedrate; //save feedrate
+#else
+  // Try to deduce the feedrate from the first block of the planner.
+  // Speed is in mm/min.
+  saved_feedrate2 = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
+#endif
+
 	planner_abort_hard(); //abort printing
-	for (int axis = X_AXIS; axis <= E_AXIS; axis++) //save positions
-		saved_pos[axis] = current_position[axis];
-//		saved_pos[axis] = st_get_position_mm(axis);
-	saved_feedrate2 = feedrate; //save feedrate
+	memcpy(saved_pos, current_position, sizeof(saved_pos));
 	saved_active_extruder = active_extruder; //save active_extruder
 
 	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
@@ -6969,13 +7074,29 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 //	card.closefile();
 	saved_printing = true;
 	sei();
-	if ((z_move != 0) || (e_move != 0)) // extruder and z move
+	if ((z_move != 0) || (e_move != 0)) { // extruder and z move
+#if 1
+    // Rather than calling plan_buffer_line directly, push the move into the command queue, 
+    char buf[48];
+    strcpy_P(buf, PSTR("G1 Z"));
+    dtostrf(saved_pos[Z_AXIS] + z_move, 8, 3, buf + strlen(buf));
+    strcat_P(buf, PSTR(" E"));
+    // Relative extrusion
+    dtostrf(e_move, 6, 3, buf + strlen(buf));
+    strcat_P(buf, PSTR(" F"));
+    dtostrf(homing_feedrate[Z_AXIS], 8, 3, buf + strlen(buf));
+    // At this point the command queue is empty.
+    enquecommand(buf, false);
+    // If this call is invoked from the main Arduino loop() function, let the caller know that the command
+    // in the command queue is not the original command, but a new one, so it should not be removed from the queue.
+    repeatcommand_front();
+#else
 		plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS] + z_move, saved_pos[E_AXIS] + e_move, homing_feedrate[Z_AXIS], active_extruder);
     st_synchronize(); //wait moving
-	MYSERIAL.print("SDPOS="); MYSERIAL.println(sdpos_atomic, DEC);
-	MYSERIAL.print("SDLEN_PLAN="); MYSERIAL.println(sdlen_planner, DEC);
-	MYSERIAL.print("SDLEN_CMDQ="); MYSERIAL.println(sdlen_cmdqueue, DEC);
-
+    memcpy(current_position, saved_pos, sizeof(saved_pos));
+    memcpy(destination, current_position, sizeof(destination));
+#endif
+  }
 }
 
 void restore_print_from_ram_and_continue(float e_move)
@@ -6989,7 +7110,10 @@ void restore_print_from_ram_and_continue(float e_move)
 	plan_set_e_position(e);
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS], active_extruder);
     st_synchronize();
+  memcpy(current_position, saved_pos, sizeof(saved_pos));
+  memcpy(destination, current_position, sizeof(destination));
 	card.setIndex(saved_sdpos);
+  sdpos_atomic = saved_sdpos;
 	card.sdprinting = true;
 	saved_printing = false;
 }

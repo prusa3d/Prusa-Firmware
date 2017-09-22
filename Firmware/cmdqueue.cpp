@@ -62,7 +62,6 @@ bool cmdqueue_pop_front()
         } else {
             // There is at least one ready line in the buffer.
             // First skip the current command ID and iterate up to the end of the string.
-//            for (++ bufindr; cmdbuffer[bufindr] != 0; ++ bufindr) ;
             for (bufindr += CMDHDRSIZE; cmdbuffer[bufindr] != 0; ++ bufindr) ;
             // Second, skip the end of string null character and iterate until a nonzero command ID is found.
             for (++ bufindr; bufindr < sizeof(cmdbuffer) && cmdbuffer[bufindr] == 0; ++ bufindr) ;
@@ -92,7 +91,10 @@ bool cmdqueue_pop_front()
 
 void cmdqueue_reset()
 {
-    while (cmdqueue_pop_front()) ;
+    bufindr = 0;
+    bufindw = 0;
+    buflen = 0;
+    cmdbuffer_front_already_processed = false;
 }
 
 // How long a string could be pushed to the front of the command queue?
@@ -552,7 +554,6 @@ void get_command()
   // Reads whole lines from the SD card. Never leaves a half-filled line in the cmdbuffer.
   while( !card.eof() && !stop_buffering) {
     int16_t n=card.get();
-    ++ sd_count.value;
     char serial_char = (char)n;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
@@ -598,6 +599,7 @@ void get_command()
       }
       // The new command buffer could be updated non-atomically, because it is not yet considered
       // to be inside the active queue.
+      sd_count.value = (card.get_sdpos()+1) - sdpos_atomic;
       cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_SDCARD;
       cmdbuffer[bufindw+1] = sd_count.lohi.lo;
       cmdbuffer[bufindw+2] = sd_count.lohi.hi;
@@ -605,19 +607,20 @@ void get_command()
       // Calculate the length before disabling the interrupts.
       uint8_t len = strlen(cmdbuffer+bufindw+CMDHDRSIZE) + (1 + CMDHDRSIZE);
 
-/*    SERIAL_ECHOPGM("SD cmd(");
-      MYSERIAL.print(sd_count.value, DEC);
-      SERIAL_ECHOPGM(") ");
-      SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);*/
+//      SERIAL_ECHOPGM("SD cmd(");
+//      MYSERIAL.print(sd_count.value, DEC);
+//      SERIAL_ECHOPGM(") ");
+//      SERIAL_ECHOLN(cmdbuffer+bufindw+CMDHDRSIZE);
 //    SERIAL_ECHOPGM("cmdbuffer:");
 //    MYSERIAL.print(cmdbuffer);
 //    SERIAL_ECHOPGM("buflen:");
 //    MYSERIAL.print(buflen+1);
+      sd_count.value = 0;
 
       cli();
       ++ buflen;
       bufindw += len;
-      sdpos_atomic = card.get_sdpos();
+      sdpos_atomic = card.get_sdpos()+1;
       if (bufindw == sizeof(cmdbuffer))
           bufindw = 0;
       sei();
@@ -640,26 +643,33 @@ void get_command()
 
 uint16_t cmdqueue_calc_sd_length()
 {
-    int _buflen = buflen;
-    int _bufindr = bufindr;
+    if (buflen == 0)
+        return 0;
     union {
         struct {
             char lo;
             char hi;
         } lohi;
         uint16_t value;
-    } sdlen;
-    sdlen.value = 0;
-    while (_buflen--)
-    {
+    } sdlen_single;
+    uint16_t sdlen = 0;
+    for (int _buflen = buflen, _bufindr = bufindr;;) {
         if (cmdbuffer[_bufindr] == CMDBUFFER_CURRENT_TYPE_SDCARD) {
-            sdlen.lohi.lo += cmdbuffer[_bufindr + 1];
-            sdlen.lohi.hi += cmdbuffer[_bufindr + 2];
+            sdlen_single.lohi.lo = cmdbuffer[_bufindr + 1];
+            sdlen_single.lohi.hi = cmdbuffer[_bufindr + 2];
+            sdlen += sdlen_single.value;
         }
-        //skip header, skip command
+        if (-- _buflen == 0)
+            break;
+        // First skip the current command ID and iterate up to the end of the string.
         for (_bufindr += CMDHDRSIZE; cmdbuffer[_bufindr] != 0; ++ _bufindr) ;
-        //skip zeros
+        // Second, skip the end of string null character and iterate until a nonzero command ID is found.
         for (++ _bufindr; _bufindr < sizeof(cmdbuffer) && cmdbuffer[_bufindr] == 0; ++ _bufindr) ;
+        // If the end of the buffer was empty,
+        if (_bufindr == sizeof(cmdbuffer)) {
+            // skip to the start and find the nonzero command.
+            for (_bufindr = 0; cmdbuffer[_bufindr] == 0; ++ _bufindr) ;
+        }
     }
-    return sdlen.value;
+    return sdlen;
 }

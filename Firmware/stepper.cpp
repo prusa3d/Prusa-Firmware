@@ -61,7 +61,7 @@ static int32_t counter_x,       // Counter variables for the bresenham line trac
                counter_y,
                counter_z,
                counter_e;
-volatile static uint32_t step_events_completed; // The number of step events executed in the current block
+volatile uint32_t step_events_completed; // The number of step events executed in the current block
 static int32_t  acceleration_time, deceleration_time;
 //static unsigned long accelerate_until, decelerate_after, acceleration_rate, initial_rate, final_rate, nominal_rate;
 static uint16_t acc_step_rate; // needed for deccelaration start point

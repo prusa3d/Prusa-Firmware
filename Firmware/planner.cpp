@@ -552,10 +552,13 @@ static inline void planner_update_queue_min_counter()
 }
 #endif /* PLANNER_DIAGNOSTICS */
 
+extern volatile uint32_t step_events_completed; // The number of step events executed in the current block
+
 void planner_abort_hard()
 {
     // Abort the stepper routine and flush the planner queue.
-    quickStop();
+    // DISABLE_STEPPER_DRIVER_INTERRUPT
+    TIMSK1 &= ~(1<<OCIE1A);
 
     // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
     // First update the planner's current position in the physical motor steps.
@@ -571,9 +574,32 @@ void planner_abort_hard()
     current_position[E_AXIS] = st_get_position_mm(E_AXIS);
     // Apply the mesh bed leveling correction to the Z axis.
 #ifdef MESH_BED_LEVELING
-    if (mbl.active)
-        current_position[Z_AXIS] -= mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]);
+    if (mbl.active) {
+        if (current_block == NULL || (current_block->steps_x == 0 && current_block->steps_y == 0))
+            current_position[Z_AXIS] -= mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]);
+        else {
+            float t = float(step_events_completed) / float(current_block->step_event_count);
+            float vec[3] = { 
+              current_block->steps_x / axis_steps_per_unit[X_AXIS],
+              current_block->steps_y / axis_steps_per_unit[Y_AXIS],
+              current_block->steps_z / axis_steps_per_unit[Z_AXIS]
+            };
+            float pos1[3], pos2[3];
+            for (int8_t i = 0; i < 3; ++ i) {
+              if (current_block->direction_bits & (1<<i))
+                vec[i] = - vec[i];
+              pos1[i] = current_position[i] - vec[i] * t;
+              pos2[i] = current_position[i] + vec[i] * (1.f - t);
+            }
+            pos1[Z_AXIS] -= mbl.get_z(pos1[X_AXIS], pos1[Y_AXIS]);
+            pos2[Z_AXIS] -= mbl.get_z(pos2[X_AXIS], pos2[Y_AXIS]);
+            current_position[Z_AXIS] = pos1[Z_AXIS] * t + pos2[Z_AXIS] * (1.f - t);
+        }
+    }
 #endif
+    // Clear the planner queue.
+    quickStop();
+
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
     memcpy(destination, current_position, sizeof(destination));
@@ -1305,8 +1331,7 @@ void planner_add_sd_length(uint16_t sdlen)
   if (block_buffer_head != block_buffer_tail) {
     // The planner buffer is not empty. Get the index of the last buffer line entered,
     // which is (block_buffer_head - 1) modulo BLOCK_BUFFER_SIZE.
-    unsigned char last = (block_buffer_head + BLOCK_BUFFER_SIZE - 1) & (BLOCK_BUFFER_SIZE - 1);
-    block_buffer[last].sdlen += sdlen;
+    block_buffer[prev_block_index(block_buffer_head)].sdlen += sdlen;
   } else {
     // There is no line stored in the planner buffer, which means the last command does not need to be revertible,
     // at a power panic, so the length of this command may be forgotten.
