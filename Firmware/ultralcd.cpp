@@ -106,8 +106,14 @@ int8_t SDscrool = 0;
 int8_t SilentModeMenu = 0;
 
 int8_t FSensorStateMenu = 0;
+
+int8_t CrashDetectMenu = 0;
+
 extern void fsensor_enable();
 extern void fsensor_disable();
+
+extern void crashdet_enable();
+extern void crashdet_disable();
 
 
 #ifdef SNMM
@@ -166,7 +172,8 @@ extern bool powersupply;
 static void lcd_main_menu();
 static void lcd_tune_menu();
 static void lcd_prepare_menu();
-static void lcd_move_menu();
+//static void lcd_move_menu();
+static void lcd_crash_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
 static void lcd_language_menu();
@@ -2520,18 +2527,6 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
   } while (--size);
 }
 
-static void lcd_fsensor_state_set()
-{
-    if (!FSensorStateMenu==0) {
-        fsensor_disable();
-    }else{
-        fsensor_enable();
-    }
-	FSensorStateMenu = !FSensorStateMenu;
-	lcd_goto_menu(lcd_settings_menu, 7);
-    
-}
-
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
@@ -2545,6 +2540,19 @@ static void lcd_silent_mode_set() {
   digipot_init();
   lcd_goto_menu(lcd_settings_menu, 7);
 }
+
+static void lcd_crash_mode_set()
+{
+    if (!CrashDetectMenu==0) {
+        crashdet_disable();
+    }else{
+        crashdet_enable();
+    }
+	CrashDetectMenu = !CrashDetectMenu;
+	lcd_goto_menu(lcd_settings_menu, 7);
+    
+}
+
 static void lcd_set_lang(unsigned char lang) {
   lang_selected = lang;
   firstrun = 1;
@@ -2553,6 +2561,18 @@ static void lcd_set_lang(unsigned char lang) {
   if (langsel == LANGSEL_MODAL)
     // From modal mode to an active mode? This forces the menu to return to the setup menu.
     langsel = LANGSEL_ACTIVE;
+}
+
+static void lcd_fsensor_state_set()
+{
+    if (!FSensorStateMenu==0) {
+        fsensor_disable();
+    }else{
+        fsensor_enable();
+    }
+	FSensorStateMenu = !FSensorStateMenu;
+	lcd_goto_menu(lcd_settings_menu, 7);
+    
 }
 
 void lcd_force_language_selection() {
@@ -2721,6 +2741,10 @@ void lcd_toshiba_flash_air_compatibility_toggle()
    eeprom_update_byte((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
 }
 
+static void lcd_crash_menu()
+{
+}
+
 static void lcd_settings_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -2744,12 +2768,20 @@ static void lcd_settings_menu()
     MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
   }
 
-  if ((SilentModeMenu == 0) || (farm_mode) ) {
+  if (SilentModeMenu == 0) {
     MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
   } else {
     MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
   }
-  
+
+  if (SilentModeMenu == 0) {
+    if (CrashDetectMenu == 0) {
+      MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
+    } else {
+      MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
+    }
+  }
+
 	if (!isPrintPaused && !homing_flag)
 	{
 		MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);

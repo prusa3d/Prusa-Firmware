@@ -583,7 +583,7 @@ void fsensor_restore_print_and_continue()
 }
 
 
-bool fsensor_enabled = true;
+bool fsensor_enabled = false;
 bool fsensor_ignore_error = true;
 bool fsensor_M600 = false;
 long fsensor_prev_pos_e = 0;
@@ -6963,6 +6963,26 @@ void restore_print_from_eeprom() {
 // new save/restore printing
 
 //extern uint32_t sdpos_atomic;
+
+void crashdet_enable()
+{
+	tmc2130_sg_stop_on_crash = true;
+}
+
+void crashdet_disable()
+{
+	tmc2130_sg_stop_on_crash = false;
+}
+
+void crashdet_stop_and_save_print()
+{
+	stop_and_save_print_to_ram(10, 0); //XY - no change, Z 10mm up, E - no change
+}
+
+void crashdet_restore_print_and_continue()
+{
+	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+}
 
 bool saved_printing = false;
 uint32_t saved_sdpos = 0;

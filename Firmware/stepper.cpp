@@ -94,10 +94,12 @@ static bool check_endstops = true;
 
 static bool check_z_endstop = false;
 
-int8_t SilentMode;
+int8_t SilentMode = 0;
 
 volatile long count_position[NUM_AXIS] = { 0, 0, 0, 0};
 volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
+
+uint8_t LastStepMask = 0;
 
 #ifdef LIN_ADVANCE
 
@@ -390,6 +392,8 @@ void isr() {
     }
   }
 
+	LastStepMask = 0;
+
   if (current_block != NULL) {
     // Set directions TO DO This should be done once during init of trapezoid. Endstops -> interrupt
     out_bits = current_block->direction_bits;
@@ -623,6 +627,7 @@ void isr() {
         counter_x += current_block->steps_x;
         if (counter_x > 0) {
           WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
+		  LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
@@ -637,6 +642,7 @@ void isr() {
         counter_y += current_block->steps_y;
         if (counter_y > 0) {
           WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
+		  LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
     WRITE(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
@@ -660,7 +666,7 @@ void isr() {
       counter_z += current_block->steps_z;
       if (counter_z > 0) {
         WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
-        
+        LastStepMask |= Z_AXIS_MASK;
         #ifdef Z_DUAL_STEPPER_DRIVERS
           WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
         #endif
@@ -772,7 +778,9 @@ void isr() {
       plan_discard_current_block();
     }
   }
-  check_fans();
+#ifdef TMC2130
+	tmc2130_st_isr(LastStepMask);
+#endif //TMC2130
 }
 
 #ifdef LIN_ADVANCE
@@ -1149,6 +1157,7 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); 
+	LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
@@ -1174,6 +1183,7 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); 
+	LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
     WRITE(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
@@ -1202,6 +1212,7 @@ void babystep(const uint8_t axis,const bool direction)
     #endif
     //perform step 
     WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); 
+	LastStepMask |= Z_AXIS_MASK;
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
     #endif
@@ -1387,7 +1398,3 @@ void microstep_readings()
       SERIAL_PROTOCOLLN( digitalRead(E1_MS2_PIN));
       #endif
 }
-
-
-
-
