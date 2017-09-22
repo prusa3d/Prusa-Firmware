@@ -223,6 +223,7 @@ static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
 static void lcd_disable_farm_mode();
+static void lcd_set_fan_check();
 void extr_unload_all(); 
 void extr_unload_used();
 void extr_unload();

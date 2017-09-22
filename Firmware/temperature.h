@@ -222,5 +222,7 @@ void countFanSpeed();
 void checkFanSpeed();
 void fanSpeedError(unsigned char _fan);
 
+void check_fans();
+
 #endif
 
