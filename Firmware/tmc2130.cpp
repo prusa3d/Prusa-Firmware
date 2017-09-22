@@ -195,7 +195,7 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 		if (tmc2130_sg_stop_on_crash && error)
 		{
 			tmc2130_sg_crash = true;
-			crashdet_stop_and_save_print();
+			tmc2130_sg_stop_on_crash = false;
 		}
 }
 
