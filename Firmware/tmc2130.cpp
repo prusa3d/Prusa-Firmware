@@ -39,6 +39,7 @@ uint8_t tmc2130_pwm_freq[2] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y};
 
 
 uint8_t tmc2131_axis_sg_thr[4] = {TMC2130_SG_THRS_X, TMC2130_SG_THRS_Y, TMC2130_SG_THRS_Z, 0};
+uint8_t tmc2131_axis_sg_thr_home[4] = {5, 5, TMC2130_SG_THRS_Z, 0};
 
 uint32_t tmc2131_axis_sg_pos[4] = {0, 0, 0, 0};
 
@@ -137,8 +138,8 @@ void tmc2130_init()
 //		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_COOLCONF, (((uint32_t)tmc2131_axis_sg_thr[i]) << 16) | ((uint32_t)1 << 24));
-		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:TMC2130_TCOOLTHRS);
+		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
 		tmc2130_wr_PWMCONF(tmc2130_cs[i], tmc2130_pwm_ampl[i], tmc2130_pwm_grad[i], tmc2130_pwm_freq[i], tmc2130_pwm_auto[i], 0, 0);
 		tmc2130_wr_TPWMTHRS(tmc2130_cs[i], TMC2130_TPWMTHRS);
 		//tmc2130_wr_THIGH(tmc2130_cs[i], TMC2130_THIGH);
@@ -287,7 +288,8 @@ void tmc2130_home_enter(uint8_t axes_mask)
 			tmc2130_axis_stalled[axis] = false;
 			//Configuration to spreadCycle
 			tmc2130_wr(cs, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
-			tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2131_axis_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
+			tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2131_axis_sg_thr_home[axis]) << 16));
+//			tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2131_axis_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 			tmc2130_wr(cs, TMC2130_REG_TCOOLTHRS, TMC2130_TCOOLTHRS);
 #ifndef TMC2130_SG_HOMING_SW_XY
 			if (mask & (X_AXIS_MASK | Y_AXIS_MASK))
@@ -323,6 +325,7 @@ void tmc2130_home_exit()
 #ifdef TMC2130_SG_HOMING_SW_XY
 					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
 #else //TMC2130_SG_HOMING_SW_XY
+					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_COOLCONF, (((uint32_t)tmc2131_axis_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
 #endif //TMC2130_SG_HOMING_SW_XY
 				}
