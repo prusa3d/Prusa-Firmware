@@ -11,7 +11,7 @@ extern uint8_t tmc2130_current_r[4];
 //flags for axis stall detection
 extern uint8_t tmc2130_axis_stalled[4];
 
-extern uint8_t tmc2131_axis_sg_thr[4];
+extern uint8_t tmc2130_axis_sg_thr[4];
 
 extern bool tmc2130_sg_stop_on_crash;
 extern bool tmc2130_sg_crash;
@@ -49,6 +49,9 @@ extern void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_ampl);
 
 
 extern uint16_t tmc2130_rd_MSCNT(uint8_t cs);
+
+extern void tmc2130_home_pause(uint8_t axis);
+extern void tmc2130_home_resume(uint8_t axis);
 
 
 #endif //TMC2130_H

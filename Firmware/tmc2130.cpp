@@ -28,6 +28,10 @@ uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
 //axis stalled flags
 uint8_t tmc2130_axis_stalled[4] = {0, 0, 0, 0};
 
+//running currents for homing
+uint8_t tmc2130_current_r_home[4] = {10, 10, 20, 10};
+
+
 //pwm_ampl
 uint8_t tmc2130_pwm_ampl[2] = {TMC2130_PWM_AMPL_X, TMC2130_PWM_AMPL_Y};
 //pwm_grad
@@ -37,11 +41,13 @@ uint8_t tmc2130_pwm_auto[2] = {TMC2130_PWM_AUTO_X, TMC2130_PWM_AUTO_Y};
 //pwm_freq
 uint8_t tmc2130_pwm_freq[2] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y};
 
+uint8_t tmc2130_mres[4] = {0, 0, 0, 0}; //will be filed at begin of init
 
-uint8_t tmc2131_axis_sg_thr[4] = {TMC2130_SG_THRS_X, TMC2130_SG_THRS_Y, TMC2130_SG_THRS_Z, 0};
-uint8_t tmc2131_axis_sg_thr_home[4] = {5, 5, TMC2130_SG_THRS_Z, 0};
 
-uint32_t tmc2131_axis_sg_pos[4] = {0, 0, 0, 0};
+uint8_t tmc2130_axis_sg_thr[4] = {TMC2130_SG_THRS_X, TMC2130_SG_THRS_Y, TMC2130_SG_THRS_Z, 0};
+uint8_t tmc2130_axis_sg_thr_home[4] = {3, 3, TMC2130_SG_THRS_Z, 0};
+
+uint32_t tmc2130_axis_sg_pos[4] = {0, 0, 0, 0};
 
 uint8_t sg_homing_axes_mask = 0x00;
 
@@ -96,16 +102,23 @@ void tmc2130_wr_TPWMTHRS(uint8_t cs, uint32_t val32);
 void tmc2130_wr_THIGH(uint8_t cs, uint32_t val32);
 
 uint8_t tmc2130_axis_by_cs(uint8_t cs);
-uint8_t tmc2130_mres(uint16_t microstep_resolution);
+uint8_t tmc2130_calc_mres(uint16_t microstep_resolution);
 
 uint8_t tmc2130_wr(uint8_t cs, uint8_t addr, uint32_t wval);
 uint8_t tmc2130_rd(uint8_t cs, uint8_t addr, uint32_t* rval);
 uint8_t tmc2130_txrx(uint8_t cs, uint8_t addr, uint32_t wval, uint32_t* rval);
 
 
+void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r);
+
+
 
 void tmc2130_init()
 {
+	tmc2130_mres[0] = tmc2130_calc_mres(TMC2130_USTEPS_XY);
+	tmc2130_mres[1] = tmc2130_calc_mres(TMC2130_USTEPS_XY);
+	tmc2130_mres[2] = tmc2130_calc_mres(TMC2130_USTEPS_Z);
+	tmc2130_mres[3] = tmc2130_calc_mres(TMC2130_USTEPS_E);
 	MYSERIAL.print("tmc2130_init mode=");
 	MYSERIAL.println(tmc2130_mode, DEC);
 	WRITE(X_TMC2130_CS, HIGH);
@@ -123,8 +136,7 @@ void tmc2130_init()
 	SPI.begin();
 	for (int i = 0; i < 2; i++) // X Y axes
 	{
-		uint8_t mres = tmc2130_mres(TMC2130_USTEPS_XY);
-		if (tmc2130_current_r[i] <= 31)
+/*		if (tmc2130_current_r[i] <= 31)
 		{
 			tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, TMC2130_INTPOL_XY, 0, 0);
 			tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
@@ -133,11 +145,13 @@ void tmc2130_init()
 		{
 			tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, mres, TMC2130_INTPOL_XY, 0, 0);
 			tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | (((tmc2130_current_r[i] >> 1) & 0x1f) << 8) | ((tmc2130_current_h[i] >> 1) & 0x1f));
-		}
+		}*/
+		tmc2130_setup_chopper(i, tmc2130_mres[i], tmc2130_current_h[i], tmc2130_current_r[i]);
+
 //		tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, TMC2130_INTPOL_XY, 0, 0);
 //		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
-		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_COOLCONF, (((uint32_t)tmc2131_axis_sg_thr[i]) << 16) | ((uint32_t)1 << 24));
+		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_axis_sg_thr[i]) << 16) | ((uint32_t)1 << 24));
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:TMC2130_TCOOLTHRS);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
 		tmc2130_wr_PWMCONF(tmc2130_cs[i], tmc2130_pwm_ampl[i], tmc2130_pwm_grad[i], tmc2130_pwm_freq[i], tmc2130_pwm_auto[i], 0, 0);
@@ -146,8 +160,8 @@ void tmc2130_init()
 	}
 	for (int i = 2; i < 3; i++) // Z axis
 	{
-		uint8_t mres = tmc2130_mres(TMC2130_USTEPS_Z);
-		if (tmc2130_current_r[i] <= 31)
+//		uint8_t mres = tmc2130_mres(TMC2130_USTEPS_Z);
+/*		if (tmc2130_current_r[i] <= 31)
 		{
 			tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, TMC2130_INTPOL_Z, 0, 0);
 			tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
@@ -156,15 +170,20 @@ void tmc2130_init()
 		{
 			tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, mres, TMC2130_INTPOL_Z, 0, 0);
 			tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | (((tmc2130_current_r[i] >> 1) & 0x1f) << 8) | ((tmc2130_current_h[i] >> 1) & 0x1f));
-		}
+		}*/
+		tmc2130_setup_chopper(i, tmc2130_mres[i], tmc2130_current_h[i], tmc2130_current_r[i]);
+
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
 	}
 	for (int i = 3; i < 4; i++) // E axis
 	{
-		uint8_t mres = tmc2130_mres(TMC2130_USTEPS_E);
-		tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, TMC2130_INTPOL_E, 0, 0);
-		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
+//		uint8_t mres = tmc2130_mres(TMC2130_USTEPS_E);
+		tmc2130_setup_chopper(i, tmc2130_mres[i], tmc2130_current_h[i], tmc2130_current_r[i]);
+
+//		tmc2130_wr_CHOPCONF(tmc2130_cs[i], 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, TMC2130_INTPOL_E, 0, 0);
+//		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[i] & 0x1f) << 8) | (tmc2130_current_h[i] & 0x1f));
+
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_TPOWERDOWN, 0x00000000);
 		tmc2130_wr(tmc2130_cs[i], TMC2130_REG_GCONF, 0x00000000);
 	}
@@ -209,7 +228,7 @@ void tmc2130_update_sg_axis(uint8_t axis)
 		if (tstep < TMC2130_TCOOLTHRS)
 		{
 			long pos = st_get_position(axis);
-			if (abs(pos - tmc2131_axis_sg_pos[axis]) > TMC2130_SG_DELTA)
+			if (abs(pos - tmc2130_axis_sg_pos[axis]) > TMC2130_SG_DELTA)
 			{
 				uint16_t sg = tmc2130_rd_DRV_STATUS(cs) & 0x3ff;
 				if (sg == 0)
@@ -250,7 +269,7 @@ bool tmc2130_update_sg()
 				if (tstep < TMC2130_TCOOLTHRS)
 				{
 					long pos = st_get_position(axis);
-					if (abs(pos - tmc2131_axis_sg_pos[axis]) > TMC2130_SG_DELTA)
+					if (abs(pos - tmc2130_axis_sg_pos[axis]) > TMC2130_SG_DELTA)
 					{
 						uint16_t sg = tmc2130_rd_DRV_STATUS(cs) & 0x3ff;
 						if (sg == 0)
@@ -285,13 +304,14 @@ void tmc2130_home_enter(uint8_t axes_mask)
 		if (axes_mask & mask)
 		{
 			sg_homing_axes_mask |= mask;
-			tmc2131_axis_sg_pos[axis] = st_get_position(axis);
+			tmc2130_axis_sg_pos[axis] = st_get_position(axis);
 			tmc2130_axis_stalled[axis] = false;
 			//Configuration to spreadCycle
 			tmc2130_wr(cs, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
-			tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2131_axis_sg_thr_home[axis]) << 16));
-//			tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2131_axis_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
+			tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_axis_sg_thr_home[axis]) << 16));
+//			tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_axis_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 			tmc2130_wr(cs, TMC2130_REG_TCOOLTHRS, TMC2130_TCOOLTHRS);
+			tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r_home[axis]);
 #ifndef TMC2130_SG_HOMING_SW_XY
 			if (mask & (X_AXIS_MASK | Y_AXIS_MASK))
 				tmc2130_wr(cs, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS); //stallguard output DIAG1, DIAG1 = pushpull
@@ -326,7 +346,8 @@ void tmc2130_home_exit()
 #ifdef TMC2130_SG_HOMING_SW_XY
 					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
 #else //TMC2130_SG_HOMING_SW_XY
-					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_COOLCONF, (((uint32_t)tmc2131_axis_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
+					tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_axis_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 					tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
 #endif //TMC2130_SG_HOMING_SW_XY
 				}
@@ -338,9 +359,25 @@ void tmc2130_home_exit()
 #endif
 }
 
+void tmc2130_home_pause(uint8_t axis)
+{
+	if (tmc2130_mode == TMC2130_MODE_NORMAL)
+	{
+		tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
+	}
+}
+
+void tmc2130_home_resume(uint8_t axis)
+{
+	if (tmc2130_mode == TMC2130_MODE_NORMAL)
+	{
+		tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
+	}
+}
+
 void tmc2130_home_restart(uint8_t axis)
 {
-	tmc2131_axis_sg_pos[axis] = st_get_position(axis);
+	tmc2130_axis_sg_pos[axis] = st_get_position(axis);
 	tmc2130_axis_stalled[axis] = false;
 }
 
@@ -368,6 +405,22 @@ void tmc2130_check_overtemp()
 	}
 }
 
+void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
+{
+	uint8_t cs = tmc2130_cs[axis];
+	uint8_t intpol = 1;
+	if (current_r <= 31)
+	{
+		tmc2130_wr_CHOPCONF(cs, 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, intpol, 0, 0);
+		tmc2130_wr(cs, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((current_r & 0x1f) << 8) | (current_h & 0x1f));
+	}
+	else
+	{
+		tmc2130_wr_CHOPCONF(cs, 3, 5, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, mres, intpol, 0, 0);
+		tmc2130_wr(cs, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | (((current_r >> 1) & 0x1f) << 8) | ((current_h >> 1) & 0x1f));
+	}
+}
+
 void tmc2130_set_current_h(uint8_t axis, uint8_t current)
 {
 	MYSERIAL.print("tmc2130_set_current_h ");
@@ -375,7 +428,7 @@ void tmc2130_set_current_h(uint8_t axis, uint8_t current)
 	MYSERIAL.print(" ");
 	MYSERIAL.println((int)current);
 	tmc2130_current_h[axis] = current;
-	tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[axis] & 0x1f) << 8) | (tmc2130_current_h[axis] & 0x1f));
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 }
 
 void tmc2130_set_current_r(uint8_t axis, uint8_t current)
@@ -385,7 +438,7 @@ void tmc2130_set_current_r(uint8_t axis, uint8_t current)
 	MYSERIAL.print(" ");
 	MYSERIAL.println((int)current);
 	tmc2130_current_r[axis] = current;
-	tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[axis] & 0x1f) << 8) | (tmc2130_current_h[axis] & 0x1f));
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 }
 
 void tmc2130_print_currents()
@@ -514,7 +567,7 @@ uint8_t tmc2130_axis_by_cs(uint8_t cs)
 }
 #endif //TMC2130_DEBUG
 
-uint8_t tmc2130_mres(uint16_t microstep_resolution)
+uint8_t tmc2130_calc_mres(uint16_t microstep_resolution)
 {
 	if (microstep_resolution == 256) return 0b0000;
 	if (microstep_resolution == 128) return 0b0001;
