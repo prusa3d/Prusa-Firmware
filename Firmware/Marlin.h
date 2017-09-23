@@ -374,8 +374,13 @@ void recover_print();
 void setup_uvlo_interrupt();
 
 extern void save_print_to_eeprom();
+extern void recover_machine_state_after_power_panic();
 extern void restore_print_from_eeprom();
 extern void position_menu();
+
+extern void print_world_coordinates();
+extern void print_physical_coordinates();
+extern void print_mesh_bed_leveling_table();
 
 
 #define UVLO !(PINE & (1<<4))

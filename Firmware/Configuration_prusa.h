@@ -480,7 +480,13 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
 
-#define UVLO_Z_AXIS_SHIFT 2
+// How much shall the print head be lifted on power panic?
+// Ideally the Z axis will reach a zero phase of the stepper driver on power outage. To simplify this,
+// UVLO_Z_AXIS_SHIFT shall be an integer multiply of the stepper driver cycle, that is 4x full step.
+// For example, the Prusa i3 MK2 with 16 microsteps per full step has Z stepping of 400 microsteps per mm.
+// At 400 microsteps per mm, a full step lifts the Z axis by 0.04mm, and a stepper driver cycle is 0.16mm.
+// The following example, 12 * (4 * 16 / 400) = 12 * 0.16mm = 1.92mm.
+#define UVLO_Z_AXIS_SHIFT 1.92
 
 #define HEATBED_V2
 

@@ -173,6 +173,11 @@ extern bool is_bed_z_jitter_data_valid();
 // Useful for visualizing the behavior of the bed induction detector.
 extern bool scan_bed_induction_points(int8_t verbosity_level);
 
+// Load Z babystep value from the EEPROM into babystepLoadZ, 
+// but don't apply it through the planner. This is useful on wake up
+// after power panic, when it is expected, that the baby step has been already applied.
+extern void babystep_load();
+
 // Apply Z babystep value from the EEPROM through the planner.
 extern void babystep_apply();
 
