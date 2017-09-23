@@ -32,7 +32,7 @@
 
 // Steps per unit {X,Y,Z,E}
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280} //Extruder motor changed back to 200step type
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -72,20 +72,20 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
-//#define MAX_SILENT_FEEDRATE           2700   // 
+//#define MAX_SILENT_FEEDRATE           2700   //
 
 #define Z_AXIS_ALWAYS_ON 1
 
 //DEBUG
-#if 0
 #define DEBUG_DCODES //D codes
+#if 0
 #define DEBUG_DISABLE_XMINLIMIT  //x min limit ignored
 #define DEBUG_DISABLE_XMAXLIMIT  //x max limit ignored
 #define DEBUG_DISABLE_YMINLIMIT  //y min limit ignored
 #define DEBUG_DISABLE_YMAXLIMIT  //y max limit ignored
 #define DEBUG_DISABLE_ZMINLIMIT  //z min limit ignored
 #define DEBUG_DISABLE_ZMAXLIMIT  //z max limit ignored
-#define DEBUG_DISABLE_STARTMSGS //no startup messages 
+#define DEBUG_DISABLE_STARTMSGS //no startup messages
 #define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
 #define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
 #define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
@@ -104,7 +104,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    32        // microstep resolution for E axis (increased from 16 to 32)
+#define TMC2130_USTEPS_E    32        // microstep resolution for E axis
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
@@ -115,20 +115,20 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_PWM_FREQ_X  2         // PWMCONF
 
 #define TMC2130_PWM_GRAD_Y  4         // PWMCONF
-#define TMC2130_PWM_AMPL_Y  210       // PWMCONF
+#define TMC2130_PWM_AMPL_Y  215       // PWMCONF
 #define TMC2130_PWM_AUTO_Y  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Y  2         // PWMCONF
 
 /* //not used
-#define TMC2130_PWM_GRAD_Z  4         // PWMCONF
-#define TMC2130_PWM_AMPL_Z  200       // PWMCONF
-#define TMC2130_PWM_AUTO_Z  1         // PWMCONF
-#define TMC2130_PWM_FREQ_Z  2         // PWMCONF
-#define TMC2130_PWM_GRAD_E  4         // PWMCONF
-#define TMC2130_PWM_AMPL_E  200       // PWMCONF
-#define TMC2130_PWM_AUTO_E  1         // PWMCONF
-#define TMC2130_PWM_FREQ_E  2         // PWMCONF
-*/
+ #define TMC2130_PWM_GRAD_Z  4         // PWMCONF
+ #define TMC2130_PWM_AMPL_Z  200       // PWMCONF
+ #define TMC2130_PWM_AUTO_Z  1         // PWMCONF
+ #define TMC2130_PWM_FREQ_Z  2         // PWMCONF
+ #define TMC2130_PWM_GRAD_E  4         // PWMCONF
+ #define TMC2130_PWM_AMPL_E  200       // PWMCONF
+ #define TMC2130_PWM_AUTO_E  1         // PWMCONF
+ #define TMC2130_PWM_FREQ_E  2         // PWMCONF
+ */
 
 //#define TMC2130_PWM_DIV   683         // PWM frequency divider (1024, 683, 512, 410)
 #define TMC2130_PWM_DIV   512         // PWM frequency divider (1024, 683, 512, 410)
@@ -137,19 +137,19 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
 #define TMC2130_THIGH     0         // THIGH - unused
 
-#define TMC2130_TCOOLTHRS 239       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS 500       // TCOOLTHRS - coolstep treshold
 
 #define TMC2130_SG_HOMING       1     // stallguard homing
 //#define TMC2130_SG_HOMING_SW_XY  1    // stallguard "software" homing for XY axes
 #define TMC2130_SG_HOMING_SW_Z  1     // stallguard "software" homing for Z axis
-#define TMC2130_SG_THRS_X       0     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y       0     // stallguard sensitivity for Y axis
-#define TMC2130_SG_THRS_Z       2     // stallguard sensitivity for Z axis
+#define TMC2130_SG_THRS_X       6     // stallguard sensitivity for X axis
+#define TMC2130_SG_THRS_Y       6     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_Z       3     // stallguard sensitivity for Z axis
 #define TMC2130_SG_DELTA      128    // stallguard delta [usteps] (minimum usteps before stallguard readed - SW homing)
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {3, 3, 5, 8}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {13, 18, 20, 22}  // default running currents for all axes
+#define TMC2130_CURRENTS_R {13, 31, 20, 22}  // default running currents for all axes
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
@@ -472,7 +472,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define DEFAULT_PID_TEMP 210
 
-#define MIN_PRINT_FAN_SPEED 50
+#define MIN_PRINT_FAN_SPEED 75
 
 #ifdef SNMM
 #define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
@@ -480,6 +480,14 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
 
-#define UVLO_Z_AXIS_SHIFT 2
+// How much shall the print head be lifted on power panic?
+// Ideally the Z axis will reach a zero phase of the stepper driver on power outage. To simplify this,
+// UVLO_Z_AXIS_SHIFT shall be an integer multiply of the stepper driver cycle, that is 4x full step.
+// For example, the Prusa i3 MK2 with 16 microsteps per full step has Z stepping of 400 microsteps per mm.
+// At 400 microsteps per mm, a full step lifts the Z axis by 0.04mm, and a stepper driver cycle is 0.16mm.
+// The following example, 12 * (4 * 16 / 400) = 12 * 0.16mm = 1.92mm.
+#define UVLO_Z_AXIS_SHIFT 1.92
+
+#define HEATBED_V2
 
 #endif //__CONFIGURATION_PRUSA_H
