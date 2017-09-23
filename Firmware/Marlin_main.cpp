@@ -1526,6 +1526,9 @@ void homeaxis(int axis)
 #endif
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
+/*
+		tmc2130_home_pause(axis);
+
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
@@ -1534,21 +1537,26 @@ void homeaxis(int axis)
 #endif
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
+
+		tmc2130_home_resume(axis);
+
         destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
-#ifdef TMC2130
-		feedrate = homing_feedrate[axis];
-#else
+//#ifdef TMC2130
+//		feedrate = homing_feedrate[axis];
+//#else
 		feedrate = homing_feedrate[axis] / 2;
-#endif
+//#endif
 #ifdef TMC2130
 		tmc2130_home_restart(axis);
 #endif
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
+*/
+		tmc2130_home_pause(axis);
 
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = -0.16 * axis_home_dir;
+        destination[axis] = -0.32 * axis_home_dir;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 
@@ -1558,6 +1566,8 @@ void homeaxis(int axis)
 
 		endstops_hit_on_purpose();
         axis_known_position[axis] = true;
+
+
 #ifdef TMC2130
 		tmc2130_home_exit();
 //        destination[axis] += 2;
@@ -5462,15 +5472,15 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 	case 916: // M916 Set sg_thrs
     {
-		if (code_seen('X')) tmc2131_axis_sg_thr[X_AXIS] = code_value();
-		if (code_seen('Y')) tmc2131_axis_sg_thr[Y_AXIS] = code_value();
-		if (code_seen('Z')) tmc2131_axis_sg_thr[Z_AXIS] = code_value();
-		MYSERIAL.print("tmc2131_axis_sg_thr[X]=");
-		MYSERIAL.print(tmc2131_axis_sg_thr[X_AXIS], DEC);
-		MYSERIAL.print("tmc2131_axis_sg_thr[Y]=");
-		MYSERIAL.print(tmc2131_axis_sg_thr[Y_AXIS], DEC);
-		MYSERIAL.print("tmc2131_axis_sg_thr[Z]=");
-		MYSERIAL.print(tmc2131_axis_sg_thr[Z_AXIS], DEC);
+		if (code_seen('X')) tmc2130_axis_sg_thr[X_AXIS] = code_value();
+		if (code_seen('Y')) tmc2130_axis_sg_thr[Y_AXIS] = code_value();
+		if (code_seen('Z')) tmc2130_axis_sg_thr[Z_AXIS] = code_value();
+		MYSERIAL.print("tmc2130_axis_sg_thr[X]=");
+		MYSERIAL.print(tmc2130_axis_sg_thr[X_AXIS], DEC);
+		MYSERIAL.print("tmc2130_axis_sg_thr[Y]=");
+		MYSERIAL.print(tmc2130_axis_sg_thr[Y_AXIS], DEC);
+		MYSERIAL.print("tmc2130_axis_sg_thr[Z]=");
+		MYSERIAL.print(tmc2130_axis_sg_thr[Z_AXIS], DEC);
     }
     break;
 
