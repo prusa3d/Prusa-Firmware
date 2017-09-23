@@ -373,7 +373,6 @@ void uvlo_();
 void recover_print();
 void setup_uvlo_interrupt();
 
-extern void save_print_to_eeprom();
 extern void recover_machine_state_after_power_panic();
 extern void restore_print_from_eeprom();
 extern void position_menu();
