@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # Hyperfine Bed Levelling for Prusa i3 MK2/MK2S
 
 NOTE: None of the modifications are mine, PJR and JeffJordan have shared the modifications on the Prusa3d.com Forums (http://shop.prusa3d.com/forum/prusa-i3-kit-building-calibrating-first-print-main-f6/hyperfine-bed-leveling--t4330.html)
@@ -8,7 +6,6 @@ This repo is so that you can pull the changes into your own MK2 firmware (if you
 ## CURRENTLY NO FILES HAVE BEEN CHANGED (except this readme!)
 
 
->>>>>>> parent of 90ca96b... Readme
 # Original Prusa i3 MK2 Firmware
 
 ## General instructions
