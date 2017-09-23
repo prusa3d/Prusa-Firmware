@@ -971,6 +971,22 @@ void setup()
 #endif
 	setup_homepin();
 
+  if (1) {
+    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+    // try to run to zero phase before powering the Z motor.    
+    // Move in negative direction
+    WRITE(Z_DIR_PIN,INVERT_Z_DIR);
+    // Round the current micro-micro steps to micro steps.
+    for (uint16_t phase = (tmc2130_rd_MSCNT(Z_TMC2130_CS) + 8) >> 4; phase > 0; -- phase) {
+      // Until the phase counter is reset to zero.
+      WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
+      delay(2);
+      WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
+      delay(2);
+    }
+    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+  }
+
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
@@ -1025,25 +1041,6 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
 	}
-
-  {
-    SERIAL_ECHOPGM("power up "); print_world_coordinates();
-    SERIAL_ECHOPGM("power up "); print_physical_coordinates();
-    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-    float z0 = current_position[Z_AXIS];
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.04, current_position[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-    SERIAL_ECHOPGM("full step: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.08, current_position[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-    SERIAL_ECHOPGM("two full steps: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.16 - 0.01, current_position[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-    SERIAL_ECHOPGM("nearly full cycle: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.16, current_position[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-    SERIAL_ECHOPGM("full cycle: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-  }
 
 #ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
