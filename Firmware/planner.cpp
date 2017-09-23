@@ -575,6 +575,12 @@ void planner_abort_hard()
     // Apply the mesh bed leveling correction to the Z axis.
 #ifdef MESH_BED_LEVELING
     if (mbl.active) {
+#if 1
+        // Undo the bed level correction so the current Z position is reversible wrt. the machine coordinates.
+        // This does not necessary mean that the Z position will be the same as linearly interpolated from the source G-code line.
+        current_position[Z_AXIS] -= mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]);
+#else
+        // Undo the bed level correction so that the current Z position is the same as linearly interpolated from the source G-code line.
         if (current_block == NULL || (current_block->steps_x == 0 && current_block->steps_y == 0))
             current_position[Z_AXIS] -= mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]);
         else {
@@ -595,6 +601,7 @@ void planner_abort_hard()
             pos2[Z_AXIS] -= mbl.get_z(pos2[X_AXIS], pos2[Y_AXIS]);
             current_position[Z_AXIS] = pos1[Z_AXIS] * t + pos2[Z_AXIS] * (1.f - t);
         }
+#endif
     }
 #endif
     // Clear the planner queue.
@@ -1250,6 +1257,7 @@ void plan_set_position(float x, float y, float z, const float &e)
 #endif // ENABLE_AUTO_BED_LEVELING
 
     // Apply the machine correction matrix.
+    if (world2machine_correction_mode != WORLD2MACHINE_CORRECTION_NONE)
     {
         float tmpx = x;
         float tmpy = y;
@@ -1260,11 +1268,9 @@ void plan_set_position(float x, float y, float z, const float &e)
   position[X_AXIS] = lround(x*axis_steps_per_unit[X_AXIS]);
   position[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
 #ifdef MESH_BED_LEVELING
-    if (mbl.active){
-      position[Z_AXIS] = lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]);
-    }else{
-        position[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
-    }
+  position[Z_AXIS] = mbl.active ? 
+    lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]) :
+    lround(z*axis_steps_per_unit[Z_AXIS]);
 #else
   position[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
 #endif // ENABLE_MESH_BED_LEVELING

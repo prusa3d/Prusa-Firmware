@@ -418,7 +418,6 @@ static float delta[3] = {0.0, 0.0, 0.0};
 
 // For tracing an arc
 static float offset[3] = {0.0, 0.0, 0.0};
-static bool home_all_axis = true;
 static float feedrate = 1500.0, next_feedrate, saved_feedrate;
 
 // Determines Absolute or Relative Coordinates.
@@ -1026,6 +1025,25 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
 	}
+
+  {
+    SERIAL_ECHOPGM("power up "); print_world_coordinates();
+    SERIAL_ECHOPGM("power up "); print_physical_coordinates();
+    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+    float z0 = current_position[Z_AXIS];
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.04, current_position[E_AXIS], feedrate/60, active_extruder);
+    st_synchronize();
+    SERIAL_ECHOPGM("full step: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.08, current_position[E_AXIS], feedrate/60, active_extruder);
+    st_synchronize();
+    SERIAL_ECHOPGM("two full steps: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.16 - 0.01, current_position[E_AXIS], feedrate/60, active_extruder);
+    st_synchronize();
+    SERIAL_ECHOPGM("nearly full cycle: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.16, current_position[E_AXIS], feedrate/60, active_extruder);
+    st_synchronize();
+    SERIAL_ECHOPGM("full cycle: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+  }
 
 #ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
@@ -2107,26 +2125,50 @@ void process_commands()
       break;
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
-		homing_flag = true;
+    {
+      st_synchronize();
+
+#if 1
+      SERIAL_ECHOPGM("G28, initial ");  print_world_coordinates();
+      SERIAL_ECHOPGM("G28, initial ");  print_physical_coordinates();
+#endif
+
+      // Flag for the display update routine and to disable the print cancelation during homing.
+		  homing_flag = true;
+      
+      // Which axes should be homed?
+      bool home_x = code_seen(axis_codes[X_AXIS]);
+      bool home_y = code_seen(axis_codes[Y_AXIS]);
+      bool home_z = code_seen(axis_codes[Z_AXIS]);
+      // Either all X,Y,Z codes are present, or none of them.
+      bool home_all_axes = home_x == home_y && home_x == home_z;
+      if (home_all_axes)
+        // No X/Y/Z code provided means to home all axes.
+        home_x = home_y = home_z = true;
 
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
 #endif //ENABLE_AUTO_BED_LEVELING
             
-	      
-        // For mesh bed leveling deactivate the matrix temporarily
-        #ifdef MESH_BED_LEVELING
-            mbl.active = 0;
-        #endif
-
       // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
       // the planner will not perform any adjustments in the XY plane. 
       // Wait for the motors to stop and update the current position with the absolute values.
       world2machine_revert_to_uncorrected();
 
+      // For mesh bed leveling deactivate the matrix temporarily.
+      // It is necessary to disable the bed leveling for the X and Y homing moves, so that the move is performed
+      // in a single axis only.
+      // In case of re-homing the X or Y axes only, the mesh bed leveling is restored after G28.
+#ifdef MESH_BED_LEVELING
+      uint8_t mbl_was_active = mbl.active;
+      mbl.active = 0;
+      current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
+#endif
+
       // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
       // consumed during the first movements following this statement.
-      babystep_undo();
+      if (home_z)
+        babystep_undo();
 
       saved_feedrate = feedrate;
       saved_feedmultiply = feedmultiply;
@@ -2135,21 +2177,17 @@ void process_commands()
 
       enable_endstops(true);
 
-      for(int8_t i=0; i < NUM_AXIS; i++)
-          destination[i] = current_position[i];
+      memcpy(destination, current_position, sizeof(destination));
       feedrate = 0.0;
 
-      home_all_axis = !((code_seen(axis_codes[X_AXIS])) || (code_seen(axis_codes[Y_AXIS])) || (code_seen(axis_codes[Z_AXIS])));
-
       #if Z_HOME_DIR > 0                      // If homing away from BED do Z first
-      if((home_all_axis) || (code_seen(axis_codes[Z_AXIS]))) {
+      if(home_z)
         homeaxis(Z_AXIS);
-      }
       #endif
 
       #ifdef QUICK_HOME
       // In the quick mode, if both x and y are to be homed, a diagonal move will be performed initially.
-      if((home_all_axis)||( code_seen(axis_codes[X_AXIS]) && code_seen(axis_codes[Y_AXIS])) )  //first diagonal move
+      if(home_x && home_y)  //first diagonal move
       {
         current_position[X_AXIS] = 0;current_position[Y_AXIS] = 0;
 
@@ -2185,10 +2223,10 @@ void process_commands()
       #endif /* QUICK_HOME */
 
 	 
-      if((home_all_axis) || (code_seen(axis_codes[X_AXIS])))
+      if(home_x)
         homeaxis(X_AXIS);
 
-      if((home_all_axis) || (code_seen(axis_codes[Y_AXIS])))
+      if(home_y)
         homeaxis(Y_AXIS);
 
       if(code_seen(axis_codes[X_AXIS]) && code_value_long() != 0)
@@ -2199,7 +2237,7 @@ void process_commands()
 
       #if Z_HOME_DIR < 0                      // If homing towards BED do Z last
         #ifndef Z_SAFE_HOMING
-          if((home_all_axis) || (code_seen(axis_codes[Z_AXIS]))) {
+          if(home_z) {
             #if defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
               destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
               feedrate = max_feedrate[Z_AXIS];
@@ -2235,7 +2273,7 @@ void process_commands()
             #endif // MESH_BED_LEVELING
           }
         #else // defined(Z_SAFE_HOMING): Z Safe mode activated.
-          if(home_all_axis) {
+          if(home_all_axes) {
             destination[X_AXIS] = round(Z_SAFE_HOMING_X_POINT - X_PROBE_OFFSET_FROM_EXTRUDER);
             destination[Y_AXIS] = round(Z_SAFE_HOMING_Y_POINT - Y_PROBE_OFFSET_FROM_EXTRUDER);
             destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
@@ -2251,7 +2289,7 @@ void process_commands()
             homeaxis(Z_AXIS);
           }
                                                 // Let's see if X and Y are homed and probe is inside bed area.
-          if(code_seen(axis_codes[Z_AXIS])) {
+          if(home_z) {
             if ( (axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]) \
               && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER >= X_MIN_POS) \
               && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER <= X_MAX_POS) \
@@ -2279,17 +2317,16 @@ void process_commands()
         #endif // Z_SAFE_HOMING
       #endif // Z_HOME_DIR < 0
 
-      if(code_seen(axis_codes[Z_AXIS])) {
-        if(code_value_long() != 0) {
-          current_position[Z_AXIS]=code_value()+add_homing[Z_AXIS];
-        }
-      }
+      if(code_seen(axis_codes[Z_AXIS]) && code_value_long() != 0)
+        current_position[Z_AXIS]=code_value()+add_homing[Z_AXIS];
       #ifdef ENABLE_AUTO_BED_LEVELING
-        if((home_all_axis) || (code_seen(axis_codes[Z_AXIS]))) {
+        if(home_z)
           current_position[Z_AXIS] += zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
-        }
       #endif
-  
+      
+      // Set the planner and stepper routine positions.
+      // At this point the mesh bed leveling and world2machine corrections are disabled and current_position
+      // contains the machine coordinates.
       plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
       #ifdef ENDSTOPS_ONLY_FOR_HOMING
@@ -2309,12 +2346,18 @@ void process_commands()
 
     // Load the machine correction matrix
     world2machine_initialize();
-    // and correct the current_position to match the transformed coordinate system.
+    // and correct the current_position XY axes to match the transformed coordinate system.
     world2machine_update_current();
 
 #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))
 	if (code_seen(axis_codes[X_AXIS]) || code_seen(axis_codes[Y_AXIS]) || code_seen('W') || code_seen(axis_codes[Z_AXIS]))
 		{
+      if (! home_z && mbl_was_active) {
+        // Re-enable the mesh bed leveling if only the X and Y axes were re-homed.
+        mbl.active = true;
+        // and re-adjust the current logical Z axis with the bed leveling offset applicable at the current XY position.
+        current_position[Z_AXIS] -= mbl.get_z(st_get_position_mm(X_AXIS), st_get_position_mm(Y_AXIS));
+      }
 		}
 	else
 		{
@@ -2331,13 +2374,11 @@ void process_commands()
 
 	  homing_flag = false;
 
-	  SERIAL_ECHOLNPGM("Homing happened");
-	  SERIAL_ECHOPGM("Current position X AXIS:");
-	  MYSERIAL.println(current_position[X_AXIS]);
-	  SERIAL_ECHOPGM("Current position Y_AXIS:");
-	  MYSERIAL.println(current_position[Y_AXIS]);
+      SERIAL_ECHOPGM("G28, final ");  print_world_coordinates();
+      SERIAL_ECHOPGM("G28, final ");  print_physical_coordinates();
+      SERIAL_ECHOPGM("G28, final ");  print_mesh_bed_leveling_table();
       break;
-
+    }
 #ifdef ENABLE_AUTO_BED_LEVELING
     case 29: // G29 Detailed Z-Probe, probes the bed at 3 or more points.
         {
@@ -6835,12 +6876,19 @@ void serialecho_temperatures() {
 
 void uvlo_() {
 		SERIAL_ECHOLNPGM("UVLO");
+
+    // Saves the current position of the start of the command queue in the file,
+    // the mesh bed leveling table and the current Z axis micro steps value into EEPROM.
 		save_print_to_eeprom();
+
     // feedrate in mm/min
 		int feedrate_bckp = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
 
     disable_x();
     disable_y();
+    // After this call, the planner queue is emptied and the current_position is set to a current logical coordinate.
+    // The logical coordinate will likely differ from the machine coordinate if the skew calibration and mesh bed leveling
+    // are in action.
     planner_abort_hard();
 
 		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
@@ -6862,7 +6910,8 @@ void uvlo_() {
 		sei(); //enable stepper driver interrupt to move Z axis
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 		st_synchronize();
-		current_position[Z_AXIS] += UVLO_Z_AXIS_SHIFT;
+    // Move Z up to the next 0th full step.
+    current_position[Z_AXIS] += UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 8) >> 4) / axis_steps_per_unit[Z_AXIS];
     eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
     // Move the print head to the side of the print until all the power stored in the power supply capacitors is depleted.
@@ -6927,6 +6976,21 @@ void save_print_to_eeprom() {
 	SERIAL_ECHOPGM("sd position after correction:");
 	MYSERIAL.println(sd_position);*/
 	eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
+
+  // Store the mesh bed leveling offsets. This is 2*9=18 bytes, which takes 18*3.4us=52us in worst case.
+  for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
+    uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
+    uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
+    // Scale the z value to 1u resolution.
+    int16_t v = mbl.active ? int16_t(floor(mbl.z_values[iy*3][ix*3] * 1000.f + 0.5f)) : 0;
+    eeprom_update_word((uint16_t*)(EEPROM_UVLO_MESH_BED_LEVELING+2*mesh_point), *reinterpret_cast<uint16_t*>(&v));
+  }
+  SERIAL_ECHOPGM("INT4 ");
+  print_mesh_bed_leveling_table();
+
+  // Read out the current Z motor microstep counter. This will be later used
+  // for reaching the zero full step before powering off.
+  eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS), tmc2130_rd_MSCNT(Z_TMC2130_CS));
 }
 
 void recover_print() {
@@ -6935,19 +6999,14 @@ void recover_print() {
 	lcd_update(2);
 	lcd_setstatuspgm(MSG_RECOVERING_PRINT);
 
-	target_temperature[active_extruder] = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND);
-	target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
-	float z_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z));
-	z_pos = z_pos + UVLO_Z_AXIS_SHIFT;
+  recover_machine_state_after_power_panic();
 
-	current_position[Z_AXIS] = z_pos;
-	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-
+  // Lift the print head, so one may remove the excess priming material.
   if (current_position[Z_AXIS] < 25)
-    // Lift the print head, so one may remove the excess priming material.
     enquecommand_P(PSTR("G1 Z25 F800"));
-	enquecommand_P(PSTR("G28 X"));
-	enquecommand_P(PSTR("G28 Y"));
+  // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine transformation status.
+	enquecommand_P(PSTR("G28 X Y"));
+  // Set the target bed and nozzle temperatures.
 	sprintf_P(cmd, PSTR("M109 S%d"), target_temperature[active_extruder]);
 	enquecommand(cmd);
 	sprintf_P(cmd, PSTR("M190 S%d"), target_temperature_bed);
@@ -6955,6 +7014,7 @@ void recover_print() {
 	enquecommand_P(PSTR("M83")); //E axis relative mode
 	enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
+  // Mark the power panic status as inactive.
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 	/*while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
 		delay_keep_alive(1000);
@@ -6964,9 +7024,68 @@ void recover_print() {
 	MYSERIAL.println(current_position[X_AXIS]);
 	SERIAL_ECHOPGM("Current position Y_AXIS:");
 	MYSERIAL.println(current_position[Y_AXIS]);
+
+  // Restart the print.
 	restore_print_from_eeprom();
+
 	SERIAL_ECHOPGM("current_position[Z_AXIS]:");
 	MYSERIAL.print(current_position[Z_AXIS]);
+}
+
+void recover_machine_state_after_power_panic()
+{
+  // 1) Recover the logical cordinates at the time of the power panic.
+  // The logical XY coordinates are needed to recover the machine Z coordinate corrected by the mesh bed leveling.
+  current_position[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
+  current_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
+  // Recover the logical coordinate of the Z axis at the time of the power panic.
+  // The current position after power panic is moved to the next closest 0th full step.
+  current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
+    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 8) >> 4) / axis_steps_per_unit[Z_AXIS];
+  memcpy(destination, current_position, sizeof(destination));
+
+  SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
+  print_world_coordinates();
+
+  // 2) Initialize the logical to physical coordinate system transformation.
+  world2machine_initialize();
+
+  // 3) Restore the mesh bed leveling offsets. This is 2*9=18 bytes, which takes 18*3.4us=52us in worst case.
+  mbl.active = false;
+  for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
+    uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
+    uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
+    // Scale the z value to 10u resolution.
+    int16_t v;
+    eeprom_read_block(&v, (void*)(EEPROM_UVLO_MESH_BED_LEVELING+2*mesh_point), 2);
+    if (v != 0)
+      mbl.active = true;
+    mbl.z_values[iy][ix] = float(v) * 0.001f;
+  }
+  if (mbl.active)
+    mbl.upsample_3x3();
+  SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
+  print_mesh_bed_leveling_table();
+
+  // 4) Load the baby stepping value, which is expected to be active at the time of power panic.
+  // The baby stepping value is used to reset the physical Z axis when rehoming the Z axis.
+  babystep_load();
+
+  // 5) Set the physical positions from the logical positions using the world2machine transformation and the active bed leveling.
+  plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+
+  // 6) Power up the motors, mark their positions as known.
+  //FIXME Verfiy, whether the X and Y axes should be powered up here, as they will later be re-homed anyway.
+  axis_known_position[X_AXIS] = true; enable_x();
+  axis_known_position[Y_AXIS] = true; enable_y();
+  axis_known_position[Z_AXIS] = true; enable_z();
+
+  SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
+  print_physical_coordinates();
+
+  // 7) Recover the target temperatures.
+  target_temperature[active_extruder] = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND);
+  target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
 }
 
 void restore_print_from_eeprom() {
@@ -6976,10 +7095,7 @@ void restore_print_from_eeprom() {
 	char cmd[30];
 	char* c;
 	char filename[13];
-	char str[5] = ".gco";
-	x_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
-	y_rec = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
-	z_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z));
+
 	fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
 	EEPROM_read_B(EEPROM_UVLO_FEEDRATE, &feedrate_rec);
 	SERIAL_ECHOPGM("Feedrate:");
@@ -6991,7 +7107,7 @@ void restore_print_from_eeprom() {
 	filename[8] = '\0';
 
 	MYSERIAL.print(filename);
-	strcat(filename, str);
+	strcat_P(filename, PSTR(".gco"));
 	sprintf_P(cmd, PSTR("M23 %s"), filename);
 	for (c = &cmd[4]; *c; c++)
 		 *c = tolower(*c);
@@ -7000,28 +7116,31 @@ void restore_print_from_eeprom() {
 	SERIAL_ECHOPGM("Position read from eeprom:");
 	MYSERIAL.println(position);
 
-	sprintf_P(cmd, PSTR("M26 S%lu"), position);
-	enquecommand(cmd);	
-  enquecommand_P(PSTR("M24")); //M24 - Start SD print
-
-	enquecommand_P(PSTR("M83")); //E axis relative mode
-	strcpy(cmd, "G1 X");
-	strcat(cmd, ftostr32(x_rec));
-	strcat(cmd, " Y");
-	strcat(cmd, ftostr32(y_rec));
-	strcat(cmd, " F2000");
+  // E axis relative mode.
+	enquecommand_P(PSTR("M83"));
+  // Move to the XY print position in logical coordinates, where the print has been killed.
+	strcpy_P(cmd, PSTR("G1 X")); strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0))));
+	strcat_P(cmd, PSTR(" Y"));   strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4))));
+	strcat_P(cmd, PSTR(" F2000"));
 	enquecommand(cmd);
-	strcpy(cmd, "G1 Z");
-	strcat(cmd, ftostr32(z_pos));
+  // Move the Z axis down to the print, in logical coordinates.
+	strcpy_P(cmd, PSTR("G1 Z")); strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z))));
 	enquecommand(cmd);
-	
+  // Unretract.
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F480"));
-	//enquecommand_P(PSTR("G1 E0.5"));
+  // Set the feedrate saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
 	enquecommand(cmd);
-	strcpy(cmd, "M106 S");
+  // Set the fan speed saved at the power panic.
+	strcpy_P(cmd, PSTR("M106 S"));
 	strcat(cmd, itostr3(int(fan_speed_rec)));
-	enquecommand(cmd);	
+	enquecommand(cmd);
+
+  // Set a position in the file.
+  sprintf_P(cmd, PSTR("M26 S%lu"), position);
+  enquecommand(cmd);
+  // Start SD print.
+  enquecommand_P(PSTR("M24")); 
 }
 
 
@@ -7199,4 +7318,42 @@ void restore_print_from_ram_and_continue(float e_move)
   sdpos_atomic = saved_sdpos;
 	card.sdprinting = true;
 	saved_printing = false;
+}
+
+void print_world_coordinates()
+{
+  SERIAL_ECHOPGM("world coordinates: (");
+  MYSERIAL.print(current_position[X_AXIS], 3);
+  SERIAL_ECHOPGM(", ");
+  MYSERIAL.print(current_position[Y_AXIS], 3);
+  SERIAL_ECHOPGM(", ");
+  MYSERIAL.print(current_position[Z_AXIS], 3);
+  SERIAL_ECHOLNPGM(")");
+}
+
+void print_physical_coordinates()
+{
+  SERIAL_ECHOPGM("physical coordinates: (");
+  MYSERIAL.print(st_get_position_mm(X_AXIS), 3);
+  SERIAL_ECHOPGM(", ");
+  MYSERIAL.print(st_get_position_mm(Y_AXIS), 3);
+  SERIAL_ECHOPGM(", ");
+  MYSERIAL.print(st_get_position_mm(Z_AXIS), 3);
+  SERIAL_ECHOLNPGM(")");
+}
+
+void print_mesh_bed_leveling_table()
+{
+  SERIAL_ECHOPGM("mesh bed leveling: ");
+  for (int8_t y = 0; y < MESH_NUM_Y_POINTS; ++ y)
+    for (int8_t x = 0; x < MESH_NUM_Y_POINTS; ++ x) {
+      SERIAL_ECHOPGM("(");
+      MYSERIAL.print(st_get_position_mm(X_AXIS), 3);
+      SERIAL_ECHOPGM(", ");
+      MYSERIAL.print(st_get_position_mm(Y_AXIS), 3);
+      SERIAL_ECHOPGM(", ");
+      MYSERIAL.print(st_get_position_mm(Z_AXIS), 3);
+      SERIAL_ECHOPGM(") ");
+    }
+  SERIAL_ECHOLNPGM("");
 }
