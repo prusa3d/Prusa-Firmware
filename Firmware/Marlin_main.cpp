@@ -1511,18 +1511,36 @@ void homeaxis(int axis)
     if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
 	{
         int axis_home_dir = home_dir(axis);
+        feedrate = homing_feedrate[axis];
+
 #ifdef TMC2130
-		tmc2130_home_enter(X_AXIS_MASK << axis);
+    		tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
+
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[axis] = 10.f;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
-        feedrate = homing_feedrate[axis];
-#ifdef TMC2130
-		tmc2130_home_restart(axis);
-#endif
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
+
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[axis] = -10.f * axis_home_dir;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+
+        destination[axis] = 15.f * axis_home_dir;
+        feedrate = homing_feedrate[axis]/2 ;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+
+
 /*
 		tmc2130_home_pause(axis);
 
@@ -1549,28 +1567,60 @@ void homeaxis(int axis)
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 */
-		tmc2130_home_pause(axis);
-
-        current_position[axis] = 0;
-        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = -0.32 * axis_home_dir;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-
-		axis_is_at_home(axis);
-		destination[axis] = current_position[axis];
-		feedrate = 0.0;
-
-		endstops_hit_on_purpose();
-        axis_known_position[axis] = true;
-
+//		    tmc2130_home_pause(axis);
+        axis_is_at_home(axis);
 
 #ifdef TMC2130
-		tmc2130_home_exit();
-//        destination[axis] += 2;
-//        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[axis]/60, active_extruder);
-//        st_synchronize();
+        tmc2130_home_exit();
 #endif
+
+
+        //FIXME this is to ensure that the axis does not remain in tension,
+        // leading to step losses when the Trinamic lowers the motor current on idle.
+        //current_position[axis] = -0.32 * axis_home_dir;
+        {
+          if (1) {
+            // try to run to zero phase before powering the Z motor.    
+            // Move in negative direction
+            if (axis == X_AXIS) {
+              WRITE(X_DIR_PIN, !INVERT_X_DIR);
+              for (uint16_t phase = 64 - ((tmc2130_rd_MSCNT(X_TMC2130_CS) + 7) >> 4); phase > 0; -- phase) {
+                // Until the phase counter is reset to zero.
+                WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
+                delay(2);
+                WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
+                delay(2);
+              }
+            }
+            else {
+              WRITE(Y_DIR_PIN, !INVERT_Y_DIR);
+              for (uint16_t phase = 64 - ((tmc2130_rd_MSCNT(Y_TMC2130_CS) + 7) >> 4); phase > 0; -- phase) {
+                // Until the phase counter is reset to zero.
+                WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
+                delay(2);
+                WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
+                delay(2);
+              }
+              }
+            // Round the current micro-micro steps to micro steps.
+          }
+
+          float gap = 0.32f;
+          current_position[axis] -= gap;
+          plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+          current_position[axis] += gap;
+        }
+
+        axis_known_position[axis] = true;
+
+        endstops_hit_on_purpose();
+        enable_endstops(false);
+        destination[axis] = current_position[axis];
+        delay(200);
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], 0.3f*feedrate/60, active_extruder);
+        st_synchronize();
+
+    		feedrate = 0.0;
     }
     else if ((axis==Z_AXIS)?HOMEAXIS_DO(Z):0)
 	{

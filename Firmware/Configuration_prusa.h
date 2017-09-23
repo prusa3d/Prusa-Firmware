@@ -142,8 +142,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_SG_HOMING       1     // stallguard homing
 //#define TMC2130_SG_HOMING_SW_XY  1    // stallguard "software" homing for XY axes
 #define TMC2130_SG_HOMING_SW_Z  1     // stallguard "software" homing for Z axis
-#define TMC2130_SG_THRS_X       6     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y       6     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_X       7     // stallguard sensitivity for X axis
+#define TMC2130_SG_THRS_Y       7     // stallguard sensitivity for Y axis
 #define TMC2130_SG_THRS_Z       3     // stallguard sensitivity for Z axis
 #define TMC2130_SG_DELTA      128    // stallguard delta [usteps] (minimum usteps before stallguard readed - SW homing)
 
