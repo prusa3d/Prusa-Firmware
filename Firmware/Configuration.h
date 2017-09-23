@@ -48,6 +48,16 @@
 #define EEPROM_BOWDEN_LENGTH (EEPROM_TEMP_CAL_ACTIVE - 2*4) //4 x int for bowden lengths for multimaterial
 #define EEPROM_CALIBRATION_STATUS_PINDA (EEPROM_BOWDEN_LENGTH - 1) //0 - not calibrated; 1 - calibrated
 
+// addition for PJR amendment
+#define EEPROM_BED_CORRECTION_PJR_A (EEPROM_CALIBRATION_STATUS_PINDA - 1)
+#define EEPROM_BED_CORRECTION_PJR_B (EEPROM_BED_CORRECTION_PJR_A - 1)
+#define EEPROM_BED_CORRECTION_PJR_C (EEPROM_BED_CORRECTION_PJR_B - 1)
+#define EEPROM_BED_CORRECTION_PJR_D (EEPROM_BED_CORRECTION_PJR_C - 1)
+#define EEPROM_BED_CORRECTION_PJR_E (EEPROM_BED_CORRECTION_PJR_D - 1)
+#define EEPROM_BED_CORRECTION_PJR_F (EEPROM_BED_CORRECTION_PJR_E - 1)
+#define EEPROM_BED_CORRECTION_PJR_G (EEPROM_BED_CORRECTION_PJR_F - 1)
+#define EEPROM_BED_CORRECTION_PJR_H (EEPROM_BED_CORRECTION_PJR_G - 1)
+
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
 #define EEPROM_FIRMWARE_VERSION_END       (FW_PRUSA3D_MAGIC_LEN+8)

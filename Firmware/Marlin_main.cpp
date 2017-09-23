@@ -2936,7 +2936,7 @@ void process_commands()
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
-		int8_t verbosity_level = 0;
+		int8_t verbosity_level = 20;
 		static bool run = false;
 
 		if (code_seen('V')) {
@@ -3123,55 +3123,142 @@ void process_commands()
 			eeprom_bed_correction_valid ? SERIAL_PROTOCOLPGM("Bed correction data valid\n") : SERIAL_PROTOCOLPGM("Bed correction data not valid\n");
 		}
 
-		for (uint8_t i = 0; i < 4; ++i) {
-			unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
-			long correction = 0;
-			if (code_seen(codes[i]))
-				correction = code_value_long();
-			else if (eeprom_bed_correction_valid) {
-				unsigned char *addr = (i < 2) ?
-					((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
-					((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
-				correction = eeprom_read_int8(addr);
-			}
-			if (correction == 0)
-				continue;
-			float offset = float(correction) * 0.001f;
-			if (fabs(offset) > 0.101f) {
-				SERIAL_ERROR_START;
-				SERIAL_ECHOPGM("Excessive bed leveling correction: ");
-				SERIAL_ECHO(offset);
-				SERIAL_ECHOLNPGM(" microns");
-			}
-			else {
-				switch (i) {
-				case 0:
-					for (uint8_t row = 0; row < 3; ++row) {
-						mbl.z_values[row][1] += 0.5f * offset;
-						mbl.z_values[row][0] += offset;
-					}
-					break;
-				case 1:
-					for (uint8_t row = 0; row < 3; ++row) {
-						mbl.z_values[row][1] += 0.5f * offset;
-						mbl.z_values[row][2] += offset;
-					}
-					break;
-				case 2:
-					for (uint8_t col = 0; col < 3; ++col) {
-						mbl.z_values[1][col] += 0.5f * offset;
-						mbl.z_values[0][col] += offset;
-					}
-					break;
-				case 3:
-					for (uint8_t col = 0; col < 3; ++col) {
-						mbl.z_values[1][col] += 0.5f * offset;
-						mbl.z_values[2][col] += offset;
-					}
-					break;
-				}
-			}
-		}
+// bed correction routine
+// PJR's amendment:
+// YOKOTSUNO
+    for (uint8_t i = 0; i < 8; ++i) {
+      unsigned char codes[8] = { 'a', 'b', 'c', 'd' , 'e' , 'f', 'g', 'h'};
+            long correction = 0;
+            if (code_seen(codes[i]))
+                correction = code_value_long();
+            else if (eeprom_bed_correction_valid) {
+
+            switch (i) {
+        case 0:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_A;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 1:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_B;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 2:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_C;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 3:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_D;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 4:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_E;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 5:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_F;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 6:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_G;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 7:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_H;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        } 
+      }
+      if (correction == 0) 
+              continue;
+            float offset = float(correction) * 0.001f;
+      if (fabs(offset) > 0.201f) {
+        SERIAL_ERROR_START;
+        SERIAL_ECHOPGM("Excessive bed leveling correction: ");
+        SERIAL_ECHO(offset);
+        SERIAL_ECHOLNPGM(" microns");
+      }
+      else {
+        switch (i) {
+        case 0:
+          {
+            mbl.z_values[0][0] += offset;
+            SERIAL_ECHOPGM("PJR A =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }          
+          break;
+        case 1:
+          {
+            mbl.z_values[0][1] += offset;
+            SERIAL_ECHOPGM("PJR B =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 2:
+          {
+            mbl.z_values[0][2] += offset;
+                        SERIAL_ECHOPGM("PJR C =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 3:
+          {
+            mbl.z_values[1][2] += offset; 
+            SERIAL_ECHOPGM("PJR D =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 4:
+          {
+            mbl.z_values[2][2] += offset; 
+            SERIAL_ECHOPGM("PJR E =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 5:
+          {
+            mbl.z_values[2][1] += offset; 
+            SERIAL_ECHOPGM("PJR F =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 6:
+          {
+            mbl.z_values[2][0] += offset; 
+            SERIAL_ECHOPGM("PJR G =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 7:
+          {
+            mbl.z_values[1][0] += offset;
+            SERIAL_ECHOPGM("PJR H =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        }
+      }
+    }
+
+
+//
+
+
 		SERIAL_ECHOLNPGM("Bed leveling correction finished");
 		mbl.upsample_3x3(); //bilinear interpolation from 3x3 to 7x7 points while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 		SERIAL_ECHOLNPGM("Upsample finished");
