@@ -3303,7 +3303,7 @@ void process_commands()
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
-		int8_t verbosity_level = 20;
+		int8_t verbosity_level = 0;
 		static bool run = false;
 
 		if (code_seen('V')) {
@@ -3502,42 +3502,42 @@ void process_commands()
 
             switch (i) {
         case 0:
-          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_A;
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT_LEFT;
           correction = eeprom_read_int8(addr);            
           }
           break;
         case 1:
-          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_B;
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT;
           correction = eeprom_read_int8(addr);            
           }
           break;
         case 2:
-          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_C;
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT_RIGHT;
           correction = eeprom_read_int8(addr);            
           }
           break;
         case 3:
-          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_D;
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_RIGHT;
           correction = eeprom_read_int8(addr);            
           }
           break;
         case 4:
-          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_E;
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_BACK_RIGHT;
           correction = eeprom_read_int8(addr);            
           }
           break;
         case 5:
-          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_F;
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_BACK;
           correction = eeprom_read_int8(addr);            
           }
           break;
         case 6:
-          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_G;
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_BACK_LEFT;
           correction = eeprom_read_int8(addr);            
           }
           break;
         case 7:
-          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_PJR_H;
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_LEFT;
           correction = eeprom_read_int8(addr);            
           }
           break;
@@ -3557,7 +3557,7 @@ void process_commands()
         case 0:
           {
             mbl.z_values[0][0] += offset;
-            SERIAL_ECHOPGM("PJR A =");
+            SERIAL_ECHOPGM("FL a =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }          
@@ -3565,7 +3565,7 @@ void process_commands()
         case 1:
           {
             mbl.z_values[0][1] += offset;
-            SERIAL_ECHOPGM("PJR B =");
+            SERIAL_ECHOPGM("F  b =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
@@ -3573,7 +3573,7 @@ void process_commands()
         case 2:
           {
             mbl.z_values[0][2] += offset;
-                        SERIAL_ECHOPGM("PJR C =");
+                        SERIAL_ECHOPGM("FR c =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
@@ -3581,7 +3581,7 @@ void process_commands()
         case 3:
           {
             mbl.z_values[1][2] += offset; 
-            SERIAL_ECHOPGM("PJR D =");
+            SERIAL_ECHOPGM("R  d =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
@@ -3589,7 +3589,7 @@ void process_commands()
         case 4:
           {
             mbl.z_values[2][2] += offset; 
-            SERIAL_ECHOPGM("PJR E =");
+            SERIAL_ECHOPGM("BR e =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
@@ -3597,7 +3597,7 @@ void process_commands()
         case 5:
           {
             mbl.z_values[2][1] += offset; 
-            SERIAL_ECHOPGM("PJR F =");
+            SERIAL_ECHOPGM("B  f =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
@@ -3605,7 +3605,7 @@ void process_commands()
         case 6:
           {
             mbl.z_values[2][0] += offset; 
-            SERIAL_ECHOPGM("PJR G =");
+            SERIAL_ECHOPGM("BR g =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
@@ -3613,7 +3613,7 @@ void process_commands()
         case 7:
           {
             mbl.z_values[1][0] += offset;
-            SERIAL_ECHOPGM("PJR H =");
+            SERIAL_ECHOPGM("L  h =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
