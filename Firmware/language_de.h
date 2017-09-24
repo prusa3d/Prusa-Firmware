@@ -265,11 +265,16 @@
 + #define(length = 20, lines = 8) MSG_PAPER						"Legen ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier einklemmt, Drucker sofort ausschalten"
 +
 +#define MSG_BED_CORRECTION_MENU									"Bed level Korrekt"
++ #define MSG_BED_CORRECTION_PJR_A                  "FrontLeft [um]"
++ #define MSG_BED_CORRECTION_PJR_B                  "FrontCentr[um]"
++ #define MSG_BED_CORRECTION_PJR_C                  "FrontRight[um]"
++ #define MSG_BED_CORRECTION_PJR_D                  "MidRight  [um]"
++ #define MSG_BED_CORRECTION_PJR_E                  "RearRight [um]"
++ #define MSG_BED_CORRECTION_PJR_F                  "RearCentr [um]"
++ #define MSG_BED_CORRECTION_PJR_G                  "RearLeft  [um]"
++ #define MSG_BED_CORRECTION_PJR_H                  "MidLeft   [um]"
 
-+ #define MSG_BED_CORRECTION_LEFT									"Links     [um]"
-+ #define MSG_BED_CORRECTION_RIGHT								"Rechts    [um]"
-+ #define MSG_BED_CORRECTION_FRONT								"Vorne     [um]"
-+ #define MSG_BED_CORRECTION_REAR									"Hinten    [um]"
+
 + #define MSG_BED_CORRECTION_RESET								"Ruecksetzen"
 +
 +#define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
