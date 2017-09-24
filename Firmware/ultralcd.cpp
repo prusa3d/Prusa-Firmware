@@ -66,22 +66,22 @@ union MenuData
         // the return menu and encoder state.
         struct EditMenuParentState editMenuParentState;
         int8_t status;
-        int8_t pjr_a;
-        int8_t pjr_b;
-        int8_t pjr_c;
-        int8_t pjr_d;
-        int8_t pjr_e;
-        int8_t pjr_f;
-        int8_t pjr_g;
-        int8_t pjr_h;
-        int    pjr_a2;
-        int    pjr_b2;
-        int    pjr_c2;
-        int    pjr_d2;
-        int    pjr_e2;
-        int    pjr_f2;
-        int    pjr_g2;
-        int    pjr_h2;
+        int8_t front_left;
+        int8_t front;
+        int8_t front_right;
+        int8_t right;
+        int8_t back_right;
+        int8_t back;
+        int8_t back_left;
+        int8_t left;
+        int    front_left2;
+        int    front2;
+        int    front_right2;
+        int    right2;
+        int    back_right2;
+        int    back2;
+        int    back_left2;
+        int    left2;
     } adjustBed;
 
     // editMenuParentState is used when an edit menu is entered, so it knows
@@ -1756,19 +1756,18 @@ static void lcd_babystep_z() {
 
 static void lcd_adjust_bed();
 
-// EEPROM_BED_CORRECTION_PJR_A
 
 static void lcd_adjust_bed_reset()
 {
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_A , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_B , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_C , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_D , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_E , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_F , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_G , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_H , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT_LEFT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT_RIGHT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_BACK_RIGHT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_BACK , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_BACK_LEFT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT , 0);
 
     lcd_goto_menu(lcd_adjust_bed, 0, false);
     // Because we did not leave the menu, the menuData did not reset.
@@ -1778,23 +1777,23 @@ static void lcd_adjust_bed_reset()
 
 void adjust_bed_reset() {
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_A , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_B , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_C , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_D , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_E , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_F , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_G , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_PJR_H , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT_LEFT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT_RIGHT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_BACK_RIGHT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_BACK , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_BACK_LEFT , 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT , 0);
     
-  menuData.adjustBed.pjr_a = menuData.adjustBed.pjr_a2 = 0;
-  menuData.adjustBed.pjr_b = menuData.adjustBed.pjr_b2 = 0;
-  menuData.adjustBed.pjr_c = menuData.adjustBed.pjr_c2 = 0;
-  menuData.adjustBed.pjr_d = menuData.adjustBed.pjr_d2 = 0;
-  menuData.adjustBed.pjr_e = menuData.adjustBed.pjr_e2 = 0;
-  menuData.adjustBed.pjr_f = menuData.adjustBed.pjr_f2 = 0;
-  menuData.adjustBed.pjr_g = menuData.adjustBed.pjr_g2 = 0;
-  menuData.adjustBed.pjr_h = menuData.adjustBed.pjr_h2 = 0;}
+  menuData.adjustBed.front_left = menuData.adjustBed.front_left2 = 0;
+  menuData.adjustBed.front = menuData.adjustBed.front2 = 0;
+  menuData.adjustBed.front_right = menuData.adjustBed.front_right2 = 0;
+  menuData.adjustBed.right = menuData.adjustBed.right2 = 0;
+  menuData.adjustBed.back_right = menuData.adjustBed.back_right2 = 0;
+  menuData.adjustBed.back = menuData.adjustBed.back2 = 0;
+  menuData.adjustBed.back_left = menuData.adjustBed.back_left2 = 0;
+  menuData.adjustBed.left = menuData.adjustBed.left2 = 0;}
 #define BED_ADJUSTMENT_UM_MAX 99
 
 static void lcd_adjust_bed()
@@ -1804,67 +1803,67 @@ static void lcd_adjust_bed()
         // Initialize its status.
         menuData.adjustBed.status = 1;
         bool valid = false;
-        menuData.adjustBed.pjr_a = menuData.adjustBed.pjr_a2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_A);
-        menuData.adjustBed.pjr_b = menuData.adjustBed.pjr_b2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_B);
-        menuData.adjustBed.pjr_c = menuData.adjustBed.pjr_c2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_C);
-        menuData.adjustBed.pjr_d = menuData.adjustBed.pjr_d2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_D);
-        menuData.adjustBed.pjr_e = menuData.adjustBed.pjr_e2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_E);
-        menuData.adjustBed.pjr_f = menuData.adjustBed.pjr_f2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_F);
-        menuData.adjustBed.pjr_g = menuData.adjustBed.pjr_g2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_G);
-        menuData.adjustBed.pjr_h = menuData.adjustBed.pjr_h2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_H);
+        menuData.adjustBed.front_left = menuData.adjustBed.front_left2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT_LEFT);
+        menuData.adjustBed.front = menuData.adjustBed.front2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT);
+        menuData.adjustBed.front_right = menuData.adjustBed.front_right2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT_RIGHT);
+        menuData.adjustBed.right = menuData.adjustBed.right2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT);
+        menuData.adjustBed.back_right = menuData.adjustBed.back_right2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_BACK_RIGHT);
+        menuData.adjustBed.back = menuData.adjustBed.back2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_BACK);
+        menuData.adjustBed.back_left = menuData.adjustBed.back_left2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_BACK_LEFT);
+        menuData.adjustBed.left = menuData.adjustBed.left2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT);
         if (eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1 && 
-            menuData.adjustBed.pjr_a >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.pjr_a <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.pjr_b >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.pjr_b <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.pjr_c >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.pjr_c <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.pjr_d >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.pjr_d <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.pjr_e >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.pjr_e <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.pjr_f >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.pjr_f <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.pjr_g >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.pjr_g <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.pjr_h >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.pjr_h <= BED_ADJUSTMENT_UM_MAX)
+            menuData.adjustBed.front_left >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.front_left <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.front >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.front <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.front_right >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.front_right <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.right >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.right <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.back_right >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.back_right <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.back >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.back <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.back_left >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.back_left <= BED_ADJUSTMENT_UM_MAX &&
+            menuData.adjustBed.left >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.left <= BED_ADJUSTMENT_UM_MAX)
 
             valid = true;
         if (! valid) {
             // Reset the values: simulate an edit.
-            menuData.adjustBed.pjr_a2 = 0;
-            menuData.adjustBed.pjr_b2 = 0;
-            menuData.adjustBed.pjr_c2 = 0;
-            menuData.adjustBed.pjr_d2 = 0;
-            menuData.adjustBed.pjr_e2 = 0;
-            menuData.adjustBed.pjr_f2 = 0;
-            menuData.adjustBed.pjr_g2 = 0;
-            menuData.adjustBed.pjr_h2 = 0;
+            menuData.adjustBed.front_left2 = 0;
+            menuData.adjustBed.front2 = 0;
+            menuData.adjustBed.front_right2 = 0;
+            menuData.adjustBed.right2 = 0;
+            menuData.adjustBed.back_right2 = 0;
+            menuData.adjustBed.back2 = 0;
+            menuData.adjustBed.back_left2 = 0;
+            menuData.adjustBed.left2 = 0;
         }
         lcdDrawUpdate = 1;
         eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
     }
 
-    if (menuData.adjustBed.pjr_a  != menuData.adjustBed.pjr_a2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_A,  menuData.adjustBed.pjr_a = menuData.adjustBed.pjr_a2);
-    if (menuData.adjustBed.pjr_b != menuData.adjustBed.pjr_b2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_B, menuData.adjustBed.pjr_b = menuData.adjustBed.pjr_b2);
-    if (menuData.adjustBed.pjr_c != menuData.adjustBed.pjr_c2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_C, menuData.adjustBed.pjr_c = menuData.adjustBed.pjr_c2);
-    if (menuData.adjustBed.pjr_d  != menuData.adjustBed.pjr_d2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_D, menuData.adjustBed.pjr_d = menuData.adjustBed.pjr_d2);
-    if (menuData.adjustBed.pjr_e  != menuData.adjustBed.pjr_e2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_E, menuData.adjustBed.pjr_e = menuData.adjustBed.pjr_e2);
-    if (menuData.adjustBed.pjr_f != menuData.adjustBed.pjr_f2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_F, menuData.adjustBed.pjr_f = menuData.adjustBed.pjr_f2);
-    if (menuData.adjustBed.pjr_g != menuData.adjustBed.pjr_g2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_G, menuData.adjustBed.pjr_g = menuData.adjustBed.pjr_g2);
-    if (menuData.adjustBed.pjr_h  != menuData.adjustBed.pjr_h2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_PJR_H, menuData.adjustBed.pjr_h = menuData.adjustBed.pjr_h2);
+    if (menuData.adjustBed.front_left  != menuData.adjustBed.front_left2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT_LEFT,  menuData.adjustBed.front_left = menuData.adjustBed.front_left2);
+    if (menuData.adjustBed.front != menuData.adjustBed.front2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT, menuData.adjustBed.front = menuData.adjustBed.front2);
+    if (menuData.adjustBed.front_right != menuData.adjustBed.front_right2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT_RIGHT, menuData.adjustBed.front_right = menuData.adjustBed.front_right2);
+    if (menuData.adjustBed.right  != menuData.adjustBed.right2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, menuData.adjustBed.right = menuData.adjustBed.right2);
+    if (menuData.adjustBed.back_right  != menuData.adjustBed.back_right2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_BACK_RIGHT, menuData.adjustBed.back_right = menuData.adjustBed.back_right2);
+    if (menuData.adjustBed.back != menuData.adjustBed.back2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_BACK, menuData.adjustBed.back = menuData.adjustBed.back2);
+    if (menuData.adjustBed.back_left != menuData.adjustBed.back_left2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_BACK_LEFT, menuData.adjustBed.back_left = menuData.adjustBed.back_left2);
+    if (menuData.adjustBed.left  != menuData.adjustBed.left2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT, menuData.adjustBed.left = menuData.adjustBed.left2);
 
     START_MENU();
     MENU_ITEM(back, MSG_SETTINGS, lcd_calibration_menu);
-    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_PJR_A, &menuData.adjustBed.pjr_a2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
-    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_PJR_B, &menuData.adjustBed.pjr_b2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
-    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_PJR_C, &menuData.adjustBed.pjr_c2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
-    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_PJR_D, &menuData.adjustBed.pjr_d2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);    
-    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_PJR_E, &menuData.adjustBed.pjr_e2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
-    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_PJR_F, &menuData.adjustBed.pjr_f2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
-    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_PJR_G, &menuData.adjustBed.pjr_g2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
-    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_PJR_H, &menuData.adjustBed.pjr_h2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_FRONT_LEFT, &menuData.adjustBed.front_left2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_FRONT, &menuData.adjustBed.front2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_FRONT_RIGHT, &menuData.adjustBed.front_right2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_RIGHT, &menuData.adjustBed.right2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);    
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_BACK_RIGHT, &menuData.adjustBed.back_right2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_BACK, &menuData.adjustBed.back2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_BACK_LEFT, &menuData.adjustBed.back_left2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_LEFT, &menuData.adjustBed.left2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
     MENU_ITEM(function, MSG_BED_CORRECTION_RESET, lcd_adjust_bed_reset);
     END_MENU();
 }
@@ -6414,4 +6413,4 @@ void copy_and_scalePID_d()
 }
 */
 
-#endif //ULTRA_LCD
+#endif //ULTRA_LCDF
