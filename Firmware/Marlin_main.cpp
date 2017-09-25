@@ -1517,106 +1517,62 @@ void homeaxis(int axis)
     		tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
 
+        // Move right a bit, so that the print head does not touch the left end position,
+        // and the following left movement has a chance to achieve the required velocity
+        // for the stall guard to work.
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+//        destination[axis] = 11.f;
+        destination[axis] = 3.f;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        // Move left away from the possible collision with the collision detection disabled.
+        endstops_hit_on_purpose();
+        enable_endstops(false);
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[axis] = - 1.;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        // Now continue to move up to the left end stop with the collision detection enabled.
+        enable_endstops(true);
+        destination[axis] = - 1.1 * max_length(axis);
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        // Move right from the collision to a known distance from the left end stop with the collision detection disabled.
+        endstops_hit_on_purpose();
+        enable_endstops(false);
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = 10.f;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
-
-        current_position[axis] = 0;
-        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
+        endstops_hit_on_purpose();
+        // Now move left up to the collision, this time with a repeatable velocity.
+        enable_endstops(true);
+        destination[axis] = - 15.f;
+        feedrate = homing_feedrate[axis]/2;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 
-        current_position[axis] = 0;
-        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = -10.f * axis_home_dir;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-
-        destination[axis] = 15.f * axis_home_dir;
-        feedrate = homing_feedrate[axis]/2 ;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-
-
-/*
-		tmc2130_home_pause(axis);
-
-        current_position[axis] = 0;
-        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = -home_retract_mm(axis) * axis_home_dir;
-#ifdef TMC2130
-		tmc2130_home_restart(axis);
-#endif
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-
-		tmc2130_home_resume(axis);
-
-        destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
-//#ifdef TMC2130
-//		feedrate = homing_feedrate[axis];
-//#else
-		feedrate = homing_feedrate[axis] / 2;
-//#endif
-#ifdef TMC2130
-		tmc2130_home_restart(axis);
-#endif
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-*/
-//		    tmc2130_home_pause(axis);
         axis_is_at_home(axis);
+        axis_known_position[axis] = true;
 
 #ifdef TMC2130
         tmc2130_home_exit();
 #endif
-
-
-        //FIXME this is to ensure that the axis does not remain in tension,
-        // leading to step losses when the Trinamic lowers the motor current on idle.
-        //current_position[axis] = -0.32 * axis_home_dir;
+        // Move the X carriage away from the collision.
+        // If this is not done, the X cariage will jump from the collision at the instant the Trinamic driver reduces power on idle.
+        endstops_hit_on_purpose();
+        enable_endstops(false);
         {
-          if (1) {
-            // try to run to zero phase before powering the Z motor.    
-            // Move in negative direction
-            if (axis == X_AXIS) {
-              WRITE(X_DIR_PIN, !INVERT_X_DIR);
-              for (uint16_t phase = 64 - ((tmc2130_rd_MSCNT(X_TMC2130_CS) + 7) >> 4); phase > 0; -- phase) {
-                // Until the phase counter is reset to zero.
-                WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
-                delay(2);
-                WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
-                delay(2);
-              }
-            }
-            else {
-              WRITE(Y_DIR_PIN, !INVERT_Y_DIR);
-              for (uint16_t phase = 64 - ((tmc2130_rd_MSCNT(Y_TMC2130_CS) + 7) >> 4); phase > 0; -- phase) {
-                // Until the phase counter is reset to zero.
-                WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
-                delay(2);
-                WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
-                delay(2);
-              }
-              }
-            // Round the current micro-micro steps to micro steps.
-          }
-
-          float gap = 0.32f;
+          // Two full periods (4 full steps).
+          float gap = 0.32f * 2.f;
           current_position[axis] -= gap;
           plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
           current_position[axis] += gap;
         }
-
-        axis_known_position[axis] = true;
-
-        endstops_hit_on_purpose();
-        enable_endstops(false);
         destination[axis] = current_position[axis];
-        delay(200);
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], 0.3f*feedrate/60, active_extruder);
         st_synchronize();
 
