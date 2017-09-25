@@ -265,14 +265,14 @@
 #define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
-#define(length=14,lines=1) MSG_BED_CORRECTION_PJR_A                "FrontLeft [um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_PJR_B                "FrontCentr[um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_PJR_C                "FrontRight[um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_PJR_D                "MidRight  [um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_PJR_E                "RearRight [um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_PJR_F                "RearCentr [um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_PJR_G                "RearLeft  [um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_PJR_H                "MidLeft   [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_LEFT        "FrontLeft [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_CENTR       "FrontCentr[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_RIGHT       "FrontRight[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_MID_RIGHT         "MidRight  [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR_RIGHT        "RearRight [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR_CENTR        "RearCentr [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR_LEFT         "RearLeft  [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_MID_LEFT          "MidLeft   [um]"
 
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
