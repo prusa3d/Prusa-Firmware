@@ -589,12 +589,23 @@ void crashdet_restore_print_and_continue()
 }
 
 
+void crashdet_stop_and_save_print2()
+{
+	cli();
+	planner_abort_hard(); //abort printing
+	cmdqueue_reset(); //empty cmdqueue
+	card.sdprinting = false;
+	card.closefile();
+	sei();
+}
+
+
 #ifdef PAT9125
 
 void fsensor_stop_and_save_print()
 {
 //	stop_and_save_print_to_ram(10, -0.8); //XY - no change, Z 10mm up, E 0.8mm in
-	stop_and_save_print_to_ram(0, 0); //XY - no change, Z 10mm up, E 0.8mm in
+	stop_and_save_print_to_ram(0, 0); //XYZE - no change
 }
 
 void fsensor_restore_print_and_continue()
@@ -971,6 +982,22 @@ void setup()
 #endif
 	setup_homepin();
 
+  if (1) {
+    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+    // try to run to zero phase before powering the Z motor.    
+    // Move in negative direction
+    WRITE(Z_DIR_PIN,INVERT_Z_DIR);
+    // Round the current micro-micro steps to micro steps.
+    for (uint16_t phase = (tmc2130_rd_MSCNT(Z_TMC2130_CS) + 8) >> 4; phase > 0; -- phase) {
+      // Until the phase counter is reset to zero.
+      WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
+      delay(2);
+      WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
+      delay(2);
+    }
+    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+  }
+
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
@@ -1025,25 +1052,6 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
 	}
-
-  {
-    SERIAL_ECHOPGM("power up "); print_world_coordinates();
-    SERIAL_ECHOPGM("power up "); print_physical_coordinates();
-    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-    float z0 = current_position[Z_AXIS];
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.04, current_position[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-    SERIAL_ECHOPGM("full step: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.08, current_position[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-    SERIAL_ECHOPGM("two full steps: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.16 - 0.01, current_position[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-    SERIAL_ECHOPGM("nearly full cycle: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], z0 + 0.16, current_position[E_AXIS], feedrate/60, active_extruder);
-    st_synchronize();
-    SERIAL_ECHOPGM("full cycle: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-  }
 
 #ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
@@ -1248,7 +1256,7 @@ void loop()
 	if (tmc2130_sg_crash)
 	{
 		tmc2130_sg_crash = false;
-		crashdet_stop_and_save_print();
+//		crashdet_stop_and_save_print();
 		enquecommand_P((PSTR("D999")));
 	}
 #endif //TMC2130
@@ -1514,66 +1522,72 @@ void homeaxis(int axis)
     if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
 	{
         int axis_home_dir = home_dir(axis);
-#ifdef TMC2130
-		tmc2130_home_enter(X_AXIS_MASK << axis);
-#endif
-        current_position[axis] = 0;
-        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = 1.5 * max_length(axis) * axis_home_dir;
         feedrate = homing_feedrate[axis];
-#ifdef TMC2130
-		tmc2130_home_restart(axis);
-#endif
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-/*
-		tmc2130_home_pause(axis);
 
+#ifdef TMC2130
+    		tmc2130_home_enter(X_AXIS_MASK << axis);
+#endif
+
+        // Move right a bit, so that the print head does not touch the left end position,
+        // and the following left movement has a chance to achieve the required velocity
+        // for the stall guard to work.
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = -home_retract_mm(axis) * axis_home_dir;
-#ifdef TMC2130
-		tmc2130_home_restart(axis);
-#endif
+//        destination[axis] = 11.f;
+        destination[axis] = 3.f;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
-
-		tmc2130_home_resume(axis);
-
-        destination[axis] = 2*home_retract_mm(axis) * axis_home_dir;
-//#ifdef TMC2130
-//		feedrate = homing_feedrate[axis];
-//#else
-		feedrate = homing_feedrate[axis] / 2;
-//#endif
-#ifdef TMC2130
-		tmc2130_home_restart(axis);
-#endif
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-*/
-		tmc2130_home_pause(axis);
-
+        // Move left away from the possible collision with the collision detection disabled.
+        endstops_hit_on_purpose();
+        enable_endstops(false);
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = -0.32 * axis_home_dir;
+        destination[axis] = - 1.;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        // Now continue to move up to the left end stop with the collision detection enabled.
+        enable_endstops(true);
+        destination[axis] = - 1.1 * max_length(axis);
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        // Move right from the collision to a known distance from the left end stop with the collision detection disabled.
+        endstops_hit_on_purpose();
+        enable_endstops(false);
+        current_position[axis] = 0;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[axis] = 10.f;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+        endstops_hit_on_purpose();
+        // Now move left up to the collision, this time with a repeatable velocity.
+        enable_endstops(true);
+        destination[axis] = - 15.f;
+        feedrate = homing_feedrate[axis]/2;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 
-		axis_is_at_home(axis);
-		destination[axis] = current_position[axis];
-		feedrate = 0.0;
-
-		endstops_hit_on_purpose();
+        axis_is_at_home(axis);
         axis_known_position[axis] = true;
 
-
 #ifdef TMC2130
-		tmc2130_home_exit();
-//        destination[axis] += 2;
-//        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[axis]/60, active_extruder);
-//        st_synchronize();
+        tmc2130_home_exit();
 #endif
+        // Move the X carriage away from the collision.
+        // If this is not done, the X cariage will jump from the collision at the instant the Trinamic driver reduces power on idle.
+        endstops_hit_on_purpose();
+        enable_endstops(false);
+        {
+          // Two full periods (4 full steps).
+          float gap = 0.32f * 2.f;
+          current_position[axis] -= gap;
+          plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+          current_position[axis] += gap;
+        }
+        destination[axis] = current_position[axis];
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], 0.3f*feedrate/60, active_extruder);
+        st_synchronize();
+
+    		feedrate = 0.0;
     }
     else if ((axis==Z_AXIS)?HOMEAXIS_DO(Z):0)
 	{
@@ -5472,15 +5486,18 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 	case 916: // M916 Set sg_thrs
     {
-		if (code_seen('X')) tmc2130_axis_sg_thr[X_AXIS] = code_value();
-		if (code_seen('Y')) tmc2130_axis_sg_thr[Y_AXIS] = code_value();
-		if (code_seen('Z')) tmc2130_axis_sg_thr[Z_AXIS] = code_value();
-		MYSERIAL.print("tmc2130_axis_sg_thr[X]=");
-		MYSERIAL.print(tmc2130_axis_sg_thr[X_AXIS], DEC);
-		MYSERIAL.print("tmc2130_axis_sg_thr[Y]=");
-		MYSERIAL.print(tmc2130_axis_sg_thr[Y_AXIS], DEC);
-		MYSERIAL.print("tmc2130_axis_sg_thr[Z]=");
-		MYSERIAL.print(tmc2130_axis_sg_thr[Z_AXIS], DEC);
+		if (code_seen('X')) tmc2130_sg_thr[X_AXIS] = code_value();
+		if (code_seen('Y')) tmc2130_sg_thr[Y_AXIS] = code_value();
+		if (code_seen('Z')) tmc2130_sg_thr[Z_AXIS] = code_value();
+		if (code_seen('E')) tmc2130_sg_thr[E_AXIS] = code_value();
+		MYSERIAL.print("tmc2130_sg_thr[X]=");
+		MYSERIAL.println(tmc2130_sg_thr[X_AXIS], DEC);
+		MYSERIAL.print("tmc2130_sg_thr[Y]=");
+		MYSERIAL.println(tmc2130_sg_thr[Y_AXIS], DEC);
+		MYSERIAL.print("tmc2130_sg_thr[Z]=");
+		MYSERIAL.println(tmc2130_sg_thr[Z_AXIS], DEC);
+		MYSERIAL.print("tmc2130_sg_thr[E]=");
+		MYSERIAL.println(tmc2130_sg_thr[E_AXIS], DEC);
     }
     break;
 
@@ -6882,53 +6899,98 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOLLN("");
 }
 
+extern uint32_t sdpos_atomic;
 
-
-void uvlo_() {
-		SERIAL_ECHOLNPGM("UVLO");
-
-    // Saves the current position of the start of the command queue in the file,
-    // the mesh bed leveling table and the current Z axis micro steps value into EEPROM.
-		save_print_to_eeprom();
-
-    // feedrate in mm/min
-		int feedrate_bckp = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
-
+void uvlo_() 
+{
+    // Conserve power as soon as possible.
     disable_x();
     disable_y();
+
+    // Indicate that the interrupt has been triggered.
+		SERIAL_ECHOLNPGM("UVLO");
+
+    // Read out the current Z motor microstep counter. This will be later used
+    // for reaching the zero full step before powering off.
+    uint16_t z_microsteps = tmc2130_rd_MSCNT(Z_TMC2130_CS);
+
+    // Calculate the file position, from which to resume this print.
+    long sd_position = sdpos_atomic; //atomic sd position of last command added in queue
+    {
+      uint16_t sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
+      sd_position -= sdlen_planner;
+      uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
+      sd_position -= sdlen_cmdqueue;
+      if (sd_position < 0) sd_position = 0;
+    }
+
+    // Backup the feedrate in mm/min.
+    int feedrate_bckp = blocks_queued() ? (block_buffer[block_buffer_tail].nominal_speed * 60.f) : feedrate;
+
     // After this call, the planner queue is emptied and the current_position is set to a current logical coordinate.
     // The logical coordinate will likely differ from the machine coordinate if the skew calibration and mesh bed leveling
     // are in action.
     planner_abort_hard();
 
-		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
-		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
-		eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
-		EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
-		eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
-		eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
-		eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
-		// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
-		// Z baystep is no more applied. Reset it.
-		//babystep_reset();
-		// Clean the input command queue.
-		cmdqueue_reset();
-		card.sdprinting = false;
-		card.closefile();
+    // Clean the input command queue.
+    cmdqueue_reset();
+    card.sdprinting = false;
+//    card.closefile();
 
-		current_position[E_AXIS] -= DEFAULT_RETRACTION;
-		sei(); //enable stepper driver interrupt to move Z axis
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
-		st_synchronize();
+    // Enable stepper driver interrupt to move Z axis.
+    // This should be fine as the planner and command queues are empty and the SD card printing is disabled.
+    //FIXME one may want to disable serial lines at this point of time to avoid interfering with the command queue,
+    // though it should not happen that the command queue is touched as the plan_buffer_line always succeed without blocking.
+		sei();
+		plan_buffer_line(
+      current_position[X_AXIS], 
+      current_position[Y_AXIS], 
+      current_position[Z_AXIS], 
+      current_position[E_AXIS] - DEFAULT_RETRACTION, 
+      400, active_extruder);
+		plan_buffer_line(
+      current_position[X_AXIS], 
+      current_position[Y_AXIS], 
+      current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / axis_steps_per_unit[Z_AXIS], 
+      current_position[E_AXIS] - DEFAULT_RETRACTION,
+      40, active_extruder);
+
     // Move Z up to the next 0th full step.
-    current_position[Z_AXIS] += UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 8) >> 4) / axis_steps_per_unit[Z_AXIS];
+    // Write the file position.
+    eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
+    // Store the mesh bed leveling offsets. This is 2*9=18 bytes, which takes 18*3.4us=52us in worst case.
+    for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
+      uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
+      uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
+      // Scale the z value to 1u resolution.
+      int16_t v = mbl.active ? int16_t(floor(mbl.z_values[iy*3][ix*3] * 1000.f + 0.5f)) : 0;
+      eeprom_update_word((uint16_t*)(EEPROM_UVLO_MESH_BED_LEVELING+2*mesh_point), *reinterpret_cast<uint16_t*>(&v));
+    }
+    // Read out the current Z motor microstep counter. This will be later used
+    // for reaching the zero full step before powering off.
+    eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS), z_microsteps);
+    // Store the current position.
+    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
+    // Store the current feed rate, temperatures and fan speed.
+    EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
+    eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
+    // Finaly store the "power outage" flag.
     eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 40, active_extruder);
+
+    st_synchronize();
+    SERIAL_ECHOPGM("stps");
+    MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+#if 0
     // Move the print head to the side of the print until all the power stored in the power supply capacitors is depleted.
     current_position[X_AXIS] = (current_position[X_AXIS] < 0.5f * (X_MIN_POS + X_MAX_POS)) ? X_MIN_POS : X_MAX_POS;
     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
     st_synchronize();
-//    disable_z();
+#endif
+    disable_z();
 
 		SERIAL_ECHOLNPGM("UVLO - end");
 		cli();
@@ -6951,56 +7013,6 @@ ISR(INT4_vect) {
 	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
 	SERIAL_ECHOLNPGM("INT4");
 	if (IS_SD_PRINTING) uvlo_();
-}
-
-#define POWERPANIC_NEW_SD_POS
-extern uint32_t sdpos_atomic;
-
-void save_print_to_eeprom() {
-	//eeprom_update_word((uint16_t*)(EPROM_UVLO_CMD_QUEUE), bufindw - bufindr );
-	//BLOCK_BUFFER_SIZE: max. 16 linear moves in planner buffer
-#define TYP_GCODE_LENGTH 30 //G1 X117.489 Y22.814 E1.46695 + cr lf
-	//card.get_sdpos() -> byte currently read from SD card
-	//bufindw -> position in circular buffer where to write
-	//bufindr -> position in circular buffer where to read
-	//bufflen -> number of lines in buffer -> for each line one special character??
-	//number_of_blocks() returns number of linear movements buffered in planner
-#ifdef POWERPANIC_NEW_SD_POS
-	long sd_position = sdpos_atomic; //atomic sd position of last command added in queue
-	uint16_t sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
-	sd_position -= sdlen_planner;
-	uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
-	sd_position -= sdlen_cmdqueue;
-#else //POWERPANIC_NEW_SD_POS
-	long sd_position = card.get_sdpos() - ((bufindw > bufindr) ? (bufindw - bufindr) : sizeof(cmdbuffer) - bufindr + bufindw) - TYP_GCODE_LENGTH* number_of_blocks();
-#endif //POWERPANIC_NEW_SD_POS
-	if (sd_position < 0) sd_position = 0;
-	/*SERIAL_ECHOPGM("sd position before correction:");
-	MYSERIAL.println(card.get_sdpos());
-	SERIAL_ECHOPGM("bufindw:");
-	MYSERIAL.println(bufindw);
-	SERIAL_ECHOPGM("bufindr:");
-	MYSERIAL.println(bufindr);
-	SERIAL_ECHOPGM("sizeof(cmd_buffer):");
-	MYSERIAL.println(sizeof(cmdbuffer));
-	SERIAL_ECHOPGM("sd position after correction:");
-	MYSERIAL.println(sd_position);*/
-	eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
-
-  // Store the mesh bed leveling offsets. This is 2*9=18 bytes, which takes 18*3.4us=52us in worst case.
-  for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
-    uint8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS; // from 0 to MESH_NUM_X_POINTS - 1
-    uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
-    // Scale the z value to 1u resolution.
-    int16_t v = mbl.active ? int16_t(floor(mbl.z_values[iy*3][ix*3] * 1000.f + 0.5f)) : 0;
-    eeprom_update_word((uint16_t*)(EEPROM_UVLO_MESH_BED_LEVELING+2*mesh_point), *reinterpret_cast<uint16_t*>(&v));
-  }
-  SERIAL_ECHOPGM("INT4 ");
-  print_mesh_bed_leveling_table();
-
-  // Read out the current Z motor microstep counter. This will be later used
-  // for reaching the zero full step before powering off.
-  eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS), tmc2130_rd_MSCNT(Z_TMC2130_CS));
 }
 
 void recover_print() {
@@ -7051,7 +7063,7 @@ void recover_machine_state_after_power_panic()
   // Recover the logical coordinate of the Z axis at the time of the power panic.
   // The current position after power panic is moved to the next closest 0th full step.
   current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
-    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 8) >> 4) / axis_steps_per_unit[Z_AXIS];
+    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
   memcpy(destination, current_position, sizeof(destination));
 
   SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
@@ -7357,13 +7369,8 @@ void print_mesh_bed_leveling_table()
   SERIAL_ECHOPGM("mesh bed leveling: ");
   for (int8_t y = 0; y < MESH_NUM_Y_POINTS; ++ y)
     for (int8_t x = 0; x < MESH_NUM_Y_POINTS; ++ x) {
-      SERIAL_ECHOPGM("(");
-      MYSERIAL.print(st_get_position_mm(X_AXIS), 3);
-      SERIAL_ECHOPGM(", ");
-      MYSERIAL.print(st_get_position_mm(Y_AXIS), 3);
-      SERIAL_ECHOPGM(", ");
-      MYSERIAL.print(st_get_position_mm(Z_AXIS), 3);
-      SERIAL_ECHOPGM(") ");
+      MYSERIAL.print(mbl.z_values[y][x], 3);
+      SERIAL_ECHOPGM(" ");
     }
   SERIAL_ECHOLNPGM("");
 }

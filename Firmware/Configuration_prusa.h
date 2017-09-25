@@ -62,7 +62,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_PAUSE_LIFT 20
 
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
-#define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
+#define HOMING_FEEDRATE {2500, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
 
 //#define DEFAULT_MAX_FEEDRATE          {400, 400, 12, 120}    // (mm/sec)
 #define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
@@ -78,18 +78,18 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 //DEBUG
 #define DEBUG_DCODES //D codes
-#if 0
-#define DEBUG_DISABLE_XMINLIMIT  //x min limit ignored
-#define DEBUG_DISABLE_XMAXLIMIT  //x max limit ignored
-#define DEBUG_DISABLE_YMINLIMIT  //y min limit ignored
-#define DEBUG_DISABLE_YMAXLIMIT  //y max limit ignored
-#define DEBUG_DISABLE_ZMINLIMIT  //z min limit ignored
-#define DEBUG_DISABLE_ZMAXLIMIT  //z max limit ignored
+#if 1
+//#define DEBUG_DISABLE_XMINLIMIT  //x min limit ignored
+//#define DEBUG_DISABLE_XMAXLIMIT  //x max limit ignored
+//#define DEBUG_DISABLE_YMINLIMIT  //y min limit ignored
+//#define DEBUG_DISABLE_YMAXLIMIT  //y max limit ignored
+//#define DEBUG_DISABLE_ZMINLIMIT  //z min limit ignored
+//#define DEBUG_DISABLE_ZMAXLIMIT  //z max limit ignored
 #define DEBUG_DISABLE_STARTMSGS //no startup messages 
-#define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
-#define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
+//#define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
+//#define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
 #define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
-#define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
+//#define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
 #define DEBUG_DISABLE_PRUSA_STATISTICS //disable prusa_statistics() mesages
 //#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
 //#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
@@ -137,19 +137,23 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
 #define TMC2130_THIGH     0         // THIGH - unused
 
-#define TMC2130_TCOOLTHRS 500       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_X 400       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_Y 400       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_Z 500       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_E 500       // TCOOLTHRS - coolstep treshold
 
 #define TMC2130_SG_HOMING       1     // stallguard homing
 //#define TMC2130_SG_HOMING_SW_XY  1    // stallguard "software" homing for XY axes
 #define TMC2130_SG_HOMING_SW_Z  1     // stallguard "software" homing for Z axis
-#define TMC2130_SG_THRS_X       6     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y       6     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_X       1     // stallguard sensitivity for X axis
+#define TMC2130_SG_THRS_Y       3     // stallguard sensitivity for Y axis
 #define TMC2130_SG_THRS_Z       3     // stallguard sensitivity for Z axis
+#define TMC2130_SG_THRS_E       3     // stallguard sensitivity for E axis
 #define TMC2130_SG_DELTA      128    // stallguard delta [usteps] (minimum usteps before stallguard readed - SW homing)
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {3, 3, 5, 8}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {13, 31, 20, 22}  // default running currents for all axes
+#define TMC2130_CURRENTS_R {13, 20, 20, 22}  // default running currents for all axes
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
