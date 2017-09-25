@@ -11,7 +11,7 @@ extern uint8_t tmc2130_current_r[4];
 //flags for axis stall detection
 extern uint8_t tmc2130_axis_stalled[4];
 
-extern uint8_t tmc2130_axis_sg_thr[4];
+extern uint8_t tmc2130_sg_thr[4];
 
 extern bool tmc2130_sg_stop_on_crash;
 extern bool tmc2130_sg_crash;
