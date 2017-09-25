@@ -62,7 +62,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_PAUSE_LIFT 20
 
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
-#define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
+#define HOMING_FEEDRATE {2500, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
 
 //#define DEFAULT_MAX_FEEDRATE          {400, 400, 12, 120}    // (mm/sec)
 #define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
