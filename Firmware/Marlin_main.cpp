@@ -589,12 +589,23 @@ void crashdet_restore_print_and_continue()
 }
 
 
+void crashdet_stop_and_save_print2()
+{
+	cli();
+	planner_abort_hard(); //abort printing
+	cmdqueue_reset(); //empty cmdqueue
+	card.sdprinting = false;
+	card.closefile();
+	sei();
+}
+
+
 #ifdef PAT9125
 
 void fsensor_stop_and_save_print()
 {
 //	stop_and_save_print_to_ram(10, -0.8); //XY - no change, Z 10mm up, E 0.8mm in
-	stop_and_save_print_to_ram(0, 0); //XY - no change, Z 10mm up, E 0.8mm in
+	stop_and_save_print_to_ram(0, 0); //XYZE - no change
 }
 
 void fsensor_restore_print_and_continue()
@@ -1245,7 +1256,7 @@ void loop()
 	if (tmc2130_sg_crash)
 	{
 		tmc2130_sg_crash = false;
-		crashdet_stop_and_save_print();
+//		crashdet_stop_and_save_print();
 		enquecommand_P((PSTR("D999")));
 	}
 #endif //TMC2130
@@ -5475,15 +5486,18 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 	case 916: // M916 Set sg_thrs
     {
-		if (code_seen('X')) tmc2130_axis_sg_thr[X_AXIS] = code_value();
-		if (code_seen('Y')) tmc2130_axis_sg_thr[Y_AXIS] = code_value();
-		if (code_seen('Z')) tmc2130_axis_sg_thr[Z_AXIS] = code_value();
-		MYSERIAL.print("tmc2130_axis_sg_thr[X]=");
-		MYSERIAL.print(tmc2130_axis_sg_thr[X_AXIS], DEC);
-		MYSERIAL.print("tmc2130_axis_sg_thr[Y]=");
-		MYSERIAL.print(tmc2130_axis_sg_thr[Y_AXIS], DEC);
-		MYSERIAL.print("tmc2130_axis_sg_thr[Z]=");
-		MYSERIAL.print(tmc2130_axis_sg_thr[Z_AXIS], DEC);
+		if (code_seen('X')) tmc2130_sg_thr[X_AXIS] = code_value();
+		if (code_seen('Y')) tmc2130_sg_thr[Y_AXIS] = code_value();
+		if (code_seen('Z')) tmc2130_sg_thr[Z_AXIS] = code_value();
+		if (code_seen('E')) tmc2130_sg_thr[E_AXIS] = code_value();
+		MYSERIAL.print("tmc2130_sg_thr[X]=");
+		MYSERIAL.println(tmc2130_sg_thr[X_AXIS], DEC);
+		MYSERIAL.print("tmc2130_sg_thr[Y]=");
+		MYSERIAL.println(tmc2130_sg_thr[Y_AXIS], DEC);
+		MYSERIAL.print("tmc2130_sg_thr[Z]=");
+		MYSERIAL.println(tmc2130_sg_thr[Z_AXIS], DEC);
+		MYSERIAL.print("tmc2130_sg_thr[E]=");
+		MYSERIAL.println(tmc2130_sg_thr[E_AXIS], DEC);
     }
     break;
 
