@@ -498,6 +498,8 @@ unsigned long chdkHigh = 0;
 boolean chdkActive = false;
 #endif
 
+static int saved_feedmultiply_mm = 100;
+
 //===========================================================================
 //=============================Routines======================================
 //===========================================================================
@@ -4934,12 +4936,20 @@ Sigma_Exit:
       SERIAL_ECHOLN("");
     }break;
     #endif
+
     case 220: // M220 S<factor in percent>- set speed factor override percentage
     {
+	  if (code_seen('B')) //backup current speed factor
+	  {
+		saved_feedmultiply_mm = feedmultiply;
+	  }
       if(code_seen('S'))
-      {
+      {		
         feedmultiply = code_value() ;
       }
+	  if (code_seen('R')) { //restore previous feedmultiply
+		  feedmultiply = saved_feedmultiply_mm;
+	  }
     }
     break;
     case 221: // M221 S<factor in percent>- set extrude factor override percentage
@@ -5808,22 +5818,18 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  case 1:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, LOW);
-
 			  break;
 		  case 2:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, HIGH);
-
 			  break;
 		  case 3:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, HIGH);
-
 			  break;
 		  default:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, LOW);
-
 			  break;
 		  }
 		  delay(100);

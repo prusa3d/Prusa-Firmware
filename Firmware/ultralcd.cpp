@@ -620,9 +620,9 @@ void lcd_commands()
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 			enquecommand_P(PSTR("G1 Z0.250 F7200.000"));
-			enquecommand_P(PSTR("G1 X50.0 E80.0  F1000.0));
-			nquecommand_P(PSTR("G1 X160.0 E20.0  F1000.0));
-			enquecommand_P(PSTR("G1 Z0.200 F7200.000));
+			enquecommand_P(PSTR("G1 X50.0 E80.0  F1000.0"));
+			enquecommand_P(PSTR("G1 X160.0 E20.0  F1000.0"));
+			enquecommand_P(PSTR("G1 Z0.200 F7200.000"));
 			enquecommand_P(PSTR("G1 X220.0 E13 F1000.0"));
 			enquecommand_P(PSTR("G1 X240.0 E0 F1000.0"));
 			enquecommand_P(PSTR("G92 E0.0"));
@@ -3804,12 +3804,10 @@ void change_extr(int extr) { //switches multiplexer for extruders
 	case 1:
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, LOW);
-		
 		break;
 	case 2:
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, HIGH);
-		
 		break;
 	case 3:
 		WRITE(E_MUX0_PIN, HIGH);
@@ -3821,7 +3819,7 @@ void change_extr(int extr) { //switches multiplexer for extruders
 		WRITE(E_MUX1_PIN, LOW);
 		
 		break;
-	}
+	}	
 	delay(100);
 }
 
