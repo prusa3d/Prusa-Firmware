@@ -371,6 +371,7 @@ void serialecho_temperatures();
 
 void uvlo_();
 void recover_print();
+void recover_print(uint8_t automatic); 
 void setup_uvlo_interrupt();
 
 extern void recover_machine_state_after_power_panic();
