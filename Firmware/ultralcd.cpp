@@ -105,9 +105,9 @@ int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = 0;
 
-int8_t FSensorStateMenu = 0;
+int8_t FSensorStateMenu = 1;
 
-int8_t CrashDetectMenu = 0;
+int8_t CrashDetectMenu = 1;
 
 extern void fsensor_enable();
 extern void fsensor_disable();
@@ -3869,10 +3869,12 @@ static void lcd_main_menu()
 
  MENU_ITEM(back, MSG_WATCH, lcd_status_screen);
 
+#ifdef RESUME_DEBUG 
  if (!saved_printing) 
   MENU_ITEM(function, PSTR("tst - Save"), lcd_menu_test_save);
  else
   MENU_ITEM(function, PSTR("tst - Restore"), lcd_menu_test_restore);
+#ifdef //RESUME_DEBUG 
 
 #ifdef TMC2130_DEBUG
  MENU_ITEM(function, PSTR("recover print"), recover_print);

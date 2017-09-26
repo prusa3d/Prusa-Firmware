@@ -586,6 +586,7 @@ void crashdet_stop_and_save_print()
 void crashdet_restore_print_and_continue()
 {
 	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+	babystep_apply();
 }
 
 
@@ -614,7 +615,7 @@ void fsensor_restore_print_and_continue()
 }
 
 
-bool fsensor_enabled = false;
+bool fsensor_enabled = true;
 bool fsensor_ignore_error = true;
 bool fsensor_M600 = false;
 long fsensor_prev_pos_e = 0;
@@ -1053,10 +1054,11 @@ void setup()
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
 	}
 
-#ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 	setup_uvlo_interrupt();
 	
+#ifndef DEBUG_DISABLE_STARTMSGS
+
   if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
       calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
       // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
@@ -5754,6 +5756,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		MYSERIAL.print("selectedSerialPort = ");
 		MYSERIAL.println(selectedSerialPort, DEC);
 		break;
+	case 10: // D10 - Tell the printer that XYZ calibration went OK
+        calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
+        break; 
 	case 999:
 	{
 		MYSERIAL.println("D999 - crash");
@@ -7298,7 +7303,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 //	card.closefile();
 	saved_printing = true;
 	sei();
-	if ((z_move != 0) || (e_move != 0)) { // extruder and z move
+	if ((z_move != 0) || (e_move != 0)) { // extruder or z move
 #if 1
     // Rather than calling plan_buffer_line directly, push the move into the command queue, 
     char buf[48];
@@ -7332,7 +7337,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	feedrate = saved_feedrate2; //restore feedrate
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS], active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS]/10, active_extruder);
     st_synchronize();
   memcpy(current_position, saved_pos, sizeof(saved_pos));
   memcpy(destination, current_position, sizeof(destination));
