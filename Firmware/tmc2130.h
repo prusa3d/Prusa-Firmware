@@ -52,6 +52,7 @@ extern uint16_t tmc2130_rd_MSCNT(uint8_t cs);
 
 extern void tmc2130_home_pause(uint8_t axis);
 extern void tmc2130_home_resume(uint8_t axis);
+extern bool tmc2130_wait_standstill_xy(int timeout);
 
 
 #endif //TMC2130_H
