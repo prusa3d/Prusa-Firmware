@@ -56,7 +56,7 @@ uint32_t tmc2130_sg_pos[4] = {0, 0, 0, 0};
 
 uint8_t sg_homing_axes_mask = 0x00;
 
-bool tmc2130_sg_stop_on_crash = false;
+bool tmc2130_sg_stop_on_crash = true;
 bool tmc2130_sg_crash = false;
 uint8_t tmc2130_diag_mask = 0x00;
 uint16_t tmc2130_sg_err[4] = {0, 0, 0, 0};
