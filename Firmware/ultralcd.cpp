@@ -2533,7 +2533,7 @@ static void lcd_silent_mode_set() {
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
   st_synchronize();
-  if (tmc2130_wait_standstill_xy(100))
+  if (tmc2130_wait_standstill_xy(1000))
 	  MYSERIAL.print("standstill OK");
   else
 	  MYSERIAL.print("standstill NG!");
