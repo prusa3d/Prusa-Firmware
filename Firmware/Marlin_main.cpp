@@ -5844,7 +5844,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		lcd_update_enable(true);
 		lcd_implementation_clear();
 		lcd_update(2);
-		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_CRASH_DETECTED, false);
+#ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
+        bool yesno = true;
+#else
+        bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_CRASH_DETECTED, false);
+#endif
 		lcd_update_enable(true);
 		lcd_update(2);
 		lcd_setstatuspgm(WELCOME_MSG);

@@ -76,6 +76,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define Z_AXIS_ALWAYS_ON 1
 
+// Automatic recovery after crash is detected
+#define AUTOMATIC_RECOVERY_AFTER_CRASH
+
 //DEBUG
 #define DEBUG_DCODES //D codes
 #if 1

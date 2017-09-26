@@ -1074,6 +1074,10 @@ static void lcd_support_menu()
 	  MENU_ITEM(function, PSTR("Check fans [DIS]"), lcd_set_fan_check);
   }
   #endif //MK1BP
+    
+#ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
+    MENU_ITEM(back, PSTR("Auto recover crash"), lcd_main_menu);
+#else
   END_MENU();
 }
 
