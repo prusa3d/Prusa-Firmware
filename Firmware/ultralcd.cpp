@@ -3874,7 +3874,7 @@ static void lcd_main_menu()
   MENU_ITEM(function, PSTR("tst - Save"), lcd_menu_test_save);
  else
   MENU_ITEM(function, PSTR("tst - Restore"), lcd_menu_test_restore);
-#ifdef //RESUME_DEBUG 
+#endif //RESUME_DEBUG 
 
 #ifdef TMC2130_DEBUG
  MENU_ITEM(function, PSTR("recover print"), recover_print);
