@@ -712,6 +712,12 @@ void fsensor_update()
 		{
 			MYSERIAL.println("fsensor_update - ERROR!!!");
 			fsensor_stop_and_save_print();
+            
+            // Increment filament failure counter
+            uint8_t ferror_count = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
+            ferror_count++;
+            eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, ferror_count);
+            
 			enquecommand_front_P((PSTR("M600")));
 			fsensor_M600 = true;
 			fsensor_enabled = false;
@@ -5829,7 +5835,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		break;
 	case 10: // D10 - Tell the printer that XYZ calibration went OK
         calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
-        break; 
+        break;
+    
+    case 12: //D12 - Reset Filament error, Power loss and crash counter ( Do it before every print and you can get stats for the print )
+        eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, 0x00);
+        eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, 0x00);
+        eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, 0x00);
 	case 999:
 	{
 		MYSERIAL.println("D999 - crash");
@@ -5844,6 +5855,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		lcd_update_enable(true);
 		lcd_implementation_clear();
 		lcd_update(2);
+        
+        // Increment crash counter
+        uint8_t crash_count = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT);
+        crash_count++;
+        eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, crash_count);
+        
 #ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
         bool yesno = true;
 #else
@@ -7071,7 +7088,12 @@ void uvlo_()
     st_synchronize();
 #endif
     disable_z();
-
+    
+    // Increment power failure counter
+    uint8_t power_count = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
+    power_count++;
+    eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, power_count);
+    
 		SERIAL_ECHOLNPGM("UVLO - end");
 		cli();
 		while(1);

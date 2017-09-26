@@ -64,6 +64,12 @@
 #define EEPROM_CRASH_DET       (EEPROM_UVLO_MESH_BED_LEVELING-12) 
 // Filament sensor on/off EEPROM setting 
 #define EEPROM_FSENSOR       (EEPROM_UVLO_MESH_BED_LEVELING-14) 
+// Crash detection counter
+#define EEPROM_CRASH_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-15)
+// Filament runout/error coutner
+#define EEPROM_FERROR_COUNT      (EEPROM_UVLO_MESH_BED_LEVELING-16)
+// Power loss errors
+#define EEPROM_POWER_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-17)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
