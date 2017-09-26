@@ -429,17 +429,46 @@ void tmc2130_home_restart(uint8_t axis)
 	tmc2130_axis_stalled[axis] = false;
 }
 
+bool tmc2130_wait_standstill_xy(int timeout)
+{
+//	MYSERIAL.println("tmc2130_wait_standstill_xy");
+	bool standstill = false;
+	while (!standstill && (timeout > 0))
+	{
+		uint32_t drv_status_x = 0;
+		uint32_t drv_status_y = 0;
+		tmc2130_rd(tmc2130_cs[X_AXIS], TMC2130_REG_DRV_STATUS, &drv_status_x);
+		tmc2130_rd(tmc2130_cs[Y_AXIS], TMC2130_REG_DRV_STATUS, &drv_status_y);
+/*		MYSERIAL.print(timeout, 10);
+		MYSERIAL.println(' ');
+		MYSERIAL.print(drv_status_x, 16);
+		MYSERIAL.println(' ');
+		MYSERIAL.print(drv_status_y, 16);
+		MYSERIAL.println('#');*/
+		standstill = (drv_status_x & 0x80000000) && (drv_status_y & 0x80000000);
+		tmc2130_check_overtemp();
+		timeout--;
+	}
+	return standstill;
+}
+
+
 void tmc2130_check_overtemp()
 {
 	const static char TMC_OVERTEMP_MSG[] PROGMEM = "TMC DRIVER OVERTEMP ";
 	static uint32_t checktime = 0;
 	if (millis() - checktime > 1000 )
 	{
+//		MYSERIAL.print("DRV_STATUS ");
 		for (int i = 0; i < 4; i++)
 		{
 			uint32_t drv_status = 0;
 			skip_debug_msg = true;
 			tmc2130_rd(tmc2130_cs[i], TMC2130_REG_DRV_STATUS, &drv_status);
+/*			MYSERIAL.print(i, DEC);
+			MYSERIAL.print(' ');
+			MYSERIAL.print(drv_status, 16);*/
+
 			if (drv_status & ((uint32_t)1 << 26))
 			{ // BIT 26 - over temp prewarning ~120C (+-20C)
 				SERIAL_ERRORRPGM(TMC_OVERTEMP_MSG);
@@ -450,6 +479,7 @@ void tmc2130_check_overtemp()
 			}
 
 		}
+//		MYSERIAL.println('#');
 		checktime = millis();
 		tmc2130_sg_change = true;
 	}

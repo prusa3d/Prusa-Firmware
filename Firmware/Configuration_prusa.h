@@ -112,13 +112,13 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
 
-#define TMC2130_PWM_GRAD_X  4         // PWMCONF
-#define TMC2130_PWM_AMPL_X  210       // PWMCONF
+#define TMC2130_PWM_GRAD_X  8         // PWMCONF
+#define TMC2130_PWM_AMPL_X  220       // PWMCONF
 #define TMC2130_PWM_AUTO_X  1         // PWMCONF
 #define TMC2130_PWM_FREQ_X  2         // PWMCONF
 
-#define TMC2130_PWM_GRAD_Y  4         // PWMCONF
-#define TMC2130_PWM_AMPL_Y  215       // PWMCONF
+#define TMC2130_PWM_GRAD_Y  8         // PWMCONF
+#define TMC2130_PWM_AMPL_Y  225       // PWMCONF
 #define TMC2130_PWM_AUTO_Y  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Y  2         // PWMCONF
 
@@ -140,8 +140,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
 #define TMC2130_THIGH     0         // THIGH - unused
 
-#define TMC2130_TCOOLTHRS_X 450       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_Y 450       // TCOOLTHRS - coolstep treshold
+//#define TMC2130_TCOOLTHRS_X 450       // TCOOLTHRS - coolstep treshold
+//#define TMC2130_TCOOLTHRS_Y 450       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_X 430       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_Y 430       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_Z 500       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_E 500       // TCOOLTHRS - coolstep treshold
 
