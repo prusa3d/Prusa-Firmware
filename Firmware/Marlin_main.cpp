@@ -567,15 +567,24 @@ static void lcd_language_menu();
 void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_print_from_ram_and_continue(float e_move);
 
+extern int8_t CrashDetectMenu;
+
 
 void crashdet_enable()
 {
+	MYSERIAL.println("crashdet_enable"); 
 	tmc2130_sg_stop_on_crash = true;
+	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0xFF); 
+	CrashDetectMenu = 1;
+
 }
 
 void crashdet_disable()
 {
+	MYSERIAL.println("crashdet_disable"); 
 	tmc2130_sg_stop_on_crash = false;
+	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
+	CrashDetectMenu = 0;
 }
 
 void crashdet_stop_and_save_print()
@@ -586,6 +595,7 @@ void crashdet_stop_and_save_print()
 void crashdet_restore_print_and_continue()
 {
 	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+//	babystep_apply();
 }
 
 
@@ -614,7 +624,7 @@ void fsensor_restore_print_and_continue()
 }
 
 
-bool fsensor_enabled = false;
+bool fsensor_enabled = true;
 bool fsensor_ignore_error = true;
 bool fsensor_M600 = false;
 long fsensor_prev_pos_e = 0;
@@ -629,6 +639,9 @@ uint8_t fsensor_err_cnt = 0;
 //#define FSENS_MAXERR 2    //filament sensor max error count
 #define FSENS_MAXERR 5    //filament sensor max error count
 
+extern int8_t FSensorStateMenu;
+
+
 void fsensor_enable()
 {
 	MYSERIAL.println("fsensor_enable");
@@ -638,12 +651,16 @@ void fsensor_enable()
 	fsensor_enabled = true;
 	fsensor_ignore_error = true;
 	fsensor_M600 = false;
+	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0xFF); 
+	FSensorStateMenu = 1;
 }
 
 void fsensor_disable()
 {
 	MYSERIAL.println("fsensor_disable");
 	fsensor_enabled = false;
+	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
+	FSensorStateMenu = 0;
 }
 
 void fsensor_update()
@@ -881,11 +898,36 @@ void setup()
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
+	if (crashdet)
+	{
+		crashdet_enable();
+	    MYSERIAL.println("CrashDetect ENABLED!");
+	}
+	else
+	{
+		crashdet_disable();
+	    MYSERIAL.println("CrashDetect DISABLED");
+	}
+
 #endif //TMC2130
 
 #ifdef PAT9125
     MYSERIAL.print("PAT9125_init:");
     MYSERIAL.println(pat9125_init(200, 200));
+
+	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+	if (fsensor)
+	{
+		fsensor_enable();
+	    MYSERIAL.println("Filament Sensor ENABLED!");
+	}
+	else
+	{
+		fsensor_disable();
+	    MYSERIAL.println("Filament Sensor DISABLED");
+	}
+
 #endif //PAT9125
     
 	st_init();    // Initialize stepper, this enables interrupts!
@@ -1053,10 +1095,11 @@ void setup()
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
 	}
 
-#ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 	setup_uvlo_interrupt();
 	
+#ifndef DEBUG_DISABLE_STARTMSGS
+
   if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
       calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
       // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
@@ -1083,6 +1126,7 @@ void setup()
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
+/*
 	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT, false))	recover_print();
 	  else {
 		  eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -1090,6 +1134,35 @@ void setup()
 		  lcd_update(2);
 		  lcd_setstatuspgm(WELCOME_MSG);
 	  }
+*/
+      manage_heater(); // Update temperatures 
+#ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
+      MYSERIAL.println("Power panic detected!"); 
+      MYSERIAL.print("Current bed temp:"); 
+      MYSERIAL.println(degBed()); 
+      MYSERIAL.print("Saved bed temp:"); 
+      MYSERIAL.println((float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED)); 
+#endif 
+     if ( degBed() > ( (float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET) ){ 
+          #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
+        MYSERIAL.println("Automatic recovery!"); 
+          #endif 
+         recover_print(1); 
+      } 
+      else{ 
+          #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
+        MYSERIAL.println("Normal recovery!"); 
+          #endif 
+          if ( lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT, false) ) recover_print(0); 
+          else { 
+              eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
+              lcd_update_enable(true); 
+              lcd_update(2); 
+              lcd_setstatuspgm(WELCOME_MSG); 
+          } 
+           
+      } 
+	   
   }
   
 }
@@ -5754,6 +5827,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		MYSERIAL.print("selectedSerialPort = ");
 		MYSERIAL.println(selectedSerialPort, DEC);
 		break;
+	case 10: // D10 - Tell the printer that XYZ calibration went OK
+        calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
+        break; 
 	case 999:
 	{
 		MYSERIAL.println("D999 - crash");
@@ -7015,7 +7091,7 @@ ISR(INT4_vect) {
 	if (IS_SD_PRINTING) uvlo_();
 }
 
-void recover_print() {
+void recover_print(uint8_t automatic) {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
@@ -7023,18 +7099,28 @@ void recover_print() {
 
   recover_machine_state_after_power_panic();
 
+    // Set the target bed and nozzle temperatures. 
+    sprintf_P(cmd, PSTR("M104 S%d"), target_temperature[active_extruder]); 
+    enquecommand(cmd); 
+    sprintf_P(cmd, PSTR("M140 S%d"), target_temperature_bed); 
+    enquecommand(cmd);
+
   // Lift the print head, so one may remove the excess priming material.
   if (current_position[Z_AXIS] < 25)
     enquecommand_P(PSTR("G1 Z25 F800"));
   // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine transformation status.
 	enquecommand_P(PSTR("G28 X Y"));
-  // Set the target bed and nozzle temperatures.
+  // Set the target bed and nozzle temperatures and wait.
 	sprintf_P(cmd, PSTR("M109 S%d"), target_temperature[active_extruder]);
 	enquecommand(cmd);
 	sprintf_P(cmd, PSTR("M190 S%d"), target_temperature_bed);
 	enquecommand(cmd);
 	enquecommand_P(PSTR("M83")); //E axis relative mode
-	enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure
+	//enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure
+    // If not automatically recoreverd (long power loss), extrude extra filament to stabilize 
+    if(automatic == 0){ 
+        enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure 
+    } 
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
   // Mark the power panic status as inactive.
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -7298,7 +7384,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 //	card.closefile();
 	saved_printing = true;
 	sei();
-	if ((z_move != 0) || (e_move != 0)) { // extruder and z move
+	if ((z_move != 0) || (e_move != 0)) { // extruder or z move
 #if 1
     // Rather than calling plan_buffer_line directly, push the move into the command queue, 
     char buf[48];
@@ -7332,7 +7418,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	feedrate = saved_feedrate2; //restore feedrate
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS], active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS]/13, active_extruder);
     st_synchronize();
   memcpy(current_position, saved_pos, sizeof(saved_pos));
   memcpy(destination, current_position, sizeof(destination));

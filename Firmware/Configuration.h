@@ -60,6 +60,10 @@
 #define EEPROM_UVLO_MESH_BED_LEVELING     (EEPROM_FAN_CHECK_ENABLED - 9*2)
 #define EEPROM_UVLO_Z_MICROSTEPS     (EEPROM_UVLO_MESH_BED_LEVELING - 2)
 
+// Crash detection mode EEPROM setting 
+#define EEPROM_CRASH_DET       (EEPROM_UVLO_MESH_BED_LEVELING-12) 
+// Filament sensor on/off EEPROM setting 
+#define EEPROM_FSENSOR       (EEPROM_UVLO_MESH_BED_LEVELING-14) 
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.

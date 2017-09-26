@@ -79,6 +79,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //DEBUG
 #define DEBUG_DCODES //D codes
 #if 1
+//#define DEBUG_CRASHDET_COUNTERS  //Display crash-detection counters on LCD
+//#define DEBUG_RESUME_PRINT       //Resume/save print debug enable 
+//#define DEBUG_UVLO_AUTOMATIC_RECOVER // Power panic automatic recovery debug output 
 //#define DEBUG_DISABLE_XMINLIMIT  //x min limit ignored
 //#define DEBUG_DISABLE_XMAXLIMIT  //x max limit ignored
 //#define DEBUG_DISABLE_YMINLIMIT  //y min limit ignored
@@ -88,7 +91,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEBUG_DISABLE_STARTMSGS //no startup messages 
 //#define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
 //#define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
-#define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
+//#define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
 //#define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
 #define DEBUG_DISABLE_PRUSA_STATISTICS //disable prusa_statistics() mesages
 //#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
@@ -110,7 +113,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
 
 #define TMC2130_PWM_GRAD_X  4         // PWMCONF
-#define TMC2130_PWM_AMPL_X  200       // PWMCONF
+#define TMC2130_PWM_AMPL_X  210       // PWMCONF
 #define TMC2130_PWM_AUTO_X  1         // PWMCONF
 #define TMC2130_PWM_FREQ_X  2         // PWMCONF
 
@@ -137,8 +140,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
 #define TMC2130_THIGH     0         // THIGH - unused
 
-#define TMC2130_TCOOLTHRS_X 400       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_Y 400       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_X 450       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_Y 450       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_Z 500       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_E 500       // TCOOLTHRS - coolstep treshold
 
@@ -491,6 +494,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // At 400 microsteps per mm, a full step lifts the Z axis by 0.04mm, and a stepper driver cycle is 0.16mm.
 // The following example, 12 * (4 * 16 / 400) = 12 * 0.16mm = 1.92mm.
 #define UVLO_Z_AXIS_SHIFT 1.92
+// If power panic occured, and the current temperature is higher then target temperature before interrupt minus this offset, print will be recovered automatically. 
+#define AUTOMATIC_UVLO_BED_TEMP_OFFSET 5 
 
 #define HEATBED_V2
 

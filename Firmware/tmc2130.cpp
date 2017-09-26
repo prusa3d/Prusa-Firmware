@@ -56,7 +56,7 @@ uint32_t tmc2130_sg_pos[4] = {0, 0, 0, 0};
 
 uint8_t sg_homing_axes_mask = 0x00;
 
-bool tmc2130_sg_stop_on_crash = false;
+bool tmc2130_sg_stop_on_crash = true;
 bool tmc2130_sg_crash = false;
 uint8_t tmc2130_diag_mask = 0x00;
 uint16_t tmc2130_sg_err[4] = {0, 0, 0, 0};
@@ -453,6 +453,7 @@ void tmc2130_check_overtemp()
 		checktime = millis();
 		tmc2130_sg_change = true;
 	}
+#ifdef DEBUG_CRASHDET_COUNTERS
 	if (tmc2130_sg_change)
 	{
 		for (int i = 0; i < 4; i++)
@@ -463,6 +464,7 @@ void tmc2130_check_overtemp()
 			lcd.print(' ');
 		}
 	}
+#endif DEBUG_CRASHDET_COUNTERS
 }
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
