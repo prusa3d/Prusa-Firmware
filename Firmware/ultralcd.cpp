@@ -2544,12 +2544,12 @@ static void lcd_silent_mode_set() {
 
 static void lcd_crash_mode_set()
 {
-    if (!CrashDetectMenu==0) {
+	CrashDetectMenu = !CrashDetectMenu; //set also from crashdet_enable() and crashdet_disable()
+    if (CrashDetectMenu==0) {
         crashdet_disable();
     }else{
         crashdet_enable();
     }
-	CrashDetectMenu = !CrashDetectMenu;
 	lcd_goto_menu(lcd_settings_menu, 7);
     
 }
@@ -2566,12 +2566,12 @@ static void lcd_set_lang(unsigned char lang) {
 
 static void lcd_fsensor_state_set()
 {
-    if (!FSensorStateMenu==0) {
+	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
+    if (FSensorStateMenu==0) {
         fsensor_disable();
     }else{
         fsensor_enable();
     }
-	FSensorStateMenu = !FSensorStateMenu;
 	lcd_goto_menu(lcd_settings_menu, 7);
     
 }
@@ -4078,11 +4078,26 @@ static void lcd_tune_menu()
   MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
   
-  if (SilentModeMenu == 0) {
-    MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune);
+  if (FSensorStateMenu == 0) {
+    MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
   } else {
-    MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set_tune);
+    MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
   }
+
+  if (SilentModeMenu == 0) {
+    MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
+  } else {
+    MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
+  }
+
+  if (SilentModeMenu == 0) {
+    if (CrashDetectMenu == 0) {
+      MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
+    } else {
+      MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
+    }
+  }
+
   END_MENU();
 }
 

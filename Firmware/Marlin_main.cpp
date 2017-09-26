@@ -567,15 +567,24 @@ static void lcd_language_menu();
 void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_print_from_ram_and_continue(float e_move);
 
+extern int8_t CrashDetectMenu;
+
 
 void crashdet_enable()
 {
+	MYSERIAL.println("crashdet_enable"); 
 	tmc2130_sg_stop_on_crash = true;
+	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0xFF); 
+	CrashDetectMenu = 1;
+
 }
 
 void crashdet_disable()
 {
+	MYSERIAL.println("crashdet_disable"); 
 	tmc2130_sg_stop_on_crash = false;
+	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
+	CrashDetectMenu = 0;
 }
 
 void crashdet_stop_and_save_print()
@@ -586,7 +595,7 @@ void crashdet_stop_and_save_print()
 void crashdet_restore_print_and_continue()
 {
 	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
-	babystep_apply();
+//	babystep_apply();
 }
 
 
@@ -630,6 +639,9 @@ uint8_t fsensor_err_cnt = 0;
 //#define FSENS_MAXERR 2    //filament sensor max error count
 #define FSENS_MAXERR 5    //filament sensor max error count
 
+extern int8_t FSensorStateMenu;
+
+
 void fsensor_enable()
 {
 	MYSERIAL.println("fsensor_enable");
@@ -639,12 +651,16 @@ void fsensor_enable()
 	fsensor_enabled = true;
 	fsensor_ignore_error = true;
 	fsensor_M600 = false;
+	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0xFF); 
+	FSensorStateMenu = 1;
 }
 
 void fsensor_disable()
 {
 	MYSERIAL.println("fsensor_disable");
 	fsensor_enabled = false;
+	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
+	FSensorStateMenu = 0;
 }
 
 void fsensor_update()
@@ -882,11 +898,36 @@ void setup()
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
+	if (crashdet)
+	{
+		crashdet_enable();
+	    MYSERIAL.println("CrashDetect ENABLED!");
+	}
+	else
+	{
+		crashdet_disable();
+	    MYSERIAL.println("CrashDetect DISABLED");
+	}
+
 #endif //TMC2130
 
 #ifdef PAT9125
     MYSERIAL.print("PAT9125_init:");
     MYSERIAL.println(pat9125_init(200, 200));
+
+	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+	if (fsensor)
+	{
+		fsensor_enable();
+	    MYSERIAL.println("Filament Sensor ENABLED!");
+	}
+	else
+	{
+		fsensor_disable();
+	    MYSERIAL.println("Filament Sensor DISABLED");
+	}
+
 #endif //PAT9125
     
 	st_init();    // Initialize stepper, this enables interrupts!
