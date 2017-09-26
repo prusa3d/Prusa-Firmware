@@ -1110,7 +1110,6 @@ static void lcd_support_menu()
     }
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
     
-  MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
     
   MENU_ITEM(submenu, PSTR("Temperatures"), lcd_menu_temperatures);
   if (fans_check_enabled == true) {
@@ -4063,6 +4062,9 @@ static void lcd_main_menu()
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
+    
+  MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
+    
   END_MENU();
 
 }
