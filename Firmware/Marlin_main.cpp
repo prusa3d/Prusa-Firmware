@@ -1126,6 +1126,7 @@ void setup()
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
+/*
 	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT, false))	recover_print();
 	  else {
 		  eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -1133,6 +1134,35 @@ void setup()
 		  lcd_update(2);
 		  lcd_setstatuspgm(WELCOME_MSG);
 	  }
+*/
+      manage_heater(); // Update temperatures 
+#ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
+      MYSERIAL.println("Power panic detected!"); 
+      MYSERIAL.print("Current bed temp:"); 
+      MYSERIAL.println(degBed()); 
+      MYSERIAL.print("Saved bed temp:"); 
+      MYSERIAL.println((float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED)); 
+#endif 
+     if ( degBed() > ( (float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET) ){ 
+          #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
+        MYSERIAL.println("Automatic recovery!"); 
+          #endif 
+         recover_print(1); 
+      } 
+      else{ 
+          #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
+        MYSERIAL.println("Normal recovery!"); 
+          #endif 
+          if ( lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT, false) ) recover_print(0); 
+          else { 
+              eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
+              lcd_update_enable(true); 
+              lcd_update(2); 
+              lcd_setstatuspgm(WELCOME_MSG); 
+          } 
+           
+      } 
+	   
   }
   
 }
@@ -7061,7 +7091,7 @@ ISR(INT4_vect) {
 	if (IS_SD_PRINTING) uvlo_();
 }
 
-void recover_print() {
+void recover_print(uint8_t automatic) {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
@@ -7069,18 +7099,28 @@ void recover_print() {
 
   recover_machine_state_after_power_panic();
 
+    // Set the target bed and nozzle temperatures. 
+    sprintf_P(cmd, PSTR("M104 S%d"), target_temperature[active_extruder]); 
+    enquecommand(cmd); 
+    sprintf_P(cmd, PSTR("M140 S%d"), target_temperature_bed); 
+    enquecommand(cmd);
+
   // Lift the print head, so one may remove the excess priming material.
   if (current_position[Z_AXIS] < 25)
     enquecommand_P(PSTR("G1 Z25 F800"));
   // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine transformation status.
 	enquecommand_P(PSTR("G28 X Y"));
-  // Set the target bed and nozzle temperatures.
+  // Set the target bed and nozzle temperatures and wait.
 	sprintf_P(cmd, PSTR("M109 S%d"), target_temperature[active_extruder]);
 	enquecommand(cmd);
 	sprintf_P(cmd, PSTR("M190 S%d"), target_temperature_bed);
 	enquecommand(cmd);
 	enquecommand_P(PSTR("M83")); //E axis relative mode
-	enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure
+	//enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure
+    // If not automatically recoreverd (long power loss), extrude extra filament to stabilize 
+    if(automatic == 0){ 
+        enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure 
+    } 
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
   // Mark the power panic status as inactive.
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -7378,7 +7418,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	feedrate = saved_feedrate2; //restore feedrate
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS]/10, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS]/13, active_extruder);
     st_synchronize();
   memcpy(current_position, saved_pos, sizeof(saved_pos));
   memcpy(destination, current_position, sizeof(destination));

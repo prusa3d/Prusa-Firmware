@@ -140,8 +140,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
 #define TMC2130_THIGH     0         // THIGH - unused
 
-#define TMC2130_TCOOLTHRS_X 400       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_Y 400       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_X 450       // TCOOLTHRS - coolstep treshold
+#define TMC2130_TCOOLTHRS_Y 450       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_Z 500       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_E 500       // TCOOLTHRS - coolstep treshold
 
@@ -494,6 +494,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // At 400 microsteps per mm, a full step lifts the Z axis by 0.04mm, and a stepper driver cycle is 0.16mm.
 // The following example, 12 * (4 * 16 / 400) = 12 * 0.16mm = 1.92mm.
 #define UVLO_Z_AXIS_SHIFT 1.92
+// If power panic occured, and the current temperature is higher then target temperature before interrupt minus this offset, print will be recovered automatically. 
+#define AUTOMATIC_UVLO_BED_TEMP_OFFSET 5 
 
 #define HEATBED_V2
 
