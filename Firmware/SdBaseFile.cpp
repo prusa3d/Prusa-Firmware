@@ -1123,6 +1123,11 @@ int8_t SdBaseFile::readDir(dir_t* dir, char* longFilename) {
 
   while (1) {
     n = read(dir, sizeof(dir_t));
+	/*SERIAL_ECHOPGM("Jsem uvnitr: ");
+	MYSERIAL.print(n);
+	uint32_t pom = curPosition();
+	SERIAL_ECHOPGM(": ");
+	MYSERIAL.println(pom, 10);*/
     if (n != sizeof(dir_t)) return n == 0 ? 0 : -1;
     // last entry if DIR_NAME_FREE
     if (dir->name[0] == DIR_NAME_FREE) return 0;

@@ -59,6 +59,28 @@ char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
 }
 
 
+void CardReader::lsDive_pointer(const char *prepend, SdFile parent, const char * const match) {
+	dir_t p;
+	uint8_t cnt = 0;
+
+	//parent.seekSet = 
+	// Read the next entry from a directory
+	parent.readDir(p, longFilename);
+	
+
+			uint8_t pn0 = p.name[0];
+
+			filenameIsDir = DIR_IS_SUBDIR(&p);
+
+
+
+			
+			createFilename(filename, p);
+			creationDate = p.creationDate;
+			creationTime = p.creationTime;
+		
+}
+
 /**
 * Dive into a folder and recurse depth-first to perform a pre-set operation lsAction:
 *   LS_Count       - Add +1 to nrFiles for every file within the parent
@@ -70,9 +92,20 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 	dir_t p;
 	uint8_t cnt = 0;
 
+	/*SERIAL_ECHOPGM("Cur pos. first: ");
+	uint32_t pom = parent.curPosition();
+	MYSERIAL.println(pom, 10);*/
+
 	// Read the next entry from a directory
 	while (parent.readDir(p, longFilename) > 0) {
-
+		//MYSERIAL.print(int(cnt));
+		//uint32_t pom = parent.curCluster();
+		//SERIAL_ECHOPGM(": ");
+		//MYSERIAL.print(pom, 10);
+		//SERIAL_ECHOPGM("; ");
+		/*SERIAL_ECHOPGM("Cur pos.: ");
+		uint32_t pom = parent.curPosition();
+		MYSERIAL.println(pom, 10);*/
 		// If the entry is a directory and the action is LS_SerialPrint
 		if (DIR_IS_SUBDIR(&p) && lsAction != LS_Count && lsAction != LS_GetFilename) {
 
@@ -145,15 +178,18 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				SERIAL_ECHOPGM("Access date: ");
 				MYSERIAL.println(p.lastAccessDate);
 				SERIAL_ECHOLNPGM("");*/
+				cluster = parent.curCluster();
+				position = parent.curPosition();
 				creationDate = p.creationDate;
 				creationTime = p.creationTime;
-				
 				//writeDate = p.lastAccessDate;
 				
 				if (match != NULL) {
 					if (strcasecmp(match, filename) == 0) return;
 				}
-				else if (cnt == nrFiles) return;
+				else if (cnt == nrFiles) {
+					return;
+				}
 				cnt++;
 				break;
 			}
@@ -630,6 +666,16 @@ void CardReader::closefile(bool store_location)
   
 }
 
+/*void CardReader::getfilename_adress(uint16_t nr, const char * const match)
+{
+	curDir = &workDir;
+	lsAction = LS_GetFilenameAdress;
+	nrFiles = nr;
+	curDir->rewind();
+	lsDive("", *curDir, match);
+
+}*/
+
 void CardReader::getfilename(uint16_t nr, const char * const match/*=NULL*/)
 {
   curDir=&workDir;
@@ -639,6 +685,29 @@ void CardReader::getfilename(uint16_t nr, const char * const match/*=NULL*/)
   lsDive("",*curDir,match);
   
 }
+
+void CardReader::getfilename_simple(uint32_t position, const char * const match/*=NULL*/)
+{
+	//SERIAL_ECHOPGM("FILE NR:");
+	//MYSERIAL.println(position);
+	curDir = &workDir;
+	//curDir = curDir + nr * 32 * 8; //32 bytes per entry
+	lsAction = LS_GetFilename;
+	//nrFiles = nr;
+	//curDir->rewind();
+	curDir->seekSet(position);
+	//curDir->setpos(32*nr);
+	lsDive_pointer("", *curDir, match);
+	/*SERIAL_ECHOPGM("; Position:");
+	uint32_t pom = curDir->curPosition();
+	MYSERIAL.print(pom, 10);
+	SERIAL_ECHOPGM("; Cluster:");
+	MYSERIAL.println(curDir->curCluster());*/
+	
+
+	
+}
+
 
 uint16_t CardReader::getnrfilenames()
 {
@@ -712,6 +781,7 @@ void CardReader::getfilename_sorted(const uint16_t nr) {
 */
 void CardReader::presort() {
 	
+	unsigned long start_time = millis();
 	if (farm_mode) return; //sorting is not used in farm mode
 	uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 	
@@ -756,6 +826,8 @@ void CardReader::presort() {
 			char sortnames[fileCnt][LONG_FILENAME_LENGTH];
 			uint16_t creation_time[SDSORT_LIMIT];
 			uint16_t creation_date[SDSORT_LIMIT];
+		  //#elif SDSORT_POINTERS
+		   
 		  #endif
 
 		  // Folder sorting needs 1 bit per entry for flags.
@@ -768,6 +840,9 @@ void CardReader::presort() {
 		  #endif
 
 		#else // !SDSORT_USES_RAM
+		// uint32_t clusters [fileCnt];
+		 uint32_t positions [fileCnt];
+
 
 		  // By default re-read the names from SD for every compare
 		  // retaining only two filenames at a time. This is very
@@ -782,6 +857,11 @@ void CardReader::presort() {
 			// Init sort order.
 			for (uint16_t i = 0; i < fileCnt; i++) {
 				sort_order[i] = i;
+				getfilename(i);
+				//clusters[i] = cluster;
+				positions[i] = position-96;
+				//MYSERIAL.println(i);
+				//MYSERIAL.println(position);
 				// If using RAM then read all filenames now.
 				#if SDSORT_USES_RAM
 					getfilename(i);
@@ -812,6 +892,8 @@ void CardReader::presort() {
 					#endif
 				#endif
 			}
+			SERIAL_ECHOPGM("Mezicas:");
+			MYSERIAL.println(millis() - start_time);
 			// Bubble Sort
 			uint16_t counter = 0;
 			for (uint16_t i = fileCnt; --i;) {
@@ -862,15 +944,22 @@ void CardReader::presort() {
 					// throughout the loop. Slow if there are many.
 					#if !SDSORT_USES_RAM
 
-						getfilename(o1);
+						getfilename_simple(positions[o1]);
+					//getfilename(o1);
 						strcpy(name1, LONGEST_FILENAME); // save (or getfilename below will trounce it)
 						creation_date_bckp = creationDate;
 						creation_time_bckp = creationTime;
 						#if HAS_FOLDER_SORTING
 							bool dir1 = filenameIsDir;
 						#endif
-						getfilename(o2);
-						char *name2 = LONGEST_FILENAME; // use the string in-place
+						getfilename_simple(positions[o2]);
+						//	getfilename(o2);
+							char *name2 = LONGEST_FILENAME; // use the string in-place
+						
+						//SERIAL_ECHOPGM("NAMES:");
+						//MYSERIAL.println(name1);
+						//MYSERIAL.println(name2);
+							
 
 					#endif // !SDSORT_USES_RAM
 
@@ -887,7 +976,9 @@ void CardReader::presort() {
 						sort_order[j + 1] = o1;
 						didSwap = true;
 						//SERIAL_ECHOLNPGM("did swap");
+						
 					}
+					//SERIAL_ECHOLNPGM("");
 				}
 				if (!didSwap) break;
 			} //end of bubble sort loop
@@ -928,6 +1019,8 @@ void CardReader::presort() {
 	  lcd_set_arrows();
 	  lcd_update(2);
 	#endif
+	  SERIAL_ECHOPGM("Sort time:");
+	  MYSERIAL.println(millis() - start_time);
 }
 
 void CardReader::flush_presort() {
