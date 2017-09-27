@@ -115,13 +115,13 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
 
-#define TMC2130_PWM_GRAD_X  4         // PWMCONF
-#define TMC2130_PWM_AMPL_X  220       // PWMCONF
+#define TMC2130_PWM_GRAD_X  2         // PWMCONF
+#define TMC2130_PWM_AMPL_X  230       // PWMCONF
 #define TMC2130_PWM_AUTO_X  1         // PWMCONF
 #define TMC2130_PWM_FREQ_X  2         // PWMCONF
 
-#define TMC2130_PWM_GRAD_Y  4         // PWMCONF
-#define TMC2130_PWM_AMPL_Y  225       // PWMCONF
+#define TMC2130_PWM_GRAD_Y  2         // PWMCONF
+#define TMC2130_PWM_AMPL_Y  235       // PWMCONF
 #define TMC2130_PWM_AUTO_Y  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Y  2         // PWMCONF
 
