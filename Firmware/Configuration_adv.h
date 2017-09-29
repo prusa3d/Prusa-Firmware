@@ -323,7 +323,7 @@
  * K=0 means advance disabled.
  * See Marlin documentation for calibration instructions.
  */
-//#define LIN_ADVANCE
+#define LIN_ADVANCE
 
 #ifdef LIN_ADVANCE
   #define LIN_ADVANCE_K 0 //Try around 45 for PLA, around 25 for ABS.

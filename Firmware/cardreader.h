@@ -27,6 +27,7 @@ public:
   void release();
   void startFileprint();
   void pauseSDPrint();
+  uint32_t getFileSize();
   void getStatus();
   void printingHasFinished();
 

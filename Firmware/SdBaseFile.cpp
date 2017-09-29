@@ -277,6 +277,8 @@ int16_t SdBaseFile::fgets(char* str, int16_t num, char* delim) {
  * \return The value one, true, is returned for success and
  * the value zero, false, is returned for failure.
  */
+
+
 bool SdBaseFile::getFilename(char* name) {
   if (!isOpen()) return false;
 
