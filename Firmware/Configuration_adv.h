@@ -268,7 +268,8 @@
   #define SDSORT_USES_STACK  false  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
   #define SDSORT_CACHE_NAMES false  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
   #define SDSORT_DYNAMIC_RAM false  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
-  #define SDSORT_POINTERS	 false //stores adresses of filenames on stack
+  #define SDSORT_POINTERS	 false //stores adresses of filenames on stack	
+  #define QUICKSORT 
 #endif
 
 #if defined(SDCARD_SORT_ALPHA)
