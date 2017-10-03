@@ -745,9 +745,9 @@ void lcd_commands()
 		lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 		if (lcd_commands_step == 0)
 		{
-			lcd_commands_step = 5;
+			lcd_commands_step = 6;
 		}
-		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
 		{
 			enquecommand_P(PSTR("M107"));
 			enquecommand_P(PSTR("M104 S210"));
@@ -758,9 +758,9 @@ void lcd_commands()
 			enquecommand_P(PSTR("G87")); //sets calibration status
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
-			lcd_commands_step = 4;
+			lcd_commands_step = 5;
 		}
-		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
 		{
 			
 			lcd_implementation_clear();
@@ -775,9 +775,9 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
 			enquecommand_P(PSTR("M204 S1000")); //set acceleration
 			enquecommand_P(PSTR("G1 F4000"));
-			lcd_commands_step = 3;
+			lcd_commands_step = 4;
 		}
-		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty()) //draw meander
+		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty()) //draw meander
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 		
@@ -817,6 +817,13 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
 			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
 			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));
+			lcd_commands_step = 3;
+		}
+
+		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+
 			lcd_commands_step = 2;
 		}
 
@@ -4414,7 +4421,7 @@ static void lcd_main_menu()
         
     }*/
  
-  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
+  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
