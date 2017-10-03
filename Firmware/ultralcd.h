@@ -105,6 +105,7 @@ void lcd_mylang();
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
+  extern int8_t SilentModeMenu;
 
 #ifdef SNMM
   extern uint8_t snmm_extruder;

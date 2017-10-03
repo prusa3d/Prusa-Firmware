@@ -1156,10 +1156,9 @@ void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 
 
 void digipot_init() //Initialize Digipot Motor Current
-{
-
+{  
   EEPROM_read_st(EEPROM_SILENT,(uint8_t*)&SilentMode,sizeof(SilentMode));
-
+  SilentModeMenu = SilentMode;
   #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
     if(SilentMode == 0){
     const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT_LOUD;

@@ -2754,7 +2754,12 @@ static void lcd_sort_type_set() {
 #endif //SDCARD_SORT_ALPHA
 
 static void lcd_silent_mode_set() {
-  SilentModeMenu = !SilentModeMenu;
+	switch (SilentModeMenu) {
+	case 0: SilentModeMenu = 1; break;
+	case 1: SilentModeMenu = 2; break;
+	case 2: SilentModeMenu = 0; break;
+	default: SilentModeMenu = 0; break;
+	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
   digipot_init();
   lcd_goto_menu(lcd_settings_menu, 7);
@@ -3157,11 +3162,14 @@ static void lcd_settings_menu()
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
-
-  if ((SilentModeMenu == 0) || (farm_mode) ) {
-    MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
-  } else {
-    MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
+    
+  if (!farm_mode) { //dont show in menu if we are in farm mode
+	  switch (SilentModeMenu) {
+	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  }	  
   }
   
 	if (!isPrintPaused && !homing_flag)
@@ -4494,8 +4502,13 @@ static void lcd_autostart_sd()
 
 
 static void lcd_silent_mode_set_tune() {
-  SilentModeMenu = !SilentModeMenu;
-  eeprom_update_byte((unsigned char*)EEPROM_SILENT, SilentModeMenu);
+  switch (SilentModeMenu) {
+  case 0: SilentModeMenu = 1; break;
+  case 1: SilentModeMenu = 2; break;
+  case 2: SilentModeMenu = 0; break;
+  default: SilentModeMenu = 0; break;
+  }
+  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
   digipot_init();
   lcd_goto_menu(lcd_tune_menu, 9);
 }
@@ -4530,10 +4543,13 @@ static void lcd_tune_menu()
   MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
   
-  if (SilentModeMenu == 0) {
-    MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune);
-  } else {
-    MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set_tune);
+  if (!farm_mode) { //dont show in menu if we are in farm mode
+	  switch (SilentModeMenu) {
+	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  }
   }
   END_MENU();
 }
