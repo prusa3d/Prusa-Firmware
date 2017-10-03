@@ -1092,6 +1092,11 @@ const char * const MSG_FILAMENT_LOADING_T3_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENT_LOADING_T3_DE
 };
 
+const char MSG_FILE_CNT_EN[] PROGMEM = "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100.";
+const char * const MSG_FILE_CNT_LANG_TABLE[1] PROGMEM = {
+	MSG_FILE_CNT_EN
+};
+
 const char MSG_FILE_INCOMPLETE_EN[] PROGMEM = "File incomplete. Continue anyway?";
 const char * const MSG_FILE_INCOMPLETE_LANG_TABLE[1] PROGMEM = {
 	MSG_FILE_INCOMPLETE_EN

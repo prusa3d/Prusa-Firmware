@@ -45,8 +45,10 @@ public:
 
   #ifdef SDCARD_SORT_ALPHA
 	void presort();
-	void swap(uint8_t array[], uint8_t left, uint8_t right);
-	void quicksort(uint8_t array[], uint8_t left, uint8_t right, uint32_t positions[]);
+  #ifdef SDSORT_QUICKSORT
+	void swap(uint8_t left, uint8_t right);
+	void quicksort(uint8_t left, uint8_t right);
+  #endif //SDSORT_QUICKSORT
 	void getfilename_sorted(const uint16_t nr);
 	#if SDSORT_GCODE
 	  FORCE_INLINE void setSortOn(bool b) { sort_alpha = b; presort(); }

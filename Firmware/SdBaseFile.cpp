@@ -1114,27 +1114,16 @@ int8_t SdBaseFile::readDir(dir_t* dir, char* longFilename) {
   int16_t n;
   // if not a directory file or miss-positioned return an error
   if (!isDir() || (0X1F & curPosition_)) {
-	  SERIAL_ECHOLNPGM("return -1");
 	  return -1;
   }
   
   //If we have a longFilename buffer, mark it as invalid. If we find a long filename it will be filled automaticly.
   if (longFilename != NULL)
   {
-	//  SERIAL_ECHOPGM("; reseting long filename; ");
   	longFilename[0] = '\0';
   }
-  //int i_pom = 0;
   while (1) {
     n = read(dir, sizeof(dir_t));
-
-	/*SERIAL_ECHOPGM("Jsem uvnitr: ");
-	MYSERIAL.print(n);
-	uint32_t pom = curPosition();
-	SERIAL_ECHOPGM(": ");
-	MYSERIAL.println(pom, 10);*/
-	//SERIAL_ECHOPGM("i: ");
-	//MYSERIAL.println(i_pom++);
 
     if (n != sizeof(dir_t)) return n == 0 ? 0 : -1;
     // last entry if DIR_NAME_FREE
@@ -1144,20 +1133,16 @@ int8_t SdBaseFile::readDir(dir_t* dir, char* longFilename) {
 	}
     // skip empty entries and entry for .  and ..
 	if (dir->name[0] == DIR_NAME_DELETED || dir->name[0] == '.') {
-		//SERIAL_ECHOLNPGM("Empty entry, . or ..");
 		continue;
 	}
     //Fill the long filename if we have a long filename entry,
 	// long filename entries are stored before the actual filename.
 	if (DIR_IS_LONG_NAME(dir) && longFilename != NULL)
     {
-		//SERIAL_ECHOLNPGM("We have long filename entry");
     	vfat_t *VFAT = (vfat_t*)dir;
 		//Sanity check the VFAT entry. The first cluster is always set to zero. And th esequence number should be higher then 0
     	if (VFAT->firstClusterLow == 0 && (VFAT->sequenceNumber & 0x1F) > 0 && (VFAT->sequenceNumber & 0x1F) <= MAX_VFAT_ENTRIES)
     	{
-			//SERIAL_ECHOPGM("VFAT Entries no:");
-			//MYSERIAL.println(VFAT->sequenceNumber & 0x1F);
 			//TODO: Store the filename checksum to verify if a none-long filename aware system modified the file table.
     		n = ((VFAT->sequenceNumber & 0x1F) - 1) * 13;
 			longFilename[n+0] = VFAT->name1[0];
@@ -1176,8 +1161,6 @@ int8_t SdBaseFile::readDir(dir_t* dir, char* longFilename) {
 			//If this VFAT entry is the last one, add a NUL terminator at the end of the string
 			if (VFAT->sequenceNumber & 0x40) {
 				longFilename[n + 13] = '\0';
-				//SERIAL_ECHOPGM("LOng F");
-				//MYSERIAL.println(longFilename);
 			}
 		}
     }
