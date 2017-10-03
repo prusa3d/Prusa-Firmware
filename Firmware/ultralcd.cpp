@@ -560,10 +560,16 @@ void lcd_commands()
 			strcpy(cmd1, "G1 Z");
 			strcat(cmd1, ftostr32(pause_lastpos[Z_AXIS]));
 			enquecommand(cmd1);
-			if (axis_relative_modes[3] == true) enquecommand_P(PSTR("M83")); // set extruder to relative mode.
-			else enquecommand_P(PSTR("M82")); // set extruder to absolute mode
-			enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
-			enquecommand_P(PSTR("G90")); //absolute positioning
+			
+			if (axis_relative_modes[3] == false) {
+				enquecommand_P(PSTR("M83")); // set extruder to relative mode
+				enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
+				enquecommand_P(PSTR("M82")); // set extruder to absolute mode
+			}
+			else {
+				enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
+			}
+			
 			lcd_commands_step = 1;
 		}
 		if (lcd_commands_step == 3 && !blocks_queued()) {	//wait for nozzle to reach target temp
@@ -578,7 +584,7 @@ void lcd_commands()
 			strcpy(cmd1, "M104 S");
 			strcat(cmd1, ftostr3(HotendTempBckp));
 			enquecommand(cmd1);
-			
+			enquecommand_P(PSTR("G90")); //absolute positioning
 			strcpy(cmd1, "G1 X");
 			strcat(cmd1, ftostr32(pause_lastpos[X_AXIS]));
 			strcat(cmd1, " Y");
