@@ -1099,8 +1099,6 @@ void setup()
 	tp_init();    // Initialize temperature loop
 	plan_init();  // Initialize planner;
 	watchdog_init();
-    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   ")); // we need to do this again for some reason, no time to research
-    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	st_init();    // Initialize stepper, this enables interrupts!
 	setup_photpin();
 	servo_init();
@@ -1197,6 +1195,8 @@ void setup()
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
+	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   ")); // we need to do this again for some reason, no time to research
+	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	card.initsd();
 
 	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
@@ -5964,14 +5964,52 @@ void ClearToSend()
         SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
+update_currents() {
+	float current_high[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
+	float current_low[3] = DEFAULT_PWM_MOTOR_CURRENT;
+	float tmp_motor[3];
+	
+	//SERIAL_ECHOLNPGM("Currents updated: ");
+
+	if (destination[Z_AXIS] < Z_SILENT) {
+		//SERIAL_ECHOLNPGM("LOW");
+		for (uint8_t i = 0; i < 3; i++) {
+			digipot_current(i, current_low[i]);		
+			/*MYSERIAL.print(int(i));
+			SERIAL_ECHOPGM(": ");
+			MYSERIAL.println(current_low[i]);*/
+		}		
+	}
+	else if (destination[Z_AXIS] > Z_HIGH_POWER) {
+		//SERIAL_ECHOLNPGM("HIGH");
+		for (uint8_t i = 0; i < 3; i++) {
+			digipot_current(i, current_high[i]);
+			/*MYSERIAL.print(int(i));
+			SERIAL_ECHOPGM(": ");
+			MYSERIAL.println(current_high[i]);*/
+		}		
+	}
+	else {
+		for (uint8_t i = 0; i < 3; i++) {
+			float q = current_low[i] - Z_SILENT*((current_high[i] - current_low[i]) / (Z_HIGH_POWER - Z_SILENT));
+			tmp_motor[i] = ((current_high[i] - current_low[i]) / (Z_HIGH_POWER - Z_SILENT))*destination[Z_AXIS] + q;
+			digipot_current(i, tmp_motor[i]);			
+			/*MYSERIAL.print(int(i));
+			SERIAL_ECHOPGM(": ");
+			MYSERIAL.println(tmp_motor[i]);*/
+		}
+	}
+}
+
 void get_coordinates()
 {
   bool seen[4]={false,false,false,false};
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
-      destination[i] = (float)code_value() + (axis_relative_modes[i] || relative_mode)*current_position[i];
+	  destination[i] = (float)code_value() + (axis_relative_modes[i] || relative_mode)*current_position[i];
       seen[i]=true;
+	  if (i == Z_AXIS && SilentModeMenu == 2) update_currents();
     }
     else destination[i] = current_position[i]; //Are these else lines really needed?
   }

@@ -63,6 +63,11 @@ const char * const MSG_AUTO_HOME_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_AUTO_HOME_DE
 };
 
+const char MSG_AUTO_MODE_ON_EN[] PROGMEM = "Mode [auto power]";
+const char * const MSG_AUTO_MODE_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_AUTO_MODE_ON_EN
+};
+
 const char MSG_A_RETRACT_EN[] PROGMEM = "A-retract";
 const char * const MSG_A_RETRACT_LANG_TABLE[1] PROGMEM = {
 	MSG_A_RETRACT_EN
@@ -1090,6 +1095,11 @@ const char * const MSG_FILAMENT_LOADING_T3_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENT_LOADING_T3_ES,
 	MSG_FILAMENT_LOADING_T3_PL,
 	MSG_FILAMENT_LOADING_T3_DE
+};
+
+const char MSG_FILE_CNT_EN[] PROGMEM = "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100.";
+const char * const MSG_FILE_CNT_LANG_TABLE[1] PROGMEM = {
+	MSG_FILE_CNT_EN
 };
 
 const char MSG_FILE_INCOMPLETE_EN[] PROGMEM = "File incomplete. Continue anyway?";

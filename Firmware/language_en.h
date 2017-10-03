@@ -103,6 +103,7 @@
 
 #define MSG_SILENT_MODE_ON					"Mode     [silent]"
 #define MSG_SILENT_MODE_OFF					"Mode [high power]" 
+#define MSG_AUTO_MODE_ON					"Mode [auto power]"
 #define(length=20) MSG_REBOOT				"Reboot the printer"
 #define(length=20) MSG_TAKE_EFFECT			" for take effect"											
 
@@ -340,3 +341,4 @@
 #define MSG_WIZARD_INSERT_CORRECT_FILAMENT			"Please load PLA filament and then resume Wizard by rebooting the printer."
 #define MSG_PLA_FILAMENT_LOADED				"Is PLA filament loaded?"
 #define MSG_PLEASE_LOAD_PLA					"Please load PLA filament first."
+#define(length=20, lines=4) MSG_FILE_CNT	"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
