@@ -194,6 +194,8 @@ MOTOR CURRENT SETTINGS
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
+#define Z_SILENT 0
+#define Z_HIGH_POWER 200
 #endif
 
 /*------------------------------------
