@@ -103,6 +103,7 @@
 
 #define MSG_SILENT_MODE_ON					"Mode     [silent]"
 #define MSG_SILENT_MODE_OFF					"Mode [high power]" 
+#define MSG_AUTO_MODE_ON					"Mode [auto power]"
 #define(length=20) MSG_REBOOT				"Reboot the printer"
 #define(length=20) MSG_TAKE_EFFECT			" for take effect"											
 
@@ -261,8 +262,8 @@
 #define(length=20, lines=8) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
 #define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
-#define(lenght=18, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
-#define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
+#define(lenght=20) MSG_UNLOADING_FILAMENT			"Unloading filament"
+#define(length=20, lines=10) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
 #define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_LEFT        "FrontLeft [um]"
@@ -287,7 +288,7 @@
 #define(length=17, lines=1) MSG_PID_EXTRUDER					"PID calibration"
 #define(length=19, lines=1) MSG_SET_TEMPERATURE					"Set temperature:"
 #define(length=20, lines=1) MSG_PID_FINISHED					"PID cal. finished"
-#define(length=20, lines=1) MSG_PID_RUNNING						"PID cal.           "
+#define(length=20, lines=1) MSG_PID_RUNNING						"PID cal.         "
 
 #define(length=17, lines=1) MSG_CALIBRATE_PINDA					"Calibrate"
 #define(length=17, lines=1) MSG_CALIBRATION_PINDA_MENU			"Temp. calibration"
@@ -345,3 +346,4 @@
 #define MSG_WIZARD_INSERT_CORRECT_FILAMENT			"Please load PLA filament and then resume Wizard by rebooting the printer."
 #define MSG_PLA_FILAMENT_LOADED				"Is PLA filament loaded?"
 #define MSG_PLEASE_LOAD_PLA					"Please load PLA filament first."
+#define MSG_FILE_CNT	"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."

@@ -75,7 +75,7 @@ void lcd_mylang();
   #define LCD_ALERTMESSAGERPGM(x) lcd_setalertstatuspgm((x))
 
   #define LCD_UPDATE_INTERVAL 100
-  #define LCD_TIMEOUT_TO_STATUS 15000
+  #define LCD_TIMEOUT_TO_STATUS 30000
 
   #ifdef ULTIPANEL
   void lcd_buttons_update();
@@ -105,6 +105,7 @@ void lcd_mylang();
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
+  extern int8_t SilentModeMenu;
 
 #ifdef SNMM
   extern uint8_t snmm_extruder;
@@ -265,7 +266,7 @@ void display_loading();
 void lcd_service_mode_show_result();
 
 #if !SDSORT_USES_RAM
-void lcd_set_arrows();
+void lcd_set_degree();
 void lcd_set_progress();
 #endif
 

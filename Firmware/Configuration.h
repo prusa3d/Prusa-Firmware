@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.12-7"
+#define FW_version "3.0.12-9"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -51,7 +51,7 @@
 #define EEPROM_XYZ_CAL_SKEW (EEPROM_SD_SORT - 4)
 #define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
 
-// addition for PJR amendment
+// addition for hyperfine tuning
 #define EEPROM_BED_CORRECTION_FRONT_LEFT (EEPROM_WIZARD_ACTIVE - 1)
 #define EEPROM_BED_CORRECTION_FRONT_RIGHT (EEPROM_BED_CORRECTION_FRONT_LEFT - 1)
 #define EEPROM_BED_CORRECTION_REAR_RIGHT (EEPROM_BED_CORRECTION_FRONT_RIGHT - 1)
