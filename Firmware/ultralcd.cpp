@@ -100,6 +100,10 @@ int8_t SilentModeMenu = 0;
 uint8_t snmm_extruder = 0;
 #endif
 
+#ifdef SDCARD_SORT_ALPHA
+bool presort_flag = false;
+#endif
+
 int lcd_commands_type=LCD_COMMAND_IDLE;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
@@ -560,10 +564,16 @@ void lcd_commands()
 			strcpy(cmd1, "G1 Z");
 			strcat(cmd1, ftostr32(pause_lastpos[Z_AXIS]));
 			enquecommand(cmd1);
-			if (axis_relative_modes[3] == true) enquecommand_P(PSTR("M83")); // set extruder to relative mode.
-			else enquecommand_P(PSTR("M82")); // set extruder to absolute mode
-			enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
-			enquecommand_P(PSTR("G90")); //absolute positioning
+			
+			if (axis_relative_modes[3] == false) {
+				enquecommand_P(PSTR("M83")); // set extruder to relative mode
+				enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
+				enquecommand_P(PSTR("M82")); // set extruder to absolute mode
+			}
+			else {
+				enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
+			}
+			
 			lcd_commands_step = 1;
 		}
 		if (lcd_commands_step == 3 && !blocks_queued()) {	//wait for nozzle to reach target temp
@@ -578,7 +588,7 @@ void lcd_commands()
 			strcpy(cmd1, "M104 S");
 			strcat(cmd1, ftostr3(HotendTempBckp));
 			enquecommand(cmd1);
-			
+			enquecommand_P(PSTR("G90")); //absolute positioning
 			strcpy(cmd1, "G1 X");
 			strcat(cmd1, ftostr32(pause_lastpos[X_AXIS]));
 			strcat(cmd1, " Y");
@@ -620,9 +630,9 @@ void lcd_commands()
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 			enquecommand_P(PSTR("G1 Z0.250 F7200.000"));
-			enquecommand_P(PSTR("G1 X50.0 E80.0  F1000.0));
-			nquecommand_P(PSTR("G1 X160.0 E20.0  F1000.0));
-			enquecommand_P(PSTR("G1 Z0.200 F7200.000));
+			enquecommand_P(PSTR("G1 X50.0 E80.0  F1000.0"));
+			enquecommand_P(PSTR("G1 X160.0 E20.0  F1000.0"));
+			enquecommand_P(PSTR("G1 Z0.200 F7200.000"));
 			enquecommand_P(PSTR("G1 X220.0 E13 F1000.0"));
 			enquecommand_P(PSTR("G1 X240.0 E0 F1000.0"));
 			enquecommand_P(PSTR("G92 E0.0"));
@@ -2737,7 +2747,6 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
 #ifdef SDCARD_SORT_ALPHA
 static void lcd_sort_type_set() {
 	uint8_t sdSort;
-	
 	EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
 	switch (sdSort) {
 	case SD_SORT_TIME: sdSort = SD_SORT_ALPHA; break;
@@ -2745,16 +2754,18 @@ static void lcd_sort_type_set() {
 	default: sdSort = SD_SORT_TIME;
 	}
 	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
-	lcd_goto_menu(lcd_sdcard_menu, 1);
-	//lcd_update(2);
-	//delay(1000);
-	
-	card.presort();
+	presort_flag = true;
+	lcd_goto_menu(lcd_settings_menu, 8);
 }
 #endif //SDCARD_SORT_ALPHA
 
 static void lcd_silent_mode_set() {
-  SilentModeMenu = !SilentModeMenu;
+	switch (SilentModeMenu) {
+	case 0: SilentModeMenu = 1; break;
+	case 1: SilentModeMenu = 2; break;
+	case 2: SilentModeMenu = 0; break;
+	default: SilentModeMenu = 0; break;
+	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
   digipot_init();
   lcd_goto_menu(lcd_settings_menu, 7);
@@ -2770,8 +2781,8 @@ static void lcd_set_lang(unsigned char lang) {
 }
 
 #if !SDSORT_USES_RAM
-void lcd_set_arrows() {
-	void lcd_set_custom_characters_arrows();
+void lcd_set_degree() {
+	lcd_set_custom_characters_degree();
 }
 
 void lcd_set_progress() {
@@ -3157,11 +3168,14 @@ static void lcd_settings_menu()
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
-
-  if ((SilentModeMenu == 0) || (farm_mode) ) {
-    MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
-  } else {
-    MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
+    
+  if (!farm_mode) { //dont show in menu if we are in farm mode
+	  switch (SilentModeMenu) {
+	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  }	  
   }
   
 	if (!isPrintPaused && !homing_flag)
@@ -3175,6 +3189,17 @@ static void lcd_settings_menu()
   } else {
     MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF, lcd_toshiba_flash_air_compatibility_toggle);
   }
+#ifdef SDCARD_SORT_ALPHA
+  if (!farm_mode) {
+	  uint8_t sdSort;
+	  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	  switch (sdSort) {
+	  case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+	  case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+	  default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
+	  }
+  }
+#endif // SDCARD_SORT_ALPHA
     
     if (farm_mode)
     {
@@ -3804,12 +3829,10 @@ void change_extr(int extr) { //switches multiplexer for extruders
 	case 1:
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, LOW);
-		
 		break;
 	case 2:
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, HIGH);
-		
 		break;
 	case 3:
 		WRITE(E_MUX0_PIN, HIGH);
@@ -3821,7 +3844,7 @@ void change_extr(int extr) { //switches multiplexer for extruders
 		WRITE(E_MUX1_PIN, LOW);
 		
 		break;
-	}
+	}	
 	delay(100);
 }
 
@@ -4496,8 +4519,13 @@ static void lcd_autostart_sd()
 
 
 static void lcd_silent_mode_set_tune() {
-  SilentModeMenu = !SilentModeMenu;
-  eeprom_update_byte((unsigned char*)EEPROM_SILENT, SilentModeMenu);
+  switch (SilentModeMenu) {
+  case 0: SilentModeMenu = 1; break;
+  case 1: SilentModeMenu = 2; break;
+  case 2: SilentModeMenu = 0; break;
+  default: SilentModeMenu = 0; break;
+  }
+  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
   digipot_init();
   lcd_goto_menu(lcd_tune_menu, 9);
 }
@@ -4532,10 +4560,13 @@ static void lcd_tune_menu()
   MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
   
-  if (SilentModeMenu == 0) {
-    MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune);
-  } else {
-    MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set_tune);
+  if (!farm_mode) { //dont show in menu if we are in farm mode
+	  switch (SilentModeMenu) {
+	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  }
   }
   END_MENU();
 }
@@ -4691,8 +4722,13 @@ void getFileDescription(char *name, char *description) {
 
 void lcd_sdcard_menu()
 {	
-  uint8_t sdSort;
+  uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
+
   int tempScrool = 0;
+  if (presort_flag == true) {
+	  presort_flag = false;
+	  card.presort();	  
+  }
   if (lcdDrawUpdate == 0 && LCD_CLICKED == 0)
     //delay(100);
   return; // nothing to do (so don't thrash the SD card)
@@ -4700,16 +4736,6 @@ void lcd_sdcard_menu()
     
   START_MENU();
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
-  if (!farm_mode) {
-#ifdef SDCARD_SORT_ALPHA
-	  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
-	  switch (sdSort) {
-	  case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
-	  case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
-	  default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
-	  }
-#endif // SDCARD_SORT_ALPHA
-  }
   card.getWorkDirName();
   if (card.filename[0] == '/')
   {
@@ -4724,14 +4750,8 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-		const uint16_t nr = ((sdSort == SD_SORT_NONE) || farm_mode) ? (fileCnt - 1 - i) : i;
+		uint16_t nr = ((sdSort == SD_SORT_NONE) || farm_mode || (sdSort == SD_SORT_TIME)) ? (fileCnt - 1 - i) : i;
 
-		 /* #ifdef SDCARD_RATHERRECENTFIRST
-			#ifndef SDCARD_SORT_ALPHA
-				fileCnt - 1 -
-			#endif
-		  #endif
-		i;*/
 		#ifdef SDCARD_SORT_ALPHA
 		if (sdSort == SD_SORT_NONE) card.getfilename(nr);
 		else card.getfilename_sorted(nr);
@@ -4749,17 +4769,6 @@ void lcd_sdcard_menu()
   }
   END_MENU();
 }
-
-//char description [10] [31];
-
-/*void get_description() {
-	uint16_t fileCnt = card.getnrfilenames();
-	for (uint16_t i = 0; i < fileCnt; i++)
-	{
-		card.getfilename(fileCnt - 1 - i);
-		getFileDescription(card.filename, description[i]);
-	}
-}*/
 
 /*void lcd_farm_sdcard_menu() 
 {
@@ -5767,6 +5776,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
         (*currentMenu)();
         menuExiting = false;
       }
+		  lcd_implementation_clear();
 		  lcd_return_to_status();
 		  lcdDrawUpdate = 2;
 	  }

@@ -306,6 +306,7 @@ class SdBaseFile {
    */
   bool seekEnd(int32_t offset = 0) {return seekSet(fileSize_ + offset);}
   bool seekSet(uint32_t pos);
+  //bool setCluster(uint32_t clust);
   bool sync();
   bool timestamp(SdBaseFile* file);
   bool timestamp(uint8_t flag, uint16_t year, uint8_t month, uint8_t day,

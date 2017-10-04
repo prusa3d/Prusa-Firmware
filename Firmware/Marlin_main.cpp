@@ -498,6 +498,8 @@ unsigned long chdkHigh = 0;
 boolean chdkActive = false;
 #endif
 
+static int saved_feedmultiply_mm = 100;
+
 //===========================================================================
 //=============================Routines======================================
 //===========================================================================
@@ -1097,8 +1099,6 @@ void setup()
 	tp_init();    // Initialize temperature loop
 	plan_init();  // Initialize planner;
 	watchdog_init();
-    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   ")); // we need to do this again for some reason, no time to research
-    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	st_init();    // Initialize stepper, this enables interrupts!
 	setup_photpin();
 	servo_init();
@@ -1195,6 +1195,8 @@ void setup()
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
+	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   ")); // we need to do this again for some reason, no time to research
+	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	card.initsd();
 
 	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
@@ -4934,12 +4936,20 @@ Sigma_Exit:
       SERIAL_ECHOLN("");
     }break;
     #endif
+
     case 220: // M220 S<factor in percent>- set speed factor override percentage
     {
+	  if (code_seen('B')) //backup current speed factor
+	  {
+		saved_feedmultiply_mm = feedmultiply;
+	  }
       if(code_seen('S'))
-      {
+      {		
         feedmultiply = code_value() ;
       }
+	  if (code_seen('R')) { //restore previous feedmultiply
+		  feedmultiply = saved_feedmultiply_mm;
+	  }
     }
     break;
     case 221: // M221 S<factor in percent>- set extrude factor override percentage
@@ -5808,22 +5818,18 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		  case 1:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, LOW);
-
 			  break;
 		  case 2:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, HIGH);
-
 			  break;
 		  case 3:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, HIGH);
-
 			  break;
 		  default:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, LOW);
-
 			  break;
 		  }
 		  delay(100);
@@ -5958,14 +5964,52 @@ void ClearToSend()
         SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
+update_currents() {
+	float current_high[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
+	float current_low[3] = DEFAULT_PWM_MOTOR_CURRENT;
+	float tmp_motor[3];
+	
+	//SERIAL_ECHOLNPGM("Currents updated: ");
+
+	if (destination[Z_AXIS] < Z_SILENT) {
+		//SERIAL_ECHOLNPGM("LOW");
+		for (uint8_t i = 0; i < 3; i++) {
+			digipot_current(i, current_low[i]);		
+			/*MYSERIAL.print(int(i));
+			SERIAL_ECHOPGM(": ");
+			MYSERIAL.println(current_low[i]);*/
+		}		
+	}
+	else if (destination[Z_AXIS] > Z_HIGH_POWER) {
+		//SERIAL_ECHOLNPGM("HIGH");
+		for (uint8_t i = 0; i < 3; i++) {
+			digipot_current(i, current_high[i]);
+			/*MYSERIAL.print(int(i));
+			SERIAL_ECHOPGM(": ");
+			MYSERIAL.println(current_high[i]);*/
+		}		
+	}
+	else {
+		for (uint8_t i = 0; i < 3; i++) {
+			float q = current_low[i] - Z_SILENT*((current_high[i] - current_low[i]) / (Z_HIGH_POWER - Z_SILENT));
+			tmp_motor[i] = ((current_high[i] - current_low[i]) / (Z_HIGH_POWER - Z_SILENT))*destination[Z_AXIS] + q;
+			digipot_current(i, tmp_motor[i]);			
+			/*MYSERIAL.print(int(i));
+			SERIAL_ECHOPGM(": ");
+			MYSERIAL.println(tmp_motor[i]);*/
+		}
+	}
+}
+
 void get_coordinates()
 {
   bool seen[4]={false,false,false,false};
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
-      destination[i] = (float)code_value() + (axis_relative_modes[i] || relative_mode)*current_position[i];
+	  destination[i] = (float)code_value() + (axis_relative_modes[i] || relative_mode)*current_position[i];
       seen[i]=true;
+	  if (i == Z_AXIS && SilentModeMenu == 2) update_currents();
     }
     else destination[i] = current_position[i]; //Are these else lines really needed?
   }
