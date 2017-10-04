@@ -605,9 +605,9 @@ void lcd_commands()
 		lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 		if (lcd_commands_step == 0)
 		{
-			lcd_commands_step = 6;
+			lcd_commands_step = 7;
 		}
-		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 7 && !blocks_queued() && cmd_buffer_empty())
 		{
 			enquecommand_P(PSTR("M107"));
 			enquecommand_P(PSTR("M104 S210"));
@@ -624,9 +624,9 @@ void lcd_commands()
 			enquecommand_P(PSTR("G92 E0"));
 			enquecommand_P(PSTR("M203 E100"));
 			enquecommand_P(PSTR("M92 E140"));
-			lcd_commands_step = 5;
+			lcd_commands_step = 6;
 		}
-		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 			enquecommand_P(PSTR("G1 Z0.250 F7200.000"));
@@ -648,9 +648,9 @@ void lcd_commands()
 			lcd_goto_menu(lcd_babystep_z, 0, false);
 
 
-			lcd_commands_step = 4;
+			lcd_commands_step = 5;
 		}
-		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty()) //draw meander
+		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty()) //draw meander
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 
@@ -671,14 +671,47 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X200 Y75 E3.62773"));
 			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
 			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
-			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));
+			
+			lcd_commands_step = 4;
+		}
+
+		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty())
+		{
+			char cmd1[30];
+			float width = 0.4;
+			float extr = 0.5; // for 20mm
+
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			strcpy(cmd1, "G1 X50 Y35 E");
+			strcat(cmd1, ftostr32(extr));
+			enquecommand(cmd1);
+
+			for (int i = 0; i < 5; i++) {
+				strcpy(cmd1, "G1 X70 Y");
+				strcat(cmd1, ftostr32(35 - i*width * 2));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr32(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 X50 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr32(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
+				enquecommand(cmd1);
+			}
+
 			lcd_commands_step = 3;
 		}
 
 		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-
+			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));
 			enquecommand_P(PSTR("G4 S0"));
 			enquecommand_P(PSTR("G1 E-4 F2100.00000"));
 			enquecommand_P(PSTR("G1 Z0.5 F7200.000"));
@@ -816,20 +849,47 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X200 Y75 E3.62773"));
 			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
 			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
-			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));
+			
 			lcd_commands_step = 3;
 		}
 
 		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			char cmd1[30];
+			float width = 0.4;
+			float extr = 0.5; // for 20mm
 
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			strcpy(cmd1, "G1 X50 Y35 E");
+			strcat(cmd1, ftostr32(extr));
+			enquecommand(cmd1);
+
+			for (int i = 0; i < 5; i++) {
+				strcpy(cmd1, "G1 X70 Y");
+				strcat(cmd1, ftostr32(35 - i*width*2));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr32(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (2*i+1)*width));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 X50 Y");
+				strcat(cmd1, ftostr32(35 - (2*i+1)*width));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr32(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (i + 1)*width*2));
+				enquecommand(cmd1);
+			}
+			
 			lcd_commands_step = 2;
 		}
 
 		if (lcd_commands_step == 2 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));
 			enquecommand_P(PSTR("M107")); //turn off printer fan
 			enquecommand_P(PSTR("M104 S0")); // turn off temperature
 			enquecommand_P(PSTR("M140 S0")); // turn off heatbed
