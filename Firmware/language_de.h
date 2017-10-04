@@ -102,6 +102,7 @@
 
 #define MSG_SILENT_MODE_ON					"Mode      [leise]"
 #define MSG_SILENT_MODE_OFF					"Mode [Hohe Leist]"
+#define MSG_AUTO_MODE_ON					"Mode[Automatisch]"
 #define MSG_REBOOT							"Reboot den Drucker"
 #define MSG_TAKE_EFFECT						" um wirksam zu werden"
 
@@ -249,6 +250,7 @@
 
 #define MSG_FIL_ADJUSTING					"Einstellen Filament. Bitte warten."
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ	"Filamente sind jetzt eingestellt. Bitte reinigen Sie die Duese zur Kalibrierung. Klicken wenn sauber."
+#define MSG_STACK_ERROR						"Error - EEPROM wurde ueberschrieben"																																		   
 
 #define MSG_CALIBRATE_E						"Kalibriere E"
 //#define MSG_RESET_CALIBRATE_E				"Reset E Cal."
@@ -335,7 +337,7 @@
 #define	MSG_WIZARD_WELCOME					"Hallo, ich bin Dein Original Prusa i3 Drucker. Sollen wir mit dem Setup-Prozess beginnen?"
 #define	MSG_WIZARD_QUIT						"Du kannst den Assistenten immer aus Kalibrierung -> Assistent wider aufnehmen."
 #define MSG_WIZARD_SELFTEST					"Zuerst werden wir den Selbsttest durchfuehren um haeufige Montageprobleme zu ueberpruefen."
-#define MSG_WIZARD_CALIBRATION_FAILED		"Lese das Handbuch um das Problem zu beheben. Danach den Drucker neustarten und mit dem Assisenten weitermachen."
+#define MSG_WIZARD_CALIBRATION_FAILED		"Lese das Handbuch um das Problem zu beheben. Danach den Drucker neustarten und mit dem Assisenten fortzusetzen."
 #define MSG_WIZARD_XYZ_CAL					"Starte jetzt die XYZ-Kalibrierung. Es wird ca. 12 min. dauern."
 #define MSG_WIZARD_FILAMENT_LOADED		"Filament geladen?"
 #define MSG_WIZARD_Z_CAL					"Starte jetzt die Z-Kalibrierung."

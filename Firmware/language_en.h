@@ -323,7 +323,7 @@
 #define(length=20, lines=6)	MSG_WIZARD_WELCOME					"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 #define(length=20, lines=5)	MSG_WIZARD_QUIT						"You can always resume the Wizard from Calibration -> Wizard."
 #define(length=20, lines=6) MSG_WIZARD_SELFTEST					"First, I will run the selftest to check most common assembly problems."
-#define(length=20, lines=6) MSG_WIZARD_CALIBRATION_FAILED		"Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
+#define(length=20, lines=7) MSG_WIZARD_CALIBRATION_FAILED		"Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 #define(length=20, lines=4) MSG_WIZARD_XYZ_CAL					"I will run xyz calibration now. It will take approx. 12 mins."
 #define(length=20) MSG_WIZARD_FILAMENT_LOADED		"Is filament loaded?"
 #define(length=20, lines=2) MSG_WIZARD_Z_CAL					"I will run z calibration now."

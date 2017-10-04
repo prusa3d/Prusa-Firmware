@@ -64,8 +64,14 @@ const char * const MSG_AUTO_HOME_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_AUTO_MODE_ON_EN[] PROGMEM = "Mode [auto power]";
-const char * const MSG_AUTO_MODE_ON_LANG_TABLE[1] PROGMEM = {
-	MSG_AUTO_MODE_ON_EN
+const char MSG_AUTO_MODE_ON_DE[] PROGMEM = "Mode[Automatisch]";
+const char * const MSG_AUTO_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_AUTO_MODE_ON_EN,
+	MSG_AUTO_MODE_ON_EN,
+	MSG_AUTO_MODE_ON_EN,
+	MSG_AUTO_MODE_ON_EN,
+	MSG_AUTO_MODE_ON_EN,
+	MSG_AUTO_MODE_ON_DE
 };
 
 const char MSG_A_RETRACT_EN[] PROGMEM = "A-retract";
@@ -3065,8 +3071,14 @@ const char * const MSG_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_STACK_ERROR_EN[] PROGMEM = "Error - static memory has been overwritten";
-const char * const MSG_STACK_ERROR_LANG_TABLE[1] PROGMEM = {
-	MSG_STACK_ERROR_EN
+const char MSG_STACK_ERROR_DE[] PROGMEM = "Error - EEPROM wurde ueberschrieben";
+const char * const MSG_STACK_ERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_DE
 };
 
 const char MSG_STATISTICS_EN[] PROGMEM = "Statistics  ";
@@ -3504,7 +3516,7 @@ const char * const MSG_USERWAIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_V2_CALIBRATION_EN[] PROGMEM = "First layer cal.";
-const char MSG_V2_CALIBRATION_DE[] PROGMEM = "Erste layer Kal.";
+const char MSG_V2_CALIBRATION_DE[] PROGMEM = "Erste Layer Kal.";
 const char * const MSG_V2_CALIBRATION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_V2_CALIBRATION_EN,
 	MSG_V2_CALIBRATION_EN,
@@ -3581,7 +3593,7 @@ const char * const MSG_WIZARD_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_WIZARD_CALIBRATION_FAILED_EN[] PROGMEM = "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer.";
-const char MSG_WIZARD_CALIBRATION_FAILED_DE[] PROGMEM = "Lese das Handbuch um das Problem zu beheben. Danach den Drucker neustarten und den Assisenten wieder aufnehmen.";
+const char MSG_WIZARD_CALIBRATION_FAILED_DE[] PROGMEM = "Lese das Handbuch um das Problem zu beheben. Danach den Drucker neustarten und mit dem Assisenten fortzusetzen.";
 const char * const MSG_WIZARD_CALIBRATION_FAILED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_CALIBRATION_FAILED_EN,
 	MSG_WIZARD_CALIBRATION_FAILED_EN,
@@ -3636,7 +3648,7 @@ const char * const MSG_WIZARD_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_WIZARD_INSERT_CORRECT_FILAMENT_EN[] PROGMEM = "Please load PLA filament and then resume Wizard by rebooting the printer.";
-const char MSG_WIZARD_INSERT_CORRECT_FILAMENT_DE[] PROGMEM = "Bitte lade PLA Filament und starte den Drucker neu um den Assistenten frotzusetzten.";
+const char MSG_WIZARD_INSERT_CORRECT_FILAMENT_DE[] PROGMEM = "Bitte lade PLA Filament und starte den Drucker neu um den Assistenten fortzusetzen.";
 const char * const MSG_WIZARD_INSERT_CORRECT_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_INSERT_CORRECT_FILAMENT_EN,
 	MSG_WIZARD_INSERT_CORRECT_FILAMENT_EN,
@@ -3702,7 +3714,7 @@ const char * const MSG_WIZARD_REPEAT_V2_CAL_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_WIZARD_RERUN_EN[] PROGMEM = "Running Wizard will delete current calibration results and start from the beginning. Continue?";
-const char MSG_WIZARD_RERUN_DE[] PROGMEM = "Starten vom Assistenten loest die aktuelle Kalibrierung und beginnt von vorne. Fortsetzen?";
+const char MSG_WIZARD_RERUN_DE[] PROGMEM = "Starten vom Assistenten loescht die aktuelle Kalibrierung und beginnt von vorne. Fortsetzen?";
 const char * const MSG_WIZARD_RERUN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_RERUN_EN,
 	MSG_WIZARD_RERUN_EN,
@@ -3757,7 +3769,7 @@ const char * const MSG_WIZARD_WELCOME_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_WIZARD_WILL_PREHEAT_EN[] PROGMEM = "Now I will preheat nozzle for PLA.";
-const char MSG_WIZARD_WILL_PREHEAT_DE[] PROGMEM = "Wareme die Duese fuer PLA vor.";
+const char MSG_WIZARD_WILL_PREHEAT_DE[] PROGMEM = "Waerme die Duese fuer PLA vor.";
 const char * const MSG_WIZARD_WILL_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_WILL_PREHEAT_EN,
 	MSG_WIZARD_WILL_PREHEAT_EN,
