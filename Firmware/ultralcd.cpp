@@ -602,12 +602,18 @@ void lcd_commands()
 #ifdef SNMM
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL)
 	{
+		char cmd1[30];
+		float width = 0.4;
+		float length = 20 - width;
+		float extr = count_e(0.2, width, length);
+		float extr_short_segment = count_e(0.2, width, width);
+
 		lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 		if (lcd_commands_step == 0)
 		{
-			lcd_commands_step = 7;
+			lcd_commands_step = 10;
 		}
-		if (lcd_commands_step == 7 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 10 && !blocks_queued() && cmd_buffer_empty())
 		{
 			enquecommand_P(PSTR("M107"));
 			enquecommand_P(PSTR("M104 S210"));
@@ -624,9 +630,9 @@ void lcd_commands()
 			enquecommand_P(PSTR("G92 E0"));
 			enquecommand_P(PSTR("M203 E100"));
 			enquecommand_P(PSTR("M92 E140"));
-			lcd_commands_step = 6;
+			lcd_commands_step = 9;
 		}
-		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 			enquecommand_P(PSTR("G1 Z0.250 F7200.000"));
@@ -648,9 +654,9 @@ void lcd_commands()
 			lcd_goto_menu(lcd_babystep_z, 0, false);
 
 
-			lcd_commands_step = 5;
+			lcd_commands_step = 8;
 		}
-		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty()) //draw meander
+		if (lcd_commands_step == 8 && !blocks_queued() && cmd_buffer_empty()) //draw meander
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 
@@ -672,36 +678,123 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
 			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
 			
+			lcd_commands_step = 7;
+		}
+
+		if (lcd_commands_step == 7 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			strcpy(cmd1, "G1 X50 Y35 E");
+			strcat(cmd1, ftostr43(extr));
+			enquecommand(cmd1);
+
+			for (int i = 0; i < 4; i++) {
+				strcpy(cmd1, "G1 X70 Y");
+				strcat(cmd1, ftostr32(35 - i*width * 2));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 X50 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+			}
+
+			lcd_commands_step = 6;
+		}
+
+		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			for (int i = 4; i < 8; i++) {
+				strcpy(cmd1, "G1 X70 Y");
+				strcat(cmd1, ftostr32(35 - i*width * 2));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 X50 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+			}
+
+			lcd_commands_step = 5;
+		}
+
+		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			for (int i = 8; i < 12; i++) {
+				strcpy(cmd1, "G1 X70 Y");
+				strcat(cmd1, ftostr32(35 - i*width * 2));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 X50 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+			}
+
 			lcd_commands_step = 4;
 		}
 
 		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty())
 		{
-			char cmd1[30];
-			float width = 0.4;
-			float extr = 0.5; // for 20mm
-
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-			strcpy(cmd1, "G1 X50 Y35 E");
-			strcat(cmd1, ftostr32(extr));
-			enquecommand(cmd1);
-
-			for (int i = 0; i < 5; i++) {
+			for (int i = 12; i < 16; i++) {
 				strcpy(cmd1, "G1 X70 Y");
 				strcat(cmd1, ftostr32(35 - i*width * 2));
 				strcat(cmd1, " E");
-				strcat(cmd1, ftostr32(extr));
+				strcat(cmd1, ftostr43(extr));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
 				strcat(cmd1, " E");
-				strcat(cmd1, ftostr32(extr));
+				strcat(cmd1, ftostr43(extr));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
 
@@ -772,15 +865,19 @@ void lcd_commands()
 
 #else //if not SNMM
 
-
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL) 
 	{
+		char cmd1[30];
+		float width = 0.4;
+		float length = 20 - width;
+		float extr = count_e(0.2, width, length);
+		float extr_short_segment = count_e(0.2, width, width);
 		lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 		if (lcd_commands_step == 0)
 		{
-			lcd_commands_step = 6;
+			lcd_commands_step = 9;
 		}
-		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
 		{
 			enquecommand_P(PSTR("M107"));
 			enquecommand_P(PSTR("M104 S210"));
@@ -791,9 +888,9 @@ void lcd_commands()
 			enquecommand_P(PSTR("G87")); //sets calibration status
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
-			lcd_commands_step = 5;
+			lcd_commands_step = 8;
 		}
-		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 8 && !blocks_queued() && cmd_buffer_empty())
 		{
 			
 			lcd_implementation_clear();
@@ -808,9 +905,9 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
 			enquecommand_P(PSTR("M204 S1000")); //set acceleration
 			enquecommand_P(PSTR("G1 F4000"));
-			lcd_commands_step = 4;
+			lcd_commands_step = 7;
 		}
-		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty()) //draw meander
+		if (lcd_commands_step == 7 && !blocks_queued() && cmd_buffer_empty()) //draw meander
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 		
@@ -850,39 +947,127 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
 			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
 			
+			lcd_commands_step = 6;
+		}
+
+		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
+		{
+
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			strcpy(cmd1, "G1 X50 Y35 E");
+			strcat(cmd1, ftostr43(extr));
+			enquecommand(cmd1);
+
+			for (int i = 0; i < 4; i++) {
+				strcpy(cmd1, "G1 X70 Y");
+				strcat(cmd1, ftostr32(35 - i*width * 2));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 X50 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+			}
+			
+			lcd_commands_step = 5;
+		}
+
+		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			for (int i = 4; i < 8; i++) {
+				strcpy(cmd1, "G1 X70 Y");
+				strcat(cmd1, ftostr32(35 - i*width * 2));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 X50 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+			}
+
+			lcd_commands_step = 4;
+		}
+
+		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty())
+		{
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			for (int i = 8; i < 12; i++) {
+				strcpy(cmd1, "G1 X70 Y");
+				strcat(cmd1, ftostr32(35 - i*width * 2));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 X50 Y");
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, " E");
+				strcat(cmd1, ftostr43(extr));
+				enquecommand(cmd1);
+				strcpy(cmd1, "G1 Y");
+				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
+				enquecommand(cmd1);
+			}
+
 			lcd_commands_step = 3;
 		}
 
 		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
 		{
-			char cmd1[30];
-			float width = 0.4;
-			float extr = 0.5; // for 20mm
-
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-			strcpy(cmd1, "G1 X50 Y35 E");
-			strcat(cmd1, ftostr32(extr));
-			enquecommand(cmd1);
-
-			for (int i = 0; i < 5; i++) {
+			for (int i = 12; i < 16; i++) {
 				strcpy(cmd1, "G1 X70 Y");
-				strcat(cmd1, ftostr32(35 - i*width*2));
+				strcat(cmd1, ftostr32(35 - i*width * 2));
 				strcat(cmd1, " E");
-				strcat(cmd1, ftostr32(extr));
+				strcat(cmd1, ftostr43(extr));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (2*i+1)*width));
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
-				strcat(cmd1, ftostr32(35 - (2*i+1)*width));
+				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
 				strcat(cmd1, " E");
-				strcat(cmd1, ftostr32(extr));
+				strcat(cmd1, ftostr43(extr));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (i + 1)*width*2));
+				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
+				strcat(cmd1, "E ");
+				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
-			
+
 			lcd_commands_step = 2;
 		}
 
@@ -1096,6 +1281,12 @@ void lcd_commands()
 	}
 
 
+}
+
+static float count_e(float layer_heigth, float extrusion_width, float extrusion_length) {
+	//returns filament length in mm which needs to be extrude to form line with extrusion_length * extrusion_width * layer heigth dimensions
+	float extr = extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4);
+	return extr;
 }
 
 static void lcd_return_to_status() {
