@@ -387,8 +387,8 @@
   
   #define BEEPER 37
 
-  #define BTN_EN1 31
-  #define BTN_EN2 33
+  #define BTN_EN1 33
+  #define BTN_EN2 31
   #define BTN_ENC 35
 
   #define SDCARDDETECT 49
