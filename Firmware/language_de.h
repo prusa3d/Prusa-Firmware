@@ -216,6 +216,7 @@
 #define MSG_SET_TEMPERATURE								"Temp. einsetzen"
 #define MSG_PID_FINISHED								"PID Kalib. fertig"
 #define MSG_PID_RUNNING									"PID Kalib."
+
 #define MSG_CONFIRM_NOZZLE_CLEAN			"Bitte reinigen Sie die Duese vor Kalibrierung. Klicken wenn sauber."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Sind beide Z Schlitten ganz oben?"
 
@@ -275,10 +276,12 @@
 
 #define MSG_BED_CORRECTION_MENU				"Bett level korrekt"
 
+
 #define MSG_BED_CORRECTION_MID_LEFT				"Mi.Links  [um]"
 #define MSG_BED_CORRECTION_MID_RIGHT			"Mi.Rechts [um]"
 #define MSG_BED_CORRECTION_FRONT_CENTR			"Ztr.Vorne [um]"
 #define MSG_BED_CORRECTION_REAR_CENTR			"Ztr.Hinten[um]"
+
 #define MSG_BED_CORRECTION_RESET			"Zuruecksetzen"
 
 #define MSG_MESH_BED_LEVELING				"Mesh Bed Leveling"

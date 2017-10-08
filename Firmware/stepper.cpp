@@ -74,11 +74,18 @@ bool abort_on_endstop_hit = false;
 #endif
 
 static bool old_x_min_endstop=false;
-static bool old_x_max_endstop=false;
 static bool old_y_min_endstop=false;
-static bool old_y_max_endstop=false;
 static bool old_z_min_endstop=false;
+
+#if defined(X_MAX_PIN) && (X_MAX_PIN > -1)
+static bool old_x_max_endstop=false;
+#endif
+#if defined(Y_MAX_PIN) && (Y_MAX_PIN > -1)
+static bool old_y_max_endstop=false;
+#endif
+#if defined(Z_MAX_PIN) && (Z_MAX_PIN > -1)
 static bool old_z_max_endstop=false;
+#endif
 
 static bool check_endstops = true;
 static bool check_z_endstop = false;
@@ -1066,9 +1073,7 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); 
-    {
-    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
-    }
+    delayMicroseconds(3);
     WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
 
     //get old pin state back.
@@ -1085,9 +1090,7 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); 
-    {
-    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
-    }
+    delayMicroseconds(3);
     WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
 
     //get old pin state back.
@@ -1109,11 +1112,11 @@ void babystep(const uint8_t axis,const bool direction)
     WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); 
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
+      delayMicroseconds(2);
+    #else
+      delayMicroseconds(3);
     #endif
-    //wait a tiny bit
-    {
-    volatile float x=1./float(axis+1); //absolutely useless
-    }
+
     WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, INVERT_Z_STEP_PIN);

@@ -3,20 +3,6 @@
 
 #include "boards.h"
 
-#if !MB(5DPRINT)
-#define X_MS1_PIN -1
-#define X_MS2_PIN -1
-#define Y_MS1_PIN -1
-#define Y_MS2_PIN -1
-#define Z_MS1_PIN -1
-#define Z_MS2_PIN -1
-#define E0_MS1_PIN -1
-#define E0_MS2_PIN -1
-#define E1_MS1_PIN -1
-#define E1_MS2_PIN -1
-#define DIGIPOTSS_PIN -1
-#endif
-
 #define LARGE_FLASH true
 
 /*****************************************************************
@@ -38,22 +24,16 @@
 
   #define X_STEP_PIN 37
   #define X_DIR_PIN 48
-  #define X_MIN_PIN 12
-  #define X_MAX_PIN 30
   #define X_ENABLE_PIN 29
   #define X_MS1_PIN 40
   #define X_MS2_PIN 41
   #define Y_STEP_PIN 36
   #define Y_DIR_PIN 49
-  #define Y_MIN_PIN 11
-  #define Y_MAX_PIN 24
   #define Y_ENABLE_PIN 28
   #define Y_MS1_PIN 69
   #define Y_MS2_PIN 39
   #define Z_STEP_PIN 35
   #define Z_DIR_PIN 47
-  #define Z_MIN_PIN 10
-  #define Z_MAX_PIN 23
   #define Z_ENABLE_PIN 27
   #define Z_MS1_PIN 68
   #define Z_MS2_PIN 67
@@ -63,6 +43,27 @@
   #define TEMP_1_PIN 1
   #define TEMP_2_PIN -1
   
+#ifndef DISABLE_MAX_ENDSTOPS
+  #define X_MAX_PIN 30
+  #define Z_MAX_PIN 23
+  #define Y_MAX_PIN 24
+#else
+  #define X_MAX_PIN -1
+  #define Y_MAX_PIN -1
+  #define Z_MAX_PIN -1
+#endif
+
+#ifndef DISABLE_MIN_ENDSTOPS
+  #define X_MIN_PIN 12
+  #define Y_MIN_PIN 11
+  #define Z_MIN_PIN 10
+#else
+  #define X_MIN_PIN -1
+  #define Y_MIN_PIN -1
+  #define Z_MIN_PIN -1
+#endif
+
+
 #ifdef SNMM 
 
 #define E_MUX0_PIN 17
@@ -234,22 +235,16 @@
   #define LARGE_FLASH true
   #define X_STEP_PIN 37
   #define X_DIR_PIN 48
-  #define X_MIN_PIN 12
-  #define X_MAX_PIN 30
   #define X_ENABLE_PIN 29
   #define X_MS1_PIN 40
   #define X_MS2_PIN 41
   #define Y_STEP_PIN 36
   #define Y_DIR_PIN 49
-  #define Y_MIN_PIN 11
-  #define Y_MAX_PIN 24
   #define Y_ENABLE_PIN 28
   #define Y_MS1_PIN 69
   #define Y_MS2_PIN 39
   #define Z_STEP_PIN 35
   #define Z_DIR_PIN 47
-  #define Z_MIN_PIN 10
-  #define Z_MAX_PIN 23
   #define Z_ENABLE_PIN 27
   #define Z_MS1_PIN 68
   #define Z_MS2_PIN 67
@@ -259,6 +254,26 @@
   #define TEMP_1_PIN 1
   #define TEMP_2_PIN -1
   
+#ifndef DISABLE_MAX_ENDSTOPS
+  #define X_MAX_PIN 30
+  #define Z_MAX_PIN 23
+  #define Y_MAX_PIN 24
+#else
+  #define X_MAX_PIN -1
+  #define Y_MAX_PIN -1
+  #define Z_MAX_PIN -1
+#endif
+
+#ifndef DISABLE_MIN_ENDSTOPS
+  #define X_MIN_PIN 12
+  #define Y_MIN_PIN 11
+  #define Z_MIN_PIN 10
+#else
+  #define X_MIN_PIN -1
+  #define Y_MIN_PIN -1
+  #define Z_MIN_PIN -1
+#endif
+
   // The SDSS pin uses a different pin mapping from file Sd2PinMap.h
 #define SDSS               53
 
@@ -364,17 +379,6 @@
   #endif
 #endif
 
-#ifdef DISABLE_MAX_ENDSTOPS
-#define X_MAX_PIN          -1
-#define Y_MAX_PIN          -1
-#define Z_MAX_PIN          -1
-#endif
-
-#ifdef DISABLE_MIN_ENDSTOPS
-#define X_MIN_PIN          -1
-#define Y_MIN_PIN          -1
-#define Z_MIN_PIN          -1
-#endif
 
 #define SENSITIVE_PINS {0, 1, X_STEP_PIN, X_DIR_PIN, X_ENABLE_PIN, X_MIN_PIN, X_MAX_PIN, Y_STEP_PIN, Y_DIR_PIN, Y_ENABLE_PIN, Y_MIN_PIN, Y_MAX_PIN, Z_STEP_PIN, Z_DIR_PIN, Z_ENABLE_PIN, Z_MIN_PIN, Z_MAX_PIN, PS_ON_PIN, \
                         HEATER_BED_PIN, FAN_PIN,                  \

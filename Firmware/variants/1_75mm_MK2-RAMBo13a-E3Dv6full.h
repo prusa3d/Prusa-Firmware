@@ -389,7 +389,7 @@ THERMISTORS SETTINGS
 
 #define PING_TIME 60 //time in s
 #define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
-#define PING_ALLERT_PERIOD 60 //time in s
+#define PING_ALERT_PERIOD 60 //time in s
 #define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
 #define NC_BUTTON_LONG_PRESS 15 //time in s
 

@@ -148,6 +148,7 @@ const char * const MSG_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_DE
 };
 
+
 const char MSG_BED_CORRECTION_FRONT_CENTR_EN[] PROGMEM = "FrontCentr[um]";
 const char MSG_BED_CORRECTION_FRONT_CENTR_CZ[] PROGMEM = "Vpredu [um]";
 const char MSG_BED_CORRECTION_FRONT_CENTR_IT[] PROGMEM = "Fronte    [um]";
@@ -171,6 +172,7 @@ const char * const MSG_BED_CORRECTION_FRONT_LEFT_LANG_TABLE[1] PROGMEM = {
 const char MSG_BED_CORRECTION_FRONT_RIGHT_EN[] PROGMEM = "FrontRight[um]";
 const char * const MSG_BED_CORRECTION_FRONT_RIGHT_LANG_TABLE[1] PROGMEM = {
 	MSG_BED_CORRECTION_FRONT_RIGHT_EN
+
 };
 
 const char MSG_BED_CORRECTION_MENU_EN[] PROGMEM = "Bed level correct";
