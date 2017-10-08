@@ -262,14 +262,21 @@
 #define(length=20, lines=8) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
 #define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
-#define(length=20) MSG_UNLOADING_FILAMENT					"Unloading filament"
+
+#define(lenght=20) MSG_UNLOADING_FILAMENT			"Unloading filament"
 #define(length=20, lines=10) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
-#define(length=18) MSG_BED_CORRECTION_MENU									"Bed level correct"
-#define(length=14,lines=1) MSG_BED_CORRECTION_LEFT								"Left side [um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_RIGHT								"Right side[um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT								"Front side[um]"
-#define(length=14,lines=1) MSG_BED_CORRECTION_REAR								"Rear side [um]"
+#define MSG_BED_CORRECTION_MENU									"Bed level correct"
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_LEFT        "FrontLeft [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_CENTR       "FrontCentr[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_RIGHT       "FrontRight[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_MID_RIGHT         "MidRight  [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR_RIGHT        "RearRight [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR_CENTR        "RearCentr [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR_LEFT         "RearLeft  [um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_MID_LEFT          "MidLeft   [um]"
+
+
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
@@ -332,6 +339,7 @@
 #define(length=20, lines=4) MSG_WIZARD_V2_CAL					"Now I will calibrate distance between tip of the nozzle and heatbed surface."
 #define(length=20, lines=10) MSG_WIZARD_V2_CAL_2					"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
 #define MSG_V2_CALIBRATION					"First layer cal."
+  
 #define(length=20, lines=2) MSG_WIZARD_DONE						"All is done. Happy printing!"
 #define(length=20, lines=8) MSG_WIZARD_LOAD_FILAMENT			"Please insert PLA filament to the extruder, then press knob to load it."
 #define(length=20, lines=6) MSG_WIZARD_RERUN					"Running Wizard will delete current calibration results and start from the beginning. Continue?"

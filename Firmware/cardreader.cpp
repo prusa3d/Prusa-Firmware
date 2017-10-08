@@ -62,6 +62,7 @@ char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
 void CardReader::lsDive_pointer(const char *prepend, SdFile parent, const char * const match) {
 	dir_t p;
 
+
 	//parent.seekSet = 
 	// Read the next entry from a directory
 	//SERIAL_ECHOPGM("Cur pos before.: ");
@@ -71,6 +72,7 @@ void CardReader::lsDive_pointer(const char *prepend, SdFile parent, const char *
 	//SERIAL_ECHOPGM("Cur pos.: ");
 	//pom = parent.curPosition();
 	//MYSERIAL.println(pom, 10);
+
 
 	filenameIsDir = DIR_IS_SUBDIR(&p);
 

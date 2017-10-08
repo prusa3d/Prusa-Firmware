@@ -5,7 +5,9 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
+
 #define FW_version "3.1.0-RC1"
+
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -50,6 +52,12 @@
 #define EEPROM_SD_SORT (EEPROM_CALIBRATION_STATUS_PINDA - 1) //0 -time, 1-alpha, 2-none
 #define EEPROM_XYZ_CAL_SKEW (EEPROM_SD_SORT - 4)
 #define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
+
+// addition for hyperfine tuning
+#define EEPROM_BED_CORRECTION_FRONT_LEFT (EEPROM_WIZARD_ACTIVE - 1)
+#define EEPROM_BED_CORRECTION_FRONT_RIGHT (EEPROM_BED_CORRECTION_FRONT_LEFT - 1)
+#define EEPROM_BED_CORRECTION_REAR_RIGHT (EEPROM_BED_CORRECTION_FRONT_RIGHT - 1)
+#define EEPROM_BED_CORRECTION_REAR_LEFT (EEPROM_BED_CORRECTION_REAR_RIGHT - 1)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.

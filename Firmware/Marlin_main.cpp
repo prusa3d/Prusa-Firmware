@@ -3486,55 +3486,142 @@ void process_commands()
 			eeprom_bed_correction_valid ? SERIAL_PROTOCOLPGM("Bed correction data valid\n") : SERIAL_PROTOCOLPGM("Bed correction data not valid\n");
 		}
 
-		for (uint8_t i = 0; i < 4; ++i) {
-			unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
-			long correction = 0;
-			if (code_seen(codes[i]))
-				correction = code_value_long();
-			else if (eeprom_bed_correction_valid) {
-				unsigned char *addr = (i < 2) ?
-					((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
-					((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
-				correction = eeprom_read_int8(addr);
-			}
-			if (correction == 0)
-				continue;
-			float offset = float(correction) * 0.001f;
-			if (fabs(offset) > 0.101f) {
-				SERIAL_ERROR_START;
-				SERIAL_ECHOPGM("Excessive bed leveling correction: ");
-				SERIAL_ECHO(offset);
-				SERIAL_ECHOLNPGM(" microns");
-			}
-			else {
-				switch (i) {
-				case 0:
-					for (uint8_t row = 0; row < 3; ++row) {
-						mbl.z_values[row][1] += 0.5f * offset;
-						mbl.z_values[row][0] += offset;
-					}
-					break;
-				case 1:
-					for (uint8_t row = 0; row < 3; ++row) {
-						mbl.z_values[row][1] += 0.5f * offset;
-						mbl.z_values[row][2] += offset;
-					}
-					break;
-				case 2:
-					for (uint8_t col = 0; col < 3; ++col) {
-						mbl.z_values[1][col] += 0.5f * offset;
-						mbl.z_values[0][col] += offset;
-					}
-					break;
-				case 3:
-					for (uint8_t col = 0; col < 3; ++col) {
-						mbl.z_values[1][col] += 0.5f * offset;
-						mbl.z_values[2][col] += offset;
-					}
-					break;
-				}
-			}
-		}
+// bed correction routine
+// PJR's amendment:
+// YOKOTSUNO
+    for (uint8_t i = 0; i < 8; ++i) {
+      unsigned char codes[8] = { 'a', 'b', 'c', 'd' , 'e' , 'f', 'g', 'h'};
+            long correction = 0;
+            if (code_seen(codes[i]))
+                correction = code_value_long();
+            else if (eeprom_bed_correction_valid) {
+
+            switch (i) {
+        case 0:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT_LEFT;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 1:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 2:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT_RIGHT;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 3:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_RIGHT;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 4:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_REAR_RIGHT;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 5:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_REAR;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 6:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_REAR_LEFT;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        case 7:
+          {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_LEFT;
+          correction = eeprom_read_int8(addr);            
+          }
+          break;
+        } 
+      }
+      if (correction == 0) 
+              continue;
+            float offset = float(correction) * 0.001f;
+      if (fabs(offset) > 0.201f) {
+        SERIAL_ERROR_START;
+        SERIAL_ECHOPGM("Excessive bed leveling correction: ");
+        SERIAL_ECHO(offset);
+        SERIAL_ECHOLNPGM(" microns");
+      }
+      else {
+        switch (i) {
+        case 0:
+          {
+            mbl.z_values[0][0] += offset;
+            SERIAL_ECHOPGM("FrontLeft a =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }          
+          break;
+        case 1:
+          {
+            mbl.z_values[0][1] += offset;
+            SERIAL_ECHOPGM("FrontCentr b =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 2:
+          {
+            mbl.z_values[0][2] += offset;
+            SERIAL_ECHOPGM("FrontRight c =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 3:
+          {
+            mbl.z_values[1][2] += offset; 
+            SERIAL_ECHOPGM("MIDRight  d =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 4:
+          {
+            mbl.z_values[2][2] += offset; 
+            SERIAL_ECHOPGM("RearRight e =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 5:
+          {
+            mbl.z_values[2][1] += offset; 
+            SERIAL_ECHOPGM("RearCENTR  f =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 6:
+          {
+            mbl.z_values[2][0] += offset; 
+            SERIAL_ECHOPGM("RearLeft g =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        case 7:
+          {
+            mbl.z_values[1][0] += offset;
+            SERIAL_ECHOPGM("MidLeft  h =");
+            SERIAL_ECHO(correction+0);
+            SERIAL_ECHOLNPGM(" microns.");
+          }
+          break;
+        }
+      }
+    }
+
+
+//
+
+
 		SERIAL_ECHOLNPGM("Bed leveling correction finished");
 		mbl.upsample_3x3(); //bilinear interpolation from 3x3 to 7x7 points while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 		SERIAL_ECHOLNPGM("Upsample finished");
@@ -5961,7 +6048,9 @@ void ClearToSend()
         SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
+
 void update_currents() {
+
 	float current_high[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 	float current_low[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor[3];
@@ -6006,7 +6095,9 @@ void get_coordinates()
     if(code_seen(axis_codes[i]))
     {
 	  destination[i] = (float)code_value() + (axis_relative_modes[i] || relative_mode)*current_position[i];
+
 	  // seen[i]=true;
+
 	  if (i == Z_AXIS && SilentModeMenu == 2) update_currents();
     }
     else destination[i] = current_position[i]; //Are these else lines really needed?
