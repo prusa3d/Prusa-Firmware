@@ -5,7 +5,9 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.0.12-5"
+
+#define FW_version "3.1.0-RC1"
+
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -49,8 +51,16 @@
 #define EEPROM_CALIBRATION_STATUS_PINDA (EEPROM_BOWDEN_LENGTH - 1) //0 - not calibrated; 1 - calibrated
 #define EEPROM_SD_SORT (EEPROM_CALIBRATION_STATUS_PINDA - 1) //0 -time, 1-alpha, 2-none
 #define EEPROM_XYZ_CAL_SKEW (EEPROM_SD_SORT - 4)
+#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
+
+// addition for hyperfine tuning
+#define EEPROM_BED_CORRECTION_FRONT_LEFT (EEPROM_WIZARD_ACTIVE - 1)
+#define EEPROM_BED_CORRECTION_FRONT_RIGHT (EEPROM_BED_CORRECTION_FRONT_LEFT - 1)
+#define EEPROM_BED_CORRECTION_REAR_RIGHT (EEPROM_BED_CORRECTION_FRONT_RIGHT - 1)
+#define EEPROM_BED_CORRECTION_REAR_LEFT (EEPROM_BED_CORRECTION_REAR_RIGHT - 1)
+
 // FILAMENT_RUNOUT_SENSOR
-#define EEPROM_FIL_RUNOUT_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1) //0 - filament runout sensor disabled; 1 - .. activated
+#define EEPROM_FIL_RUNOUT_ACTIVE (EEPROM_BED_CORRECTION_REAR_RIGHT - 1) //0 - filament runout sensor disabled; 1 - .. activated
 #define EEPROM_FIL_RUNOUT_INVERTING (EEPROM_FIL_RUNOUT_ACTIVE - 1) //0 - filament runout sensor inverted; 1 - .. normal
 #define EEPROM_ENDSTOPPULLUP_FIL_RUNOUT (EEPROM_FIL_RUNOUT_INVERTING - 1) //0 - filament runout sensor pullup; 0 - .. normal
 // end FILAMENT_RUNOUT_SENSOR
@@ -727,7 +737,7 @@ enum CalibrationStatus
 	CALIBRATION_STATUS_ASSEMBLED = 255,
 
 	// For the wizard: self test has been performed, now the XYZ calibration is needed.
-	// CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
+	CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
 
 	// For the wizard: factory assembled, needs to run Z calibration.
 	CALIBRATION_STATUS_Z_CALIBRATION = 240,

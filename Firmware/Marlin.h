@@ -222,6 +222,7 @@ void enquecommand(const char *cmd, bool from_progmem = false);
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
 void enquecommand_front(const char *cmd, bool from_progmem = false);
+bool cmd_buffer_empty();
 //put an ASCII command at the end of the current buffer, read from flash
 #define enquecommand_P(cmd) enquecommand(cmd, true)
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
@@ -366,6 +367,7 @@ void temp_compensation_start();
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
 void proc_commands();
+bool check_commands();
 
 #ifdef HOST_KEEPALIVE_FEATURE
 
@@ -385,4 +387,9 @@ extern MarlinBusyState busy_state;
 
 #endif //HOST_KEEPALIVE_FEATURE
 
+bool gcode_M45(bool onlyZ);
+void gcode_M701();
+
+
 #endif //ifndef marlin.h
+

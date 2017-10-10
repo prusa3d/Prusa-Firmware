@@ -1029,16 +1029,20 @@ Having the real displacement of the head, we can calculate the total movement le
   // Acceleration of the segment, in mm/sec^2
   block->acceleration = block->acceleration_st / steps_per_mm;
 
-#if 1
+#if 0
   // Oversample diagonal movements by a power of 2 up to 8x
   // to achieve more accurate diagonal movements.
   uint8_t bresenham_oversample = 1;
   for (uint8_t i = 0; i < 3; ++ i) {
     if (block->nominal_rate >= 5000) // 5kHz
       break;
-    block->nominal_rate << 1;
-    bresenham_oversample << 1;
-    block->step_event_count << 1;
+    // The following statements in their original form did nothing (missing =).
+    // In effect, this entire block under the conditional was doing nothing.
+    // Adding the syntax correction did not produce good movement results therefore
+    // it has been disabled (above)
+    block->nominal_rate <<= 1;
+    bresenham_oversample <<= 1;
+    block->step_event_count <<= 1;
   }
   if (bresenham_oversample > 1)
     // Lower the acceleration steps/sec^2 to account for the oversampling.

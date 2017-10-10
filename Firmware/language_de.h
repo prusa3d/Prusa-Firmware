@@ -102,6 +102,7 @@
 
 #define MSG_SILENT_MODE_ON					"Mode      [leise]"
 #define MSG_SILENT_MODE_OFF					"Mode [Hohe Leist]"
+#define MSG_AUTO_MODE_ON					"Mode[Automatisch]"
 #define MSG_REBOOT							"Reboot den Drucker"
 #define MSG_TAKE_EFFECT						" um wirksam zu werden"
 
@@ -221,6 +222,8 @@
 #define MSG_CONFIRM_NOZZLE_CLEAN			"Bitte reinigen Sie die Duese vor Kalibrierung. Klicken wenn sauber."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Sind beide Z Schlitten ganz oben?"
 
+#define MSG_CONFIRM_NOZZLE_CLEAN			"Bitte reinigen Sie die Duese vor Kalibrierung. Klicken wenn sauber."
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Sind beide Z Schlitten ganz oben?"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Suche Bett Kalibrierpunkt"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" von 4"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Genauigkeit verbessern bei Kalibrierpunkt"
@@ -259,6 +262,7 @@
 
 #define MSG_FIL_ADJUSTING					"Einstellen Filament. Bitte warten."
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ	"Filamente sind jetzt eingestellt. Bitte reinigen Sie die Duese zur Kalibrierung. Klicken wenn sauber."
+#define MSG_STACK_ERROR						"Error - EEPROM wurde ueberschrieben"																																		   
 
 #define MSG_CALIBRATE_E						"Kalibriere E"
 //#define MSG_RESET_CALIBRATE_E				"Reset E Cal."
@@ -276,10 +280,12 @@
 
 #define MSG_BED_CORRECTION_MENU				"Bett level korrekt"
 
-#define MSG_BED_CORRECTION_LEFT				"Links     [um]"
-#define MSG_BED_CORRECTION_RIGHT			"Rechts    [um]"
-#define MSG_BED_CORRECTION_FRONT			"Vorne     [um]"
-#define MSG_BED_CORRECTION_REAR				"Hinten    [um]"
+
+#define MSG_BED_CORRECTION_MID_LEFT				"Mi.Links  [um]"
+#define MSG_BED_CORRECTION_MID_RIGHT			"Mi.Rechts [um]"
+#define MSG_BED_CORRECTION_FRONT_CENTR			"Ztr.Vorne [um]"
+#define MSG_BED_CORRECTION_REAR_CENTR			"Ztr.Hinten[um]"
+
 #define MSG_BED_CORRECTION_RESET			"Zuruecksetzen"
 
 #define MSG_MESH_BED_LEVELING				"Mesh Bed Leveling"
@@ -339,3 +345,28 @@
 #define MSG_SORT_ALPHA						"Sort: [Alphabet]"
 #define MSG_SORT_NONE						"Sort:    [Keine]"
 #define MSG_SORTING							"Sortiere Dateien"
+#define MSG_FILE_INCOMPLETE										"Datei unvollstaedig. Trotzdem weiter machen?"
+#define MSG_WIZARD							"Assistent"
+#define	MSG_WIZARD_LANGUAGE					"Bitte Sprache waehlen"
+#define	MSG_WIZARD_WELCOME					"Hallo, ich bin Dein Original Prusa i3 Drucker. Sollen wir mit dem Setup-Prozess beginnen?"
+#define	MSG_WIZARD_QUIT						"Du kannst den Assistenten immer aus Kalibrierung -> Assistent wider aufnehmen."
+#define MSG_WIZARD_SELFTEST					"Zuerst werden wir den Selbsttest durchfuehren um haeufige Montageprobleme zu ueberpruefen."
+#define MSG_WIZARD_CALIBRATION_FAILED		"Lese das Handbuch um das Problem zu beheben. Danach den Drucker neustarten und mit dem Assisenten fortzusetzen."
+#define MSG_WIZARD_XYZ_CAL					"Starte jetzt die XYZ-Kalibrierung. Es wird ca. 12 min. dauern."
+#define MSG_WIZARD_FILAMENT_LOADED		"Filament geladen?"
+#define MSG_WIZARD_Z_CAL					"Starte jetzt die Z-Kalibrierung."
+#define MSG_WIZARD_WILL_PREHEAT				"Waerme die Duese fuer PLA vor."
+#define MSG_WIZARD_HEATING					"Vorwaermen der Duese. Bitte warten."
+#define MSG_WIZARD_V2_CAL					"Starte mit der Kalibrierung zwischen der Duese und Bett."
+#define MSG_WIZARD_V2_CAL_2					"Starte die Kal.-Linie zu drucken, bitte drehe am Knopf bis Du die optimale Hoehe erreichst. Schaue im Handbuch unter Calibration nach."
+#define MSG_V2_CALIBRATION					"Erste Layer Kal."
+#define MSG_WIZARD_DONE						"Fertig. Happy printing!"
+#define MSG_WIZARD_LOAD_FILAMENT			"Fuehre PLA Filament in den Extruder und drueck den Knopf um dies zu laden."
+#define MSG_WIZARD_RERUN					"Starten vom Assistenten loescht die aktuelle Kalibrierung und beginnt von vorne. Fortsetzen?"
+#define MSG_WIZARD_REPEAT_V2_CAL					"Willst Du den letzten Schritt widerholen um den Abstand zwischen Duese und Bett erneut einzustellen?"
+#define MSG_WIZARD_CLEAN_HEATBED					"Bitte reinige das Bett und druecke den Knopf."
+#define MSG_WIZARD_PLA_FILAMENT					"Ist es PLA Filament?"
+#define MSG_WIZARD_INSERT_CORRECT_FILAMENT			"Bitte lade PLA Filament und starte den Drucker neu um den Assistenten fortzusetzen."
+#define MSG_PLA_FILAMENT_LOADED				"Ist PLA Filament geladen?"
+#define MSG_PLEASE_LOAD_PLA					"Bitte lade erst PLA filament."
+#define MSG_FILE_CNT	"Einige Dateien werden nicht sortiert, da das max. 100 Dateien pro Ordner ist."

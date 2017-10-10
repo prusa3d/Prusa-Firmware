@@ -198,6 +198,8 @@ MOTOR CURRENT SETTINGS
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
+#define Z_SILENT 0
+#define Z_HIGH_POWER 200
 #endif
 
 /*------------------------------------
@@ -389,7 +391,7 @@ THERMISTORS SETTINGS
 
 #define PING_TIME 60 //time in s
 #define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
-#define PING_ALLERT_PERIOD 60 //time in s
+#define PING_ALERT_PERIOD 60 //time in s
 #define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
 #define NC_BUTTON_LONG_PRESS 15 //time in s
 
@@ -404,5 +406,7 @@ THERMISTORS SETTINGS
 #else
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
+
+#define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
 
 #endif //__CONFIGURATION_PRUSA_H
