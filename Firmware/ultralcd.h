@@ -86,6 +86,9 @@
   #define LCD_COMMAND_LONG_PAUSE_RESUME 6
   #define LCD_COMMAND_PID_EXTRUDER 7 
   #define LCD_COMMAND_V2_CAL 8
+#ifdef DEFAULT_PID_BED_TEMP
+  #define LCD_COMMAND_PID_BED 9
+#endif
 
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;

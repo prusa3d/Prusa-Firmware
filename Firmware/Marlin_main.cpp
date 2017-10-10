@@ -257,6 +257,13 @@ bool homing_flag = false;
 
 bool temp_cal_active = false;
 
+// FILAMENT_RUNOUT_SENSOR
+bool fil_runout_active = false;
+bool FIL_RUNOUT_INVERTING = false;
+bool fil_funout_inv = false;
+bool ENDSTOPPULLUP_FIL_RUNOUT = false;
+// end FILAMENT_RUNOUT_SENSOR
+
 unsigned long kicktime = millis()+100000;
 
 unsigned int  usb_printing_counter;
@@ -1270,6 +1277,15 @@ void setup()
   for (int i = 0; i < 4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   
 #endif //DEBUG_DISABLE_STARTMSGS
+
+// FILAMENT_RUNOUT_SENSOR
+#ifdef FILAMENT_RUNOUT_SENSOR
+  fil_runout_active = eeprom_read_byte((uint8_t*)EEPROM_FIL_RUNOUT_ACTIVE);
+  FIL_RUNOUT_INVERTING = eeprom_read_byte((uint8_t*)EEPROM_FIL_RUNOUT_INVERTING);
+  ENDSTOPPULLUP_FIL_RUNOUT = eeprom_read_byte((uint8_t*)EEPROM_ENDSTOPPULLUP_FIL_RUNOUT);
+#endif
+  // end FILAMENT_RUNOUT_SENSOR
+
   lcd_update_enable(true);
 
   // Store the currently running firmware into an eeprom,
@@ -2302,8 +2318,13 @@ bool gcode_M45(bool onlyZ) {
 
 void process_commands()
 {
-  #ifdef FILAMENT_RUNOUT_SUPPORT
-    SET_INPUT(FR_SENS);
+  #ifdef FILAMENT_RUNOUT_SENSOR
+    SET_INPUT(FIL_RUNOUT_PIN);
+	if (ENDSTOPPULLUP_FIL_RUNOUT) {
+	  pinMode(FIL_RUNOUT_PIN, INPUT_PULLUP);
+	} else {
+      pinMode(FIL_RUNOUT_PIN, INPUT);
+	}
   #endif
 
 #ifdef CMDBUFFER_DEBUG
@@ -2433,7 +2454,7 @@ void process_commands()
         return;
     } else if (code_seen("SERIAL HIGH")) {
         MYSERIAL.println("SERIAL HIGH");
-        MYSERIAL.begin(1152000);
+        MYSERIAL.begin(250000);
         return;
     } else if(code_seen("Beat")) {
         // Kick farm link timer
@@ -2458,10 +2479,8 @@ void process_commands()
     case 1: // G1
       if(Stopped == false) {
 
-        #ifdef FILAMENT_RUNOUT_SUPPORT
-            
-            if(READ(FR_SENS)){
-
+        #ifdef FILAMENT_RUNOUT_SENSOR
+          if((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING == 0) && fil_runout_active) {
                         feedmultiplyBckp=feedmultiply;
                         float target[4];
                         float lastpos[4];
@@ -4822,7 +4841,28 @@ Sigma_Exit:
         }
         SERIAL_PROTOCOLLN("");
       #endif
-      break;
+// FILAMENT_RUNOUT_SENSOR
+//	#if fil_runout_active && defined(FIL_RUNOUT_PIN) && FIL_RUNOUT_PIN > -1
+  #if defined(FIL_RUNOUT_PIN) && FIL_RUNOUT_PIN > -1
+    if (fil_runout_active == true) {
+          SERIAL_PROTOCOLRPGM(MSG_FIL_RUNOUT_SETTINGS);
+		  if(READ(FIL_RUNOUT_PIN)^FIL_RUNOUT_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+		SERIAL_PROTOCOLLN("");
+    }
+//Debug
+//	  SERIAL_PROTOCOL(fil_runout_active);
+//		SERIAL_PROTOCOL(FIL_RUNOUT_INVERTING);
+//		SERIAL_PROTOCOL(ENDSTOPPULLUP_FIL_RUNOUT);
+//		SERIAL_PROTOCOLLN("");
+//end Debug info
+	#endif
+// end FILAMENT_RUNOUT_SENSOR
+
+     break;
       //TODO: update for all axis, use for loop
     #ifdef BLINKM
     case 150: // M150
@@ -5270,7 +5310,7 @@ Sigma_Exit:
     {
       float temp = 150.0;
       int e=0;
-      int c=5;
+      int c=8;
       if (code_seen('E')) e=code_value();
         if (e<0)
           temp=70;

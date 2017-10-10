@@ -216,10 +216,14 @@
 #define MSG_SET_TEMPERATURE								"Temp. einsetzen"
 #define MSG_PID_FINISHED								"PID Kalib. fertig"
 #define MSG_PID_RUNNING									"PID Kalib."
-
+#define(length=20, lines=1) MSG_PID_BED							"PID Bett Kalibrier. "
+#define(length=20, lines=1) MSG_PID_BED_FINISHED				"PID Bett Kal. fertig"
+#define(length=20, lines=1) MSG_PID_BED_RUNNING					"PID Bett Kal."
 #define MSG_CONFIRM_NOZZLE_CLEAN			"Bitte reinigen Sie die Duese vor Kalibrierung. Klicken wenn sauber."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Sind beide Z Schlitten ganz oben?"
 
+#define MSG_CONFIRM_NOZZLE_CLEAN			"Bitte reinigen Sie die Duese vor Kalibrierung. Klicken wenn sauber."
+#define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Sind beide Z Schlitten ganz oben?"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Suche Bett Kalibrierpunkt"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" von 4"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Genauigkeit verbessern bei Kalibrierpunkt"
