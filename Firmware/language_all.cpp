@@ -3557,9 +3557,9 @@ const char * const MSG_WIZARD_QUIT_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_QUIT_EN
 };
 
-const char MSG_WIZARD_REPEAT_V2_CA_EN[] PROGMEM = "Do you want to repeat last step to readjust distance between nozzle and heatbed?";
-const char * const MSG_WIZARD_REPEAT_V2_CA_LANG_TABLE[1] PROGMEM = {
-	MSG_WIZARD_REPEAT_V2_CA_EN
+const char MSG_WIZARD_REPEAT_V2_CAL_EN[] PROGMEM = "Do you want to repeat last step to readjust distance between nozzle and heatbed?";
+const char * const MSG_WIZARD_REPEAT_V2_CAL_LANG_TABLE[1] PROGMEM = {
+	MSG_WIZARD_REPEAT_V2_CAL_EN
 };
 
 const char MSG_WIZARD_RERUN_EN[] PROGMEM = "Running Wizard will delete current calibration results and start from the beginning. Continue?";

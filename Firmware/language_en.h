@@ -334,7 +334,7 @@
 #define(lenght=20, lines=8) MSG_WIZARD_DONE						"All is done. Happy printing!"
 #define(lenght=20, lines=8) MSG_WIZARD_LOAD_FILAMENT			"Please insert PLA filament to the extruder, then press knob to load it."
 #define(lenght=20, lines=7) MSG_WIZARD_RERUN					"Running Wizard will delete current calibration results and start from the beginning. Continue?"
-#define(lenght=20, lines=7) MSG_WIZARD_REPEAT_V2_CA				"Do you want to repeat last step to readjust distance between nozzle and heatbed?"
+#define(lenght=20, lines=7) MSG_WIZARD_REPEAT_V2_CAL			"Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 #define(lenght=20, lines=8) MSG_WIZARD_CLEAN_HEATBED			"Please clean heatbed and then press the knob."
 #define(lenght=20, lines=2) MSG_WIZARD_PLA_FILAMENT				"Is it PLA filament?"
 #define(lenght=20, lines=8) MSG_WIZARD_INSERT_CORRECT_FILAMENT	"Please load PLA filament and then resume Wizard by rebooting the printer."
