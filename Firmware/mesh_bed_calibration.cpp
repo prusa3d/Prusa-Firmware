@@ -1599,7 +1599,6 @@ inline void scan_bed_induction_sensor_point()
     float x1 = center_old_x + IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS;
     float y0 = center_old_y - IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS;
     float y1 = center_old_y + IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS;
-    float y = y0;
 
     if (x0 < X_MIN_POS)
         x0 = X_MIN_POS;
@@ -2271,11 +2270,11 @@ bool sample_mesh_and_store_reference()
     {
         // Verify the span of the Z values.
         float zmin = mbl.z_values[0][0];
-        float zmax = zmax;
+        float zmax = zmin;
         for (int8_t j = 0; j < 3; ++ j)
            for (int8_t i = 0; i < 3; ++ i) {
                 zmin = min(zmin, mbl.z_values[j][i]);
-                zmax = min(zmax, mbl.z_values[j][i]);
+                zmax = max(zmax, mbl.z_values[j][i]);
            }
         if (zmax - zmin > 3.f) {
             // The span of the Z offsets is extreme. Give up.
@@ -2446,7 +2445,7 @@ void babystep_reset()
 }
 
 void count_xyz_details() {
-	float a1, a2;
+	//float a1, a2;
 	float cntr[2] = {
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 0)),
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 4))
@@ -2474,14 +2473,15 @@ void count_xyz_details() {
 	SERIAL_ECHOPGM("Calibration status:");
 	MYSERIAL.println(int(calibration_status()));
 
-	a2 = -1 * asin(vec_y[0] / MACHINE_AXIS_SCALE_Y);
-/*	SERIAL_ECHOLNPGM("par:");
+/*	a2 = -1 * asin(vec_y[0] / MACHINE_AXIS_SCALE_Y);
+	SERIAL_ECHOLNPGM("par:");
 	MYSERIAL.println(vec_y[0]);
-	MYSERIAL.println(a2);*/
+	MYSERIAL.println(a2);
 	a1 = asin(vec_x[1] / MACHINE_AXIS_SCALE_X);
-/*	MYSERIAL.println(vec_x[1]);
-	MYSERIAL.println(a1);*/
-	//angleDiff = fabs(a2 - a1);
+	MYSERIAL.println(vec_x[1]);
+	MYSERIAL.println(a1);
+	angleDiff = fabs(a2 - a1);
+*/
 	for (uint8_t mesh_point = 0; mesh_point < 3; ++mesh_point) {
 		float y = vec_x[1] * pgm_read_float(bed_ref_points + mesh_point * 2) + vec_y[1] * pgm_read_float(bed_ref_points + mesh_point * 2 + 1) + cntr[1];
 		distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);

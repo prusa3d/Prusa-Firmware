@@ -276,7 +276,6 @@ bool mesh_bed_leveling_flag = false;
 bool mesh_bed_run_from_menu = false;
 
 unsigned char lang_selected = 0;
-int8_t FarmMode = 0;
 
 bool prusa_sd_card_upload = false;
 
@@ -407,8 +406,6 @@ uint8_t saved_filament_type;
 //===========================================================================
 const char axis_codes[NUM_AXIS] = {'X', 'Y', 'Z', 'E'};
 float destination[NUM_AXIS] = {  0.0, 0.0, 0.0, 0.0};
-
-static float delta[3] = {0.0, 0.0, 0.0};
 
 // For tracing an arc
 static float offset[3] = {0.0, 0.0, 0.0};
@@ -568,7 +565,7 @@ bool cmdqueue_pop_front()
             // First skip the current command ID and iterate up to the end of the string.
             for (++ bufindr; cmdbuffer[bufindr] != 0; ++ bufindr) ;
             // Second, skip the end of string null character and iterate until a nonzero command ID is found.
-            for (++ bufindr; bufindr < sizeof(cmdbuffer) && cmdbuffer[bufindr] == 0; ++ bufindr) ;
+            for (++ bufindr; (bufindr < (int)sizeof(cmdbuffer)) && (cmdbuffer[bufindr] == 0); ++ bufindr) ;
             // If the end of the buffer was empty,
             if (bufindr == sizeof(cmdbuffer)) {
                 // skip to the start and find the nonzero command.
@@ -663,12 +660,12 @@ bool cmdqueue_could_enqueue_back(int len_asked)
         int endw = bufindw + len_asked + 2;
         if (bufindw < bufindr)
             // Simple case. There is a contiguous space between the write buffer and the read buffer.
-            return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
+            return ((endw + CMDBUFFER_RESERVE_FRONT) <= bufindr);
         // Otherwise the free space is split between the start and end.
         if (// Could one fit to the end, including the reserve?
-            endw + CMDBUFFER_RESERVE_FRONT <= sizeof(cmdbuffer) ||
+            (endw + CMDBUFFER_RESERVE_FRONT <= (int)sizeof(cmdbuffer)) ||
             // Could one fit to the end, and the reserve to the start?
-            (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
+            ((endw <= (int)sizeof(cmdbuffer)) && (CMDBUFFER_RESERVE_FRONT <= bufindr)))
             return true;
         // Could one fit both to the start?
         if (len_asked + 2 + CMDBUFFER_RESERVE_FRONT <= bufindr) {
@@ -684,12 +681,12 @@ bool cmdqueue_could_enqueue_back(int len_asked)
         int endw = bufindw + len_asked + 2;
         if (bufindw < bufindr)
             // Simple case. There is a contiguous space between the write buffer and the read buffer.
-            return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
+            return ((endw + CMDBUFFER_RESERVE_FRONT) <= bufindr);
         // Otherwise the free space is split between the start and end.
         if (// Could one fit to the end, including the reserve?
-            endw + CMDBUFFER_RESERVE_FRONT <= sizeof(cmdbuffer) ||
+            (endw + CMDBUFFER_RESERVE_FRONT <= (int)sizeof(cmdbuffer)) ||
             // Could one fit to the end, and the reserve to the start?
-            (endw <= sizeof(cmdbuffer) && CMDBUFFER_RESERVE_FRONT <= bufindr))
+            ((endw <= (int)sizeof(cmdbuffer)) && (CMDBUFFER_RESERVE_FRONT <= bufindr)))
             return true;
         // Could one fit both to the start?
         if (len_asked + 2 + CMDBUFFER_RESERVE_FRONT <= bufindr) {
@@ -921,8 +918,6 @@ void servo_init()
   #endif
 }
 
-static void lcd_language_menu();
-
 
 #ifdef MESH_BED_LEVELING
    enum MeshLevelingState { MeshReport, MeshStart, MeshNext, MeshSet };
@@ -936,8 +931,7 @@ static void lcd_language_menu();
 int  er_progress = 0;
 void factory_reset(char level, bool quiet)
 {	
-	lcd_implementation_clear();
-	int cursor_pos = 0;
+    lcd_implementation_clear();
     switch (level) {
                    
         // Level 0: Language reset
@@ -970,8 +964,8 @@ void factory_reset(char level, bool quiet)
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
             farm_no = 0;
-			farm_mode = false;
-			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
+            farm_mode = 0;
+            eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
                        
             WRITE(BEEPER, HIGH);
@@ -1027,14 +1021,15 @@ void factory_reset(char level, bool quiet)
 void setup()
 {
 	lcd_init();
-    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
-    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
+	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
+	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	setup_killpin();
 	setup_powerhold();
-    farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
+	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
-	if (farm_no == 0xFFFF) farm_no = 0;
+	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF))
+		farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
+	if ((uint16_t)farm_no == 0xFFFF) farm_no = 0;
 	if (farm_mode)
 	{
 		prusa_statistics(8);
@@ -1290,7 +1285,7 @@ void trace();
 char chunk[CHUNK_SIZE+SAFETY_MARGIN];
 int chunkHead = 0;
 
-int serial_read_stream() {
+void serial_read_stream() {
 
     setTargetHotend(0, 0);
     setTargetBed(0);
@@ -1351,7 +1346,7 @@ int serial_read_stream() {
             card.closefile();
             prusa_sd_card_upload = false;
             SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
-            return 0;
+            return;
         }
 
     }
@@ -1366,8 +1361,8 @@ void host_keepalive() {
   if (farm_mode) return;
   long ms = millis();
   if (host_keepalive_interval && busy_state != NOT_BUSY) {
-    if (ms - prev_busy_signal_ms < 1000UL * host_keepalive_interval) return;
-	switch (busy_state) {
+    if ((ms - prev_busy_signal_ms) < (long)(1000L * host_keepalive_interval)) return;
+     switch (busy_state) {
       case IN_HANDLER:
       case IN_PROCESS:
         SERIAL_ECHO_START;
@@ -1381,6 +1376,8 @@ void host_keepalive() {
         SERIAL_ECHO_START;
         SERIAL_ECHOLNPGM("busy: paused for input");
         break;
+      default:
+	break;
     }
   }
   prev_busy_signal_ms = ms;
@@ -1391,8 +1388,6 @@ void host_keepalive() {
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
 {
-	bool stack_integrity = true;
-
 	if (usb_printing_counter > 0 && millis()-_usb_timer > 1000)
 	{
 		is_usb_printing = true;
@@ -1413,43 +1408,43 @@ void loop()
 
         get_command();
 
-  #ifdef SDSUPPORT
-  card.checkautostart(false);
-  #endif
-  if(buflen)
-  {
-    #ifdef SDSUPPORT
-      if(card.saving)
-      {
-        // Saving a G-code file onto an SD-card is in progress.
-        // Saving starts with M28, saving until M29 is seen.
-        if(strstr_P(CMDBUFFER_CURRENT_STRING, PSTR("M29")) == NULL) {
-          card.write_command(CMDBUFFER_CURRENT_STRING);
-          if(card.logging)
-            process_commands();
-          else
-           SERIAL_PROTOCOLLNRPGM(MSG_OK);
-        } else {
-          card.closefile();
-          SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
-        }
-      } else {
-        process_commands();
-      }
-    #else
-      process_commands();
-    #endif //SDSUPPORT
-      if (! cmdbuffer_front_already_processed)
-          cmdqueue_pop_front();
-      cmdbuffer_front_already_processed = false;
+	#ifdef SDSUPPORT
+	card.checkautostart(false);
+	#endif
+	if(buflen)
+	{
+	  #ifdef SDSUPPORT
+	      if(card.saving)
+	      {
+	        // Saving a G-code file onto an SD-card is in progress.
+	        // Saving starts with M28, saving until M29 is seen.
+	        if(strstr_P(CMDBUFFER_CURRENT_STRING, PSTR("M29")) == NULL) {
+	          card.write_command(CMDBUFFER_CURRENT_STRING);
+	          if(card.logging)
+	            process_commands();
+	          else
+	           SERIAL_PROTOCOLLNRPGM(MSG_OK);
+	        } else {
+	          card.closefile();
+	          SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
+	        }
+	      } else {
+	        process_commands();
+	      }
+	  #else
+	      process_commands();
+	  #endif //SDSUPPORT
+	  if (! cmdbuffer_front_already_processed)
+	      cmdqueue_pop_front();
+	  cmdbuffer_front_already_processed = false;
 	  host_keepalive();
-  }
-}
-  //check heater every n milliseconds
-  manage_heater();
-  isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
-  checkHitEndstops();
-  lcd_update();
+	}
+    }
+    //check heater every n milliseconds
+    manage_heater();
+    isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
+    checkHitEndstops();
+    lcd_update();
 }
 
 void proc_commands() {
@@ -2328,11 +2323,6 @@ void process_commands()
 
   // PRUSA GCODES
 
-#ifdef SNMM
-  float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
-  float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
-  int8_t SilentMode;
-#endif
   KEEPALIVE_STATE(IN_HANDLER);
 
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
@@ -2646,10 +2636,10 @@ void process_commands()
             if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
               float echange=destination[E_AXIS]-current_position[E_AXIS];
 
-              if((echange<-MIN_RETRACT && !retracted) || (echange>MIN_RETRACT && retracted)) { //move appears to be an attempt to retract or recover
+              if((echange<-MIN_RETRACT && !retracted[active_extruder]) || (echange>MIN_RETRACT && retracted[active_extruder])) { //move appears to be an attempt to retract or recover
                   current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
                   plan_set_e_position(current_position[E_AXIS]); //AND from the planner
-                  retract(!retracted);
+                  retract(!retracted[active_extruder]);
                   return;
               }
 
@@ -3383,7 +3373,6 @@ void process_commands()
 		int iy = 0;
 
 		int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
-		int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS] / 60;
 		int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
 		bool has_z = is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
 		if (verbosity_level >= 1) {
@@ -4771,7 +4760,6 @@ Sigma_Exit:
           }
         }
 
-        float area = .0;
         if(code_seen('D')) {
 		  float diameter = (float)code_value();
 		  if (diameter == 0.0) {
@@ -5353,7 +5341,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         }
         
         feedmultiplyBckp=feedmultiply;
-        int8_t TooLowZ = 0;
 
         target[X_AXIS]=current_position[X_AXIS];
         target[Y_AXIS]=current_position[Y_AXIS];
@@ -5386,11 +5373,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         {
           #ifdef FILAMENTCHANGE_ZADD
             target[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
+	    // XXX: Removed unused var 'TooLowZ'
             if(target[Z_AXIS] < 10){
               target[Z_AXIS]+= 10 ;
-              TooLowZ = 1;
-            }else{
-              TooLowZ = 0;
             }
           #endif
      
@@ -5842,6 +5827,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			  SERIAL_ECHOLNRPGM(MSG_INVALID_EXTRUDER);
 		  }
 		  else {
+#if EXTRUDERS == 1
+			  if (code_seen('F')) {
+				  next_feedrate = code_value();
+				  if (next_feedrate > 0.0) {
+					  feedrate = next_feedrate;
+				  }
+			  }
+#else
 			  boolean make_move = false;
 			  if (code_seen('F')) {
 				  make_move = true;
@@ -5850,7 +5843,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 					  feedrate = next_feedrate;
 				  }
 			  }
-#if EXTRUDERS > 1
 			  if (tmp_extruder != active_extruder) {
 				  // Save current position to return to after applying extruder offset
 				  memcpy(destination, current_position, sizeof(destination));
@@ -5964,7 +5956,7 @@ void ClearToSend()
         SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
-update_currents() {
+void update_currents() {
 	float current_high[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 	float current_low[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor[3];
@@ -6003,12 +5995,13 @@ update_currents() {
 
 void get_coordinates()
 {
-  bool seen[4]={false,false,false,false};
+  // XXX: Unused var (set but not ref)
+  // bool seen[4]={false,false,false,false};
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
 	  destination[i] = (float)code_value() + (axis_relative_modes[i] || relative_mode)*current_position[i];
-      seen[i]=true;
+	  // seen[i]=true;
 	  if (i == Z_AXIS && SilentModeMenu == 2) update_currents();
     }
     else destination[i] = current_position[i]; //Are these else lines really needed?
@@ -6683,7 +6676,6 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
 
 	int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
-	int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS] / 60;
 	int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
 
 	setup_for_endstop_move(false);
@@ -6850,7 +6842,6 @@ void temp_compensation_start() {
 
 void temp_compensation_apply() {
 	int i_add;
-	int compensation_value;
 	int z_shift = 0;
 	float z_shift_mm;
 
@@ -6879,7 +6870,7 @@ float temp_comp_interpolation(float inp_temperature) {
 
 	//cubic spline interpolation
 
-	int n, i, j, k;
+	int n, i, j;
 	float h[10], a, b, c, d, sum, s[10] = { 0 }, x[10], F[10], f[10], m[10][10] = { 0 }, temp;
 	int shift[10];
 	int temp_C[10];

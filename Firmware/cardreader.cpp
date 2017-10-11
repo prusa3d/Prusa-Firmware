@@ -61,7 +61,6 @@ char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
 
 void CardReader::lsDive_pointer(const char *prepend, SdFile parent, const char * const match) {
 	dir_t p;
-	uint8_t cnt = 0;
 
 	//parent.seekSet = 
 	// Read the next entry from a directory
@@ -73,17 +72,11 @@ void CardReader::lsDive_pointer(const char *prepend, SdFile parent, const char *
 	//pom = parent.curPosition();
 	//MYSERIAL.println(pom, 10);
 
-			uint8_t pn0 = p.name[0];
+	filenameIsDir = DIR_IS_SUBDIR(&p);
 
-			filenameIsDir = DIR_IS_SUBDIR(&p);
-
-
-
-			
-			createFilename(filename, p);
-			creationDate = p.creationDate;
-			creationTime = p.creationTime;
-		
+	createFilename(filename, p);
+	creationDate = p.creationDate;
+	creationTime = p.creationTime;
 }
 
 /**
@@ -363,12 +356,12 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
   if(name[0]=='/')
   {
     dirname_start=strchr(name,'/')+1;
-    while(dirname_start>0)
+    while(dirname_start)
     {
       dirname_end=strchr(dirname_start,'/');
       //SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-name));
       //SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-name));
-      if(dirname_end>0 && dirname_end>dirname_start)
+      if(dirname_end && dirname_end>dirname_start)
       {
         char subdirname[13];
         strncpy(subdirname, dirname_start, dirname_end-dirname_start);
@@ -461,12 +454,12 @@ void CardReader::removeFile(char* name)
   if(name[0]=='/')
   {
     dirname_start=strchr(name,'/')+1;
-    while(dirname_start>0)
+    while(dirname_start)
     {
       dirname_end=strchr(dirname_start,'/');
       //SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-name));
       //SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-name));
-      if(dirname_end>0 && dirname_end>dirname_start)
+      if(dirname_end && dirname_end>dirname_start)
       {
         char subdirname[13];
         strncpy(subdirname, dirname_start, dirname_end-dirname_start);
@@ -710,8 +703,7 @@ void CardReader::updir()
   {
     --workDirDepth;
     workDir = workDirParents[0];
-    int d;
-    for (int d = 0; d < workDirDepth; d++)
+    for (uint8_t d = 0; d < workDirDepth; d++)
       workDirParents[d] = workDirParents[d+1];
   }
 }

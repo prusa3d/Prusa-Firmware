@@ -360,6 +360,7 @@ static void lcd_set_custom_characters(
     B00000
   }; //thanks Sonny Mounicou
 
+#if 0	// Unused
   byte arrup[8] = {
     B00100,
     B01110,
@@ -381,7 +382,7 @@ static void lcd_set_custom_characters(
     B01010,
     B00100
   }; 
-
+#endif
 
   #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
     static bool char_mode = false;
@@ -603,16 +604,15 @@ static void lcd_implementation_init_noclear(
 }
 
 
-static void lcd_implementation_nodisplay()
+inline void lcd_implementation_nodisplay()
 {
     lcd.noDisplay();
 }
-static void lcd_implementation_display()
+inline void lcd_implementation_display()
 {
     lcd.display();
 }
-
-void lcd_implementation_clear()
+inline void lcd_implementation_clear()
 {
     lcd.clear();
 }
@@ -901,7 +901,7 @@ static void lcd_implementation_status_screen()
 				lcd.setCursor(7, 3);
 				lcd_printPGM(PSTR("             "));
 
-				for (int dots = 0; dots < heating_status_counter; dots++)
+				for (uint16_t dots = 0; dots < heating_status_counter; dots++)
 				{
 					lcd.setCursor(7 + dots, 3);
 					lcd.print('.');
@@ -1103,6 +1103,7 @@ static void lcd_implementation_drawmenu_setting_edit_generic(uint8_t row, const 
         lcd.print(' ');
     lcd.print(data);
 }
+#if 0
 static void lcd_implementation_drawmenu_setting_edit_generic_P(uint8_t row, const char* pstr, char pre_char, const char* data)
 {
     char c;
@@ -1125,6 +1126,7 @@ static void lcd_implementation_drawmenu_setting_edit_generic_P(uint8_t row, cons
         lcd.print(' ');
     lcd_printPGM(data);
 }
+#endif
 #define lcd_implementation_drawmenu_setting_edit_int3_selected(row, pstr, pstr2, data, minValue, maxValue) lcd_implementation_drawmenu_setting_edit_generic(row, pstr, '>', itostr3(*(data)))
 #define lcd_implementation_drawmenu_setting_edit_int3(row, pstr, pstr2, data, minValue, maxValue) lcd_implementation_drawmenu_setting_edit_generic(row, pstr, ' ', itostr3(*(data)))
 #define lcd_implementation_drawmenu_setting_edit_float3_selected(row, pstr, pstr2, data, minValue, maxValue) lcd_implementation_drawmenu_setting_edit_generic(row, pstr, '>', ftostr3(*(data)))
@@ -1202,12 +1204,6 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 
     lcd.setCursor(0, row);
     lcd.print('>');
-    if (longFilename[0] != '\0')
-    {
-
-        filename = longFilename;
-        //longFilename[LCD_WIDTH-1] = '\0';
-    }
 
     int i = 1;
     int j = 0;
@@ -1229,8 +1225,8 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
             if(LCD_CLICKED || ( enc_dif != encoderDiff )){
 				longFilenameTMP = longFilename;
 				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
-				int i = 1;
-				int j = 0;				
+				i = 1;
+				j = 0;
 				break;
             }else{
 				if (j == 1) delay(3);	//wait around 1.2 s to start scrolling text

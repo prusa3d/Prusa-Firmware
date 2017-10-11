@@ -2528,7 +2528,7 @@ const char MSG_SELFTEST_CHECK_BED_CZ[] PROGMEM = "Kontrola bed     ";
 const char MSG_SELFTEST_CHECK_BED_IT[] PROGMEM = "Verifica letto";
 const char MSG_SELFTEST_CHECK_BED_ES[] PROGMEM = "Control de cama";
 const char MSG_SELFTEST_CHECK_BED_PL[] PROGMEM = "Kontrola bed     ";
-const char MSG_SELFTEST_CHECK_BED_DE[] PROGMEM = "Pr\x81fe Bed        ";
+const char MSG_SELFTEST_CHECK_BED_DE[] PROGMEM = "Pr\x81""fe Bed        ";
 const char * const MSG_SELFTEST_CHECK_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_BED_EN,
 	MSG_SELFTEST_CHECK_BED_CZ,
