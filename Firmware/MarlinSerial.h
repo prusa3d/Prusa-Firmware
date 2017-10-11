@@ -134,8 +134,7 @@ class MarlinSerial //: public Stream
                 // Test for a framing error.
                 if (M_UCSRxA & (1<<M_FEx)) {
                     // Characters received with the framing errors will be ignored.
-                    // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
-                    volatile unsigned char c = M_UDRx;
+                    (void)(*(char *)M_UDRx);
                 } else {
                     unsigned char c  =  M_UDRx;
                     int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
@@ -156,8 +155,7 @@ class MarlinSerial //: public Stream
                 // Test for a framing error.
                 if (M_UCSRxA & (1<<M_FEx)) {
                     // Characters received with the framing errors will be ignored.
-                    // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
-                    volatile unsigned char c = M_UDRx;
+                    (void)(*(char *)M_UDRx);
                 } else {
                     unsigned char c  =  M_UDRx;
                     int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
@@ -177,8 +175,7 @@ class MarlinSerial //: public Stream
                 // Test for a framing error.
                 if (UCSR2A & (1<<FE2)) {
                     // Characters received with the framing errors will be ignored.
-                    // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
-                    volatile unsigned char c = UDR2;
+                    (void)(*(char *)UDR2);
                 } else {
                     unsigned char c  =  UDR2;
                     int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;

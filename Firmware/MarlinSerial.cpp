@@ -56,8 +56,8 @@ FORCE_INLINE void store_char(unsigned char c)
       // Test for a framing error.
       if (M_UCSRxA & (1<<M_FEx)) {
           // Characters received with the framing errors will be ignored.
-          // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
-          volatile unsigned char c = M_UDRx;
+          // Dummy register read (discard)
+          (void)(*(char *)M_UDRx);
       } else {
           // Read the input register.
           unsigned char c = M_UDRx;
@@ -71,8 +71,8 @@ FORCE_INLINE void store_char(unsigned char c)
         // Test for a framing error.
         if (UCSR2A & (1<<FE2)) {
             // Characters received with the framing errors will be ignored.
-            // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
-            volatile unsigned char c = UDR2;
+            // Dummy register read (discard)
+            (void)(*(char *)UDR2);
         } else {
             // Read the input register.
             unsigned char c = UDR2;
