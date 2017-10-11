@@ -449,8 +449,8 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
 	}
 	#endif // SUPPORT_VERBOSITY
 
-    #if 0
-    if (result == BED_SKEW_OFFSET_DETECTION_PERFECT && fabs(a1) < bed_skew_angle_mild && fabs(a2) < bed_skew_angle_mild) {
+    #if 1
+    if (result == BED_SKEW_OFFSET_DETECTION_PERFECT) {
         if (verbosity_level > 0)
             SERIAL_ECHOLNPGM("Very little skew detected. Disabling skew correction.");
         // Just disable the skew correction.

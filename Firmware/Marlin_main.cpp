@@ -1490,7 +1490,6 @@ void get_command()
         continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
-		(serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1) )
     {
       if(!serial_count) { //if empty line
@@ -1658,7 +1657,6 @@ void get_command()
     if(serial_char == '\n' ||
        serial_char == '\r' ||
        (serial_char == '#' && comment_mode == false) ||
-       (serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1)||n==-1)
     {
       if(card.eof()){
@@ -1917,6 +1915,171 @@ static float probe_pt(float x, float y, float z_before) {
 }
 
 #endif // #ifdef ENABLE_AUTO_BED_LEVELING
+
+#if defined(EEPROM_SAVE_RESTORE)
+ /**
+  * M767: Dump EEPROM to serial (suitable for restore) or to SD File
+  *   Ex: M767 S --> dump to SD card 'eesave.hex'
+  *       M767 P<addrs>	--> Write M768 P<addrs> V<value> to SERIAL
+  *       M767 X --> dump entire EEPROM to SERIAL
+  * M768: Set EEPROM location from value
+  *   Ex: M768 P<addrs> V<value>
+  *       M768 R --> restore from SD card
+  *
+  */
+#ifdef SDSUPPORT
+#define EECHUNKSIZE	32
+// :<count><offset><type><data><cksum>EOL
+#define EELINESIZE	(1 + 2 + 4 + 2 + (2 * EECHUNKSIZE) + 2 + 1)
+static char linebfr[EELINESIZE + 1];
+
+static uint16_t bfrVal(char *ptr, uint8_t len)
+{
+	uint16_t retval = 0;
+	char ch;
+
+	for (uint8_t i = 0; i < len; i++) {
+		ch = *ptr++;
+		retval <<= 4;
+		if (ch >= 'A')
+			retval += 9 + (ch & 0x0F);
+		else
+			retval += ch & 0x0F;
+	}
+
+	return retval;
+}
+#endif
+
+
+void gcode_M767() {
+	if (code_seen('S')) {
+#ifdef SDSUPPORT
+		// Save EEPROM to SD
+		uint8_t nch, i;
+
+		// Only if no other files open and not printing
+		if (IS_SD_PRINTING || is_usb_printing)
+			return;
+
+		// Reset SD card and write to root
+		card.initsd();
+		// Overwrite existing
+	        card.openFile((char *)"eesave.hex", false, true);
+		for (unsigned long ofs = 0; ofs < 4096; ofs += EECHUNKSIZE) {
+			int8_t cksum = EECHUNKSIZE;
+			nch = sprintf_P(linebfr, PSTR(":%02X%04X00"), EECHUNKSIZE, ofs);
+			cksum += (ofs & 0xFF) + ((ofs >> 8) & 0xFF);
+			for (i = 0; i < EECHUNKSIZE; i++) {
+				uint8_t eeval = eeprom_read_byte((unsigned char *)(ofs + i));
+				cksum += eeval;
+				nch += sprintf_P(linebfr + nch, PSTR("%02X"), eeval);
+			}
+
+			nch += sprintf_P(linebfr + nch, PSTR("%02X\n"), (-cksum) & 0xFF);
+			if (card.write_buf(linebfr, nch) != nch) {
+				SERIAL_ERROR_START;
+				SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
+				break;
+			}
+		}
+
+		// Close file
+		card.closefile(false);
+		SERIAL_ECHOLNPGM("EEPROM saved");
+#else
+		return;
+#endif
+	} else {
+		if (code_seen('P')) {
+			uint16_t addrs = code_value_short();
+			SERIAL_ECHOPAIR("M768 P", (unsigned long)addrs);
+			SERIAL_ECHOPAIR(" V", (unsigned long)eeprom_read_byte((unsigned char *)addrs));
+			SERIAL_ECHOLN("");
+		} else {
+			if (code_seen('X')) {
+				for (unsigned long ofs = 0; ofs < 4096; ofs++) {
+					SERIAL_ECHOPAIR("M768 P", ofs);
+					SERIAL_ECHOPAIR(" V", (unsigned long)eeprom_read_byte((unsigned char *)ofs));
+					SERIAL_ECHOLN("");
+				}
+			}
+		}
+	}
+
+	return;
+}
+
+void gcode_M768() {
+	uint16_t addrs;
+
+	if (code_seen('P')) {
+		addrs = code_value_short();
+
+		// Write value to offset
+		// Erase (set to 0xFF) if no value given
+		eeprom_update_byte((unsigned char *)addrs,
+				code_seen('V') ? code_value_uint8() : 0xFF);
+	}
+#ifdef SDSUPPORT
+	else if (code_seen('R')) {
+		// Restore EEPROM from SD
+		// Only if no other files open and not printing
+		if (IS_SD_PRINTING || is_usb_printing)
+			return;
+
+		// Reset SD card and write to root
+		card.initsd();
+		// Open existing
+	        card.openFile((char *)"eesave.hex", true);
+		if (!card.isFileOpen())
+			return;
+
+		for (unsigned long ofs = 0; ofs < 4096; ofs += EECHUNKSIZE) {
+			if (card.read_buf(linebfr, EELINESIZE) != EELINESIZE)
+				return;
+
+			// Validate buffer header
+			if ((linebfr[0] != ':') || (bfrVal(&linebfr[1], 2) != EECHUNKSIZE) ||
+			    (bfrVal(&linebfr[7], 2) != 0)) {
+				SERIAL_ERROR_START;
+				SERIAL_ERRORLNPGM("Header mis-match");
+				return;
+			}
+
+			// Validate checksum
+			int8_t cksum = 0;
+			for (uint8_t i = 1; i < EELINESIZE - 1; i += 2) {
+				cksum += bfrVal(&linebfr[i], 2);
+			}
+			if (cksum != 0) {
+				SERIAL_ERROR_START;
+				SERIAL_ERRORLNPGM("Bad checksum");
+				return;
+			}
+
+			addrs = bfrVal(&linebfr[3], 4);
+			if (addrs > 4064) {
+				SERIAL_ERROR_START;
+				SERIAL_ERRORLNPGM("Bad EEPROM offset");
+				return;
+			}
+			// Things look OK - (re-)write EEPROM
+			for (uint8_t i = 0; i < EECHUNKSIZE; i++) {
+				uint8_t eeval = bfrVal(&linebfr[9 + (i * 2)], 2);
+				eeprom_update_byte((unsigned char *)(addrs + i), eeval);
+			}
+		}
+
+		// All done with restore
+		card.closefile();
+		SERIAL_ECHOLNPGM("EEPROM restored");
+	}
+#endif
+
+	return;
+}
+#endif	// EEPROM_SAVE_RESTORE
 
 #ifdef LIN_ADVANCE
   /**
@@ -5819,6 +5982,15 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif	
 	}
 	break;
+
+#if defined(EEPROM_SAVE_RESTORE)
+    case 767:	// Dump eeprom
+	gcode_M767();
+	break;
+    case 768:	// Load eeprom location
+	gcode_M768();
+	break;
+#endif
 
     case 999: // M999: Restart after being stopped
       Stopped = false;

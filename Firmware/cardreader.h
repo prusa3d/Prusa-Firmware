@@ -64,6 +64,11 @@ public:
   FORCE_INLINE uint8_t percentDone(){if(!isFileOpen()) return 0; if(filesize) return sdpos/((filesize+99)/100); else return 0;};
   FORCE_INLINE char* getWorkDirName(){workDir.getFilename(filename);return filename;};
 
+#ifdef EEPROM_SAVE_RESTORE
+  FORCE_INLINE int16_t write_buf(void *buf, uint16_t cnt) { return file.write(buf, cnt); }
+  FORCE_INLINE int16_t read_buf(void *buf, uint16_t cnt) { return file.read(buf, cnt); }
+#endif
+
   bool ToshibaFlashAir_isEnabled() const { return card.getFlashAirCompatible(); }
   void ToshibaFlashAir_enable(bool enable) { card.setFlashAirCompatible(enable); }
   bool ToshibaFlashAir_GetIP(uint8_t *ip);
