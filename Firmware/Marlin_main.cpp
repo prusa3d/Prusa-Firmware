@@ -1236,6 +1236,7 @@ void setup()
 #ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 
+  for (int i = 0; i < 4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
@@ -1266,8 +1267,7 @@ void setup()
 	  if (!previous_settings_retrieved) {
 		  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED);
 	  }
-  }
-  for (int i = 0; i < 4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+  }  
   
 #endif //DEBUG_DISABLE_STARTMSGS
   lcd_update_enable(true);
