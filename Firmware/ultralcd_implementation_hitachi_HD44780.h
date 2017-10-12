@@ -958,18 +958,13 @@ static void lcd_implementation_status_screen()
 						custom_message = false;
 						custom_message_type = 0;
 					}
-					if (custom_message_state > 3 && custom_message_state < 10 )
+					if (custom_message_state > 3 && custom_message_state <= 10 )
 					{
 						lcd.setCursor(0, 3);
 						lcd_printPGM(PSTR("                   "));
 						lcd.setCursor(0, 3);
 						lcd_printPGM(MSG_HOMEYZ_DONE);
 						custom_message_state--;
-					}
-					if (custom_message_state == 10)
-					{
-						lcd_printPGM(MSG_HOMEYZ_DONE);
-						custom_message_state = 9;
 					}
 				}
 
