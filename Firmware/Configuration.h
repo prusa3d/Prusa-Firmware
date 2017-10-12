@@ -5,9 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-
 #define FW_version "3.1.0-RC1"
-
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -60,7 +58,7 @@
 #define EEPROM_BED_CORRECTION_REAR_LEFT (EEPROM_BED_CORRECTION_REAR_RIGHT - 1)
 
 // FILAMENT_RUNOUT_SENSOR
-#define EEPROM_FIL_RUNOUT_ACTIVE (EEPROM_BED_CORRECTION_REAR_RIGHT - 1) //0 - filament runout sensor disabled; 1 - .. activated
+#define EEPROM_FIL_RUNOUT_ACTIVE (EEPROM_BED_CORRECTION_REAR_LEFT - 1) //0 - filament runout sensor disabled; 1 - .. activated
 #define EEPROM_FIL_RUNOUT_INVERTING (EEPROM_FIL_RUNOUT_ACTIVE - 1) //0 - filament runout sensor inverted; 1 - .. normal
 #define EEPROM_ENDSTOPPULLUP_FIL_RUNOUT (EEPROM_FIL_RUNOUT_INVERTING - 1) //0 - filament runout sensor pullup; 0 - .. normal
 // end FILAMENT_RUNOUT_SENSOR

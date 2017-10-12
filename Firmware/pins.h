@@ -19,7 +19,9 @@
   #endif
   
 // FILAMENT_RUNOUT_SUPPORT
+#ifdef FILAMENT_RUNOUT_SUPPORT
   #define FIL_RUNOUT_PIN 24
+#endif
 // end FILAMENT_RUNOUT_SUPPORT
 
   #define X_STEP_PIN 37
@@ -29,8 +31,6 @@
   #define X_MS2_PIN 41
   #define Y_STEP_PIN 36
   #define Y_DIR_PIN 49
-  #define Y_MIN_PIN 11
-  #define Y_MAX_PIN -1
   #define Y_ENABLE_PIN 28
   #define Y_MS1_PIN 69
   #define Y_MS2_PIN 39
@@ -59,7 +59,7 @@
   #define X_MIN_PIN 12
   #define Y_MIN_PIN 11
   #define Z_MIN_PIN 10
-#els
+#else
   #define X_MIN_PIN -1
   #define Y_MIN_PIN -1
   #define Z_MIN_PIN -1
@@ -226,7 +226,9 @@
   #endif
 
 // FILAMENT_RUNOUT_SUPPORT
+#ifdef FILAMENT_RUNOUT_SUPPORT
   #define FIL_RUNOUT_PIN 24
+#endif
 // end FILAMENT_RUNOUT_SUPPORT
 
 #ifdef SNMM
@@ -244,8 +246,6 @@
   #define X_MS2_PIN 41
   #define Y_STEP_PIN 36
   #define Y_DIR_PIN 49
-  #define Y_MIN_PIN 11
-  #define Y_MAX_PIN -1
   #define Y_ENABLE_PIN 28
   #define Y_MS1_PIN 69
   #define Y_MS2_PIN 39

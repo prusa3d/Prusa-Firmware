@@ -3564,7 +3564,7 @@ void lcd_wizard(int state) {
 	lcd_return_to_status();
 	lcd_update(2);
 }
-// FR_FILAMENT_RUNOUT_SENSOR
+// FILAMENT_RUNOUT_SENSOR
 void lcd_fil_runout_settings_menu()
 {
 	START_MENU();
@@ -6724,12 +6724,14 @@ char *itostr3left(const int &xx)
   return conv;
 }
 
-// Convert int to rj string with 1234 format
-char *itostr4(const int &xx) {
-  conv[0] = xx >= 1000 ? (xx / 1000) % 10 + '0' : ' ';
+// Convert int to rj string with 1234 or -123 format 
+char *itostr4(const int &x)
+{
+  int xx = abs(x);
+  conv[0] = (x < 0) ? '-' : (xx >= 1000) ? (xx / 1000) % 10 + '0' : ' ';
   conv[1] = xx >= 100 ? (xx / 100) % 10 + '0' : ' ';
   conv[2] = xx >= 10 ? (xx / 10) % 10 + '0' : ' ';
-  conv[3] = xx % 10 + '0';
+  conv[3] = (xx) % 10 + '0';
   conv[4] = 0;
   return conv;
 }

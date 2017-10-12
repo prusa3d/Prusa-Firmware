@@ -151,7 +151,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				createFilename(filename, p);
 				SERIAL_PROTOCOL(prepend);
 				SERIAL_PROTOCOL(filename);
-				//SERIAL_PROTOCOLCHAR(' ');
+				MYSERIAL.write(' ');
 				SERIAL_PROTOCOLLN(p.fileSize);
 				break;
 

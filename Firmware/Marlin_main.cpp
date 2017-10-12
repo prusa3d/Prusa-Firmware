@@ -1503,8 +1503,7 @@ void get_command()
         continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
-		(serial_char == ':' && comment_mode == false) ||
-       serial_count >= (MAX_CMD_SIZE - 1) )
+      serial_count >= (MAX_CMD_SIZE - 1) )
     {
       if(!serial_count) { //if empty line
         comment_mode = false; //for new command
@@ -1667,7 +1666,6 @@ void get_command()
     if(serial_char == '\n' ||
        serial_char == '\r' ||
        (serial_char == '#' && comment_mode == false) ||
-       (serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1)||n==-1)
     {
       if(card.eof()){
@@ -2344,12 +2342,7 @@ void process_commands()
 
   // PRUSA GCODES
 
-#ifdef SNMM
-  float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
-  float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
-  int8_t SilentMode;
-#endif
-  KEEPALIVE_STATE(IN_HANDLER);
+ KEEPALIVE_STATE(IN_HANDLER);
 
   if (code_seen("M117")) { //moved to highest priority place to be able to to print strings which includes "G", "PRUSA" and "^"
 	  custom_message = true; //fixes using M117 during SD print, but needs to be be updated in future
@@ -2480,7 +2473,7 @@ void process_commands()
       if(Stopped == false) {
 
         #ifdef FILAMENT_RUNOUT_SENSOR
-          if((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING == 0) && fil_runout_active) {
+          if(((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING) == 0) && fil_runout_active) {
                         feedmultiplyBckp=feedmultiply;
                         float target[4];
                         float lastpos[4];

@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-my @langs = ("en","cz","it","es","pl","de");
+my @langs = ("en","cz","it","es","pl","de","nl");
 
 sub parselang 
 {
@@ -17,6 +17,8 @@ sub parselang
 	while (my $line = <$fh>) {
 		chomp $line;
 		next if (index($line, 'define') == -1 || index($line, 'MSG') == -1);
+		# Skip commented lines
+		next if (index($line, '//') == 0);
 		my $modifiers = {};
     	my $symbol = '';
     	my $value = '';
