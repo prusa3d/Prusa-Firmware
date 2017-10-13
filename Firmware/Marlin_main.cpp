@@ -931,6 +931,8 @@ void servo_init()
 int  er_progress = 0;
 void factory_reset(char level, bool quiet)
 {	
+    UNUSED(quiet);
+
     lcd_implementation_clear();
     switch (level) {
                    
@@ -3370,7 +3372,7 @@ void process_commands()
 			clamped ? SERIAL_PROTOCOLPGM("First calibration point clamped.\n") : SERIAL_PROTOCOLPGM("No clamping for first calibration point.\n");
 		}
 		#endif // SUPPORT_VERBOSITY
-		//            mbl.get_meas_xy(0, 0, current_position[X_AXIS], current_position[Y_AXIS], false);            
+
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS] / 30, active_extruder);
 		// Wait until the move is finished.
 		st_synchronize();

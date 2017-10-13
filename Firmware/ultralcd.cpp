@@ -5787,6 +5787,8 @@ static bool check_file(const char* filename) {
 
 static void menu_action_sdfile(const char* filename, char* longFilename)
 {	
+  UNUSED(longFilename);
+
   loading_flag = false;
   char cmd[30];
   char* c;
@@ -5806,6 +5808,8 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)
 {
+  UNUSED(longFilename);
+
   card.chdir(filename);
   encoderPosition = 0;
 }
@@ -6301,12 +6305,12 @@ bool lcd_detected(void)
 #endif
 }
 
+#ifdef LCD_USE_I2C_BUZZER
 void lcd_buzz(long duration, uint16_t freq)
 {
-#ifdef LCD_USE_I2C_BUZZER
   lcd.buzz(duration, freq);
-#endif
 }
+#endif
 
 bool lcd_clicked()
 {

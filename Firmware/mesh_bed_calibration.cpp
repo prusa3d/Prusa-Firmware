@@ -2436,6 +2436,8 @@ bool sample_mesh_and_store_reference()
 
 bool scan_bed_induction_points(int8_t verbosity_level)
 {
+    UNUSED(verbosity_level);
+
     // Don't let the manage_inactivity() function remove power from the motors.
     refresh_cmd_timeout();
 
