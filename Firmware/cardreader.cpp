@@ -1057,7 +1057,7 @@ void CardReader::printingHasFinished()
       }
       autotempShutdown();
 	  #ifdef SDCARD_SORT_ALPHA
-		presort();
+		//presort();
 	  #endif
     }
 }

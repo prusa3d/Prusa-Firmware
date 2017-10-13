@@ -3542,11 +3542,6 @@ const char * const MSG_WIZARD_INSERT_CORRECT_FILAMENT_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_INSERT_CORRECT_FILAMENT_EN
 };
 
-const char MSG_WIZARD_LANGUAGE_EN[] PROGMEM = "Please choose your language";
-const char * const MSG_WIZARD_LANGUAGE_LANG_TABLE[1] PROGMEM = {
-	MSG_WIZARD_LANGUAGE_EN
-};
-
 const char MSG_WIZARD_LOAD_FILAMENT_EN[] PROGMEM = "Please insert PLA filament to the extruder, then press knob to load it.";
 const char * const MSG_WIZARD_LOAD_FILAMENT_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_LOAD_FILAMENT_EN

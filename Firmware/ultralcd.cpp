@@ -3332,8 +3332,10 @@ void lcd_wizard(int state) {
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_WIZARD_FILAMENT_LOADED, false);
 			if (wizard_event) state = 8;
 			else state = 6;
+
 			break;
 		case 6: //waiting for preheat nozzle for PLA;
+#ifndef SNMM
 			lcd_display_message_fullscreen_P(MSG_WIZARD_WILL_PREHEAT);
 			current_position[Z_AXIS] = 100; //move in z axis to make space for loading filament
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
@@ -3351,6 +3353,7 @@ void lcd_wizard(int state) {
 				lcd_set_custom_characters();
 				delay_keep_alive(1000);
 			}
+#endif //not SNMM
 			state = 7;
 			break;
 		case 7: //load filament 
@@ -5770,6 +5773,7 @@ static bool check_file(const char* filename) {
 		get_command();
 		result = check_commands();
 	}
+	cmdqueue_reset();
 	card.printingHasFinished();
 	strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
 	return result;

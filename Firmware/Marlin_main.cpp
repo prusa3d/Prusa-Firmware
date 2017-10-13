@@ -1236,6 +1236,7 @@ void setup()
 #ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 
+  for (int i = 0; i < 4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
@@ -1266,8 +1267,7 @@ void setup()
 	  if (!previous_settings_retrieved) {
 		  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED);
 	  }
-  }
-  for (int i = 0; i < 4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
+  }  
   
 #endif //DEBUG_DISABLE_STARTMSGS
   lcd_update_enable(true);
@@ -1388,6 +1388,7 @@ void host_keepalive() {
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
 {
+	KEEPALIVE_STATE(NOT_BUSY);
 	if (usb_printing_counter > 0 && millis()-_usb_timer > 1000)
 	{
 		is_usb_printing = true;
