@@ -4158,7 +4158,6 @@ void extr_adj(int extruder) //loading filament for SNMM
 void extr_unload() { //unloads filament
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
-	int8_t SilentMode;
 
 	if (degHotend0() > EXTRUDE_MINTEMP) {
 		lcd_implementation_clear();
@@ -4205,7 +4204,7 @@ void extr_unload() { //unloads filament
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
 		st_synchronize();
 		//digipot_init();
-		if (SilentMode == 1) digipot_current(2, tmp_motor[2]); //set back to normal operation currents
+		if (SilentModeMenu == 1) digipot_current(2, tmp_motor[2]); //set back to normal operation currents
 		else digipot_current(2, tmp_motor_loud[2]);
 		lcd_update_enable(true);
 		lcd_return_to_status();
@@ -5791,6 +5790,8 @@ static bool check_file(const char* filename) {
 
 static void menu_action_sdfile(const char* filename, char* longFilename)
 {	
+  UNUSED(longFilename);
+
   loading_flag = false;
   char cmd[30];
   char* c;
@@ -5810,6 +5811,8 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)
 {
+  UNUSED(longFilename);
+
   card.chdir(filename);
   encoderPosition = 0;
 }
@@ -6305,12 +6308,12 @@ bool lcd_detected(void)
 #endif
 }
 
+#ifdef LCD_USE_I2C_BUZZER
 void lcd_buzz(long duration, uint16_t freq)
 {
-#ifdef LCD_USE_I2C_BUZZER
   lcd.buzz(duration, freq);
-#endif
 }
+#endif
 
 bool lcd_clicked()
 {

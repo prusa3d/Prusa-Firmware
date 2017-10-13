@@ -931,6 +931,8 @@ void servo_init()
 int  er_progress = 0;
 void factory_reset(char level, bool quiet)
 {	
+    UNUSED(quiet);
+
     lcd_implementation_clear();
     switch (level) {
                    
@@ -3297,18 +3299,20 @@ void process_commands()
 	case 80:
 #ifdef MK1BP
 		break;
-#endif //MK1BP
+#else
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
-		int8_t verbosity_level = 0;
 		static bool run = false;
 
+		#ifdef SUPPORT_VERBOSITY
+		int8_t verbosity_level = 0;
 		if (code_seen('V')) {
 			// Just 'V' without a number counts as V1.
 			char c = strchr_pointer[1];
 			verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
 		}
+		#endif
 		// Firstly check if we know where we are
 		if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
 			// We don't know where we are! HOME!
@@ -3369,8 +3373,10 @@ void process_commands()
 		if (verbosity_level >= 1) {
 			clamped ? SERIAL_PROTOCOLPGM("First calibration point clamped.\n") : SERIAL_PROTOCOLPGM("No clamping for first calibration point.\n");
 		}
+		#else
+		  UNUSED(clamped);
 		#endif // SUPPORT_VERBOSITY
-		//            mbl.get_meas_xy(0, 0, current_position[X_AXIS], current_position[Y_AXIS], false);            
+
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS] / 30, active_extruder);
 		// Wait until the move is finished.
 		st_synchronize();
@@ -3424,13 +3430,15 @@ void process_commands()
 
 
 
-			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+			clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 1) {
 
 				SERIAL_PROTOCOL(mesh_point);
 				clamped ? SERIAL_PROTOCOLPGM(": xy clamped.\n") : SERIAL_PROTOCOLPGM(": no xy clamping\n");
 			}
+			#else
+			  UNUSED(clamped);
 			#endif // SUPPORT_VERBOSITY
 
 
@@ -3571,7 +3579,7 @@ void process_commands()
 		
 	}
 	break;
-
+#endif	//MK1BP
         /**
          * G81: Print mesh bed leveling status and bed profile if activated
          */
