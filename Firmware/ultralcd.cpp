@@ -1483,7 +1483,7 @@ static void lcd_support_menu()
   }
   #ifndef MK1BP
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
-  if(!IS_SD_PRINTING) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
+  if(!IS_SD_PRINTING && !is_usb_printing) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
   #endif //MK1BP
   END_MENU();
 }
