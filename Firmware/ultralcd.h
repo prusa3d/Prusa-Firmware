@@ -213,7 +213,7 @@ void stack_error();
 void lcd_printer_connected();
 void lcd_ping();
 
-void lcd_calibrate_extruder();
+//void lcd_calibrate_extruder();
 void lcd_farm_sdcard_menu();
 
 //void getFileDescription(char *name, char *description);

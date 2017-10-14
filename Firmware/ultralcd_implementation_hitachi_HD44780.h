@@ -959,18 +959,13 @@ static void lcd_implementation_status_screen()
 						custom_message = false;
 						custom_message_type = 0;
 					}
-					if (custom_message_state > 3 && custom_message_state < 10 )
+					if (custom_message_state > 3 && custom_message_state <= 10 )
 					{
 						lcd.setCursor(0, 3);
 						lcd_printPGM(PSTR("                   "));
 						lcd.setCursor(0, 3);
 						lcd_printPGM(MSG_HOMEYZ_DONE);
 						custom_message_state--;
-					}
-					if (custom_message_state == 10)
-					{
-						lcd_printPGM(MSG_HOMEYZ_DONE);
-						custom_message_state = 9;
 					}
 				}
 
@@ -1205,12 +1200,6 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 
     lcd.setCursor(0, row);
     lcd.print('>');
-    if (longFilename[0] != '\0')
-    {
-
-        filename = longFilename;
-        //longFilename[LCD_WIDTH-1] = '\0';
-    }
 
     int i = 1;
     int j = 0;

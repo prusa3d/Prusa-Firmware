@@ -192,7 +192,6 @@ static int  lcd_selftest_screen(int _step, int _progress, int _progress_scale, b
 static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
 static bool lcd_selftest_fan_dialog(int _fan);
 static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
-
 static void lcd_colorprint_change();
 #ifdef SNMM
 static void extr_adj_0();
@@ -1283,7 +1282,7 @@ void lcd_commands()
 			lcd_commands_step = 5;
 			#endif
 			#ifdef DEFAULT_PID_BED_TEMP
-			lcd_commands_step = lcd_commands_step+1;
+				lcd_commands_step = lcd_commands_step+1;
 			#endif
 		}
 
@@ -1537,6 +1536,8 @@ static void lcd_support_menu()
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
   MENU_ITEM(back, MSG_DATE, lcd_main_menu);
   MENU_ITEM(back, PSTR(__DATE__), lcd_main_menu);
+  MENU_ITEM(back, PSTR(__TIME__), lcd_main_menu);
+  MENU_ITEM(back, PSTR(STRING_CONFIG_H_AUTHOR), lcd_main_menu);
 
   // Show the FlashAir IP address, if the card is available.
   if (menuData.supportMenu.is_flash_air) {
@@ -1546,7 +1547,7 @@ static void lcd_support_menu()
   }
   #ifndef MK1BP
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
-  if(!IS_SD_PRINTING) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
+  if(!IS_SD_PRINTING && !is_usb_printing) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
   #endif //MK1BP
   END_MENU();
 }
@@ -2762,15 +2763,15 @@ static void lcd_show_end_stops() {
     lcd.setCursor(0, 0);
     lcd_printPGM((PSTR("End stops/sens diag")));
     lcd.setCursor(0, 1);
-    lcd_printPGM(((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ? (PSTR("X1")) : (PSTR("X0")));
+    lcd_printPGM(((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ? (PSTR("X:1")) : (PSTR("X:0")));
     lcd.setCursor(0, 2);
-    lcd_printPGM(((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ? (PSTR("Y1")) : (PSTR("Y0")));
+    lcd_printPGM(((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ? (PSTR("Y:1")) : (PSTR("Y:0")));
     lcd.setCursor(0, 3);
-    lcd_printPGM(((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) ? (PSTR("Z1")) : (PSTR("Z0")));
+    lcd_printPGM(((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) ? (PSTR("Z:1")) : (PSTR("Z:0")));
 	// FILAMENT_RUNOUT_SENSOR
 	if (fil_runout_active) {
 		lcd.setCursor(4, 1);
-		lcd_printPGM(((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING) == 1) ? (PSTR("FR_S1")) : (PSTR("FR_S0")));		
+		lcd_printPGM(((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING) == 1) ? (PSTR("FRS:1")) : (PSTR("FRS:0")));		
 	}
 	// end FILAMENT_RUNOUT_SENSOR
 }
@@ -3183,6 +3184,19 @@ static void lcd_silent_mode_set() {
   digipot_init();
   lcd_goto_menu(lcd_settings_menu, 7);
 }
+
+static void lcd_silent_mode_set_tune() {
+  switch (SilentModeMenu) {
+  case 0: SilentModeMenu = 1; break;
+  case 1: SilentModeMenu = 2; break;
+  case 2: SilentModeMenu = 0; break;
+  default: SilentModeMenu = 0; break;
+  }
+  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+  digipot_init();
+  lcd_goto_menu(lcd_tune_menu, 8);
+}
+
 static void lcd_set_lang(unsigned char lang) {
   lang_selected = lang;
   firstrun = 1;
@@ -3463,6 +3477,7 @@ void lcd_wizard(int state) {
 			else state = 6;
 			break;
 		case 6: //waiting for preheat nozzle for PLA;
+#ifndef SNMM
 			lcd_display_message_fullscreen_P(MSG_WIZARD_WILL_PREHEAT);
 			current_position[Z_AXIS] = 100; //move in z axis to make space for loading filament
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
@@ -3480,6 +3495,7 @@ void lcd_wizard(int state) {
 				lcd_set_custom_characters();
 				delay_keep_alive(1000);
 			}
+#endif //not SNMM
 			state = 7;
 			break;
 		case 7: //load filament 
@@ -3602,6 +3618,13 @@ void lcd_fil_runout_active_set() {
 	lcd_goto_menu(lcd_fil_runout_settings_menu, 1);
 	}
 
+	void lcd_fil_runout_active_tune() {
+	fil_runout_active = !fil_runout_active;
+	eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_ACTIVE, fil_runout_active);
+	digipot_init();
+	lcd_goto_menu(lcd_tune_menu, 9);
+	}
+	
 void lcd_fil_runout_inverting_set() {
 	FIL_RUNOUT_INVERTING = !FIL_RUNOUT_INVERTING;
 	eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_INVERTING, FIL_RUNOUT_INVERTING);
@@ -4929,17 +4952,6 @@ static void lcd_autostart_sd()
 }
 
 
-static void lcd_silent_mode_set_tune() {
-  switch (SilentModeMenu) {
-  case 0: SilentModeMenu = 1; break;
-  case 1: SilentModeMenu = 2; break;
-  case 2: SilentModeMenu = 0; break;
-  default: SilentModeMenu = 0; break;
-  }
-  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
-  digipot_init();
-  lcd_goto_menu(lcd_tune_menu, 9);
-}
 #endif
 
 static void lcd_colorprint_change() {
@@ -4962,24 +4974,33 @@ static void lcd_tune_menu()
   START_MENU();
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu); //1
   MENU_ITEM_EDIT(int3, MSG_SPEED, &feedmultiply, 10, 999);//2
-
   MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
   MENU_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 10);//4
-
   MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);//5
   MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);//6
 #ifdef FILAMENTCHANGEENABLE
   MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
-  
-  if (!farm_mode) { //dont show in menu if we are in farm mode
+
+  if (!farm_mode) { //dont show in menu if we are in farm mode //8
 	  switch (SilentModeMenu) {
-	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
-	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
-	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
-	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune); break;
+	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set_tune); break;
+	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set_tune); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune); break;
 	  }
   }
+
+// FILAMENT_RUNOUT_SENSOR
+#ifdef FILAMENT_RUNOUT_SUPPORT //9
+	if (fil_runout_active == false) {
+		MENU_ITEM(function, MSG_FIL_RUNOUT_ACTIVE_OFF, lcd_fil_runout_active_tune);
+	} else {
+		MENU_ITEM(function, MSG_FIL_RUNOUT_ACTIVE_ON, lcd_fil_runout_active_tune);
+	}
+#endif
+// end FILAMENT_RUNOUT_SENSOR
+
   END_MENU();
 }
 
@@ -5957,6 +5978,7 @@ static bool check_file(const char* filename) {
 		get_command();
 		result = check_commands();
 	}
+	cmdqueue_reset();
 	card.printingHasFinished();
 	strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
 	return result;

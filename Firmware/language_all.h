@@ -9,7 +9,6 @@
 #define LANG_ID_ES 3
 #define LANG_ID_PL 4
 #define LANG_ID_DE 5
-#define LANG_ID_NL 6
 // Language is not defined and it shall be selected from the menu.
 #define LANG_ID_FORCE_SELECTION 254
 // Language is not defined on a virgin RAMBo board.
@@ -19,7 +18,7 @@
 #define LANG_ID_DEFAULT LANG_ID_EN
 
 // Number of languages available in the language table.
-#define LANG_NUM 7
+#define LANG_NUM 6
 
 // Currectly active language selection.
 extern unsigned char lang_selected;
@@ -473,6 +472,8 @@ extern const char* const MSG_REFRESH_LANG_TABLE[1];
 #define MSG_REFRESH LANG_TABLE_SELECT_EXPLICIT(MSG_REFRESH_LANG_TABLE, 0)
 extern const char* const MSG_RESEND_LANG_TABLE[1];
 #define MSG_RESEND LANG_TABLE_SELECT_EXPLICIT(MSG_RESEND_LANG_TABLE, 0)
+extern const char* const MSG_RESET_CALIBRATE_E_LANG_TABLE[1];
+#define MSG_RESET_CALIBRATE_E LANG_TABLE_SELECT_EXPLICIT(MSG_RESET_CALIBRATE_E_LANG_TABLE, 0)
 extern const char* const MSG_RESTORE_FAILSAFE_LANG_TABLE[1];
 #define MSG_RESTORE_FAILSAFE LANG_TABLE_SELECT_EXPLICIT(MSG_RESTORE_FAILSAFE_LANG_TABLE, 0)
 extern const char* const MSG_RESUME_PRINT_LANG_TABLE[LANG_NUM];
@@ -593,8 +594,8 @@ extern const char* const MSG_SOFTWARE_RESET_LANG_TABLE[1];
 #define MSG_SOFTWARE_RESET LANG_TABLE_SELECT_EXPLICIT(MSG_SOFTWARE_RESET_LANG_TABLE, 0)
 extern const char* const MSG_SORTING_LANG_TABLE[LANG_NUM];
 #define MSG_SORTING LANG_TABLE_SELECT(MSG_SORTING_LANG_TABLE)
-extern const char* const MSG_SORT_ALPHA_LANG_TABLE[LANG_NUM];
-#define MSG_SORT_ALPHA LANG_TABLE_SELECT(MSG_SORT_ALPHA_LANG_TABLE)
+extern const char* const MSG_SORT_ALPHA_LANG_TABLE[1];
+#define MSG_SORT_ALPHA LANG_TABLE_SELECT_EXPLICIT(MSG_SORT_ALPHA_LANG_TABLE, 0)
 extern const char* const MSG_SORT_NONE_LANG_TABLE[LANG_NUM];
 #define MSG_SORT_NONE LANG_TABLE_SELECT(MSG_SORT_NONE_LANG_TABLE)
 extern const char* const MSG_SORT_TIME_LANG_TABLE[LANG_NUM];

@@ -252,7 +252,7 @@
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ				"Filamenten zijn nu ingesteld. Reinig het tuit voor de kalibratie. Klik als klaar."
 #define MSG_STACK_ERROR						"Error - static memory has been overwritten"
 #define MSG_CALIBRATE_E						"Kalibratie E"
-//#define MSG_RESET_CALIBRATE_E				"Reset E Cal."
+#define MSG_RESET_CALIBRATE_E				"Reset E Cal."
 #define MSG_E_CAL_KNOB						"Draai knop tot mark extruder bereikt is. Klik als klaar."
 
 //#define MSG_FARM_CARD_MENU				"Farm mode print"

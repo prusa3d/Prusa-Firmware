@@ -1243,6 +1243,7 @@ void setup()
 #ifndef DEBUG_DISABLE_STARTMSGS
 	check_babystep(); //checking if Z babystep is in allowed range
 
+  for (int i = 0; i < 4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
@@ -1274,7 +1275,6 @@ void setup()
 		  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED);
 	  }
   }
-  for (int i = 0; i < 4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   
 #endif //DEBUG_DISABLE_STARTMSGS
 
@@ -1284,7 +1284,7 @@ void setup()
   FIL_RUNOUT_INVERTING = eeprom_read_byte((uint8_t*)EEPROM_FIL_RUNOUT_INVERTING);
   ENDSTOPPULLUP_FIL_RUNOUT = eeprom_read_byte((uint8_t*)EEPROM_ENDSTOPPULLUP_FIL_RUNOUT);
 #endif
-  // end FILAMENT_RUNOUT_SENSOR
+// end FILAMENT_RUNOUT_SENSOR
 
   lcd_update_enable(true);
 
@@ -1404,6 +1404,7 @@ void host_keepalive() {
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
 {
+	KEEPALIVE_STATE(NOT_BUSY);
 	if (usb_printing_counter > 0 && millis()-_usb_timer > 1000)
 	{
 		is_usb_printing = true;
@@ -1503,7 +1504,8 @@ void get_command()
         continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
-      serial_count >= (MAX_CMD_SIZE - 1) )
+		(serial_char == ':' && comment_mode == false) ||
+       serial_count >= (MAX_CMD_SIZE - 1) )
     {
       if(!serial_count) { //if empty line
         comment_mode = false; //for new command
@@ -1666,6 +1668,7 @@ void get_command()
     if(serial_char == '\n' ||
        serial_char == '\r' ||
        (serial_char == '#' && comment_mode == false) ||
+       (serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1)||n==-1)
     {
       if(card.eof()){
@@ -2447,7 +2450,7 @@ void process_commands()
         return;
     } else if (code_seen("SERIAL HIGH")) {
         MYSERIAL.println("SERIAL HIGH");
-        MYSERIAL.begin(250000);
+        MYSERIAL.begin(115200);
         return;
     } else if(code_seen("Beat")) {
         // Kick farm link timer
@@ -2474,7 +2477,9 @@ void process_commands()
 
         #ifdef FILAMENT_RUNOUT_SENSOR
           if(((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING) == 0) && fil_runout_active) {
-                        feedmultiplyBckp=feedmultiply;
+			//enqueue_and_echo_commands_P(PSTR(FILAMENT_RUNOUT_SCRIPT));
+			enquecommand_front_P((PSTR(FILAMENT_RUNOUT_SCRIPT)));
+/*                        feedmultiplyBckp=feedmultiply;
                         float target[4];
                         float lastpos[4];
                         target[X_AXIS]=current_position[X_AXIS];
@@ -2493,6 +2498,9 @@ void process_commands()
 
 
                         target[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
+						if(target[Z_AXIS] < 20){
+							target[Z_AXIS]+= 20 ;
+						}
 
                         plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 300, active_extruder);
 
@@ -2636,7 +2644,7 @@ void process_commands()
 
                         sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
                         enquecommand(cmd);
-
+*/
             }
 
 
@@ -3498,9 +3506,7 @@ void process_commands()
 			eeprom_bed_correction_valid ? SERIAL_PROTOCOLPGM("Bed correction data valid\n") : SERIAL_PROTOCOLPGM("Bed correction data not valid\n");
 		}
 
-// bed correction routine
-// PJR's amendment:
-// YOKOTSUNO
+// Hyperfine bed correction routine
     for (uint8_t i = 0; i < 8; ++i) {
       unsigned char codes[8] = { 'a', 'b', 'c', 'd' , 'e' , 'f', 'g', 'h'};
             long correction = 0;
@@ -5499,8 +5505,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           #ifdef FILAMENTCHANGE_ZADD
             target[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
 	    // XXX: Removed unused var 'TooLowZ'
-            if(target[Z_AXIS] < 10){
-              target[Z_AXIS]+= 10 ;
+            if(target[Z_AXIS] < 20){
+              target[Z_AXIS]+= 20 ;
             }
           #endif
      

@@ -149,6 +149,7 @@
 #define MSG_SD_NOT_PRINTING                 "Pas d'impression SD"
 #define MSG_SD_ERR_WRITE_TO_FILE            "Erreur d'ecriture dans le fichier"
 #define MSG_SD_CANT_ENTER_SUBDIR            "Sous-repertoire de probleme d'acces: "
+/* to be translated
 #define MSG_STEPPER_TOO_HIGH                "Schrittrate zu hoch"
 #define MSG_ENDSTOPS_HIT                    "Endanstop erreicht"
 #define MSG_ERR_COLD_EXTRUDE_STOP           "Stop, Extruder kalt!"
@@ -156,8 +157,9 @@
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
 #define MSG_BABYSTEPPING_Z                  "Z wurde eingestellt"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Menuestruktur fehlerhaft"
-
+*/
 #define MSG_LANGUAGE_NAME					"Francais"
+/*
 #define MSG_LANGUAGE_SELECT					"Waehle Sprache"
 #define MSG_PRUSA3D							"prusa3d.com"
 #define MSG_PRUSA3D_FORUM					"forum.prusa3d.com"
@@ -265,7 +267,7 @@
 #define MSG_STACK_ERROR						"Error - EEPROM wurde ueberschrieben"																																		   
 
 #define MSG_CALIBRATE_E						"Kalibriere E"
-//#define MSG_RESET_CALIBRATE_E				"Reset E Cal."
+#define MSG_RESET_CALIBRATE_E				"Reset E Cal."
 #define MSG_E_CAL_KNOB						"Knopf drehen bis die Filamentmarkierung erreicht ist. Klicken wenn fertig."
 
 //#define MSG_FARM_CARD_MENU				"Farm mode print"
@@ -370,3 +372,4 @@
 #define MSG_PLA_FILAMENT_LOADED				"Ist PLA Filament geladen?"
 #define MSG_PLEASE_LOAD_PLA					"Bitte lade erst PLA Filament."
 #define MSG_FILE_CNT	"Einige Dateien werden nicht sortiert, da das max. 100 Dateien pro Ordner ist."
+*/

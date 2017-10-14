@@ -151,9 +151,9 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				createFilename(filename, p);
 				SERIAL_PROTOCOL(prepend);
 				if (longFilename[0] != 0) {
-				SERIAL_PROTOCOL(longFilename);
+					SERIAL_PROTOCOL(longFilename);
 				} else {
-				SERIAL_PROTOCOL(filename);
+					SERIAL_PROTOCOL(filename);
 				}
 				MYSERIAL.write(' ');
 				SERIAL_PROTOCOLLN(p.fileSize);
@@ -1060,7 +1060,7 @@ void CardReader::printingHasFinished()
       }
       autotempShutdown();
 	  #ifdef SDCARD_SORT_ALPHA
-		presort();
+		//presort();
 	  #endif
     }
 }
