@@ -2429,7 +2429,7 @@ void process_commands()
         return;
     } else if (code_seen("SERIAL HIGH")) {
         MYSERIAL.println("SERIAL HIGH");
-        MYSERIAL.begin(1152000);
+        MYSERIAL.begin(115200);
         return;
     } else if(code_seen("Beat")) {
         // Kick farm link timer
@@ -2457,8 +2457,9 @@ void process_commands()
         #ifdef FILAMENT_RUNOUT_SUPPORT
             
             if(READ(FR_SENS)){
+			enquecommand_front_P((PSTR(FILAMENT_RUNOUT_SCRIPT)));
 
-                        feedmultiplyBckp=feedmultiply;
+/*                        feedmultiplyBckp=feedmultiply;
                         float target[4];
                         float lastpos[4];
                         target[X_AXIS]=current_position[X_AXIS];
@@ -2620,7 +2621,7 @@ void process_commands()
 
                         sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
                         enquecommand(cmd);
-
+*/
             }
 
 
