@@ -67,6 +67,8 @@ FORCE_INLINE void store_char(unsigned char c)
 #ifndef SNMM
   SIGNAL(USART2_RX_vect)
   {
+	  SERIAL_ECHOPGM("Debug:");
+	  MYSERIAL.println(1);
       if (selectedSerialPort == 1) {
         // Test for a framing error.
         if (UCSR2A & (1<<FE2)) {
@@ -108,6 +110,8 @@ void MarlinSerial::begin(long baud)
 #endif
 // set up the first (original serial port)
   if (useU2X) {
+	  SERIAL_ECHOPGM("Debug:");
+	  MYSERIAL.println(3);
     M_UCSRxA = 1 << M_U2Xx;
     baud_setting = (F_CPU / 4 / baud - 1) / 2;
   } else {
@@ -145,6 +149,8 @@ void MarlinSerial::begin(long baud)
 
 void MarlinSerial::end()
 {
+	SERIAL_ECHOPGM("Debug:");
+	MYSERIAL.println(4);
   cbi(M_UCSRxB, M_RXENx);
   cbi(M_UCSRxB, M_TXENx);
   cbi(M_UCSRxB, M_RXCIEx);
