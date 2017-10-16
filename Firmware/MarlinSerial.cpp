@@ -67,8 +67,6 @@ FORCE_INLINE void store_char(unsigned char c)
 #ifndef SNMM
   SIGNAL(USART2_RX_vect)
   {
-	  SERIAL_ECHOPGM("Debug:");
-	  MYSERIAL.println(1);
       if (selectedSerialPort == 1) {
         // Test for a framing error.
         if (UCSR2A & (1<<FE2)) {
@@ -110,8 +108,6 @@ void MarlinSerial::begin(long baud)
 #endif
 // set up the first (original serial port)
   if (useU2X) {
-	  SERIAL_ECHOPGM("Debug:");
-	  MYSERIAL.println(3);
     M_UCSRxA = 1 << M_U2Xx;
     baud_setting = (F_CPU / 4 / baud - 1) / 2;
   } else {
@@ -128,29 +124,29 @@ void MarlinSerial::begin(long baud)
   sbi(M_UCSRxB, M_RXCIEx);
   
 #ifndef SNMM
-// set up the second serial port
-  if (useU2X) {
-        UCSR2A = 1 << U2X2;
-        baud_setting = (F_CPU / 4 / baud - 1) / 2;
-    } else {
-        UCSR2A = 0;
-        baud_setting = (F_CPU / 8 / baud - 1) / 2;
-    }
 
-    // assign the baud_setting, a.k.a. ubbr (USART Baud Rate Register)
-    UBRR2H = baud_setting >> 8;
-    UBRR2L = baud_setting;
+  if (selectedSerialPort == 1) { //set up also the second serial port 
+	  if (useU2X) {
+		  UCSR2A = 1 << U2X2;
+		  baud_setting = (F_CPU / 4 / baud - 1) / 2;
+	  } else {
+		  UCSR2A = 0;
+		  baud_setting = (F_CPU / 8 / baud - 1) / 2;
+	  }
 
-    sbi(UCSR2B, RXEN2);
-    sbi(UCSR2B, TXEN2);
-    sbi(UCSR2B, RXCIE2);
+	  // assign the baud_setting, a.k.a. ubbr (USART Baud Rate Register)
+	  UBRR2H = baud_setting >> 8;
+	  UBRR2L = baud_setting;
+	  
+	  sbi(UCSR2B, RXEN2);
+	  sbi(UCSR2B, TXEN2);
+	  sbi(UCSR2B, RXCIE2);	  
+  }
 #endif
 }
 
 void MarlinSerial::end()
 {
-	SERIAL_ECHOPGM("Debug:");
-	MYSERIAL.println(4);
   cbi(M_UCSRxB, M_RXENx);
   cbi(M_UCSRxB, M_TXENx);
   cbi(M_UCSRxB, M_RXCIEx);

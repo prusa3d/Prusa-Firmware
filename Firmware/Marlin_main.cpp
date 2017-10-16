@@ -290,7 +290,7 @@ unsigned int custom_message_type;
 unsigned int custom_message_state;
 char snmm_filaments_used = 0;
 
-int selectedSerialPort;
+uint8_t selectedSerialPort;
 
 float distance_from_min[3];
 
@@ -1030,12 +1030,8 @@ void setup()
 	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF))
 		farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
 	if ((uint16_t)farm_no == 0xFFFF) farm_no = 0;
-	SERIAL_ECHOPGM("Farm mode:");
-	MYSERIAL.println(farm_mode);
 	if (farm_mode)
 	{
-		SERIAL_ECHOPGM("Debug:");
-		MYSERIAL.println(0);
 		prusa_statistics(8);
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
