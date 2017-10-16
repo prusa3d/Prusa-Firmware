@@ -1197,9 +1197,9 @@ void lcd_commands()
 			cancel_heatup = true;
 			setTargetBed(0);
 			#ifndef SNMM
-			setTargetHotend(0, 0);	//heating when changing filament for multicolor
-			setTargetHotend(0, 1);
-			setTargetHotend(0, 2);
+			setTargetHotend0(0);	//heating when changing filament for multicolor
+			setTargetHotend1(0);
+			setTargetHotend2(0);
 			#endif
 			manage_heater();
 			custom_message = true;
