@@ -257,6 +257,13 @@ bool homing_flag = false;
 
 bool temp_cal_active = false;
 
+// FILAMENT_RUNOUT_SENSOR
+bool fil_runout_active = false;
+bool FIL_RUNOUT_INVERTING = false;
+bool fil_funout_inv = false;
+bool ENDSTOPPULLUP_FIL_RUNOUT = false;
+// end FILAMENT_RUNOUT_SENSOR
+
 unsigned long kicktime = millis()+100000;
 
 unsigned int  usb_printing_counter;
@@ -1270,6 +1277,15 @@ void setup()
   }  
   
 #endif //DEBUG_DISABLE_STARTMSGS
+
+// FILAMENT_RUNOUT_SENSOR
+#ifdef FILAMENT_RUNOUT_SENSOR
+  fil_runout_active = eeprom_read_byte((uint8_t*)EEPROM_FIL_RUNOUT_ACTIVE);
+  FIL_RUNOUT_INVERTING = eeprom_read_byte((uint8_t*)EEPROM_FIL_RUNOUT_INVERTING);
+  ENDSTOPPULLUP_FIL_RUNOUT = eeprom_read_byte((uint8_t*)EEPROM_ENDSTOPPULLUP_FIL_RUNOUT);
+#endif
+// end FILAMENT_RUNOUT_SENSOR
+
   lcd_update_enable(true);
 
   // Store the currently running firmware into an eeprom,
@@ -2303,8 +2319,13 @@ bool gcode_M45(bool onlyZ) {
 
 void process_commands()
 {
-  #ifdef FILAMENT_RUNOUT_SUPPORT
-    SET_INPUT(FR_SENS);
+  #ifdef FILAMENT_RUNOUT_SENSOR
+    SET_INPUT(FIL_RUNOUT_PIN);
+	if (ENDSTOPPULLUP_FIL_RUNOUT) {
+	  pinMode(FIL_RUNOUT_PIN, INPUT_PULLUP);
+	} else {
+      pinMode(FIL_RUNOUT_PIN, INPUT);
+	}
   #endif
 
 #ifdef CMDBUFFER_DEBUG
@@ -2454,11 +2475,11 @@ void process_commands()
     case 1: // G1
       if(Stopped == false) {
 
-        #ifdef FILAMENT_RUNOUT_SUPPORT
-            
-            if(READ(FR_SENS)){
-
-                        feedmultiplyBckp=feedmultiply;
+        #ifdef FILAMENT_RUNOUT_SENSOR
+          if(((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING) == 0) && fil_runout_active) {
+			//enqueue_and_echo_commands_P(PSTR(FILAMENT_RUNOUT_SCRIPT));
+			enquecommand_front_P((PSTR(FILAMENT_RUNOUT_SCRIPT)));
+/*                        feedmultiplyBckp=feedmultiply;
                         float target[4];
                         float lastpos[4];
                         target[X_AXIS]=current_position[X_AXIS];
@@ -2477,6 +2498,9 @@ void process_commands()
 
 
                         target[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
+						if(target[Z_AXIS] < 20){
+							target[Z_AXIS]+= 20 ;
+						}
 
                         plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 300, active_extruder);
 
@@ -2620,7 +2644,7 @@ void process_commands()
 
                         sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
                         enquecommand(cmd);
-
+*/
             }
 
 
@@ -4731,7 +4755,22 @@ Sigma_Exit:
         }
         SERIAL_PROTOCOLLN("");
       #endif
-      break;
+// FILAMENT_RUNOUT_SENSOR
+//	#if fil_runout_active && defined(FIL_RUNOUT_PIN) && FIL_RUNOUT_PIN > -1
+  #if defined(FIL_RUNOUT_PIN) && FIL_RUNOUT_PIN > -1
+    if (fil_runout_active == true) {
+          SERIAL_PROTOCOLRPGM(MSG_FIL_RUNOUT_SETTINGS);
+		  if(READ(FIL_RUNOUT_PIN)^FIL_RUNOUT_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+		SERIAL_PROTOCOLLN("");
+    }
+	#endif
+// end FILAMENT_RUNOUT_SENSOR
+
+     break;
       //TODO: update for all axis, use for loop
     #ifdef BLINKM
     case 150: // M150
