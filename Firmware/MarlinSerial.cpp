@@ -124,22 +124,24 @@ void MarlinSerial::begin(long baud)
   sbi(M_UCSRxB, M_RXCIEx);
   
 #ifndef SNMM
-// set up the second serial port
-  if (useU2X) {
-        UCSR2A = 1 << U2X2;
-        baud_setting = (F_CPU / 4 / baud - 1) / 2;
-    } else {
-        UCSR2A = 0;
-        baud_setting = (F_CPU / 8 / baud - 1) / 2;
-    }
 
-    // assign the baud_setting, a.k.a. ubbr (USART Baud Rate Register)
-    UBRR2H = baud_setting >> 8;
-    UBRR2L = baud_setting;
+  if (selectedSerialPort == 1) { //set up also the second serial port 
+	  if (useU2X) {
+		  UCSR2A = 1 << U2X2;
+		  baud_setting = (F_CPU / 4 / baud - 1) / 2;
+	  } else {
+		  UCSR2A = 0;
+		  baud_setting = (F_CPU / 8 / baud - 1) / 2;
+	  }
 
-    sbi(UCSR2B, RXEN2);
-    sbi(UCSR2B, TXEN2);
-    sbi(UCSR2B, RXCIE2);
+	  // assign the baud_setting, a.k.a. ubbr (USART Baud Rate Register)
+	  UBRR2H = baud_setting >> 8;
+	  UBRR2L = baud_setting;
+	  
+	  sbi(UCSR2B, RXEN2);
+	  sbi(UCSR2B, TXEN2);
+	  sbi(UCSR2B, RXCIE2);	  
+  }
 #endif
 }
 
