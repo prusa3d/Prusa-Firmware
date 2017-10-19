@@ -1288,6 +1288,9 @@ void plan_set_position(float x, float y, float z, const float &e)
 // Only useful in the bed leveling routine, when the mesh bed leveling is off.
 void plan_set_z_position(const float &z)
 {
+    #ifdef LIN_ADVANCE
+	position_float[Z_AXIS] = z;
+    #endif
     position[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
     st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
 }
