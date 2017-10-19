@@ -735,7 +735,7 @@ void isr() {
 
   void advance_isr() {
 
-	nextAdvanceISR = eISR_Rate;
+    nextAdvanceISR = eISR_Rate;
 
     if (e_steps) {
       bool dir =
@@ -785,7 +785,7 @@ void isr() {
     }
 
     // Don't run the ISR faster than possible
-	if (OCR1A < TCNT1 + 16) OCR1A = TCNT1 + 16;
+    if (OCR1A < TCNT1 + 16) OCR1A = TCNT1 + 16;
   }
   
   void clear_current_adv_vars() {
