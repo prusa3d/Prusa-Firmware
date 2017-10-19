@@ -735,7 +735,7 @@ void isr() {
 
   void advance_isr() {
 
-    nextAdvanceISR = eISR_Rate;
+	nextAdvanceISR = eISR_Rate;
 
     if (e_steps) {
       bool dir =
@@ -752,7 +752,10 @@ void isr() {
         e_steps < 0 ? ++e_steps : --e_steps;
         WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
       }
-    }
+	}
+	else if(eISR_Rate == 0) {
+	  nextAdvanceISR = ADV_NEVER;
+	}
   }
 
   void advance_isr_scheduler() {
@@ -782,7 +785,7 @@ void isr() {
     }
 
     // Don't run the ISR faster than possible
-    if (OCR1A < TCNT1 + 16) OCR1A = TCNT1 + 16;
+	if (OCR1A < TCNT1 + 16) OCR1A = TCNT1 + 16;
   }
   
   void clear_current_adv_vars() {

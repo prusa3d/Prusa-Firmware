@@ -1294,6 +1294,9 @@ void plan_set_z_position(const float &z)
 
 void plan_set_e_position(const float &e)
 {
+  #ifdef LIN_ADVANCE
+  position_float[E_AXIS] = e;
+  #endif
   position[E_AXIS] = lround(e*axis_steps_per_unit[E_AXIS]);  
   st_set_e_position(position[E_AXIS]);
 }
