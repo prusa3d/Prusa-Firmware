@@ -84,7 +84,8 @@
 #define MSG_LOAD_FILAMENT                   "Carica filamento"
 
 #define MSG_SILENT_MODE_ON		    "Modo [silenzioso]"
-#define MSG_SILENT_MODE_OFF		    "Mode      [forte]" 
+#define MSG_SILENT_MODE_OFF		    "Mode      [forte]"
+#define MSG_AUTO_MODE_ON			"Mode       [auto]"
 #define MSG_REBOOT			    "Riavvia stampante"
 #define MSG_TAKE_EFFECT			    " per attualizzare"
 
@@ -297,7 +298,7 @@
 #define MSG_SLIGHT_SKEW						"Incl. leggera:"
 #define MSG_SEVERE_SKEW						"Inc. rilevante:"
 #define MSG_SORT_TIME						"Ordine: [Tempo]"
-#define MSG_SORT_ALPHA						"Ordine: [Alfabeto]"
+#define MSG_SORT_ALPHA						"Ordine:[Alfabeto]"
 #define MSG_SORT_NONE						"Ordine: [Nessuno]"
 #define MSG_WIZARD							"Wizard"
 #define MSG_DEFAULT_SETTINGS_LOADED			"Settaggi predefiniti caricati"
@@ -313,7 +314,7 @@
 #define MSG_WIZARD_WILL_PREHEAT				"Adesso preriscaldero l'ugello per PLA."
 #define MSG_WIZARD_V2_CAL					"Adesso tarero lo stacco fra ugello e superfice del piatto."
 #define MSG_WIZARD_V2_CAL_2					"Adesso iniziero a stampare una linea e tu dovrai abbassare l'ugello gradualmente ruotando la manopola, sino a raggiungere una altezza ottimale. Per favore, dai uno sguardo alla immagine nel capitolo Calibrazione del nostro manuale."
-#define MSG_V2_CALIBRATION					"Calibrazione primo layer."
+#define MSG_V2_CALIBRATION					"Cal. primo layer."
 #define MSG_WIZARD_DONE						"Ben fatto. Buona stampa!"
 #define MSG_WIZARD_LOAD_FILAMENT			"Per favore inserisci il filamento di PLA nell'estrusore, poi premi la manopola per caricare."
 #define MSG_WIZARD_RERUN					"Se avvi il Wizard perderai la calibrazione preesistente e dovrai ricominciare dall'inizio. Continuare?"

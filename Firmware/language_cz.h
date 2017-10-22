@@ -104,6 +104,7 @@
 
 #define MSG_SILENT_MODE_ON					"Mod       [tichy]"
 #define MSG_SILENT_MODE_OFF					"Mod  [vys. vykon]" 
+#define MSG_AUTO_MODE_ON					"Mod [automaticky]"
 #define MSG_REBOOT							"Restartujte tiskarnu"
 #define MSG_TAKE_EFFECT						" pro projeveni zmen"	
 
@@ -317,7 +318,7 @@
 #define MSG_WIZARD							"Wizard"
 #define MSG_DEFAULT_SETTINGS_LOADED			"Defaultni nastaveni nahrano"
 #define MSG_SORTING							"Trideni souboru"
-#define MSG_FILE_INCOMPLETE					"Soubor neni kompletni. Pokracovat?"
+#define MSG_FILE_INCOMPLETE					"Soubor nekompletni. Pokracovat?"
 #define MSG_WIZARD_WELCOME					"Dobry den, jsem vase tiskarna Original Prusa i3. Chcete abych Vas provedla kalibracnim procesem?"
 #define MSG_WIZARD_QUIT						"Wizarda muzete kdykoliv znovu spustit z menu Calibration -> Wizard"
 #define MSG_WIZARD_SELFTEST					"Nejdriv pomoci selftestu zkontoluji nejcastejsi chyby vznikajici pri sestaveni tiskarny."
