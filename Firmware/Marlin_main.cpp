@@ -5769,7 +5769,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
   else if(code_seen('T'))
   {
+	#ifdef SNMM
 	  int index;
+	  st_synchronize();
 	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 	   
 	  if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
@@ -5783,7 +5785,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			  tmp_extruder = code_value();
 		  }
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
-#ifdef SNMM
       #ifdef LIN_ADVANCE
         if (snmm_extruder != tmp_extruder)
           clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
@@ -5791,7 +5792,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       
       snmm_extruder = tmp_extruder;
 
-		  st_synchronize();
 		  delay(100);
 
 		  disable_e0();

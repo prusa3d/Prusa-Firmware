@@ -2504,8 +2504,11 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
 				while (lcd_clicked());
 				delay(10);
 				while (lcd_clicked());
-				KEEPALIVE_STATE(IN_HANDLER);
-				if(msg_next == NULL) return yes;
+				if (msg_next == NULL) {
+					KEEPALIVE_STATE(IN_HANDLER);
+					lcd_set_custom_characters();
+					return yes;
+				}
 				else break;
 			}
 		}
@@ -3284,6 +3287,7 @@ void lcd_wizard() {
 		lcd_wizard(0);
 	}
 	else {
+		lcd_return_to_status();
 		lcd_update_enable(true);
 		lcd_update(2);
 	}

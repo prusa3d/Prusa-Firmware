@@ -735,8 +735,6 @@ void isr() {
 
   void advance_isr() {
 
-    nextAdvanceISR = eISR_Rate;
-
     if (e_steps) {
       bool dir =
       #ifdef SNMM
@@ -752,7 +750,11 @@ void isr() {
         e_steps < 0 ? ++e_steps : --e_steps;
         WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
       }
-    }
+	}
+	else{
+		eISR_Rate = ADV_NEVER;
+	}
+	nextAdvanceISR = eISR_Rate;
   }
 
   void advance_isr_scheduler() {
