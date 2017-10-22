@@ -10,6 +10,9 @@
 #ifdef PAT9125_SWI2C
 #include "swi2c.h"
 #endif //PAT9125_SWI2C
+#ifdef PAT9125_HWI2C
+#include <Wire.h>
+#endif //PAT9125_HWI2C
 
 
 unsigned char pat9125_PID1 = 0;
@@ -26,6 +29,9 @@ int pat9125_init(unsigned char xres, unsigned char yres)
 #ifdef PAT9125_SWI2C
 	swi2c_init(PAT9125_SWI2C_SDA, PAT9125_SWI2C_SCL, PAT9125_SWI2C_CFG);
 #endif //PAT9125_SWI2C
+#ifdef PAT9125_HWI2C
+	Wire.begin();
+#endif //PAT9125_HWI2C
 	pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
 	pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
 	if ((pat9125_PID1 != 0x31) || (pat9125_PID2 != 0x91))
@@ -72,6 +78,14 @@ unsigned char pat9125_rd_reg(unsigned char addr)
 #ifdef PAT9125_SWI2C
 	int iret = swi2c_readByte_A8(PAT9125_I2C_ADDR, addr, &data);
 #endif //PAT9125_SWI2C
+#ifdef PAT9125_HWI2C
+	Wire.beginTransmission(PAT9125_I2C_ADDR);
+	Wire.write(addr);
+	Wire.endTransmission();
+	if (Wire.requestFrom(PAT9125_I2C_ADDR, 1) == 1)
+//	if (Wire.available())
+		data = Wire.read();
+#endif //PAT9125_HWI2C
 	return data;
 }
 
@@ -86,6 +100,13 @@ void pat9125_wr_reg(unsigned char addr, unsigned char data)
 #ifdef PAT9125_SWI2C
 	int iret = swi2c_writeByte_A8(PAT9125_I2C_ADDR, addr, &data);
 #endif //PAT9125_SWI2C
+#ifdef PAT9125_HWI2C
+	Wire.beginTransmission(PAT9125_I2C_ADDR);
+	Wire.write(addr);
+	Wire.write(data);
+	Wire.endTransmission();
+#endif //PAT9125_HWI2C
+
 }
 
 #endif //PAT9125

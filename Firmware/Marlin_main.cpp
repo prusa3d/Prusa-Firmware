@@ -70,6 +70,7 @@
 
 #ifdef PAT9125
 #include "pat9125.h"
+#include "fsensor.h"
 #endif //PAT9125
 
 #ifdef TMC2130
@@ -610,123 +611,6 @@ void crashdet_stop_and_save_print2()
 }
 
 
-#ifdef PAT9125
-
-void fsensor_stop_and_save_print()
-{
-//	stop_and_save_print_to_ram(10, -0.8); //XY - no change, Z 10mm up, E 0.8mm in
-	stop_and_save_print_to_ram(0, 0); //XYZE - no change
-}
-
-void fsensor_restore_print_and_continue()
-{
-	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
-}
-
-
-bool fsensor_enabled = true;
-bool fsensor_ignore_error = true;
-bool fsensor_M600 = false;
-long fsensor_prev_pos_e = 0;
-uint8_t fsensor_err_cnt = 0;
-
-#define FSENS_ESTEPS 280  //extruder resolution [steps/mm]
-//#define FSENS_MINDEL 560  //filament sensor min delta [steps] (3mm)
-#define FSENS_MINDEL 280  //filament sensor min delta [steps] (3mm)
-#define FSENS_MINFAC 3    //filament sensor minimum factor [count/mm]
-//#define FSENS_MAXFAC 50   //filament sensor maximum factor [count/mm]
-#define FSENS_MAXFAC 40   //filament sensor maximum factor [count/mm]
-//#define FSENS_MAXERR 2    //filament sensor max error count
-#define FSENS_MAXERR 5    //filament sensor max error count
-
-extern int8_t FSensorStateMenu;
-
-
-void fsensor_enable()
-{
-	MYSERIAL.println("fsensor_enable");
-	pat9125_y = 0;
-	fsensor_prev_pos_e = st_get_position(E_AXIS);
-	fsensor_err_cnt = 0;
-	fsensor_enabled = true;
-	fsensor_ignore_error = true;
-	fsensor_M600 = false;
-	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0xFF); 
-	FSensorStateMenu = 1;
-}
-
-void fsensor_disable()
-{
-	MYSERIAL.println("fsensor_disable");
-	fsensor_enabled = false;
-	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
-	FSensorStateMenu = 0;
-}
-
-void fsensor_update()
-{
-	if (!fsensor_enabled) return;
-	long pos_e = st_get_position(E_AXIS); //current position
-	pat9125_update();
-	long del_e = pos_e - fsensor_prev_pos_e; //delta
-	if (abs(del_e) < FSENS_MINDEL) return;
-	float de = ((float)del_e / FSENS_ESTEPS);
-	int cmin = de * FSENS_MINFAC;
-	int cmax = de * FSENS_MAXFAC;
-	int cnt = -pat9125_y;
-	fsensor_prev_pos_e = pos_e;
-	pat9125_y = 0;
-	bool err = false;
-	if ((del_e > 0) && ((cnt < cmin) || (cnt > cmax))) err = true;
-	if ((del_e < 0) && ((cnt > cmin) || (cnt < cmax))) err = true;
-	if (err)
-		fsensor_err_cnt++;
-	else
-		fsensor_err_cnt = 0;
-
-/**/
-	MYSERIAL.print("pos_e=");
-	MYSERIAL.print(pos_e);
-	MYSERIAL.print(" de=");
-	MYSERIAL.print(de);
-	MYSERIAL.print(" cmin=");
-	MYSERIAL.print((int)cmin);
-	MYSERIAL.print(" cmax=");
-	MYSERIAL.print((int)cmax);
-	MYSERIAL.print(" cnt=");
-	MYSERIAL.print((int)cnt);
-	MYSERIAL.print(" err=");
-	MYSERIAL.println((int)fsensor_err_cnt);/**/
-
-//	return;
-
-	if (fsensor_err_cnt > FSENS_MAXERR)
-	{
-		MYSERIAL.println("fsensor_update (fsensor_err_cnt > FSENS_MAXERR)");
-		if (fsensor_ignore_error)
-		{
-			MYSERIAL.println("fsensor_update - error ignored)");
-			fsensor_ignore_error = false;
-		}
-		else
-		{
-			MYSERIAL.println("fsensor_update - ERROR!!!");
-			fsensor_stop_and_save_print();
-            
-            // Increment filament failure counter
-            uint8_t ferror_count = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
-            ferror_count++;
-            eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, ferror_count);
-            
-			enquecommand_front_P((PSTR("M600")));
-			fsensor_M600 = true;
-			fsensor_enabled = false;
-		}
-	}
-}
-
-#endif //PAT9125
-
 
 #ifdef MESH_BED_LEVELING
    enum MeshLevelingState { MeshReport, MeshStart, MeshNext, MeshSet };
@@ -920,9 +804,10 @@ void setup()
 
 #ifdef PAT9125
     MYSERIAL.print("PAT9125_init:");
-    MYSERIAL.println(pat9125_init(200, 200));
-
+	int pat9125 = pat9125_init(200, 200);
+	MYSERIAL.println(pat9125);
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+	if (!pat9125) fsensor = 0; //disable sensor
 	if (fsensor)
 	{
 		fsensor_enable();
@@ -4484,6 +4369,8 @@ Sigma_Exit:
       SERIAL_PROTOCOL(float(st_get_position(Y_AXIS))/axis_steps_per_unit[Y_AXIS]);
       SERIAL_PROTOCOLPGM(" Z:");
       SERIAL_PROTOCOL(float(st_get_position(Z_AXIS))/axis_steps_per_unit[Z_AXIS]);
+      SERIAL_PROTOCOLPGM(" E:");
+      SERIAL_PROTOCOL(float(st_get_position(E_AXIS))/axis_steps_per_unit[E_AXIS]);
 
       SERIAL_PROTOCOLLN("");
       break;
