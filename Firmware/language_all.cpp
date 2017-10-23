@@ -68,7 +68,7 @@ const char MSG_AUTO_MODE_ON_CZ[] PROGMEM = "Mod [automaticky]";
 const char MSG_AUTO_MODE_ON_IT[] PROGMEM = "Mode       [auto]";
 const char MSG_AUTO_MODE_ON_ES[] PROGMEM = "Modo       [auto]";
 const char MSG_AUTO_MODE_ON_PL[] PROGMEM = "Mod        [auto]";
-const char MSG_AUTO_MODE_ON_DE[] PROGMEM = "Mode [Auto]";
+const char MSG_AUTO_MODE_ON_DE[] PROGMEM = "Mode       [Auto]";
 const char * const MSG_AUTO_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_AUTO_MODE_ON_EN,
 	MSG_AUTO_MODE_ON_CZ,
@@ -2588,7 +2588,7 @@ const char MSG_SELFTEST_CHECK_BED_CZ[] PROGMEM = "Kontrola bed     ";
 const char MSG_SELFTEST_CHECK_BED_IT[] PROGMEM = "Verifica letto";
 const char MSG_SELFTEST_CHECK_BED_ES[] PROGMEM = "Control de cama";
 const char MSG_SELFTEST_CHECK_BED_PL[] PROGMEM = "Kontrola bed     ";
-const char MSG_SELFTEST_CHECK_BED_DE[] PROGMEM = "Pr\x81""fe Bed        ";
+const char MSG_SELFTEST_CHECK_BED_DE[] PROGMEM = "Pruefe Bed        ";
 const char * const MSG_SELFTEST_CHECK_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_BED_EN,
 	MSG_SELFTEST_CHECK_BED_CZ,
@@ -2603,7 +2603,7 @@ const char MSG_SELFTEST_CHECK_ENDSTOPS_CZ[] PROGMEM = "Kontrola endstops";
 const char MSG_SELFTEST_CHECK_ENDSTOPS_IT[] PROGMEM = "Verifica finecorsa";
 const char MSG_SELFTEST_CHECK_ENDSTOPS_ES[] PROGMEM = "Cont. topes final";
 const char MSG_SELFTEST_CHECK_ENDSTOPS_PL[] PROGMEM = "Kontrola endstops";
-const char MSG_SELFTEST_CHECK_ENDSTOPS_DE[] PROGMEM = "Pruefe Endschalter  ";
+const char MSG_SELFTEST_CHECK_ENDSTOPS_DE[] PROGMEM = "Pruefe Endschalter";
 const char * const MSG_SELFTEST_CHECK_ENDSTOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_ENDSTOPS_EN,
 	MSG_SELFTEST_CHECK_ENDSTOPS_CZ,
@@ -2618,7 +2618,7 @@ const char MSG_SELFTEST_CHECK_HOTEND_CZ[] PROGMEM = "Kontrola hotend  ";
 const char MSG_SELFTEST_CHECK_HOTEND_IT[] PROGMEM = "Verifica ugello";
 const char MSG_SELFTEST_CHECK_HOTEND_ES[] PROGMEM = "Control hotend ";
 const char MSG_SELFTEST_CHECK_HOTEND_PL[] PROGMEM = "Kontrola hotend  ";
-const char MSG_SELFTEST_CHECK_HOTEND_DE[] PROGMEM = "Pruefe Hotend";
+const char MSG_SELFTEST_CHECK_HOTEND_DE[] PROGMEM = "Pruefe Hotend     ";
 const char * const MSG_SELFTEST_CHECK_HOTEND_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_HOTEND_EN,
 	MSG_SELFTEST_CHECK_HOTEND_CZ,
@@ -2883,7 +2883,7 @@ const char * const MSG_SELFTEST_PLEASECHECK_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_SELFTEST_START_EN[] PROGMEM = "Self test start  ";
 const char MSG_SELFTEST_START_IT[] PROGMEM = "Avvia autotest";
 const char MSG_SELFTEST_START_ES[] PROGMEM = "Autotest salida";
-const char MSG_SELFTEST_START_DE[] PROGMEM = "Selbsttest start ";
+const char MSG_SELFTEST_START_DE[] PROGMEM = "Selbsttest start  ";
 const char * const MSG_SELFTEST_START_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_START_EN,
 	MSG_SELFTEST_START_EN,
@@ -3003,7 +3003,7 @@ const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod       [tichy]";
 const char MSG_SILENT_MODE_ON_IT[] PROGMEM = "Modo [silenzioso]";
 const char MSG_SILENT_MODE_ON_ES[] PROGMEM = "Modo   [silencio]";
 const char MSG_SILENT_MODE_ON_PL[] PROGMEM = "Mod       [cichy]";
-const char MSG_SILENT_MODE_ON_DE[] PROGMEM = "Mode     [leise]";
+const char MSG_SILENT_MODE_ON_DE[] PROGMEM = "Mode      [leise]";
 const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_EN,
 	MSG_SILENT_MODE_ON_CZ,
