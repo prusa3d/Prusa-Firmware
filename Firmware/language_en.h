@@ -294,16 +294,6 @@
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON			"Temp. cal. [ON]"
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF		"Temp. cal. [OFF]"
 
-
-
-
-
-
-
-
-
-
-
 #define(length=20, lines=1) MSG_PREPARE_FILAMENT			"Prepare new filament"
 #define(length=19, lines=1) MSG_ALL							"All"
 #define(length=19, lines=1) MSG_USED						"Used during print"

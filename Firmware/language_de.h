@@ -71,16 +71,16 @@
 #define MSG_PREHEAT                         "Vorwaermen"
 #define MSG_UNLOAD_FILAMENT                 "Filament entladen"
 #define MSG_LOAD_FILAMENT                 	"Filament laden"
-
-
-
-
-
-
-
-
-
-
+#define MSG_LOAD_ALL						"Alle laden"
+#define MSG_LOAD_FILAMENT_1					"Filament 1 laden"
+#define MSG_LOAD_FILAMENT_2					"Filament 2 laden"
+#define MSG_LOAD_FILAMENT_3					"Filament 3 laden"
+#define MSG_LOAD_FILAMENT_4					"Filament 4 laden"
+#define MSG_UNLOAD_FILAMENT_1				"Filam. 1 entladen"
+#define MSG_UNLOAD_FILAMENT_2				"Filam. 2 entladen"
+#define MSG_UNLOAD_FILAMENT_3				"Filam. 3 entladen"
+#define MSG_UNLOAD_FILAMENT_4				"Filam. 4 entladen"
+#define MSG_UNLOAD_ALL						"Alles entladen"
 
 
 #define MSG_RECTRACT                        "Retract"
@@ -294,16 +294,7 @@
 #define MSG_TEMP_CALIBRATION_ON							"Temp. Kal. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Temp. Kal. [OFF]"
 
-#define MSG_LOAD_ALL									"Alle laden"
-#define MSG_LOAD_FILAMENT_1								"Filament 1 laden"
-#define MSG_LOAD_FILAMENT_2								"Filament 2 laden"
-#define MSG_LOAD_FILAMENT_3								"Filament 3 laden"
-#define MSG_LOAD_FILAMENT_4								"Filament 4 laden"
-#define MSG_UNLOAD_FILAMENT_1							"Filam. 1 entladen"
-#define MSG_UNLOAD_FILAMENT_2							"Filam. 2 entladen"
-#define MSG_UNLOAD_FILAMENT_3							"Filam. 3 entladen"
-#define MSG_UNLOAD_FILAMENT_4							"Filam. 4 entladen"
-#define MSG_UNLOAD_ALL									"Alles entladen"
+
 #define MSG_PREPARE_FILAMENT							"Filam. bereithalten"
 #define MSG_ALL											"Alle"
 #define MSG_USED										"Beim Druck benutzte"
