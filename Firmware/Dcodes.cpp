@@ -1,6 +1,7 @@
 #include "Dcodes.h"
 #include "Marlin.h"
 #include "cmdqueue.h"
+#include "pat9125.h"
 
 inline void serial_print_hex_nibble(uint8_t val)
 {
@@ -189,4 +190,57 @@ void dcode_4()
 	}
 }
 
+void dcode_9125()
+{
+	MYSERIAL.println("D9125 - PAT9125");
+	if ((strchr_pointer[1+4] == '?') || (strchr_pointer[1+4] == 0))
+	{
+		MYSERIAL.print("res_x=");
+		MYSERIAL.print(pat9125_xres, DEC);
+		MYSERIAL.print(" res_y=");
+		MYSERIAL.print(pat9125_yres, DEC);
+		MYSERIAL.print(" x=");
+		MYSERIAL.print(pat9125_x, DEC);
+		MYSERIAL.print(" y=");
+		MYSERIAL.print(pat9125_y, DEC);
+		MYSERIAL.print(" b=");
+		MYSERIAL.print(pat9125_b, DEC);
+		MYSERIAL.print(" s=");
+		MYSERIAL.println(pat9125_s, DEC);
+		return;
+	}
+	if (strchr_pointer[1+4] == '!')
+	{
+		pat9125_update();
+		MYSERIAL.print("x=");
+		MYSERIAL.print(pat9125_x, DEC);
+		MYSERIAL.print(" y=");
+		MYSERIAL.print(pat9125_y, DEC);
+		MYSERIAL.print(" b=");
+		MYSERIAL.print(pat9125_b, DEC);
+		MYSERIAL.print(" s=");
+		MYSERIAL.println(pat9125_s, DEC);
+		return;
+	}
+	if (code_seen('R'))
+	{
+		unsigned char res = (int)code_value();
+		MYSERIAL.print("pat9125_init(xres=yres=");
+		MYSERIAL.print(res, DEC);
+		MYSERIAL.print(")=");
+		MYSERIAL.println(pat9125_init(res, res), DEC);
+	}
+	if (code_seen('X'))
+	{
+		pat9125_x = (int)code_value();
+		MYSERIAL.print("pat9125_x=");
+		MYSERIAL.print(pat9125_x, DEC);
+	}
+	if (code_seen('Y'))
+	{
+		pat9125_y = (int)code_value();
+		MYSERIAL.print("pat9125_y=");
+		MYSERIAL.print(pat9125_y, DEC);
+	}
+}
 

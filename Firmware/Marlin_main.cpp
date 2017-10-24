@@ -988,6 +988,8 @@ void setup()
 
 	check_babystep(); //checking if Z babystep is in allowed range
 	setup_uvlo_interrupt();
+
+	fsensor_setup_interrupt();
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
 
@@ -5713,6 +5715,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		dcode_3(); break;
 	case 4: // D4 - Read/Write PIN
 		dcode_4(); break;
+	case 9125: // D9125 - PAT9125
+		dcode_9125(); break;
 	case 5:
 		MYSERIAL.println("D5 - Test");
 		if (code_seen('P'))

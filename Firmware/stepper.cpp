@@ -37,7 +37,8 @@
 #endif //TMC2130
 
 #ifdef PAT9125
-extern uint8_t fsensor_err_cnt;
+#include "fsensor.h"
+int fsensor_counter = 0; //counter for e-steps
 #endif //PAT9125
 
 //===========================================================================
@@ -370,7 +371,11 @@ void isr() {
     // Anything in the buffer?
     current_block = plan_get_current_block();
     if (current_block != NULL) {
-      // The busy flag is set by the plan_get_current_block() call.
+#ifdef PAT9125
+	  fsensor_counter = 0;
+      fsensor_st_block_begin(current_block);
+#endif //PAT9125
+	  // The busy flag is set by the plan_get_current_block() call.
       // current_block->busy = true;
       trapezoid_generator_reset();
       counter_x = -(current_block->step_event_count >> 1);
@@ -716,6 +721,9 @@ void isr() {
           counter_e -= current_block->step_event_count;
           count_position[E_AXIS]+=count_direction[E_AXIS];
           WRITE_E_STEP(INVERT_E_STEP_PIN);
+#ifdef PAT9125
+          fsensor_counter++;
+#endif //PAT9125
         }
 #endif
         
@@ -799,13 +807,20 @@ void isr() {
     if (step_events_completed >= current_block->step_event_count) {
 
 #ifdef PAT9125
-		if (current_block->steps_e < 0) //black magic - decrement filament sensor errors for negative extruder move
-			if (fsensor_err_cnt) fsensor_err_cnt--;
+      fsensor_st_block_chunk(current_block, fsensor_counter);
+	  fsensor_counter = 0;
 #endif //PAT9125
 
       current_block = NULL;
       plan_discard_current_block();
     }
+#ifdef PAT9125
+	else if (fsensor_counter >= fsensor_chunk_len)
+	{
+      fsensor_st_block_chunk(current_block, fsensor_counter);
+	  fsensor_counter = 0;
+	}
+#endif //PAT9125
   }
 #ifdef TMC2130
 	tmc2130_st_isr(LastStepMask);
@@ -834,6 +849,10 @@ void advance_isr() {
           WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
           e_steps < 0 ? ++e_steps : --e_steps;
           WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
+#ifdef PAT9125
+		  fsensor_counter++;
+#endif //PAT9125
+
       }
   }
 }
