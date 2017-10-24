@@ -6,14 +6,20 @@
 #include "pat9125.h"
 #include "planner.h"
 
+//#include "LiquidCrystal.h"
+//extern LiquidCrystal lcd;
+
+
+#define FSENSOR_ERR_MAX      5  //filament sensor max error count
+#define FSENSOR_INT_PIN     63  //filament sensor interrupt pin
+#define FSENSOR_CHUNK_LEN  560  //filament sensor chunk length in steps
+
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
-extern long st_get_position(uint8_t axis);
-
+extern int8_t FSensorStateMenu;
 
 void fsensor_stop_and_save_print()
 {
-//	stop_and_save_print_to_ram(10, -0.8); //XY - no change, Z 10mm up, E 0.8mm in
 	stop_and_save_print_to_ram(0, 0); //XYZE - no change
 }
 
@@ -22,34 +28,22 @@ void fsensor_restore_print_and_continue()
 	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
 }
 
-
+uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
+int16_t fsensor_chunk_len = FSENSOR_CHUNK_LEN;
 bool fsensor_enabled = true;
-bool fsensor_ignore_error = true;
+//bool fsensor_ignore_error = true;
 bool fsensor_M600 = false;
-long fsensor_prev_pos_e = 0;
 uint8_t fsensor_err_cnt = 0;
-
-#define FSENS_ESTEPS 280  //extruder resolution [steps/mm]
-//#define FSENS_MINDEL 560  //filament sensor min delta [steps] (3mm)
-#define FSENS_MINDEL 280  //filament sensor min delta [steps] (3mm)
-#define FSENS_MINFAC 3    //filament sensor minimum factor [count/mm]
-//#define FSENS_MAXFAC 50   //filament sensor maximum factor [count/mm]
-#define FSENS_MAXFAC 40   //filament sensor maximum factor [count/mm]
-//#define FSENS_MAXERR 2    //filament sensor max error count
-#define FSENS_MAXERR 5    //filament sensor max error count
-
-extern int8_t FSensorStateMenu;
+int16_t fsensor_st_cnt = 0;
 
 
 void fsensor_enable()
 {
 	MYSERIAL.println("fsensor_enable");
-	pat9125_y = 0;
-	fsensor_prev_pos_e = st_get_position(E_AXIS);
-	fsensor_err_cnt = 0;
 	fsensor_enabled = true;
-	fsensor_ignore_error = true;
+//	fsensor_ignore_error = true;
 	fsensor_M600 = false;
+	fsensor_err_cnt = 0;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0xFF); 
 	FSensorStateMenu = 1;
 }
@@ -62,18 +56,7 @@ void fsensor_disable()
 	FSensorStateMenu = 0;
 }
 
-#include "LiquidCrystal.h"
-extern LiquidCrystal lcd;
-
-//bool pat9125_change = ((old_x != pat9125_x) || (old_y != pat9125_y));
-
-uint8_t fsensor_int_pin = 63;
-int16_t fsensor_steps_e = 0;
-int16_t fsensor_y_old = 0;
-
-
-
-void pciSetup(byte pin) 
+void pciSetup(byte pin)
 {
 	*digitalPinToPCMSK(pin) |= bit (digitalPinToPCMSKbit(pin)); // enable pin
 	PCIFR |= bit (digitalPinToPCICRbit(pin)); // clear any outstanding interrupt
@@ -90,109 +73,82 @@ void fsensor_setup_interrupt()
 	pciSetup(fsensor_int_pin);
 }
 
-void fsensor_interrupt_raise()
-{
-	digitalWrite(fsensor_int_pin, LOW);
-}
-
 ISR(PCINT2_vect)
 {
+//	return;
+	int st_cnt = fsensor_st_cnt;
+	fsensor_st_cnt = 0;
 	sei();
-	SERIAL_ECHOLNPGM("PCINT2");
 	*digitalPinToPCMSK(fsensor_int_pin) &= ~bit(digitalPinToPCMSKbit(fsensor_int_pin));
 	digitalWrite(fsensor_int_pin, HIGH);
 	*digitalPinToPCMSK(fsensor_int_pin) |= bit(digitalPinToPCMSKbit(fsensor_int_pin));
-//	PCIFR |= bit (digitalPinToPCICRbit(fsensor_int_pin)); // clear any outstanding interrupt
-//	pat9125_update();
-	pat9125_update();
-	MYSERIAL.print("steps_e=");
-	MYSERIAL.print(fsensor_steps_e, DEC);
-	MYSERIAL.print(" dy=");
-	MYSERIAL.println(pat9125_y - fsensor_y_old, DEC);
-	fsensor_y_old = pat9125_y;
+	pat9125_update_y();
+	if (st_cnt != 0)
+	{
+#ifdef DEBUG_FSENSOR_LOG
+		MYSERIAL.print("cnt=");
+		MYSERIAL.print(st_cnt, DEC);
+		MYSERIAL.print(" dy=");
+		MYSERIAL.print(pat9125_y, DEC);
+#endif //DEBUG_FSENSOR_LOG
+		if (st_cnt != 0)
+		{
+			if( (pat9125_y == 0) || ((pat9125_y > 0) && (st_cnt < 0)) || ((pat9125_y < 0) && (st_cnt > 0)))
+			{ //invalid movement
+				fsensor_err_cnt++;
+#ifdef DEBUG_FSENSOR_LOG
+				MYSERIAL.print("\tNG ! err=");
+				MYSERIAL.println(fsensor_err_cnt, DEC);
+#endif //DEBUG_FSENSOR_LOG
+			}
+			else
+			{ //propper movement
+				if (fsensor_err_cnt > 0)
+					fsensor_err_cnt--;
+#ifdef DEBUG_FSENSOR_LOG
+				MYSERIAL.print("\tOK    err=");
+				MYSERIAL.println(fsensor_err_cnt, DEC);
+#endif //DEBUG_FSENSOR_LOG
+			}
+		}
+		else
+		{ //no movement
+#ifdef DEBUG_FSENSOR_LOG
+			MYSERIAL.println("\tOK 0");
+#endif //DEBUG_FSENSOR_LOG
+		}
+	}
+	pat9125_y = 0;
+	return;
 }
 
-void fsensor_st_end_block(block_t* bl)
+void fsensor_st_block_begin(block_t* bl)
 {
-//	return;
-	fsensor_steps_e = bl->steps_e;
-	digitalWrite(fsensor_int_pin, LOW);
+	if ((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8))
+		digitalWrite(fsensor_int_pin, LOW);
+	if ((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8))
+		digitalWrite(fsensor_int_pin, LOW);
 }
 
-void fsensor_st_new_block(block_t* bl)
+void fsensor_st_block_chunk(block_t* bl, int cnt)
 {
-//	return;
-//	fsensor_steps_e = bl->steps_e;
-//	digitalWrite(fsensor_int_pin, LOW);
+	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
+	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
+		digitalWrite(fsensor_int_pin, LOW);
 }
 
 void fsensor_update()
 {
-//	return;
 	if (!fsensor_enabled) return;
-	long pos_e = st_get_position(E_AXIS); //current position
-	int old_x = pat9125_x;
-	int old_y = pat9125_y;
-	pat9125_update();
-/*	bool pat9125_change = ((old_x != pat9125_x) || (old_y != pat9125_y));
-	static uint32_t checktime = 0;
-	pat9125_change |= (millis() - checktime > 250);
-#ifdef DEBUG_PAT9125_COUNTERS
-	if (pat9125_change)
+	if (fsensor_err_cnt > FSENSOR_ERR_MAX)
 	{
-		lcd.setCursor(2, 3);
-		lcd.print(pat9125_x, DEC);
-		lcd.print(' ');
-		lcd.print(pat9125_y, DEC);
-		lcd.print(' ');
-		lcd.print(pos_e, DEC);
-		lcd.print(' ');
-		checktime = millis();
-	}
-#endif DEBUG_PAT9125_COUNTERS
-	return;*/
-
-	long del_e = pos_e - fsensor_prev_pos_e; //delta
-	if (abs(del_e) < FSENS_MINDEL) return;
-	float de = ((float)del_e / FSENS_ESTEPS);
-	int cmin = de * FSENS_MINFAC;
-	int cmax = de * FSENS_MAXFAC;
-	int cnt = -pat9125_y;
-	fsensor_prev_pos_e = pos_e;
-	pat9125_y = 0;
-	bool err = false;
-	if ((del_e > 0) && ((cnt < cmin) || (cnt > cmax))) err = true;
-	if ((del_e < 0) && ((cnt > cmin) || (cnt < cmax))) err = true;
-	if (err)
-		fsensor_err_cnt++;
-	else
-		fsensor_err_cnt = 0;
-
-/**/
-	MYSERIAL.print("pos_e=");
-	MYSERIAL.print(pos_e);
-	MYSERIAL.print(" de=");
-	MYSERIAL.print(de);
-	MYSERIAL.print(" cmin=");
-	MYSERIAL.print((int)cmin);
-	MYSERIAL.print(" cmax=");
-	MYSERIAL.print((int)cmax);
-	MYSERIAL.print(" cnt=");
-	MYSERIAL.print((int)cnt);
-	MYSERIAL.print(" err=");
-	MYSERIAL.println((int)fsensor_err_cnt);/**/
-
-//	return;
-
-	if (fsensor_err_cnt > FSENS_MAXERR)
-	{
-		MYSERIAL.println("fsensor_update (fsensor_err_cnt > FSENS_MAXERR)");
-		if (fsensor_ignore_error)
+		MYSERIAL.println("fsensor_update (fsensor_err_cnt > FSENSOR_ERR_MAX)");
+/*		if (fsensor_ignore_error)
 		{
 			MYSERIAL.println("fsensor_update - error ignored)");
 			fsensor_ignore_error = false;
 		}
-		else
+		else*/
 		{
 			MYSERIAL.println("fsensor_update - ERROR!!!");
 			fsensor_stop_and_save_print();

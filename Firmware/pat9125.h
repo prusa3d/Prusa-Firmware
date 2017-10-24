@@ -27,12 +27,17 @@
 extern unsigned char pat9125_PID1;
 extern unsigned char pat9125_PID2;
 
+extern unsigned char pat9125_xres;
+extern unsigned char pat9125_yres;
+
 extern int pat9125_x;
 extern int pat9125_y;
-extern int pat9125_b;
+extern unsigned char pat9125_b;
+extern unsigned char pat9125_s;
 
 extern int pat9125_init(unsigned char xres, unsigned char yres);
 extern int pat9125_update();
+extern int pat9125_update_y();
 
 extern unsigned char pat9125_rd_reg(unsigned char addr);
 extern void pat9125_wr_reg(unsigned char addr, unsigned char data);
