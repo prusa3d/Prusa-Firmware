@@ -5,6 +5,8 @@ use strict;
 use warnings;
 
 my @langs = ("en","cz","it","es","pl","de");
+# New option - single language support 
+#my @langs = ("en");
 
 sub parselang 
 {
@@ -200,7 +202,7 @@ print $fh <<END
 #define LANG_ID_UNDEFINED 255
 
 // Default language ID, if no language is selected.
-#define LANG_ID_DEFAULT LANG_ID_CZ
+#define LANG_ID_DEFAULT LANG_ID_EN
 
 // Number of languages available in the language table.
 #define LANG_NUM ${num_languages}
@@ -218,10 +220,12 @@ foreach my $key (sort(keys %texts)) {
 	my $strings = $texts{$key};
 	if (@{$strings} == grep { $_ eq ${$strings}[0] } @{$strings}) {
 		# All strings are English.
-	    print $fh "extern const char* const ${key}_LANG_TABLE[1];\n";
+		print $fh "extern const char* const ${key}_LANG_TABLE[1];\n";
 		print $fh "#define $key LANG_TABLE_SELECT_EXPLICIT(${key}_LANG_TABLE, 0)\n";
+		print $fh "#define ${key}_EXPLICIT(LANG) LANG_TABLE_SELECT_EXPLICIT(${key}_LANG_TABLE, 0)\n"
+			if ($key eq "MSG_LANGUAGE_NAME" || $key eq "MSG_LANGUAGE_SELECT");
 	} else {
-	    print $fh "extern const char* const ${key}_LANG_TABLE[LANG_NUM];\n";
+		print $fh "extern const char* const ${key}_LANG_TABLE[LANG_NUM];\n";
 		print $fh "#define $key LANG_TABLE_SELECT(${key}_LANG_TABLE)\n";
 		print $fh "#define ${key}_EXPLICIT(LANG) LANG_TABLE_SELECT_EXPLICIT(${key}_LANG_TABLE, LANG)\n"
 			if ($key eq "MSG_LANGUAGE_NAME" || $key eq "MSG_LANGUAGE_SELECT");

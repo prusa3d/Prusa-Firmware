@@ -2355,9 +2355,9 @@ bool gcode_M45(bool onlyZ) {
 	bool final_result = false;
 	if (!onlyZ) {
 		setTargetBed(0);
-		setTargetHotend(0, 0);
-		setTargetHotend(0, 1);
-		setTargetHotend(0, 2);
+		setTargetHotend0(0);
+		setTargetHotend1(0);
+		setTargetHotend2(0);
 		adjust_bed_reset(); //reset bed level correction
 	}
 
@@ -7198,9 +7198,9 @@ void long_pause() //long pause print
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
 
 	//set nozzle target temperature to 0
-	setTargetHotend(0, 0);
-	setTargetHotend(0, 1);
-	setTargetHotend(0, 2);
+	setTargetHotend0(0);
+	setTargetHotend1(0);
+	setTargetHotend2(0);
 
 	//Move XY to side
 	current_position[X_AXIS] = X_PAUSE_POS;

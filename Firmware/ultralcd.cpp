@@ -184,8 +184,9 @@ static void lcd_main_menu();
 static void lcd_tune_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
+#if (LNAG_NUM > 1)
 static void lcd_language_menu();
-
+#endif
 static void lcd_control_temperature_menu();
 
 static void lcd_babystep_z();
@@ -246,7 +247,9 @@ static void menu_action_back(menuFunc_t data);
 static void menu_action_submenu(menuFunc_t data);
 static void menu_action_gcode(const char* pgcode);
 static void menu_action_function(menuFunc_t data);
+#if (LANG_NUM > 1)
 static void menu_action_setlang(unsigned char lang);
+#endif
 static void menu_action_sdfile(const char* filename, char* longFilename);
 static void menu_action_sddirectory(const char* filename, char* longFilename);
 static void menu_action_setting_edit_int3(const char* pstr, int* ptr, int minValue, int maxValue);
@@ -380,7 +383,7 @@ static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const boo
 }
 
 /* Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent */
-
+#if (LANG_NUM > 1)
 // Language selection dialog not active.
 #define LANGSEL_OFF 0
 // Language selection dialog modal, entered from the info screen. This is the case on firmware boot up,
@@ -390,9 +393,11 @@ static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const boo
 #define LANGSEL_ACTIVE 2
 // Language selection dialog status
 unsigned char langsel = LANGSEL_OFF;
+#endif
 
 void set_language_from_EEPROM() {
   unsigned char eep = eeprom_read_byte((unsigned char*)EEPROM_LANG);
+#if (LANG_NUM > 1)
   if (eep < LANG_NUM)
   {
     lang_selected = eep;
@@ -405,6 +410,13 @@ void set_language_from_EEPROM() {
     // Invalid language, enter the language selection screen in a modal mode.
     langsel = LANGSEL_MODAL;
   }
+#else
+  lang_selected = LANG_ID_DEFAULT;
+  if (eep != LANG_ID_DEFAULT)
+  {
+    eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_DEFAULT);
+  }
+#endif
 }
 
 static void lcd_status_screen()
@@ -423,12 +435,6 @@ static void lcd_status_screen()
 		eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
 		eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
 	}
-	
-	if (langsel) {
-      //strncpy_P(lcd_status_message, PSTR(">>>>>>>>>>>> PRESS v"), LCD_WIDTH);
-      // Entering the language selection screen in a modal mode.
-      
-    }
   }
 
   
@@ -521,8 +527,6 @@ static void lcd_status_screen()
     }
   }
 
-
-  //if (--langsel ==0) {langsel=1;current_click=true;}
 
   if (current_click && (lcd_commands_type != LCD_COMMAND_STOP_PRINT)) //click is aborted unless stop print finishes
   {
@@ -1225,9 +1229,9 @@ void lcd_commands()
 			cancel_heatup = true;
 			setTargetBed(0);
 			#ifndef SNMM
-			setTargetHotend(0, 0);	//heating when changing filament for multicolor
-			setTargetHotend(0, 1);
-			setTargetHotend(0, 2);
+			setTargetHotend0(0);	//heating when changing filament for multicolor
+			setTargetHotend1(0);
+			setTargetHotend2(0);
 			#endif
 			manage_heater();
 			custom_message = true;
@@ -3173,10 +3177,12 @@ static void lcd_set_lang(unsigned char lang) {
   lang_selected = lang;
   firstrun = 1;
   eeprom_update_byte((unsigned char *)EEPROM_LANG, lang);
-  /*langsel=0;*/
+
+#if (LANG_NUM > 1)
   if (langsel == LANGSEL_MODAL)
     // From modal mode to an active mode? This forces the menu to return to the setup menu.
     langsel = LANGSEL_ACTIVE;
+#endif
 }
 
 #if !SDSORT_USES_RAM
@@ -3193,6 +3199,7 @@ void lcd_force_language_selection() {
   eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
 }
 
+#if (LANG_NUM > 1)
 static void lcd_language_menu()
 {
   START_MENU();
@@ -3206,6 +3213,7 @@ static void lcd_language_menu()
   }
   END_MENU();
 }
+#endif
 
 void lcd_mesh_bedleveling()
 {
@@ -3585,7 +3593,9 @@ static void lcd_settings_menu()
 	{
 		MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);
 	}
+#if (LANG_NUM > 1)
 	MENU_ITEM(submenu, MSG_LANGUAGE_SELECT, lcd_language_menu);
+#endif
 
   if (card.ToshibaFlashAir_isEnabled()) {
     MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON, lcd_toshiba_flash_air_compatibility_toggle);
@@ -3657,6 +3667,7 @@ static void lcd_calibration_menu()
   END_MENU();
 }
 
+#if (LANG_NUM > 1)
 void lcd_mylang_drawmenu(int cursor) {
   int first = 0;
   if (cursor>3) first = cursor-3;
@@ -3779,6 +3790,11 @@ void lcd_mylang() {
   lcd_return_to_status();
 
 }
+#else
+void lcd_mylang() {
+  lcd_set_lang(LANG_ID_DEFAULT);
+}
+#endif
 
 void bowden_menu() {
 	int enc_dif = encoderDiff;
@@ -5859,9 +5875,11 @@ static void menu_action_submenu(menuFunc_t data) {
 static void menu_action_gcode(const char* pgcode) {
   enquecommand_P(pgcode);
 }
+#if (LANG_NUM > 1)
 static void menu_action_setlang(unsigned char lang) {
   lcd_set_lang(lang);
 }
+#endif
 static void menu_action_function(menuFunc_t data) {
   (*data)();
 }

@@ -68,14 +68,13 @@ const char MSG_AUTO_MODE_ON_CZ[] PROGMEM = "Mod [automaticky]";
 const char MSG_AUTO_MODE_ON_IT[] PROGMEM = "Mode       [auto]";
 const char MSG_AUTO_MODE_ON_ES[] PROGMEM = "Modo       [auto]";
 const char MSG_AUTO_MODE_ON_PL[] PROGMEM = "Mod        [auto]";
-const char MSG_AUTO_MODE_ON_DE[] PROGMEM = "Mode [Auto]";
 const char * const MSG_AUTO_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_AUTO_MODE_ON_EN,
 	MSG_AUTO_MODE_ON_CZ,
 	MSG_AUTO_MODE_ON_IT,
 	MSG_AUTO_MODE_ON_ES,
 	MSG_AUTO_MODE_ON_PL,
-	MSG_AUTO_MODE_ON_DE
+	MSG_AUTO_MODE_ON_EN
 };
 
 const char MSG_A_RETRACT_EN[] PROGMEM = "A-retract";
@@ -3668,8 +3667,18 @@ const char * const MSG_WATCHDOG_RESET_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_WIZARD_EN[] PROGMEM = "Setup Wizard";
-const char * const MSG_WIZARD_LANG_TABLE[1] PROGMEM = {
-	MSG_WIZARD_EN
+const char MSG_WIZARD_CZ[] PROGMEM = "Wizard";
+const char MSG_WIZARD_IT[] PROGMEM = "Wizard";
+const char MSG_WIZARD_ES[] PROGMEM = "Wizard";
+const char MSG_WIZARD_PL[] PROGMEM = "Wizard";
+const char MSG_WIZARD_DE[] PROGMEM = "Wizard";
+const char * const MSG_WIZARD_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_WIZARD_EN,
+	MSG_WIZARD_CZ,
+	MSG_WIZARD_IT,
+	MSG_WIZARD_ES,
+	MSG_WIZARD_PL,
+	MSG_WIZARD_DE
 };
 
 const char MSG_WIZARD_CALIBRATION_FAILED_EN[] PROGMEM = "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer.";
