@@ -834,6 +834,7 @@ void CardReader::presort() {
 		if (fileCnt > 1) {
 			// Init sort order.
 			for (uint16_t i = 0; i < fileCnt; i++) {
+				if (!IS_SD_INSERTED) return;
 				manage_heater();
 				sort_order[i] = i;
 
