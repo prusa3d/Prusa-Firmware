@@ -909,6 +909,8 @@ void CardReader::presort() {
 			#endif
 
 			for (uint16_t i = fileCnt; --i;) {
+				if (!IS_SD_INSERTED) return;
+
 				bool didSwap = false;
 				#if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
 				int8_t percent = (counter * 100) / total;//((counter * 100) / pow((fileCnt-1),2));
@@ -920,6 +922,7 @@ void CardReader::presort() {
 
 				//MYSERIAL.println(int(i));
 				for (uint16_t j = 0; j < i; ++j) {
+					if (!IS_SD_INSERTED) return;
 					manage_heater();
 					const uint16_t o1 = sort_order[j], o2 = sort_order[j + 1];					
 
