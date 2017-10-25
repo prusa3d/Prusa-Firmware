@@ -148,7 +148,6 @@ private:
   int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
   void lsDive(const char *prepend, SdFile parent, const char * const match=NULL);
-  void lsDive_pointer(const char *prepend, SdFile parent, const char * const match = NULL);
   #ifdef SDCARD_SORT_ALPHA
     void flush_presort();
   #endif
