@@ -37,7 +37,8 @@
 #endif //TMC2130
 
 #ifdef PAT9125
-extern uint8_t fsensor_err_cnt;
+#include "fsensor.h"
+int fsensor_counter = 0; //counter for e-steps
 #endif //PAT9125
 
 //===========================================================================
@@ -370,7 +371,11 @@ void isr() {
     // Anything in the buffer?
     current_block = plan_get_current_block();
     if (current_block != NULL) {
-      // The busy flag is set by the plan_get_current_block() call.
+#ifdef PAT9125
+	  fsensor_counter = 0;
+      fsensor_st_block_begin(current_block);
+#endif //PAT9125
+	  // The busy flag is set by the plan_get_current_block() call.
       // current_block->busy = true;
       trapezoid_generator_reset();
       counter_x = -(current_block->step_event_count >> 1);
@@ -436,12 +441,19 @@ void isr() {
       CHECK_ENDSTOPS
       {
         {
-          #if defined(X_MIN_PIN) && (X_MIN_PIN > -1) && !defined(DEBUG_DISABLE_XMINLIMIT)
-			#ifndef TMC2130_SG_HOMING_SW_XY
-				x_min_endstop = (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
-			#else //TMC2130_SG_HOMING_SW_XY
-				x_min_endstop = tmc2130_axis_stalled[X_AXIS];
-			#endif //TMC2130_SG_HOMING_SW_XY
+          #if ( (defined(X_MIN_PIN) && (X_MIN_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_XMINLIMIT)
+            
+            #ifdef TMC2130_SG_HOMING
+            // Stall guard homing turned on, now decide if software or hardware one
+                #ifndef TMC2130_SG_HOMING_SW_XY
+                x_min_endstop = (READ(X_TMC2130_DIAG) != X_MIN_ENDSTOP_INVERTING);
+                #else //TMC2130_SG_HOMING_SW_XY
+                x_min_endstop = tmc2130_axis_stalled[X_AXIS];
+                #endif //TMC2130_SG_HOMING_SW_XY
+            #else
+            // Normal homing
+            x_min_endstop = (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
+            #endif
             if(x_min_endstop && old_x_min_endstop && (current_block->steps_x > 0)) {
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
@@ -456,12 +468,19 @@ void isr() {
       CHECK_ENDSTOPS
       {
         {
-          #if defined(X_MAX_PIN) && (X_MAX_PIN > -1) && !defined(DEBUG_DISABLE_XMAXLIMIT)
-			#ifndef TMC2130_SG_HOMING_SW_XY
-				x_max_endstop = (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
-			#else //TMC2130_SG_HOMING_SW_XY
-				x_max_endstop = tmc2130_axis_stalled[X_AXIS];
-			#endif //TMC2130_SG_HOMING_SW_XY
+          #if ( (defined(X_MAX_PIN) && (X_MAX_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_XMAXLIMIT)
+            
+            #ifdef TMC2130_SG_HOMING
+            // Stall guard homing turned on, now decide if software or hardware one
+                #ifndef TMC2130_SG_HOMING_SW_XY
+                x_max_endstop = (READ(X_TMC2130_DIAG) != X_MAX_ENDSTOP_INVERTING);
+                #else //TMC2130_SG_HOMING_SW_XY
+                x_max_endstop = tmc2130_axis_stalled[X_AXIS];
+                #endif //TMC2130_SG_HOMING_SW_XY
+            #else
+            // Normal homing
+            x_max_endstop = (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
+            #endif
             if(x_max_endstop && old_x_max_endstop && (current_block->steps_x > 0)){
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
@@ -480,12 +499,20 @@ void isr() {
     #endif
       CHECK_ENDSTOPS
       {
-        #if defined(Y_MIN_PIN) && (Y_MIN_PIN > -1) && !defined(DEBUG_DISABLE_YMINLIMIT)
-			#ifndef TMC2130_SG_HOMING_SW_XY
-				y_min_endstop=(READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
-			#else //TMC2130_SG_HOMING_SW_XY
-				y_min_endstop = tmc2130_axis_stalled[Y_AXIS];
-			#endif //TMC2130_SG_HOMING_SW_XY
+          
+        #if ( (defined(Y_MIN_PIN) && (Y_MIN_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_YMINLIMIT)
+                  
+        #ifdef TMC2130_SG_HOMING
+        // Stall guard homing turned on, now decide if software or hardware one
+            #ifndef TMC2130_SG_HOMING_SW_XY
+            y_min_endstop = (READ(Y_TMC2130_DIAG) != Y_MIN_ENDSTOP_INVERTING);
+            #else //TMC2130_SG_HOMING_SW_XY
+            y_min_endstop = tmc2130_axis_stalled[Y_AXIS];
+            #endif //TMC2130_SG_HOMING_SW_XY
+        #else
+        // Normal homing
+        y_min_endstop = (READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
+        #endif
           if(y_min_endstop && old_y_min_endstop && (current_block->steps_y > 0)) {
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
@@ -498,12 +525,19 @@ void isr() {
     else { // +direction
       CHECK_ENDSTOPS
       {
-        #if defined(Y_MAX_PIN) && (Y_MAX_PIN > -1) && !defined(DEBUG_DISABLE_YMAXLIMIT)
-			#ifndef TMC2130_SG_HOMING_SW_XY
-				y_max_endstop=(READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
-			#else //TMC2130_SG_HOMING_SW_XY
-				y_max_endstop = tmc2130_axis_stalled[Y_AXIS];
-			#endif //TMC2130_SG_HOMING_SW_XY
+        #if ( (defined(Y_MAX_PIN) && (Y_MAX_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_YMAXLIMIT)
+                  
+        #ifdef TMC2130_SG_HOMING
+        // Stall guard homing turned on, now decide if software or hardware one
+            #ifndef TMC2130_SG_HOMING_SW_XY
+            y_max_endstop = (READ(Y_TMC2130_DIAG) != Y_MAX_ENDSTOP_INVERTING);
+            #else //TMC2130_SG_HOMING_SW_XY
+            y_max_endstop = tmc2130_axis_stalled[Y_AXIS];
+            #endif //TMC2130_SG_HOMING_SW_XY
+        #else
+        // Normal homing
+        y_max_endstop = (READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
+        #endif
           if(y_max_endstop && old_y_max_endstop && (current_block->steps_y > 0)){
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
@@ -687,6 +721,9 @@ void isr() {
           counter_e -= current_block->step_event_count;
           count_position[E_AXIS]+=count_direction[E_AXIS];
           WRITE_E_STEP(INVERT_E_STEP_PIN);
+#ifdef PAT9125
+          fsensor_counter++;
+#endif //PAT9125
         }
 #endif
         
@@ -770,13 +807,20 @@ void isr() {
     if (step_events_completed >= current_block->step_event_count) {
 
 #ifdef PAT9125
-		if (current_block->steps_e < 0) //black magic - decrement filament sensor errors for negative extruder move
-			if (fsensor_err_cnt) fsensor_err_cnt--;
+      fsensor_st_block_chunk(current_block, fsensor_counter);
+	  fsensor_counter = 0;
 #endif //PAT9125
 
       current_block = NULL;
       plan_discard_current_block();
     }
+#ifdef PAT9125
+	else if (fsensor_counter >= fsensor_chunk_len)
+	{
+      fsensor_st_block_chunk(current_block, fsensor_counter);
+	  fsensor_counter = 0;
+	}
+#endif //PAT9125
   }
 #ifdef TMC2130
 	tmc2130_st_isr(LastStepMask);
@@ -805,6 +849,10 @@ void advance_isr() {
           WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
           e_steps < 0 ? ++e_steps : --e_steps;
           WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
+#ifdef PAT9125
+		  fsensor_counter++;
+#endif //PAT9125
+
       }
   }
 }
@@ -929,6 +977,18 @@ void st_init()
 
   //endstops and pullups
 
+  #ifdef TMC2130_SG_HOMING
+    SET_INPUT(X_TMC2130_DIAG);
+    WRITE(X_TMC2130_DIAG,HIGH);
+    
+    SET_INPUT(Y_TMC2130_DIAG);
+    WRITE(Y_TMC2130_DIAG,HIGH);
+    
+    SET_INPUT(Z_TMC2130_DIAG);
+    WRITE(Z_TMC2130_DIAG,HIGH);
+    
+  #endif
+    
   #if defined(X_MIN_PIN) && X_MIN_PIN > -1
     SET_INPUT(X_MIN_PIN);
     #ifdef ENDSTOPPULLUP_XMIN

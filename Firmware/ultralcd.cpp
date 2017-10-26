@@ -189,6 +189,8 @@ static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
 static void lcd_menu_extruder_info();
+static void lcd_menu_fails_stats();
+
 #ifdef DOGLCD
 static void lcd_set_contrast();
 #endif
@@ -961,6 +963,47 @@ static void lcd_menu_extruder_info()
     }
 }
 
+static void lcd_menu_fails_stats()
+{
+    
+    // Display screen info
+    
+    lcd.setCursor(0, 0);
+    lcd.print("Failure stats       ");
+    
+    // Display power failures
+    uint8_t power_count = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
+    lcd.setCursor(0, 1);
+    lcd.print(" Power failures:    ");
+    lcd.setCursor(17, 1);
+    lcd.print(itostr3((int)power_count));
+
+    
+    // Display Crash detected
+    uint8_t crash_count = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT);
+    lcd.setCursor(0, 2);
+    lcd.print(" Crash detected:    ");
+    lcd.setCursor(17, 2);
+    lcd.print(itostr3((int)crash_count));
+    
+    
+    // Display filament failures
+    uint8_t ferror_count = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
+    lcd.setCursor(0, 3);
+    lcd.print(" Filament fails:    ");
+    lcd.setCursor(17, 3);
+    lcd.print(itostr3((int)ferror_count));
+    
+
+    
+    if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_return_to_status();
+    }
+    
+}
+
 static void lcd_menu_temperatures()
 {
     lcd.setCursor(1, 1);
@@ -1034,13 +1077,15 @@ static void lcd_support_menu()
 
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
 
+  MENU_ITEM(back, PSTR("Firmware:"), lcd_main_menu);
+  MENU_ITEM(back, PSTR(" " FW_version_build), lcd_main_menu);
   // Ideally this block would be optimized out by the compiler.
-  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
+/*  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
   if (fw_string_len < 6) {
       MENU_ITEM(back, PSTR(MSG_FW_VERSION " - " FW_version), lcd_main_menu);
   } else {
       MENU_ITEM(back, PSTR("FW - " FW_version), lcd_main_menu);
-  }
+  }*/
       
   MENU_ITEM(back, MSG_PRUSA3D, lcd_main_menu);
   MENU_ITEM(back, MSG_PRUSA3D_FORUM, lcd_main_menu);
@@ -1066,6 +1111,8 @@ static void lcd_support_menu()
   MENU_ITEM(function, PSTR("XYZ cal. details"), lcd_service_mode_show_result);
     }
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
+    
+    
   MENU_ITEM(submenu, PSTR("Temperatures"), lcd_menu_temperatures);
   if (fans_check_enabled == true) {
 	  MENU_ITEM(function, PSTR("Check fans [EN]"), lcd_set_fan_check);
@@ -1074,6 +1121,10 @@ static void lcd_support_menu()
 	  MENU_ITEM(function, PSTR("Check fans [DIS]"), lcd_set_fan_check);
   }
   #endif //MK1BP
+    
+#ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
+    MENU_ITEM(back, PSTR("Auto recover crash"), lcd_main_menu);
+#endif
   END_MENU();
 }
 
@@ -4013,6 +4064,9 @@ static void lcd_main_menu()
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
+    
+  MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
+    
   END_MENU();
 
 }

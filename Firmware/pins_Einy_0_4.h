@@ -20,13 +20,15 @@
 #define PAT9125_SWI2C_SCL      21 //SCL on P3
 #define PAT9125_SWI2C_CFG    0xb1 //2us clock delay, 2048 cycles timeout
 
+//#define PAT9125_HWI2C
+
 #define X_TMC2130_CS           41
 #define X_TMC2130_DIAG         64 // !!! changed from 40 (EINY03)
 #define X_STEP_PIN             37
 #define X_DIR_PIN              49
-//#define X_MIN_PIN            12
+#define X_MIN_PIN            12
 //#define X_MAX_PIN            30
-#define X_MIN_PIN              X_TMC2130_DIAG
+//#define X_MIN_PIN              X_TMC2130_DIAG
 #define X_MAX_PIN              X_TMC2130_DIAG
 #define X_ENABLE_PIN           29
 #define X_MS1_PIN           -1
@@ -36,9 +38,9 @@
 #define Y_TMC2130_DIAG      69
 #define Y_STEP_PIN          36
 #define Y_DIR_PIN           48
-//#define Y_MIN_PIN           11
+#define Y_MIN_PIN           11
 //#define Y_MAX_PIN           24
-#define Y_MIN_PIN           Y_TMC2130_DIAG
+//#define Y_MIN_PIN           Y_TMC2130_DIAG
 #define Y_MAX_PIN           Y_TMC2130_DIAG
 #define Y_ENABLE_PIN        28
 #define Y_MS1_PIN           -1

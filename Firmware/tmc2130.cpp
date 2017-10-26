@@ -212,8 +212,8 @@ uint8_t tmc2130_sample_diag()
 	uint8_t mask = 0;
 	if (READ(X_TMC2130_DIAG)) mask |= X_AXIS_MASK;
 	if (READ(Y_TMC2130_DIAG)) mask |= Y_AXIS_MASK;
-	if (READ(Z_TMC2130_DIAG)) mask |= Z_AXIS_MASK;
-	if (READ(E0_TMC2130_DIAG)) mask |= E_AXIS_MASK;
+//	if (READ(Z_TMC2130_DIAG)) mask |= Z_AXIS_MASK;
+//	if (READ(E0_TMC2130_DIAG)) mask |= E_AXIS_MASK;
 	return mask;
 }
 
@@ -222,7 +222,8 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 	if (tmc2130_mode == TMC2130_MODE_SILENT) return;
 	bool crash = false;
 	uint8_t diag_mask = tmc2130_sample_diag();
-	for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++)
+//	for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++)
+	for (uint8_t axis = X_AXIS; axis <= Y_AXIS; axis++)
 	{
 		uint8_t mask = (X_AXIS_MASK << axis);
 		if (diag_mask & mask) tmc2130_sg_err[axis]++;

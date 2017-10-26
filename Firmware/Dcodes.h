@@ -7,5 +7,7 @@ extern void dcode_2();
 extern void dcode_3();
 extern void dcode_4();
 
+extern void dcode_9125();
+
 
 #endif //DCODES_H

@@ -4,8 +4,14 @@
 #include "boards.h"
 #include "Configuration_prusa.h"
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
 // Firmware version
 #define FW_version "3.0.12-RC2"
+#define FW_build   104
+#define FW_version_build FW_version " b" STR(FW_build)
+
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -64,6 +70,12 @@
 #define EEPROM_CRASH_DET       (EEPROM_UVLO_MESH_BED_LEVELING-12) 
 // Filament sensor on/off EEPROM setting 
 #define EEPROM_FSENSOR       (EEPROM_UVLO_MESH_BED_LEVELING-14) 
+// Crash detection counter
+#define EEPROM_CRASH_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-15)
+// Filament runout/error coutner
+#define EEPROM_FERROR_COUNT      (EEPROM_UVLO_MESH_BED_LEVELING-16)
+// Power loss errors
+#define EEPROM_POWER_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-17)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.

@@ -73,7 +73,7 @@
 // is the index of the location from which to read.
 #define RX_BUFFER_SIZE 128
 
-extern int selectedSerialPort;
+extern uint8_t selectedSerialPort;
 
 struct ring_buffer
 {
