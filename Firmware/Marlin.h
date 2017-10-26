@@ -334,6 +334,7 @@ extern int fanSpeedBckp;
 extern float pause_lastpos[4];
 extern unsigned long pause_time;
 extern unsigned long start_pause_print;
+extern unsigned long t_fan_rising_edge;
 
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
@@ -372,6 +373,7 @@ void serialecho_temperatures();
 void uvlo_();
 void recover_print(uint8_t automatic); 
 void setup_uvlo_interrupt();
+void setup_fan_interrupt();
 
 extern void recover_machine_state_after_power_panic();
 extern void restore_print_from_eeprom();
