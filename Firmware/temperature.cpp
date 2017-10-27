@@ -2178,10 +2178,10 @@ void check_fans() {
 		fan_edge_counter[0] ++;
 		fan_state[0] = !fan_state[0];
 	}
-	if (READ(TACH_1) != fan_state[1]) {
-		fan_edge_counter[1] ++;
-		fan_state[1] = !fan_state[1];
-	}
+	//if (READ(TACH_1) != fan_state[1]) {
+	//	fan_edge_counter[1] ++;
+	//	fan_state[1] = !fan_state[1];
+	//}
 }
 
 #ifdef PIDTEMP

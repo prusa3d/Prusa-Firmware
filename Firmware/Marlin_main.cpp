@@ -107,6 +107,8 @@
 #define TEST(n,b) (((n)&BIT(b))!=0)
 #define SET_BIT(n,b,value) (n) ^= ((-value)^(n)) & (BIT(b))
 
+//Macro for print fan speed
+#define FAN_PULSE_WIDTH_LIMIT ((fanSpeed > 100) ? 3 : 4) //time in ms
 
 // look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
 // http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
@@ -288,6 +290,7 @@ int fanSpeedBckp = 0;
 float pause_lastpos[4];
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
+unsigned long t_fan_rising_edge = millis();
 
 unsigned long load_filament_time;
 
@@ -988,8 +991,9 @@ void setup()
 
 	check_babystep(); //checking if Z babystep is in allowed range
 	setup_uvlo_interrupt();
-
+	setup_fan_interrupt();
 	fsensor_setup_interrupt();
+
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
 
@@ -6988,6 +6992,34 @@ void uvlo_()
 		SERIAL_ECHOLNPGM("UVLO - end");
 		cli();
 		while(1);
+}
+
+void setup_fan_interrupt() {
+//INT7
+	DDRE &= ~(1 << 7); //input pin
+	PORTE &= ~(1 << 7); //no internal pull-up
+
+	//start with sensing rising edge
+	EICRB &= ~(1 << 6);
+	EICRB |= (1 << 7);
+
+	//enable INT7 interrupt
+	EIMSK |= (1 << 7);
+}
+
+ISR(INT7_vect) {
+	//measuring speed now works for fanSpeed > 18 (approximately), which is sufficient because MIN_PRINT_FAN_SPEED is higher
+
+	if (fanSpeed < MIN_PRINT_FAN_SPEED) return;
+	if ((1 << 6) & EICRB) { //interrupt was triggered by rising edge
+		t_fan_rising_edge = millis();
+	}
+	else { //interrupt was triggered by falling edge
+		if ((millis() - t_fan_rising_edge) >= FAN_PULSE_WIDTH_LIMIT) {//this pulse was from sensor and not from pwm
+			fan_edge_counter[1] += 2; //we are currently counting all edges so lets count two edges for one pulse
+		}
+	}	
+	EICRB ^= (1 << 6); //change edge
 }
 
 void setup_uvlo_interrupt() {
