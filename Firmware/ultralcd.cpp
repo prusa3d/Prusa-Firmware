@@ -1536,15 +1536,16 @@ static void lcd_move_e()
 }
 
 void lcd_service_mode_show_result() {
+	float angleDiff;
 	lcd_set_custom_characters_degree();
 	count_xyz_details();
+	angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
 	lcd_update_enable(false);
 	lcd_implementation_clear();
 	lcd_printPGM(PSTR("Y distance from min:"));
 	lcd_print_at_PGM(0, 1, PSTR("Left:"));
-	lcd_print_at_PGM(0, 2, PSTR("Center:"));
 	lcd_print_at_PGM(0, 3, PSTR("Right:"));
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 2; i++) {
 		if(distance_from_min[i] < 200) {
 			lcd_print_at_PGM(8, i + 1, PSTR(""));
 			lcd.print(distance_from_min[i]);
@@ -2818,11 +2819,11 @@ static void lcd_settings_menu()
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
 
-  if (FSensorStateMenu == 0) {
+  /*if (FSensorStateMenu == 0) {
     MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
   } else {
     MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
-  }
+  }*/
 
   if (SilentModeMenu == 0) {
     MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);

@@ -218,7 +218,7 @@
 #define(length=60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Searching bed calibration point"
 #define(length=14) MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" of 4"
 #define(length=60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Improving bed calibration point"
-#define(length=14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" of 9"
+#define(length=14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" of 4"
 #define(length=60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Measuring reference height of calibration point"
 #define(length=14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" of 9"
 #define(length=20) MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteration "

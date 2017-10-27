@@ -310,8 +310,7 @@ unsigned int custom_message_type;
 unsigned int custom_message_state;
 char snmm_filaments_used = 0;
 
-float distance_from_min[3];
-float angleDiff;
+float distance_from_min[2];
 
 bool fan_state[2];
 int fan_edge_counter[2];
@@ -1450,7 +1449,7 @@ inline void gcode_M900() {
 #ifdef TMC2130
 bool calibrate_z_auto()
 {
-	lcd_display_message_fullscreen_P(MSG_CALIBRATE_Z_AUTO);
+	//lcd_display_message_fullscreen_P(MSG_CALIBRATE_Z_AUTO);
 	bool endstops_enabled  = enable_endstops(true);
 	int axis_up_dir = -home_dir(Z_AXIS);
 	tmc2130_home_enter(Z_AXIS_MASK);
@@ -6891,6 +6890,7 @@ extern uint32_t sdpos_atomic;
 
 void uvlo_() 
 {
+	unsigned long time_start = millis();
     // Conserve power as soon as possible.
     disable_x();
     disable_y();
@@ -6986,6 +6986,7 @@ void uvlo_()
     eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, power_count);
     
 		SERIAL_ECHOLNPGM("UVLO - end");
+		MYSERIAL.println(millis() - time_start);
 		cli();
 		while(1);
 }

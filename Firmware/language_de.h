@@ -206,7 +206,7 @@
 +#define(length = 60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Suchen Bed Kalibrierpunkt"
 + #define(length = 14) MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" von 4"
 + #define(length = 60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Verbesserung Bed Kalibrierpunkt"
-+ #define(length = 14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" von 9"
++ #define(length = 14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" von 4"
 + #define(length = 60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Messen der Referenzhoehe des Kalibrierpunktes"
 + #define(length = 14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" von 9"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteration "
