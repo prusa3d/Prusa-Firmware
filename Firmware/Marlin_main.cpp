@@ -1931,7 +1931,7 @@ static float probe_pt(float x, float y, float z_before) {
 #define EECHUNKSIZE	32
 // :<count><offset><type><data><cksum>EOL
 #define EELINESIZE	(1 + 2 + 4 + 2 + (2 * EECHUNKSIZE) + 2 + 1)
-static char linebfr[EELINESIZE + 1];
+static char *linebfr;
 
 static uint16_t bfrVal(char *ptr, uint8_t len)
 {
@@ -1966,6 +1966,10 @@ void gcode_M767() {
 		card.initsd();
 		// Overwrite existing
 	        card.openFile((char *)"eesave.hex", false, true);
+		linebfr = (char *)malloc(EELINESIZE + 1);
+		if (!linebfr)
+			kill();
+
 		for (unsigned long ofs = 0; ofs < 4096; ofs += EECHUNKSIZE) {
 			int8_t cksum = EECHUNKSIZE;
 			nch = sprintf_P(linebfr, PSTR(":%02X%04X00"), EECHUNKSIZE, ofs);
@@ -1978,12 +1982,14 @@ void gcode_M767() {
 
 			nch += sprintf_P(linebfr + nch, PSTR("%02X\n"), (-cksum) & 0xFF);
 			if (card.write_buf(linebfr, nch) != nch) {
+				free(linebfr);
 				SERIAL_ERROR_START;
 				SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
 				break;
 			}
 		}
 
+		free(linebfr);
 		// Close file
 		card.closefile(false);
 		SERIAL_ECHOLNPGM("EEPROM saved");
@@ -2035,13 +2041,19 @@ void gcode_M768() {
 		if (!card.isFileOpen())
 			return;
 
-		for (unsigned long ofs = 0; ofs < 4096; ofs += EECHUNKSIZE) {
-			if (card.read_buf(linebfr, EELINESIZE) != EELINESIZE)
-				return;
+		linebfr = (char *)malloc(EELINESIZE + 1);
+		if (!linebfr)
+			kill();
 
+		for (unsigned long ofs = 0; ofs < 4096; ofs += EECHUNKSIZE) {
+			if (card.read_buf(linebfr, EELINESIZE) != EELINESIZE) {
+				free(linebfr);
+				return;
+			}
 			// Validate buffer header
 			if ((linebfr[0] != ':') || (bfrVal(&linebfr[1], 2) != EECHUNKSIZE) ||
 			    (bfrVal(&linebfr[7], 2) != 0)) {
+				free(linebfr);
 				SERIAL_ERROR_START;
 				SERIAL_ERRORLNPGM("Header mis-match");
 				return;
@@ -2053,6 +2065,7 @@ void gcode_M768() {
 				cksum += bfrVal(&linebfr[i], 2);
 			}
 			if (cksum != 0) {
+				free(linebfr);
 				SERIAL_ERROR_START;
 				SERIAL_ERRORLNPGM("Bad checksum");
 				return;
@@ -2060,6 +2073,7 @@ void gcode_M768() {
 
 			addrs = bfrVal(&linebfr[3], 4);
 			if (addrs > 4064) {
+				free(linebfr);
 				SERIAL_ERROR_START;
 				SERIAL_ERRORLNPGM("Bad EEPROM offset");
 				return;
@@ -2072,6 +2086,7 @@ void gcode_M768() {
 		}
 
 		// All done with restore
+		free(linebfr);
 		card.closefile();
 		SERIAL_ECHOLNPGM("EEPROM restored");
 	}
