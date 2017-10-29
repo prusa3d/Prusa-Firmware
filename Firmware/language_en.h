@@ -101,6 +101,9 @@
 #define(length=20) MSG_CHANGING_FILAMENT	"Changing filament!"
 
 
+#define MSG_FILAMENT_NOTIFICATION_MODE_CONTINUOUS					"Fil Notif  [continuous]"
+#define MSG_FILAMENT_NOTIFICATION_MODE_SHORT					"Fil Notif  [short]"
+#define MSG_FILAMENT_NOTIFICATION_MODE_SILENT					"Fil Notif  [silent]"
 #define MSG_SILENT_MODE_ON					"Mode     [silent]"
 #define MSG_SILENT_MODE_OFF					"Mode [high power]" 
 #define MSG_AUTO_MODE_ON					"Mode [auto power]"

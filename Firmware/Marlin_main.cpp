@@ -5466,6 +5466,16 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lcd_wait_interact();
 		load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
+
+        uint8_t FilamentNotificationMode = eeprom_read_byte((uint8_t*) EEPROM_FILAMENT_NOTIFICATION);
+
+        if(FilamentNotificationMode == 1) {
+          SET_OUTPUT(BEEPER);
+          WRITE(BEEPER, HIGH);
+          delay(100);
+          WRITE(BEEPER, LOW);
+        }
+   
         while(!lcd_clicked()){
 
 		  cnt++;
@@ -5478,29 +5488,30 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 #endif // SNMM*/
 
-          if(cnt==0)
-          {
-          #if BEEPER > 0
-            if (counterBeep== 500){
-              counterBeep = 0;  
+          if(FilamentNotificationMode == 0) {
+            if(cnt==0)
+            {
+            #if BEEPER > 0
+              if (counterBeep== 500){
+                counterBeep = 0;  
+              }
+              SET_OUTPUT(BEEPER);
+              if (counterBeep== 0){
+                WRITE(BEEPER,HIGH);
+              }			
+              if (counterBeep== 20){
+                WRITE(BEEPER,LOW);
+              }
+              counterBeep++;
+            #else
+  			   #if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
+                lcd_buzz(1000/6,100);
+  			   #else
+  			     lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS,LCD_FEEDBACK_FREQUENCY_HZ);
+  			   #endif
+            #endif
             }
-            SET_OUTPUT(BEEPER);
-            if (counterBeep== 0){
-              WRITE(BEEPER,HIGH);
-            }			
-            if (counterBeep== 20){
-              WRITE(BEEPER,LOW);
-            }
-            counterBeep++;
-          #else
-			   #if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
-              lcd_buzz(1000/6,100);
-			   #else
-			     lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS,LCD_FEEDBACK_FREQUENCY_HZ);
-			   #endif
-          #endif
           }
-
         }
 		KEEPALIVE_STATE(IN_HANDLER);
 		WRITE(BEEPER, LOW);

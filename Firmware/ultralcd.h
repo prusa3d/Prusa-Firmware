@@ -95,6 +95,7 @@
   extern int farm_timer;
   extern int farm_status;
   extern int8_t SilentModeMenu;
+  extern int8_t FilamentNotificationModeMenu;
 
 #ifdef SNMM
   extern uint8_t snmm_extruder;

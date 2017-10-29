@@ -96,6 +96,8 @@ int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = 0;
 
+int8_t FilamentNotificationModeMenu = 0;
+
 #ifdef SNMM
 uint8_t snmm_extruder = 0;
 #endif
@@ -3058,6 +3060,18 @@ static void lcd_silent_mode_set() {
   lcd_goto_menu(lcd_settings_menu, 7);
 }
 
+static void lcd_filament_notification_mode_set() {
+  switch (FilamentNotificationModeMenu) {
+  case 0: FilamentNotificationModeMenu = 1; break;
+  case 1: FilamentNotificationModeMenu = 2; break;
+  case 2: FilamentNotificationModeMenu = 0; break;
+  default: FilamentNotificationModeMenu = 0; break;
+  }
+  eeprom_update_byte((unsigned char *)EEPROM_FILAMENT_NOTIFICATION, FilamentNotificationModeMenu);
+  digipot_init();
+  lcd_goto_menu(lcd_settings_menu, 7);
+}
+
 static void lcd_silent_mode_set_tune() {
   switch (SilentModeMenu) {
   case 0: SilentModeMenu = 1; break;
@@ -3459,6 +3473,8 @@ void lcd_wizard(int state) {
 static void lcd_settings_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
+  EEPROM_read(EEPROM_FILAMENT_NOTIFICATION, (uint8_t*)&FilamentNotificationModeMenu, sizeof(FilamentNotificationModeMenu));
+  
   START_MENU();
 
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
@@ -3479,8 +3495,17 @@ static void lcd_settings_menu()
 	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
 	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
 	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
-	  }	  
+	  }
+
+    switch (FilamentNotificationModeMenu) {
+      case 0: MENU_ITEM(function, MSG_FILAMENT_NOTIFICATION_MODE_CONTINUOUS, lcd_filament_notification_mode_set); break;
+      case 1: MENU_ITEM(function, MSG_FILAMENT_NOTIFICATION_MODE_SHORT, lcd_filament_notification_mode_set); break;
+      case 2: MENU_ITEM(function, MSG_FILAMENT_NOTIFICATION_MODE_SILENT, lcd_filament_notification_mode_set); break;
+      default: MENU_ITEM(function, MSG_FILAMENT_NOTIFICATION_MODE_CONTINUOUS, lcd_filament_notification_mode_set); break;
+    }
   }
+
+  
   
 	if (!isPrintPaused && !homing_flag)
 	{
