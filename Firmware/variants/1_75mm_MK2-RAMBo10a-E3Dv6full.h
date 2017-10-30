@@ -405,4 +405,8 @@ THERMISTORS SETTINGS
 
 #define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
 
+#ifdef SNMM
+#define SUPPORT_VERBOSITY
+#endif
+
 #endif //__CONFIGURATION_PRUSA_H
