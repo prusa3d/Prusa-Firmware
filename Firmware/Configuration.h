@@ -9,7 +9,7 @@
 
 // Firmware version
 #define FW_version "3.0.12-RC2"
-#define FW_build   105
+#define FW_build   106
 #define FW_version_build FW_version " b" STR(FW_build)
 
 
@@ -76,6 +76,28 @@
 #define EEPROM_FERROR_COUNT      (EEPROM_UVLO_MESH_BED_LEVELING-16)
 // Power loss errors
 #define EEPROM_POWER_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-17)
+
+//TMC2130 configuration
+#define EEPROM_TMC_AXIS_SIZE  //axis configuration block size
+#define EEPROM_TMC_X (EEPROM_TMC + 0 * EEPROM_TMC_AXIS_SIZE) //X axis configuration blok
+#define EEPROM_TMC_Y (EEPROM_TMC + 1 * EEPROM_TMC_AXIS_SIZE) //Y axis
+#define EEPROM_TMC_Z (EEPROM_TMC + 2 * EEPROM_TMC_AXIS_SIZE) //Z axis
+#define EEPROM_TMC_E (EEPROM_TMC + 3 * EEPROM_TMC_AXIS_SIZE) //E axis
+//TMC2130 - X axis
+#define EEPROM_TMC_X_USTEPS_INTPOL   (EEPROM_TMC_X +  0) // 1byte, bit 0..4 USTEPS, bit 7 INTPOL
+#define EEPROM_TMC_X_PWM_AMPL        (EEPROM_TMC_X +  1) // 1byte (0..255)
+#define EEPROM_TMC_X_PWM_GRAD_FREQ   (EEPROM_TMC_X +  2) // 1byte, bit 0..3 GRAD, bit 4..5 FREQ
+#define EEPROM_TMC_X_TCOOLTHRS       (EEPROM_TMC_X +  3) // 2bytes (0..)
+#define EEPROM_TMC_X_SG_THRS         (EEPROM_TMC_X +  5) // 1byte, (-64..+63)
+#define EEPROM_TMC_X_CURRENT_H       (EEPROM_TMC_X +  6) // 1byte, (0..63)
+#define EEPROM_TMC_X_CURRENT_R       (EEPROM_TMC_X +  7) // 1byte, (0..63)
+#define EEPROM_TMC_X_HOME_SG_THRS    (EEPROM_TMC_X +  8) // 1byte, (-64..+63)
+#define EEPROM_TMC_X_HOME_CURRENT_R  (EEPROM_TMC_X +  9) // 1byte, (-64..+63)
+#define EEPROM_TMC_X_HOME_DTCOOLTHRS (EEPROM_TMC_X + 10) // 1byte (-128..+127)
+#define EEPROM_TMC_X_DTCOOLTHRS_LOW  (EEPROM_TMC_X + 11) // 1byte (-128..+127)
+#define EEPROM_TMC_X_DTCOOLTHRS_HIGH (EEPROM_TMC_X + 12) // 1byte (-128..+127)
+#define EEPROM_TMC_X_SG_THRS_LOW     (EEPROM_TMC_X + 13) // 1byte, (-64..+63)
+#define EEPROM_TMC_X_SG_THRS_HIGH    (EEPROM_TMC_X + 14) // 1byte, (-64..+63)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
