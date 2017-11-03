@@ -4959,9 +4959,9 @@ void lcd_sdcard_menu()
   uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
 
   if (presort_flag == true) {
- 	  presort_flag = false;
+	  presort_flag = false;
 	  card.presort();	  
-   }
+  }
   if (lcdDrawUpdate == 0 && LCD_CLICKED == 0)
     //delay(100);
   return; // nothing to do (so don't thrash the SD card)
