@@ -67,7 +67,7 @@ const char MSG_AUTO_MODE_ON_EN[] PROGMEM = "Mode [auto power]";
 const char MSG_AUTO_MODE_ON_CZ[] PROGMEM = "Mod [automaticky]";
 const char MSG_AUTO_MODE_ON_IT[] PROGMEM = "Mode       [auto]";
 const char MSG_AUTO_MODE_ON_ES[] PROGMEM = "Modo       [auto]";
-const char MSG_AUTO_MODE_ON_PL[] PROGMEM = "Mod        [auto]";
+const char MSG_AUTO_MODE_ON_PL[] PROGMEM = "Tryb       [auto]";
 const char MSG_AUTO_MODE_ON_DE[] PROGMEM = "Mode [Auto]";
 const char * const MSG_AUTO_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_AUTO_MODE_ON_EN,
@@ -95,13 +95,15 @@ const char * const MSG_BABYSTEPPING_Y_LANG_TABLE[1] PROGMEM = {
 
 const char MSG_BABYSTEPPING_Z_EN[] PROGMEM = "Adjusting Z";
 const char MSG_BABYSTEPPING_Z_CZ[] PROGMEM = "Dostavovani Z";
-const char MSG_BABYSTEPPING_Z_PL[] PROGMEM = "Dostavovani Z";
+const char MSG_BABYSTEPPING_Z_IT[] PROGMEM = "Compensazione Z";
+const char MSG_BABYSTEPPING_Z_ES[] PROGMEM = "Ajustar Z";
+const char MSG_BABYSTEPPING_Z_PL[] PROGMEM = "Dostrojenie Z";
 const char MSG_BABYSTEPPING_Z_DE[] PROGMEM = "Z wurde eingestellt";
 const char * const MSG_BABYSTEPPING_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BABYSTEPPING_Z_EN,
 	MSG_BABYSTEPPING_Z_CZ,
-	MSG_BABYSTEPPING_Z_EN,
-	MSG_BABYSTEPPING_Z_EN,
+	MSG_BABYSTEPPING_Z_IT,
+	MSG_BABYSTEPPING_Z_ES,
 	MSG_BABYSTEPPING_Z_PL,
 	MSG_BABYSTEPPING_Z_DE
 };
@@ -2998,7 +3000,7 @@ const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode [high power]";
 const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod  [vys. vykon]";
 const char MSG_SILENT_MODE_OFF_IT[] PROGMEM = "Mode      [forte]";
 const char MSG_SILENT_MODE_OFF_ES[] PROGMEM = "Modo [rend.pleno]";
-const char MSG_SILENT_MODE_OFF_PL[] PROGMEM = "Mod [w wydajnosc]";
+const char MSG_SILENT_MODE_OFF_PL[] PROGMEM = "Tryb[w wydajnosc]";
 const char MSG_SILENT_MODE_OFF_DE[] PROGMEM = "Mode [Hohe Leist]";
 const char * const MSG_SILENT_MODE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_OFF_EN,
@@ -3013,7 +3015,7 @@ const char MSG_SILENT_MODE_ON_EN[] PROGMEM = "Mode     [silent]";
 const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod       [tichy]";
 const char MSG_SILENT_MODE_ON_IT[] PROGMEM = "Modo [silenzioso]";
 const char MSG_SILENT_MODE_ON_ES[] PROGMEM = "Modo   [silencio]";
-const char MSG_SILENT_MODE_ON_PL[] PROGMEM = "Mod       [cichy]";
+const char MSG_SILENT_MODE_ON_PL[] PROGMEM = "Tryb      [cichy]";
 const char MSG_SILENT_MODE_ON_DE[] PROGMEM = "Mode     [leise]";
 const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_EN,
