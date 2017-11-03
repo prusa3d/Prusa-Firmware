@@ -1952,7 +1952,7 @@ static float probe_pt(float x, float y, float z_before) {
 bool check_commands() {
 	  bool end_command_found = false;
 
-	  if (buflen)
+	  while (buflen)
 	  {
 		  if ((code_seen("M84")) || (code_seen("M 84"))) end_command_found = true;
 		  if (!cmdbuffer_front_already_processed)

@@ -5779,7 +5779,6 @@ static bool check_file(const char* filename) {
 		get_command();
 		result = check_commands();
 	}
-	cmdqueue_reset();
 	card.printingHasFinished();
 	strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
 	return result;
