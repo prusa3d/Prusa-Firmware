@@ -1779,7 +1779,15 @@ void process_commands()
 		else if (code_seen("PRN")) {
 		  MYSERIAL.println(status_number);
 
-		}else if (code_seen("fn")) {
+        }else if (code_seen("FAN")) {
+            MYSERIAL.print("E0:");
+            MYSERIAL.print(60*fan_speed[0]);
+            MYSERIAL.println(" RPM");
+            MYSERIAL.print("PRN0:");
+            MYSERIAL.print(60*fan_speed[1]);
+            MYSERIAL.println(" RPM");
+            
+        }else if (code_seen("fn")) {
 		  if (farm_mode) {
 			  MYSERIAL.println(farm_no);
 		  }
