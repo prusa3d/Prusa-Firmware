@@ -246,7 +246,7 @@ void CardReader::startFileprint()
   {
     sdprinting = true;
     #ifdef SDCARD_SORT_ALPHA
-	  flush_presort();
+	 // flush_presort();
     #endif
   }
 }
@@ -1047,7 +1047,7 @@ void CardReader::printingHasFinished()
       }
       autotempShutdown();
 	  #ifdef SDCARD_SORT_ALPHA
-		//presort();
+		//if(!check_file)	presort();
 	  #endif
     }
 }
