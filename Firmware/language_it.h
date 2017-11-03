@@ -132,7 +132,7 @@
 #define MSG_ERR_COLD_EXTRUDE_STOP           " cold extrusion prevented"
 #define MSG_BABYSTEPPING_X                  "Babystepping X"
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-#define MSG_BABYSTEPPING_Z                  "Adjusting Z"
+#define MSG_BABYSTEPPING_Z                  "Compensazione Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
 #define MSG_LANGUAGE_NAME		    "Italiano"
@@ -313,7 +313,7 @@
 #define MSG_WIZARD_Z_CAL					"Adesso avviero una Calibrazione Z."
 #define MSG_WIZARD_WILL_PREHEAT				"Adesso preriscaldero l'ugello per PLA."
 #define MSG_WIZARD_V2_CAL					"Adesso tarero lo stacco fra ugello e superfice del piatto."
-#define MSG_WIZARD_V2_CAL_2					"Adesso iniziero a stampare una linea e tu dovrai abbassare l'ugello gradualmente ruotando la manopola, sino a raggiungere una altezza ottimale. Per favore, dai uno sguardo alla immagine nel capitolo Calibrazione del nostro manuale."
+#define MSG_WIZARD_V2_CAL_2					"Adesso iniziero a stampare una linea e tu dovrai abbassare l'ugello poco per volta ruotando la manopola sino a raggiungere una altezza ottimale. Per favore dai uno sguardo all'immagine del nostro manuale, cap.Calibrazione."
 #define MSG_V2_CALIBRATION					"Cal. primo layer."
 #define MSG_WIZARD_DONE						"Ben fatto. Buona stampa!"
 #define MSG_WIZARD_LOAD_FILAMENT			"Per favore inserisci il filamento di PLA nell'estrusore, poi premi la manopola per caricare."
