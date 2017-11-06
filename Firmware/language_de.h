@@ -267,11 +267,14 @@
 +
 +#define MSG_BED_CORRECTION_MENU									"Bett level Korrekt"
 
-+ #define MSG_BED_CORRECTION_LEFT									"Links     [um]"
-+ #define MSG_BED_CORRECTION_RIGHT								"Rechts    [um]"
-+ #define MSG_BED_CORRECTION_FRONT								"Vorne     [um]"
-+ #define MSG_BED_CORRECTION_REAR									"Hinten    [um]"
-+ #define MSG_BED_CORRECTION_RESET								"Ruecksetzen"
+#define MSG_BED_CORRECTION_FRONT_LEFT        "Vo.Links  [um]"
+#define MSG_BED_CORRECTION_FRONT_CENTR       "Vo.Zentrum[um]"
+#define MSG_BED_CORRECTION_FRONT_RIGHT       "Vo.Rechts [um]"
+#define MSG_BED_CORRECTION_MID_RIGHT         "Mi.Rechts [um]"
+#define MSG_BED_CORRECTION_REAR_RIGHT        "Hi.Rechts [um]"
+#define MSG_BED_CORRECTION_REAR_CENTR        "Hi.Zentrum[um]"
+#define MSG_BED_CORRECTION_REAR_LEFT         "Hi.Links  [um]"
+#define MSG_BED_CORRECTION_MID_LEFT          "Mi.Links  [um]"
 +
 +#define MSG_MESH_BED_LEVELING									"Mesh Bett Leveling"
 + #define MSG_MENU_CALIBRATION									"Kalibrierung"

@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.1.0-RC2 F "
+#define FW_version "3.1.0-RC2HF "
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -52,12 +52,10 @@
 #define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
 
 // addition for hyperfine tuning
-/*
 #define EEPROM_BED_CORRECTION_FRONT_LEFT (EEPROM_WIZARD_ACTIVE - 1)
 #define EEPROM_BED_CORRECTION_FRONT_RIGHT (EEPROM_BED_CORRECTION_FRONT_LEFT - 1)
 #define EEPROM_BED_CORRECTION_REAR_RIGHT (EEPROM_BED_CORRECTION_FRONT_RIGHT - 1)
 #define EEPROM_BED_CORRECTION_REAR_LEFT (EEPROM_BED_CORRECTION_REAR_RIGHT - 1)
-*/
 
 // FILAMENT_RUNOUT_SENSOR
 
@@ -84,7 +82,7 @@
 //#define STRING_VERSION "1.0.2"
 
 #define STRING_VERSION_CONFIG_H __DATE__ " " __TIME__ // build date and time
-#define STRING_CONFIG_H_AUTHOR "(3d-gussner,1106V1)" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "(3d-gussner,1106v1)" // Who made the changes.
 
 // SERIAL_PORT selects which serial port should be used for communication with the host.
 // This allows the connection of wireless adapters (for instance) to non-default port pins.
