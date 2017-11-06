@@ -58,27 +58,6 @@ char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
   return buffer;
 }
 
-
-void CardReader::lsDive_pointer(const char *prepend, SdFile parent, const char * const match) {
-	dir_t p;
-
-	//parent.seekSet = 
-	// Read the next entry from a directory
-	//SERIAL_ECHOPGM("Cur pos before.: ");
-	//uint32_t pom = parent.curPosition();
-	//MYSERIAL.println(pom, 10);
-	parent.readDir(p, longFilename);
-	//SERIAL_ECHOPGM("Cur pos.: ");
-	//pom = parent.curPosition();
-	//MYSERIAL.println(pom, 10);
-
-	filenameIsDir = DIR_IS_SUBDIR(&p);
-
-	createFilename(filename, p);
-	creationDate = p.creationDate;
-	creationTime = p.creationTime;
-}
-
 /**
 * Dive into a folder and recurse depth-first to perform a pre-set operation lsAction:
 *   LS_Count       - Add +1 to nrFiles for every file within the parent
@@ -267,7 +246,7 @@ void CardReader::startFileprint()
   {
     sdprinting = true;
     #ifdef SDCARD_SORT_ALPHA
-	  flush_presort();
+	 // flush_presort();
     #endif
   }
 }
@@ -698,6 +677,9 @@ void CardReader::chdir(const char * relpath)
       workDirParents[0]=*parent;
     }
     workDir=newfile;
+    #ifdef SDCARD_SORT_ALPHA
+	  presort();
+    #endif
   }
 }
 
@@ -709,6 +691,9 @@ void CardReader::updir()
     workDir = workDirParents[0];
     for (uint8_t d = 0; d < workDirDepth; d++)
       workDirParents[d] = workDirParents[d+1];
+    #ifdef SDCARD_SORT_ALPHA
+	  presort();
+    #endif
   }
 }
 
@@ -849,6 +834,7 @@ void CardReader::presort() {
 		if (fileCnt > 1) {
 			// Init sort order.
 			for (uint16_t i = 0; i < fileCnt; i++) {
+				if (!IS_SD_INSERTED) return;
 				manage_heater();
 				sort_order[i] = i;
 
@@ -924,6 +910,8 @@ void CardReader::presort() {
 			#endif
 
 			for (uint16_t i = fileCnt; --i;) {
+				if (!IS_SD_INSERTED) return;
+
 				bool didSwap = false;
 				#if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
 				int8_t percent = (counter * 100) / total;//((counter * 100) / pow((fileCnt-1),2));
@@ -935,6 +923,7 @@ void CardReader::presort() {
 
 				//MYSERIAL.println(int(i));
 				for (uint16_t j = 0; j < i; ++j) {
+					if (!IS_SD_INSERTED) return;
 					manage_heater();
 					const uint16_t o1 = sort_order[j], o2 = sort_order[j + 1];					
 
@@ -1009,6 +998,7 @@ void CardReader::presort() {
 	  lcd_implementation_clear();
 	  lcd_update(2);
 	#endif
+	  lcd_update(2);
 	  KEEPALIVE_STATE(NOT_BUSY);
 	  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 }
@@ -1057,7 +1047,7 @@ void CardReader::printingHasFinished()
       }
       autotempShutdown();
 	  #ifdef SDCARD_SORT_ALPHA
-		//presort();
+		//if(!check_file)	presort();
 	  #endif
     }
 }

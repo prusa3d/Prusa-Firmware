@@ -295,7 +295,7 @@ extern bool is_usb_printing;
 extern bool homing_flag;
 extern bool temp_cal_active;
 // FILAMENT_RUNOUT_SENSOR
-extern bool fil_runout_active;
+extern uint8_t fil_runout_status;
 extern bool FIL_RUNOUT_INVERTING;
 extern bool ENDSTOPPULLUP_FIL_RUNOUT;
 // end FILAMENT_RUNOUT_SENSOR

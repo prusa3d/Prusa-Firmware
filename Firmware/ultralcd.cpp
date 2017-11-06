@@ -97,12 +97,9 @@ int8_t SDscrool = 0;
 int8_t SilentModeMenu = 0;
 
 // FILAMENT_RUNOUT_SENSOR
-#ifdef FILAMENT_RUNOUT_SENSOR
-static void lcd_fil_runout_settings_menu();
-static void lcd_fil_runout_active_set();
-static void lcd_fil_runout_inverting_set();
-static void lcd_endstoppullup_fil_runout_set();
-#endif
+/*#ifdef FILAMENT_RUNOUT_SENSOR
+static void lcd_fil_runout_status_set();
+#endif*/
 // end FILAMENT_RUNOUT_SENSOR
 #ifdef SNMM
 uint8_t snmm_extruder = 0;
@@ -1296,14 +1293,19 @@ void lcd_commands()
 			pid_tuning_finished = false;
 			custom_message_state = 0;
 			lcd_setstatuspgm(MSG_PID_FINISHED);
-			strcpy(cmd1, "M301 P");
-			strcat(cmd1, ftostr32(_Kp));
-			strcat(cmd1, " I");
-			strcat(cmd1, ftostr32(_Ki));
-			strcat(cmd1, " D");
-			strcat(cmd1, ftostr32(_Kd));
-			enquecommand(cmd1);
-			enquecommand_P(PSTR("M500"));
+			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
+				strcpy(cmd1, "M301 P");
+				strcat(cmd1, ftostr32(_Kp));
+				strcat(cmd1, " I");
+				strcat(cmd1, ftostr32(_Ki));
+				strcat(cmd1, " D");
+				strcat(cmd1, ftostr32(_Kd));
+				enquecommand(cmd1);
+				enquecommand_P(PSTR("M500"));
+			}
+			else {
+				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
+			}
 			display_time = millis();
 			lcd_commands_step = 1;
 		}
@@ -2512,8 +2514,11 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
 				while (lcd_clicked());
 				delay(10);
 				while (lcd_clicked());
-				KEEPALIVE_STATE(IN_HANDLER);
-				if(msg_next == NULL) return yes;
+				if (msg_next == NULL) {
+					KEEPALIVE_STATE(IN_HANDLER);
+					lcd_set_custom_characters();
+					return yes;
+				}
 				else break;
 			}
 		}
@@ -2653,7 +2658,7 @@ static void lcd_show_end_stops() {
     lcd.setCursor(0, 3);
     lcd_printPGM(((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) ? (PSTR("Z:1")) : (PSTR("Z:0")));
 	// FILAMENT_RUNOUT_SENSOR
-	if (fil_runout_active) {
+	if (fil_runout_status > 0) {
 		lcd.setCursor(4, 1);
 		lcd_printPGM(((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING) == 1) ? (PSTR("FRS:1")) : (PSTR("FRS:0")));		
 	}
@@ -3068,6 +3073,19 @@ static void lcd_silent_mode_set() {
   digipot_init();
   lcd_goto_menu(lcd_settings_menu, 7);
 }
+
+static void lcd_silent_mode_set_tune() {
+  switch (SilentModeMenu) {
+  case 0: SilentModeMenu = 1; break;
+  case 1: SilentModeMenu = 2; break;
+  case 2: SilentModeMenu = 0; break;
+  default: SilentModeMenu = 0; break;
+  }
+  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+  digipot_init();
+  lcd_goto_menu(lcd_tune_menu, 8);
+}
+
 static void lcd_set_lang(unsigned char lang) {
   lang_selected = lang;
   firstrun = 1;
@@ -3285,6 +3303,7 @@ void lcd_wizard() {
 		lcd_wizard(0);
 	}
 	else {
+		lcd_return_to_status();
 		lcd_update_enable(true);
 		lcd_update(2);
 	}
@@ -3453,18 +3472,10 @@ void lcd_wizard(int state) {
 	lcd_update(2);
 }
 // FILAMENT_RUNOUT_SENSOR
-void lcd_fil_runout_settings_menu()
+/*void lcd_fil_runout_settings_menu()
 {
 	START_MENU();
 		MENU_ITEM(back, MSG_SETTINGS, lcd_settings_menu);
-		// debug info
-		//lcd.setCursor(1, 5);
-		//lcd_printPGM((fil_runout_active == 1) ? (PSTR("S_ON ")) : (PSTR("S_OFF")));
-		//lcd.setCursor(7, 5);
-		//lcd_printPGM((FIL_RUNOUT_INVERTING == 0) ? (PSTR("I_ON ")) : (PSTR("I_OFF")));
-		//lcd.setCursor(13, 5);
-		//lcd_printPGM((ENDSTOPPULLUP_FIL_RUNOUT == 0) ? (PSTR("P_ON ")) : (PSTR("P_OFF")));
-		// end debug info		
 		if (fil_runout_active == false) {
 			MENU_ITEM(submenu, MSG_FIL_RUNOUT_ACTIVE_OFF, lcd_fil_runout_active_set);
 		} else {
@@ -3481,34 +3492,90 @@ void lcd_fil_runout_settings_menu()
 			}
 		}
 	END_MENU();
-}
+}*/
 
-void lcd_fil_runout_active_set() {
-	fil_runout_active = !fil_runout_active;
-	eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_ACTIVE, fil_runout_active);
+static void lcd_fil_runout_status_set() {
+int8_t fil_runout_status = 0;
+	switch (fil_runout_status) {
+	case 0:
+		fil_runout_status = 1;
+		FIL_RUNOUT_INVERTING = 1;
+		ENDSTOPPULLUP_FIL_RUNOUT = 1;
+		break;
+	case 1:
+		fil_runout_status = 2;
+		FIL_RUNOUT_INVERTING = 0;
+		ENDSTOPPULLUP_FIL_RUNOUT = 0;
+		break;
+	case 2:
+		fil_runout_status = 0;
+		FIL_RUNOUT_INVERTING = 1;
+		ENDSTOPPULLUP_FIL_RUNOUT = 1;
+		break;
+	default: fil_runout_status = 0; break;
+	}
+  eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_STATUS, fil_runout_status);
+/* if (fil_runout_status == 1) {
+	FIL_RUNOUT_INVERTING = 0;
+	ENDSTOPPULLUP_FIL_RUNOUT = 1;
+  else
+	FIL_RUNOUT_INVERTING = 1;
+	ENDSTOPPULLUP_FIL_RUNOUT = 0;
+ }*/
+  digipot_init();
+  lcd_goto_menu(lcd_settings_menu, 9);
+}
+	/*fil_runout_active = !fil_runout_active;
+	eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_STATUS, fil_runout_status);
 	digipot_init();
 	lcd_goto_menu(lcd_fil_runout_settings_menu, 1);
-	}
+	}*/
 
-	void lcd_fil_runout_active_tune() {
-	fil_runout_active = !fil_runout_active;
-	eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_ACTIVE, fil_runout_active);
-	digipot_init();
-	lcd_goto_menu(lcd_tune_menu, 9);
+static void lcd_fil_runout_status_tune() {
+	switch (fil_runout_status) {
+	case 0:
+		fil_runout_status = 1;
+		FIL_RUNOUT_INVERTING = 1;
+		ENDSTOPPULLUP_FIL_RUNOUT = 1;
+		break;
+	case 1:
+		fil_runout_status = 2;
+		FIL_RUNOUT_INVERTING = 0;
+		ENDSTOPPULLUP_FIL_RUNOUT = 0;
+		break;
+	case 2:
+		fil_runout_status = 0;
+		FIL_RUNOUT_INVERTING = 1;
+		ENDSTOPPULLUP_FIL_RUNOUT = 1;
+		break;
+	default: fil_runout_status = 0; break;
 	}
+  eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_STATUS, fil_runout_status);
+  digipot_init();
+  lcd_goto_menu(lcd_tune_menu, 9);
+}
+
+
+
+	//void lcd_fil_runout_status_tune() {
+	//fil_runout_status = !fil_runout_status;
+	//eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_STATUS, fil_runout_status);
+	//digipot_init();
+	//lcd_goto_menu(lcd_tune_menu, 9);
+	//}
 	
-void lcd_fil_runout_inverting_set() {
-	FIL_RUNOUT_INVERTING = !FIL_RUNOUT_INVERTING;
-	eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_INVERTING, FIL_RUNOUT_INVERTING);
-	digipot_init();
-	lcd_goto_menu(lcd_fil_runout_settings_menu, 2);
-	}
-  void lcd_endstoppullup_fil_runout_set() {
-      ENDSTOPPULLUP_FIL_RUNOUT = !ENDSTOPPULLUP_FIL_RUNOUT;
-      eeprom_update_byte((unsigned char *)EEPROM_ENDSTOPPULLUP_FIL_RUNOUT, ENDSTOPPULLUP_FIL_RUNOUT);
-      digipot_init();
-      lcd_goto_menu(lcd_fil_runout_settings_menu, 3);
-  }
+//void lcd_fil_runout_inverting_set() {
+	//FIL_RUNOUT_INVERTING = !FIL_RUNOUT_INVERTING;
+	//eeprom_update_byte((unsigned char *)EEPROM_FIL_RUNOUT_INVERTING, FIL_RUNOUT_INVERTING);
+	//digipot_init();
+	//lcd_goto_menu(lcd_fil_runout_settings_menu, 2);
+	//}
+  //void lcd_endstoppullup_fil_runout_set() {
+      //ENDSTOPPULLUP_FIL_RUNOUT = !ENDSTOPPULLUP_FIL_RUNOUT;
+      //eeprom_update_byte((unsigned char *)EEPROM_ENDSTOPPULLUP_FIL_RUNOUT, ENDSTOPPULLUP_FIL_RUNOUT);
+      //digipot_init();
+      //lcd_goto_menu(lcd_fil_runout_settings_menu, 3);
+  //}
 
 // end FILAMENT_RUNOUT_SENSOR
 
@@ -3568,7 +3635,12 @@ static void lcd_settings_menu()
     }
 // FILAMENT_RUNOUT_SENSOR
 #ifdef FIL_RUNOUT_PIN
-	MENU_ITEM(submenu, MSG_FIL_RUNOUT_SETTINGS, lcd_fil_runout_settings_menu);
+	  switch (fil_runout_status) {
+	  case 0: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_OFF, lcd_fil_runout_status_set); break;
+	  case 1: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_VCC, lcd_fil_runout_status_set); break;
+	  case 2: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_GND, lcd_fil_runout_status_set); break;
+	  default: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_OFF, lcd_fil_runout_status_set); break;
+	  }	  
 #endif
 // end FILAMENT_RUNOUT_SENSOR 
   END_MENU();
@@ -4822,17 +4894,6 @@ static void lcd_autostart_sd()
 }
 
 
-static void lcd_silent_mode_set_tune() {
-  switch (SilentModeMenu) {
-  case 0: SilentModeMenu = 1; break;
-  case 1: SilentModeMenu = 2; break;
-  case 2: SilentModeMenu = 0; break;
-  default: SilentModeMenu = 0; break;
-  }
-  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
-  digipot_init();
-  lcd_goto_menu(lcd_tune_menu, 9);
-}
 #endif
 
 static void lcd_colorprint_change() {
@@ -4864,22 +4925,25 @@ static void lcd_tune_menu()
 #ifdef FILAMENTCHANGEENABLE
   MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
-  
-  if (!farm_mode) { //dont show in menu if we are in farm mode
+
+  if (!farm_mode) { //dont show in menu if we are in farm mode //8
 	  switch (SilentModeMenu) {
-	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
-	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
-	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
-	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune); break;
+	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set_tune); break;
+	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set_tune); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune); break;
 	  }
   }
 
 // FILAMENT_RUNOUT_SENSOR
 #ifdef FILAMENT_RUNOUT_SUPPORT //9
-	if (fil_runout_active == false) {
-		MENU_ITEM(function, MSG_FIL_RUNOUT_ACTIVE_OFF, lcd_fil_runout_active_tune);
-	} else {
-		MENU_ITEM(function, MSG_FIL_RUNOUT_ACTIVE_ON, lcd_fil_runout_active_tune);
+	if (fil_runout_status > 0) {
+		switch (fil_runout_status) {
+		case 0: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_OFF, lcd_fil_runout_status_tune); break;
+		case 1: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_VCC, lcd_fil_runout_status_tune); break;
+		case 2: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_GND, lcd_fil_runout_status_tune); break;
+		default: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_OFF, lcd_fil_runout_status_tune); break;
+		}
 	}
 #endif
 // end FILAMENT_RUNOUT_SENSOR
@@ -5861,7 +5925,6 @@ static bool check_file(const char* filename) {
 		get_command();
 		result = check_commands();
 	}
-	cmdqueue_reset();
 	card.printingHasFinished();
 	strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
 	return result;

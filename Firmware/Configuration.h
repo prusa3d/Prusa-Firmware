@@ -5,7 +5,7 @@
 #include "Configuration_prusa.h"
 
 // Firmware version
-#define FW_version "3.1.0-RC1"
+#define FW_version "3.1.0-RC2"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
@@ -57,17 +57,11 @@
 #define EEPROM_BED_CORRECTION_FRONT_RIGHT (EEPROM_BED_CORRECTION_FRONT_LEFT - 1)
 #define EEPROM_BED_CORRECTION_REAR_RIGHT (EEPROM_BED_CORRECTION_FRONT_RIGHT - 1)
 #define EEPROM_BED_CORRECTION_REAR_LEFT (EEPROM_BED_CORRECTION_REAR_RIGHT - 1)
-
+*/
 
 // FILAMENT_RUNOUT_SENSOR
-#define EEPROM_FIL_RUNOUT_ACTIVE (EEPROM_BED_CORRECTION_REAR_LEFT - 1) //0 - filament runout sensor disabled; 1 - .. activated
-*/
-#define EEPROM_FIL_RUNOUT_ACTIVE (EEPROM_WIZARD_ACTIVE - 1) //0 - filament runout sensor disabled; 1 - .. activated
-//
-#define EEPROM_FIL_RUNOUT_INVERTING (EEPROM_FIL_RUNOUT_ACTIVE - 1) //0 - filament runout sensor inverted; 1 - .. normal
-#define EEPROM_ENDSTOPPULLUP_FIL_RUNOUT (EEPROM_FIL_RUNOUT_INVERTING - 1) //0 - filament runout sensor pullup; 0 - .. normal
-// end FILAMENT_RUNOUT_SENSOR
 
+#define EEPROM_FIL_RUNOUT_STATUS (EEPROM_WIZARD_ACTIVE - 1) //0 - filament runout sensor disabled; 1 -  FRS type Signal to VCC; FRS type Signal to GND
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
 #define EEPROM_FIRMWARE_VERSION_END       (FW_PRUSA3D_MAGIC_LEN+8)
@@ -90,7 +84,7 @@
 //#define STRING_VERSION "1.0.2"
 
 #define STRING_VERSION_CONFIG_H __DATE__ " " __TIME__ // build date and time
-#define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "(3d-gussner,1106V1)" // Who made the changes.
 
 // SERIAL_PORT selects which serial port should be used for communication with the host.
 // This allows the connection of wireless adapters (for instance) to non-default port pins.
