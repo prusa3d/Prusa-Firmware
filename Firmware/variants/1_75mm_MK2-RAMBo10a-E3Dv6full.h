@@ -168,12 +168,12 @@ ADDITIONAL FEATURES SETTINGS
 *------------------------------------*/
 
 // Define Prusa filament runout sensor
-//#define FILAMENT_RUNOUT_SUPPORT
-
+#define FILAMENT_RUNOUT_SUPPORT
 #ifdef FILAMENT_RUNOUT_SUPPORT
 #define FILAMENT_RUNOUT_SENSOR 1
 #define FILAMENT_RUNOUT_SCRIPT "M600"
 #endif
+// end Define Prusa filament runout sensor
 
 // temperature runaway
 #define TEMP_RUNAWAY_BED_HYSTERESIS 5

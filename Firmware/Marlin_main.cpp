@@ -257,6 +257,13 @@ bool homing_flag = false;
 
 bool temp_cal_active = false;
 
+// FILAMENT_RUNOUT_SENSOR
+bool FIL_RUNOUT_INVERTING = false;
+uint8_t fil_runout_status = 0;
+bool fil_funout_inv = false;
+bool ENDSTOPPULLUP_FIL_RUNOUT = false;
+// end FILAMENT_RUNOUT_SENSOR
+
 unsigned long kicktime = millis()+100000;
 
 unsigned int  usb_printing_counter;
@@ -1270,6 +1277,13 @@ void setup()
   }  
   
 #endif //DEBUG_DISABLE_STARTMSGS
+
+// FILAMENT_RUNOUT_SENSOR
+#ifdef FILAMENT_RUNOUT_SENSOR
+  fil_runout_status = eeprom_read_byte((uint8_t*)EEPROM_FIL_RUNOUT_STATUS);
+#endif
+// end FILAMENT_RUNOUT_SENSOR
+
   lcd_update_enable(true);
 
   // Store the currently running firmware into an eeprom,
@@ -2307,8 +2321,13 @@ bool gcode_M45(bool onlyZ) {
 
 void process_commands()
 {
-  #ifdef FILAMENT_RUNOUT_SUPPORT
-    SET_INPUT(FR_SENS);
+  #ifdef FILAMENT_RUNOUT_SENSOR
+    SET_INPUT(FIL_RUNOUT_PIN);
+	if (ENDSTOPPULLUP_FIL_RUNOUT) {
+	  pinMode(FIL_RUNOUT_PIN, INPUT_PULLUP);
+	} else {
+      pinMode(FIL_RUNOUT_PIN, INPUT);
+	}
   #endif
 
 #ifdef CMDBUFFER_DEBUG
@@ -2458,11 +2477,10 @@ void process_commands()
     case 1: // G1
       if(Stopped == false) {
 
-        #ifdef FILAMENT_RUNOUT_SUPPORT
-            
-            if(READ(FR_SENS)){
+        #ifdef FILAMENT_RUNOUT_SENSOR
+          if(((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING) == 0) && fil_runout_status) {
+			//enqueue_and_echo_commands_P(PSTR(FILAMENT_RUNOUT_SCRIPT));
 			enquecommand_front_P((PSTR(FILAMENT_RUNOUT_SCRIPT)));
-
 /*                        feedmultiplyBckp=feedmultiply;
                         float target[4];
                         float lastpos[4];
@@ -4748,7 +4766,27 @@ Sigma_Exit:
         }
         SERIAL_PROTOCOLLN("");
       #endif
-      break;
+// FILAMENT_RUNOUT_SENSOR
+//	#if fil_runout_status && defined(FIL_RUNOUT_PIN) && FIL_RUNOUT_PIN > -1
+  #if defined(FIL_RUNOUT_PIN) && FIL_RUNOUT_PIN > -1
+    if (fil_runout_status == 1) {
+          SERIAL_PROTOCOLRPGM(MSG_FIL_RUNOUT_STATUS_VCC);
+	}
+	else if (fil_runout_status == 2) {
+		SERIAL_PROTOCOLRPGM(MSG_FIL_RUNOUT_STATUS_GND);
+	}
+	if (fil_runout_status > 0) {
+	if(READ(FIL_RUNOUT_PIN)^FIL_RUNOUT_INVERTING){
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
+        }else{
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
+        }
+		SERIAL_PROTOCOLLN("");
+    }
+	#endif
+// end FILAMENT_RUNOUT_SENSOR
+
+     break;
       //TODO: update for all axis, use for loop
     #ifdef BLINKM
     case 150: // M150

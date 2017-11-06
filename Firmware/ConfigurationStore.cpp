@@ -262,8 +262,17 @@ void Config_PrintSettings()
 #endif
 #endif
     } else {
-        SERIAL_ECHOLNPGM("Filament settings: Disabled");
+        SERIAL_ECHOLNPGM("Filament volumetric settings: Disabled");
     }
+#endif
+#ifdef FIL_RUNOUT_SENSOR
+	if (fil_runout_status == 1) {
+		SERIAL_ECHOLNPGM(MSG_FIL_RUNOUT_STATUS_VCC);
+	} else 
+		if (if_runout_status == 2) {
+			SERIAL_ECHOLNPGM(MSG_FIL_RUNOUT_STATUS_GND);
+		} else
+			SERIAL_ECHOLNPGM(MSG_FIL_RUNOUT_STATUS_OFF);
 #endif
 }
 #endif
