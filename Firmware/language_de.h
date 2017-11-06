@@ -92,6 +92,7 @@
 
 #define MSG_SILENT_MODE_ON					"Mode     [leise]"
 #define MSG_SILENT_MODE_OFF					"Mode [Hohe Leist]"
+#define MSG_AUTO_MODE_ON					"Mode [Auto]"
 #define(length = 20) MSG_REBOOT				"Zum Uebernehmen "
 #define(length = 22) MSG_TAKE_EFFECT			"Drucker neu starten"
 
@@ -210,7 +211,6 @@
 #define(length = 60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Messen der Referenzhoehe des Kalibrierpunktes"
 #define(length = 14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" von 9"
 
->>>>>>> Add optional 8-point Mesh Bed Correction offsets + LCD and translations support
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteration "
 
 #define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ-Kalibrierung fehlgeschlagen. Bed-Kalibrierpunkt nicht gefunden."
@@ -347,11 +347,11 @@
 #define MSG_WIZARD_SELFTEST					"Zunaechst fuehre ich den Selbsttest durch um die haeufigsten Probleme bei der Aufbau zu ueberpruefen."
 #define MSG_WIZARD_CALIBRATION_FAILED		"Bitte ueberpruefen Sie unser Handbuch und beheben Sie das Problem. Fahren Sie dann mit dem Assistenten fort, indem Sie den Drucker neu starten."
 #define MSG_WIZARD_XYZ_CAL					"Ich werde jetzt die XYZ-Kalibrierung durchfuehren. Es wird ca. 12 Minuten dauern"
-#define MSG_WIZARD_FILAMENT_LOADED			"Ist Filament geladen?"
+#define MSG_WIZARD_FILAMENT_LOADED			"Ist das Filament geladen?"
 #define MSG_WIZARD_Z_CAL					"Ich werde jetzt die Z Kalibrierung durchfuehren."
 #define MSG_WIZARD_WILL_PREHEAT				"Jetzt werde ich die Duese fuer PLA vorheizen. "
 #define MSG_WIZARD_V2_CAL					"Jetzt werde ich den Abstand zwischen Duesenspitze und Druckbett kalibrieren."
-#define MSG_WIZARD_V2_CAL_2					"Ich werde jetzt erste Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Ueberpruefen Sie die Bilder in unserem Handbuch im Kapitel Kalibrierung."
+#define MSG_WIZARD_V2_CAL_2					"Ich werde jetzt erste Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Ueberpruefen Sie die Bilder in unserem Handbuch im Kapitel Kalibrierung"
 #define MSG_V2_CALIBRATION					"Erste-Schicht Kal"
 #define MSG_WIZARD_DONE						"Alles wurde getan. Viel Spass beim Drucken!"
 #define MSG_WIZARD_LOAD_FILAMENT			"Fuehren Sie bitte PLA Filament in den Extruder und bestaetigen Sie den Knopf um es zu laden."

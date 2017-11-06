@@ -68,13 +68,14 @@ const char MSG_AUTO_MODE_ON_CZ[] PROGMEM = "Mod [automaticky]";
 const char MSG_AUTO_MODE_ON_IT[] PROGMEM = "Mode       [auto]";
 const char MSG_AUTO_MODE_ON_ES[] PROGMEM = "Modo       [auto]";
 const char MSG_AUTO_MODE_ON_PL[] PROGMEM = "Mod        [auto]";
+const char MSG_AUTO_MODE_ON_DE[] PROGMEM = "Mode [Auto]";
 const char * const MSG_AUTO_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_AUTO_MODE_ON_EN,
 	MSG_AUTO_MODE_ON_CZ,
 	MSG_AUTO_MODE_ON_IT,
 	MSG_AUTO_MODE_ON_ES,
 	MSG_AUTO_MODE_ON_PL,
-	MSG_AUTO_MODE_ON_EN
+	MSG_AUTO_MODE_ON_DE
 };
 
 const char MSG_A_RETRACT_EN[] PROGMEM = "A-retract";
@@ -3731,7 +3732,7 @@ const char MSG_WIZARD_FILAMENT_LOADED_CZ[] PROGMEM = "Je filament zaveden?";
 const char MSG_WIZARD_FILAMENT_LOADED_IT[] PROGMEM = "Il filamento e stato caricato?";
 const char MSG_WIZARD_FILAMENT_LOADED_ES[] PROGMEM = "Esta el filamento cargado?";
 const char MSG_WIZARD_FILAMENT_LOADED_PL[] PROGMEM = "Filament jest zaladowany?";
-const char MSG_WIZARD_FILAMENT_LOADED_DE[] PROGMEM = "Ist Filament geladen?";
+const char MSG_WIZARD_FILAMENT_LOADED_DE[] PROGMEM = "Ist das Filament geladen?";
 const char * const MSG_WIZARD_FILAMENT_LOADED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_FILAMENT_LOADED_EN,
 	MSG_WIZARD_FILAMENT_LOADED_CZ,
@@ -3881,7 +3882,7 @@ const char MSG_WIZARD_V2_CAL_2_CZ[] PROGMEM = "Zacnu tisknout linku a Vy budete 
 const char MSG_WIZARD_V2_CAL_2_IT[] PROGMEM = "Adesso iniziero a stampare una linea e tu dovrai abbassare l'ugello gradualmente ruotando la manopola, sino a raggiungere una altezza ottimale. Per favore, dai uno sguardo alla immagine nel capitolo Calibrazione del nostro manuale.";
 const char MSG_WIZARD_V2_CAL_2_ES[] PROGMEM = "Voy a comenzar a imprimir la linea y tu bajaras el nozzle gradualmente al rotar el mando, hasta que llegues a la altura optima. Mira las imagenes del capitulo Calibracion en el manual.";
 const char MSG_WIZARD_V2_CAL_2_PL[] PROGMEM = "Zaczne drukowac linie. Stopniowo opuszczaj dysze przekrecajac guzik, poki nie uzyskasz optymalnej wysokosci. Sprawdz obrazki w naszym poradniku w rozdz. Kalibracja";
-const char MSG_WIZARD_V2_CAL_2_DE[] PROGMEM = "Ich werde jetzt erste Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Ueberpruefen Sie die Bilder in unserem Handbuch im Kapitel Kalibrierung.";
+const char MSG_WIZARD_V2_CAL_2_DE[] PROGMEM = "Ich werde jetzt erste Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Ueberpruefen Sie die Bilder in unserem Handbuch im Kapitel Kalibrierung";
 const char * const MSG_WIZARD_V2_CAL_2_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_V2_CAL_2_EN,
 	MSG_WIZARD_V2_CAL_2_CZ,
