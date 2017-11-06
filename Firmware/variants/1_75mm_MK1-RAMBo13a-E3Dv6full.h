@@ -150,8 +150,8 @@ CHANGE FILAMENT SETTINGS
 // Filament change configuration
 #define FILAMENTCHANGEENABLE
 #ifdef FILAMENTCHANGEENABLE
-#define FILAMENTCHANGE_XPOS 211
-#define FILAMENTCHANGE_YPOS 0
+#define FILAMENTCHANGE_XPOS 0
+#define FILAMENTCHANGE_YPOS -2.2
 #define FILAMENTCHANGE_ZADD 2
 #define FILAMENTCHANGE_FIRSTRETRACT -2
 #define FILAMENTCHANGE_FINALRETRACT -80
@@ -173,7 +173,9 @@ ADDITIONAL FEATURES SETTINGS
 *------------------------------------*/
 
 // Define Prusa filament runout sensor
-//#define FILAMENT_RUNOUT_SUPPORT
+#define FILAMENT_RUNOUT_SUPPORT
+// end Define Prusa filament runout sensor
+
 
 #ifdef FILAMENT_RUNOUT_SUPPORT
 #define FILAMENT_RUNOUT_SENSOR 1

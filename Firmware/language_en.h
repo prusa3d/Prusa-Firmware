@@ -234,7 +234,7 @@
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR	"XYZ calibration compromised. Right front calibration point not reachable."
 #define(length=20,lines=8) MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR		"XYZ calibration compromised. Front calibration points not reachable."
 
-#define(length=20,lines=4) MSG_BED_LEVELING_FAILED_POINT_LOW						"Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
+#define(length=20,lines=5) MSG_BED_LEVELING_FAILED_POINT_LOW						"Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 #define(length=20,lines=4) MSG_BED_LEVELING_FAILED_POINT_HIGH						"Bed leveling failed. Sensor triggered too high. Waiting for reset."
 #define(length=20,lines=4) MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED				"Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
 
@@ -263,7 +263,7 @@
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
 #define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
 #define(lenght=18, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
-#define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
+#define(length=20, lines=10) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
 #define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_LEFT        "FrontLeft [um]"
@@ -334,7 +334,7 @@
 #define(length=20, lines=4) MSG_WIZARD_WILL_PREHEAT				"Now I will preheat nozzle for PLA."
 #define(length=20, lines=3) MSG_WIZARD_HEATING					"Preheating nozzle. Please wait."
 #define(lenght=20, lines=8) MSG_WIZARD_V2_CAL					"Now I will calibrate distance between tip of the nozzle and heatbed surface."
-#define(lenght=20, lines=12) MSG_WIZARD_V2_CAL_2				"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
+#define(lenght=20, lines=13) MSG_WIZARD_V2_CAL_2				"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
 #define(lenght=17, lines=1) MSG_V2_CALIBRATION					"First layer cal."
 #define(lenght=20, lines=8) MSG_WIZARD_DONE						"All is done. Happy printing!"
 #define(lenght=20, lines=8) MSG_WIZARD_LOAD_FILAMENT			"Please insert PLA filament to the extruder, then press knob to load it."
@@ -346,3 +346,6 @@
 #define(lenght=20, lines=2) MSG_PLA_FILAMENT_LOADED				"Is PLA filament loaded?"
 #define(lenght=20, lines=4) MSG_PLEASE_LOAD_PLA					"Please load PLA filament first."
 #define(length=20, lines=8) MSG_FILE_CNT						"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
+#define(length=20) MSG_FIL_RUNOUT_STATUS_OFF					"Fil.RS      [OFF]"
+#define(length=20) MSG_FIL_RUNOUT_STATUS_VCC					"Fil.RS [S to VCC]"
+#define(length=20) MSG_FIL_RUNOUT_STATUS_GND					"Fil.RS [S to GND]"
