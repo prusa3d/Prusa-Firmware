@@ -20,13 +20,17 @@ before_install:
 install:
   - wget http://downloads.arduino.cc/arduino-1.8.5-linux64.tar.xz
   - tar xf arduino-1.8.5-linux64.tar.xz
+  - export PATH=$PWD/arduino-1.8.5:$PATH
+  - arduino --pref "boardsmanager.additional.urls=https://raw.githubusercontent.com/ultimachine/ArduinoAddons/master/package_ultimachine_index.json" --save-prefs
+  - arduino --install-boards rambo:avr
+  - arduino --pref "compiler.warning_level=all" --save-prefs
 
 script:
   - GIT_BUILD=$(git rev-parse --short HEAD)
   - VARIANTS=$(ls Firmware/variants/)
   - for VARIANT in $VARIANTS; do
       cp Firmware/variants/${VARIANT} Firmware/Configuration_prusa.h ;
-      arduino-1.8.5/arduino --pref build.path=. --verify --verbose-build --board arduino:avr:mega:cpu=atmega2560 $PWD/Firmware/Firmware.ino ;
+      arduino --pref build.path=. --verify --verbose-build --board rambo:avr:rambo $PWD/Firmware/Firmware.ino ;
       mv Firmware.ino.hex "${VARIANT}"ex ;
     done
   - mkdir -p prusa3d_fw_${GIT_BUILD}/MK1-175mm prusa3d_fw_${GIT_BUILD}/MK2-MultiMaterial prusa3d_fw_${GIT_BUILD}/MK2
