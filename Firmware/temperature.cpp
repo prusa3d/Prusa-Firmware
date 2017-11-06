@@ -251,7 +251,6 @@ static int temp_runaway_error_counter[4];
 
 
  for(;;) {
-
     if(temp_meas_ready == true) { // temp sample ready
       updateTemperaturesFromRawValues();
 
