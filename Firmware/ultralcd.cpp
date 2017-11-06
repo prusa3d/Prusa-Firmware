@@ -1320,14 +1320,19 @@ void lcd_commands()
 			pid_tuning_finished = false;
 			custom_message_state = 0;
 			lcd_setstatuspgm(MSG_PID_FINISHED);
-			strcpy(cmd1, "M301 P");
-			strcat(cmd1, ftostr32(_Kp));
-			strcat(cmd1, " I");
-			strcat(cmd1, ftostr32(_Ki));
-			strcat(cmd1, " D");
-			strcat(cmd1, ftostr32(_Kd));
-			enquecommand(cmd1);
-			enquecommand_P(PSTR("M500"));
+			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
+				strcpy(cmd1, "M301 P");
+				strcat(cmd1, ftostr32(_Kp));
+				strcat(cmd1, " I");
+				strcat(cmd1, ftostr32(_Ki));
+				strcat(cmd1, " D");
+				strcat(cmd1, ftostr32(_Kd));
+				enquecommand(cmd1);
+				enquecommand_P(PSTR("M500"));
+			}
+			else {
+				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
+			}
 			display_time = millis();
 			lcd_commands_step = 1;
 		}
@@ -5898,7 +5903,6 @@ static bool check_file(const char* filename) {
 		get_command();
 		result = check_commands();
 	}
-	cmdqueue_reset();
 	card.printingHasFinished();
 	strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
 	return result;

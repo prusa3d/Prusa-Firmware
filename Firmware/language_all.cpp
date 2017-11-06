@@ -67,7 +67,7 @@ const char MSG_AUTO_MODE_ON_EN[] PROGMEM = "Mode [auto power]";
 const char MSG_AUTO_MODE_ON_CZ[] PROGMEM = "Mod [automaticky]";
 const char MSG_AUTO_MODE_ON_IT[] PROGMEM = "Mode       [auto]";
 const char MSG_AUTO_MODE_ON_ES[] PROGMEM = "Modo       [auto]";
-const char MSG_AUTO_MODE_ON_PL[] PROGMEM = "Mod        [auto]";
+const char MSG_AUTO_MODE_ON_PL[] PROGMEM = "Tryb       [auto]";
 const char MSG_AUTO_MODE_ON_DE[] PROGMEM = "Mode [Auto]";
 const char * const MSG_AUTO_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_AUTO_MODE_ON_EN,
@@ -2638,7 +2638,7 @@ const char MSG_SELFTEST_CHECK_BED_CZ[] PROGMEM = "Kontrola bed     ";
 const char MSG_SELFTEST_CHECK_BED_IT[] PROGMEM = "Verifica letto";
 const char MSG_SELFTEST_CHECK_BED_ES[] PROGMEM = "Control de cama";
 const char MSG_SELFTEST_CHECK_BED_PL[] PROGMEM = "Kontrola bed     ";
-const char MSG_SELFTEST_CHECK_BED_DE[] PROGMEM = "Pruefe Bed        ";
+const char MSG_SELFTEST_CHECK_BED_DE[] PROGMEM = "Pruefe Bett       ";
 const char * const MSG_SELFTEST_CHECK_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_BED_EN,
 	MSG_SELFTEST_CHECK_BED_CZ,
@@ -3037,7 +3037,7 @@ const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode [high power]";
 const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod  [vys. vykon]";
 const char MSG_SILENT_MODE_OFF_IT[] PROGMEM = "Mode      [forte]";
 const char MSG_SILENT_MODE_OFF_ES[] PROGMEM = "Modo [rend.pleno]";
-const char MSG_SILENT_MODE_OFF_PL[] PROGMEM = "Mod [w wydajnosc]";
+const char MSG_SILENT_MODE_OFF_PL[] PROGMEM = "Tryb[w wydajnosc]";
 const char MSG_SILENT_MODE_OFF_DE[] PROGMEM = "Mode [Hohe Leist]";
 const char * const MSG_SILENT_MODE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_OFF_EN,
@@ -3052,7 +3052,7 @@ const char MSG_SILENT_MODE_ON_EN[] PROGMEM = "Mode     [silent]";
 const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod       [tichy]";
 const char MSG_SILENT_MODE_ON_IT[] PROGMEM = "Modo [silenzioso]";
 const char MSG_SILENT_MODE_ON_ES[] PROGMEM = "Modo   [silencio]";
-const char MSG_SILENT_MODE_ON_PL[] PROGMEM = "Mod       [cichy]";
+const char MSG_SILENT_MODE_ON_PL[] PROGMEM = "Tryb      [cichy]";
 const char MSG_SILENT_MODE_ON_DE[] PROGMEM = "Mode     [leise]";
 const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_EN,
@@ -3879,7 +3879,7 @@ const char * const MSG_WIZARD_V2_CAL_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_WIZARD_V2_CAL_2_EN[] PROGMEM = "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration.";
 const char MSG_WIZARD_V2_CAL_2_CZ[] PROGMEM = "Zacnu tisknout linku a Vy budete postupne snizovat trysku otacenim tlacitka dokud nedosahnete optimalni vysky. Prohlednete si obrazky v nasi prirucce v kapitole Kalibrace";
-const char MSG_WIZARD_V2_CAL_2_IT[] PROGMEM = "Adesso iniziero a stampare una linea e tu dovrai abbassare l'ugello gradualmente ruotando la manopola, sino a raggiungere una altezza ottimale. Per favore, dai uno sguardo alla immagine nel capitolo Calibrazione del nostro manuale.";
+const char MSG_WIZARD_V2_CAL_2_IT[] PROGMEM = "Adesso iniziero a stampare una linea e tu dovrai abbassare l'ugello poco per volta ruotando la manopola sino a raggiungere una altezza ottimale. Per favore dai uno sguardo all'immagine del nostro manuale, cap.Calibrazione.";
 const char MSG_WIZARD_V2_CAL_2_ES[] PROGMEM = "Voy a comenzar a imprimir la linea y tu bajaras el nozzle gradualmente al rotar el mando, hasta que llegues a la altura optima. Mira las imagenes del capitulo Calibracion en el manual.";
 const char MSG_WIZARD_V2_CAL_2_PL[] PROGMEM = "Zaczne drukowac linie. Stopniowo opuszczaj dysze przekrecajac guzik, poki nie uzyskasz optymalnej wysokosci. Sprawdz obrazki w naszym poradniku w rozdz. Kalibracja";
 const char MSG_WIZARD_V2_CAL_2_DE[] PROGMEM = "Ich werde jetzt erste Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Ueberpruefen Sie die Bilder in unserem Handbuch im Kapitel Kalibrierung";

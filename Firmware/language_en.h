@@ -156,7 +156,7 @@
 #define MSG_ERR_COLD_EXTRUDE_STOP           " cold extrusion prevented"
 #define MSG_BABYSTEPPING_X                  "Babystepping X"
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-#define MSG_BABYSTEPPING_Z                  "Adjusting Z"
+#define(length=20) MSG_BABYSTEPPING_Z       "Adjusting Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
 #define MSG_LANGUAGE_NAME					"English"
