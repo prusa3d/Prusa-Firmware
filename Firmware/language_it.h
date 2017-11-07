@@ -193,7 +193,7 @@
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1			"Ricerca del letto punto di calibraz."
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2			" su 4"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1		"Perfezion. il letto punto di calibraz."
-#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2		" su 9"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2		" su 4"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1		"Misurare l'altezza di riferimento del punto di calibrazione"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2		" su 9"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Reiterazione "

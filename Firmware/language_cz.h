@@ -219,7 +219,7 @@
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Hledam kalibracni bod podlozky"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	" z 4"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Zlepsuji presnost kalibracniho bodu"
-#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" z 9"
+#define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" z 4"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Merim referencni vysku kalibracniho bodu"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" z 9"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iterace "

@@ -77,6 +77,8 @@
 // Power loss errors
 #define EEPROM_POWER_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-17)
 
+#define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4) //float for skew backup
+
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
 #define EEPROM_FIRMWARE_VERSION_END       (FW_PRUSA3D_MAGIC_LEN+8)
