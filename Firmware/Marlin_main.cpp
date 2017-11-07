@@ -271,7 +271,7 @@ int extruder_multiply[EXTRUDERS] = {100
   #endif
 };
 
-int bowden_length[4];
+int bowden_length[4] = {385, 385, 385, 385};
 
 bool is_usb_printing = false;
 bool homing_flag = false;
@@ -960,6 +960,7 @@ void setup()
 		// EEPROM_LANG to number lower than 0x0ff.
 		// 1) Set a high power mode.
 		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
+		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
 	}
 #ifdef SNMM
 	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
@@ -992,29 +993,36 @@ void setup()
 	setup_uvlo_interrupt();
 	setup_fan_interrupt();
 	fsensor_setup_interrupt();
-
+	for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]); 
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
-
-  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
-      calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
-      // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
-      eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
-      // Show the message.
-      lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
-  } else if (calibration_status() == CALIBRATION_STATUS_LIVE_ADJUST) {
-      // Show the message.
-      lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
-      lcd_update_enable(true);
-  } else if (calibration_status() == CALIBRATION_STATUS_CALIBRATED && temp_cal_active == true && calibration_status_pinda() == false) {
-	  lcd_show_fullscreen_message_and_wait_P(MSG_PINDA_NOT_CALIBRATED);
-	  lcd_update_enable(true);
-  } else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
-      // Show the message.
-	  lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
+  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
+		lcd_wizard(0);
   }
+  else if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
+	  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
+		  calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
+		  // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
+		  eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+		  // Show the message.
+		  lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
+	  }
+	  else if (calibration_status() == CALIBRATION_STATUS_LIVE_ADJUST) {
+		  // Show the message.
+		  lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
+		  lcd_update_enable(true);
+	  }
+	  else if (calibration_status() == CALIBRATION_STATUS_CALIBRATED && temp_cal_active == true && calibration_status_pinda() == false) {
+		  lcd_show_fullscreen_message_and_wait_P(MSG_PINDA_NOT_CALIBRATED);
+		  lcd_update_enable(true);
+	  }
+	  else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
+		  // Show the message.
+		  lcd_show_fullscreen_message_and_wait_P(MSG_FOLLOW_CALIBRATION_FLOW);
+	  }
+  }
+
 #endif //DEBUG_DISABLE_STARTMSGS
-  for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]);
   lcd_update_enable(true);
   lcd_implementation_clear();
   lcd_update(2);
@@ -1416,7 +1424,6 @@ static float probe_pt(float x, float y, float z_before) {
 
 #endif // #ifdef ENABLE_AUTO_BED_LEVELING
 
-
 #ifdef LIN_ADVANCE
    /**
     * M900: Set and/or Get advance K factor and WH/D ratio
@@ -1734,6 +1741,175 @@ void ramming() {
 	}
   }
 */
+
+bool gcode_M45(bool onlyZ) {
+	bool final_result = false;
+	// Only Z calibration?
+
+
+	if (!onlyZ) {
+		setTargetBed(0);
+		setTargetHotend(0, 0);
+		setTargetHotend(0, 1);
+		setTargetHotend(0, 2);
+		adjust_bed_reset(); //reset bed level correction
+	}
+
+	// Disable the default update procedure of the display. We will do a modal dialog.
+	lcd_update_enable(false);
+	// Let the planner use the uncorrected coordinates.
+	mbl.reset();
+	// Reset world2machine_rotation_and_skew and world2machine_shift, therefore
+	// the planner will not perform any adjustments in the XY plane. 
+	// Wait for the motors to stop and update the current position with the absolute values.
+	world2machine_revert_to_uncorrected();
+	// Reset the baby step value applied without moving the axes.
+	babystep_reset();
+	// Mark all axes as in a need for homing.
+	memset(axis_known_position, 0, sizeof(axis_known_position));
+
+	// Home in the XY plane.
+	//set_destination_to_current();
+	setup_for_endstop_move();
+	lcd_display_message_fullscreen_P(MSG_AUTO_HOME);
+	home_xy();
+
+	// Let the user move the Z axes up to the end stoppers.
+#ifdef TMC2130
+	if (calibrate_z_auto()) {
+#else //TMC2130
+	if (lcd_calibrate_z_end_stop_manual(onlyZ)) {
+#endif //TMC2130
+		refresh_cmd_timeout();
+		if (((degHotend(0) > MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) && (!onlyZ)) {
+			lcd_wait_for_cool_down();
+			lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
+			lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
+			lcd_implementation_print_at(0, 2, 1);
+			lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
+		}
+
+		// Move the print head close to the bed.
+		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+		st_synchronize();
+
+
+		//#ifdef TMC2130
+		//		tmc2130_home_enter(X_AXIS_MASK | Y_AXIS_MASK);
+		//#endif
+
+		int8_t verbosity_level = 0;
+		if (code_seen('V')) {
+			// Just 'V' without a number counts as V1.
+			char c = strchr_pointer[1];
+			verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
+		}
+
+		if (onlyZ) {
+			clean_up_after_endstop_move();
+			// Z only calibration.
+			// Load the machine correction matrix
+			world2machine_initialize();
+			// and correct the current_position to match the transformed coordinate system.
+			world2machine_update_current();
+			//FIXME
+			bool result = sample_mesh_and_store_reference();
+			if (result) {
+				if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION)
+					// Shipped, the nozzle height has been set already. The user can start printing now.
+					calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+				// babystep_apply();
+			}
+		}
+		else {
+			// Reset the baby step value and the baby step applied flag.
+			calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
+			eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
+			// Complete XYZ calibration.
+			uint8_t point_too_far_mask = 0;
+			BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level, point_too_far_mask);
+			clean_up_after_endstop_move();
+			// Print head up.
+			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+			st_synchronize();
+			if (result >= 0) {
+				point_too_far_mask = 0;
+				// Second half: The fine adjustment.
+				// Let the planner use the uncorrected coordinates.
+				mbl.reset();
+				world2machine_reset();
+				// Home in the XY plane.
+				setup_for_endstop_move();
+				home_xy();
+				result = improve_bed_offset_and_skew(1, verbosity_level, point_too_far_mask);
+				clean_up_after_endstop_move();
+				// Print head up.
+				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+				st_synchronize();
+				// if (result >= 0) babystep_apply();
+			}
+			lcd_bed_calibration_show_result(result, point_too_far_mask);
+			if (result >= 0) {
+				// Calibration valid, the machine should be able to print. Advise the user to run the V2Calibration.gcode.
+				calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+				if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
+				final_result = true;
+			}
+		}
+#ifdef TMC2130
+		tmc2130_home_exit();
+#endif
+	}
+	else {
+		// Timeouted.
+	}
+	lcd_update_enable(true);
+	return final_result;
+	}
+
+void gcode_M701() {
+#ifdef SNMM
+	extr_adj(snmm_extruder);//loads current extruder
+#else
+	enable_z();
+	custom_message = true;
+	custom_message_type = 2;
+
+	lcd_setstatuspgm(MSG_LOADING_FILAMENT);
+	current_position[E_AXIS] += 70;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+
+	current_position[E_AXIS] += 25;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
+	st_synchronize();
+
+	if (!farm_mode && loading_flag) {
+		bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN, false, true);
+
+		while (!clean) {
+			lcd_update_enable(true);
+			lcd_update(2);
+			current_position[E_AXIS] += 25;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
+			st_synchronize();
+			clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN, false, true);
+
+		}
+
+	}
+	lcd_update_enable(true);
+	lcd_update(2);
+	lcd_setstatuspgm(WELCOME_MSG);
+	disable_z();
+	loading_flag = false;
+	custom_message = false;
+	custom_message_type = 0;
+#endif
+}
+
 void process_commands()
 {
   #ifdef FILAMENT_RUNOUT_SUPPORT
@@ -3586,130 +3762,10 @@ void process_commands()
 
     case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
-		// Only Z calibration?
-		bool onlyZ = code_seen('Z');
-
-		if (!onlyZ) {
-			setTargetBed(0);
-			setTargetHotend(0, 0);
-			setTargetHotend(0, 1);
-			setTargetHotend(0, 2);
-			adjust_bed_reset(); //reset bed level correction
-		}
-
-        // Disable the default update procedure of the display. We will do a modal dialog.
-        lcd_update_enable(false);
-        // Let the planner use the uncorrected coordinates.
-        mbl.reset();
-        // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
-        // the planner will not perform any adjustments in the XY plane. 
-        // Wait for the motors to stop and update the current position with the absolute values.
-        world2machine_revert_to_uncorrected();
-        // Reset the baby step value applied without moving the axes.
-        babystep_reset();
-        // Mark all axes as in a need for homing.
-        memset(axis_known_position, 0, sizeof(axis_known_position));
-
-        // Home in the XY plane.
-        //set_destination_to_current();
-        setup_for_endstop_move();
-		lcd_display_message_fullscreen_P(MSG_AUTO_HOME);
-		home_xy();
-
-        // Let the user move the Z axes up to the end stoppers.
-#ifdef TMC2130
-        if (calibrate_z_auto()) {
-#else //TMC2130
-        if (lcd_calibrate_z_end_stop_manual( onlyZ )) {
-#endif //TMC2130
-            refresh_cmd_timeout();
-			if (((degHotend(0) > MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) && (!onlyZ)) {
-				lcd_wait_for_cool_down();
-				lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
-				lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
-				lcd_implementation_print_at(0, 2, 1);
-				lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
-			}
-
-            // Move the print head close to the bed.
-            current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
-            st_synchronize();
-
-
-//#ifdef TMC2130
-//		tmc2130_home_enter(X_AXIS_MASK | Y_AXIS_MASK);
-//#endif
-
-            int8_t verbosity_level = 0;
-            if (code_seen('V')) {
-                // Just 'V' without a number counts as V1.
-                char c = strchr_pointer[1];
-                verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
-            }
-            
-            if (onlyZ) {
-                clean_up_after_endstop_move();
-                // Z only calibration.
-                // Load the machine correction matrix
-                world2machine_initialize();
-                // and correct the current_position to match the transformed coordinate system.
-                world2machine_update_current();
-                //FIXME
-                bool result = sample_mesh_and_store_reference();
-                if (result) {
-                    if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION)
-                        // Shipped, the nozzle height has been set already. The user can start printing now.
-                        calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-                    // babystep_apply();
-                }
-            } else {
-                // Reset the baby step value and the baby step applied flag.
-                calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
-                eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
-                // Complete XYZ calibration.
-				uint8_t point_too_far_mask = 0;
-                BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level, point_too_far_mask);
-				clean_up_after_endstop_move();
-                // Print head up.
-                current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
-                st_synchronize();
-                if (result >= 0) {
-					point_too_far_mask = 0;
-                    // Second half: The fine adjustment.
-                    // Let the planner use the uncorrected coordinates.
-                    mbl.reset();
-                    world2machine_reset();
-                    // Home in the XY plane.
-                    setup_for_endstop_move();
-                    home_xy();
-                    result = improve_bed_offset_and_skew(1, verbosity_level, point_too_far_mask);
-                    clean_up_after_endstop_move();
-                    // Print head up.
-                    current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-                    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
-                    st_synchronize();
-                    // if (result >= 0) babystep_apply();
-                }
-                lcd_bed_calibration_show_result(result, point_too_far_mask);
-                if (result >= 0) {
-                    // Calibration valid, the machine should be able to print. Advise the user to run the V2Calibration.gcode.
-                    calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
-                    lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);
-                }
-            }
-#ifdef TMC2130
-		tmc2130_home_exit();
-#endif
-        } else {
-            // Timeouted.
-        }
-
-
-        lcd_update_enable(true);
-        break;
+		bool only_Z = code_seen('Z');
+		gcode_M45(only_Z);				
     }
+	break;
 
     /*
     case 46:
@@ -5539,37 +5595,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     break;
 	case 701: //M701: load filament
 	{
-		enable_z();
-		custom_message = true;
-		custom_message_type = 2;
-		
-		lcd_setstatuspgm(MSG_LOADING_FILAMENT);
-		current_position[E_AXIS] += 70;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
-
-		current_position[E_AXIS] += 25;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
-		st_synchronize();
-
-		if (!farm_mode && loading_flag) {
-			bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN, false, true);
-
-			while (!clean) {
-				lcd_update_enable(true);
-				lcd_update(2);
-				current_position[E_AXIS] += 25;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
-				st_synchronize();
-				clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN, false, true);
-			}
-		}
-		lcd_update_enable(true);
-		lcd_update(2);
-		lcd_setstatuspgm(WELCOME_MSG);
-		disable_z();
-		loading_flag = false;
-		custom_message = false;
-		custom_message_type = 0;
+		gcode_M701();
 	}
 	break;
 	case 702:

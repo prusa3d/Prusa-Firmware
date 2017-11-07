@@ -35,7 +35,7 @@ void lcd_mylang();
   bool lcd_detected(void);
 
   
-  static void lcd_selftest();
+  static bool lcd_selftest();
   static bool lcd_selfcheck_endstops();
   static bool lcd_selfcheck_axis(int _axis, int _travel);
   static bool lcd_selfcheck_axis_sg(char axis);
@@ -55,7 +55,7 @@ void lcd_mylang();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
   // 0: no, 1: yes, -1: timeouted
   extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
-
+  extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
   // Ask the user to move the Z axis up to the end stoppers and let
   // the user confirm that it has been done.
   extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
@@ -98,6 +98,7 @@ void lcd_mylang();
   #define LCD_COMMAND_LONG_PAUSE 5
   #define LCD_COMMAND_LONG_PAUSE_RESUME 6
   #define LCD_COMMAND_PID_EXTRUDER 7 
+  #define LCD_COMMAND_V2_CAL 8
 
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
@@ -231,6 +232,8 @@ void extr_unload_all();
 void extr_unload_used();
 void extr_unload();
 static char snmm_stop_print_menu();
+static float count_e(float layer_heigth, float extrusion_width, float extrusion_length);
+static void lcd_babystep_z();
 
 void stack_error();
 static void lcd_ping_allert();
@@ -262,5 +265,8 @@ void lcd_temp_calibration_set();
 void display_loading();
 
 void lcd_service_mode_show_result();
+
+void lcd_wizard();
+void lcd_wizard(int state);
 
 #endif //ULTRALCD_H

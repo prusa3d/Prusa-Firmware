@@ -79,6 +79,8 @@
 
 #define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4) //float for skew backup
 
+#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
+
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
 #define EEPROM_FIRMWARE_VERSION_END       (FW_PRUSA3D_MAGIC_LEN+8)
@@ -747,7 +749,7 @@ enum CalibrationStatus
 	CALIBRATION_STATUS_ASSEMBLED = 255,
 
 	// For the wizard: self test has been performed, now the XYZ calibration is needed.
-	// CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
+	CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
 
 	// For the wizard: factory assembled, needs to run Z calibration.
 	CALIBRATION_STATUS_Z_CALIBRATION = 240,

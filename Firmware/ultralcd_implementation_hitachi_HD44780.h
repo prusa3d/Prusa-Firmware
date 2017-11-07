@@ -475,8 +475,19 @@ void lcd_set_custom_characters_nextpage()
     B01010,
     B00100
   }; 
+  
+  byte confirm[8] = {
+	  B00000,
+	  B00001,
+	  B00011,
+	  B10110,
+	  B11100,
+	  B01000,
+	  B00000
+  };
 
     lcd.createChar(1, arrdown);
+	lcd.createChar(2, confirm);
 }
 
 void lcd_set_custom_characters_degree()
