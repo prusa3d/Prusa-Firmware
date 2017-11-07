@@ -229,8 +229,8 @@
 #define MSG_BED_CORRECTION_MENU                                 "Corr. de la cama"
 #define MSG_BED_CORRECTION_MID_LEFT                             "Izquierda [um]"
 #define MSG_BED_CORRECTION_MID_RIGHT                            "Derecha   [um]"
-#define MSG_BED_CORRECTION_FRONT_CEN                            "Adelante  [um]"
-#define MSG_BED_CORRECTION_REAR_CENT                            "Atras     [um]"
+#define MSG_BED_CORRECTION_FRONT_CENTR                          "Adelante  [um]"
+#define MSG_BED_CORRECTION_REAR_CENTR                           "Atras     [um]"
 #define MSG_BED_CORRECTION_RESET                                "Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"

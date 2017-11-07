@@ -265,14 +265,14 @@ void Config_PrintSettings()
         SERIAL_ECHOLNPGM("Filament volumetric settings: Disabled");
     }
 #endif
-#ifdef FIL_RUNOUT_SENSOR
+#ifdef FILAMENT_RUNOUT_SENSOR
 	if (fil_runout_status == 1) {
-		SERIAL_ECHOLNPGM(MSG_FIL_RUNOUT_STATUS_VCC);
+		SERIAL_ECHOLNPGM("Filament Runout Sensor: Signal to VCC");
 	} else 
-		if (if_runout_status == 2) {
-			SERIAL_ECHOLNPGM(MSG_FIL_RUNOUT_STATUS_GND);
+		if (fil_runout_status == 2) {
+			SERIAL_ECHOLNPGM("Filament Runout Sensor: Signal to GND");
 		} else
-			SERIAL_ECHOLNPGM(MSG_FIL_RUNOUT_STATUS_OFF);
+			SERIAL_ECHOLNPGM("Filament Runout Sensor: Disabled");
 #endif
 }
 #endif

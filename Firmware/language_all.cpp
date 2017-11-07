@@ -68,7 +68,7 @@ const char MSG_AUTO_MODE_ON_CZ[] PROGMEM = "Mod [automaticky]";
 const char MSG_AUTO_MODE_ON_IT[] PROGMEM = "Mode       [auto]";
 const char MSG_AUTO_MODE_ON_ES[] PROGMEM = "Modo       [auto]";
 const char MSG_AUTO_MODE_ON_PL[] PROGMEM = "Tryb       [auto]";
-const char MSG_AUTO_MODE_ON_DE[] PROGMEM = "Mode [Auto]";
+const char MSG_AUTO_MODE_ON_DE[] PROGMEM = "Mode       [Auto]";
 const char * const MSG_AUTO_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_AUTO_MODE_ON_EN,
 	MSG_AUTO_MODE_ON_CZ,
@@ -98,7 +98,7 @@ const char MSG_BABYSTEPPING_Z_CZ[] PROGMEM = "Dostavovani Z";
 const char MSG_BABYSTEPPING_Z_IT[] PROGMEM = "Compensazione Z";
 const char MSG_BABYSTEPPING_Z_ES[] PROGMEM = "Ajustar Z";
 const char MSG_BABYSTEPPING_Z_PL[] PROGMEM = "Dostrojenie Z";
-const char MSG_BABYSTEPPING_Z_DE[] PROGMEM = "Z wurde eingestellt";
+const char MSG_BABYSTEPPING_Z_DE[] PROGMEM = "Z einstellen";
 const char * const MSG_BABYSTEPPING_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BABYSTEPPING_Z_EN,
 	MSG_BABYSTEPPING_Z_CZ,
@@ -138,7 +138,7 @@ const char MSG_BABYSTEP_Z_NOT_SET_CZ[] PROGMEM = "Neni zkalibrovana vzdalenost t
 const char MSG_BABYSTEP_Z_NOT_SET_IT[] PROGMEM = "Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo First steps, sezione First layer calibration.";
 const char MSG_BABYSTEP_Z_NOT_SET_ES[] PROGMEM = "Distancia entre la punta de la boquilla y la superficie de la cama no fijada aun. Por favor siga el manual, capitulo First steps, seccion First layer calibration.";
 const char MSG_BABYSTEP_Z_NOT_SET_PL[] PROGMEM = "Odleglosc dyszy od podkladki nie jest skalibrowana. Postepuj zgodnie z instrukcja rozdzial Zaczynamy, podrozdzial Kalibracja pierwszej warstwy.";
-const char MSG_BABYSTEP_Z_NOT_SET_DE[] PROGMEM = "Der Abstand zwischen der Spitze der Duese und der Bett ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, section First layer calibration.";
+const char MSG_BABYSTEP_Z_NOT_SET_DE[] PROGMEM = "Der Abstand zwischen der Spitze der Duese und der Druckoberflaeche / Bett ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, section First layer calibration.";
 const char * const MSG_BABYSTEP_Z_NOT_SET_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BABYSTEP_Z_NOT_SET_EN,
 	MSG_BABYSTEP_Z_NOT_SET_CZ,
@@ -162,34 +162,41 @@ const char * const MSG_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_DE
 };
 
-const char MSG_BED_CORRECTION_FRONT_EN[] PROGMEM = "Front side[um]";
-const char MSG_BED_CORRECTION_FRONT_CZ[] PROGMEM = "Vpredu [um]";
-const char MSG_BED_CORRECTION_FRONT_IT[] PROGMEM = "Fronte    [um]";
-const char MSG_BED_CORRECTION_FRONT_ES[] PROGMEM = "Adelante  [um]";
-const char MSG_BED_CORRECTION_FRONT_PL[] PROGMEM = "Do przodu [um]";
-const char MSG_BED_CORRECTION_FRONT_DE[] PROGMEM = "Vorne     [um]";
-const char * const MSG_BED_CORRECTION_FRONT_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_BED_CORRECTION_FRONT_EN,
-	MSG_BED_CORRECTION_FRONT_CZ,
-	MSG_BED_CORRECTION_FRONT_IT,
-	MSG_BED_CORRECTION_FRONT_ES,
-	MSG_BED_CORRECTION_FRONT_PL,
-	MSG_BED_CORRECTION_FRONT_DE
+const char MSG_BED_CORRECTION_FRONT_CENTR_EN[] PROGMEM = "Fr.Centr b[um]";
+const char MSG_BED_CORRECTION_FRONT_CENTR_CZ[] PROGMEM = "Vpredu [um]";
+const char MSG_BED_CORRECTION_FRONT_CENTR_IT[] PROGMEM = "Fronte    [um]";
+const char MSG_BED_CORRECTION_FRONT_CENTR_ES[] PROGMEM = "Adelante  [um]";
+const char MSG_BED_CORRECTION_FRONT_CENTR_PL[] PROGMEM = "Do przodu [um]";
+const char MSG_BED_CORRECTION_FRONT_CENTR_DE[] PROGMEM = "VoZentr. b[um]";
+const char * const MSG_BED_CORRECTION_FRONT_CENTR_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_CORRECTION_FRONT_CENTR_EN,
+	MSG_BED_CORRECTION_FRONT_CENTR_CZ,
+	MSG_BED_CORRECTION_FRONT_CENTR_IT,
+	MSG_BED_CORRECTION_FRONT_CENTR_ES,
+	MSG_BED_CORRECTION_FRONT_CENTR_PL,
+	MSG_BED_CORRECTION_FRONT_CENTR_DE
 };
 
-const char MSG_BED_CORRECTION_LEFT_EN[] PROGMEM = "Left side [um]";
-const char MSG_BED_CORRECTION_LEFT_CZ[] PROGMEM = "Vlevo  [um]";
-const char MSG_BED_CORRECTION_LEFT_IT[] PROGMEM = "Sinistra  [um]";
-const char MSG_BED_CORRECTION_LEFT_ES[] PROGMEM = "Izquierda [um]";
-const char MSG_BED_CORRECTION_LEFT_PL[] PROGMEM = "W lewo  [um]";
-const char MSG_BED_CORRECTION_LEFT_DE[] PROGMEM = "Links     [um]";
-const char * const MSG_BED_CORRECTION_LEFT_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_BED_CORRECTION_LEFT_EN,
-	MSG_BED_CORRECTION_LEFT_CZ,
-	MSG_BED_CORRECTION_LEFT_IT,
-	MSG_BED_CORRECTION_LEFT_ES,
-	MSG_BED_CORRECTION_LEFT_PL,
-	MSG_BED_CORRECTION_LEFT_DE
+const char MSG_BED_CORRECTION_FRONT_LEFT_EN[] PROGMEM = "Fr.Left  a[um]";
+const char MSG_BED_CORRECTION_FRONT_LEFT_DE[] PROGMEM = "VoLinks  a[um]";
+const char * const MSG_BED_CORRECTION_FRONT_LEFT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_CORRECTION_FRONT_LEFT_EN,
+	MSG_BED_CORRECTION_FRONT_LEFT_EN,
+	MSG_BED_CORRECTION_FRONT_LEFT_EN,
+	MSG_BED_CORRECTION_FRONT_LEFT_EN,
+	MSG_BED_CORRECTION_FRONT_LEFT_EN,
+	MSG_BED_CORRECTION_FRONT_LEFT_DE
+};
+
+const char MSG_BED_CORRECTION_FRONT_RIGHT_EN[] PROGMEM = "Fr.Right c[um]";
+const char MSG_BED_CORRECTION_FRONT_RIGHT_DE[] PROGMEM = "VoRechts c[um]";
+const char * const MSG_BED_CORRECTION_FRONT_RIGHT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_CORRECTION_FRONT_RIGHT_EN,
+	MSG_BED_CORRECTION_FRONT_RIGHT_EN,
+	MSG_BED_CORRECTION_FRONT_RIGHT_EN,
+	MSG_BED_CORRECTION_FRONT_RIGHT_EN,
+	MSG_BED_CORRECTION_FRONT_RIGHT_EN,
+	MSG_BED_CORRECTION_FRONT_RIGHT_DE
 };
 
 const char MSG_BED_CORRECTION_MENU_EN[] PROGMEM = "Bed level correct";
@@ -197,7 +204,7 @@ const char MSG_BED_CORRECTION_MENU_CZ[] PROGMEM = "Korekce podlozky";
 const char MSG_BED_CORRECTION_MENU_IT[] PROGMEM = "Correz. liv.letto";
 const char MSG_BED_CORRECTION_MENU_ES[] PROGMEM = "Corr. de la cama";
 const char MSG_BED_CORRECTION_MENU_PL[] PROGMEM = "Korekta podkladki";
-const char MSG_BED_CORRECTION_MENU_DE[] PROGMEM = "Bett level Korrekt";
+const char MSG_BED_CORRECTION_MENU_DE[] PROGMEM = "Bett level korrekt";
 const char * const MSG_BED_CORRECTION_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_CORRECTION_MENU_EN,
 	MSG_BED_CORRECTION_MENU_CZ,
@@ -207,23 +214,75 @@ const char * const MSG_BED_CORRECTION_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_CORRECTION_MENU_DE
 };
 
-const char MSG_BED_CORRECTION_REAR_EN[] PROGMEM = "Rear side [um]";
-const char MSG_BED_CORRECTION_REAR_CZ[] PROGMEM = "Vzadu  [um]";
-const char MSG_BED_CORRECTION_REAR_IT[] PROGMEM = "Retro     [um]";
-const char MSG_BED_CORRECTION_REAR_ES[] PROGMEM = "Atras     [um]";
-const char MSG_BED_CORRECTION_REAR_PL[] PROGMEM = "Do tylu  [um]";
-const char MSG_BED_CORRECTION_REAR_DE[] PROGMEM = "Hinten    [um]";
-const char * const MSG_BED_CORRECTION_REAR_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_BED_CORRECTION_REAR_EN,
-	MSG_BED_CORRECTION_REAR_CZ,
-	MSG_BED_CORRECTION_REAR_IT,
-	MSG_BED_CORRECTION_REAR_ES,
-	MSG_BED_CORRECTION_REAR_PL,
-	MSG_BED_CORRECTION_REAR_DE
+const char MSG_BED_CORRECTION_MID_LEFT_EN[] PROGMEM = "Mi.Left  h[um]";
+const char MSG_BED_CORRECTION_MID_LEFT_CZ[] PROGMEM = "Vlevo  [um]";
+const char MSG_BED_CORRECTION_MID_LEFT_IT[] PROGMEM = "Sinistra  [um]";
+const char MSG_BED_CORRECTION_MID_LEFT_ES[] PROGMEM = "Izquierda [um]";
+const char MSG_BED_CORRECTION_MID_LEFT_PL[] PROGMEM = "W lewo  [um]";
+const char MSG_BED_CORRECTION_MID_LEFT_DE[] PROGMEM = "MiLinks  h[um]";
+const char * const MSG_BED_CORRECTION_MID_LEFT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_CORRECTION_MID_LEFT_EN,
+	MSG_BED_CORRECTION_MID_LEFT_CZ,
+	MSG_BED_CORRECTION_MID_LEFT_IT,
+	MSG_BED_CORRECTION_MID_LEFT_ES,
+	MSG_BED_CORRECTION_MID_LEFT_PL,
+	MSG_BED_CORRECTION_MID_LEFT_DE
+};
+
+const char MSG_BED_CORRECTION_MID_RIGHT_EN[] PROGMEM = "Mi.Right d[um]";
+const char MSG_BED_CORRECTION_MID_RIGHT_CZ[] PROGMEM = "Vpravo [um]";
+const char MSG_BED_CORRECTION_MID_RIGHT_IT[] PROGMEM = "Destra    [um]";
+const char MSG_BED_CORRECTION_MID_RIGHT_ES[] PROGMEM = "Derecha   [um]";
+const char MSG_BED_CORRECTION_MID_RIGHT_PL[] PROGMEM = "W prawo [um]";
+const char MSG_BED_CORRECTION_MID_RIGHT_DE[] PROGMEM = "MiRechts d[um]";
+const char * const MSG_BED_CORRECTION_MID_RIGHT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_CORRECTION_MID_RIGHT_EN,
+	MSG_BED_CORRECTION_MID_RIGHT_CZ,
+	MSG_BED_CORRECTION_MID_RIGHT_IT,
+	MSG_BED_CORRECTION_MID_RIGHT_ES,
+	MSG_BED_CORRECTION_MID_RIGHT_PL,
+	MSG_BED_CORRECTION_MID_RIGHT_DE
+};
+
+const char MSG_BED_CORRECTION_REAR_CENTR_EN[] PROGMEM = "Re.Centr f[um]";
+const char MSG_BED_CORRECTION_REAR_CENTR_CZ[] PROGMEM = "Vzadu  [um]";
+const char MSG_BED_CORRECTION_REAR_CENTR_IT[] PROGMEM = "Retro     [um]";
+const char MSG_BED_CORRECTION_REAR_CENTR_ES[] PROGMEM = "Atras     [um]";
+const char MSG_BED_CORRECTION_REAR_CENTR_PL[] PROGMEM = "Do tylu  [um]";
+const char MSG_BED_CORRECTION_REAR_CENTR_DE[] PROGMEM = "HiZentr. f[um]";
+const char * const MSG_BED_CORRECTION_REAR_CENTR_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_CORRECTION_REAR_CENTR_EN,
+	MSG_BED_CORRECTION_REAR_CENTR_CZ,
+	MSG_BED_CORRECTION_REAR_CENTR_IT,
+	MSG_BED_CORRECTION_REAR_CENTR_ES,
+	MSG_BED_CORRECTION_REAR_CENTR_PL,
+	MSG_BED_CORRECTION_REAR_CENTR_DE
+};
+
+const char MSG_BED_CORRECTION_REAR_LEFT_EN[] PROGMEM = "Re.Left  g[um]";
+const char MSG_BED_CORRECTION_REAR_LEFT_DE[] PROGMEM = "HiLinks  g[um]";
+const char * const MSG_BED_CORRECTION_REAR_LEFT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_CORRECTION_REAR_LEFT_EN,
+	MSG_BED_CORRECTION_REAR_LEFT_EN,
+	MSG_BED_CORRECTION_REAR_LEFT_EN,
+	MSG_BED_CORRECTION_REAR_LEFT_EN,
+	MSG_BED_CORRECTION_REAR_LEFT_EN,
+	MSG_BED_CORRECTION_REAR_LEFT_DE
+};
+
+const char MSG_BED_CORRECTION_REAR_RIGHT_EN[] PROGMEM = "Re.Right e[um]";
+const char MSG_BED_CORRECTION_REAR_RIGHT_DE[] PROGMEM = "HiRechts e[um]";
+const char * const MSG_BED_CORRECTION_REAR_RIGHT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_CORRECTION_REAR_RIGHT_EN,
+	MSG_BED_CORRECTION_REAR_RIGHT_EN,
+	MSG_BED_CORRECTION_REAR_RIGHT_EN,
+	MSG_BED_CORRECTION_REAR_RIGHT_EN,
+	MSG_BED_CORRECTION_REAR_RIGHT_EN,
+	MSG_BED_CORRECTION_REAR_RIGHT_DE
 };
 
 const char MSG_BED_CORRECTION_RESET_EN[] PROGMEM = "Reset";
-const char MSG_BED_CORRECTION_RESET_DE[] PROGMEM = "Ruecksetzen";
+const char MSG_BED_CORRECTION_RESET_DE[] PROGMEM = "Zuruecksetzen";
 const char * const MSG_BED_CORRECTION_RESET_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_CORRECTION_RESET_EN,
 	MSG_BED_CORRECTION_RESET_EN,
@@ -231,21 +290,6 @@ const char * const MSG_BED_CORRECTION_RESET_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_CORRECTION_RESET_EN,
 	MSG_BED_CORRECTION_RESET_EN,
 	MSG_BED_CORRECTION_RESET_DE
-};
-
-const char MSG_BED_CORRECTION_RIGHT_EN[] PROGMEM = "Right side[um]";
-const char MSG_BED_CORRECTION_RIGHT_CZ[] PROGMEM = "Vpravo [um]";
-const char MSG_BED_CORRECTION_RIGHT_IT[] PROGMEM = "Destra    [um]";
-const char MSG_BED_CORRECTION_RIGHT_ES[] PROGMEM = "Derecha   [um]";
-const char MSG_BED_CORRECTION_RIGHT_PL[] PROGMEM = "W prawo [um]";
-const char MSG_BED_CORRECTION_RIGHT_DE[] PROGMEM = "Rechts    [um]";
-const char * const MSG_BED_CORRECTION_RIGHT_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_BED_CORRECTION_RIGHT_EN,
-	MSG_BED_CORRECTION_RIGHT_CZ,
-	MSG_BED_CORRECTION_RIGHT_IT,
-	MSG_BED_CORRECTION_RIGHT_ES,
-	MSG_BED_CORRECTION_RIGHT_PL,
-	MSG_BED_CORRECTION_RIGHT_DE
 };
 
 const char MSG_BED_DONE_EN[] PROGMEM = "Bed done";
@@ -283,7 +327,7 @@ const char MSG_BED_LEVELING_FAILED_POINT_HIGH_CZ[] PROGMEM = "Kalibrace Z selhal
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_IT[] PROGMEM = "Livellamento letto fallito.Risp sensore troppo prestoIn attesa di reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_ES[] PROGMEM = "Nivelacion fallada. Sensor funciona demasiado temprano. Esperando reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_PL[] PROGMEM = "Kalibracja Z nieudana. Sensor dotk. za wysoko. Czekam na reset.";
-const char MSG_BED_LEVELING_FAILED_POINT_HIGH_DE[] PROGMEM = "Z-Kalibrierung fehlgeschlg. Sensor zu hoch ausgeloest. Warte auf Reset.";
+const char MSG_BED_LEVELING_FAILED_POINT_HIGH_DE[] PROGMEM = "Z-Kalibrierung fehlgeschlagen. Sensor wurde zu hoch ausgeloest. Warte auf Reset.";
 const char * const MSG_BED_LEVELING_FAILED_POINT_HIGH_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_LEVELING_FAILED_POINT_HIGH_EN,
 	MSG_BED_LEVELING_FAILED_POINT_HIGH_CZ,
@@ -298,7 +342,7 @@ const char MSG_BED_LEVELING_FAILED_POINT_LOW_CZ[] PROGMEM = "Kalibrace Z selhala
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_IT[] PROGMEM = "Livellamento letto fallito.NoRispSensor Residui su ugello? In attesa di reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_ES[] PROGMEM = "Nivelacion fallada. Sensor no funciona. Escombros en Boqui.? Esperando reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_LOW_PL[] PROGMEM = "Kalibracja nieudana. Sensor nie dotknal. Zanieczysz. dysza? Czekam na reset.";
-const char MSG_BED_LEVELING_FAILED_POINT_LOW_DE[] PROGMEM = "Z-Kal. fehlgeschlg. Sensor nicht ausgeloest. Schmutzige Duese? Warte auf Reset";
+const char MSG_BED_LEVELING_FAILED_POINT_LOW_DE[] PROGMEM = "Z-Kalibrierung fehlgeschlagen. Sensor wurde nicht ausgeloest. Schmutzige Duese? Warte auf Reset.";
 const char * const MSG_BED_LEVELING_FAILED_POINT_LOW_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_LEVELING_FAILED_POINT_LOW_EN,
 	MSG_BED_LEVELING_FAILED_POINT_LOW_CZ,
@@ -313,7 +357,7 @@ const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_CZ[] PROGMEM = "Kalibrace 
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_IT[] PROGMEM = "Livellamento letto fallito. Sensore discon. o Cavo Dann. In attesa di reset.";
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_ES[] PROGMEM = "Nivelacion fallada. Sensor desconectado o cables danados. Esperando reset.";
 const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_PL[] PROGMEM = "Kalibracja nieudana. Sensor odlaczony lub uszkodz. kabel. Czekam na reset.";
-const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_DE[] PROGMEM = "Z-Kalibrierung fehlgeschlg. Sensor nicht angeschlossen. Warte auf Reset.";
+const char MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_DE[] PROGMEM = "Z-Kalibrierung fehlgeschlagen. Sensor nicht angeschlossen oder Kabel defekt. Warte auf Reset.";
 const char * const MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_EN,
 	MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED_CZ,
@@ -388,7 +432,7 @@ const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_CZ[] PROGMEM = "Kalibrace XYZ v
 const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_IT[] PROGMEM = "Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari. Complimenti!";
 const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_ES[] PROGMEM = "Calibracion XYZ ok. Ejes X/Y perpendiculares. Felicitaciones!";
 const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_PL[] PROGMEM = "Kalibracja XYZ ok. Osie X/Y sa prostopadle. Gratulacje!";
-const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_DE[] PROGMEM = "XYZ-Kalibrierung OK. X/Y-Achsen sind senkrecht zueinander. Glueckwunsch!";
+const char MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_DE[] PROGMEM = "XYZ-Kalibrierung ok. X/Y-Achsen sind senkrecht zueinander. Glueckwunsch!";
 const char * const MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_EN,
 	MSG_BED_SKEW_OFFSET_DETECTION_PERFECT_CZ,
@@ -418,7 +462,7 @@ const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_CZ[] PROGMEM = "Kalibrace 
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_IT[] PROGMEM = "Calibrazion XYZ corretta. La distorsione verra' automaticamente compensata.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_ES[] PROGMEM = "Calibracion XYZ correcta. La inclinacion se corregira automaticamente.";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_PL[] PROGMEM = "Kalibracja XYZ prawidlowa. Skosy beda automatycznie wyrownane przy druku.";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_DE[] PROGMEM = "XYZ Kalibrierung in Ordnung. Schiefheit wird automatisch korrigiert.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_DE[] PROGMEM = "XYZ-Kalibrierung ok. X/Y-Achsen sind ziehmlich asymetrisch. Symetrie wird automatisch korrigiert.";
 const char * const MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_EN,
 	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME_CZ,
@@ -433,7 +477,7 @@ const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_CZ[] PROGMEM = "Kalibrace XYZ
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_IT[] PROGMEM = "Calibrazion XYZ corretta. Assi X/Y leggermente storti. Ben fatto!";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_ES[] PROGMEM = "Calibracion XYZ correcta. Los ejes X / Y estan ligeramente inclinados. Buen trabajo!";
 const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_PL[] PROGMEM = "Kalibracja XYZ prawidlowa. Osie X/Y lekko skosne. Dobra robota!";
-const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_DE[] PROGMEM = "XYZ Kalibrierung in Ordnung. X/Y Achsen sind etwas schief.";
+const char MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_DE[] PROGMEM = "XYZ-Kalibrierung ok. X/Y-Achsen sind leicht asymetrisch. Symetrie wird automatisch korrigiert. Gut gemacht!";
 const char * const MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_EN,
 	MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD_CZ,
@@ -546,7 +590,7 @@ const char MSG_CALIBRATE_PINDA_CZ[] PROGMEM = "Zkalibrovat";
 const char MSG_CALIBRATE_PINDA_IT[] PROGMEM = "Calibrare";
 const char MSG_CALIBRATE_PINDA_ES[] PROGMEM = "Calibrar";
 const char MSG_CALIBRATE_PINDA_PL[] PROGMEM = "Skalibrowac";
-const char MSG_CALIBRATE_PINDA_DE[] PROGMEM = "Kalibrieren";
+const char MSG_CALIBRATE_PINDA_DE[] PROGMEM = "PINDA Temp. Kal.";
 const char * const MSG_CALIBRATE_PINDA_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_PINDA_EN,
 	MSG_CALIBRATE_PINDA_CZ,
@@ -561,7 +605,7 @@ const char MSG_CALIBRATION_PINDA_MENU_CZ[] PROGMEM = "Teplot. kalibrace";
 const char MSG_CALIBRATION_PINDA_MENU_IT[] PROGMEM = "Taratura temp.";
 const char MSG_CALIBRATION_PINDA_MENU_ES[] PROGMEM = "Calibracion temp.";
 const char MSG_CALIBRATION_PINDA_MENU_PL[] PROGMEM = "Cieplna kalibr.";
-const char MSG_CALIBRATION_PINDA_MENU_DE[] PROGMEM = "Temp. kalibrieren";
+const char MSG_CALIBRATION_PINDA_MENU_DE[] PROGMEM = "PINDA Temp. Kal.";
 const char * const MSG_CALIBRATION_PINDA_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATION_PINDA_MENU_EN,
 	MSG_CALIBRATION_PINDA_MENU_CZ,
@@ -691,7 +735,7 @@ const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_CZ[] PROGMEM = "Dojely oba Z voziky k
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_IT[] PROGMEM = "I carrelli Z sin/des sono altezza max?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_ES[] PROGMEM = "Carros Z izq./der. estan arriba maximo?";
 const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_PL[] PROGMEM = "Oba wozki dojechaly do gornej ramy?";
-const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_DE[] PROGMEM = "Ist der Schlitten ganz oben?";
+const char MSG_CONFIRM_CARRIAGE_AT_THE_TOP_DE[] PROGMEM = "Sind die Z-Schlitten ganz oben?";
 const char * const MSG_CONFIRM_CARRIAGE_AT_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CONFIRM_CARRIAGE_AT_THE_TOP_EN,
 	MSG_CONFIRM_CARRIAGE_AT_THE_TOP_CZ,
@@ -706,7 +750,7 @@ const char MSG_CONFIRM_NOZZLE_CLEAN_CZ[] PROGMEM = "Pro uspesnou kalibraci ocist
 const char MSG_CONFIRM_NOZZLE_CLEAN_IT[] PROGMEM = "Pulire l'ugello per la calibrazione, poi fare click.";
 const char MSG_CONFIRM_NOZZLE_CLEAN_ES[] PROGMEM = "Limpiar boquilla para calibracion. Click cuando acabes.";
 const char MSG_CONFIRM_NOZZLE_CLEAN_PL[] PROGMEM = "Dla prawidl. kalibracji prosze oczyscic dysze. Potw. guzikiem.";
-const char MSG_CONFIRM_NOZZLE_CLEAN_DE[] PROGMEM = "Bitte entfernen Sie ueberstehendes Filament von der Duese. Klicken wenn sauber.";
+const char MSG_CONFIRM_NOZZLE_CLEAN_DE[] PROGMEM = "Bitte entfernen Sie ueberstehendes Filament von der Duese vor der Kalibrierung. Klicken wenn sauber.";
 const char * const MSG_CONFIRM_NOZZLE_CLEAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CONFIRM_NOZZLE_CLEAN_EN,
 	MSG_CONFIRM_NOZZLE_CLEAN_CZ,
@@ -721,7 +765,7 @@ const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_CZ[] PROGMEM = "Filamenty jsou srovn
 const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_IT[] PROGMEM = "I filamenti sono regolati. Si prega di pulire l'ugello per la calibrazione. Click per continuare.";
 const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_ES[] PROGMEM = "Filamentos ajustados. Limpie la boquilla para calibracion. Haga clic una vez terminado.";
 const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_PL[] PROGMEM = "Dla prawidlowej kalibracji prosze oczyscic dysze. Potem potwierdzic przyciskiem.";
-const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_DE[] PROGMEM = "Filamente sind jetzt eingestellt. Bitte reinigen Sie die Duese zur Kalibrierung. Klicken wenn fertig.";
+const char MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_DE[] PROGMEM = "Filamente sind jetzt eingestellt. Bitte reinigen Sie die Duese zur Kalibrierung. Klicken wenn sauber.";
 const char * const MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_EN,
 	MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ_CZ,
@@ -791,7 +835,7 @@ const char MSG_DATE_CZ[] PROGMEM = "Datum:";
 const char MSG_DATE_IT[] PROGMEM = "Data";
 const char MSG_DATE_ES[] PROGMEM = "Fecha:";
 const char MSG_DATE_PL[] PROGMEM = "Data:";
-const char MSG_DATE_DE[] PROGMEM = "Datum";
+const char MSG_DATE_DE[] PROGMEM = "Datum:";
 const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DATE_EN,
 	MSG_DATE_CZ,
@@ -834,7 +878,7 @@ const char * const MSG_DISABLE_STEPPERS_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_DWELL_EN[] PROGMEM = "Sleep...";
 const char MSG_DWELL_IT[] PROGMEM = "Sospensione...";
 const char MSG_DWELL_ES[] PROGMEM = "En espera";
-const char MSG_DWELL_DE[] PROGMEM = "Einen Moment bitte.";
+const char MSG_DWELL_DE[] PROGMEM = "Warten...";
 const char * const MSG_DWELL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DWELL_EN,
 	MSG_DWELL_EN,
@@ -1133,7 +1177,7 @@ const char MSG_FILE_CNT_CZ[] PROGMEM = "Nektere soubory nebudou setrideny. Maxim
 const char MSG_FILE_CNT_IT[] PROGMEM = "Alcuni dei file non potranno essere organizzati. 100 e il n. max. di file che possono essere organizzati.";
 const char MSG_FILE_CNT_ES[] PROGMEM = "Algunos archivos no seran ordenados. El Max. num. de archivos para ordenar en 1 carpeta es 100.";
 const char MSG_FILE_CNT_PL[] PROGMEM = "Niektore pliki nie beda sortowane. Max. ilosc plikow do sortu w 1 folderze to 100.";
-const char MSG_FILE_CNT_DE[] PROGMEM = "Einige Dateien werden nicht sortiert. Max. Anzahl der Dateien in einem Ordner ist 100.";
+const char MSG_FILE_CNT_DE[] PROGMEM = "Einige Dateien werden nicht sortiert. Max. 100 Dateien innerhalb einem Ordner sind zugelassen.";
 const char * const MSG_FILE_CNT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILE_CNT_EN,
 	MSG_FILE_CNT_CZ,
@@ -1148,7 +1192,7 @@ const char MSG_FILE_INCOMPLETE_CZ[] PROGMEM = "Soubor nekompletni. Pokracovat?";
 const char MSG_FILE_INCOMPLETE_IT[] PROGMEM = "File incompleto. Continuare comunque?";
 const char MSG_FILE_INCOMPLETE_ES[] PROGMEM = "Archivo imcompleto. Deseas continuar?";
 const char MSG_FILE_INCOMPLETE_PL[] PROGMEM = "Plik niekompletny. Kontynuowac?";
-const char MSG_FILE_INCOMPLETE_DE[] PROGMEM = "Datei unvollstaend. Trotzdem fortfahren?";
+const char MSG_FILE_INCOMPLETE_DE[] PROGMEM = "Datei unvollstaedig. Trotzdem fortfahren?";
 const char * const MSG_FILE_INCOMPLETE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILE_INCOMPLETE_EN,
 	MSG_FILE_INCOMPLETE_CZ,
@@ -1173,7 +1217,7 @@ const char MSG_FIL_ADJUSTING_CZ[] PROGMEM = "Probiha srovnani filamentu. Prosim 
 const char MSG_FIL_ADJUSTING_IT[] PROGMEM = "Filamento in fase di regolazione. Attendere prego.";
 const char MSG_FIL_ADJUSTING_ES[] PROGMEM = "Ajustando filamentos. Esperar por favor.";
 const char MSG_FIL_ADJUSTING_PL[] PROGMEM = "Przebiega wyrownanie filamentow. Prosze czekac.";
-const char MSG_FIL_ADJUSTING_DE[] PROGMEM = "Filament positionieren. Bitte warten.";
+const char MSG_FIL_ADJUSTING_DE[] PROGMEM = "FilamenteEinstellen. Bitte warten.";
 const char * const MSG_FIL_ADJUSTING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FIL_ADJUSTING_EN,
 	MSG_FIL_ADJUSTING_CZ,
@@ -1203,13 +1247,14 @@ const char MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_CZ[] PROGMEM = "Iterace ";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_IT[] PROGMEM = "Reiterazione ";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_ES[] PROGMEM = "Reiteracion ";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_PL[] PROGMEM = "Iteracja ";
+const char MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_DE[] PROGMEM = "Wiederholung ";
 const char * const MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_EN,
 	MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_CZ,
 	MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_IT,
 	MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_ES,
 	MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_PL,
-	MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_EN
+	MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION_DE
 };
 
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_EN[] PROGMEM = "Searching bed calibration point";
@@ -1217,7 +1262,7 @@ const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Hledam kalibracni 
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Ricerca del letto punto di calibraz.";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_ES[] PROGMEM = "Buscando cama punto de calibracion";
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_PL[] PROGMEM = "Szukam punktu kalibracyjnego podkladki";
-const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_DE[] PROGMEM = "Suchen Bett Kalibrierpunkt";
+const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_DE[] PROGMEM = "Suche Bett Kalibrierpunkt";
 const char * const MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_EN,
 	MSG_FIND_BED_OFFSET_AND_SKEW_LINE1_CZ,
@@ -1247,7 +1292,7 @@ const char MSG_FINISHING_MOVEMENTS_CZ[] PROGMEM = "Dokoncovani pohybu";
 const char MSG_FINISHING_MOVEMENTS_IT[] PROGMEM = "Arresto in corso";
 const char MSG_FINISHING_MOVEMENTS_ES[] PROGMEM = "Term. movimientos";
 const char MSG_FINISHING_MOVEMENTS_PL[] PROGMEM = "Konczenie druku";
-const char MSG_FINISHING_MOVEMENTS_DE[] PROGMEM = "Bewegung beenden";
+const char MSG_FINISHING_MOVEMENTS_DE[] PROGMEM = "Bewegungen beenden";
 const char * const MSG_FINISHING_MOVEMENTS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FINISHING_MOVEMENTS_EN,
 	MSG_FINISHING_MOVEMENTS_CZ,
@@ -1292,7 +1337,7 @@ const char MSG_FOLLOW_CALIBRATION_FLOW_CZ[] PROGMEM = "Tiskarna nebyla jeste zka
 const char MSG_FOLLOW_CALIBRATION_FLOW_IT[] PROGMEM = "Stampante ancora non calibrata. Si prega di seguire il manuale, capitolo PRIMI PASSI, sezione della calibrazione.";
 const char MSG_FOLLOW_CALIBRATION_FLOW_ES[] PROGMEM = "Impresora no esta calibrada todavia. Por favor usar el manual, el capitulo First steps, seleccion Calibration flow.";
 const char MSG_FOLLOW_CALIBRATION_FLOW_PL[] PROGMEM = "Drukarka nie zostala jeszcze skalibrowana. Prosze kierowac sie instrukcja, rozdzial Zaczynamy, podrozdzial Selftest.";
-const char MSG_FOLLOW_CALIBRATION_FLOW_DE[] PROGMEM = "Der Drucker wurde noch nicht kalibriert. Bitte folgen Sie das Handbuch, Kapitel First steps, Abschnitt Calibration flow.";
+const char MSG_FOLLOW_CALIBRATION_FLOW_DE[] PROGMEM = "Der Drucker wurde noch nicht kalibriert. Bitte folgen Sie dem Handbuch, Kapitel First steps, Abschnitt Calibration flow.";
 const char * const MSG_FOLLOW_CALIBRATION_FLOW_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FOLLOW_CALIBRATION_FLOW_EN,
 	MSG_FOLLOW_CALIBRATION_FLOW_CZ,
@@ -1392,7 +1437,7 @@ const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_CZ[] PROGMEM = "Zlepsuji presno
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_IT[] PROGMEM = "Perfezion. il letto punto di calibraz.";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_ES[] PROGMEM = "Mejorando cama punto de calibracion";
 const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_PL[] PROGMEM = "Poprawiam precyzyjnosc punktu kalibracyjnego";
-const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_DE[] PROGMEM = "Verbesserung Bett Kalibrierpunkt";
+const char MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_DE[] PROGMEM = "Verbessere Bett Kalibrierpunkt";
 const char * const MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_EN,
 	MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1_CZ,
@@ -1520,7 +1565,7 @@ const char MSG_LOADING_FILAMENT_CZ[] PROGMEM = "Zavadeni filamentu";
 const char MSG_LOADING_FILAMENT_IT[] PROGMEM = "Caricando filam.";
 const char MSG_LOADING_FILAMENT_ES[] PROGMEM = "Introduciendo filam.";
 const char MSG_LOADING_FILAMENT_PL[] PROGMEM = "Wprow. filamentu";
-const char MSG_LOADING_FILAMENT_DE[] PROGMEM = "Filament leadt";
+const char MSG_LOADING_FILAMENT_DE[] PROGMEM = "Filament laedt";
 const char * const MSG_LOADING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_LOADING_FILAMENT_EN,
 	MSG_LOADING_FILAMENT_CZ,
@@ -1720,7 +1765,7 @@ const char MSG_MEASURED_SKEW_CZ[] PROGMEM = "Merene zkoseni:";
 const char MSG_MEASURED_SKEW_IT[] PROGMEM = "Incl. misurata:";
 const char MSG_MEASURED_SKEW_ES[] PROGMEM = "Inclin. medida:";
 const char MSG_MEASURED_SKEW_PL[] PROGMEM = "Zmier. sciecie:";
-const char MSG_MEASURED_SKEW_DE[] PROGMEM = "Schraeglauf:";
+const char MSG_MEASURED_SKEW_DE[] PROGMEM = "Symmetrie:";
 const char * const MSG_MEASURED_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MEASURED_SKEW_EN,
 	MSG_MEASURED_SKEW_CZ,
@@ -1777,14 +1822,13 @@ const char * const MSG_MENU_CALIBRATION_LANG_TABLE[LANG_NUM] PROGMEM = {
 
 const char MSG_MESH_BED_LEVELING_EN[] PROGMEM = "Mesh Bed Leveling";
 const char MSG_MESH_BED_LEVELING_IT[] PROGMEM = "Mesh livel. letto";
-const char MSG_MESH_BED_LEVELING_DE[] PROGMEM = "Mesh Bett Leveling";
 const char * const MSG_MESH_BED_LEVELING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MESH_BED_LEVELING_EN,
 	MSG_MESH_BED_LEVELING_EN,
 	MSG_MESH_BED_LEVELING_IT,
 	MSG_MESH_BED_LEVELING_EN,
 	MSG_MESH_BED_LEVELING_EN,
-	MSG_MESH_BED_LEVELING_DE
+	MSG_MESH_BED_LEVELING_EN
 };
 
 const char MSG_MIN_EN[] PROGMEM = " \002 Min";
@@ -1817,7 +1861,7 @@ const char MSG_MOVE_AXIS_CZ[] PROGMEM = "Posunout osu";
 const char MSG_MOVE_AXIS_IT[] PROGMEM = "Muovi asse";
 const char MSG_MOVE_AXIS_ES[] PROGMEM = "Mover ejes";
 const char MSG_MOVE_AXIS_PL[] PROGMEM = "Ruch osi";
-const char MSG_MOVE_AXIS_DE[] PROGMEM = "Achsbewegung";
+const char MSG_MOVE_AXIS_DE[] PROGMEM = "Bewege Achse";
 const char * const MSG_MOVE_AXIS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_AXIS_EN,
 	MSG_MOVE_AXIS_CZ,
@@ -1832,7 +1876,7 @@ const char MSG_MOVE_CARRIAGE_TO_THE_TOP_CZ[] PROGMEM = "Kalibrace XYZ. Otacenim 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_IT[] PROGMEM = "Calibrazione XYZ. Ruotare la manopola per alzare il carrello Z fino all'altezza massima. Click per terminare.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_ES[] PROGMEM = "Calibrando XYZ. Gira el boton para subir el carro Z hasta golpe piezas superioras. Despues haz clic.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_PL[] PROGMEM = "Kalibracja XYZ. Przekrec galke, aby przesunac os Z do gornych krancowek. Nacisnij, by potwierdzic.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_DE[] PROGMEM = "Kalibrieren von XYZ. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken Sie den Knopf wenn es ganz oben wird.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_DE[] PROGMEM = "Kalibrieren von XYZ. Drehen Sie den Knopf, bis beide Z-Schlitten obere Anschaege erreichen. Klicken wenn beide ganz oben sind.";
 const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_EN,
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_CZ,
@@ -1847,7 +1891,7 @@ const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_CZ[] PROGMEM = "Kalibrace Z. Otacenim 
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_IT[] PROGMEM = "Calibrazione Z. Ruotare la manopola per alzare il carrello Z fino all'altezza massima. Click per terminare.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_ES[] PROGMEM = "Calibrando Z. Gira el boton para subir el carro Z hasta golpe piezas superioras. Despues haz clic.";
 const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_PL[] PROGMEM = "Kalibracja Z. Przekrec galke, aby przesunac os Z do gornych krancowek. Nacisnij, by potwierdzic.";
-const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_DE[] PROGMEM = "Kalibrieren von Z. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken Sie den Knopf wenn es ganz oben wird.";
+const char MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_DE[] PROGMEM = "Kalibrieren von Z. Drehen Sie den Knopf, bis beide Z-Schlitten obere Anschaege erreichen. Klicken wenn beide ganz oben sind.";
 const char * const MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_EN,
 	MSG_MOVE_CARRIAGE_TO_THE_TOP_Z_CZ,
@@ -1962,7 +2006,7 @@ const char MSG_NOT_COLOR_CZ[] PROGMEM = "Barva neni cista";
 const char MSG_NOT_COLOR_IT[] PROGMEM = "Colore non puro";
 const char MSG_NOT_COLOR_ES[] PROGMEM = "Color no homogeneo";
 const char MSG_NOT_COLOR_PL[] PROGMEM = "Kolor zanieczysz.";
-const char MSG_NOT_COLOR_DE[] PROGMEM = "Farbe unklar";
+const char MSG_NOT_COLOR_DE[] PROGMEM = "Farbe nicht klar.";
 const char * const MSG_NOT_COLOR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_NOT_COLOR_EN,
 	MSG_NOT_COLOR_CZ,
@@ -2060,7 +2104,7 @@ const char MSG_PAPER_CZ[] PROGMEM = "Umistete list papiru na podlozku a udrzujte
 const char MSG_PAPER_IT[] PROGMEM = "Porre un foglio sotto l'ugello durante la calibrazione dei primi 4 punti. In caso l'ugello muova il foglio spegnere prontamente la stampante.";
 const char MSG_PAPER_ES[] PROGMEM = "Colocar una hoja de papel sobre la superficie de impresion durante la calibracion de los primeros 4 puntos. Si la boquilla mueve el papel, apagar impresora inmediatamente.";
 const char MSG_PAPER_PL[] PROGMEM = "Umiesc kartke papieru na podkladce i trzymaj pod dysza podczas pomiaru pierwszych 4 punktow. Jesli dysza zahaczy o papier, wylacz drukarke.";
-const char MSG_PAPER_DE[] PROGMEM = "Legen ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier einklemmt, Drucker sofort ausschalten";
+const char MSG_PAPER_DE[] PROGMEM = "Lege waehrend der Kalibrierung der ersten 4 Punkte ein Blatt Papier unter die Duese. Wenn die Duese das Papier bewegt, Drucker sofort ausschalten!";
 const char * const MSG_PAPER_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PAPER_EN,
 	MSG_PAPER_CZ,
@@ -2075,7 +2119,7 @@ const char MSG_PAUSE_PRINT_CZ[] PROGMEM = "Pozastavit tisk";
 const char MSG_PAUSE_PRINT_IT[] PROGMEM = "Metti in pausa";
 const char MSG_PAUSE_PRINT_ES[] PROGMEM = "Pausar impresion";
 const char MSG_PAUSE_PRINT_PL[] PROGMEM = "Przerwac druk";
-const char MSG_PAUSE_PRINT_DE[] PROGMEM = "Druck unterbrech.";
+const char MSG_PAUSE_PRINT_DE[] PROGMEM = "Pause";
 const char * const MSG_PAUSE_PRINT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PAUSE_PRINT_EN,
 	MSG_PAUSE_PRINT_CZ,
@@ -2089,7 +2133,7 @@ const char MSG_PICK_Z_EN[] PROGMEM = "Pick print";
 const char MSG_PICK_Z_CZ[] PROGMEM = "Vyberte vytisk";
 const char MSG_PICK_Z_ES[] PROGMEM = "Esc. Modelo Adecuado";
 const char MSG_PICK_Z_PL[] PROGMEM = "Vyberte vytisk";
-const char MSG_PICK_Z_DE[] PROGMEM = "Waehle Abdruck";
+const char MSG_PICK_Z_DE[] PROGMEM = "Waehle Druck";
 const char * const MSG_PICK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PICK_Z_EN,
 	MSG_PICK_Z_CZ,
@@ -2129,7 +2173,7 @@ const char * const MSG_PID_FINISHED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PID_FINISHED_DE
 };
 
-const char MSG_PID_RUNNING_EN[] PROGMEM = "PID cal.           ";
+const char MSG_PID_RUNNING_EN[] PROGMEM = "PID cal.         ";
 const char MSG_PID_RUNNING_CZ[] PROGMEM = "PID kal.           ";
 const char MSG_PID_RUNNING_IT[] PROGMEM = "Cal. PID";
 const char MSG_PID_RUNNING_ES[] PROGMEM = "Cal. PID           ";
@@ -2149,7 +2193,7 @@ const char MSG_PINDA_NOT_CALIBRATED_CZ[] PROGMEM = "Tiskarna nebyla teplotne zka
 const char MSG_PINDA_NOT_CALIBRATED_IT[] PROGMEM = "Taratura della temperatura non ancora eseguita";
 const char MSG_PINDA_NOT_CALIBRATED_ES[] PROGMEM = "La temperatura de calibracion no ha sido ajustada";
 const char MSG_PINDA_NOT_CALIBRATED_PL[] PROGMEM = "Cieplna kalibracja nie byla przeprowadzona";
-const char MSG_PINDA_NOT_CALIBRATED_DE[] PROGMEM = "Temperatur wurde nicht kalibriert";
+const char MSG_PINDA_NOT_CALIBRATED_DE[] PROGMEM = "PINDA Temp. wurde nicht kalibriert";
 const char * const MSG_PINDA_NOT_CALIBRATED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PINDA_NOT_CALIBRATED_EN,
 	MSG_PINDA_NOT_CALIBRATED_CZ,
@@ -2254,7 +2298,7 @@ const char MSG_PREHEAT_NOZZLE_CZ[] PROGMEM = "Predehrejte trysku!";
 const char MSG_PREHEAT_NOZZLE_IT[] PROGMEM = "Preris. ugello!";
 const char MSG_PREHEAT_NOZZLE_ES[] PROGMEM = "Precalentar extrusor";
 const char MSG_PREHEAT_NOZZLE_PL[] PROGMEM = "Nagrzej dysze!";
-const char MSG_PREHEAT_NOZZLE_DE[] PROGMEM = "Duese Vorwaermen";
+const char MSG_PREHEAT_NOZZLE_DE[] PROGMEM = "Duese vorwaermen!";
 const char * const MSG_PREHEAT_NOZZLE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PREHEAT_NOZZLE_EN,
 	MSG_PREHEAT_NOZZLE_CZ,
@@ -2295,8 +2339,14 @@ const char * const MSG_PRESS_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_PRINTER_DISCONNECTED_EN[] PROGMEM = "Printer disconnected";
-const char * const MSG_PRINTER_DISCONNECTED_LANG_TABLE[1] PROGMEM = {
-	MSG_PRINTER_DISCONNECTED_EN
+const char MSG_PRINTER_DISCONNECTED_DE[] PROGMEM = "Drucker getrent";
+const char * const MSG_PRINTER_DISCONNECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PRINTER_DISCONNECTED_EN,
+	MSG_PRINTER_DISCONNECTED_EN,
+	MSG_PRINTER_DISCONNECTED_EN,
+	MSG_PRINTER_DISCONNECTED_EN,
+	MSG_PRINTER_DISCONNECTED_EN,
+	MSG_PRINTER_DISCONNECTED_DE
 };
 
 const char MSG_PRINT_ABORTED_EN[] PROGMEM = "Print aborted";
@@ -2440,7 +2490,7 @@ const char MSG_RESUMING_PRINT_CZ[] PROGMEM = "Obnovovani tisku";
 const char MSG_RESUMING_PRINT_IT[] PROGMEM = "Stampa in ripresa";
 const char MSG_RESUMING_PRINT_ES[] PROGMEM = "Reanudar impresion";
 const char MSG_RESUMING_PRINT_PL[] PROGMEM = "Wznawianie druku";
-const char MSG_RESUMING_PRINT_DE[] PROGMEM = "Druck weitergehen";
+const char MSG_RESUMING_PRINT_DE[] PROGMEM = "Druck fortsetzen";
 const char * const MSG_RESUMING_PRINT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_RESUMING_PRINT_EN,
 	MSG_RESUMING_PRINT_CZ,
@@ -2586,14 +2636,13 @@ const char * const MSG_SELFTEST_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_SELFTEST_BEDHEATER_EN[] PROGMEM = "Bed / Heater";
 const char MSG_SELFTEST_BEDHEATER_IT[] PROGMEM = "Letto/Riscald.";
 const char MSG_SELFTEST_BEDHEATER_ES[] PROGMEM = "Cama/Calentador";
-const char MSG_SELFTEST_BEDHEATER_DE[] PROGMEM = "Bett / Heater";
 const char * const MSG_SELFTEST_BEDHEATER_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_BEDHEATER_EN,
 	MSG_SELFTEST_BEDHEATER_EN,
 	MSG_SELFTEST_BEDHEATER_IT,
 	MSG_SELFTEST_BEDHEATER_ES,
 	MSG_SELFTEST_BEDHEATER_EN,
-	MSG_SELFTEST_BEDHEATER_DE
+	MSG_SELFTEST_BEDHEATER_EN
 };
 
 const char MSG_SELFTEST_CHECK_ALLCORRECT_EN[] PROGMEM = "All correct      ";
@@ -2616,7 +2665,7 @@ const char MSG_SELFTEST_CHECK_BED_CZ[] PROGMEM = "Kontrola bed     ";
 const char MSG_SELFTEST_CHECK_BED_IT[] PROGMEM = "Verifica letto";
 const char MSG_SELFTEST_CHECK_BED_ES[] PROGMEM = "Control de cama";
 const char MSG_SELFTEST_CHECK_BED_PL[] PROGMEM = "Kontrola bed     ";
-const char MSG_SELFTEST_CHECK_BED_DE[] PROGMEM = "Pruefe Bett        ";
+const char MSG_SELFTEST_CHECK_BED_DE[] PROGMEM = "Pruefe Bett       ";
 const char * const MSG_SELFTEST_CHECK_BED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_BED_EN,
 	MSG_SELFTEST_CHECK_BED_CZ,
@@ -2631,7 +2680,7 @@ const char MSG_SELFTEST_CHECK_ENDSTOPS_CZ[] PROGMEM = "Kontrola endstops";
 const char MSG_SELFTEST_CHECK_ENDSTOPS_IT[] PROGMEM = "Verifica finecorsa";
 const char MSG_SELFTEST_CHECK_ENDSTOPS_ES[] PROGMEM = "Cont. topes final";
 const char MSG_SELFTEST_CHECK_ENDSTOPS_PL[] PROGMEM = "Kontrola endstops";
-const char MSG_SELFTEST_CHECK_ENDSTOPS_DE[] PROGMEM = "Pruefe Endschalter  ";
+const char MSG_SELFTEST_CHECK_ENDSTOPS_DE[] PROGMEM = "Pruefe Endschalter";
 const char * const MSG_SELFTEST_CHECK_ENDSTOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_ENDSTOPS_EN,
 	MSG_SELFTEST_CHECK_ENDSTOPS_CZ,
@@ -2646,7 +2695,7 @@ const char MSG_SELFTEST_CHECK_HOTEND_CZ[] PROGMEM = "Kontrola hotend  ";
 const char MSG_SELFTEST_CHECK_HOTEND_IT[] PROGMEM = "Verifica ugello";
 const char MSG_SELFTEST_CHECK_HOTEND_ES[] PROGMEM = "Control hotend ";
 const char MSG_SELFTEST_CHECK_HOTEND_PL[] PROGMEM = "Kontrola hotend  ";
-const char MSG_SELFTEST_CHECK_HOTEND_DE[] PROGMEM = "Pruefe Duese";
+const char MSG_SELFTEST_CHECK_HOTEND_DE[] PROGMEM = "Pruefe Hotend     ";
 const char * const MSG_SELFTEST_CHECK_HOTEND_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_HOTEND_EN,
 	MSG_SELFTEST_CHECK_HOTEND_CZ,
@@ -2701,7 +2750,7 @@ const char * const MSG_SELFTEST_CHECK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_Z_DE
 };
 
-const char MSG_SELFTEST_COOLING_FAN_EN[] PROGMEM = "Front print fan?";;
+const char MSG_SELFTEST_COOLING_FAN_EN[] PROGMEM = "Front print fan?";
 const char MSG_SELFTEST_COOLING_FAN_CZ[] PROGMEM = "Predni tiskovy vent?";;
 const char MSG_SELFTEST_COOLING_FAN_IT[] PROGMEM = "Vent di stampa ant.?";;
 const char MSG_SELFTEST_COOLING_FAN_ES[] PROGMEM = "Vent. al frente?";;
@@ -2744,7 +2793,7 @@ const char * const MSG_SELFTEST_ENDSTOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_SELFTEST_ENDSTOP_NOTHIT_EN[] PROGMEM = "Endstop not hit";
 const char MSG_SELFTEST_ENDSTOP_NOTHIT_IT[] PROGMEM = "Finec. fuori por.";
 const char MSG_SELFTEST_ENDSTOP_NOTHIT_ES[] PROGMEM = "Tope fin. no toc.";
-const char MSG_SELFTEST_ENDSTOP_NOTHIT_DE[] PROGMEM = "Ende nicht getrof.";
+const char MSG_SELFTEST_ENDSTOP_NOTHIT_DE[] PROGMEM = "Endsch. n. erreicht";
 const char * const MSG_SELFTEST_ENDSTOP_NOTHIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_ENDSTOP_NOTHIT_EN,
 	MSG_SELFTEST_ENDSTOP_NOTHIT_EN,
@@ -2757,7 +2806,7 @@ const char * const MSG_SELFTEST_ENDSTOP_NOTHIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_SELFTEST_ERROR_EN[] PROGMEM = "Selftest error !";
 const char MSG_SELFTEST_ERROR_IT[] PROGMEM = "Autotest negativo";
 const char MSG_SELFTEST_ERROR_ES[] PROGMEM = "Autotest error!";
-const char MSG_SELFTEST_ERROR_DE[] PROGMEM = "Selbtest Fehler!";
+const char MSG_SELFTEST_ERROR_DE[] PROGMEM = "Selbsttest Fehler !";
 const char * const MSG_SELFTEST_ERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_ERROR_EN,
 	MSG_SELFTEST_ERROR_EN,
@@ -2767,7 +2816,7 @@ const char * const MSG_SELFTEST_ERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_ERROR_DE
 };
 
-const char MSG_SELFTEST_EXTRUDER_FAN_EN[] PROGMEM = "Left hotend fan?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_EN[] PROGMEM = "Left hotend fan?";
 const char MSG_SELFTEST_EXTRUDER_FAN_CZ[] PROGMEM = "Levy vent na trysce?";;
 const char MSG_SELFTEST_EXTRUDER_FAN_IT[] PROGMEM = "Vent SX sull'ugello?";;
 const char MSG_SELFTEST_EXTRUDER_FAN_ES[] PROGMEM = "Vent. en la izg?";;
@@ -2787,7 +2836,7 @@ const char MSG_SELFTEST_FAILED_CZ[] PROGMEM = "Selftest selhal  ";
 const char MSG_SELFTEST_FAILED_IT[] PROGMEM = "Autotest fallito";
 const char MSG_SELFTEST_FAILED_ES[] PROGMEM = "Autotest fallado";
 const char MSG_SELFTEST_FAILED_PL[] PROGMEM = "Selftest nieudany";
-const char MSG_SELFTEST_FAILED_DE[] PROGMEM = "Selbsttest misslung.";
+const char MSG_SELFTEST_FAILED_DE[] PROGMEM = "Selbsttest misluekt";
 const char * const MSG_SELFTEST_FAILED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAILED_EN,
 	MSG_SELFTEST_FAILED_CZ,
@@ -2797,7 +2846,7 @@ const char * const MSG_SELFTEST_FAILED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAILED_DE
 };
 
-const char MSG_SELFTEST_FAN_EN[] PROGMEM = "Fan test";;
+const char MSG_SELFTEST_FAN_EN[] PROGMEM = "Fan test";
 const char MSG_SELFTEST_FAN_CZ[] PROGMEM = "Test ventilatoru";;
 const char MSG_SELFTEST_FAN_IT[] PROGMEM = "Prova del ventilator";;
 const char MSG_SELFTEST_FAN_ES[] PROGMEM = "Test del ventilador";;
@@ -2812,7 +2861,7 @@ const char * const MSG_SELFTEST_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAN_DE
 };
 
-const char MSG_SELFTEST_FAN_NO_EN[] PROGMEM = "Not spinning";;
+const char MSG_SELFTEST_FAN_NO_EN[] PROGMEM = "Not spinning";
 const char MSG_SELFTEST_FAN_NO_CZ[] PROGMEM = "Netoci se";;
 const char MSG_SELFTEST_FAN_NO_IT[] PROGMEM = "Non si gira";;
 const char MSG_SELFTEST_FAN_NO_ES[] PROGMEM = "Ventilador no gira";;
@@ -2827,7 +2876,7 @@ const char * const MSG_SELFTEST_FAN_NO_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAN_NO_DE
 };
 
-const char MSG_SELFTEST_FAN_YES_EN[] PROGMEM = "Spinning";;
+const char MSG_SELFTEST_FAN_YES_EN[] PROGMEM = "Spinning";
 const char MSG_SELFTEST_FAN_YES_CZ[] PROGMEM = "Toci se";;
 const char MSG_SELFTEST_FAN_YES_IT[] PROGMEM = "Gira";;
 const char MSG_SELFTEST_FAN_YES_ES[] PROGMEM = "Ventilador gira";;
@@ -2926,7 +2975,7 @@ const char MSG_SELFTEST_WIRINGERROR_CZ[] PROGMEM = "Chyba zapojeni";
 const char MSG_SELFTEST_WIRINGERROR_IT[] PROGMEM = "Errore cablaggio";
 const char MSG_SELFTEST_WIRINGERROR_ES[] PROGMEM = "Error de conexion";
 const char MSG_SELFTEST_WIRINGERROR_PL[] PROGMEM = "Blad polaczenia";
-const char MSG_SELFTEST_WIRINGERROR_DE[] PROGMEM = "Verdrahtungfehler";
+const char MSG_SELFTEST_WIRINGERROR_DE[] PROGMEM = "Verdrahtungsfehler";
 const char * const MSG_SELFTEST_WIRINGERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_WIRINGERROR_EN,
 	MSG_SELFTEST_WIRINGERROR_CZ,
@@ -2971,7 +3020,7 @@ const char MSG_SET_TEMPERATURE_CZ[] PROGMEM = "Nastavte teplotu:";
 const char MSG_SET_TEMPERATURE_IT[] PROGMEM = "Imposta temperatura";
 const char MSG_SET_TEMPERATURE_ES[] PROGMEM = "Establecer temp.:";
 const char MSG_SET_TEMPERATURE_PL[] PROGMEM = "Ustawic temperature";
-const char MSG_SET_TEMPERATURE_DE[] PROGMEM = "Temp. einsetzen";
+const char MSG_SET_TEMPERATURE_DE[] PROGMEM = "Temp.einstellen";
 const char * const MSG_SET_TEMPERATURE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SET_TEMPERATURE_EN,
 	MSG_SET_TEMPERATURE_CZ,
@@ -2986,7 +3035,7 @@ const char MSG_SEVERE_SKEW_CZ[] PROGMEM = "Tezke zkoseni:";
 const char MSG_SEVERE_SKEW_IT[] PROGMEM = "Inc. rilevante:";
 const char MSG_SEVERE_SKEW_ES[] PROGMEM = "Inclin. severa:";
 const char MSG_SEVERE_SKEW_PL[] PROGMEM = "Ostre sciecie:";
-const char MSG_SEVERE_SKEW_DE[] PROGMEM = "Schwerer Schr.:";
+const char MSG_SEVERE_SKEW_DE[] PROGMEM = "Schwere Asym.:";
 const char * const MSG_SEVERE_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SEVERE_SKEW_EN,
 	MSG_SEVERE_SKEW_CZ,
@@ -3001,7 +3050,7 @@ const char MSG_SHOW_END_STOPS_CZ[] PROGMEM = "Stav konc. spin.";
 const char MSG_SHOW_END_STOPS_IT[] PROGMEM = "Stato finecorsa";
 const char MSG_SHOW_END_STOPS_ES[] PROGMEM = "Ensena tope final";
 const char MSG_SHOW_END_STOPS_PL[] PROGMEM = "Pokaz krancowki";
-const char MSG_SHOW_END_STOPS_DE[] PROGMEM = "Endschalter Stat.";
+const char MSG_SHOW_END_STOPS_DE[] PROGMEM = "Endstopp-status";
 const char * const MSG_SHOW_END_STOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SHOW_END_STOPS_EN,
 	MSG_SHOW_END_STOPS_CZ,
@@ -3031,7 +3080,7 @@ const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod       [tichy]";
 const char MSG_SILENT_MODE_ON_IT[] PROGMEM = "Modo [silenzioso]";
 const char MSG_SILENT_MODE_ON_ES[] PROGMEM = "Modo   [silencio]";
 const char MSG_SILENT_MODE_ON_PL[] PROGMEM = "Tryb      [cichy]";
-const char MSG_SILENT_MODE_ON_DE[] PROGMEM = "Mode     [leise]";
+const char MSG_SILENT_MODE_ON_DE[] PROGMEM = "Mode      [leise]";
 const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_EN,
 	MSG_SILENT_MODE_ON_CZ,
@@ -3046,7 +3095,7 @@ const char MSG_SLIGHT_SKEW_CZ[] PROGMEM = "Lehke zkoseni:";
 const char MSG_SLIGHT_SKEW_IT[] PROGMEM = "Incl. leggera:";
 const char MSG_SLIGHT_SKEW_ES[] PROGMEM = "Inclin. ligera:";
 const char MSG_SLIGHT_SKEW_PL[] PROGMEM = "Lekkie sciecie:";
-const char MSG_SLIGHT_SKEW_DE[] PROGMEM = "Leichter Schr.:";
+const char MSG_SLIGHT_SKEW_DE[] PROGMEM = "Geringe Asym.:";
 const char * const MSG_SLIGHT_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SLIGHT_SKEW_EN,
 	MSG_SLIGHT_SKEW_CZ,
@@ -3137,8 +3186,14 @@ const char * const MSG_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_STACK_ERROR_EN[] PROGMEM = "Error - static memory has been overwritten";
-const char * const MSG_STACK_ERROR_LANG_TABLE[1] PROGMEM = {
-	MSG_STACK_ERROR_EN
+const char MSG_STACK_ERROR_DE[] PROGMEM = "Error - Konfig. wurde ueberschrieben";
+const char * const MSG_STACK_ERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_DE
 };
 
 const char MSG_STATISTICS_EN[] PROGMEM = "Statistics  ";
@@ -3191,7 +3246,7 @@ const char MSG_STATS_TOTALFILAMENT_CZ[] PROGMEM = "Filament celkem :";
 const char MSG_STATS_TOTALFILAMENT_IT[] PROGMEM = "Filamento tot:";
 const char MSG_STATS_TOTALFILAMENT_ES[] PROGMEM = "Filamento total:";
 const char MSG_STATS_TOTALFILAMENT_PL[] PROGMEM = "Filament lacznie :";
-const char MSG_STATS_TOTALFILAMENT_DE[] PROGMEM = "Gesamtfilament:";
+const char MSG_STATS_TOTALFILAMENT_DE[] PROGMEM = "Filament Gesamt:";
 const char * const MSG_STATS_TOTALFILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_STATS_TOTALFILAMENT_EN,
 	MSG_STATS_TOTALFILAMENT_CZ,
@@ -3323,12 +3378,12 @@ const char * const MSG_TEMPERATURE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMPERATURE_DE
 };
 
-const char MSG_TEMP_CALIBRATION_EN[] PROGMEM = "Temp. cal.          ";
+const char MSG_TEMP_CALIBRATION_EN[] PROGMEM = "PINDA Temp.cal.";
 const char MSG_TEMP_CALIBRATION_CZ[] PROGMEM = "Tepl. kal.          ";
 const char MSG_TEMP_CALIBRATION_IT[] PROGMEM = "Cal. temp.          ";
 const char MSG_TEMP_CALIBRATION_ES[] PROGMEM = "Cal. temp.          ";
 const char MSG_TEMP_CALIBRATION_PL[] PROGMEM = "Ciepl. kal.         ";
-const char MSG_TEMP_CALIBRATION_DE[] PROGMEM = "Temp Kalib.         ";
+const char MSG_TEMP_CALIBRATION_DE[] PROGMEM = "PINDA Temp.Kal.     ";
 const char * const MSG_TEMP_CALIBRATION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_EN,
 	MSG_TEMP_CALIBRATION_CZ,
@@ -3338,12 +3393,12 @@ const char * const MSG_TEMP_CALIBRATION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_DE
 };
 
-const char MSG_TEMP_CALIBRATION_DONE_EN[] PROGMEM = "Temperature calibration is finished. Click to continue.";
+const char MSG_TEMP_CALIBRATION_DONE_EN[] PROGMEM = "PINDA Temperature calibration is finished. Click to continue.";
 const char MSG_TEMP_CALIBRATION_DONE_CZ[] PROGMEM = "Teplotni kalibrace dokoncena. Pokracujte stiskem tlacitka.";
 const char MSG_TEMP_CALIBRATION_DONE_IT[] PROGMEM = "Taratura temperatura terminata. Fare click per continuare.";
 const char MSG_TEMP_CALIBRATION_DONE_ES[] PROGMEM = "Calibracon temperatura terminada. Presionar para continuar.";
 const char MSG_TEMP_CALIBRATION_DONE_PL[] PROGMEM = "Cieplna kalibracja zakonczona. Kontynuuj przyciskiem";
-const char MSG_TEMP_CALIBRATION_DONE_DE[] PROGMEM = "Temp. Kalibrierung fertig. Klicken um weiter zu gehen.";
+const char MSG_TEMP_CALIBRATION_DONE_DE[] PROGMEM = "PINDA Temp. Kalibrierung fertig. Klicke um fortzufahren.";
 const char * const MSG_TEMP_CALIBRATION_DONE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_DONE_EN,
 	MSG_TEMP_CALIBRATION_DONE_CZ,
@@ -3353,12 +3408,12 @@ const char * const MSG_TEMP_CALIBRATION_DONE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_DONE_DE
 };
 
-const char MSG_TEMP_CALIBRATION_OFF_EN[] PROGMEM = "Temp. cal. [OFF]";
+const char MSG_TEMP_CALIBRATION_OFF_EN[] PROGMEM = "PINDA Temp.cal.[OFF]";
 const char MSG_TEMP_CALIBRATION_OFF_CZ[] PROGMEM = "Tepl. kal. [OFF]";
 const char MSG_TEMP_CALIBRATION_OFF_IT[] PROGMEM = "Cal. temp. [OFF]";
 const char MSG_TEMP_CALIBRATION_OFF_ES[] PROGMEM = "Cal. temp. [OFF]";
 const char MSG_TEMP_CALIBRATION_OFF_PL[] PROGMEM = "Ciepl. kal. [OFF]";
-const char MSG_TEMP_CALIBRATION_OFF_DE[] PROGMEM = "Temp. Kal. [OFF]";
+const char MSG_TEMP_CALIBRATION_OFF_DE[] PROGMEM = "PINDA T.Kal.[OFF]";
 const char * const MSG_TEMP_CALIBRATION_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_OFF_EN,
 	MSG_TEMP_CALIBRATION_OFF_CZ,
@@ -3368,12 +3423,12 @@ const char * const MSG_TEMP_CALIBRATION_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_OFF_DE
 };
 
-const char MSG_TEMP_CALIBRATION_ON_EN[] PROGMEM = "Temp. cal. [ON]";
+const char MSG_TEMP_CALIBRATION_ON_EN[] PROGMEM = "PINDA Temp.cal. [ON]";
 const char MSG_TEMP_CALIBRATION_ON_CZ[] PROGMEM = "Tepl. kal. [ON]";
 const char MSG_TEMP_CALIBRATION_ON_IT[] PROGMEM = "Cal. temp. [ON]";
 const char MSG_TEMP_CALIBRATION_ON_ES[] PROGMEM = "Cal. temp. [ON]";
 const char MSG_TEMP_CALIBRATION_ON_PL[] PROGMEM = "Ciepl. kal. [ON]";
-const char MSG_TEMP_CALIBRATION_ON_DE[] PROGMEM = "Temp. Kal. [ON]";
+const char MSG_TEMP_CALIBRATION_ON_DE[] PROGMEM = "PINDA T.Kal. [ON]";
 const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_ON_EN,
 	MSG_TEMP_CALIBRATION_ON_CZ,
@@ -3432,7 +3487,7 @@ const char MSG_UNLOADING_FILAMENT_CZ[] PROGMEM = "Vysouvam filament";
 const char MSG_UNLOADING_FILAMENT_IT[] PROGMEM = "Rilasc. filamento";
 const char MSG_UNLOADING_FILAMENT_ES[] PROGMEM = "Soltando filamento";
 const char MSG_UNLOADING_FILAMENT_PL[] PROGMEM = "Wysuwam filament";
-const char MSG_UNLOADING_FILAMENT_DE[] PROGMEM = "Filament auswerfen";
+const char MSG_UNLOADING_FILAMENT_DE[] PROGMEM = "Entlade Filament";
 const char * const MSG_UNLOADING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOADING_FILAMENT_EN,
 	MSG_UNLOADING_FILAMENT_CZ,
@@ -3447,7 +3502,7 @@ const char MSG_UNLOAD_ALL_CZ[] PROGMEM = "Vyjmout vse";
 const char MSG_UNLOAD_ALL_IT[] PROGMEM = "Rilasciare tutti";
 const char MSG_UNLOAD_ALL_ES[] PROGMEM = "Soltar todos fil.";
 const char MSG_UNLOAD_ALL_PL[] PROGMEM = "Wyjac wszystkie";
-const char MSG_UNLOAD_ALL_DE[] PROGMEM = "Alles entladen";
+const char MSG_UNLOAD_ALL_DE[] PROGMEM = "Alle entladen";
 const char * const MSG_UNLOAD_ALL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_ALL_EN,
 	MSG_UNLOAD_ALL_CZ,
@@ -3477,7 +3532,7 @@ const char MSG_UNLOAD_FILAMENT_1_CZ[] PROGMEM = "Vyjmout filam. 1";
 const char MSG_UNLOAD_FILAMENT_1_IT[] PROGMEM = "Rilasciare fil. 1";
 const char MSG_UNLOAD_FILAMENT_1_ES[] PROGMEM = "Soltar fil. 1";
 const char MSG_UNLOAD_FILAMENT_1_PL[] PROGMEM = "Wyjac filament 1";
-const char MSG_UNLOAD_FILAMENT_1_DE[] PROGMEM = "Filam. 1 entladen";
+const char MSG_UNLOAD_FILAMENT_1_DE[] PROGMEM = "Filam.1 entladen";
 const char * const MSG_UNLOAD_FILAMENT_1_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_1_EN,
 	MSG_UNLOAD_FILAMENT_1_CZ,
@@ -3492,7 +3547,7 @@ const char MSG_UNLOAD_FILAMENT_2_CZ[] PROGMEM = "Vyjmout filam. 2";
 const char MSG_UNLOAD_FILAMENT_2_IT[] PROGMEM = "Rilasciare fil. 1";
 const char MSG_UNLOAD_FILAMENT_2_ES[] PROGMEM = "Soltar fil. 2";
 const char MSG_UNLOAD_FILAMENT_2_PL[] PROGMEM = "Wyjac filament 2";
-const char MSG_UNLOAD_FILAMENT_2_DE[] PROGMEM = "Filam. 2 entladen";
+const char MSG_UNLOAD_FILAMENT_2_DE[] PROGMEM = "Filam.2 entladen";
 const char * const MSG_UNLOAD_FILAMENT_2_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_2_EN,
 	MSG_UNLOAD_FILAMENT_2_CZ,
@@ -3507,7 +3562,7 @@ const char MSG_UNLOAD_FILAMENT_3_CZ[] PROGMEM = "Vyjmout filam. 3";
 const char MSG_UNLOAD_FILAMENT_3_IT[] PROGMEM = "Rilasciare fil. 1";
 const char MSG_UNLOAD_FILAMENT_3_ES[] PROGMEM = "Soltar fil. 3";
 const char MSG_UNLOAD_FILAMENT_3_PL[] PROGMEM = "Wyjac filament 3";
-const char MSG_UNLOAD_FILAMENT_3_DE[] PROGMEM = "Filam. 3 entladen";
+const char MSG_UNLOAD_FILAMENT_3_DE[] PROGMEM = "Filam.3 entladen";
 const char * const MSG_UNLOAD_FILAMENT_3_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_3_EN,
 	MSG_UNLOAD_FILAMENT_3_CZ,
@@ -3522,7 +3577,7 @@ const char MSG_UNLOAD_FILAMENT_4_CZ[] PROGMEM = "Vyjmout filam. 4";
 const char MSG_UNLOAD_FILAMENT_4_IT[] PROGMEM = "Rilasciare fil. 1";
 const char MSG_UNLOAD_FILAMENT_4_ES[] PROGMEM = "Soltar fil. 4";
 const char MSG_UNLOAD_FILAMENT_4_PL[] PROGMEM = "Wyjac filament 4";
-const char MSG_UNLOAD_FILAMENT_4_DE[] PROGMEM = "Filam. 4 entladen";
+const char MSG_UNLOAD_FILAMENT_4_DE[] PROGMEM = "Filam.4 entladen";
 const char * const MSG_UNLOAD_FILAMENT_4_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_4_EN,
 	MSG_UNLOAD_FILAMENT_4_CZ,
@@ -3552,7 +3607,7 @@ const char MSG_USED_CZ[] PROGMEM = "Pouzite behem tisku";
 const char MSG_USED_IT[] PROGMEM = "Usati nella stampa";
 const char MSG_USED_ES[] PROGMEM = "Usado en impresion";
 const char MSG_USED_PL[] PROGMEM = "Uzyte przy druku";
-const char MSG_USED_DE[] PROGMEM = "Beim Druck benutzte";
+const char MSG_USED_DE[] PROGMEM = "Benutzt beim Druck";
 const char * const MSG_USED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_USED_EN,
 	MSG_USED_CZ,
@@ -3565,7 +3620,7 @@ const char * const MSG_USED_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_USERWAIT_EN[] PROGMEM = "Wait for user...";
 const char MSG_USERWAIT_IT[] PROGMEM = "Attendendo utente";
 const char MSG_USERWAIT_ES[] PROGMEM = "Esperando ordenes";
-const char MSG_USERWAIT_DE[] PROGMEM = "Warte auf user...";
+const char MSG_USERWAIT_DE[] PROGMEM = "Warte auf Nutzer";
 const char * const MSG_USERWAIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_USERWAIT_EN,
 	MSG_USERWAIT_EN,
@@ -3615,7 +3670,7 @@ const char MSG_WAITING_TEMP_CZ[] PROGMEM = "Cekani na zchladnuti trysky a podloz
 const char MSG_WAITING_TEMP_IT[] PROGMEM = "In attesa del raffreddamento della testina e del piatto";
 const char MSG_WAITING_TEMP_ES[] PROGMEM = "Esperando enfriamiento de la cama y del extrusor.";
 const char MSG_WAITING_TEMP_PL[] PROGMEM = "Oczekiwanie na wychlodzenie dyszy i podkladki.";
-const char MSG_WAITING_TEMP_DE[] PROGMEM = "Warten auf Abkuehlung von Heater und Bett.";
+const char MSG_WAITING_TEMP_DE[] PROGMEM = "Warten auf Abkuehlung von Duese und Bett.";
 const char * const MSG_WAITING_TEMP_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WAITING_TEMP_EN,
 	MSG_WAITING_TEMP_CZ,
@@ -3646,8 +3701,14 @@ const char * const MSG_WATCHDOG_RESET_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_WIZARD_EN[] PROGMEM = "Wizard";
-const char * const MSG_WIZARD_LANG_TABLE[1] PROGMEM = {
-	MSG_WIZARD_EN
+const char MSG_WIZARD_DE[] PROGMEM = "Assistent";
+const char * const MSG_WIZARD_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_WIZARD_EN,
+	MSG_WIZARD_EN,
+	MSG_WIZARD_EN,
+	MSG_WIZARD_EN,
+	MSG_WIZARD_EN,
+	MSG_WIZARD_DE
 };
 
 const char MSG_WIZARD_CALIBRATION_FAILED_EN[] PROGMEM = "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer.";
@@ -3685,7 +3746,7 @@ const char MSG_WIZARD_DONE_CZ[] PROGMEM = "Vse je hotovo.";
 const char MSG_WIZARD_DONE_IT[] PROGMEM = "Ben fatto. Buona stampa!";
 const char MSG_WIZARD_DONE_ES[] PROGMEM = "Terminado! Feliz impresion!";
 const char MSG_WIZARD_DONE_PL[] PROGMEM = "Gotowe. Udanego druku!";
-const char MSG_WIZARD_DONE_DE[] PROGMEM = "Alles wurde getan. Viel Spass beim Drucken!";
+const char MSG_WIZARD_DONE_DE[] PROGMEM = "Fertig. Viel Spass beim Drucken!";
 const char * const MSG_WIZARD_DONE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_DONE_EN,
 	MSG_WIZARD_DONE_CZ,
@@ -3700,7 +3761,7 @@ const char MSG_WIZARD_FILAMENT_LOADED_CZ[] PROGMEM = "Je filament zaveden?";
 const char MSG_WIZARD_FILAMENT_LOADED_IT[] PROGMEM = "Il filamento e stato caricato?";
 const char MSG_WIZARD_FILAMENT_LOADED_ES[] PROGMEM = "Esta el filamento cargado?";
 const char MSG_WIZARD_FILAMENT_LOADED_PL[] PROGMEM = "Filament jest zaladowany?";
-const char MSG_WIZARD_FILAMENT_LOADED_DE[] PROGMEM = "Ist das Filament geladen?";
+const char MSG_WIZARD_FILAMENT_LOADED_DE[] PROGMEM = "Ist PLA Filament geladen?";
 const char * const MSG_WIZARD_FILAMENT_LOADED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_FILAMENT_LOADED_EN,
 	MSG_WIZARD_FILAMENT_LOADED_CZ,
@@ -3715,7 +3776,7 @@ const char MSG_WIZARD_HEATING_CZ[] PROGMEM = "Predehrivam trysku. Prosim cekejte
 const char MSG_WIZARD_HEATING_IT[] PROGMEM = "Sto preriscaldando l'ugello. Per favore attendi.";
 const char MSG_WIZARD_HEATING_ES[] PROGMEM = "Precalentando nozzle. Espera por favor.";
 const char MSG_WIZARD_HEATING_PL[] PROGMEM = "Nagrzewanie dyszy. Prosze czekac.";
-const char MSG_WIZARD_HEATING_DE[] PROGMEM = "Vorheizen der Duese. Bitte warten.";
+const char MSG_WIZARD_HEATING_DE[] PROGMEM = "Vorwaermen der Duese. Bitte warten.";
 const char * const MSG_WIZARD_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_HEATING_EN,
 	MSG_WIZARD_HEATING_CZ,
@@ -3760,7 +3821,7 @@ const char MSG_WIZARD_PLA_FILAMENT_CZ[] PROGMEM = "Je to PLA filament?";
 const char MSG_WIZARD_PLA_FILAMENT_IT[] PROGMEM = "E questo un filamento di PLA?";
 const char MSG_WIZARD_PLA_FILAMENT_ES[] PROGMEM = "Es este un filamento PLA?";
 const char MSG_WIZARD_PLA_FILAMENT_PL[] PROGMEM = "Czy to filament PLA?";
-const char MSG_WIZARD_PLA_FILAMENT_DE[] PROGMEM = "Ist es wirklich PLA Filament?";
+const char MSG_WIZARD_PLA_FILAMENT_DE[] PROGMEM = "Ist es wirklich PLA Filament";
 const char * const MSG_WIZARD_PLA_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_PLA_FILAMENT_EN,
 	MSG_WIZARD_PLA_FILAMENT_CZ,
@@ -3775,7 +3836,7 @@ const char MSG_WIZARD_QUIT_CZ[] PROGMEM = "Wizarda muzete kdykoliv znovu spustit
 const char MSG_WIZARD_QUIT_IT[] PROGMEM = "E possibile proseguire la guide Wizard in qualsiasi momento attraverso Calibrazione -> Wizard.";
 const char MSG_WIZARD_QUIT_ES[] PROGMEM = "Siempre puedes acceder al asistente desde Calibracion -> Wizard";
 const char MSG_WIZARD_QUIT_PL[] PROGMEM = "Zawsze mozesz przywrocic Wizard przez Kalibracja -> Wizard.";
-const char MSG_WIZARD_QUIT_DE[] PROGMEM = "Sie koennen immer den Asistenten im Menu neu aufrufen: Kalibrierung -> Assistant";
+const char MSG_WIZARD_QUIT_DE[] PROGMEM = "Sie koennen den Assistenten im Menu erneut aufrufen: Kalibrierung -> Assistent";
 const char * const MSG_WIZARD_QUIT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_QUIT_EN,
 	MSG_WIZARD_QUIT_CZ,
@@ -3790,7 +3851,7 @@ const char MSG_WIZARD_REPEAT_V2_CAL_CZ[] PROGMEM = "Chcete opakovat posledni kro
 const char MSG_WIZARD_REPEAT_V2_CAL_IT[] PROGMEM = "Desideri ripetere l'ultimo passaggio per migliorare la distanza fra ugello e piatto?";
 const char MSG_WIZARD_REPEAT_V2_CAL_ES[] PROGMEM = "Quieres repetir el ultimo paso para reajustar la distancia nozzle-heatbed?";
 const char MSG_WIZARD_REPEAT_V2_CAL_PL[] PROGMEM = "Chcesz powtorzyc ostatni krok i przestawic odleglosc miedzy dysza a stolikiem?";
-const char MSG_WIZARD_REPEAT_V2_CAL_DE[] PROGMEM = "Moechten Sie den letzten Schritt wiederholen um den Abstand zwischen Duese und Druckbett neu einzustellen?";
+const char MSG_WIZARD_REPEAT_V2_CAL_DE[] PROGMEM = "Moechten Sie den letzten Schritt wiederholen um den Abstand zwischen Duese und Druckbett erneut einzustellen?";
 const char * const MSG_WIZARD_REPEAT_V2_CAL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_REPEAT_V2_CAL_EN,
 	MSG_WIZARD_REPEAT_V2_CAL_CZ,
@@ -3835,7 +3896,7 @@ const char MSG_WIZARD_V2_CAL_CZ[] PROGMEM = "Nyni zkalibruji vzdalenost mezi kon
 const char MSG_WIZARD_V2_CAL_IT[] PROGMEM = "Adesso tarero lo stacco fra ugello e superfice del piatto.";
 const char MSG_WIZARD_V2_CAL_ES[] PROGMEM = "Voy a calibrar la distancia entre la punta del nozzle y la superficie de la heatbed.";
 const char MSG_WIZARD_V2_CAL_PL[] PROGMEM = "Kalibruje odleglosc miedzy koncowka dyszy a stolikiem.";
-const char MSG_WIZARD_V2_CAL_DE[] PROGMEM = "Jetzt werde ich den Abstand zwischen Duesenspitze und Druckbett kalibrieren.";
+const char MSG_WIZARD_V2_CAL_DE[] PROGMEM = "Beginne den Abstand zwischen Duesenspitze und Druckbett zu kalibrieren.";
 const char * const MSG_WIZARD_V2_CAL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_V2_CAL_EN,
 	MSG_WIZARD_V2_CAL_CZ,
@@ -3850,7 +3911,7 @@ const char MSG_WIZARD_V2_CAL_2_CZ[] PROGMEM = "Zacnu tisknout linku a Vy budete 
 const char MSG_WIZARD_V2_CAL_2_IT[] PROGMEM = "Adesso iniziero a stampare una linea e tu dovrai abbassare l'ugello poco per volta ruotando la manopola sino a raggiungere una altezza ottimale. Per favore dai uno sguardo all'immagine del nostro manuale, cap.Calibrazione.";
 const char MSG_WIZARD_V2_CAL_2_ES[] PROGMEM = "Voy a comenzar a imprimir la linea y tu bajaras el nozzle gradualmente al rotar el mando, hasta que llegues a la altura optima. Mira las imagenes del capitulo Calibracion en el manual.";
 const char MSG_WIZARD_V2_CAL_2_PL[] PROGMEM = "Zaczne drukowac linie. Stopniowo opuszczaj dysze przekrecajac guzik, poki nie uzyskasz optymalnej wysokosci. Sprawdz obrazki w naszym poradniku w rozdz. Kalibracja";
-const char MSG_WIZARD_V2_CAL_2_DE[] PROGMEM = "Ich werde jetzt erste Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Ueberpruefen Sie die Bilder in unserem Handbuch im Kapitel Kalibrierung";
+const char MSG_WIZARD_V2_CAL_2_DE[] PROGMEM = "Ich werde jetzt die erste Linie drucken. Waehrend des Druckes koennen Sie die Duese vorsichtig senken indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Ueberpruefen Sie die Bilder in unserem Handbuch im Kapitel Calibration.";
 const char * const MSG_WIZARD_V2_CAL_2_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_V2_CAL_2_EN,
 	MSG_WIZARD_V2_CAL_2_CZ,
@@ -3865,7 +3926,7 @@ const char MSG_WIZARD_WELCOME_CZ[] PROGMEM = "Dobry den, jsem vase tiskarna Orig
 const char MSG_WIZARD_WELCOME_IT[] PROGMEM = "Ciao, sono la tua stampante Original Prusa i3. Gradiresti aiuto attraverso il processo di configurazione?";
 const char MSG_WIZARD_WELCOME_ES[] PROGMEM = "Hola, soy tu impresora Original Prusa i3. Quieres que te guie a traves de la configuracion?";
 const char MSG_WIZARD_WELCOME_PL[] PROGMEM = "Czesc, jestem Twoja Original Prusa i3. Czy mam pomoc Ci z instalacja?";
-const char MSG_WIZARD_WELCOME_DE[] PROGMEM = "Hallo, ich bin dein Original Prusa i3 Drucker. Moechten Sie meine Hilfe durch den Setup-Prozess?";
+const char MSG_WIZARD_WELCOME_DE[] PROGMEM = "Hallo, ich bin Dein Original Prusa i3 Drucker. Sollen wir mit dem Setup-Prozess beginnen?";
 const char * const MSG_WIZARD_WELCOME_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_WELCOME_EN,
 	MSG_WIZARD_WELCOME_CZ,
@@ -3880,7 +3941,7 @@ const char MSG_WIZARD_WILL_PREHEAT_CZ[] PROGMEM = "Nyni predehreji trysku pro PL
 const char MSG_WIZARD_WILL_PREHEAT_IT[] PROGMEM = "Adesso preriscaldero l'ugello per PLA.";
 const char MSG_WIZARD_WILL_PREHEAT_ES[] PROGMEM = "Voy a precalentar el nozzle para PLA ahora.";
 const char MSG_WIZARD_WILL_PREHEAT_PL[] PROGMEM = "Nagrzewam dysze dla PLA.";
-const char MSG_WIZARD_WILL_PREHEAT_DE[] PROGMEM = "Jetzt werde ich die Duese fuer PLA vorheizen. ";
+const char MSG_WIZARD_WILL_PREHEAT_DE[] PROGMEM = "Waerme die Duese fuer PLA vor.";
 const char * const MSG_WIZARD_WILL_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_WILL_PREHEAT_EN,
 	MSG_WIZARD_WILL_PREHEAT_CZ,
@@ -3895,7 +3956,7 @@ const char MSG_WIZARD_XYZ_CAL_CZ[] PROGMEM = "Nyni provedu xyz kalibraci. Zabere
 const char MSG_WIZARD_XYZ_CAL_IT[] PROGMEM = "Adesso avviero una Calibrazione XYZ. Puo durare circa 12 min.";
 const char MSG_WIZARD_XYZ_CAL_ES[] PROGMEM = "Hare la calibracion XYZ. Tardara 12 min. aproximadamente.";
 const char MSG_WIZARD_XYZ_CAL_PL[] PROGMEM = "Wlaczam kalibracje xyz. Zajmie to ok. 12 min.";
-const char MSG_WIZARD_XYZ_CAL_DE[] PROGMEM = "Ich werde jetzt die XYZ-Kalibrierung durchfuehren. Es wird ca. 12 Minuten dauern";
+const char MSG_WIZARD_XYZ_CAL_DE[] PROGMEM = "Beginne jetzt mit der XYZ-Kalibrierung. Es wird ca. 12 Minuten dauern";
 const char * const MSG_WIZARD_XYZ_CAL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_XYZ_CAL_EN,
 	MSG_WIZARD_XYZ_CAL_CZ,
@@ -3910,7 +3971,7 @@ const char MSG_WIZARD_Z_CAL_CZ[] PROGMEM = "Nyni provedu z kalibraci.";
 const char MSG_WIZARD_Z_CAL_IT[] PROGMEM = "Adesso avviero una Calibrazione Z.";
 const char MSG_WIZARD_Z_CAL_ES[] PROGMEM = "Voy a hacer Calibracion Z ahora.";
 const char MSG_WIZARD_Z_CAL_PL[] PROGMEM = "Wlaczam kalibracje z.";
-const char MSG_WIZARD_Z_CAL_DE[] PROGMEM = "Ich werde jetzt die Z Kalibrierung durchfuehren.";
+const char MSG_WIZARD_Z_CAL_DE[] PROGMEM = "Beginne jetzt mit der Z-Kalibrierung";
 const char * const MSG_WIZARD_Z_CAL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_Z_CAL_EN,
 	MSG_WIZARD_Z_CAL_CZ,
@@ -3965,7 +4026,7 @@ const char MSG_Y_DISTANCE_FROM_MIN_CZ[] PROGMEM = "Y vzdalenost od min:";
 const char MSG_Y_DISTANCE_FROM_MIN_IT[] PROGMEM = "Distanza Y da min:";
 const char MSG_Y_DISTANCE_FROM_MIN_ES[] PROGMEM = "Dist. Y desde min:";
 const char MSG_Y_DISTANCE_FROM_MIN_PL[] PROGMEM = "Odleglosc Y od min.:";
-const char MSG_Y_DISTANCE_FROM_MIN_DE[] PROGMEM = "Y Entfernung vom min";
+const char MSG_Y_DISTANCE_FROM_MIN_DE[] PROGMEM = "Y Entfernung von min";
 const char * const MSG_Y_DISTANCE_FROM_MIN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_Y_DISTANCE_FROM_MIN_EN,
 	MSG_Y_DISTANCE_FROM_MIN_CZ,
