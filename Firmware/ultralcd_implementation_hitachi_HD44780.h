@@ -591,7 +591,7 @@ static void lcd_implementation_init_noclear(
       lcd.backlight();
     
 #else
-    lcd.begin_noclear(LCD_WIDTH, LCD_HEIGHT);
+    lcd.begin(LCD_WIDTH, LCD_HEIGHT, LCD_5x8DOTS, true);
 #endif
 
     lcd_set_custom_characters(
