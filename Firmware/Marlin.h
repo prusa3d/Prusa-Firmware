@@ -298,6 +298,10 @@ extern bool temp_cal_active;
 extern uint8_t fil_runout_status;
 extern bool FIL_RUNOUT_INVERTING;
 extern bool ENDSTOPPULLUP_FIL_RUNOUT;
+extern uint8_t fil_runout_status_set;
+extern bool FIL_RUNOUT_INVERTING_SET;
+extern bool ENDSTOPPULLUP_FIL_RUNOUT_SET;
+
 // end FILAMENT_RUNOUT_SENSOR
 extern bool loading_flag;
 extern unsigned int usb_printing_counter;

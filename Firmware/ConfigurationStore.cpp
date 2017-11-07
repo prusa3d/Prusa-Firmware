@@ -266,6 +266,7 @@ void Config_PrintSettings()
     }
 #endif
 #ifdef FILAMENT_RUNOUT_SENSOR
+SERIAL_ECHO_START;
 	if (fil_runout_status == 1) {
 		SERIAL_ECHOLNPGM("Filament Runout Sensor: Signal to VCC");
 	} else 

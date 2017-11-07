@@ -262,6 +262,10 @@ bool FIL_RUNOUT_INVERTING = false;
 uint8_t fil_runout_status = 0;
 bool fil_funout_inv = false;
 bool ENDSTOPPULLUP_FIL_RUNOUT = false;
+bool FIL_RUNOUT_INVERTING_SET = false;
+uint8_t fil_runout_status_set = 0;
+bool ENDSTOPPULLUP_FIL_RUNOUT_SET = false;
+
 // end FILAMENT_RUNOUT_SENSOR
 
 unsigned long kicktime = millis()+100000;
@@ -1281,6 +1285,17 @@ void setup()
 // FILAMENT_RUNOUT_SENSOR
 #ifdef FILAMENT_RUNOUT_SENSOR
   fil_runout_status = eeprom_read_byte((uint8_t*)EEPROM_FIL_RUNOUT_STATUS);
+  if (fil_runout_status == 1) {
+	  FIL_RUNOUT_INVERTING = 0;
+	  ENDSTOPPULLUP_FIL_RUNOUT = 0;
+	  
+  } else {
+	  FIL_RUNOUT_INVERTING = 1;
+	  ENDSTOPPULLUP_FIL_RUNOUT = 1;
+  };
+  fil_runout_status_set = fil_runout_status;
+  FIL_RUNOUT_INVERTING_SET = FIL_RUNOUT_INVERTING;
+  ENDSTOPPULLUP_FIL_RUNOUT_SET = ENDSTOPPULLUP_FIL_RUNOUT;
 #endif
 // end FILAMENT_RUNOUT_SENSOR
 
@@ -3582,7 +3597,7 @@ void process_commands()
         case 0:
           {
             mbl.z_values[0][0] += offset;
-            SERIAL_ECHOPGM("FrontLeft a =");
+            SERIAL_ECHOPGM("FrontLeft  a =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }          
@@ -3606,7 +3621,7 @@ void process_commands()
         case 3:
           {
             mbl.z_values[1][2] += offset; 
-            SERIAL_ECHOPGM("MidRight  d =");
+            SERIAL_ECHOPGM("MidRight   d =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
@@ -3614,7 +3629,7 @@ void process_commands()
         case 4:
           {
             mbl.z_values[2][2] += offset; 
-            SERIAL_ECHOPGM("RearRight e =");
+            SERIAL_ECHOPGM("RearRight  e =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
@@ -3630,7 +3645,7 @@ void process_commands()
         case 6:
           {
             mbl.z_values[2][0] += offset; 
-            SERIAL_ECHOPGM("RearLeft g =");
+            SERIAL_ECHOPGM("RearLeft   g =");
             SERIAL_ECHO(correction+0);
             SERIAL_ECHOLNPGM(" microns.");
           }
