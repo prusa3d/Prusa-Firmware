@@ -337,3 +337,8 @@
 #define(lenght=20, lines=8) MSG_WIZARD_INSERT_CORRECT_FILAMENT	"Please load PLA filament and then resume Wizard by rebooting the printer."
 #define(lenght=20, lines=2) MSG_PLA_FILAMENT_LOADED				"Is PLA filament loaded?"
 #define(lenght=20, lines=4) MSG_PLEASE_LOAD_PLA					"Please load PLA filament first."
+
+#define MSG_CRASHDETECT_OFF										"Crash det.  [off]"
+#define MSG_CRASHDETECT_ON										"Crash det.   [on]"
+#define MSG_FSENSOR_OFF											"Fil. sensor [off]"
+#define MSG_FSENSOR_ON											"Fil. sensor  [on]"

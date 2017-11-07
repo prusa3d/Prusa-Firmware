@@ -730,6 +730,16 @@ const char * const MSG_COUNT_X_LANG_TABLE[1] PROGMEM = {
 	MSG_COUNT_X_EN
 };
 
+const char MSG_CRASHDETECT_OFF_EN[] PROGMEM = "Crash det.  [off]";
+const char * const MSG_CRASHDETECT_OFF_LANG_TABLE[1] PROGMEM = {
+	MSG_CRASHDETECT_OFF_EN
+};
+
+const char MSG_CRASHDETECT_ON_EN[] PROGMEM = "Crash det.   [on]";
+const char * const MSG_CRASHDETECT_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_CRASHDETECT_ON_EN
+};
+
 const char MSG_CRASH_DETECTED_EN[] PROGMEM = "Crash detected. Continue printing?";
 const char * const MSG_CRASH_DETECTED_LANG_TABLE[1] PROGMEM = {
 	MSG_CRASH_DETECTED_EN
@@ -1194,6 +1204,16 @@ const char * const MSG_FOLLOW_CALIBRATION_FLOW_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_FREE_MEMORY_EN[] PROGMEM = " Free Memory: ";
 const char * const MSG_FREE_MEMORY_LANG_TABLE[1] PROGMEM = {
 	MSG_FREE_MEMORY_EN
+};
+
+const char MSG_FSENSOR_OFF_EN[] PROGMEM = "Fil. sensor [off]";
+const char * const MSG_FSENSOR_OFF_LANG_TABLE[1] PROGMEM = {
+	MSG_FSENSOR_OFF_EN
+};
+
+const char MSG_FSENSOR_ON_EN[] PROGMEM = "Fil. sensor  [on]";
+const char * const MSG_FSENSOR_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_FSENSOR_ON_EN
 };
 
 const char MSG_HEATING_EN[] PROGMEM = "Heating";
