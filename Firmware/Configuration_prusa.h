@@ -507,4 +507,6 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define HEATBED_V2
 
+//#define SUPPORT_VERBOSITY
+
 #endif //__CONFIGURATION_PRUSA_H

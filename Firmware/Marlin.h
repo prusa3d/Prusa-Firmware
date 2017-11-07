@@ -339,8 +339,7 @@ extern unsigned long t_fan_rising_edge;
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
-extern float distance_from_min[3];
-extern float angleDiff;
+extern float distance_from_min[2];
 
 extern void calculate_volumetric_multipliers();
 
