@@ -103,8 +103,9 @@ ISR(PCINT2_vect)
 			}
 			else
 			{ //propper movement
-				if (fsensor_err_cnt > 0)
-					fsensor_err_cnt--;
+//				if (fsensor_err_cnt > 0)
+//					fsensor_err_cnt--;
+					fsensor_err_cnt = 0;
 #ifdef DEBUG_FSENSOR_LOG
 				MYSERIAL.print("\tOK    err=");
 				MYSERIAL.println(fsensor_err_cnt, DEC);
@@ -124,6 +125,7 @@ ISR(PCINT2_vect)
 
 void fsensor_st_block_begin(block_t* bl)
 {
+	if (!fsensor_enabled) return;
 	if ((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8))
 		digitalWrite(fsensor_int_pin, LOW);
 	if ((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8))
@@ -132,6 +134,7 @@ void fsensor_st_block_begin(block_t* bl)
 
 void fsensor_st_block_chunk(block_t* bl, int cnt)
 {
+	if (!fsensor_enabled) return;
 	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
 	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
 		digitalWrite(fsensor_int_pin, LOW);

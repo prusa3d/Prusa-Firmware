@@ -83,7 +83,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //DEBUG
 #define DEBUG_DCODES //D codes
 #if 1
-#define DEBUG_FSENSOR_LOG          //Reports fsensor status to serial
+//#define DEBUG_FSENSOR_LOG          //Reports fsensor status to serial
 //#define DEBUG_CRASHDET_COUNTERS  //Display crash-detection counters on LCD
 //#define DEBUG_RESUME_PRINT       //Resume/save print debug enable 
 //#define DEBUG_UVLO_AUTOMATIC_RECOVER // Power panic automatic recovery debug output 
@@ -162,7 +162,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_SG_DELTA      128    // stallguard delta [usteps] (minimum usteps before stallguard readed - SW homing)
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-#define TMC2130_CURRENTS_H {3, 3, 5, 12}  // default holding currents for all axes
+#define TMC2130_CURRENTS_H {3, 3, 20, 28}  // default holding currents for all axes
 #define TMC2130_CURRENTS_R {13, 20, 20, 28}  // default running currents for all axes
 
 //#define TMC2130_DEBUG
@@ -249,7 +249,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define FILAMENTCHANGE_XYFEED 50
 #define FILAMENTCHANGE_EFEED 20
-#define FILAMENTCHANGE_RFEED 400
+//#define FILAMENTCHANGE_RFEED 400
+#define FILAMENTCHANGE_RFEED 7000 / 60
 #define FILAMENTCHANGE_EXFEED 2
 #define FILAMENTCHANGE_ZFEED 15
 
