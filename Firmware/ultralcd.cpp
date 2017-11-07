@@ -4273,7 +4273,6 @@ void extr_adj(int extruder) //loading filament for SNMM
 void extr_unload() { //unloads filament
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
-	int8_t SilentMode;
 
 	if (degHotend0() > EXTRUDE_MINTEMP) {
 		lcd_implementation_clear();
@@ -4320,7 +4319,7 @@ void extr_unload() { //unloads filament
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
 		st_synchronize();
 		//digipot_init();
-		if (SilentMode == 1) digipot_current(2, tmp_motor[2]); //set back to normal operation currents
+		if (SilentModeMenu == 1) digipot_current(2, tmp_motor[2]); //set back to normal operation currents
 		else digipot_current(2, tmp_motor_loud[2]);
 		lcd_update_enable(true);
 		lcd_return_to_status();

@@ -143,8 +143,10 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     int8_t        verbosity_level
     )
 {
-	float angleDiff;
-	#ifdef SUPPORT_VERBOSITY
+    float angleDiff;
+    #ifndef SUPPORT_VERBOSITY
+      UNUSED(verbosity_level);
+    #else
     if (verbosity_level >= 10) {
 		SERIAL_ECHOLNPGM("calculate machine skew and offset LS");
 
@@ -186,7 +188,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
         }
         delay_keep_alive(100);
     }
-	#endif // SUPPORT_VERBOSITY
+    #endif // SUPPORT_VERBOSITY
 
     // Run some iterations of the Gauss-Newton method of non-linear least squares.
     // Initial set of parameters:
@@ -823,6 +825,8 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 {
 	#ifdef SUPPORT_VERBOSITY
     if(verbosity_level >= 10) SERIAL_ECHOLNPGM("find bed induction sensor point z");
+	#else
+	  UNUSED(verbosity_level);
 	#endif // SUPPORT_VERBOSITY
 	bool endstops_enabled  = enable_endstops(true);
     bool endstop_z_enabled = enable_z_endstop(false);
@@ -880,6 +884,8 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 {
 	#ifdef SUPPORT_VERBOSITY
 	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
+	#else
+	  UNUSED(verbosity_level);
 	#endif // SUPPORT_VERBOSITY
 	float feedrate = homing_feedrate[X_AXIS] / 60.f;
     bool found = false;
@@ -1218,13 +1224,15 @@ inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t ver
         }
         b = current_position[X_AXIS];
         if (b - a < MIN_BED_SENSOR_POINT_RESPONSE_DMR) {
-			#ifdef SUPPORT_VERBOSITY
-			if (verbosity_level >= 5) {
+	    #ifdef SUPPORT_VERBOSITY
+	    if (verbosity_level >= 5) {
                 SERIAL_ECHOPGM("Point width too small: ");
                 SERIAL_ECHO(b - a);
                 SERIAL_ECHOLNPGM("");
             }
-			#endif // SUPPORT_VERBOSITY
+	    #else
+		UNUSED(verbosity_level);
+	    #endif // SUPPORT_VERBOSITY
             // We force the calibration routine to move the Z axis slightly down to make the response more pronounced.
             if (b - a < 0.5f * MIN_BED_SENSOR_POINT_RESPONSE_DMR) {
                 // Don't use the new X value.
@@ -1350,6 +1358,8 @@ inline bool improve_bed_induction_sensor_point3(int verbosity_level)
 
 	#ifdef SUPPORT_VERBOSITY
 	if (verbosity_level >= 20) MYSERIAL.println("Improve bed induction sensor point3");
+	#else
+	  UNUSED(verbosity_level);
 	#endif  // SUPPORT_VERBOSITY
 	// Was the sensor point detected too far in the minus Y axis?
     // If yes, the center of the induction point cannot be reached by the machine.
