@@ -5398,11 +5398,8 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	case 1: axis_length = Y_MAX_POS + 8; break;
 	default: axis_length = 210; break;
 	}
-	/*SERIAL_ECHOPGM("Current position 1:");
-	MYSERIAL.println(current_position[axis]);*/
-
-	current_position[axis] = 0;
-	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	SERIAL_ECHOPGM("Current position 1:");
+	MYSERIAL.println(current_position[axis]);
 
 #ifdef TMC2130
 	tmc2130_home_exit();
@@ -5410,10 +5407,10 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 #endif
 
 	for (char i = 0; i < 2; i++) {
-		/*SERIAL_ECHOPGM("i = ");
+		SERIAL_ECHOPGM("i = ");
 		MYSERIAL.println(int(i));
 		SERIAL_ECHOPGM("Current position 2:");
-		MYSERIAL.println(current_position[axis]);*/
+		MYSERIAL.println(current_position[axis]);
 
 #ifdef TMC2130
 		tmc2130_home_enter(X_AXIS_MASK << axis);
@@ -5433,8 +5430,13 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 
 		current_position_init = st_get_position_mm(axis);
+		SERIAL_ECHOPGM("Current position init:");
+		MYSERIAL.print(current_position_init);
+		SERIAL_ECHOPGM("; ");
+		MYSERIAL.println(current_position[axis]);
+
 		if (i < 1) {
-			current_position[axis] += margin;
+			current_position[axis] += 2 * margin;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 			st_synchronize();
 			current_position[axis] += axis_length;
@@ -5450,6 +5452,17 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
 			current_position_final = st_get_position_mm(axis);
+			SERIAL_ECHOPGM("Current position final:");
+			MYSERIAL.print(current_position_final);
+			SERIAL_ECHOPGM("; ");
+			MYSERIAL.println(current_position[axis]);
+
+			current_position[axis] -= margin;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+			st_synchronize();
+			SERIAL_ECHOPGM("Current position 3:");
+			MYSERIAL.println(current_position[axis]);
+
 		}
 		measured_axis_length[i] = abs(current_position_final - current_position_init);
 		SERIAL_ECHOPGM("Measured axis length:");
