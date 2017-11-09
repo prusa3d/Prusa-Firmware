@@ -2218,7 +2218,7 @@ bool gcode_M45(bool onlyZ) {
 			lcd_wait_for_cool_down();
 			lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
 			lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
-			lcd_implementation_print_at(0, 2, 1);
+			lcd_implementation_print_at(0, 3, 1);
 			lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
 		}
 
