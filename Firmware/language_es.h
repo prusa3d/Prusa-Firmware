@@ -167,11 +167,11 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT         "Tope no alcanzado"
 #define MSG_SELFTEST_OK                     "Self test OK"
 
-#define(length=20) MSG_SELFTEST_FAN					"Test ventiladores";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Vent. frontal?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Vent. izquierdo?";
-#define MSG_SELFTEST_FAN_YES				"Ventilador gira";
-#define MSG_SELFTEST_FAN_NO					"Ventilador no gira";
+#define MSG_SELFTEST_FAN					"Test ventiladores"
+#define MSG_SELFTEST_COOLING_FAN			"Vent. frontal?"
+#define MSG_SELFTEST_EXTRUDER_FAN			"Vent. izquierdo?"
+#define MSG_SELFTEST_FAN_YES				"Ventilador gira"
+#define MSG_SELFTEST_FAN_NO					"Ventilador no gira"
 
 #define MSG_STATS_TOTALFILAMENT             "Filamento total:"
 #define MSG_STATS_TOTALPRINTTIME            "Tiempo total :"

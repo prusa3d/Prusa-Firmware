@@ -2685,11 +2685,11 @@ const char * const MSG_SELFTEST_CHECK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_CHECK_Z_DE
 };
 
-const char MSG_SELFTEST_COOLING_FAN_EN[] PROGMEM = "Front print fan?";;
-const char MSG_SELFTEST_COOLING_FAN_CZ[] PROGMEM = "Predni tiskovy vent?";;
-const char MSG_SELFTEST_COOLING_FAN_IT[] PROGMEM = "Vent di stampa ant.?";;
-const char MSG_SELFTEST_COOLING_FAN_ES[] PROGMEM = "Vent. frontal?";;
-const char MSG_SELFTEST_COOLING_FAN_PL[] PROGMEM = "Przedni went. druku?";;
+const char MSG_SELFTEST_COOLING_FAN_EN[] PROGMEM = "Front print fan?";
+const char MSG_SELFTEST_COOLING_FAN_CZ[] PROGMEM = "Predni tiskovy vent?";
+const char MSG_SELFTEST_COOLING_FAN_IT[] PROGMEM = "Vent di stampa ant.?";
+const char MSG_SELFTEST_COOLING_FAN_ES[] PROGMEM = "Vent. frontal?";
+const char MSG_SELFTEST_COOLING_FAN_PL[] PROGMEM = "Przedni went. druku?";
 const char MSG_SELFTEST_COOLING_FAN_DE[] PROGMEM = "Vorderer Luefter?";
 const char * const MSG_SELFTEST_COOLING_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_COOLING_FAN_EN,
@@ -2751,11 +2751,11 @@ const char * const MSG_SELFTEST_ERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_ERROR_DE
 };
 
-const char MSG_SELFTEST_EXTRUDER_FAN_EN[] PROGMEM = "Left hotend fan?";;
-const char MSG_SELFTEST_EXTRUDER_FAN_CZ[] PROGMEM = "Levy vent na trysce?";;
-const char MSG_SELFTEST_EXTRUDER_FAN_IT[] PROGMEM = "Vent SX sull'ugello?";;
-const char MSG_SELFTEST_EXTRUDER_FAN_ES[] PROGMEM = "Vent. izquierdo?";;
-const char MSG_SELFTEST_EXTRUDER_FAN_PL[] PROGMEM = "Lewy went na dysze?";;
+const char MSG_SELFTEST_EXTRUDER_FAN_EN[] PROGMEM = "Left hotend fan?";
+const char MSG_SELFTEST_EXTRUDER_FAN_CZ[] PROGMEM = "Levy vent na trysce?";
+const char MSG_SELFTEST_EXTRUDER_FAN_IT[] PROGMEM = "Vent SX sull'ugello?";
+const char MSG_SELFTEST_EXTRUDER_FAN_ES[] PROGMEM = "Vent. izquierdo?";
+const char MSG_SELFTEST_EXTRUDER_FAN_PL[] PROGMEM = "Lewy went na dysze?";
 const char MSG_SELFTEST_EXTRUDER_FAN_DE[] PROGMEM = "Linker Luefter?";
 const char * const MSG_SELFTEST_EXTRUDER_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_EXTRUDER_FAN_EN,
@@ -2781,11 +2781,11 @@ const char * const MSG_SELFTEST_FAILED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAILED_DE
 };
 
-const char MSG_SELFTEST_FAN_EN[] PROGMEM = "Fan test";;
-const char MSG_SELFTEST_FAN_CZ[] PROGMEM = "Test ventilatoru";;
-const char MSG_SELFTEST_FAN_IT[] PROGMEM = "Prova del ventilator";;
-const char MSG_SELFTEST_FAN_ES[] PROGMEM = "Test ventiladores";;
-const char MSG_SELFTEST_FAN_PL[] PROGMEM = "Test wentylatora";;
+const char MSG_SELFTEST_FAN_EN[] PROGMEM = "Fan test";
+const char MSG_SELFTEST_FAN_CZ[] PROGMEM = "Test ventilatoru";
+const char MSG_SELFTEST_FAN_IT[] PROGMEM = "Prova del ventilator";
+const char MSG_SELFTEST_FAN_ES[] PROGMEM = "Test ventiladores";
+const char MSG_SELFTEST_FAN_PL[] PROGMEM = "Test wentylatora";
 const char MSG_SELFTEST_FAN_DE[] PROGMEM = "Lueftertest";
 const char * const MSG_SELFTEST_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAN_EN,
@@ -2796,11 +2796,11 @@ const char * const MSG_SELFTEST_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAN_DE
 };
 
-const char MSG_SELFTEST_FAN_NO_EN[] PROGMEM = "Not spinning";;
-const char MSG_SELFTEST_FAN_NO_CZ[] PROGMEM = "Netoci se";;
-const char MSG_SELFTEST_FAN_NO_IT[] PROGMEM = "Non si gira";;
-const char MSG_SELFTEST_FAN_NO_ES[] PROGMEM = "Ventilador no gira";;
-const char MSG_SELFTEST_FAN_NO_PL[] PROGMEM = "Nie kreci sie";;
+const char MSG_SELFTEST_FAN_NO_EN[] PROGMEM = "Not spinning";
+const char MSG_SELFTEST_FAN_NO_CZ[] PROGMEM = "Netoci se";
+const char MSG_SELFTEST_FAN_NO_IT[] PROGMEM = "Non si gira";
+const char MSG_SELFTEST_FAN_NO_ES[] PROGMEM = "Ventilador no gira";
+const char MSG_SELFTEST_FAN_NO_PL[] PROGMEM = "Nie kreci sie";
 const char MSG_SELFTEST_FAN_NO_DE[] PROGMEM = "Dreht nicht";
 const char * const MSG_SELFTEST_FAN_NO_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAN_NO_EN,
@@ -2811,11 +2811,11 @@ const char * const MSG_SELFTEST_FAN_NO_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAN_NO_DE
 };
 
-const char MSG_SELFTEST_FAN_YES_EN[] PROGMEM = "Spinning";;
-const char MSG_SELFTEST_FAN_YES_CZ[] PROGMEM = "Toci se";;
-const char MSG_SELFTEST_FAN_YES_IT[] PROGMEM = "Gira";;
-const char MSG_SELFTEST_FAN_YES_ES[] PROGMEM = "Ventilador gira";;
-const char MSG_SELFTEST_FAN_YES_PL[] PROGMEM = "Kreci sie";;
+const char MSG_SELFTEST_FAN_YES_EN[] PROGMEM = "Spinning";
+const char MSG_SELFTEST_FAN_YES_CZ[] PROGMEM = "Toci se";
+const char MSG_SELFTEST_FAN_YES_IT[] PROGMEM = "Gira";
+const char MSG_SELFTEST_FAN_YES_ES[] PROGMEM = "Ventilador gira";
+const char MSG_SELFTEST_FAN_YES_PL[] PROGMEM = "Kreci sie";
 const char MSG_SELFTEST_FAN_YES_DE[] PROGMEM = "Dreht";
 const char * const MSG_SELFTEST_FAN_YES_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SELFTEST_FAN_YES_EN,

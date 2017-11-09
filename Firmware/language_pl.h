@@ -173,11 +173,11 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT         "Endstop not hit"
 #define MSG_SELFTEST_OK                     "Self test OK"
 
-#define MSG_SELFTEST_FAN					"Test wentylatora";
-#define MSG_SELFTEST_COOLING_FAN			"Przedni went. druku?";
-#define MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze?";
-#define MSG_SELFTEST_FAN_YES				"Kreci sie";
-#define MSG_SELFTEST_FAN_NO					"Nie kreci sie";
+#define MSG_SELFTEST_FAN					"Test wentylatora"
+#define MSG_SELFTEST_COOLING_FAN			"Przedni went. druku?"
+#define MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze?"
+#define MSG_SELFTEST_FAN_YES				"Kreci sie"
+#define MSG_SELFTEST_FAN_NO					"Nie kreci sie"
 
 #define MSG_STATS_TOTALFILAMENT             "Filament lacznie :"
 #define MSG_STATS_TOTALPRINTTIME            "Czas calkowity :"
