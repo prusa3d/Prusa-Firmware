@@ -181,8 +181,8 @@
 #define(length=20) MSG_SELFTEST_FAN					"Fan test";
 #define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?";
 #define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Left hotend fan?";
-#define MSG_SELFTEST_FAN_YES				"Spinning";
-#define MSG_SELFTEST_FAN_NO					"Not spinning";
+#define(length=19) MSG_SELFTEST_FAN_YES				"Spinning";
+#define(lenght=19) MSG_SELFTEST_FAN_NO					"Not spinning";
 
 #define(length=20) MSG_STATS_TOTALFILAMENT	"Total filament :"
 #define(length=20) MSG_STATS_TOTALPRINTTIME "Total print time :"
