@@ -354,4 +354,4 @@
 #define MSG_PLEASE_LOAD_PLA					"Bitte laden Sie zuerst PLA Filament."
 #define MSG_FILE_CNT						"Einige Dateien werden nicht sortiert. Max. Anzahl der Dateien in einem Ordner ist 100."
 #define MSG_WIZARD_HEATING					"Vorheizen der Duese. Bitte warten."
-
+#define MSG_M117_V2_CALIBRATION				"M117 Erste-Schicht Kal."
