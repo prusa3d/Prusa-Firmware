@@ -341,3 +341,4 @@
 #define(lenght=20, lines=2) MSG_PLA_FILAMENT_LOADED				"Is PLA filament loaded?"
 #define(lenght=20, lines=4) MSG_PLEASE_LOAD_PLA					"Please load PLA filament first."
 #define(length=20, lines=8) MSG_FILE_CNT						"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
+#define(length=25, lines=1) MSG_M117_V2_CALIBRATION				"M117 First layer cal."

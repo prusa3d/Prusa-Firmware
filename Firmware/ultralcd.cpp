@@ -556,10 +556,15 @@ void lcd_commands()
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
 	{
 		if(lcd_commands_step == 0) {
-			card.pauseSDPrint();
-			lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
-			lcdDrawUpdate = 3;
-			lcd_commands_step = 1;
+			if (card.sdprinting) {
+				card.pauseSDPrint();
+				lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
+				lcdDrawUpdate = 3;
+				lcd_commands_step = 1;
+			}
+			else {
+				lcd_commands_type = 0;
+			}
 		}
 		if (lcd_commands_step == 1 && !blocks_queued()) {
 			lcd_setstatuspgm(MSG_PRINT_PAUSED);
@@ -652,7 +657,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("M190 S55"));
 			enquecommand_P(PSTR("M109 S210"));
 			enquecommand_P(PSTR("T0"));
-			enquecommand_P(PSTR("M117 First layer cal."));
+			enquecommand_P(MSG_M117_V2_CALIBRATION);
 			enquecommand_P(PSTR("G87")); //sets calibration status
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G21")); //set units to millimeters
@@ -915,7 +920,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("M140 S55"));
 			enquecommand_P(PSTR("M190 S55"));
 			enquecommand_P(PSTR("M109 S210"));
-			enquecommand_P(PSTR("M117 First layer cal."));
+			enquecommand_P(MSG_M117_V2_CALIBRATION);
 			enquecommand_P(PSTR("G87")); //sets calibration status
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
