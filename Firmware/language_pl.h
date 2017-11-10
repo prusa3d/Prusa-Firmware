@@ -349,3 +349,4 @@
 #define MSG_PLEASE_LOAD_PLA					"Prosze, najpierw zaladuj filament PLA."
 #define MSG_FILE_CNT						"Niektore pliki nie beda sortowane. Max. ilosc plikow do sortu w 1 folderze to 100."
 #define MSG_WIZARD_HEATING					"Nagrzewanie dyszy. Prosze czekac."
+#define MSG_M117_V2_CALIBRATION				"M117 Kal. 1. warstwy"

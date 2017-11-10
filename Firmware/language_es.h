@@ -346,3 +346,4 @@
 #define MSG_PLEASE_LOAD_PLA					"Carga el filamento PLA primero por favor."
 #define MSG_FILE_CNT						"Algunos archivos no seran ordenados. El Max. num. de archivos para ordenar en 1 carpeta es 100."
 #define MSG_WIZARD_HEATING					"Precalentando nozzle. Espera por favor."
+#define MSG_M117_V2_CALIBRATION				"M117 Cal. primera cap."

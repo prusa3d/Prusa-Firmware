@@ -337,3 +337,4 @@
 #define MSG_PLEASE_LOAD_PLA					"Per favore prima caricare filamento di PLA."
 #define MSG_FILE_CNT						"Alcuni dei file non potranno essere organizzati. 100 e il n. max. di file che possono essere organizzati."
 #define MSG_WIZARD_HEATING					"Sto preriscaldando l'ugello. Per favore attendi."
+#define MSG_M117_V2_CALIBRATION				"M117 Cal. primo layer."

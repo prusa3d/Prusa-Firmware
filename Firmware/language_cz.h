@@ -352,3 +352,4 @@
 #define MSG_PLEASE_LOAD_PLA					"Nejdrive zavedte PLA filament prosim."
 #define MSG_FILE_CNT						"Nektere soubory nebudou setrideny. Maximalni pocet souboru pro setrideni je 100."
 #define MSG_WIZARD_HEATING					"Predehrivam trysku. Prosim cekejte."
+#define MSG_M117_V2_CALIBRATION				"M117 Kal. prvni vrstvy"
