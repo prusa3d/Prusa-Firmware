@@ -3270,6 +3270,7 @@ void lcd_v2_calibration() {
 		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_PLA_FILAMENT_LOADED, false, true);
 		if (loaded) {
 			lcd_commands_type = LCD_COMMAND_V2_CAL;
+			lcd_commands_step = 0;
 		}
 		else {
 			lcd_display_message_fullscreen_P(MSG_PLEASE_LOAD_PLA);
@@ -4675,7 +4676,7 @@ static void lcd_main_menu()
   }
 
 
-  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing )
+  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing  || (lcd_commands_type == LCD_COMMAND_V2_CAL))
   {
     MENU_ITEM(submenu, MSG_TUNE, lcd_tune_menu);
   } else 
@@ -4683,6 +4684,9 @@ static void lcd_main_menu()
     MENU_ITEM(submenu, MSG_PREHEAT, lcd_preheat_menu);
   }
 
+  if ((lcd_commands_type == LCD_COMMAND_V2_CAL)) {
+    MENU_ITEM(submenu, MSG_STOP_PRINT, lcd_sdcard_stop);
+  } else {
 #ifdef SDSUPPORT
   if (card.cardOK)
   {
@@ -4719,9 +4723,10 @@ static void lcd_main_menu()
 #endif
   }
 #endif
+}
 
 
-  if (IS_SD_PRINTING || is_usb_printing)
+  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL))
   {
 	  if (farm_mode)
 	  {
@@ -4899,6 +4904,9 @@ void lcd_sdcard_stop()
 		}
 		if ((int32_t)encoderPosition == 2)
 		{
+			lcd_commands_type = LCD_COMMAND_STOP_PRINT;
+			lcd_commands_step = 0;
+
 		cancel_heatup = true;
         #ifdef MESH_BED_LEVELING
         mbl.active = false;
@@ -4924,7 +4932,6 @@ void lcd_sdcard_stop()
 
 				lcd_return_to_status();
 				lcd_ignore_click(true);
-				lcd_commands_type = LCD_COMMAND_STOP_PRINT;
 				if (farm_mode) prusa_statistics(7);
                 // Turn off the print fan
                 SET_OUTPUT(FAN_PIN);
