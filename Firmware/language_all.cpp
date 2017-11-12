@@ -530,6 +530,11 @@ const char * const MSG_CALIBRATE_PINDA_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_PINDA_DE
 };
 
+const char MSG_CALIBRATE_Z_AUTO_EN[] PROGMEM = "Calibrating Z";
+const char * const MSG_CALIBRATE_Z_AUTO_LANG_TABLE[1] PROGMEM = {
+	MSG_CALIBRATE_Z_AUTO_EN
+};
+
 const char MSG_CALIBRATION_PINDA_MENU_EN[] PROGMEM = "Temp. calibration";
 const char MSG_CALIBRATION_PINDA_MENU_CZ[] PROGMEM = "Teplot. kalibrace";
 const char MSG_CALIBRATION_PINDA_MENU_IT[] PROGMEM = "Taratura temp.";
@@ -2077,6 +2082,11 @@ const char * const MSG_PINDA_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PINDA_PREHEAT_DE
 };
 
+const char MSG_PLACE_STEEL_SHEET_EN[] PROGMEM = "Please place steel sheet on heatbed.";
+const char * const MSG_PLACE_STEEL_SHEET_LANG_TABLE[1] PROGMEM = {
+	MSG_PLACE_STEEL_SHEET_EN
+};
+
 const char MSG_PLANNER_BUFFER_BYTES_EN[] PROGMEM = "  PlannerBufferBytes: ";
 const char * const MSG_PLANNER_BUFFER_BYTES_LANG_TABLE[1] PROGMEM = {
 	MSG_PLANNER_BUFFER_BYTES_EN
@@ -2281,6 +2291,11 @@ const char * const MSG_RECTRACT_LANG_TABLE[1] PROGMEM = {
 const char MSG_REFRESH_EN[] PROGMEM = "\xF8" "Refresh";
 const char * const MSG_REFRESH_LANG_TABLE[1] PROGMEM = {
 	MSG_REFRESH_EN
+};
+
+const char MSG_REMOVE_STEEL_SHEET_EN[] PROGMEM = "Please remove steel sheet.";
+const char * const MSG_REMOVE_STEEL_SHEET_LANG_TABLE[1] PROGMEM = {
+	MSG_REMOVE_STEEL_SHEET_EN
 };
 
 const char MSG_RESEND_EN[] PROGMEM = "Resend: ";

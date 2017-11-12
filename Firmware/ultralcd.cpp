@@ -2390,6 +2390,8 @@ void lcd_wait_for_cool_down() {
 // Lets the user move the Z carriage up to the end stoppers.
 // When done, it sets the current Z to Z_MAX_POS and returns true.
 // Otherwise the Z calibration is not changed and false is returned.
+
+#ifndef TMC2130
 bool lcd_calibrate_z_end_stop_manual(bool only_z)
 {
     bool clean_nozzle_asked = false;
@@ -2480,6 +2482,8 @@ calibrated:
 canceled:
     return false;
 }
+
+#endif // TMC2130
 
 static inline bool pgm_is_whitespace(const char *c_addr)
 {
@@ -5398,8 +5402,6 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	case 1: axis_length = Y_MAX_POS + 8; break;
 	default: axis_length = 210; break;
 	}
-	SERIAL_ECHOPGM("Current position 1:");
-	MYSERIAL.println(current_position[axis]);
 
 #ifdef TMC2130
 	tmc2130_home_exit();
@@ -5407,18 +5409,12 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 #endif
 
 	for (char i = 0; i < 2; i++) {
-		SERIAL_ECHOPGM("i = ");
-		MYSERIAL.println(int(i));
-		SERIAL_ECHOPGM("Current position 2:");
-		MYSERIAL.println(current_position[axis]);
 
 #ifdef TMC2130
 		tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
-
-
-			current_position[axis] -= (axis_length + margin);
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+		current_position[axis] -= (axis_length + margin);
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 
 		st_synchronize();
 
@@ -5430,10 +5426,6 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 
 		current_position_init = st_get_position_mm(axis);
-		SERIAL_ECHOPGM("Current position init:");
-		MYSERIAL.print(current_position_init);
-		SERIAL_ECHOPGM("; ");
-		MYSERIAL.println(current_position[axis]);
 
 		if (i < 1) {
 			current_position[axis] += 2 * margin;
@@ -5452,23 +5444,14 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
 			current_position_final = st_get_position_mm(axis);
-			SERIAL_ECHOPGM("Current position final:");
-			MYSERIAL.print(current_position_final);
-			SERIAL_ECHOPGM("; ");
-			MYSERIAL.println(current_position[axis]);
 
 			current_position[axis] -= margin;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 			st_synchronize();
-			SERIAL_ECHOPGM("Current position 3:");
-			MYSERIAL.println(current_position[axis]);
-
 		}
 		measured_axis_length[i] = abs(current_position_final - current_position_init);
-		SERIAL_ECHOPGM("Measured axis length:");
-		MYSERIAL.println(measured_axis_length[i]);
-
-
+		//SERIAL_ECHOPGM("Measured axis length:");
+		//MYSERIAL.println(measured_axis_length[i]);
 		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
 			//axis length
 #ifdef TMC2130
@@ -5487,8 +5470,8 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		}
 	}
 
-	SERIAL_ECHOPGM("Axis length difference:");
-	MYSERIAL.println(abs(measured_axis_length[0] - measured_axis_length[1]));
+	//SERIAL_ECHOPGM("Axis length difference:");
+	//MYSERIAL.println(abs(measured_axis_length[0] - measured_axis_length[1]));
 	
 		if (abs(measured_axis_length[0] - measured_axis_length[1]) > 1) {
 			//loose pulleys

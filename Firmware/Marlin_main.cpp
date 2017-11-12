@@ -1461,6 +1461,8 @@ inline void gcode_M900() {
 bool calibrate_z_auto()
 {
 	//lcd_display_message_fullscreen_P(MSG_CALIBRATE_Z_AUTO);
+	lcd_implementation_clear();
+	lcd_print_at_PGM(0,1, MSG_CALIBRATE_Z_AUTO);
 	bool endstops_enabled  = enable_endstops(true);
 	int axis_up_dir = -home_dir(Z_AXIS);
 	tmc2130_home_enter(Z_AXIS_MASK);
@@ -1484,7 +1486,7 @@ bool calibrate_z_auto()
 	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
 	st_synchronize();
     enable_endstops(endstops_enabled);
-    current_position[Z_AXIS] = Z_MAX_POS-3.f;
+    current_position[Z_AXIS] = Z_MAX_POS+2.0;
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	return true;
 }

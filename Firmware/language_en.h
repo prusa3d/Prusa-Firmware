@@ -338,7 +338,13 @@
 #define(lenght=20, lines=2) MSG_PLA_FILAMENT_LOADED				"Is PLA filament loaded?"
 #define(lenght=20, lines=4) MSG_PLEASE_LOAD_PLA					"Please load PLA filament first."
 
+//messages bellow has no translation yet
+
 #define MSG_CRASHDETECT_OFF										"Crash det.  [off]"
 #define MSG_CRASHDETECT_ON										"Crash det.   [on]"
 #define MSG_FSENSOR_OFF											"Fil. sensor [off]"
 #define MSG_FSENSOR_ON											"Fil. sensor  [on]"
+
+#define(length=20, lines=4) MSG_PLACE_STEEL_SHEET				"Please place steel sheet on heatbed."
+#define MSG_REMOVE_STEEL_SHEET									"Please remove steel sheet."
+#define(length=20, lines=2) MSG_CALIBRATE_Z_AUTO				"Calibrating Z"
