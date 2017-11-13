@@ -244,3 +244,6 @@ void dcode_9125()
 	}
 }
 
+void dcode_2130()
+{
+}

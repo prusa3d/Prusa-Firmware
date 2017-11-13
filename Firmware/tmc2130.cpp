@@ -739,4 +739,14 @@ uint8_t tmc2130_txrx(uint8_t cs, uint8_t addr, uint32_t wval, uint32_t* rval)
 	return stat;
 }
 
+void tmc2130_eeprom_load_config()
+{
+	
+}
+
+void tmc2130_eeprom_save_config()
+{
+}
+
+
 #endif //TMC2130

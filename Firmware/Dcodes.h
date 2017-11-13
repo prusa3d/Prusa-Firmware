@@ -8,6 +8,7 @@ extern void dcode_3();
 extern void dcode_4();
 
 extern void dcode_9125();
+extern void dcode_2130();
 
 
 #endif //DCODES_H
