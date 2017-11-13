@@ -59,6 +59,7 @@ extern bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update = fals
 extern void cmdqueue_dump_to_serial_single_line(int nr, const char *p);
 extern void cmdqueue_dump_to_serial();
 #endif /* CMDBUFFER_DEBUG */
+extern bool cmd_buffer_empty();
 extern void enquecommand(const char *cmd, bool from_progmem);
 extern void enquecommand_front(const char *cmd, bool from_progmem);
 extern void repeatcommand_front();

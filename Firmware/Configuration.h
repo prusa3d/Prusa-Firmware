@@ -9,7 +9,8 @@
 
 // Firmware version
 #define FW_version "3.0.12-RC2"
-#define FW_build   107
+//#define FW_build   107
+#define FW_build   --BUILD-NUMBER--
 #define FW_version_build FW_version " b" STR(FW_build)
 
 
@@ -100,6 +101,8 @@
 #define EEPROM_TMC_X_SG_THRS_HIGH    (EEPROM_TMC_X + 14) // 1byte, (-64..+63)
 
 #define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4) //float for skew backup
+
+#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
@@ -769,7 +772,7 @@ enum CalibrationStatus
 	CALIBRATION_STATUS_ASSEMBLED = 255,
 
 	// For the wizard: self test has been performed, now the XYZ calibration is needed.
-	// CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
+	CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
 
 	// For the wizard: factory assembled, needs to run Z calibration.
 	CALIBRATION_STATUS_Z_CALIBRATION = 240,

@@ -234,7 +234,6 @@ void cmdqueue_reset();
 
 void prepare_arc_move(char isclockwise);
 void clamp_to_software_endstops(float target[3]);
-
 void refresh_cmd_timeout(void);
 
 #ifdef FAST_PWM_FAN
@@ -382,5 +381,8 @@ extern void print_world_coordinates();
 extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
 
+// G-codes
+bool gcode_M45(bool onlyZ);
+void gcode_M701();
 
 #define UVLO !(PINE & (1<<4))
