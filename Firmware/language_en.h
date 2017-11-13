@@ -346,5 +346,6 @@
 #define MSG_FSENSOR_ON											"Fil. sensor  [on]"
 
 #define(length=20, lines=4) MSG_PLACE_STEEL_SHEET				"Please place steel sheet on heatbed."
-#define MSG_REMOVE_STEEL_SHEET									"Please remove steel sheet."
+#define(length=20, lines=4) MSG_REMOVE_STEEL_SHEET				"Please remove steel sheet from heatbed."
 #define(length=20, lines=2) MSG_CALIBRATE_Z_AUTO				"Calibrating Z"
+#define(length=20, lines=2) MSG_STEEL_SHEET_CHECK				"Is steel sheet on heatbed?"

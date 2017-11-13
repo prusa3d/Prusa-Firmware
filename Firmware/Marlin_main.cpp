@@ -1783,14 +1783,17 @@ bool gcode_M45(bool onlyZ) {
 	if (lcd_calibrate_z_end_stop_manual(onlyZ)) {
 #endif //TMC2130
 		refresh_cmd_timeout();
-		if (((degHotend(0) > MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) && (!onlyZ)) {
-			lcd_wait_for_cool_down();
-			lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
+		//if (((degHotend(0) > MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) && (!onlyZ)) {
+		//	lcd_wait_for_cool_down();
+		//}
+		if(!onlyZ){
+			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
+			if(result) lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
+		    lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
 			lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
 			lcd_implementation_print_at(0, 2, 1);
 			lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
 		}
-
 		// Move the print head close to the bed.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);

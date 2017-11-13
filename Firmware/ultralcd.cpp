@@ -2365,7 +2365,7 @@ void lcd_adjust_z() {
 
 }
 
-void lcd_wait_for_cool_down() {
+/*void lcd_wait_for_cool_down() {
 	lcd_set_custom_characters_degree();
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(MSG_WAITING_TEMP);
@@ -2385,7 +2385,7 @@ void lcd_wait_for_cool_down() {
 		delay_keep_alive(1000);
 	}
 	lcd_set_custom_characters_arrows();
-}
+}*/
 
 // Lets the user move the Z carriage up to the end stoppers.
 // When done, it sets the current Z to Z_MAX_POS and returns true.
@@ -5402,7 +5402,8 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	case 1: axis_length = Y_MAX_POS + 8; break;
 	default: axis_length = 210; break;
 	}
-
+	//tmc2130_sg_stop_on_crash = false;
+	crashdet_disable();
 #ifdef TMC2130
 	tmc2130_home_exit();
 	enable_endstops(true);
@@ -5426,7 +5427,6 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 
 		current_position_init = st_get_position_mm(axis);
-
 		if (i < 1) {
 			current_position[axis] += 2 * margin;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
@@ -5450,8 +5450,8 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			st_synchronize();
 		}
 		measured_axis_length[i] = abs(current_position_final - current_position_init);
-		//SERIAL_ECHOPGM("Measured axis length:");
-		//MYSERIAL.println(measured_axis_length[i]);
+		SERIAL_ECHOPGM("Measured axis length:");
+		MYSERIAL.println(measured_axis_length[i]);
 		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
 			//axis length
 #ifdef TMC2130
@@ -5466,12 +5466,14 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			if (axis == Z_AXIS) _error_1 = "Z";
 
 			lcd_selftest_error(9, _error_1, _error_2);
+			//crashdet_enable();
+			//uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
 			return false;
 		}
 	}
 
-	//SERIAL_ECHOPGM("Axis length difference:");
-	//MYSERIAL.println(abs(measured_axis_length[0] - measured_axis_length[1]));
+	SERIAL_ECHOPGM("Axis length difference:");
+	MYSERIAL.println(abs(measured_axis_length[0] - measured_axis_length[1]));
 	
 		if (abs(measured_axis_length[0] - measured_axis_length[1]) > 1) {
 			//loose pulleys
@@ -5483,9 +5485,10 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			if (axis == Z_AXIS) _error_1 = "Z";
 
 			lcd_selftest_error(8, _error_1, _error_2);
+			//crashdet_enable();
 			return false;
 		}
-
+		//crashdet_enable();
 		return true;
 }
 	

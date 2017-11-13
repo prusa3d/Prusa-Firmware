@@ -2293,7 +2293,7 @@ const char * const MSG_REFRESH_LANG_TABLE[1] PROGMEM = {
 	MSG_REFRESH_EN
 };
 
-const char MSG_REMOVE_STEEL_SHEET_EN[] PROGMEM = "Please remove steel sheet.";
+const char MSG_REMOVE_STEEL_SHEET_EN[] PROGMEM = "Please remove steel sheet from heatbed.";
 const char * const MSG_REMOVE_STEEL_SHEET_LANG_TABLE[1] PROGMEM = {
 	MSG_REMOVE_STEEL_SHEET_EN
 };
@@ -3026,6 +3026,11 @@ const char * const MSG_STATS_TOTALPRINTTIME_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_STATS_TOTALPRINTTIME_ES,
 	MSG_STATS_TOTALPRINTTIME_PL,
 	MSG_STATS_TOTALPRINTTIME_DE
+};
+
+const char MSG_STEEL_SHEET_CHECK_EN[] PROGMEM = "Is steel sheet on heatbed?";
+const char * const MSG_STEEL_SHEET_CHECK_LANG_TABLE[1] PROGMEM = {
+	MSG_STEEL_SHEET_CHECK_EN
 };
 
 const char MSG_STEPPER_TOO_HIGH_EN[] PROGMEM = "Steprate too high: ";
