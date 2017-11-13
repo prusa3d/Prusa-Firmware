@@ -128,6 +128,8 @@ uint8_t LastStepMask = 0;
 
 #define CHECK_ENDSTOPS  if(check_endstops)
 
+#ifndef _NO_ASM
+
 // intRes = intIn1 * intIn2 >> 16
 // uses:
 // r26 to store 0
@@ -197,6 +199,18 @@ asm volatile ( \
 : \
 "r26" , "r27" \
 )
+
+#else //_NO_ASM
+
+void MultiU16X8toH16(unsigned short& intRes, unsigned char& charIn1, unsigned short& intIn2)
+{
+}
+
+void MultiU24X24toH16(uint16_t& intRes, int32_t& longIn1, long& longIn2)
+{
+}
+
+#endif //_NO_ASM
 
 // Some useful constants
 
@@ -742,7 +756,7 @@ void isr() {
         
     // Calculare new timer value
     unsigned short timer;
-    unsigned short step_rate;
+    uint16_t step_rate;
     if (step_events_completed <= (unsigned long int)current_block->accelerate_until) {
       // v = t * a   ->   acc_step_rate = acceleration_time * current_block->acceleration_rate
       MultiU24X24toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);

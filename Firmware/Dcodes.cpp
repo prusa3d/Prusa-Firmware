@@ -2,6 +2,20 @@
 #include "Marlin.h"
 #include "cmdqueue.h"
 #include "pat9125.h"
+#include <avr/wdt.h>
+
+
+#define RAMSIZE        0x2000
+#define boot_src_addr  (*((uint32_t*)(RAMSIZE - 16)))
+#define boot_dst_addr  (*((uint32_t*)(RAMSIZE - 12)))
+#define boot_copy_size (*((uint16_t*)(RAMSIZE - 8)))
+#define boot_reserved  (*((uint8_t*)(RAMSIZE - 6)))
+#define boot_app_flags (*((uint8_t*)(RAMSIZE - 5)))
+#define boot_app_magic (*((uint32_t*)(RAMSIZE - 4)))
+#define BOOT_APP_FLG_ERASE 0x01
+#define BOOT_APP_FLG_COPY  0x02
+#define BOOT_APP_FLG_FLASH 0x04
+
 
 inline void serial_print_hex_nibble(uint8_t val)
 {
@@ -48,16 +62,17 @@ void dcode_0()
 	if (*(strchr_pointer + 1) == 0) return;
 	MYSERIAL.println("D0 - Reset");
 	if (code_seen('B')) //bootloader
-		asm volatile("jmp 0x1e000");
+	{
+		cli();
+		wdt_enable(WDTO_15MS);
+		while(1);
+	}
 	else //reset
+	{
+#ifndef _NO_ASM
 		asm volatile("jmp 0x00000");
-/*
-	cli(); //disable interrupts
-	wdt_reset(); //reset watchdog
-	WDTCSR = (1<<WDCE) | (1<<WDE); //enable watchdog
-	WDTCSR = (1<<WDE) | (1<<WDP0); //30ms prescaler
-	while(1); //wait for reset
-*/
+#endif //_NO_ASM
+	}
 }
 
 void dcode_1()
@@ -90,7 +105,7 @@ void dcode_2()
 			for (int i = 0; i < count; i++)
 				*((uint8_t*)(address + i)) =  data[i];
 			MYSERIAL.print(count, DEC);
-			MYSERIAL.println(" bytes written to RAM at addres ");
+			MYSERIAL.println(" bytes written to RAM at address ");
 			serial_print_hex_word(address);
 			MYSERIAL.write('\n');
 		}
@@ -134,7 +149,7 @@ void dcode_3()
 			for (int i = 0; i < count; i++)
 				eeprom_write_byte((uint8_t*)(address + i), data[i]);
 			MYSERIAL.print(count, DEC);
-			MYSERIAL.println(" bytes written to EEPROM at addres ");
+			MYSERIAL.println(" bytes written to EEPROM at address ");
 			serial_print_hex_word(address);
 			MYSERIAL.write('\n');
 		}
@@ -188,6 +203,99 @@ void dcode_4()
 			}
 		}
 	}
+}
+
+void dcode_5()
+{
+	MYSERIAL.println("D5 - Read/Write FLASH");
+	uint32_t address = 0x0000; //default 0x0000
+	uint16_t count = 0x0400; //default 0x0400 (1kb block)
+	if (code_seen('A')) // Address (0x00000-0x3ffff)
+		address = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
+	if (code_seen('C')) // Count (0x0001-0x2000)
+		count = (int)code_value();
+	address &= 0x3ffff;
+	if (count > 0x2000) count = 0x2000;
+	if ((address + count) > 0x40000) count = 0x40000 - address;
+	bool bErase = false;
+	bool bCopy = false;
+	if (code_seen('E')) //Erase
+		bErase = true;
+	uint8_t data[16];
+	if (code_seen('X')) // Data
+	{
+		count = parse_hex(strchr_pointer + 1, data, 16);
+		if (count > 0) bCopy = true;
+	}
+	if (bErase || bCopy)
+	{
+		if (bErase)
+		{
+			MYSERIAL.print(count, DEC);
+			MYSERIAL.println(" bytes of FLASH at address ");
+			serial_print_hex_word(address);
+			MYSERIAL.write(" will be erased\n");
+		}
+		if (bCopy)
+		{
+			MYSERIAL.print(count, DEC);
+			MYSERIAL.println(" bytes will be written to FLASH at address ");
+			serial_print_hex_word(address);
+			MYSERIAL.write('\n');
+		}
+		cli();
+		boot_app_magic = 0x55aa55aa;
+		boot_app_flags = (bErase?(BOOT_APP_FLG_ERASE):0) | (bCopy?(BOOT_APP_FLG_COPY):0);
+		boot_copy_size = (uint16_t)count;
+		boot_dst_addr = (uint32_t)address;
+		boot_src_addr = (uint32_t)(&data);
+		wdt_enable(WDTO_15MS);
+		while(1);
+	}
+	while (count)
+	{
+		serial_print_hex_nibble(address >> 16);
+		serial_print_hex_word(address);
+		MYSERIAL.write(' ');
+		uint8_t countperline = 16;
+		while (count && countperline)
+		{
+			uint8_t data = pgm_read_byte_far((uint8_t*)address++);
+			MYSERIAL.write(' ');
+			serial_print_hex_byte(data);
+			countperline--;
+			count--;
+		}
+		MYSERIAL.write('\n');
+	}
+}
+
+void dcode_6()
+{
+	cli();
+	boot_app_magic = 0x55aa55aa;
+	boot_app_flags = BOOT_APP_FLG_ERASE | BOOT_APP_FLG_COPY | BOOT_APP_FLG_FLASH;
+	boot_copy_size = (uint16_t)0xc00;
+	boot_src_addr = (uint32_t)0x0003e400;
+	boot_dst_addr = (uint32_t)0x0003f400;
+	wdt_enable(WDTO_15MS);
+	while(1);
+
+/*	MYSERIAL.println("D6 - Test");
+	MYSERIAL.print("REGx90=0x");
+	MYSERIAL.println(REGx90, HEX);
+	REGx90 = 100;
+	MYSERIAL.print("REGx90=0x");
+	MYSERIAL.println(REGx90, HEX);*/
+}
+
+void dcode_7()
+{
+}
+
+void dcode_2130()
+{
+//	printf("test");
 }
 
 void dcode_9125()
@@ -244,6 +352,3 @@ void dcode_9125()
 	}
 }
 
-void dcode_2130()
-{
-}
