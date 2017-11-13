@@ -717,7 +717,7 @@ void factory_reset(char level, bool quiet)
 void setup()
 {
     lcd_init();
-    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
+	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
     lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	setup_killpin();
 	setup_powerhold();
@@ -5738,15 +5738,18 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		dcode_3(); break;
 	case 4: // D4 - Read/Write PIN
 		dcode_4(); break;
+	case 5: // D5 - Read/Write FLASH
+		dcode_5(); break;
+	case 6: // D6 - Test
+		dcode_6(); break;
+	case 7: // D7 - Test
+		dcode_7(); break;
+	case 2130: // D9125 - TMC2130
+		dcode_2130(); break;
 	case 9125: // D9125 - PAT9125
 		dcode_9125(); break;
-	case 5:
-		MYSERIAL.println("D5 - Test");
-		if (code_seen('P'))
-			selectedSerialPort = (int)code_value();
-		MYSERIAL.print("selectedSerialPort = ");
-		MYSERIAL.println(selectedSerialPort, DEC);
-		break;
+
+
 	case 10: // D10 - Tell the printer that XYZ calibration went OK
         calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
         break;
@@ -5849,11 +5852,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			homeaxis(0);
 		}
 		break;*/
-	case 6:
+/*	case 6:
 		{
-/*			MYSERIAL.print("tmc2130_rd_MSCNT(1)=");
+			MYSERIAL.print("tmc2130_rd_MSCNT(1)=");
 			int val = tmc2130_rd_MSCNT(tmc2130_cs[1]);
-			MYSERIAL.println(val);*/
+			MYSERIAL.println(val);
 			homeaxis(1);
 		}
 		break;
@@ -5868,7 +5871,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			MYSERIAL.print("swi2c_check=");
 			MYSERIAL.println(swi2c_check(0x75));
 		}
-		break;
+		break;*/
 	}
   }
 #endif //DEBUG_DCODES

@@ -841,6 +841,14 @@ static void lcd_move_menu_axis();
 
 /* Menu implementation */
 
+void lcd_preheat_farm()
+{
+  setTargetHotend0(FARM_PREHEAT_HOTEND_TEMP);
+  setTargetBed(FARM_PREHEAT_HPB_TEMP);
+  fanSpeed = 0;
+  lcd_return_to_status();
+  setWatch(); // heater sanity check timer
+}
 
 void lcd_preheat_pla()
 {
@@ -1041,6 +1049,9 @@ static void lcd_preheat_menu()
   START_MENU();
 
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+
+  if (farm_mode)
+    MENU_ITEM(function, PSTR("farm  -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FARM_PREHEAT_HPB_TEMP)), lcd_preheat_farm);
 
   MENU_ITEM(function, PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
   MENU_ITEM(function, PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)), lcd_preheat_pla);
@@ -2819,11 +2830,11 @@ static void lcd_settings_menu()
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
 
-  /*if (FSensorStateMenu == 0) {
+  if (FSensorStateMenu == 0) {
     MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
   } else {
     MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
-  }*/
+  }
 
   if (SilentModeMenu == 0) {
     MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
