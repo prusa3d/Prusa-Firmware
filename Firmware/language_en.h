@@ -315,6 +315,8 @@
 #define(length=11, lines=1) MSG_INFO_FILAMENT_XDIFF				"Fil. Xd:"
 #define(length=11, lines=1) MSG_INFO_FILAMENT_YDIFF				"Fil. Ydiff:"
 
+//Wizard messages which has tranlsations
+
 #define(length=17, lines=1) MSG_WIZARD							"Wizard"
 #define(length=20, lines=7)	MSG_WIZARD_WELCOME					"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 #define(length=20, lines=8) MSG_WIZARD_QUIT						"You can always resume the Wizard from Calibration -> Wizard."
@@ -337,7 +339,7 @@
 #define(lenght=20, lines=8) MSG_WIZARD_INSERT_CORRECT_FILAMENT	"Please load PLA filament and then resume Wizard by rebooting the printer."
 #define(lenght=20, lines=2) MSG_PLA_FILAMENT_LOADED				"Is PLA filament loaded?"
 #define(lenght=20, lines=4) MSG_PLEASE_LOAD_PLA					"Please load PLA filament first."
-
+#define(length=25, lines=1) MSG_M117_V2_CALIBRATION				"M117 First layer cal."
 //messages bellow has no translation yet
 
 #define MSG_CRASHDETECT_OFF										"Crash det.  [off]"
