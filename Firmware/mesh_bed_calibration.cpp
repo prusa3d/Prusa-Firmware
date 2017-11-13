@@ -2294,6 +2294,13 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
     }
 	#endif // SUPPORT_VERBOSITY
 
+	//make space
+	current_position[Z_AXIS] += 150;
+	go_to_current(homing_feedrate[Z_AXIS] / 60);
+	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder););
+
+	lcd_show_fullscreen_message_and_wait_P(MSG_PLACE_STEEL_SHEET);
+
     // Sample Z heights for the mesh bed leveling.
     // In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
     if (! sample_mesh_and_store_reference())

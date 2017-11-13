@@ -310,6 +310,11 @@ void enquecommand(const char *cmd, bool from_progmem)
     }
 }
 
+bool cmd_buffer_empty()
+{
+	return (buflen == 0);
+}
+
 void enquecommand_front(const char *cmd, bool from_progmem)
 {
     int len = from_progmem ? strlen_P(cmd) : strlen(cmd);
