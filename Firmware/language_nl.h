@@ -330,7 +330,7 @@
 #define MSG_WIZARD_HEATING					"Opwarmen van de tuit. Wacht aub."
 #define MSG_WIZARD_V2_CAL					"Begin met kalibratie tussen tuit en bed."
 #define MSG_WIZARD_V2_CAL_2					"Begin de Kal.-Linie te printen, draai de knop tot je de optimale hoogte bereikt. Controleer de afbeeldingen in ons handboek in hoofdstuk Calibration."
-#define MSG_V2_CALIBRATION					"Eerste layer cal."
+#define MSG_V2_CALIBRATION					"Eerste laag kal."
 #define MSG_WIZARD_DONE						"Klaar. Happy printing!"
 #define MSG_WIZARD_LOAD_FILAMENT			"Plaats PLA filament in de extruder, druk dan op knop om het te laden."
 #define MSG_WIZARD_RERUN					"Starten van deWizard verwijdert de huidige kalibreringsresultaten en begint vanaf het begin. Doorgaan?"
@@ -341,3 +341,4 @@
 #define MSG_PLA_FILAMENT_LOADED				"Is PLA filament geladen?"
 #define MSG_PLEASE_LOAD_PLA					"Laad eerst PLA filament. aub"
 #define MSG_FILE_CNT						"Sommige bestanden worden niet gesorteerd omdat de max. 100 bestanden per map is."
+#define MSG_M117_V2_CALIBRATION				"M117 eerste laag kal."

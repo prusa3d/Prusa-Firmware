@@ -341,3 +341,4 @@
 #define MSG_PLA_FILAMENT_LOADED				"O filamento PLA esta carregado?"
 #define MSG_PLEASE_LOAD_PLA					"Por favor carregue filamento PLA."
 #define MSG_FILE_CNT						"Alguns ficheiros nao serao ordenados. Num. max. de ficheiros numa pasta para ordenar e 100."
+#define MSG_M117_V2_CALIBRATION				"M117 Primeira camada cal."
