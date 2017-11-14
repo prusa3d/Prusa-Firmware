@@ -280,10 +280,10 @@
 #define MSG_BED_CORRECTION_MENU				"Bett level korrekt"
 
 
-#define MSG_BED_CORRECTION_MID_LEFT				"Mi.Links  [um]"
-#define MSG_BED_CORRECTION_MID_RIGHT			"Mi.Rechts [um]"
-#define MSG_BED_CORRECTION_FRONT_CENTR			"Ztr.Vorne [um]"
-#define MSG_BED_CORRECTION_REAR_CENTR			"Ztr.Hinten[um]"
+//#define MSG_BED_CORRECTION_MID_LEFT				"Mi.Links  [um]"
+//#define MSG_BED_CORRECTION_MID_RIGHT			"Mi.Rechts [um]"
+//#define MSG_BED_CORRECTION_FRONT_CENTR			"Ztr.Vorne [um]"
+//#define MSG_BED_CORRECTION_REAR_CENTR			"Ztr.Hinten[um]"
 
 #define MSG_BED_CORRECTION_RESET			"Zuruecksetzen"
 

@@ -265,10 +265,10 @@
 #define MSG_PAPER							"Coloque folha de papel debaixo do bico durante a calibracao dos primeiros 4 pontos. Se o Bico arrastar o papel, desligue a impressora de imediato."
 
 #define MSG_BED_CORRECTION_MENU				"Nivel cama correto"
-#define MSG_BED_CORRECTION_LEFT				"Esquerda [um]"
-#define MSG_BED_CORRECTION_RIGHT			"Direita[um]"
-#define MSG_BED_CORRECTION_FRONT			"Frontal[um]"
-#define MSG_BED_CORRECTION_REAR				"Retaguarda [um]"
+//#define MSG_BED_CORRECTION_MID_LEFT 				"Esquerda [um]"
+//#define MSG_BED_CORRECTION_MID_RIGHT			"Direita[um]"
+//#define MSG_BED_CORRECTION_FRONT_CENTR			"Frontal[um]"
+//#define MSG_BED_CORRECTION_REAR_CENTR				"Retaguarda [um]"
 #define MSG_BED_CORRECTION_RESET			"Reset"
 
 #define MSG_MESH_BED_LEVELING				"Malha Nivel. Plataf."
