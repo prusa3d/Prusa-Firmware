@@ -177,11 +177,11 @@
 #define MSG_SELFTEST_OK						"Self test OK"
 #define(length=20,lines=1) MSG_LOOSE_PULLEY	"Loose pulley"
 
-#define(length=20) MSG_SELFTEST_FAN			"Fan test"
-#define(length=20) MSG_SELFTEST_COOLING_FAN		"Front print fan?"
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN	"Left hotend fan?"
-#define(length=19) MSG_SELFTEST_FAN_YES			"Spinning"
-#define(length=19) MSG_SELFTEST_FAN_NO			"Not spinning"
+#define(length=20) MSG_SELFTEST_FAN					"Fan test"
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?"
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN		"Left hotend fan?"
+#define(length=19) MSG_SELFTEST_FAN_YES				"Spinning"
+#define(length=19) MSG_SELFTEST_FAN_NO				"Not spinning"
 
 #define(length=20) MSG_STATS_TOTALFILAMENT	"Total filament :"
 #define(length=20) MSG_STATS_TOTALPRINTTIME "Total print time :"
