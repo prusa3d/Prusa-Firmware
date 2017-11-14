@@ -5288,6 +5288,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           }
 
         }
+		WRITE(BEEPER, LOW);
 #ifdef SNMM
 		display_loading();
 		do {
@@ -5300,14 +5301,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			target[E_AXIS] += 0.001;
 			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
 		}*/
-#endif
-        //Filament inserted
-        
-        WRITE(BEEPER,LOW);
 
-		//Feed the filament to the end of nozzle quickly        
-#ifdef SNMM
-		
+        //Filament inserted     
+		//Feed the filament to the end of nozzle quickly   		
 		st_synchronize();
 		target[E_AXIS] += bowden_length[snmm_extruder];
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);

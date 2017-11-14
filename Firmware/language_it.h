@@ -311,3 +311,12 @@
 #define MSG_PLEASE_LOAD_PLA					"Per favore prima caricare filamento di PLA."
 #define MSG_WIZARD_HEATING					"Sto preriscaldando l'ugello. Per favore attendi."
 #define MSG_M117_V2_CALIBRATION				"M117 Cal. primo layer."
+
+#define MSG_DATE							"Data"
+#define MSG_XYZ_DETAILS						"XYZ Cal. dettagli"
+#define	MSG_Y_DISTANCE_FROM_MIN				"Distanza Y da min:"
+#define	MSG_LEFT							"Sinistra:"
+#define MSG_RIGHT							"Destra:"
+#define MSG_MEASURED_SKEW					"Incl. misurata:"
+#define MSG_SLIGHT_SKEW						"Incl. leggera:"
+#define MSG_SEVERE_SKEW						"Inc. rilevante:"
