@@ -565,10 +565,15 @@ void lcd_commands()
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
 	{
 		if(lcd_commands_step == 0) {
-			card.pauseSDPrint();
-			lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
-			lcdDrawUpdate = 3;
-			lcd_commands_step = 1;
+			if (card.sdprinting) {
+				card.pauseSDPrint();
+				lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
+				lcdDrawUpdate = 3;
+				lcd_commands_step = 1;
+			}
+			else {
+				lcd_commands_type = 0;
+			}
 		}
 		if (lcd_commands_step == 1 && !blocks_queued()) {
 			lcd_setstatuspgm(MSG_PRINT_PAUSED);
@@ -661,7 +666,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("M190 S55"));
 			enquecommand_P(PSTR("M109 S210"));
 			enquecommand_P(PSTR("T0"));
-			enquecommand_P(PSTR("M117 First layer cal."));
+			enquecommand_P(MSG_M117_V2_CALIBRATION);
 			enquecommand_P(PSTR("G87")); //sets calibration status
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G21")); //set units to millimeters
@@ -676,8 +681,8 @@ void lcd_commands()
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 			enquecommand_P(PSTR("G1 Z0.250 F7200.000"));
-			enquecommand_P(PSTR("G1 X50.0 E80.0  F1000.0"));
-			enquecommand_P(PSTR("G1 X160.0 E20.0  F1000.0"));
+			enquecommand_P(PSTR("G1 X50.0 E80.0 F1000.0"));
+			enquecommand_P(PSTR("G1 X160.0 E20.0 F1000.0"));
 			enquecommand_P(PSTR("G1 Z0.200 F7200.000"));
 			enquecommand_P(PSTR("G1 X220.0 E13 F1000.0"));
 			enquecommand_P(PSTR("G1 X240.0 E0 F1000.0"));
@@ -736,7 +741,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
@@ -746,7 +751,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
@@ -765,7 +770,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
@@ -775,7 +780,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
@@ -794,7 +799,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
@@ -804,7 +809,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
@@ -823,7 +828,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
@@ -833,7 +838,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
@@ -844,7 +849,7 @@ void lcd_commands()
 		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));
+			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
 			enquecommand_P(PSTR("G4 S0"));
 			enquecommand_P(PSTR("G1 E-4 F2100.00000"));
 			enquecommand_P(PSTR("G1 Z0.5 F7200.000"));
@@ -875,7 +880,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X50 Y1 E-5.0000"));
 			enquecommand_P(PSTR("G1 F2400"));
 			enquecommand_P(PSTR("G1 X0 Y1 E5.0000"));
-			enquecommand_P(PSTR("G1 X50 Y1 E - 5.0000"));
+			enquecommand_P(PSTR("G1 X50 Y1 E-5.0000"));
 			enquecommand_P(PSTR("G1 F2400"));
 			enquecommand_P(PSTR("G1 X0 Y1 E5.0000"));
 			enquecommand_P(PSTR("G1 X50 Y1 E-3.0000"));
@@ -924,7 +929,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("M140 S55"));
 			enquecommand_P(PSTR("M190 S55"));
 			enquecommand_P(PSTR("M109 S210"));
-			enquecommand_P(PSTR("M117 First layer cal."));
+			enquecommand_P(MSG_M117_V2_CALIBRATION);
 			enquecommand_P(PSTR("G87")); //sets calibration status
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
@@ -935,13 +940,13 @@ void lcd_commands()
 			
 			lcd_implementation_clear();
 			lcd_goto_menu(lcd_babystep_z, 0, false);			
-			enquecommand_P(PSTR("G1 X60.0 E9.0  F1000.0")); //intro line
-			enquecommand_P(PSTR("G1 X100.0 E12.5  F1000.0")); //intro line			
+			enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
+			enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0")); //intro line			
 			enquecommand_P(PSTR("G92 E0.0"));
 			enquecommand_P(PSTR("G21")); //set units to millimeters
 			enquecommand_P(PSTR("G90")); //use absolute coordinates
 			enquecommand_P(PSTR("M83")); //use relative distances for extrusion
-			enquecommand_P(PSTR("G1 E - 1.50000 F2100.00000"));
+			enquecommand_P(PSTR("G1 E-1.50000 F2100.00000"));
 			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
 			enquecommand_P(PSTR("M204 S1000")); //set acceleration
 			enquecommand_P(PSTR("G1 F4000"));
@@ -1006,7 +1011,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
@@ -1016,7 +1021,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
@@ -1035,7 +1040,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
@@ -1045,7 +1050,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
@@ -1064,7 +1069,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
@@ -1074,7 +1079,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
@@ -1093,7 +1098,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 X50 Y");
@@ -1103,7 +1108,7 @@ void lcd_commands()
 				enquecommand(cmd1);
 				strcpy(cmd1, "G1 Y");
 				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, "E ");
+				strcat(cmd1, " E");
 				strcat(cmd1, ftostr43(extr_short_segment));
 				enquecommand(cmd1);
 			}
@@ -1114,7 +1119,7 @@ void lcd_commands()
 		if (lcd_commands_step == 2 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));
+			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
 			enquecommand_P(PSTR("M107")); //turn off printer fan
 			enquecommand_P(PSTR("M104 S0")); // turn off temperature
 			enquecommand_P(PSTR("M140 S0")); // turn off heatbed
@@ -2377,7 +2382,7 @@ calibrated:
     }else{
 		lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
         lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
-        lcd_implementation_print_at(0, 2, 1);
+        lcd_implementation_print_at(0, 3, 1);
         lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
     }
     

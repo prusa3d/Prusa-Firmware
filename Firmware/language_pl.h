@@ -173,11 +173,11 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT         "Endstop not hit"
 #define MSG_SELFTEST_OK                     "Self test OK"
 
-#define(length=20) MSG_SELFTEST_FAN					"Test wentylatora";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Przodni went. druku?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze?";
-#define MSG_SELFTEST_FAN_YES				"Kreci sie";
-#define MSG_SELFTEST_FAN_NO					"Nekreci sie";
+#define MSG_SELFTEST_FAN					"Test wentylatora"
+#define MSG_SELFTEST_COOLING_FAN			"Przedni went. druku?"
+#define MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze?"
+#define MSG_SELFTEST_FAN_YES				"Kreci sie"
+#define MSG_SELFTEST_FAN_NO					"Nie kreci sie"
 
 #define MSG_STATS_TOTALFILAMENT             "Filament lacznie :"
 #define MSG_STATS_TOTALPRINTTIME            "Czas calkowity :"
@@ -316,7 +316,7 @@
 #define MSG_DEFAULT_SETTINGS_LOADED			"Ustawienia domyœlne"
 #define MSG_SORTING							"Sortowanie plikow"
 #define MSG_FILE_INCOMPLETE					"Plik niekompletny. Kontynuowac?"
-#define MSG_WIZARD_WELCOME					"Czesc, jestem Twoja Original Prusa i3. Czy mam pomoc Ci z instalacja?"
+#define MSG_WIZARD_WELCOME					"Czesc, jestem Twoja drukarka Original Prusa i3. Czy potrzebujesz pomocy z instalacja?"
 #define MSG_WIZARD_QUIT						"Zawsze mozesz przywrocic Wizard przez Kalibracja -> Wizard."
 #define MSG_WIZARD_SELFTEST					"Najpierw wlacze autotest w celu kontrolli najczestszych problemow z montazem."
 #define MSG_WIZARD_CALIBRATION_FAILED		"Prosze sprawdz nasz poradnik i napraw problem. Potem przywroc Wizard restartujac drukarke."
@@ -338,3 +338,4 @@
 #define MSG_PLEASE_LOAD_PLA					"Prosze, najpierw zaladuj filament PLA."
 #define MSG_FILE_CNT						"Niektore pliki nie beda sortowane. Max. ilosc plikow do sortu w 1 folderze to 100."
 #define MSG_WIZARD_HEATING					"Nagrzewanie dyszy. Prosze czekac."
+#define MSG_M117_V2_CALIBRATION				"M117 Kal. 1. warstwy"

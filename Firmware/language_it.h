@@ -153,11 +153,11 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT	    "Finec. fuori por."
 #define MSG_SELFTEST_OK			    "Autotest OK"
 
-#define(length=20) MSG_SELFTEST_FAN					"Prova del ventilator";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Vent di stampa ant.?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN        "Vent SX sull'ugello?";
-#define MSG_SELFTEST_FAN_YES				"Gira";
-#define MSG_SELFTEST_FAN_NO					"Non si gira";
+#define MSG_SELFTEST_FAN					"Prova del ventilator"
+#define MSG_SELFTEST_COOLING_FAN			"Vent di stampa ant.?"
+#define MSG_SELFTEST_EXTRUDER_FAN        "Vent SX sull'ugello?"
+#define MSG_SELFTEST_FAN_YES				"Gira"
+#define MSG_SELFTEST_FAN_NO					"Non si gira"
 
 #define MSG_STATS_TOTALFILAMENT		    "Filamento tot:"
 #define MSG_STATS_TOTALPRINTTIME	    "Tempo stampa tot:"
@@ -326,3 +326,4 @@
 #define MSG_PLEASE_LOAD_PLA					"Per favore prima caricare filamento di PLA."
 #define MSG_FILE_CNT						"Alcuni dei file non potranno essere organizzati. 100 e il n. max. di file che possono essere organizzati."
 #define MSG_WIZARD_HEATING					"Sto preriscaldando l'ugello. Per favore attendi."
+#define MSG_M117_V2_CALIBRATION				"M117 Cal. primo layer."
