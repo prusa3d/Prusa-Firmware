@@ -783,6 +783,9 @@ void manage_heater()
 		    	 volumetric_multiplier[FILAMENT_SENSOR_EXTRUDER_NUM]=0.01;
 	}
 #endif
+#ifdef HOST_KEEPALIVE_FEATURE
+  host_keepalive();
+#endif
 }
 
 #define PGM_RD_W(x)   (short)pgm_read_word(&x)
