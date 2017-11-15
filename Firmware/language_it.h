@@ -84,7 +84,8 @@
 #define MSG_LOAD_FILAMENT                   "Carica filamento"
 
 #define MSG_SILENT_MODE_ON		    "Modo [silenzioso]"
-#define MSG_SILENT_MODE_OFF		    "Mode      [forte]" 
+#define MSG_SILENT_MODE_OFF		    "Mode      [forte]"
+#define MSG_AUTO_MODE_ON			"Mode       [auto]"
 #define MSG_REBOOT			    "Riavvia stampante"
 #define MSG_TAKE_EFFECT			    " per attualizzare"
 
@@ -131,7 +132,7 @@
 #define MSG_ERR_COLD_EXTRUDE_STOP           " cold extrusion prevented"
 #define MSG_BABYSTEPPING_X                  "Babystepping X"
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-#define MSG_BABYSTEPPING_Z                  "Adjusting Z"
+#define MSG_BABYSTEPPING_Z                  "Compensazione Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
 #define MSG_LANGUAGE_NAME		    "Italiano"
@@ -152,11 +153,11 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT	    "Finec. fuori por."
 #define MSG_SELFTEST_OK			    "Autotest OK"
 
-#define(length=20) MSG_SELFTEST_FAN					"Prova del ventilator";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Vent di stampa ant.?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN        "Vent SX sull'ugello?";
-#define MSG_SELFTEST_FAN_YES				"Gira";
-#define MSG_SELFTEST_FAN_NO					"Non si gira";
+#define MSG_SELFTEST_FAN					"Prova del ventilator"
+#define MSG_SELFTEST_COOLING_FAN			"Vent di stampa ant.?"
+#define MSG_SELFTEST_EXTRUDER_FAN        "Vent SX sull'ugello?"
+#define MSG_SELFTEST_FAN_YES				"Gira"
+#define MSG_SELFTEST_FAN_NO					"Non si gira"
 
 #define MSG_STATS_TOTALFILAMENT		    "Filamento tot:"
 #define MSG_STATS_TOTALPRINTTIME	    "Tempo stampa tot:"
@@ -296,3 +297,33 @@
 #define MSG_MEASURED_SKEW					"Incl. misurata:"
 #define MSG_SLIGHT_SKEW						"Incl. leggera:"
 #define MSG_SEVERE_SKEW						"Inc. rilevante:"
+#define MSG_SORT_TIME						"Ordine: [Tempo]"
+#define MSG_SORT_ALPHA						"Ordine:[Alfabeto]"
+#define MSG_SORT_NONE						"Ordine: [Nessuno]"
+#define MSG_WIZARD							"Wizard"
+#define MSG_DEFAULT_SETTINGS_LOADED			"Settaggi predefiniti caricati"
+#define MSG_SORTING							"Ordine dei file"
+#define MSG_FILE_INCOMPLETE					"File incompleto. Continuare comunque?"
+#define MSG_WIZARD_WELCOME					"Ciao, sono la tua stampante Original Prusa i3. Gradiresti aiuto attraverso il processo di configurazione?"
+#define MSG_WIZARD_QUIT						"E possibile proseguire la guide Wizard in qualsiasi momento attraverso Calibrazione -> Wizard."
+#define MSG_WIZARD_SELFTEST					"Anzitutto avviero il Self Test per controllare gli errori di assemblaggio piu comuni."
+#define MSG_WIZARD_CALIBRATION_FAILED		"Per favore consulta il nostro manuale per risolvere il problema. Poi riprendi il Wizard dopo aver riavviato la stampante."
+#define MSG_WIZARD_XYZ_CAL					"Adesso avviero una Calibrazione XYZ. Puo durare circa 12 min."
+#define MSG_WIZARD_FILAMENT_LOADED			"Il filamento e stato caricato?"
+#define MSG_WIZARD_Z_CAL					"Adesso avviero una Calibrazione Z."
+#define MSG_WIZARD_WILL_PREHEAT				"Adesso preriscaldero l'ugello per PLA."
+#define MSG_WIZARD_V2_CAL					"Adesso tarero lo stacco fra ugello e superfice del piatto."
+#define MSG_WIZARD_V2_CAL_2					"Adesso iniziero a stampare una linea e tu dovrai abbassare l'ugello poco per volta ruotando la manopola sino a raggiungere una altezza ottimale. Per favore dai uno sguardo all'immagine del nostro manuale, cap.Calibrazione."
+#define MSG_V2_CALIBRATION					"Cal. primo layer."
+#define MSG_WIZARD_DONE						"Ben fatto. Buona stampa!"
+#define MSG_WIZARD_LOAD_FILAMENT			"Per favore inserisci il filamento di PLA nell'estrusore, poi premi la manopola per caricare."
+#define MSG_WIZARD_RERUN					"Se avvi il Wizard perderai la calibrazione preesistente e dovrai ricominciare dall'inizio. Continuare?"
+#define MSG_WIZARD_REPEAT_V2_CAL			"Desideri ripetere l'ultimo passaggio per migliorare la distanza fra ugello e piatto?"
+#define MSG_WIZARD_CLEAN_HEATBED			"Per favore pulisci il piatto, poi premi la manopola."
+#define MSG_WIZARD_PLA_FILAMENT				"E questo un filamento di PLA?"
+#define MSG_WIZARD_INSERT_CORRECT_FILAMENT	"Per favore carica filamento di PLA e riprendi il Wizard dopo aver riavviato la stampante."
+#define MSG_PLA_FILAMENT_LOADED				"Il PLA e stato caricato?"
+#define MSG_PLEASE_LOAD_PLA					"Per favore prima caricare filamento di PLA."
+#define MSG_FILE_CNT						"Alcuni dei file non potranno essere organizzati. 100 e il n. max. di file che possono essere organizzati."
+#define MSG_WIZARD_HEATING					"Sto preriscaldando l'ugello. Per favore attendi."
+#define MSG_M117_V2_CALIBRATION				"M117 Cal. primo layer."

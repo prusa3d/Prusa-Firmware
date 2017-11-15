@@ -14,14 +14,14 @@ FORCE_INLINE void Config_PrintSettings() {}
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings();
-void Config_RetrieveSettings();
+bool Config_RetrieveSettings();
 #else
 FORCE_INLINE void Config_StoreSettings() {}
 FORCE_INLINE void Config_RetrieveSettings() { Config_ResetDefault(); Config_PrintSettings(); }
 #endif
 
 inline uint8_t calibration_status() { return eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS); }
-inline uint8_t calibration_status_store(uint8_t status) { eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS, status); }
+inline void calibration_status_store(uint8_t status) { eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS, status); }
 inline bool calibration_status_pinda() { return eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA); }
 
 #endif//CONFIG_STORE_H

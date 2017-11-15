@@ -88,7 +88,16 @@ typedef struct {
 
   // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
   float speed_factor;
+  
+  #ifdef LIN_ADVANCE
+    bool use_advance_lead;
+    unsigned long abs_adv_steps_multiplier8; // Factorised by 2^8 to avoid float
+  #endif
 } block_t;
+
+#ifdef LIN_ADVANCE
+  extern float extruder_advance_k, advance_ed_ratio;
+#endif
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 // this holds the required transform to compensate for bed level

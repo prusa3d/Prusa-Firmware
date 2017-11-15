@@ -104,6 +104,7 @@
 
 #define MSG_SILENT_MODE_ON					"Mod       [tichy]"
 #define MSG_SILENT_MODE_OFF					"Mod  [vys. vykon]" 
+#define MSG_AUTO_MODE_ON					"Mod [automaticky]"
 #define MSG_REBOOT							"Restartujte tiskarnu"
 #define MSG_TAKE_EFFECT						" pro projeveni zmen"	
 
@@ -181,11 +182,11 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
 
-#define(length=20) MSG_SELFTEST_FAN					"Test ventilatoru";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Predni tiskovy vent?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Levy vent na trysce?";
-#define MSG_SELFTEST_FAN_YES				"Toci se";
-#define MSG_SELFTEST_FAN_NO					"Netoci se";
+#define MSG_SELFTEST_FAN					"Test ventilatoru"
+#define MSG_SELFTEST_COOLING_FAN			"Predni tiskovy vent?"
+#define MSG_SELFTEST_EXTRUDER_FAN			"Levy vent na trysce?"
+#define MSG_SELFTEST_FAN_YES				"Toci se"
+#define MSG_SELFTEST_FAN_NO					"Netoci se"
 
 #define MSG_STATS_TOTALFILAMENT				"Filament celkem :"
 #define MSG_STATS_TOTALPRINTTIME			"Celkovy cas :"
@@ -311,3 +312,33 @@
 #define MSG_MEASURED_SKEW					"Merene zkoseni:"
 #define MSG_SLIGHT_SKEW						"Lehke zkoseni:"
 #define MSG_SEVERE_SKEW						"Tezke zkoseni:"
+#define MSG_SORT_TIME						"Trideni [Cas]"
+#define MSG_SORT_ALPHA						"Trideni [Abeceda]"
+#define MSG_SORT_NONE						"Trideni [Zadne]"
+#define MSG_WIZARD							"Wizard"
+#define MSG_DEFAULT_SETTINGS_LOADED			"Defaultni nastaveni nahrano"
+#define MSG_SORTING							"Trideni souboru"
+#define MSG_FILE_INCOMPLETE					"Soubor nekompletni. Pokracovat?"
+#define MSG_WIZARD_WELCOME					"Dobry den, jsem vase tiskarna Original Prusa i3. Chcete abych Vas provedla kalibracnim procesem?"
+#define MSG_WIZARD_QUIT						"Wizarda muzete kdykoliv znovu spustit z menu Calibration -> Wizard"
+#define MSG_WIZARD_SELFTEST					"Nejdriv pomoci selftestu zkontoluji nejcastejsi chyby vznikajici pri sestaveni tiskarny."
+#define MSG_WIZARD_CALIBRATION_FAILED		"Prosim nahlednete do manualu a opravte problem. Po te obnovte Wizarda rebootovanim tiskarny."
+#define MSG_WIZARD_XYZ_CAL					"Nyni provedu xyz kalibraci. Zabere to priblizne 12 min."
+#define MSG_WIZARD_FILAMENT_LOADED			"Je filament zaveden?"
+#define MSG_WIZARD_Z_CAL					"Nyni provedu z kalibraci."
+#define MSG_WIZARD_WILL_PREHEAT				"Nyni predehreji trysku pro PLA."
+#define MSG_WIZARD_V2_CAL					"Nyni zkalibruji vzdalenost mezi koncem trysky a povrchem heatbedu."
+#define MSG_WIZARD_V2_CAL_2					"Zacnu tisknout linku a Vy budete postupne snizovat trysku otacenim tlacitka dokud nedosahnete optimalni vysky. Prohlednete si obrazky v nasi prirucce v kapitole Kalibrace"
+#define MSG_V2_CALIBRATION					"Kal. prvni vrstvy"
+#define MSG_WIZARD_DONE						"Vse je hotovo."
+#define MSG_WIZARD_LOAD_FILAMENT			"Prosim vlozte PLA filament do extruderu, po te stisknete tlacitko pro zavedeni filamentu."
+#define MSG_WIZARD_RERUN					"Spusteni Wizarda vymaze ulozene vysledky vsech kalibraci a spusti kalibracni proces od zacatku. Pokracovat?"
+#define MSG_WIZARD_REPEAT_V2_CAL			"Chcete opakovat posledni krok a pozmenit vzdalenost mezi tryskou a heatbed?"
+#define MSG_WIZARD_CLEAN_HEATBED			"Prosim ocistete heatbed a stisknete tlacitko."
+#define MSG_WIZARD_PLA_FILAMENT				"Je to PLA filament?"		
+#define MSG_WIZARD_INSERT_CORRECT_FILAMENT	"Prosim zavedte PLA filament a po te obnovte Wizarda stisknutim reset tlacitka."
+#define MSG_PLA_FILAMENT_LOADED				"Je PLA filament zaveden?"
+#define MSG_PLEASE_LOAD_PLA					"Nejdrive zavedte PLA filament prosim."
+#define MSG_FILE_CNT						"Nektere soubory nebudou setrideny. Maximalni pocet souboru pro setrideni je 100."
+#define MSG_WIZARD_HEATING					"Predehrivam trysku. Prosim cekejte."
+#define MSG_M117_V2_CALIBRATION				"M117 Kal. prvni vrstvy"

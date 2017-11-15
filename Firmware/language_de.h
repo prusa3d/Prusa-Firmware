@@ -26,7 +26,7 @@
 	+ #define MSG_NOZZLE                          "Duese"
 	+ #define MSG_NOZZLE1                         "Duese2"
 	+ #define MSG_NOZZLE2                         "Duese3"
-	+ #define MSG_BED                             "Bed"
+	+ #define MSG_BED                             "Bett"
 	+ #define MSG_FAN_SPEED                       "Luefter-Tempo"
 	+ #define MSG_FLOW                            "Durchfluss"
 	+ #define MSG_FLOW0                           "Durchfluss 0"
@@ -92,6 +92,7 @@
 	+
 	+#define MSG_SILENT_MODE_ON					"Mode     [leise]"
 	+ #define MSG_SILENT_MODE_OFF					"Mode [Hohe Leist]"
+	+ #define MSG_AUTO_MODE_ON					"Mode [Auto]"
 	+ #define(length = 20) MSG_REBOOT				"Zum Uebernehmen "
 	+ #define(length = 22) MSG_TAKE_EFFECT			"Drucker neu starten"
 	+
@@ -114,8 +115,8 @@
 	+ #define MSG_M109_INVALID_EXTRUDER           "M109 Falscher Extruder"
 	+ #define MSG_HEATING                         "Aufwaermen"
 	+ #define(length = 20) MSG_HEATING_COMPLETE   "Aufwaermen OK"
-	+ #define MSG_BED_HEATING                     "Bed aufwaermen"
-	+ #define MSG_BED_DONE                        "Bed OK"
+	+ #define MSG_BED_HEATING                     "Bett aufwaermen"
+	+ #define MSG_BED_DONE                        "Bett OK"
 	+ #define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" CUSTOM_MENDEL_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
 	+ #define MSG_ERR_KILLED                      "Printer gestoppt. kill() aufgerufen!"
 	+ #define MSG_ERR_STOPPED                     "Drucker aufgrund von Fehlern gestoppt. Fehler beheben und mit M999 neu starten. (Temperatur wird zurueckgesetzt. Nach dem Neustart neu einstellen!)"
@@ -143,7 +144,7 @@
 	+ #define MSG_ERR_COLD_EXTRUDE_STOP           "Stopp, Extruder kalt!"
 	+ #define MSG_BABYSTEPPING_X                  "Babystepping X"
 	+ #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-	+ #define MSG_BABYSTEPPING_Z                  "Z wurde eingestellt"
+	 #define MSG_BABYSTEPPING_Z                  "Z wurde eingestellt"
 	+ #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Menuestruktur fehlerhaft"
 	+
 	+#define MSG_LANGUAGE_NAME					"Deutsch"
@@ -156,7 +157,7 @@
 	+ #define MSG_SELFTEST_PLEASECHECK			"Bitte pruefe:"
 	+ #define MSG_SELFTEST_NOTCONNECTED			"Nicht angeschlossen"
 	+ #define MSG_SELFTEST_HEATERTHERMISTOR		"Heater/Thermistor"
-	+ #define MSG_SELFTEST_BEDHEATER				"Bed / Heater"
+	+ #define MSG_SELFTEST_BEDHEATER				"Bett / Heater"
 	+ #define MSG_SELFTEST_WIRINGERROR			"Verdrahtungfehler"
 	+ #define MSG_SELFTEST_ENDSTOPS				"Endschalter"
 	+ #define MSG_SELFTEST_MOTOR					"Motor"
@@ -177,11 +178,11 @@
 + #define(length = 20) MSG_STATS_PRINTTIME		"Druckzeit:  "
 + #define(length = 20) MSG_SELFTEST_START				"Selbsttest start "
 + #define(length = 20) MSG_SELFTEST_CHECK_ENDSTOPS	"Pruefe Endschalter  "
-+ #define(length = 20) MSG_SELFTEST_CHECK_HOTEND		"Pruefe Hotend" 
++ #define(length = 20) MSG_SELFTEST_CHECK_HOTEND		"Pruefe Duese" 
 + #define(length = 20) MSG_SELFTEST_CHECK_X				"Pruefe X Achse    "
 + #define(length = 20) MSG_SELFTEST_CHECK_Y				"Pruefe Y Achse    "
 + #define(length = 20) MSG_SELFTEST_CHECK_Z				"Pruefe Z Achse    "
-+ #define(length = 20) MSG_SELFTEST_CHECK_BED			"Pr\x81fe Bed        "
++ #define(length = 20) MSG_SELFTEST_CHECK_BED			"Pruefe Bett        "
 + #define(length = 20) MSG_SELFTEST_CHECK_ALLCORRECT	"Alles richtig    "
 + #define MSG_SELFTEST						"Selbsttest       "
 + #define(length = 20) MSG_SELFTEST_FAILED		"Selbsttest misslung."
@@ -196,25 +197,25 @@
 + #define MSG_CALIBRATE_BED_RESET				"Reset XYZ Kalibr."
 +
 
-+#define(length = 20, lines = 8) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Kalibrieren von XYZ. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken wenn ganz oben."
-+ #define(length = 20, lines = 8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Kalibrieren von Z. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken wenn ganz oben."
++#define(length = 20, lines = 8) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Kalibrieren von XYZ. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken Sie den Knopf wenn es ganz oben wird."
++ #define(length = 20, lines = 8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Kalibrieren von Z. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken Sie den Knopf wenn es ganz oben wird."
 +
 
 +#define(length = 20, lines = 8) MSG_CONFIRM_NOZZLE_CLEAN			"Bitte entfernen Sie ueberstehendes Filament von der Duese. Klicken wenn sauber."
 + #define(length = 20, lines = 2) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Ist der Schlitten ganz oben?"
 +
-+#define(length = 60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Suchen Bed Kalibrierpunkt"
++#define(length = 60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Suchen Bett Kalibrierpunkt"
 + #define(length = 14) MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" von 4"
-+ #define(length = 60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Verbesserung Bed Kalibrierpunkt"
++ #define(length = 60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Verbesserung Bett Kalibrierpunkt"
 + #define(length = 14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" von 9"
 + #define(length = 60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Messen der Referenzhoehe des Kalibrierpunktes"
 + #define(length = 14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" von 9"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteration "
 +
-+#define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ-Kalibrierung fehlgeschlagen. Bed-Kalibrierpunkt nicht gefunden."
++#define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ-Kalibrierung fehlgeschlagen. Bett-Kalibrierpunkt nicht gefunden."
 + #define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED				"XYZ-Kalibrierung fehlgeschlagen. Bitte schauen Sie in das Handbuch."
 
-+ #define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"XYZ-Kalibrierung ok. X/Y-Achsen sind senkrecht zueinander. Glueckwunsch!"
++ #define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"XYZ-Kalibrierung OK. X/Y-Achsen sind senkrecht zueinander. Glueckwunsch!"
 + #define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD					"XYZ Kalibrierung in Ordnung. X/Y Achsen sind etwas schief."
 + #define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME					"XYZ Kalibrierung in Ordnung. Schiefheit wird automatisch korrigiert."
 
@@ -233,8 +234,8 @@
 +#define(length = 20, lines = 2) MSG_NEW_FIRMWARE_AVAILABLE								"Neue Firmware Version verfuegbar:"
 + #define(length = 20) MSG_NEW_FIRMWARE_PLEASE_UPGRADE									"Bitte aktualisieren."
 +
-+ #define(length = 20, lines = 8) MSG_FOLLOW_CALIBRATION_FLOW								"Der Drucker wurde noch nicht kalibriert. Bitte folgen Sie dem Handbuch, Kapitel First steps, Abschnitt Calibration flow."
-+ #define(length = 20, lines = 12) MSG_BABYSTEP_Z_NOT_SET									"Der Abstand zwischen der Spitze der Duese und der Bed ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, section First layer calibration."
++ #define(length = 20, lines = 8) MSG_FOLLOW_CALIBRATION_FLOW								"Der Drucker wurde noch nicht kalibriert. Bitte folgen Sie das Handbuch, Kapitel First steps, Abschnitt Calibration flow."
++ #define(length = 20, lines = 12) MSG_BABYSTEP_Z_NOT_SET									"Der Abstand zwischen der Spitze der Duese und der Bett ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, section First layer calibration."
 + 
 +
 
@@ -258,13 +259,13 @@
 
 +#define(length = 20, lines = 8) MSG_MARK_FIL						"Filament 100mm vom Extrudergehaeuse markieren. Klicken wenn Fertig."
 + #define(length = 20, lines = 8) MSG_CLEAN_NOZZLE_E				"E-Kalibrierung beendet. Bitte reinigen Sie die Duese. Klicken wenn fertig."
-+ #define(length = 20, lines = 3) MSG_WAITING_TEMP				"Warten auf Abkuehlung von Heater und Bed."
++ #define(length = 20, lines = 3) MSG_WAITING_TEMP				"Warten auf Abkuehlung von Heater und Bett."
 
 + #define(length = 20, lines = 2) MSG_FILAMENT_CLEAN				"Ist Farbe rein?"
 + #define(lenght = 20, lines = 1) MSG_UNLOADING_FILAMENT			"Filament auswerfen"
 + #define(length = 20, lines = 8) MSG_PAPER						"Legen ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier einklemmt, Drucker sofort ausschalten"
 +
-+#define MSG_BED_CORRECTION_MENU									"Bed level Korrekt"
++#define MSG_BED_CORRECTION_MENU									"Bett level Korrekt"
 
 + #define MSG_BED_CORRECTION_LEFT									"Links     [um]"
 + #define MSG_BED_CORRECTION_RIGHT								"Rechts    [um]"
@@ -272,7 +273,7 @@
 + #define MSG_BED_CORRECTION_REAR									"Hinten    [um]"
 + #define MSG_BED_CORRECTION_RESET								"Ruecksetzen"
 +
-+#define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
++#define MSG_MESH_BED_LEVELING									"Mesh Bett Leveling"
 + #define MSG_MENU_CALIBRATION									"Kalibrierung"
 
 + #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD Karte [normal]"
@@ -324,3 +325,33 @@
 #define MSG_MEASURED_SKEW					"Schraeglauf:"
 #define MSG_SLIGHT_SKEW						"Leichter Schr.:"
 #define MSG_SEVERE_SKEW						"Schwerer Schr.:"
+#define MSG_SORT_TIME						"Sortieren: [Zeit]"
+#define MSG_SORT_ALPHA						"Sortieren:[Alpha]"
+#define MSG_SORT_NONE						"Sortieren:[Keine]"
+#define MSG_WIZARD							"Wizard"
+#define MSG_DEFAULT_SETTINGS_LOADED			"Standardeinstellungen wurden zuruckgesetzt"
+#define MSG_SORTING							"Dateien sortieren"
+#define MSG_FILE_INCOMPLETE					"Datei unvollstaend. Trotzdem fortfahren?"
+#define MSG_WIZARD_WELCOME					"Hallo, ich bin dein Original Prusa i3 Drucker. Moechten Sie meine Hilfe durch den Setup-Prozess?"
+#define MSG_WIZARD_QUIT						"Sie koennen immer den Asistenten im Menu neu aufrufen: Kalibrierung -> Assistant"
+#define MSG_WIZARD_SELFTEST					"Zunaechst fuehre ich den Selbsttest durch um die haeufigsten Probleme bei der Aufbau zu ueberpruefen."
+#define MSG_WIZARD_CALIBRATION_FAILED		"Bitte ueberpruefen Sie unser Handbuch und beheben Sie das Problem. Fahren Sie dann mit dem Assistenten fort, indem Sie den Drucker neu starten."
+#define MSG_WIZARD_XYZ_CAL					"Ich werde jetzt die XYZ-Kalibrierung durchfuehren. Es wird ca. 12 Minuten dauern"
+#define MSG_WIZARD_FILAMENT_LOADED			"Ist das Filament geladen?"
+#define MSG_WIZARD_Z_CAL					"Ich werde jetzt die Z Kalibrierung durchfuehren."
+#define MSG_WIZARD_WILL_PREHEAT				"Jetzt werde ich die Duese fuer PLA vorheizen. "
+#define MSG_WIZARD_V2_CAL					"Jetzt werde ich den Abstand zwischen Duesenspitze und Druckbett kalibrieren."
+#define MSG_WIZARD_V2_CAL_2					"Ich werde jetzt erste Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Ueberpruefen Sie die Bilder in unserem Handbuch im Kapitel Kalibrierung"
+#define MSG_V2_CALIBRATION					"Erste-Schicht Kal"
+#define MSG_WIZARD_DONE						"Alles wurde getan. Viel Spass beim Drucken!"
+#define MSG_WIZARD_LOAD_FILAMENT			"Fuehren Sie bitte PLA Filament in den Extruder und bestaetigen Sie den Knopf um es zu laden."
+#define MSG_WIZARD_RERUN					"Der laufende Assistent loescht die aktuelle Kalibrierergebnisse und wird von Anfang an beginnen. Fortsetzen?"
+#define MSG_WIZARD_REPEAT_V2_CAL			"Moechten Sie den letzten Schritt wiederholen um den Abstand zwischen Duese und Druckbett neu einzustellen?"
+#define MSG_WIZARD_CLEAN_HEATBED			"Bitte reinigen Sie das Heizbett und druecken Sie dann den Knopf."
+#define MSG_WIZARD_PLA_FILAMENT				"Ist es wirklich PLA Filament?"
+#define MSG_WIZARD_INSERT_CORRECT_FILAMENT	"Bitte laden Sie PLA-Filament und fahren Sie mit dem Assistenten fort, indem Sie den Drucker neu starten."
+#define MSG_PLA_FILAMENT_LOADED				"Ist PLA Filament geladen?"
+#define MSG_PLEASE_LOAD_PLA					"Bitte laden Sie zuerst PLA Filament."
+#define MSG_FILE_CNT						"Einige Dateien werden nicht sortiert. Max. Anzahl der Dateien in einem Ordner ist 100."
+#define MSG_WIZARD_HEATING					"Vorheizen der Duese. Bitte warten."
+#define MSG_M117_V2_CALIBRATION				"M117 Erste-Schicht Kal."

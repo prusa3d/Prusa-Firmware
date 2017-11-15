@@ -103,6 +103,7 @@
 
 #define MSG_SILENT_MODE_ON					"Mode     [silent]"
 #define MSG_SILENT_MODE_OFF					"Mode [high power]" 
+#define MSG_AUTO_MODE_ON					"Mode [auto power]"
 #define(length=20) MSG_REBOOT				"Reboot the printer"
 #define(length=20) MSG_TAKE_EFFECT			" for take effect"											
 
@@ -155,7 +156,7 @@
 #define MSG_ERR_COLD_EXTRUDE_STOP           " cold extrusion prevented"
 #define MSG_BABYSTEPPING_X                  "Babystepping X"
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-#define MSG_BABYSTEPPING_Z                  "Adjusting Z"
+#define(length=20) MSG_BABYSTEPPING_Z       "Adjusting Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
 #define MSG_LANGUAGE_NAME					"English"
@@ -177,11 +178,11 @@
 #define MSG_SELFTEST_OK						"Self test OK"
 #define(length=20,lines=1) MSG_LOOSE_PULLEY					"Loose pulley"
 
-#define(length=20) MSG_SELFTEST_FAN					"Fan test";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Left hotend fan?";
-#define MSG_SELFTEST_FAN_YES				"Spinning";
-#define MSG_SELFTEST_FAN_NO					"Not spinning";
+#define(length=20) MSG_SELFTEST_FAN					"Fan test"
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?"
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN		"Left hotend fan?"
+#define(length=19) MSG_SELFTEST_FAN_YES				"Spinning"
+#define(length=19) MSG_SELFTEST_FAN_NO				"Not spinning"
 
 #define(length=20) MSG_STATS_TOTALFILAMENT	"Total filament :"
 #define(length=20) MSG_STATS_TOTALPRINTTIME "Total print time :"
@@ -311,3 +312,33 @@
 #define(length=15, lines=1) MSG_MEASURED_SKEW					"Measured skew:"
 #define(length=15, lines=1) MSG_SLIGHT_SKEW						"Slight skew:"
 #define(length=15, lines=1) MSG_SEVERE_SKEW						"Severe skew:"
+#define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Default settings loaded"
+#define(length=17, lines=1) MSG_SORT_TIME						"Sort: [Time]"
+#define(length=17, lines=1) MSG_SORT_ALPHA						"Sort: [Alphabet]"
+#define(length=17, lines=1) MSG_SORT_NONE						"Sort: [None]"
+#define(length=20, lines=1) MSG_SORTING							"Sorting files"
+#define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
+#define(length=17, lines=1) MSG_WIZARD							"Wizard"
+#define(length=20, lines=7)	MSG_WIZARD_WELCOME					"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+#define(length=20, lines=8) MSG_WIZARD_QUIT						"You can always resume the Wizard from Calibration -> Wizard."
+#define(length=20, lines=8) MSG_WIZARD_SELFTEST					"First, I will run the selftest to check most common assembly problems."
+#define(length=20, lines=8) MSG_WIZARD_CALIBRATION_FAILED		"Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
+#define(length=20, lines=8) MSG_WIZARD_XYZ_CAL					"I will run xyz calibration now. It will take approx. 12 mins."
+#define(length=20, lines=2) MSG_WIZARD_FILAMENT_LOADED			"Is filament loaded?"
+#define(length=20, lines=8) MSG_WIZARD_Z_CAL					"I will run z calibration now."
+#define(length=20, lines=4) MSG_WIZARD_WILL_PREHEAT				"Now I will preheat nozzle for PLA."
+#define(length=20, lines=3) MSG_WIZARD_HEATING					"Preheating nozzle. Please wait."
+#define(lenght=20, lines=8) MSG_WIZARD_V2_CAL					"Now I will calibrate distance between tip of the nozzle and heatbed surface."
+#define(lenght=20, lines=12) MSG_WIZARD_V2_CAL_2				"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
+#define(lenght=17, lines=1) MSG_V2_CALIBRATION					"First layer cal."
+#define(lenght=20, lines=8) MSG_WIZARD_DONE						"All is done. Happy printing!"
+#define(lenght=20, lines=8) MSG_WIZARD_LOAD_FILAMENT			"Please insert PLA filament to the extruder, then press knob to load it."
+#define(lenght=20, lines=7) MSG_WIZARD_RERUN					"Running Wizard will delete current calibration results and start from the beginning. Continue?"
+#define(lenght=20, lines=7) MSG_WIZARD_REPEAT_V2_CAL			"Do you want to repeat last step to readjust distance between nozzle and heatbed?"
+#define(lenght=20, lines=8) MSG_WIZARD_CLEAN_HEATBED			"Please clean heatbed and then press the knob."
+#define(lenght=20, lines=2) MSG_WIZARD_PLA_FILAMENT				"Is it PLA filament?"
+#define(lenght=20, lines=8) MSG_WIZARD_INSERT_CORRECT_FILAMENT	"Please load PLA filament and then resume Wizard by rebooting the printer."
+#define(lenght=20, lines=2) MSG_PLA_FILAMENT_LOADED				"Is PLA filament loaded?"
+#define(lenght=20, lines=4) MSG_PLEASE_LOAD_PLA					"Please load PLA filament first."
+#define(length=20, lines=8) MSG_FILE_CNT						"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
+#define(length=25, lines=1) MSG_M117_V2_CALIBRATION				"M117 First layer cal."

@@ -182,6 +182,14 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 #ifdef FILAMENT_SENSOR
   static int meas_shift_index;  //used to point to a delayed sample in buffer for filament width sensor
 #endif
+
+#if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
+static float temp_runaway_status[4];
+static float temp_runaway_target[4];
+static float temp_runaway_timer[4];
+static int temp_runaway_error_counter[4];
+#endif
+
 //===========================================================================
 //=============================   functions      ============================
 //===========================================================================
@@ -203,6 +211,9 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
   long bias, d;
   float Ku, Tu;
   float max = 0, min = 10000;
+  uint8_t safety_check_cycles = 0;
+  const uint8_t safety_check_cycles_count = (extruder < 0) ? 45 : 10; //10 cycles / 20s delay for extruder and 45 cycles / 90s for heatbed
+  float temp_ambient;
 
 #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
     (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
@@ -220,7 +231,7 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 		  pid_cycle = 0;
           return;
         }
-	
+
   SERIAL_ECHOLN("PID Autotune start");
   
   disable_heater(); // switch off all heaters.
@@ -240,7 +251,6 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 
 
  for(;;) {
-
     if(temp_meas_ready == true) { // temp sample ready
       updateTemperaturesFromRawValues();
 
@@ -336,14 +346,34 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
         p=soft_pwm_bed;       
         SERIAL_PROTOCOLPGM("ok B:");
       }else{
-        p=soft_pwm[extruder];       
-        SERIAL_PROTOCOLPGM("ok T:");
+        p=soft_pwm[extruder]; 		
+		SERIAL_PROTOCOLPGM("ok T:");
       }
-			
-      SERIAL_PROTOCOL(input);   
-      SERIAL_PROTOCOLPGM(" @:");
-      SERIAL_PROTOCOLLN(p);       
+		SERIAL_PROTOCOL(input);   
+		SERIAL_PROTOCOLPGM(" @:");
+		SERIAL_PROTOCOLLN(p);       
+		if (safety_check_cycles == 0) { //save ambient temp
+			temp_ambient = input;
+			//SERIAL_ECHOPGM("Ambient T: ");
+			//MYSERIAL.println(temp_ambient);
+			safety_check_cycles++;
+		}
+		else if (safety_check_cycles < safety_check_cycles_count) { //delay
+			safety_check_cycles++;		
+		}
+		else if (safety_check_cycles == safety_check_cycles_count){ //check that temperature is rising
+			safety_check_cycles++;
+			//SERIAL_ECHOPGM("Time from beginning: ");
+			//MYSERIAL.print(safety_check_cycles_count * 2);
+			//SERIAL_ECHOPGM("s. Difference between current and ambient T: ");
+			//MYSERIAL.println(input - temp_ambient);
 
+			if (abs(input - temp_ambient) < 5.0) { 
+				temp_runaway_stop(false, (extruder<0));
+				pid_tuning_finished = true;
+				return;
+			}
+		}
       temp_millis = millis();
     }
     if(((millis() - t1) + (millis() - t2)) > (10L*60L*1000L*2L)) {
@@ -686,6 +716,7 @@ void manage_heater()
 		    	 volumetric_multiplier[FILAMENT_SENSOR_EXTRUDER_NUM]=0.01;
 	}
 #endif
+  host_keepalive();
 }
 
 #define PGM_RD_W(x)   (short)pgm_read_word(&x)
@@ -1303,6 +1334,9 @@ void max_temp_error(uint8_t e) {
 }
 
 void min_temp_error(uint8_t e) {
+#ifdef DEBUG_DISABLE_MINTEMP
+	return;
+#endif
   disable_heater();
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
@@ -1333,6 +1367,9 @@ void bed_max_temp_error(void) {
 }
 
 void bed_min_temp_error(void) {
+#ifdef DEBUG_DISABLE_MINTEMP
+	return;
+#endif
 #if HEATER_BED_PIN > -1
     WRITE(HEATER_BED_PIN, 0);
 #endif
@@ -1410,7 +1447,9 @@ ISR(TIMER0_COMPB_vect)
   static unsigned char temp_count = 0;
   static unsigned long raw_temp_0_value = 0;
   static unsigned long raw_temp_1_value = 0;
+#if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
   static unsigned long raw_temp_2_value = 0;
+#endif
   static unsigned long raw_temp_bed_value = 0;
   static unsigned char temp_state = 10;
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
@@ -1850,7 +1889,7 @@ ISR(TIMER0_COMPB_vect)
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
       redundant_temperature_raw = raw_temp_1_value;
 #endif
-#if EXTRUDERS > 2
+#if (EXTRUDERS > 2) && defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
       current_temperature_raw[2] = raw_temp_2_value;
 #endif
       current_temperature_bed_raw = raw_temp_bed_value;
@@ -1866,7 +1905,9 @@ ISR(TIMER0_COMPB_vect)
     temp_count = 0;
     raw_temp_0_value = 0;
     raw_temp_1_value = 0;
+#if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
     raw_temp_2_value = 0;
+#endif
     raw_temp_bed_value = 0;
 
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
