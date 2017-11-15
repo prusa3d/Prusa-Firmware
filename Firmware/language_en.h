@@ -340,6 +340,16 @@
 #define(lenght=20, lines=2) MSG_PLA_FILAMENT_LOADED				"Is PLA filament loaded?"
 #define(lenght=20, lines=4) MSG_PLEASE_LOAD_PLA					"Please load PLA filament first."
 #define(length=25, lines=1) MSG_M117_V2_CALIBRATION				"M117 First layer cal."
+
+#define(length=17, lines=1) MSG_DATE							"Date:"
+#define(length=19, lines=1) MSG_XYZ_DETAILS						"XYZ cal. details"
+#define(length=20, lines=1)	MSG_Y_DISTANCE_FROM_MIN				"Y distance from min:"
+#define(length=12, lines=1)	MSG_LEFT							"Left:"
+#define(length=12, lines=1) MSG_RIGHT							"Right:"
+#define(length=15, lines=1) MSG_MEASURED_SKEW					"Measured skew:"
+#define(length=15, lines=1) MSG_SLIGHT_SKEW						"Slight skew:"
+#define(length=15, lines=1) MSG_SEVERE_SKEW						"Severe skew:"
+
 //messages bellow has no translation yet
 
 #define MSG_CRASHDETECT_OFF										"Crash det.  [off]"

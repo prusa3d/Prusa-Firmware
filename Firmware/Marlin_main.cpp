@@ -5367,6 +5367,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           }
 
         }
+		WRITE(BEEPER, LOW);
 		KEEPALIVE_STATE(IN_HANDLER);
 
 #ifdef SNMM
@@ -5383,14 +5384,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			target[E_AXIS] += 0.001;
 			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
 		}*/
-#endif
-        //Filament inserted
-        
-        WRITE(BEEPER,LOW);
 
-		//Feed the filament to the end of nozzle quickly        
-#ifdef SNMM
-		
+        //Filament inserted     
+		//Feed the filament to the end of nozzle quickly   		
 		st_synchronize();
 		target[E_AXIS] += bowden_length[snmm_extruder];
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
@@ -5729,6 +5725,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
   else if(code_seen('T'))
   {
 	  int index;
+	  st_synchronize();
 	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 	   
 	  if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
@@ -5751,7 +5748,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           
 		  snmm_extruder = tmp_extruder;
 
-		  st_synchronize();
+		  
 		  delay(100);
 
 		  disable_e0();

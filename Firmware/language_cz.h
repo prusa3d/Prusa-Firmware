@@ -326,3 +326,12 @@
 #define MSG_PLEASE_LOAD_PLA					"Nejdrive zavedte PLA filament prosim."
 #define MSG_WIZARD_HEATING					"Predehrivam trysku. Prosim cekejte."
 #define MSG_M117_V2_CALIBRATION				"M117 Kal. prvni vrstvy"
+
+#define MSG_DATE							"Datum:"
+#define MSG_XYZ_DETAILS						"Detaily XYZ kal."
+#define	MSG_Y_DISTANCE_FROM_MIN				"Y vzdalenost od min:"
+#define	MSG_LEFT							"Levy:"
+#define MSG_RIGHT							"Pravy:"
+#define MSG_MEASURED_SKEW					"Merene zkoseni:"
+#define MSG_SLIGHT_SKEW						"Lehke zkoseni:"
+#define MSG_SEVERE_SKEW						"Tezke zkoseni:"
