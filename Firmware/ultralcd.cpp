@@ -3675,7 +3675,7 @@ static void lcd_calibration_menu()
   if (!isPrintPaused)
   {
 	MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
-    MENU_ITEM(function, MSG_SELFTEST, lcd_selftest);
+    MENU_ITEM(function, MSG_SELFTEST, lcd_selftest_v);
 #ifdef MK1BP
     // MK1
     // "Calibrate Z"
@@ -5293,6 +5293,11 @@ menu_edit_type(float, float51, ftostr51, 10)
 menu_edit_type(float, float52, ftostr52, 100)
 menu_edit_type(unsigned long, long5, ftostr5, 0.01)
 
+static void lcd_selftest_v()
+{
+	(void)lcd_selftest();
+}
+
 static bool lcd_selftest()
 {
 	int _progress = 0;
@@ -5418,7 +5423,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	default: axis_length = 210; break;
 	}
 	//tmc2130_sg_stop_on_crash = false;
-	crashdet_disable();
+	//crashdet_disable();
 #ifdef TMC2130
 	tmc2130_home_exit();
 	enable_endstops(true);
