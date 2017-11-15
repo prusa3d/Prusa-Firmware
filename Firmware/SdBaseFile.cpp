@@ -277,6 +277,8 @@ int16_t SdBaseFile::fgets(char* str, int16_t num, char* delim) {
  * \return The value one, true, is returned for success and
  * the value zero, false, is returned for failure.
  */
+
+
 bool SdBaseFile::getFilename(char* name) {
   if (!isOpen()) return false;
 
@@ -1111,21 +1113,28 @@ int16_t SdBaseFile::read(void* buf, uint16_t nbyte) {
 int8_t SdBaseFile::readDir(dir_t* dir, char* longFilename) {
   int16_t n;
   // if not a directory file or miss-positioned return an error
-  if (!isDir() || (0X1F & curPosition_)) return -1;
+  if (!isDir() || (0X1F & curPosition_)) {
+	  return -1;
+  }
   
   //If we have a longFilename buffer, mark it as invalid. If we find a long filename it will be filled automaticly.
   if (longFilename != NULL)
   {
   	longFilename[0] = '\0';
   }
-
   while (1) {
     n = read(dir, sizeof(dir_t));
+
     if (n != sizeof(dir_t)) return n == 0 ? 0 : -1;
     // last entry if DIR_NAME_FREE
-    if (dir->name[0] == DIR_NAME_FREE) return 0;
+	if (dir->name[0] == DIR_NAME_FREE) {
+		return 0;
+		SERIAL_ECHOLNPGM("DIR_NAME_FREE");
+	}
     // skip empty entries and entry for .  and ..
-    if (dir->name[0] == DIR_NAME_DELETED || dir->name[0] == '.') continue;
+	if (dir->name[0] == DIR_NAME_DELETED || dir->name[0] == '.') {
+		continue;
+	}
     //Fill the long filename if we have a long filename entry,
 	// long filename entries are stored before the actual filename.
 	if (DIR_IS_LONG_NAME(dir) && longFilename != NULL)
@@ -1150,8 +1159,9 @@ int8_t SdBaseFile::readDir(dir_t* dir, char* longFilename) {
 			longFilename[n+11] = VFAT->name3[0];
 			longFilename[n+12] = VFAT->name3[1];
 			//If this VFAT entry is the last one, add a NUL terminator at the end of the string
-			if (VFAT->sequenceNumber & 0x40)
-				longFilename[n+13] = '\0';
+			if (VFAT->sequenceNumber & 0x40) {
+				longFilename[n + 13] = '\0';
+			}
 		}
     }
     // return if normal file or subdirectory

@@ -44,6 +44,16 @@ extern bool abort_on_endstop_hit;
 // Initialize and start the stepper motor subsystem
 void st_init();
 
+// Interrupt Service Routines
+
+void isr();
+
+#ifdef LIN_ADVANCE
+  void advance_isr();
+  void advance_isr_scheduler();
+  void clear_current_adv_vars(); //Used to reset the built up pretension and remaining esteps on filament change.
+#endif
+
 // Block until all buffered steps are executed
 void st_synchronize();
 
