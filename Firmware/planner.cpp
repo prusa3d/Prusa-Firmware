@@ -153,6 +153,7 @@ static inline int8_t prev_block_index(int8_t block_index) {
 //=============================functions         ============================
 //===========================================================================
 
+#if 0
 // Calculates the distance (not time) it takes to accelerate from initial_rate to target_rate using the 
 // given acceleration:
 FORCE_INLINE float estimate_acceleration_distance(float initial_rate, float target_rate, float acceleration)
@@ -181,6 +182,7 @@ FORCE_INLINE float intersection_distance(float initial_rate, float final_rate, f
     return 0.0;  // acceleration was 0, set intersection distance to 0
   }
 }
+#endif
 
 #define MINIMAL_STEP_RATE 120
 
@@ -418,7 +420,7 @@ void plan_init() {
   block_buffer_tail = 0;
   memset(position, 0, sizeof(position)); // clear position
   #ifdef LIN_ADVANCE
-    memset(position_float, 0, sizeof(position)); // clear position
+    memset(position_float, 0, sizeof(position_float)); // clear position
   #endif
   previous_speed[0] = 0.0;
   previous_speed[1] = 0.0;
