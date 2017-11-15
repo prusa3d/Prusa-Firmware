@@ -5640,6 +5640,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
   else if(code_seen('T'))
   {
 	  int index;
+	  st_synchronize();
 	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 	   
 	  if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
@@ -5662,7 +5663,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
           
 		  snmm_extruder = tmp_extruder;
 
-		  st_synchronize();
+		  
 		  delay(100);
 
 		  disable_e0();

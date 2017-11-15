@@ -846,9 +846,6 @@ void isr() {
       // Timer interrupt for E. e_steps is set in the main routine.
       
 void advance_isr() {
-  
-  nextAdvanceISR = eISR_Rate;
-  
   if (e_steps) {
       bool dir =
 #ifdef SNMM
@@ -869,6 +866,10 @@ void advance_isr() {
 
       }
   }
+  else {
+    eISR_Rate = ADV_NEVER;
+  }
+  nextAdvanceISR = eISR_Rate;
 }
 
 void advance_isr_scheduler() {
