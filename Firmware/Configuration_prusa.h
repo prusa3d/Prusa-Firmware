@@ -1,6 +1,6 @@
 #ifndef CONFIGURATION_PRUSA_H
 #define CONFIGURATION_PRUSA_H
-#include "macros.h"
+
 /*------------------------------------
 GENERAL SETTINGS
 *------------------------------------*/
@@ -20,13 +20,6 @@ GENERAL SETTINGS
 
 // Prusa Single extruder multiple material suport
 //#define SNMM
-
-// Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
-//#define E3D_PT100_EXTRUDER_WITH_AMP
-//#define E3D_PT100_EXTRUDER_NO_AMP
-//#define E3D_PT100_BED_WITH_AMP
-//#define E3D_PT100_BED_NO_AMP
-
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
@@ -73,7 +66,6 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define X_PAUSE_POS 50
 #define Y_PAUSE_POS 190
 #define Z_PAUSE_LIFT 20
-
 
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
@@ -132,18 +124,20 @@ EXTRUDER SETTINGS
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
 
+
+
+
+
 #ifdef SNMM
-//#define BOWDEN_LENGTH  408
+//#define BOWDEN_LENGTH	408
 #define BOWDEN_LENGTH 433 //default total length for filament fast loading part; max length for extrusion is 465 mm!; this length can be adjusted in service menu
 #define FIL_LOAD_LENGTH 102 //length for loading filament into the nozzle
 #define FIL_COOLING 10 //length for cooling moves
 #define E_MOTOR_LOW_CURRENT 350 // current for PRUSAY code
 #define E_MOTOR_HIGH_CURRENT 700 //current for unloading filament, stop print, PRUSAY ramming
-
 #endif //SNMM
 
 //#define DIS //for measuring bed heigth and PINDa detection heigth relative to auto home point, experimental function
-
 
 
 /*------------------------------------
@@ -180,6 +174,7 @@ ADDITIONAL FEATURES SETTINGS
 
 #ifdef FILAMENT_RUNOUT_SUPPORT
 #define FILAMENT_RUNOUT_SENSOR 1
+#define FILAMENT_RUNOUT_SCRIPT "M600"
 #endif
 
 // temperature runaway
@@ -202,6 +197,8 @@ MOTOR CURRENT SETTINGS
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
+#define Z_SILENT 0
+#define Z_HIGH_POWER 200
 #endif
 
 /*------------------------------------
@@ -256,9 +253,9 @@ BED SETTINGS
 #define MAX_BED_POWER 255 // limits duty cycle to bed; 255=full current
 
 // Bed temperature compensation settings
-//#define BED_OFFSET 10
-//#define BED_OFFSET_START 40
-//#define BED_OFFSET_CENTER 50
+#define BED_OFFSET 10
+#define BED_OFFSET_START 40
+#define BED_OFFSET_CENTER 50
 
 
 #ifdef PIDTEMPBED
@@ -393,18 +390,25 @@ THERMISTORS SETTINGS
 
 #define PING_TIME 60 //time in s
 #define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
-#define PING_ALLERT_PERIOD 60 //time in s
+#define PING_ALERT_PERIOD 60 //time in s
+#define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
+#define NC_BUTTON_LONG_PRESS 15 //time in s
 
 #define LONG_PRESS_TIME 1000 //time in ms for button long press 
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
 
-#define PAUSE_RETRACT 1 
-
 #define DEFAULT_PID_TEMP 210
 
-#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration
+#ifdef SNMM
+#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
+#else
+#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
+#endif
 
+#define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
 
+#ifndef SNMM
+#define SUPPORT_VERBOSITY
+#endif
 
 #endif //__CONFIGURATION_PRUSA_H
-

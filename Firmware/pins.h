@@ -340,7 +340,7 @@
     #error Oops!  Make sure you have 'Arduino Mega 2560' selected from the 'Tools -> Boards' menu.
   #endif
 
-/********** HERE *****/
+
 
   // filament runout sensor (NOT SUPPORTED)
   #define FR_SENS 21
@@ -441,20 +441,18 @@
   #define PS_ON_PIN 71
 
 // The Z2 axis, if any, should be the next open extruder port
-#if ENABLED(Z_DUAL_STEPPER_DRIVERS)
+#ifdef Z_DUAL_STEPPER_DRIVERS
 
     #define Z2_STEP_PIN   36
     #define Z2_DIR_PIN    34
     #define Z2_ENABLE_PIN 30
  
 #endif
-  // TODO to find out how to disable the motor PWM
   // looks like digitpot stuff all hangs off #ifdef MOTOR_CURRENT_PWM_XY_PIN
   //#define MOTOR_CURRENT_PWM_XY_PIN 46
   //#define MOTOR_CURRENT_PWM_Z_PIN 45
   //#define MOTOR_CURRENT_PWM_E_PIN 44
-    
-/******* to here ****/
+  
 #endif
 
 
