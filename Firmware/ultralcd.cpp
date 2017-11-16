@@ -3043,7 +3043,7 @@ static void prusa_stat_printinfo()
 	SERIAL_ECHO("]");
 }
 
-
+/*
 void lcd_pick_babystep(){
     int enc_dif = 0;
     int cursor_pos = 1;
@@ -3145,7 +3145,7 @@ void lcd_pick_babystep(){
     lcd_implementation_clear();
     lcd_return_to_status();
 }
-
+*/
 void lcd_move_menu_axis()
 {
 	START_MENU();
@@ -3664,6 +3664,11 @@ static void lcd_settings_menu()
 	END_MENU();
 }
 
+static void lcd_selftest_()
+{
+	lcd_selftest();
+}
+
 static void lcd_calibration_menu()
 {
   START_MENU();
@@ -3671,7 +3676,7 @@ static void lcd_calibration_menu()
   if (!isPrintPaused)
   {
 	MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
-    MENU_ITEM(function, MSG_SELFTEST, lcd_selftest);
+    MENU_ITEM(function, MSG_SELFTEST, lcd_selftest_);
 #ifdef MK1BP
     // MK1
     // "Calibrate Z"
