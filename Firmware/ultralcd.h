@@ -37,8 +37,12 @@ void lcd_mylang();
   static void lcd_selftest_v();
   static bool lcd_selftest();
   static bool lcd_selfcheck_endstops();
-  static bool lcd_selfcheck_axis(int _axis, int _travel);
+
+#ifdef TMC2130
+  static void reset_crash_det(char axis);
   static bool lcd_selfcheck_axis_sg(char axis);
+#endif //TMC2130
+  static bool lcd_selfcheck_axis(int _axis, int _travel);
   static bool lcd_selfcheck_check_heater(bool _isbed);
   static int  lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay);
   static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
