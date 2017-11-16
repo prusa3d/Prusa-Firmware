@@ -3689,7 +3689,7 @@ static void lcd_calibration_menu()
   if (!isPrintPaused)
   {
 	MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
-    MENU_ITEM(function, MSG_SELFTEST, lcd_selftest_);
+    MENU_ITEM(function, MSG_SELFTEST, lcd_selftest_v);
 #ifdef MK1BP
     // MK1
     // "Calibrate Z"
@@ -5309,6 +5309,11 @@ menu_edit_type(float, float51, ftostr51, 10)
 menu_edit_type(float, float52, ftostr52, 100)
 menu_edit_type(unsigned long, long5, ftostr5, 0.01)
 
+static void lcd_selftest_v()
+{
+	(void)lcd_selftest();
+}
+
 static bool lcd_selftest()
 {
 	int _progress = 0;
@@ -5344,29 +5349,39 @@ static bool lcd_selftest()
 	{
 		//current_position[Z_AXIS] += 15;									//move Z axis higher to avoid false triggering of Z end stop in case that we are very low - just above heatbed
 		_progress = lcd_selftest_screen(4, _progress, 3, true, 2000);
-		_result = lcd_selfcheck_axis_sg(X_AXIS);//, X_MAX_POS);
+#ifdef TMC2130
+		_result = lcd_selfcheck_axis_sg(X_AXIS);
+#else
+		_result = lcd_selfcheck_axis(X_AXIS, X_MAX_POS);
+#endif //TMC2130
 	}
 
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(4, _progress, 3, true, 0);
 
-
-		//_result = lcd_selfcheck_pulleys(X_AXIS);
+#ifndef TMC2130
+		_result = lcd_selfcheck_pulleys(X_AXIS);
+#endif
 	}
 
 
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(5, _progress, 3, true, 1500);
+#ifdef TMC2130
 		_result = lcd_selfcheck_axis_sg(Y_AXIS);
-		//_result = lcd_selfcheck_axis(Y_AXIS, Y_MAX_POS);
+#else
+		_result = lcd_selfcheck_axis(Y_AXIS, Y_MAX_POS);
+#endif // TMC2130
 	}
 
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(5, _progress, 3, true, 0);
-		//_result = lcd_selfcheck_pulleys(Y_AXIS);
+#ifndef TMC2130
+		_result = lcd_selfcheck_pulleys(Y_AXIS);
+#endif // TMC2130
 	}
 
 
@@ -5421,74 +5436,80 @@ static bool lcd_selftest()
 	return(_result);
 }
 
+#ifdef TMC2130
+
+static void reset_crash_det(char axis) {
+	current_position[axis] += 10;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+	st_synchronize();
+	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET)) tmc2130_sg_stop_on_crash = true;
+}
 
 static bool lcd_selfcheck_axis_sg(char axis) {
-	
+// each axis length is measured twice	
 	float axis_length, current_position_init, current_position_final;
 	float measured_axis_length[2];
-	float margin = 100;
+	float margin = 60;
 	float max_error_mm = 10;
 	switch (axis) {
 	case 0: axis_length = X_MAX_POS; break;
 	case 1: axis_length = Y_MAX_POS + 8; break;
 	default: axis_length = 210; break;
 	}
-	//tmc2130_sg_stop_on_crash = false;
-	crashdet_disable();
-#ifdef TMC2130
+
+
+	tmc2130_sg_stop_on_crash = false;
 	tmc2130_home_exit();
 	enable_endstops(true);
-#endif
+// first axis length measurement begin	
+	tmc2130_home_enter(X_AXIS_MASK << axis);
+	current_position[axis] -= (axis_length + margin);
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 
-	for (char i = 0; i < 2; i++) {
+	
+	st_synchronize();
+	tmc2130_home_exit();
 
-#ifdef TMC2130
-		tmc2130_home_enter(X_AXIS_MASK << axis);
-#endif
-		current_position[axis] -= (axis_length + margin);
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+	current_position_init = st_get_position_mm(axis);
 
-		st_synchronize();
+	current_position[axis] += 2 * margin;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+	st_synchronize();
+	current_position[axis] += axis_length;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 
-#ifdef TMC2130
-		tmc2130_home_exit();
-#endif
-		//current_position[axis] = st_get_position_mm(axis);
-		//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	tmc2130_home_enter(X_AXIS_MASK << axis);
+	st_synchronize();
+	tmc2130_home_exit();
 
+	current_position_final = st_get_position_mm(axis);
+	measured_axis_length[0] = abs(current_position_final - current_position_init);
 
-		current_position_init = st_get_position_mm(axis);
-		if (i < 1) {
-			current_position[axis] += 2 * margin;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-			st_synchronize();
-			current_position[axis] += axis_length;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-#ifdef TMC2130
-			tmc2130_home_enter(X_AXIS_MASK << axis);
-#endif
-			st_synchronize();
-#ifdef TMC2130
-			tmc2130_home_exit();
-#endif
-			//current_position[axis] = st_get_position_mm(axis);
-			//plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+// first measurement end and second measurement begin	
+	
+	current_position[axis] -= margin;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+	st_synchronize();	
 
-			current_position_final = st_get_position_mm(axis);
+	tmc2130_home_enter(X_AXIS_MASK << axis);
+	current_position[axis] -= (axis_length + margin);
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+		
+	st_synchronize();
+	tmc2130_home_exit();
 
-			current_position[axis] -= margin;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-			st_synchronize();
-		}
-		measured_axis_length[i] = abs(current_position_final - current_position_init);
+	current_position_init = st_get_position_mm(axis);
+
+	measured_axis_length[1] = abs(current_position_final - current_position_init);
+	
+//end of second measurement, now check for possible errors:
+	
+	for(int i = 0; i < 2; i++){ //check if measured axis length corresponds to expected length
 		SERIAL_ECHOPGM("Measured axis length:");
 		MYSERIAL.println(measured_axis_length[i]);
 		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
-			//axis length
-#ifdef TMC2130
-			tmc2130_home_exit();
 			enable_endstops(false);
-#endif
+
 			const char *_error_1;
 			const char *_error_2;
 
@@ -5497,8 +5518,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			if (axis == Z_AXIS) _error_1 = "Z";
 
 			lcd_selftest_error(9, _error_1, _error_2);
-			//crashdet_enable();
-			//uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
+			reset_crash_det(axis);
 			return false;
 		}
 	}
@@ -5506,7 +5526,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	SERIAL_ECHOPGM("Axis length difference:");
 	MYSERIAL.println(abs(measured_axis_length[0] - measured_axis_length[1]));
 	
-		if (abs(measured_axis_length[0] - measured_axis_length[1]) > 1) {
+		if (abs(measured_axis_length[0] - measured_axis_length[1]) > 1) { //check if difference between first and second measurement is low
 			//loose pulleys
 			const char *_error_1;
 			const char *_error_2;
@@ -5516,12 +5536,16 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			if (axis == Z_AXIS) _error_1 = "Z";
 
 			lcd_selftest_error(8, _error_1, _error_2);
-			//crashdet_enable();
+
+			reset_crash_det(axis);
+
 			return false;
 		}
-		//crashdet_enable();
+
+		reset_crash_det(axis);
 		return true;
 }
+#endif //TMC2130
 	
 
 

@@ -219,7 +219,7 @@ uint8_t tmc2130_sample_diag()
 
 void tmc2130_st_isr(uint8_t last_step_mask)
 {
-	if (tmc2130_mode == TMC2130_MODE_SILENT) return;
+	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false) return;
 	bool crash = false;
 	uint8_t diag_mask = tmc2130_sample_diag();
 //	for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++)
