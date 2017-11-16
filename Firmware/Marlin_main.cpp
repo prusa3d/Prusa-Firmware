@@ -399,7 +399,7 @@ bool cancel_heatup = false ;
 
 #ifdef HOST_KEEPALIVE_FEATURE
   
-  MarlinBusyState busy_state = NOT_BUSY;
+  int busy_state = NOT_BUSY;
   static long prev_busy_signal_ms = -1;
   uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
 #else
@@ -4490,7 +4490,7 @@ Sigma_Exit:
 	case 113: // M113 - Get or set Host Keepalive interval
 		if (code_seen('S')) {
 			host_keepalive_interval = (uint8_t)code_value_short();
-			NOMORE(host_keepalive_interval, 60);
+//			NOMORE(host_keepalive_interval, 60);
 		}
 		else {
 			SERIAL_ECHO_START;

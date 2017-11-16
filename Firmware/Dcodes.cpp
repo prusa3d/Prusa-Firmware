@@ -1,6 +1,8 @@
 #include "Dcodes.h"
 #include "Marlin.h"
-#
+
+#ifdef DEBUG_DCODES
+
 #include "ConfigurationStore.h"
 #include "cmdqueue.h"
 #include "pat9125.h"
@@ -421,3 +423,5 @@ void dcode_9125()
 		fsensor_log = (int)code_value();
 	}
 }
+
+#endif //DEBUG_DCODES

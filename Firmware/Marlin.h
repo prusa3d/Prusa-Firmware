@@ -389,17 +389,24 @@ extern void print_mesh_bed_leveling_table();
 
 // States for managing Marlin and host communication
 // Marlin sends messages if blocked or busy
-enum MarlinBusyState {
+/*enum MarlinBusyState {
 	NOT_BUSY,           // Not in a handler
 	IN_HANDLER,         // Processing a GCode
 	IN_PROCESS,         // Known to be blocking command input (as in G29)
 	PAUSED_FOR_USER,    // Blocking pending any input
 	PAUSED_FOR_INPUT    // Blocking pending text input (concept)
-};
+};*/
+
+#define NOT_BUSY          1
+#define IN_HANDLER        2
+#define IN_PROCESS        3
+#define PAUSED_FOR_USER   4
+#define PAUSED_FOR_INPUT  5
 
 #define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
 extern void host_keepalive();
-extern MarlinBusyState busy_state;
+//extern MarlinBusyState busy_state;
+extern int busy_state;
 
 #endif //HOST_KEEPALIVE_FEATURE
 
