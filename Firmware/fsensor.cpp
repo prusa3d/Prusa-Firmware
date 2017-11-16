@@ -35,6 +35,7 @@ bool fsensor_enabled = true;
 bool fsensor_M600 = false;
 uint8_t fsensor_err_cnt = 0;
 int16_t fsensor_st_cnt = 0;
+uint8_t fsensor_log = 0;
 
 
 void fsensor_enable()
@@ -86,35 +87,46 @@ ISR(PCINT2_vect)
 	if (st_cnt != 0)
 	{
 #ifdef DEBUG_FSENSOR_LOG
-		MYSERIAL.print("cnt=");
-		MYSERIAL.print(st_cnt, DEC);
-		MYSERIAL.print(" dy=");
-		MYSERIAL.print(pat9125_y, DEC);
+		if (fsensor_log)
+		{
+			MYSERIAL.print("cnt=");
+			MYSERIAL.print(st_cnt, DEC);
+			MYSERIAL.print(" dy=");
+			MYSERIAL.print(pat9125_y, DEC);
+		}
 #endif //DEBUG_FSENSOR_LOG
 		if (st_cnt != 0)
 		{
 			if( (pat9125_y == 0) || ((pat9125_y > 0) && (st_cnt < 0)) || ((pat9125_y < 0) && (st_cnt > 0)))
 			{ //invalid movement
-				fsensor_err_cnt++;
+				if (st_cnt > 0) //only positive movements
+					fsensor_err_cnt++;
 #ifdef DEBUG_FSENSOR_LOG
+			if (fsensor_log)
+			{
 				MYSERIAL.print("\tNG ! err=");
 				MYSERIAL.println(fsensor_err_cnt, DEC);
+			}
 #endif //DEBUG_FSENSOR_LOG
 			}
 			else
 			{ //propper movement
-//				if (fsensor_err_cnt > 0)
-//					fsensor_err_cnt--;
-					fsensor_err_cnt = 0;
+				if (fsensor_err_cnt > 0)
+					fsensor_err_cnt--;
+//					fsensor_err_cnt = 0;
 #ifdef DEBUG_FSENSOR_LOG
-				MYSERIAL.print("\tOK    err=");
-				MYSERIAL.println(fsensor_err_cnt, DEC);
+				if (fsensor_log)
+				{
+					MYSERIAL.print("\tOK    err=");
+					MYSERIAL.println(fsensor_err_cnt, DEC);
+				}
 #endif //DEBUG_FSENSOR_LOG
 			}
 		}
 		else
 		{ //no movement
 #ifdef DEBUG_FSENSOR_LOG
+		if (fsensor_log)
 			MYSERIAL.println("\tOK 0");
 #endif //DEBUG_FSENSOR_LOG
 		}

@@ -1,5 +1,7 @@
 #include "Dcodes.h"
 #include "Marlin.h"
+#
+#include "ConfigurationStore.h"
 #include "cmdqueue.h"
 #include "pat9125.h"
 #include <avr/wdt.h>
@@ -15,6 +17,10 @@
 #define BOOT_APP_FLG_ERASE 0x01
 #define BOOT_APP_FLG_COPY  0x02
 #define BOOT_APP_FLG_FLASH 0x04
+
+extern uint8_t fsensor_log;
+extern float current_temperature_pinda;
+extern float axis_steps_per_unit[NUM_AXIS];
 
 
 inline void serial_print_hex_nibble(uint8_t val)
@@ -77,11 +83,12 @@ void dcode_0()
 
 void dcode_1()
 {
-	MYSERIAL.println("D1 - Clear EEPROM");
+	MYSERIAL.println("D1 - Clear EEPROM and RESET");
 	cli();
-	for (int i = 0; i < 4096; i++)
-		eeprom_write_byte((unsigned char*)i, (unsigned char)0);
-	sei();
+	for (int i = 0; i < 8192; i++)
+		eeprom_write_byte((unsigned char*)i, (unsigned char)0xff);
+	wdt_enable(WDTO_15MS);
+	while(1);
 }
 
 void dcode_2()
@@ -128,6 +135,7 @@ void dcode_2()
 		MYSERIAL.write('\n');
 	}
 }
+
 void dcode_3()
 {
 	MYSERIAL.println("D3 - Read/Write EEPROM");
@@ -272,6 +280,13 @@ void dcode_5()
 
 void dcode_6()
 {
+	MYSERIAL.println("D6 - Read/Write external FLASH");
+}
+
+void dcode_7()
+{
+	MYSERIAL.println("D7 - Read/Write Bootloader");
+/*
 	cli();
 	boot_app_magic = 0x55aa55aa;
 	boot_app_flags = BOOT_APP_FLG_ERASE | BOOT_APP_FLG_COPY | BOOT_APP_FLG_FLASH;
@@ -280,17 +295,68 @@ void dcode_6()
 	boot_dst_addr = (uint32_t)0x0003f400;
 	wdt_enable(WDTO_15MS);
 	while(1);
-
-/*	MYSERIAL.println("D6 - Test");
-	MYSERIAL.print("REGx90=0x");
-	MYSERIAL.println(REGx90, HEX);
-	REGx90 = 100;
-	MYSERIAL.print("REGx90=0x");
-	MYSERIAL.println(REGx90, HEX);*/
+*/
 }
 
-void dcode_7()
+void dcode_8()
 {
+	MYSERIAL.println("D8 - Read/Write PINDA");
+	uint8_t cal_status = calibration_status_pinda();
+	float temp_pinda = current_temperature_pinda;
+	float offset_z = temp_compensation_pinda_thermistor_offset(temp_pinda);
+	if ((strchr_pointer[1+1] == '?') || (strchr_pointer[1+1] == 0))
+	{
+		MYSERIAL.print("cal_status=");
+		MYSERIAL.println(cal_status?"1":"0");
+		for (uint8_t i = 0; i < 6; i++)
+		{
+			MYSERIAL.print("temp_pinda=");
+			MYSERIAL.print(35 + i * 5, DEC);
+			MYSERIAL.print("C, temp_shift=");
+			uint16_t offs = 0;
+			if (i > 0) offs = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+			MYSERIAL.print(((float)offs) / axis_steps_per_unit[Z_AXIS], 3);
+			MYSERIAL.println("mm");
+		}
+	}
+	else if (strchr_pointer[1+1] == '!')
+	{
+		cal_status = 1;
+		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, cal_status);
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 50); //40C - 
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 100); //45C - 
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 150); //50C - 
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 200); //55C - 
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 250); //60C - 
+	}
+	else
+	{
+		if (code_seen('P')) // Pinda temperature [C]
+			temp_pinda = code_value();
+		offset_z = temp_compensation_pinda_thermistor_offset(temp_pinda);
+		if (code_seen('Z')) // Z Offset [mm]
+		{
+			offset_z = code_value();
+		}
+	}
+	MYSERIAL.print("temp_pinda=");
+	MYSERIAL.println(temp_pinda);
+	MYSERIAL.print("offset_z=");
+	MYSERIAL.println(offset_z, 3);
+}
+
+void dcode_10()
+{//Tell the printer that XYZ calibration went OK
+	MYSERIAL.println("D10 - XYZ calibration = OK");
+	calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
+}
+
+void dcode_12()
+{//Reset Filament error, Power loss and crash counter ( Do it before every print and you can get stats for the print )
+	MYSERIAL.println("D12 - Reset failstat counters");
+    eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, 0x00);
+    eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, 0x00);
+    eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, 0x00);
 }
 
 void dcode_2130()
@@ -350,5 +416,8 @@ void dcode_9125()
 		MYSERIAL.print("pat9125_y=");
 		MYSERIAL.print(pat9125_y, DEC);
 	}
+	if (code_seen('L'))
+	{
+		fsensor_log = (int)code_value();
+	}
 }
-

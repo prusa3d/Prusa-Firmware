@@ -290,6 +290,10 @@ extern float retract_length, retract_length_swap, retract_feedrate, retract_zlif
 extern float retract_recover_length, retract_recover_length_swap, retract_recover_feedrate;
 #endif
 
+#ifdef HOST_KEEPALIVE_FEATURE
+extern uint8_t host_keepalive_interval;
+#endif
+
 extern unsigned long starttime;
 extern unsigned long stoptime;
 extern int bowden_length[4];
@@ -362,7 +366,7 @@ void temp_compensation_apply();
 void temp_compensation_start();
 
 #ifdef PINDA_THERMISTOR
-float temp_compensation_pinda_thermistor_offset();
+float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
 #endif //PINDA_THERMISTOR
 
 void wait_for_heater(long codenum);
@@ -380,6 +384,24 @@ extern void position_menu();
 extern void print_world_coordinates();
 extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
+
+#ifdef HOST_KEEPALIVE_FEATURE
+
+// States for managing Marlin and host communication
+// Marlin sends messages if blocked or busy
+enum MarlinBusyState {
+	NOT_BUSY,           // Not in a handler
+	IN_HANDLER,         // Processing a GCode
+	IN_PROCESS,         // Known to be blocking command input (as in G29)
+	PAUSED_FOR_USER,    // Blocking pending any input
+	PAUSED_FOR_INPUT    // Blocking pending text input (concept)
+};
+
+#define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
+extern void host_keepalive();
+extern MarlinBusyState busy_state;
+
+#endif //HOST_KEEPALIVE_FEATURE
 
 // G-codes
 bool gcode_M45(bool onlyZ);

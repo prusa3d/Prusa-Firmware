@@ -9,8 +9,8 @@
 
 // Firmware version
 #define FW_version "3.0.12-RC2"
-//#define FW_build   107
-#define FW_build   --BUILD-NUMBER--
+#define FW_build   108
+//#define FW_build   --BUILD-NUMBER--
 #define FW_version_build FW_version " b" STR(FW_build)
 
 
@@ -519,7 +519,13 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // please keep turned on if you can.
 //#define EEPROM_CHITCHAT
 
-
+// Host Keepalive
+//
+// When enabled Marlin will send a busy status message to the host
+// every couple of seconds when it can't accept commands.
+//
+#define HOST_KEEPALIVE_FEATURE    // Disable this if your host doesn't like keepalive messages
+#define HOST_KEEPALIVE_INTERVAL 2 // Number of seconds between "busy" messages. Set with M113.
 
 //LCD and SD support
 #define ULTRA_LCD  //general LCD support, also 16x2
