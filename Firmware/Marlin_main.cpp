@@ -3252,17 +3252,18 @@ void process_commands()
 			float offset_z = 0;
 
 #ifdef PINDA_THERMISTOR
-			offset_z = temp_compensation_pinda_thermistor_offset();
+			offset_z = temp_compensation_pinda_thermistor_offset(current_temperature_pinda);
 #endif //PINDA_THERMISTOR
-			#ifdef SUPPORT_VERBOSITY
-			if (verbosity_level >= 1) {
+//			#ifdef SUPPORT_VERBOSITY
+//			if (verbosity_level >= 1)
+			{
 				SERIAL_ECHOPGM("mesh bed leveling: ");
 				MYSERIAL.print(current_position[Z_AXIS], 5);
 				SERIAL_ECHOPGM(" offset: ");
 				MYSERIAL.print(offset_z, 5);
 				SERIAL_ECHOLNPGM("");
 			}
-			#endif // SUPPORT_VERBOSITY
+//			#endif // SUPPORT_VERBOSITY
 			mbl.set_z(ix, iy, current_position[Z_AXIS] - offset_z); //store measured z values z_values[iy][ix] = z - offset_z;
 
 			custom_message_state--;
@@ -5771,24 +5772,25 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		dcode_4(); break;
 	case 5: // D5 - Read/Write FLASH
 		dcode_5(); break;
-	case 6: // D6 - Test
+	case 6: // D6 - Read/Write external FLASH
 		dcode_6(); break;
-	case 7: // D7 - Test
+	case 7: // D7 - Read/Write Bootloader
 		dcode_7(); break;
+	case 8: // D8 - Read/Write PINDA
+		dcode_8(); break;
+
+	case 10: // D10 - XYZ calibration = OK
+		dcode_10(); break;
+    
+    case 12: //D12 - Reset failstat counters
+		dcode_12(); break;
+
 	case 2130: // D9125 - TMC2130
 		dcode_2130(); break;
 	case 9125: // D9125 - PAT9125
 		dcode_9125(); break;
 
 
-	case 10: // D10 - Tell the printer that XYZ calibration went OK
-        calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
-        break;
-    
-    case 12: //D12 - Reset Filament error, Power loss and crash counter ( Do it before every print and you can get stats for the print )
-        eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, 0x00);
-        eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, 0x00);
-        eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, 0x00);
 	case 999:
 	{
 		MYSERIAL.println("D999 - crash");
@@ -6883,11 +6885,11 @@ float temp_comp_interpolation(float inp_temperature) {
 }
 
 #ifdef PINDA_THERMISTOR
-float temp_compensation_pinda_thermistor_offset()
+float temp_compensation_pinda_thermistor_offset(float temperature_pinda)
 {
 	if (!temp_cal_active) return 0;
 	if (!calibration_status_pinda()) return 0;
-	return temp_comp_interpolation(current_temperature_pinda) / axis_steps_per_unit[Z_AXIS];
+	return temp_comp_interpolation(temperature_pinda) / axis_steps_per_unit[Z_AXIS];
 }
 #endif //PINDA_THERMISTOR
 

@@ -362,7 +362,7 @@ void temp_compensation_apply();
 void temp_compensation_start();
 
 #ifdef PINDA_THERMISTOR
-float temp_compensation_pinda_thermistor_offset();
+float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
 #endif //PINDA_THERMISTOR
 
 void wait_for_heater(long codenum);
