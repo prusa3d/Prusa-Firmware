@@ -9,6 +9,8 @@
 #include <avr/wdt.h>
 
 
+#define FLASHSIZE     0x40000
+
 #define RAMSIZE        0x2000
 #define boot_src_addr  (*((uint32_t*)(RAMSIZE - 16)))
 #define boot_dst_addr  (*((uint32_t*)(RAMSIZE - 12)))
@@ -25,22 +27,52 @@ extern float current_temperature_pinda;
 extern float axis_steps_per_unit[NUM_AXIS];
 
 
-inline void serial_print_hex_nibble(uint8_t val)
+inline void print_hex_nibble(uint8_t val)
 {
-	MYSERIAL.write((val > 9)?(val - 10 + 'a'):(val + '0'));
+	putchar((val > 9)?(val - 10 + 'a'):(val + '0'));
 }
 
-void serial_print_hex_byte(uint8_t val)
+void print_hex_byte(uint8_t val)
 {
-	serial_print_hex_nibble(val >> 4);
-	serial_print_hex_nibble(val & 15);
+	print_hex_nibble(val >> 4);
+	print_hex_nibble(val & 15);
 }
 
-void serial_print_hex_word(uint16_t val)
+void print_hex_word(uint16_t val)
 {
-	serial_print_hex_byte(val >> 8);
-	serial_print_hex_byte(val & 255);
+	print_hex_byte(val >> 8);
+	print_hex_byte(val & 255);
 }
+
+void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperline = 16)
+{
+	while (count)
+	{
+		if (type == 2)
+			print_hex_nibble(address >> 16);
+		print_hex_word(address);
+		putchar(' ');
+		uint8_t count_line = countperline;
+		while (count && count_line)
+		{
+			uint8_t data = 0;
+			switch (type)
+			{
+			case 0: data = *((uint8_t*)address++); break;
+			case 1: data = eeprom_read_byte((uint8_t*)address++); break;
+			case 2: data = pgm_read_byte_far((uint8_t*)address++); break;
+			}
+			putchar(' ');
+			print_hex_byte(data);
+			count_line--;
+			count--;
+		}
+		putchar('\n');
+	}
+}
+
+//#define LOG(args...) printf(args)
+#define LOG(args...)
 
 int parse_hex(char* hex, uint8_t* data, int count)
 {
@@ -68,7 +100,7 @@ int parse_hex(char* hex, uint8_t* data, int count)
 void dcode_0()
 {
 	if (*(strchr_pointer + 1) == 0) return;
-	MYSERIAL.println("D0 - Reset");
+	LOG("D0 - Reset\n");
 	if (code_seen('B')) //bootloader
 	{
 		cli();
@@ -85,7 +117,7 @@ void dcode_0()
 
 void dcode_1()
 {
-	MYSERIAL.println("D1 - Clear EEPROM and RESET");
+	LOG("D1 - Clear EEPROM and RESET\n");
 	cli();
 	for (int i = 0; i < 8192; i++)
 		eeprom_write_byte((unsigned char*)i, (unsigned char)0xff);
@@ -95,7 +127,7 @@ void dcode_1()
 
 void dcode_2()
 {
-	MYSERIAL.println("D2 - Read/Write RAM");
+	LOG("D2 - Read/Write RAM\n");
 	uint16_t address = 0x0000; //default 0x0000
 	uint16_t count = 0x2000; //default 0x2000 (entire ram)
 	if (code_seen('A')) // Address (0x0000-0x1fff)
@@ -113,34 +145,32 @@ void dcode_2()
 		{
 			for (int i = 0; i < count; i++)
 				*((uint8_t*)(address + i)) =  data[i];
-			MYSERIAL.print(count, DEC);
-			MYSERIAL.println(" bytes written to RAM at address ");
-			serial_print_hex_word(address);
-			MYSERIAL.write('\n');
+			LOG("%d bytes written to RAM at address %04x", count, address);
 		}
 		else
 			count = 0;
 	}
-	while (count)
+	print_mem(address, count, 0);
+/*	while (count)
 	{
-		serial_print_hex_word(address);
-		MYSERIAL.write(' ');
+		print_hex_word(address);
+		putchar(' ');
 		uint8_t countperline = 16;
 		while (count && countperline)
 		{
 			uint8_t data = *((uint8_t*)address++);
-			MYSERIAL.write(' ');
-			serial_print_hex_byte(data);
+			putchar(' ');
+			print_hex_byte(data);
 			countperline--;
 			count--;
 		}
-		MYSERIAL.write('\n');
-	}
+		putchar('\n');
+	}*/
 }
 
 void dcode_3()
 {
-	MYSERIAL.println("D3 - Read/Write EEPROM");
+	LOG("D3 - Read/Write EEPROM\n");
 	uint16_t address = 0x0000; //default 0x0000
 	uint16_t count = 0x2000; //default 0x2000 (entire eeprom)
 	if (code_seen('A')) // Address (0x0000-0x1fff)
@@ -158,34 +188,35 @@ void dcode_3()
 		{
 			for (int i = 0; i < count; i++)
 				eeprom_write_byte((uint8_t*)(address + i), data[i]);
-			MYSERIAL.print(count, DEC);
-			MYSERIAL.println(" bytes written to EEPROM at address ");
-			serial_print_hex_word(address);
-			MYSERIAL.write('\n');
+			LOG(count, DEC);
+			LOG(" bytes written to EEPROM at address ");
+			print_hex_word(address);
+			putchar('\n');
 		}
 		else
 			count = 0;
 	}
-	while (count)
+	print_mem(address, count, 1);
+/*	while (count)
 	{
-		serial_print_hex_word(address);
-		MYSERIAL.write(' ');
+		print_hex_word(address);
+		putchar(' ');
 		uint8_t countperline = 16;
 		while (count && countperline)
 		{
 			uint8_t data = eeprom_read_byte((uint8_t*)address++);
-			MYSERIAL.write(' ');
-			serial_print_hex_byte(data);
+			putchar(' ');
+			print_hex_byte(data);
 			countperline--;
 			count--;
 		}
-		MYSERIAL.write('\n');
-	}
+		putchar('\n');
+	}*/
 }
 
 void dcode_4()
 {
-	MYSERIAL.println("D4 - Read/Write PIN");
+	LOG("D4 - Read/Write PIN\n");
 	if (code_seen('P')) // Pin (0-255)
 	{
 		int pin = (int)code_value();
@@ -206,18 +237,15 @@ void dcode_4()
 			else
 			{
 				int val = (digitalRead(pin) != LOW)?1:0;
-				MYSERIAL.print("PIN");
-				MYSERIAL.print(pin);
-				MYSERIAL.print("=");
-				MYSERIAL.println(val);
+				printf("PIN%d=%d", pin, val);
 			}
 		}
 	}
 }
-
+/*
 void dcode_5()
 {
-	MYSERIAL.println("D5 - Read/Write FLASH");
+	LOG("D5 - Read/Write FLASH\n");
 	uint32_t address = 0x0000; //default 0x0000
 	uint16_t count = 0x0400; //default 0x0400 (1kb block)
 	if (code_seen('A')) // Address (0x00000-0x3ffff)
@@ -241,17 +269,17 @@ void dcode_5()
 	{
 		if (bErase)
 		{
-			MYSERIAL.print(count, DEC);
-			MYSERIAL.println(" bytes of FLASH at address ");
-			serial_print_hex_word(address);
-			MYSERIAL.write(" will be erased\n");
+			LOG(count, DEC);
+			LOG(" bytes of FLASH at address ");
+			print_hex_word(address);
+			putchar(" will be erased\n");
 		}
 		if (bCopy)
 		{
-			MYSERIAL.print(count, DEC);
-			MYSERIAL.println(" bytes will be written to FLASH at address ");
-			serial_print_hex_word(address);
-			MYSERIAL.write('\n');
+			LOG(count, DEC);
+			LOG(" bytes will be written to FLASH at address ");
+			print_hex_word(address);
+			putchar('\n');
 		}
 		cli();
 		boot_app_magic = 0x55aa55aa;
@@ -264,30 +292,31 @@ void dcode_5()
 	}
 	while (count)
 	{
-		serial_print_hex_nibble(address >> 16);
-		serial_print_hex_word(address);
-		MYSERIAL.write(' ');
+		print_hex_nibble(address >> 16);
+		print_hex_word(address);
+		putchar(' ');
 		uint8_t countperline = 16;
 		while (count && countperline)
 		{
 			uint8_t data = pgm_read_byte_far((uint8_t*)address++);
-			MYSERIAL.write(' ');
-			serial_print_hex_byte(data);
+			putchar(' ');
+			print_hex_byte(data);
 			countperline--;
 			count--;
 		}
-		MYSERIAL.write('\n');
+		putchar('\n');
 	}
 }
+*/
 
 void dcode_6()
 {
-	MYSERIAL.println("D6 - Read/Write external FLASH");
+	LOG("D6 - Read/Write external FLASH\n");
 }
 
 void dcode_7()
 {
-	MYSERIAL.println("D7 - Read/Write Bootloader");
+	LOG("D7 - Read/Write Bootloader\n");
 /*
 	cli();
 	boot_app_magic = 0x55aa55aa;
@@ -302,23 +331,23 @@ void dcode_7()
 
 void dcode_8()
 {
-	MYSERIAL.println("D8 - Read/Write PINDA");
+	LOG("D8 - Read/Write PINDA\n");
 	uint8_t cal_status = calibration_status_pinda();
 	float temp_pinda = current_temperature_pinda;
 	float offset_z = temp_compensation_pinda_thermistor_offset(temp_pinda);
 	if ((strchr_pointer[1+1] == '?') || (strchr_pointer[1+1] == 0))
 	{
-		MYSERIAL.print("cal_status=");
-		MYSERIAL.println(cal_status?"1":"0");
+		LOG("cal_status=");
+		LOG(cal_status?"1\n":"0\n");
 		for (uint8_t i = 0; i < 6; i++)
 		{
-			MYSERIAL.print("temp_pinda=");
-			MYSERIAL.print(35 + i * 5, DEC);
-			MYSERIAL.print("C, temp_shift=");
+			LOG("temp_pinda=");
+			LOG(35 + i * 5, DEC);
+			LOG("C, temp_shift=");
 			uint16_t offs = 0;
 			if (i > 0) offs = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
-			MYSERIAL.print(((float)offs) / axis_steps_per_unit[Z_AXIS], 3);
-			MYSERIAL.println("mm");
+			LOG(((float)offs) / axis_steps_per_unit[Z_AXIS], 3);
+			LOG("mm\n");
 		}
 	}
 	else if (strchr_pointer[1+1] == '!')
@@ -341,21 +370,21 @@ void dcode_8()
 			offset_z = code_value();
 		}
 	}
-	MYSERIAL.print("temp_pinda=");
-	MYSERIAL.println(temp_pinda);
-	MYSERIAL.print("offset_z=");
-	MYSERIAL.println(offset_z, 3);
+	LOG("temp_pinda=");
+	LOG(temp_pinda);
+	LOG("offset_z=");
+	LOG(offset_z, 3);
 }
 
 void dcode_10()
 {//Tell the printer that XYZ calibration went OK
-	MYSERIAL.println("D10 - XYZ calibration = OK");
+	LOG("D10 - XYZ calibration = OK\n");
 	calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
 }
 
 void dcode_12()
 {//Reset Filament error, Power loss and crash counter ( Do it before every print and you can get stats for the print )
-	MYSERIAL.println("D12 - Reset failstat counters");
+	LOG("D12 - Reset failstat counters\n");
     eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, 0x00);
     eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, 0x00);
     eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, 0x00);
@@ -368,59 +397,37 @@ void dcode_2130()
 
 void dcode_9125()
 {
-	MYSERIAL.println("D9125 - PAT9125");
+	LOG("D9125 - PAT9125\n");
 	if ((strchr_pointer[1+4] == '?') || (strchr_pointer[1+4] == 0))
 	{
-		MYSERIAL.print("res_x=");
-		MYSERIAL.print(pat9125_xres, DEC);
-		MYSERIAL.print(" res_y=");
-		MYSERIAL.print(pat9125_yres, DEC);
-		MYSERIAL.print(" x=");
-		MYSERIAL.print(pat9125_x, DEC);
-		MYSERIAL.print(" y=");
-		MYSERIAL.print(pat9125_y, DEC);
-		MYSERIAL.print(" b=");
-		MYSERIAL.print(pat9125_b, DEC);
-		MYSERIAL.print(" s=");
-		MYSERIAL.println(pat9125_s, DEC);
+		printf("res_x=%d res_y=%d x=%d y=%d b=%d s=%d\n", pat9125_xres, pat9125_yres, pat9125_x, pat9125_y, pat9125_b, pat9125_s);
 		return;
 	}
 	if (strchr_pointer[1+4] == '!')
 	{
 		pat9125_update();
-		MYSERIAL.print("x=");
-		MYSERIAL.print(pat9125_x, DEC);
-		MYSERIAL.print(" y=");
-		MYSERIAL.print(pat9125_y, DEC);
-		MYSERIAL.print(" b=");
-		MYSERIAL.print(pat9125_b, DEC);
-		MYSERIAL.print(" s=");
-		MYSERIAL.println(pat9125_s, DEC);
+		printf("x=%d y=%d b=%d s=%d\n", pat9125_x, pat9125_y, pat9125_b, pat9125_s);
 		return;
 	}
 	if (code_seen('R'))
 	{
 		unsigned char res = (int)code_value();
-		MYSERIAL.print("pat9125_init(xres=yres=");
-		MYSERIAL.print(res, DEC);
-		MYSERIAL.print(")=");
-		MYSERIAL.println(pat9125_init(res, res), DEC);
+		LOG("pat9125_init(xres=yres=%d)=%d\n", res, pat9125_init(res, res));
 	}
 	if (code_seen('X'))
 	{
 		pat9125_x = (int)code_value();
-		MYSERIAL.print("pat9125_x=");
-		MYSERIAL.print(pat9125_x, DEC);
+		LOG("pat9125_x=%d\n", pat9125_x);
 	}
 	if (code_seen('Y'))
 	{
 		pat9125_y = (int)code_value();
-		MYSERIAL.print("pat9125_y=");
-		MYSERIAL.print(pat9125_y, DEC);
+		LOG("pat9125_y=%d\n", pat9125_y);
 	}
 	if (code_seen('L'))
 	{
 		fsensor_log = (int)code_value();
+		LOG("fsensor_log=%d\n", fsensor_log);
 	}
 }
 

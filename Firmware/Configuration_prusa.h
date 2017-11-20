@@ -82,7 +82,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 //DEBUG
 //#define _NO_ASM
-//#define DEBUG_DCODES //D codes
+#define DEBUG_DCODES //D codes
 #if 1
 //#define DEBUG_FSENSOR_LOG          //Reports fsensor status to serial
 //#define DEBUG_CRASHDET_COUNTERS  //Display crash-detection counters on LCD

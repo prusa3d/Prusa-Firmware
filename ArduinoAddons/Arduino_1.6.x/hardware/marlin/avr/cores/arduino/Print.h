@@ -31,6 +31,8 @@
 #define OCT 8
 #define BIN 2
 
+//#define _Print_printf
+
 class Print
 {
   private:
@@ -79,6 +81,14 @@ class Print
     size_t println(double, int = 2);
     size_t println(const Printable&);
     size_t println(void);
+
+//printf
+#ifdef _Print_printf
+	void printf(const char *format, ...);
+#ifdef F // check to see if F() macro is available
+    void printf(const __FlashStringHelper *format, ...);
+#endif
+#endif //_Print_printf
 };
 
 #endif

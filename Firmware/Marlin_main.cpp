@@ -720,7 +720,32 @@ void factory_reset(char level, bool quiet)
     
 
 }
+#include "LiquidCrystal.h"
+extern LiquidCrystal lcd;
 
+FILE _lcdout = {0};
+
+int lcd_putchar(char c, FILE *stream)
+{
+	lcd.write(c);
+	return 0;
+}
+
+FILE _uartout = {0};
+
+int uart_putchar(char c, FILE *stream)
+{
+	MYSERIAL.write(c);
+	return 0;
+}
+
+void lcd_splash()
+{
+//	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
+//	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
+//	lcd.print_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
+    fputs_P(PSTR(ESC_2J ESC_H(3,1) "Original Prusa" ESC_H(4,2) "3D  Printers"), lcdout);
+}
 
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
@@ -728,8 +753,8 @@ void factory_reset(char level, bool quiet)
 void setup()
 {
     lcd_init();
-	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
-    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
+	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
+	lcd_splash();
 	setup_killpin();
 	setup_powerhold();
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
@@ -744,6 +769,8 @@ void setup()
 	else
 		selectedSerialPort = 0;
 	MYSERIAL.begin(BAUDRATE);
+	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
+	stdout = uartout;
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
 
@@ -794,7 +821,11 @@ void setup()
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
 	Config_RetrieveSettings(EEPROM_OFFSET);
 	SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
+
 	tp_init();    // Initialize temperature loop
+
+	lcd_splash(); // we need to do this again, because tp_init() kills lcd
+
 	plan_init();  // Initialize planner;
 	watchdog_init();
 
@@ -833,12 +864,11 @@ void setup()
 	}
 
 #endif //PAT9125
-    
+
 	st_init();    // Initialize stepper, this enables interrupts!
     
 	setup_photpin();
-    lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   ")); // we need to do this again for some reason, no time to research
-    lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    ")); 
+
 	servo_init();
 	// Reset the machine correction matrix.
 	// It does not make sense to load the correction matrix until the machine is homed.
@@ -5853,7 +5883,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	case 4: // D4 - Read/Write PIN
 		dcode_4(); break;
 	case 5: // D5 - Read/Write FLASH
-		dcode_5(); break;
+//		dcode_5(); break;
+		break;
 	case 6: // D6 - Read/Write external FLASH
 		dcode_6(); break;
 	case 7: // D7 - Read/Write Bootloader

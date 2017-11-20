@@ -62,6 +62,12 @@
   #define MYSERIAL MSerial
 #endif
 
+extern FILE _lcdout;
+#define lcdout (&_lcdout)
+
+extern FILE _uartout;
+#define uartout (&_uartout)
+
 #define SERIAL_PROTOCOL(x) (MYSERIAL.print(x))
 #define SERIAL_PROTOCOL_F(x,y) (MYSERIAL.print(x,y))
 #define SERIAL_PROTOCOLPGM(x) (serialprintPGM(PSTR(x)))
