@@ -131,7 +131,7 @@
 #define MSG_ERR_COLD_EXTRUDE_STOP           " cold extrusion prevented"
 #define MSG_BABYSTEPPING_X                  "Babystepping X"
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-#define MSG_BABYSTEPPING_Z                  "Adjusting Z"
+#define MSG_BABYSTEPPING_Z                  "Compensazione Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
 #define MSG_LANGUAGE_NAME		    "Italiano"
@@ -152,11 +152,11 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT	    "Finec. fuori por."
 #define MSG_SELFTEST_OK			    "Autotest OK"
 
-#define(length=20) MSG_SELFTEST_FAN					"Prova del ventilator";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Vent di stampa ant.?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN        "Vent SX sull'ugello?";
-#define MSG_SELFTEST_FAN_YES				"Gira";
-#define MSG_SELFTEST_FAN_NO					"Non si gira";
+#define MSG_SELFTEST_FAN					"Prova del ventilator"
+#define MSG_SELFTEST_COOLING_FAN			"Vent di stampa ant.?"
+#define MSG_SELFTEST_EXTRUDER_FAN        "Vent SX sull'ugello?"
+#define MSG_SELFTEST_FAN_YES				"Gira"
+#define MSG_SELFTEST_FAN_NO					"Non si gira"
 
 #define MSG_STATS_TOTALFILAMENT		    "Filamento tot:"
 #define MSG_STATS_TOTALPRINTTIME	    "Tempo stampa tot:"
