@@ -226,6 +226,9 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
   long bias, d;
   float Ku, Tu;
   float max = 0, min = 10000;
+  uint8_t safety_check_cycles = 0;
+  const uint8_t safety_check_cycles_count = (extruder < 0) ? 45 : 10; //10 cycles / 20s delay for extruder and 45 cycles / 90s for heatbed
+  float temp_ambient;
 
 #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
     (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
@@ -366,7 +369,28 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
       SERIAL_PROTOCOL(input);   
       SERIAL_PROTOCOLPGM(" @:");
       SERIAL_PROTOCOLLN(p);       
+		if (safety_check_cycles == 0) { //save ambient temp
+			temp_ambient = input;
+			//SERIAL_ECHOPGM("Ambient T: ");
+			//MYSERIAL.println(temp_ambient);
+			safety_check_cycles++;
+		}
+		else if (safety_check_cycles < safety_check_cycles_count) { //delay
+			safety_check_cycles++;		
+		}
+		else if (safety_check_cycles == safety_check_cycles_count){ //check that temperature is rising
+			safety_check_cycles++;
+			//SERIAL_ECHOPGM("Time from beginning: ");
+			//MYSERIAL.print(safety_check_cycles_count * 2);
+			//SERIAL_ECHOPGM("s. Difference between current and ambient T: ");
+			//MYSERIAL.println(input - temp_ambient);
 
+			if (abs(input - temp_ambient) < 5.0) { 
+				temp_runaway_stop(false, (extruder<0));
+				pid_tuning_finished = true;
+				return;
+			}
+		}
       temp_millis = millis();
     }
     if(((millis() - t1) + (millis() - t2)) > (10L*60L*1000L*2L)) {

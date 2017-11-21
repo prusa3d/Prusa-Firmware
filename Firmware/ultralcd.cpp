@@ -1291,6 +1291,7 @@ void lcd_commands()
 			pid_tuning_finished = false;
 			custom_message_state = 0;
 			lcd_setstatuspgm(MSG_PID_FINISHED);
+			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
 			strcpy(cmd1, "M301 P");
 			strcat(cmd1, ftostr32(_Kp));
 			strcat(cmd1, " I");
@@ -1299,6 +1300,10 @@ void lcd_commands()
 			strcat(cmd1, ftostr32(_Kd));
 			enquecommand(cmd1);
 			enquecommand_P(PSTR("M500"));
+			}
+			else {
+				SERIAL_ECHOPGM("Invalid PID cal. results. Not stored to EEPROM.");
+			}
 			display_time = millis();
 			lcd_commands_step = 1;
 		}
