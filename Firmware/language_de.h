@@ -26,7 +26,7 @@
 	+ #define MSG_NOZZLE                          "Duese"
 	+ #define MSG_NOZZLE1                         "Duese2"
 	+ #define MSG_NOZZLE2                         "Duese3"
-	+ #define MSG_BED                             "Bed"
+	+ #define MSG_BED                             "Bett"
 	+ #define MSG_FAN_SPEED                       "Luefter-Tempo"
 	+ #define MSG_FLOW                            "Durchfluss"
 	+ #define MSG_FLOW0                           "Durchfluss 0"
@@ -114,8 +114,8 @@
 	+ #define MSG_M109_INVALID_EXTRUDER           "M109 Falscher Extruder"
 	+ #define MSG_HEATING                         "Aufwaermen"
 	+ #define(length = 20) MSG_HEATING_COMPLETE   "Aufwaermen OK"
-	+ #define MSG_BED_HEATING                     "Bed aufwaermen"
-	+ #define MSG_BED_DONE                        "Bed OK"
+	+ #define MSG_BED_HEATING                     "Bett aufwaermen"
+	+ #define MSG_BED_DONE                        "Bett OK"
 	+ #define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" CUSTOM_MENDEL_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
 	+ #define MSG_ERR_KILLED                      "Printer gestoppt. kill() aufgerufen!"
 	+ #define MSG_ERR_STOPPED                     "Drucker aufgrund von Fehlern gestoppt. Fehler beheben und mit M999 neu starten. (Temperatur wird zurueckgesetzt. Nach dem Neustart neu einstellen!)"
@@ -156,7 +156,7 @@
 	+ #define MSG_SELFTEST_PLEASECHECK			"Bitte pruefe:"
 	+ #define MSG_SELFTEST_NOTCONNECTED			"Nicht angeschlossen"
 	+ #define MSG_SELFTEST_HEATERTHERMISTOR		"Heater/Thermistor"
-	+ #define MSG_SELFTEST_BEDHEATER				"Bed / Heater"
+	+ #define MSG_SELFTEST_BEDHEATER				"Bett / Heater"
 	+ #define MSG_SELFTEST_WIRINGERROR			"Verdrahtungfehler"
 	+ #define MSG_SELFTEST_ENDSTOPS				"Endschalter"
 	+ #define MSG_SELFTEST_MOTOR					"Motor"
@@ -177,11 +177,11 @@
 + #define(length = 20) MSG_STATS_PRINTTIME		"Druckzeit:  "
 + #define(length = 20) MSG_SELFTEST_START				"Selbsttest start "
 + #define(length = 20) MSG_SELFTEST_CHECK_ENDSTOPS	"Pruefe Endschalter  "
-+ #define(length = 20) MSG_SELFTEST_CHECK_HOTEND		"Pruefe Hotend" 
++ #define(length = 20) MSG_SELFTEST_CHECK_HOTEND		"Pruefe Duese" 
 + #define(length = 20) MSG_SELFTEST_CHECK_X				"Pruefe X Achse    "
 + #define(length = 20) MSG_SELFTEST_CHECK_Y				"Pruefe Y Achse    "
 + #define(length = 20) MSG_SELFTEST_CHECK_Z				"Pruefe Z Achse    "
-+ #define(length = 20) MSG_SELFTEST_CHECK_BED			"Pr\x81fe Bed        "
++ #define(length = 20) MSG_SELFTEST_CHECK_BED			"Pruefe Bett        "
 + #define(length = 20) MSG_SELFTEST_CHECK_ALLCORRECT	"Alles richtig    "
 + #define MSG_SELFTEST						"Selbsttest       "
 + #define(length = 20) MSG_SELFTEST_FAILED		"Selbsttest misslung."
@@ -196,22 +196,22 @@
 + #define MSG_CALIBRATE_BED_RESET				"Reset XYZ Kalibr."
 +
 
-+#define(length = 20, lines = 8) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Kalibrieren von XYZ. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken wenn ganz oben."
-+ #define(length = 20, lines = 8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Kalibrieren von Z. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken wenn ganz oben."
++#define(length = 20, lines = 8) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Kalibrieren von XYZ. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken Sie den Knopf wenn es ganz oben wird."
++ #define(length = 20, lines = 8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Kalibrieren von Z. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken Sie den Knopf wenn es ganz oben wird."
 +
 
 +#define(length = 20, lines = 8) MSG_CONFIRM_NOZZLE_CLEAN			"Bitte entfernen Sie ueberstehendes Filament von der Duese. Klicken wenn sauber."
 + #define(length = 20, lines = 2) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Ist der Schlitten ganz oben?"
 +
-+#define(length = 60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Suchen Bed Kalibrierpunkt"
++#define(length = 60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Suchen Bett Kalibrierpunkt"
 + #define(length = 14) MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" von 4"
-+ #define(length = 60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Verbesserung Bed Kalibrierpunkt"
++ #define(length = 60) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Verbesserung Bett Kalibrierpunkt"
 + #define(length = 14) MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2	" von 4"
 + #define(length = 60) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Messen der Referenzhoehe des Kalibrierpunktes"
 + #define(length = 14) MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" von 9"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteration "
 +
-+#define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ-Kalibrierung fehlgeschlagen. Bed-Kalibrierpunkt nicht gefunden."
++#define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"XYZ-Kalibrierung fehlgeschlagen. Bett-Kalibrierpunkt nicht gefunden."
 + #define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED				"XYZ-Kalibrierung fehlgeschlagen. Bitte schauen Sie in das Handbuch."
 
 + #define(length = 20, lines = 8) MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"XYZ-Kalibrierung ok. X/Y-Achsen sind senkrecht zueinander. Glueckwunsch!"
@@ -233,8 +233,8 @@
 +#define(length = 20, lines = 2) MSG_NEW_FIRMWARE_AVAILABLE								"Neue Firmware Version verfuegbar:"
 + #define(length = 20) MSG_NEW_FIRMWARE_PLEASE_UPGRADE									"Bitte aktualisieren."
 +
-+ #define(length = 20, lines = 8) MSG_FOLLOW_CALIBRATION_FLOW								"Der Drucker wurde noch nicht kalibriert. Bitte folgen Sie dem Handbuch, Kapitel First steps, Abschnitt Calibration flow."
-+ #define(length = 20, lines = 12) MSG_BABYSTEP_Z_NOT_SET									"Der Abstand zwischen der Spitze der Duese und der Bed ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, section First layer calibration."
++ #define(length = 20, lines = 8) MSG_FOLLOW_CALIBRATION_FLOW								"Der Drucker wurde noch nicht kalibriert. Bitte folgen Sie das Handbuch, Kapitel First steps, Abschnitt Calibration flow."
++ #define(length = 20, lines = 12) MSG_BABYSTEP_Z_NOT_SET									"Der Abstand zwischen der Spitze der Duese und der Bett ist noch nicht eingestellt. Bitte folgen Sie dem Handbuch, First steps, section First layer calibration."
 + 
 +
 
@@ -258,13 +258,13 @@
 
 +#define(length = 20, lines = 8) MSG_MARK_FIL						"Filament 100mm vom Extrudergehaeuse markieren. Klicken wenn Fertig."
 + #define(length = 20, lines = 8) MSG_CLEAN_NOZZLE_E				"E-Kalibrierung beendet. Bitte reinigen Sie die Duese. Klicken wenn fertig."
-+ #define(length = 20, lines = 3) MSG_WAITING_TEMP				"Warten auf Abkuehlung von Heater und Bed."
++ #define(length = 20, lines = 3) MSG_WAITING_TEMP				"Warten auf Abkuehlung von Heater und Bett."
 
 + #define(length = 20, lines = 2) MSG_FILAMENT_CLEAN				"Ist Farbe rein?"
 + #define(lenght = 20, lines = 1) MSG_UNLOADING_FILAMENT			"Filament auswerfen"
 + #define(length = 20, lines = 8) MSG_PAPER						"Legen ein Blatt Papier unter die Duese waehrend der Kalibrierung der ersten 4 Punkte. Wenn die Duese das Papier einklemmt, Drucker sofort ausschalten"
 +
-+#define MSG_BED_CORRECTION_MENU									"Bed level Korrekt"
++#define MSG_BED_CORRECTION_MENU									"Bett level Korrekt"
 
 + #define MSG_BED_CORRECTION_LEFT									"Links     [um]"
 + #define MSG_BED_CORRECTION_RIGHT								"Rechts    [um]"
@@ -272,7 +272,7 @@
 + #define MSG_BED_CORRECTION_REAR									"Hinten    [um]"
 + #define MSG_BED_CORRECTION_RESET								"Ruecksetzen"
 +
-+#define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
++#define MSG_MESH_BED_LEVELING									"Mesh Bett Leveling"
 + #define MSG_MENU_CALIBRATION									"Kalibrierung"
 
 + #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD Karte [normal]"

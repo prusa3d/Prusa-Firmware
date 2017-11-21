@@ -61,8 +61,9 @@
 #define MSG_PRESS                               "Nacisnij przycisk"
 #define MSG_INSERT_FILAMENT             "Wprowadz filament"
 #define MSG_CHANGING_FILAMENT   "Wymiana filamentu"
-#define MSG_SILENT_MODE_ON                                      "Mod       [cichy]"
-#define MSG_SILENT_MODE_OFF                                     "Mod [w wydajnosc]" 
+#define MSG_SILENT_MODE_ON                                      "Tryb      [cichy]"
+#define MSG_SILENT_MODE_OFF                                     "Tryb[w wydajnosc]"
+
 #define MSG_REBOOT                                                      "Restart drukarki"
 #define MSG_TAKE_EFFECT                                         " wprow. zmian"   
 #define MSG_HEATING                         "Grzanie..."
@@ -121,7 +122,7 @@
 #define MSG_ERR_COLD_EXTRUDE_STOP           " cold extrusion prevented"
 #define MSG_BABYSTEPPING_X                  "Babystepping X"
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-#define MSG_BABYSTEPPING_Z                  "Dostavovani Z"
+#define MSG_BABYSTEPPING_Z                  "Dostrojenie Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 #define MSG_SET_HOME_OFFSETS                "Nastav pocatek home"
 #define MSG_SET_ORIGIN                      "Nastav pocatek"
@@ -172,11 +173,11 @@
 #define MSG_SELFTEST_ENDSTOP_NOTHIT         "Endstop not hit"
 #define MSG_SELFTEST_OK                     "Self test OK"
 
-#define(length=20) MSG_SELFTEST_FAN					"Test wentylatora";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Przodni went. druku?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze?";
-#define MSG_SELFTEST_FAN_YES				"Kreci sie";
-#define MSG_SELFTEST_FAN_NO					"Nekreci sie";
+#define MSG_SELFTEST_FAN					"Test wentylatora"
+#define MSG_SELFTEST_COOLING_FAN			"Przedni went. druku?"
+#define MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze?"
+#define MSG_SELFTEST_FAN_YES				"Kreci sie"
+#define MSG_SELFTEST_FAN_NO					"Nie kreci sie"
 
 #define MSG_STATS_TOTALFILAMENT             "Filament lacznie :"
 #define MSG_STATS_TOTALPRINTTIME            "Czas calkowity :"

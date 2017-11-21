@@ -155,7 +155,7 @@
 #define MSG_ERR_COLD_EXTRUDE_STOP           " cold extrusion prevented"
 #define MSG_BABYSTEPPING_X                  "Babystepping X"
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
-#define MSG_BABYSTEPPING_Z                  "Adjusting Z"
+#define(length=20) MSG_BABYSTEPPING_Z       "Adjusting Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 
 #define MSG_LANGUAGE_NAME					"English"
@@ -173,17 +173,16 @@
 #define MSG_SELFTEST_ENDSTOPS				"Endstops"
 #define MSG_SELFTEST_MOTOR					"Motor"
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
-#define MSG_SELFTEST_AXIS					"Axis"
-#define MSG_SELFTEST_AXIS_LENGTH			"Axis length"
+
 #define(length=20,lines=1) MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
 #define(length=20,lines=1) MSG_LOOSE_PULLEY					"Loose pulley"
 
-#define(length=20) MSG_SELFTEST_FAN					"Fan test";
-#define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?";
-#define(length=20) MSG_SELFTEST_EXTRUDER_FAN			"Left hotend fan?";
-#define MSG_SELFTEST_FAN_YES				"Spinning";
-#define MSG_SELFTEST_FAN_NO					"Not spinning";
+#define(length=20) MSG_SELFTEST_FAN					"Fan test"
+#define(length=20) MSG_SELFTEST_COOLING_FAN			"Front print fan?"
+#define(length=20) MSG_SELFTEST_EXTRUDER_FAN		"Left hotend fan?"
+#define(length=19) MSG_SELFTEST_FAN_YES				"Spinning"
+#define(length=19) MSG_SELFTEST_FAN_NO				"Not spinning"
 
 #define(length=20) MSG_STATS_TOTALFILAMENT	"Total filament :"
 #define(length=20) MSG_STATS_TOTALPRINTTIME "Total print time :"
@@ -304,16 +303,6 @@
 #define(length=17, lines=1) MSG_EXTRUDER_2						"Extruder 2"
 #define(length=17, lines=1) MSG_EXTRUDER_3						"Extruder 3"
 #define(length=17, lines=1) MSG_EXTRUDER_4						"Extruder 4"
-#define(length=20, lines=2) MSG_RECOVER_PRINT					"Blackout occurred. Recover print?"
-#define(length=20, lines=1) MSG_RECOVERING_PRINT				"Recovering print    "
-#define(length=20, lines=2) MSG_CRASH_DETECTED					"Crash detected. Continue printing?"
-
-#define(length=15, lines=1) MSG_INFO_EXTRUDER				"Extruder info"
-
-#define(length=11, lines=1) MSG_INFO_NOZZLE_FAN				"Nozzle FAN:"
-#define(length=11, lines=1) MSG_INFO_PRINT_FAN				"Print FAN: "
-#define(length=11, lines=1) MSG_INFO_FILAMENT_XDIFF				"Fil. Xd:"
-#define(length=11, lines=1) MSG_INFO_FILAMENT_YDIFF				"Fil. Ydiff:"
 
 //Wizard messages which has tranlsations
 
@@ -361,3 +350,17 @@
 #define(length=20, lines=4) MSG_REMOVE_STEEL_SHEET				"Please remove steel sheet from heatbed."
 #define(length=20, lines=2) MSG_CALIBRATE_Z_AUTO				"Calibrating Z"
 #define(length=20, lines=2) MSG_STEEL_SHEET_CHECK				"Is steel sheet on heatbed?"
+
+#define MSG_SELFTEST_AXIS					"Axis"
+#define MSG_SELFTEST_AXIS_LENGTH			"Axis length"
+
+#define(length=20, lines=2) MSG_RECOVER_PRINT					"Blackout occurred. Recover print?"
+#define(length=20, lines=1) MSG_RECOVERING_PRINT				"Recovering print    "
+#define(length=20, lines=2) MSG_CRASH_DETECTED					"Crash detected. Continue printing?"
+
+#define(length=15, lines=1) MSG_INFO_EXTRUDER				"Extruder info"
+
+#define(length=11, lines=1) MSG_INFO_NOZZLE_FAN				"Nozzle FAN:"
+#define(length=11, lines=1) MSG_INFO_PRINT_FAN				"Print FAN: "
+#define(length=11, lines=1) MSG_INFO_FILAMENT_XDIFF				"Fil. Xd:"
+#define(length=11, lines=1) MSG_INFO_FILAMENT_YDIFF				"Fil. Ydiff:"
