@@ -958,7 +958,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
             current_position[Y_AXIS] = y0;
             for (i = 0; i < nsteps_y; current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++ i) {
                 // Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
-				current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
+                current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
                 go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
                 dir_positive = ! dir_positive;
                 if (endstop_z_hit_on_purpose())
@@ -966,7 +966,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
             }
             for (i = 0; i < nsteps_y; current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++ i) {
                 // Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
-				current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
+                current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
                 go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
                 dir_positive = ! dir_positive;
                 if (endstop_z_hit_on_purpose())
