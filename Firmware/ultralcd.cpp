@@ -5455,17 +5455,28 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	float axis_length, current_position_init, current_position_final;
 	float measured_axis_length[2];
 	float margin = 60;
-	float max_error_mm = 10;
+	float max_error_mm = 5;
 	switch (axis) {
 	case 0: axis_length = X_MAX_POS; break;
 	case 1: axis_length = Y_MAX_POS + 8; break;
 	default: axis_length = 210; break;
 	}
 
-
 	tmc2130_sg_stop_on_crash = false;
 	tmc2130_home_exit();
 	enable_endstops(true);
+
+	if (axis == X_AXIS) { //there is collision between cables and PSU cover in X axis if Z coordinate is too low
+		
+		current_position[Z_AXIS] += 17;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+		tmc2130_home_enter(Z_AXIS_MASK);
+		st_synchronize();
+		tmc2130_home_exit();
+	}
+
+
+
 // first axis length measurement begin	
 	tmc2130_home_enter(X_AXIS_MASK << axis);
 	current_position[axis] -= (axis_length + margin);
