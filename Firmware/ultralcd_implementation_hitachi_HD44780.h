@@ -1210,19 +1210,12 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 
     lcd.setCursor(0, row);
     lcd.print('>');
-    if (longFilename[0] != '\0')
-    {
-
-        filename = longFilename;
-        //longFilename[LCD_WIDTH-1] = '\0';
-    }
 
     int i = 1;
     int j = 0;
-    int inter = 0;
     char* longFilenameTMP = longFilename;
 
-    while( ((c = *longFilenameTMP) != '\0') && (inter == 0) )
+    while((c = *longFilenameTMP) != '\0')
     {
 
         lcd.setCursor(i, row);
@@ -1232,20 +1225,22 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
         if(i==LCD_WIDTH){
           i=1;
           j++;
-          longFilenameTMP = longFilename;
-          longFilenameTMP = longFilenameTMP+j;
+          longFilenameTMP = longFilename + j;          
           n = LCD_WIDTH - 1;
-          for(int g = 0; ((g<300)&&(inter == 0)) ;g++){
+          for(int g = 0; g<300 ;g++){
             if(LCD_CLICKED || ( enc_dif != encoderDiff )){
-                
-            //  inter = 1;
+				longFilenameTMP = longFilename;
+				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
+				i = 1;
+				j = 0;
+				break;
             }else{
-              delay(1);
+				if (j == 1) delay(3);	//wait around 1.2 s to start scrolling text
+				delay(1);				//then scroll with redrawing every 300 ms 
             }
 
           }
         }
-
     }
     if(c!='\0'){
       lcd.setCursor(i, row);
