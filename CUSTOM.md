@@ -1,5 +1,13 @@
 # Changelog of local customizations
 
+## Version 22-Nov-2017
+### Updates and mods
+- Add extra 25mm to manual (LCD) filament load extrusion.
+- Merge latest Prusa3D firmware release v3.1.0 changes.
+
+### Bug fixes
+- Fix M110 G-code compatibility
+
 ## Version 9-Nov-2017
 ### New features
 

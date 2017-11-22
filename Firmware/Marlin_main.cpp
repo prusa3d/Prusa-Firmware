@@ -2338,7 +2338,7 @@ void gcode_M701() {
 	current_position[E_AXIS] += 70;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
 
-	current_position[E_AXIS] += 25;
+	current_position[E_AXIS] += 50;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
 	st_synchronize();
 
@@ -4867,8 +4867,6 @@ Sigma_Exit:
 	case 110:   // M110 - reset line pos
 		if (code_seen('N'))
 			gcode_LastN = code_value_long();
-		else
-			gcode_LastN = 0;
 		break;
 #ifdef HOST_KEEPALIVE_FEATURE
 	case 113: // M113 - Get or set Host Keepalive interval
