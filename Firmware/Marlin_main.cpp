@@ -583,7 +583,6 @@ void restore_print_from_ram_and_continue(float e_move);
 
 extern int8_t CrashDetectMenu;
 
-
 void crashdet_enable()
 {
 	MYSERIAL.println("crashdet_enable"); 
@@ -621,6 +620,58 @@ void crashdet_stop_and_save_print2()
 	card.sdprinting = false;
 	card.closefile();
 	sei();
+}
+
+void crashdet_detected()
+{
+	printf("CRASH_DETECTED");
+/*	while (!is_buffer_empty())
+	{
+		process_commands();
+	    cmdqueue_pop_front();
+	}*/
+	st_synchronize();
+
+	lcd_update_enable(true);
+	lcd_implementation_clear();
+	lcd_update(2);
+    
+    // Increment crash counter
+    uint8_t crash_count = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT);
+    crash_count++;
+    eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, crash_count);
+    
+#ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
+    bool yesno = true;
+#else
+    bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_CRASH_DETECTED, false);
+#endif
+	lcd_update_enable(true);
+	lcd_update(2);
+	lcd_setstatuspgm(WELCOME_MSG);
+	if (yesno)
+	{
+		enquecommand_P(PSTR("G28 X"));
+		enquecommand_P(PSTR("G28 Y"));
+		enquecommand_P(PSTR("CRASH_RECOVER"));
+	}
+	else
+	{
+		enquecommand_P(PSTR("CRASH_CANCEL"));
+	}
+}
+
+void crashdet_recover()
+{
+	crashdet_restore_print_and_continue();
+	tmc2130_sg_stop_on_crash = true;
+}
+
+void crashdet_cancel()
+{
+	card.sdprinting = false;
+	card.closefile();
+	tmc2130_sg_stop_on_crash = true;
 }
 
 
@@ -1310,7 +1361,7 @@ void loop()
 	{
 		tmc2130_sg_crash = false;
 //		crashdet_stop_and_save_print();
-		enquecommand_P((PSTR("D999")));
+		enquecommand_P((PSTR("CRASH_DETECTED")));
 	}
 #endif //TMC2130
 
@@ -2030,6 +2081,14 @@ void process_commands()
 		  *(starpos) = '\0';
 	  lcd_setstatus(strchr_pointer + 5);
   }
+
+  else if(code_seen("CRASH_DETECTED"))
+	  crashdet_detected();
+  else if(code_seen("CRASH_RECOVER"))
+	  crashdet_recover();
+  else if(code_seen("CRASH_CANCEL"))
+	  crashdet_cancel();
+
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
 			if (farm_mode) {
@@ -5902,122 +5961,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		dcode_2130(); break;
 	case 9125: // D9125 - PAT9125
 		dcode_9125(); break;
-
-
-	case 999:
-	{
-		MYSERIAL.println("D999 - crash");
-
-/*		while (!is_buffer_empty())
-		{
-			process_commands();
-		    cmdqueue_pop_front();
-		}*/
-		st_synchronize();
-
-		lcd_update_enable(true);
-		lcd_implementation_clear();
-		lcd_update(2);
-        
-        // Increment crash counter
-        uint8_t crash_count = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT);
-        crash_count++;
-        eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, crash_count);
-        
-#ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
-        bool yesno = true;
-#else
-        bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_CRASH_DETECTED, false);
-#endif
-		lcd_update_enable(true);
-		lcd_update(2);
-		lcd_setstatuspgm(WELCOME_MSG);
-		if (yesno)
-		{
-			enquecommand_P(PSTR("G28 X"));
-			enquecommand_P(PSTR("G28 Y"));
-			enquecommand_P(PSTR("D1000"));
-		}
-		else
-		{
-			enquecommand_P(PSTR("D1001"));
-		}
-	}
-		break;
-	case 1000:
-		crashdet_restore_print_and_continue();
-		tmc2130_sg_stop_on_crash = true;
-		break;
-	case 1001:
-		card.sdprinting = false;
-		card.closefile();
-		tmc2130_sg_stop_on_crash = true;
-		break;
-/*	case 4:
-		{
-			MYSERIAL.println("D4 - Test");
-			uint8_t data[16];
-			int cnt = parse_hex(strchr_pointer + 2, data, 16);
-			MYSERIAL.println(cnt, DEC);
-			for (int i = 0; i < cnt; i++)
-			{
-				serial_print_hex_byte(data[i]);
-				MYSERIAL.write(' ');
-			}
-			MYSERIAL.write('\n');
-		}
-		break;
-/*	case 3:
-		if (code_seen('L')) // lcd pwm (0-255)
-		{
-			lcdSoftPwm = (int)code_value();
-		}
-		if (code_seen('B')) // lcd blink delay (0-255)
-		{
-			lcdBlinkDelay = (int)code_value();
-		}
-//		calibrate_z_auto();
-/*		MYSERIAL.print("fsensor_enable()");
-#ifdef PAT9125
-		fsensor_enable();
-#endif*/
-		break;
-//	case 4:
-//			lcdBlinkDelay = 10;
-/*		MYSERIAL.print("fsensor_disable()");
-#ifdef PAT9125
-		fsensor_disable();
-#endif            
-		break;*/
-//		break;
-/*	case 5:
-		{
-			MYSERIAL.print("tmc2130_rd_MSCNT(0)=");
-			int val = tmc2130_rd_MSCNT(tmc2130_cs[0]);
-			MYSERIAL.println(val);
-			homeaxis(0);
-		}
-		break;*/
-/*	case 6:
-		{
-			MYSERIAL.print("tmc2130_rd_MSCNT(1)=");
-			int val = tmc2130_rd_MSCNT(tmc2130_cs[1]);
-			MYSERIAL.println(val);
-			homeaxis(1);
-		}
-		break;
-	case 7:
-		{
-			MYSERIAL.print("pat9125_init=");
-			MYSERIAL.println(pat9125_init(200, 200));
-		}
-		break;
-	case 8:
-		{
-			MYSERIAL.print("swi2c_check=");
-			MYSERIAL.println(swi2c_check(0x75));
-		}
-		break;*/
 	}
   }
 #endif //DEBUG_DCODES

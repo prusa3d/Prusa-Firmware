@@ -7,8 +7,7 @@
 #define LANG_ID_CZ 1
 #define LANG_ID_IT 2
 #define LANG_ID_ES 3
-#define LANG_ID_PL 4
-#define LANG_ID_DE 5
+#define LANG_ID_DE 4
 // Language is not defined and it shall be selected from the menu.
 #define LANG_ID_FORCE_SELECTION 254
 // Language is not defined on a virgin RAMBo board.
@@ -18,7 +17,7 @@
 #define LANG_ID_DEFAULT LANG_ID_CZ
 
 // Number of languages available in the language table.
-#define LANG_NUM 6
+#define LANG_NUM 5
 
 // Currectly active language selection.
 extern unsigned char lang_selected;
