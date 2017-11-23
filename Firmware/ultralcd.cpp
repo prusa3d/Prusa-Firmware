@@ -3444,7 +3444,7 @@ void lcd_v2_calibration() {
 void lcd_wizard() {
 	bool result = true;
 	if (calibration_status() != CALIBRATION_STATUS_ASSEMBLED) {
-		result = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_RERUN, true, false);
+		result = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_RERUN, false, false);
 	}
 	if (result) {
 		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
