@@ -979,6 +979,10 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
 			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
 
+			strcpy(cmd1, "G1 X50 Y35 E");
+			strcat(cmd1, ftostr43(extr));
+			enquecommand(cmd1);
+
 			lcd_commands_step = 6;
 		}
 
@@ -986,9 +990,6 @@ void lcd_commands()
 		{
 
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-			strcpy(cmd1, "G1 X50 Y35 E");
-			strcat(cmd1, ftostr43(extr));
-			enquecommand(cmd1);
 
 			for (int i = 0; i < 4; i++) {
 				strcpy(cmd1, "G1 X70 Y");
