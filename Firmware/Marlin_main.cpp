@@ -1025,6 +1025,7 @@ void setup()
 	lcd_init();
 	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
 	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
+	delay(2000); lcd_implementation_clear();
 	setup_killpin();
 	setup_powerhold();
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
@@ -1187,13 +1188,10 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
-	
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
-	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   ")); // we need to do this again for some reason, no time to research
-	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	card.initsd();
 
 	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
