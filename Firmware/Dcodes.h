@@ -1,6 +1,8 @@
 #ifndef DCODES_H
 #define DCODES_H
 
+extern void dcode__1(); //D-1 - Endless loop (to simulate deadlock)
+
 extern void dcode_0(); //D0 - Reset
 extern void dcode_1(); //D1 - Clear EEPROM
 extern void dcode_2(); //D2 - Read/Write RAM

@@ -97,6 +97,13 @@ int parse_hex(char* hex, uint8_t* data, int count)
 	return parsed;
 }
 
+void dcode__1()
+{
+	printf("D-1 - Endless loop\n");
+	cli();
+	while (1);
+}
+
 void dcode_0()
 {
 	if (*(strchr_pointer + 1) == 0) return;

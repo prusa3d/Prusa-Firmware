@@ -1162,6 +1162,7 @@ void setup()
 	   
   }
   KEEPALIVE_STATE(NOT_BUSY);
+  wdt_enable(WDTO_4S);
 }
 
 void trace();
@@ -5931,6 +5932,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
   {
     switch((int)code_value())
     {
+	case -1: // D-1 - Endless loop
+		dcode__1(); break;
 	case 0: // D0 - Reset
 		dcode_0(); break;
 	case 1: // D1 - Clear EEPROM
