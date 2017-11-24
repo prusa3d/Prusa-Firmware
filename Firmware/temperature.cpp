@@ -37,6 +37,8 @@
 
 #include "Sd2PinMap.h"
 
+#include <avr/wdt.h>
+
 
 //===========================================================================
 //=============================public variables============================
@@ -573,6 +575,8 @@ void checkExtruderAutoFans()
 
 void manage_heater()
 {
+	wdt_reset();
+
   float pid_input;
   float pid_output;
 

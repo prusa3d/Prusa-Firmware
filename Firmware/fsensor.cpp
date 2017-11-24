@@ -5,14 +5,16 @@
 #include "fsensor.h"
 #include "pat9125.h"
 #include "planner.h"
+#include "fastio.h"
 
 //#include "LiquidCrystal.h"
 //extern LiquidCrystal lcd;
 
 
-#define FSENSOR_ERR_MAX      5  //filament sensor max error count
-#define FSENSOR_INT_PIN     63  //filament sensor interrupt pin
-#define FSENSOR_CHUNK_LEN  560  //filament sensor chunk length in steps
+#define FSENSOR_ERR_MAX          5  //filament sensor max error count
+#define FSENSOR_INT_PIN         63  //filament sensor interrupt pin PK1
+#define FSENSOR_INT_PIN_MSK   0x02  //filament sensor interrupt pin mask (bit1)
+#define FSENSOR_CHUNK_LEN      560  //filament sensor chunk length in steps
 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
@@ -28,14 +30,15 @@ void fsensor_restore_print_and_continue()
 	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
 }
 
-uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
+//uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
+uint8_t fsensor_int_pin_old = 0;
 int16_t fsensor_chunk_len = FSENSOR_CHUNK_LEN;
 bool fsensor_enabled = true;
 //bool fsensor_ignore_error = true;
 bool fsensor_M600 = false;
 uint8_t fsensor_err_cnt = 0;
 int16_t fsensor_st_cnt = 0;
-uint8_t fsensor_log = 0;
+uint8_t fsensor_log = 1;
 
 
 void fsensor_enable()
@@ -66,23 +69,30 @@ void pciSetup(byte pin)
 
 void fsensor_setup_interrupt()
 {
-	uint8_t fsensor_int_pin = 63;
+//	uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
+//	uint8_t fsensor_int_pcmsk = digitalPinToPCMSKbit(pin);
+//	uint8_t fsensor_int_pcicr = digitalPinToPCICRbit(pin);
 
-	pinMode(fsensor_int_pin, OUTPUT);
-	digitalWrite(fsensor_int_pin, HIGH); 
+	pinMode(FSENSOR_INT_PIN, OUTPUT);
+	digitalWrite(FSENSOR_INT_PIN, LOW);
+	fsensor_int_pin_old = 0;
 
-	pciSetup(fsensor_int_pin);
+	pciSetup(FSENSOR_INT_PIN);
 }
 
 ISR(PCINT2_vect)
 {
 //	return;
+	if (!((fsensor_int_pin_old ^ PINK) & FSENSOR_INT_PIN_MSK)) return;
+//	puts("PCINT2\n");
+//	return;
+
 	int st_cnt = fsensor_st_cnt;
 	fsensor_st_cnt = 0;
 	sei();
-	*digitalPinToPCMSK(fsensor_int_pin) &= ~bit(digitalPinToPCMSKbit(fsensor_int_pin));
+/*	*digitalPinToPCMSK(fsensor_int_pin) &= ~bit(digitalPinToPCMSKbit(fsensor_int_pin));
 	digitalWrite(fsensor_int_pin, HIGH);
-	*digitalPinToPCMSK(fsensor_int_pin) |= bit(digitalPinToPCMSKbit(fsensor_int_pin));
+	*digitalPinToPCMSK(fsensor_int_pin) |= bit(digitalPinToPCMSKbit(fsensor_int_pin));*/
 	pat9125_update_y();
 	if (st_cnt != 0)
 	{
@@ -138,10 +148,14 @@ ISR(PCINT2_vect)
 void fsensor_st_block_begin(block_t* bl)
 {
 	if (!fsensor_enabled) return;
-	if ((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8))
-		digitalWrite(fsensor_int_pin, LOW);
-	if ((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8))
-		digitalWrite(fsensor_int_pin, LOW);
+	if (((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8)) || 
+		((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8)))
+	{
+		if (_READ(63)) _WRITE(63, LOW);
+		else _WRITE(63, HIGH);
+	}
+//		PINK |= FSENSOR_INT_PIN_MSK; //toggle pin
+//		_WRITE(fsensor_int_pin, LOW);
 }
 
 void fsensor_st_block_chunk(block_t* bl, int cnt)
@@ -149,7 +163,12 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	if (!fsensor_enabled) return;
 	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
 	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
-		digitalWrite(fsensor_int_pin, LOW);
+	{
+		if (_READ(63)) _WRITE(63, LOW);
+		else _WRITE(63, HIGH);
+	}
+//		PINK |= FSENSOR_INT_PIN_MSK; //toggle pin
+//		_WRITE(fsensor_int_pin, LOW);
 }
 
 void fsensor_update()
