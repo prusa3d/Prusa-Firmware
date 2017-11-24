@@ -3540,6 +3540,7 @@ void lcd_wizard(int state) {
 			break;
 		case 7: //load filament 
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_LOAD_FILAMENT);
+			lcd_update_enable(false);
 			lcd_implementation_clear();
 			lcd_print_at_PGM(0, 2, MSG_LOADING_FILAMENT);
 			loading_flag = true;
