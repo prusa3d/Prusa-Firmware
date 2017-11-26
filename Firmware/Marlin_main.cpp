@@ -5789,6 +5789,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			extr_unload_all(); //unload all filaments
 		}
 #else
+		bool old_fsensor_enabled = fsensor_enabled;
+		fsensor_enabled = false;
 		custom_message = true;
 		custom_message_type = 2;
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
@@ -5798,6 +5800,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		lcd_setstatuspgm(WELCOME_MSG);
 		custom_message = false;
 		custom_message_type = 0;
+		fsensor_enabled = old_fsensor_enabled;
 #endif	
 	}
 	break;
