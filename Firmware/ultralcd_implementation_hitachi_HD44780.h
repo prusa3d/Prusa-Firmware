@@ -1227,9 +1227,9 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
           longFilenameTMP = longFilename + j;          
           n = LCD_WIDTH - 1;
           for(int g = 0; g<300 ;g++){
+			  manage_heater();
 			  MYSERIAL.print("G: ");
 			  MYSERIAL.println(g);
-			  if (!SdFatUtil::test_stack_integrity()) stack_error();
             if(LCD_CLICKED || ( enc_dif != encoderDiff )){
 				longFilenameTMP = longFilename;
 				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
@@ -1240,7 +1240,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
             }else{
 				if (j == 1) delay(3);	//wait around 1.2 s to start scrolling text
 				delay(1);				//then scroll with redrawing every 300 ms 
-            }
+			}
 
           }
         }
