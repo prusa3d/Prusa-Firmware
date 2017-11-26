@@ -1919,6 +1919,7 @@ bool gcode_M45(bool onlyZ) {
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
 			if(result) lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
+			lcd_show_fullscreen_message_and_wait_P(MSG_CONFIRM_NOZZLE_CLEAN);
 		    lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
