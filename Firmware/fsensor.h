@@ -25,6 +25,8 @@ extern void fsensor_st_block_chunk(block_t* bl, int cnt);
 extern int16_t fsensor_chunk_len;
 //M600 in progress
 extern bool fsensor_M600;
+//enable/disable flag
+extern bool fsensor_enabled;
 
 
 #endif //FSENSOR_H
