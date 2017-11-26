@@ -1205,14 +1205,12 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 
     lcd.setCursor(0, row);
     lcd.print('>');
-	int i = 1;
+    int i = 1;
     int j = 0;
     char* longFilenameTMP = longFilename;
 
     while((c = *longFilenameTMP) != '\0')
     {
-		MYSERIAL.print("Counter: ");
-		MYSERIAL.println(counter++);
         lcd.setCursor(i, row);
         lcd.print(c);
         i++;
@@ -1233,7 +1231,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
             }else{
 				if (j == 1) delay(3);	//wait around 1.2 s to start scrolling text
 				delay(1);				//then scroll with redrawing every 300 ms 
-			}
+            }
 
           }
         }
