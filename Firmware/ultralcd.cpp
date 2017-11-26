@@ -1121,6 +1121,7 @@ void lcd_commands()
 			lcd_setstatuspgm(WELCOME_MSG);
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
+			menuExiting = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by going to status screen
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 				lcd_wizard(10);
 			}
@@ -3564,7 +3565,9 @@ void lcd_wizard(int state) {
 		case 10: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_REPEAT_V2_CAL, false);
 			if (wizard_event) {
+				//reset status and live adjust z value in eeprom
 				calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+				EEPROM_save_B(EEPROM_BABYSTEP_Z, 0);
 				lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_CLEAN_HEATBED);
 				state = 9;
 			}
