@@ -1205,14 +1205,18 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 
     lcd.setCursor(0, row);
     lcd.print('>');
-
+	int counter = 0;
     int i = 1;
     int j = 0;
     char* longFilenameTMP = longFilename;
+	MYSERIAL.println("");
+	MYSERIAL.println("");
+	MYSERIAL.println("================================Start: ");
 
     while((c = *longFilenameTMP) != '\0')
     {
-
+		MYSERIAL.print("Counter: ");
+		MYSERIAL.println(counter++);
         lcd.setCursor(i, row);
         lcd.print(c);
         i++;
@@ -1223,11 +1227,15 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
           longFilenameTMP = longFilename + j;          
           n = LCD_WIDTH - 1;
           for(int g = 0; g<300 ;g++){
+			  MYSERIAL.print("G: ");
+			  MYSERIAL.println(g);
+			  if (!SdFatUtil::test_stack_integrity()) stack_error();
             if(LCD_CLICKED || ( enc_dif != encoderDiff )){
 				longFilenameTMP = longFilename;
 				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
 				i = 1;
 				j = 0;
+				MYSERIAL.println("Here");
 				break;
             }else{
 				if (j == 1) delay(3);	//wait around 1.2 s to start scrolling text
