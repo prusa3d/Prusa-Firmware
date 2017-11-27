@@ -3301,12 +3301,6 @@ void lcd_pinda_calibration_menu()
 	START_MENU();
 		MENU_ITEM(back, MSG_MENU_CALIBRATION, lcd_calibration_menu);
 		MENU_ITEM(submenu, MSG_CALIBRATE_PINDA, lcd_calibrate_pinda);
-		if (temp_cal_active == false) {
-			MENU_ITEM(function, MSG_TEMP_CALIBRATION_OFF, lcd_temp_calibration_set);
-		}
-		else {
-			MENU_ITEM(function, MSG_TEMP_CALIBRATION_ON, lcd_temp_calibration_set);
-		}
 	END_MENU();
 }
 
@@ -3674,6 +3668,12 @@ static void lcd_settings_menu()
       MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
     }
   }
+  if (temp_cal_active == false) {
+	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_OFF, lcd_temp_calibration_set);
+  }
+  else {
+	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_ON, lcd_temp_calibration_set);
+  }
 
 	if (!isPrintPaused && !homing_flag)
 	{
@@ -3728,9 +3728,6 @@ static void lcd_calibration_menu()
 	
 #endif //MK1BP
     MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
-#ifndef MK1BP
-	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
-#endif //MK1BP
 	MENU_ITEM(submenu, MSG_PID_EXTRUDER, pid_extruder);
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
 #ifndef MK1BP
@@ -3739,6 +3736,9 @@ static void lcd_calibration_menu()
 #ifndef SNMM
 	//MENU_ITEM(function, MSG_RESET_CALIBRATE_E, lcd_extr_cal_reset);
 #endif
+#ifndef MK1BP
+	MENU_ITEM(submenu, MSG_CALIBRATION_PINDA_MENU, lcd_pinda_calibration_menu);
+#endif //MK1BP
   }
   
   END_MENU();
