@@ -423,3 +423,5 @@ bool gcode_M45(bool onlyZ);
 void gcode_M701();
 
 #define UVLO !(PINE & (1<<4))
+
+void extr_unload2();

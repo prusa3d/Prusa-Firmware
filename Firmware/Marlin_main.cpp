@@ -5818,6 +5818,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		custom_message = true;
 		custom_message_type = 2;
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
+
+//		extr_unload2();
+
 		current_position[E_AXIS] -= 80;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7000 / 60, active_extruder);
 		st_synchronize();
@@ -7046,6 +7049,12 @@ void uvlo_()
     disable_x();
     disable_y();
 
+	tmc2130_set_current_h(Z_AXIS, 12);
+	tmc2130_set_current_r(Z_AXIS, 12);
+	tmc2130_set_current_h(E_AXIS, 20);
+	tmc2130_set_current_r(E_AXIS, 20);
+
+
     // Indicate that the interrupt has been triggered.
 		SERIAL_ECHOLNPGM("UVLO");
 
@@ -7572,4 +7581,77 @@ void print_mesh_bed_leveling_table()
       SERIAL_ECHOPGM(" ");
     }
   SERIAL_ECHOLNPGM("");
+}
+
+
+#define FIL_LOAD_LENGTH 60
+
+void extr_unload2() { //unloads filament
+//	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
+//	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
+//	int8_t SilentMode;
+	uint8_t snmm_extruder = 0;
+	if (degHotend0() > EXTRUDE_MINTEMP) {
+		lcd_implementation_clear();
+		lcd_display_message_fullscreen_P(PSTR(""));
+		max_feedrate[E_AXIS] = 50;
+		lcd.setCursor(0, 0); lcd_printPGM(MSG_UNLOADING_FILAMENT);
+//		lcd.print(" ");
+//		lcd.print(snmm_extruder + 1);
+		lcd.setCursor(0, 2); lcd_printPGM(MSG_PLEASE_WAIT);
+		if (current_position[Z_AXIS] < 15) {
+			current_position[Z_AXIS] += 15; //lifting in Z direction to make space for extrusion
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 25, active_extruder);
+		}
+		
+		current_position[E_AXIS] += 10; //extrusion
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 10, active_extruder);
+//		digipot_current(2, E_MOTOR_HIGH_CURRENT);
+		if (current_temperature[0] < 230) { //PLA & all other filaments
+			current_position[E_AXIS] += 5.4;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2800 / 60, active_extruder);
+			current_position[E_AXIS] += 3.2;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			current_position[E_AXIS] += 3;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3400 / 60, active_extruder);
+		}
+		else { //ABS
+			current_position[E_AXIS] += 3.1;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
+			current_position[E_AXIS] += 3.1;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
+			current_position[E_AXIS] += 4;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+			/*current_position[X_AXIS] += 23; //delay
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder); //delay
+			current_position[X_AXIS] -= 23; //delay
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder); //delay*/
+			delay_keep_alive(4700);
+		}
+	
+		max_feedrate[E_AXIS] = 80;
+		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+		st_synchronize();
+		//digipot_init();
+//		if (SilentMode == 1) digipot_current(2, tmp_motor[2]); //set back to normal operation currents
+//		else digipot_current(2, tmp_motor_loud[2]);
+		lcd_update_enable(true);
+//		lcd_return_to_status();
+		max_feedrate[E_AXIS] = 50;
+	}
+	else {
+
+		lcd_implementation_clear();
+		lcd.setCursor(0, 0);
+		lcd_printPGM(MSG_ERROR);
+		lcd.setCursor(0, 2);
+		lcd_printPGM(MSG_PREHEAT_NOZZLE);
+
+		delay(2000);
+		lcd_implementation_clear();
+	}
+//	lcd_return_to_status();
 }
