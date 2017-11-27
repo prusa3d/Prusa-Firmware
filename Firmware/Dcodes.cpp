@@ -397,9 +397,36 @@ void dcode_12()
     eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, 0x00);
 }
 
+#include "tmc2130.h"
+#include "Marlin.h"
+#include "planner.h"
+extern void st_synchronize();
+
 void dcode_2130()
 {
 //	printf("test");
+	printf_P(PSTR("D2130 - TMC2130\n"));
+	uint8_t axis = 0xff;
+	if (code_seen('X'))
+		axis = X_AXIS;
+	else if (code_seen('Y'))
+		axis = Y_AXIS;
+	if (axis != 0xff)
+	{
+		homeaxis(axis);
+		tmc2130_sg_meassure_start(axis);
+		memcpy(destination, current_position, sizeof(destination));
+        destination[axis] = 200;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[X_AXIS]/60, active_extruder);
+        st_synchronize();
+		memcpy(destination, current_position, sizeof(destination));
+        destination[axis] = 0;
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[X_AXIS]/60, active_extruder);
+        st_synchronize();
+		uint16_t sg = tmc2130_sg_meassure_stop();
+		tmc2130_sg_meassure = 0xff;
+		printf_P(PSTR("Meassure avg = %d\n"), sg);
+	}
 }
 
 void dcode_9125()

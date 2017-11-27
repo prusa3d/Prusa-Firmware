@@ -1531,6 +1531,8 @@ static void lcd_menu_fails_stats()
 
 static void lcd_menu_temperatures()
 {
+	fprintf_P(lcdout, PSTR(ESC_H(1,1) "Ambient:  %d%c" ESC_H(1,2) "PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
+/*
     lcd.setCursor(1, 1);
     lcd.print("Ambient: ");
     lcd.setCursor(12, 1);
@@ -1540,7 +1542,17 @@ static void lcd_menu_temperatures()
     lcd.print("PINDA: ");
     lcd.setCursor(12, 2);
     lcd.print(ftostr31ns(current_temperature_pinda));
-	lcd.print(LCD_STR_DEGREE);
+	lcd.print(LCD_STR_DEGREE);*/
+    if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_return_to_status();
+    }
+}
+
+static void lcd_menu_belt_status()
+{
+    fprintf_P(lcdout, PSTR(ESC_H(1,0) "Belt status" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     if (lcd_clicked())
     {
         lcd_quick_feedback();
@@ -1637,6 +1649,7 @@ static void lcd_support_menu()
   if (!IS_SD_PRINTING && !is_usb_printing) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
     
+  MENU_ITEM(submenu, PSTR("Belt status"), lcd_menu_belt_status);
     
   MENU_ITEM(submenu, PSTR("Temperatures"), lcd_menu_temperatures);
   if (fans_check_enabled == true) {
@@ -5480,9 +5493,8 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		tmc2130_home_exit();
 	}
 
-
-
 // first axis length measurement begin	
+
 	tmc2130_home_enter(X_AXIS_MASK << axis);
 	current_position[axis] -= (axis_length + margin);
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
@@ -5491,11 +5503,14 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	st_synchronize();
 	tmc2130_home_exit();
 
+	tmc2130_sg_meassure_start(axis);
+
 	current_position_init = st_get_position_mm(axis);
 
 	current_position[axis] += 2 * margin;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 	st_synchronize();
+
 	current_position[axis] += axis_length;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 
@@ -5503,11 +5518,17 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	st_synchronize();
 	tmc2130_home_exit();
 
+	uint16_t sg1 = tmc2130_sg_meassure_stop();
+	printf_P(PSTR("%c AXIS SG1=%d\n"), 'X'+axis, sg1);
+	eeprom_write_word(((uint16_t*)((axis == X_AXIS)?EEPROM_BELTSTATUS_X:EEPROM_BELTSTATUS_Y)), sg1);
+
 	current_position_final = st_get_position_mm(axis);
 	measured_axis_length[0] = abs(current_position_final - current_position_init);
 
+
 // first measurement end and second measurement begin	
-	
+
+
 	current_position[axis] -= margin;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 	st_synchronize();	
@@ -5522,7 +5543,8 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	current_position_init = st_get_position_mm(axis);
 
 	measured_axis_length[1] = abs(current_position_final - current_position_init);
-	
+
+
 //end of second measurement, now check for possible errors:
 	
 	for(int i = 0; i < 2; i++){ //check if measured axis length corresponds to expected length
