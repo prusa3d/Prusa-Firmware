@@ -22,7 +22,7 @@ extern int8_t FSensorStateMenu;
 
 void fsensor_stop_and_save_print()
 {
-	stop_and_save_print_to_ram(0, 0); //XYZE - no change
+	stop_and_save_print_to_ram(0, 0); //XYZE - no change	
 }
 
 void fsensor_restore_print_and_continue()
