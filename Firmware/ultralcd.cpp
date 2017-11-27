@@ -1582,9 +1582,9 @@ static void lcd_preheat_menu()
   if (farm_mode)
     MENU_ITEM(function, PSTR("farm  -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FARM_PREHEAT_HPB_TEMP)), lcd_preheat_farm);
 
-  MENU_ITEM(function, PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
   MENU_ITEM(function, PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)), lcd_preheat_pla);
   MENU_ITEM(function, PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)), lcd_preheat_pet);
+  MENU_ITEM(function, PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
   MENU_ITEM(function, PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(HIPS_PREHEAT_HPB_TEMP)), lcd_preheat_hips);
   MENU_ITEM(function, PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)), lcd_preheat_pp);
   MENU_ITEM(function, PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FLEX_PREHEAT_HPB_TEMP)), lcd_preheat_flex);
@@ -1652,17 +1652,7 @@ static void lcd_support_menu()
   MENU_ITEM(submenu, PSTR("Belt status"), lcd_menu_belt_status);
     
   MENU_ITEM(submenu, PSTR("Temperatures"), lcd_menu_temperatures);
-  if (fans_check_enabled == true) {
-	  MENU_ITEM(function, PSTR("Check fans [EN]"), lcd_set_fan_check);
-  }
-  else {
-	  MENU_ITEM(function, PSTR("Check fans [DIS]"), lcd_set_fan_check);
-  }
   #endif //MK1BP
-    
-#ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
-    MENU_ITEM(back, PSTR("Auto recover crash"), lcd_main_menu);
-#endif
   END_MENU();
 }
 
@@ -3664,6 +3654,12 @@ static void lcd_settings_menu()
   } else {
     MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
   }
+  if (fans_check_enabled == true) {
+	  MENU_ITEM(function, MSG_FANS_CHECK_ON, lcd_set_fan_check);
+  }
+  else {
+	  MENU_ITEM(function, MSG_FANS_CHECK_OFF, lcd_set_fan_check);
+  }
 
   if (SilentModeMenu == 0) {
     MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
@@ -3711,25 +3707,25 @@ static void lcd_calibration_menu()
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
   if (!isPrintPaused)
   {
+	MENU_ITEM(function, MSG_WIZARD, lcd_wizard);
+	MENU_ITEM(submenu, MSG_V2_CALIBRATION, lcd_v2_calibration);
 	MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28 W"));
-    MENU_ITEM(function, MSG_SELFTEST, lcd_selftest_v);
+	MENU_ITEM(function, MSG_SELFTEST, lcd_selftest_v);
 #ifdef MK1BP
     // MK1
     // "Calibrate Z"
     MENU_ITEM(gcode, MSG_HOMEYZ, PSTR("G28 Z"));
 #else //MK1BP
     // MK2
-MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
+    MENU_ITEM(function, MSG_CALIBRATE_BED, lcd_mesh_calibration);
     // "Calibrate Z" with storing the reference values to EEPROM.
     MENU_ITEM(submenu, MSG_HOMEYZ, lcd_mesh_calibration_z);
-	MENU_ITEM(submenu, MSG_V2_CALIBRATION, lcd_v2_calibration);
-	
 #ifndef SNMM
 	//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
 #endif
     // "Mesh Bed Leveling"
     MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
-	MENU_ITEM(function, MSG_WIZARD, lcd_wizard);
+	
 #endif //MK1BP
     MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
 #ifndef MK1BP

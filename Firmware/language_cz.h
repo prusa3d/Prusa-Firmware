@@ -102,8 +102,8 @@
 #define MSG_INSERT_FILAMENT		"Vlozte filament"
 #define MSG_CHANGING_FILAMENT	"Vymena filamentu!"
 
-#define MSG_SILENT_MODE_ON					"Mod       [tichy]"
-#define MSG_SILENT_MODE_OFF					"Mod  [vys. vykon]" 
+#define MSG_SILENT_MODE_ON					"Mod     [Stealth]"
+#define MSG_SILENT_MODE_OFF					"Mod      [Normal]" 
 #define MSG_REBOOT							"Restartujte tiskarnu"
 #define MSG_TAKE_EFFECT						" pro projeveni zmen"	
 
@@ -335,3 +335,17 @@
 #define MSG_MEASURED_SKEW					"Merene zkoseni:"
 #define MSG_SLIGHT_SKEW						"Lehke zkoseni:"
 #define MSG_SEVERE_SKEW						"Tezke zkoseni:"
+
+#define MSG_CALIBRATE_Z_AUTO				"Kalibruji Z"
+#define MSG_FSENSOR_OFF						"Fil. senzor [vyp]"
+#define MSG_FSENSOR_ON						"Fil. senzor [zap]" 
+#define MSG_CRASHDETECT_ON					"Crash det.  [zap]"
+#define MSG_CRASHDETECT_OFF					"Crash det.  [vyp]"
+#define MSG_FANS_CHECK_ON					"Kontr. vent.[zap]"
+#define MSG_FANS_CHECK_OFF					"Kontr. vent.[vyp]"
+#define MSG_RECOVERING_PRINT				"Obnovovani tisku    "
+#define MSG_SELFTEST_AXIS					"Osa"
+#define MSG_SELFTEST_AXIS_LENGTH			"Delka osy"
+#define MSG_STEEL_SHEET_CHECK				"Je tiskovy plat na heatbed?"
+#define MSG_REMOVE_STEEL_SHEET				"Odstrante tiskovy plat z heatbed prosim."
+#define MSG_PLACE_STEEL_SHEET				"Umistete prosim tiskovy plat na heatbed"

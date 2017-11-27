@@ -101,8 +101,8 @@
 #define(length=20) MSG_CHANGING_FILAMENT	"Changing filament!"
 
 
-#define MSG_SILENT_MODE_ON					"Mode     [silent]"
-#define MSG_SILENT_MODE_OFF					"Mode [high power]" 
+#define MSG_SILENT_MODE_ON					"Mode    [Stealth]"
+#define MSG_SILENT_MODE_OFF					"Mode     [Normal]" 
 #define(length=20) MSG_REBOOT				"Reboot the printer"
 #define(length=20) MSG_TAKE_EFFECT			" for take effect"											
 
@@ -364,3 +364,5 @@
 #define(length=11, lines=1) MSG_INFO_PRINT_FAN				"Print FAN: "
 #define(length=11, lines=1) MSG_INFO_FILAMENT_XDIFF				"Fil. Xd:"
 #define(length=11, lines=1) MSG_INFO_FILAMENT_YDIFF				"Fil. Ydiff:"
+#define(length=17, lines=1) MSG_FANS_CHECK_ON					"Fans check [ON]"
+#define(length=17, lines=1) MSG_FANS_CHECK_OFF					"Fans check [OFF]"

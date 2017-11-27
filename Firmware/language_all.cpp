@@ -279,8 +279,10 @@ const char * const MSG_CALIBRATE_PINDA_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_CALIBRATE_Z_AUTO_EN[] PROGMEM = "Calibrating Z";
-const char * const MSG_CALIBRATE_Z_AUTO_LANG_TABLE[1] PROGMEM = {
-	MSG_CALIBRATE_Z_AUTO_EN
+const char MSG_CALIBRATE_Z_AUTO_CZ[] PROGMEM = "Kalibruji Z";
+const char * const MSG_CALIBRATE_Z_AUTO_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CALIBRATE_Z_AUTO_EN,
+	MSG_CALIBRATE_Z_AUTO_CZ
 };
 
 const char MSG_CALIBRATION_PINDA_MENU_EN[] PROGMEM = "Temp. calibration";
@@ -388,13 +390,17 @@ const char * const MSG_COUNT_X_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_CRASHDETECT_OFF_EN[] PROGMEM = "Crash det.  [off]";
-const char * const MSG_CRASHDETECT_OFF_LANG_TABLE[1] PROGMEM = {
-	MSG_CRASHDETECT_OFF_EN
+const char MSG_CRASHDETECT_OFF_CZ[] PROGMEM = "Crash det.  [vyp]";
+const char * const MSG_CRASHDETECT_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CRASHDETECT_OFF_EN,
+	MSG_CRASHDETECT_OFF_CZ
 };
 
 const char MSG_CRASHDETECT_ON_EN[] PROGMEM = "Crash det.   [on]";
-const char * const MSG_CRASHDETECT_ON_LANG_TABLE[1] PROGMEM = {
-	MSG_CRASHDETECT_ON_EN
+const char MSG_CRASHDETECT_ON_CZ[] PROGMEM = "Crash det.  [zap]";
+const char * const MSG_CRASHDETECT_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CRASHDETECT_ON_EN,
+	MSG_CRASHDETECT_ON_CZ
 };
 
 const char MSG_CRASH_DETECTED_EN[] PROGMEM = "Crash detected. Continue printing?";
@@ -547,6 +553,20 @@ const char * const MSG_FACTOR_LANG_TABLE[1] PROGMEM = {
 	MSG_FACTOR_EN
 };
 
+const char MSG_FANS_CHECK_OFF_EN[] PROGMEM = "Fans check [OFF]";
+const char MSG_FANS_CHECK_OFF_CZ[] PROGMEM = "Kontr. vent.[vyp]";
+const char * const MSG_FANS_CHECK_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FANS_CHECK_OFF_EN,
+	MSG_FANS_CHECK_OFF_CZ
+};
+
+const char MSG_FANS_CHECK_ON_EN[] PROGMEM = "Fans check [ON]";
+const char MSG_FANS_CHECK_ON_CZ[] PROGMEM = "Kontr. vent.[zap]";
+const char * const MSG_FANS_CHECK_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FANS_CHECK_ON_EN,
+	MSG_FANS_CHECK_ON_CZ
+};
+
 const char MSG_FAN_SPEED_EN[] PROGMEM = "Fan speed";
 const char MSG_FAN_SPEED_CZ[] PROGMEM = "Rychlost vent.";
 const char * const MSG_FAN_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -681,13 +701,17 @@ const char * const MSG_FREE_MEMORY_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_FSENSOR_OFF_EN[] PROGMEM = "Fil. sensor [off]";
-const char * const MSG_FSENSOR_OFF_LANG_TABLE[1] PROGMEM = {
-	MSG_FSENSOR_OFF_EN
+const char MSG_FSENSOR_OFF_CZ[] PROGMEM = "Fil. senzor [vyp]";
+const char * const MSG_FSENSOR_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FSENSOR_OFF_EN,
+	MSG_FSENSOR_OFF_CZ
 };
 
 const char MSG_FSENSOR_ON_EN[] PROGMEM = "Fil. sensor  [on]";
-const char * const MSG_FSENSOR_ON_LANG_TABLE[1] PROGMEM = {
-	MSG_FSENSOR_ON_EN
+const char MSG_FSENSOR_ON_CZ[] PROGMEM = "Fil. senzor [zap]";
+const char * const MSG_FSENSOR_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FSENSOR_ON_EN,
+	MSG_FSENSOR_ON_CZ
 };
 
 const char MSG_HEATING_EN[] PROGMEM = "Heating";
@@ -1187,8 +1211,10 @@ const char * const MSG_PINDA_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_PLACE_STEEL_SHEET_EN[] PROGMEM = "Please place steel sheet on heatbed.";
-const char * const MSG_PLACE_STEEL_SHEET_LANG_TABLE[1] PROGMEM = {
-	MSG_PLACE_STEEL_SHEET_EN
+const char MSG_PLACE_STEEL_SHEET_CZ[] PROGMEM = "Umistete prosim tiskovy plat na heatbed";
+const char * const MSG_PLACE_STEEL_SHEET_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PLACE_STEEL_SHEET_EN,
+	MSG_PLACE_STEEL_SHEET_CZ
 };
 
 const char MSG_PLANNER_BUFFER_BYTES_EN[] PROGMEM = "  PlannerBufferBytes: ";
@@ -1303,8 +1329,10 @@ const char * const MSG_REBOOT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_RECOVERING_PRINT_EN[] PROGMEM = "Recovering print    ";
-const char * const MSG_RECOVERING_PRINT_LANG_TABLE[1] PROGMEM = {
-	MSG_RECOVERING_PRINT_EN
+const char MSG_RECOVERING_PRINT_CZ[] PROGMEM = "Obnovovani tisku    ";
+const char * const MSG_RECOVERING_PRINT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_RECOVERING_PRINT_EN,
+	MSG_RECOVERING_PRINT_CZ
 };
 
 const char MSG_RECOVER_PRINT_EN[] PROGMEM = "Blackout occurred. Recover print?";
@@ -1323,8 +1351,10 @@ const char * const MSG_REFRESH_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_REMOVE_STEEL_SHEET_EN[] PROGMEM = "Please remove steel sheet from heatbed.";
-const char * const MSG_REMOVE_STEEL_SHEET_LANG_TABLE[1] PROGMEM = {
-	MSG_REMOVE_STEEL_SHEET_EN
+const char MSG_REMOVE_STEEL_SHEET_CZ[] PROGMEM = "Odstrante tiskovy plat z heatbed prosim.";
+const char * const MSG_REMOVE_STEEL_SHEET_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_REMOVE_STEEL_SHEET_EN,
+	MSG_REMOVE_STEEL_SHEET_CZ
 };
 
 const char MSG_RESEND_EN[] PROGMEM = "Resend: ";
@@ -1465,13 +1495,17 @@ const char * const MSG_SELFTEST_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_SELFTEST_AXIS_EN[] PROGMEM = "Axis";
-const char * const MSG_SELFTEST_AXIS_LANG_TABLE[1] PROGMEM = {
-	MSG_SELFTEST_AXIS_EN
+const char MSG_SELFTEST_AXIS_CZ[] PROGMEM = "Osa";
+const char * const MSG_SELFTEST_AXIS_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SELFTEST_AXIS_EN,
+	MSG_SELFTEST_AXIS_CZ
 };
 
 const char MSG_SELFTEST_AXIS_LENGTH_EN[] PROGMEM = "Axis length";
-const char * const MSG_SELFTEST_AXIS_LENGTH_LANG_TABLE[1] PROGMEM = {
-	MSG_SELFTEST_AXIS_LENGTH_EN
+const char MSG_SELFTEST_AXIS_LENGTH_CZ[] PROGMEM = "Delka osy";
+const char * const MSG_SELFTEST_AXIS_LENGTH_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SELFTEST_AXIS_LENGTH_EN,
+	MSG_SELFTEST_AXIS_LENGTH_CZ
 };
 
 const char MSG_SELFTEST_BEDHEATER_EN[] PROGMEM = "Bed / Heater";
@@ -1674,15 +1708,15 @@ const char * const MSG_SHOW_END_STOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SHOW_END_STOPS_CZ
 };
 
-const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode [high power]";
-const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod  [vys. vykon]";
+const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode     [Normal]";
+const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod      [Normal]";
 const char * const MSG_SILENT_MODE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_OFF_EN,
 	MSG_SILENT_MODE_OFF_CZ
 };
 
-const char MSG_SILENT_MODE_ON_EN[] PROGMEM = "Mode     [silent]";
-const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod       [tichy]";
+const char MSG_SILENT_MODE_ON_EN[] PROGMEM = "Mode    [Stealth]";
+const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod     [Stealth]";
 const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_EN,
 	MSG_SILENT_MODE_ON_CZ
@@ -1748,8 +1782,10 @@ const char * const MSG_STATS_TOTALPRINTTIME_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_STEEL_SHEET_CHECK_EN[] PROGMEM = "Is steel sheet on heatbed?";
-const char * const MSG_STEEL_SHEET_CHECK_LANG_TABLE[1] PROGMEM = {
-	MSG_STEEL_SHEET_CHECK_EN
+const char MSG_STEEL_SHEET_CHECK_CZ[] PROGMEM = "Je tiskovy plat na heatbed?";
+const char * const MSG_STEEL_SHEET_CHECK_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_STEEL_SHEET_CHECK_EN,
+	MSG_STEEL_SHEET_CHECK_CZ
 };
 
 const char MSG_STEPPER_TOO_HIGH_EN[] PROGMEM = "Steprate too high: ";
