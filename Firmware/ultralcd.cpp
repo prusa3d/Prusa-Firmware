@@ -3222,7 +3222,8 @@ static void lcd_silent_mode_set() {
   sei();
 #endif //TMC2130
   digipot_init();
-  lcd_goto_menu(lcd_settings_menu, 7);
+  if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 8);
+  else lcd_goto_menu(lcd_settings_menu, 7);
 }
 
 static void lcd_crash_mode_set()
@@ -3233,7 +3234,8 @@ static void lcd_crash_mode_set()
     }else{
         crashdet_enable();
     }
-	lcd_goto_menu(lcd_settings_menu, 9);
+	if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 9);
+	else lcd_goto_menu(lcd_settings_menu, 9);
     
 }
 
@@ -3255,7 +3257,8 @@ static void lcd_fsensor_state_set()
     }else{
         fsensor_enable();
     }
-	lcd_goto_menu(lcd_settings_menu, 7);
+	if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 7);
+	else lcd_goto_menu(lcd_settings_menu, 7);
     
 }
 
