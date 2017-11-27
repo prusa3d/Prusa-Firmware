@@ -1114,13 +1114,14 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 Z10 F1300.000"));
 			enquecommand_P(PSTR("G1 X10 Y180 F4000")); //home X axis
 			enquecommand_P(PSTR("M84"));// disable motors
+			lcd_timeoutToStatus = millis() - 1; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 			lcd_commands_step = 1;
 		}
 		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_setstatuspgm(WELCOME_MSG);
 			lcd_commands_step = 0;
-			lcd_commands_type = 0;
+			lcd_commands_type = 0;			
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 				lcd_wizard(10);
 			}
@@ -3577,7 +3578,9 @@ void lcd_wizard(int state) {
 		case 10: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_REPEAT_V2_CAL, false);
 			if (wizard_event) {
+				//reset status and live adjust z value in eeprom
 				calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+				EEPROM_save_B(EEPROM_BABYSTEP_Z, 0);
 				lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_CLEAN_HEATBED);
 				state = 9;
 			}

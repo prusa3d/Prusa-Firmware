@@ -1205,14 +1205,12 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 
     lcd.setCursor(0, row);
     lcd.print('>');
-
     int i = 1;
     int j = 0;
     char* longFilenameTMP = longFilename;
 
     while((c = *longFilenameTMP) != '\0')
     {
-
         lcd.setCursor(i, row);
         lcd.print(c);
         i++;
@@ -1223,6 +1221,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
           longFilenameTMP = longFilename + j;          
           n = LCD_WIDTH - 1;
           for(int g = 0; g<300 ;g++){
+			  manage_heater();
             if(LCD_CLICKED || ( enc_dif != encoderDiff )){
 				longFilenameTMP = longFilename;
 				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
