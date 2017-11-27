@@ -6152,8 +6152,6 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)
 {
-	MYSERIAL.println(filename);
-
 	uint8_t depth = (uint8_t)card.getWorkDirDepth();
 
 	strcpy(dir_names[depth], filename);
