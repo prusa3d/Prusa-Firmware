@@ -101,8 +101,8 @@
 #define(length=20) MSG_CHANGING_FILAMENT	"Changing filament!"
 
 
-#define MSG_SILENT_MODE_ON					"Mode     [silent]"
-#define MSG_SILENT_MODE_OFF					"Mode [high power]" 
+#define MSG_SILENT_MODE_ON					"Mode    [Stealth]"
+#define MSG_SILENT_MODE_OFF					"Mode     [Normal]" 
 #define(length=20) MSG_REBOOT				"Reboot the printer"
 #define(length=20) MSG_TAKE_EFFECT			" for take effect"											
 
@@ -291,8 +291,8 @@
 #define(length=20, lines=1) MSG_PINDA_PREHEAT					"PINDA Heating"
 #define(length=20, lines=1) MSG_TEMP_CALIBRATION				"Temp. cal.          "
 #define(length=20, lines=4) MSG_TEMP_CALIBRATION_DONE			"Temperature calibration is finished. Click to continue."
-#define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"Temp. cal. [ON]"
-#define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF			"Temp. cal. [OFF]"
+#define(length=20, lines=1) MSG_TEMP_CALIBRATION_ON				"Temp. cal.   [on]"
+#define(length=20, lines=1) MSG_TEMP_CALIBRATION_OFF			"Temp. cal.  [off]"
 #define(length=20, lines=1) MSG_PREPARE_FILAMENT				"Prepare new filament"
 #define(length=19, lines=1) MSG_ALL								"All"
 #define(length=19, lines=1) MSG_USED							"Used during print"
@@ -364,3 +364,5 @@
 #define(length=11, lines=1) MSG_INFO_PRINT_FAN				"Print FAN: "
 #define(length=11, lines=1) MSG_INFO_FILAMENT_XDIFF				"Fil. Xd:"
 #define(length=11, lines=1) MSG_INFO_FILAMENT_YDIFF				"Fil. Ydiff:"
+#define(length=17, lines=1) MSG_FANS_CHECK_ON					"Fans check   [on]"
+#define(length=17, lines=1) MSG_FANS_CHECK_OFF					"Fans check  [off]"
