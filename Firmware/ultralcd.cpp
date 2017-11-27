@@ -36,7 +36,6 @@ extern bool fans_check_enabled = true;
 typedef void (*menuFunc_t)();
 
 static void lcd_sd_updir();
-static void lcd_return_to_status();
 
 struct EditMenuParentState
 {
