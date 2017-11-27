@@ -475,9 +475,13 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_BABYSTEP_MIN -3999
 #define Z_BABYSTEP_MAX 0
 
+#define PINDA_PREHEAT_X 20
+#define PINDA_PREHEAT_Y 60
+#define PINDA_PREHEAT_Z 0.15
+/*
 #define PINDA_PREHEAT_X 70
 #define PINDA_PREHEAT_Y -3
-#define PINDA_PREHEAT_Z 1
+#define PINDA_PREHEAT_Z 1*/
 #define PINDA_HEAT_T 120 //time in s
 
 #define PINDA_MIN_T 50

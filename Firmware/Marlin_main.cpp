@@ -1075,7 +1075,13 @@ void setup()
 	} else temp_cal_active = eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE);
 
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
-		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
+		//eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
+		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0,   8); //40C -  20um -   8usteps
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1,  24); //45C -  60um -  24usteps
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2,  48); //50C - 120um -  48usteps
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3,  80); //55C - 200um -  80usteps
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
 	}
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -2936,7 +2942,7 @@ void process_commands()
 			MYSERIAL.println(start_temp);
 
 //			setTargetHotend(200, 0);
-			setTargetBed(50 + 10 * (start_temp - 30) / 5);
+			setTargetBed(70 + (start_temp - 30));
 
 			custom_message = true;
 			custom_message_type = 4;
