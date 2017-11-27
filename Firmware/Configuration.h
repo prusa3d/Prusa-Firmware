@@ -8,8 +8,8 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_version "3.0.12-RC2"
-#define FW_build   113
+#define FW_version "3.1.1-RC1"
+#define FW_build   115
 //#define FW_build   --BUILD-NUMBER--
 #define FW_version_build FW_version " b" STR(FW_build)
 

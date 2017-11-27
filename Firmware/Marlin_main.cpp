@@ -826,6 +826,7 @@ void setup()
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
 
+
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
 	for (int i = 0; i < 4096; ++i) {
@@ -842,11 +843,16 @@ void setup()
 
 	// Check startup - does nothing if bootloader sets MCUSR to 0
 	byte mcu = MCUSR;
-	if (mcu & 1) SERIAL_ECHOLNRPGM(MSG_POWERUP);
+/*	if (mcu & 1) SERIAL_ECHOLNRPGM(MSG_POWERUP);
 	if (mcu & 2) SERIAL_ECHOLNRPGM(MSG_EXTERNAL_RESET);
 	if (mcu & 4) SERIAL_ECHOLNRPGM(MSG_BROWNOUT_RESET);
 	if (mcu & 8) SERIAL_ECHOLNRPGM(MSG_WATCHDOG_RESET);
-	if (mcu & 32) SERIAL_ECHOLNRPGM(MSG_SOFTWARE_RESET);
+	if (mcu & 32) SERIAL_ECHOLNRPGM(MSG_SOFTWARE_RESET);*/
+	if (mcu & 1) puts_P(MSG_POWERUP);
+	if (mcu & 2) puts_P(MSG_EXTERNAL_RESET);
+	if (mcu & 4) puts_P(MSG_BROWNOUT_RESET);
+	if (mcu & 8) puts_P(MSG_WATCHDOG_RESET);
+	if (mcu & 32) puts_P(MSG_SOFTWARE_RESET);
 	MCUSR = 0;
 
 	//SERIAL_ECHORPGM(MSG_MARLIN);
@@ -1083,6 +1089,9 @@ void setup()
 		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2,  48); //50C - 120um -  48usteps
 		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3,  80); //55C - 200um -  80usteps
 		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+
+		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 1);
+		temp_cal_active = true;
 	}
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -5293,6 +5302,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
     {
 		MYSERIAL.println("!!!!M600!!!!");
+		bool old_fsensor_enabled = fsensor_enabled;
+		fsensor_enabled = false; //temporary solution for unexpected restarting
 
 		st_synchronize();
 		float target[4];
@@ -5603,7 +5614,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  lcd_setstatuspgm(WELCOME_MSG);
 	  custom_message = false;
 	  custom_message_type = 0;
+
+      fsensor_enabled = old_fsensor_enabled; //temporary solution for unexpected restarting
+
 #ifdef PAT9125
+
 	  if (fsensor_M600)
 	  {
 		cmdqueue_pop_front(); //hack because M600 repeated 2x when enqueued to front
@@ -5616,6 +5631,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		fsensor_enable();
 		fsensor_restore_print_and_continue();
 	  }
+
 #endif //PAT9125
         
     }
@@ -6351,7 +6367,12 @@ void kill(const char *full_screen_message, unsigned char id)
   }
   cli();   // disable interrupts
   suicide();
-  while(1) { /* Intentionally left empty */ } // Wait for reset
+  while(1)
+  {
+	wdt_reset();
+	  /* Intentionally left empty */
+	
+  } // Wait for reset
 }
 
 void Stop()

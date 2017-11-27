@@ -511,7 +511,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // For example, the Prusa i3 MK2 with 16 microsteps per full step has Z stepping of 400 microsteps per mm.
 // At 400 microsteps per mm, a full step lifts the Z axis by 0.04mm, and a stepper driver cycle is 0.16mm.
 // The following example, 12 * (4 * 16 / 400) = 12 * 0.16mm = 1.92mm.
-#define UVLO_Z_AXIS_SHIFT 1.92
+//#define UVLO_Z_AXIS_SHIFT 1.92
+#define UVLO_Z_AXIS_SHIFT 0.64
 // If power panic occured, and the current temperature is higher then target temperature before interrupt minus this offset, print will be recovered automatically. 
 #define AUTOMATIC_UVLO_BED_TEMP_OFFSET 5 
 
