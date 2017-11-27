@@ -16,7 +16,7 @@
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK3"
 
 // Electronics
-#define MOTHERBOARD BOARD_EINY_0_4a
+#define MOTHERBOARD BOARD_EINSY_0_4a
 
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
