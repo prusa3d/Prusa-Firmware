@@ -56,6 +56,11 @@ uint32_t tmc2130_sg_pos[4] = {0, 0, 0, 0};
 
 uint8_t sg_homing_axes_mask = 0x00;
 
+uint8_t tmc2130_sg_meassure = 0xff;
+uint16_t tmc2130_sg_meassure_cnt = 0;
+uint32_t tmc2130_sg_meassure_val = 0;
+
+
 bool tmc2130_sg_stop_on_crash = true;
 bool tmc2130_sg_crash = false;
 uint8_t tmc2130_diag_mask = 0x00;
@@ -285,7 +290,16 @@ bool tmc2130_update_sg()
 //	uint16_t tstep = tmc2130_rd_TSTEP(tmc2130_cs[0]);
 //	MYSERIAL.print("TSTEP_X=");
 //	MYSERIAL.println((int)tstep);
-	
+	if (tmc2130_sg_meassure <= E_AXIS)
+	{
+		uint8_t cs = tmc2130_cs[tmc2130_sg_meassure];
+		uint16_t sg = tmc2130_rd_DRV_STATUS(cs) & 0x3ff;
+		tmc2130_sg_meassure_val += sg;
+		tmc2130_sg_meassure_cnt++;
+
+//		printf_P(PSTR("tmc2130_update_sg - meassure - sg=%d\n"), sg);
+		return true;
+	}
 #ifdef TMC2130_SG_HOMING_SW_XY
 	if (sg_homing_axes_mask & X_AXIS_MASK) tmc2130_update_sg_axis(X_AXIS);
 	if (sg_homing_axes_mask & Y_AXIS_MASK) tmc2130_update_sg_axis(Y_AXIS);
@@ -429,6 +443,20 @@ void tmc2130_home_restart(uint8_t axis)
 	tmc2130_sg_pos[axis] = st_get_position(axis);
 	tmc2130_axis_stalled[axis] = false;
 }
+
+void tmc2130_sg_meassure_start(uint8_t axis)
+{
+	tmc2130_sg_meassure = axis;
+	tmc2130_sg_meassure_cnt = 0;
+	tmc2130_sg_meassure_val = 0;
+}
+
+uint16_t tmc2130_sg_meassure_stop()
+{
+	tmc2130_sg_meassure = 0xff;
+	return tmc2130_sg_meassure_val / tmc2130_sg_meassure_cnt;
+}
+
 
 bool tmc2130_wait_standstill_xy(int timeout)
 {
@@ -741,11 +769,11 @@ uint8_t tmc2130_txrx(uint8_t cs, uint8_t addr, uint32_t wval, uint32_t* rval)
 
 void tmc2130_eeprom_load_config()
 {
-	
 }
 
 void tmc2130_eeprom_save_config()
 {
+
 }
 
 

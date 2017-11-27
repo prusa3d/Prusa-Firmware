@@ -4,7 +4,8 @@
 use strict;
 use warnings;
 
-my @langs = ("en","cz","it","es","de");
+#my @langs = ("en","cz","it","es","de");
+my @langs = ("en","cz");
 
 sub parselang 
 {

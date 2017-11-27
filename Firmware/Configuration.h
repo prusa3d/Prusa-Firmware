@@ -9,7 +9,7 @@
 
 // Firmware version
 #define FW_version "3.0.12-RC2"
-#define FW_build   111
+#define FW_build   113
 //#define FW_build   --BUILD-NUMBER--
 #define FW_version_build FW_version " b" STR(FW_build)
 
@@ -103,6 +103,9 @@
 #define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4) //float for skew backup
 
 #define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
+
+#define EEPROM_BELTSTATUS_X (EEPROM_WIZARD_ACTIVE - 2) //uint16
+#define EEPROM_BELTSTATUS_Y (EEPROM_BELTSTATUS_X - 2) //uint16
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
