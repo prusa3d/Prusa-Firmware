@@ -1091,7 +1091,7 @@ void setup()
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
-  else if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
+  if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
 	  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
 		  calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
 		  // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
