@@ -9,7 +9,7 @@
 
 // Firmware version
 #define FW_version "3.0.12-RC2"
-#define FW_build   113
+#define FW_build   114
 //#define FW_build   --BUILD-NUMBER--
 #define FW_version_build FW_version " b" STR(FW_build)
 

@@ -1437,6 +1437,8 @@ static void lcd_menu_extruder_info()
 {
     int fan_speed_RPM[2];
     
+    pat9125_update();
+    
     fan_speed_RPM[0] = 60*fan_speed[0];
     fan_speed_RPM[1] = 60*fan_speed[1];
     
@@ -1474,11 +1476,25 @@ static void lcd_menu_extruder_info()
     lcd.print(itostr3(pat9125_y));
     
     // Display Light intensity from Filament sensor
+    /* Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
+     value ranges from 0(darkest) to 255(brightest). */
     lcd.setCursor(0, 3);
     
-    lcd.print("Intensity:          ");
-    lcd.setCursor(12, 3);
+    lcd.print("Int:             ");
+    lcd.setCursor(5, 3);
     lcd.print(itostr3(pat9125_b));
+    
+    // Display LASER shutter time from Filament sensor
+    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chip’s internal
+     auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
+     When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to
+     46. */
+    
+    lcd.setCursor(10, 3);
+    
+    lcd.print("Shut:    ");
+    lcd.setCursor(15, 3);
+    lcd.print(itostr3(pat9125_s));
 
     
     if (lcd_clicked())
