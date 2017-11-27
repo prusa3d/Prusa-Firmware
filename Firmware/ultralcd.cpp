@@ -6136,6 +6136,7 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)
 {
+	MYSERIAL.println(filename);
   card.chdir(filename);
   encoderPosition = 0;
 }

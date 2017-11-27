@@ -284,6 +284,7 @@ bool SdBaseFile::getFilename(char* name) {
     name[0] = '/';
     name[1] = '\0';
     return true;
+	dir_level = 0;
   }
   // cache entry
   dir_t* p = cacheDirEntry(SdVolume::CACHE_FOR_READ);
