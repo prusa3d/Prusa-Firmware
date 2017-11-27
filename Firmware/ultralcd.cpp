@@ -6134,13 +6134,15 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
 
   uint8_t depth = (uint8_t)card.getWorkDirDepth();
 
-  char dir_name[9];
+ //char dir_name[9];
 
   for (uint8_t i = 0; i < depth; i++) {
-//	  card.getDirName(dir_name, i + 1);
-	  MYSERIAL.println(dir_name);
+	  //card.getDirName(dir_name, i + 1);
+	  //dir_name[8] = '\0';
+	  //MYSERIAL.println(dir_name);
 	  for (int j = 0; j < 8; j++) {
 		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8*i, dir_names[i][j]);
+		  //eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_name[j]);
 	  }
 
   }
