@@ -553,14 +553,14 @@ const char * const MSG_FACTOR_LANG_TABLE[1] PROGMEM = {
 	MSG_FACTOR_EN
 };
 
-const char MSG_FANS_CHECK_OFF_EN[] PROGMEM = "Fans check [OFF]";
+const char MSG_FANS_CHECK_OFF_EN[] PROGMEM = "Fans check  [off]";
 const char MSG_FANS_CHECK_OFF_CZ[] PROGMEM = "Kontr. vent.[vyp]";
 const char * const MSG_FANS_CHECK_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FANS_CHECK_OFF_EN,
 	MSG_FANS_CHECK_OFF_CZ
 };
 
-const char MSG_FANS_CHECK_ON_EN[] PROGMEM = "Fans check [ON]";
+const char MSG_FANS_CHECK_ON_EN[] PROGMEM = "Fans check   [on]";
 const char MSG_FANS_CHECK_ON_CZ[] PROGMEM = "Kontr. vent.[zap]";
 const char * const MSG_FANS_CHECK_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FANS_CHECK_ON_EN,
@@ -1859,15 +1859,15 @@ const char * const MSG_TEMP_CALIBRATION_DONE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_DONE_CZ
 };
 
-const char MSG_TEMP_CALIBRATION_OFF_EN[] PROGMEM = "Temp. cal. [OFF]";
-const char MSG_TEMP_CALIBRATION_OFF_CZ[] PROGMEM = "Tepl. kal. [OFF]";
+const char MSG_TEMP_CALIBRATION_OFF_EN[] PROGMEM = "Temp. cal.   [off]";
+const char MSG_TEMP_CALIBRATION_OFF_CZ[] PROGMEM = "Tepl. kal.  [vyp]";
 const char * const MSG_TEMP_CALIBRATION_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_OFF_EN,
 	MSG_TEMP_CALIBRATION_OFF_CZ
 };
 
-const char MSG_TEMP_CALIBRATION_ON_EN[] PROGMEM = "Temp. cal. [ON]";
-const char MSG_TEMP_CALIBRATION_ON_CZ[] PROGMEM = "Tepl. kal. [ON]";
+const char MSG_TEMP_CALIBRATION_ON_EN[] PROGMEM = "Temp. cal.    [on]";
+const char MSG_TEMP_CALIBRATION_ON_CZ[] PROGMEM = "Tepl. kal.  [zap]";
 const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_ON_EN,
 	MSG_TEMP_CALIBRATION_ON_CZ

@@ -3655,11 +3655,6 @@ static void lcd_settings_menu()
 	  MENU_ITEM(function, MSG_FANS_CHECK_OFF, lcd_set_fan_check);
   }
 
-  if (SilentModeMenu == 0) {
-    MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
-  } else {
-    MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
-  }
 
   if (SilentModeMenu == 0) {
     if (CrashDetectMenu == 0) {
@@ -3674,7 +3669,12 @@ static void lcd_settings_menu()
   else {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_ON, lcd_temp_calibration_set);
   }
-
+  if (SilentModeMenu == 0) {
+	  MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
+  }
+  else {
+	  MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
+  }
 	if (!isPrintPaused && !homing_flag)
 	{
 		MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);
