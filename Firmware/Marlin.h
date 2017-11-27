@@ -350,6 +350,8 @@ extern bool mesh_bed_run_from_menu;
 
 extern float distance_from_min[2];
 
+extern char dir_names[3][9];
+
 extern void calculate_volumetric_multipliers();
 
 // Similar to the default Arduino delay function, 
