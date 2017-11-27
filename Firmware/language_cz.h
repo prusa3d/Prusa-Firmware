@@ -349,3 +349,4 @@
 #define MSG_STEEL_SHEET_CHECK				"Je tiskovy plat na heatbed?"
 #define MSG_REMOVE_STEEL_SHEET				"Odstrante tiskovy plat z heatbed prosim."
 #define MSG_PLACE_STEEL_SHEET				"Umistete prosim tiskovy plat na heatbed"
+#define MSG_RECOVER_PRINT					"Detekovan vypadek proudu.Obnovit tisk?"

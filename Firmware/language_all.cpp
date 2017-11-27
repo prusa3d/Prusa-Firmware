@@ -1336,8 +1336,10 @@ const char * const MSG_RECOVERING_PRINT_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_RECOVER_PRINT_EN[] PROGMEM = "Blackout occurred. Recover print?";
-const char * const MSG_RECOVER_PRINT_LANG_TABLE[1] PROGMEM = {
-	MSG_RECOVER_PRINT_EN
+const char MSG_RECOVER_PRINT_CZ[] PROGMEM = "Detekovan vypadek proudu.Obnovit tisk?";
+const char * const MSG_RECOVER_PRINT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_RECOVER_PRINT_EN,
+	MSG_RECOVER_PRINT_CZ
 };
 
 const char MSG_RECTRACT_EN[] PROGMEM = "Rectract";
