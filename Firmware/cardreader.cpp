@@ -233,6 +233,15 @@ void CardReader::openLogFile(char* name)
   openFile(name, false);
 }
 
+void CardReader::getDirName(char* name, uint8_t level)
+{	
+		workDirParents[level].getFilename(name);
+}
+
+uint16_t CardReader::getWorkDirDepth() {
+	return workDirDepth;
+}
+
 void CardReader::getAbsFilename(char *t)
 {
   uint8_t cnt=0;
@@ -635,7 +644,7 @@ void CardReader::updir()
   {
     --workDirDepth;
     workDir = workDirParents[0];
-    int d;
+	int d;
     for (int d = 0; d < workDirDepth; d++)
       workDirParents[d] = workDirParents[d+1];
   }

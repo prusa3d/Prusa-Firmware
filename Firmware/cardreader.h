@@ -33,6 +33,8 @@ public:
   uint16_t getnrfilenames();
   
   void getAbsFilename(char *t);
+  void getDirName(char* name, uint8_t level);
+  uint16_t getWorkDirDepth();
   
 
   void ls();

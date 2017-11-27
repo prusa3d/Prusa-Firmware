@@ -320,6 +320,7 @@ bool fan_state[2];
 int fan_edge_counter[2];
 int fan_speed[2];
 
+char dir_names[3][9];
 
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
@@ -7278,11 +7279,27 @@ void restore_print_from_eeprom() {
 	char cmd[30];
 	char* c;
 	char filename[13];
+	uint8_t depth = 0;
+	char dir_name[9];
 
 	fan_speed_rec = eeprom_read_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED);
 	EEPROM_read_B(EEPROM_UVLO_FEEDRATE, &feedrate_rec);
 	SERIAL_ECHOPGM("Feedrate:");
 	MYSERIAL.println(feedrate_rec);
+
+	depth = eeprom_read_byte((uint8_t*)EEPROM_DIR_DEPTH);
+	
+	MYSERIAL.println(int(depth));
+	for (int i = 0; i < depth; i++) {
+		for (int j = 0; j < 8; j++) {
+			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
+			
+		}
+		dir_name[8] = '\0';
+		MYSERIAL.println(dir_name);
+		card.chdir(dir_name);
+	}
+
 	for (int i = 0; i < 8; i++) {
 		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
 		

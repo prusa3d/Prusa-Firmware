@@ -6153,11 +6153,33 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
   for (int i = 0; i < 8; i++) {
 	  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, filename[i]);
   }
+
+  uint8_t depth = (uint8_t)card.getWorkDirDepth();
+
+ //char dir_name[9];
+
+  for (uint8_t i = 0; i < depth; i++) {
+	  //card.getDirName(dir_name, i + 1);
+	  //dir_name[8] = '\0';
+	  //MYSERIAL.println(dir_name);
+	  for (int j = 0; j < 8; j++) {
+		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8*i, dir_names[i][j]);
+		  //eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_name[j]);
+	  }
+
+  }
+  //MYSERIAL.println(int(depth));
+  eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
+
   enquecommand_P(PSTR("M24"));
   lcd_return_to_status();
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)
 {
+	uint8_t depth = (uint8_t)card.getWorkDirDepth();
+
+	strcpy(dir_names[depth], filename);
+	MYSERIAL.println(dir_names[depth]);
   card.chdir(filename);
   encoderPosition = 0;
 }
