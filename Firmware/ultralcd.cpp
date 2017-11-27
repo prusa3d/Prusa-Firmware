@@ -1114,14 +1114,14 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 Z10 F1300.000"));
 			enquecommand_P(PSTR("G1 X10 Y180 F4000")); //home X axis
 			enquecommand_P(PSTR("M84"));// disable motors
+			lcd_timeoutToStatus = millis() - 1; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 			lcd_commands_step = 1;
 		}
 		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_setstatuspgm(WELCOME_MSG);
 			lcd_commands_step = 0;
-			lcd_commands_type = 0;
-			menuExiting = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by going to status screen
+			lcd_commands_type = 0;			
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 				lcd_wizard(10);
 			}
