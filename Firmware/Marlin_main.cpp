@@ -1121,7 +1121,7 @@ void setup()
 		  lcd_update_enable(true);
 	  }
 	  else if (calibration_status() == CALIBRATION_STATUS_CALIBRATED && temp_cal_active == true && calibration_status_pinda() == false) {
-		  lcd_show_fullscreen_message_and_wait_P(MSG_PINDA_NOT_CALIBRATED);
+		  //lcd_show_fullscreen_message_and_wait_P(MSG_PINDA_NOT_CALIBRATED);
 		  lcd_update_enable(true);
 	  }
 	  else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
@@ -7045,6 +7045,7 @@ extern uint32_t sdpos_atomic;
 void uvlo_() 
 {
 	unsigned long time_start = millis();
+	bool sd_print = card.sdprinting;
     // Conserve power as soon as possible.
     disable_x();
     disable_y();
@@ -7127,7 +7128,7 @@ void uvlo_()
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
     // Finaly store the "power outage" flag.
-    eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
+	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 
     st_synchronize();
     SERIAL_ECHOPGM("stps");
