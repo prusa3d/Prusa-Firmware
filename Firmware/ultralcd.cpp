@@ -1659,7 +1659,7 @@ static void lcd_support_menu()
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
-	lcd_goto_menu(lcd_support_menu, 15);
+	lcd_goto_menu(lcd_settings_menu, 8);
 }
 
 void lcd_unLoadFilament()
@@ -3233,7 +3233,7 @@ static void lcd_crash_mode_set()
     }else{
         crashdet_enable();
     }
-	lcd_goto_menu(lcd_settings_menu, 7);
+	lcd_goto_menu(lcd_settings_menu, 9);
     
 }
 
@@ -3308,7 +3308,7 @@ void lcd_temp_calibration_set() {
 	temp_cal_active = !temp_cal_active;
 	eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
 	digipot_init();
-	lcd_goto_menu(lcd_pinda_calibration_menu, 2);
+	lcd_goto_menu(lcd_settings_menu, 10);
 }
 
 void lcd_calibrate_pinda() {
