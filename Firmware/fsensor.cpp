@@ -41,20 +41,23 @@ int16_t fsensor_st_cnt = 0;
 uint8_t fsensor_log = 1;
 
 
-void fsensor_enable()
+bool fsensor_enable()
 {
-	MYSERIAL.println("fsensor_enable");
-	fsensor_enabled = true;
+	puts_P(PSTR("fsensor_enable\n"));
+	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
+    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
+	fsensor_enabled = pat9125?true:false;
 //	fsensor_ignore_error = true;
 	fsensor_M600 = false;
 	fsensor_err_cnt = 0;
-	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0xFF); 
-	FSensorStateMenu = 1;
+	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled?0xFF:0x00); 
+	FSensorStateMenu = fsensor_enabled?true:false;
+	return fsensor_enabled;
 }
 
 void fsensor_disable()
 {
-	MYSERIAL.println("fsensor_disable");
+	puts_P(PSTR("fsensor_disable\n"));
 	fsensor_enabled = false;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
 	FSensorStateMenu = 0;

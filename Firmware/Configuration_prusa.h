@@ -292,6 +292,13 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif
 
 /*------------------------------------
+ PAT9125 SETTINGS
+ *------------------------------------*/
+
+#define PAT9125_XRES			200
+#define PAT9125_YRES			200
+
+/*------------------------------------
  BED SETTINGS
  *------------------------------------*/
 
