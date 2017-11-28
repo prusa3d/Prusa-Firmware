@@ -8,7 +8,7 @@ extern void fsensor_stop_and_save_print();
 extern void fsensor_restore_print_and_continue();
 
 //enable/disable
-extern void fsensor_enable();
+extern bool fsensor_enable();
 extern void fsensor_disable();
 
 //update (perform M600 on filament runout)

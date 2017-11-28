@@ -905,20 +905,20 @@ void setup()
 #endif //TMC2130
 
 #ifdef PAT9125
-    MYSERIAL.print("PAT9125_init:");
-	int pat9125 = pat9125_init(200, 200);
-	MYSERIAL.println(pat9125);
+	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
+    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	if (!pat9125) fsensor = 0; //disable sensor
+    puts_P(PSTR("FSensor "));
 	if (fsensor)
 	{
+		puts_P(PSTR("ENABLED\n"));
 		fsensor_enable();
-	    MYSERIAL.println("Filament Sensor ENABLED!");
 	}
 	else
 	{
+	    puts_P(PSTR("DISABLED\n"));
 		fsensor_disable();
-	    MYSERIAL.println("Filament Sensor DISABLED");
 	}
 
 #endif //PAT9125

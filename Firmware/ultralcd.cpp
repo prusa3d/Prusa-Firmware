@@ -110,7 +110,7 @@ int8_t FSensorStateMenu = 1;
 
 int8_t CrashDetectMenu = 1;
 
-extern void fsensor_enable();
+extern bool fsensor_enable();
 extern void fsensor_disable();
 
 extern void crashdet_enable();
@@ -3271,7 +3271,8 @@ static void lcd_fsensor_state_set()
     if (FSensorStateMenu==0) {
         fsensor_disable();
     }else{
-        fsensor_enable();
+        if (!fsensor_enable());
+			FSensorStateMenu = 0;
     }
 	if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 7);
 	else lcd_goto_menu(lcd_settings_menu, 7);
