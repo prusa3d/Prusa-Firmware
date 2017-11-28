@@ -1953,6 +1953,13 @@ const char * const MSG_UNLOAD_FILAMENT_4_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_4_CZ
 };
 
+const char MSG_UNLOAD_SUCCESSFULL_EN[] PROGMEM = "Repeat unloading filament?";
+const char MSG_UNLOAD_SUCCESSFULL_CZ[] PROGMEM = "Opakovat vysunuti filamentu?";
+const char * const MSG_UNLOAD_SUCCESSFULL_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_UNLOAD_SUCCESSFULL_EN,
+	MSG_UNLOAD_SUCCESSFULL_CZ
+};
+
 const char MSG_USB_PRINTING_EN[] PROGMEM = "USB printing  ";
 const char MSG_USB_PRINTING_CZ[] PROGMEM = "Tisk z USB  ";
 const char * const MSG_USB_PRINTING_LANG_TABLE[LANG_NUM] PROGMEM = {

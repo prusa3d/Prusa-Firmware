@@ -5428,57 +5428,64 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 		}
 		WRITE(BEEPER, LOW);
-		KEEPALIVE_STATE(IN_HANDLER);
+		
+		lcd_change_fil_state = 0;
+		while (lcd_change_fil_state == 0) {
+			lcd_display_message_fullscreen_P(MSG_UNLOADING_FILAMENT);
+			KEEPALIVE_STATE(IN_HANDLER);
+			custom_message = true;
+			lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
 
-		custom_message = true;
-		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
-
-        // Unload filament
-        if(code_seen('L'))
-        {
-          target[E_AXIS]+= code_value();
-        }
-        else
-        {
-			#ifdef SNMM
-
-			#else
-				#ifdef FILAMENTCHANGE_FINALRETRACT
-							target[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
-				#endif
-			#endif // SNMM
-        }
-
+			// Unload filament
+			if (code_seen('L'))
+			{
+				target[E_AXIS] += code_value();
+			}
+			else
+			{
 #ifdef SNMM
-		target[E_AXIS] += 12;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500, active_extruder);
-		target[E_AXIS] += 6;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
-		target[E_AXIS] += (FIL_LOAD_LENGTH * -1);
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
-		st_synchronize();
-		target[E_AXIS] += (FIL_COOLING);
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-		target[E_AXIS] += (FIL_COOLING*-1);
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-		target[E_AXIS] += (bowden_length[snmm_extruder] *-1);
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
-		st_synchronize();
 
 #else
-//		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500/60, active_extruder);
+#ifdef FILAMENTCHANGE_FINALRETRACT
+				target[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
+#endif
 #endif // SNMM
-		     
+			}
 
-        //finish moves
-        st_synchronize();
-        //disable extruder steppers so filament can be removed
-        disable_e0();
-        disable_e1();
-        disable_e2();
-        delay(100);
-        
+#ifdef SNMM
+			target[E_AXIS] += 12;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500, active_extruder);
+			target[E_AXIS] += 6;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
+			target[E_AXIS] += (FIL_LOAD_LENGTH * -1);
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
+			st_synchronize();
+			target[E_AXIS] += (FIL_COOLING);
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+			target[E_AXIS] += (FIL_COOLING*-1);
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+			target[E_AXIS] += (bowden_length[snmm_extruder] * -1);
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
+			st_synchronize();
+
+#else
+			//		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500 / 60, active_extruder);
+#endif // SNMM
+
+
+			//finish moves
+			st_synchronize();
+			//disable extruder steppers so filament can be removed
+			disable_e0();
+			disable_e1();
+			disable_e2();
+			delay(100);
+			KEEPALIVE_STATE(PAUSED_FOR_USER);
+			lcd_change_fil_state = !lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_UNLOAD_SUCCESSFULL, false, false);
+			//lcd_return_to_status();
+			lcd_update_enable(true);
+		}
         //Wait for user to insert filament
         lcd_wait_interact();
 		//load_filament_time = millis();
