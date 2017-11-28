@@ -1281,6 +1281,13 @@ const char * const MSG_PRESS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PRESS_CZ
 };
 
+const char MSG_PRESS_TO_UNLOAD_EN[] PROGMEM = "Please press the knob to unload filament";
+const char MSG_PRESS_TO_UNLOAD_CZ[] PROGMEM = "Pro vysunuti filamentu stisknete prosim tlacitko";
+const char * const MSG_PRESS_TO_UNLOAD_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PRESS_TO_UNLOAD_EN,
+	MSG_PRESS_TO_UNLOAD_CZ
+};
+
 const char MSG_PRINTER_DISCONNECTED_EN[] PROGMEM = "Printer disconnected";
 const char * const MSG_PRINTER_DISCONNECTED_LANG_TABLE[1] PROGMEM = {
 	MSG_PRINTER_DISCONNECTED_EN

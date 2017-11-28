@@ -293,7 +293,7 @@ unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
 
-unsigned long load_filament_time;
+//unsigned long load_filament_time;
 
 bool mesh_bed_leveling_flag = false;
 bool mesh_bed_run_from_menu = false;
@@ -5386,6 +5386,50 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         }
         plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
 		st_synchronize();
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
+
+		uint8_t cnt = 0;
+		int counterBeep = 0;
+		lcd_display_message_fullscreen_P(MSG_PRESS_TO_UNLOAD);
+		while (!lcd_clicked()) {
+
+			cnt++;
+			manage_heater();
+			manage_inactivity(true);
+
+			/*#ifdef SNMM
+			target[E_AXIS] += 0.002;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
+
+			#endif // SNMM*/
+
+			if (cnt == 0)
+			{
+#if BEEPER > 0
+				if (counterBeep == 500) {
+					counterBeep = 0;
+				}
+				SET_OUTPUT(BEEPER);
+				if (counterBeep == 0) {
+					WRITE(BEEPER, HIGH);
+				}
+				if (counterBeep == 20) {
+					WRITE(BEEPER, LOW);
+				}
+				counterBeep++;
+#else
+#if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
+				lcd_buzz(1000 / 6, 100);
+#else
+				lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS, LCD_FEEDBACK_FREQUENCY_HZ);
+#endif
+#endif
+			}
+
+		}
+		WRITE(BEEPER, LOW);
+		KEEPALIVE_STATE(IN_HANDLER);
+
 		custom_message = true;
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
 
@@ -5436,14 +5480,12 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         delay(100);
         
         //Wait for user to insert filament
-        uint8_t cnt=0;
-        int counterBeep = 0;
         lcd_wait_interact();
-		load_filament_time = millis();
+		//load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(!lcd_clicked()){
 
-		  cnt++;
+
           manage_heater();
           manage_inactivity(true);
 
@@ -5453,31 +5495,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 #endif // SNMM*/
 
-          if(cnt==0)
-          {
-          #if BEEPER > 0
-            if (counterBeep== 500){
-              counterBeep = 0;  
-            }
-            SET_OUTPUT(BEEPER);
-            if (counterBeep== 0){
-              WRITE(BEEPER,HIGH);
-            }			
-            if (counterBeep== 20){
-              WRITE(BEEPER,LOW);
-            }
-            counterBeep++;
-          #else
-			   #if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
-              lcd_buzz(1000/6,100);
-			   #else
-			     lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS,LCD_FEEDBACK_FREQUENCY_HZ);
-			   #endif
-          #endif
-          }
-
         }
-		WRITE(BEEPER, LOW);
+		//WRITE(BEEPER, LOW);
 		KEEPALIVE_STATE(IN_HANDLER);
 
 #ifdef SNMM
