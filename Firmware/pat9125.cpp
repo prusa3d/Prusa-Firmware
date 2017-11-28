@@ -39,6 +39,8 @@ int pat9125_init(unsigned char xres, unsigned char yres)
 	pat9125_yres = yres;
 	pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
 	pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
+//	pat9125_PID1 = 0x31;
+//	pat9125_PID2 = 0x91;
 	if ((pat9125_PID1 != 0x31) || (pat9125_PID2 != 0x91))
 	{
 		return 0;
