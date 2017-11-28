@@ -350,3 +350,5 @@
 #define MSG_REMOVE_STEEL_SHEET				"Odstrante tiskovy plat z heatbed prosim."
 #define MSG_PLACE_STEEL_SHEET				"Umistete prosim tiskovy plat na heatbed"
 #define MSG_RECOVER_PRINT					"Detekovan vypadek proudu.Obnovit tisk?"
+#define MSG_PRESS_TO_UNLOAD					"Pro vysunuti filamentu stisknete prosim tlacitko"	
+#define MSG_UNLOAD_SUCCESSFULL				"Opakovat vysunuti filamentu?"
