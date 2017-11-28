@@ -7148,6 +7148,8 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
+    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
     // Store the current feed rate, temperatures and fan speed.
     EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
@@ -7255,6 +7257,15 @@ void recover_print(uint8_t automatic) {
         enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure 
     } 
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
+	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
+	{
+		float extruder_abs_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
+		enquecommand_P(PSTR("M82")); //E axis abslute mode
+	    sprintf_P(cmd, PSTR("G92 E"));
+		dtostrf(extruder_abs_pos, 6, 3, cmd + strlen(cmd));
+		enquecommand(cmd); 
+	}
+
   // Mark the power panic status as inactive.
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 	/*while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
