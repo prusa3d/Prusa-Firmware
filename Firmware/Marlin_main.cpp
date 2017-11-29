@@ -7108,7 +7108,8 @@ void uvlo_()
     planner_abort_hard();
 
     // Store the current extruder position.
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
+   // eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
+	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
 
     // Clean the input command queue.
@@ -7259,16 +7260,6 @@ void recover_print(uint8_t automatic) {
         enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure 
     } 
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
-	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
-	{
-		float extruder_abs_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
-		enquecommand_P(PSTR("M82")); //E axis abslute mode
-//		current_position[E_AXIS] = extruder_abs_pos;
-//		plan_set_e_position(extruder_abs_pos);
-	    sprintf_P(cmd, PSTR("G92 E"));
-		dtostrf(extruder_abs_pos, 6, 3, cmd + strlen(cmd));
-		enquecommand(cmd); 
-	}
 
   // Mark the power panic status as inactive.
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -7389,9 +7380,9 @@ void restore_print_from_eeprom() {
 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
 	SERIAL_ECHOPGM("Position read from eeprom:");
 	MYSERIAL.println(position);
-
+	
   // E axis relative mode.
-	enquecommand_P(PSTR("M83"));
+	 enquecommand_P(PSTR("M83"));
   // Move to the XY print position in logical coordinates, where the print has been killed.
 	strcpy_P(cmd, PSTR("G1 X")); strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0))));
 	strcat_P(cmd, PSTR(" Y"));   strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4))));
@@ -7405,6 +7396,16 @@ void restore_print_from_eeprom() {
   // Set the feedrate saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
 	enquecommand(cmd);
+	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
+	{
+		float extruder_abs_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
+		enquecommand_P(PSTR("M82")); //E axis abslute mode
+									 //		current_position[E_AXIS] = extruder_abs_pos;
+									 //		plan_set_e_position(extruder_abs_pos);
+		sprintf_P(cmd, PSTR("G92 E"));
+		dtostrf(extruder_abs_pos, 6, 3, cmd + strlen(cmd));
+		enquecommand(cmd);
+	}
   // Set the fan speed saved at the power panic.
 	strcpy_P(cmd, PSTR("M106 S"));
 	strcat(cmd, itostr3(int(fan_speed_rec)));
