@@ -50,8 +50,8 @@ bool fsensor_enable()
 //	fsensor_ignore_error = true;
 	fsensor_M600 = false;
 	fsensor_err_cnt = 0;
-	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled?0xFF:0x00); 
-	FSensorStateMenu = fsensor_enabled?true:false;
+	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled?0x01:0x00); 
+	FSensorStateMenu = fsensor_enabled?1:0;
 	return fsensor_enabled;
 }
 

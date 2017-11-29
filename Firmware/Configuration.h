@@ -9,7 +9,7 @@
 
 // Firmware version
 #define FW_version "3.1.1-RC1"
-#define FW_build   117
+#define FW_build   121
 //#define FW_build   --BUILD-NUMBER--
 #define FW_version_build FW_version " b" STR(FW_build)
 
@@ -66,6 +66,8 @@
 #define EEPROM_FAN_CHECK_ENABLED		(EEPROM_UVLO_FAN_SPEED - 1)
 #define EEPROM_UVLO_MESH_BED_LEVELING     (EEPROM_FAN_CHECK_ENABLED - 9*2)
 #define EEPROM_UVLO_Z_MICROSTEPS     (EEPROM_UVLO_MESH_BED_LEVELING - 2)
+#define EEPROM_UVLO_E_ABS            (EEPROM_UVLO_Z_MICROSTEPS - 1)
+#define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4) //float for current position in E
 
 // Crash detection mode EEPROM setting 
 #define EEPROM_CRASH_DET       (EEPROM_UVLO_MESH_BED_LEVELING-12) 

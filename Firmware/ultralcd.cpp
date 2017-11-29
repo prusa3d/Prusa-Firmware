@@ -3271,8 +3271,7 @@ static void lcd_fsensor_state_set()
     if (FSensorStateMenu==0) {
         fsensor_disable();
     }else{
-        if (!fsensor_enable());
-			FSensorStateMenu = 0;
+        fsensor_enable();
     }
 	if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 7);
 	else lcd_goto_menu(lcd_settings_menu, 7);

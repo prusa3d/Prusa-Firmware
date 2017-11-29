@@ -7107,6 +7107,10 @@ void uvlo_()
     // are in action.
     planner_abort_hard();
 
+    // Store the current extruder position.
+    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
+
     // Clean the input command queue.
     cmdqueue_reset();
     card.sdprinting = false;
@@ -7255,6 +7259,17 @@ void recover_print(uint8_t automatic) {
         enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure 
     } 
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
+	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
+	{
+		float extruder_abs_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
+		enquecommand_P(PSTR("M82")); //E axis abslute mode
+//		current_position[E_AXIS] = extruder_abs_pos;
+//		plan_set_e_position(extruder_abs_pos);
+	    sprintf_P(cmd, PSTR("G92 E"));
+		dtostrf(extruder_abs_pos, 6, 3, cmd + strlen(cmd));
+		enquecommand(cmd); 
+	}
+
   // Mark the power panic status as inactive.
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
 	/*while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
@@ -7271,6 +7286,8 @@ void recover_print(uint8_t automatic) {
 
 	SERIAL_ECHOPGM("current_position[Z_AXIS]:");
 	MYSERIAL.print(current_position[Z_AXIS]);
+	SERIAL_ECHOPGM("current_position[E_AXIS]:");
+	MYSERIAL.print(current_position[E_AXIS]);
 }
 
 void recover_machine_state_after_power_panic()
