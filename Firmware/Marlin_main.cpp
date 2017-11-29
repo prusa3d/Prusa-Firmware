@@ -7107,6 +7107,10 @@ void uvlo_()
     // are in action.
     planner_abort_hard();
 
+    // Store the current extruder position.
+    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
+
     // Clean the input command queue.
     cmdqueue_reset();
     card.sdprinting = false;
@@ -7148,8 +7152,6 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
     // Store the current feed rate, temperatures and fan speed.
     EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
@@ -7261,6 +7263,8 @@ void recover_print(uint8_t automatic) {
 	{
 		float extruder_abs_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
 		enquecommand_P(PSTR("M82")); //E axis abslute mode
+//		current_position[E_AXIS] = extruder_abs_pos;
+//		plan_set_e_position(extruder_abs_pos);
 	    sprintf_P(cmd, PSTR("G92 E"));
 		dtostrf(extruder_abs_pos, 6, 3, cmd + strlen(cmd));
 		enquecommand(cmd); 
@@ -7282,6 +7286,8 @@ void recover_print(uint8_t automatic) {
 
 	SERIAL_ECHOPGM("current_position[Z_AXIS]:");
 	MYSERIAL.print(current_position[Z_AXIS]);
+	SERIAL_ECHOPGM("current_position[E_AXIS]:");
+	MYSERIAL.print(current_position[E_AXIS]);
 }
 
 void recover_machine_state_after_power_panic()
