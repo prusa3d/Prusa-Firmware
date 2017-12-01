@@ -7107,11 +7107,6 @@ void uvlo_()
     // are in action.
     planner_abort_hard();
 
-    // Store the current extruder position.
-   // eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
-	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
-
     // Clean the input command queue.
     cmdqueue_reset();
     card.sdprinting = false;
@@ -7150,6 +7145,10 @@ void uvlo_()
     // for reaching the zero full step before powering off.
     eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS), z_microsteps);
     // Store the current position.
+	// Store the current extruder position.
+	// eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
+	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), current_position[E_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3] ? 0 : 1);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
@@ -7259,7 +7258,7 @@ void recover_print(uint8_t automatic) {
     if(automatic == 0){ 
         enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure 
     } 
-	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
+	//enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
 
   // Mark the power panic status as inactive.
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -7283,6 +7282,7 @@ void recover_print(uint8_t automatic) {
 
 void recover_machine_state_after_power_panic()
 {
+	char cmd[30];
   // 1) Recover the logical cordinates at the time of the power panic.
   // The logical XY coordinates are needed to recover the machine Z coordinate corrected by the mesh bed leveling.
   current_position[X_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0));
@@ -7291,6 +7291,12 @@ void recover_machine_state_after_power_panic()
   // The current position after power panic is moved to the next closest 0th full step.
   current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
     UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
+  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS)) {
+	  current_position[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
+	  sprintf_P(cmd, PSTR("G92 E"));
+	  dtostrf(current_position[E_AXIS], 6, 3, cmd + strlen(cmd));
+	  enquecommand(cmd);
+  }
   memcpy(destination, current_position, sizeof(destination));
 
   SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
@@ -7400,11 +7406,6 @@ void restore_print_from_eeprom() {
 	{
 		float extruder_abs_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
 		enquecommand_P(PSTR("M82")); //E axis abslute mode
-									 //		current_position[E_AXIS] = extruder_abs_pos;
-									 //		plan_set_e_position(extruder_abs_pos);
-		sprintf_P(cmd, PSTR("G92 E"));
-		dtostrf(extruder_abs_pos, 6, 3, cmd + strlen(cmd));
-		enquecommand(cmd);
 	}
   // Set the fan speed saved at the power panic.
 	strcpy_P(cmd, PSTR("M106 S"));
