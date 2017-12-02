@@ -6,7 +6,7 @@
 
 #ifdef ULTRA_LCD
 
-  void lcd_update();
+  void lcd_update(uint8_t lcdDrawUpdateOverride = 0);
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
   void lcd_update_enable(bool enable);
   void lcd_init();
@@ -14,6 +14,7 @@
   void lcd_setstatuspgm(const char* message);
   void lcd_setalertstatuspgm(const char* message);
   void lcd_reset_alert_level();
+  uint8_t get_message_level();
   void lcd_adjust_z();
   void lcd_pick_babystep();
   void lcd_alright();
@@ -26,29 +27,44 @@
   void lcd_loading_color();
   void lcd_force_language_selection();
   void lcd_sdcard_stop();
+  void lcd_sdcard_pause();
+  void lcd_print_stop();
   void prusa_statistics(int _message);
   void lcd_confirm_print();
-  
+void lcd_mylang();
   bool lcd_detected(void);
 
-  static void lcd_selftest();
+  static void lcd_selftest_v();
+  static bool lcd_selftest();
   static bool lcd_selfcheck_endstops();
+
+#ifdef TMC2130
+  static void reset_crash_det(char axis);
+  static bool lcd_selfcheck_axis_sg(char axis);
+#endif //TMC2130
   static bool lcd_selfcheck_axis(int _axis, int _travel);
   static bool lcd_selfcheck_check_heater(bool _isbed);
   static int  lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay);
   static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
+  static bool lcd_selftest_fan_dialog(int _fan);
   static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
-  static void lcd_menu_statistics();
+  void lcd_menu_statistics();
+  static bool lcd_selfcheck_pulleys(int axis);
 
-  extern void lcd_display_message_fullscreen_P(const char *msg);
+  extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
+  inline const char* lcd_display_message_fullscreen_P(const char *msg) 
+    { uint8_t nlines; return lcd_display_message_fullscreen_P(msg, nlines); }
+
   extern void lcd_wait_for_click();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
   // 0: no, 1: yes, -1: timeouted
-  extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true);
-
+  extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
+  extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
   // Ask the user to move the Z axis up to the end stoppers and let
   // the user confirm that it has been done.
-  extern bool lcd_calibrate_z_end_stop_manual();
+  #ifndef TMC2130
+  extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
+  #endif
   // Show the result of the calibration process on the LCD screen.
   extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
 
@@ -67,7 +83,7 @@
   #define LCD_ALERTMESSAGERPGM(x) lcd_setalertstatuspgm((x))
 
   #define LCD_UPDATE_INTERVAL 100
-  #define LCD_TIMEOUT_TO_STATUS 15000
+  #define LCD_TIMEOUT_TO_STATUS 30000
 
   #ifdef ULTIPANEL
   void lcd_buttons_update();
@@ -78,22 +94,32 @@
   #else
   FORCE_INLINE void lcd_buttons_update() {}
   #endif
+
+
+  // To be used in lcd_commands_type.
+  #define LCD_COMMAND_IDLE 0
+  #define LCD_COMMAND_LOAD_FILAMENT 1
+  #define LCD_COMMAND_STOP_PRINT 2
+  #define LCD_COMMAND_FARM_MODE_CONFIRM 4
+  #define LCD_COMMAND_LONG_PAUSE 5
+  #define LCD_COMMAND_LONG_PAUSE_RESUME 6
+  #define LCD_COMMAND_PID_EXTRUDER 7 
+  #define LCD_COMMAND_V2_CAL 8
+
+  extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
-
-  extern int plaPreheatHotendTemp;
-  extern int plaPreheatHPBTemp;
-  extern int plaPreheatFanSpeed;
-
-  extern int absPreheatHotendTemp;
-  extern int absPreheatHPBTemp;
-  extern int absPreheatFanSpeed;
   
-  extern bool farm_mode;
+  extern uint8_t farm_mode;
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
 
+#ifdef SNMM
+  extern uint8_t snmm_extruder;
+#endif // SNMM
+
   extern bool cancel_heatup;
+  extern bool isPrintPaused;
   
   #ifdef FILAMENT_LCD_DISPLAY
         extern unsigned long message_millis;
@@ -190,5 +216,63 @@ extern void lcd_implementation_print(int i);
 extern void lcd_implementation_print_at(uint8_t x, uint8_t y, int i);
 extern void lcd_implementation_print(float f);
 extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
+
+
+void change_extr(int extr);
+static void lcd_colorprint_change();
+static int get_ext_nr();
+static void extr_adj(int extruder);
+static void extr_adj_0();
+static void extr_adj_1();
+static void extr_adj_2();
+static void extr_adj_3();
+static void fil_load_menu();
+static void fil_unload_menu();
+static void extr_unload_0();
+static void extr_unload_1();
+static void extr_unload_2();
+static void extr_unload_3();
+static void lcd_disable_farm_mode();
+static void lcd_set_fan_check();
+void extr_unload_all(); 
+void extr_unload_used();
+void extr_unload();
+static char snmm_stop_print_menu();
+static float count_e(float layer_heigth, float extrusion_width, float extrusion_length);
+static void lcd_babystep_z();
+
+void stack_error();
+static void lcd_ping_allert();
+void lcd_printer_connected();
+void lcd_ping();
+
+void lcd_calibrate_extruder();
+void lcd_farm_sdcard_menu();
+
+//void getFileDescription(char *name, char *description);
+
+void lcd_farm_sdcard_menu_w();
+//void get_description();
+
+//void lcd_wait_for_cool_down();
+void adjust_bed_reset();
+void lcd_extr_cal_reset();
+
+union MenuData;
+
+void bowden_menu();
+char reset_menu();
+char choose_extruder_menu();
+
+void lcd_pinda_calibration_menu();
+void lcd_calibrate_pinda();
+void lcd_temp_calibration_set();
+
+void display_loading();
+
+void lcd_service_mode_show_result();
+
+void lcd_wizard();
+void lcd_wizard(int state);
 
 #endif //ULTRALCD_H

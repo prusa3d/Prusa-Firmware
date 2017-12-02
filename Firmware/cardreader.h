@@ -14,6 +14,7 @@ public:
   
   void initsd();
   void write_command(char *buf);
+  void write_command_no_newline(char *buf);
   //files auto[0-9].g on the sd card are performed in a row
   //this is to delay autostart and hence the initialisaiton of the sd card to some seconds after the normal init, so the device is available quick after a reset
 
@@ -32,6 +33,8 @@ public:
   uint16_t getnrfilenames();
   
   void getAbsFilename(char *t);
+  void getDirName(char* name, uint8_t level);
+  uint16_t getWorkDirDepth();
   
 
   void ls();
@@ -46,7 +49,10 @@ public:
   FORCE_INLINE void setIndex(long index) {sdpos = index;file.seekSet(index);};
   FORCE_INLINE uint8_t percentDone(){if(!isFileOpen()) return 0; if(filesize) return sdpos/((filesize+99)/100); else return 0;};
   FORCE_INLINE char* getWorkDirName(){workDir.getFilename(filename);return filename;};
+  FORCE_INLINE uint32_t get_sdpos() { if (!isFileOpen()) return 0; else return(sdpos); };
 
+  bool ToshibaFlashAir_isEnabled() const { return card.getFlashAirCompatible(); }
+  void ToshibaFlashAir_enable(bool enable) { card.setFlashAirCompatible(enable); }
   bool ToshibaFlashAir_GetIP(uint8_t *ip);
 
 public:

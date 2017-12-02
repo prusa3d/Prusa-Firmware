@@ -103,6 +103,15 @@ private:
   uint8_t _initialized;
 
   uint8_t _numlines,_currline;
+
+  uint8_t _escape[8];
+  size_t escape_write(uint8_t value);
+  
 };
+
+#define ESC_2J     "\x1b[2J"
+#define ESC_25h    "\x1b[?25h"
+#define ESC_25l    "\x1b[?25l"
+#define ESC_H(c,r) "\x1b["#r";"#c"H"
 
 #endif

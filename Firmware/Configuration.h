@@ -4,20 +4,27 @@
 #include "boards.h"
 #include "Configuration_prusa.h"
 
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
 // Firmware version
-#define FW_version "3.0.5"
+#define FW_version "3.1.1-RC1"
+#define FW_build   121
+//#define FW_build   --BUILD-NUMBER--
+#define FW_version_build FW_version " b" STR(FW_build)
+
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
-
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
+#define EEPROM_TOP 4096
 #define EEPROM_SILENT 4095
 #define EEPROM_LANG 4094
 #define EEPROM_BABYSTEP_X 4092
 #define EEPROM_BABYSTEP_Y 4090
 #define EEPROM_BABYSTEP_Z 4088
-#define EEPROM_BABYSTEP_Z_SET 4087
+#define EEPROM_CALIBRATION_STATUS 4087
 #define EEPROM_BABYSTEP_Z0 4085
 #define EEPROM_FILAMENTUSED 4081
 // uint32_t
@@ -30,17 +37,92 @@
 // Offsets of the Z heiths of the calibration points from the first point.
 // The offsets are saved as 16bit signed int, scaled to tenths of microns.
 #define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
+#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-1)
+#define EEPROM_FARM_NUMBER (EEPROM_FARM_MODE-3)
 
-#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-4)
+// Correction of the bed leveling, in micrometers.
+// Maximum 50 micrometers allowed.
+// Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
+#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
+#define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
+#define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
+#define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
+#define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
+#define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
+#define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1)
+#define EEPROM_PROBE_TEMP_SHIFT (EEPROM_PRINT_FLAG - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
+#define EEPROM_TEMP_CAL_ACTIVE (EEPROM_PROBE_TEMP_SHIFT - 1)
+#define EEPROM_BOWDEN_LENGTH (EEPROM_TEMP_CAL_ACTIVE - 2*4) //4 x int for bowden lengths for multimaterial
+#define EEPROM_CALIBRATION_STATUS_PINDA (EEPROM_BOWDEN_LENGTH - 1) //0 - not calibrated; 1 - calibrated
+#define EEPROM_UVLO						(EEPROM_CALIBRATION_STATUS_PINDA - 1) //1 - uvlo during print
+#define EEPROM_UVLO_CURRENT_POSITION	(EEPROM_UVLO-2*4) // 2 x float for current_position in X and Y axes
+#define EEPROM_FILENAME (EEPROM_UVLO_CURRENT_POSITION - 8) //8chars to store filename without extension
+#define EEPROM_FILE_POSITION (EEPROM_FILENAME - 4) //32 bit for uint32_t file position 
+#define EEPROM_UVLO_CURRENT_POSITION_Z	(EEPROM_FILE_POSITION - 4) //float for current position in Z
+#define EEPROM_UVLO_TARGET_HOTEND		(EEPROM_UVLO_CURRENT_POSITION_Z - 1)
+#define EEPROM_UVLO_TARGET_BED			(EEPROM_UVLO_TARGET_HOTEND - 1)
+#define EEPROM_UVLO_FEEDRATE			(EEPROM_UVLO_TARGET_BED - 2)
+#define EEPROM_UVLO_FAN_SPEED			(EEPROM_UVLO_FEEDRATE - 1) 
+#define EEPROM_FAN_CHECK_ENABLED		(EEPROM_UVLO_FAN_SPEED - 1)
+#define EEPROM_UVLO_MESH_BED_LEVELING     (EEPROM_FAN_CHECK_ENABLED - 9*2)
+#define EEPROM_UVLO_Z_MICROSTEPS     (EEPROM_UVLO_MESH_BED_LEVELING - 2)
+#define EEPROM_UVLO_E_ABS            (EEPROM_UVLO_Z_MICROSTEPS - 1)
+#define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4) //float for current position in E
+
+// Crash detection mode EEPROM setting 
+#define EEPROM_CRASH_DET       (EEPROM_UVLO_MESH_BED_LEVELING-12) 
+// Filament sensor on/off EEPROM setting 
+#define EEPROM_FSENSOR       (EEPROM_UVLO_MESH_BED_LEVELING-14) 
+// Crash detection counter
+#define EEPROM_CRASH_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-15)
+// Filament runout/error coutner
+#define EEPROM_FERROR_COUNT      (EEPROM_UVLO_MESH_BED_LEVELING-16)
+// Power loss errors
+#define EEPROM_POWER_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-17)
+#define EEPROM_DIR_DEPTH        (EEPROM_POWER_COUNT-1)
+#define EEPROM_DIRS  (EEPROM_DIR_DEPTH-80) //8 chars for each dir name, max 10 levels
+
+//TMC2130 configuration
+#define EEPROM_TMC_AXIS_SIZE  //axis configuration block size
+#define EEPROM_TMC_X (EEPROM_TMC + 0 * EEPROM_TMC_AXIS_SIZE) //X axis configuration blok
+#define EEPROM_TMC_Y (EEPROM_TMC + 1 * EEPROM_TMC_AXIS_SIZE) //Y axis
+#define EEPROM_TMC_Z (EEPROM_TMC + 2 * EEPROM_TMC_AXIS_SIZE) //Z axis
+#define EEPROM_TMC_E (EEPROM_TMC + 3 * EEPROM_TMC_AXIS_SIZE) //E axis
+//TMC2130 - X axis
+#define EEPROM_TMC_X_USTEPS_INTPOL   (EEPROM_TMC_X +  0) // 1byte, bit 0..4 USTEPS, bit 7 INTPOL
+#define EEPROM_TMC_X_PWM_AMPL        (EEPROM_TMC_X +  1) // 1byte (0..255)
+#define EEPROM_TMC_X_PWM_GRAD_FREQ   (EEPROM_TMC_X +  2) // 1byte, bit 0..3 GRAD, bit 4..5 FREQ
+#define EEPROM_TMC_X_TCOOLTHRS       (EEPROM_TMC_X +  3) // 2bytes (0..)
+#define EEPROM_TMC_X_SG_THRS         (EEPROM_TMC_X +  5) // 1byte, (-64..+63)
+#define EEPROM_TMC_X_CURRENT_H       (EEPROM_TMC_X +  6) // 1byte, (0..63)
+#define EEPROM_TMC_X_CURRENT_R       (EEPROM_TMC_X +  7) // 1byte, (0..63)
+#define EEPROM_TMC_X_HOME_SG_THRS    (EEPROM_TMC_X +  8) // 1byte, (-64..+63)
+#define EEPROM_TMC_X_HOME_CURRENT_R  (EEPROM_TMC_X +  9) // 1byte, (-64..+63)
+#define EEPROM_TMC_X_HOME_DTCOOLTHRS (EEPROM_TMC_X + 10) // 1byte (-128..+127)
+#define EEPROM_TMC_X_DTCOOLTHRS_LOW  (EEPROM_TMC_X + 11) // 1byte (-128..+127)
+#define EEPROM_TMC_X_DTCOOLTHRS_HIGH (EEPROM_TMC_X + 12) // 1byte (-128..+127)
+#define EEPROM_TMC_X_SG_THRS_LOW     (EEPROM_TMC_X + 13) // 1byte, (-64..+63)
+#define EEPROM_TMC_X_SG_THRS_HIGH    (EEPROM_TMC_X + 14) // 1byte, (-64..+63)
+
+#define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4) //float for skew backup
+
+#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
+
+#define EEPROM_BELTSTATUS_X (EEPROM_WIZARD_ACTIVE - 2) //uint16
+#define EEPROM_BELTSTATUS_Y (EEPROM_BELTSTATUS_X - 2) //uint16
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
+#define EEPROM_FIRMWARE_VERSION_END       (FW_PRUSA3D_MAGIC_LEN+8)
 #define EEPROM_FIRMWARE_VERSION_FLAVOR    (FW_PRUSA3D_MAGIC_LEN+6)
 #define EEPROM_FIRMWARE_VERSION_REVISION  (FW_PRUSA3D_MAGIC_LEN+4)
 #define EEPROM_FIRMWARE_VERSION_MINOR     (FW_PRUSA3D_MAGIC_LEN+2)
 #define EEPROM_FIRMWARE_VERSION_MAJOR     FW_PRUSA3D_MAGIC_LEN
 // Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
-#define EEPROM_FIRMWARE_PRUSA_MAGIC
+#define EEPROM_FIRMWARE_PRUSA_MAGIC 0
+
+#define EEPROM_OFFSET 20 //offset for storing settings using M500
+//#define EEPROM_OFFSET 
 
 // This configuration file contains the basic settings.
 // Advanced settings can be found in Configuration_adv.h
@@ -154,6 +236,10 @@
 //if PREVENT_DANGEROUS_EXTRUDE is on, you can still disable (uncomment) very long bits of extrusion separately.
 #define PREVENT_LENGTHY_EXTRUDE
 
+#ifdef DEBUG_DISABLE_PREVENT_EXTRUDER
+#undef PREVENT_DANGEROUS_EXTRUDE
+#undef PREVENT_LENGTHY_EXTRUDE
+#endif //DEBUG_DISABLE_PREVENT_EXTRUDER
 
 #define EXTRUDE_MAXLENGTH (X_MAX_LENGTH+Y_MAX_LENGTH) //prevent extrusion of very large distances.
 
@@ -226,8 +312,8 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 // The pullups are needed if you directly connect a mechanical endswitch between the signal and ground pins.
 
-const bool X_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of the endstop.
-const bool Y_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of the endstop.
+const bool X_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
+const bool Y_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of the endstop.
 //#define DISABLE_MAX_ENDSTOPS
 //#define DISABLE_MIN_ENDSTOPS
@@ -250,10 +336,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define DISABLE_E false // For all extruders
 #define DISABLE_INACTIVE_EXTRUDER true //disable only inactive extruders and keep active extruder enabled
 
-#define INVERT_X_DIR false    // for Mendel set to false, for Orca set to true
+#define INVERT_X_DIR true    // for Mendel set to false, for Orca set to true
 #define INVERT_Y_DIR false    // for Mendel set to true, for Orca set to false
-#define INVERT_Z_DIR false     // for Mendel set to false, for Orca set to true
-#define INVERT_E0_DIR true   // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_Z_DIR true     // for Mendel set to false, for Orca set to true
+#define INVERT_E0_DIR false   // for direct drive extruder v9 set to true, for geared extruder set to false
 #define INVERT_E1_DIR false    // for direct drive extruder v9 set to true, for geared extruder set to false
 #define INVERT_E2_DIR false   // for direct drive extruder v9 set to true, for geared extruder set to false
 
@@ -263,14 +349,20 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define Y_HOME_DIR -1
 #define Z_HOME_DIR -1
 
+#ifdef DEBUG_DISABLE_SWLIMITS
+#define min_software_endstops false
+#define max_software_endstops false
+#else
 #define min_software_endstops true // If true, axis won't move to coordinates less than HOME_POS.
 #define max_software_endstops true  // If true, axis won't move to coordinates greater than the defined lengths below.
-
+#endif //DEBUG_DISABLE_SWLIMITS
 
 
 #define X_MAX_LENGTH (X_MAX_POS - X_MIN_POS)
 #define Y_MAX_LENGTH (Y_MAX_POS - Y_MIN_POS) 
 #define Z_MAX_LENGTH (Z_MAX_POS - Z_MIN_POS)
+
+#define Z_HEIGHT_HIDE_LIVE_ADJUST_MENU 2.0f
 
 //============================= Bed Auto Leveling ===========================
 
@@ -405,9 +497,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // #define EXTRUDER_OFFSET_Y {0.0, 5.00}  // (in mm) for each extruder, offset of the hotend on the Y axis
 
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
-#define DEFAULT_XYJERK                20.0    // (mm/sec)
+#define DEFAULT_XJERK                15       // (mm/sec)
+#define DEFAULT_YJERK                15       // (mm/sec)
 #define DEFAULT_ZJERK                 0.4     // (mm/sec)
-#define DEFAULT_EJERK                 5.0    // (mm/sec)
+#define DEFAULT_EJERK                 2.5     // (mm/sec)
 
 //===========================================================================
 //=============================Additional Features===========================
@@ -433,7 +526,13 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // please keep turned on if you can.
 //#define EEPROM_CHITCHAT
 
-
+// Host Keepalive
+//
+// When enabled Marlin will send a busy status message to the host
+// every couple of seconds when it can't accept commands.
+//
+#define HOST_KEEPALIVE_FEATURE    // Disable this if your host doesn't like keepalive messages
+#define HOST_KEEPALIVE_INTERVAL 2 // Number of seconds between "busy" messages. Set with M113.
 
 //LCD and SD support
 #define ULTRA_LCD  //general LCD support, also 16x2
@@ -678,14 +777,36 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 //#define FILAMENT_LCD_DISPLAY
 
 
+// Calibration status of the machine, to be stored into the EEPROM,
+// (unsigned char*)EEPROM_CALIBRATION_STATUS
+enum CalibrationStatus
+{
+	// Freshly assembled, needs to peform a self-test and the XYZ calibration.
+	CALIBRATION_STATUS_ASSEMBLED = 255,
 
+	// For the wizard: self test has been performed, now the XYZ calibration is needed.
+	CALIBRATION_STATUS_XYZ_CALIBRATION = 250,
 
+	// For the wizard: factory assembled, needs to run Z calibration.
+	CALIBRATION_STATUS_Z_CALIBRATION = 240,
 
+	// The XYZ calibration has been performed, now it remains to run the V2Calibration.gcode.
+	CALIBRATION_STATUS_LIVE_ADJUST = 230,
+
+    // Calibrated, ready to print.
+    CALIBRATION_STATUS_CALIBRATED = 1,
+
+    // Legacy: resetted by issuing a G86 G-code.
+    // This value can only be expected after an upgrade from the initial MK2 firmware releases.
+    // Currently the G86 sets the calibration status to 
+    CALIBRATION_STATUS_UNKNOWN = 0,
+};
 
 #include "Configuration_adv.h"
 #include "thermistortables.h"
 
+#define PINDA_THERMISTOR
 
-
+#define AMBIENT_THERMISTOR
 
 #endif //__CONFIGURATION_H

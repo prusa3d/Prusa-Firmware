@@ -62,6 +62,12 @@
   #define MYSERIAL MSerial
 #endif
 
+extern FILE _lcdout;
+#define lcdout (&_lcdout)
+
+extern FILE _uartout;
+#define uartout (&_uartout)
+
 #define SERIAL_PROTOCOL(x) (MYSERIAL.print(x))
 #define SERIAL_PROTOCOL_F(x,y) (MYSERIAL.print(x,y))
 #define SERIAL_PROTOCOLPGM(x) (serialprintPGM(PSTR(x)))
@@ -108,9 +114,10 @@ FORCE_INLINE void serialprintPGM(const char *str)
   }
 }
 
-
+bool is_buffer_empty();
 void get_command();
 void process_commands();
+void ramming();
 
 void manage_inactivity(bool ignore_stepper_queue=false);
 
@@ -201,6 +208,12 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 
 
 enum AxisEnum {X_AXIS=0, Y_AXIS=1, Z_AXIS=2, E_AXIS=3, X_HEAD=4, Y_HEAD=5};
+#define X_AXIS_MASK  1
+#define Y_AXIS_MASK  2
+#define Z_AXIS_MASK  4
+#define E_AXIS_MASK  8
+#define X_HEAD_MASK 16
+#define Y_HEAD_MASK 32
 
 
 void FlushSerialRequestResend();
@@ -208,7 +221,7 @@ void ClearToSend();
 
 void get_coordinates();
 void prepare_move();
-void kill(const char *full_screen_message = NULL);
+void kill(const char *full_screen_message = NULL, unsigned char id = 0);
 void Stop();
 
 bool IsStopped();
@@ -222,10 +235,11 @@ void enquecommand_front(const char *cmd, bool from_progmem = false);
 #define enquecommand_P(cmd) enquecommand(cmd, true)
 #define enquecommand_front_P(cmd) enquecommand_front(cmd, true)
 void repeatcommand_front();
+// Remove all lines from the command queue.
+void cmdqueue_reset();
 
 void prepare_arc_move(char isclockwise);
 void clamp_to_software_endstops(float target[3]);
-
 void refresh_cmd_timeout(void);
 
 #ifdef FAST_PWM_FAN
@@ -260,6 +274,11 @@ extern void homeaxis(int axis);
 extern unsigned char fanSpeedSoftPwm;
 #endif
 
+#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
+extern unsigned char lcdSoftPwm;
+extern unsigned char lcdBlinkDelay;
+#endif
+
 #ifdef FILAMENT_SENSOR
   extern float filament_width_nominal;  //holds the theoretical filament diameter ie., 3.00 or 1.75
   extern bool filament_sensor;  //indicates that filament sensor readings should control extrusion
@@ -277,19 +296,35 @@ extern float retract_length, retract_length_swap, retract_feedrate, retract_zlif
 extern float retract_recover_length, retract_recover_length_swap, retract_recover_feedrate;
 #endif
 
+#ifdef HOST_KEEPALIVE_FEATURE
+extern uint8_t host_keepalive_interval;
+#endif
+
 extern unsigned long starttime;
 extern unsigned long stoptime;
+extern int bowden_length[4];
 extern bool is_usb_printing;
+extern bool homing_flag;
+extern bool temp_cal_active;
+extern bool loading_flag;
 extern unsigned int usb_printing_counter;
+
+extern unsigned long kicktime;
 
 extern unsigned long total_filament_used;
 void save_statistics(unsigned long _total_filament_used, unsigned long _total_print_time);
 extern unsigned int heating_status;
+extern unsigned int status_number;
 extern unsigned int heating_status_counter;
 extern bool custom_message;
 extern unsigned int custom_message_type;
 extern unsigned int custom_message_state;
+extern char snmm_filaments_used;
+extern unsigned long PingTime;
 
+extern bool fan_state[2];
+extern int fan_edge_counter[2];
+extern int fan_speed[2];
 
 // Handling multiple extruders pins
 extern uint8_t active_extruder;
@@ -301,12 +336,92 @@ extern void digipot_i2c_init();
 
 #endif
 
+//Long pause
+extern int saved_feedmultiply;
+extern float HotendTempBckp;
+extern int fanSpeedBckp;
+extern float pause_lastpos[4];
+extern unsigned long pause_time;
+extern unsigned long start_pause_print;
+extern unsigned long t_fan_rising_edge;
 
+extern bool mesh_bed_leveling_flag;
+extern bool mesh_bed_run_from_menu;
 
+extern float distance_from_min[2];
 
+extern char dir_names[3][9];
 
 extern void calculate_volumetric_multipliers();
 
 // Similar to the default Arduino delay function, 
 // but it keeps the background tasks running.
-extern void delay_keep_alive(int ms);
+extern void delay_keep_alive(unsigned int ms);
+
+extern void check_babystep();
+
+extern void long_pause();
+
+#ifdef DIS
+
+void d_setup();
+float d_ReadData();
+void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
+
+#endif
+float temp_comp_interpolation(float temperature);
+void temp_compensation_apply();
+void temp_compensation_start();
+
+#ifdef PINDA_THERMISTOR
+float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
+#endif //PINDA_THERMISTOR
+
+void wait_for_heater(long codenum);
+void serialecho_temperatures();
+
+void uvlo_();
+void recover_print(uint8_t automatic); 
+void setup_uvlo_interrupt();
+void setup_fan_interrupt();
+
+extern void recover_machine_state_after_power_panic();
+extern void restore_print_from_eeprom();
+extern void position_menu();
+
+extern void print_world_coordinates();
+extern void print_physical_coordinates();
+extern void print_mesh_bed_leveling_table();
+
+#ifdef HOST_KEEPALIVE_FEATURE
+
+// States for managing Marlin and host communication
+// Marlin sends messages if blocked or busy
+/*enum MarlinBusyState {
+	NOT_BUSY,           // Not in a handler
+	IN_HANDLER,         // Processing a GCode
+	IN_PROCESS,         // Known to be blocking command input (as in G29)
+	PAUSED_FOR_USER,    // Blocking pending any input
+	PAUSED_FOR_INPUT    // Blocking pending text input (concept)
+};*/
+
+#define NOT_BUSY          1
+#define IN_HANDLER        2
+#define IN_PROCESS        3
+#define PAUSED_FOR_USER   4
+#define PAUSED_FOR_INPUT  5
+
+#define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
+extern void host_keepalive();
+//extern MarlinBusyState busy_state;
+extern int busy_state;
+
+#endif //HOST_KEEPALIVE_FEATURE
+
+// G-codes
+bool gcode_M45(bool onlyZ);
+void gcode_M701();
+
+#define UVLO !(PINE & (1<<4))
+
+void extr_unload2();
