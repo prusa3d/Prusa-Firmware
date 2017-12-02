@@ -156,6 +156,8 @@ void LiquidCrystal::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
   command(LCD_ENTRYMODESET | _displaymode);
   delayMicroseconds(60);
 
+  _escape[0] = 0;
+
 }
 
 
@@ -354,9 +356,148 @@ inline void LiquidCrystal::command(uint8_t value) {
 }
 
 inline size_t LiquidCrystal::write(uint8_t value) {
+  if (_escape[0] || (value == 0x1b))
+    return escape_write(value);
   send(value, HIGH);
   return 1; // assume sucess
 }
+
+//Supported VT100 escape codes:
+//EraseScreen  "\x1b[2J"
+//CursorHome   "\x1b[%d;%dH"
+//CursorShow   "\x1b[?25h"
+//CursorHide   "\x1b[?25l"
+
+inline size_t LiquidCrystal::escape_write(uint8_t chr)
+{
+#define escape_cnt (_escape[0])        //escape character counter
+#define is_num_msk (_escape[1])        //numeric character bit mask
+#define chr_is_num (is_num_msk & 0x01) //current character is numeric
+#define e_2_is_num (is_num_msk & 0x04) //escape char 2 is numeric
+#define e_3_is_num (is_num_msk & 0x08) //...
+#define e_4_is_num (is_num_msk & 0x10)
+#define e_5_is_num (is_num_msk & 0x20)
+#define e_6_is_num (is_num_msk & 0x40)
+#define e_7_is_num (is_num_msk & 0x80)
+#define e2_num (_escape[2] - '0')      //number from character 2
+#define e3_num (_escape[3] - '0')      //number from character 3
+#define e23_num (10*e2_num+e3_num)     //number from characters 2 and 3
+#define e4_num (_escape[4] - '0')      //number from character 4
+#define e5_num (_escape[5] - '0')      //number from character 5
+#define e45_num (10*e4_num+e5_num)     //number from characters 4 and 5
+#define e6_num (_escape[6] - '0')      //number from character 6
+#define e56_num (10*e5_num+e6_num)     //number from characters 5 and 6
+	if (escape_cnt > 1) // escape length > 1 = "\x1b["
+	{
+		_escape[escape_cnt] = chr; // store current char
+		if ((chr >= '0') && (chr <= '9')) // char is numeric
+			is_num_msk |= (1 | (1 << escape_cnt)); //set mask
+		else
+			is_num_msk &= ~1; //clear mask
+	}
+	switch (escape_cnt++)
+	{
+	case 0:
+		if (chr == 0x1b) return 1;  // escape = "\x1b"
+		break;
+	case 1:
+		is_num_msk = 0x00; // reset 'is number' bit mask
+		if (chr == '[') return 1; // escape = "\x1b["
+		break;
+	case 2:
+		switch (chr)
+		{
+		case '2': return 1; // escape = "\x1b[2"
+		case '?': return 1; // escape = "\x1b[?"
+		default:
+			if (chr_is_num) return 1; // escape = "\x1b[%1d"
+		}
+		break;
+	case 3:
+		switch (_escape[2])
+		{
+		case '?': // escape = "\x1b[?"
+			if (chr == '2') return 1; // escape = "\x1b[?2"
+			break;
+		case '2':
+			if (chr == 'J') // escape = "\x1b[2J"
+				{ clear(); break; } // EraseScreen
+		default:
+			if (e_2_is_num && // escape = "\x1b[%1d"
+				((chr == ';') || // escape = "\x1b[%1d;"
+				chr_is_num)) // escape = "\x1b[%2d"
+				return 1;
+		}
+		break;
+	case 4:
+		switch (_escape[2])
+		{
+		case '?': // "\x1b[?"
+			if ((_escape[3] == '2') && (chr == '5')) return 1; // escape = "\x1b[?25"
+			break;
+		default:
+			if (e_2_is_num) // escape = "\x1b[%1d"
+			{
+				if ((_escape[3] == ';') && chr_is_num) return 1; // escape = "\x1b[%1d;%1d"
+				else if (e_3_is_num && (chr == ';')) return 1; // escape = "\x1b[%2d;"
+			}
+		}
+		break;
+	case 5:
+		switch (_escape[2])
+		{
+		case '?':
+			if ((_escape[3] == '2') && (_escape[4] == '5')) // escape = "\x1b[?25"
+				switch (chr)
+				{
+				case 'h': // escape = "\x1b[?25h"
+  					void cursor(); // CursorShow
+					break;
+				case 'l': // escape = "\x1b[?25l"
+					noCursor(); // CursorHide
+					break;
+				}
+			break;
+		default:
+			if (e_2_is_num) // escape = "\x1b[%1d"
+			{
+				if ((_escape[3] == ';') && e_4_is_num) // escape = "\x1b%1d;%1dH"
+				{
+					if (chr == 'H') // escape = "\x1b%1d;%1dH"
+						setCursor(e4_num, e2_num); // CursorHome
+					else if (chr_is_num)
+						return 1; // escape = "\x1b%1d;%2d"
+				}
+				else if (e_3_is_num && (_escape[4] == ';') && chr_is_num)
+					return 1; // escape = "\x1b%2d;%1d"
+			}
+		}
+		break;
+	case 6:
+		if (e_2_is_num) // escape = "\x1b[%1d"
+		{
+			if ((_escape[3] == ';') && e_4_is_num && e_5_is_num && (chr == 'H')) // escape = "\x1b%1d;%2dH"
+				setCursor(e45_num, e2_num); // CursorHome
+			else if (e_3_is_num && (_escape[4] == ';') && e_5_is_num) // escape = "\x1b%2d;%1d"
+			{
+				if (chr == 'H') // escape = "\x1b%2d;%1dH"
+					setCursor(e5_num, e23_num); // CursorHome
+				else if (chr_is_num) // "\x1b%2d;%2d"
+					return 1;
+			}
+		}
+		break;
+	case 7:
+		if (e_2_is_num && e_3_is_num && (_escape[4] == ';')) // "\x1b[%2d;"
+			if (e_5_is_num && e_6_is_num && (chr == 'H')) // "\x1b[%2d;%2dH"
+				setCursor(e56_num, e23_num); // CursorHome
+		break;
+	}
+	escape_cnt = 0; // reset escape
+end:
+	return 1; // assume sucess
+}
+
 
 /************ low level data pushing commands **********/
 

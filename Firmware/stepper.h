@@ -44,6 +44,16 @@ extern bool abort_on_endstop_hit;
 // Initialize and start the stepper motor subsystem
 void st_init();
 
+// Interrupt Service Routines
+
+void isr();
+
+#ifdef LIN_ADVANCE
+  void advance_isr();
+  void advance_isr_scheduler();
+  void clear_current_adv_vars(); //Used to reset the built up pretension and remaining esteps on filament change.
+#endif
+
 // Block until all buffered steps are executed
 void st_synchronize();
 
@@ -54,6 +64,8 @@ void st_set_e_position(const long &e);
 // Get current position in steps
 long st_get_position(uint8_t axis);
 
+// Get current x and y position in steps
+void st_get_position_xy(long &x, long &y);
 
 // Get current position in mm
 float st_get_position_mm(uint8_t axis);
@@ -77,6 +89,10 @@ void checkStepperErrors(); //Print errors detected by the stepper
 void finishAndDisableSteppers();
 
 extern block_t *current_block;  // A pointer to the block currently being traced
+extern bool x_min_endstop;
+extern bool x_max_endstop;
+extern bool y_min_endstop;
+extern bool y_max_endstop;
 
 void quickStop();
 

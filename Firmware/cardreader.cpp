@@ -81,7 +81,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
         if(lsAction==LS_SerialPrint)
         {
           SERIAL_ECHO_START;
-          SERIAL_ECHOLN(MSG_SD_CANT_OPEN_SUBDIR);
+          SERIAL_ECHORPGM(MSG_SD_CANT_ENTER_SUBDIR);
           SERIAL_ECHOLN(lfilename);
         }
       }
@@ -233,6 +233,15 @@ void CardReader::openLogFile(char* name)
   openFile(name, false);
 }
 
+void CardReader::getDirName(char* name, uint8_t level)
+{	
+		workDirParents[level].getFilename(name);
+}
+
+uint16_t CardReader::getWorkDirDepth() {
+	return workDirDepth;
+}
+
 void CardReader::getAbsFilename(char *t)
 {
   uint8_t cnt=0;
@@ -262,7 +271,7 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
        SERIAL_ERROR_START;
        SERIAL_ERRORPGM("trying to call sub-gcode files with too many levels. MAX level is:");
        SERIAL_ERRORLN(SD_PROCEDURE_DEPTH);
-       kill();
+       kill("", 1);
        return;
      }
      
@@ -501,6 +510,19 @@ void CardReader::write_command(char *buf)
   }
 }
 
+#define CHUNK_SIZE 64
+
+void CardReader::write_command_no_newline(char *buf)
+{
+  file.write(buf, CHUNK_SIZE);
+  if (file.writeError)
+  {
+    SERIAL_ERROR_START;
+    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
+    MYSERIAL.println("An error while writing to the SD Card.");
+  }
+}
+
 
 void CardReader::checkautostart(bool force)
 {
@@ -622,7 +644,7 @@ void CardReader::updir()
   {
     --workDirDepth;
     workDir = workDirParents[0];
-    int d;
+	int d;
     for (int d = 0; d < workDirDepth; d++)
       workDirParents[d] = workDirParents[d+1];
   }
