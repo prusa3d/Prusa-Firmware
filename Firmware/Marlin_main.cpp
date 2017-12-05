@@ -5490,12 +5490,21 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lcd_wait_interact();
 		//load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
-        while(!lcd_clicked()){
-
-
+		pat9125_update_y(); //update sensor
+		uint16_t y_old = pat9125_y; //save current y value
+		uint8_t change_cnt = 0; //reset number of changes counter
+        while(!lcd_clicked())
+		{
           manage_heater();
           manage_inactivity(true);
-
+          pat9125_update_y(); //update sensor
+          if (y_old != pat9125_y) //? y value is different
+          {
+			if ((y_old - pat9125_y) > 0)  //? delta-y value is positive (inserting)
+				change_cnt++; //increment change counter
+			y_old = pat9125_y; //save current value
+			if (change_cnt > 20) break; //number of positive changes > 20, start loading
+          }
 /*#ifdef SNMM
 		  target[E_AXIS] += 0.002;
 		  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
