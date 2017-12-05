@@ -56,23 +56,23 @@ FORCE_INLINE void store_char(unsigned char c)
       // Test for a framing error.
       if (M_UCSRxA & (1<<M_FEx)) {
           // Characters received with the framing errors will be ignored.
-          // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
-          volatile unsigned char c = M_UDRx;
+          // Dummy register read (discard)
+          (void)(*(char *)M_UDRx);
       } else {
           // Read the input register.
           unsigned char c = M_UDRx;
           store_char(c);
       }
   }
-  
+#ifndef SNMM
   SIGNAL(USART2_RX_vect)
   {
       if (selectedSerialPort == 1) {
         // Test for a framing error.
         if (UCSR2A & (1<<FE2)) {
             // Characters received with the framing errors will be ignored.
-            // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
-            volatile unsigned char c = UDR2;
+            // Dummy register read (discard)
+            (void)(*(char *)UDR2);
         } else {
             // Read the input register.
             unsigned char c = UDR2;
@@ -81,6 +81,7 @@ FORCE_INLINE void store_char(unsigned char c)
         }
       }
   }
+#endif
 #endif
 
 // Constructors ////////////////////////////////////////////////////////////////
@@ -122,23 +123,26 @@ void MarlinSerial::begin(long baud)
   sbi(M_UCSRxB, M_TXENx);
   sbi(M_UCSRxB, M_RXCIEx);
   
-  
-// set up the second serial port
-  if (useU2X) {
-        UCSR2A = 1 << U2X2;
-        baud_setting = (F_CPU / 4 / baud - 1) / 2;
-    } else {
-        UCSR2A = 0;
-        baud_setting = (F_CPU / 8 / baud - 1) / 2;
-    }
+#ifndef SNMM
 
-    // assign the baud_setting, a.k.a. ubbr (USART Baud Rate Register)
-    UBRR2H = baud_setting >> 8;
-    UBRR2L = baud_setting;
+  if (selectedSerialPort == 1) { //set up also the second serial port 
+	  if (useU2X) {
+		  UCSR2A = 1 << U2X2;
+		  baud_setting = (F_CPU / 4 / baud - 1) / 2;
+	  } else {
+		  UCSR2A = 0;
+		  baud_setting = (F_CPU / 8 / baud - 1) / 2;
+	  }
 
-    sbi(UCSR2B, RXEN2);
-    sbi(UCSR2B, TXEN2);
-    sbi(UCSR2B, RXCIE2);
+	  // assign the baud_setting, a.k.a. ubbr (USART Baud Rate Register)
+	  UBRR2H = baud_setting >> 8;
+	  UBRR2L = baud_setting;
+	  
+	  sbi(UCSR2B, RXEN2);
+	  sbi(UCSR2B, TXEN2);
+	  sbi(UCSR2B, RXCIE2);	  
+  }
+#endif
 }
 
 void MarlinSerial::end()
@@ -146,10 +150,12 @@ void MarlinSerial::end()
   cbi(M_UCSRxB, M_RXENx);
   cbi(M_UCSRxB, M_TXENx);
   cbi(M_UCSRxB, M_RXCIEx);
-  
+
+#ifndef SNMM
   cbi(UCSR2B, RXEN2);
   cbi(UCSR2B, TXEN2);
-  cbi(UCSR2B, RXCIE2); 
+  cbi(UCSR2B, RXCIE2);
+#endif
 }
 
 

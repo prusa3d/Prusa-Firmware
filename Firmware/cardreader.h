@@ -27,10 +27,12 @@ public:
   void release();
   void startFileprint();
   void pauseSDPrint();
+  uint32_t getFileSize();
   void getStatus();
   void printingHasFinished();
 
   void getfilename(uint16_t nr, const char* const match=NULL);
+  void getfilename_simple(uint32_t position, const char * const match=NULL);
   uint16_t getnrfilenames();
   
   void getAbsFilename(char *t);
@@ -43,6 +45,10 @@ public:
 
   #ifdef SDCARD_SORT_ALPHA
 	void presort();
+  #ifdef SDSORT_QUICKSORT
+	void swap(uint8_t left, uint8_t right);
+	void quicksort(uint8_t left, uint8_t right);
+  #endif //SDSORT_QUICKSORT
 	void getfilename_sorted(const uint16_t nr);
 	#if SDSORT_GCODE
 	  FORCE_INLINE void setSortOn(bool b) { sort_alpha = b; presort(); }
@@ -69,6 +75,7 @@ public:
   bool cardOK ;
   char filename[13];
   uint16_t creationTime, creationDate;
+  uint32_t cluster, position;
   char longFilename[LONG_FILENAME_LENGTH];
   bool filenameIsDir;
   int lastnr; //last number of the autostart;
@@ -141,7 +148,6 @@ private:
   int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
   void lsDive(const char *prepend, SdFile parent, const char * const match=NULL);
-
   #ifdef SDCARD_SORT_ALPHA
     void flush_presort();
   #endif

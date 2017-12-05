@@ -74,11 +74,18 @@ bool abort_on_endstop_hit = false;
 #endif
 
 static bool old_x_min_endstop=false;
-static bool old_x_max_endstop=false;
 static bool old_y_min_endstop=false;
-static bool old_y_max_endstop=false;
 static bool old_z_min_endstop=false;
+
+#if defined(X_MAX_PIN) && (X_MAX_PIN > -1)
+static bool old_x_max_endstop=false;
+#endif
+#if defined(Y_MAX_PIN) && (Y_MAX_PIN > -1)
+static bool old_y_max_endstop=false;
+#endif
+#if defined(Z_MAX_PIN) && (Z_MAX_PIN > -1)
 static bool old_z_max_endstop=false;
+#endif
 
 static bool check_endstops = true;
 static bool check_z_endstop = false;
@@ -728,8 +735,6 @@ void isr() {
 
   void advance_isr() {
 
-    nextAdvanceISR = eISR_Rate;
-
     if (e_steps) {
       bool dir =
       #ifdef SNMM
@@ -745,7 +750,11 @@ void isr() {
         e_steps < 0 ? ++e_steps : --e_steps;
         WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
       }
-    }
+	}
+	else{
+		eISR_Rate = ADV_NEVER;
+	}
+	nextAdvanceISR = eISR_Rate;
   }
 
   void advance_isr_scheduler() {
@@ -1066,9 +1075,7 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); 
-    {
-    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
-    }
+    delayMicroseconds(3);
     WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
 
     //get old pin state back.
@@ -1085,9 +1092,7 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); 
-    {
-    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
-    }
+    delayMicroseconds(3);
     WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
 
     //get old pin state back.
@@ -1109,11 +1114,11 @@ void babystep(const uint8_t axis,const bool direction)
     WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); 
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
+      delayMicroseconds(2);
+    #else
+      delayMicroseconds(3);
     #endif
-    //wait a tiny bit
-    {
-    volatile float x=1./float(axis+1); //absolutely useless
-    }
+
     WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, INVERT_Z_STEP_PIN);
@@ -1156,11 +1161,10 @@ void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 
 
 void digipot_init() //Initialize Digipot Motor Current
-{
-
+{  
   EEPROM_read_st(EEPROM_SILENT,(uint8_t*)&SilentMode,sizeof(SilentMode));
-
-#if defined(DIGIPOTSS_PIN) && (DIGIPOTSS_PIN > -1)
+  SilentModeMenu = SilentMode;
+  #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
     if(SilentMode == 0){
     const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT_LOUD;
     }else{
@@ -1171,7 +1175,7 @@ void digipot_init() //Initialize Digipot Motor Current
     for(int i=0;i<=4;i++)
       //digitalPotWrite(digipot_ch[i], digipot_motor_current[i]);
       digipot_current(i,digipot_motor_current[i]);
-#endif
+  #endif
   #ifdef MOTOR_CURRENT_PWM_XY_PIN
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_Z_PIN, OUTPUT);

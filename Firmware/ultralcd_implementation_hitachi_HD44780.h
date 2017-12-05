@@ -360,6 +360,7 @@ static void lcd_set_custom_characters(
     B00000
   }; //thanks Sonny Mounicou
 
+#if 0	// Unused
   byte arrup[8] = {
     B00100,
     B01110,
@@ -381,7 +382,7 @@ static void lcd_set_custom_characters(
     B01010,
     B00100
   }; 
-
+#endif
 
   #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
     static bool char_mode = false;
@@ -491,8 +492,19 @@ void lcd_set_custom_characters_nextpage()
     B01010,
     B00100
   }; 
+  byte confirm[8] = {
+	B00000,
+	B00001,
+	B00011,
+	B10110,
+	B11100,
+	B01000,
+	B00000,
+	B00000
+  };
 
     lcd.createChar(1, arrdown);
+	lcd.createChar(2, confirm);
 }
 
 void lcd_set_custom_characters_degree()
@@ -592,16 +604,15 @@ static void lcd_implementation_init_noclear(
 }
 
 
-static void lcd_implementation_nodisplay()
+inline void lcd_implementation_nodisplay()
 {
     lcd.noDisplay();
 }
-static void lcd_implementation_display()
+inline void lcd_implementation_display()
 {
     lcd.display();
 }
-
-void lcd_implementation_clear()
+inline void lcd_implementation_clear()
 {
     lcd.clear();
 }
@@ -846,50 +857,48 @@ if (print_sd_status)
     // If heating in progress, set flag
 	if (heating_status != 0) { custom_message = true; }
 
-    // If printing from SD, show what we are printing
-	if ((IS_SD_PRINTING) && !custom_message)
-	{
-
-      if(strcmp(longFilenameOLD, card.longFilename) != 0)
-	  {
-        memset(longFilenameOLD,'\0',strlen(longFilenameOLD));
-        sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
-        scrollstuff = 0;
-      }
-
-      if(strlen(card.longFilename) > LCD_WIDTH)
-	  {
-
-        int inters = 0;
-        int gh = scrollstuff;
-        while( ((gh-scrollstuff)<LCD_WIDTH) && (inters == 0)  )
+	if (IS_SD_PRINTING) {
+		if (strcmp(longFilenameOLD, card.longFilename) != 0)
 		{
-          
-          if(card.longFilename[gh] == '\0')
+			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
+			sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
+			scrollstuff = 0;
+		}
+	}
+
+    // If printing from SD, show what we are printing
+	if (IS_SD_PRINTING && !custom_message)
+	{
+		  if (strlen(card.longFilename) > LCD_WIDTH)
 		  {
-            lcd.setCursor(gh-scrollstuff, 3);
-            lcd.print(card.longFilename[gh-1]);
-            scrollstuff = 0;
-            gh = scrollstuff;
-            inters = 1;
-          }
+			  int inters = 0;
+			  int gh = scrollstuff;
+			  while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
+			  {
+
+				  if (card.longFilename[gh] == '\0')
+				  {
+					  lcd.setCursor(gh - scrollstuff, 3);
+					  lcd.print(card.longFilename[gh - 1]);
+					  scrollstuff = 0;
+					  gh = scrollstuff;
+					  inters = 1;
+				  }
+				  else
+				  {
+					  lcd.setCursor(gh - scrollstuff, 3);
+					  lcd.print(card.longFilename[gh - 1]);
+					  gh++;
+				  }
+
+
+			  }
+			  scrollstuff++;
+		  }
 		  else
 		  {
-            lcd.setCursor(gh-scrollstuff, 3);
-            lcd.print(card.longFilename[gh-1]);
-            gh++;
-          }
-
-          
-        }
-        scrollstuff++;
-      }
-	  else
-	  {
-        lcd.print(longFilenameOLD);
-      }
-
-
+			  lcd.print(longFilenameOLD);
+		  }
     }
     // If not, check for other special events
 	else
@@ -908,7 +917,7 @@ if (print_sd_status)
 				lcd.setCursor(7, 3);
 				lcd_printPGM(PSTR("             "));
 
-				for (int dots = 0; dots < heating_status_counter; dots++)
+				for (uint16_t dots = 0; dots < heating_status_counter; dots++)
 				{
 					lcd.setCursor(7 + dots, 3);
 					lcd.print('.');
@@ -965,18 +974,13 @@ if (print_sd_status)
 						custom_message = false;
 						custom_message_type = 0;
 					}
-					if (custom_message_state > 3 && custom_message_state < 10 )
+					if (custom_message_state > 3 && custom_message_state <= 10 )
 					{
 						lcd.setCursor(0, 3);
 						lcd_printPGM(PSTR("                   "));
 						lcd.setCursor(0, 3);
 						lcd_printPGM(MSG_HOMEYZ_DONE);
 						custom_message_state--;
-					}
-					if (custom_message_state == 10)
-					{
-						lcd_printPGM(MSG_HOMEYZ_DONE);
-						custom_message_state = 9;
 					}
 				}
 
@@ -1110,6 +1114,7 @@ static void lcd_implementation_drawmenu_setting_edit_generic(uint8_t row, const 
         lcd.print(' ');
     lcd.print(data);
 }
+#if 0
 static void lcd_implementation_drawmenu_setting_edit_generic_P(uint8_t row, const char* pstr, char pre_char, const char* data)
 {
     char c;
@@ -1132,6 +1137,7 @@ static void lcd_implementation_drawmenu_setting_edit_generic_P(uint8_t row, cons
         lcd.print(' ');
     lcd_printPGM(data);
 }
+#endif
 #define lcd_implementation_drawmenu_setting_edit_int3_selected(row, pstr, pstr2, data, minValue, maxValue) lcd_implementation_drawmenu_setting_edit_generic(row, pstr, '>', itostr3(*(data)))
 #define lcd_implementation_drawmenu_setting_edit_int3(row, pstr, pstr2, data, minValue, maxValue) lcd_implementation_drawmenu_setting_edit_generic(row, pstr, ' ', itostr3(*(data)))
 #define lcd_implementation_drawmenu_setting_edit_float3_selected(row, pstr, pstr2, data, minValue, maxValue) lcd_implementation_drawmenu_setting_edit_generic(row, pstr, '>', ftostr3(*(data)))
@@ -1209,12 +1215,6 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
 
     lcd.setCursor(0, row);
     lcd.print('>');
-    if (longFilename[0] != '\0')
-    {
-
-        filename = longFilename;
-        //longFilename[LCD_WIDTH-1] = '\0';
-    }
 
     int i = 1;
     int j = 0;
@@ -1236,8 +1236,8 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char*
             if(LCD_CLICKED || ( enc_dif != encoderDiff )){
 				longFilenameTMP = longFilename;
 				*(longFilenameTMP + LCD_WIDTH - 2) = '\0';
-				int i = 1;
-				int j = 0;				
+				i = 1;
+				j = 0;
 				break;
             }else{
 				if (j == 1) delay(3);	//wait around 1.2 s to start scrolling text

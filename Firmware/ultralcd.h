@@ -29,21 +29,13 @@
   void prusa_statistics(int _message, uint8_t _col_nr = 0);
   void lcd_confirm_print();
   unsigned char lcd_choose_color();
-void lcd_mylang();
+  void lcd_mylang();
   bool lcd_detected(void);
 
   
-  static void lcd_selftest();
-  static bool lcd_selfcheck_endstops();
-  static bool lcd_selfcheck_axis(int _axis, int _travel);
-  static bool lcd_selfcheck_check_heater(bool _isbed);
-  static int  lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay);
-  static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
-  static bool lcd_selftest_fan_dialog(int _fan);
-  static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
   void lcd_menu_statistics();
-  static bool lcd_selfcheck_pulleys(int axis);
 
+  
   extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
   inline const char* lcd_display_message_fullscreen_P(const char *msg) 
     { uint8_t nlines; return lcd_display_message_fullscreen_P(msg, nlines); }
@@ -52,7 +44,7 @@ void lcd_mylang();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
   // 0: no, 1: yes, -1: timeouted
   extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
-
+  extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
   // Ask the user to move the Z axis up to the end stoppers and let
   // the user confirm that it has been done.
   extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
@@ -66,15 +58,13 @@ void lcd_mylang();
   void lcd_setcontrast(uint8_t value);
 #endif
 
-  static unsigned char blink = 0;	// Variable for visualization of fan rotation in GLCD
-
   #define LCD_MESSAGEPGM(x) lcd_setstatuspgm(PSTR(x))
   #define LCD_ALERTMESSAGEPGM(x) lcd_setalertstatuspgm(PSTR(x))
   #define LCD_MESSAGERPGM(x) lcd_setstatuspgm((x))
   #define LCD_ALERTMESSAGERPGM(x) lcd_setalertstatuspgm((x))
 
   #define LCD_UPDATE_INTERVAL 100
-  #define LCD_TIMEOUT_TO_STATUS 15000
+  #define LCD_TIMEOUT_TO_STATUS 30000
 
   #ifdef ULTIPANEL
   void lcd_buttons_update();
@@ -95,6 +85,7 @@ void lcd_mylang();
   #define LCD_COMMAND_LONG_PAUSE 5
   #define LCD_COMMAND_LONG_PAUSE_RESUME 6
   #define LCD_COMMAND_PID_EXTRUDER 7 
+  #define LCD_COMMAND_V2_CAL 8
 
   extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
@@ -103,6 +94,7 @@ void lcd_mylang();
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
+  extern int8_t SilentModeMenu;
 
 #ifdef SNMM
   extern uint8_t snmm_extruder;
@@ -209,29 +201,12 @@ extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 
 
 void change_extr(int extr);
-static void lcd_colorprint_change();
-static int get_ext_nr();
-static void extr_adj(int extruder);
-static void extr_adj_0();
-static void extr_adj_1();
-static void extr_adj_2();
-static void extr_adj_3();
-static void fil_load_menu();
-static void fil_unload_menu();
-static void extr_unload_0();
-static void extr_unload_1();
-static void extr_unload_2();
-static void extr_unload_3();
-static void lcd_disable_farm_mode();
+int get_ext_nr();
+void extr_adj(int extruder);
 void extr_unload_all(); 
 void extr_unload_used();
 void extr_unload();
-static char snmm_stop_print_menu();
-#ifdef SDCARD_SORT_ALPHA
-static void lcd_sort_type_set();
-#endif
 void stack_error();
-static void lcd_ping_allert();
 void lcd_printer_connected();
 void lcd_ping();
 
@@ -262,8 +237,11 @@ void display_loading();
 void lcd_service_mode_show_result();
 
 #if !SDSORT_USES_RAM
-void lcd_set_arrows();
+void lcd_set_degree();
 void lcd_set_progress();
 #endif
+
+void lcd_wizard();
+void lcd_wizard(int state);
 
 #endif //ULTRALCD_H
