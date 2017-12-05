@@ -234,6 +234,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
         float A[4][4] = { 0.f };
         float b[4] = { 0.f };
         float acc;
+		delay_keep_alive(0); //manage heater, reset watchdog, manage inactivity
         for (uint8_t r = 0; r < 4; ++r) {
             for (uint8_t c = 0; c < 4; ++c) {
                 acc = 0;
@@ -1926,7 +1927,8 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			}
 			#endif // SUPPORT_VERBOSITY
 		}
-
+		delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
+		
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 20) {
 			// Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
@@ -1951,8 +1953,9 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 				SERIAL_ECHOPGM(" < ");
 				MYSERIAL.println(Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 		}
-
 		result = calculate_machine_skew_and_offset_LS(pts, 4, bed_ref_points_4, vec_x, vec_y, cntr, verbosity_level);
+		delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
+		
 		if (result >= 0) {
 			world2machine_update(vec_x, vec_y, cntr);
 #if 1
@@ -2254,7 +2257,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
 #endif
 
     // Correct the current_position to match the transformed coordinate system after world2machine_rotation_and_skew and world2machine_shift were set.
-    world2machine_update_current();
+	world2machine_update_current();
 
     enable_endstops(false);
     enable_z_endstop(false);
