@@ -1602,6 +1602,20 @@ inline void gcode_M900() {
     }
 #endif // LIN_ADVANCE
 
+bool check_commands() {
+	bool end_command_found = false;
+	
+		while (buflen)
+		{
+		if ((code_seen("M84")) || (code_seen("M 84"))) end_command_found = true;
+		if (!cmdbuffer_front_already_processed)
+			 cmdqueue_pop_front();
+		cmdbuffer_front_already_processed = false;
+		}
+	return end_command_found;
+	
+}
+
 #ifdef TMC2130
 bool calibrate_z_auto()
 {

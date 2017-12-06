@@ -468,6 +468,11 @@ void CardReader::removeFile(char* name)
   
 }
 
+uint32_t CardReader::getFileSize()
+{
+	return filesize;
+}
+
 void CardReader::getStatus()
 {
   if(sdprinting){
@@ -669,8 +674,8 @@ void CardReader::printingHasFinished()
       sdprinting = false;
       if(SD_FINISHED_STEPPERRELEASE)
       {
-          //finishAndDisableSteppers();
-          enquecommand_P(PSTR(SD_FINISHED_RELEASECOMMAND));
+          finishAndDisableSteppers();
+          //enquecommand_P(PSTR(SD_FINISHED_RELEASECOMMAND));
       }
       autotempShutdown();
     }

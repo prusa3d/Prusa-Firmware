@@ -6156,37 +6156,59 @@ static void menu_action_setlang(unsigned char lang) {
 static void menu_action_function(menuFunc_t data) {
   (*data)();
 }
+
+static bool check_file(const char* filename) {
+	bool result = false;
+	uint32_t filesize;
+	card.openFile(filename, true);
+	filesize = card.getFileSize();
+	if (filesize > END_FILE_SECTION) {
+		card.setIndex(filesize - END_FILE_SECTION);
+		
+	}
+	
+		while (!card.eof() && !result) {
+		card.sdprinting = true;
+		get_command();
+		result = check_commands();
+		
+	}
+	card.printingHasFinished();
+	strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
+	return result;
+	
+}
+
 static void menu_action_sdfile(const char* filename, char* longFilename)
 {
   loading_flag = false;
   char cmd[30];
   char* c;
+  bool result = true;
   sprintf_P(cmd, PSTR("M23 %s"), filename);
   for (c = &cmd[4]; *c; c++)
     *c = tolower(*c);
-  enquecommand(cmd);
-  for (int i = 0; i < 8; i++) {
-	  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, filename[i]);
+  
+  if (!check_file(filename)) {
+	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILE_INCOMPLETE, false, false);
+	  lcd_update_enable(true);
   }
+  if (result) {
 
-  uint8_t depth = (uint8_t)card.getWorkDirDepth();
+	  uint8_t depth = (uint8_t)card.getWorkDirDepth();
 
- //char dir_name[9];
+	  for (uint8_t i = 0; i < depth; i++) {
+		  for (int j = 0; j < 8; j++) {
+			  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
+		  }
 
-  for (uint8_t i = 0; i < depth; i++) {
-	  //card.getDirName(dir_name, i + 1);
-	  //dir_name[8] = '\0';
-	  //MYSERIAL.println(dir_name);
-	  for (int j = 0; j < 8; j++) {
-		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8*i, dir_names[i][j]);
-		  //eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_name[j]);
 	  }
+	  eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
 
+	  enquecommand(cmd);
+	  enquecommand_P(PSTR("M24"));
   }
-  //MYSERIAL.println(int(depth));
-  eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
 
-  enquecommand_P(PSTR("M24"));
   lcd_return_to_status();
 }
 static void menu_action_sddirectory(const char* filename, char* longFilename)
