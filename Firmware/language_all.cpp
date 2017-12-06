@@ -621,6 +621,13 @@ const char * const MSG_FILAMENT_LOADING_T3_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENT_LOADING_T3_CZ
 };
 
+const char MSG_FILE_INCOMPLETE_EN[] PROGMEM = "File incomplete. Continue anyway?";
+const char MSG_FILE_INCOMPLETE_CZ[] PROGMEM = "Soubor nekompletni. Pokracovat?";
+const char * const MSG_FILE_INCOMPLETE_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FILE_INCOMPLETE_EN,
+	MSG_FILE_INCOMPLETE_CZ
+};
+
 const char MSG_FILE_PRINTED_EN[] PROGMEM = "Done printing file";
 const char * const MSG_FILE_PRINTED_LANG_TABLE[1] PROGMEM = {
 	MSG_FILE_PRINTED_EN

@@ -379,6 +379,7 @@ float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
 
 void wait_for_heater(long codenum);
 void serialecho_temperatures();
+bool check_commands();
 
 void uvlo_();
 void recover_print(uint8_t automatic); 

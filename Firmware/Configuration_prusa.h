@@ -512,6 +512,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
 
+#define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
+
 // How much shall the print head be lifted on power panic?
 // Ideally the Z axis will reach a zero phase of the stepper driver on power outage. To simplify this,
 // UVLO_Z_AXIS_SHIFT shall be an integer multiply of the stepper driver cycle, that is 4x full step.

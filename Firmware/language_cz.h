@@ -352,3 +352,4 @@
 #define MSG_RECOVER_PRINT					"Detekovan vypadek proudu.Obnovit tisk?"
 #define MSG_PRESS_TO_UNLOAD					"Pro vysunuti filamentu stisknete prosim tlacitko"	
 #define MSG_UNLOAD_SUCCESSFULL				"Opakovat vysunuti filamentu?"
+#define MSG_FILE_INCOMPLETE					"Soubor nekompletni. Pokracovat?"

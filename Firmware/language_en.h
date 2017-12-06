@@ -368,3 +368,5 @@
 #define(length=17, lines=1) MSG_FANS_CHECK_OFF					"Fans check  [off]"
 #define(length=20, lines=4) MSG_PRESS_TO_UNLOAD					"Please press the knob to unload filament"
 #define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Repeat unloading filament?"
+#define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
+
