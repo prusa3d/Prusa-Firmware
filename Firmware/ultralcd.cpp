@@ -6195,6 +6195,10 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
   }
   if (result) {
 
+	  for (int i = 0; i < 8; i++) {
+		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, filename[i]);
+	  }
+
 	  uint8_t depth = (uint8_t)card.getWorkDirDepth();
 
 	  for (uint8_t i = 0; i < depth; i++) {
