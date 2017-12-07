@@ -101,7 +101,7 @@ class MarlinSerial //: public Stream
     {
       return (unsigned int)(RX_BUFFER_SIZE + rx_buffer.head - rx_buffer.tail) % RX_BUFFER_SIZE;
     }
-    
+    /*
     FORCE_INLINE void write(uint8_t c)
     {
       while (!((M_UCSRxA) & (1 << M_UDREx)))
@@ -109,7 +109,20 @@ class MarlinSerial //: public Stream
 
       M_UDRx = c;
     }
-    
+    */
+	void write(uint8_t c)
+		{
+		if (selectedSerialPort == 0) {
+			while (!((M_UCSRxA) & (1 << M_UDREx)))
+				;
+				M_UDRx = c;
+		}
+		else if (selectedSerialPort == 1) {
+			while (!((UCSR1A) & (1 << UDRE1)))
+				;
+				UDR1 = c;
+		}
+	}
     
     void checkRx(void)
     {
@@ -135,14 +148,14 @@ class MarlinSerial //: public Stream
                 }
             }
         } else if(selectedSerialPort == 1) {
-            if((UCSR2A & (1<<RXC2)) != 0) {
+            if((UCSR1A & (1<<RXC1)) != 0) {
                 // Test for a framing error.
-                if (UCSR2A & (1<<FE2)) {
+                if (UCSR1A & (1<<FE1)) {
                     // Characters received with the framing errors will be ignored.
                     // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
-                    volatile unsigned char c = UDR2;
+                    volatile unsigned char c = UDR1;
                 } else {
-                    unsigned char c  =  UDR2;
+                    unsigned char c  =  UDR1;
                     int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
                     // if we should be storing the received character into the location
                     // just before the tail (meaning that the head would advance to the
