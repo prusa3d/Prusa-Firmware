@@ -6160,7 +6160,7 @@ static void menu_action_function(menuFunc_t data) {
 static bool check_file(const char* filename) {
 	bool result = false;
 	uint32_t filesize;
-	card.openFile(filename, true);
+	card.openFile((char*)filename, true);
 	filesize = card.getFileSize();
 	if (filesize > END_FILE_SECTION) {
 		card.setIndex(filesize - END_FILE_SECTION);
