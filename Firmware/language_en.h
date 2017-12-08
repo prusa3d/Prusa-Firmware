@@ -370,3 +370,6 @@
 #define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Repeat unloading filament?"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
 
+#define(length=17, lines=1) MSG_SECOND_SERIAL_ON				"2nd USART    [on]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_OFF				"2nd USART   [off]"
+

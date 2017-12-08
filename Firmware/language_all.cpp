@@ -1505,6 +1505,16 @@ const char * const MSG_SD_WRITE_TO_FILE_LANG_TABLE[1] PROGMEM = {
 	MSG_SD_WRITE_TO_FILE_EN
 };
 
+const char MSG_SECOND_SERIAL_OFF_EN[] PROGMEM = "2nd USART   [off]";
+const char * const MSG_SECOND_SERIAL_OFF_LANG_TABLE[1] PROGMEM = {
+	MSG_SECOND_SERIAL_OFF_EN
+};
+
+const char MSG_SECOND_SERIAL_ON_EN[] PROGMEM = "2nd USART    [on]";
+const char * const MSG_SECOND_SERIAL_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_SECOND_SERIAL_ON_EN
+};
+
 const char MSG_SELFTEST_EN[] PROGMEM = "Selftest         ";
 const char * const MSG_SELFTEST_LANG_TABLE[1] PROGMEM = {
 	MSG_SELFTEST_EN
