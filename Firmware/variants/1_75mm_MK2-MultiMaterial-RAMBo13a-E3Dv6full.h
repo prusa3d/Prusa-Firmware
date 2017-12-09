@@ -81,6 +81,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define Z_AXIS_ALWAYS_ON 1
 
+// Define to include M42 & M226 commands
+//#define WITH_M42_M226
+
 /*------------------------------------
 EXTRUDER SETTINGS
 *------------------------------------*/

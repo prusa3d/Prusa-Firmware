@@ -463,7 +463,9 @@ static int serial_count = 0;  //index of character read from serial line
 static boolean comment_mode = false;
 static char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
+#ifdef WITH_M42_M226
 const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
+#endif
 
 //static float tt = 0;
 //static float bt = 0;
@@ -1022,12 +1024,18 @@ void factory_reset(char level, bool quiet)
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+	setup_killpin();
+	setup_powerhold();
+
+	MYSERIAL.begin(BAUDRATE);
+	SERIAL_ECHO_START;
+	SERIAL_PROTOCOLLNPGM("start");
+
 	lcd_init();
 	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
 	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	delay(2000); lcd_implementation_clear();
-	setup_killpin();
-	setup_powerhold();
+
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF))
@@ -1038,14 +1046,10 @@ void setup()
 		prusa_statistics(8);
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
-        selectedSerialPort = 1;
+		selectedSerialPort = 1;
 	} else {
-        selectedSerialPort = 0;
-    }
-	MYSERIAL.begin(BAUDRATE);
-	SERIAL_PROTOCOLLNPGM("start");
-	SERIAL_ECHO_START;
-
+		selectedSerialPort = 0;
+	}
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
@@ -2336,7 +2340,7 @@ void gcode_M701() {
 	current_position[E_AXIS] += 70;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
 
-	current_position[E_AXIS] += 50;
+	current_position[E_AXIS] += 40;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
 	st_synchronize();
 
@@ -4167,6 +4171,7 @@ void process_commands()
       autotempShutdown();
       }
       break;
+#ifdef WITH_M42_M226
     case 42: //M42 -Change pin status via gcode
       if (code_seen('S'))
       {
@@ -4194,7 +4199,7 @@ void process_commands()
         }
       }
      break;
-
+#endif
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
 
 		// Reset the baby step value and the baby step applied flag.
@@ -5208,6 +5213,8 @@ Sigma_Exit:
     }
     break;
 
+
+#ifdef WITH_M42_M226
 	case 226: // M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
 	{
       if(code_seen('P')){
@@ -5259,7 +5266,7 @@ Sigma_Exit:
       }
     }
     break;
-
+#endif
     #if NUM_SERVOS > 0
     case 280: // M280 - set servo position absolute. P: servo index, S: angle or microseconds
       {

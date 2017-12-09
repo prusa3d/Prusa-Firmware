@@ -559,48 +559,6 @@ static void lcd_implementation_init(
             progress_bar_set
         #endif
     );
-
-    lcd.clear();
-}
-
-
-static void lcd_implementation_init_noclear(
-  #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-    bool progress_bar_set=true
-  #endif
-) {
-
-#if defined(LCD_I2C_TYPE_PCF8575)
-    lcd.begin_noclear(LCD_WIDTH, LCD_HEIGHT);
-  #ifdef LCD_I2C_PIN_BL
-    lcd.setBacklightPin(LCD_I2C_PIN_BL,POSITIVE);
-    lcd.setBacklight(HIGH);
-  #endif
-  
-#elif defined(LCD_I2C_TYPE_MCP23017)
-    lcd.setMCPType(LTI_TYPE_MCP23017);
-    lcd.begin_noclear(LCD_WIDTH, LCD_HEIGHT);
-    lcd.setBacklight(0); //set all the LEDs off to begin with
-    
-#elif defined(LCD_I2C_TYPE_MCP23008)
-    lcd.setMCPType(LTI_TYPE_MCP23008);
-    lcd.begin_noclear(LCD_WIDTH, LCD_HEIGHT);
-
-#elif defined(LCD_I2C_TYPE_PCA8574)
-      lcd.init();
-      lcd.backlight();
-    
-#else
-    lcd.begin(LCD_WIDTH, LCD_HEIGHT, LCD_5x8DOTS, true);
-#endif
-
-    lcd_set_custom_characters(
-        #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-            progress_bar_set
-        #endif
-    );
-
-
 }
 
 

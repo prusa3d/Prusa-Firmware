@@ -427,14 +427,15 @@ static void lcd_status_screen()
     firstrun = 0;
     set_language_from_EEPROM();
      
-      if(lcd_status_message_level == 0){
-          strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
-      }
-	if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
-	{
-		eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-		eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
-	}
+    if(lcd_status_message_level == 0){
+      strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
+    }
+
+    if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
+    {
+	eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+	eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+    }
   }
 
   
@@ -446,7 +447,7 @@ static void lcd_status_screen()
   {
     ReInitLCD++;
 
-
+    // Re-init lcd every 30 re-draw updates (Why? Are things this un-reliable?)
     if (ReInitLCD == 30) {
       lcd_implementation_init( // to maybe revive the LCD if static electricity killed it.
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
@@ -454,24 +455,9 @@ static void lcd_status_screen()
 #endif
       );
       ReInitLCD = 0 ;
-    } else {
-
-      if ((ReInitLCD % 10) == 0) {
-        //lcd_implementation_nodisplay();
-        lcd_implementation_init_noclear( // to maybe revive the LCD if static electricity killed it.
-#if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-          currentMenu == lcd_status_screen
-#endif
-        );
-
-      }
-
     }
 
-
-    //lcd_implementation_display();
     lcd_implementation_status_screen();
-    //lcd_implementation_clear();
 
 	if (farm_mode)
 	{
