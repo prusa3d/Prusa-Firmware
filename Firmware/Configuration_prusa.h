@@ -89,6 +89,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Automatic recovery after crash is detected
 #define AUTOMATIC_RECOVERY_AFTER_CRASH
 
+// Disable some commands
+#define _DISABLE_M42_M226
+
 //DEBUG
 //#define _NO_ASM
 #define DEBUG_DCODES //D codes
