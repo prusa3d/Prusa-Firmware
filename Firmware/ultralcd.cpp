@@ -1484,6 +1484,9 @@ static void lcd_support_menu()
 
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
 
+  MENU_ITEM(back, PSTR("Firmware:"), lcd_main_menu);
+  MENU_ITEM(back, PSTR(" " FW_report_version), lcd_main_menu);
+#if 0
   // Ideally this block would be optimized out by the compiler.
   const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
   if (fw_string_len < 6) {
@@ -1491,7 +1494,7 @@ static void lcd_support_menu()
   } else {
       MENU_ITEM(back, PSTR("FW - " FW_version), lcd_main_menu);
   }
-      
+#endif      
   MENU_ITEM(back, MSG_PRUSA3D, lcd_main_menu);
   MENU_ITEM(back, MSG_PRUSA3D_FORUM, lcd_main_menu);
   MENU_ITEM(back, MSG_PRUSA3D_HOWTO, lcd_main_menu);

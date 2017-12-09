@@ -4,8 +4,14 @@
 #include "boards.h"
 #include "Configuration_prusa.h"
 
+// Stringize helpers
+#define XSTR(s) #s
+#define STR(s) XSTR(s)
+
 // Firmware version
 #define FW_version "3.1.0"
+#define FW_local_variant 3
+#define FW_report_version FW_version " r" STR(FW_local_variant)
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
