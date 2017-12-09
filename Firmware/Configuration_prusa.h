@@ -63,17 +63,26 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define Z_PAUSE_LIFT 20
 
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
-#define HOMING_FEEDRATE {2500, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
+#define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
 
-//#define DEFAULT_MAX_FEEDRATE          {400, 400, 12, 120}    // (mm/sec)
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {1000, 1000, 200, 5000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}      // (mm/sec)   max feedrate (M203)
+#define DEFAULT_MAX_ACCELERATION      {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
 
-#define DEFAULT_ACCELERATION          1250   // X, Y, Z and E max acceleration in mm/s^2 for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts
+
+#define DEFAULT_ACCELERATION          1250   // X, Y, Z and E max acceleration in mm/s^2 for printing moves (M204S)
+#define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts (M204T)
 
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
-//#define MAX_SILENT_FEEDRATE           2700   // 
+
+//Silent mode limits
+#define SILENT_MAX_ACCEL_X  800 // X-axis max acceleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_Y  800 // Y-axis max axxeleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_X_ST (100*SILENT_MAX_ACCEL_X) // X max accel in steps/s^2
+#define SILENT_MAX_ACCEL_Y_ST (100*SILENT_MAX_ACCEL_Y) // Y max accel in steps/s^2
+#define SILENT_MAX_FEEDRATE 80  //because mode switched to normal for homming in mm/s, this value limits also homing, it should be greater (80mm/s=4800mm/min>2700mm/min)
+
+//cannot compile (ultralcd.cpp, line 6165), please FIX
+#define END_FILE_SECTION 0
 
 #define Z_AXIS_ALWAYS_ON 1
 
@@ -511,8 +520,6 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #else
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
-
-#define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
 
 // How much shall the print head be lifted on power panic?
 // Ideally the Z axis will reach a zero phase of the stepper driver on power outage. To simplify this,
