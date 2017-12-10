@@ -96,6 +96,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //#define _NO_ASM
 #define DEBUG_DCODES //D codes
 #if 1
+#define DEBUG_STACK_MONITOR        //Stack monitor in stepper ISR
 //#define DEBUG_FSENSOR_LOG          //Reports fsensor status to serial
 //#define DEBUG_CRASHDET_COUNTERS  //Display crash-detection counters on LCD
 //#define DEBUG_RESUME_PRINT       //Resume/save print debug enable 

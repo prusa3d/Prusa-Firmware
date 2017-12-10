@@ -1534,15 +1534,25 @@ static void lcd_menu_fails_stats()
     lcd.print(" Filament fails:    ");
     lcd.setCursor(17, 3);
     lcd.print(itostr3((int)ferror_count));
-    
 
-    
-    if (lcd_clicked())
+	if (lcd_clicked())
     {
         lcd_quick_feedback();
         lcd_return_to_status();
     }
     
+}
+
+extern uint16_t SP_min;
+static void lcd_menu_debug()
+{
+	fprintf_P(lcdout, PSTR(ESC_H(1,1)"SP_min: 0x%04x"), SP_min);
+
+	if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_return_to_status();
+    }
 }
 
 static void lcd_menu_temperatures()
@@ -4931,7 +4941,9 @@ static void lcd_main_menu()
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
     
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
-    
+
+  MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
+
   END_MENU();
 
 }
