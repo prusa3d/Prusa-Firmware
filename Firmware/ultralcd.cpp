@@ -1544,9 +1544,12 @@ static void lcd_menu_fails_stats()
 }
 
 extern uint16_t SP_min;
+extern char* __malloc_heap_start;
+extern char* __malloc_heap_end;
+
 static void lcd_menu_debug()
 {
-	fprintf_P(lcdout, PSTR(ESC_H(1,1)"SP_min: 0x%04x"), SP_min);
+	fprintf_P(lcdout, PSTR(ESC_H(1,1)"RAM statistics"ESC_H(5,1)"SP_min: 0x%04x"ESC_H(1,2)"heap_start: 0x%04x"ESC_H(3,3)"heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
 
 	if (lcd_clicked())
     {
