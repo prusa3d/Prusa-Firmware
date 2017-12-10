@@ -462,6 +462,21 @@ void lcd_set_custom_characters_arrows()
     lcd.createChar(1, arrdown);
 }
 
+void lcd_set_custom_characters_progress()
+ {
+  byte progress[8] = {
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+  };
+  lcd.createChar(1, progress);
+ }
+
 void lcd_set_custom_characters_nextpage()
  {
 

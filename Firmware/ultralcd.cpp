@@ -3223,6 +3223,23 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
   } while (--size);
 }
 
+#ifdef SDCARD_SORT_ALPHA
+static void lcd_sort_type_set() {
+	uint8_t sdSort;
+		EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	switch (sdSort) {
+		case SD_SORT_TIME: sdSort = SD_SORT_ALPHA; break;
+		case SD_SORT_ALPHA: sdSort = SD_SORT_NONE; break;
+		default: sdSort = SD_SORT_TIME;
+	}
+	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
+	lcd_goto_menu(lcd_sdcard_menu, 1);
+	//lcd_update(2);
+	//delay(1000);	
+	card.presort();
+}
+#endif //SDCARD_SORT_ALPHA
+
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
@@ -3277,6 +3294,16 @@ static void lcd_fsensor_state_set()
 	else lcd_goto_menu(lcd_settings_menu, 7);
     
 }
+
+#if !SDSORT_USES_RAM
+void lcd_set_arrows() {
+	void lcd_set_custom_characters_arrows();
+}
+
+void lcd_set_progress() {
+	lcd_set_custom_characters_progress();
+}
+#endif
 
 void lcd_force_language_selection() {
   eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
@@ -5178,8 +5205,7 @@ void getFileDescription(char *name, char *description) {
 
 void lcd_sdcard_menu()
 {
-
-	int tempScrool = 0;
+  int tempScrool = 0;
   if (lcdDrawUpdate == 0 && LCD_CLICKED == 0)
     //delay(100);
     return; // nothing to do (so don't thrash the SD card)
@@ -5201,22 +5227,24 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-#ifndef SDCARD_RATHERRECENTFIRST
-      card.getfilename(i);
-#else
-      card.getfilename(fileCnt - 1 - i);
-#endif
-      if (card.filenameIsDir)
-      {
-        MENU_ITEM(sddirectory, MSG_CARD_MENU, card.filename, card.longFilename);
-      } else {
-
-        MENU_ITEM(sdfile, MSG_CARD_MENU, card.filename, card.longFilename);
-
-
-
-
-      }
+		const uint16_t nr = (sdSort == SD_SORT_NONE) ? (fileCnt - 1 - i) : i;
+		/*#ifdef SDCARD_RATHERRECENTFIRST
+			#ifndef SDCARD_SORT_ALPHA
+				fileCnt - 1 -
+			#endif
+		#endif
+		i;*/
+		#ifdef SDCARD_SORT_ALPHA
+			if (sdSort == SD_SORT_NONE) card.getfilename(nr);
+			else card.getfilename_sorted(nr);
+		#else
+			 card.getfilename(nr);
+		#endif
+			
+		if (card.filenameIsDir)
+			MENU_ITEM(sddirectory, MSG_CARD_MENU, card.filename, card.longFilename);
+		else
+			MENU_ITEM(sdfile, MSG_CARD_MENU, card.filename, card.longFilename);
     } else {
       MENU_ITEM_DUMMY();
     }
