@@ -41,6 +41,10 @@
 int fsensor_counter = 0; //counter for e-steps
 #endif //PAT9125
 
+#ifdef DEBUG_STACK_MONITOR
+uint16_t SP_min = 0x21FF;
+#endif //DEBUG_STACK_MONITOR
+
 //===========================================================================
 //=============================public variables  ============================
 //===========================================================================
@@ -371,6 +375,10 @@ FORCE_INLINE void trapezoid_generator_reset() {
 // "The Stepper Driver Interrupt" - This timer interrupt is the workhorse.
 // It pops blocks from the block_buffer and executes them by pulsing the stepper pins appropriately.
 ISR(TIMER1_COMPA_vect) {
+#ifdef DEBUG_STACK_MONITOR
+	uint16_t sp = SPL + 256 * SPH;
+	if (sp < SP_min) SP_min = sp;
+#endif //DEBUG_STACK_MONITOR
   #ifdef LIN_ADVANCE
     advance_isr_scheduler();
   #else
