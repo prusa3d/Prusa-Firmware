@@ -100,7 +100,9 @@
 #define SERIAL_PORT 0
 
 // This determines the communication speed of the printer
+#ifndef BAUDRATE
 #define BAUDRATE 115200
+#endif
 
 // This enables the serial port associated to the Bluetooth interface
 //#define BTENABLED              // Enable BT interface on AT90USB devices
