@@ -422,6 +422,11 @@ const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DATE_CZ
 };
 
+const char MSG_DEFAULT_SETTINGS_LOADED_EN[] PROGMEM = "Default settings loaded";
+const char * const MSG_DEFAULT_SETTINGS_LOADED_LANG_TABLE[1] PROGMEM = {
+	MSG_DEFAULT_SETTINGS_LOADED_EN
+};
+
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
 const char MSG_DISABLE_STEPPERS_CZ[] PROGMEM = "Vypnout motory";
 const char * const MSG_DISABLE_STEPPERS_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -619,6 +624,13 @@ const char MSG_FILAMENT_LOADING_T3_CZ[] PROGMEM = "Vlozte filament do extruderu 
 const char * const MSG_FILAMENT_LOADING_T3_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENT_LOADING_T3_EN,
 	MSG_FILAMENT_LOADING_T3_CZ
+};
+
+const char MSG_FILE_CNT_EN[] PROGMEM = "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100.";
+const char MSG_FILE_CNT_CZ[] PROGMEM = "Nektere soubory nebudou setrideny. Maximalni pocet souboru pro setrideni je 100.";
+const char * const MSG_FILE_CNT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FILE_CNT_EN,
+	MSG_FILE_CNT_CZ
 };
 
 const char MSG_FILE_INCOMPLETE_EN[] PROGMEM = "File incomplete. Continue anyway?";
@@ -1748,6 +1760,32 @@ const char * const MSG_SLIGHT_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {
 const char MSG_SOFTWARE_RESET_EN[] PROGMEM = " Software Reset";
 const char * const MSG_SOFTWARE_RESET_LANG_TABLE[1] PROGMEM = {
 	MSG_SOFTWARE_RESET_EN
+};
+
+const char MSG_SORTING_EN[] PROGMEM = "Sorting files";
+const char * const MSG_SORTING_LANG_TABLE[1] PROGMEM = {
+	MSG_SORTING_EN
+};
+
+const char MSG_SORT_ALPHA_EN[] PROGMEM = "Sort: [Alphabet]";
+const char MSG_SORT_ALPHA_CZ[] PROGMEM = "Trideni [Abeceda]";
+const char * const MSG_SORT_ALPHA_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SORT_ALPHA_EN,
+	MSG_SORT_ALPHA_CZ
+};
+
+const char MSG_SORT_NONE_EN[] PROGMEM = "Sort: [None]";
+const char MSG_SORT_NONE_CZ[] PROGMEM = "Trideni [Zadne]";
+const char * const MSG_SORT_NONE_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SORT_NONE_EN,
+	MSG_SORT_NONE_CZ
+};
+
+const char MSG_SORT_TIME_EN[] PROGMEM = "Sort: [Time]";
+const char MSG_SORT_TIME_CZ[] PROGMEM = "Trideni [Cas]";
+const char * const MSG_SORT_TIME_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SORT_TIME_EN,
+	MSG_SORT_TIME_CZ
 };
 
 const char MSG_SPEED_EN[] PROGMEM = "Speed";

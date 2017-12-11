@@ -121,6 +121,10 @@ extern void crashdet_disable();
 uint8_t snmm_extruder = 0;
 #endif
 
+#ifdef SDCARD_SORT_ALPHA
+ bool presort_flag = false;
+#endif
+
 int lcd_commands_type=LCD_COMMAND_IDLE;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
@@ -3233,7 +3237,8 @@ static void lcd_sort_type_set() {
 		default: sdSort = SD_SORT_TIME;
 	}
 	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
-	lcd_goto_menu(lcd_sdcard_menu, 1);
+	presort_flag = true;
+	lcd_goto_menu(lcd_settings_menu, 8);
 	//lcd_update(2);
 	//delay(1000);	
 	card.presort();
@@ -3296,8 +3301,8 @@ static void lcd_fsensor_state_set()
 }
 
 #if !SDSORT_USES_RAM
-void lcd_set_arrows() {
-	void lcd_set_custom_characters_arrows();
+void lcd_set_degree() {
+	lcd_set_custom_characters_degree();
 }
 
 void lcd_set_progress() {
@@ -3732,6 +3737,18 @@ static void lcd_settings_menu()
   } else {
     MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF, lcd_toshiba_flash_air_compatibility_toggle);
   }
+
+  #ifdef SDCARD_SORT_ALPHA
+	  if (!farm_mode) {
+	  uint8_t sdSort;
+	  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	  switch (sdSort) {
+		  case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+		  case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+		  default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
+	  }
+  }
+  #endif // SDCARD_SORT_ALPHA
     
     if (farm_mode)
     {
@@ -5205,7 +5222,12 @@ void getFileDescription(char *name, char *description) {
 
 void lcd_sdcard_menu()
 {
+  uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
   int tempScrool = 0;
+  if (presort_flag == true) {
+	  presort_flag = false;
+	  card.presort();
+  }
   if (lcdDrawUpdate == 0 && LCD_CLICKED == 0)
     //delay(100);
     return; // nothing to do (so don't thrash the SD card)
@@ -5227,7 +5249,7 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-		const uint16_t nr = (sdSort == SD_SORT_NONE) ? (fileCnt - 1 - i) : i;
+		const uint16_t nr = ((sdSort == SD_SORT_NONE) || farm_mode || (sdSort == SD_SORT_TIME)) ? (fileCnt - 1 - i) : i;
 		/*#ifdef SDCARD_RATHERRECENTFIRST
 			#ifndef SDCARD_SORT_ALPHA
 				fileCnt - 1 -
@@ -6471,6 +6493,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
         (*currentMenu)();
         menuExiting = false;
       }
+	      lcd_implementation_clear();
 		  lcd_return_to_status();
 		  lcdDrawUpdate = 2;
 	  }
