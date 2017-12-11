@@ -3239,9 +3239,6 @@ static void lcd_sort_type_set() {
 	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
 	presort_flag = true;
 	lcd_goto_menu(lcd_settings_menu, 8);
-	//lcd_update(2);
-	//delay(1000);	
-	card.presort();
 }
 #endif //SDCARD_SORT_ALPHA
 
