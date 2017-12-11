@@ -338,6 +338,7 @@
 
 #define MSG_CALIBRATE_Z_AUTO				"Kalibruji Z"
 #define MSG_FSENSOR_OFF						"Fil. senzor [vyp]"
+#define MSG_FSENSOR_NA						"Fil. senzor [err]"
 #define MSG_FSENSOR_ON						"Fil. senzor [zap]" 
 #define MSG_CRASHDETECT_ON					"Crash det.  [zap]"
 #define MSG_CRASHDETECT_OFF					"Crash det.  [vyp]"

@@ -719,6 +719,13 @@ const char * const MSG_FREE_MEMORY_LANG_TABLE[1] PROGMEM = {
 	MSG_FREE_MEMORY_EN
 };
 
+const char MSG_FSENSOR_NA_EN[] PROGMEM = "Fil. sensor [N/A]";
+const char MSG_FSENSOR_NA_CZ[] PROGMEM = "Fil. senzor [err]";
+const char * const MSG_FSENSOR_NA_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FSENSOR_NA_EN,
+	MSG_FSENSOR_NA_CZ
+};
+
 const char MSG_FSENSOR_OFF_EN[] PROGMEM = "Fil. sensor [off]";
 const char MSG_FSENSOR_OFF_CZ[] PROGMEM = "Fil. senzor [vyp]";
 const char * const MSG_FSENSOR_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {

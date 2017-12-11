@@ -344,6 +344,7 @@
 #define MSG_CRASHDETECT_OFF										"Crash det.  [off]"
 #define MSG_CRASHDETECT_ON										"Crash det.   [on]"
 #define MSG_FSENSOR_OFF											"Fil. sensor [off]"
+#define MSG_FSENSOR_NA											"Fil. sensor [N/A]"
 #define MSG_FSENSOR_ON											"Fil. sensor  [on]"
 
 #define(length=20, lines=4) MSG_PLACE_STEEL_SHEET				"Please place steel sheet on heatbed."

@@ -27,6 +27,9 @@ extern int16_t fsensor_chunk_len;
 extern bool fsensor_M600;
 //enable/disable flag
 extern bool fsensor_enabled;
+//not responding flag
+extern bool fsensor_not_responding;
+
 
 
 #endif //FSENSOR_H
