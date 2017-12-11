@@ -353,3 +353,7 @@
 #define MSG_PRESS_TO_UNLOAD					"Pro vysunuti filamentu stisknete prosim tlacitko"	
 #define MSG_UNLOAD_SUCCESSFULL				"Opakovat vysunuti filamentu?"
 #define MSG_FILE_INCOMPLETE					"Soubor nekompletni. Pokracovat?"
+#define MSG_FILE_CNT						"Nektere soubory nebudou setrideny. Maximalni pocet souboru pro setrideni je 100."
+#define MSG_SORT_TIME						"Trideni [Cas]"
+#define MSG_SORT_ALPHA						"Trideni [Abeceda]"
+#define MSG_SORT_NONE						"Trideni [Zadne]"

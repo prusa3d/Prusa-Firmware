@@ -322,6 +322,8 @@ int fan_speed[2];
 
 char dir_names[3][9];
 
+bool sortAlpha = false;
+
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
   #if EXTRUDERS > 1
@@ -1097,6 +1099,9 @@ void setup()
 	}
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
+	}
+	if (eeprom_read_byte((uint8_t*)EEPROM_SD_SORT) == 255) {
+		eeprom_write_byte((uint8_t*)EEPROM_SD_SORT, 0);
 	}
 
 	check_babystep(); //checking if Z babystep is in allowed range

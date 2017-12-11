@@ -9,7 +9,7 @@
 
 // Firmware version
 #define FW_version "3.1.1-RC1"
-#define FW_build   128
+#define FW_build   129
 //#define FW_build   --BUILD-NUMBER--
 #define FW_version_build FW_version " b" STR(FW_build)
 
@@ -81,6 +81,7 @@
 #define EEPROM_POWER_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-17)
 #define EEPROM_DIR_DEPTH        (EEPROM_POWER_COUNT-1)
 #define EEPROM_DIRS  (EEPROM_DIR_DEPTH-80) //8 chars for each dir name, max 10 levels
+#define EEPROM_SD_SORT (EEPROM_DIRS - 1) //0 -time, 1-alpha, 2-none
 
 //TMC2130 configuration
 #define EEPROM_TMC_AXIS_SIZE  //axis configuration block size
