@@ -1538,15 +1538,28 @@ static void lcd_menu_fails_stats()
     lcd.print(" Filament fails:    ");
     lcd.setCursor(17, 3);
     lcd.print(itostr3((int)ferror_count));
-    
 
-    
-    if (lcd_clicked())
+	if (lcd_clicked())
     {
         lcd_quick_feedback();
         lcd_return_to_status();
     }
     
+}
+
+extern uint16_t SP_min;
+extern char* __malloc_heap_start;
+extern char* __malloc_heap_end;
+
+static void lcd_menu_debug()
+{
+	fprintf_P(lcdout, PSTR(ESC_H(1,1)"RAM statistics"ESC_H(5,1)"SP_min: 0x%04x"ESC_H(1,2)"heap_start: 0x%04x"ESC_H(3,3)"heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
+
+	if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_return_to_status();
+    }
 }
 
 static void lcd_menu_temperatures()
@@ -4972,7 +4985,9 @@ static void lcd_main_menu()
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
     
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
-    
+
+  MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
+
   END_MENU();
 
 }
@@ -6207,7 +6222,7 @@ static void menu_action_function(menuFunc_t data) {
 static bool check_file(const char* filename) {
 	bool result = false;
 	uint32_t filesize;
-	card.openFile(filename, true);
+	card.openFile((char*)filename, true);
 	filesize = card.getFileSize();
 	if (filesize > END_FILE_SECTION) {
 		card.setIndex(filesize - END_FILE_SECTION);
@@ -6235,23 +6250,25 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
   sprintf_P(cmd, PSTR("M23 %s"), filename);
   for (c = &cmd[4]; *c; c++)
     *c = tolower(*c);
+
+  for (int i = 0; i < 8; i++) {
+	  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, filename[i]);
+  }
+
+  uint8_t depth = (uint8_t)card.getWorkDirDepth();
+  eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
+
+  for (uint8_t i = 0; i < depth; i++) {
+	  for (int j = 0; j < 8; j++) {
+		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
+	  }
+  }
   
   if (!check_file(filename)) {
 	  result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILE_INCOMPLETE, false, false);
 	  lcd_update_enable(true);
   }
   if (result) {
-
-	  uint8_t depth = (uint8_t)card.getWorkDirDepth();
-
-	  for (uint8_t i = 0; i < depth; i++) {
-		  for (int j = 0; j < 8; j++) {
-			  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
-		  }
-
-	  }
-	  eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
-
 	  enquecommand(cmd);
 	  enquecommand_P(PSTR("M24"));
   }

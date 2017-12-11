@@ -441,7 +441,9 @@ static float feedrate = 1500.0, next_feedrate, saved_feedrate;
 // Also there is bool axis_relative_modes[] per axis flag.
 static bool relative_mode = false;  
 
+#ifndef _DISABLE_M42_M226
 const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
+#endif //_DISABLE_M42_M226
 
 //static float tt = 0;
 //static float bt = 0;
@@ -3907,6 +3909,7 @@ void process_commands()
       autotempShutdown();
       }
       break;
+#ifndef _DISABLE_M42_M226
     case 42: //M42 -Change pin status via gcode
       if (code_seen('S'))
       {
@@ -3934,7 +3937,7 @@ void process_commands()
         }
       }
      break;
-
+#endif //_DISABLE_M42_M226
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
 
 		// Reset the baby step value and the baby step applied flag.
@@ -4950,6 +4953,7 @@ Sigma_Exit:
     }
     break;
 
+#ifndef _DISABLE_M42_M226
 	case 226: // M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
 	{
       if(code_seen('P')){
@@ -5001,6 +5005,7 @@ Sigma_Exit:
       }
     }
     break;
+#endif //_DISABLE_M42_M226
 
     #if NUM_SERVOS > 0
     case 280: // M280 - set servo position absolute. P: servo index, S: angle or microseconds
