@@ -3687,6 +3687,8 @@ static void lcd_crash_menu()
 {
 }
 
+extern bool fsensor_not_responding;
+
 static void lcd_settings_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -3705,7 +3707,10 @@ static void lcd_settings_menu()
   }
 
   if (FSensorStateMenu == 0) {
-    MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
+	  if (fsensor_not_responding)
+		MENU_ITEM(function, MSG_FSENSOR_NA, lcd_fsensor_state_set);
+	  else
+		MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
   } else {
     MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
   }
