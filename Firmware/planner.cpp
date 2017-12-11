@@ -1043,13 +1043,10 @@ Having the real displacement of the head, we can calculate the total movement le
 		if(((float)block->acceleration_st * (float)block->steps_y / (float)block->step_event_count) > SILENT_MAX_ACCEL_Y_ST)
 		  block->acceleration_st = SILENT_MAX_ACCEL_Y_ST;
 	}
-	else
-	{
-		if(((float)block->acceleration_st * (float)block->steps_x / (float)block->step_event_count) > axis_steps_per_sqr_second[X_AXIS])
-		  block->acceleration_st = axis_steps_per_sqr_second[X_AXIS];
-		if(((float)block->acceleration_st * (float)block->steps_y / (float)block->step_event_count) > axis_steps_per_sqr_second[Y_AXIS])
-		  block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS];
-	}
+	if(((float)block->acceleration_st * (float)block->steps_x / (float)block->step_event_count) > axis_steps_per_sqr_second[X_AXIS])
+	  block->acceleration_st = axis_steps_per_sqr_second[X_AXIS];
+	if(((float)block->acceleration_st * (float)block->steps_y / (float)block->step_event_count) > axis_steps_per_sqr_second[Y_AXIS])
+	  block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS];
 	if(((float)block->acceleration_st * (float)block->steps_e / (float)block->step_event_count) > axis_steps_per_sqr_second[E_AXIS])
 	  block->acceleration_st = axis_steps_per_sqr_second[E_AXIS];
 	if(((float)block->acceleration_st * (float)block->steps_z / (float)block->step_event_count ) > axis_steps_per_sqr_second[Z_AXIS])
