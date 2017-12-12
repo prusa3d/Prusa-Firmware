@@ -601,6 +601,7 @@ void crashdet_disable()
 {
 	MYSERIAL.println("crashdet_disable"); 
 	tmc2130_sg_stop_on_crash = false;
+	tmc2130_sg_crash = false;
 	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
 	CrashDetectMenu = 0;
 }

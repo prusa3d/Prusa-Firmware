@@ -75,11 +75,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 
 //Silent mode limits
-#define SILENT_MAX_ACCEL_X  900 // X-axis max acceleration in silent mode in mm/s^2
-#define SILENT_MAX_ACCEL_Y  900 // Y-axis max axxeleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_X  1024 // X-axis max acceleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_Y  1024 // Y-axis max axxeleration in silent mode in mm/s^2
 #define SILENT_MAX_ACCEL_X_ST (100*SILENT_MAX_ACCEL_X) // X max accel in steps/s^2
 #define SILENT_MAX_ACCEL_Y_ST (100*SILENT_MAX_ACCEL_Y) // Y max accel in steps/s^2
-#define SILENT_MAX_FEEDRATE 120  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (120mm/s=7200mm/min>2700mm/min)
+#define SILENT_MAX_FEEDRATE 192  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (120mm/s=7200mm/min>2700mm/min)
 
 //number of bytes from end of the file to start check
 #define END_FILE_SECTION 10000
