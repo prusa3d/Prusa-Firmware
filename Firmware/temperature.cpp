@@ -1465,6 +1465,7 @@ void min_temp_error(uint8_t e) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
+if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
   disable_heater();
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
@@ -1498,6 +1499,7 @@ void bed_min_temp_error(void) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
+if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
 #if HEATER_BED_PIN > -1
     WRITE(HEATER_BED_PIN, 0);
 #endif
