@@ -5433,6 +5433,9 @@ static bool lcd_selftest()
 
 	lcd_implementation_clear();
 	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_START);
+	#ifdef TMC2130
+	  FORCE_HIGH_POWER_START;
+	#endif // TMC2130
 	delay(2000);
 
 	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
@@ -5545,6 +5548,9 @@ static bool lcd_selftest()
 	{
 		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_FAILED);
 	}
+	#ifdef TMC2130
+	  FORCE_HIGH_POWER_END;
+	#endif // TMC2130
 	return(_result);
 }
 
