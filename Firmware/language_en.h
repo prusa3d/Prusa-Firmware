@@ -377,3 +377,5 @@
 #define(length=17, lines=1) MSG_SORT_NONE						"Sort: [None]"
 #define(length=20, lines=1) MSG_SORTING							"Sorting files"
 #define(length=20, lines=4) MSG_FILE_CNT						"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
+#define(length=17, lines=1) MSG_SECOND_SERIAL_ON				"2nd USART    [on]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_OFF				"2nd USART   [off]"

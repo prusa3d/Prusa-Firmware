@@ -3372,6 +3372,13 @@ void lcd_temp_calibration_set() {
 	lcd_goto_menu(lcd_settings_menu, 10);
 }
 
+void lcd_second_serial_set() {
+	if(selectedSerialPort == 1) selectedSerialPort = 0;
+	else selectedSerialPort = 1;
+	eeprom_update_byte((unsigned char *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
+	lcd_goto_menu(lcd_settings_menu, 11);
+}
+
 void lcd_calibrate_pinda() {
 	enquecommand_P(PSTR("G76"));
 	lcd_return_to_status();
@@ -3735,6 +3742,13 @@ static void lcd_settings_menu()
   else {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_ON, lcd_temp_calibration_set);
   }
+  if (selectedSerialPort == false) {
+	  MENU_ITEM(function, MSG_SECOND_SERIAL_OFF, lcd_second_serial_set);
+  }
+  else {
+	  MENU_ITEM(function, MSG_SECOND_SERIAL_ON, lcd_second_serial_set);
+  }
+
   if (SilentModeMenu == 0) {
 	  MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
   }
