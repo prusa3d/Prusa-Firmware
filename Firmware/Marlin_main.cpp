@@ -727,6 +727,7 @@ void factory_reset(char level, bool quiet)
             lcd_force_language_selection();
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
+			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
             farm_no = 0;
 			farm_mode == false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
@@ -1998,6 +1999,7 @@ bool gcode_M45(bool onlyZ) {
 				if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION)
 					// Shipped, the nozzle height has been set already. The user can start printing now.
 					calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+					final_result = true;
 				// babystep_apply();
 			}
 		}
