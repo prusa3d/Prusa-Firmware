@@ -4924,7 +4924,7 @@ static void lcd_main_menu()
   }
 
 #ifdef SDSUPPORT
-  if (card.cardOK)
+  if (card.cardOK || lcd_commands_type == LCD_COMMAND_V2_CAL)
   {
     if (card.isFileOpen())
     {
@@ -4940,6 +4940,9 @@ static void lcd_main_menu()
 			MENU_ITEM(submenu, MSG_STOP_PRINT, lcd_sdcard_stop);
 		}
 	}
+	else if (lcd_commands_type == LCD_COMMAND_V2_CAL && mesh_bed_leveling_flag == false && homing_flag == false) {
+		//MENU_ITEM(submenu, MSG_STOP_PRINT, lcd_sdcard_stop);
+	}
 	else
 	{
 		if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
@@ -4951,6 +4954,7 @@ static void lcd_main_menu()
       MENU_ITEM(gcode, MSG_CNG_SDCARD, PSTR("M21"));  // SD-card changed by user
 #endif
     }
+	
   } else 
   {
     MENU_ITEM(submenu, MSG_NO_CARD, lcd_sdcard_menu);
@@ -5168,6 +5172,7 @@ void lcd_print_stop() {
 
 	lcd_return_to_status();
 	lcd_ignore_click(true);
+	lcd_commands_step = 0;
 	lcd_commands_type = LCD_COMMAND_STOP_PRINT;
 
 	// Turn off the print fan
