@@ -1679,7 +1679,7 @@ static void lcd_support_menu()
   }
   #ifndef MK1BP
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
-  if (!IS_SD_PRINTING && !is_usb_printing) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
+  if (!IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL)) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
     
   MENU_ITEM(submenu, PSTR("Belt status"), lcd_menu_belt_status);
@@ -3270,7 +3270,7 @@ static void lcd_silent_mode_set() {
   sei();
 #endif //TMC2130
   digipot_init();
-  if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 8);
+  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 8);
   else lcd_goto_menu(lcd_settings_menu, 7);
 }
 
@@ -3282,7 +3282,7 @@ static void lcd_crash_mode_set()
     }else{
         crashdet_enable();
     }
-	if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 9);
+	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 9);
 	else lcd_goto_menu(lcd_settings_menu, 9);
     
 }
@@ -3305,7 +3305,7 @@ static void lcd_fsensor_state_set()
     }else{
         fsensor_enable();
     }
-	if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 7);
+	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 7);
 	else lcd_goto_menu(lcd_settings_menu, 7);
     
 }
@@ -4909,13 +4909,13 @@ static void lcd_main_menu()
         
     }*/
     
-  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
+  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
 
 
-  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing )
+  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL))
   {
     MENU_ITEM(submenu, MSG_TUNE, lcd_tune_menu);
   } else 
@@ -4924,7 +4924,7 @@ static void lcd_main_menu()
   }
 
 #ifdef SDSUPPORT
-  if (card.cardOK)
+  if (card.cardOK || lcd_commands_type == LCD_COMMAND_V2_CAL)
   {
     if (card.isFileOpen())
     {
@@ -4940,9 +4940,12 @@ static void lcd_main_menu()
 			MENU_ITEM(submenu, MSG_STOP_PRINT, lcd_sdcard_stop);
 		}
 	}
+	else if (lcd_commands_type == LCD_COMMAND_V2_CAL && mesh_bed_leveling_flag == false && homing_flag == false) {
+		//MENU_ITEM(submenu, MSG_STOP_PRINT, lcd_sdcard_stop);
+	}
 	else
 	{
-		if (!is_usb_printing)
+		if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 		{
 			//if (farm_mode) MENU_ITEM(submenu, MSG_FARM_CARD_MENU, lcd_farm_sdcard_menu);
 			/*else*/ MENU_ITEM(submenu, MSG_CARD_MENU, lcd_sdcard_menu);
@@ -4951,6 +4954,7 @@ static void lcd_main_menu()
       MENU_ITEM(gcode, MSG_CNG_SDCARD, PSTR("M21"));  // SD-card changed by user
 #endif
     }
+	
   } else 
   {
     MENU_ITEM(submenu, MSG_NO_CARD, lcd_sdcard_menu);
@@ -4961,7 +4965,7 @@ static void lcd_main_menu()
 #endif
 
 
-  if (IS_SD_PRINTING || is_usb_printing)
+  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL))
   {
 	  if (farm_mode)
 	  {
@@ -4983,7 +4987,7 @@ static void lcd_main_menu()
     if(!isPrintPaused) MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);
   }
 
-  if (!is_usb_printing)
+  if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
   {
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
@@ -5168,6 +5172,7 @@ void lcd_print_stop() {
 
 	lcd_return_to_status();
 	lcd_ignore_click(true);
+	lcd_commands_step = 0;
 	lcd_commands_type = LCD_COMMAND_STOP_PRINT;
 
 	// Turn off the print fan
