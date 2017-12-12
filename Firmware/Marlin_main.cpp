@@ -630,7 +630,7 @@ void crashdet_stop_and_save_print2()
 
 void crashdet_detected()
 {
-	printf("CRASH_DETECTED");
+//	printf("CRASH_DETECTED");
 /*	while (!is_buffer_empty())
 	{
 		process_commands();
@@ -714,6 +714,11 @@ void factory_reset(char level, bool quiet)
 			WRITE(BEEPER, LOW);
 			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
 			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+
+			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT, 0);
+			eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
+			
 			lcd_menu_statistics();
             
 			break;
@@ -1071,7 +1076,14 @@ void setup()
 		// 1) Set a high power mode.
 		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
 		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
+
 	}
+	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff)
+		eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT) == 0xff)
+		eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) == 0xff)
+		eeprom_write_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
 #ifdef SNMM
 	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
 	  int _z = BOWDEN_LENGTH;
