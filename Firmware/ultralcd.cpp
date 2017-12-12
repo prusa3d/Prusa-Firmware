@@ -915,6 +915,7 @@ void lcd_commands()
 		}
 		if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
 		{
+			IS_SD_PRINTING = true;
 			enquecommand_P(PSTR("M107"));
 			enquecommand_P(PSTR("M104 S210"));
 			enquecommand_P(PSTR("M140 S55"));
@@ -1124,6 +1125,7 @@ void lcd_commands()
 		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_setstatuspgm(WELCOME_MSG);
+			IS_SD_PRINTING = false;
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;			
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
@@ -4909,7 +4911,7 @@ static void lcd_main_menu()
         
     }*/
     
-  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
+  if ( ( IS_SD_PRINTING || is_usb_printing ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
