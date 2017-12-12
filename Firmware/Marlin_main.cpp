@@ -727,6 +727,7 @@ void factory_reset(char level, bool quiet)
             lcd_force_language_selection();
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
+			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
             farm_no = 0;
 			farm_mode == false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
@@ -1916,11 +1917,30 @@ void ramming() {
   }
 */
 
+#ifdef TMC2130
+void force_high_power_mode(bool start_high_power_section) {
+	uint8_t silent;
+	silent = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+	if (silent == 1) {
+		//we are in silent mode, set to normal mode to enable crash detection
+
+
+		st_synchronize();
+		cli();
+		tmc2130_mode = (start_high_power_section == true) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
+		tmc2130_init();
+		sei();
+		digipot_init();
+	}
+}
+#endif //TMC2130
+
 bool gcode_M45(bool onlyZ) {
 	bool final_result = false;
+	#ifdef TMC2130
+	FORCE_HIGH_POWER_START;
+	#endif // TMC2130
 	// Only Z calibration?
-
-
 	if (!onlyZ) {
 		setTargetBed(0);
 		setTargetHotend(0, 0);
@@ -1999,6 +2019,7 @@ bool gcode_M45(bool onlyZ) {
 				if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION)
 					// Shipped, the nozzle height has been set already. The user can start printing now.
 					calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+					final_result = true;
 				// babystep_apply();
 			}
 		}
@@ -2047,6 +2068,9 @@ bool gcode_M45(bool onlyZ) {
 		// Timeouted.
 	}
 	lcd_update_enable(true);
+#ifdef TMC2130
+	FORCE_HIGH_POWER_END;
+#endif // TMC2130
 	return final_result;
 	}
 

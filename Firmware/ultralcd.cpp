@@ -3569,6 +3569,8 @@ void lcd_wizard(int state) {
 			break;
 		case 4: //z cal.
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_Z_CAL);
+			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
+			if (!wizard_event) lcd_show_fullscreen_message_and_wait_P(MSG_PLACE_STEEL_SHEET);
 			wizard_event = gcode_M45(true);
 			if (wizard_event) state = 11; //shipped, no need to set first layer, go to final message directly
 			else end = true;
@@ -5445,6 +5447,9 @@ static bool lcd_selftest()
 
 	lcd_implementation_clear();
 	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_START);
+	#ifdef TMC2130
+	  FORCE_HIGH_POWER_START;
+	#endif // TMC2130
 	delay(2000);
 
 	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
@@ -5557,6 +5562,9 @@ static bool lcd_selftest()
 	{
 		LCD_ALERTMESSAGERPGM(MSG_SELFTEST_FAILED);
 	}
+	#ifdef TMC2130
+	  FORCE_HIGH_POWER_END;
+	#endif // TMC2130
 	return(_result);
 }
 

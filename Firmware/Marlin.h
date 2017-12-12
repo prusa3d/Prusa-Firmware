@@ -420,6 +420,15 @@ extern int busy_state;
 
 #endif //HOST_KEEPALIVE_FEATURE
 
+#ifdef TMC2130
+
+#define FORCE_HIGH_POWER_START	force_high_power_mode(true)
+#define FORCE_HIGH_POWER_END	force_high_power_mode(false)
+
+void force_high_power_mode(bool start_high_power_section);
+
+#endif //TMC2130
+
 // G-codes
 bool gcode_M45(bool onlyZ);
 void gcode_M701();
