@@ -338,6 +338,7 @@
 
 #define MSG_CALIBRATE_Z_AUTO				"Kalibruji Z"
 #define MSG_FSENSOR_OFF						"Fil. senzor [vyp]"
+#define MSG_FSENSOR_NA						"Fil. senzor [err]"
 #define MSG_FSENSOR_ON						"Fil. senzor [zap]" 
 #define MSG_CRASHDETECT_ON					"Crash det.  [zap]"
 #define MSG_CRASHDETECT_OFF					"Crash det.  [vyp]"
@@ -353,3 +354,7 @@
 #define MSG_PRESS_TO_UNLOAD					"Pro vysunuti filamentu stisknete prosim tlacitko"	
 #define MSG_UNLOAD_SUCCESSFULL				"Opakovat vysunuti filamentu?"
 #define MSG_FILE_INCOMPLETE					"Soubor nekompletni. Pokracovat?"
+#define MSG_FILE_CNT						"Nektere soubory nebudou setrideny. Maximalni pocet souboru pro setrideni je 100."
+#define MSG_SORT_TIME						"Trideni [Cas]"
+#define MSG_SORT_ALPHA						"Trideni [Abeceda]"
+#define MSG_SORT_NONE						"Trideni [Zadne]"

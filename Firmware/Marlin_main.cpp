@@ -322,6 +322,8 @@ int fan_speed[2];
 
 char dir_names[3][9];
 
+bool sortAlpha = false;
+
 bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
   #if EXTRUDERS > 1
@@ -439,7 +441,9 @@ static float feedrate = 1500.0, next_feedrate, saved_feedrate;
 // Also there is bool axis_relative_modes[] per axis flag.
 static bool relative_mode = false;  
 
+#ifndef _DISABLE_M42_M226
 const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
+#endif //_DISABLE_M42_M226
 
 //static float tt = 0;
 //static float bt = 0;
@@ -597,6 +601,7 @@ void crashdet_disable()
 {
 	MYSERIAL.println("crashdet_disable"); 
 	tmc2130_sg_stop_on_crash = false;
+	tmc2130_sg_crash = false;
 	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
 	CrashDetectMenu = 0;
 }
@@ -909,7 +914,11 @@ void setup()
 	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
     printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
-	if (!pat9125) fsensor = 0; //disable sensor
+	if (!pat9125)
+	{
+		fsensor = 0; //disable sensor
+		fsensor_not_responding = true;
+	}
     puts_P(PSTR("FSensor "));
 	if (fsensor)
 	{
@@ -1096,6 +1105,9 @@ void setup()
 	}
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
+	}
+	if (eeprom_read_byte((uint8_t*)EEPROM_SD_SORT) == 255) {
+		eeprom_write_byte((uint8_t*)EEPROM_SD_SORT, 0);
 	}
 
 	check_babystep(); //checking if Z babystep is in allowed range
@@ -3903,6 +3915,7 @@ void process_commands()
       autotempShutdown();
       }
       break;
+#ifndef _DISABLE_M42_M226
     case 42: //M42 -Change pin status via gcode
       if (code_seen('S'))
       {
@@ -3930,7 +3943,7 @@ void process_commands()
         }
       }
      break;
-
+#endif //_DISABLE_M42_M226
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
 
 		// Reset the baby step value and the baby step applied flag.
@@ -4946,6 +4959,7 @@ Sigma_Exit:
     }
     break;
 
+#ifndef _DISABLE_M42_M226
 	case 226: // M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
 	{
       if(code_seen('P')){
@@ -4997,6 +5011,7 @@ Sigma_Exit:
       }
     }
     break;
+#endif //_DISABLE_M42_M226
 
     #if NUM_SERVOS > 0
     case 280: // M280 - set servo position absolute. P: servo index, S: angle or microseconds

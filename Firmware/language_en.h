@@ -344,6 +344,7 @@
 #define MSG_CRASHDETECT_OFF										"Crash det.  [off]"
 #define MSG_CRASHDETECT_ON										"Crash det.   [on]"
 #define MSG_FSENSOR_OFF											"Fil. sensor [off]"
+#define MSG_FSENSOR_NA											"Fil. sensor [N/A]"
 #define MSG_FSENSOR_ON											"Fil. sensor  [on]"
 
 #define(length=20, lines=4) MSG_PLACE_STEEL_SHEET				"Please place steel sheet on heatbed."
@@ -370,6 +371,11 @@
 #define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Repeat unloading filament?"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
 
+#define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Default settings loaded"
+#define(length=17, lines=1) MSG_SORT_TIME						"Sort: [Time]"
+#define(length=17, lines=1) MSG_SORT_ALPHA						"Sort: [Alphabet]"
+#define(length=17, lines=1) MSG_SORT_NONE						"Sort: [None]"
+#define(length=20, lines=1) MSG_SORTING							"Sorting files"
+#define(length=20, lines=4) MSG_FILE_CNT						"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 #define(length=17, lines=1) MSG_SECOND_SERIAL_ON				"2nd USART    [on]"
 #define(length=17, lines=1) MSG_SECOND_SERIAL_OFF				"2nd USART   [off]"
-

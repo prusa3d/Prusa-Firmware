@@ -238,6 +238,9 @@ void extr_unload_all();
 void extr_unload_used();
 void extr_unload();
 static char snmm_stop_print_menu();
+#ifdef SDCARD_SORT_ALPHA
+ static void lcd_sort_type_set();
+#endif
 static float count_e(float layer_heigth, float extrusion_width, float extrusion_length);
 static void lcd_babystep_z();
 
@@ -271,6 +274,11 @@ void lcd_temp_calibration_set();
 void display_loading();
 
 void lcd_service_mode_show_result();
+
+#if !SDSORT_USES_RAM
+ void lcd_set_degree();
+ void lcd_set_progress();
+#endif
 
 void lcd_wizard();
 void lcd_wizard(int state);

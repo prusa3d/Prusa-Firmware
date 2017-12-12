@@ -121,6 +121,10 @@ extern void crashdet_disable();
 uint8_t snmm_extruder = 0;
 #endif
 
+#ifdef SDCARD_SORT_ALPHA
+ bool presort_flag = false;
+#endif
+
 int lcd_commands_type=LCD_COMMAND_IDLE;
 int lcd_commands_step=0;
 bool isPrintPaused = false;
@@ -1534,15 +1538,28 @@ static void lcd_menu_fails_stats()
     lcd.print(" Filament fails:    ");
     lcd.setCursor(17, 3);
     lcd.print(itostr3((int)ferror_count));
-    
 
-    
-    if (lcd_clicked())
+	if (lcd_clicked())
     {
         lcd_quick_feedback();
         lcd_return_to_status();
     }
     
+}
+
+extern uint16_t SP_min;
+extern char* __malloc_heap_start;
+extern char* __malloc_heap_end;
+
+static void lcd_menu_debug()
+{
+	fprintf_P(lcdout, PSTR(ESC_H(1,1)"RAM statistics"ESC_H(5,1)"SP_min: 0x%04x"ESC_H(1,2)"heap_start: 0x%04x"ESC_H(3,3)"heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
+
+	if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_return_to_status();
+    }
 }
 
 static void lcd_menu_temperatures()
@@ -1662,7 +1679,7 @@ static void lcd_support_menu()
   }
   #ifndef MK1BP
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
-  if (!IS_SD_PRINTING && !is_usb_printing) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
+  if (!IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL)) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
     
   MENU_ITEM(submenu, PSTR("Belt status"), lcd_menu_belt_status);
@@ -3223,6 +3240,21 @@ void EEPROM_read(int pos, uint8_t* value, uint8_t size)
   } while (--size);
 }
 
+#ifdef SDCARD_SORT_ALPHA
+static void lcd_sort_type_set() {
+	uint8_t sdSort;
+		EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	switch (sdSort) {
+		case SD_SORT_TIME: sdSort = SD_SORT_ALPHA; break;
+		case SD_SORT_ALPHA: sdSort = SD_SORT_NONE; break;
+		default: sdSort = SD_SORT_TIME;
+	}
+	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
+	presort_flag = true;
+	lcd_goto_menu(lcd_settings_menu, 8);
+}
+#endif //SDCARD_SORT_ALPHA
+
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
@@ -3238,7 +3270,7 @@ static void lcd_silent_mode_set() {
   sei();
 #endif //TMC2130
   digipot_init();
-  if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 8);
+  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 8);
   else lcd_goto_menu(lcd_settings_menu, 7);
 }
 
@@ -3250,7 +3282,7 @@ static void lcd_crash_mode_set()
     }else{
         crashdet_enable();
     }
-	if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 9);
+	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 9);
 	else lcd_goto_menu(lcd_settings_menu, 9);
     
 }
@@ -3273,10 +3305,20 @@ static void lcd_fsensor_state_set()
     }else{
         fsensor_enable();
     }
-	if (IS_SD_PRINTING || is_usb_printing) lcd_goto_menu(lcd_tune_menu, 7);
+	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 7);
 	else lcd_goto_menu(lcd_settings_menu, 7);
     
 }
+
+#if !SDSORT_USES_RAM
+void lcd_set_degree() {
+	lcd_set_custom_characters_degree();
+}
+
+void lcd_set_progress() {
+	lcd_set_custom_characters_progress();
+}
+#endif
 
 void lcd_force_language_selection() {
   eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
@@ -3652,6 +3694,8 @@ static void lcd_crash_menu()
 {
 }
 
+extern bool fsensor_not_responding;
+
 static void lcd_settings_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -3670,7 +3714,10 @@ static void lcd_settings_menu()
   }
 
   if (FSensorStateMenu == 0) {
-    MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
+	  if (fsensor_not_responding)
+		MENU_ITEM(function, MSG_FSENSOR_NA, lcd_fsensor_state_set);
+	  else
+		MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
   } else {
     MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
   }
@@ -3719,6 +3766,18 @@ static void lcd_settings_menu()
   } else {
     MENU_ITEM(function, MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF, lcd_toshiba_flash_air_compatibility_toggle);
   }
+
+  #ifdef SDCARD_SORT_ALPHA
+	  if (!farm_mode) {
+	  uint8_t sdSort;
+	  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+	  switch (sdSort) {
+		  case SD_SORT_TIME: MENU_ITEM(function, MSG_SORT_TIME, lcd_sort_type_set); break;
+		  case SD_SORT_ALPHA: MENU_ITEM(function, MSG_SORT_ALPHA, lcd_sort_type_set); break;
+		  default: MENU_ITEM(function, MSG_SORT_NONE, lcd_sort_type_set);
+	  }
+  }
+  #endif // SDCARD_SORT_ALPHA
     
     if (farm_mode)
     {
@@ -4864,13 +4923,13 @@ static void lcd_main_menu()
         
     }*/
     
-  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) ) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
+  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
 	MENU_ITEM(submenu, MSG_BABYSTEP_Z, lcd_babystep_z);//8
   }
 
 
-  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing )
+  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL))
   {
     MENU_ITEM(submenu, MSG_TUNE, lcd_tune_menu);
   } else 
@@ -4879,7 +4938,7 @@ static void lcd_main_menu()
   }
 
 #ifdef SDSUPPORT
-  if (card.cardOK)
+  if (card.cardOK || lcd_commands_type == LCD_COMMAND_V2_CAL)
   {
     if (card.isFileOpen())
     {
@@ -4895,9 +4954,12 @@ static void lcd_main_menu()
 			MENU_ITEM(submenu, MSG_STOP_PRINT, lcd_sdcard_stop);
 		}
 	}
+	else if (lcd_commands_type == LCD_COMMAND_V2_CAL && mesh_bed_leveling_flag == false && homing_flag == false) {
+		//MENU_ITEM(submenu, MSG_STOP_PRINT, lcd_sdcard_stop);
+	}
 	else
 	{
-		if (!is_usb_printing)
+		if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 		{
 			//if (farm_mode) MENU_ITEM(submenu, MSG_FARM_CARD_MENU, lcd_farm_sdcard_menu);
 			/*else*/ MENU_ITEM(submenu, MSG_CARD_MENU, lcd_sdcard_menu);
@@ -4906,6 +4968,7 @@ static void lcd_main_menu()
       MENU_ITEM(gcode, MSG_CNG_SDCARD, PSTR("M21"));  // SD-card changed by user
 #endif
     }
+	
   } else 
   {
     MENU_ITEM(submenu, MSG_NO_CARD, lcd_sdcard_menu);
@@ -4916,7 +4979,7 @@ static void lcd_main_menu()
 #endif
 
 
-  if (IS_SD_PRINTING || is_usb_printing)
+  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL))
   {
 	  if (farm_mode)
 	  {
@@ -4938,14 +5001,16 @@ static void lcd_main_menu()
     if(!isPrintPaused) MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);
   }
 
-  if (!is_usb_printing)
+  if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
   {
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
     
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
-    
+
+  MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
+
   END_MENU();
 
 }
@@ -5121,6 +5186,7 @@ void lcd_print_stop() {
 
 	lcd_return_to_status();
 	lcd_ignore_click(true);
+	lcd_commands_step = 0;
 	lcd_commands_type = LCD_COMMAND_STOP_PRINT;
 
 	// Turn off the print fan
@@ -5192,8 +5258,12 @@ void getFileDescription(char *name, char *description) {
 
 void lcd_sdcard_menu()
 {
-
-	int tempScrool = 0;
+  uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
+  int tempScrool = 0;
+  if (presort_flag == true) {
+	  presort_flag = false;
+	  card.presort();
+  }
   if (lcdDrawUpdate == 0 && LCD_CLICKED == 0)
     //delay(100);
     return; // nothing to do (so don't thrash the SD card)
@@ -5215,22 +5285,24 @@ void lcd_sdcard_menu()
   {
     if (_menuItemNr == _lineNr)
     {
-#ifndef SDCARD_RATHERRECENTFIRST
-      card.getfilename(i);
-#else
-      card.getfilename(fileCnt - 1 - i);
-#endif
-      if (card.filenameIsDir)
-      {
-        MENU_ITEM(sddirectory, MSG_CARD_MENU, card.filename, card.longFilename);
-      } else {
-
-        MENU_ITEM(sdfile, MSG_CARD_MENU, card.filename, card.longFilename);
-
-
-
-
-      }
+		const uint16_t nr = ((sdSort == SD_SORT_NONE) || farm_mode || (sdSort == SD_SORT_TIME)) ? (fileCnt - 1 - i) : i;
+		/*#ifdef SDCARD_RATHERRECENTFIRST
+			#ifndef SDCARD_SORT_ALPHA
+				fileCnt - 1 -
+			#endif
+		#endif
+		i;*/
+		#ifdef SDCARD_SORT_ALPHA
+			if (sdSort == SD_SORT_NONE) card.getfilename(nr);
+			else card.getfilename_sorted(nr);
+		#else
+			 card.getfilename(nr);
+		#endif
+			
+		if (card.filenameIsDir)
+			MENU_ITEM(sddirectory, MSG_CARD_MENU, card.filename, card.longFilename);
+		else
+			MENU_ITEM(sdfile, MSG_CARD_MENU, card.filename, card.longFilename);
     } else {
       MENU_ITEM_DUMMY();
     }
@@ -6174,7 +6246,7 @@ static void menu_action_function(menuFunc_t data) {
 static bool check_file(const char* filename) {
 	bool result = false;
 	uint32_t filesize;
-	card.openFile(filename, true);
+	card.openFile((char*)filename, true);
 	filesize = card.getFileSize();
 	if (filesize > END_FILE_SECTION) {
 		card.setIndex(filesize - END_FILE_SECTION);
@@ -6459,6 +6531,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
         (*currentMenu)();
         menuExiting = false;
       }
+	      lcd_implementation_clear();
 		  lcd_return_to_status();
 		  lcdDrawUpdate = 2;
 	  }

@@ -34,6 +34,7 @@ void fsensor_restore_print_and_continue()
 uint8_t fsensor_int_pin_old = 0;
 int16_t fsensor_chunk_len = FSENSOR_CHUNK_LEN;
 bool fsensor_enabled = true;
+bool fsensor_not_responding = false;
 //bool fsensor_ignore_error = true;
 bool fsensor_M600 = false;
 uint8_t fsensor_err_cnt = 0;
@@ -47,6 +48,10 @@ bool fsensor_enable()
 	puts_P(PSTR("fsensor_enable\n"));
 	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
     printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
+	if (pat9125)
+		fsensor_not_responding = false;
+	else
+		fsensor_not_responding = true;
 	fsensor_enabled = pat9125?true:false;
 //	fsensor_ignore_error = true;
 	fsensor_M600 = false;
@@ -97,7 +102,12 @@ ISR(PCINT2_vect)
 /*	*digitalPinToPCMSK(fsensor_int_pin) &= ~bit(digitalPinToPCMSKbit(fsensor_int_pin));
 	digitalWrite(fsensor_int_pin, HIGH);
 	*digitalPinToPCMSK(fsensor_int_pin) |= bit(digitalPinToPCMSKbit(fsensor_int_pin));*/
-	pat9125_update_y();
+	if (!pat9125_update_y())
+	{
+		puts_P(PSTR("pat9125 not responding.\n"));
+		fsensor_disable();
+		fsensor_not_responding = true;
+	}
 	if (st_cnt != 0)
 	{
 #ifdef DEBUG_FSENSOR_LOG

@@ -462,6 +462,21 @@ void lcd_set_custom_characters_arrows()
     lcd.createChar(1, arrdown);
 }
 
+void lcd_set_custom_characters_progress()
+ {
+  byte progress[8] = {
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+	B11111,
+  };
+  lcd.createChar(1, progress);
+ }
+
 void lcd_set_custom_characters_nextpage()
  {
 
@@ -847,17 +862,18 @@ if (print_sd_status)
     // If heating in progress, set flag
 	if (heating_status != 0) { custom_message = true; }
 
+	if (IS_SD_PRINTING) {
+		if (strcmp(longFilenameOLD, card.longFilename) != 0)
+		{
+			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
+			sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
+			scrollstuff = 0;
+		}
+	}
+
     // If printing from SD, show what we are printing
 	if ((IS_SD_PRINTING) && !custom_message)
 	{
-
-      if(strcmp(longFilenameOLD, card.longFilename) != 0)
-	  {
-        memset(longFilenameOLD,'\0',strlen(longFilenameOLD));
-        sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
-        scrollstuff = 0;
-      }
-
       if(strlen(card.longFilename) > LCD_WIDTH)
 	  {
 
