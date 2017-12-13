@@ -102,12 +102,14 @@ void fsensor_autoload_check_start(void)
 	fsensor_autoload_c = 0; //reset number of changes counter
 	fsensor_autoload_last_millis = millis();
 	fsensor_autoload_enabled = true;
+	fsensor_err_cnt = 0;
 }
 
 void fsensor_autoload_check_stop(void)
 {
 	puts_P(PSTR("fsensor_autoload_check_stop\n"));
 	fsensor_autoload_enabled = false;
+	fsensor_err_cnt = 0;
 }
 
 bool fsensor_check_autoload(void)
