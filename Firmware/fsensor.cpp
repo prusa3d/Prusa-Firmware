@@ -41,6 +41,11 @@ uint8_t fsensor_err_cnt = 0;
 int16_t fsensor_st_cnt = 0;
 uint8_t fsensor_log = 1;
 
+//autoload enable/disable flag
+bool fsensor_autoload_enabled = false;
+uint16_t fsensor_autoload_y = 0;
+uint8_t fsensor_autoload_c = 0;
+uint32_t fsensor_autoload_last_millis = 0;
 
 
 bool fsensor_enable()
@@ -87,6 +92,51 @@ void fsensor_setup_interrupt()
 	fsensor_int_pin_old = 0;
 
 	pciSetup(FSENSOR_INT_PIN);
+}
+
+void fsensor_autoload_check_start(void)
+{
+	puts_P(PSTR("fsensor_autoload_check_start\n"));
+	pat9125_update_y(); //update sensor
+	fsensor_autoload_y = pat9125_y; //save current y value
+	fsensor_autoload_c = 0; //reset number of changes counter
+	fsensor_autoload_last_millis = millis();
+	fsensor_autoload_enabled = true;
+}
+
+void fsensor_autoload_check_stop(void)
+{
+	puts_P(PSTR("fsensor_autoload_check_stop\n"));
+	fsensor_autoload_enabled = false;
+}
+
+bool fsensor_check_autoload(void)
+{
+	if ((millis() - fsensor_autoload_last_millis) < 50) return false;
+	fsensor_autoload_last_millis = millis();
+	pat9125_update_y(); //update sensor
+	uint16_t dy = fsensor_autoload_y - pat9125_y;
+	if (dy) //? y value is different
+	{
+		if (dy > 0)  //? delta-y value is positive (inserting)
+		{
+			fsensor_autoload_c+=3; //increment change counter
+//			printf_P(PSTR("fsensor_check_autoload dy=%d c=%d\n"), dy, fsensor_autoload_c);
+		}
+		else if (fsensor_autoload_c > 0)
+		{
+			fsensor_autoload_c--;
+//			printf_P(PSTR("fsensor_check_autoload dy=%d c=%d\n"), dy, fsensor_autoload_c);
+		}
+		fsensor_autoload_y = pat9125_y; //save current value
+		if (fsensor_autoload_c > 10) return true; //number of positive changes > 10, start loading
+	}
+	else if (fsensor_autoload_c > 0)
+	{
+		fsensor_autoload_c--;
+//		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d\n"), dy, fsensor_autoload_c);
+	}
+	return false;
 }
 
 ISR(PCINT2_vect)
