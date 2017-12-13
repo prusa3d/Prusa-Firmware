@@ -5557,21 +5557,17 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lcd_wait_interact();
 		//load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
-		pat9125_update_y(); //update sensor
-		uint16_t y_old = pat9125_y; //save current y value
-		uint8_t change_cnt = 0; //reset number of changes counter
+#ifdef PAT9125
+		if (fsensor_M600) fsensor_autoload_check_start();
+#endif //PAT9125
         while(!lcd_clicked())
 		{
           manage_heater();
           manage_inactivity(true);
-          pat9125_update_y(); //update sensor
-          if (y_old != pat9125_y) //? y value is different
-          {
-			if ((y_old - pat9125_y) > 0)  //? delta-y value is positive (inserting)
-				change_cnt++; //increment change counter
-			y_old = pat9125_y; //save current value
-			if (change_cnt > 20) break; //number of positive changes > 20, start loading
-          }
+#ifdef PAT9125
+		  if (fsensor_M600 && fsensor_check_autoload())
+			  break;
+#endif //PAT9125
 /*#ifdef SNMM
 		  target[E_AXIS] += 0.002;
 		  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
@@ -5579,6 +5575,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif // SNMM*/
 
         }
+#ifdef PAT9125
+		if (fsensor_M600) fsensor_autoload_check_stop();
+#endif //PAT9125
 		//WRITE(BEEPER, LOW);
 		KEEPALIVE_STATE(IN_HANDLER);
 
@@ -6350,7 +6349,23 @@ void handle_status_leds(void) {
 
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
-	
+	if (fsensor_enabled && !fsensor_M600 && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && (current_temperature[0] > EXTRUDE_MINTEMP))
+	{
+		if (fsensor_autoload_enabled)
+		{
+			if (fsensor_check_autoload())
+			{
+				fsensor_autoload_check_stop();
+				enquecommand_front_P((PSTR("M701")));
+			}
+		}
+		else
+			fsensor_autoload_check_start();
+	}
+	else
+		if (fsensor_autoload_enabled)
+			fsensor_autoload_check_stop();
+
 #if defined(KILL_PIN) && KILL_PIN > -1
 	static int killCount = 0;   // make the inactivity button a bit less responsive
    const int KILL_DELAY = 10000;

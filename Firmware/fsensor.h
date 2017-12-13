@@ -17,6 +17,15 @@ extern void fsensor_update();
 //setup pin-change interrupt
 extern void fsensor_setup_interrupt();
 
+//
+extern void fsensor_autoload_check_start(void);
+
+//
+extern void fsensor_autoload_check_stop(void);
+
+//
+extern bool fsensor_check_autoload(void);
+
 //callbacks from stepper
 extern void fsensor_st_block_begin(block_t* bl);
 extern void fsensor_st_block_chunk(block_t* bl, int cnt);
@@ -30,6 +39,8 @@ extern bool fsensor_enabled;
 //not responding flag
 extern bool fsensor_not_responding;
 
+//autoload enable/disable flag
+extern bool fsensor_autoload_enabled;
 
 
 #endif //FSENSOR_H
