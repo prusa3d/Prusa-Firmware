@@ -6193,7 +6193,7 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 		lcd_selftest_screen_step(3, 0, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Bed", _indicator);
 	}
 
-	if (_delay > 0) delay(_delay);
+	if (_delay > 0) delay_keep_alive(_delay);
 	_progress++;
 
 	return (_progress > _progress_scale * 2) ? 0 : _progress;

@@ -9,7 +9,7 @@
 
 // Firmware version
 #define FW_version "3.1.1-RC1"
-#define FW_build   131
+#define FW_build   133
 //#define FW_build   --BUILD-NUMBER--
 #define FW_version_build FW_version " b" STR(FW_build)
 
@@ -79,7 +79,13 @@
 #define EEPROM_FERROR_COUNT      (EEPROM_UVLO_MESH_BED_LEVELING-16)
 // Power loss errors
 #define EEPROM_POWER_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-17)
-#define EEPROM_DIR_DEPTH        (EEPROM_POWER_COUNT-1)
+
+#define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4) //float for skew backup
+#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
+#define EEPROM_BELTSTATUS_X (EEPROM_WIZARD_ACTIVE - 2) //uint16
+#define EEPROM_BELTSTATUS_Y (EEPROM_BELTSTATUS_X - 2) //uint16
+
+#define EEPROM_DIR_DEPTH        (EEPROM_BELTSTATUS_Y-1)
 #define EEPROM_DIRS  (EEPROM_DIR_DEPTH-80) //8 chars for each dir name, max 10 levels
 #define EEPROM_SD_SORT (EEPROM_DIRS - 1) //0 -time, 1-alpha, 2-none
 #define EEPROM_SECOND_SERIAL_ACTIVE (EEPROM_SD_SORT - 1)
@@ -105,13 +111,6 @@
 #define EEPROM_TMC_X_DTCOOLTHRS_HIGH (EEPROM_TMC_X + 12) // 1byte (-128..+127)
 #define EEPROM_TMC_X_SG_THRS_LOW     (EEPROM_TMC_X + 13) // 1byte, (-64..+63)
 #define EEPROM_TMC_X_SG_THRS_HIGH    (EEPROM_TMC_X + 14) // 1byte, (-64..+63)
-
-#define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4) //float for skew backup
-
-#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
-
-#define EEPROM_BELTSTATUS_X (EEPROM_WIZARD_ACTIVE - 2) //uint16
-#define EEPROM_BELTSTATUS_Y (EEPROM_BELTSTATUS_X - 2) //uint16
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
