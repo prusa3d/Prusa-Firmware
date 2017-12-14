@@ -268,7 +268,7 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 
 
  for(;;) {
-
+	wdt_reset();
     if(temp_meas_ready == true) { // temp sample ready
       updateTemperaturesFromRawValues();
 
