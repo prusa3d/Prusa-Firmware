@@ -2426,8 +2426,10 @@ void lcd_adjust_z() {
 
 }
 
-/*void lcd_wait_for_cool_down() {
+void lcd_wait_for_cool_down() {
 	lcd_set_custom_characters_degree();
+	setTargetHotend(0,0);
+	setTargetBed(0);
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(MSG_WAITING_TEMP);
 
@@ -2444,9 +2446,11 @@ void lcd_adjust_z() {
 		lcd.print(LCD_STR_DEGREE);
 		lcd_set_custom_characters();
 		delay_keep_alive(1000);
+		serialecho_temperatures();
 	}
 	lcd_set_custom_characters_arrows();
-}*/
+	lcd_update_enable(true);
+}
 
 // Lets the user move the Z carriage up to the end stoppers.
 // When done, it sets the current Z to Z_MAX_POS and returns true.
@@ -5444,14 +5448,14 @@ static bool lcd_selftest()
 {
 	int _progress = 0;
 	bool _result = false;
-
+	lcd_wait_for_cool_down();
 	lcd_implementation_clear();
 	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_START);
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
 	delay(2000);
-
+	KEEPALIVE_STATE(IN_HANDLER);
 	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
 	_result = lcd_selftest_fan_dialog(0);
 	
@@ -5467,7 +5471,7 @@ static bool lcd_selftest()
 		//_progress = lcd_selftest_screen(2, _progress, 3, true, 2000);
 		_result = true;// lcd_selfcheck_endstops();
 	}
-
+	
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(3, _progress, 3, true, 1000);
@@ -5565,6 +5569,7 @@ static bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_END;
 	#endif // TMC2130
+	KEEPALIVE_STATE(NOT_BUSY);
 	return(_result);
 }
 
@@ -5935,6 +5940,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	target_temperature_bed = (_isbed) ? 100 : 0;
 	manage_heater();
 	manage_inactivity(true);
+	KEEPALIVE_STATE(NOT_BUSY); //we are sending temperatures on serial line, so no need to send host keepalive messages
 
 	do {
 		_counter++;
@@ -5951,6 +5957,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 			MYSERIAL.print("Hotend temp:");
 			MYSERIAL.println(degHotend(0));
 		}*/
+		if(_counter%5 == 0) serialecho_temperatures(); //show temperatures once in two seconds
 
 	} while (_docycle); 
 
@@ -5985,6 +5992,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 	manage_heater();
 	manage_inactivity(true);
+	KEEPALIVE_STATE(IN_HANDLER);
 	return _stepresult;
 
 }
@@ -6076,6 +6084,14 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd.setCursor(18, 3);
 		lcd.print(_error_1);
 		break;
+	case 10:
+		lcd.setCursor(0, 2);
+		lcd_printPGM(MSG_SELFTEST_FANS);
+		lcd.setCursor(0, 3);
+		lcd_printPGM(MSG_SELFTEST_SWAPPED);
+		lcd.setCursor(18, 3);
+		lcd.print(_error_1);
+		break;
 	}
 
 	delay(1000);
@@ -6105,26 +6121,37 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		delay(2000);				//delay_keep_alive would turn off extruder fan, because temerature is too low
 		manage_heater();			//count average fan speed from 2s delay and turn off fans
 		if (!fan_speed[0]) _result = false;
-		/*SERIAL_ECHOPGM("Extruder fan speed: ");
-		MYSERIAL.println(fan_speed[0]);
-		SERIAL_ECHOPGM("Print fan speed: ");
-		MYSERIAL.print(fan_speed[1]);*/
+		//SERIAL_ECHOPGM("Extruder fan speed: ");
+		//MYSERIAL.println(fan_speed[0]);
+		//SERIAL_ECHOPGM("Print fan speed: ");
+		//MYSERIAL.print(fan_speed[1]);
 		break;
 
 	case 1:
 		//will it work with Thotend > 50 C ?
-		fanSpeed = 255;				//print fan
-		delay_keep_alive(2000);
+		fanSpeed = 150;				//print fan
+		for (uint8_t i = 0; i < 5; i++) {
+			delay_keep_alive(1000);
+			lcd.setCursor(14, 3);
+			lcd.print("-");
+			delay_keep_alive(1000);
+			lcd.setCursor(14, 3);
+			lcd.print("|");
+		}
 		fanSpeed = 0;
 		manage_heater();			//turn off fan
 		manage_inactivity(true);	//to turn off print fan
 		if (!fan_speed[1]) {
 			_result = false; _errno = 7;
 		}
-		/*SERIAL_ECHOPGM("Extruder fan speed: ");
-		MYSERIAL.println(fan_speed[0]);
+		else if (fan_speed[1] < 40) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
+			_result = false; _errno = 10;
+		}
+
+		//SERIAL_ECHOPGM("Extruder fan speed: ");
+		//MYSERIAL.println(fan_speed[0]);
 		SERIAL_ECHOPGM("Print fan speed: ");
-		MYSERIAL.print(fan_speed[1]);*/
+		MYSERIAL.print(fan_speed[1]);
 		break;
 	}
 	if (!_result)

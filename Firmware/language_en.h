@@ -173,6 +173,8 @@
 #define MSG_SELFTEST_ENDSTOPS				"Endstops"
 #define MSG_SELFTEST_MOTOR					"Motor"
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
+#define MSG_SELFTEST_FANS					"Front/left fans"
+#define MSG_SELFTEST_SWAPPED				"Swapped"
 
 #define(length=20,lines=1) MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
