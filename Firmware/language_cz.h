@@ -180,6 +180,8 @@
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
+#define MSG_SELFTEST_FANS					"Predni/levy vent."
+#define MSG_SELFTEST_SWAPPED				"Prohozene"
 
 #define MSG_SELFTEST_FAN					"Test ventilatoru"
 #define MSG_SELFTEST_COOLING_FAN			"Predni tiskovy vent?"
