@@ -9,7 +9,6 @@ extern uint8_t tmc2130_mode;
 extern uint8_t tmc2130_current_h[4];
 extern uint8_t tmc2130_current_r[4];
 //flags for axis stall detection
-extern uint8_t tmc2130_axis_stalled[4];
 
 extern uint8_t tmc2130_sg_thr[4];
 
@@ -35,8 +34,6 @@ extern void tmc2130_check_overtemp();
 extern void tmc2130_home_enter(uint8_t axes_mask);
 //exit homing (called from homeaxis after homing ends)
 extern void tmc2130_home_exit();
-//restart homing (called from homeaxis befor move)
-extern void tmc2130_home_restart(uint8_t axis);
 
 //start stallguard meassuring for single axis
 extern void tmc2130_sg_meassure_start(uint8_t axis);
@@ -59,8 +56,6 @@ extern void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_ampl);
 
 extern uint16_t tmc2130_rd_MSCNT(uint8_t cs);
 
-extern void tmc2130_home_pause(uint8_t axis);
-extern void tmc2130_home_resume(uint8_t axis);
 extern bool tmc2130_wait_standstill_xy(int timeout);
 
 extern void tmc2130_eeprom_load_config();
