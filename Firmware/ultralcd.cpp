@@ -5675,6 +5675,8 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			if (axis == Z_AXIS) _error_1 = "Z";
 
 			lcd_selftest_error(9, _error_1, _error_2);
+			current_position[axis] = 0;
+			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
 			return false;
 		}
@@ -5693,12 +5695,14 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			if (axis == Z_AXIS) _error_1 = "Z";
 
 			lcd_selftest_error(8, _error_1, _error_2);
-
+			current_position[axis] = 0;
+			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
 
 			return false;
 		}
-
+		current_position[axis] = 0;
+		plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 		reset_crash_det(axis);
 		return true;
 }
