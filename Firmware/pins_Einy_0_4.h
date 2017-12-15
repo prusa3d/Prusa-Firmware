@@ -73,6 +73,10 @@
 
 #define TEMP_PINDA_PIN       3 //A3
 
+#define VOLT_PWR_PIN         4 //A4
+#define VOLT_BED_PIN         9 //A9
+
+
 #define E0_TMC2130_CS       66
 #define E0_TMC2130_DIAG     65
 #define E0_STEP_PIN         34
@@ -99,7 +103,7 @@
 
 #ifdef NEWPANEL
 
-#define LCD_PWM_PIN         32  // lcd backlight brightnes pwm control pin
+#define LCD_PWM_PIN         -1//32  // lcd backlight brightnes pwm control pin
 #define LCD_PWM_MAX       0x0f  // lcd pwm maximum value (0x07=64Hz, 0x0f=32Hz, 0x1f=16Hz)
 
 #define BEEPER              84  // Beeper on AUX-4

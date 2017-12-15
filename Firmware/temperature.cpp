@@ -58,6 +58,14 @@ int current_temperature_raw_ambient =  0 ;
 float current_temperature_ambient = 0.0;
 #endif //AMBIENT_THERMISTOR
 
+#ifdef VOLT_PWR_PIN
+int current_voltage_raw_pwr = 0;
+#endif
+
+#ifdef VOLT_BED_PIN
+int current_voltage_raw_bed = 0;
+#endif
+
 int current_temperature_bed_raw = 0;
 float current_temperature_bed = 0.0;
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
@@ -1582,7 +1590,9 @@ ISR(TIMER0_COMPB_vect)
   static unsigned long raw_temp_bed_value = 0;
   static unsigned long raw_temp_pinda_value = 0;
   static unsigned long raw_temp_ambient_value = 0;
-  static unsigned char temp_state = 14;
+  static unsigned long raw_volt_pwr_value = 0;
+  static unsigned long raw_volt_bed_value = 0;
+  static unsigned char temp_state = 18;
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
   static unsigned char soft_pwm_0;
 #ifdef SLOW_PWM_HEATERS
@@ -2059,14 +2069,54 @@ ISR(TIMER0_COMPB_vect)
       #if defined(TEMP_PINDA_PIN) && (TEMP_PINDA_PIN > -1)
         raw_temp_pinda_value += ADC;
       #endif
+	 temp_state = 14;
+     break;
 
-	 temp_state = 0;   
-      
+	case 14: // Prepare VOLT_PWR
+      #if defined(VOLT_PWR_PIN) && (VOLT_PWR_PIN > -1)
+        #if VOLT_PWR_PIN > 7
+          ADCSRB = 1<<MUX5;
+        #else
+          ADCSRB = 0;
+        #endif
+        ADMUX = ((1 << REFS0) | (VOLT_PWR_PIN & 0x07));
+        ADCSRA |= 1<<ADSC; // Start conversion
+      #endif
+      lcd_buttons_update();
+      temp_state = 15;
+     break;
+
+	case 15: // Measure VOLT_PWR
+      #if defined(VOLT_PWR_PIN) && (VOLT_PWR_PIN > -1)
+        raw_volt_pwr_value += ADC;
+      #endif
+	 temp_state = 16;
+	 break;
+
+	case 16: // Prepare VOLT_BED
+      #if defined(VOLT_BED_PIN) && (VOLT_BED_PIN > -1)
+        #if VOLT_BED_PIN > 7
+          ADCSRB = 1<<MUX5;
+        #else
+          ADCSRB = 0;
+        #endif
+        ADMUX = ((1 << REFS0) | (VOLT_BED_PIN & 0x07));
+        ADCSRA |= 1<<ADSC; // Start conversion
+      #endif
+      lcd_buttons_update();
+      temp_state = 17;
+     break;
+
+	case 17: // Measure VOLT_BED
+      #if defined(VOLT_BED_PIN) && (VOLT_BED_PIN > -1)
+        raw_volt_bed_value += ADC;
+      #endif
+	 temp_state = 0;
+
      temp_count++;
-     break;      
+     break;
       
-      
-    case 14: //Startup, delay initial temp reading a tiny bit so the hardware can settle.
+    case 18: //Startup, delay initial temp reading a tiny bit so the hardware can settle.
       temp_state = 0;
       break;
 //    default:
@@ -2095,6 +2145,13 @@ ISR(TIMER0_COMPB_vect)
 #ifdef AMBIENT_THERMISTOR
 		current_temperature_raw_ambient = raw_temp_ambient_value;
 #endif //AMBIENT_THERMISTOR
+#ifdef VOLT_PWR_PIN
+		current_voltage_raw_pwr = raw_volt_pwr_value;
+#endif
+#ifdef VOLT_BED_PIN
+		current_voltage_raw_bed = raw_volt_bed_value;
+#endif
+
 		current_temperature_bed_raw = raw_temp_bed_value;
     }
 
@@ -2112,6 +2169,8 @@ ISR(TIMER0_COMPB_vect)
     raw_temp_bed_value = 0;
 	raw_temp_pinda_value = 0;
 	raw_temp_ambient_value = 0;
+	raw_volt_pwr_value = 0;
+	raw_volt_bed_value = 0;
 
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
     if(current_temperature_raw[0] <= maxttemp_raw[0]) {

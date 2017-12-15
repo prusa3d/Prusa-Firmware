@@ -1564,18 +1564,24 @@ static void lcd_menu_debug()
 
 static void lcd_menu_temperatures()
 {
-	fprintf_P(lcdout, PSTR(ESC_H(1,1) "Ambient:  %d%c" ESC_H(1,2) "PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
-/*
-    lcd.setCursor(1, 1);
-    lcd.print("Ambient: ");
-    lcd.setCursor(12, 1);
-    lcd.print(ftostr31ns(current_temperature_ambient));
-	lcd.print(LCD_STR_DEGREE);
-    lcd.setCursor(1, 2);
-    lcd.print("PINDA: ");
-    lcd.setCursor(12, 2);
-    lcd.print(ftostr31ns(current_temperature_pinda));
-	lcd.print(LCD_STR_DEGREE);*/
+	fprintf_P(lcdout, PSTR(ESC_H(1,0)"Nozzle:   %d%c" ESC_H(1,1)"Bed:      %d%c"), (int)current_temperature[0], '\x01', (int)current_temperature_bed, '\x01');
+	fprintf_P(lcdout, PSTR(ESC_H(1,2)"Ambient:  %d%c" ESC_H(1,3)"PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
+    if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_return_to_status();
+    }
+}
+
+#define VOLT_DIV_R1 10000
+#define VOLT_DIV_R2 2370
+#define VOLT_DIV_FAC ((float)VOLT_DIV_R2 / (VOLT_DIV_R2 + VOLT_DIV_R1))
+#define VOLT_DIV_REF 5
+static void lcd_menu_voltages()
+{
+	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
+	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
+	fprintf_P(lcdout, PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
     if (lcd_clicked())
     {
         lcd_quick_feedback();
@@ -1685,6 +1691,8 @@ static void lcd_support_menu()
   MENU_ITEM(submenu, PSTR("Belt status"), lcd_menu_belt_status);
     
   MENU_ITEM(submenu, PSTR("Temperatures"), lcd_menu_temperatures);
+
+  MENU_ITEM(submenu, PSTR("Voltages"), lcd_menu_voltages);
   #endif //MK1BP
   END_MENU();
 }

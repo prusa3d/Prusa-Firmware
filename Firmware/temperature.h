@@ -60,6 +60,14 @@ extern float current_temperature_pinda;
 extern float current_temperature_ambient;
 #endif
 
+#ifdef VOLT_PWR_PIN
+extern int current_voltage_raw_pwr;
+#endif
+
+#ifdef VOLT_BED_PIN
+extern int current_voltage_raw_bed;
+#endif
+
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
   extern float redundant_temperature;
 #endif
