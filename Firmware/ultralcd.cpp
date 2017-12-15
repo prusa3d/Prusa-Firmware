@@ -6144,7 +6144,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		if (!fan_speed[1]) {
 			_result = false; _errno = 7;
 		}
-		else if (fan_speed[1] < 40) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
+		else if (fan_speed[1] < 34) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
 			_result = false; _errno = 10;
 		}
 
