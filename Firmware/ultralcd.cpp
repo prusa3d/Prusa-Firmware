@@ -373,7 +373,6 @@ void set_language_from_EEPROM() {
 
 static void lcd_status_screen()
 {
-	
   if (firstrun == 1) 
   {
     firstrun = 0;
