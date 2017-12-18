@@ -921,7 +921,7 @@ void CardReader::presort() {
 					}
 				}
 				if (!didSwap) break;
-			} //end of bubble sort loop
+			} //end of bubble sort loop			
 #endif
 			  // Using RAM but not keeping names around
 			#if (SDSORT_USES_RAM && !SDSORT_CACHE_NAMES)
