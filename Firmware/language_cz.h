@@ -204,6 +204,11 @@
 #define MSG_SELFTEST_CHECK_ALLCORRECT		"Vse OK           "
 #define MSG_SELFTEST						"Selftest         "
 #define MSG_SELFTEST_FAILED					"Selftest selhal  "
+#define MSG_SELFTEST_EXTRUDER_FAN_SPEED		"Levy vent.:"
+#define MSG_SELFTEST_PRINT_FAN_SPEED		"Tiskovy vent.:"
+#define MSG_SELFTEST_FILAMENT_SENSOR		"Senzor filamentu:"
+#define MSG_SELFTEST_CHECK_FSENSOR			"Kontrola senzoru"
+#define MSG_FILAMENT_SENSOR					"Senzor filamentu"
 
 #define MSG_STATISTICS						"Statistika  "
 #define MSG_USB_PRINTING					"Tisk z USB  "

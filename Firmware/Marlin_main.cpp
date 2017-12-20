@@ -917,27 +917,11 @@ void setup()
 #endif //TMC2130
 
 #ifdef PAT9125
-	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
-    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
-	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
-	if (!pat9125)
-	{
-		fsensor = 0; //disable sensor
-		fsensor_not_responding = true;
-	}
-    puts_P(PSTR("FSensor "));
-	if (fsensor)
-	{
-		puts_P(PSTR("ENABLED\n"));
-		fsensor_enable();
-	}
-	else
-	{
-	    puts_P(PSTR("DISABLED\n"));
-		fsensor_disable();
-	}
+
+	fsensor_init();
 
 #endif //PAT9125
+
 
 	st_init();    // Initialize stepper, this enables interrupts!
     
@@ -1206,6 +1190,31 @@ void setup()
   KEEPALIVE_STATE(NOT_BUSY);
   wdt_enable(WDTO_4S);
 }
+
+#ifdef PAT9125
+void fsensor_init() {
+	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
+	printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
+	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+	if (!pat9125)
+	{
+		fsensor = 0; //disable sensor
+		fsensor_not_responding = true;
+	}
+	puts_P(PSTR("FSensor "));
+	if (fsensor)
+	{
+		puts_P(PSTR("ENABLED\n"));
+		fsensor_enable();
+	}
+	else
+	{
+		puts_P(PSTR("DISABLED\n"));
+		fsensor_disable();
+	}
+}
+
+#endif //PAT9125
 
 void trace();
 
