@@ -39,3 +39,14 @@ script:
   - mv *_MK2-RAMBo* prusa3d_fw_${GIT_BUILD}/MK2
   - zip -r prusa3d_fw_${GIT_BUILD}.zip prusa3d_fw_* *.pdf
   - curl --upload-file prusa3d_fw_${GIT_BUILD}.zip https://transfer.sh/prusa3d_fw_${GIT_BUILD}.zip
+
+deploy:
+  provider: releases
+  api_key:
+    secure: fViiNU342ZKF0ZQQ6LS/11j3B1NpMZaHqPmoikDWgssRc3G0iHjWxPtr9dvt3G2l3BHTPcnhg5u7Al0u+UmmeP2yKT6f7sSVCpW7fY/wxVzXgDNbczY21TI3D18XiOBeYL2bosCYKdl6JkFZzvqCkFYcqB1WI9wSfg2D7NuWNjpEV8b3p65ge6Th5r5mPfskvjnhtpl229jJ5ewl8NDDMV+WyChkCrTKWHtZatTPcRr23hNy7sSafbmdbWw43C/fkU4iDVdNbeUd7A3JZflFnF1oSH3QqgucVl8PENPc2LsyXeXWzZ90QR9KfeSDzaKmJdZWg5horMOFWo4jr/MqLhZKFntsEFqnPpVqyWlT3xzP8f3U05jErS7ZetT5+PhvOhYINx6Frn7Y21aMTyih33AM9JstBZuK086os5wY488TGWBcSFQnV9mM3Ku9ff0L/rT99sTuc9+sftzWR65udUtPe0XhlCfbpGcotph3ydgy3htLC3+0pDEIOaQqkWTN7kc05ygp9zUbd8jfmbk1wYdmOlXu/IWiPh/lS0/MpNuKI3E2nH6DzirZILxDv8C31/S6FyUBBP7GgrM0xYaWJ1vAHd99QsuWZ2ZwOdg7XKJd2Gl9Bqob/Br8eknLhLC/nCyILnueTxRnBvOHSjudMk7EqSw3fXiUQPUB4Q3tRjY=
+  file: prusa3d_fw_${GIT_BUILD}.zip
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: thess/Prusa-Firmware
+    branch: private-build2

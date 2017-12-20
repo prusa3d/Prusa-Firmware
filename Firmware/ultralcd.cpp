@@ -1494,7 +1494,7 @@ static void lcd_support_menu()
   } else {
       MENU_ITEM(back, PSTR("FW - " FW_version), lcd_main_menu);
   }
-#endif      
+#endif
   MENU_ITEM(back, MSG_PRUSA3D, lcd_main_menu);
   MENU_ITEM(back, MSG_PRUSA3D_FORUM, lcd_main_menu);
   MENU_ITEM(back, MSG_PRUSA3D_HOWTO, lcd_main_menu);

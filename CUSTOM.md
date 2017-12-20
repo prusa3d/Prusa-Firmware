@@ -1,5 +1,17 @@
 # Changelog of local customizations
 
+## Version 20-Dec-2017 (v3.1.0 r4)
+### Updates and mods
+- Allow BAUDRATE override by build opts (default 115200).
+- Remove unused source files (qr_solve, vector_3).
+- Use SDK version of LiquidCrystal library (faster draw).
+- Adjust extra filament load extrusion to 15mm.
+- Add private build variant configuration version number.
+
+## Bug fixes
+- Init serial before lcd to elminate random garbage output.
+- Remove redundant splash screen init.
+
 ## Version 22-Nov-2017
 ### Updates and mods
 - Add extra 25mm to manual (LCD) filament load extrusion.
