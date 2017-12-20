@@ -1201,6 +1201,9 @@ void fsensor_init() {
 		fsensor = 0; //disable sensor
 		fsensor_not_responding = true;
 	}
+	else {
+		fsensor_not_responding = false;
+	}
 	puts_P(PSTR("FSensor "));
 	if (fsensor)
 	{
