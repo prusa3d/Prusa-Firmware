@@ -6111,6 +6111,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		dcode_7(); break;
 	case 8: // D8 - Read/Write PINDA
 		dcode_8(); break;
+	case 9: // D9 - Read/Write ADC
+		dcode_9(); break;
 
 	case 10: // D10 - XYZ calibration = OK
 		dcode_10(); break;
