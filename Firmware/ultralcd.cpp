@@ -5558,16 +5558,27 @@ static bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(7, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(7, _progress, 3, true, 2000); //check bed
 		_result = lcd_selfcheck_check_heater(true);
 	}
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(8, _progress, 3, true, 5000);
+		_progress = lcd_selftest_screen(8, _progress, 3, true, 2000); //bed ok
+#ifdef PAT9125
+		_progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
+		_result = lcd_selftest_fsensor();
+#endif // PAT9125
+	}
+	if (_result)
+	{
+#ifdef PAT9125
+		_progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
+#endif // PAT9125
+		_progress = lcd_selftest_screen(11, _progress, 3, true, 5000); //all correct
 	}
 	else
 	{
-		_progress = lcd_selftest_screen(9, _progress, 3, true, 5000);
+		_progress = lcd_selftest_screen(12, _progress, 3, true, 5000);
 	}
 	lcd_reset_alert_level();
 	enquecommand_P(PSTR("M84"));
@@ -6112,6 +6123,12 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd.setCursor(18, 3);
 		lcd.print(_error_1);
 		break;
+	case 11: 
+		lcd.setCursor(0, 2);
+		lcd_printPGM(MSG_FILAMENT_SENSOR);
+		lcd.setCursor(0, 3);
+		lcd_printPGM(MSG_SELFTEST_WIRINGERROR);
+		break;
 	}
 
 	delay(1000);
@@ -6127,6 +6144,18 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 	lcd_return_to_status();
 
 }
+
+#ifdef PAT9125
+static bool lcd_selftest_fsensor() {
+	fsensor_init();
+	if (fsensor_not_responding)
+	{
+		const char *_err;
+		lcd_selftest_error(11, _err, _err);
+	}
+	return(!fsensor_not_responding);
+}
+#endif //PAT9125
 
 static bool lcd_selftest_fan_dialog(int _fan)
 {
@@ -6152,10 +6181,10 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		fanSpeed = 150;				//print fan
 		for (uint8_t i = 0; i < 5; i++) {
 			delay_keep_alive(1000);
-			lcd.setCursor(14, 3);
+			lcd.setCursor(18, 3);
 			lcd.print("-");
 			delay_keep_alive(1000);
-			lcd.setCursor(14, 3);
+			lcd.setCursor(18, 3);
 			lcd.print("|");
 		}
 		fanSpeed = 0;
@@ -6206,22 +6235,31 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	if (_step == 5) lcd_printPGM(MSG_SELFTEST_CHECK_Y);
 	if (_step == 6) lcd_printPGM(MSG_SELFTEST_CHECK_Z);
 	if (_step == 7) lcd_printPGM(MSG_SELFTEST_CHECK_BED);
-	if (_step == 8) lcd_printPGM(MSG_SELFTEST_CHECK_ALLCORRECT);
-	if (_step == 9) lcd_printPGM(MSG_SELFTEST_FAILED);
+	if (_step == 8) lcd_printPGM(MSG_SELFTEST_CHECK_BED);
+	if (_step == 9) lcd_printPGM(MSG_SELFTEST_CHECK_FSENSOR);
+	if (_step == 10) lcd_printPGM(MSG_SELFTEST_CHECK_FSENSOR);
+	if (_step == 11) lcd_printPGM(MSG_SELFTEST_CHECK_ALLCORRECT);
+	if (_step == 12) lcd_printPGM(MSG_SELFTEST_FAILED);
 
 	lcd.setCursor(0, 1);
 	lcd.print("--------------------");
 	if ((_step >= -1) && (_step <= 1))
 	{
 		//SERIAL_ECHOLNPGM("Fan test");
-		lcd_print_at_PGM(0, 2, PSTR("Extruder fan:"));
-		lcd.setCursor(14, 2);
+		lcd_print_at_PGM(0, 2, MSG_SELFTEST_EXTRUDER_FAN_SPEED);
+		lcd.setCursor(18, 2);
 		(_step < 0) ? lcd.print(_indicator) : lcd.print("OK");
-		lcd_print_at_PGM(0, 3, PSTR("Print fan:"));
-		lcd.setCursor(14, 3);
+		lcd_print_at_PGM(0, 3, MSG_SELFTEST_PRINT_FAN_SPEED);
+		lcd.setCursor(18, 3);
 		(_step < 1) ? lcd.print(_indicator) : lcd.print("OK");
 	}
-	else if (_step != 9)
+	else if (_step >= 9 && _step <= 10)
+	{
+		lcd_print_at_PGM(0, 2, MSG_SELFTEST_FILAMENT_SENSOR);
+		lcd.setCursor(18, 2);
+		(_step == 9) ? lcd.print(_indicator) : lcd.print("OK");
+	}
+	else if (_step < 9)
 	{
 		//SERIAL_ECHOLNPGM("Other tests");
 		_step_block = 3;
