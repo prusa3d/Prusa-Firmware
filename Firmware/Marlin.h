@@ -395,6 +395,10 @@ extern void print_world_coordinates();
 extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
 
+#ifdef PAT9125
+extern void fsensor_init();
+#endif //PAT9125
+
 #ifdef HOST_KEEPALIVE_FEATURE
 
 // States for managing Marlin and host communication

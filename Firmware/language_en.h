@@ -175,6 +175,9 @@
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
 #define MSG_SELFTEST_FANS					"Front/left fans"
 #define MSG_SELFTEST_SWAPPED				"Swapped"
+#define(length=18) MSG_SELFTEST_EXTRUDER_FAN_SPEED	"Extruder fan:"
+#define(length=18) MSG_SELFTEST_PRINT_FAN_SPEED		"Print fan:"
+#define(length=18) MSG_SELFTEST_FILAMENT_SENSOR		"Filament sensor:"
 
 #define(length=20,lines=1) MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
@@ -197,6 +200,8 @@
 #define(length=20) MSG_SELFTEST_CHECK_Y				"Checking Y axis  "
 #define(length=20) MSG_SELFTEST_CHECK_Z				"Checking Z axis  "
 #define(length=20) MSG_SELFTEST_CHECK_BED			"Checking bed     "
+#define(length=20) MSG_SELFTEST_CHECK_FSENSOR		"Checking sensors "
+#define(length=20) MSG_FILAMENT_SENSOR				"Filament sensor"
 #define(length=20) MSG_SELFTEST_CHECK_ALLCORRECT	"All correct      "
 #define MSG_SELFTEST						"Selftest         "
 #define(length=20) MSG_SELFTEST_FAILED		"Selftest failed  "
