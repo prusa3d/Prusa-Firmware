@@ -11,7 +11,7 @@
 #define FW_version "3.1.1-RC2"
 #define FW_build   137
 //#define FW_build   --BUILD-NUMBER--
-#define FW_version_build FW_version " b" STR(FW_build) "x"
+#define FW_version_build FW_version " b" STR(FW_build) "y"
 
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"

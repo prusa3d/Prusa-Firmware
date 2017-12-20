@@ -1556,6 +1556,7 @@ void adc_ready(void) //callback from adc when sampling finished
 ISR(TIMER0_COMPB_vect)
 {
 	if (!temp_meas_ready) adc_cycle();
+	lcd_buttons_update();
 
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
   static unsigned char soft_pwm_0;
