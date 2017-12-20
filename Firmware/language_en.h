@@ -369,6 +369,8 @@
 #define(length=11, lines=1) MSG_INFO_FILAMENT_YDIFF				"Fil. Ydiff:"
 #define(length=17, lines=1) MSG_FANS_CHECK_ON					"Fans check   [on]"
 #define(length=17, lines=1) MSG_FANS_CHECK_OFF					"Fans check  [off]"
+#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_ON				"F. autoload  [on]"
+#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_OFF				"F. autoload [off]"
 #define(length=20, lines=4) MSG_PRESS_TO_UNLOAD					"Please press the knob to unload filament"
 #define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Repeat unloading filament?"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"

@@ -476,9 +476,11 @@ void countFanSpeed()
 	fan_edge_counter[1] = 0;
 }
 
+extern bool fans_check_enabled;
+
 void checkFanSpeed()
 {
-	bool fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
+	fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 
 	if (fan_speed[0] == 0 && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;

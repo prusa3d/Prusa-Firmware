@@ -30,7 +30,8 @@
 int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added to encoderPosition every LCD update */
 
 extern int lcd_change_fil_state;
-extern bool fans_check_enabled = true;
+extern bool fans_check_enabled;
+extern bool filament_autoload_enabled;
 
 //Function pointer to menu functions.
 typedef void (*menuFunc_t)();
@@ -1700,6 +1701,12 @@ static void lcd_support_menu()
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
+	lcd_goto_menu(lcd_settings_menu, 8);
+}
+
+void lcd_set_filament_autoload() {
+	filament_autoload_enabled = !filament_autoload_enabled;
+	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
 	lcd_goto_menu(lcd_settings_menu, 8);
 }
 
@@ -3734,6 +3741,12 @@ static void lcd_settings_menu()
 		MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
   } else {
     MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
+  }
+  if (filament_autoload_enabled == true) {
+	  MENU_ITEM(function, MSG_FSENS_AUTOLOAD_ON, lcd_set_filament_autoload);
+  }
+  else {
+	  MENU_ITEM(function, MSG_FSENS_AUTOLOAD_OFF, lcd_set_filament_autoload);
   }
   if (fans_check_enabled == true) {
 	  MENU_ITEM(function, MSG_FANS_CHECK_ON, lcd_set_fan_check);

@@ -740,6 +740,16 @@ const char * const MSG_FSENSOR_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FSENSOR_ON_CZ
 };
 
+const char MSG_FSENS_AUTOLOAD_OFF_EN[] PROGMEM = "F. autoload [off]";
+const char * const MSG_FSENS_AUTOLOAD_OFF_LANG_TABLE[1] PROGMEM = {
+	MSG_FSENS_AUTOLOAD_OFF_EN
+};
+
+const char MSG_FSENS_AUTOLOAD_ON_EN[] PROGMEM = "F. autoload  [on]";
+const char * const MSG_FSENS_AUTOLOAD_ON_LANG_TABLE[1] PROGMEM = {
+	MSG_FSENS_AUTOLOAD_ON_EN
+};
+
 const char MSG_HEATING_EN[] PROGMEM = "Heating";
 const char MSG_HEATING_CZ[] PROGMEM = "Zahrivani";
 const char * const MSG_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
