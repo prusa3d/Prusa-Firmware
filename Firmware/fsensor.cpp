@@ -47,6 +47,14 @@ uint16_t fsensor_autoload_y = 0;
 uint8_t fsensor_autoload_c = 0;
 uint32_t fsensor_autoload_last_millis = 0;
 
+void fsensor_block()
+{
+	fsensor_enabled = false;
+}
+
+void fsensor_unblock() {
+	fsensor_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FSENSOR) == 0x01);
+}
 
 bool fsensor_enable()
 {

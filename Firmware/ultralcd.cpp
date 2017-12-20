@@ -110,6 +110,9 @@ int8_t FSensorStateMenu = 1;
 
 int8_t CrashDetectMenu = 1;
 
+extern void fsensor_block();
+extern void fsensor_unblock();
+
 extern bool fsensor_enable();
 extern void fsensor_disable();
 
@@ -2646,11 +2649,16 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
                 while (lcd_clicked()) ;
                 delay(10);
                 while (lcd_clicked()) ;
-				KEEPALIVE_STATE(IN_HANDLER);
-				lcd_set_custom_characters();
-				lcd_update_enable(true);
-				lcd_update(2);
-                return;
+				if (msg_next == NULL) {
+					KEEPALIVE_STATE(IN_HANDLER);
+					lcd_set_custom_characters();
+					lcd_update_enable(true);
+					lcd_update(2);
+					return;
+				}
+				else {
+					break;
+				}
             }
         }
         if (multi_screen) {
@@ -3618,15 +3626,16 @@ void lcd_wizard(int state) {
 			state = 7;
 			break;
 		case 7: //load filament 
+			fsensor_block();
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_LOAD_FILAMENT);
 			lcd_update_enable(false);
 			lcd_implementation_clear();
 			lcd_print_at_PGM(0, 2, MSG_LOADING_FILAMENT);
-			loading_flag = true;
 #ifdef SNMM
 			change_extr(0);
 #endif
 			gcode_M701();
+			fsensor_unblock();
 			state = 9;
 			break;
 		case 8:

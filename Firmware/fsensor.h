@@ -7,6 +7,10 @@
 extern void fsensor_stop_and_save_print();
 extern void fsensor_restore_print_and_continue();
 
+//temporarily enable/disable without writing to eeprom
+extern void fsensor_block();
+extern void fsensor_unblock();
+
 //enable/disable
 extern bool fsensor_enable();
 extern void fsensor_disable();
