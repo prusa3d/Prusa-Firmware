@@ -6,6 +6,8 @@
 #include "ConfigurationStore.h"
 #include "cmdqueue.h"
 #include "pat9125.h"
+#include "adc.h"
+#include "temperature.h"
 #include <avr/wdt.h>
 
 
@@ -375,6 +377,67 @@ void dcode_8()
 		}
 	}
 	printf_P(PSTR("temp_pinda=%d offset_z=%d.%03d\n"), (int)temp_pinda, (int)offset_z, ((int)(1000 * offset_z) % 1000));
+}
+
+const char* dcode_9_ADC_name(uint8_t i)
+{
+	switch (i)
+	{
+	case 0: return PSTR("TEMP_HEATER0");
+	case 1: return PSTR("TEMP_HEATER1");
+	case 2: return PSTR("TEMP_BED");
+	case 3: return PSTR("TEMP_PINDA");
+	case 4: return PSTR("VOLT_PWR");
+	case 5: return PSTR("TEMP_AMBIENT");
+	case 6: return PSTR("VOLT_BED");
+	}
+	return 0;
+}
+
+extern int current_temperature_raw[EXTRUDERS];
+extern int current_temperature_bed_raw;
+extern int current_temperature_raw_pinda;
+extern int current_temperature_raw_ambient;
+extern int current_voltage_raw_pwr;
+extern int current_voltage_raw_bed;
+uint16_t dcode_9_ADC_val(uint8_t i)
+{
+	switch (i)
+	{
+	case 0: return current_temperature_raw[0];
+	case 1: return 0;
+	case 2: return current_temperature_bed_raw;
+	case 3: return current_temperature_raw_pinda;
+	case 4: return current_voltage_raw_pwr;
+	case 5: return current_temperature_raw_ambient;
+	case 6: return current_voltage_raw_bed;
+	}
+	return 0;
+}
+
+void dcode_9()
+{
+	printf_P(PSTR("D9 - Read/Write ADC\n"));
+	if ((strchr_pointer[1+1] == '?') || (strchr_pointer[1+1] == 0))
+	{
+		for (uint8_t i = 0; i < ADC_CHAN_CNT; i++)
+			printf_P(PSTR("\tADC%d=%4d\t(%S)\n"), i, dcode_9_ADC_val(i) >> 4, dcode_9_ADC_name(i));
+	}
+	else
+	{
+		uint8_t index = 0xff;
+		if (code_seen('I')) // index (index of used channel, not avr channel index)
+			index = code_value();
+		if (index < ADC_CHAN_CNT)
+		{
+			if (code_seen('V')) // value to be written as simulated
+			{
+				adc_sim_mask |= (1 << index);
+				adc_values[index] = (((int)code_value()) << 4);
+				printf_P(PSTR("ADC%d=%4d\n"), index, adc_values[index] >> 4);
+			}
+		}
+	}
 }
 
 void dcode_10()

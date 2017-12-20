@@ -38,6 +38,7 @@
 #include "Sd2PinMap.h"
 
 #include <avr/wdt.h>
+#include "adc.h"
 
 
 //===========================================================================
@@ -475,9 +476,11 @@ void countFanSpeed()
 	fan_edge_counter[1] = 0;
 }
 
+extern bool fans_check_enabled;
+
 void checkFanSpeed()
 {
-	bool fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
+	fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 
 	if (fan_speed[0] == 0 && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
@@ -1081,52 +1084,8 @@ void tp_init()
 	digitalWrite(MAX6675_SS,1);
   #endif
 
-  // Set analog inputs
-  ADCSRA = 1<<ADEN | 1<<ADSC | 1<<ADIF | 0x07;
-  DIDR0 = 0;
-  #ifdef DIDR2
-    DIDR2 = 0;
-  #endif
-  #if defined(TEMP_0_PIN) && (TEMP_0_PIN > -1)
-    #if TEMP_0_PIN < 8
-       DIDR0 |= 1 << TEMP_0_PIN; 
-    #else
-       DIDR2 |= 1<<(TEMP_0_PIN - 8); 
-    #endif
-  #endif
-  #if defined(TEMP_1_PIN) && (TEMP_1_PIN > -1)
-    #if TEMP_1_PIN < 8
-       DIDR0 |= 1<<TEMP_1_PIN; 
-    #else
-       DIDR2 |= 1<<(TEMP_1_PIN - 8); 
-    #endif
-  #endif
-  #if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
-    #if TEMP_2_PIN < 8
-       DIDR0 |= 1 << TEMP_2_PIN; 
-    #else
-       DIDR2 |= 1<<(TEMP_2_PIN - 8); 
-    #endif
-  #endif
-  #if defined(TEMP_BED_PIN) && (TEMP_BED_PIN > -1)
-    #if TEMP_BED_PIN < 8
-       DIDR0 |= 1<<TEMP_BED_PIN; 
-    #else
-       DIDR2 |= 1<<(TEMP_BED_PIN - 8); 
-    #endif
-  #endif
-  
-  //Added for Filament Sensor 
-  #ifdef FILAMENT_SENSOR
-   #if defined(FILWIDTH_PIN) && (FILWIDTH_PIN > -1) 
-	#if FILWIDTH_PIN < 8 
-       	   DIDR0 |= 1<<FILWIDTH_PIN;  
-	#else 
-       	   DIDR2 |= 1<<(FILWIDTH_PIN - 8);  
-	#endif 
-   #endif
-  #endif
-  
+  adc_init();
+
   // Use timer0 for temperature measurement
   // Interleave temperature interrupt with millies interrupt
   OCR0B = 128;
@@ -1578,21 +1537,29 @@ int read_max6675()
 #endif
 
 
+
+extern "C" {
+
+void adc_ready(void) //callback from adc when sampling finished
+{
+	current_temperature_raw[0] = adc_values[0];
+	current_temperature_bed_raw = adc_values[2];
+	current_temperature_raw_pinda = adc_values[3];
+	current_voltage_raw_pwr = adc_values[4];
+	current_temperature_raw_ambient = adc_values[5];
+	current_voltage_raw_bed = adc_values[6];
+	temp_meas_ready = true;
+}
+
+} // extern "C"
+
+
 // Timer 0 is shared with millies
 ISR(TIMER0_COMPB_vect)
 {
-//	if (UVLO) uvlo();
-  //these variables are only accesible from the ISR, but static, so they don't lose their value
-  static unsigned char temp_count = 0;
-  static unsigned long raw_temp_0_value = 0;
-  static unsigned long raw_temp_1_value = 0;
-  static unsigned long raw_temp_2_value = 0;
-  static unsigned long raw_temp_bed_value = 0;
-  static unsigned long raw_temp_pinda_value = 0;
-  static unsigned long raw_temp_ambient_value = 0;
-  static unsigned long raw_volt_pwr_value = 0;
-  static unsigned long raw_volt_bed_value = 0;
-  static unsigned char temp_state = 18;
+	if (!temp_meas_ready) adc_cycle();
+	lcd_buttons_update();
+
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
   static unsigned char soft_pwm_0;
 #ifdef SLOW_PWM_HEATERS
@@ -1926,252 +1893,33 @@ ISR(TIMER0_COMPB_vect)
   } //if ((pwm_count % 64) == 0) {
   
 #endif //ifndef SLOW_PWM_HEATERS
+
   
-  switch(temp_state) {
-    case 0: // Prepare TEMP_0
-      #if defined(TEMP_0_PIN) && (TEMP_0_PIN > -1)
-        #if TEMP_0_PIN > 7
-          ADCSRB = 1<<MUX5;
-        #else
-          ADCSRB = 0;
-        #endif
-        ADMUX = ((1 << REFS0) | (TEMP_0_PIN & 0x07));
-        ADCSRA |= 1<<ADSC; // Start conversion
-      #endif
-      lcd_buttons_update();
-      temp_state = 1;
-      break;
-    case 1: // Measure TEMP_0
-      #if defined(TEMP_0_PIN) && (TEMP_0_PIN > -1)
-        raw_temp_0_value += ADC;
-      #endif
-      #ifdef HEATER_0_USES_MAX6675 // TODO remove the blocking
-        raw_temp_0_value = read_max6675();
-      #endif
-      temp_state = 2;
-      break;
-    case 2: // Prepare TEMP_BED
-      #if defined(TEMP_BED_PIN) && (TEMP_BED_PIN > -1)
-        #if TEMP_BED_PIN > 7
-          ADCSRB = 1<<MUX5;
-        #else
-          ADCSRB = 0;
-        #endif
-        ADMUX = ((1 << REFS0) | (TEMP_BED_PIN & 0x07));
-        ADCSRA |= 1<<ADSC; // Start conversion
-      #endif
-      lcd_buttons_update();
-      temp_state = 3;
-      break;
-    case 3: // Measure TEMP_BED
-      #if defined(TEMP_BED_PIN) && (TEMP_BED_PIN > -1)
-        raw_temp_bed_value += ADC;
-      #endif
-      temp_state = 4;
-      break;
-    case 4: // Prepare TEMP_1
-      #if defined(TEMP_1_PIN) && (TEMP_1_PIN > -1)
-        #if TEMP_1_PIN > 7
-          ADCSRB = 1<<MUX5;
-        #else
-          ADCSRB = 0;
-        #endif
-        ADMUX = ((1 << REFS0) | (TEMP_1_PIN & 0x07));
-        ADCSRA |= 1<<ADSC; // Start conversion
-      #endif
-      lcd_buttons_update();
-      temp_state = 5;
-      break;
-    case 5: // Measure TEMP_1
-      #if defined(TEMP_1_PIN) && (TEMP_1_PIN > -1)
-        raw_temp_1_value += ADC;
-      #endif
-      temp_state = 6;
-      break;
-    case 6: // Prepare TEMP_2
-      #if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
-        #if TEMP_2_PIN > 7
-          ADCSRB = 1<<MUX5;
-        #else
-          ADCSRB = 0;
-        #endif
-        ADMUX = ((1 << REFS0) | (TEMP_2_PIN & 0x07));
-        ADCSRA |= 1<<ADSC; // Start conversion
-      #endif
-      lcd_buttons_update();
-      temp_state = 7;
-      break;
-    case 7: // Measure TEMP_2
-      #if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
-        raw_temp_2_value += ADC;
-      #endif
-      temp_state = 8;//change so that Filament Width is also measured
-      
-      break;
-    case 8: //Prepare FILWIDTH 
-     #if defined(FILWIDTH_PIN) && (FILWIDTH_PIN> -1) 
-      #if FILWIDTH_PIN>7 
-         ADCSRB = 1<<MUX5;
-      #else
-         ADCSRB = 0; 
-      #endif 
-      ADMUX = ((1 << REFS0) | (FILWIDTH_PIN & 0x07)); 
-      ADCSRA |= 1<<ADSC; // Start conversion 
-     #endif 
-     lcd_buttons_update();       
-     temp_state = 9; 
-     break; 
-    case 9:   //Measure FILWIDTH 
-     #if defined(FILWIDTH_PIN) &&(FILWIDTH_PIN > -1)
-     //raw_filwidth_value += ADC;  //remove to use an IIR filter approach 
-      if(ADC>102)  //check that ADC is reading a voltage > 0.5 volts, otherwise don't take in the data.
-        {
-    	raw_filwidth_value= raw_filwidth_value-(raw_filwidth_value>>7);  //multipliy raw_filwidth_value by 127/128
-        
-        raw_filwidth_value= raw_filwidth_value + ((unsigned long)ADC<<7);  //add new ADC reading 
-        }
-     #endif
-      temp_state = 10;
-      break;
-    case 10: // Prepare TEMP_AMBIENT
-      #if defined(TEMP_AMBIENT_PIN) && (TEMP_AMBIENT_PIN > -1)
-        #if TEMP_AMBIENT_PIN > 7
-          ADCSRB = 1<<MUX5;
-        #else
-          ADCSRB = 0;
-        #endif
-        ADMUX = ((1 << REFS0) | (TEMP_AMBIENT_PIN & 0x07));
-        ADCSRA |= 1<<ADSC; // Start conversion
-      #endif
-      lcd_buttons_update();
-      temp_state = 11;
-      break;
-    case 11: // Measure TEMP_AMBIENT
-      #if defined(TEMP_AMBIENT_PIN) && (TEMP_AMBIENT_PIN > -1)
-        raw_temp_ambient_value += ADC;
-      #endif
-      temp_state = 12;
-      break;
-    case 12: // Prepare TEMP_PINDA
-      #if defined(TEMP_PINDA_PIN) && (TEMP_PINDA_PIN > -1)
-        #if TEMP_PINDA_PIN > 7
-          ADCSRB = 1<<MUX5;
-        #else
-          ADCSRB = 0;
-        #endif
-        ADMUX = ((1 << REFS0) | (TEMP_PINDA_PIN & 0x07));
-        ADCSRA |= 1<<ADSC; // Start conversion
-      #endif
-      lcd_buttons_update();
-      temp_state = 13;
-      break;
-    case 13: // Measure TEMP_PINDA
-      #if defined(TEMP_PINDA_PIN) && (TEMP_PINDA_PIN > -1)
-        raw_temp_pinda_value += ADC;
-      #endif
-	 temp_state = 14;
-     break;
-
-	case 14: // Prepare VOLT_PWR
-      #if defined(VOLT_PWR_PIN) && (VOLT_PWR_PIN > -1)
-        #if VOLT_PWR_PIN > 7
-          ADCSRB = 1<<MUX5;
-        #else
-          ADCSRB = 0;
-        #endif
-        ADMUX = ((1 << REFS0) | (VOLT_PWR_PIN & 0x07));
-        ADCSRA |= 1<<ADSC; // Start conversion
-      #endif
-      lcd_buttons_update();
-      temp_state = 15;
-     break;
-
-	case 15: // Measure VOLT_PWR
-      #if defined(VOLT_PWR_PIN) && (VOLT_PWR_PIN > -1)
-        raw_volt_pwr_value += ADC;
-      #endif
-	 temp_state = 16;
-	 break;
-
-	case 16: // Prepare VOLT_BED
-      #if defined(VOLT_BED_PIN) && (VOLT_BED_PIN > -1)
-        #if VOLT_BED_PIN > 7
-          ADCSRB = 1<<MUX5;
-        #else
-          ADCSRB = 0;
-        #endif
-        ADMUX = ((1 << REFS0) | (VOLT_BED_PIN & 0x07));
-        ADCSRA |= 1<<ADSC; // Start conversion
-      #endif
-      lcd_buttons_update();
-      temp_state = 17;
-     break;
-
-	case 17: // Measure VOLT_BED
-      #if defined(VOLT_BED_PIN) && (VOLT_BED_PIN > -1)
-        raw_volt_bed_value += ADC;
-      #endif
-	 temp_state = 0;
-
-     temp_count++;
-     break;
-      
-    case 18: //Startup, delay initial temp reading a tiny bit so the hardware can settle.
-      temp_state = 0;
-      break;
-//    default:
-//      SERIAL_ERROR_START;
-//      SERIAL_ERRORLNPGM("Temp measurement error!");
-//      break;
-  }
-    
-  if(temp_count >= OVERSAMPLENR) // 10 * 16 * 1/(16000000/64/256)  = 164ms.
+#ifdef BABYSTEPPING
+  for(uint8_t axis=0;axis<3;axis++)
   {
-    if (!temp_meas_ready) //Only update the raw values if they have been read. Else we could be updating them during reading.
+    int curTodo=babystepsTodo[axis]; //get rid of volatile for performance
+   
+    if(curTodo>0)
     {
-		current_temperature_raw[0] = raw_temp_0_value;
-#if EXTRUDERS > 1
-		current_temperature_raw[1] = raw_temp_1_value;
-#endif
-#ifdef TEMP_SENSOR_1_AS_REDUNDANT
-		redundant_temperature_raw = raw_temp_1_value;
-#endif
-#if EXTRUDERS > 2
-		current_temperature_raw[2] = raw_temp_2_value;
-#endif
-#ifdef PINDA_THERMISTOR
-		current_temperature_raw_pinda = raw_temp_pinda_value;
-#endif //PINDA_THERMISTOR
-#ifdef AMBIENT_THERMISTOR
-		current_temperature_raw_ambient = raw_temp_ambient_value;
-#endif //AMBIENT_THERMISTOR
-#ifdef VOLT_PWR_PIN
-		current_voltage_raw_pwr = raw_volt_pwr_value;
-#endif
-#ifdef VOLT_BED_PIN
-		current_voltage_raw_bed = raw_volt_bed_value;
-#endif
-
-		current_temperature_bed_raw = raw_temp_bed_value;
+      babystep(axis,/*fwd*/true);
+      babystepsTodo[axis]--; //less to do next time
     }
+    else
+    if(curTodo<0)
+    {
+      babystep(axis,/*fwd*/false);
+      babystepsTodo[axis]++; //less to do next time
+    }
+  }
+#endif //BABYSTEPPING
 
-//Add similar code for Filament Sensor - can be read any time since IIR filtering is used 
-#if defined(FILWIDTH_PIN) &&(FILWIDTH_PIN > -1)
-  current_raw_filwidth = raw_filwidth_value>>10;  //need to divide to get to 0-16384 range since we used 1/128 IIR filter approach 
-#endif
-    
-    
-    temp_meas_ready = true;
-    temp_count = 0;
-    raw_temp_0_value = 0;
-    raw_temp_1_value = 0;
-    raw_temp_2_value = 0;
-    raw_temp_bed_value = 0;
-	raw_temp_pinda_value = 0;
-	raw_temp_ambient_value = 0;
-	raw_volt_pwr_value = 0;
-	raw_volt_bed_value = 0;
+  check_fans();
+}
 
+void check_min_max_temp()
+{
+	/*
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
     if(current_temperature_raw[0] <= maxttemp_raw[0]) {
 #else
@@ -2218,8 +1966,14 @@ ISR(TIMER0_COMPB_vect)
         min_temp_error(2);
     }
 #endif
-  
-  /* No bed MINTEMP error? */
+
+
+
+
+
+
+
+  // No bed MINTEMP error?
         
         
 #if defined(BED_MAXTEMP) && (TEMP_SENSOR_BED != 0)
@@ -2241,28 +1995,7 @@ ISR(TIMER0_COMPB_vect)
                 bed_min_temp_error();
             }
             
-#endif
-  
-#ifdef BABYSTEPPING
-  for(uint8_t axis=0;axis<3;axis++)
-  {
-    int curTodo=babystepsTodo[axis]; //get rid of volatile for performance
-   
-    if(curTodo>0)
-    {
-      babystep(axis,/*fwd*/true);
-      babystepsTodo[axis]--; //less to do next time
-    }
-    else
-    if(curTodo<0)
-    {
-      babystep(axis,/*fwd*/false);
-      babystepsTodo[axis]++; //less to do next time
-    }
-  }
-#endif //BABYSTEPPING
-
-  check_fans();
+#endif*/
 }
 
 void check_fans() {

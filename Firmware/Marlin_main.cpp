@@ -586,6 +586,9 @@ static void lcd_language_menu();
 void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_print_from_ram_and_continue(float e_move);
 
+bool fans_check_enabled = true;
+bool filament_autoload_enabled = true;
+
 extern int8_t CrashDetectMenu;
 
 void crashdet_enable()
@@ -917,9 +920,7 @@ void setup()
 #endif //TMC2130
 
 #ifdef PAT9125
-
 	fsensor_init();
-
 #endif //PAT9125
 
 
@@ -5596,14 +5597,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		//load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 #ifdef PAT9125
-		if (fsensor_M600) fsensor_autoload_check_start();
+		if (filament_autoload_enabled && fsensor_M600) fsensor_autoload_check_start();
 #endif //PAT9125
         while(!lcd_clicked())
 		{
           manage_heater();
           manage_inactivity(true);
 #ifdef PAT9125
-		  if (fsensor_M600 && fsensor_check_autoload())
+		  if (filament_autoload_enabled && fsensor_M600 && fsensor_check_autoload())
 			  break;
 #endif //PAT9125
 /*#ifdef SNMM
@@ -5614,7 +5615,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
         }
 #ifdef PAT9125
-		if (fsensor_M600) fsensor_autoload_check_stop();
+		if (filament_autoload_enabled && fsensor_M600) fsensor_autoload_check_stop();
 #endif //PAT9125
 		//WRITE(BEEPER, LOW);
 		KEEPALIVE_STATE(IN_HANDLER);
@@ -6122,6 +6123,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		dcode_7(); break;
 	case 8: // D8 - Read/Write PINDA
 		dcode_8(); break;
+	case 9: // D9 - Read/Write ADC
+		dcode_9(); break;
 
 	case 10: // D10 - XYZ calibration = OK
 		dcode_10(); break;
@@ -6387,7 +6390,7 @@ void handle_status_leds(void) {
 
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
-	if (fsensor_enabled && !fsensor_M600 && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && (current_temperature[0] > EXTRUDE_MINTEMP))
+	if (fsensor_enabled && filament_autoload_enabled && !fsensor_M600 && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && (current_temperature[0] > EXTRUDE_MINTEMP))
 	{
 		if (fsensor_autoload_enabled)
 		{

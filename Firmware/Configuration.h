@@ -8,10 +8,10 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_version "3.1.1-RC1"
-#define FW_build   136
+#define FW_version "3.1.1-RC2"
+#define FW_build   137
 //#define FW_build   --BUILD-NUMBER--
-#define FW_version_build FW_version " b" STR(FW_build)
+#define FW_version_build FW_version " b" STR(FW_build) "z"
 
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
@@ -89,6 +89,8 @@
 #define EEPROM_DIRS  (EEPROM_DIR_DEPTH-80) //8 chars for each dir name, max 10 levels
 #define EEPROM_SD_SORT (EEPROM_DIRS - 1) //0 -time, 1-alpha, 2-none
 #define EEPROM_SECOND_SERIAL_ACTIVE (EEPROM_SD_SORT - 1)
+
+#define EEPROM_FSENS_AUTOLOAD_ENABLED (EEPROM_SECOND_SERIAL_ACTIVE - 1)
 
 //TMC2130 configuration
 #define EEPROM_TMC_AXIS_SIZE  //axis configuration block size
