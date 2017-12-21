@@ -41,13 +41,13 @@
 
 // Bed correction is valid if set to 1. If set to zero or 255,
 //   the BED_CORRECTION_OFFSETS bytes are invalid.
-#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
 #ifdef MBC_8POINT
-// 4 Unused bytes (available for future options)
-#define EEPROM_UNUSED  (EEPROM_BED_CORRECTION_VALID-1)
-#define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_UNUSED-4)
+// 5 Unused bytes (available for future options)
+#define EEPROM_UNUSED  (EEPROM_FARM_NUMBER-1)
+#define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_UNUSED-5)
 #else
 // Old style MBC offsets
+#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
 #define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
 #define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
 #define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
@@ -65,8 +65,9 @@
 
 // E^2 address of custom MBC offsets array.
 // Correction of the bed leveling, in micrometers.
-// Current Range is: +/- 500um (stored as int16.
-#define EEPROM_BED_CORRECTION_OFFSETS	(EEPROM_WIZARD_ACTIVE - 16)
+// Current Range is: +/- 500um (stored as int16).
+#define EEPROM_BED_CORRECTION_VALID	999
+#define EEPROM_BED_CORRECTION_OFFSETS	(EEPROM_BED_CORRECTION_VALID - 16)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.

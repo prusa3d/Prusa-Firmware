@@ -24,7 +24,7 @@ If you want to have some feature added to this customized firmware version and d
 
 ## Download of precompiled .hex files
 
-A _.zip_ file containing pre-built versions of each private firmware release can be found in the Github reposiotory [here](https://github.com/thess/Prusa-Firware/releases)
+A _.zip_ file containing pre-built versions of each private firmware release can be found in the Github reposiotory [here](https://github.com/thess/Prusa-Firmware/releases)
 
 Intermediate firmware versions of individual checkins are provided by the Travis CI builds. The URL of a _.zip_ file containing the  firmware can be found toward the end of the Travis build log. Click on the button in the right-hand corner of the log to move to the end. [Travis CI output](https://travis-ci.org/thess/Prusa-Firmware) **Note:** The Travis CI build results are only kept for 14-days.
 
