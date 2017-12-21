@@ -813,6 +813,79 @@ void lcd_splash()
     fputs_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"), lcdout);
 }
 
+void factory_reset() 
+{
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
+	if (!READ(BTN_ENC))
+	{
+		_delay_ms(1000);
+		if (!READ(BTN_ENC))
+		{
+			lcd_implementation_clear();
+
+
+			lcd_printPGM(PSTR("Factory RESET"));
+
+
+			SET_OUTPUT(BEEPER);
+			WRITE(BEEPER, HIGH);
+
+			while (!READ(BTN_ENC));
+
+			WRITE(BEEPER, LOW);
+
+
+
+			_delay_ms(2000);
+
+			char level = reset_menu();
+			factory_reset(level, false);
+
+			switch (level) {
+			case 0: _delay_ms(0); break;
+			case 1: _delay_ms(0); break;
+			case 2: _delay_ms(0); break;
+			case 3: _delay_ms(0); break;
+			}
+			// _delay_ms(100);
+			/*
+			#ifdef MESH_BED_LEVELING
+			_delay_ms(2000);
+
+			if (!READ(BTN_ENC))
+			{
+			WRITE(BEEPER, HIGH);
+			_delay_ms(100);
+			WRITE(BEEPER, LOW);
+			_delay_ms(200);
+			WRITE(BEEPER, HIGH);
+			_delay_ms(100);
+			WRITE(BEEPER, LOW);
+
+			int _z = 0;
+			calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+			EEPROM_save_B(EEPROM_BABYSTEP_X, &_z);
+			EEPROM_save_B(EEPROM_BABYSTEP_Y, &_z);
+			EEPROM_save_B(EEPROM_BABYSTEP_Z, &_z);
+			}
+			else
+			{
+
+			WRITE(BEEPER, HIGH);
+			_delay_ms(100);
+			WRITE(BEEPER, LOW);
+			}
+			#endif // mesh */
+
+		}
+	}
+	else
+	{
+		//_delay_ms(1000);  // wait 1sec to display the splash screen // what's this and why do we need it?? - andre
+	}
+	KEEPALIVE_STATE(IN_HANDLER);
+}
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -823,6 +896,7 @@ void setup()
 	lcd_splash();
 	setup_killpin();
 	setup_powerhold();
+	
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
@@ -902,6 +976,8 @@ void setup()
 	plan_init();  // Initialize planner;
 	watchdog_init();
 
+	factory_reset();
+
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
@@ -919,11 +995,6 @@ void setup()
 
 #endif //TMC2130
 
-#ifdef PAT9125
-	fsensor_init();
-#endif //PAT9125
-
-
 	st_init();    // Initialize stepper, this enables interrupts!
     
 	setup_photpin();
@@ -932,76 +1003,10 @@ void setup()
 	// Reset the machine correction matrix.
 	// It does not make sense to load the correction matrix until the machine is homed.
 	world2machine_reset();
-	KEEPALIVE_STATE(PAUSED_FOR_USER);
-	if (!READ(BTN_ENC))
-	{
-		_delay_ms(1000);
-		if (!READ(BTN_ENC))
-		{
-			lcd_implementation_clear();
-
-
-			lcd_printPGM(PSTR("Factory RESET"));
-
-
-			SET_OUTPUT(BEEPER);
-			WRITE(BEEPER, HIGH);
-
-			while (!READ(BTN_ENC));
-
-			WRITE(BEEPER, LOW);
-
-
-
-			_delay_ms(2000);
-
-			char level = reset_menu();
-			factory_reset(level, false);
-
-			switch (level) {
-			case 0: _delay_ms(0); break;
-			case 1: _delay_ms(0); break;
-			case 2: _delay_ms(0); break;
-			case 3: _delay_ms(0); break;
-			}
-			// _delay_ms(100);
-  /*
-  #ifdef MESH_BED_LEVELING
-			_delay_ms(2000);
-
-			if (!READ(BTN_ENC))
-			{
-				WRITE(BEEPER, HIGH);
-				_delay_ms(100);
-				WRITE(BEEPER, LOW);
-				_delay_ms(200);
-				WRITE(BEEPER, HIGH);
-				_delay_ms(100);
-				WRITE(BEEPER, LOW);
-
-				int _z = 0;
-				calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-				EEPROM_save_B(EEPROM_BABYSTEP_X, &_z);
-				EEPROM_save_B(EEPROM_BABYSTEP_Y, &_z);
-				EEPROM_save_B(EEPROM_BABYSTEP_Z, &_z);
-			}
-			else
-			{
-
-				WRITE(BEEPER, HIGH);
-				_delay_ms(100);
-				WRITE(BEEPER, LOW);
-			}
-  #endif // mesh */
-
-		}
-	}
-	else
-	{
-		//_delay_ms(1000);  // wait 1sec to display the splash screen // what's this and why do we need it?? - andre
-	}
     
-
+#ifdef PAT9125
+	fsensor_init();
+#endif //PAT9125
 
 
 #if defined(CONTROLLERFAN_PIN) && (CONTROLLERFAN_PIN > -1)
@@ -1112,6 +1117,7 @@ void setup()
 	for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]); 
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
+  KEEPALIVE_STATE(PAUSED_FOR_USER);
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
