@@ -103,8 +103,8 @@
 
 #ifdef NEWPANEL
 
-#define LCD_PWM_PIN         -1//32  // lcd backlight brightnes pwm control pin
-#define LCD_PWM_MAX       0x0f  // lcd pwm maximum value (0x07=64Hz, 0x0f=32Hz, 0x1f=16Hz)
+//#define LCD_PWM_PIN         -1//32  // lcd backlight brightnes pwm control pin
+//#define LCD_PWM_MAX       0x0f  // lcd pwm maximum value (0x07=64Hz, 0x0f=32Hz, 0x1f=16Hz)
 
 #define BEEPER              84  // Beeper on AUX-4
 #define LCD_PINS_RS         82
