@@ -97,10 +97,6 @@ float current_temperature_bed = 0.0;
   unsigned char fanSpeedSoftPwm;
 #endif
 
-#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
-  unsigned char lcdSoftPwm = (LCD_PWM_MAX * 2 + 1); //set default value to maximum
-  unsigned char lcdBlinkDelay = 0; //lcd blinking delay (0 = no blink)
-#endif
 
 unsigned char soft_pwm_bed;
 
@@ -156,11 +152,6 @@ static volatile bool temp_meas_ready = false;
   static unsigned long extruder_autofan_last_check;
 #endif  
 
-#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
-  static unsigned char soft_pwm_lcd = 0;
-  static unsigned char lcd_blink_delay = 0;
-  static bool lcd_blink_on = false;
-#endif
 
 #if EXTRUDERS > 3
   # error Unsupported number of extruders
@@ -1057,11 +1048,6 @@ void tp_init()
     #ifdef FAN_SOFT_PWM
     soft_pwm_fan = fanSpeedSoftPwm / 2;
     #endif
-	#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
-    soft_pwm_lcd = lcdSoftPwm / 2;
-	lcd_blink_delay = lcdBlinkDelay;
-    lcd_blink_on = true;
-    #endif
   #endif
 
   #ifdef HEATER_0_USES_MAX6675
@@ -1631,27 +1617,6 @@ ISR(TIMER0_COMPB_vect)
     WRITE(HEATER_1_PIN,0);
 #endif
   }
-#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
-	if ((pwm_count & LCD_PWM_MAX) == 0)
-	{
-		if (lcd_blink_delay)
-		{
-			lcd_blink_delay--;
-			if (lcd_blink_delay == 0)
-			{
-				lcd_blink_delay = lcdBlinkDelay;
-				lcd_blink_on = !lcd_blink_on;
-			}
-		}
-		else
-		{
-			lcd_blink_delay = lcdBlinkDelay;
-			lcd_blink_on = true;
-		}
-		soft_pwm_lcd = (lcd_blink_on) ? (lcdSoftPwm / 2) : 0;
-		if (soft_pwm_lcd > 0) WRITE(LCD_PWM_PIN,1); else WRITE(LCD_PWM_PIN,0);
-	}
-#endif
 
 #if EXTRUDERS > 1
   if(soft_pwm_1 < pwm_count) WRITE(HEATER_1_PIN,0);
@@ -1664,9 +1629,6 @@ ISR(TIMER0_COMPB_vect)
 #endif
 #ifdef FAN_SOFT_PWM
   if(soft_pwm_fan < pwm_count) WRITE(FAN_PIN,0);
-#endif
-#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
-  if (soft_pwm_lcd < (pwm_count & LCD_PWM_MAX)) WRITE(LCD_PWM_PIN,0);
 #endif
   
   pwm_count += (1 << SOFT_PWM_SCALE);

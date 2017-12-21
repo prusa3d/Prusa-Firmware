@@ -1008,9 +1008,6 @@ void setup()
 	SET_OUTPUT(CONTROLLERFAN_PIN); //Set pin used for driver cooling fan
 #endif
 
-#if defined(LCD_PWM_PIN) && (LCD_PWM_PIN > -1)
-	SET_OUTPUT(LCD_PWM_PIN); //Set pin used for driver cooling fan
-#endif
 
 #ifdef DIGIPOT_I2C
 	digipot_i2c_init();
