@@ -46,6 +46,7 @@ bool fsensor_autoload_enabled = false;
 uint16_t fsensor_autoload_y = 0;
 uint8_t fsensor_autoload_c = 0;
 uint32_t fsensor_autoload_last_millis = 0;
+uint8_t fsensor_autoload_sum = 0;
 
 void fsensor_block()
 {
@@ -108,6 +109,7 @@ void fsensor_autoload_check_start(void)
 	pat9125_update_y(); //update sensor
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
+	fsensor_autoload_sum = 0;
 	fsensor_autoload_last_millis = millis();
 	fsensor_autoload_enabled = true;
 	fsensor_err_cnt = 0;
@@ -116,36 +118,36 @@ void fsensor_autoload_check_start(void)
 void fsensor_autoload_check_stop(void)
 {
 	puts_P(PSTR("fsensor_autoload_check_stop\n"));
+	fsensor_autoload_sum = 0;
 	fsensor_autoload_enabled = false;
 	fsensor_err_cnt = 0;
 }
 
 bool fsensor_check_autoload(void)
 {
-	if ((millis() - fsensor_autoload_last_millis) < 50) return false;
+	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
+	if ((millis() - fsensor_autoload_last_millis) < 25) return false;
 	fsensor_autoload_last_millis = millis();
 	pat9125_update_y(); //update sensor
-	uint16_t dy = fsensor_autoload_y - pat9125_y;
+	int16_t dy = fsensor_autoload_y - pat9125_y;
 	if (dy) //? y value is different
 	{
-		if (dy > 0)  //? delta-y value is positive (inserting)
+		if (dy < 0) //? delta-y value is positive (inserting)
 		{
-			fsensor_autoload_c+=3; //increment change counter
-//			printf_P(PSTR("fsensor_check_autoload dy=%d c=%d\n"), dy, fsensor_autoload_c);
+			fsensor_autoload_sum -= dy;
+			fsensor_autoload_c += 3; //increment change counter by 3
 		}
-		else if (fsensor_autoload_c > 0)
-		{
-			fsensor_autoload_c--;
-//			printf_P(PSTR("fsensor_check_autoload dy=%d c=%d\n"), dy, fsensor_autoload_c);
-		}
+		else if (fsensor_autoload_c > 1)
+			fsensor_autoload_c -= 2; //decrement change counter by 2 
 		fsensor_autoload_y = pat9125_y; //save current value
-		if (fsensor_autoload_c > 10) return true; //number of positive changes > 10, start loading
 	}
 	else if (fsensor_autoload_c > 0)
-	{
 		fsensor_autoload_c--;
-//		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d\n"), dy, fsensor_autoload_c);
-	}
+	if (fsensor_autoload_c == 0) fsensor_autoload_sum = 0;
+//	if (fsensor_autoload_c != fsensor_autoload_c_old)
+//		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
+	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
+		return true;
 	return false;
 }
 

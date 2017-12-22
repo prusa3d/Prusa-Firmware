@@ -5027,8 +5027,8 @@ static void lcd_main_menu()
 	if (!filament_autoload_enabled)
 	{
 		MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
-		MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
 	}
+	MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
 	#endif
 	#ifdef SNMM
 	MENU_ITEM(submenu, MSG_LOAD_FILAMENT, fil_load_menu);
@@ -5043,11 +5043,12 @@ static void lcd_main_menu()
   {
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
-  MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
     
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
 
   MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
+
+  MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
 
   END_MENU();
 
