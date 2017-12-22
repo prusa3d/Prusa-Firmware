@@ -5413,7 +5413,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     #ifdef FILAMENTCHANGEENABLE
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
     {
-		MYSERIAL.println("!!!!M600!!!!");
 		bool old_fsensor_enabled = fsensor_enabled;
 		fsensor_enabled = false; //temporary solution for unexpected restarting
 
