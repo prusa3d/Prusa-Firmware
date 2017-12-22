@@ -258,7 +258,6 @@ void fsensor_update()
 		}
 		else*/
 		{
-			MYSERIAL.println("fsensor_update - ERROR!!!");
 			fsensor_stop_and_save_print();
 			enquecommand_front_P((PSTR("M600")));
 			fsensor_M600 = true;
