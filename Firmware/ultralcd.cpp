@@ -5043,11 +5043,12 @@ static void lcd_main_menu()
   {
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
-  MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
     
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
 
   MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
+
+  MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
 
   END_MENU();
 
