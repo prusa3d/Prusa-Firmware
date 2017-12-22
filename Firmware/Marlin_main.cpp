@@ -1703,7 +1703,7 @@ void homeaxis(int axis)
         feedrate = homing_feedrate[axis];
 
 #ifdef TMC2130
-    		tmc2130_home_enter(X_AXIS_MASK << axis);
+    	tmc2130_home_enter(X_AXIS_MASK << axis);
 #endif
 
         // Move right a bit, so that the print head does not touch the left end position,
@@ -6159,7 +6159,8 @@ void FlushSerialRequestResend()
   MYSERIAL.flush();
   SERIAL_PROTOCOLRPGM(MSG_RESEND);
   SERIAL_PROTOCOLLN(gcode_LastN + 1);
-  ClearToSend();
+  previous_millis_cmd = millis();
+  SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
 // Confirm the execution of a command, if sent from a serial line.
