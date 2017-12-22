@@ -391,7 +391,6 @@ void get_command()
         continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
-       (serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1) )
     {
       if(!serial_count) { //if empty line
@@ -400,67 +399,68 @@ void get_command()
       }
       cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
       if(!comment_mode){
-        comment_mode = false; //for new command
-        if ((strchr_pointer = strstr(cmdbuffer+bufindw+CMDHDRSIZE, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'N')) != NULL) {
-            if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'N')) != NULL)
-            {
-            // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
-            // and Marlin tests, whether the successive lines are stamped with an increasing line number ID.
-            gcode_N = (strtol(strchr_pointer+1, NULL, 10));
-            if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("M110")) == NULL) ) {
-                // M110 - set current line number.
-                // Line numbers not sent in succession.
-                SERIAL_ERROR_START;
-                SERIAL_ERRORRPGM(MSG_ERR_LINE_NO);
-                SERIAL_ERRORLN(gcode_LastN);
-                //Serial.println(gcode_N);
-                FlushSerialRequestResend();
-                serial_count = 0;
-                return;
-            }
+		  // Line numbers must be first in buffer
 
-            if((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*')) != NULL)
-            {
-                byte checksum = 0;
-                char *p = cmdbuffer+bufindw+CMDHDRSIZE;
-                while (p != strchr_pointer)
-                    checksum = checksum^(*p++);
-                if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
-                SERIAL_ERROR_START;
-                SERIAL_ERRORRPGM(MSG_ERR_CHECKSUM_MISMATCH);
-                SERIAL_ERRORLN(gcode_LastN);
-                FlushSerialRequestResend();
-                serial_count = 0;
-                return;
-                }
-                // If no errors, remove the checksum and continue parsing.
-                *strchr_pointer = 0;
-            }
-            else
-            {
-                SERIAL_ERROR_START;
-                SERIAL_ERRORRPGM(MSG_ERR_NO_CHECKSUM);
-                SERIAL_ERRORLN(gcode_LastN);
-                FlushSerialRequestResend();
-                serial_count = 0;
-                return;
-            }
+		  if ((strstr(cmdbuffer+bufindw+CMDHDRSIZE, "PRUSA") == NULL) &&
+			  (cmdbuffer[bufindw+CMDHDRSIZE] == 'N')) {
 
-            gcode_LastN = gcode_N;
-            //if no errors, continue parsing
-            } // end of 'N' command
-        }
-        else  // if we don't receive 'N' but still see '*'
+			  // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
+			  // and Marlin tests, whether the successive lines are stamped with an increasing line number ID
+			  gcode_N = (strtol(cmdbuffer+bufindw+CMDHDRSIZE+1, NULL, 10));
+			  if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("M110")) == NULL) ) {
+				  // M110 - set current line number.
+				  // Line numbers not sent in succession.
+				  SERIAL_ERROR_START;
+				  SERIAL_ERRORRPGM(MSG_ERR_LINE_NO);
+				  SERIAL_ERRORLN(gcode_LastN);
+				  //Serial.println(gcode_N);
+				  FlushSerialRequestResend();
+				  serial_count = 0;
+				  return;
+			  }
+
+			  if((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*')) != NULL)
+			  {
+				  byte checksum = 0;
+				  char *p = cmdbuffer+bufindw+CMDHDRSIZE;
+				  while (p != strchr_pointer)
+					  checksum = checksum^(*p++);
+				  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
+					  SERIAL_ERROR_START;
+					  SERIAL_ERRORRPGM(MSG_ERR_CHECKSUM_MISMATCH);
+					  SERIAL_ERRORLN(gcode_LastN);
+					  FlushSerialRequestResend();
+					  serial_count = 0;
+					  return;
+				  }
+				  // If no errors, remove the checksum and continue parsing.
+				  *strchr_pointer = 0;
+			  }
+			  else
+			  {
+				  SERIAL_ERROR_START;
+				  SERIAL_ERRORRPGM(MSG_ERR_NO_CHECKSUM);
+				  SERIAL_ERRORLN(gcode_LastN);
+				  FlushSerialRequestResend();
+				  serial_count = 0;
+				  return;
+			  }
+
+			  // Don't parse N again with code_seen('N')
+			  cmdbuffer[bufindw + CMDHDRSIZE] = '$';
+			  //if no errors, continue parsing
+			  gcode_LastN = gcode_N;
+		}
+        // if we don't receive 'N' but still see '*'
+        if ((cmdbuffer[bufindw + CMDHDRSIZE] != 'N') && (cmdbuffer[bufindw + CMDHDRSIZE] != '$') && (strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*') != NULL))
         {
-          if((strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*') != NULL))
-          {
+
             SERIAL_ERROR_START;
             SERIAL_ERRORRPGM(MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM);
             SERIAL_ERRORLN(gcode_LastN);
             serial_count = 0;
             return;
-          }
-        } // end of '*' command
+        }
         if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'G')) != NULL) {
               if (! IS_SD_PRINTING) {
                       usb_printing_counter = 10;
