@@ -5600,15 +5600,21 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		//load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 #ifdef PAT9125
-		if (filament_autoload_enabled && fsensor_M600) fsensor_autoload_check_start();
+		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_start();
 #endif //PAT9125
+//		  printf_P(PSTR("M600 PAT9125 filament_autoload_enabled=%d, old_fsensor_enabled=%d, fsensor_M600=%d"), filament_autoload_enabled, old_fsensor_enabled, fsensor_M600);
         while(!lcd_clicked())
 		{
           manage_heater();
           manage_inactivity(true);
 #ifdef PAT9125
-		  if (filament_autoload_enabled && fsensor_M600 && fsensor_check_autoload())
+		  if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600) && fsensor_check_autoload())
+		  {
+			tone(BEEPER, 1000);
+			delay_keep_alive(50);
+			noTone(BEEPER);
 			  break;
+		  }
 #endif //PAT9125
 /*#ifdef SNMM
 		  target[E_AXIS] += 0.002;
@@ -5618,7 +5624,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
         }
 #ifdef PAT9125
-		if (filament_autoload_enabled && fsensor_M600) fsensor_autoload_check_stop();
+		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_stop();
 #endif //PAT9125
 		//WRITE(BEEPER, LOW);
 		KEEPALIVE_STATE(IN_HANDLER);
@@ -6400,6 +6406,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			if (fsensor_check_autoload())
 			{
 				fsensor_autoload_check_stop();
+				tone(BEEPER, 1000);
+		        delay_keep_alive(50);
+				noTone(BEEPER);
 				enquecommand_front_P((PSTR("M701")));
 			}
 		}
