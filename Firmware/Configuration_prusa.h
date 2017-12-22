@@ -225,7 +225,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif
 
 // Extrude mintemp
-#define EXTRUDE_MINTEMP 130
+#define EXTRUDE_MINTEMP 190
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
