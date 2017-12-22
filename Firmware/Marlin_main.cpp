@@ -6167,7 +6167,7 @@ void FlushSerialRequestResend()
 // Execution of a command from a SD card will not be confirmed.
 void ClearToSend()
 {
-	previous_millis_cmd = millis();
+    previous_millis_cmd = millis();
     if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB)
         SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }

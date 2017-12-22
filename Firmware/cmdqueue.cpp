@@ -480,7 +480,7 @@ void get_command()
           kill("", 2);
         
         // Store the current line into buffer, move to the next line.
-        cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_USB;   
+        cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_USB; 
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Storing a command line to buffer: ");
