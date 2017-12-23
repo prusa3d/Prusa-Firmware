@@ -221,6 +221,8 @@ uint8_t tmc2130_sample_diag()
 	return mask;
 }
 
+extern bool is_usb_printing;
+
 void tmc2130_st_isr(uint8_t last_step_mask)
 {
 	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false) return;
@@ -253,7 +255,7 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 			if (diag_mask & 0x04) tmc2130_sg_cnt[2]++;
 			if (diag_mask & 0x08) tmc2130_sg_cnt[3]++;
 		}*/
-		if (tmc2130_sg_stop_on_crash && crash)
+		if (!is_usb_printing && tmc2130_sg_stop_on_crash && crash)
 		{
 			tmc2130_sg_crash = true;
 			tmc2130_sg_stop_on_crash = false;
