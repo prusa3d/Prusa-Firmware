@@ -231,6 +231,8 @@ void checkFanSpeed();
 void fanSpeedError(unsigned char _fan);
 
 void check_fans();
+void check_min_temp();
+void check_max_temp();
 
 #endif
 

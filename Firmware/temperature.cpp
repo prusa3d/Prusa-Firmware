@@ -660,7 +660,7 @@ void manage_heater()
   #endif
 
     // Check if temperature is within the correct range
-    if((current_temperature[e] > minttemp[e]) && (current_temperature[e] < maxttemp[e])) 
+    if(((current_temperature_ambient < MINTEMP_MINAMBIENT) || (current_temperature[e] > minttemp[e])) && (current_temperature[e] < maxttemp[e])) 
     {
       soft_pwm[e] = (int)pid_output >> 1;
     }
@@ -745,7 +745,7 @@ void manage_heater()
       pid_output = constrain(target_temperature_bed, 0, MAX_BED_POWER);
     #endif //PID_OPENLOOP
 
-	  if((current_temperature_bed > BED_MINTEMP) && (current_temperature_bed < BED_MAXTEMP)) 
+	  if(((current_temperature_bed > BED_MINTEMP) || (current_temperature_ambient < MINTEMP_MINAMBIENT)) && (current_temperature_bed < BED_MAXTEMP)) 
 	  {
 	    soft_pwm_bed = (int)pid_output >> 1;
 	  }
@@ -1418,7 +1418,7 @@ void min_temp_error(uint8_t e) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
-if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
+//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
   disable_heater();
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
@@ -1452,7 +1452,7 @@ void bed_min_temp_error(void) {
 #ifdef DEBUG_DISABLE_MINTEMP
 	return;
 #endif
-if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
+//if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
 #if HEATER_BED_PIN > -1
     WRITE(HEATER_BED_PIN, 0);
 #endif
@@ -1544,6 +1544,11 @@ void adc_ready(void) //callback from adc when sampling finished
 ISR(TIMER0_COMPB_vect)
 {
 	if (!temp_meas_ready) adc_cycle();
+	else
+	{
+		check_max_temp();
+		check_min_temp();
+	}
 	lcd_buttons_update();
 
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
@@ -1879,85 +1884,49 @@ ISR(TIMER0_COMPB_vect)
   check_fans();
 }
 
-void check_min_max_temp()
+void check_max_temp()
 {
-	/*
+//heater
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
-    if(current_temperature_raw[0] <= maxttemp_raw[0]) {
+    if (current_temperature_raw[0] <= maxttemp_raw[0]) {
 #else
-    if(current_temperature_raw[0] >= maxttemp_raw[0]) {
+    if (current_temperature_raw[0] >= maxttemp_raw[0]) {
 #endif
         max_temp_error(0);
     }
-#if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
-    if(current_temperature_raw[0] >= minttemp_raw[0]) {
-#else
-    if(current_temperature_raw[0] <= minttemp_raw[0]) {
-#endif
-        min_temp_error(0);
-    }
-#if EXTRUDERS > 1
-#if HEATER_1_RAW_LO_TEMP > HEATER_1_RAW_HI_TEMP
-    if(current_temperature_raw[1] <= maxttemp_raw[1]) {
-#else
-    if(current_temperature_raw[1] >= maxttemp_raw[1]) {
-#endif
-        max_temp_error(1);
-    }
-#if HEATER_1_RAW_LO_TEMP > HEATER_1_RAW_HI_TEMP
-    if(current_temperature_raw[1] >= minttemp_raw[1]) {
-#else
-    if(current_temperature_raw[1] <= minttemp_raw[1]) {
-#endif
-        min_temp_error(1);
-    }
-#endif
-#if EXTRUDERS > 2
-#if HEATER_2_RAW_LO_TEMP > HEATER_2_RAW_HI_TEMP
-    if(current_temperature_raw[2] <= maxttemp_raw[2]) {
-#else
-    if(current_temperature_raw[2] >= maxttemp_raw[2]) {
-#endif
-        max_temp_error(2);
-    }
-#if HEATER_2_RAW_LO_TEMP > HEATER_2_RAW_HI_TEMP
-    if(current_temperature_raw[2] >= minttemp_raw[2]) {
-#else
-    if(current_temperature_raw[2] <= minttemp_raw[2]) {
-#endif
-        min_temp_error(2);
-    }
-#endif
-
-
-
-
-
-
-
-  // No bed MINTEMP error?
-        
-        
+//bed
 #if defined(BED_MAXTEMP) && (TEMP_SENSOR_BED != 0)
-# if HEATER_BED_RAW_LO_TEMP > HEATER_BED_RAW_HI_TEMP
-    if(current_temperature_bed_raw <= bed_maxttemp_raw) {
+#if HEATER_BED_RAW_LO_TEMP > HEATER_BED_RAW_HI_TEMP
+    if (current_temperature_bed_raw <= bed_maxttemp_raw) {
 #else
-    if(current_temperature_bed_raw >= bed_maxttemp_raw) {
+    if (current_temperature_bed_raw >= bed_maxttemp_raw) {
 #endif
        target_temperature_bed = 0;
        bed_max_temp_error();
     }
-  }
-        
-# if HEATER_BED_RAW_LO_TEMP > HEATER_BED_RAW_HI_TEMP
-        if(current_temperature_bed_raw >= bed_minttemp_raw) {
-#else
-            if(current_temperature_bed_raw <= bed_minttemp_raw) {
 #endif
-                bed_min_temp_error();
-            }
-            
-#endif*/
+
+}
+
+void check_min_temp()
+{
+	if (current_temperature_raw_ambient > OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW) return;
+//heater
+#if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
+	if (current_temperature_raw[0] >= minttemp_raw[0]) {
+#else
+	if (current_temperature_raw[0] <= minttemp_raw[0]) {
+#endif
+		min_temp_error(0);
+	}
+//bed
+#if HEATER_BED_RAW_LO_TEMP > HEATER_BED_RAW_HI_TEMP
+	if (current_temperature_bed_raw >= bed_minttemp_raw) {
+#else
+	if (current_temperature_bed_raw <= bed_minttemp_raw) {
+#endif
+		bed_min_temp_error();
+	}
 }
 
 void check_fans() {
