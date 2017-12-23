@@ -4633,8 +4633,6 @@ Sigma_Exit:
 	case 110:   // M110 - reset line pos
 		if (code_seen('N'))
 			gcode_LastN = code_value_long();
-		else
-			gcode_LastN = 0;
 		break;
 #ifdef HOST_KEEPALIVE_FEATURE
 	case 113: // M113 - Get or set Host Keepalive interval
