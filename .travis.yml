@@ -26,24 +26,26 @@ install:
   - arduino --pref "compiler.warning_level=all" --save-prefs
 
 script:
-  - GIT_BUILD=$(git rev-parse --short HEAD)
+  - GIT_VERSION=$(git rev-parse --short HEAD)
   - VARIANTS=$(ls Firmware/variants/)
   - for VARIANT in $VARIANTS; do
       cp Firmware/variants/${VARIANT} Firmware/Configuration_prusa.h ;
       arduino --pref build.path=. --verify --verbose-build --board rambo:avr:rambo $PWD/Firmware/Firmware.ino ;
       mv Firmware.ino.hex "${VARIANT}"ex ;
     done
-  - mkdir -p prusa3d_fw_${GIT_BUILD}/MK1-175mm prusa3d_fw_${GIT_BUILD}/MK2-MultiMaterial prusa3d_fw_${GIT_BUILD}/MK2
-  - mv *_MK1-RAMBo* prusa3d_fw_${GIT_BUILD}/MK1-175mm
-  - mv *_MK2-MultiMaterial-RAMBo* prusa3d_fw_${GIT_BUILD}/MK2-MultiMaterial
-  - mv *_MK2-RAMBo* prusa3d_fw_${GIT_BUILD}/MK2
-  - zip -r prusa3d_fw_${GIT_BUILD}.zip prusa3d_fw_* *.pdf
-  - curl --upload-file prusa3d_fw_${GIT_BUILD}.zip https://transfer.sh/prusa3d_fw_${GIT_BUILD}.zip
 
-after_success: |
-  if [ -n "${TRAVIS_TAG}" ]; then
-    mv prusa3d_fw_${GIT_BUILD}.zip prusa3d_fw_${TRAVIS_TAG}.zip
-  done
+after_success:
+  - if [ -n "${TRAVIS_TAG}" ]; then
+      BUILD_NAME=${TRAVIS_TAG} ;
+    else
+      BUILD_NAME=${GIT_VERSION} ;
+    fi
+  - mkdir -p prusa3d_fw_${BUILD_NAME}/MK1-175mm prusa3d_fw_${BUILD_NAME}/MK2-MultiMaterial prusa3d_fw_${BUILD_NAME}/MK2
+  - mv *_MK1-RAMBo* prusa3d_fw_${BUILD_NAME}/MK1-175mm
+  - mv *_MK2-MultiMaterial-RAMBo* prusa3d_fw_${BUILD_NAME}/MK2-MultiMaterial
+  - mv *_MK2-RAMBo* prusa3d_fw_${BUILD_NAME}/MK2
+  - zip -r prusa3d_fw_${BUILD_NAME}.zip prusa3d_fw_* *.pdf
+  - curl --upload-file prusa3d_fw_${BUILD_NAME}.zip https://transfer.sh/prusa3d_fw_${BUILD_NAME}.zip
 
 deploy:
   provider: releases
@@ -52,6 +54,6 @@ deploy:
   file: prusa3d_fw_${TRAVIS_TAG}.zip
   skip_cleanup: true
   on:
-    tags: true
     repo: thess/Prusa-Firmware
     branch: private-build2
+    tags: true

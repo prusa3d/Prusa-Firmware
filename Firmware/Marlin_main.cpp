@@ -6565,38 +6565,45 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 
 void kill(const char *full_screen_message)
 {
-  cli(); // Stop interrupts
+  SERIAL_ERROR_START;
+  SERIAL_ERRORLNRPGM(MSG_ERR_KILLED);
+
+  // Turn things off...
   disable_heater();
 
   disable_x();
-//  SERIAL_ECHOLNPGM("kill - disable Y");
   disable_y();
   disable_z();
   disable_e0();
   disable_e1();
   disable_e2();
 
-#if defined(PS_ON_PIN) && PS_ON_PIN > -1
-  pinMode(PS_ON_PIN,INPUT);
-#endif
-  SERIAL_ERROR_START;
-  SERIAL_ERRORLNRPGM(MSG_ERR_KILLED);
   if (full_screen_message != NULL) {
       SERIAL_ERRORLNRPGM(full_screen_message);
       lcd_display_message_fullscreen_P(full_screen_message);
   } else {
       LCD_ALERTMESSAGERPGM(MSG_KILLED);
+      for (int i=5; i--; lcd_update())
+        _delay_ms(200);
   }
 
-  // FMC small patch to update the LCD before ending
-  sei();   // enable interrupts
-  for ( int i=5; i--; lcd_update())
-  {
-     delay(200);	
-  }
-  cli();   // disable interrupts
+  // Wait for screen to settle
+  _delay_ms(1000);
+
+  // disable ints and reset heaters again
+  cli();
+  _delay_ms(200);
+  disable_heater();
+
+#if defined(PS_ON_PIN) && PS_ON_PIN > -1
+  pinMode(PS_ON_PIN,INPUT);
+#endif
   suicide();
-  while(1) { /* Intentionally left empty */ } // Wait for reset
+  // Wait for reset
+  while(1) {
+    // nice doggie
+    watchdog_reset();
+  }
 }
 
 void Stop()
