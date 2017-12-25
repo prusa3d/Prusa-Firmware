@@ -1241,6 +1241,7 @@ void microstep_init()
 
 void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
 {
+ #if defined(X_MS1_PIN) && X_MS1_PIN > -1
   if(ms1 > -1) switch(driver)
   {
     case 0: digitalWrite( X_MS1_PIN,ms1); break;
@@ -1261,6 +1262,7 @@ void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
     case 4: digitalWrite(E1_MS2_PIN,ms2); break;
     #endif
   }
+  #endif
 }
 
 void microstep_mode(uint8_t driver, uint8_t stepping_mode)
@@ -1277,6 +1279,7 @@ void microstep_mode(uint8_t driver, uint8_t stepping_mode)
 
 void microstep_readings()
 {
+   #if defined(X_MS1_PIN) && X_MS1_PIN > -1
       SERIAL_PROTOCOLPGM("MS1,MS2 Pins\n");
       SERIAL_PROTOCOLPGM("X: ");
       SERIAL_PROTOCOL(   digitalRead(X_MS1_PIN));
@@ -1290,6 +1293,7 @@ void microstep_readings()
       SERIAL_PROTOCOLPGM("E0: ");
       SERIAL_PROTOCOL(   digitalRead(E0_MS1_PIN));
       SERIAL_PROTOCOLLN( digitalRead(E0_MS2_PIN));
+      #endif
       #if defined(E1_MS1_PIN) && E1_MS1_PIN > -1
       SERIAL_PROTOCOLPGM("E1: ");
       SERIAL_PROTOCOL(   digitalRead(E1_MS1_PIN));

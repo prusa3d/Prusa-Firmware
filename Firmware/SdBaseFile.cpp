@@ -296,7 +296,7 @@ bool SdBaseFile::getFilename(char* name) {
   return true;
 }
 //------------------------------------------------------------------------------
-void SdBaseFile::getpos(filepos_t* pos) {
+void SdBaseFile::getpos(FatPos_t* pos) {
   pos->position = curPosition_;
   pos->cluster = curCluster_;
 }
@@ -927,7 +927,7 @@ bool SdBaseFile::openRoot(SdVolume* vol) {
  * \return The byte if no error and not at eof else -1;
  */
 int SdBaseFile::peek() {
-  filepos_t pos;
+  FatPos_t pos;
   getpos(&pos);
   int c = read();
   if (c >= 0) setpos(&pos);
@@ -1502,7 +1502,7 @@ bool SdBaseFile::seekSet(uint32_t pos) {
   return false;
 }
 //------------------------------------------------------------------------------
-void SdBaseFile::setpos(filepos_t* pos) {
+void SdBaseFile::setpos(FatPos_t* pos) {
   curPosition_ = pos->position;
   curCluster_ = pos->cluster;
 }

@@ -2,9 +2,14 @@
 
 ## General instructions
 
-Pre-compiled hex output on PRUSA RESEARCH site: http://prusa3d.com/downloads/firmware/
+This is the Prusa Firmware for Prusa i3 Mk2, modified to work with generic RAMPS hardware (or, better yet, a board with more mosfet outputs like MKS BASE or MKS GEN).
 
-Just download and flash it to the electronics
+Configuration_prusa.h is already there, you don't need, or want, to copy a config from the variants directory.
+
+Ideally, your board has a MOSFET on D7, and you should connect the extruder cooling fan to that (NOT the part fan). The firmware is setup for Dual Z steppers using the E1 driver. It won't matter if you use the Z driver for both either in series or parallel either.
+
+
+Good luck!!!
 
 
 ## Build instructions
@@ -15,25 +20,13 @@ Install arduino
 
 ### Step 2
 
-Remove Liquid Crystal library from your arduino or rename it
+Remove Liquid Crystal library from your arduino or rename it (not certain this is really necessary anymore)
 
 ### Step 3
 
-Install the arduino addon located in the root of this repo. Don't forget to install correct version!
+Install the arduino addon located in the root of this repo. Don't forget to install correct version! (not certain this is really necessary anymore
 
 ### Step 4
-
-Copy the configuration file matching your printer from variants folder to the the Firmware folder
-
-### Step 5
-
-Rename it to "Configuration_prusa.h"
-
-### Step 6
-
-Compile the firmware
-
-### Step 7
 
 Upload the firmware to board
 
