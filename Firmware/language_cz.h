@@ -278,7 +278,7 @@
 #define MSG_MARK_FIL									"Oznacte filament 100 mm od tela extruderu a po te potvrdte tlacitkem."
 #define MSG_CLEAN_NOZZLE_E								"E kalibrace ukoncena. Prosim ocistete trysku. Po te potvrdte tlacitkem."
 #define MSG_WAITING_TEMP								"Cekani na zchladnuti trysky a podlozky."
-#define MSG_FILAMENT_CLEAN								"Je barva cista?" 
+#define MSG_FILAMENT_CLEAN								"Filament vytlacen a spravne barvy?" 
 #define MSG_UNLOADING_FILAMENT							"Vysouvam filament"
 
 #define MSG_PAPER										"Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, vypnete tiskarnu."
