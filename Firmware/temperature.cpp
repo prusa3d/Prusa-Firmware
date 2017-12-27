@@ -1908,9 +1908,8 @@ void check_max_temp()
 
 }
 
-void check_min_temp()
+void check_min_temp_heater0()
 {
-	if (current_temperature_raw_ambient > OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW) return;
 //heater
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
 	if (current_temperature_raw[0] >= minttemp_raw[0]) {
@@ -1919,7 +1918,10 @@ void check_min_temp()
 #endif
 		min_temp_error(0);
 	}
-//bed
+}
+
+void check_min_temp_bed()
+{
 #if HEATER_BED_RAW_LO_TEMP > HEATER_BED_RAW_HI_TEMP
 	if (current_temperature_bed_raw >= bed_minttemp_raw) {
 #else
@@ -1927,6 +1929,28 @@ void check_min_temp()
 #endif
 		bed_min_temp_error();
 	}
+}
+
+void check_min_temp()
+{
+	static uint8_t heat_cycles = 0;
+	if (current_temperature_raw_ambient > OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)
+	{
+		if (READ(HEATER_0_PIN) == HIGH)
+		{
+//			if ((heat_cycles % 10) == 0)
+//				printf_P(PSTR("X%d\n"), heat_cycles);
+			if (heat_cycles > 50) //reaction time 5-10s
+				check_min_temp_heater0();
+			else
+				heat_cycles++;
+		}
+		else
+			heat_cycles = 0;
+		return;
+	}
+	check_min_temp_heater0();
+	check_min_temp_bed();
 }
 
 void check_fans() {
