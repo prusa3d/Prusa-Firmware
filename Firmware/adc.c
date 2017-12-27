@@ -26,6 +26,11 @@ void adc_init(void)
 	DIDR0 = (ADC_CHAN_MSK & 0xff);
 	DIDR2 = (ADC_CHAN_MSK >> 8);
 	adc_reset();
+//	adc_sim_mask = 0b0101;
+//	adc_sim_mask = 0b100101;
+//	adc_values[0] = 1023 * 16;
+//	adc_values[2] = 1023 * 16;
+//	adc_values[5] = 1002 * 16;
 }
 
 void adc_reset(void)

@@ -743,44 +743,44 @@ void world2machine_initialize()
 
     bool reset = false;
     if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y)) {
-        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
+//        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
         reset = true;
     }
     else {
         // Length of the vec_x shall be close to unity.
         float l = sqrt(vec_x[0] * vec_x[0] + vec_x[1] * vec_x[1]);
         if (l < 0.9 || l > 1.1) {
-			SERIAL_ECHOLNPGM("X vector length:");
-			MYSERIAL.println(l);
-            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
+//			SERIAL_ECHOLNPGM("X vector length:");
+//			MYSERIAL.println(l);
+//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
             reset = true;
         }
         // Length of the vec_y shall be close to unity.
         l = sqrt(vec_y[0] * vec_y[0] + vec_y[1] * vec_y[1]);
         if (l < 0.9 || l > 1.1) {
-			SERIAL_ECHOLNPGM("Y vector length:");
-			MYSERIAL.println(l);
-            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the Y vector out of range.");
+//			SERIAL_ECHOLNPGM("Y vector length:");
+//			MYSERIAL.println(l);
+//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the Y vector out of range.");
             reset = true;
         }
         // Correction of the zero point shall be reasonably small.
         l = sqrt(cntr[0] * cntr[0] + cntr[1] * cntr[1]);
         if (l > 15.f) {
-			SERIAL_ECHOLNPGM("Zero point correction:");
-			MYSERIAL.println(l);
-            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Shift out of range.");
+//			SERIAL_ECHOLNPGM("Zero point correction:");
+//			MYSERIAL.println(l);
+//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Shift out of range.");
             reset = true;
         }
         // vec_x and vec_y shall be nearly perpendicular.
         l = vec_x[0] * vec_y[0] + vec_x[1] * vec_y[1];
         if (fabs(l) > 0.1f) {
-            SERIAL_ECHOLNPGM("Invalid bed correction matrix. X/Y axes are far from being perpendicular.");
+//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. X/Y axes are far from being perpendicular.");
             reset = true;
         }
     }
 
     if (reset) {
-        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
+//        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
         reset_bed_offset_and_skew();
         world2machine_reset();
     } else {
