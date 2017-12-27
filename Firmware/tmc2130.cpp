@@ -255,7 +255,7 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 			if (diag_mask & 0x04) tmc2130_sg_cnt[2]++;
 			if (diag_mask & 0x08) tmc2130_sg_cnt[3]++;
 		}*/
-		if (!is_usb_printing && tmc2130_sg_stop_on_crash && crash)
+		if (/*!is_usb_printing && */tmc2130_sg_stop_on_crash && crash)
 		{
 			tmc2130_sg_crash = true;
 			tmc2130_sg_stop_on_crash = false;
@@ -353,7 +353,7 @@ uint16_t tmc2130_sg_meassure_stop()
 
 bool tmc2130_wait_standstill_xy(int timeout)
 {
-	DBG(_n("tmc2130_wait_standstill_xy(timeout=%d)\n"), timeout);
+//	DBG(_n("tmc2130_wait_standstill_xy(timeout=%d)\n"), timeout);
 	bool standstill = false;
 	while (!standstill && (timeout > 0))
 	{
@@ -361,7 +361,7 @@ bool tmc2130_wait_standstill_xy(int timeout)
 		uint32_t drv_status_y = 0;
 		tmc2130_rd(tmc2130_cs[X_AXIS], TMC2130_REG_DRV_STATUS, &drv_status_x);
 		tmc2130_rd(tmc2130_cs[Y_AXIS], TMC2130_REG_DRV_STATUS, &drv_status_y);
-		DBG(_n("\tdrv_status_x=0x%08x drv_status_x=0x%08x\n"), drv_status_x, drv_status_y);
+//		DBG(_n("\tdrv_status_x=0x%08x drv_status_x=0x%08x\n"), drv_status_x, drv_status_y);
 		standstill = (drv_status_x & 0x80000000) && (drv_status_y & 0x80000000);
 		tmc2130_check_overtemp();
 		timeout--;
