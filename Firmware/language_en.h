@@ -349,6 +349,7 @@
 //messages bellow has no translation yet
 
 #define MSG_CRASHDETECT_OFF										"Crash det.  [off]"
+#define MSG_CRASHDETECT_NA										"Crash det.  [N/A]"
 #define MSG_CRASHDETECT_ON										"Crash det.   [on]"
 #define MSG_FSENSOR_OFF											"Fil. sensor [off]"
 #define MSG_FSENSOR_NA											"Fil. sensor [N/A]"
