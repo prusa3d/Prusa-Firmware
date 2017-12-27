@@ -34,6 +34,11 @@ const char * const MSG_AUTHOR_LANG_TABLE[1] PROGMEM = {
 	MSG_AUTHOR_EN
 };
 
+const char MSG_AUTOLOAD_FILAMENT_EN[] PROGMEM = "AUTOLoad filament";
+const char * const MSG_AUTOLOAD_FILAMENT_LANG_TABLE[1] PROGMEM = {
+	MSG_AUTOLOAD_FILAMENT_EN
+};
+
 const char MSG_AUTO_HOME_EN[] PROGMEM = "Auto home";
 const char * const MSG_AUTO_HOME_LANG_TABLE[1] PROGMEM = {
 	MSG_AUTO_HOME_EN
