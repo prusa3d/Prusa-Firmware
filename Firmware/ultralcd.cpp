@@ -1583,8 +1583,9 @@ static void lcd_menu_temperatures()
 static void lcd_menu_voltages()
 {
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
-	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
-	fprintf_P(lcdout, PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
+	//float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
+	//fprintf_P(lcdout, PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
+    fprintf_P(lcdout, PSTR( ESC_H(1,1)"PWR:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr))) ;
     if (lcd_clicked())
     {
         lcd_quick_feedback();
@@ -1691,11 +1692,13 @@ static void lcd_support_menu()
   if (!IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL)) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
     
-  MENU_ITEM(submenu, PSTR("Belt status"), lcd_menu_belt_status);
+  MENU_ITEM(submenu, MSG_MENU_BELT_STATUS, lcd_menu_belt_status);
     
-  MENU_ITEM(submenu, PSTR("Temperatures"), lcd_menu_temperatures);
+  MENU_ITEM(submenu, MSG_MENU_TEMPERATURES, lcd_menu_temperatures);
 
-  MENU_ITEM(submenu, PSTR("Voltages"), lcd_menu_voltages);
+  MENU_ITEM(submenu, MSG_MENU_VOLTAGES, lcd_menu_voltages);
+    
+  MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
   #endif //MK1BP
   END_MENU();
 }
@@ -1932,7 +1935,7 @@ void lcd_LoadFilament()
   {
 	  if (filament_autoload_enabled)
 	  {
-		  lcd_show_fullscreen_message_and_wait_P(PSTR("Autoloading filament is active, just insert filament..."));
+		  lcd_show_fullscreen_message_and_wait_P(MSG_AUTOLOADING_ENABLED);
 		  return;
 	  }
 	  custom_message = true;
@@ -3288,7 +3291,7 @@ static void lcd_sort_type_set() {
 
 static void lcd_crash_mode_info2()
 {
-	lcd_show_fullscreen_message_and_wait_P(PSTR("WARNING: crashdetection unavailable in STEALTH mode."));
+	lcd_show_fullscreen_message_and_wait_P(MSG_CRASH_DET_STEALTH_FORCE_OFF);
 }
 
 
@@ -3315,7 +3318,7 @@ static void lcd_silent_mode_set() {
 
 static void lcd_crash_mode_info()
 {
-	lcd_show_fullscreen_message_and_wait_P(PSTR("Crash-detection can be used only in NORMAL mode."));
+	lcd_show_fullscreen_message_and_wait_P(MSG_CRASH_DET_ONLY_IN_NORMAL);
 }
 
 
@@ -5059,8 +5062,6 @@ static void lcd_main_menu()
   }
     
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
-
-  MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
 
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
 

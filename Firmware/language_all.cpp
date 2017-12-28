@@ -34,9 +34,18 @@ const char * const MSG_AUTHOR_LANG_TABLE[1] PROGMEM = {
 	MSG_AUTHOR_EN
 };
 
-const char MSG_AUTOLOAD_FILAMENT_EN[] PROGMEM = "AUTOLoad filament";
-const char * const MSG_AUTOLOAD_FILAMENT_LANG_TABLE[1] PROGMEM = {
-	MSG_AUTOLOAD_FILAMENT_EN
+const char MSG_AUTOLOADING_ENABLED_EN[] PROGMEM = "Autoloading filament is active, just press the knob and insert filament...";
+const char MSG_AUTOLOADING_ENABLED_CZ[] PROGMEM = "Automaticke zavedeni filamentu aktivni, stisknete tlacitko a vlozte filament...";
+const char * const MSG_AUTOLOADING_ENABLED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_AUTOLOADING_ENABLED_EN,
+	MSG_AUTOLOADING_ENABLED_CZ
+};
+
+const char MSG_AUTOLOAD_FILAMENT_EN[] PROGMEM = "AutoLoad filament";
+const char MSG_AUTOLOAD_FILAMENT_CZ[] PROGMEM = "AutoZavedeni fil.";
+const char * const MSG_AUTOLOAD_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_AUTOLOAD_FILAMENT_EN,
+	MSG_AUTOLOAD_FILAMENT_CZ
 };
 
 const char MSG_AUTO_HOME_EN[] PROGMEM = "Auto home";
@@ -418,6 +427,20 @@ const char * const MSG_CRASH_DETECTED_LANG_TABLE[1] PROGMEM = {
 	MSG_CRASH_DETECTED_EN
 };
 
+const char MSG_CRASH_DET_ONLY_IN_NORMAL_EN[] PROGMEM = "Crash detection can be turned on only in Normal mode.";
+const char MSG_CRASH_DET_ONLY_IN_NORMAL_CZ[] PROGMEM = "Crash detekce muze byt zapnuta pouze v Normal modu";
+const char * const MSG_CRASH_DET_ONLY_IN_NORMAL_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CRASH_DET_ONLY_IN_NORMAL_EN,
+	MSG_CRASH_DET_ONLY_IN_NORMAL_CZ
+};
+
+const char MSG_CRASH_DET_STEALTH_FORCE_OFF_EN[] PROGMEM = "WARNING: Crash detection disabled in Stealth mode";
+const char MSG_CRASH_DET_STEALTH_FORCE_OFF_CZ[] PROGMEM = "POZOR: Crash detekce deaktivovana ve Stealth modu";
+const char * const MSG_CRASH_DET_STEALTH_FORCE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CRASH_DET_STEALTH_FORCE_OFF_EN,
+	MSG_CRASH_DET_STEALTH_FORCE_OFF_CZ
+};
+
 const char MSG_CURRENT_EN[] PROGMEM = "Current";
 const char MSG_CURRENT_CZ[] PROGMEM = "Pouze aktualni";
 const char * const MSG_CURRENT_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -758,13 +781,17 @@ const char * const MSG_FSENSOR_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_FSENS_AUTOLOAD_OFF_EN[] PROGMEM = "F. autoload [off]";
-const char * const MSG_FSENS_AUTOLOAD_OFF_LANG_TABLE[1] PROGMEM = {
-	MSG_FSENS_AUTOLOAD_OFF_EN
+const char MSG_FSENS_AUTOLOAD_OFF_CZ[] PROGMEM = "F. autozav. [off]";
+const char * const MSG_FSENS_AUTOLOAD_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FSENS_AUTOLOAD_OFF_EN,
+	MSG_FSENS_AUTOLOAD_OFF_CZ
 };
 
 const char MSG_FSENS_AUTOLOAD_ON_EN[] PROGMEM = "F. autoload  [on]";
-const char * const MSG_FSENS_AUTOLOAD_ON_LANG_TABLE[1] PROGMEM = {
-	MSG_FSENS_AUTOLOAD_ON_EN
+const char MSG_FSENS_AUTOLOAD_ON_CZ[] PROGMEM = "F. autozav.  [on]";
+const char * const MSG_FSENS_AUTOLOAD_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FSENS_AUTOLOAD_ON_EN,
+	MSG_FSENS_AUTOLOAD_ON_CZ
 };
 
 const char MSG_HEATING_EN[] PROGMEM = "Heating";
@@ -837,13 +864,17 @@ const char * const MSG_INFO_FILAMENT_YDIFF_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_INFO_NOZZLE_FAN_EN[] PROGMEM = "Nozzle FAN:";
-const char * const MSG_INFO_NOZZLE_FAN_LANG_TABLE[1] PROGMEM = {
-	MSG_INFO_NOZZLE_FAN_EN
+const char MSG_INFO_NOZZLE_FAN_CZ[] PROGMEM = "Trysk. vent:";
+const char * const MSG_INFO_NOZZLE_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_INFO_NOZZLE_FAN_EN,
+	MSG_INFO_NOZZLE_FAN_CZ
 };
 
 const char MSG_INFO_PRINT_FAN_EN[] PROGMEM = "Print FAN: ";
-const char * const MSG_INFO_PRINT_FAN_LANG_TABLE[1] PROGMEM = {
-	MSG_INFO_PRINT_FAN_EN
+const char MSG_INFO_PRINT_FAN_CZ[] PROGMEM = "Tisk. vent:";
+const char * const MSG_INFO_PRINT_FAN_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_INFO_PRINT_FAN_EN,
+	MSG_INFO_PRINT_FAN_CZ
 };
 
 const char MSG_INIT_SDCARD_EN[] PROGMEM = "Init. SD card";
@@ -1044,11 +1075,32 @@ const char * const MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2_LANG_TABLE[LANG_NUM] P
 	MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2_CZ
 };
 
+const char MSG_MENU_BELT_STATUS_EN[] PROGMEM = "Belt status";
+const char MSG_MENU_BELT_STATUS_CZ[] PROGMEM = "Stav remenu";
+const char * const MSG_MENU_BELT_STATUS_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_MENU_BELT_STATUS_EN,
+	MSG_MENU_BELT_STATUS_CZ
+};
+
 const char MSG_MENU_CALIBRATION_EN[] PROGMEM = "Calibration";
 const char MSG_MENU_CALIBRATION_CZ[] PROGMEM = "Kalibrace";
 const char * const MSG_MENU_CALIBRATION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_MENU_CALIBRATION_EN,
 	MSG_MENU_CALIBRATION_CZ
+};
+
+const char MSG_MENU_TEMPERATURES_EN[] PROGMEM = "Temperatures";
+const char MSG_MENU_TEMPERATURES_CZ[] PROGMEM = "Teploty";
+const char * const MSG_MENU_TEMPERATURES_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_MENU_TEMPERATURES_EN,
+	MSG_MENU_TEMPERATURES_CZ
+};
+
+const char MSG_MENU_VOLTAGES_EN[] PROGMEM = "Voltages";
+const char MSG_MENU_VOLTAGES_CZ[] PROGMEM = "Napeti";
+const char * const MSG_MENU_VOLTAGES_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_MENU_VOLTAGES_EN,
+	MSG_MENU_VOLTAGES_CZ
 };
 
 const char MSG_MESH_BED_LEVELING_EN[] PROGMEM = "Mesh Bed Leveling";
@@ -1551,12 +1603,12 @@ const char * const MSG_SD_WRITE_TO_FILE_LANG_TABLE[1] PROGMEM = {
 	MSG_SD_WRITE_TO_FILE_EN
 };
 
-const char MSG_SECOND_SERIAL_OFF_EN[] PROGMEM = "rPi port    [off]";
+const char MSG_SECOND_SERIAL_OFF_EN[] PROGMEM = "RPi port    [off]";
 const char * const MSG_SECOND_SERIAL_OFF_LANG_TABLE[1] PROGMEM = {
 	MSG_SECOND_SERIAL_OFF_EN
 };
 
-const char MSG_SECOND_SERIAL_ON_EN[] PROGMEM = "rPi port     [on]";
+const char MSG_SECOND_SERIAL_ON_EN[] PROGMEM = "RPi port     [on]";
 const char * const MSG_SECOND_SERIAL_ON_LANG_TABLE[1] PROGMEM = {
 	MSG_SECOND_SERIAL_ON_EN
 };
@@ -1849,26 +1901,28 @@ const char * const MSG_SOFTWARE_RESET_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_SORTING_EN[] PROGMEM = "Sorting files";
-const char * const MSG_SORTING_LANG_TABLE[1] PROGMEM = {
-	MSG_SORTING_EN
+const char MSG_SORTING_CZ[] PROGMEM = "Trideni souboru";
+const char * const MSG_SORTING_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SORTING_EN,
+	MSG_SORTING_CZ
 };
 
-const char MSG_SORT_ALPHA_EN[] PROGMEM = "Sort: [Alphabet]";
+const char MSG_SORT_ALPHA_EN[] PROGMEM = "Sort:  [Alphabet]";
 const char MSG_SORT_ALPHA_CZ[] PROGMEM = "Trideni [Abeceda]";
 const char * const MSG_SORT_ALPHA_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SORT_ALPHA_EN,
 	MSG_SORT_ALPHA_CZ
 };
 
-const char MSG_SORT_NONE_EN[] PROGMEM = "Sort: [None]";
-const char MSG_SORT_NONE_CZ[] PROGMEM = "Trideni [Zadne]";
+const char MSG_SORT_NONE_EN[] PROGMEM = "Sort:      [None]";
+const char MSG_SORT_NONE_CZ[] PROGMEM = "Trideni   [Zadne]";
 const char * const MSG_SORT_NONE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SORT_NONE_EN,
 	MSG_SORT_NONE_CZ
 };
 
-const char MSG_SORT_TIME_EN[] PROGMEM = "Sort: [Time]";
-const char MSG_SORT_TIME_CZ[] PROGMEM = "Trideni [Cas]";
+const char MSG_SORT_TIME_EN[] PROGMEM = "Sort:      [Time]";
+const char MSG_SORT_TIME_CZ[] PROGMEM = "Trideni     [Cas]";
 const char * const MSG_SORT_TIME_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SORT_TIME_EN,
 	MSG_SORT_TIME_CZ
@@ -1882,8 +1936,10 @@ const char * const MSG_SPEED_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_STACK_ERROR_EN[] PROGMEM = "Error - static memory has been overwritten";
-const char * const MSG_STACK_ERROR_LANG_TABLE[1] PROGMEM = {
-	MSG_STACK_ERROR_EN
+const char MSG_STACK_ERROR_CZ[] PROGMEM = "Chyba - Doslo k prepisu staticke pameti!";
+const char * const MSG_STACK_ERROR_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_STACK_ERROR_EN,
+	MSG_STACK_ERROR_CZ
 };
 
 const char MSG_STATISTICS_EN[] PROGMEM = "Statistics  ";
@@ -2013,7 +2069,7 @@ const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_ON_CZ
 };
 
-const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_EN[] PROGMEM = "SD card [normal]";
+const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_EN[] PROGMEM = "SD card  [normal]";
 const char * const MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_LANG_TABLE[1] PROGMEM = {
 	MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_EN
 };
