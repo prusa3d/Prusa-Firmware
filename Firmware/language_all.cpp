@@ -35,10 +35,17 @@ const char * const MSG_AUTHOR_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_AUTOLOADING_ENABLED_EN[] PROGMEM = "Autoloading filament is active, just press the knob and insert filament...";
-const char MSG_AUTOLOADING_ENABLED_CZ[] PROGMEM = "Automaticke zavedeni filamentu aktivni, stisknete tlacitko a vlozte filament...";
+const char MSG_AUTOLOADING_ENABLED_CZ[] PROGMEM = "Automaticke zavadeni filamentu aktivni, stisknete tlacitko a vlozte filament...";
 const char * const MSG_AUTOLOADING_ENABLED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_AUTOLOADING_ENABLED_EN,
 	MSG_AUTOLOADING_ENABLED_CZ
+};
+
+const char MSG_AUTOLOADING_ONLY_IF_FSENS_ON_EN[] PROGMEM = "Autoloading filament available only when filament sensor is turned on...";
+const char MSG_AUTOLOADING_ONLY_IF_FSENS_ON_CZ[] PROGMEM = "Automaticke zavadeni filamentu dostupne pouze pri zapnutem filament senzoru...";
+const char * const MSG_AUTOLOADING_ONLY_IF_FSENS_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_AUTOLOADING_ONLY_IF_FSENS_ON_EN,
+	MSG_AUTOLOADING_ONLY_IF_FSENS_ON_CZ
 };
 
 const char MSG_AUTOLOAD_FILAMENT_EN[] PROGMEM = "AutoLoad filament";
@@ -423,8 +430,10 @@ const char * const MSG_CRASHDETECT_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_CRASH_DETECTED_EN[] PROGMEM = "Crash detected. Continue printing?";
-const char * const MSG_CRASH_DETECTED_LANG_TABLE[1] PROGMEM = {
-	MSG_CRASH_DETECTED_EN
+const char MSG_CRASH_DETECTED_CZ[] PROGMEM = "Naraz detekovan, pokracovat v tisku?";
+const char * const MSG_CRASH_DETECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CRASH_DETECTED_EN,
+	MSG_CRASH_DETECTED_CZ
 };
 
 const char MSG_CRASH_DET_ONLY_IN_NORMAL_EN[] PROGMEM = "Crash detection can be turned on only in Normal mode.";
@@ -624,7 +633,7 @@ const char * const MSG_FILAMENTCHANGE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENTCHANGE_CZ
 };
 
-const char MSG_FILAMENT_CLEAN_EN[] PROGMEM = "Filament extruding & with right color?";
+const char MSG_FILAMENT_CLEAN_EN[] PROGMEM = "Filament extruding & with correct color?";
 const char MSG_FILAMENT_CLEAN_CZ[] PROGMEM = "Filament vytlacen a spravne barvy?";
 const char * const MSG_FILAMENT_CLEAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENT_CLEAN_EN,
@@ -760,7 +769,7 @@ const char * const MSG_FREE_MEMORY_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_FSENSOR_NA_EN[] PROGMEM = "Fil. sensor [N/A]";
-const char MSG_FSENSOR_NA_CZ[] PROGMEM = "Fil. senzor [err]";
+const char MSG_FSENSOR_NA_CZ[] PROGMEM = "Fil. senzor [N/A]";
 const char * const MSG_FSENSOR_NA_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FSENSOR_NA_EN,
 	MSG_FSENSOR_NA_CZ
@@ -780,18 +789,32 @@ const char * const MSG_FSENSOR_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FSENSOR_ON_CZ
 };
 
+const char MSG_FSENS_AUTOLOAD_NA_EN[] PROGMEM = "F. autoload [N/A]";
+const char MSG_FSENS_AUTOLOAD_NA_CZ[] PROGMEM = "F. autozav. [N/A]";
+const char * const MSG_FSENS_AUTOLOAD_NA_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FSENS_AUTOLOAD_NA_EN,
+	MSG_FSENS_AUTOLOAD_NA_CZ
+};
+
 const char MSG_FSENS_AUTOLOAD_OFF_EN[] PROGMEM = "F. autoload [off]";
-const char MSG_FSENS_AUTOLOAD_OFF_CZ[] PROGMEM = "F. autozav. [off]";
+const char MSG_FSENS_AUTOLOAD_OFF_CZ[] PROGMEM = "F. autozav. [vyp]";
 const char * const MSG_FSENS_AUTOLOAD_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FSENS_AUTOLOAD_OFF_EN,
 	MSG_FSENS_AUTOLOAD_OFF_CZ
 };
 
 const char MSG_FSENS_AUTOLOAD_ON_EN[] PROGMEM = "F. autoload  [on]";
-const char MSG_FSENS_AUTOLOAD_ON_CZ[] PROGMEM = "F. autozav.  [on]";
+const char MSG_FSENS_AUTOLOAD_ON_CZ[] PROGMEM = "F. autozav. [zap]";
 const char * const MSG_FSENS_AUTOLOAD_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FSENS_AUTOLOAD_ON_EN,
 	MSG_FSENS_AUTOLOAD_ON_CZ
+};
+
+const char MSG_FSENS_NOT_RESPONDING_EN[] PROGMEM = "ERROR: Filament sensor is not responding, please check connection.";
+const char MSG_FSENS_NOT_RESPONDING_CZ[] PROGMEM = "CHYBA: Filament senzor nereaguje, zkontrolujte zapojeni.";
+const char * const MSG_FSENS_NOT_RESPONDING_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FSENS_NOT_RESPONDING_EN,
+	MSG_FSENS_NOT_RESPONDING_CZ
 };
 
 const char MSG_HEATING_EN[] PROGMEM = "Heating";
@@ -1201,7 +1224,7 @@ const char * const MSG_NO_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_NO_CZ
 };
 
-const char MSG_NOT_COLOR_EN[] PROGMEM = "Color not right";
+const char MSG_NOT_COLOR_EN[] PROGMEM = "Color not correct";
 const char MSG_NOT_COLOR_CZ[] PROGMEM = "Barva neni cista";
 const char * const MSG_NOT_COLOR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_NOT_COLOR_EN,
@@ -1604,13 +1627,17 @@ const char * const MSG_SD_WRITE_TO_FILE_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_SECOND_SERIAL_OFF_EN[] PROGMEM = "RPi port    [off]";
-const char * const MSG_SECOND_SERIAL_OFF_LANG_TABLE[1] PROGMEM = {
-	MSG_SECOND_SERIAL_OFF_EN
+const char MSG_SECOND_SERIAL_OFF_CZ[] PROGMEM = "RPi port    [vyp]";
+const char * const MSG_SECOND_SERIAL_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SECOND_SERIAL_OFF_EN,
+	MSG_SECOND_SERIAL_OFF_CZ
 };
 
 const char MSG_SECOND_SERIAL_ON_EN[] PROGMEM = "RPi port     [on]";
-const char * const MSG_SECOND_SERIAL_ON_LANG_TABLE[1] PROGMEM = {
-	MSG_SECOND_SERIAL_ON_EN
+const char MSG_SECOND_SERIAL_ON_CZ[] PROGMEM = "RPi port    [zap]";
+const char * const MSG_SECOND_SERIAL_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_SECOND_SERIAL_ON_EN,
+	MSG_SECOND_SERIAL_ON_CZ
 };
 
 const char MSG_SELFTEST_EN[] PROGMEM = "Selftest         ";
