@@ -389,6 +389,11 @@ const char * const MSG_COUNT_X_LANG_TABLE[1] PROGMEM = {
 	MSG_COUNT_X_EN
 };
 
+const char MSG_CRASHDETECT_NA_EN[] PROGMEM = "Crash det.  [N/A]";
+const char * const MSG_CRASHDETECT_NA_LANG_TABLE[1] PROGMEM = {
+	MSG_CRASHDETECT_NA_EN
+};
+
 const char MSG_CRASHDETECT_OFF_EN[] PROGMEM = "Crash det.  [off]";
 const char MSG_CRASHDETECT_OFF_CZ[] PROGMEM = "Crash det.  [vyp]";
 const char * const MSG_CRASHDETECT_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1541,12 +1546,12 @@ const char * const MSG_SD_WRITE_TO_FILE_LANG_TABLE[1] PROGMEM = {
 	MSG_SD_WRITE_TO_FILE_EN
 };
 
-const char MSG_SECOND_SERIAL_OFF_EN[] PROGMEM = "2nd USART   [off]";
+const char MSG_SECOND_SERIAL_OFF_EN[] PROGMEM = "rPi port    [off]";
 const char * const MSG_SECOND_SERIAL_OFF_LANG_TABLE[1] PROGMEM = {
 	MSG_SECOND_SERIAL_OFF_EN
 };
 
-const char MSG_SECOND_SERIAL_ON_EN[] PROGMEM = "2nd USART    [on]";
+const char MSG_SECOND_SERIAL_ON_EN[] PROGMEM = "rPi port     [on]";
 const char * const MSG_SECOND_SERIAL_ON_LANG_TABLE[1] PROGMEM = {
 	MSG_SECOND_SERIAL_ON_EN
 };

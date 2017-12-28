@@ -59,9 +59,9 @@ void fsensor_unblock() {
 
 bool fsensor_enable()
 {
-	puts_P(PSTR("fsensor_enable\n"));
+//	puts_P(PSTR("fsensor_enable\n"));
 	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
-    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
+//    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
 	if (pat9125)
 		fsensor_not_responding = false;
 	else
@@ -77,7 +77,7 @@ bool fsensor_enable()
 
 void fsensor_disable()
 {
-	puts_P(PSTR("fsensor_disable\n"));
+//	puts_P(PSTR("fsensor_disable\n"));
 	fsensor_enabled = false;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
 	FSensorStateMenu = 0;
@@ -105,7 +105,7 @@ void fsensor_setup_interrupt()
 
 void fsensor_autoload_check_start(void)
 {
-	puts_P(PSTR("fsensor_autoload_check_start\n"));
+//	puts_P(PSTR("fsensor_autoload_check_start\n"));
 	pat9125_update_y(); //update sensor
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
@@ -117,7 +117,7 @@ void fsensor_autoload_check_start(void)
 
 void fsensor_autoload_check_stop(void)
 {
-	puts_P(PSTR("fsensor_autoload_check_stop\n"));
+//	puts_P(PSTR("fsensor_autoload_check_stop\n"));
 	fsensor_autoload_sum = 0;
 	fsensor_autoload_enabled = false;
 	fsensor_err_cnt = 0;
@@ -166,7 +166,7 @@ ISR(PCINT2_vect)
 	*digitalPinToPCMSK(fsensor_int_pin) |= bit(digitalPinToPCMSKbit(fsensor_int_pin));*/
 	if (!pat9125_update_y())
 	{
-		puts_P(PSTR("pat9125 not responding.\n"));
+//		puts_P(PSTR("pat9125 not responding.\n"));
 		fsensor_disable();
 		fsensor_not_responding = true;
 	}
@@ -252,7 +252,7 @@ void fsensor_update()
 	if (!fsensor_enabled) return;
 	if (fsensor_err_cnt > FSENSOR_ERR_MAX)
 	{
-		MYSERIAL.println("fsensor_update (fsensor_err_cnt > FSENSOR_ERR_MAX)");
+//		MYSERIAL.println("fsensor_update (fsensor_err_cnt > FSENSOR_ERR_MAX)");
 /*		if (fsensor_ignore_error)
 		{
 			MYSERIAL.println("fsensor_update - error ignored)");

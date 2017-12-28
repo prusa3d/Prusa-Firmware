@@ -1336,7 +1336,7 @@ void loop()
 	KEEPALIVE_STATE(NOT_BUSY);
 	bool stack_integrity = true;
 
-	if (usb_printing_counter > 0 && millis()-_usb_timer > 1000)
+	if ((usb_printing_counter > 0) && ((millis()-_usb_timer) > 1000))
 	{
 		is_usb_printing = true;
 		usb_printing_counter--;
@@ -2574,7 +2574,7 @@ void process_commands()
     {
       st_synchronize();
 
-#if 1
+#if 0
       SERIAL_ECHOPGM("G28, initial ");  print_world_coordinates();
       SERIAL_ECHOPGM("G28, initial ");  print_physical_coordinates();
 #endif
@@ -2819,10 +2819,11 @@ void process_commands()
 	  if (farm_mode) { prusa_statistics(20); };
 
 	  homing_flag = false;
-
+#if 0
       SERIAL_ECHOPGM("G28, final ");  print_world_coordinates();
       SERIAL_ECHOPGM("G28, final ");  print_physical_coordinates();
       SERIAL_ECHOPGM("G28, final ");  print_mesh_bed_leveling_table();
+#endif
       break;
     }
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -3520,14 +3521,14 @@ void process_commands()
 			offset_z = temp_compensation_pinda_thermistor_offset(current_temperature_pinda);
 #endif //PINDA_THERMISTOR
 //			#ifdef SUPPORT_VERBOSITY
-//			if (verbosity_level >= 1)
+/*			if (verbosity_level >= 1)
 			{
 				SERIAL_ECHOPGM("mesh bed leveling: ");
 				MYSERIAL.print(current_position[Z_AXIS], 5);
 				SERIAL_ECHOPGM(" offset: ");
 				MYSERIAL.print(offset_z, 5);
 				SERIAL_ECHOLNPGM("");
-			}
+			}*/
 //			#endif // SUPPORT_VERBOSITY
 			mbl.set_z(ix, iy, current_position[Z_AXIS] - offset_z); //store measured z values z_values[iy][ix] = z - offset_z;
 
@@ -3550,7 +3551,7 @@ void process_commands()
 			SERIAL_ECHOLNPGM("killed");
 		}
 		clean_up_after_endstop_move();
-		SERIAL_ECHOLNPGM("clean up finished ");
+//		SERIAL_ECHOLNPGM("clean up finished ");
 
 		bool apply_temp_comp = true;
 #ifdef PINDA_THERMISTOR
@@ -3559,7 +3560,7 @@ void process_commands()
 		if (apply_temp_comp)
 		if(temp_cal_active == true && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
 		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
-		SERIAL_ECHOLNPGM("babystep applied");
+//		SERIAL_ECHOLNPGM("babystep applied");
 		bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 1) {
@@ -3616,13 +3617,13 @@ void process_commands()
 				}
 			}
 		}
-		SERIAL_ECHOLNPGM("Bed leveling correction finished");
+//		SERIAL_ECHOLNPGM("Bed leveling correction finished");
 		mbl.upsample_3x3(); //bilinear interpolation from 3x3 to 7x7 points while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
-		SERIAL_ECHOLNPGM("Upsample finished");
+//		SERIAL_ECHOLNPGM("Upsample finished");
 		mbl.active = 1; //activate mesh bed leveling
-		SERIAL_ECHOLNPGM("Mesh bed leveling activated");
+//		SERIAL_ECHOLNPGM("Mesh bed leveling activated");
 		go_home_with_z_lift();
-		SERIAL_ECHOLNPGM("Go home finished");
+//		SERIAL_ECHOLNPGM("Go home finished");
 		//unretract (after PINDA preheat retraction)
 		if (degHotend(active_extruder) > EXTRUDE_MINTEMP && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
 			current_position[E_AXIS] += DEFAULT_RETRACTION;
@@ -7486,8 +7487,8 @@ void recover_machine_state_after_power_panic()
   }
   if (mbl.active)
     mbl.upsample_3x3();
-  SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
-  print_mesh_bed_leveling_table();
+//  SERIAL_ECHOPGM("recover_machine_state_after_power_panic, initial ");
+//  print_mesh_bed_leveling_table();
 
   // 4) Load the baby stepping value, which is expected to be active at the time of power panic.
   // The baby stepping value is used to reset the physical Z axis when rehoming the Z axis.

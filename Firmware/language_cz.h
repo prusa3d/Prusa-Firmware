@@ -348,6 +348,7 @@
 #define MSG_FSENSOR_NA						"Fil. senzor [err]"
 #define MSG_FSENSOR_ON						"Fil. senzor [zap]" 
 #define MSG_CRASHDETECT_ON					"Crash det.  [zap]"
+#define MSG_CRASHDETECT_NA					"Crash det.  [N/A]"
 #define MSG_CRASHDETECT_OFF					"Crash det.  [vyp]"
 #define MSG_FANS_CHECK_ON					"Kontr. vent.[zap]"
 #define MSG_FANS_CHECK_OFF					"Kontr. vent.[vyp]"

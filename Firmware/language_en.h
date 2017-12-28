@@ -349,6 +349,7 @@
 //messages bellow has no translation yet
 
 #define MSG_CRASHDETECT_OFF										"Crash det.  [off]"
+#define MSG_CRASHDETECT_NA										"Crash det.  [N/A]"
 #define MSG_CRASHDETECT_ON										"Crash det.   [on]"
 #define MSG_FSENSOR_OFF											"Fil. sensor [off]"
 #define MSG_FSENSOR_NA											"Fil. sensor [N/A]"
@@ -386,5 +387,5 @@
 #define(length=17, lines=1) MSG_SORT_NONE						"Sort: [None]"
 #define(length=20, lines=1) MSG_SORTING							"Sorting files"
 #define(length=20, lines=4) MSG_FILE_CNT						"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
-#define(length=17, lines=1) MSG_SECOND_SERIAL_ON				"2nd USART    [on]"
-#define(length=17, lines=1) MSG_SECOND_SERIAL_OFF				"2nd USART   [off]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_ON				"rPi port     [on]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_OFF				"rPi port    [off]"
