@@ -355,8 +355,8 @@ ve
 #define MSG_CRASHDETECT_OFF					"Crash det.  [vyp]"
 #define MSG_FANS_CHECK_ON					"Kontr. vent.[zap]"
 #define MSG_FANS_CHECK_OFF					        "Kontr. vent.[vyp]"
-#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_ON   "F. autozav.  [on]"
-#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_OFF  "F. autozav. [off]"
+#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_ON   "F. autozav. [zap]"
+#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_OFF  "F. autozav. [vyp]"
 #define MSG_RECOVERING_PRINT				"Obnovovani tisku    "
 #define MSG_SELFTEST_AXIS					"Osa"
 #define MSG_SELFTEST_AXIS_LENGTH			"Delka osy"
@@ -378,8 +378,8 @@ ve
 #define(length=11, lines=1) MSG_INFO_PRINT_FAN                  "Tisk. vent:"
 
 
-#define(length=17, lines=1) MSG_SECOND_SERIAL_ON                "RPi port     [on]"
-#define(length=17, lines=1) MSG_SECOND_SERIAL_OFF                "RPi port    [off]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_ON                "RPi port     [zap]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_OFF                "RPi port    [vyp]"
 
 #define(length=15, lines=1) MSG_INFO_EXTRUDER                "Extruder info"
 #define(length=15, lines=1) MSG_MENU_VOLTAGES               "Napeti"
