@@ -348,7 +348,7 @@
 ve
 #define MSG_CALIBRATE_Z_AUTO				"Kalibruji Z"
 #define MSG_FSENSOR_OFF						"Fil. senzor [vyp]"
-#define MSG_FSENSOR_NA						"Fil. senzor [err]"
+#define MSG_FSENSOR_NA						"Fil. senzor [N/A]"
 #define MSG_FSENSOR_ON						"Fil. senzor [zap]" 
 #define MSG_CRASHDETECT_ON					"Crash det.  [zap]"
 #define MSG_CRASHDETECT_NA					"Crash det.  [N/A]"
@@ -357,7 +357,10 @@ ve
 #define MSG_FANS_CHECK_OFF					        "Kontr. vent.[vyp]"
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_ON   "F. autozav. [zap]"
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_OFF  "F. autozav. [vyp]"
+#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_NA  "F. autozav. [N/A]"
 #define MSG_RECOVERING_PRINT				"Obnovovani tisku    "
+#define(length=20, lines=2) MSG_CRASH_DETECTED   "Naraz detekovan, pokracovat v tisku?"
+
 #define MSG_SELFTEST_AXIS					"Osa"
 #define MSG_SELFTEST_AXIS_LENGTH			"Delka osy"
 #define MSG_STEEL_SHEET_CHECK				"Je tiskovy plat na heatbed?"
@@ -374,11 +377,11 @@ ve
 #define(length=20, lines=1) MSG_SORTING                            "Trideni souboru"
 
 
-#define(length=11, lines=1) MSG_INFO_NOZZLE_FAN                 "Trysk. vent:"
-#define(length=11, lines=1) MSG_INFO_PRINT_FAN                  "Tisk. vent:"
+#define(length=12, lines=1) MSG_INFO_NOZZLE_FAN                 "Trysk. vent:"
+#define(length=12, lines=1) MSG_INFO_PRINT_FAN                  "Tisk. vent:"
 
 
-#define(length=17, lines=1) MSG_SECOND_SERIAL_ON                "RPi port     [zap]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_ON                 "RPi port    [zap]"
 #define(length=17, lines=1) MSG_SECOND_SERIAL_OFF                "RPi port    [vyp]"
 
 #define(length=15, lines=1) MSG_INFO_EXTRUDER                "Extruder info"
@@ -389,4 +392,8 @@ ve
 #define(length=20, lines=4) MSG_CRASH_DET_ONLY_IN_NORMAL        "Crash detekce muze byt zapnuta pouze v Normal modu"
 #define(length=20, lines=4) MSG_CRASH_DET_STEALTH_FORCE_OFF     "POZOR: Crash detekce deaktivovana ve Stealth modu"
 
-#define(length=20, lines=4) MSG_AUTOLOADING_ENABLED     "Automaticke zavedeni filamentu aktivni, stisknete tlacitko a vlozte filament..."
+#define(length=20, lines=4) MSG_AUTOLOADING_ENABLED             "Automaticke zavadeni filamentu aktivni, stisknete tlacitko a vlozte filament..."
+#define(length=20, lines=4) MSG_AUTOLOADING_ONLY_IF_FSENS_ON    "Automaticke zavadeni filamentu dostupne pouze pri zapnutem filament senzoru..."
+
+#define(length=20, lines=4) MSG_FSENS_NOT_RESPONDING     "CHYBA: Filament senzor nereaguje, zkontrolujte zapojeni."
+

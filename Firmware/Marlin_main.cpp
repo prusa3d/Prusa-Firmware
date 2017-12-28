@@ -6422,17 +6422,35 @@ void handle_status_leds(void) {
 
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
-	if (fsensor_enabled && filament_autoload_enabled && !fsensor_M600 && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && (current_temperature[0] > EXTRUDE_MINTEMP))
+	if (fsensor_enabled && filament_autoload_enabled && !fsensor_M600 && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 	{
 		if (fsensor_autoload_enabled)
 		{
 			if (fsensor_check_autoload())
 			{
-				fsensor_autoload_check_stop();
-				tone(BEEPER, 1000);
-		        delay_keep_alive(50);
-				noTone(BEEPER);
-				enquecommand_front_P((PSTR("M701")));
+                
+                if (degHotend0() > EXTRUDE_MINTEMP)
+                {
+                    fsensor_autoload_check_stop();
+                    tone(BEEPER, 1000);
+                    delay_keep_alive(50);
+                    noTone(BEEPER);
+                    loading_flag = true;
+                    enquecommand_front_P((PSTR("M701")));
+                }
+                else
+                {
+                    lcd_update_enable(false);
+                    lcd_implementation_clear();
+                    lcd.setCursor(0, 0);
+                    lcd_printPGM(MSG_ERROR);
+                    lcd.setCursor(0, 2);
+                    lcd_printPGM(MSG_PREHEAT_NOZZLE);
+                    delay(2000);
+                    lcd_implementation_clear();
+                    lcd_update_enable(true);
+                }
+                
 			}
 		}
 		else

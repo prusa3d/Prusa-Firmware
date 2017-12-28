@@ -33,6 +33,10 @@ extern int lcd_change_fil_state;
 extern bool fans_check_enabled;
 extern bool filament_autoload_enabled;
 
+extern bool fsensor_not_responding;
+
+extern bool fsensor_enabled;
+
 //Function pointer to menu functions.
 typedef void (*menuFunc_t)();
 
@@ -1933,7 +1937,7 @@ void lcd_LoadFilament()
 {
   if (degHotend0() > EXTRUDE_MINTEMP) 
   {
-	  if (filament_autoload_enabled)
+	  if (filament_autoload_enabled && fsensor_enabled)
 	  {
 		  lcd_show_fullscreen_message_and_wait_P(MSG_AUTOLOADING_ENABLED);
 		  return;
@@ -3294,6 +3298,15 @@ static void lcd_crash_mode_info2()
 	lcd_show_fullscreen_message_and_wait_P(MSG_CRASH_DET_STEALTH_FORCE_OFF);
 }
 
+static void lcd_filament_autoload_info()
+{
+    lcd_show_fullscreen_message_and_wait_P(MSG_AUTOLOADING_ONLY_IF_FSENS_ON);
+}
+
+static void lcd_fsensor_fail()
+{
+    lcd_show_fullscreen_message_and_wait_P(MSG_FSENS_NOT_RESPONDING);
+}
 
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
@@ -3350,8 +3363,15 @@ static void lcd_fsensor_state_set()
 	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
     if (FSensorStateMenu==0) {
         fsensor_disable();
+        if ((filament_autoload_enabled == true)){
+            lcd_filament_autoload_info();
+        }
     }else{
         fsensor_enable();
+        if (fsensor_not_responding)
+        {
+            lcd_fsensor_fail();
+        }
     }
 	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 7);
 	else lcd_goto_menu(lcd_settings_menu, 7);
@@ -3745,7 +3765,7 @@ static void lcd_crash_menu()
 {
 }
 
-extern bool fsensor_not_responding;
+
 
 static void lcd_settings_menu()
 {
@@ -3765,19 +3785,29 @@ static void lcd_settings_menu()
   }
 
   if (FSensorStateMenu == 0) {
-	  if (fsensor_not_responding)
-		MENU_ITEM(function, MSG_FSENSOR_NA, lcd_fsensor_state_set);
-	  else
-		MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
+      if (fsensor_not_responding){
+          // Filament sensor not working
+          MENU_ITEM(function, MSG_FSENSOR_NA, lcd_fsensor_state_set);
+          MENU_ITEM(function, MSG_FSENS_AUTOLOAD_NA, lcd_fsensor_fail);
+      }
+      else{
+          // Filament sensor turned off, working, no problems
+          MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
+          MENU_ITEM(function, MSG_FSENS_AUTOLOAD_NA, lcd_filament_autoload_info);
+      }
   } else {
-    MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
+      // Filament sensor turned on, working, no problems
+      MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
+      
+      if ((filament_autoload_enabled == true)) {
+          MENU_ITEM(function, MSG_FSENS_AUTOLOAD_ON, lcd_set_filament_autoload);
+      }
+      else {
+          MENU_ITEM(function, MSG_FSENS_AUTOLOAD_OFF, lcd_set_filament_autoload);
+      }
+      
   }
-  if (filament_autoload_enabled == true) {
-	  MENU_ITEM(function, MSG_FSENS_AUTOLOAD_ON, lcd_set_filament_autoload);
-  }
-  else {
-	  MENU_ITEM(function, MSG_FSENS_AUTOLOAD_OFF, lcd_set_filament_autoload);
-  }
+
   if (fans_check_enabled == true) {
 	  MENU_ITEM(function, MSG_FANS_CHECK_ON, lcd_set_fan_check);
   }
@@ -5041,10 +5071,10 @@ static void lcd_main_menu()
   else 
   {
 	#ifndef SNMM
-	if (!filament_autoload_enabled)
-		MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
+	if ( ((filament_autoload_enabled == true) && (fsensor_enabled == true)))
+        MENU_ITEM(function, MSG_AUTOLOAD_FILAMENT, lcd_LoadFilament);
 	else
-		MENU_ITEM(function, MSG_AUTOLOAD_FILAMENT, lcd_LoadFilament);
+		MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
 	MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
 	#endif
 	#ifdef SNMM

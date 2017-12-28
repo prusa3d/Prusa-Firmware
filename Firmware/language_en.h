@@ -92,7 +92,7 @@
 #define MSG_YES					"Yes"
 #define MSG_NO					"No"
 #define(length=19) MSG_NOT_LOADED 			"Filament not loaded"
-#define MSG_NOT_COLOR 			"Color not right"
+#define MSG_NOT_COLOR 			"Color not correct"
 #define(length=20) MSG_LOADING_FILAMENT		"Loading filament"
 #define(length=20) MSG_PLEASE_WAIT			"Please wait"
 #define MSG_LOADING_COLOR		"Loading color"
@@ -269,8 +269,8 @@
 #define(length=20, lines=8) MSG_MARK_FIL						"Mark filament 100mm from extruder body. Click when done."
 #define(length=20, lines=8) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
-#define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Filament extruding & with right color?"
-#define(lenght=18, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
+#define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Filament extruding & with correct color?"
+#define(lenght=20, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
 #define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
@@ -381,6 +381,7 @@
 #define(length=17, lines=1) MSG_FANS_CHECK_OFF					"Fans check  [off]"
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_ON				"F. autoload  [on]"
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_OFF				"F. autoload [off]"
+#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_NA                "F. autoload [N/A]"
 #define(length=20, lines=4) MSG_PRESS_TO_UNLOAD					"Please press the knob to unload filament"
 #define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Repeat unloading filament?"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
@@ -397,5 +398,7 @@
 #define(length=20, lines=4) MSG_CRASH_DET_ONLY_IN_NORMAL        "Crash detection can be turned on only in Normal mode."
 #define(length=20, lines=4) MSG_CRASH_DET_STEALTH_FORCE_OFF     "WARNING: Crash detection disabled in Stealth mode"
 
-#define(length=20, lines=4) MSG_AUTOLOADING_ENABLED     "Autoloading filament is active, just press the knob and insert filament..."
+#define(length=20, lines=4) MSG_AUTOLOADING_ENABLED              "Autoloading filament is active, just press the knob and insert filament..."
+#define(length=20, lines=4) MSG_AUTOLOADING_ONLY_IF_FSENS_ON     "Autoloading filament available only when filament sensor is turned on..."
 
+#define(length=20, lines=4) MSG_FSENS_NOT_RESPONDING     "ERROR: Filament sensor is not responding, please check connection."
