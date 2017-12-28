@@ -91,7 +91,7 @@
 #define MSG_YES					"Yes"
 #define MSG_NO					"No"
 #define(length=19) MSG_NOT_LOADED 			"Filament not loaded"
-#define MSG_NOT_COLOR 			"Color not clear"
+#define MSG_NOT_COLOR 			"Color not right"
 #define(length=20) MSG_LOADING_FILAMENT		"Loading filament"
 #define(length=20) MSG_PLEASE_WAIT			"Please wait"
 #define MSG_LOADING_COLOR		"Loading color"
@@ -268,7 +268,7 @@
 #define(length=20, lines=8) MSG_MARK_FIL						"Mark filament 100mm from extruder body. Click when done."
 #define(length=20, lines=8) MSG_CLEAN_NOZZLE_E				"E calibration finished. Please clean the nozzle. Click when done."
 #define(length=20, lines=3) MSG_WAITING_TEMP				"Waiting for nozzle and bed cooling"
-#define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Is color clear?"
+#define(length=20, lines=2) MSG_FILAMENT_CLEAN				"Filament extruding & with right color?"
 #define(lenght=18, lines=1) MSG_UNLOADING_FILAMENT			"Unloading filament"
 #define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
