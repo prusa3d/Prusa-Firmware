@@ -1930,11 +1930,16 @@ void lcd_LoadFilament()
 {
   if (degHotend0() > EXTRUDE_MINTEMP) 
   {
+	  if (filament_autoload_enabled)
+	  {
+		  lcd_show_fullscreen_message_and_wait_P(PSTR("Autoloading filament is active, just insert filament..."));
+		  return;
+	  }
 	  custom_message = true;
 	  loading_flag = true;
 	  enquecommand_P(PSTR("M701")); //load filament
 	  SERIAL_ECHOLN("Loading filament");	    
-    }
+  }
   else 
   {
 
@@ -5034,9 +5039,9 @@ static void lcd_main_menu()
   {
 	#ifndef SNMM
 	if (!filament_autoload_enabled)
-	{
 		MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
-	}
+	else
+		MENU_ITEM(function, MSG_AUTOLOAD_FILAMENT, lcd_LoadFilament);
 	MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
 	#endif
 	#ifdef SNMM

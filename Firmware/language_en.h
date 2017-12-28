@@ -70,6 +70,7 @@
 #define MSG_SETTINGS                         "Settings"
 #define MSG_PREHEAT                         "Preheat"
 #define(length=17) MSG_UNLOAD_FILAMENT               "Unload filament"
+#define(length=17) MSG_AUTOLOAD_FILAMENT             "AUTOLoad filament"
 #define(length=17) MSG_LOAD_FILAMENT                 "Load filament"
 #define(length=17) MSG_LOAD_FILAMENT_1				"Load filament 1"
 #define(length=17) MSG_LOAD_FILAMENT_2				"Load filament 2"

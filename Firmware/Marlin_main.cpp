@@ -7762,6 +7762,7 @@ void restore_print_from_ram_and_continue(float e_move)
   sdpos_atomic = saved_sdpos;
 	card.sdprinting = true;
 	saved_printing = false;
+	printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 }
 
 void print_world_coordinates()
