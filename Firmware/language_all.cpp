@@ -601,8 +601,8 @@ const char * const MSG_FILAMENTCHANGE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENTCHANGE_CZ
 };
 
-const char MSG_FILAMENT_CLEAN_EN[] PROGMEM = "Is color clear?";
-const char MSG_FILAMENT_CLEAN_CZ[] PROGMEM = "Je barva cista?";
+const char MSG_FILAMENT_CLEAN_EN[] PROGMEM = "Filament extruding & with right color?";
+const char MSG_FILAMENT_CLEAN_CZ[] PROGMEM = "Filament vytlacen a spravne barvy?";
 const char * const MSG_FILAMENT_CLEAN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FILAMENT_CLEAN_EN,
 	MSG_FILAMENT_CLEAN_CZ
@@ -1149,7 +1149,7 @@ const char * const MSG_NO_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_NO_CZ
 };
 
-const char MSG_NOT_COLOR_EN[] PROGMEM = "Color not clear";
+const char MSG_NOT_COLOR_EN[] PROGMEM = "Color not right";
 const char MSG_NOT_COLOR_CZ[] PROGMEM = "Barva neni cista";
 const char * const MSG_NOT_COLOR_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_NOT_COLOR_EN,
@@ -1551,12 +1551,12 @@ const char * const MSG_SD_WRITE_TO_FILE_LANG_TABLE[1] PROGMEM = {
 	MSG_SD_WRITE_TO_FILE_EN
 };
 
-const char MSG_SECOND_SERIAL_OFF_EN[] PROGMEM = "2nd USART   [off]";
+const char MSG_SECOND_SERIAL_OFF_EN[] PROGMEM = "rPi port    [off]";
 const char * const MSG_SECOND_SERIAL_OFF_LANG_TABLE[1] PROGMEM = {
 	MSG_SECOND_SERIAL_OFF_EN
 };
 
-const char MSG_SECOND_SERIAL_ON_EN[] PROGMEM = "2nd USART    [on]";
+const char MSG_SECOND_SERIAL_ON_EN[] PROGMEM = "rPi port     [on]";
 const char * const MSG_SECOND_SERIAL_ON_LANG_TABLE[1] PROGMEM = {
 	MSG_SECOND_SERIAL_ON_EN
 };
