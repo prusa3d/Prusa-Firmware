@@ -53,36 +53,41 @@ FORCE_INLINE void store_char(unsigned char c)
 #if defined(M_USARTx_RX_vect)
   // fixed by Mark Sproul this is on the 644/644p
   //SIGNAL(SIG_USART_RECV)
-  SIGNAL(M_USARTx_RX_vect)
-  {
-      // Test for a framing error.
-      if (M_UCSRxA & (1<<M_FEx)) {
-          // Characters received with the framing errors will be ignored.
-          // Dummy register read (discard)
-          (void)(*(char *)M_UDRx);
-      } else {
-          // Read the input register.
-          unsigned char c = M_UDRx;
-          store_char(c);
-      }
-  }
+SIGNAL(M_USARTx_RX_vect)
+{
+	// Test for a framing error.
+	if (M_UCSRxA & (1<<M_FEx))
+	{
+		// Characters received with the framing errors will be ignored.
+		// Dummy register read (discard)
+		(void)(*(char *)M_UDRx);
+	}
+	else
+	{
+		// Read the input register.
+		unsigned char c = M_UDRx;
+		if (selectedSerialPort == 0)
+			store_char(c);
+	}
+}
 #ifndef SNMM
-  SIGNAL(USART1_RX_vect)
-  {
-      if (selectedSerialPort == 1) {
-        // Test for a framing error.
-        if (UCSR1A & (1<<FE1)) {
-            // Characters received with the framing errors will be ignored.
-            // Dummy register read (discard)
-            (void)(*(char *)UDR1);
-        } else {
-            // Read the input register.
-            unsigned char c = UDR1;
-            store_char(c);
-            
-        }
-      }
-  }
+SIGNAL(USART1_RX_vect)
+{
+	// Test for a framing error.
+	if (UCSR1A & (1<<FE1))
+	{
+		// Characters received with the framing errors will be ignored.
+		// Dummy register read (discard)
+		(void)(*(char *)UDR1);
+	}
+	else
+	{
+		// Read the input register.
+		unsigned char c = UDR1;
+		if (selectedSerialPort == 1)
+			store_char(c);
+	}
+}
 #endif
 #endif
 

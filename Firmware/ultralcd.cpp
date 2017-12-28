@@ -3830,7 +3830,7 @@ static void lcd_settings_menu()
   else {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_ON, lcd_temp_calibration_set);
   }
-  if (selectedSerialPort == false) {
+  if (selectedSerialPort == 0) {
 	  MENU_ITEM(function, MSG_SECOND_SERIAL_OFF, lcd_second_serial_set);
   }
   else {
