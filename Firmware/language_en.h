@@ -70,7 +70,7 @@
 #define MSG_SETTINGS                         "Settings"
 #define MSG_PREHEAT                         "Preheat"
 #define(length=17) MSG_UNLOAD_FILAMENT               "Unload filament"
-#define(length=17) MSG_AUTOLOAD_FILAMENT             "AUTOLoad filament"
+#define(length=17) MSG_AUTOLOAD_FILAMENT             "AutoLoad filament"
 #define(length=17) MSG_LOAD_FILAMENT                 "Load filament"
 #define(length=17) MSG_LOAD_FILAMENT_1				"Load filament 1"
 #define(length=17) MSG_LOAD_FILAMENT_2				"Load filament 2"
@@ -282,7 +282,7 @@
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Calibration"
-#define(length=19, lines=1) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
+#define(length=19, lines=1) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card  [normal]"
 #define(length=19, lines=1) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
 #define(length=20, lines=1) MSG_PRINTER_DISCONNECTED			"Printer disconnected"
 #define(length=20, lines=1) MSG_FINISHING_MOVEMENTS				"Finishing movements"
@@ -369,6 +369,9 @@
 #define(length=20, lines=2) MSG_CRASH_DETECTED					"Crash detected. Continue printing?"
 
 #define(length=15, lines=1) MSG_INFO_EXTRUDER				"Extruder info"
+#define(length=15, lines=1) MSG_MENU_VOLTAGES               "Voltages"
+#define(length=15, lines=1) MSG_MENU_TEMPERATURES           "Temperatures"
+#define(length=15, lines=1) MSG_MENU_BELT_STATUS            "Belt status"
 
 #define(length=11, lines=1) MSG_INFO_NOZZLE_FAN				"Nozzle FAN:"
 #define(length=11, lines=1) MSG_INFO_PRINT_FAN				"Print FAN: "
@@ -383,10 +386,16 @@
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
 
 #define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Default settings loaded"
-#define(length=17, lines=1) MSG_SORT_TIME						"Sort: [Time]"
-#define(length=17, lines=1) MSG_SORT_ALPHA						"Sort: [Alphabet]"
-#define(length=17, lines=1) MSG_SORT_NONE						"Sort: [None]"
+#define(length=17, lines=1) MSG_SORT_TIME						"Sort:      [Time]"
+#define(length=17, lines=1) MSG_SORT_ALPHA						"Sort:  [Alphabet]"
+#define(length=17, lines=1) MSG_SORT_NONE						"Sort:      [None]"
 #define(length=20, lines=1) MSG_SORTING							"Sorting files"
 #define(length=20, lines=4) MSG_FILE_CNT						"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
-#define(length=17, lines=1) MSG_SECOND_SERIAL_ON				"rPi port     [on]"
-#define(length=17, lines=1) MSG_SECOND_SERIAL_OFF				"rPi port    [off]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_ON				"RPi port     [on]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_OFF				"RPi port    [off]"
+
+#define(length=20, lines=4) MSG_CRASH_DET_ONLY_IN_NORMAL        "Crash detection can be turned on only in Normal mode."
+#define(length=20, lines=4) MSG_CRASH_DET_STEALTH_FORCE_OFF     "WARNING: Crash detection disabled in Stealth mode"
+
+#define(length=20, lines=4) MSG_AUTOLOADING_ENABLED     "Autoloading filament is active, just press the knob and insert filament..."
+

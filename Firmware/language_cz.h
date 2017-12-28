@@ -74,6 +74,7 @@
 #define MSG_PREHEAT                         "Predehrev"
 #define MSG_UNLOAD_FILAMENT                 "Vyjmout filament"
 #define MSG_LOAD_FILAMENT					"Zavest filament"
+#define(length=17) MSG_AUTOLOAD_FILAMENT    "AutoZavedeni fil."
 #define MSG_LOAD_FILAMENT_1					"Zavest filament 1"
 #define MSG_LOAD_FILAMENT_2					"Zavest filament 2"
 #define MSG_LOAD_FILAMENT_3					"Zavest filament 3"
@@ -261,8 +262,10 @@
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Kalibrace"
-#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
+#define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card  [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
+
+#define(length=20, lines=4) MSG_STACK_ERROR                     "Chyba - Doslo k prepisu staticke pameti!"
 
 #define MSG_LOOSE_PULLEY								"Uvolnena remenicka"
 #define MSG_FILAMENT_LOADING_T0							"Vlozte filament do extruderu 1. Potvrdte tlacitkem."
@@ -342,7 +345,7 @@
 #define MSG_MEASURED_SKEW					"Merene zkoseni:"
 #define MSG_SLIGHT_SKEW						"Lehke zkoseni:"
 #define MSG_SEVERE_SKEW						"Tezke zkoseni:"
-
+ve
 #define MSG_CALIBRATE_Z_AUTO				"Kalibruji Z"
 #define MSG_FSENSOR_OFF						"Fil. senzor [vyp]"
 #define MSG_FSENSOR_NA						"Fil. senzor [err]"
@@ -351,7 +354,9 @@
 #define MSG_CRASHDETECT_NA					"Crash det.  [N/A]"
 #define MSG_CRASHDETECT_OFF					"Crash det.  [vyp]"
 #define MSG_FANS_CHECK_ON					"Kontr. vent.[zap]"
-#define MSG_FANS_CHECK_OFF					"Kontr. vent.[vyp]"
+#define MSG_FANS_CHECK_OFF					        "Kontr. vent.[vyp]"
+#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_ON   "F. autozav.  [on]"
+#define(length=17, lines=1) MSG_FSENS_AUTOLOAD_OFF  "F. autozav. [off]"
 #define MSG_RECOVERING_PRINT				"Obnovovani tisku    "
 #define MSG_SELFTEST_AXIS					"Osa"
 #define MSG_SELFTEST_AXIS_LENGTH			"Delka osy"
@@ -363,6 +368,25 @@
 #define MSG_UNLOAD_SUCCESSFULL				"Opakovat vysunuti filamentu?"
 #define MSG_FILE_INCOMPLETE					"Soubor nekompletni. Pokracovat?"
 #define MSG_FILE_CNT						"Nektere soubory nebudou setrideny. Maximalni pocet souboru pro setrideni je 100."
-#define MSG_SORT_TIME						"Trideni [Cas]"
+#define MSG_SORT_TIME						"Trideni     [Cas]"
 #define MSG_SORT_ALPHA						"Trideni [Abeceda]"
-#define MSG_SORT_NONE						"Trideni [Zadne]"
+#define MSG_SORT_NONE						"Trideni   [Zadne]"
+#define(length=20, lines=1) MSG_SORTING                            "Trideni souboru"
+
+
+#define(length=11, lines=1) MSG_INFO_NOZZLE_FAN                 "Trysk. vent:"
+#define(length=11, lines=1) MSG_INFO_PRINT_FAN                  "Tisk. vent:"
+
+
+#define(length=17, lines=1) MSG_SECOND_SERIAL_ON                "RPi port     [on]"
+#define(length=17, lines=1) MSG_SECOND_SERIAL_OFF                "RPi port    [off]"
+
+#define(length=15, lines=1) MSG_INFO_EXTRUDER                "Extruder info"
+#define(length=15, lines=1) MSG_MENU_VOLTAGES               "Napeti"
+#define(length=15, lines=1) MSG_MENU_TEMPERATURES           "Teploty"
+#define(length=15, lines=1) MSG_MENU_BELT_STATUS            "Stav remenu"
+
+#define(length=20, lines=4) MSG_CRASH_DET_ONLY_IN_NORMAL        "Crash detekce muze byt zapnuta pouze v Normal modu"
+#define(length=20, lines=4) MSG_CRASH_DET_STEALTH_FORCE_OFF     "POZOR: Crash detekce deaktivovana ve Stealth modu"
+
+#define(length=20, lines=4) MSG_AUTOLOADING_ENABLED     "Automaticke zavedeni filamentu aktivni, stisknete tlacitko a vlozte filament..."
