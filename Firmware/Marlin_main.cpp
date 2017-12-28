@@ -7260,15 +7260,16 @@ void uvlo_()
     // Conserve power as soon as possible.
     disable_x();
     disable_y();
-
-	tmc2130_set_current_h(Z_AXIS, 12);
-	tmc2130_set_current_r(Z_AXIS, 12);
+    disable_e0();
+    
+	tmc2130_set_current_h(Z_AXIS, 20);
+	tmc2130_set_current_r(Z_AXIS, 20);
 	tmc2130_set_current_h(E_AXIS, 20);
 	tmc2130_set_current_r(E_AXIS, 20);
 
 
     // Indicate that the interrupt has been triggered.
-		SERIAL_ECHOLNPGM("UVLO");
+	//	SERIAL_ECHOLNPGM("UVLO");
 
     // Read out the current Z motor microstep counter. This will be later used
     // for reaching the zero full step before powering off.
@@ -7310,15 +7311,32 @@ void uvlo_()
       current_position[X_AXIS], 
       current_position[Y_AXIS], 
       current_position[Z_AXIS], 
-      current_position[E_AXIS] - DEFAULT_RETRACTION, 
-      400, active_extruder);
+      current_position[E_AXIS] - DEFAULT_RETRACTION,
+      95, active_extruder);
+    
+        st_synchronize();
+        disable_e0();
+    
 		plan_buffer_line(
       current_position[X_AXIS], 
       current_position[Y_AXIS], 
       current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / axis_steps_per_unit[Z_AXIS], 
       current_position[E_AXIS] - DEFAULT_RETRACTION,
       40, active_extruder);
-
+    
+    st_synchronize();
+    disable_e0();
+    
+    plan_buffer_line(
+                     current_position[X_AXIS],
+                     current_position[Y_AXIS],
+                     current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / axis_steps_per_unit[Z_AXIS],
+                     current_position[E_AXIS] - DEFAULT_RETRACTION,
+                     40, active_extruder);
+    st_synchronize();
+    disable_e0();
+    disable_z();
+    
     // Move Z up to the next 0th full step.
     // Write the file position.
     eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
@@ -7348,12 +7366,7 @@ void uvlo_()
     st_synchronize();
     SERIAL_ECHOPGM("stps");
     MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
-#if 0
-    // Move the print head to the side of the print until all the power stored in the power supply capacitors is depleted.
-    current_position[X_AXIS] = (current_position[X_AXIS] < 0.5f * (X_MIN_POS + X_MAX_POS)) ? X_MIN_POS : X_MAX_POS;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
-    st_synchronize();
-#endif
+
     disable_z();
     
     // Increment power failure counter
@@ -7363,8 +7376,32 @@ void uvlo_()
     
 		SERIAL_ECHOLNPGM("UVLO - end");
 		MYSERIAL.println(millis() - time_start);
+    
+#if 0
+    // Move the print head to the side of the print until all the power stored in the power supply capacitors is depleted.
+    current_position[X_AXIS] = (current_position[X_AXIS] < 0.5f * (X_MIN_POS + X_MAX_POS)) ? X_MIN_POS : X_MAX_POS;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+    st_synchronize();
+#endif
+    
+
 		cli();
-		while(1);
+    volatile unsigned int ppcount = 0;
+    SET_OUTPUT(BEEPER);
+    WRITE(BEEPER, HIGH);
+    for(ppcount = 0; ppcount < 2000; ppcount ++){
+        asm("nop");//50ns on 20Mhz, 62.5ns on 16Mhz
+    }
+    WRITE(BEEPER, LOW);
+    while(1){
+#if 1
+        WRITE(BEEPER, LOW);
+        for(ppcount = 0; ppcount < 8000; ppcount ++){
+             asm("nop");//50ns on 20Mhz, 62.5ns on 16Mhz
+        }
+#endif
+        
+    };
 }
 
 void setup_fan_interrupt() {
@@ -7584,7 +7621,7 @@ void restore_print_from_eeprom() {
 	strcpy_P(cmd, PSTR("G1 Z")); strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z))));
 	enquecommand(cmd);
   // Unretract.
-	enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION)" F480"));
+	enquecommand_P(PSTR("G1 E"  STRINGIFY(2*DEFAULT_RETRACTION)" F480"));
   // Set the feedrate saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
 	enquecommand(cmd);
