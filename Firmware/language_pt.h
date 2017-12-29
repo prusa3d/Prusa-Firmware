@@ -104,7 +104,7 @@
 #define MSG_SILENT_MODE_OFF					"Modo  [Alta pot.]" 
 #define MSG_AUTO_MODE_ON					"Modo  [Pot. auto]"
 #define MSG_REBOOT							"Reinicie impressora"
-#define MSG_TAKE_EFFECT						" para aplicar"											
+//#define MSG_TAKE_EFFECT						" para aplicar"											
 
 #define MSG_Enqueing						"Col. em espera \""
 #define MSG_POWERUP							"Ligar"

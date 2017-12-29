@@ -103,7 +103,7 @@
 #define MSG_SILENT_MODE_OFF					"Mode [Hohe Leist]"
 #define MSG_AUTO_MODE_ON					"Mode       [Auto]"
 #define MSG_REBOOT							"Zum Uebernehmen "
-#define MSG_TAKE_EFFECT						"Drucker neu starten"
+//#define MSG_TAKE_EFFECT						"Drucker neu starten"
 
 #define MSG_Enqueing						"enqueuing \"
 #define MSG_POWERUP							"Einschalten"

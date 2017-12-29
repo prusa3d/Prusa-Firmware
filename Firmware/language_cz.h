@@ -106,7 +106,7 @@
 #define MSG_SILENT_MODE_OFF					"Mod  [vys. vykon]" 
 #define MSG_AUTO_MODE_ON					"Mod [automaticky]"
 #define MSG_REBOOT							"Restartujte tiskarnu"
-#define MSG_TAKE_EFFECT						" pro projeveni zmen"	
+//#define MSG_TAKE_EFFECT						" pro projeveni zmen"	
 
 #define MSG_Enqueing                        "enqueing \""
 #define MSG_POWERUP                         "PowerUp"

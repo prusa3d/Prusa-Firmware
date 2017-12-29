@@ -1441,8 +1441,8 @@ static void lcd_preheat_menu()
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
 
   MENU_ITEM(function, PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)), lcd_preheat_pla);
-  MENU_ITEM(function, PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
   MENU_ITEM(function, PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)), lcd_preheat_pet);
+  MENU_ITEM(function, PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
   MENU_ITEM(function, PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(HIPS_PREHEAT_HPB_TEMP)), lcd_preheat_hips);
   MENU_ITEM(function, PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)), lcd_preheat_pp);
   MENU_ITEM(function, PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FLEX_PREHEAT_HPB_TEMP)), lcd_preheat_flex);
@@ -1475,13 +1475,15 @@ static void lcd_support_menu()
 
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
 
+  MENU_ITEM(back, PSTR("Firmware:"), lcd_main_menu);
+  MENU_ITEM(back, PSTR(" " FW_version_build), lcd_main_menu);
   // Ideally this block would be optimized out by the compiler.
-  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
+/*  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
   if (fw_string_len < 6) {
       MENU_ITEM(back, PSTR(MSG_FW_VERSION " - " FW_version), lcd_main_menu);
   } else {
       MENU_ITEM(back, PSTR("FW - " FW_version), lcd_main_menu);
-  }
+  }*/
       
   MENU_ITEM(back, MSG_PRUSA3D, lcd_main_menu);
   MENU_ITEM(back, MSG_PRUSA3D_FORUM, lcd_main_menu);
@@ -2707,10 +2709,12 @@ static void lcd_show_end_stops() {
     lcd.setCursor(0, 3);
     lcd_printPGM(((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) ? (PSTR("Z:1")) : (PSTR("Z:0")));
 	// FILAMENT_RUNOUT_SENSOR
+	#ifdef FILAMENT_RUNOUT_SUPPORT
 	if (fil_runout_status > 0) {
 		lcd.setCursor(4, 1);
 		lcd_printPGM(((READ(FIL_RUNOUT_PIN) ^ FIL_RUNOUT_INVERTING) == 1) ? (PSTR("FRS:1")) : (PSTR("FRS:0")));		
 	}
+	#endif
 	// end FILAMENT_RUNOUT_SENSOR
 }
 
@@ -3521,6 +3525,7 @@ void lcd_wizard(int state) {
 	lcd_update(2);
 }
 // FILAMENT_RUNOUT_SENSOR
+#ifdef FILAMENT_RUNOUT_SUPPORT
 static void lcd_fil_runout_status_set() {
 	switch (fil_runout_status) {
 	case 0:
@@ -3569,6 +3574,7 @@ static void lcd_fil_runout_status_tune() {
   digipot_init();
   lcd_goto_menu(lcd_tune_menu, 9);
 }
+#endif
 // end FILAMENT_RUNOUT_SENSOR
 
 
@@ -3628,7 +3634,7 @@ static void lcd_settings_menu()
 		MENU_ITEM(function, PSTR("Disable farm mode"), lcd_disable_farm_mode);
     }
 // FILAMENT_RUNOUT_SENSOR
-#ifdef FIL_RUNOUT_PIN
+#ifdef FILAMENT_RUNOUT_SUPPORT
 	  switch (fil_runout_status) {
 	  case 0: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_OFF, lcd_fil_runout_status_set); break;
 	  case 1: MENU_ITEM(function, MSG_FIL_RUNOUT_STATUS_VCC, lcd_fil_runout_status_set); break;

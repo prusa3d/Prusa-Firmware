@@ -66,7 +66,7 @@
 #define MSG_SILENT_MODE_OFF		    "Modo [rend.pleno]" 
 #define MSG_AUTO_MODE_ON			"Modo       [auto]"
 #define MSG_REBOOT			    "Reiniciar impresora"
-#define MSG_TAKE_EFFECT			    " para aplicar cambios" 
+//#define MSG_TAKE_EFFECT			    " para aplicar cambios" 
 #define MSG_HEATING                         "Calentando..."
 #define MSG_HEATING_COMPLETE                "Calentamiento final."
 #define MSG_BED_HEATING                     "Calentando Base"

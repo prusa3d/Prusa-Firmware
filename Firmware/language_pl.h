@@ -65,7 +65,7 @@
 #define MSG_SILENT_MODE_OFF                                     "Tryb[w wydajnosc]"
 #define MSG_AUTO_MODE_ON                                     "Tryb       [auto]"
 #define MSG_REBOOT                                                      "Restart drukarki"
-#define MSG_TAKE_EFFECT                                         " wprow. zmian"   
+//#define MSG_TAKE_EFFECT                                         " wprow. zmian"   
 #define MSG_HEATING                         "Grzanie..."
 #define MSG_HEATING_COMPLETE                "Grzanie OK."
 #define MSG_BED_HEATING                     "Grzanie stolika.."

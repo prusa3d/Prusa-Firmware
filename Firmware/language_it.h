@@ -87,7 +87,7 @@
 #define MSG_SILENT_MODE_OFF		    "Mode      [forte]"
 #define MSG_AUTO_MODE_ON			"Mode       [auto]"
 #define MSG_REBOOT			    "Riavvia stampante"
-#define MSG_TAKE_EFFECT			    " per attualizzare"
+//#define MSG_TAKE_EFFECT			    " per attualizzare"
 
 #define MSG_Enqueing                        "enqueing \""
 #define MSG_POWERUP                         "PowerUp"

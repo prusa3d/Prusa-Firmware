@@ -104,7 +104,7 @@
 #define MSG_SILENT_MODE_OFF					"Mode [high power]" 
 #define MSG_AUTO_MODE_ON					"Mode [auto power]"
 #define(length=20) MSG_REBOOT				"Reboot the printer"
-#define(length=20) MSG_TAKE_EFFECT			" for take effect"											
+//#define(length=20) MSG_TAKE_EFFECT			" for take effect"											
 
 #define MSG_Enqueing                        "enqueing \""
 #define MSG_POWERUP                         "PowerUp"
@@ -211,7 +211,7 @@
 #define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 
 #define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN			"Please clean the nozzle for calibration. Click when done."
-#define(length=20,lines=2) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Are left and right Z~carriages all up?"
+#define(length=20,lines=3) MSG_CONFIRM_CARRIAGE_AT_THE_TOP	"Are left and right Z~carriages all up?"
 
 #define(length=60) MSG_FIND_BED_OFFSET_AND_SKEW_LINE1		"Searching bed calibration point"
 #define(length=14) MSG_FIND_BED_OFFSET_AND_SKEW_LINE2		" of 4"
