@@ -3160,12 +3160,11 @@ void process_commands()
 			disable_e0();
 			disable_e1();
 			disable_e2();
+			setTargetBed(0); //set bed target temperature back to 0
+//			setTargetHotend(0,0); //set hotend target temperature back to 0
 			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
 			lcd_update_enable(true);
 			lcd_update(2);
-
-			setTargetBed(0); //set bed target temperature back to 0
-//			setTargetHotend(0,0); //set hotend target temperature back to 0
 			break;
 		}
 #endif //PINDA_THERMISTOR
