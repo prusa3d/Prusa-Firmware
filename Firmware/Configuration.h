@@ -66,7 +66,7 @@
 // E^2 address of custom MBC offsets array.
 // Correction of the bed leveling, in micrometers.
 // Current Range is: +/- 500um (stored as int16).
-#define EEPROM_BED_CORRECTION_VALID	999
+#define EEPROM_BED_CORRECTION_VALID	499
 #define EEPROM_BED_CORRECTION_OFFSETS	(EEPROM_BED_CORRECTION_VALID - 16)
 
 // Currently running firmware, each digit stored as uint16_t.

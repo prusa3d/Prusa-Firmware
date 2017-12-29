@@ -451,90 +451,95 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
 	}
 	#endif // SUPPORT_VERBOSITY
 
-    #if 1
     if (result == BED_SKEW_OFFSET_DETECTION_PERFECT) {
-        if (verbosity_level > 0)
-            SERIAL_ECHOLNPGM("Very little skew detected. Disabling skew correction.");
-        // Just disable the skew correction.
-        vec_x[0] = MACHINE_AXIS_SCALE_X;
-        vec_x[1] = 0.f;
-        vec_y[0] = 0.f;
-        vec_y[1] = MACHINE_AXIS_SCALE_Y;
-    }
-    #else
-    if (result == BED_SKEW_OFFSET_DETECTION_PERFECT) {
-		#ifdef SUPPORT_VERBOSITY
-        if (verbosity_level > 0)
-            SERIAL_ECHOLNPGM("Very little skew detected. Orthogonalizing the axes.");
-		#endif // SUPPORT_VERBOSITY
-		// Orthogonalize the axes.
-        a1 = 0.5f * (a1 + a2);
-        vec_x[0] =  cos(a1) * MACHINE_AXIS_SCALE_X;
-        vec_x[1] =  sin(a1) * MACHINE_AXIS_SCALE_X;
-        vec_y[0] = -sin(a1) * MACHINE_AXIS_SCALE_Y;
-        vec_y[1] =  cos(a1) * MACHINE_AXIS_SCALE_Y;
-        // Refresh the offset.
-        cntr[0] = 0.f;
-        cntr[1] = 0.f;
-        float wx = 0.f;
-        float wy = 0.f;
-        for (int8_t i = 0; i < npts; ++ i) {
-            float x = vec_x[0] * measured_pts[i * 2] + vec_y[0] * measured_pts[i * 2 + 1];
-            float y = vec_x[1] * measured_pts[i * 2] + vec_y[1] * measured_pts[i * 2 + 1];
-            float w = point_weight_x(i, npts, y);
-			cntr[0] += w * (pgm_read_float(true_pts + i * 2) - x);
-			wx += w;
-			#ifdef SUPPORT_VERBOSITY
-			if (verbosity_level >= 20) {
-				MYSERIAL.print(i);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOLNPGM("Weight_x:");
-				MYSERIAL.print(w);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOLNPGM("cntr[0]:");
-				MYSERIAL.print(cntr[0]);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOLNPGM("wx:");
-				MYSERIAL.print(wx);
-			}
-			#endif // SUPPORT_VERBOSITY
-            w = point_weight_y(i, npts, y);
-			cntr[1] += w * (pgm_read_float(true_pts + i * 2 + 1) - y);
-			wy += w;
+	bool skew_correction = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_SKEW_CORRECTION, false, false);
 
-			#ifdef SUPPORT_VERBOSITY
-			if (verbosity_level >= 20) {
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOLNPGM("Weight_y:");
-				MYSERIAL.print(w);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOLNPGM("cntr[1]:");
-				MYSERIAL.print(cntr[1]);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOLNPGM("wy:");
-				MYSERIAL.print(wy);
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOLNPGM("");
-			}
-			#endif // SUPPORT_VERBOSITY
+	lcd_update_enable(true);
+	lcd_update(2);
+
+        if (skew_correction) {
+	    #ifdef SUPPORT_VERBOSITY
+            if (verbosity_level > 0)
+                SERIAL_ECHOLNPGM("Very little skew detected. Disabling skew correction.");
+	    #endif
+            // Just disable the skew correction.
+            vec_x[0] = MACHINE_AXIS_SCALE_X;
+            vec_x[1] = 0.f;
+            vec_y[0] = 0.f;
+            vec_y[1] = MACHINE_AXIS_SCALE_Y;
+        } else {
+	    #ifdef SUPPORT_VERBOSITY
+            if (verbosity_level > 0)
+                SERIAL_ECHOLNPGM("Very little skew detected. Orthogonalizing the axes.");
+	    #endif
+	    // Orthogonalize the axes.
+            a1 = 0.5f * (a1 + a2);
+            vec_x[0] =  cos(a1) * MACHINE_AXIS_SCALE_X;
+            vec_x[1] =  sin(a1) * MACHINE_AXIS_SCALE_X;
+            vec_y[0] = -sin(a1) * MACHINE_AXIS_SCALE_Y;
+            vec_y[1] =  cos(a1) * MACHINE_AXIS_SCALE_Y;
+            // Refresh the offset.
+            cntr[0] = 0.f;
+            cntr[1] = 0.f;
+            float wx = 0.f;
+            float wy = 0.f;
+            for (int8_t i = 0; i < npts; ++ i) {
+                float x = vec_x[0] * measured_pts[i * 2] + vec_y[0] * measured_pts[i * 2 + 1];
+                float y = vec_x[1] * measured_pts[i * 2] + vec_y[1] * measured_pts[i * 2 + 1];
+                float w = point_weight_x(i, npts, y);
+		cntr[0] += w * (pgm_read_float(true_pts + i * 2) - x);
+		wx += w;
+		#ifdef SUPPORT_VERBOSITY
+		if (verbosity_level >= 20) {
+			MYSERIAL.print(i);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("Weight_x:");
+			MYSERIAL.print(w);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("cntr[0]:");
+			MYSERIAL.print(cntr[0]);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("wx:");
+			MYSERIAL.print(wx);
 		}
-        cntr[0] /= wx;
-        cntr[1] /= wy;
+		#endif // SUPPORT_VERBOSITY
+		w = point_weight_y(i, npts, y);
+		cntr[1] += w * (pgm_read_float(true_pts + i * 2 + 1) - y);
+		wy += w;
+
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 20) {
 			SERIAL_ECHOLNPGM("");
-			SERIAL_ECHOLNPGM("Final cntr values:");
-			SERIAL_ECHOLNPGM("cntr[0]:");
-			MYSERIAL.print(cntr[0]);
+			SERIAL_ECHOLNPGM("Weight_y:");
+			MYSERIAL.print(w);
 			SERIAL_ECHOLNPGM("");
 			SERIAL_ECHOLNPGM("cntr[1]:");
 			MYSERIAL.print(cntr[1]);
 			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("wy:");
+			MYSERIAL.print(wy);
+			SERIAL_ECHOLNPGM("");
+			SERIAL_ECHOLNPGM("");
 		}
 		#endif // SUPPORT_VERBOSITY
+	    }
+	    cntr[0] /= wx;
+	    cntr[1] /= wy;
+	    #ifdef SUPPORT_VERBOSITY
+	    if (verbosity_level >= 20) {
+		SERIAL_ECHOLNPGM("");
+		SERIAL_ECHOLNPGM("Final cntr values:");
+		SERIAL_ECHOLNPGM("cntr[0]:");
+		MYSERIAL.print(cntr[0]);
+		SERIAL_ECHOLNPGM("");
+		SERIAL_ECHOLNPGM("cntr[1]:");
+		MYSERIAL.print(cntr[1]);
+		SERIAL_ECHOLNPGM("");
+	    }
+	    #endif // SUPPORT_VERBOSITY
 
+        }
     }
-    #endif
 
     // Invert the transformation matrix made of vec_x, vec_y and cntr.
     {

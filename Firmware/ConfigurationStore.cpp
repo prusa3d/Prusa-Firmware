@@ -130,10 +130,11 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i, filament_size[2]);
   #endif
   #endif
-  /*MYSERIAL.print("Top address used:\n");
-  MYSERIAL.print(i);
-  MYSERIAL.print("\n");
-  */
+#if 0
+  SERIAL_ECHO_START;
+  SERIAL_ECHOPAIR("Top address used: ", (unsigned long)i);
+  SERIAL_ECHOLN("");
+#endif
   char ver2[4]=EEPROM_VERSION;
   i=EEPROM_OFFSET;
   EEPROM_WRITE_VAR(i,ver2); // validate data
