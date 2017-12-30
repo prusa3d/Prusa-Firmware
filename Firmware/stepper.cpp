@@ -662,9 +662,9 @@ void isr() {
 	}
 
     for(uint8_t i=0; i < step_loops; i++) { // Take multiple steps per interrupt (For high speed moves)
- /*     #ifndef AT90USB
+      #ifndef AT90USB
       MSerial.checkRx(); // Check for serial chars.
-      #endif*/ //RP - removed
+      #endif //RP - returned, because missing characters
 
 #ifdef LIN_ADVANCE
         counter_e += current_block->steps_e;
