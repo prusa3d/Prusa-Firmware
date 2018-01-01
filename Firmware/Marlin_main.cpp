@@ -1499,6 +1499,12 @@ void get_command()
         return;
       }
       cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
+
+      // Skip leading whitespace
+      while(cmdbuffer[bufindw + 1] == ' ') bufindw++;
+      // Set command type here so correct responses are sent in case line error
+      cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_USB;
+
       if(!comment_mode){
 	    // Line numbers must be first in buffer
 	    if ((strstr(cmdbuffer+bufindw+1, "PRUSA") == NULL) && 
@@ -1581,9 +1587,8 @@ void get_command()
         //If command was e-stop process now
         if(strcmp(cmdbuffer+bufindw+1, "M112") == 0)
           kill();
-        
+
         // Store the current line into buffer, move to the next line.
-        cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_USB;
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Storing a command line to buffer: ");
