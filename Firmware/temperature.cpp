@@ -697,6 +697,7 @@ void manage_heater()
     #endif
   } // End extruder for loop
 
+#ifndef DEBUG_DISABLE_FANCHECK
   #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
       (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
       (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
@@ -708,6 +709,7 @@ void manage_heater()
     extruder_autofan_last_check = millis();
   }  
   #endif       
+#endif //DEBUG_DISABLE_FANCHECK
   
   #ifndef PIDTEMPBED
   if(millis() - previous_millis_bed_heater < BED_CHECK_INTERVAL)

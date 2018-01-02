@@ -1112,8 +1112,12 @@ void setup()
 
 	check_babystep(); //checking if Z babystep is in allowed range
 	setup_uvlo_interrupt();
+#ifndef DEBUG_DISABLE_FANCHECK
 	setup_fan_interrupt();
+#endif //DEBUG_DISABLE_FANCHECK
+#ifndef DEBUG_DISABLE_FSENSORCHECK
 	fsensor_setup_interrupt();
+#endif //DEBUG_DISABLE_FSENSORCHECK
 	for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]); 
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
@@ -1219,6 +1223,10 @@ void fsensor_init() {
 		puts_P(PSTR("DISABLED\n"));
 		fsensor_disable();
 	}
+#ifdef DEBUG_DISABLE_FSENSORCHECK
+	filament_autoload_enabled = false;
+	fsensor_disable();
+#endif //DEBUG_DISABLE_FSENSORCHECK
 }
 
 #endif //PAT9125

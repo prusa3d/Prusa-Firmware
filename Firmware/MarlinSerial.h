@@ -111,16 +111,16 @@ class MarlinSerial //: public Stream
     }
     */
 	void write(uint8_t c)
+	{
+		if (selectedSerialPort == 0)
 		{
-		if (selectedSerialPort == 0) {
-			while (!((M_UCSRxA) & (1 << M_UDREx)))
-				;
-				M_UDRx = c;
+			while (!((M_UCSRxA) & (1 << M_UDREx)));
+			M_UDRx = c;
 		}
-		else if (selectedSerialPort == 1) {
-			while (!((UCSR1A) & (1 << UDRE1)))
-				;
-				UDR1 = c;
+		else if (selectedSerialPort == 1)
+		{
+			while (!((UCSR1A) & (1 << UDRE1)));
+			UDR1 = c;
 		}
 	}
     
@@ -144,7 +144,10 @@ class MarlinSerial //: public Stream
                         rx_buffer.buffer[rx_buffer.head] = c;
                         rx_buffer.head = i;
                     }
-                    selectedSerialPort = 0;
+                    //selectedSerialPort = 0;
+#ifdef DEBUG_DUMP_TO_2ND_SERIAL
+					UDR1 = c;
+#endif //DEBUG_DUMP_TO_2ND_SERIAL
                 }
             }
         } else if(selectedSerialPort == 1) {
@@ -165,7 +168,10 @@ class MarlinSerial //: public Stream
                         rx_buffer.buffer[rx_buffer.head] = c;
                         rx_buffer.head = i;
                     }
-                    selectedSerialPort = 1;
+                    //selectedSerialPort = 1;
+#ifdef DEBUG_DUMP_TO_2ND_SERIAL
+					M_UDRx = c;
+#endif //DEBUG_DUMP_TO_2ND_SERIAL
                 }
             }
         }
