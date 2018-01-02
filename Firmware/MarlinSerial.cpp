@@ -68,6 +68,9 @@ SIGNAL(M_USARTx_RX_vect)
 		unsigned char c = M_UDRx;
 		if (selectedSerialPort == 0)
 			store_char(c);
+#ifdef DEBUG_DUMP_TO_2ND_SERIAL
+		UDR1 = c;
+#endif //DEBUG_DUMP_TO_2ND_SERIAL
 	}
 }
 #ifndef SNMM
@@ -86,6 +89,9 @@ SIGNAL(USART1_RX_vect)
 		unsigned char c = UDR1;
 		if (selectedSerialPort == 1)
 			store_char(c);
+#ifdef DEBUG_DUMP_TO_2ND_SERIAL
+		M_UDRx = c;
+#endif //DEBUG_DUMP_TO_2ND_SERIAL
 	}
 }
 #endif

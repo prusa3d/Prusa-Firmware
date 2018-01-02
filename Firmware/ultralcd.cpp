@@ -3783,7 +3783,7 @@ static void lcd_settings_menu()
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
-
+#ifndef DEBUG_DISABLE_FSENSORCHECK
   if (FSensorStateMenu == 0) {
       if (fsensor_not_responding){
           // Filament sensor not working
@@ -3807,6 +3807,7 @@ static void lcd_settings_menu()
       }
       
   }
+#endif //DEBUG_DISABLE_FSENSORCHECK
 
   if (fans_check_enabled == true) {
 	  MENU_ITEM(function, MSG_FANS_CHECK_ON, lcd_set_fan_check);
@@ -5150,11 +5151,13 @@ static void lcd_tune_menu()
   MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
   
+#ifndef DEBUG_DISABLE_FSENSORCHECK
   if (FSensorStateMenu == 0) {
     MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
   } else {
     MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
   }
+#endif //DEBUG_DISABLE_FSENSORCHECK
 
   if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
   else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);

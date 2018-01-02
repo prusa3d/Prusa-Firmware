@@ -129,10 +129,13 @@ void Config_StoreSettings(uint16_t offset, uint8_t level)
   #endif
   #endif
 
+#ifdef LIN_ADVANCE
   if (level >= 10) {
 	  EEPROM_WRITE_VAR(i, extruder_advance_k);
 	  EEPROM_WRITE_VAR(i, advance_ed_ratio);
   }
+#endif //LIN_ADVANCE
+
   /*MYSERIAL.print("Top address used:\n");
   MYSERIAL.print(i); 
   MYSERIAL.print("\n");
@@ -365,11 +368,14 @@ void Config_RetrieveSettings(uint16_t offset, uint8_t level)
 		EEPROM_READ_VAR(i, filament_size[2]);
 #endif
 #endif
+#ifdef LIN_ADVANCE
 		if (level >= 10) {
 			EEPROM_READ_VAR(i, extruder_advance_k);
 			EEPROM_READ_VAR(i, advance_ed_ratio);
 		}
 		calculate_volumetric_multipliers();
+#endif //LIN_ADVANCE
+
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
         SERIAL_ECHO_START;
