@@ -65,7 +65,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
 
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}      // (mm/sec)   max feedrate (M203)
+#define DEFAULT_MAX_FEEDRATE          {200, 200, 12, 120}      // (mm/sec)   max feedrate (M203)
 #define DEFAULT_MAX_ACCELERATION      {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
 
 
@@ -75,8 +75,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 
 //Silent mode limits
-#define SILENT_MAX_ACCEL_X  1000 // X-axis max acceleration in silent mode in mm/s^2
-#define SILENT_MAX_ACCEL_Y  1000 // Y-axis max axxeleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_X  984 // X-axis max acceleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_Y  984 // Y-axis max axxeleration in silent mode in mm/s^2
 #define SILENT_MAX_ACCEL_X_ST (100*SILENT_MAX_ACCEL_X) // X max accel in steps/s^2
 #define SILENT_MAX_ACCEL_Y_ST (100*SILENT_MAX_ACCEL_Y) // Y max accel in steps/s^2
 #define SILENT_MAX_FEEDRATE 172  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (160mm/s=9600mm/min>2700mm/min)
@@ -124,8 +124,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
 //#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
 //#define DEBUG_BLINK_ACTIVE
-#define DEBUG_DISABLE_FANCHECK     //disable fan check (no ISR INT7, check disabled)
-#define DEBUG_DISABLE_FSENSORCHECK //disable fsensor check (no ISR INT7, check disabled)
+//#define DEBUG_DISABLE_FANCHECK     //disable fan check (no ISR INT7, check disabled)
+//#define DEBUG_DISABLE_FSENSORCHECK //disable fsensor check (no ISR INT7, check disabled)
 #define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
 #endif
 

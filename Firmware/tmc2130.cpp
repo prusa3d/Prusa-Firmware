@@ -127,7 +127,7 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 
 void tmc2130_init()
 {
-	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("NORMAL"):_n("STEALTH"));
+	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
 	tmc2130_mres[0] = tmc2130_calc_mres(TMC2130_USTEPS_XY);
 	tmc2130_mres[1] = tmc2130_calc_mres(TMC2130_USTEPS_XY);
 	tmc2130_mres[2] = tmc2130_calc_mres(TMC2130_USTEPS_Z);
