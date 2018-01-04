@@ -2223,15 +2223,18 @@ static void lcd_adjust_bed()
 
 void pid_extruder() {
 
-	lcd_implementation_clear();
-	lcd.setCursor(1, 0);
-	lcd_printPGM(MSG_SET_TEMPERATURE);
-	pid_temp += int(encoderPosition);
-	if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
-	if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
-	encoderPosition = 0;
-	lcd.setCursor(1, 2);
-	lcd.print(ftostr3(pid_temp));
+	if ((encoderPosition != 0) || (lcdDrawUpdate == 1)) {
+	    lcd_implementation_clear();
+	    lcd.setCursor(1, 0);
+	    lcd_printPGM(MSG_SET_TEMPERATURE);
+	    pid_temp += int(encoderPosition);
+	    if (pid_temp > HEATER_0_MAXTEMP) pid_temp = HEATER_0_MAXTEMP;
+	    if (pid_temp < HEATER_0_MINTEMP) pid_temp = HEATER_0_MINTEMP;
+	    encoderPosition = 0;
+	    lcd.setCursor(1, 2);
+	    lcd.print(ftostr3(pid_temp));
+	    lcdDrawUpdate = 1;
+	}
 	if (lcd_clicked()) {
 		lcd_commands_type = LCD_COMMAND_PID_EXTRUDER;
 		lcd_return_to_status();
