@@ -914,7 +914,7 @@ void setup()
 	stdout = uartout;
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
-
+	printf_P(PSTR(" "FW_version_build"\n"));
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
@@ -1020,7 +1020,7 @@ void setup()
 	setup_homepin();
 
   if (1) {
-    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+///    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
     // try to run to zero phase before powering the Z motor.    
     // Move in negative direction
     WRITE(Z_DIR_PIN,INVERT_Z_DIR);
@@ -1032,7 +1032,7 @@ void setup()
       WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
       delay(2);
     }
-    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+//    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
   }
 
 #if defined(Z_AXIS_ALWAYS_ON)
