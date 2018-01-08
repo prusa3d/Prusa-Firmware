@@ -68,7 +68,11 @@
 // When first starting the main fan, run it at full speed for the
 // given number of milliseconds.  This gets the fan spinning reliably
 // before setting a PWM value. (Does not work with software PWM for fan on Sanguinololu)
-//#define FAN_KICKSTART_TIME 100
+// RP: new implementation - long pulse at 100% when starting, short pulse  
+#define FAN_KICK_START_TIME 800  //when starting from zero (long kick time)
+#define FAN_KICK_RUN_MINPWM 25   //PWM treshold for short kicks
+#define FAN_KICK_IDLE_TIME  4000 //delay between short kicks
+#define FAN_KICK_RUN_TIME   50   //short kick time
 
 
 
@@ -224,6 +228,55 @@
 // using:
 //#define MENU_ADDAUTOSTART
 
+/**
+* Sort SD file listings in alphabetical order.
+*
+* With this option enabled, items on SD cards will be sorted
+* by name for easier navigation.
+*
+* By default...
+*
+*  - Use the slowest -but safest- method for sorting.
+*  - Folders are sorted to the top.
+*  - The sort key is statically allocated.
+*  - No added G-code (M34) support.
+*  - 40 item sorting limit. (Items after the first 40 are unsorted.)
+*
+* SD sorting uses static allocation (as set by SDSORT_LIMIT), allowing the
+* compiler to calculate the worst-case usage and throw an error if the SRAM
+* limit is exceeded.
+*
+*  - SDSORT_USES_RAM provides faster sorting via a static directory buffer.
+*  - SDSORT_USES_STACK does the same, but uses a local stack-based buffer.
+*  - SDSORT_CACHE_NAMES will retain the sorted file listing in RAM. (Expensive!)
+*  - SDSORT_DYNAMIC_RAM only uses RAM when the SD menu is visible. (Use with caution!)
+*/
+#define SDCARD_SORT_ALPHA //Alphabetical sorting of SD files menu
+
+// SD Card Sorting options
+// In current firmware Prusa Firmware version,
+// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to false.
+#ifdef SDCARD_SORT_ALPHA
+  #define SD_SORT_TIME 0
+  #define SD_SORT_ALPHA 1
+  #define SD_SORT_NONE 2
+
+  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
+  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
+  #define SDSORT_GCODE       false  // Allow turning sorting on/off with LCD and M34 g-code.
+  #define SDSORT_USES_RAM    false  // Pre-allocate a static array for faster pre-sorting.
+  #define SDSORT_USES_STACK  false  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
+  #define SDSORT_CACHE_NAMES false  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
+  #define SDSORT_DYNAMIC_RAM false  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
+
+ // #define SDSORT_QUICKSORT 
+#endif
+
+#if defined(SDCARD_SORT_ALPHA)
+  #define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
+#endif
+
+
 // Show a progress bar on the LCD when printing from SD?
 //#define LCD_PROGRESS_BAR
 
@@ -265,24 +318,45 @@
   #endif
 #endif
 
-// extruder advance constant (s2/mm3)
-//
-// advance (steps) = STEPS_PER_CUBIC_MM_E * EXTRUDER_ADVANCE_K * cubic mm per second ^ 2
-//
-// Hooke's law says:		force = k * distance
-// Bernoulli's principle says:	v ^ 2 / 2 + g . h + pressure / density = constant
-// so: v ^ 2 is proportional to number of steps we advance the extruder
-//#define ADVANCE
+/**
+ * Implementation of linear pressure control
+ *
+ * Assumption: advance = k * (delta velocity)
+ * K=0 means advance disabled.
+ * See Marlin documentation for calibration instructions.
+ */
+#define LIN_ADVANCE
 
-#ifdef ADVANCE
-  #define EXTRUDER_ADVANCE_K .006
+#ifdef LIN_ADVANCE
+  #define LIN_ADVANCE_K 0 //Try around 45 for PLA, around 25 for ABS.
 
-  #define D_FILAMENT 1.75
-  #define STEPS_MM_E 174.6
-  #define EXTRUSION_AREA (0.25 * D_FILAMENT * D_FILAMENT * 3.14159)
-  #define STEPS_PER_CUBIC_MM_E (axis_steps_per_unit[E_AXIS]/ EXTRUSION_AREA)
-
-#endif // ADVANCE
+  /**
+   * Some Slicers produce Gcode with randomly jumping extrusion widths occasionally.
+   * For example within a 0.4mm perimeter it may produce a single segment of 0.05mm width.
+   * While this is harmless for normal printing (the fluid nature of the filament will
+   * close this very, very tiny gap), it throws off the LIN_ADVANCE pressure adaption.
+   *
+   * For this case LIN_ADVANCE_E_D_RATIO can be used to set the extrusion:distance ratio
+   * to a fixed value. Note that using a fixed ratio will lead to wrong nozzle pressures
+   * if the slicer is using variable widths or layer heights within one print!
+   *
+   * This option sets the default E:D ratio at startup. Use `M900` to override this value.
+   *
+   * Example: `M900 W0.4 H0.2 D1.75`, where:
+   *   - W is the extrusion width in mm
+   *   - H is the layer height in mm
+   *   - D is the filament diameter in mm
+   *
+   * Example: `M900 R0.0458` to set the ratio directly.
+   *
+   * Set to 0 to auto-detect the ratio based on given Gcode G1 print moves.
+   *
+   * Slic3r (including Prusa Slic3r) produces Gcode compatible with the automatic mode.
+   * Cura (as of this writing) may produce Gcode incompatible with the automatic mode.
+   */
+  #define LIN_ADVANCE_E_D_RATIO 0 // The calculated ratio (or 0) according to the formula W * H / ((D / 2) ^ 2 * PI)
+                                  // Example: 0.4 * 0.2 / ((1.75 / 2) ^ 2 * PI) = 0.033260135
+#endif
 
 // Arc interpretation settings:
 #define MM_PER_ARC_SEGMENT 1

@@ -73,6 +73,7 @@
 // is the index of the location from which to read.
 #define RX_BUFFER_SIZE 128
 
+extern uint8_t selectedSerialPort;
 
 struct ring_buffer
 {
@@ -100,37 +101,97 @@ class MarlinSerial //: public Stream
     {
       return (unsigned int)(RX_BUFFER_SIZE + rx_buffer.head - rx_buffer.tail) % RX_BUFFER_SIZE;
     }
-    
-    FORCE_INLINE void write(uint8_t c)
-    {
-      while (!((M_UCSRxA) & (1 << M_UDREx)))
-        ;
 
-      M_UDRx = c;
-    }
+	void write(uint8_t c)
+	{
+#ifdef SNMM // don't do the second serial port when multimaterialing
+        while (!((M_UCSRxA) & (1 << M_UDREx)))
+				;
+
+        M_UDRx = c;
+#else
+		if (selectedSerialPort == 0) {
+			while (!((M_UCSRxA) & (1 << M_UDREx)))
+				;
+
+			M_UDRx = c;
+		}
+		else if (selectedSerialPort == 1) {
+			while (!((UCSR2A) & (1 << UDRE2)))
+				;
+
+			UDR2 = c;
+		}
+#endif
+	}
     
     
-    FORCE_INLINE void checkRx(void)
+    void checkRx(void)
     {
+        
+#ifdef SNMM
         if((M_UCSRxA & (1<<M_RXCx)) != 0) {
-            // Test for a framing error.
-            if (M_UCSRxA & (1<<M_FEx)) {
-                // Characters received with the framing errors will be ignored.
-                // The temporary variable "c" was made volatile, so the compiler does not optimize this out.
-                volatile unsigned char c = M_UDRx;
-            } else {
-                unsigned char c  =  M_UDRx;
-                int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
-                // if we should be storing the received character into the location
-                // just before the tail (meaning that the head would advance to the
-                // current location of the tail), we're about to overflow the buffer
-                // and so we don't write the character or advance the head.
-                if (i != rx_buffer.tail) {
-                    rx_buffer.buffer[rx_buffer.head] = c;
-                    rx_buffer.head = i;
+                // Test for a framing error.
+                if (M_UCSRxA & (1<<M_FEx)) {
+                    // Characters received with the framing errors will be ignored.
+                    (void)(*(char *)M_UDRx);
+                } else {
+                    unsigned char c  =  M_UDRx;
+                    int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
+                    // if we should be storing the received character into the location
+                    // just before the tail (meaning that the head would advance to the
+                    // current location of the tail), we're about to overflow the buffer
+                    // and so we don't write the character or advance the head.
+                    if (i != rx_buffer.tail) {
+                        rx_buffer.buffer[rx_buffer.head] = c;
+                        rx_buffer.head = i;
+                    }
+                    selectedSerialPort = 0;
+                }
+            }
+#else
+        if (selectedSerialPort == 0) {
+            if((M_UCSRxA & (1<<M_RXCx)) != 0) {
+                // Test for a framing error.
+                if (M_UCSRxA & (1<<M_FEx)) {
+                    // Characters received with the framing errors will be ignored.
+                    (void)(*(char *)M_UDRx);
+                } else {
+                    unsigned char c  =  M_UDRx;
+                    int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
+                    // if we should be storing the received character into the location
+                    // just before the tail (meaning that the head would advance to the
+                    // current location of the tail), we're about to overflow the buffer
+                    // and so we don't write the character or advance the head.
+                    if (i != rx_buffer.tail) {
+                        rx_buffer.buffer[rx_buffer.head] = c;
+                        rx_buffer.head = i;
+                    }
+                    selectedSerialPort = 0;
+                }
+            }
+        } else if(selectedSerialPort == 1) {
+            if((UCSR2A & (1<<RXC2)) != 0) {
+                // Test for a framing error.
+                if (UCSR2A & (1<<FE2)) {
+                    // Characters received with the framing errors will be ignored.
+                    (void)(*(char *)UDR2);
+                } else {
+                    unsigned char c  =  UDR2;
+                    int i = (unsigned int)(rx_buffer.head + 1) % RX_BUFFER_SIZE;
+                    // if we should be storing the received character into the location
+                    // just before the tail (meaning that the head would advance to the
+                    // current location of the tail), we're about to overflow the buffer
+                    // and so we don't write the character or advance the head.
+                    if (i != rx_buffer.tail) {
+                        rx_buffer.buffer[rx_buffer.head] = c;
+                        rx_buffer.head = i;
+                    }
+                    selectedSerialPort = 1;
                 }
             }
         }
+#endif
     }
     
     
