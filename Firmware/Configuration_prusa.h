@@ -291,8 +291,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif
 
 // temperature runaway
-//#define TEMP_RUNAWAY_BED_HYSTERESIS 5
-//#define TEMP_RUNAWAY_BED_TIMEOUT 360
+#define TEMP_RUNAWAY_BED_HYSTERESIS 5
+#define TEMP_RUNAWAY_BED_TIMEOUT 360
 
 #define TEMP_RUNAWAY_EXTRUDER_HYSTERESIS 15
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
