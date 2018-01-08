@@ -6207,7 +6207,7 @@ static bool lcd_selftest_fsensor() {
 static bool lcd_selftest_fan_dialog(int _fan)
 {
 	bool _result = true;
-	int _errno = 6;
+	int _errno = 7;
 
 	switch (_fan) {
 	case 0:
@@ -6238,7 +6238,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		manage_heater();			//turn off fan
 		manage_inactivity(true);	//to turn off print fan
 		if (!fan_speed[1]) {
-			_result = false; _errno = 7;
+			_result = false; _errno = 6;
 		}
 		else if (fan_speed[1] < 34) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
 			_result = false; _errno = 10;
@@ -6247,7 +6247,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		//SERIAL_ECHOPGM("Extruder fan speed: ");
 		//MYSERIAL.println(fan_speed[0]);
 		SERIAL_ECHOPGM("Print fan speed: ");
-		MYSERIAL.print(fan_speed[1]);
+		MYSERIAL.println(fan_speed[1]);
 		break;
 	}
 	if (!_result)
