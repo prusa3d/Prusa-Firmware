@@ -75,11 +75,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 
 //Silent mode limits
-#define SILENT_MAX_ACCEL_X  984 // X-axis max acceleration in silent mode in mm/s^2
-#define SILENT_MAX_ACCEL_Y  984 // Y-axis max axxeleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_X  960 // X-axis max acceleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_Y  960 // Y-axis max axxeleration in silent mode in mm/s^2
 #define SILENT_MAX_ACCEL_X_ST (100*SILENT_MAX_ACCEL_X) // X max accel in steps/s^2
 #define SILENT_MAX_ACCEL_Y_ST (100*SILENT_MAX_ACCEL_Y) // Y max accel in steps/s^2
-#define SILENT_MAX_FEEDRATE 172  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (160mm/s=9600mm/min>2700mm/min)
+#define SILENT_MAX_FEEDRATE 172  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
 
 //number of bytes from end of the file to start check
 #define END_FILE_SECTION 10000
@@ -180,7 +180,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_SG_HOMING       1     // stallguard homing
 #define TMC2130_SG_THRS_X       3     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y       4     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_Y       3     // stallguard sensitivity for Y axis
 #define TMC2130_SG_THRS_Z       3     // stallguard sensitivity for Z axis
 #define TMC2130_SG_THRS_E       3     // stallguard sensitivity for E axis
 

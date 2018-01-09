@@ -11,7 +11,7 @@
 #define FW_version "3.1.1-RC4"
 #define FW_build   143
 //#define FW_build   --BUILD-NUMBER--
-#define FW_version_build FW_version " b" STR(FW_build) "e"
+#define FW_version_build FW_version " b" STR(FW_build) "f"
 
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
@@ -500,8 +500,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // #define EXTRUDER_OFFSET_Y {0.0, 5.00}  // (in mm) for each extruder, offset of the hotend on the Y axis
 
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
-#define DEFAULT_XJERK                15       // (mm/sec)
-#define DEFAULT_YJERK                15       // (mm/sec)
+#define DEFAULT_XJERK                10       // (mm/sec)
+#define DEFAULT_YJERK                10       // (mm/sec)
 #define DEFAULT_ZJERK                 0.4     // (mm/sec)
 #define DEFAULT_EJERK                 2.5     // (mm/sec)
 
