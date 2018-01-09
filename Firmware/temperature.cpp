@@ -1316,6 +1316,9 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 		card.sdprinting = false;
 		card.closefile();
 	}
+	// Clean the input command queue 
+	// This is necessary, because in command queue there can be commands which would later set heater or bed temperature.
+	cmdqueue_reset();
 	
 	disable_heater();
 	disable_x();
