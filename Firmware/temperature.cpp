@@ -1548,6 +1548,11 @@ void adc_ready(void) //callback from adc when sampling finished
 // Timer 0 is shared with millies
 ISR(TIMER0_COMPB_vect)
 {
+	static bool _lock = false;
+	if (_lock) return;
+	_lock = true;
+	asm("sei");
+
 	if (!temp_meas_ready) adc_cycle();
 	else
 	{
@@ -1887,6 +1892,8 @@ ISR(TIMER0_COMPB_vect)
 #endif //BABYSTEPPING
 
   check_fans();
+
+	_lock = false;
 }
 
 void check_max_temp()
