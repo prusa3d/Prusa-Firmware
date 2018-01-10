@@ -2153,6 +2153,10 @@ void gcode_M701()
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
 	st_synchronize();
 
+	tone(BEEPER, 500);
+	delay_keep_alive(50);
+	noTone(BEEPER);
+
 	if (!farm_mode && loading_flag) {
 		bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FILAMENT_CLEAN, false, true);
 
@@ -2175,6 +2179,7 @@ void gcode_M701()
 	custom_message = false;
 	custom_message_type = 0;
 #endif
+
 }
 
 void process_commands()
@@ -5687,13 +5692,15 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
         plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
         
- 
-
-        
         //Wait for user to check the state
         lcd_change_fil_state = 0;
         lcd_loading_filament();
-        while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
+
+		tone(BEEPER, 500);
+		delay_keep_alive(50);
+		noTone(BEEPER);
+
+		while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
           lcd_change_fil_state = 0;
 		  KEEPALIVE_STATE(PAUSED_FOR_USER);
           lcd_alright();
