@@ -6665,7 +6665,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
       // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
       // to give it a chance to save its state.
       // This is useful for example, when the babystep value has to be written into EEPROM.
-	  if (currentMenu != NULL) {
+      if (currentMenu != NULL) {
         menuExiting = true;
         (*currentMenu)();
         menuExiting = false;
