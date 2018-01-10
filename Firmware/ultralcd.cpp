@@ -651,7 +651,7 @@ void lcd_commands()
 		float extr = count_e(0.2, width, length);
 		float extr_short_segment = count_e(0.2, width, width);
 
-		lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		if (lcd_commands_step>1) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 		if (lcd_commands_step == 0)
 		{
 			lcd_commands_step = 10;
@@ -915,7 +915,7 @@ void lcd_commands()
 		float length = 20 - width;
 		float extr = count_e(0.2, width, length);
 		float extr_short_segment = count_e(0.2, width, width);
-		lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		if(lcd_commands_step>1) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 		if (lcd_commands_step == 0)
 		{
 			lcd_commands_step = 9;
@@ -3703,7 +3703,6 @@ void lcd_wizard(int state) {
 			if (wizard_event) {
 				//reset status and live adjust z value in eeprom
 				calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
-				EEPROM_save_B(EEPROM_BABYSTEP_Z, 0);
 				lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_CLEAN_HEATBED);
 				state = 9;
 			}
@@ -6666,7 +6665,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
       // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
       // to give it a chance to save its state.
       // This is useful for example, when the babystep value has to be written into EEPROM.
-      if (currentMenu != NULL) {
+	  if (currentMenu != NULL) {
         menuExiting = true;
         (*currentMenu)();
         menuExiting = false;
