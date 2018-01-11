@@ -369,6 +369,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
+void show_fw_version_warnings();
 
 #ifdef PINDA_THERMISTOR
 float temp_compensation_pinda_thermistor_offset(float temperature_pinda);

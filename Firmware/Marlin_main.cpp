@@ -886,6 +886,17 @@ void factory_reset()
 	KEEPALIVE_STATE(IN_HANDLER);
 }
 
+void show_fw_version_warnings() {
+	if (FW_DEV_VERSION == FW_VERSION_GOLD) return;
+	switch (FW_DEV_VERSION) {
+	case(FW_VERSION_ALPHA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_ALPHA); break;
+	case(FW_VERSION_BETA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA); break;
+	case(FW_VERSION_RC): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_RC); break;
+	default: lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_UNKNOWN); break;
+	}
+	lcd_update_enable(true);
+}
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -914,7 +925,7 @@ void setup()
 	stdout = uartout;
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
-	printf_P(PSTR(" "FW_version_build"\n"));
+	printf_P(PSTR(" "FW_VERSION_FULL"\n"));
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
@@ -1122,6 +1133,9 @@ void setup()
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
+
+  show_fw_version_warnings();
+
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
@@ -2296,7 +2310,7 @@ void process_commands()
 		
 	} else if(code_seen("Fir")){
 
-      SERIAL_PROTOCOLLN(FW_version);
+      SERIAL_PROTOCOLLN(FW_VERSION);
 
     } else if(code_seen("Rev")){
 

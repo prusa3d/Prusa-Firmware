@@ -8,11 +8,16 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_version "3.1.1-RC4"
-#define FW_build   143
-//#define FW_build   --BUILD-NUMBER--
-#define FW_version_build FW_version " b" STR(FW_build) "e"
+#define FW_VERSION "3.1.1-RC4"
+#define FW_COMMIT_NR   143
+#define FW_DEV_VERSION FW_VERSION_RC
+#define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
+#define FW_VERSION_UNKNOWN 4
+#define FW_VERSION_ALPHA 3
+#define FW_VERSION_BETA 2
+#define FW_VERSION_RC 1
+#define FW_VERSION_GOLD 0
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10

@@ -1665,7 +1665,7 @@ static void lcd_support_menu()
   MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
 
   MENU_ITEM(back, PSTR("Firmware:"), lcd_main_menu);
-  MENU_ITEM(back, PSTR(" " FW_version_build), lcd_main_menu);
+  MENU_ITEM(back, PSTR(" " FW_VERSION_FULL), lcd_main_menu);
   // Ideally this block would be optimized out by the compiler.
 /*  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
   if (fw_string_len < 6) {
@@ -3133,7 +3133,7 @@ static void prusa_stat_printinfo()
 		SERIAL_ECHO(0);
 	}
 	SERIAL_ECHO("][FWR:");
-	SERIAL_ECHO(FW_version);
+	SERIAL_ECHO(FW_VERSION);
 	SERIAL_ECHO("]");
 }
 
