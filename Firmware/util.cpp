@@ -5,7 +5,7 @@
 #include "util.h"
 
 // Allocate the version string in the program memory. Otherwise the string lands either on the stack or in the global RAM.
-const char FW_VERSION_STR[] PROGMEM = FW_version;
+const char FW_VERSION_STR[] PROGMEM = FW_VERSION;
 
 const char* FW_VERSION_STR_P()
 {

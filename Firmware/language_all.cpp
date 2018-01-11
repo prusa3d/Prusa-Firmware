@@ -817,6 +817,34 @@ const char * const MSG_FSENS_NOT_RESPONDING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FSENS_NOT_RESPONDING_CZ
 };
 
+const char MSG_FW_VERSION_ALPHA_EN[] PROGMEM = "You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage.";
+const char MSG_FW_VERSION_ALPHA_CZ[] PROGMEM = "Pouzivate alpha verzi firmwaru. Jedna se o vyvojovou verzi. Pouzivani teto verze firmware neni doporuceno a muze zpusobit poskozeni tiskarny.";
+const char * const MSG_FW_VERSION_ALPHA_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FW_VERSION_ALPHA_EN,
+	MSG_FW_VERSION_ALPHA_CZ
+};
+
+const char MSG_FW_VERSION_BETA_EN[] PROGMEM = "You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage.";
+const char MSG_FW_VERSION_BETA_CZ[] PROGMEM = "Pouzivate beta verzi firmwaru. Jedna se o vyvojovou verzi. Pouzivani teto verze firmware neni doporuceno a muze zpusobit poskozeni tiskarny.";
+const char * const MSG_FW_VERSION_BETA_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FW_VERSION_BETA_EN,
+	MSG_FW_VERSION_BETA_CZ
+};
+
+const char MSG_FW_VERSION_RC_EN[] PROGMEM = "This firmware version is release candidate. Some of the features may not work properly.";
+const char MSG_FW_VERSION_RC_CZ[] PROGMEM = "Tato verze firmware je release candidate. Nektere z funkci nemusi pracovat spolehlive.";
+const char * const MSG_FW_VERSION_RC_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FW_VERSION_RC_EN,
+	MSG_FW_VERSION_RC_CZ
+};
+
+const char MSG_FW_VERSION_UNKNOWN_EN[] PROGMEM = "WARNING: Unknown firmware version";
+const char MSG_FW_VERSION_UNKNOWN_CZ[] PROGMEM = "VAROVANI: Neznama verze firmware";
+const char * const MSG_FW_VERSION_UNKNOWN_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FW_VERSION_UNKNOWN_EN,
+	MSG_FW_VERSION_UNKNOWN_CZ
+};
+
 const char MSG_HEATING_EN[] PROGMEM = "Heating";
 const char MSG_HEATING_CZ[] PROGMEM = "Zahrivani";
 const char * const MSG_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
