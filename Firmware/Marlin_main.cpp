@@ -1058,7 +1058,6 @@ void setup()
 		// EEPROM_LANG to number lower than 0x0ff.
 		// 1) Set a high power mode.
 		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
-		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS, CALIBRATION_STATUS_LIVE_ADJUST);
 		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
 
 	}
