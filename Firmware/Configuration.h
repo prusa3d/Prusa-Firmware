@@ -9,7 +9,7 @@
 
 // Firmware version
 #define FW_VERSION "3.1.1-RC4"
-#define FW_COMMIT_NR   143
+#define FW_COMMIT_NR   144
 #define FW_DEV_VERSION FW_VERSION_RC
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
