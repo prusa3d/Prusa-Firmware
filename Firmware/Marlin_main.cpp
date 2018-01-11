@@ -657,7 +657,7 @@ void crashdet_detected()
 #endif
 	lcd_update_enable(true);
 	lcd_update(2);
-	lcd_setstatuspgm(WELCOME_MSG);
+	lcd_setstatuspgm(PSTR("Crash detected!"));
 	if (yesno)
 	{
 		enquecommand_P(PSTR("G28 X"));

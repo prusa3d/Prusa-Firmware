@@ -239,7 +239,7 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 		{
 			tmc2130_sg_cnt[axis] = tmc2130_sg_err[axis];
 			tmc2130_sg_change = true;
-			if (tmc2130_sg_err[axis] >= 64)
+			if (tmc2130_sg_err[axis] >= 32)
 			{
 				tmc2130_sg_err[axis] = 0;
 				crash = true;
