@@ -6204,6 +6204,96 @@ static bool lcd_selftest_fsensor() {
 }
 #endif //PAT9125
 
+static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
+{
+
+	bool _result = check_opposite;
+	lcd_implementation_clear();
+
+	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_FAN);
+	
+	switch (_fan)
+	{
+	case 1:
+		// extruder cooling fan
+		lcd.setCursor(0, 1); 
+		if(check_opposite == true) lcd_printPGM(MSG_SELFTEST_COOLING_FAN); 
+		else lcd_printPGM(MSG_SELFTEST_EXTRUDER_FAN);
+		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
+		break;
+	case 2:
+		// object cooling fan
+		lcd.setCursor(0, 1);
+		if (check_opposite == true) lcd_printPGM(MSG_SELFTEST_EXTRUDER_FAN);
+		else lcd_printPGM(MSG_SELFTEST_COOLING_FAN);
+		SET_OUTPUT(FAN_PIN);
+		analogWrite(FAN_PIN, 255);
+		break;
+	}
+	delay(500);
+
+	lcd.setCursor(1, 2); lcd_printPGM(MSG_SELFTEST_FAN_YES);
+	lcd.setCursor(0, 3); lcd.print(">");
+	lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
+
+	int8_t enc_dif = 0;
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
+	do
+	{
+		switch (_fan)
+		{
+		case 1:
+			// extruder cooling fan
+			SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+			WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
+			break;
+		case 2:
+			// object cooling fan
+			SET_OUTPUT(FAN_PIN);
+			analogWrite(FAN_PIN, 255);
+			break;
+		}
+
+		if (abs((enc_dif - encoderDiff)) > 2) {
+			if (enc_dif > encoderDiff) {
+				_result = !check_opposite;
+				lcd.setCursor(0, 2); lcd.print(">");
+				lcd.setCursor(1, 2); lcd_printPGM(MSG_SELFTEST_FAN_YES);
+				lcd.setCursor(0, 3); lcd.print(" ");
+				lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
+			}
+
+			if (enc_dif < encoderDiff) {
+				_result = check_opposite;
+				lcd.setCursor(0, 2); lcd.print(" ");
+				lcd.setCursor(1, 2); lcd_printPGM(MSG_SELFTEST_FAN_YES);
+				lcd.setCursor(0, 3); lcd.print(">");
+				lcd.setCursor(1, 3); lcd_printPGM(MSG_SELFTEST_FAN_NO);
+			}
+			enc_dif = 0;
+			encoderDiff = 0;
+		}
+
+
+		manage_heater();
+		delay(100);
+
+	} while (!lcd_clicked());
+	KEEPALIVE_STATE(IN_HANDLER);
+	SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
+	WRITE(EXTRUDER_0_AUTO_FAN_PIN, 0);
+	SET_OUTPUT(FAN_PIN);
+	analogWrite(FAN_PIN, 0);
+
+	fanSpeed = 0;
+	manage_heater();
+
+	return _result;
+
+}
+
+
 static bool lcd_selftest_fan_dialog(int _fan)
 {
 	bool _result = true;
@@ -6238,16 +6328,25 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		manage_heater();			//turn off fan
 		manage_inactivity(true);	//to turn off print fan
 		if (!fan_speed[1]) {
-			_result = false; _errno = 6;
+			_result = false; _errno = 6; //print fan not spinning
 		}
 		else if (fan_speed[1] < 34) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
-			_result = false; _errno = 10;
+			//check fans manually
+
+			_result = lcd_selftest_manual_fan_check(2, true); //turn on print fan and check that left extruder fan is not spinning
+			if (_result) {
+				_result = lcd_selftest_manual_fan_check(2, false); //print fan is stil turned on; check that it is spinning
+				if (!_result) _errno = 6; //print fan not spinning
+			}
+			else {
+				_errno = 10; //swapped fans
+			}
 		}
 
 		//SERIAL_ECHOPGM("Extruder fan speed: ");
 		//MYSERIAL.println(fan_speed[0]);
-		SERIAL_ECHOPGM("Print fan speed: ");
-		MYSERIAL.println(fan_speed[1]);
+		//SERIAL_ECHOPGM("Print fan speed: ");
+		//MYSERIAL.println(fan_speed[1]);
 		break;
 	}
 	if (!_result)
