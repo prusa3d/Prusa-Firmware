@@ -5454,6 +5454,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         feedmultiplyBckp=feedmultiply;
         int8_t TooLowZ = 0;
 
+		float HotendTempBckp = degTargetHotend(active_extruder);
+		int fanSpeedBckp = fanSpeed;
         target[X_AXIS]=current_position[X_AXIS];
         target[Y_AXIS]=current_position[Y_AXIS];
         target[Z_AXIS]=current_position[Z_AXIS];
@@ -5525,7 +5527,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		uint8_t cnt = 0;
 		int counterBeep = 0;
 		lcd_display_message_fullscreen_P(MSG_PRESS_TO_UNLOAD);
-		while (!lcd_clicked()) {
+		unsigned long waiting_start_time = millis();
+		while (!lcd_clicked() && (millis() < waiting_start_time + M600_TIMEOUT * 1000)){
 
 			cnt++;
 			manage_heater();
@@ -6007,7 +6010,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 //		extr_unload2();
 
-		current_position[E_AXIS] -= 45;
+		/*current_position[E_AXIS] -= 45;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
         st_synchronize();
         current_position[E_AXIS] -= 15;
@@ -6015,7 +6018,36 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         st_synchronize();
         current_position[E_AXIS] -= 20;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000 / 60, active_extruder);
+		st_synchronize();*/
+
+		/*current_position[E_AXIS] -= 62;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000 / 60, active_extruder);
+		current_position[E_AXIS] -= 15;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 160 / 60, active_extruder);
+		*/
+		current_position[E_AXIS] -= 35;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000 / 60, active_extruder);
+		current_position[E_AXIS] -= 10;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 300 / 60, active_extruder);
+		current_position[E_AXIS] += 20;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+		current_position[E_AXIS] -= 20;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+		current_position[E_AXIS] += 20;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+		current_position[E_AXIS] -= 20;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+		current_position[E_AXIS] += 20;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+		current_position[E_AXIS] -= 60;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+
 		st_synchronize();
+		disable_e0();
+		disable_e1();
+		disable_e2();
+
+
 		lcd_setstatuspgm(WELCOME_MSG);
 		custom_message = false;
 		custom_message_type = 0;
