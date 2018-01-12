@@ -66,6 +66,11 @@
 #define READ(IO)  _READ(IO)
 /// Write to a pin wrapper
 #define WRITE(IO, v)  _WRITE(IO, v)
+/// Write to a pin wrapper, non critical.
+/// This macro is cheaper than WRITE(IO,v) on ports H,I,J,K,L, as _WRITE_C disables / enables interrupts
+/// and stores the old CPU flags on the stack.
+/// This macro should only be called, where it cannot be interrupted. 
+#define WRITE_NC(IO, v)  _WRITE_NC(IO, v)
 
 /// toggle a pin wrapper
 #define TOGGLE(IO)  _TOGGLE(IO)
