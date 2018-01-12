@@ -436,15 +436,15 @@ const char * const MSG_CRASH_DETECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CRASH_DETECTED_CZ
 };
 
-const char MSG_CRASH_DET_ONLY_IN_NORMAL_EN[] PROGMEM = "Crash detection can be turned on only in Normal mode.";
-const char MSG_CRASH_DET_ONLY_IN_NORMAL_CZ[] PROGMEM = "Crash detekce muze byt zapnuta pouze v Normal modu";
+const char MSG_CRASH_DET_ONLY_IN_NORMAL_EN[] PROGMEM = "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode";
+const char MSG_CRASH_DET_ONLY_IN_NORMAL_CZ[] PROGMEM = "\x1b[2JCrash detekce muze\x1b[1;0Hbyt zapnuta pouze v\x1b[2;0HNormal modu";
 const char * const MSG_CRASH_DET_ONLY_IN_NORMAL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CRASH_DET_ONLY_IN_NORMAL_EN,
 	MSG_CRASH_DET_ONLY_IN_NORMAL_CZ
 };
 
-const char MSG_CRASH_DET_STEALTH_FORCE_OFF_EN[] PROGMEM = "WARNING: Crash detection disabled in Stealth mode";
-const char MSG_CRASH_DET_STEALTH_FORCE_OFF_CZ[] PROGMEM = "POZOR: Crash detekce deaktivovana ve Stealth modu";
+const char MSG_CRASH_DET_STEALTH_FORCE_OFF_EN[] PROGMEM = "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode";
+const char MSG_CRASH_DET_STEALTH_FORCE_OFF_CZ[] PROGMEM = "\x1b[2JPOZOR:\x1b[1;0HCrash detekce\x1b[2;0Hdeaktivovana ve\x1b[3;0HStealth modu";
 const char * const MSG_CRASH_DET_STEALTH_FORCE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CRASH_DET_STEALTH_FORCE_OFF_EN,
 	MSG_CRASH_DET_STEALTH_FORCE_OFF_CZ

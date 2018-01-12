@@ -3293,9 +3293,36 @@ static void lcd_sort_type_set() {
 }
 #endif //SDCARD_SORT_ALPHA
 
+static void lcd_crash_mode_info()
+{
+	lcd_update_enable(true);
+	static uint32_t tim = 0;
+	if ((tim + 1000) < millis())
+	{
+		fputs_P(MSG_CRASH_DET_ONLY_IN_NORMAL, lcdout);
+		tim = millis();
+	}
+	if (lcd_clicked())
+	{
+		if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 18);
+		else lcd_goto_menu(lcd_settings_menu, 16, true, true);
+	}
+}
+
 static void lcd_crash_mode_info2()
 {
-	lcd_show_fullscreen_message_and_wait_P(MSG_CRASH_DET_STEALTH_FORCE_OFF);
+	lcd_update_enable(true);
+	static uint32_t tim = 0;
+	if ((tim + 1000) < millis())
+	{
+		fputs_P(MSG_CRASH_DET_STEALTH_FORCE_OFF, lcdout);
+		tim = millis();
+	}
+	if (lcd_clicked())
+	{
+		if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 16);
+		else lcd_goto_menu(lcd_settings_menu, 14, true, true);
+	}
 }
 
 static void lcd_filament_autoload_info()
@@ -3311,8 +3338,6 @@ static void lcd_fsensor_fail()
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
-  if (CrashDetectMenu && SilentModeMenu)
-	  lcd_crash_mode_info2();
 #ifdef TMC2130
   st_synchronize();
   if (tmc2130_wait_standstill_xy(1000)) {}
@@ -3325,15 +3350,9 @@ static void lcd_silent_mode_set() {
   sei();
 #endif //TMC2130
   digipot_init();
-  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 8);
-  else lcd_goto_menu(lcd_settings_menu, 7);
+  if (CrashDetectMenu && SilentModeMenu)
+	  lcd_goto_menu(lcd_crash_mode_info2);
 }
-
-static void lcd_crash_mode_info()
-{
-	lcd_show_fullscreen_message_and_wait_P(MSG_CRASH_DET_ONLY_IN_NORMAL);
-}
-
 
 static void lcd_crash_mode_set()
 {
@@ -3823,7 +3842,7 @@ static void lcd_settings_menu()
     if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
     else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
   }
-  else MENU_ITEM(function, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+  else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
 
   if (temp_cal_active == false) {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_OFF, lcd_temp_calibration_set);
@@ -5167,7 +5186,7 @@ static void lcd_tune_menu()
     if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
     else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
   }
-  else MENU_ITEM(function, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+  else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
 
   END_MENU();
 }

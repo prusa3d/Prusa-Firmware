@@ -389,8 +389,8 @@ ve
 #define(length=15, lines=1) MSG_MENU_TEMPERATURES           "Teploty"
 #define(length=15, lines=1) MSG_MENU_BELT_STATUS            "Stav remenu"
 
-#define(length=20, lines=4) MSG_CRASH_DET_ONLY_IN_NORMAL        "Crash detekce muze byt zapnuta pouze v Normal modu"
-#define(length=20, lines=4) MSG_CRASH_DET_STEALTH_FORCE_OFF     "POZOR: Crash detekce deaktivovana ve Stealth modu"
+#define(length=20, lines=4) MSG_CRASH_DET_ONLY_IN_NORMAL        "\x1b[2JCrash detekce muze\x1b[1;0Hbyt zapnuta pouze v\x1b[2;0HNormal modu"
+#define(length=20, lines=4) MSG_CRASH_DET_STEALTH_FORCE_OFF     "\x1b[2JPOZOR:\x1b[1;0HCrash detekce\x1b[2;0Hdeaktivovana ve\x1b[3;0HStealth modu"
 
 #define(length=20, lines=4) MSG_AUTOLOADING_ENABLED             "Automaticke zavadeni filamentu aktivni, stisknete tlacitko a vlozte filament..."
 #define(length=20, lines=4) MSG_AUTOLOADING_ONLY_IF_FSENS_ON    "Automaticke zavadeni filamentu dostupne pouze pri zapnutem filament senzoru..."
