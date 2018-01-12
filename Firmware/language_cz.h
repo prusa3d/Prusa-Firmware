@@ -359,7 +359,8 @@ ve
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_OFF  "F. autozav. [vyp]"
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_NA  "F. autozav. [N/A]"
 #define MSG_RECOVERING_PRINT				"Obnovovani tisku    "
-#define(length=20, lines=2) MSG_CRASH_DETECTED   "Naraz detekovan, pokracovat v tisku?"
+#define(length=20, lines=1) MSG_CRASH_DETECTED   "Detekovan naraz."
+#define(length=20, lines=2) MSG_CRASH_DETECTED2   "Naraz detekovan, pokracovat v tisku?"
 
 #define MSG_SELFTEST_AXIS					"Osa"
 #define MSG_SELFTEST_AXIS_LENGTH			"Delka osy"

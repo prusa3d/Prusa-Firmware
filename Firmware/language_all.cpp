@@ -429,11 +429,18 @@ const char * const MSG_CRASHDETECT_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CRASHDETECT_ON_CZ
 };
 
-const char MSG_CRASH_DETECTED_EN[] PROGMEM = "Crash detected. Continue printing?";
-const char MSG_CRASH_DETECTED_CZ[] PROGMEM = "Naraz detekovan, pokracovat v tisku?";
+const char MSG_CRASH_DETECTED_EN[] PROGMEM = "Crash detected.";
+const char MSG_CRASH_DETECTED_CZ[] PROGMEM = "Detekovan naraz.";
 const char * const MSG_CRASH_DETECTED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CRASH_DETECTED_EN,
 	MSG_CRASH_DETECTED_CZ
+};
+
+const char MSG_CRASH_DETECTED2_EN[] PROGMEM = "Crash detected. Continue printing?";
+const char MSG_CRASH_DETECTED2_CZ[] PROGMEM = "Naraz detekovan, pokracovat v tisku?";
+const char * const MSG_CRASH_DETECTED2_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CRASH_DETECTED2_EN,
+	MSG_CRASH_DETECTED2_CZ
 };
 
 const char MSG_CRASH_DET_ONLY_IN_NORMAL_EN[] PROGMEM = "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode";

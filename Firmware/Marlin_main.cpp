@@ -593,7 +593,7 @@ extern int8_t CrashDetectMenu;
 
 void crashdet_enable()
 {
-	MYSERIAL.println("crashdet_enable"); 
+//	MYSERIAL.println("crashdet_enable"); 
 	tmc2130_sg_stop_on_crash = true;
 	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0xFF); 
 	CrashDetectMenu = 1;
@@ -602,7 +602,7 @@ void crashdet_enable()
 
 void crashdet_disable()
 {
-	MYSERIAL.println("crashdet_disable"); 
+//	MYSERIAL.println("crashdet_disable"); 
 	tmc2130_sg_stop_on_crash = false;
 	tmc2130_sg_crash = false;
 	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
@@ -657,7 +657,7 @@ void crashdet_detected()
 #endif
 	lcd_update_enable(true);
 	lcd_update(2);
-	lcd_setstatuspgm(PSTR("Crash detected!"));
+	lcd_setstatuspgm(MSG_CRASH_DETECTED);
 	if (yesno)
 	{
 		enquecommand_P(PSTR("G28 X"));
