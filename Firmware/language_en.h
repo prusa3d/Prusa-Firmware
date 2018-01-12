@@ -367,7 +367,8 @@
 
 #define(length=20, lines=2) MSG_RECOVER_PRINT					"Blackout occurred. Recover print?"
 #define(length=20, lines=1) MSG_RECOVERING_PRINT				"Recovering print    "
-#define(length=20, lines=2) MSG_CRASH_DETECTED					"Crash detected. Continue printing?"
+#define(length=20, lines=1) MSG_CRASH_DETECTED				"Crash detected."
+#define(length=20, lines=2) MSG_CRASH_DETECTED2				"Crash detected. Continue printing?"
 
 #define(length=15, lines=1) MSG_INFO_EXTRUDER				"Extruder info"
 #define(length=15, lines=1) MSG_MENU_VOLTAGES               "Voltages"
@@ -396,8 +397,8 @@
 #define(length=17, lines=1) MSG_SECOND_SERIAL_ON				"RPi port     [on]"
 #define(length=17, lines=1) MSG_SECOND_SERIAL_OFF				"RPi port    [off]"
 
-#define(length=20, lines=4) MSG_CRASH_DET_ONLY_IN_NORMAL        "Crash detection can be turned on only in Normal mode."
-#define(length=20, lines=4) MSG_CRASH_DET_STEALTH_FORCE_OFF     "WARNING: Crash detection disabled in Stealth mode"
+#define(length=20, lines=4) MSG_CRASH_DET_ONLY_IN_NORMAL        "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
+#define(length=20, lines=4) MSG_CRASH_DET_STEALTH_FORCE_OFF     "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 
 #define(length=20, lines=4) MSG_AUTOLOADING_ENABLED              "Autoloading filament is active, just press the knob and insert filament..."
 #define(length=20, lines=4) MSG_AUTOLOADING_ONLY_IF_FSENS_ON     "Autoloading filament available only when filament sensor is turned on..."
