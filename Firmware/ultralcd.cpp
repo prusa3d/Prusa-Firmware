@@ -388,6 +388,7 @@ static void lcd_status_screen()
      
       if(lcd_status_message_level == 0){
           strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
+		lcd_finishstatus();
       }
 	if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
 	{
@@ -6420,6 +6421,7 @@ static bool check_file(const char* filename) {
 	}
 	card.printingHasFinished();
 	strncpy_P(lcd_status_message, WELCOME_MSG, LCD_WIDTH);
+	lcd_finishstatus();
 	return result;
 	
 }
@@ -6760,6 +6762,7 @@ void lcd_setstatuspgm(const char* message)
   if (lcd_status_message_level > 0)
     return;
   strncpy_P(lcd_status_message, message, LCD_WIDTH);
+  lcd_status_message[LCD_WIDTH] = 0;
   lcd_finishstatus();
 }
 void lcd_setalertstatuspgm(const char* message)
