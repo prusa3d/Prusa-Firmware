@@ -261,6 +261,9 @@ void fsensor_update()
 		else*/
 		{
 			fsensor_stop_and_save_print();
+			uint8_t ferror_count = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
+			ferror_count++;
+			eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, ferror_count);
 			enquecommand_front_P((PSTR("M600")));
 			fsensor_M600 = true;
 			fsensor_enabled = false;
