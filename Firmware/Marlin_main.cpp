@@ -7443,10 +7443,10 @@ ISR(INT7_vect) {
 
 	if (fanSpeed < MIN_PRINT_FAN_SPEED) return;
 	if ((1 << 6) & EICRB) { //interrupt was triggered by rising edge
-		t_fan_rising_edge = millis();
+		t_fan_rising_edge = millis_nc();
 	}
 	else { //interrupt was triggered by falling edge
-		if ((millis() - t_fan_rising_edge) >= FAN_PULSE_WIDTH_LIMIT) {//this pulse was from sensor and not from pwm
+		if ((millis_nc() - t_fan_rising_edge) >= FAN_PULSE_WIDTH_LIMIT) {//this pulse was from sensor and not from pwm
 			fan_edge_counter[1] += 2; //we are currently counting all edges so lets count two edges for one pulse
 		}
 	}	
