@@ -432,27 +432,27 @@ void isr() {
 
     // Set the direction bits (X_AXIS=A_AXIS and Y_AXIS=B_AXIS for COREXY)
     if((out_bits & (1<<X_AXIS))!=0){
-        WRITE(X_DIR_PIN, INVERT_X_DIR);
+        WRITE_NC(X_DIR_PIN, INVERT_X_DIR);
       count_direction[X_AXIS]=-1;
     }
     else{
-        WRITE(X_DIR_PIN, !INVERT_X_DIR);
+        WRITE_NC(X_DIR_PIN, !INVERT_X_DIR);
       count_direction[X_AXIS]=1;
     }
     if((out_bits & (1<<Y_AXIS))!=0){
-      WRITE(Y_DIR_PIN, INVERT_Y_DIR);
+      WRITE_NC(Y_DIR_PIN, INVERT_Y_DIR);
 	  
 	  #ifdef Y_DUAL_STEPPER_DRIVERS
-	    WRITE(Y2_DIR_PIN, !(INVERT_Y_DIR == INVERT_Y2_VS_Y_DIR));
+	    WRITE_NC(Y2_DIR_PIN, !(INVERT_Y_DIR == INVERT_Y2_VS_Y_DIR));
 	  #endif
 	  
       count_direction[Y_AXIS]=-1;
     }
     else{
-      WRITE(Y_DIR_PIN, !INVERT_Y_DIR);
+      WRITE_NC(Y_DIR_PIN, !INVERT_Y_DIR);
 	  
 	  #ifdef Y_DUAL_STEPPER_DRIVERS
-	    WRITE(Y2_DIR_PIN, (INVERT_Y_DIR == INVERT_Y2_VS_Y_DIR));
+	    WRITE_NC(Y2_DIR_PIN, (INVERT_Y_DIR == INVERT_Y2_VS_Y_DIR));
 	  #endif
 	  
       count_direction[Y_AXIS]=1;
@@ -559,10 +559,10 @@ void isr() {
     }
 
     if ((out_bits & (1<<Z_AXIS)) != 0) {   // -direction
-      WRITE(Z_DIR_PIN,INVERT_Z_DIR);
+      WRITE_NC(Z_DIR_PIN,INVERT_Z_DIR);
       
       #ifdef Z_DUAL_STEPPER_DRIVERS
-        WRITE(Z2_DIR_PIN,INVERT_Z_DIR);
+        WRITE_NC(Z2_DIR_PIN,INVERT_Z_DIR);
       #endif
 
       count_direction[Z_AXIS]=-1;
@@ -585,10 +585,10 @@ void isr() {
       }
     }
     else { // +direction
-      WRITE(Z_DIR_PIN,!INVERT_Z_DIR);
+      WRITE_NC(Z_DIR_PIN,!INVERT_Z_DIR);
 
       #ifdef Z_DUAL_STEPPER_DRIVERS
-        WRITE(Z2_DIR_PIN,!INVERT_Z_DIR);
+        WRITE_NC(Z2_DIR_PIN,!INVERT_Z_DIR);
       #endif
 
       count_direction[Z_AXIS]=1;
@@ -681,57 +681,57 @@ void isr() {
         
         counter_x += current_block->steps_x;
         if (counter_x > 0) {
-          WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
+          WRITE_NC(X_STEP_PIN, !INVERT_X_STEP_PIN);
 		  LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
-    WRITE(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
+    WRITE_NC(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
           counter_x -= current_block->step_event_count;
           count_position[X_AXIS]+=count_direction[X_AXIS];   
-          WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
+          WRITE_NC(X_STEP_PIN, INVERT_X_STEP_PIN);
 #ifdef DEBUG_XSTEP_DUP_PIN
-    WRITE(DEBUG_XSTEP_DUP_PIN,INVERT_X_STEP_PIN);
+    WRITE_NC(DEBUG_XSTEP_DUP_PIN,INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
         }
 
         counter_y += current_block->steps_y;
         if (counter_y > 0) {
-          WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
+          WRITE_NC(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
 		  LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
-    WRITE(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
+    WRITE_NC(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
 		  
 		  #ifdef Y_DUAL_STEPPER_DRIVERS
-			WRITE(Y2_STEP_PIN, !INVERT_Y_STEP_PIN);
+			WRITE_NC(Y2_STEP_PIN, !INVERT_Y_STEP_PIN);
 		  #endif
 		  
           counter_y -= current_block->step_event_count;
           count_position[Y_AXIS]+=count_direction[Y_AXIS];
-          WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
+          WRITE_NC(Y_STEP_PIN, INVERT_Y_STEP_PIN);
 #ifdef DEBUG_YSTEP_DUP_PIN
-    WRITE(DEBUG_YSTEP_DUP_PIN,INVERT_Y_STEP_PIN);
+    WRITE_NC(DEBUG_YSTEP_DUP_PIN,INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
 		  
 		  #ifdef Y_DUAL_STEPPER_DRIVERS
-			WRITE(Y2_STEP_PIN, INVERT_Y_STEP_PIN);
+			WRITE_NC(Y2_STEP_PIN, INVERT_Y_STEP_PIN);
 		  #endif
         }
 
       counter_z += current_block->steps_z;
       if (counter_z > 0) {
-        WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
+        WRITE_NC(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
         LastStepMask |= Z_AXIS_MASK;
         #ifdef Z_DUAL_STEPPER_DRIVERS
-          WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
+          WRITE_NC(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
         #endif
 
         counter_z -= current_block->step_event_count;
         count_position[Z_AXIS]+=count_direction[Z_AXIS];
-        WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
+        WRITE_NC(Z_STEP_PIN, INVERT_Z_STEP_PIN);
         
         #ifdef Z_DUAL_STEPPER_DRIVERS
-          WRITE(Z2_STEP_PIN, INVERT_Z_STEP_PIN);
+          WRITE_NC(Z2_STEP_PIN, INVERT_Z_STEP_PIN);
         #endif
       }
 
@@ -853,7 +853,7 @@ void isr() {
   // interrupt repeats at a 100us rate (10kHz).
   if (OCR1A < TCNT1) {
     stepper_timer_overflow_state = true;
-    WRITE(BEEPER, HIGH);
+    WRITE_NC(BEEPER, HIGH);
   }
 #endif
 }
@@ -871,12 +871,12 @@ void advance_isr() {
       (e_steps < 0)
 #endif
       ? INVERT_E0_DIR : !INVERT_E0_DIR; //If we have SNMM, reverse every second extruder.
-      WRITE(E0_DIR_PIN, dir);
+      WRITE_NC(E0_DIR_PIN, dir);
       
       for (uint8_t i = step_loops; e_steps && i--;) {
-          WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
+          WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
           e_steps < 0 ? ++e_steps : --e_steps;
-          WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
+          WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #ifdef PAT9125
 		  fsensor_counter++;
 #endif //PAT9125
