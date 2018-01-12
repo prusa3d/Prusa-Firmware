@@ -249,7 +249,7 @@ void refresh_cmd_timeout(void);
 extern volatile unsigned long timer0_millis;
 // An unsynchronized equivalent to a standard Arduino millis() function.
 // To be used inside an interrupt routine.
-FORCE_INLINE unsigned long timer_nc() { return timer0_millis; }
+FORCE_INLINE unsigned long millis_nc() { return timer0_millis; }
 
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val);
