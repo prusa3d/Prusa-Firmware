@@ -126,3 +126,27 @@
 
 #endif //NEWPANEL
 #endif //ULTRA_LCD
+
+// Support for an 8 bit logic analyzer, for example the Saleae.
+// Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.
+#define LOGIC_ANALYZER_CH0		X_MIN_PIN		// PB6
+#define LOGIC_ANALYZER_CH1		Y_MIN_PIN		// PB5
+#define LOGIC_ANALYZER_CH2		53				// PB0 (PROC_nCS)
+// Channels 3-7 are slow, they could generate
+// 0.889Mhz waveform with a software loop and interrupt locking,
+// 1.333MHz waveform without interrupt locking.
+#define LOGIC_ANALYZER_CH3 		73				// PJ3
+// PK0 has no Arduino digital pin assigned, so we set it directly.
+#define WRITE_LOGIC_ANALYZER_CH4(value) if (value) PORTK |= (1 << 0); else PORTK &= ~(1 << 0) // PK0
+#define LOGIC_ANALYZER_CH5		16				// PH0 (RXD2)
+#define LOGIC_ANALYZER_CH6		17				// PH1 (TXD2)
+#define LOGIC_ANALYZER_CH7 		76				// PJ5
+
+#define LOGIC_ANALYZER_CH0_ENABLE SET_OUTPUT(LOGIC_ANALYZER_CH0)
+#define LOGIC_ANALYZER_CH1_ENABLE SET_OUTPUT(LOGIC_ANALYZER_CH1)
+#define LOGIC_ANALYZER_CH2_ENABLE SET_OUTPUT(LOGIC_ANALYZER_CH2)
+#define LOGIC_ANALYZER_CH3_ENABLE SET_OUTPUT(LOGIC_ANALYZER_CH3)
+#define LOGIC_ANALYZER_CH4_ENABLE do { DDRK |= 1 << 0; } while (0)
+#define LOGIC_ANALYZER_CH5_ENABLE do { cbi(UCSR2B, TXEN2); cbi(UCSR2B, RXEN2); cbi(UCSR2B, RXCIE2); SET_OUTPUT(LOGIC_ANALYZER_CH5); } while (0)
+#define LOGIC_ANALYZER_CH6_ENABLE do { cbi(UCSR2B, TXEN2); cbi(UCSR2B, RXEN2); cbi(UCSR2B, RXCIE2); SET_OUTPUT(LOGIC_ANALYZER_CH6); } while (0)
+#define LOGIC_ANALYZER_CH7_ENABLE SET_OUTPUT(LOGIC_ANALYZER_CH7)

@@ -5109,6 +5109,19 @@ void stack_error() {
 	 while (1) delay_keep_alive(1000);
 }
 
+#ifdef DEBUG_STEPPER_TIMER_MISSED
+bool stepper_timer_overflow_state = false;
+void stepper_timer_overflow() {
+  SET_OUTPUT(BEEPER);
+  WRITE(BEEPER, HIGH);
+  delay(1000);
+  WRITE(BEEPER, LOW);
+  lcd_display_message_fullscreen_P(MSG_STEPPER_TIMER_OVERFLOW_ERROR);
+  //err_triggered = 1;
+   while (1) delay_keep_alive(1000);
+}
+#endif /* DEBUG_STEPPER_TIMER_MISSED */
+
 #ifdef SDSUPPORT
 static void lcd_autostart_sd()
 {
@@ -6779,6 +6792,9 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 	  lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
 	  }
 	if (!SdFatUtil::test_stack_integrity()) stack_error();
+#ifdef DEBUG_STEPPER_TIMER_MISSED
+  if (stepper_timer_overflow_state) stepper_timer_overflow();
+#endif /* DEBUG_STEPPER_TIMER_MISSED */
 	lcd_ping(); //check that we have received ping command if we are in farm mode
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL) lcd_commands();
 }

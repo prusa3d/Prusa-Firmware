@@ -126,6 +126,10 @@ uint8_t LastStepMask = 0;
   #define _NEXT_ISR(T) OCR1A = T
 #endif
 
+#ifdef DEBUG_STEPPER_TIMER_MISSED
+extern bool stepper_timer_overflow_state;
+#endif /* DEBUG_STEPPER_TIMER_MISSED */
+
 //===========================================================================
 //=============================functions         ============================
 //===========================================================================
@@ -842,6 +846,16 @@ void isr() {
 #ifdef TMC2130
 	tmc2130_st_isr(LastStepMask);
 #endif //TMC2130
+#ifdef DEBUG_STEPPER_TIMER_MISSED
+  // Verify whether the next planned timer interrupt has not been missed already.  
+  // This debugging test takes < 1.125us
+  // This skews the profiling slightly as the fastest stepper timer
+  // interrupt repeats at a 100us rate (10kHz).
+  if (OCR1A < TCNT1) {
+    stepper_timer_overflow_state = true;
+    WRITE(BEEPER, HIGH);
+  }
+#endif
 }
 
 #ifdef LIN_ADVANCE

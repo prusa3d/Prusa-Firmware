@@ -261,6 +261,7 @@
 #define(length=20, lines=4) MSG_FIL_ADJUSTING								"Adjusting filaments. Please wait."
 #define(length=20,lines=8) MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ			"Filaments are now adjusted. Please clean the nozzle for calibration. Click when done."
 #define(length=20, lines=4) MSG_STACK_ERROR						"Error - static memory has been overwritten"
+#define(length=20, lines=4) MSG_STEPPER_TIMER_OVERFLOW_ERROR	"Error - stepper timer overflow"
 #define(length=20, lines=1) MSG_CALIBRATE_E						"Calibrate E"
 //#define(length=20, lines=1) MSG_RESET_CALIBRATE_E				"Reset E Cal."
 #define(length=20, lines=8) MSG_E_CAL_KNOB						"Rotate knob until mark reaches extruder body. Click when done."
