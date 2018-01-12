@@ -242,6 +242,15 @@ void prepare_arc_move(char isclockwise);
 void clamp_to_software_endstops(float target[3]);
 void refresh_cmd_timeout(void);
 
+// Timer counter, incremented by the 1ms Arduino timer.
+// The standard Arduino timer() function returns this value atomically
+// by disabling / enabling interrupts. This is costly, if the interrupts are known
+// to be disabled.
+extern volatile unsigned long timer0_millis;
+// An unsynchronized equivalent to a standard Arduino millis() function.
+// To be used inside an interrupt routine.
+FORCE_INLINE unsigned long timer_nc() { return timer0_millis; }
+
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val);
 #endif
