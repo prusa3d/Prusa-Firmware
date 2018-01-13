@@ -204,6 +204,8 @@ static void lcd_farm_no();
 static void lcd_menu_extruder_info();
 static void lcd_menu_fails_stats();
 
+void lcd_finishstatus();
+
 #ifdef DOGLCD
 static void lcd_set_contrast();
 #endif
