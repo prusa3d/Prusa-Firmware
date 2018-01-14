@@ -634,34 +634,20 @@ void isr() {
 	if ((out_bits & (1 << E_AXIS)) != 0)
 	{	// -direction
 		//AKU
+    WRITE(E0_DIR_PIN, 
 #ifdef SNMM
-		if (snmm_extruder == 0 || snmm_extruder == 2)
-		{
-			NORM_E_DIR();
-		}
-		else
-		{
-			REV_E_DIR();
-		}
-#else
-		REV_E_DIR();
+      (snmm_extruder == 0 || snmm_extruder == 2) ? !INVERT_E0_DIR :
 #endif // SNMM
+      INVERT_E0_DIR);
 		count_direction[E_AXIS] = -1;
 	}
 	else
 	{	// +direction
+		WRITE(E0_DIR_PIN,
 #ifdef SNMM
-		if (snmm_extruder == 0 || snmm_extruder == 2)
-		{
-			REV_E_DIR();
-		}
-		else
-		{
-			NORM_E_DIR();
-		}
-#else
-		NORM_E_DIR();
+      (snmm_extruder == 0 || snmm_extruder == 2) ? INVERT_E0_DIR :
 #endif // SNMM
+      !INVERT_E0_DIR);
 		count_direction[E_AXIS] = 1;
 	}
 
@@ -738,10 +724,10 @@ void isr() {
 #ifndef LIN_ADVANCE
         counter_e += current_block->steps_e;
         if (counter_e > 0) {
-          WRITE_E_STEP(!INVERT_E_STEP_PIN);
+          WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
           counter_e -= current_block->step_event_count;
           count_position[E_AXIS]+=count_direction[E_AXIS];
-          WRITE_E_STEP(INVERT_E_STEP_PIN);
+          WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #ifdef PAT9125
           fsensor_counter++;
 #endif //PAT9125
