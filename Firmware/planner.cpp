@@ -839,9 +839,7 @@ block->steps_y.wide = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-p
   if(block->steps_x.wide != 0) enable_x();
   if(block->steps_y.wide != 0) enable_y();
   #endif
-#ifndef Z_LATE_ENABLE
   if(block->steps_z.wide != 0) enable_z();
-#endif
 
   // Enable extruder(s)
   if(block->steps_e.wide != 0)
@@ -1233,6 +1231,9 @@ Having the real displacement of the head, we can calculate the total movement le
   // Precalculate the division, so when all the trapezoids in the planner queue get recalculated, the division is not repeated.
   block->speed_factor = block->nominal_rate / block->nominal_speed;
   calculate_trapezoid_for_block(block, block->entry_speed, safe_speed);
+
+  if (block->step_event_count.wide <= 32767)
+    block->flag |= BLOCK_FLAG_DDA_LOWRES;
 
   // Move the buffer head. From now the block may be picked up by the stepper interrupt controller.
   block_buffer_head = next_buffer_head;

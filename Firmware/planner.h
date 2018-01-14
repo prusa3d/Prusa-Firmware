@@ -50,7 +50,7 @@ union dda_isteps_t
 {
   int32_t     wide;
   struct {
-    uint16_t  lo;
+    int16_t   lo;
     int16_t   hi;
   };
 };
@@ -94,7 +94,7 @@ typedef struct {
   float acceleration;
 
   // Bit flags defined by the BlockFlag enum.
-  bool flag;
+  uint8_t flag;
 
   // Settings for the trapezoid generator (runs inside an interrupt handler).
   // Changing the following values in the planner needs to be synchronized with the interrupt handler by disabling the interrupts.
