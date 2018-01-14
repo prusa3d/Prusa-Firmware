@@ -227,8 +227,8 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
   // Is the Plateau of Nominal Rate smaller than nothing? That means no cruising, and we will
   // have to use intersection_distance() to calculate when to abort acceleration and start braking
   // in order to reach the final_rate exactly at the end of this block.
-  if (accel_decel_steps < block->step_event_count) {
-    plateau_steps = block->step_event_count - accel_decel_steps;
+  if (accel_decel_steps < block->step_event_count.wide) {
+    plateau_steps = block->step_event_count.wide - accel_decel_steps;
   } else {
     uint32_t acceleration_x4  = acceleration << 2;
     // Avoid negative numbers
@@ -240,26 +240,26 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
         accelerate_steps = (block->step_event_count >> 1) + (final_rate_sqr - initial_rate_sqr + acceleration_x4 - 1 + (block->step_event_count & 1) * acceleration_x2) / acceleration_x4;
 #else
         accelerate_steps = final_rate_sqr - initial_rate_sqr + acceleration_x4 - 1;
-        if (block->step_event_count & 1)
+        if (block->step_event_count.wide & 1)
             accelerate_steps += acceleration_x2;
         accelerate_steps /= acceleration_x4;
-        accelerate_steps += (block->step_event_count >> 1);
+        accelerate_steps += (block->step_event_count.wide >> 1);
 #endif
-        if (accelerate_steps > block->step_event_count)
-            accelerate_steps = block->step_event_count;
+        if (accelerate_steps > block->step_event_count.wide)
+            accelerate_steps = block->step_event_count.wide;
     } else {
 #if 0
         decelerate_steps = (block->step_event_count >> 1) + (initial_rate_sqr - final_rate_sqr + (block->step_event_count & 1) * acceleration_x2) / acceleration_x4;
 #else
         decelerate_steps = initial_rate_sqr - final_rate_sqr;
-        if (block->step_event_count & 1)
+        if (block->step_event_count.wide & 1)
             decelerate_steps += acceleration_x2;
         decelerate_steps /= acceleration_x4;
-        decelerate_steps += (block->step_event_count >> 1);
+        decelerate_steps += (block->step_event_count.wide >> 1);
 #endif
-        if (decelerate_steps > block->step_event_count)
-            decelerate_steps = block->step_event_count;
-        accelerate_steps = block->step_event_count - decelerate_steps;
+        if (decelerate_steps > block->step_event_count.wide)
+            decelerate_steps = block->step_event_count.wide;
+        accelerate_steps = block->step_event_count.wide - decelerate_steps;
     }
   }
 
@@ -449,10 +449,10 @@ void getHighESpeed()
   uint8_t block_index = block_buffer_tail;
 
   while(block_index != block_buffer_head) {
-    if((block_buffer[block_index].steps_x != 0) ||
-      (block_buffer[block_index].steps_y != 0) ||
-      (block_buffer[block_index].steps_z != 0)) {
-      float se=(float(block_buffer[block_index].steps_e)/float(block_buffer[block_index].step_event_count))*block_buffer[block_index].nominal_speed;
+    if((block_buffer[block_index].steps_x.wide != 0) ||
+      (block_buffer[block_index].steps_y.wide != 0) ||
+      (block_buffer[block_index].steps_z.wide != 0)) {
+      float se=(float(block_buffer[block_index].steps_e.wide)/float(block_buffer[block_index].step_event_count.wide))*block_buffer[block_index].nominal_speed;
       //se; mm/sec;
       if(se>high)
       {
@@ -493,10 +493,10 @@ void check_axes_activity()
     while(block_index != block_buffer_head)
     {
       block = &block_buffer[block_index];
-      if(block->steps_x != 0) x_active++;
-      if(block->steps_y != 0) y_active++;
-      if(block->steps_z != 0) z_active++;
-      if(block->steps_e != 0) e_active++;
+      if(block->steps_x.wide != 0) x_active++;
+      if(block->steps_y.wide != 0) y_active++;
+      if(block->steps_z.wide != 0) z_active++;
+      if(block->steps_e.wide != 0) e_active++;
       block_index = (block_index+1) & (BLOCK_BUFFER_SIZE - 1);
     }
   }
@@ -769,26 +769,24 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Number of steps for each axis
 #ifndef COREXY
 // default non-h-bot planning
-block->steps_x = labs(target[X_AXIS]-position[X_AXIS]);
-block->steps_y = labs(target[Y_AXIS]-position[Y_AXIS]);
+block->steps_x.wide = labs(target[X_AXIS]-position[X_AXIS]);
+block->steps_y.wide = labs(target[Y_AXIS]-position[Y_AXIS]);
 #else
 // corexy planning
 // these equations follow the form of the dA and dB equations on http://www.corexy.com/theory.html
-block->steps_x = labs((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]));
-block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]));
+block->steps_x.wide = labs((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]));
+block->steps_y.wide = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]));
 #endif
-  block->steps_z = labs(target[Z_AXIS]-position[Z_AXIS]);
-  block->steps_e = labs(target[E_AXIS]-position[E_AXIS]);
+  block->steps_z.wide = labs(target[Z_AXIS]-position[Z_AXIS]);
+  block->steps_e.wide = labs(target[E_AXIS]-position[E_AXIS]);
   if (volumetric_multiplier[active_extruder] != 1.f)
-    block->steps_e *= volumetric_multiplier[active_extruder];
-  if (extrudemultiply != 100) {
-    block->steps_e *= extrudemultiply;
-    block->steps_e /= 100;
-  }
-  block->step_event_count = max(block->steps_x, max(block->steps_y, max(block->steps_z, block->steps_e)));
+    block->steps_e.wide *= volumetric_multiplier[active_extruder];
+  if (extrudemultiply != 100)
+    block->steps_e.wide *= extrudemultiply * 0.01;
+  block->step_event_count.wide = max(block->steps_x.wide, max(block->steps_y.wide, max(block->steps_z.wide, block->steps_e.wide)));
 
   // Bail if this is a zero-length block
-  if (block->step_event_count <= dropsegments)
+  if (block->step_event_count.wide <= dropsegments)
   { 
 #ifdef PLANNER_DIAGNOSTICS
     planner_update_queue_min_counter();
@@ -832,21 +830,21 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
 
   //enable active axes
   #ifdef COREXY
-  if((block->steps_x != 0) || (block->steps_y != 0))
+  if((block->steps_x.wide != 0) || (block->steps_y.wide != 0))
   {
     enable_x();
     enable_y();
   }
   #else
-  if(block->steps_x != 0) enable_x();
-  if(block->steps_y != 0) enable_y();
+  if(block->steps_x.wide != 0) enable_x();
+  if(block->steps_y.wide != 0) enable_y();
   #endif
 #ifndef Z_LATE_ENABLE
-  if(block->steps_z != 0) enable_z();
+  if(block->steps_z.wide != 0) enable_z();
 #endif
 
   // Enable extruder(s)
-  if(block->steps_e != 0)
+  if(block->steps_e.wide != 0)
   {
     if (DISABLE_INACTIVE_EXTRUDER) //enable only selected extruder
     {
@@ -888,7 +886,7 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
     }
   }
 
-  if (block->steps_e == 0)
+  if (block->steps_e.wide == 0)
   {
     if(feed_rate<mintravelfeedrate) feed_rate=mintravelfeedrate;
   }
@@ -917,7 +915,7 @@ Having the real displacement of the head, we can calculate the total movement le
   #endif
   delta_mm[Z_AXIS] = (target[Z_AXIS]-position[Z_AXIS])/axis_steps_per_unit[Z_AXIS];
   delta_mm[E_AXIS] = ((target[E_AXIS]-position[E_AXIS])/axis_steps_per_unit[E_AXIS])*volumetric_multiplier[active_extruder]*extrudemultiply/100.0;
-  if ( block->steps_x <=dropsegments && block->steps_y <=dropsegments && block->steps_z <=dropsegments )
+  if ( block->steps_x.wide <=dropsegments && block->steps_y.wide <=dropsegments && block->steps_z.wide <=dropsegments )
   {
     block->millimeters = fabs(delta_mm[E_AXIS]);
   } 
@@ -950,7 +948,7 @@ Having the real displacement of the head, we can calculate the total movement le
 #endif // SLOWDOWN
 
   block->nominal_speed = block->millimeters * inverse_second; // (mm/sec) Always > 0
-  block->nominal_rate = ceil(block->step_event_count * inverse_second); // (step/sec) Always > 0
+  block->nominal_rate = ceil(block->step_event_count.wide * inverse_second); // (step/sec) Always > 0
 
 #ifdef FILAMENT_SENSOR
   //FMM update ring buffer used for delay with filament measurements
@@ -1027,8 +1025,8 @@ Having the real displacement of the head, we can calculate the total movement le
   // Compute and limit the acceleration rate for the trapezoid generator.  
   // block->step_event_count ... event count of the fastest axis
   // block->millimeters ... Euclidian length of the XYZ movement or the E length, if no XYZ movement.
-  float steps_per_mm = block->step_event_count/block->millimeters;
-  if(block->steps_x == 0 && block->steps_y == 0 && block->steps_z == 0)
+  float steps_per_mm = block->step_event_count.wide/block->millimeters;
+  if(block->steps_x.wide == 0 && block->steps_y.wide == 0 && block->steps_z.wide == 0)
   {
     block->acceleration_st = ceil(retract_acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
   }
@@ -1038,29 +1036,29 @@ Having the real displacement of the head, we can calculate the total movement le
 #ifdef TMC2130
 	if (tmc2130_mode == TMC2130_MODE_SILENT)
 	{
-		if(((float)block->acceleration_st * (float)block->steps_x / (float)block->step_event_count) > SILENT_MAX_ACCEL_X_ST)
+		if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > SILENT_MAX_ACCEL_X_ST)
 		  block->acceleration_st = SILENT_MAX_ACCEL_X_ST;
-		if(((float)block->acceleration_st * (float)block->steps_y / (float)block->step_event_count) > SILENT_MAX_ACCEL_Y_ST)
+		if(((float)block->acceleration_st * (float)block->steps_y.wide / (float)block->step_event_count.wide) > SILENT_MAX_ACCEL_Y_ST)
 		  block->acceleration_st = SILENT_MAX_ACCEL_Y_ST;
 	}
-	if(((float)block->acceleration_st * (float)block->steps_x / (float)block->step_event_count) > axis_steps_per_sqr_second[X_AXIS])
+	if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
 	  block->acceleration_st = axis_steps_per_sqr_second[X_AXIS];
-	if(((float)block->acceleration_st * (float)block->steps_y / (float)block->step_event_count) > axis_steps_per_sqr_second[Y_AXIS])
+	if(((float)block->acceleration_st * (float)block->steps_y.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Y_AXIS])
 	  block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS];
-	if(((float)block->acceleration_st * (float)block->steps_e / (float)block->step_event_count) > axis_steps_per_sqr_second[E_AXIS])
+	if(((float)block->acceleration_st * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
 	  block->acceleration_st = axis_steps_per_sqr_second[E_AXIS];
-	if(((float)block->acceleration_st * (float)block->steps_z / (float)block->step_event_count ) > axis_steps_per_sqr_second[Z_AXIS])
+	if(((float)block->acceleration_st * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > axis_steps_per_sqr_second[Z_AXIS])
 	  block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
 #else //TMC2130
     // Limit acceleration per axis
     //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
-    if(((float)block->acceleration_st * (float)block->steps_x / (float)block->step_event_count) > axis_steps_per_sqr_second[X_AXIS])
+    if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
       block->acceleration_st = axis_steps_per_sqr_second[X_AXIS];
-    if(((float)block->acceleration_st * (float)block->steps_y / (float)block->step_event_count) > axis_steps_per_sqr_second[Y_AXIS])
+    if(((float)block->acceleration_st * (float)block->steps_y.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Y_AXIS])
       block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS];
-    if(((float)block->acceleration_st * (float)block->steps_e / (float)block->step_event_count) > axis_steps_per_sqr_second[E_AXIS])
+    if(((float)block->acceleration_st * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
       block->acceleration_st = axis_steps_per_sqr_second[E_AXIS];
-    if(((float)block->acceleration_st * (float)block->steps_z / (float)block->step_event_count ) > axis_steps_per_sqr_second[Z_AXIS])
+    if(((float)block->acceleration_st * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > axis_steps_per_sqr_second[Z_AXIS])
       block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
 #endif //TMC2130
   }
@@ -1218,10 +1216,10 @@ Having the real displacement of the head, we can calculate the total movement le
     //                                                   The math is good, but we must avoid retract moves with advance!
     // de_float > 0.0                                  : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
     //
-    block->use_advance_lead =  block->steps_e
-                           && (block->steps_x || block->steps_y)
+    block->use_advance_lead =  block->steps_e.wide
+                           && (block->steps_x.wide || block->steps_y.wide)
                            && extruder_advance_k
-                           && (uint32_t)block->steps_e != block->step_event_count
+                           && (uint32_t)block->steps_e.wide != block->step_event_count.wide
                            && de_float > 0.0;
     if (block->use_advance_lead)
         block->abs_adv_steps_multiplier8 = lround(

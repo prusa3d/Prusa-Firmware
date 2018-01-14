@@ -62,11 +62,12 @@ bool z_max_endstop = false;
 
 // Variables used by The Stepper Driver Interrupt
 static unsigned char out_bits;        // The next stepping-bits to be output
-static int32_t counter_x,       // Counter variables for the bresenham line tracer
+static dda_isteps_t
+               counter_x,       // Counter variables for the bresenham line tracer
                counter_y,
                counter_z,
                counter_e;
-volatile uint32_t step_events_completed; // The number of step events executed in the current block
+volatile dda_usteps_t step_events_completed; // The number of step events executed in the current block
 static int32_t  acceleration_time, deceleration_time;
 //static unsigned long accelerate_until, decelerate_after, acceleration_rate, initial_rate, final_rate, nominal_rate;
 static uint16_t acc_step_rate; // needed for deccelaration start point
@@ -404,14 +405,14 @@ void isr() {
 	  // The busy flag is set by the plan_get_current_block() call.
       // current_block->busy = true;
       trapezoid_generator_reset();
-      counter_x = -(current_block->step_event_count >> 1);
-      counter_y = counter_x;
-      counter_z = counter_x;
-      counter_e = counter_x;
-      step_events_completed = 0;
+      counter_x.wide = -(current_block->step_event_count.wide >> 1);
+      counter_y.wide = counter_x.wide;
+      counter_z.wide = counter_x.wide;
+      counter_e.wide = counter_x.wide;
+      step_events_completed.wide = 0;
 
       #ifdef Z_LATE_ENABLE
-        if(current_block->steps_z > 0) {
+        if(current_block->steps_z.wide > 0) {
           enable_z();
           _NEXT_ISR(2000); //1ms wait
           return;
@@ -476,10 +477,10 @@ void isr() {
             // Normal homing
             x_min_endstop = (READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
             #endif
-            if(x_min_endstop && old_x_min_endstop && (current_block->steps_x > 0)) {
+            if(x_min_endstop && old_x_min_endstop && (current_block->steps_x.wide > 0)) {
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
-              step_events_completed = current_block->step_event_count;
+              step_events_completed.wide = current_block->step_event_count.wide;
             }
             old_x_min_endstop = x_min_endstop;
           #endif
@@ -499,10 +500,10 @@ void isr() {
             // Normal homing
             x_max_endstop = (READ(X_MAX_PIN) != X_MAX_ENDSTOP_INVERTING);
             #endif
-            if(x_max_endstop && old_x_max_endstop && (current_block->steps_x > 0)){
+            if(x_max_endstop && old_x_max_endstop && (current_block->steps_x.wide > 0)){
               endstops_trigsteps[X_AXIS] = count_position[X_AXIS];
               endstop_x_hit=true;
-              step_events_completed = current_block->step_event_count;
+              step_events_completed.wide = current_block->step_event_count.wide;
             }
             old_x_max_endstop = x_max_endstop;
           #endif
@@ -527,10 +528,10 @@ void isr() {
         // Normal homing
         y_min_endstop = (READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
         #endif
-          if(y_min_endstop && old_y_min_endstop && (current_block->steps_y > 0)) {
+          if(y_min_endstop && old_y_min_endstop && (current_block->steps_y.wide > 0)) {
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
-            step_events_completed = current_block->step_event_count;
+            step_events_completed.wide = current_block->step_event_count.wide;
           }
           old_y_min_endstop = y_min_endstop;
         #endif
@@ -548,10 +549,10 @@ void isr() {
         // Normal homing
         y_max_endstop = (READ(Y_MAX_PIN) != Y_MAX_ENDSTOP_INVERTING);
         #endif
-          if(y_max_endstop && old_y_max_endstop && (current_block->steps_y > 0)){
+          if(y_max_endstop && old_y_max_endstop && (current_block->steps_y.wide > 0)){
             endstops_trigsteps[Y_AXIS] = count_position[Y_AXIS];
             endstop_y_hit=true;
-            step_events_completed = current_block->step_event_count;
+            step_events_completed.wide = current_block->step_event_count.wide;
           }
           old_y_max_endstop = y_max_endstop;
         #endif
@@ -575,10 +576,10 @@ void isr() {
             #else
 				z_min_endstop = (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
             #endif //TMC2130_SG_HOMING
-          if(z_min_endstop && old_z_min_endstop && (current_block->steps_z > 0)) {
+          if(z_min_endstop && old_z_min_endstop && (current_block->steps_z.wide > 0)) {
             endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
             endstop_z_hit=true;
-            step_events_completed = current_block->step_event_count;
+            step_events_completed.wide = current_block->step_event_count.wide;
           }
           old_z_min_endstop = z_min_endstop;
         #endif
@@ -601,10 +602,10 @@ void isr() {
             #else
 				z_max_endstop = (READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING);
             #endif //TMC2130_SG_HOMING
-          if(z_max_endstop && old_z_max_endstop && (current_block->steps_z > 0)) {
+          if(z_max_endstop && old_z_max_endstop && (current_block->steps_z.wide > 0)) {
             endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
             endstop_z_hit=true;
-            step_events_completed = current_block->step_event_count;
+            step_events_completed.wide = current_block->step_event_count.wide;
           }
           old_z_max_endstop = z_max_endstop;
         #endif
@@ -625,7 +626,7 @@ void isr() {
         if(z_min_endstop && old_z_min_endstop) {
           endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
           endstop_z_hit=true;
-          step_events_completed = current_block->step_event_count;
+          step_events_completed.wide = current_block->step_event_count.wide;
         }
         old_z_min_endstop = z_min_endstop;
     }
@@ -657,22 +658,22 @@ void isr() {
       #endif //RP - returned, because missing characters
 
 #ifdef LIN_ADVANCE
-        counter_e += current_block->steps_e;
-        if (counter_e > 0) {
-          counter_e -= current_block->step_event_count;
+        counter_e.wide += current_block->steps_e.wide;
+        if (counter_e.wide > 0) {
+          counter_e.wide -= current_block->step_event_count.wide;
           count_position[E_AXIS] += count_direction[E_AXIS];
           ((out_bits&(1<<E_AXIS))!=0) ? --e_steps : ++e_steps;
         }
 #endif
         
-        counter_x += current_block->steps_x;
-        if (counter_x > 0) {
+        counter_x.wide += current_block->steps_x.wide;
+        if (counter_x.wide > 0) {
           WRITE_NC(X_STEP_PIN, !INVERT_X_STEP_PIN);
 		  LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE_NC(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
-          counter_x -= current_block->step_event_count;
+          counter_x.wide -= current_block->step_event_count.wide;
           count_position[X_AXIS]+=count_direction[X_AXIS];   
           WRITE_NC(X_STEP_PIN, INVERT_X_STEP_PIN);
 #ifdef DEBUG_XSTEP_DUP_PIN
@@ -680,8 +681,8 @@ void isr() {
 #endif //DEBUG_XSTEP_DUP_PIN
         }
 
-        counter_y += current_block->steps_y;
-        if (counter_y > 0) {
+        counter_y.wide += current_block->steps_y.wide;
+        if (counter_y.wide > 0) {
           WRITE_NC(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
 		  LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
@@ -692,7 +693,7 @@ void isr() {
 			WRITE_NC(Y2_STEP_PIN, !INVERT_Y_STEP_PIN);
 		  #endif
 		  
-          counter_y -= current_block->step_event_count;
+          counter_y.wide -= current_block->step_event_count.wide;
           count_position[Y_AXIS]+=count_direction[Y_AXIS];
           WRITE_NC(Y_STEP_PIN, INVERT_Y_STEP_PIN);
 #ifdef DEBUG_YSTEP_DUP_PIN
@@ -704,15 +705,15 @@ void isr() {
 		  #endif
         }
 
-      counter_z += current_block->steps_z;
-      if (counter_z > 0) {
+      counter_z.wide += current_block->steps_z.wide;
+      if (counter_z.wide > 0) {
         WRITE_NC(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
         LastStepMask |= Z_AXIS_MASK;
         #ifdef Z_DUAL_STEPPER_DRIVERS
           WRITE_NC(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
         #endif
 
-        counter_z -= current_block->step_event_count;
+        counter_z.wide -= current_block->step_event_count.wide;
         count_position[Z_AXIS]+=count_direction[Z_AXIS];
         WRITE_NC(Z_STEP_PIN, INVERT_Z_STEP_PIN);
         
@@ -722,10 +723,10 @@ void isr() {
       }
 
 #ifndef LIN_ADVANCE
-        counter_e += current_block->steps_e;
-        if (counter_e > 0) {
+        counter_e.wide += current_block->steps_e.wide;
+        if (counter_e.wide > 0) {
           WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
-          counter_e -= current_block->step_event_count;
+          counter_e.wide -= current_block->step_event_count.wide;
           count_position[E_AXIS]+=count_direction[E_AXIS];
           WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #ifdef PAT9125
@@ -734,8 +735,8 @@ void isr() {
         }
 #endif
         
-      step_events_completed += 1;
-      if(step_events_completed >= current_block->step_event_count) break;
+      ++ step_events_completed.wide;
+      if(step_events_completed.wide >= current_block->step_event_count.wide) break;
     }
 #ifdef LIN_ADVANCE
       if (current_block->use_advance_lead) {
@@ -750,7 +751,7 @@ void isr() {
     // Calculare new timer value
     unsigned short timer;
     uint16_t step_rate;
-    if (step_events_completed <= (unsigned long int)current_block->accelerate_until) {
+    if (step_events_completed.wide <= (unsigned long int)current_block->accelerate_until) {
       // v = t * a   ->   acc_step_rate = acceleration_time * current_block->acceleration_rate
       MultiU24X24toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
       acc_step_rate += current_block->initial_rate;
@@ -771,7 +772,7 @@ void isr() {
         eISR_Rate = ADV_RATE(timer, step_loops);
 #endif
     }
-    else if (step_events_completed > (unsigned long int)current_block->decelerate_after) {
+    else if (step_events_completed.wide > (unsigned long int)current_block->decelerate_after) {
       MultiU24X24toH16(step_rate, deceleration_time, current_block->acceleration_rate);
 
       if(step_rate > acc_step_rate) { // Check step_rate stays positive
@@ -811,7 +812,7 @@ void isr() {
     }
 
     // If current block is finished, reset pointer
-    if (step_events_completed >= current_block->step_event_count) {
+    if (step_events_completed.wide >= current_block->step_event_count.wide) {
 
 #ifdef PAT9125
       fsensor_st_block_chunk(current_block, fsensor_counter);
