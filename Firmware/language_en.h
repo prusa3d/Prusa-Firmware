@@ -385,7 +385,10 @@
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_OFF				"F. autoload [off]"
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_NA                "F. autoload [N/A]"
 #define(length=20, lines=4) MSG_PRESS_TO_UNLOAD					"Please press the knob to unload filament"
-#define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Repeat unloading filament?"
+#define(length=20, lines=4) MSG_PRESS_TO_PREHEAT				"Press knob to preheat nozzle and continue."
+#define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Was filament successfully unloaded?"
+#define(length=20, lines=4) MSG_CHECK_IDLER						"Please open idler and remove filament manually."
+#define(length=20, lines=4) MSG_PULL_OUT_FILAMENT				"Please pull out filament immediately"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
 
 #define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Default settings loaded"

@@ -341,6 +341,13 @@ const char * const MSG_CHANGING_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CHANGING_FILAMENT_CZ
 };
 
+const char MSG_CHECK_IDLER_EN[] PROGMEM = "Please open idler and remove filament manually.";
+const char MSG_CHECK_IDLER_CZ[] PROGMEM = "Prosim otevrete idler a manualne odstrante filament.";
+const char * const MSG_CHECK_IDLER_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CHECK_IDLER_EN,
+	MSG_CHECK_IDLER_CZ
+};
+
 const char MSG_CHOOSE_EXTRUDER_EN[] PROGMEM = "Choose extruder:";
 const char MSG_CHOOSE_EXTRUDER_CZ[] PROGMEM = "Vyberte extruder:";
 const char * const MSG_CHOOSE_EXTRUDER_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1444,6 +1451,13 @@ const char * const MSG_PRESS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PRESS_CZ
 };
 
+const char MSG_PRESS_TO_PREHEAT_EN[] PROGMEM = "Press knob to preheat nozzle and continue.";
+const char MSG_PRESS_TO_PREHEAT_CZ[] PROGMEM = "Pro nahrati trysky a pokracovani stisknete tlacitko.";
+const char * const MSG_PRESS_TO_PREHEAT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PRESS_TO_PREHEAT_EN,
+	MSG_PRESS_TO_PREHEAT_CZ
+};
+
 const char MSG_PRESS_TO_UNLOAD_EN[] PROGMEM = "Please press the knob to unload filament";
 const char MSG_PRESS_TO_UNLOAD_CZ[] PROGMEM = "Pro vysunuti filamentu stisknete prosim tlacitko";
 const char * const MSG_PRESS_TO_UNLOAD_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -1489,6 +1503,13 @@ const char MSG_PRUSA3D_HOWTO_CZ[] PROGMEM = "howto.prusa3d.cz";
 const char * const MSG_PRUSA3D_HOWTO_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PRUSA3D_HOWTO_EN,
 	MSG_PRUSA3D_HOWTO_CZ
+};
+
+const char MSG_PULL_OUT_FILAMENT_EN[] PROGMEM = "Please pull out filament immediately";
+const char MSG_PULL_OUT_FILAMENT_CZ[] PROGMEM = "Prosim vyjmete urychlene filament";
+const char * const MSG_PULL_OUT_FILAMENT_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_PULL_OUT_FILAMENT_EN,
+	MSG_PULL_OUT_FILAMENT_CZ
 };
 
 const char MSG_REBOOT_EN[] PROGMEM = "Reboot the printer";
@@ -2207,8 +2228,8 @@ const char * const MSG_UNLOAD_FILAMENT_4_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_4_CZ
 };
 
-const char MSG_UNLOAD_SUCCESSFULL_EN[] PROGMEM = "Repeat unloading filament?";
-const char MSG_UNLOAD_SUCCESSFULL_CZ[] PROGMEM = "Opakovat vysunuti filamentu?";
+const char MSG_UNLOAD_SUCCESSFULL_EN[] PROGMEM = "Was filament successfully unloaded?";
+const char MSG_UNLOAD_SUCCESSFULL_CZ[] PROGMEM = "Bylo vysunuti filamentu uspesne?";
 const char * const MSG_UNLOAD_SUCCESSFULL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_SUCCESSFULL_EN,
 	MSG_UNLOAD_SUCCESSFULL_CZ

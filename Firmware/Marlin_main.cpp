@@ -5461,6 +5461,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         feedmultiplyBckp=feedmultiply;
         int8_t TooLowZ = 0;
 
+		float HotendTempBckp = degTargetHotend(active_extruder);
+		int fanSpeedBckp = fanSpeed;
         target[X_AXIS]=current_position[X_AXIS];
         target[Y_AXIS]=current_position[Y_AXIS];
         target[Z_AXIS]=current_position[Z_AXIS];
@@ -5530,11 +5532,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 		uint8_t cnt = 0;
-		int counterBeep = 0;
+		int counterBeep = 0;	
+		fanSpeed = 0;
+		unsigned long waiting_start_time = millis();
+		uint8_t wait_for_user_state = 0;
 		lcd_display_message_fullscreen_P(MSG_PRESS_TO_UNLOAD);
-		while (!lcd_clicked()) {
+		while (!(wait_for_user_state == 0 && lcd_clicked())){
 
-			cnt++;
+			//cnt++;
 			manage_heater();
 			manage_inactivity(true);
 
@@ -5544,7 +5549,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 			#endif // SNMM*/
 
-			if (cnt == 0)
+			//if (cnt == 0)
 			{
 #if BEEPER > 0
 				if (counterBeep == 500) {
@@ -5557,6 +5562,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 				if (counterBeep == 20) {
 					WRITE(BEEPER, LOW);
 				}
+				
 				counterBeep++;
 #else
 #if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
@@ -5566,18 +5572,61 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif
 #endif
 			}
+			
+			switch (wait_for_user_state) {
+			case 0: 
+				delay_keep_alive(4);
+
+				if (millis() > waiting_start_time + M600_TIMEOUT * 1000) {
+					lcd_display_message_fullscreen_P(MSG_PRESS_TO_PREHEAT);
+					wait_for_user_state = 1;
+					setTargetHotend(0, 0);
+					setTargetHotend(0, 1);
+					setTargetHotend(0, 2);
+					st_synchronize();
+					disable_e0();
+					disable_e1();
+					disable_e2();
+				}
+				break;
+			case 1:
+				delay_keep_alive(4);
+		
+				if (lcd_clicked()) {
+					setTargetHotend(HotendTempBckp, active_extruder);
+					lcd_wait_for_heater();
+
+					wait_for_user_state = 2;
+				}
+				break;
+			case 2:
+
+				if (abs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
+					lcd_display_message_fullscreen_P(MSG_PRESS_TO_UNLOAD);
+					waiting_start_time = millis();
+					wait_for_user_state = 0;
+				}
+				else {
+					counterBeep = 20; //beeper will be inactive during waiting for nozzle preheat
+					lcd.setCursor(1, 4);
+					lcd.print(ftostr3(degHotend(active_extruder)));
+				}
+				break;
+
+			}
 
 		}
 		WRITE(BEEPER, LOW);
 		
 		lcd_change_fil_state = 0;
-		while (lcd_change_fil_state == 0) {
+		
+
+		// Unload filament
 			lcd_display_message_fullscreen_P(MSG_UNLOADING_FILAMENT);
 			KEEPALIVE_STATE(IN_HANDLER);
 			custom_message = true;
 			lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
 
-			// Unload filament
 			if (code_seen('L'))
 			{
 				target[E_AXIS] += code_value();
@@ -5629,16 +5678,31 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 			//finish moves
 			st_synchronize();
+
+			lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
+			
 			//disable extruder steppers so filament can be removed
 			disable_e0();
 			disable_e1();
 			disable_e2();
 			delay(100);
+			 
+			
+			WRITE(BEEPER, HIGH);
+			counterBeep = 0;
+			while(!lcd_clicked() && (counterBeep < 50)) {
+				if(counterBeep > 5) WRITE(BEEPER, LOW);
+				delay_keep_alive(100);
+				counterBeep++;
+			}
+			WRITE(BEEPER, LOW);
+
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
-			lcd_change_fil_state = !lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_UNLOAD_SUCCESSFULL, false, false);
+			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_UNLOAD_SUCCESSFULL, false, true);
+			if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(MSG_CHECK_IDLER);
 			//lcd_return_to_status();
 			lcd_update_enable(true);
-		}
+		
         //Wait for user to insert filament
         lcd_wait_interact();
 		//load_filament_time = millis();
@@ -5772,6 +5836,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         
 
       //Not let's go back to print
+		fanSpeed = fanSpeedBckp;
 
       //Feed a little of filament to stabilize pressure
       target[E_AXIS]+= FILAMENTCHANGE_RECFEED;
@@ -6024,7 +6089,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         st_synchronize();
         current_position[E_AXIS] -= 20;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000 / 60, active_extruder);
-		st_synchronize();
+		st_synchronize();		
 		lcd_setstatuspgm(WELCOME_MSG);
 		custom_message = false;
 		custom_message_type = 0;

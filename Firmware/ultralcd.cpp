@@ -2458,6 +2458,17 @@ void lcd_adjust_z() {
 
 }
 
+void lcd_wait_for_heater() {
+	lcd_display_message_fullscreen_P(MSG_WIZARD_HEATING);
+
+		lcd.setCursor(0, 4);
+		lcd.print(LCD_STR_THERMOMETER[0]);
+		lcd.print(ftostr3(degHotend(active_extruder)));
+		lcd.print("/");
+		lcd.print(ftostr3(degTargetHotend(active_extruder)));
+		lcd.print(LCD_STR_DEGREE);
+}
+
 void lcd_wait_for_cool_down() {
 	lcd_set_custom_characters_degree();
 	setTargetHotend(0,0);
