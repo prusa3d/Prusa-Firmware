@@ -5577,7 +5577,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			case 0: 
 				delay_keep_alive(4);
 
-				if (millis() > waiting_start_time + M600_TIMEOUT * 1000) {
+				if (millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
 					lcd_display_message_fullscreen_P(MSG_PRESS_TO_PREHEAT);
 					wait_for_user_state = 1;
 					setTargetHotend(0, 0);

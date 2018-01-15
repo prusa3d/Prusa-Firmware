@@ -2228,7 +2228,7 @@ const char * const MSG_UNLOAD_FILAMENT_4_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_4_CZ
 };
 
-const char MSG_UNLOAD_SUCCESSFULL_EN[] PROGMEM = "Was filament successfully unloaded?";
+const char MSG_UNLOAD_SUCCESSFULL_EN[] PROGMEM = "Was filament unload successfull?";
 const char MSG_UNLOAD_SUCCESSFULL_CZ[] PROGMEM = "Bylo vysunuti filamentu uspesne?";
 const char * const MSG_UNLOAD_SUCCESSFULL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_SUCCESSFULL_EN,
