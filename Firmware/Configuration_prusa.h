@@ -546,7 +546,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define HEATBED_V2
 
-#define M600_TIMEOUT 10 //600 //seconds
+#define M600_TIMEOUT 600  //seconds
 
 //#define SUPPORT_VERBOSITY
 
