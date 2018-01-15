@@ -75,11 +75,16 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 
 //Silent mode limits
-#define SILENT_MAX_ACCEL_X  960 // X-axis max acceleration in silent mode in mm/s^2
-#define SILENT_MAX_ACCEL_Y  960 // Y-axis max axxeleration in silent mode in mm/s^2
-#define SILENT_MAX_ACCEL_X_ST (100*SILENT_MAX_ACCEL_X) // X max accel in steps/s^2
-#define SILENT_MAX_ACCEL_Y_ST (100*SILENT_MAX_ACCEL_Y) // Y max accel in steps/s^2
+#define SILENT_MAX_ACCEL  960 // max axxeleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_ST (100*SILENT_MAX_ACCEL) // max accel in steps/s^2
 #define SILENT_MAX_FEEDRATE 172  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
+
+//Normal mode limits
+#define NORMAL_MAX_ACCEL 2500 // Y-axis max axxeleration in normal mode in mm/s^2
+#define NORMAL_MAX_ACCEL_ST (100*NORMAL_MAX_ACCEL) // max accel in steps/s^2
+#define NORMAL_MAX_FEEDRATE 200  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
+
+//#define SIMPLE_ACCEL_LIMIT          //new limitation method for normal/silent
 
 //number of bytes from end of the file to start check
 #define END_FILE_SECTION 10000
@@ -96,8 +101,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // this value is litlebit higher that real limit, because ambient termistor is on the board and is temperated from it,
 // temperature inside the case is around 31C for ambient temperature 25C, when the printer is powered on long time and idle
 // the real limit is 15C (same as MINTEMP limit), this is because 15C is end of scale for both used thermistors (bed, heater)
-#define MINTEMP_MINAMBIENT      18
-#define MINTEMP_MINAMBIENT_RAW  991
+#define MINTEMP_MINAMBIENT      25
+#define MINTEMP_MINAMBIENT_RAW  978
 
 
 //DEBUG

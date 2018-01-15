@@ -4941,6 +4941,8 @@ Sigma_Exit:
       if(code_seen('Y')) max_jerk[Y_AXIS] = code_value();
       if(code_seen('Z')) max_jerk[Z_AXIS] = code_value();
       if(code_seen('E')) max_jerk[E_AXIS] = code_value();
+		if (max_jerk[X_AXIS] > DEFAULT_XJERK) max_jerk[X_AXIS] = DEFAULT_XJERK;
+		if (max_jerk[Y_AXIS] > DEFAULT_YJERK) max_jerk[Y_AXIS] = DEFAULT_YJERK;
     }
     break;
     case 206: // M206 additional homing offset
