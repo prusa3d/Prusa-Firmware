@@ -545,7 +545,7 @@ FORCE_INLINE void stepper_check_endstops()
     if ((out_bits & (1<<Z_AXIS)) != 0) // -direction
     {
       #if defined(Z_MIN_PIN) && (Z_MIN_PIN > -1) && !defined(DEBUG_DISABLE_ZMINLIMIT)
-      if (check_z_endstop) {
+      if (! check_z_endstop) {
         #ifdef TMC2130_SG_HOMING
           // Stall guard homing turned on
           z_min_endstop = (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (READ(Z_TMC2130_DIAG) != 0);
