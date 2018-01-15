@@ -368,11 +368,15 @@ void get_command()
     
     bool rx_buffer_full = false; //flag that serial rx buffer is full
 
+	if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
+		MYSERIAL.flush();
+		SERIAL_ECHOLNPGM("Full RX Buffer");   //if buffer was full, there is danger that reading of last gcode will not be completed
+
+		rx_buffer_full = true;                //sets flag that buffer was full    
+	}
+
   while (MYSERIAL.available() > 0) {
-      if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
-          SERIAL_ECHOLNPGM("Full RX Buffer");   //if buffer was full, there is danger that reading of last gcode will not be completed
-          rx_buffer_full = true;                //sets flag that buffer was full    
-      }
+
     char serial_char = MYSERIAL.read();
 /*    if (selectedSerialPort == 1)
     {
@@ -529,11 +533,11 @@ void get_command()
     }
 
     //add comment
-    if (rx_buffer_full == true && serial_count > 0) {   //if rx buffer was full and string was not properly terminated
+   /*if (rx_buffer_full == true && serial_count > 0) {   //if rx buffer was full and string was not properly terminated
         rx_buffer_full = false;
         bufindw = bufindw - serial_count;               //adjust tail of the buffer to prepare buffer for writing new command
         serial_count = 0;
-    }
+    }*/
 
   #ifdef SDSUPPORT
   if(!card.sdprinting || serial_count!=0){
