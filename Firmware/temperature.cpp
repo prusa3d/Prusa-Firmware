@@ -1879,14 +1879,18 @@ ISR(TIMER0_COMPB_vect)
    
     if(curTodo>0)
     {
+		asm("cli");
       babystep(axis,/*fwd*/true);
       babystepsTodo[axis]--; //less to do next time
+		asm("sei");
     }
     else
     if(curTodo<0)
     {
+		asm("cli");
       babystep(axis,/*fwd*/false);
       babystepsTodo[axis]++; //less to do next time
+		asm("sei");
     }
   }
 #endif //BABYSTEPPING
