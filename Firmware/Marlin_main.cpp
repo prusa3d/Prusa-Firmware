@@ -2019,6 +2019,12 @@ bool gcode_M45(bool onlyZ)
 	lcd_display_message_fullscreen_P(MSG_AUTO_HOME);
 	home_xy();
 
+	enable_endstops(false);
+	current_position[X_AXIS] += 5;
+	current_position[Y_AXIS] += 5;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+	st_synchronize();
+
 	// Let the user move the Z axes up to the end stoppers.
 #ifdef TMC2130
 	if (calibrate_z_auto())
@@ -2092,7 +2098,7 @@ bool gcode_M45(bool onlyZ)
 			else
 			{
 				// Reset the baby step value and the baby step applied flag.
-				calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
+				calibration_status_store(CALIBRATION_STATUS_XYZ_CALIBRATION);
 				eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
 				// Complete XYZ calibration.
 				uint8_t point_too_far_mask = 0;
