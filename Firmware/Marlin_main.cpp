@@ -887,7 +887,7 @@ void factory_reset()
 }
 
 void show_fw_version_warnings() {
-	if (FW_DEV_VERSION == FW_VERSION_GOLD) return;
+	if (FW_DEV_VERSION == FW_VERSION_GOLD || FW_DEV_VERSION == FW_VERSION_RC) return;
 	switch (FW_DEV_VERSION) {
 	case(FW_VERSION_ALPHA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_ALPHA); break;
 	case(FW_VERSION_BETA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA); break;
