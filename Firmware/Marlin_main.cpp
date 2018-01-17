@@ -6092,11 +6092,34 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
         st_synchronize();
         current_position[E_AXIS] -= 15;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 160 / 60, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
         st_synchronize();
         current_position[E_AXIS] -= 20;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000 / 60, active_extruder);
-		st_synchronize();		
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+		st_synchronize();
+
+		lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
+
+		//disable extruder steppers so filament can be removed
+		disable_e0();
+		disable_e1();
+		disable_e2();
+		delay(100);
+
+
+		WRITE(BEEPER, HIGH);
+		uint8_t counterBeep = 0;
+		while (!lcd_clicked() && (counterBeep < 50)) {
+			if (counterBeep > 5) WRITE(BEEPER, LOW);
+			delay_keep_alive(100);
+			counterBeep++;
+		}
+		WRITE(BEEPER, LOW);
+		st_synchronize();	
+		while (lcd_clicked()) delay_keep_alive(100);
+
+		lcd_update_enable(true);
+	
 		lcd_setstatuspgm(WELCOME_MSG);
 		custom_message = false;
 		custom_message_type = 0;
