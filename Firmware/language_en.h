@@ -411,3 +411,4 @@
 #define(length=20, lines=8) MSG_FW_VERSION_ALPHA		 "You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage." 
 #define(length=20, lines=8) MSG_FW_VERSION_BETA			 "You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."
 #define(length=20, lines=8) MSG_FW_VERSION_RC			 "This firmware version is release candidate. Some of the features may not work properly."
+#define(length=20, lines=8) MSG_FW_VERSION_DEBUG		 "This is development firmware version which contains additional debugging features. Using this version may cause printer damage."
