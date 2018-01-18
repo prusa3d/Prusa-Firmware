@@ -892,6 +892,7 @@ void show_fw_version_warnings() {
 	case(FW_VERSION_ALPHA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_ALPHA); break;
 	case(FW_VERSION_BETA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA); break;
 	case(FW_VERSION_RC): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_RC); break;
+	case(FW_VERSION_DEBUG): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_DEBUG); break;
 	default: lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_UNKNOWN); break;
 	}
 	lcd_update_enable(true);

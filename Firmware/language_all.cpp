@@ -845,6 +845,13 @@ const char * const MSG_FW_VERSION_BETA_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FW_VERSION_BETA_CZ
 };
 
+const char MSG_FW_VERSION_DEBUG_EN[] PROGMEM = "This is development firmware version which contains additional debugging features. Using this version may cause printer damage.";
+const char MSG_FW_VERSION_DEBUG_CZ[] PROGMEM = "Toto je vyvojova verze firmwaru obsahujici funkce pro debugging. Pouziti teto verze muze poskodit Vasi tiskarnu.";
+const char * const MSG_FW_VERSION_DEBUG_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FW_VERSION_DEBUG_EN,
+	MSG_FW_VERSION_DEBUG_CZ
+};
+
 const char MSG_FW_VERSION_RC_EN[] PROGMEM = "This firmware version is release candidate. Some of the features may not work properly.";
 const char MSG_FW_VERSION_RC_CZ[] PROGMEM = "Tato verze firmware je release candidate. Nektere z funkci nemusi pracovat spolehlive.";
 const char * const MSG_FW_VERSION_RC_LANG_TABLE[LANG_NUM] PROGMEM = {
