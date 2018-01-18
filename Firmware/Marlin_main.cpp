@@ -1199,8 +1199,7 @@ void setup()
 	card.initsd();
 
 	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
-		eeprom_read_dword((uint32_t*)(EEPROM_TOP - 8)) == 0x0ffffffff &&
-		eeprom_read_dword((uint32_t*)(EEPROM_TOP - 12)) == 0x0ffffffff) {
+	    eeprom_read_dword((uint32_t*)(EEPROM_TOP - 8)) == 0x0ffffffff) {
 		// Maiden startup. The firmware has been loaded and first started on a virgin RAMBo board,
 		// where all the EEPROM entries are set to 0x0ff.
 		// Once a firmware boots up, it forces at least a language selection, which changes
@@ -1468,21 +1467,12 @@ void get_command()
 	if (!cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1)) 
 		return;
 	
-	bool rx_buffer_full = false; //flag that serial rx buffer is full
-
   while (MYSERIAL.available() > 0) {
-	  if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
-		  SERIAL_ECHOLNPGM("Full RX Buffer");   //if buffer was full, there is danger that reading of last gcode will not be completed
-		  rx_buffer_full = true;				//sets flag that buffer was full	
-	  }
+
     char serial_char = MYSERIAL.read();
-    if (selectedSerialPort == 1) {
-        selectedSerialPort = 0;
-        MYSERIAL.write(serial_char);
-        selectedSerialPort = 1;
-    }
-      TimeSent = millis();
-      TimeNow = millis();
+
+    TimeSent = millis();
+    TimeNow = millis();
 
     if (serial_char < 0)
         // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
@@ -1635,13 +1625,6 @@ void get_command()
             return;
         }
     }
-
-	//add comment
-	if (rx_buffer_full == true && serial_count > 0) {   //if rx buffer was full and string was not properly terminated
-		rx_buffer_full = false;
-		bufindw = bufindw - serial_count;				//adjust tail of the buffer to prepare buffer for writing new command
-		serial_count = 0;
-	}
 
   #ifdef SDSUPPORT
   if(!card.sdprinting || serial_count!=0){
@@ -5559,8 +5542,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         {
           zprobe_zoffset = -value; // compare w/ line 278 of ConfigurationStore.cpp
           SERIAL_ECHO_START;
-          SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", MSG_OK,PSTR("")));
-          SERIAL_PROTOCOLLN("");
+          SERIAL_ECHOLN(CAT4(MSG_ZPROBE_ZOFFSET, " ", MSG_OK,PSTR("")));
         }
         else
         {
@@ -5576,7 +5558,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       else
       {
           SERIAL_ECHO_START;
-          SERIAL_ECHOLNRPGM(CAT2(MSG_ZPROBE_ZOFFSET, PSTR(" : ")));
+          SERIAL_ECHO(CAT2(MSG_ZPROBE_ZOFFSET, PSTR(" : ")));
           SERIAL_ECHO(-zprobe_zoffset);
           SERIAL_PROTOCOLLN("");
       }

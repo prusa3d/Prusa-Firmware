@@ -10,7 +10,7 @@
 
 // Firmware version
 #define FW_version "3.1.0"
-#define FW_local_variant 5
+#define FW_local_variant 6
 #define FW_report_version FW_version " r" STR(FW_local_variant)
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
@@ -467,7 +467,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 //===========================================================================
 
 // Custom M code points
-#define CUSTOM_M_CODES
+//#define CUSTOM_M_CODES
 #ifdef CUSTOM_M_CODES
   #define CUSTOM_M_CODE_SET_Z_PROBE_OFFSET 851
   #define Z_PROBE_OFFSET_RANGE_MIN -15

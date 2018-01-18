@@ -364,10 +364,13 @@ uint8_t lcdDrawUpdate = 2;                  /* Set to none-zero when the LCD nee
 // float raw_Ki, raw_Kd;
 #endif
 
-static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true, bool reset_menu_state = true) {
+static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true, bool reset_menu_state = true)
+{
+  CRITICAL_SECTION_START
   if (currentMenu != menu) {
     currentMenu = menu;
     encoderPosition = encoder;
+    CRITICAL_SECTION_END
     if (reset_menu_state) {
         // Resets the global shared C union.
         // This ensures, that the menu entered will find out, that it shall initialize itself.
@@ -379,6 +382,8 @@ static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const boo
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
     lcd_set_custom_characters(menu == lcd_status_screen);
 #endif
+  } else {
+    CRITICAL_SECTION_END
   }
 }
 
@@ -5189,8 +5194,10 @@ void lcd_sdcard_menu()
   } \
   static void menu_action_setting_edit_ ## _name (const char* pstr, _type* ptr, _type minValue, _type maxValue) \
   { \
+    CRITICAL_SECTION_START \
     menuData.editMenuParentState.prevMenu = currentMenu; \
     menuData.editMenuParentState.prevEncoderPosition = encoderPosition; \
+    CRITICAL_SECTION_END \
     \
     lcdDrawUpdate = 2; \
     menuData.editMenuParentState.editLabel = pstr; \

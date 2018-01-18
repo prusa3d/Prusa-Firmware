@@ -3077,7 +3077,7 @@ const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_DE
 };
 
-const char MSG_SKEW_CORRECTION_EN[] PROGMEM = "Very small XY skew. Disable skew correction?";
+const char MSG_SKEW_CORRECTION_EN[] PROGMEM = "Very little skew detected. Disable correction?";
 const char * const MSG_SKEW_CORRECTION_LANG_TABLE[1] PROGMEM = {
 	MSG_SKEW_CORRECTION_EN
 };
