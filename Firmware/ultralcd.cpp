@@ -1563,6 +1563,7 @@ static void lcd_menu_fails_stats()
     
 }
 
+#ifdef DEBUG_BUILD
 extern uint16_t SP_min;
 extern char* __malloc_heap_start;
 extern char* __malloc_heap_end;
@@ -1577,6 +1578,7 @@ static void lcd_menu_debug()
         lcd_return_to_status();
     }
 }
+#endif /* DEBUG_BUILD */
 
 static void lcd_menu_temperatures()
 {
@@ -1713,8 +1715,11 @@ static void lcd_support_menu()
   MENU_ITEM(submenu, MSG_MENU_TEMPERATURES, lcd_menu_temperatures);
 
   MENU_ITEM(submenu, MSG_MENU_VOLTAGES, lcd_menu_voltages);
-    
+
+#ifdef DEBUG_BUILD
   MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
+#endif /* DEBUG_BUILD */
+
   #endif //MK1BP
   END_MENU();
 }
