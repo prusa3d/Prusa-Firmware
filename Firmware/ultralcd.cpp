@@ -1675,6 +1675,9 @@ static void lcd_support_menu()
 
   MENU_ITEM(back, PSTR("Firmware:"), lcd_main_menu);
   MENU_ITEM(back, PSTR(" " FW_VERSION_FULL), lcd_main_menu);
+#if (FW_DEV_VERSION != FW_VERSION_GOLD) && (FW_DEV_VERSION != FW_VERSION_RC)
+  MENU_ITEM(back, PSTR(" repo " FW_REPOSITORY), lcd_main_menu);
+#endif
   // Ideally this block would be optimized out by the compiler.
 /*  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
   if (fw_string_len < 6) {

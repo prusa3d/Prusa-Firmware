@@ -729,20 +729,7 @@ static void lcd_implementation_status_screen()
     lcd_printPGM(PSTR(LCD_STR_DEGREE " "));
     lcd_printPGM(PSTR("  "));
 
-#if 1
-    //Print Feedrate
-    lcd.setCursor(LCD_WIDTH - 8-2, 1);
-    lcd_printPGM(PSTR("  "));
-    lcd.print(LCD_STR_FEEDRATE[0]);
-    lcd.print(itostr3(feedmultiply));
-    lcd_printPGM(PSTR("%     "));
-
-	//lcd.setCursor(8, 0);
-	//lcd.print(itostr3(fan_speed[0]));
-	//lcd.setCursor(8, 1);
-	//lcd.print(itostr3(fan_speed[1]));
-
-#else
+#ifdef PLANNER_DIAGNOSTICS
     //Print Feedrate
     lcd.setCursor(LCD_WIDTH - 8-2, 1);
     lcd.print(LCD_STR_FEEDRATE[0]);
@@ -751,15 +738,23 @@ static void lcd_implementation_status_screen()
     {
       uint8_t queue = planner_queue_min();
       if (queue < (BLOCK_BUFFER_SIZE >> 1)) {
-        lcd.print('!');
+        lcd.write('!');
       } else {
-        lcd.print((char)(queue / 10) + '0');
+        lcd.write((char)(queue / 10) + '0');
         queue %= 10;
       }
-      lcd.print((char)queue + '0');
+      lcd.write((char)queue + '0');
       planner_queue_min_reset();
     }
-#endif
+#else /* PLANNER_DIAGNOSTICS */
+    //Print Feedrate
+    lcd.setCursor(LCD_WIDTH - 8-2, 1);
+    lcd_printPGM(PSTR("  "));
+    lcd.print(LCD_STR_FEEDRATE[0]);
+    lcd.print(itostr3(feedmultiply));
+    lcd_printPGM(PSTR("%     "));
+#endif /* PLANNER_DIAGNOSTICS */
+
 	bool print_sd_status = true;
 	
 #ifdef PINDA_THERMISTOR
@@ -872,7 +867,12 @@ if (print_sd_status)
 	}
 
     // If printing from SD, show what we are printing
-	if ((IS_SD_PRINTING) && !custom_message)
+	if ((IS_SD_PRINTING) && !custom_message
+#ifdef DEBUG_BUILD
+    && lcd_status_message[0] == 0
+#endif /* DEBUG_BUILD */
+    )
+
 	{
       if(strlen(card.longFilename) > LCD_WIDTH)
 	  {

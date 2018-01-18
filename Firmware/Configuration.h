@@ -2,7 +2,6 @@
 #define CONFIGURATION_H
 
 #include "boards.h"
-#include "Configuration_prusa.h"
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
@@ -10,7 +9,8 @@
 // Firmware version
 #define FW_VERSION "3.1.1-RC5"
 #define FW_COMMIT_NR   150
-#define FW_DEV_VERSION FW_VERSION_RC
+#define FW_DEV_VERSION FW_VERSION_DEBUG
+#define FW_REPOSITORY "Prusa3D/MK3"
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
 #define FW_VERSION_DEBUG 5
@@ -19,6 +19,14 @@
 #define FW_VERSION_BETA 2
 #define FW_VERSION_RC 1
 #define FW_VERSION_GOLD 0
+
+#if FW_DEV_VERSION == FW_VERSION_DEBUG
+#define DEBUG_BUILD
+#else
+#undef DEBUG_BUILD
+#endif
+
+#include "Configuration_prusa.h"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10

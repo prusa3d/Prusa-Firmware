@@ -892,7 +892,19 @@ void show_fw_version_warnings() {
 	case(FW_VERSION_ALPHA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_ALPHA); break;
 	case(FW_VERSION_BETA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA); break;
 	case(FW_VERSION_RC): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_RC); break;
-	case(FW_VERSION_DEBUG): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_DEBUG); break;
+	case(FW_VERSION_DEBUG): 
+#if 1
+    lcd_update_enable(false);
+    lcd_implementation_clear();
+    lcd_print_at_PGM(0, 0, PSTR("Debbugging build !!!"));
+    lcd_print_at_PGM(0, 1, PSTR("May destroy printer!"));
+    lcd_print_at_PGM(0, 2, PSTR("ver ")); lcd_printPGM(PSTR(FW_VERSION_FULL));
+    lcd_print_at_PGM(0, 3, PSTR(FW_REPOSITORY));
+    lcd_wait_for_click();
+#else
+    lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_DEBUG);
+#endif
+    break;
 	default: lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_UNKNOWN); break;
 	}
 	lcd_update_enable(true);
