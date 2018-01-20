@@ -627,6 +627,10 @@ void get_command()
       sd_count.value = 0;
 
       cli();
+      // This block locks the interrupts globally for 3.56 us,
+      // which corresponds to a maximum repeat frequency of 280.70 kHz.
+      // This blocking is safe in the context of a 10kHz stepper driver interrupt
+      // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
       ++ buflen;
       bufindw += len;
       sdpos_atomic = card.get_sdpos()+1;

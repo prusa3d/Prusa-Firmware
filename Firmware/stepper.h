@@ -23,6 +23,9 @@
 
 #include "planner.h"
 
+#define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIMSK1 |= (1<<OCIE1A)
+#define DISABLE_STEPPER_DRIVER_INTERRUPT() TIMSK1 &= ~(1<<OCIE1A)
+
 #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 extern bool abort_on_endstop_hit;
 #endif
@@ -57,11 +60,18 @@ void st_get_position_xy(long &x, long &y);
 float st_get_position_mm(uint8_t axis);
 
 
-// The stepper subsystem goes to sleep when it runs out of things to execute. Call this
-// to notify the subsystem that it is time to go to work.
-void st_wake_up();
+// Call this function just before re-enabling the stepper driver interrupt and the global interrupts
+// to avoid a stepper timer overflow.
+FORCE_INLINE void st_reset_timer()
+{
+  // Clear a possible pending interrupt on OCR1A overflow.
+  TIFR1 |= 1 << OCF1A;
+  // Reset the counter.
+  TCNT1 = 0;
+  // Wake up after 1ms from now.
+  OCR1A = 2000;
+}
 
-  
 void checkHitEndstops(); //call from somewhere to create an serial error message with the locations the endstops where hit, in case they were triggered
 bool endstops_hit_on_purpose(); //avoid creation of the message, i.e. after homing and before a routine call of checkHitEndstops();
 bool endstop_z_hit_on_purpose();
