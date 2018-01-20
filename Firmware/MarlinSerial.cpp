@@ -49,11 +49,13 @@ FORCE_INLINE void store_char(unsigned char c)
 }
 
 
-//#elif defined(SIG_USART_RECV)
 #if defined(M_USARTx_RX_vect)
-  // fixed by Mark Sproul this is on the 644/644p
-  //SIGNAL(SIG_USART_RECV)
-SIGNAL(M_USARTx_RX_vect)
+// The serial line receive interrupt routine for a baud rate 115200
+// ticks at maximum 11.76 kHz and blocks for 2.688 us at each tick.
+// If the serial line is fully utilized, this corresponds to 3.16%
+// loading of the CPU (the interrupt invocation overhead not taken into account).
+// As the serial line is not fully utilized, the CPU load is likely around 1%.
+ISR(M_USARTx_RX_vect)
 {
 	// Test for a framing error.
 	if (M_UCSRxA & (1<<M_FEx))
@@ -74,7 +76,7 @@ SIGNAL(M_USARTx_RX_vect)
 	}
 }
 #ifndef SNMM
-SIGNAL(USART1_RX_vect)
+ISR(USART1_RX_vect)
 {
 	// Test for a framing error.
 	if (UCSR1A & (1<<FE1))

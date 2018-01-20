@@ -7566,6 +7566,8 @@ void setup_fan_interrupt() {
 	EIMSK |= (1 << 7);
 }
 
+// The fan interrupt is triggered at maximum 325Hz (may be a bit more due to component tollerances),
+// and it takes 4.24 us to process (the interrupt invocation overhead not taken into account).
 ISR(INT7_vect) {
 	//measuring speed now works for fanSpeed > 18 (approximately), which is sufficient because MIN_PRINT_FAN_SPEED is higher
 
