@@ -854,6 +854,11 @@ void isr() {
   if (OCR1A < TCNT1) {
     stepper_timer_overflow_state = true;
     WRITE_NC(BEEPER, HIGH);
+    SERIAL_PROTOCOLPGM("Stepper timer overflow ");
+    SERIAL_PROTOCOL(OCR1A);
+    SERIAL_PROTOCOLPGM("<");
+    SERIAL_PROTOCOL(TCNT1);
+    SERIAL_PROTOCOLLN("!");
   }
 #endif
 }
@@ -1137,6 +1142,7 @@ void st_init()
   // create_speed_lookuptable.py
   TCCR1B = (TCCR1B & ~(0x07<<CS10)) | (2<<CS10);
 
+  // Plan the first interrupt after 8ms from now.
   OCR1A = 0x4000;
   TCNT1 = 0;
   ENABLE_STEPPER_DRIVER_INTERRUPT();
@@ -1176,6 +1182,11 @@ void st_synchronize()
 void st_set_position(const long &x, const long &y, const long &z, const long &e)
 {
   CRITICAL_SECTION_START;
+  // Copy 4x4B.
+  // This block locks the interrupts globally for 4.56 us,
+  // which corresponds to a maximum repeat frequency of 219.18 kHz.
+  // This blocking is safe in the context of a 10kHz stepper driver interrupt
+  // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
   count_position[X_AXIS] = x;
   count_position[Y_AXIS] = y;
   count_position[Z_AXIS] = z;

@@ -264,6 +264,10 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
   }
 
   CRITICAL_SECTION_START;  // Fill variables used by the stepper in a critical section
+  // This block locks the interrupts globally for 4.38 us,
+  // which corresponds to a maximum repeat frequency of 228.57 kHz.
+  // This blocking is safe in the context of a 10kHz stepper driver interrupt
+  // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
   if (! block->busy) { // Don't update variables if block is busy.
     block->accelerate_until = accelerate_steps;
     block->decelerate_after = accelerate_steps+plateau_steps;
