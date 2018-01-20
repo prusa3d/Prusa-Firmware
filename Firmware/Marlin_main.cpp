@@ -1409,8 +1409,12 @@ void loop()
     #endif //SDSUPPORT
 
     if (! cmdbuffer_front_already_processed && buflen)
-	  {
-		    cli();
+    {
+      // ptr points to the start of the block currently being processed.
+      // The first character in the block is the block type.      
+      char *ptr = cmdbuffer + bufindr;
+      if (*ptr == CMDBUFFER_CURRENT_TYPE_SDCARD) {
+        // To support power panic, move the lenght of the command on the SD card to a planner buffer.
         union {
           struct {
               char lo;
@@ -1419,14 +1423,28 @@ void loop()
           uint16_t value;
         } sdlen;
         sdlen.value = 0;
-		    if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_SDCARD) {
-			      sdlen.lohi.lo = cmdbuffer[bufindr + 1];
-            sdlen.lohi.hi = cmdbuffer[bufindr + 2];
+        {
+          // This block locks the interrupts globally for 3.25 us,
+          // which corresponds to a maximum repeat frequency of 307.69 kHz.
+          // This blocking is safe in the context of a 10kHz stepper driver interrupt
+          // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
+          cli();
+          // Reset the command to something, which will be ignored by the power panic routine,
+          // so this buffer length will not be counted twice.
+          *ptr ++ = CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED;
+          // Extract the current buffer length.
+          sdlen.lohi.lo = *ptr ++;
+          sdlen.lohi.hi = *ptr;
+          // and pass it to the planner queue.
+          planner_add_sd_length(sdlen.value);
+          sei();
         }
-	      cmdqueue_pop_front();
-		    planner_add_sd_length(sdlen.value);
-		    sei();
-	  }
+      }
+      // Now it is safe to release the already processed command block. If interrupted by the power panic now,
+      // this block's SD card length will not be counted twice as its command type has been replaced 
+      // by CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED.
+      cmdqueue_pop_front();
+    }
 	host_keepalive();
   }
 }
