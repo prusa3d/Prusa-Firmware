@@ -222,10 +222,6 @@ void MultiU24X24toH16(uint16_t& intRes, int32_t& longIn1, long& longIn2)
 
 // Some useful constants
 
-#define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIMSK1 |= (1<<OCIE1A)
-#define DISABLE_STEPPER_DRIVER_INTERRUPT() TIMSK1 &= ~(1<<OCIE1A)
-
-
 void checkHitEndstops()
 {
  if( endstop_x_hit || endstop_y_hit || endstop_z_hit) {
@@ -307,17 +303,6 @@ bool enable_z_endstop(bool check)
 //  first block->accelerate_until step_events_completed, then keeps going at constant speed until
 //  step_events_completed reaches block->decelerate_after after which it decelerates until the trapezoid generator is reset.
 //  The slope of acceleration is calculated with the leib ramp alghorithm.
-
-void st_wake_up() {
-  //  TCNT1 = 0;
-  ENABLE_STEPPER_DRIVER_INTERRUPT();
-}
-
-void step_wait(){
-    for(int8_t i=0; i < 6; i++){
-    }
-}
-
 
 FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   unsigned short timer;
@@ -1241,6 +1226,7 @@ void quickStop()
   DISABLE_STEPPER_DRIVER_INTERRUPT();
   while (blocks_queued()) plan_discard_current_block(); 
   current_block = NULL;
+  st_reset_timer();
   ENABLE_STEPPER_DRIVER_INTERRUPT();
 }
 

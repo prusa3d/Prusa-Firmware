@@ -3359,6 +3359,8 @@ static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
+  // Wait until the planner queue is drained and the stepper routine achieves
+  // an idle state.
   st_synchronize();
   if (tmc2130_wait_standstill_xy(1000)) {}
 //	  MYSERIAL.print("standstill OK");
@@ -3367,6 +3369,9 @@ static void lcd_silent_mode_set() {
   cli();
 	tmc2130_mode = SilentModeMenu?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_init();
+  // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
+  // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
+  st_reset_timer();
   sei();
 #endif //TMC2130
   digipot_init();

@@ -565,8 +565,7 @@ extern volatile uint32_t step_events_completed; // The number of step events exe
 void planner_abort_hard()
 {
     // Abort the stepper routine and flush the planner queue.
-    // DISABLE_STEPPER_DRIVER_INTERRUPT
-    TIMSK1 &= ~(1<<OCIE1A);
+    DISABLE_STEPPER_DRIVER_INTERRUPT();
 
     // Now the front-end (the Marlin_main.cpp with its current_position) is out of sync.
     // First update the planner's current position in the physical motor steps.
@@ -612,7 +611,7 @@ void planner_abort_hard()
 #endif
     }
 #endif
-    // Clear the planner queue.
+    // Clear the planner queue, reset and re-enable the stepper timer.
     quickStop();
 
     // Apply inverse world correction matrix.
@@ -1297,7 +1296,12 @@ Having the real displacement of the head, we can calculate the total movement le
 #ifdef PLANNER_DIAGNOSTICS
   planner_update_queue_min_counter();
 #endif /* PLANNER_DIAGNOSTIC */
-  st_wake_up();
+
+  // The stepper timer interrupt will run continuously from now on.
+  // If there are no planner blocks to be executed by the stepper routine,
+  // the stepper interrupt ticks at 1kHz to wake up and pick a block
+  // from the planner queue if available.
+  ENABLE_STEPPER_DRIVER_INTERRUPT();
 }
 
 #ifdef ENABLE_AUTO_BED_LEVELING

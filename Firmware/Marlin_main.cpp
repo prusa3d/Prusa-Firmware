@@ -628,6 +628,8 @@ void crashdet_stop_and_save_print2()
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 	card.closefile();
+  // Reset and re-enable the stepper timer just before the global interrupts are enabled.
+  st_reset_timer();
 	sei();
 }
 
@@ -1993,11 +1995,14 @@ void force_high_power_mode(bool start_high_power_section) {
 	if (silent == 1) {
 		//we are in silent mode, set to normal mode to enable crash detection
 
-
+    // Wait for the planner queue to drain and for the stepper timer routine to reach an idle state.
 		st_synchronize();
 		cli();
 		tmc2130_mode = (start_high_power_section == true) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
 		tmc2130_init();
+    // We may have missed a stepper timer interrupt due to the time spent in the tmc2130_init() routine.
+    // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
+    st_reset_timer();
 		sei();
 		digipot_init();
 	}
@@ -7918,6 +7923,8 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	card.sdprinting = false;
 //	card.closefile();
 	saved_printing = true;
+  // We may have missed a stepper timer interrupt. Be safe than sorry, reset the stepper timer before re-enabling interrupts.
+  st_reset_timer();
 	sei();
 	if ((z_move != 0) || (e_move != 0)) { // extruder or z move
 #if 1
