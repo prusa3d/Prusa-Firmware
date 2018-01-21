@@ -335,22 +335,28 @@ uint8_t lcdDrawUpdate = 2;                  /* Set to none-zero when the LCD nee
 // float raw_Ki, raw_Kd;
 #endif
 
-static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true, bool reset_menu_state = true) {
-  if (currentMenu != menu) {
-    currentMenu = menu;
-    encoderPosition = encoder;
-    if (reset_menu_state) {
-        // Resets the global shared C union.
-        // This ensures, that the menu entered will find out, that it shall initialize itself.
-        memset(&menuData, 0, sizeof(menuData));
-    }
-    if (feedback) lcd_quick_feedback();
-
-    // For LCD_PROGRESS_BAR re-initialize the custom characters
+static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true, bool reset_menu_state = true)
+{
+	asm("cli");
+	if (currentMenu != menu)
+	{
+		currentMenu = menu;
+		encoderPosition = encoder;
+		asm("sei");
+		if (reset_menu_state)
+		{
+			// Resets the global shared C union.
+			// This ensures, that the menu entered will find out, that it shall initialize itself.
+			memset(&menuData, 0, sizeof(menuData));
+		}
+		if (feedback) lcd_quick_feedback();
+		// For LCD_PROGRESS_BAR re-initialize the custom characters
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-    lcd_set_custom_characters(menu == lcd_status_screen);
+		lcd_set_custom_characters(menu == lcd_status_screen);
 #endif
-  }
+	}
+	else
+		asm("sei");
 }
 
 /* Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent */
@@ -2456,6 +2462,17 @@ void lcd_adjust_z() {
   lcd_implementation_clear();
   lcd_return_to_status();
 
+}
+
+void lcd_wait_for_heater() {
+	lcd_display_message_fullscreen_P(MSG_WIZARD_HEATING);
+
+		lcd.setCursor(0, 4);
+		lcd.print(LCD_STR_THERMOMETER[0]);
+		lcd.print(ftostr3(degHotend(active_extruder)));
+		lcd.print("/");
+		lcd.print(ftostr3(degTargetHotend(active_extruder)));
+		lcd.print(LCD_STR_DEGREE);
 }
 
 void lcd_wait_for_cool_down() {
@@ -5495,8 +5512,10 @@ void lcd_sdcard_menu()
   } \
   static void menu_action_setting_edit_ ## _name (const char* pstr, _type* ptr, _type minValue, _type maxValue) \
   { \
-    menuData.editMenuParentState.prevMenu = currentMenu; \
+    asm("cli"); \
+	menuData.editMenuParentState.prevMenu = currentMenu; \
     menuData.editMenuParentState.prevEncoderPosition = encoderPosition; \
+    asm("sei"); \
     \
     lcdDrawUpdate = 2; \
     menuData.editMenuParentState.editLabel = pstr; \
@@ -6910,6 +6929,9 @@ void lcd_setcontrast(uint8_t value)
 /* Warning: This function is called from interrupt context */
 void lcd_buttons_update()
 {
+	static bool _lock = false;
+	if (_lock) return;
+	_lock = true;
 #ifdef NEWPANEL
   uint8_t newbutton = 0;
   if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
@@ -7034,6 +7056,7 @@ void lcd_buttons_update()
     }
   }
   lastEncoderBits = enc;
+  _lock = false;
 }
 
 bool lcd_detected(void)

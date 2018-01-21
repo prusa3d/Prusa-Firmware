@@ -153,11 +153,13 @@ bool fsensor_check_autoload(void)
 
 ISR(PCINT2_vect)
 {
-//	return;
-	if (!((fsensor_int_pin_old ^ PINK) & FSENSOR_INT_PIN_MSK)) return;
 //	puts("PCINT2\n");
+	if (!((fsensor_int_pin_old ^ PINK) & FSENSOR_INT_PIN_MSK)) return;
+	fsensor_int_pin_old = PINK;
+	static bool _lock = false;
+	if (_lock) return;
+	_lock = true;
 //	return;
-
 	int st_cnt = fsensor_st_cnt;
 	fsensor_st_cnt = 0;
 	sei();
@@ -218,6 +220,7 @@ ISR(PCINT2_vect)
 		}
 	}
 	pat9125_y = 0;
+	_lock = false;
 	return;
 }
 
