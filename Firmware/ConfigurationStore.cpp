@@ -311,8 +311,6 @@ void Config_RetrieveSettings(uint16_t offset, uint8_t level)
         EEPROM_READ_VAR(i,max_jerk[Y_AXIS]);
 		EEPROM_READ_VAR(i,max_jerk[Z_AXIS]);
 		EEPROM_READ_VAR(i,max_jerk[E_AXIS]);
-		if (max_jerk[X_AXIS] > DEFAULT_XJERK) max_jerk[X_AXIS] = DEFAULT_XJERK;
-		if (max_jerk[Y_AXIS] > DEFAULT_YJERK) max_jerk[Y_AXIS] = DEFAULT_YJERK;
         EEPROM_READ_VAR(i,add_homing);
         #ifndef ULTIPANEL
         int plaPreheatHotendTemp, plaPreheatHPBTemp, plaPreheatFanSpeed;

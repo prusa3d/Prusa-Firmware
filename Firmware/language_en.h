@@ -385,10 +385,7 @@
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_OFF				"F. autoload [off]"
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_NA                "F. autoload [N/A]"
 #define(length=20, lines=4) MSG_PRESS_TO_UNLOAD					"Please press the knob to unload filament"
-#define(length=20, lines=4) MSG_PRESS_TO_PREHEAT				"Press knob to preheat nozzle and continue."
-#define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Was filament unload successfull?"
-#define(length=20, lines=4) MSG_CHECK_IDLER						"Please open idler and remove filament manually."
-#define(length=20, lines=4) MSG_PULL_OUT_FILAMENT				"Please pull out filament immediately"
+#define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Repeat unloading filament?"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
 
 #define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Default settings loaded"
@@ -411,4 +408,3 @@
 #define(length=20, lines=8) MSG_FW_VERSION_ALPHA		 "You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage." 
 #define(length=20, lines=8) MSG_FW_VERSION_BETA			 "You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."
 #define(length=20, lines=8) MSG_FW_VERSION_RC			 "This firmware version is release candidate. Some of the features may not work properly."
-#define(length=20, lines=8) MSG_FW_VERSION_DEBUG		 "This is development firmware version which contains additional debugging features. Using this version may cause printer damage."
