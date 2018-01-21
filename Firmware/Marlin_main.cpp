@@ -887,12 +887,11 @@ void factory_reset()
 }
 
 void show_fw_version_warnings() {
-	if (FW_DEV_VERSION == FW_VERSION_GOLD || FW_DEV_VERSION == FW_VERSION_RC) return;
+	if (FW_DEV_VERSION == FW_VERSION_GOLD) return;
 	switch (FW_DEV_VERSION) {
 	case(FW_VERSION_ALPHA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_ALPHA); break;
 	case(FW_VERSION_BETA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA); break;
 	case(FW_VERSION_RC): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_RC); break;
-	case(FW_VERSION_DEBUG): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_DEBUG); break;
 	default: lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_UNKNOWN); break;
 	}
 	lcd_update_enable(true);
@@ -1070,7 +1069,6 @@ void setup()
 		// EEPROM_LANG to number lower than 0x0ff.
 		// 1) Set a high power mode.
 		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
-		tmc2130_mode = TMC2130_MODE_NORMAL;
 		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
 
 	}
@@ -2021,12 +2019,6 @@ bool gcode_M45(bool onlyZ)
 	lcd_display_message_fullscreen_P(MSG_AUTO_HOME);
 	home_xy();
 
-	enable_endstops(false);
-	current_position[X_AXIS] += 5;
-	current_position[Y_AXIS] += 5;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
-	st_synchronize();
-
 	// Let the user move the Z axes up to the end stoppers.
 #ifdef TMC2130
 	if (calibrate_z_auto())
@@ -2100,7 +2092,7 @@ bool gcode_M45(bool onlyZ)
 			else
 			{
 				// Reset the baby step value and the baby step applied flag.
-				calibration_status_store(CALIBRATION_STATUS_XYZ_CALIBRATION);
+				calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
 				eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
 				// Complete XYZ calibration.
 				uint8_t point_too_far_mask = 0;
@@ -4962,8 +4954,6 @@ Sigma_Exit:
       if(code_seen('Y')) max_jerk[Y_AXIS] = code_value();
       if(code_seen('Z')) max_jerk[Z_AXIS] = code_value();
       if(code_seen('E')) max_jerk[E_AXIS] = code_value();
-		if (max_jerk[X_AXIS] > DEFAULT_XJERK) max_jerk[X_AXIS] = DEFAULT_XJERK;
-		if (max_jerk[Y_AXIS] > DEFAULT_YJERK) max_jerk[Y_AXIS] = DEFAULT_YJERK;
     }
     break;
     case 206: // M206 additional homing offset
@@ -5482,8 +5472,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         feedmultiplyBckp=feedmultiply;
         int8_t TooLowZ = 0;
 
-		float HotendTempBckp = degTargetHotend(active_extruder);
-		int fanSpeedBckp = fanSpeed;
         target[X_AXIS]=current_position[X_AXIS];
         target[Y_AXIS]=current_position[Y_AXIS];
         target[Z_AXIS]=current_position[Z_AXIS];
@@ -5553,14 +5541,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 		uint8_t cnt = 0;
-		int counterBeep = 0;	
-		fanSpeed = 0;
-		unsigned long waiting_start_time = millis();
-		uint8_t wait_for_user_state = 0;
+		int counterBeep = 0;
 		lcd_display_message_fullscreen_P(MSG_PRESS_TO_UNLOAD);
-		while (!(wait_for_user_state == 0 && lcd_clicked())){
+		while (!lcd_clicked()) {
 
-			//cnt++;
+			cnt++;
 			manage_heater();
 			manage_inactivity(true);
 
@@ -5570,7 +5555,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 			#endif // SNMM*/
 
-			//if (cnt == 0)
+			if (cnt == 0)
 			{
 #if BEEPER > 0
 				if (counterBeep == 500) {
@@ -5583,7 +5568,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 				if (counterBeep == 20) {
 					WRITE(BEEPER, LOW);
 				}
-				
 				counterBeep++;
 #else
 #if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
@@ -5593,61 +5577,18 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif
 #endif
 			}
-			
-			switch (wait_for_user_state) {
-			case 0: 
-				delay_keep_alive(4);
-
-				if (millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
-					lcd_display_message_fullscreen_P(MSG_PRESS_TO_PREHEAT);
-					wait_for_user_state = 1;
-					setTargetHotend(0, 0);
-					setTargetHotend(0, 1);
-					setTargetHotend(0, 2);
-					st_synchronize();
-					disable_e0();
-					disable_e1();
-					disable_e2();
-				}
-				break;
-			case 1:
-				delay_keep_alive(4);
-		
-				if (lcd_clicked()) {
-					setTargetHotend(HotendTempBckp, active_extruder);
-					lcd_wait_for_heater();
-
-					wait_for_user_state = 2;
-				}
-				break;
-			case 2:
-
-				if (abs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
-					lcd_display_message_fullscreen_P(MSG_PRESS_TO_UNLOAD);
-					waiting_start_time = millis();
-					wait_for_user_state = 0;
-				}
-				else {
-					counterBeep = 20; //beeper will be inactive during waiting for nozzle preheat
-					lcd.setCursor(1, 4);
-					lcd.print(ftostr3(degHotend(active_extruder)));
-				}
-				break;
-
-			}
 
 		}
 		WRITE(BEEPER, LOW);
 		
 		lcd_change_fil_state = 0;
-		
-
-		// Unload filament
+		while (lcd_change_fil_state == 0) {
 			lcd_display_message_fullscreen_P(MSG_UNLOADING_FILAMENT);
 			KEEPALIVE_STATE(IN_HANDLER);
 			custom_message = true;
 			lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
 
+			// Unload filament
 			if (code_seen('L'))
 			{
 				target[E_AXIS] += code_value();
@@ -5688,10 +5629,10 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5200 / 60, active_extruder);
             st_synchronize();
             target[E_AXIS] -= 15;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
+            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 160 / 60, active_extruder);
             st_synchronize();
             target[E_AXIS] -= 20;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
+            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000 / 60, active_extruder);
             st_synchronize();
             
 #endif // SNMM
@@ -5699,31 +5640,16 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 			//finish moves
 			st_synchronize();
-
-			lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
-			
 			//disable extruder steppers so filament can be removed
 			disable_e0();
 			disable_e1();
 			disable_e2();
 			delay(100);
-			 
-			
-			WRITE(BEEPER, HIGH);
-			counterBeep = 0;
-			while(!lcd_clicked() && (counterBeep < 50)) {
-				if(counterBeep > 5) WRITE(BEEPER, LOW);
-				delay_keep_alive(100);
-				counterBeep++;
-			}
-			WRITE(BEEPER, LOW);
-
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
-			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_UNLOAD_SUCCESSFULL, false, true);
-			if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(MSG_CHECK_IDLER);
+			lcd_change_fil_state = !lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_UNLOAD_SUCCESSFULL, false, false);
 			//lcd_return_to_status();
 			lcd_update_enable(true);
-		
+		}
         //Wait for user to insert filament
         lcd_wait_interact();
 		//load_filament_time = millis();
@@ -5857,7 +5783,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         
 
       //Not let's go back to print
-		fanSpeed = fanSpeedBckp;
 
       //Feed a little of filament to stabilize pressure
       target[E_AXIS]+= FILAMENTCHANGE_RECFEED;
@@ -6106,34 +6031,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
         st_synchronize();
         current_position[E_AXIS] -= 15;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 160 / 60, active_extruder);
         st_synchronize();
         current_position[E_AXIS] -= 20;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000 / 60, active_extruder);
 		st_synchronize();
-
-		lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
-
-		//disable extruder steppers so filament can be removed
-		disable_e0();
-		disable_e1();
-		disable_e2();
-		delay(100);
-
-
-		WRITE(BEEPER, HIGH);
-		uint8_t counterBeep = 0;
-		while (!lcd_clicked() && (counterBeep < 50)) {
-			if (counterBeep > 5) WRITE(BEEPER, LOW);
-			delay_keep_alive(100);
-			counterBeep++;
-		}
-		WRITE(BEEPER, LOW);
-		st_synchronize();	
-		while (lcd_clicked()) delay_keep_alive(100);
-
-		lcd_update_enable(true);
-	
 		lcd_setstatuspgm(WELCOME_MSG);
 		custom_message = false;
 		custom_message_type = 0;

@@ -8,12 +8,11 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.1.1-RC5"
-#define FW_COMMIT_NR   150
+#define FW_VERSION "3.1.1-RC4"
+#define FW_COMMIT_NR   145
 #define FW_DEV_VERSION FW_VERSION_RC
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
-#define FW_VERSION_DEBUG 5
 #define FW_VERSION_UNKNOWN 4
 #define FW_VERSION_ALPHA 3
 #define FW_VERSION_BETA 2
