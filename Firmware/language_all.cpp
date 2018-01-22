@@ -845,13 +845,6 @@ const char * const MSG_FW_VERSION_BETA_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FW_VERSION_BETA_CZ
 };
 
-const char MSG_FW_VERSION_DEBUG_EN[] PROGMEM = "This is development firmware version which contains additional debugging features. Using this version may cause printer damage.";
-const char MSG_FW_VERSION_DEBUG_CZ[] PROGMEM = "Toto je vyvojova verze firmwaru obsahujici funkce pro debugging. Pouziti teto verze muze poskodit Vasi tiskarnu.";
-const char * const MSG_FW_VERSION_DEBUG_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_FW_VERSION_DEBUG_EN,
-	MSG_FW_VERSION_DEBUG_CZ
-};
-
 const char MSG_FW_VERSION_RC_EN[] PROGMEM = "This firmware version is release candidate. Some of the features may not work properly.";
 const char MSG_FW_VERSION_RC_CZ[] PROGMEM = "Tato verze firmware je release candidate. Nektere z funkci nemusi pracovat spolehlive.";
 const char * const MSG_FW_VERSION_RC_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -859,8 +852,8 @@ const char * const MSG_FW_VERSION_RC_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FW_VERSION_RC_CZ
 };
 
-const char MSG_FW_VERSION_UNKNOWN_EN[] PROGMEM = "WARNING: Unknown firmware version";
-const char MSG_FW_VERSION_UNKNOWN_CZ[] PROGMEM = "VAROVANI: Neznama verze firmware";
+const char MSG_FW_VERSION_UNKNOWN_EN[] PROGMEM = "WARNING: This is an unofficial, unsupported build. Use at your own risk!";
+const char MSG_FW_VERSION_UNKNOWN_CZ[] PROGMEM = "VAROVANI: Neznama, nepodporovana verze firmware. Pouziti na vlastni nebezpeci!";
 const char * const MSG_FW_VERSION_UNKNOWN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FW_VERSION_UNKNOWN_EN,
 	MSG_FW_VERSION_UNKNOWN_CZ

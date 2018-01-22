@@ -401,8 +401,7 @@
 
 #define MSG_FSENS_NOT_RESPONDING     "CHYBA: Filament senzor nereaguje, zkontrolujte zapojeni."
 
-#define MSG_FW_VERSION_UNKNOWN		 "VAROVANI: Neznama verze firmware"
+#define MSG_FW_VERSION_UNKNOWN		 "VAROVANI: Neznama, nepodporovana verze firmware. Pouziti na vlastni nebezpeci!"
 #define MSG_FW_VERSION_ALPHA		 "Pouzivate alpha verzi firmwaru. Jedna se o vyvojovou verzi. Pouzivani teto verze firmware neni doporuceno a muze zpusobit poskozeni tiskarny." 
 #define MSG_FW_VERSION_BETA			 "Pouzivate beta verzi firmwaru. Jedna se o vyvojovou verzi. Pouzivani teto verze firmware neni doporuceno a muze zpusobit poskozeni tiskarny."
 #define MSG_FW_VERSION_RC			 "Tato verze firmware je release candidate. Nektere z funkci nemusi pracovat spolehlive."
-#define MSG_FW_VERSION_DEBUG		 "Toto je vyvojova verze firmwaru obsahujici funkce pro debugging. Pouziti teto verze muze poskodit Vasi tiskarnu."
