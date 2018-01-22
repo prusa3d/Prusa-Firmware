@@ -889,21 +889,21 @@ void factory_reset()
 void show_fw_version_warnings() {
 	if (FW_DEV_VERSION == FW_VERSION_GOLD || FW_DEV_VERSION == FW_VERSION_RC) return;
 	switch (FW_DEV_VERSION) {
-	case(FW_VERSION_ALPHA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_ALPHA); break;
-	case(FW_VERSION_BETA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA); break;
-	case(FW_VERSION_RC): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_RC); break;
-	case(FW_VERSION_DEBUG): 
-#if 1
+	case(FW_VERSION_ALPHA):   lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_ALPHA);   break;
+	case(FW_VERSION_BETA):    lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA);    break;
+  case(FW_VERSION_DEVEL):
+	case(FW_VERSION_DEBUG):
     lcd_update_enable(false);
     lcd_implementation_clear();
+  #if FW_DEV_VERSION == FW_VERSION_DEVEL
+    lcd_print_at_PGM(0, 0, PSTR("Development build !!"));
+  #else
     lcd_print_at_PGM(0, 0, PSTR("Debbugging build !!!"));
+  #endif
     lcd_print_at_PGM(0, 1, PSTR("May destroy printer!"));
     lcd_print_at_PGM(0, 2, PSTR("ver ")); lcd_printPGM(PSTR(FW_VERSION_FULL));
     lcd_print_at_PGM(0, 3, PSTR(FW_REPOSITORY));
     lcd_wait_for_click();
-#else
-    lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_DEBUG);
-#endif
     break;
 	default: lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_UNKNOWN); break;
 	}
