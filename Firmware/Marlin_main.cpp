@@ -887,11 +887,12 @@ void factory_reset()
 }
 
 void show_fw_version_warnings() {
-	if (FW_DEV_VERSION == FW_VERSION_GOLD) return;
+	if (FW_DEV_VERSION == FW_VERSION_GOLD || FW_DEV_VERSION == FW_VERSION_RC) return;
 	switch (FW_DEV_VERSION) {
 	case(FW_VERSION_ALPHA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_ALPHA); break;
 	case(FW_VERSION_BETA): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA); break;
 	case(FW_VERSION_RC): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_RC); break;
+	case(FW_VERSION_DEBUG): lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_DEBUG); break;
 	default: lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_UNKNOWN); break;
 	}
 	lcd_update_enable(true);
@@ -1069,6 +1070,7 @@ void setup()
 		// EEPROM_LANG to number lower than 0x0ff.
 		// 1) Set a high power mode.
 		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
+		tmc2130_mode = TMC2130_MODE_NORMAL;
 		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
 
 	}
@@ -2019,6 +2021,12 @@ bool gcode_M45(bool onlyZ)
 	lcd_display_message_fullscreen_P(MSG_AUTO_HOME);
 	home_xy();
 
+	enable_endstops(false);
+	current_position[X_AXIS] += 5;
+	current_position[Y_AXIS] += 5;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+	st_synchronize();
+
 	// Let the user move the Z axes up to the end stoppers.
 #ifdef TMC2130
 	if (calibrate_z_auto())
@@ -2092,7 +2100,7 @@ bool gcode_M45(bool onlyZ)
 			else
 			{
 				// Reset the baby step value and the baby step applied flag.
-				calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
+				calibration_status_store(CALIBRATION_STATUS_XYZ_CALIBRATION);
 				eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
 				// Complete XYZ calibration.
 				uint8_t point_too_far_mask = 0;
@@ -3053,11 +3061,10 @@ void process_commands()
 
 	case 75:
 	{
-		for (int i = 35; i <= 80; i++) {
+		for (int i = 40; i <= 110; i++) {
 			MYSERIAL.print(i);
-			MYSERIAL.print("  -");
-			MYSERIAL.print(int(temp_compensation_pinda_thermistor_offset(i) * 1000));
-     MYSERIAL.println("um");
+			MYSERIAL.print("  ");
+			MYSERIAL.println(temp_comp_interpolation(i));// / axis_steps_per_unit[Z_AXIS]);
 		}
 	}
 	break;
@@ -3082,12 +3089,12 @@ void process_commands()
 			int z_shift = 0; //unit: steps
 			float start_temp = 5 * (int)(current_temperature_pinda / 5);
 			if (start_temp < 35) start_temp = 35;
-			if (start_temp < current_temperature_pinda) start_temp = (int)(current_temperature_pinda);
-			SERIAL_ECHOPGM("Start temperature: ");
+			if (start_temp < current_temperature_pinda) start_temp += 5;
+			SERIAL_ECHOPGM("start temperature: ");
 			MYSERIAL.println(start_temp);
 
+//			setTargetHotend(200, 0);
 			setTargetBed(70 + (start_temp - 30));
-      
 
 			custom_message = true;
 			custom_message_type = 4;
@@ -3126,35 +3133,28 @@ void process_commands()
 
 			int i = -1; for (; i < 5; i++)
 			{
-				float temp = (42 + i * 7);
-        if (start_temp <= temp) break;
+				float temp = (40 + i * 5);
 				SERIAL_ECHOPGM("Step: ");
 				MYSERIAL.print(i + 2);
-				if (i > -1) { 
-				   SERIAL_ECHOLNPGM("/6 (skipped)");
-				} else {
-          SERIAL_ECHOLNPGM("/6");
-        }
+				SERIAL_ECHOLNPGM("/6 (skipped)");
 				SERIAL_ECHOPGM("PINDA temperature: ");
-				MYSERIAL.print((42 + i * 7));
+				MYSERIAL.print((40 + i*5));
 				SERIAL_ECHOPGM(" Z shift (mm):");
 				MYSERIAL.print(0);
 				SERIAL_ECHOLNPGM("");
 				if (i >= 0) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
-        //if (start_temp <= temp) break;
+				if (start_temp <= temp) break;
 			}
 
 			for (i++; i < 5; i++)
 			{
-				float temp = (42 + i * 7);
+				float temp = (40 + i * 5);
 				SERIAL_ECHOPGM("Step: ");
 				MYSERIAL.print(i + 2);
 				SERIAL_ECHOLNPGM("/6");
 				custom_message_state = i + 2;
-				if ((50 + 10 * (temp - 30) / 5) > 115) {
-				  setTargetBed(115);
-				} else setTargetBed(50 + 10 * (temp - 30) / 5);
-				if (i>2) setTargetHotend(255, 0);  //Boost to get to the end game (last couple probings)
+				setTargetBed(50 + 10 * (temp - 30) / 5);
+//				setTargetHotend(255, 0);
 				current_position[X_AXIS] = PINDA_PREHEAT_X;
 				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 				current_position[Z_AXIS] = PINDA_PREHEAT_Z;
@@ -3180,8 +3180,9 @@ void process_commands()
 				SERIAL_ECHOPGM(" Z shift (mm):");
 				MYSERIAL.print(current_position[Z_AXIS] - zero_z);
 				SERIAL_ECHOLNPGM("");
-        if (z_shift < 0) z_shift = 0; //Ensure that a small negative value doesn't throw out EEPROM word/float
-        EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
+
+				EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
+
 			}
 			custom_message_type = 0;
 			custom_message = false;
@@ -3195,13 +3196,7 @@ void process_commands()
 			disable_e1();
 			disable_e2();
 			setTargetBed(0); //set bed target temperature back to 0
-  		setTargetHotend(0,0); //set hotend target temperature back to 0
-      //Move head back out of the way
-      current_position[X_AXIS] = pgm_read_float(bed_ref_points);
-      current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
-      current_position[Z_AXIS] = 5; //Lift head up a little
-      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-      st_synchronize();
+//			setTargetHotend(0,0); //set hotend target temperature back to 0
 			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
 			lcd_update_enable(true);
 			lcd_update(2);
@@ -4954,6 +4949,8 @@ Sigma_Exit:
       if(code_seen('Y')) max_jerk[Y_AXIS] = code_value();
       if(code_seen('Z')) max_jerk[Z_AXIS] = code_value();
       if(code_seen('E')) max_jerk[E_AXIS] = code_value();
+		if (max_jerk[X_AXIS] > DEFAULT_XJERK) max_jerk[X_AXIS] = DEFAULT_XJERK;
+		if (max_jerk[Y_AXIS] > DEFAULT_YJERK) max_jerk[Y_AXIS] = DEFAULT_YJERK;
     }
     break;
     case 206: // M206 additional homing offset
@@ -5472,6 +5469,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         feedmultiplyBckp=feedmultiply;
         int8_t TooLowZ = 0;
 
+		float HotendTempBckp = degTargetHotend(active_extruder);
+		int fanSpeedBckp = fanSpeed;
         target[X_AXIS]=current_position[X_AXIS];
         target[Y_AXIS]=current_position[Y_AXIS];
         target[Z_AXIS]=current_position[Z_AXIS];
@@ -5541,11 +5540,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 		uint8_t cnt = 0;
-		int counterBeep = 0;
+		int counterBeep = 0;	
+		fanSpeed = 0;
+		unsigned long waiting_start_time = millis();
+		uint8_t wait_for_user_state = 0;
 		lcd_display_message_fullscreen_P(MSG_PRESS_TO_UNLOAD);
-		while (!lcd_clicked()) {
+		while (!(wait_for_user_state == 0 && lcd_clicked())){
 
-			cnt++;
+			//cnt++;
 			manage_heater();
 			manage_inactivity(true);
 
@@ -5555,7 +5557,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 			#endif // SNMM*/
 
-			if (cnt == 0)
+			//if (cnt == 0)
 			{
 #if BEEPER > 0
 				if (counterBeep == 500) {
@@ -5568,6 +5570,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 				if (counterBeep == 20) {
 					WRITE(BEEPER, LOW);
 				}
+				
 				counterBeep++;
 #else
 #if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
@@ -5577,18 +5580,61 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif
 #endif
 			}
+			
+			switch (wait_for_user_state) {
+			case 0: 
+				delay_keep_alive(4);
+
+				if (millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
+					lcd_display_message_fullscreen_P(MSG_PRESS_TO_PREHEAT);
+					wait_for_user_state = 1;
+					setTargetHotend(0, 0);
+					setTargetHotend(0, 1);
+					setTargetHotend(0, 2);
+					st_synchronize();
+					disable_e0();
+					disable_e1();
+					disable_e2();
+				}
+				break;
+			case 1:
+				delay_keep_alive(4);
+		
+				if (lcd_clicked()) {
+					setTargetHotend(HotendTempBckp, active_extruder);
+					lcd_wait_for_heater();
+
+					wait_for_user_state = 2;
+				}
+				break;
+			case 2:
+
+				if (abs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
+					lcd_display_message_fullscreen_P(MSG_PRESS_TO_UNLOAD);
+					waiting_start_time = millis();
+					wait_for_user_state = 0;
+				}
+				else {
+					counterBeep = 20; //beeper will be inactive during waiting for nozzle preheat
+					lcd.setCursor(1, 4);
+					lcd.print(ftostr3(degHotend(active_extruder)));
+				}
+				break;
+
+			}
 
 		}
 		WRITE(BEEPER, LOW);
 		
 		lcd_change_fil_state = 0;
-		while (lcd_change_fil_state == 0) {
+		
+
+		// Unload filament
 			lcd_display_message_fullscreen_P(MSG_UNLOADING_FILAMENT);
 			KEEPALIVE_STATE(IN_HANDLER);
 			custom_message = true;
 			lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
 
-			// Unload filament
 			if (code_seen('L'))
 			{
 				target[E_AXIS] += code_value();
@@ -5629,10 +5675,10 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5200 / 60, active_extruder);
             st_synchronize();
             target[E_AXIS] -= 15;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 160 / 60, active_extruder);
+            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
             st_synchronize();
             target[E_AXIS] -= 20;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000 / 60, active_extruder);
+            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
             st_synchronize();
             
 #endif // SNMM
@@ -5640,16 +5686,31 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 			//finish moves
 			st_synchronize();
+
+			lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
+			
 			//disable extruder steppers so filament can be removed
 			disable_e0();
 			disable_e1();
 			disable_e2();
 			delay(100);
+			 
+			
+			WRITE(BEEPER, HIGH);
+			counterBeep = 0;
+			while(!lcd_clicked() && (counterBeep < 50)) {
+				if(counterBeep > 5) WRITE(BEEPER, LOW);
+				delay_keep_alive(100);
+				counterBeep++;
+			}
+			WRITE(BEEPER, LOW);
+
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
-			lcd_change_fil_state = !lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_UNLOAD_SUCCESSFULL, false, false);
+			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_UNLOAD_SUCCESSFULL, false, true);
+			if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(MSG_CHECK_IDLER);
 			//lcd_return_to_status();
 			lcd_update_enable(true);
-		}
+		
         //Wait for user to insert filament
         lcd_wait_interact();
 		//load_filament_time = millis();
@@ -5783,6 +5844,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         
 
       //Not let's go back to print
+		fanSpeed = fanSpeedBckp;
 
       //Feed a little of filament to stabilize pressure
       target[E_AXIS]+= FILAMENTCHANGE_RECFEED;
@@ -6031,11 +6093,34 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
         st_synchronize();
         current_position[E_AXIS] -= 15;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 160 / 60, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
         st_synchronize();
         current_position[E_AXIS] -= 20;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000 / 60, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
 		st_synchronize();
+
+		lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
+
+		//disable extruder steppers so filament can be removed
+		disable_e0();
+		disable_e1();
+		disable_e2();
+		delay(100);
+
+
+		WRITE(BEEPER, HIGH);
+		uint8_t counterBeep = 0;
+		while (!lcd_clicked() && (counterBeep < 50)) {
+			if (counterBeep > 5) WRITE(BEEPER, LOW);
+			delay_keep_alive(100);
+			counterBeep++;
+		}
+		WRITE(BEEPER, LOW);
+		st_synchronize();	
+		while (lcd_clicked()) delay_keep_alive(100);
+
+		lcd_update_enable(true);
+	
 		lcd_setstatuspgm(WELCOME_MSG);
 		custom_message = false;
 		custom_message_type = 0;
@@ -7178,8 +7263,9 @@ float temp_comp_interpolation(float inp_temperature) {
 	shift[0] = 0;
 	for (i = 0; i < n; i++) {
 		if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &shift[i]); //read shift in steps from EEPROM
+		temp_C[i] = 50 + i * 10; //temperature in C
 #ifdef PINDA_THERMISTOR
-		temp_C[i] = 35 + i * 7; //temperature in C
+		temp_C[i] = 35 + i * 5; //temperature in C
 #else
 		temp_C[i] = 50 + i * 10; //temperature in C
 #endif
@@ -7224,11 +7310,9 @@ float temp_comp_interpolation(float inp_temperature) {
 				d = f[i];
 				sum = a*pow((inp_temperature - x[i]), 3) + b*pow((inp_temperature - x[i]), 2) + c*(inp_temperature - x[i]) + d;
 			}
-    // Create hard limits to prevent machine damage from error result
-		if (sum < 0) {
-		  return 0;
-		} else if ((sum / axis_steps_per_unit[Z_AXIS]) > 1.5) return (1.5 * axis_steps_per_unit[Z_AXIS]);
-   return sum;
+
+		return sum;
+
 }
 
 #ifdef PINDA_THERMISTOR
@@ -7286,8 +7370,8 @@ void serialecho_temperatures() {
 	float tt = degHotend(active_extruder);
 	SERIAL_PROTOCOLPGM("T:");
 	SERIAL_PROTOCOL(tt);
-	SERIAL_PROTOCOLPGM(" P:");
-	SERIAL_PROTOCOL(current_temperature_pinda);
+	SERIAL_PROTOCOLPGM(" E:");
+	SERIAL_PROTOCOL((int)active_extruder);
 	SERIAL_PROTOCOLPGM(" B:");
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");

@@ -8,11 +8,12 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.1.1-RC4"
-#define FW_COMMIT_NR   145
+#define FW_VERSION "3.1.1-RC5"
+#define FW_COMMIT_NR   150
 #define FW_DEV_VERSION FW_VERSION_RC
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
+#define FW_VERSION_DEBUG 5
 #define FW_VERSION_UNKNOWN 4
 #define FW_VERSION_ALPHA 3
 #define FW_VERSION_BETA 2
@@ -548,8 +549,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define SDSUPPORT // Enable SD Card Support in Hardware Console
 //#define SDSLOW // Use slower SD transfer mode (not normally needed - uncomment if you're getting volume init error)
 #define SD_CHECK_AND_RETRY // Use CRC checks and retries on the SD communication
-#define ENCODER_PULSES_PER_STEP 4 // Increase if you have a high resolution encoder
-#define ENCODER_STEPS_PER_MENU_ITEM 1 // Set according to ENCODER_PULSES_PER_STEP or your liking
+#define ENCODER_PULSES_PER_STEP 2 // Increase if you have a high resolution encoder
+#define ENCODER_STEPS_PER_MENU_ITEM 2 // Set according to ENCODER_PULSES_PER_STEP or your liking
 //#define ULTIMAKERCONTROLLER //as available from the Ultimaker online store.
 //#define ULTIPANEL  //the UltiPanel as on Thingiverse
 //#define LCD_FEEDBACK_FREQUENCY_HZ 1000	// this is the tone frequency the buzzer plays when on UI feedback. ie Screen Click
