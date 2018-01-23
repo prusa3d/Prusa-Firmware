@@ -222,10 +222,6 @@ void MultiU24X24toH16(uint16_t& intRes, int32_t& longIn1, long& longIn2)
 
 // Some useful constants
 
-#define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIMSK1 |= (1<<OCIE1A)
-#define DISABLE_STEPPER_DRIVER_INTERRUPT() TIMSK1 &= ~(1<<OCIE1A)
-
-
 void checkHitEndstops()
 {
  if( endstop_x_hit || endstop_y_hit || endstop_z_hit) {
@@ -307,17 +303,6 @@ bool enable_z_endstop(bool check)
 //  first block->accelerate_until step_events_completed, then keeps going at constant speed until
 //  step_events_completed reaches block->decelerate_after after which it decelerates until the trapezoid generator is reset.
 //  The slope of acceleration is calculated with the leib ramp alghorithm.
-
-void st_wake_up() {
-  //  TCNT1 = 0;
-  ENABLE_STEPPER_DRIVER_INTERRUPT();
-}
-
-void step_wait(){
-    for(int8_t i=0; i < 6; i++){
-    }
-}
-
 
 FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   unsigned short timer;
@@ -854,6 +839,11 @@ void isr() {
   if (OCR1A < TCNT1) {
     stepper_timer_overflow_state = true;
     WRITE_NC(BEEPER, HIGH);
+    SERIAL_PROTOCOLPGM("Stepper timer overflow ");
+    SERIAL_PROTOCOL(OCR1A);
+    SERIAL_PROTOCOLPGM("<");
+    SERIAL_PROTOCOL(TCNT1);
+    SERIAL_PROTOCOLLN("!");
   }
 #endif
 }
@@ -1137,6 +1127,7 @@ void st_init()
   // create_speed_lookuptable.py
   TCCR1B = (TCCR1B & ~(0x07<<CS10)) | (2<<CS10);
 
+  // Plan the first interrupt after 8ms from now.
   OCR1A = 0x4000;
   TCNT1 = 0;
   ENABLE_STEPPER_DRIVER_INTERRUPT();
@@ -1176,6 +1167,11 @@ void st_synchronize()
 void st_set_position(const long &x, const long &y, const long &z, const long &e)
 {
   CRITICAL_SECTION_START;
+  // Copy 4x4B.
+  // This block locks the interrupts globally for 4.56 us,
+  // which corresponds to a maximum repeat frequency of 219.18 kHz.
+  // This blocking is safe in the context of a 10kHz stepper driver interrupt
+  // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
   count_position[X_AXIS] = x;
   count_position[Y_AXIS] = y;
   count_position[Z_AXIS] = z;
@@ -1230,6 +1226,7 @@ void quickStop()
   DISABLE_STEPPER_DRIVER_INTERRUPT();
   while (blocks_queued()) plan_discard_current_block(); 
   current_block = NULL;
+  st_reset_timer();
   ENABLE_STEPPER_DRIVER_INTERRUPT();
 }
 
