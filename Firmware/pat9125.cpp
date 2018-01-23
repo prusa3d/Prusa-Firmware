@@ -17,14 +17,64 @@
 
 unsigned char pat9125_PID1 = 0;
 unsigned char pat9125_PID2 = 0;
-unsigned char pat9125_xres = 0;
-unsigned char pat9125_yres = 0;
 int pat9125_x = 0;
 int pat9125_y = 0;
 unsigned char pat9125_b = 0;
 unsigned char pat9125_s = 0;
 
-int pat9125_init(unsigned char xres, unsigned char yres)
+// Init sequence, address & value.
+const PROGMEM unsigned char pat9125_init_seq1[] = {
+	// Disable write protect.
+	PAT9125_WP, 0x5a,
+	// Set the X resolution to zero to let the sensor know that it could safely ignore movement in the X axis.
+    PAT9125_RES_X, PAT9125_XRES,
+    // Set the Y resolution to a maximum (or nearly a maximum).
+    PAT9125_RES_Y, PAT9125_YRES,
+    // Set 12-bit X/Y data format.
+    PAT9125_ORIENTATION, 0x04,
+//	PAT9125_ORIENTATION, 0x04 | (xinv?0x08:0) | (yinv?0x10:0), //!? direction switching does not work
+    // Now continues the magic sequence from the PAT912EL Application Note: Firmware Guides for Tracking Optimization.
+    0x5e, 0x08,
+    0x20, 0x64,
+    0x2b, 0x6d,
+    0x32, 0x2f,
+    // stopper
+    0x0ff
+};
+
+// Init sequence, address & value.
+const PROGMEM unsigned char pat9125_init_seq2[] = {
+	// Magic sequence to enforce full frame rate of the sensor.
+	0x06, 0x028,
+	0x33, 0x0d0,
+	0x36, 0x0c2,
+	0x3e, 0x001,
+	0x3f, 0x015,
+	0x41, 0x032,
+	0x42, 0x03b,
+	0x43, 0x0f2,
+	0x44, 0x03b,
+	0x45, 0x0f2,
+	0x46, 0x022,
+	0x47, 0x03b,
+	0x48, 0x0f2,
+	0x49, 0x03b,
+	0x4a, 0x0f0,
+	0x58, 0x098,
+	0x59, 0x00c,
+	0x5a, 0x008,
+	0x5b, 0x00c,
+	0x5c, 0x008,
+	0x61, 0x010,
+	0x67, 0x09b,
+	0x6e, 0x022,
+	0x71, 0x007,
+	0x72, 0x008,
+	// stopper
+    0x0ff
+};
+
+int pat9125_init()
 {
 #ifdef PAT9125_SWSPI
 	swspi_init();
@@ -35,8 +85,7 @@ int pat9125_init(unsigned char xres, unsigned char yres)
 #ifdef PAT9125_HWI2C
 	Wire.begin();
 #endif //PAT9125_HWI2C
-	pat9125_xres = xres;
-	pat9125_yres = yres;
+	// Verify that the sensor responds with its correct product ID.
 	pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
 	pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
 //	pat9125_PID1 = 0x31;
@@ -45,9 +94,44 @@ int pat9125_init(unsigned char xres, unsigned char yres)
 	{
 		return 0;
 	}
-    pat9125_wr_reg(PAT9125_RES_X, pat9125_xres);
-    pat9125_wr_reg(PAT9125_RES_Y, pat9125_yres);
-//	pat9125_wr_reg(PAT9125_ORIENTATION, 0x04 | (xinv?0x08:0) | (yinv?0x10:0)); //!? direction switching does not work
+	// Switch to bank0, not allowed to perform OTS_RegWriteRead.
+	pat9125_wr_reg(PAT9125_BANK_SELECTION, 0);
+	// Software reset (i.e. set bit7 to 1). It will reset to 0 automatically.
+	// After the reset, OTS_RegWriteRead is not allowed.
+	pat9125_wr_reg(PAT9125_CONFIG, 0x97);
+	// Wait until the sensor reboots.
+	// Delay 1ms.
+	delayMicroseconds(1000);
+	{
+		const unsigned char *ptr = pat9125_init_seq1;
+		for (;;) {
+			const unsigned char addr = pgm_read_byte_near(ptr ++);
+			if (addr == 0x0ff)
+				break;
+			if (! pat9125_wr_reg_verify(addr, pgm_read_byte_near(ptr ++)))
+				// Verification of the register write failed.
+				return 0;
+		}
+	}
+	// Delay 10ms.
+	delayMicroseconds(10000);
+	// Switch to bank1, not allowed to perform OTS_RegWrite.
+	pat9125_wr_reg(PAT9125_BANK_SELECTION, 0x01);
+	{
+		const unsigned char *ptr = pat9125_init_seq2;
+		for (;;) {
+			const unsigned char addr = pgm_read_byte_near(ptr ++);
+			if (addr == 0x0ff)
+				break;
+			if (! pat9125_wr_reg_verify(addr, pgm_read_byte_near(ptr ++)))
+				// Verification of the register write failed.
+				return 0;
+		}
+	}
+	// Switch to bank0, not allowed to perform OTS_RegWriteRead.
+	pat9125_wr_reg(PAT9125_BANK_SELECTION, 0x00);
+	// Enable write protect.
+	pat9125_wr_reg(PAT9125_WP, 0x00);
 	return 1;
 }
 
@@ -69,8 +153,8 @@ int pat9125_update()
 			if (iDY & 0x800) iDY -= 4096;
 			pat9125_x += iDX;
 			pat9125_y -= iDY; //negative number, because direction switching does not work
-			return 1;
 		}
+		return 1;
 	}
 	return 0;
 }
@@ -87,8 +171,8 @@ int pat9125_update_y()
 			int iDY = ucYL | ((ucXYH << 8) & 0xf00);
 			if (iDY & 0x800) iDY -= 4096;
 			pat9125_y -= iDY; //negative number, because direction switching does not work
-			return 1;
 		}
+		return 1;
 	}
 	return 0;
 }
@@ -133,7 +217,12 @@ void pat9125_wr_reg(unsigned char addr, unsigned char data)
 	Wire.write(data);
 	Wire.endTransmission();
 #endif //PAT9125_HWI2C
+}
 
+bool pat9125_wr_reg_verify(unsigned char addr, unsigned char data)
+{
+	pat9125_wr_reg(addr, data);
+	return pat9125_rd_reg(addr) == data;
 }
 
 #endif //PAT9125

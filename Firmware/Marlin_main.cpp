@@ -1231,7 +1231,7 @@ void setup()
 
 #ifdef PAT9125
 void fsensor_init() {
-	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
+	int pat9125 = pat9125_init();
 	printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	if (!pat9125)

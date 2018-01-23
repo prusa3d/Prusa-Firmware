@@ -500,11 +500,13 @@ void dcode_9125()
 		printf("x=%d y=%d b=%d s=%d\n", pat9125_x, pat9125_y, pat9125_b, pat9125_s);
 		return;
 	}
+/*
 	if (code_seen('R'))
 	{
 		unsigned char res = (int)code_value();
 		LOG("pat9125_init(xres=yres=%d)=%d\n", res, pat9125_init(res, res));
 	}
+*/
 	if (code_seen('X'))
 	{
 		pat9125_x = (int)code_value();
