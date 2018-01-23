@@ -501,7 +501,6 @@ void fanSpeedError(unsigned char _fan) {
 	}
 	else {
 		setTargetHotend0(0);
-		Stop();
 	}
 	SERIAL_ERROR_START;
 	switch (_fan) {

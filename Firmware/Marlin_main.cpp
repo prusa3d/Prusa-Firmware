@@ -2620,7 +2620,7 @@ void process_commands()
     {
       st_synchronize();
 
-#if 1
+#if 0
       SERIAL_ECHOPGM("G28, initial ");  print_world_coordinates();
       SERIAL_ECHOPGM("G28, initial ");  print_physical_coordinates();
 #endif
@@ -2865,7 +2865,7 @@ void process_commands()
 	  if (farm_mode) { prusa_statistics(20); };
 
 	  homing_flag = false;
-#if 1
+#if 0
       SERIAL_ECHOPGM("G28, final ");  print_world_coordinates();
       SERIAL_ECHOPGM("G28, final ");  print_physical_coordinates();
       SERIAL_ECHOPGM("G28, final ");  print_mesh_bed_leveling_table();
@@ -7351,13 +7351,6 @@ void long_pause() //long pause print
 	pause_lastpos[Y_AXIS] = current_position[Y_AXIS];
 	pause_lastpos[Z_AXIS] = current_position[Z_AXIS];
 	pause_lastpos[E_AXIS] = current_position[E_AXIS];
-
-	SERIAL_ECHOPGM("X: "); 
-	MYSERIAL.println(pause_lastpos[X_AXIS]);
-	SERIAL_ECHOPGM("Y: ");
-	MYSERIAL.println(pause_lastpos[Y_AXIS]);
-	SERIAL_ECHOPGM("Z: ");
-	MYSERIAL.println(pause_lastpos[Z_AXIS]);
 
 	//retract
 	current_position[E_AXIS] -= DEFAULT_RETRACTION;

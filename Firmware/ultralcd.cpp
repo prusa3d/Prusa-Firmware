@@ -612,7 +612,6 @@ void lcd_commands()
 			card.startFileprint();
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
-			SERIAL_ECHOPGM("isPrintPaused set to false!!!");
 		}
 		if (lcd_commands_step == 2 && !blocks_queued()) {	//turn on fan, move Z and unretract
 			
