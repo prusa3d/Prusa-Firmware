@@ -5934,9 +5934,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	break;
 
 #ifdef LIN_ADVANCE
-	case 900: // M900: Set LIN_ADVANCE options.
-		gcode_M900();
-	break;
+    case 900: // M900: Set LIN_ADVANCE options.
+        gcode_M900();
+    break;
 #endif
 
     case 907: // M907 Set digital trimpot motor current using axis codes.
@@ -6157,7 +6157,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		printf("Unknown M code: ");
 		printf(cmdbuffer + bufindr + CMDHDRSIZE);
 		printf("\n");
-		//SERIAL_ECHO(cmdbuffer + bufindr + CMDHDRSIZE);
     }
 	
   } // end if(code_seen('M')) (end of M codes)
