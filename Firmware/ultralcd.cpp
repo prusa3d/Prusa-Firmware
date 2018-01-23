@@ -576,12 +576,17 @@ void lcd_commands()
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
 	{
 		if(lcd_commands_step == 0) {
-			card.pauseSDPrint();
-			lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
-			lcdDrawUpdate = 3;
-			lcd_commands_step = 1;
+			if (card.sdprinting) {
+				card.pauseSDPrint();
+				lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
+				lcdDrawUpdate = 3;
+				lcd_commands_step = 1;
+			}
+			else {
+				lcd_commands_type = 0;
+			}
 		}
-		if (lcd_commands_step == 1 && !blocks_queued()) {
+		if (lcd_commands_step == 1 && !blocks_queued() && !homing_flag) {
 			lcd_setstatuspgm(MSG_PRINT_PAUSED);
 			isPrintPaused = true;
 			long_pause();
@@ -598,7 +603,7 @@ void lcd_commands()
 			lcdDrawUpdate = 3;
 			lcd_commands_step = 4;
 		}
-		if (lcd_commands_step == 1 && !blocks_queued()) {	//recover feedmultiply
+		if (lcd_commands_step == 1 && !blocks_queued() && (current_position[Z_AXIS] == pause_lastpos[Z_AXIS])) {	//recover feedmultiply
 			
 			sprintf_P(cmd1, PSTR("M220 S%d"), saved_feedmultiply);
 			enquecommand(cmd1);
@@ -607,6 +612,7 @@ void lcd_commands()
 			card.startFileprint();
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
+			SERIAL_ECHOPGM("isPrintPaused set to false!!!");
 		}
 		if (lcd_commands_step == 2 && !blocks_queued()) {	//turn on fan, move Z and unretract
 			
