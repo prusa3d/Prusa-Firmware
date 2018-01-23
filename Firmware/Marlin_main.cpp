@@ -3829,7 +3829,10 @@ void process_commands()
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
 		lcd_update(2);
 		break;
-
+	default:
+		printf("Unknown G code: ");
+		printf(cmdbuffer + bufindr + CMDHDRSIZE);
+		printf("\n");
 
 
 
@@ -3846,7 +3849,10 @@ void process_commands()
 	   
 	 /*for (++strchr_pointer; *strchr_pointer == ' ' || *strchr_pointer == '\t'; ++strchr_pointer);*/
 	  if (*(strchr_pointer+index) < '0' || *(strchr_pointer+index) > '9') {
-		  SERIAL_ECHOLNPGM("Invalid M code");
+		  printf("Invalid M code: ");
+		  printf(cmdbuffer + bufindr + CMDHDRSIZE);
+		  printf("\n");
+
 	  } else
     switch((int)code_value())
     {
@@ -5926,11 +5932,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
 	}
 	break;
-            
+
 #ifdef LIN_ADVANCE
-    case 900: // M900: Set LIN_ADVANCE options.
-        gcode_M900();
-    break;
+	case 900: // M900: Set LIN_ADVANCE options.
+		gcode_M900();
+	break;
 #endif
 
     case 907: // M907 Set digital trimpot motor current using axis codes.
@@ -6147,7 +6153,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       gcode_LastN = Stopped_gcode_LastN;
       FlushSerialRequestResend();
     break;
-	default: SERIAL_ECHOLNPGM("Invalid M code.");
+	default: 
+		printf("Unknown M code: ");
+		printf(cmdbuffer + bufindr + CMDHDRSIZE);
+		printf("\n");
+		//SERIAL_ECHO(cmdbuffer + bufindr + CMDHDRSIZE);
     }
 	
   } // end if(code_seen('M')) (end of M codes)
