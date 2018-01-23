@@ -603,7 +603,7 @@ void lcd_commands()
 			lcdDrawUpdate = 3;
 			lcd_commands_step = 4;
 		}
-		if (lcd_commands_step == 1 && !blocks_queued() && (current_position[Z_AXIS] == pause_lastpos[Z_AXIS])) {	//recover feedmultiply
+		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty()) {	//recover feedmultiply; cmd_buffer_empty() ensures that card.sdprinting is synchronized with buffered commands and thus print cant be paused until resume is finished
 			
 			sprintf_P(cmd1, PSTR("M220 S%d"), saved_feedmultiply);
 			enquecommand(cmd1);
