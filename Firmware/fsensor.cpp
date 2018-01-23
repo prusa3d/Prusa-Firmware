@@ -60,7 +60,7 @@ void fsensor_unblock() {
 bool fsensor_enable()
 {
 //	puts_P(PSTR("fsensor_enable\n"));
-	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
+	int pat9125 = pat9125_init();
 //    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
 	if (pat9125)
 		fsensor_not_responding = false;
@@ -168,7 +168,9 @@ ISR(PCINT2_vect)
 	*digitalPinToPCMSK(fsensor_int_pin) |= bit(digitalPinToPCMSKbit(fsensor_int_pin));*/
 	if (!pat9125_update_y())
 	{
-//		puts_P(PSTR("pat9125 not responding.\n"));
+#ifdef DEBUG_FSENSOR_LOG
+		puts_P(PSTR("pat9125 not responding.\n"));
+#endif //DEBUG_FSENSOR_LOG
 		fsensor_disable();
 		fsensor_not_responding = true;
 	}
