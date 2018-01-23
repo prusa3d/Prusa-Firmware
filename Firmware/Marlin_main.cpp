@@ -662,8 +662,7 @@ void crashdet_detected()
 	lcd_setstatuspgm(MSG_CRASH_DETECTED);
 	if (yesno)
 	{
-		enquecommand_P(PSTR("G28 X"));
-		enquecommand_P(PSTR("G28 Y"));
+		enquecommand_P(PSTR("G28 X Y"));
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}
 	else

@@ -576,12 +576,17 @@ void lcd_commands()
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
 	{
 		if(lcd_commands_step == 0) {
-			card.pauseSDPrint();
-			lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
-			lcdDrawUpdate = 3;
-			lcd_commands_step = 1;
+			if (card.sdprinting) {
+				card.pauseSDPrint();
+				lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
+				lcdDrawUpdate = 3;
+				lcd_commands_step = 1;
+			}
+			else {
+				lcd_commands_type = 0;
+			}
 		}
-		if (lcd_commands_step == 1 && !blocks_queued()) {
+		if (lcd_commands_step == 1 && !blocks_queued() && !homing_flag) {
 			lcd_setstatuspgm(MSG_PRINT_PAUSED);
 			isPrintPaused = true;
 			long_pause();
@@ -598,7 +603,7 @@ void lcd_commands()
 			lcdDrawUpdate = 3;
 			lcd_commands_step = 4;
 		}
-		if (lcd_commands_step == 1 && !blocks_queued()) {	//recover feedmultiply
+		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty()) {	//recover feedmultiply; cmd_buffer_empty() ensures that card.sdprinting is synchronized with buffered commands and thus print cant be paused until resume is finished
 			
 			sprintf_P(cmd1, PSTR("M220 S%d"), saved_feedmultiply);
 			enquecommand(cmd1);
