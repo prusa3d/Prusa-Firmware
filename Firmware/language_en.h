@@ -275,10 +275,23 @@
 #define(length=20, lines=8) MSG_PAPER						"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 
 #define MSG_BED_CORRECTION_MENU									"Bed level correct"
+/* Stock Bed correction
 #define(length=14,lines=1) MSG_BED_CORRECTION_LEFT								"Left side [um]"
 #define(length=14,lines=1) MSG_BED_CORRECTION_RIGHT								"Right side[um]"
 #define(length=14,lines=1) MSG_BED_CORRECTION_FRONT								"Front side[um]"
 #define(length=14,lines=1) MSG_BED_CORRECTION_REAR								"Rear side [um]"
+*/
+// Hyperfine Bed Tuning
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_LEFT        "Fr.Left  a[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_CENTR       "Fr.Centr b[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_FRONT_RIGHT       "Fr.Right c[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_MID_RIGHT         "Mi.Right d[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR_RIGHT        "Re.Right e[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR_CENTR        "Re.Centr f[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_REAR_LEFT         "Re.Left  g[um]"
+#define(length=14,lines=1) MSG_BED_CORRECTION_MID_LEFT          "Mi.Left  h[um]"
+// end Hyperfine Bed Tuning
+
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
