@@ -258,7 +258,6 @@ void lcd_farm_sdcard_menu();
 void lcd_farm_sdcard_menu_w();
 //void get_description();
 
-void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();
 void adjust_bed_reset();
 void lcd_extr_cal_reset();
