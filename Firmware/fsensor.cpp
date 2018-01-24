@@ -14,7 +14,7 @@
 #define FSENSOR_ERR_MAX          5  //filament sensor max error count
 #define FSENSOR_INT_PIN         63  //filament sensor interrupt pin PK1
 #define FSENSOR_INT_PIN_MSK   0x02  //filament sensor interrupt pin mask (bit1)
-#define FSENSOR_CHUNK_LEN      560  //filament sensor chunk length in steps
+#define FSENSOR_CHUNK_LEN      280  //filament sensor chunk length in steps
 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
