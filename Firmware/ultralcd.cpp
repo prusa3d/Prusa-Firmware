@@ -570,12 +570,17 @@ void lcd_commands()
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
 	{
 		if(lcd_commands_step == 0) {
-			card.pauseSDPrint();
-			lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
-			lcdDrawUpdate = 3;
-			lcd_commands_step = 1;
+			if (card.sdprinting) {
+				card.pauseSDPrint();
+				lcd_setstatuspgm(MSG_FINISHING_MOVEMENTS);
+				lcdDrawUpdate = 3;
+				lcd_commands_step = 1;
+			}
+			else {
+				lcd_commands_type = 0;
+			}
 		}
-		if (lcd_commands_step == 1 && !blocks_queued()) {
+		if (lcd_commands_step == 1 && !blocks_queued() && !homing_flag) {
 			lcd_setstatuspgm(MSG_PRINT_PAUSED);
 			isPrintPaused = true;
 			long_pause();
@@ -592,7 +597,7 @@ void lcd_commands()
 			lcdDrawUpdate = 3;
 			lcd_commands_step = 4;
 		}
-		if (lcd_commands_step == 1 && !blocks_queued()) {	//recover feedmultiply
+		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty()) {	//recover feedmultiply; cmd_buffer_empty() ensures that card.sdprinting is synchronized with buffered commands and thus print cant be paused until resume is finished
 			
 			sprintf_P(cmd1, PSTR("M220 S%d"), saved_feedmultiply);
 			enquecommand(cmd1);
@@ -662,10 +667,10 @@ void lcd_commands()
 		if (lcd_commands_step == 10 && !blocks_queued() && cmd_buffer_empty())
 		{
 			enquecommand_P(PSTR("M107"));
-			enquecommand_P(PSTR("M104 S210"));
-			enquecommand_P(PSTR("M140 S55"));
-			enquecommand_P(PSTR("M190 S55"));
-			enquecommand_P(PSTR("M109 S210"));
+			enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(PSTR("T0"));
 			enquecommand_P(MSG_M117_V2_CALIBRATION);
 			enquecommand_P(PSTR("G87")); //sets calibration status
@@ -926,10 +931,10 @@ void lcd_commands()
 		if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
 		{
 			enquecommand_P(PSTR("M107"));
-			enquecommand_P(PSTR("M104 S210"));
-			enquecommand_P(PSTR("M140 S55"));
-			enquecommand_P(PSTR("M190 S55"));
-			enquecommand_P(PSTR("M109 S210"));
+			enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(MSG_M117_V2_CALIBRATION);
 			enquecommand_P(PSTR("G87")); //sets calibration status
 			enquecommand_P(PSTR("G28"));
@@ -1557,6 +1562,7 @@ static void lcd_menu_fails_stats()
     
 }
 
+#ifdef DEBUG_BUILD
 extern uint16_t SP_min;
 extern char* __malloc_heap_start;
 extern char* __malloc_heap_end;
@@ -1571,6 +1577,7 @@ static void lcd_menu_debug()
         lcd_return_to_status();
     }
 }
+#endif /* DEBUG_BUILD */
 
 static void lcd_menu_temperatures()
 {
@@ -1669,6 +1676,9 @@ static void lcd_support_menu()
 
   MENU_ITEM(back, PSTR("Firmware:"), lcd_main_menu);
   MENU_ITEM(back, PSTR(" " FW_VERSION_FULL), lcd_main_menu);
+#if (FW_DEV_VERSION != FW_VERSION_GOLD) && (FW_DEV_VERSION != FW_VERSION_RC)
+  MENU_ITEM(back, PSTR(" repo " FW_REPOSITORY), lcd_main_menu);
+#endif
   // Ideally this block would be optimized out by the compiler.
 /*  const uint8_t fw_string_len = strlen_P(FW_VERSION_STR_P());
   if (fw_string_len < 6) {
@@ -1704,8 +1714,11 @@ static void lcd_support_menu()
   MENU_ITEM(submenu, MSG_MENU_TEMPERATURES, lcd_menu_temperatures);
 
   MENU_ITEM(submenu, MSG_MENU_VOLTAGES, lcd_menu_voltages);
-    
+
+#ifdef DEBUG_BUILD
   MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
+#endif /* DEBUG_BUILD */
+
   #endif //MK1BP
   END_MENU();
 }
@@ -3342,6 +3355,8 @@ static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
+  // Wait until the planner queue is drained and the stepper routine achieves
+  // an idle state.
   st_synchronize();
   if (tmc2130_wait_standstill_xy(1000)) {}
 //	  MYSERIAL.print("standstill OK");
@@ -3350,6 +3365,9 @@ static void lcd_silent_mode_set() {
   cli();
 	tmc2130_mode = SilentModeMenu?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_init();
+  // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
+  // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
+  st_reset_timer();
   sei();
 #endif //TMC2130
   digipot_init();

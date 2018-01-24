@@ -2,23 +2,45 @@
 #define CONFIGURATION_H
 
 #include "boards.h"
-#include "Configuration_prusa.h"
 
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
 #define FW_VERSION "3.1.1-RC5"
-#define FW_COMMIT_NR   150
-#define FW_DEV_VERSION FW_VERSION_RC
+#define FW_COMMIT_NR   151
+// FW_VERSION_UNKNOWN means this is an unofficial build.
+// The firmware should only be checked into github with this symbol.
+#define FW_DEV_VERSION FW_VERSION_UNKNOWN
+#define FW_REPOSITORY "Prusa3D/MK3"
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
-#define FW_VERSION_DEBUG 5
-#define FW_VERSION_UNKNOWN 4
-#define FW_VERSION_ALPHA 3
-#define FW_VERSION_BETA 2
-#define FW_VERSION_RC 1
-#define FW_VERSION_GOLD 0
+// Debug version has debugging enabled (the symbol DEBUG_BUILD is set).
+// The debug build may be a bit slower than the non-debug build, therefore the debug build should
+// not be shipped to a customer.
+#define FW_VERSION_DEBUG    6
+// This is a development build. A development build is either built from an unofficial git repository, 
+// or from an unofficial branch, or it does not have a label set. Only the build server should set this build type.
+#define FW_VERSION_DEVEL    5
+// This is an alpha release. Only the build server should set this build type.
+#define FW_VERSION_ALPHA    4
+// This is a beta release. Only the build server should set this build type.
+#define FW_VERSION_BETA     3
+// This is a release candidate build. Only the build server should set this build type.
+#define FW_VERSION_RC       2
+// This is a final release. Only the build server should set this build type.
+#define FW_VERSION_GOLD     1
+// This is an unofficial build. The firmware should only be checked into github with this symbol,
+// the build server shall never produce builds with this build type.
+#define FW_VERSION_UNKNOWN  0
+
+#if FW_DEV_VERSION == FW_VERSION_DEBUG
+#define DEBUG_BUILD
+#else
+#undef DEBUG_BUILD
+#endif
+
+#include "Configuration_prusa.h"
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10

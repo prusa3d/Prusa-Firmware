@@ -23,24 +23,23 @@
 #define PAT9125_SHUTTER			0x14
 #define PAT9125_FRAME			0x17
 #define PAT9125_ORIENTATION		0x19
+#define PAT9125_BANK_SELECTION	0x7f
 
 extern unsigned char pat9125_PID1;
 extern unsigned char pat9125_PID2;
-
-extern unsigned char pat9125_xres;
-extern unsigned char pat9125_yres;
 
 extern int pat9125_x;
 extern int pat9125_y;
 extern unsigned char pat9125_b;
 extern unsigned char pat9125_s;
 
-extern int pat9125_init(unsigned char xres, unsigned char yres);
+extern int pat9125_init();
 extern int pat9125_update();
 extern int pat9125_update_y();
 
 extern unsigned char pat9125_rd_reg(unsigned char addr);
 extern void pat9125_wr_reg(unsigned char addr, unsigned char data);
+extern bool pat9125_wr_reg_verify(unsigned char addr, unsigned char data);
 
 
 #endif //PAT9125_H
