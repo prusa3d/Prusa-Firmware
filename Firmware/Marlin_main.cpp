@@ -3852,15 +3852,7 @@ void process_commands()
 		lcd_update(2);
 		break;
 	default:
-		printf("Unknown G code: ");
-		printf(cmdbuffer + bufindr + CMDHDRSIZE);
-		printf("\n");
-
-
-
-
-
-
+		printf_P(PSTR("Unknown G code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
   } // end if(code_seen('G'))
 
@@ -3871,9 +3863,7 @@ void process_commands()
 	   
 	 /*for (++strchr_pointer; *strchr_pointer == ' ' || *strchr_pointer == '\t'; ++strchr_pointer);*/
 	  if (*(strchr_pointer+index) < '0' || *(strchr_pointer+index) > '9') {
-		  printf("Invalid M code: ");
-		  printf(cmdbuffer + bufindr + CMDHDRSIZE);
-		  printf("\n");
+		  printf_P(PSTR("Invalid M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
 
 	  } else
     switch((int)code_value())
@@ -6176,9 +6166,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       FlushSerialRequestResend();
     break;
 	default: 
-		printf("Unknown M code: ");
-		printf(cmdbuffer + bufindr + CMDHDRSIZE);
-		printf("\n");
+		printf_P(PSTR("Unknown M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
 	
   } // end if(code_seen('M')) (end of M codes)

@@ -3501,6 +3501,7 @@ void lcd_second_serial_set() {
 	if(selectedSerialPort == 1) selectedSerialPort = 0;
 	else selectedSerialPort = 1;
 	eeprom_update_byte((unsigned char *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
+	MYSERIAL.begin(BAUDRATE);
 	lcd_goto_menu(lcd_settings_menu, 11);
 }
 
