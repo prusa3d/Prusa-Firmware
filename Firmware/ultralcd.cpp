@@ -2410,6 +2410,7 @@ static void lcd_adjust_bed()
         eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT, menuData.adjustBed.mid_left = menuData.adjustBed.mid_left2);
 
     START_MENU();
+	MENU_ITEM(back, MSG_SETTINGS, lcd_calibration_menu);
     MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_FRONT_LEFT, &menuData.adjustBed.front_left2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
     MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_FRONT_CENTR, &menuData.adjustBed.front_centr2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
     MENU_ITEM_EDIT(int3, MSG_BED_CORRECTION_FRONT_RIGHT, &menuData.adjustBed.front_right2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
