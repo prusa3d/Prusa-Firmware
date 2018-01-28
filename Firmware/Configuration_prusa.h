@@ -511,7 +511,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define PINDA_PREHEAT_X 20
 #define PINDA_PREHEAT_Y 60
-#define PINDA_PREHEAT_Z 0.15
+#define PINDA_PREHEAT_Z 0.10
 /*
 #define PINDA_PREHEAT_X 70
 #define PINDA_PREHEAT_Y -3
