@@ -991,7 +991,7 @@ void setup()
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
-	Config_RetrieveSettings(EEPROM_OFFSET);
+	bool previous_settings_retrieved = Config_RetrieveSettings(EEPROM_OFFSET);
 	SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
 
 	tp_init();    // Initialize temperature loop
@@ -1150,6 +1150,8 @@ void setup()
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
   show_fw_version_warnings();
+
+  if (!previous_settings_retrieved) lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version was changed, inform user that default setting were loaded
 
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
