@@ -461,33 +461,76 @@ extern void st_synchronize();
 
 void dcode_2130()
 {
+	uint16_t test_feedrate = 2000;
+	uint16_t sg;
+	uint8_t axis = 0xff;
+
+	/*
+	feedrates for unload:
+	5800
+	3600
+	800
+	*/
+
 //	printf("test");
 	printf_P(PSTR("D2130 - TMC2130\n"));
-	uint8_t axis = 0xff;
+	
 	if (code_seen('X'))
 		axis = X_AXIS;
 	else if (code_seen('Y'))
 		axis = Y_AXIS;
-	if (axis != 0xff)
-	{
+	else if (code_seen('E'))
+		axis = E_AXIS;
+
+	if (code_seen('F')) test_feedrate = code_value();
+
+	//if (code_seen('C')) tmc2130_current_unload = code_value();
+
+	switch (axis) {
+	case(X_AXIS):
+	case(Y_AXIS):
 		homeaxis(axis);
 		tmc2130_sg_meassure_start(axis);
 		memcpy(destination, current_position, sizeof(destination));
-        destination[axis] = 200;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[X_AXIS]/60, active_extruder);
-        st_synchronize();
+		destination[axis] = 200;
+		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[X_AXIS] / 60, active_extruder);
+		st_synchronize();
 		memcpy(destination, current_position, sizeof(destination));
-        destination[axis] = 0;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[X_AXIS]/60, active_extruder);
-        st_synchronize();
-		uint16_t sg = tmc2130_sg_meassure_stop();
+		destination[axis] = 0;
+		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[X_AXIS] / 60, active_extruder);
+		st_synchronize();
+		sg = tmc2130_sg_meassure_stop();
 		tmc2130_sg_meassure = 0xff;
-		printf_P(PSTR("Meassure avg = %d\n"), sg);
+		break;
+	case(E_AXIS):
+		//tmc2130_set_current_h(E_AXIS, tmc2130_current_unload);
+		//tmc2130_set_current_r(E_AXIS, tmc2130_current_unload);
+		//tmc2130_print_currents();
+
+
+		printf_P(PSTR("E_AXIS test; feedrate: %d\n"), test_feedrate);
+		tmc2130_sg_meassure_start(axis);
+		memcpy(destination, current_position, sizeof(destination));
+		destination[axis] += 100;
+		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], test_feedrate/60, active_extruder);
+		st_synchronize();
+		memcpy(destination, current_position, sizeof(destination));
+		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], test_feedrate/60, active_extruder);
+		st_synchronize();
+		sg = tmc2130_sg_meassure_stop();
+		break;
+
+	default:
+		break;
 	}
+	printf_P(PSTR("Meassure avg = %d\n"), sg);
+
 }
+
 
 void dcode_9125()
 {
+#ifdef PAT9125_DEBUG
 	LOG("D9125 - PAT9125\n");
 	if ((strchr_pointer[1+4] == '?') || (strchr_pointer[1+4] == 0))
 	{
@@ -522,6 +565,8 @@ void dcode_9125()
 		fsensor_log = (int)code_value();
 		LOG("fsensor_log=%d\n", fsensor_log);
 	}
+#endif
 }
+
 
 #endif //DEBUG_DCODES

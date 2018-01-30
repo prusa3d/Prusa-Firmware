@@ -276,9 +276,31 @@ bool tmc2130_update_sg()
 		tmc2130_sg_meassure_val += sg;
 		tmc2130_sg_meassure_cnt++;
 //		printf_P(PSTR("tmc2130_update_sg - meassure - sg=%d\n"), sg);
+		printf_P(PSTR("sg = %d \n"), sg);
 		return true;
 	}
 	return false;
+}
+
+void tmc2130_unload_enter() {
+	uint8_t cs = tmc2130_cs[E_AXIS];
+	sg_homing_axes_mask |= E_AXIS_MASK;
+
+	tmc2130_wr(cs, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL); //spread cycle
+	tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr_home[E_AXIS]) << 16)); //stallguard home threshold for E axis
+	//			tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
+	tmc2130_wr(cs, TMC2130_REG_TCOOLTHRS, 500); //velocity threshold for stop on stall
+
+	tmc2130_setup_chopper(E_AXIS, tmc2130_mres[E_AXIS], tmc2130_current_h[E_AXIS], tmc2130_current_r_home[E_AXIS]);
+	tmc2130_wr(cs, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS); 
+	// spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])
+	//stallguard output DIAG1, DIAG1 = pushpull
+
+}
+
+void tmc2130_unload_exit() {
+	if (sg_homing_axes_mask) sg_homing_axes_mask = 0x00;
+	tmc2130_sg_crash = false;
 }
 
 void tmc2130_home_enter(uint8_t axes_mask)
@@ -348,6 +370,12 @@ void tmc2130_sg_meassure_start(uint8_t axis)
 
 uint16_t tmc2130_sg_meassure_stop()
 {
+	SERIAL_ECHOPGM("val:");
+	MYSERIAL.println(tmc2130_sg_meassure_val);
+
+	SERIAL_ECHOPGM("cnt:");
+	MYSERIAL.println(tmc2130_sg_meassure_cnt);
+
 	tmc2130_sg_meassure = 0xff;
 	return tmc2130_sg_meassure_val / tmc2130_sg_meassure_cnt;
 }

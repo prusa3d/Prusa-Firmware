@@ -1743,7 +1743,9 @@ void lcd_set_filament_autoload() {
 
 void lcd_unLoadFilament()
 {
-
+#ifdef DEBUG_DISABLE_PREVENT_EXTRUDER
+	enquecommand_P(PSTR("M702")); //unload filament
+#else
   if (degHotend0() > EXTRUDE_MINTEMP) {
 	
 	  enquecommand_P(PSTR("M702")); //unload filament
@@ -1761,6 +1763,7 @@ void lcd_unLoadFilament()
   }
 
   lcd_return_to_status();
+#endif //DEBUG_DISABLE_PREVENT_EXTRUDER
 }
 
 void lcd_change_filament() {

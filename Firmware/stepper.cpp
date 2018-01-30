@@ -98,6 +98,7 @@ static bool old_z_max_endstop=false;
 static bool check_endstops = true;
 
 static bool check_z_endstop = false;
+static bool check_e_endstop = false;
 
 int8_t SilentMode = 0;
 
@@ -259,10 +260,11 @@ void checkHitEndstops()
 
 bool endstops_hit_on_purpose()
 {
-  bool hit = endstop_x_hit || endstop_y_hit || endstop_z_hit;
+  bool hit = endstop_x_hit || endstop_y_hit || endstop_z_hit || endstop_e_hit;
   endstop_x_hit=false;
   endstop_y_hit=false;
   endstop_z_hit=false;
+  endstop_e_hit=false;
   return hit;
 }
 
@@ -286,6 +288,14 @@ bool enable_z_endstop(bool check)
   check_z_endstop = check;
   endstop_z_hit=false;
   return old;
+}
+
+bool enable_e_endstop(bool check)
+{
+	bool old = check_e_endstop;
+	check_e_endstop = check;
+	endstop_e_hit = false;
+	return old;
 }
 
 //         __________________________
