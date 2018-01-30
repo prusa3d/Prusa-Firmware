@@ -1103,12 +1103,14 @@ void setup()
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
 	card.initsd();
-	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff)
-		eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff)
-		eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) == 0xff)
-		eeprom_write_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_POWER_COUNT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_X, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_Y, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_FERROR_COUNT, 0);
 #ifdef SNMM
 	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
 	  int _z = BOWDEN_LENGTH;
@@ -7562,9 +7564,8 @@ void uvlo_()
     disable_z();
     
     // Increment power failure counter
-    uint8_t power_count = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
-    power_count++;
-    eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, power_count);
+	eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
+	eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
     
 		SERIAL_ECHOLNPGM("UVLO - end");
 		MYSERIAL.println(millis() - time_start);
