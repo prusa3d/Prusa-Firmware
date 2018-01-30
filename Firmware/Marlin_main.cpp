@@ -604,7 +604,7 @@ void crashdet_disable()
 {
 //	MYSERIAL.println("crashdet_disable"); 
 	tmc2130_sg_stop_on_crash = false;
-	tmc2130_sg_crash = false;
+	tmc2130_sg_crash = 0;
 	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
 	CrashDetectMenu = 0;
 }
@@ -633,7 +633,7 @@ void crashdet_stop_and_save_print2()
 	sei();
 }
 
-void crashdet_detected()
+void crashdet_detected(uint8_t mask)
 {
 //	printf("CRASH_DETECTED");
 /*	while (!is_buffer_empty())
@@ -646,11 +646,17 @@ void crashdet_detected()
 	lcd_update_enable(true);
 	lcd_implementation_clear();
 	lcd_update(2);
-    
-    // Increment crash counter
-    uint8_t crash_count = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT);
-    crash_count++;
-    eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, crash_count);
+
+	if (mask & X_AXIS_MASK)
+	{
+		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_X, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) + 1);
+		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) + 1);
+	}
+	if (mask & Y_AXIS_MASK)
+	{
+		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) + 1);
+		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) + 1);
+	}
     
 #ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
     bool yesno = true;
@@ -719,10 +725,16 @@ void factory_reset(char level, bool quiet)
 			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
 			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
 
-			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT, 0);
+			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
+			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
 			eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
-			
+			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+
+			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
+			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
+			eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
+			eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+
 			lcd_menu_statistics();
             
 			break;
@@ -1093,8 +1105,8 @@ void setup()
 	card.initsd();
 	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff)
 		eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT) == 0xff)
-		eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff)
+		eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
 	if (eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) == 0xff)
 		eeprom_write_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
 #ifdef SNMM
@@ -1473,9 +1485,15 @@ void loop()
 	tmc2130_check_overtemp();
 	if (tmc2130_sg_crash)
 	{
-		tmc2130_sg_crash = false;
+		uint8_t crash = tmc2130_sg_crash;
+		tmc2130_sg_crash = 0;
 //		crashdet_stop_and_save_print();
-		enquecommand_P((PSTR("CRASH_DETECTED")));
+		switch (crash)
+		{
+		case 1: enquecommand_P((PSTR("CRASH_DETECTEDX"))); break;
+		case 2: enquecommand_P((PSTR("CRASH_DETECTEDY"))); break;
+		case 3: enquecommand_P((PSTR("CRASH_DETECTEDXY"))); break;
+		}
 	}
 #endif //TMC2130
 
@@ -2276,7 +2294,12 @@ void process_commands()
   }
 
   else if(code_seen("CRASH_DETECTED"))
-	  crashdet_detected();
+  {
+	  uint8_t mask = 0;
+	  if (code_seen("X")) mask |= X_AXIS_MASK;
+	  if (code_seen("Y")) mask |= Y_AXIS_MASK;
+	  crashdet_detected(mask);
+  }
   else if(code_seen("CRASH_RECOVER"))
 	  crashdet_recover();
   else if(code_seen("CRASH_CANCEL"))

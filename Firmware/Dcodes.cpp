@@ -449,7 +449,7 @@ void dcode_10()
 void dcode_12()
 {//Reset Filament error, Power loss and crash counter ( Do it before every print and you can get stats for the print )
 	LOG("D12 - Reset failstat counters\n");
-    eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, 0x00);
+    eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0x00);
     eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, 0x00);
     eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, 0x00);
 }

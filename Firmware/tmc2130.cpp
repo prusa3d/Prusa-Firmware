@@ -58,7 +58,7 @@ uint32_t tmc2130_sg_meassure_val = 0;
 
 bool tmc2130_sg_stop_on_crash = true;
 uint8_t tmc2130_sg_diag_mask = 0x00;
-bool tmc2130_sg_crash = false;
+uint8_t tmc2130_sg_crash = 0;
 uint16_t tmc2130_sg_err[4] = {0, 0, 0, 0};
 uint16_t tmc2130_sg_cnt[4] = {0, 0, 0, 0};
 bool tmc2130_sg_change = false;
@@ -234,7 +234,7 @@ extern bool is_usb_printing;
 void tmc2130_st_isr(uint8_t last_step_mask)
 {
 	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false) return;
-	bool crash = false;
+	uint8_t crash = 0;
 	uint8_t diag_mask = tmc2130_sample_diag();
 //	for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++)
 	for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++)
@@ -252,7 +252,7 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 			if (tmc2130_sg_err[axis] >= sg_thr)
 			{
 				tmc2130_sg_err[axis] = 0;
-				crash = true;
+				crash |= mask;
 			}
 		}
 	}
@@ -267,7 +267,7 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 		}*/
 		if (/*!is_usb_printing && */tmc2130_sg_stop_on_crash && crash)
 		{
-			tmc2130_sg_crash = true;
+			tmc2130_sg_crash = crash;
 			tmc2130_sg_stop_on_crash = false;
 			crashdet_stop_and_save_print();
 		}
