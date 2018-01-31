@@ -116,8 +116,6 @@ union Data
   int value;
 };
 
-int8_t ReInitLCD = 0;
-
 int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = 0;
@@ -450,19 +448,9 @@ static void lcd_status_screen()
     lcdDrawUpdate = 1;
   if (lcdDrawUpdate)
   {
-    ReInitLCD++;
+	// ***Note: Removed lcd reinit from here
 
-    // Re-init lcd every 30 re-draw updates (Why? Are things this un-reliable?)
-    if (ReInitLCD == 30) {
-      lcd_implementation_init( // to maybe revive the LCD if static electricity killed it.
-#if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-        currentMenu == lcd_status_screen
-#endif
-      );
-      ReInitLCD = 0 ;
-    }
-
-    lcd_implementation_status_screen();
+	lcd_implementation_status_screen();
 
 	if (farm_mode)
 	{
@@ -6146,29 +6134,34 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 #endif
 
 #ifdef ULTIPANEL
-	  if (lcd_timeoutToStatus < millis() && currentMenu != lcd_status_screen)
-	  {
-      // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
-      // to give it a chance to save its state.
-      // This is useful for example, when the babystep value has to be written into EEPROM.
-      if (currentMenu != NULL) {
-        menuExiting = true;
-        (*currentMenu)();
-        menuExiting = false;
-      }
-		  lcd_implementation_clear();
-		  lcd_return_to_status();
-		  lcdDrawUpdate = 2;
-	  }
+	if (lcd_timeoutToStatus < millis() && currentMenu != lcd_status_screen)
+	{
+	    // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
+	    // to give it a chance to save its state.
+	    // This is useful for example, when the babystep value has to be written into EEPROM.
+	    if (currentMenu != NULL) {
+	        menuExiting = true;
+	        (*currentMenu)();
+	        menuExiting = false;
+	    }
+
+	    lcd_return_to_status();
+	    lcdDrawUpdate = 2;
+	}
 #endif//ULTIPANEL
-	  if (lcdDrawUpdate == 2) lcd_implementation_clear();
-	  if (lcdDrawUpdate) lcdDrawUpdate--;
-	  lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
-	  }
-	if (!SdFatUtil::test_stack_integrity()) stack_error();
-	lcd_ping(); //check that we have received ping command if we are in farm mode
-	lcd_send_status();
-	if (lcd_commands_type == LCD_COMMAND_V2_CAL) lcd_commands();
+	if (lcdDrawUpdate == 2) lcd_implementation_clear();
+	if (lcdDrawUpdate) lcdDrawUpdate--;
+	lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
+  }
+
+  if (!SdFatUtil::test_stack_integrity())
+	stack_error();
+
+  lcd_ping(); //check that we have received ping command if we are in farm mode
+  lcd_send_status();
+
+  if (lcd_commands_type == LCD_COMMAND_V2_CAL)
+	lcd_commands();
 }
 
 void lcd_printer_connected() {
