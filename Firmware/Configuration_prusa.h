@@ -189,7 +189,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_SG_THRS_X       3     // stallguard sensitivity for X axis
 #define TMC2130_SG_THRS_Y       3     // stallguard sensitivity for Y axis
 #define TMC2130_SG_THRS_Z       3     // stallguard sensitivity for Z axis
-#define TMC2130_SG_THRS_E       3     // stallguard sensitivity for E axis
+#define TMC2130_SG_THRS_E       -3    // stallguard sensitivity for E axis
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {13, 20, 25, 35}  // default holding currents for all axes

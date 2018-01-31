@@ -285,6 +285,7 @@ bool tmc2130_update_sg()
 void tmc2130_unload_enter() {
 	uint8_t cs = tmc2130_cs[E_AXIS];
 	sg_homing_axes_mask |= E_AXIS_MASK;
+	tmc2130_mres[E_AXIS] = tmc2130_calc_mres(8); //use 8 microsteps reolution for M600 unload
 
 	tmc2130_wr(cs, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL); //spread cycle
 	tmc2130_wr(cs, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr_home[E_AXIS]) << 16)); //stallguard home threshold for E axis
@@ -301,6 +302,8 @@ void tmc2130_unload_enter() {
 void tmc2130_unload_exit() {
 	if (sg_homing_axes_mask) sg_homing_axes_mask = 0x00;
 	tmc2130_sg_crash = false;
+	tmc2130_mres[E_AXIS] = tmc2130_calc_mres(TMC2130_USTEPS_E);
+	tmc2130_setup_chopper(E_AXIS, tmc2130_mres[E_AXIS], tmc2130_current_h[E_AXIS], tmc2130_current_r[E_AXIS]);
 }
 
 void tmc2130_home_enter(uint8_t axes_mask)
