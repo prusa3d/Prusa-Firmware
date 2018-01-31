@@ -3140,6 +3140,9 @@ void process_commands()
 #ifdef PINDA_THERMISTOR
 		if (true)
 		{
+			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
+			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
+			if(result) lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
 			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
 				// We don't know where we are! HOME!
 				// Push the commands to the front of the message queue in the reverse order!
