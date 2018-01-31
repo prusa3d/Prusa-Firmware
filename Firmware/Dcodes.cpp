@@ -484,8 +484,6 @@ void dcode_2130()
 
 	if (code_seen('F')) test_feedrate = code_value();
 
-	//if (code_seen('C')) tmc2130_current_unload = code_value();
-
 	switch (axis) {
 	case(X_AXIS):
 	case(Y_AXIS):

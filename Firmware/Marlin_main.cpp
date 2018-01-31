@@ -5698,6 +5698,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif // SNMM
 			}
 
+			uint8_t E_holding_bckp = tmc2130_current_h[E_AXIS];
+			uint8_t E_running_bckp = tmc2130_current_r[E_AXIS];
+			tmc2130_set_current_h(E_AXIS, tmc2130_current_unload);
+			tmc2130_set_current_r(E_AXIS, tmc2130_current_unload);
+
+			bool e_stall_enabled = enable_e_stall(true);
+			tmc2130_unload_enter();
+
 #ifdef SNMM
 			target[E_AXIS] += 12;
 			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500, active_extruder);
@@ -5734,6 +5742,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 			//finish moves
 			st_synchronize();
+
+			tmc2130_unload_exit();
+			enable_e_stall(e_stall_enabled);
+			tmc2130_set_current_h(E_AXIS, E_holding_bckp);
+			tmc2130_set_current_r(E_AXIS, E_running_bckp);
 
 			lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
 			
@@ -6140,37 +6153,53 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		tmc2130_print_currents();
 //		extr_unload2();
 
-		current_position[E_AXIS] += 4;
+		/*current_position[E_AXIS] += 4;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2600 / 60, active_extruder);
 		current_position[E_AXIS] += 2;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3600 / 60, active_extruder);
+		/*current_position[E_AXIS] += 3;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 4200 / 60, active_extruder);
 		current_position[E_AXIS] += 3;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 4400 / 60, active_extruder);
-		current_position[E_AXIS] += 3;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
-
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 4200 / 60, active_extruder);
+		*/
 		st_synchronize();
 		tmc2130_set_current_h(E_AXIS, tmc2130_current_unload);
 		tmc2130_set_current_r(E_AXIS, tmc2130_current_unload);
 		tmc2130_print_currents();
-		bool endstops_enabled = enable_endstops(true);
+		bool e_stall_enabled = enable_e_stall(true);
+
 		//tmc2130_sg_meassure_start(E_AXIS);
 		tmc2130_unload_enter();
 		
 		/*current_position[E_AXIS] -= 15;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5800 / 60, active_extruder);*/
-		current_position[E_AXIS] -= 55;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3600 / 60, active_extruder);
+		//current_position[E_AXIS] -= 55;
+		current_position[E_AXIS] -= 150;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3500 / 60, active_extruder);
 		st_synchronize();
+
+		if(return_e_stalled()) {
+			WRITE(BEEPER, HIGH);
+			uint8_t counterBeep = 0;
+			while (!lcd_clicked() && (counterBeep < 50)) {
+			if (counterBeep > 5) WRITE(BEEPER, LOW);
+			delay_keep_alive(100);
+			counterBeep++;
+			}
+			WRITE(BEEPER, LOW);
+		}
+
 		tmc2130_unload_exit();
-		enable_endstops(endstops_enabled);
+		enable_e_stall(e_stall_enabled);
 		//tmc2130_sg_meassure_stop();
-		current_position[E_AXIS] -= 10;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
+		//current_position[E_AXIS] -= 10;
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 800 / 60, active_extruder);
 		st_synchronize();
 
 		tmc2130_set_current_h(E_AXIS, E_holding_bckp);
 		tmc2130_set_current_r(E_AXIS, E_running_bckp);
+
+		
 
 		//tmc2130_setup_chopper(E_AXIS, 0b0011, E_holding_bckp, E_running_bckp);
 		tmc2130_print_currents();
@@ -6183,14 +6212,14 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		delay(100);
 
 
-		WRITE(BEEPER, HIGH);
+/*		WRITE(BEEPER, HIGH);
 		uint8_t counterBeep = 0;
 		while (!lcd_clicked() && (counterBeep < 50)) {
 			if (counterBeep > 5) WRITE(BEEPER, LOW);
 			delay_keep_alive(100);
 			counterBeep++;
 		}
-		WRITE(BEEPER, LOW);
+		WRITE(BEEPER, LOW);*/
 		st_synchronize();	
 		while (lcd_clicked()) delay_keep_alive(100);
 

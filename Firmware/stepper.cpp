@@ -55,6 +55,7 @@ bool y_min_endstop = false;
 bool y_max_endstop = false;
 bool z_min_endstop = false;
 bool z_max_endstop = false;
+bool e_negative_dir_stall = false;
 //===========================================================================
 //=============================private variables ============================
 //===========================================================================
@@ -79,6 +80,7 @@ volatile long endstops_stepsTotal,endstops_stepsDone;
 static volatile bool endstop_x_hit=false;
 static volatile bool endstop_y_hit=false;
 static volatile bool endstop_z_hit=false;
+static volatile bool e_stalled = false;
 #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 bool abort_on_endstop_hit = false;
 #endif
@@ -94,11 +96,12 @@ static bool old_y_min_endstop=false;
 static bool old_y_max_endstop=false;
 static bool old_z_min_endstop=false;
 static bool old_z_max_endstop=false;
+static bool old_e_negative_dir_stall=false;
 
 static bool check_endstops = true;
 
 static bool check_z_endstop = false;
-static bool check_e_endstop = false;
+static bool check_e_stall = false;
 
 int8_t SilentMode = 0;
 
@@ -258,13 +261,17 @@ void checkHitEndstops()
  }
 }
 
+bool return_e_stalled(){
+	return e_stalled;
+}
+
+
 bool endstops_hit_on_purpose()
 {
-  bool hit = endstop_x_hit || endstop_y_hit || endstop_z_hit || endstop_e_hit;
+  bool hit = endstop_x_hit || endstop_y_hit || endstop_z_hit;
   endstop_x_hit=false;
   endstop_y_hit=false;
   endstop_z_hit=false;
-  endstop_e_hit=false;
   return hit;
 }
 
@@ -290,11 +297,11 @@ bool enable_z_endstop(bool check)
   return old;
 }
 
-bool enable_e_endstop(bool check)
+bool enable_e_stall(bool check)
 {
-	bool old = check_e_endstop;
-	check_e_endstop = check;
-	endstop_e_hit = false;
+	bool old = check_e_stall;
+	check_e_stall = check;
+	e_stalled = false;
 	return old;
 }
 
@@ -642,6 +649,15 @@ void isr() {
 		REV_E_DIR();
 #endif // SNMM
 		count_direction[E_AXIS] = -1;
+		if (check_e_stall) {
+			e_negative_dir_stall = (READ(E0_TMC2130_DIAG) != 0);
+			if (e_negative_dir_stall && old_e_negative_dir_stall) {
+				//endstops_trigsteps[E_AXIS] = count_position[E_AXIS];
+				e_stalled = true;
+				step_events_completed = current_block->step_event_count;
+			}
+			old_e_negative_dir_stall = e_negative_dir_stall;
+		}
 	}
 	else
 	{	// +direction
