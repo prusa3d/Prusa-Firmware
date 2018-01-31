@@ -6125,25 +6125,60 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	case 702:
 	{
 #ifdef SNMM
-			if (code_seen('U')) {
-				extr_unload_used(); //unload all filaments which were used in current print
-			}
-			else if (code_seen('C')) {
-				extr_unload(); //unload just current filament 
-			}
-			else {
-				extr_unload_all(); //unload all filaments
-			}
+		if (code_seen('U')) {
+			extr_unload_used(); //unload all filaments which were used in current print
+		}
+		else if (code_seen('C')) {
+			extr_unload(); //unload just current filament 
+		}
+		else {
+			extr_unload_all(); //unload all filaments
+		}
 #else
-			custom_message = true;
-			custom_message_type = 2;
-			lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
-			current_position[E_AXIS] -= 80;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 7000 / 60, active_extruder);
-			st_synchronize();
-			lcd_setstatuspgm(WELCOME_MSG);
-			custom_message = false;
-			custom_message_type = 0;
+		bool old_fsensor_enabled = fsensor_enabled;
+		fsensor_enabled = false;
+		custom_message = true;
+		custom_message_type = 2;
+		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
+
+		//		extr_unload2();
+
+		current_position[E_AXIS] -= 45;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
+		st_synchronize();
+		current_position[E_AXIS] -= 15;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+		st_synchronize();
+		current_position[E_AXIS] -= 20;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+		st_synchronize();
+
+		lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
+
+		//disable extruder steppers so filament can be removed
+		disable_e0();
+		disable_e1();
+		disable_e2();
+		delay(100);
+
+
+		WRITE(BEEPER, HIGH);
+		uint8_t counterBeep = 0;
+		while (!lcd_clicked() && (counterBeep < 50)) {
+			if (counterBeep > 5) WRITE(BEEPER, LOW);
+			delay_keep_alive(100);
+			counterBeep++;
+		}
+		WRITE(BEEPER, LOW);
+		st_synchronize();
+		while (lcd_clicked()) delay_keep_alive(100);
+
+		lcd_update_enable(true);
+
+		lcd_setstatuspgm(WELCOME_MSG);
+		custom_message = false;
+		custom_message_type = 0;
+		fsensor_enabled = old_fsensor_enabled;
 #endif	
 	}
 	break;
