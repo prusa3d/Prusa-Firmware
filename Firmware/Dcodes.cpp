@@ -465,13 +465,6 @@ void dcode_2130()
 	uint16_t sg;
 	uint8_t axis = 0xff;
 
-	/*
-	feedrates for unload:
-	5800
-	3600
-	800
-	*/
-
 //	printf("test");
 	printf_P(PSTR("D2130 - TMC2130\n"));
 	
@@ -501,10 +494,6 @@ void dcode_2130()
 		tmc2130_sg_meassure = 0xff;
 		break;
 	case(E_AXIS):
-		//tmc2130_set_current_h(E_AXIS, tmc2130_current_unload);
-		//tmc2130_set_current_r(E_AXIS, tmc2130_current_unload);
-		//tmc2130_print_currents();
-
 
 		printf_P(PSTR("E_AXIS test; feedrate: %d\n"), test_feedrate);
 		tmc2130_sg_meassure_start(axis);

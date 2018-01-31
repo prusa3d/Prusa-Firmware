@@ -276,7 +276,7 @@ bool tmc2130_update_sg()
 		tmc2130_sg_meassure_val += sg;
 		tmc2130_sg_meassure_cnt++;
 //		printf_P(PSTR("tmc2130_update_sg - meassure - sg=%d\n"), sg);
-		printf_P(PSTR("sg = %d \n"), sg);
+//		printf_P(PSTR("sg = %d \n"), sg);
 		return true;
 	}
 	return false;
@@ -373,11 +373,11 @@ void tmc2130_sg_meassure_start(uint8_t axis)
 
 uint16_t tmc2130_sg_meassure_stop()
 {
-	SERIAL_ECHOPGM("val:");
+	/*SERIAL_ECHOPGM("val:");
 	MYSERIAL.println(tmc2130_sg_meassure_val);
 
 	SERIAL_ECHOPGM("cnt:");
-	MYSERIAL.println(tmc2130_sg_meassure_cnt);
+	MYSERIAL.println(tmc2130_sg_meassure_cnt);*/
 
 	tmc2130_sg_meassure = 0xff;
 	return tmc2130_sg_meassure_val / tmc2130_sg_meassure_cnt;

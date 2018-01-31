@@ -393,7 +393,6 @@ ISR(TIMER1_COMPA_vect) {
 }
 
 void isr() {
-	WRITE_NC(LOGIC_ANALYZER_CH0, true);
 	
 	//if (UVLO) uvlo();
   // If there is no current block, attempt to pop one from the buffer
