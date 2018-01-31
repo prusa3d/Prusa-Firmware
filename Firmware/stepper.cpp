@@ -393,6 +393,8 @@ ISR(TIMER1_COMPA_vect) {
 }
 
 void isr() {
+	WRITE_NC(LOGIC_ANALYZER_CH0, true);
+	
 	//if (UVLO) uvlo();
   // If there is no current block, attempt to pop one from the buffer
   if (current_block == NULL) {
@@ -649,7 +651,8 @@ void isr() {
 		REV_E_DIR();
 #endif // SNMM
 		count_direction[E_AXIS] = -1;
-		if (check_e_stall) {
+		/*if (check_e_stall) {
+			WRITE_NC(LOGIC_ANALYZER_CH1, true);
 			e_negative_dir_stall = (READ(E0_TMC2130_DIAG) != 0);
 			if (e_negative_dir_stall && old_e_negative_dir_stall) {
 				//endstops_trigsteps[E_AXIS] = count_position[E_AXIS];
@@ -657,7 +660,8 @@ void isr() {
 				step_events_completed = current_block->step_event_count;
 			}
 			old_e_negative_dir_stall = e_negative_dir_stall;
-		}
+			WRITE_NC(LOGIC_ANALYZER_CH1, false);
+		}*/
 	}
 	else
 	{	// +direction
@@ -680,6 +684,9 @@ void isr() {
       #ifndef AT90USB
       MSerial.checkRx(); // Check for serial chars.
       #endif //RP - returned, because missing characters
+
+	  if (step_loops == 2);
+	  if (step_loops == 4) WRITE_NC(LOGIC_ANALYZER_CH1, true);
 
 #ifdef LIN_ADVANCE
         counter_e += current_block->steps_e;
@@ -758,7 +765,7 @@ void isr() {
 #endif //PAT9125
         }
 #endif
-        
+   
       step_events_completed += 1;
       if(step_events_completed >= current_block->step_event_count) break;
     }
@@ -862,7 +869,7 @@ void isr() {
   // This debugging test takes < 1.125us
   // This skews the profiling slightly as the fastest stepper timer
   // interrupt repeats at a 100us rate (10kHz).
-  if (OCR1A < TCNT1) {
+ /* if (OCR1A < TCNT1) {
     stepper_timer_overflow_state = true;
     WRITE_NC(BEEPER, HIGH);
     SERIAL_PROTOCOLPGM("Stepper timer overflow ");
@@ -870,7 +877,11 @@ void isr() {
     SERIAL_PROTOCOLPGM("<");
     SERIAL_PROTOCOL(TCNT1);
     SERIAL_PROTOCOLLN("!");
-  }
+  }*/
+  //if (OCR1A < TCNT1 + 16) OCR1A = TCNT1 + 16;
+  WRITE_NC(LOGIC_ANALYZER_CH0, false);
+  WRITE_NC(LOGIC_ANALYZER_CH1, false);
+  WRITE_NC(LOGIC_ANALYZER_CH3, false);
 #endif
 }
 

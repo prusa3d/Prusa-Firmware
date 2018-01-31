@@ -1226,6 +1226,11 @@ void setup()
       } 
 	   
   }
+  LOGIC_ANALYZER_CH0_ENABLE; 
+  LOGIC_ANALYZER_CH1_ENABLE;
+  LOGIC_ANALYZER_CH2_ENABLE;
+  LOGIC_ANALYZER_CH3_ENABLE;
+
   KEEPALIVE_STATE(NOT_BUSY);
   wdt_enable(WDTO_4S);
 }
@@ -6175,7 +6180,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5800 / 60, active_extruder);*/
 		//current_position[E_AXIS] -= 55;
 		current_position[E_AXIS] -= 150;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3500 / 60, active_extruder);
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 4000 / 60, active_extruder);
 		st_synchronize();
 
 		if(return_e_stalled()) {
