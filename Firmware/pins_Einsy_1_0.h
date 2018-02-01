@@ -1,8 +1,8 @@
 /*****************************************************************
-* EINY Rambo 0.4a Pin Assignments
+* EINSY Rambo 1.0a Pin Assignments
 ******************************************************************/
 
-#define ELECTRONICS "EINY_04a"
+#define ELECTRONICS "EINSy_10a"
 
 #define KNOWN_BOARD
 #ifndef __AVR_ATmega2560__

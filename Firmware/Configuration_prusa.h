@@ -16,7 +16,7 @@
 #define CUSTOM_MENDEL_NAME "Prusa i3 MK3"
 
 // Electronics
-#define MOTHERBOARD BOARD_EINSY_0_4a
+#define MOTHERBOARD BOARD_EINSY_1_0a
 
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
@@ -324,7 +324,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
-#if MOTHERBOARD == 200 || MOTHERBOARD == 203 || MOTHERBOARD == 303 || MOTHERBOARD == 304 || MOTHERBOARD == 305
+#if MOTHERBOARD == 200 || MOTHERBOARD == 203 || MOTHERBOARD == 310
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {400, 750, 750} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {400, 750, 750} // {XY,Z,E}
