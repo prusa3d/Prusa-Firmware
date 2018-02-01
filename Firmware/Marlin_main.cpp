@@ -589,6 +589,9 @@ void restore_print_from_ram_and_continue(float e_move);
 bool fans_check_enabled = true;
 bool filament_autoload_enabled = true;
 
+
+#ifdef TMC2130
+
 extern int8_t CrashDetectMenu;
 
 void crashdet_enable()
@@ -697,6 +700,8 @@ void failstats_reset_print()
 	eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
 }
+
+#endif //TMC2130
 
 
 #ifdef MESH_BED_LEVELING
@@ -1063,6 +1068,8 @@ void setup()
 #endif
 	setup_homepin();
 
+#ifdef TMC2130
+
   if (1) {
 ///    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
     // try to run to zero phase before powering the Z motor.    
@@ -1078,6 +1085,7 @@ void setup()
     }
 //    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
   }
+#endif //TMC2130
 
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
@@ -1093,7 +1101,7 @@ void setup()
 
 	// Enable Toshiba FlashAir SD card / WiFi enahanced card.
 	card.ToshibaFlashAir_enable(eeprom_read_byte((unsigned char*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY) == 1);
-	
+
 	if (eeprom_read_dword((uint32_t*)(EEPROM_TOP - 4)) == 0x0ffffffff &&
 		eeprom_read_dword((uint32_t*)(EEPROM_TOP - 8)) == 0x0ffffffff) {
 		// Maiden startup. The firmware has been loaded and first started on a virgin RAMBo board,
@@ -1101,10 +1109,11 @@ void setup()
 		// Once a firmware boots up, it forces at least a language selection, which changes
 		// EEPROM_LANG to number lower than 0x0ff.
 		// 1) Set a high power mode.
+#ifdef TMC2130
 		eeprom_write_byte((uint8_t*)EEPROM_SILENT, 0);
 		tmc2130_mode = TMC2130_MODE_NORMAL;
+#endif //TMC2130
 		eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
-
 	}
 
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
@@ -1158,7 +1167,11 @@ void setup()
 	}
 
 	check_babystep(); //checking if Z babystep is in allowed range
+
+#ifdef UVLO_SUPPORT
 	setup_uvlo_interrupt();
+#endif //UVLO_SUPPORT
+
 #ifndef DEBUG_DISABLE_FANCHECK
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
@@ -1207,7 +1220,8 @@ void setup()
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
-  
+
+#ifdef UVLO_SUPPORT
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
 /*
 	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT, false))	recover_print();
@@ -1247,6 +1261,8 @@ void setup()
       } 
 	   
   }
+#endif //UVLO_SUPPORT
+
   KEEPALIVE_STATE(NOT_BUSY);
   wdt_enable(WDTO_4S);
 }
@@ -2119,19 +2135,20 @@ bool gcode_M45(bool onlyZ)
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 
 		bool endstops_enabled  = enable_endstops(true);
+#ifdef TMC2130
 		tmc2130_home_enter(Z_AXIS_MASK);
+#endif //TMC2130
+
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
 
 		st_synchronize();
+#ifdef TMC2130
 		tmc2130_home_exit();
+#endif //TMC2130
 		enable_endstops(endstops_enabled);
 
 		if (st_get_position_mm(Z_AXIS) == MESH_HOME_Z_SEARCH)
 		{
-
-			//#ifdef TMC2130
-			//		tmc2130_home_enter(X_AXIS_MASK | Y_AXIS_MASK);
-			//#endif
 
 			int8_t verbosity_level = 0;
 			if (code_seen('V'))
@@ -2304,6 +2321,7 @@ void process_commands()
 	  lcd_setstatus(strchr_pointer + 5);
   }
 
+#ifdef TMC2130
   else if(code_seen("CRASH_DETECTED"))
   {
 	  uint8_t mask = 0;
@@ -2315,6 +2333,7 @@ void process_commands()
 	  crashdet_recover();
   else if(code_seen("CRASH_CANCEL"))
 	  crashdet_cancel();
+#endif //TMC2130
 
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
@@ -3995,8 +4014,10 @@ void process_commands()
       card.openFile(strchr_pointer + 4,true);
       break;
     case 24: //M24 - Start SD print
+#ifdef TMC2130
 	  if (!card.paused)
 		failstats_reset_print();
+#endif //TMC2130
       card.startFileprint();
       starttime=millis();
 	  break;
@@ -6025,6 +6046,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     }
     break;
 
+#ifdef TMC2130
+
 	case 910: // M910 TMC2130 init
     {
 		tmc2130_init();
@@ -6103,6 +6126,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         if (code_seen('E')) tmc2130_set_pwm_grad(3, code_value());
     }
     break;
+
+#endif //TMC2130
 
     case 350: // M350 Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {
@@ -7449,6 +7474,8 @@ void serialecho_temperatures() {
 
 extern uint32_t sdpos_atomic;
 
+#ifdef UVLO_SUPPORT
+
 void uvlo_() 
 {
 	unsigned long time_start = millis();
@@ -7458,10 +7485,12 @@ void uvlo_()
     disable_y();
     disable_e0();
     
+#ifdef TMC2130
 	tmc2130_set_current_h(Z_AXIS, 20);
 	tmc2130_set_current_r(Z_AXIS, 20);
 	tmc2130_set_current_h(E_AXIS, 20);
 	tmc2130_set_current_r(E_AXIS, 20);
+#endif //TMC2130
 
 
     // Indicate that the interrupt has been triggered.
@@ -7469,7 +7498,10 @@ void uvlo_()
 
     // Read out the current Z motor microstep counter. This will be later used
     // for reaching the zero full step before powering off.
-    uint16_t z_microsteps = tmc2130_rd_MSCNT(Z_TMC2130_CS);
+    uint16_t z_microsteps = 0;
+#ifdef TMC2130
+	z_microsteps = tmc2130_rd_MSCNT(Z_TMC2130_CS);
+#endif //TMC2130
 
     // Calculate the file position, from which to resume this print.
     long sd_position = sdpos_atomic; //atomic sd position of last command added in queue
@@ -7598,6 +7630,7 @@ void uvlo_()
         
     };
 }
+#endif //UVLO_SUPPORT
 
 void setup_fan_interrupt() {
 //INT7
@@ -7629,6 +7662,7 @@ ISR(INT7_vect) {
 	EICRB ^= (1 << 6); //change edge
 }
 
+#ifdef UVLO_SUPPORT
 void setup_uvlo_interrupt() {
 	DDRE &= ~(1 << 4); //input pin
 	PORTE &= ~(1 << 4); //no internal pull-up
@@ -7838,6 +7872,7 @@ void restore_print_from_eeprom() {
   // Start SD print.
   enquecommand_P(PSTR("M24")); 
 }
+#endif //UVLO_SUPPORT
 
 
 ////////////////////////////////////////////////////////////////////////////////
