@@ -34,6 +34,8 @@ extern void tmc2130_check_overtemp();
 extern void tmc2130_home_enter(uint8_t axes_mask);
 //exit homing (called from homeaxis after homing ends)
 extern void tmc2130_home_exit();
+extern void tmc2130_unload_enter();
+extern void tmc2130_unload_exit();
 
 //start stallguard meassuring for single axis
 extern void tmc2130_sg_meassure_start(uint8_t axis);

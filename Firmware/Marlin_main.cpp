@@ -1247,6 +1247,7 @@ void setup()
       } 
 	   
   }
+
   KEEPALIVE_STATE(NOT_BUSY);
   wdt_enable(WDTO_4S);
 }
@@ -5740,21 +5741,34 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			//plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500 / 60, active_extruder);
             
             target[E_AXIS] -= FILAMENTCHANGE_FINALRETRACT;
-            target[E_AXIS] -= 45;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5200 / 60, active_extruder);
-            st_synchronize();
-            target[E_AXIS] -= 15;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
-            st_synchronize();
-            target[E_AXIS] -= 20;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
-            st_synchronize();
+
+			bool e_stall_enabled = enable_e_stall(true);
+			tmc2130_unload_enter(); //8 microstep resolution to overcome switching between E-stepper bursts (1,2 or 4 stepper pulses per isr) 
+
+			target[E_AXIS] -= 11.25;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400 / 60, active_extruder);
+			st_synchronize();
+			bool e_was_stalled = return_e_stalled();
+			tmc2130_unload_exit();
+			enable_e_stall(e_stall_enabled);
+			
+			if (!e_was_stalled) {
+				target[E_AXIS] -= 15;
+				plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
+				st_synchronize();
+				target[E_AXIS] -= 20;
+				plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
+				st_synchronize();
+			}
             
 #endif // SNMM
 
 
 			//finish moves
 			st_synchronize();
+
+			tmc2130_unload_exit();
+			enable_e_stall(e_stall_enabled);
 
 			lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
 			
@@ -6154,18 +6168,18 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		fsensor_enabled = false;
 		custom_message = true;
 		custom_message_type = 2;
-		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
+		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT);
 
-//		extr_unload2();
+		//		extr_unload2();
 
 		current_position[E_AXIS] -= 45;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
-        st_synchronize();
-        current_position[E_AXIS] -= 15;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
-        st_synchronize();
-        current_position[E_AXIS] -= 20;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+		st_synchronize();
+		current_position[E_AXIS] -= 15;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+		st_synchronize();
+		current_position[E_AXIS] -= 20;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
 		st_synchronize();
 
 		lcd_display_message_fullscreen_P(MSG_PULL_OUT_FILAMENT);
@@ -6185,11 +6199,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			counterBeep++;
 		}
 		WRITE(BEEPER, LOW);
-		st_synchronize();	
+		st_synchronize();
 		while (lcd_clicked()) delay_keep_alive(100);
 
 		lcd_update_enable(true);
-	
+
 		lcd_setstatuspgm(WELCOME_MSG);
 		custom_message = false;
 		custom_message_type = 0;

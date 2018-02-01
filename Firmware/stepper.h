@@ -93,6 +93,8 @@ bool endstop_z_hit_on_purpose();
 
 bool enable_endstops(bool check); // Enable/disable endstop checking. Return the old value.
 bool enable_z_endstop(bool check);
+bool enable_e_stall(bool check); //for unload filament (just negative E direction)
+bool return_e_stalled();
 
 void checkStepperErrors(); //Print errors detected by the stepper
 
