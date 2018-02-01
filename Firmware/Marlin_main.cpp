@@ -5716,8 +5716,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			bool e_stall_enabled = enable_e_stall(true);
 			tmc2130_unload_enter(); //8 microstep resolution to overcome switching between E-stepper bursts (1,2 or 4 stepper pulses per isr) 
 
-			current_position[E_AXIS] -= 11.25;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1400 / 60, active_extruder);
+			target[E_AXIS] -= 11.25;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400 / 60, active_extruder);
 			st_synchronize();
 			bool e_was_stalled = return_e_stalled();
 			tmc2130_unload_exit();
