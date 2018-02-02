@@ -186,12 +186,16 @@ FORCE_INLINE float intersection_distance(float initial_rate, float final_rate, f
   }
 }
 
+// Minimum stepper rate 120Hz.
 #define MINIMAL_STEP_RATE 120
 
 // Calculates trapezoid parameters so that the entry- and exit-speed is compensated by the provided factors.
 void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit_speed) 
 {
   // These two lines are the only floating point calculations performed in this routine.
+  // initial_rate, final_rate in Hz.
+  // Minimum stepper rate 120Hz, maximum 40kHz. If the stepper rate goes above 10kHz,
+  // the stepper interrupt routine groups the pulses by 2 or 4 pulses per interrupt tick.
   uint32_t initial_rate = ceil(entry_speed * block->speed_factor); // (step/min)
   uint32_t final_rate   = ceil(exit_speed  * block->speed_factor); // (step/min)
 
