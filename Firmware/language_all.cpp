@@ -479,8 +479,10 @@ const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_DEFAULT_SETTINGS_LOADED_EN[] PROGMEM = "Default settings loaded";
-const char * const MSG_DEFAULT_SETTINGS_LOADED_LANG_TABLE[1] PROGMEM = {
-	MSG_DEFAULT_SETTINGS_LOADED_EN
+const char MSG_DEFAULT_SETTINGS_LOADED_CZ[] PROGMEM = "Nahrano vychozi nastaveni";
+const char * const MSG_DEFAULT_SETTINGS_LOADED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_DEFAULT_SETTINGS_LOADED_EN,
+	MSG_DEFAULT_SETTINGS_LOADED_CZ
 };
 
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
@@ -845,13 +847,6 @@ const char * const MSG_FW_VERSION_BETA_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FW_VERSION_BETA_CZ
 };
 
-const char MSG_FW_VERSION_DEBUG_EN[] PROGMEM = "This is development firmware version which contains additional debugging features. Using this version may cause printer damage.";
-const char MSG_FW_VERSION_DEBUG_CZ[] PROGMEM = "Toto je vyvojova verze firmwaru obsahujici funkce pro debugging. Pouziti teto verze muze poskodit Vasi tiskarnu.";
-const char * const MSG_FW_VERSION_DEBUG_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_FW_VERSION_DEBUG_EN,
-	MSG_FW_VERSION_DEBUG_CZ
-};
-
 const char MSG_FW_VERSION_RC_EN[] PROGMEM = "This firmware version is release candidate. Some of the features may not work properly.";
 const char MSG_FW_VERSION_RC_CZ[] PROGMEM = "Tato verze firmware je release candidate. Nektere z funkci nemusi pracovat spolehlive.";
 const char * const MSG_FW_VERSION_RC_LANG_TABLE[LANG_NUM] PROGMEM = {
@@ -859,8 +854,8 @@ const char * const MSG_FW_VERSION_RC_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FW_VERSION_RC_CZ
 };
 
-const char MSG_FW_VERSION_UNKNOWN_EN[] PROGMEM = "WARNING: Unknown firmware version";
-const char MSG_FW_VERSION_UNKNOWN_CZ[] PROGMEM = "VAROVANI: Neznama verze firmware";
+const char MSG_FW_VERSION_UNKNOWN_EN[] PROGMEM = "WARNING: This is an unofficial, unsupported build. Use at your own risk!";
+const char MSG_FW_VERSION_UNKNOWN_CZ[] PROGMEM = "VAROVANI: Neznama, nepodporovana verze firmware. Pouziti na vlastni nebezpeci!";
 const char * const MSG_FW_VERSION_UNKNOWN_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FW_VERSION_UNKNOWN_EN,
 	MSG_FW_VERSION_UNKNOWN_CZ
@@ -2164,6 +2159,11 @@ const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_ON_CZ
 };
 
+const char MSG_TEMP_CAL_WARNING_EN[] PROGMEM = "Stable ambient temperature 21-26C is needed a rigid stand is required.";
+const char * const MSG_TEMP_CAL_WARNING_LANG_TABLE[1] PROGMEM = {
+	MSG_TEMP_CAL_WARNING_EN
+};
+
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_EN[] PROGMEM = "SD card  [normal]";
 const char * const MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_LANG_TABLE[1] PROGMEM = {
 	MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_EN
@@ -2235,11 +2235,11 @@ const char * const MSG_UNLOAD_FILAMENT_4_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_UNLOAD_FILAMENT_4_CZ
 };
 
-const char MSG_UNLOAD_SUCCESSFULL_EN[] PROGMEM = "Was filament unload successfull?";
-const char MSG_UNLOAD_SUCCESSFULL_CZ[] PROGMEM = "Bylo vysunuti filamentu uspesne?";
-const char * const MSG_UNLOAD_SUCCESSFULL_LANG_TABLE[LANG_NUM] PROGMEM = {
-	MSG_UNLOAD_SUCCESSFULL_EN,
-	MSG_UNLOAD_SUCCESSFULL_CZ
+const char MSG_UNLOAD_SUCCESSFUL_EN[] PROGMEM = "Was filament unload successful?";
+const char MSG_UNLOAD_SUCCESSFUL_CZ[] PROGMEM = "Bylo vysunuti filamentu uspesne?";
+const char * const MSG_UNLOAD_SUCCESSFUL_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_UNLOAD_SUCCESSFUL_EN,
+	MSG_UNLOAD_SUCCESSFUL_CZ
 };
 
 const char MSG_USB_PRINTING_EN[] PROGMEM = "USB printing  ";

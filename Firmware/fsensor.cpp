@@ -4,8 +4,10 @@
 
 #include "fsensor.h"
 #include "pat9125.h"
+#include "stepper.h"
 #include "planner.h"
 #include "fastio.h"
+#include "cmdqueue.h"
 
 //#include "LiquidCrystal.h"
 //extern LiquidCrystal lcd;
@@ -14,7 +16,7 @@
 #define FSENSOR_ERR_MAX          5  //filament sensor max error count
 #define FSENSOR_INT_PIN         63  //filament sensor interrupt pin PK1
 #define FSENSOR_INT_PIN_MSK   0x02  //filament sensor interrupt pin mask (bit1)
-#define FSENSOR_CHUNK_LEN      560  //filament sensor chunk length in steps
+#define FSENSOR_CHUNK_LEN      280  //filament sensor chunk length in steps
 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
@@ -60,7 +62,7 @@ void fsensor_unblock() {
 bool fsensor_enable()
 {
 //	puts_P(PSTR("fsensor_enable\n"));
-	int pat9125 = pat9125_init(PAT9125_XRES, PAT9125_YRES);
+	int pat9125 = pat9125_init();
 //    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
 	if (pat9125)
 		fsensor_not_responding = false;
@@ -168,7 +170,9 @@ ISR(PCINT2_vect)
 	*digitalPinToPCMSK(fsensor_int_pin) |= bit(digitalPinToPCMSKbit(fsensor_int_pin));*/
 	if (!pat9125_update_y())
 	{
-//		puts_P(PSTR("pat9125 not responding.\n"));
+#ifdef DEBUG_FSENSOR_LOG
+		puts_P(PSTR("pat9125 not responding.\n"));
+#endif //DEBUG_FSENSOR_LOG
 		fsensor_disable();
 		fsensor_not_responding = true;
 	}
@@ -255,18 +259,28 @@ void fsensor_update()
 	if (!fsensor_enabled) return;
 	if (fsensor_err_cnt > FSENSOR_ERR_MAX)
 	{
-//		MYSERIAL.println("fsensor_update (fsensor_err_cnt > FSENSOR_ERR_MAX)");
-/*		if (fsensor_ignore_error)
+		fsensor_stop_and_save_print();
+
+		fsensor_err_cnt = 0;
+
+		enquecommand_front_P((PSTR("G1 E-3 F200")));
+		process_commands();
+	    cmdqueue_pop_front();
+		st_synchronize();
+
+		enquecommand_front_P((PSTR("G1 E3 F200")));
+		process_commands();
+	    cmdqueue_pop_front();
+		st_synchronize();
+
+		if (fsensor_err_cnt == 0)
 		{
-			MYSERIAL.println("fsensor_update - error ignored)");
-			fsensor_ignore_error = false;
+			fsensor_restore_print_and_continue();
 		}
-		else*/
+		else
 		{
-			fsensor_stop_and_save_print();
-			uint8_t ferror_count = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
-			ferror_count++;
-			eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, ferror_count);
+			eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+			eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
 			enquecommand_front_P((PSTR("M600")));
 			fsensor_M600 = true;
 			fsensor_enabled = false;

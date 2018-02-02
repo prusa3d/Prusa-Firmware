@@ -32,8 +32,8 @@
 
 // Steps per unit {X,Y,Z,E}
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
-//#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,560}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280}
+//#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,560}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -104,7 +104,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MINTEMP_MINAMBIENT      25
 #define MINTEMP_MINAMBIENT_RAW  978
 
-
+//#define DEBUG_BUILD
 #ifdef DEBUG_BUILD
 //#define _NO_ASM
 #define DEBUG_DCODES //D codes
@@ -130,7 +130,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //#define DEBUG_BLINK_ACTIVE
 //#define DEBUG_DISABLE_FANCHECK     //disable fan check (no ISR INT7, check disabled)
 //#define DEBUG_DISABLE_FSENSORCHECK //disable fsensor check (no ISR INT7, check disabled)
-#define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
+//#define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
 #define DEBUG_STEPPER_TIMER_MISSED // Stop on stepper timer overflow, beep and display a message.
 #define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
 #endif /* DEBUG_BUILD */
@@ -144,7 +144,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    64        // microstep resolution for E axis
+#define TMC2130_USTEPS_E    32        // microstep resolution for E axis
 #define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
 #define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
 #define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
@@ -159,16 +159,28 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_PWM_AUTO_Y  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Y  2         // PWMCONF
 
-/* //not used
+#define TMC2130_PWM_GRAD_E  2         // PWMCONF
+#define TMC2130_PWM_AMPL_E  235       // PWMCONF
+#define TMC2130_PWM_AUTO_E  1         // PWMCONF
+#define TMC2130_PWM_FREQ_E  2         // PWMCONF
+
 #define TMC2130_PWM_GRAD_Z  4         // PWMCONF
 #define TMC2130_PWM_AMPL_Z  200       // PWMCONF
 #define TMC2130_PWM_AUTO_Z  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Z  2         // PWMCONF
+
 #define TMC2130_PWM_GRAD_E  4         // PWMCONF
-#define TMC2130_PWM_AMPL_E  200       // PWMCONF
+#define TMC2130_PWM_AMPL_E  240       // PWMCONF
 #define TMC2130_PWM_AUTO_E  1         // PWMCONF
 #define TMC2130_PWM_FREQ_E  2         // PWMCONF
-*/
+
+#define TMC2130_TOFF_XYZ    3         // CHOPCONF // fchop = 27.778kHz
+#define TMC2130_TOFF_E      3         // CHOPCONF // fchop = 27.778kHz
+//#define TMC2130_TOFF_E      4         // CHOPCONF // fchop = 21.429kHz
+//#define TMC2130_TOFF_E      5         // CHOPCONF // fchop = 17.442kHz
+
+//#define TMC2130_STEALTH_E // Extruder stealthChop mode
+//#define TMC2130_CNSTOFF_E // Extruder constant-off-time mode (similar to MK2)
 
 //#define TMC2130_PWM_DIV   683         // PWM frequency divider (1024, 683, 512, 410)
 #define TMC2130_PWM_DIV   512         // PWM frequency divider (1024, 683, 512, 410)
@@ -193,6 +205,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {13, 20, 25, 35}  // default holding currents for all axes
 #define TMC2130_CURRENTS_R {13, 20, 25, 35}  // default running currents for all axes
+#define TMC2130_UNLOAD_CURRENT_R 12			 // lowe current for M600 to protect filament sensor 
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
@@ -322,8 +335,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
  PAT9125 SETTINGS
  *------------------------------------*/
 
-#define PAT9125_XRES			200
-#define PAT9125_YRES			200
+#define PAT9125_XRES			0
+#define PAT9125_YRES			255
 
 /*------------------------------------
  BED SETTINGS
@@ -430,11 +443,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define PP_PREHEAT_HPB_TEMP 100
 #define PP_PREHEAT_FAN_SPEED 0
 
-#define PET_PREHEAT_HOTEND_TEMP 240
-#define PET_PREHEAT_HPB_TEMP 90
+#define PET_PREHEAT_HOTEND_TEMP 230
+#define PET_PREHEAT_HPB_TEMP 85
 #define PET_PREHEAT_FAN_SPEED 0
 
-#define FLEX_PREHEAT_HOTEND_TEMP 230
+#define FLEX_PREHEAT_HOTEND_TEMP 240
 #define FLEX_PREHEAT_HPB_TEMP 50
 #define FLEX_PREHEAT_FAN_SPEED 0
 

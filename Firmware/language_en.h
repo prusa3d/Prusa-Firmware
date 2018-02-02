@@ -361,6 +361,7 @@
 #define(length=20, lines=4) MSG_REMOVE_STEEL_SHEET				"Please remove steel sheet from heatbed."
 #define(length=20, lines=2) MSG_CALIBRATE_Z_AUTO				"Calibrating Z"
 #define(length=20, lines=2) MSG_STEEL_SHEET_CHECK				"Is steel sheet on heatbed?"
+#define(length=20, lines=4) MSG_TEMP_CAL_WARNING				"Stable ambient temperature 21-26C is needed a rigid stand is required."
 
 #define MSG_SELFTEST_AXIS					"Axis"
 #define MSG_SELFTEST_AXIS_LENGTH			"Axis length"
@@ -386,7 +387,7 @@
 #define(length=17, lines=1) MSG_FSENS_AUTOLOAD_NA                "F. autoload [N/A]"
 #define(length=20, lines=4) MSG_PRESS_TO_UNLOAD					"Please press the knob to unload filament"
 #define(length=20, lines=4) MSG_PRESS_TO_PREHEAT				"Press knob to preheat nozzle and continue."
-#define(length=20, lines=2) MSG_UNLOAD_SUCCESSFULL				"Was filament unload successfull?"
+#define(length=20, lines=2) MSG_UNLOAD_SUCCESSFUL				"Was filament unload successful?"
 #define(length=20, lines=4) MSG_CHECK_IDLER						"Please open idler and remove filament manually."
 #define(length=20, lines=4) MSG_PULL_OUT_FILAMENT				"Please pull out filament immediately"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
@@ -407,8 +408,7 @@
 #define(length=20, lines=4) MSG_AUTOLOADING_ONLY_IF_FSENS_ON     "Autoloading filament available only when filament sensor is turned on..."
 
 #define(length=20, lines=4) MSG_FSENS_NOT_RESPONDING     "ERROR: Filament sensor is not responding, please check connection."
-#define(length=20, lines=8) MSG_FW_VERSION_UNKNOWN		 "WARNING: Unknown firmware version"
+#define(length=20, lines=8) MSG_FW_VERSION_UNKNOWN		 "WARNING: This is an unofficial, unsupported build. Use at your own risk!"
 #define(length=20, lines=8) MSG_FW_VERSION_ALPHA		 "You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage." 
 #define(length=20, lines=8) MSG_FW_VERSION_BETA			 "You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."
 #define(length=20, lines=8) MSG_FW_VERSION_RC			 "This firmware version is release candidate. Some of the features may not work properly."
-#define(length=20, lines=8) MSG_FW_VERSION_DEBUG		 "This is development firmware version which contains additional debugging features. Using this version may cause printer damage."
