@@ -3153,126 +3153,157 @@ void process_commands()
 				enquecommand_front_P((PSTR("G28 W0")));
 				break;
 			}
+                        bool grey_pinda = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Do you have PINDA with a grey cable?"), false);
+                        lcd_update_enable(true);
+
 			KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
 			SERIAL_ECHOLNPGM("PINDA probe calibration start");
+                        // We will heat the bed up to 100C with PINDA probe high above it (so it stays cool)
+            setTargetBed(110);
+            custom_message = true;
+            custom_message_type = 4;
+            custom_message_state = 1;
+            custom_message = MSG_TEMP_CALIBRATION;
+            current_position[X_AXIS] = pgm_read_float(bed_ref_points + 2 * (6));
+            current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 2 * (6) + 1);
+            current_position[Z_AXIS] = PINDA_PREHEAT_Z + 200.f;
 
-			float zero_z;
-			int z_shift = 0; //unit: steps
-			float start_temp = 5 * (int)(current_temperature_pinda / 5);
-			if (start_temp < 35) start_temp = 35;
-			if (start_temp < current_temperature_pinda) start_temp += 5;
-			SERIAL_ECHOPGM("start temperature: ");
-			MYSERIAL.println(start_temp);
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+            st_synchronize();
+            while (current_temperature_bed < 109) {
+              delay_keep_alive(1000);
+              serialecho_temperatures();
+            }
 
-//			setTargetHotend(200, 0);
-			setTargetBed(70 + (start_temp - 30));
+            current_position[Z_AXIS] = PINDA_PREHEAT_Z;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+            st_synchronize();
 
-			custom_message = true;
-			custom_message_type = 4;
-			custom_message_state = 1;
-			custom_message = MSG_TEMP_CALIBRATION;
-			current_position[X_AXIS] = PINDA_PREHEAT_X;
-			current_position[Y_AXIS] = PINDA_PREHEAT_Y;
-			current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-			st_synchronize();
+            int timeout = 0;
+            int counter = 0;
+            float last_temp = 0;
+            float equations[3][4];
+            memset(&equations, 0, sizeof(equations));
 
-			while (current_temperature_pinda < start_temp)
-			{
-				delay_keep_alive(1000);
-				serialecho_temperatures();
-			}
+            int N = 0;
+            while (1) {
+              delay_keep_alive(1000);
+              float cur_temp_pinda = current_temperature_pinda;
 
-			eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process 
+              SERIAL_ECHOLNPGM("");
+              SERIAL_ECHOPGM("PINDA temp: ");
+              MYSERIAL.print(cur_temp_pinda);
+              SERIAL_ECHOPGM(" ");
+              serialecho_temperatures();
+              SERIAL_ECHOPGM(" ");
 
-			current_position[Z_AXIS] = 5;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+              if (counter == 60 || N == 0 || (timeout>360 && counter==0)) {              // let's measure!
+                if (N == 0)
+                  last_temp = cur_temp_pinda; // so that cooling isnt triggered after initial measurement
 
-			current_position[X_AXIS] = pgm_read_float(bed_ref_points);
-			current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-			st_synchronize();
+                current_position[Z_AXIS] = 5;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+                st_synchronize();
+                find_bed_induction_sensor_point_z(-1.f);
 
-			find_bed_induction_sensor_point_z(-1.f);
-			zero_z = current_position[Z_AXIS];
+                SERIAL_ECHOPGM("Z position (um): ");
+                MYSERIAL.print(1000 * current_position[Z_AXIS]);
 
-			//current_position[Z_AXIS]
-			SERIAL_ECHOLNPGM("");
-			SERIAL_ECHOPGM("ZERO: ");
-			MYSERIAL.print(current_position[Z_AXIS]);
-			SERIAL_ECHOLNPGM("");
+                for (int j = 0; j < 3; j++) {    // we will only fill what cannot be deduced by symmetry later
+                  equations[1][j] += pow(cur_temp_pinda, j + 1);
+                  equations[j][3] += 1000*current_position[Z_AXIS] * pow(cur_temp_pinda, j);
+                }
+                equations[0][0] += 1;
+                equations[2][2] += pow(cur_temp_pinda, 4);
 
-			int i = -1; for (; i < 5; i++)
-			{
-				float temp = (40 + i * 5);
-				SERIAL_ECHOPGM("Step: ");
-				MYSERIAL.print(i + 2);
-				SERIAL_ECHOLNPGM("/6 (skipped)");
-				SERIAL_ECHOPGM("PINDA temperature: ");
-				MYSERIAL.print((40 + i*5));
-				SERIAL_ECHOPGM(" Z shift (mm):");
-				MYSERIAL.print(0);
-				SERIAL_ECHOLNPGM("");
-				if (i >= 0) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
-				if (start_temp <= temp) break;
-			}
+                current_position[Z_AXIS] = PINDA_PREHEAT_Z;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+                st_synchronize();
 
-			for (i++; i < 5; i++)
-			{
-				float temp = (40 + i * 5);
-				SERIAL_ECHOPGM("Step: ");
-				MYSERIAL.print(i + 2);
-				SERIAL_ECHOLNPGM("/6");
-				custom_message_state = i + 2;
-				setTargetBed(50 + 10 * (temp - 30) / 5);
-//				setTargetHotend(255, 0);
-				current_position[X_AXIS] = PINDA_PREHEAT_X;
-				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
-				current_position[Z_AXIS] = PINDA_PREHEAT_Z;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-				st_synchronize();
-				while (current_temperature_pinda < temp)
-				{
-					delay_keep_alive(1000);
-					serialecho_temperatures();
-				}
-				current_position[Z_AXIS] = 5;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-				current_position[X_AXIS] = pgm_read_float(bed_ref_points);
-				current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-				st_synchronize();
-				find_bed_induction_sensor_point_z(-1.f);
-				z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
+                if (timeout > 360) break;
+                counter = 0;
+                timeout = 0;
+                ++N;
+                continue;
+              }
 
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOPGM("PINDA temperature: ");
-				MYSERIAL.print(current_temperature_pinda);
-				SERIAL_ECHOPGM(" Z shift (mm):");
-				MYSERIAL.print(current_position[Z_AXIS] - zero_z);
-				SERIAL_ECHOLNPGM("");
+              if (counter == 0 && ( cur_temp_pinda > last_temp + 5 || timeout == 360 )) { // sonda se ohriva a bud prekrocila posledni merenou teplotu o 5 stupnu, nebo uplynulo vic nez 6 minut od posledniho mereni
+                SERIAL_ECHOLNPGM("*");
+                counter = 1;
+                if (timeout < 360)    // in case we cannot heat up anymore we can stay where we are to avoid cooling
+                     current_position[Z_AXIS] += (cur_temp_pinda <= 35 ? 2 : 1) * exp((63 - cur_temp_pinda) / 10.f); // go twice as high for small temperatures, they heat the probe more easily than the formula predicts
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+                st_synchronize();
+                last_temp = cur_temp_pinda;
+              }
+              if (counter != 0) ++counter;
+              ++timeout;
+            }
 
-				EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
+            setTargetBed(0);
 
-			}
-			custom_message_type = 0;
-			custom_message = false;
+            // Measurement finished, now we must process it - first fill in rest of the linear system matrix
+            equations[0][1] = equations[1][0];
+            equations[0][2] = equations[1][1];
+            equations[2][0] = equations[1][1];
+            equations[2][1] = equations[1][2];
 
-			eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-			SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
-			disable_x();
-			disable_y();
-			disable_z();
-			disable_e0();
-			disable_e1();
-			disable_e2();
-			setTargetBed(0); //set bed target temperature back to 0
-//			setTargetHotend(0,0); //set hotend target temperature back to 0
-			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
-			lcd_update_enable(true);
-			lcd_update(2);
-			break;
-		}
+            int n = 3;                 // number of equations in the linear system
+            if (grey_pinda) {          // in this case we only need to solve 2*2 subsystem (linear fit)
+                for (int i=0;i<2;++i)  // move rhs column one position left
+                  equations[i][2]=equations[i][3];
+                n=2;
+            }
+
+
+            // Gaussian elimination
+            for (int i = 0; i < n; i++) {
+
+              for (int j = n; j >= i; j--)          // divide this equation to make to pivot 1
+                equations[i][j] /= equations[i][i];
+
+              for (int j = i + 1; j < n; j++)       // subtract proper multiple of the leading equation from all equations below
+                for (int k = n; k >= i; k--)
+                  equations[j][k] -= equations[i][k] * equations[j][i];
+            }
+
+            for (int i = n-1; i >= 0; i--) {        // back substitution - misusing right-hand side of the matrix for storing results
+              for (int j = n-1; j > i; j--)
+                equations[i][n] -= equations[i][j] * equations[j][n];
+            }
+
+            if (grey_pinda) {                       // copy results back to the last column
+              equations[0][3] = equations[0][2];
+              equations[1][3] = equations[1][2];
+              equations[2][3] = 0.f;
+            }
+
+            SERIAL_ECHOLNPGM("Fit complete!");
+            SERIAL_ECHOPGM("Quadratic coefficient ( 10^(-6)* (um/K) ): ");
+            MYSERIAL.print(1000000*equations[2][3]);
+            SERIAL_ECHOLNPGM("");
+            SERIAL_ECHOPGM("Linear coefficient ( 10^(-6)* (um/K) ): ");
+            MYSERIAL.print(1000000*equations[1][3]);
+            SERIAL_ECHOLNPGM("");
+
+
+            // we will only save quadratic and linear term, absolute is just a matter of choosing zero position
+            eeprom_update_float((float*)(EEPROM_PROBE_TEMP_SHIFT + 0 * sizeof(float)), grey_pinda ? 0.f : equations[2][3]); // quadratic term
+            eeprom_update_float((float*)(EEPROM_PROBE_TEMP_SHIFT + 1 * sizeof(float)), equations[1][3]); // linear term
+            eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+
+            SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
+            disable_x();
+            disable_y();
+            disable_z();
+            disable_e0();
+            disable_e1();
+            disable_e2();
+            lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
+            lcd_update_enable(true);
+            lcd_update(2);
+            break;
+          }
 #endif //PINDA_THERMISTOR
 
 		setTargetBed(PINDA_MIN_T);
@@ -7393,9 +7424,16 @@ float temp_comp_interpolation(float inp_temperature) {
 #ifdef PINDA_THERMISTOR
 float temp_compensation_pinda_thermistor_offset(float temperature_pinda)
 {
-	if (!temp_cal_active) return 0;
-	if (!calibration_status_pinda()) return 0;
-	return temp_comp_interpolation(temperature_pinda) / axis_steps_per_unit[Z_AXIS];
+  if (!temp_cal_active) return 0;
+  if (!calibration_status_pinda()) return 0;
+//  return temp_comp_interpolation(temperature_pinda) / axis_steps_per_unit[Z_AXIS];
+
+// first we must recover parameters of the parabolic fit
+  float a = eeprom_read_float((float*)(EEPROM_PROBE_TEMP_SHIFT));
+  float b = eeprom_read_float((float*)(EEPROM_PROBE_TEMP_SHIFT + sizeof(float)));
+
+  float zero_temp = 50.f;  // the fit will equal zero at this temperature
+  return (a*pow(temperature_pinda,2) + b*temperature_pinda - zero_temp*(zero_temp*a+b)) / 1000.f;  // return distance in mm
 }
 #endif //PINDA_THERMISTOR
 
