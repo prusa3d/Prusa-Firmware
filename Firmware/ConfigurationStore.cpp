@@ -47,7 +47,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
-#define EEPROM_VERSION "V1"
+#define EEPROM_VERSION "V2"
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings(uint16_t offset, uint8_t level) 
@@ -285,9 +285,10 @@ void Config_PrintSettings(uint8_t level)
 
 
 #ifdef EEPROM_SETTINGS
-void Config_RetrieveSettings(uint16_t offset, uint8_t level)
+bool Config_RetrieveSettings(uint16_t offset, uint8_t level)
 {
     int i=offset;
+	bool previous_settings_retrieved = true;
     char stored_ver[4];
     char ver[4]=EEPROM_VERSION;
     EEPROM_READ_VAR(i,stored_ver); //read stored version
@@ -386,10 +387,18 @@ void Config_RetrieveSettings(uint16_t offset, uint8_t level)
     else
     {
         Config_ResetDefault();
+		//Return false to inform user that eeprom version was changed and firmware is using default hardcoded settings now.
+		//In case that storing to eeprom was not used yet, do not inform user that hardcoded settings are used.
+		if (eeprom_read_byte((uint8_t *)offset) != 0xFF ||
+			eeprom_read_byte((uint8_t *)offset + 1) != 0xFF ||
+			eeprom_read_byte((uint8_t *)offset + 2) != 0xFF) {
+			previous_settings_retrieved = false;
+		}
     }
     #ifdef EEPROM_CHITCHAT
       Config_PrintSettings();
     #endif
+	return previous_settings_retrieved;
 }
 #endif
 

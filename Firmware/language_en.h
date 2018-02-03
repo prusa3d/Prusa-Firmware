@@ -374,6 +374,7 @@
 #define(length=20, lines=4) MSG_REMOVE_STEEL_SHEET				"Please remove steel sheet from heatbed."
 #define(length=20, lines=2) MSG_CALIBRATE_Z_AUTO				"Calibrating Z"
 #define(length=20, lines=2) MSG_STEEL_SHEET_CHECK				"Is steel sheet on heatbed?"
+#define(length=20, lines=4) MSG_TEMP_CAL_WARNING				"Stable ambient temperature 21-26C is needed a rigid stand is required."
 
 #define MSG_SELFTEST_AXIS					"Axis"
 #define MSG_SELFTEST_AXIS_LENGTH			"Axis length"

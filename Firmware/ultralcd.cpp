@@ -1539,44 +1539,57 @@ static void lcd_menu_extruder_info()
     }
 }
 
-static void lcd_menu_fails_stats()
+static void lcd_menu_fails_stats_total()
 {
-    
-    // Display screen info
-    
-    lcd.setCursor(0, 0);
-    lcd.print("Failure stats       ");
-    
-    // Display power failures
-    uint8_t power_count = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
-    lcd.setCursor(0, 1);
-    lcd.print(" Power failures:    ");
-    lcd.setCursor(17, 1);
-    lcd.print(itostr3((int)power_count));
-
-    
-    // Display Crash detected
-    uint8_t crash_count = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT);
-    lcd.setCursor(0, 2);
-    lcd.print(" Crash detected:    ");
-    lcd.setCursor(17, 2);
-    lcd.print(itostr3((int)crash_count));
-    
-    
-    // Display filament failures
-    uint8_t ferror_count = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
-    lcd.setCursor(0, 3);
-    lcd.print(" Filament fails:    ");
-    lcd.setCursor(17, 3);
-    lcd.print(itostr3((int)ferror_count));
-
+//01234567890123456789
+//Total failures
+// Power failures  000
+// Filam. runouts  000
+// Crash  X 000  Y 000
+//////////////////////
+    uint16_t power = eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
+    uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
+    uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
+    uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
+	fprintf_P(lcdout, PSTR(ESC_H(0,0)"Total failures"ESC_H(1,1)"Power failures  %-3d"ESC_H(1,2)"Filam. runouts  %-3d"ESC_H(1,3)"Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
-        lcd_return_to_status();
+        //lcd_return_to_status();
+		lcd_goto_menu(lcd_menu_fails_stats, 4);
     }
-    
 }
+
+static void lcd_menu_fails_stats_print()
+{
+//01234567890123456789
+//Last print failures
+// Power failures  000
+// Filam. runouts  000
+// Crash  X 000  Y 000
+//////////////////////
+    uint8_t power = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
+    uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
+    uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
+    uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
+	fprintf_P(lcdout, PSTR(ESC_H(0,0)"Last print failures"ESC_H(1,1)"Power failures  %-3d"ESC_H(1,2)"Filam. runouts  %-3d"ESC_H(1,3)"Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        //lcd_return_to_status();
+		lcd_goto_menu(lcd_menu_fails_stats, 2);
+    }    
+}
+
+static void lcd_menu_fails_stats()
+{
+	START_MENU();
+	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+	MENU_ITEM(submenu, PSTR("Last print"), lcd_menu_fails_stats_print);
+	MENU_ITEM(submenu, PSTR("Total"), lcd_menu_fails_stats_total);
+	END_MENU();
+}
+
 
 #ifdef DEBUG_BUILD
 extern uint16_t SP_min;
@@ -3550,6 +3563,7 @@ void lcd_second_serial_set() {
 	if(selectedSerialPort == 1) selectedSerialPort = 0;
 	else selectedSerialPort = 1;
 	eeprom_update_byte((unsigned char *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
+	MYSERIAL.begin(BAUDRATE);
 	lcd_goto_menu(lcd_settings_menu, 11);
 }
 

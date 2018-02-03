@@ -449,7 +449,7 @@ void dcode_10()
 void dcode_12()
 {//Reset Filament error, Power loss and crash counter ( Do it before every print and you can get stats for the print )
 	LOG("D12 - Reset failstat counters\n");
-    eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, 0x00);
+    eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0x00);
     eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, 0x00);
     eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, 0x00);
 }
@@ -491,7 +491,8 @@ void dcode_9125()
 	LOG("D9125 - PAT9125\n");
 	if ((strchr_pointer[1+4] == '?') || (strchr_pointer[1+4] == 0))
 	{
-		printf("res_x=%d res_y=%d x=%d y=%d b=%d s=%d\n", pat9125_xres, pat9125_yres, pat9125_x, pat9125_y, pat9125_b, pat9125_s);
+//		printf("res_x=%d res_y=%d x=%d y=%d b=%d s=%d\n", pat9125_xres, pat9125_yres, pat9125_x, pat9125_y, pat9125_b, pat9125_s);
+		printf("x=%d y=%d b=%d s=%d\n", pat9125_x, pat9125_y, pat9125_b, pat9125_s);
 		return;
 	}
 	if (strchr_pointer[1+4] == '!')

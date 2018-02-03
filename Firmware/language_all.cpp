@@ -519,8 +519,10 @@ const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_DEFAULT_SETTINGS_LOADED_EN[] PROGMEM = "Default settings loaded";
-const char * const MSG_DEFAULT_SETTINGS_LOADED_LANG_TABLE[1] PROGMEM = {
-	MSG_DEFAULT_SETTINGS_LOADED_EN
+const char MSG_DEFAULT_SETTINGS_LOADED_CZ[] PROGMEM = "Nahrano vychozi nastaveni";
+const char * const MSG_DEFAULT_SETTINGS_LOADED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_DEFAULT_SETTINGS_LOADED_EN,
+	MSG_DEFAULT_SETTINGS_LOADED_CZ
 };
 
 const char MSG_DISABLE_STEPPERS_EN[] PROGMEM = "Disable steppers";
@@ -2195,6 +2197,11 @@ const char MSG_TEMP_CALIBRATION_ON_CZ[] PROGMEM = "Tepl. kal.  [zap]";
 const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_ON_EN,
 	MSG_TEMP_CALIBRATION_ON_CZ
+};
+
+const char MSG_TEMP_CAL_WARNING_EN[] PROGMEM = "Stable ambient temperature 21-26C is needed a rigid stand is required.";
+const char * const MSG_TEMP_CAL_WARNING_LANG_TABLE[1] PROGMEM = {
+	MSG_TEMP_CAL_WARNING_EN
 };
 
 const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF_EN[] PROGMEM = "SD card  [normal]";
