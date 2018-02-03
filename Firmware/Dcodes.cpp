@@ -371,10 +371,10 @@ void dcode_8()
 		if (code_seen('P')) // Pinda temperature [C]
 			temp_pinda = code_value();
 		offset_z = temp_compensation_pinda_thermistor_offset(temp_pinda);
-		/*if (code_seen('Z')) // Z Offset [mm]
+		if (code_seen('Z')) // Z Offset [mm]
 		{
 			offset_z = code_value();
-		}*/
+		}
 	}
 	printf_P(PSTR("temp_pinda=%d offset_z=%d.%03d\n"), (int)temp_pinda, (int)offset_z, ((int)(1000 * offset_z) % 1000));
 }

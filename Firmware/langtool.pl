@@ -199,7 +199,7 @@ print $fh <<END
 #define LANG_ID_UNDEFINED 255
 
 // Default language ID, if no language is selected.
-#define LANG_ID_DEFAULT LANG_ID_CZ
+#define LANG_ID_DEFAULT LANG_ID_EN
 
 // Number of languages available in the language table.
 #define LANG_NUM ${num_languages}
