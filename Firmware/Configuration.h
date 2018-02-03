@@ -7,8 +7,8 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.1.1-RC5"
-#define FW_COMMIT_NR   151
+#define FW_VERSION "3.1.1"
+#define FW_COMMIT_NR   197
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
@@ -93,25 +93,28 @@
 #define EEPROM_UVLO_FAN_SPEED			(EEPROM_UVLO_FEEDRATE - 1) 
 #define EEPROM_FAN_CHECK_ENABLED		(EEPROM_UVLO_FAN_SPEED - 1)
 #define EEPROM_UVLO_MESH_BED_LEVELING     (EEPROM_FAN_CHECK_ENABLED - 9*2)
+
 #define EEPROM_UVLO_Z_MICROSTEPS     (EEPROM_UVLO_MESH_BED_LEVELING - 2)
 #define EEPROM_UVLO_E_ABS            (EEPROM_UVLO_Z_MICROSTEPS - 1)
-#define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4) //float for current position in E
+#define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4)                 //float for current position in E
 
 // Crash detection mode EEPROM setting 
-#define EEPROM_CRASH_DET       (EEPROM_UVLO_MESH_BED_LEVELING-12) 
+#define EEPROM_CRASH_DET         (EEPROM_UVLO_CURRENT_POSITION_E - 5)           // float (orig EEPROM_UVLO_MESH_BED_LEVELING-12) 
+// Crash detection counter Y (last print)
+#define EEPROM_CRASH_COUNT_Y       (EEPROM_CRASH_DET - 1)                       // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-15)
 // Filament sensor on/off EEPROM setting 
-#define EEPROM_FSENSOR       (EEPROM_UVLO_MESH_BED_LEVELING-14) 
-// Crash detection counter
-#define EEPROM_CRASH_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-15)
-// Filament runout/error coutner
-#define EEPROM_FERROR_COUNT      (EEPROM_UVLO_MESH_BED_LEVELING-16)
-// Power loss errors
-#define EEPROM_POWER_COUNT       (EEPROM_UVLO_MESH_BED_LEVELING-17)
+#define EEPROM_FSENSOR           (EEPROM_CRASH_COUNT_Y - 1)                     // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-14) 
+// Crash detection counter X (last print)
+#define EEPROM_CRASH_COUNT_X       (EEPROM_FSENSOR - 1)                         // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-15)
+// Filament runout/error coutner (last print)
+#define EEPROM_FERROR_COUNT      (EEPROM_CRASH_COUNT_X - 1)                     // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-16)
+// Power loss errors (last print)
+#define EEPROM_POWER_COUNT       (EEPROM_FERROR_COUNT - 1)                      // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-17)
 
-#define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4) //float for skew backup
+#define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4)                            // float for skew backup
 #define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
-#define EEPROM_BELTSTATUS_X (EEPROM_WIZARD_ACTIVE - 2) //uint16
-#define EEPROM_BELTSTATUS_Y (EEPROM_BELTSTATUS_X - 2) //uint16
+#define EEPROM_BELTSTATUS_X (EEPROM_WIZARD_ACTIVE - 2)                          // uint16
+#define EEPROM_BELTSTATUS_Y (EEPROM_BELTSTATUS_X - 2)                           // uint16
 
 #define EEPROM_DIR_DEPTH        (EEPROM_BELTSTATUS_Y-1)
 #define EEPROM_DIRS  (EEPROM_DIR_DEPTH-80) //8 chars for each dir name, max 10 levels
@@ -119,6 +122,16 @@
 #define EEPROM_SECOND_SERIAL_ACTIVE (EEPROM_SD_SORT - 1)
 
 #define EEPROM_FSENS_AUTOLOAD_ENABLED (EEPROM_SECOND_SERIAL_ACTIVE - 1)
+
+// Crash detection counter X (total)
+#define EEPROM_CRASH_COUNT_X_TOT       (EEPROM_FSENS_AUTOLOAD_ENABLED - 2)     // uint16
+// Crash detection counter Y (total)
+#define EEPROM_CRASH_COUNT_Y_TOT       (EEPROM_CRASH_COUNT_X_TOT - 2)          // uint16
+// Filament runout/error coutner (total)
+#define EEPROM_FERROR_COUNT_TOT      (EEPROM_CRASH_COUNT_Y_TOT - 2)            // uint16
+// Power loss errors (total)
+#define EEPROM_POWER_COUNT_TOT       (EEPROM_FERROR_COUNT_TOT - 2)             // uint16
+
 
 //TMC2130 configuration
 #define EEPROM_TMC_AXIS_SIZE  //axis configuration block size
@@ -571,8 +584,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define SDSUPPORT // Enable SD Card Support in Hardware Console
 //#define SDSLOW // Use slower SD transfer mode (not normally needed - uncomment if you're getting volume init error)
 #define SD_CHECK_AND_RETRY // Use CRC checks and retries on the SD communication
-#define ENCODER_PULSES_PER_STEP 2 // Increase if you have a high resolution encoder
-#define ENCODER_STEPS_PER_MENU_ITEM 2 // Set according to ENCODER_PULSES_PER_STEP or your liking
+#define ENCODER_PULSES_PER_STEP 4 // Increase if you have a high resolution encoder
+#define ENCODER_STEPS_PER_MENU_ITEM 1 // Set according to ENCODER_PULSES_PER_STEP or your liking
 //#define ULTIMAKERCONTROLLER //as available from the Ultimaker online store.
 //#define ULTIPANEL  //the UltiPanel as on Thingiverse
 //#define LCD_FEEDBACK_FREQUENCY_HZ 1000	// this is the tone frequency the buzzer plays when on UI feedback. ie Screen Click

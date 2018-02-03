@@ -362,10 +362,10 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
       int p;
       if (extruder<0){
         p=soft_pwm_bed;       
-        SERIAL_PROTOCOLPGM("ok B:");
+        SERIAL_PROTOCOLPGM("B:");
       }else{
         p=soft_pwm[extruder];       
-        SERIAL_PROTOCOLPGM("ok T:");
+        SERIAL_PROTOCOLPGM("T:");
       }
 			
       SERIAL_PROTOCOL(input);   
@@ -500,12 +500,12 @@ void fanSpeedError(unsigned char _fan) {
 		}
 	}
 	else {
-		setTargetHotend0(0);
+			setTargetHotend0(0);
+			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
 	}
-	SERIAL_ERROR_START;
 	switch (_fan) {
 	case 0:
-			SERIAL_ERRORLNPGM("ERROR: Extruder fan speed is lower then expected");
+			SERIAL_ECHOLNPGM("Extruder fan speed is lower then expected");
 			if (get_message_level() == 0) {
 				WRITE(BEEPER, HIGH);
 				delayMicroseconds(200);
@@ -515,7 +515,7 @@ void fanSpeedError(unsigned char _fan) {
 			}
 		break;
 	case 1:
-			SERIAL_ERRORLNPGM("ERROR: Print fan speed is lower then expected");
+			SERIAL_ECHOLNPGM("Print fan speed is lower then expected");
 			if (get_message_level() == 0) {
 				WRITE(BEEPER, HIGH);
 				delayMicroseconds(200);

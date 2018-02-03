@@ -604,7 +604,7 @@ void crashdet_disable()
 {
 //	MYSERIAL.println("crashdet_disable"); 
 	tmc2130_sg_stop_on_crash = false;
-	tmc2130_sg_crash = false;
+	tmc2130_sg_crash = 0;
 	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
 	CrashDetectMenu = 0;
 }
@@ -633,7 +633,7 @@ void crashdet_stop_and_save_print2()
 	sei();
 }
 
-void crashdet_detected()
+void crashdet_detected(uint8_t mask)
 {
 //	printf("CRASH_DETECTED");
 /*	while (!is_buffer_empty())
@@ -646,11 +646,17 @@ void crashdet_detected()
 	lcd_update_enable(true);
 	lcd_implementation_clear();
 	lcd_update(2);
-    
-    // Increment crash counter
-    uint8_t crash_count = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT);
-    crash_count++;
-    eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT, crash_count);
+
+	if (mask & X_AXIS_MASK)
+	{
+		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_X, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) + 1);
+		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) + 1);
+	}
+	if (mask & Y_AXIS_MASK)
+	{
+		eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) + 1);
+		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) + 1);
+	}
     
 #ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
     bool yesno = true;
@@ -684,6 +690,13 @@ void crashdet_cancel()
 	tmc2130_sg_stop_on_crash = true;
 }
 
+void failstats_reset_print()
+{
+	eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
+	eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
+	eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
+	eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+}
 
 
 #ifdef MESH_BED_LEVELING
@@ -719,10 +732,16 @@ void factory_reset(char level, bool quiet)
 			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
 			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
 
-			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
-			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT, 0);
+			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
+			eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
 			eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);
-			
+			eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
+
+			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
+			eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
+			eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
+			eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+
 			lcd_menu_statistics();
             
 			break;
@@ -991,7 +1010,7 @@ void setup()
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
-	Config_RetrieveSettings(EEPROM_OFFSET);
+	bool previous_settings_retrieved = Config_RetrieveSettings(EEPROM_OFFSET);
 	SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
 
 	tp_init();    // Initialize temperature loop
@@ -1091,12 +1110,14 @@ void setup()
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
 	card.initsd();
-	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff)
-		eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT) == 0xff)
-		eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) == 0xff)
-		eeprom_write_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, 0);
+	if (eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_POWER_COUNT_TOT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, 0);
 #ifdef SNMM
 	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
 	  int _z = BOWDEN_LENGTH;
@@ -1150,6 +1171,8 @@ void setup()
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
   show_fw_version_warnings();
+
+  if (!previous_settings_retrieved) lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version was changed, inform user that default setting were loaded
 
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
@@ -1473,9 +1496,15 @@ void loop()
 	tmc2130_check_overtemp();
 	if (tmc2130_sg_crash)
 	{
-		tmc2130_sg_crash = false;
+		uint8_t crash = tmc2130_sg_crash;
+		tmc2130_sg_crash = 0;
 //		crashdet_stop_and_save_print();
-		enquecommand_P((PSTR("CRASH_DETECTED")));
+		switch (crash)
+		{
+		case 1: enquecommand_P((PSTR("CRASH_DETECTEDX"))); break;
+		case 2: enquecommand_P((PSTR("CRASH_DETECTEDY"))); break;
+		case 3: enquecommand_P((PSTR("CRASH_DETECTEDXY"))); break;
+		}
 	}
 #endif //TMC2130
 
@@ -2276,7 +2305,12 @@ void process_commands()
   }
 
   else if(code_seen("CRASH_DETECTED"))
-	  crashdet_detected();
+  {
+	  uint8_t mask = 0;
+	  if (code_seen("X")) mask |= X_AXIS_MASK;
+	  if (code_seen("Y")) mask |= Y_AXIS_MASK;
+	  crashdet_detected(mask);
+  }
   else if(code_seen("CRASH_RECOVER"))
 	  crashdet_recover();
   else if(code_seen("CRASH_CANCEL"))
@@ -3108,6 +3142,9 @@ void process_commands()
 #ifdef PINDA_THERMISTOR
 		if (true)
 		{
+			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
+			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
+			if(result) lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
 			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
 				// We don't know where we are! HOME!
 				// Push the commands to the front of the message queue in the reverse order!
@@ -3852,15 +3889,7 @@ void process_commands()
 		lcd_update(2);
 		break;
 	default:
-		printf("Unknown G code: ");
-		printf(cmdbuffer + bufindr + CMDHDRSIZE);
-		printf("\n");
-
-
-
-
-
-
+		printf_P(PSTR("Unknown G code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
   } // end if(code_seen('G'))
 
@@ -3871,9 +3900,7 @@ void process_commands()
 	   
 	 /*for (++strchr_pointer; *strchr_pointer == ' ' || *strchr_pointer == '\t'; ++strchr_pointer);*/
 	  if (*(strchr_pointer+index) < '0' || *(strchr_pointer+index) > '9') {
-		  printf("Invalid M code: ");
-		  printf(cmdbuffer + bufindr + CMDHDRSIZE);
-		  printf("\n");
+		  printf_P(PSTR("Invalid M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
 
 	  } else
     switch((int)code_value())
@@ -3968,6 +3995,8 @@ void process_commands()
       card.openFile(strchr_pointer + 4,true);
       break;
     case 24: //M24 - Start SD print
+	  if (!card.paused)
+		failstats_reset_print();
       card.startFileprint();
       starttime=millis();
 	  break;
@@ -5711,6 +5740,10 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			//plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500 / 60, active_extruder);
             
             target[E_AXIS] -= FILAMENTCHANGE_FINALRETRACT;
+            st_synchronize();
+            uint8_t tmc2130_current_r_bckp = tmc2130_current_r[E_AXIS];
+            tmc2130_set_current_r(E_AXIS, TMC2130_UNLOAD_CURRENT_R);
+
             target[E_AXIS] -= 45;
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5200 / 60, active_extruder);
             st_synchronize();
@@ -5721,6 +5754,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
             st_synchronize();
             
+            tmc2130_set_current_r(E_AXIS, tmc2130_current_r_bckp);
 #endif // SNMM
 
 
@@ -6128,7 +6162,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
 
 //		extr_unload2();
-
+		
 		current_position[E_AXIS] -= 45;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
         st_synchronize();
@@ -6176,9 +6210,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
       FlushSerialRequestResend();
     break;
 	default: 
-		printf("Unknown M code: ");
-		printf(cmdbuffer + bufindr + CMDHDRSIZE);
-		printf("\n");
+		printf_P(PSTR("Unknown M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
 	
   } // end if(code_seen('M')) (end of M codes)
@@ -7539,9 +7571,8 @@ void uvlo_()
     disable_z();
     
     // Increment power failure counter
-    uint8_t power_count = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
-    power_count++;
-    eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, power_count);
+	eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
+	eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
     
 		SERIAL_ECHOLNPGM("UVLO - end");
 		MYSERIAL.println(millis() - time_start);
