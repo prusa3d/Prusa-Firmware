@@ -46,12 +46,8 @@ FORCE_INLINE void store_char(unsigned char c)
   }
 }
 
-
-//#elif defined(SIG_USART_RECV)
 #if defined(M_USARTx_RX_vect)
-  // fixed by Mark Sproul this is on the 644/644p
-  //SIGNAL(SIG_USART_RECV)
-  SIGNAL(M_USARTx_RX_vect)
+  ISR(M_USARTx_RX_vect)
   {
       // Test for a framing error.
       if (M_UCSRxA & (1<<M_FEx)) {
@@ -65,7 +61,7 @@ FORCE_INLINE void store_char(unsigned char c)
       }
   }
 #ifndef SNMM
-  SIGNAL(USART2_RX_vect)
+  ISR(USART2_RX_vect)
   {
       if (selectedSerialPort == 1) {
         // Test for a framing error.
@@ -159,6 +155,55 @@ void MarlinSerial::end()
 }
 
 
+void MarlinSerial::checkRx(void)
+{
+
+#ifdef SNMM
+    if((M_UCSRxA & (1<<M_RXCx)) != 0) {
+        CRITICAL_SECTION_START
+        // Test for a framing error.
+        if (M_UCSRxA & (1<<M_FEx)) {
+            // Characters received with the framing errors will be ignored.
+            (void)(*(char *)M_UDRx);
+        } else {
+            unsigned char c  =  M_UDRx;
+            store_char(c);
+            selectedSerialPort = 0;
+        }
+        CRITICAL_SECTION_END
+    }
+#else
+    if (selectedSerialPort == 0) {
+        if((M_UCSRxA & (1<<M_RXCx)) != 0) {
+		CRITICAL_SECTION_START
+        // Test for a framing error.
+            if (M_UCSRxA & (1<<M_FEx)) {
+                // Characters received with the framing errors will be ignored.
+                (void)(*(char *)M_UDRx);
+            } else {
+                unsigned char c  =  M_UDRx;
+                store_char(c);
+                selectedSerialPort = 0;
+            }
+            CRITICAL_SECTION_END
+        }
+    } else if(selectedSerialPort == 1) {
+        if((UCSR2A & (1<<RXC2)) != 0) {
+            CRITICAL_SECTION_START
+            // Test for a framing error.
+            if (UCSR2A & (1<<FE2)) {
+                // Characters received with the framing errors will be ignored.
+                (void)(*(char *)UDR2);
+            } else {
+                unsigned char c  =  UDR2;
+                store_char(c);
+                selectedSerialPort = 1;
+            }
+            CRITICAL_SECTION_END
+        }
+    }
+#endif
+}
 
 int MarlinSerial::peek(void)
 {

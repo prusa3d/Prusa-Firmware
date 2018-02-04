@@ -202,5 +202,10 @@ void PID_autotune(float temp, int extruder, int ncycles);
 void setExtruderAutoFanState(int pin, bool state);
 void checkExtruderAutoFans();
 
+extern volatile bool in_temp_isr;
+
+#define ENABLE_TEMPERATURE_INTERRUPT()  sbi(TIMSK0, OCIE0B)
+#define DISABLE_TEMPERATURE_INTERRUPT() cbi(TIMSK0, OCIE0B)
+
 #endif
 

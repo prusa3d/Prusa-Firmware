@@ -102,6 +102,11 @@ void microstep_readings();
   void babystep(const uint8_t axis,const bool direction); // perform a short step with a single stepper motor, outside of any convention
 #endif
      
+// Interrupt enable/disable macros
 
+#define ENABLE_STEPPER_DRIVER_INTERRUPT()  sbi(TIMSK1, OCIE1A)
+#define DISABLE_STEPPER_DRIVER_INTERRUPT() cbi(TIMSK1, OCIE1A)
+
+#define ENABLE_ISRs()	do { cli(); if (in_temp_isr) DISABLE_TEMPERATURE_INTERRUPT(); else ENABLE_TEMPERATURE_INTERRUPT(); ENABLE_STEPPER_DRIVER_INTERRUPT(); } while(0)
 
 #endif
