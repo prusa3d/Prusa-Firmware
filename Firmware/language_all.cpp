@@ -2159,7 +2159,7 @@ const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_ON_CZ
 };
 
-const char MSG_TEMP_CAL_WARNING_EN[] PROGMEM = "Stable ambient temperature 21-26C is needed a rigid stand is required.";
+const char MSG_TEMP_CAL_WARNING_EN[] PROGMEM = "Stable ambient temperature below 35C and rigid stand are required.";
 const char * const MSG_TEMP_CAL_WARNING_LANG_TABLE[1] PROGMEM = {
 	MSG_TEMP_CAL_WARNING_EN
 };

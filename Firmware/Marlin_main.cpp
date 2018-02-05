@@ -3141,10 +3141,7 @@ void process_commands()
 	{
 #ifdef PINDA_THERMISTOR
 		if (true)
-		{
-			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
-			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
-			if(result) lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
+		{			
 			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
 				// We don't know where we are! HOME!
 				// Push the commands to the front of the message queue in the reverse order!
@@ -3153,6 +3150,15 @@ void process_commands()
 				enquecommand_front_P((PSTR("G28 W0")));
 				break;
 			}
+                        
+                        lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
+                        if (current_temperature_pinda > 35) {
+                          lcd_show_fullscreen_message_and_wait_P(PSTR("Calibration failed: Initial PINDA temperature must be below 35C!"));                          
+                          break;
+                        }
+                        
+			if(lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false))
+                            lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
                         bool grey_pinda = lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Do you have PINDA with a grey cable?"), false);
                         lcd_update_enable(true);
 
@@ -3191,12 +3197,11 @@ void process_commands()
               float cur_temp_pinda = current_temperature_pinda;
 
               SERIAL_ECHOLNPGM("");
-              SERIAL_ECHOPGM("PINDA temp: ");
+              SERIAL_ECHOPGM("PINDA temp:");
               MYSERIAL.print(cur_temp_pinda);
               SERIAL_ECHOPGM(" ");
               serialecho_temperatures();
-              SERIAL_ECHOPGM(" ");
-
+              
               if (counter == 60 || N == 0 || (timeout>360 && counter==0)) {              // let's measure!
                 if (N == 0)
                   last_temp = cur_temp_pinda; // so that cooling isnt triggered after initial measurement
@@ -3208,6 +3213,7 @@ void process_commands()
 
                 SERIAL_ECHOPGM("Z position (um): ");
                 MYSERIAL.print(1000 * current_position[Z_AXIS]);
+                SERIAL_ECHOLNPGM("");
 
                 for (int j = 0; j < 3; j++) {    // we will only fill what cannot be deduced by symmetry later
                   equations[1][j] += pow(cur_temp_pinda, j + 1);
@@ -3278,7 +3284,9 @@ void process_commands()
               equations[2][3] = 0.f;
             }
 
-            SERIAL_ECHOLNPGM("Fit complete!");
+            SERIAL_ECHOLNPGM("");
+            SERIAL_ECHOLNPGM("");
+            SERIAL_ECHOLNPGM("Measurement finished, fit complete!");
             SERIAL_ECHOPGM("Quadratic coefficient ( 10^(-6)* (um/K) ): ");
             MYSERIAL.print(1000000*equations[2][3]);
             SERIAL_ECHOLNPGM("");
