@@ -930,6 +930,13 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
+
+
+void erase_eeprom_section(uint16_t offset, uint16_t bytes)
+{
+	for (int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
+}
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -1172,8 +1179,10 @@ void setup()
 
   show_fw_version_warnings();
 
-  if (!previous_settings_retrieved) lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version was changed, inform user that default setting were loaded
-
+  if (!previous_settings_retrieved) {
+	  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version was changed, inform user that default setting were loaded
+	  erase_eeprom_section(EEPROM_OFFSET, 156); 							   //erase M500 part of eeprom
+  }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
