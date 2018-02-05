@@ -518,8 +518,8 @@ const char * const MSG_DATE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DATE_CZ
 };
 
-const char MSG_DEFAULT_SETTINGS_LOADED_EN[] PROGMEM = "Default settings loaded";
-const char MSG_DEFAULT_SETTINGS_LOADED_CZ[] PROGMEM = "Nahrano vychozi nastaveni";
+const char MSG_DEFAULT_SETTINGS_LOADED_EN[] PROGMEM = "Old settings found. Default PID, Esteps etc. will be set.";
+const char MSG_DEFAULT_SETTINGS_LOADED_CZ[] PROGMEM = "Neplatne hodnoty nastaveni. Bude pouzito vychozi PID, Esteps atd.";
 const char * const MSG_DEFAULT_SETTINGS_LOADED_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_DEFAULT_SETTINGS_LOADED_EN,
 	MSG_DEFAULT_SETTINGS_LOADED_CZ

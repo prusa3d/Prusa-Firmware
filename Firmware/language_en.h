@@ -405,7 +405,7 @@
 #define(length=20, lines=4) MSG_PULL_OUT_FILAMENT				"Please pull out filament immediately"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
 
-#define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Default settings loaded"
+#define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Old settings found. Default PID, Esteps etc. will be set."
 #define(length=17, lines=1) MSG_SORT_TIME						"Sort:      [Time]"
 #define(length=17, lines=1) MSG_SORT_ALPHA						"Sort:  [Alphabet]"
 #define(length=17, lines=1) MSG_SORT_NONE						"Sort:      [None]"
