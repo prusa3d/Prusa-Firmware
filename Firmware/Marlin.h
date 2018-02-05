@@ -379,6 +379,7 @@ float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
 void show_fw_version_warnings();
+void erase_eeprom_section(uint16_t offset, uint16_t bytes);
 
 #ifdef PINDA_THERMISTOR
 float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
