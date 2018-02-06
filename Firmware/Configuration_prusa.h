@@ -237,6 +237,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {400, 750, 750} // {XY,Z,E}
 #endif
 
+#define RPM_FANS
+
 /*------------------------------------
  PAT9125 SETTINGS
  *------------------------------------*/

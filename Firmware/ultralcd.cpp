@@ -5635,8 +5635,11 @@ static bool lcd_selftest()
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(1, _progress, 3, true, 2000);
-		//_progress = lcd_selftest_screen(2, _progress, 3, true, 2000);
-		_result = true;// lcd_selfcheck_endstops();
+#ifndef TMC2130
+		_result = lcd_selfcheck_endstops();
+#else
+		_result = true;
+#endif
 	}
 	
 	if (_result)
