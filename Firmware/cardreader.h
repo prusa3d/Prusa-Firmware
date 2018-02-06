@@ -75,6 +75,7 @@ public:
   bool logging;
   bool sdprinting ;  
   bool cardOK ;
+  bool paused ;
   char filename[13];
   uint16_t creationTime, creationDate;
   uint32_t cluster, position;

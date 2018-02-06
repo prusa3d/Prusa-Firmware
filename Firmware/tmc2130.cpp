@@ -34,13 +34,13 @@ uint8_t tmc2130_current_r_home[4] = {10, 10, 20, 10};
 
 
 //pwm_ampl
-uint8_t tmc2130_pwm_ampl[2] = {TMC2130_PWM_AMPL_X, TMC2130_PWM_AMPL_Y};
+uint8_t tmc2130_pwm_ampl[4] = {TMC2130_PWM_AMPL_X, TMC2130_PWM_AMPL_Y, TMC2130_PWM_AMPL_Z, TMC2130_PWM_AMPL_E};
 //pwm_grad
-uint8_t tmc2130_pwm_grad[2] = {TMC2130_PWM_GRAD_X, TMC2130_PWM_GRAD_Y};
+uint8_t tmc2130_pwm_grad[4] = {TMC2130_PWM_GRAD_X, TMC2130_PWM_GRAD_Y, TMC2130_PWM_GRAD_Z, TMC2130_PWM_GRAD_E};
 //pwm_auto
-uint8_t tmc2130_pwm_auto[2] = {TMC2130_PWM_AUTO_X, TMC2130_PWM_AUTO_Y};
+uint8_t tmc2130_pwm_auto[4] = {TMC2130_PWM_AUTO_X, TMC2130_PWM_AUTO_Y, TMC2130_PWM_AUTO_Z, TMC2130_PWM_AUTO_E};
 //pwm_freq
-uint8_t tmc2130_pwm_freq[2] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y};
+uint8_t tmc2130_pwm_freq[4] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y, TMC2130_PWM_FREQ_Z, TMC2130_PWM_FREQ_E};
 
 uint8_t tmc2130_mres[4] = {0, 0, 0, 0}; //will be filed at begin of init
 
@@ -58,7 +58,7 @@ uint32_t tmc2130_sg_meassure_val = 0;
 
 bool tmc2130_sg_stop_on_crash = true;
 uint8_t tmc2130_sg_diag_mask = 0x00;
-bool tmc2130_sg_crash = false;
+uint8_t tmc2130_sg_crash = 0;
 uint16_t tmc2130_sg_err[4] = {0, 0, 0, 0};
 uint16_t tmc2130_sg_cnt[4] = {0, 0, 0, 0};
 bool tmc2130_sg_change = false;
@@ -198,7 +198,15 @@ void tmc2130_init()
 //		tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((tmc2130_current_r[axis] & 0x1f) << 8) | (tmc2130_current_h[axis] & 0x1f));
 
 		tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_TPOWERDOWN, 0x00000000);
+#ifndef TMC2130_STEALTH_E
 		tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
+#else //TMC2130_STEALTH_E
+		tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
+		tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_TCOOLTHRS, 0);
+		tmc2130_wr(tmc2130_cs[axis], TMC2130_REG_GCONF, TMC2130_GCONF_SILENT);
+		tmc2130_wr_PWMCONF(tmc2130_cs[axis], tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
+		tmc2130_wr_TPWMTHRS(tmc2130_cs[axis], TMC2130_TPWMTHRS);
+#endif //TMC2130_STEALTH_E
 	}
 
 	tmc2130_sg_err[0] = 0;
@@ -226,7 +234,7 @@ extern bool is_usb_printing;
 void tmc2130_st_isr(uint8_t last_step_mask)
 {
 	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false) return;
-	bool crash = false;
+	uint8_t crash = 0;
 	uint8_t diag_mask = tmc2130_sample_diag();
 //	for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++)
 	for (uint8_t axis = X_AXIS; axis <= Z_AXIS; axis++)
@@ -239,12 +247,12 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 		{
 			tmc2130_sg_cnt[axis] = tmc2130_sg_err[axis];
 			tmc2130_sg_change = true;
-			uint8_t sg_thr = 48;
-			if (axis == Y_AXIS) sg_thr = 64;
+			uint8_t sg_thr = 64;
+//			if (axis == Y_AXIS) sg_thr = 64;
 			if (tmc2130_sg_err[axis] >= sg_thr)
 			{
 				tmc2130_sg_err[axis] = 0;
-				crash = true;
+				crash |= mask;
 			}
 		}
 	}
@@ -259,7 +267,7 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 		}*/
 		if (/*!is_usb_printing && */tmc2130_sg_stop_on_crash && crash)
 		{
-			tmc2130_sg_crash = true;
+			tmc2130_sg_crash = crash;
 			tmc2130_sg_stop_on_crash = false;
 			crashdet_stop_and_save_print();
 		}
@@ -414,14 +422,33 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 {
 	uint8_t cs = tmc2130_cs[axis];
 	uint8_t intpol = 1;
+	uint8_t toff = TMC2130_TOFF_XYZ; // toff = 3 (fchop = 27.778kHz)
+	uint8_t hstrt = 5; //initial 4, modified to 5
+	uint8_t hend = 1;
+	uint8_t fd3 = 0;
+	uint8_t rndtf = 0; //random off time
+	uint8_t chm = 0; //spreadCycle
+	uint8_t tbl = 2; //blanking time
+	if (axis == E_AXIS)
+	{
+#ifdef TMC2130_CNSTOFF_E
+		// fd = 0 (slow decay only)
+		hstrt = 0; //fd0..2
+		fd3 = 0; //fd3
+		hend = 0; //sine wave offset
+		chm = 1; // constant off time mod
+#endif //TMC2130_CNSTOFF_E
+		toff = TMC2130_TOFF_E; // toff = 3-5
+//		rndtf = 1;
+	}
 	if (current_r <= 31)
 	{
-		tmc2130_wr_CHOPCONF(cs, 3, 5, 1, 0, 0, 0, 0, 2, 1, 0, 0, 0, mres, intpol, 0, 0);
+		tmc2130_wr_CHOPCONF(cs, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 1, 0, 0, 0, mres, intpol, 0, 0);
 		tmc2130_wr(cs, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | ((current_r & 0x1f) << 8) | (current_h & 0x1f));
 	}
 	else
 	{
-		tmc2130_wr_CHOPCONF(cs, 3, 5, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, mres, intpol, 0, 0);
+		tmc2130_wr_CHOPCONF(cs, toff, hstrt, hend, fd3, 0, 0, 0, tbl, 0, 0, 0, 0, mres, intpol, 0, 0);
 		tmc2130_wr(cs, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | (((current_r >> 1) & 0x1f) << 8) | ((current_h >> 1) & 0x1f));
 	}
 }

@@ -361,6 +361,7 @@
 #define(length=20, lines=4) MSG_REMOVE_STEEL_SHEET				"Please remove steel sheet from heatbed."
 #define(length=20, lines=2) MSG_CALIBRATE_Z_AUTO				"Calibrating Z"
 #define(length=20, lines=2) MSG_STEEL_SHEET_CHECK				"Is steel sheet on heatbed?"
+#define(length=20, lines=4) MSG_TEMP_CAL_WARNING				"Stable ambient temperature 21-26C is needed a rigid stand is required."
 
 #define MSG_SELFTEST_AXIS					"Axis"
 #define MSG_SELFTEST_AXIS_LENGTH			"Axis length"
@@ -391,7 +392,7 @@
 #define(length=20, lines=4) MSG_PULL_OUT_FILAMENT				"Please pull out filament immediately"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
 
-#define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Default settings loaded"
+#define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Old settings found. Default PID, Esteps etc. will be set."
 #define(length=17, lines=1) MSG_SORT_TIME						"Sort:      [Time]"
 #define(length=17, lines=1) MSG_SORT_ALPHA						"Sort:  [Alphabet]"
 #define(length=17, lines=1) MSG_SORT_NONE						"Sort:      [None]"

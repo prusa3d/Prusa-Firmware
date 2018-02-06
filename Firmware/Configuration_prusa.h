@@ -104,7 +104,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MINTEMP_MINAMBIENT      25
 #define MINTEMP_MINAMBIENT_RAW  978
 
-
+//#define DEBUG_BUILD
 #ifdef DEBUG_BUILD
 //#define _NO_ASM
 #define DEBUG_DCODES //D codes
@@ -119,7 +119,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //#define DEBUG_DISABLE_YMAXLIMIT  //y max limit ignored
 //#define DEBUG_DISABLE_ZMINLIMIT  //z min limit ignored
 //#define DEBUG_DISABLE_ZMAXLIMIT  //z max limit ignored
-//#define DEBUG_DISABLE_STARTMSGS //no startup messages 
+#define DEBUG_DISABLE_STARTMSGS //no startup messages 
 //#define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
 //#define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
 //#define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
@@ -159,16 +159,28 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_PWM_AUTO_Y  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Y  2         // PWMCONF
 
-/* //not used
+#define TMC2130_PWM_GRAD_E  2         // PWMCONF
+#define TMC2130_PWM_AMPL_E  235       // PWMCONF
+#define TMC2130_PWM_AUTO_E  1         // PWMCONF
+#define TMC2130_PWM_FREQ_E  2         // PWMCONF
+
 #define TMC2130_PWM_GRAD_Z  4         // PWMCONF
 #define TMC2130_PWM_AMPL_Z  200       // PWMCONF
 #define TMC2130_PWM_AUTO_Z  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Z  2         // PWMCONF
+
 #define TMC2130_PWM_GRAD_E  4         // PWMCONF
-#define TMC2130_PWM_AMPL_E  200       // PWMCONF
+#define TMC2130_PWM_AMPL_E  240       // PWMCONF
 #define TMC2130_PWM_AUTO_E  1         // PWMCONF
 #define TMC2130_PWM_FREQ_E  2         // PWMCONF
-*/
+
+#define TMC2130_TOFF_XYZ    3         // CHOPCONF // fchop = 27.778kHz
+#define TMC2130_TOFF_E      3         // CHOPCONF // fchop = 27.778kHz
+//#define TMC2130_TOFF_E      4         // CHOPCONF // fchop = 21.429kHz
+//#define TMC2130_TOFF_E      5         // CHOPCONF // fchop = 17.442kHz
+
+//#define TMC2130_STEALTH_E // Extruder stealthChop mode
+//#define TMC2130_CNSTOFF_E // Extruder constant-off-time mode (similar to MK2)
 
 //#define TMC2130_PWM_DIV   683         // PWM frequency divider (1024, 683, 512, 410)
 #define TMC2130_PWM_DIV   512         // PWM frequency divider (1024, 683, 512, 410)
@@ -193,6 +205,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
 #define TMC2130_CURRENTS_H {13, 20, 25, 35}  // default holding currents for all axes
 #define TMC2130_CURRENTS_R {13, 20, 25, 35}  // default running currents for all axes
+#define TMC2130_UNLOAD_CURRENT_R 12			 // lowe current for M600 to protect filament sensor 
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
