@@ -121,8 +121,10 @@ extern void fsensor_unblock();
 extern bool fsensor_enable();
 extern void fsensor_disable();
 
+#ifdef TMC2130
 extern void crashdet_enable();
 extern void crashdet_disable();
+#endif //TMC2130
 
 
 #ifdef SNMM
@@ -186,7 +188,6 @@ static void lcd_main_menu();
 static void lcd_tune_menu();
 static void lcd_prepare_menu();
 //static void lcd_move_menu();
-static void lcd_crash_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
 static void lcd_language_menu();
@@ -202,7 +203,9 @@ static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
 static void lcd_menu_extruder_info();
+#ifdef TMC2130
 static void lcd_menu_fails_stats();
+#endif //TMC2130
 
 void lcd_finishstatus();
 
@@ -1529,6 +1532,7 @@ static void lcd_menu_extruder_info()
     }
 }
 
+#ifdef TMC2130
 static void lcd_menu_fails_stats_total()
 {
 //01234567890123456789
@@ -1579,6 +1583,7 @@ static void lcd_menu_fails_stats()
 	MENU_ITEM(submenu, PSTR("Total"), lcd_menu_fails_stats_total);
 	END_MENU();
 }
+#endif //TMC2130
 
 
 #ifdef DEBUG_BUILD
@@ -1601,8 +1606,13 @@ static void lcd_menu_debug()
 static void lcd_menu_temperatures()
 {
 	fprintf_P(lcdout, PSTR(ESC_H(1,0)"Nozzle:   %d%c" ESC_H(1,1)"Bed:      %d%c"), (int)current_temperature[0], '\x01', (int)current_temperature_bed, '\x01');
+#ifdef AMBIENT_THERMISTOR
 	fprintf_P(lcdout, PSTR(ESC_H(1,2)"Ambient:  %d%c" ESC_H(1,3)"PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
-    if (lcd_clicked())
+#else //AMBIENT_THERMISTOR
+	fprintf_P(lcdout, PSTR(ESC_H(1,2)"PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
+#endif //AMBIENT_THERMISTOR
+
+	if (lcd_clicked())
     {
         lcd_quick_feedback();
         lcd_return_to_status();
@@ -3339,6 +3349,7 @@ static void lcd_sort_type_set() {
 }
 #endif //SDCARD_SORT_ALPHA
 
+#ifdef TMC2130
 static void lcd_crash_mode_info()
 {
 	lcd_update_enable(true);
@@ -3370,6 +3381,7 @@ static void lcd_crash_mode_info2()
 		else lcd_goto_menu(lcd_settings_menu, 14, true, true);
 	}
 }
+#endif //TMC2130
 
 static void lcd_filament_autoload_info()
 {
@@ -3401,10 +3413,13 @@ static void lcd_silent_mode_set() {
   sei();
 #endif //TMC2130
   digipot_init();
+#ifdef TMC2130
   if (CrashDetectMenu && SilentModeMenu)
 	  lcd_goto_menu(lcd_crash_mode_info2);
+#endif //TMC2130
 }
 
+#ifdef TMC2130
 static void lcd_crash_mode_set()
 {
 	CrashDetectMenu = !CrashDetectMenu; //set also from crashdet_enable() and crashdet_disable()
@@ -3417,6 +3432,8 @@ static void lcd_crash_mode_set()
 	else lcd_goto_menu(lcd_settings_menu, 9);
     
 }
+#endif //TMC2130
+
 
 static void lcd_set_lang(unsigned char lang) {
   lang_selected = lang;
@@ -3831,10 +3848,6 @@ void lcd_wizard(int state) {
 	lcd_update(2);
 }
 
-static void lcd_crash_menu()
-{
-}
-
 
 
 static void lcd_settings_menu()
@@ -3886,6 +3899,7 @@ static void lcd_settings_menu()
 	  MENU_ITEM(function, MSG_FANS_CHECK_OFF, lcd_set_fan_check);
   }
 
+#ifdef TMC2130
   if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
   else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
   if (SilentModeMenu == 0)
@@ -3894,6 +3908,7 @@ static void lcd_settings_menu()
     else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
   }
   else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+#endif //TMC2130
 
   if (temp_cal_active == false) {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_OFF, lcd_temp_calibration_set);
@@ -5162,7 +5177,9 @@ static void lcd_main_menu()
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
     
+#ifdef TMC2130
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
+#endif //TMC2130
 
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
 
@@ -5242,6 +5259,7 @@ static void lcd_tune_menu()
   }
 #endif //DEBUG_DISABLE_FSENSORCHECK
 
+#ifdef TMC2130
   if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
   else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
 
@@ -5251,6 +5269,7 @@ static void lcd_tune_menu()
     else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
   }
   else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+#endif //TMC2130
 
   END_MENU();
 }

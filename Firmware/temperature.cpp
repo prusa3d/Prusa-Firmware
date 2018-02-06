@@ -454,6 +454,8 @@ void setExtruderAutoFanState(int pin, bool state)
   analogWrite(pin, newFanSpeed);
 }
 
+#if (defined(TACH_0))
+
 void countFanSpeed()
 {
 	//SERIAL_ECHOPGM("edge counter 1:"); MYSERIAL.println(fan_edge_counter[1]);
@@ -526,6 +528,7 @@ void fanSpeedError(unsigned char _fan) {
 		break;
 	}
 }
+#endif //(defined(TACH_0))
 
 
 void checkExtruderAutoFans()
@@ -660,11 +663,16 @@ void manage_heater()
   #endif
 
     // Check if temperature is within the correct range
+#ifdef AMBIENT_THERMISTOR
     if(((current_temperature_ambient < MINTEMP_MINAMBIENT) || (current_temperature[e] > minttemp[e])) && (current_temperature[e] < maxttemp[e])) 
+#else //AMBIENT_THERMISTOR
+    if((current_temperature[e] > minttemp[e]) && (current_temperature[e] < maxttemp[e])) 
+#endif //AMBIENT_THERMISTOR
     {
       soft_pwm[e] = (int)pid_output >> 1;
     }
-    else {
+    else
+	{
       soft_pwm[e] = 0;
     }
 
@@ -703,8 +711,10 @@ void manage_heater()
       (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
   if(millis() - extruder_autofan_last_check > 1000)  // only need to check fan state very infrequently
   {
+#if (defined(TACH_0))
 	countFanSpeed();
 	checkFanSpeed();
+#endif //(defined(TACH_0))
     checkExtruderAutoFans();
     extruder_autofan_last_check = millis();
   }  
@@ -747,7 +757,11 @@ void manage_heater()
       pid_output = constrain(target_temperature_bed, 0, MAX_BED_POWER);
     #endif //PID_OPENLOOP
 
+#ifdef AMBIENT_THERMISTOR
 	  if(((current_temperature_bed > BED_MINTEMP) || (current_temperature_ambient < MINTEMP_MINAMBIENT)) && (current_temperature_bed < BED_MAXTEMP)) 
+#else //AMBIENT_THERMISTOR
+	  if((current_temperature_bed > BED_MINTEMP) && (current_temperature_bed < BED_MAXTEMP)) 
+#endif //AMBIENT_THERMISTOR
 	  {
 	    soft_pwm_bed = (int)pid_output >> 1;
 	  }
@@ -924,6 +938,7 @@ static float analog2tempBed(int raw) {
   #endif
 }
 
+#ifdef AMBIENT_THERMISTOR
 static float analog2tempAmbient(int raw)
 {
     float celsius = 0;
@@ -944,6 +959,7 @@ static float analog2tempAmbient(int raw)
     if (i == AMBIENTTEMPTABLE_LEN) celsius = PGM_RD_W(AMBIENTTEMPTABLE[i-1][1]);
     return celsius;
 }
+#endif //AMBIENT_THERMISTOR
 
 /* Called to get the raw values into the the actual temperatures. The raw values are created in interrupt context,
     and this function is called from normal context as it is too slow to run in interrupts and will block the stepper routine otherwise */
@@ -1537,7 +1553,9 @@ void adc_ready(void) //callback from adc when sampling finished
 	current_temperature_bed_raw = adc_values[2];
 	current_temperature_raw_pinda = adc_values[3];
 	current_voltage_raw_pwr = adc_values[4];
+#ifdef AMBIENT_THERMISTOR
 	current_temperature_raw_ambient = adc_values[5];
+#endif //AMBIENT_THERMISTOR
 	current_voltage_raw_bed = adc_values[6];
 	temp_meas_ready = true;
 }
@@ -1895,7 +1913,9 @@ ISR(TIMER0_COMPB_vect)
   }
 #endif //BABYSTEPPING
 
+#if (defined(TACH_0))
   check_fans();
+#endif //(defined(TACH_0))
 
 	_lock = false;
 }
@@ -1949,6 +1969,7 @@ void check_min_temp_bed()
 
 void check_min_temp()
 {
+#ifdef AMBIENT_THERMISTOR
 	static uint8_t heat_cycles = 0;
 	if (current_temperature_raw_ambient > OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)
 	{
@@ -1965,10 +1986,12 @@ void check_min_temp()
 			heat_cycles = 0;
 		return;
 	}
+#endif //AMBIENT_THERMISTOR
 	check_min_temp_heater0();
 	check_min_temp_bed();
 }
 
+#if (defined(TACH_0))
 void check_fans() {
 	if (READ(TACH_0) != fan_state[0]) {
 		fan_edge_counter[0] ++;
@@ -1979,6 +2002,7 @@ void check_fans() {
 	//	fan_state[1] = !fan_state[1];
 	//}
 }
+#endif //TACH_0
 
 #ifdef PIDTEMP
 // Apply the scale factors to the PID values

@@ -1,8 +1,8 @@
 /*****************************************************************
-* EINY Rambo 0.4a Pin Assignments
+* EINSY Rambo 1.0a Pin Assignments
 ******************************************************************/
 
-#define ELECTRONICS "EINY_04a"
+#define ELECTRONICS "EINSy_10a"
 
 #define KNOWN_BOARD
 #ifndef __AVR_ATmega2560__
@@ -11,6 +11,12 @@
 
 #define TMC2130
 #define PAT9125
+#define UVLO_SUPPORT
+#define UVLO_SUPPORT
+
+#define AMBIENT_THERMISTOR
+#define PINDA_THERMISTOR
+
 
 #define SWI2C                    // enable software i2c
 #define SWI2C_A8                 // 8bit address functions
