@@ -1179,9 +1179,10 @@ void setup()
 	setup_uvlo_interrupt();
 #endif //UVLO_SUPPORT
 
-#ifndef DEBUG_DISABLE_FANCHECK
+#if !defined(DEBUG_DISABLE_FANCHECK) && defined(TACH_1) && TACH_1 >-1
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
+
 #ifndef DEBUG_DISABLE_FSENSORCHECK
 	fsensor_setup_interrupt();
 #endif //DEBUG_DISABLE_FSENSORCHECK
@@ -7648,6 +7649,8 @@ void uvlo_()
 }
 #endif //UVLO_SUPPORT
 
+#if defined(TACH_1) && TACH_1 >-1
+
 void setup_fan_interrupt() {
 //INT7
 	DDRE &= ~(1 << 7); //input pin
@@ -7677,6 +7680,8 @@ ISR(INT7_vect) {
 	}	
 	EICRB ^= (1 << 6); //change edge
 }
+
+#endif
 
 #ifdef UVLO_SUPPORT
 void setup_uvlo_interrupt() {
