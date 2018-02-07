@@ -935,6 +935,13 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
+
+
+void erase_eeprom_section(uint16_t offset, uint16_t bytes)
+{
+	for (int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
+}
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -1123,10 +1130,10 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, 0);
 	if (eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
-	if (eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_POWER_COUNT, 0);
-	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_X, 0);
-	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_Y, 0);
-	if (eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_FERROR_COUNT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_POWER_COUNT_TOT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, 0);
+	if (eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, 0);
 #ifdef SNMM
 	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
 	  int _z = BOWDEN_LENGTH;
@@ -1172,9 +1179,10 @@ void setup()
 	setup_uvlo_interrupt();
 #endif //UVLO_SUPPORT
 
-#ifndef DEBUG_DISABLE_FANCHECK
+#if !defined(DEBUG_DISABLE_FANCHECK) && defined(TACH_1) && TACH_1 >-1
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
+
 #ifndef DEBUG_DISABLE_FSENSORCHECK
 	fsensor_setup_interrupt();
 #endif //DEBUG_DISABLE_FSENSORCHECK
@@ -1185,8 +1193,10 @@ void setup()
 
   show_fw_version_warnings();
 
-  if (!previous_settings_retrieved) lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version was changed, inform user that default setting were loaded
-
+  if (!previous_settings_retrieved) {
+	  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version was changed, inform user that default setting were loaded
+	  erase_eeprom_section(EEPROM_OFFSET, 156); 							   //erase M500 part of eeprom
+  }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
@@ -5761,6 +5771,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			//plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500 / 60, active_extruder);
             
             target[E_AXIS] -= FILAMENTCHANGE_FINALRETRACT;
+            st_synchronize();
+#ifdef TMC2130
+            uint8_t tmc2130_current_r_bckp = tmc2130_current_r[E_AXIS];
+            tmc2130_set_current_r(E_AXIS, TMC2130_UNLOAD_CURRENT_R);
+#endif //TMC2130
             target[E_AXIS] -= 45;
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5200 / 60, active_extruder);
             st_synchronize();
@@ -5770,7 +5785,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             target[E_AXIS] -= 20;
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
             st_synchronize();
-            
+#ifdef TMC2130            
+            tmc2130_set_current_r(E_AXIS, tmc2130_current_r_bckp);
+#endif //TMC2130
 #endif // SNMM
 
 
@@ -6182,7 +6199,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
 
 //		extr_unload2();
-
+		
 		current_position[E_AXIS] -= 45;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
         st_synchronize();
@@ -7632,6 +7649,8 @@ void uvlo_()
 }
 #endif //UVLO_SUPPORT
 
+#if defined(TACH_1) && TACH_1 >-1
+
 void setup_fan_interrupt() {
 //INT7
 	DDRE &= ~(1 << 7); //input pin
@@ -7661,6 +7680,8 @@ ISR(INT7_vect) {
 	}	
 	EICRB ^= (1 << 6); //change edge
 }
+
+#endif
 
 #ifdef UVLO_SUPPORT
 void setup_uvlo_interrupt() {

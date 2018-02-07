@@ -379,6 +379,7 @@ float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
 void show_fw_version_warnings();
+void erase_eeprom_section(uint16_t offset, uint16_t bytes);
 
 #ifdef PINDA_THERMISTOR
 float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
@@ -391,7 +392,10 @@ bool check_commands();
 void uvlo_();
 void recover_print(uint8_t automatic); 
 void setup_uvlo_interrupt();
+
+#if defined(TACH_1) && TACH_1 >-1
 void setup_fan_interrupt();
+#endif
 
 extern void recover_machine_state_after_power_panic();
 extern void restore_print_from_eeprom();

@@ -227,7 +227,7 @@ void setExtruderAutoFanState(int pin, bool state);
 void checkExtruderAutoFans();
 
 
-#if (defined(TACH_0))
+#if (defined(TACH_0) && TACH_0 > -1)
 
 void countFanSpeed();
 void checkFanSpeed();

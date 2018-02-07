@@ -26,7 +26,7 @@
 #define X_STEP_PIN             37
 #define X_DIR_PIN              48
 #define X_MIN_PIN              12
-#define X_MAX_PIN              30
+#define X_MAX_PIN              -1
 #define X_ENABLE_PIN           29
 #define X_MS1_PIN              40
 #define X_MS2_PIN              41
@@ -34,7 +34,7 @@
 #define Y_STEP_PIN             36
 #define Y_DIR_PIN              49
 #define Y_MIN_PIN              11
-#define Y_MAX_PIN              24
+#define Y_MAX_PIN              -1
 #define Y_ENABLE_PIN           28
 #define Y_MS1_PIN              69
 #define Y_MS2_PIN              39
@@ -85,6 +85,7 @@
 #define PS_ON_PIN           -1
 #define KILL_PIN            -1  // 80 with Smart Controller LCD
 #define SUICIDE_PIN         -1  // PIN that has to be turned on right after start, to keep power flowing.
+#define TACH_0				30	// noctua extruder fan
 
 #ifdef ULTRA_LCD
 
@@ -134,3 +135,4 @@
 #define LOGIC_ANALYZER_CH5_ENABLE do { cbi(UCSR2B, TXEN2); cbi(UCSR2B, RXEN2); cbi(UCSR2B, RXCIE2); SET_OUTPUT(LOGIC_ANALYZER_CH5); } while (0)
 #define LOGIC_ANALYZER_CH6_ENABLE do { cbi(UCSR2B, TXEN2); cbi(UCSR2B, RXEN2); cbi(UCSR2B, RXCIE2); SET_OUTPUT(LOGIC_ANALYZER_CH6); } while (0)
 #define LOGIC_ANALYZER_CH7_ENABLE SET_OUTPUT(LOGIC_ANALYZER_CH7)
+

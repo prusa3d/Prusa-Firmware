@@ -1483,6 +1483,7 @@ static void lcd_menu_extruder_info()
     
     // Display Nozzle fan RPM
     
+#if (defined(TACH_1))
     lcd.setCursor(0, 1);
     lcd_printPGM(MSG_INFO_PRINT_FAN);
     
@@ -1491,7 +1492,7 @@ static void lcd_menu_extruder_info()
     lcd.setCursor(12, 1);
     lcd.print(itostr4(fan_speed_RPM[1]));
     lcd.print(" RPM");
-
+#endif
     
     // Display X and Y difference from Filament sensor
     
@@ -3707,7 +3708,7 @@ void lcd_wizard(int state) {
 			case CALIBRATION_STATUS_CALIBRATED: end = true; eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0); break;
 			default: state = 2; break; //if calibration status is unknown, run wizard from the beginning
 			}
-			break;
+			break; 
 		case 2: //selftest
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_SELFTEST);
 			wizard_event = lcd_selftest();
@@ -5629,14 +5630,21 @@ static bool lcd_selftest()
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
+#if (defined(TACH_1)) 		
 		_result = lcd_selftest_fan_dialog(1);
+#else //defined(TACH_1)
+		_result = lcd_selftest_manual_fan_check(1, false);
+#endif //defined(TACH_1)
 	}
 
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(1, _progress, 3, true, 2000);
-		//_progress = lcd_selftest_screen(2, _progress, 3, true, 2000);
-		_result = true;// lcd_selfcheck_endstops();
+#ifndef TMC2130
+		_result = lcd_selfcheck_endstops();
+#else
+		_result = true;
+#endif
 	}
 	
 	if (_result)
@@ -5885,13 +5893,11 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		return true;
 }
 #endif //TMC2130
-	
 
-
+#ifndef TMC2130
 
 static bool lcd_selfcheck_axis(int _axis, int _travel)
 {
-	
 	bool _stepdone = false;
 	bool _stepresult = false;
 	int _progress = 0;
@@ -5899,41 +5905,39 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 	int _err_endstop = 0;
 	int _lcd_refresh = 0;
 	_travel = _travel + (_travel / 10);
+
 	do {
-
 		current_position[_axis] = current_position[_axis] - 1;
-
 
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
-		
-		if (/*x_min_endstop || y_min_endstop || */(READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1))
+
+		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
+			((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 		{
 			if (_axis == 0)
 			{
-				_stepresult = (x_min_endstop) ? true : false;
-				_err_endstop = (y_min_endstop) ? 1 : 2;
-				
+				_stepresult = ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ? true : false;
+				_err_endstop = ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ? 1 : 2;
+
 			}
 			if (_axis == 1)
 			{
-				_stepresult = (y_min_endstop) ? true : false;
-				_err_endstop = (x_min_endstop) ? 0 : 2;
-				
+				_stepresult = ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ? true : false;
+				_err_endstop = ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ? 0 : 2;
+
 			}
 			if (_axis == 2)
 			{
-				_stepresult = (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? true : false;
-				_err_endstop = (x_min_endstop) ? 0 : 1;
+				_stepresult = ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) ? true : false;
+				_err_endstop = ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ? 0 : 1;
 				/*disable_x();
 				disable_y();
 				disable_z();*/
 			}
 			_stepdone = true;
 		}
-#ifdef TMC2130
-		tmc2130_home_exit();
-#endif
 
 		if (_lcd_refresh < 6)
 		{
@@ -5941,7 +5945,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 		else
 		{
-			_progress = lcd_selftest_screen(4 + _axis, _progress, 3, false, 0);
+			_progress = lcd_selftest_screen(2 + _axis, _progress, 3, false, 0);
 			_lcd_refresh = 0;
 		}
 
@@ -5950,7 +5954,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 
 		//delay(100);
 		(_travel_done <= _travel) ? _travel_done++ : _stepdone = true;
-		
+
 	} while (!_stepdone);
 
 
@@ -5980,7 +5984,6 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 	}
 
-
 	return _stepresult;
 }
 
@@ -5988,124 +5991,100 @@ static bool lcd_selfcheck_pulleys(int axis)
 {
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
-	float current_position_init, current_position_final;
+	float current_position_init;
 	float move;
 	bool endstop_triggered = false;
-	bool result = true;
 	int i;
 	unsigned long timeout_counter;
 	refresh_cmd_timeout();
 	manage_inactivity(true);
 
 	if (axis == 0) move = 50; //X_AXIS 
-		else move = 50; //Y_AXIS
+	else move = 50; //Y_AXIS
 
-		//current_position_init = current_position[axis];
-		current_position_init = st_get_position_mm(axis);
-		current_position[axis] += 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-		for (i = 0; i < 5; i++) {
-			refresh_cmd_timeout();
-			current_position[axis] = current_position[axis] + move;
-			//digipot_current(0, 850); //set motor current higher
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 200, active_extruder);
-			st_synchronize();
-			//if (SilentModeMenu == 1) digipot_current(0, tmp_motor[0]); //set back to normal operation currents
-			//else digipot_current(0, tmp_motor_loud[0]); //set motor current back			
-			current_position[axis] = current_position[axis] - move;
-#ifdef TMC2130
-			tmc2130_home_enter(X_AXIS_MASK << axis);
-#endif
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 50, active_extruder);
-			
-			st_synchronize();
-			if ((x_min_endstop) || (y_min_endstop)) {
+	current_position_init = current_position[axis];
+
+	current_position[axis] += 2;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+	for (i = 0; i < 5; i++) {
+		refresh_cmd_timeout();
+		current_position[axis] = current_position[axis] + move;
+		digipot_current(0, 850); //set motor current higher
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 200, active_extruder);
+		st_synchronize();
+		if (SilentModeMenu == 1) digipot_current(0, tmp_motor[0]); //set back to normal operation currents
+		else digipot_current(0, tmp_motor_loud[0]); //set motor current back			
+		current_position[axis] = current_position[axis] - move;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 50, active_extruder);
+		st_synchronize();
+		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
+			lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
+			return(false);
+		}
+	}
+	timeout_counter = millis() + 2500;
+	endstop_triggered = false;
+	manage_inactivity(true);
+	while (!endstop_triggered) {
+		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
+			endstop_triggered = true;
+			if (current_position_init - 1 <= current_position[axis] && current_position_init + 1 >= current_position[axis]) {
+				current_position[axis] += 15;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+				st_synchronize();
+				return(true);
+			}
+			else {
 				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
-#ifdef TMC2130
-			tmc2130_home_exit();
-#endif
 		}
-		timeout_counter = millis() + 2500;
-		endstop_triggered = false;
-		manage_inactivity(true);
-		while (!endstop_triggered) {
-			if ((x_min_endstop) || (y_min_endstop)) {
-#ifdef TMC2130
-				tmc2130_home_exit();
-#endif
-				endstop_triggered = true;
-				current_position_final = st_get_position_mm(axis);
-
-				SERIAL_ECHOPGM("current_pos_init:");
-				MYSERIAL.println(current_position_init);
-				SERIAL_ECHOPGM("current_pos:");
-				MYSERIAL.println(current_position_final);
+		else {
+			current_position[axis] -= 1;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+			st_synchronize();
+			if (millis() > timeout_counter) {
 				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
-				
-				if (current_position_init - 1 <= current_position_final && current_position_init + 1 >= current_position_final) {
-					current_position[axis] += 15;
-					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-					st_synchronize();
-					return(true);
-				}
-				else {
-
-					return(false);
-				}
+				return(false);
 			}
-			else {
-#ifdef TMC2130
-				tmc2130_home_exit();
-#endif
-				//current_position[axis] -= 1;
-				current_position[axis] += 50;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-				current_position[axis] -= 100;
-#ifdef TMC2130
-				tmc2130_home_enter(X_AXIS_MASK << axis);
-#endif
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-				st_synchronize();
-				
-				if (millis() > timeout_counter) {
-					lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
-					return(false);
-				}
-			}
-		}		
-
-
+		}
+	}
+	return(true);
 }
 
 static bool lcd_selfcheck_endstops()
-{/*
+{
 	bool _result = true;
 
-	if (x_min_endstop || y_min_endstop || READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1)
+	if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+		((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
+		((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 	{
-		current_position[0] = (x_min_endstop) ? current_position[0] = current_position[0] + 10 : current_position[0];
-		current_position[1] = (y_min_endstop) ? current_position[1] = current_position[1] + 10 : current_position[1];
-		current_position[2] = (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? current_position[2] = current_position[2] + 10 : current_position[2];
+		if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) current_position[0] += 10;
+		if ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) current_position[1] += 10;
+		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) current_position[2] += 10;
 	}
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[0] / 60, active_extruder);
 	delay(500);
 
-	if (x_min_endstop || y_min_endstop || READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1)
+	if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+		((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
+		((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 	{
 		_result = false;
 		char _error[4] = "";
-		if (x_min_endstop) strcat(_error, "X");
-		if (y_min_endstop) strcat(_error, "Y");
-		if (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) strcat(_error, "Z");
+		if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "X");
+		if ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Y");
+		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Z");
 		lcd_selftest_error(3, _error, "");
 	}
 	manage_heater();
 	manage_inactivity(true);
 	return _result;
-	*/
 }
+#endif //not defined TMC2130
 
 static bool lcd_selfcheck_check_heater(bool _isbed)
 {
@@ -6318,7 +6297,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 	
 	switch (_fan)
 	{
-	case 1:
+	case 0:
 		// extruder cooling fan
 		lcd.setCursor(0, 1); 
 		if(check_opposite == true) lcd_printPGM(MSG_SELFTEST_COOLING_FAN); 
@@ -6326,7 +6305,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
 		break;
-	case 2:
+	case 1:
 		// object cooling fan
 		lcd.setCursor(0, 1);
 		if (check_opposite == true) lcd_printPGM(MSG_SELFTEST_EXTRUDER_FAN);
@@ -6347,12 +6326,12 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 	{
 		switch (_fan)
 		{
-		case 1:
+		case 0:
 			// extruder cooling fan
 			SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 			WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
 			break;
-		case 2:
+		case 1:
 			// object cooling fan
 			SET_OUTPUT(FAN_PIN);
 			analogWrite(FAN_PIN, 255);
@@ -6437,9 +6416,9 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		else if (fan_speed[1] < 34) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
 			//check fans manually
 
-			_result = lcd_selftest_manual_fan_check(2, true); //turn on print fan and check that left extruder fan is not spinning
+			_result = lcd_selftest_manual_fan_check(1, true); //turn on print fan and check that left extruder fan is not spinning
 			if (_result) {
-				_result = lcd_selftest_manual_fan_check(2, false); //print fan is stil turned on; check that it is spinning
+				_result = lcd_selftest_manual_fan_check(1, false); //print fan is stil turned on; check that it is spinning
 				if (!_result) _errno = 6; //print fan not spinning
 			}
 			else {
@@ -6463,8 +6442,6 @@ static bool lcd_selftest_fan_dialog(int _fan)
 
 static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay)
 {
-	//SERIAL_ECHOPGM("Step:");
-	//MYSERIAL.println(_step);
 
 	lcd_next_update_millis = millis() + (LCD_UPDATE_INTERVAL * 10000);
 

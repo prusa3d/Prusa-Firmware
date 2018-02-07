@@ -454,7 +454,7 @@ void setExtruderAutoFanState(int pin, bool state)
   analogWrite(pin, newFanSpeed);
 }
 
-#if (defined(TACH_0))
+#if (defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 
 void countFanSpeed()
 {
@@ -475,12 +475,14 @@ void checkFanSpeed()
 {
 	fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
-
+#if defined(TACH_0) && TACH_0 >-1
 	if (fan_speed[0] == 0 && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
 	else fan_speed_errors[0] = 0;
-
+#endif
+#if defined(TACH_1) && TACH_1 >-1
 	if ((fan_speed[1] == 0)&& (fanSpeed > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
 	else fan_speed_errors[1] = 0;
+#endif
 
 	if ((fan_speed_errors[0] > 5) && fans_check_enabled) fanSpeedError(0); //extruder fan
 	if ((fan_speed_errors[1] > 15) && fans_check_enabled) fanSpeedError(1); //print fan
@@ -528,7 +530,7 @@ void fanSpeedError(unsigned char _fan) {
 		break;
 	}
 }
-#endif //(defined(TACH_0))
+#endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 
 
 void checkExtruderAutoFans()
@@ -711,10 +713,10 @@ void manage_heater()
       (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
   if(millis() - extruder_autofan_last_check > 1000)  // only need to check fan state very infrequently
   {
-#if (defined(TACH_0))
+#if (defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 	countFanSpeed();
 	checkFanSpeed();
-#endif //(defined(TACH_0))
+#endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
     checkExtruderAutoFans();
     extruder_autofan_last_check = millis();
   }  
@@ -1913,7 +1915,7 @@ ISR(TIMER0_COMPB_vect)
   }
 #endif //BABYSTEPPING
 
-#if (defined(TACH_0))
+#if (defined(TACH_0) && TACH_0 > -1)
   check_fans();
 #endif //(defined(TACH_0))
 
@@ -1990,8 +1992,8 @@ void check_min_temp()
 	check_min_temp_heater0();
 	check_min_temp_bed();
 }
-
-#if (defined(TACH_0))
+ 
+#if (defined(TACH_0) && TACH_0 > -1)
 void check_fans() {
 	if (READ(TACH_0) != fan_state[0]) {
 		fan_edge_counter[0] ++;
