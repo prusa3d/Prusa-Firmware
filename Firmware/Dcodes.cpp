@@ -400,6 +400,7 @@ extern int current_temperature_raw_pinda;
 extern int current_temperature_raw_ambient;
 extern int current_voltage_raw_pwr;
 extern int current_voltage_raw_bed;
+
 uint16_t dcode_9_ADC_val(uint8_t i)
 {
 	switch (i)
@@ -408,9 +409,13 @@ uint16_t dcode_9_ADC_val(uint8_t i)
 	case 1: return 0;
 	case 2: return current_temperature_bed_raw;
 	case 3: return current_temperature_raw_pinda;
+#ifdef VOLT_PWR_PIN
 	case 4: return current_voltage_raw_pwr;
-	case 5: return current_temperature_raw_ambient;
 	case 6: return current_voltage_raw_bed;
+#endif //VOLT_PWR_PIN
+#ifdef AMBIENT_THERMISTOR
+	case 5: return current_temperature_raw_ambient;
+#endif //AMBIENT_THERMISTOR
 	}
 	return 0;
 }
@@ -454,11 +459,11 @@ void dcode_12()
     eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, 0x00);
 }
 
-#include "tmc2130.h"
-#include "Marlin.h"
+
+#ifdef TMC2130
 #include "planner.h"
 extern void st_synchronize();
-
+#include "tmc2130.h"
 void dcode_2130()
 {
 //	printf("test");
@@ -485,7 +490,9 @@ void dcode_2130()
 		printf_P(PSTR("Meassure avg = %d\n"), sg);
 	}
 }
+#endif //TMC2130
 
+#ifdef PAT9125
 void dcode_9125()
 {
 	LOG("D9125 - PAT9125\n");
@@ -524,5 +531,7 @@ void dcode_9125()
 		LOG("fsensor_log=%d\n", fsensor_log);
 	}
 }
+#endif //PAT9125
+
 
 #endif //DEBUG_DCODES

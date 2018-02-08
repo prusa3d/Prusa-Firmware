@@ -6401,10 +6401,16 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     case 12: //D12 - Reset failstat counters
 		dcode_12(); break;
 
+#ifdef TMC2130
 	case 2130: // D9125 - TMC2130
 		dcode_2130(); break;
+#endif //TMC2130
+
+#ifdef PAT9125
 	case 9125: // D9125 - PAT9125
 		dcode_9125(); break;
+#endif //PAT9125
+
 	}
   }
 #endif //DEBUG_DCODES
