@@ -1554,11 +1554,15 @@ void adc_ready(void) //callback from adc when sampling finished
 	current_temperature_raw[0] = adc_values[0];
 	current_temperature_bed_raw = adc_values[2];
 	current_temperature_raw_pinda = adc_values[3];
+#ifdef VOLT_PWR_PIN
 	current_voltage_raw_pwr = adc_values[4];
+#endif
 #ifdef AMBIENT_THERMISTOR
 	current_temperature_raw_ambient = adc_values[5];
 #endif //AMBIENT_THERMISTOR
+#ifdef VOLT_BED_PIN
 	current_voltage_raw_bed = adc_values[6];
+#endif
 	temp_meas_ready = true;
 }
 

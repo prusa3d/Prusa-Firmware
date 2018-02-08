@@ -63,8 +63,6 @@
 
 #define TEMP_PINDA_PIN          3 //A3
 
-#define VOLT_PWR_PIN            4 //A4
-#define VOLT_BED_PIN            9 //A9
 
 
 #define E0_STEP_PIN            34
