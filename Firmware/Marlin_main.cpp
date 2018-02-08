@@ -5775,8 +5775,15 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #ifdef TMC2130
             uint8_t tmc2130_current_r_bckp = tmc2130_current_r[E_AXIS];
             tmc2130_set_current_r(E_AXIS, TMC2130_UNLOAD_CURRENT_R);
+#else 
+
+			digipot_current(2, 450); //set motor current for unload
+			float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
+			float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
+
 #endif //TMC2130
-            target[E_AXIS] -= 45;
+
+			target[E_AXIS] -= 45;
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5200 / 60, active_extruder);
             st_synchronize();
             target[E_AXIS] -= 15;
@@ -5784,10 +5791,16 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             st_synchronize();
             target[E_AXIS] -= 20;
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
-            st_synchronize();
+			st_synchronize();
+
 #ifdef TMC2130            
             tmc2130_set_current_r(E_AXIS, tmc2130_current_r_bckp);
+#else
+			uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+			if(silentMode) digipot_current(2, tmp_motor[2]); //set E back to normal operation currents
+			else digipot_current(2, tmp_motor_loud[2]);		
 #endif //TMC2130
+
 #endif // SNMM
 
 
