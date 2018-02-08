@@ -5783,7 +5783,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
 #endif //TMC2130
 
-			target[E_AXIS] -= 45;
+            target[E_AXIS] -= 45;
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5200 / 60, active_extruder);
             st_synchronize();
             target[E_AXIS] -= 15;
@@ -5791,7 +5791,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             st_synchronize();
             target[E_AXIS] -= 20;
             plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
-			st_synchronize();
+            st_synchronize();
 
 #ifdef TMC2130            
             tmc2130_set_current_r(E_AXIS, tmc2130_current_r_bckp);
