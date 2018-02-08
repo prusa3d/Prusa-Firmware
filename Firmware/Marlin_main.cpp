@@ -5777,7 +5777,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             tmc2130_set_current_r(E_AXIS, TMC2130_UNLOAD_CURRENT_R);
 #else 
 
-			digipot_current(2, 450); //set motor current for unload
+			digipot_current(2, 200); //set lower E motor current for unload to protect filament sensor and ptfe tube
 			float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 			float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 
