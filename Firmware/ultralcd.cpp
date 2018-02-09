@@ -318,8 +318,8 @@ volatile uint8_t slow_buttons;//Contains the bits of the currently pressed butto
 #endif
 uint8_t currentMenuViewOffset;              /* scroll offset in the current menu */
 uint8_t lastEncoderBits;
-uint32_t encoderPosition;
-uint32_t savedEncoderPosition;
+uint16_t encoderPosition;
+uint16_t savedEncoderPosition;
 #if (SDCARDDETECT > 0)
 bool lcd_oldcardstatus;
 #endif
@@ -6554,11 +6554,32 @@ static void lcd_quick_feedback()
   lcd_implementation_quick_feedback();
 }
 
+#define ENC_STACK_SIZE 3
+static uint8_t enc_stack[ENC_STACK_SIZE]; //encoder is originaly uint16, but for menu 
+static uint8_t enc_stack_cnt = 0;
+
+static void lcd_push_encoder(void)
+{
+	if (enc_stack_cnt >= ENC_STACK_SIZE) return;
+	enc_stack[enc_stack_cnt] = encoderPosition;
+	enc_stack_cnt++;
+}
+
+static void lcd_pop_encoder(void)
+{
+	if (enc_stack_cnt == 0) return;
+	enc_stack_cnt--;
+	encoderPosition = enc_stack[enc_stack_cnt];
+}
+
+
 /** Menu action functions **/
 static void menu_action_back(menuFunc_t data) {
   lcd_goto_menu(data);
+  lcd_pop_encoder();
 }
 static void menu_action_submenu(menuFunc_t data) {
+  lcd_push_encoder();
   lcd_goto_menu(data);
 }
 static void menu_action_gcode(const char* pgcode) {
