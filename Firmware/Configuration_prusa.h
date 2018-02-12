@@ -56,7 +56,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
 #define Y_MIN_POS -4 //orig -4
-#define Z_MAX_POS 210
+#define Z_MAX_POS 200
 #define Z_MIN_POS 0.15
 
 // Canceled home position
@@ -231,10 +231,12 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
-#if MOTHERBOARD == 200 || MOTHERBOARD == 203 || MOTHERBOARD == 310
+#if MOTHERBOARD == 203 || MOTHERBOARD == 200
 #define MOTOR_CURRENT_PWM_RANGE 2000
-#define DEFAULT_PWM_MOTOR_CURRENT  {400, 750, 750} // {XY,Z,E}
-#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {400, 750, 750} // {XY,Z,E}
+#define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
+#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
+#define Z_SILENT 0
+#define Z_HIGH_POWER 200
 #endif
 
 /*------------------------------------
