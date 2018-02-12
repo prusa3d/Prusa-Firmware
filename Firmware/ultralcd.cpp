@@ -318,8 +318,8 @@ volatile uint8_t slow_buttons;//Contains the bits of the currently pressed butto
 #endif
 uint8_t currentMenuViewOffset;              /* scroll offset in the current menu */
 uint8_t lastEncoderBits;
-uint32_t encoderPosition;
-uint32_t savedEncoderPosition;
+uint16_t encoderPosition;
+uint16_t savedEncoderPosition;
 #if (SDCARDDETECT > 0)
 bool lcd_oldcardstatus;
 #endif
@@ -1620,6 +1620,7 @@ static void lcd_menu_temperatures()
     }
 }
 
+#ifdef defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
 #define VOLT_DIV_R1 10000
 #define VOLT_DIV_R2 2370
 #define VOLT_DIV_FAC ((float)VOLT_DIV_R2 / (VOLT_DIV_R2 + VOLT_DIV_R1))
@@ -1636,7 +1637,9 @@ static void lcd_menu_voltages()
         lcd_return_to_status();
     }
 }
+#endif //defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
 
+#ifdef TMC2130
 static void lcd_menu_belt_status()
 {
     fprintf_P(lcdout, PSTR(ESC_H(1,0) "Belt status" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
@@ -1646,6 +1649,7 @@ static void lcd_menu_belt_status()
         lcd_return_to_status();
     }
 }
+#endif //TMC2130
 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
@@ -1738,12 +1742,16 @@ static void lcd_support_menu()
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
   if (!IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL)) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
-    
+
+#ifdef TMC2130
   MENU_ITEM(submenu, MSG_MENU_BELT_STATUS, lcd_menu_belt_status);
+#endif //TMC2130
     
   MENU_ITEM(submenu, MSG_MENU_TEMPERATURES, lcd_menu_temperatures);
 
+#ifdef defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
   MENU_ITEM(submenu, MSG_MENU_VOLTAGES, lcd_menu_voltages);
+#endif //defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
 
 #ifdef DEBUG_BUILD
   MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
@@ -6546,11 +6554,32 @@ static void lcd_quick_feedback()
   lcd_implementation_quick_feedback();
 }
 
+#define ENC_STACK_SIZE 3
+static uint8_t enc_stack[ENC_STACK_SIZE]; //encoder is originaly uint16, but for menu 
+static uint8_t enc_stack_cnt = 0;
+
+static void lcd_push_encoder(void)
+{
+	if (enc_stack_cnt >= ENC_STACK_SIZE) return;
+	enc_stack[enc_stack_cnt] = encoderPosition;
+	enc_stack_cnt++;
+}
+
+static void lcd_pop_encoder(void)
+{
+	if (enc_stack_cnt == 0) return;
+	enc_stack_cnt--;
+	encoderPosition = enc_stack[enc_stack_cnt];
+}
+
+
 /** Menu action functions **/
 static void menu_action_back(menuFunc_t data) {
   lcd_goto_menu(data);
+  lcd_pop_encoder();
 }
 static void menu_action_submenu(menuFunc_t data) {
+  lcd_push_encoder();
   lcd_goto_menu(data);
 }
 static void menu_action_gcode(const char* pgcode) {

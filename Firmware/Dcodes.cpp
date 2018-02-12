@@ -397,9 +397,18 @@ const char* dcode_9_ADC_name(uint8_t i)
 extern int current_temperature_raw[EXTRUDERS];
 extern int current_temperature_bed_raw;
 extern int current_temperature_raw_pinda;
+
+#ifdef AMBIENT_THERMISTOR
 extern int current_temperature_raw_ambient;
+#endif //AMBIENT_THERMISTOR
+
+#ifdef VOLT_PWR_PIN
 extern int current_voltage_raw_pwr;
+#endif //VOLT_PWR_PIN
+
+#ifdef VOLT_BED_PIN
 extern int current_voltage_raw_bed;
+#endif //VOLT_BED_PIN
 
 uint16_t dcode_9_ADC_val(uint8_t i)
 {
@@ -411,11 +420,13 @@ uint16_t dcode_9_ADC_val(uint8_t i)
 	case 3: return current_temperature_raw_pinda;
 #ifdef VOLT_PWR_PIN
 	case 4: return current_voltage_raw_pwr;
-	case 6: return current_voltage_raw_bed;
 #endif //VOLT_PWR_PIN
 #ifdef AMBIENT_THERMISTOR
 	case 5: return current_temperature_raw_ambient;
 #endif //AMBIENT_THERMISTOR
+#ifdef VOLT_BED_PIN
+	case 6: return current_voltage_raw_bed;
+#endif //VOLT_BED_PIN
 	}
 	return 0;
 }
