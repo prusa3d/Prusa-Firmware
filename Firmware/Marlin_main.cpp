@@ -3211,6 +3211,9 @@ void process_commands()
                 st_synchronize();
                 find_bed_induction_sensor_point_z(-1.f);
 
+                SERIAL_ECHOPGM("PINDA temp (C): ");
+                MYSERIAL.print(cur_temp_pinda);
+                SERIAL_ECHOPGM(" ; ");
                 SERIAL_ECHOPGM("Z position (um): ");
                 MYSERIAL.print(1000 * current_position[Z_AXIS]);
                 SERIAL_ECHOLNPGM("");
@@ -3234,7 +3237,6 @@ void process_commands()
               }
 
               if (counter == 0 && ( cur_temp_pinda > last_temp + 5 || timeout == 360 )) { // sonda se ohriva a bud prekrocila posledni merenou teplotu o 5 stupnu, nebo uplynulo vic nez 6 minut od posledniho mereni
-                SERIAL_ECHOLNPGM("*");
                 counter = 1;
                 if (timeout < 360)    // in case we cannot heat up anymore we can stay where we are to avoid cooling
                      current_position[Z_AXIS] += (cur_temp_pinda <= 35 ? 2 : 1) * exp((63 - cur_temp_pinda) / 10.f); // go twice as high for small temperatures, they heat the probe more easily than the formula predicts
