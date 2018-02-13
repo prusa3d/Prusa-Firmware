@@ -3,6 +3,7 @@
 # Updated for Arduino 1.8.5+ by Ted Hess
 #	Remove need to change default build environment
 #	Firmware/ArduinoAddons are not used
+#	Remove MK1 builds
 # https://learn.adafruit.com/continuous-integration-arduino-and-you/testing-your-project
 
 language: c
@@ -27,7 +28,7 @@ install:
 
 script:
   - GIT_VERSION=$(git rev-parse --short HEAD)
-  - VARIANTS=$(ls Firmware/variants/)
+  - VARIANTS=$(ls Firmware/variants/1_75_MK2*)
   - for VARIANT in $VARIANTS; do
       cp Firmware/variants/${VARIANT} Firmware/Configuration_prusa.h ;
       arduino --pref build.path=. --verify --verbose-build --board rambo:avr:rambo $PWD/Firmware/Firmware.ino ;
@@ -40,8 +41,7 @@ after_success:
     else
       BUILD_NAME=${GIT_VERSION} ;
     fi
-  - mkdir -p prusa3d_fw_${BUILD_NAME}/MK1-175mm prusa3d_fw_${BUILD_NAME}/MK2-MultiMaterial prusa3d_fw_${BUILD_NAME}/MK2
-  - mv *_MK1-RAMBo* prusa3d_fw_${BUILD_NAME}/MK1-175mm
+  - mkdir -p prusa3d_fw_${BUILD_NAME}/MK2-MultiMaterial prusa3d_fw_${BUILD_NAME}/MK2
   - mv *_MK2-MultiMaterial-RAMBo* prusa3d_fw_${BUILD_NAME}/MK2-MultiMaterial
   - mv *_MK2-RAMBo* prusa3d_fw_${BUILD_NAME}/MK2
   - zip -r prusa3d_fw_${BUILD_NAME}.zip prusa3d_fw_* *.pdf

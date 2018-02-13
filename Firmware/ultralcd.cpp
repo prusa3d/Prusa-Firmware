@@ -3352,6 +3352,12 @@ void lcd_extr_cal_reset() {
 
 #endif
 
+void lcd_xy_skew_disable_toggle()
+{
+    xy_skew_disabled = !xy_skew_disabled;
+    eeprom_update_byte((uint8_t *)EEPROM_XY_SKEW_DISABLED, xy_skew_disabled);
+}
+
 void lcd_toshiba_flash_air_compatibility_toggle()
 {
    card.ToshibaFlashAir_enable(! card.ToshibaFlashAir_isEnabled());
@@ -3651,6 +3657,16 @@ static void lcd_calibration_menu()
 #endif //MK1BP
 	MENU_ITEM(submenu, MSG_PID_EXTRUDER, pid_extruder);
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
+
+    // Option only available if minimal skew on XY plane
+    if (eeprom_read_byte((uint8_t *)EEPROM_XY_CALIBRATION_RESULT) == BED_SKEW_OFFSET_DETECTION_PERFECT) {
+	if (xy_skew_disabled) {
+	    MENU_ITEM(function, MSG_SKEW_CORRECTION_OFF, lcd_xy_skew_disable_toggle);
+	} else {
+	    MENU_ITEM(function, MSG_SKEW_CORRECTION_ON, lcd_xy_skew_disable_toggle);
+	}
+    }
+
 #ifndef MK1BP
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 #endif //MK1BP

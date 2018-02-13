@@ -10,7 +10,7 @@
 
 // Firmware version
 #define FW_version "3.1.0"
-#define FW_local_variant 7
+#define FW_local_variant 8
 #define FW_report_version FW_version " r" STR(FW_local_variant)
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
@@ -68,6 +68,8 @@
 // Current Range is: +/- 500um (stored as int16).
 #define EEPROM_BED_CORRECTION_VALID	499
 #define EEPROM_BED_CORRECTION_OFFSETS	(EEPROM_BED_CORRECTION_VALID - 16)
+#define EEPROM_XY_CALIBRATION_RESULT	(EEPROM_BED_CORRECTION_OFFSETS - 1)
+#define EEPROM_XY_SKEW_DISABLED		(EEPROM_XY_CALIBRATION_RESULT - 1)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.

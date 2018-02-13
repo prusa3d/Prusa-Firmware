@@ -338,3 +338,5 @@
 #define MSG_FILE_CNT						"Alcuni dei file non potranno essere organizzati. 100 e il n. max. di file che possono essere organizzati."
 #define MSG_WIZARD_HEATING					"Sto preriscaldando l'ugello. Per favore attendi."
 #define MSG_M117_V2_CALIBRATION				"M117 Cal. primo layer."
+#define MSG_SKEW_CORRECTION_ON			"XY Correz. [ON]"
+#define MSG_SKEW_CORRECTION_OFF			"XY Correz. [OFF]"

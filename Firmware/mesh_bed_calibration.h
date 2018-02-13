@@ -9,6 +9,8 @@ extern const float bed_ref_points[] PROGMEM;
 extern const float bed_skew_angle_mild;
 extern const float bed_skew_angle_extreme;
 
+extern bool xy_skew_disabled;
+
 // Is the world2machine correction activated?
 enum World2MachineCorrectionMode
 {

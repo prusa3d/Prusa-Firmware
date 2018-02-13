@@ -2429,6 +2429,10 @@ bool gcode_M45(bool onlyZ) {
 			if (calibration_status() != 250 || eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) {				
 				calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
 			}
+
+			// Reset XY skew result
+			eeprom_update_byte((uint8_t *)EEPROM_XY_CALIBRATION_RESULT, 0xFF);
+			eeprom_update_byte((uint8_t *)EEPROM_XY_SKEW_DISABLED, 0);
 			// Reset the baby step value and the baby step applied flag.
 			eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
 			// Complete XYZ calibration.
@@ -2458,6 +2462,7 @@ bool gcode_M45(bool onlyZ) {
 			}
 			lcd_bed_calibration_show_result(result, point_too_far_mask);
 			if (result >= 0) {
+				eeprom_update_byte((unsigned char *)EEPROM_XY_CALIBRATION_RESULT, result);
 				// Calibration valid, the machine should be able to print. Advise the user to run the V2Calibration.gcode.
 				calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
 				if(eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) lcd_show_fullscreen_message_and_wait_P(MSG_BABYSTEP_Z_NOT_SET);

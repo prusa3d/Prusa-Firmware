@@ -7,6 +7,7 @@
 #include "stepper.h"
 #include "ultralcd.h"
 
+bool	xy_skew_disabled;
 uint8_t world2machine_correction_mode;
 float   world2machine_rotation_and_skew[2][2];
 float   world2machine_rotation_and_skew_inv[2][2];
@@ -452,32 +453,17 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
 	#endif // SUPPORT_VERBOSITY
 
     if (result == BED_SKEW_OFFSET_DETECTION_PERFECT) {
-	bool skew_correction = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_SKEW_CORRECTION, false, false);
-
-	lcd_update_enable(true);
-	lcd_update(2);
-
-        if (skew_correction) {
-	    #ifdef SUPPORT_VERBOSITY
-            if (verbosity_level > 0)
-                SERIAL_ECHOLNPGM("Very little skew detected. Disabling skew correction.");
-	    #endif
-            // Just disable the skew correction.
-            vec_x[0] = MACHINE_AXIS_SCALE_X;
-            vec_x[1] = 0.f;
-            vec_y[0] = 0.f;
-            vec_y[1] = MACHINE_AXIS_SCALE_Y;
-        } else {
-	    #ifdef SUPPORT_VERBOSITY
+            #ifdef SUPPORT_VERBOSITY
             if (verbosity_level > 0)
                 SERIAL_ECHOLNPGM("Very little skew detected. Orthogonalizing the axes.");
-	    #endif
-	    // Orthogonalize the axes.
+            #endif
+            // Orthogonalize the axes.
             a1 = 0.5f * (a1 + a2);
             vec_x[0] =  cos(a1) * MACHINE_AXIS_SCALE_X;
             vec_x[1] =  sin(a1) * MACHINE_AXIS_SCALE_X;
             vec_y[0] = -sin(a1) * MACHINE_AXIS_SCALE_Y;
             vec_y[1] =  cos(a1) * MACHINE_AXIS_SCALE_Y;
+
             // Refresh the offset.
             cntr[0] = 0.f;
             cntr[1] = 0.f;
@@ -538,7 +524,6 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
 	    }
 	    #endif // SUPPORT_VERBOSITY
 
-        }
     }
 
     // Invert the transformation matrix made of vec_x, vec_y and cntr.
@@ -632,6 +617,10 @@ void reset_bed_offset_and_skew()
     // Reset the 8 16bit offsets.
     for (int8_t i = 0; i < 4; ++ i)
         eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_Z_JITTER+i*4), 0x0FFFFFFFF);
+
+    // Reset XY skew handling
+    eeprom_update_byte((uint8_t *)EEPROM_XY_CALIBRATION_RESULT, 0xFF);
+    eeprom_update_byte((uint8_t *)EEPROM_XY_SKEW_DISABLED, false);
 }
 
 bool is_bed_z_jitter_data_valid()
@@ -645,10 +634,18 @@ bool is_bed_z_jitter_data_valid()
 
 static void world2machine_update(const float vec_x[2], const float vec_y[2], const float cntr[2])
 {
-    world2machine_rotation_and_skew[0][0] = vec_x[0];
-    world2machine_rotation_and_skew[1][0] = vec_x[1];
-    world2machine_rotation_and_skew[0][1] = vec_y[0];
-    world2machine_rotation_and_skew[1][1] = vec_y[1];
+    // Check skew compensation is disabled (use unity matrix if so)
+    if (!xy_skew_disabled || homing_flag || mesh_bed_leveling_flag) {
+        world2machine_rotation_and_skew[0][0] = vec_x[0];
+        world2machine_rotation_and_skew[1][0] = vec_x[1];
+        world2machine_rotation_and_skew[0][1] = vec_y[0];
+        world2machine_rotation_and_skew[1][1] = vec_y[1];
+    } else {
+        world2machine_rotation_and_skew[0][0] = 1.0f;
+        world2machine_rotation_and_skew[1][0] = 0.f;
+        world2machine_rotation_and_skew[0][1] = 0.f;
+        world2machine_rotation_and_skew[1][1] = 1.0f;
+    }
     world2machine_shift[0] = cntr[0];
     world2machine_shift[1] = cntr[1];
     // No correction.
@@ -762,6 +759,8 @@ void world2machine_initialize()
         reset_bed_offset_and_skew();
         world2machine_reset();
     } else {
+	// Skew disabled must equal 1 (all else is false)
+	xy_skew_disabled = (eeprom_read_byte((uint8_t *)EEPROM_XY_SKEW_DISABLED) == true);
         world2machine_update(vec_x, vec_y, cntr);
         /*
         SERIAL_ECHOPGM("world2machine_initialize() loaded: ");
