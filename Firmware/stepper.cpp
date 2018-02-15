@@ -131,6 +131,7 @@ uint8_t LastStepMask = 0;
 
 #ifdef DEBUG_STEPPER_TIMER_MISSED
 extern bool stepper_timer_overflow_state;
+extern uint16_t stepper_timer_overflow_last;
 #endif /* DEBUG_STEPPER_TIMER_MISSED */
 
 //===========================================================================
@@ -381,22 +382,25 @@ ISR(TIMER1_COMPA_vect) {
     isr();
 
   // Don't run the ISR faster than possible
-//  if (OCR1A < TCNT1 + 16) OCR1A = TCNT1 + 16;
+  // Is there a 8us time left before the next interrupt triggers?
+  if (OCR1A < TCNT1 + 16) {
 #ifdef DEBUG_STEPPER_TIMER_MISSED
-  // Verify whether the next planned timer interrupt has not been missed already.  
-  // This debugging test takes < 1.125us
-  // This skews the profiling slightly as the fastest stepper timer
-  // interrupt repeats at a 100us rate (10kHz).
-  if (OCR1A < TCNT1) {
-    stepper_timer_overflow_state = true;
-    WRITE_NC(BEEPER, HIGH);
-    SERIAL_PROTOCOLPGM("Stepper timer overflow ");
-    SERIAL_PROTOCOL(OCR1A);
-    SERIAL_PROTOCOLPGM("<");
-    SERIAL_PROTOCOL(TCNT1);
-    SERIAL_PROTOCOLLN("!");
-  }
+    // Verify whether the next planned timer interrupt has not been missed already.  
+    // This debugging test takes < 1.125us
+    // This skews the profiling slightly as the fastest stepper timer
+    // interrupt repeats at a 100us rate (10kHz).
+    if (OCR1A + 40 < TCNT1) {
+      // The interrupt was delayed by more than 20us (which is 1/5th of the 10kHz ISR repeat rate).
+      // Give a warning.
+      stepper_timer_overflow_state = true;
+      stepper_timer_overflow_last = TCNT1 - OCR1A;
+      // Beep, the beeper will be cleared at the stepper_timer_overflow() called from the main thread.
+      WRITE(BEEPER, HIGH);
+    }
 #endif
+    // Fix the next interrupt to be executed after 8us from now.
+    OCR1A = TCNT1 + 16; 
+  }
 }
 
 FORCE_INLINE void stepper_next_block()
