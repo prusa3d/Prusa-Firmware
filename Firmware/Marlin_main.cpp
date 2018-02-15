@@ -6195,12 +6195,38 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
     case 350: // M350 Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {
+	#ifdef TMC2130
+		if(code_seen('E'))
+		{
+			uint16_t res_new = code_value();
+			if ((res_new == 8) || (res_new == 16) || (res_new == 32) || (res_new == 64) || (res_new == 128))
+			{
+				st_synchronize();
+				uint8_t axis = E_AXIS;
+				uint16_t res = tmc2130_get_res(axis);
+				tmc2130_set_res(axis, res_new);
+				if (res_new > res)
+				{
+					uint16_t fac = (res_new / res);
+					axis_steps_per_unit[axis] *= fac;
+					position[E_AXIS] *= fac;
+				}
+				else
+				{
+					uint16_t fac = (res / res_new);
+					axis_steps_per_unit[axis] /= fac;
+					position[E_AXIS] /= fac;
+				}
+			}
+		}
+	#else //TMC2130
       #if defined(X_MS1_PIN) && X_MS1_PIN > -1
         if(code_seen('S')) for(int i=0;i<=4;i++) microstep_mode(i,code_value());
         for(int i=0;i<NUM_AXIS;i++) if(code_seen(axis_codes[i])) microstep_mode(i,(uint8_t)code_value());
         if(code_seen('B')) microstep_mode(4,code_value());
         microstep_readings();
       #endif
+	#endif //TMC2130
     }
     break;
     case 351: // M351 Toggle MS1 MS2 pins directly, S# determines MS1 or MS2, X# sets the pin high/low.

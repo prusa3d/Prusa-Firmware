@@ -698,6 +698,15 @@ uint16_t tmc2130_get_res(uint8_t axis)
 	return tmc2130_mres2usteps(tmc2130_mres[axis]);
 }
 
+void tmc2130_set_res(uint8_t axis, uint16_t res)
+{
+	tmc2130_mres[axis] = tmc2130_usteps2mres(res);
+//	uint32_t u = micros();
+	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+//	u = micros() - u;
+//	printf_P(PSTR("tmc2130_setup_chopper %c %lu us"), "XYZE"[axis], u);
+}
+
 uint8_t tmc2130_get_pwr(uint8_t axis)
 {
 	switch (axis)

@@ -107,6 +107,7 @@ struct
 #pragma pack(pop)
 
 extern uint16_t tmc2130_get_res(uint8_t axis);
+extern void tmc2130_set_res(uint8_t axis, uint16_t res);
 extern uint8_t tmc2130_get_pwr(uint8_t axis);
 extern void tmc2130_set_pwr(uint8_t axis, uint8_t pwr);
 extern uint8_t tmc2130_get_inv(uint8_t axis);

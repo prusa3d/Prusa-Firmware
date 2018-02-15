@@ -446,6 +446,11 @@ void dcode_10()
 	calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST); 
 }
 
+void dcode_12()
+{//Time
+	LOG("D12 - Time\n");
+}
+
 #include "tmc2130.h"
 #include "Marlin.h"
 #include "planner.h"
@@ -495,7 +500,8 @@ void dcode_2130()
 		}
 		else if (strchr_pointer[1+5] == '?')
 		{
-			if (strcmp(strchr_pointer + 7, "step") == 0) printf_P(PSTR("%c step=%d\n"), ch_axis, tmc2130_rd_MSCNT(axis) >> tmc2130_mres[axis]);
+			if (strcmp(strchr_pointer + 7, "mres") == 0) printf_P(PSTR("%c mres=%d\n"), ch_axis, tmc2130_mres[axis]);
+			else if (strcmp(strchr_pointer + 7, "step") == 0) printf_P(PSTR("%c step=%d\n"), ch_axis, tmc2130_rd_MSCNT(axis) >> tmc2130_mres[axis]);
 			else if (strcmp(strchr_pointer + 7, "mscnt") == 0) printf_P(PSTR("%c MSCNT=%d\n"), ch_axis, tmc2130_rd_MSCNT(axis));
 			else if (strcmp(strchr_pointer + 7, "mscuract") == 0)
 			{
@@ -518,6 +524,21 @@ void dcode_2130()
 				uint8_t step = atoi(strchr_pointer + 11);
 				uint16_t res = tmc2130_get_res(axis);
 				tmc2130_goto_step(axis, step & (4*res - 1), 2, 1000, res);
+			}
+			else if (strncmp(strchr_pointer + 7, "mres", 4) == 0)
+			{
+				uint8_t mres = strchr_pointer[11] - '0';
+				if ((mres >= 0) && (mres <= 8))
+				{
+					st_synchronize();
+					uint16_t res = tmc2130_get_res(axis);
+					uint16_t res_new = tmc2130_mres2usteps(mres);
+					tmc2130_set_res(axis, res_new);
+					if (res_new > res)
+						axis_steps_per_unit[axis] *= (res_new / res);
+					else
+						axis_steps_per_unit[axis] /= (res / res_new);
+				}
 			}
 			else if (strncmp(strchr_pointer + 7, "wave", 4) == 0)
 			{
