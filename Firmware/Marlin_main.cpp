@@ -1031,6 +1031,7 @@ void setup()
 
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+	if (silentMode == 0xff) silentMode = 0;
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
 	if (crashdet)
@@ -1043,6 +1044,28 @@ void setup()
 		crashdet_disable();
 	    MYSERIAL.println("CrashDetect DISABLED");
 	}
+
+	tmc2130_wave_fac[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC);
+	tmc2130_wave_fac[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC);
+	tmc2130_wave_fac[Z_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC);
+	tmc2130_wave_fac[E_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC);
+	if (tmc2130_wave_fac[X_AXIS] == 0xff) tmc2130_wave_fac[X_AXIS] = 0;
+	if (tmc2130_wave_fac[Y_AXIS] == 0xff) tmc2130_wave_fac[Y_AXIS] = 0;
+	if (tmc2130_wave_fac[Z_AXIS] == 0xff) tmc2130_wave_fac[Z_AXIS] = 0;
+	if (tmc2130_wave_fac[E_AXIS] == 0xff) tmc2130_wave_fac[E_AXIS] = 0;
+
+	tmc2130_mres[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_X_MRES);
+	tmc2130_mres[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_Y_MRES);
+	tmc2130_mres[Z_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_Z_MRES);
+	tmc2130_mres[E_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_E_MRES);
+	if (tmc2130_mres[X_AXIS] == 0xff) tmc2130_mres[X_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
+	if (tmc2130_mres[Y_AXIS] == 0xff) tmc2130_mres[Y_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
+	if (tmc2130_mres[Z_AXIS] == 0xff) tmc2130_mres[Z_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_Z);
+	if (tmc2130_mres[E_AXIS] == 0xff) tmc2130_mres[E_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_E);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_X_MRES, tmc2130_mres[X_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_Y_MRES, tmc2130_mres[Y_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_Z_MRES, tmc2130_mres[Z_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_E_MRES, tmc2130_mres[E_AXIS]);
 
 #endif //TMC2130
 
@@ -1071,19 +1094,19 @@ void setup()
 	setup_homepin();
 
   if (1) {
-///    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+///    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_AXIS));
     // try to run to zero phase before powering the Z motor.    
     // Move in negative direction
     WRITE(Z_DIR_PIN,INVERT_Z_DIR);
     // Round the current micro-micro steps to micro steps.
-    for (uint16_t phase = (tmc2130_rd_MSCNT(Z_TMC2130_CS) + 8) >> 4; phase > 0; -- phase) {
+    for (uint16_t phase = (tmc2130_rd_MSCNT(Z_AXIS) + 8) >> 4; phase > 0; -- phase) {
       // Until the phase counter is reset to zero.
       WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
       delay(2);
       WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
       delay(2);
     }
-//    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+//    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_AXIS));
   }
 
 #if defined(Z_AXIS_ALWAYS_ON)
@@ -1216,7 +1239,24 @@ void setup()
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
-  
+
+  	tmc2130_home_origin[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_X_ORIGIN);
+	tmc2130_home_bsteps[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_X_BSTEPS);
+	tmc2130_home_fsteps[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_X_FSTEPS);
+	if (tmc2130_home_origin[X_AXIS] == 0xff) tmc2130_home_origin[X_AXIS] = 0;
+	if (tmc2130_home_bsteps[X_AXIS] == 0xff) tmc2130_home_bsteps[X_AXIS] = 48;
+	if (tmc2130_home_fsteps[X_AXIS] == 0xff) tmc2130_home_fsteps[X_AXIS] = 48;
+
+	tmc2130_home_origin[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_ORIGIN);
+	tmc2130_home_bsteps[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_BSTEPS);
+	tmc2130_home_fsteps[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_FSTEPS);
+	if (tmc2130_home_origin[Y_AXIS] == 0xff) tmc2130_home_origin[Y_AXIS] = 0;
+	if (tmc2130_home_bsteps[Y_AXIS] == 0xff) tmc2130_home_bsteps[Y_AXIS] = 48;
+	if (tmc2130_home_fsteps[Y_AXIS] == 0xff) tmc2130_home_fsteps[Y_AXIS] = 48;
+
+	tmc2130_home_enabled = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED);
+	if (tmc2130_home_enabled == 0xff) tmc2130_home_enabled = 0;
+
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
 /*
 	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT, false))	recover_print();
@@ -1785,9 +1825,9 @@ bool calibrate_z_auto()
 }
 #endif //TMC2130
 
-void homeaxis(int axis)
+void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 {
-	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homming
+	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homing
 #define HOMEAXIS_DO(LETTER) \
 ((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
     if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
@@ -1797,7 +1837,8 @@ void homeaxis(int axis)
 
 #ifdef TMC2130
     	tmc2130_home_enter(X_AXIS_MASK << axis);
-#endif
+#endif //TMC2130
+
 
         // Move right a bit, so that the print head does not touch the left end position,
         // and the following left movement has a chance to achieve the required velocity
@@ -1821,44 +1862,66 @@ void homeaxis(int axis)
         destination[axis] = - 1.1 * max_length(axis);
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
-        // Move right from the collision to a known distance from the left end stop with the collision detection disabled.
-        endstops_hit_on_purpose();
-        enable_endstops(false);
-        current_position[axis] = 0;
-        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = 10.f;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-        endstops_hit_on_purpose();
-        // Now move left up to the collision, this time with a repeatable velocity.
-        enable_endstops(true);
-        destination[axis] = - 15.f;
-        feedrate = homing_feedrate[axis]/2;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
+		for (uint8_t i = 0; i < cnt; i++)
+		{
+			// Move right from the collision to a known distance from the left end stop with the collision detection disabled.
+			endstops_hit_on_purpose();
+			enable_endstops(false);
+			current_position[axis] = 0;
+			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+			destination[axis] = 10.f;
+			plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+			st_synchronize();
+			endstops_hit_on_purpose();
+			// Now move left up to the collision, this time with a repeatable velocity.
+			enable_endstops(true);
+			destination[axis] = - 11.f;
+#ifdef TMC2130
+			feedrate = homing_feedrate[axis];
+#else //TMC2130
+			feedrate = homing_feedrate[axis] / 2;
+#endif //TMC2130
+			plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+			st_synchronize();
+#ifdef TMC2130
+			uint16_t mscnt = tmc2130_rd_MSCNT(axis);
+			if (pstep) pstep[i] = mscnt >> 4;
+			printf_P(PSTR("%3d step=%2d mscnt=%4d\n"), i, mscnt >> 4, mscnt);
+#endif //TMC2130
+		}
+		endstops_hit_on_purpose();
+		enable_endstops(false);
+
+#ifdef TMC2130
+		uint8_t orig = tmc2130_home_origin[axis];
+		uint8_t back = tmc2130_home_bsteps[axis];
+		if (tmc2130_home_enabled && (orig <= 63))
+		{
+			tmc2130_goto_step(axis, orig, 2, 1000, tmc2130_get_res(axis));
+			if (back > 0)
+				tmc2130_do_steps(axis, back, 1, 1000);
+		}
+		else
+			tmc2130_do_steps(axis, 8, 2, 1000);
+		tmc2130_home_exit();
+#endif //TMC2130
 
         axis_is_at_home(axis);
         axis_known_position[axis] = true;
-
+        // Move from minimum
 #ifdef TMC2130
-        tmc2130_home_exit();
-#endif
-        // Move the X carriage away from the collision.
-        // If this is not done, the X cariage will jump from the collision at the instant the Trinamic driver reduces power on idle.
-        endstops_hit_on_purpose();
-        enable_endstops(false);
-        {
-          // Two full periods (4 full steps).
-          float gap = 0.32f * 2.f;
-          current_position[axis] -= gap;
-          plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-          current_position[axis] += gap;
-        }
+        float dist = 0.01f * tmc2130_home_fsteps[axis];
+#else //TMC2130
+        float dist = 0.01f * 64;
+#endif //TMC2130
+        current_position[axis] -= dist;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        current_position[axis] += dist;
         destination[axis] = current_position[axis];
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], 0.3f*feedrate/60, active_extruder);
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], 0.5f*feedrate/60, active_extruder);
         st_synchronize();
 
-    		feedrate = 0.0;
+   		feedrate = 0.0;
     }
     else if ((axis==Z_AXIS)?HOMEAXIS_DO(Z):0)
 	{
@@ -2698,6 +2761,8 @@ void process_commands()
       bool home_x = code_seen(axis_codes[X_AXIS]);
       bool home_y = code_seen(axis_codes[Y_AXIS]);
       bool home_z = code_seen(axis_codes[Z_AXIS]);
+      // calibrate?
+      bool calib = code_seen('C');
       // Either all X,Y,Z codes are present, or none of them.
       bool home_all_axes = home_x == home_y && home_x == home_z;
       if (home_all_axes)
@@ -2782,10 +2847,20 @@ void process_commands()
 
 	 
       if(home_x)
-        homeaxis(X_AXIS);
+	  {
+		if (!calib)
+			homeaxis(X_AXIS);
+		else
+			tmc2130_home_calibrate(X_AXIS);
+	  }
 
       if(home_y)
-        homeaxis(Y_AXIS);
+	  {
+		if (!calib)
+	        homeaxis(Y_AXIS);
+		else
+			tmc2130_home_calibrate(Y_AXIS);
+	  }
 
       if(code_seen(axis_codes[X_AXIS]) && code_value_long() != 0)
         current_position[X_AXIS]=code_value()+add_homing[X_AXIS];
@@ -6370,9 +6445,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	case 10: // D10 - XYZ calibration = OK
 		dcode_10(); break;
     
-    case 12: //D12 - Reset failstat counters
-		dcode_12(); break;
-
 	case 2130: // D9125 - TMC2130
 		dcode_2130(); break;
 	case 9125: // D9125 - PAT9125
@@ -7483,7 +7555,7 @@ void uvlo_()
 
     // Read out the current Z motor microstep counter. This will be later used
     // for reaching the zero full step before powering off.
-    uint16_t z_microsteps = tmc2130_rd_MSCNT(Z_TMC2130_CS);
+    uint16_t z_microsteps = tmc2130_rd_MSCNT(Z_AXIS);
 
     // Calculate the file position, from which to resume this print.
     long sd_position = sdpos_atomic; //atomic sd position of last command added in queue
@@ -7575,7 +7647,7 @@ void uvlo_()
 
     st_synchronize();
     SERIAL_ECHOPGM("stps");
-    MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+    MYSERIAL.println(tmc2130_rd_MSCNT(Z_AXIS));
 
     disable_z();
     
