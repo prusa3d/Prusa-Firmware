@@ -542,10 +542,10 @@ void dcode_2130()
 			}
 			else if (strncmp(strchr_pointer + 7, "wave", 4) == 0)
 			{
-				uint8_t fac200 = atoi(strchr_pointer + 11) & 0xfe;
+				uint8_t fac200 = atoi(strchr_pointer + 11) & 0xff;
 				if (fac200 < TMC2130_WAVE_FAC200_MIN) fac200 = 0;
 				if (fac200 > TMC2130_WAVE_FAC200_MAX) fac200 = TMC2130_WAVE_FAC200_MAX;
-				tmc2130_set_wave(axis, fac200);
+				tmc2130_set_wave(axis, 247, fac200);
 				tmc2130_wave_fac[axis] = fac200;
 			}
 		}

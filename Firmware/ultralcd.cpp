@@ -5806,7 +5806,7 @@ extern char conv[8];
 // Convert tmc2130 wfac to string 
 char *wfac_to_str5(const uint8_t &x)
 {
-	if (x>=TMC2130_WAVE_FAC200_MIN) return ftostr43(((float)(x & 0xfe))/200);
+	if (x>=TMC2130_WAVE_FAC200_MIN) return ftostr43(((float)(x & 0xff))/200);
 	conv[0] = ' ';
 	conv[1] = ' ';
 	conv[2] = 'O';

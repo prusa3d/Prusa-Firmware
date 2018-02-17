@@ -188,10 +188,10 @@ void tmc2130_init()
 	tmc2130_sg_cnt[2] = 0;
 	tmc2130_sg_cnt[3] = 0;
 
-	tmc2130_set_wave(X_AXIS, tmc2130_wave_fac[X_AXIS]);
-	tmc2130_set_wave(Y_AXIS, tmc2130_wave_fac[Y_AXIS]);
-	tmc2130_set_wave(Z_AXIS, tmc2130_wave_fac[Z_AXIS]);
-	tmc2130_set_wave(E_AXIS, tmc2130_wave_fac[E_AXIS]);
+	tmc2130_set_wave(X_AXIS, 247, tmc2130_wave_fac[X_AXIS]);
+	tmc2130_set_wave(Y_AXIS, 247, tmc2130_wave_fac[Y_AXIS]);
+	tmc2130_set_wave(Z_AXIS, 247, tmc2130_wave_fac[Z_AXIS]);
+	tmc2130_set_wave(E_AXIS, 247, tmc2130_wave_fac[E_AXIS]);
 }
 
 uint8_t tmc2130_sample_diag()
@@ -499,6 +499,7 @@ void tmc2130_wr_MSLUTSTART(uint8_t axis, uint8_t start_sin, uint8_t start_sin90)
 	val |= (uint32_t)start_sin;
 	val |= ((uint32_t)start_sin90) << 16;
 	tmc2130_wr(axis, TMC2130_REG_MSLUTSTART, val);
+	//printf_P(PSTR("MSLUTSTART=%08lx (start_sin=%d start_sin90=%d)\n"), val, start_sin, start_sin90);
 }
 
 void tmc2130_wr_MSLUTSEL(uint8_t axis, uint8_t x1, uint8_t x2, uint8_t x3, uint8_t w0, uint8_t w1, uint8_t w2, uint8_t w3)
@@ -512,11 +513,13 @@ void tmc2130_wr_MSLUTSEL(uint8_t axis, uint8_t x1, uint8_t x2, uint8_t x3, uint8
 	val |= ((uint32_t)x2) << 16;
 	val |= ((uint32_t)x3) << 24;
 	tmc2130_wr(axis, TMC2130_REG_MSLUTSEL, val);
+	//printf_P(PSTR("MSLUTSEL=%08lx (x1=%d x2=%d x3=%d w0=%d w1=%d w2=%d w3=%d)\n"), val, x1, x2, x3, w0, w1, w2, w3);
 }
 
 void tmc2130_wr_MSLUT(uint8_t axis, uint8_t i, uint32_t val)
 {
 	tmc2130_wr(axis, TMC2130_REG_MSLUT0 + (i & 7), val);
+	//printf_P(PSTR("MSLUT[%d]=%08lx\n"), i, val);
 }
 
 void tmc2130_wr_CHOPCONF(uint8_t axis, uint8_t toff, uint8_t hstrt, uint8_t hend, uint8_t fd3, uint8_t disfdcc, uint8_t rndtf, uint8_t chm, uint8_t tbl, uint8_t vsense, uint8_t vhighfs, uint8_t vhighchm, uint8_t sync, uint8_t mres, uint8_t intpol, uint8_t dedge, uint8_t diss2g)
@@ -847,11 +850,82 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 }
 
-void tmc2130_set_wave(uint8_t axis, uint8_t fac200)
+void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac200)
 {
-//	printf_P(PSTR("tmc2130_set_wave %d %d\n"), axis, fac200);
+// TMC2130 wave compression algorithm
+// optimized for minimal memory requirements
+	printf_P(PSTR("tmc2130_set_wave %d %d\n"), axis, fac200);
 	if (fac200 < TMC2130_WAVE_FAC200_MIN) fac200 = 0;
 	if (fac200 > TMC2130_WAVE_FAC200_MAX) fac200 = TMC2130_WAVE_FAC200_MAX;
+	float fac = (float)fac200/200; //correction factor
+	uint8_t vA = 0;                //value of currentA
+	uint8_t va = 0;                //previous vA
+	uint8_t d0 = 0;                //delta0
+	uint8_t d1 = 1;                //delta1
+	uint8_t w[4] = {1,1,1,1};      //W bits (MSLUTSEL)
+	uint8_t x[3] = {255,255,255};  //X segment bounds (MSLUTSEL)
+	uint8_t s = 0;                 //current segment
+	int8_t b;                      //encoded bit value
+	uint8_t dA;                    //delta value
+	int i;                         //microstep index
+	uint32_t reg;                  //tmc2130 register
+	tmc2130_wr_MSLUTSTART(axis, 0, amp);
+	for (i = 0; i < 256; i++)
+	{
+		if ((i & 31) == 0)
+			reg = 0;
+		// calculate value
+		if (fac == 0) // default TMC wave
+			vA = (uint8_t)((amp+1) * sin((2*PI*i + PI)/1024) + 0.5) - 1;
+		else // corrected wave
+			vA = (uint8_t)(amp * pow(sin(2*PI*i/1024), fac) + 0.5);
+		dA = vA - va; // calculate delta
+		va = vA;
+		b = -1;
+		if (dA == d0) b = 0;      //delta == delta0 => bit=0
+		else if (dA == d1) b = 1; //delta == delta1 => bit=1
+		else
+		{
+			if (dA < d0) // delta < delta0 => switch wbit down
+			{
+				//printf("dn\n");
+				b = 0;
+				switch (dA)
+				{
+				case -1: d0 = -1; d1 = 0; w[s+1] = 0; break;
+				case  0: d0 =  0; d1 = 1; w[s+1] = 1; break;
+				case  1: d0 =  1; d1 = 2; w[s+1] = 2; break;
+				default: b = -1; break;
+				}
+				if (b >= 0) { x[s] = i; s++; }
+			}
+			else if (dA > d1) // delta > delta0 => switch wbit up
+			{
+				//printf("up\n");
+				b = 1;
+				switch (dA)
+				{
+				case  1: d0 =  0; d1 = 1; w[s+1] = 1; break;
+				case  2: d0 =  1; d1 = 2; w[s+1] = 2; break;
+				case  3: d0 =  2; d1 = 3; w[s+1] = 3; break;
+				default: b = -1; break;
+				}
+			    if (b >= 0) { x[s] = i; s++; }
+			}
+		}
+		if (b < 0) break; // delta out of range (<-1 or >3)
+		if (s > 3) break; // segment out of range (> 3)
+		//printf("%d\n", vA);
+		if (b == 1) reg |= 0x80000000;
+		if ((i & 31) == 31)
+			tmc2130_wr_MSLUT(axis, (uint8_t)(i >> 5), reg);
+		else
+			reg >>= 1;
+//		printf("%3d\t%3d\t%2d\t%2d\t%2d\t%2d    %08x\n", i, vA, dA, b, w[s], s, reg);
+	}
+	tmc2130_wr_MSLUTSEL(axis, x[0], x[1], x[2], w[0], w[1], w[2], w[3]);
+
+/*
 //	printf_P(PSTR(" tmc2130_set_wave %d %d\n"), axis, fac200);
 	switch (fac200)
 	{
@@ -867,7 +941,43 @@ void tmc2130_set_wave(uint8_t axis, uint8_t fac200)
 		tmc2130_wr_MSLUT(axis, 7, 0x00404222);
 		tmc2130_wr_MSLUTSEL(axis, 2, 154, 255, 1, 2, 1, 1);
 		break;
-/*	case 215: //calculated wave 247/1.075
+	case 210: //calculated wave 247/1.050
+		tmc2130_wr_MSLUTSTART(axis, 0, 247);
+		tmc2130_wr_MSLUT(axis, 0, 0x55294a4e);
+		tmc2130_wr_MSLUT(axis, 1, 0xa52a552a);
+		tmc2130_wr_MSLUT(axis, 2, 0x48949294);
+		tmc2130_wr_MSLUT(axis, 3, 0x81042222);
+		tmc2130_wr_MSLUT(axis, 4, 0x00000000);
+		tmc2130_wr_MSLUT(axis, 5, 0xdb6eef7e);
+		tmc2130_wr_MSLUT(axis, 6, 0x9295555a);
+		tmc2130_wr_MSLUT(axis, 7, 0x00408444);
+		tmc2130_wr_MSLUTSEL(axis, 3, 160, 255, 1, 2, 1, 1);
+		break;
+	case 212: //calculated wave 247/1.060
+		tmc2130_wr_MSLUTSTART(axis, 0, 247);
+		tmc2130_wr_MSLUT(axis, 0, 0x4a94948e);
+		tmc2130_wr_MSLUT(axis, 1, 0x94a952a5);
+		tmc2130_wr_MSLUT(axis, 2, 0x24925252);
+		tmc2130_wr_MSLUT(axis, 3, 0x10421112);
+		tmc2130_wr_MSLUT(axis, 4, 0xc0000020);
+		tmc2130_wr_MSLUT(axis, 5, 0xdb7777df);
+		tmc2130_wr_MSLUT(axis, 6, 0x9295556a);
+		tmc2130_wr_MSLUT(axis, 7, 0x00408444);
+		tmc2130_wr_MSLUTSEL(axis, 3, 157, 255, 1, 2, 1, 1);
+		break;
+	case 214: //calculated wave 247/1.070
+		tmc2130_wr_MSLUTSTART(axis, 0, 247);
+		tmc2130_wr_MSLUT(axis, 0, 0xa949489e);
+		tmc2130_wr_MSLUT(axis, 1, 0x52a54a54);
+		tmc2130_wr_MSLUT(axis, 2, 0x224a494a);
+		tmc2130_wr_MSLUT(axis, 3, 0x04108889);
+		tmc2130_wr_MSLUT(axis, 4, 0xffc08002);
+		tmc2130_wr_MSLUT(axis, 5, 0x6dbbbdfb);
+		tmc2130_wr_MSLUT(axis, 6, 0x94a555ab);
+		tmc2130_wr_MSLUT(axis, 7, 0x00408444);
+		tmc2130_wr_MSLUTSEL(axis, 4, 149, 255, 1, 2, 1, 1);
+		break;
+	case 215: //calculated wave 247/1.075
 		tmc2130_wr_MSLUTSTART(axis, 0, 247);
 		tmc2130_wr_MSLUT(axis, 0, 0x4a52491e);
 		tmc2130_wr_MSLUT(axis, 1, 0xa54a54a9);
@@ -878,7 +988,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t fac200)
 		tmc2130_wr_MSLUT(axis, 6, 0x94a555ad);
 		tmc2130_wr_MSLUT(axis, 7, 0x00408444);
 		tmc2130_wr_MSLUTSEL(axis, 4, 161, 255, 1, 2, 1, 1);
-		break;*/
+		break;
 	case 216: //calculated wave 247/1.080
 		tmc2130_wr_MSLUTSTART(axis, 0, 247);
 		tmc2130_wr_MSLUT(axis, 0, 0x9494911e);
@@ -939,19 +1049,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t fac200)
 		tmc2130_wr_MSLUT(axis, 7, 0x00810889);
 		tmc2130_wr_MSLUTSEL(axis, 9, 164, 255, 1, 2, 1, 1);
 		break;
-/*	case 230: //calculated wave 247/1.150
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0x24444076);
-		tmc2130_wr_MSLUT(axis, 1, 0x29294949);
-		tmc2130_wr_MSLUT(axis, 2, 0x24a494a5);
-		tmc2130_wr_MSLUT(axis, 3, 0x84222449);
-		tmc2130_wr_MSLUT(axis, 4, 0x00004020);
-		tmc2130_wr_MSLUT(axis, 5, 0xdbbbefe0);
-		tmc2130_wr_MSLUT(axis, 6, 0x495556b5);
-		tmc2130_wr_MSLUT(axis, 7, 0x00810889);
-		tmc2130_wr_MSLUTSEL(axis, 6, 164, 255, 1, 2, 1, 1);
-		break;*/
-	}
+	}*/
 }
 
 void bubblesort_uint8(uint8_t* data, uint8_t size, uint8_t* data2)
