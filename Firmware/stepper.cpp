@@ -1433,6 +1433,9 @@ void microstep_init()
   #endif
 }
 
+
+#ifndef TMC2130
+
 void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
 {
   if(ms1 > -1) switch(driver)
@@ -1490,3 +1493,4 @@ void microstep_readings()
       SERIAL_PROTOCOLLN( digitalRead(E1_MS2_PIN));
       #endif
 }
+#endif //TMC2130

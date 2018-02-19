@@ -447,11 +447,8 @@ void dcode_10()
 }
 
 void dcode_12()
-{//Reset Filament error, Power loss and crash counter ( Do it before every print and you can get stats for the print )
-	LOG("D12 - Reset failstat counters\n");
-    eeprom_update_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0x00);
-    eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, 0x00);
-    eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, 0x00);
+{//Time
+	LOG("D12 - Time\n");
 }
 
 #include "tmc2130.h"
@@ -461,28 +458,101 @@ extern void st_synchronize();
 
 void dcode_2130()
 {
-//	printf("test");
 	printf_P(PSTR("D2130 - TMC2130\n"));
 	uint8_t axis = 0xff;
-	if (code_seen('X'))
-		axis = X_AXIS;
-	else if (code_seen('Y'))
-		axis = Y_AXIS;
+	switch (strchr_pointer[1+4])
+	{
+	case 'X': axis = X_AXIS; break;
+	case 'Y': axis = Y_AXIS; break;
+	case 'Z': axis = Z_AXIS; break;
+	case 'E': axis = E_AXIS; break;
+	}
 	if (axis != 0xff)
 	{
-		homeaxis(axis);
-		tmc2130_sg_meassure_start(axis);
-		memcpy(destination, current_position, sizeof(destination));
-        destination[axis] = 200;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[X_AXIS]/60, active_extruder);
-        st_synchronize();
-		memcpy(destination, current_position, sizeof(destination));
-        destination[axis] = 0;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], homing_feedrate[X_AXIS]/60, active_extruder);
-        st_synchronize();
-		uint16_t sg = tmc2130_sg_meassure_stop();
-		tmc2130_sg_meassure = 0xff;
-		printf_P(PSTR("Meassure avg = %d\n"), sg);
+		char ch_axis = strchr_pointer[1+4];
+		if (strchr_pointer[1+5] == '0') { tmc2130_set_pwr(axis, 0); }
+		else if (strchr_pointer[1+5] == '1') { tmc2130_set_pwr(axis, 1); }
+		else if (strchr_pointer[1+5] == '+')
+		{
+			if (strchr_pointer[1+6] == 0)
+			{
+				tmc2130_set_dir(axis, 0);
+				tmc2130_do_step(axis);
+			}
+			else
+			{
+				uint8_t steps = atoi(strchr_pointer + 1 + 6);
+				tmc2130_do_steps(axis, steps, 0, 1000);
+			}
+		}
+		else if (strchr_pointer[1+5] == '-')
+		{
+			if (strchr_pointer[1+6] == 0)
+			{
+				tmc2130_set_dir(axis, 1);
+				tmc2130_do_step(axis);
+			}
+			else
+			{
+				uint8_t steps = atoi(strchr_pointer + 1 + 6);
+				tmc2130_do_steps(axis, steps, 1, 1000);
+			}
+		}
+		else if (strchr_pointer[1+5] == '?')
+		{
+			if (strcmp(strchr_pointer + 7, "mres") == 0) printf_P(PSTR("%c mres=%d\n"), ch_axis, tmc2130_mres[axis]);
+			else if (strcmp(strchr_pointer + 7, "step") == 0) printf_P(PSTR("%c step=%d\n"), ch_axis, tmc2130_rd_MSCNT(axis) >> tmc2130_mres[axis]);
+			else if (strcmp(strchr_pointer + 7, "mscnt") == 0) printf_P(PSTR("%c MSCNT=%d\n"), ch_axis, tmc2130_rd_MSCNT(axis));
+			else if (strcmp(strchr_pointer + 7, "mscuract") == 0)
+			{
+				uint32_t val = tmc2130_rd_MSCURACT(axis);
+				int curA = (val & 0xff);
+				int curB = ((val >> 16) & 0xff);
+				if ((val << 7) & 0x8000) curA -= 256;
+				if ((val >> 9) & 0x8000) curB -= 256;
+				printf_P(PSTR("%c MSCURACT=0x%08lx A=%d B=%d\n"), ch_axis, val, curA, curB);
+			}
+			else if (strcmp(strchr_pointer + 7, "wave") == 0)
+			{
+				tmc2130_get_wave(axis, 0, stdout);
+			}
+		}
+		else if (strchr_pointer[1+5] == '!')
+		{
+			if (strncmp(strchr_pointer + 7, "step", 4) == 0)
+			{
+				uint8_t step = atoi(strchr_pointer + 11);
+				uint16_t res = tmc2130_get_res(axis);
+				tmc2130_goto_step(axis, step & (4*res - 1), 2, 1000, res);
+			}
+			else if (strncmp(strchr_pointer + 7, "mres", 4) == 0)
+			{
+				uint8_t mres = strchr_pointer[11] - '0';
+				if ((mres >= 0) && (mres <= 8))
+				{
+					st_synchronize();
+					uint16_t res = tmc2130_get_res(axis);
+					uint16_t res_new = tmc2130_mres2usteps(mres);
+					tmc2130_set_res(axis, res_new);
+					if (res_new > res)
+						axis_steps_per_unit[axis] *= (res_new / res);
+					else
+						axis_steps_per_unit[axis] /= (res / res_new);
+				}
+			}
+			else if (strncmp(strchr_pointer + 7, "wave", 4) == 0)
+			{
+				uint8_t fac200 = atoi(strchr_pointer + 11) & 0xff;
+				if (fac200 < TMC2130_WAVE_FAC200_MIN) fac200 = 0;
+				if (fac200 > TMC2130_WAVE_FAC200_MAX) fac200 = TMC2130_WAVE_FAC200_MAX;
+				tmc2130_set_wave(axis, 247, fac200);
+				tmc2130_wave_fac[axis] = fac200;
+			}
+		}
+		else if (strchr_pointer[1+5] == '@')
+		{
+			tmc2130_home_calibrate(axis);
+		}
 	}
 }
 
