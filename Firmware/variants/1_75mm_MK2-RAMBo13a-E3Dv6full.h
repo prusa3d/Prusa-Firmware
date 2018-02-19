@@ -5,6 +5,8 @@
 GENERAL SETTINGS
 *------------------------------------*/
 
+#define CALIBRATE_EXTRUDER
+
 // Printer revision
 #define FILAMENT_SIZE "1_75mm_MK2"
 #define NOZZLE_TYPE "E3Dv6full"
@@ -13,7 +15,7 @@ GENERAL SETTINGS
 #define DEVELOPER
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK2"
+#define CUSTOM_MENDEL_NAME "Prusa ECal MK2"
 
 // Electronics
 #define MOTHERBOARD BOARD_RAMBO_MINI_1_3

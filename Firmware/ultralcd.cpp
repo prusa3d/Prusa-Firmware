@@ -3165,7 +3165,8 @@ void lcd_calibrate_pinda() {
 
 #ifndef SNMM
 
-/*void lcd_calibrate_extruder() {
+#ifdef CALIBRATE_EXTRUDER
+void lcd_calibrate_extruder() {
 	
 	if (degHotend0() > EXTRUDE_MINTEMP)
 	{
@@ -3176,8 +3177,8 @@ void lcd_calibrate_pinda() {
 
 		long steps_final;
 		float e_steps_per_unit;
-		float feedrate = (180 / axis_steps_per_unit[E_AXIS]) * 1;	//3	//initial automatic extrusion feedrate (depends on current value of axis_steps_per_unit to avoid too fast extrusion)
-		float e_shift_calibration = (axis_steps_per_unit[E_AXIS] > 180 ) ? ((180 / axis_steps_per_unit[E_AXIS]) * 70): 70; //length of initial automatic extrusion sequence
+		float feedrate = 2;	//3	//initial automatic extrusion feedrate (depends on current value of axis_steps_per_unit to avoid too fast extrusion)
+		float e_shift_calibration = 80; //length of initial automatic extrusion sequence
 		const char   *msg_e_cal_knob = MSG_E_CAL_KNOB;
 		const char   *msg_next_e_cal_knob = lcd_display_message_fullscreen_P(msg_e_cal_knob);
 		const bool    multi_screen = msg_next_e_cal_knob != NULL;
@@ -3185,13 +3186,14 @@ void lcd_calibrate_pinda() {
 
 		lcd_show_fullscreen_message_and_wait_P(MSG_MARK_FIL);
 		lcd_implementation_clear();
-		
+		lcd_update_enable(false);
 		
 		lcd.setCursor(0, 1); lcd_printPGM(MSG_PLEASE_WAIT);
+        
 		current_position[E_AXIS] += e_shift_calibration;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder);
 		st_synchronize();
-
+        
 		lcd_display_message_fullscreen_P(msg_e_cal_knob);
 		msg_millis = millis();
 		while (!LCD_CLICKED) {
@@ -3210,7 +3212,7 @@ void lcd_calibrate_pinda() {
 				encoderPosition += (encoderDiff / ENCODER_PULSES_PER_STEP);
 				encoderDiff = 0;
 				if (!planner_queue_full()) {
-					current_position[E_AXIS] += float(abs((int)encoderPosition)) * 0.01; //0.05
+					current_position[E_AXIS] += float(abs((int)encoderPosition)) * 0.02; //0.05
 					encoderPosition = 0;
 					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder);
 					
@@ -3236,7 +3238,20 @@ void lcd_calibrate_pinda() {
 		lcd_show_fullscreen_message_and_wait_P(MSG_CLEAN_NOZZLE_E);
 		lcd_update_enable(true);
 		lcdDrawUpdate = 2;
-
+        
+        // Print calculated e-steps on LCD
+        lcd_update_enable(false);
+        lcd_implementation_clear();
+        lcd.setCursor(0, 1);
+        lcd.print("Calculated Esteps/mm");
+        lcd.setCursor(7, 3);
+        lcd.print(e_steps_per_unit);
+        while (!LCD_CLICKED) {
+            manage_heater();
+        }
+        lcd_implementation_clear();
+        lcd_update_enable(true);
+        
 	}
 	else
 	{
@@ -3256,7 +3271,8 @@ void lcd_extr_cal_reset() {
 	axis_steps_per_unit[E_AXIS] = tmp1[3];
 	//extrudemultiply = 100;
 	enquecommand_P(PSTR("M500"));
-}*/
+}
+#endif
 
 #endif
 
@@ -3544,7 +3560,9 @@ static void lcd_calibration_menu()
 	MENU_ITEM(submenu, MSG_V2_CALIBRATION, lcd_v2_calibration);
 	
 #ifndef SNMM
-	//MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
+      #ifdef CALIBRATE_EXTRUDER
+	MENU_ITEM(function, MSG_CALIBRATE_E, lcd_calibrate_extruder);
+      #endif
 #endif
     // "Mesh Bed Leveling"
     MENU_ITEM(submenu, MSG_MESH_BED_LEVELING, lcd_mesh_bedleveling);
