@@ -117,10 +117,11 @@ void tmc2130_wr_PWMCONF(uint8_t axis, uint8_t pwm_ampl, uint8_t pwm_grad, uint8_
 void tmc2130_wr_TPWMTHRS(uint8_t axis, uint32_t val32);
 void tmc2130_wr_THIGH(uint8_t axis, uint32_t val32);
 
+#define tmc2130_rd(axis, addr, rval) tmc2130_rx(axis, addr, rval)
+#define tmc2130_wr(axis, addr, wval) tmc2130_tx(axis, addr | 0x80, wval)
 
-uint8_t tmc2130_wr(uint8_t axis, uint8_t addr, uint32_t wval);
-uint8_t tmc2130_rd(uint8_t axis, uint8_t addr, uint32_t* rval);
-uint8_t tmc2130_txrx(uint8_t axis, uint8_t addr, uint32_t wval, uint32_t* rval);
+uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval);
+uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval);
 
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r);
@@ -130,10 +131,6 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 void tmc2130_init()
 {
 	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
-/*	tmc2130_mres[X_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
-	tmc2130_mres[Y_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
-	tmc2130_mres[Z_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_Z);
-	tmc2130_mres[E_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_E);*/
 	WRITE(X_TMC2130_CS, HIGH);
 	WRITE(Y_TMC2130_CS, HIGH);
 	WRITE(Z_TMC2130_CS, HIGH);
@@ -233,14 +230,7 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 	}
 	if (sg_homing_axes_mask == 0)
 	{
-/*		if (crash)
-		{
-			if (diag_mask & 0x01) tmc2130_sg_cnt[0]++;
-			if (diag_mask & 0x02) tmc2130_sg_cnt[1]++;
-			if (diag_mask & 0x04) tmc2130_sg_cnt[2]++;
-			if (diag_mask & 0x08) tmc2130_sg_cnt[3]++;
-		}*/
-		if (/*!is_usb_printing && */tmc2130_sg_stop_on_crash && crash)
+		if (tmc2130_sg_stop_on_crash && crash)
 		{
 			tmc2130_sg_crash = crash;
 			tmc2130_sg_stop_on_crash = false;
@@ -574,43 +564,6 @@ uint8_t tmc2130_usteps2mres(uint16_t usteps)
 	return mres;
 }
 
-uint8_t tmc2130_wr(uint8_t axis, uint8_t addr, uint32_t wval)
-{
-	uint8_t stat = tmc2130_txrx(axis, addr | 0x80, wval, 0);
-#ifdef TMC2130_DEBUG_WR
-	MYSERIAL.print("tmc2130_wr(");
-	MYSERIAL.print((unsigned char)axis, DEC);
-	MYSERIAL.print(", 0x");
-	MYSERIAL.print((unsigned char)addr, HEX);
-	MYSERIAL.print(", 0x");
-	MYSERIAL.print((unsigned long)wval, HEX);
-	MYSERIAL.print(")=0x");
-	MYSERIAL.println((unsigned char)stat, HEX);
-#endif //TMC2130_DEBUG_WR
-	return stat;
-}
-
-uint8_t tmc2130_rd(uint8_t axis, uint8_t addr, uint32_t* rval)
-{
-	uint32_t val32 = 0;
-	uint8_t stat = tmc2130_txrx(axis, addr, 0x00000000, &val32);
-	if (rval != 0) *rval = val32;
-#ifdef TMC2130_DEBUG_RD
-	if (!skip_debug_msg)
-	{
-		MYSERIAL.print("tmc2130_rd(");
-		MYSERIAL.print((unsigned char)axis, DEC);
-		MYSERIAL.print(", 0x");
-		MYSERIAL.print((unsigned char)addr, HEX);
-		MYSERIAL.print(", 0x");
-		MYSERIAL.print((unsigned long)val32, HEX);
-		MYSERIAL.print(")=0x");
-		MYSERIAL.println((unsigned char)stat, HEX);
-	}
-	skip_debug_msg = false;
-#endif //TMC2130_DEBUG_RD
-	return stat;
-}
 
 inline void tmc2130_cs_low(uint8_t axis)
 {
@@ -634,7 +587,8 @@ inline void tmc2130_cs_high(uint8_t axis)
 	}
 }
 
-uint8_t tmc2130_txrx(uint8_t axis, uint8_t addr, uint32_t wval, uint32_t* rval)
+
+uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval)
 {
 	//datagram1 - request
 	SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
@@ -644,6 +598,20 @@ uint8_t tmc2130_txrx(uint8_t axis, uint8_t addr, uint32_t wval, uint32_t* rval)
 	SPI.transfer((wval >> 16) & 0xff);
 	SPI.transfer((wval >> 8) & 0xff);
 	SPI.transfer(wval & 0xff); // LSB
+	tmc2130_cs_high(axis);
+	SPI.endTransaction();
+}
+
+uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
+{
+	//datagram1 - request
+	SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
+	tmc2130_cs_low(axis);
+	SPI.transfer(addr); // address
+	SPI.transfer(0); // MSB
+	SPI.transfer(0);
+	SPI.transfer(0);
+	SPI.transfer(0); // LSB
 	tmc2130_cs_high(axis);
 	SPI.endTransaction();
 	//datagram2 - response
@@ -704,10 +672,10 @@ uint16_t tmc2130_get_res(uint8_t axis)
 void tmc2130_set_res(uint8_t axis, uint16_t res)
 {
 	tmc2130_mres[axis] = tmc2130_usteps2mres(res);
-//	uint32_t u = micros();
+	uint32_t u = micros();
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
-//	u = micros() - u;
-//	printf_P(PSTR("tmc2130_setup_chopper %c %lu us"), "XYZE"[axis], u);
+	u = micros() - u;
+	printf_P(PSTR("tmc2130_setup_chopper %c %lu us"), "XYZE"[axis], u);
 }
 
 uint8_t tmc2130_get_pwr(uint8_t axis)
@@ -924,132 +892,6 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac200)
 //		printf("%3d\t%3d\t%2d\t%2d\t%2d\t%2d    %08x\n", i, vA, dA, b, w[s], s, reg);
 	}
 	tmc2130_wr_MSLUTSEL(axis, x[0], x[1], x[2], w[0], w[1], w[2], w[3]);
-
-/*
-//	printf_P(PSTR(" tmc2130_set_wave %d %d\n"), axis, fac200);
-	switch (fac200)
-	{
-	case 0: //default TMC wave 247/0
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0xaaaab556);
-		tmc2130_wr_MSLUT(axis, 1, 0x4a9554aa);
-		tmc2130_wr_MSLUT(axis, 2, 0x24492929);
-		tmc2130_wr_MSLUT(axis, 3, 0x10104222);
-		tmc2130_wr_MSLUT(axis, 4, 0xf8000000);
-		tmc2130_wr_MSLUT(axis, 5, 0xb5bb777d);
-		tmc2130_wr_MSLUT(axis, 6, 0x49295556);
-		tmc2130_wr_MSLUT(axis, 7, 0x00404222);
-		tmc2130_wr_MSLUTSEL(axis, 2, 154, 255, 1, 2, 1, 1);
-		break;
-	case 210: //calculated wave 247/1.050
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0x55294a4e);
-		tmc2130_wr_MSLUT(axis, 1, 0xa52a552a);
-		tmc2130_wr_MSLUT(axis, 2, 0x48949294);
-		tmc2130_wr_MSLUT(axis, 3, 0x81042222);
-		tmc2130_wr_MSLUT(axis, 4, 0x00000000);
-		tmc2130_wr_MSLUT(axis, 5, 0xdb6eef7e);
-		tmc2130_wr_MSLUT(axis, 6, 0x9295555a);
-		tmc2130_wr_MSLUT(axis, 7, 0x00408444);
-		tmc2130_wr_MSLUTSEL(axis, 3, 160, 255, 1, 2, 1, 1);
-		break;
-	case 212: //calculated wave 247/1.060
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0x4a94948e);
-		tmc2130_wr_MSLUT(axis, 1, 0x94a952a5);
-		tmc2130_wr_MSLUT(axis, 2, 0x24925252);
-		tmc2130_wr_MSLUT(axis, 3, 0x10421112);
-		tmc2130_wr_MSLUT(axis, 4, 0xc0000020);
-		tmc2130_wr_MSLUT(axis, 5, 0xdb7777df);
-		tmc2130_wr_MSLUT(axis, 6, 0x9295556a);
-		tmc2130_wr_MSLUT(axis, 7, 0x00408444);
-		tmc2130_wr_MSLUTSEL(axis, 3, 157, 255, 1, 2, 1, 1);
-		break;
-	case 214: //calculated wave 247/1.070
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0xa949489e);
-		tmc2130_wr_MSLUT(axis, 1, 0x52a54a54);
-		tmc2130_wr_MSLUT(axis, 2, 0x224a494a);
-		tmc2130_wr_MSLUT(axis, 3, 0x04108889);
-		tmc2130_wr_MSLUT(axis, 4, 0xffc08002);
-		tmc2130_wr_MSLUT(axis, 5, 0x6dbbbdfb);
-		tmc2130_wr_MSLUT(axis, 6, 0x94a555ab);
-		tmc2130_wr_MSLUT(axis, 7, 0x00408444);
-		tmc2130_wr_MSLUTSEL(axis, 4, 149, 255, 1, 2, 1, 1);
-		break;
-	case 215: //calculated wave 247/1.075
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0x4a52491e);
-		tmc2130_wr_MSLUT(axis, 1, 0xa54a54a9);
-		tmc2130_wr_MSLUT(axis, 2, 0x49249494);
-		tmc2130_wr_MSLUT(axis, 3, 0x10421122);
-		tmc2130_wr_MSLUT(axis, 4, 0x00000008);
-		tmc2130_wr_MSLUT(axis, 5, 0x6ddbdefc);
-		tmc2130_wr_MSLUT(axis, 6, 0x94a555ad);
-		tmc2130_wr_MSLUT(axis, 7, 0x00408444);
-		tmc2130_wr_MSLUTSEL(axis, 4, 161, 255, 1, 2, 1, 1);
-		break;
-	case 216: //calculated wave 247/1.080
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0x9494911e);
-		tmc2130_wr_MSLUT(axis, 1, 0x4a94a94a);
-		tmc2130_wr_MSLUT(axis, 2, 0x92492929);
-		tmc2130_wr_MSLUT(axis, 3, 0x41044444);
-		tmc2130_wr_MSLUT(axis, 4, 0x00000040);
-		tmc2130_wr_MSLUT(axis, 5, 0xaedddf7f);
-		tmc2130_wr_MSLUT(axis, 6, 0x94a956ad);
-		tmc2130_wr_MSLUT(axis, 7, 0x00808448);
-		tmc2130_wr_MSLUTSEL(axis, 4, 159, 255, 1, 2, 1, 1);
-		break;
-	case 218: //calculated wave 247/1.090
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0x4a49223e);
-		tmc2130_wr_MSLUT(axis, 1, 0x4a52a529);
-		tmc2130_wr_MSLUT(axis, 2, 0x49252529);
-		tmc2130_wr_MSLUT(axis, 3, 0x08422224);
-		tmc2130_wr_MSLUT(axis, 4, 0xfc008004);
-		tmc2130_wr_MSLUT(axis, 5, 0xb6eef7df);
-		tmc2130_wr_MSLUT(axis, 6, 0xa4aaaab5);
-		tmc2130_wr_MSLUT(axis, 7, 0x00808448);
-		tmc2130_wr_MSLUTSEL(axis, 5, 153, 255, 1, 2, 1, 1);
-		break;
-	case 220: //calculated wave 247/1.100
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0xa492487e);
-		tmc2130_wr_MSLUT(axis, 1, 0x294a52a4);
-		tmc2130_wr_MSLUT(axis, 2, 0x492494a5);
-		tmc2130_wr_MSLUT(axis, 3, 0x82110912);
-		tmc2130_wr_MSLUT(axis, 4, 0x00000080);
-		tmc2130_wr_MSLUT(axis, 5, 0xdb777df8);
-		tmc2130_wr_MSLUT(axis, 6, 0x252aaad6);
-		tmc2130_wr_MSLUT(axis, 7, 0x00808449);
-		tmc2130_wr_MSLUTSEL(axis, 6, 162, 255, 1, 2, 1, 1);
-		break;
-	case 222: //calculated wave 247/1.110
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0x524910fe);
-		tmc2130_wr_MSLUT(axis, 1, 0xa5294a52);
-		tmc2130_wr_MSLUT(axis, 2, 0x24929294);
-		tmc2130_wr_MSLUT(axis, 3, 0x20844489);
-		tmc2130_wr_MSLUT(axis, 4, 0xc0004008);
-		tmc2130_wr_MSLUT(axis, 5, 0xdbbbdf7f);
-		tmc2130_wr_MSLUT(axis, 6, 0x252aab5a);
-		tmc2130_wr_MSLUT(axis, 7, 0x00808449);
-		tmc2130_wr_MSLUTSEL(axis, 7, 157, 255, 1, 2, 1, 1);
-		break;
-	case 224: //calculated wave 247/1.120
-		tmc2130_wr_MSLUTSTART(axis, 0, 247);
-		tmc2130_wr_MSLUT(axis, 0, 0x292223fe);
-		tmc2130_wr_MSLUT(axis, 1, 0x94a52949);
-		tmc2130_wr_MSLUT(axis, 2, 0x92524a52);
-		tmc2130_wr_MSLUT(axis, 3, 0x04222244);
-		tmc2130_wr_MSLUT(axis, 4, 0x00000101);
-		tmc2130_wr_MSLUT(axis, 5, 0x6dddefe0);
-		tmc2130_wr_MSLUT(axis, 6, 0x254aad5b);
-		tmc2130_wr_MSLUT(axis, 7, 0x00810889);
-		tmc2130_wr_MSLUTSEL(axis, 9, 164, 255, 1, 2, 1, 1);
-		break;
-	}*/
 }
 
 void bubblesort_uint8(uint8_t* data, uint8_t size, uint8_t* data2)
