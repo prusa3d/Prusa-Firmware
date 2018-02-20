@@ -1585,13 +1585,17 @@ static void lcd_menu_fails_stats()
 
 
 #ifdef DEBUG_BUILD
+#ifdef DEBUG_STACK_MONITOR
 extern uint16_t SP_min;
 extern char* __malloc_heap_start;
 extern char* __malloc_heap_end;
+#endif //DEBUG_STACK_MONITOR
 
 static void lcd_menu_debug()
 {
+#ifdef DEBUG_STACK_MONITOR
 	fprintf_P(lcdout, PSTR(ESC_H(1,1)"RAM statistics"ESC_H(5,1)"SP_min: 0x%04x"ESC_H(1,2)"heap_start: 0x%04x"ESC_H(3,3)"heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
+#endif //DEBUG_STACK_MONITOR
 
 	if (lcd_clicked())
     {
@@ -5836,7 +5840,7 @@ static void lcd_selftest_v()
 static bool lcd_selftest()
 {
 	int _progress = 0;
-	bool _result = false;
+	bool _result = true;
 	lcd_wait_for_cool_down();
 	lcd_implementation_clear();
 	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_START);
@@ -5845,8 +5849,12 @@ static bool lcd_selftest()
 	#endif // TMC2130
 	delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
-	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
-	_result = lcd_selftest_fan_dialog(0);
+
+	if (_result)
+	{
+		_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
+		_result = lcd_selftest_fan_dialog(0);
+	}
 	
 	if (_result)
 	{
@@ -5927,6 +5935,15 @@ static bool lcd_selftest()
 			enquecommand_P(PSTR("G28 W"));
 			enquecommand_P(PSTR("G1 Z15"));
 		}
+	}
+
+	if (_result)
+	{
+		_progress = lcd_selftest_screen(13, 0, 2, true, 0);
+		tmc2130_home_calibrate(X_AXIS);
+		_progress = lcd_selftest_screen(13, 1, 2, true, 0);
+		tmc2130_home_calibrate(Y_AXIS);
+		_progress = lcd_selftest_screen(13, 2, 2, true, 0);
 	}
 
 	if (_result)
@@ -6712,6 +6729,7 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	if (_step == 10) lcd_printPGM(MSG_SELFTEST_CHECK_FSENSOR);
 	if (_step == 11) lcd_printPGM(MSG_SELFTEST_CHECK_ALLCORRECT);
 	if (_step == 12) lcd_printPGM(MSG_SELFTEST_FAILED);
+	if (_step == 13) lcd_printPGM(PSTR("Calibrating home"));
 
 	lcd.setCursor(0, 1);
 	lcd.print("--------------------");
