@@ -319,7 +319,10 @@ float add_homing[3]={0,0,0};
 float min_pos[3] = { X_MIN_POS, Y_MIN_POS, Z_MIN_POS };
 float max_pos[3] = { X_MAX_POS, Y_MAX_POS, Z_MAX_POS };
 bool axis_known_position[3] = {false, false, false};
+
+#ifdef ENABLE_AUTO_BED_LEVELING
 float zprobe_zoffset;
+#endif
 
 // Extruder offset
 #if EXTRUDERS > 1

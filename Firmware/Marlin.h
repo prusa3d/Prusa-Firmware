@@ -258,7 +258,9 @@ extern float add_homing[3];
 extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
+#ifdef ENABLE_AUTO_BED_LEVELING
 extern float zprobe_zoffset;
+#endif
 extern int fanSpeed;
 extern void homeaxis(int axis);
 

@@ -85,7 +85,11 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i,absPreheatFanSpeed);
 */
   
-  EEPROM_WRITE_VAR(i,zprobe_zoffset);
+  #ifdef ENABLE_AUTO_BED_LEVELING
+   EEPROM_WRITE_VAR(i,zprobe_zoffset);
+  #else
+   i += sizeof(float);
+  #endif
   #ifdef PIDTEMP
     EEPROM_WRITE_VAR(i,Kp);
     EEPROM_WRITE_VAR(i,Ki);
@@ -314,8 +318,11 @@ bool Config_RetrieveSettings()
         EEPROM_READ_VAR(i,absPreheatFanSpeed);
         */
 
-        
-        EEPROM_READ_VAR(i,zprobe_zoffset);
+        #ifdef ENABLE_AUTO_BED_LEVELING
+         EEPROM_READ_VAR(i,zprobe_zoffset);
+	#else
+	 i += sizeof(float);
+        #endif
         #ifndef PIDTEMP
         float Kp,Ki,Kd;
         #endif
