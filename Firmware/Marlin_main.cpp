@@ -6561,7 +6561,11 @@ void get_coordinates()
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
-      destination[i] = (float)code_value() + (axis_relative_modes[i] || relative_mode)*current_position[i];
+      destination[i] = (float)code_value();
+      if (i == E_AXIS && extrudemultiply != 100)
+        destination[i] *= (extrudemultiply * 0.01f);
+      if (axis_relative_modes[i] || relative_mode)
+        destination[i] += current_position[i];
       seen[i]=true;
     }
     else destination[i] = current_position[i]; //Are these else lines really needed?
