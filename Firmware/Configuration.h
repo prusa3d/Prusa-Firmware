@@ -8,7 +8,7 @@
 
 // Firmware version
 #define FW_VERSION "3.1.1"
-#define FW_COMMIT_NR   197
+#define FW_COMMIT_NR   201
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
@@ -131,6 +131,45 @@
 #define EEPROM_FERROR_COUNT_TOT      (EEPROM_CRASH_COUNT_Y_TOT - 2)            // uint16
 // Power loss errors (total)
 #define EEPROM_POWER_COUNT_TOT       (EEPROM_FERROR_COUNT_TOT - 2)             // uint16
+
+
+////////////////////////////////////////
+// TMC2130 Accurate sensorless homing 
+
+// X-axis home origin (stepper phase in microsteps, 0..63 for 16ustep resolution)
+#define EEPROM_TMC2130_HOME_X_ORIGIN           (EEPROM_POWER_COUNT_TOT - 1)                    // uint8
+// X-axis home bsteps (number of microsteps backward)
+#define EEPROM_TMC2130_HOME_X_BSTEPS           (EEPROM_TMC2130_HOME_X_ORIGIN - 1)              // uint8
+// X-axis home fsteps (number of microsteps forward)
+#define EEPROM_TMC2130_HOME_X_FSTEPS           (EEPROM_TMC2130_HOME_X_BSTEPS - 1)              // uint8
+// Y-axis home origin (stepper phase in microsteps, 0..63 for 16ustep resolution)
+#define EEPROM_TMC2130_HOME_Y_ORIGIN           (EEPROM_TMC2130_HOME_X_FSTEPS - 1)              // uint8
+// X-axis home bsteps (number of microsteps backward)
+#define EEPROM_TMC2130_HOME_Y_BSTEPS           (EEPROM_TMC2130_HOME_Y_ORIGIN - 1)              // uint8
+// X-axis home fsteps (number of microsteps forward)
+#define EEPROM_TMC2130_HOME_Y_FSTEPS           (EEPROM_TMC2130_HOME_Y_BSTEPS - 1)              // uint8
+// Accurate homing enabled
+#define EEPROM_TMC2130_HOME_ENABLED            (EEPROM_TMC2130_HOME_Y_FSTEPS - 1)              // uint8
+
+
+////////////////////////////////////////
+// TMC2130 uStep linearity correction
+
+// Linearity correction factor (XYZE) encoded as uint8 (0=>1, 1=>1.001, 254=>1.254, 255=>clear eeprom/disabled)
+#define EEPROM_TMC2130_WAVE_X_FAC              (EEPROM_TMC2130_HOME_ENABLED - 1)               // uint8
+#define EEPROM_TMC2130_WAVE_Y_FAC              (EEPROM_TMC2130_WAVE_X_FAC - 1)                 // uint8
+#define EEPROM_TMC2130_WAVE_Z_FAC              (EEPROM_TMC2130_WAVE_Y_FAC - 1)                 // uint8
+#define EEPROM_TMC2130_WAVE_E_FAC              (EEPROM_TMC2130_WAVE_Z_FAC - 1)                 // uint8
+
+
+////////////////////////////////////////
+// TMC2130 uStep resolution
+
+// microstep resolution (XYZE): usteps = (256 >> mres)
+#define EEPROM_TMC2130_X_MRES              (EEPROM_TMC2130_WAVE_E_FAC - 1)                     // uint8
+#define EEPROM_TMC2130_Y_MRES              (EEPROM_TMC2130_X_MRES - 1)                         // uint8
+#define EEPROM_TMC2130_Z_MRES              (EEPROM_TMC2130_Y_MRES - 1)                         // uint8
+#define EEPROM_TMC2130_E_MRES              (EEPROM_TMC2130_Z_MRES - 1)                         // uint8
 
 
 //TMC2130 configuration
