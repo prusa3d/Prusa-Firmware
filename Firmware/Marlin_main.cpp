@@ -1140,6 +1140,51 @@ void setup()
 	// Force SD card update. Otherwise the SD card update is done from loop() on card.checkautostart(false), 
 	// but this times out if a blocking dialog is shown in setup().
 	card.initsd();
+#ifdef DEBUG_SD_SPEED_TEST
+	if (card.cardOK)
+	{
+		uint8_t* buff = (uint8_t*)block_buffer;
+		uint32_t block = 0;
+		uint32_t sumr = 0;
+		uint32_t sumw = 0;
+		for (int i = 0; i < 1024; i++)
+		{
+			uint32_t u = micros();
+			bool res = card.card.readBlock(i, buff);
+			u = micros() - u;
+			if (res)
+			{
+				printf_P(PSTR("readBlock %4d 512 bytes %lu us\n"), i, u);
+				sumr += u;
+				u = micros();
+				res = card.card.writeBlock(i, buff);
+				u = micros() - u;
+				if (res)
+				{
+					printf_P(PSTR("writeBlock %4d 512 bytes %lu us\n"), i, u);
+					sumw += u;
+				}
+				else
+				{
+					printf_P(PSTR("writeBlock %4d error\n"), i);
+					break;
+				}
+			}
+			else
+			{
+				printf_P(PSTR("readBlock %4d error\n"), i);
+				break;
+			}
+		}
+		uint32_t avg_rspeed = (1024 * 1000000) / (sumr / 512);
+		uint32_t avg_wspeed = (1024 * 1000000) / (sumw / 512);
+		printf_P(PSTR("avg read speed %lu bytes/s\n"), avg_rspeed);
+		printf_P(PSTR("avg write speed %lu bytes/s\n"), avg_wspeed);
+	}
+	else
+		printf_P(PSTR("Card NG!\n"));
+#endif DEBUG_SD_SPEED_TEST
+
 	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, 0);
@@ -1845,6 +1890,7 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         // for the stall guard to work.
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+		set_destination_to_current();
 //        destination[axis] = 11.f;
         destination[axis] = 3.f;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
@@ -6527,6 +6573,11 @@ void get_coordinates()
 		if (next_feedrate > MAX_SILENT_FEEDRATE) next_feedrate = MAX_SILENT_FEEDRATE;
 #endif //MAX_SILENT_FEEDRATE
     if(next_feedrate > 0.0) feedrate = next_feedrate;
+	if (!seen[0] && !seen[1] && !seen[2] && seen[3])
+	{
+//		float e_max_speed = 
+//		printf_P(PSTR("E MOVE speed %7.3f\n"), feedrate / 60)
+	}
   }
 }
 
