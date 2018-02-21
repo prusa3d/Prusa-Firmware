@@ -333,7 +333,7 @@ float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
     #endif
   #endif
 };
-float volumetric_multiplier[EXTRUDERS] = {1.0
+float extruder_multiplier[EXTRUDERS] = {1.0
   #if EXTRUDERS > 1
     , 1.0
     #if EXTRUDERS > 2
@@ -408,18 +408,6 @@ bool cancel_heatup = false ;
 #else
   #define host_keepalive();
   #define KEEPALIVE_STATE(n);
-#endif
-
-#ifdef FILAMENT_SENSOR
-  //Variables for Filament Sensor input 
-  float filament_width_nominal=DEFAULT_NOMINAL_FILAMENT_DIA;  //Set nominal filament width, can be changed with M404 
-  bool filament_sensor=false;  //M405 turns on filament_sensor control, M406 turns it off 
-  float filament_width_meas=DEFAULT_MEASURED_FILAMENT_DIA; //Stores the measured filament diameter 
-  signed char measurement_delay[MAX_MEASUREMENT_DELAY+1];  //ring buffer to delay measurement  store extruder factor after subtracting 100 
-  int delay_index1=0;  //index into ring buffer
-  int delay_index2=-1;  //index into ring buffer - set to -1 on startup to indicate ring buffer needs to be initialized
-  float delay_dist=0; //delay distance counter  
-  int meas_delay_cm = MEASUREMENT_DELAY_CM;  //distance delay setting
 #endif
 
 const char errormagic[] PROGMEM = "Error:";
@@ -1972,11 +1960,7 @@ void refresh_cmd_timeout(void)
       destination[Y_AXIS]=current_position[Y_AXIS];
       destination[Z_AXIS]=current_position[Z_AXIS];
       destination[E_AXIS]=current_position[E_AXIS];
-      if (swapretract) {
-        current_position[E_AXIS]+=retract_length_swap/volumetric_multiplier[active_extruder];
-      } else {
-        current_position[E_AXIS]+=retract_length/volumetric_multiplier[active_extruder];
-      }
+      current_position[E_AXIS]+=(swapretract?retract_length_swap:retract_length)*float(extrudemultiply)*0.01f;
       plan_set_e_position(current_position[E_AXIS]);
       float oldFeedrate = feedrate;
       feedrate=retract_feedrate*60;
@@ -1993,12 +1977,7 @@ void refresh_cmd_timeout(void)
       destination[E_AXIS]=current_position[E_AXIS];
       current_position[Z_AXIS]+=retract_zlift;
       plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-      //prepare_move();
-      if (swapretract) {
-        current_position[E_AXIS]-=(retract_length_swap+retract_recover_length_swap)/volumetric_multiplier[active_extruder]; 
-      } else {
-        current_position[E_AXIS]-=(retract_length+retract_recover_length)/volumetric_multiplier[active_extruder]; 
-      }
+      current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(retract_length+retract_recover_length))*float(extrudemultiply)*0.01f;
       plan_set_e_position(current_position[E_AXIS]);
       float oldFeedrate = feedrate;
       feedrate=retract_recover_feedrate*60;
@@ -5061,7 +5040,7 @@ Sigma_Exit:
           //reserved for setting filament diameter via UFID or filament measuring device
           break;
         }
-		calculate_volumetric_multipliers();
+		calculate_extruder_multipliers();
       }
       break;
     case 201: // M201
@@ -5229,6 +5208,7 @@ Sigma_Exit:
           extrudemultiply = tmp_code ;
         }
       }
+      calculate_extruder_multipliers();
     }
     break;
 
@@ -5466,69 +5446,6 @@ Sigma_Exit:
       st_synchronize();
     }
     break;
-
-#ifdef FILAMENT_SENSOR
-case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or display nominal filament width 
-    {
-    #if (FILWIDTH_PIN > -1) 
-    if(code_seen('N')) filament_width_nominal=code_value();
-    else{
-    SERIAL_PROTOCOLPGM("Filament dia (nominal mm):"); 
-    SERIAL_PROTOCOLLN(filament_width_nominal); 
-    }
-    #endif
-    }
-    break; 
-    
-    case 405:  //M405 Turn on filament sensor for control 
-    {
-    
-    
-    if(code_seen('D')) meas_delay_cm=code_value();
-       
-       if(meas_delay_cm> MAX_MEASUREMENT_DELAY)
-       	meas_delay_cm = MAX_MEASUREMENT_DELAY;
-    
-       if(delay_index2 == -1)  //initialize the ring buffer if it has not been done since startup
-    	   {
-    	   int temp_ratio = widthFil_to_size_ratio(); 
-       	    
-       	    for (delay_index1=0; delay_index1<(MAX_MEASUREMENT_DELAY+1); ++delay_index1 ){
-       	              measurement_delay[delay_index1]=temp_ratio-100;  //subtract 100 to scale within a signed byte
-       	        }
-       	    delay_index1=0;
-       	    delay_index2=0;	
-    	   }
-    
-    filament_sensor = true ; 
-    
-    //SERIAL_PROTOCOLPGM("Filament dia (measured mm):"); 
-    //SERIAL_PROTOCOL(filament_width_meas); 
-    //SERIAL_PROTOCOLPGM("Extrusion ratio(%):"); 
-    //SERIAL_PROTOCOL(extrudemultiply); 
-    } 
-    break; 
-    
-    case 406:  //M406 Turn off filament sensor for control 
-    {      
-    filament_sensor = false ; 
-    } 
-    break; 
-  
-    case 407:   //M407 Display measured filament diameter 
-    { 
-     
-    
-    
-    SERIAL_PROTOCOLPGM("Filament dia (measured mm):"); 
-    SERIAL_PROTOCOLLN(filament_width_meas);   
-    } 
-    break; 
-    #endif
-    
-
-
-
 
     case 500: // M500 Store settings in EEPROM
     {
@@ -6515,10 +6432,19 @@ void get_coordinates()
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
+      bool relative = axis_relative_modes[i] || relative_mode;
       destination[i] = (float)code_value();
-      if (i == E_AXIS && extrudemultiply != 100)
-        destination[i] *= (extrudemultiply * 0.01f);
-      if (axis_relative_modes[i] || relative_mode)
+      if (i == E_AXIS) {
+        float emult = extruder_multiplier[active_extruder];
+        if (emult != 1.) {
+          if (! relative) {
+            destination[i] -= current_position[i];
+            relative = true;
+          }
+          destination[i] *= emult;
+        }
+      }
+      if (relative)
         destination[i] += current_position[i];
       seen[i]=true;
     }
@@ -7033,27 +6959,20 @@ void save_statistics(unsigned long _total_filament_used, unsigned long _total_pr
 
 }
 
-float calculate_volumetric_multiplier(float diameter) {
-	float area = .0;
-	float radius = .0;
-
-	radius = diameter * .5;
-	if (! volumetric_enabled || radius == 0) {
-		area = 1;
-	}
-	else {
-		area = M_PI * pow(radius, 2);
-	}
-
-	return 1.0 / area;
+float calculate_extruder_multiplier(float diameter) {
+  bool  enabled = volumetric_enabled && diameter > 0;
+  float area    = enabled ? (M_PI * pow(diameter * .5, 2)) : 0;
+	return (extrudemultiply == 100) ? 
+    (enabled ? (1.f / area) : 1.f) :
+    (enabled ? ((float(extrudemultiply) * 0.01f) / area) : 1.f);
 }
 
-void calculate_volumetric_multipliers() {
-	volumetric_multiplier[0] = calculate_volumetric_multiplier(filament_size[0]);
+void calculate_extruder_multipliers() {
+	extruder_multiplier[0] = calculate_extruder_multiplier(filament_size[0]);
 #if EXTRUDERS > 1
-	volumetric_multiplier[1] = calculate_volumetric_multiplier(filament_size[1]);
+	extruder_multiplier[1] = calculate_extruder_multiplier(filament_size[1]);
 #if EXTRUDERS > 2
-	volumetric_multiplier[2] = calculate_volumetric_multiplier(filament_size[2]);
+	extruder_multiplier[2] = calculate_extruder_multiplier(filament_size[2]);
 #endif
 #endif
 }
