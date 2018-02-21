@@ -1179,13 +1179,15 @@ void setup()
 	setup_uvlo_interrupt();
 #endif //UVLO_SUPPORT
 
-#if !defined(DEBUG_DISABLE_FANCHECK) && defined(TACH_1) && TACH_1 >-1
+#if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
 
+#ifdef PAT9125
 #ifndef DEBUG_DISABLE_FSENSORCHECK
 	fsensor_setup_interrupt();
 #endif //DEBUG_DISABLE_FSENSORCHECK
+#endif //PAT9125
 	for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]); 
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
@@ -5551,8 +5553,10 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     #ifdef FILAMENTCHANGEENABLE
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
     {
+#ifdef PAT9125
 		bool old_fsensor_enabled = fsensor_enabled;
 		fsensor_enabled = false; //temporary solution for unexpected restarting
+#endif //PAT9125
 
 		st_synchronize();
 		float target[4];
@@ -6003,9 +6007,8 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	  custom_message = false;
 	  custom_message_type = 0;
 
-      fsensor_enabled = old_fsensor_enabled; //temporary solution for unexpected restarting
-
 #ifdef PAT9125
+      fsensor_enabled = old_fsensor_enabled; //temporary solution for unexpected restarting
 
 	  if (fsensor_M600)
 	  {
@@ -6205,8 +6208,10 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 			extr_unload_all(); //unload all filaments
 		}
 #else
+#ifdef PAT9125
 		bool old_fsensor_enabled = fsensor_enabled;
 		fsensor_enabled = false;
+#endif //PAT9125
 		custom_message = true;
 		custom_message_type = 2;
 		lcd_setstatuspgm(MSG_UNLOADING_FILAMENT); 
@@ -6248,7 +6253,9 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 		lcd_setstatuspgm(WELCOME_MSG);
 		custom_message = false;
 		custom_message_type = 0;
+#ifdef PAT9125
 		fsensor_enabled = old_fsensor_enabled;
+#endif //PAT9125
 #endif	
 	}
 	break;
@@ -6679,6 +6686,7 @@ void handle_status_leds(void) {
 
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
+#ifdef PAT9125
 	if (fsensor_enabled && filament_autoload_enabled && !fsensor_M600 && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 	{
 		if (fsensor_autoload_enabled)
@@ -6716,6 +6724,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 	else
 		if (fsensor_autoload_enabled)
 			fsensor_autoload_check_stop();
+#endif //PAT9125
 
 #if defined(KILL_PIN) && KILL_PIN > -1
 	static int killCount = 0;   // make the inactivity button a bit less responsive
@@ -7668,7 +7677,7 @@ void uvlo_()
 }
 #endif //UVLO_SUPPORT
 
-#if defined(TACH_1) && TACH_1 >-1
+#if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 
 void setup_fan_interrupt() {
 //INT7
