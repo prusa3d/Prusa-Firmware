@@ -320,6 +320,27 @@ const char * const MSG_CARD_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CARD_MENU_CZ
 };
 
+const char MSG_CHANGED_BOTH_EN[] PROGMEM = "Warning: both printer type and motherboard type changed.";
+const char MSG_CHANGED_BOTH_CZ[] PROGMEM = "Varovani: doslo ke zmene typu tiskarny a motherboardu.";
+const char * const MSG_CHANGED_BOTH_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CHANGED_BOTH_EN,
+	MSG_CHANGED_BOTH_CZ
+};
+
+const char MSG_CHANGED_MOTHERBOARD_EN[] PROGMEM = "Warning: motherboard type changed.";
+const char MSG_CHANGED_MOTHERBOARD_CZ[] PROGMEM = "Varovani: doslo ke zmene typu motherboardu.";
+const char * const MSG_CHANGED_MOTHERBOARD_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CHANGED_MOTHERBOARD_EN,
+	MSG_CHANGED_MOTHERBOARD_CZ
+};
+
+const char MSG_CHANGED_PRINTER_EN[] PROGMEM = "Warning: printer type changed.";
+const char MSG_CHANGED_PRINTER_CZ[] PROGMEM = "Varovani: doslo ke zmene typu tiskarny.";
+const char * const MSG_CHANGED_PRINTER_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CHANGED_PRINTER_EN,
+	MSG_CHANGED_PRINTER_CZ
+};
+
 const char MSG_CHANGE_EXTR_EN[] PROGMEM = "Change extruder";
 const char MSG_CHANGE_EXTR_CZ[] PROGMEM = "Zmenit extruder";
 const char * const MSG_CHANGE_EXTR_LANG_TABLE[LANG_NUM] PROGMEM = {

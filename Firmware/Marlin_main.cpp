@@ -41,6 +41,7 @@
   #include "mesh_bed_calibration.h"
 #endif
 
+#include "printers.h"
 #include "ultralcd.h"
 #include "Configuration_prusa.h"
 #include "planner.h"
@@ -935,7 +936,22 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
+uint8_t check_printer_version()
+{
+	uint8_t version_changed = 0;
+	uint16_t printer_type = eeprom_read_word((uint16_t*)EEPROM_PRINTER_TYPE);
+	uint16_t motherboard = eeprom_read_word((uint16_t*)EEPROM_BOARD_TYPE);
 
+	if (printer_type != PRINTER_TYPE) {
+		if (printer_type == 0xffff) eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
+		else version_changed |= 0b10;
+	}
+	if (motherboard != MOTHERBOARD) {
+		if(motherboard == 0xffff) eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD);
+		else version_changed |= 0b01;
+	}
+	return version_changed;
+}
 
 void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 {
@@ -1022,7 +1038,15 @@ void setup()
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
-	bool previous_settings_retrieved = Config_RetrieveSettings(EEPROM_OFFSET);
+	
+	bool previous_settings_retrieved = false; 
+	uint8_t hw_changed = check_printer_version();
+	if (!(hw_changed & 0b10)) { //if printer version wasn't changed, check for eeprom version and retrieve settings from eeprom in case that version wasn't changed
+		previous_settings_retrieved = Config_RetrieveSettings(EEPROM_OFFSET);
+	} 
+	else { //printer version was changed so use default settings 
+		Config_ResetDefault();
+	}
 	SdFatUtil::set_stack_guard(); //writes magic number at the end of static variables to protect against overwriting static memory by stack
 
 	tp_init();    // Initialize temperature loop
@@ -1195,8 +1219,27 @@ void setup()
 
   show_fw_version_warnings();
 
+  switch (hw_changed) { 
+	  //if motherboard or printer type was changed inform user as it can indicate flashing wrong firmware version
+	  //if user confirms with knob, new hw version (printer and/or motherboard) is written to eeprom and message will be not shown next time
+	case(0b01): 
+		lcd_show_fullscreen_message_and_wait_P(MSG_CHANGED_MOTHERBOARD); 
+		eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD); 
+		break;
+	case(0b10): 
+		lcd_show_fullscreen_message_and_wait_P(MSG_CHANGED_PRINTER); 
+		eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE); 
+		break;
+	case(0b11): 
+		lcd_show_fullscreen_message_and_wait_P(MSG_CHANGED_BOTH); 
+		eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
+		eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD); 
+		break;
+	default: break; //no change, show no message
+  }
+
   if (!previous_settings_retrieved) {
-	  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version was changed, inform user that default setting were loaded
+	  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version or printer type was changed, inform user that default setting were loaded
 	  erase_eeprom_section(EEPROM_OFFSET, 156); 							   //erase M500 part of eeprom
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {

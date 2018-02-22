@@ -6,6 +6,7 @@
  *------------------------------------*/
 
 // Printer revision
+#define PRINTER_TYPE PRINTER_MK25
 #define FILAMENT_SIZE "1_75mm_MK25"
 #define NOZZLE_TYPE "E3Dv6full"
 
@@ -157,7 +158,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif
 
 // Extrude mintemp
-#define EXTRUDE_MINTEMP 190
+#define EXTRUDE_MINTEMP 180
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8

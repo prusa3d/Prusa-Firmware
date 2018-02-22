@@ -380,6 +380,7 @@ void temp_compensation_apply();
 void temp_compensation_start();
 void show_fw_version_warnings();
 void erase_eeprom_section(uint16_t offset, uint16_t bytes);
+uint8_t check_printer_version();
 
 #ifdef PINDA_THERMISTOR
 float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
