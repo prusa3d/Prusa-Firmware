@@ -2075,7 +2075,7 @@ void force_high_power_mode(bool start_high_power_section) {
 }
 #endif //TMC2130
 
-bool gcode_M45(bool onlyZ)
+bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 {
 	bool final_result = false;
 	#ifdef TMC2130
@@ -2125,14 +2125,18 @@ bool gcode_M45(bool onlyZ)
 	{
 #endif //TMC2130
 		refresh_cmd_timeout();
-		//if (((degHotend(0) > MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) && (!onlyZ))
-		//{
-		//	lcd_wait_for_cool_down();
-		//}
+		#ifndef STEEL_SHEET
+		if (((degHotend(0) > MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) && (!onlyZ))
+		{
+			lcd_wait_for_cool_down();
+		}
+		#endif //STEEL_SHEET
 		if(!onlyZ)
 		{
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
+			#ifdef STEEL_SHEET
 			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
+			#endif //STEEL_SHEET
 			if(result) lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
 			lcd_show_fullscreen_message_and_wait_P(MSG_CONFIRM_NOZZLE_CLEAN);
 		    lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
@@ -4174,8 +4178,17 @@ void process_commands()
 
     case 45: // M45: Prusa3D: bed skew and offset with manual Z up
     {
+		int8_t verbosity_level = 0;
 		bool only_Z = code_seen('Z');
-		gcode_M45(only_Z);				
+		#ifdef SUPPORT_VERBOSITY
+		if (code_seen('V'))
+		{
+			// Just 'V' without a number counts as V1.
+			char c = strchr_pointer[1];
+			verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
+		}
+		#endif //SUPPORT_VERBOSITY
+		gcode_M45(only_Z, verbosity_level);
     }
 	break;
 
