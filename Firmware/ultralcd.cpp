@@ -2635,7 +2635,7 @@ calibrated:
         lcd_implementation_print_at(0, 3, 1);
         lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
     }else{
-		lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
+		//lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
         lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
         lcd_implementation_print_at(0, 2, 1);
         lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
@@ -3740,7 +3740,7 @@ void lcd_wizard(int state) {
 			break;
 		case 3: //xyz cal.
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_XYZ_CAL);
-			wizard_event = gcode_M45(false);
+			wizard_event = gcode_M45(false, 0);
 			if (wizard_event) state = 5;
 			else end = true;
 			break;
@@ -3748,7 +3748,7 @@ void lcd_wizard(int state) {
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_Z_CAL);
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
 			if (!wizard_event) lcd_show_fullscreen_message_and_wait_P(MSG_PLACE_STEEL_SHEET);
-			wizard_event = gcode_M45(true);
+			wizard_event = gcode_M45(true, 0);
 			if (wizard_event) state = 11; //shipped, no need to set first layer, go to final message directly
 			else end = true;
 			break;
