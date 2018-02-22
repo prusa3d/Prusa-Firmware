@@ -40,6 +40,7 @@ void lcd_mylang();
 #ifdef TMC2130
   static void reset_crash_det(char axis);
   static bool lcd_selfcheck_axis_sg(char axis);
+  static bool lcd_selfcheck_axis(int _axis, int _travel);
 #else
   static bool lcd_selfcheck_endstops();
   static bool lcd_selfcheck_axis(int _axis, int _travel);

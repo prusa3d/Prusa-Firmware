@@ -10,8 +10,6 @@
 #endif
 
 #define TMC2130
-#define PAT9125
-#define UVLO_SUPPORT
 #define UVLO_SUPPORT
 
 #define AMBIENT_THERMISTOR

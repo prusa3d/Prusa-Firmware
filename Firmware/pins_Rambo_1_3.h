@@ -9,8 +9,6 @@
   #error Oops!  Make sure you have 'Arduino Mega 2560 or Rambo' selected from the 'Tools -> Boards' menu.
 #endif
 
-#define PAT9125
-
 #define PINDA_THERMISTOR
 
 #define SWI2C                    // enable software i2c

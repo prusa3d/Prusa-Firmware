@@ -33,9 +33,10 @@ extern int lcd_change_fil_state;
 extern bool fans_check_enabled;
 extern bool filament_autoload_enabled;
 
+#ifdef PAT9125
 extern bool fsensor_not_responding;
-
 extern bool fsensor_enabled;
+#endif //PAT9125
 
 //Function pointer to menu functions.
 typedef void (*menuFunc_t)();
@@ -1465,7 +1466,9 @@ static void lcd_menu_extruder_info()
 {
     int fan_speed_RPM[2];
     
+#ifdef PAT9125
     pat9125_update();
+#endif //PAT9125
     
     fan_speed_RPM[0] = 60*fan_speed[0];
     fan_speed_RPM[1] = 60*fan_speed[1];
@@ -1494,8 +1497,8 @@ static void lcd_menu_extruder_info()
     lcd.print(" RPM");
 #endif
     
-    // Display X and Y difference from Filament sensor
-    
+#ifdef PAT9125
+	// Display X and Y difference from Filament sensor    
     lcd.setCursor(0, 2);
     lcd.print("Fil. Xd:");
     lcd.print(itostr3(pat9125_x));
@@ -1524,6 +1527,7 @@ static void lcd_menu_extruder_info()
     lcd.print("Shut:    ");
     lcd.setCursor(15, 3);
     lcd.print(itostr3(pat9125_s));
+#endif //PAT9125
 
     
     if (lcd_clicked())
@@ -1991,11 +1995,13 @@ void lcd_LoadFilament()
 {
   if (degHotend0() > EXTRUDE_MINTEMP) 
   {
+#ifdef PAT9125
 	  if (filament_autoload_enabled && fsensor_enabled)
 	  {
 		  lcd_show_fullscreen_message_and_wait_P(MSG_AUTOLOADING_ENABLED);
 		  return;
 	  }
+#endif //PAT9125
 	  custom_message = true;
 	  loading_flag = true;
 	  enquecommand_P(PSTR("M701")); //load filament
@@ -3392,6 +3398,7 @@ static void lcd_crash_mode_info2()
 }
 #endif //TMC2130
 
+#ifdef PAT9125
 static void lcd_filament_autoload_info()
 {
     lcd_show_fullscreen_message_and_wait_P(MSG_AUTOLOADING_ONLY_IF_FSENS_ON);
@@ -3401,6 +3408,8 @@ static void lcd_fsensor_fail()
 {
     lcd_show_fullscreen_message_and_wait_P(MSG_FSENS_NOT_RESPONDING);
 }
+#endif //PAT9125
+
 
 static void lcd_silent_mode_set() {
   SilentModeMenu = !SilentModeMenu;
@@ -3454,6 +3463,7 @@ static void lcd_set_lang(unsigned char lang) {
     langsel = LANGSEL_ACTIVE;
 }
 
+#ifdef PAT9125
 static void lcd_fsensor_state_set()
 {
 	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
@@ -3473,6 +3483,8 @@ static void lcd_fsensor_state_set()
 	else lcd_goto_menu(lcd_settings_menu, 7);
     
 }
+#endif //PAT9125
+
 
 #if !SDSORT_USES_RAM
 void lcd_set_degree() {
@@ -3772,7 +3784,9 @@ void lcd_wizard(int state) {
 			state = 7;
 			break;
 		case 7: //load filament 
+#ifdef PAT9125
 			fsensor_block();
+#endif //PAT9125
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_LOAD_FILAMENT);
 			lcd_update_enable(false);
 			lcd_implementation_clear();
@@ -3781,7 +3795,9 @@ void lcd_wizard(int state) {
 			change_extr(0);
 #endif
 			gcode_M701();
+#ifdef PAT9125
 			fsensor_unblock();
+#endif //PAT9125
 			state = 9;
 			break;
 		case 8:
@@ -3875,6 +3891,8 @@ static void lcd_settings_menu()
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
+
+#ifdef PAT9125
 #ifndef DEBUG_DISABLE_FSENSORCHECK
   if (FSensorStateMenu == 0) {
       if (fsensor_not_responding){
@@ -3900,6 +3918,7 @@ static void lcd_settings_menu()
       
   }
 #endif //DEBUG_DISABLE_FSENSORCHECK
+#endif //PAT9125
 
   if (fans_check_enabled == true) {
 	  MENU_ITEM(function, MSG_FANS_CHECK_ON, lcd_set_fan_check);
@@ -5166,9 +5185,11 @@ static void lcd_main_menu()
   else 
   {
 	#ifndef SNMM
+#ifdef PAT9125
 	if ( ((filament_autoload_enabled == true) && (fsensor_enabled == true)))
         MENU_ITEM(function, MSG_AUTOLOAD_FILAMENT, lcd_LoadFilament);
 	else
+#endif //PAT9125
 		MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
 	MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
 	#endif
@@ -5260,6 +5281,7 @@ static void lcd_tune_menu()
   MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
   
+#ifdef PAT9125
 #ifndef DEBUG_DISABLE_FSENSORCHECK
   if (FSensorStateMenu == 0) {
     MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
@@ -5267,6 +5289,7 @@ static void lcd_tune_menu()
     MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
   }
 #endif //DEBUG_DISABLE_FSENSORCHECK
+#endif //PAT9125
 
 #ifdef TMC2130
   if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
@@ -5633,12 +5656,16 @@ static bool lcd_selftest()
 	delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
+#if (defined(FANCHECK) && defined(TACH_0)) 		
 	_result = lcd_selftest_fan_dialog(0);
+#else //defined(TACH_0)
+	_result = lcd_selftest_manual_fan_check(0, false);
+#endif //defined(TACH_0)
 	
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
-#if (defined(TACH_1)) 		
+#if (defined(FANCHECK) && defined(TACH_1)) 		
 		_result = lcd_selftest_fan_dialog(1);
 #else //defined(TACH_1)
 		_result = lcd_selftest_manual_fan_check(1, false);
@@ -5902,7 +5929,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 }
 #endif //TMC2130
 
-#ifndef TMC2130
+//#ifndef TMC2130
 
 static bool lcd_selfcheck_axis(int _axis, int _travel)
 {
@@ -6092,7 +6119,7 @@ static bool lcd_selfcheck_endstops()
 	manage_inactivity(true);
 	return _result;
 }
-#endif //not defined TMC2130
+//#endif //not defined TMC2130
 
 static bool lcd_selfcheck_check_heater(bool _isbed)
 {

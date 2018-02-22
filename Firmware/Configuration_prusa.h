@@ -164,6 +164,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
 
+#define PAT9125
+#define FANCHECK
+
 
 /*------------------------------------
  LOAD/UNLOAD FILAMENT SETTINGS
