@@ -5895,6 +5895,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lcd_wait_interact();
 		//load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
+
 #ifdef PAT9125
 		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_start();
 #endif //PAT9125
@@ -5924,6 +5925,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 #endif //PAT9125
 		//WRITE(BEEPER, LOW);
 		KEEPALIVE_STATE(IN_HANDLER);
+
 
 #ifdef SNMM
 		display_loading();
@@ -6781,6 +6783,22 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 		if (fsensor_autoload_enabled)
 			fsensor_autoload_check_stop();
 #endif //PAT9125
+
+#ifdef SAFETYTIMER
+		static uint32_t safety_timer = 0;
+		if (degTargetBed() || degTargetHotend(0))
+		{
+			if ((safety_timer == 0) || IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL))
+				safety_timer = millis();
+			else if ((safety_timer + (15*60*1000)) < millis())
+			{
+				setTargetBed(0);
+				setTargetHotend(0, 0);
+				safety_timer = 0;
+			}
+		}
+#endif //SAFETYTIMER
+
 
 #if defined(KILL_PIN) && KILL_PIN > -1
 	static int killCount = 0;   // make the inactivity button a bit less responsive
