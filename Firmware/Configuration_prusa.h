@@ -18,6 +18,9 @@
 // Electronics
 #define MOTHERBOARD BOARD_RAMBO_MINI_1_3
 
+#define HEATBED_V2
+#define STEEL_SHEET
+#define TACH0PULLUP
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
@@ -459,12 +462,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
 
-#define HEATBED_V2
-#define STEEL_SHEET
-
 #define M600_TIMEOUT 600  //seconds
-
-#define TACH0PULLUP
 
 //#define SUPPORT_VERBOSITY
 
