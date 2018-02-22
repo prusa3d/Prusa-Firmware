@@ -135,6 +135,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
 #endif /* DEBUG_BUILD */
 
+//#define EXPERIMENTAL_FEATURES
 
 /*------------------------------------
  TMC2130 default settings
