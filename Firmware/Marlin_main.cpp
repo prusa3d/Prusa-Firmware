@@ -2120,7 +2120,7 @@ void force_high_power_mode(bool start_high_power_section) {
 }
 #endif //TMC2130
 
-bool gcode_M45(bool onlyZ, int8_t verbosity_level);
+bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 {
 	bool final_result = false;
 	#ifdef TMC2130
