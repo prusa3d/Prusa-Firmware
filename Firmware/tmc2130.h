@@ -119,6 +119,6 @@ extern void tmc2130_goto_step(uint8_t axis, uint8_t step, uint8_t dir, uint16_t 
 extern void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream);
 extern void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac200);
 
-extern void tmc2130_home_calibrate(uint8_t axis);
+extern bool tmc2130_home_calibrate(uint8_t axis);
 
 #endif //TMC2130_H

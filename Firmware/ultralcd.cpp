@@ -3953,6 +3953,7 @@ static void lcd_selftest_()
 	lcd_selftest();
 }
 
+#ifdef EXPERIMENTAL_FEATURES
 
 static void lcd_experimantal_menu();
 static void lcd_homing_accuracy_menu();
@@ -4164,6 +4165,7 @@ static void lcd_experimantal_menu()
 	MENU_ITEM(submenu, PSTR("uStep linearity"), lcd_ustep_linearity_menu);
 	END_MENU();
 }
+#endif //EXPERIMENTAL_FEATURES
 
 
 static void lcd_calibration_menu()
@@ -5375,7 +5377,10 @@ static void lcd_main_menu()
 	#endif
 	MENU_ITEM(submenu, MSG_SETTINGS, lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);
+
+#ifdef EXPERIMENTAL_FEATURES
 	MENU_ITEM(submenu, PSTR("Experimantal"), lcd_experimantal_menu);
+#endif //EXPERIMENTAL_FEATURES
   }
 
   if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
@@ -5940,10 +5945,13 @@ static bool lcd_selftest()
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(13, 0, 2, true, 0);
-		tmc2130_home_calibrate(X_AXIS);
+		bool bres = tmc2130_home_calibrate(X_AXIS);
 		_progress = lcd_selftest_screen(13, 1, 2, true, 0);
-		tmc2130_home_calibrate(Y_AXIS);
+		bres &= tmc2130_home_calibrate(Y_AXIS);
 		_progress = lcd_selftest_screen(13, 2, 2, true, 0);
+		if (bres)
+			eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED, 1);
+		_result = bres;
 	}
 
 	if (_result)

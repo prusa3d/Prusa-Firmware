@@ -672,10 +672,10 @@ uint16_t tmc2130_get_res(uint8_t axis)
 void tmc2130_set_res(uint8_t axis, uint16_t res)
 {
 	tmc2130_mres[axis] = tmc2130_usteps2mres(res);
-	uint32_t u = micros();
+//	uint32_t u = micros();
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
-	u = micros() - u;
-	printf_P(PSTR("tmc2130_setup_chopper %c %lu us"), "XYZE"[axis], u);
+//	u = micros() - u;
+//	printf_P(PSTR("tmc2130_setup_chopper %c %lu us"), "XYZE"[axis], u);
 }
 
 uint8_t tmc2130_get_pwr(uint8_t axis)
@@ -948,7 +948,7 @@ uint8_t clusterize_uint8(uint8_t* data, uint8_t size, uint8_t* ccnt, uint8_t* cv
 	return ++cl;
 }
 
-void tmc2130_home_calibrate(uint8_t axis)
+bool tmc2130_home_calibrate(uint8_t axis)
 {
 	uint8_t step[16];
 	uint8_t cnt[16];
@@ -967,6 +967,7 @@ void tmc2130_home_calibrate(uint8_t axis)
 	printf_P(PSTR("result value: %d\n"), tmc2130_home_origin[axis]);
 	if (axis == X_AXIS) eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_X_ORIGIN, tmc2130_home_origin[X_AXIS]);
 	else if (axis == Y_AXIS) eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_ORIGIN, tmc2130_home_origin[Y_AXIS]);
+	return true;
 }
 
 #endif //TMC2130
