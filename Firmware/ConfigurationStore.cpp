@@ -472,7 +472,7 @@ void Config_ResetDefault()
 	filament_size[2] = DEFAULT_NOMINAL_FILAMENT_DIA;
 #endif
 #endif
-	calculate_volumetric_multipliers();
+	calculate_extruder_multipliers();
 
 SERIAL_ECHO_START;
 SERIAL_ECHOLNPGM("Hardcoded Default Settings Loaded");
