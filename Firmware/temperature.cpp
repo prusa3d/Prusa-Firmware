@@ -471,7 +471,7 @@ void checkFanSpeed()
 	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
 	else fan_speed_errors[0] = 0;
 
-	if ((fan_speed[1] == 0) && (block_buffer[block_buffer_tail].fan_speed > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
+	if ((fan_speed[1] == 0) && ((blocks_queued()?block_buffer[block_buffer_tail].fan_speed:fanSpeed) > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
 	else fan_speed_errors[1] = 0;
 
 	if ((fan_speed_errors[0] > 5) && fans_check_enabled) {
