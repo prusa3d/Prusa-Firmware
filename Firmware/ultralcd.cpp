@@ -5938,7 +5938,7 @@ static bool lcd_selftest()
 		_result = lcd_selfcheck_axis(2, Z_MAX_POS);
 		if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) {
 			enquecommand_P(PSTR("G28 W"));
-			enquecommand_P(PSTR("G1 Z15"));
+			enquecommand_P(PSTR("G1 Z15 F1000"));
 		}
 	}
 
