@@ -97,18 +97,21 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 
 #ifdef LIN_ADVANCE
 
-  uint16_t ADV_NEVER = 65535;
+  static uint32_t LA_decelerate_after;
+  
+  static const uint16_t ADV_NEVER = 65535;
 
   static uint16_t nextMainISR = 0;
   static uint16_t nextAdvanceISR = ADV_NEVER;
   static uint16_t eISR_Rate = ADV_NEVER;
+  static uint16_t current_adv_steps = 0;
+  static uint16_t final_adv_steps;
+  static uint16_t max_adv_steps;
 
-  static volatile int e_steps; //Extrusion steps to be executed by the stepper
-  static int final_estep_rate; //Speed of extruder at cruising speed
-  static int current_estep_rate; //The current speed of the extruder
-  static int current_adv_steps; //The current pretension of filament expressed in steps
+  static volatile int8_t e_steps = 0;
+  
+  static bool use_advance_lead;
 
-  #define ADV_RATE(T, L) (e_steps ? (T) * (L) / abs(e_steps) : ADV_NEVER)
   #define _NEXT_ISR(T) nextMainISR = T
 
 #else
@@ -338,9 +341,10 @@ FORCE_INLINE void trapezoid_generator_reset() {
   _NEXT_ISR(acceleration_time);
   
   #ifdef LIN_ADVANCE
-    if (current_block->use_advance_lead) {
-      current_estep_rate = ((unsigned long)acc_step_rate * current_block->abs_adv_steps_multiplier8) >> 17;
-      final_estep_rate = (current_block->nominal_rate * current_block->abs_adv_steps_multiplier8) >> 17;
+    if ((use_advance_lead = current_block->use_advance_lead)) {
+      LA_decelerate_after = current_block->decelerate_after;
+      final_adv_steps = current_block->final_adv_steps;
+      max_adv_steps = current_block->max_adv_steps;
     }
   #endif
 }
@@ -647,16 +651,6 @@ void isr() {
       step_events_completed += 1;
       if(step_events_completed >= current_block->step_event_count) break;
     }
-    
-    #ifdef LIN_ADVANCE
-      if (current_block->use_advance_lead) {
-        const int delta_adv_steps = current_estep_rate - current_adv_steps;
-        current_adv_steps += delta_adv_steps;
-        e_steps += delta_adv_steps;
-      }
-      // If we have esteps to execute, fire the next advance_isr "now"
-      if (e_steps) nextAdvanceISR = 0;
-    #endif
   
     // Calculare new timer value
     unsigned short timer;
@@ -677,9 +671,15 @@ void isr() {
       
       #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-          current_estep_rate = ((uint32_t)acc_step_rate * current_block->abs_adv_steps_multiplier8) >> 17;
+          if (step_events_completed == step_loops || (e_steps && eISR_Rate != current_block->advance_speed)) {
+            nextAdvanceISR = 0; // Wake up eISR on first acceleration loop and fire ISR if final adv_rate is reached
+            eISR_Rate = current_block->advance_speed;
+          }
         }
-        eISR_Rate = ADV_RATE(timer, step_loops);
+        else {
+          eISR_Rate = ADV_NEVER;
+          if (e_steps) nextAdvanceISR = 0;
+        }
       #endif
     }
     else if (step_events_completed > (unsigned long int)current_block->decelerate_after) {
@@ -703,17 +703,21 @@ void isr() {
       
       #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-          current_estep_rate = ((uint32_t)step_rate * current_block->abs_adv_steps_multiplier8) >> 17;
+          if (step_events_completed <= (uint32_t)current_block->decelerate_after + step_loops || (e_steps && eISR_Rate != current_block->advance_speed)) {
+            nextAdvanceISR = 0; // Wake up eISR on first deceleration loop
+            eISR_Rate = current_block->advance_speed;
+          }
         }
-        eISR_Rate = ADV_RATE(timer, step_loops);
+        else {
+          eISR_Rate = ADV_NEVER;
+          if (e_steps) nextAdvanceISR = 0;
+        }
       #endif
     }
     else {
       #ifdef LIN_ADVANCE
-        if (current_block->use_advance_lead)
-          current_estep_rate = final_estep_rate;
-
-        eISR_Rate = ADV_RATE(OCR1A_nominal, step_loops_nominal);
+        // If we have esteps to execute, fire the next advance_isr "now"
+        if (e_steps && eISR_Rate != current_block->advance_speed) nextAdvanceISR = 0;
       #endif
       
       _NEXT_ISR(OCR1A_nominal);
@@ -735,6 +739,25 @@ void isr() {
 
   void advance_isr() {
 
+    if (use_advance_lead) {
+      if (step_events_completed > LA_decelerate_after && current_adv_steps > final_adv_steps) {
+        e_steps--;
+        current_adv_steps--;
+        nextAdvanceISR = eISR_Rate;
+      }
+      else if (step_events_completed < LA_decelerate_after && current_adv_steps < max_adv_steps) {
+        e_steps++;
+        current_adv_steps++;
+        nextAdvanceISR = eISR_Rate;
+      }
+      else {
+        nextAdvanceISR = ADV_NEVER;
+        eISR_Rate = ADV_NEVER;
+      }
+    }
+    else
+      nextAdvanceISR = ADV_NEVER;
+    
     if (e_steps) {
       bool dir =
       #ifdef SNMM
@@ -745,16 +768,12 @@ void isr() {
       ? INVERT_E0_DIR : !INVERT_E0_DIR; //If we have SNMM, reverse every second extruder.
       WRITE(E0_DIR_PIN, dir);
   
-      for (uint8_t i = step_loops; e_steps && i--;) {
+      while (e_steps) {
         WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
         e_steps < 0 ? ++e_steps : --e_steps;
         WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
       }
-	}
-	else{
-		eISR_Rate = ADV_NEVER;
-	}
-	nextAdvanceISR = eISR_Rate;
+  	}
   }
 
   void advance_isr_scheduler() {
