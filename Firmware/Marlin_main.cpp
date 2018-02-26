@@ -1429,8 +1429,8 @@ void host_keepalive() {
      switch (busy_state) {
       case IN_HANDLER:
       case IN_PROCESS:
-        SERIAL_ECHO_START;
-        SERIAL_ECHOLNPGM("busy: processing");
+        //SERIAL_ECHO_START;
+        //SERIAL_ECHOLNPGM("busy: processing");
         break;
       case PAUSED_FOR_USER:
         SERIAL_ECHO_START;
@@ -2274,6 +2274,29 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	FORCE_HIGH_POWER_END;
 #endif // TMC2130
 	return final_result;
+}
+
+void gcode_M114()
+{
+	SERIAL_PROTOCOLPGM("X:");
+	SERIAL_PROTOCOL(current_position[X_AXIS]);
+	SERIAL_PROTOCOLPGM(" Y:");
+	SERIAL_PROTOCOL(current_position[Y_AXIS]);
+	SERIAL_PROTOCOLPGM(" Z:");
+	SERIAL_PROTOCOL(current_position[Z_AXIS]);
+	SERIAL_PROTOCOLPGM(" E:");
+	SERIAL_PROTOCOL(current_position[E_AXIS]);
+
+	SERIAL_PROTOCOLRPGM(MSG_COUNT_X);
+	SERIAL_PROTOCOL(float(st_get_position(X_AXIS)) / axis_steps_per_unit[X_AXIS]);
+	SERIAL_PROTOCOLPGM(" Y:");
+	SERIAL_PROTOCOL(float(st_get_position(Y_AXIS)) / axis_steps_per_unit[Y_AXIS]);
+	SERIAL_PROTOCOLPGM(" Z:");
+	SERIAL_PROTOCOL(float(st_get_position(Z_AXIS)) / axis_steps_per_unit[Z_AXIS]);
+	SERIAL_PROTOCOLPGM(" E:");
+	SERIAL_PROTOCOL(float(st_get_position(E_AXIS)) / axis_steps_per_unit[E_AXIS]);
+
+	SERIAL_PROTOCOLLN("");
 }
 
 void gcode_M701()
@@ -4246,7 +4269,7 @@ void process_commands()
 		KEEPALIVE_STATE(IN_HANDLER);
         break;
 
-#if 0
+#if 1
     case 48: // M48: scan the bed induction sensor points, print the sensor trigger coordinates to the serial line for visualization on the PC.
     {
         // Disable the default update procedure of the display. We will do a modal dialog.
@@ -4908,25 +4931,7 @@ Sigma_Exit:
       lcd_setstatus(strchr_pointer + 5);
       break;*/
     case 114: // M114
-      SERIAL_PROTOCOLPGM("X:");
-      SERIAL_PROTOCOL(current_position[X_AXIS]);
-      SERIAL_PROTOCOLPGM(" Y:");
-      SERIAL_PROTOCOL(current_position[Y_AXIS]);
-      SERIAL_PROTOCOLPGM(" Z:");
-      SERIAL_PROTOCOL(current_position[Z_AXIS]);
-      SERIAL_PROTOCOLPGM(" E:");
-      SERIAL_PROTOCOL(current_position[E_AXIS]);
-
-      SERIAL_PROTOCOLRPGM(MSG_COUNT_X);
-      SERIAL_PROTOCOL(float(st_get_position(X_AXIS))/axis_steps_per_unit[X_AXIS]);
-      SERIAL_PROTOCOLPGM(" Y:");
-      SERIAL_PROTOCOL(float(st_get_position(Y_AXIS))/axis_steps_per_unit[Y_AXIS]);
-      SERIAL_PROTOCOLPGM(" Z:");
-      SERIAL_PROTOCOL(float(st_get_position(Z_AXIS))/axis_steps_per_unit[Z_AXIS]);
-      SERIAL_PROTOCOLPGM(" E:");
-      SERIAL_PROTOCOL(float(st_get_position(E_AXIS))/axis_steps_per_unit[E_AXIS]);
-
-      SERIAL_PROTOCOLLN("");
+		gcode_M114();
       break;
     case 120: // M120
       enable_endstops(false) ;

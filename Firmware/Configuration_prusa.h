@@ -60,7 +60,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
 #define Y_MIN_POS -4
-#define Z_MAX_POS 200
+#define Z_MAX_POS 210
 #define Z_MIN_POS 0.15
 
 // Canceled home position

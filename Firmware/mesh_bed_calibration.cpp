@@ -975,13 +975,26 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
             }
         }
         endloop:
-//        SERIAL_ECHOLN("First hit");
+        SERIAL_ECHO("First hit");
+		SERIAL_ECHO("- X: ");
+		MYSERIAL.print(current_position[X_AXIS]);
+		SERIAL_ECHO("; Y: ");
+		MYSERIAL.print(current_position[Y_AXIS]);
+		SERIAL_ECHO("; Z: ");
+		MYSERIAL.println(current_position[Z_AXIS]);
+
+		//scan 
+		//if (current_position[X_AXIS] > 100 && current_position[Y_AXIS] > 100) {
+		//	scan();
+		//}
 
         // we have to let the planner know where we are right now as it is not where we said to go.
         update_current_position_xyz();
 
         // Search in this plane for the first hit. Zig-zag first in X, then in Y axis.
         for (int8_t iter = 0; iter < 3; ++ iter) {
+			SERIAL_ECHOPGM("iter: ");
+			MYSERIAL.println(iter);
             if (iter > 0) {
                 // Slightly lower the Z axis to get a reliable trigger.
                 current_position[Z_AXIS] -= 0.02f;
@@ -998,7 +1011,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
             found = false;
             for (i = 0, dir_positive = true; i < (nsteps_y - 1); current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++ i, dir_positive = ! dir_positive) {
                 go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
-                if (endstop_z_hit_on_purpose()) {
+                if (endstop_z_hit_on_purpose()) {					
                     found = true;
                     break;
                 }
@@ -1368,7 +1381,7 @@ canceled:
 // Searching in a zig-zag movement in a plane for the maximum width of the response.
 // This function may set the current_position[Y_AXIS] below Y_MIN_POS, if the function succeeded.
 // If this function failed, the Y coordinate will never be outside the working space.
-#define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS (4.f)
+#define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS (8.f)
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y (0.1f)
 inline bool improve_bed_induction_sensor_point3(int verbosity_level)
 {	
@@ -2462,6 +2475,10 @@ bool sample_mesh_and_store_reference()
     return true;
 }
 
+void scan() {
+	scan_bed_induction_sensor_point();
+}
+
 bool scan_bed_induction_points(int8_t verbosity_level)
 {
     // Don't let the manage_inactivity() function remove power from the motors.
@@ -2490,7 +2507,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
     bool endstop_z_enabled = enable_z_endstop(false);
 
     // Collect a matrix of 9x9 points.
-    for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
+    for (int8_t mesh_point = 2; mesh_point < 3; ++ mesh_point) {
         // Don't let the manage_inactivity() function remove power from the motors.
         refresh_cmd_timeout();
 
@@ -2501,14 +2518,14 @@ bool scan_bed_induction_points(int8_t verbosity_level)
         go_to_current(homing_feedrate[Z_AXIS]/60);
         // Go to the measurement point.
         // Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
-        current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points+mesh_point*2) + vec_y[0] * pgm_read_float(bed_ref_points+mesh_point*2+1) + cntr[0];
-        current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points+mesh_point*2) + vec_y[1] * pgm_read_float(bed_ref_points+mesh_point*2+1) + cntr[1];
+        current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points_4+mesh_point*2) + vec_y[0] * pgm_read_float(bed_ref_points_4+mesh_point*2+1) + cntr[0];
+        current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points_4+mesh_point*2) + vec_y[1] * pgm_read_float(bed_ref_points_4+mesh_point*2+1) + cntr[1];
         // The calibration points are very close to the min Y.
         if (current_position[Y_AXIS] < Y_MIN_POS_FOR_BED_CALIBRATION)
             current_position[Y_AXIS] = Y_MIN_POS_FOR_BED_CALIBRATION;
         go_to_current(homing_feedrate[X_AXIS]/60);
         find_bed_induction_sensor_point_z();
-        scan_bed_induction_sensor_point();
+		scan_bed_induction_sensor_point();
     }
     // Don't let the manage_inactivity() function remove power from the motors.
     refresh_cmd_timeout();
