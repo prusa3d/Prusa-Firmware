@@ -2096,7 +2096,9 @@ void gcode_M768() {
   inline void gcode_M900() {
     st_synchronize();
 
-    const float newK = code_seen('K') ? code_value_float() : -1;
+    float newK = code_seen('K') ? code_value_float() : -1;
+    // [Filter older style K-factor - Don't do anything dumb]
+    if (newK > 10.0) newK = LIN_ADVANCE_K;
     if (newK >= 0) extruder_advance_K = newK;
 
     SERIAL_ECHO_START;

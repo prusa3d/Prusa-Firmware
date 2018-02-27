@@ -39,7 +39,6 @@
 //===========================================================================
 block_t *current_block;  // A pointer to the block currently being traced
 
-
 //===========================================================================
 //=============================private variables ============================
 //===========================================================================
@@ -345,7 +344,7 @@ ISR(TIMER1_COMPA_vect) {
 
 void isr() {
   #ifndef LIN_ADVANCE
-    // Disable Timer0 ISRs and enable global ISR again to capture UART events (incoming chars)
+    // Disable Timer1 ISRs and enable global ISR again to capture UART events (incoming chars)
     DISABLE_TEMPERATURE_INTERRUPT(); // Temperature ISR
     DISABLE_STEPPER_DRIVER_INTERRUPT();
     sei();
@@ -726,6 +725,10 @@ void isr() {
   }
 
   #ifndef LIN_ADVANCE
+    // Don't run the ISR faster than possible
+    if (OCR1A < TCNT1 + 16)
+      OCR1A = TCNT1 + 16;
+
     ENABLE_ISRs();	// Re-enable ISRs
   #endif  
 }
@@ -775,7 +778,7 @@ void isr() {
   }
 
   void advance_isr_scheduler() {
-    // Disable Timer0 ISRs and enable global ISR again to capture UART events (incoming chars)
+    // Disable Timer1 ISRs and enable global ISR again to capture UART events (incoming chars)
     DISABLE_TEMPERATURE_INTERRUPT(); // Temperature ISR
     DISABLE_STEPPER_DRIVER_INTERRUPT();
     sei();
@@ -806,7 +809,8 @@ void isr() {
     }
 
     // Don't run the ISR faster than possible
-    if (OCR1A < TCNT1 + 16) OCR1A = TCNT1 + 16;
+    if (OCR1A < TCNT1 + 16)
+      OCR1A = TCNT1 + 16;
 
     // Restore original ISR settings
     ENABLE_ISRs();

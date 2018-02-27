@@ -28,7 +28,7 @@ install:
 
 script:
   - GIT_VERSION=$(git rev-parse --short HEAD)
-  - VARIANTS=$(ls Firmware/variants/1_75_MK2*)
+  - VARIANTS=$(find Firmware/variants -name "1_75mm_MK2*" -printf "%f\n")
   - for VARIANT in $VARIANTS; do
       cp Firmware/variants/${VARIANT} Firmware/Configuration_prusa.h ;
       arduino --pref build.path=. --verify --verbose-build --board rambo:avr:rambo $PWD/Firmware/Firmware.ino ;
