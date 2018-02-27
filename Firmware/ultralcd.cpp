@@ -5842,7 +5842,7 @@ static void lcd_selftest_v()
 	(void)lcd_selftest();
 }
 
-static bool lcd_selftest()
+bool lcd_selftest()
 {
 	int _progress = 0;
 	bool _result = true;

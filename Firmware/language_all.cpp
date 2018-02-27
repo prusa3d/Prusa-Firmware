@@ -779,6 +779,13 @@ const char * const MSG_FOLLOW_CALIBRATION_FLOW_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_FOLLOW_CALIBRATION_FLOW_CZ
 };
 
+const char MSG_FORCE_SELFTEST_EN[] PROGMEM = "Selftest will be run to calibrate accurate sensorless rehoming.";
+const char MSG_FORCE_SELFTEST_CZ[] PROGMEM = "Pro kalibraci presneho rehomovani bude nyni spusten selftest.";
+const char * const MSG_FORCE_SELFTEST_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_FORCE_SELFTEST_EN,
+	MSG_FORCE_SELFTEST_CZ
+};
+
 const char MSG_FREE_MEMORY_EN[] PROGMEM = " Free Memory: ";
 const char * const MSG_FREE_MEMORY_LANG_TABLE[1] PROGMEM = {
 	MSG_FREE_MEMORY_EN

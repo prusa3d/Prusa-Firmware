@@ -35,7 +35,7 @@ void lcd_mylang();
   bool lcd_detected(void);
 
   static void lcd_selftest_v();
-  static bool lcd_selftest();
+  extern bool lcd_selftest();
   static bool lcd_selfcheck_endstops();
 
 #ifdef TMC2130
