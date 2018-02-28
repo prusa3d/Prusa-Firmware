@@ -983,6 +983,10 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 		SERIAL_ECHO("; Z: ");
 		MYSERIAL.println(current_position[Z_AXIS]);
 
+		lcd_show_fullscreen_message_and_wait_P(PSTR("First hit"));
+		lcd_update_enable(true);
+
+
 		//scan 
 		//if (current_position[X_AXIS] > 100 && current_position[Y_AXIS] > 100) {
 		//	scan();
@@ -1011,6 +1015,8 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
             found = false;
             for (i = 0, dir_positive = true; i < (nsteps_y - 1); current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++ i, dir_positive = ! dir_positive) {
                 go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
+				SERIAL_ECHOPGM("current position Z: ");
+				MYSERIAL.println(current_position[Z_AXIS]);
                 if (endstop_z_hit_on_purpose()) {					
                     found = true;
                     break;
@@ -1018,7 +1024,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
             }
             update_current_position_xyz();
             if (! found) {
-//                SERIAL_ECHOLN("Search in Y - not found");
+                SERIAL_ECHOLN("Search in Y - not found");
                 continue;
             }
 //            SERIAL_ECHOLN("Search in Y - found");
@@ -1031,14 +1037,16 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
             found = false;
             for (i = 0, dir_positive = true; i < (nsteps_y - 1); current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++ i, dir_positive = ! dir_positive) {
                 go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
-                if (endstop_z_hit_on_purpose()) {
+				SERIAL_ECHOPGM("current position Z: ");
+				MYSERIAL.println(current_position[Z_AXIS]);
+				if (endstop_z_hit_on_purpose()) {
                     found = true;
                     break;
                 }
             }
             update_current_position_xyz();
             if (! found) {
-//                SERIAL_ECHOLN("Search in Y2 - not found");
+                SERIAL_ECHOLN("Search in Y2 - not found");
                 continue;
             }
 //            SERIAL_ECHOLN("Search in Y2 - found");
