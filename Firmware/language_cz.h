@@ -406,3 +406,4 @@
 #define MSG_FW_VERSION_ALPHA		 "Pouzivate alpha verzi firmwaru. Jedna se o vyvojovou verzi. Pouzivani teto verze firmware neni doporuceno a muze zpusobit poskozeni tiskarny." 
 #define MSG_FW_VERSION_BETA			 "Pouzivate beta verzi firmwaru. Jedna se o vyvojovou verzi. Pouzivani teto verze firmware neni doporuceno a muze zpusobit poskozeni tiskarny."
 #define MSG_FW_VERSION_RC			 "Tato verze firmware je release candidate. Nektere z funkci nemusi pracovat spolehlive."
+#define MSG_FORCE_SELFTEST			 "Pro kalibraci presneho rehomovani bude nyni spusten selftest."
