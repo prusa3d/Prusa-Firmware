@@ -17,7 +17,7 @@ extern bool tmc2130_sg_stop_on_crash;
 extern uint8_t tmc2130_sg_crash; //crash mask
 
 extern uint8_t tmc2130_sg_meassure;
-extern uint16_t tmc2130_sg_meassure_cnt;
+extern uint32_t tmc2130_sg_meassure_cnt;
 extern uint32_t tmc2130_sg_meassure_val;
 
 #define TMC2130_MODE_NORMAL 0
