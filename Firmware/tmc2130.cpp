@@ -50,7 +50,7 @@ uint8_t tmc2130_sg_thr_home[4] = {3, 3, TMC2130_SG_THRS_Z, TMC2130_SG_THRS_E};
 uint8_t sg_homing_axes_mask = 0x00;
 
 uint8_t tmc2130_sg_meassure = 0xff;
-uint16_t tmc2130_sg_meassure_cnt = 0;
+uint32_t tmc2130_sg_meassure_cnt = 0;
 uint32_t tmc2130_sg_meassure_val = 0;
 
 uint8_t tmc2130_home_enabled = 0;
