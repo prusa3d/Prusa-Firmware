@@ -131,7 +131,12 @@ private:
 
 #endif // SDCARD_SORT_ALPHA
 
+#ifdef DEBUG_SD_SPEED_TEST
+public:
+#endif DEBUG_SD_SPEED_TEST
   Sd2Card card;
+
+private:
   SdVolume volume;
   SdFile file;
   #define SD_PROCEDURE_DEPTH 1

@@ -238,6 +238,9 @@ static void menu_action_setlang(unsigned char lang);
 static void menu_action_sdfile(const char* filename, char* longFilename);
 static void menu_action_sddirectory(const char* filename, char* longFilename);
 static void menu_action_setting_edit_bool(const char* pstr, bool* ptr);
+static void menu_action_setting_edit_wfac(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
+static void menu_action_setting_edit_mres(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
+static void menu_action_setting_edit_byte3(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
 static void menu_action_setting_edit_int3(const char* pstr, int* ptr, int minValue, int maxValue);
 static void menu_action_setting_edit_float3(const char* pstr, float* ptr, float minValue, float maxValue);
 static void menu_action_setting_edit_float32(const char* pstr, float* ptr, float minValue, float maxValue);
@@ -1592,13 +1595,17 @@ static void lcd_menu_fails_stats()
 
 
 #ifdef DEBUG_BUILD
+#ifdef DEBUG_STACK_MONITOR
 extern uint16_t SP_min;
 extern char* __malloc_heap_start;
 extern char* __malloc_heap_end;
+#endif //DEBUG_STACK_MONITOR
 
 static void lcd_menu_debug()
 {
+#ifdef DEBUG_STACK_MONITOR
 	fprintf_P(lcdout, PSTR(ESC_H(1,1)"RAM statistics"ESC_H(5,1)"SP_min: 0x%04x"ESC_H(1,2)"heap_start: 0x%04x"ESC_H(3,3)"heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
+#endif //DEBUG_STACK_MONITOR
 
 	if (lcd_clicked())
     {
@@ -3995,6 +4002,221 @@ static void lcd_selftest_()
 	lcd_selftest();
 }
 
+#ifdef EXPERIMENTAL_FEATURES
+
+static void lcd_experimantal_menu();
+static void lcd_homing_accuracy_menu();
+
+static void lcd_accurate_home_set()
+{
+	tmc2130_home_enabled = tmc2130_home_enabled?0:1;
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED, tmc2130_home_enabled);
+}
+
+static void lcd_homing_accuracy_menu_advanced_reset()
+{
+	tmc2130_home_bsteps[X_AXIS] = 48;
+	tmc2130_home_fsteps[X_AXIS] = 48;
+	tmc2130_home_bsteps[Y_AXIS] = 48;
+	tmc2130_home_fsteps[Y_AXIS] = 48;
+}
+
+static void lcd_homing_accuracy_menu_advanced_save()
+{
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_X_ORIGIN, tmc2130_home_origin[X_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_X_BSTEPS, tmc2130_home_bsteps[X_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_X_FSTEPS, tmc2130_home_fsteps[X_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_ORIGIN, tmc2130_home_origin[Y_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_BSTEPS, tmc2130_home_bsteps[Y_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_FSTEPS, tmc2130_home_fsteps[Y_AXIS]);
+}
+
+static void lcd_homing_accuracy_menu_advanced_back()
+{
+	lcd_homing_accuracy_menu_advanced_save();
+	currentMenu = lcd_homing_accuracy_menu;
+	lcd_homing_accuracy_menu();
+}
+
+static void lcd_homing_accuracy_menu_advanced()
+{
+	lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	START_MENU();
+	MENU_ITEM(back, PSTR("Homing accuracy"), lcd_homing_accuracy_menu_advanced_back);
+	MENU_ITEM(function, PSTR("Reset def. steps"), lcd_homing_accuracy_menu_advanced_reset);
+	MENU_ITEM_EDIT(byte3, PSTR("X-origin"),  &tmc2130_home_origin[X_AXIS],  0, 63);
+	MENU_ITEM_EDIT(byte3, PSTR("Y-origin"),  &tmc2130_home_origin[Y_AXIS],  0, 63);
+	MENU_ITEM_EDIT(byte3, PSTR("X-bsteps"),  &tmc2130_home_bsteps[X_AXIS],  0, 128);
+	MENU_ITEM_EDIT(byte3, PSTR("Y-bsteps"),  &tmc2130_home_bsteps[Y_AXIS],  0, 128);
+	MENU_ITEM_EDIT(byte3, PSTR("X-fsteps"),  &tmc2130_home_fsteps[X_AXIS],  0, 128);
+	MENU_ITEM_EDIT(byte3, PSTR("Y-fsteps"),  &tmc2130_home_fsteps[Y_AXIS],  0, 128);
+	END_MENU();
+}
+
+static void lcd_homing_accuracy_menu()
+{
+	START_MENU();
+	MENU_ITEM(back, PSTR("Experimental"), lcd_experimantal_menu);
+	MENU_ITEM(function, tmc2130_home_enabled?PSTR("Accur. homing  On"):PSTR("Accur. homing Off"), lcd_accurate_home_set);
+    MENU_ITEM(gcode, PSTR("Calibrate X"), PSTR("G28XC"));
+    MENU_ITEM(gcode, PSTR("Calibrate Y"), PSTR("G28YC"));
+	MENU_ITEM(submenu, PSTR("Advanced"), lcd_homing_accuracy_menu_advanced);
+	END_MENU();
+}
+
+static void lcd_ustep_resolution_menu_save()
+{
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_X_MRES, tmc2130_mres[X_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_Y_MRES, tmc2130_mres[Y_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_Z_MRES, tmc2130_mres[Z_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_E_MRES, tmc2130_mres[E_AXIS]);
+}
+
+static void lcd_ustep_resolution_menu_back()
+{
+	float tmp1[]=DEFAULT_AXIS_STEPS_PER_UNIT;
+	bool changed = false;
+	if (tmc2130_mres[X_AXIS] != eeprom_read_byte((uint8_t*)EEPROM_TMC2130_X_MRES))
+	{
+		axis_steps_per_unit[X_AXIS] = tmp1[X_AXIS] * tmc2130_mres2usteps(tmc2130_mres[X_AXIS]) / TMC2130_USTEPS_XY;
+		changed = true;
+	}
+	if (tmc2130_mres[Y_AXIS] != eeprom_read_byte((uint8_t*)EEPROM_TMC2130_Y_MRES))
+	{
+		axis_steps_per_unit[Y_AXIS] = tmp1[Y_AXIS] * tmc2130_mres2usteps(tmc2130_mres[Y_AXIS]) / TMC2130_USTEPS_XY;
+		changed = true;
+	}
+	if (tmc2130_mres[Z_AXIS] != eeprom_read_byte((uint8_t*)EEPROM_TMC2130_Z_MRES))
+	{
+		axis_steps_per_unit[Z_AXIS] = tmp1[Z_AXIS] * tmc2130_mres2usteps(tmc2130_mres[Z_AXIS]) / TMC2130_USTEPS_Z;
+		changed = true;
+	}
+	if (tmc2130_mres[E_AXIS] != eeprom_read_byte((uint8_t*)EEPROM_TMC2130_E_MRES))
+	{
+		axis_steps_per_unit[E_AXIS] = tmp1[E_AXIS] * tmc2130_mres2usteps(tmc2130_mres[E_AXIS]) / TMC2130_USTEPS_E;
+		changed = true;
+	}
+    if (changed)
+	{
+		lcd_ustep_resolution_menu_save();
+		Config_StoreSettings(EEPROM_OFFSET);
+		tmc2130_init();
+	}
+	currentMenu = lcd_experimantal_menu;
+	lcd_experimantal_menu();
+}
+
+static void lcd_ustep_resolution_reset_def_xyze()
+{
+	tmc2130_mres[X_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
+	tmc2130_mres[Y_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
+	tmc2130_mres[Z_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_Z);
+	tmc2130_mres[E_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_E);
+	float tmp1[]=DEFAULT_AXIS_STEPS_PER_UNIT;
+	axis_steps_per_unit[X_AXIS] = tmp1[X_AXIS];
+	axis_steps_per_unit[Y_AXIS] = tmp1[Y_AXIS];
+	axis_steps_per_unit[Z_AXIS] = tmp1[Z_AXIS];
+	axis_steps_per_unit[E_AXIS] = tmp1[E_AXIS];
+}
+
+static void lcd_ustep_resolution_menu()
+{
+	lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	START_MENU();
+	MENU_ITEM(back, PSTR("Experimental"), lcd_ustep_resolution_menu_back);
+	MENU_ITEM(function, PSTR("Reset defaults"),  lcd_ustep_resolution_reset_def_xyze);
+	MENU_ITEM_EDIT(mres, PSTR("X-resolution"),  &tmc2130_mres[X_AXIS],  4, 4);
+	MENU_ITEM_EDIT(mres, PSTR("Y-resolution"),  &tmc2130_mres[Y_AXIS],  4, 4);
+	MENU_ITEM_EDIT(mres, PSTR("Z-resolution"),  &tmc2130_mres[Z_AXIS],  4, 4);
+	MENU_ITEM_EDIT(mres, PSTR("E-resolution"),  &tmc2130_mres[E_AXIS],  2, 5);
+	END_MENU();
+}
+
+static void lcd_ustep_linearity_menu_save()
+{
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC, tmc2130_wave_fac[X_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC, tmc2130_wave_fac[Y_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC, tmc2130_wave_fac[Z_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC, tmc2130_wave_fac[E_AXIS]);
+}
+
+static void lcd_ustep_linearity_menu_back()
+{
+	bool changed = false;
+	if (tmc2130_wave_fac[X_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[X_AXIS] = 0;
+	if (tmc2130_wave_fac[Y_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[Y_AXIS] = 0;
+	if (tmc2130_wave_fac[Z_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[Z_AXIS] = 0;
+	if (tmc2130_wave_fac[E_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[E_AXIS] = 0;
+	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC) != tmc2130_wave_fac[X_AXIS]);
+	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC) != tmc2130_wave_fac[Y_AXIS]);
+	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC) != tmc2130_wave_fac[Z_AXIS]);
+	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
+	lcd_ustep_linearity_menu_save();
+	if (changed) tmc2130_init();
+	currentMenu = lcd_experimantal_menu;
+	lcd_experimantal_menu();
+}
+
+static void lcd_ustep_linearity_menu_recomended()
+{
+	tmc2130_wave_fac[X_AXIS] = 220;
+	tmc2130_wave_fac[Y_AXIS] = 220;
+	tmc2130_wave_fac[Z_AXIS] = 220;
+	tmc2130_wave_fac[E_AXIS] = 220;
+}
+
+static void lcd_ustep_linearity_menu_reset()
+{
+	tmc2130_wave_fac[X_AXIS] = 0;
+	tmc2130_wave_fac[Y_AXIS] = 0;
+	tmc2130_wave_fac[Z_AXIS] = 0;
+	tmc2130_wave_fac[E_AXIS] = 0;
+}
+
+static void lcd_ustep_linearity_menu()
+{
+	lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	START_MENU();
+	MENU_ITEM(back, PSTR("Experimental"), lcd_ustep_linearity_menu_back);
+	MENU_ITEM(function, PSTR("Reset correction"), lcd_ustep_linearity_menu_reset);
+	MENU_ITEM(function, PSTR("Recomended config"), lcd_ustep_linearity_menu_recomended);
+	MENU_ITEM_EDIT(wfac, PSTR("X-correction"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("Y-correction"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("Z-correction"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("E-correction"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
+	END_MENU();
+}
+
+static void lcd_experimantal_menu_save_all()
+{
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED, tmc2130_home_enabled);
+	lcd_ustep_resolution_menu_save();
+	lcd_ustep_linearity_menu_save();
+	Config_StoreSettings(EEPROM_OFFSET);
+}
+
+static void lcd_experimantal_menu_disable_all()
+{
+	tmc2130_home_enabled = 0;
+	lcd_ustep_resolution_reset_def_xyze();
+	lcd_ustep_linearity_menu_reset();
+	lcd_experimantal_menu_save_all();
+	tmc2130_init();
+}
+
+static void lcd_experimantal_menu()
+{
+	START_MENU();
+	MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+	MENU_ITEM(function, PSTR("All Xfeatures off"), lcd_experimantal_menu_disable_all);
+	MENU_ITEM(submenu, PSTR("Homing accuracy"), lcd_homing_accuracy_menu);
+	MENU_ITEM(submenu, PSTR("uStep resolution"), lcd_ustep_resolution_menu);
+	MENU_ITEM(submenu, PSTR("uStep linearity"), lcd_ustep_linearity_menu);
+	END_MENU();
+}
+#endif //EXPERIMENTAL_FEATURES
+
+
 static void lcd_calibration_menu()
 {
   START_MENU();
@@ -5204,6 +5426,10 @@ static void lcd_main_menu()
 	#endif
 	MENU_ITEM(submenu, MSG_SETTINGS, lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM(submenu, MSG_MENU_CALIBRATION, lcd_calibration_menu);
+
+#ifdef EXPERIMENTAL_FEATURES
+	MENU_ITEM(submenu, PSTR("Experimantal"), lcd_experimantal_menu);
+#endif //EXPERIMENTAL_FEATURES
   }
 
   if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
@@ -5627,6 +5853,30 @@ void lcd_sdcard_menu()
   }
   */
 
+// Convert tmc2130 mres to string 
+char *mres_to_str3(const uint8_t &x)
+{
+	return itostr3(256 >> x);
+}
+
+extern char conv[8];
+
+// Convert tmc2130 wfac to string 
+char *wfac_to_str5(const uint8_t &x)
+{
+	if (x>=TMC2130_WAVE_FAC200_MIN) return ftostr43(((float)(x & 0xff))/200);
+	conv[0] = ' ';
+	conv[1] = ' ';
+	conv[2] = 'O';
+	conv[3] = 'f';
+	conv[4] = 'f';
+	conv[5] = 0;
+	return conv;
+}
+
+menu_edit_type(uint8_t, wfac, wfac_to_str5, 1)
+menu_edit_type(uint8_t, mres, mres_to_str3, 1)
+menu_edit_type(uint8_t, byte3, itostr3, 1)
 menu_edit_type(int, int3, itostr3, 1)
 menu_edit_type(float, float3, ftostr3, 1)
 menu_edit_type(float, float32, ftostr32, 100)
@@ -5641,10 +5891,10 @@ static void lcd_selftest_v()
 	(void)lcd_selftest();
 }
 
-static bool lcd_selftest()
+bool lcd_selftest()
 {
 	int _progress = 0;
-	bool _result = false;
+	bool _result = true;
 	lcd_wait_for_cool_down();
 	lcd_implementation_clear();
 	lcd.setCursor(0, 0); lcd_printPGM(MSG_SELFTEST_START);
@@ -5653,8 +5903,12 @@ static bool lcd_selftest()
 	#endif // TMC2130
 	delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
-	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
-	_result = lcd_selftest_fan_dialog(0);
+
+	if (_result)
+	{
+		_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
+		_result = lcd_selftest_fan_dialog(0);
+	}
 	
 	if (_result)
 	{
@@ -5733,8 +5987,20 @@ static bool lcd_selftest()
 		_result = lcd_selfcheck_axis(2, Z_MAX_POS);
 		if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) {
 			enquecommand_P(PSTR("G28 W"));
-			enquecommand_P(PSTR("G1 Z15"));
+			enquecommand_P(PSTR("G1 Z15 F1000"));
 		}
+	}
+
+	if (_result)
+	{
+		_progress = lcd_selftest_screen(13, 0, 2, true, 0);
+		bool bres = tmc2130_home_calibrate(X_AXIS);
+		_progress = lcd_selftest_screen(13, 1, 2, true, 0);
+		bres &= tmc2130_home_calibrate(Y_AXIS);
+		_progress = lcd_selftest_screen(13, 2, 2, true, 0);
+		if (bres)
+			eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED, 1);
+		_result = bres;
 	}
 
 	if (_result)
@@ -6520,6 +6786,7 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	if (_step == 10) lcd_printPGM(MSG_SELFTEST_CHECK_FSENSOR);
 	if (_step == 11) lcd_printPGM(MSG_SELFTEST_CHECK_ALLCORRECT);
 	if (_step == 12) lcd_printPGM(MSG_SELFTEST_FAILED);
+	if (_step == 13) lcd_printPGM(PSTR("Calibrating home"));
 
 	lcd.setCursor(0, 1);
 	lcd.print("--------------------");

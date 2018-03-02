@@ -135,6 +135,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
 #endif /* DEBUG_BUILD */
 
+//#define EXPERIMENTAL_FEATURES
+//#define TMC2130_LINEARITY_CORRECTION
+//#define TMC2130_VARIABLE_RESOLUTION
+
+
 
 /*------------------------------------
  TMC2130 default settings
@@ -203,8 +208,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_SG_THRS_E       3     // stallguard sensitivity for E axis
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-#define TMC2130_CURRENTS_H {13, 20, 25, 35}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {13, 20, 25, 35}  // default running currents for all axes
+#define TMC2130_CURRENTS_H {16, 20, 28, 36}  // default holding currents for all axes
+#define TMC2130_CURRENTS_R {16, 20, 28, 36}  // default running currents for all axes
 #define TMC2130_UNLOAD_CURRENT_R 12			 // lowe current for M600 to protect filament sensor 
 
 //#define TMC2130_DEBUG
