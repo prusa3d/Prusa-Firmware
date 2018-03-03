@@ -270,7 +270,7 @@ bool endstop_z_hit_on_purpose()
 {
   bool hit = endstop_z_hit;
   endstop_z_hit=false;
-  if (hit == true) gcode_M114();
+  //if (hit == true) gcode_M114();
   return hit;
 }
 
