@@ -1429,8 +1429,8 @@ void host_keepalive() {
      switch (busy_state) {
       case IN_HANDLER:
       case IN_PROCESS:
-        //SERIAL_ECHO_START;
-        //SERIAL_ECHOLNPGM("busy: processing");
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: processing");
         break;
       case PAUSED_FOR_USER:
         SERIAL_ECHO_START;
@@ -4271,7 +4271,7 @@ void process_commands()
 		KEEPALIVE_STATE(IN_HANDLER);
         break;
 
-#if 1
+#if 0
     case 48: // M48: scan the bed induction sensor points, print the sensor trigger coordinates to the serial line for visualization on the PC.
     {
         // Disable the default update procedure of the display. We will do a modal dialog.

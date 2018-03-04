@@ -904,8 +904,12 @@ error:
 #define FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS (8.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS (4.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP  (1.f)
+#ifdef HEATBED_V2
 #define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (2.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR  (0.01f)
+#else //HEATBED_V2
+#define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.2f)
+#endif //HEATBED_V2
 
 #ifdef HEATBED_V2
 inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
@@ -2107,7 +2111,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		#endif // SUPPORT_VERBOSITY
 		if (!find_bed_induction_sensor_point_xy(verbosity_level))
 			return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-#if 0
+#if 1
 		
 			if (k == 0 || k == 1) {
 				// Improve the position of the 1st row sensor points by a zig-zag movement.
@@ -2387,9 +2391,6 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
                 // by a cross center method.
                 // Use a zig-zag search for the first row of the points.
                 found = improve_bed_induction_sensor_point3(verbosity_level);
-				//found = improve_bed_induction_sensor_point2(mesh_point < 2, verbosity_level);
-				SERIAL_ECHOPGM("ITER: ");
-				SERIAL_ECHO(iter);
             } else {
                 switch (method) {
                     case 0: found = improve_bed_induction_sensor_point(); break;
@@ -2398,9 +2399,6 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
                 }
             }
             if (found) {
-				lcd_show_fullscreen_message_and_wait_P(PSTR("found"));
-				lcd_update_enable(true);
-
                 if (iter > 3) {
                     // Average the last 4 measurements.
                     pts[mesh_point*2  ] += current_position[X_AXIS];
@@ -2720,10 +2718,6 @@ bool sample_mesh_and_store_reference()
     return true;
 }
 
-void scan() {
-	scan_bed_induction_sensor_point();
-}
-
 bool scan_bed_induction_points(int8_t verbosity_level)
 {
     // Don't let the manage_inactivity() function remove power from the motors.
@@ -2752,7 +2746,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
     bool endstop_z_enabled = enable_z_endstop(false);
 
     // Collect a matrix of 9x9 points.
-    for (int8_t mesh_point = 2; mesh_point < 3; ++ mesh_point) {
+    for (int8_t mesh_point = 0; mesh_point < 9; ++ mesh_point) {
         // Don't let the manage_inactivity() function remove power from the motors.
         refresh_cmd_timeout();
 
@@ -2763,8 +2757,8 @@ bool scan_bed_induction_points(int8_t verbosity_level)
         go_to_current(homing_feedrate[Z_AXIS]/60);
         // Go to the measurement point.
         // Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
-        current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points_4+mesh_point*2) + vec_y[0] * pgm_read_float(bed_ref_points_4+mesh_point*2+1) + cntr[0];
-        current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points_4+mesh_point*2) + vec_y[1] * pgm_read_float(bed_ref_points_4+mesh_point*2+1) + cntr[1];
+        current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points+mesh_point*2) + vec_y[0] * pgm_read_float(bed_ref_points+mesh_point*2+1) + cntr[0];
+        current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points+mesh_point*2) + vec_y[1] * pgm_read_float(bed_ref_points+mesh_point*2+1) + cntr[1];
         // The calibration points are very close to the min Y.
         if (current_position[Y_AXIS] < Y_MIN_POS_FOR_BED_CALIBRATION)
             current_position[Y_AXIS] = Y_MIN_POS_FOR_BED_CALIBRATION;

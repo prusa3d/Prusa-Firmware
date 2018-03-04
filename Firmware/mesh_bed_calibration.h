@@ -172,7 +172,6 @@ extern bool is_bed_z_jitter_data_valid();
 // write the trigger coordinates to the serial line.
 // Useful for visualizing the behavior of the bed induction detector.
 extern bool scan_bed_induction_points(int8_t verbosity_level);
-extern void scan();
 
 // Load Z babystep value from the EEPROM into babystepLoadZ, 
 // but don't apply it through the planner. This is useful on wake up
