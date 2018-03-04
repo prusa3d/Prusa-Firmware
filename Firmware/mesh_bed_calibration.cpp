@@ -907,21 +907,22 @@ error:
 #define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (2.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR  (0.01f)
 
+#ifdef HEATBED_V2
 inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 {
 	#ifdef SUPPORT_VERBOSITY
-	if(verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
+	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
 	#endif // SUPPORT_VERBOSITY
 	float feedrate = homing_feedrate[X_AXIS] / 60.f;
-    bool found = false;
+	bool found = false;
 
-    {
-        float x0 = current_position[X_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
-        float x1 = current_position[X_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
-        float y0 = current_position[Y_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
-        float y1 = current_position[Y_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
-        uint8_t nsteps_y;
-        uint8_t i;
+	{
+		float x0 = current_position[X_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
+		float x1 = current_position[X_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
+		float y0 = current_position[Y_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
+		float y1 = current_position[Y_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
+		uint8_t nsteps_y;
+		uint8_t i;
 		if (x0 < X_MIN_POS) {
 			x0 = X_MIN_POS;
 			#ifdef SUPPORT_VERBOSITY
@@ -946,35 +947,31 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("Y searching radius higher than X_MAX. Clamping was done.");
 			#endif // SUPPORT_VERBOSITY
 		}
-        nsteps_y = int(ceil((y1 - y0) / FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP));
+		nsteps_y = int(ceil((y1 - y0) / FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP));
 
-        enable_endstops(false);
-        bool  dir_positive = true;
+		enable_endstops(false);
+		bool  dir_positive = true;
 		float z_error = 2 * FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP;
 		float find_bed_induction_sensor_point_z_step = FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP;
 		float initial_z_position = current_position[Z_AXIS];
 
-//        go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
-        go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
-        // Continously lower the Z axis.
-        endstops_hit_on_purpose();
-        enable_z_endstop(true);
-        while (current_position[Z_AXIS] > -10.f && z_error > FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR) {
-            // Do nsteps_y zig-zag movements.
-			/*SERIAL_ECHOLNPGM("---------------");
-			SERIAL_ECHOPGM("Y coordinate:");
-			MYSERIAL.println(current_position[Y_AXIS]);
-			SERIAL_ECHOPGM("Z coordinate:");
-			MYSERIAL.println(current_position[Z_AXIS]);*/
-			SERIAL_ECHOPGM("z_error: ");
-			MYSERIAL.println(z_error);
-            current_position[Y_AXIS] = y0;
+		//        go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
+		go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
+		// Continously lower the Z axis.
+		endstops_hit_on_purpose();
+		enable_z_endstop(true);
+		while (current_position[Z_AXIS] > -10.f && z_error > FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR) {
+			// Do nsteps_y zig-zag movements.
+
+			//SERIAL_ECHOPGM("z_error: ");
+			//MYSERIAL.println(z_error);
+			current_position[Y_AXIS] = y0;
 			initial_z_position = current_position[Z_AXIS];
-			for (i = 0; i < (nsteps_y - 1); current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++ i) {
-                // Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
-                current_position[Z_AXIS] -= find_bed_induction_sensor_point_z_step / float(nsteps_y - 1);
-                go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
-                dir_positive = ! dir_positive;
+			for (i = 0; i < (nsteps_y - 1); current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++i) {
+				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
+				current_position[Z_AXIS] -= find_bed_induction_sensor_point_z_step / float(nsteps_y - 1);
+				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
+				dir_positive = !dir_positive;
 				if (endstop_z_hit_on_purpose()) {
 					update_current_position_xyz();
 					z_error = 2 * (initial_z_position - current_position[Z_AXIS]);
@@ -987,13 +984,13 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 					}
 					goto endloop;
 				}
-            }
+			}
 			initial_z_position = current_position[Z_AXIS];
-			for (i = 0; i < (nsteps_y - 1); current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++ i) {
-                // Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
-                current_position[Z_AXIS] -= find_bed_induction_sensor_point_z_step / float(nsteps_y - 1);
-                go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
-                dir_positive = ! dir_positive;
+			for (i = 0; i < (nsteps_y - 1); current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++i) {
+				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
+				current_position[Z_AXIS] -= find_bed_induction_sensor_point_z_step / float(nsteps_y - 1);
+				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
+				dir_positive = !dir_positive;
 				if (endstop_z_hit_on_purpose()) {
 					update_current_position_xyz();
 					z_error = 2 * (initial_z_position - current_position[Z_AXIS]);
@@ -1006,176 +1003,355 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 					}
 					goto endloop;
 				}
-            }
-			endloop: ;
-			/*SERIAL_ECHOPGM("Y coordinate:");
-			MYSERIAL.println(current_position[Y_AXIS]);
-			SERIAL_ECHOPGM("Z coordinate:");
-			MYSERIAL.println(current_position[Z_AXIS]);*/
-        }
-       // endloop:
-        SERIAL_ECHO("First hit");
-		SERIAL_ECHO("- X: ");
-		MYSERIAL.print(current_position[X_AXIS]);
-		SERIAL_ECHO("; Y: ");
-		MYSERIAL.print(current_position[Y_AXIS]);
-		SERIAL_ECHO("; Z: ");
-		MYSERIAL.println(current_position[Z_AXIS]);
+			}
+		endloop:;
+		}
+		#ifdef SUPPORT_VERBOSITY
+		if (verbosity_level >= 20) {
+			SERIAL_ECHO("First hit");
+			SERIAL_ECHO("- X: ");
+			MYSERIAL.print(current_position[X_AXIS]);
+			SERIAL_ECHO("; Y: ");
+			MYSERIAL.print(current_position[Y_AXIS]);
+			SERIAL_ECHO("; Z: ");
+			MYSERIAL.println(current_position[Z_AXIS]);
+		}
+		#endif //SUPPORT_VERBOSITY
+		//lcd_show_fullscreen_message_and_wait_P(PSTR("First hit"));
+		//lcd_update_enable(true);
 
-		lcd_show_fullscreen_message_and_wait_P(PSTR("First hit"));
-		lcd_update_enable(true);
+		float init_x_position = current_position[X_AXIS];
+		float init_y_position = current_position[Y_AXIS];
 
-
-		//scan 
-		//if (current_position[X_AXIS] > 100 && current_position[Y_AXIS] > 100) {
-		//	scan();
-		//}
-
-        // we have to let the planner know where we are right now as it is not where we said to go.
-        update_current_position_xyz();
-
-
-        // Search in this plane for the first hit. Zig-zag first in X, then in Y axis.
-        for (int8_t iter = 0; iter < 9; ++ iter) {
-			SERIAL_ECHOPGM("iter: ");
+		// we have to let the planner know where we are right now as it is not where we said to go.
+		update_current_position_xyz();
+		enable_z_endstop(false);
+		
+		for (int8_t iter = 0; iter < 2; ++iter) {
+			/*SERIAL_ECHOPGM("iter: ");
 			MYSERIAL.println(iter);
-            if (iter > 0) {
-                // Slightly lower the Z axis to get a reliable trigger.
-                current_position[Z_AXIS] -= 0.005f;
-                go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
-            }
+			SERIAL_ECHOPGM("1 - current_position[Z_AXIS]: ");
+			MYSERIAL.println(current_position[Z_AXIS]);*/
 
-				SERIAL_ECHOPGM("current_position[Z_AXIS]: ");
-				MYSERIAL.println(current_position[Z_AXIS]);
-            // Do nsteps_y zig-zag movements.
-            float a, b;
-            enable_endstops(false);
-            enable_z_endstop(false);
-            current_position[Y_AXIS] = y0;
-            go_xy(x0, current_position[Y_AXIS], feedrate);
-            enable_z_endstop(true);
-            found = false;
-            for (i = 0, dir_positive = true; i < (nsteps_y - 1); current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++ i, dir_positive = ! dir_positive) {
-                go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
-				//SERIAL_ECHOPGM("current position Z: ");
-				//MYSERIAL.println(current_position[Z_AXIS]);
-                if (endstop_z_hit_on_purpose()) {					
-                    found = true;
-                    break;
-                }
-            }
-            update_current_position_xyz();
-            if (! found) {
-                SERIAL_ECHOLN("Search in Y - not found");
-                continue;
-            }
-//            SERIAL_ECHOLN("Search in Y - found");
-			lcd_show_fullscreen_message_and_wait_P(PSTR("first Y1 found"));
+			// Slightly lower the Z axis to get a reliable trigger.
+			current_position[Z_AXIS] -= 0.05f;
+			go_xyz(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], homing_feedrate[Z_AXIS] / (60 * 10));
+
+			SERIAL_ECHOPGM("2 - current_position[Z_AXIS]: ");
+			MYSERIAL.println(current_position[Z_AXIS]);
+			// Do nsteps_y zig-zag movements.
+			float a, b;
+			float avg[2] = { 0,0 };
+
+			for (int iteration = 0; iteration < 8; iteration++) {
+
+				found = false;
+				enable_z_endstop(true, true);
+				go_xy(x0, current_position[Y_AXIS], feedrate / 3);
+				update_current_position_xyz();
+				if (!endstop_z_hit_on_purpose()) {
+					//                SERIAL_ECHOLN("Search X span 0 - not found");
+					continue;
+				}
+
+				//lcd_show_fullscreen_message_and_wait_P(PSTR("X1 found"));
+				//lcd_update_enable(true);
+				//            SERIAL_ECHOLN("Search X span 0 - found");
+				a = current_position[X_AXIS];
+				enable_z_endstop(false);
+				go_xy(init_x_position, current_position[Y_AXIS], feedrate / 3);
+				enable_z_endstop(true);
+				go_xy(x1, current_position[Y_AXIS], feedrate / 3);
+				update_current_position_xyz();
+				if (!endstop_z_hit_on_purpose()) {
+					//                SERIAL_ECHOLN("Search X span 1 - not found");
+					continue;
+				}
+				//lcd_show_fullscreen_message_and_wait_P(PSTR("X2 found"));
+				//lcd_update_enable(true);
+				//            SERIAL_ECHOLN("Search X span 1 - found");
+				b = current_position[X_AXIS];
+				// Go to the center.
+				enable_z_endstop(false);
+				current_position[X_AXIS] = 0.5f * (a + b);
+				go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate / 3);
+				found = true;
+				
+				// Search in the Y direction along a cross.
+				found = false;
+				enable_z_endstop(true);
+				go_xy(current_position[X_AXIS], y0, feedrate / 3);
+				update_current_position_xyz();
+				if (!endstop_z_hit_on_purpose()) {
+					//                SERIAL_ECHOLN("Search Y2 span 0 - not found");
+					continue;
+				}
+				//lcd_show_fullscreen_message_and_wait_P(PSTR("Y1 found"));
+				//lcd_update_enable(true);
+				//            SERIAL_ECHOLN("Search Y2 span 0 - found");
+				a = current_position[Y_AXIS];
+				enable_z_endstop(false);
+				go_xy(current_position[X_AXIS], init_y_position, feedrate / 3);
+				enable_z_endstop(true);
+				go_xy(current_position[X_AXIS], y1, feedrate / 3);
+				update_current_position_xyz();
+				if (!endstop_z_hit_on_purpose()) {
+					//                SERIAL_ECHOLN("Search Y2 span 1 - not found");
+					continue;
+				}
+				//            SERIAL_ECHOLN("Search Y2 span 1 - found");
+				b = current_position[Y_AXIS];
+				//lcd_show_fullscreen_message_and_wait_P(PSTR("Y2 found"));
+				//lcd_update_enable(true);
+
+				// Go to the center.
+				enable_z_endstop(false, false);
+				current_position[Y_AXIS] = 0.5f * (a + b);
+				go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate / 3);
+
+				#ifdef SUPPORT_VERBOSITY
+				if (verbosity_level >= 20) {
+					SERIAL_ECHOPGM("ITERATION: ");
+					MYSERIAL.println(iteration);
+					SERIAL_ECHOPGM("CURRENT POSITION X: ");
+					MYSERIAL.println(current_position[X_AXIS]);
+					SERIAL_ECHOPGM("CURRENT POSITION Y: ");
+					MYSERIAL.println(current_position[Y_AXIS]);
+				}
+				#endif //SUPPORT_VERBOSITY
+
+				if (iteration > 3) {
+					// Average the last 4 measurements.
+					avg[X_AXIS] += current_position[X_AXIS];
+					avg[Y_AXIS] += current_position[Y_AXIS];
+				}
+
+				found = true;
+
+			}
+			avg[X_AXIS] *= (1.f / 4.f);
+			avg[Y_AXIS] *= (1.f / 4.f);
+
+			current_position[X_AXIS] = avg[X_AXIS];
+			current_position[Y_AXIS] = avg[Y_AXIS];
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) {
+				SERIAL_ECHOPGM("AVG CURRENT POSITION X: ");
+				MYSERIAL.println(current_position[X_AXIS]);
+				SERIAL_ECHOPGM("AVG CURRENT POSITION Y: ");
+				MYSERIAL.println(current_position[Y_AXIS]);
+			}
+			#endif // SUPPORT_VERBOSITY
+			go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
+			lcd_show_fullscreen_message_and_wait_P(PSTR("Final position"));
 			lcd_update_enable(true);
-            a = current_position[Y_AXIS];
 
-            enable_z_endstop(false);
-            current_position[Y_AXIS] = y1;
-            go_xy(x0, current_position[Y_AXIS], feedrate);
-            enable_z_endstop(true);
-            found = false;
-            for (i = 0, dir_positive = true; i < (nsteps_y - 1); current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++ i, dir_positive = ! dir_positive) {
-                go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
-				SERIAL_ECHOPGM("current position Z: ");
-				MYSERIAL.println(current_position[Z_AXIS]);
+			break;
+		}
+	}
+
+	enable_z_endstop(false);
+	return found;
+
+}
+#else //HEATBED_V2
+inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
+{
+	#ifdef SUPPORT_VERBOSITY
+	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
+	#endif // SUPPORT_VERBOSITY
+	float feedrate = homing_feedrate[X_AXIS] / 60.f;
+	bool found = false;
+
+	{
+		float x0 = current_position[X_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
+		float x1 = current_position[X_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
+		float y0 = current_position[Y_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
+		float y1 = current_position[Y_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
+		uint8_t nsteps_y;
+		uint8_t i;
+		if (x0 < X_MIN_POS) {
+			x0 = X_MIN_POS;
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("X searching radius lower than X_MIN. Clamping was done.");
+			#endif // SUPPORT_VERBOSITY
+		}
+		if (x1 > X_MAX_POS) {
+			x1 = X_MAX_POS;
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("X searching radius higher than X_MAX. Clamping was done.");
+			#endif // SUPPORT_VERBOSITY
+		}
+		if (y0 < Y_MIN_POS_FOR_BED_CALIBRATION) {
+			y0 = Y_MIN_POS_FOR_BED_CALIBRATION;
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("Y searching radius lower than Y_MIN. Clamping was done.");
+			#endif // SUPPORT_VERBOSITY
+		}
+		if (y1 > Y_MAX_POS) {
+			y1 = Y_MAX_POS;
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("Y searching radius higher than X_MAX. Clamping was done.");
+			#endif // SUPPORT_VERBOSITY
+		}
+		nsteps_y = int(ceil((y1 - y0) / FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP));
+
+		enable_endstops(false);
+		bool  dir_positive = true;
+
+		//        go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
+		go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
+		// Continously lower the Z axis.
+		endstops_hit_on_purpose();
+		enable_z_endstop(true);
+		while (current_position[Z_AXIS] > -10.f) {
+			// Do nsteps_y zig-zag movements.
+			current_position[Y_AXIS] = y0;
+			for (i = 0; i < nsteps_y; current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++i) {
+				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
+				current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
+				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
+				dir_positive = !dir_positive;
+				if (endstop_z_hit_on_purpose())
+					goto endloop;
+			}
+			for (i = 0; i < nsteps_y; current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++i) {
+				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
+				current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
+				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
+				dir_positive = !dir_positive;
+				if (endstop_z_hit_on_purpose())
+					goto endloop;
+			}
+		}
+	endloop:
+		//        SERIAL_ECHOLN("First hit");
+
+		// we have to let the planner know where we are right now as it is not where we said to go.
+		update_current_position_xyz();
+
+		// Search in this plane for the first hit. Zig-zag first in X, then in Y axis.
+		for (int8_t iter = 0; iter < 3; ++iter) {
+			if (iter > 0) {
+				// Slightly lower the Z axis to get a reliable trigger.
+				current_position[Z_AXIS] -= 0.02f;
+				go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS] / 60);
+			}
+
+			// Do nsteps_y zig-zag movements.
+			float a, b;
+			enable_endstops(false);
+			enable_z_endstop(false);
+			current_position[Y_AXIS] = y0;
+			go_xy(x0, current_position[Y_AXIS], feedrate);
+			enable_z_endstop(true);
+			found = false;
+			for (i = 0, dir_positive = true; i < nsteps_y; current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++i, dir_positive = !dir_positive) {
+				go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
 				if (endstop_z_hit_on_purpose()) {
-                    found = true;
-                    break;
-                }
-            }
-            update_current_position_xyz();
-            if (! found) {
-                SERIAL_ECHOLN("Search in Y2 - not found");
-                continue;
-            }
-			lcd_show_fullscreen_message_and_wait_P(PSTR("first Y2 found"));
-			lcd_update_enable(true);
-//            SERIAL_ECHOLN("Search in Y2 - found");
-            b = current_position[Y_AXIS];
-            current_position[Y_AXIS] = 0.5f * (a + b);
+					found = true;
+					break;
+				}
+			}
+			update_current_position_xyz();
+			if (!found) {
+				//                SERIAL_ECHOLN("Search in Y - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search in Y - found");
+			a = current_position[Y_AXIS];
 
-            // Search in the X direction along a cross.
-            found = false;
-            enable_z_endstop(false);
-            go_xy(x0, current_position[Y_AXIS], feedrate);
-            enable_z_endstop(true);
-            go_xy(x1, current_position[Y_AXIS], feedrate/10);
-            update_current_position_xyz();
-            if (! endstop_z_hit_on_purpose()) {
-//                SERIAL_ECHOLN("Search X span 0 - not found");
-                continue;
-            }
-			lcd_show_fullscreen_message_and_wait_P(PSTR("X1 found"));
-			lcd_update_enable(true);
-//            SERIAL_ECHOLN("Search X span 0 - found");
-            a = current_position[X_AXIS];
-            enable_z_endstop(false);
-            go_xy(x1, current_position[Y_AXIS], feedrate);
-            enable_z_endstop(true);
-            go_xy(x0, current_position[Y_AXIS], feedrate/10);
-            update_current_position_xyz();
-            if (! endstop_z_hit_on_purpose()) {
-//                SERIAL_ECHOLN("Search X span 1 - not found");
-                continue;
-            }
-			lcd_show_fullscreen_message_and_wait_P(PSTR("X2 found"));
-			lcd_update_enable(true);
-//            SERIAL_ECHOLN("Search X span 1 - found");
-            b = current_position[X_AXIS];
-            // Go to the center.
-            enable_z_endstop(false);
-            current_position[X_AXIS] = 0.5f * (a + b);
-            go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
-            found = true;
+			enable_z_endstop(false);
+			current_position[Y_AXIS] = y1;
+			go_xy(x0, current_position[Y_AXIS], feedrate);
+			enable_z_endstop(true);
+			found = false;
+			for (i = 0, dir_positive = true; i < nsteps_y; current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++i, dir_positive = !dir_positive) {
+				go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
+				if (endstop_z_hit_on_purpose()) {
+					found = true;
+					break;
+				}
+			}
+			update_current_position_xyz();
+			if (!found) {
+				//                SERIAL_ECHOLN("Search in Y2 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search in Y2 - found");
+			b = current_position[Y_AXIS];
+			current_position[Y_AXIS] = 0.5f * (a + b);
+
+			// Search in the X direction along a cross.
+			found = false;
+			enable_z_endstop(false);
+			go_xy(x0, current_position[Y_AXIS], feedrate);
+			enable_z_endstop(true);
+			go_xy(x1, current_position[Y_AXIS], feedrate);
+			update_current_position_xyz();
+			if (!endstop_z_hit_on_purpose()) {
+				//                SERIAL_ECHOLN("Search X span 0 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search X span 0 - found");
+			a = current_position[X_AXIS];
+			enable_z_endstop(false);
+			go_xy(x1, current_position[Y_AXIS], feedrate);
+			enable_z_endstop(true);
+			go_xy(x0, current_position[Y_AXIS], feedrate);
+			update_current_position_xyz();
+			if (!endstop_z_hit_on_purpose()) {
+				//                SERIAL_ECHOLN("Search X span 1 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search X span 1 - found");
+			b = current_position[X_AXIS];
+			// Go to the center.
+			enable_z_endstop(false);
+			current_position[X_AXIS] = 0.5f * (a + b);
+			go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
+			found = true;
 
 #if 1
-            // Search in the Y direction along a cross.
-            found = false;
-            enable_z_endstop(false);
-            go_xy(current_position[X_AXIS], y0, feedrate);
-            enable_z_endstop(true);
-            go_xy(current_position[X_AXIS], y1, feedrate);
-            update_current_position_xyz();
-            if (! endstop_z_hit_on_purpose()) {
-//                SERIAL_ECHOLN("Search Y2 span 0 - not found");
-                continue;
-            }
-			lcd_show_fullscreen_message_and_wait_P(PSTR("Y1 found"));
-			lcd_update_enable(true);
-//            SERIAL_ECHOLN("Search Y2 span 0 - found");
-            a = current_position[Y_AXIS];
-            enable_z_endstop(false);
-            go_xy(current_position[X_AXIS], y1, feedrate);
-            enable_z_endstop(true);
-            go_xy(current_position[X_AXIS], y0, feedrate);
-            update_current_position_xyz();
-            if (! endstop_z_hit_on_purpose()) {
-//                SERIAL_ECHOLN("Search Y2 span 1 - not found");
-                continue;
-            }
-//            SERIAL_ECHOLN("Search Y2 span 1 - found");
-            b = current_position[Y_AXIS];
-			lcd_show_fullscreen_message_and_wait_P(PSTR("Y2 found"));
-			lcd_update_enable(true);
-
-            // Go to the center.
-            enable_z_endstop(false);
-            current_position[Y_AXIS] = 0.5f * (a + b);
-            go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
-            found = true;
+			// Search in the Y direction along a cross.
+			found = false;
+			enable_z_endstop(false);
+			go_xy(current_position[X_AXIS], y0, feedrate);
+			enable_z_endstop(true);
+			go_xy(current_position[X_AXIS], y1, feedrate);
+			update_current_position_xyz();
+			if (!endstop_z_hit_on_purpose()) {
+				//                SERIAL_ECHOLN("Search Y2 span 0 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search Y2 span 0 - found");
+			a = current_position[Y_AXIS];
+			enable_z_endstop(false);
+			go_xy(current_position[X_AXIS], y1, feedrate);
+			enable_z_endstop(true);
+			go_xy(current_position[X_AXIS], y0, feedrate);
+			update_current_position_xyz();
+			if (!endstop_z_hit_on_purpose()) {
+				//                SERIAL_ECHOLN("Search Y2 span 1 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search Y2 span 1 - found");
+			b = current_position[Y_AXIS];
+			// Go to the center.
+			enable_z_endstop(false);
+			current_position[Y_AXIS] = 0.5f * (a + b);
+			go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
+			found = true;
 #endif
-            break;
-        }
-    }
+			break;
+		}
+	}
 
-    enable_z_endstop(false);
-    return found;
+	enable_z_endstop(false);
+	return found;
 }
+
+#endif //HEATBED_V2
 
 // Search around the current_position[X,Y,Z].
 // It is expected, that the induction sensor is switched on at the current position.
@@ -2211,6 +2387,9 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
                 // by a cross center method.
                 // Use a zig-zag search for the first row of the points.
                 found = improve_bed_induction_sensor_point3(verbosity_level);
+				//found = improve_bed_induction_sensor_point2(mesh_point < 2, verbosity_level);
+				SERIAL_ECHOPGM("ITER: ");
+				SERIAL_ECHO(iter);
             } else {
                 switch (method) {
                     case 0: found = improve_bed_induction_sensor_point(); break;
@@ -2219,6 +2398,9 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
                 }
             }
             if (found) {
+				lcd_show_fullscreen_message_and_wait_P(PSTR("found"));
+				lcd_update_enable(true);
+
                 if (iter > 3) {
                     // Average the last 4 measurements.
                     pts[mesh_point*2  ] += current_position[X_AXIS];
