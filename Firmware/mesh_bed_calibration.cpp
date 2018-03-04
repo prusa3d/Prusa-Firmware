@@ -1038,7 +1038,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			MYSERIAL.println(current_position[Z_AXIS]);*/
 
 			// Slightly lower the Z axis to get a reliable trigger.
-			current_position[Z_AXIS] -= 0.05f;
+			current_position[Z_AXIS] -= 0.1f;
 			go_xyz(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], homing_feedrate[Z_AXIS] / (60 * 10));
 
 			SERIAL_ECHOPGM("2 - current_position[Z_AXIS]: ");
@@ -1050,8 +1050,9 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			for (int iteration = 0; iteration < 8; iteration++) {
 
 				found = false;
-				enable_z_endstop(true, true);
-				go_xy(x0, current_position[Y_AXIS], feedrate / 3);
+				invert_z_endstop(true);
+				enable_z_endstop(true);
+				go_xy(x0, current_position[Y_AXIS], feedrate / 5);
 				update_current_position_xyz();
 				if (!endstop_z_hit_on_purpose()) {
 					//                SERIAL_ECHOLN("Search X span 0 - not found");
@@ -1063,9 +1064,9 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 				//            SERIAL_ECHOLN("Search X span 0 - found");
 				a = current_position[X_AXIS];
 				enable_z_endstop(false);
-				go_xy(init_x_position, current_position[Y_AXIS], feedrate / 3);
+				go_xy(init_x_position, current_position[Y_AXIS], feedrate / 5);
 				enable_z_endstop(true);
-				go_xy(x1, current_position[Y_AXIS], feedrate / 3);
+				go_xy(x1, current_position[Y_AXIS], feedrate / 5);
 				update_current_position_xyz();
 				if (!endstop_z_hit_on_purpose()) {
 					//                SERIAL_ECHOLN("Search X span 1 - not found");
@@ -1078,13 +1079,13 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 				// Go to the center.
 				enable_z_endstop(false);
 				current_position[X_AXIS] = 0.5f * (a + b);
-				go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate / 3);
+				go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate / 5);
 				found = true;
 				
 				// Search in the Y direction along a cross.
 				found = false;
 				enable_z_endstop(true);
-				go_xy(current_position[X_AXIS], y0, feedrate / 3);
+				go_xy(current_position[X_AXIS], y0, feedrate / 5);
 				update_current_position_xyz();
 				if (!endstop_z_hit_on_purpose()) {
 					//                SERIAL_ECHOLN("Search Y2 span 0 - not found");
@@ -1095,9 +1096,9 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 				//            SERIAL_ECHOLN("Search Y2 span 0 - found");
 				a = current_position[Y_AXIS];
 				enable_z_endstop(false);
-				go_xy(current_position[X_AXIS], init_y_position, feedrate / 3);
+				go_xy(current_position[X_AXIS], init_y_position, feedrate / 5);
 				enable_z_endstop(true);
-				go_xy(current_position[X_AXIS], y1, feedrate / 3);
+				go_xy(current_position[X_AXIS], y1, feedrate / 5);
 				update_current_position_xyz();
 				if (!endstop_z_hit_on_purpose()) {
 					//                SERIAL_ECHOLN("Search Y2 span 1 - not found");
@@ -1109,9 +1110,10 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 				//lcd_update_enable(true);
 
 				// Go to the center.
-				enable_z_endstop(false, false);
+				enable_z_endstop(false);
+				invert_z_endstop(false);
 				current_position[Y_AXIS] = 0.5f * (a + b);
-				go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate / 3);
+				go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate / 5);
 
 				#ifdef SUPPORT_VERBOSITY
 				if (verbosity_level >= 20) {
@@ -1124,17 +1126,20 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 				}
 				#endif //SUPPORT_VERBOSITY
 
-				if (iteration > 3) {
-					// Average the last 4 measurements.
+				if (iteration > 0) {
+					// Average the last 7 measurements.
 					avg[X_AXIS] += current_position[X_AXIS];
 					avg[Y_AXIS] += current_position[Y_AXIS];
 				}
 
+				init_x_position = current_position[X_AXIS];
+				init_y_position = current_position[Y_AXIS];
+
 				found = true;
 
 			}
-			avg[X_AXIS] *= (1.f / 4.f);
-			avg[Y_AXIS] *= (1.f / 4.f);
+			avg[X_AXIS] *= (1.f / 7.f);
+			avg[Y_AXIS] *= (1.f / 7.f);
 
 			current_position[X_AXIS] = avg[X_AXIS];
 			current_position[Y_AXIS] = avg[Y_AXIS];
@@ -2111,7 +2116,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		#endif // SUPPORT_VERBOSITY
 		if (!find_bed_induction_sensor_point_xy(verbosity_level))
 			return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-#if 1
+#ifndef HEATBED_V2
 		
 			if (k == 0 || k == 1) {
 				// Improve the position of the 1st row sensor points by a zig-zag movement.
@@ -2132,7 +2137,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 					// not found
 					return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 			}
-#endif
+#endif //HEATBED_V2
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 10)
 				delay_keep_alive(3000);
@@ -2548,16 +2553,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
     }
 	#endif // SUPPORT_VERBOSITY
 
-	//make space
-	current_position[Z_AXIS] += 150;
-	go_to_current(homing_feedrate[Z_AXIS] / 60);
-	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder););
-
-	lcd_show_fullscreen_message_and_wait_P(MSG_PLACE_STEEL_SHEET);
-
-    // Sample Z heights for the mesh bed leveling.
-    // In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
-    if (! sample_mesh_and_store_reference())
+	if(!sample_z())
         goto canceled;
 
     enable_endstops(endstops_enabled);
@@ -2577,6 +2573,22 @@ canceled:
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
     return result;
+}
+
+bool sample_z() {
+	bool sampled = true;
+	//make space
+	current_position[Z_AXIS] += 150;
+	go_to_current(homing_feedrate[Z_AXIS] / 60);
+	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder););
+
+	lcd_show_fullscreen_message_and_wait_P(MSG_PLACE_STEEL_SHEET);
+
+	// Sample Z heights for the mesh bed leveling.
+	// In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
+	if (!sample_mesh_and_store_reference()) sampled = false;
+
+	return sampled;
 }
 
 void go_home_with_z_lift()

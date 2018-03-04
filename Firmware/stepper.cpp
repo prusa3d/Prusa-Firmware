@@ -611,7 +611,7 @@ void isr() {
             // Stall guard homing turned on
                 z_min_endstop = (READ(Z_MIN_PIN) != z_endstop_invert) || (READ(Z_TMC2130_DIAG) != 0);
             #else
-				z_min_endstop = (READ(Z_MIN_PIN) != z_endstop_invert);
+                z_min_endstop = (READ(Z_MIN_PIN) != z_endstop_invert);
             #endif //TMC2130_SG_HOMING
         if(z_min_endstop && old_z_min_endstop) {
           endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];
