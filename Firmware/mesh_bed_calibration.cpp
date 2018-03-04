@@ -104,10 +104,17 @@ const float bed_ref_points[] PROGMEM = {
 
 static inline float sqr(float x) { return x * x; }
 
+#ifdef HEATBED_V2
 static inline bool point_on_1st_row(const uint8_t i)
 {
-	return (i < 2);
+	return false;
 }
+#else //HEATBED_V2
+static inline bool point_on_1st_row(const uint8_t i)
+{
+	return (i < 3);
+}
+#endif //HEATBED_V2
 
 // Weight of a point coordinate in a least squares optimization.
 // The first row of points may not be fully reachable
@@ -1152,8 +1159,12 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			}
 			#endif // SUPPORT_VERBOSITY
 			go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
-			lcd_show_fullscreen_message_and_wait_P(PSTR("Final position"));
-			lcd_update_enable(true);
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) {
+				lcd_show_fullscreen_message_and_wait_P(PSTR("Final position"));
+				lcd_update_enable(true);
+			}
+			#endif //SUPPORT_VERBOSITY
 
 			break;
 		}
