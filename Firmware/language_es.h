@@ -72,7 +72,7 @@
 #define MSG_BED_HEATING                     "Calentando Base"
 #define MSG_BED_DONE                        "Base preparada"
 #define MSG_LANGUAGE_NAME					"Espanol"
-#define MSG_LANGUAGE_SELECT		    "Cambiae el idioma"
+#define MSG_LANGUAGE_SELECT		    "Cambiar el idioma"
 #define MSG_PRUSA3D							"prusa3d.com"
 #define MSG_PRUSA3D_FORUM					"forum.prusa3d.com"
 #define MSG_PRUSA3D_HOWTO					"howto.prusa3d.com"
