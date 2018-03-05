@@ -218,6 +218,7 @@ enum AxisEnum {X_AXIS=0, Y_AXIS=1, Z_AXIS=2, E_AXIS=3, X_HEAD=4, Y_HEAD=5};
 
 void FlushSerialRequestResend();
 void ClearToSend();
+void update_currents();
 
 void get_coordinates();
 void prepare_move();

@@ -1985,14 +1985,14 @@ const char * const MSG_SHOW_END_STOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SHOW_END_STOPS_CZ
 };
 
-const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode     [Normal]";
+const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode [high power]";
 const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod      [Normal]";
 const char * const MSG_SILENT_MODE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_OFF_EN,
 	MSG_SILENT_MODE_OFF_CZ
 };
 
-const char MSG_SILENT_MODE_ON_EN[] PROGMEM = "Mode    [Stealth]";
+const char MSG_SILENT_MODE_ON_EN[] PROGMEM = "Mode     [silent]";
 const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod     [Stealth]";
 const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_EN,
