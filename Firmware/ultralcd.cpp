@@ -3908,12 +3908,14 @@ static void lcd_settings_menu()
   else {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_ON, lcd_temp_calibration_set);
   }
+#ifdef HAS_SECOND_SERIAL_PORT
   if (selectedSerialPort == 0) {
 	  MENU_ITEM(function, MSG_SECOND_SERIAL_OFF, lcd_second_serial_set);
   }
   else {
 	  MENU_ITEM(function, MSG_SECOND_SERIAL_ON, lcd_second_serial_set);
   }
+#endif //HAS_SECOND_SERIAL
 
   if (!isPrintPaused && !homing_flag)
 	{
