@@ -378,8 +378,8 @@ bool Config_RetrieveSettings(uint16_t offset, uint8_t level)
 			EEPROM_READ_VAR(i, extruder_advance_k);
 			EEPROM_READ_VAR(i, advance_ed_ratio);
 		}
-		calculate_volumetric_multipliers();
 #endif //LIN_ADVANCE
+    calculate_extruder_multipliers();
 
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
