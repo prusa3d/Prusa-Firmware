@@ -435,6 +435,7 @@ void force_high_power_mode(bool start_high_power_section);
 
 // G-codes
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
+void gcode_M114();
 void gcode_M701();
 
 #define UVLO !(PINE & (1<<4))

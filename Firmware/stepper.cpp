@@ -98,6 +98,7 @@ static bool old_z_max_endstop=false;
 static bool check_endstops = true;
 
 static bool check_z_endstop = false;
+static bool z_endstop_invert = false;
 
 int8_t SilentMode = 0;
 
@@ -282,10 +283,15 @@ bool enable_endstops(bool check)
 
 bool enable_z_endstop(bool check)
 {
-  bool old = check_z_endstop;
-  check_z_endstop = check;
-  endstop_z_hit=false;
-  return old;
+	bool old = check_z_endstop;
+	check_z_endstop = check;
+	endstop_z_hit = false;
+	return old;
+}
+
+void invert_z_endstop(bool endstop_invert)
+{
+  z_endstop_invert = endstop_invert;
 }
 
 //         __________________________
@@ -603,9 +609,9 @@ void isr() {
         // Good for searching for the center of an induction target.
             #ifdef TMC2130_SG_HOMING
             // Stall guard homing turned on
-                z_min_endstop = (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING) || (READ(Z_TMC2130_DIAG) != 0);
+                z_min_endstop = (READ(Z_MIN_PIN) != z_endstop_invert) || (READ(Z_TMC2130_DIAG) != 0);
             #else
-				z_min_endstop = (READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
+                z_min_endstop = (READ(Z_MIN_PIN) != z_endstop_invert);
             #endif //TMC2130_SG_HOMING
         if(z_min_endstop && old_z_min_endstop) {
           endstops_trigsteps[Z_AXIS] = count_position[Z_AXIS];

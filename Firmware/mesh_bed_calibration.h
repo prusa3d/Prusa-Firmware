@@ -187,5 +187,6 @@ extern void babystep_undo();
 // Reset the current babystep counter without moving the axes.
 extern void babystep_reset();
 extern void count_xyz_details();
+extern bool sample_z();
 
 #endif /* MESH_BED_CALIBRATION_H */

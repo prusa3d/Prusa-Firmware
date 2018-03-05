@@ -2228,8 +2228,12 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
 				st_synchronize();
+				
 				if (result >= 0)
 				{
+					#ifdef HEATBED_V2
+					sample_z();
+					#else //HEATBED_V2
 					point_too_far_mask = 0;
 					// Second half: The fine adjustment.
 					// Let the planner use the uncorrected coordinates.
@@ -2244,8 +2248,10 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 					current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
 					st_synchronize();
-					// if (result >= 0) babystep_apply();
+					// if (result >= 0) babystep_apply();					
+					#endif //HEATBED_V2
 				}
+				
 				lcd_bed_calibration_show_result(result, point_too_far_mask);
 				if (result >= 0)
 				{
@@ -2274,6 +2280,29 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	FORCE_HIGH_POWER_END;
 #endif // TMC2130
 	return final_result;
+}
+
+void gcode_M114()
+{
+	SERIAL_PROTOCOLPGM("X:");
+	SERIAL_PROTOCOL(current_position[X_AXIS]);
+	SERIAL_PROTOCOLPGM(" Y:");
+	SERIAL_PROTOCOL(current_position[Y_AXIS]);
+	SERIAL_PROTOCOLPGM(" Z:");
+	SERIAL_PROTOCOL(current_position[Z_AXIS]);
+	SERIAL_PROTOCOLPGM(" E:");
+	SERIAL_PROTOCOL(current_position[E_AXIS]);
+
+	SERIAL_PROTOCOLRPGM(MSG_COUNT_X);
+	SERIAL_PROTOCOL(float(st_get_position(X_AXIS)) / axis_steps_per_unit[X_AXIS]);
+	SERIAL_PROTOCOLPGM(" Y:");
+	SERIAL_PROTOCOL(float(st_get_position(Y_AXIS)) / axis_steps_per_unit[Y_AXIS]);
+	SERIAL_PROTOCOLPGM(" Z:");
+	SERIAL_PROTOCOL(float(st_get_position(Z_AXIS)) / axis_steps_per_unit[Z_AXIS]);
+	SERIAL_PROTOCOLPGM(" E:");
+	SERIAL_PROTOCOL(float(st_get_position(E_AXIS)) / axis_steps_per_unit[E_AXIS]);
+
+	SERIAL_PROTOCOLLN("");
 }
 
 void gcode_M701()
@@ -4908,25 +4937,7 @@ Sigma_Exit:
       lcd_setstatus(strchr_pointer + 5);
       break;*/
     case 114: // M114
-      SERIAL_PROTOCOLPGM("X:");
-      SERIAL_PROTOCOL(current_position[X_AXIS]);
-      SERIAL_PROTOCOLPGM(" Y:");
-      SERIAL_PROTOCOL(current_position[Y_AXIS]);
-      SERIAL_PROTOCOLPGM(" Z:");
-      SERIAL_PROTOCOL(current_position[Z_AXIS]);
-      SERIAL_PROTOCOLPGM(" E:");
-      SERIAL_PROTOCOL(current_position[E_AXIS]);
-
-      SERIAL_PROTOCOLRPGM(MSG_COUNT_X);
-      SERIAL_PROTOCOL(float(st_get_position(X_AXIS))/axis_steps_per_unit[X_AXIS]);
-      SERIAL_PROTOCOLPGM(" Y:");
-      SERIAL_PROTOCOL(float(st_get_position(Y_AXIS))/axis_steps_per_unit[Y_AXIS]);
-      SERIAL_PROTOCOLPGM(" Z:");
-      SERIAL_PROTOCOL(float(st_get_position(Z_AXIS))/axis_steps_per_unit[Z_AXIS]);
-      SERIAL_PROTOCOLPGM(" E:");
-      SERIAL_PROTOCOL(float(st_get_position(E_AXIS))/axis_steps_per_unit[E_AXIS]);
-
-      SERIAL_PROTOCOLLN("");
+		gcode_M114();
       break;
     case 120: // M120
       enable_endstops(false) ;
