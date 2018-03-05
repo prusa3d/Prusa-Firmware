@@ -204,9 +204,9 @@ static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
 static void lcd_menu_extruder_info();
-#ifdef TMC2130
+#if defined(TMC2130) || defined(PAT9125)
 static void lcd_menu_fails_stats();
-#endif //TMC2130
+#endif //TMC2130 or PAT9125
 
 void lcd_finishstatus();
 
@@ -1537,7 +1537,7 @@ static void lcd_menu_extruder_info()
     }
 }
 
-#ifdef TMC2130
+#if defined(TMC2130) && defined(PAT9125)
 static void lcd_menu_fails_stats_total()
 {
 //01234567890123456789
@@ -1579,7 +1579,13 @@ static void lcd_menu_fails_stats_print()
 		lcd_goto_menu(lcd_menu_fails_stats, 2);
     }    
 }
-
+/**
+ * @brief Open fail statistics menu
+ *
+ * This version of function is used, when there is filament sensor,
+ * power failure and crash detection.
+ * There are Last print and Total menu items.
+ */
 static void lcd_menu_fails_stats()
 {
 	START_MENU();
@@ -1587,6 +1593,34 @@ static void lcd_menu_fails_stats()
 	MENU_ITEM(submenu, PSTR("Last print"), lcd_menu_fails_stats_print);
 	MENU_ITEM(submenu, PSTR("Total"), lcd_menu_fails_stats_total);
 	END_MENU();
+}
+#else if defined(PAT9125)
+/**
+ * @brief Print last print and total filament run outs
+ *
+ * This version of function is used, when there is filament sensor,
+ * but no other sensors (e.g. power failure, crash detection).
+ *
+ * Example screen:
+ * @code
+ * 01234567890123456789
+ * Last print failures
+ *  Filam. runouts  0
+ * Total failures
+ *  Filam. runouts  5
+ * @endcode
+ */
+static void lcd_menu_fails_stats()
+{
+    uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
+    uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
+    fprintf_P(lcdout, PSTR(ESC_H(0,0)"Last print failures"ESC_H(1,1)"Filam. runouts  %-3d"ESC_H(0,2)"Total failures"ESC_H(1,3)"Filam. runouts  %-3d"), filamentLast, filamentTotal);
+    if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        //lcd_return_to_status();
+        lcd_goto_menu(lcd_main_menu, 8); //TODO: Remove hard coded encoder value.
+    }
 }
 #endif //TMC2130
 
@@ -5221,9 +5255,9 @@ static void lcd_main_menu()
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
     
-#ifdef TMC2130
+#if defined(TMC2130) || defined(PAT9125)
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
-#endif //TMC2130
+#endif
 
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
 

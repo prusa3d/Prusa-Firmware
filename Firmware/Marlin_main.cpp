@@ -681,6 +681,7 @@ void crashdet_cancel()
 	card.closefile();
 	tmc2130_sg_stop_on_crash = true;
 }
+#endif //TMC2130
 
 void failstats_reset_print()
 {
@@ -690,7 +691,6 @@ void failstats_reset_print()
 	eeprom_update_byte((uint8_t *)EEPROM_POWER_COUNT, 0);
 }
 
-#endif //TMC2130
 
 
 #ifdef MESH_BED_LEVELING
@@ -4081,10 +4081,8 @@ void process_commands()
       card.openFile(strchr_pointer + 4,true);
       break;
     case 24: //M24 - Start SD print
-#ifdef TMC2130
 	  if (!card.paused)
 		failstats_reset_print();
-#endif //TMC2130
       card.startFileprint();
       starttime=millis();
 	  break;
