@@ -1053,59 +1053,51 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			// Do nsteps_y zig-zag movements.
 			float a, b;
 			float avg[2] = { 0,0 };
-
+			invert_z_endstop(true);
 			for (int iteration = 0; iteration < 8; iteration++) {
 
-				found = false;
-				invert_z_endstop(true);
+				found = false;				
 				enable_z_endstop(true);
-				go_xy(x0, current_position[Y_AXIS], feedrate / 5);
+				go_xy(init_x_position + 16.0f, current_position[Y_AXIS], feedrate / 5);
 				update_current_position_xyz();
 				if (!endstop_z_hit_on_purpose()) {
 					//                SERIAL_ECHOLN("Search X span 0 - not found");
 					continue;
 				}
-
-				//lcd_show_fullscreen_message_and_wait_P(PSTR("X1 found"));
-				//lcd_update_enable(true);
 				//            SERIAL_ECHOLN("Search X span 0 - found");
 				a = current_position[X_AXIS];
 				enable_z_endstop(false);
 				go_xy(init_x_position, current_position[Y_AXIS], feedrate / 5);
 				enable_z_endstop(true);
-				go_xy(x1, current_position[Y_AXIS], feedrate / 5);
+				go_xy(init_x_position - 16.0f, current_position[Y_AXIS], feedrate / 5);
 				update_current_position_xyz();
 				if (!endstop_z_hit_on_purpose()) {
 					//                SERIAL_ECHOLN("Search X span 1 - not found");
 					continue;
 				}
-				//lcd_show_fullscreen_message_and_wait_P(PSTR("X2 found"));
-				//lcd_update_enable(true);
 				//            SERIAL_ECHOLN("Search X span 1 - found");
 				b = current_position[X_AXIS];
 				// Go to the center.
 				enable_z_endstop(false);
 				current_position[X_AXIS] = 0.5f * (a + b);
-				go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate / 5);
+				go_xy(current_position[X_AXIS], init_y_position, feedrate / 5);
 				found = true;
 				
 				// Search in the Y direction along a cross.
 				found = false;
 				enable_z_endstop(true);
-				go_xy(current_position[X_AXIS], y0, feedrate / 5);
+				go_xy(current_position[X_AXIS], init_y_position + 16.0f, feedrate / 5);
 				update_current_position_xyz();
 				if (!endstop_z_hit_on_purpose()) {
 					//                SERIAL_ECHOLN("Search Y2 span 0 - not found");
 					continue;
 				}
-				//lcd_show_fullscreen_message_and_wait_P(PSTR("Y1 found"));
-				//lcd_update_enable(true);
 				//            SERIAL_ECHOLN("Search Y2 span 0 - found");
 				a = current_position[Y_AXIS];
 				enable_z_endstop(false);
 				go_xy(current_position[X_AXIS], init_y_position, feedrate / 5);
 				enable_z_endstop(true);
-				go_xy(current_position[X_AXIS], y1, feedrate / 5);
+				go_xy(current_position[X_AXIS], init_y_position - 16.0f, feedrate / 5);
 				update_current_position_xyz();
 				if (!endstop_z_hit_on_purpose()) {
 					//                SERIAL_ECHOLN("Search Y2 span 1 - not found");
@@ -1113,12 +1105,8 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 				}
 				//            SERIAL_ECHOLN("Search Y2 span 1 - found");
 				b = current_position[Y_AXIS];
-				//lcd_show_fullscreen_message_and_wait_P(PSTR("Y2 found"));
-				//lcd_update_enable(true);
-
 				// Go to the center.
 				enable_z_endstop(false);
-				invert_z_endstop(false);
 				current_position[Y_AXIS] = 0.5f * (a + b);
 				go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate / 5);
 
@@ -1145,6 +1133,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 				found = true;
 
 			}
+			invert_z_endstop(false);
 			avg[X_AXIS] *= (1.f / 7.f);
 			avg[Y_AXIS] *= (1.f / 7.f);
 
@@ -1169,8 +1158,9 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			break;
 		}
 	}
-
+	
 	enable_z_endstop(false);
+	invert_z_endstop(false);
 	return found;
 
 }
