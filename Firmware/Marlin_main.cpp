@@ -333,7 +333,7 @@ float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
     #endif
   #endif
 };
-float volumetric_multiplier[EXTRUDERS] = {1.0
+float extruder_multiplier[EXTRUDERS] = {1.0
   #if EXTRUDERS > 1
     , 1.0
     #if EXTRUDERS > 2
@@ -408,18 +408,6 @@ bool cancel_heatup = false ;
 #else
   #define host_keepalive();
   #define KEEPALIVE_STATE(n);
-#endif
-
-#ifdef FILAMENT_SENSOR
-  //Variables for Filament Sensor input 
-  float filament_width_nominal=DEFAULT_NOMINAL_FILAMENT_DIA;  //Set nominal filament width, can be changed with M404 
-  bool filament_sensor=false;  //M405 turns on filament_sensor control, M406 turns it off 
-  float filament_width_meas=DEFAULT_MEASURED_FILAMENT_DIA; //Stores the measured filament diameter 
-  signed char measurement_delay[MAX_MEASUREMENT_DELAY+1];  //ring buffer to delay measurement  store extruder factor after subtracting 100 
-  int delay_index1=0;  //index into ring buffer
-  int delay_index2=-1;  //index into ring buffer - set to -1 on startup to indicate ring buffer needs to be initialized
-  float delay_dist=0; //delay distance counter  
-  int meas_delay_cm = MEASUREMENT_DELAY_CM;  //distance delay setting
 #endif
 
 const char errormagic[] PROGMEM = "Error:";
@@ -930,6 +918,13 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
+
+
+void erase_eeprom_section(uint16_t offset, uint16_t bytes)
+{
+	for (int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
+}
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -1024,6 +1019,7 @@ void setup()
 
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+	if (silentMode == 0xff) silentMode = 0;
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
 	if (crashdet)
@@ -1036,6 +1032,28 @@ void setup()
 		crashdet_disable();
 	    MYSERIAL.println("CrashDetect DISABLED");
 	}
+
+	tmc2130_wave_fac[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC);
+	tmc2130_wave_fac[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC);
+	tmc2130_wave_fac[Z_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC);
+	tmc2130_wave_fac[E_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC);
+	if (tmc2130_wave_fac[X_AXIS] == 0xff) tmc2130_wave_fac[X_AXIS] = 0;
+	if (tmc2130_wave_fac[Y_AXIS] == 0xff) tmc2130_wave_fac[Y_AXIS] = 0;
+	if (tmc2130_wave_fac[Z_AXIS] == 0xff) tmc2130_wave_fac[Z_AXIS] = 0;
+	if (tmc2130_wave_fac[E_AXIS] == 0xff) tmc2130_wave_fac[E_AXIS] = 0;
+
+	tmc2130_mres[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_X_MRES);
+	tmc2130_mres[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_Y_MRES);
+	tmc2130_mres[Z_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_Z_MRES);
+	tmc2130_mres[E_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_E_MRES);
+	if (tmc2130_mres[X_AXIS] == 0xff) tmc2130_mres[X_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
+	if (tmc2130_mres[Y_AXIS] == 0xff) tmc2130_mres[Y_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
+	if (tmc2130_mres[Z_AXIS] == 0xff) tmc2130_mres[Z_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_Z);
+	if (tmc2130_mres[E_AXIS] == 0xff) tmc2130_mres[E_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_E);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_X_MRES, tmc2130_mres[X_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_Y_MRES, tmc2130_mres[Y_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_Z_MRES, tmc2130_mres[Z_AXIS]);
+	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_E_MRES, tmc2130_mres[E_AXIS]);
 
 #endif //TMC2130
 
@@ -1064,19 +1082,19 @@ void setup()
 	setup_homepin();
 
   if (1) {
-///    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+///    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_AXIS));
     // try to run to zero phase before powering the Z motor.    
     // Move in negative direction
     WRITE(Z_DIR_PIN,INVERT_Z_DIR);
     // Round the current micro-micro steps to micro steps.
-    for (uint16_t phase = (tmc2130_rd_MSCNT(Z_TMC2130_CS) + 8) >> 4; phase > 0; -- phase) {
+    for (uint16_t phase = (tmc2130_rd_MSCNT(Z_AXIS) + 8) >> 4; phase > 0; -- phase) {
       // Until the phase counter is reset to zero.
       WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
       delay(2);
       WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
       delay(2);
     }
-//    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+//    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_AXIS));
   }
 
 #if defined(Z_AXIS_ALWAYS_ON)
@@ -1172,8 +1190,10 @@ void setup()
 
   show_fw_version_warnings();
 
-  if (!previous_settings_retrieved) lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version was changed, inform user that default setting were loaded
-
+  if (!previous_settings_retrieved) {
+	  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version was changed, inform user that default setting were loaded
+	  erase_eeprom_section(EEPROM_OFFSET, 156); 							   //erase M500 part of eeprom
+  }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
   }
@@ -1207,7 +1227,24 @@ void setup()
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
   update_current_firmware_version_to_eeprom();
-  
+
+  	tmc2130_home_origin[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_X_ORIGIN);
+	tmc2130_home_bsteps[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_X_BSTEPS);
+	tmc2130_home_fsteps[X_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_X_FSTEPS);
+	if (tmc2130_home_origin[X_AXIS] == 0xff) tmc2130_home_origin[X_AXIS] = 0;
+	if (tmc2130_home_bsteps[X_AXIS] == 0xff) tmc2130_home_bsteps[X_AXIS] = 48;
+	if (tmc2130_home_fsteps[X_AXIS] == 0xff) tmc2130_home_fsteps[X_AXIS] = 48;
+
+	tmc2130_home_origin[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_ORIGIN);
+	tmc2130_home_bsteps[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_BSTEPS);
+	tmc2130_home_fsteps[Y_AXIS] = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_Y_FSTEPS);
+	if (tmc2130_home_origin[Y_AXIS] == 0xff) tmc2130_home_origin[Y_AXIS] = 0;
+	if (tmc2130_home_bsteps[Y_AXIS] == 0xff) tmc2130_home_bsteps[Y_AXIS] = 48;
+	if (tmc2130_home_fsteps[Y_AXIS] == 0xff) tmc2130_home_fsteps[Y_AXIS] = 48;
+
+	tmc2130_home_enabled = eeprom_read_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED);
+	if (tmc2130_home_enabled == 0xff) tmc2130_home_enabled = 0;
+
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
 /*
 	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_RECOVER_PRINT, false))	recover_print();
@@ -1776,9 +1813,9 @@ bool calibrate_z_auto()
 }
 #endif //TMC2130
 
-void homeaxis(int axis)
+void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 {
-	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homming
+	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homing
 #define HOMEAXIS_DO(LETTER) \
 ((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
     if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
@@ -1788,7 +1825,8 @@ void homeaxis(int axis)
 
 #ifdef TMC2130
     	tmc2130_home_enter(X_AXIS_MASK << axis);
-#endif
+#endif //TMC2130
+
 
         // Move right a bit, so that the print head does not touch the left end position,
         // and the following left movement has a chance to achieve the required velocity
@@ -1812,44 +1850,66 @@ void homeaxis(int axis)
         destination[axis] = - 1.1 * max_length(axis);
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
-        // Move right from the collision to a known distance from the left end stop with the collision detection disabled.
-        endstops_hit_on_purpose();
-        enable_endstops(false);
-        current_position[axis] = 0;
-        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = 10.f;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-        endstops_hit_on_purpose();
-        // Now move left up to the collision, this time with a repeatable velocity.
-        enable_endstops(true);
-        destination[axis] = - 15.f;
-        feedrate = homing_feedrate[axis]/2;
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
+		for (uint8_t i = 0; i < cnt; i++)
+		{
+			// Move right from the collision to a known distance from the left end stop with the collision detection disabled.
+			endstops_hit_on_purpose();
+			enable_endstops(false);
+			current_position[axis] = 0;
+			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+			destination[axis] = 10.f;
+			plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+			st_synchronize();
+			endstops_hit_on_purpose();
+			// Now move left up to the collision, this time with a repeatable velocity.
+			enable_endstops(true);
+			destination[axis] = - 11.f;
+#ifdef TMC2130
+			feedrate = homing_feedrate[axis];
+#else //TMC2130
+			feedrate = homing_feedrate[axis] / 2;
+#endif //TMC2130
+			plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+			st_synchronize();
+#ifdef TMC2130
+			uint16_t mscnt = tmc2130_rd_MSCNT(axis);
+			if (pstep) pstep[i] = mscnt >> 4;
+			printf_P(PSTR("%3d step=%2d mscnt=%4d\n"), i, mscnt >> 4, mscnt);
+#endif //TMC2130
+		}
+		endstops_hit_on_purpose();
+		enable_endstops(false);
+
+#ifdef TMC2130
+		uint8_t orig = tmc2130_home_origin[axis];
+		uint8_t back = tmc2130_home_bsteps[axis];
+		if (tmc2130_home_enabled && (orig <= 63))
+		{
+			tmc2130_goto_step(axis, orig, 2, 1000, tmc2130_get_res(axis));
+			if (back > 0)
+				tmc2130_do_steps(axis, back, 1, 1000);
+		}
+		else
+			tmc2130_do_steps(axis, 8, 2, 1000);
+		tmc2130_home_exit();
+#endif //TMC2130
 
         axis_is_at_home(axis);
         axis_known_position[axis] = true;
-
+        // Move from minimum
 #ifdef TMC2130
-        tmc2130_home_exit();
-#endif
-        // Move the X carriage away from the collision.
-        // If this is not done, the X cariage will jump from the collision at the instant the Trinamic driver reduces power on idle.
-        endstops_hit_on_purpose();
-        enable_endstops(false);
-        {
-          // Two full periods (4 full steps).
-          float gap = 0.32f * 2.f;
-          current_position[axis] -= gap;
-          plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-          current_position[axis] += gap;
-        }
+        float dist = 0.01f * tmc2130_home_fsteps[axis];
+#else //TMC2130
+        float dist = 0.01f * 64;
+#endif //TMC2130
+        current_position[axis] -= dist;
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        current_position[axis] += dist;
         destination[axis] = current_position[axis];
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], 0.3f*feedrate/60, active_extruder);
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], 0.5f*feedrate/60, active_extruder);
         st_synchronize();
 
-    		feedrate = 0.0;
+   		feedrate = 0.0;
     }
     else if ((axis==Z_AXIS)?HOMEAXIS_DO(Z):0)
 	{
@@ -1900,11 +1960,7 @@ void refresh_cmd_timeout(void)
       destination[Y_AXIS]=current_position[Y_AXIS];
       destination[Z_AXIS]=current_position[Z_AXIS];
       destination[E_AXIS]=current_position[E_AXIS];
-      if (swapretract) {
-        current_position[E_AXIS]+=retract_length_swap/volumetric_multiplier[active_extruder];
-      } else {
-        current_position[E_AXIS]+=retract_length/volumetric_multiplier[active_extruder];
-      }
+      current_position[E_AXIS]+=(swapretract?retract_length_swap:retract_length)*float(extrudemultiply)*0.01f;
       plan_set_e_position(current_position[E_AXIS]);
       float oldFeedrate = feedrate;
       feedrate=retract_feedrate*60;
@@ -1921,12 +1977,7 @@ void refresh_cmd_timeout(void)
       destination[E_AXIS]=current_position[E_AXIS];
       current_position[Z_AXIS]+=retract_zlift;
       plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-      //prepare_move();
-      if (swapretract) {
-        current_position[E_AXIS]-=(retract_length_swap+retract_recover_length_swap)/volumetric_multiplier[active_extruder]; 
-      } else {
-        current_position[E_AXIS]-=(retract_length+retract_recover_length)/volumetric_multiplier[active_extruder]; 
-      }
+      current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(retract_length+retract_recover_length))*float(extrudemultiply)*0.01f;
       plan_set_e_position(current_position[E_AXIS]);
       float oldFeedrate = feedrate;
       feedrate=retract_recover_feedrate*60;
@@ -2689,6 +2740,8 @@ void process_commands()
       bool home_x = code_seen(axis_codes[X_AXIS]);
       bool home_y = code_seen(axis_codes[Y_AXIS]);
       bool home_z = code_seen(axis_codes[Z_AXIS]);
+      // calibrate?
+      bool calib = code_seen('C');
       // Either all X,Y,Z codes are present, or none of them.
       bool home_all_axes = home_x == home_y && home_x == home_z;
       if (home_all_axes)
@@ -2773,10 +2826,20 @@ void process_commands()
 
 	 
       if(home_x)
-        homeaxis(X_AXIS);
+	  {
+		if (!calib)
+			homeaxis(X_AXIS);
+		else
+			tmc2130_home_calibrate(X_AXIS);
+	  }
 
       if(home_y)
-        homeaxis(Y_AXIS);
+	  {
+		if (!calib)
+	        homeaxis(Y_AXIS);
+		else
+			tmc2130_home_calibrate(Y_AXIS);
+	  }
 
       if(code_seen(axis_codes[X_AXIS]) && code_value_long() != 0)
         current_position[X_AXIS]=code_value()+add_homing[X_AXIS];
@@ -4977,7 +5040,7 @@ Sigma_Exit:
           //reserved for setting filament diameter via UFID or filament measuring device
           break;
         }
-		calculate_volumetric_multipliers();
+		calculate_extruder_multipliers();
       }
       break;
     case 201: // M201
@@ -5145,6 +5208,7 @@ Sigma_Exit:
           extrudemultiply = tmp_code ;
         }
       }
+      calculate_extruder_multipliers();
     }
     break;
 
@@ -5382,69 +5446,6 @@ Sigma_Exit:
       st_synchronize();
     }
     break;
-
-#ifdef FILAMENT_SENSOR
-case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or display nominal filament width 
-    {
-    #if (FILWIDTH_PIN > -1) 
-    if(code_seen('N')) filament_width_nominal=code_value();
-    else{
-    SERIAL_PROTOCOLPGM("Filament dia (nominal mm):"); 
-    SERIAL_PROTOCOLLN(filament_width_nominal); 
-    }
-    #endif
-    }
-    break; 
-    
-    case 405:  //M405 Turn on filament sensor for control 
-    {
-    
-    
-    if(code_seen('D')) meas_delay_cm=code_value();
-       
-       if(meas_delay_cm> MAX_MEASUREMENT_DELAY)
-       	meas_delay_cm = MAX_MEASUREMENT_DELAY;
-    
-       if(delay_index2 == -1)  //initialize the ring buffer if it has not been done since startup
-    	   {
-    	   int temp_ratio = widthFil_to_size_ratio(); 
-       	    
-       	    for (delay_index1=0; delay_index1<(MAX_MEASUREMENT_DELAY+1); ++delay_index1 ){
-       	              measurement_delay[delay_index1]=temp_ratio-100;  //subtract 100 to scale within a signed byte
-       	        }
-       	    delay_index1=0;
-       	    delay_index2=0;	
-    	   }
-    
-    filament_sensor = true ; 
-    
-    //SERIAL_PROTOCOLPGM("Filament dia (measured mm):"); 
-    //SERIAL_PROTOCOL(filament_width_meas); 
-    //SERIAL_PROTOCOLPGM("Extrusion ratio(%):"); 
-    //SERIAL_PROTOCOL(extrudemultiply); 
-    } 
-    break; 
-    
-    case 406:  //M406 Turn off filament sensor for control 
-    {      
-    filament_sensor = false ; 
-    } 
-    break; 
-  
-    case 407:   //M407 Display measured filament diameter 
-    { 
-     
-    
-    
-    SERIAL_PROTOCOLPGM("Filament dia (measured mm):"); 
-    SERIAL_PROTOCOLLN(filament_width_meas);   
-    } 
-    break; 
-    #endif
-    
-
-
-
 
     case 500: // M500 Store settings in EEPROM
     {
@@ -6111,12 +6112,38 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 
     case 350: // M350 Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {
+	#ifdef TMC2130
+		if(code_seen('E'))
+		{
+			uint16_t res_new = code_value();
+			if ((res_new == 8) || (res_new == 16) || (res_new == 32) || (res_new == 64) || (res_new == 128))
+			{
+				st_synchronize();
+				uint8_t axis = E_AXIS;
+				uint16_t res = tmc2130_get_res(axis);
+				tmc2130_set_res(axis, res_new);
+				if (res_new > res)
+				{
+					uint16_t fac = (res_new / res);
+					axis_steps_per_unit[axis] *= fac;
+					position[E_AXIS] *= fac;
+				}
+				else
+				{
+					uint16_t fac = (res / res_new);
+					axis_steps_per_unit[axis] /= fac;
+					position[E_AXIS] /= fac;
+				}
+			}
+		}
+	#else //TMC2130
       #if defined(X_MS1_PIN) && X_MS1_PIN > -1
         if(code_seen('S')) for(int i=0;i<=4;i++) microstep_mode(i,code_value());
         for(int i=0;i<NUM_AXIS;i++) if(code_seen(axis_codes[i])) microstep_mode(i,(uint8_t)code_value());
         if(code_seen('B')) microstep_mode(4,code_value());
         microstep_readings();
       #endif
+	#endif //TMC2130
     }
     break;
     case 351: // M351 Toggle MS1 MS2 pins directly, S# determines MS1 or MS2, X# sets the pin high/low.
@@ -6361,9 +6388,6 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
 	case 10: // D10 - XYZ calibration = OK
 		dcode_10(); break;
     
-    case 12: //D12 - Reset failstat counters
-		dcode_12(); break;
-
 	case 2130: // D9125 - TMC2130
 		dcode_2130(); break;
 	case 9125: // D9125 - PAT9125
@@ -6408,7 +6432,20 @@ void get_coordinates()
   for(int8_t i=0; i < NUM_AXIS; i++) {
     if(code_seen(axis_codes[i]))
     {
-      destination[i] = (float)code_value() + (axis_relative_modes[i] || relative_mode)*current_position[i];
+      bool relative = axis_relative_modes[i] || relative_mode;
+      destination[i] = (float)code_value();
+      if (i == E_AXIS) {
+        float emult = extruder_multiplier[active_extruder];
+        if (emult != 1.) {
+          if (! relative) {
+            destination[i] -= current_position[i];
+            relative = true;
+          }
+          destination[i] *= emult;
+        }
+      }
+      if (relative)
+        destination[i] += current_position[i];
       seen[i]=true;
     }
     else destination[i] = current_position[i]; //Are these else lines really needed?
@@ -6922,27 +6959,20 @@ void save_statistics(unsigned long _total_filament_used, unsigned long _total_pr
 
 }
 
-float calculate_volumetric_multiplier(float diameter) {
-	float area = .0;
-	float radius = .0;
-
-	radius = diameter * .5;
-	if (! volumetric_enabled || radius == 0) {
-		area = 1;
-	}
-	else {
-		area = M_PI * pow(radius, 2);
-	}
-
-	return 1.0 / area;
+float calculate_extruder_multiplier(float diameter) {
+  bool  enabled = volumetric_enabled && diameter > 0;
+  float area    = enabled ? (M_PI * pow(diameter * .5, 2)) : 0;
+	return (extrudemultiply == 100) ? 
+    (enabled ? (1.f / area) : 1.f) :
+    (enabled ? ((float(extrudemultiply) * 0.01f) / area) : 1.f);
 }
 
-void calculate_volumetric_multipliers() {
-	volumetric_multiplier[0] = calculate_volumetric_multiplier(filament_size[0]);
+void calculate_extruder_multipliers() {
+	extruder_multiplier[0] = calculate_extruder_multiplier(filament_size[0]);
 #if EXTRUDERS > 1
-	volumetric_multiplier[1] = calculate_volumetric_multiplier(filament_size[1]);
+	extruder_multiplier[1] = calculate_extruder_multiplier(filament_size[1]);
 #if EXTRUDERS > 2
-	volumetric_multiplier[2] = calculate_volumetric_multiplier(filament_size[2]);
+	extruder_multiplier[2] = calculate_extruder_multiplier(filament_size[2]);
 #endif
 #endif
 }
@@ -7474,7 +7504,7 @@ void uvlo_()
 
     // Read out the current Z motor microstep counter. This will be later used
     // for reaching the zero full step before powering off.
-    uint16_t z_microsteps = tmc2130_rd_MSCNT(Z_TMC2130_CS);
+    uint16_t z_microsteps = tmc2130_rd_MSCNT(Z_AXIS);
 
     // Calculate the file position, from which to resume this print.
     long sd_position = sdpos_atomic; //atomic sd position of last command added in queue
@@ -7566,7 +7596,7 @@ void uvlo_()
 
     st_synchronize();
     SERIAL_ECHOPGM("stps");
-    MYSERIAL.println(tmc2130_rd_MSCNT(Z_TMC2130_CS));
+    MYSERIAL.println(tmc2130_rd_MSCNT(Z_AXIS));
 
     disable_z();
     

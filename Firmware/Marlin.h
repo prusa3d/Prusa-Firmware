@@ -276,22 +276,11 @@ extern float max_pos[3];
 extern bool axis_known_position[3];
 extern float zprobe_zoffset;
 extern int fanSpeed;
-extern void homeaxis(int axis);
+extern void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 
 
 #ifdef FAN_SOFT_PWM
 extern unsigned char fanSpeedSoftPwm;
-#endif
-
-
-#ifdef FILAMENT_SENSOR
-  extern float filament_width_nominal;  //holds the theoretical filament diameter ie., 3.00 or 1.75
-  extern bool filament_sensor;  //indicates that filament sensor readings should control extrusion
-  extern float filament_width_meas; //holds the filament diameter as accurately measured
-  extern signed char measurement_delay[];  //ring buffer to delay measurement
-  extern int delay_index1, delay_index2;  //index into ring buffer
-  extern float delay_dist; //delay distance counter
-  extern int meas_delay_cm; //delay distance
 #endif
 
 #ifdef FWRETRACT
@@ -358,7 +347,7 @@ extern bool sortAlpha;
 
 extern char dir_names[3][9];
 
-extern void calculate_volumetric_multipliers();
+extern void calculate_extruder_multipliers();
 
 // Similar to the default Arduino delay function, 
 // but it keeps the background tasks running.
@@ -379,6 +368,7 @@ float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
 void show_fw_version_warnings();
+void erase_eeprom_section(uint16_t offset, uint16_t bytes);
 
 #ifdef PINDA_THERMISTOR
 float temp_compensation_pinda_thermistor_offset(float temperature_pinda);

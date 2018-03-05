@@ -136,10 +136,12 @@ void Config_StoreSettings(uint16_t offset, uint8_t level)
   }
 #endif //LIN_ADVANCE
 
-  /*MYSERIAL.print("Top address used:\n");
+/*  MYSERIAL.print("Top address used:\n");
   MYSERIAL.print(i); 
-  MYSERIAL.print("\n");
-  */
+  MYSERIAL.print("; (0x");
+  MYSERIAL.print(i, HEX);
+  MYSERIAL.println(")");
+*/ 
   char ver2[4]=EEPROM_VERSION;
   i=offset;
   EEPROM_WRITE_VAR(i,ver2); // validate data
@@ -470,7 +472,7 @@ void Config_ResetDefault()
 	filament_size[2] = DEFAULT_NOMINAL_FILAMENT_DIA;
 #endif
 #endif
-	calculate_volumetric_multipliers();
+	calculate_extruder_multipliers();
 
 SERIAL_ECHO_START;
 SERIAL_ECHOLNPGM("Hardcoded Default Settings Loaded");

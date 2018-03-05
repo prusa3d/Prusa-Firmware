@@ -126,10 +126,6 @@ static uint8_t g_cntr_planner_queue_min = 0;
 float extrude_min_temp=EXTRUDE_MINTEMP;
 #endif
 
-#ifdef FILAMENT_SENSOR
- static char meas_sample; //temporary variable to hold filament measurement sample
-#endif
-
 #ifdef LIN_ADVANCE
     float extruder_advance_k = LIN_ADVANCE_K,
     advance_ed_ratio = LIN_ADVANCE_E_D_RATIO,
@@ -786,10 +782,6 @@ block->steps_y.wide = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-p
 #endif
   block->steps_z.wide = labs(target[Z_AXIS]-position[Z_AXIS]);
   block->steps_e.wide = labs(target[E_AXIS]-position[E_AXIS]);
-  if (volumetric_multiplier[active_extruder] != 1.f)
-    block->steps_e.wide *= volumetric_multiplier[active_extruder];
-  if (extrudemultiply != 100)
-    block->steps_e.wide *= extrudemultiply * 0.01;
   block->step_event_count.wide = max(block->steps_x.wide, max(block->steps_y.wide, max(block->steps_z.wide, block->steps_e.wide)));
 
   // Bail if this is a zero-length block
@@ -919,7 +911,7 @@ Having the real displacement of the head, we can calculate the total movement le
     delta_mm[Y_AXIS] = ((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]))/axis_steps_per_unit[Y_AXIS];
   #endif
   delta_mm[Z_AXIS] = (target[Z_AXIS]-position[Z_AXIS])/axis_steps_per_unit[Z_AXIS];
-  delta_mm[E_AXIS] = ((target[E_AXIS]-position[E_AXIS])/axis_steps_per_unit[E_AXIS])*volumetric_multiplier[active_extruder]*extrudemultiply/100.0;
+  delta_mm[E_AXIS] = (target[E_AXIS]-position[E_AXIS])/axis_steps_per_unit[E_AXIS];
   if ( block->steps_x.wide <=dropsegments && block->steps_y.wide <=dropsegments && block->steps_z.wide <=dropsegments )
   {
     block->millimeters = fabs(delta_mm[E_AXIS]);
@@ -954,49 +946,6 @@ Having the real displacement of the head, we can calculate the total movement le
 
   block->nominal_speed = block->millimeters * inverse_second; // (mm/sec) Always > 0
   block->nominal_rate = ceil(block->step_event_count.wide * inverse_second); // (step/sec) Always > 0
-
-#ifdef FILAMENT_SENSOR
-  //FMM update ring buffer used for delay with filament measurements
-  
-  
-    if((extruder==FILAMENT_SENSOR_EXTRUDER_NUM) && (delay_index2 > -1))  //only for extruder with filament sensor and if ring buffer is initialized
-  	  {
-    delay_dist = delay_dist + delta_mm[E_AXIS];  //increment counter with next move in e axis
-  
-    while (delay_dist >= (10*(MAX_MEASUREMENT_DELAY+1)))  //check if counter is over max buffer size in mm
-      	  delay_dist = delay_dist - 10*(MAX_MEASUREMENT_DELAY+1);  //loop around the buffer
-    while (delay_dist<0)
-    	  delay_dist = delay_dist + 10*(MAX_MEASUREMENT_DELAY+1); //loop around the buffer
-      
-    delay_index1=delay_dist/10.0;  //calculate index
-    
-    //ensure the number is within range of the array after converting from floating point
-    if(delay_index1<0)
-    	delay_index1=0;
-    else if (delay_index1>MAX_MEASUREMENT_DELAY)
-    	delay_index1=MAX_MEASUREMENT_DELAY;
-    	
-    if(delay_index1 != delay_index2)  //moved index
-  	  {
-    	meas_sample=widthFil_to_size_ratio()-100;  //subtract off 100 to reduce magnitude - to store in a signed char
-  	  }
-    while( delay_index1 != delay_index2)
-  	  {
-  	  delay_index2 = delay_index2 + 1;
-  	if(delay_index2>MAX_MEASUREMENT_DELAY)
-  			  delay_index2=delay_index2-(MAX_MEASUREMENT_DELAY+1);  //loop around buffer when incrementing
-  	  if(delay_index2<0)
-  		delay_index2=0;
-  	  else if (delay_index2>MAX_MEASUREMENT_DELAY)
-  		delay_index2=MAX_MEASUREMENT_DELAY;  
-  	  
-  	  measurement_delay[delay_index2]=meas_sample;
-  	  }
-    	
-    
-  	  }
-#endif
-
 
   // Calculate and limit speed in mm/sec for each axis
   float current_speed[4];
