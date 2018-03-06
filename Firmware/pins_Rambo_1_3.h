@@ -52,14 +52,14 @@
 #define TEMP_0_PIN              0 //A0
 
 #define HEATER_1_PIN           -1
-#define TEMP_1_PIN              1 //A1
+#define TEMP_1_PIN             -1 //A1
 
 #define HEATER_2_PIN           -1
 #define TEMP_2_PIN             -1
 
 #define TEMP_AMBIENT_PIN        6 //A6
 
-#define TEMP_PINDA_PIN          3 //A3
+#define TEMP_PINDA_PIN          1 //A1
 
 
 

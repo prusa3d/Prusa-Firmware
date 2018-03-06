@@ -1494,8 +1494,8 @@ extern "C" {
 void adc_ready(void) //callback from adc when sampling finished
 {
 	current_temperature_raw[0] = adc_values[0];
-	current_temperature_bed_raw = adc_values[2];
-	current_temperature_raw_pinda = adc_values[3];
+	current_temperature_raw_pinda = adc_values[1];
+	current_temperature_bed_raw = adc_values[2];	
 #ifdef VOLT_PWR_PIN
 	current_voltage_raw_pwr = adc_values[4];
 #endif
