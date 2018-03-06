@@ -204,9 +204,9 @@ static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
 static void lcd_menu_extruder_info();
-#ifdef TMC2130
+#if defined(TMC2130) || defined(PAT9125)
 static void lcd_menu_fails_stats();
-#endif //TMC2130
+#endif //TMC2130 or PAT9125
 
 void lcd_finishstatus();
 
@@ -1537,7 +1537,7 @@ static void lcd_menu_extruder_info()
     }
 }
 
-#ifdef TMC2130
+#if defined(TMC2130) && defined(PAT9125)
 static void lcd_menu_fails_stats_total()
 {
 //01234567890123456789
@@ -1579,7 +1579,13 @@ static void lcd_menu_fails_stats_print()
 		lcd_goto_menu(lcd_menu_fails_stats, 2);
     }    
 }
-
+/**
+ * @brief Open fail statistics menu
+ *
+ * This version of function is used, when there is filament sensor,
+ * power failure and crash detection.
+ * There are Last print and Total menu items.
+ */
 static void lcd_menu_fails_stats()
 {
 	START_MENU();
@@ -1587,6 +1593,34 @@ static void lcd_menu_fails_stats()
 	MENU_ITEM(submenu, PSTR("Last print"), lcd_menu_fails_stats_print);
 	MENU_ITEM(submenu, PSTR("Total"), lcd_menu_fails_stats_total);
 	END_MENU();
+}
+#else if defined(PAT9125)
+/**
+ * @brief Print last print and total filament run outs
+ *
+ * This version of function is used, when there is filament sensor,
+ * but no other sensors (e.g. power failure, crash detection).
+ *
+ * Example screen:
+ * @code
+ * 01234567890123456789
+ * Last print failures
+ *  Filam. runouts  0
+ * Total failures
+ *  Filam. runouts  5
+ * @endcode
+ */
+static void lcd_menu_fails_stats()
+{
+    uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
+    uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
+    fprintf_P(lcdout, PSTR(ESC_H(0,0)"Last print failures"ESC_H(1,1)"Filam. runouts  %-3d"ESC_H(0,2)"Total failures"ESC_H(1,3)"Filam. runouts  %-3d"), filamentLast, filamentTotal);
+    if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        //lcd_return_to_status();
+        lcd_goto_menu(lcd_main_menu, 8); //TODO: Remove hard coded encoder value.
+    }
 }
 #endif //TMC2130
 
@@ -3412,7 +3446,12 @@ static void lcd_fsensor_fail()
 
 
 static void lcd_silent_mode_set() {
-  SilentModeMenu = !SilentModeMenu;
+	switch (SilentModeMenu) {
+	case 0: SilentModeMenu = 1; break;
+	case 1: SilentModeMenu = 2; break;
+	case 2: SilentModeMenu = 0; break;
+	default: SilentModeMenu = 0; break;
+	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
   // Wait until the planner queue is drained and the stepper routine achieves
@@ -3891,6 +3930,14 @@ static void lcd_settings_menu()
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
+  if (!farm_mode) { //dont show in menu if we are in farm mode
+	  switch (SilentModeMenu) {
+	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  }
+  }
 
 #ifdef PAT9125
 #ifndef DEBUG_DISABLE_FSENSORCHECK
@@ -3944,12 +3991,15 @@ static void lcd_settings_menu()
   else {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_ON, lcd_temp_calibration_set);
   }
+#ifdef HAS_SECOND_SERIAL_PORT
   if (selectedSerialPort == 0) {
 	  MENU_ITEM(function, MSG_SECOND_SERIAL_OFF, lcd_second_serial_set);
   }
   else {
 	  MENU_ITEM(function, MSG_SECOND_SERIAL_ON, lcd_second_serial_set);
   }
+#endif //HAS_SECOND_SERIAL
+
 
   if (!isPrintPaused && !homing_flag)
 	{
@@ -5207,9 +5257,9 @@ static void lcd_main_menu()
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
     
-#ifdef TMC2130
+#if defined(TMC2130) || defined(PAT9125)
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
-#endif //TMC2130
+#endif
 
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
 
@@ -5251,6 +5301,18 @@ static void lcd_autostart_sd()
 
 
 
+static void lcd_silent_mode_set_tune() {
+  switch (SilentModeMenu) {
+  case 0: SilentModeMenu = 1; break;
+  case 1: SilentModeMenu = 2; break;
+  case 2: SilentModeMenu = 0; break;
+  default: SilentModeMenu = 0; break;
+  }
+  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+  digipot_init();
+  lcd_goto_menu(lcd_tune_menu, 9);
+}
+
 static void lcd_colorprint_change() {
 	
 	enquecommand_P(PSTR("M600"));
@@ -5264,50 +5326,54 @@ static void lcd_colorprint_change() {
 
 static void lcd_tune_menu()
 {
-  EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
+	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
 
-  
 
-  START_MENU();
-  MENU_ITEM(back, MSG_MAIN, lcd_main_menu); //1
-  MENU_ITEM_EDIT(int3, MSG_SPEED, &feedmultiply, 10, 999);//2
 
-  MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
-  MENU_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 10);//4
+	START_MENU();
+	MENU_ITEM(back, MSG_MAIN, lcd_main_menu); //1
+	MENU_ITEM_EDIT(int3, MSG_SPEED, &feedmultiply, 10, 999);//2
 
-  MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);//5
-  MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);//6
+	MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
+	MENU_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 10);//4
+
+	MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);//5
+	MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);//6
 #ifdef FILAMENTCHANGEENABLE
-  MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
+	MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
-  
-#ifdef PAT9125
+
 #ifndef DEBUG_DISABLE_FSENSORCHECK
-  if (FSensorStateMenu == 0) {
-    MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
-  } else {
-    MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
-  }
+	if (FSensorStateMenu == 0) {
+		MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
+	}
+	else {
+		MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
+	}
 #endif //DEBUG_DISABLE_FSENSORCHECK
-#endif //PAT9125
 
 #ifdef TMC2130
-  if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
-  else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
+	if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
+	else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
 
-  if (SilentModeMenu == 0)
-  {
-    if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
-    else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
-  }
-  else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+	if (SilentModeMenu == 0)
+	{
+		if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
+		else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
+	}
+	else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+#else //TMC2130
+	if (!farm_mode) { //dont show in menu if we are in farm mode
+		switch (SilentModeMenu) {
+		case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+		case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+		case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+		default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+		}
+	}
 #endif //TMC2130
-
-  END_MENU();
+	END_MENU();
 }
-
-
-
 
 static void lcd_move_menu_01mm()
 {
