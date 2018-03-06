@@ -913,7 +913,7 @@ error:
 #define FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP  (1.f)
 #ifdef HEATBED_V2
 #define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (2.f)
-#define FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR  (0.01f)
+#define FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR  (0.03f)
 #else //HEATBED_V2
 #define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.2f)
 #endif //HEATBED_V2
@@ -971,45 +971,46 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 		// Continously lower the Z axis.
 		endstops_hit_on_purpose();
 		enable_z_endstop(true);
+		bool direction = false;
 		while (current_position[Z_AXIS] > -10.f && z_error > FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR) {
 			// Do nsteps_y zig-zag movements.
 
-			//SERIAL_ECHOPGM("z_error: ");
-			//MYSERIAL.println(z_error);
-			current_position[Y_AXIS] = y0;
+			SERIAL_ECHOPGM("z_error: ");
+			MYSERIAL.println(z_error);
+			current_position[Y_AXIS] = direction ? y1 : y0;
 			initial_z_position = current_position[Z_AXIS];
-			for (i = 0; i < (nsteps_y - 1); current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++i) {
+			for (i = 0; i < (nsteps_y - 1); (direction == false) ? (current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1)) : (current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1)), ++i) {
 				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
 				current_position[Z_AXIS] -= find_bed_induction_sensor_point_z_step / float(nsteps_y - 1);
 				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
 				dir_positive = !dir_positive;
 				if (endstop_z_hit_on_purpose()) {
 					update_current_position_xyz();
-					z_error = 2 * (initial_z_position - current_position[Z_AXIS]);
+					z_error = initial_z_position - current_position[Z_AXIS] + find_bed_induction_sensor_point_z_step;
 					if (z_error > FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR) {
 						find_bed_induction_sensor_point_z_step = z_error / 2;
 						current_position[Z_AXIS] += z_error;
 						enable_z_endstop(false);
-						go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
+						(direction == false) ? go_xyz(x0, y0, current_position[Z_AXIS], feedrate) : go_xyz(x0, y1, current_position[Z_AXIS], feedrate);
 						enable_z_endstop(true);
 					}
 					goto endloop;
 				}
 			}
-			initial_z_position = current_position[Z_AXIS];
-			for (i = 0; i < (nsteps_y - 1); current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++i) {
+			for (i = 0; i < (nsteps_y - 1); (direction == false) ? (current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1)) : (current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1)), ++i) {
 				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
 				current_position[Z_AXIS] -= find_bed_induction_sensor_point_z_step / float(nsteps_y - 1);
 				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
 				dir_positive = !dir_positive;
 				if (endstop_z_hit_on_purpose()) {
 					update_current_position_xyz();
-					z_error = 2 * (initial_z_position - current_position[Z_AXIS]);
+					z_error = initial_z_position - current_position[Z_AXIS];
 					if (z_error > FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR) {
 						find_bed_induction_sensor_point_z_step = z_error / 2;
 						current_position[Z_AXIS] += z_error;
 						enable_z_endstop(false);
-						go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
+						direction = !direction;
+						(direction == false) ? go_xyz(x0, y0, current_position[Z_AXIS], feedrate) : go_xyz(x0, y1, current_position[Z_AXIS], feedrate);
 						enable_z_endstop(true);
 					}
 					goto endloop;
