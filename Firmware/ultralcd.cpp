@@ -1,6 +1,7 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #ifdef ULTRA_LCD
+#include "MenuStack.h"
 #include "Marlin.h"
 #include "language.h"
 #include "cardreader.h"
@@ -39,7 +40,7 @@ extern bool fsensor_enabled;
 #endif //PAT9125
 
 //Function pointer to menu functions.
-typedef void (*menuFunc_t)();
+
 
 static void lcd_sd_updir();
 
@@ -223,7 +224,7 @@ static void lcd_delta_calibrate_menu();
 static void lcd_quick_feedback();//Cause an LCD refresh, and give the user visual or audible feedback that something has happened
 
 /* Different types of actions that can be used in menu items. */
-static void menu_action_back(menuFunc_t data);
+static void menu_action_back(menuFunc_t data = 0);
 #define menu_action_back_RAM menu_action_back
 static void menu_action_submenu(menuFunc_t data);
 static void menu_action_gcode(const char* pgcode);
@@ -339,6 +340,22 @@ uint8_t lcdDrawUpdate = 2;                  /* Set to none-zero when the LCD nee
 // float raw_Ki, raw_Kd;
 #endif
 
+
+/**
+ * @brief Go to menu
+ *
+ * This function should not be used directly, use
+ * menu_action_back and menu_action_submenu instead.
+ *
+ * @param menu target menu
+ * @param encoder position in target menu
+ * @param feedback
+ *  * true sound feedback (click)
+ *  * false no feedback
+ * @param reset_menu_state
+ *  * true reset menu state global union
+ *  * false do not reset menu state global union
+ */
 static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true, bool reset_menu_state = true)
 {
 	asm("cli");
@@ -6647,32 +6664,25 @@ static void lcd_quick_feedback()
   lcd_implementation_quick_feedback();
 }
 
-#define ENC_STACK_SIZE 3
-static uint8_t enc_stack[ENC_STACK_SIZE]; //encoder is originaly uint16, but for menu 
-static uint8_t enc_stack_cnt = 0;
-
-static void lcd_push_encoder(void)
-{
-	if (enc_stack_cnt >= ENC_STACK_SIZE) return;
-	enc_stack[enc_stack_cnt] = encoderPosition;
-	enc_stack_cnt++;
-}
-
-static void lcd_pop_encoder(void)
-{
-	if (enc_stack_cnt == 0) return;
-	enc_stack_cnt--;
-	encoderPosition = enc_stack[enc_stack_cnt];
-}
-
-
 /** Menu action functions **/
-static void menu_action_back(menuFunc_t data) {
-  lcd_goto_menu(data);
-  lcd_pop_encoder();
+static MenuStack menuStack;
+
+/**
+ * @brief Go up in menu structure
+ * @param data unused parameter
+ */
+static void menu_action_back(menuFunc_t data)
+{
+    MenuStack::Record record = menuStack.pop();
+    lcd_goto_menu(record.menu);
+    encoderPosition = record.position;
 }
+/**
+ * @brief Go deeper into menu structure
+ * @param data nested menu
+ */
 static void menu_action_submenu(menuFunc_t data) {
-  lcd_push_encoder();
+  menuStack.push(currentMenu, encoderPosition);
   lcd_goto_menu(data);
 }
 static void menu_action_gcode(const char* pgcode) {
