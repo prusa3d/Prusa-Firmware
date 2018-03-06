@@ -7021,11 +7021,14 @@ void save_statistics(unsigned long _total_filament_used, unsigned long _total_pr
 }
 
 float calculate_extruder_multiplier(float diameter) {
-  bool  enabled = volumetric_enabled && diameter > 0;
-  float area    = enabled ? (M_PI * pow(diameter * .5, 2)) : 0;
-	return (extrudemultiply == 100) ? 
-    (enabled ? (1.f / area) : 1.f) :
-    (enabled ? ((float(extrudemultiply) * 0.01f) / area) : 1.f);
+  float out = 1.f;
+  if (volumetric_enabled && diameter > 0.f) {
+    float area = M_PI * diameter * diameter * 0.25;
+    out = 1.f / area;
+  }
+  if (extrudemultiply != 100)
+    out *= float(extrudemultiply) * 0.01f;
+  return out;
 }
 
 void calculate_extruder_multipliers() {
