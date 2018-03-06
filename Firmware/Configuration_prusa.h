@@ -17,6 +17,7 @@
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_0_4a
+#define HAS_SECOND_SERIAL_PORT
 
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
