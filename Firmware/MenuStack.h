@@ -24,8 +24,9 @@ public:
     MenuStack():m_stack(),m_index(0) {}
     void push(menuFunc_t menu, uint8_t position);
     Record pop();
+    void reset(){m_index = 0;}
 private:
-    static const int max_depth = 3;
+    static const int max_depth = 4;
     Record m_stack[max_depth];
     uint8_t m_index;
 };

@@ -106,7 +106,7 @@ union Data
   byte b[2];
   int value;
 };
-
+static MenuStack menuStack;
 int8_t ReInitLCD = 0;
 
 int8_t SDscrool = 0;
@@ -527,8 +527,8 @@ static void lcd_status_screen()
 
   if (current_click && (lcd_commands_type != LCD_COMMAND_STOP_PRINT)) //click is aborted unless stop print finishes
   {
-
-    lcd_goto_menu(lcd_main_menu);
+    menuStack.reset();
+    menu_action_submenu(lcd_main_menu);
     lcd_implementation_init( // to maybe revive the LCD if static electricity killed it.
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
       currentMenu == lcd_status_screen
@@ -6663,7 +6663,6 @@ static void lcd_quick_feedback()
 }
 
 /** Menu action functions **/
-static MenuStack menuStack;
 
 /**
  * @brief Go up in menu structure
