@@ -972,7 +972,8 @@ void lcd_commands()
 		{
 
 			lcd_implementation_clear();
-			lcd_goto_menu(lcd_babystep_z, 0, false);
+			menuStack.reset();
+			menu_action_submenu(lcd_babystep_z);
 			enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
 			enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0")); //intro line			
 			enquecommand_P(PSTR("G92 E0.0"));
@@ -2373,7 +2374,7 @@ static void _lcd_babystep(int axis, const char *msg)
       (axis == 0) ? EEPROM_BABYSTEP_X : ((axis == 1) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z), 
       &menuData.babyStep.babystepMem[axis]);
   }
-  if (LCD_CLICKED) lcd_goto_menu(lcd_main_menu);
+  if (LCD_CLICKED) menu_action_back();
 }
 
 static void lcd_babystep_x() {
