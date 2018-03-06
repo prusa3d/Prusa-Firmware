@@ -1634,9 +1634,7 @@ static void lcd_menu_fails_stats()
     fprintf_P(lcdout, PSTR(ESC_H(0,0)"Last print failures"ESC_H(1,1)"Filam. runouts  %-3d"ESC_H(0,2)"Total failures"ESC_H(1,3)"Filam. runouts  %-3d"), filamentLast, filamentTotal);
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
-        //lcd_return_to_status();
-        lcd_goto_menu(lcd_main_menu, 8); //TODO: Remove hard coded encoder value.
+        menu_action_back();
     }
 }
 #endif //TMC2130
