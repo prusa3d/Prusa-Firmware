@@ -525,7 +525,7 @@ static void lcd_status_screen()
 
   if (current_click && (lcd_commands_type != LCD_COMMAND_STOP_PRINT)) //click is aborted unless stop print finishes
   {
-    menuStack.reset();
+    menuStack.reset(); //redundant, as already done in lcd_return_to_status(), just to be sure
     menu_action_submenu(lcd_main_menu);
     lcd_implementation_init( // to maybe revive the LCD if static electricity killed it.
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
@@ -1381,6 +1381,7 @@ static void lcd_return_to_status() {
   );
 
     lcd_goto_menu(lcd_status_screen, 0, false);
+    menuStack.reset();
 }
 
 
