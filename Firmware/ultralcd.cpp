@@ -2220,7 +2220,7 @@ static void lcd_move_e()
   {
     lcd_implementation_drawedit(PSTR("Extruder"), ftostr31(current_position[E_AXIS]));
   }
-  if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis);
+  if (LCD_CLICKED) menu_action_back();
 }
 	else {
 		lcd_implementation_clear();
