@@ -3542,8 +3542,8 @@ static void lcd_fsensor_state_set()
             lcd_fsensor_fail();
         }
     }
-	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 7);
-	else lcd_goto_menu(lcd_settings_menu, 7); //doesn't break menuStack
+	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu);
+	else lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
     
 }
 #endif //PAT9125
