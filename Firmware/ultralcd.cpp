@@ -1537,7 +1537,7 @@ static void lcd_menu_extruder_info()
     lcd.print(itostr3(pat9125_b));
     
     // Display LASER shutter time from Filament sensor
-    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chip�s internal
+    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
      auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
      When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to
      46. */
