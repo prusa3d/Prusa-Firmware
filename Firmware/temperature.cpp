@@ -32,7 +32,6 @@
 #include "Marlin.h"
 #include "ultralcd.h"
 #include "temperature.h"
-#include "watchdog.h"
 #include "cardreader.h"
 
 #include "Sd2PinMap.h"
@@ -262,7 +261,9 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 
 
  for(;;) {
-	wdt_reset();
+#ifdef WATCHDOG
+    wdt_reset();
+#endif //WATCHDOG
     if(temp_meas_ready == true) { // temp sample ready
       updateTemperaturesFromRawValues();
 
@@ -576,7 +577,9 @@ void checkExtruderAutoFans()
 
 void manage_heater()
 {
-	wdt_reset();
+#ifdef WATCHDOG
+    wdt_reset();
+#endif //WATCHDOG
 
   float pid_input;
   float pid_output;
@@ -960,7 +963,9 @@ static void updateTemperaturesFromRawValues()
     #endif
 
     //Reset the watchdog after we know we have a temperature measurement.
-    watchdog_reset();
+#ifdef WATCHDOG
+    wdt_reset();
+#endif //WATCHDOG
 
     CRITICAL_SECTION_START;
     temp_meas_ready = false;
