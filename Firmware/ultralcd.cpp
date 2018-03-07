@@ -342,8 +342,11 @@ uint8_t lcdDrawUpdate = 2;                  /* Set to none-zero when the LCD nee
 /**
  * @brief Go to menu
  *
- * This function should not be used directly, use
- * menu_action_back and menu_action_submenu instead.
+ * In MENU_ITEM(submenu,... ) use MENU_ITEM(back,...) or
+ * menu_action_back() and menu_action_submenu() instead, otherwise menuStack will be broken.
+ *
+ * It is acceptable to call lcd_goto_menu(menu) directly from MENU_ITEM(function,...), if destination menu
+ * is the same, from which function was called.
  *
  * @param menu target menu
  * @param encoder position in target menu
@@ -1817,13 +1820,13 @@ static void lcd_support_menu()
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
-	lcd_goto_menu(lcd_settings_menu, 8);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
 void lcd_set_filament_autoload() {
 	filament_autoload_enabled = !filament_autoload_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
-	lcd_goto_menu(lcd_settings_menu, 8);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
 void lcd_unLoadFilament()
@@ -3027,7 +3030,7 @@ static void lcd_show_end_stops() {
 
 static void menu_show_end_stops() {
     lcd_show_end_stops();
-    if (LCD_CLICKED) lcd_goto_menu(lcd_calibration_menu);
+    if (LCD_CLICKED) lcd_goto_menu(lcd_calibration_menu); //doesn't break menuStack
 }
 
 // Lets the user move the Z carriage up to the end stoppers.
@@ -3415,7 +3418,7 @@ static void lcd_sort_type_set() {
 	}
 	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
 	presort_flag = true;
-	lcd_goto_menu(lcd_settings_menu, 8);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 #endif //SDCARD_SORT_ALPHA
 
@@ -3605,7 +3608,7 @@ void lcd_temp_calibration_set() {
 	temp_cal_active = !temp_cal_active;
 	eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
 	digipot_init();
-	lcd_goto_menu(lcd_settings_menu, 10);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
 #ifdef HAS_SECOND_SERIAL_PORT
@@ -3614,7 +3617,7 @@ void lcd_second_serial_set() {
 	else selectedSerialPort = 1;
 	eeprom_update_byte((unsigned char *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
 	MYSERIAL.begin(BAUDRATE);
-	lcd_goto_menu(lcd_settings_menu, 11);//doesn't break menuStack
+	lcd_goto_menu(lcd_settings_menu);//doesn't break menuStack
 }
 #endif //HAS_SECOND_SERIAL_PORT
 
