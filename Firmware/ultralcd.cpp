@@ -2389,6 +2389,14 @@ static void lcd_babystep_z() {
 
 static void lcd_adjust_bed();
 
+/**
+ * @brief adjust bed reset menu item function
+ *
+ * To be used as MENU_ITEM(function,...) inside lcd_adjust_bed submenu. In such case lcd_goto_menu usage
+ * is correct and doesn't break menuStack.
+ * Because we did not leave the menu, the menuData did not reset.
+ * Force refresh of the bed leveling data.
+ */
 static void lcd_adjust_bed_reset()
 {
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
@@ -2396,9 +2404,7 @@ static void lcd_adjust_bed_reset()
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR , 0);
-    lcd_goto_menu(lcd_adjust_bed, 0, false);
-    // Because we did not leave the menu, the menuData did not reset.
-    // Force refresh of the bed leveling data.
+    lcd_goto_menu(lcd_adjust_bed, 0, false); //doesn't break menuStack
     menuData.adjustBed.status = 0;
 }
 
