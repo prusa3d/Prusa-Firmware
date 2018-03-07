@@ -6057,14 +6057,12 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	}
 
 // first axis length measurement begin	
-
-	tmc2130_home_enter(X_AXIS_MASK << axis);
+	
 	current_position[axis] -= (axis_length + margin);
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 
 	
 	st_synchronize();
-	tmc2130_home_exit();
 
 	tmc2130_sg_meassure_start(axis);
 
@@ -6077,9 +6075,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	current_position[axis] += axis_length;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 
-	tmc2130_home_enter(X_AXIS_MASK << axis);
 	st_synchronize();
-	tmc2130_home_exit();
 
 	uint16_t sg1 = tmc2130_sg_meassure_stop();
 	printf_P(PSTR("%c AXIS SG1=%d\n"), 'X'+axis, sg1);
@@ -6096,12 +6092,10 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 	st_synchronize();	
 
-	tmc2130_home_enter(X_AXIS_MASK << axis);
 	current_position[axis] -= (axis_length + margin);
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		
 	st_synchronize();
-	tmc2130_home_exit();
 
 	current_position_init = st_get_position_mm(axis);
 
@@ -6109,7 +6103,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 
 //end of second measurement, now check for possible errors:
-	
+
 	for(int i = 0; i < 2; i++){ //check if measured axis length corresponds to expected length
 		SERIAL_ECHOPGM("Measured axis length:");
 		MYSERIAL.println(measured_axis_length[i]);
