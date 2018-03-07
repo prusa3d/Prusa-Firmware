@@ -3539,7 +3539,7 @@ static void lcd_fsensor_state_set()
         }
     }
 	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 7);
-	else lcd_goto_menu(lcd_settings_menu, 7);
+	else lcd_goto_menu(lcd_settings_menu, 7); //doesn't break menuStack
     
 }
 #endif //PAT9125
@@ -4627,7 +4627,7 @@ static void lcd_disable_farm_mode() {
 		lcd_return_to_status();
 	}
 	else {
-		lcd_goto_menu(lcd_settings_menu);
+		lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 	}
 	lcd_update_enable(true);
 	lcdDrawUpdate = 2;
