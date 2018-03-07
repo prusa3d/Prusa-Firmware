@@ -49,7 +49,6 @@
 #include "temperature.h"
 #include "motion_control.h"
 #include "cardreader.h"
-#include "watchdog.h"
 #include "ConfigurationStore.h"
 #include "language.h"
 #include "pins_arduino.h"
@@ -1042,7 +1041,6 @@ void setup()
 	lcd_splash(); // we need to do this again, because tp_init() kills lcd
 
 	plan_init();  // Initialize planner;
-	watchdog_init();
 
 	factory_reset();
 
@@ -1307,7 +1305,9 @@ void setup()
 #endif //UVLO_SUPPORT
 
   KEEPALIVE_STATE(NOT_BUSY);
+#ifdef WATCHDOG
   wdt_enable(WDTO_4S);
+#endif //WATCHDOG
 }
 
 #ifdef PAT9125
@@ -6901,7 +6901,9 @@ void kill(const char *full_screen_message, unsigned char id)
   suicide();
   while(1)
   {
-	wdt_reset();
+#ifdef WATCHDOG
+    wdt_reset();
+#endif //WATCHDOG
 	  /* Intentionally left empty */
 	
   } // Wait for reset
