@@ -321,14 +321,11 @@ void trapezoid_generator_reset() {
   _NEXT_ISR(acceleration_time);
   
   #ifdef LIN_ADVANCE
-    if (current_block->use_advance_lead) {
+    if ((use_advance_lead = current_block->use_advance_lead)) {
       LA_decelerate_after = current_block->decelerate_after;
       final_adv_steps = current_block->final_adv_steps;
       max_adv_steps = current_block->max_adv_steps;
-      use_advance_lead = true;
     }
-    else
-      use_advance_lead = false;
   #endif
 }
 
@@ -739,7 +736,7 @@ void isr() {
 
   void advance_isr() {
 
-    if (current_block->use_advance_lead) {
+    if (use_advance_lead) {
       if (step_events_completed > LA_decelerate_after && current_adv_steps > final_adv_steps) {
         e_steps--;
         current_adv_steps--;
