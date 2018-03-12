@@ -262,8 +262,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define EXTRUDER_2_AUTO_FAN_PIN   -1
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
-
-
+#define SAFETYTIMER
 
 /*------------------------------------
  LOAD/UNLOAD FILAMENT SETTINGS
