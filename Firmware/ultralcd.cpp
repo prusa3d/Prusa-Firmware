@@ -5422,14 +5422,21 @@ void stack_error() {
 
 #ifdef DEBUG_STEPPER_TIMER_MISSED
 bool stepper_timer_overflow_state = false;
+uint16_t stepper_timer_overflow_max = 0;
+uint16_t stepper_timer_overflow_last = 0;
+uint16_t stepper_timer_overflow_cnt = 0;
 void stepper_timer_overflow() {
-  SET_OUTPUT(BEEPER);
-  WRITE(BEEPER, HIGH);
-  delay(1000);
+  char msg[28];
+  sprintf_P(msg, PSTR("#%d %d max %d"), ++ stepper_timer_overflow_cnt, stepper_timer_overflow_last >> 1, stepper_timer_overflow_max >> 1);
+  lcd_setstatus(msg);
+  stepper_timer_overflow_state = false;
+  if (stepper_timer_overflow_last > stepper_timer_overflow_max)
+    stepper_timer_overflow_max = stepper_timer_overflow_last;
+  SERIAL_ECHOPGM("Stepper timer overflow: ");
+  MYSERIAL.print(msg);
+  SERIAL_ECHOLNPGM("");
+
   WRITE(BEEPER, LOW);
-  lcd_display_message_fullscreen_P(MSG_STEPPER_TIMER_OVERFLOW_ERROR);
-  //err_triggered = 1;
-   while (1) delay_keep_alive(1000);
 }
 #endif /* DEBUG_STEPPER_TIMER_MISSED */
 

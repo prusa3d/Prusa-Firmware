@@ -127,8 +127,6 @@
 //END AUTOSET LOCATIONS OF LIMIT SWITCHES -ZP
 
 
-//#define Z_LATE_ENABLE // Enable Z the last moment. Needed if your Z driver overheats.
-
 // A single Z stepper driver is usually used to drive 2 stepper motors.
 // Uncomment this define to utilize a separate stepper driver for each Z axis motor.
 // Only a few motherboards support this, like RAMPS, which have dual extruder support (the 2nd, often unused, extruder driver is used
@@ -318,7 +316,7 @@
     * K=0 means advance disabled.
     * See Marlin documentation for calibration instructions.
     */
-//#define LIN_ADVANCE
+#define LIN_ADVANCE
 
 #ifdef LIN_ADVANCE
   #define LIN_ADVANCE_K 0 //Try around 45 for PLA, around 25 for ABS.
