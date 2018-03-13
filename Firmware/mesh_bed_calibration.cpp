@@ -898,6 +898,9 @@ error:
     return false;
 }
 
+#ifdef NEW_XYZCAL
+extern bool xyzcal_find_bed_induction_sensor_point_xy();
+#endif //NEW_XYZCAL
 // Search around the current_position[X,Y],
 // look for the induction sensor response.
 // Adjust the  current_position[X,Y,Z] to the center of the target dot and its response Z coordinate.
@@ -905,8 +908,11 @@ error:
 #define FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS (6.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP  (1.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.2f)
-inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
+/*inline */bool find_bed_induction_sensor_point_xy(int verbosity_level)
 {
+#ifdef NEW_XYZCAL
+	return xyzcal_find_bed_induction_sensor_point_xy();
+#else //NEW_XYZCAL
 	#ifdef SUPPORT_VERBOSITY
 	if(verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
 	#endif // SUPPORT_VERBOSITY
@@ -1099,8 +1105,10 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 
     enable_z_endstop(false);
     return found;
+#endif //NEW_XYZCAL
 }
 
+#ifndef NEW_XYZCAL
 // Search around the current_position[X,Y,Z].
 // It is expected, that the induction sensor is switched on at the current position.
 // Look around this center point by painting a star around the point.
@@ -1190,7 +1198,9 @@ inline bool improve_bed_induction_sensor_point()
     enable_z_endstop(endstop_z_enabled);
     return found;
 }
+#endif //NEW_XYZCAL
 
+#ifndef NEW_XYZCAL
 static inline void debug_output_point(const char *type, const float &x, const float &y, const float &z)
 {
     SERIAL_ECHOPGM("Measured ");
@@ -1203,7 +1213,9 @@ static inline void debug_output_point(const char *type, const float &x, const fl
     MYSERIAL.print(z, 5);
     SERIAL_ECHOLNPGM("");
 }
+#endif //NEW_XYZCAL
 
+#ifndef NEW_XYZCAL
 // Search around the current_position[X,Y,Z].
 // It is expected, that the induction sensor is switched on at the current position.
 // Look around this center point by painting a star around the point.
@@ -1363,7 +1375,9 @@ canceled:
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
     return false;
 }
+#endif //NEW_XYZCAL
 
+#ifndef NEW_XYZCAL
 // Searching the front points, where one cannot move the sensor head in front of the sensor point.
 // Searching in a zig-zag movement in a plane for the maximum width of the response.
 // This function may set the current_position[Y_AXIS] below Y_MIN_POS, if the function succeeded.
@@ -1684,7 +1698,9 @@ canceled:
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
     return false;
 }
+#endif //NEW_XYZCAL
 
+#ifndef NEW_XYZCAL
 // Scan the mesh bed induction points one by one by a left-right zig-zag movement,
 // write the trigger coordinates to the serial line.
 // Useful for visualizing the behavior of the bed induction detector.
@@ -1729,6 +1745,7 @@ inline void scan_bed_induction_sensor_point()
     current_position[Y_AXIS] = center_old_y;
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
 }
+#endif //NEW_XYZCAL
 
 #define MESH_BED_CALIBRATION_SHOW_LCD
 
@@ -1855,7 +1872,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		#endif // SUPPORT_VERBOSITY
 		if (!find_bed_induction_sensor_point_xy(verbosity_level))
 			return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-#if 1
+#ifndef NEW_XYZCAL
 		
 			if (k == 0 || k == 1) {
 				// Improve the position of the 1st row sensor points by a zig-zag movement.
@@ -2017,6 +2034,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 	return result;    
 }
 
+#ifndef NEW_XYZCAL
 BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level, uint8_t &too_far_mask)
 {
     // Don't let the manage_inactivity() function remove power from the motors.
@@ -2322,6 +2340,7 @@ canceled:
     enable_z_endstop(endstop_z_enabled);
     return result;
 }
+#endif //NEW_XYZCAL
 
 void go_home_with_z_lift()
 {
@@ -2462,6 +2481,7 @@ bool sample_mesh_and_store_reference()
     return true;
 }
 
+#ifndef NEW_XYZCAL
 bool scan_bed_induction_points(int8_t verbosity_level)
 {
     // Don't let the manage_inactivity() function remove power from the motors.
@@ -2523,6 +2543,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
     enable_z_endstop(endstop_z_enabled);
     return true;
 }
+#endif //NEW_XYZCAL
 
 // Shift a Z axis by a given delta.
 // To replace loading of the babystep correction.

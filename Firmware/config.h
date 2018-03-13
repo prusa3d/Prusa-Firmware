@@ -8,5 +8,8 @@
 #define ADC_OVRSAMPL      16        //oversampling multiplier
 #define ADC_CALLBACK      adc_ready //callback function ()
 
+//SM4 configuration
+#define SM4_DEFDELAY      500       //default step delay [us]
+
 
 #endif //_CONFIG_H

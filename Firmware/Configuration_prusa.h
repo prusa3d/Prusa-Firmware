@@ -95,6 +95,12 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Automatic recovery after crash is detected
 #define AUTOMATIC_RECOVERY_AFTER_CRASH
 
+// New XYZ calibration
+#define NEW_XYZCAL
+
+// Watchdog support
+#define WATCHDOG
+
 // Disable some commands
 #define _DISABLE_M42_M226
 
