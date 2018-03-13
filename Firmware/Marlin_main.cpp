@@ -54,6 +54,7 @@
 #include "pins_arduino.h"
 #include "math.h"
 #include "util.h"
+#include "Timer.h"
 
 #include <avr/wdt.h>
 
@@ -6733,6 +6734,31 @@ void handle_status_leds(void) {
 }
 #endif
 
+#ifdef SAFETYTIMER
+/**
+ * @brief Turn off heating after 15 minutes of inactivity
+ */
+static void handleSafetyTimer()
+{
+    static_assert(EXTRUDERS == 1,"Implemented only for one extruder.");
+    static Timer safetyTimer;
+    if (IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) ||
+            (!degTargetBed() && !degTargetHotend(0)))
+    {
+        safetyTimer.stop();
+    }
+    else if ((degTargetBed() || degTargetHotend(0)) && (!safetyTimer.running()))
+    {
+        safetyTimer.start();
+    }
+    else if (safetyTimer.expired(15*60*1000))
+    {
+        setTargetBed(0);
+        setTargetHotend(0, 0);
+    }
+}
+#endif //SAFETYTIMER
+
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 	if (fsensor_enabled && filament_autoload_enabled && !fsensor_M600 && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
@@ -6772,6 +6798,10 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 	else
 		if (fsensor_autoload_enabled)
 			fsensor_autoload_check_stop();
+
+#ifdef SAFETYTIMER
+	handleSafetyTimer();
+#endif //SAFETYTIMER
 
 #if defined(KILL_PIN) && KILL_PIN > -1
 	static int killCount = 0;   // make the inactivity button a bit less responsive
