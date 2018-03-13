@@ -2285,6 +2285,7 @@ bool gcode_M45(bool onlyZ)
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
 				st_synchronize();
+#ifndef NEW_XYZCAL
 				if (result >= 0)
 				{
 					point_too_far_mask = 0;
@@ -2303,6 +2304,8 @@ bool gcode_M45(bool onlyZ)
 					st_synchronize();
 					// if (result >= 0) babystep_apply();
 				}
+#endif //NEW_XYZCAL
+
 				lcd_bed_calibration_show_result(result, point_too_far_mask);
 				if (result >= 0)
 				{
