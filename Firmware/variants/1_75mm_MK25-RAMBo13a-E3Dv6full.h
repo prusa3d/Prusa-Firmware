@@ -2,34 +2,49 @@
 #define CONFIGURATION_PRUSA_H
 
 /*------------------------------------
-GENERAL SETTINGS
-*------------------------------------*/
+ GENERAL SETTINGS
+ *------------------------------------*/
 
 // Printer revision
-#define FILAMENT_SIZE "1_75mm_MK2"
+#define FILAMENT_SIZE "1_75mm_MK25"
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Developer flag
 #define DEVELOPER
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK2"
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK2.5"
 
 // Electronics
-#define MOTHERBOARD BOARD_RAMBO_MINI_1_0
+#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
+
+
+// Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
+//#define E3D_PT100_EXTRUDER_WITH_AMP
+//#define E3D_PT100_EXTRUDER_NO_AMP
+//#define E3D_PT100_BED_WITH_AMP
+//#define E3D_PT100_BED_NO_AMP
 
 
 /*------------------------------------
-AXIS SETTINGS
-*------------------------------------*/
+ AXIS SETTINGS
+ *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 const bool Y_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
+
+// Direction inverting
+#define INVERT_X_DIR false    // for Mendel set to false, for Orca set to true
+#define INVERT_Y_DIR false    // for Mendel set to true, for Orca set to false
+#define INVERT_Z_DIR false    // for Mendel set to false, for Orca set to true
+#define INVERT_E0_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_E1_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_E2_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
 
 // Home position
 #define MANUAL_X_HOME_POS 0
@@ -40,31 +55,72 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define X_MAX_POS 255
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
-#define Y_MIN_POS -4
-#define Z_MAX_POS 210
-#define Z_MIN_POS 0.2
+#define Y_MIN_POS -4 //orig -4
+#define Z_MAX_POS 200
+#define Z_MIN_POS 0.15
 
 // Canceled home position
 #define X_CANCEL_POS 50
 #define Y_CANCEL_POS 190
 
+//Pause print position
+#define X_PAUSE_POS 50
+#define Y_PAUSE_POS 190
+#define Z_PAUSE_LIFT 20
+
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
-#define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
+#define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
 
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 1000, 25}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {9000,9000,1000,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
-
-#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
+#define DEFAULT_MAX_FEEDRATE          {200, 200, 12, 120}      // (mm/sec)   max feedrate (M203)
+#define DEFAULT_MAX_ACCELERATION      {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
 
 
-#define MANUAL_FEEDRATE {3000, 3000, 1000, 100}   // set the speeds for manual moves (mm/min)
+#define DEFAULT_ACCELERATION          1250   // X, Y, Z and E max acceleration in mm/s^2 for printing moves (M204S)
+#define DEFAULT_RETRACT_ACCELERATION  1250   // X, Y, Z and E max acceleration in mm/s^2 for retracts (M204T)
+
+#define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
+
+//number of bytes from end of the file to start check
+#define END_FILE_SECTION 10000
 
 #define Z_AXIS_ALWAYS_ON 1
 
+
+//#define DEBUG_BUILD
+#ifdef DEBUG_BUILD
+//#define _NO_ASM
+#define DEBUG_DCODES //D codes
+#define DEBUG_STACK_MONITOR        //Stack monitor in stepper ISR
+//#define DEBUG_FSENSOR_LOG          //Reports fsensor status to serial
+//#define DEBUG_CRASHDET_COUNTERS  //Display crash-detection counters on LCD
+//#define DEBUG_RESUME_PRINT       //Resume/save print debug enable 
+//#define DEBUG_UVLO_AUTOMATIC_RECOVER // Power panic automatic recovery debug output 
+//#define DEBUG_DISABLE_XMINLIMIT  //x min limit ignored
+//#define DEBUG_DISABLE_XMAXLIMIT  //x max limit ignored
+//#define DEBUG_DISABLE_YMINLIMIT  //y min limit ignored
+//#define DEBUG_DISABLE_YMAXLIMIT  //y max limit ignored
+//#define DEBUG_DISABLE_ZMINLIMIT  //z min limit ignored
+//#define DEBUG_DISABLE_ZMAXLIMIT  //z max limit ignored
+//#define DEBUG_DISABLE_STARTMSGS //no startup messages 
+//#define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
+//#define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
+//#define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
+//#define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
+//#define DEBUG_DISABLE_PRUSA_STATISTICS //disable prusa_statistics() mesages
+//#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
+//#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
+//#define DEBUG_BLINK_ACTIVE
+//#define DEBUG_DISABLE_FANCHECK     //disable fan check (no ISR INT7, check disabled)
+//#define DEBUG_DISABLE_FSENSORCHECK //disable fsensor check (no ISR INT7, check disabled)
+//#define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
+//#define DEBUG_STEPPER_TIMER_MISSED // Stop on stepper timer overflow, beep and display a message.
+//#define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
+#endif /* DEBUG_BUILD */
+
+
 /*------------------------------------
-EXTRUDER SETTINGS
-*------------------------------------*/
+ EXTRUDER SETTINGS
+ *------------------------------------*/
 
 // Mintemps
 #define HEATER_0_MINTEMP 15
@@ -73,18 +129,32 @@ EXTRUDER SETTINGS
 #define BED_MINTEMP 15
 
 // Maxtemps
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
+#define HEATER_0_MAXTEMP 410
+#else
 #define HEATER_0_MAXTEMP 305
+#endif
 #define HEATER_1_MAXTEMP 305
 #define HEATER_2_MAXTEMP 305
-#define BED_MAXTEMP 150
+#define BED_MAXTEMP 125
 
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
+// Define PID constants for extruder with PT100
+#define  DEFAULT_Kp 21.70
+#define  DEFAULT_Ki 1.60
+#define  DEFAULT_Kd 73.76
+#else
 // Define PID constants for extruder
-#define  DEFAULT_Kp 40.925
-#define  DEFAULT_Ki 4.875
-#define  DEFAULT_Kd 86.085
+//#define  DEFAULT_Kp 40.925
+//#define  DEFAULT_Ki 4.875
+//#define  DEFAULT_Kd 86.085
+#define  DEFAULT_Kp 16.13
+#define  DEFAULT_Ki 1.1625
+#define  DEFAULT_Kd 56.23
+#endif
 
 // Extrude mintemp
-#define EXTRUDE_MINTEMP 130
+#define EXTRUDE_MINTEMP 190
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
@@ -94,10 +164,13 @@ EXTRUDER SETTINGS
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
 
+#define PAT9125
+#define FANCHECK
+
 
 /*------------------------------------
-LOAD/UNLOAD FILAMENT SETTINGS
-*------------------------------------*/
+ LOAD/UNLOAD FILAMENT SETTINGS
+ *------------------------------------*/
 
 // Load filament commands
 #define LOAD_FILAMENT_0 "M83"
@@ -106,11 +179,11 @@ LOAD/UNLOAD FILAMENT SETTINGS
 
 // Unload filament commands
 #define UNLOAD_FILAMENT_0 "M83"
-#define UNLOAD_FILAMENT_1 "G1 E-80 F400"
+#define UNLOAD_FILAMENT_1 "G1 E-80 F7000"
 
 /*------------------------------------
-CHANGE FILAMENT SETTINGS
-*------------------------------------*/
+ CHANGE FILAMENT SETTINGS
+ *------------------------------------*/
 
 // Filament change configuration
 #define FILAMENTCHANGEENABLE
@@ -127,15 +200,16 @@ CHANGE FILAMENT SETTINGS
 
 #define FILAMENTCHANGE_XYFEED 50
 #define FILAMENTCHANGE_EFEED 20
-#define FILAMENTCHANGE_RFEED 400
+//#define FILAMENTCHANGE_RFEED 400
+#define FILAMENTCHANGE_RFEED 7000 / 60
 #define FILAMENTCHANGE_EXFEED 2
 #define FILAMENTCHANGE_ZFEED 15
 
 #endif
 
 /*------------------------------------
-ADDITIONAL FEATURES SETTINGS
-*------------------------------------*/
+ ADDITIONAL FEATURES SETTINGS
+ *------------------------------------*/
 
 // Define Prusa filament runout sensor
 //#define FILAMENT_RUNOUT_SUPPORT
@@ -145,30 +219,39 @@ ADDITIONAL FEATURES SETTINGS
 #endif
 
 // temperature runaway
-//#define TEMP_RUNAWAY_BED_HYSTERESIS 5
-//#define TEMP_RUNAWAY_BED_TIMEOUT 360
+#define TEMP_RUNAWAY_BED_HYSTERESIS 5
+#define TEMP_RUNAWAY_BED_TIMEOUT 360
 
 #define TEMP_RUNAWAY_EXTRUDER_HYSTERESIS 15
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
 
 /*------------------------------------
-MOTOR CURRENT SETTINGS
-*------------------------------------*/
+ MOTOR CURRENT SETTINGS
+ *------------------------------------*/
 
 // Motor Current setting for BIG RAMBo
 #define DIGIPOT_MOTOR_CURRENT {135,135,135,135,135} // Values 0-255 (RAMBO 135 = ~0.75A, 185 = ~1A)
 #define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
-#if MOTHERBOARD == 102 || MOTHERBOARD == 302
+#if MOTHERBOARD == 203 || MOTHERBOARD == 200
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
+#define Z_SILENT 0
+#define Z_HIGH_POWER 200
 #endif
 
 /*------------------------------------
-BED SETTINGS
-*------------------------------------*/
+ PAT9125 SETTINGS
+ *------------------------------------*/
+
+#define PAT9125_XRES			0
+#define PAT9125_YRES			255
+
+/*------------------------------------
+ BED SETTINGS
+ *------------------------------------*/
 
 // Define Mesh Bed Leveling system to enable it
 #define MESH_BED_LEVELING
@@ -190,7 +273,7 @@ BED SETTINGS
 #define MESH_MEAS_NUM_Y_POINTS 3
 
 #define MESH_HOME_Z_CALIB 0.2
-#define MESH_HOME_Z_SEARCH 5
+#define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.
 
 #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
 #define Y_PROBE_OFFSET_FROM_EXTRUDER 9     // Z probe to nozzle Y offset: -front +behind
@@ -226,9 +309,16 @@ BED SETTINGS
 #ifdef PIDTEMPBED
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
 //from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
+#if defined(E3D_PT100_BED_WITH_AMP) || defined(E3D_PT100_BED_NO_AMP)
+// Define PID constants for extruder with PT100
+#define  DEFAULT_bedKp 21.70
+#define  DEFAULT_bedKi 1.60
+#define  DEFAULT_bedKd 73.76
+#else
 #define  DEFAULT_bedKp 126.13
 #define  DEFAULT_bedKi 4.30
 #define  DEFAULT_bedKd 924.76
+#endif
 
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
 //from pidautotune
@@ -241,36 +331,40 @@ BED SETTINGS
 
 
 /*-----------------------------------
-PREHEAT SETTINGS
-*------------------------------------*/
+ PREHEAT SETTINGS
+ *------------------------------------*/
+
+#define FARM_PREHEAT_HOTEND_TEMP 250
+#define FARM_PREHEAT_HPB_TEMP 40
+#define FARM_PREHEAT_FAN_SPEED 0
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
-#define PLA_PREHEAT_HPB_TEMP 55
-#define PLA_PREHEAT_FAN_SPEED 0  
+#define PLA_PREHEAT_HPB_TEMP 60
+#define PLA_PREHEAT_FAN_SPEED 0
 
 #define ABS_PREHEAT_HOTEND_TEMP 255
 #define ABS_PREHEAT_HPB_TEMP 100
-#define ABS_PREHEAT_FAN_SPEED 0 
+#define ABS_PREHEAT_FAN_SPEED 0
 
 #define HIPS_PREHEAT_HOTEND_TEMP 220
 #define HIPS_PREHEAT_HPB_TEMP 100
-#define HIPS_PREHEAT_FAN_SPEED 0 
+#define HIPS_PREHEAT_FAN_SPEED 0
 
 #define PP_PREHEAT_HOTEND_TEMP 254
 #define PP_PREHEAT_HPB_TEMP 100
-#define PP_PREHEAT_FAN_SPEED 0 
+#define PP_PREHEAT_FAN_SPEED 0
 
-#define PET_PREHEAT_HOTEND_TEMP 240
-#define PET_PREHEAT_HPB_TEMP 90
-#define PET_PREHEAT_FAN_SPEED 0 
+#define PET_PREHEAT_HOTEND_TEMP 230
+#define PET_PREHEAT_HPB_TEMP 85
+#define PET_PREHEAT_FAN_SPEED 0
 
-#define FLEX_PREHEAT_HOTEND_TEMP 230
+#define FLEX_PREHEAT_HOTEND_TEMP 240
 #define FLEX_PREHEAT_HPB_TEMP 50
-#define FLEX_PREHEAT_FAN_SPEED 0 
+#define FLEX_PREHEAT_FAN_SPEED 0
 
 /*------------------------------------
-THERMISTORS SETTINGS
-*------------------------------------*/
+ THERMISTORS SETTINGS
+ *------------------------------------*/
 
 //
 //--NORMAL IS 4.7kohm PULLUP!-- 1kohm pullup can be used on hotend sensor, using correct resistor and table
@@ -292,7 +386,7 @@ THERMISTORS SETTINGS
 // 10 is 100k RS thermistor 198-961 (4.7k pullup)
 // 11 is 100k beta 3950 1% thermistor (4.7k pullup)
 // 12 is 100k 0603 SMD Vishay NTCS0603E3104FXT (4.7k pullup) (calibrated for Makibox hot bed)
-// 13 is 100k Hisens 3950  1% up to 300°C for hotend "Simple ONE " & "Hotend "All In ONE" 
+// 13 is 100k Hisens 3950  1% up to 300°C for hotend "Simple ONE " & "Hotend "All In ONE"
 // 20 is the PT100 circuit found in the Ultimainboard V2.x
 // 60 is 100k Maker's Tool Works Kapton Bed Thermistor beta=3950
 //
@@ -305,12 +399,75 @@ THERMISTORS SETTINGS
 // 1047 is Pt1000 with 4k7 pullup
 // 1010 is Pt1000 with 1k pullup (non standard)
 // 147 is Pt100 with 4k7 pullup
+// 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.3a
+// 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
 
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP)
+#define TEMP_SENSOR_0 247
+#elif defined(E3D_PT100_EXTRUDER_NO_AMP)
+#define TEMP_SENSOR_0 148
+#else
 #define TEMP_SENSOR_0 5
+#endif
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
+#if defined(E3D_PT100_BED_WITH_AMP)
+#define TEMP_SENSOR_BED 247
+#elif defined(E3D_PT100_BED_NO_AMP)
+#define TEMP_SENSOR_BED 148
+#else
 #define TEMP_SENSOR_BED 1
+#endif
+#define TEMP_SENSOR_PINDA 1
 
+#define STACK_GUARD_TEST_VALUE 0xA2A2
+
+#define MAX_BED_TEMP_CALIBRATION 50
+#define MAX_HOTEND_TEMP_CALIBRATION 50
+
+#define MAX_E_STEPS_PER_UNIT 250
+#define MIN_E_STEPS_PER_UNIT 100
+
+#define Z_BABYSTEP_MIN -3999
+#define Z_BABYSTEP_MAX 0
+
+#define PINDA_PREHEAT_X 20
+#define PINDA_PREHEAT_Y 60
+#define PINDA_PREHEAT_Z 0.15
+/*
+#define PINDA_PREHEAT_X 70
+#define PINDA_PREHEAT_Y -3
+#define PINDA_PREHEAT_Z 1*/
+#define PINDA_HEAT_T 120 //time in s
+
+#define PINDA_MIN_T 50
+#define PINDA_STEP_T 10
+#define PINDA_MAX_T 100
+
+#define PING_TIME 60 //time in s
+#define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
+#define PING_ALLERT_PERIOD 60 //time in s
+
+#define LONG_PRESS_TIME 1000 //time in ms for button long press
+#define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
+
+#define DEFAULT_PID_TEMP 210
+
+#define MIN_PRINT_FAN_SPEED 75
+
+#ifdef SNMM
+#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
+#else
+#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
+#endif
+
+#define HEATBED_V2
+
+#define M600_TIMEOUT 600  //seconds
+
+#define TACH0PULLUP
+
+//#define SUPPORT_VERBOSITY
 
 #endif //__CONFIGURATION_PRUSA_H

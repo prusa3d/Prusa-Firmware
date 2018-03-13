@@ -102,8 +102,9 @@
 #define(length=20) MSG_CHANGING_FILAMENT	"Changing filament!"
 
 
-#define MSG_SILENT_MODE_ON					"Mode    [Stealth]"
-#define MSG_SILENT_MODE_OFF					"Mode     [Normal]" 
+#define MSG_SILENT_MODE_ON					"Mode     [silent]"
+#define MSG_SILENT_MODE_OFF					"Mode [high power]" 
+#define MSG_AUTO_MODE_ON					"Mode [auto power]"
 #define(length=20) MSG_REBOOT				"Reboot the printer"
 #define(length=20) MSG_TAKE_EFFECT			" for take effect"											
 
@@ -413,3 +414,6 @@
 #define(length=20, lines=8) MSG_FW_VERSION_BETA			 "You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."
 #define(length=20, lines=8) MSG_FW_VERSION_RC			 "This firmware version is release candidate. Some of the features may not work properly."
 #define(length=20, lines=8) MSG_FORCE_SELFTEST			 "Selftest will be run to calibrate accurate sensorless rehoming."
+#define(length=20, lines=4) MSG_CHANGED_MOTHERBOARD		 "Warning: motherboard type changed."
+#define(length=20, lines=4) MSG_CHANGED_PRINTER			 "Warning: printer type changed."
+#define(length=20, lines=4) MSG_CHANGED_BOTH			 "Warning: both printer type and motherboard type changed."

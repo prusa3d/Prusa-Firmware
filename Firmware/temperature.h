@@ -221,13 +221,20 @@ void PID_autotune(float temp, int extruder, int ncycles);
 void setExtruderAutoFanState(int pin, bool state);
 void checkExtruderAutoFans();
 
+
+#if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
+
 void countFanSpeed();
 void checkFanSpeed();
 void fanSpeedError(unsigned char _fan);
 
 void check_fans();
+
+#endif //(defined(TACH_0))
+
 void check_min_temp();
 void check_max_temp();
+
 
 #endif
 

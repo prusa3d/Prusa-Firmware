@@ -41,16 +41,21 @@ void lcd_mylang();
 #ifdef TMC2130
   static void reset_crash_det(char axis);
   static bool lcd_selfcheck_axis_sg(char axis);
-#endif //TMC2130
   static bool lcd_selfcheck_axis(int _axis, int _travel);
+#else
+  static bool lcd_selfcheck_endstops();
+  static bool lcd_selfcheck_axis(int _axis, int _travel);
+  static bool lcd_selfcheck_pulleys(int axis);
+#endif //TMC2130
+
   static bool lcd_selfcheck_check_heater(bool _isbed);
   static int  lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay);
   static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
+  static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite);
   static bool lcd_selftest_fan_dialog(int _fan);
   static bool lcd_selftest_fsensor();
   static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
-  void lcd_menu_statistics();
-  static bool lcd_selfcheck_pulleys(int axis);
+  void lcd_menu_statistics(); 
 
   extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
   inline const char* lcd_display_message_fullscreen_P(const char *msg) 
@@ -114,6 +119,7 @@ void lcd_mylang();
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
+  extern int8_t SilentModeMenu;
 
 #ifdef SNMM
   extern uint8_t snmm_extruder;
