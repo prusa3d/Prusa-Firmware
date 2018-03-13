@@ -5624,12 +5624,14 @@ static void lcd_tune_menu()
 #endif
 
 #ifndef DEBUG_DISABLE_FSENSORCHECK
+#ifdef PAT9125
 	if (FSensorStateMenu == 0) {
 		MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
 	}
 	else {
 		MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
 	}
+#endif //PAT9125
 #endif //DEBUG_DISABLE_FSENSORCHECK
 
 #ifdef TMC2130
