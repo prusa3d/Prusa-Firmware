@@ -54,6 +54,7 @@
 #include "pins_arduino.h"
 #include "math.h"
 #include "util.h"
+#include "Timer.h"
 
 #include <avr/wdt.h>
 
@@ -6720,6 +6721,31 @@ void handle_status_leds(void) {
 }
 #endif
 
+#ifdef SAFETYTIMER
+/**
+ * @brief Turn off heating after 15 minutes of inactivity
+ */
+static void handleSafetyTimer()
+{
+    static_assert(EXTRUDERS == 1,"Implemented only for one extruder.");
+    static Timer safetyTimer;
+    if (IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) ||
+            (!degTargetBed() && !degTargetHotend(0)))
+    {
+        safetyTimer.stop();
+    }
+    else if ((degTargetBed() || degTargetHotend(0)) && (!safetyTimer.running()))
+    {
+        safetyTimer.start();
+    }
+    else if (safetyTimer.expired(15*60*1000))
+    {
+        setTargetBed(0);
+        setTargetHotend(0, 0);
+    }
+}
+#endif //SAFETYTIMER
+
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef PAT9125
@@ -6763,18 +6789,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 #endif //PAT9125
 
 #ifdef SAFETYTIMER
-		static uint32_t safety_timer = 0;
-		if (degTargetBed() || degTargetHotend(0))
-		{
-			if ((safety_timer == 0) || IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL))
-				safety_timer = millis();
-			else if ((safety_timer + (15*60*1000)) < millis())
-			{
-				setTargetBed(0);
-				setTargetHotend(0, 0);
-				safety_timer = 0;
-			}
-		}
+	handleSafetyTimer();
 #endif //SAFETYTIMER
 
 
