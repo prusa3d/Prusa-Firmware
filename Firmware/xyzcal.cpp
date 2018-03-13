@@ -568,10 +568,10 @@ uint8_t xyzcal_xycoords2point(int16_t x, int16_t y)
 }
 
 //MK3
-#if ((MOTHERBOARD == 303) || (MOTHERBOARD == 304))
+#if ((MOTHERBOARD == 310))
 const int16_t PROGMEM xyzcal_point_xcoords[4] = {1200, 22000, 22000, 1200};
 const int16_t PROGMEM xyzcal_point_ycoords[4] = {600, 600, 19800, 19800};
-#endif //((MOTHERBOARD == 303) || (MOTHERBOARD == 304))
+#endif //((MOTHERBOARD == 310))
 
 //MK2.5
 #if ((MOTHERBOARD == 200) || (MOTHERBOARD == 203))

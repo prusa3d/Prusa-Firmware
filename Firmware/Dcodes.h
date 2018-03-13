@@ -16,7 +16,13 @@ extern void dcode_9(); //D9 - Read/Write ADC (Write=enable simulated, Read=disab
 
 extern void dcode_10(); //D10 - XYZ calibration = OK
 
+#ifdef TMC2130
 extern void dcode_2130(); //D2130 - TMC2130
+#endif //TMC2130
+
+#ifdef PAT9125
 extern void dcode_9125(); //D9125 - PAT9125
+#endif //PAT9125
+
 
 #endif //DCODES_H

@@ -32,7 +32,6 @@
 #include "Marlin.h"
 #include "ultralcd.h"
 #include "temperature.h"
-#include "watchdog.h"
 #include "cardreader.h"
 
 #include "Sd2PinMap.h"
@@ -262,7 +261,9 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 
 
  for(;;) {
-	wdt_reset();
+#ifdef WATCHDOG
+    wdt_reset();
+#endif //WATCHDOG
     if(temp_meas_ready == true) { // temp sample ready
       updateTemperaturesFromRawValues();
 
@@ -448,6 +449,8 @@ void setExtruderAutoFanState(int pin, bool state)
   analogWrite(pin, newFanSpeed);
 }
 
+#if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
+
 void countFanSpeed()
 {
 	//SERIAL_ECHOPGM("edge counter 1:"); MYSERIAL.println(fan_edge_counter[1]);
@@ -467,12 +470,14 @@ void checkFanSpeed()
 {
 	fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
-
-	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
+#if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
+	if (fan_speed[0] == 0 && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
 	else fan_speed_errors[0] = 0;
-
-	if ((fan_speed[1] == 0) && ((blocks_queued()?block_buffer[block_buffer_tail].fan_speed:fanSpeed) > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
+#endif
+#if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
+	if ((fan_speed[1] == 0)&& (fanSpeed > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
 	else fan_speed_errors[1] = 0;
+#endif
 
 	if ((fan_speed_errors[0] > 5) && fans_check_enabled) {
 		fan_speed_errors[0] = 0;
@@ -526,6 +531,7 @@ void fanSpeedError(unsigned char _fan) {
 		break;
 	}
 }
+#endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 
 
 void checkExtruderAutoFans()
@@ -577,7 +583,9 @@ void checkExtruderAutoFans()
 
 void manage_heater()
 {
-	wdt_reset();
+#ifdef WATCHDOG
+    wdt_reset();
+#endif //WATCHDOG
 
   float pid_input;
   float pid_output;
@@ -660,11 +668,16 @@ void manage_heater()
   #endif
 
     // Check if temperature is within the correct range
+#ifdef AMBIENT_THERMISTOR
     if(((current_temperature_ambient < MINTEMP_MINAMBIENT) || (current_temperature[e] > minttemp[e])) && (current_temperature[e] < maxttemp[e])) 
+#else //AMBIENT_THERMISTOR
+    if((current_temperature[e] > minttemp[e]) && (current_temperature[e] < maxttemp[e])) 
+#endif //AMBIENT_THERMISTOR
     {
       soft_pwm[e] = (int)pid_output >> 1;
     }
-    else {
+    else
+	{
       soft_pwm[e] = 0;
     }
 
@@ -703,8 +716,10 @@ void manage_heater()
       (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
   if(millis() - extruder_autofan_last_check > 1000)  // only need to check fan state very infrequently
   {
+#if (defined(FANCHECK) && ((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1))))
 	countFanSpeed();
 	checkFanSpeed();
+#endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
     checkExtruderAutoFans();
     extruder_autofan_last_check = millis();
   }  
@@ -747,7 +762,11 @@ void manage_heater()
       pid_output = constrain(target_temperature_bed, 0, MAX_BED_POWER);
     #endif //PID_OPENLOOP
 
+#ifdef AMBIENT_THERMISTOR
 	  if(((current_temperature_bed > BED_MINTEMP) || (current_temperature_ambient < MINTEMP_MINAMBIENT)) && (current_temperature_bed < BED_MAXTEMP)) 
+#else //AMBIENT_THERMISTOR
+	  if((current_temperature_bed > BED_MINTEMP) && (current_temperature_bed < BED_MAXTEMP)) 
+#endif //AMBIENT_THERMISTOR
 	  {
 	    soft_pwm_bed = (int)pid_output >> 1;
 	  }
@@ -903,6 +922,7 @@ static float analog2tempBed(int raw) {
   #endif
 }
 
+#ifdef AMBIENT_THERMISTOR
 static float analog2tempAmbient(int raw)
 {
     float celsius = 0;
@@ -923,6 +943,7 @@ static float analog2tempAmbient(int raw)
     if (i == AMBIENTTEMPTABLE_LEN) celsius = PGM_RD_W(AMBIENTTEMPTABLE[i-1][1]);
     return celsius;
 }
+#endif //AMBIENT_THERMISTOR
 
 /* Called to get the raw values into the the actual temperatures. The raw values are created in interrupt context,
     and this function is called from normal context as it is too slow to run in interrupts and will block the stepper routine otherwise */
@@ -948,7 +969,9 @@ static void updateTemperaturesFromRawValues()
     #endif
 
     //Reset the watchdog after we know we have a temperature measurement.
-    watchdog_reset();
+#ifdef WATCHDOG
+    wdt_reset();
+#endif //WATCHDOG
 
     CRITICAL_SECTION_START;
     temp_meas_ready = false;
@@ -1482,11 +1505,17 @@ extern "C" {
 void adc_ready(void) //callback from adc when sampling finished
 {
 	current_temperature_raw[0] = adc_values[0];
-	current_temperature_bed_raw = adc_values[2];
-	current_temperature_raw_pinda = adc_values[3];
+	current_temperature_raw_pinda = adc_values[1];
+	current_temperature_bed_raw = adc_values[2];	
+#ifdef VOLT_PWR_PIN
 	current_voltage_raw_pwr = adc_values[4];
+#endif
+#ifdef AMBIENT_THERMISTOR
 	current_temperature_raw_ambient = adc_values[5];
+#endif //AMBIENT_THERMISTOR
+#ifdef VOLT_BED_PIN
 	current_voltage_raw_bed = adc_values[6];
+#endif
 	temp_meas_ready = true;
 }
 
@@ -1843,7 +1872,9 @@ ISR(TIMER0_COMPB_vect)
   }
 #endif //BABYSTEPPING
 
+#if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
   check_fans();
+#endif //(defined(TACH_0))
 
 	_lock = false;
 }
@@ -1897,6 +1928,7 @@ void check_min_temp_bed()
 
 void check_min_temp()
 {
+#ifdef AMBIENT_THERMISTOR
 	static uint8_t heat_cycles = 0;
 	if (current_temperature_raw_ambient > OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)
 	{
@@ -1913,10 +1945,12 @@ void check_min_temp()
 			heat_cycles = 0;
 		return;
 	}
+#endif //AMBIENT_THERMISTOR
 	check_min_temp_heater0();
 	check_min_temp_bed();
 }
-
+ 
+#if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
 void check_fans() {
 	if (READ(TACH_0) != fan_state[0]) {
 		fan_edge_counter[0] ++;
@@ -1927,6 +1961,7 @@ void check_fans() {
 	//	fan_state[1] = !fan_state[1];
 	//}
 }
+#endif //TACH_0
 
 #ifdef PIDTEMP
 // Apply the scale factors to the PID values
