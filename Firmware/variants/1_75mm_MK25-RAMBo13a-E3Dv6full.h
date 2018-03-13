@@ -6,6 +6,7 @@
  *------------------------------------*/
 
 // Printer revision
+#define PRINTER_TYPE PRINTER_MK25
 #define FILAMENT_SIZE "1_75mm_MK25"
 #define NOZZLE_TYPE "E3Dv6full"
 
@@ -18,6 +19,9 @@
 // Electronics
 #define MOTHERBOARD BOARD_RAMBO_MINI_1_3
 
+#define HEATBED_V2
+#define STEEL_SHEET
+#define TACH0PULLUP
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
@@ -31,7 +35,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,133}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -52,11 +56,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_Z_HOME_POS 0.2
 
 // Travel limits after homing
-#define X_MAX_POS 255
+#define X_MAX_POS 250
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
-#define Y_MIN_POS -4 //orig -4
-#define Z_MAX_POS 200
+#define Y_MIN_POS -4
+#define Z_MAX_POS 210
 #define Z_MIN_POS 0.15
 
 // Canceled home position
@@ -154,7 +158,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif
 
 // Extrude mintemp
-#define EXTRUDE_MINTEMP 190
+#define EXTRUDE_MINTEMP 180
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
@@ -164,8 +168,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
 
-#define PAT9125
+#define PAT9125 //!< Filament sensor
 #define FANCHECK
+//#define WATCHDOG
+#define SAFETYTIMER
 
 
 /*------------------------------------
@@ -276,7 +282,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.
 
 #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
-#define Y_PROBE_OFFSET_FROM_EXTRUDER 9     // Z probe to nozzle Y offset: -front +behind
+#define Y_PROBE_OFFSET_FROM_EXTRUDER 5     // Z probe to nozzle Y offset: -front +behind
 #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
 
@@ -462,12 +468,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
 
-#define HEATBED_V2
-
 #define M600_TIMEOUT 600  //seconds
 
-#define TACH0PULLUP
-
-//#define SUPPORT_VERBOSITY
+#define SUPPORT_VERBOSITY
 
 #endif //__CONFIGURATION_PRUSA_H

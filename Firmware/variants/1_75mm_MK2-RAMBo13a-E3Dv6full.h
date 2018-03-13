@@ -6,6 +6,7 @@ GENERAL SETTINGS
 *------------------------------------*/
 
 // Printer revision
+#define PRINTER_TYPE PRINTER_MK2
 #define FILAMENT_SIZE "1_75mm_MK2"
 #define NOZZLE_TYPE "E3Dv6full"
 

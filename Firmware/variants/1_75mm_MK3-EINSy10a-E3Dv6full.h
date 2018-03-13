@@ -6,6 +6,7 @@
  *------------------------------------*/
 
 // Printer revision
+#define PRINTER_TYPE PRINTER_MK3
 #define FILAMENT_SIZE "1_75mm_MK3"
 #define NOZZLE_TYPE "E3Dv6full"
 
@@ -17,6 +18,7 @@
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
+#define HAS_SECOND_SERIAL_PORT
 
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
@@ -102,6 +104,25 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Automatic recovery after crash is detected
 #define AUTOMATIC_RECOVERY_AFTER_CRASH
 
+// New XYZ calibration
+#define NEW_XYZCAL
+
+// Watchdog support
+#define WATCHDOG
+
+// Power panic
+#define UVLO_SUPPORT
+
+// Fan check
+#define FANCHECK
+
+// Safety timer
+#define SAFETYTIMER
+
+// Filament sensor
+#define PAT9125
+
+
 // Disable some commands
 #define _DISABLE_M42_M226
 
@@ -142,6 +163,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEBUG_STEPPER_TIMER_MISSED // Stop on stepper timer overflow, beep and display a message.
 #define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
 #endif /* DEBUG_BUILD */
+
+//#define EXPERIMENTAL_FEATURES
+//#define TMC2130_LINEARITY_CORRECTION
+//#define TMC2130_VARIABLE_RESOLUTION
+
 
 
 /*------------------------------------
@@ -211,8 +237,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_SG_THRS_E       3     // stallguard sensitivity for E axis
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-#define TMC2130_CURRENTS_H {13, 20, 25, 35}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {13, 20, 25, 35}  // default running currents for all axes
+#define TMC2130_CURRENTS_H {16, 20, 28, 36}  // default holding currents for all axes
+#define TMC2130_CURRENTS_R {16, 20, 28, 36}  // default running currents for all axes
 #define TMC2130_UNLOAD_CURRENT_R 12			 // lowe current for M600 to protect filament sensor 
 
 //#define TMC2130_DEBUG
@@ -265,9 +291,6 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
-
-#define PAT9125
-#define FANCHECK
 
 
 /*------------------------------------
@@ -336,7 +359,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
-#if MOTHERBOARD == 200 || MOTHERBOARD == 203 || MOTHERBOARD == 310
+#if MOTHERBOARD == 200 || MOTHERBOARD == 203
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {400, 750, 750} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {400, 750, 750} // {XY,Z,E}

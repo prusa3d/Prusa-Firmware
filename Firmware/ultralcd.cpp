@@ -5624,12 +5624,14 @@ static void lcd_tune_menu()
 #endif
 
 #ifndef DEBUG_DISABLE_FSENSORCHECK
+#ifdef PAT9125
 	if (FSensorStateMenu == 0) {
 		MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
 	}
 	else {
 		MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
 	}
+#endif //PAT9125
 #endif //DEBUG_DISABLE_FSENSORCHECK
 
 #ifdef TMC2130
@@ -5986,6 +5988,7 @@ extern char conv[8];
 // Convert tmc2130 wfac to string 
 char *wfac_to_str5(const uint8_t &x)
 {
+#ifdef TMC2130
 	if (x>=TMC2130_WAVE_FAC200_MIN) return ftostr43(((float)(x & 0xff))/200);
 	conv[0] = ' ';
 	conv[1] = ' ';
@@ -5993,6 +5996,7 @@ char *wfac_to_str5(const uint8_t &x)
 	conv[3] = 'f';
 	conv[4] = 'f';
 	conv[5] = 0;
+#endif //TMC2130
 	return conv;
 }
 
@@ -6121,6 +6125,7 @@ bool lcd_selftest()
 		}
 	}
 
+#ifdef TMC2130
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(13, 0, 2, true, 0);
@@ -6132,6 +6137,7 @@ bool lcd_selftest()
 			eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED, 1);
 		_result = bres;
 	}
+#endif //TMC2130
 
 	if (_result)
 	{
