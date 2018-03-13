@@ -1,6 +1,7 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #ifdef ULTRA_LCD
+#include "MenuStack.h"
 #include "Marlin.h"
 #include "language.h"
 #include "cardreader.h"
@@ -39,7 +40,7 @@ extern bool fsensor_enabled;
 #endif //PAT9125
 
 //Function pointer to menu functions.
-typedef void (*menuFunc_t)();
+
 
 static void lcd_sd_updir();
 
@@ -117,7 +118,7 @@ union Data
   byte b[2];
   int value;
 };
-
+static MenuStack menuStack;
 int8_t ReInitLCD = 0;
 
 int8_t SDscrool = 0;
@@ -235,7 +236,7 @@ static void lcd_delta_calibrate_menu();
 static void lcd_quick_feedback();//Cause an LCD refresh, and give the user visual or audible feedback that something has happened
 
 /* Different types of actions that can be used in menu items. */
-static void menu_action_back(menuFunc_t data);
+static void menu_action_back(menuFunc_t data = 0);
 #define menu_action_back_RAM menu_action_back
 static void menu_action_submenu(menuFunc_t data);
 static void menu_action_gcode(const char* pgcode);
@@ -332,14 +333,12 @@ volatile uint8_t slow_buttons;//Contains the bits of the currently pressed butto
 uint8_t currentMenuViewOffset;              /* scroll offset in the current menu */
 uint8_t lastEncoderBits;
 uint16_t encoderPosition;
-uint16_t savedEncoderPosition;
 #if (SDCARDDETECT > 0)
 bool lcd_oldcardstatus;
 #endif
 #endif //ULTIPANEL
 
 menuFunc_t currentMenu = lcd_status_screen; /* function pointer to the currently active menu */
-menuFunc_t savedMenu;
 uint32_t lcd_next_update_millis;
 uint8_t lcd_status_update_delay;
 bool ignore_click = false;
@@ -351,6 +350,25 @@ uint8_t lcdDrawUpdate = 2;                  /* Set to none-zero when the LCD nee
 // float raw_Ki, raw_Kd;
 #endif
 
+
+/**
+ * @brief Go to menu
+ *
+ * In MENU_ITEM(submenu,... ) use MENU_ITEM(back,...) or
+ * menu_action_back() and menu_action_submenu() instead, otherwise menuStack will be broken.
+ *
+ * It is acceptable to call lcd_goto_menu(menu) directly from MENU_ITEM(function,...), if destination menu
+ * is the same, from which function was called.
+ *
+ * @param menu target menu
+ * @param encoder position in target menu
+ * @param feedback
+ *  * true sound feedback (click)
+ *  * false no feedback
+ * @param reset_menu_state
+ *  * true reset menu state global union
+ *  * false do not reset menu state global union
+ */
 static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true, bool reset_menu_state = true)
 {
 	asm("cli");
@@ -522,8 +540,8 @@ static void lcd_status_screen()
 
   if (current_click && (lcd_commands_type != LCD_COMMAND_STOP_PRINT)) //click is aborted unless stop print finishes
   {
-
-    lcd_goto_menu(lcd_main_menu);
+    menuStack.reset(); //redundant, as already done in lcd_return_to_status(), just to be sure
+    menu_action_submenu(lcd_main_menu);
     lcd_implementation_init( // to maybe revive the LCD if static electricity killed it.
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
       currentMenu == lcd_status_screen
@@ -967,7 +985,8 @@ void lcd_commands()
 		{
 
 			lcd_implementation_clear();
-			lcd_goto_menu(lcd_babystep_z, 0, false);
+			menuStack.reset();
+			menu_action_submenu(lcd_babystep_z);
 			enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
 			enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0")); //intro line			
 			enquecommand_P(PSTR("G92 E0.0"));
@@ -1377,6 +1396,7 @@ static void lcd_return_to_status() {
   );
 
     lcd_goto_menu(lcd_status_screen, 0, false);
+    menuStack.reset();
 }
 
 
@@ -1529,7 +1549,7 @@ static void lcd_menu_extruder_info()
     lcd.print(itostr3(pat9125_b));
     
     // Display LASER shutter time from Filament sensor
-    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chip’s internal
+    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
      auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
      When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to
      46. */
@@ -1629,9 +1649,7 @@ static void lcd_menu_fails_stats()
     fprintf_P(lcdout, PSTR(ESC_H(0,0)"Last print failures"ESC_H(1,1)"Filam. runouts  %-3d"ESC_H(0,2)"Total failures"ESC_H(1,3)"Filam. runouts  %-3d"), filamentLast, filamentTotal);
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
-        //lcd_return_to_status();
-        lcd_goto_menu(lcd_main_menu, 8); //TODO: Remove hard coded encoder value.
+        menu_action_back();
     }
 }
 #endif //TMC2130
@@ -1814,13 +1832,13 @@ static void lcd_support_menu()
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
-	lcd_goto_menu(lcd_settings_menu, 8);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
 void lcd_set_filament_autoload() {
 	filament_autoload_enabled = !filament_autoload_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
-	lcd_goto_menu(lcd_settings_menu, 8);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
 void lcd_unLoadFilament()
@@ -2196,7 +2214,7 @@ static void _lcd_move(const char *name, int axis, int min, int max) {
     }
   }
   if (lcdDrawUpdate) lcd_implementation_drawedit(name, ftostr31(current_position[axis]));
-  if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis); {
+  if (LCD_CLICKED) menu_action_back(); {
   }
 }
 
@@ -2218,7 +2236,7 @@ static void lcd_move_e()
   {
     lcd_implementation_drawedit(PSTR("Extruder"), ftostr31(current_position[E_AXIS]));
   }
-  if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis);
+  if (LCD_CLICKED) menu_action_back();
 }
 	else {
 		lcd_implementation_clear();
@@ -2370,7 +2388,7 @@ static void _lcd_babystep(int axis, const char *msg)
       (axis == 0) ? EEPROM_BABYSTEP_X : ((axis == 1) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z), 
       &menuData.babyStep.babystepMem[axis]);
   }
-  if (LCD_CLICKED) lcd_goto_menu(lcd_main_menu);
+  if (LCD_CLICKED) menu_action_back();
 }
 
 static void lcd_babystep_x() {
@@ -2385,6 +2403,14 @@ static void lcd_babystep_z() {
 
 static void lcd_adjust_bed();
 
+/**
+ * @brief adjust bed reset menu item function
+ *
+ * To be used as MENU_ITEM(function,...) inside lcd_adjust_bed submenu. In such case lcd_goto_menu usage
+ * is correct and doesn't break menuStack.
+ * Because we did not leave the menu, the menuData did not reset.
+ * Force refresh of the bed leveling data.
+ */
 static void lcd_adjust_bed_reset()
 {
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
@@ -2392,9 +2418,7 @@ static void lcd_adjust_bed_reset()
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR , 0);
-    lcd_goto_menu(lcd_adjust_bed, 0, false);
-    // Because we did not leave the menu, the menuData did not reset.
-    // Force refresh of the bed leveling data.
+    lcd_goto_menu(lcd_adjust_bed, 0, false); //doesn't break menuStack
     menuData.adjustBed.status = 0;
 }
 
@@ -3018,7 +3042,7 @@ static void lcd_show_end_stops() {
 
 static void menu_show_end_stops() {
     lcd_show_end_stops();
-    if (LCD_CLICKED) lcd_goto_menu(lcd_calibration_menu);
+    if (LCD_CLICKED) lcd_goto_menu(lcd_calibration_menu); //doesn't break menuStack
 }
 
 // Lets the user move the Z carriage up to the end stoppers.
@@ -3406,7 +3430,7 @@ static void lcd_sort_type_set() {
 	}
 	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
 	presort_flag = true;
-	lcd_goto_menu(lcd_settings_menu, 8);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 #endif //SDCARD_SORT_ALPHA
 
@@ -3530,8 +3554,8 @@ static void lcd_fsensor_state_set()
             lcd_fsensor_fail();
         }
     }
-	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 7);
-	else lcd_goto_menu(lcd_settings_menu, 7);
+	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu);
+	else lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
     
 }
 #endif //PAT9125
@@ -3596,16 +3620,18 @@ void lcd_temp_calibration_set() {
 	temp_cal_active = !temp_cal_active;
 	eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
 	digipot_init();
-	lcd_goto_menu(lcd_settings_menu, 10);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
+#ifdef HAS_SECOND_SERIAL_PORT
 void lcd_second_serial_set() {
 	if(selectedSerialPort == 1) selectedSerialPort = 0;
 	else selectedSerialPort = 1;
 	eeprom_update_byte((unsigned char *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
 	MYSERIAL.begin(BAUDRATE);
-	lcd_goto_menu(lcd_settings_menu, 11);
+	lcd_goto_menu(lcd_settings_menu);//doesn't break menuStack
 }
+#endif //HAS_SECOND_SERIAL_PORT
 
 void lcd_calibrate_pinda() {
 	enquecommand_P(PSTR("G76"));
@@ -4619,7 +4645,7 @@ static void lcd_disable_farm_mode() {
 		lcd_return_to_status();
 	}
 	else {
-		lcd_goto_menu(lcd_settings_menu);
+		lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 	}
 	lcd_update_enable(true);
 	lcdDrawUpdate = 2;
@@ -6669,32 +6695,24 @@ static void lcd_quick_feedback()
   lcd_implementation_quick_feedback();
 }
 
-#define ENC_STACK_SIZE 3
-static uint8_t enc_stack[ENC_STACK_SIZE]; //encoder is originaly uint16, but for menu 
-static uint8_t enc_stack_cnt = 0;
-
-static void lcd_push_encoder(void)
-{
-	if (enc_stack_cnt >= ENC_STACK_SIZE) return;
-	enc_stack[enc_stack_cnt] = encoderPosition;
-	enc_stack_cnt++;
-}
-
-static void lcd_pop_encoder(void)
-{
-	if (enc_stack_cnt == 0) return;
-	enc_stack_cnt--;
-	encoderPosition = enc_stack[enc_stack_cnt];
-}
-
-
 /** Menu action functions **/
-static void menu_action_back(menuFunc_t data) {
-  lcd_goto_menu(data);
-  lcd_pop_encoder();
+
+/**
+ * @brief Go up in menu structure
+ * @param data unused parameter
+ */
+static void menu_action_back(menuFunc_t data)
+{
+    MenuStack::Record record = menuStack.pop();
+    lcd_goto_menu(record.menu);
+    encoderPosition = record.position;
 }
+/**
+ * @brief Go deeper into menu structure
+ * @param data nested menu
+ */
 static void menu_action_submenu(menuFunc_t data) {
-  lcd_push_encoder();
+  menuStack.push(currentMenu, encoderPosition);
   lcd_goto_menu(data);
 }
 static void menu_action_gcode(const char* pgcode) {
@@ -7115,10 +7133,6 @@ void lcd_buttons_update()
 		  if (millis() > button_blanking_time) {
 			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
 			  if (button_pressed == false && long_press_active == false) {
-				  if (currentMenu != lcd_move_z) {
-					  savedMenu = currentMenu;
-					  savedEncoderPosition = encoderPosition;
-				  }
 				  long_press_timer = millis();
 				  button_pressed = true;
 			  }
@@ -7127,7 +7141,7 @@ void lcd_buttons_update()
 
 					  long_press_active = true;
 					  move_menu_scale = 1.0;
-					  lcd_goto_menu(lcd_move_z);
+					  menu_action_submenu(lcd_move_z);
 				  }
 			  }
 		  }
@@ -7137,13 +7151,7 @@ void lcd_buttons_update()
 			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
 
 			  if (long_press_active == false) { //button released before long press gets activated
-				  if (currentMenu == lcd_move_z) {
-					  //return to previously active menu and previous encoder position
-					  lcd_goto_menu(savedMenu, savedEncoderPosition);					  
-				  }
-				  else {
 					  newbutton |= EN_C;
-				  }
 			  }
 			  else if (currentMenu == lcd_move_z) lcd_quick_feedback(); 
 			  //button_pressed is set back to false via lcd_quick_feedback function
