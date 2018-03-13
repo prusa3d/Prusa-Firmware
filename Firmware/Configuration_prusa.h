@@ -6,20 +6,22 @@
  *------------------------------------*/
 
 // Printer revision
-#define PRINTER_TYPE PRINTER_MK3
-#define FILAMENT_SIZE "1_75mm_MK3"
+#define PRINTER_TYPE PRINTER_MK25
+#define FILAMENT_SIZE "1_75mm_MK25"
 #define NOZZLE_TYPE "E3Dv6full"
 
 // Developer flag
 #define DEVELOPER
 
 // Printer name
-#define CUSTOM_MENDEL_NAME "Prusa i3 MK3"
+#define CUSTOM_MENDEL_NAME "Prusa i3 MK2.5"
 
 // Electronics
-#define MOTHERBOARD BOARD_EINSY_1_0a
-#define HAS_SECOND_SERIAL_PORT
+#define MOTHERBOARD BOARD_RAMBO_MINI_1_3
 
+#define HEATBED_V2
+#define STEEL_SHEET
+#define TACH0PULLUP
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
@@ -33,9 +35,7 @@
  *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
-//#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,280}
-//#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,560}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,133}
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
@@ -43,12 +43,12 @@ const bool Y_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 
 // Direction inverting
-#define INVERT_X_DIR true    // for Mendel set to false, for Orca set to true
+#define INVERT_X_DIR false    // for Mendel set to false, for Orca set to true
 #define INVERT_Y_DIR false    // for Mendel set to true, for Orca set to false
-#define INVERT_Z_DIR true     // for Mendel set to false, for Orca set to true
-#define INVERT_E0_DIR false   // for direct drive extruder v9 set to true, for geared extruder set to false
-#define INVERT_E1_DIR false    // for direct drive extruder v9 set to true, for geared extruder set to false
-#define INVERT_E2_DIR false   // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_Z_DIR false    // for Mendel set to false, for Orca set to true
+#define INVERT_E0_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_E1_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_E2_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
 
 // Home position
 #define MANUAL_X_HOME_POS 0
@@ -56,10 +56,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_Z_HOME_POS 0.2
 
 // Travel limits after homing
-#define X_MAX_POS 255
+#define X_MAX_POS 250
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
-#define Y_MIN_POS -4 //orig -4
+#define Y_MIN_POS -4
 #define Z_MAX_POS 210
 #define Z_MIN_POS 0.15
 
@@ -84,54 +84,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 
-//Silent mode limits
-#define SILENT_MAX_ACCEL  960 // max axxeleration in silent mode in mm/s^2
-#define SILENT_MAX_ACCEL_ST (100*SILENT_MAX_ACCEL) // max accel in steps/s^2
-#define SILENT_MAX_FEEDRATE 172  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
-
-//Normal mode limits
-#define NORMAL_MAX_ACCEL 2500 // Y-axis max axxeleration in normal mode in mm/s^2
-#define NORMAL_MAX_ACCEL_ST (100*NORMAL_MAX_ACCEL) // max accel in steps/s^2
-#define NORMAL_MAX_FEEDRATE 200  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
-
-//#define SIMPLE_ACCEL_LIMIT          //new limitation method for normal/silent
-
 //number of bytes from end of the file to start check
 #define END_FILE_SECTION 10000
 
 #define Z_AXIS_ALWAYS_ON 1
 
-// Automatic recovery after crash is detected
-#define AUTOMATIC_RECOVERY_AFTER_CRASH
-
-// New XYZ calibration
-#define NEW_XYZCAL
-
-// Watchdog support
-#define WATCHDOG
-
-// Power panic
-#define UVLO_SUPPORT
-
-// Fan check
-#define FANCHECK
-
-// Safety timer
-#define SAFETYTIMER
-
-// Filament sensor
-#define PAT9125
-
-
-// Disable some commands
-#define _DISABLE_M42_M226
-
-// Minimum ambient temperature limit to start triggering MINTEMP errors [C]
-// this value is litlebit higher that real limit, because ambient termistor is on the board and is temperated from it,
-// temperature inside the case is around 31C for ambient temperature 25C, when the printer is powered on long time and idle
-// the real limit is 15C (same as MINTEMP limit), this is because 15C is end of scale for both used thermistors (bed, heater)
-#define MINTEMP_MINAMBIENT      25
-#define MINTEMP_MINAMBIENT_RAW  978
 
 //#define DEBUG_BUILD
 #ifdef DEBUG_BUILD
@@ -148,7 +105,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //#define DEBUG_DISABLE_YMAXLIMIT  //y max limit ignored
 //#define DEBUG_DISABLE_ZMINLIMIT  //z min limit ignored
 //#define DEBUG_DISABLE_ZMAXLIMIT  //z max limit ignored
-#define DEBUG_DISABLE_STARTMSGS //no startup messages 
+//#define DEBUG_DISABLE_STARTMSGS //no startup messages 
 //#define DEBUG_DISABLE_MINTEMP   //mintemp error ignored
 //#define DEBUG_DISABLE_SWLIMITS  //sw limits ignored
 //#define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
@@ -159,91 +116,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //#define DEBUG_BLINK_ACTIVE
 //#define DEBUG_DISABLE_FANCHECK     //disable fan check (no ISR INT7, check disabled)
 //#define DEBUG_DISABLE_FSENSORCHECK //disable fsensor check (no ISR INT7, check disabled)
-#define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
-#define DEBUG_STEPPER_TIMER_MISSED // Stop on stepper timer overflow, beep and display a message.
-#define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
+//#define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
+//#define DEBUG_STEPPER_TIMER_MISSED // Stop on stepper timer overflow, beep and display a message.
+//#define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
 #endif /* DEBUG_BUILD */
-
-//#define EXPERIMENTAL_FEATURES
-//#define TMC2130_LINEARITY_CORRECTION
-//#define TMC2130_VARIABLE_RESOLUTION
-
-
-
-/*------------------------------------
- TMC2130 default settings
- *------------------------------------*/
-
-#define TMC2130_FCLK 12000000       // fclk = 12MHz
-
-#define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
-#define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    32        // microstep resolution for E axis
-#define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
-#define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
-#define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
-
-#define TMC2130_PWM_GRAD_X  2         // PWMCONF
-#define TMC2130_PWM_AMPL_X  230       // PWMCONF
-#define TMC2130_PWM_AUTO_X  1         // PWMCONF
-#define TMC2130_PWM_FREQ_X  2         // PWMCONF
-
-#define TMC2130_PWM_GRAD_Y  2         // PWMCONF
-#define TMC2130_PWM_AMPL_Y  235       // PWMCONF
-#define TMC2130_PWM_AUTO_Y  1         // PWMCONF
-#define TMC2130_PWM_FREQ_Y  2         // PWMCONF
-
-#define TMC2130_PWM_GRAD_E  2         // PWMCONF
-#define TMC2130_PWM_AMPL_E  235       // PWMCONF
-#define TMC2130_PWM_AUTO_E  1         // PWMCONF
-#define TMC2130_PWM_FREQ_E  2         // PWMCONF
-
-#define TMC2130_PWM_GRAD_Z  4         // PWMCONF
-#define TMC2130_PWM_AMPL_Z  200       // PWMCONF
-#define TMC2130_PWM_AUTO_Z  1         // PWMCONF
-#define TMC2130_PWM_FREQ_Z  2         // PWMCONF
-
-#define TMC2130_PWM_GRAD_E  4         // PWMCONF
-#define TMC2130_PWM_AMPL_E  240       // PWMCONF
-#define TMC2130_PWM_AUTO_E  1         // PWMCONF
-#define TMC2130_PWM_FREQ_E  2         // PWMCONF
-
-#define TMC2130_TOFF_XYZ    3         // CHOPCONF // fchop = 27.778kHz
-#define TMC2130_TOFF_E      3         // CHOPCONF // fchop = 27.778kHz
-//#define TMC2130_TOFF_E      4         // CHOPCONF // fchop = 21.429kHz
-//#define TMC2130_TOFF_E      5         // CHOPCONF // fchop = 17.442kHz
-
-//#define TMC2130_STEALTH_E // Extruder stealthChop mode
-//#define TMC2130_CNSTOFF_E // Extruder constant-off-time mode (similar to MK2)
-
-//#define TMC2130_PWM_DIV   683         // PWM frequency divider (1024, 683, 512, 410)
-#define TMC2130_PWM_DIV   512         // PWM frequency divider (1024, 683, 512, 410)
-#define TMC2130_PWM_CLK   (2 * TMC2130_FCLK / TMC2130_PWM_DIV) // PWM frequency (23.4kHz, 35.1kHz, 46.9kHz, 58.5kHz for 12MHz fclk)
-
-#define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
-#define TMC2130_THIGH     0         // THIGH - unused
-
-//#define TMC2130_TCOOLTHRS_X 450       // TCOOLTHRS - coolstep treshold
-//#define TMC2130_TCOOLTHRS_Y 450       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_X 430       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_Y 430       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_Z 500       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_E 500       // TCOOLTHRS - coolstep treshold
-
-#define TMC2130_SG_HOMING       1     // stallguard homing
-#define TMC2130_SG_THRS_X       3     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y       3     // stallguard sensitivity for Y axis
-#define TMC2130_SG_THRS_Z       3     // stallguard sensitivity for Z axis
-#define TMC2130_SG_THRS_E       3     // stallguard sensitivity for E axis
-
-//new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-#define TMC2130_CURRENTS_H {16, 20, 28, 36}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {16, 20, 28, 36}  // default running currents for all axes
-#define TMC2130_UNLOAD_CURRENT_R 12			 // lowe current for M600 to protect filament sensor 
-
-//#define TMC2130_DEBUG
-//#define TMC2130_DEBUG_WR
-//#define TMC2130_DEBUG_RD
 
 
 /*------------------------------------
@@ -282,7 +158,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif
 
 // Extrude mintemp
-#define EXTRUDE_MINTEMP 190
+#define EXTRUDE_MINTEMP 180
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
@@ -291,6 +167,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
+
+#define PAT9125 //!< Filament sensor
+#define FANCHECK
+//#define WATCHDOG
+#define SAFETYTIMER
 
 
 /*------------------------------------
@@ -359,10 +240,12 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
-#if MOTHERBOARD == 200 || MOTHERBOARD == 203
+#if MOTHERBOARD == 203 || MOTHERBOARD == 200
 #define MOTOR_CURRENT_PWM_RANGE 2000
-#define DEFAULT_PWM_MOTOR_CURRENT  {400, 750, 750} // {XY,Z,E}
-#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {400, 750, 750} // {XY,Z,E}
+#define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
+#define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
+#define Z_SILENT 0
+#define Z_HIGH_POWER 200
 #endif
 
 /*------------------------------------
@@ -543,7 +426,6 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TEMP_SENSOR_BED 1
 #endif
 #define TEMP_SENSOR_PINDA 1
-#define TEMP_SENSOR_AMBIENT 2000
 
 #define STACK_GUARD_TEST_VALUE 0xA2A2
 
@@ -586,21 +468,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
 
-// How much shall the print head be lifted on power panic?
-// Ideally the Z axis will reach a zero phase of the stepper driver on power outage. To simplify this,
-// UVLO_Z_AXIS_SHIFT shall be an integer multiply of the stepper driver cycle, that is 4x full step.
-// For example, the Prusa i3 MK2 with 16 microsteps per full step has Z stepping of 400 microsteps per mm.
-// At 400 microsteps per mm, a full step lifts the Z axis by 0.04mm, and a stepper driver cycle is 0.16mm.
-// The following example, 12 * (4 * 16 / 400) = 12 * 0.16mm = 1.92mm.
-//#define UVLO_Z_AXIS_SHIFT 1.92
-#define UVLO_Z_AXIS_SHIFT 0.64
-// If power panic occured, and the current temperature is higher then target temperature before interrupt minus this offset, print will be recovered automatically. 
-#define AUTOMATIC_UVLO_BED_TEMP_OFFSET 5 
-
-#define HEATBED_V2
-
 #define M600_TIMEOUT 600  //seconds
 
-//#define SUPPORT_VERBOSITY
+#define SUPPORT_VERBOSITY
 
 #endif //__CONFIGURATION_PRUSA_H
