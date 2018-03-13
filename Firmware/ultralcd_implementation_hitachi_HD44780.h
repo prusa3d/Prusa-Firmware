@@ -875,7 +875,7 @@ if (print_sd_status)
 
 	{
       if(strlen(card.longFilename) > LCD_WIDTH)
-	  {
+      {
 
 			  int inters = 0;
 			  int gh = scrollstuff;
@@ -900,15 +900,13 @@ if (print_sd_status)
 
 			  }
 			  scrollstuff++;
-		  }
-		  else
-		  {
+      }
+      else
+      {
 			  lcd.print(longFilenameOLD);
-		  }
-	  }
-
-
-    }
+      }
+	}
+	    
     // If not, check for other special events
 	else
 	{
@@ -1409,6 +1407,7 @@ static uint8_t lcd_implementation_read_slow_buttons()
     // Reading these buttons this is likely to be too slow to call inside interrupt context
     // so they are called during normal lcd_update
     slow_buttons = lcd.readButtons() << B_I2C_BTN_OFFSET; 
+
     #if defined(LCD_I2C_VIKI)
     if(slow_buttons & (B_MI|B_RI)) { //LCD clicked
        if(blocking_enc > millis()) {
