@@ -6743,7 +6743,9 @@ void handle_status_leds(void) {
  */
 static void handleSafetyTimer()
 {
-    static_assert(EXTRUDERS == 1,"Implemented only for one extruder.");
+#if (EXTRUDERS > 1)
+#error Implemented only for one extruder.
+#endif //(EXTRUDERS > 1)
     static Timer safetyTimer;
     if (IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) ||
             (!degTargetBed() && !degTargetHotend(0)))
