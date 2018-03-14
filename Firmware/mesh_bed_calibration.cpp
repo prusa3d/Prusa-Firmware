@@ -922,7 +922,7 @@ extern bool xyzcal_find_bed_induction_sensor_point_xy();
 #endif //HEATBED_V2
 
 #ifdef HEATBED_V2
-/*inline */bool find_bed_induction_sensor_point_xy(int verbosity_level)
+inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 {
 #ifdef NEW_XYZCAL
 	return xyzcal_find_bed_induction_sensor_point_xy();
@@ -1174,6 +1174,9 @@ extern bool xyzcal_find_bed_induction_sensor_point_xy();
 #else //HEATBED_V2
 inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 {
+#ifdef NEW_XYZCAL
+	return xyzcal_find_bed_induction_sensor_point_xy();
+#else //NEW_XYZCAL
 	#ifdef SUPPORT_VERBOSITY
 	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
 	#endif // SUPPORT_VERBOSITY
@@ -1366,6 +1369,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 
 	enable_z_endstop(false);
 	return found;
+#endif //NEW_XYZCAL
 }
 
 #endif //HEATBED_V2

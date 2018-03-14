@@ -91,6 +91,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define Z_AXIS_ALWAYS_ON 1
 
+// New XYZ calibration
+//#define NEW_XYZCAL
+
+
 /*------------------------------------
 EXTRUDER SETTINGS
 *------------------------------------*/
