@@ -150,7 +150,7 @@ int lcd_commands_step=0;
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
 int farm_no = 0;
-int farm_timer = 30;
+int farm_timer = 8;
 int farm_status = 0;
 unsigned long allert_timer = millis();
 bool printer_connected = true;
@@ -160,7 +160,7 @@ float pid_temp = DEFAULT_PID_TEMP;
 
 bool long_press_active = false;
 long long_press_timer = millis();
-long button_blanking_time = millis();
+unsigned long button_blanking_time = millis();
 bool button_pressed = false;
 
 bool menuExiting = false;
@@ -467,15 +467,15 @@ static void lcd_status_screen()
 		farm_timer--;
 		if (farm_timer < 1)
 		{
-			farm_timer = 180;
+			farm_timer = 10;
 			prusa_statistics(0);
 		}
 		switch (farm_timer)
 		{
-		case 45:
+		case 8:
 			prusa_statistics(21);
 			break;
-		case 10:
+		case 5:
 			if (IS_SD_PRINTING)
 			{
 				prusa_statistics(20);
@@ -2993,7 +2993,7 @@ void lcd_diag_show_end_stops()
 
 
 
-void prusa_statistics(int _message) {
+void prusa_statistics(int _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
 	return;
 #endif //DEBUG_DISABLE_PRUSA_STATISTICS
@@ -3063,14 +3063,18 @@ void prusa_statistics(int _message) {
 
 		break;
 	case 4:		// print succesfull
-		SERIAL_ECHOLN("{[RES:1]");
+		SERIAL_ECHO("{[RES:1][FIL:");
+		MYSERIAL.print(int(_fil_nr));
+		SERIAL_ECHO("]");
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 5:		// print not succesfull
-		SERIAL_ECHOLN("{[RES:0]");
+		SERIAL_ECHO("{[RES:0][FIL:");
+		MYSERIAL.print(int(_fil_nr));
+		SERIAL_ECHO("]");
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
@@ -3102,7 +3106,7 @@ void prusa_statistics(int _message) {
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
-		farm_timer = 5;
+		farm_timer = 4;
 		break;
 	case 21: // temperatures
 		SERIAL_ECHO("{");
@@ -3129,7 +3133,7 @@ void prusa_statistics(int _message) {
 		SERIAL_ECHOLN("}");
 		break;
 	case 92: // Error - Min temp
-		SERIAL_ECHOLN("{[ERR:3]");
+		SERIAL_ECHO("{[ERR:3]");
 		prusa_stat_farm_number();
 		SERIAL_ECHOLN("}");
 		break;
@@ -5170,14 +5174,99 @@ static void lcd_farm_no()
 
 }
 
+
+unsigned char lcd_choose_color() {
+	//function returns index of currently chosen item
+	//following part can be modified from 2 to 255 items:
+	//-----------------------------------------------------
+	unsigned char items_no = 2;
+	const char *item[items_no];
+	item[0] = "Orange";
+	item[1] = "Black";
+	//-----------------------------------------------------
+	unsigned char active_rows;
+	static int first = 0;
+	int enc_dif = 0;
+	unsigned char cursor_pos = 1;
+	enc_dif = encoderDiff;
+	lcd_implementation_clear();
+	lcd.setCursor(0, 1);
+	lcd.print(">");
+
+	active_rows = items_no < 3 ? items_no : 3;
+
+	while (1) {
+		lcd_print_at_PGM(0, 0, PSTR("Choose color:"));
+		for (int i = 0; i < active_rows; i++) {
+			lcd.setCursor(1, i+1);
+			lcd.print(item[first + i]);
+		}
+
+		manage_heater();
+		manage_inactivity(true);
+		proc_commands();
+		if (abs((enc_dif - encoderDiff)) > 12) {
+					
+				if (enc_dif > encoderDiff) {
+					cursor_pos--;
+				}
+
+				if (enc_dif < encoderDiff) {
+					cursor_pos++;
+				}
+				
+				if (cursor_pos > active_rows) {
+					cursor_pos = active_rows;
+					if (first < items_no - active_rows) {
+						first++;
+						lcd_implementation_clear();
+					}
+				}
+
+				if (cursor_pos < 1) {
+					cursor_pos = 1;
+					if (first > 0) {
+						first--;
+						lcd_implementation_clear();
+					}
+				}
+				lcd.setCursor(0, 1);
+				lcd.print(" ");
+				lcd.setCursor(0, 2);
+				lcd.print(" ");
+				lcd.setCursor(0, 3);
+				lcd.print(" ");
+				lcd.setCursor(0, cursor_pos);
+				lcd.print(">");
+				enc_dif = encoderDiff;
+				delay(100);
+
+		}
+
+		if (lcd_clicked()) {
+			while (lcd_clicked());
+			delay(10);
+			while (lcd_clicked());
+			switch(cursor_pos + first - 1) {
+			case 0: return 1; break;
+			case 1: return 0; break;
+			default: return 99; break;
+			}
+		}
+
+	}
+
+}
+
 void lcd_confirm_print()
 {
+	uint8_t filament_type;
 	int enc_dif = 0;
 	int cursor_pos = 1;
 	int _ret = 0;
 	int _t = 0;
 
-
+	enc_dif = encoderDiff;
 	lcd_implementation_clear();
 
 	lcd.setCursor(0, 0);
@@ -5185,8 +5274,7 @@ void lcd_confirm_print()
 
 	do
 	{
-
-		if (abs((enc_dif - encoderDiff)) > 2) {
+		if (abs(enc_dif - encoderDiff) > 12) {
 			if (enc_dif > encoderDiff) {
 				cursor_pos--;
 			}
@@ -5194,6 +5282,7 @@ void lcd_confirm_print()
 			if (enc_dif < encoderDiff) {
 				cursor_pos++;
 			}
+			enc_dif = encoderDiff;
 		}
 
 		if (cursor_pos > 2) { cursor_pos = 2; }
@@ -5241,6 +5330,7 @@ void lcd_confirm_print()
 
 		manage_heater();
 		manage_inactivity();
+		proc_commands();
 
 	} while (_ret == 0);
 
