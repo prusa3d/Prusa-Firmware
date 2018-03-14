@@ -19,8 +19,8 @@
 
 #define _PINDA ((READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING)?1:0)
 
-//#define DBG(args...) printf_P(args)
-#define DBG(args...)
+#define DBG(args...) printf_P(args)
+//#define DBG(args...)
 #define _n PSTR
 
 #define _X ((int16_t)count_position[X_AXIS])
@@ -87,11 +87,11 @@ uint8_t xyzcal_dm = 0;
 
 void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de)
 {
-	DBG(_n("xyzcal_update_pos dx=%d dy=%d dz=%d dir=%02x\n"), dx, dy, dz, xyzcal_dm);
+//	DBG(_n("xyzcal_update_pos dx=%d dy=%d dz=%d dir=%02x\n"), dx, dy, dz, xyzcal_dm);
 	if (xyzcal_dm&1) count_position[0] -= dx; else count_position[0] += dx;
 	if (xyzcal_dm&2) count_position[1] -= dy; else count_position[1] += dy;
 	if (xyzcal_dm&4) count_position[2] -= dz; else count_position[2] += dz;
-	DBG(_n(" after xyzcal_update_pos x=%ld y=%ld z=%ld\n"), count_position[0], count_position[1], count_position[2]);
+//	DBG(_n(" after xyzcal_update_pos x=%ld y=%ld z=%ld\n"), count_position[0], count_position[1], count_position[2]);
 }
 
 uint16_t xyzcal_sm4_delay = 0;
@@ -142,7 +142,7 @@ uint16_t xyzcal_calc_delay(uint16_t nd, uint16_t dd)
 
 bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_t check_pinda)
 {
-	DBG(_n("xyzcal_lineXYZ_to x=%d y=%d z=%d  check=%d\n"), x, y, z, check_pinda);
+//	DBG(_n("xyzcal_lineXYZ_to x=%d y=%d z=%d  check=%d\n"), x, y, z, check_pinda);
 	x -= (int16_t)count_position[0];
 	y -= (int16_t)count_position[1];
 	z -= (int16_t)count_position[2];
@@ -384,7 +384,7 @@ void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
 	for (l = 15; l > 8; l--)
 		if (histo[l] >= 10)
 			break;
-	uint8_t pix_min = (max_l + 3) << 4;
+	uint8_t pix_min = (max_l + 2) << 4;
 	uint8_t pix_max = l << 4;
 	uint8_t pix_dif = pix_max - pix_min;
 	DBG(_n(" min=%d max=%d dif=%d\n"), pix_min, pix_max, pix_dif);
@@ -425,7 +425,7 @@ void xyzcal_draw_pattern_12x12_in_32x32(uint8_t* pattern, uint32_t* pixels, int 
 
 int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, uint8_t c, uint8_t r)
 {
-	uint8_t thr = 64;
+	uint8_t thr = 32;
 	int16_t match = 0;
 	for (uint8_t i = 0; i < 12; i++)
 		for (uint8_t j = 0; j < 12; j++)
@@ -620,7 +620,7 @@ bool xyzcal_scan_and_process(void)
 	int16_t z = _Z;
 
 	uint8_t* pixels = (uint8_t*)block_buffer;
-	xyzcal_scan_pixels_32x32(x, y, z - 128, 2400, 200, pixels);
+	xyzcal_scan_pixels_32x32(x, y, z - 72, 2400, 200, pixels);
 
 	uint16_t* histo = (uint16_t*)(pixels + 32*32);
 	xyzcal_histo_pixels_32x32(pixels, histo);

@@ -1332,11 +1332,14 @@ void setup()
 	  }
   }
 
+#ifndef DEBUG_DISABLE_FORCE_SELFTEST
   if (force_selftest_if_fw_version() && calibration_status() < CALIBRATION_STATUS_ASSEMBLED ) {
 	  lcd_show_fullscreen_message_and_wait_P(MSG_FORCE_SELFTEST);
 	  update_current_firmware_version_to_eeprom();
 	  lcd_selftest();
   }
+#endif //DEBUG_DISABLE_FORCE_SELFTEST
+
   KEEPALIVE_STATE(IN_PROCESS);
 #endif //DEBUG_DISABLE_STARTMSGS
   lcd_update_enable(true);
