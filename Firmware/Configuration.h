@@ -7,12 +7,12 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.1.3"
-#define FW_COMMIT_NR   245
+#define FW_VERSION "3.2.0-alpha"
+#define FW_COMMIT_NR   370
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
-#define FW_REPOSITORY "Prusa3D/MK3"
+#define FW_REPOSITORY "Unknown"
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
 // Debug version has debugging enabled (the symbol DEBUG_BUILD is set).
