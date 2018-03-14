@@ -89,6 +89,19 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define Z_AXIS_ALWAYS_ON 1
 
+// New XYZ calibration
+#define NEW_XYZCAL
+
+// Fan check
+#define FANCHECK
+
+// Safety timer
+#define SAFETYTIMER
+
+// Filament sensor
+#define PAT9125
+
+
 
 //#define DEBUG_BUILD
 #ifdef DEBUG_BUILD
@@ -166,12 +179,6 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define EXTRUDER_2_AUTO_FAN_PIN   -1
 #define EXTRUDER_AUTO_FAN_TEMPERATURE 50
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
-
-
-#define PAT9125 //!< Filament sensor
-#define FANCHECK
-//#define WATCHDOG
-#define SAFETYTIMER
 
 
 /*------------------------------------
