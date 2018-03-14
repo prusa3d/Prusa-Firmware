@@ -456,6 +456,38 @@ void dcode_12()
 #include "planner.h"
 extern void st_synchronize();
 
+/**
+ * @brief D2130 Trinamic stepper controller
+ * D2130<axis><command>[subcommand][value]
+ *  * Axis
+ *  * * 'X'
+ *  * * 'Y'
+ *  * * 'Z'
+ *  * * 'E'
+ *  * command
+ *  * * '0' current off
+ *  * * '1' current on
+ *  * * '+' single step
+ *  * * * value sereval steps
+ *  * * '-' dtto oposite direction
+ *  * * '?' read register
+ *  * * * "mres"
+ *  * * * "step"
+ *  * * * "mscnt"
+ *  * * * "mscuract"
+ *  * * * "wave"
+ *  * * '!' set register
+ *  * * * "mres"
+ *  * * * "step"
+ *  * * * "wave"
+ *  * * * *0, 180..250 meaning: off, 0.9..1.25, recommended value is 1.1
+ *  * * '@' home calibrate axis
+ *
+ *  Example:
+ *  D2130E?wave //print extruder microstep linearity compensation curve
+ *  D2130E!wave0 //disable extruder linearity compensation curve, (sine curve is used)
+ *  D2130E!wave220 // (sin(x))^1.1 extruder microstep compensation curve used
+ */
 void dcode_2130()
 {
 	printf_P(PSTR("D2130 - TMC2130\n"));
