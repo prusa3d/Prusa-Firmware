@@ -99,6 +99,7 @@ static bool old_z_max_endstop=false;
 static bool check_endstops = true;
 
 static bool check_z_endstop = false;
+static bool z_endstop_invert = false;
 
 int8_t SilentMode = 0;
 
@@ -284,10 +285,15 @@ bool enable_endstops(bool check)
 
 bool enable_z_endstop(bool check)
 {
-  bool old = check_z_endstop;
-  check_z_endstop = check;
-  endstop_z_hit=false;
-  return old;
+	bool old = check_z_endstop;
+	check_z_endstop = check;
+	endstop_z_hit = false;
+	return old;
+}
+
+void invert_z_endstop(bool endstop_invert)
+{
+  z_endstop_invert = endstop_invert;
 }
 
 //         __________________________
@@ -629,6 +635,7 @@ FORCE_INLINE void stepper_check_endstops()
   }
   #endif
 }
+
 
 FORCE_INLINE void stepper_tick_lowres()
 {
@@ -1144,6 +1151,13 @@ void st_init()
     #endif
   #endif
 
+  #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
+	SET_INPUT(TACH_0);
+    #ifdef TACH0PULLUP
+	  WRITE(TACH_0, HIGH);
+    #endif
+  #endif
+
 
   //Initialize Step Pins
 #if defined(X_STEP_PIN) && (X_STEP_PIN > -1)
@@ -1442,10 +1456,9 @@ void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 
 
 void digipot_init() //Initialize Digipot Motor Current
-{
-
+{  
   EEPROM_read_st(EEPROM_SILENT,(uint8_t*)&SilentMode,sizeof(SilentMode));
-
+  SilentModeMenu = SilentMode;
   #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
     if(SilentMode == 0){
     const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT_LOUD;

@@ -6,6 +6,7 @@ GENERAL SETTINGS
 *------------------------------------*/
 
 // Printer revision
+#define PRINTER_TYPE PRINTER_MK2
 #define FILAMENT_SIZE "1_75mm_MK2"
 #define NOZZLE_TYPE "E3Dv6full"
 
@@ -18,49 +19,81 @@ GENERAL SETTINGS
 // Electronics
 #define MOTHERBOARD BOARD_RAMBO_MINI_1_3
 
+// Prusa Single extruder multiple material suport
+//#define SNMM
+
+// Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
+//#define E3D_PT100_EXTRUDER_WITH_AMP
+//#define E3D_PT100_EXTRUDER_NO_AMP
+//#define E3D_PT100_BED_WITH_AMP
+//#define E3D_PT100_BED_NO_AMP
+
 
 /*------------------------------------
 AXIS SETTINGS
 *------------------------------------*/
 
 // Steps per unit {X,Y,Z,E}
+#ifdef SNMM
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
+#else
 #define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
+#endif
+
 
 // Endstop inverting
 const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 const bool Y_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
 
+// Direction inverting
+#define INVERT_X_DIR false    // for Mendel set to false, for Orca set to true
+#define INVERT_Y_DIR false    // for Mendel set to true, for Orca set to false
+#define INVERT_Z_DIR false    // for Mendel set to false, for Orca set to true
+#define INVERT_E0_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_E1_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_E2_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
+
+
 // Home position
 #define MANUAL_X_HOME_POS 0
 #define MANUAL_Y_HOME_POS -2.2
-#define MANUAL_Z_HOME_POS 0.2
+#define MANUAL_Z_HOME_POS 0.15
 
 // Travel limits after homing
-#define X_MAX_POS 255
+#define X_MAX_POS 250
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
-#define Y_MIN_POS -4
+#define Y_MIN_POS -2.2
 #define Z_MAX_POS 210
-#define Z_MIN_POS 0.2
+#define Z_MIN_POS 0.15
 
 // Canceled home position
 #define X_CANCEL_POS 50
 #define Y_CANCEL_POS 190
 
+//Pause print position
+#define X_PAUSE_POS 50
+#define Y_PAUSE_POS 190
+#define Z_PAUSE_LIFT 20
+
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
 
-#define DEFAULT_MAX_FEEDRATE          {500, 500, 1000, 25}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {9000,9000,1000,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
+#define DEFAULT_MAX_ACCELERATION      {9000,9000,500,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
-#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
+#define DEFAULT_ACCELERATION          1500    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  1500   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 
 #define MANUAL_FEEDRATE {3000, 3000, 1000, 100}   // set the speeds for manual moves (mm/min)
 
 #define Z_AXIS_ALWAYS_ON 1
+
+// New XYZ calibration
+//#define NEW_XYZCAL
+
 
 /*------------------------------------
 EXTRUDER SETTINGS
@@ -73,15 +106,26 @@ EXTRUDER SETTINGS
 #define BED_MINTEMP 15
 
 // Maxtemps
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
+#define HEATER_0_MAXTEMP 410
+#else
 #define HEATER_0_MAXTEMP 305
+#endif
 #define HEATER_1_MAXTEMP 305
 #define HEATER_2_MAXTEMP 305
 #define BED_MAXTEMP 150
 
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
+// Define PID constants for extruder with PT100
+#define  DEFAULT_Kp 21.70
+#define  DEFAULT_Ki 1.60
+#define  DEFAULT_Kd 73.76
+#else
 // Define PID constants for extruder
 #define  DEFAULT_Kp 40.925
 #define  DEFAULT_Ki 4.875
 #define  DEFAULT_Kd 86.085
+#endif
 
 // Extrude mintemp
 #define EXTRUDE_MINTEMP 130
@@ -94,19 +138,17 @@ EXTRUDER SETTINGS
 #define EXTRUDER_AUTO_FAN_SPEED   255  // == full speed
 
 
+#ifdef SNMM
+//#define BOWDEN_LENGTH	408
+#define BOWDEN_LENGTH 433 //default total length for filament fast loading part; max length for extrusion is 465 mm!; this length can be adjusted in service menu
+#define FIL_LOAD_LENGTH 102 //length for loading filament into the nozzle
+#define FIL_COOLING 10 //length for cooling moves
+#define E_MOTOR_LOW_CURRENT 350 // current for PRUSAY code
+#define E_MOTOR_HIGH_CURRENT 700 //current for unloading filament, stop print, PRUSAY ramming
+#endif //SNMM
 
-/*------------------------------------
-LOAD/UNLOAD FILAMENT SETTINGS
-*------------------------------------*/
+//#define DIS //for measuring bed heigth and PINDa detection heigth relative to auto home point, experimental function
 
-// Load filament commands
-#define LOAD_FILAMENT_0 "M83"
-#define LOAD_FILAMENT_1 "G1 E70 F400"
-#define LOAD_FILAMENT_2 "G1 E40 F100"
-
-// Unload filament commands
-#define UNLOAD_FILAMENT_0 "M83"
-#define UNLOAD_FILAMENT_1 "G1 E-80 F400"
 
 /*------------------------------------
 CHANGE FILAMENT SETTINGS
@@ -142,11 +184,12 @@ ADDITIONAL FEATURES SETTINGS
 
 #ifdef FILAMENT_RUNOUT_SUPPORT
 #define FILAMENT_RUNOUT_SENSOR 1
+#define FILAMENT_RUNOUT_SCRIPT "M600"
 #endif
 
 // temperature runaway
-//#define TEMP_RUNAWAY_BED_HYSTERESIS 5
-//#define TEMP_RUNAWAY_BED_TIMEOUT 360
+#define TEMP_RUNAWAY_BED_HYSTERESIS 5
+#define TEMP_RUNAWAY_BED_TIMEOUT 360
 
 #define TEMP_RUNAWAY_EXTRUDER_HYSTERESIS 15
 #define TEMP_RUNAWAY_EXTRUDER_TIMEOUT 45
@@ -160,10 +203,12 @@ MOTOR CURRENT SETTINGS
 #define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
-#if MOTHERBOARD == 102 || MOTHERBOARD == 302
+#if MOTHERBOARD == 203 || MOTHERBOARD == 200
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
+#define Z_SILENT 0
+#define Z_HIGH_POWER 200
 #endif
 
 /*------------------------------------
@@ -190,7 +235,7 @@ BED SETTINGS
 #define MESH_MEAS_NUM_Y_POINTS 3
 
 #define MESH_HOME_Z_CALIB 0.2
-#define MESH_HOME_Z_SEARCH 5
+#define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.
 
 #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
 #define Y_PROBE_OFFSET_FROM_EXTRUDER 9     // Z probe to nozzle Y offset: -front +behind
@@ -226,9 +271,16 @@ BED SETTINGS
 #ifdef PIDTEMPBED
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
 //from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
+#if defined(E3D_PT100_BED_WITH_AMP) || defined(E3D_PT100_BED_NO_AMP)
+// Define PID constants for extruder with PT100
+#define  DEFAULT_bedKp 21.70
+#define  DEFAULT_bedKi 1.60
+#define  DEFAULT_bedKd 73.76
+#else
 #define  DEFAULT_bedKp 126.13
 #define  DEFAULT_bedKi 4.30
 #define  DEFAULT_bedKd 924.76
+#endif
 
 //120v 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
 //from pidautotune
@@ -243,6 +295,10 @@ BED SETTINGS
 /*-----------------------------------
 PREHEAT SETTINGS
 *------------------------------------*/
+
+#define FARM_PREHEAT_HOTEND_TEMP 250
+#define FARM_PREHEAT_HPB_TEMP 40
+#define FARM_PREHEAT_FAN_SPEED 0
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
 #define PLA_PREHEAT_HPB_TEMP 55
@@ -305,12 +361,71 @@ THERMISTORS SETTINGS
 // 1047 is Pt1000 with 4k7 pullup
 // 1010 is Pt1000 with 1k pullup (non standard)
 // 147 is Pt100 with 4k7 pullup
+// 148 is E3D Pt100 with 4k7 pullup and no PT100 Amplifier on a MiniRambo 1.3a
+// 247 is Pt100 with 4k7 pullup and PT100 Amplifier
 // 110 is Pt100 with 1k pullup (non standard)
 
+#if defined(E3D_PT100_EXTRUDER_WITH_AMP)
+#define TEMP_SENSOR_0 247
+#elif defined(E3D_PT100_EXTRUDER_NO_AMP)
+#define TEMP_SENSOR_0 148
+#else
 #define TEMP_SENSOR_0 5
+#endif
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
+#if defined(E3D_PT100_BED_WITH_AMP)
+#define TEMP_SENSOR_BED 247
+#elif defined(E3D_PT100_BED_NO_AMP)
+#define TEMP_SENSOR_BED 148
+#else
 #define TEMP_SENSOR_BED 1
+#endif
 
+#define STACK_GUARD_TEST_VALUE 0xA2A2
+
+#define MAX_BED_TEMP_CALIBRATION 50
+#define MAX_HOTEND_TEMP_CALIBRATION 50
+
+#define MAX_E_STEPS_PER_UNIT 250
+#define MIN_E_STEPS_PER_UNIT 100
+
+#define Z_BABYSTEP_MIN -3999
+#define Z_BABYSTEP_MAX 0
+
+#define PINDA_PREHEAT_X 70
+#define PINDA_PREHEAT_Y -3
+#define PINDA_PREHEAT_Z 1
+#define PINDA_HEAT_T 120 //time in s
+
+#define PINDA_MIN_T 50
+#define PINDA_STEP_T 10
+#define PINDA_MAX_T 100
+
+#define PING_TIME 60 //time in s
+#define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
+#define PING_ALLERT_PERIOD 60 //time in s
+
+#define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
+#define NC_BUTTON_LONG_PRESS 15 //time in s
+
+#define LONG_PRESS_TIME 1000 //time in ms for button long press 
+#define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release
+
+#define DEFAULT_PID_TEMP 210
+
+#ifdef SNMM
+#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
+#else
+#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
+#endif
+
+#define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
+
+#define M600_TIMEOUT 600  //seconds
+
+#ifndef SNMM
+#define SUPPORT_VERBOSITY
+#endif
 
 #endif //__CONFIGURATION_PRUSA_H

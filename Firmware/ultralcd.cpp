@@ -1,6 +1,7 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #ifdef ULTRA_LCD
+#include "MenuStack.h"
 #include "Marlin.h"
 #include "language.h"
 #include "cardreader.h"
@@ -33,12 +34,13 @@ extern int lcd_change_fil_state;
 extern bool fans_check_enabled;
 extern bool filament_autoload_enabled;
 
+#ifdef PAT9125
 extern bool fsensor_not_responding;
-
 extern bool fsensor_enabled;
+#endif //PAT9125
 
 //Function pointer to menu functions.
-typedef void (*menuFunc_t)();
+
 
 static void lcd_sd_updir();
 
@@ -116,7 +118,7 @@ union Data
   byte b[2];
   int value;
 };
-
+static MenuStack menuStack;
 int8_t ReInitLCD = 0;
 
 int8_t SDscrool = 0;
@@ -133,8 +135,10 @@ extern void fsensor_unblock();
 extern bool fsensor_enable();
 extern void fsensor_disable();
 
+#ifdef TMC2130
 extern void crashdet_enable();
 extern void crashdet_disable();
+#endif //TMC2130
 
 
 #ifdef SNMM
@@ -198,7 +202,6 @@ static void lcd_main_menu();
 static void lcd_tune_menu();
 static void lcd_prepare_menu();
 //static void lcd_move_menu();
-static void lcd_crash_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
 static void lcd_language_menu();
@@ -214,7 +217,9 @@ static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
 static void lcd_menu_extruder_info();
+#if defined(TMC2130) || defined(PAT9125)
 static void lcd_menu_fails_stats();
+#endif //TMC2130 or PAT9125
 
 void lcd_finishstatus();
 
@@ -231,7 +236,7 @@ static void lcd_delta_calibrate_menu();
 static void lcd_quick_feedback();//Cause an LCD refresh, and give the user visual or audible feedback that something has happened
 
 /* Different types of actions that can be used in menu items. */
-static void menu_action_back(menuFunc_t data);
+static void menu_action_back(menuFunc_t data = 0);
 #define menu_action_back_RAM menu_action_back
 static void menu_action_submenu(menuFunc_t data);
 static void menu_action_gcode(const char* pgcode);
@@ -330,15 +335,13 @@ volatile uint8_t slow_buttons;//Contains the bits of the currently pressed butto
 #endif
 uint8_t currentMenuViewOffset;              /* scroll offset in the current menu */
 uint8_t lastEncoderBits;
-uint32_t encoderPosition;
-uint32_t savedEncoderPosition;
+uint16_t encoderPosition;
 #if (SDCARDDETECT > 0)
 bool lcd_oldcardstatus;
 #endif
 #endif //ULTIPANEL
 
 menuFunc_t currentMenu = lcd_status_screen; /* function pointer to the currently active menu */
-menuFunc_t savedMenu;
 uint32_t lcd_next_update_millis;
 uint8_t lcd_status_update_delay;
 bool ignore_click = false;
@@ -350,6 +353,25 @@ uint8_t lcdDrawUpdate = 2;                  /* Set to none-zero when the LCD nee
 // float raw_Ki, raw_Kd;
 #endif
 
+
+/**
+ * @brief Go to menu
+ *
+ * In MENU_ITEM(submenu,... ) use MENU_ITEM(back,...) or
+ * menu_action_back() and menu_action_submenu() instead, otherwise menuStack will be broken.
+ *
+ * It is acceptable to call lcd_goto_menu(menu) directly from MENU_ITEM(function,...), if destination menu
+ * is the same, from which function was called.
+ *
+ * @param menu target menu
+ * @param encoder position in target menu
+ * @param feedback
+ *  * true sound feedback (click)
+ *  * false no feedback
+ * @param reset_menu_state
+ *  * true reset menu state global union
+ *  * false do not reset menu state global union
+ */
 static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const bool feedback = true, bool reset_menu_state = true)
 {
 	asm("cli");
@@ -521,8 +543,8 @@ static void lcd_status_screen()
 
   if (current_click && (lcd_commands_type != LCD_COMMAND_STOP_PRINT)) //click is aborted unless stop print finishes
   {
-
-    lcd_goto_menu(lcd_main_menu);
+    menuStack.reset(); //redundant, as already done in lcd_return_to_status(), just to be sure
+    menu_action_submenu(lcd_main_menu);
     lcd_implementation_init( // to maybe revive the LCD if static electricity killed it.
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
       currentMenu == lcd_status_screen
@@ -966,7 +988,8 @@ void lcd_commands()
 		{
 
 			lcd_implementation_clear();
-			lcd_goto_menu(lcd_babystep_z, 0, false);
+			menuStack.reset();
+			menu_action_submenu(lcd_babystep_z);
 			enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
 			enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0")); //intro line			
 			enquecommand_P(PSTR("G92 E0.0"));
@@ -1376,6 +1399,7 @@ static void lcd_return_to_status() {
   );
 
     lcd_goto_menu(lcd_status_screen, 0, false);
+    menuStack.reset();
 }
 
 
@@ -1477,7 +1501,9 @@ static void lcd_menu_extruder_info()
 {
     int fan_speed_RPM[2];
     
+#ifdef PAT9125
     pat9125_update();
+#endif //PAT9125
     
     fan_speed_RPM[0] = 60*fan_speed[0];
     fan_speed_RPM[1] = 60*fan_speed[1];
@@ -1495,6 +1521,7 @@ static void lcd_menu_extruder_info()
     
     // Display Nozzle fan RPM
     
+#if (defined(TACH_1))
     lcd.setCursor(0, 1);
     lcd_printPGM(MSG_INFO_PRINT_FAN);
     
@@ -1503,10 +1530,10 @@ static void lcd_menu_extruder_info()
     lcd.setCursor(12, 1);
     lcd.print(itostr4(fan_speed_RPM[1]));
     lcd.print(" RPM");
-
+#endif
     
-    // Display X and Y difference from Filament sensor
-    
+#ifdef PAT9125
+	// Display X and Y difference from Filament sensor    
     lcd.setCursor(0, 2);
     lcd.print("Fil. Xd:");
     lcd.print(itostr3(pat9125_x));
@@ -1525,7 +1552,7 @@ static void lcd_menu_extruder_info()
     lcd.print(itostr3(pat9125_b));
     
     // Display LASER shutter time from Filament sensor
-    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chip’s internal
+    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
      auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
      When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to
      46. */
@@ -1535,6 +1562,7 @@ static void lcd_menu_extruder_info()
     lcd.print("Shut:    ");
     lcd.setCursor(15, 3);
     lcd.print(itostr3(pat9125_s));
+#endif //PAT9125
 
     
     if (lcd_clicked())
@@ -1544,6 +1572,7 @@ static void lcd_menu_extruder_info()
     }
 }
 
+#if defined(TMC2130) && defined(PAT9125)
 static void lcd_menu_fails_stats_total()
 {
 //01234567890123456789
@@ -1585,7 +1614,13 @@ static void lcd_menu_fails_stats_print()
 		lcd_goto_menu(lcd_menu_fails_stats, 2);
     }    
 }
-
+/**
+ * @brief Open fail statistics menu
+ *
+ * This version of function is used, when there is filament sensor,
+ * power failure and crash detection.
+ * There are Last print and Total menu items.
+ */
 static void lcd_menu_fails_stats()
 {
 	START_MENU();
@@ -1594,6 +1629,33 @@ static void lcd_menu_fails_stats()
 	MENU_ITEM(submenu, PSTR("Total"), lcd_menu_fails_stats_total);
 	END_MENU();
 }
+#else if defined(PAT9125)
+/**
+ * @brief Print last print and total filament run outs
+ *
+ * This version of function is used, when there is filament sensor,
+ * but no other sensors (e.g. power failure, crash detection).
+ *
+ * Example screen:
+ * @code
+ * 01234567890123456789
+ * Last print failures
+ *  Filam. runouts  0
+ * Total failures
+ *  Filam. runouts  5
+ * @endcode
+ */
+static void lcd_menu_fails_stats()
+{
+    uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
+    uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
+    fprintf_P(lcdout, PSTR(ESC_H(0,0)"Last print failures"ESC_H(1,1)"Filam. runouts  %-3d"ESC_H(0,2)"Total failures"ESC_H(1,3)"Filam. runouts  %-3d"), filamentLast, filamentTotal);
+    if (lcd_clicked())
+    {
+        menu_action_back();
+    }
+}
+#endif //TMC2130
 
 
 #ifdef DEBUG_BUILD
@@ -1620,14 +1682,20 @@ static void lcd_menu_debug()
 static void lcd_menu_temperatures()
 {
 	fprintf_P(lcdout, PSTR(ESC_H(1,0)"Nozzle:   %d%c" ESC_H(1,1)"Bed:      %d%c"), (int)current_temperature[0], '\x01', (int)current_temperature_bed, '\x01');
+#ifdef AMBIENT_THERMISTOR
 	fprintf_P(lcdout, PSTR(ESC_H(1,2)"Ambient:  %d%c" ESC_H(1,3)"PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
-    if (lcd_clicked())
+#else //AMBIENT_THERMISTOR
+	fprintf_P(lcdout, PSTR(ESC_H(1,2)"PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
+#endif //AMBIENT_THERMISTOR
+
+	if (lcd_clicked())
     {
         lcd_quick_feedback();
         lcd_return_to_status();
     }
 }
 
+#ifdef defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
 #define VOLT_DIV_R1 10000
 #define VOLT_DIV_R2 2370
 #define VOLT_DIV_FAC ((float)VOLT_DIV_R2 / (VOLT_DIV_R2 + VOLT_DIV_R1))
@@ -1644,7 +1712,9 @@ static void lcd_menu_voltages()
         lcd_return_to_status();
     }
 }
+#endif //defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
 
+#ifdef TMC2130
 static void lcd_menu_belt_status()
 {
     fprintf_P(lcdout, PSTR(ESC_H(1,0) "Belt status" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
@@ -1654,6 +1724,7 @@ static void lcd_menu_belt_status()
         lcd_return_to_status();
     }
 }
+#endif //TMC2130
 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
@@ -1746,12 +1817,16 @@ static void lcd_support_menu()
   MENU_ITEM(back, PSTR("------------"), lcd_main_menu);
   if (!IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL)) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
-    
+
+#ifdef TMC2130
   MENU_ITEM(submenu, MSG_MENU_BELT_STATUS, lcd_menu_belt_status);
+#endif //TMC2130
     
   MENU_ITEM(submenu, MSG_MENU_TEMPERATURES, lcd_menu_temperatures);
 
+#ifdef defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
   MENU_ITEM(submenu, MSG_MENU_VOLTAGES, lcd_menu_voltages);
+#endif //defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
 
 #ifdef DEBUG_BUILD
   MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
@@ -1764,13 +1839,13 @@ static void lcd_support_menu()
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
-	lcd_goto_menu(lcd_settings_menu, 8);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
 void lcd_set_filament_autoload() {
 	filament_autoload_enabled = !filament_autoload_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
-	lcd_goto_menu(lcd_settings_menu, 8);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
 void lcd_unLoadFilament()
@@ -1991,11 +2066,13 @@ void lcd_LoadFilament()
 {
   if (degHotend0() > EXTRUDE_MINTEMP) 
   {
+#ifdef PAT9125
 	  if (filament_autoload_enabled && fsensor_enabled)
 	  {
 		  lcd_show_fullscreen_message_and_wait_P(MSG_AUTOLOADING_ENABLED);
 		  return;
 	  }
+#endif //PAT9125
 	  custom_message = true;
 	  loading_flag = true;
 	  enquecommand_P(PSTR("M701")); //load filament
@@ -2144,7 +2221,7 @@ static void _lcd_move(const char *name, int axis, int min, int max) {
     }
   }
   if (lcdDrawUpdate) lcd_implementation_drawedit(name, ftostr31(current_position[axis]));
-  if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis); {
+  if (LCD_CLICKED) menu_action_back(); {
   }
 }
 
@@ -2166,7 +2243,7 @@ static void lcd_move_e()
   {
     lcd_implementation_drawedit(PSTR("Extruder"), ftostr31(current_position[E_AXIS]));
   }
-  if (LCD_CLICKED) lcd_goto_menu(lcd_move_menu_axis);
+  if (LCD_CLICKED) menu_action_back();
 }
 	else {
 		lcd_implementation_clear();
@@ -2318,7 +2395,7 @@ static void _lcd_babystep(int axis, const char *msg)
       (axis == 0) ? EEPROM_BABYSTEP_X : ((axis == 1) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z), 
       &menuData.babyStep.babystepMem[axis]);
   }
-  if (LCD_CLICKED) lcd_goto_menu(lcd_main_menu);
+  if (LCD_CLICKED) menu_action_back();
 }
 
 static void lcd_babystep_x() {
@@ -2333,6 +2410,14 @@ static void lcd_babystep_z() {
 
 static void lcd_adjust_bed();
 
+/**
+ * @brief adjust bed reset menu item function
+ *
+ * To be used as MENU_ITEM(function,...) inside lcd_adjust_bed submenu. In such case lcd_goto_menu usage
+ * is correct and doesn't break menuStack.
+ * Because we did not leave the menu, the menuData did not reset.
+ * Force refresh of the bed leveling data.
+ */
 static void lcd_adjust_bed_reset()
 {
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
@@ -2340,9 +2425,7 @@ static void lcd_adjust_bed_reset()
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR , 0);
-    lcd_goto_menu(lcd_adjust_bed, 0, false);
-    // Because we did not leave the menu, the menuData did not reset.
-    // Force refresh of the bed leveling data.
+    lcd_goto_menu(lcd_adjust_bed, 0, false); //doesn't break menuStack
     menuData.adjustBed.status = 0;
 }
 
@@ -2629,7 +2712,7 @@ calibrated:
         lcd_implementation_print_at(0, 3, 1);
         lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
     }else{
-		lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
+		//lcd_show_fullscreen_message_and_wait_P(MSG_PAPER);
         lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1);
         lcd_implementation_print_at(0, 2, 1);
         lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
@@ -2966,7 +3049,7 @@ static void lcd_show_end_stops() {
 
 static void menu_show_end_stops() {
     lcd_show_end_stops();
-    if (LCD_CLICKED) lcd_goto_menu(lcd_calibration_menu);
+    if (LCD_CLICKED) lcd_goto_menu(lcd_calibration_menu); //doesn't break menuStack
 }
 
 // Lets the user move the Z carriage up to the end stoppers.
@@ -3358,10 +3441,11 @@ static void lcd_sort_type_set() {
 	}
 	eeprom_update_byte((unsigned char *)EEPROM_SD_SORT, sdSort);
 	presort_flag = true;
-	lcd_goto_menu(lcd_settings_menu, 8);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 #endif //SDCARD_SORT_ALPHA
 
+#ifdef TMC2130
 static void lcd_crash_mode_info()
 {
 	lcd_update_enable(true);
@@ -3393,7 +3477,9 @@ static void lcd_crash_mode_info2()
 		else lcd_goto_menu(lcd_settings_menu, 14, true, true);
 	}
 }
+#endif //TMC2130
 
+#ifdef PAT9125
 static void lcd_filament_autoload_info()
 {
     lcd_show_fullscreen_message_and_wait_P(MSG_AUTOLOADING_ONLY_IF_FSENS_ON);
@@ -3403,9 +3489,16 @@ static void lcd_fsensor_fail()
 {
     lcd_show_fullscreen_message_and_wait_P(MSG_FSENS_NOT_RESPONDING);
 }
+#endif //PAT9125
+
 
 static void lcd_silent_mode_set() {
-  SilentModeMenu = !SilentModeMenu;
+	switch (SilentModeMenu) {
+	case 0: SilentModeMenu = 1; break;
+	case 1: SilentModeMenu = 2; break;
+	case 2: SilentModeMenu = 0; break;
+	default: SilentModeMenu = 0; break;
+	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
   // Wait until the planner queue is drained and the stepper routine achieves
@@ -3424,10 +3517,13 @@ static void lcd_silent_mode_set() {
   sei();
 #endif //TMC2130
   digipot_init();
+#ifdef TMC2130
   if (CrashDetectMenu && SilentModeMenu)
 	  lcd_goto_menu(lcd_crash_mode_info2);
+#endif //TMC2130
 }
 
+#ifdef TMC2130
 static void lcd_crash_mode_set()
 {
 	CrashDetectMenu = !CrashDetectMenu; //set also from crashdet_enable() and crashdet_disable()
@@ -3440,6 +3536,8 @@ static void lcd_crash_mode_set()
 	else lcd_goto_menu(lcd_settings_menu, 9);
     
 }
+#endif //TMC2130
+
 
 static void lcd_set_lang(unsigned char lang) {
   lang_selected = lang;
@@ -3451,6 +3549,7 @@ static void lcd_set_lang(unsigned char lang) {
     langsel = LANGSEL_ACTIVE;
 }
 
+#ifdef PAT9125
 static void lcd_fsensor_state_set()
 {
 	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
@@ -3466,10 +3565,12 @@ static void lcd_fsensor_state_set()
             lcd_fsensor_fail();
         }
     }
-	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 7);
-	else lcd_goto_menu(lcd_settings_menu, 7);
+	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu);
+	else lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
     
 }
+#endif //PAT9125
+
 
 #if !SDSORT_USES_RAM
 void lcd_set_degree() {
@@ -3530,16 +3631,18 @@ void lcd_temp_calibration_set() {
 	temp_cal_active = !temp_cal_active;
 	eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
 	digipot_init();
-	lcd_goto_menu(lcd_settings_menu, 10);
+	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
+#ifdef HAS_SECOND_SERIAL_PORT
 void lcd_second_serial_set() {
 	if(selectedSerialPort == 1) selectedSerialPort = 0;
 	else selectedSerialPort = 1;
 	eeprom_update_byte((unsigned char *)EEPROM_SECOND_SERIAL_ACTIVE, selectedSerialPort);
 	MYSERIAL.begin(BAUDRATE);
-	lcd_goto_menu(lcd_settings_menu, 11);
+	lcd_goto_menu(lcd_settings_menu);//doesn't break menuStack
 }
+#endif //HAS_SECOND_SERIAL_PORT
 
 void lcd_calibrate_pinda() {
 	enquecommand_P(PSTR("G76"));
@@ -3713,7 +3816,7 @@ void lcd_wizard(int state) {
 			case CALIBRATION_STATUS_CALIBRATED: end = true; eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0); break;
 			default: state = 2; break; //if calibration status is unknown, run wizard from the beginning
 			}
-			break;
+			break; 
 		case 2: //selftest
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_SELFTEST);
 			wizard_event = lcd_selftest();
@@ -3725,7 +3828,7 @@ void lcd_wizard(int state) {
 			break;
 		case 3: //xyz cal.
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_XYZ_CAL);
-			wizard_event = gcode_M45(false);
+			wizard_event = gcode_M45(false, 0);
 			if (wizard_event) state = 5;
 			else end = true;
 			break;
@@ -3733,7 +3836,7 @@ void lcd_wizard(int state) {
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_Z_CAL);
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
 			if (!wizard_event) lcd_show_fullscreen_message_and_wait_P(MSG_PLACE_STEEL_SHEET);
-			wizard_event = gcode_M45(true);
+			wizard_event = gcode_M45(true, 0);
 			if (wizard_event) state = 11; //shipped, no need to set first layer, go to final message directly
 			else end = true;
 			break;
@@ -3769,7 +3872,9 @@ void lcd_wizard(int state) {
 			state = 7;
 			break;
 		case 7: //load filament 
+#ifdef PAT9125
 			fsensor_block();
+#endif //PAT9125
 			lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_LOAD_FILAMENT);
 			lcd_update_enable(false);
 			lcd_implementation_clear();
@@ -3778,7 +3883,9 @@ void lcd_wizard(int state) {
 			change_extr(0);
 #endif
 			gcode_M701();
+#ifdef PAT9125
 			fsensor_unblock();
+#endif //PAT9125
 			state = 9;
 			break;
 		case 8:
@@ -3854,10 +3961,6 @@ void lcd_wizard(int state) {
 	lcd_update(2);
 }
 
-static void lcd_crash_menu()
-{
-}
-
 
 
 static void lcd_settings_menu()
@@ -3876,6 +3979,16 @@ static void lcd_settings_menu()
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
+  if (!farm_mode) { //dont show in menu if we are in farm mode
+	  switch (SilentModeMenu) {
+	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  }
+  }
+
+#ifdef PAT9125
 #ifndef DEBUG_DISABLE_FSENSORCHECK
   if (FSensorStateMenu == 0) {
       if (fsensor_not_responding){
@@ -3901,6 +4014,7 @@ static void lcd_settings_menu()
       
   }
 #endif //DEBUG_DISABLE_FSENSORCHECK
+#endif //PAT9125
 
   if (fans_check_enabled == true) {
 	  MENU_ITEM(function, MSG_FANS_CHECK_ON, lcd_set_fan_check);
@@ -3909,6 +4023,7 @@ static void lcd_settings_menu()
 	  MENU_ITEM(function, MSG_FANS_CHECK_OFF, lcd_set_fan_check);
   }
 
+#ifdef TMC2130
   if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
   else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
   if (SilentModeMenu == 0)
@@ -3917,6 +4032,7 @@ static void lcd_settings_menu()
     else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
   }
   else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+#endif //TMC2130
 
   if (temp_cal_active == false) {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_OFF, lcd_temp_calibration_set);
@@ -4754,7 +4870,7 @@ static void lcd_disable_farm_mode() {
 		lcd_return_to_status();
 	}
 	else {
-		lcd_goto_menu(lcd_settings_menu);
+		lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 	}
 	lcd_update_enable(true);
 	lcdDrawUpdate = 2;
@@ -5476,9 +5592,11 @@ static void lcd_main_menu()
   else 
   {
 	#ifndef SNMM
+#ifdef PAT9125
 	if ( ((filament_autoload_enabled == true) && (fsensor_enabled == true)))
         MENU_ITEM(function, MSG_AUTOLOAD_FILAMENT, lcd_LoadFilament);
 	else
+#endif //PAT9125
 		MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
 	MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
 	#endif
@@ -5500,7 +5618,9 @@ static void lcd_main_menu()
 	  MENU_ITEM(submenu, MSG_STATISTICS, lcd_menu_statistics);
   }
     
+#if defined(TMC2130) || defined(PAT9125)
   MENU_ITEM(submenu, PSTR("Fail stats"), lcd_menu_fails_stats);
+#endif
 
   MENU_ITEM(submenu, MSG_SUPPORT, lcd_support_menu);
 
@@ -5549,6 +5669,18 @@ static void lcd_autostart_sd()
 
 
 
+static void lcd_silent_mode_set_tune() {
+  switch (SilentModeMenu) {
+  case 0: SilentModeMenu = 1; break;
+  case 1: SilentModeMenu = 2; break;
+  case 2: SilentModeMenu = 0; break;
+  default: SilentModeMenu = 0; break;
+  }
+  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+  digipot_init();
+  lcd_goto_menu(lcd_tune_menu, 9);
+}
+
 static void lcd_colorprint_change() {
 	
 	enquecommand_P(PSTR("M600"));
@@ -5574,44 +5706,54 @@ static void lcd_tune_menu()
 
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
 
-  
 
-  START_MENU();
-  MENU_ITEM(back, MSG_MAIN, lcd_main_menu); //1
-  MENU_ITEM_EDIT(int3, MSG_SPEED, &feedmultiply, 10, 999);//2
 
-  MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
-  MENU_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 10);//4
+	START_MENU();
+	MENU_ITEM(back, MSG_MAIN, lcd_main_menu); //1
+	MENU_ITEM_EDIT(int3, MSG_SPEED, &feedmultiply, 10, 999);//2
 
-  MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);//5
-  MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);//6
+	MENU_ITEM_EDIT(int3, MSG_NOZZLE, &target_temperature[0], 0, HEATER_0_MAXTEMP - 10);//3
+	MENU_ITEM_EDIT(int3, MSG_BED, &target_temperature_bed, 0, BED_MAXTEMP - 10);//4
+
+	MENU_ITEM_EDIT(int3, MSG_FAN_SPEED, &fanSpeed, 0, 255);//5
+	MENU_ITEM_EDIT(int3, MSG_FLOW, &extrudemultiply, 10, 999);//6
 #ifdef FILAMENTCHANGEENABLE
-  MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
+	MENU_ITEM(function, MSG_FILAMENTCHANGE, lcd_colorprint_change);//7
 #endif
-  
+
 #ifndef DEBUG_DISABLE_FSENSORCHECK
-  if (FSensorStateMenu == 0) {
-    MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
-  } else {
-    MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
-  }
+#ifdef PAT9125
+	if (FSensorStateMenu == 0) {
+		MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
+	}
+	else {
+		MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
+	}
+#endif //PAT9125
 #endif //DEBUG_DISABLE_FSENSORCHECK
 
-  if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
-  else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
+#ifdef TMC2130
+	if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
+	else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
 
-  if (SilentModeMenu == 0)
-  {
-    if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
-    else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
-  }
-  else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
-
-  END_MENU();
+	if (SilentModeMenu == 0)
+	{
+		if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
+		else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
+	}
+	else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+#else //TMC2130
+	if (!farm_mode) { //dont show in menu if we are in farm mode
+		switch (SilentModeMenu) {
+		case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+		case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+		case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+		default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+		}
+	}
+#endif //TMC2130
+	END_MENU();
 }
-
-
-
 
 static void lcd_move_menu_01mm()
 {
@@ -5944,6 +6086,7 @@ extern char conv[8];
 // Convert tmc2130 wfac to string 
 char *wfac_to_str5(const uint8_t &x)
 {
+#ifdef TMC2130
 	if (x>=TMC2130_WAVE_FAC200_MIN) return ftostr43(((float)(x & 0xff))/200);
 	conv[0] = ' ';
 	conv[1] = ' ';
@@ -5951,6 +6094,7 @@ char *wfac_to_str5(const uint8_t &x)
 	conv[3] = 'f';
 	conv[4] = 'f';
 	conv[5] = 0;
+#endif //TMC2130
 	return conv;
 }
 
@@ -5984,23 +6128,31 @@ bool lcd_selftest()
 	delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 
-	if (_result)
-	{
-		_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
-		_result = lcd_selftest_fan_dialog(0);
-	}
+	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
+#if (defined(FANCHECK) && defined(TACH_0)) 		
+	_result = lcd_selftest_fan_dialog(0);
+#else //defined(TACH_0)
+	_result = lcd_selftest_manual_fan_check(0, false);
+#endif //defined(TACH_0)
 	
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
+#if (defined(FANCHECK) && defined(TACH_1)) 		
 		_result = lcd_selftest_fan_dialog(1);
+#else //defined(TACH_1)
+		_result = lcd_selftest_manual_fan_check(1, false);
+#endif //defined(TACH_1)
 	}
 
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(1, _progress, 3, true, 2000);
-		//_progress = lcd_selftest_screen(2, _progress, 3, true, 2000);
-		_result = true;// lcd_selfcheck_endstops();
+#ifndef TMC2130
+		_result = lcd_selfcheck_endstops();
+#else
+		_result = true;
+#endif
 	}
 	
 	if (_result)
@@ -6071,6 +6223,7 @@ bool lcd_selftest()
 		}
 	}
 
+#ifdef TMC2130
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(13, 0, 2, true, 0);
@@ -6082,6 +6235,7 @@ bool lcd_selftest()
 			eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED, 1);
 		_result = bres;
 	}
+#endif //TMC2130
 
 	if (_result)
 	{
@@ -6255,13 +6409,11 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		return true;
 }
 #endif //TMC2130
-	
 
-
+//#ifndef TMC2130
 
 static bool lcd_selfcheck_axis(int _axis, int _travel)
 {
-	
 	bool _stepdone = false;
 	bool _stepresult = false;
 	int _progress = 0;
@@ -6269,41 +6421,39 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 	int _err_endstop = 0;
 	int _lcd_refresh = 0;
 	_travel = _travel + (_travel / 10);
+
 	do {
-
 		current_position[_axis] = current_position[_axis] - 1;
-
 
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
-		
-		if (/*x_min_endstop || y_min_endstop || */(READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1))
+
+		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
+			((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 		{
 			if (_axis == 0)
 			{
-				_stepresult = (x_min_endstop) ? true : false;
-				_err_endstop = (y_min_endstop) ? 1 : 2;
-				
+				_stepresult = ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ? true : false;
+				_err_endstop = ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ? 1 : 2;
+
 			}
 			if (_axis == 1)
 			{
-				_stepresult = (y_min_endstop) ? true : false;
-				_err_endstop = (x_min_endstop) ? 0 : 2;
-				
+				_stepresult = ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ? true : false;
+				_err_endstop = ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ? 0 : 2;
+
 			}
 			if (_axis == 2)
 			{
-				_stepresult = (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? true : false;
-				_err_endstop = (x_min_endstop) ? 0 : 1;
+				_stepresult = ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) ? true : false;
+				_err_endstop = ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ? 0 : 1;
 				/*disable_x();
 				disable_y();
 				disable_z();*/
 			}
 			_stepdone = true;
 		}
-#ifdef TMC2130
-		tmc2130_home_exit();
-#endif
 
 		if (_lcd_refresh < 6)
 		{
@@ -6311,7 +6461,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 		else
 		{
-			_progress = lcd_selftest_screen(4 + _axis, _progress, 3, false, 0);
+			_progress = lcd_selftest_screen(2 + _axis, _progress, 3, false, 0);
 			_lcd_refresh = 0;
 		}
 
@@ -6320,7 +6470,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 
 		//delay(100);
 		(_travel_done <= _travel) ? _travel_done++ : _stepdone = true;
-		
+
 	} while (!_stepdone);
 
 
@@ -6350,132 +6500,110 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 	}
 
-
 	return _stepresult;
 }
 
+#ifndef TMC2130
 static bool lcd_selfcheck_pulleys(int axis)
 {
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
-	float current_position_init, current_position_final;
+	float current_position_init;
 	float move;
 	bool endstop_triggered = false;
-	bool result = true;
 	int i;
 	unsigned long timeout_counter;
 	refresh_cmd_timeout();
 	manage_inactivity(true);
 
 	if (axis == 0) move = 50; //X_AXIS 
-		else move = 50; //Y_AXIS
+	else move = 50; //Y_AXIS
 
-		//current_position_init = current_position[axis];
-		current_position_init = st_get_position_mm(axis);
-		current_position[axis] += 5;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-		for (i = 0; i < 5; i++) {
-			refresh_cmd_timeout();
-			current_position[axis] = current_position[axis] + move;
-			//digipot_current(0, 850); //set motor current higher
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 200, active_extruder);
-			st_synchronize();
-			//if (SilentModeMenu == 1) digipot_current(0, tmp_motor[0]); //set back to normal operation currents
-			//else digipot_current(0, tmp_motor_loud[0]); //set motor current back			
-			current_position[axis] = current_position[axis] - move;
-#ifdef TMC2130
-			tmc2130_home_enter(X_AXIS_MASK << axis);
-#endif
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 50, active_extruder);
-			
-			st_synchronize();
-			if ((x_min_endstop) || (y_min_endstop)) {
+	current_position_init = current_position[axis];
+
+	current_position[axis] += 2;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+	for (i = 0; i < 5; i++) {
+		refresh_cmd_timeout();
+		current_position[axis] = current_position[axis] + move;
+		digipot_current(0, 850); //set motor current higher
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 200, active_extruder);
+		st_synchronize();
+		if (SilentModeMenu == 1) digipot_current(0, tmp_motor[0]); //set back to normal operation currents
+		else digipot_current(0, tmp_motor_loud[0]); //set motor current back			
+		current_position[axis] = current_position[axis] - move;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 50, active_extruder);
+		st_synchronize();
+		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
+			lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
+			return(false);
+		}
+	}
+	timeout_counter = millis() + 2500;
+	endstop_triggered = false;
+	manage_inactivity(true);
+	while (!endstop_triggered) {
+		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
+			endstop_triggered = true;
+			if (current_position_init - 1 <= current_position[axis] && current_position_init + 1 >= current_position[axis]) {
+				current_position[axis] += 15;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+				st_synchronize();
+				return(true);
+			}
+			else {
 				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
-#ifdef TMC2130
-			tmc2130_home_exit();
-#endif
 		}
-		timeout_counter = millis() + 2500;
-		endstop_triggered = false;
-		manage_inactivity(true);
-		while (!endstop_triggered) {
-			if ((x_min_endstop) || (y_min_endstop)) {
-#ifdef TMC2130
-				tmc2130_home_exit();
-#endif
-				endstop_triggered = true;
-				current_position_final = st_get_position_mm(axis);
-
-				SERIAL_ECHOPGM("current_pos_init:");
-				MYSERIAL.println(current_position_init);
-				SERIAL_ECHOPGM("current_pos:");
-				MYSERIAL.println(current_position_final);
+		else {
+			current_position[axis] -= 1;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+			st_synchronize();
+			if (millis() > timeout_counter) {
 				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
-				
-				if (current_position_init - 1 <= current_position_final && current_position_init + 1 >= current_position_final) {
-					current_position[axis] += 15;
-					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-					st_synchronize();
-					return(true);
-				}
-				else {
-
-					return(false);
-				}
+				return(false);
 			}
-			else {
-#ifdef TMC2130
-				tmc2130_home_exit();
-#endif
-				//current_position[axis] -= 1;
-				current_position[axis] += 50;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-				current_position[axis] -= 100;
-#ifdef TMC2130
-				tmc2130_home_enter(X_AXIS_MASK << axis);
-#endif
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-				st_synchronize();
-				
-				if (millis() > timeout_counter) {
-					lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
-					return(false);
-				}
-			}
-		}		
-
-
+		}
+	}
+	return(true);
 }
+#endif TMC2130
+
 
 static bool lcd_selfcheck_endstops()
-{/*
+{
 	bool _result = true;
 
-	if (x_min_endstop || y_min_endstop || READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1)
+	if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+		((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
+		((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 	{
-		current_position[0] = (x_min_endstop) ? current_position[0] = current_position[0] + 10 : current_position[0];
-		current_position[1] = (y_min_endstop) ? current_position[1] = current_position[1] + 10 : current_position[1];
-		current_position[2] = (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? current_position[2] = current_position[2] + 10 : current_position[2];
+		if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) current_position[0] += 10;
+		if ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) current_position[1] += 10;
+		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) current_position[2] += 10;
 	}
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[0] / 60, active_extruder);
 	delay(500);
 
-	if (x_min_endstop || y_min_endstop || READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1)
+	if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
+		((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
+		((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 	{
 		_result = false;
 		char _error[4] = "";
-		if (x_min_endstop) strcat(_error, "X");
-		if (y_min_endstop) strcat(_error, "Y");
-		if (READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) strcat(_error, "Z");
+		if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "X");
+		if ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Y");
+		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Z");
 		lcd_selftest_error(3, _error, "");
 	}
 	manage_heater();
 	manage_inactivity(true);
 	return _result;
-	*/
 }
+//#endif //not defined TMC2130
 
 static bool lcd_selfcheck_check_heater(bool _isbed)
 {
@@ -6688,7 +6816,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 	
 	switch (_fan)
 	{
-	case 1:
+	case 0:
 		// extruder cooling fan
 		lcd.setCursor(0, 1); 
 		if(check_opposite == true) lcd_printPGM(MSG_SELFTEST_COOLING_FAN); 
@@ -6696,7 +6824,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
 		break;
-	case 2:
+	case 1:
 		// object cooling fan
 		lcd.setCursor(0, 1);
 		if (check_opposite == true) lcd_printPGM(MSG_SELFTEST_EXTRUDER_FAN);
@@ -6717,12 +6845,12 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 	{
 		switch (_fan)
 		{
-		case 1:
+		case 0:
 			// extruder cooling fan
 			SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 			WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
 			break;
-		case 2:
+		case 1:
 			// object cooling fan
 			SET_OUTPUT(FAN_PIN);
 			analogWrite(FAN_PIN, 255);
@@ -6807,9 +6935,9 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		else if (fan_speed[1] < 34) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
 			//check fans manually
 
-			_result = lcd_selftest_manual_fan_check(2, true); //turn on print fan and check that left extruder fan is not spinning
+			_result = lcd_selftest_manual_fan_check(1, true); //turn on print fan and check that left extruder fan is not spinning
 			if (_result) {
-				_result = lcd_selftest_manual_fan_check(2, false); //print fan is stil turned on; check that it is spinning
+				_result = lcd_selftest_manual_fan_check(1, false); //print fan is stil turned on; check that it is spinning
 				if (!_result) _errno = 6; //print fan not spinning
 			}
 			else {
@@ -6833,8 +6961,6 @@ static bool lcd_selftest_fan_dialog(int _fan)
 
 static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay)
 {
-	//SERIAL_ECHOPGM("Step:");
-	//MYSERIAL.println(_step);
 
 	lcd_next_update_millis = millis() + (LCD_UPDATE_INTERVAL * 10000);
 
@@ -6941,10 +7067,23 @@ static void lcd_quick_feedback()
 }
 
 /** Menu action functions **/
-static void menu_action_back(menuFunc_t data) {
-  lcd_goto_menu(data);
+
+/**
+ * @brief Go up in menu structure
+ * @param data unused parameter
+ */
+static void menu_action_back(menuFunc_t data)
+{
+    MenuStack::Record record = menuStack.pop();
+    lcd_goto_menu(record.menu);
+    encoderPosition = record.position;
 }
+/**
+ * @brief Go deeper into menu structure
+ * @param data nested menu
+ */
 static void menu_action_submenu(menuFunc_t data) {
+  menuStack.push(currentMenu, encoderPosition);
   lcd_goto_menu(data);
 }
 static void menu_action_gcode(const char* pgcode) {
@@ -7409,10 +7548,6 @@ void lcd_buttons_update()
 		  if (millis() > button_blanking_time) {
 			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
 			  if (button_pressed == false && long_press_active == false) {
-				  if (currentMenu != lcd_move_z) {
-					  savedMenu = currentMenu;
-					  savedEncoderPosition = encoderPosition;
-				  }
 				  long_press_timer = millis();
 				  button_pressed = true;
 			  }
@@ -7421,7 +7556,7 @@ void lcd_buttons_update()
 
 					  long_press_active = true;
 					  move_menu_scale = 1.0;
-					  lcd_goto_menu(lcd_move_z);
+					  menu_action_submenu(lcd_move_z);
 				  }
 			  }
 		  }
@@ -7431,13 +7566,7 @@ void lcd_buttons_update()
 			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
 
 			  if (long_press_active == false) { //button released before long press gets activated
-				  if (currentMenu == lcd_move_z) {
-					  //return to previously active menu and previous encoder position
-					  lcd_goto_menu(savedMenu, savedEncoderPosition);					  
-				  }
-				  else {
 					  newbutton |= EN_C;
-				  }
 			  }
 			  else if (currentMenu == lcd_move_z) lcd_quick_feedback(); 
 			  //button_pressed is set back to false via lcd_quick_feedback function
