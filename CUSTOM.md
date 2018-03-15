@@ -1,5 +1,35 @@
 # Changelog of local customizations
 
+## Version 15-Mar-2018 (v3.1.0 r10)
+
+### Updates and mods
+
+* Default to 250000 Baud for platformio builds 
+* Replace watchdog (disabled by default)
+
+### Bug fixes
+
+* LA bugfix from @Sebastianv650
+
+## Version 27-Feb-2018 (v3.1.0 r9)
+
+This release incorporates a number of experimental features and structural changes
+
+### Updates and mods
+
+* Integration of @Sebastianv650 Linear Advance v1.5 Details can be found in the [Marlin](http://marlinfw.org/docs/features/lin_advance.html) documentation.
+* New internal ISR structuring to prevent temperature / fan ISR from stalling stepper and allowing serial RX to be highest priority. CheckRX is no longer needed. 
+* It is now possible to use the USB interface at 250000 Baud without errors provided the host can handle higher data rates. A firmware rebuild is required to enable capability.
+* Add Calibration LCD menu item for optionally disabling XY skew correction.
+* XY Skew correction menu item only enabled only when skew is 'perfect' (< 0.1deg).
+
+### Bug fixes
+
+* Fix HOME-Z to correct location (calibration point). Fixes dinging the heat-bed after ``Setup Wizard``
+* Remove attempted recovery from RX buffer full (just drop chars). This includes a fix to append 'ok' after resend request when line number or checksum error detected. Addresses Prusa-Firmware issue [#331](https://github.com/prusa3d/Prusa-Firmware/issues/331)
+* Use CRITICAL_SECTION in LCD menu and buttons sync.
+* Eliminate excessive LCD redraw and flicker.
+
 ## Version 20-Dec-2017 (v3.1.0 r4)
 ### Updates and mods
 - Allow BAUDRATE override by build opts (default 115200).
