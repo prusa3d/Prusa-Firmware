@@ -32,11 +32,13 @@
 #include "Marlin.h"
 #include "ultralcd.h"
 #include "temperature.h"
-#include "watchdog.h"
 #include "cardreader.h"
 
 #include "Sd2PinMap.h"
 
+#ifdef WATCHDOG
+#include <avr/wdt.h>
+#endif
 
 //===========================================================================
 //=============================public variables============================
@@ -841,7 +843,9 @@ static void updateTemperaturesFromRawValues()
       filament_width_meas = analog2widthFil();
     #endif  
     //Reset the watchdog after we know we have a temperature measurement.
-    watchdog_reset();
+    #ifdef WATCHDOG
+      wdt_reset();
+    #endif
 
     CRITICAL_SECTION_START;
     temp_meas_ready = false;
