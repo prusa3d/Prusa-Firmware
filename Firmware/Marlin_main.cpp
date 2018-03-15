@@ -976,7 +976,7 @@ void setup()
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
-		//selectedSerialPort = 1;
+		selectedSerialPort = 1;
 	}
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
