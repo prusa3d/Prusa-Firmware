@@ -73,7 +73,7 @@
 #define HEATER_2_PIN        -1
 #define TEMP_2_PIN          -1
 
-#define TEMP_AMBIENT_PIN     6 //A6
+#define TEMP_AMBIENT_PIN     5 //A5
 
 #define TEMP_PINDA_PIN       3 //A3
 

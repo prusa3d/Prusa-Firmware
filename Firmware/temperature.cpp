@@ -182,6 +182,7 @@ static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
 static float analog2tempAmbient(int raw);
+static float analog2tempPINDA(int raw);
 static void updateTemperaturesFromRawValues();
 
 enum TempRunawayStates
@@ -922,6 +923,35 @@ static float analog2tempBed(int raw) {
   #endif
 }
 
+#ifdef PINDA_THERMISTOR
+
+static float analog2tempPINDA(int raw) {
+
+	float celsius = 0;
+	byte i;
+
+	for (i = 1; i<BEDTEMPTABLE_LEN; i++)
+	{
+		if (PGM_RD_W(BEDTEMPTABLE[i][0]) > raw)
+		{
+			celsius = PGM_RD_W(BEDTEMPTABLE[i - 1][1]) +
+				(raw - PGM_RD_W(BEDTEMPTABLE[i - 1][0])) *
+				(float)(PGM_RD_W(BEDTEMPTABLE[i][1]) - PGM_RD_W(BEDTEMPTABLE[i - 1][1])) /
+				(float)(PGM_RD_W(BEDTEMPTABLE[i][0]) - PGM_RD_W(BEDTEMPTABLE[i - 1][0]));
+			break;
+		}
+	}
+
+	// Overflow: Set to last value in the table
+	if (i == BEDTEMPTABLE_LEN) celsius = PGM_RD_W(BEDTEMPTABLE[i - 1][1]);
+
+	return celsius;
+}
+
+
+#endif //PINDA_THERMISTOR
+
+
 #ifdef AMBIENT_THERMISTOR
 static float analog2tempAmbient(int raw)
 {
@@ -955,7 +985,7 @@ static void updateTemperaturesFromRawValues()
     }
 
 #ifdef PINDA_THERMISTOR
-	current_temperature_pinda = analog2tempBed(current_temperature_raw_pinda); //thermistor for pinda is the same as for bed
+	current_temperature_pinda = analog2tempPINDA(current_temperature_raw_pinda);
 #endif
 
 #ifdef AMBIENT_THERMISTOR
@@ -1504,17 +1534,17 @@ extern "C" {
 
 void adc_ready(void) //callback from adc when sampling finished
 {
-	current_temperature_raw[0] = adc_values[0];
-	current_temperature_raw_pinda = adc_values[1];
-	current_temperature_bed_raw = adc_values[2];	
+	current_temperature_raw[0] = adc_values[TEMP_0_PIN]; //heater
+	current_temperature_raw_pinda = adc_values[TEMP_PINDA_PIN];
+	current_temperature_bed_raw = adc_values[TEMP_BED_PIN];
 #ifdef VOLT_PWR_PIN
-	current_voltage_raw_pwr = adc_values[4];
+	current_voltage_raw_pwr = adc_values[VOLT_PWR_PIN];
 #endif
 #ifdef AMBIENT_THERMISTOR
-	current_temperature_raw_ambient = adc_values[5];
+	current_temperature_raw_ambient = adc_values[TEMP_AMBIENT_PIN];
 #endif //AMBIENT_THERMISTOR
 #ifdef VOLT_BED_PIN
-	current_voltage_raw_bed = adc_values[6];
+	current_voltage_raw_bed = adc_values[VOLT_BED_PIN]; // 6->9
 #endif
 	temp_meas_ready = true;
 }
