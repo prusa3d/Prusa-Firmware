@@ -63,17 +63,17 @@ const float bed_ref_points_4[] PROGMEM = {
 };
 
 const float bed_ref_points[] PROGMEM = {
-	13.f - BED_ZERO_REF_X,   10.4f - 4.f - BED_ZERO_REF_Y,
-	115.f - BED_ZERO_REF_X,   10.4f - 4.f - BED_ZERO_REF_Y,
-	216.f - BED_ZERO_REF_X,   10.4f - 4.f - BED_ZERO_REF_Y,
+	13.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
+	115.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
+	216.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
 
-	216.f - BED_ZERO_REF_X, 106.4f - 4.f - BED_ZERO_REF_Y,
-	115.f - BED_ZERO_REF_X, 106.4f - 4.f - BED_ZERO_REF_Y,
-	13.f - BED_ZERO_REF_X, 106.4f - 4.f - BED_ZERO_REF_Y,
+	216.f - BED_ZERO_REF_X, 106.4f - BED_ZERO_REF_Y,
+	115.f - BED_ZERO_REF_X, 106.4f - BED_ZERO_REF_Y,
+	13.f - BED_ZERO_REF_X, 106.4f - BED_ZERO_REF_Y,
 
-	13.f - BED_ZERO_REF_X, 202.4f - 4.f - BED_ZERO_REF_Y,
-	115.f - BED_ZERO_REF_X, 202.4f - 4.f - BED_ZERO_REF_Y,
-	216.f - BED_ZERO_REF_X, 202.4f - 4.f - BED_ZERO_REF_Y
+	13.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
+	115.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
+	216.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
 };
 #else
 
