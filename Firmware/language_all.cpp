@@ -61,8 +61,10 @@ const char * const MSG_AUTO_HOME_LANG_TABLE[1] PROGMEM = {
 };
 
 const char MSG_AUTO_MODE_ON_EN[] PROGMEM = "Mode [auto power]";
-const char * const MSG_AUTO_MODE_ON_LANG_TABLE[1] PROGMEM = {
-	MSG_AUTO_MODE_ON_EN
+const char MSG_AUTO_MODE_ON_CZ[] PROGMEM = "Mod [automaticky]";
+const char * const MSG_AUTO_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_AUTO_MODE_ON_EN,
+	MSG_AUTO_MODE_ON_CZ
 };
 
 const char MSG_A_RETRACT_EN[] PROGMEM = "A-retract";
@@ -1986,14 +1988,14 @@ const char * const MSG_SHOW_END_STOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 };
 
 const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode [high power]";
-const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod      [Normal]";
+const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod  [vys. vykon]";
 const char * const MSG_SILENT_MODE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_OFF_EN,
 	MSG_SILENT_MODE_OFF_CZ
 };
 
 const char MSG_SILENT_MODE_ON_EN[] PROGMEM = "Mode     [silent]";
-const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod     [Stealth]";
+const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod       [tichy]";
 const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_EN,
 	MSG_SILENT_MODE_ON_CZ
