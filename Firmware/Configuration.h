@@ -8,7 +8,7 @@
 
 // Firmware version
 #define FW_VERSION "3.1.3"
-#define FW_COMMIT_NR   301
+#define FW_COMMIT_NR   309
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
