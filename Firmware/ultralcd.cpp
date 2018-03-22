@@ -240,7 +240,7 @@ static void menu_action_setlang(unsigned char lang);
 static void menu_action_sdfile(const char* filename, char* longFilename);
 static void menu_action_sddirectory(const char* filename, char* longFilename);
 static void menu_action_setting_edit_bool(const char* pstr, bool* ptr);
-static void menu_action_setting_edit_wfac(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
+static void menu_action_setting_edit_wfac(const char* pstr, uint16_t* ptr, uint16_t minValue, uint16_t maxValue);
 static void menu_action_setting_edit_mres(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
 static void menu_action_setting_edit_byte3(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
 static void menu_action_setting_edit_int3(const char* pstr, int* ptr, int minValue, int maxValue);
@@ -1525,7 +1525,7 @@ static void lcd_menu_extruder_info()
     lcd.print(itostr3(pat9125_b));
     
     // Display LASER shutter time from Filament sensor
-    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chip’s internal
+    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chipï¿½s internal
      auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
      When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to
      46. */
@@ -4108,10 +4108,10 @@ static void lcd_ustep_linearity_menu_save()
 static void lcd_ustep_linearity_menu_back()
 {
 	bool changed = false;
-	if (tmc2130_wave_fac[X_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[X_AXIS] = 0;
-	if (tmc2130_wave_fac[Y_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[Y_AXIS] = 0;
-	if (tmc2130_wave_fac[Z_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[Z_AXIS] = 0;
-	if (tmc2130_wave_fac[E_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[E_AXIS] = 0;
+	if (tmc2130_wave_fac[X_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[X_AXIS] = 0;
+	if (tmc2130_wave_fac[Y_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[Y_AXIS] = 0;
+	if (tmc2130_wave_fac[Z_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[Z_AXIS] = 0;
+	if (tmc2130_wave_fac[E_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[E_AXIS] = 0;
 	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC) != tmc2130_wave_fac[X_AXIS]);
 	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC) != tmc2130_wave_fac[Y_AXIS]);
 	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC) != tmc2130_wave_fac[Z_AXIS]);
@@ -4145,10 +4145,10 @@ static void lcd_ustep_linearity_menu()
 	MENU_ITEM(back, PSTR("Experimental"), lcd_ustep_linearity_menu_back);
 	MENU_ITEM(function, PSTR("Reset correction"), lcd_ustep_linearity_menu_reset);
 	MENU_ITEM(function, PSTR("Recomended config"), lcd_ustep_linearity_menu_recomended);
-	MENU_ITEM_EDIT(wfac, PSTR("X-correction"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
-	MENU_ITEM_EDIT(wfac, PSTR("Y-correction"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
-	MENU_ITEM_EDIT(wfac, PSTR("Z-correction"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
-	MENU_ITEM_EDIT(wfac, PSTR("E-correction"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("X-correction"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("Y-correction"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("Z-correction"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("E-correction"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
 	END_MENU();
 }
 
@@ -5844,9 +5844,9 @@ char *mres_to_str3(const uint8_t &x)
 extern char conv[8];
 
 // Convert tmc2130 wfac to string 
-char *wfac_to_str5(const uint8_t &x)
+char *wfac_to_str5(const uint16_t &x)
 {
-	if (x>=TMC2130_WAVE_FAC200_MIN) return ftostr43(((float)(x & 0xff))/200);
+	if (x>=TMC2130_WAVE_FAC1000_MIN) return ftostr43(((float)(x & 0xffff))/1000);
 	conv[0] = ' ';
 	conv[1] = ' ';
 	conv[2] = 'O';
@@ -5856,7 +5856,7 @@ char *wfac_to_str5(const uint8_t &x)
 	return conv;
 }
 
-menu_edit_type(uint8_t, wfac, wfac_to_str5, 1)
+menu_edit_type(uint16_t, wfac, wfac_to_str5, 1)
 menu_edit_type(uint8_t, mres, mres_to_str3, 1)
 menu_edit_type(uint8_t, byte3, itostr3, 1)
 menu_edit_type(int, int3, itostr3, 1)

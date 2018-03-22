@@ -1146,7 +1146,7 @@ static void lcd_implementation_drawmenu_setting_edit_generic_P(uint8_t row, cons
 }
 
 
-extern char *wfac_to_str5(const uint8_t &x);
+extern char *wfac_to_str5(const uint16_t &x);
 extern char *mres_to_str3(const uint8_t &x);
 
 #define lcd_implementation_drawmenu_setting_edit_wfac_selected(row, pstr, pstr2, data, minValue, maxValue) lcd_implementation_drawmenu_setting_edit_generic(row, pstr, '>', wfac_to_str5(*(data)))
