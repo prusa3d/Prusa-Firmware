@@ -105,6 +105,9 @@
 #define MSG_SILENT_MODE_ON					"Mode     [silent]"
 #define MSG_SILENT_MODE_OFF					"Mode [high power]" 
 #define MSG_AUTO_MODE_ON					"Mode [auto power]"
+#define MSG_STEALTH_MODE_OFF				"Mode     [Normal]"
+#define MSG_STEALTH_MODE_ON					"Mode    [Stealth]"
+
 #define(length=20) MSG_REBOOT				"Reboot the printer"
 #define(length=20) MSG_TAKE_EFFECT			" for take effect"											
 
