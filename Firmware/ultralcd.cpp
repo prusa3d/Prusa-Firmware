@@ -3979,6 +3979,7 @@ static void lcd_settings_menu()
   {
 	  MENU_ITEM(gcode, MSG_DISABLE_STEPPERS, PSTR("M84"));
   }
+#ifndef TMC2130
   if (!farm_mode) { //dont show in menu if we are in farm mode
 	  switch (SilentModeMenu) {
 	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
@@ -3987,6 +3988,7 @@ static void lcd_settings_menu()
 	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
 	  }
   }
+#endif //TMC2130
 
 #ifdef PAT9125
 #ifndef DEBUG_DISABLE_FSENSORCHECK
@@ -4024,8 +4026,8 @@ static void lcd_settings_menu()
   }
 
 #ifdef TMC2130
-  if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
-  else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
+  if (SilentModeMenu == 0) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
+  else MENU_ITEM(function, MSG_STEALTH_MODE_ON, lcd_silent_mode_set);
   if (SilentModeMenu == 0)
   {
     if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
@@ -5733,8 +5735,8 @@ static void lcd_tune_menu()
 #endif //DEBUG_DISABLE_FSENSORCHECK
 
 #ifdef TMC2130
-	if (SilentModeMenu == 0) MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set);
-	else MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set);
+	if (SilentModeMenu == 0) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
+	else MENU_ITEM(function, MSG_STEALTH_MODE_ON, lcd_silent_mode_set);
 
 	if (SilentModeMenu == 0)
 	{

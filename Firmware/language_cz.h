@@ -103,8 +103,12 @@
 #define MSG_INSERT_FILAMENT		"Vlozte filament"
 #define MSG_CHANGING_FILAMENT	"Vymena filamentu!"
 
-#define MSG_SILENT_MODE_ON					"Mod     [Stealth]"
-#define MSG_SILENT_MODE_OFF					"Mod      [Normal]" 
+#define MSG_SILENT_MODE_ON					"Mod       [tichy]"
+#define MSG_SILENT_MODE_OFF					"Mod  [vys. vykon]" 
+#define MSG_AUTO_MODE_ON					"Mod [automaticky]"
+#define MSG_STEALTH_MODE_OFF				"Mod      [Normal]"
+#define MSG_STEALTH_MODE_ON					"Mod     [Stealth]"
+
 #define MSG_REBOOT							"Restartujte tiskarnu"
 #define MSG_TAKE_EFFECT						" pro projeveni zmen"	
 
