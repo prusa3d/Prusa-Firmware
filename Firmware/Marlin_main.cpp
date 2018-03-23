@@ -251,6 +251,8 @@ CardReader card;
 #endif
 
 unsigned long PingTime = millis();
+unsigned long NcTime;
+
 union Data
 {
 byte b[2];
@@ -413,6 +415,10 @@ bool cancel_heatup = false ;
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
+
+bool no_response = false;
+uint8_t important_status;
+uint8_t saved_filament_type;
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -956,16 +962,19 @@ void setup()
 	lcd_splash();
 	setup_killpin();
 	setup_powerhold();
-	
+
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
-	if (farm_no == 0xFFFF) farm_no = 0;
+	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF)) 
+		farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
+	if ((uint16_t)farm_no == 0xFFFF) farm_no = 0;
 	
 	selectedSerialPort = eeprom_read_byte((uint8_t*)EEPROM_SECOND_SERIAL_ACTIVE);
 	if (selectedSerialPort == 0xFF) selectedSerialPort = 0;
 	if (farm_mode)
 	{ 
+		no_response = true; //we need confirmation by recieving PRUSA thx
+		important_status = 8;
 		prusa_statistics(8);
 		selectedSerialPort = 1;
 	}
@@ -2484,6 +2493,7 @@ void gcode_M701()
 
 void process_commands()
 {
+	if (!buflen) return; //empty command
   #ifdef FILAMENT_RUNOUT_SUPPORT
     SET_INPUT(FR_SENS);
   #endif
@@ -2559,6 +2569,9 @@ void process_commands()
 			  MYSERIAL.println("Not in farm mode.");
 		  }
 		  
+		}
+		else if (code_seen("thx")) {
+			no_response = false;
 		}else if (code_seen("fv")) {
         // get file version
         #ifdef SDSUPPORT

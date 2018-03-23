@@ -29,8 +29,9 @@
   void lcd_sdcard_stop();
   void lcd_sdcard_pause();
   void lcd_print_stop();
-  void prusa_statistics(int _message);
+  void prusa_statistics(int _message, uint8_t _col_nr = 0);
   void lcd_confirm_print();
+  unsigned char lcd_choose_color();
 void lcd_mylang();
   bool lcd_detected(void);
 
@@ -290,5 +291,8 @@ void lcd_service_mode_show_result();
 
 void lcd_wizard();
 void lcd_wizard(int state);
+
+static void lcd_send_status();
+static void lcd_connect_printer();
 
 #endif //ULTRALCD_H
