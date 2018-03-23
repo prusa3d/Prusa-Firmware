@@ -1695,7 +1695,7 @@ static void lcd_menu_temperatures()
     }
 }
 
-#ifdef defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
+#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
 #define VOLT_DIV_R1 10000
 #define VOLT_DIV_R2 2370
 #define VOLT_DIV_FAC ((float)VOLT_DIV_R2 / (VOLT_DIV_R2 + VOLT_DIV_R1))
@@ -1712,7 +1712,7 @@ static void lcd_menu_voltages()
         lcd_return_to_status();
     }
 }
-#endif //defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
+#endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 #ifdef TMC2130
 static void lcd_menu_belt_status()
@@ -1824,9 +1824,9 @@ static void lcd_support_menu()
     
   MENU_ITEM(submenu, MSG_MENU_TEMPERATURES, lcd_menu_temperatures);
 
-#ifdef defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
+#if defined (VOLT_BED_PIN) || defined (VOLT_BED_PIN)
   MENU_ITEM(submenu, MSG_MENU_VOLTAGES, lcd_menu_voltages);
-#endif //defined(VOLT_BED_PIN) || defined(VOLT_BED_PIN)
+#endif //defined VOLT_BED_PIN || defined VOLT_BED_PIN
 
 #ifdef DEBUG_BUILD
   MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
