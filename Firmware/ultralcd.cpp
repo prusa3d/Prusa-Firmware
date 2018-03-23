@@ -7414,7 +7414,7 @@ static void lcd_send_status() {
 		NcTime = millis();
 		lcd_connect_printer();
 	}
-};
+}
 
 static void lcd_connect_printer() {
 	lcd_update_enable(false);
