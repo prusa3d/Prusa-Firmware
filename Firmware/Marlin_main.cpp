@@ -1306,7 +1306,7 @@ void setup()
 
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
-  wdt_enable(WDTO_4S);
+   wdt_enable(WDTO_4S);
 #endif //WATCHDOG
 }
 
@@ -2228,7 +2228,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
 				st_synchronize();
-				
+#ifndef NEW_XYZCAL				
 				if (result >= 0)
 				{
 					#ifdef HEATBED_V2
@@ -2251,6 +2251,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 					// if (result >= 0) babystep_apply();					
 					#endif //HEATBED_V2
 				}
+#endif //NEW_XYZCAL
 				
 				lcd_bed_calibration_show_result(result, point_too_far_mask);
 				if (result >= 0)
@@ -3228,6 +3229,16 @@ void process_commands()
 #ifdef PINDA_THERMISTOR
 		if (true)
 		{
+			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
+			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
+			if (result)
+			{
+				current_position[Z_AXIS] += 50;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				st_synchronize();
+				lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
+			}
+			lcd_update_enable(true);
 			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
 				// We don't know where we are! HOME!
 				// Push the commands to the front of the message queue in the reverse order!
@@ -3236,10 +3247,6 @@ void process_commands()
 				enquecommand_front_P((PSTR("G28 W0")));
 				break;
 			}
-			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
-			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
-			if (result) lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
-			lcd_update_enable(true);
 			KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
 			SERIAL_ECHOLNPGM("PINDA probe calibration start");
 
@@ -6406,6 +6413,12 @@ Sigma_Exit:
     case 12: //D12 - Reset failstat counters
 		dcode_12(); break;
 
+	case 15: //D15 - 
+		dcode_15(); break;
+
+	case 16: //D16 - 
+		dcode_16(); break;
+
 #ifdef TMC2130
 	case 2130: // D9125 - TMC2130
 		dcode_2130(); break;
@@ -6902,7 +6915,7 @@ void kill(const char *full_screen_message, unsigned char id)
   while(1)
   {
 #ifdef WATCHDOG
-    wdt_reset();
+	wdt_reset();
 #endif //WATCHDOG
 	  /* Intentionally left empty */
 	

@@ -172,7 +172,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define FANCHECK
 //#define WATCHDOG
 //#define SAFETYTIMER
-
+#define NEW_XYZCAL
 
 /*------------------------------------
  LOAD/UNLOAD FILAMENT SETTINGS
