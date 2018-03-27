@@ -470,6 +470,82 @@ int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 	return max_match;
 }
 
+#define MAX_DIAMETR 600
+
+int8_t xyzcal_find_point_center2(uint16_t delay_us)
+{
+	printf_P(PSTR("xyzcal_find_point_center2\n"));
+	int16_t x0 = _X;
+	int16_t y0 = _Y;
+	int16_t z0 = _Z;
+	printf_P(PSTR(" x0=%d\n"), x0);
+	printf_P(PSTR(" y0=%d\n"), y0);
+	printf_P(PSTR(" z0=%d\n"), z0);
+
+	xyzcal_lineXYZ_to(_X, _Y, z0 + 400, 500, -1);
+	xyzcal_lineXYZ_to(_X, _Y, z0 - 400, 500, 1);
+	xyzcal_lineXYZ_to(_X, _Y, z0 + 400, 500, -1);
+	xyzcal_lineXYZ_to(_X, _Y, z0 - 400, 500, 1);
+
+	z0 = _Z;
+
+//	xyzcal_lineXYZ_to(x0, y0, z0 - 100, 500, 1);
+//	z0 = _Z;
+//	printf_P(PSTR("  z0=%d\n"), z0);
+//	xyzcal_lineXYZ_to(x0, y0, z0 + 100, 500, -1);
+//	z0 += _Z;
+//	z0 /= 2;
+	printf_P(PSTR("   z0=%d\n"), z0);
+//	xyzcal_lineXYZ_to(x0, y0, z0 - 100, 500, 1);
+//	z0 = _Z - 10;
+
+	xyzcal_lineXYZ_to(x0 - MAX_DIAMETR, y0, z0, delay_us, -1);
+	int16_t dx1 = x0 - _X;
+	if (dx1 >= MAX_DIAMETR)
+	{
+		printf_P(PSTR("!!! dx1 = %d\n"), dx1);
+		return 0;
+	}
+	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
+	xyzcal_lineXYZ_to(x0 + MAX_DIAMETR, y0, z0, delay_us, -1);
+	int16_t dx2 = _X - x0;
+	if (dx2 >= MAX_DIAMETR)
+	{
+		printf_P(PSTR("!!! dx2 = %d\n"), dx2);
+		return 0;
+	}
+	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
+	xyzcal_lineXYZ_to(x0 , y0 - MAX_DIAMETR, z0, delay_us, -1);
+	int16_t dy1 = y0 - _Y;
+	if (dy1 >= MAX_DIAMETR)
+	{
+		printf_P(PSTR("!!! dy1 = %d\n"), dy1);
+		return 0;
+	}
+	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
+	xyzcal_lineXYZ_to(x0, y0 + MAX_DIAMETR, z0, delay_us, -1);
+	int16_t dy2 = _Y - y0;
+	if (dy2 >= MAX_DIAMETR)
+	{
+		printf_P(PSTR("!!! dy2 = %d\n"), dy2);
+		return 0;
+	}
+	printf_P(PSTR("dx1=%d\n"), dx1);
+	printf_P(PSTR("dx2=%d\n"), dx2);
+	printf_P(PSTR("dy1=%d\n"), dy1);
+	printf_P(PSTR("dy2=%d\n"), dy2);
+
+	x0 += (dx2 - dx1) / 2;
+	y0 += (dy2 - dy1) / 2;
+
+	printf_P(PSTR(" x0=%d\n"), x0);
+	printf_P(PSTR(" y0=%d\n"), y0);
+
+	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
+
+	return 1;
+}
+
 #ifdef XYZCAL_FIND_POINT_CENTER
 int8_t xyzcal_find_point_center(int16_t x0, int16_t y0, int16_t z0, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t turns)
 {
@@ -671,7 +747,22 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void)
 		xyzcal_lineXYZ_to(x, y, z, 200, 0);
 		if (xyzcal_scan_and_process())
 		{
-			ret = true;
+			if (xyzcal_find_point_center2(500))
+			{
+				uint32_t x_avg = 0;
+				uint32_t y_avg = 0;
+				uint8_t n; for (n = 0; n < 4; n++)
+				{
+					if (!xyzcal_find_point_center2(1000)) break;
+					x_avg += _X;
+					y_avg += _Y;	
+				}
+				if (n == 4)
+				{
+					xyzcal_lineXYZ_to(x_avg >> 2, y_avg >> 2, _Z, 200, 0);
+					ret = true;
+				}
+			}
 		}
 	}
 	xyzcal_meassure_leave();

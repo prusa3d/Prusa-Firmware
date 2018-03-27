@@ -2367,7 +2367,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
 				st_synchronize();
-#ifndef NEW_XYZCAL
+//#ifndef NEW_XYZCAL
 				if (result >= 0)
 				{
 					#ifdef HEATBED_V2
@@ -2390,7 +2390,9 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 					// if (result >= 0) babystep_apply();					
 					#endif //HEATBED_V2
 				}
-#endif //NEW_XYZCAL
+//#endif //NEW_XYZCAL
+				lcd_update_enable(true);
+				lcd_update(2);
 
 				lcd_bed_calibration_show_result(result, point_too_far_mask);
 				if (result >= 0)
