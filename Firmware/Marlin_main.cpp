@@ -54,6 +54,7 @@
 #include "pins_arduino.h"
 #include "math.h"
 #include "util.h"
+#include "Timer.h"
 
 #include <avr/wdt.h>
 
@@ -3228,7 +3229,8 @@ void process_commands()
 #ifdef PINDA_THERMISTOR
 		if (true)
 		{
-			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
+			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS]))
+			{
 				// We don't know where we are! HOME!
 				// Push the commands to the front of the message queue in the reverse order!
 				// There shall be always enough space reserved for these commands.
@@ -3238,7 +3240,14 @@ void process_commands()
 			}
 			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
 			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
-			if (result) lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
+			if (result)
+			{
+				current_position[Z_AXIS] = 50;
+				current_position[Y_AXIS] = 190;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				st_synchronize();
+				lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
+			}
 			lcd_update_enable(true);
 			KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
 			SERIAL_ECHOLNPGM("PINDA probe calibration start");
@@ -6720,6 +6729,31 @@ void handle_status_leds(void) {
 }
 #endif
 
+#ifdef SAFETYTIMER
+/**
+ * @brief Turn off heating after 15 minutes of inactivity
+ */
+static void handleSafetyTimer()
+{
+    static_assert(EXTRUDERS == 1,"Implemented only for one extruder.");
+    static Timer safetyTimer;
+    if (IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) ||
+            (!degTargetBed() && !degTargetHotend(0)))
+    {
+        safetyTimer.stop();
+    }
+    else if ((degTargetBed() || degTargetHotend(0)) && (!safetyTimer.running()))
+    {
+        safetyTimer.start();
+    }
+    else if (safetyTimer.expired(15*60*1000))
+    {
+        setTargetBed(0);
+        setTargetHotend(0, 0);
+    }
+}
+#endif //SAFETYTIMER
+
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef PAT9125
@@ -6763,18 +6797,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 #endif //PAT9125
 
 #ifdef SAFETYTIMER
-		static uint32_t safety_timer = 0;
-		if (degTargetBed() || degTargetHotend(0))
-		{
-			if ((safety_timer == 0) || IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL))
-				safety_timer = millis();
-			else if ((safety_timer + (15*60*1000)) < millis())
-			{
-				setTargetBed(0);
-				setTargetHotend(0, 0);
-				safety_timer = 0;
-			}
-		}
+	handleSafetyTimer();
 #endif //SAFETYTIMER
 
 
