@@ -170,6 +170,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define PAT9125 //!< Filament sensor
 #define FANCHECK
+
+// New XYZ calibration
+#define NEW_XYZCAL
+
 //#define WATCHDOG
 //#define SAFETYTIMER
 

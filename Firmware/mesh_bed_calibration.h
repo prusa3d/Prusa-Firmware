@@ -161,7 +161,9 @@ enum BedSkewOffsetDetectionResultType {
 };
 
 extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level, uint8_t &too_far_mask);
+#ifndef NEW_XYZCAL
 extern BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level, uint8_t &too_far_mask);
+#endif //NEW_XYZCAL
 
 extern bool sample_mesh_and_store_reference();
 
