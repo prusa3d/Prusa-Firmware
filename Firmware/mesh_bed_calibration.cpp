@@ -19,11 +19,8 @@ float   world2machine_shift[2];
 #define WEIGHT_FIRST_ROW_Y_HIGH (0.3f)
 #define WEIGHT_FIRST_ROW_Y_LOW  (0.0f)
 
-//#define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER) // -22 + 23 = 1
-//#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER) // -0.6 + 5 = 4.4
-
 #define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER) // -22 + 23 = 1
-#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER + 4) // -0.6 + 5 = 4.4
+#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER) // -0.6 + 5 = 4.4
 
 // Scaling of the real machine axes against the programmed dimensions in the firmware.
 // The correction is tiny, here around 0.5mm on 250mm length.
@@ -59,10 +56,10 @@ const float bed_skew_angle_extreme = (0.25f * M_PI / 180.f);
 // Positions of the bed reference points in the machine coordinates, referenced to the P.I.N.D.A sensor.
 // The points are the following: center front, center right, center rear, center left.
 const float bed_ref_points_4[] PROGMEM = {
-	13.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X,  10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
-	13.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
+	13.f - BED_ZERO_REF_X,   10.4f - 4.f - BED_ZERO_REF_Y,
+	221.f - BED_ZERO_REF_X,  10.4f - 4.f - BED_ZERO_REF_Y,
+	221.f - BED_ZERO_REF_X, 202.4f - 4.f - BED_ZERO_REF_Y,
+	13.f - BED_ZERO_REF_X, 202.4f - 4.f - BED_ZERO_REF_Y
 };
 
 const float bed_ref_points[] PROGMEM = {
@@ -908,10 +905,6 @@ error:
     return false;
 }
 
-#ifdef NEW_XYZCAL
-extern bool xyzcal_find_bed_induction_sensor_point_xy();
-#endif //NEW_XYZCAL
-
 // Search around the current_position[X,Y],
 // look for the induction sensor response.
 // Adjust the  current_position[X,Y,Z] to the center of the target dot and its response Z coordinate.
@@ -925,13 +918,9 @@ extern bool xyzcal_find_bed_induction_sensor_point_xy();
 #define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.2f)
 #endif //HEATBED_V2
 
-
 #ifdef HEATBED_V2
-/*inline */bool find_bed_induction_sensor_point_xy(int verbosity_level)
+inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 {
-#ifdef NEW_XYZCAL
-	return xyzcal_find_bed_induction_sensor_point_xy();
-#else //NEW_XYZCAL
 	#ifdef SUPPORT_VERBOSITY
 	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
 	#endif // SUPPORT_VERBOSITY
@@ -1174,9 +1163,8 @@ extern bool xyzcal_find_bed_induction_sensor_point_xy();
 	enable_z_endstop(false);
 	invert_z_endstop(false);
 	return found;
-#endif //NEW_XYZCAL
-}
 
+}
 #else //HEATBED_V2
 inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 {
@@ -1376,17 +1364,11 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 
 #endif //HEATBED_V2
 
-#ifdef NEW_XYZCAL
-extern bool xyzcal_improve_bed_induction_sensor_point(void);
-#endif //NEW_XYZCAL
 // Search around the current_position[X,Y,Z].
 // It is expected, that the induction sensor is switched on at the current position.
 // Look around this center point by painting a star around the point.
-/*inline */bool improve_bed_induction_sensor_point()
+inline bool improve_bed_induction_sensor_point()
 {
-#ifdef NEW_XYZCAL
-	return xyzcal_improve_bed_induction_sensor_point();
-#else //NEW_XYZCAL
     static const float search_radius = 8.f;
 
     bool  endstops_enabled  = enable_endstops(false);
@@ -1470,7 +1452,6 @@ extern bool xyzcal_improve_bed_induction_sensor_point(void);
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
     return found;
-#endif //NEW_XYZCAL
 }
 
 static inline void debug_output_point(const char *type, const float &x, const float &y, const float &z)
@@ -1486,19 +1467,12 @@ static inline void debug_output_point(const char *type, const float &x, const fl
     SERIAL_ECHOLNPGM("");
 }
 
-#ifdef NEW_XYZCAL
-extern bool xyzcal_improve_bed_induction_sensor_point2(bool lift_z_on_min_y);
-#endif //NEW_XYZCAL
 // Search around the current_position[X,Y,Z].
 // It is expected, that the induction sensor is switched on at the current position.
 // Look around this center point by painting a star around the point.
 #define IMPROVE_BED_INDUCTION_SENSOR_SEARCH_RADIUS (8.f)
-/*inline */bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t verbosity_level)
+inline bool improve_bed_induction_sensor_point2(bool lift_z_on_min_y, int8_t verbosity_level)
 {
-#ifdef NEW_XYZCAL
-	return xyzcal_improve_bed_induction_sensor_point();
-#else //NEW_XYZCAL
-
     float center_old_x = current_position[X_AXIS];
     float center_old_y = current_position[Y_AXIS];
     float a, b;
@@ -1651,23 +1625,16 @@ canceled:
     enable_z_endstop(false);
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
     return false;
-#endif //NEW_XYZCAL
 }
 
-#ifdef NEW_XYZCAL
-extern bool xyzcal_improve_bed_induction_sensor_point3(void);
-#endif //NEW_XYZCAL
 // Searching the front points, where one cannot move the sensor head in front of the sensor point.
 // Searching in a zig-zag movement in a plane for the maximum width of the response.
 // This function may set the current_position[Y_AXIS] below Y_MIN_POS, if the function succeeded.
 // If this function failed, the Y coordinate will never be outside the working space.
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS (8.f)
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y (0.1f)
-/*inline */bool improve_bed_induction_sensor_point3(int verbosity_level)
+inline bool improve_bed_induction_sensor_point3(int verbosity_level)
 {	
-#ifdef NEW_XYZCAL
-	return xyzcal_improve_bed_induction_sensor_point3();
-#else //NEW_XYZCAL
     float center_old_x = current_position[X_AXIS];
     float center_old_y = current_position[Y_AXIS];
     float a, b;
@@ -1979,10 +1946,8 @@ canceled:
         current_position[Y_AXIS] = Y_MIN_POS;
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
     return false;
-#endif //NEW_XYZCAL
 }
 
-#ifndef NEW_XYZCAL
 // Scan the mesh bed induction points one by one by a left-right zig-zag movement,
 // write the trigger coordinates to the serial line.
 // Useful for visualizing the behavior of the bed induction detector.
@@ -2027,7 +1992,6 @@ inline void scan_bed_induction_sensor_point()
     current_position[Y_AXIS] = center_old_y;
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
 }
-#endif //NEW_XYZCAL
 
 #define MESH_BED_CALIBRATION_SHOW_LCD
 
@@ -2415,11 +2379,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         current_position[Z_AXIS] -= 0.025f;
         // Improve the point position by searching its center in a current plane.
         int8_t n_errors = 3;
-#ifdef NEW_XYZCAL
-       for (int8_t iter = 0; iter < 1; ) {
-#else //NEW_XYZCAL
-       for (int8_t iter = 0; iter < 8; ) {
-#endif //NEW_XYZCAL
+        for (int8_t iter = 0; iter < 8; ) {
 			#ifdef SUPPORT_VERBOSITY
             if (verbosity_level > 20) {
                 SERIAL_ECHOPGM("Improving bed point ");
@@ -2772,7 +2732,6 @@ bool sample_mesh_and_store_reference()
     return true;
 }
 
-#ifndef NEW_XYZCAL
 bool scan_bed_induction_points(int8_t verbosity_level)
 {
     // Don't let the manage_inactivity() function remove power from the motors.
@@ -2834,7 +2793,6 @@ bool scan_bed_induction_points(int8_t verbosity_level)
     enable_z_endstop(endstop_z_enabled);
     return true;
 }
-#endif //NEW_XYZCAL
 
 // Shift a Z axis by a given delta.
 // To replace loading of the babystep correction.
