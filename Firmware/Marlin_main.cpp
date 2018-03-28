@@ -1057,7 +1057,8 @@ void setup()
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	if (silentMode == 0xff) silentMode = 0;
-	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+//	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+	tmc2130_mode = TMC2130_MODE_NORMAL;
 	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
 	if (crashdet)
 	{
@@ -1104,6 +1105,11 @@ void setup()
 #endif //TMC2130
 
 	st_init();    // Initialize stepper, this enables interrupts!
+
+#ifdef TMC2130
+	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+	tmc2130_init();
+#endif //TMC2130
     
 	setup_photpin();
 
