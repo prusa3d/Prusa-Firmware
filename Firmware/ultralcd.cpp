@@ -7097,6 +7097,7 @@ static void menu_action_function(menuFunc_t data) {
 }
 
 static bool check_file(const char* filename) {
+	if (farm_mode) return true;
 	bool result = false;
 	uint32_t filesize;
 	card.openFile((char*)filename, true);
