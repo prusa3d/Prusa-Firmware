@@ -6037,6 +6037,7 @@ bool lcd_selftest()
 	_result = lcd_selftest_manual_fan_check(0, false);
 #endif //defined(TACH_0)
 	
+
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(0, _progress, 3, true, 2000);
@@ -6062,6 +6063,7 @@ bool lcd_selftest()
 		_progress = lcd_selftest_screen(3, _progress, 3, true, 1000);
 		_result = lcd_selfcheck_check_heater(false);
 	}
+
 
 	if (_result)
 	{
@@ -6316,6 +6318,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 static bool lcd_selfcheck_axis(int _axis, int _travel)
 {
+//	printf_P(PSTR("lcd_selfcheck_axis %d, %d\n"), _axis, _travel);
 	bool _stepdone = false;
 	bool _stepresult = false;
 	int _progress = 0;
@@ -6329,10 +6332,13 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
-
+#ifdef TMC2130
+		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1))
+#else //TMC2130
 		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
 			((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
+#endif //TMC2130
 		{
 			if (_axis == 0)
 			{
@@ -6350,6 +6356,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 			{
 				_stepresult = ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) ? true : false;
 				_err_endstop = ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ? 0 : 1;
+	printf_P(PSTR("lcd_selfcheck_axis %d, %d\n"), _stepresult, _err_endstop);
 				/*disable_x();
 				disable_y();
 				disable_z();*/
@@ -6391,6 +6398,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		if (_err_endstop == 0) _error_2 = "X";
 		if (_err_endstop == 1) _error_2 = "Y";
 		if (_err_endstop == 2) _error_2 = "Z";
+
 
 		if (_travel_done >= _travel)
 		{
