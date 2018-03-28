@@ -470,8 +470,40 @@ void dcode_12()
 
 #ifdef TMC2130
 #include "planner.h"
-extern void st_synchronize();
 #include "tmc2130.h"
+extern void st_synchronize();
+/**
+ * @brief D2130 Trinamic stepper controller
+ * D2130<axis><command>[subcommand][value]
+ *  * Axis
+ *  * * 'X'
+ *  * * 'Y'
+ *  * * 'Z'
+ *  * * 'E'
+ *  * command
+ *  * * '0' current off
+ *  * * '1' current on
+ *  * * '+' single step
+ *  * * * value sereval steps
+ *  * * '-' dtto oposite direction
+ *  * * '?' read register
+ *  * * * "mres"
+ *  * * * "step"
+ *  * * * "mscnt"
+ *  * * * "mscuract"
+ *  * * * "wave"
+ *  * * '!' set register
+ *  * * * "mres"
+ *  * * * "step"
+ *  * * * "wave"
+ *  * * * *0, 180..250 meaning: off, 0.9..1.25, recommended value is 1.1
+ *  * * '@' home calibrate axis
+ *
+ *  Example:
+ *  D2130E?wave //print extruder microstep linearity compensation curve
+ *  D2130E!wave0 //disable extruder linearity compensation curve, (sine curve is used)
+ *  D2130E!wave220 // (sin(x))^1.1 extruder microstep compensation curve used
+ */
 void dcode_2130()
 {
 	printf_P(PSTR("D2130 - TMC2130\n"));
@@ -558,11 +590,11 @@ void dcode_2130()
 			}
 			else if (strncmp(strchr_pointer + 7, "wave", 4) == 0)
 			{
-				uint8_t fac200 = atoi(strchr_pointer + 11) & 0xff;
-				if (fac200 < TMC2130_WAVE_FAC200_MIN) fac200 = 0;
-				if (fac200 > TMC2130_WAVE_FAC200_MAX) fac200 = TMC2130_WAVE_FAC200_MAX;
-				tmc2130_set_wave(axis, 247, fac200);
-				tmc2130_wave_fac[axis] = fac200;
+				uint16_t fac1000 = atoi(strchr_pointer + 11) & 0xffff;
+				if (fac1000 < TMC2130_WAVE_FAC1000_MIN) fac1000 = 0;
+				if (fac1000 > TMC2130_WAVE_FAC1000_MAX) fac1000 = TMC2130_WAVE_FAC1000_MAX;
+				tmc2130_set_wave(axis, 247, fac1000);
+				tmc2130_wave_fac[axis] = fac1000;
 			}
 		}
 		else if (strchr_pointer[1+5] == '@')

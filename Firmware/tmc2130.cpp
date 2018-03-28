@@ -58,7 +58,7 @@ uint8_t tmc2130_home_origin[2] = {0, 0};
 uint8_t tmc2130_home_bsteps[2] = {48, 48};
 uint8_t tmc2130_home_fsteps[2] = {48, 48};
 
-uint8_t tmc2130_wave_fac[4] = {0, 0, 0, 0};
+uint16_t tmc2130_wave_fac[4] = {0, 0, 0, 0};
 
 bool tmc2130_sg_stop_on_crash = true;
 uint8_t tmc2130_sg_diag_mask = 0x00;
@@ -825,14 +825,14 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 }
 
-void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac200)
+void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint16_t fac1000)
 {
 // TMC2130 wave compression algorithm
 // optimized for minimal memory requirements
-	printf_P(PSTR("tmc2130_set_wave %d %d\n"), axis, fac200);
-	if (fac200 < TMC2130_WAVE_FAC200_MIN) fac200 = 0;
-	if (fac200 > TMC2130_WAVE_FAC200_MAX) fac200 = TMC2130_WAVE_FAC200_MAX;
-	float fac = (float)fac200/200; //correction factor
+	printf_P(PSTR("tmc2130_set_wave %d %d\n"), axis, fac1000);
+	if (fac1000 < TMC2130_WAVE_FAC1000_MIN) fac1000 = 0;
+	if (fac1000 > TMC2130_WAVE_FAC1000_MAX) fac1000 = TMC2130_WAVE_FAC1000_MAX;
+	float fac = (float)fac1000/1000; //correction factor
 	uint8_t vA = 0;                //value of currentA
 	uint8_t va = 0;                //previous vA
 	uint8_t d0 = 0;                //delta0

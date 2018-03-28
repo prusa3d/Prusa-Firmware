@@ -210,6 +210,7 @@ static void lcd_control_temperature_preheat_pla_settings_menu();
 static void lcd_control_temperature_preheat_abs_settings_menu();
 static void lcd_control_motion_menu();
 static void lcd_control_volumetric_menu();
+static void lcd_settings_menu_back();
 
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
@@ -245,7 +246,7 @@ static void menu_action_setlang(unsigned char lang);
 static void menu_action_sdfile(const char* filename, char* longFilename);
 static void menu_action_sddirectory(const char* filename, char* longFilename);
 static void menu_action_setting_edit_bool(const char* pstr, bool* ptr);
-static void menu_action_setting_edit_wfac(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
+static void menu_action_setting_edit_wfac(const char* pstr, uint16_t* ptr, uint16_t minValue, uint16_t maxValue);
 static void menu_action_setting_edit_mres(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
 static void menu_action_setting_edit_byte3(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
 static void menu_action_setting_edit_int3(const char* pstr, int* ptr, int minValue, int maxValue);
@@ -3968,7 +3969,7 @@ static void lcd_settings_menu()
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
   START_MENU();
 
-  MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+  MENU_ITEM(back, MSG_MAIN, lcd_settings_menu_back);
 
   MENU_ITEM(submenu, MSG_TEMPERATURE, lcd_control_temperature_menu);
   if (!homing_flag)
@@ -4034,6 +4035,7 @@ static void lcd_settings_menu()
     else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
   }
   else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+  MENU_ITEM_EDIT(wfac, MSG_EXTRUDER_CORRECTION,  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
 #endif //TMC2130
 
   if (temp_cal_active == false) {
@@ -4089,6 +4091,23 @@ static void lcd_selftest_()
 	lcd_selftest();
 }
 
+static void lcd_ustep_linearity_menu_save()
+{
+    eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_X_FAC, tmc2130_wave_fac[X_AXIS]);
+    eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_Y_FAC, tmc2130_wave_fac[Y_AXIS]);
+    eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_Z_FAC, tmc2130_wave_fac[Z_AXIS]);
+    eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC, tmc2130_wave_fac[E_AXIS]);
+}
+static void lcd_settings_menu_back()
+{
+    bool changed = false;
+    if (tmc2130_wave_fac[E_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[E_AXIS] = 0;
+    changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
+    lcd_ustep_linearity_menu_save();
+    if (changed) tmc2130_init();
+    currentMenu = lcd_main_menu;
+    lcd_main_menu();
+}
 #ifdef EXPERIMENTAL_FEATURES
 
 static void lcd_experimantal_menu();
@@ -4219,25 +4238,19 @@ static void lcd_ustep_resolution_menu()
 	END_MENU();
 }
 
-static void lcd_ustep_linearity_menu_save()
-{
-	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC, tmc2130_wave_fac[X_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC, tmc2130_wave_fac[Y_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC, tmc2130_wave_fac[Z_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC, tmc2130_wave_fac[E_AXIS]);
-}
+
 
 static void lcd_ustep_linearity_menu_back()
 {
 	bool changed = false;
-	if (tmc2130_wave_fac[X_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[X_AXIS] = 0;
-	if (tmc2130_wave_fac[Y_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[Y_AXIS] = 0;
-	if (tmc2130_wave_fac[Z_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[Z_AXIS] = 0;
-	if (tmc2130_wave_fac[E_AXIS] < TMC2130_WAVE_FAC200_MIN) tmc2130_wave_fac[E_AXIS] = 0;
-	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC) != tmc2130_wave_fac[X_AXIS]);
-	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC) != tmc2130_wave_fac[Y_AXIS]);
-	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC) != tmc2130_wave_fac[Z_AXIS]);
-	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
+	if (tmc2130_wave_fac[X_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[X_AXIS] = 0;
+	if (tmc2130_wave_fac[Y_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[Y_AXIS] = 0;
+	if (tmc2130_wave_fac[Z_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[Z_AXIS] = 0;
+	if (tmc2130_wave_fac[E_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[E_AXIS] = 0;
+	changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_X_FAC) != tmc2130_wave_fac[X_AXIS]);
+	changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_Y_FAC) != tmc2130_wave_fac[Y_AXIS]);
+	changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_Z_FAC) != tmc2130_wave_fac[Z_AXIS]);
+	changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
 	lcd_ustep_linearity_menu_save();
 	if (changed) tmc2130_init();
 	currentMenu = lcd_experimantal_menu;
@@ -4267,10 +4280,10 @@ static void lcd_ustep_linearity_menu()
 	MENU_ITEM(back, PSTR("Experimental"), lcd_ustep_linearity_menu_back);
 	MENU_ITEM(function, PSTR("Reset correction"), lcd_ustep_linearity_menu_reset);
 	MENU_ITEM(function, PSTR("Recomended config"), lcd_ustep_linearity_menu_recomended);
-	MENU_ITEM_EDIT(wfac, PSTR("X-correction"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
-	MENU_ITEM_EDIT(wfac, PSTR("Y-correction"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
-	MENU_ITEM_EDIT(wfac, PSTR("Z-correction"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
-	MENU_ITEM_EDIT(wfac, PSTR("E-correction"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC200_MIN-TMC2130_WAVE_FAC200_STP, TMC2130_WAVE_FAC200_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("X-correction"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("Y-correction"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("Z-correction"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
+	MENU_ITEM_EDIT(wfac, PSTR("E-correction"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
 	END_MENU();
 }
 
@@ -6086,21 +6099,21 @@ char *mres_to_str3(const uint8_t &x)
 extern char conv[8];
 
 // Convert tmc2130 wfac to string 
-char *wfac_to_str5(const uint8_t &x)
+char *wfac_to_str5(const uint16_t &x)
 {
-#ifdef TMC2130
-	if (x>=TMC2130_WAVE_FAC200_MIN) return ftostr43(((float)(x & 0xff))/200);
-	conv[0] = ' ';
-	conv[1] = ' ';
-	conv[2] = 'O';
-	conv[3] = 'f';
-	conv[4] = 'f';
-	conv[5] = 0;
-#endif //TMC2130
+	if (x>=TMC2130_WAVE_FAC1000_MIN)
+	    {
+	    conv[0] = '[';
+	    ftostr43(((float)(x & 0xffff)/1000),1);
+	    }
+	else strcpy_P(conv,MSG_EXTRUDER_CORRECTION_OFF);
+	conv[6] = ']';
+	conv[7] = ' ';
+	conv[8] = 0;
 	return conv;
 }
 
-menu_edit_type(uint8_t, wfac, wfac_to_str5, 1)
+menu_edit_type(uint16_t, wfac, wfac_to_str5, 1)
 menu_edit_type(uint8_t, mres, mres_to_str3, 1)
 menu_edit_type(uint8_t, byte3, itostr3, 1)
 menu_edit_type(int, int3, itostr3, 1)
@@ -7769,19 +7782,21 @@ char *ftostr32ns(const float &x) {
 
 
 // Convert float to string with 1.234 format
-char *ftostr43(const float &x)
+char *ftostr43(const float &x, uint8_t offset)
 {
+  const size_t maxOffset = sizeof(conv)/sizeof(conv[0]) - 6;
+  if (offset>maxOffset) offset = maxOffset;
   long xx = x * 1000;
   if (xx >= 0)
-    conv[0] = (xx / 1000) % 10 + '0';
+    conv[offset] = (xx / 1000) % 10 + '0';
   else
-    conv[0] = '-';
+    conv[offset] = '-';
   xx = abs(xx);
-  conv[1] = '.';
-  conv[2] = (xx / 100) % 10 + '0';
-  conv[3] = (xx / 10) % 10 + '0';
-  conv[4] = (xx) % 10 + '0';
-  conv[5] = 0;
+  conv[offset + 1] = '.';
+  conv[offset + 2] = (xx / 100) % 10 + '0';
+  conv[offset + 3] = (xx / 10) % 10 + '0';
+  conv[offset + 4] = (xx) % 10 + '0';
+  conv[offset + 5] = 0;
   return conv;
 }
 
