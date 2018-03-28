@@ -599,6 +599,16 @@ const char * const MSG_EXTRUDER_4_LANG_TABLE[1] PROGMEM = {
 	MSG_EXTRUDER_4_EN
 };
 
+const char MSG_EXTRUDER_CORRECTION_EN[] PROGMEM = "E-correct";
+const char * const MSG_EXTRUDER_CORRECTION_LANG_TABLE[1] PROGMEM = {
+	MSG_EXTRUDER_CORRECTION_EN
+};
+
+const char MSG_EXTRUDER_CORRECTION_OFF_EN[] PROGMEM = "  [off";
+const char * const MSG_EXTRUDER_CORRECTION_OFF_LANG_TABLE[1] PROGMEM = {
+	MSG_EXTRUDER_CORRECTION_OFF_EN
+};
+
 const char MSG_E_CAL_KNOB_EN[] PROGMEM = "Rotate knob until mark reaches extruder body. Click when done.";
 const char MSG_E_CAL_KNOB_CZ[] PROGMEM = "Otacejte tlacitkem dokud znacka nedosahne tela extruderu. Potvrdte tlacitkem.";
 const char * const MSG_E_CAL_KNOB_LANG_TABLE[LANG_NUM] PROGMEM = {

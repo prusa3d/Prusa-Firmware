@@ -207,6 +207,7 @@ static void lcd_control_temperature_preheat_pla_settings_menu();
 static void lcd_control_temperature_preheat_abs_settings_menu();
 static void lcd_control_motion_menu();
 static void lcd_control_volumetric_menu();
+static void lcd_settings_menu_back();
 
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
@@ -3861,7 +3862,7 @@ static void lcd_settings_menu()
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
   START_MENU();
 
-  MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+  MENU_ITEM(back, MSG_MAIN, lcd_settings_menu_back);
 
   MENU_ITEM(submenu, MSG_TEMPERATURE, lcd_control_temperature_menu);
   if (!homing_flag)
@@ -3913,6 +3914,7 @@ static void lcd_settings_menu()
     else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
   }
   else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+  MENU_ITEM_EDIT(wfac, MSG_EXTRUDER_CORRECTION,  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
 
   if (temp_cal_active == false) {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_OFF, lcd_temp_calibration_set);
@@ -3973,6 +3975,16 @@ static void lcd_ustep_linearity_menu_save()
     eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_Y_FAC, tmc2130_wave_fac[Y_AXIS]);
     eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_Z_FAC, tmc2130_wave_fac[Z_AXIS]);
     eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC, tmc2130_wave_fac[E_AXIS]);
+}
+static void lcd_settings_menu_back()
+{
+    bool changed = false;
+    if (tmc2130_wave_fac[E_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[E_AXIS] = 0;
+    changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
+    lcd_ustep_linearity_menu_save();
+    if (changed) tmc2130_init();
+    currentMenu = lcd_main_menu;
+    lcd_main_menu();
 }
 #ifdef EXPERIMENTAL_FEATURES
 
@@ -5847,13 +5859,15 @@ extern char conv[8];
 // Convert tmc2130 wfac to string 
 char *wfac_to_str5(const uint16_t &x)
 {
-	if (x>=TMC2130_WAVE_FAC1000_MIN) return ftostr43(((float)(x & 0xffff))/1000);
-	conv[0] = ' ';
-	conv[1] = ' ';
-	conv[2] = 'O';
-	conv[3] = 'f';
-	conv[4] = 'f';
-	conv[5] = 0;
+	if (x>=TMC2130_WAVE_FAC1000_MIN)
+	    {
+	    conv[0] = '[';
+	    ftostr43(((float)(x & 0xffff)/1000),1);
+	    }
+	else strcpy_P(conv,MSG_EXTRUDER_CORRECTION_OFF);
+	conv[6] = ']';
+	conv[7] = ' ';
+	conv[8] = 0;
 	return conv;
 }
 
@@ -7489,19 +7503,21 @@ char *ftostr32ns(const float &x) {
 
 
 // Convert float to string with 1.234 format
-char *ftostr43(const float &x)
+char *ftostr43(const float &x, uint8_t offset)
 {
+  const size_t maxOffset = sizeof(conv)/sizeof(conv[0]) - 6;
+  if (offset>maxOffset) offset = maxOffset;
   long xx = x * 1000;
   if (xx >= 0)
-    conv[0] = (xx / 1000) % 10 + '0';
+    conv[offset] = (xx / 1000) % 10 + '0';
   else
-    conv[0] = '-';
+    conv[offset] = '-';
   xx = abs(xx);
-  conv[1] = '.';
-  conv[2] = (xx / 100) % 10 + '0';
-  conv[3] = (xx / 10) % 10 + '0';
-  conv[4] = (xx) % 10 + '0';
-  conv[5] = 0;
+  conv[offset + 1] = '.';
+  conv[offset + 2] = (xx / 100) % 10 + '0';
+  conv[offset + 3] = (xx / 10) % 10 + '0';
+  conv[offset + 4] = (xx) % 10 + '0';
+  conv[offset + 5] = 0;
   return conv;
 }
 
