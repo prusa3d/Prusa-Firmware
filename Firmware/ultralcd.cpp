@@ -3967,6 +3967,13 @@ static void lcd_selftest_()
 	lcd_selftest();
 }
 
+static void lcd_ustep_linearity_menu_save()
+{
+    eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_X_FAC, tmc2130_wave_fac[X_AXIS]);
+    eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_Y_FAC, tmc2130_wave_fac[Y_AXIS]);
+    eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_Z_FAC, tmc2130_wave_fac[Z_AXIS]);
+    eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC, tmc2130_wave_fac[E_AXIS]);
+}
 #ifdef EXPERIMENTAL_FEATURES
 
 static void lcd_experimantal_menu();
@@ -4097,13 +4104,7 @@ static void lcd_ustep_resolution_menu()
 	END_MENU();
 }
 
-static void lcd_ustep_linearity_menu_save()
-{
-	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC, tmc2130_wave_fac[X_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC, tmc2130_wave_fac[Y_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC, tmc2130_wave_fac[Z_AXIS]);
-	eeprom_update_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC, tmc2130_wave_fac[E_AXIS]);
-}
+
 
 static void lcd_ustep_linearity_menu_back()
 {
@@ -4112,10 +4113,10 @@ static void lcd_ustep_linearity_menu_back()
 	if (tmc2130_wave_fac[Y_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[Y_AXIS] = 0;
 	if (tmc2130_wave_fac[Z_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[Z_AXIS] = 0;
 	if (tmc2130_wave_fac[E_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[E_AXIS] = 0;
-	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC) != tmc2130_wave_fac[X_AXIS]);
-	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC) != tmc2130_wave_fac[Y_AXIS]);
-	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC) != tmc2130_wave_fac[Z_AXIS]);
-	changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
+	changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_X_FAC) != tmc2130_wave_fac[X_AXIS]);
+	changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_Y_FAC) != tmc2130_wave_fac[Y_AXIS]);
+	changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_Z_FAC) != tmc2130_wave_fac[Z_AXIS]);
+	changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
 	lcd_ustep_linearity_menu_save();
 	if (changed) tmc2130_init();
 	currentMenu = lcd_experimantal_menu;
