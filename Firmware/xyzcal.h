@@ -27,6 +27,8 @@ extern int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* p
 
 extern int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, uint8_t* pc, uint8_t* pr);
 
+extern int8_t xyzcal_find_point_center2(uint16_t delay_us);
+
 //extern int8_t xyzcal_find_point_center(int16_t x0, int16_t y0, int16_t z0, int16_t min_z, int16_t max_z, uint16_t delay_us, uint8_t turns);
 
 extern bool xyzcal_searchZ(void);
