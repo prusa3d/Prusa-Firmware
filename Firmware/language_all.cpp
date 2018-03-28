@@ -60,6 +60,13 @@ const char * const MSG_AUTO_HOME_LANG_TABLE[1] PROGMEM = {
 	MSG_AUTO_HOME_EN
 };
 
+const char MSG_AUTO_MODE_ON_EN[] PROGMEM = "Mode [auto power]";
+const char MSG_AUTO_MODE_ON_CZ[] PROGMEM = "Mod [automaticky]";
+const char * const MSG_AUTO_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_AUTO_MODE_ON_EN,
+	MSG_AUTO_MODE_ON_CZ
+};
+
 const char MSG_A_RETRACT_EN[] PROGMEM = "A-retract";
 const char * const MSG_A_RETRACT_LANG_TABLE[1] PROGMEM = {
 	MSG_A_RETRACT_EN
@@ -318,6 +325,27 @@ const char MSG_CARD_MENU_CZ[] PROGMEM = "Tisk z SD";
 const char * const MSG_CARD_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CARD_MENU_EN,
 	MSG_CARD_MENU_CZ
+};
+
+const char MSG_CHANGED_BOTH_EN[] PROGMEM = "Warning: both printer type and motherboard type changed.";
+const char MSG_CHANGED_BOTH_CZ[] PROGMEM = "Varovani: doslo ke zmene typu tiskarny a motherboardu.";
+const char * const MSG_CHANGED_BOTH_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CHANGED_BOTH_EN,
+	MSG_CHANGED_BOTH_CZ
+};
+
+const char MSG_CHANGED_MOTHERBOARD_EN[] PROGMEM = "Warning: motherboard type changed.";
+const char MSG_CHANGED_MOTHERBOARD_CZ[] PROGMEM = "Varovani: doslo ke zmene typu motherboardu.";
+const char * const MSG_CHANGED_MOTHERBOARD_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CHANGED_MOTHERBOARD_EN,
+	MSG_CHANGED_MOTHERBOARD_CZ
+};
+
+const char MSG_CHANGED_PRINTER_EN[] PROGMEM = "Warning: printer type changed.";
+const char MSG_CHANGED_PRINTER_CZ[] PROGMEM = "Varovani: doslo ke zmene typu tiskarny.";
+const char * const MSG_CHANGED_PRINTER_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_CHANGED_PRINTER_EN,
+	MSG_CHANGED_PRINTER_CZ
 };
 
 const char MSG_CHANGE_EXTR_EN[] PROGMEM = "Change extruder";
@@ -1976,15 +2004,15 @@ const char * const MSG_SHOW_END_STOPS_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SHOW_END_STOPS_CZ
 };
 
-const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode     [Normal]";
-const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod      [Normal]";
+const char MSG_SILENT_MODE_OFF_EN[] PROGMEM = "Mode [high power]";
+const char MSG_SILENT_MODE_OFF_CZ[] PROGMEM = "Mod  [vys. vykon]";
 const char * const MSG_SILENT_MODE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_OFF_EN,
 	MSG_SILENT_MODE_OFF_CZ
 };
 
-const char MSG_SILENT_MODE_ON_EN[] PROGMEM = "Mode    [Stealth]";
-const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod     [Stealth]";
+const char MSG_SILENT_MODE_ON_EN[] PROGMEM = "Mode     [silent]";
+const char MSG_SILENT_MODE_ON_CZ[] PROGMEM = "Mod       [tichy]";
 const char * const MSG_SILENT_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_SILENT_MODE_ON_EN,
 	MSG_SILENT_MODE_ON_CZ
@@ -2077,6 +2105,20 @@ const char MSG_STATS_TOTALPRINTTIME_CZ[] PROGMEM = "Celkovy cas :";
 const char * const MSG_STATS_TOTALPRINTTIME_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_STATS_TOTALPRINTTIME_EN,
 	MSG_STATS_TOTALPRINTTIME_CZ
+};
+
+const char MSG_STEALTH_MODE_OFF_EN[] PROGMEM = "Mode     [Normal]";
+const char MSG_STEALTH_MODE_OFF_CZ[] PROGMEM = "Mod      [Normal]";
+const char * const MSG_STEALTH_MODE_OFF_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_STEALTH_MODE_OFF_EN,
+	MSG_STEALTH_MODE_OFF_CZ
+};
+
+const char MSG_STEALTH_MODE_ON_EN[] PROGMEM = "Mode    [Stealth]";
+const char MSG_STEALTH_MODE_ON_CZ[] PROGMEM = "Mod     [Stealth]";
+const char * const MSG_STEALTH_MODE_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_STEALTH_MODE_ON_EN,
+	MSG_STEALTH_MODE_ON_CZ
 };
 
 const char MSG_STEEL_SHEET_CHECK_EN[] PROGMEM = "Is steel sheet on heatbed?";

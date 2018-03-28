@@ -103,8 +103,12 @@
 #define MSG_INSERT_FILAMENT		"Vlozte filament"
 #define MSG_CHANGING_FILAMENT	"Vymena filamentu!"
 
-#define MSG_SILENT_MODE_ON					"Mod     [Stealth]"
-#define MSG_SILENT_MODE_OFF					"Mod      [Normal]" 
+#define MSG_SILENT_MODE_ON					"Mod       [tichy]"
+#define MSG_SILENT_MODE_OFF					"Mod  [vys. vykon]" 
+#define MSG_AUTO_MODE_ON					"Mod [automaticky]"
+#define MSG_STEALTH_MODE_OFF				"Mod      [Normal]"
+#define MSG_STEALTH_MODE_ON					"Mod     [Stealth]"
+
 #define MSG_REBOOT							"Restartujte tiskarnu"
 #define MSG_TAKE_EFFECT						" pro projeveni zmen"	
 
@@ -407,3 +411,6 @@
 #define MSG_FW_VERSION_BETA			 "Pouzivate beta verzi firmwaru. Jedna se o vyvojovou verzi. Pouzivani teto verze firmware neni doporuceno a muze zpusobit poskozeni tiskarny."
 #define MSG_FW_VERSION_RC			 "Tato verze firmware je release candidate. Nektere z funkci nemusi pracovat spolehlive."
 #define MSG_FORCE_SELFTEST			 "Pro kalibraci presneho rehomovani bude nyni spusten selftest."
+#define MSG_CHANGED_MOTHERBOARD		 "Varovani: doslo ke zmene typu motherboardu."
+#define MSG_CHANGED_PRINTER			 "Varovani: doslo ke zmene typu tiskarny."
+#define MSG_CHANGED_BOTH			 "Varovani: doslo ke zmene typu tiskarny a motherboardu."

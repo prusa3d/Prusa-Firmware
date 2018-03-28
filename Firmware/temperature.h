@@ -27,6 +27,9 @@
   #include "stepper.h"
 #endif
 
+#define ENABLE_TEMPERATURE_INTERRUPT()  TIMSK0 |= (1<<OCIE0B)
+#define DISABLE_TEMPERATURE_INTERRUPT() TIMSK0 &= ~(1<<OCIE0B)
+
 // public functions
 void tp_init();  //initialize the heating
 void manage_heater(); //it is critical that this is called periodically.
@@ -218,13 +221,20 @@ void PID_autotune(float temp, int extruder, int ncycles);
 void setExtruderAutoFanState(int pin, bool state);
 void checkExtruderAutoFans();
 
+
+#if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
+
 void countFanSpeed();
 void checkFanSpeed();
 void fanSpeedError(unsigned char _fan);
 
 void check_fans();
+
+#endif //(defined(TACH_0))
+
 void check_min_temp();
 void check_max_temp();
+
 
 #endif
 

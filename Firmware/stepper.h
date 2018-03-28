@@ -79,6 +79,7 @@ bool endstop_z_hit_on_purpose();
 
 bool enable_endstops(bool check); // Enable/disable endstop checking. Return the old value.
 bool enable_z_endstop(bool check);
+void invert_z_endstop(bool endstop_invert);
 
 void checkStepperErrors(); //Print errors detected by the stepper
 

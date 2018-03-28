@@ -875,39 +875,38 @@ if (print_sd_status)
 
 	{
       if(strlen(card.longFilename) > LCD_WIDTH)
-	  {
+      {
 
-        int inters = 0;
-        int gh = scrollstuff;
-        while( ((gh-scrollstuff)<LCD_WIDTH) && (inters == 0)  )
-		{
-          
-          if(card.longFilename[gh] == '\0')
-		  {
-            lcd.setCursor(gh-scrollstuff, 3);
-            lcd.print(card.longFilename[gh-1]);
-            scrollstuff = 0;
-            gh = scrollstuff;
-            inters = 1;
-          }
-		  else
-		  {
-            lcd.setCursor(gh-scrollstuff, 3);
-            lcd.print(card.longFilename[gh-1]);
-            gh++;
-          }
+			  int inters = 0;
+			  int gh = scrollstuff;
+			  while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
+			  {
 
-          
-        }
-        scrollstuff++;
+				  if (card.longFilename[gh] == '\0')
+				  {
+					  lcd.setCursor(gh - scrollstuff, 3);
+					  lcd.print(card.longFilename[gh - 1]);
+					  scrollstuff = 0;
+					  gh = scrollstuff;
+					  inters = 1;
+				  }
+				  else
+				  {
+					  lcd.setCursor(gh - scrollstuff, 3);
+					  lcd.print(card.longFilename[gh - 1]);
+					  gh++;
+				  }
+
+
+			  }
+			  scrollstuff++;
       }
-	  else
-	  {
-        lcd.print(longFilenameOLD);
+      else
+      {
+			  lcd.print(longFilenameOLD);
       }
-
-
-    }
+	}
+	    
     // If not, check for other special events
 	else
 	{
@@ -1408,6 +1407,7 @@ static uint8_t lcd_implementation_read_slow_buttons()
     // Reading these buttons this is likely to be too slow to call inside interrupt context
     // so they are called during normal lcd_update
     slow_buttons = lcd.readButtons() << B_I2C_BTN_OFFSET; 
+
     #if defined(LCD_I2C_VIKI)
     if(slow_buttons & (B_MI|B_RI)) { //LCD clicked
        if(blocking_enc > millis()) {
