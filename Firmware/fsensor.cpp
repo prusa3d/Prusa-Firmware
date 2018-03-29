@@ -9,8 +9,8 @@
 #include "fastio.h"
 #include "cmdqueue.h"
 
-//#include "LiquidCrystal.h"
-//extern LiquidCrystal lcd;
+//#include "LiquidCrystal_Prusa.h"
+//extern LiquidCrystal_Prusa lcd;
 
 
 #define FSENSOR_ERR_MAX          5  //filament sensor max error count

@@ -11,5 +11,11 @@
 //SM4 configuration
 #define SM4_DEFDELAY      500       //default step delay [us]
 
+//TMC2130 - Trinamic stepper driver
+//pinout - hardcoded
+//spi:
+#define TMC2130_SPI_RATE       0 // fosc/4 = 4MHz
+#define TMC2130_SPCR           SPI_SPCR(TMC2130_SPI_RATE, 1, 1, 1, 0)
+#define TMC2130_SPSR           SPI_SPSR(TMC2130_SPI_RATE)
 
 #endif //_CONFIG_H

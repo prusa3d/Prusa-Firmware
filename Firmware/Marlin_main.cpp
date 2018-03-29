@@ -65,6 +65,10 @@
 #include "swspi.h"
 #endif //SWSPI
 
+#ifdef NEW_SPI
+#include "spi.h"
+#endif //NEW_SPI
+
 #ifdef SWI2C
 #include "swi2c.h"
 #endif //SWI2C
@@ -806,8 +810,8 @@ void factory_reset(char level, bool quiet)
     
 
 }
-#include "LiquidCrystal.h"
-extern LiquidCrystal lcd;
+#include "LiquidCrystal_Prusa.h"
+extern LiquidCrystal_Prusa lcd;
 
 FILE _lcdout = {0};
 
@@ -1105,6 +1109,10 @@ void setup()
 #endif //TMC2130_VARIABLE_RESOLUTION
 
 #endif //TMC2130
+
+#ifdef NEW_SPI
+	spi_init();
+#endif //NEW_SPI
 
 	st_init();    // Initialize stepper, this enables interrupts!
 

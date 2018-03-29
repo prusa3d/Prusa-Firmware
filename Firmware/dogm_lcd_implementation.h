@@ -42,11 +42,11 @@
 /* Russian language not supported yet, needs custom font
 
 #ifdef LANGUAGE_RU
-#include "LiquidCrystalRus.h"
-#define LCD_CLASS LiquidCrystalRus
+#include "LiquidCrystal_Rus.h"
+#define LCD_CLASS LiquidCrystal_Rus
 #else
-#include <LiquidCrystal.h>
-#define LCD_CLASS LiquidCrystal
+#include <LiquidCrystal_Prusa.h>
+#define LCD_CLASS LiquidCrystal_Prusa
 #endif
 */
 

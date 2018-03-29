@@ -43,7 +43,7 @@
   #elif defined(DOGLCD)
     #include <U8glib.h> // library for graphics LCD by Oli Kraus (https://code.google.com/p/u8glib/)
   #else
-    #include "LiquidCrystal.h" // library for character LCD
+    #include "LiquidCrystal_Prusa.h" // library for character LCD
   #endif
 #endif
 
