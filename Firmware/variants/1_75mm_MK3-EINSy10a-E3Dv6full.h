@@ -107,6 +107,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // New XYZ calibration
 #define NEW_XYZCAL
 
+// Do not use Arduino SPI 
+#define NEW_SPI
+
 // Watchdog support
 #define WATCHDOG
 
@@ -573,6 +576,9 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define PING_TIME 60 //time in s
 #define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
 #define PING_ALLERT_PERIOD 60 //time in s
+
+#define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
+#define NC_BUTTON_LONG_PRESS 15 //time in s
 
 #define LONG_PRESS_TIME 1000 //time in ms for button long press
 #define BUTTON_BLANKING_TIME 200 //time in ms for blanking after button release

@@ -136,7 +136,6 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MINTEMP_MINAMBIENT      25
 #define MINTEMP_MINAMBIENT_RAW  978
 
-#define DEBUG_DISABLE_FORCE_SELFTEST //disable force selftest
 //#define DEBUG_BUILD
 #ifdef DEBUG_BUILD
 //#define _NO_ASM
@@ -158,7 +157,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //#define DEBUG_DISABLE_LCD_STATUS_LINE  //empty four lcd line
 //#define DEBUG_DISABLE_PREVENT_EXTRUDER //cold extrusion and long extrusion allowed
 //#define DEBUG_DISABLE_PRUSA_STATISTICS //disable prusa_statistics() mesages
-#define DEBUG_DISABLE_FORCE_SELFTEST //disable force selftest
+//#define DEBUG_DISABLE_FORCE_SELFTEST //disable force selftest
 //#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
 //#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
 //#define DEBUG_BLINK_ACTIVE
@@ -170,7 +169,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif /* DEBUG_BUILD */
 
 //#define EXPERIMENTAL_FEATURES
-#define TMC2130_LINEARITY_CORRECTION
+//#define TMC2130_LINEARITY_CORRECTION
 //#define TMC2130_VARIABLE_RESOLUTION
 
 
@@ -577,6 +576,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define PING_TIME 60 //time in s
 #define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
 #define PING_ALLERT_PERIOD 60 //time in s
+
 #define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
 #define NC_BUTTON_LONG_PRESS 15 //time in s
 

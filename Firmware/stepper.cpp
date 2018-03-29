@@ -1017,7 +1017,7 @@ void st_init()
 	tmc2130_init();
 #endif //TMC2130
 
-  digipot_init(); //Initialize Digipot Motor Current
+  st_current_init(); //Initialize Digipot Motor Current
   microstep_init(); //Initialize Microstepping Pins
 
   //Initialize Dir Pins
@@ -1455,22 +1455,10 @@ void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 }
 
 
-void digipot_init() //Initialize Digipot Motor Current
+void st_current_init() //Initialize Digipot Motor Current
 {  
   EEPROM_read_st(EEPROM_SILENT,(uint8_t*)&SilentMode,sizeof(SilentMode));
   SilentModeMenu = SilentMode;
-  #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
-    if(SilentMode == 0){
-    const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT_LOUD;
-    }else{
-      const uint8_t digipot_motor_current[] = DIGIPOT_MOTOR_CURRENT;
-    }
-    SPI.begin();
-    pinMode(DIGIPOTSS_PIN, OUTPUT);
-    for(int i=0;i<=4;i++)
-      //digitalPotWrite(digipot_ch[i], digipot_motor_current[i]);
-      digipot_current(i,digipot_motor_current[i]);
-  #endif
   #ifdef MOTOR_CURRENT_PWM_XY_PIN
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_Z_PIN, OUTPUT);
@@ -1488,9 +1476,9 @@ void digipot_init() //Initialize Digipot Motor Current
      motor_current_setting[2] = motor_current_setting_silent[2];
 
     }
-    digipot_current(0, motor_current_setting[0]);
-    digipot_current(1, motor_current_setting[1]);
-    digipot_current(2, motor_current_setting[2]);
+    st_current_set(0, motor_current_setting[0]);
+    st_current_set(1, motor_current_setting[1]);
+    st_current_set(2, motor_current_setting[2]);
     //Set timer5 to 31khz so the PWM of the motor power is as constant as possible. (removes a buzzing noise)
     TCCR5B = (TCCR5B & ~(_BV(CS50) | _BV(CS51) | _BV(CS52))) | _BV(CS50);
   #endif
@@ -1499,12 +1487,8 @@ void digipot_init() //Initialize Digipot Motor Current
 
 
 
-void digipot_current(uint8_t driver, int current)
+void st_current_set(uint8_t driver, int current)
 {
-  #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
-    const uint8_t digipot_ch[] = DIGIPOT_CHANNELS;
-    digitalPotWrite(digipot_ch[driver], current);
-  #endif
   #ifdef MOTOR_CURRENT_PWM_XY_PIN
   if (driver == 0) analogWrite(MOTOR_CURRENT_PWM_XY_PIN, (long)current * 255L / (long)MOTOR_CURRENT_PWM_RANGE);
   if (driver == 1) analogWrite(MOTOR_CURRENT_PWM_Z_PIN, (long)current * 255L / (long)MOTOR_CURRENT_PWM_RANGE);

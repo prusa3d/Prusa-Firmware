@@ -183,11 +183,7 @@ uint8_t lcd_status_message_level;
 char lcd_status_message[LCD_WIDTH + 1] = ""; //////WELCOME!
 unsigned char firstrun = 1;
 
-#ifdef DOGLCD
-#include "dogm_lcd_implementation.h"
-#else
 #include "ultralcd_implementation_hitachi_HD44780.h"
-#endif
 
 /** forward declarations **/
 
@@ -3530,7 +3526,7 @@ static void lcd_silent_mode_set() {
   st_reset_timer();
   sei();
 #endif //TMC2130
-  digipot_init();
+  st_current_init();
 #ifdef TMC2130
   if (CrashDetectMenu && SilentModeMenu)
 	  lcd_goto_menu(lcd_crash_mode_info2);
@@ -3644,7 +3640,7 @@ void lcd_pinda_calibration_menu()
 void lcd_temp_calibration_set() {
 	temp_cal_active = !temp_cal_active;
 	eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, temp_cal_active);
-	digipot_init();
+	st_current_init();
 	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
@@ -4104,6 +4100,7 @@ static void lcd_selftest_()
 	lcd_selftest();
 }
 
+#ifdef TMC2130
 static void lcd_ustep_linearity_menu_save()
 {
     eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_X_FAC, tmc2130_wave_fac[X_AXIS]);
@@ -4111,13 +4108,17 @@ static void lcd_ustep_linearity_menu_save()
     eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_Z_FAC, tmc2130_wave_fac[Z_AXIS]);
     eeprom_update_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC, tmc2130_wave_fac[E_AXIS]);
 }
+#endif //TMC2130
+
 static void lcd_settings_menu_back()
 {
+#ifdef TMC2130
     bool changed = false;
     if (tmc2130_wave_fac[E_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[E_AXIS] = 0;
     changed |= (eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
     lcd_ustep_linearity_menu_save();
     if (changed) tmc2130_init();
+#endif //TMC2130
     currentMenu = lcd_main_menu;
     lcd_main_menu();
 }
@@ -5050,7 +5051,7 @@ void extr_unload() { //unloads filament
 		
 		current_position[E_AXIS] += 10; //extrusion
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 10, active_extruder);
-		digipot_current(2, E_MOTOR_HIGH_CURRENT);
+		st_current_set(2, E_MOTOR_HIGH_CURRENT);
 		if (current_temperature[0] < 230) { //PLA & all other filaments
 			current_position[E_AXIS] += 5.4;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2800 / 60, active_extruder);
@@ -5079,9 +5080,9 @@ void extr_unload() { //unloads filament
 		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
 		st_synchronize();
-		//digipot_init();
-		if (SilentMode == 1) digipot_current(2, tmp_motor[2]); //set back to normal operation currents
-		else digipot_current(2, tmp_motor_loud[2]);
+		//st_current_init();
+		if (SilentMode == 1) st_current_set(2, tmp_motor[2]); //set back to normal operation currents
+		else st_current_set(2, tmp_motor_loud[2]);
 		lcd_update_enable(true);
 		lcd_return_to_status();
 		max_feedrate[E_AXIS] = 50;
@@ -5705,7 +5706,7 @@ static void lcd_silent_mode_set_tune() {
   default: SilentModeMenu = 0; break;
   }
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
-  digipot_init();
+  st_current_init();
   lcd_goto_menu(lcd_tune_menu, 9);
 }
 
@@ -6103,14 +6104,15 @@ void lcd_sdcard_menu()
   }
   */
 
+
+#ifdef TMC2130
+extern char conv[8];
 // Convert tmc2130 mres to string 
 char *mres_to_str3(const uint8_t &x)
 {
 	return itostr3(256 >> x);
 }
-
-extern char conv[8];
-
+menu_edit_type(uint8_t, mres, mres_to_str3, 1)
 // Convert tmc2130 wfac to string 
 char *wfac_to_str5(const uint16_t &x)
 {
@@ -6125,9 +6127,9 @@ char *wfac_to_str5(const uint16_t &x)
 	conv[8] = 0;
 	return conv;
 }
-
 menu_edit_type(uint16_t, wfac, wfac_to_str5, 1)
-menu_edit_type(uint8_t, mres, mres_to_str3, 1)
+#endif //TMC2130
+
 menu_edit_type(uint8_t, byte3, itostr3, 1)
 menu_edit_type(int, int3, itostr3, 1)
 menu_edit_type(float, float3, ftostr3, 1)
@@ -6562,11 +6564,11 @@ static bool lcd_selfcheck_pulleys(int axis)
 	for (i = 0; i < 5; i++) {
 		refresh_cmd_timeout();
 		current_position[axis] = current_position[axis] + move;
-		digipot_current(0, 850); //set motor current higher
+		st_current_set(0, 850); //set motor current higher
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 200, active_extruder);
 		st_synchronize();
-		if (SilentModeMenu == 1) digipot_current(0, tmp_motor[0]); //set back to normal operation currents
-		else digipot_current(0, tmp_motor_loud[0]); //set motor current back			
+		if (SilentModeMenu == 1) st_current_set(0, tmp_motor[0]); //set back to normal operation currents
+		else st_current_set(0, tmp_motor_loud[0]); //set motor current back			
 		current_position[axis] = current_position[axis] - move;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 50, active_extruder);
 		st_synchronize();
@@ -7391,22 +7393,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 	  if (LCD_CLICKED) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 #endif//ULTIPANEL
 
-#ifdef DOGLCD        // Changes due to different driver architecture of the DOGM display
-	  blink++;     // Variable for fan animation and alive dot
-	  u8g.firstPage();
-	  do
-	  {
-		  u8g.setFont(u8g_font_6x10_marlin);
-		  u8g.setPrintPos(125, 0);
-		  if (blink % 2) u8g.setColorIndex(1); else u8g.setColorIndex(0); // Set color for the alive dot
-		  u8g.drawPixel(127, 63); // draw alive dot
-		  u8g.setColorIndex(1); // black on white
-		  (*currentMenu)();
-		  if (!lcdDrawUpdate)  break; // Terminate display update, when nothing new to draw. This must be done before the last dogm.next()
-	  } while (u8g.nextPage());
-#else
 	  (*currentMenu)();
-#endif
 
 #ifdef LCD_HAS_STATUS_INDICATORS
 	  lcd_implementation_update_indicators();
