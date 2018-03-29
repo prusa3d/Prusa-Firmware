@@ -690,7 +690,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 
 //#define LCD_I2C_SAINSMART_YWROBOT
 #ifdef LCD_I2C_SAINSMART_YWROBOT
-  // This uses the LiquidCrystal_I2C library ( https://bitbucket.org/fmalpartida/new-liquidcrystal/wiki/Home )
+  // This uses the LiquidCrystal_I2C library ( https://bitbucket.org/fmalpartida/new-LiquidCrystal_Prusa/wiki/Home )
   // Make sure it is placed in the Arduino libraries directory.
   #define LCD_I2C_TYPE_PCF8575
   #define LCD_I2C_ADDRESS 0x27   // I2C Address of the port expander
@@ -745,7 +745,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 // Shift register panels
 // ---------------------
 // 2 wire Non-latching LCD SR from:
-// https://bitbucket.org/fmalpartida/new-liquidcrystal/wiki/schematics#!shiftregister-connection 
+// https://bitbucket.org/fmalpartida/new-LiquidCrystal_Prusa/wiki/schematics#!shiftregister-connection 
 
 //#define SAV_3DLCD
 #ifdef SAV_3DLCD

@@ -810,8 +810,8 @@ void factory_reset(char level, bool quiet)
     
 
 }
-#include "LiquidCrystal.h"
-extern LiquidCrystal lcd;
+#include "LiquidCrystal_Prusa.h"
+extern LiquidCrystal_Prusa lcd;
 
 FILE _lcdout = {0};
 
