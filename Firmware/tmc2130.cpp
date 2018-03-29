@@ -3,9 +3,14 @@
 #ifdef TMC2130
 
 #include "tmc2130.h"
-#include <SPI.h>
 #include "LiquidCrystal.h"
 #include "ultralcd.h"
+#ifndef NEW_SPI
+#include <SPI.h>
+#else //NEW_SPI
+#include "spi.h"
+#endif //NEW_SPI
+
 
 extern LiquidCrystal lcd;
 
@@ -143,7 +148,9 @@ void tmc2130_init()
 	SET_INPUT(Y_TMC2130_DIAG);
 	SET_INPUT(Z_TMC2130_DIAG);
 	SET_INPUT(E0_TMC2130_DIAG);
+#ifndef NEW_SPI
 	SPI.begin();
+#endif //NEW_SPI
 	for (int axis = 0; axis < 2; axis++) // X Y axes
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
@@ -594,11 +601,15 @@ inline void tmc2130_cs_high(uint8_t axis)
 	}
 }
 
+#ifndef NEW_SPI
 
 uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval)
 {
 	//datagram1 - request
+	printf_P(PSTR("tmc2130_tx %d 0x%02hhx, 0x%08lx\n"), axis, addr, wval);
 	SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
+	printf_P(PSTR(" SPCR = 0x%02hhx\n"), SPCR);
+	printf_P(PSTR(" SPSR = 0x%02hhx\n"), SPSR);
 	tmc2130_cs_low(axis);
 	SPI.transfer(addr); // address
 	SPI.transfer((wval >> 24) & 0xff); // MSB
@@ -635,6 +646,62 @@ uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
 	if (rval != 0) *rval = val32;
 	return stat;
 }
+
+#else //NEW_SPI
+
+//Arduino SPI
+//#define TMC2130_SPI_ENTER()    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3))
+//#define TMC2130_SPI_TXRX       SPI.transfer
+//#define TMC2130_SPI_LEAVE      SPI.endTransaction
+
+//spi
+#define TMC2130_SPI_ENTER()    spi_setup(TMC2130_SPCR, TMC2130_SPSR)
+#define TMC2130_SPI_TXRX       spi_txrx
+#define TMC2130_SPI_LEAVE()
+
+uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval)
+{
+	//datagram1 - request
+	TMC2130_SPI_ENTER();
+	tmc2130_cs_low(axis);
+	TMC2130_SPI_TXRX(addr); // address
+	TMC2130_SPI_TXRX((wval >> 24) & 0xff); // MSB
+	TMC2130_SPI_TXRX((wval >> 16) & 0xff);
+	TMC2130_SPI_TXRX((wval >> 8) & 0xff);
+	TMC2130_SPI_TXRX(wval & 0xff); // LSB
+	tmc2130_cs_high(axis);
+	TMC2130_SPI_LEAVE();
+}
+
+uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
+{
+	//datagram1 - request
+	TMC2130_SPI_ENTER();
+	tmc2130_cs_low(axis);
+	TMC2130_SPI_TXRX(addr); // address
+	TMC2130_SPI_TXRX(0); // MSB
+	TMC2130_SPI_TXRX(0);
+	TMC2130_SPI_TXRX(0);
+	TMC2130_SPI_TXRX(0); // LSB
+	tmc2130_cs_high(axis);
+	TMC2130_SPI_LEAVE();
+	//datagram2 - response
+	TMC2130_SPI_ENTER();
+	tmc2130_cs_low(axis);
+	uint8_t stat = TMC2130_SPI_TXRX(0); // status
+	uint32_t val32 = 0;
+	val32 = TMC2130_SPI_TXRX(0); // MSB
+	val32 = (val32 << 8) | TMC2130_SPI_TXRX(0);
+	val32 = (val32 << 8) | TMC2130_SPI_TXRX(0);
+	val32 = (val32 << 8) | TMC2130_SPI_TXRX(0); // LSB
+	tmc2130_cs_high(axis);
+	TMC2130_SPI_LEAVE();
+	if (rval != 0) *rval = val32;
+	return stat;
+}
+
+#endif //NEW_SPI
+
 
 void tmc2130_eeprom_load_config()
 {
