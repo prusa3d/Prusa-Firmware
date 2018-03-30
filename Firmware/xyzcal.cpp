@@ -4,6 +4,7 @@
 #ifdef NEW_XYZCAL
 
 #include "xyzcal.h"
+#include <stdio.h>
 #include <avr/wdt.h>
 #include "stepper.h"
 #include "temperature.h"
