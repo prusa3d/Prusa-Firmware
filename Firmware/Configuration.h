@@ -132,13 +132,6 @@
 // Power loss errors (total)
 #define EEPROM_POWER_COUNT_TOT       (EEPROM_FERROR_COUNT_TOT - 2)             // uint16
 
-// Hyperfine Bed Tuning
-#define EEPROM_BED_CORRECTION_FRONT_LEFT (EEPROM_POWER_COUNT_TOT - 1)
-#define EEPROM_BED_CORRECTION_FRONT_RIGHT (EEPROM_BED_CORRECTION_FRONT_LEFT - 1)
-#define EEPROM_BED_CORRECTION_REAR_RIGHT (EEPROM_BED_CORRECTION_FRONT_RIGHT - 1)
-#define EEPROM_BED_CORRECTION_REAR_LEFT (EEPROM_BED_CORRECTION_REAR_RIGHT - 1)
-// End Hyperfine Bed Tuning
-
 
 ////////////////////////////////////////
 // TMC2130 Accurate sensorless homing 
@@ -168,6 +161,12 @@
 #define EEPROM_TMC2130_WAVE_Z_FAC              (EEPROM_TMC2130_WAVE_Y_FAC - 1)                 // uint8
 #define EEPROM_TMC2130_WAVE_E_FAC              (EEPROM_TMC2130_WAVE_Z_FAC - 1)                 // uint8
 
+// Hyperfine Bed Tuning
+#define EEPROM_BED_CORRECTION_FRONT_LEFT (EEPROM_TMC2130_WAVE_E_FAC - 1)
+#define EEPROM_BED_CORRECTION_FRONT_RIGHT (EEPROM_BED_CORRECTION_FRONT_LEFT - 1)
+#define EEPROM_BED_CORRECTION_REAR_RIGHT (EEPROM_BED_CORRECTION_FRONT_RIGHT - 1)
+#define EEPROM_BED_CORRECTION_REAR_LEFT (EEPROM_BED_CORRECTION_REAR_RIGHT - 1)
+// End Hyperfine Bed Tuning
 
 ////////////////////////////////////////
 // TMC2130 uStep resolution
