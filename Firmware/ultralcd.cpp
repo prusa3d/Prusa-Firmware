@@ -99,7 +99,19 @@ union MenuData
         int    mid_left2;
     } adjustBed;
 // End Hyperfine bed Tuning
-	
+
+    struct TuneMenu
+    {
+        // editMenuParentState is used when an edit menu is entered, so it knows
+        // the return menu and encoder state.
+        struct EditMenuParentState editMenuParentState;
+        // To recognize, whether the menu has been just initialized.
+        int8_t  status;
+        // Backup of extrudemultiply, to recognize, that the value has been changed and
+        // it needs to be applied.
+        int16_t extrudemultiply;
+    } tuneMenu;
+
     // editMenuParentState is used when an edit menu is entered, so it knows
     // the return menu and encoder state.
     struct EditMenuParentState editMenuParentState;
@@ -3957,12 +3969,14 @@ static void lcd_settings_menu()
   else {
 	  MENU_ITEM(function, MSG_TEMP_CALIBRATION_ON, lcd_temp_calibration_set);
   }
+#ifdef HAS_SECOND_SERIAL_PORT
   if (selectedSerialPort == 0) {
 	  MENU_ITEM(function, MSG_SECOND_SERIAL_OFF, lcd_second_serial_set);
   }
   else {
 	  MENU_ITEM(function, MSG_SECOND_SERIAL_ON, lcd_second_serial_set);
   }
+#endif //HAS_SECOND_SERIAL
 
   if (!isPrintPaused && !homing_flag)
 	{
@@ -5492,6 +5506,16 @@ static void lcd_colorprint_change() {
 
 static void lcd_tune_menu()
 {
+  if (menuData.tuneMenu.status == 0) {
+    // Menu was entered. Mark the menu as entered and save the current extrudemultiply value.
+    menuData.tuneMenu.status = 1;
+    menuData.tuneMenu.extrudemultiply = extrudemultiply;
+  } else if (menuData.tuneMenu.extrudemultiply != extrudemultiply) {
+    // extrudemultiply has been changed from the child menu. Apply the new value.
+    menuData.tuneMenu.extrudemultiply = extrudemultiply;
+    calculate_extruder_multipliers();
+  }
+
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
 
   
@@ -6082,14 +6106,12 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	}
 
 // first axis length measurement begin	
-
-	tmc2130_home_enter(X_AXIS_MASK << axis);
+	
 	current_position[axis] -= (axis_length + margin);
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 
 	
 	st_synchronize();
-	tmc2130_home_exit();
 
 	tmc2130_sg_meassure_start(axis);
 
@@ -6102,9 +6124,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	current_position[axis] += axis_length;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 
-	tmc2130_home_enter(X_AXIS_MASK << axis);
 	st_synchronize();
-	tmc2130_home_exit();
 
 	uint16_t sg1 = tmc2130_sg_meassure_stop();
 	printf_P(PSTR("%c AXIS SG1=%d\n"), 'X'+axis, sg1);
@@ -6121,12 +6141,10 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 	st_synchronize();	
 
-	tmc2130_home_enter(X_AXIS_MASK << axis);
 	current_position[axis] -= (axis_length + margin);
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		
 	st_synchronize();
-	tmc2130_home_exit();
 
 	current_position_init = st_get_position_mm(axis);
 
@@ -6134,7 +6152,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 
 
 //end of second measurement, now check for possible errors:
-	
+
 	for(int i = 0; i < 2; i++){ //check if measured axis length corresponds to expected length
 		SERIAL_ECHOPGM("Measured axis length:");
 		MYSERIAL.println(measured_axis_length[i]);

@@ -7,11 +7,11 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.1.2"
-#define FW_COMMIT_NR   231
+#define FW_VERSION "3.1.3"
+#define FW_COMMIT_NR   245
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
-#define FW_DEV_VERSION FW_VERSION_UNKNOWN
+#define FW_DEV_VERSION FW_VERSION_GOLD
 #define FW_REPOSITORY "Prusa3D/MK3"
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
@@ -123,12 +123,6 @@
 
 #define EEPROM_FSENS_AUTOLOAD_ENABLED (EEPROM_SECOND_SERIAL_ACTIVE - 1)
 
-// Hyperfine Bed Tuning
-#define EEPROM_BED_CORRECTION_FRONT_LEFT (EEPROM_FSENS_AUTOLOAD_ENABLED - 1)
-#define EEPROM_BED_CORRECTION_FRONT_RIGHT (EEPROM_BED_CORRECTION_FRONT_LEFT - 1)
-#define EEPROM_BED_CORRECTION_REAR_RIGHT (EEPROM_BED_CORRECTION_FRONT_RIGHT - 1)
-#define EEPROM_BED_CORRECTION_REAR_LEFT (EEPROM_BED_CORRECTION_REAR_RIGHT - 1)
-// End Hyperfine Bed Tuning
 // Crash detection counter X (total)
 #define EEPROM_CRASH_COUNT_X_TOT       (EEPROM_FSENS_AUTOLOAD_ENABLED - 2)     // uint16
 // Crash detection counter Y (total)
@@ -137,6 +131,13 @@
 #define EEPROM_FERROR_COUNT_TOT      (EEPROM_CRASH_COUNT_Y_TOT - 2)            // uint16
 // Power loss errors (total)
 #define EEPROM_POWER_COUNT_TOT       (EEPROM_FERROR_COUNT_TOT - 2)             // uint16
+
+// Hyperfine Bed Tuning
+#define EEPROM_BED_CORRECTION_FRONT_LEFT (EEPROM_POWER_COUNT_TOT - 1)
+#define EEPROM_BED_CORRECTION_FRONT_RIGHT (EEPROM_BED_CORRECTION_FRONT_LEFT - 1)
+#define EEPROM_BED_CORRECTION_REAR_RIGHT (EEPROM_BED_CORRECTION_FRONT_RIGHT - 1)
+#define EEPROM_BED_CORRECTION_REAR_LEFT (EEPROM_BED_CORRECTION_REAR_RIGHT - 1)
+// End Hyperfine Bed Tuning
 
 
 ////////////////////////////////////////

@@ -3267,10 +3267,8 @@ void process_commands()
 #ifdef PINDA_THERMISTOR
 		if (true)
 		{
-			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
-			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
-			if(result) lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
-			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
+			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS]))
+			{
 				// We don't know where we are! HOME!
 				// Push the commands to the front of the message queue in the reverse order!
 				// There shall be always enough space reserved for these commands.
@@ -3278,6 +3276,17 @@ void process_commands()
 				enquecommand_front_P((PSTR("G28 W0")));
 				break;
 			}
+			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
+			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
+			if (result)
+			{
+				current_position[Z_AXIS] = 50;
+				current_position[Y_AXIS] = 190;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				st_synchronize();
+				lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
+			}
+			lcd_update_enable(true);
 			KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
 			SERIAL_ECHOLNPGM("PINDA probe calibration start");
 
@@ -7119,11 +7128,14 @@ void save_statistics(unsigned long _total_filament_used, unsigned long _total_pr
 }
 
 float calculate_extruder_multiplier(float diameter) {
-  bool  enabled = volumetric_enabled && diameter > 0;
-  float area    = enabled ? (M_PI * pow(diameter * .5, 2)) : 0;
-	return (extrudemultiply == 100) ? 
-    (enabled ? (1.f / area) : 1.f) :
-    (enabled ? ((float(extrudemultiply) * 0.01f) / area) : 1.f);
+  float out = 1.f;
+  if (volumetric_enabled && diameter > 0.f) {
+    float area = M_PI * diameter * diameter * 0.25;
+    out = 1.f / area;
+  }
+  if (extrudemultiply != 100)
+    out *= float(extrudemultiply) * 0.01f;
+  return out;
 }
 
 void calculate_extruder_multipliers() {
@@ -7636,8 +7648,8 @@ void serialecho_temperatures() {
 	float tt = degHotend(active_extruder);
 	SERIAL_PROTOCOLPGM("T:");
 	SERIAL_PROTOCOL(tt);
-	SERIAL_PROTOCOLPGM(" P:");
-	SERIAL_PROTOCOL(current_temperature_pinda);
+	SERIAL_PROTOCOLPGM(" E:");
+	SERIAL_PROTOCOL((int)active_extruder);
 	SERIAL_PROTOCOLPGM(" B:");
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");
