@@ -425,7 +425,7 @@ void xyzcal_draw_pattern_12x12_in_32x32(uint8_t* pattern, uint32_t* pixels, int 
 
 int16_t xyzcal_match_pattern_12x12_in_32x32(uint16_t* pattern, uint8_t* pixels, uint8_t c, uint8_t r)
 {
-	uint8_t thr = 32;
+	uint8_t thr = 16;
 	int16_t match = 0;
 	for (uint8_t i = 0; i < 12; i++)
 		for (uint8_t j = 0; j < 12; j++)
