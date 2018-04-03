@@ -471,6 +471,7 @@ int16_t xyzcal_find_pattern_12x12_in_32x32(uint8_t* pixels, uint16_t* pattern, u
 }
 
 #define MAX_DIAMETR 600
+#define XYZCAL_FIND_CENTER_DIAGONAL
 
 int8_t xyzcal_find_point_center2(uint16_t delay_us)
 {
@@ -499,6 +500,37 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 //	xyzcal_lineXYZ_to(x0, y0, z0 - 100, 500, 1);
 //	z0 = _Z - 10;
 
+	int8_t ret = 1;
+
+#ifdef XYZCAL_FIND_CENTER_DIAGONAL
+	int32_t xc = 0;
+	int32_t yc = 0;
+	int16_t ad = 45;
+	for (; ad < 360; ad += 90)
+	{
+		float ar = (float)ad * _PI / 180;
+		int16_t x = x0 + MAX_DIAMETR * cos(ar);
+		int16_t y = y0 + MAX_DIAMETR * sin(ar);
+		if (!xyzcal_lineXYZ_to(x, y, z0, delay_us, -1))
+		{
+			printf_P(PSTR("ERROR ad=%d\n"), ad);
+			ret = 0;
+			break;
+		}
+		xc += _X;
+		yc += _Y;
+		xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
+	}
+	if (ret)
+	{
+		printf_P(PSTR("OK\n"), ad);
+		x0 = xc / 4;
+		y0 = yc / 4;
+		printf_P(PSTR(" x0=%d\n"), x0);
+		printf_P(PSTR(" y0=%d\n"), y0);
+	}
+
+#else //XYZCAL_FIND_CENTER_DIAGONAL
 	xyzcal_lineXYZ_to(x0 - MAX_DIAMETR, y0, z0, delay_us, -1);
 	int16_t dx1 = x0 - _X;
 	if (dx1 >= MAX_DIAMETR)
@@ -541,9 +573,11 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	printf_P(PSTR(" x0=%d\n"), x0);
 	printf_P(PSTR(" y0=%d\n"), y0);
 
+#endif //XYZCAL_FIND_CENTER_DIAGONAL
+
 	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
 
-	return 1;
+	return ret;
 }
 
 #ifdef XYZCAL_FIND_POINT_CENTER
