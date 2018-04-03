@@ -57,6 +57,7 @@
 #include "Timer.h"
 
 #include <avr/wdt.h>
+#include <avr/pgmspace.h>
 
 #include "Dcodes.h"
 
@@ -1077,15 +1078,15 @@ void setup()
 
 #ifdef TMC2130_LINEARITY_CORRECTION
 #ifdef EXPERIMENTAL_FEATURES
-	tmc2130_wave_fac[X_AXIS] = eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_X_FAC);
-	tmc2130_wave_fac[Y_AXIS] = eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_Y_FAC);
-	tmc2130_wave_fac[Z_AXIS] = eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_Z_FAC);
+	tmc2130_wave_fac[X_AXIS] = eeprom_read_word((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC);
+	tmc2130_wave_fac[Y_AXIS] = eeprom_read_word((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC);
+	tmc2130_wave_fac[Z_AXIS] = eeprom_read_word((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC);
 #endif //EXPERIMENTAL_FEATURES
 	tmc2130_wave_fac[E_AXIS] = eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC);
-	if (tmc2130_wave_fac[X_AXIS] == 0xffff) tmc2130_wave_fac[X_AXIS] = 0;
-	if (tmc2130_wave_fac[Y_AXIS] == 0xffff) tmc2130_wave_fac[Y_AXIS] = 0;
-	if (tmc2130_wave_fac[Z_AXIS] == 0xffff) tmc2130_wave_fac[Z_AXIS] = 0;
-	if (tmc2130_wave_fac[E_AXIS] == 0xffff) tmc2130_wave_fac[E_AXIS] = 0;
+	if (tmc2130_wave_fac[X_AXIS] == 0xff) tmc2130_wave_fac[X_AXIS] = 0;
+	if (tmc2130_wave_fac[Y_AXIS] == 0xff) tmc2130_wave_fac[Y_AXIS] = 0;
+	if (tmc2130_wave_fac[Z_AXIS] == 0xff) tmc2130_wave_fac[Z_AXIS] = 0;
+	if (tmc2130_wave_fac[E_AXIS] == 0xff) tmc2130_wave_fac[E_AXIS] = 0;
 #endif //TMC2130_LINEARITY_CORRECTION
 
 #ifdef TMC2130_VARIABLE_RESOLUTION
@@ -1138,9 +1139,6 @@ void setup()
 #endif
 
 
-#ifdef DIGIPOT_I2C
-	digipot_i2c_init();
-#endif
 	setup_homepin();
 
 #ifdef TMC2130
@@ -2249,7 +2247,6 @@ void force_high_power_mode(bool start_high_power_section) {
     // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
     st_reset_timer();
 		sei();
-		digipot_init();
 	}
 }
 #endif //TMC2130
@@ -2547,19 +2544,36 @@ void process_commands()
 	  lcd_setstatus(strchr_pointer + 5);
   }
 
-#ifdef TMC2130
-  else if(code_seen("CRASH_DETECTED"))
-  {
-	  uint8_t mask = 0;
-	  if (code_seen("X")) mask |= X_AXIS_MASK;
-	  if (code_seen("Y")) mask |= Y_AXIS_MASK;
-	  crashdet_detected(mask);
-  }
-  else if(code_seen("CRASH_RECOVER"))
-	  crashdet_recover();
-  else if(code_seen("CRASH_CANCEL"))
-	  crashdet_cancel();
-#endif //TMC2130
+//#ifdef TMC2130
+	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
+	{
+	  if(code_seen("CRASH_DETECTED"))
+	  {
+		  uint8_t mask = 0;
+		  if (code_seen("X")) mask |= X_AXIS_MASK;
+		  if (code_seen("Y")) mask |= Y_AXIS_MASK;
+		  crashdet_detected(mask);
+	  }
+	  else if(code_seen("CRASH_RECOVER"))
+		  crashdet_recover();
+	  else if(code_seen("CRASH_CANCEL"))
+		  crashdet_cancel();
+	}
+	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("TMC_"), 4) == 0)
+	{
+		if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_WAVE_E"), 10) == 0)
+		{
+			uint8_t fac = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
+			tmc2130_set_wave(E_AXIS, 247, fac);
+		}
+		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_STEP_E"), 10) == 0)
+		{
+			uint8_t step = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
+			uint16_t res = tmc2130_get_res(E_AXIS);
+			tmc2130_goto_step(E_AXIS, step & (4*res - 1), 2, 1000, res);
+		}
+	}
+//#endif //TMC2130
 
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
@@ -5948,7 +5962,7 @@ Sigma_Exit:
             tmc2130_set_current_r(E_AXIS, TMC2130_UNLOAD_CURRENT_R);
 #else 
 
-			digipot_current(2, 200); //set lower E motor current for unload to protect filament sensor and ptfe tube
+			st_current_set(2, 200); //set lower E motor current for unload to protect filament sensor and ptfe tube
 			float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 			float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 
@@ -5968,8 +5982,8 @@ Sigma_Exit:
             tmc2130_set_current_r(E_AXIS, tmc2130_current_r_bckp);
 #else
 			uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-			if(silentMode) digipot_current(2, tmp_motor[2]); //set E back to normal operation currents
-			else digipot_current(2, tmp_motor_loud[2]);		
+			if(silentMode) st_current_set(2, tmp_motor[2]); //set E back to normal operation currents
+			else st_current_set(2, tmp_motor_loud[2]);		
 #endif //TMC2130
 
 #endif // SNMM
@@ -6216,24 +6230,18 @@ Sigma_Exit:
     case 907: // M907 Set digital trimpot motor current using axis codes.
     {
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
-        for(int i=0;i<NUM_AXIS;i++) if(code_seen(axis_codes[i])) digipot_current(i,code_value());
-        if(code_seen('B')) digipot_current(4,code_value());
-        if(code_seen('S')) for(int i=0;i<=4;i++) digipot_current(i,code_value());
+        for(int i=0;i<NUM_AXIS;i++) if(code_seen(axis_codes[i])) st_current_set(i,code_value());
+        if(code_seen('B')) st_current_set(4,code_value());
+        if(code_seen('S')) for(int i=0;i<=4;i++) st_current_set(i,code_value());
       #endif
       #ifdef MOTOR_CURRENT_PWM_XY_PIN
-        if(code_seen('X')) digipot_current(0, code_value());
+        if(code_seen('X')) st_current_set(0, code_value());
       #endif
       #ifdef MOTOR_CURRENT_PWM_Z_PIN
-        if(code_seen('Z')) digipot_current(1, code_value());
+        if(code_seen('Z')) st_current_set(1, code_value());
       #endif
       #ifdef MOTOR_CURRENT_PWM_E_PIN
-        if(code_seen('E')) digipot_current(2, code_value());
-      #endif
-      #ifdef DIGIPOT_I2C
-        // this one uses actual amps in floating point
-        for(int i=0;i<NUM_AXIS;i++) if(code_seen(axis_codes[i])) digipot_i2c_set_current(i, code_value());
-        // for each additional extruder (named B,C,D,E..., channels 4,5,6,7...)
-        for(int i=NUM_AXIS;i<DIGIPOT_I2C_NUM_CHANNELS;i++) if(code_seen('B'+i-NUM_AXIS)) digipot_i2c_set_current(i, code_value());
+        if(code_seen('E')) st_current_set(2, code_value());
       #endif
     }
     break;
@@ -6669,7 +6677,7 @@ void update_currents() {
 	if (destination[Z_AXIS] < Z_SILENT) {
 		//SERIAL_ECHOLNPGM("LOW");
 		for (uint8_t i = 0; i < 3; i++) {
-			digipot_current(i, current_low[i]);		
+			st_current_set(i, current_low[i]);		
 			/*MYSERIAL.print(int(i));
 			SERIAL_ECHOPGM(": ");
 			MYSERIAL.println(current_low[i]);*/
@@ -6678,7 +6686,7 @@ void update_currents() {
 	else if (destination[Z_AXIS] > Z_HIGH_POWER) {
 		//SERIAL_ECHOLNPGM("HIGH");
 		for (uint8_t i = 0; i < 3; i++) {
-			digipot_current(i, current_high[i]);
+			st_current_set(i, current_high[i]);
 			/*MYSERIAL.print(int(i));
 			SERIAL_ECHOPGM(": ");
 			MYSERIAL.println(current_high[i]);*/
@@ -6688,7 +6696,7 @@ void update_currents() {
 		for (uint8_t i = 0; i < 3; i++) {
 			float q = current_low[i] - Z_SILENT*((current_high[i] - current_low[i]) / (Z_HIGH_POWER - Z_SILENT));
 			tmp_motor[i] = ((current_high[i] - current_low[i]) / (Z_HIGH_POWER - Z_SILENT))*destination[Z_AXIS] + q;
-			digipot_current(i, tmp_motor[i]);			
+			st_current_set(i, tmp_motor[i]);			
 			/*MYSERIAL.print(int(i));
 			SERIAL_ECHOPGM(": ");
 			MYSERIAL.println(tmp_motor[i]);*/
@@ -8446,7 +8454,7 @@ void extr_unload2() { //unloads filament
 		
 		current_position[E_AXIS] += 10; //extrusion
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 10, active_extruder);
-//		digipot_current(2, E_MOTOR_HIGH_CURRENT);
+//		st_current_set(2, E_MOTOR_HIGH_CURRENT);
 		if (current_temperature[0] < 230) { //PLA & all other filaments
 			current_position[E_AXIS] += 5.4;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2800 / 60, active_extruder);
@@ -8475,9 +8483,9 @@ void extr_unload2() { //unloads filament
 		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
 		st_synchronize();
-		//digipot_init();
-//		if (SilentMode == 1) digipot_current(2, tmp_motor[2]); //set back to normal operation currents
-//		else digipot_current(2, tmp_motor_loud[2]);
+		//st_current_init();
+//		if (SilentMode == 1) st_current_set(2, tmp_motor[2]); //set back to normal operation currents
+//		else st_current_set(2, tmp_motor_loud[2]);
 		lcd_update_enable(true);
 //		lcd_return_to_status();
 		max_feedrate[E_AXIS] = 50;
