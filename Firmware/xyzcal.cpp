@@ -370,7 +370,7 @@ void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
 {
 	uint8_t l;
 	uint16_t max_c = histo[0];
-	uint8_t max_l = 0;
+	uint8_t max_l = 1;
 	for (l = 1; l < 16; l++)
 	{
 		uint16_t c = histo[l];
@@ -384,7 +384,7 @@ void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
 	for (l = 15; l > 8; l--)
 		if (histo[l] >= 10)
 			break;
-	uint8_t pix_min = (max_l + 2) << 4;
+	uint8_t pix_min = (max_l + 1) << 4;
 	uint8_t pix_max = l << 4;
 	uint8_t pix_dif = pix_max - pix_min;
 	DBG(_n(" min=%d max=%d dif=%d\n"), pix_min, pix_max, pix_dif);
