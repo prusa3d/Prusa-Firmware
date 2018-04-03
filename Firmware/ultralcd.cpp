@@ -242,7 +242,7 @@ static void menu_action_setlang(unsigned char lang);
 static void menu_action_sdfile(const char* filename, char* longFilename);
 static void menu_action_sddirectory(const char* filename, char* longFilename);
 static void menu_action_setting_edit_bool(const char* pstr, bool* ptr);
-static void menu_action_setting_edit_wfac(const char* pstr, uint16_t* ptr, uint16_t minValue, uint16_t maxValue);
+static void menu_action_setting_edit_wfac(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
 static void menu_action_setting_edit_mres(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
 static void menu_action_setting_edit_byte3(const char* pstr, uint8_t* ptr, uint8_t minValue, uint8_t maxValue);
 static void menu_action_setting_edit_int3(const char* pstr, int* ptr, int minValue, int maxValue);
@@ -6114,20 +6114,20 @@ char *mres_to_str3(const uint8_t &x)
 }
 menu_edit_type(uint8_t, mres, mres_to_str3, 1)
 // Convert tmc2130 wfac to string 
-char *wfac_to_str5(const uint16_t &x)
+char *wfac_to_str5(const uint8_t &x)
 {
-	if (x>=TMC2130_WAVE_FAC1000_MIN)
+	if (x >= TMC2130_WAVE_FAC1000_MIN)
 	    {
 	    conv[0] = '[';
-	    ftostr43(((float)(x & 0xffff)/1000),1);
+	    ftostr43(((float)((uint16_t)x + 1000) / 1000), 1);
 	    }
-	else strcpy_P(conv,MSG_EXTRUDER_CORRECTION_OFF);
+	else strcpy_P(conv, MSG_EXTRUDER_CORRECTION_OFF);
 	conv[6] = ']';
 	conv[7] = ' ';
 	conv[8] = 0;
 	return conv;
 }
-menu_edit_type(uint16_t, wfac, wfac_to_str5, 1)
+menu_edit_type(uint8_t, wfac, wfac_to_str5, 1)
 #endif //TMC2130
 
 menu_edit_type(uint8_t, byte3, itostr3, 1)

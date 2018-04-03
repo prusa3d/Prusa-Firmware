@@ -57,6 +57,7 @@
 #include "Timer.h"
 
 #include <avr/wdt.h>
+#include <avr/pgmspace.h>
 
 #include "Dcodes.h"
 
@@ -1077,15 +1078,15 @@ void setup()
 
 #ifdef TMC2130_LINEARITY_CORRECTION
 #ifdef EXPERIMENTAL_FEATURES
-	tmc2130_wave_fac[X_AXIS] = eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_X_FAC);
-	tmc2130_wave_fac[Y_AXIS] = eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_Y_FAC);
-	tmc2130_wave_fac[Z_AXIS] = eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_Z_FAC);
+	tmc2130_wave_fac[X_AXIS] = eeprom_read_word((uint8_t*)EEPROM_TMC2130_WAVE_X_FAC);
+	tmc2130_wave_fac[Y_AXIS] = eeprom_read_word((uint8_t*)EEPROM_TMC2130_WAVE_Y_FAC);
+	tmc2130_wave_fac[Z_AXIS] = eeprom_read_word((uint8_t*)EEPROM_TMC2130_WAVE_Z_FAC);
 #endif //EXPERIMENTAL_FEATURES
 	tmc2130_wave_fac[E_AXIS] = eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC);
-	if (tmc2130_wave_fac[X_AXIS] == 0xffff) tmc2130_wave_fac[X_AXIS] = 0;
-	if (tmc2130_wave_fac[Y_AXIS] == 0xffff) tmc2130_wave_fac[Y_AXIS] = 0;
-	if (tmc2130_wave_fac[Z_AXIS] == 0xffff) tmc2130_wave_fac[Z_AXIS] = 0;
-	if (tmc2130_wave_fac[E_AXIS] == 0xffff) tmc2130_wave_fac[E_AXIS] = 0;
+	if (tmc2130_wave_fac[X_AXIS] == 0xff) tmc2130_wave_fac[X_AXIS] = 0;
+	if (tmc2130_wave_fac[Y_AXIS] == 0xff) tmc2130_wave_fac[Y_AXIS] = 0;
+	if (tmc2130_wave_fac[Z_AXIS] == 0xff) tmc2130_wave_fac[Z_AXIS] = 0;
+	if (tmc2130_wave_fac[E_AXIS] == 0xff) tmc2130_wave_fac[E_AXIS] = 0;
 #endif //TMC2130_LINEARITY_CORRECTION
 
 #ifdef TMC2130_VARIABLE_RESOLUTION
@@ -2543,19 +2544,36 @@ void process_commands()
 	  lcd_setstatus(strchr_pointer + 5);
   }
 
-#ifdef TMC2130
-  else if(code_seen("CRASH_DETECTED"))
-  {
-	  uint8_t mask = 0;
-	  if (code_seen("X")) mask |= X_AXIS_MASK;
-	  if (code_seen("Y")) mask |= Y_AXIS_MASK;
-	  crashdet_detected(mask);
-  }
-  else if(code_seen("CRASH_RECOVER"))
-	  crashdet_recover();
-  else if(code_seen("CRASH_CANCEL"))
-	  crashdet_cancel();
-#endif //TMC2130
+//#ifdef TMC2130
+	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
+	{
+	  if(code_seen("CRASH_DETECTED"))
+	  {
+		  uint8_t mask = 0;
+		  if (code_seen("X")) mask |= X_AXIS_MASK;
+		  if (code_seen("Y")) mask |= Y_AXIS_MASK;
+		  crashdet_detected(mask);
+	  }
+	  else if(code_seen("CRASH_RECOVER"))
+		  crashdet_recover();
+	  else if(code_seen("CRASH_CANCEL"))
+		  crashdet_cancel();
+	}
+	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("TMC_"), 4) == 0)
+	{
+		if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_WAVE_E"), 10) == 0)
+		{
+			uint8_t fac = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
+			tmc2130_set_wave(E_AXIS, 247, fac);
+		}
+		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_STEP_E"), 10) == 0)
+		{
+			uint8_t step = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
+			uint16_t res = tmc2130_get_res(E_AXIS);
+			tmc2130_goto_step(E_AXIS, step & (4*res - 1), 2, 1000, res);
+		}
+	}
+//#endif //TMC2130
 
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping

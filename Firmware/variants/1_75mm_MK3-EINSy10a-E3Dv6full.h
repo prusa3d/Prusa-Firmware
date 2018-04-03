@@ -169,7 +169,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif /* DEBUG_BUILD */
 
 //#define EXPERIMENTAL_FEATURES
-//#define TMC2130_LINEARITY_CORRECTION
+#define TMC2130_LINEARITY_CORRECTION
 //#define TMC2130_VARIABLE_RESOLUTION
 
 
