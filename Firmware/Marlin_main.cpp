@@ -3216,10 +3216,11 @@ void process_commands()
 
 	case 75:
 	{
-		for (int i = 40; i <= 110; i++) {
+		for (int i = 35; i <= 80; i++) {
 			MYSERIAL.print(i);
-			MYSERIAL.print("  ");
-			MYSERIAL.println(temp_comp_interpolation(i));// / axis_steps_per_unit[Z_AXIS]);
+			MYSERIAL.print("  -");
+			MYSERIAL.println(int(temp_compensation_pinda_thermistor_offset(i) * 1000));
+			MYSERIAL.println("um");
 		}
 	}
 	break;
@@ -3256,8 +3257,8 @@ void process_commands()
 			int z_shift = 0; //unit: steps
 			float start_temp = 5 * (int)(current_temperature_pinda / 5);
 			if (start_temp < 35) start_temp = 35;
-			if (start_temp < current_temperature_pinda) start_temp += 5;
-			SERIAL_ECHOPGM("start temperature: ");
+			if (start_temp < current_temperature_pinda) start_temp = (int)(current_temperature_pinda);
+			SERIAL_ECHOPGM("Start temperature: ");
 			MYSERIAL.println(start_temp);
 
 //			setTargetHotend(200, 0);
@@ -3300,28 +3301,35 @@ void process_commands()
 
 			int i = -1; for (; i < 5; i++)
 			{
-				float temp = (40 + i * 5);
+				float temp = (42 + i * 7);
+        if (start_temp <= temp) break;
 				SERIAL_ECHOPGM("Step: ");
 				MYSERIAL.print(i + 2);
-				SERIAL_ECHOLNPGM("/6 (skipped)");
+				if (i > -1) { 
+				   SERIAL_ECHOLNPGM("/6 (skipped)");
+				} else {
+          SERIAL_ECHOLNPGM("/6");
+        }
 				SERIAL_ECHOPGM("PINDA temperature: ");
-				MYSERIAL.print((40 + i*5));
+				MYSERIAL.print((42 + i * 7));
 				SERIAL_ECHOPGM(" Z shift (mm):");
 				MYSERIAL.print(0);
 				SERIAL_ECHOLNPGM("");
 				if (i >= 0) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
-				if (start_temp <= temp) break;
+        //if (start_temp <= temp) break;
 			}
 
 			for (i++; i < 5; i++)
 			{
-				float temp = (40 + i * 5);
+				float temp = (42 + i * 7);
 				SERIAL_ECHOPGM("Step: ");
 				MYSERIAL.print(i + 2);
 				SERIAL_ECHOLNPGM("/6");
 				custom_message_state = i + 2;
-				setTargetBed(50 + 10 * (temp - 30) / 5);
-//				setTargetHotend(255, 0);
+				if ((50 + 10 * (temp - 30) / 5) > 115) {
+				  setTargetBed(115);
+				} else setTargetBed(50 + 10 * (temp - 30) / 5);
+				if (i>2) setTargetHotend(255, 0);  //Boost to get to the end game (last couple probings)
 				current_position[X_AXIS] = PINDA_PREHEAT_X;
 				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 				current_position[Z_AXIS] = PINDA_PREHEAT_Z;
@@ -3347,9 +3355,8 @@ void process_commands()
 				SERIAL_ECHOPGM(" Z shift (mm):");
 				MYSERIAL.print(current_position[Z_AXIS] - zero_z);
 				SERIAL_ECHOLNPGM("");
-
-				EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
-
+        if (z_shift < 0) z_shift = 0; //Ensure that a small negative value doesn't throw out EEPROM word/float
+        EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 			}
 			custom_message_type = 0;
 			custom_message = false;
@@ -3363,7 +3370,13 @@ void process_commands()
 			disable_e1();
 			disable_e2();
 			setTargetBed(0); //set bed target temperature back to 0
-//			setTargetHotend(0,0); //set hotend target temperature back to 0
+  		setTargetHotend(0,0); //set hotend target temperature back to 0
+      //Move head back out of the way
+      current_position[X_AXIS] = pgm_read_float(bed_ref_points);
+      current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
+      current_position[Z_AXIS] = 5; //Lift head up a little
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+      st_synchronize();
 			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
 			lcd_update_enable(true);
 			lcd_update(2);
@@ -3769,55 +3782,135 @@ void process_commands()
 		}
 		#endif // SUPPORT_VERBOSITY
 
-		for (uint8_t i = 0; i < 4; ++i) {
-			unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
+// Hyperfine Bed Tuning
+	for (uint8_t i = 0; i < 8; ++i) {
+		unsigned char codes[8] = { 'a', 'b', 'c', 'd' , 'e' , 'f', 'g', 'h'};
 			long correction = 0;
 			if (code_seen(codes[i]))
 				correction = code_value_long();
 			else if (eeprom_bed_correction_valid) {
-				unsigned char *addr = (i < 2) ?
-					((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
-					((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
-				correction = eeprom_read_int8(addr);
+			switch (i) {
+			case 0:
+				{unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT_LEFT;
+				correction = eeprom_read_int8(addr);            
+				}
+				break;
+			case 1:
+				{unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT;
+				correction = eeprom_read_int8(addr);            
+				}
+				break;
+			case 2:
+				{unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT_RIGHT;
+				correction = eeprom_read_int8(addr);            
+				}
+				break;
+			case 3:
+				{unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_RIGHT;
+				correction = eeprom_read_int8(addr);            
+				}
+				break;
+			case 4:
+				{unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_REAR_RIGHT;
+				correction = eeprom_read_int8(addr);            
+				}
+				break;
+			case 5:
+				{unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_REAR;
+				correction = eeprom_read_int8(addr);            
+				}
+				break;
+			case 6:
+				{unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_REAR_LEFT;
+				correction = eeprom_read_int8(addr);            
+				}
+				break;
+			case 7:
+				{unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_LEFT;
+				correction = eeprom_read_int8(addr);            
+				}
+				break;
 			}
-			if (correction == 0)
-				continue;
+		}
+		if (correction == 0) 
+			continue;
 			float offset = float(correction) * 0.001f;
-			if (fabs(offset) > 0.101f) {
+			if (fabs(offset) > 0.201f) {
 				SERIAL_ERROR_START;
 				SERIAL_ECHOPGM("Excessive bed leveling correction: ");
 				SERIAL_ECHO(offset);
 				SERIAL_ECHOLNPGM(" microns");
 			}
 			else {
-				switch (i) {
-				case 0:
-					for (uint8_t row = 0; row < 3; ++row) {
-						mbl.z_values[row][1] += 0.5f * offset;
-						mbl.z_values[row][0] += offset;
-					}
-					break;
-				case 1:
-					for (uint8_t row = 0; row < 3; ++row) {
-						mbl.z_values[row][1] += 0.5f * offset;
-						mbl.z_values[row][2] += offset;
-					}
-					break;
-				case 2:
-					for (uint8_t col = 0; col < 3; ++col) {
-						mbl.z_values[1][col] += 0.5f * offset;
-						mbl.z_values[0][col] += offset;
-					}
-					break;
-				case 3:
-					for (uint8_t col = 0; col < 3; ++col) {
-						mbl.z_values[1][col] += 0.5f * offset;
-						mbl.z_values[2][col] += offset;
-					}
-					break;
+			switch (i) {
+			case 0:
+				{
+				mbl.z_values[0][0] += offset;
+				SERIAL_ECHOPGM("FrontLeft  a =");
+				SERIAL_ECHO(correction+0);
+				SERIAL_ECHOLNPGM(" microns.");
 				}
+				break;
+			case 1:
+				{
+				mbl.z_values[0][1] += offset;
+				SERIAL_ECHOPGM("FrontCentr b =");
+				SERIAL_ECHO(correction+0);
+				SERIAL_ECHOLNPGM(" microns.");
+				}
+				break;
+			case 2:
+				{
+				mbl.z_values[0][2] += offset;
+				SERIAL_ECHOPGM("FrontRight c =");
+				SERIAL_ECHO(correction+0);
+				SERIAL_ECHOLNPGM(" microns.");
+				}
+				break;
+			case 3:
+				{
+				mbl.z_values[1][2] += offset; 
+				SERIAL_ECHOPGM("MidRight   d =");
+				SERIAL_ECHO(correction+0);
+				SERIAL_ECHOLNPGM(" microns.");
+				}
+				break;
+			case 4:
+				{
+				mbl.z_values[2][2] += offset; 
+				SERIAL_ECHOPGM("RearRight  e =");
+				SERIAL_ECHO(correction+0);
+				SERIAL_ECHOLNPGM(" microns.");
+				}
+				break;
+			case 5:
+				{
+				mbl.z_values[2][1] += offset; 
+				SERIAL_ECHOPGM("RearCentr  f =");
+				SERIAL_ECHO(correction+0);
+				SERIAL_ECHOLNPGM(" microns.");
+				}
+				break;
+			case 6:
+				{
+				mbl.z_values[2][0] += offset; 
+				SERIAL_ECHOPGM("RearLeft   g =");
+				SERIAL_ECHO(correction+0);
+				SERIAL_ECHOLNPGM(" microns.");
+				}
+				break;
+			case 7:
+				{
+				mbl.z_values[1][0] += offset;
+				SERIAL_ECHOPGM("MidLeft  h =");
+				SERIAL_ECHO(correction+0);
+				SERIAL_ECHOLNPGM(" microns.");
+				}
+				break;
 			}
 		}
+	}
+// End Hyperfine Bed Tuning
 //		SERIAL_ECHOLNPGM("Bed leveling correction finished");
 		mbl.upsample_3x3(); //bilinear interpolation from 3x3 to 7x7 points while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 //		SERIAL_ECHOLNPGM("Upsample finished");
@@ -7478,7 +7571,7 @@ float temp_comp_interpolation(float inp_temperature) {
 		if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &shift[i]); //read shift in steps from EEPROM
 		temp_C[i] = 50 + i * 10; //temperature in C
 #ifdef PINDA_THERMISTOR
-		temp_C[i] = 35 + i * 5; //temperature in C
+		temp_C[i] = 35 + i * 7; //temperature in C
 #else
 		temp_C[i] = 50 + i * 10; //temperature in C
 #endif
@@ -7523,9 +7616,11 @@ float temp_comp_interpolation(float inp_temperature) {
 				d = f[i];
 				sum = a*pow((inp_temperature - x[i]), 3) + b*pow((inp_temperature - x[i]), 2) + c*(inp_temperature - x[i]) + d;
 			}
-
-		return sum;
-
+    // Create hard limits to prevent machine damage from error result
+		if (sum < 0) {
+		  return 0;
+		} else if ((sum / axis_steps_per_unit[Z_AXIS]) > 1.5) return (1.5 * axis_steps_per_unit[Z_AXIS]);
+   return sum;
 }
 
 #ifdef PINDA_THERMISTOR
