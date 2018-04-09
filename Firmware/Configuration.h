@@ -7,8 +7,8 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.1.4-RC1"
-#define FW_COMMIT_NR   328
+#define FW_VERSION "3.1.4"
+#define FW_COMMIT_NR   330
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
