@@ -462,7 +462,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
  *------------------------------------*/
 
 #define FARM_PREHEAT_HOTEND_TEMP 250
-#define FARM_PREHEAT_HPB_TEMP 40
+#define FARM_PREHEAT_HPB_TEMP 60
 #define FARM_PREHEAT_FAN_SPEED 0
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
