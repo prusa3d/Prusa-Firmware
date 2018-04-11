@@ -194,7 +194,7 @@ extern volatile uint16_t buttons;  //an extended version of the last checked but
     LCD_CLASS lcd(LCD_I2C_ADDRESS, LCD_WIDTH, LCD_HEIGHT);
     
 // 2 wire Non-latching LCD SR from:
-// https://bitbucket.org/fmalpartida/new-LiquidCrystal_Prusa/wiki/schematics#!shiftregister-connection 
+// https://bitbucket.org/fmalpartida/new-LiquidCrystal/wiki/schematics#!shiftregister-connection 
 #elif defined(SR_LCD_2W_NL)
 
   extern "C" void __cxa_pure_virtual() { while (1); }
