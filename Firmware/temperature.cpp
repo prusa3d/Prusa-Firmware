@@ -985,7 +985,7 @@ static void updateTemperaturesFromRawValues()
     }
 
 #ifdef PINDA_THERMISTOR
-	current_temperature_pinda = analog2tempPINDA(current_temperature_raw_pinda);
+	current_temperature_pinda = analog2tempBed(current_temperature_raw_pinda);
 #endif
 
 #ifdef AMBIENT_THERMISTOR

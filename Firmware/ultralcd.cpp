@@ -1834,9 +1834,9 @@ static void lcd_support_menu()
     
   MENU_ITEM(submenu, MSG_MENU_TEMPERATURES, lcd_menu_temperatures);
 
-#if defined (VOLT_BED_PIN) || defined (VOLT_BED_PIN)
+#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
   MENU_ITEM(submenu, MSG_MENU_VOLTAGES, lcd_menu_voltages);
-#endif //defined VOLT_BED_PIN || defined VOLT_BED_PIN
+#endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 #ifdef DEBUG_BUILD
   MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
