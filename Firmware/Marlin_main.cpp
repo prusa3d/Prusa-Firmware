@@ -232,6 +232,7 @@
 // M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
 // M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 // M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
+// M667 - Set/Read PINDA temperature compensation offsets
 // M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
 // M907 - Set digital trimpot motor current using axis codes.
 // M908 - Control digital trimpot directly.
@@ -4966,6 +4967,72 @@ Sigma_Exit:
         previous_millis_cmd = millis();
     #endif
         break;
+
+#ifdef PINDA_THERMISTOR
+  case 667: // M667 - Set/Read PINDA temperature compensation offsets
+    if (code_seen('?')) { // ? - Print out current EEPRO offset values
+      uint8_t cal_status = calibration_status_pinda();
+      cal_status?SERIAL_PROTOCOLLN("PINDA cal status: 1"):SERIAL_PROTOCOLLN("PINDA cal status: 0");
+      SERIAL_PROTOCOLLN("index, temp, ustep, um");
+      for (uint8_t i = 0; i < 6; i++)
+      {
+        uint16_t usteps = 0;
+        if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+        float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
+        i==0?SERIAL_PROTOCOLPGM("n/a"):SERIAL_PROTOCOL(i-1);
+        SERIAL_PROTOCOLPGM(", ");
+        SERIAL_PROTOCOL(35 + (i * 5));
+        SERIAL_PROTOCOLPGM(", ");
+        SERIAL_PROTOCOL(usteps);
+        SERIAL_PROTOCOLPGM(", ");
+        SERIAL_PROTOCOL(mm * 1000);
+        SERIAL_PROTOCOLLN("");
+      }
+    } else if (code_seen('!')) { // ! - Set factory default values
+      eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0,   8); //40C -  20um -   8usteps
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1,  24); //45C -  60um -  24usteps
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2,  48); //50C - 120um -  48usteps
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3,  80); //55C - 200um -  80usteps
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+      SERIAL_PROTOCOLLN("factory restored");
+    } else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
+      eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 0);
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 0);
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 0);
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 0);
+      eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0);
+      SERIAL_PROTOCOLLN("zerorized");
+    } else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
+      uint16_t usteps =  code_value();
+      if (code_seen('I')) {
+        byte index = code_value();
+        if ((index >= 0) && (index < 5)) {
+          eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + index, usteps);
+          SERIAL_PROTOCOLLN("OK");
+          SERIAL_PROTOCOLLN("index, temp, ustep, um");
+          for (uint8_t i = 0; i < 6; i++)
+          {
+            uint16_t usteps = 0;
+            if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+            float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
+            i==0?SERIAL_PROTOCOLPGM("n/a"):SERIAL_PROTOCOL(i-1);
+            SERIAL_PROTOCOLPGM(", ");
+            SERIAL_PROTOCOL(35 + (i * 5));
+            SERIAL_PROTOCOLPGM(", ");
+            SERIAL_PROTOCOL(usteps);
+            SERIAL_PROTOCOLPGM(", ");
+            SERIAL_PROTOCOL(mm * 1000);
+            SERIAL_PROTOCOLLN("");
+          }
+        }
+      }
+    } else {
+    SERIAL_PROTOCOLPGM("no valid command");
+    }
+    break;
+#endif //PINDA_THERMISTOR
 
     #if defined(FAN_PIN) && FAN_PIN > -1
       case 106: //M106 Fan On
