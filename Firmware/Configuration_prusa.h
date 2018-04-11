@@ -18,6 +18,7 @@
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
+#define STEEL_SHEET
 #define HAS_SECOND_SERIAL_PORT
 
 
@@ -169,7 +170,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #endif /* DEBUG_BUILD */
 
 //#define EXPERIMENTAL_FEATURES
-//#define TMC2130_LINEARITY_CORRECTION
+#define TMC2130_LINEARITY_CORRECTION
 //#define TMC2130_VARIABLE_RESOLUTION
 
 
@@ -244,6 +245,8 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_CURRENTS_H {16, 20, 28, 36}  // default holding currents for all axes
 #define TMC2130_CURRENTS_R {16, 20, 28, 36}  // default running currents for all axes
 #define TMC2130_UNLOAD_CURRENT_R 12			 // lowe current for M600 to protect filament sensor 
+
+#define TMC2130_STEALTH_Z
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
