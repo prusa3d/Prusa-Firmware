@@ -2544,7 +2544,7 @@ void process_commands()
 	  lcd_setstatus(strchr_pointer + 5);
   }
 
-//#ifdef TMC2130
+#ifdef TMC2130
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
 	{
 	  if(code_seen("CRASH_DETECTED"))
@@ -2573,7 +2573,7 @@ void process_commands()
 			tmc2130_goto_step(E_AXIS, step & (4*res - 1), 2, 1000, res);
 		}
 	}
-//#endif //TMC2130
+#endif //TMC2130
 
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
