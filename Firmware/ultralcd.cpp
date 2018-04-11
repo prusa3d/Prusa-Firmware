@@ -3505,8 +3505,12 @@ static void lcd_fsensor_fail()
 static void lcd_silent_mode_set() {
 	switch (SilentModeMenu) {
 	case 0: SilentModeMenu = 1; break;
+#ifdef TMC2130
+	case 1: SilentModeMenu = 0; break;
+#else
 	case 1: SilentModeMenu = 2; break;
 	case 2: SilentModeMenu = 0; break;
+#endif //TMC2130
 	default: SilentModeMenu = 0; break;
 	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
