@@ -1277,7 +1277,7 @@ void setup()
 		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0); //60C
 
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
-		temp_cal_active = true;
+		temp_cal_active = false;
 	}
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
