@@ -18,6 +18,7 @@
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
+#define STEEL_SHEET
 #define HAS_SECOND_SERIAL_PORT
 
 

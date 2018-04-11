@@ -63,7 +63,7 @@ bool fsensor_enable()
 {
 //	puts_P(PSTR("fsensor_enable\n"));
 	int pat9125 = pat9125_init();
-//    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
+    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
 	if (pat9125)
 		fsensor_not_responding = false;
 	else
@@ -74,6 +74,7 @@ bool fsensor_enable()
 	fsensor_err_cnt = 0;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled?0x01:0x00); 
 	FSensorStateMenu = fsensor_enabled?1:0;
+//	printf_P(PSTR("fsensor_enable - end %d\n"), fsensor_enabled?1:0);
 	return fsensor_enabled;
 }
 
@@ -108,7 +109,14 @@ void fsensor_setup_interrupt()
 void fsensor_autoload_check_start(void)
 {
 //	puts_P(PSTR("fsensor_autoload_check_start\n"));
-	pat9125_update_y(); //update sensor
+	if (!pat9125_update_y()) //update sensor
+	{
+		puts_P(PSTR("pat9125 not responding (3).\n"));
+		fsensor_disable();
+		fsensor_not_responding = true;
+		fsensor_autoload_enabled = false;
+		return;
+	}
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
 	fsensor_autoload_sum = 0;
@@ -130,7 +138,13 @@ bool fsensor_check_autoload(void)
 	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
 	if ((millis() - fsensor_autoload_last_millis) < 25) return false;
 	fsensor_autoload_last_millis = millis();
-	pat9125_update_y(); //update sensor
+	if (!pat9125_update_y())
+	{
+		puts_P(PSTR("pat9125 not responding (2).\n"));
+		fsensor_disable();
+		fsensor_not_responding = true;
+		return false; //update sensor
+	}
 	int16_t dy = fsensor_autoload_y - pat9125_y;
 	if (dy) //? y value is different
 	{
@@ -170,9 +184,9 @@ ISR(PCINT2_vect)
 	*digitalPinToPCMSK(fsensor_int_pin) |= bit(digitalPinToPCMSKbit(fsensor_int_pin));*/
 	if (!pat9125_update_y())
 	{
-#ifdef DEBUG_FSENSOR_LOG
-		puts_P(PSTR("pat9125 not responding.\n"));
-#endif //DEBUG_FSENSOR_LOG
+//#ifdef DEBUG_FSENSOR_LOG
+		puts_P(PSTR("pat9125 not responding (1).\n"));
+//#endif //DEBUG_FSENSOR_LOG
 		fsensor_disable();
 		fsensor_not_responding = true;
 	}

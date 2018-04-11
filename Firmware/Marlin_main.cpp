@@ -232,6 +232,8 @@
 // M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
 // M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 // M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
+// M860 - Wait for PINDA thermistor to reach target temperature.
+// M861 - Set / Read PINDA temperature compensation offsets
 // M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
 // M907 - Set digital trimpot motor current using axis codes.
 // M908 - Control digital trimpot directly.
@@ -1268,14 +1270,14 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
 		//eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0,   8); //40C -  20um -   8usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1,  24); //45C -  60um -  24usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2,  48); //50C - 120um -  48usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3,  80); //55C - 200um -  80usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 0); //40C
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 0); //45C
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 0); //50C
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 0); //55C
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0); //60C
 
-		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 1);
-		temp_cal_active = true;
+		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
+		temp_cal_active = false;
 	}
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -2544,7 +2546,7 @@ void process_commands()
 	  lcd_setstatus(strchr_pointer + 5);
   }
 
-//#ifdef TMC2130
+#ifdef TMC2130
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
 	{
 	  if(code_seen("CRASH_DETECTED"))
@@ -2573,7 +2575,7 @@ void process_commands()
 			tmc2130_goto_step(E_AXIS, step & (4*res - 1), 2, 1000, res);
 		}
 	}
-//#endif //TMC2130
+#endif //TMC2130
 
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
@@ -3554,6 +3556,9 @@ void process_commands()
 			setTargetBed(0); //set bed target temperature back to 0
 //			setTargetHotend(0,0); //set hotend target temperature back to 0
 			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
+			temp_cal_active = true;
+			eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
+
 			lcd_update_enable(true);
 			lcd_update(2);
 			break;
@@ -3667,6 +3672,8 @@ void process_commands()
 			disable_e2();
 			setTargetBed(0); //set bed target temperature back to 0
 		lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
+		temp_cal_active = true;
+		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
 		lcd_update_enable(true);
 		lcd_update(2);		
 
@@ -6220,6 +6227,117 @@ Sigma_Exit:
 		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
 	}
 	break;
+
+#ifdef PINDA_THERMISTOR
+	case 860: // M860 - Wait for PINDA thermistor to reach target temperature.
+	{
+		int setTargetPinda = 0;
+
+		if (code_seen('S')) {
+			setTargetPinda = code_value();
+		}
+		else {
+			break;
+		}
+
+		LCD_MESSAGERPGM(MSG_PLEASE_WAIT);
+
+		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
+		SERIAL_PROTOCOL(setTargetPinda);
+		SERIAL_PROTOCOLLN("");
+
+		codenum = millis();
+		cancel_heatup = false;
+
+		KEEPALIVE_STATE(NOT_BUSY);
+
+		while ((!cancel_heatup) && current_temperature_pinda < setTargetPinda) {
+			if ((millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
+			{
+				SERIAL_PROTOCOLPGM("P:");
+				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
+				SERIAL_PROTOCOLPGM("/");
+				SERIAL_PROTOCOL(setTargetPinda);
+				SERIAL_PROTOCOLLN("");
+				codenum = millis();
+			}
+			manage_heater();
+			manage_inactivity();
+			lcd_update();
+		}
+		LCD_MESSAGERPGM(MSG_OK);
+
+		break;
+	}
+	case 861: // M861 - Set/Read PINDA temperature compensation offsets
+		if (code_seen('?')) { // ? - Print out current EEPRO offset values
+			uint8_t cal_status = calibration_status_pinda();
+			cal_status ? SERIAL_PROTOCOLLN("PINDA cal status: 1") : SERIAL_PROTOCOLLN("PINDA cal status: 0");
+			SERIAL_PROTOCOLLN("index, temp, ustep, um");
+			for (uint8_t i = 0; i < 6; i++)
+			{
+				uint16_t usteps = 0;
+				if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+				float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
+				i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
+				SERIAL_PROTOCOLPGM(", ");
+				SERIAL_PROTOCOL(35 + (i * 5));
+				SERIAL_PROTOCOLPGM(", ");
+				SERIAL_PROTOCOL(usteps);
+				SERIAL_PROTOCOLPGM(", ");
+				SERIAL_PROTOCOL(mm * 1000);
+				SERIAL_PROTOCOLLN("");
+			}
+		}
+		else if (code_seen('!')) { // ! - Set factory default values
+			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 8); //40C -  20um -   8usteps
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 24); //45C -  60um -  24usteps
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 48); //50C - 120um -  48usteps
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 80); //55C - 200um -  80usteps
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+			SERIAL_PROTOCOLLN("factory restored");
+		}
+		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
+			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 0);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 0);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 0);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 0);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0);
+			SERIAL_PROTOCOLLN("zerorized");
+		}
+		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
+			uint16_t usteps = code_value();
+			if (code_seen('I')) {
+				byte index = code_value();
+				if ((index >= 0) && (index < 5)) {
+					eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + index, usteps);
+					SERIAL_PROTOCOLLN("OK");
+					SERIAL_PROTOCOLLN("index, temp, ustep, um");
+					for (uint8_t i = 0; i < 6; i++)
+					{
+						uint16_t usteps = 0;
+						if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+						float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
+						i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
+						SERIAL_PROTOCOLPGM(", ");
+						SERIAL_PROTOCOL(35 + (i * 5));
+						SERIAL_PROTOCOLPGM(", ");
+						SERIAL_PROTOCOL(usteps);
+						SERIAL_PROTOCOLPGM(", ");
+						SERIAL_PROTOCOL(mm * 1000);
+						SERIAL_PROTOCOLLN("");
+					}
+				}
+			}
+		}
+		else {
+			SERIAL_PROTOCOLPGM("no valid command");
+		}
+		break;
+
+#endif //PINDA_THERMISTOR
 
 #ifdef LIN_ADVANCE
     case 900: // M900: Set LIN_ADVANCE options.
