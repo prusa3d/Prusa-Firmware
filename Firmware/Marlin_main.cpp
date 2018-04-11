@@ -232,7 +232,7 @@
 // M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
 // M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 // M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
-// M666 - Wait for PINDA thermistor to reach target temperature.
+// M860 - Wait for PINDA thermistor to reach target temperature.
 // M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
 // M907 - Set digital trimpot motor current using axis codes.
 // M908 - Control digital trimpot directly.
@@ -4968,48 +4968,6 @@ Sigma_Exit:
     #endif
         break;
 
-#ifdef PINDA_THERMISTOR
-case 666: // M666 - Wait for PINDA thermistor to reach target temperature.
-  {
-    int setTargetPinda = 0;
-  
-    if (code_seen('S')) {
-      setTargetPinda =  code_value();
-    } else {
-      break;
-    }
-
-    LCD_MESSAGERPGM(MSG_PLEASE_WAIT);
-
-    SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
-    SERIAL_PROTOCOL(setTargetPinda);
-    SERIAL_PROTOCOLLN("");
-
-    codenum = millis();
-    cancel_heatup = false;
-
-    KEEPALIVE_STATE(NOT_BUSY);
-
-    while ( (!cancel_heatup) && current_temperature_pinda < setTargetPinda) {
-      if(( millis() - codenum) > 1000 ) //Print Temp Reading every 1 second while waiting.
-      {
-        SERIAL_PROTOCOLPGM("P:");
-        SERIAL_PROTOCOL_F(current_temperature_pinda,1);
-        SERIAL_PROTOCOLPGM("/");
-        SERIAL_PROTOCOL(setTargetPinda);
-        SERIAL_PROTOCOLLN("");
-        codenum = millis();
-      }
-      manage_heater();
-      manage_inactivity();
-      lcd_update();
-    }
-    LCD_MESSAGERPGM(MSG_OK);
-  
-    break;
-  }
-#endif //PINDA_THERMISTOR
-
     #if defined(FAN_PIN) && FAN_PIN > -1
       case 106: //M106 Fan On
         if (code_seen('S')){
@@ -6263,6 +6221,49 @@ case 666: // M666 - Wait for PINDA thermistor to reach target temperature.
 		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
 	}
 	break;
+
+#ifdef PINDA_THERMISTOR
+	case 860: // M860 - Wait for PINDA thermistor to reach target temperature.
+	{
+		int setTargetPinda = 0;
+
+		if (code_seen('S')) {
+			setTargetPinda = code_value();
+		}
+		else {
+			break;
+		}
+
+		LCD_MESSAGERPGM(MSG_PLEASE_WAIT);
+
+		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
+		SERIAL_PROTOCOL(setTargetPinda);
+		SERIAL_PROTOCOLLN("");
+
+		codenum = millis();
+		cancel_heatup = false;
+
+		KEEPALIVE_STATE(NOT_BUSY);
+
+		while ((!cancel_heatup) && current_temperature_pinda < setTargetPinda) {
+			if ((millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
+			{
+				SERIAL_PROTOCOLPGM("P:");
+				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
+				SERIAL_PROTOCOLPGM("/");
+				SERIAL_PROTOCOL(setTargetPinda);
+				SERIAL_PROTOCOLLN("");
+				codenum = millis();
+			}
+			manage_heater();
+			manage_inactivity();
+			lcd_update();
+		}
+		LCD_MESSAGERPGM(MSG_OK);
+
+		break;
+	}
+#endif //PINDA_THERMISTOR
 
 #ifdef LIN_ADVANCE
     case 900: // M900: Set LIN_ADVANCE options.
