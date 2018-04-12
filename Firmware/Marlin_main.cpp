@@ -2506,6 +2506,38 @@ void gcode_M701()
 #endif
 
 }
+/**
+ * @brief Get serial number from 32U2 processor
+ */
+static void gcode_PRUSA_SN()
+{
+    if (farm_mode) { 
+        selectedSerialPort = 0; 
+        MSerial.write(";S"); 
+        // S/N is:CZPX0917X003XC13518 
+        int numbersRead = 0; 
+
+        while (numbersRead < 19) { 
+            while (MSerial.available() > 0) { 
+                uint8_t serial_char = MSerial.read(); 
+                selectedSerialPort = 1; 
+                MSerial.write(serial_char); 
+                numbersRead++; 
+                selectedSerialPort = 0; 
+            } 
+        } 
+        selectedSerialPort = 1; 
+        MSerial.write('\n'); 
+        /*for (int b = 0; b < 3; b++) { 
+            tone(BEEPER, 110); 
+            delay(50); 
+            noTone(BEEPER); 
+            delay(50); 
+        }*/ 
+    } else { 
+         MYSERIAL.println("Not in farm mode."); 
+    } 
+}
 
 void process_commands()
 {
@@ -2625,33 +2657,7 @@ void process_commands()
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
 	} else if (code_seen("SN")) { 
-        if (farm_mode) { 
-            selectedSerialPort = 0; 
-            MSerial.write(";S"); 
-            // S/N is:CZPX0917X003XC13518 
-            int numbersRead = 0; 
- 
-            while (numbersRead < 19) { 
-                while (MSerial.available() > 0) { 
-                    uint8_t serial_char = MSerial.read(); 
-                    selectedSerialPort = 1; 
-                    MSerial.write(serial_char); 
-                    numbersRead++; 
-                    selectedSerialPort = 0; 
-                } 
-            } 
-            selectedSerialPort = 1; 
-            MSerial.write('\n'); 
-            /*for (int b = 0; b < 3; b++) { 
-                tone(BEEPER, 110); 
-                delay(50); 
-                noTone(BEEPER); 
-                delay(50); 
-            }*/ 
-        } else { 
-            MYSERIAL.println("Not in farm mode."); 
-        } 
-		
+        gcode_PRUSA_SN();
 	} else if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_VERSION);
