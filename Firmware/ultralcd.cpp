@@ -6167,6 +6167,11 @@ bool lcd_selftest()
 	_result = lcd_selftest_fan_dialog(0);
 #else //defined(TACH_0)
 	_result = lcd_selftest_manual_fan_check(0, false);
+	if (!_result)
+	{
+		const char *_err;
+		lcd_selftest_error(7, _err, _err); //extruder fan not spinning
+	}
 #endif //defined(TACH_0)
 	
 
@@ -6177,6 +6182,12 @@ bool lcd_selftest()
 		_result = lcd_selftest_fan_dialog(1);
 #else //defined(TACH_1)
 		_result = lcd_selftest_manual_fan_check(1, false);
+		if (!_result)
+		{			
+			const char *_err;
+			lcd_selftest_error(6, _err, _err); //print fan not spinning
+		}
+
 #endif //defined(TACH_1)
 	}
 
@@ -6883,6 +6894,8 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 
 	int8_t enc_dif = 0;
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
+
+	button_pressed = false; 
 	do
 	{
 		switch (_fan)
