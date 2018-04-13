@@ -2507,6 +2507,52 @@ void gcode_M701()
 #endif
 
 }
+/**
+ * @brief Get serial number from 32U2 processor
+ *
+ * Typical format of S/N is:CZPX0917X003XC13518
+ *
+ * Command operates only in farm mode, if not in farm mode, "Not in farm mode." is written to MYSERIAL.
+ *
+ * Send command ;S to serial port 0 to retrieve serial number stored in 32U2 processor,
+ * reply is transmitted to serial port 1 character by character.
+ * Operation takes typically 23 ms. If the retransmit is not finished until 100 ms,
+ * it is interrupted, so less, or no characters are retransmitted, only newline character is send
+ * in any case.
+ */
+static void gcode_PRUSA_SN()
+{
+    if (farm_mode) {
+        selectedSerialPort = 0;
+        MSerial.write(";S");
+        int numbersRead = 0;
+        Timer timeout;
+        timeout.start();
+
+        while (numbersRead < 19) {
+            while (MSerial.available() > 0) {
+                uint8_t serial_char = MSerial.read();
+                selectedSerialPort = 1;
+                MSerial.write(serial_char);
+                numbersRead++;
+                selectedSerialPort = 0;
+            }
+            if (timeout.expired(100)) break;
+        }
+        selectedSerialPort = 1;
+        MSerial.write('\n');
+#if 0
+        for (int b = 0; b < 3; b++) {
+            tone(BEEPER, 110);
+            delay(50);
+            noTone(BEEPER);
+            delay(50);
+        }
+#endif
+    } else {
+        MYSERIAL.println("Not in farm mode.");
+    }
+}
 
 void process_commands()
 {
@@ -2626,33 +2672,7 @@ void process_commands()
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
 	} else if (code_seen("SN")) { 
-        if (farm_mode) { 
-            selectedSerialPort = 0; 
-            MSerial.write(";S"); 
-            // S/N is:CZPX0917X003XC13518 
-            int numbersRead = 0; 
- 
-            while (numbersRead < 19) { 
-                while (MSerial.available() > 0) { 
-                    uint8_t serial_char = MSerial.read(); 
-                    selectedSerialPort = 1; 
-                    MSerial.write(serial_char); 
-                    numbersRead++; 
-                    selectedSerialPort = 0; 
-                } 
-            } 
-            selectedSerialPort = 1; 
-            MSerial.write('\n'); 
-            /*for (int b = 0; b < 3; b++) { 
-                tone(BEEPER, 110); 
-                delay(50); 
-                noTone(BEEPER); 
-                delay(50); 
-            }*/ 
-        } else { 
-            MYSERIAL.println("Not in farm mode."); 
-        } 
-		
+        gcode_PRUSA_SN();
 	} else if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_VERSION);
