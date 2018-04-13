@@ -19,10 +19,10 @@ public:
     struct Record
     {
         menuFunc_t menu;
-        uint8_t position;
+        int8_t position;
     };
     MenuStack():m_stack(),m_index(0) {}
-    void push(menuFunc_t menu, uint8_t position);
+    void push(menuFunc_t menu, int8_t position);
     Record pop();
     void reset(){m_index = 0;}
 private:
