@@ -1877,7 +1877,7 @@ void lcd_unLoadFilament()
     lcd_implementation_clear();
   }
 
-  lcd_return_to_status();
+  menu_action_back();
 }
 
 void lcd_change_filament() {
@@ -5635,7 +5635,7 @@ static void lcd_main_menu()
 	else
 #endif //PAT9125
 		MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
-	MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
+	MENU_ITEM(submenu, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
 	#endif
 	#ifdef SNMM
 	MENU_ITEM(submenu, MSG_LOAD_FILAMENT, fil_load_menu);
