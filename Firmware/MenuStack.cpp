@@ -9,7 +9,7 @@
  * @param menu
  * @param position selected position in menu being pushed
  */
-void MenuStack::push(menuFunc_t menu, uint8_t position)
+void MenuStack::push(menuFunc_t menu, int8_t position)
 {
     if (m_index >= max_depth) return;
     m_stack[m_index].menu = menu;
