@@ -3483,8 +3483,11 @@ static void lcd_crash_mode_info2()
 	}
 	if (lcd_clicked())
 	{
-		if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 16);
-		else lcd_goto_menu(lcd_settings_menu, 14, true, true);
+//-//		if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 16);
+		if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) menu_action_back();
+//-//		else lcd_goto_menu(lcd_settings_menu, 14, true, true);
+//-//		else lcd_goto_menu(lcd_settings_menu, 7, true, true);
+		else menu_action_back();
 	}
 }
 #endif //TMC2130
@@ -3533,7 +3536,8 @@ static void lcd_silent_mode_set() {
   st_current_init();
 #ifdef TMC2130
   if (CrashDetectMenu && SilentModeMenu)
-	  lcd_goto_menu(lcd_crash_mode_info2);
+//-//	  lcd_goto_menu(lcd_crash_mode_info2);
+	  menu_action_submenu(lcd_crash_mode_info2);
 #endif //TMC2130
 }
 
@@ -5705,13 +5709,18 @@ static void lcd_autostart_sd()
 static void lcd_silent_mode_set_tune() {
   switch (SilentModeMenu) {
   case 0: SilentModeMenu = 1; break;
+#ifdef TMC2130
+  case 1: SilentModeMenu = 0; break;
+#else
   case 1: SilentModeMenu = 2; break;
   case 2: SilentModeMenu = 0; break;
+#endif //TMC2130
   default: SilentModeMenu = 0; break;
   }
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
   st_current_init();
-  lcd_goto_menu(lcd_tune_menu, 9);
+//-//  lcd_goto_menu(lcd_tune_menu, 9);
+  menu_action_back();
 }
 
 static void lcd_colorprint_change() {
