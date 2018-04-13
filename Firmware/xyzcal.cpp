@@ -32,7 +32,7 @@
 
 #define _PI 3.14159265F
 
-extern long count_position[NUM_AXIS];
+extern volatile long count_position[NUM_AXIS];
 
 uint8_t check_pinda_0();
 uint8_t check_pinda_1();
