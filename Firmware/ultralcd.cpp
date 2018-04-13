@@ -1595,8 +1595,7 @@ static void lcd_menu_fails_stats_total()
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
-        //lcd_return_to_status();
-		lcd_goto_menu(lcd_menu_fails_stats, 4);
+        menu_action_back();
     }
 }
 
@@ -1616,8 +1615,7 @@ static void lcd_menu_fails_stats_print()
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
-        //lcd_return_to_status();
-		lcd_goto_menu(lcd_menu_fails_stats, 2);
+		menu_action_back();
     }    
 }
 /**
