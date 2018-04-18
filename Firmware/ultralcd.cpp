@@ -185,6 +185,8 @@ unsigned char firstrun = 1;
 
 #include "ultralcd_implementation_hitachi_HD44780.h"
 
+static const char separator[] PROGMEM = "--------------------";
+
 /** forward declarations **/
 
 // void copy_and_scalePID_i();
@@ -2271,7 +2273,7 @@ static void lcd_menu_xyz_y_min()
 {
     lcd.setCursor(0,0);
     lcd_printPGM(MSG_Y_DISTANCE_FROM_MIN);
-    lcd_print_at_PGM(0, 1, PSTR("--------------------"));
+    lcd_print_at_PGM(0, 1, separator);
     lcd_print_at_PGM(0, 2, MSG_LEFT);
     lcd_print_at_PGM(0, 3, MSG_RIGHT);
 
@@ -2304,7 +2306,7 @@ static void lcd_menu_xyz_skew()
         lcd.print(angleDiff * 180 / M_PI);
         lcd.print(LCD_STR_DEGREE);
     }else lcd_print_at_PGM(16, 0, PSTR("N/A"));
-    lcd_print_at_PGM(0, 1, PSTR("--------------------"));
+    lcd_print_at_PGM(0, 1, separator);
     lcd_print_at_PGM(0, 2, MSG_SLIGHT_SKEW);
     lcd_print_at_PGM(15, 2, PSTR(""));
     lcd.print(bed_skew_angle_mild * 180 / M_PI);
@@ -7050,7 +7052,7 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	if (_step == 13) lcd_printPGM(PSTR("Calibrating home"));
 
 	lcd.setCursor(0, 1);
-	lcd.print("--------------------");
+	lcd_printPGM(separator);
 	if ((_step >= -1) && (_step <= 1))
 	{
 		//SERIAL_ECHOLNPGM("Fan test");
