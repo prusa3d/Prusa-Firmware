@@ -2288,7 +2288,6 @@ static void lcd_menu_xyz_y_min()
     if (lcd_clicked())
     {
         lcd_quick_feedback();
-        lcd_set_custom_characters_degree();
         lcd_goto_menu(lcd_menu_xyz_skew);
     }
 }
@@ -2317,7 +2316,6 @@ static void lcd_menu_xyz_skew()
 
     if (lcd_clicked())
     {
-        lcd_set_custom_characters_arrows();
         lcd_quick_feedback();
         menu_action_back();
     }
