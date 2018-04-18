@@ -2295,13 +2295,14 @@ static void lcd_menu_xyz_y_min()
     lcd_print_at_PGM(0, 2, MSG_LEFT);
     lcd_print_at_PGM(0, 3, MSG_RIGHT);
 
-    DistanceMin distanceMin = count_xyz_details();
+    float distanceMin[2];
+    count_xyz_details(distanceMin);
 
     for (int i = 0; i < 2; i++) {
-        if(distanceMin.d[i] < 200) {
+        if(distanceMin[i] < 200) {
             lcd_print_at_PGM(11, i + 2, PSTR(""));
-            lcd.print(distanceMin.d[i]);
-            lcd_print_at_PGM((distanceMin.d[i] < 0) ? 17 : 16, i + 2, PSTR("mm"));
+            lcd.print(distanceMin[i]);
+            lcd_print_at_PGM((distanceMin[i] < 0) ? 17 : 16, i + 2, PSTR("mm"));
         } else lcd_print_at_PGM(11, i + 2, PSTR("N/A"));
     }
     if (lcd_clicked())
