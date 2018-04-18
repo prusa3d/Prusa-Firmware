@@ -1336,7 +1336,8 @@ void setup()
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
 	  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
-		  calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
+		  calibration_status() == CALIBRATION_STATUS_UNKNOWN || 
+		  calibration_status() == CALIBRATION_STATUS_XYZ_CALIBRATION) {
 		  // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
 		  eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
 		  // Show the message.
@@ -1357,13 +1358,13 @@ void setup()
 	  }
   }
 
-#ifndef DEBUG_DISABLE_FORCE_SELFTEST
-  if (force_selftest_if_fw_version() && calibration_status() < CALIBRATION_STATUS_ASSEMBLED ) {
+#if !defined (DEBUG_DISABLE_FORCE_SELFTEST) && defined (TMC2130)
+  if (force_selftest_if_fw_version() && calibration_status() < CALIBRATION_STATUS_ASSEMBLED) {
 	  lcd_show_fullscreen_message_and_wait_P(MSG_FORCE_SELFTEST);
 	  update_current_firmware_version_to_eeprom();
 	  lcd_selftest();
   }
-#endif //DEBUG_DISABLE_FORCE_SELFTEST
+#endif //TMC2130 && !DEBUG_DISABLE_FORCE_SELFTEST
 
   KEEPALIVE_STATE(IN_PROCESS);
 #endif //DEBUG_DISABLE_STARTMSGS

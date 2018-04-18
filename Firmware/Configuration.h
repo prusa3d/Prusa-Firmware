@@ -7,7 +7,7 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.2.0-RC1"
+#define FW_VERSION "3.2.0-RC2"
 #define FW_COMMIT_NR   461
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
@@ -132,10 +132,6 @@
 // Power loss errors (total)
 #define EEPROM_POWER_COUNT_TOT       (EEPROM_FERROR_COUNT_TOT - 2)             // uint16
 
-#define EEPROM_PRINTER_TYPE          (EEPROM_POWER_COUNT_TOT - 2)              // uint16
-#define EEPROM_BOARD_TYPE            (EEPROM_PRINTER_TYPE - 2)                 // uint16
-
-
 ////////////////////////////////////////
 // TMC2130 Accurate sensorless homing 
 
@@ -174,6 +170,8 @@
 #define EEPROM_TMC2130_Z_MRES              (EEPROM_TMC2130_Y_MRES - 1)                         // uint8
 #define EEPROM_TMC2130_E_MRES              (EEPROM_TMC2130_Z_MRES - 1)                         // uint8
 
+#define EEPROM_PRINTER_TYPE          (EEPROM_TMC2130_E_MRES - 2)                               // uint16
+#define EEPROM_BOARD_TYPE            (EEPROM_PRINTER_TYPE - 2)                                 // uint16
 
 //TMC2130 configuration
 #define EEPROM_TMC_AXIS_SIZE  //axis configuration block size
