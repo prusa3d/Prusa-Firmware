@@ -20,7 +20,7 @@ float   world2machine_shift[2];
 #define WEIGHT_FIRST_ROW_Y_LOW  (0.0f)
 
 #define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER) // -22 + 23 = 1
-#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER) // -0.6 + 5 = 4.4
+#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER + 4.f) // -0.6 + 5 + 4 = 8.4
 
 // Scaling of the real machine axes against the programmed dimensions in the firmware.
 // The correction is tiny, here around 0.5mm on 250mm length.
@@ -56,10 +56,10 @@ const float bed_skew_angle_extreme = (0.25f * M_PI / 180.f);
 // Positions of the bed reference points in the machine coordinates, referenced to the P.I.N.D.A sensor.
 // The points are the following: center front, center right, center rear, center left.
 const float bed_ref_points_4[] PROGMEM = {
-	13.f - BED_ZERO_REF_X,   10.4f - 4.f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X,  10.4f - 4.f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X, 202.4f - 4.f - BED_ZERO_REF_Y,
-	13.f - BED_ZERO_REF_X, 202.4f - 4.f - BED_ZERO_REF_Y
+	13.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
+	221.f - BED_ZERO_REF_X,  10.4f - BED_ZERO_REF_Y,
+	221.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
+	13.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
 };
 
 const float bed_ref_points[] PROGMEM = {
