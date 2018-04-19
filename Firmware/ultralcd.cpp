@@ -226,6 +226,7 @@ static void lcd_farm_no();
 static void lcd_menu_extruder_info();
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
+static void lcd_menu_xyz_offset();
 #if defined(TMC2130) || defined(PAT9125)
 static void lcd_menu_fails_stats();
 #endif //TMC2130 or PAT9125
@@ -2336,6 +2337,27 @@ static void lcd_menu_xyz_skew()
     lcd.print(bed_skew_angle_extreme * 180 / M_PI);
     lcd.print(LCD_STR_DEGREE);
 
+    if (lcd_clicked())
+    {
+        lcd_quick_feedback();
+        lcd_goto_menu(lcd_menu_xyz_offset);
+    }
+}
+
+static void lcd_menu_xyz_offset()
+{
+    lcd.setCursor(0,0);
+    lcd_printPGM(MSG_MEASURED_OFFSET);
+    lcd_print_at_PGM(0, 1, separator);
+    lcd_print_at_PGM(0, 2, PSTR("X"));
+    lcd_print_at_PGM(0, 3, PSTR("Y"));
+
+    for (int i = 0; i < 2; i++)
+    {
+        lcd_print_at_PGM(11, i + 2, PSTR(""));
+        lcd.print(world2machine_shift[i]);
+        lcd_print_at_PGM((world2machine_shift[i] < 0) ? 17 : 16, i + 2, PSTR("mm"));
+    }
     if (lcd_clicked())
     {
         lcd_quick_feedback();
