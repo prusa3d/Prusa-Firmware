@@ -3459,6 +3459,10 @@ void process_commands()
 				st_synchronize();
 				lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
 			}
+			if ((current_temperature_pinda > 35) && (farm_mode == false)) {
+				//waiting for PIDNA probe to cool down in case that we are not in farm mode
+				lcd_wait_for_pinda(35);
+			}
 			lcd_update_enable(true);
 			KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
 			SERIAL_ECHOLNPGM("PINDA probe calibration start");

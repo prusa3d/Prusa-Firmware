@@ -267,6 +267,7 @@ void lcd_farm_sdcard_menu_w();
 
 void lcd_wait_for_heater();
 void lcd_wait_for_cool_down();
+void lcd_wait_for_pinda(uint8_t temp);
 void adjust_bed_reset();
 void lcd_extr_cal_reset();
 

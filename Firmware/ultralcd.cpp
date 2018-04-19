@@ -2600,6 +2600,25 @@ void lcd_adjust_z() {
 
 }
 
+void lcd_wait_for_pinda(uint8_t temp) {
+	lcd_set_custom_characters_degree();
+	setTargetHotend(0, 0);
+	setTargetBed(0);
+	while (current_temperature_pinda > temp){
+		lcd_display_message_fullscreen_P(MSG_WAITING_TEMP_PINDA);
+
+		lcd.setCursor(0, 4);
+		lcd.print(LCD_STR_THERMOMETER[0]);
+		lcd.print(ftostr3(current_temperature_pinda));
+		lcd.print("/35");
+		lcd.print(LCD_STR_DEGREE);
+		delay_keep_alive(1000);
+		serialecho_temperatures();
+	}
+	lcd_set_custom_characters_arrows();
+	lcd_update_enable(true);
+}
+
 void lcd_wait_for_heater() {
 	lcd_display_message_fullscreen_P(MSG_WIZARD_HEATING);
 

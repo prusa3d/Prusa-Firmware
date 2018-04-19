@@ -422,3 +422,4 @@
 #define(length=20, lines=4) MSG_CHANGED_MOTHERBOARD		 "Warning: motherboard type changed."
 #define(length=20, lines=4) MSG_CHANGED_PRINTER			 "Warning: printer type changed."
 #define(length=20, lines=4) MSG_CHANGED_BOTH			 "Warning: both printer type and motherboard type changed."
+#define(length=20, lines=3) MSG_WAITING_TEMP_PINDA		 "Waiting for PINDA probe cooling"

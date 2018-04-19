@@ -2354,6 +2354,13 @@ const char * const MSG_WAITING_TEMP_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WAITING_TEMP_CZ
 };
 
+const char MSG_WAITING_TEMP_PINDA_EN[] PROGMEM = "Waiting for PINDA probe cooling";
+const char MSG_WAITING_TEMP_PINDA_CZ[] PROGMEM = "Cekani na zchladnuti PINDA";
+const char * const MSG_WAITING_TEMP_PINDA_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_WAITING_TEMP_PINDA_EN,
+	MSG_WAITING_TEMP_PINDA_CZ
+};
+
 const char MSG_WATCH_EN[] PROGMEM = "Info screen";
 const char MSG_WATCH_CZ[] PROGMEM = "Informace";
 const char * const MSG_WATCH_LANG_TABLE[LANG_NUM] PROGMEM = {
