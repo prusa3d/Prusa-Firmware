@@ -707,7 +707,11 @@ void world2machine_reset()
 {
     const float vx[] = { 1.f, 0.f };
     const float vy[] = { 0.f, 1.f };
+#ifdef DEFAULT_Y_OFFSET
+    const float cntr[] = { 0.f, DEFAULT_Y_OFFSET };
+#else
     const float cntr[] = { 0.f, 0.f };
+#endif
     world2machine_update(vx, vy, cntr);
 }
 
