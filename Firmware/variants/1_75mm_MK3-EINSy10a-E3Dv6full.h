@@ -61,7 +61,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define X_MIN_POS 0
 #define Y_MAX_POS 210
 #define Y_MIN_POS -4 //orig -4
-#define Z_MAX_POS 211
+#define Z_MAX_POS 210
 #define Z_MIN_POS 0.15
 
 // Canceled home position
@@ -76,7 +76,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
 
-#define DEFAULT_MAX_FEEDRATE          {250, 250, 12, 120}      // (mm/sec)   max feedrate (M203)
+#define DEFAULT_MAX_FEEDRATE          {200, 200, 12, 120}      // (mm/sec)   max feedrate (M203)
 #define DEFAULT_MAX_ACCELERATION      {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
 
 
@@ -130,10 +130,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Disable some commands
 #define _DISABLE_M42_M226
 
-// Min. ambient temperature limit at which to start triggering MINTEMP errors [C]
-// this value is a bit higher than the real limit because the ambient thermistor is on the board which generates heat
-// Temperature inside the case is around 31C when in use (25C when the printer is powered on for a long time but idle)
-// the real limit is 15C (same as MINTEMP limit), this is because 15C is the end of the scale for both thermistors (bed, heater)
+// Minimum ambient temperature limit to start triggering MINTEMP errors [C]
+// this value is litlebit higher that real limit, because ambient termistor is on the board and is temperated from it,
+// temperature inside the case is around 31C for ambient temperature 25C, when the printer is powered on long time and idle
+// the real limit is 15C (same as MINTEMP limit), this is because 15C is end of scale for both used thermistors (bed, heater)
 #define MINTEMP_MINAMBIENT      25
 #define MINTEMP_MINAMBIENT_RAW  978
 
