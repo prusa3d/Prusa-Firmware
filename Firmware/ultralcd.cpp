@@ -2448,7 +2448,7 @@ void adjust_bed_reset() {
 	menuData.adjustBed.front = menuData.adjustBed.front2 = 0;
 	menuData.adjustBed.rear = menuData.adjustBed.rear2 = 0;
 }
-#define BED_ADJUSTMENT_UM_MAX 50
+#define BED_ADJUSTMENT_UM_MAX 125
 
 static void lcd_adjust_bed()
 {
