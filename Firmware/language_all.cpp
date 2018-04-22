@@ -313,7 +313,7 @@ const char * const MSG_CALIBRATE_Z_AUTO_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATE_Z_AUTO_CZ
 };
 
-const char MSG_CALIBRATION_PINDA_MENU_EN[] PROGMEM = "PINDA temp. cal.";
+const char MSG_CALIBRATION_PINDA_MENU_EN[] PROGMEM = "Temp. calibration";
 const char MSG_CALIBRATION_PINDA_MENU_CZ[] PROGMEM = "Teplot. kalibrace";
 const char * const MSG_CALIBRATION_PINDA_MENU_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_CALIBRATION_PINDA_MENU_EN,
@@ -1392,7 +1392,7 @@ const char * const MSG_PICK_Z_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PICK_Z_CZ
 };
 
-const char MSG_PID_EXTRUDER_EN[] PROGMEM = "Extruder PID cal.";
+const char MSG_PID_EXTRUDER_EN[] PROGMEM = "PID calibration";
 const char MSG_PID_EXTRUDER_CZ[] PROGMEM = "PID kalibrace";
 const char * const MSG_PID_EXTRUDER_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_PID_EXTRUDER_EN,
@@ -2366,7 +2366,7 @@ const char * const MSG_WATCHDOG_RESET_LANG_TABLE[1] PROGMEM = {
 	MSG_WATCHDOG_RESET_EN
 };
 
-const char MSG_WIZARD_EN[] PROGMEM = "Setup Wizard";
+const char MSG_WIZARD_EN[] PROGMEM = "Wizard";
 const char * const MSG_WIZARD_LANG_TABLE[1] PROGMEM = {
 	MSG_WIZARD_EN
 };
