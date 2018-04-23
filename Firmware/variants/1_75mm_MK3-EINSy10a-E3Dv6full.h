@@ -130,7 +130,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Disable some commands
 #define _DISABLE_M42_M226
 
-// Min. ambient temperature limit at which to start triggering MINTEMP errors. [C]
+// Minimum ambient temperature limit at which to start triggering MINTEMP errors. [C]
 // this value is a bit higher than the real limit because the ambient thermistor is on the board, which generates heat.
 // With an ambient temp of 25C, the temperature inside the case is around 31C if the printer is powered on for a long time but idle.
 // the real limit is 15C (same as MINTEMP limit), this is because 15C is the end of the scale for both thermistors (bed, heater).
