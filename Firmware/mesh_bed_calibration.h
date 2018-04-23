@@ -37,26 +37,6 @@ extern void world2machine_initialize();
 // to current_position[x,y].
 extern void world2machine_update_current();
 
-inline void world2machine(const float &x, const float &y, float &out_x, float &out_y)
-{
-	if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
-		// No correction.
-		out_x = x;
-		out_y = y;
-	} else {
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SKEW) {
-			// Firs the skew & rotation correction.
-			out_x = world2machine_rotation_and_skew[0][0] * x + world2machine_rotation_and_skew[0][1] * y;
-			out_y = world2machine_rotation_and_skew[1][0] * x + world2machine_rotation_and_skew[1][1] * y;
-		}
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SHIFT) {
-			// Then add the offset.
-			out_x += world2machine_shift[0];
-			out_y += world2machine_shift[1];
-		}
-	}
-}
-
 inline void world2machine(float &x, float &y)
 {
 	if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
@@ -75,6 +55,13 @@ inline void world2machine(float &x, float &y)
 			y += world2machine_shift[1];
 		}
 	}
+}
+
+inline void world2machine(const float &x, const float &y, float &out_x, float &out_y)
+{
+    out_x = x;
+    out_y = y;
+    world2machine(out_x, out_y);
 }
 
 inline void machine2world(float x, float y, float &out_x, float &out_y)
