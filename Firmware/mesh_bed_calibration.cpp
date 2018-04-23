@@ -707,22 +707,26 @@ void world2machine_reset()
 {
     const float vx[] = { 1.f, 0.f };
     const float vy[] = { 0.f, 1.f };
-#ifdef DEFAULT_Y_OFFSET
-    const float cntr[] = { 0.f, DEFAULT_Y_OFFSET };
-#else
     const float cntr[] = { 0.f, 0.f };
-#endif
     world2machine_update(vx, vy, cntr);
+}
+
+static void world2machine_default()
+{
+#ifdef DEFAULT_Y_OFFSET
+    const float vx[] = { 1.f, 0.f };
+    const float vy[] = { 0.f, 1.f };
+    const float cntr[] = { 0.f, DEFAULT_Y_OFFSET };
+    world2machine_update(vx, vy, cntr);
+#else
+    world2machine_reset();
+#endif
 }
 
 void world2machine_revert_to_uncorrected()
 {
     if (world2machine_correction_mode != WORLD2MACHINE_CORRECTION_NONE) {
-        // Reset the machine correction matrix.
-        const float vx[] = { 1.f, 0.f };
-        const float vy[] = { 0.f, 1.f };
-        const float cntr[] = { 0.f, 0.f };
-        world2machine_update(vx, vy, cntr);
+        world2machine_reset();
         // Wait for the motors to stop and update the current position with the absolute values.
         st_synchronize();
         current_position[X_AXIS] = st_get_position_mm(X_AXIS);
@@ -793,7 +797,7 @@ void world2machine_initialize()
     if (reset) {
 //        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
         reset_bed_offset_and_skew();
-        world2machine_reset();
+        world2machine_default();
     } else {
         world2machine_update(vec_x, vec_y, cntr);
         /*
