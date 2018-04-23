@@ -1836,7 +1836,7 @@ static void lcd_support_menu()
   }
   #ifndef MK1BP
   MENU_ITEM(back, PSTR("------------"), 0);
-  if (!IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL)) MENU_ITEM(submenu, MSG_XYZ_DETAILS, lcd_menu_xyz_y_min);
+  MENU_ITEM(submenu, MSG_XYZ_DETAILS, lcd_menu_xyz_y_min);
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
 
 #ifdef TMC2130
