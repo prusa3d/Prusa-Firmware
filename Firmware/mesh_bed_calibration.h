@@ -5,6 +5,7 @@
 // The world coordinates match the machine coordinates only in case, when the machine
 // is built properly, the end stops are at the correct positions and the axes are perpendicular.
 extern const float bed_ref_points[] PROGMEM;
+extern const float bed_ref_points_4[] PROGMEM;
 
 extern const float bed_skew_angle_mild;
 extern const float bed_skew_angle_extreme;
