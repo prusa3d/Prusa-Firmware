@@ -2075,6 +2075,9 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         feedrate = homing_feedrate[axis];
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
+#ifdef TMC2130
+		if (READ(Z_TMC2130_DIAG) != 0) return; //Z crash
+#endif //TMC2130
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
@@ -2084,6 +2087,9 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         feedrate = homing_feedrate[axis]/2 ;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
+#ifdef TMC2130
+		if (READ(Z_TMC2130_DIAG) != 0) return; //Z crash
+#endif //TMC2130
         axis_is_at_home(axis);
         destination[axis] = current_position[axis];
         feedrate = 0.0;
@@ -3765,6 +3771,15 @@ void process_commands()
 #endif //MK1BP
 	case_G80:
 	{
+#ifdef TMC2130
+		//previously enqueued "G28 W0" failed (crash Z)
+		if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && !axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0))
+		{
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			break;
+		}
+#endif //TMC2130
+
 		mesh_bed_leveling_flag = true;
 		int8_t verbosity_level = 0;
 		static bool run = false;
