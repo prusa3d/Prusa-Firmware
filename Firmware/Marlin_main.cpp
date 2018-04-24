@@ -2958,7 +2958,7 @@ void process_commands()
       break;
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
-	    {
+    {
       st_synchronize();
 
 #if 0
