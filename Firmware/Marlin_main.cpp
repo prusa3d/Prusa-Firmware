@@ -3100,7 +3100,7 @@ void process_commands()
       			  } 
               // 1st mesh bed leveling measurement point, corrected.
               world2machine_initialize();
-              world2machine(pgm_read_float(bed_ref_points), pgm_read_float(bed_ref_points+1), destination[X_AXIS], destination[Y_AXIS]);
+              world2machine(pgm_read_float(bed_ref_points_4), pgm_read_float(bed_ref_points_4+1), destination[X_AXIS], destination[Y_AXIS]);
               world2machine_reset();
               if (destination[Y_AXIS] < Y_MIN_POS)
                   destination[Y_AXIS] = Y_MIN_POS;
@@ -3108,7 +3108,18 @@ void process_commands()
               feedrate = homing_feedrate[Z_AXIS]/10;
               current_position[Z_AXIS] = 0;
               enable_endstops(false);
+#ifdef DEBUG_BUILD
+              SERIAL_ECHOLNPGM("plan_set_position()");
+              MYSERIAL.println(current_position[X_AXIS]);MYSERIAL.println(current_position[Y_AXIS]);
+              MYSERIAL.println(current_position[Z_AXIS]);MYSERIAL.println(current_position[E_AXIS]);
+#endif
               plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+#ifdef DEBUG_BUILD
+              SERIAL_ECHOLNPGM("plan_buffer_line()");
+              MYSERIAL.println(destination[X_AXIS]);MYSERIAL.println(destination[Y_AXIS]);
+              MYSERIAL.println(destination[Z_AXIS]);MYSERIAL.println(destination[E_AXIS]);
+              MYSERIAL.println(feedrate);MYSERIAL.println(active_extruder);
+#endif
               plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
               st_synchronize();
               current_position[X_AXIS] = destination[X_AXIS];
