@@ -2218,6 +2218,13 @@ const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_ON_CZ
 };
 
+const char MSG_TEMP_CAL_FAILED_EN[] PROGMEM = "Temperature calibration failed";
+const char MSG_TEMP_CAL_FAILED_CZ[] PROGMEM = "Teplotni kalibrace selhala";
+const char * const MSG_TEMP_CAL_FAILED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_TEMP_CAL_FAILED_EN,
+	MSG_TEMP_CAL_FAILED_CZ
+};
+
 const char MSG_TEMP_CAL_WARNING_EN[] PROGMEM = "Stable ambient temperature 21-26C is needed a rigid stand is required.";
 const char * const MSG_TEMP_CAL_WARNING_LANG_TABLE[1] PROGMEM = {
 	MSG_TEMP_CAL_WARNING_EN
