@@ -270,6 +270,10 @@ void lcd_wait_for_cool_down();
 void adjust_bed_reset();
 void lcd_extr_cal_reset();
 
+void lcd_temp_cal_show_result(bool result);
+bool lcd_wait_for_pinda(float temp);
+
+
 union MenuData;
 
 void bowden_menu();

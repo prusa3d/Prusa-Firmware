@@ -2218,6 +2218,13 @@ const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_ON_CZ
 };
 
+const char MSG_TEMP_CAL_FAILED_EN[] PROGMEM = "Temperature calibration failed";
+const char MSG_TEMP_CAL_FAILED_CZ[] PROGMEM = "Teplotni kalibrace selhala";
+const char * const MSG_TEMP_CAL_FAILED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_TEMP_CAL_FAILED_EN,
+	MSG_TEMP_CAL_FAILED_CZ
+};
+
 const char MSG_TEMP_CAL_WARNING_EN[] PROGMEM = "Stable ambient temperature 21-26C is needed a rigid stand is required.";
 const char * const MSG_TEMP_CAL_WARNING_LANG_TABLE[1] PROGMEM = {
 	MSG_TEMP_CAL_WARNING_EN
@@ -2352,6 +2359,13 @@ const char MSG_WAITING_TEMP_CZ[] PROGMEM = "Cekani na zchladnuti trysky a podloz
 const char * const MSG_WAITING_TEMP_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WAITING_TEMP_EN,
 	MSG_WAITING_TEMP_CZ
+};
+
+const char MSG_WAITING_TEMP_PINDA_EN[] PROGMEM = "Waiting for PINDA probe cooling";
+const char MSG_WAITING_TEMP_PINDA_CZ[] PROGMEM = "Cekani na zchladnuti PINDA";
+const char * const MSG_WAITING_TEMP_PINDA_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_WAITING_TEMP_PINDA_EN,
+	MSG_WAITING_TEMP_PINDA_CZ
 };
 
 const char MSG_WATCH_EN[] PROGMEM = "Info screen";

@@ -414,3 +414,5 @@
 #define MSG_CHANGED_MOTHERBOARD		 "Varovani: doslo ke zmene typu motherboardu."
 #define MSG_CHANGED_PRINTER			 "Varovani: doslo ke zmene typu tiskarny."
 #define MSG_CHANGED_BOTH			 "Varovani: doslo ke zmene typu tiskarny a motherboardu."
+#define MSG_WAITING_TEMP_PINDA		 "Cekani na zchladnuti PINDA"
+#define MSG_TEMP_CAL_FAILED			 "Teplotni kalibrace selhala"

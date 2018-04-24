@@ -9,6 +9,7 @@
 #include "stepper.h"
 #include "ConfigurationStore.h"
 #include <string.h>
+#include "Timer.h"
 
 #include "util.h"
 #include "mesh_bed_leveling.h"
@@ -2600,6 +2601,35 @@ void lcd_adjust_z() {
 
 }
 
+bool lcd_wait_for_pinda(float temp) {
+	lcd_set_custom_characters_degree();
+	setTargetHotend(0, 0);
+	setTargetBed(0);
+	Timer pinda_timeout;
+	pinda_timeout.start();
+	bool target_temp_reached = true;
+
+	while (current_temperature_pinda > temp){
+		lcd_display_message_fullscreen_P(MSG_WAITING_TEMP_PINDA);
+
+		lcd.setCursor(0, 4);
+		lcd.print(LCD_STR_THERMOMETER[0]);
+		lcd.print(ftostr3(current_temperature_pinda));
+		lcd.print("/");
+		lcd.print(ftostr3(temp));
+		lcd.print(LCD_STR_DEGREE);
+		delay_keep_alive(1000);
+		serialecho_temperatures();
+		if (pinda_timeout.expired(8 * 60 * 1000ul)) { //PINDA cooling from 60 C to 35 C takes about 7 minutes
+			target_temp_reached = false;
+			break;
+		}
+	}
+	lcd_set_custom_characters_arrows();
+	lcd_update_enable(true);
+	return(target_temp_reached);
+}
+
 void lcd_wait_for_heater() {
 	lcd_display_message_fullscreen_P(MSG_WIZARD_HEATING);
 
@@ -3042,6 +3072,36 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
             lcd_show_fullscreen_message_and_wait_P(msg);
         }
     }
+}
+
+void lcd_temp_cal_show_result(bool result) {
+	
+	custom_message_type = 0;
+	custom_message = false;
+	disable_x();
+	disable_y();
+	disable_z();
+	disable_e0();
+	disable_e1();
+	disable_e2();
+	setTargetBed(0); //set bed target temperature back to 0
+
+	if (result == true) {
+		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+		SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
+		lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
+		temp_cal_active = true;
+		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
+	}
+	else {
+		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
+		SERIAL_ECHOLNPGM("Temperature calibration failed. Continue with pressing the knob.");
+		lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_FAILED);
+		temp_cal_active = false;
+		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 0);
+	}
+	lcd_update_enable(true);
+	lcd_update(2);
 }
 
 static void lcd_show_end_stops() {

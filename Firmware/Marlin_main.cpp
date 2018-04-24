@@ -3452,13 +3452,32 @@ void process_commands()
 			}
 			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
 			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
+			
 			if (result)
 			{
 				current_position[Z_AXIS] = 50;
-				current_position[Y_AXIS] = 190;
+				current_position[Y_AXIS] += 180;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
+				current_position[Y_AXIS] -= 180;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				st_synchronize();
+				feedrate = homing_feedrate[Z_AXIS] / 10;
+				enable_endstops(true);
+				endstops_hit_on_purpose();
+				homeaxis(Z_AXIS);
+				plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+				enable_endstops(false);
+			}
+			if ((current_temperature_pinda > 35) && (farm_mode == false)) {
+				//waiting for PIDNA probe to cool down in case that we are not in farm mode
+				current_position[Z_AXIS] = 100;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				if (lcd_wait_for_pinda(35) == false) { //waiting for PINDA probe to cool, if this takes more then time expected, temp. cal. fails
+					lcd_temp_cal_show_result(false);
+					break;
+				}
 			}
 			lcd_update_enable(true);
 			KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
@@ -3501,7 +3520,9 @@ void process_commands()
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			st_synchronize();
 
-			find_bed_induction_sensor_point_z(-1.f);
+			bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
+			if(find_z_result == false) lcd_temp_cal_show_result(find_z_result);
+
 			zero_z = current_position[Z_AXIS];
 
 			//current_position[Z_AXIS]
@@ -3550,7 +3571,9 @@ void process_commands()
 				current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
-				find_bed_induction_sensor_point_z(-1.f);
+				find_z_result = find_bed_induction_sensor_point_z(-1.f);
+				if (find_z_result == false) lcd_temp_cal_show_result(find_z_result);
+
 				z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
 
 				SERIAL_ECHOLNPGM("");
@@ -3563,25 +3586,8 @@ void process_commands()
 				EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 
 			}
-			custom_message_type = 0;
-			custom_message = false;
+			lcd_temp_cal_show_result(true);
 
-			eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-			SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
-			disable_x();
-			disable_y();
-			disable_z();
-			disable_e0();
-			disable_e1();
-			disable_e2();
-			setTargetBed(0); //set bed target temperature back to 0
-//			setTargetHotend(0,0); //set hotend target temperature back to 0
-			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
-			temp_cal_active = true;
-			eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
-
-			lcd_update_enable(true);
-			lcd_update(2);
 			break;
 		}
 #endif //PINDA_THERMISTOR
