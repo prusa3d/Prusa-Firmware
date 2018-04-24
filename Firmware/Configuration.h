@@ -704,6 +704,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 	#define ENCODER_STEPS_PER_MENU_ITEM 2
   #endif
 
+#define REVERSE_ENCODER_DIRECTION // reverses value and menu directions
 
   #ifdef LCD_USE_I2C_BUZZER
 	#define LCD_FEEDBACK_FREQUENCY_HZ 1000
