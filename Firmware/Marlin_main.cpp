@@ -2076,7 +2076,7 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 #ifdef TMC2130
-		if (READ(Z_TMC2130_DIAG) != 0) return; //Z crash
+		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) return; //Z crash
 #endif //TMC2130
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -2088,7 +2088,7 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 #ifdef TMC2130
-		if (READ(Z_TMC2130_DIAG) != 0) return; //Z crash
+		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) return; //Z crash
 #endif //TMC2130
         axis_is_at_home(axis);
         destination[axis] = current_position[axis];
