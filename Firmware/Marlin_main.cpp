@@ -324,8 +324,6 @@ unsigned int custom_message_type;
 unsigned int custom_message_state;
 char snmm_filaments_used = 0;
 
-float distance_from_min[2];
-
 bool fan_state[2];
 int fan_edge_counter[2];
 int fan_speed[2];
