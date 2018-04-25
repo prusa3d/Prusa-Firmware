@@ -6,6 +6,12 @@
 #include "Timer.h"
 #include "Arduino.h"
 
+/**
+ * @brief construct Timer
+ *
+ * It is guaranteed, that construction is equivalent with zeroing all members.
+ * This property can be exploited in MenuData union.
+ */
 Timer::Timer() : m_isRunning(false), m_started()
 {
 }
