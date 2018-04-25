@@ -159,22 +159,29 @@ static inline float point_weight_y(const uint8_t i, const uint8_t npts, const fl
     }
     return w;
 }
-
-// Non-Linear Least Squares fitting of the bed to the measured induction points
-// using the Gauss-Newton method.
-// This method will maintain a unity length of the machine axes,
-// which is the correct approach if the sensor points are not measured precisely.
+/**
+ * @brief Calculate machine skew and offset
+ *
+ * Non-Linear Least Squares fitting of the bed to the measured induction points
+ * using the Gauss-Newton method.
+ * This method will maintain a unity length of the machine axes,
+ * which is the correct approach if the sensor points are not measured precisely.
+ * @param measured_pts Matrix of 2D points (maximum 18 floats)
+ * @param npts Number of points (maximum 9)
+ * @param true_pts
+ * @param [out] vec_x Resulting correction matrix. X axis vector
+ * @param [out] vec_y Resulting correction matrix. Y axis vector
+ * @param [out] cntr  Resulting correction matrix. [0;0] pont offset
+ * @param verbosity_level
+ * @return BedSkewOffsetDetectionResultType
+ */
 BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
-    // Matrix of maximum 9 2D points (18 floats)
     const float  *measured_pts,
     uint8_t       npts,
     const float  *true_pts,
-    // Resulting correction matrix.
     float        *vec_x,
     float        *vec_y,
     float        *cntr,
-    // Temporary values, 49-18-(2*3)=25 floats
-    //    , float *temp
     int8_t        verbosity_level
     )
 {
@@ -649,6 +656,9 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     return result;
 }
 
+/**
+ * @brief Erase calibration data stored in EEPROM
+ */
 void reset_bed_offset_and_skew()
 {
     eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_CENTER+0), 0x0FFFFFFFF);
@@ -703,6 +713,12 @@ static void world2machine_update(const float vec_x[2], const float vec_y[2], con
     }
 }
 
+/**
+ * @brief Set calibration matrix to identity
+ *
+ * In contrast with world2machine_revert_to_uncorrected(), it doesn't wait for finishing moves
+ * nor updates the current position with the absolute values.
+ */
 void world2machine_reset()
 {
     const float vx[] = { 1.f, 0.f };
@@ -711,6 +727,11 @@ void world2machine_reset()
     world2machine_update(vx, vy, cntr);
 }
 
+/**
+ * @brief Set calibration matrix to default value
+ *
+ * This is used if no valid calibration data can be read from EEPROM.
+ */
 static void world2machine_default()
 {
 #ifdef DEFAULT_Y_OFFSET
@@ -722,12 +743,15 @@ static void world2machine_default()
     world2machine_reset();
 #endif
 }
-
+/**
+ * @brief Set calibration matrix to identity and update current position with absolute position
+ *
+ * Wait for the motors to stop and then update the current position with the absolute values.
+ */
 void world2machine_revert_to_uncorrected()
 {
     if (world2machine_correction_mode != WORLD2MACHINE_CORRECTION_NONE) {
         world2machine_reset();
-        // Wait for the motors to stop and update the current position with the absolute values.
         st_synchronize();
         current_position[X_AXIS] = st_get_position_mm(X_AXIS);
         current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
@@ -740,6 +764,15 @@ static inline bool vec_undef(const float v[2])
     return vx[0] == 0x0FFFFFFFF || vx[1] == 0x0FFFFFFFF;
 }
 
+/**
+ * @brief Read and apply calibration data from EEPROM
+ *
+ * If no calibration data has been stored in EEPROM or invalid,
+ * world2machine_default() is used.
+ *
+ * If stored calibration data is invalid, EEPROM storage is cleared.
+ *
+ */
 void world2machine_initialize()
 {
     //SERIAL_ECHOLNPGM("world2machine_initialize");
@@ -818,10 +851,14 @@ void world2machine_initialize()
     }
 }
 
-// When switching from absolute to corrected coordinates,
-// this will get the absolute coordinates from the servos,
-// applies the inverse world2machine transformation
-// and stores the result into current_position[x,y].
+/**
+ * @brief Update current position after switching to corrected coordinates
+ *
+ * When switching from absolute to corrected coordinates,
+ * this will get the absolute coordinates from the servos,
+ * applies the inverse world2machine transformation
+ * and stores the result into current_position[x,y].
+ */
 void world2machine_update_current()
 {
     float x = current_position[X_AXIS] - world2machine_shift[0];

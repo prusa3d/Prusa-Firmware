@@ -135,17 +135,22 @@ extern bool find_bed_induction_sensor_point_z(float minimum_z = -10.f, uint8_t n
 extern bool find_bed_induction_sensor_point_xy(int verbosity_level = 0);
 extern void go_home_with_z_lift();
 
-// Positive or zero: ok
-// Negative: failed
+/**
+ * @brief Bed skew and offest detection result
+ *
+ * Positive or zero: ok
+ * Negative: failed
+ */
+
 enum BedSkewOffsetDetectionResultType {
 	// Detection failed, some point was not found.
-	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1,
-	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2,
+	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1, //!< Point not found.
+	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2, //!< Fitting failed
 	
 	// Detection finished with success.
-	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,
-	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,
-	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2
+	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,  //!< Perfect.
+	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,  //!< Mildly skewed.
+	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2   //!< Extremely skewed.
 };
 
 extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level, uint8_t &too_far_mask);
