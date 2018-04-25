@@ -441,5 +441,4 @@ void gcode_M701();
 
 #define UVLO !(PINE & (1<<4))
 
-void extr_unload2();
 void proc_commands();

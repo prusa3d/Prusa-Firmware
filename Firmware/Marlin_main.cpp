@@ -232,6 +232,8 @@
 // M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
 // M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 // M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
+// M860 - Wait for PINDA thermistor to reach target temperature.
+// M861 - Set / Read PINDA temperature compensation offsets
 // M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
 // M907 - Set digital trimpot motor current using axis codes.
 // M908 - Control digital trimpot directly.
@@ -1268,14 +1270,14 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
 		//eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0,   8); //40C -  20um -   8usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1,  24); //45C -  60um -  24usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2,  48); //50C - 120um -  48usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3,  80); //55C - 200um -  80usteps
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 0); //40C
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 0); //45C
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 0); //50C
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 0); //55C
+		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0); //60C
 
-		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 1);
-		temp_cal_active = true;
+		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
+		temp_cal_active = false;
 	}
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_UVLO, 0);
@@ -2505,6 +2507,52 @@ void gcode_M701()
 #endif
 
 }
+/**
+ * @brief Get serial number from 32U2 processor
+ *
+ * Typical format of S/N is:CZPX0917X003XC13518
+ *
+ * Command operates only in farm mode, if not in farm mode, "Not in farm mode." is written to MYSERIAL.
+ *
+ * Send command ;S to serial port 0 to retrieve serial number stored in 32U2 processor,
+ * reply is transmitted to serial port 1 character by character.
+ * Operation takes typically 23 ms. If the retransmit is not finished until 100 ms,
+ * it is interrupted, so less, or no characters are retransmitted, only newline character is send
+ * in any case.
+ */
+static void gcode_PRUSA_SN()
+{
+    if (farm_mode) {
+        selectedSerialPort = 0;
+        MSerial.write(";S");
+        int numbersRead = 0;
+        Timer timeout;
+        timeout.start();
+
+        while (numbersRead < 19) {
+            while (MSerial.available() > 0) {
+                uint8_t serial_char = MSerial.read();
+                selectedSerialPort = 1;
+                MSerial.write(serial_char);
+                numbersRead++;
+                selectedSerialPort = 0;
+            }
+            if (timeout.expired(100)) break;
+        }
+        selectedSerialPort = 1;
+        MSerial.write('\n');
+#if 0
+        for (int b = 0; b < 3; b++) {
+            tone(BEEPER, 110);
+            delay(50);
+            noTone(BEEPER);
+            delay(50);
+        }
+#endif
+    } else {
+        MYSERIAL.println("Not in farm mode.");
+    }
+}
 
 void process_commands()
 {
@@ -2544,7 +2592,7 @@ void process_commands()
 	  lcd_setstatus(strchr_pointer + 5);
   }
 
-//#ifdef TMC2130
+#ifdef TMC2130
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
 	{
 	  if(code_seen("CRASH_DETECTED"))
@@ -2573,7 +2621,7 @@ void process_commands()
 			tmc2130_goto_step(E_AXIS, step & (4*res - 1), 2, 1000, res);
 		}
 	}
-//#endif //TMC2130
+#endif //TMC2130
 
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
@@ -2624,33 +2672,7 @@ void process_commands()
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
 	} else if (code_seen("SN")) { 
-        if (farm_mode) { 
-            selectedSerialPort = 0; 
-            MSerial.write(";S"); 
-            // S/N is:CZPX0917X003XC13518 
-            int numbersRead = 0; 
- 
-            while (numbersRead < 19) { 
-                while (MSerial.available() > 0) { 
-                    uint8_t serial_char = MSerial.read(); 
-                    selectedSerialPort = 1; 
-                    MSerial.write(serial_char); 
-                    numbersRead++; 
-                    selectedSerialPort = 0; 
-                } 
-            } 
-            selectedSerialPort = 1; 
-            MSerial.write('\n'); 
-            /*for (int b = 0; b < 3; b++) { 
-                tone(BEEPER, 110); 
-                delay(50); 
-                noTone(BEEPER); 
-                delay(50); 
-            }*/ 
-        } else { 
-            MYSERIAL.println("Not in farm mode."); 
-        } 
-		
+        gcode_PRUSA_SN();
 	} else if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_VERSION);
@@ -3554,6 +3576,9 @@ void process_commands()
 			setTargetBed(0); //set bed target temperature back to 0
 //			setTargetHotend(0,0); //set hotend target temperature back to 0
 			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
+			temp_cal_active = true;
+			eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
+
 			lcd_update_enable(true);
 			lcd_update(2);
 			break;
@@ -3667,6 +3692,8 @@ void process_commands()
 			disable_e2();
 			setTargetBed(0); //set bed target temperature back to 0
 		lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
+		temp_cal_active = true;
+		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
 		lcd_update_enable(true);
 		lcd_update(2);		
 
@@ -5982,7 +6009,7 @@ Sigma_Exit:
             tmc2130_set_current_r(E_AXIS, tmc2130_current_r_bckp);
 #else
 			uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-			if(silentMode) st_current_set(2, tmp_motor[2]); //set E back to normal operation currents
+			if(silentMode != SILENT_MODE_NORMAL) st_current_set(2, tmp_motor[2]); //set E back to normal operation currents
 			else st_current_set(2, tmp_motor_loud[2]);		
 #endif //TMC2130
 
@@ -6220,6 +6247,117 @@ Sigma_Exit:
 		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
 	}
 	break;
+
+#ifdef PINDA_THERMISTOR
+	case 860: // M860 - Wait for PINDA thermistor to reach target temperature.
+	{
+		int setTargetPinda = 0;
+
+		if (code_seen('S')) {
+			setTargetPinda = code_value();
+		}
+		else {
+			break;
+		}
+
+		LCD_MESSAGERPGM(MSG_PLEASE_WAIT);
+
+		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
+		SERIAL_PROTOCOL(setTargetPinda);
+		SERIAL_PROTOCOLLN("");
+
+		codenum = millis();
+		cancel_heatup = false;
+
+		KEEPALIVE_STATE(NOT_BUSY);
+
+		while ((!cancel_heatup) && current_temperature_pinda < setTargetPinda) {
+			if ((millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
+			{
+				SERIAL_PROTOCOLPGM("P:");
+				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
+				SERIAL_PROTOCOLPGM("/");
+				SERIAL_PROTOCOL(setTargetPinda);
+				SERIAL_PROTOCOLLN("");
+				codenum = millis();
+			}
+			manage_heater();
+			manage_inactivity();
+			lcd_update();
+		}
+		LCD_MESSAGERPGM(MSG_OK);
+
+		break;
+	}
+	case 861: // M861 - Set/Read PINDA temperature compensation offsets
+		if (code_seen('?')) { // ? - Print out current EEPRO offset values
+			uint8_t cal_status = calibration_status_pinda();
+			cal_status ? SERIAL_PROTOCOLLN("PINDA cal status: 1") : SERIAL_PROTOCOLLN("PINDA cal status: 0");
+			SERIAL_PROTOCOLLN("index, temp, ustep, um");
+			for (uint8_t i = 0; i < 6; i++)
+			{
+				uint16_t usteps = 0;
+				if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+				float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
+				i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
+				SERIAL_PROTOCOLPGM(", ");
+				SERIAL_PROTOCOL(35 + (i * 5));
+				SERIAL_PROTOCOLPGM(", ");
+				SERIAL_PROTOCOL(usteps);
+				SERIAL_PROTOCOLPGM(", ");
+				SERIAL_PROTOCOL(mm * 1000);
+				SERIAL_PROTOCOLLN("");
+			}
+		}
+		else if (code_seen('!')) { // ! - Set factory default values
+			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 8); //40C -  20um -   8usteps
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 24); //45C -  60um -  24usteps
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 48); //50C - 120um -  48usteps
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 80); //55C - 200um -  80usteps
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+			SERIAL_PROTOCOLLN("factory restored");
+		}
+		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
+			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 0);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 0);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 0);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 0);
+			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0);
+			SERIAL_PROTOCOLLN("zerorized");
+		}
+		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
+			uint16_t usteps = code_value();
+			if (code_seen('I')) {
+				byte index = code_value();
+				if ((index >= 0) && (index < 5)) {
+					eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + index, usteps);
+					SERIAL_PROTOCOLLN("OK");
+					SERIAL_PROTOCOLLN("index, temp, ustep, um");
+					for (uint8_t i = 0; i < 6; i++)
+					{
+						uint16_t usteps = 0;
+						if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+						float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
+						i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
+						SERIAL_PROTOCOLPGM(", ");
+						SERIAL_PROTOCOL(35 + (i * 5));
+						SERIAL_PROTOCOLPGM(", ");
+						SERIAL_PROTOCOL(usteps);
+						SERIAL_PROTOCOLPGM(", ");
+						SERIAL_PROTOCOL(mm * 1000);
+						SERIAL_PROTOCOLLN("");
+					}
+				}
+			}
+		}
+		else {
+			SERIAL_PROTOCOLPGM("no valid command");
+		}
+		break;
+
+#endif //PINDA_THERMISTOR
 
 #ifdef LIN_ADVANCE
     case 900: // M900: Set LIN_ADVANCE options.
@@ -6510,7 +6648,6 @@ Sigma_Exit:
 
 		  pinMode(E_MUX0_PIN, OUTPUT);
 		  pinMode(E_MUX1_PIN, OUTPUT);
-		  pinMode(E_MUX2_PIN, OUTPUT);
 
 		  delay(100);
 		  SERIAL_ECHO_START;
@@ -6520,25 +6657,21 @@ Sigma_Exit:
 		  case 1:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  case 2:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  case 3:
 			  WRITE(E_MUX0_PIN, HIGH);
 			  WRITE(E_MUX1_PIN, HIGH);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  default:
 			  WRITE(E_MUX0_PIN, LOW);
 			  WRITE(E_MUX1_PIN, LOW);
-			  WRITE(E_MUX2_PIN, LOW);
 
 			  break;
 		  }
@@ -6666,7 +6799,7 @@ void ClearToSend()
         SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
-#if MOTHERBOARD == 200 || MOTHERBOARD == 203
+#if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
 void update_currents() {
 	float current_high[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 	float current_low[3] = DEFAULT_PWM_MOTOR_CURRENT;
@@ -6703,7 +6836,7 @@ void update_currents() {
 		}
 	}
 }
-#endif //MOTHERBOARD == 200 || MOTHERBOARD == 203
+#endif //MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
 
 void get_coordinates()
 {
@@ -6726,9 +6859,9 @@ void get_coordinates()
       if (relative)
         destination[i] += current_position[i];
       seen[i]=true;
-#if MOTHERBOARD == 200 || MOTHERBOARD == 203
-	  if (i == Z_AXIS && SilentModeMenu == 2) update_currents();
-#endif //MOTHERBOARD == 200 || MOTHERBOARD == 203
+#if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
+	  if (i == Z_AXIS && SilentModeMenu == SILENT_MODE_AUTO) update_currents();
+#endif //MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
     }
     else destination[i] = current_position[i]; //Are these else lines really needed?
   }
@@ -6964,7 +7097,7 @@ static void handleSafetyTimer()
     {
         safetyTimer.start();
     }
-    else if (safetyTimer.expired(15*60*1000))
+    else if (safetyTimer.expired(900000ul))
     {
         setTargetBed(0);
         setTargetHotend(0, 0);
@@ -8433,73 +8566,3 @@ void print_mesh_bed_leveling_table()
 
 
 #define FIL_LOAD_LENGTH 60
-
-void extr_unload2() { //unloads filament
-//	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
-//	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
-//	int8_t SilentMode;
-	uint8_t snmm_extruder = 0;
-	if (degHotend0() > EXTRUDE_MINTEMP) {
-		lcd_implementation_clear();
-		lcd_display_message_fullscreen_P(PSTR(""));
-		max_feedrate[E_AXIS] = 50;
-		lcd.setCursor(0, 0); lcd_printPGM(MSG_UNLOADING_FILAMENT);
-//		lcd.print(" ");
-//		lcd.print(snmm_extruder + 1);
-		lcd.setCursor(0, 2); lcd_printPGM(MSG_PLEASE_WAIT);
-		if (current_position[Z_AXIS] < 15) {
-			current_position[Z_AXIS] += 15; //lifting in Z direction to make space for extrusion
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 25, active_extruder);
-		}
-		
-		current_position[E_AXIS] += 10; //extrusion
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 10, active_extruder);
-//		st_current_set(2, E_MOTOR_HIGH_CURRENT);
-		if (current_temperature[0] < 230) { //PLA & all other filaments
-			current_position[E_AXIS] += 5.4;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2800 / 60, active_extruder);
-			current_position[E_AXIS] += 3.2;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-			current_position[E_AXIS] += 3;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3400 / 60, active_extruder);
-		}
-		else { //ABS
-			current_position[E_AXIS] += 3.1;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
-			current_position[E_AXIS] += 3.1;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-			current_position[E_AXIS] += 4;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-			/*current_position[X_AXIS] += 23; //delay
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder); //delay
-			current_position[X_AXIS] -= 23; //delay
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder); //delay*/
-			delay_keep_alive(4700);
-		}
-	
-		max_feedrate[E_AXIS] = 80;
-		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
-		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
-		st_synchronize();
-		//st_current_init();
-//		if (SilentMode == 1) st_current_set(2, tmp_motor[2]); //set back to normal operation currents
-//		else st_current_set(2, tmp_motor_loud[2]);
-		lcd_update_enable(true);
-//		lcd_return_to_status();
-		max_feedrate[E_AXIS] = 50;
-	}
-	else {
-
-		lcd_implementation_clear();
-		lcd.setCursor(0, 0);
-		lcd_printPGM(MSG_ERROR);
-		lcd.setCursor(0, 2);
-		lcd_printPGM(MSG_PREHEAT_NOZZLE);
-
-		delay(2000);
-		lcd_implementation_clear();
-	}
-//	lcd_return_to_status();
-}

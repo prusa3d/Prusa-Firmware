@@ -123,7 +123,7 @@ int8_t ReInitLCD = 0;
 
 int8_t SDscrool = 0;
 
-int8_t SilentModeMenu = 0;
+int8_t SilentModeMenu = SILENT_MODE_OFF;
 
 int8_t FSensorStateMenu = 1;
 
@@ -3466,10 +3466,7 @@ static void lcd_crash_mode_info()
 		tim = millis();
 	}
 	if (lcd_clicked())
-	{
-		if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 18);
-		else lcd_goto_menu(lcd_settings_menu, 16, true, true);
-	}
+          menu_action_back();
 }
 
 static void lcd_crash_mode_info2()
@@ -3482,13 +3479,7 @@ static void lcd_crash_mode_info2()
 		tim = millis();
 	}
 	if (lcd_clicked())
-	{
-//-//		if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu, 16);
-		if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) menu_action_back();
-//-//		else lcd_goto_menu(lcd_settings_menu, 14, true, true);
-//-//		else lcd_goto_menu(lcd_settings_menu, 7, true, true);
-		else menu_action_back();
-	}
+          menu_action_back();
 }
 #endif //TMC2130
 
@@ -3507,14 +3498,16 @@ static void lcd_fsensor_fail()
 
 static void lcd_silent_mode_set() {
 	switch (SilentModeMenu) {
-	case 0: SilentModeMenu = 1; break;
 #ifdef TMC2130
-	case 1: SilentModeMenu = 0; break;
+	case SILENT_MODE_NORMAL: SilentModeMenu = SILENT_MODE_STEALTH; break;
+	case SILENT_MODE_STEALTH: SilentModeMenu = SILENT_MODE_NORMAL; break;
+	default: SilentModeMenu = SILENT_MODE_NORMAL; break; // (probably) not needed
 #else
-	case 1: SilentModeMenu = 2; break;
-	case 2: SilentModeMenu = 0; break;
+	case SILENT_MODE_POWER: SilentModeMenu = SILENT_MODE_SILENT; break;
+	case SILENT_MODE_SILENT: SilentModeMenu = SILENT_MODE_AUTO; break;
+	case SILENT_MODE_AUTO: SilentModeMenu = SILENT_MODE_POWER; break;
+	default: SilentModeMenu = SILENT_MODE_POWER; break; // (probably) not needed
 #endif //TMC2130
-	default: SilentModeMenu = 0; break;
 	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
@@ -3526,7 +3519,7 @@ static void lcd_silent_mode_set() {
 //  else
 //	  MYSERIAL.print("standstill NG!");
   cli();
-	tmc2130_mode = SilentModeMenu?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+	tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_init();
   // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
   // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
@@ -3535,8 +3528,7 @@ static void lcd_silent_mode_set() {
 #endif //TMC2130
   st_current_init();
 #ifdef TMC2130
-  if (CrashDetectMenu && SilentModeMenu)
-//-//	  lcd_goto_menu(lcd_crash_mode_info2);
+  if (CrashDetectMenu && (SilentModeMenu != SILENT_MODE_NORMAL))
 	  menu_action_submenu(lcd_crash_mode_info2);
 #endif //TMC2130
 }
@@ -4000,10 +3992,10 @@ static void lcd_settings_menu()
 #ifndef TMC2130
   if (!farm_mode) { //dont show in menu if we are in farm mode
 	  switch (SilentModeMenu) {
-	  case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
-	  case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
-	  case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
-	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case SILENT_MODE_POWER: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+	  case SILENT_MODE_SILENT: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+	  case SILENT_MODE_AUTO: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break; // (probably) not needed
 	  }
   }
 #endif //TMC2130
@@ -4044,9 +4036,10 @@ static void lcd_settings_menu()
   }
 
 #ifdef TMC2130
-  if (SilentModeMenu == 0) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
+//*** MaR::180416_01a
+  if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
   else MENU_ITEM(function, MSG_STEALTH_MODE_ON, lcd_silent_mode_set);
-  if (SilentModeMenu == 0)
+  if (SilentModeMenu == SILENT_MODE_NORMAL)
   {
     if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
     else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
@@ -4947,37 +4940,30 @@ void change_extr(int extr) { //switches multiplexer for extruders
 	disable_e1();
 	disable_e2();
 
-#ifdef SNMM
 	snmm_extruder = extr;
-#endif
 
 	pinMode(E_MUX0_PIN, OUTPUT);
 	pinMode(E_MUX1_PIN, OUTPUT);
-	pinMode(E_MUX2_PIN, OUTPUT);
 
 	switch (extr) {
 	case 1:
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, LOW);
-		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	case 2:
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, HIGH);
-		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	case 3:
 		WRITE(E_MUX0_PIN, HIGH);
 		WRITE(E_MUX1_PIN, HIGH);
-		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	default:
 		WRITE(E_MUX0_PIN, LOW);
 		WRITE(E_MUX1_PIN, LOW);
-		WRITE(E_MUX2_PIN, LOW);
 		
 		break;
 	}
@@ -4985,7 +4971,7 @@ void change_extr(int extr) { //switches multiplexer for extruders
 }
 
 static int get_ext_nr() { //reads multiplexer input pins and return current extruder number (counted from 0)
-	return(4 * READ(E_MUX2_PIN) + 2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
+	return(2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
 }
 
 
@@ -4998,7 +4984,7 @@ void display_loading() {
 	}
 }
 
-static void extr_adj(int extruder) //loading filament for SNMM
+void extr_adj(int extruder) //loading filament for SNMM
 {
 	bool correct;
 	max_feedrate[E_AXIS] =80;
@@ -5042,7 +5028,7 @@ static void extr_adj(int extruder) //loading filament for SNMM
 void extr_unload() { //unloads filament
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
-	int8_t SilentMode;
+	uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 
 	if (degHotend0() > EXTRUDE_MINTEMP) {
 		lcd_implementation_clear();
@@ -5089,7 +5075,7 @@ void extr_unload() { //unloads filament
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
 		st_synchronize();
 		//st_current_init();
-		if (SilentMode == 1) st_current_set(2, tmp_motor[2]); //set back to normal operation currents
+		if (SilentMode != SILENT_MODE_OFF) st_current_set(2, tmp_motor[2]); //set back to normal operation currents
 		else st_current_set(2, tmp_motor_loud[2]);
 		lcd_update_enable(true);
 		lcd_return_to_status();
@@ -5708,18 +5694,19 @@ static void lcd_autostart_sd()
 
 static void lcd_silent_mode_set_tune() {
   switch (SilentModeMenu) {
-  case 0: SilentModeMenu = 1; break;
 #ifdef TMC2130
-  case 1: SilentModeMenu = 0; break;
+	case SILENT_MODE_NORMAL: SilentModeMenu = SILENT_MODE_STEALTH; break;
+	case SILENT_MODE_STEALTH: SilentModeMenu = SILENT_MODE_NORMAL; break;
+	default: SilentModeMenu = SILENT_MODE_NORMAL; break; // (probably) not needed
 #else
-  case 1: SilentModeMenu = 2; break;
-  case 2: SilentModeMenu = 0; break;
+	case SILENT_MODE_POWER: SilentModeMenu = SILENT_MODE_SILENT; break;
+	case SILENT_MODE_SILENT: SilentModeMenu = SILENT_MODE_AUTO; break;
+	case SILENT_MODE_AUTO: SilentModeMenu = SILENT_MODE_POWER; break;
+	default: SilentModeMenu = SILENT_MODE_POWER; break; // (probably) not needed
 #endif //TMC2130
-  default: SilentModeMenu = 0; break;
   }
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
   st_current_init();
-//-//  lcd_goto_menu(lcd_tune_menu, 9);
   menu_action_back();
 }
 
@@ -5775,10 +5762,11 @@ static void lcd_tune_menu()
 #endif //DEBUG_DISABLE_FSENSORCHECK
 
 #ifdef TMC2130
-	if (SilentModeMenu == 0) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
+//*** MaR::180416_01b
+	if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
 	else MENU_ITEM(function, MSG_STEALTH_MODE_ON, lcd_silent_mode_set);
 
-	if (SilentModeMenu == 0)
+	if (SilentModeMenu == SILENT_MODE_NORMAL)
 	{
 		if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
 		else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
@@ -5787,10 +5775,10 @@ static void lcd_tune_menu()
 #else //TMC2130
 	if (!farm_mode) { //dont show in menu if we are in farm mode
 		switch (SilentModeMenu) {
-		case 0: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
-		case 1: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
-		case 2: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
-		default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+		case SILENT_MODE_POWER: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break;
+		case SILENT_MODE_SILENT: MENU_ITEM(function, MSG_SILENT_MODE_ON, lcd_silent_mode_set); break;
+		case SILENT_MODE_AUTO: MENU_ITEM(function, MSG_AUTO_MODE_ON, lcd_silent_mode_set); break;
+		default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set); break; // (probably) not needed
 		}
 	}
 #endif //TMC2130
@@ -6580,7 +6568,8 @@ static bool lcd_selfcheck_pulleys(int axis)
 		st_current_set(0, 850); //set motor current higher
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 200, active_extruder);
 		st_synchronize();
-		if (SilentModeMenu == 1) st_current_set(0, tmp_motor[0]); //set back to normal operation currents
+//*** MaR::180416_02
+          if (SilentModeMenu != SILENT_MODE_OFF) st_current_set(0, tmp_motor[0]); //set back to normal operation currents
 		else st_current_set(0, tmp_motor_loud[0]); //set motor current back			
 		current_position[axis] = current_position[axis] - move;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 50, active_extruder);
