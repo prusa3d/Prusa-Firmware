@@ -41,10 +41,10 @@ sub parselang
     	# Trim whitespaces from both sides
     	$value =~ s/^\s+|\s+$//g;
 		#$string =~ s/" MACHINE_NAME "/Prusa i3/;
-		$value =~ s/" FIRMWARE_URL "/https:\/\/github.com\/prusa3d\/Prusa-i3-Plus\//;
-		$value =~ s/" PROTOCOL_VERSION "/1.0/;
-		$value =~ s/" STRINGIFY\(EXTRUDERS\) "/1/;
-		$value =~ s/" MACHINE_UUID "/00000000-0000-0000-0000-000000000000/;
+		#$value =~ s/" FIRMWARE_URL "/https:\/\/github.com\/prusa3d\/Prusa-Firmware\//;
+		#$value =~ s/" PROTOCOL_VERSION "/1.0/;
+		#$value =~ s/" STRINGIFY\(EXTRUDERS\) "/1/;
+		#$value =~ s/" MACHINE_UUID "/00000000-0000-0000-0000-000000000000/;
 		${$out}{$symbol} = { value=>$value, %$modifiers };
 	}
 	return $out;

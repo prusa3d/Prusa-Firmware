@@ -116,7 +116,6 @@
 	+ #define(length = 20) MSG_HEATING_COMPLETE   "Aufwaermen OK"
 	+ #define MSG_BED_HEATING                     "Bett aufwaermen"
 	+ #define MSG_BED_DONE                        "Bett OK"
-	+ #define MSG_M115_REPORT                     "FIRMWARE_NAME:Marlin V1.0.2; Sprinter/grbl mashup for gen6 FIRMWARE_URL:" FIRMWARE_URL " PROTOCOL_VERSION:" PROTOCOL_VERSION " MACHINE_TYPE:" CUSTOM_MENDEL_NAME " EXTRUDER_COUNT:" STRINGIFY(EXTRUDERS) " UUID:" MACHINE_UUID "\n"
 	+ #define MSG_ERR_KILLED                      "Printer gestoppt. kill() aufgerufen!"
 	+ #define MSG_ERR_STOPPED                     "Drucker aufgrund von Fehlern gestoppt. Fehler beheben und mit M999 neu starten. (Temperatur wird zurueckgesetzt. Nach dem Neustart neu einstellen!)"
 	+ #define MSG_RESEND                          "Wiederholen: "
