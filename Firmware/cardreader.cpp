@@ -524,7 +524,7 @@ void CardReader::getStatus()
     SERIAL_PROTOCOLPGM("\n");
   }
   else{
-    SERIAL_PROTOCOLLNRPGM("Not printing");
+    SERIAL_PROTOCOLLNPGM("Not printing");
   }
 }
 void CardReader::write_command(char *buf)
