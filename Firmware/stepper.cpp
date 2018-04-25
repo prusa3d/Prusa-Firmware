@@ -101,8 +101,6 @@ static bool check_endstops = true;
 static bool check_z_endstop = false;
 static bool z_endstop_invert = false;
 
-int8_t SilentMode = 0;
-
 volatile long count_position[NUM_AXIS] = { 0, 0, 0, 0};
 volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 
@@ -1459,6 +1457,7 @@ void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl e
   #endif
 }
 
+//*** MaR::180416_03
 void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 {
     do
@@ -1472,13 +1471,13 @@ void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 
 void st_current_init() //Initialize Digipot Motor Current
 {  
-  EEPROM_read_st(EEPROM_SILENT,(uint8_t*)&SilentMode,sizeof(SilentMode));
+uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
   SilentModeMenu = SilentMode;
   #ifdef MOTOR_CURRENT_PWM_XY_PIN
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_Z_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_E_PIN, OUTPUT);
-    if((SilentMode == 0) || (farm_mode) ){
+    if((SilentMode == SILENT_MODE_OFF) || (farm_mode) ){
 
      motor_current_setting[0] = motor_current_setting_loud[0];
      motor_current_setting[1] = motor_current_setting_loud[1];

@@ -120,6 +120,16 @@ void lcd_mylang();
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
+  #ifdef TMC2130
+    #define SILENT_MODE_NORMAL 0
+    #define SILENT_MODE_STEALTH 1
+    #define SILENT_MODE_OFF SILENT_MODE_NORMAL
+  #else
+    #define SILENT_MODE_POWER 0
+    #define SILENT_MODE_SILENT 1
+    #define SILENT_MODE_AUTO 2
+    #define SILENT_MODE_OFF SILENT_MODE_POWER
+  #endif
   extern int8_t SilentModeMenu;
 
 #ifdef SNMM
@@ -229,7 +239,7 @@ extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 void change_extr(int extr);
 static void lcd_colorprint_change();
 static int get_ext_nr();
-static void extr_adj(int extruder);
+void extr_adj(int extruder);
 static void extr_adj_0();
 static void extr_adj_1();
 static void extr_adj_2();

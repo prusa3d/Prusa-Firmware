@@ -682,16 +682,16 @@ uint8_t xyzcal_xycoords2point(int16_t x, int16_t y)
 }
 
 //MK3
-#if ((MOTHERBOARD == 310))
+#if ((MOTHERBOARD == BOARD_EINSY_1_0a))
 const int16_t PROGMEM xyzcal_point_xcoords[4] = {1200, 22000, 22000, 1200};
 const int16_t PROGMEM xyzcal_point_ycoords[4] = {600, 600, 19800, 19800};
-#endif //((MOTHERBOARD == 310))
+#endif //((MOTHERBOARD == BOARD_EINSY_1_0a))
 
 //MK2.5
-#if ((MOTHERBOARD == 200) || (MOTHERBOARD == 203))
+#if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
 const int16_t PROGMEM xyzcal_point_xcoords[4] = {1200, 22000, 22000, 1200};
 const int16_t PROGMEM xyzcal_point_ycoords[4] = {700, 700, 19800, 19800};
-#endif //((MOTHERBOARD == 200) || (MOTHERBOARD == 203))
+#endif //((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
 
 const uint16_t PROGMEM xyzcal_point_pattern[12] = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
 

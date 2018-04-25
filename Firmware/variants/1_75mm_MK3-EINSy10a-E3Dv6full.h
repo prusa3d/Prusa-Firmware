@@ -368,7 +368,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
-#if MOTHERBOARD == 200 || MOTHERBOARD == 203
+#if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {400, 750, 750} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {400, 750, 750} // {XY,Z,E}
