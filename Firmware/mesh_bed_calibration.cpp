@@ -7,6 +7,10 @@
 #include "stepper.h"
 #include "ultralcd.h"
 
+#ifdef TMC2130
+#include "tmc2130.h"
+#endif //TMC2130
+
 uint8_t world2machine_correction_mode;
 float   world2machine_rotation_and_skew[2][2];
 float   world2machine_rotation_and_skew_inv[2][2];
@@ -880,8 +884,11 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     update_current_position_z();
     if (! endstop_z_hit_on_purpose())
         goto error;
-
-    for (uint8_t i = 0; i < n_iter; ++ i) {
+#ifdef TMC2130
+	if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) goto error; //crash Z detected
+#endif //TMC2130
+    for (uint8_t i = 0; i < n_iter; ++ i)
+	{
         // Move up the retract distance.
         current_position[Z_AXIS] += .5f;
         go_to_current(homing_feedrate[Z_AXIS]/60);
@@ -892,10 +899,16 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
         update_current_position_z();
         if (! endstop_z_hit_on_purpose())
             goto error;
+#ifdef TMC2130
+		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) goto error; //crash Z detected
+#endif //TMC2130
 //        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
 //        MYSERIAL.print(current_position[Z_AXIS], 5);
 //        SERIAL_ECHOLNPGM("");
+		float dz = i?abs(current_position[Z_AXIS] - (z / i)):0;
         z += current_position[Z_AXIS];
+//		printf_P(PSTR(" Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
+		if (dz > 0.05) goto error;//deviation > 50um
     }
     current_position[Z_AXIS] = z;
     if (n_iter > 1)
@@ -2683,8 +2696,21 @@ bool sample_mesh_and_store_reference()
         memcpy(destination, current_position, sizeof(destination));
         enable_endstops(true);
         homeaxis(Z_AXIS);
+
+#ifdef TMC2130
+		if (!axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0)) //Z crash
+		{
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			return false;
+		}
+#endif //TMC2130
+
         enable_endstops(false);
-        find_bed_induction_sensor_point_z();
+		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
+		{
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			return false;
+		}
         mbl.set_z(0, 0, current_position[Z_AXIS]);
     }
     for (int8_t mesh_point = 1; mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS; ++ mesh_point) {
@@ -2702,7 +2728,11 @@ bool sample_mesh_and_store_reference()
         lcd_implementation_print_at(0, next_line, mesh_point+1);
         lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
-        find_bed_induction_sensor_point_z();
+		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
+		{
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			return false;
+		}
         // Get cords of measuring point
         int8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
         int8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
