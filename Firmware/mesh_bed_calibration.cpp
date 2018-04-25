@@ -2683,6 +2683,15 @@ bool sample_mesh_and_store_reference()
         memcpy(destination, current_position, sizeof(destination));
         enable_endstops(true);
         homeaxis(Z_AXIS);
+
+#ifdef TMC2130
+		if (!axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0)) //Z crash
+		{
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			return false;
+		}
+#endif //TMC2130
+
         enable_endstops(false);
         find_bed_induction_sensor_point_z();
         mbl.set_z(0, 0, current_position[Z_AXIS]);
