@@ -9,6 +9,7 @@
 #include "stepper.h"
 #include "ConfigurationStore.h"
 #include <string.h>
+#include "Timer.h"
 
 #include "util.h"
 #include "mesh_bed_leveling.h"
@@ -107,6 +108,11 @@ union MenuData
     // editMenuParentState is used when an edit menu is entered, so it knows
     // the return menu and encoder state.
     struct EditMenuParentState editMenuParentState;
+
+    struct AutoLoadFilamentMenu
+    {
+        Timer timer;
+    } autoLoadFilamentMenu;
 };
 
 // State of the currently active menu.
@@ -187,6 +193,7 @@ unsigned char firstrun = 1;
 
 /** forward declarations **/
 
+static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg, uint8_t &nlines);
 // void copy_and_scalePID_i();
 // void copy_and_scalePID_d();
 
@@ -1595,8 +1602,7 @@ static void lcd_menu_fails_stats_total()
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
-        //lcd_return_to_status();
-		lcd_goto_menu(lcd_menu_fails_stats, 4);
+        menu_action_back();
     }
 }
 
@@ -1616,8 +1622,7 @@ static void lcd_menu_fails_stats_print()
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
-        //lcd_return_to_status();
-		lcd_goto_menu(lcd_menu_fails_stats, 2);
+		menu_action_back();
     }    
 }
 /**
@@ -1752,10 +1757,10 @@ static void lcd_preheat_menu()
   MENU_ITEM(back, MSG_MAIN, 0);
 
   if (farm_mode) {
-	  MENU_ITEM(function, PSTR("farm    -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FARM_PREHEAT_HPB_TEMP)), lcd_preheat_farm);
-	  MENU_ITEM(function, PSTR("nozzle  -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/0"), lcd_preheat_farm_nozzle);
+	  MENU_ITEM(function, PSTR("farm   -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FARM_PREHEAT_HPB_TEMP)), lcd_preheat_farm);
+	  MENU_ITEM(function, PSTR("nozzle -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/0"), lcd_preheat_farm_nozzle);
 	  MENU_ITEM(function, MSG_COOLDOWN, lcd_cooldown);
-	  MENU_ITEM(function, PSTR("ABS     -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
+	  MENU_ITEM(function, PSTR("ABS    -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
   } else {
 	  MENU_ITEM(function, PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)), lcd_preheat_pla);
 	  MENU_ITEM(function, PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)), lcd_preheat_pet);
@@ -1834,9 +1839,9 @@ static void lcd_support_menu()
     
   MENU_ITEM(submenu, MSG_MENU_TEMPERATURES, lcd_menu_temperatures);
 
-#if defined (VOLT_BED_PIN) || defined (VOLT_BED_PIN)
+#if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
   MENU_ITEM(submenu, MSG_MENU_VOLTAGES, lcd_menu_voltages);
-#endif //defined VOLT_BED_PIN || defined VOLT_BED_PIN
+#endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 #ifdef DEBUG_BUILD
   MENU_ITEM(submenu, PSTR("Debug"), lcd_menu_debug);
@@ -1877,7 +1882,7 @@ void lcd_unLoadFilament()
     lcd_implementation_clear();
   }
 
-  lcd_return_to_status();
+  menu_action_back();
 }
 
 void lcd_change_filament() {
@@ -2070,38 +2075,49 @@ void lcd_alright() {
 
 }
 
-
-
-void lcd_LoadFilament()
-{
-  if (degHotend0() > EXTRUDE_MINTEMP) 
-  {
 #ifdef PAT9125
-	  if (filament_autoload_enabled && fsensor_enabled)
-	  {
-		  lcd_show_fullscreen_message_and_wait_P(MSG_AUTOLOADING_ENABLED);
-		  return;
-	  }
+static void lcd_menu_AutoLoadFilament()
+{
+    if (degHotend0() > EXTRUDE_MINTEMP)
+    {
+        uint8_t nlines;
+        lcd_display_message_fullscreen_nonBlocking_P(MSG_AUTOLOADING_ENABLED,nlines);
+    }
+    else
+    {
+        if (!menuData.autoLoadFilamentMenu.timer.running()) menuData.autoLoadFilamentMenu.timer.start();
+        lcd.setCursor(0, 0);
+        lcd_printPGM(MSG_ERROR);
+        lcd.setCursor(0, 2);
+        lcd_printPGM(MSG_PREHEAT_NOZZLE);
+        if (menuData.autoLoadFilamentMenu.timer.expired(2000ul)) menu_action_back();
+    }
+    if (lcd_clicked()) menu_action_back();
+}
 #endif //PAT9125
-	  custom_message = true;
-	  loading_flag = true;
-	  enquecommand_P(PSTR("M701")); //load filament
-	  SERIAL_ECHOLN("Loading filament");	    
+
+static void lcd_LoadFilament()
+{
+  if (degHotend0() > EXTRUDE_MINTEMP)
+  {
+      custom_message = true;
+      loading_flag = true;
+      enquecommand_P(PSTR("M701")); //load filament
+      SERIAL_ECHOLN("Loading filament");
+      lcd_return_to_status();
   }
-  else 
+  else
   {
 
     lcd_implementation_clear();
     lcd.setCursor(0, 0);
     lcd_printPGM(MSG_ERROR);
     lcd.setCursor(0, 2);
-	lcd_printPGM(MSG_PREHEAT_NOZZLE);
+    lcd_printPGM(MSG_PREHEAT_NOZZLE);
     delay(2000);
     lcd_implementation_clear();
   }
-  lcd_return_to_status();
 }
-
 
 void lcd_menu_statistics()
 {
@@ -2602,6 +2618,35 @@ void lcd_adjust_z() {
 
 }
 
+bool lcd_wait_for_pinda(float temp) {
+	lcd_set_custom_characters_degree();
+	setTargetHotend(0, 0);
+	setTargetBed(0);
+	Timer pinda_timeout;
+	pinda_timeout.start();
+	bool target_temp_reached = true;
+
+	while (current_temperature_pinda > temp){
+		lcd_display_message_fullscreen_P(MSG_WAITING_TEMP_PINDA);
+
+		lcd.setCursor(0, 4);
+		lcd.print(LCD_STR_THERMOMETER[0]);
+		lcd.print(ftostr3(current_temperature_pinda));
+		lcd.print("/");
+		lcd.print(ftostr3(temp));
+		lcd.print(LCD_STR_DEGREE);
+		delay_keep_alive(1000);
+		serialecho_temperatures();
+		if (pinda_timeout.expired(8 * 60 * 1000ul)) { //PINDA cooling from 60 C to 35 C takes about 7 minutes
+			target_temp_reached = false;
+			break;
+		}
+	}
+	lcd_set_custom_characters_arrows();
+	lcd_update_enable(true);
+	return(target_temp_reached);
+}
+
 void lcd_wait_for_heater() {
 	lcd_display_message_fullscreen_P(MSG_WIZARD_HEATING);
 
@@ -2749,11 +2794,16 @@ static inline bool pgm_is_interpunction(const char *c_addr)
     return c == '.' || c == ',' || c == ':'|| c == ';' || c == '?' || c == '!' || c == '/';
 }
 
-const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
+/**
+ * @brief show full screen message
+ *
+ * This function is non-blocking
+ * @param msg message to be displayed from PROGMEM
+ * @param nlines
+ * @return rest of the text (to be displayed on next page)
+ */
+static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg, uint8_t &nlines)
 {
-    // Disable update of the screen by the usual lcd_update() routine. 
-    lcd_update_enable(false);
-    lcd_implementation_clear();
     lcd.setCursor(0, 0);
     const char *msgend = msg;
     uint8_t row = 0;
@@ -2806,6 +2856,21 @@ const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
     return multi_screen ? msgend : NULL;
 }
 
+const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
+{
+    // Disable update of the screen by the usual lcd_update() routine.
+    lcd_update_enable(false);
+    lcd_implementation_clear();
+    return lcd_display_message_fullscreen_nonBlocking_P(msg, nlines);
+}
+
+
+/**
+ * @brief show full screen message and wait
+ *
+ * This function is blocking.
+ * @param msg message to be displayed from PROGMEM
+ */
 void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 {
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
@@ -3044,6 +3109,36 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
             lcd_show_fullscreen_message_and_wait_P(msg);
         }
     }
+}
+
+void lcd_temp_cal_show_result(bool result) {
+	
+	custom_message_type = 0;
+	custom_message = false;
+	disable_x();
+	disable_y();
+	disable_z();
+	disable_e0();
+	disable_e1();
+	disable_e2();
+	setTargetBed(0); //set bed target temperature back to 0
+
+	if (result == true) {
+		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+		SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
+		lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
+		temp_cal_active = true;
+		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
+	}
+	else {
+		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
+		SERIAL_ECHOLNPGM("Temperature calibration failed. Continue with pressing the knob.");
+		lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_FAILED);
+		temp_cal_active = false;
+		eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 0);
+	}
+	lcd_update_enable(true);
+	lcd_update(2);
 }
 
 static void lcd_show_end_stops() {
@@ -5617,11 +5712,11 @@ static void lcd_main_menu()
 	#ifndef SNMM
 #ifdef PAT9125
 	if ( ((filament_autoload_enabled == true) && (fsensor_enabled == true)))
-        MENU_ITEM(function, MSG_AUTOLOAD_FILAMENT, lcd_LoadFilament);
+        MENU_ITEM(submenu, MSG_AUTOLOAD_FILAMENT, lcd_menu_AutoLoadFilament);
 	else
 #endif //PAT9125
 		MENU_ITEM(function, MSG_LOAD_FILAMENT, lcd_LoadFilament);
-	MENU_ITEM(function, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
+	MENU_ITEM(submenu, MSG_UNLOAD_FILAMENT, lcd_unLoadFilament);
 	#endif
 	#ifdef SNMM
 	MENU_ITEM(submenu, MSG_LOAD_FILAMENT, fil_load_menu);
@@ -6164,6 +6259,11 @@ bool lcd_selftest()
 	_result = lcd_selftest_fan_dialog(0);
 #else //defined(TACH_0)
 	_result = lcd_selftest_manual_fan_check(0, false);
+	if (!_result)
+	{
+		const char *_err;
+		lcd_selftest_error(7, _err, _err); //extruder fan not spinning
+	}
 #endif //defined(TACH_0)
 	
 
@@ -6174,6 +6274,12 @@ bool lcd_selftest()
 		_result = lcd_selftest_fan_dialog(1);
 #else //defined(TACH_1)
 		_result = lcd_selftest_manual_fan_check(1, false);
+		if (!_result)
+		{			
+			const char *_err;
+			lcd_selftest_error(6, _err, _err); //print fan not spinning
+		}
+
 #endif //defined(TACH_1)
 	}
 
@@ -6881,6 +6987,8 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 
 	int8_t enc_dif = 0;
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
+
+	button_pressed = false; 
 	do
 	{
 		switch (_fan)

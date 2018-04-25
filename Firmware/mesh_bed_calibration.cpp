@@ -7,6 +7,10 @@
 #include "stepper.h"
 #include "ultralcd.h"
 
+#ifdef TMC2130
+#include "tmc2130.h"
+#endif //TMC2130
+
 uint8_t world2machine_correction_mode;
 float   world2machine_rotation_and_skew[2][2];
 float   world2machine_rotation_and_skew_inv[2][2];
@@ -20,7 +24,7 @@ float   world2machine_shift[2];
 #define WEIGHT_FIRST_ROW_Y_LOW  (0.0f)
 
 #define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER) // -22 + 23 = 1
-#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER) // -0.6 + 5 = 4.4
+#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER + 4.f) // -0.6 + 5 + 4 = 8.4
 
 // Scaling of the real machine axes against the programmed dimensions in the firmware.
 // The correction is tiny, here around 0.5mm on 250mm length.
@@ -56,10 +60,10 @@ const float bed_skew_angle_extreme = (0.25f * M_PI / 180.f);
 // Positions of the bed reference points in the machine coordinates, referenced to the P.I.N.D.A sensor.
 // The points are the following: center front, center right, center rear, center left.
 const float bed_ref_points_4[] PROGMEM = {
-	13.f - BED_ZERO_REF_X,   10.4f - 4.f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X,  10.4f - 4.f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X, 202.4f - 4.f - BED_ZERO_REF_Y,
-	13.f - BED_ZERO_REF_X, 202.4f - 4.f - BED_ZERO_REF_Y
+	13.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
+	221.f - BED_ZERO_REF_X,  10.4f - BED_ZERO_REF_Y,
+	221.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
+	13.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
 };
 
 const float bed_ref_points[] PROGMEM = {
@@ -159,22 +163,29 @@ static inline float point_weight_y(const uint8_t i, const uint8_t npts, const fl
     }
     return w;
 }
-
-// Non-Linear Least Squares fitting of the bed to the measured induction points
-// using the Gauss-Newton method.
-// This method will maintain a unity length of the machine axes,
-// which is the correct approach if the sensor points are not measured precisely.
+/**
+ * @brief Calculate machine skew and offset
+ *
+ * Non-Linear Least Squares fitting of the bed to the measured induction points
+ * using the Gauss-Newton method.
+ * This method will maintain a unity length of the machine axes,
+ * which is the correct approach if the sensor points are not measured precisely.
+ * @param measured_pts Matrix of 2D points (maximum 18 floats)
+ * @param npts Number of points (maximum 9)
+ * @param true_pts
+ * @param [out] vec_x Resulting correction matrix. X axis vector
+ * @param [out] vec_y Resulting correction matrix. Y axis vector
+ * @param [out] cntr  Resulting correction matrix. [0;0] pont offset
+ * @param verbosity_level
+ * @return BedSkewOffsetDetectionResultType
+ */
 BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
-    // Matrix of maximum 9 2D points (18 floats)
     const float  *measured_pts,
     uint8_t       npts,
     const float  *true_pts,
-    // Resulting correction matrix.
     float        *vec_x,
     float        *vec_y,
     float        *cntr,
-    // Temporary values, 49-18-(2*3)=25 floats
-    //    , float *temp
     int8_t        verbosity_level
     )
 {
@@ -649,6 +660,9 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     return result;
 }
 
+/**
+ * @brief Erase calibration data stored in EEPROM
+ */
 void reset_bed_offset_and_skew()
 {
     eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_CENTER+0), 0x0FFFFFFFF);
@@ -703,6 +717,12 @@ static void world2machine_update(const float vec_x[2], const float vec_y[2], con
     }
 }
 
+/**
+ * @brief Set calibration matrix to identity
+ *
+ * In contrast with world2machine_revert_to_uncorrected(), it doesn't wait for finishing moves
+ * nor updates the current position with the absolute values.
+ */
 void world2machine_reset()
 {
     const float vx[] = { 1.f, 0.f };
@@ -711,15 +731,31 @@ void world2machine_reset()
     world2machine_update(vx, vy, cntr);
 }
 
+/**
+ * @brief Set calibration matrix to default value
+ *
+ * This is used if no valid calibration data can be read from EEPROM.
+ */
+static void world2machine_default()
+{
+#ifdef DEFAULT_Y_OFFSET
+    const float vx[] = { 1.f, 0.f };
+    const float vy[] = { 0.f, 1.f };
+    const float cntr[] = { 0.f, DEFAULT_Y_OFFSET };
+    world2machine_update(vx, vy, cntr);
+#else
+    world2machine_reset();
+#endif
+}
+/**
+ * @brief Set calibration matrix to identity and update current position with absolute position
+ *
+ * Wait for the motors to stop and then update the current position with the absolute values.
+ */
 void world2machine_revert_to_uncorrected()
 {
     if (world2machine_correction_mode != WORLD2MACHINE_CORRECTION_NONE) {
-        // Reset the machine correction matrix.
-        const float vx[] = { 1.f, 0.f };
-        const float vy[] = { 0.f, 1.f };
-        const float cntr[] = { 0.f, 0.f };
-        world2machine_update(vx, vy, cntr);
-        // Wait for the motors to stop and update the current position with the absolute values.
+        world2machine_reset();
         st_synchronize();
         current_position[X_AXIS] = st_get_position_mm(X_AXIS);
         current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
@@ -732,6 +768,15 @@ static inline bool vec_undef(const float v[2])
     return vx[0] == 0x0FFFFFFFF || vx[1] == 0x0FFFFFFFF;
 }
 
+/**
+ * @brief Read and apply calibration data from EEPROM
+ *
+ * If no calibration data has been stored in EEPROM or invalid,
+ * world2machine_default() is used.
+ *
+ * If stored calibration data is invalid, EEPROM storage is cleared.
+ *
+ */
 void world2machine_initialize()
 {
     //SERIAL_ECHOLNPGM("world2machine_initialize");
@@ -789,7 +834,7 @@ void world2machine_initialize()
     if (reset) {
 //        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
         reset_bed_offset_and_skew();
-        world2machine_reset();
+        world2machine_default();
     } else {
         world2machine_update(vec_x, vec_y, cntr);
         /*
@@ -810,10 +855,14 @@ void world2machine_initialize()
     }
 }
 
-// When switching from absolute to corrected coordinates,
-// this will get the absolute coordinates from the servos,
-// applies the inverse world2machine transformation
-// and stores the result into current_position[x,y].
+/**
+ * @brief Update current position after switching to corrected coordinates
+ *
+ * When switching from absolute to corrected coordinates,
+ * this will get the absolute coordinates from the servos,
+ * applies the inverse world2machine transformation
+ * and stores the result into current_position[x,y].
+ */
 void world2machine_update_current()
 {
     float x = current_position[X_AXIS] - world2machine_shift[0];
@@ -872,8 +921,11 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     update_current_position_z();
     if (! endstop_z_hit_on_purpose())
         goto error;
-
-    for (uint8_t i = 0; i < n_iter; ++ i) {
+#ifdef TMC2130
+	if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) goto error; //crash Z detected
+#endif //TMC2130
+    for (uint8_t i = 0; i < n_iter; ++ i)
+	{
         // Move up the retract distance.
         current_position[Z_AXIS] += .5f;
         go_to_current(homing_feedrate[Z_AXIS]/60);
@@ -884,10 +936,16 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
         update_current_position_z();
         if (! endstop_z_hit_on_purpose())
             goto error;
+#ifdef TMC2130
+		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) goto error; //crash Z detected
+#endif //TMC2130
 //        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
 //        MYSERIAL.print(current_position[Z_AXIS], 5);
 //        SERIAL_ECHOLNPGM("");
+		float dz = i?abs(current_position[Z_AXIS] - (z / i)):0;
         z += current_position[Z_AXIS];
+//		printf_P(PSTR(" Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
+		if (dz > 0.05) goto error;//deviation > 50um
     }
     current_position[Z_AXIS] = z;
     if (n_iter > 1)
@@ -2675,8 +2733,21 @@ bool sample_mesh_and_store_reference()
         memcpy(destination, current_position, sizeof(destination));
         enable_endstops(true);
         homeaxis(Z_AXIS);
+
+#ifdef TMC2130
+		if (!axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0)) //Z crash
+		{
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			return false;
+		}
+#endif //TMC2130
+
         enable_endstops(false);
-        find_bed_induction_sensor_point_z();
+		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
+		{
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			return false;
+		}
         mbl.set_z(0, 0, current_position[Z_AXIS]);
     }
     for (int8_t mesh_point = 1; mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS; ++ mesh_point) {
@@ -2694,7 +2765,11 @@ bool sample_mesh_and_store_reference()
         lcd_implementation_print_at(0, next_line, mesh_point+1);
         lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
-        find_bed_induction_sensor_point_z();
+		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
+		{
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			return false;
+		}
         // Get cords of measuring point
         int8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
         int8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;

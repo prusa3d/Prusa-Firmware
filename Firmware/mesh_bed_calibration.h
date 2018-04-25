@@ -5,6 +5,7 @@
 // The world coordinates match the machine coordinates only in case, when the machine
 // is built properly, the end stops are at the correct positions and the axes are perpendicular.
 extern const float bed_ref_points[] PROGMEM;
+extern const float bed_ref_points_4[] PROGMEM;
 
 extern const float bed_skew_angle_mild;
 extern const float bed_skew_angle_extreme;
@@ -37,26 +38,6 @@ extern void world2machine_initialize();
 // to current_position[x,y].
 extern void world2machine_update_current();
 
-inline void world2machine(const float &x, const float &y, float &out_x, float &out_y)
-{
-	if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
-		// No correction.
-		out_x = x;
-		out_y = y;
-	} else {
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SKEW) {
-			// Firs the skew & rotation correction.
-			out_x = world2machine_rotation_and_skew[0][0] * x + world2machine_rotation_and_skew[0][1] * y;
-			out_y = world2machine_rotation_and_skew[1][0] * x + world2machine_rotation_and_skew[1][1] * y;
-		}
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SHIFT) {
-			// Then add the offset.
-			out_x += world2machine_shift[0];
-			out_y += world2machine_shift[1];
-		}
-	}
-}
-
 inline void world2machine(float &x, float &y)
 {
 	if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
@@ -75,6 +56,13 @@ inline void world2machine(float &x, float &y)
 			y += world2machine_shift[1];
 		}
 	}
+}
+
+inline void world2machine(const float &x, const float &y, float &out_x, float &out_y)
+{
+    out_x = x;
+    out_y = y;
+    world2machine(out_x, out_y);
 }
 
 inline void machine2world(float x, float y, float &out_x, float &out_y)
@@ -147,17 +135,22 @@ extern bool find_bed_induction_sensor_point_z(float minimum_z = -10.f, uint8_t n
 extern bool find_bed_induction_sensor_point_xy(int verbosity_level = 0);
 extern void go_home_with_z_lift();
 
-// Positive or zero: ok
-// Negative: failed
+/**
+ * @brief Bed skew and offest detection result
+ *
+ * Positive or zero: ok
+ * Negative: failed
+ */
+
 enum BedSkewOffsetDetectionResultType {
 	// Detection failed, some point was not found.
-	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1,
-	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2,
+	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1, //!< Point not found.
+	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2, //!< Fitting failed
 	
 	// Detection finished with success.
-	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,
-	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,
-	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2
+	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,  //!< Perfect.
+	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,  //!< Mildly skewed.
+	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2   //!< Extremely skewed.
 };
 
 extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level, uint8_t &too_far_mask);

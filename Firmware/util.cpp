@@ -260,6 +260,10 @@ bool force_selftest_if_fw_version()
 		else if (ver_with_calibration[i] < ver_eeprom[i])
 			break;
 	}
+
+	//force selftest also in case that version used before flashing new firmware was 3.2.0-RC1
+	if ((ver_eeprom[0] == 3) && (ver_eeprom[1] == 2) && (ver_eeprom[2] == 0) && (ver_eeprom[3] == 3)) force_selftest = true;
+	
 	return force_selftest;
 }
 

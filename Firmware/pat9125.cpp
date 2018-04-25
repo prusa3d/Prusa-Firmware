@@ -92,7 +92,10 @@ int pat9125_init()
 //	pat9125_PID2 = 0x91;
 	if ((pat9125_PID1 != 0x31) || (pat9125_PID2 != 0x91))
 	{
-		return 0;
+		pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
+		pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
+		if ((pat9125_PID1 != 0x31) || (pat9125_PID2 != 0x91))
+			return 0;
 	}
 	// Switch to bank0, not allowed to perform OTS_RegWriteRead.
 	pat9125_wr_reg(PAT9125_BANK_SELECTION, 0);
@@ -132,6 +135,9 @@ int pat9125_init()
 	pat9125_wr_reg(PAT9125_BANK_SELECTION, 0x00);
 	// Enable write protect.
 	pat9125_wr_reg(PAT9125_WP, 0x00);
+
+	pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
+	pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
 	return 1;
 }
 
@@ -142,11 +148,13 @@ int pat9125_update()
 		unsigned char ucMotion = pat9125_rd_reg(PAT9125_MOTION);
 		pat9125_b = pat9125_rd_reg(PAT9125_FRAME);
 		pat9125_s = pat9125_rd_reg(PAT9125_SHUTTER);
+		if (pat9125_PID1 == 0xff) return 0;
 		if (ucMotion & 0x80)
 		{
 			unsigned char ucXL = pat9125_rd_reg(PAT9125_DELTA_XL);
 			unsigned char ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
 			unsigned char ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
+			if (pat9125_PID1 == 0xff) return 0;
 			int iDX = ucXL | ((ucXYH << 4) & 0xf00);
 			int iDY = ucYL | ((ucXYH << 8) & 0xf00);
 			if (iDX & 0x800) iDX -= 4096;
@@ -164,10 +172,12 @@ int pat9125_update_y()
 	if ((pat9125_PID1 == 0x31) && (pat9125_PID2 == 0x91))
 	{
 		unsigned char ucMotion = pat9125_rd_reg(PAT9125_MOTION);
+		if (pat9125_PID1 == 0xff) return 0;
 		if (ucMotion & 0x80)
 		{
 			unsigned char ucYL = pat9125_rd_reg(PAT9125_DELTA_YL);
 			unsigned char ucXYH = pat9125_rd_reg(PAT9125_DELTA_XYH);
+			if (pat9125_PID1 == 0xff) return 0;
 			int iDY = ucYL | ((ucXYH << 8) & 0xf00);
 			if (iDY & 0x800) iDY -= 4096;
 			pat9125_y -= iDY; //negative number, because direction switching does not work
@@ -179,6 +189,7 @@ int pat9125_update_y()
 
 unsigned char pat9125_rd_reg(unsigned char addr)
 {
+//    printf_P(PSTR("pat9125_rd_reg 0x%hhx "), addr);
 	unsigned char data = 0;
 #ifdef PAT9125_SWSPI
 	swspi_start();
@@ -188,6 +199,14 @@ unsigned char pat9125_rd_reg(unsigned char addr)
 #endif //PAT9125_SWSPI
 #ifdef PAT9125_SWI2C
 	int iret = swi2c_readByte_A8(PAT9125_I2C_ADDR, addr, &data);
+	if (!iret) //NO ACK error
+	{
+		pat9125_PID1 = 0xff;
+		pat9125_PID2 = 0xff;
+//	    printf_P(PSTR("ERR\n"));
+		return 0;
+	}
+//    printf_P(PSTR("0x%hhx OK\n"), data);
 #endif //PAT9125_SWI2C
 #ifdef PAT9125_HWI2C
 	Wire.beginTransmission(PAT9125_I2C_ADDR);
@@ -202,6 +221,7 @@ unsigned char pat9125_rd_reg(unsigned char addr)
 
 void pat9125_wr_reg(unsigned char addr, unsigned char data)
 {
+//    printf_P(PSTR("pat9125_wr_reg 0x%hhx 0x%hhx  "), addr, data);
 #ifdef PAT9125_SWSPI
 	swspi_start();
 	swspi_tx(addr | 0x80);
@@ -210,6 +230,15 @@ void pat9125_wr_reg(unsigned char addr, unsigned char data)
 #endif //PAT9125_SWSPI
 #ifdef PAT9125_SWI2C
 	int iret = swi2c_writeByte_A8(PAT9125_I2C_ADDR, addr, &data);
+	if (!iret) //NO ACK error
+	{
+		pat9125_PID1 = 0xff;
+		pat9125_PID2 = 0xff;
+//	    printf_P(PSTR("ERR\n"));
+		return;
+	}
+//    printf_P(PSTR("OK\n"));
+
 #endif //PAT9125_SWI2C
 #ifdef PAT9125_HWI2C
 	Wire.beginTransmission(PAT9125_I2C_ADDR);

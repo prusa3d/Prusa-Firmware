@@ -384,8 +384,12 @@ void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
 	for (l = 14; l > 8; l--)
 		if (histo[l] >= 10)
 			break;
-	uint8_t pix_min = (max_l << 4) / 2;
+	uint8_t pix_min = 0;
 	uint8_t pix_max = l << 4;
+	if (histo[0] < (32*32 - 144))
+	{
+		pix_min = (max_l << 4) / 2;
+	}
 	uint8_t pix_dif = pix_max - pix_min;
 	DBG(_n(" min=%d max=%d dif=%d\n"), pix_min, pix_max, pix_dif);
 	for (int16_t i = 0; i < 32*32; i++)

@@ -2197,8 +2197,8 @@ const char * const MSG_TEMP_CALIBRATION_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_CZ
 };
 
-const char MSG_TEMP_CALIBRATION_DONE_EN[] PROGMEM = "Temperature calibration is finished. Click to continue.";
-const char MSG_TEMP_CALIBRATION_DONE_CZ[] PROGMEM = "Teplotni kalibrace dokoncena. Pokracujte stiskem tlacitka.";
+const char MSG_TEMP_CALIBRATION_DONE_EN[] PROGMEM = "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal.";
+const char MSG_TEMP_CALIBRATION_DONE_CZ[] PROGMEM = "Teplotni kalibrace dokoncena a je nyni aktivni. Teplotni kalibraci je mozno deaktivovat v menu Nastaveni->Tepl. kal.";
 const char * const MSG_TEMP_CALIBRATION_DONE_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_DONE_EN,
 	MSG_TEMP_CALIBRATION_DONE_CZ
@@ -2216,6 +2216,13 @@ const char MSG_TEMP_CALIBRATION_ON_CZ[] PROGMEM = "Tepl. kal.  [zap]";
 const char * const MSG_TEMP_CALIBRATION_ON_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_TEMP_CALIBRATION_ON_EN,
 	MSG_TEMP_CALIBRATION_ON_CZ
+};
+
+const char MSG_TEMP_CAL_FAILED_EN[] PROGMEM = "Temperature calibration failed";
+const char MSG_TEMP_CAL_FAILED_CZ[] PROGMEM = "Teplotni kalibrace selhala";
+const char * const MSG_TEMP_CAL_FAILED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_TEMP_CAL_FAILED_EN,
+	MSG_TEMP_CAL_FAILED_CZ
 };
 
 const char MSG_TEMP_CAL_WARNING_EN[] PROGMEM = "Stable ambient temperature 21-26C is needed a rigid stand is required.";
@@ -2352,6 +2359,13 @@ const char MSG_WAITING_TEMP_CZ[] PROGMEM = "Cekani na zchladnuti trysky a podloz
 const char * const MSG_WAITING_TEMP_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WAITING_TEMP_EN,
 	MSG_WAITING_TEMP_CZ
+};
+
+const char MSG_WAITING_TEMP_PINDA_EN[] PROGMEM = "Waiting for PINDA probe cooling";
+const char MSG_WAITING_TEMP_PINDA_CZ[] PROGMEM = "Cekani na zchladnuti PINDA";
+const char * const MSG_WAITING_TEMP_PINDA_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_WAITING_TEMP_PINDA_EN,
+	MSG_WAITING_TEMP_PINDA_CZ
 };
 
 const char MSG_WATCH_EN[] PROGMEM = "Info screen";

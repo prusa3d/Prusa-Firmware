@@ -1336,7 +1336,8 @@ void setup()
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
 	  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
-		  calibration_status() == CALIBRATION_STATUS_UNKNOWN) {
+		  calibration_status() == CALIBRATION_STATUS_UNKNOWN || 
+		  calibration_status() == CALIBRATION_STATUS_XYZ_CALIBRATION) {
 		  // Reset the babystepping values, so the printer will not move the Z axis up when the babystepping is enabled.
 		  eeprom_update_word((uint16_t*)EEPROM_BABYSTEP_Z, 0);
 		  // Show the message.
@@ -1357,13 +1358,13 @@ void setup()
 	  }
   }
 
-#ifndef DEBUG_DISABLE_FORCE_SELFTEST
-  if (force_selftest_if_fw_version() && calibration_status() < CALIBRATION_STATUS_ASSEMBLED ) {
+#if !defined (DEBUG_DISABLE_FORCE_SELFTEST) && defined (TMC2130)
+  if (force_selftest_if_fw_version() && calibration_status() < CALIBRATION_STATUS_ASSEMBLED) {
 	  lcd_show_fullscreen_message_and_wait_P(MSG_FORCE_SELFTEST);
 	  update_current_firmware_version_to_eeprom();
 	  lcd_selftest();
   }
-#endif //DEBUG_DISABLE_FORCE_SELFTEST
+#endif //TMC2130 && !DEBUG_DISABLE_FORCE_SELFTEST
 
   KEEPALIVE_STATE(IN_PROCESS);
 #endif //DEBUG_DISABLE_STARTMSGS
@@ -2074,6 +2075,9 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         feedrate = homing_feedrate[axis];
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
+#ifdef TMC2130
+		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) return; //Z crash
+#endif //TMC2130
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
         destination[axis] = -home_retract_mm(axis) * axis_home_dir;
@@ -2083,6 +2087,9 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         feedrate = homing_feedrate[axis]/2 ;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
+#ifdef TMC2130
+		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) return; //Z crash
+#endif //TMC2130
         axis_is_at_home(axis);
         destination[axis] = current_position[axis];
         feedrate = 0.0;
@@ -3099,7 +3106,7 @@ void process_commands()
       			  } 
               // 1st mesh bed leveling measurement point, corrected.
               world2machine_initialize();
-              world2machine(pgm_read_float(bed_ref_points), pgm_read_float(bed_ref_points+1), destination[X_AXIS], destination[Y_AXIS]);
+              world2machine(pgm_read_float(bed_ref_points_4), pgm_read_float(bed_ref_points_4+1), destination[X_AXIS], destination[Y_AXIS]);
               world2machine_reset();
               if (destination[Y_AXIS] < Y_MIN_POS)
                   destination[Y_AXIS] = Y_MIN_POS;
@@ -3107,7 +3114,18 @@ void process_commands()
               feedrate = homing_feedrate[Z_AXIS]/10;
               current_position[Z_AXIS] = 0;
               enable_endstops(false);
+#ifdef DEBUG_BUILD
+              SERIAL_ECHOLNPGM("plan_set_position()");
+              MYSERIAL.println(current_position[X_AXIS]);MYSERIAL.println(current_position[Y_AXIS]);
+              MYSERIAL.println(current_position[Z_AXIS]);MYSERIAL.println(current_position[E_AXIS]);
+#endif
               plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+#ifdef DEBUG_BUILD
+              SERIAL_ECHOLNPGM("plan_buffer_line()");
+              MYSERIAL.println(destination[X_AXIS]);MYSERIAL.println(destination[Y_AXIS]);
+              MYSERIAL.println(destination[Z_AXIS]);MYSERIAL.println(destination[E_AXIS]);
+              MYSERIAL.println(feedrate);MYSERIAL.println(active_extruder);
+#endif
               plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
               st_synchronize();
               current_position[X_AXIS] = destination[X_AXIS];
@@ -3451,13 +3469,32 @@ void process_commands()
 			}
 			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
 			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
+			
 			if (result)
 			{
 				current_position[Z_AXIS] = 50;
-				current_position[Y_AXIS] = 190;
+				current_position[Y_AXIS] += 180;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
+				current_position[Y_AXIS] -= 180;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				st_synchronize();
+				feedrate = homing_feedrate[Z_AXIS] / 10;
+				enable_endstops(true);
+				endstops_hit_on_purpose();
+				homeaxis(Z_AXIS);
+				plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+				enable_endstops(false);
+			}
+			if ((current_temperature_pinda > 35) && (farm_mode == false)) {
+				//waiting for PIDNA probe to cool down in case that we are not in farm mode
+				current_position[Z_AXIS] = 100;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+				if (lcd_wait_for_pinda(35) == false) { //waiting for PINDA probe to cool, if this takes more then time expected, temp. cal. fails
+					lcd_temp_cal_show_result(false);
+					break;
+				}
 			}
 			lcd_update_enable(true);
 			KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
@@ -3500,7 +3537,9 @@ void process_commands()
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			st_synchronize();
 
-			find_bed_induction_sensor_point_z(-1.f);
+			bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
+			if(find_z_result == false) lcd_temp_cal_show_result(find_z_result);
+
 			zero_z = current_position[Z_AXIS];
 
 			//current_position[Z_AXIS]
@@ -3549,7 +3588,9 @@ void process_commands()
 				current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
-				find_bed_induction_sensor_point_z(-1.f);
+				find_z_result = find_bed_induction_sensor_point_z(-1.f);
+				if (find_z_result == false) lcd_temp_cal_show_result(find_z_result);
+
 				z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
 
 				SERIAL_ECHOLNPGM("");
@@ -3562,25 +3603,8 @@ void process_commands()
 				EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 
 			}
-			custom_message_type = 0;
-			custom_message = false;
+			lcd_temp_cal_show_result(true);
 
-			eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-			SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
-			disable_x();
-			disable_y();
-			disable_z();
-			disable_e0();
-			disable_e1();
-			disable_e2();
-			setTargetBed(0); //set bed target temperature back to 0
-//			setTargetHotend(0,0); //set hotend target temperature back to 0
-			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CALIBRATION_DONE);
-			temp_cal_active = true;
-			eeprom_update_byte((unsigned char *)EEPROM_TEMP_CAL_ACTIVE, 1);
-
-			lcd_update_enable(true);
-			lcd_update(2);
 			break;
 		}
 #endif //PINDA_THERMISTOR
@@ -3764,6 +3788,15 @@ void process_commands()
 #endif //MK1BP
 	case_G80:
 	{
+#ifdef TMC2130
+		//previously enqueued "G28 W0" failed (crash Z)
+		if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && !axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0))
+		{
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			break;
+		}
+#endif //TMC2130
+
 		mesh_bed_leveling_flag = true;
 		int8_t verbosity_level = 0;
 		static bool run = false;
