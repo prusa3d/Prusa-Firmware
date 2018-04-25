@@ -5184,7 +5184,16 @@ Sigma_Exit:
           // pause the print and ask the user to upgrade the firmware.
           show_upgrade_dialog_if_version_newer(++ strchr_pointer);
       } else {
-          SERIAL_PROTOCOLRPGM(MSG_M115_REPORT);
+          SERIAL_ECHOPGM("FIRMWARE_NAME:Prusa-Firmware ");
+          SERIAL_ECHORPGM(FW_VERSION_STR_P());
+          SERIAL_ECHOPGM(" based on Marlin FIRMWARE_URL:https://github.com/prusa3d/Prusa-Firmware PROTOCOL_VERSION:");
+          SERIAL_ECHOPGM(PROTOCOL_VERSION);
+          SERIAL_ECHOPGM(" MACHINE_TYPE:");
+          SERIAL_ECHOPGM(CUSTOM_MENDEL_NAME); 
+          SERIAL_ECHOPGM(" EXTRUDER_COUNT:"); 
+          SERIAL_ECHOPGM(STRINGIFY(EXTRUDERS)); 
+          SERIAL_ECHOPGM(" UUID:"); 
+          SERIAL_ECHOLNPGM(MACHINE_UUID);
       }
       break;
 /*    case 117: // M117 display message
