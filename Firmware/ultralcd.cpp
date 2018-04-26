@@ -111,7 +111,8 @@ union MenuData
 
     struct AutoLoadFilamentMenu
     {
-        Timer timer;
+        //Timer timer;
+		char dummy;
     } autoLoadFilamentMenu;
 };
 
@@ -2085,12 +2086,13 @@ static void lcd_menu_AutoLoadFilament()
     }
     else
     {
-        if (!menuData.autoLoadFilamentMenu.timer.running()) menuData.autoLoadFilamentMenu.timer.start();
+		Timer* ptimer = (Timer*)&(menuData.autoLoadFilamentMenu.dummy);
+        if (!ptimer->running()) ptimer->start();
         lcd.setCursor(0, 0);
         lcd_printPGM(MSG_ERROR);
         lcd.setCursor(0, 2);
         lcd_printPGM(MSG_PREHEAT_NOZZLE);
-        if (menuData.autoLoadFilamentMenu.timer.expired(2000ul)) menu_action_back();
+        if (ptimer->expired(2000ul)) menu_action_back();
     }
     if (lcd_clicked()) menu_action_back();
 }
