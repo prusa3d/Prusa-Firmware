@@ -6328,10 +6328,9 @@ Sigma_Exit:
 		break;
 	}
 	case 861: // M861 - Set/Read PINDA temperature compensation offsets
-		if (code_seen('?')) { // ? - Print out current EEPROM offset values
+        if (code_seen('?')) { // ? - Print out current EEPROM offset values
 			uint8_t cal_status = calibration_status_pinda();
             int16_t usteps = 0;
-            int16_t z_shift = 0;
             cal_status ? SERIAL_PROTOCOLLN("PINDA cal status: 1") : SERIAL_PROTOCOLLN("PINDA cal status: 0");
 			SERIAL_PROTOCOLLN("index, temp, ustep, um");
             for (uint8_t i = 0; i < 6; i++)
@@ -6350,7 +6349,7 @@ Sigma_Exit:
 		}
         else if (code_seen('!')) { // ! - Set factory default values
             eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-            z_shift = 8;    //40C -  20um -   8usteps
+            int16_t z_shift = 8;    //40C -  20um -   8usteps
             EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT, &z_shift);
             z_shift = 24;   //45C -  60um -  24usteps
             EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 2, &z_shift);
@@ -6364,11 +6363,12 @@ Sigma_Exit:
         }
 		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
+            int16_t z_shift = 0;
             for (uint8_t i = 0; i < 5; i++) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 			SERIAL_PROTOCOLLN("zerorized");
 		}
 		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
-			usteps = code_value();
+			int16_t usteps = code_value();
 			if (code_seen('I')) {
 				byte index = code_value();
 				if ((index >= 0) && (index < 5)) {
