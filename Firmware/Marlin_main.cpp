@@ -6051,7 +6051,7 @@ Sigma_Exit:
             tmc2130_set_current_r(E_AXIS, tmc2130_current_r_bckp);
 #else
 			uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-			if(silentMode != SILENT_MODE_NORMAL) st_current_set(2, tmp_motor[2]); //set E back to normal operation currents
+			if(silentMode != SILENT_MODE_POWER) st_current_set(2, tmp_motor[2]); //set E back to normal operation currents
 			else st_current_set(2, tmp_motor_loud[2]);		
 #endif //TMC2130
 
