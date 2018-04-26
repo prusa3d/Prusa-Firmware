@@ -1270,12 +1270,8 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
 		//eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 0); //40C
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 0); //45C
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 0); //50C
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 0); //55C
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0); //60C
-
+		int16_t z_shift = 0;
+		for (uint8_t i = 0; i < 5; i++) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 		temp_cal_active = false;
 	}
@@ -6332,14 +6328,14 @@ Sigma_Exit:
 		break;
 	}
 	case 861: // M861 - Set/Read PINDA temperature compensation offsets
-		if (code_seen('?')) { // ? - Print out current EEPRO offset values
+		if (code_seen('?')) { // ? - Print out current EEPROM offset values
 			uint8_t cal_status = calibration_status_pinda();
+			int16_t usteps = 0;
 			cal_status ? SERIAL_PROTOCOLLN("PINDA cal status: 1") : SERIAL_PROTOCOLLN("PINDA cal status: 0");
 			SERIAL_PROTOCOLLN("index, temp, ustep, um");
 			for (uint8_t i = 0; i < 6; i++)
 			{
-				uint16_t usteps = 0;
-				if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+				if(i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &usteps);
 				float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
 				i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 				SERIAL_PROTOCOLPGM(", ");
@@ -6353,34 +6349,35 @@ Sigma_Exit:
 		}
 		else if (code_seen('!')) { // ! - Set factory default values
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 8); //40C -  20um -   8usteps
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 24); //45C -  60um -  24usteps
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 48); //50C - 120um -  48usteps
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 80); //55C - 200um -  80usteps
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+			int16_t z_shift = 8;    //40C -  20um -   8usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT, &z_shift);
+			z_shift = 24;   //45C -  60um -  24usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 2, &z_shift);
+			z_shift = 48;   //50C - 120um -  48usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 4, &z_shift);
+			z_shift = 80;   //55C - 200um -  80usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 6, &z_shift);
+			z_shift = 120;  //60C - 300um - 120usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 8, &z_shift);
 			SERIAL_PROTOCOLLN("factory restored");
 		}
 		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 0);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 0);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 0);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 0);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0);
+			int16_t z_shift = 0;
+			for (uint8_t i = 0; i < 5; i++) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 			SERIAL_PROTOCOLLN("zerorized");
 		}
 		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
-			uint16_t usteps = code_value();
+			int16_t usteps = code_value();
 			if (code_seen('I')) {
 				byte index = code_value();
 				if ((index >= 0) && (index < 5)) {
-					eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + index, usteps);
+					EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + index * 2, &usteps);
 					SERIAL_PROTOCOLLN("OK");
 					SERIAL_PROTOCOLLN("index, temp, ustep, um");
 					for (uint8_t i = 0; i < 6; i++)
 					{
-						uint16_t usteps = 0;
-						if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+						if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i - 1) * 2, &usteps);
 						float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
 						i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 						SERIAL_PROTOCOLPGM(", ");
