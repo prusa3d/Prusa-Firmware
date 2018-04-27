@@ -6367,6 +6367,9 @@ bool lcd_selftest()
 #ifdef TMC2130
 	if (_result)
 	{
+		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+		st_synchronize();
 		_progress = lcd_selftest_screen(13, 0, 2, true, 0);
 		bool bres = tmc2130_home_calibrate(X_AXIS);
 		_progress = lcd_selftest_screen(13, 1, 2, true, 0);
@@ -6607,7 +6610,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 		else
 		{
-			_progress = lcd_selftest_screen(2 + _axis, _progress, 3, false, 0);
+			_progress = lcd_selftest_screen(4 + _axis, _progress, 3, false, 0);
 			_lcd_refresh = 0;
 		}
 
