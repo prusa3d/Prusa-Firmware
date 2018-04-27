@@ -7136,7 +7136,7 @@ static void handleSafetyTimer()
     {
         safetyTimer.start();
     }
-    else if (safetyTimer.expired(900000ul))
+    else if (safetyTimer.expired(1800000ul)) //30 minutes
     {
         setTargetBed(0);
         setTargetHotend(0, 0);
