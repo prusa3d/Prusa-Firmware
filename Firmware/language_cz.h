@@ -132,6 +132,7 @@
 #define MSG_HEATING                         "Zahrivani"
 #define MSG_HEATING_COMPLETE                "Zahrivani OK."
 #define MSG_BED_HEATING                     "Zahrivani bed"
+#define MSG_BED_HEATING_SAFETY_DISABLED     "Zahrivani preruseno bezpecnostnim casovacem."
 #define MSG_BED_DONE                        "Bed OK."
 #define MSG_ERR_KILLED                      "Printer halted. kill() called!"
 #define MSG_ERR_STOPPED                     "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
