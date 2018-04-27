@@ -615,6 +615,4 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 //#define SUPPORT_VERBOSITY
 
-#define DEBUG_DISABLE_FORCE_SELFTEST //temporary change for test purposes
-
 #endif //__CONFIGURATION_PRUSA_H
