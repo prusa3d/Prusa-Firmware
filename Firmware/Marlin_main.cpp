@@ -7119,7 +7119,9 @@ void handle_status_leds(void) {
 
 #ifdef SAFETYTIMER
 /**
- * @brief Turn off heating after 15 minutes of inactivity
+ * @brief Turn off heating after 30 minutes of inactivity
+ *
+ * Full screen blocking notification message is shown after heater turning off.
  */
 static void handleSafetyTimer()
 {
@@ -7136,10 +7138,11 @@ static void handleSafetyTimer()
     {
         safetyTimer.start();
     }
-    else if (safetyTimer.expired(1800000ul)) //30 minutes
+    else if (safetyTimer.expired(1800000ul))
     {
         setTargetBed(0);
         setTargetHotend(0, 0);
+        lcd_show_fullscreen_message_and_wait_P(MSG_BED_HEATING_SAFETY_DISABLED);
     }
 }
 #endif //SAFETYTIMER
