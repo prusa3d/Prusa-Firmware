@@ -6377,6 +6377,7 @@ Sigma_Exit:
 					SERIAL_PROTOCOLLN("index, temp, ustep, um");
 					for (uint8_t i = 0; i < 6; i++)
 					{
+						usteps = 0;
 						if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i - 1) * 2, &usteps);
 						float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
 						i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
