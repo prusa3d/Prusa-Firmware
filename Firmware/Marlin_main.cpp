@@ -3976,7 +3976,7 @@ void process_commands()
 				SERIAL_ECHOLNPGM("");
 			}*/
 //			#endif // SUPPORT_VERBOSITY
-			mbl.set_z(ix, iy, current_position[Z_AXIS] - offset_z); //store measured z values z_values[iy][ix] = z - offset_z;
+			mbl.set_z(ix, iy, current_position[Z_AXIS] + offset_z); //store measured z values z_values[iy][ix] = z + offset_z;
 
 			custom_message_state--;
 			mesh_point++;
