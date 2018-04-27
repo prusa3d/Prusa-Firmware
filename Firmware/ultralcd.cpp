@@ -6347,9 +6347,9 @@ bool lcd_selftest()
 #ifdef TMC2130
 		tmc2130_home_exit();
 		enable_endstops(false);
-#endif
 		current_position[X_AXIS] = current_position[X_AXIS] + 14;
 		current_position[Y_AXIS] = current_position[Y_AXIS] + 12;
+#endif
 
 		//homeaxis(X_AXIS);
 		//homeaxis(Y_AXIS);
@@ -6567,6 +6567,11 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 	int _lcd_refresh = 0;
 	_travel = _travel + (_travel / 10);
 
+	if (_axis == X_AXIS) {
+		current_position[Z_AXIS] += 17;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
+	}
+
 	do {
 		current_position[_axis] = current_position[_axis] - 1;
 
@@ -6699,7 +6704,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
 			endstop_triggered = true;
 			if (current_position_init - 1 <= current_position[axis] && current_position_init + 1 >= current_position[axis]) {
-				current_position[axis] += 15;
+				current_position[axis] += (axis == X_AXIS) ? 13 : 9;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 				st_synchronize();
 				return(true);
