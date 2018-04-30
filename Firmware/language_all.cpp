@@ -170,6 +170,13 @@ const char * const MSG_BED_HEATING_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_BED_HEATING_CZ
 };
 
+const char MSG_BED_HEATING_SAFETY_DISABLED_EN[] PROGMEM = "Heating disabled by safety timer.";
+const char MSG_BED_HEATING_SAFETY_DISABLED_CZ[] PROGMEM = "Zahrivani preruseno bezpecnostnim casovacem.";
+const char * const MSG_BED_HEATING_SAFETY_DISABLED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_BED_HEATING_SAFETY_DISABLED_EN,
+	MSG_BED_HEATING_SAFETY_DISABLED_CZ
+};
+
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_EN[] PROGMEM = "Bed leveling failed. Sensor triggered too high. Waiting for reset.";
 const char MSG_BED_LEVELING_FAILED_POINT_HIGH_CZ[] PROGMEM = "Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset.";
 const char * const MSG_BED_LEVELING_FAILED_POINT_HIGH_LANG_TABLE[LANG_NUM] PROGMEM = {
