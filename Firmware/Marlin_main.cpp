@@ -3534,8 +3534,10 @@ void process_commands()
 			st_synchronize();
 
 			bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
-			if(find_z_result == false) lcd_temp_cal_show_result(find_z_result);
-
+			if (find_z_result == false) {
+				lcd_temp_cal_show_result(find_z_result);
+				break;
+			}
 			zero_z = current_position[Z_AXIS];
 
 			//current_position[Z_AXIS]
@@ -3585,8 +3587,10 @@ void process_commands()
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				find_z_result = find_bed_induction_sensor_point_z(-1.f);
-				if (find_z_result == false) lcd_temp_cal_show_result(find_z_result);
-
+				if (find_z_result == false) {
+					lcd_temp_cal_show_result(find_z_result);
+					break;
+				}
 				z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
 
 				SERIAL_ECHOLNPGM("");
