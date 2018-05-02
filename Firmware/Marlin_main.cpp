@@ -764,7 +764,8 @@ void factory_reset(char level, bool quiet)
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
             farm_no = 0;
-			farm_mode == false;
+//*** MaR::180501_01
+			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
                        
@@ -970,6 +971,7 @@ void setup()
 	setup_killpin();
 	setup_powerhold();
 
+//*** MaR::180501_02b
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF)) 
@@ -1067,7 +1069,7 @@ void setup()
 //	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_mode = TMC2130_MODE_NORMAL;
 	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
-	if (crashdet)
+	if (crashdet && !farm_mode)
 	{
 		crashdet_enable();
 	    MYSERIAL.println("CrashDetect ENABLED!");
@@ -1165,6 +1167,7 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
+//*** MaR::180501_02
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
@@ -3534,10 +3537,8 @@ void process_commands()
 			st_synchronize();
 
 			bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
-			if (find_z_result == false) {
-				lcd_temp_cal_show_result(find_z_result);
-				break;
-			}
+			if(find_z_result == false) lcd_temp_cal_show_result(find_z_result);
+
 			zero_z = current_position[Z_AXIS];
 
 			//current_position[Z_AXIS]
@@ -3587,10 +3588,8 @@ void process_commands()
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				find_z_result = find_bed_induction_sensor_point_z(-1.f);
-				if (find_z_result == false) {
-					lcd_temp_cal_show_result(find_z_result);
-					break;
-				}
+				if (find_z_result == false) lcd_temp_cal_show_result(find_z_result);
+
 				z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
 
 				SERIAL_ECHOLNPGM("");
@@ -4221,13 +4220,15 @@ void process_commands()
       }
       break;
 
-	case 98: //activate farm mode
+	case 98: // G98 (activate farm mode)
 		farm_mode = 1;
 		PingTime = millis();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+          SilentModeMenu = SILENT_MODE_OFF;
+          eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 		break;
 
-	case 99: //deactivate farm mode
+	case 99: // G99 (deactivate farm mode)
 		farm_mode = 0;
 		lcd_printer_connected();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
