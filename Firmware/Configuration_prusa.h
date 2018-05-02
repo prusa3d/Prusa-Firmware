@@ -20,6 +20,7 @@ GENERAL SETTINGS
 
 // Prusa Single extruder multiple material suport
 //#define SNMM
+#define MK3
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
@@ -34,9 +35,13 @@ AXIS SETTINGS
 
 // Steps per unit {X,Y,Z,E}
 #ifdef SNMM
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
+	#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,140}
 #else
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
+	#ifdef MK3
+		#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,133}
+	#else
+		#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,161.3}
+	#endif
 #endif
 
 

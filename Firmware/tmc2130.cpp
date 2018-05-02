@@ -138,9 +138,9 @@ void tmc2130_init()
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current[axis], tmc2130_current[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
-//		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
-//		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
-		tmc2130_wr(axis, TMC2130_REG_GCONF, /* (axis < 2) ? TMC2130_GCONF_SGSENS : */ TMC2130_GCONF_NORMAL);
+		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
+		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
+		tmc2130_wr(axis, TMC2130_REG_GCONF, (axis < 2) ? TMC2130_GCONF_SGSENS : TMC2130_GCONF_NORMAL);
 //		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
 //		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
 		//tmc2130_wr_THIGH(axis, TMC2130_THIGH);
@@ -247,7 +247,7 @@ void tmc2130_wr_MSLUTSTART(uint8_t axis, uint8_t start_sin, uint8_t start_sin90)
 	val |= (uint32_t)start_sin;
 	val |= ((uint32_t)start_sin90) << 16;
 	tmc2130_wr(axis, TMC2130_REG_MSLUTSTART, val);
-	//printf_P(PSTR("MSLUTSTART=%08lx (start_sin=%d start_sin90=%d)\n"), val, start_sin, start_sin90);
+	//printf_P(PSTR("MSLUTSTART=_08lx (start_sin=%d start_sin90=%d)\n"), val, start_sin, start_sin90);
 }
 
 void tmc2130_wr_MSLUTSEL(uint8_t axis, uint8_t x1, uint8_t x2, uint8_t x3, uint8_t w0, uint8_t w1, uint8_t w2, uint8_t w3)
