@@ -54,7 +54,8 @@
 #include "pins_arduino.h"
 #include "math.h"
 #include "util.h"
-
+#include "tmc2130.h"
+#include "spi.h"
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -990,6 +991,19 @@ void factory_reset(char level, bool quiet)
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+  WRITE(X_TMC2130_CS, HIGH);
+  WRITE(Y_TMC2130_CS, HIGH);
+  WRITE(Z_TMC2130_CS, HIGH);
+  WRITE(E0_TMC2130_CS, HIGH);
+  SET_OUTPUT(X_TMC2130_CS);
+  SET_OUTPUT(Y_TMC2130_CS);
+  SET_OUTPUT(Z_TMC2130_CS);
+  SET_OUTPUT(E0_TMC2130_CS);
+  SET_INPUT(X_TMC2130_DIAG);
+  SET_INPUT(Y_TMC2130_DIAG);
+  SET_INPUT(Z_TMC2130_DIAG);
+  SET_INPUT(E0_TMC2130_DIAG);
+
 	setup_killpin();
 	setup_powerhold();
 	MYSERIAL.begin(BAUDRATE);
@@ -1046,7 +1060,26 @@ void setup()
 	tp_init();    // Initialize temperature loop
 	plan_init();  // Initialize planner;
 	watchdog_init();
+
+#ifdef TMC2130_LINEARITY_CORRECTION
+  tmc2130_wave_fac[E_AXIS] = eeprom_read_word((uint16_t*)EEPROM_TMC2130_WAVE_E_FAC);
+  if (tmc2130_wave_fac[X_AXIS] == 0xff) tmc2130_wave_fac[X_AXIS] = 0;
+  if (tmc2130_wave_fac[Y_AXIS] == 0xff) tmc2130_wave_fac[Y_AXIS] = 0;
+  if (tmc2130_wave_fac[Z_AXIS] == 0xff) tmc2130_wave_fac[Z_AXIS] = 0;
+  if (tmc2130_wave_fac[E_AXIS] == 0xff) tmc2130_wave_fac[E_AXIS] = 0;
+#endif //TMC2130_LINEARITY_CORRECTION
+
+  tmc2130_mres[X_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
+  tmc2130_mres[Y_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_XY);
+  tmc2130_mres[Z_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_Z);
+  tmc2130_mres[E_AXIS] = tmc2130_usteps2mres(TMC2130_USTEPS_E);
+
+  spi_init();
 	st_init();    // Initialize stepper, this enables interrupts!
+
+  tmc2130_mode = TMC2130_MODE_NORMAL;
+  tmc2130_init();
+
 	setup_photpin();
 	servo_init();
 	// Reset the machine correction matrix.

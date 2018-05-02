@@ -7,6 +7,7 @@
 #define BOARD_RAMBO             301  // Rambo
 #define BOARD_RAMBO_MINI_1_3    302  // Rambo-mini 1.3
 #define BOARD_RAMBO_MINI_1_0    102  // Rambo-mini 1.0
+#define BOARD_EINSY_1_0a        310  // EINSy 1.0a     - 310 (new)
 
 
 #define BOARD_99                99   // This is in pins.h but...?
