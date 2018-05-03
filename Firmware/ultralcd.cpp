@@ -989,7 +989,6 @@ void lcd_commands()
 			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(MSG_M117_V2_CALIBRATION);
-			enquecommand_P(PSTR("G87")); //sets calibration status
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
 			lcd_commands_step = 8;
@@ -2384,7 +2383,17 @@ static void lcd_move_z() {
 }
 
 
-
+/**
+ * @brief Adjust first layer offset from bed if axis is Z_AXIS
+ *
+ * If menu is left (button pushed or timed out), value is stored to EEPROM and
+ * if the axis is Z_AXIS, CALIBRATION_STATUS_CALIBRATED is also stored.
+ * Purpose of this function for other axis then Z is unknown.
+ *
+ * @param axis AxisEnum X_AXIS Y_AXIS Z_AXIS
+ * other value leads to storing Z_AXIS
+ * @param msg text to be displayed
+ */
 static void _lcd_babystep(int axis, const char *msg) 
 {
     if (menuData.babyStep.status == 0) {
@@ -2431,8 +2440,10 @@ static void _lcd_babystep(int axis, const char *msg)
   if (LCD_CLICKED || menuExiting) {
     // Only update the EEPROM when leaving the menu.
     EEPROM_save_B(
-      (axis == 0) ? EEPROM_BABYSTEP_X : ((axis == 1) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z), 
+      (axis == X_AXIS) ? EEPROM_BABYSTEP_X : ((axis == Y_AXIS) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z),
       &menuData.babyStep.babystepMem[axis]);
+
+    if(Z_AXIS == axis) calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
   }
   if (LCD_CLICKED) menu_action_back();
 }
