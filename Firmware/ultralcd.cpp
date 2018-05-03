@@ -3655,7 +3655,7 @@ static void lcd_crash_mode_set()
     
 }
 #endif //TMC2130
-
+ 
 
 static void lcd_set_lang(unsigned char lang) {
   lang_selected = lang;
@@ -4144,15 +4144,18 @@ static void lcd_settings_menu()
   }
 
 #ifdef TMC2130
-//*** MaR::180416_01a
-  if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
-  else MENU_ITEM(function, MSG_STEALTH_MODE_ON, lcd_silent_mode_set);
-  if (SilentModeMenu == SILENT_MODE_NORMAL)
+  if(!farm_mode)
   {
-    if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
-    else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
+//*** MaR::180416_01a
+    if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
+    else MENU_ITEM(function, MSG_STEALTH_MODE_ON, lcd_silent_mode_set);
+    if (SilentModeMenu == SILENT_MODE_NORMAL)
+    {
+      if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
+      else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
+    }
+    else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
   }
-  else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
   MENU_ITEM_EDIT(wfac, MSG_EXTRUDER_CORRECTION,  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);
 #endif //TMC2130
 
@@ -5870,16 +5873,19 @@ static void lcd_tune_menu()
 #endif //DEBUG_DISABLE_FSENSORCHECK
 
 #ifdef TMC2130
+     if(!farm_mode)
+     {
 //*** MaR::180416_01b
-	if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
-	else MENU_ITEM(function, MSG_STEALTH_MODE_ON, lcd_silent_mode_set);
+          if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM(function, MSG_STEALTH_MODE_OFF, lcd_silent_mode_set);
+          else MENU_ITEM(function, MSG_STEALTH_MODE_ON, lcd_silent_mode_set);
 
-	if (SilentModeMenu == SILENT_MODE_NORMAL)
-	{
-		if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
-		else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
-	}
-	else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+          if (SilentModeMenu == SILENT_MODE_NORMAL)
+          {
+               if (CrashDetectMenu == 0) MENU_ITEM(function, MSG_CRASHDETECT_OFF, lcd_crash_mode_set);
+               else MENU_ITEM(function, MSG_CRASHDETECT_ON, lcd_crash_mode_set);
+          }
+          else MENU_ITEM(submenu, MSG_CRASHDETECT_NA, lcd_crash_mode_info);
+     }
 #else //TMC2130
 	if (!farm_mode) { //dont show in menu if we are in farm mode
 		switch (SilentModeMenu) {
