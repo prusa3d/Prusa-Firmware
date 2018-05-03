@@ -114,6 +114,11 @@ union MenuData
         //Timer timer;
 		char dummy;
     } autoLoadFilamentMenu;
+    struct _Lcd_moveMenu
+    {
+        bool initialized;
+        bool endstopsEnabledPrevious;
+    } _lcd_moveMenu;
 };
 
 // State of the currently active menu.
@@ -2236,6 +2241,12 @@ void lcd_menu_statistics()
 
 
 static void _lcd_move(const char *name, int axis, int min, int max) {
+    if (!menuData._lcd_moveMenu.initialized)
+    {
+        menuData._lcd_moveMenu.endstopsEnabledPrevious = enable_endstops(false);
+        menuData._lcd_moveMenu.initialized = true;
+    }
+
 	if (encoderPosition != 0) {
     refresh_cmd_timeout();
     if (! planner_queue_full()) {
@@ -2249,8 +2260,8 @@ static void _lcd_move(const char *name, int axis, int min, int max) {
     }
   }
   if (lcdDrawUpdate) lcd_implementation_drawedit(name, ftostr31(current_position[axis]));
-  if (LCD_CLICKED) menu_action_back(); {
-  }
+  if (menuExiting || LCD_CLICKED) (void)enable_endstops(menuData._lcd_moveMenu.endstopsEnabledPrevious);
+  if (LCD_CLICKED) menu_action_back();
 }
 
 
