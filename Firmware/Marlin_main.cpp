@@ -7132,6 +7132,8 @@ void handle_status_leds(void) {
  * @brief Turn off heating after 30 minutes of inactivity
  *
  * Full screen blocking notification message is shown after heater turning off.
+ * Paused print is not considered inactivity, as nozzle is cooled anyway and bed cooling would
+ * damage print.
  */
 static void handleSafetyTimer()
 {
@@ -7139,8 +7141,8 @@ static void handleSafetyTimer()
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
     static Timer safetyTimer;
-    if (IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) ||
-            (!degTargetBed() && !degTargetHotend(0)))
+    if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4)
+        || (lcd_commands_type == LCD_COMMAND_V2_CAL) || (!degTargetBed() && !degTargetHotend(0)))
     {
         safetyTimer.stop();
     }
@@ -7198,11 +7200,6 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 		if (fsensor_autoload_enabled)
 			fsensor_autoload_check_stop();
 #endif //PAT9125
-
-#ifdef SAFETYTIMER
-	handleSafetyTimer();
-#endif //SAFETYTIMER
-
 
 #ifdef SAFETYTIMER
 	handleSafetyTimer();
