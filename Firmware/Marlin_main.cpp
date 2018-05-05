@@ -3480,11 +3480,14 @@ void process_commands()
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				feedrate = homing_feedrate[Z_AXIS] / 10;
+				world2machine_revert_to_uncorrected();
 				enable_endstops(true);
 				endstops_hit_on_purpose();
 				homeaxis(Z_AXIS);
 				plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 				enable_endstops(false);
+				world2machine_initialize();
+				world2machine_update_current();
 			}
 			if ((current_temperature_pinda > 35) && (farm_mode == false)) {
 				//waiting for PIDNA probe to cool down in case that we are not in farm mode
