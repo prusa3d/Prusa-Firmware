@@ -76,7 +76,15 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
 
-#define DEFAULT_Y_OFFSET    2.f // Offset of [0;0] point, when the printer is not calibrated
+//#define DEFAULT_Y_OFFSET    4.f // Default distance of Y_MIN_POS point from endstop, when the printer is not calibrated.
+/**
+ * [0,0] steel sheet print area point X coordinate in bed print area coordinates
+ */
+#define SHEET_PRINT_ZERO_REF_X 0.f
+/**
+ * [0,0] steel sheet print area point Y coordinate in bed print area coordinates
+ */
+#define SHEET_PRINT_ZERO_REF_Y -2.f
 
 #define DEFAULT_MAX_FEEDRATE          {200, 200, 12, 120}      // (mm/sec)   max feedrate (M203)
 #define DEFAULT_MAX_ACCELERATION      {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)
@@ -408,7 +416,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.
 
 #define X_PROBE_OFFSET_FROM_EXTRUDER 23     // Z probe to nozzle X offset: -left  +right
-#define Y_PROBE_OFFSET_FROM_EXTRUDER 3     // Z probe to nozzle Y offset: -front +behind
+#define Y_PROBE_OFFSET_FROM_EXTRUDER 5     // Z probe to nozzle Y offset: -front +behind
 #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.4  // Z probe to nozzle Z offset: -below (always!)
 #endif
 

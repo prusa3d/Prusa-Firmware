@@ -57,13 +57,36 @@ const float bed_skew_angle_extreme = (0.25f * M_PI / 180.f);
 
 #ifdef HEATBED_V2
 
-// Positions of the bed reference points in the machine coordinates, referenced to the P.I.N.D.A sensor.
-// The points are the following: center front, center right, center rear, center left.
+/**
+ * [0,0] bed print area point X coordinate in bed coordinates ver. 05d/24V
+ */
+#define BED_PRINT_ZERO_REF_X 2.f
+/**
+ * [0,0] bed print area point Y coordinate in bed coordinates ver. 05d/24V
+ */
+#define BED_PRINT_ZERO_REF_Y 9.4f
+
+/**
+ * @brief Positions of the bed reference points in print area coordinates. ver. 05d/24V
+ *
+ * Numeral constants are in bed coordinates, subtracting macro defined values converts it to print area coordinates.
+ *
+ * The points are the following:
+ * MK2: center front, center right, center rear, center left.
+ * MK25 and MK3: front left, front right, rear right, rear left
+ */
 const float bed_ref_points_4[] PROGMEM = {
-	13.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X,  10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
-	13.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
+	37.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_X,
+	18.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	18.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	37.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y
 };
 
 const float bed_ref_points[] PROGMEM = {
