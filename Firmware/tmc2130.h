@@ -1,6 +1,7 @@
 #ifndef TMC2130_H
 #define TMC2130_H
 
+#include "Configuration_prusa.h"
 
 /*------------------------------------
  TMC2130 default settings
@@ -8,13 +9,15 @@
 
 #define TMC2130_FCLK 12000000       // fclk = 12MHz
 
-#define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
-#define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-//#define TMC2130_USTEPS_E    32        // microstep resolution for E axis
-#define TMC2130_USTEPS_E    16        // microstep resolution for E axis
-#define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
-#define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
-#define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
+#ifdef EINSY_HIGH_SAMPLE_RATE
+	#define TMC2130_USTEPS_XY   32        // microstep resolution for XY axes
+	#define TMC2130_USTEPS_Z    32        // microstep resolution for Z axis
+	#define TMC2130_USTEPS_E    64        // microstep resolution for E axis
+#else
+	#define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
+	#define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
+	#define TMC2130_USTEPS_E    16        // microstep resolution for E axis
+#endif
 
 #define TMC2130_PWM_GRAD_X  2         // PWMCONF
 #define TMC2130_PWM_AMPL_X  230       // PWMCONF
