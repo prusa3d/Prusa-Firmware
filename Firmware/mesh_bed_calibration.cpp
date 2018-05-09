@@ -1,7 +1,7 @@
 #include "Marlin.h"
 #include "Configuration.h"
 #include "ConfigurationStore.h"
-#include "language_all.h"
+#include "language.h"
 #include "mesh_bed_calibration.h"
 #include "mesh_bed_leveling.h"
 #include "stepper.h"
