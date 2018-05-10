@@ -1586,7 +1586,7 @@ static void lcd_menu_extruder_info()
     if (lcd_clicked())
     {
         lcd_quick_feedback();
-        lcd_return_to_status();
+        menu_action_back();
     }
 }
 
@@ -1707,7 +1707,7 @@ static void lcd_menu_temperatures()
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
-        lcd_return_to_status();
+        menu_action_back();
     }
 }
 
@@ -1725,7 +1725,7 @@ static void lcd_menu_voltages()
     if (lcd_clicked())
     {
         lcd_quick_feedback();
-        lcd_return_to_status();
+        menu_action_back();
     }
 }
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
@@ -1737,7 +1737,7 @@ static void lcd_menu_belt_status()
     if (lcd_clicked())
     {
         lcd_quick_feedback();
-        lcd_return_to_status();
+        menu_action_back();
     }
 }
 #endif //TMC2130
@@ -2161,7 +2161,7 @@ void lcd_menu_statistics()
 		if (lcd_clicked())
 		{
 			lcd_quick_feedback();
-			lcd_return_to_status();
+               menu_action_back();
 		}
 	}
 	else
@@ -2234,7 +2234,7 @@ void lcd_menu_statistics()
 		KEEPALIVE_STATE(NOT_BUSY);
 
 		lcd_quick_feedback();
-		lcd_return_to_status();
+          menu_action_back();
 	}
 }
 
@@ -3178,7 +3178,7 @@ static void lcd_show_end_stops() {
 
 static void menu_show_end_stops() {
     lcd_show_end_stops();
-    if (LCD_CLICKED) lcd_goto_menu(lcd_calibration_menu); //doesn't break menuStack
+    if (LCD_CLICKED) menu_action_back();
 }
 
 // Lets the user move the Z carriage up to the end stoppers.
