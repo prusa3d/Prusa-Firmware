@@ -131,6 +131,7 @@
 #define MSG_HEATING                         "Heating"
 #define(length=20) MSG_HEATING_COMPLETE     "Heating done."
 #define MSG_BED_HEATING                     "Bed Heating"
+#define MSG_BED_HEATING_SAFETY_DISABLED     "Heating disabled by safety timer."
 #define MSG_BED_DONE                        "Bed done"
 #define MSG_ERR_KILLED                      "Printer halted. kill() called!"
 #define MSG_ERR_STOPPED                     "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"

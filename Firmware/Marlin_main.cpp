@@ -762,7 +762,8 @@ void factory_reset(char level, bool quiet)
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
             farm_no = 0;
-			farm_mode == false;
+//*** MaR::180501_01
+			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
                        
@@ -968,6 +969,7 @@ void setup()
 	setup_killpin();
 	setup_powerhold();
 
+//*** MaR::180501_02b
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF)) 
@@ -1065,7 +1067,7 @@ void setup()
 //	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_mode = TMC2130_MODE_NORMAL;
 	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
-	if (crashdet)
+	if (crashdet && !farm_mode)
 	{
 		crashdet_enable();
 	    MYSERIAL.println("CrashDetect ENABLED!");
@@ -1163,6 +1165,7 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
+//*** MaR::180501_02
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
@@ -1268,12 +1271,8 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA) == 255) {
 		//eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0);
 		eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 0); //40C
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 0); //45C
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 0); //50C
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 0); //55C
-		eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0); //60C
-
+		int16_t z_shift = 0;
+		for (uint8_t i = 0; i < 5; i++) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 		temp_cal_active = false;
 	}
@@ -3536,8 +3535,10 @@ void process_commands()
 			st_synchronize();
 
 			bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
-			if(find_z_result == false) lcd_temp_cal_show_result(find_z_result);
-
+			if (find_z_result == false) {
+				lcd_temp_cal_show_result(find_z_result);
+				break;
+			}
 			zero_z = current_position[Z_AXIS];
 
 			//current_position[Z_AXIS]
@@ -3587,8 +3588,10 @@ void process_commands()
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				find_z_result = find_bed_induction_sensor_point_z(-1.f);
-				if (find_z_result == false) lcd_temp_cal_show_result(find_z_result);
-
+				if (find_z_result == false) {
+					lcd_temp_cal_show_result(find_z_result);
+					break;
+				}
 				z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
 
 				SERIAL_ECHOLNPGM("");
@@ -4219,13 +4222,15 @@ void process_commands()
       }
       break;
 
-	case 98: //activate farm mode
+	case 98: // G98 (activate farm mode)
 		farm_mode = 1;
 		PingTime = millis();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+          SilentModeMenu = SILENT_MODE_OFF;
+          eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 		break;
 
-	case 99: //deactivate farm mode
+	case 99: // G99 (deactivate farm mode)
 		farm_mode = 0;
 		lcd_printer_connected();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
@@ -6330,14 +6335,14 @@ Sigma_Exit:
 		break;
 	}
 	case 861: // M861 - Set/Read PINDA temperature compensation offsets
-		if (code_seen('?')) { // ? - Print out current EEPRO offset values
+		if (code_seen('?')) { // ? - Print out current EEPROM offset values
 			uint8_t cal_status = calibration_status_pinda();
+			int16_t usteps = 0;
 			cal_status ? SERIAL_PROTOCOLLN("PINDA cal status: 1") : SERIAL_PROTOCOLLN("PINDA cal status: 0");
 			SERIAL_PROTOCOLLN("index, temp, ustep, um");
 			for (uint8_t i = 0; i < 6; i++)
 			{
-				uint16_t usteps = 0;
-				if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+				if(i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &usteps);
 				float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
 				i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 				SERIAL_PROTOCOLPGM(", ");
@@ -6351,34 +6356,36 @@ Sigma_Exit:
 		}
 		else if (code_seen('!')) { // ! - Set factory default values
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 8); //40C -  20um -   8usteps
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 24); //45C -  60um -  24usteps
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 48); //50C - 120um -  48usteps
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 80); //55C - 200um -  80usteps
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 120); //60C - 300um - 120usteps
+			int16_t z_shift = 8;    //40C -  20um -   8usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT, &z_shift);
+			z_shift = 24;   //45C -  60um -  24usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 2, &z_shift);
+			z_shift = 48;   //50C - 120um -  48usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 4, &z_shift);
+			z_shift = 80;   //55C - 200um -  80usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 6, &z_shift);
+			z_shift = 120;  //60C - 300um - 120usteps
+			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + 8, &z_shift);
 			SERIAL_PROTOCOLLN("factory restored");
 		}
 		else if (code_seen('Z')) { // Z - Set all values to 0 (effectively disabling PINDA temperature compensation)
 			eeprom_write_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 0, 0);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 1, 0);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 2, 0);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 3, 0);
-			eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + 4, 0);
+			int16_t z_shift = 0;
+			for (uint8_t i = 0; i < 5; i++) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 			SERIAL_PROTOCOLLN("zerorized");
 		}
 		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
-			uint16_t usteps = code_value();
+			int16_t usteps = code_value();
 			if (code_seen('I')) {
 				byte index = code_value();
 				if ((index >= 0) && (index < 5)) {
-					eeprom_write_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + index, usteps);
+					EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + index * 2, &usteps);
 					SERIAL_PROTOCOLLN("OK");
 					SERIAL_PROTOCOLLN("index, temp, ustep, um");
 					for (uint8_t i = 0; i < 6; i++)
 					{
-						uint16_t usteps = 0;
-						if (i > 0) usteps = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
+						usteps = 0;
+						if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i - 1) * 2, &usteps);
 						float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
 						i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 						SERIAL_PROTOCOLPGM(", ");
@@ -7120,7 +7127,11 @@ void handle_status_leds(void) {
 
 #ifdef SAFETYTIMER
 /**
- * @brief Turn off heating after 15 minutes of inactivity
+ * @brief Turn off heating after 30 minutes of inactivity
+ *
+ * Full screen blocking notification message is shown after heater turning off.
+ * Paused print is not considered inactivity, as nozzle is cooled anyway and bed cooling would
+ * damage print.
  */
 static void handleSafetyTimer()
 {
@@ -7128,8 +7139,8 @@ static void handleSafetyTimer()
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
     static Timer safetyTimer;
-    if (IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) ||
-            (!degTargetBed() && !degTargetHotend(0)))
+    if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4)
+        || (lcd_commands_type == LCD_COMMAND_V2_CAL) || (!degTargetBed() && !degTargetHotend(0)))
     {
         safetyTimer.stop();
     }
@@ -7137,10 +7148,11 @@ static void handleSafetyTimer()
     {
         safetyTimer.start();
     }
-    else if (safetyTimer.expired(900000ul))
+    else if (safetyTimer.expired(1800000ul))
     {
         setTargetBed(0);
         setTargetHotend(0, 0);
+        lcd_show_fullscreen_message_and_wait_P(MSG_BED_HEATING_SAFETY_DISABLED);
     }
 }
 #endif //SAFETYTIMER
@@ -7186,11 +7198,6 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 		if (fsensor_autoload_enabled)
 			fsensor_autoload_check_stop();
 #endif //PAT9125
-
-#ifdef SAFETYTIMER
-	handleSafetyTimer();
-#endif //SAFETYTIMER
-
 
 #ifdef SAFETYTIMER
 	handleSafetyTimer();
