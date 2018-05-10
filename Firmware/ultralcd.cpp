@@ -1586,7 +1586,6 @@ static void lcd_menu_extruder_info()
     
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
         menu_action_back();
     }
 }
@@ -1707,7 +1706,6 @@ static void lcd_menu_temperatures()
 
 	if (lcd_clicked())
     {
-        lcd_quick_feedback();
         menu_action_back();
     }
 }
@@ -1725,7 +1723,6 @@ static void lcd_menu_voltages()
     fprintf_P(lcdout, PSTR( ESC_H(1,1)"PWR:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr))) ;
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
         menu_action_back();
     }
 }
@@ -1737,7 +1734,6 @@ static void lcd_menu_belt_status()
     fprintf_P(lcdout, PSTR(ESC_H(1,0) "Belt status" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
         menu_action_back();
     }
 }
@@ -2289,7 +2285,12 @@ static void lcd_move_e()
 		lcd_return_to_status();
 	}
 }
-
+/**
+ * @brief Show measured Y distance of front calibration points from Y_MIN_POS
+ *
+ * If those points are detected too close to edge of reachable area, their confidence is lowered.
+ * This functionality is applied more often for MK2 printers.
+ */
 static void lcd_menu_xyz_y_min()
 {
     lcd.setCursor(0,0);
@@ -2310,11 +2311,12 @@ static void lcd_menu_xyz_y_min()
     }
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
         lcd_goto_menu(lcd_menu_xyz_skew);
     }
 }
-
+/**
+ * @brief Show measured axis skewness
+ */
 static void lcd_menu_xyz_skew()
 {
     float angleDiff;
@@ -2339,11 +2341,12 @@ static void lcd_menu_xyz_skew()
 
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
         lcd_goto_menu(lcd_menu_xyz_offset);
     }
 }
-
+/**
+ * @brief Show measured bed offset from expected position
+ */
 static void lcd_menu_xyz_offset()
 {
     lcd.setCursor(0,0);
@@ -2352,15 +2355,19 @@ static void lcd_menu_xyz_offset()
     lcd_print_at_PGM(0, 2, PSTR("X"));
     lcd_print_at_PGM(0, 3, PSTR("Y"));
 
+    float vec_x[2];
+    float vec_y[2];
+    float cntr[2];
+    world2machine_read_valid(vec_x, vec_y, cntr);
+
     for (int i = 0; i < 2; i++)
     {
         lcd_print_at_PGM(11, i + 2, PSTR(""));
-        lcd.print(world2machine_shift[i]);
-        lcd_print_at_PGM((world2machine_shift[i] < 0) ? 17 : 16, i + 2, PSTR("mm"));
+        lcd.print(cntr[i]);
+        lcd_print_at_PGM((cntr[i] < 0) ? 17 : 16, i + 2, PSTR("mm"));
     }
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
         menu_action_back();
     }
 }
