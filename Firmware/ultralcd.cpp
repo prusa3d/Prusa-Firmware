@@ -174,7 +174,6 @@ unsigned long display_time; //just timer for showing pid finished message on lcd
 float pid_temp = DEFAULT_PID_TEMP;
 
 bool long_press_active = false;
-long long_press_timer = millis();
 unsigned long button_blanking_time = millis();
 bool button_pressed = false;
 
@@ -7704,13 +7703,13 @@ void lcd_buttons_update()
 		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 		  if (millis() > button_blanking_time) {
 			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
+			  static ShortTimer longPressTimer;
 			  if (button_pressed == false && long_press_active == false) {
-				  long_press_timer = millis();
+			      longPressTimer.start();
 				  button_pressed = true;
 			  }
 			  else {
-				  if (millis() - long_press_timer > LONG_PRESS_TIME) { //long press activated
-
+				  if (longPressTimer.expired(LONG_PRESS_TIME)) {
 					  long_press_active = true;
 					  move_menu_scale = 1.0;
 					  menu_action_submenu(lcd_move_z);
