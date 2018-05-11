@@ -2532,7 +2532,7 @@ static void gcode_PRUSA_SN()
         selectedSerialPort = 0;
         MSerial.write(";S");
         int numbersRead = 0;
-        Timer timeout;
+        ShortTimer timeout;
         timeout.start();
 
         while (numbersRead < 19) {
@@ -2543,7 +2543,7 @@ static void gcode_PRUSA_SN()
                 numbersRead++;
                 selectedSerialPort = 0;
             }
-            if (timeout.expired(100)) break;
+            if (timeout.expired(100u)) break;
         }
         selectedSerialPort = 1;
         MSerial.write('\n');
@@ -7140,7 +7140,7 @@ static void handleSafetyTimer()
 #if (EXTRUDERS > 1)
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
-    static Timer safetyTimer;
+    static LongTimer safetyTimer;
     if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4)
         || (lcd_commands_type == LCD_COMMAND_V2_CAL) || (!degTargetBed() && !degTargetHotend(0)))
     {

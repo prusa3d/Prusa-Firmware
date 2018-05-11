@@ -111,7 +111,7 @@ union MenuData
 
     struct AutoLoadFilamentMenu
     {
-        //Timer timer;
+        //ShortTimer timer;
 		char dummy;
     } autoLoadFilamentMenu;
     struct _Lcd_moveMenu
@@ -2089,13 +2089,13 @@ static void lcd_menu_AutoLoadFilament()
     }
     else
     {
-		Timer* ptimer = (Timer*)&(menuData.autoLoadFilamentMenu.dummy);
+		ShortTimer* ptimer = (ShortTimer*)&(menuData.autoLoadFilamentMenu.dummy);
         if (!ptimer->running()) ptimer->start();
         lcd.setCursor(0, 0);
         lcd_printPGM(MSG_ERROR);
         lcd.setCursor(0, 2);
         lcd_printPGM(MSG_PREHEAT_NOZZLE);
-        if (ptimer->expired(2000ul)) menu_action_back();
+        if (ptimer->expired(2000u)) menu_action_back();
     }
     if (lcd_clicked()) menu_action_back();
 }
@@ -2645,7 +2645,7 @@ bool lcd_wait_for_pinda(float temp) {
 	lcd_set_custom_characters_degree();
 	setTargetHotend(0, 0);
 	setTargetBed(0);
-	Timer pinda_timeout;
+	LongTimer pinda_timeout;
 	pinda_timeout.start();
 	bool target_temp_reached = true;
 
