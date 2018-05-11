@@ -168,7 +168,6 @@ uint8_t farm_mode = 0;
 int farm_no = 0;
 int farm_timer = 8;
 int farm_status = 0;
-unsigned long allert_timer = millis();
 bool printer_connected = true;
 
 unsigned long display_time; //just timer for showing pid finished message on lcd;
@@ -5029,20 +5028,6 @@ static void lcd_disable_farm_mode() {
 	
 }
 
-static void lcd_ping_allert() {
-	if ((abs(millis() - allert_timer)*0.001) > PING_ALLERT_PERIOD) {
-		allert_timer = millis();
-		SET_OUTPUT(BEEPER);
-		for (int i = 0; i < 2; i++) {
-			WRITE(BEEPER, HIGH);
-			delay(50);
-			WRITE(BEEPER, LOW);
-			delay(100);
-		}
-	}
-
-};
-
 
 #ifdef SNMM
 
@@ -7630,7 +7615,6 @@ void lcd_ping() { //chceck if printer is connected to monitoring when in farm mo
 																							  //if there are comamnds in buffer, some long gcodes can delay execution of ping command
 																							  //therefore longer period is used
 			printer_connected = false;
-			//lcd_ping_allert(); //acustic signals
 		}
 		else {
 			lcd_printer_connected();
