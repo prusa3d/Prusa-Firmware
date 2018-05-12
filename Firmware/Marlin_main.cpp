@@ -3486,11 +3486,11 @@ void process_commands()
 				plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 				enable_endstops(false);
 			}
-			if ((current_temperature_pinda > 35) && (farm_mode == false)) {
+			if ((current_temperature_pinda > 28) && (farm_mode == false)) {
 				//waiting for PIDNA probe to cool down in case that we are not in farm mode
 				current_position[Z_AXIS] = 100;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-				if (lcd_wait_for_pinda(35) == false) { //waiting for PINDA probe to cool, if this takes more then time expected, temp. cal. fails
+				if (lcd_wait_for_pinda(28) == false) { //waiting for PINDA probe to cool, if this takes more then time expected, temp. cal. fails
 					lcd_temp_cal_show_result(false);
 					break;
 				}
@@ -3501,9 +3501,10 @@ void process_commands()
 
 			float zero_z;
 			int z_shift = 0; //unit: steps
-			float start_temp = 5 * (int)(current_temperature_pinda / 5);
-			if (start_temp < 35) start_temp = 35;
-			if (start_temp < current_temperature_pinda) start_temp += 5;
+			float start_temp = 28;
+			while (start_temp < current_temperature_pinda) {
+			  start_temp += 6;
+			}
 			SERIAL_ECHOPGM("start temperature: ");
 			MYSERIAL.println(start_temp);
 
@@ -3551,13 +3552,13 @@ void process_commands()
 
 			int i = -1; for (; i < 5; i++)
 			{
-				float temp = (40 + i * 5);
+				float temp = (34 + i * 6);
 				SERIAL_ECHOPGM("Step: ");
 				MYSERIAL.print(i + 2);
 				SERIAL_ECHOLNPGM("/6 (skipped)");
 				SERIAL_ECHOPGM("PINDA temperature: ");
-				MYSERIAL.print((40 + i*5));
-				SERIAL_ECHOPGM(" Z shift (mm):");
+				MYSERIAL.print((34 + i*6));
+				SERIAL_ECHOPGM(" Z shift (um):");
 				MYSERIAL.print(0);
 				SERIAL_ECHOLNPGM("");
 				if (i >= 0) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
@@ -3566,12 +3567,12 @@ void process_commands()
 
 			for (i++; i < 5; i++)
 			{
-				float temp = (40 + i * 5);
+				float temp = (34 + i * 6);
 				SERIAL_ECHOPGM("Step: ");
 				MYSERIAL.print(i + 2);
 				SERIAL_ECHOLNPGM("/6");
 				custom_message_state = i + 2;
-				setTargetBed(50 + 10 * (temp - 30) / 5);
+				setTargetBed(50 + 10 * (temp - 28) / 5);
 //				setTargetHotend(255, 0);
 				current_position[X_AXIS] = PINDA_PREHEAT_X;
 				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
@@ -3599,8 +3600,8 @@ void process_commands()
 				SERIAL_ECHOLNPGM("");
 				SERIAL_ECHOPGM("PINDA temperature: ");
 				MYSERIAL.print(current_temperature_pinda);
-				SERIAL_ECHOPGM(" Z shift (mm):");
-				MYSERIAL.print(current_position[Z_AXIS] - zero_z);
+				SERIAL_ECHOPGM(" Z shift (um):");
+				MYSERIAL.print((current_position[Z_AXIS] - zero_z)*1000);
 				SERIAL_ECHOLNPGM("");
 
 				EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
@@ -6348,7 +6349,7 @@ Sigma_Exit:
 				float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
 				i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 				SERIAL_PROTOCOLPGM(", ");
-				SERIAL_PROTOCOL(35 + (i * 5));
+				SERIAL_PROTOCOL(28 + (i * 6));
 				SERIAL_PROTOCOLPGM(", ");
 				SERIAL_PROTOCOL(usteps);
 				SERIAL_PROTOCOLPGM(", ");
@@ -6391,7 +6392,7 @@ Sigma_Exit:
 						float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
 						i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 						SERIAL_PROTOCOLPGM(", ");
-						SERIAL_PROTOCOL(35 + (i * 5));
+						SERIAL_PROTOCOL(28 + (i * 6));
 						SERIAL_PROTOCOLPGM(", ");
 						SERIAL_PROTOCOL(usteps);
 						SERIAL_PROTOCOLPGM(", ");
@@ -7882,7 +7883,7 @@ float temp_comp_interpolation(float inp_temperature) {
 		if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &shift[i]); //read shift in steps from EEPROM
 		temp_C[i] = 50 + i * 10; //temperature in C
 #ifdef PINDA_THERMISTOR
-		temp_C[i] = 35 + i * 5; //temperature in C
+		temp_C[i] = 28 + i * 6; //temperature in C
 #else
 		temp_C[i] = 50 + i * 10; //temperature in C
 #endif

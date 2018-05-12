@@ -353,7 +353,7 @@ void dcode_8()
 			if (i > 0) offs = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
 			float foffs = ((float)offs) / axis_steps_per_unit[Z_AXIS];
 			offs = 1000 * foffs;
-			printf_P(PSTR("temp_pinda=%dC temp_shift=%dum\n"), 35 + i * 5, offs);
+			printf_P(PSTR("temp_pinda=%dC temp_shift=%dum\n"), 28 + i * 6, offs);
 		}
 	}
 	else if (strchr_pointer[1+1] == '!')
