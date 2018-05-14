@@ -197,6 +197,8 @@ unsigned char firstrun = 1;
 
 #include "ultralcd_implementation_hitachi_HD44780.h"
 
+static const char separator[] PROGMEM = "--------------------";
+
 /** forward declarations **/
 
 static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg, uint8_t &nlines);
@@ -227,6 +229,9 @@ static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
 static void lcd_menu_extruder_info();
+static void lcd_menu_xyz_y_min();
+static void lcd_menu_xyz_skew();
+static void lcd_menu_xyz_offset();
 #if defined(TMC2130) || defined(PAT9125)
 static void lcd_menu_fails_stats();
 #endif //TMC2130 or PAT9125
@@ -1585,7 +1590,6 @@ static void lcd_menu_extruder_info()
     
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
         menu_action_back();
     }
 }
@@ -1690,7 +1694,7 @@ static void lcd_menu_debug()
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
-        lcd_return_to_status();
+        menu_action_back();
     }
 }
 #endif /* DEBUG_BUILD */
@@ -1706,7 +1710,6 @@ static void lcd_menu_temperatures()
 
 	if (lcd_clicked())
     {
-        lcd_quick_feedback();
         menu_action_back();
     }
 }
@@ -1724,7 +1727,6 @@ static void lcd_menu_voltages()
     fprintf_P(lcdout, PSTR( ESC_H(1,1)"PWR:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr))) ;
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
         menu_action_back();
     }
 }
@@ -1736,7 +1738,6 @@ static void lcd_menu_belt_status()
     fprintf_P(lcdout, PSTR(ESC_H(1,0) "Belt status" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     if (lcd_clicked())
     {
-        lcd_quick_feedback();
         menu_action_back();
     }
 }
@@ -1835,7 +1836,7 @@ static void lcd_support_menu()
   }
   #ifndef MK1BP
   MENU_ITEM(back, PSTR("------------"), 0);
-  if (!IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL)) MENU_ITEM(function, MSG_XYZ_DETAILS, lcd_service_mode_show_result);
+  MENU_ITEM(submenu, MSG_XYZ_DETAILS, lcd_menu_xyz_y_min);
   MENU_ITEM(submenu, MSG_INFO_EXTRUDER, lcd_menu_extruder_info);
 
 #ifdef TMC2130
@@ -2294,63 +2295,92 @@ static void lcd_move_e()
 		lcd_return_to_status();
 	}
 }
+/**
+ * @brief Show measured Y distance of front calibration points from Y_MIN_POS
+ *
+ * If those points are detected too close to edge of reachable area, their confidence is lowered.
+ * This functionality is applied more often for MK2 printers.
+ */
+static void lcd_menu_xyz_y_min()
+{
+    lcd.setCursor(0,0);
+    lcd_printPGM(MSG_Y_DISTANCE_FROM_MIN);
+    lcd_print_at_PGM(0, 1, separator);
+    lcd_print_at_PGM(0, 2, MSG_LEFT);
+    lcd_print_at_PGM(0, 3, MSG_RIGHT);
 
-void lcd_service_mode_show_result() {
-	float angleDiff;
-	lcd_set_custom_characters_degree();
-	count_xyz_details();
-	angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
-	lcd_update_enable(false);
-	lcd_implementation_clear();
-	lcd_printPGM(MSG_Y_DISTANCE_FROM_MIN);
-	lcd_print_at_PGM(0, 1, MSG_LEFT);
-	lcd_print_at_PGM(0, 2, MSG_RIGHT);
+    float distanceMin[2];
+    count_xyz_details(distanceMin);
 
-	for (int i = 0; i < 2; i++) {
-		if(distance_from_min[i] < 200) {
-			lcd_print_at_PGM(11, i + 1, PSTR(""));
-			lcd.print(distance_from_min[i]);
-			lcd_print_at_PGM((distance_from_min[i] < 0) ? 17 : 16, i + 1, PSTR("mm"));		
-		} else lcd_print_at_PGM(11, i + 1, PSTR("N/A"));
-	}
-	delay_keep_alive(500);
-	KEEPALIVE_STATE(PAUSED_FOR_USER);
-	while (!lcd_clicked()) {
-		delay_keep_alive(100);
-	}
-	delay_keep_alive(500);
-	lcd_implementation_clear();
-	
-
-	lcd_printPGM(MSG_MEASURED_SKEW);
-	if (angleDiff < 100) {
-		lcd.setCursor(15, 0);
-		lcd.print(angleDiff * 180 / M_PI);
-		lcd.print(LCD_STR_DEGREE);
-	}else lcd_print_at_PGM(16, 0, PSTR("N/A"));
-	lcd_print_at_PGM(0, 1, PSTR("--------------------"));
-	lcd_print_at_PGM(0, 2, MSG_SLIGHT_SKEW);
-	lcd_print_at_PGM(15, 2, PSTR(""));
-	lcd.print(bed_skew_angle_mild * 180 / M_PI);
-	lcd.print(LCD_STR_DEGREE);
-	lcd_print_at_PGM(0, 3, MSG_SEVERE_SKEW);
-	lcd_print_at_PGM(15, 3, PSTR(""));
-	lcd.print(bed_skew_angle_extreme * 180 / M_PI);
-	lcd.print(LCD_STR_DEGREE);
-	delay_keep_alive(500);
-	while (!lcd_clicked()) {
-		delay_keep_alive(100);
-	}
-	KEEPALIVE_STATE(NOT_BUSY);
-	delay_keep_alive(500);
-	lcd_set_custom_characters_arrows();
-	lcd_return_to_status();
-	lcd_update_enable(true);
-	lcd_update(2);
+    for (int i = 0; i < 2; i++) {
+        if(distanceMin[i] < 200) {
+            lcd_print_at_PGM(11, i + 2, PSTR(""));
+            lcd.print(distanceMin[i]);
+            lcd_print_at_PGM((distanceMin[i] < 0) ? 17 : 16, i + 2, PSTR("mm"));
+        } else lcd_print_at_PGM(11, i + 2, PSTR("N/A"));
+    }
+    if (lcd_clicked())
+    {
+        lcd_goto_menu(lcd_menu_xyz_skew);
+    }
 }
+/**
+ * @brief Show measured axis skewness
+ */
+static void lcd_menu_xyz_skew()
+{
+    float angleDiff;
+    angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
 
+    lcd.setCursor(0,0);
+    lcd_printPGM(MSG_MEASURED_SKEW);
+    if (angleDiff < 100) {
+        lcd.setCursor(15, 0);
+        lcd.print(angleDiff * 180 / M_PI);
+        lcd.print(LCD_STR_DEGREE);
+    }else lcd_print_at_PGM(16, 0, PSTR("N/A"));
+    lcd_print_at_PGM(0, 1, separator);
+    lcd_print_at_PGM(0, 2, MSG_SLIGHT_SKEW);
+    lcd_print_at_PGM(15, 2, PSTR(""));
+    lcd.print(bed_skew_angle_mild * 180 / M_PI);
+    lcd.print(LCD_STR_DEGREE);
+    lcd_print_at_PGM(0, 3, MSG_SEVERE_SKEW);
+    lcd_print_at_PGM(15, 3, PSTR(""));
+    lcd.print(bed_skew_angle_extreme * 180 / M_PI);
+    lcd.print(LCD_STR_DEGREE);
 
+    if (lcd_clicked())
+    {
+        lcd_goto_menu(lcd_menu_xyz_offset);
+    }
+}
+/**
+ * @brief Show measured bed offset from expected position
+ */
+static void lcd_menu_xyz_offset()
+{
+    lcd.setCursor(0,0);
+    lcd_printPGM(MSG_MEASURED_OFFSET);
+    lcd_print_at_PGM(0, 1, separator);
+    lcd_print_at_PGM(0, 2, PSTR("X"));
+    lcd_print_at_PGM(0, 3, PSTR("Y"));
 
+    float vec_x[2];
+    float vec_y[2];
+    float cntr[2];
+    world2machine_read_valid(vec_x, vec_y, cntr);
+
+    for (int i = 0; i < 2; i++)
+    {
+        lcd_print_at_PGM(11, i + 2, PSTR(""));
+        lcd.print(cntr[i]);
+        lcd_print_at_PGM((cntr[i] < 0) ? 17 : 16, i + 2, PSTR("mm"));
+    }
+    if (lcd_clicked())
+    {
+        menu_action_back();
+    }
+}
 
 // Save a single axis babystep value.
 void EEPROM_save_B(int pos, int* value)
@@ -7175,7 +7205,7 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	if (_step == 13) lcd_printPGM(PSTR("Calibrating home"));
 
 	lcd.setCursor(0, 1);
-	lcd.print("--------------------");
+	lcd_printPGM(separator);
 	if ((_step >= -1) && (_step <= 1))
 	{
 		//SERIAL_ECHOLNPGM("Fan test");

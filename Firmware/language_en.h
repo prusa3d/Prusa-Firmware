@@ -219,6 +219,7 @@
 #define(length=17,lines=1) MSG_SHOW_END_STOPS					"Show end stops"
 #define MSG_CALIBRATE_BED					"Calibrate XYZ"
 #define MSG_CALIBRATE_BED_RESET				"Reset XYZ calibr."
+#define MSG_MEASURED_OFFSET                 "[0;0] point offset"
 
 #define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP 	"Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 #define(length=20,lines=8) MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 	"Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."

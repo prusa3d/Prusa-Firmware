@@ -26,16 +26,10 @@ extern float world2machine_rotation_and_skew_inv[2][2];
 // Shift of the machine zero point, in the machine coordinates.
 extern float world2machine_shift[2];
 
-// Resets the transformation to identity.
 extern void world2machine_reset();
-// Resets the transformation to identity and update current_position[X,Y] from the servos.
 extern void world2machine_revert_to_uncorrected();
-// Loads the transformation from the EEPROM, if available.
 extern void world2machine_initialize();
-
-// When switching from absolute to corrected coordinates,
-// this will apply an inverse world2machine transformation
-// to current_position[x,y].
+extern void world2machine_read_valid(float vec_x[2], float vec_y[2], float cntr[2]);
 extern void world2machine_update_current();
 
 inline void world2machine(float &x, float &y)
@@ -181,7 +175,8 @@ extern void babystep_undo();
 
 // Reset the current babystep counter without moving the axes.
 extern void babystep_reset();
-extern void count_xyz_details();
+
+extern void count_xyz_details(float (&distanceMin)[2]);
 extern bool sample_z();
 
 #endif /* MESH_BED_CALIBRATION_H */
