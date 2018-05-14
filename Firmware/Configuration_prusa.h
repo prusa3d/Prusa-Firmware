@@ -23,6 +23,8 @@ GENERAL SETTINGS
 #define MK3
 #define EINSY_HIGH_SAMPLE_RATE
 
+#define ENABLE_LEVELING_FADE_HEIGHT
+
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
 //#define E3D_PT100_EXTRUDER_NO_AMP

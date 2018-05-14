@@ -4929,9 +4929,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
     break; 
     #endif
     
-
-
-
+    #ifdef ENABLE_LEVELING_FADE_HEIGHT
+    case 420: // M420 Z[height] Sets the Z fade height (0 or none to disable)
+      if (code_seen('Z')) mbl.set_z_fade_height(code_value());
+      break;
+    #endif
 
     case 500: // M500 Store settings in EEPROM
     {

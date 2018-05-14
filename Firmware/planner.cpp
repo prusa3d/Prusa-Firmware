@@ -563,7 +563,7 @@ void planner_abort_hard()
     // Apply the mesh bed leveling correction to the Z axis.
 #ifdef MESH_BED_LEVELING
     if (mbl.active)
-        current_position[Z_AXIS] -= mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]);
+        current_position[Z_AXIS] -= mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS]);
 #endif
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
@@ -668,7 +668,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   target[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
 #ifdef MESH_BED_LEVELING
     if (mbl.active){
-        target[Z_AXIS] = lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]);
+        target[Z_AXIS] = lround((z+mbl.get_z(x, y, z))*axis_steps_per_unit[Z_AXIS]);
     }else{
         target[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
     }
@@ -1171,7 +1171,7 @@ void plan_set_position(float x, float y, float z, const float &e)
   position[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
 #ifdef MESH_BED_LEVELING
     if (mbl.active){
-      position[Z_AXIS] = lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]);
+      position[Z_AXIS] = lround((z+mbl.get_z(x, y, z))*axis_steps_per_unit[Z_AXIS]);
     }else{
         position[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
     }

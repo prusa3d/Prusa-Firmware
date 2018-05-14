@@ -1,5 +1,7 @@
 #include "Marlin.h"
 
+#include "float.h"
+
 #ifdef MESH_BED_LEVELING
 
 #define MEAS_NUM_X_DIST (float(MESH_MAX_X - MESH_MIN_X)/float(MESH_MEAS_NUM_X_POINTS - 1))
@@ -12,10 +14,25 @@ class mesh_bed_leveling {
 public:
     uint8_t active;
     float z_values[MESH_NUM_Y_POINTS][MESH_NUM_X_POINTS];
+
+#ifdef ENABLE_LEVELING_FADE_HEIGHT
+    // Average Z height of z_values.
+    float z_avg;
+    // Z height at which to fade to zero.
+    float z_fade;
+    // Previous z, at which fade_factor was calculated.
+    float z_prev;
+    // Fade factor, calculated for z_prev.
+    float fade_factor;
+#endif
     
     mesh_bed_leveling();
     
     void reset();
+
+#ifdef ENABLE_LEVELING_FADE_HEIGHT
+    void set_z_fade_height(float z) { z_fade = (z > 0.f) ? z : 0.f; z_prev = - FLT_MAX; }
+#endif
     
 #if MESH_NUM_X_POINTS>=5 && MESH_NUM_Y_POINTS>=5 && (MESH_NUM_X_POINTS&1)==1 && (MESH_NUM_Y_POINTS&1)==1
     void upsample_3x3();
@@ -43,9 +60,33 @@ public:
         return i - 1;
     }
     
-    float get_z(float x, float y) {
+    float get_z(float x, float y, float z) {
         int   i, j;
         float s, t;
+
+#ifdef ENABLE_LEVELING_FADE_HEIGHT
+        if (z != z_prev) {
+            if (z > z_fade || z_fade == 0.)
+                fade_factor = 0.f;
+            else if (z <= 0.f)
+                fade_factor = 1.f;
+            else {
+                fade_factor = (z_fade - z) / z_fade;
+            }
+#if 0
+            SERIAL_ECHOPGM("fading z: ");
+            MYSERIAL.print(z);
+            SERIAL_ECHOPGM(", fade: ");
+            MYSERIAL.print(z_fade);
+            SERIAL_ECHOLNPGM(", fade_factor: ");
+            MYSERIAL.print(fade_factor);
+            SERIAL_ECHOLNPGM("");
+#endif
+            z_prev = z;
+        }
+        if (fade_factor == 0.f)
+            return z_avg;
+#endif
         
 #if MESH_NUM_X_POINTS==3 && MESH_NUM_Y_POINTS==3
 #define MESH_MID_X (0.5f*(MESH_MIN_X+MESH_MAX_X))
@@ -115,7 +156,12 @@ public:
         float si = 1.f-s;
         float z0 = si * z_values[j  ][i] + s * z_values[j  ][i+1];
         float z1 = si * z_values[j+1][i] + s * z_values[j+1][i+1];
-        return (1.f-t) * z0 + t * z1;
+        return 
+#ifdef ENABLE_LEVELING_FADE_HEIGHT
+            z_avg + fade_factor * ((1.f-t) * z0 + t * z1 - z_avg);
+#else
+            ((1.f-t) * z0 + t * z1);
+#endif
     }
     
 };

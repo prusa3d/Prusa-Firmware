@@ -13,6 +13,14 @@ void mesh_bed_leveling::reset() {
     for (int y = 0; y < MESH_NUM_Y_POINTS; y++)
         for (int x = 0; x < MESH_NUM_X_POINTS; x++)
             z_values[y][x] = 0;
+
+#ifdef ENABLE_LEVELING_FADE_HEIGHT
+    z_avg = 0.f;
+    z_fade = 0.;
+    z_prev = FLT_MAX;
+    // Fade factor, calculated for z_prev.
+    fade_factor = 0.;
+#endif
 }
 
 static inline bool vec_undef(const float v[2])
@@ -173,6 +181,14 @@ void mesh_bed_leveling::upsample_3x3()
         }
     }
 */
+
+#ifdef ENABLE_LEVELING_FADE_HEIGHT
+    z_avg = 0;
+    for (int j = 0; j < MESH_NUM_Y_POINTS; ++ j)
+        for (int i = 0; i < MESH_NUM_X_POINTS; ++ i)
+            z_avg += z_values[j][i];
+    z_avg /= float(MESH_NUM_X_POINTS * MESH_NUM_Y_POINTS);
+#endif
 }
 #endif
 
