@@ -6314,8 +6314,6 @@ Sigma_Exit:
 		codenum = millis();
 		cancel_heatup = false;
 
-		KEEPALIVE_STATE(NOT_BUSY);
-
 		while ((!cancel_heatup) && current_temperature_pinda < setTargetPinda) {
 			if ((millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
 			{
