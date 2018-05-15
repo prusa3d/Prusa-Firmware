@@ -2632,12 +2632,11 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         // In case of success, update the too_far_mask from the calculated points.
         for (uint8_t mesh_point = 0; mesh_point < 2; ++ mesh_point) {
             float y = vec_x[1] * pgm_read_float(bed_ref_points_4+mesh_point*2) + vec_y[1] * pgm_read_float(bed_ref_points_4+mesh_point*2+1) + cntr[1];
-			distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 20) {
 				SERIAL_ECHOLNPGM("");
 				SERIAL_ECHOPGM("Distance from min:");
-				MYSERIAL.print(distance_from_min[mesh_point]);
+				MYSERIAL.print(y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 				SERIAL_ECHOLNPGM("");
 				SERIAL_ECHOPGM("y:");
 				MYSERIAL.print(y);
