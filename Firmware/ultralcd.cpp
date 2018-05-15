@@ -1866,7 +1866,6 @@ void lcd_set_fan_check() {
 void lcd_set_filament_autoload() {
 	filament_autoload_enabled = !filament_autoload_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
-	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
 void lcd_unLoadFilament()
@@ -3635,12 +3634,30 @@ static void lcd_crash_mode_info2()
 #ifdef PAT9125
 static void lcd_filament_autoload_info()
 {
-    lcd_show_fullscreen_message_and_wait_P(MSG_AUTOLOADING_ONLY_IF_FSENS_ON);
+uint8_t nlines;
+	lcd_update_enable(true);
+	static uint32_t tim = 0;
+	if ((tim + 1000) < millis())
+	{
+          lcd_display_message_fullscreen_nonBlocking_P(MSG_AUTOLOADING_ONLY_IF_FSENS_ON, nlines);
+		tim = millis();
+	}
+	if (lcd_clicked())
+          menu_action_back();
 }
 
 static void lcd_fsensor_fail()
 {
-    lcd_show_fullscreen_message_and_wait_P(MSG_FSENS_NOT_RESPONDING);
+uint8_t nlines;
+	lcd_update_enable(true);
+	static uint32_t tim = 0;
+	if ((tim + 1000) < millis())
+	{
+          lcd_display_message_fullscreen_nonBlocking_P(MSG_FSENS_NOT_RESPONDING, nlines);
+		tim = millis();
+	}
+	if (lcd_clicked())
+          menu_action_back();
 }
 #endif //PAT9125
 
@@ -3712,21 +3729,15 @@ static void lcd_set_lang(unsigned char lang) {
 static void lcd_fsensor_state_set()
 {
 	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
-    if (FSensorStateMenu==0) {
+    if (!FSensorStateMenu) {
         fsensor_disable();
-        if ((filament_autoload_enabled == true)){
-            lcd_filament_autoload_info();
-        }
+        if (filament_autoload_enabled)
+            menu_action_submenu(lcd_filament_autoload_info);
     }else{
         fsensor_enable();
         if (fsensor_not_responding)
-        {
-            lcd_fsensor_fail();
-        }
+            menu_action_submenu(lcd_fsensor_fail);
     }
-	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu);
-	else lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
-    
 }
 #endif //PAT9125
 
@@ -4155,18 +4166,18 @@ static void lcd_settings_menu()
       if (fsensor_not_responding){
           // Filament sensor not working
           MENU_ITEM(function, MSG_FSENSOR_NA, lcd_fsensor_state_set);
-          MENU_ITEM(function, MSG_FSENS_AUTOLOAD_NA, lcd_fsensor_fail);
+          MENU_ITEM(submenu, MSG_FSENS_AUTOLOAD_NA, lcd_fsensor_fail);
       }
       else{
           // Filament sensor turned off, working, no problems
           MENU_ITEM(function, MSG_FSENSOR_OFF, lcd_fsensor_state_set);
-          MENU_ITEM(function, MSG_FSENS_AUTOLOAD_NA, lcd_filament_autoload_info);
+          MENU_ITEM(submenu, MSG_FSENS_AUTOLOAD_NA, lcd_filament_autoload_info);
       }
   } else {
       // Filament sensor turned on, working, no problems
       MENU_ITEM(function, MSG_FSENSOR_ON, lcd_fsensor_state_set);
       
-      if ((filament_autoload_enabled == true)) {
+      if (filament_autoload_enabled) {
           MENU_ITEM(function, MSG_FSENS_AUTOLOAD_ON, lcd_set_filament_autoload);
       }
       else {
@@ -4512,7 +4523,9 @@ static void lcd_calibration_menu()
 #endif //MK1BP
     MENU_ITEM(submenu, MSG_BED_CORRECTION_MENU, lcd_adjust_bed);
 	MENU_ITEM(submenu, MSG_PID_EXTRUDER, pid_extruder);
+#ifndef TMC2130
     MENU_ITEM(submenu, MSG_SHOW_END_STOPS, menu_show_end_stops);
+#endif
 #ifndef MK1BP
     MENU_ITEM(gcode, MSG_CALIBRATE_BED_RESET, PSTR("M44"));
 #endif //MK1BP
