@@ -4061,8 +4061,6 @@ void lcd_wizard(int state) {
 		case 10: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(MSG_WIZARD_REPEAT_V2_CAL, false);
 			if (wizard_event) {
-				//reset status and live adjust z value in eeprom
-				calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
 				lcd_show_fullscreen_message_and_wait_P(MSG_WIZARD_CLEAN_HEATBED);
 				state = 9;
 			}
