@@ -2,7 +2,7 @@
 #define CMDQUEUE_H
 
 #include "Marlin.h"
-#include "language_all.h"
+#include "language.h"
 
 
 // String circular buffer. Commands may be pushed to the buffer from both sides:
