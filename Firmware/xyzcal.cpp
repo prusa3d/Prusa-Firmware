@@ -21,7 +21,9 @@
 
 #define DBG(args...) printf_P(args)
 //#define DBG(args...)
+#ifndef _n
 #define _n PSTR
+#endif //_n
 
 #define _X ((int16_t)count_position[X_AXIS])
 #define _Y ((int16_t)count_position[Y_AXIS])

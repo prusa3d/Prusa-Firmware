@@ -76,8 +76,12 @@ bool tmc2130_sg_change = false;
 bool skip_debug_msg = false;
 
 #define DBG(args...) printf_P(args)
+#ifndef _n
 #define _n PSTR
+#endif //_n
+#ifndef _i
 #define _i PSTR
+#endif //_i
 
 //TMC2130 registers
 #define TMC2130_REG_GCONF      0x00 // 17 bits
