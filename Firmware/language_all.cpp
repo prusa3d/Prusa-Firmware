@@ -1168,6 +1168,11 @@ const char * const MSG_MAX_LANG_TABLE[1] PROGMEM = {
 	MSG_MAX_EN
 };
 
+const char MSG_MEASURED_OFFSET_EN[] PROGMEM = "[0;0] point offset";
+const char * const MSG_MEASURED_OFFSET_LANG_TABLE[1] PROGMEM = {
+	MSG_MEASURED_OFFSET_EN
+};
+
 const char MSG_MEASURED_SKEW_EN[] PROGMEM = "Measured skew:";
 const char MSG_MEASURED_SKEW_CZ[] PROGMEM = "Merene zkoseni:";
 const char * const MSG_MEASURED_SKEW_LANG_TABLE[LANG_NUM] PROGMEM = {

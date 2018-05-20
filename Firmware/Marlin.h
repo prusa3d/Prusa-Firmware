@@ -343,7 +343,6 @@ extern unsigned long t_fan_rising_edge;
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
-extern float distance_from_min[2];
 extern bool sortAlpha;
 
 extern char dir_names[3][9];

@@ -324,8 +324,6 @@ unsigned int custom_message_type;
 unsigned int custom_message_state;
 char snmm_filaments_used = 0;
 
-float distance_from_min[2];
-
 bool fan_state[2];
 int fan_edge_counter[2];
 int fan_speed[2];
@@ -764,7 +762,8 @@ void factory_reset(char level, bool quiet)
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
             farm_no = 0;
-			farm_mode == false;
+//*** MaR::180501_01
+			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
                        
@@ -970,6 +969,7 @@ void setup()
 	setup_killpin();
 	setup_powerhold();
 
+//*** MaR::180501_02b
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF)) 
@@ -1067,7 +1067,7 @@ void setup()
 //	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_mode = TMC2130_MODE_NORMAL;
 	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
-	if (crashdet)
+	if (crashdet && !farm_mode)
 	{
 		crashdet_enable();
 	    MYSERIAL.println("CrashDetect ENABLED!");
@@ -1165,6 +1165,7 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
+//*** MaR::180501_02
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
@@ -4221,13 +4222,15 @@ void process_commands()
       }
       break;
 
-	case 98: //activate farm mode
+	case 98: // G98 (activate farm mode)
 		farm_mode = 1;
 		PingTime = millis();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+          SilentModeMenu = SILENT_MODE_OFF;
+          eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 		break;
 
-	case 99: //deactivate farm mode
+	case 99: // G99 (deactivate farm mode)
 		farm_mode = 0;
 		lcd_printer_connected();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
@@ -7127,6 +7130,8 @@ void handle_status_leds(void) {
  * @brief Turn off heating after 30 minutes of inactivity
  *
  * Full screen blocking notification message is shown after heater turning off.
+ * Paused print is not considered inactivity, as nozzle is cooled anyway and bed cooling would
+ * damage print.
  */
 static void handleSafetyTimer()
 {
@@ -7134,8 +7139,8 @@ static void handleSafetyTimer()
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
     static Timer safetyTimer;
-    if (IS_SD_PRINTING || is_usb_printing || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) ||
-            (!degTargetBed() && !degTargetHotend(0)))
+    if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4)
+        || (lcd_commands_type == LCD_COMMAND_V2_CAL) || (!degTargetBed() && !degTargetHotend(0)))
     {
         safetyTimer.stop();
     }
@@ -7193,11 +7198,6 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 		if (fsensor_autoload_enabled)
 			fsensor_autoload_check_stop();
 #endif //PAT9125
-
-#ifdef SAFETYTIMER
-	handleSafetyTimer();
-#endif //SAFETYTIMER
-
 
 #ifdef SAFETYTIMER
 	handleSafetyTimer();

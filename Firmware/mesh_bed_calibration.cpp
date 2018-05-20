@@ -57,13 +57,36 @@ const float bed_skew_angle_extreme = (0.25f * M_PI / 180.f);
 
 #ifdef HEATBED_V2
 
-// Positions of the bed reference points in the machine coordinates, referenced to the P.I.N.D.A sensor.
-// The points are the following: center front, center right, center rear, center left.
+/**
+ * [0,0] bed print area point X coordinate in bed coordinates ver. 05d/24V
+ */
+#define BED_PRINT_ZERO_REF_X 2.f
+/**
+ * [0,0] bed print area point Y coordinate in bed coordinates ver. 05d/24V
+ */
+#define BED_PRINT_ZERO_REF_Y 9.4f
+
+/**
+ * @brief Positions of the bed reference points in print area coordinates. ver. 05d/24V
+ *
+ * Numeral constants are in bed coordinates, subtracting macro defined values converts it to print area coordinates.
+ *
+ * The points are the following:
+ * MK2: center front, center right, center rear, center left.
+ * MK25 and MK3: front left, front right, rear right, rear left
+ */
 const float bed_ref_points_4[] PROGMEM = {
-	13.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X,  10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
-	13.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
+	37.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_X,
+	18.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	18.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	37.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y
 };
 
 const float bed_ref_points[] PROGMEM = {
@@ -732,19 +755,24 @@ void world2machine_reset()
 }
 
 /**
- * @brief Set calibration matrix to default value
+ * @brief Get calibration matrix default value
  *
  * This is used if no valid calibration data can be read from EEPROM.
+ * @param [out] vec_x axis x vector
+ * @param [out] vec_y axis y vector
+ * @param [out] cntr offset vector
  */
-static void world2machine_default()
+static void world2machine_default(float vec_x[2], float vec_y[2], float cntr[2])
 {
+    vec_x[0] = 1.f;
+    vec_x[1] = 0.f;
+    vec_y[0] = 0.f;
+    vec_y[1] = 1.f;
+    cntr[0] =  0.f;
 #ifdef DEFAULT_Y_OFFSET
-    const float vx[] = { 1.f, 0.f };
-    const float vy[] = { 0.f, 1.f };
-    const float cntr[] = { 0.f, DEFAULT_Y_OFFSET };
-    world2machine_update(vx, vy, cntr);
+    cntr[1] = DEFAULT_Y_OFFSET;
 #else
-    world2machine_reset();
+    cntr[1] = 0.f;
 #endif
 }
 /**
@@ -768,91 +796,119 @@ static inline bool vec_undef(const float v[2])
     return vx[0] == 0x0FFFFFFFF || vx[1] == 0x0FFFFFFFF;
 }
 
+
 /**
- * @brief Read and apply calibration data from EEPROM
+ * @brief Read calibration data from EEPROM
  *
  * If no calibration data has been stored in EEPROM or invalid,
  * world2machine_default() is used.
  *
  * If stored calibration data is invalid, EEPROM storage is cleared.
- *
+ * @param [out] vec_x axis x vector
+ * @param [out] vec_y axis y vector
+ * @param [out] cntr offset vector
  */
-void world2machine_initialize()
+void world2machine_read_valid(float vec_x[2], float vec_y[2], float cntr[2])
 {
-    //SERIAL_ECHOLNPGM("world2machine_initialize");
-    float cntr[2] = {
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0)),
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4))
-    };
-    float vec_x[2] = {
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0)),
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4))
-    };
-    float vec_y[2] = {
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0)),
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4))
-    };
+    vec_x[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0));
+    vec_x[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4));
+    vec_y[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0));
+    vec_y[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4));
+    cntr[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0));
+    cntr[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4));
 
     bool reset = false;
-    if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y)) {
-//        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
+    if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y))
+    {
+#if 0
+        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
+#endif
         reset = true;
     }
-    else {
+    else
+    {
         // Length of the vec_x shall be close to unity.
         float l = sqrt(vec_x[0] * vec_x[0] + vec_x[1] * vec_x[1]);
-        if (l < 0.9 || l > 1.1) {
-//			SERIAL_ECHOLNPGM("X vector length:");
-//			MYSERIAL.println(l);
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
+        if (l < 0.9 || l > 1.1)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("X vector length:");
+            MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
+#endif
             reset = true;
         }
         // Length of the vec_y shall be close to unity.
         l = sqrt(vec_y[0] * vec_y[0] + vec_y[1] * vec_y[1]);
-        if (l < 0.9 || l > 1.1) {
-//			SERIAL_ECHOLNPGM("Y vector length:");
-//			MYSERIAL.println(l);
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the Y vector out of range.");
+        if (l < 0.9 || l > 1.1)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("Y vector length:");
+            MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the Y vector out of range.");
+#endif
             reset = true;
         }
         // Correction of the zero point shall be reasonably small.
         l = sqrt(cntr[0] * cntr[0] + cntr[1] * cntr[1]);
-        if (l > 15.f) {
-//			SERIAL_ECHOLNPGM("Zero point correction:");
-//			MYSERIAL.println(l);
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Shift out of range.");
+        if (l > 15.f)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("Zero point correction:");
+            MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Shift out of range.");
+#endif
             reset = true;
         }
         // vec_x and vec_y shall be nearly perpendicular.
         l = vec_x[0] * vec_y[0] + vec_x[1] * vec_y[1];
-        if (fabs(l) > 0.1f) {
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. X/Y axes are far from being perpendicular.");
+        if (fabs(l) > 0.1f)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. X/Y axes are far from being perpendicular.");
+#endif
             reset = true;
         }
     }
 
-    if (reset) {
-//        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
+    if (reset)
+    {
+#if 0
+        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
+#endif
         reset_bed_offset_and_skew();
-        world2machine_default();
-    } else {
-        world2machine_update(vec_x, vec_y, cntr);
-        /*
-        SERIAL_ECHOPGM("world2machine_initialize() loaded: ");
-        MYSERIAL.print(world2machine_rotation_and_skew[0][0], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_rotation_and_skew[0][1], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_rotation_and_skew[1][0], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_rotation_and_skew[1][1], 5);
-        SERIAL_ECHOPGM(", offset ");
-        MYSERIAL.print(world2machine_shift[0], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_shift[1], 5);
-        SERIAL_ECHOLNPGM("");
-        */
+        world2machine_default(vec_x, vec_y, cntr);
     }
+}
+
+/**
+ * @brief Read and apply validated calibration data from EEPROM
+ */
+void world2machine_initialize()
+{
+#if 0
+    SERIAL_ECHOLNPGM("world2machine_initialize");
+#endif
+    float vec_x[2];
+    float vec_y[2];
+    float cntr[2];
+    world2machine_read_valid(vec_x, vec_y, cntr);
+    world2machine_update(vec_x, vec_y, cntr);
+#if 0
+    SERIAL_ECHOPGM("world2machine_initialize() loaded: ");
+    MYSERIAL.print(world2machine_rotation_and_skew[0][0], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_rotation_and_skew[0][1], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_rotation_and_skew[1][0], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_rotation_and_skew[1][1], 5);
+    SERIAL_ECHOPGM(", offset ");
+    MYSERIAL.print(world2machine_shift[0], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_shift[1], 5);
+    SERIAL_ECHOLNPGM("");
+#endif
 }
 
 /**
@@ -2576,12 +2632,11 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         // In case of success, update the too_far_mask from the calculated points.
         for (uint8_t mesh_point = 0; mesh_point < 2; ++ mesh_point) {
             float y = vec_x[1] * pgm_read_float(bed_ref_points_4+mesh_point*2) + vec_y[1] * pgm_read_float(bed_ref_points_4+mesh_point*2+1) + cntr[1];
-			distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 20) {
 				SERIAL_ECHOLNPGM("");
 				SERIAL_ECHOPGM("Distance from min:");
-				MYSERIAL.print(distance_from_min[mesh_point]);
+				MYSERIAL.print(y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 				SERIAL_ECHOLNPGM("");
 				SERIAL_ECHOPGM("y:");
 				MYSERIAL.print(y);
@@ -2960,8 +3015,7 @@ void babystep_reset()
       babystepLoadZ = 0;    
 }
 
-void count_xyz_details() {
-	float a1, a2;
+void count_xyz_details(float (&distanceMin)[2]) {
 	float cntr[2] = {
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 0)),
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 4))
@@ -2974,12 +3028,14 @@ void count_xyz_details() {
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 0)),
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 4))
 	};
+#if 0
 	a2 = -1 * asin(vec_y[0] / MACHINE_AXIS_SCALE_Y);
 	a1 = asin(vec_x[1] / MACHINE_AXIS_SCALE_X);
-	//angleDiff = fabs(a2 - a1);
+	angleDiff = fabs(a2 - a1);
+#endif
 	for (uint8_t mesh_point = 0; mesh_point < 2; ++mesh_point) {
 		float y = vec_x[1] * pgm_read_float(bed_ref_points_4 + mesh_point * 2) + vec_y[1] * pgm_read_float(bed_ref_points_4 + mesh_point * 2 + 1) + cntr[1];
-		distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
+		distanceMin[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 	}
 }
 
