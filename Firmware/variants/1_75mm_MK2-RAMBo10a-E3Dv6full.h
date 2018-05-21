@@ -42,9 +42,9 @@ AXIS SETTINGS
 
 
 // Endstop inverting
-const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
-const bool Y_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
-const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
+#define X_MIN_ENDSTOP_INVERTING 0 // set to true to invert the logic of the endstop.
+#define Y_MIN_ENDSTOP_INVERTING 0 // set to true to invert the logic of the endstop.
+#define Z_MIN_ENDSTOP_INVERTING 0 // set to true to invert the logic of the endstop.
 
 // Direction inverting
 #define INVERT_X_DIR false    // for Mendel set to false, for Orca set to true
