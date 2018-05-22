@@ -2197,7 +2197,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
 
 		if (iteration > 0) {
-			lcd_print_at_PGM(0, next_line + 1, MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION);
+			lcd_print_at_PGM(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 			lcd_implementation_print(int(iteration + 1));
 		}
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -2455,7 +2455,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_i("Improving bed calibration point"), next_line);////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
     if (next_line > 3)
         next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -2468,7 +2468,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2);
+        lcd_printPGM(_i(" of 4"));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.

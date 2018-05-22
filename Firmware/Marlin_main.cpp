@@ -308,7 +308,7 @@ unsigned long t_fan_rising_edge = millis();
 bool mesh_bed_leveling_flag = false;
 bool mesh_bed_run_from_menu = false;
 
-unsigned char lang_selected = 0;
+//unsigned char lang_selected = 0;
 int8_t FarmMode = 0;
 
 bool prusa_sd_card_upload = false;
@@ -915,8 +915,8 @@ void factory_reset()
 void show_fw_version_warnings() {
 	if (FW_DEV_VERSION == FW_VERSION_GOLD || FW_DEV_VERSION == FW_VERSION_RC) return;
 	switch (FW_DEV_VERSION) {
-	case(FW_VERSION_ALPHA):   lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_ALPHA);   break;
-	case(FW_VERSION_BETA):    lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_BETA);    break;
+	case(FW_VERSION_ALPHA):   lcd_show_fullscreen_message_and_wait_P(_i("You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage."));   break;////MSG_FW_VERSION_ALPHA c=20 r=8
+	case(FW_VERSION_BETA):    lcd_show_fullscreen_message_and_wait_P(_i("You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."));    break;////MSG_FW_VERSION_BETA c=20 r=8
   case(FW_VERSION_DEVEL):
 	case(FW_VERSION_DEBUG):
     lcd_update_enable(false);
@@ -931,7 +931,7 @@ void show_fw_version_warnings() {
     lcd_print_at_PGM(0, 3, PSTR(FW_REPOSITORY));
     lcd_wait_for_click();
     break;
-	default: lcd_show_fullscreen_message_and_wait_P(MSG_FW_VERSION_UNKNOWN); break;
+	default: lcd_show_fullscreen_message_and_wait_P(_i("WARNING: This is an unofficial, unsupported build. Use at your own risk!")); break;////MSG_FW_VERSION_UNKNOWN c=20 r=8
 	}
 	lcd_update_enable(true);
 }
@@ -1026,9 +1026,9 @@ void setup()
 #ifdef STRING_VERSION_CONFIG_H
 #ifdef STRING_CONFIG_H_AUTHOR
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(MSG_CONFIGURATION_VER);
+	SERIAL_ECHORPGM(_i(" Last Updated: "));////MSG_CONFIGURATION_VER c=0 r=0
 	SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
-	SERIAL_ECHORPGM(MSG_AUTHOR);
+	SERIAL_ECHORPGM(_n(" | Author: "));////MSG_AUTHOR c=0 r=0
 	SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
 	SERIAL_ECHOPGM("Compiled: ");
 	SERIAL_ECHOLNPGM(__DATE__);
@@ -1036,9 +1036,9 @@ void setup()
 #endif
 
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(MSG_FREE_MEMORY);
+	SERIAL_ECHORPGM(_i(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
 	SERIAL_ECHO(freeMemory());
-	SERIAL_ECHORPGM(MSG_PLANNER_BUFFER_BYTES);
+	SERIAL_ECHORPGM(_i("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
@@ -1309,15 +1309,15 @@ void setup()
 	  //if motherboard or printer type was changed inform user as it can indicate flashing wrong firmware version
 	  //if user confirms with knob, new hw version (printer and/or motherboard) is written to eeprom and message will be not shown next time
 	case(0b01): 
-		lcd_show_fullscreen_message_and_wait_P(MSG_CHANGED_MOTHERBOARD); 
+		lcd_show_fullscreen_message_and_wait_P(_i("Warning: motherboard type changed.")); ////MSG_CHANGED_MOTHERBOARD c=20 r=4
 		eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD); 
 		break;
 	case(0b10): 
-		lcd_show_fullscreen_message_and_wait_P(MSG_CHANGED_PRINTER); 
+		lcd_show_fullscreen_message_and_wait_P(_i("Warning: printer type changed.")); ////MSG_CHANGED_PRINTER c=20 r=4
 		eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE); 
 		break;
 	case(0b11): 
-		lcd_show_fullscreen_message_and_wait_P(MSG_CHANGED_BOTH); 
+		lcd_show_fullscreen_message_and_wait_P(_i("Warning: both printer type and motherboard type changed.")); ////MSG_CHANGED_BOTH c=20 r=4
 		eeprom_write_word((uint16_t*)EEPROM_PRINTER_TYPE, PRINTER_TYPE);
 		eeprom_write_word((uint16_t*)EEPROM_BOARD_TYPE, MOTHERBOARD); 
 		break;
@@ -1325,7 +1325,7 @@ void setup()
   }
 
   if (!previous_settings_retrieved) {
-	  lcd_show_fullscreen_message_and_wait_P(MSG_DEFAULT_SETTINGS_LOADED); //if EEPROM version or printer type was changed, inform user that default setting were loaded
+	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 	  erase_eeprom_section(EEPROM_OFFSET, 156); 							   //erase M500 part of eeprom
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
@@ -1346,7 +1346,7 @@ void setup()
 		  lcd_update_enable(true);
 	  }
 	  else if (calibration_status() == CALIBRATION_STATUS_CALIBRATED && temp_cal_active == true && calibration_status_pinda() == false) {
-		  //lcd_show_fullscreen_message_and_wait_P(MSG_PINDA_NOT_CALIBRATED);
+		  //lcd_show_fullscreen_message_and_wait_P(_i("Temperature calibration has not been run yet"));////MSG_PINDA_NOT_CALIBRATED c=20 r=4
 		  lcd_update_enable(true);
 	  }
 	  else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
@@ -1357,7 +1357,7 @@ void setup()
 
 #if !defined (DEBUG_DISABLE_FORCE_SELFTEST) && defined (TMC2130)
   if (force_selftest_if_fw_version() && calibration_status() < CALIBRATION_STATUS_ASSEMBLED) {
-	  lcd_show_fullscreen_message_and_wait_P(MSG_FORCE_SELFTEST);
+	  lcd_show_fullscreen_message_and_wait_P(_i("Selftest will be run to calibrate accurate sensorless rehoming."));////MSG_FORCE_SELFTEST c=20 r=8
 	  update_current_firmware_version_to_eeprom();
 	  lcd_selftest();
   }
@@ -2454,7 +2454,7 @@ void gcode_M114()
 	SERIAL_PROTOCOLPGM(" E:");
 	SERIAL_PROTOCOL(current_position[E_AXIS]);
 
-	SERIAL_PROTOCOLRPGM(MSG_COUNT_X);
+	SERIAL_PROTOCOLRPGM(_n(" Count X: "));////MSG_COUNT_X c=0 r=0
 	SERIAL_PROTOCOL(float(st_get_position(X_AXIS)) / axis_steps_per_unit[X_AXIS]);
 	SERIAL_PROTOCOLPGM(" Y:");
 	SERIAL_PROTOCOL(float(st_get_position(Y_AXIS)) / axis_steps_per_unit[Y_AXIS]);
@@ -2934,7 +2934,7 @@ void process_commands()
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-	  if(codenum != 0) LCD_MESSAGERPGM(MSG_DWELL);
+	  if(codenum != 0) LCD_MESSAGERPGM(_i("Sleep..."));////MSG_DWELL c=0 r=0
       st_synchronize();
       codenum += millis();  // keep track of when we started waiting
       previous_millis_cmd = millis();
@@ -3464,7 +3464,7 @@ void process_commands()
 				enquecommand_front_P((PSTR("G28 W0")));
 				break;
 			}
-			lcd_show_fullscreen_message_and_wait_P(MSG_TEMP_CAL_WARNING);
+			lcd_show_fullscreen_message_and_wait_P(_i("Stable ambient temperature 21-26C is needed a rigid stand is required."));////MSG_TEMP_CAL_WARNING c=20 r=4
 			bool result = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_STEEL_SHEET_CHECK, false, false);
 			
 			if (result)
@@ -3949,11 +3949,11 @@ void process_commands()
 				break;
 			}
 			if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
-				kill_message = MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED;
+				kill_message = _i("Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.");////MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
 				break;
 			}
 			if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) { //if we have data from z calibration, max. allowed difference is 1mm for each point
-				kill_message = MSG_BED_LEVELING_FAILED_POINT_HIGH;
+				kill_message = _i("Bed leveling failed. Sensor triggered too high. Waiting for reset.");////MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
 				break;
 			}
 			#ifdef SUPPORT_VERBOSITY
@@ -4277,7 +4277,7 @@ void process_commands()
       if (!hasP && !hasS && *src != '\0') {
         lcd_setstatus(src);
       } else {
-        LCD_MESSAGERPGM(MSG_USERWAIT);
+        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT c=0 r=0
       }
 
       lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
@@ -4305,14 +4305,14 @@ void process_commands()
 		KEEPALIVE_STATE(IN_HANDLER);
       }
       if (IS_SD_PRINTING)
-        LCD_MESSAGERPGM(MSG_RESUMING);
+        LCD_MESSAGERPGM(_i("Resuming print"));////MSG_RESUMING c=0 r=0
       else
         LCD_MESSAGERPGM(WELCOME_MSG);
     }
     break;
 #endif
     case 17:
-        LCD_MESSAGERPGM(MSG_NO_MOVE);
+        LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE c=0 r=0
         enable_x();
         enable_y();
         enable_z();
@@ -4323,9 +4323,9 @@ void process_commands()
 
 #ifdef SDSUPPORT
     case 20: // M20 - list SD card
-      SERIAL_PROTOCOLLNRPGM(MSG_BEGIN_FILE_LIST);
+      SERIAL_PROTOCOLLNRPGM(_i("Begin file list"));////MSG_BEGIN_FILE_LIST c=0 r=0
       card.ls();
-      SERIAL_PROTOCOLLNRPGM(MSG_END_FILE_LIST);
+      SERIAL_PROTOCOLLNRPGM(_i("End file list"));////MSG_END_FILE_LIST c=0 r=0
       break;
     case 21: // M21 - init SD card
 
@@ -4864,7 +4864,7 @@ Sigma_Exit:
         }
       #else
         SERIAL_ERROR_START;
-        SERIAL_ERRORLNRPGM(MSG_ERR_NO_THERMISTORS);
+        SERIAL_ERRORLNRPGM(_i("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS c=0 r=0
       #endif
 
         SERIAL_PROTOCOLPGM(" @:");
@@ -5215,10 +5215,10 @@ Sigma_Exit:
       enable_endstops(true) ;
       break;
     case 119: // M119
-    SERIAL_PROTOCOLRPGM(MSG_M119_REPORT);
+    SERIAL_PROTOCOLRPGM(_i("Reporting endstop status"));////MSG_M119_REPORT c=0 r=0
     SERIAL_PROTOCOLLN("");
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
-        SERIAL_PROTOCOLRPGM(MSG_X_MIN);
+        SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN c=0 r=0
         if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5227,7 +5227,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
-        SERIAL_PROTOCOLRPGM(MSG_X_MAX);
+        SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX c=0 r=0
         if(READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5236,7 +5236,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
-        SERIAL_PROTOCOLRPGM(MSG_Y_MIN);
+        SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN c=0 r=0
         if(READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5245,7 +5245,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
-        SERIAL_PROTOCOLRPGM(MSG_Y_MAX);
+        SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX c=0 r=0
         if(READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5296,7 +5296,7 @@ Sigma_Exit:
           tmp_extruder = code_value();
 		  if(tmp_extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
-            SERIAL_ECHO(MSG_M200_INVALID_EXTRUDER);
+            SERIAL_ECHO(_i("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
             break;
           }
         }
@@ -5943,7 +5943,7 @@ Sigma_Exit:
 				delay_keep_alive(4);
 
 				if (millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
-					lcd_display_message_fullscreen_P(MSG_PRESS_TO_PREHEAT);
+					lcd_display_message_fullscreen_P(_i("Press knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
 					wait_for_user_state = 1;
 					setTargetHotend(0, 0);
 					setTargetHotend(0, 1);
@@ -6083,8 +6083,8 @@ Sigma_Exit:
 			WRITE(BEEPER, LOW);
 
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
-			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_UNLOAD_SUCCESSFUL, false, true);
-			if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(MSG_CHECK_IDLER);
+			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, true);////MSG_UNLOAD_SUCCESSFUL c=20 r=2
+			if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
 			//lcd_return_to_status();
 			lcd_update_enable(true);
 		
@@ -6729,7 +6729,7 @@ Sigma_Exit:
 			  SERIAL_ECHO_START;
 			  SERIAL_ECHOPGM("T");
 			  SERIAL_PROTOCOLLN((int)tmp_extruder);
-			  SERIAL_ECHOLNRPGM(MSG_INVALID_EXTRUDER);
+			  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
 		  }
 		  else {
 			  boolean make_move = false;
@@ -6761,7 +6761,7 @@ Sigma_Exit:
 			  }
 #endif
 			  SERIAL_ECHO_START;
-			  SERIAL_ECHORPGM(MSG_ACTIVE_EXTRUDER);
+			  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER c=0 r=0
 			  SERIAL_PROTOCOLLN((int)active_extruder);
 		  }
 
@@ -6831,7 +6831,7 @@ void FlushSerialRequestResend()
 {
   //char cmdbuffer[bufindr][100]="Resend:";
   MYSERIAL.flush();
-  SERIAL_PROTOCOLRPGM(MSG_RESEND);
+  SERIAL_PROTOCOLRPGM(_i("Resend: "));////MSG_RESEND c=0 r=0
   SERIAL_PROTOCOLLN(gcode_LastN + 1);
   previous_millis_cmd = millis();
   SERIAL_PROTOCOLLNRPGM(MSG_OK);
@@ -7152,7 +7152,7 @@ static void handleSafetyTimer()
     {
         setTargetBed(0);
         setTargetHotend(0, 0);
-        lcd_show_fullscreen_message_and_wait_P(MSG_BED_HEATING_SAFETY_DISABLED);
+        lcd_show_fullscreen_message_and_wait_P(_i("Heating disabled by safety timer."));////MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
     }
 }
 #endif //SAFETYTIMER
@@ -7308,12 +7308,12 @@ void kill(const char *full_screen_message, unsigned char id)
   pinMode(PS_ON_PIN,INPUT);
 #endif
   SERIAL_ERROR_START;
-  SERIAL_ERRORLNRPGM(MSG_ERR_KILLED);
+  SERIAL_ERRORLNRPGM(_i("Printer halted. kill() called!"));////MSG_ERR_KILLED c=0 r=0
   if (full_screen_message != NULL) {
       SERIAL_ERRORLNRPGM(full_screen_message);
       lcd_display_message_fullscreen_P(full_screen_message);
   } else {
-      LCD_ALERTMESSAGERPGM(MSG_KILLED);
+      LCD_ALERTMESSAGERPGM(_i("KILLED. "));////MSG_KILLED c=0 r=0
   }
 
   // FMC small patch to update the LCD before ending
@@ -7426,19 +7426,19 @@ bool setTargetedHotend(int code){
       SERIAL_ECHO_START;
       switch(code){
         case 104:
-          SERIAL_ECHORPGM(MSG_M104_INVALID_EXTRUDER);
+          SERIAL_ECHORPGM(_i("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER c=0 r=0
           break;
         case 105:
-          SERIAL_ECHO(MSG_M105_INVALID_EXTRUDER);
+          SERIAL_ECHO(_i("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER c=0 r=0
           break;
         case 109:
-          SERIAL_ECHO(MSG_M109_INVALID_EXTRUDER);
+          SERIAL_ECHO(_i("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER c=0 r=0
           break;
         case 218:
-          SERIAL_ECHO(MSG_M218_INVALID_EXTRUDER);
+          SERIAL_ECHO(_i("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER c=0 r=0
           break;
         case 221:
-          SERIAL_ECHO(MSG_M221_INVALID_EXTRUDER);
+          SERIAL_ECHO(_i("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
           break;
       }
       SERIAL_PROTOCOLLN((int)tmp_extruder);
@@ -8209,7 +8209,7 @@ void recover_print(uint8_t automatic) {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
-	lcd_setstatuspgm(MSG_RECOVERING_PRINT);
+	lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20 r=1
 
   recover_machine_state_after_power_panic();
 

@@ -968,7 +968,7 @@ if (print_sd_status)
 					lcd.setCursor(0, 3);
 					lcd_printPGM(PSTR("                    "));
 					lcd.setCursor(0, 3);
-					lcd_printPGM(MSG_HOMEYZ_PROGRESS);
+					lcd_printPGM(_i("Calibrating Z"));////MSG_HOMEYZ_PROGRESS c=0 r=0
 					lcd_printPGM(PSTR(" : "));
 					lcd.print(custom_message_state-10);
 				}
@@ -986,7 +986,7 @@ if (print_sd_status)
 						lcd.setCursor(0, 3);
 						lcd_printPGM(PSTR("                   "));
 						lcd.setCursor(0, 3);
-						lcd_printPGM(MSG_HOMEYZ_DONE);
+						lcd_printPGM(_i("Calibration done"));////MSG_HOMEYZ_DONE c=0 r=0
 						custom_message_state--;
 					}
 				}
@@ -1020,7 +1020,7 @@ if (print_sd_status)
 			// temp compensation preheat
 			if (custom_message_type == 5) {
 				lcd.setCursor(0, 3);
-				lcd_printPGM(MSG_PINDA_PREHEAT);
+				lcd_printPGM(_i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
 				if (custom_message_state <= PINDA_HEAT_T) {
 					lcd_printPGM(PSTR(": "));
 					lcd.print(custom_message_state); //seconds

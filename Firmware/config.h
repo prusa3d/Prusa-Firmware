@@ -18,4 +18,10 @@
 #define TMC2130_SPCR           SPI_SPCR(TMC2130_SPI_RATE, 1, 1, 1, 0)
 #define TMC2130_SPSR           SPI_SPSR(TMC2130_SPI_RATE)
 
+//LANG - Multi-language support
+#define LANG_MODE               0 // primary language only
+//#define LANG_MODE               1 // sec. language support
+#define LANG_SIZE_RESERVED 0x3000 // reserved space for secondary language (12kb)
+
+
 #endif //_CONFIG_H
