@@ -1,0 +1,343 @@
+  [off
+  PlannerBufferBytes: 
+ \002 Fact
+ \002 Max
+ \002 Min
+ cold extrusion prevented
+ Free Memory: 
+ Last Updated: 
+ of 4
+ of 4
+ of 9
+[0;0] point offset
+\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode
+\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode
+\xf8Refresh
+Adjusting Z
+All
+All correct      
+All is done. Happy printing!
+and press the knob
+Are left and right Z~carriages all up?
+Auto adjust Z?
+Auto home
+AutoLoad filament
+Autoloading filament available only when filament sensor is turned on...
+Autoloading filament is active, just press the knob and insert filament...
+Axis
+Axis length
+Babystepping X
+Babystepping Y
+Bed
+Bed / Heater
+Bed done
+Bed Heating
+Bed level correct
+Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset.
+Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.
+Bed leveling failed. Sensor triggered too high. Waiting for reset.
+Begin file list
+Belt status
+Blackout occurred. Recover print?
+Calibrate
+Calibrate E
+Calibrate XYZ
+Calibrate Z
+Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.
+Calibrating Z
+Calibrating Z
+Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.
+Calibration
+Calibration done
+Cannot enter subdir: 
+Cannot open subdir
+Card inserted
+Card removed
+Color not correct
+Cooldown
+Crash det.   [on]
+Crash det.  [N/A]
+Crash det.  [off]
+Crash detected.
+Current
+Date:
+Disable steppers
+Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration.
+Do you want to repeat last step to readjust distance between nozzle and heatbed?
+E calibration finished. Please clean the nozzle. Click when done.
+E-correct
+End file list
+Endstop
+Endstop not hit
+Endstops
+endstops hit: 
+enqueing \x22
+Error - static memory has been overwritten
+error writing to file
+ERROR:
+ERROR: Filament sensor is not responding, please check connection.
+Extruder
+Extruder
+Extruder 1
+Extruder 2
+Extruder 3
+Extruder 4
+Extruder fan:
+Extruder info
+F. autoload  [on]
+F. autoload [N/A]
+F. autoload [off]
+Fan speed
+Fan test
+Fans check   [on]
+Fans check  [off]
+Fil. sensor  [on]
+Fil. sensor [N/A]
+Fil. sensor [off]
+Filament extruding & with correct color?
+Filament not loaded
+Filament sensor
+Filament sensor:
+Filament used:  
+File incomplete. Continue anyway?
+File opened: 
+File selected
+Finishing movements
+First layer cal.
+First, I will run the selftest to check most common assembly problems.
+Flow
+forum.prusa3d.com
+Front print fan?
+Front side[um]
+Front/left fans
+Heater/Thermistor
+Heating
+Heating disabled by safety timer.
+Heating done.
+Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?
+howto.prusa3d.com
+Change extruder
+Change filament
+Change SD card
+Change success!
+Changed correctly?
+Changing filament!
+Checking bed     
+Checking endstops
+Checking hotend  "  
+Checking sensors 
+Checking X axis  
+Checking Y axis  
+Checking Z axis  
+checksum mismatch, Last Line: 
+Choose extruder:
+I will run xyz calibration now. It will take approx. 12 mins.
+I will run z calibration now.
+I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration.
+Improving bed calibration point
+Info screen
+Init. SD card
+Insert filament
+Insert filament into extruder 1. Click when done.
+Insert filament into extruder 2. Click when done.
+Insert filament into extruder 3. Click when done.
+Insert filament into extruder 4. Click when done.
+Is filament loaded?
+Is it PLA filament?
+Is PLA filament loaded?
+Is steel sheet on heatbed?
+Iteration 
+KILLED. 
+Left hotend fan?
+Left side [um]
+Left:
+Live adjust Z
+Load all
+Load filament
+Load filament 1
+Load filament 2
+Load filament 3
+Load filament 4
+Loading color
+Loading filament
+Loose pulley
+M104 Invalid extruder 
+M105 Invalid extruder 
+M109 Invalid extruder 
+M117 First layer cal.
+M200 Invalid extruder 
+M218 Invalid extruder 
+M221 Invalid extruder 
+Main
+Mark filament 100mm from extruder body. Click when done.
+Measured skew:
+Measuring reference height of calibration point
+Mesh Bed Leveling
+Mode     [Normal]
+Mode     [silent]
+Mode    [Stealth]
+Mode [auto power]
+Mode [high power]" 
+Motor
+Move axis
+Move X
+Move Y
+Move Z
+New firmware version available:
+No
+No Checksum with line number, Last Line: 
+No move.
+No SD card
+No thermistors - no temperature
+Not connected
+Not spinning
+Now I will calibrate distance between tip of the nozzle and heatbed surface.
+Now I will preheat nozzle for PLA.
+Nozzle
+Nozzle FAN:
+Nozzle2
+Nozzle3
+ok
+Old settings found. Default PID, Esteps etc. will be set.
+open
+open failed, File: 
+openRoot failed
+Pause print
+Pick print
+PID cal.           
+PID cal. finished
+PID calibration
+PINDA Heating
+Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately.
+Please clean heatbed and then press the knob.
+Please clean the nozzle for calibration. Click when done.
+Please check :"	
+Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer.
+Please insert PLA filament to the extruder, then press knob to load it.
+Please load PLA filament and then resume Wizard by rebooting the printer.
+Please load PLA filament first.
+Please open idler and remove filament manually.
+Please place steel sheet on heatbed.
+Please press the knob to unload filament
+Please pull out filament immediately
+Please remove steel sheet from heatbed.
+Please upgrade.
+Please wait
+PowerUp
+Preheat
+Preheat the nozzle!
+Preheating nozzle. Please wait.
+Prepare new filament
+Press knob to preheat nozzle and continue.
+Print aborted
+Print fan:
+Print FAN: 
+Print from SD
+Print paused
+Print time:  
+Printer disconnected
+Printer halted. kill() called!
+Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow.
+Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)
+Prusa i3 MK3 ready.
+prusa3d.com
+Rear side [um]
+Recovering print    
+Reporting endstop status
+Resend: 
+Reset
+Reset XYZ calibr.
+Resume print
+Resuming print
+Resuming print
+Right side[um]
+Right:
+Rotate knob until mark reaches extruder body. Click when done.
+RPi port     [on]
+RPi port    [off]
+Running Wizard will delete current calibration results and start from the beginning. Continue?
+SD card  [normal]
+SD card [FlshAir]
+SD card ok
+SD init fail
+SD printing byte 
+Searching bed calibration point
+Select language
+Self test OK
+Self test start  
+Selftest         
+Selftest error !
+Selftest failed  
+Selftest will be run to calibrate accurate sensorless rehoming.
+Set temperature:
+Settings
+Severe skew:
+Show end stops
+Sleep...
+Slight skew:
+Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100.
+Sort:      [None]
+Sort:      [Time]
+Sort:  [Alphabet]
+Sorting files
+Speed
+Spinning
+Stable ambient temperature 21-26C is needed a rigid stand is required.
+Statistics  
+Steprate too high: 
+Stop print
+STOPPED. 
+Support
+Swapped
+Temp. cal.          
+Temp. cal.   [on]
+Temp. cal.  [off]
+Temp. calibration
+Temperature
+Temperature calibration failed
+Temperature calibration has not been run yet
+Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal.
+Temperatures
+Total filament :
+Total print time :
+TRIGGERED
+Tune
+Unload all
+Unload filament
+Unload filament 1
+Unload filament 2
+Unload filament 3
+Unload filament 4
+Unloading filament
+Used during print
+Voltages
+volume.init failed
+Wait for user...
+Waiting for nozzle and bed cooling
+Waiting for PINDA probe cooling
+Warning: both printer type and motherboard type changed.
+Warning: motherboard type changed.
+Warning: printer type changed.
+WARNING: This is an unofficial, unsupported build. Use at your own risk!
+Was filament unload successful?
+Wiring error
+Wizard
+workDir open failed
+Writing to file: 
+XYZ cal. details
+XYZ calibration all right. Skew will be corrected automatically.
+XYZ calibration all right. X/Y axes are slightly skewed. Good job!
+XYZ calibration compromised. Front calibration points not reachable.
+XYZ calibration compromised. Left front calibration point not reachable.
+XYZ calibration compromised. Right front calibration point not reachable.
+XYZ calibration failed. Bed calibration point was not found.
+XYZ calibration failed. Front calibration points not reachable.
+XYZ calibration failed. Left front calibration point not reachable.
+XYZ calibration failed. Please consult the manual.
+XYZ calibration failed. Right front calibration point not reachable.
+XYZ calibration ok. X/Y axes are perpendicular. Congratulations!
+Y distance from min:
+Yes
+You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage." 
+You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage.
+You can always resume the Wizard from Calibration -> Wizard.
