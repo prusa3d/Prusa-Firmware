@@ -1,5 +1,11 @@
 lang_upgrade - scripts for migration to new multilanguage support design
 
+upgrade.sh - entire process:
+Run scripts: clean.sh, make_msgs.sh, find_msgs.sh, make_source.sh.
+Backup (move) all language*.h and language*.cpp files from source to folder '../lang_backup'.
+Copy folder ./source/*.* to ../Firmware, new files will be messages.h, messages.c, language.h, language.c and other source will be replaced.
+After this step should be source compilable in english version, LANG_MODE in config.h is set to 0 (primary language only)
+
 
 0. clean.sh
 delete all output files
@@ -15,14 +21,13 @@ make_msgs.sh also reports number of messages in each language_xx.h file and tota
 2. find_msgs.sh
 Find usage of each message and output listing in to file msgs_usage.txt in format: MSG_xx nn.
 MSG_xx is identifier, nn is number of occurrences. Output is sorted by number of occurrences (ascending order).
+Generate filtered msgs_en.txt and msgs_common.txt files. Each file is sorted to three output files - unused, used once and used more.
+Output files will be:
+ msgs_common_unused.txt, msgs_common_used_more.txt, msgs_common_used_once.txt
+ msgs_en_unused.txt, msgs_en_used_more.txt, msgs_en_used_once.txt
 
-3. replace_msgs.sh
-List all unused messages to file msgs_unused.txt.
+3. make_source.sh
 Copy all source files to folder ./source
-Replace all single-used messages in all ./source/*.c* files directly with the english version string constant and comment at end of line.
+Replace all messages used once in all ./source/*.c* files directly with the english version string constant and comment at end of line.
 Generate messages.h and messages.c source files with messages used twice and more.
-
-4. upgrade.sh
-Backup (move) all language*.h and language*.cpp files from source to folder '../backup'.
-Copy folder ./source/*.* to ../Firmware, new files will be messages.h, messages.c, language.h and other source will be replaced.
-After this step should be source compilable in english version, LANG_MODE in config.h is set to LANG_MODE_SINGLE.
+Replace line '' in Marlin_main.cpp with comment.

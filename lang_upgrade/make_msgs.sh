@@ -34,7 +34,7 @@ process_language_common()
  #cat ../Firmware/language_common.h | grep -E "^[+]*define" | sed "s/lenght/length/g" >msgs_common.txt_0
  cat ../Firmware/language_common.h | grep -E "^define" | sed "s/lenght/length/g" >msgs_common.txt_0
   #replace define and +define
- cat msgs_common.txt_0 | sed -E "s/^[+]*define[ \t]*([^ \t]*)[ \t]*([^ \t]*[ \t]*\"[^\"]*\"*)/\1 \2/g" | sort >msgs_common.txt
+ cat msgs_common.txt_0 | sed -E "s/^[+]*define[ \t]*([^ \t]*)[ \t]*([^ \t]*[ \t]*\"[^\"]*\"*)/\1 c=0 r=0 \2/g" | sort >msgs_common.txt
  #calculate msgcount
  msgcount=$(grep -c '' msgs_common.txt)
  #calculate charcount
@@ -89,5 +89,5 @@ process_language_xx pl
 process_language_xx es
 
 
-echo "finished.."
+echo "step1 finished... press key"
 read
