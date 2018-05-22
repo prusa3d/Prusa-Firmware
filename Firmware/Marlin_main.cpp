@@ -1444,6 +1444,7 @@ void fsensor_init() {
 	int pat9125 = pat9125_init();
 	printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+     filament_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
 	if (!pat9125)
 	{
 		fsensor = 0; //disable sensor
