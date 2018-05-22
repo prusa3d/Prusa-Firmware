@@ -425,6 +425,10 @@ bool no_response = false;
 uint8_t important_status;
 uint8_t saved_filament_type;
 
+// save/restore printing
+bool saved_printing = false;
+
+
 //===========================================================================
 //=============================Private Variables=============================
 //===========================================================================
@@ -476,6 +480,14 @@ bool target_direction;
 unsigned long chdkHigh = 0;
 boolean chdkActive = false;
 #endif
+
+// save/restore printing
+static uint32_t saved_sdpos = 0;
+static float saved_pos[4] = { 0, 0, 0, 0 };
+// Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
+static float saved_feedrate2 = 0;
+static uint8_t saved_active_extruder = 0;
+static bool saved_extruder_under_pressure = false;
 
 //===========================================================================
 //=============================Routines======================================
@@ -7139,7 +7151,7 @@ static void handleSafetyTimer()
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
     static Timer safetyTimer;
-    if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4)
+    if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || saved_printing
         || (lcd_commands_type == LCD_COMMAND_V2_CAL) || (!degTargetBed() && !degTargetHotend(0)))
     {
         safetyTimer.stop();
@@ -7148,11 +7160,11 @@ static void handleSafetyTimer()
     {
         safetyTimer.start();
     }
-    else if (safetyTimer.expired(1800000ul))
+    else if (safetyTimer.expired(1800000ul)) //30 min
     {
         setTargetBed(0);
         setTargetHotend(0, 0);
-        lcd_show_fullscreen_message_and_wait_P(MSG_BED_HEATING_SAFETY_DISABLED);
+		lcd_show_fullscreen_message_and_wait_P(MSG_BED_HEATING_SAFETY_DISABLED);
     }
 }
 #endif //SAFETYTIMER
@@ -8400,17 +8412,7 @@ void restore_print_from_eeprom() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// new save/restore printing
-
-//extern uint32_t sdpos_atomic;
-
-bool saved_printing = false;
-uint32_t saved_sdpos = 0;
-float saved_pos[4] = {0, 0, 0, 0};
-// Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
-float saved_feedrate2 = 0;
-uint8_t saved_active_extruder = 0;
-bool saved_extruder_under_pressure = false;
+// save/restore printing
 
 void stop_and_save_print_to_ram(float z_move, float e_move)
 {

@@ -347,6 +347,9 @@ extern bool sortAlpha;
 
 extern char dir_names[3][9];
 
+// save/restore printing
+extern bool saved_printing;
+
 extern void calculate_extruder_multipliers();
 
 // Similar to the default Arduino delay function, 

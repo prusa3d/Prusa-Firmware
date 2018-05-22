@@ -20,7 +20,7 @@
 
 #ifdef PAT9125
 #include "pat9125.h"
-#endif //PAT9125
+#endif //PAT9125 
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -5624,8 +5624,6 @@ void lcd_confirm_print()
 	} while (_ret == 0);
 
 }
-
-extern bool saved_printing;
 
 static void lcd_main_menu()
 {
