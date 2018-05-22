@@ -7164,7 +7164,7 @@ static void handleSafetyTimer()
     {
         setTargetBed(0);
         setTargetHotend(0, 0);
-		lcd_show_fullscreen_message_and_wait_P(MSG_BED_HEATING_SAFETY_DISABLED);
+        lcd_show_fullscreen_message_and_wait_P(MSG_BED_HEATING_SAFETY_DISABLED);
     }
 }
 #endif //SAFETYTIMER

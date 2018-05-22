@@ -20,7 +20,7 @@
 
 #ifdef PAT9125
 #include "pat9125.h"
-#endif //PAT9125 
+#endif //PAT9125
 
 #ifdef TMC2130
 #include "tmc2130.h"
