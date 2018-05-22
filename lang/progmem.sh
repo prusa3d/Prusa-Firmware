@@ -61,12 +61,13 @@ ls "$OUTDIR"/sketch/*.o | while read fn; do
  #list symbols from section $PROGMEM (only address, size and name)
  $OBJDUMP -t -j ".$PROGMEM" $fn | tail -n +5 | cut -c1-9,28-36,37- | sed "/^$/d" | sort >> $PROGMEM.sym
 done 2>/dev/null
-
+#exit
 # (3)
 echo "step 3 - filtering $PROGMEM symbols"
 #create list of $PROGMEM symbol names separated by '\|'
 progmem=$(cut -c19- $PROGMEM.sym)
-progmem=$(echo $progmem | sed "s/ /\\\|/g")
+progmem=$(echo $progmem | sed "s/ /\\\b\\\|\\\b/g")
+progmem='\b'$progmem'\b'
 #filter $PROGMEM symbols from section '.text' (result file will contain list sorted by absolute address) 
 cat text.sym | grep $progmem > $PROGMEM.sym
 
@@ -104,10 +105,12 @@ cat $PROGMEM.dat | sed 's/ /\t/;s/ /\t /;s/ /\\x/g;s/\t/ /g' > $PROGMEM.chr
 # (7)
 #convert $PROGMEM.chr to $PROGMEM.var (convert data to text)
 cat $PROGMEM.chr | \
+ sed 's/ \\xff\\xff/ /;' | \
  sed 's/\\x22/\\\\\\x22/g;' | \
  sed 's/\\x1b/\\\\\\x1b/g;' | \
  sed 's/\\x01/\\\\\\x01/g;' | \
- sed 's/\\x00$/\\x0d/;s/^/printf "/;s/$/"/' | sh > $PROGMEM.var
+ sed 's/\\xf8/\\\\\\xf8/g;' | \
+ sed 's/\\x00$/\\x0a/;s/^/printf "/;s/$/"/' | sh > $PROGMEM.var
 cat $PROGMEM.var | sed 's/\r/\n/g' |sed -E 's/^[0-9a-f]{8} [^ ]* //' >$PROGMEM.txt
 
 read
