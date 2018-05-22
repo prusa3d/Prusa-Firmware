@@ -23,9 +23,9 @@ const char MSG_CARD_MENU[] PROGMEM_I1 = ISTR("Print from SD"); ////c=0 r=0
 const char MSG_CONFIRM_NOZZLE_CLEAN[] PROGMEM_I1 = ISTR("Please clean the nozzle for calibration. Click when done."); ////c=20 r=8
 const char MSG_COOLDOWN[] PROGMEM_I1 = ISTR("Cooldown"); ////c=0 r=0
 const char MSG_CRASH_DETECTED[] PROGMEM_I1 = ISTR("Crash detected."); ////c=20 r=1
-const char MSG_CRASHDETECT_NA[] PROGMEM_I1 = ISTR("Crash det. [N/A]"); ////c=0 r=0
-const char MSG_CRASHDETECT_OFF[] PROGMEM_I1 = ISTR("Crash det. [off]"); ////c=0 r=0
-const char MSG_CRASHDETECT_ON[] PROGMEM_I1 = ISTR("Crash det. [on]"); ////c=0 r=0
+const char MSG_CRASHDETECT_NA[] PROGMEM_I1 = ISTR("Crash det.  [N/A]"); ////c=0 r=0
+const char MSG_CRASHDETECT_OFF[] PROGMEM_I1 = ISTR("Crash det.  [off]"); ////c=0 r=0
+const char MSG_CRASHDETECT_ON[] PROGMEM_I1 = ISTR("Crash det.   [on]"); ////c=0 r=0
 const char MSG_ENDSTOP_HIT[] PROGMEM_I1 = ISTR("TRIGGERED"); ////c=0 r=0
 const char MSG_ENDSTOP_OPEN[] PROGMEM_I1 = ISTR("open"); ////c=0 r=0
 const char MSG_ENDSTOPS_HIT[] PROGMEM_I1 = ISTR("endstops hit: "); ////c=0 r=0
@@ -46,7 +46,7 @@ const char MSG_FINISHING_MOVEMENTS[] PROGMEM_I1 = ISTR("Finishing movements"); /
 const char MSG_FOLLOW_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=8
 const char MSG_FSENS_AUTOLOAD_NA[] PROGMEM_I1 = ISTR("F. autoload [N/A]"); ////c=17 r=1
 const char MSG_FSENSOR_OFF[] PROGMEM_I1 = ISTR("Fil. sensor [off]"); ////c=0 r=0
-const char MSG_FSENSOR_ON[] PROGMEM_I1 = ISTR("Fil. sensor [on]"); ////c=0 r=0
+const char MSG_FSENSOR_ON[] PROGMEM_I1 = ISTR("Fil. sensor  [on]"); ////c=0 r=0
 const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////c=0 r=0
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20 r=0
 const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////c=0 r=0
@@ -87,9 +87,9 @@ const char MSG_SELFTEST_MOTOR[] PROGMEM_I1 = ISTR("Motor"); ////c=0 r=0
 const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////c=0 r=0
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////c=0 r=0
 const char MSG_SILENT_MODE_OFF[] PROGMEM_I1 = ISTR("Mode [high power]"); ////c=0 r=0
-const char MSG_SILENT_MODE_ON[] PROGMEM_I1 = ISTR("Mode [silent]"); ////c=0 r=0
-const char MSG_STEALTH_MODE_OFF[] PROGMEM_I1 = ISTR("Mode [Normal]"); ////c=0 r=0
-const char MSG_STEALTH_MODE_ON[] PROGMEM_I1 = ISTR("Mode [Stealth]"); ////c=0 r=0
+const char MSG_SILENT_MODE_ON[] PROGMEM_I1 = ISTR("Mode     [silent]"); ////c=0 r=0
+const char MSG_STEALTH_MODE_OFF[] PROGMEM_I1 = ISTR("Mode     [Normal]"); ////c=0 r=0
+const char MSG_STEALTH_MODE_ON[] PROGMEM_I1 = ISTR("Mode    [Stealth]"); ////c=0 r=0
 const char MSG_STEEL_SHEET_CHECK[] PROGMEM_I1 = ISTR("Is steel sheet on heatbed?"); ////c=20 r=2
 const char MSG_STOP_PRINT[] PROGMEM_I1 = ISTR("Stop print"); ////c=0 r=0
 const char MSG_STOPPED[] PROGMEM_I1 = ISTR("STOPPED. "); ////c=0 r=0
