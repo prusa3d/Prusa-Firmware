@@ -1258,10 +1258,18 @@ void setup()
   // In the future, somewhere here would one compare the current firmware version against the firmware version stored in the EEPROM.
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
   // is being written into the EEPROM, so the update procedure will be triggered only once.
-    lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
-    if (lang_selected >= LANG_NUM){
-      lcd_mylang();
-    }
+
+///	lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
+///    if (lang_selected >= LANG_NUM){
+///      lcd_mylang();
+///    }
+	lang_select(0);
+	puts_P(_n("\nNew ML support"));
+	printf_P(_n(" lang_selected     =%d\n"), lang_selected);
+	printf_P(_n(" &_SEC_LANG        =%04x\n"), &_SEC_LANG);
+	printf_P(_n(" sizeof(_SEC_LANG) =%04x\n"), sizeof(_SEC_LANG));
+	puts_P(_n("\n"));
+
 	
 	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);

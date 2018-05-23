@@ -10,7 +10,7 @@ unsigned char lang_selected = 0;
 #if (LANG_MODE == 0) //primary language only
 #else //(LANG_MODE == 0)
 //reserved xx kbytes for secondary language table
-static const char _SEC_LANG[LANG_SIZE_RESERVED] PROGMEM_I2 = "_SEC_LANG";
+const char _SEC_LANG[LANG_SIZE_RESERVED] PROGMEM_I2 = "_SEC_LANG";
 #endif //(LANG_MODE == 0)
 
 //lang_table_t structure - 16byte header

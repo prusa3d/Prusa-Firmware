@@ -21,11 +21,6 @@
 #define STRINGIFY_(n) #n
 #define STRINGIFY(n) STRINGIFY_(n)
 
-#if (LANG_MODE == 0)
-//#define _i PSTR
-//#define _I(s) (__extension__({static const char __c[] __attribute__((section("Txt_i"))) = s; &__c[0];}))
-#endif //(LANG_MODE == 0)
-
 //section progmem0 will be used for localized translated strings
 #define PROGMEM_I2 __attribute__((section(".progmem0")))
 //section progmem1 will be used for localized strings in english
@@ -69,6 +64,10 @@ extern "C" {
 
 // Currectly active language selection.
 extern unsigned char lang_selected;
+
+#if (LANG_MODE != 0)
+extern const char _SEC_LANG[LANG_SIZE_RESERVED];
+#endif //(LANG_MODE == 0)
 
 extern const char* lang_get_translation(const char* s);
 extern const char* lang_select(unsigned char lang);
