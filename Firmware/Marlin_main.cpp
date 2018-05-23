@@ -1265,9 +1265,11 @@ void setup()
 ///    }
 	lang_select(0);
 	puts_P(_n("\nNew ML support"));
-	printf_P(_n(" lang_selected     =%d\n"), lang_selected);
-	printf_P(_n(" &_SEC_LANG        =%04x\n"), &_SEC_LANG);
-	printf_P(_n(" sizeof(_SEC_LANG) =%04x\n"), sizeof(_SEC_LANG));
+	printf_P(_n(" lang_selected     = %d\n"), lang_selected);
+	printf_P(_n(" &_SEC_LANG        = 0x%04x\n"), &_SEC_LANG);
+	printf_P(_n(" sizeof(_SEC_LANG) = 0x%04x\n"), sizeof(_SEC_LANG));
+	uint16_t ptr_lang_table0 = ((uint16_t)(&_SEC_LANG) + 0xff) & 0xff00;
+	printf_P(_n(" &_lang_table0     = 0x%04x\n"), ptr_lang_table0);
 	puts_P(_n("\n"));
 
 	
