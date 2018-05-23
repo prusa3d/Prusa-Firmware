@@ -194,9 +194,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
 #define TMC2130_USTEPS_E    32        // microstep resolution for E axis
-#define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
-#define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
-#define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
+
 
 #define TMC2130_PWM_GRAD_X  2         // PWMCONF
 #define TMC2130_PWM_AMPL_X  230       // PWMCONF
@@ -207,11 +205,6 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_PWM_AMPL_Y  235       // PWMCONF
 #define TMC2130_PWM_AUTO_Y  1         // PWMCONF
 #define TMC2130_PWM_FREQ_Y  2         // PWMCONF
-
-#define TMC2130_PWM_GRAD_E  2         // PWMCONF
-#define TMC2130_PWM_AMPL_E  235       // PWMCONF
-#define TMC2130_PWM_AUTO_E  1         // PWMCONF
-#define TMC2130_PWM_FREQ_E  2         // PWMCONF
 
 #define TMC2130_PWM_GRAD_Z  4         // PWMCONF
 #define TMC2130_PWM_AMPL_Z  200       // PWMCONF
@@ -225,38 +218,54 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define TMC2130_TOFF_XYZ    3         // CHOPCONF // fchop = 27.778kHz
 #define TMC2130_TOFF_E      3         // CHOPCONF // fchop = 27.778kHz
-//#define TMC2130_TOFF_E      4         // CHOPCONF // fchop = 21.429kHz
-//#define TMC2130_TOFF_E      5         // CHOPCONF // fchop = 17.442kHz
 
 //#define TMC2130_STEALTH_E // Extruder stealthChop mode
 //#define TMC2130_CNSTOFF_E // Extruder constant-off-time mode (similar to MK2)
 
-//#define TMC2130_PWM_DIV   683         // PWM frequency divider (1024, 683, 512, 410)
 #define TMC2130_PWM_DIV   512         // PWM frequency divider (1024, 683, 512, 410)
 #define TMC2130_PWM_CLK   (2 * TMC2130_FCLK / TMC2130_PWM_DIV) // PWM frequency (23.4kHz, 35.1kHz, 46.9kHz, 58.5kHz for 12MHz fclk)
 
 #define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
-#define TMC2130_THIGH     0         // THIGH - unused
 
-//#define TMC2130_TCOOLTHRS_X 450       // TCOOLTHRS - coolstep treshold
-//#define TMC2130_TCOOLTHRS_Y 450       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_X 430       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_Y 430       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_Z 500       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_E 500       // TCOOLTHRS - coolstep treshold
 
-#define TMC2130_SG_HOMING       1     // stallguard homing
-#define TMC2130_SG_THRS_X       3     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y       3     // stallguard sensitivity for Y axis
-#define TMC2130_SG_THRS_Z       4     // stallguard sensitivity for Z axis
-#define TMC2130_SG_THRS_E       3     // stallguard sensitivity for E axis
+
+#define _sg(n) ((uint8_t)n & 127) //Convert 7-bit 2's complement to 8-bit unsigned
+
+//The SG_THRS stallGuard sensitivities have a range of -64 to 63.  -64 is the most sensitive, with 0 being half way, and 63 is the least sensitive.
+
+//Used only when homing
+#define TMC2130_SG_HOMING       	 1      // stallguard homing
+#define TMC2130_HOMING_SG_THRS_X _sg(3)     // stallguard sensitivity for X axis when homing
+#define TMC2130_HOMING_SG_THRS_Y _sg(3)     // stallguard sensitivity for Y axis when homing
+#define TMC2130_HOMING_SG_THRS_Z _sg(4)     // stallguard sensitivity for Z axis when homing
+#define TMC2130_HOMING_SG_THRS_E _sg(3)     // stallguard sensitivity for E axis when homing
+
+
+//Used only for crash detection, not homing
+#define TMC2130_SG_THRS_X        _sg(3)     // stallguard sensitivity for X axis
+#define TMC2130_SG_THRS_Y        _sg(3)     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_Z        _sg(4)     // stallguard sensitivity for Z axis
+#define TMC2130_SG_THRS_E        _sg(3)     // stallguard sensitivity for E axis
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-#define TMC2130_CURRENTS_H {16, 20, 35, 30}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {16, 20, 35, 30}  // default running currents for all axes
-#define TMC2130_UNLOAD_CURRENT_R 12			 // lowe current for M600 to protect filament sensor 
+#define TMC2130_CURRENTS_R_HOME 	{ 8, 10, 30, 18}  // default homing currents for all axes
+#define TMC2130_CURRENTS_H 			{16, 20, 35, 30}  // default holding currents for all axes
+#define TMC2130_CURRENTS_R 			{16, 20, 35, 30}  // default running currents for all axes
+#define TMC2130_UNLOAD_CURRENT_R 	12			 	  // low current for M600 to protect filament sensor 
 
 #define TMC2130_STEALTH_Z
+
+#define TMC2130_STEP_INTERPOLATION {1, 1, 1, 1} // 256 microstep interpolation for X, Y, Z, and E axes
+#define TMC2130_BLANKING_TIME 3 // current measurement blanking time
+#define TMC2130_CHOP_MODE 0 // 0 = spreadCycle
+#define TMC2130_RANDOM_OFF_TIME 0 // 0 = off
+#define TMC2130_TOFF_XYZ 3 // toff = 3 (fchop = 27.778kHz)
+#define TMC2130_HSTART 5 //initial 4, modified to 5
+#define TMC2130_HEND 1 // 1
+#define TMC2130_FAST_DECAY3 0 // Not used in spreadCycle mode
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
