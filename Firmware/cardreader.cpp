@@ -211,7 +211,7 @@ void CardReader::initsd()
   /*
   if(!workDir.openRoot(&volume))
   {
-    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
+    SERIAL_ECHOLNPGM(_T(MSG_SD_WORKDIR_FAIL));
   }
   */
   
@@ -221,7 +221,7 @@ void CardReader::setroot()
 {
   /*if(!workDir.openRoot(&volume))
   {
-    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
+    SERIAL_ECHOLNPGM(_T(MSG_SD_WORKDIR_FAIL));
   }*/
   workDir=root;
   
@@ -360,7 +360,7 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
         SERIAL_ECHOLN(subdirname);
         if(!myDir.open(curDir,subdirname,O_READ))
         {
-          SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+          SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
           SERIAL_PROTOCOL(subdirname);
           SERIAL_PROTOCOLLNPGM(".");
           return;
@@ -405,7 +405,7 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
     }
     else
     {
-      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+      SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLLNPGM(".");
     }
@@ -414,7 +414,7 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
   { //write
     if (!file.open(curDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC))
     {
-      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+      SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLLNPGM(".");
     }
@@ -546,7 +546,7 @@ void CardReader::write_command(char *buf)
   if (file.writeError)
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
+    SERIAL_ERRORLNRPGM(_T(MSG_SD_ERR_WRITE_TO_FILE));
   }
 }
 
@@ -558,7 +558,7 @@ void CardReader::write_command_no_newline(char *buf)
   if (file.writeError)
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
+    SERIAL_ERRORLNRPGM(_T(MSG_SD_ERR_WRITE_TO_FILE));
     MYSERIAL.println("An error while writing to the SD Card.");
   }
 }

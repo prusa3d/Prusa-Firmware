@@ -286,7 +286,7 @@ void enquecommand(const char *cmd, bool from_progmem)
         else
             strcpy(cmdbuffer + bufindw + CMDHDRSIZE, cmd);
         SERIAL_ECHO_START;
-        SERIAL_ECHORPGM(MSG_Enqueing);
+        SERIAL_ECHORPGM(_T(MSG_Enqueing));
         SERIAL_ECHO(cmdbuffer + bufindw + CMDHDRSIZE);
         SERIAL_ECHOLNPGM("\"");
         bufindw += len + (CMDHDRSIZE + 1);
@@ -298,7 +298,7 @@ void enquecommand(const char *cmd, bool from_progmem)
 #endif /* CMDBUFFER_DEBUG */
     } else {
         SERIAL_ERROR_START;
-        SERIAL_ECHORPGM(MSG_Enqueing);
+        SERIAL_ECHORPGM(_T(MSG_Enqueing));
         if (from_progmem)
             SERIAL_PROTOCOLRPGM(cmd);
         else
@@ -483,8 +483,8 @@ void get_command()
             if (Stopped == true) {
                 int gcode = strtol(strchr_pointer+1, NULL, 10);
                 if (gcode >= 0 && gcode <= 3) {
-                    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
-                    LCD_MESSAGERPGM(MSG_STOPPED);
+                    SERIAL_ERRORLNRPGM(_T(MSG_ERR_STOPPED));
+                    LCD_MESSAGERPGM(_T(MSG_STOPPED));
                 }
             }
         } // end of 'G' command

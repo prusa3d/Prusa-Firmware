@@ -934,22 +934,22 @@ if (print_sd_status)
 				{
 				case 1:
 					lcd.setCursor(0, 3);
-					lcd_printPGM(MSG_HEATING);
+					lcd_printPGM(_T(MSG_HEATING));
 					break;
 				case 2:
 					lcd.setCursor(0, 3);
-					lcd_printPGM(MSG_HEATING_COMPLETE);
+					lcd_printPGM(_T(MSG_HEATING_COMPLETE));
 					heating_status = 0;
 					heating_status_counter = 0;
 					custom_message = false;
 					break;
 				case 3:
 					lcd.setCursor(0, 3);
-					lcd_printPGM(MSG_BED_HEATING);
+					lcd_printPGM(_T(MSG_BED_HEATING));
 					break;
 				case 4:
 					lcd.setCursor(0, 3);
-					lcd_printPGM(MSG_BED_DONE);
+					lcd_printPGM(_T(MSG_BED_DONE));
 					heating_status = 0;
 					heating_status_counter = 0;
 					custom_message = false;
@@ -976,8 +976,8 @@ if (print_sd_status)
 				{
 					if (custom_message_state == 3)
 					{
-						lcd_printPGM(WELCOME_MSG);
-						lcd_setstatuspgm(WELCOME_MSG);
+						lcd_printPGM(_T(WELCOME_MSG));
+						lcd_setstatuspgm(_T(WELCOME_MSG));
 						custom_message = false;
 						custom_message_type = 0;
 					}
@@ -1012,7 +1012,7 @@ if (print_sd_status)
 			if (custom_message_type == 4) {
 				char progress[4];
 				lcd.setCursor(0, 3);
-				lcd_printPGM(MSG_TEMP_CALIBRATION);
+				lcd_printPGM(_T(MSG_TEMP_CALIBRATION));
 				lcd.setCursor(12, 3);
 				sprintf(progress, "%d/6", custom_message_state);
 				lcd.print(progress);
