@@ -3470,11 +3470,12 @@ void process_commands()
 			if (result)
 			{
 				current_position[Z_AXIS] = 50;
-				current_position[Y_AXIS] += 180;
+				current_position[Y_AXIS] = 180;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				lcd_show_fullscreen_message_and_wait_P(MSG_REMOVE_STEEL_SHEET);
-				current_position[Y_AXIS] -= 180;
+				current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
+				current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				feedrate = homing_feedrate[Z_AXIS] / 10;
