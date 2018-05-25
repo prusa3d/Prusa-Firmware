@@ -231,34 +231,45 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_TCOOLTHRS_Y 430       // TCOOLTHRS - coolstep treshold
 #define TMC2130_TCOOLTHRS_Z 500       // TCOOLTHRS - coolstep treshold
 
+#define TMC2130_SG_HOMING       	 1         // stallguard homing
 
-#define _sg(n) ((uint8_t)n & 127) //Convert 7-bit 2's complement to 8-bit unsigned
+#define _sg(n) (((uint8_t)n & 127)) //Convert 7-bit 2's complement to 8-bit unsigned
 
 //The SG_THRS stallGuard sensitivities have a range of -64 to 63.  -64 is the most sensitive, with 0 being half way, and 63 is the least sensitive.
+//Homing:
+#define TMC2130_HOMING_SG_THRS_X 	_sg(3)     // stallguard sensitivity for X axis when homing
+#define TMC2130_HOMING_SG_THRS_Y 	_sg(3)     // stallguard sensitivity for Y axis when homing
+#define TMC2130_HOMING_SG_THRS_Z 	_sg(4)     // stallguard sensitivity for Z axis when homing
+#define TMC2130_HOMING_SG_THRS_E 	_sg(3)     // stallguard sensitivity for E axis when homing
+//Running:
+#define TMC2130_SG_THRS_X        	_sg(3)     // stallguard sensitivity for X axis
+#define TMC2130_SG_THRS_Y        	_sg(3)     // stallguard sensitivity for Y axis
+#define TMC2130_SG_THRS_Z        	_sg(4)     // stallguard sensitivity for Z axis
+#define TMC2130_SG_THRS_E        	_sg(3)     // stallguard sensitivity for E axis
 
-//Used only when homing
-#define TMC2130_SG_HOMING       	 1      // stallguard homing
-#define TMC2130_HOMING_SG_THRS_X _sg(3)     // stallguard sensitivity for X axis when homing
-#define TMC2130_HOMING_SG_THRS_Y _sg(3)     // stallguard sensitivity for Y axis when homing
-#define TMC2130_HOMING_SG_THRS_Z _sg(4)     // stallguard sensitivity for Z axis when homing
-#define TMC2130_HOMING_SG_THRS_E _sg(3)     // stallguard sensitivity for E axis when homing
 
+// Values are scaling factors, not milliamps.
+// For a 0.22 Ohm Rsense resistor (Einsy RAMBO), actual RMS currents are:
+/*                                          value+1
+   For value < 31, current in milliamps =  –––––––– * 0.53
+										      32
 
-//Used only for crash detection, not homing
-#define TMC2130_SG_THRS_X        _sg(3)     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y        _sg(3)     // stallguard sensitivity for Y axis
-#define TMC2130_SG_THRS_Z        _sg(4)     // stallguard sensitivity for Z axis
-#define TMC2130_SG_THRS_E        _sg(3)     // stallguard sensitivity for E axis
-
-//new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
+                                           value-31
+   For value > 31, current in milliamps = ––––––––– * 0.943
+                                              32
+*/
+									/* RANGE: 0-63 */
 #define TMC2130_CURRENTS_R_HOME 	{ 8, 10, 20, 18}  // default homing currents for all axes
 #define TMC2130_CURRENTS_H 			{16, 20, 35, 30}  // default holding currents for all axes
 #define TMC2130_CURRENTS_R 			{16, 20, 35, 30}  // default running currents for all axes
-#define TMC2130_UNLOAD_CURRENT_R 	12			 	  // low current for M600 to protect filament sensor 
 
+									/* 1=ON, 0=OFF */
+#define TMC2130_STEP_INTERPOLATION  { 1,  1,  1,  1}  // 256 microstep interpolation for X, Y, Z, and E axes
+
+#define TMC2130_UNLOAD_CURRENT_R 	12			 	  // low current for M600 to protect filament sensor
 #define TMC2130_STEALTH_Z
 
-#define TMC2130_STEP_INTERPOLATION {1, 1, 1, 1} // 256 microstep interpolation for X, Y, Z, and E axes
+// For descriptions of what these do, see https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet_Rev1.10.pdf 
 #define TMC2130_BLANKING_TIME 2 // current measurement blanking time, default 2
 #define TMC2130_CHOP_MODE 0 // 0 = spreadCycle
 #define TMC2130_RANDOM_OFF_TIME 0 // 0 = off

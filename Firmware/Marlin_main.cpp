@@ -6448,76 +6448,151 @@ Sigma_Exit:
     }
     break;
 
-	case 911: // M911 Set TMC2130 holding currents
+  case 911: // M911 Set TMC2130 holding currents
     {
-		if (code_seen('X')) tmc2130_set_current_h(0, code_value());
-		if (code_seen('Y')) tmc2130_set_current_h(1, code_value());
-        if (code_seen('Z')) tmc2130_set_current_h(2, code_value());
-        if (code_seen('E')) tmc2130_set_current_h(3, code_value());
+    if (code_seen('X')) tmc2130_set_current_h(0, code_value());
+    if (code_seen('Y')) tmc2130_set_current_h(1, code_value());
+    if (code_seen('Z')) tmc2130_set_current_h(2, code_value());
+    if (code_seen('E')) tmc2130_set_current_h(3, code_value());
+    MYSERIAL.println("Holding currents:");
+    MYSERIAL.print("X   ");
+    MYSERIAL.println(tmc2130_current_h[0]);
+    MYSERIAL.print("Y   ");
+    MYSERIAL.println(tmc2130_current_h[1]);
+    MYSERIAL.print("Z   ");
+    MYSERIAL.println(tmc2130_current_h[2]);
+    MYSERIAL.print("E   ");
+    MYSERIAL.println(tmc2130_current_h[3]);
     }
     break;
 
-	case 912: // M912 Set TMC2130 running currents
+  case 912: // M912 Set TMC2130 running currents
     {
-		if (code_seen('X')) tmc2130_set_current_r(0, code_value());
-		if (code_seen('Y')) tmc2130_set_current_r(1, code_value());
-        if (code_seen('Z')) tmc2130_set_current_r(2, code_value());
-        if (code_seen('E')) tmc2130_set_current_r(3, code_value());
+    if (code_seen('X')) tmc2130_set_current_r(0, code_value());
+    if (code_seen('Y')) tmc2130_set_current_r(1, code_value());
+    if (code_seen('Z')) tmc2130_set_current_r(2, code_value());
+    if (code_seen('E')) tmc2130_set_current_r(3, code_value());
+    MYSERIAL.println("Running currents:");
+    MYSERIAL.print("X   ");
+    MYSERIAL.println(tmc2130_current_r[0]);
+    MYSERIAL.print("Y   ");
+    MYSERIAL.println(tmc2130_current_r[1]);
+    MYSERIAL.print("Z   ");
+    MYSERIAL.println(tmc2130_current_r[2]);
+    MYSERIAL.print("E   ");
+    MYSERIAL.println(tmc2130_current_r[3]);
     }
     break;
 
-	case 913: // M913 Print TMC2130 currents
+  case 913: // M913 Print TMC2130 currents
     {
-		tmc2130_print_currents();
+    tmc2130_print_currents();
     }
     break;
 
-	case 914: // M914 Set normal mode
+  case 914: // M914 Set normal mode
     {
-		tmc2130_mode = TMC2130_MODE_NORMAL;
-		tmc2130_init();
+    tmc2130_mode = TMC2130_MODE_NORMAL;
+    tmc2130_init();
     }
     break;
 
-	case 915: // M915 Set silent mode
+  case 915: // M915 Set silent mode
     {
-		tmc2130_mode = TMC2130_MODE_SILENT;
-		tmc2130_init();
+    tmc2130_mode = TMC2130_MODE_SILENT;
+    tmc2130_init();
     }
     break;
 
-	case 916: // M916 Set sg_thrs
+  case 916: // M916 Set sg_thrs
     {
-		if (code_seen('X')) tmc2130_sg_thr[X_AXIS] = code_value();
-		if (code_seen('Y')) tmc2130_sg_thr[Y_AXIS] = code_value();
-		if (code_seen('Z')) tmc2130_sg_thr[Z_AXIS] = code_value();
-		if (code_seen('E')) tmc2130_sg_thr[E_AXIS] = code_value();
-		MYSERIAL.print("tmc2130_sg_thr[X]=");
-		MYSERIAL.println(tmc2130_sg_thr[X_AXIS], DEC);
-		MYSERIAL.print("tmc2130_sg_thr[Y]=");
-		MYSERIAL.println(tmc2130_sg_thr[Y_AXIS], DEC);
-		MYSERIAL.print("tmc2130_sg_thr[Z]=");
-		MYSERIAL.println(tmc2130_sg_thr[Z_AXIS], DEC);
-		MYSERIAL.print("tmc2130_sg_thr[E]=");
-		MYSERIAL.println(tmc2130_sg_thr[E_AXIS], DEC);
+    if (code_seen('X')) tmc2130_sg_thr[X_AXIS] = code_value();
+    if (code_seen('Y')) tmc2130_sg_thr[Y_AXIS] = code_value();
+    if (code_seen('Z')) tmc2130_sg_thr[Z_AXIS] = code_value();
+    if (code_seen('E')) tmc2130_sg_thr[E_AXIS] = code_value();
+    MYSERIAL.print("tmc2130_sg_thr[X]=");
+    MYSERIAL.println(tmc2130_sg_thr[X_AXIS], DEC);
+    MYSERIAL.print("tmc2130_sg_thr[Y]=");
+    MYSERIAL.println(tmc2130_sg_thr[Y_AXIS], DEC);
+    MYSERIAL.print("tmc2130_sg_thr[Z]=");
+    MYSERIAL.println(tmc2130_sg_thr[Z_AXIS], DEC);
+    MYSERIAL.print("tmc2130_sg_thr[E]=");
+    MYSERIAL.println(tmc2130_sg_thr[E_AXIS], DEC);
     }
     break;
 
-	case 917: // M917 Set TMC2130 pwm_ampl
+  case 917: // M917 Set TMC2130 pwm_ampl
     {
-		if (code_seen('X')) tmc2130_set_pwm_ampl(0, code_value());
-		if (code_seen('Y')) tmc2130_set_pwm_ampl(1, code_value());
-        if (code_seen('Z')) tmc2130_set_pwm_ampl(2, code_value());
-        if (code_seen('E')) tmc2130_set_pwm_ampl(3, code_value());
+    if (code_seen('X')) tmc2130_set_pwm_ampl(0, code_value());
+    if (code_seen('Y')) tmc2130_set_pwm_ampl(1, code_value());
+    if (code_seen('Z')) tmc2130_set_pwm_ampl(2, code_value());
+    if (code_seen('E')) tmc2130_set_pwm_ampl(3, code_value());
+    MYSERIAL.print("tmc2130_pwm_ampl[X]=");
+    MYSERIAL.println(tmc2130_pwm_ampl[X_AXIS], DEC);
+    MYSERIAL.print("tmc2130_pwm_ampl[Y]=");
+    MYSERIAL.println(tmc2130_pwm_ampl[Y_AXIS], DEC);
+    MYSERIAL.print("tmc2130_pwm_ampl[Z]=");
+    MYSERIAL.println(tmc2130_pwm_ampl[Z_AXIS], DEC);
+    MYSERIAL.print("tmc2130_pwm_ampl[E]=");
+    MYSERIAL.println(tmc2130_pwm_ampl[E_AXIS], DEC);
     }
     break;
 
-	case 918: // M918 Set TMC2130 pwm_grad
+  case 918: // M918 Set TMC2130 pwm_grad
     {
-		if (code_seen('X')) tmc2130_set_pwm_grad(0, code_value());
-		if (code_seen('Y')) tmc2130_set_pwm_grad(1, code_value());
-        if (code_seen('Z')) tmc2130_set_pwm_grad(2, code_value());
-        if (code_seen('E')) tmc2130_set_pwm_grad(3, code_value());
+    if (code_seen('X')) tmc2130_set_pwm_grad(0, code_value());
+    if (code_seen('Y')) tmc2130_set_pwm_grad(1, code_value());
+    if (code_seen('Z')) tmc2130_set_pwm_grad(2, code_value());
+    if (code_seen('E')) tmc2130_set_pwm_grad(3, code_value());
+    MYSERIAL.print("tmc2130_pwm_grad[X]=");
+    MYSERIAL.println(tmc2130_pwm_grad[X_AXIS], DEC);
+    MYSERIAL.print("tmc2130_pwm_grad[Y]=");
+    MYSERIAL.println(tmc2130_pwm_grad[Y_AXIS], DEC);
+    MYSERIAL.print("tmc2130_pwm_grad[Z]=");
+    MYSERIAL.println(tmc2130_pwm_grad[Z_AXIS], DEC);
+    MYSERIAL.print("tmc2130_pwm_grad[E]=");
+    MYSERIAL.println(tmc2130_pwm_grad[E_AXIS], DEC);
+    }
+    break;
+
+  case 919: // M919 Print sgt values
+    {
+    tmc2130_print_sgt();
+    }
+    break;
+
+  case 922: // M922 Set TMC2130 homing currents - compliment to M912
+    {
+    if (code_seen('X')) tmc2130_set_current_r_home(0, code_value());
+    if (code_seen('Y')) tmc2130_set_current_r_home(1, code_value());
+    if (code_seen('Z')) tmc2130_set_current_r_home(2, code_value());
+    if (code_seen('E')) tmc2130_set_current_r_home(3, code_value());
+    MYSERIAL.println("Homing currents:");
+    MYSERIAL.print("X   ");
+    MYSERIAL.println(tmc2130_current_r_home[0]);
+    MYSERIAL.print("Y   ");
+    MYSERIAL.println(tmc2130_current_r_home[1]);
+    MYSERIAL.print("Z   ");
+    MYSERIAL.println(tmc2130_current_r_home[2]);
+    MYSERIAL.print("E   ");
+    MYSERIAL.println(tmc2130_current_r_home[3]);
+    }
+    break;
+
+  case 926: // M926 Set tmc2130_sg_thr_home - compliment to M916
+    {
+    if (code_seen('X')) tmc2130_sg_thr_home[X_AXIS] = code_value();
+    if (code_seen('Y')) tmc2130_sg_thr_home[Y_AXIS] = code_value();
+    if (code_seen('Z')) tmc2130_sg_thr_home[Z_AXIS] = code_value();
+    if (code_seen('E')) tmc2130_sg_thr_home[E_AXIS] = code_value();
+    MYSERIAL.print("tmc2130_sg_thr_home[X]=");
+    MYSERIAL.println(tmc2130_sg_thr_home[X_AXIS], DEC);
+    MYSERIAL.print("tmc2130_sg_thr_home[Y]=");
+    MYSERIAL.println(tmc2130_sg_thr_home[Y_AXIS], DEC);
+    MYSERIAL.print("tmc2130_sg_thr_home[Z]=");
+    MYSERIAL.println(tmc2130_sg_thr_home[Z_AXIS], DEC);
+    MYSERIAL.print("tmc2130_sg_thr_home[E]=");
+    MYSERIAL.println(tmc2130_sg_thr_home[E_AXIS], DEC);
     }
     break;
 
