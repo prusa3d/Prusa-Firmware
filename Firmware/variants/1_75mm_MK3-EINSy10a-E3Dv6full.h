@@ -251,7 +251,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_SG_THRS_E        _sg(3)     // stallguard sensitivity for E axis
 
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-#define TMC2130_CURRENTS_R_HOME 	{ 8, 10, 30, 18}  // default homing currents for all axes
+#define TMC2130_CURRENTS_R_HOME 	{ 8, 10, 20, 18}  // default homing currents for all axes
 #define TMC2130_CURRENTS_H 			{16, 20, 35, 30}  // default holding currents for all axes
 #define TMC2130_CURRENTS_R 			{16, 20, 35, 30}  // default running currents for all axes
 #define TMC2130_UNLOAD_CURRENT_R 	12			 	  // low current for M600 to protect filament sensor 
@@ -259,7 +259,7 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_STEALTH_Z
 
 #define TMC2130_STEP_INTERPOLATION {1, 1, 1, 1} // 256 microstep interpolation for X, Y, Z, and E axes
-#define TMC2130_BLANKING_TIME 3 // current measurement blanking time
+#define TMC2130_BLANKING_TIME 2 // current measurement blanking time, default 2
 #define TMC2130_CHOP_MODE 0 // 0 = spreadCycle
 #define TMC2130_RANDOM_OFF_TIME 0 // 0 = off
 #define TMC2130_TOFF_XYZ 3 // toff = 3 (fchop = 27.778kHz)
