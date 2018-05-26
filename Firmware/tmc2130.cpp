@@ -11,7 +11,6 @@
 #include "spi.h"
 #endif //NEW_SPI
 
-
 extern LiquidCrystal_Prusa lcd;
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
@@ -25,46 +24,41 @@ extern long st_get_position(uint8_t axis);
 extern void crashdet_stop_and_save_print();
 extern void crashdet_stop_and_save_print2();
 
-//mode
-uint8_t tmc2130_mode = TMC2130_MODE_NORMAL;
-//holding currents
-uint8_t tmc2130_current_h[4] = TMC2130_CURRENTS_H;
-//running currents
-uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
+//CHOPCONF REGISTER CONFIGURATION
+uint8_t tmc2130_toff[4] = TMC2130_TOFF;
+uint8_t tmc2130_hstrt[4] = TMC2130_HSTRT;
+uint8_t tmc2130_hend[4] = TMC2130_HEND;
+uint8_t tmc2130_fd3[4] = {0, 0, 0, 0};
+uint8_t tmc2130_disfdcc[4] = {0, 0, 0, 0};
+uint8_t tmc2130_rndtf[4] = {0, 0, 0, 0};
+uint8_t tmc2130_chm[4] = {0, 0, 0, 0};
+uint8_t tmc2130_tbl[4] = TMC2130_TBL;
+uint8_t tmc2130_vsense[4] = {0, 0, 0, 0};
+uint8_t tmc2130_vhighfs[4] = {0, 0, 0, 0};
+uint8_t tmc2130_vhighchm[4] = {0, 0, 0, 0};
+uint8_t tmc2130_sync[4] = {0, 0, 0, 0};
+uint8_t tmc2130_mres[4] = {0, 0, 0, 0}; //TMC2130_MRES;           // will be filed at begin of init 
+uint8_t tmc2130_intpol[4] = TMC2130_INTPOL;
+uint8_t tmc2130_dedge[4] = {0, 0, 0, 0};
+uint8_t tmc2130_diss2g[4] = {0, 0, 0, 0};
 
-//running currents for homing
-uint8_t tmc2130_current_r_home[4] = {8, 10, 20, 18};
-
-
-//pwm_ampl
-uint8_t tmc2130_pwm_ampl[4] = {TMC2130_PWM_AMPL_X, TMC2130_PWM_AMPL_Y, TMC2130_PWM_AMPL_Z, TMC2130_PWM_AMPL_E};
-//pwm_grad
-uint8_t tmc2130_pwm_grad[4] = {TMC2130_PWM_GRAD_X, TMC2130_PWM_GRAD_Y, TMC2130_PWM_GRAD_Z, TMC2130_PWM_GRAD_E};
-//pwm_auto
-uint8_t tmc2130_pwm_auto[4] = {TMC2130_PWM_AUTO_X, TMC2130_PWM_AUTO_Y, TMC2130_PWM_AUTO_Z, TMC2130_PWM_AUTO_E};
-//pwm_freq
-uint8_t tmc2130_pwm_freq[4] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y, TMC2130_PWM_FREQ_Z, TMC2130_PWM_FREQ_E};
-
-uint8_t tmc2130_mres[4] = {0, 0, 0, 0}; //will be filed at begin of init
-
-
-uint8_t tmc2130_sg_thr[4] = {TMC2130_SG_THRS_X, TMC2130_SG_THRS_Y, TMC2130_SG_THRS_Z, TMC2130_SG_THRS_E};
-uint8_t tmc2130_sg_thr_home[4] = {3, 3, TMC2130_SG_THRS_Z, TMC2130_SG_THRS_E};
-
-
-uint8_t tmc2130_sg_homing_axes_mask = 0x00;
-
-uint8_t tmc2130_sg_meassure = 0xff;
-uint32_t tmc2130_sg_meassure_cnt = 0;
-uint32_t tmc2130_sg_meassure_val = 0;
-
+//GENERAL CONFIGURATION 
+uint8_t tmc2130_current_h[4] = TMC2130_IHOLD;       //Holding currents for X, Y, Z & E axis
+uint8_t tmc2130_current_r[4] = TMC2130_IRUN;        //Running currents for X, Y, Z & E axis
+uint8_t tmc2130_current_r_home[4] = TMC2130_IHOME;  //Running currents during homing for X, Y, Z & E axis
+uint8_t tmc2130_mode = TMC2130_MODE_NORMAL;         //Sets default mode for normal operation
 uint8_t tmc2130_home_enabled = 0;
 uint8_t tmc2130_home_origin[2] = {0, 0};
-uint8_t tmc2130_home_bsteps[2] = {48, 48};
-uint8_t tmc2130_home_fsteps[2] = {48, 48};
+uint8_t tmc2130_home_bsteps[2] = {48, 48};          //Babysteps during homing procedure
+uint8_t tmc2130_home_fsteps[2] = {48, 48};          //Fullsteps during homing procedure
 
-uint8_t tmc2130_wave_fac[4] = {0, 0, 0, 0};
-
+//COOLSTEP REGISTER CONFIGURATION
+uint8_t tmc2130_sg_thr[4] = TMC2130_SG_THRS;        //Stallguard threshold for for X, Y, Z & E axis
+uint8_t tmc2130_sg_thr_home[4] = TMC2130_SG_HOMING; //Stallguard threshold during homing procedure for X, Y, Z & E axis
+uint8_t tmc2130_sg_homing_axes_mask = 0x00;
+uint8_t tmc2130_sg_measure = 0xff;
+uint32_t tmc2130_sg_measure_cnt = 0;
+uint32_t tmc2130_sg_measure_val = 0;
 bool tmc2130_sg_stop_on_crash = true;
 uint8_t tmc2130_sg_diag_mask = 0x00;
 uint8_t tmc2130_sg_crash = 0;
@@ -73,15 +67,19 @@ uint16_t tmc2130_sg_cnt[4] = {0, 0, 0, 0};
 bool tmc2130_sg_change = false;
 
 
+//STEALTHCHOP REGISTER CONFIGURATION
+uint8_t tmc2130_pwm_ampl[4] = TMC2130_PWM_AMPL;     //pwm_ampl  
+uint8_t tmc2130_pwm_grad[4] = TMC2130_PWM_GRAD;     //pwm_grad
+uint8_t tmc2130_pwm_auto[4] = TMC2130_PWM_AUTO;     //pwm_auto
+uint8_t tmc2130_pwm_freq[4] = TMC2130_PWM_FREQ;     //pwm_freq
+
+uint8_t tmc2130_wave_fac[4] = {0, 0, 0, 0};
+
 bool skip_debug_msg = false;
 
 #define DBG(args...) printf_P(args)
-#ifndef _n
 #define _n PSTR
-#endif //_n
-#ifndef _i
 #define _i PSTR
-#endif //_i
 
 //TMC2130 registers
 #define TMC2130_REG_GCONF      0x00 // 17 bits
@@ -116,12 +114,11 @@ bool skip_debug_msg = false;
 #define TMC2130_REG_ENCM_CTRL  0x72 // 2 bits
 #define TMC2130_REG_LOST_STEPS 0x73 // 20 bits
 
-
 uint16_t tmc2130_rd_TSTEP(uint8_t axis);
 uint16_t tmc2130_rd_MSCNT(uint8_t axis);
 uint32_t tmc2130_rd_MSCURACT(uint8_t axis);
 
-void tmc2130_wr_CHOPCONF(uint8_t axis, uint8_t toff = 3, uint8_t hstrt = 4, uint8_t hend = 1, uint8_t fd3 = 0, uint8_t disfdcc = 0, uint8_t rndtf = 0, uint8_t chm = 0, uint8_t tbl = 2, uint8_t vsense = 0, uint8_t vhighfs = 0, uint8_t vhighchm = 0, uint8_t sync = 0, uint8_t mres = 0b0100, uint8_t intpol = 1, uint8_t dedge = 0, uint8_t diss2g = 0);
+void tmc2130_wr_CHOPCONF(uint8_t axis, uint8_t toff, uint8_t hstrt, uint8_t hend, uint8_t fd3, uint8_t disfdcc, uint8_t rndtf, uint8_t chm, uint8_t tbl, uint8_t vsense, uint8_t vhighfs, uint8_t vhighchm, uint8_t sync, uint8_t mres, uint8_t intpol, uint8_t dedge, uint8_t diss2g);
 void tmc2130_wr_PWMCONF(uint8_t axis, uint8_t pwm_ampl, uint8_t pwm_grad, uint8_t pwm_freq, uint8_t pwm_auto, uint8_t pwm_symm, uint8_t freewheel);
 void tmc2130_wr_TPWMTHRS(uint8_t axis, uint32_t val32);
 void tmc2130_wr_THIGH(uint8_t axis, uint32_t val32);
@@ -135,13 +132,16 @@ uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval);
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r);
 
+uint8_t tmc2130_tcoolthrs[4] = TMC2130_TCOOLTHRS;
+
 uint16_t __tcoolthrs(uint8_t axis)
 {
 	switch (axis)
 	{
-	case X_AXIS: return TMC2130_TCOOLTHRS_X;
-	case Y_AXIS: return TMC2130_TCOOLTHRS_Y;
-	case Z_AXIS: return TMC2130_TCOOLTHRS_Z;
+	case X_AXIS: return tmc2130_tcoolthrs[X_AXIS];
+	case Y_AXIS: return tmc2130_tcoolthrs[Y_AXIS];
+	case Z_AXIS: return tmc2130_tcoolthrs[Z_AXIS];
+  case E_AXIS: return tmc2130_tcoolthrs[E_AXIS];
 	}
 	return 0;
 }
@@ -164,17 +164,30 @@ void tmc2130_init()
 #ifndef NEW_SPI
 	SPI.begin();
 #endif //NEW_SPI
-	for (int axis = 0; axis < 2; axis++) // X Y axes
+	for (int axis = 0; axis < 1; axis++) // X Y axes
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
 		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
 		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:__tcoolthrs(axis));
 		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
+    tmc2130_wr_CHOPCONF(axis, tmc2130_toff[axis], tmc2130_hstrt[axis], tmc2130_hend[axis], tmc2130_fd3[axis], tmc2130_disfdcc[axis], tmc2130_rndtf[axis], tmc2130_chm[axis], tmc2130_tbl[axis], tmc2130_vsense[axis], tmc2130_vhighfs[axis], tmc2130_vhighchm[axis], tmc2130_sync[axis], tmc2130_mres[axis], tmc2130_intpol[axis], tmc2130_dedge[axis], tmc2130_diss2g[axis]);
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
 		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
 		//tmc2130_wr_THIGH(axis, TMC2130_THIGH);
 	}
+  for (int axis = 1; axis < 2; axis++) // X Y axes
+  {
+    tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+    tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
+    tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
+    tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:__tcoolthrs(axis));
+    tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
+    tmc2130_wr_CHOPCONF(axis, tmc2130_toff[axis], tmc2130_hstrt[axis], tmc2130_hend[axis], tmc2130_fd3[axis], tmc2130_disfdcc[axis], tmc2130_rndtf[axis], tmc2130_chm[axis], tmc2130_tbl[axis], tmc2130_vsense[axis], tmc2130_vhighfs[axis], tmc2130_vhighchm[axis], tmc2130_sync[axis], tmc2130_mres[axis], tmc2130_intpol[axis], tmc2130_dedge[axis], tmc2130_diss2g[axis]);
+    tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
+    tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
+    //tmc2130_wr_THIGH(axis, TMC2130_THIGH);
+  }
 	for (int axis = 2; axis < 3; axis++) // Z axis
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
@@ -185,6 +198,7 @@ void tmc2130_init()
 		tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
 		tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, (tmc2130_mode == TMC2130_MODE_SILENT)?0:__tcoolthrs(axis));
 		tmc2130_wr(axis, TMC2130_REG_GCONF, (tmc2130_mode == TMC2130_MODE_SILENT)?TMC2130_GCONF_SILENT:TMC2130_GCONF_SGSENS);
+    tmc2130_wr_CHOPCONF(axis, tmc2130_toff[axis], tmc2130_hstrt[axis], tmc2130_hend[axis], tmc2130_fd3[axis], tmc2130_disfdcc[axis], tmc2130_rndtf[axis], tmc2130_chm[axis], tmc2130_tbl[axis], tmc2130_vsense[axis], tmc2130_vhighfs[axis], tmc2130_vhighchm[axis], tmc2130_sync[axis], tmc2130_mres[axis], tmc2130_intpol[axis], tmc2130_dedge[axis], tmc2130_diss2g[axis]);
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
 		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
 #endif //TMC2130_STEALTH_Z
@@ -192,6 +206,7 @@ void tmc2130_init()
 	for (int axis = 3; axis < 4; axis++) // E axis
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+    tmc2130_wr_CHOPCONF(axis, tmc2130_toff[axis], tmc2130_hstrt[axis], tmc2130_hend[axis], tmc2130_fd3[axis], tmc2130_disfdcc[axis], tmc2130_rndtf[axis], tmc2130_chm[axis], tmc2130_tbl[axis], tmc2130_vsense[axis], tmc2130_vhighfs[axis], tmc2130_vhighchm[axis], tmc2130_sync[axis], tmc2130_mres[axis], tmc2130_intpol[axis], tmc2130_dedge[axis], tmc2130_diss2g[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
 #ifndef TMC2130_STEALTH_E
 		tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS);
@@ -213,12 +228,10 @@ void tmc2130_init()
 	tmc2130_sg_cnt[2] = 0;
 	tmc2130_sg_cnt[3] = 0;
 
-#ifdef TMC2130_LINEARITY_CORRECTION
-//	tmc2130_set_wave(X_AXIS, 247, tmc2130_wave_fac[X_AXIS]);
-//	tmc2130_set_wave(Y_AXIS, 247, tmc2130_wave_fac[Y_AXIS]);
-//	tmc2130_set_wave(Z_AXIS, 247, tmc2130_wave_fac[Z_AXIS]);
+	tmc2130_set_wave(X_AXIS, 247, tmc2130_wave_fac[X_AXIS]);
+	tmc2130_set_wave(Y_AXIS, 247, tmc2130_wave_fac[Y_AXIS]);
+	tmc2130_set_wave(Z_AXIS, 247, tmc2130_wave_fac[Z_AXIS]);
 	tmc2130_set_wave(E_AXIS, 247, tmc2130_wave_fac[E_AXIS]);
-#endif //TMC2130_LINEARITY_CORRECTION
 
 }
 
@@ -273,12 +286,12 @@ void tmc2130_st_isr(uint8_t last_step_mask)
 
 bool tmc2130_update_sg()
 {
-	if (tmc2130_sg_meassure <= E_AXIS)
+	if (tmc2130_sg_measure <= E_AXIS)
 	{
 		uint32_t val32 = 0;
-		tmc2130_rd(tmc2130_sg_meassure, TMC2130_REG_DRV_STATUS, &val32);
-		tmc2130_sg_meassure_val += (val32 & 0x3ff);
-		tmc2130_sg_meassure_cnt++;
+		tmc2130_rd(tmc2130_sg_measure, TMC2130_REG_DRV_STATUS, &val32);
+		tmc2130_sg_measure_val += (val32 & 0x3ff);
+		tmc2130_sg_measure_cnt++;
 		return true;
 	}
 	return false;
@@ -302,6 +315,7 @@ void tmc2130_home_enter(uint8_t axes_mask)
 //			tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 			tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
 			tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r_home[axis]);
+      tmc2130_wr_CHOPCONF(axis, tmc2130_toff[axis], tmc2130_hstrt[axis], tmc2130_hend[axis], tmc2130_fd3[axis], tmc2130_disfdcc[axis], tmc2130_rndtf[axis], tmc2130_chm[axis], tmc2130_tbl[axis], tmc2130_vsense[axis], tmc2130_vhighfs[axis], tmc2130_vhighchm[axis], tmc2130_sync[axis], tmc2130_mres[axis], tmc2130_intpol[axis], tmc2130_dedge[axis], tmc2130_diss2g[axis]);
 			if (mask & (X_AXIS_MASK | Y_AXIS_MASK | Z_AXIS_MASK))
 				tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_SGSENS); //stallguard output DIAG1, DIAG1 = pushpull
 		}
@@ -336,6 +350,7 @@ void tmc2130_home_exit()
 				{
 //					tmc2130_wr(axis, TMC2130_REG_GCONF, TMC2130_GCONF_NORMAL);
 					tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+          tmc2130_wr_CHOPCONF(axis, tmc2130_toff[axis], tmc2130_hstrt[axis], tmc2130_hend[axis], tmc2130_fd3[axis], tmc2130_disfdcc[axis], tmc2130_rndtf[axis], tmc2130_chm[axis], tmc2130_tbl[axis], tmc2130_vsense[axis], tmc2130_vhighfs[axis], tmc2130_vhighchm[axis], tmc2130_sync[axis], tmc2130_mres[axis], tmc2130_intpol[axis], tmc2130_dedge[axis], tmc2130_diss2g[axis]);
 //					tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16) | ((uint32_t)1 << 24));
 					tmc2130_wr(axis, TMC2130_REG_COOLCONF, (((uint32_t)tmc2130_sg_thr[axis]) << 16));
 					tmc2130_wr(axis, TMC2130_REG_TCOOLTHRS, __tcoolthrs(axis));
@@ -349,17 +364,17 @@ void tmc2130_home_exit()
 #endif
 }
 
-void tmc2130_sg_meassure_start(uint8_t axis)
+void tmc2130_sg_measure_start(uint8_t axis)
 {
-	tmc2130_sg_meassure = axis;
-	tmc2130_sg_meassure_cnt = 0;
-	tmc2130_sg_meassure_val = 0;
+	tmc2130_sg_measure = axis;
+	tmc2130_sg_measure_cnt = 0;
+	tmc2130_sg_measure_val = 0;
 }
 
-uint16_t tmc2130_sg_meassure_stop()
+uint16_t tmc2130_sg_measure_stop()
 {
-	tmc2130_sg_meassure = 0xff;
-	return tmc2130_sg_meassure_val / tmc2130_sg_meassure_cnt;
+	tmc2130_sg_measure = 0xff;
+	return tmc2130_sg_measure_val / tmc2130_sg_measure_cnt;
 }
 
 
@@ -422,10 +437,10 @@ void tmc2130_check_overtemp()
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
-	uint8_t intpol = 1;
-	uint8_t toff = TMC2130_TOFF_XYZ; // toff = 3 (fchop = 27.778kHz)
-	uint8_t hstrt = 5; //initial 4, modified to 5
-	uint8_t hend = 1;
+	uint8_t intpol = intpol;
+	uint8_t toff = toff; // toff = 3 (fchop = 27.778kHz)
+	uint8_t hstrt = hstrt; //initial 4, modified to 5
+	uint8_t hend = hend;
 	uint8_t fd3 = 0;
 	uint8_t rndtf = 0; //random off time
 	uint8_t chm = 0; //spreadCycle
@@ -439,7 +454,7 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 		hend = 0; //sine wave offset
 		chm = 1; // constant off time mod
 #endif //TMC2130_CNSTOFF_E
-		toff = TMC2130_TOFF_E; // toff = 3-5
+		toff = toff; // toff = 3-5
 //		rndtf = 1;
 	}
 	if (current_r <= 31)
