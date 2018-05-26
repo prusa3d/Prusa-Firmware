@@ -183,85 +183,60 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define TMC2130_LINEARITY_CORRECTION
 //#define TMC2130_VARIABLE_RESOLUTION
 
-
-
 /*------------------------------------
  TMC2130 default settings
- *------------------------------------*/
-
-#define TMC2130_FCLK 12000000       // fclk = 12MHz
-
-#define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
-#define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
-#define TMC2130_USTEPS_E    32        // microstep resolution for E axis
-#define TMC2130_INTPOL_XY   1         // extrapolate 256 for XY axes
-#define TMC2130_INTPOL_Z    1         // extrapolate 256 for Z axis
-#define TMC2130_INTPOL_E    1         // extrapolate 256 for E axis
-
-#define TMC2130_PWM_GRAD_X  2         // PWMCONF
-#define TMC2130_PWM_AMPL_X  230       // PWMCONF
-#define TMC2130_PWM_AUTO_X  1         // PWMCONF
-#define TMC2130_PWM_FREQ_X  2         // PWMCONF
-
-#define TMC2130_PWM_GRAD_Y  2         // PWMCONF
-#define TMC2130_PWM_AMPL_Y  235       // PWMCONF
-#define TMC2130_PWM_AUTO_Y  1         // PWMCONF
-#define TMC2130_PWM_FREQ_Y  2         // PWMCONF
-
-#define TMC2130_PWM_GRAD_E  2         // PWMCONF
-#define TMC2130_PWM_AMPL_E  235       // PWMCONF
-#define TMC2130_PWM_AUTO_E  1         // PWMCONF
-#define TMC2130_PWM_FREQ_E  2         // PWMCONF
-
-#define TMC2130_PWM_GRAD_Z  4         // PWMCONF
-#define TMC2130_PWM_AMPL_Z  200       // PWMCONF
-#define TMC2130_PWM_AUTO_Z  1         // PWMCONF
-#define TMC2130_PWM_FREQ_Z  2         // PWMCONF
-
-#define TMC2130_PWM_GRAD_E  4         // PWMCONF
-#define TMC2130_PWM_AMPL_E  240       // PWMCONF
-#define TMC2130_PWM_AUTO_E  1         // PWMCONF
-#define TMC2130_PWM_FREQ_E  2         // PWMCONF
-
-#define TMC2130_TOFF_XYZ    3         // CHOPCONF // fchop = 27.778kHz
-#define TMC2130_TOFF_E      3         // CHOPCONF // fchop = 27.778kHz
-//#define TMC2130_TOFF_E      4         // CHOPCONF // fchop = 21.429kHz
-//#define TMC2130_TOFF_E      5         // CHOPCONF // fchop = 17.442kHz
-
-//#define TMC2130_STEALTH_E // Extruder stealthChop mode
-//#define TMC2130_CNSTOFF_E // Extruder constant-off-time mode (similar to MK2)
-
-//#define TMC2130_PWM_DIV   683         // PWM frequency divider (1024, 683, 512, 410)
-#define TMC2130_PWM_DIV   512         // PWM frequency divider (1024, 683, 512, 410)
-#define TMC2130_PWM_CLK   (2 * TMC2130_FCLK / TMC2130_PWM_DIV) // PWM frequency (23.4kHz, 35.1kHz, 46.9kHz, 58.5kHz for 12MHz fclk)
-
-#define TMC2130_TPWMTHRS  0         // TPWMTHRS - Sets the switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
-#define TMC2130_THIGH     0         // THIGH - unused
-
-//#define TMC2130_TCOOLTHRS_X 450       // TCOOLTHRS - coolstep treshold
-//#define TMC2130_TCOOLTHRS_Y 450       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_X 430       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_Y 430       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_Z 500       // TCOOLTHRS - coolstep treshold
-#define TMC2130_TCOOLTHRS_E 500       // TCOOLTHRS - coolstep treshold
-
-#define TMC2130_SG_HOMING       1     // stallguard homing
-#define TMC2130_SG_THRS_X       3     // stallguard sensitivity for X axis
-#define TMC2130_SG_THRS_Y       3     // stallguard sensitivity for Y axis
-#define TMC2130_SG_THRS_Z       4     // stallguard sensitivity for Z axis
-#define TMC2130_SG_THRS_E       3     // stallguard sensitivity for E axis
-
-//new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only)
-#define TMC2130_CURRENTS_H {16, 20, 35, 30}  // default holding currents for all axes
-#define TMC2130_CURRENTS_R {16, 20, 35, 30}  // default running currents for all axes
-#define TMC2130_UNLOAD_CURRENT_R 12			 // lowe current for M600 to protect filament sensor 
-
-#define TMC2130_STEALTH_Z
+ *-----------------------------------*/
 
 //#define TMC2130_DEBUG
 //#define TMC2130_DEBUG_WR
 //#define TMC2130_DEBUG_RD
+//#define TMC2130_VARIABLE_RESOLUTION
 
+//These definitions have been kept as reference for external functions
+#define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
+#define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
+#define TMC2130_USTEPS_E    32        // microstep resolution for E axis
+
+//                          {X, Y, Z, E}                           
+#define TMC2130_MRES        {4, 4, 4, 3}                // Default uStep steeting for each axis; X, Y, Z, E. ( 0 = 256 ... 3 = 32, 4 = 16 ... 8 = Fullstep) (ONLY IN TMC2130.cpp)
+#define TMC2130_INTPOL      {1, 1, 1, 1}                // Interpolate to driver native 256 uSteps for smooth movement
+//new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only) 
+#define TMC2130_IRUN        {16, 20, 35, 20}            // Default running currents for all axes 
+#define TMC2130_IHOLD       {12, 14, 25, 14}            // Default holding currents for all axes 
+#define TMC2130_IHOME       {8, 10, 20, 10}             // Default homing currents for all axes to prevent belt slipping  
+#define TMC2130_UNLOAD_CURRENT_R 12                     // Lower extruder current for M600 moves to protect filament sensor 
+
+/*------------------------------------
+ CHOPPER CONFIGURATION
+ *-----------------------------------*/
+
+#define TMC2130_FCLK        12000000                    // CHOPCONF - Chopper clock frequency: fclk = 12MHz
+#define TMC2130_TBL         {1, 1, 1, 1}                // CHOPCONF - Blank time setting, for current desipation in sense resistor
+#define TMC2130_TOFF        {3, 3, 3, 3}                // CHOPCONF - Spreadcycle Chopper off time setting, regulating chopper frequency: 4 = 34.1kHz 
+#define TMC2130_HSTRT       {6, 6, 7, 6}                // CHOPCONF - Spreadcycle Waveform hysterisis start setting, based off motor resistance and inductance (MAX = 7)
+#define TMC2130_HEND        {1, 2, 5, 2}                // CHOPCONF - Spreadcycle Waveform hysterisis end setting, based off motor resistance and inductance (MAX = 15)
+#define TMC2130_TPWMTHRS    0                           // TPWMTHRS - Switching speed threshold based on TSTEP from stealthChop to spreadCycle mode
+#define TMC2130_THIGH       0                           // THIGH - unused
+
+/*------------------------------------
+ STALLGUARD AND COOLSTEP CONFIGURATION
+ *-----------------------------------*/
+           
+#define TMC2130_SG_THRS     {3, 3, 4, 3}                // SGTHRS - Stallguard running sensititvity
+#define TMC2130_SG_HOMING   {3, 3, 3, 3}                // SGTHRS - Stallguard homing sensitivity
+#define TMC2130_TCOOLTHRS   {430, 430, 500, 500}    // TCOOLTHRS - coolstep lower velocity treshold (430, 430, 500, 500)
+
+/*------------------------------------
+ STEALTHCHOP CONFIGURATION
+ *-----------------------------------*/
+
+#define TMC2130_PWM_GRAD    {2, 2, 4, 4}                // PWMCONF - Stealthchop maximum PWM amplitude per half wave 
+#define TMC2130_PWM_AMPL    {230, 235, 200, 240}        // PWMCONF - Stealthchop PWM amplitude
+#define TMC2130_PWM_AUTO    {1, 1, 1, 1}                // PWMCONF - Stealthchop enable automatic current control
+#define TMC2130_PWM_FREQ    {2, 2, 2, 2}                // PWMCONF - Stealthchop PWM frequency selection: 2 = 2/683*fclk = 35.2kHz
+#define TMC2130_STEALTH_Z                               // Enable Stealthchop for Z-axis
+//#define TMC2130_STEALTH_E                               // Extruder stealthChop mode
+//#define TMC2130_CNSTOFF_E                               // Extruder constant-off-time mode (similar to MK2)
 
 /*------------------------------------
  EXTRUDER SETTINGS
