@@ -10,7 +10,7 @@
 #  text.sym
 #  $PROGMEM.sym (progmem1.sym)
 #  $PROGMEM.lss (...)
-#  $PROGMEM.dat
+#  $PROGMEM.hex
 #  $PROGMEM.chr
 #  $PROGMEM.var
 #  $PROGMEM.txt

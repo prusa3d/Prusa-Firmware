@@ -10,7 +10,7 @@
 #  text.sym
 #  $PROGMEM.sym
 #  $PROGMEM.lss
-#  $PROGMEM.dat
+#  $PROGMEM.hex
 #  $PROGMEM.chr
 #  $PROGMEM.var
 #  $PROGMEM.txt
@@ -34,7 +34,7 @@ OBJDUMP=C:/arduino-1.6.8/hardware/tools/avr/bin/avr-objdump.exe
 #  3. list symbol table of section '.$PROGMEM' from all output object files to $PROGMEM.sym
 #  4. filter only $PROGMEM symbols from text.sym and store it back to $PROGMEM.sym with absolute address
 #  5. calculate start and stop address of section '.$PROGMEM'
-#  6. extract string data from elf file to $PROGMEM.dat
+#  6. extract string data from elf file to $PROGMEM.hex
 #  7. prepare string data for character check and conversion (output to $PROGMEM.chr)
 #  8. perform character check and conversion (output to $PROGMEM.var and $PROGMEM.txt)
 #
@@ -51,17 +51,17 @@ echo " progmem.sh (1) - removing output files" >&2
 if [ -e text.sym ]; then rm text.sym; fi
 if [ -e $PROGMEM.sym ]; then rm $PROGMEM.sym; fi
 if [ -e $PROGMEM.lss ]; then rm $PROGMEM.lss; fi
-if [ -e $PROGMEM.dat ]; then rm $PROGMEM.dat; fi
+if [ -e $PROGMEM.hex ]; then rm $PROGMEM.hex; fi
 if [ -e $PROGMEM.chr ]; then rm $PROGMEM.chr; fi
 if [ -e $PROGMEM.var ]; then rm $PROGMEM.var; fi
 if [ -e $PROGMEM.txt ]; then rm $PROGMEM.txt; fi
 
-# (1)
+# (2)
 echo " progmem.sh (2) - listing symbol table of section '.text'" >&2
 #list symbols from section '.text' into file text.sym (only address, size and name)
 $OBJDUMP -t -j ".text" $OUTELF | tail -n +5 | grep -E "^[0-9a-f]{8} [gl]     O" | cut -c1-9,28-36,37- | sed "/^$/d" | sort >> text.sym
 
-# (2)
+# (3)
 echo " progmem.sh (3) - listing symbol table of section '.$PROGMEM'" >&2
 #loop over all object files
 ls "$OUTDIR"/sketch/*.o | while read fn; do
@@ -69,8 +69,8 @@ ls "$OUTDIR"/sketch/*.o | while read fn; do
  #list symbols from section $PROGMEM (only address, size and name)
  $OBJDUMP -t -j ".$PROGMEM" $fn 2>/dev/null | tail -n +5 | cut -c1-9,28-36,37- | sed "/^$/d" | sort >> $PROGMEM.sym
 done
-#exit
-# (3)
+
+# (4)
 echo " progmem.sh (4) - filtering $PROGMEM symbols" >&2
 #create list of $PROGMEM symbol names separated by '\|'
 progmem=$(cut -c19- $PROGMEM.sym)
@@ -79,7 +79,7 @@ progmem='\b'$progmem'\b'
 #filter $PROGMEM symbols from section '.text' (result file will contain list sorted by absolute address) 
 cat text.sym | grep $progmem > $PROGMEM.sym
 
-# (4)
+# (5)
 echo " progmem.sh (5) - calculating start and stop address" >&2
 #calculate start addres of section ".$PROGMEM"
 PROGMEM_BEG=$(head -n1 $PROGMEM.sym | while read offs size name; do echo "0x"$offs; done)
@@ -88,29 +88,29 @@ PROGMEM_END=$(tail -n1 $PROGMEM.sym | while read offs size name; do printf "0x%x
 echo "  START address = "$PROGMEM_BEG >&2
 echo "  STOP  address = "$PROGMEM_END >&2
 
-# (5)
+# (6)
 echo " progmem.sh (6) - extracting string data from elf" >&2
 #dump $PROGMEM data in hex format, cut textual data (keep hex data only)
 $OBJDUMP -d -j ".text" -w -z --start-address=$PROGMEM_BEG --stop-address=$PROGMEM_END $OUTELF | cut -c1-57 > $PROGMEM.lss
-#convert $PROGMEM.lss to $PROGMEM.dat:
+#convert $PROGMEM.lss to $PROGMEM.hex:
 # replace empty lines with '|' (variables separated by empty lines)
 # remove address from multiline variables (keep address at first variable line only)
 # remove '<' and '>:', remove whitespace at end of lines
 # remove line-endings, replace separator with '\n' (join hex data lines - each line will contain single variable)
 # filter progmem symbols
 cat $PROGMEM.lss | tail -n +7 | sed -E 's/^$/|/;s/^........:\t/ /;s/<//g;s/>:/ /g;s/[ \t]*$//' |\
- tr -d '\n' | sed "s/[|]/\n/g" | grep $progmem > $PROGMEM.dat
+ tr -d '\n' | sed "s/[|]/\n/g" | grep $progmem > $PROGMEM.hex
 
-# (6)
+# (7)
 echo " progmem.sh (7) - preparing string data" >&2
-#convert $PROGMEM.dat to $PROGMEM.chr (prepare string data for character check and conversion) 
+#convert $PROGMEM.hex to $PROGMEM.chr (prepare string data for character check and conversion) 
 # replace first space with tab
 # replace second space with tab and space
 # replace all remaining spaces with '\x'
 # replace all tabs with spaces
-cat $PROGMEM.dat | sed 's/ /\t/;s/ /\t /;s/ /\\x/g;s/\t/ /g' > $PROGMEM.chr
+cat $PROGMEM.hex | sed 's/ /\t/;s/ /\t /;s/ /\\x/g;s/\t/ /g' > $PROGMEM.chr
 
-# (7)
+# (8)
 #convert $PROGMEM.chr to $PROGMEM.var (convert data to text)
 echo " progmem.sh (8) - converting string data" >&2
 cat $PROGMEM.chr | \
