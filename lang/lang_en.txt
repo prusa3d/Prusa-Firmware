@@ -638,7 +638,8 @@
 "Please clean the nozzle for calibration. Click when done."
 
 #MSG_SELFTEST_PLEASECHECK c=0 r=0
-"Please check :"	
+"Please check :"
+
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 

@@ -1,19 +1,10 @@
 #!/bin/sh
-#
-# Multi-language support postbuild script
-# Description of proces:
-#  0. remove output files
-#  1. list symbol table of section '.text' from output elf file to text.sym (sorted by address)
-#  2. list symbol table of section '.$PROGMEM' from all output object files to $PROGMEM.sym
-#  3. filter only $PROGMEM symbols from text.sym and store it back to $PROGMEM.sym with absolute address
-#  4. calculate start and stop address of section '.$PROGMEM'
-#  5. extract string data from elf file to $PROGMEM.dat
-#  6. prepare string data for character check and conversion (output to $PROGMEM.chr)
-#  7. perform character check and conversion (output to $PROGMEM.var and $PROGMEM.txt)
+# progmem.sh - multi-language support low-level script
+#  for examining content of progmem sections (default is progmem1)
 #
 # Input files:
-#  Firmware.ino.elf
-#  *.o (all object files)
+#  $OUTDIR/Firmware.ino.elf
+#  $OUTDIR/sketch/*.o (all object files)
 #
 # Output files:
 #  text.sym
@@ -34,11 +25,28 @@ OUTELF="$OUTDIR/Firmware.ino.elf"
 #
 # AVR gcc tools used:
 OBJDUMP=C:/arduino-1.6.8/hardware/tools/avr/bin/avr-objdump.exe
-#READELF=C:/arduino-1.6.8/hardware/tools/avr/bin/avr-readelf.exe
+#
+#
+# Description of process:
+#  0. check input files
+#  1. remove output files
+#  2. list symbol table of section '.text' from output elf file to text.sym (sorted by address)
+#  3. list symbol table of section '.$PROGMEM' from all output object files to $PROGMEM.sym
+#  4. filter only $PROGMEM symbols from text.sym and store it back to $PROGMEM.sym with absolute address
+#  5. calculate start and stop address of section '.$PROGMEM'
+#  6. extract string data from elf file to $PROGMEM.dat
+#  7. prepare string data for character check and conversion (output to $PROGMEM.chr)
+#  8. perform character check and conversion (output to $PROGMEM.var and $PROGMEM.txt)
+#
 
+echo "progmem.sh started" >&2
 
 # (0)
-echo "step 0 - removing output files"
+echo " progmem.sh (0) - checking input files" >&2
+if [ ! -e $OUTDIR ]; then echo "progmem.sh - file '$OUTELF' not found!" >&2; exit 1; fi
+
+# (1)
+echo " progmem.sh (1) - removing output files" >&2
 #remove output files if exists
 if [ -e text.sym ]; then rm text.sym; fi
 if [ -e $PROGMEM.sym ]; then rm $PROGMEM.sym; fi
@@ -49,21 +57,21 @@ if [ -e $PROGMEM.var ]; then rm $PROGMEM.var; fi
 if [ -e $PROGMEM.txt ]; then rm $PROGMEM.txt; fi
 
 # (1)
-echo "step 1 - listing symbol table of section '.text'"
+echo " progmem.sh (2) - listing symbol table of section '.text'" >&2
 #list symbols from section '.text' into file text.sym (only address, size and name)
 $OBJDUMP -t -j ".text" $OUTELF | tail -n +5 | grep -E "^[0-9a-f]{8} [gl]     O" | cut -c1-9,28-36,37- | sed "/^$/d" | sort >> text.sym
 
 # (2)
-echo "step 2 - listing symbol table of section '.$PROGMEM'"
+echo " progmem.sh (3) - listing symbol table of section '.$PROGMEM'" >&2
 #loop over all object files
 ls "$OUTDIR"/sketch/*.o | while read fn; do
- echo " processing $fn"
+ echo "  processing $fn" >&2
  #list symbols from section $PROGMEM (only address, size and name)
- $OBJDUMP -t -j ".$PROGMEM" $fn | tail -n +5 | cut -c1-9,28-36,37- | sed "/^$/d" | sort >> $PROGMEM.sym
-done 2>/dev/null
+ $OBJDUMP -t -j ".$PROGMEM" $fn 2>/dev/null | tail -n +5 | cut -c1-9,28-36,37- | sed "/^$/d" | sort >> $PROGMEM.sym
+done
 #exit
 # (3)
-echo "step 3 - filtering $PROGMEM symbols"
+echo " progmem.sh (4) - filtering $PROGMEM symbols" >&2
 #create list of $PROGMEM symbol names separated by '\|'
 progmem=$(cut -c19- $PROGMEM.sym)
 progmem=$(echo $progmem | sed "s/ /\\\b\\\|\\\b/g")
@@ -72,16 +80,16 @@ progmem='\b'$progmem'\b'
 cat text.sym | grep $progmem > $PROGMEM.sym
 
 # (4)
-echo "step 4 - calculating start and stop address"
+echo " progmem.sh (5) - calculating start and stop address" >&2
 #calculate start addres of section ".$PROGMEM"
 PROGMEM_BEG=$(head -n1 $PROGMEM.sym | while read offs size name; do echo "0x"$offs; done)
 #calculate stop addres of section ".$PROGMEM"
 PROGMEM_END=$(tail -n1 $PROGMEM.sym | while read offs size name; do printf "0x%x" $(("0x"$offs + "0x"$size)); done)
-echo " START address = "$PROGMEM_BEG
-echo " STOP address  = "$PROGMEM_END
+echo "  START address = "$PROGMEM_BEG >&2
+echo "  STOP  address = "$PROGMEM_END >&2
 
 # (5)
-echo "step 5 - extracting string data from elf"
+echo " progmem.sh (6) - extracting string data from elf" >&2
 #dump $PROGMEM data in hex format, cut textual data (keep hex data only)
 $OBJDUMP -d -j ".text" -w -z --start-address=$PROGMEM_BEG --stop-address=$PROGMEM_END $OUTELF | cut -c1-57 > $PROGMEM.lss
 #convert $PROGMEM.lss to $PROGMEM.dat:
@@ -94,7 +102,7 @@ cat $PROGMEM.lss | tail -n +7 | sed -E 's/^$/|/;s/^........:\t/ /;s/<//g;s/>:/ /
  tr -d '\n' | sed "s/[|]/\n/g" | grep $progmem > $PROGMEM.dat
 
 # (6)
-echo "step 6 - preparing string data"
+echo " progmem.sh (7) - preparing string data" >&2
 #convert $PROGMEM.dat to $PROGMEM.chr (prepare string data for character check and conversion) 
 # replace first space with tab
 # replace second space with tab and space
@@ -104,6 +112,7 @@ cat $PROGMEM.dat | sed 's/ /\t/;s/ /\t /;s/ /\\x/g;s/\t/ /g' > $PROGMEM.chr
 
 # (7)
 #convert $PROGMEM.chr to $PROGMEM.var (convert data to text)
+echo " progmem.sh (8) - converting string data" >&2
 cat $PROGMEM.chr | \
  sed 's/ \\xff\\xff/ /;' | \
  sed 's/\\x22/\\\\\\x22/g;' | \
@@ -113,4 +122,6 @@ cat $PROGMEM.chr | \
  sed 's/\\x00$/\\x0a/;s/^/printf "/;s/$/"/' | sh > $PROGMEM.var
 cat $PROGMEM.var | sed 's/\r/\n/g' |sed -E 's/^[0-9a-f]{8} [^ ]* //' >$PROGMEM.txt
 
-read
+echo "progmem.sh finished" >&2
+
+exit 0
