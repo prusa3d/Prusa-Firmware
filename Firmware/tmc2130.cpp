@@ -37,7 +37,7 @@ uint8_t tmc2130_vsense[4] = {0, 0, 0, 0};
 uint8_t tmc2130_vhighfs[4] = {0, 0, 0, 0};
 uint8_t tmc2130_vhighchm[4] = {0, 0, 0, 0};
 uint8_t tmc2130_sync[4] = {0, 0, 0, 0};
-uint8_t tmc2130_mres[4] = {0, 0, 0, 0}; //TMC2130_MRES;           // will be filed at begin of init 
+uint8_t tmc2130_mres[4] = {0, 0, 0, 0};            // will be filed at begin of init 
 uint8_t tmc2130_intpol[4] = TMC2130_INTPOL;
 uint8_t tmc2130_dedge[4] = {0, 0, 0, 0};
 uint8_t tmc2130_diss2g[4] = {0, 0, 0, 0};
@@ -78,8 +78,12 @@ uint8_t tmc2130_wave_fac[4] = {0, 0, 0, 0};
 bool skip_debug_msg = false;
 
 #define DBG(args...) printf_P(args)
+#ifndef _n
 #define _n PSTR
+#endif //_n
+#ifndef _i
 #define _i PSTR
+#endif //_i
 
 //TMC2130 registers
 #define TMC2130_REG_GCONF      0x00 // 17 bits
@@ -364,17 +368,17 @@ void tmc2130_home_exit()
 #endif
 }
 
-void tmc2130_sg_measure_start(uint8_t axis)
+void tmc2130_sg_meassure_start(uint8_t axis)
 {
-	tmc2130_sg_measure = axis;
-	tmc2130_sg_measure_cnt = 0;
-	tmc2130_sg_measure_val = 0;
+	tmc2130_sg_meassure = axis;
+	tmc2130_sg_meassure_cnt = 0;
+	tmc2130_sg_meassure_val = 0;
 }
 
-uint16_t tmc2130_sg_measure_stop()
+uint16_t tmc2130_sg_meassure_stop()
 {
-	tmc2130_sg_measure = 0xff;
-	return tmc2130_sg_measure_val / tmc2130_sg_measure_cnt;
+	tmc2130_sg_meassure = 0xff;
+	return tmc2130_sg_meassure_val / tmc2130_sg_meassure_cnt;
 }
 
 
@@ -437,14 +441,14 @@ void tmc2130_check_overtemp()
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
-	uint8_t intpol = intpol;
-	uint8_t toff = toff; // toff = 3 (fchop = 27.778kHz)
-	uint8_t hstrt = hstrt; //initial 4, modified to 5
-	uint8_t hend = hend;
+	uint8_t intpol = tmc2130_intpol[axis];
+	uint8_t toff = tmc2130_toff[axis]; 		// toff = 3 (fchop = 27.778kHz)
+	uint8_t hstrt = tmc2130_hstrt[axis]; 		//initial 4, modified to 5
+	uint8_t hend = tmc2130_hend[axis];
 	uint8_t fd3 = 0;
-	uint8_t rndtf = 0; //random off time
-	uint8_t chm = 0; //spreadCycle
-	uint8_t tbl = 2; //blanking time
+	uint8_t rndtf = 0; 				//random off time
+	uint8_t chm = 0; 				//spreadCycle
+	uint8_t tbl = tmc2130_tbl[axis]; 		//blanking time
 	if (axis == E_AXIS)
 	{
 #ifdef TMC2130_CNSTOFF_E
@@ -454,7 +458,7 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 		hend = 0; //sine wave offset
 		chm = 1; // constant off time mod
 #endif //TMC2130_CNSTOFF_E
-		toff = toff; // toff = 3-5
+		toff = tmc2130_toff[axis]; 		// toff = 3-5
 //		rndtf = 1;
 	}
 	if (current_r <= 31)
