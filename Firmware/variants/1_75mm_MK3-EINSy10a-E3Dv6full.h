@@ -192,13 +192,11 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //#define TMC2130_DEBUG_RD
 //#define TMC2130_VARIABLE_RESOLUTION
 
-//These definitions have been kept as reference for external functions
 #define TMC2130_USTEPS_XY   16        // microstep resolution for XY axes
 #define TMC2130_USTEPS_Z    16        // microstep resolution for Z axis
 #define TMC2130_USTEPS_E    32        // microstep resolution for E axis
 
 //                          {X, Y, Z, E}                           
-#define TMC2130_MRES        {4, 4, 4, 3}                // Default uStep steeting for each axis; X, Y, Z, E. ( 0 = 256 ... 3 = 32, 4 = 16 ... 8 = Fullstep) (ONLY IN TMC2130.cpp)
 #define TMC2130_INTPOL      {1, 1, 1, 1}                // Interpolate to driver native 256 uSteps for smooth movement
 //new settings is possible for vsense = 1, running current value > 31 set vsense to zero and shift both currents by 1 bit right (Z axis only) 
 #define TMC2130_IRUN        {16, 20, 35, 20}            // Default running currents for all axes 
