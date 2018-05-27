@@ -52,14 +52,14 @@ printf "  lang_table_addr =0x%04x\n" $lang_table_addr >&2
 lang_table_size=$((256*$((($sec_lang_size - ($lang_table_addr - $sec_lang_addr))/256))))
 printf "  lang_table_size =0x%04x (=%d bytes)\n" $lang_table_size $lang_table_size >&2
 
-#get lang_cz.bin file size
-lang_file_size=$(wc -c lang_cz.bin | cut -f1 -d' ')
+#get lang_xx.bin file size
+lang_file_size=$(wc -c lang_$LANG.bin | cut -f1 -d' ')
 printf "  lang_file_size  =0x%04x (=%d bytes)\n" $lang_file_size $lang_file_size >&2
 
 if [ $lang_file_size -gt $lang_table_size ]; then echo "Lanaguage binary file size too big!"; finish 1; fi
 
 echo "updating 'firmware.bin'..." >&2
-dd if=lang_cz.bin of=firmware.bin bs=1 seek=$lang_table_addr conv=notrunc 2>/dev/null
+dd if=lang_$LANG.bin of=firmware.bin bs=1 seek=$lang_table_addr conv=notrunc 2>/dev/null
 
 #convert bin to hex
 echo "converting to hex..." >&2
