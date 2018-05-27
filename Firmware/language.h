@@ -70,6 +70,7 @@ extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 #endif //(LANG_MODE == 0)
 
 extern const char* lang_get_translation(const char* s);
+extern const char* lang_get_sec_lang_str(const char* s);
 extern const char* lang_select(unsigned char lang);
 
 #if defined(__cplusplus)

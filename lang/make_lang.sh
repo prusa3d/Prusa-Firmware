@@ -78,20 +78,21 @@ cat lang_$LANG.txt | sed "s/\\\\/\\\\\\\\/g" | while read s; do
 done >lang_$LANG.dat
 echo "OK" >&2
 
-#generate lang_xx.ofs (secondary language text data offset table)
-echo -n " generating lang_$LANG.ofs..." >&2
-cat lang_$LANG.txt | sed "s/\\\\x[0-9a-f][0-9a-f]/\./g;s/\\\\[0-7][0-7][0-7]/\./g" |\
- awk 'BEGIN { o=0;} { printf("%d\n",o); o+=(length($0)-1); }' > lang_$LANG.ofs
-echo "OK" >&2
-
-lt_data_size=$(wc -c lang_$LANG.dat | cut -f1 -d' ')
-
+#calculate variables
 lt_magic='\xa5\x5a\xb4\x4b'
 lt_count=$(grep -c '^' lang_$LANG.txt)
-lt_size=$((16 + 2 * $lt_count + $lt_data_size))
+lt_data_size=$(wc -c lang_$LANG.dat | cut -f1 -d' ')
+lt_offs_size=$((2 * $lt_count))
+lt_size=$((16 + $lt_offs_size + $lt_data_size))
 lt_chsum=1
 lt_resv0='\xff\xff'
 lt_resv1='\xff\xff\xff\xff'
+
+#generate lang_xx.ofs (secondary language text data offset table)
+echo -n " generating lang_$LANG.ofs..." >&2
+cat lang_$LANG.txt | sed "s/\\\\x[0-9a-f][0-9a-f]/\./g;s/\\\\[0-7][0-7][0-7]/\./g" |\
+ awk 'BEGIN { o='$((16 + $lt_offs_size))';} { printf("%d\n",o); o+=(length($0)-1); }' > lang_$LANG.ofs
+echo "OK" >&2
 
 #generate lang_xx.bin (secondary language result binary file)
 echo " generating lang_$LANG.bin:" >&2
@@ -117,13 +118,13 @@ echo -n -e "$lt_resv1" |\
  dd of=lang_$LANG.bin bs=1 count=4 seek=12 conv=notrunc 2>/dev/null
 echo "OK" >&2
 
-echo -n "  writing offset table ($((2 * $lt_count)) bytes)..." >&2
+echo -n "  writing offset table ($lt_offs_size bytes)..." >&2
 echo -n -e $(cat lang_$LANG.ofs | awk "$awk_ui16" | tr -d '\n'; echo) |\
- dd of=./lang_$LANG.bin bs=1 count=$((2 * $lt_count)) seek=16 conv=notrunc 2>/dev/null
+ dd of=./lang_$LANG.bin bs=1 count=$lt_offs_size seek=16 conv=notrunc 2>/dev/null
 echo "OK" >&2
 
 echo -n "  writing text data ($lt_data_size bytes)..." >&2
-dd if=./lang_$LANG.dat of=./lang_$LANG.bin bs=1 count=$lt_data_size seek=$((16 + 2 * $lt_count)) conv=notrunc 2>/dev/null
+dd if=./lang_$LANG.dat of=./lang_$LANG.bin bs=1 count=$lt_data_size seek=$((16 + $lt_offs_size)) conv=notrunc 2>/dev/null
 echo "OK" >&2
 
 echo " lang_table details:" >&2
@@ -132,3 +133,6 @@ echo "  lt_size  = $lt_size" >&2
 echo "  lt_chsum = $lt_chsum" >&2
 
 finish 0
+
+
+

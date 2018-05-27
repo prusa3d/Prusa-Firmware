@@ -81,7 +81,7 @@ echo " updating binary:" >&2
 #update progmem1 id entries in binary file
 echo -n "  primary language ids..." >&2
 cat textaddr.txt | grep "^ADDR OK" | cut -f3- -d' ' | sed "s/^0000/0x/" |\
- awk '{ hi = int($2 / 256); lo = int($2 - 256 * hi); printf("%d \\\\x%02x\\\\x%02x\n", strtonum($1), lo, hi); }' |\
+ awk '{ id = $2 - 1; hi = int(id / 256); lo = int(id - 256 * hi); printf("%d \\\\x%02x\\\\x%02x\n", strtonum($1), lo, hi); }' |\
  while read addr data; do
   echo -n -e $data | dd of=./firmware.bin bs=1 count=2 seek=$addr conv=notrunc oflag=nonblock 2>/dev/null
  done

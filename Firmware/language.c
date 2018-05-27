@@ -39,7 +39,19 @@ const char* lang_get_translation(const char* s)
 	uint16_t ui = pgm_read_word(((uint16_t*)s)); //read string id
 	if (ui == 0xffff) return s + 2; //translation not found
 	ui = pgm_read_word(((uint16_t*)(((char*)lang_table + 16 + ui*2)))); //read relative offset
-	return (const char*)((char*)lang_table + ui + 16); //return calculated pointer
+	return (const char*)((char*)lang_table + ui); //return calculated pointer
+}
+
+const char* lang_get_sec_lang_str(const char* s)
+{
+	uint16_t ui = (uint16_t)&_SEC_LANG; //pointer to _SEC_LANG reserved space
+	ui += 0x00ff; //add 1 page
+	ui &= 0xff00; //align to page
+	lang_table_t* _lang_table = ui; //table pointer
+	ui = pgm_read_word(((uint16_t*)s)); //read string id
+	if (ui == 0xffff) return s + 2; //translation not found
+	ui = pgm_read_word(((uint16_t*)(((char*)_lang_table + 16 + ui*2)))); //read relative offset
+	return (const char*)((char*)_lang_table + ui); //return calculated pointer
 }
 
 const char* lang_select(unsigned char lang)
@@ -54,10 +66,10 @@ const char* lang_select(unsigned char lang)
 		return;
 	}
 	uint16_t ui = (uint16_t)&_SEC_LANG; //pointer to _SEC_LANG reserved space
-	ui += 0x0100; //add 1 page
+	ui += 0x00ff; //add 1 page
 	ui &= 0xff00; //align to page
 	lang_table = ui; //set table pointer
 	ui = pgm_read_word(((uint16_t*)(((char*)lang_table + 16)))); //read relative offset of first string (language name)
-	return (const char*)((char*)lang_table + ui + 16); //return calculated pointer
+	return (const char*)((char*)lang_table + ui); //return calculated pointer
 #endif //(LANG_MODE == 0)
 }
