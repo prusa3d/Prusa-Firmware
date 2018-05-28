@@ -26,7 +26,9 @@ OBJCOPY=C:/arduino-1.6.8/hardware/tools/avr/bin/avr-objcopy.exe
 # Selected language:
 LANG=$1
 #if [ -z "$LANG" ]; then LANG='cz'; fi
-
+#
+# Params:
+IGNORE_MISSING_TEXT=0
 
 function finish
 {
@@ -67,8 +69,16 @@ echo "OK" >&2
 
 #check for messages declared in progmem1, but not found in lang_en.txt
 echo -n " checking textaddr.txt..." >&2
-if cat textaddr.txt | grep "^ADDR NF"; then echo "NG! - some strings not found in lang_en.txt!"; finish 1; fi
-echo "OK" >&2
+if cat textaddr.txt | grep "^ADDR NF" >/dev/null; then
+ echo "NG! - some texts not found in lang_en.txt!"
+ if [ $(("0$IGNORE_MISSING_TEXT")) -eq 0 ]; then
+  finish 1
+ else
+  echo "  missing text ignored!" >&2
+ fi
+else
+ echo "OK" >&2
+fi
 
 #update progmem1 id entries in binary file
 echo -n " extracting binary..." >&2
