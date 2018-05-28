@@ -73,6 +73,7 @@ extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
 extern const char* lang_get_sec_lang_str(const char* s);
 extern const char* lang_select(unsigned char lang);
+extern unsigned char lang_get_count();
 extern const char* lang_get_name(unsigned char lang);
 
 #if defined(__cplusplus)
@@ -81,7 +82,6 @@ extern const char* lang_get_name(unsigned char lang);
 
 #define CAT2(_s1, _s2) _s1
 #define CAT4(_s1, _s2, _s3, _s4) _s1
-#define MSG_LANGUAGE_NAME_EXPLICIT(i) lang_get_name(i)
 
 extern const char MSG_LANGUAGE_NAME[];
 
