@@ -457,7 +457,7 @@ static void lcd_status_screen()
 	}
 	
 	if (langsel) {
-      //strncpy_P(lcd_status_message, PSTR(">>>>>>>>>>>> PRESS v"), LCD_WIDTH);
+      //strncpy_P(lcd_status_message, PSTR(">>>>>>>>> PRESS v"), LCD_WIDTH);
       // Entering the language selection screen in a modal mode.
       
     }
@@ -1866,7 +1866,6 @@ void lcd_set_fan_check() {
 void lcd_set_filament_autoload() {
 	filament_autoload_enabled = !filament_autoload_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
-	lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
 }
 
 void lcd_unLoadFilament()
@@ -3635,12 +3634,30 @@ static void lcd_crash_mode_info2()
 #ifdef PAT9125
 static void lcd_filament_autoload_info()
 {
-    lcd_show_fullscreen_message_and_wait_P(_i("Autoloading filament available only when filament sensor is turned on..."));////MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
+uint8_t nlines;
+	lcd_update_enable(true);
+	static uint32_t tim = 0;
+	if ((tim + 1000) < millis())
+	{
+          lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament available only when filament sensor is turned on..."), nlines); ////MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
+		tim = millis();
+	}
+	if (lcd_clicked())
+          menu_action_back();
 }
 
 static void lcd_fsensor_fail()
 {
-    lcd_show_fullscreen_message_and_wait_P(_i("ERROR: Filament sensor is not responding, please check connection."));////MSG_FSENS_NOT_RESPONDING c=20 r=4
+uint8_t nlines;
+	lcd_update_enable(true);
+	static uint32_t tim = 0;
+	if ((tim + 1000) < millis())
+	{
+          lcd_display_message_fullscreen_nonBlocking_P(_i("ERROR: Filament sensor is not responding, please check connection."), nlines);////MSG_FSENS_NOT_RESPONDING c=20 r=4
+		tim = millis();
+	}
+	if (lcd_clicked())
+          menu_action_back();
 }
 #endif //PAT9125
 
@@ -3712,21 +3729,15 @@ static void lcd_set_lang(unsigned char lang) {
 static void lcd_fsensor_state_set()
 {
 	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
-    if (FSensorStateMenu==0) {
+    if (!FSensorStateMenu) {
         fsensor_disable();
-        if ((filament_autoload_enabled == true)){
-            lcd_filament_autoload_info();
-        }
+        if (filament_autoload_enabled)
+            menu_action_submenu(lcd_filament_autoload_info);
     }else{
         fsensor_enable();
         if (fsensor_not_responding)
-        {
-            lcd_fsensor_fail();
-        }
+            menu_action_submenu(lcd_fsensor_fail);
     }
-	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) lcd_goto_menu(lcd_tune_menu);
-	else lcd_goto_menu(lcd_settings_menu); //doesn't break menuStack
-    
 }
 #endif //PAT9125
 
@@ -4153,18 +4164,19 @@ static void lcd_settings_menu()
       if (fsensor_not_responding){
           // Filament sensor not working
           MENU_ITEM(function, _i("Fil. sensor [N/A]"), lcd_fsensor_state_set);////MSG_FSENSOR_NA c=0 r=0
-          MENU_ITEM(function, _T(MSG_FSENS_AUTOLOAD_NA), lcd_fsensor_fail);
+          MENU_ITEM(submenu, _T(MSG_FSENS_AUTOLOAD_NA), lcd_fsensor_fail);
       }
       else{
           // Filament sensor turned off, working, no problems
           MENU_ITEM(function, _T(MSG_FSENSOR_OFF), lcd_fsensor_state_set);
-          MENU_ITEM(function, _T(MSG_FSENS_AUTOLOAD_NA), lcd_filament_autoload_info);
+          MENU_ITEM(submenu,_T(MSG_FSENS_AUTOLOAD_NA), lcd_filament_autoload_info);
       }
   } else {
       // Filament sensor turned on, working, no problems
       MENU_ITEM(function, _T(MSG_FSENSOR_ON), lcd_fsensor_state_set);
-      
-      if ((filament_autoload_enabled == true)) {
+     
+
+      if (filament_autoload_enabled) {
           MENU_ITEM(function, _i("F. autoload  [on]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_ON c=17 r=1
       }
       else {
@@ -4519,9 +4531,12 @@ static void lcd_calibration_menu()
     MENU_ITEM(submenu, _i("Mesh Bed Leveling"), lcd_mesh_bedleveling);////MSG_MESH_BED_LEVELING c=0 r=0
 	
 #endif //MK1BP
+
     MENU_ITEM(submenu, _i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=0 r=0
 	MENU_ITEM(submenu, _i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17 r=1
+#ifndef TMC2130
     MENU_ITEM(submenu, _i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=17 r=1
+#endif
 #ifndef MK1BP
     MENU_ITEM(gcode, _i("Reset XYZ calibr."), PSTR("M44"));////MSG_CALIBRATE_BED_RESET c=0 r=0
 #endif //MK1BP
