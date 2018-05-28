@@ -425,3 +425,4 @@
 #define(length=20, lines=4) MSG_CHANGED_BOTH			 "Warning: both printer type and motherboard type changed."
 #define(length=20, lines=3) MSG_WAITING_TEMP_PINDA		 "Waiting for PINDA probe cooling"
 #define(length=20, lines=8) MSG_TEMP_CAL_FAILED			 "Temperature calibration failed"
+#define(length=20, lines=8) MSG_XYZ_CAL_NEEDED			 "Please run XYZ calibration first."

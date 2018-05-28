@@ -962,6 +962,10 @@ static inline void update_current_position_z()
 // At the current position, find the Z stop.
 inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int verbosity_level)
 {
+#ifdef TMC2130
+	FORCE_HIGH_POWER_START;
+#endif
+
 	#ifdef SUPPORT_VERBOSITY
     if(verbosity_level >= 10) SERIAL_ECHOLNPGM("find bed induction sensor point z");
 	#endif // SUPPORT_VERBOSITY
@@ -978,7 +982,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     if (! endstop_z_hit_on_purpose())
         goto error;
 #ifdef TMC2130
-	if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) goto error; //crash Z detected
+	if (READ(Z_TMC2130_DIAG) != 0) goto error; //crash Z detected
 #endif //TMC2130
     for (uint8_t i = 0; i < n_iter; ++ i)
 	{
@@ -993,7 +997,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
         if (! endstop_z_hit_on_purpose())
             goto error;
 #ifdef TMC2130
-		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) goto error; //crash Z detected
+		if (READ(Z_TMC2130_DIAG) != 0) goto error; //crash Z detected
 #endif //TMC2130
 //        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
 //        MYSERIAL.print(current_position[Z_AXIS], 5);
@@ -1007,16 +1011,23 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     if (n_iter > 1)
         current_position[Z_AXIS] /= float(n_iter);
 
+
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
 //    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 3");
-    return true;
+#ifdef TMC2130
+	FORCE_HIGH_POWER_END;
+#endif
+	return true;
 
 error:
 //    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 4");
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
-    return false;
+#ifdef TMC2130
+	FORCE_HIGH_POWER_END;
+#endif
+	return false;
 }
 
 #ifdef NEW_XYZCAL

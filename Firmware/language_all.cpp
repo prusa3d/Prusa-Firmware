@@ -2518,6 +2518,13 @@ const char * const MSG_WIZARD_Z_CAL_LANG_TABLE[LANG_NUM] PROGMEM = {
 	MSG_WIZARD_Z_CAL_CZ
 };
 
+const char MSG_XYZ_CAL_NEEDED_EN[] PROGMEM = "Please run XYZ calibration first.";
+const char MSG_XYZ_CAL_NEEDED_CZ[] PROGMEM = "Nejdriv spuste kalibraci XYZ prosim.";
+const char * const MSG_XYZ_CAL_NEEDED_LANG_TABLE[LANG_NUM] PROGMEM = {
+	MSG_XYZ_CAL_NEEDED_EN,
+	MSG_XYZ_CAL_NEEDED_CZ
+};
+
 const char MSG_XYZ_DETAILS_EN[] PROGMEM = "XYZ cal. details";
 const char MSG_XYZ_DETAILS_CZ[] PROGMEM = "Detaily XYZ kal.";
 const char * const MSG_XYZ_DETAILS_LANG_TABLE[LANG_NUM] PROGMEM = {

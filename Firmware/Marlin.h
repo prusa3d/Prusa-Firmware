@@ -434,6 +434,7 @@ void force_high_power_mode(bool start_high_power_section);
 #endif //TMC2130
 
 // G-codes
+void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib);
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
 void gcode_M701();
