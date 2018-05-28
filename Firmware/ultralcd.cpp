@@ -5651,8 +5651,6 @@ void lcd_confirm_print()
 
 }
 
-extern bool saved_printing;
-
 static void lcd_main_menu()
 {
 
