@@ -3480,7 +3480,7 @@ void process_commands()
 			if (calibration_status() >= CALIBRATION_STATUS_XYZ_CALIBRATION) {
 				//we need to know accurate position of first calibration point
 				//if xyz calibration was not performed yet, interrupt temperature calibration and inform user that xyz cal. is needed
-				lcd_show_fullscreen_message_and_wait_P(MSG_XYZ_CAL_NEEDED);
+				//lcd_show_fullscreen_message_and_wait_P(); //add message here
 				break;
 			}
 			
