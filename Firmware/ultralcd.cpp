@@ -1649,7 +1649,7 @@ static void lcd_menu_fails_stats()
 	MENU_ITEM(submenu, PSTR("Total"), lcd_menu_fails_stats_total);
 	END_MENU();
 }
-#else if defined(PAT9125)
+#elif defined(PAT9125)
 /**
  * @brief Print last print and total filament run outs
  *
