@@ -2193,7 +2193,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		#endif // SUPPORT_VERBOSITY
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1), next_line);
     if (next_line > 3)
         next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -2205,10 +2205,10 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
 		lcd_implementation_print_at(0, next_line, k + 1);
-		lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
+		lcd_printPGM(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 
 		if (iteration > 0) {
-			lcd_print_at_PGM(0, next_line + 1, MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION);
+			lcd_print_at_PGM(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 			lcd_implementation_print(int(iteration + 1));
 		}
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -2466,7 +2466,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_i("Improving bed calibration point"), next_line);////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
     if (next_line > 3)
         next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -2479,7 +2479,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2);
+        lcd_printPGM(_i(" of 4"));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.
@@ -2736,7 +2736,7 @@ bool sample_z() {
 	go_to_current(homing_feedrate[Z_AXIS] / 60);
 	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder););
 
-	lcd_show_fullscreen_message_and_wait_P(MSG_PLACE_STEEL_SHEET);
+	lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 
 	// Sample Z heights for the mesh bed leveling.
 	// In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
@@ -2778,12 +2778,12 @@ bool sample_mesh_and_store_reference()
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1), next_line);
     if (next_line > 3)
         next_line = 3;
     // display "point xx of yy"
     lcd_implementation_print_at(0, next_line, 1);
-    lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
+    lcd_printPGM(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Sample Z heights for the mesh bed leveling.
@@ -2803,7 +2803,7 @@ bool sample_mesh_and_store_reference()
 #ifdef TMC2130
 		if (!axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0)) //Z crash
 		{
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return false;
 		}
 #endif //TMC2130
@@ -2811,7 +2811,7 @@ bool sample_mesh_and_store_reference()
         enable_endstops(false);
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return false;
 		}
         mbl.set_z(0, 0, current_position[Z_AXIS]);
@@ -2829,11 +2829,11 @@ bool sample_mesh_and_store_reference()
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         // display "point xx of yy"
         lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
+        lcd_printPGM(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return false;
 		}
         // Get cords of measuring point
