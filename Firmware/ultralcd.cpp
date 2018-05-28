@@ -3759,14 +3759,12 @@ void lcd_force_language_selection() {
 static void lcd_language_menu()
 {
   START_MENU();
-  if (langsel == LANGSEL_OFF) {
+  if (langsel == LANGSEL_OFF)
     MENU_ITEM(back, _T(MSG_SETTINGS), 0);
-  } else if (langsel == LANGSEL_ACTIVE) {
+  else if (langsel == LANGSEL_ACTIVE)
     MENU_ITEM(back, _T(MSG_WATCH), 0);
-  }
-  for (int i=0;i<LANG_NUM;i++){
-    MENU_ITEM(setlang, MSG_LANGUAGE_NAME_EXPLICIT(i), i);
-  }
+  for (int i=0; i < lang_get_count(); i++)
+    MENU_ITEM(setlang, lang_get_name(i), i);
   END_MENU();
 }
 
@@ -4594,71 +4592,76 @@ void lcd_mylang_drawmenu(int cursor) {
 }
 */
 
-void lcd_mylang_drawmenu(int cursor) {
+void lcd_mylang_drawmenu(int cursor)
+{
+	unsigned char lang_cnt = lang_get_count();
   int first = 0;
   if (cursor>3) first = cursor-3;
-  if (cursor==LANG_NUM && LANG_NUM>4) first = LANG_NUM-4;
-  if (cursor==LANG_NUM && LANG_NUM==4) first = LANG_NUM-4;
+  if (cursor==lang_cnt && lang_cnt>4) first = lang_cnt-4;
+  if (cursor==lang_cnt && lang_cnt==4) first = lang_cnt-4;
 
 
   lcd.setCursor(0, 0);
   lcd.print("                    ");
   lcd.setCursor(1, 0);
-  lcd_printPGM(MSG_LANGUAGE_NAME_EXPLICIT(first+0));
+  lcd_printPGM(lang_get_name(first+0));
 
   lcd.setCursor(0, 1);
   lcd.print("                    ");
   lcd.setCursor(1, 1);
-  lcd_printPGM(MSG_LANGUAGE_NAME_EXPLICIT(first+1));
+  lcd_printPGM(lang_get_name(first+1));
 
   lcd.setCursor(0, 2);
   lcd.print("                    ");
 
-  if (LANG_NUM > 2){
+  if (lang_cnt > 2){
     lcd.setCursor(1, 2);
-    lcd_printPGM(MSG_LANGUAGE_NAME_EXPLICIT(first+2));
+    lcd_printPGM(lang_get_name(first+2));
   }
 
   lcd.setCursor(0, 3);
   lcd.print("                    ");
-  if (LANG_NUM>3) {
+  if (lang_cnt>3) {
     lcd.setCursor(1, 3);
-    lcd_printPGM(MSG_LANGUAGE_NAME_EXPLICIT(first+3));
+    lcd_printPGM(lang_get_name(first+3));
   }
   
   if (cursor==1) lcd.setCursor(0, 0);
   if (cursor==2) lcd.setCursor(0, 1);
   if (cursor>2) lcd.setCursor(0, 2);
-  if (cursor==LANG_NUM && LANG_NUM>3) lcd.setCursor(0, 3);
+  if (cursor==lang_cnt && lang_cnt>3) lcd.setCursor(0, 3);
 
   lcd.print(">");
   
-  if (cursor<LANG_NUM-1 && LANG_NUM>4) {
+  if (cursor<lang_cnt-1 && lang_cnt>4) {
     lcd.setCursor(19,3);
     lcd.print("\x01");
   }
-  if (cursor>3 && LANG_NUM>4) {
+  if (cursor>3 && lang_cnt>4) {
     lcd.setCursor(19,0);
     lcd.print("^");
-  }  
+  }
 }
  
 void lcd_mylang_drawcursor(int cursor) {
   
+	unsigned char lang_cnt = lang_get_count();
   if (cursor==1) lcd.setCursor(0, 1);
-  if (cursor>1 && cursor<LANG_NUM) lcd.setCursor(0, 2);
-  if (cursor==LANG_NUM) lcd.setCursor(0, 3);
+  if (cursor>1 && cursor<lang_cnt) lcd.setCursor(0, 2);
+  if (cursor==lang_cnt) lcd.setCursor(0, 3);
 
   lcd.print(">");
   
 }  
 
-void lcd_mylang() {
+void lcd_mylang()
+{
   int enc_dif = 0;
   int cursor_pos = 1;
   lang_selected=255;
   int hlaska=1;
   int counter=0;
+  unsigned char lang_cnt = lang_get_count();
   lcd_set_custom_characters_arrows();
 
   lcd_implementation_clear();
@@ -4666,7 +4669,6 @@ void lcd_mylang() {
   //lcd_mylang_top(hlaska);
 
   lcd_mylang_drawmenu(cursor_pos);
-
 
   enc_dif = encoderDiff;
 
@@ -4686,8 +4688,8 @@ void lcd_mylang() {
           cursor_pos ++;
         }
 
-        if (cursor_pos > LANG_NUM) {
-          cursor_pos = LANG_NUM;
+        if (cursor_pos > lang_cnt) {
+          cursor_pos = lang_cnt;
         }
 
         if (cursor_pos < 1) {

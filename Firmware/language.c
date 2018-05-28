@@ -75,3 +75,21 @@ const char* lang_select(unsigned char lang)
 	return (const char*)((char*)lang_table + ui); //return calculated pointer
 #endif //(LANG_MODE == 0)
 }
+
+unsigned char lang_get_count()
+{
+	uint16_t ui = (uint16_t)&_SEC_LANG; //pointer to _SEC_LANG reserved space
+	ui += 0x00ff; //add 1 page
+	ui &= 0xff00; //align to page
+	lang_table_t* _lang_table = ui; //table pointer
+	if (pgm_read_dword(((uint32_t*)(_lang_table + 0))) == 0x4bb45aa5) return 2;
+	return 1;
+}
+
+const char* lang_get_name(unsigned char lang)
+{
+	if (lang == 0) return MSG_LANGUAGE_NAME + 2;
+	return lang_get_sec_lang_str(MSG_LANGUAGE_NAME);
+}
+
+const char MSG_LANGUAGE_NAME[] PROGMEM_I1 = ISTR("English"); ////c=0 r=0
