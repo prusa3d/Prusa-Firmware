@@ -44,15 +44,16 @@
 
 
 // Language indices into their particular symbol tables.
-#define LANG_ID_EN 0
-#define LANG_ID_CZ 1
+#define LANG_ID_PRI 0
+#define LANG_ID_SEC 1
+
 // Language is not defined and it shall be selected from the menu.
 #define LANG_ID_FORCE_SELECTION 254
 // Language is not defined on a virgin RAMBo board.
 #define LANG_ID_UNDEFINED 255
 
 // Default language ID, if no language is selected.
-#define LANG_ID_DEFAULT LANG_ID_CZ
+#define LANG_ID_DEFAULT LANG_ID_PRI
 
 // Number of languages available in the language table.
 #define LANG_NUM 2
@@ -72,6 +73,7 @@ extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
 extern const char* lang_get_sec_lang_str(const char* s);
 extern const char* lang_select(unsigned char lang);
+extern const char* lang_get_name(unsigned char lang);
 
 #if defined(__cplusplus)
 }
@@ -79,9 +81,12 @@ extern const char* lang_select(unsigned char lang);
 
 #define CAT2(_s1, _s2) _s1
 #define CAT4(_s1, _s2, _s3, _s4) _s1
-#define MSG_LANGUAGE_NAME_EXPLICIT(i) ((i==0)?PSTR("ENG"):PSTR("CZE"))
+#define MSG_LANGUAGE_NAME_EXPLICIT(i) lang_get_name(i)
+
+extern const char MSG_LANGUAGE_NAME[];
 
 #include "messages.h"
+
 
 #endif //__LANGUAGE_H
 

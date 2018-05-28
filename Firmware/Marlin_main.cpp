@@ -1271,11 +1271,13 @@ void setup()
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
   // is being written into the EEPROM, so the update procedure will be triggered only once.
 
-///	lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
-///    if (lang_selected >= LANG_NUM){
-///      lcd_mylang();
-///    }
-	lang_select(1);
+	lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
+	if (lang_selected >= LANG_NUM)
+	{
+		lcd_mylang();
+	}
+	lang_select(lang_selected);
+
 	puts_P(_n("\nNew ML support"));
 	printf_P(_n(" lang_selected     = %d\n"), lang_selected);
 	printf_P(_n(" &_SEC_LANG        = 0x%04x\n"), &_SEC_LANG);

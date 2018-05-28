@@ -75,3 +75,11 @@ const char* lang_select(unsigned char lang)
 	return (const char*)((char*)lang_table + ui); //return calculated pointer
 #endif //(LANG_MODE == 0)
 }
+
+const char* lang_get_name(unsigned char lang)
+{
+	if (lang == 0) return MSG_LANGUAGE_NAME + 2;
+	return lang_get_sec_lang_str(MSG_LANGUAGE_NAME);
+}
+
+const char MSG_LANGUAGE_NAME[] PROGMEM_I1 = ISTR("English"); ////c=0 r=0

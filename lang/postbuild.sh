@@ -28,7 +28,7 @@ LANG=$1
 #if [ -z "$LANG" ]; then LANG='cz'; fi
 #
 # Params:
-IGNORE_MISSING_TEXT=0
+IGNORE_MISSING_TEXT=1
 
 function finish
 {
