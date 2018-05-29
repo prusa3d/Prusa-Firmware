@@ -1,0 +1,28 @@
+# Translation into Czech.
+#
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ultralcd.cpp:6304
+msgid "  [off"
+msgstr ""
+
+#: ultralcd.cpp:2362
+msgid "[0;0] point offset"
+msgstr ""
+
+#: ultralcd.cpp:4213
+msgid "E-correct"
+msgstr ""
+
+#: ultralcd.cpp:607
+msgid "Printer disconnected"
+msgstr ""
+
+#: Marlin_main.cpp:3504
+msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
+msgstr ""
+
