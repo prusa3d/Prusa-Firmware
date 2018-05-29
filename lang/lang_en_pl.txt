@@ -290,6 +290,10 @@
 "Endstops"
 "Endstops"
 
+#MSG_LANGUAGE_NAME c=0 r=0
+"English"
+"Polski"
+
 #MSG_Enqueing c=0 r=0
 "enqueing \x22"
 "enqueing \x22"
