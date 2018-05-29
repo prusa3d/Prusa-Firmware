@@ -76,6 +76,7 @@ extern const char* lang_select(unsigned char lang);
 extern unsigned char lang_get_count();
 extern const char* lang_get_name(unsigned char lang);
 
+
 #if defined(__cplusplus)
 }
 #endif //defined(__cplusplus)
@@ -88,5 +89,5 @@ extern const char MSG_LANGUAGE_NAME[];
 #include "messages.h"
 
 
-#endif //__LANGUAGE_H
+#endif //LANGUAGE_H
 

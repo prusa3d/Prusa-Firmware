@@ -2,6 +2,7 @@
 #include "language.h"
 #include <inttypes.h>
 #include <avr/pgmspace.h>
+#include "bootapp.h"
 
 
 // Currectly active language selection.
@@ -93,3 +94,4 @@ const char* lang_get_name(unsigned char lang)
 }
 
 const char MSG_LANGUAGE_NAME[] PROGMEM_I1 = ISTR("English"); ////c=0 r=0
+
