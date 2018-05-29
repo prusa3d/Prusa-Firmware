@@ -436,7 +436,7 @@
 
 #MSG_PRUSA3D_FORUM c=0 r=0
 "forum.prusa3d.com"
-"\x00"
+"forum.prusa3d.com"
 
 #MSG_SELFTEST_COOLING_FAN c=20 r=0
 "Front print fan?"
@@ -472,7 +472,7 @@
 
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
-"\x00"
+"howto.prusa3d.com"
 
 #MSG_CHANGE_EXTR c=20 r=1
 "Change extruder"
@@ -972,7 +972,7 @@
 
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
-"\x00"
+"prusa3d.com"
 
 #MSG_BED_CORRECTION_REAR c=14 r=1
 "Rear side [um]"
