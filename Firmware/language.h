@@ -78,7 +78,10 @@ extern const char* lang_get_sec_lang_str_by_id(uint16_t id);
 extern const char* lang_select(uint8_t lang);
 extern uint8_t lang_get_count();
 extern const char* lang_get_name(uint8_t lang);
+
+#ifdef DEBUG_SEC_LANG
 extern uint16_t lang_print_sec_lang(FILE* out);
+#endif //DEBUG_SEC_LANG
 
 
 #if defined(__cplusplus)
