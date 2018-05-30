@@ -1619,98 +1619,56 @@ void lcd_loading_filament() {
 
 }
 
-
-
-
+// Ask user whether filament has been loaded successfully
 void lcd_alright() {
-  int enc_dif = 0;
-  int cursor_pos = 1;
+   int enc_dif = 0;
+   int cursor_pos = 1;
 
+   // Display menu
+   lcd_implementation_clear();
 
+   lcd.setCursor(0, 0); lcd_printPGM(MSG_CORRECTLY);
+   lcd.setCursor(1, 1); lcd_printPGM(MSG_YES);
+   lcd.setCursor(1, 2); lcd_printPGM(MSG_NOT_LOADED);
+   lcd.setCursor(1, 3); lcd_printPGM(MSG_NOT_COLOR);
 
+   lcd.setCursor(0, 1); lcd.print(">");
 
-  lcd_implementation_clear();
+   enc_dif = encoderDiff;
 
-  lcd.setCursor(0, 0);
+   while(lcd_change_fil_state == 0) {
+      manage_heater();
+      manage_inactivity(true);
 
-  lcd_printPGM(MSG_CORRECTLY);
+       if(abs(enc_dif - encoderDiff) > 4) {
+          if(enc_dif > encoderDiff) cursor_pos--;
+          if(enc_dif < encoderDiff) cursor_pos++;
 
-  lcd.setCursor(1, 1);
+          // Keep cursor in bounds
+          if(cursor_pos > 3) cursor_pos = 3;
+          if(cursor_pos < 1) cursor_pos = 1;
 
-  lcd_printPGM(MSG_YES);
+          // Update cursor position on display
+          lcd.setCursor(0, 1); lcd.print(" ");
+          lcd.setCursor(0, 2); lcd.print(" ");
+          lcd.setCursor(0, 3); lcd.print(" ");
 
-  lcd.setCursor(1, 2);
+          lcd.setCursor(0, cursor_pos);
+          lcd.print(">");
 
-  lcd_printPGM(MSG_NOT_LOADED);
-
-
-  lcd.setCursor(1, 3);
-  lcd_printPGM(MSG_NOT_COLOR);
-
-
-  lcd.setCursor(0, 1);
-
-  lcd.print(">");
-
-
-  enc_dif = encoderDiff;
-
-  while (lcd_change_fil_state == 0) {
-
-    manage_heater();
-    manage_inactivity(true);
-
-    if ( abs((enc_dif - encoderDiff)) > 4 ) {
-
-      if ( (abs(enc_dif - encoderDiff)) > 1 ) {
-        if (enc_dif > encoderDiff ) {
-          cursor_pos --;
-        }
-
-        if (enc_dif < encoderDiff  ) {
-          cursor_pos ++;
-        }
-
-        if (cursor_pos > 3) {
-          cursor_pos = 3;
-        }
-
-        if (cursor_pos < 1) {
-          cursor_pos = 1;
-        }
-        lcd.setCursor(0, 1);
-        lcd.print(" ");
-        lcd.setCursor(0, 2);
-        lcd.print(" ");
-        lcd.setCursor(0, 3);
-        lcd.print(" ");
-        lcd.setCursor(0, cursor_pos);
-        lcd.print(">");
-        enc_dif = encoderDiff;
-        delay(100);
+          enc_dif = encoderDiff;
+          delay(100);
       }
 
-    }
-
-
-    if (lcd_clicked()) {
-
-      lcd_change_fil_state = cursor_pos;
-      delay(500);
-
-    }
-
-
-
-  };
-
-
-  lcd_implementation_clear();
-  lcd_return_to_status();
-
+      // Return selection value and exit loop
+      if(lcd_clicked()) {
+         lcd_change_fil_state = cursor_pos;
+         delay(500);
+      }
+   }
+   lcd_implementation_clear();
+   lcd_return_to_status();
 }
-
-
 
 void lcd_LoadFilament()
 {
