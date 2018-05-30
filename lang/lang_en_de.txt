@@ -296,7 +296,7 @@
 
 #MSG_Enqueing c=0 r=0
 "enqueing \x22"
-"enqueuing \x22
+"enqueuing \x22"
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
