@@ -34,7 +34,7 @@
 #define _i(s) _I(s)
 #define _T(s) s
 #else //(LANG_MODE == 0)
-#define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff"s; &__c[0];}))
+#define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff" s; &__c[0];}))
 #define ISTR(s) "\xff\xff" s
 #define _i(s) lang_get_translation(_I(s))
 #define _T(s) lang_get_translation(s)
