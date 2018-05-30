@@ -2134,6 +2134,9 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
     }
     else if ((axis==Z_AXIS)?HOMEAXIS_DO(Z):0)
 	{
+#ifdef TMC2130
+		FORCE_HIGH_POWER_START;
+#endif	
         int axis_home_dir = home_dir(axis);
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -2142,7 +2145,11 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 #ifdef TMC2130
-		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) return; //Z crash
+		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
+			FORCE_HIGH_POWER_END;
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			return; 
+		}
 #endif //TMC2130
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -2154,13 +2161,20 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 #ifdef TMC2130
-		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) return; //Z crash
+		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
+			FORCE_HIGH_POWER_END;
+			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			return; 
+		}
 #endif //TMC2130
         axis_is_at_home(axis);
         destination[axis] = current_position[axis];
         feedrate = 0.0;
         endstops_hit_on_purpose();
         axis_known_position[axis] = true;
+#ifdef TMC2130
+		FORCE_HIGH_POWER_END;
+#endif	
     }
     enable_endstops(endstops_enabled);
 }
@@ -2325,6 +2339,281 @@ void force_high_power_mode(bool start_high_power_section) {
 	}
 }
 #endif //TMC2130
+
+void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib){
+      st_synchronize();
+
+#if 0
+      SERIAL_ECHOPGM("G28, initial ");  print_world_coordinates();
+      SERIAL_ECHOPGM("G28, initial ");  print_physical_coordinates();
+#endif
+
+      // Flag for the display update routine and to disable the print cancelation during homing.
+	  homing_flag = true;
+     
+      // Either all X,Y,Z codes are present, or none of them.
+      bool home_all_axes = home_x == home_y && home_x == home_z;
+      if (home_all_axes)
+        // No X/Y/Z code provided means to home all axes.
+        home_x = home_y = home_z = true;
+
+#ifdef ENABLE_AUTO_BED_LEVELING
+      plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
+#endif //ENABLE_AUTO_BED_LEVELING
+            
+      // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
+      // the planner will not perform any adjustments in the XY plane. 
+      // Wait for the motors to stop and update the current position with the absolute values.
+      world2machine_revert_to_uncorrected();
+
+      // For mesh bed leveling deactivate the matrix temporarily.
+      // It is necessary to disable the bed leveling for the X and Y homing moves, so that the move is performed
+      // in a single axis only.
+      // In case of re-homing the X or Y axes only, the mesh bed leveling is restored after G28.
+#ifdef MESH_BED_LEVELING
+      uint8_t mbl_was_active = mbl.active;
+      mbl.active = 0;
+      current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
+#endif
+
+      // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
+      // consumed during the first movements following this statement.
+      if (home_z)
+        babystep_undo();
+
+      saved_feedrate = feedrate;
+      saved_feedmultiply = feedmultiply;
+      feedmultiply = 100;
+      previous_millis_cmd = millis();
+
+      enable_endstops(true);
+
+      memcpy(destination, current_position, sizeof(destination));
+      feedrate = 0.0;
+
+      #if Z_HOME_DIR > 0                      // If homing away from BED do Z first
+      if(home_z)
+        homeaxis(Z_AXIS);
+      #endif
+
+      #ifdef QUICK_HOME
+      // In the quick mode, if both x and y are to be homed, a diagonal move will be performed initially.
+      if(home_x && home_y)  //first diagonal move
+      {
+        current_position[X_AXIS] = 0;current_position[Y_AXIS] = 0;
+
+        int x_axis_home_dir = home_dir(X_AXIS);
+
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[X_AXIS] = 1.5 * max_length(X_AXIS) * x_axis_home_dir;destination[Y_AXIS] = 1.5 * max_length(Y_AXIS) * home_dir(Y_AXIS);
+        feedrate = homing_feedrate[X_AXIS];
+        if(homing_feedrate[Y_AXIS]<feedrate)
+          feedrate = homing_feedrate[Y_AXIS];
+        if (max_length(X_AXIS) > max_length(Y_AXIS)) {
+          feedrate *= sqrt(pow(max_length(Y_AXIS) / max_length(X_AXIS), 2) + 1);
+        } else {
+          feedrate *= sqrt(pow(max_length(X_AXIS) / max_length(Y_AXIS), 2) + 1);
+        }
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        st_synchronize();
+
+        axis_is_at_home(X_AXIS);
+        axis_is_at_home(Y_AXIS);
+        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+        destination[X_AXIS] = current_position[X_AXIS];
+        destination[Y_AXIS] = current_position[Y_AXIS];
+        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+        feedrate = 0.0;
+        st_synchronize();
+        endstops_hit_on_purpose();
+
+        current_position[X_AXIS] = destination[X_AXIS];
+        current_position[Y_AXIS] = destination[Y_AXIS];
+        current_position[Z_AXIS] = destination[Z_AXIS];
+      }
+      #endif /* QUICK_HOME */
+
+#ifdef TMC2130	 
+      if(home_x)
+	  {
+		if (!calib)
+			homeaxis(X_AXIS);
+		else
+			tmc2130_home_calibrate(X_AXIS);
+	  }
+
+      if(home_y)
+	  {
+		if (!calib)
+	        homeaxis(Y_AXIS);
+		else
+			tmc2130_home_calibrate(Y_AXIS);
+	  }
+#endif //TMC2130
+
+
+      if(code_seen(axis_codes[X_AXIS]) && code_value_long() != 0)
+        current_position[X_AXIS]=code_value()+add_homing[X_AXIS];
+
+      if(code_seen(axis_codes[Y_AXIS]) && code_value_long() != 0)
+		    current_position[Y_AXIS]=code_value()+add_homing[Y_AXIS];
+
+      #if Z_HOME_DIR < 0                      // If homing towards BED do Z last
+        #ifndef Z_SAFE_HOMING
+          if(home_z) {
+            #if defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
+              destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
+              feedrate = max_feedrate[Z_AXIS];
+              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
+              st_synchronize();
+            #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
+            #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))  // If Mesh bed leveling, move X&Y to safe position for home
+      			  if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] )) 
+      			  {
+                homeaxis(X_AXIS);
+                homeaxis(Y_AXIS);
+      			  } 
+              // 1st mesh bed leveling measurement point, corrected.
+              world2machine_initialize();
+              world2machine(pgm_read_float(bed_ref_points_4), pgm_read_float(bed_ref_points_4+1), destination[X_AXIS], destination[Y_AXIS]);
+              world2machine_reset();
+              if (destination[Y_AXIS] < Y_MIN_POS)
+                  destination[Y_AXIS] = Y_MIN_POS;
+              destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
+              feedrate = homing_feedrate[Z_AXIS]/10;
+              current_position[Z_AXIS] = 0;
+              enable_endstops(false);
+#ifdef DEBUG_BUILD
+              SERIAL_ECHOLNPGM("plan_set_position()");
+              MYSERIAL.println(current_position[X_AXIS]);MYSERIAL.println(current_position[Y_AXIS]);
+              MYSERIAL.println(current_position[Z_AXIS]);MYSERIAL.println(current_position[E_AXIS]);
+#endif
+              plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+#ifdef DEBUG_BUILD
+              SERIAL_ECHOLNPGM("plan_buffer_line()");
+              MYSERIAL.println(destination[X_AXIS]);MYSERIAL.println(destination[Y_AXIS]);
+              MYSERIAL.println(destination[Z_AXIS]);MYSERIAL.println(destination[E_AXIS]);
+              MYSERIAL.println(feedrate);MYSERIAL.println(active_extruder);
+#endif
+              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
+              st_synchronize();
+              current_position[X_AXIS] = destination[X_AXIS];
+              current_position[Y_AXIS] = destination[Y_AXIS];
+              enable_endstops(true);
+              endstops_hit_on_purpose();
+              homeaxis(Z_AXIS);
+            #else // MESH_BED_LEVELING
+              homeaxis(Z_AXIS);
+            #endif // MESH_BED_LEVELING
+          }
+        #else // defined(Z_SAFE_HOMING): Z Safe mode activated.
+          if(home_all_axes) {
+            destination[X_AXIS] = round(Z_SAFE_HOMING_X_POINT - X_PROBE_OFFSET_FROM_EXTRUDER);
+            destination[Y_AXIS] = round(Z_SAFE_HOMING_Y_POINT - Y_PROBE_OFFSET_FROM_EXTRUDER);
+            destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
+            feedrate = XY_TRAVEL_SPEED/60;
+            current_position[Z_AXIS] = 0;
+
+            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+            plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
+            st_synchronize();
+            current_position[X_AXIS] = destination[X_AXIS];
+            current_position[Y_AXIS] = destination[Y_AXIS];
+
+            homeaxis(Z_AXIS);
+          }
+                                                // Let's see if X and Y are homed and probe is inside bed area.
+          if(home_z) {
+            if ( (axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]) \
+              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER >= X_MIN_POS) \
+              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER <= X_MAX_POS) \
+              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER >= Y_MIN_POS) \
+              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER <= Y_MAX_POS)) {
+
+              current_position[Z_AXIS] = 0;
+              plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+              destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
+              feedrate = max_feedrate[Z_AXIS];
+              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
+              st_synchronize();
+
+              homeaxis(Z_AXIS);
+            } else if (!((axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]))) {
+                LCD_MESSAGERPGM(MSG_POSITION_UNKNOWN);
+                SERIAL_ECHO_START;
+                SERIAL_ECHOLNRPGM(MSG_POSITION_UNKNOWN);
+            } else {
+                LCD_MESSAGERPGM(MSG_ZPROBE_OUT);
+                SERIAL_ECHO_START;
+                SERIAL_ECHOLNRPGM(MSG_ZPROBE_OUT);
+            }
+          }
+        #endif // Z_SAFE_HOMING
+      #endif // Z_HOME_DIR < 0
+
+      if(code_seen(axis_codes[Z_AXIS]) && code_value_long() != 0)
+        current_position[Z_AXIS]=code_value()+add_homing[Z_AXIS];
+      #ifdef ENABLE_AUTO_BED_LEVELING
+        if(home_z)
+          current_position[Z_AXIS] += zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
+      #endif
+      
+      // Set the planner and stepper routine positions.
+      // At this point the mesh bed leveling and world2machine corrections are disabled and current_position
+      // contains the machine coordinates.
+      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+
+      #ifdef ENDSTOPS_ONLY_FOR_HOMING
+        enable_endstops(false);
+      #endif
+
+      feedrate = saved_feedrate;
+      feedmultiply = saved_feedmultiply;
+      previous_millis_cmd = millis();
+      endstops_hit_on_purpose();
+#ifndef MESH_BED_LEVELING
+      // If MESH_BED_LEVELING is not active, then it is the original Prusa i3.
+      // Offer the user to load the baby step value, which has been adjusted at the previous print session.
+      if(card.sdprinting && eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z))
+          lcd_adjust_z();
+#endif
+
+    // Load the machine correction matrix
+    world2machine_initialize();
+    // and correct the current_position XY axes to match the transformed coordinate system.
+    world2machine_update_current();
+
+#if (defined(MESH_BED_LEVELING) && !defined(MK1BP))
+	if (code_seen(axis_codes[X_AXIS]) || code_seen(axis_codes[Y_AXIS]) || code_seen('W') || code_seen(axis_codes[Z_AXIS]))
+		{
+      if (! home_z && mbl_was_active) {
+        // Re-enable the mesh bed leveling if only the X and Y axes were re-homed.
+        mbl.active = true;
+        // and re-adjust the current logical Z axis with the bed leveling offset applicable at the current XY position.
+        current_position[Z_AXIS] -= mbl.get_z(st_get_position_mm(X_AXIS), st_get_position_mm(Y_AXIS));
+      }
+		}
+	else
+		{
+			st_synchronize();
+			homing_flag = false;
+			// Push the commands to the front of the message queue in the reverse order!
+			// There shall be always enough space reserved for these commands.
+			enquecommand_front_P((PSTR("G80")));
+			//goto case_G80;
+	  }
+#endif
+
+	  if (farm_mode) { prusa_statistics(20); };
+
+	  homing_flag = false;
+#if 0
+      SERIAL_ECHOPGM("G28, final ");  print_world_coordinates();
+      SERIAL_ECHOPGM("G28, final ");  print_physical_coordinates();
+      SERIAL_ECHOPGM("G28, final ");  print_mesh_bed_leveling_table();
+#endif
+}
+
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 {
@@ -3032,284 +3321,16 @@ void process_commands()
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
     {
-      st_synchronize();
-
-#if 0
-      SERIAL_ECHOPGM("G28, initial ");  print_world_coordinates();
-      SERIAL_ECHOPGM("G28, initial ");  print_physical_coordinates();
-#endif
-
-      // Flag for the display update routine and to disable the print cancelation during homing.
-		  homing_flag = true;
-      
       // Which axes should be homed?
       bool home_x = code_seen(axis_codes[X_AXIS]);
       bool home_y = code_seen(axis_codes[Y_AXIS]);
       bool home_z = code_seen(axis_codes[Z_AXIS]);
       // calibrate?
       bool calib = code_seen('C');
-      // Either all X,Y,Z codes are present, or none of them.
-      bool home_all_axes = home_x == home_y && home_x == home_z;
-      if (home_all_axes)
-        // No X/Y/Z code provided means to home all axes.
-        home_x = home_y = home_z = true;
 
-#ifdef ENABLE_AUTO_BED_LEVELING
-      plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
-#endif //ENABLE_AUTO_BED_LEVELING
-            
-      // Reset world2machine_rotation_and_skew and world2machine_shift, therefore
-      // the planner will not perform any adjustments in the XY plane. 
-      // Wait for the motors to stop and update the current position with the absolute values.
-      world2machine_revert_to_uncorrected();
-
-      // For mesh bed leveling deactivate the matrix temporarily.
-      // It is necessary to disable the bed leveling for the X and Y homing moves, so that the move is performed
-      // in a single axis only.
-      // In case of re-homing the X or Y axes only, the mesh bed leveling is restored after G28.
-#ifdef MESH_BED_LEVELING
-      uint8_t mbl_was_active = mbl.active;
-      mbl.active = 0;
-      current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
-#endif
-
-      // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
-      // consumed during the first movements following this statement.
-      if (home_z)
-        babystep_undo();
-
-      saved_feedrate = feedrate;
-      saved_feedmultiply = feedmultiply;
-      feedmultiply = 100;
-      previous_millis_cmd = millis();
-
-      enable_endstops(true);
-
-      memcpy(destination, current_position, sizeof(destination));
-      feedrate = 0.0;
-
-      #if Z_HOME_DIR > 0                      // If homing away from BED do Z first
-      if(home_z)
-        homeaxis(Z_AXIS);
-      #endif
-
-      #ifdef QUICK_HOME
-      // In the quick mode, if both x and y are to be homed, a diagonal move will be performed initially.
-      if(home_x && home_y)  //first diagonal move
-      {
-        current_position[X_AXIS] = 0;current_position[Y_AXIS] = 0;
-
-        int x_axis_home_dir = home_dir(X_AXIS);
-
-        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[X_AXIS] = 1.5 * max_length(X_AXIS) * x_axis_home_dir;destination[Y_AXIS] = 1.5 * max_length(Y_AXIS) * home_dir(Y_AXIS);
-        feedrate = homing_feedrate[X_AXIS];
-        if(homing_feedrate[Y_AXIS]<feedrate)
-          feedrate = homing_feedrate[Y_AXIS];
-        if (max_length(X_AXIS) > max_length(Y_AXIS)) {
-          feedrate *= sqrt(pow(max_length(Y_AXIS) / max_length(X_AXIS), 2) + 1);
-        } else {
-          feedrate *= sqrt(pow(max_length(X_AXIS) / max_length(Y_AXIS), 2) + 1);
-        }
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        st_synchronize();
-
-        axis_is_at_home(X_AXIS);
-        axis_is_at_home(Y_AXIS);
-        plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[X_AXIS] = current_position[X_AXIS];
-        destination[Y_AXIS] = current_position[Y_AXIS];
-        plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
-        feedrate = 0.0;
-        st_synchronize();
-        endstops_hit_on_purpose();
-
-        current_position[X_AXIS] = destination[X_AXIS];
-        current_position[Y_AXIS] = destination[Y_AXIS];
-        current_position[Z_AXIS] = destination[Z_AXIS];
-      }
-      #endif /* QUICK_HOME */
-
-#ifdef TMC2130	 
-      if(home_x)
-	  {
-		if (!calib)
-			homeaxis(X_AXIS);
-		else
-			tmc2130_home_calibrate(X_AXIS);
-	  }
-
-      if(home_y)
-	  {
-		if (!calib)
-	        homeaxis(Y_AXIS);
-		else
-			tmc2130_home_calibrate(Y_AXIS);
-	  }
-#endif //TMC2130
-
-
-      if(code_seen(axis_codes[X_AXIS]) && code_value_long() != 0)
-        current_position[X_AXIS]=code_value()+add_homing[X_AXIS];
-
-      if(code_seen(axis_codes[Y_AXIS]) && code_value_long() != 0)
-		    current_position[Y_AXIS]=code_value()+add_homing[Y_AXIS];
-
-      #if Z_HOME_DIR < 0                      // If homing towards BED do Z last
-        #ifndef Z_SAFE_HOMING
-          if(home_z) {
-            #if defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
-              destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
-              feedrate = max_feedrate[Z_AXIS];
-              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
-              st_synchronize();
-            #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
-            #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))  // If Mesh bed leveling, moxve X&Y to safe position for home
-      			  if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] )) 
-      			  {
-                homeaxis(X_AXIS);
-                homeaxis(Y_AXIS);
-      			  } 
-              // 1st mesh bed leveling measurement point, corrected.
-              world2machine_initialize();
-              world2machine(pgm_read_float(bed_ref_points_4), pgm_read_float(bed_ref_points_4+1), destination[X_AXIS], destination[Y_AXIS]);
-              world2machine_reset();
-              if (destination[Y_AXIS] < Y_MIN_POS)
-                  destination[Y_AXIS] = Y_MIN_POS;
-              destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
-              feedrate = homing_feedrate[Z_AXIS]/10;
-              current_position[Z_AXIS] = 0;
-              enable_endstops(false);
-#ifdef DEBUG_BUILD
-              SERIAL_ECHOLNPGM("plan_set_position()");
-              MYSERIAL.println(current_position[X_AXIS]);MYSERIAL.println(current_position[Y_AXIS]);
-              MYSERIAL.println(current_position[Z_AXIS]);MYSERIAL.println(current_position[E_AXIS]);
-#endif
-              plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-#ifdef DEBUG_BUILD
-              SERIAL_ECHOLNPGM("plan_buffer_line()");
-              MYSERIAL.println(destination[X_AXIS]);MYSERIAL.println(destination[Y_AXIS]);
-              MYSERIAL.println(destination[Z_AXIS]);MYSERIAL.println(destination[E_AXIS]);
-              MYSERIAL.println(feedrate);MYSERIAL.println(active_extruder);
-#endif
-              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
-              st_synchronize();
-              current_position[X_AXIS] = destination[X_AXIS];
-              current_position[Y_AXIS] = destination[Y_AXIS];
-              enable_endstops(true);
-              endstops_hit_on_purpose();
-              homeaxis(Z_AXIS);
-            #else // MESH_BED_LEVELING
-              homeaxis(Z_AXIS);
-            #endif // MESH_BED_LEVELING
-          }
-        #else // defined(Z_SAFE_HOMING): Z Safe mode activated.
-          if(home_all_axes) {
-            destination[X_AXIS] = round(Z_SAFE_HOMING_X_POINT - X_PROBE_OFFSET_FROM_EXTRUDER);
-            destination[Y_AXIS] = round(Z_SAFE_HOMING_Y_POINT - Y_PROBE_OFFSET_FROM_EXTRUDER);
-            destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
-            feedrate = XY_TRAVEL_SPEED/60;
-            current_position[Z_AXIS] = 0;
-
-            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-            plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
-            st_synchronize();
-            current_position[X_AXIS] = destination[X_AXIS];
-            current_position[Y_AXIS] = destination[Y_AXIS];
-
-            homeaxis(Z_AXIS);
-          }
-                                                // Let's see if X and Y are homed and probe is inside bed area.
-          if(home_z) {
-            if ( (axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]) \
-              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER >= X_MIN_POS) \
-              && (current_position[X_AXIS]+X_PROBE_OFFSET_FROM_EXTRUDER <= X_MAX_POS) \
-              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER >= Y_MIN_POS) \
-              && (current_position[Y_AXIS]+Y_PROBE_OFFSET_FROM_EXTRUDER <= Y_MAX_POS)) {
-
-              current_position[Z_AXIS] = 0;
-              plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-              destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
-              feedrate = max_feedrate[Z_AXIS];
-              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
-              st_synchronize();
-
-              homeaxis(Z_AXIS);
-            } else if (!((axis_known_position[X_AXIS]) && (axis_known_position[Y_AXIS]))) {
-                LCD_MESSAGERPGM(MSG_POSITION_UNKNOWN);
-                SERIAL_ECHO_START;
-                SERIAL_ECHOLNRPGM(MSG_POSITION_UNKNOWN);
-            } else {
-                LCD_MESSAGERPGM(MSG_ZPROBE_OUT);
-                SERIAL_ECHO_START;
-                SERIAL_ECHOLNRPGM(MSG_ZPROBE_OUT);
-            }
-          }
-        #endif // Z_SAFE_HOMING
-      #endif // Z_HOME_DIR < 0
-
-      if(code_seen(axis_codes[Z_AXIS]) && code_value_long() != 0)
-        current_position[Z_AXIS]=code_value()+add_homing[Z_AXIS];
-      #ifdef ENABLE_AUTO_BED_LEVELING
-        if(home_z)
-          current_position[Z_AXIS] += zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
-      #endif
-      
-      // Set the planner and stepper routine positions.
-      // At this point the mesh bed leveling and world2machine corrections are disabled and current_position
-      // contains the machine coordinates.
-      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-
-      #ifdef ENDSTOPS_ONLY_FOR_HOMING
-        enable_endstops(false);
-      #endif
-
-      feedrate = saved_feedrate;
-      feedmultiply = saved_feedmultiply;
-      previous_millis_cmd = millis();
-      endstops_hit_on_purpose();
-#ifndef MESH_BED_LEVELING
-      // If MESH_BED_LEVELING is not active, then it is the original Prusa i3.
-      // Offer the user to load the baby step value, which has been adjusted at the previous print session.
-      if(card.sdprinting && eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z))
-          lcd_adjust_z();
-#endif
-
-    // Load the machine correction matrix
-    world2machine_initialize();
-    // and correct the current_position XY axes to match the transformed coordinate system.
-    world2machine_update_current();
-
-#if (defined(MESH_BED_LEVELING) && !defined(MK1BP))
-	if (code_seen(axis_codes[X_AXIS]) || code_seen(axis_codes[Y_AXIS]) || code_seen('W') || code_seen(axis_codes[Z_AXIS]))
-		{
-      if (! home_z && mbl_was_active) {
-        // Re-enable the mesh bed leveling if only the X and Y axes were re-homed.
-        mbl.active = true;
-        // and re-adjust the current logical Z axis with the bed leveling offset applicable at the current XY position.
-        current_position[Z_AXIS] -= mbl.get_z(st_get_position_mm(X_AXIS), st_get_position_mm(Y_AXIS));
-      }
-		}
-	else
-		{
-			st_synchronize();
-			homing_flag = false;
-			// Push the commands to the front of the message queue in the reverse order!
-			// There shall be always enough space reserved for these commands.
-			// enquecommand_front_P((PSTR("G80")));
-			goto case_G80;
-	  }
-#endif
-
-	  if (farm_mode) { prusa_statistics(20); };
-
-	  homing_flag = false;
-#if 0
-      SERIAL_ECHOPGM("G28, final ");  print_world_coordinates();
-      SERIAL_ECHOPGM("G28, final ");  print_physical_coordinates();
-      SERIAL_ECHOPGM("G28, final ");  print_mesh_bed_leveling_table();
-#endif
-      break;
+	  gcode_G28(home_x, home_y, home_z, calib);
+	  
+	  break;
     }
 #ifdef ENABLE_AUTO_BED_LEVELING
     case 29: // G29 Detailed Z-Probe, probes the bed at 3 or more points.
@@ -3524,6 +3545,14 @@ void process_commands()
 #ifdef PINDA_THERMISTOR
 		if (true)
 		{
+
+			if (calibration_status() >= CALIBRATION_STATUS_XYZ_CALIBRATION) {
+				//we need to know accurate position of first calibration point
+				//if xyz calibration was not performed yet, interrupt temperature calibration and inform user that xyz cal. is needed
+				lcd_show_fullscreen_message_and_wait_P(_i("Please run XYZ calibration first."));
+				break;
+			}
+			
 			if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS]))
 			{
 				// We don't know where we are! HOME!
@@ -3538,20 +3567,19 @@ void process_commands()
 			
 			if (result)
 			{
+				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				current_position[Z_AXIS] = 50;
-				current_position[Y_AXIS] += 180;
+				current_position[Y_AXIS] = 180;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				lcd_show_fullscreen_message_and_wait_P(_T(MSG_REMOVE_STEEL_SHEET));
-				current_position[Y_AXIS] -= 180;
+				current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
+				current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
-				feedrate = homing_feedrate[Z_AXIS] / 10;
-				enable_endstops(true);
-				endstops_hit_on_purpose();
-				homeaxis(Z_AXIS);
-				plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-				enable_endstops(false);
+				gcode_G28(false, false, true, false);
+
 			}
 			if ((current_temperature_pinda > 35) && (farm_mode == false)) {
 				//waiting for PIDNA probe to cool down in case that we are not in farm mode
@@ -3581,8 +3609,11 @@ void process_commands()
 			custom_message_type = 4;
 			custom_message_state = 1;
 			custom_message = _T(MSG_TEMP_CALIBRATION);
+			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			current_position[X_AXIS] = PINDA_PREHEAT_X;
 			current_position[Y_AXIS] = PINDA_PREHEAT_Y;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			current_position[Z_AXIS] = PINDA_PREHEAT_Z;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			st_synchronize();
@@ -3595,11 +3626,10 @@ void process_commands()
 
 			eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 0); //invalidate temp. calibration in case that in will be aborted during the calibration process 
 
-			current_position[Z_AXIS] = 5;
+			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-
-			current_position[X_AXIS] = pgm_read_float(bed_ref_points);
-			current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
+			current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
+			current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			st_synchronize();
 
@@ -3640,8 +3670,11 @@ void process_commands()
 				custom_message_state = i + 2;
 				setTargetBed(50 + 10 * (temp - 30) / 5);
 //				setTargetHotend(255, 0);
+				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				current_position[X_AXIS] = PINDA_PREHEAT_X;
 				current_position[Y_AXIS] = PINDA_PREHEAT_Y;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				current_position[Z_AXIS] = PINDA_PREHEAT_Z;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
@@ -3650,10 +3683,10 @@ void process_commands()
 					delay_keep_alive(1000);
 					serialecho_temperatures();
 				}
-				current_position[Z_AXIS] = 5;
+				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-				current_position[X_AXIS] = pgm_read_float(bed_ref_points);
-				current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
+				current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
+				current_position[Y_AXIS] = pgm_read_float(bed_ref_points_4 + 1);
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
 				find_z_result = find_bed_induction_sensor_point_z(-1.f);
@@ -3858,15 +3891,6 @@ void process_commands()
 #endif //MK1BP
 	case_G80:
 	{
-#ifdef TMC2130
-		//previously enqueued "G28 W0" failed (crash Z)
-		if (axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && !axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0))
-		{
-			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-			break;
-		}
-#endif //TMC2130
-
 		mesh_bed_leveling_flag = true;
 		int8_t verbosity_level = 0;
 		static bool run = false;
