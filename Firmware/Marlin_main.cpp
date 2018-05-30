@@ -1007,7 +1007,7 @@ void setup()
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
-//	upgrade_sec_lang_from_external_flash();
+	upgrade_sec_lang_from_external_flash();
 
 	lcd_splash();
 	setup_killpin();
@@ -1309,27 +1309,9 @@ void setup()
 		lcd_mylang();
 	}
 	lang_select(lang_selected);
-
-	puts_P(_n("\nNew ML support"));
-	printf_P(_n(" lang_selected     = %d\n"), lang_selected);
-	printf_P(_n(" &_SEC_LANG        = 0x%04x\n"), &_SEC_LANG);
-	printf_P(_n(" sizeof(_SEC_LANG) = 0x%04x\n"), sizeof(_SEC_LANG));
-	uint16_t ptr_lang_table0 = ((uint16_t)(&_SEC_LANG) + 0xff) & 0xff00;
-	printf_P(_n(" &_lang_table0     = 0x%04x\n"), ptr_lang_table0);
-	uint32_t _lt_magic = pgm_read_dword(((uint32_t*)(ptr_lang_table0 + 0)));
-	uint16_t _lt_size = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 4)));
-	uint16_t _lt_count = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 6)));
-	uint16_t _lt_chsum = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 8)));
-	uint16_t _lt_resv0 = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 10)));
-	uint32_t _lt_resv1 = pgm_read_dword(((uint32_t*)(ptr_lang_table0 + 12)));
-	printf_P(_n("  _lt_magic        = 0x%08lx %S\n"), _lt_magic, (_lt_magic==0x4bb45aa5)?_n("OK"):_n("NA"));
-	printf_P(_n("  _lt_size         = 0x%04x (%d)\n"), _lt_size, _lt_size);
-	printf_P(_n("  _lt_count        = 0x%04x (%d)\n"), _lt_count, _lt_count);
-	printf_P(_n("  _lt_chsum        = 0x%04x\n"), _lt_chsum);
-	printf_P(_n("  _lt_resv0        = 0x%04x\n"), _lt_resv0);
-	printf_P(_n("  _lt_resv1        = 0x%08lx\n"), _lt_resv1);
-	puts_P(_n("\n"));
-
+#ifdef DEBUG_SEC_LANG
+	lang_print_sec_lang(uartout);
+#endif //DEBUG_SEC_LANG
 	
 	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);

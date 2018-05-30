@@ -3,6 +3,8 @@
 #define LANGUAGE_H
 
 #include "config.h"
+#include <inttypes.h>
+#include <stdio.h>
 
 #define PROTOCOL_VERSION "1.0"
 
@@ -64,7 +66,7 @@ extern "C" {
 #endif //defined(__cplusplus)
 
 // Currectly active language selection.
-extern unsigned char lang_selected;
+extern uint8_t lang_selected;
 
 #if (LANG_MODE != 0)
 extern const char _SEC_LANG[LANG_SIZE_RESERVED];
@@ -72,9 +74,11 @@ extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 
 extern const char* lang_get_translation(const char* s);
 extern const char* lang_get_sec_lang_str(const char* s);
-extern const char* lang_select(unsigned char lang);
-extern unsigned char lang_get_count();
-extern const char* lang_get_name(unsigned char lang);
+extern const char* lang_get_sec_lang_str_by_id(uint16_t id);
+extern const char* lang_select(uint8_t lang);
+extern uint8_t lang_get_count();
+extern const char* lang_get_name(uint8_t lang);
+extern uint16_t lang_print_sec_lang(FILE* out);
 
 
 #if defined(__cplusplus)

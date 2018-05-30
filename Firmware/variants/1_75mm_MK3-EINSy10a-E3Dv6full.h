@@ -148,6 +148,7 @@
 #define MINTEMP_MINAMBIENT_RAW  978
 
 //#define DEBUG_BUILD
+//#define DEBUG_SEC_LANG   //secondary language debug output at startup
 #ifdef DEBUG_BUILD
 //#define _NO_ASM
 #define DEBUG_DCODES //D codes
