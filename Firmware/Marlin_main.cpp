@@ -1250,7 +1250,7 @@ void setup()
 	}
 	else
 		printf_P(PSTR("Card NG!\n"));
-#endif DEBUG_SD_SPEED_TEST
+#endif //DEBUG_SD_SPEED_TEST
 
 	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
