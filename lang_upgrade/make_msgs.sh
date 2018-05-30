@@ -69,25 +69,27 @@ process_language_xx()
 {
  echo -n " processing language_$1.h ..." | tee -a make_msgs.out
  #list all defines from language_cz.h
- cat "../Firmware/language_$1.h" | grep "^#define" >"msgs_$1.txt_0"
- cat "msgs_$1.txt_0" | sed -E "s/^#define[ \t]*([^ \t]*)[ \t]*([^ \t]*[ \t]*\"[^\"]*\"*)/\1 \2/g" | sort >"msgs_$1.txt"
+ cat "../lang_backup/language_$1.h" | sed "s/[ \t]*\+//;s/^\+ #/#/;s/^\+#/#/" | grep -E "^#define" >"msgs_$1.txt_0"
+ cat "msgs_$1.txt_0" | sed "s/(length = [0-9]*)//" | sed "s/(length = [0-9]*, lines = [0-9]*)//" > "msgs_$1.txt_1"
+ cat "msgs_$1.txt_1" | sed -E "s/^#define[ \t]*([^ \t]*)[ \t]*([^ \t]*[ \t]*\"[^\"]*\"*)/\1 \2/g" | sort >"msgs_$1.txt"
  #calculate msgcount
  msgcount=$(grep -c '' "msgs_$1.txt")
  #calculate charcount
  charcount=$(calc_charcount "msgs_$1.txt" 2)
  #remove tmp files
  rm "msgs_$1.txt_0"
+ rm "msgs_$1.txt_1"
  echo "ok ($msgcount messages, $charcount characters)" | tee -a make_msgs.out
 }
 
-process_language_common
-process_language_en
-process_language_xx cz
+#process_language_common
+#process_language_en
+#process_language_xx cz
 process_language_xx de
-process_language_xx it
-process_language_xx pl
-process_language_xx es
+#process_language_xx it
+#process_language_xx pl
+#process_language_xx es
 
 
-echo "step1 finished... press key"
+echo "make_msgs.sh finished... press key"
 read

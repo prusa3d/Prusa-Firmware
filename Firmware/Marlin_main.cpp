@@ -970,6 +970,35 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 	for (int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
 }
 
+#include "bootapp.h"
+
+void __test()
+{
+	cli();
+	boot_app_magic = 0x55aa55aa;
+	boot_app_flags = BOOT_APP_FLG_USER0;
+	boot_reserved = 0x00;
+	wdt_enable(WDTO_15MS);
+	while(1);
+}
+
+void upgrade_sec_lang_from_external_flash()
+{
+	if ((boot_app_magic == 0x55aa55aa) && (boot_app_flags & BOOT_APP_FLG_USER0))
+	{
+		fprintf_P(lcdout, PSTR(ESC_2J ESC_H(1,1) "TEST %d"), boot_reserved);
+		boot_reserved++;
+		if (boot_reserved < 4)
+		{
+			_delay_ms(1000);
+			cli();
+			wdt_enable(WDTO_15MS);
+			while(1);
+		}
+	}
+	boot_app_flags &= ~BOOT_APP_FLG_USER0;
+}
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -977,6 +1006,9 @@ void setup()
 {
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
+
+//	upgrade_sec_lang_from_external_flash();
+
 	lcd_splash();
 	setup_killpin();
 	setup_powerhold();
@@ -1250,7 +1282,7 @@ void setup()
 	}
 	else
 		printf_P(PSTR("Card NG!\n"));
-#endif DEBUG_SD_SPEED_TEST
+#endif //DEBUG_SD_SPEED_TEST
 
 	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);

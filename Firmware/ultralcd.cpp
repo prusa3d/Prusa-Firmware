@@ -3610,7 +3610,7 @@ static void lcd_crash_mode_info()
 	static uint32_t tim = 0;
 	if ((tim + 1000) < millis())
 	{
-		fputs_P(_i("[2JCrash detection can[1;0Hbe turned on only in[2;0HNormal mode"), lcdout);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
+		fputs_P(_i("\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"), lcdout);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 		tim = millis();
 	}
 	if (lcd_clicked())
@@ -3623,7 +3623,7 @@ static void lcd_crash_mode_info2()
 	static uint32_t tim = 0;
 	if ((tim + 1000) < millis())
 	{
-		fputs_P(_i("[2JWARNING:[1;0HCrash detection[2;0Hdisabled in[3;0HStealth mode"), lcdout);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+		fputs_P(_i("\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"), lcdout);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 		tim = millis();
 	}
 	if (lcd_clicked())
@@ -5995,9 +5995,9 @@ static void lcd_control_temperature_menu()
   MENU_ITEM_EDIT(int3, _T(MSG_FAN_SPEED), &fanSpeed, 0, 255);
 #if defined AUTOTEMP && (TEMP_SENSOR_0 != 0)
   MENU_ITEM_EDIT(bool, MSG_AUTOTEMP, &autotemp_enabled);
-  MENU_ITEM_EDIT(float3, _i("   MENU_ITEM_EDIT(float3, MSG_MIN, &autotemp_min, 0, HEATER_0_MAXTEMP - 10);02 Min"), &autotemp_min, 0, HEATER_0_MAXTEMP - 10);////MSG_MIN c=0 r=0
-  MENU_ITEM_EDIT(float3, _i("   MENU_ITEM_EDIT(float3, MSG_MAX, &autotemp_max, 0, HEATER_0_MAXTEMP - 10);02 Max"), &autotemp_max, 0, HEATER_0_MAXTEMP - 10);////MSG_MAX c=0 r=0
-  MENU_ITEM_EDIT(float32, _i("   MENU_ITEM_EDIT(float32, MSG_FACTOR, &autotemp_factor, 0.0, 1.0);02 Fact"), &autotemp_factor, 0.0, 1.0);////MSG_FACTOR c=0 r=0
+  MENU_ITEM_EDIT(float3, _i(" \002 Min"), &autotemp_min, 0, HEATER_0_MAXTEMP - 10);////MSG_MIN c=0 r=0
+  MENU_ITEM_EDIT(float3, _i(" \002 Max"), &autotemp_max, 0, HEATER_0_MAXTEMP - 10);////MSG_MAX c=0 r=0
+  MENU_ITEM_EDIT(float32, _i(" \002 Fact"), &autotemp_factor, 0.0, 1.0);////MSG_FACTOR c=0 r=0
 #endif
 
   END_MENU();

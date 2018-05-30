@@ -35,7 +35,7 @@
 #define _T(s) s
 #else //(LANG_MODE == 0)
 #define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff"s; &__c[0];}))
-#define ISTR(s) "\xff\xff"s
+#define ISTR(s) "\xff\xff" s
 #define _i(s) lang_get_translation(_I(s))
 #define _T(s) lang_get_translation(s)
 #endif //(LANG_MODE == 0)
@@ -76,6 +76,7 @@ extern const char* lang_select(unsigned char lang);
 extern unsigned char lang_get_count();
 extern const char* lang_get_name(unsigned char lang);
 
+
 #if defined(__cplusplus)
 }
 #endif //defined(__cplusplus)
@@ -88,5 +89,5 @@ extern const char MSG_LANGUAGE_NAME[];
 #include "messages.h"
 
 
-#endif //__LANGUAGE_H
+#endif //LANGUAGE_H
 
