@@ -28,7 +28,7 @@ function finish
 }
 
 echo "update_lang.sh started" >&2
-echo "selected language=$LANG" >&2
+echo " selected language=$LANG" >&2
 
 echo -n " checking files..." >&2
 if [ ! -e text.sym ]; then echo "NG!  file text.sym not found!" >&2; finish 1; fi
