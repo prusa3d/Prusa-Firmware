@@ -6407,10 +6407,10 @@ Sigma_Exit:
 		codenum = millis();
 		cancel_heatup = false;
 
-    bool is_pinda_cooling = false;
-    if ((degTargetBed() == 0) && (degTargetHotend(0) == 0)) {
-      is_pinda_cooling = true;
-    }
+		bool is_pinda_cooling = false;
+		if ((degTargetBed() == 0) && (degTargetHotend(0) == 0)) {
+		    is_pinda_cooling = true;
+		}
 
 		while ( ((!is_pinda_cooling) && (!cancel_heatup) && (current_temperature_pinda < set_target_pinda)) || (is_pinda_cooling && (current_temperature_pinda > set_target_pinda)) ) {
 			if ((millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
