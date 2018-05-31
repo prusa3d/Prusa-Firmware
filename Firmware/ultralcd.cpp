@@ -6816,7 +6816,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 	}
 	return(true);
 }
-#endif TMC2130
+#endif //TMC2130
 
 
 static bool lcd_selfcheck_endstops()

@@ -419,7 +419,7 @@ void tmc2130_check_overtemp()
 			lcd.print(' ');
 		}
 	}
-#endif DEBUG_CRASHDET_COUNTERS
+#endif //DEBUG_CRASHDET_COUNTERS
 }
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
