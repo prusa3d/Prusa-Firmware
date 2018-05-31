@@ -20,33 +20,25 @@ if [ -z "$LANG" ]; then LANG='cz'; fi
 #
 #
 
-if [ "$LANG" == "all" ]; then
- ./make_lang.sh cz
- ./make_lang.sh de
- ./make_lang.sh es
- ./make_lang.sh it
- ./make_lang.sh pl
- exit 0
-fi
-
-function finish
+finish()
 {
- if [ "$1" == "0" ]; then
+ if [ $1 -eq 0 ]; then
   if [ -e lang_en.tmp ]; then rm lang_en.tmp; fi
   if [ -e lang_en_$LANG.tmp ]; then rm lang_en_$LANG.tmp; fi
   if [ -e lang_en_$LANG.dif ]; then rm lang_en_$LANG.dif; fi
  fi
- echo
- if [ "$1" == "0" ]; then
+# echo >&2
+ if [ $1 -eq 0 ]; then
   echo "make_lang.sh finished with success" >&2
  else
   echo "make_lang.sh finished with errors!" >&2
  fi
- case "$-" in
-  *i*) echo "press enter key"; read ;;
- esac
  exit $1
 }
+
+make_lang()
+{
+LANG=$1
 
 echo "make_lang.sh started" >&2
 echo "selected language=$LANG" >&2
@@ -84,7 +76,7 @@ echo -n " generating lang_$LANG.dat..." >&2
 cat lang_$LANG.txt | sed "s/\\\\/\\\\\\\\/g" | while read s; do
  s=${s#\"}
  s=${s%\"}
- echo -n -e "$s"'\x00'
+ /bin/echo -e -n "$s\x00"
 done >lang_$LANG.dat
 echo "OK" >&2
 
@@ -114,22 +106,22 @@ awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
 #write data to binary file with dd
 
 echo -n "  writing header (16 bytes)..." >&2
-echo -n -e "$lt_magic" |\
+/bin/echo -n -e "$lt_magic" |\
  dd of=lang_$LANG.bin bs=1 count=4 seek=0 conv=notrunc 2>/dev/null
-echo -n -e $(echo -n "$lt_size" | awk "$awk_ui16") |\
+/bin/echo -n -e $(echo -n "$lt_size" | awk "$awk_ui16") |\
  dd of=lang_$LANG.bin bs=1 count=2 seek=4 conv=notrunc 2>/dev/null
-echo -n -e $(echo -n "$lt_count" | awk "$awk_ui16") |\
+/bin/echo -n -e $(echo -n "$lt_count" | awk "$awk_ui16") |\
  dd of=lang_$LANG.bin bs=1 count=2 seek=6 conv=notrunc 2>/dev/null
-echo -n -e $(echo -n "$lt_chsum" | awk "$awk_ui16") |\
+/bin/echo -n -e $(echo -n "$lt_chsum" | awk "$awk_ui16") |\
  dd of=lang_$LANG.bin bs=1 count=2 seek=8 conv=notrunc 2>/dev/null
-echo -n -e "$lt_resv0" |\
+/bin/echo -n -e "$lt_resv0" |\
  dd of=lang_$LANG.bin bs=1 count=2 seek=10 conv=notrunc 2>/dev/null
-echo -n -e "$lt_resv1" |\
+/bin/echo -n -e "$lt_resv1" |\
  dd of=lang_$LANG.bin bs=1 count=4 seek=12 conv=notrunc 2>/dev/null
 echo "OK" >&2
 
 echo -n "  writing offset table ($lt_offs_size bytes)..." >&2
-echo -n -e $(cat lang_$LANG.ofs | awk "$awk_ui16" | tr -d '\n'; echo) |\
+/bin/echo -n -e $(cat lang_$LANG.ofs | awk "$awk_ui16" | tr -d '\n'; echo) |\
  dd of=./lang_$LANG.bin bs=1 count=$lt_offs_size seek=16 conv=notrunc 2>/dev/null
 echo "OK" >&2
 
@@ -141,8 +133,19 @@ echo " lang_table details:" >&2
 echo "  lt_count = $lt_count" >&2
 echo "  lt_size  = $lt_size" >&2
 echo "  lt_chsum = $lt_chsum" >&2
+}
+
+echo $LANG
+
+if [ "$LANG" = "all" ]; then
+ make_lang cz
+ make_lang de
+ make_lang es
+ make_lang it
+ make_lang pl
+ exit 0
+else
+ make_lang $LANG
+fi
 
 finish 0
-
-
-

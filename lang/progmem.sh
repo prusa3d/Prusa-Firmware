@@ -14,7 +14,7 @@
 #  $PROGMEM.hex - variables - hex
 #  $PROGMEM.chr - variables - char escape
 #  $PROGMEM.var - variables - strings
-#  $PROGMEM.txt - text data only
+#  $PROGMEM.txt - text data only (not used)
 #
 #
 # Config:
@@ -86,7 +86,7 @@ echo " progmem.sh (5) - calculating start and stop address" >&2
 #calculate start addres of section ".$PROGMEM"
 PROGMEM_BEG=$(head -n1 $PROGMEM.sym | while read offs size name; do echo "0x"$offs; done)
 #calculate stop addres of section ".$PROGMEM"
-PROGMEM_END=$(tail -n1 $PROGMEM.sym | while read offs size name; do printf "0x%x" $(("0x"$offs + "0x"$size)); done)
+PROGMEM_END=$(tail -n1 $PROGMEM.sym | while read offs size name; do printf "0x%x" $((0x$offs + 0x$size)); done)
 echo "  START address = "$PROGMEM_BEG >&2
 echo "  STOP  address = "$PROGMEM_END >&2
 
@@ -112,8 +112,9 @@ echo " progmem.sh (7) - preparing string data" >&2
 # replace all tabs with spaces
 cat $PROGMEM.hex | sed 's/ /\t/;s/ /\t /;s/ /\\x/g;s/\t/ /g' > $PROGMEM.chr
 
+
 # (8)
-#convert $PROGMEM.chr to $PROGMEM.var (convert data to text)
+#convert $PROGMEM.chr to $PROGMEM.var (convert data to text, TODO: rewrite as awk script)
 echo " progmem.sh (8) - converting string data" >&2
 cat $PROGMEM.chr | \
  sed 's/ \\xff\\xff/ /;' | \
@@ -121,8 +122,10 @@ cat $PROGMEM.chr | \
  sed 's/\\x1b/\\\\\\x1b/g;' | \
  sed 's/\\x01/\\\\\\x01/g;' | \
  sed 's/\\xf8/\\\\\\xf8/g;' | \
- sed 's/\\x00$/\\x0a/;s/^/printf "/;s/$/"/' | sh > $PROGMEM.var
-cat $PROGMEM.var | sed 's/\r/\n/g' |sed -E 's/^[0-9a-f]{8} [^ ]* //' >$PROGMEM.txt
+ sed 's/\\x00$//;s/^/echo -e "/;s/$/"/' | sh > $PROGMEM.var
+
+#this step can be omitted because .txt file is not used
+#cat $PROGMEM.var | sed 's/\r/\n/g' |sed -E 's/^[0-9a-f]{8} [^ ]* //' >$PROGMEM.txt
 
 echo "progmem.sh finished" >&2
 

@@ -81,19 +81,19 @@ cat ../lang_en_$LANG.txt | sed "s/\\\\/\\\\\\\\/g;s/^#/#: /" | while read -r s; 
  if [ "$s" == "" ]; then
   echo "  processing $num of $num_texts" >&2
   if [ "$s0" == "\"\\\\x00\"" ]; then
-   search=$(echo -e "$s1")
+   search=$(/bin/echo -e "$s1")
    found=$(grep -m1 -n -F "$search" $files | head -n1 | cut -f1-2 -d':' | sed "s/^.*\///")
    echo "#: $found"
    echo "#, fuzzy"
-   echo -e "msgid $s1"
+   /bin/echo -e "msgid $s1"
    echo 'msgstr ""'
    echo
   else
-   search=$(echo -e "$s1")
+   search=$(/bin/echo -e "$s1")
    found=$(grep -m1 -n -F "$search" $files | head -n1 | cut -f1-2 -d':' | sed "s/^.*\///")
    echo "#: $found"
-   echo -e "msgid $s1"
-   echo -e "msgstr $s0"
+   /bin/echo -e "msgid $s1"
+   /bin/echo -e "msgstr $s0"
    echo
   fi
   num=$((num+1))
