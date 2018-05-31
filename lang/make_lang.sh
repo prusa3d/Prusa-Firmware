@@ -1,5 +1,6 @@
 #!/bin/sh
-# makelang.sh - multi-language support high-level script
+#
+# makelang.sh - multi-language support script
 #  for generating lang_xx.bin (secondary language binary file)
 #
 # Input files:
@@ -18,6 +19,15 @@ LANG=$1
 if [ -z "$LANG" ]; then LANG='cz'; fi
 #
 #
+
+if [ "$LANG" == "all" ]; then
+ ./make_lang.sh cz
+ ./make_lang.sh de
+ ./make_lang.sh es
+ ./make_lang.sh it
+ ./make_lang.sh pl
+ exit 0
+fi
 
 function finish
 {

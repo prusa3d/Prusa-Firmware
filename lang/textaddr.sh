@@ -1,7 +1,7 @@
 #!/bin/sh
-# textaddr.sh - multi-language support low level script
-#  for compiling progmem1.var and lang_en.txt files
-#  to textaddr.txt file (mapping of progmem addreses to text idenifiers)
+#
+# textaddr.sh - multi-language support script
+#  Compile progmem1.var and lang_en.txt files to textaddr.txt file (mapping of progmem addreses to text idenifiers)
 #
 # Input files:
 #  progmem1.var
