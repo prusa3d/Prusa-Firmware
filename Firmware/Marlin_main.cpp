@@ -1034,7 +1034,7 @@ void setup()
 	stdout = uartout;
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
-	printf_P(PSTR(" "FW_VERSION_FULL"\n"));
+	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
