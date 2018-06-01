@@ -7,8 +7,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: es\n"
 "Project-Id-Version: Prusa-Firmware\n"
-"POT-Creation-Date: Thu May 31 13:43:45 2018\n"
-"PO-Revision-Date: Thu May 31 13:43:45 2018\n"
+"POT-Creation-Date: Fri Jun 1 14:16:15 2018\n"
+"PO-Revision-Date: Fri Jun 1 14:16:15 2018\n"
 "Language-Team: \n"
 "X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -48,11 +48,7 @@ msgstr " Free Memory: "
 msgid " Last Updated: "
 msgstr " Last Updated: "
 
-#: mesh_bed_calibration.cpp:2471
-msgid " of 4"
-msgstr " de 4"
-
-#: mesh_bed_calibration.cpp:2471
+#: messages.c:44
 msgid " of 4"
 msgstr " de 4"
 
@@ -87,7 +83,7 @@ msgstr "Ajustar Z"
 msgid "All correct      "
 msgstr "Todo bien"
 
-#: messages.c:102
+#: messages.c:103
 msgid "All is done. Happy printing!"
 msgstr "Terminado! Feliz impresion!"
 
@@ -164,11 +160,11 @@ msgstr "Corr. de la cama"
 msgid "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 msgstr "Nivelacion fallada. Sensor no funciona. Escombros en nozzle? Esperando reset."
 
-#: Marlin_main.cpp:4003
+#: Marlin_main.cpp:4031
 msgid "Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
 msgstr "Nivelacion fallada. Sensor desconectado o cables danados. Esperando reset."
 
-#: Marlin_main.cpp:4007
+#: Marlin_main.cpp:4035
 msgid "Bed leveling failed. Sensor triggered too high. Waiting for reset."
 msgstr "Nivelacion fallada. Sensor funciona demasiado temprano. Esperando reset."
 
@@ -176,7 +172,7 @@ msgstr "Nivelacion fallada. Sensor funciona demasiado temprano. Esperando reset.
 msgid "Bed"
 msgstr "Heatbed"
 
-#: Marlin_main.cpp:4377
+#: Marlin_main.cpp:4405
 msgid "Begin file list"
 msgstr "Begin file list"
 
@@ -209,10 +205,6 @@ msgstr "Calibrar"
 #: ultralcd.cpp:2756
 msgid "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 msgstr "Calibrando XYZ. Gira el boton para subir el extrusor hasta tocar los topes superiores. Despues haz clic."
-
-#: messages.c:21
-msgid "Calibrating Z"
-msgstr "Calibrando Z"
 
 #: messages.c:21
 msgid "Calibrating Z"
@@ -304,7 +296,7 @@ msgstr "E calibrado. Limpia nozzle. Haz clic una vez terminado."
 msgid "E-correct"
 msgstr ""
 
-#: Marlin_main.cpp:4379
+#: Marlin_main.cpp:4407
 msgid "End file list"
 msgstr "End file list"
 
@@ -324,7 +316,7 @@ msgstr "endstops hit: "
 msgid "Endstops"
 msgstr "Topes finales"
 
-#: language.c:130
+#: language.c:153
 msgid "English"
 msgstr "Espanol"
 
@@ -337,7 +329,7 @@ msgstr "enqueing \x22"
 msgid "Error - static memory has been overwritten"
 msgstr ""
 
-#: messages.c:75
+#: messages.c:76
 msgid "error writing to file"
 msgstr "error writing to file"
 
@@ -380,10 +372,6 @@ msgstr ""
 msgid "Extruder"
 msgstr "Extruir"
 
-#: messages.c:35
-msgid "Extruder"
-msgstr "Extruir"
-
 #: ultralcd.cpp:4178
 #, fuzzy
 msgid "F. autoload  [on]"
@@ -403,7 +391,7 @@ msgstr ""
 msgid "Fan speed"
 msgstr "Velocidad Vent."
 
-#: messages.c:81
+#: messages.c:82
 msgid "Fan test"
 msgstr "Test ventiladores"
 
@@ -487,7 +475,7 @@ msgstr "Flujo"
 msgid "forum.prusa3d.com"
 msgstr "forum.prusa3d.com"
 
-#: messages.c:78
+#: messages.c:79
 msgid "Front print fan?"
 msgstr "Vent. frontal?"
 
@@ -504,7 +492,7 @@ msgstr ""
 msgid "Heater/Thermistor"
 msgstr "Hotend"
 
-#: Marlin_main.cpp:7204
+#: Marlin_main.cpp:7232
 #, fuzzy
 msgid "Heating disabled by safety timer."
 msgstr ""
@@ -549,7 +537,7 @@ msgstr "Cambiado correct.?"
 msgid "Changing filament!"
 msgstr "Cambiando filamento"
 
-#: messages.c:84
+#: messages.c:85
 msgid "Checking bed     "
 msgstr "Control heatbed"
 
@@ -561,7 +549,7 @@ msgstr "Control topes"
 msgid "Checking hotend  "
 msgstr "Control hotend "
 
-#: messages.c:85
+#: messages.c:86
 #, fuzzy
 msgid "Checking sensors "
 msgstr ""
@@ -598,11 +586,11 @@ msgstr "Voy a hacer Calibracion Z ahora."
 msgid "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
 msgstr "Voy a comenzar a imprimir la linea y tu bajaras el nozzle gradualmente al rotar el mando, hasta que llegues a la altura optima. Mira las imagenes del capitulo Calibracion en el manual."
 
-#: mesh_bed_calibration.cpp:2458
+#: mesh_bed_calibration.cpp:2469
 msgid "Improving bed calibration point"
 msgstr "Mejorando punto de calibracion heatbed"
 
-#: messages.c:100
+#: messages.c:101
 msgid "Info screen"
 msgstr "Monitorizar"
 
@@ -642,20 +630,20 @@ msgstr "Es el filamento PLA?"
 msgid "Is PLA filament loaded?"
 msgstr "Esta el filamento PLA cargado?"
 
-#: messages.c:93
+#: messages.c:94
 #, fuzzy
 msgid "Is steel sheet on heatbed?"
 msgstr ""
 
-#: mesh_bed_calibration.cpp:2200
+#: mesh_bed_calibration.cpp:2211
 msgid "Iteration "
 msgstr "Reiteracion "
 
-#: Marlin_main.cpp:7365
+#: Marlin_main.cpp:7393
 msgid "KILLED. "
 msgstr "PARADA DE EMERGENCIA"
 
-#: messages.c:79
+#: messages.c:80
 msgid "Left hotend fan?"
 msgstr "Vent. izquierdo?"
 
@@ -708,15 +696,15 @@ msgstr "Introduciendo filam."
 msgid "Loose pulley"
 msgstr "Polea suelta"
 
-#: Marlin_main.cpp:7478
+#: Marlin_main.cpp:7506
 msgid "M104 Invalid extruder "
 msgstr "M104 Invalid extruder "
 
-#: Marlin_main.cpp:7481
+#: Marlin_main.cpp:7509
 msgid "M105 Invalid extruder "
 msgstr "M105 Invalid extruder "
 
-#: Marlin_main.cpp:7484
+#: Marlin_main.cpp:7512
 msgid "M109 Invalid extruder "
 msgstr "M109 Invalid extruder "
 
@@ -724,15 +712,15 @@ msgstr "M109 Invalid extruder "
 msgid "M117 First layer cal."
 msgstr "M117 Cal. primera cap."
 
-#: Marlin_main.cpp:5350
+#: Marlin_main.cpp:5378
 msgid "M200 Invalid extruder "
 msgstr "M200 Invalid extruder "
 
-#: Marlin_main.cpp:7487
+#: Marlin_main.cpp:7515
 msgid "M218 Invalid extruder "
 msgstr "M218 Invalid extruder "
 
-#: Marlin_main.cpp:7490
+#: Marlin_main.cpp:7518
 msgid "M221 Invalid extruder "
 msgstr "M221 Invalid extruder "
 
@@ -757,16 +745,16 @@ msgstr "Midiendo altura del punto de calibracion"
 msgid "Mesh Bed Leveling"
 msgstr "Mesh Bed Leveling"
 
-#: messages.c:91
+#: messages.c:92
 #, fuzzy
 msgid "Mode     [Normal]"
 msgstr ""
 
-#: messages.c:90
+#: messages.c:91
 msgid "Mode     [silent]"
 msgstr "Modo [silencio]"
 
-#: messages.c:92
+#: messages.c:93
 #, fuzzy
 msgid "Mode    [Stealth]"
 msgstr ""
@@ -776,11 +764,11 @@ msgstr ""
 msgid "Mode [auto power]"
 msgstr ""
 
-#: messages.c:89
+#: messages.c:90
 msgid "Mode [high power]"
 msgstr "Modo [rend.pleno]"
 
-#: messages.c:86
+#: messages.c:87
 msgid "Motor"
 msgstr "Motor"
 
@@ -808,7 +796,7 @@ msgstr "Nuevo firmware disponible:"
 msgid "No Checksum with line number, Last Line: "
 msgstr "No Checksum with line number, Last Line: "
 
-#: Marlin_main.cpp:4366
+#: Marlin_main.cpp:4394
 msgid "No move."
 msgstr "Sin movimiento"
 
@@ -816,7 +804,7 @@ msgstr "Sin movimiento"
 msgid "No SD card"
 msgstr "No hay tarjeta SD"
 
-#: Marlin_main.cpp:4918
+#: Marlin_main.cpp:4946
 msgid "No thermistors - no temperature"
 msgstr "No thermistors - no temperature"
 
@@ -828,7 +816,7 @@ msgstr "No"
 msgid "Not connected"
 msgstr "No hay conexion "
 
-#: messages.c:82
+#: messages.c:83
 msgid "Not spinning"
 msgstr "Ventilador no gira"
 
@@ -861,7 +849,7 @@ msgstr "Nozzle3"
 msgid "ok"
 msgstr "ok"
 
-#: Marlin_main.cpp:1378
+#: Marlin_main.cpp:1382
 #, fuzzy
 msgid "Old settings found. Default PID, Esteps etc. will be set."
 msgstr ""
@@ -918,7 +906,7 @@ msgstr "Limpia nozzle para calibracion. Click cuando acabes."
 msgid "Please check :"
 msgstr "Controla :"
 
-#: messages.c:101
+#: messages.c:102
 msgid "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 msgstr "Lee el manual y resuelve el problema. Despues, reinicia la impresora y continua con el Wizard"
 
@@ -934,7 +922,7 @@ msgstr "Carga filamento PLA, por favor, y reinicia la impresora para continuar c
 msgid "Please load PLA filament first."
 msgstr "Carga el filamento PLA primero por favor."
 
-#: Marlin_main.cpp:6138
+#: Marlin_main.cpp:6166
 #, fuzzy
 msgid "Please open idler and remove filament manually."
 msgstr ""
@@ -954,7 +942,7 @@ msgstr ""
 msgid "Please pull out filament immediately"
 msgstr ""
 
-#: messages.c:74
+#: messages.c:75
 #, fuzzy
 msgid "Please remove steel sheet from heatbed."
 msgstr ""
@@ -979,7 +967,7 @@ msgstr "Precalentar extrusor"
 msgid "Preheat"
 msgstr "Precalentar"
 
-#: messages.c:103
+#: messages.c:104
 msgid "Preheating nozzle. Please wait."
 msgstr "Precalentando nozzle. Espera por favor."
 
@@ -987,7 +975,7 @@ msgstr "Precalentando nozzle. Espera por favor."
 msgid "Prepare new filament"
 msgstr "Preparar filamento"
 
-#: Marlin_main.cpp:5997
+#: Marlin_main.cpp:6025
 #, fuzzy
 msgid "Press knob to preheat nozzle and continue."
 msgstr ""
@@ -1023,7 +1011,7 @@ msgstr "Tiempo de imp.:"
 msgid "Printer disconnected"
 msgstr ""
 
-#: Marlin_main.cpp:7360
+#: Marlin_main.cpp:7388
 msgid "Printer halted. kill() called!"
 msgstr "Printer halted. kill() called!"
 
@@ -1047,16 +1035,16 @@ msgstr "prusa3d.com"
 msgid "Rear side [um]"
 msgstr "Trasera [um]"
 
-#: Marlin_main.cpp:8261
+#: Marlin_main.cpp:8289
 #, fuzzy
 msgid "Recovering print    "
 msgstr ""
 
-#: Marlin_main.cpp:5269
+#: Marlin_main.cpp:5297
 msgid "Reporting endstop status"
 msgstr "Reporting endstop status"
 
-#: Marlin_main.cpp:6883
+#: Marlin_main.cpp:6911
 msgid "Resend: "
 msgstr "Resend: "
 
@@ -1072,11 +1060,7 @@ msgstr "Reset"
 msgid "Resume print"
 msgstr "Reanudar impres."
 
-#: Marlin_main.cpp:4359
-msgid "Resuming print"
-msgstr "Resumiendo impresion"
-
-#: Marlin_main.cpp:4359
+#: messages.c:74
 msgid "Resuming print"
 msgstr "Resumiendo impresion"
 
@@ -1151,11 +1135,11 @@ msgstr "Selftest"
 msgid "Selftest error !"
 msgstr "Autotest error!"
 
-#: messages.c:80
+#: messages.c:81
 msgid "Selftest failed  "
 msgstr "Fallo Selftest"
 
-#: Marlin_main.cpp:1410
+#: Marlin_main.cpp:1414
 #, fuzzy
 msgid "Selftest will be run to calibrate accurate sensorless rehoming."
 msgstr ""
@@ -1164,7 +1148,7 @@ msgstr ""
 msgid "Set temperature:"
 msgstr "Establecer temp.:"
 
-#: messages.c:88
+#: messages.c:89
 msgid "Settings"
 msgstr "Configuracion"
 
@@ -1177,7 +1161,7 @@ msgstr ""
 msgid "Show end stops"
 msgstr "Ensena tope final"
 
-#: Marlin_main.cpp:2988
+#: Marlin_main.cpp:3281
 msgid "Sleep..."
 msgstr "En espera"
 
@@ -1215,11 +1199,11 @@ msgstr ""
 msgid "Speed"
 msgstr "Velocidad"
 
-#: messages.c:83
+#: messages.c:84
 msgid "Spinning"
 msgstr "Ventilador gira"
 
-#: Marlin_main.cpp:3518
+#: Marlin_main.cpp:3551
 #, fuzzy
 msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
 msgstr ""
@@ -1232,11 +1216,11 @@ msgstr "Estadisticas "
 msgid "Steprate too high: "
 msgstr "Steprate too high: "
 
-#: messages.c:94
+#: messages.c:95
 msgid "Stop print"
 msgstr "Detener impresion"
 
-#: messages.c:95
+#: messages.c:96
 msgid "STOPPED. "
 msgstr "PARADA"
 
@@ -1249,7 +1233,7 @@ msgstr "Soporte"
 msgid "Swapped"
 msgstr ""
 
-#: messages.c:96
+#: messages.c:97
 msgid "Temp. cal.          "
 msgstr "Cal. temp. "
 
@@ -1270,11 +1254,11 @@ msgstr "Calibracion temp."
 msgid "Temperature calibration failed"
 msgstr ""
 
-#: Marlin_main.cpp:1399
+#: Marlin_main.cpp:1403
 msgid "Temperature calibration has not been run yet"
 msgstr "La temperatura de calibracion no ha sido ajustada"
 
-#: messages.c:97
+#: messages.c:98
 msgid "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 msgstr "Calibracon temperatura terminada. Haz clic para continuar."
 
@@ -1323,11 +1307,11 @@ msgstr "Soltar fil. 3"
 msgid "Unload filament 4"
 msgstr "Soltar fil. 4"
 
-#: messages.c:98
+#: messages.c:99
 msgid "Unload filament"
 msgstr "Soltar filamento"
 
-#: messages.c:99
+#: messages.c:100
 msgid "Unloading filament"
 msgstr "Soltando filamento"
 
@@ -1344,7 +1328,7 @@ msgstr ""
 msgid "volume.init failed"
 msgstr "volume.init failed"
 
-#: Marlin_main.cpp:4331
+#: Marlin_main.cpp:4359
 msgid "Wait for user..."
 msgstr "Esperando ordenes"
 
@@ -1357,17 +1341,17 @@ msgstr "Esperando enfriamiento de heatbed y extrusor."
 msgid "Waiting for PINDA probe cooling"
 msgstr ""
 
-#: Marlin_main.cpp:1370
+#: Marlin_main.cpp:1374
 #, fuzzy
 msgid "Warning: both printer type and motherboard type changed."
 msgstr ""
 
-#: Marlin_main.cpp:1362
+#: Marlin_main.cpp:1366
 #, fuzzy
 msgid "Warning: motherboard type changed."
 msgstr ""
 
-#: Marlin_main.cpp:1366
+#: Marlin_main.cpp:1370
 #, fuzzy
 msgid "Warning: printer type changed."
 msgstr ""
@@ -1377,12 +1361,12 @@ msgstr ""
 msgid "WARNING: This is an unofficial, unsupported build. Use at your own risk!"
 msgstr ""
 
-#: Marlin_main.cpp:6137
+#: Marlin_main.cpp:6165
 #, fuzzy
 msgid "Was filament unload successful?"
 msgstr ""
 
-#: messages.c:87
+#: messages.c:88
 msgid "Wiring error"
 msgstr "Error de conexion"
 
@@ -1390,7 +1374,7 @@ msgstr "Error de conexion"
 msgid "Wizard"
 msgstr "Wizard"
 
-#: messages.c:77
+#: messages.c:78
 msgid "workDir open failed"
 msgstr "workDir open failed"
 
@@ -1452,7 +1436,7 @@ msgstr "Calibracion XYZ ok. Ejes X/Y perpendiculares. Enhorabuena!"
 msgid "Y distance from min:"
 msgstr ""
 
-#: messages.c:105
+#: messages.c:106
 msgid "Yes"
 msgstr "Si"
 
@@ -1466,7 +1450,7 @@ msgstr ""
 msgid "You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."
 msgstr ""
 
-#: messages.c:104
+#: messages.c:105
 msgid "You can always resume the Wizard from Calibration -> Wizard."
 msgstr "Siempre puedes acceder al asistente desde Calibracion -> Wizard"
 
