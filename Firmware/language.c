@@ -13,18 +13,21 @@ uint8_t lang_selected = 0;
 const char _SEC_LANG[LANG_SIZE_RESERVED] PROGMEM_I2 = "_SEC_LANG";
 #endif //(LANG_MODE == 0)
 
-//lang_table_t structure - 16byte header
+//lang_table_header_t structure - (size= 16byte)
 typedef struct
 {
-	struct
-	{
-		uint32_t magic;      //+0
-		uint16_t size;       //+4
-		uint16_t count;      //+6
-		uint16_t checksum;   //+8
-		uint16_t reserved0;  //+10
-		uint32_t reserved1;  //+12
-	} header;
+	uint32_t magic;      //+0 
+	uint16_t size;       //+4
+	uint16_t count;      //+6
+	uint16_t checksum;   //+8
+	uint16_t code;       //+10
+	uint32_t reserved1;  //+12
+} lang_table_header_t;
+
+//lang_table_t structure - (size= 16byte + 2*count)
+typedef struct
+{
+	lang_table_header_t header;
 	uint16_t table[];
 } lang_table_t;
 
@@ -88,14 +91,34 @@ uint8_t lang_get_count()
 	ui += 0x00ff; //add 1 page
 	ui &= 0xff00; //align to page
 	lang_table_t* _lang_table = ui; //table pointer
-	if (pgm_read_dword(((uint32_t*)(_lang_table + 0))) == 0x4bb45aa5) return 2;
+	if (pgm_read_dword(((uint32_t*)(_lang_table + 0))) == LANG_MAGIC) return 2;
 	return 1;
 }
 
 const char* lang_get_name(uint8_t lang)
 {
-	if (lang == 0) return MSG_LANGUAGE_NAME + 2;
-	return lang_get_sec_lang_str(MSG_LANGUAGE_NAME);
+	if (lang == LANG_ID_UNDEFINED) lang = lang_selected;
+	if (lang == LANG_ID_PRI) return MSG_LANGUAGE_NAME + 2;
+	if (lang == LANG_ID_SEC)
+	{
+		uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+		if (pgm_read_dword(((uint32_t*)(ui + 0))) == LANG_MAGIC) //magic num is OK
+			return lang_get_sec_lang_str(MSG_LANGUAGE_NAME);
+	}
+	return 0;
+}
+
+uint16_t lang_get_code(uint8_t lang)
+{
+	if (lang == LANG_ID_UNDEFINED) lang = lang_selected;
+	if (lang == LANG_ID_PRI) return LANG_CODE_EN;
+	if (lang == LANG_ID_SEC)
+	{
+		uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+		if (pgm_read_dword(((uint32_t*)(ui + 0))) == LANG_MAGIC) //magic num is OK
+			return pgm_read_word(((uint16_t*)(ui + 10))); //read language code
+	}
+	return LANG_CODE_XX;
 }
 
 #ifdef DEBUG_SEC_LANG
@@ -111,13 +134,13 @@ uint16_t lang_print_sec_lang(FILE* out)
 	uint16_t _lt_chsum = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 8)));
 	uint16_t _lt_resv0 = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 10)));
 	uint32_t _lt_resv1 = pgm_read_dword(((uint32_t*)(ptr_lang_table0 + 12)));
-	printf_P(_n(" _lt_magic        = 0x%08lx %S\n"), _lt_magic, (_lt_magic==0x4bb45aa5)?_n("OK"):_n("NA"));
+	printf_P(_n(" _lt_magic        = 0x%08lx %S\n"), _lt_magic, (_lt_magic==LANG_MAGIC)?_n("OK"):_n("NA"));
 	printf_P(_n(" _lt_size         = 0x%04x (%d)\n"), _lt_size, _lt_size);
 	printf_P(_n(" _lt_count        = 0x%04x (%d)\n"), _lt_count, _lt_count);
 	printf_P(_n(" _lt_chsum        = 0x%04x\n"), _lt_chsum);
 	printf_P(_n(" _lt_resv0        = 0x%04x\n"), _lt_resv0);
 	printf_P(_n(" _lt_resv1        = 0x%08lx\n"), _lt_resv1);
-	if (_lt_magic != 0x4bb45aa5) return 0;
+	if (_lt_magic != LANG_MAGIC) return 0;
 	puts_P(_n(" strings:\n"));
 	uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
 	for (ui = 0; ui < _lt_count; ui++)

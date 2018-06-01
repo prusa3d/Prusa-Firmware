@@ -51,6 +51,7 @@
 
 // Language is not defined and it shall be selected from the menu.
 #define LANG_ID_FORCE_SELECTION 254
+
 // Language is not defined on a virgin RAMBo board.
 #define LANG_ID_UNDEFINED 255
 
@@ -60,6 +61,17 @@
 // Number of languages available in the language table.
 #define LANG_NUM 2
 
+// Magic number at begin of lang table.
+#define LANG_MAGIC 0x4bb45aa5
+
+// Language codes (ISO639-1)
+#define LANG_CODE_XX 0x3f3f //'??'
+#define LANG_CODE_EN 0x656e //'en'
+#define LANG_CODE_CZ 0x6373 //'cs'
+#define LANG_CODE_DE 0x6465 //'de'
+#define LANG_CODE_ES 0x6573 //'es'
+#define LANG_CODE_IT 0x6974 //'it'
+#define LANG_CODE_PL 0x706c //'pl'
 
 #if defined(__cplusplus)
 extern "C" {
@@ -78,6 +90,7 @@ extern const char* lang_get_sec_lang_str_by_id(uint16_t id);
 extern const char* lang_select(uint8_t lang);
 extern uint8_t lang_get_count();
 extern const char* lang_get_name(uint8_t lang);
+extern uint16_t lang_get_code(uint8_t lang);
 
 #ifdef DEBUG_SEC_LANG
 extern uint16_t lang_print_sec_lang(FILE* out);

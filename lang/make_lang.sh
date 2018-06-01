@@ -87,8 +87,17 @@ lt_data_size=$(wc -c lang_$LANG.dat | cut -f1 -d' ')
 lt_offs_size=$((2 * $lt_count))
 lt_size=$((16 + $lt_offs_size + $lt_data_size))
 lt_chsum=1
-lt_resv0='\xff\xff'
+lt_code='\xff\xff'
 lt_resv1='\xff\xff\xff\xff'
+
+case "$LANG" in
+ *en*) lt_code='\x6e\x65' ;;
+ *cz*) lt_code='\x73\x63' ;;
+ *de*) lt_code='\x65\x64' ;;
+ *es*) lt_code='\x73\x65' ;;
+ *it*) lt_code='\x74\x69' ;;
+ *pl*) lt_code='\x6c\x70' ;;
+esac
 
 #generate lang_xx.ofs (secondary language text data offset table)
 echo -n " generating lang_$LANG.ofs..." >&2
@@ -114,7 +123,7 @@ echo -n "  writing header (16 bytes)..." >&2
  dd of=lang_$LANG.bin bs=1 count=2 seek=6 conv=notrunc 2>/dev/null
 /bin/echo -n -e $(echo -n "$lt_chsum" | awk "$awk_ui16") |\
  dd of=lang_$LANG.bin bs=1 count=2 seek=8 conv=notrunc 2>/dev/null
-/bin/echo -n -e "$lt_resv0" |\
+/bin/echo -n -e "$lt_code" |\
  dd of=lang_$LANG.bin bs=1 count=2 seek=10 conv=notrunc 2>/dev/null
 /bin/echo -n -e "$lt_resv1" |\
  dd of=lang_$LANG.bin bs=1 count=4 seek=12 conv=notrunc 2>/dev/null

@@ -29,8 +29,8 @@ lang_name=$(\
   *en*) echo "English" ;;
   *cz*) echo "Czech" ;;
   *de*) echo "German" ;;
-  *it*) echo "Italian" ;;
   *es*) echo "Spanish" ;;
+  *it*) echo "Italian" ;;
   *pl*) echo "Polish" ;;
  esac)
 
