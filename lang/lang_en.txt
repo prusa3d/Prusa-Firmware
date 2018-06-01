@@ -22,9 +22,6 @@
 #MSG_CONFIGURATION_VER c=0 r=0
 " Last Updated: "
 
-#MSG_FIND_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
-" of 4"
-
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 " of 4"
 
@@ -139,9 +136,6 @@
 #MSG_CALIBRATE_Z_AUTO c=20 r=2
 "Calibrating Z"
 
-#MSG_HOMEYZ_PROGRESS c=0 r=0
-"Calibrating Z"
-
 #MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
 "Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 
@@ -252,9 +246,6 @@
 
 #MSG_INFO_EXTRUDER c=15 r=1
 "Extruder info"
-
-#MSG_EXTRUDER c=17 r=1
-"Extruder"
 
 #MSG_MOVE_E c=0 r=0
 "Extruder"
@@ -750,9 +741,6 @@
 
 #MSG_RESUME_PRINT c=0 r=0
 "Resume print"
-
-#MSG_RESUMING c=0 r=0
-"Resuming print"
 
 #MSG_RESUMING_PRINT c=20 r=1
 "Resuming print"

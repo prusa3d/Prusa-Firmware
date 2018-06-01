@@ -34,10 +34,6 @@
 " of 4"
 " von 4"
 
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
-" of 4"
-" von 4"
-
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14 r=0
 " of 9"
 " von 9"
@@ -182,11 +178,7 @@
 "Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
 "Kalibrieren von XYZ. Drehen Sie den Knopf bis der obere Anschlag erreicht wird. Klicken Sie den Knopf wenn es ganz oben wird."
 
-#MSG_HOMEYZ_PROGRESS c=0 r=0
-"Calibrating Z"
-"Kalibriere Z"
-
-#MSG_HOMEYZ_PROGRESS c=0 r=0
+#MSG_CALIBRATE_Z_AUTO c=0 r=0
 "Calibrating Z"
 "Kalibriere Z"
 
@@ -337,10 +329,6 @@
 #MSG_INFO_EXTRUDER c=15 r=1
 "Extruder info"
 "\x00"
-
-#MSG_MOVE_E c=0 r=0
-"Extruder"
-"Extruder"
 
 #MSG_MOVE_E c=0 r=0
 "Extruder"
@@ -1002,11 +990,7 @@
 "Resume print"
 "Fortsetzen"
 
-#MSG_RESUMING c=0 r=0
-"Resuming print"
-"Druck fortgesetzt"
-
-#MSG_RESUMING c=0 r=0
+#MSG_RESUMING_PRINT c=0 r=0
 "Resuming print"
 "Druck fortgesetzt"
 

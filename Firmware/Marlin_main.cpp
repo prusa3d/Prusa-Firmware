@@ -4384,7 +4384,7 @@ void process_commands()
 		KEEPALIVE_STATE(IN_HANDLER);
       }
       if (IS_SD_PRINTING)
-        LCD_MESSAGERPGM(_i("Resuming print"));////MSG_RESUMING c=0 r=0
+        LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
       else
         LCD_MESSAGERPGM(_T(WELCOME_MSG));
     }

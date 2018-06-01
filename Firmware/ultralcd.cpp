@@ -703,7 +703,7 @@ void lcd_commands()
 			strcat(cmd1, ftostr32(pause_lastpos[Y_AXIS]));
 			enquecommand(cmd1);
 			
-			lcd_setstatuspgm(_i("Resuming print"));////MSG_RESUMING_PRINT c=20 r=1
+			lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
 			lcd_commands_step = 3;
 		}
 	}
