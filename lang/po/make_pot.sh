@@ -18,13 +18,16 @@ lang_short="en"
 
 po_date=$(date)
 
-cat ../lang_en_cz.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_cz.tmp
-cat ../lang_en_de.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_de.tmp
-cat ../lang_en_es.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_es.tmp
-cat ../lang_en_it.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_it.tmp
-cat ../lang_en_pl.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_pl.tmp
+#cat ../lang_en_cz.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_cz.tmp
+#cat ../lang_en_de.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_de.tmp
+#cat ../lang_en_es.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_es.tmp
+#cat ../lang_en_it.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_it.tmp
+#cat ../lang_en_pl.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_pl.tmp
 
-cat lang_pot_cz.tmp lang_pot_de.tmp lang_pot_es.tmp lang_pot_it.tmp lang_pot_pl.tmp | sort -u > lang_pot.tmp
+#cat lang_pot_cz.tmp lang_pot_de.tmp lang_pot_es.tmp lang_pot_it.tmp lang_pot_pl.tmp | sort -u > lang_pot.tmp
+
+#cat ../lang_en.txt | sed "/^$/d;/^#/d" > lang_pot.tmp
+
 
 #write po header
 echo "# Translation of Prusa-Firmware into $lang_name." > lang.pot
@@ -49,21 +52,29 @@ echo >> lang.pot
 files=$(ls "$SRCDIR"/*.cpp "$SRCDIR"/*.c "$SRCDIR"/*.h)
 
 num_texts=$(grep '^#' -c ../lang_en.txt)
-num_texts_nt=$(grep '^' -c lang_pot.tmp)
-echo " $num_texts texts, $num_texts_nt not translated" >&2
+#num_texts_nt=$(grep '^"' -c lang_en.txt)
+#echo " $num_texts texts, $num_texts_nt not translated" >&2
+echo " $num_texts texts" >&2
 
 #loop over all messages
+s0=''
+s1=''
 num=1
-cat lang_pot.tmp | sed "s/\\\\/\\\\\\\\/g;s/^#/#: /" | while read -r s; do
+cat ../lang_en.txt | sed "s/\\\\/\\\\\\\\/g" | while read -r s; do
+ if [ -z "$s" ]; then
   echo "  processing $num of $num_texts" >&2
-  search=$(/bin/echo -e "$s")
+  search=$(/bin/echo -e "$s0")
   found=$(grep -m1 -n -F "$search" $files | head -n1 | cut -f1-2 -d':' | sed "s/^.*\///")
+  echo "$s1" | sed 's/ c=0//;s/ r=0//;s/^#/# /'
   echo "#: $found"
   #echo "#, fuzzy"
-  /bin/echo -e "msgid $s"
+  /bin/echo -e "msgid $s0"
   echo 'msgstr ""'
   echo
   num=$((num+1))
+ fi
+ s1=$s0
+ s0=$s
 done >> lang.pot
 
 #replace LF with CRLF

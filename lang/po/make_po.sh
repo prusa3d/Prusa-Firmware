@@ -77,12 +77,13 @@ s0=''
 s1=''
 s2=''
 num=1
-cat ../lang_en_$LANG.txt | sed "s/\\\\/\\\\\\\\/g;s/^#/#: /" | while read -r s; do
+cat ../lang_en_$LANG.txt | sed "s/\\\\/\\\\\\\\/g" | while read -r s; do
  if [ "$s" == "" ]; then
   echo "  processing $num of $num_texts" >&2
   if [ "$s0" == "\"\\\\x00\"" ]; then
    search=$(/bin/echo -e "$s1")
    found=$(grep -m1 -n -F "$search" $files | head -n1 | cut -f1-2 -d':' | sed "s/^.*\///")
+   echo "$s2" | sed 's/ c=0//;s/ r=0//;s/^#/# /'
    echo "#: $found"
    echo "#, fuzzy"
    /bin/echo -e "msgid $s1"
@@ -91,6 +92,7 @@ cat ../lang_en_$LANG.txt | sed "s/\\\\/\\\\\\\\/g;s/^#/#: /" | while read -r s; 
   else
    search=$(/bin/echo -e "$s1")
    found=$(grep -m1 -n -F "$search" $files | head -n1 | cut -f1-2 -d':' | sed "s/^.*\///")
+   echo "$s2" | sed 's/ c=0//;s/ r=0//;s/^#/# /'
    echo "#: $found"
    /bin/echo -e "msgid $s1"
    /bin/echo -e "msgstr $s0"
