@@ -830,8 +830,12 @@ if (print_sd_status)
 #endif
 	}
 
-
-
+#ifdef CMD_DIAGNOSTICS
+	lcd.setCursor(LCD_WIDTH - 8 -1, 2);
+	lcd_printPGM(PSTR("      C"));
+	lcd.print(buflen);	// number of commands in cmd buffer
+	if (buflen < 9) lcd_printPGM(" ");
+#else
     //Print time elapsed
     lcd.setCursor(LCD_WIDTH - 8 -1, 2);
     lcd_printPGM(PSTR(" "));
@@ -846,6 +850,7 @@ if (print_sd_status)
         lcd_printPGM(PSTR("--:--"));
     }
     lcd_printPGM(PSTR("  "));
+#endif //CMD_DIAGNOSTICS
 
 #ifdef DEBUG_DISABLE_LCD_STATUS_LINE
 	return;

@@ -116,6 +116,9 @@
 //Macro for print fan speed
 #define FAN_PULSE_WIDTH_LIMIT ((fanSpeed > 100) ? 3 : 4) //time in ms
 
+#define PRINTING_TYPE_SD 0
+#define PRINTING_TYPE_USB 1
+
 // look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
 // http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
 
@@ -483,6 +486,7 @@ boolean chdkActive = false;
 
 // save/restore printing
 static uint32_t saved_sdpos = 0;
+static uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { 0, 0, 0, 0 };
 // Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
 static float saved_feedrate2 = 0;
@@ -626,12 +630,12 @@ void crashdet_disable()
 
 void crashdet_stop_and_save_print()
 {
-	stop_and_save_print_to_ram(10, 0); //XY - no change, Z 10mm up, E - no change
+	stop_and_save_print_to_ram(10, -2); //XY - no change, Z 10mm up, E -2mm retract
 }
 
 void crashdet_restore_print_and_continue()
 {
-	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+	restore_print_from_ram_and_continue(2); //XYZ = orig, E +2mm unretract
 //	babystep_apply();
 }
 
@@ -1732,7 +1736,15 @@ void loop()
           planner_add_sd_length(sdlen.value);
           sei();
         }
-      }
+	  }
+	  else if((*ptr == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR) && !IS_SD_PRINTING){ 
+		  
+		  cli();
+          *ptr ++ = CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED;
+          // and one for each command to previous block in the planner queue.
+          planner_add_sd_length(1);
+          sei();
+	  }
       // Now it is safe to release the already processed command block. If interrupted by the power panic now,
       // this block's SD card length will not be counted twice as its command type has been replaced 
       // by CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED.
@@ -6933,7 +6945,7 @@ void FlushSerialRequestResend()
 void ClearToSend()
 {
     previous_millis_cmd = millis();
-    if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB)
+    if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB))
         SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
 }
 
@@ -8496,15 +8508,36 @@ void restore_print_from_eeprom() {
 void stop_and_save_print_to_ram(float z_move, float e_move)
 {
 	if (saved_printing) return;
-	cli();
-  unsigned char nplanner_blocks = number_of_blocks();
-	saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
-	uint16_t sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
-	saved_sdpos -= sdlen_planner;
-	uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
-	saved_sdpos -= sdlen_cmdqueue;
+	unsigned char nplanner_blocks;
+	unsigned char nlines;
+	uint16_t sdlen_planner;
+	uint16_t sdlen_cmdqueue;
+	
 
-#if 1
+	cli();
+	if (card.sdprinting) {
+		nplanner_blocks = number_of_blocks();
+		saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
+		sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
+		saved_sdpos -= sdlen_planner;
+		sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
+		saved_sdpos -= sdlen_cmdqueue;
+		saved_printing_type = PRINTING_TYPE_SD;
+
+	}
+	else if (is_usb_printing) { //reuse saved_sdpos for storing line number
+		 saved_sdpos = gcode_LastN; //start with line number of command added recently to cmd queue
+		 //reuse planner_calc_sd_length function for getting number of lines of commands in planner:
+		 nlines = planner_calc_sd_length(); //number of lines of commands in planner 
+		 saved_sdpos -= nlines;
+		 saved_sdpos -= buflen; //number of blocks in cmd buffer
+		 saved_printing_type = PRINTING_TYPE_USB;
+	}
+	else {
+		//not sd printing nor usb printing
+	}
+
+#if 0
   SERIAL_ECHOPGM("SDPOS_ATOMIC="); MYSERIAL.println(sdpos_atomic, DEC);
   SERIAL_ECHOPGM("SDPOS="); MYSERIAL.println(card.get_sdpos(), DEC);
   SERIAL_ECHOPGM("SDLEN_PLAN="); MYSERIAL.println(sdlen_planner, DEC);
@@ -8524,7 +8557,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
       MYSERIAL.print(char(card.get()));
     SERIAL_ECHOLNPGM("End of command buffer");
   }
-#if 1
+#if 0
   {
     // Print the content of the planner buffer, line by line:
     card.setIndex(saved_sdpos);
@@ -8620,11 +8653,17 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 #if 1
     // Rather than calling plan_buffer_line directly, push the move into the command queue, 
     char buf[48];
+
+	// First unretract (relative extrusion)
+	strcpy_P(buf, PSTR("G1 E"));
+	dtostrf(e_move, 6, 3, buf + strlen(buf));
+	strcat_P(buf, PSTR(" F"));
+	dtostrf(retract_feedrate*60, 8, 3, buf + strlen(buf));
+	enquecommand(buf, false);
+
+	// Then lift Z axis
     strcpy_P(buf, PSTR("G1 Z"));
     dtostrf(saved_pos[Z_AXIS] + z_move, 8, 3, buf + strlen(buf));
-    strcat_P(buf, PSTR(" E"));
-    // Relative extrusion
-    dtostrf(e_move, 6, 3, buf + strlen(buf));
     strcat_P(buf, PSTR(" F"));
     dtostrf(homing_feedrate[Z_AXIS], 8, 3, buf + strlen(buf));
     // At this point the command queue is empty.
@@ -8651,14 +8690,23 @@ void restore_print_from_ram_and_continue(float e_move)
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS]/13, active_extruder);
-    st_synchronize();
-  memcpy(current_position, saved_pos, sizeof(saved_pos));
-  memcpy(destination, current_position, sizeof(destination));
-	card.setIndex(saved_sdpos);
-  sdpos_atomic = saved_sdpos;
-	card.sdprinting = true;
+	st_synchronize();
+	memcpy(current_position, saved_pos, sizeof(saved_pos));
+	memcpy(destination, current_position, sizeof(destination));
+	if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
+		card.setIndex(saved_sdpos);
+		sdpos_atomic = saved_sdpos;
+		card.sdprinting = true;
+	}
+	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
+		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
+		FlushSerialRequestResend();
+	}
+	else {
+		//not sd printing nor usb printing
+	}
 	saved_printing = false;
-	printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
+	
 }
 
 void print_world_coordinates()
