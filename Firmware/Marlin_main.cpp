@@ -318,6 +318,7 @@ float pause_lastpos[4];
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
+static LongTimer safetyTimer;
 
 //unsigned long load_filament_time;
 
@@ -7156,7 +7157,6 @@ static void handleSafetyTimer()
 #if (EXTRUDERS > 1)
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
-    static LongTimer safetyTimer;
     if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4)
         || (lcd_commands_type == LCD_COMMAND_V2_CAL) || (!degTargetBed() && !degTargetHotend(0)))
     {
