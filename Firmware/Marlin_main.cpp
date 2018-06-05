@@ -8122,7 +8122,6 @@ void uvlo_()
     // Conserve power as soon as possible.
     disable_x();
     disable_y();
-    disable_e0();
     
 #ifdef TMC2130
 	tmc2130_set_current_h(Z_AXIS, 20);
@@ -8222,11 +8221,19 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
-    // Store the current feed rate, temperatures and fan speed.
+    // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
     EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
+	eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_0), extruder_multiplier[0]);
+#if EXTRUDERS > 1
+	eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_1), extruder_multiplier[1]);
+#if EXTRUDERS > 2
+	eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_2), extruder_multiplier[2]);
+#endif
+#endif
+
     // Finaly store the "power outage" flag.
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 
@@ -8330,13 +8337,7 @@ void recover_print(uint8_t automatic) {
 	lcd_update(2);
 	lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20 r=1
 
-  recover_machine_state_after_power_panic();
-
-    // Set the target bed and nozzle temperatures. 
-    sprintf_P(cmd, PSTR("M104 S%d"), target_temperature[active_extruder]); 
-    enquecommand(cmd); 
-    sprintf_P(cmd, PSTR("M140 S%d"), target_temperature_bed); 
-    enquecommand(cmd);
+  recover_machine_state_after_power_panic(); //recover position, temperatures and extrude_multipliers
 
   // Lift the print head, so one may remove the excess priming material.
   if (current_position[Z_AXIS] < 25)
@@ -8438,6 +8439,16 @@ void recover_machine_state_after_power_panic()
   // 7) Recover the target temperatures.
   target_temperature[active_extruder] = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND);
   target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
+
+  // 8) Recover extruder multipilers
+  extruder_multiplier[0] = eeprom_read_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_0));
+#if EXTRUDERS > 1
+  extruder_multiplier[1] = eeprom_read_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_1));
+#if EXTRUDERS > 2
+  extruder_multiplier[2] = eeprom_read_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_2));
+#endif
+#endif
+
 }
 
 void restore_print_from_eeprom() {
