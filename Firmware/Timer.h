@@ -32,12 +32,20 @@ private:
  *
  * Maximum period is at least 49 days.
  */
+#if __cplusplus>=201103L
 using LongTimer = Timer<unsigned long>;
+#else
+typedef Timer<unsigned long> LongTimer;
+#endif
 /**
  * @brief Timer unsigned short specialization
  *
  * Maximum period is at least 65 seconds.
  */
+#if __cplusplus>=201103L
 using ShortTimer = Timer<unsigned short>;
+#else
+typedef Timer<unsigned short> ShortTimer;
+#endif
 
 #endif /* TIMER_H */
