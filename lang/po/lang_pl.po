@@ -1,0 +1,292 @@
+# Translation into Polish.
+#
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ultralcd.cpp:6304
+msgid "  [off"
+msgstr ""
+
+#: ultralcd.cpp:2362
+msgid "[0;0] point offset"
+msgstr ""
+
+#: ultralcd.cpp:3613
+msgid "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
+msgstr ""
+
+#: ultralcd.cpp:3626
+msgid "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
+msgstr ""
+
+#: ultralcd.cpp:5796
+msgid "AutoLoad filament"
+msgstr ""
+
+#: ultralcd.cpp:3642
+msgid "Autoloading filament available only when filament sensor is turned on..."
+msgstr ""
+
+#: ultralcd.cpp:2089
+msgid "Autoloading filament is active, just press the knob and insert filament..."
+msgstr ""
+
+#: ultralcd.cpp:6999
+msgid "Axis length"
+msgstr ""
+
+#: ultralcd.cpp:7001
+msgid "Axis"
+msgstr ""
+
+#: ultralcd.cpp:1738
+msgid "Belt status"
+msgstr ""
+
+#: messages.c:72
+msgid "Blackout occurred. Recover print?"
+msgstr ""
+
+#: messages.c:28
+msgid "Crash det.   [on]"
+msgstr ""
+
+#: messages.c:26
+msgid "Crash det.  [N/A]"
+msgstr ""
+
+#: messages.c:27
+msgid "Crash det.  [off]"
+msgstr ""
+
+#: messages.c:25
+msgid "Crash detected."
+msgstr ""
+
+#: ultralcd.cpp:4213
+msgid "E-correct"
+msgstr ""
+
+#: ultralcd.cpp:5835
+msgid "Error - static memory has been overwritten"
+msgstr ""
+
+#: ultralcd.cpp:3656
+msgid "ERROR: Filament sensor is not responding, please check connection."
+msgstr ""
+
+#: ultralcd.cpp:7236
+msgid "Extruder fan:"
+msgstr ""
+
+#: ultralcd.cpp:1840
+msgid "Extruder info"
+msgstr ""
+
+#: ultralcd.cpp:4178
+msgid "F. autoload  [on]"
+msgstr ""
+
+#: messages.c:47
+msgid "F. autoload [N/A]"
+msgstr ""
+
+#: ultralcd.cpp:4181
+msgid "F. autoload [off]"
+msgstr ""
+
+#: ultralcd.cpp:4189
+msgid "Fans check   [on]"
+msgstr ""
+
+#: ultralcd.cpp:4192
+msgid "Fans check  [off]"
+msgstr ""
+
+#: messages.c:49
+msgid "Fil. sensor  [on]"
+msgstr ""
+
+#: ultralcd.cpp:4164
+msgid "Fil. sensor [N/A]"
+msgstr ""
+
+#: messages.c:48
+msgid "Fil. sensor [off]"
+msgstr ""
+
+#: ultralcd.cpp:7015
+msgid "Filament sensor"
+msgstr ""
+
+#: ultralcd.cpp:7245
+msgid "Filament sensor:"
+msgstr ""
+
+#: ultralcd.cpp:7388
+msgid "File incomplete. Continue anyway?"
+msgstr ""
+
+#: ultralcd.cpp:7007
+msgid "Front/left fans"
+msgstr ""
+
+#: Marlin_main.cpp:7190
+msgid "Heating disabled by safety timer."
+msgstr ""
+
+#: messages.c:85
+msgid "Checking sensors "
+msgstr ""
+
+#: messages.c:93
+msgid "Is steel sheet on heatbed?"
+msgstr ""
+
+#: messages.c:91
+msgid "Mode     [Normal]"
+msgstr ""
+
+#: messages.c:92
+msgid "Mode    [Stealth]"
+msgstr ""
+
+#: messages.c:13
+msgid "Mode [auto power]"
+msgstr ""
+
+#: ultralcd.cpp:1537
+msgid "Nozzle FAN:"
+msgstr ""
+
+#: Marlin_main.cpp:1364
+msgid "Old settings found. Default PID, Esteps etc. will be set."
+msgstr ""
+
+#: Marlin_main.cpp:6124
+msgid "Please open idler and remove filament manually."
+msgstr ""
+
+#: messages.c:65
+msgid "Please place steel sheet on heatbed."
+msgstr ""
+
+#: messages.c:69
+msgid "Please press the knob to unload filament"
+msgstr ""
+
+#: messages.c:71
+msgid "Please pull out filament immediately"
+msgstr ""
+
+#: messages.c:74
+msgid "Please remove steel sheet from heatbed."
+msgstr ""
+
+#: Marlin_main.cpp:5983
+msgid "Press knob to preheat nozzle and continue."
+msgstr ""
+
+#: ultralcd.cpp:1549
+msgid "Print FAN: "
+msgstr ""
+
+#: ultralcd.cpp:7239
+msgid "Print fan:"
+msgstr ""
+
+#: ultralcd.cpp:607
+msgid "Printer disconnected"
+msgstr ""
+
+#: Marlin_main.cpp:8247
+msgid "Recovering print    "
+msgstr ""
+
+#: ultralcd.cpp:4227
+msgid "RPi port     [on]"
+msgstr ""
+
+#: ultralcd.cpp:4224
+msgid "RPi port    [off]"
+msgstr ""
+
+#: Marlin_main.cpp:1396
+msgid "Selftest will be run to calibrate accurate sensorless rehoming."
+msgstr ""
+
+#: cardreader.cpp:754
+msgid "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
+msgstr ""
+
+#: ultralcd.cpp:4250
+msgid "Sort:      [None]"
+msgstr ""
+
+#: ultralcd.cpp:4248
+msgid "Sort:      [Time]"
+msgstr ""
+
+#: ultralcd.cpp:4249
+msgid "Sort:  [Alphabet]"
+msgstr ""
+
+#: cardreader.cpp:761
+msgid "Sorting files"
+msgstr ""
+
+#: Marlin_main.cpp:3504
+msgid "Stable ambient temperature 21-26C is needed a rigid stand is required."
+msgstr ""
+
+#: ultralcd.cpp:7009
+msgid "Swapped"
+msgstr ""
+
+#: ultralcd.cpp:3189
+msgid "Temperature calibration failed"
+msgstr ""
+
+#: ultralcd.cpp:1846
+msgid "Temperatures"
+msgstr ""
+
+#: ultralcd.cpp:1849
+msgid "Voltages"
+msgstr ""
+
+#: ultralcd.cpp:2683
+msgid "Waiting for PINDA probe cooling"
+msgstr ""
+
+#: Marlin_main.cpp:1356
+msgid "Warning: both printer type and motherboard type changed."
+msgstr ""
+
+#: Marlin_main.cpp:1348
+msgid "Warning: motherboard type changed."
+msgstr ""
+
+#: Marlin_main.cpp:1352
+msgid "Warning: printer type changed."
+msgstr ""
+
+#: Marlin_main.cpp:946
+msgid "WARNING: This is an unofficial, unsupported build. Use at your own risk!"
+msgstr ""
+
+#: Marlin_main.cpp:6123
+msgid "Was filament unload successful?"
+msgstr ""
+
+#: Marlin_main.cpp:930
+msgid "You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage."
+msgstr ""
+
+#: Marlin_main.cpp:931
+msgid "You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."
+msgstr ""
+

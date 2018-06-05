@@ -343,10 +343,12 @@ extern unsigned long t_fan_rising_edge;
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
-extern float distance_from_min[2];
 extern bool sortAlpha;
 
 extern char dir_names[3][9];
+
+// save/restore printing
+extern bool saved_printing;
 
 extern void calculate_extruder_multipliers();
 
@@ -435,6 +437,7 @@ void force_high_power_mode(bool start_high_power_section);
 #endif //TMC2130
 
 // G-codes
+void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib);
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
 void gcode_M701();

@@ -76,8 +76,12 @@ bool tmc2130_sg_change = false;
 bool skip_debug_msg = false;
 
 #define DBG(args...) printf_P(args)
+#ifndef _n
 #define _n PSTR
+#endif //_n
+#ifndef _i
 #define _i PSTR
+#endif //_i
 
 //TMC2130 registers
 #define TMC2130_REG_GCONF      0x00 // 17 bits
@@ -210,9 +214,11 @@ void tmc2130_init()
 	tmc2130_sg_cnt[3] = 0;
 
 #ifdef TMC2130_LINEARITY_CORRECTION
-//	tmc2130_set_wave(X_AXIS, 247, tmc2130_wave_fac[X_AXIS]);
-//	tmc2130_set_wave(Y_AXIS, 247, tmc2130_wave_fac[Y_AXIS]);
-//	tmc2130_set_wave(Z_AXIS, 247, tmc2130_wave_fac[Z_AXIS]);
+#ifdef TMC2130_LINEARITY_CORRECTION_XYZ
+	tmc2130_set_wave(X_AXIS, 247, tmc2130_wave_fac[X_AXIS]);
+	tmc2130_set_wave(Y_AXIS, 247, tmc2130_wave_fac[Y_AXIS]);
+	tmc2130_set_wave(Z_AXIS, 247, tmc2130_wave_fac[Z_AXIS]);
+#endif //TMC2130_LINEARITY_CORRECTION_XYZ
 	tmc2130_set_wave(E_AXIS, 247, tmc2130_wave_fac[E_AXIS]);
 #endif //TMC2130_LINEARITY_CORRECTION
 
@@ -413,7 +419,7 @@ void tmc2130_check_overtemp()
 			lcd.print(' ');
 		}
 	}
-#endif DEBUG_CRASHDET_COUNTERS
+#endif //DEBUG_CRASHDET_COUNTERS
 }
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)

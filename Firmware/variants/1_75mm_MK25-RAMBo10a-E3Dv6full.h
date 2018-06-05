@@ -38,9 +38,9 @@
 #define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,133}
 
 // Endstop inverting
-const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
-const bool Y_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
-const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
+#define X_MIN_ENDSTOP_INVERTING 0 // set to true to invert the logic of the endstop.
+#define Y_MIN_ENDSTOP_INVERTING 0 // set to true to invert the logic of the endstop.
+#define Z_MIN_ENDSTOP_INVERTING 0 // set to true to invert the logic of the endstop.
 
 // Direction inverting
 #define INVERT_X_DIR false    // for Mendel set to false, for Orca set to true
@@ -74,6 +74,15 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min) // 3000 is also valid for stallGuard homing. Valid range: 2200 - 3000
+
+/**
+ * [0,0] steel sheet print area point X coordinate in bed print area coordinates
+ */
+#define SHEET_PRINT_ZERO_REF_X 0.f
+/**
+ * [0,0] steel sheet print area point Y coordinate in bed print area coordinates
+ */
+#define SHEET_PRINT_ZERO_REF_Y 0.f
 
 #define DEFAULT_MAX_FEEDRATE          {200, 200, 12, 120}      // (mm/sec)   max feedrate (M203)
 #define DEFAULT_MAX_ACCELERATION      {1000, 1000, 200, 5000}  // (mm/sec^2) max acceleration (M201)

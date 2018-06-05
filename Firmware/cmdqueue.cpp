@@ -286,7 +286,7 @@ void enquecommand(const char *cmd, bool from_progmem)
         else
             strcpy(cmdbuffer + bufindw + CMDHDRSIZE, cmd);
         SERIAL_ECHO_START;
-        SERIAL_ECHORPGM(MSG_Enqueing);
+        SERIAL_ECHORPGM(_T(MSG_Enqueing));
         SERIAL_ECHO(cmdbuffer + bufindw + CMDHDRSIZE);
         SERIAL_ECHOLNPGM("\"");
         bufindw += len + (CMDHDRSIZE + 1);
@@ -298,7 +298,7 @@ void enquecommand(const char *cmd, bool from_progmem)
 #endif /* CMDBUFFER_DEBUG */
     } else {
         SERIAL_ERROR_START;
-        SERIAL_ECHORPGM(MSG_Enqueing);
+        SERIAL_ECHORPGM(_T(MSG_Enqueing));
         if (from_progmem)
             SERIAL_PROTOCOLRPGM(cmd);
         else
@@ -425,7 +425,7 @@ void get_command()
 				  // M110 - set current line number.
 				  // Line numbers not sent in succession.
 				  SERIAL_ERROR_START;
-				  SERIAL_ERRORRPGM(MSG_ERR_LINE_NO);
+				  SERIAL_ERRORRPGM(_n("Line Number is not Last Line Number+1, Last Line: "));////MSG_ERR_LINE_NO c=0 r=0
 				  SERIAL_ERRORLN(gcode_LastN);
 				  //Serial.println(gcode_N);
 				  FlushSerialRequestResend();
@@ -441,7 +441,7 @@ void get_command()
 					  checksum = checksum^(*p++);
 				  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
 					  SERIAL_ERROR_START;
-					  SERIAL_ERRORRPGM(MSG_ERR_CHECKSUM_MISMATCH);
+					  SERIAL_ERRORRPGM(_i("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
 					  SERIAL_ERRORLN(gcode_LastN);
 					  FlushSerialRequestResend();
 					  serial_count = 0;
@@ -453,7 +453,7 @@ void get_command()
 			  else
 			  {
 				  SERIAL_ERROR_START;
-				  SERIAL_ERRORRPGM(MSG_ERR_NO_CHECKSUM);
+				  SERIAL_ERRORRPGM(_i("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM c=0 r=0
 				  SERIAL_ERRORLN(gcode_LastN);
 				  FlushSerialRequestResend();
 				  serial_count = 0;
@@ -470,7 +470,7 @@ void get_command()
         {
 
             SERIAL_ERROR_START;
-            SERIAL_ERRORRPGM(MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM);
+            SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM c=0 r=0
             SERIAL_ERRORLN(gcode_LastN);
             serial_count = 0;
             return;
@@ -483,8 +483,8 @@ void get_command()
             if (Stopped == true) {
                 int gcode = strtol(strchr_pointer+1, NULL, 10);
                 if (gcode >= 0 && gcode <= 3) {
-                    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
-                    LCD_MESSAGERPGM(MSG_STOPPED);
+                    SERIAL_ERRORLNRPGM(_T(MSG_ERR_STOPPED));
+                    LCD_MESSAGERPGM(_T(MSG_STOPPED));
                 }
             }
         } // end of 'G' command
@@ -580,7 +580,7 @@ void get_command()
        serial_count >= (MAX_CMD_SIZE - 1) || n==-1)
     {
       if(card.eof()){
-        SERIAL_PROTOCOLLNRPGM(MSG_FILE_PRINTED);
+        SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED c=0 r=0
         stoptime=millis();
         char time[30];
         unsigned long t=(stoptime-starttime-pause_time)/1000;

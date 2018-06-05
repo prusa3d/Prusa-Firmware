@@ -1,7 +1,7 @@
 #include "Marlin.h"
 #include "Configuration.h"
 #include "ConfigurationStore.h"
-#include "language_all.h"
+#include "language.h"
 #include "mesh_bed_calibration.h"
 #include "mesh_bed_leveling.h"
 #include "stepper.h"
@@ -57,13 +57,36 @@ const float bed_skew_angle_extreme = (0.25f * M_PI / 180.f);
 
 #ifdef HEATBED_V2
 
-// Positions of the bed reference points in the machine coordinates, referenced to the P.I.N.D.A sensor.
-// The points are the following: center front, center right, center rear, center left.
+/**
+ * [0,0] bed print area point X coordinate in bed coordinates ver. 05d/24V
+ */
+#define BED_PRINT_ZERO_REF_X 2.f
+/**
+ * [0,0] bed print area point Y coordinate in bed coordinates ver. 05d/24V
+ */
+#define BED_PRINT_ZERO_REF_Y 9.4f
+
+/**
+ * @brief Positions of the bed reference points in print area coordinates. ver. 05d/24V
+ *
+ * Numeral constants are in bed coordinates, subtracting macro defined values converts it to print area coordinates.
+ *
+ * The points are the following:
+ * MK2: center front, center right, center rear, center left.
+ * MK25 and MK3: front left, front right, rear right, rear left
+ */
 const float bed_ref_points_4[] PROGMEM = {
-	13.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X,  10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
-	13.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
+	37.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_X,
+	18.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	18.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	37.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y
 };
 
 const float bed_ref_points[] PROGMEM = {
@@ -732,19 +755,24 @@ void world2machine_reset()
 }
 
 /**
- * @brief Set calibration matrix to default value
+ * @brief Get calibration matrix default value
  *
  * This is used if no valid calibration data can be read from EEPROM.
+ * @param [out] vec_x axis x vector
+ * @param [out] vec_y axis y vector
+ * @param [out] cntr offset vector
  */
-static void world2machine_default()
+static void world2machine_default(float vec_x[2], float vec_y[2], float cntr[2])
 {
+    vec_x[0] = 1.f;
+    vec_x[1] = 0.f;
+    vec_y[0] = 0.f;
+    vec_y[1] = 1.f;
+    cntr[0] =  0.f;
 #ifdef DEFAULT_Y_OFFSET
-    const float vx[] = { 1.f, 0.f };
-    const float vy[] = { 0.f, 1.f };
-    const float cntr[] = { 0.f, DEFAULT_Y_OFFSET };
-    world2machine_update(vx, vy, cntr);
+    cntr[1] = DEFAULT_Y_OFFSET;
 #else
-    world2machine_reset();
+    cntr[1] = 0.f;
 #endif
 }
 /**
@@ -768,91 +796,119 @@ static inline bool vec_undef(const float v[2])
     return vx[0] == 0x0FFFFFFFF || vx[1] == 0x0FFFFFFFF;
 }
 
+
 /**
- * @brief Read and apply calibration data from EEPROM
+ * @brief Read calibration data from EEPROM
  *
  * If no calibration data has been stored in EEPROM or invalid,
  * world2machine_default() is used.
  *
  * If stored calibration data is invalid, EEPROM storage is cleared.
- *
+ * @param [out] vec_x axis x vector
+ * @param [out] vec_y axis y vector
+ * @param [out] cntr offset vector
  */
-void world2machine_initialize()
+void world2machine_read_valid(float vec_x[2], float vec_y[2], float cntr[2])
 {
-    //SERIAL_ECHOLNPGM("world2machine_initialize");
-    float cntr[2] = {
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0)),
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4))
-    };
-    float vec_x[2] = {
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0)),
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4))
-    };
-    float vec_y[2] = {
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0)),
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4))
-    };
+    vec_x[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0));
+    vec_x[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4));
+    vec_y[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0));
+    vec_y[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4));
+    cntr[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0));
+    cntr[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4));
 
     bool reset = false;
-    if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y)) {
-//        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
+    if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y))
+    {
+#if 0
+        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
+#endif
         reset = true;
     }
-    else {
+    else
+    {
         // Length of the vec_x shall be close to unity.
         float l = sqrt(vec_x[0] * vec_x[0] + vec_x[1] * vec_x[1]);
-        if (l < 0.9 || l > 1.1) {
-//			SERIAL_ECHOLNPGM("X vector length:");
-//			MYSERIAL.println(l);
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
+        if (l < 0.9 || l > 1.1)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("X vector length:");
+            MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
+#endif
             reset = true;
         }
         // Length of the vec_y shall be close to unity.
         l = sqrt(vec_y[0] * vec_y[0] + vec_y[1] * vec_y[1]);
-        if (l < 0.9 || l > 1.1) {
-//			SERIAL_ECHOLNPGM("Y vector length:");
-//			MYSERIAL.println(l);
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the Y vector out of range.");
+        if (l < 0.9 || l > 1.1)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("Y vector length:");
+            MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the Y vector out of range.");
+#endif
             reset = true;
         }
         // Correction of the zero point shall be reasonably small.
         l = sqrt(cntr[0] * cntr[0] + cntr[1] * cntr[1]);
-        if (l > 15.f) {
-//			SERIAL_ECHOLNPGM("Zero point correction:");
-//			MYSERIAL.println(l);
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Shift out of range.");
+        if (l > 15.f)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("Zero point correction:");
+            MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Shift out of range.");
+#endif
             reset = true;
         }
         // vec_x and vec_y shall be nearly perpendicular.
         l = vec_x[0] * vec_y[0] + vec_x[1] * vec_y[1];
-        if (fabs(l) > 0.1f) {
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. X/Y axes are far from being perpendicular.");
+        if (fabs(l) > 0.1f)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. X/Y axes are far from being perpendicular.");
+#endif
             reset = true;
         }
     }
 
-    if (reset) {
-//        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
+    if (reset)
+    {
+#if 0
+        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
+#endif
         reset_bed_offset_and_skew();
-        world2machine_default();
-    } else {
-        world2machine_update(vec_x, vec_y, cntr);
-        /*
-        SERIAL_ECHOPGM("world2machine_initialize() loaded: ");
-        MYSERIAL.print(world2machine_rotation_and_skew[0][0], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_rotation_and_skew[0][1], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_rotation_and_skew[1][0], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_rotation_and_skew[1][1], 5);
-        SERIAL_ECHOPGM(", offset ");
-        MYSERIAL.print(world2machine_shift[0], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_shift[1], 5);
-        SERIAL_ECHOLNPGM("");
-        */
+        world2machine_default(vec_x, vec_y, cntr);
     }
+}
+
+/**
+ * @brief Read and apply validated calibration data from EEPROM
+ */
+void world2machine_initialize()
+{
+#if 0
+    SERIAL_ECHOLNPGM("world2machine_initialize");
+#endif
+    float vec_x[2];
+    float vec_y[2];
+    float cntr[2];
+    world2machine_read_valid(vec_x, vec_y, cntr);
+    world2machine_update(vec_x, vec_y, cntr);
+#if 0
+    SERIAL_ECHOPGM("world2machine_initialize() loaded: ");
+    MYSERIAL.print(world2machine_rotation_and_skew[0][0], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_rotation_and_skew[0][1], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_rotation_and_skew[1][0], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_rotation_and_skew[1][1], 5);
+    SERIAL_ECHOPGM(", offset ");
+    MYSERIAL.print(world2machine_shift[0], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_shift[1], 5);
+    SERIAL_ECHOLNPGM("");
+#endif
 }
 
 /**
@@ -906,6 +962,10 @@ static inline void update_current_position_z()
 // At the current position, find the Z stop.
 inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int verbosity_level)
 {
+#ifdef TMC2130
+	FORCE_HIGH_POWER_START;
+#endif
+
 	#ifdef SUPPORT_VERBOSITY
     if(verbosity_level >= 10) SERIAL_ECHOLNPGM("find bed induction sensor point z");
 	#endif // SUPPORT_VERBOSITY
@@ -922,7 +982,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     if (! endstop_z_hit_on_purpose())
         goto error;
 #ifdef TMC2130
-	if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) goto error; //crash Z detected
+	if (READ(Z_TMC2130_DIAG) != 0) goto error; //crash Z detected
 #endif //TMC2130
     for (uint8_t i = 0; i < n_iter; ++ i)
 	{
@@ -937,7 +997,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
         if (! endstop_z_hit_on_purpose())
             goto error;
 #ifdef TMC2130
-		if ((tmc2130_mode == TMC2130_MODE_NORMAL) && (READ(Z_TMC2130_DIAG) != 0)) goto error; //crash Z detected
+		if (READ(Z_TMC2130_DIAG) != 0) goto error; //crash Z detected
 #endif //TMC2130
 //        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
 //        MYSERIAL.print(current_position[Z_AXIS], 5);
@@ -951,16 +1011,23 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     if (n_iter > 1)
         current_position[Z_AXIS] /= float(n_iter);
 
+
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
 //    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 3");
-    return true;
+#ifdef TMC2130
+	FORCE_HIGH_POWER_END;
+#endif
+	return true;
 
 error:
 //    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 4");
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
-    return false;
+#ifdef TMC2130
+	FORCE_HIGH_POWER_END;
+#endif
+	return false;
 }
 
 #ifdef NEW_XYZCAL
@@ -2126,7 +2193,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		#endif // SUPPORT_VERBOSITY
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1), next_line);
     if (next_line > 3)
         next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -2138,10 +2205,10 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
 		lcd_implementation_print_at(0, next_line, k + 1);
-		lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
+		lcd_printPGM(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 
 		if (iteration > 0) {
-			lcd_print_at_PGM(0, next_line + 1, MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION);
+			lcd_print_at_PGM(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 			lcd_implementation_print(int(iteration + 1));
 		}
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -2399,7 +2466,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_i("Improving bed calibration point"), next_line);////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
     if (next_line > 3)
         next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -2412,7 +2479,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2);
+        lcd_printPGM(_i(" of 4"));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.
@@ -2576,12 +2643,11 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         // In case of success, update the too_far_mask from the calculated points.
         for (uint8_t mesh_point = 0; mesh_point < 2; ++ mesh_point) {
             float y = vec_x[1] * pgm_read_float(bed_ref_points_4+mesh_point*2) + vec_y[1] * pgm_read_float(bed_ref_points_4+mesh_point*2+1) + cntr[1];
-			distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 20) {
 				SERIAL_ECHOLNPGM("");
 				SERIAL_ECHOPGM("Distance from min:");
-				MYSERIAL.print(distance_from_min[mesh_point]);
+				MYSERIAL.print(y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 				SERIAL_ECHOLNPGM("");
 				SERIAL_ECHOPGM("y:");
 				MYSERIAL.print(y);
@@ -2670,7 +2736,7 @@ bool sample_z() {
 	go_to_current(homing_feedrate[Z_AXIS] / 60);
 	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder););
 
-	lcd_show_fullscreen_message_and_wait_P(MSG_PLACE_STEEL_SHEET);
+	lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 
 	// Sample Z heights for the mesh bed leveling.
 	// In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
@@ -2712,12 +2778,12 @@ bool sample_mesh_and_store_reference()
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1), next_line);
     if (next_line > 3)
         next_line = 3;
     // display "point xx of yy"
     lcd_implementation_print_at(0, next_line, 1);
-    lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
+    lcd_printPGM(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Sample Z heights for the mesh bed leveling.
@@ -2737,7 +2803,7 @@ bool sample_mesh_and_store_reference()
 #ifdef TMC2130
 		if (!axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0)) //Z crash
 		{
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return false;
 		}
 #endif //TMC2130
@@ -2745,7 +2811,7 @@ bool sample_mesh_and_store_reference()
         enable_endstops(false);
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return false;
 		}
         mbl.set_z(0, 0, current_position[Z_AXIS]);
@@ -2763,11 +2829,11 @@ bool sample_mesh_and_store_reference()
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         // display "point xx of yy"
         lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
+        lcd_printPGM(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return false;
 		}
         // Get cords of measuring point
@@ -2960,8 +3026,7 @@ void babystep_reset()
       babystepLoadZ = 0;    
 }
 
-void count_xyz_details() {
-	float a1, a2;
+void count_xyz_details(float (&distanceMin)[2]) {
 	float cntr[2] = {
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 0)),
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 4))
@@ -2974,12 +3039,14 @@ void count_xyz_details() {
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 0)),
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 4))
 	};
+#if 0
 	a2 = -1 * asin(vec_y[0] / MACHINE_AXIS_SCALE_Y);
 	a1 = asin(vec_x[1] / MACHINE_AXIS_SCALE_X);
-	//angleDiff = fabs(a2 - a1);
+	angleDiff = fabs(a2 - a1);
+#endif
 	for (uint8_t mesh_point = 0; mesh_point < 2; ++mesh_point) {
 		float y = vec_x[1] * pgm_read_float(bed_ref_points_4 + mesh_point * 2) + vec_y[1] * pgm_read_float(bed_ref_points_4 + mesh_point * 2 + 1) + cntr[1];
-		distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
+		distanceMin[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 	}
 }
 
