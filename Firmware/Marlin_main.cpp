@@ -8557,7 +8557,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
       MYSERIAL.print(char(card.get()));
     SERIAL_ECHOLNPGM("End of command buffer");
   }
-#if 0
   {
     // Print the content of the planner buffer, line by line:
     card.setIndex(saved_sdpos);
@@ -8567,7 +8566,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
       MYSERIAL.print(int(iline), DEC);
       SERIAL_ECHOPGM(", length: ");
       MYSERIAL.print(block_buffer[idx].sdlen, DEC);
-      /*SERIAL_ECHOPGM(", steps: (");
+      SERIAL_ECHOPGM(", steps: (");
       MYSERIAL.print(block_buffer[idx].steps_x, DEC);
       SERIAL_ECHOPGM(",");
       MYSERIAL.print(block_buffer[idx].steps_y, DEC);
@@ -8578,10 +8577,9 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
       SERIAL_ECHOPGM("), events: ");
       MYSERIAL.println(block_buffer[idx].step_event_count, DEC);
       for (int len = block_buffer[idx].sdlen; len > 0; -- len)
-        MYSERIAL.print(char(card.get()));*/
+        MYSERIAL.print(char(card.get()));
     }
   }
-#endif
   {
     // Print the content of the command buffer, line by line:
     int8_t iline = 0;
