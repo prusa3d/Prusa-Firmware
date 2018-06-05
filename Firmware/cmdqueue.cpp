@@ -386,7 +386,7 @@ void get_command()
 	}
 
   while (MYSERIAL.available() > 0) {
-
+	
     char serial_char = MYSERIAL.read();
 /*    if (selectedSerialPort == 1)
     {
@@ -413,6 +413,9 @@ void get_command()
       }
       cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
       if(!comment_mode){
+		  
+		  gcode_N = 0;
+
 		  // Line numbers must be first in buffer
 
 		  if ((strstr(cmdbuffer+bufindw+CMDHDRSIZE, "PRUSA") == NULL) &&
@@ -494,7 +497,8 @@ void get_command()
           kill("", 2);
         
         // Store the current line into buffer, move to the next line.
-        cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_USB; 
+		// Store type of entry
+        cmdbuffer[bufindw] = gcode_N ? CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR : CMDBUFFER_CURRENT_TYPE_USB;
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Storing a command line to buffer: ");
