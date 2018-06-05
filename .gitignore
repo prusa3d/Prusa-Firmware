@@ -1,0 +1,6 @@
+.settings
+.project
+.cproject
+Debug
+Firmware/Configuration_prusa.h
+Firmware/Doc

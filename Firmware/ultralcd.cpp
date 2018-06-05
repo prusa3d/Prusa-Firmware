@@ -111,7 +111,7 @@ union MenuData
 
     struct AutoLoadFilamentMenu
     {
-        //Timer timer;
+        //ShortTimer timer;
 		char dummy;
     } autoLoadFilamentMenu;
     struct _Lcd_moveMenu
@@ -168,14 +168,13 @@ uint8_t farm_mode = 0;
 int farm_no = 0;
 int farm_timer = 8;
 int farm_status = 0;
-unsigned long allert_timer = millis();
 bool printer_connected = true;
 
 unsigned long display_time; //just timer for showing pid finished message on lcd;
 float pid_temp = DEFAULT_PID_TEMP;
 
 bool long_press_active = false;
-long long_press_timer = millis();
+static ShortTimer longPressTimer;
 unsigned long button_blanking_time = millis();
 bool button_pressed = false;
 
@@ -2090,7 +2089,7 @@ static void lcd_menu_AutoLoadFilament()
     }
     else
     {
-		Timer* ptimer = (Timer*)&(menuData.autoLoadFilamentMenu.dummy);
+		ShortTimer* ptimer = (ShortTimer*)&(menuData.autoLoadFilamentMenu.dummy);
         if (!ptimer->running()) ptimer->start();
         lcd.setCursor(0, 0);
         lcd_printPGM(_T(MSG_ERROR));
@@ -2675,7 +2674,7 @@ bool lcd_wait_for_pinda(float temp) {
 	lcd_set_custom_characters_degree();
 	setTargetHotend(0, 0);
 	setTargetBed(0);
-	Timer pinda_timeout;
+	LongTimer pinda_timeout;
 	pinda_timeout.start();
 	bool target_temp_reached = true;
 
@@ -5084,20 +5083,6 @@ static void lcd_disable_farm_mode() {
 	lcdDrawUpdate = 2;
 	
 }
-
-static void lcd_ping_allert() {
-	if ((abs(millis() - allert_timer)*0.001) > PING_ALLERT_PERIOD) {
-		allert_timer = millis();
-		SET_OUTPUT(BEEPER);
-		for (int i = 0; i < 2; i++) {
-			WRITE(BEEPER, HIGH);
-			delay(50);
-			WRITE(BEEPER, LOW);
-			delay(100);
-		}
-	}
-
-};
 
 
 #ifdef SNMM
@@ -7684,7 +7669,6 @@ void lcd_ping() { //chceck if printer is connected to monitoring when in farm mo
 																							  //if there are comamnds in buffer, some long gcodes can delay execution of ping command
 																							  //therefore longer period is used
 			printer_connected = false;
-			//lcd_ping_allert(); //acustic signals
 		}
 		else {
 			lcd_printer_connected();
@@ -7775,12 +7759,11 @@ void lcd_buttons_update()
 		  if (millis() > button_blanking_time) {
 			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
 			  if (button_pressed == false && long_press_active == false) {
-				  long_press_timer = millis();
+			      longPressTimer.start();
 				  button_pressed = true;
 			  }
 			  else {
-				  if (millis() - long_press_timer > LONG_PRESS_TIME) { //long press activated
-
+				  if (longPressTimer.expired(LONG_PRESS_TIME)) {
 					  long_press_active = true;
 					  move_menu_scale = 1.0;
 					  menu_action_submenu(lcd_move_z);
