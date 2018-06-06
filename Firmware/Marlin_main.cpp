@@ -6418,10 +6418,10 @@ Sigma_Exit:
 #ifdef PINDA_THERMISTOR
 	case 860: // M860 - Wait for PINDA thermistor to reach target temperature.
 	{
-		int setTargetPinda = 0;
+		int set_target_pinda = 0;
 
 		if (code_seen('S')) {
-			setTargetPinda = code_value();
+			set_target_pinda = code_value();
 		}
 		else {
 			break;
@@ -6430,19 +6430,24 @@ Sigma_Exit:
 		LCD_MESSAGERPGM(_T(MSG_PLEASE_WAIT));
 
 		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
-		SERIAL_PROTOCOL(setTargetPinda);
+		SERIAL_PROTOCOL(set_target_pinda);
 		SERIAL_PROTOCOLLN("");
 
 		codenum = millis();
 		cancel_heatup = false;
 
-		while ((!cancel_heatup) && current_temperature_pinda < setTargetPinda) {
+		bool is_pinda_cooling = false;
+		if ((degTargetBed() == 0) && (degTargetHotend(0) == 0)) {
+		    is_pinda_cooling = true;
+		}
+
+		while ( ((!is_pinda_cooling) && (!cancel_heatup) && (current_temperature_pinda < set_target_pinda)) || (is_pinda_cooling && (current_temperature_pinda > set_target_pinda)) ) {
 			if ((millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
 			{
 				SERIAL_PROTOCOLPGM("P:");
 				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
 				SERIAL_PROTOCOLPGM("/");
-				SERIAL_PROTOCOL(setTargetPinda);
+				SERIAL_PROTOCOL(set_target_pinda);
 				SERIAL_PROTOCOLLN("");
 				codenum = millis();
 			}
@@ -6454,6 +6459,7 @@ Sigma_Exit:
 
 		break;
 	}
+ 
 	case 861: // M861 - Set/Read PINDA temperature compensation offsets
 		if (code_seen('?')) { // ? - Print out current EEPROM offset values
 			uint8_t cal_status = calibration_status_pinda();
