@@ -83,6 +83,9 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
+#ifdef W25X20CL
+#include "w25x20cl.h"
+#endif //W25X20CL
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -982,6 +985,8 @@ void __test()
 	while(1);
 }
 
+#ifdef W25X20CL
+
 void upgrade_sec_lang_from_external_flash()
 {
 	if ((boot_app_magic == 0x55aa55aa) && (boot_app_flags & BOOT_APP_FLG_USER0))
@@ -999,11 +1004,54 @@ void upgrade_sec_lang_from_external_flash()
 	boot_app_flags &= ~BOOT_APP_FLG_USER0;
 }
 
+uint8_t lang_xflash_enum_codes(uint16_t* codes)
+{
+	lang_table_header_t header;
+	uint8_t count = 0;
+	uint32_t addr = 0x00000;
+	while (1)
+	{
+		printf_P(_n("LANGTABLE%d:"), count);
+		w25x20cl_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t));
+		if (header.magic != LANG_MAGIC)
+		{
+			printf_P(_n("NG!\n"));
+			break;
+		}
+		printf_P(_n("OK\n"));
+		printf_P(_n(" _lt_magic        = 0x%08lx %S\n"), header.magic, (header.magic==LANG_MAGIC)?_n("OK"):_n("NA"));
+		printf_P(_n(" _lt_size         = 0x%04x (%d)\n"), header.size, header.size);
+		printf_P(_n(" _lt_count        = 0x%04x (%d)\n"), header.count, header.count);
+		printf_P(_n(" _lt_chsum        = 0x%04x\n"), header.checksum);
+		printf_P(_n(" _lt_code         = 0x%04x\n"), header.code);
+		printf_P(_n(" _lt_resv1        = 0x%08lx\n"), header.reserved1);
+
+		addr += header.size;
+		codes[count] = header.code;
+		count ++;
+	}
+	return count;
+}
+
+void list_sec_lang_from_external_flash()
+{
+	uint16_t codes[8];
+	uint8_t count = lang_xflash_enum_codes(codes);
+	printf_P(_n("XFlash lang count = %hhd\n"), count);
+}
+
+#endif //W25X20CL
+
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+#ifdef NEW_SPI
+	spi_init();
+#endif //NEW_SPI
+
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
@@ -1157,9 +1205,6 @@ void setup()
 
 #endif //TMC2130
 
-#ifdef NEW_SPI
-	spi_init();
-#endif //NEW_SPI
 
 	st_init();    // Initialize stepper, this enables interrupts!
 
@@ -1303,15 +1348,34 @@ void setup()
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
   // is being written into the EEPROM, so the update procedure will be triggered only once.
 
+	spi_setup(TMC2130_SPCR, TMC2130_SPSR);
+	puts_P(_n("w25x20cl init: "));
+	if (w25x20cl_ini())
+	{
+		uint8_t uid[8]; // 64bit unique id
+		w25x20cl_rd_uid(uid);
+		puts_P(_n("OK, UID="));
+		for (uint8_t i = 0; i < 8; i ++)
+			printf_P(PSTR("%02hhx"), uid[i]);
+		putchar('\n');
+		list_sec_lang_from_external_flash();
+	}
+	else
+		puts_P(_n("NG!\n"));
+
+
 	lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
 	if (lang_selected >= LANG_NUM)
 	{
-		lcd_mylang();
+//		lcd_mylang();
+		lang_selected = 0;
 	}
 	lang_select(lang_selected);
 
 	uint16_t sec_lang_code=lang_get_code(1);
 	printf_P(_n("SEC_LANG_CODE=0x%04x (%c%c)\n"), sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
+
+
 
 #ifdef DEBUG_SEC_LANG
 	lang_print_sec_lang(uartout);

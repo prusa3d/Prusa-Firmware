@@ -3715,14 +3715,18 @@ static void lcd_crash_mode_set()
 #endif //TMC2130
  
 
-static void lcd_set_lang(unsigned char lang) {
-  lang_selected = lang;
-  firstrun = 1;
-  eeprom_update_byte((unsigned char *)EEPROM_LANG, lang);
-  /*langsel=0;*/
-  if (langsel == LANGSEL_MODAL)
-    // From modal mode to an active mode? This forces the menu to return to the setup menu.
-    langsel = LANGSEL_ACTIVE;
+static void lcd_set_lang(unsigned char lang)
+{
+	lang_select(lang);
+/*
+	lang_selected = lang;
+	firstrun = 1;
+	eeprom_update_byte((unsigned char *)EEPROM_LANG, lang);
+	// langsel=0;
+	if (langsel == LANGSEL_MODAL)
+	// From modal mode to an active mode? This forces the menu to return to the setup menu.
+	langsel = LANGSEL_ACTIVE;
+*/
 }
 
 #ifdef PAT9125
@@ -3756,17 +3760,21 @@ void lcd_force_language_selection() {
   eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
 }
 
+#if (LANG_MODE != 0)
 static void lcd_language_menu()
 {
-  START_MENU();
-  if (langsel == LANGSEL_OFF)
-    MENU_ITEM(back, _T(MSG_SETTINGS), 0);
-  else if (langsel == LANGSEL_ACTIVE)
-    MENU_ITEM(back, _T(MSG_WATCH), 0);
-  for (int i=0; i < lang_get_count(); i++)
-    MENU_ITEM(setlang, lang_get_name(i), i);
-  END_MENU();
+	START_MENU();
+	if (langsel == LANGSEL_OFF)
+		MENU_ITEM(back, _T(MSG_SETTINGS), 0);
+	else if (langsel == LANGSEL_ACTIVE)
+		MENU_ITEM(back, _T(MSG_WATCH), 0);
+	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(0)), 0);
+	for (int i = 1; i < lang_get_count(); i++)
+		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i+1)), i);
+	END_MENU();
 }
+#endif //(LANG_MODE != 0)
+
 
 void lcd_mesh_bedleveling()
 {
@@ -4232,7 +4240,10 @@ static void lcd_settings_menu()
 	{
 		MENU_ITEM(submenu, _T(MSG_BABYSTEP_Z), lcd_babystep_z);
 	}
+
+#if (LANG_MODE != 0)
 	MENU_ITEM(submenu, _i("Select language"), lcd_language_menu);////MSG_LANGUAGE_SELECT c=0 r=0
+#endif //(LANG_MODE != 0)
 
   if (card.ToshibaFlashAir_isEnabled()) {
     MENU_ITEM(function, _i("SD card [FlshAir]"), lcd_toshiba_flash_air_compatibility_toggle);////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
@@ -4591,7 +4602,7 @@ void lcd_mylang_drawmenu(int cursor) {
   }  
 }
 */
-
+/*
 void lcd_mylang_drawmenu(int cursor)
 {
 	unsigned char lang_cnt = lang_get_count();
@@ -4642,7 +4653,8 @@ void lcd_mylang_drawmenu(int cursor)
     lcd.print("^");
   }
 }
- 
+*/
+/*
 void lcd_mylang_drawcursor(int cursor) {
   
 	unsigned char lang_cnt = lang_get_count();
@@ -4652,8 +4664,9 @@ void lcd_mylang_drawcursor(int cursor) {
 
   lcd.print(">");
   
-}  
-
+}
+*/
+/*
 void lcd_mylang()
 {
   int enc_dif = 0;
@@ -4710,15 +4723,13 @@ void lcd_mylang()
       delay(500);
 
     }
-    /*
-    if (++counter == 80) {
-      hlaska++;
-      if(hlaska>LANG_NUM) hlaska=1;
-      lcd_mylang_top(hlaska);
-      lcd_mylang_drawcursor(cursor_pos);
-      counter=0;
-    }
-    */
+//    if (++counter == 80) {
+//      hlaska++;
+//      if(hlaska>LANG_NUM) hlaska=1;
+//      lcd_mylang_top(hlaska);
+//      lcd_mylang_drawcursor(cursor_pos);
+//      counter=0;
+//    }
   };
 
   if(MYSERIAL.available() > 1){
@@ -4731,7 +4742,7 @@ void lcd_mylang()
   lcd_return_to_status();
 
 }
-
+*/
 void bowden_menu() {
 	int enc_dif = encoderDiff;
 	int cursor_pos = 0;

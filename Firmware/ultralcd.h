@@ -32,7 +32,7 @@
   void prusa_statistics(int _message, uint8_t _col_nr = 0);
   void lcd_confirm_print();
   unsigned char lcd_choose_color();
-void lcd_mylang();
+//void lcd_mylang();
   bool lcd_detected(void);
 
   static void lcd_selftest_v();
