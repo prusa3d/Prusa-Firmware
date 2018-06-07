@@ -3769,8 +3769,9 @@ static void lcd_language_menu()
 	else if (langsel == LANGSEL_ACTIVE)
 		MENU_ITEM(back, _T(MSG_WATCH), 0);
 	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(0)), 0);
-	for (int i = 1; i < lang_get_count(); i++)
-		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i+1)), i);
+//	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(1)), 1);
+	for (int i = 2; i < lang_get_count(); i++)
+		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i)), i);
 	END_MENU();
 }
 #endif //(LANG_MODE != 0)
@@ -7349,9 +7350,19 @@ static void menu_action_submenu(menuFunc_t data) {
 static void menu_action_gcode(const char* pgcode) {
   enquecommand_P(pgcode);
 }
-static void menu_action_setlang(unsigned char lang) {
-  lcd_set_lang(lang);
+
+static void menu_action_setlang(unsigned char lang)
+{
+	if (lang <= LANG_ID_SEC)
+	{
+		lcd_set_lang(lang);
+		return;
+	}
+	uint16_t code = lang_get_code(lang);
+	if (code == lang_get_code(1)) lcd_set_lang(1);
+	lcd_set_lang(lang);
 }
+
 static void menu_action_function(menuFunc_t data) {
   (*data)();
 }

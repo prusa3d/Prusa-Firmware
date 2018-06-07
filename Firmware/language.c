@@ -57,6 +57,7 @@ uint8_t lang_select(uint8_t lang)
 		lang_selected = 0;
 		return 1;
 	}
+#ifdef W25X20CL
 	if (lang == LANG_ID_SEC) //current secondary language
 	{
 		uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
@@ -65,6 +66,8 @@ uint8_t lang_select(uint8_t lang)
 		lang_selected = 1; // set language id
 		return 1;
 	}
+#else //W25X20CL
+#endif //W25X20CL
 /*
 	uint16_t ui = (uint16_t)&_SEC_LANG; //pointer to _SEC_LANG reserved space
 	ui += 0x00ff; //add 1 page
@@ -77,8 +80,8 @@ uint8_t lang_select(uint8_t lang)
 
 uint8_t lang_get_count()
 {
-//#ifdef W25X20CL
-	uint8_t count = 1; //count = 1+n (primary + all in xflash)
+#ifdef W25X20CL
+	uint8_t count = 2; //count = 1+n (primary + secondary + all in xflash)
 	uint32_t addr = 0x00000; //start of xflash
 	lang_table_header_t header; //table header structure
 	while (1)
@@ -89,10 +92,13 @@ uint8_t lang_get_count()
 		count++; //inc counter
 	}
 	return count;
+#else //W25X20CL
+#endif //W25X20CL
 }
 
 uint16_t lang_get_code(uint8_t lang)
 {
+#ifdef W25X20CL
 	if (lang == LANG_ID_PRI) return LANG_CODE_EN; //primary lang = EN
 	if (lang == LANG_ID_SEC)
 	{
@@ -110,6 +116,8 @@ uint16_t lang_get_code(uint8_t lang)
 		if (--lang == 0) return header.code;
 		addr += header.size; //calc address of next table
 	}
+#else //W25X20CL
+#endif //W25X20CL
 
 //	if (lang == LANG_ID_SEC)
 //	{
