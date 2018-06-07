@@ -13,10 +13,10 @@ LANG=$1
 if [ -z "$LANG" ]; then LANG='cz'; fi
 #
 
-function finish
+finish()
 {
  echo
- if [ "$1" == "0" ]; then
+ if [ "$1" = "0" ]; then
   echo "update_lang.sh finished with success" >&2
  else
   echo "update_lang.sh finished with errors!" >&2

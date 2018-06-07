@@ -122,10 +122,10 @@ cat $PROGMEM.chr | \
  sed 's/\\x1b/\\\\\\x1b/g;' | \
  sed 's/\\x01/\\\\\\x01/g;' | \
  sed 's/\\xf8/\\\\\\xf8/g;' | \
- sed 's/\\x00$//;s/^/echo -e "/;s/$/"/' | sh > $PROGMEM.var
+ sed 's/\\x00$//;s/^/\/bin\/echo -e "/;s/$/"/' | sh > $PROGMEM.var
 
 #this step can be omitted because .txt file is not used
-#cat $PROGMEM.var | sed 's/\r/\n/g' |sed -E 's/^[0-9a-f]{8} [^ ]* //' >$PROGMEM.txt
+#cat $PROGMEM.var | sed 's/\r/\n/g' | sed -E 's/^[0-9a-f]{8} [^ ]* //' >$PROGMEM.txt
 
 echo "progmem.sh finished" >&2
 

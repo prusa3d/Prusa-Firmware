@@ -30,10 +30,10 @@ LANG=$1
 IGNORE_MISSING_TEXT=1
 
 
-function finish
+finish()
 {
  echo
- if [ "$1" == "0" ]; then
+ if [ "$1" = "0" ]; then
   echo "postbuild.sh finished with success" >&2
  else
   echo "postbuild.sh finished with errors!" >&2
@@ -71,7 +71,7 @@ echo "OK" >&2
 echo -n " checking textaddr.txt..." >&2
 if cat textaddr.txt | grep "^ADDR NF" >/dev/null; then
  echo "NG! - some texts not found in lang_en.txt!"
- if [ $(("0$IGNORE_MISSING_TEXT")) -eq 0 ]; then
+ if [ $IGNORE_MISSING_TEXT -eq 0 ]; then
   finish 1
  else
   echo "  missing text ignored!" >&2
@@ -82,7 +82,7 @@ fi
 
 #update progmem1 id entries in binary file
 echo -n " extracting binary..." >&2
-$OBJCOPY -I ihex -O binary $OUTDIR/Firmware.ino.hex ./firmware.bin
+$OBJCOPY -I ihex -O binary $INOHEX ./firmware.bin
 echo "OK" >&2
 
 #update binary file
@@ -93,7 +93,7 @@ echo -n "  primary language ids..." >&2
 cat textaddr.txt | grep "^ADDR OK" | cut -f3- -d' ' | sed "s/^0000/0x/" |\
  awk '{ id = $2 - 1; hi = int(id / 256); lo = int(id - 256 * hi); printf("%d \\\\x%02x\\\\x%02x\n", strtonum($1), lo, hi); }' |\
  while read addr data; do
-  echo -n -e $data | dd of=./firmware.bin bs=1 count=2 seek=$addr conv=notrunc oflag=nonblock 2>/dev/null
+  /bin/echo -n -e $data | dd of=./firmware.bin bs=1 count=2 seek=$addr conv=notrunc oflag=nonblock 2>/dev/null
  done
 echo "OK" >&2
 
