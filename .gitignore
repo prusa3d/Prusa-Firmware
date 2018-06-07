@@ -16,3 +16,14 @@
 /Firmware/Firmware.vcxproj
 /Firmware/Firmware.sln
 /Firmware/Firmware - Shortcut.lnk
+.settings
+.project
+.cproject
+Debug
+Firmware/Configuration_prusa.h
+Firmware/Doc
+/Firmware/.vs/Firmware/v14/.suo
+/Firmware/Firmware.sln
+/Firmware/Firmware.vcxproj
+/Firmware/Firmware.vcxproj.filters
+/Firmware/__vm
