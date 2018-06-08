@@ -1,7 +1,7 @@
 #!/bin/sh
-# textaddr.sh - multi-language support low level script
-#  for compiling progmem1.var and lang_en.txt files
-#  to textaddr.txt file (mapping of progmem addreses to text idenifiers)
+#
+# textaddr.sh - multi-language support script
+#  Compile progmem1.var and lang_en.txt files to textaddr.txt file (mapping of progmem addreses to text idenifiers)
 #
 # Input files:
 #  progmem1.var
@@ -34,7 +34,7 @@ text=''
   if [ -z "$addr" ]; then
    addr=$num
   else
-   if [ "$text" == "$txt" ]; then
+   if [ "$text" = "$txt" ]; then
     addr="$addr $num"
    else
     echo "ADDR NF $addr $text"
@@ -46,7 +46,7 @@ text=''
   if [ -z "$addr" ]; then
    echo "TEXT NF $num $txt"
   else
-   if [ "$text" == "$txt" ]; then
+   if [ "$text" = "$txt" ]; then
     if [ ${#addr} -eq 8 ]; then
      echo "ADDR OK $addr $num"
     else

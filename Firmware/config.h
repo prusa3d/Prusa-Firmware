@@ -18,6 +18,9 @@
 #define TMC2130_SPCR           SPI_SPCR(TMC2130_SPI_RATE, 1, 1, 1, 0)
 #define TMC2130_SPSR           SPI_SPSR(TMC2130_SPI_RATE)
 
+//W25X20CL configuration
+#define W25X20CL_PIN_CS        32
+
 //LANG - Multi-language support
 //#define LANG_MODE               0 // primary language only
 #define LANG_MODE               1 // sec. language support
