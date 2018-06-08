@@ -69,6 +69,7 @@ extern const char MSG_PULL_OUT_FILAMENT[];
 extern const char MSG_RECOVER_PRINT[];
 extern const char MSG_REFRESH[];
 extern const char MSG_REMOVE_STEEL_SHEET[];
+extern const char MSG_RESUMING_PRINT[];
 extern const char MSG_SD_ERR_WRITE_TO_FILE[];
 extern const char MSG_SD_OPEN_FILE_FAIL[];
 extern const char MSG_SD_WORKDIR_FAIL[];

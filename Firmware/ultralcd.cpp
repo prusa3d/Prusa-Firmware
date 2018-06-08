@@ -702,7 +702,7 @@ void lcd_commands()
 			strcat(cmd1, ftostr32(pause_lastpos[Y_AXIS]));
 			enquecommand(cmd1);
 			
-			lcd_setstatuspgm(_i("Resuming print"));////MSG_RESUMING_PRINT c=20 r=1
+			lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
 			lcd_commands_step = 3;
 		}
 	}
@@ -1721,9 +1721,9 @@ static void lcd_menu_temperatures()
 static void lcd_menu_voltages()
 {
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
-	//float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
-	//fprintf_P(lcdout, PSTR(ESC_H(1,1) "PWR:      %d.%01dV" ESC_H(1,2) "BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
-    fprintf_P(lcdout, PSTR( ESC_H(1,1) "PWR:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr))) ;
+//	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
+//	fprintf_P(lcdout, PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
+    fprintf_P(lcdout, PSTR( ESC_H(1,1)"PWR:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr))) ;
     if (lcd_clicked())
     {
         menu_action_back();
@@ -3714,14 +3714,25 @@ static void lcd_crash_mode_set()
 #endif //TMC2130
  
 
-static void lcd_set_lang(unsigned char lang) {
-  lang_selected = lang;
-  firstrun = 1;
-  eeprom_update_byte((unsigned char *)EEPROM_LANG, lang);
-  /*langsel=0;*/
-  if (langsel == LANGSEL_MODAL)
-    // From modal mode to an active mode? This forces the menu to return to the setup menu.
-    langsel = LANGSEL_ACTIVE;
+static void lcd_set_lang(unsigned char lang)
+{
+	if (lang > LANG_ID_SEC)
+		if (!lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language from XFLASH?"), false, true))
+		{
+			lcd_return_to_status();
+			lcd_update_enable(true);
+			return;
+		}
+	lang_select(lang);
+/*
+	lang_selected = lang;
+	firstrun = 1;
+	eeprom_update_byte((unsigned char *)EEPROM_LANG, lang);
+	// langsel=0;
+	if (langsel == LANGSEL_MODAL)
+	// From modal mode to an active mode? This forces the menu to return to the setup menu.
+	langsel = LANGSEL_ACTIVE;
+*/
 }
 
 #ifdef PAT9125
@@ -3755,17 +3766,22 @@ void lcd_force_language_selection() {
   eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
 }
 
+#if (LANG_MODE != 0)
 static void lcd_language_menu()
 {
-  START_MENU();
-  if (langsel == LANGSEL_OFF)
-    MENU_ITEM(back, _T(MSG_SETTINGS), 0);
-  else if (langsel == LANGSEL_ACTIVE)
-    MENU_ITEM(back, _T(MSG_WATCH), 0);
-  for (int i=0; i < lang_get_count(); i++)
-    MENU_ITEM(setlang, lang_get_name(i), i);
-  END_MENU();
+	START_MENU();
+	if (langsel == LANGSEL_OFF)
+		MENU_ITEM(back, _T(MSG_SETTINGS), 0);
+	else if (langsel == LANGSEL_ACTIVE)
+		MENU_ITEM(back, _T(MSG_WATCH), 0);
+	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(0)), 0);
+//	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(1)), 1);
+	for (int i = 2; i < lang_get_count(); i++) //skip seconday language - solved in menu_action_setlang
+		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i)), i);
+	END_MENU();
 }
+#endif //(LANG_MODE != 0)
+
 
 void lcd_mesh_bedleveling()
 {
@@ -4231,7 +4247,10 @@ static void lcd_settings_menu()
 	{
 		MENU_ITEM(submenu, _T(MSG_BABYSTEP_Z), lcd_babystep_z);
 	}
+
+#if (LANG_MODE != 0)
 	MENU_ITEM(submenu, _i("Select language"), lcd_language_menu);////MSG_LANGUAGE_SELECT c=0 r=0
+#endif //(LANG_MODE != 0)
 
   if (card.ToshibaFlashAir_isEnabled()) {
     MENU_ITEM(function, _i("SD card [FlshAir]"), lcd_toshiba_flash_air_compatibility_toggle);////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
@@ -4590,7 +4609,7 @@ void lcd_mylang_drawmenu(int cursor) {
   }  
 }
 */
-
+/*
 void lcd_mylang_drawmenu(int cursor)
 {
 	unsigned char lang_cnt = lang_get_count();
@@ -4641,7 +4660,8 @@ void lcd_mylang_drawmenu(int cursor)
     lcd.print("^");
   }
 }
- 
+*/
+/*
 void lcd_mylang_drawcursor(int cursor) {
   
 	unsigned char lang_cnt = lang_get_count();
@@ -4651,8 +4671,9 @@ void lcd_mylang_drawcursor(int cursor) {
 
   lcd.print(">");
   
-}  
-
+}
+*/
+/*
 void lcd_mylang()
 {
   int enc_dif = 0;
@@ -4709,15 +4730,13 @@ void lcd_mylang()
       delay(500);
 
     }
-    /*
-    if (++counter == 80) {
-      hlaska++;
-      if(hlaska>LANG_NUM) hlaska=1;
-      lcd_mylang_top(hlaska);
-      lcd_mylang_drawcursor(cursor_pos);
-      counter=0;
-    }
-    */
+//    if (++counter == 80) {
+//      hlaska++;
+//      if(hlaska>LANG_NUM) hlaska=1;
+//      lcd_mylang_top(hlaska);
+//      lcd_mylang_drawcursor(cursor_pos);
+//      counter=0;
+//    }
   };
 
   if(MYSERIAL.available() > 1){
@@ -4730,7 +4749,7 @@ void lcd_mylang()
   lcd_return_to_status();
 
 }
-
+*/
 void bowden_menu() {
 	int enc_dif = encoderDiff;
 	int cursor_pos = 0;
@@ -5638,6 +5657,13 @@ void lcd_confirm_print()
 
 }
 
+extern void __test();
+
+static void lcd_test_menu()
+{
+	__test();
+}
+
 static void lcd_main_menu()
 {
 
@@ -5807,6 +5833,7 @@ static void lcd_main_menu()
 #endif
 
   MENU_ITEM(submenu, _i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
+//  MENU_ITEM(submenu, _i("Test"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
 
   END_MENU();
 
@@ -7315,9 +7342,23 @@ static void menu_action_submenu(menuFunc_t data) {
 static void menu_action_gcode(const char* pgcode) {
   enquecommand_P(pgcode);
 }
-static void menu_action_setlang(unsigned char lang) {
-  lcd_set_lang(lang);
+
+static void menu_action_setlang(unsigned char lang)
+{
+	if (lang <= LANG_ID_SEC)
+	{
+		lcd_set_lang(lang);
+		return;
+	}
+	uint16_t code = lang_get_code(lang);
+	if (code == lang_get_code(1))
+	{
+		lcd_set_lang(1);
+		return;
+	}
+	lcd_set_lang(lang);
 }
+
 static void menu_action_function(menuFunc_t data) {
   (*data)();
 }

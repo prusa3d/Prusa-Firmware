@@ -71,6 +71,7 @@ const char MSG_PRINT_ABORTED[] PROGMEM_I1 = ISTR("Print aborted"); ////c=20 r=0
 const char MSG_PULL_OUT_FILAMENT[] PROGMEM_I1 = ISTR("Please pull out filament immediately"); ////c=20 r=4
 const char MSG_RECOVER_PRINT[] PROGMEM_I1 = ISTR("Blackout occurred. Recover print?"); ////c=20 r=2
 const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\xF8" "Refresh"); ////c=0 r=0
+const char MSG_RESUMING_PRINT[] PROGMEM_I1 = ISTR("Resuming print"); ////c=0 r=0
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////c=20 r=4
 const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_I1 = ISTR("error writing to file"); ////c=0 r=0
 const char MSG_SD_OPEN_FILE_FAIL[] PROGMEM_I1 = ISTR("open failed, File: "); ////c=0 r=0
