@@ -76,6 +76,7 @@ uint8_t lang_select(uint8_t lang)
 	ui = pgm_read_word(((uint16_t*)(((char*)lang_table + 16)))); //read relative offset of first string (language name)
 	return (const char*)((char*)lang_table + ui); //return calculated pointer
 */
+	return 0;
 }
 
 uint8_t lang_get_count()

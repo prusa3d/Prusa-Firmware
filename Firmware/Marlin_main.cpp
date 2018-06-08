@@ -1372,10 +1372,8 @@ void setup()
 	}
 	lang_select(lang_selected);
 
-	uint16_t sec_lang_code=lang_get_code(1);
+	uint16_t sec_lang_code = lang_get_code(1);
 	printf_P(_n("SEC_LANG_CODE=0x%04x (%c%c)\n"), sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
-
-
 
 #ifdef DEBUG_SEC_LANG
 	lang_print_sec_lang(uartout);
