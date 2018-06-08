@@ -2,13 +2,15 @@
 #ifndef LANGUAGE_H
 #define LANGUAGE_H
 
+#define W25X20CL
+
 #include "config.h"
+#include <inttypes.h>
+//#include <stdio.h>
 
 #define PROTOCOL_VERSION "1.0"
 
-#ifdef CUSTOM_MENDEL_NAME
-   // #define CUSTOM_MENDEL_NAME CUSTOM_MENDEL_NAME
-#else
+#ifndef CUSTOM_MENDEL_NAME
     #define MACHINE_NAME "Mendel"
 #endif
 
@@ -42,6 +44,23 @@
 #define _N(s) (__extension__({static const char __c[] PROGMEM_N1 = s; &__c[0];}))
 #define _n(s) _N(s)
 
+//lang_table_header_t structure - (size= 16byte)
+typedef struct
+{
+	uint32_t magic;      //+0 
+	uint16_t size;       //+4
+	uint16_t count;      //+6
+	uint16_t checksum;   //+8
+	uint16_t code;       //+10
+	uint32_t reserved1;  //+12
+} lang_table_header_t;
+
+//lang_table_t structure - (size= 16byte + 2*count)
+typedef struct
+{
+	lang_table_header_t header;
+	uint16_t table[];
+} lang_table_t;
 
 // Language indices into their particular symbol tables.
 #define LANG_ID_PRI 0
@@ -49,6 +68,7 @@
 
 // Language is not defined and it shall be selected from the menu.
 #define LANG_ID_FORCE_SELECTION 254
+
 // Language is not defined on a virgin RAMBo board.
 #define LANG_ID_UNDEFINED 255
 
@@ -58,24 +78,43 @@
 // Number of languages available in the language table.
 #define LANG_NUM 2
 
+// Magic number at begin of lang table.
+#define LANG_MAGIC 0x4bb45aa5
+
+// Language codes (ISO639-1)
+#define LANG_CODE_XX 0x3f3f //'??'
+#define LANG_CODE_EN 0x656e //'en'
+#define LANG_CODE_CZ 0x6373 //'cs'
+#define LANG_CODE_DE 0x6465 //'de'
+#define LANG_CODE_ES 0x6573 //'es'
+#define LANG_CODE_IT 0x6974 //'it'
+#define LANG_CODE_PL 0x706c //'pl'
 
 #if defined(__cplusplus)
 extern "C" {
 #endif //defined(__cplusplus)
 
 // Currectly active language selection.
-extern unsigned char lang_selected;
+extern uint8_t lang_selected;
 
 #if (LANG_MODE != 0)
 extern const char _SEC_LANG[LANG_SIZE_RESERVED];
-#endif //(LANG_MODE == 0)
-
 extern const char* lang_get_translation(const char* s);
 extern const char* lang_get_sec_lang_str(const char* s);
-extern const char* lang_select(unsigned char lang);
-extern unsigned char lang_get_count();
-extern const char* lang_get_name(unsigned char lang);
+#endif //(LANG_MODE != 0)
 
+//selects 
+extern uint8_t lang_select(uint8_t lang);
+
+//get total number of languages (primary + all in xflash)
+extern uint8_t lang_get_count();
+extern uint16_t lang_get_code(uint8_t lang);
+extern const char* lang_get_name_by_code(uint16_t code);
+
+#ifdef DEBUG_SEC_LANG
+extern const char* lang_get_sec_lang_str_by_id(uint16_t id);
+extern uint16_t lang_print_sec_lang(FILE* out);
+#endif //DEBUG_SEC_LANG
 
 #if defined(__cplusplus)
 }
@@ -84,7 +123,8 @@ extern const char* lang_get_name(unsigned char lang);
 #define CAT2(_s1, _s2) _s1
 #define CAT4(_s1, _s2, _s3, _s4) _s1
 
-extern const char MSG_LANGUAGE_NAME[];
+//Localized language name
+//extern const char MSG_LANGUAGE_NAME[];
 
 #include "messages.h"
 

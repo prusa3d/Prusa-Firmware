@@ -1,4 +1,4 @@
-# 1. Developement environment preparing
+# 1. Development environment preparation
 
    1. install `"Arduino Software IDE"` for your preferred operating system  
 `https://www.arduino.cc -> Software->Downloads`  

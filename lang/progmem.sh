@@ -1,31 +1,33 @@
 #!/bin/sh
-# progmem.sh - multi-language support low-level script
-#  for examining content of progmem sections (default is progmem1)
+#
+# progmem.sh - multi-language support script
+#  Examine content of progmem sections (default is progmem1).
 #
 # Input files:
 #  $OUTDIR/Firmware.ino.elf
 #  $OUTDIR/sketch/*.o (all object files)
 #
 # Output files:
-#  text.sym
-#  $PROGMEM.sym
-#  $PROGMEM.lss
-#  $PROGMEM.hex
-#  $PROGMEM.chr
-#  $PROGMEM.var
-#  $PROGMEM.txt
+#  text.sym     - formated symbol listing of section '.text'
+#  $PROGMEM.sym - formated symbol listing of section '.progmemX'
+#  $PROGMEM.lss - disassembly listing file
+#  $PROGMEM.hex - variables - hex
+#  $PROGMEM.chr - variables - char escape
+#  $PROGMEM.var - variables - strings
+#  $PROGMEM.txt - text data only (not used)
+#
+#
+# Config:
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$OUTDIR" ]; then echo 'variable OUTDIR not set!' >&2; exit 1; fi
+if [ -z "$OBJDIR" ]; then echo 'variable OBJDIR not set!' >&2; exit 1; fi
+if [ -z "$INOELF" ]; then echo 'variable INOELF not set!' >&2; exit 1; fi
+if [ -z "$OBJDUMP" ]; then echo 'variable OBJDUMP not set!' >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
 #
 # Program memory used
 PROGMEM=progmem$1
 if [ -z "$1" ]; then PROGMEM=progmem1; fi
-#
-# Output folder and elf file:
-OUTDIR="../../output"
-OUTELF="$OUTDIR/Firmware.ino.elf"
-#
-# AVR gcc tools used:
-OBJDUMP=C:/arduino-1.6.8/hardware/tools/avr/bin/avr-objdump.exe
-#
 #
 # Description of process:
 #  0. check input files
@@ -43,7 +45,7 @@ echo "progmem.sh started" >&2
 
 # (0)
 echo " progmem.sh (0) - checking input files" >&2
-if [ ! -e $OUTDIR ]; then echo "progmem.sh - file '$OUTELF' not found!" >&2; exit 1; fi
+if [ ! -e $OUTDIR ]; then echo "progmem.sh - file '$INOELF' not found!" >&2; exit 1; fi
 
 # (1)
 echo " progmem.sh (1) - removing output files" >&2
@@ -59,12 +61,12 @@ if [ -e $PROGMEM.txt ]; then rm $PROGMEM.txt; fi
 # (2)
 echo " progmem.sh (2) - listing symbol table of section '.text'" >&2
 #list symbols from section '.text' into file text.sym (only address, size and name)
-$OBJDUMP -t -j ".text" $OUTELF | tail -n +5 | grep -E "^[0-9a-f]{8} [gl]     O" | cut -c1-9,28-36,37- | sed "/^$/d" | sort >> text.sym
+$OBJDUMP -t -j ".text" $INOELF | tail -n +5 | grep -E "^[0-9a-f]{8} [gl]     O" | cut -c1-9,28-36,37- | sed "/^$/d" | sort >> text.sym
 
 # (3)
 echo " progmem.sh (3) - listing symbol table of section '.$PROGMEM'" >&2
 #loop over all object files
-ls "$OUTDIR"/sketch/*.o | while read fn; do
+ls "$OBJDIR"/*.o | while read fn; do
  echo "  processing $fn" >&2
  #list symbols from section $PROGMEM (only address, size and name)
  $OBJDUMP -t -j ".$PROGMEM" $fn 2>/dev/null | tail -n +5 | cut -c1-9,28-36,37- | sed "/^$/d" | sort >> $PROGMEM.sym
@@ -84,14 +86,14 @@ echo " progmem.sh (5) - calculating start and stop address" >&2
 #calculate start addres of section ".$PROGMEM"
 PROGMEM_BEG=$(head -n1 $PROGMEM.sym | while read offs size name; do echo "0x"$offs; done)
 #calculate stop addres of section ".$PROGMEM"
-PROGMEM_END=$(tail -n1 $PROGMEM.sym | while read offs size name; do printf "0x%x" $(("0x"$offs + "0x"$size)); done)
+PROGMEM_END=$(tail -n1 $PROGMEM.sym | while read offs size name; do printf "0x%x" $((0x$offs + 0x$size)); done)
 echo "  START address = "$PROGMEM_BEG >&2
 echo "  STOP  address = "$PROGMEM_END >&2
 
 # (6)
 echo " progmem.sh (6) - extracting string data from elf" >&2
 #dump $PROGMEM data in hex format, cut textual data (keep hex data only)
-$OBJDUMP -d -j ".text" -w -z --start-address=$PROGMEM_BEG --stop-address=$PROGMEM_END $OUTELF | cut -c1-57 > $PROGMEM.lss
+$OBJDUMP -d -j ".text" -w -z --start-address=$PROGMEM_BEG --stop-address=$PROGMEM_END $INOELF | cut -c1-57 > $PROGMEM.lss
 #convert $PROGMEM.lss to $PROGMEM.hex:
 # replace empty lines with '|' (variables separated by empty lines)
 # remove address from multiline variables (keep address at first variable line only)
@@ -110,8 +112,9 @@ echo " progmem.sh (7) - preparing string data" >&2
 # replace all tabs with spaces
 cat $PROGMEM.hex | sed 's/ /\t/;s/ /\t /;s/ /\\x/g;s/\t/ /g' > $PROGMEM.chr
 
+
 # (8)
-#convert $PROGMEM.chr to $PROGMEM.var (convert data to text)
+#convert $PROGMEM.chr to $PROGMEM.var (convert data to text, TODO: rewrite as awk script)
 echo " progmem.sh (8) - converting string data" >&2
 cat $PROGMEM.chr | \
  sed 's/ \\xff\\xff/ /;' | \
@@ -119,8 +122,10 @@ cat $PROGMEM.chr | \
  sed 's/\\x1b/\\\\\\x1b/g;' | \
  sed 's/\\x01/\\\\\\x01/g;' | \
  sed 's/\\xf8/\\\\\\xf8/g;' | \
- sed 's/\\x00$/\\x0a/;s/^/printf "/;s/$/"/' | sh > $PROGMEM.var
-cat $PROGMEM.var | sed 's/\r/\n/g' |sed -E 's/^[0-9a-f]{8} [^ ]* //' >$PROGMEM.txt
+ sed 's/\\x00$//;s/^/\/bin\/echo -e "/;s/$/"/' | sh > $PROGMEM.var
+
+#this step can be omitted because .txt file is not used
+#cat $PROGMEM.var | sed 's/\r/\n/g' | sed -E 's/^[0-9a-f]{8} [^ ]* //' >$PROGMEM.txt
 
 echo "progmem.sh finished" >&2
 

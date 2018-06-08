@@ -2479,7 +2479,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(_i(" of 4"));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
+        lcd_printPGM(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.

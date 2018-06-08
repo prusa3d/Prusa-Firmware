@@ -987,7 +987,7 @@ if (print_sd_status)
 					lcd.setCursor(0, 3);
 					lcd_printPGM(PSTR("                    "));
 					lcd.setCursor(0, 3);
-					lcd_printPGM(_i("Calibrating Z"));////MSG_HOMEYZ_PROGRESS c=0 r=0
+					lcd_printPGM(_T(MSG_CALIBRATE_Z_AUTO));
 					lcd_printPGM(PSTR(" : "));
 					lcd.print(custom_message_state-10);
 				}

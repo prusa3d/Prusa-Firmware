@@ -1,31 +1,34 @@
 #!/bin/sh
-# update_lang.sh - multi-language support low level script
-#  for updating secondary language in binary file
 #
-# AVR gcc tools used:
-OBJCOPY=C:/arduino-1.6.8/hardware/tools/avr/bin/avr-objcopy.exe
+# update_lang.sh - multi-language support script
+#  Update secondary language in binary file.
+#
+# Config:
+if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
+if [ -z "$OBJCOPY" ]; then echo 'variable OBJCOPY not set!' >&2; exit 1; fi
+if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
 #
 # Selected language:
 LANG=$1
 if [ -z "$LANG" ]; then LANG='cz'; fi
 #
 
-function finish
+finish()
 {
  echo
- if [ "$1" == "0" ]; then
+ if [ "$1" = "0" ]; then
   echo "update_lang.sh finished with success" >&2
  else
   echo "update_lang.sh finished with errors!" >&2
  fi
  case "$-" in
-  *i*) echo "press enter key"; read ;;
+  *i*) echo "press enter key" >&2; read ;;
  esac
  exit $1
 }
 
 echo "update_lang.sh started" >&2
-echo "selected language=$LANG" >&2
+echo " selected language=$LANG" >&2
 
 echo -n " checking files..." >&2
 if [ ! -e text.sym ]; then echo "NG!  file text.sym not found!" >&2; finish 1; fi
@@ -56,13 +59,13 @@ printf "  lang_table_size =0x%04x (=%d bytes)\n" $lang_table_size $lang_table_si
 lang_file_size=$(wc -c lang_$LANG.bin | cut -f1 -d' ')
 printf "  lang_file_size  =0x%04x (=%d bytes)\n" $lang_file_size $lang_file_size >&2
 
-if [ $lang_file_size -gt $lang_table_size ]; then echo "Lanaguage binary file size too big!"; finish 1; fi
+if [ $lang_file_size -gt $lang_table_size ]; then echo "Lanaguage binary file size too big!" >&2; finish 1; fi
 
 echo "updating 'firmware.bin'..." >&2
 dd if=lang_$LANG.bin of=firmware.bin bs=1 seek=$lang_table_addr conv=notrunc 2>/dev/null
 
 #convert bin to hex
 echo "converting to hex..." >&2
-$OBJCOPY -I binary -O ihex ./firmware.bin ./firmware.hex
+$OBJCOPY -I binary -O ihex ./firmware.bin ./firmware_$LANG.hex
 
 finish 0

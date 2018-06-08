@@ -99,6 +99,9 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
+#ifdef W25X20CL
+#include "w25x20cl.h"
+#endif //W25X20CL
 
 #ifdef BLINKM
 #include "BlinkM.h"
@@ -323,6 +326,7 @@ unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
 static LongTimer safetyTimer;
+static LongTimer crashDetTimer;
 
 //unsigned long load_filament_time;
 
@@ -684,6 +688,25 @@ void crashdet_detected(uint8_t mask)
 	    cmdqueue_pop_front();
 	}*/
 	st_synchronize();
+	static uint8_t crashDet_counter = 0;
+	bool automatic_recovery_after_crash = true;
+	bool yesno;
+
+	if (crashDet_counter++ == 0) {
+		crashDetTimer.start();
+	}
+	else if (crashDetTimer.expired(CRASHDET_TIMER * 1000ul)){
+		crashDetTimer.stop();
+		crashDet_counter = 0;
+	}
+	else if(crashDet_counter == CRASHDET_COUNTER_MAX){
+		automatic_recovery_after_crash = false;
+		crashDetTimer.stop();
+		crashDet_counter = 0;
+	}
+	else {
+		crashDetTimer.start();
+	}
 
 	lcd_update_enable(true);
 	lcd_implementation_clear();
@@ -700,17 +723,21 @@ void crashdet_detected(uint8_t mask)
 		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) + 1);
 	}
     
-#ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
-    bool yesno = true;
-#else
-    bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_CRASH_DETECTED), false);
-#endif
+
+
 	lcd_update_enable(true);
 	lcd_update(2);
 	lcd_setstatuspgm(_T(MSG_CRASH_DETECTED));
+	gcode_G28(true, true, false, false); //home X and Y
+	st_synchronize();
+
+	if(automatic_recovery_after_crash) 
+		yesno = true;
+	else 
+		yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);
+	lcd_update_enable(true);
 	if (yesno)
 	{
-		enquecommand_P(PSTR("G28 X Y"));
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}
 	else
@@ -727,10 +754,15 @@ void crashdet_recover()
 
 void crashdet_cancel()
 {
-	card.sdprinting = false;
-	card.closefile();
 	tmc2130_sg_stop_on_crash = true;
+	if (saved_printing_type == PRINTING_TYPE_SD) {
+		lcd_print_stop();
+	}else if(saved_printing_type == PRINTING_TYPE_USB){
+		SERIAL_ECHOLNPGM("// action:cancel"); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
+		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+	}
 }
+
 #endif //TMC2130
 
 void failstats_reset_print()
@@ -1009,6 +1041,8 @@ void __test()
 	while(1);
 }
 
+#ifdef W25X20CL
+
 void upgrade_sec_lang_from_external_flash()
 {
 	if ((boot_app_magic == 0x55aa55aa) && (boot_app_flags & BOOT_APP_FLG_USER0))
@@ -1026,15 +1060,58 @@ void upgrade_sec_lang_from_external_flash()
 	boot_app_flags &= ~BOOT_APP_FLG_USER0;
 }
 
+uint8_t lang_xflash_enum_codes(uint16_t* codes)
+{
+	lang_table_header_t header;
+	uint8_t count = 0;
+	uint32_t addr = 0x00000;
+	while (1)
+	{
+		printf_P(_n("LANGTABLE%d:"), count);
+		w25x20cl_rd_data(addr, (uint8_t*)&header, sizeof(lang_table_header_t));
+		if (header.magic != LANG_MAGIC)
+		{
+			printf_P(_n("NG!\n"));
+			break;
+		}
+		printf_P(_n("OK\n"));
+		printf_P(_n(" _lt_magic        = 0x%08lx %S\n"), header.magic, (header.magic==LANG_MAGIC)?_n("OK"):_n("NA"));
+		printf_P(_n(" _lt_size         = 0x%04x (%d)\n"), header.size, header.size);
+		printf_P(_n(" _lt_count        = 0x%04x (%d)\n"), header.count, header.count);
+		printf_P(_n(" _lt_chsum        = 0x%04x\n"), header.checksum);
+		printf_P(_n(" _lt_code         = 0x%04x\n"), header.code);
+		printf_P(_n(" _lt_resv1        = 0x%08lx\n"), header.reserved1);
+
+		addr += header.size;
+		codes[count] = header.code;
+		count ++;
+	}
+	return count;
+}
+
+void list_sec_lang_from_external_flash()
+{
+	uint16_t codes[8];
+	uint8_t count = lang_xflash_enum_codes(codes);
+	printf_P(_n("XFlash lang count = %hhd\n"), count);
+}
+
+#endif //W25X20CL
+
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+#ifdef NEW_SPI
+	spi_init();
+#endif //NEW_SPI
+
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
-//	upgrade_sec_lang_from_external_flash();
+	upgrade_sec_lang_from_external_flash();
 
 	lcd_splash();
 	setup_killpin();
@@ -1184,9 +1261,6 @@ void setup()
 
 #endif //TMC2130
 
-#ifdef NEW_SPI
-	spi_init();
-#endif //NEW_SPI
 
 	st_init();    // Initialize stepper, this enables interrupts!
 
@@ -1330,33 +1404,36 @@ void setup()
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
   // is being written into the EEPROM, so the update procedure will be triggered only once.
 
+	spi_setup(TMC2130_SPCR, TMC2130_SPSR);
+	puts_P(_n("w25x20cl init: "));
+	if (w25x20cl_ini())
+	{
+		uint8_t uid[8]; // 64bit unique id
+		w25x20cl_rd_uid(uid);
+		puts_P(_n("OK, UID="));
+		for (uint8_t i = 0; i < 8; i ++)
+			printf_P(PSTR("%02hhx"), uid[i]);
+		putchar('\n');
+		list_sec_lang_from_external_flash();
+	}
+	else
+		puts_P(_n("NG!\n"));
+
+
 	lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
 	if (lang_selected >= LANG_NUM)
 	{
-		lcd_mylang();
+//		lcd_mylang();
+		lang_selected = 0;
 	}
 	lang_select(lang_selected);
 
-	puts_P(_n("\nNew ML support"));
-	printf_P(_n(" lang_selected     = %d\n"), lang_selected);
-	printf_P(_n(" &_SEC_LANG        = 0x%04x\n"), &_SEC_LANG);
-	printf_P(_n(" sizeof(_SEC_LANG) = 0x%04x\n"), sizeof(_SEC_LANG));
-	uint16_t ptr_lang_table0 = ((uint16_t)(&_SEC_LANG) + 0xff) & 0xff00;
-	printf_P(_n(" &_lang_table0     = 0x%04x\n"), ptr_lang_table0);
-	uint32_t _lt_magic = pgm_read_dword(((uint32_t*)(ptr_lang_table0 + 0)));
-	uint16_t _lt_size = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 4)));
-	uint16_t _lt_count = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 6)));
-	uint16_t _lt_chsum = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 8)));
-	uint16_t _lt_resv0 = pgm_read_word(((uint16_t*)(ptr_lang_table0 + 10)));
-	uint32_t _lt_resv1 = pgm_read_dword(((uint32_t*)(ptr_lang_table0 + 12)));
-	printf_P(_n("  _lt_magic        = 0x%08lx %S\n"), _lt_magic, (_lt_magic==0x4bb45aa5)?_n("OK"):_n("NA"));
-	printf_P(_n("  _lt_size         = 0x%04x (%d)\n"), _lt_size, _lt_size);
-	printf_P(_n("  _lt_count        = 0x%04x (%d)\n"), _lt_count, _lt_count);
-	printf_P(_n("  _lt_chsum        = 0x%04x\n"), _lt_chsum);
-	printf_P(_n("  _lt_resv0        = 0x%04x\n"), _lt_resv0);
-	printf_P(_n("  _lt_resv1        = 0x%08lx\n"), _lt_resv1);
-	puts_P(_n("\n"));
+	uint16_t sec_lang_code = lang_get_code(1);
+	printf_P(_n("SEC_LANG_CODE=0x%04x (%c%c)\n"), sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
 
+#ifdef DEBUG_SEC_LANG
+	lang_print_sec_lang(uartout);
+#endif //DEBUG_SEC_LANG
 	
 	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
@@ -3297,10 +3374,10 @@ void process_commands()
             if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
               float echange=destination[E_AXIS]-current_position[E_AXIS];
 
-              if((echange<-MIN_RETRACT && !retracted) || (echange>MIN_RETRACT && retracted)) { //move appears to be an attempt to retract or recover
+              if((echange<-MIN_RETRACT && !retracted[active_extruder]) || (echange>MIN_RETRACT && retracted[active_extruder])) { //move appears to be an attempt to retract or recover
                   current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
                   plan_set_e_position(current_position[E_AXIS]); //AND from the planner
-                  retract(!retracted);
+                  retract(!retracted[active_extruder]);
                   return;
               }
 
@@ -4433,7 +4510,7 @@ void process_commands()
 		KEEPALIVE_STATE(IN_HANDLER);
       }
       if (IS_SD_PRINTING)
-        LCD_MESSAGERPGM(_i("Resuming print"));////MSG_RESUMING c=0 r=0
+        LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
       else
         LCD_MESSAGERPGM(_T(WELCOME_MSG));
     }
@@ -8262,6 +8339,7 @@ void uvlo_()
 	eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_2), extruder_multiplier[2]);
 #endif
 #endif
+	eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
 
     // Finaly store the "power outage" flag.
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
@@ -8477,7 +8555,7 @@ void recover_machine_state_after_power_panic()
   extruder_multiplier[2] = eeprom_read_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_2));
 #endif
 #endif
-
+  extrudemultiply = (int)eeprom_read_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY));
 }
 
 void restore_print_from_eeprom() {
