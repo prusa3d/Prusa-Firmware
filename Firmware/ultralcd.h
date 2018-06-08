@@ -263,7 +263,6 @@ static float count_e(float layer_heigth, float extrusion_width, float extrusion_
 static void lcd_babystep_z();
 
 void stack_error();
-static void lcd_ping_allert();
 void lcd_printer_connected();
 void lcd_ping();
 

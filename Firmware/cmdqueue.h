@@ -22,6 +22,8 @@
 // to the planner queue, but not yet removed from the cmdqueue. 
 // This is a temporary state to reduce stepper interrupt locking time.
 #define CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED 5
+//Command in cmdbuffer was sent over USB and contains line number
+#define CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR 6
 
 // How much space to reserve for the chained commands
 // of type CMDBUFFER_CURRENT_TYPE_CHAINED,

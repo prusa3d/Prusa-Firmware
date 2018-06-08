@@ -111,7 +111,7 @@ union MenuData
 
     struct AutoLoadFilamentMenu
     {
-        //Timer timer;
+        //ShortTimer timer;
 		char dummy;
     } autoLoadFilamentMenu;
     struct _Lcd_moveMenu
@@ -168,14 +168,13 @@ uint8_t farm_mode = 0;
 int farm_no = 0;
 int farm_timer = 8;
 int farm_status = 0;
-unsigned long allert_timer = millis();
 bool printer_connected = true;
 
 unsigned long display_time; //just timer for showing pid finished message on lcd;
 float pid_temp = DEFAULT_PID_TEMP;
 
 bool long_press_active = false;
-long long_press_timer = millis();
+static ShortTimer longPressTimer;
 unsigned long button_blanking_time = millis();
 bool button_pressed = false;
 
@@ -1607,7 +1606,7 @@ static void lcd_menu_fails_stats_total()
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
-	fprintf_P(lcdout, PSTR(ESC_H(0,0)"Total failures"ESC_H(1,1)"Power failures  %-3d"ESC_H(1,2)"Filam. runouts  %-3d"ESC_H(1,3)"Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	fprintf_P(lcdout, PSTR(ESC_H(0,0) "Total failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
@@ -1627,7 +1626,7 @@ static void lcd_menu_fails_stats_print()
     uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
-	fprintf_P(lcdout, PSTR(ESC_H(0,0)"Last print failures"ESC_H(1,1)"Power failures  %-3d"ESC_H(1,2)"Filam. runouts  %-3d"ESC_H(1,3)"Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	fprintf_P(lcdout, PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
@@ -1669,7 +1668,7 @@ static void lcd_menu_fails_stats()
 {
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
-    fprintf_P(lcdout, PSTR(ESC_H(0,0)"Last print failures"ESC_H(1,1)"Filam. runouts  %-3d"ESC_H(0,2)"Total failures"ESC_H(1,3)"Filam. runouts  %-3d"), filamentLast, filamentTotal);
+    fprintf_P(lcdout, PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Filam. runouts  %-3d" ESC_H(0,2) "Total failures" ESC_H(1,3) "Filam. runouts  %-3d"), filamentLast, filamentTotal);
     if (lcd_clicked())
     {
         menu_action_back();
@@ -1688,7 +1687,7 @@ extern char* __malloc_heap_end;
 static void lcd_menu_debug()
 {
 #ifdef DEBUG_STACK_MONITOR
-	fprintf_P(lcdout, PSTR(ESC_H(1,1)"RAM statistics"ESC_H(5,1)"SP_min: 0x%04x"ESC_H(1,2)"heap_start: 0x%04x"ESC_H(3,3)"heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
+	fprintf_P(lcdout, PSTR(ESC_H(1,1) "RAM statistics" ESC_H(5,1) "SP_min: 0x%04x" ESC_H(1,2) "heap_start: 0x%04x" ESC_H(3,3) "heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
 #endif //DEBUG_STACK_MONITOR
 
 	if (lcd_clicked())
@@ -1701,11 +1700,11 @@ static void lcd_menu_debug()
 
 static void lcd_menu_temperatures()
 {
-	fprintf_P(lcdout, PSTR(ESC_H(1,0)"Nozzle:   %d%c" ESC_H(1,1)"Bed:      %d%c"), (int)current_temperature[0], '\x01', (int)current_temperature_bed, '\x01');
+	fprintf_P(lcdout, PSTR(ESC_H(1,0) "Nozzle:   %d%c" ESC_H(1,1) "Bed:      %d%c"), (int)current_temperature[0], '\x01', (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
-	fprintf_P(lcdout, PSTR(ESC_H(1,2)"Ambient:  %d%c" ESC_H(1,3)"PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
+	fprintf_P(lcdout, PSTR(ESC_H(1,2) "Ambient:  %d%c" ESC_H(1,3) "PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
 #else //AMBIENT_THERMISTOR
-	fprintf_P(lcdout, PSTR(ESC_H(1,2)"PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
+	fprintf_P(lcdout, PSTR(ESC_H(1,2) "PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
 #endif //AMBIENT_THERMISTOR
 
 	if (lcd_clicked())
@@ -2090,7 +2089,7 @@ static void lcd_menu_AutoLoadFilament()
     }
     else
     {
-		Timer* ptimer = (Timer*)&(menuData.autoLoadFilamentMenu.dummy);
+		ShortTimer* ptimer = (ShortTimer*)&(menuData.autoLoadFilamentMenu.dummy);
         if (!ptimer->running()) ptimer->start();
         lcd.setCursor(0, 0);
         lcd_printPGM(_T(MSG_ERROR));
@@ -2675,7 +2674,7 @@ bool lcd_wait_for_pinda(float temp) {
 	lcd_set_custom_characters_degree();
 	setTargetHotend(0, 0);
 	setTargetBed(0);
-	Timer pinda_timeout;
+	LongTimer pinda_timeout;
 	pinda_timeout.start();
 	bool target_temp_reached = true;
 
@@ -5103,20 +5102,6 @@ static void lcd_disable_farm_mode() {
 	lcdDrawUpdate = 2;
 	
 }
-
-static void lcd_ping_allert() {
-	if ((abs(millis() - allert_timer)*0.001) > PING_ALLERT_PERIOD) {
-		allert_timer = millis();
-		SET_OUTPUT(BEEPER);
-		for (int i = 0; i < 2; i++) {
-			WRITE(BEEPER, HIGH);
-			delay(50);
-			WRITE(BEEPER, LOW);
-			delay(100);
-		}
-	}
-
-};
 
 
 #ifdef SNMM
@@ -7725,7 +7710,6 @@ void lcd_ping() { //chceck if printer is connected to monitoring when in farm mo
 																							  //if there are comamnds in buffer, some long gcodes can delay execution of ping command
 																							  //therefore longer period is used
 			printer_connected = false;
-			//lcd_ping_allert(); //acustic signals
 		}
 		else {
 			lcd_printer_connected();
@@ -7816,12 +7800,11 @@ void lcd_buttons_update()
 		  if (millis() > button_blanking_time) {
 			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
 			  if (button_pressed == false && long_press_active == false) {
-				  long_press_timer = millis();
+			      longPressTimer.start();
 				  button_pressed = true;
 			  }
 			  else {
-				  if (millis() - long_press_timer > LONG_PRESS_TIME) { //long press activated
-
+				  if (longPressTimer.expired(LONG_PRESS_TIME)) {
 					  long_press_active = true;
 					  move_menu_scale = 1.0;
 					  menu_action_submenu(lcd_move_z);

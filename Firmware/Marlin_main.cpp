@@ -1,30 +1,46 @@
 /* -*- c++ -*- */
-
-/*
-    Reprap firmware based on Sprinter and grbl.
- Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
-
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * @file
  */
 
-/*
- This firmware is a mashup between Sprinter and grbl.
-  (https://github.com/kliment/Sprinter)
-  (https://github.com/simen/grbl/tree)
-
- It has preliminary support for Matthew Roberts advance algorithm
-    http://reprap.org/pipermail/reprap-dev/2011-May/003323.html
+/**
+ * @mainpage Reprap 3D printer firmware based on Sprinter and grbl.
+ *
+ * @section intro_sec Introduction
+ *
+ * This firmware is a mashup between Sprinter and grbl.
+ * https://github.com/kliment/Sprinter
+ * https://github.com/simen/grbl/tree
+ *
+ * It has preliminary support for Matthew Roberts advance algorithm
+ * http://reprap.org/pipermail/reprap-dev/2011-May/003323.html
+ *
+ * Prusa Research s.r.o. https://www.prusa3d.cz
+ *
+ * @section copyright_sec Copyright
+ *
+ * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @section notes_sec Notes
+ *
+ * * Do not create static objects in global functions.
+ *   Otherwise constructor guard against concurrent calls is generated costing
+ *   about 8B RAM and 14B flash.
+ *
+ *
  */
 
 #include "Marlin.h"
@@ -118,6 +134,9 @@
 
 //Macro for print fan speed
 #define FAN_PULSE_WIDTH_LIMIT ((fanSpeed > 100) ? 3 : 4) //time in ms
+
+#define PRINTING_TYPE_SD 0
+#define PRINTING_TYPE_USB 1
 
 // look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
 // http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
@@ -305,6 +324,7 @@ float pause_lastpos[4];
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
+static LongTimer safetyTimer;
 
 //unsigned long load_filament_time;
 
@@ -486,6 +506,7 @@ boolean chdkActive = false;
 
 // save/restore printing
 static uint32_t saved_sdpos = 0;
+static uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { 0, 0, 0, 0 };
 // Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
 static float saved_feedrate2 = 0;
@@ -629,12 +650,12 @@ void crashdet_disable()
 
 void crashdet_stop_and_save_print()
 {
-	stop_and_save_print_to_ram(10, 0); //XY - no change, Z 10mm up, E - no change
+	stop_and_save_print_to_ram(10, -2); //XY - no change, Z 10mm up, E -2mm retract
 }
 
 void crashdet_restore_print_and_continue()
 {
-	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+	restore_print_from_ram_and_continue(2); //XYZ = orig, E +2mm unretract
 //	babystep_apply();
 }
 
@@ -1780,7 +1801,15 @@ void loop()
           planner_add_sd_length(sdlen.value);
           sei();
         }
-      }
+	  }
+	  else if((*ptr == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR) && !IS_SD_PRINTING){ 
+		  
+		  cli();
+          *ptr ++ = CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED;
+          // and one for each command to previous block in the planner queue.
+          planner_add_sd_length(1);
+          sei();
+	  }
       // Now it is safe to release the already processed command block. If interrupted by the power panic now,
       // this block's SD card length will not be counted twice as its command type has been replaced 
       // by CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED.
@@ -2936,7 +2965,7 @@ static void gcode_PRUSA_SN()
         selectedSerialPort = 0;
         MSerial.write(";S");
         int numbersRead = 0;
-        Timer timeout;
+        ShortTimer timeout;
         timeout.start();
 
         while (numbersRead < 19) {
@@ -2947,7 +2976,7 @@ static void gcode_PRUSA_SN()
                 numbersRead++;
                 selectedSerialPort = 0;
             }
-            if (timeout.expired(100)) break;
+            if (timeout.expired(100u)) break;
         }
         selectedSerialPort = 1;
         MSerial.write('\n');
@@ -3310,10 +3339,10 @@ void process_commands()
             if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
               float echange=destination[E_AXIS]-current_position[E_AXIS];
 
-              if((echange<-MIN_RETRACT && !retracted) || (echange>MIN_RETRACT && retracted)) { //move appears to be an attempt to retract or recover
+              if((echange<-MIN_RETRACT && !retracted[active_extruder]) || (echange>MIN_RETRACT && retracted[active_extruder])) { //move appears to be an attempt to retract or recover
                   current_position[E_AXIS] = destination[E_AXIS]; //hide the slicer-generated retract/recover from calculations
                   plan_set_e_position(current_position[E_AXIS]); //AND from the planner
-                  retract(!retracted);
+                  retract(!retracted[active_extruder]);
                   return;
               }
 
@@ -6437,10 +6466,10 @@ Sigma_Exit:
 #ifdef PINDA_THERMISTOR
 	case 860: // M860 - Wait for PINDA thermistor to reach target temperature.
 	{
-		int setTargetPinda = 0;
+		int set_target_pinda = 0;
 
 		if (code_seen('S')) {
-			setTargetPinda = code_value();
+			set_target_pinda = code_value();
 		}
 		else {
 			break;
@@ -6449,19 +6478,24 @@ Sigma_Exit:
 		LCD_MESSAGERPGM(_T(MSG_PLEASE_WAIT));
 
 		SERIAL_PROTOCOLPGM("Wait for PINDA target temperature:");
-		SERIAL_PROTOCOL(setTargetPinda);
+		SERIAL_PROTOCOL(set_target_pinda);
 		SERIAL_PROTOCOLLN("");
 
 		codenum = millis();
 		cancel_heatup = false;
 
-		while ((!cancel_heatup) && current_temperature_pinda < setTargetPinda) {
+		bool is_pinda_cooling = false;
+		if ((degTargetBed() == 0) && (degTargetHotend(0) == 0)) {
+		    is_pinda_cooling = true;
+		}
+
+		while ( ((!is_pinda_cooling) && (!cancel_heatup) && (current_temperature_pinda < set_target_pinda)) || (is_pinda_cooling && (current_temperature_pinda > set_target_pinda)) ) {
 			if ((millis() - codenum) > 1000) //Print Temp Reading every 1 second while waiting.
 			{
 				SERIAL_PROTOCOLPGM("P:");
 				SERIAL_PROTOCOL_F(current_temperature_pinda, 1);
 				SERIAL_PROTOCOLPGM("/");
-				SERIAL_PROTOCOL(setTargetPinda);
+				SERIAL_PROTOCOL(set_target_pinda);
 				SERIAL_PROTOCOLLN("");
 				codenum = millis();
 			}
@@ -6473,6 +6507,7 @@ Sigma_Exit:
 
 		break;
 	}
+ 
 	case 861: // M861 - Set/Read PINDA temperature compensation offsets
 		if (code_seen('?')) { // ? - Print out current EEPROM offset values
 			uint8_t cal_status = calibration_status_pinda();
@@ -6981,7 +7016,7 @@ void FlushSerialRequestResend()
 void ClearToSend()
 {
     previous_millis_cmd = millis();
-    if (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB)
+    if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR))
         SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
 }
 
@@ -7277,7 +7312,6 @@ static void handleSafetyTimer()
 #if (EXTRUDERS > 1)
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
-    static Timer safetyTimer;
     if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || saved_printing
         || (lcd_commands_type == LCD_COMMAND_V2_CAL) || (!degTargetBed() && !degTargetHotend(0)))
     {
@@ -8142,7 +8176,6 @@ void uvlo_()
     // Conserve power as soon as possible.
     disable_x();
     disable_y();
-    disable_e0();
     
 #ifdef TMC2130
 	tmc2130_set_current_h(Z_AXIS, 20);
@@ -8242,11 +8275,19 @@ void uvlo_()
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 0), current_position[X_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4), current_position[Y_AXIS]);
     eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z), current_position[Z_AXIS]);
-    // Store the current feed rate, temperatures and fan speed.
+    // Store the current feed rate, temperatures, fan speed and extruder multipliers (flow rates)
     EEPROM_save_B(EEPROM_UVLO_FEEDRATE, &feedrate_bckp);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND, target_temperature[active_extruder]);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_TARGET_BED, target_temperature_bed);
     eeprom_update_byte((uint8_t*)EEPROM_UVLO_FAN_SPEED, fanSpeed);
+	eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_0), extruder_multiplier[0]);
+#if EXTRUDERS > 1
+	eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_1), extruder_multiplier[1]);
+#if EXTRUDERS > 2
+	eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_2), extruder_multiplier[2]);
+#endif
+#endif
+
     // Finaly store the "power outage" flag.
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 
@@ -8350,13 +8391,7 @@ void recover_print(uint8_t automatic) {
 	lcd_update(2);
 	lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20 r=1
 
-  recover_machine_state_after_power_panic();
-
-    // Set the target bed and nozzle temperatures. 
-    sprintf_P(cmd, PSTR("M104 S%d"), target_temperature[active_extruder]); 
-    enquecommand(cmd); 
-    sprintf_P(cmd, PSTR("M140 S%d"), target_temperature_bed); 
-    enquecommand(cmd);
+  recover_machine_state_after_power_panic(); //recover position, temperatures and extrude_multipliers
 
   // Lift the print head, so one may remove the excess priming material.
   if (current_position[Z_AXIS] < 25)
@@ -8458,6 +8493,16 @@ void recover_machine_state_after_power_panic()
   // 7) Recover the target temperatures.
   target_temperature[active_extruder] = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_HOTEND);
   target_temperature_bed = eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED);
+
+  // 8) Recover extruder multipilers
+  extruder_multiplier[0] = eeprom_read_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_0));
+#if EXTRUDERS > 1
+  extruder_multiplier[1] = eeprom_read_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_1));
+#if EXTRUDERS > 2
+  extruder_multiplier[2] = eeprom_read_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_2));
+#endif
+#endif
+
 }
 
 void restore_print_from_eeprom() {
@@ -8544,13 +8589,34 @@ void restore_print_from_eeprom() {
 void stop_and_save_print_to_ram(float z_move, float e_move)
 {
 	if (saved_printing) return;
+	unsigned char nplanner_blocks;
+	unsigned char nlines;
+	uint16_t sdlen_planner;
+	uint16_t sdlen_cmdqueue;
+	
+
 	cli();
-  unsigned char nplanner_blocks = number_of_blocks();
-	saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
-	uint16_t sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
-	saved_sdpos -= sdlen_planner;
-	uint16_t sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
-	saved_sdpos -= sdlen_cmdqueue;
+	if (card.sdprinting) {
+		nplanner_blocks = number_of_blocks();
+		saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
+		sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
+		saved_sdpos -= sdlen_planner;
+		sdlen_cmdqueue = cmdqueue_calc_sd_length(); //length of sd commands in cmdqueue
+		saved_sdpos -= sdlen_cmdqueue;
+		saved_printing_type = PRINTING_TYPE_SD;
+
+	}
+	else if (is_usb_printing) { //reuse saved_sdpos for storing line number
+		 saved_sdpos = gcode_LastN; //start with line number of command added recently to cmd queue
+		 //reuse planner_calc_sd_length function for getting number of lines of commands in planner:
+		 nlines = planner_calc_sd_length(); //number of lines of commands in planner 
+		 saved_sdpos -= nlines;
+		 saved_sdpos -= buflen; //number of blocks in cmd buffer
+		 saved_printing_type = PRINTING_TYPE_USB;
+	}
+	else {
+		//not sd printing nor usb printing
+	}
 
 #if 0
   SERIAL_ECHOPGM("SDPOS_ATOMIC="); MYSERIAL.println(sdpos_atomic, DEC);
@@ -8559,7 +8625,8 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   SERIAL_ECHOPGM("SDLEN_CMDQ="); MYSERIAL.println(sdlen_cmdqueue, DEC);
   SERIAL_ECHOPGM("PLANNERBLOCKS="); MYSERIAL.println(int(nplanner_blocks), DEC);
   SERIAL_ECHOPGM("SDSAVED="); MYSERIAL.println(saved_sdpos, DEC);
-  SERIAL_ECHOPGM("SDFILELEN="); MYSERIAL.println(card.fileSize(), DEC);
+  //SERIAL_ECHOPGM("SDFILELEN="); MYSERIAL.println(card.fileSize(), DEC);
+
 
   {
     card.setIndex(saved_sdpos);
@@ -8571,7 +8638,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
       MYSERIAL.print(char(card.get()));
     SERIAL_ECHOLNPGM("End of command buffer");
   }
-
   {
     // Print the content of the planner buffer, line by line:
     card.setIndex(saved_sdpos);
@@ -8666,11 +8732,17 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 #if 1
     // Rather than calling plan_buffer_line directly, push the move into the command queue, 
     char buf[48];
+
+	// First unretract (relative extrusion)
+	strcpy_P(buf, PSTR("G1 E"));
+	dtostrf(e_move, 6, 3, buf + strlen(buf));
+	strcat_P(buf, PSTR(" F"));
+	dtostrf(retract_feedrate*60, 8, 3, buf + strlen(buf));
+	enquecommand(buf, false);
+
+	// Then lift Z axis
     strcpy_P(buf, PSTR("G1 Z"));
     dtostrf(saved_pos[Z_AXIS] + z_move, 8, 3, buf + strlen(buf));
-    strcat_P(buf, PSTR(" E"));
-    // Relative extrusion
-    dtostrf(e_move, 6, 3, buf + strlen(buf));
     strcat_P(buf, PSTR(" F"));
     dtostrf(homing_feedrate[Z_AXIS], 8, 3, buf + strlen(buf));
     // At this point the command queue is empty.
@@ -8697,14 +8769,23 @@ void restore_print_from_ram_and_continue(float e_move)
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS]/13, active_extruder);
-    st_synchronize();
-  memcpy(current_position, saved_pos, sizeof(saved_pos));
-  memcpy(destination, current_position, sizeof(destination));
-	card.setIndex(saved_sdpos);
-  sdpos_atomic = saved_sdpos;
-	card.sdprinting = true;
+	st_synchronize();
+	memcpy(current_position, saved_pos, sizeof(saved_pos));
+	memcpy(destination, current_position, sizeof(destination));
+	if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
+		card.setIndex(saved_sdpos);
+		sdpos_atomic = saved_sdpos;
+		card.sdprinting = true;
+	}
+	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
+		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
+		FlushSerialRequestResend();
+	}
+	else {
+		//not sd printing nor usb printing
+	}
 	saved_printing = false;
-	printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
+	
 }
 
 void print_world_coordinates()
