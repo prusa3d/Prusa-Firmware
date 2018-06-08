@@ -141,6 +141,7 @@
 //#define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
 //#define DEBUG_STEPPER_TIMER_MISSED // Stop on stepper timer overflow, beep and display a message.
 //#define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
+//#define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
 
 

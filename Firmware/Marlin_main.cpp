@@ -325,6 +325,7 @@ unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
 static LongTimer safetyTimer;
+static LongTimer crashDetTimer;
 
 //unsigned long load_filament_time;
 
@@ -681,6 +682,25 @@ void crashdet_detected(uint8_t mask)
 	    cmdqueue_pop_front();
 	}*/
 	st_synchronize();
+	static uint8_t crashDet_counter = 0;
+	bool automatic_recovery_after_crash = true;
+	bool yesno;
+
+	if (crashDet_counter++ == 0) {
+		crashDetTimer.start();
+	}
+	else if (crashDetTimer.expired(CRASHDET_TIMER * 1000ul)){
+		crashDetTimer.stop();
+		crashDet_counter = 0;
+	}
+	else if(crashDet_counter == CRASHDET_COUNTER_MAX){
+		automatic_recovery_after_crash = false;
+		crashDetTimer.stop();
+		crashDet_counter = 0;
+	}
+	else {
+		crashDetTimer.start();
+	}
 
 	lcd_update_enable(true);
 	lcd_implementation_clear();
@@ -697,17 +717,21 @@ void crashdet_detected(uint8_t mask)
 		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) + 1);
 	}
     
-#ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
-    bool yesno = true;
-#else
-    bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_CRASH_DETECTED), false);
-#endif
+
+
 	lcd_update_enable(true);
 	lcd_update(2);
 	lcd_setstatuspgm(_T(MSG_CRASH_DETECTED));
+	gcode_G28(true, true, false, false); //home X and Y
+	st_synchronize();
+
+	if(automatic_recovery_after_crash) 
+		yesno = true;
+	else 
+		yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);
+	lcd_update_enable(true);
 	if (yesno)
 	{
-		enquecommand_P(PSTR("G28 X Y"));
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}
 	else
@@ -724,10 +748,15 @@ void crashdet_recover()
 
 void crashdet_cancel()
 {
-	card.sdprinting = false;
-	card.closefile();
 	tmc2130_sg_stop_on_crash = true;
+	if (saved_printing_type == PRINTING_TYPE_SD) {
+		lcd_print_stop();
+	}else if(saved_printing_type == PRINTING_TYPE_USB){
+		SERIAL_ECHOLNPGM("// action:cancel"); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
+		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+	}
 }
+
 #endif //TMC2130
 
 void failstats_reset_print()
