@@ -197,12 +197,12 @@ class MarlinSerial //: public Stream
         write(*buffer++);
     }
 
-    static FORCE_INLINE void print(const String &s)
+/*    static FORCE_INLINE void print(const String &s)
     {
       for (int i = 0; i < (int)s.length(); i++) {
         write(s[i]);
       }
-    }
+    }*/
     
     static FORCE_INLINE void print(const char *str)
     {
