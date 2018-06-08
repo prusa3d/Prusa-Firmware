@@ -97,10 +97,36 @@ uint8_t lang_get_count()
 #endif //W25X20CL
 }
 
+uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* offset)
+{
+	if (lang == LANG_ID_PRI) return 0; //primary lang not supported for this function
+#ifdef W25X20CL
+	if (lang == LANG_ID_SEC)
+	{
+		uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+		memcpy_P(header, ui, sizeof(lang_table_header_t)); //read table header from progmem
+		if (offset) *offset = ui;
+		return (header == LANG_MAGIC)?1:0; //return 1 if magic valid
+	}
+	uint32_t addr = 0x00000; //start of xflash
+	lang--;
+	while (1)
+	{
+		w25x20cl_rd_data(addr, header, sizeof(lang_table_header_t)); //read table header from xflash
+		if (header->magic != LANG_MAGIC) break; //break if not valid
+		if (offset) *offset = addr;
+		if (--lang == 0) return 1;
+		addr += header->size; //calc address of next table
+	}
+	return 0;
+#else //W25X20CL
+#endif //W25X20CL
+}
+
 uint16_t lang_get_code(uint8_t lang)
 {
-#ifdef W25X20CL
 	if (lang == LANG_ID_PRI) return LANG_CODE_EN; //primary lang = EN
+#ifdef W25X20CL
 	if (lang == LANG_ID_SEC)
 	{
 		uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer

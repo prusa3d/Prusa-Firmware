@@ -108,6 +108,7 @@ extern uint8_t lang_select(uint8_t lang);
 
 //get total number of languages (primary + all in xflash)
 extern uint8_t lang_get_count();
+extern uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* offset);
 extern uint16_t lang_get_code(uint8_t lang);
 extern const char* lang_get_name_by_code(uint16_t code);
 

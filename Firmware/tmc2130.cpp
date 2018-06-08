@@ -5,6 +5,7 @@
 #include "tmc2130.h"
 #include "LiquidCrystal_Prusa.h"
 #include "ultralcd.h"
+#include "language.h"
 #ifndef NEW_SPI
 #include <SPI.h>
 #else //NEW_SPI
@@ -386,7 +387,6 @@ bool tmc2130_wait_standstill_xy(int timeout)
 
 void tmc2130_check_overtemp()
 {
-	const static char TMC_OVERTEMP_MSG[] PROGMEM = "TMC DRIVER OVERTEMP ";
 	static uint32_t checktime = 0;
 	if (millis() - checktime > 1000 )
 	{
@@ -397,11 +397,11 @@ void tmc2130_check_overtemp()
 			tmc2130_rd(i, TMC2130_REG_DRV_STATUS, &drv_status);
 			if (drv_status & ((uint32_t)1 << 26))
 			{ // BIT 26 - over temp prewarning ~120C (+-20C)
-				SERIAL_ERRORRPGM(TMC_OVERTEMP_MSG);
+				SERIAL_ERRORRPGM(MSG_TMC_OVERTEMP);
 				SERIAL_ECHOLN(i);
 				for (int j = 0; j < 4; j++)
 					tmc2130_wr(j, TMC2130_REG_CHOPCONF, 0x00010000);
-				kill(TMC_OVERTEMP_MSG);
+				kill(MSG_TMC_OVERTEMP);
 			}
 
 		}

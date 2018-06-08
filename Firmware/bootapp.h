@@ -20,6 +20,8 @@
 
 #define BOOT_APP_FLG_USER0 0x80
 
+#define BOOT_APP_MAGIC 0x55aa55aa
+
 
 #if defined(__cplusplus)
 extern "C" {

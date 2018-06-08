@@ -996,34 +996,94 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 
 #include "bootapp.h"
 
-void __test()
+void __test(uint8_t lang)
 {
+	uint8_t cnt = lang_get_count();
+	printf_P(PSTR("cnt=%d lang=%d\n"), cnt, lang);
+	if ((lang < 2) || (lang > cnt)) return;
+
 	cli();
-	boot_app_magic = 0x55aa55aa;
+	boot_app_magic = BOOT_APP_MAGIC;
 	boot_app_flags = BOOT_APP_FLG_USER0;
-	boot_reserved = 0x00;
+	boot_reserved = lang << 4;
 	wdt_enable(WDTO_15MS);
 	while(1);
 }
 
 #ifdef W25X20CL
 
+#define W25X20CL_BLOCK 1024
+
 void upgrade_sec_lang_from_external_flash()
 {
-	if ((boot_app_magic == 0x55aa55aa) && (boot_app_flags & BOOT_APP_FLG_USER0))
+	if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0))
 	{
-		fprintf_P(lcdout, PSTR(ESC_2J ESC_H(1,1) "TEST %d"), boot_reserved);
-		boot_reserved++;
-		if (boot_reserved < 4)
+		uint8_t lang = boot_reserved >> 4;
+		uint8_t state = boot_reserved & 0xf;
+
+		fprintf_P(lcdout, PSTR(ESC_H(1,3) "lang=%1hhd state=%1hhx"), lang, state);
+		delay(1000);
+		state++;
+		boot_reserved = state | (lang << 4);
+		if (state < 15)
 		{
-			_delay_ms(1000);
 			cli();
 			wdt_enable(WDTO_15MS);
 			while(1);
 		}
+/*		fprintf_P(lcdout, PSTR(ESC_2J "UPGRADE START"));
+		delay(1000);
+		fprintf_P(lcdout, PSTR(ESC_H(1,1) "lang=%hhd state=%hhd"), lang, state);
+		delay(1000);*/
+/*
+		lang_table_header_t header;
+		uint32_t src_addr = 0x00000;
+		if (lang_get_header(lang, &header, &src_addr))
+		{
+			uint16_t dst_addr = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+			uint16_t size = W25X20CL_BLOCK * state;
+			src_addr += size;
+			dst_addr += size;
+			state++;
+			boot_reserved = state | (lang << 4);
+			if (size < header.size)
+			{
+				fprintf_P(lcdout, PSTR(ESC_2J ESC_H(1,0) "Copying lang #%hhd" ESC_H(1,1) "size 0x%04x"), lang, size);
+				size = header.size - size;
+				if (size > W25X20CL_BLOCK) size = W25X20CL_BLOCK;
+
+//				delay(1000);
+//				cli();
+//				wdt_enable(WDTO_15MS);
+//				while(1);
+				cli();
+				w25x20cl_rd_data(src_addr, (uint8_t*)0x0800, 256);
+				bootapp_ram2flash(0x0800, dst_addr, 256);
+			}
+*/
+/*
+
+				
+				
+//				header.size - (4096*state);
+
+			fprintf_P(lcdout, PSTR(ESC_2J ESC_H(1,0) "Copying lang #%hhd" ESC_H(1,1) "state %hhd" ESC_H(1,2) "offs: %08lx" ESC_H(1,3) "remain %04x"), lang, state, offset, remain);
+			state++;
+			boot_reserved = state | (lang << 4);
+			if (state < 4)
+			{
+				_delay_ms(1000);
+				cli();
+				wdt_enable(WDTO_15MS);
+				while(1);
+			}*/
+//		}
 	}
 	boot_app_flags &= ~BOOT_APP_FLG_USER0;
 }
+
+
+#ifdef DEBUG_W25X20CL
 
 uint8_t lang_xflash_enum_codes(uint16_t* codes)
 {
@@ -1044,7 +1104,7 @@ uint8_t lang_xflash_enum_codes(uint16_t* codes)
 		printf_P(_n(" _lt_size         = 0x%04x (%d)\n"), header.size, header.size);
 		printf_P(_n(" _lt_count        = 0x%04x (%d)\n"), header.count, header.count);
 		printf_P(_n(" _lt_chsum        = 0x%04x\n"), header.checksum);
-		printf_P(_n(" _lt_code         = 0x%04x\n"), header.code);
+		printf_P(_n(" _lt_code         = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
 		printf_P(_n(" _lt_resv1        = 0x%08lx\n"), header.reserved1);
 
 		addr += header.size;
@@ -1061,6 +1121,8 @@ void list_sec_lang_from_external_flash()
 	printf_P(_n("XFlash lang count = %hhd\n"), count);
 }
 
+#endif //DEBUG_W25X20CL
+
 #endif //W25X20CL
 
 
@@ -1069,16 +1131,20 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+    lcd_init();
+	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
+
 #ifdef NEW_SPI
 	spi_init();
 #endif //NEW_SPI
 
-    lcd_init();
-	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
-
-	upgrade_sec_lang_from_external_flash();
-
 	lcd_splash();
+
+	if (w25x20cl_init())
+		upgrade_sec_lang_from_external_flash();
+	else
+		kill(_i("External SPI flash W25X20CL not responding."));
+
 	setup_killpin();
 	setup_powerhold();
 
@@ -1369,21 +1435,17 @@ void setup()
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
   // is being written into the EEPROM, so the update procedure will be triggered only once.
 
-	spi_setup(TMC2130_SPCR, TMC2130_SPSR);
-	puts_P(_n("w25x20cl init: "));
-	if (w25x20cl_ini())
-	{
-		uint8_t uid[8]; // 64bit unique id
-		w25x20cl_rd_uid(uid);
-		puts_P(_n("OK, UID="));
-		for (uint8_t i = 0; i < 8; i ++)
-			printf_P(PSTR("%02hhx"), uid[i]);
-		putchar('\n');
-		list_sec_lang_from_external_flash();
-	}
-	else
-		puts_P(_n("NG!\n"));
 
+#ifdef DEBUG_W25X20CL
+	W25X20CL_SPI_ENTER();
+	uint8_t uid[8]; // 64bit unique id
+	w25x20cl_rd_uid(uid);
+	puts_P(_n("W25X20CL UID="));
+	for (uint8_t i = 0; i < 8; i ++)
+		printf_P(PSTR("%02hhx"), uid[i]);
+	putchar('\n');
+	list_sec_lang_from_external_flash();
+#endif //DEBUG_W25X20CL
 
 	lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
 	if (lang_selected >= LANG_NUM)
@@ -1393,12 +1455,13 @@ void setup()
 	}
 	lang_select(lang_selected);
 
+//#ifdef DEBUG_SEC_LANG
+
 	uint16_t sec_lang_code = lang_get_code(1);
 	printf_P(_n("SEC_LANG_CODE=0x%04x (%c%c)\n"), sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
 
-#ifdef DEBUG_SEC_LANG
-	lang_print_sec_lang(uartout);
-#endif //DEBUG_SEC_LANG
+//	lang_print_sec_lang(uartout);
+//#endif //DEBUG_SEC_LANG
 	
 	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
@@ -2224,7 +2287,7 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 #ifdef TMC2130
 		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
 			FORCE_HIGH_POWER_END;
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return; 
 		}
 #endif //TMC2130
@@ -2240,7 +2303,7 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 #ifdef TMC2130
 		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
 			FORCE_HIGH_POWER_END;
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return; 
 		}
 #endif //TMC2130
@@ -5004,7 +5067,7 @@ Sigma_Exit:
       setWatch();
       break;
     case 112: //  M112 -Emergency Stop
-      kill("", 3);
+      kill(_n(""), 3);
       break;
     case 140: // M140 set bed temp
       if (code_seen('S')) setTargetBed(code_value());
@@ -7387,7 +7450,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 
   if( (millis() - previous_millis_cmd) >  max_inactive_time )
     if(max_inactive_time)
-      kill("", 4);
+      kill(_n(""), 4);
   if(stepper_inactive_time)  {
     if( (millis() - previous_millis_cmd) >  stepper_inactive_time )
     {

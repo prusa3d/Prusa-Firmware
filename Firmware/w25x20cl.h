@@ -6,20 +6,21 @@
 #include "config.h"
 
 
-#define W25_STATUS_BUSY   0x01
-#define W25_STATUS_WEL    0x02
-#define W25_STATUS_BP0    0x04
-#define W25_STATUS_BP1    0x08
-#define W25_STATUS_TB     0x20
-#define W25_STATUS_SRP    0x80
+#define W25X20CL_STATUS_BUSY   0x01
+#define W25X20CL_STATUS_WEL    0x02
+#define W25X20CL_STATUS_BP0    0x04
+#define W25X20CL_STATUS_BP1    0x08
+#define W25X20CL_STATUS_TB     0x20
+#define W25X20CL_STATUS_SRP    0x80
 
+#define W25X20CL_SPI_ENTER() spi_setup(W25X20CL_SPCR, W25X20CL_SPSR)
 
 #if defined(__cplusplus)
 extern "C" {
 #endif //defined(__cplusplus)
 
 
-extern int8_t w25x20cl_ini(void);
+extern int8_t w25x20cl_init(void);
 extern void w25x20cl_enable_wr(void);
 extern void w25x20cl_disable_wr(void);
 extern uint8_t w25x20cl_rd_status_reg(void);

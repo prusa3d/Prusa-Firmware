@@ -20,12 +20,12 @@ void bootapp_print_vars()
 void bootapp_ram2flash(uint16_t rptr, uint16_t fptr, uint16_t size)
 {
 	cli();
-	boot_app_magic = 0x55aa55aa;
+	boot_app_magic = BOOT_APP_MAGIC;
 	boot_app_flags |= BOOT_APP_FLG_COPY;
 	uint16_t ui; for (ui = 0; ui < size; ui++)
 	{
 		uint8_t uc = ram_array[ui+rptr];
-		if (pgm_readbyte(ui+fptr) & uc != uc)
+		if (pgm_read_byte(ui+fptr) & uc != uc)
 		{
 			boot_app_flags |= BOOT_APP_FLG_ERASE;
 			break;
