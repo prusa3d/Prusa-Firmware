@@ -188,6 +188,7 @@
 //        Call gcode file : "M32 P !filename#" and return to caller file after finishing (similar to #include).
 //        The '#' is necessary when calling from within sd files, as it stops buffer prereading
 // M42  - Change pin status via gcode Use M42 Px Sy to set pin x to value y, when omitting Px the onboard led will be used.
+// M73  - Show percent done and print time remaining
 // M80  - Turn on Power Supply
 // M81  - Turn off Power Supply
 // M82  - Set E codes absolute (default)
@@ -452,6 +453,11 @@ uint8_t saved_filament_type;
 // save/restore printing
 bool saved_printing = false;
 
+// storing estimated time to end of print counted by slicer
+uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
+uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -4542,7 +4548,7 @@ void process_commands()
       card.openFile(strchr_pointer + 4,true);
       break;
     case 24: //M24 - Start SD print
-	  if (!card.paused)
+	  if (!card.paused) 
 		failstats_reset_print();
       card.startFileprint();
       starttime=millis();
@@ -5024,6 +5030,22 @@ Sigma_Exit:
 	}
 #endif		// Z_PROBE_REPEATABILITY_TEST 
 #endif		// ENABLE_AUTO_BED_LEVELING
+	case 73: //M73 show percent done and time remaining
+		if(code_seen('P')) print_percent_done_normal = code_value();
+		if(code_seen('R')) print_time_remaining_normal = code_value();
+		if(code_seen('Q')) print_percent_done_silent = code_value();
+		if(code_seen('S')) print_time_remaining_silent = code_value();
+
+		SERIAL_ECHOPGM("NORMAL MODE: Percent done: ");
+		MYSERIAL.print(int(print_percent_done_normal));
+		SERIAL_ECHOPGM("; print time remaining in mins: ");
+		MYSERIAL.println(print_time_remaining_normal);
+		SERIAL_ECHOPGM("SILENT MODE: Percent done: ");
+		MYSERIAL.print(int(print_percent_done_silent));
+		SERIAL_ECHOPGM("; print time remaining in mins: ");
+		MYSERIAL.println(print_time_remaining_silent);
+
+		break;
 
     case 104: // M104
       if(setTargetedHotend(104)){
@@ -5332,6 +5354,8 @@ Sigma_Exit:
           #endif
         }
       }
+	  //in the end of print set estimated time to end of print and extruders used during print to default values for next print
+	  print_time_remaining_init();
 	  snmm_filaments_used = 0;
       break;
     case 85: // M85
@@ -7341,8 +7365,7 @@ static void handleSafetyTimer()
 #if (EXTRUDERS > 1)
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
-    if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || saved_printing
-        || (lcd_commands_type == LCD_COMMAND_V2_CAL) || (!degTargetBed() && !degTargetHotend(0)))
+    if ((PRINTER_ACTIVE) || (!degTargetBed() && !degTargetHotend(0)))
     {
         safetyTimer.stop();
     }
@@ -8851,5 +8874,34 @@ void print_mesh_bed_leveling_table()
   SERIAL_ECHOLNPGM("");
 }
 
+uint16_t print_time_remaining() {
+	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
+	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_remaining_normal;
+	else print_t = print_time_remaining_silent;
+	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100 * print_t / feedmultiply;
+	return print_t;
+}
+
+uint8_t print_percent_done() {
+	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
+	uint8_t percent_done = 0;
+	if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100) {
+		percent_done = print_percent_done_normal;
+	}
+	else if (print_percent_done_silent <= 100) {
+		percent_done = print_percent_done_silent;
+	}
+	else {
+		percent_done = card.percentDone();
+	}
+	return percent_done;
+}
+
+static void print_time_remaining_init() {
+	print_time_remaining_normal = PRINT_TIME_REMAINING_INIT;
+	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
+	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
+	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+}
 
 #define FIL_LOAD_LENGTH 60
