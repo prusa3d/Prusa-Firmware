@@ -3717,12 +3717,15 @@ static void lcd_crash_mode_set()
 static void lcd_set_lang(unsigned char lang)
 {
 	if (lang > LANG_ID_SEC)
+	{
 		if (!lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language from XFLASH?"), false, true))
 		{
 			lcd_return_to_status();
 			lcd_update_enable(true);
 			return;
 		}
+		lang_boot_upgrade_start(lang);
+	}
 	lang_select(lang);
 /*
 	lang_selected = lang;
@@ -5657,11 +5660,9 @@ void lcd_confirm_print()
 
 }
 
-extern void __test(uint8_t lang);
-
 static void lcd_test_menu()
 {
-	__test(3);
+	lang_boot_upgrade_start(3);
 	lcd_update_enable(true);
 	lcd_return_to_status();
 }

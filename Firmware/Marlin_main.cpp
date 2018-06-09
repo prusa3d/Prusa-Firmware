@@ -996,19 +996,6 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 
 #include "bootapp.h"
 
-void __test(uint8_t lang)
-{
-	uint8_t cnt = lang_get_count();
-	printf_P(PSTR("cnt=%d lang=%d\n"), cnt, lang);
-	if ((lang < 2) || (lang > cnt)) return;
-
-	cli();
-	boot_app_magic = BOOT_APP_MAGIC;
-	boot_app_flags = BOOT_APP_FLG_USER0;
-	boot_reserved = lang << 4;
-	wdt_enable(WDTO_15MS);
-	while(1);
-}
 
 #ifdef W25X20CL
 
@@ -1026,17 +1013,15 @@ void upgrade_sec_lang_from_external_flash()
 		uint32_t src_addr;
 		if (lang_get_header(lang, &header, &src_addr))
 		{
-			fprintf_P(lcdout, PSTR(ESC_H(1,3) "lng=%1hhd sta=%1hhx %04x"), lang, state, header.size);
+			fprintf_P(lcdout, PSTR(ESC_H(1,3) "l=%1hhd s=%1hhx %04x %04x"), lang, state, src_addr, header.size);
 			delay(1000);
-			boot_reserved = (state+1) | (lang << 4);
-			if ((state * LANGBOOT_BLOCKSIZE) < 0x211c)
+			boot_reserved = (state + 1) | (lang << 4);
+			if ((state * LANGBOOT_BLOCKSIZE) < header.size)
 			{
 				cli();
-//				for (uint16_t i = 0; i < LANGBOOT_BLOCKSIZE; i++)
-//					ram_array[0x800 + i] = 0xee;
-				uint16_t size = 0x211c - state * LANGBOOT_BLOCKSIZE;
+				uint16_t size = header.size - state * LANGBOOT_BLOCKSIZE;
 				if (size > LANGBOOT_BLOCKSIZE) size = LANGBOOT_BLOCKSIZE;
-				w25x20cl_rd_data(0x25ba + state * LANGBOOT_BLOCKSIZE, (uint8_t*)LANGBOOT_RAMBUFFER, size);
+				w25x20cl_rd_data(src_addr + state * LANGBOOT_BLOCKSIZE, (uint8_t*)LANGBOOT_RAMBUFFER, size);
 				bootapp_ram2flash(LANGBOOT_RAMBUFFER, _SEC_LANG_TABLE + state * LANGBOOT_BLOCKSIZE, size);
 			}
 		}
@@ -1510,7 +1495,7 @@ void setup()
 //#ifdef DEBUG_SEC_LANG
 
 	uint16_t sec_lang_code = lang_get_code(1);
-	uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	printf_P(_n("lang_selected=%d\nlang_table=0x%04x\nSEC_LANG_CODE=0x%04x (%c%c)\n"), lang_selected, ui, sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
 
 //	lang_print_sec_lang(uartout);

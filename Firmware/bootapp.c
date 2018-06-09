@@ -38,3 +38,13 @@ void bootapp_ram2flash(uint16_t rptr, uint16_t fptr, uint16_t size)
 	wdt_enable(WDTO_15MS);
 	while(1);
 }
+
+void bootapp_reboot_user0(uint8_t reserved)
+{
+	cli();
+	boot_app_magic = BOOT_APP_MAGIC;
+	boot_app_flags = BOOT_APP_FLG_USER0;
+	boot_reserved = reserved;
+	wdt_enable(WDTO_15MS);
+	while(1);
+}

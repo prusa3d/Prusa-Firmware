@@ -100,7 +100,6 @@ extern uint8_t lang_selected;
 #if (LANG_MODE != 0)
 extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
-extern const char* lang_get_sec_lang_str(const char* s);
 #define _SEC_LANG_TABLE ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00)
 #endif //(LANG_MODE != 0)
 
@@ -118,15 +117,14 @@ extern const char* lang_get_sec_lang_str_by_id(uint16_t id);
 extern uint16_t lang_print_sec_lang(FILE* out);
 #endif //DEBUG_SEC_LANG
 
+extern void lang_boot_upgrade_start(uint8_t lang);
+
 #if defined(__cplusplus)
 }
 #endif //defined(__cplusplus)
 
 #define CAT2(_s1, _s2) _s1
 #define CAT4(_s1, _s2, _s3, _s4) _s1
-
-//Localized language name
-//extern const char MSG_LANGUAGE_NAME[];
 
 #include "messages.h"
 

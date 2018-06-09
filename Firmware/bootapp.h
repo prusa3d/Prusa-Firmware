@@ -30,6 +30,7 @@ extern "C" {
 
 extern void bootapp_ram2flash(uint16_t rptr, uint16_t fptr, uint16_t size);
 
+extern void bootapp_reboot_user0(uint8_t reserved);
 
 #if defined(__cplusplus)
 }
