@@ -197,7 +197,7 @@ uint16_t lang_print_sec_lang(FILE* out)
 #endif //(LANG_MODE == 0)
 
 
-void lang_boot_upgrade_start(uint8_t lang)
+void lang_boot_update_start(uint8_t lang)
 {
 	uint8_t cnt = lang_get_count();
 	if ((lang < 2) || (lang > cnt)) return; //only languages from xflash can be selected

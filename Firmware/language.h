@@ -114,7 +114,7 @@ extern const char* lang_get_sec_lang_str_by_id(uint16_t id);
 extern uint16_t lang_print_sec_lang(FILE* out);
 #endif //DEBUG_SEC_LANG
 
-extern void lang_boot_upgrade_start(uint8_t lang);
+extern void lang_boot_update_start(uint8_t lang);
 
 #if defined(__cplusplus)
 }

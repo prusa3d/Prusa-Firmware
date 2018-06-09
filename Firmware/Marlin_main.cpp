@@ -1001,7 +1001,7 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 #define LANGBOOT_BLOCKSIZE 0x1000  
 #define LANGBOOT_RAMBUFFER 0x0800
 
-void upgrade_sec_lang_from_external_flash()
+void update_sec_lang_from_external_flash()
 {
 	if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0))
 	{
@@ -1011,8 +1011,9 @@ void upgrade_sec_lang_from_external_flash()
 		uint32_t src_addr;
 		if (lang_get_header(lang, &header, &src_addr))
 		{
-			fprintf_P(lcdout, PSTR(ESC_H(1,3) "l=%1hhd s=%1hhx %04x %04x"), lang, state, src_addr, header.size);
-			delay(1000);
+			fputs_P(PSTR(ESC_H(1,3) "Language update."), lcdout);
+			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
+			delay(100);
 			boot_reserved = (state + 1) | (lang << 4);
 			if ((state * LANGBOOT_BLOCKSIZE) < header.size)
 			{
@@ -1020,10 +1021,17 @@ void upgrade_sec_lang_from_external_flash()
 				uint16_t size = header.size - state * LANGBOOT_BLOCKSIZE;
 				if (size > LANGBOOT_BLOCKSIZE) size = LANGBOOT_BLOCKSIZE;
 				w25x20cl_rd_data(src_addr + state * LANGBOOT_BLOCKSIZE, (uint8_t*)LANGBOOT_RAMBUFFER, size);
+				if (state == 0)
+				{
+					//TODO - check header integrity
+				}
 				bootapp_ram2flash(LANGBOOT_RAMBUFFER, _SEC_LANG_TABLE + state * LANGBOOT_BLOCKSIZE, size);
 			}
 			else
+			{
+				//TODO - check sec lang data integrity
 				eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_SEC);
+			}
 		}
 	}
 	boot_app_flags &= ~BOOT_APP_FLG_USER0;
@@ -1088,7 +1096,7 @@ void setup()
 	lcd_splash();
 
 	if (w25x20cl_init())
-		upgrade_sec_lang_from_external_flash();
+		update_sec_lang_from_external_flash();
 	else
 		kill(_i("External SPI flash W25X20CL not responding."));
 
@@ -1118,6 +1126,7 @@ void setup()
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
+#ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;
 	uint32_t src_addr = 0x00000;
 	if (lang_get_header(3, &header, &src_addr))
@@ -1221,6 +1230,8 @@ void setup()
 	}
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: done");
 #endif
+
+#endif //DEBUG_SEC_LANG
 
 	// Check startup - does nothing if bootloader sets MCUSR to 0
 	byte mcu = MCUSR;
@@ -1486,14 +1497,14 @@ void setup()
 
 	lang_select(eeprom_read_byte((uint8_t*)EEPROM_LANG));
 
-//#ifdef DEBUG_SEC_LANG
+#ifdef DEBUG_SEC_LANG
 
 	uint16_t sec_lang_code = lang_get_code(1);
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	printf_P(_n("lang_selected=%d\nlang_table=0x%04x\nSEC_LANG_CODE=0x%04x (%c%c)\n"), lang_selected, ui, sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
 
 //	lang_print_sec_lang(uartout);
-//#endif //DEBUG_SEC_LANG
+#endif //DEBUG_SEC_LANG
 	
 	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);

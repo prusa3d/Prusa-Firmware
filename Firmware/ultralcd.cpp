@@ -3690,7 +3690,7 @@ static void lcd_set_lang(unsigned char lang)
 			lcd_update_enable(true);
 			return;
 		}
-		lang_boot_upgrade_start(lang);
+		lang_boot_update_start(lang);
 	}
 	if (lang_select(lang))
 		eeprom_update_byte((unsigned char*)EEPROM_LANG, lang);
@@ -5432,7 +5432,7 @@ void lcd_confirm_print()
 
 static void lcd_test_menu()
 {
-	lang_boot_upgrade_start(3);
+	lang_boot_update_start(3);
 	lcd_update_enable(true);
 	lcd_return_to_status();
 }
