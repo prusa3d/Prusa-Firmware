@@ -112,6 +112,7 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 	lang--;
 	while (1)
 	{
+		W25X20CL_SPI_ENTER();
 		w25x20cl_rd_data(addr, header, sizeof(lang_table_header_t)); //read table header from xflash
 		if (header->magic != LANG_MAGIC) break; //break if not valid
 		if (offset) *offset = addr;

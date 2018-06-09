@@ -22,7 +22,8 @@ void bootapp_ram2flash(uint16_t rptr, uint16_t fptr, uint16_t size)
 	cli();
 	boot_app_magic = BOOT_APP_MAGIC;
 	boot_app_flags |= BOOT_APP_FLG_COPY;
-	uint16_t ui; for (ui = 0; ui < size; ui++)
+	boot_app_flags |= BOOT_APP_FLG_ERASE;
+/*	uint16_t ui; for (ui = 0; ui < size; ui++)
 	{
 		uint8_t uc = ram_array[ui+rptr];
 		if (pgm_read_byte(ui+fptr) & uc != uc)
@@ -30,7 +31,7 @@ void bootapp_ram2flash(uint16_t rptr, uint16_t fptr, uint16_t size)
 			boot_app_flags |= BOOT_APP_FLG_ERASE;
 			break;
 		}
-	}
+	}*/
 	boot_copy_size = (uint16_t)size;
 	boot_src_addr = (uint32_t)rptr;
 	boot_dst_addr = (uint32_t)fptr;

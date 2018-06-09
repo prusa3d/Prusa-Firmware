@@ -4,6 +4,8 @@
 
 #include <inttypes.h>
 #include "config.h"
+#include "spi.h"
+
 
 
 #define W25X20CL_STATUS_BUSY   0x01

@@ -967,7 +967,7 @@ void show_fw_version_warnings() {
     lcd_print_at_PGM(0, 3, PSTR(FW_REPOSITORY));
     lcd_wait_for_click();
     break;
-	default: lcd_show_fullscreen_message_and_wait_P(_i("WARNING: This is an unofficial, unsupported build. Use at your own risk!")); break;////MSG_FW_VERSION_UNKNOWN c=20 r=8
+//	default: lcd_show_fullscreen_message_and_wait_P(_i("WARNING: This is an unofficial, unsupported build. Use at your own risk!")); break;////MSG_FW_VERSION_UNKNOWN c=20 r=8
 	}
 	lcd_update_enable(true);
 }
@@ -1012,7 +1012,9 @@ void __test(uint8_t lang)
 
 #ifdef W25X20CL
 
-#define W25X20CL_BLOCK 1024
+// language upgrade from external flash
+#define LANGBOOT_BLOCKSIZE 0x0400  
+#define LANGBOOT_RAMBUFFER 0x0800
 
 void upgrade_sec_lang_from_external_flash()
 {
@@ -1020,64 +1022,24 @@ void upgrade_sec_lang_from_external_flash()
 	{
 		uint8_t lang = boot_reserved >> 4;
 		uint8_t state = boot_reserved & 0xf;
-
-		fprintf_P(lcdout, PSTR(ESC_H(1,3) "lang=%1hhd state=%1hhx"), lang, state);
-		delay(1000);
-		state++;
-		boot_reserved = state | (lang << 4);
-		if (state < 15)
+//		lang_table_header_t header;
+//		uint32_t src_addr = 0x00000;
+//		if (lang_get_header(lang, &header, &src_addr))
 		{
-			cli();
-			wdt_enable(WDTO_15MS);
-			while(1);
-		}
-/*		fprintf_P(lcdout, PSTR(ESC_2J "UPGRADE START"));
-		delay(1000);
-		fprintf_P(lcdout, PSTR(ESC_H(1,1) "lang=%hhd state=%hhd"), lang, state);
-		delay(1000);*/
-/*
-		lang_table_header_t header;
-		uint32_t src_addr = 0x00000;
-		if (lang_get_header(lang, &header, &src_addr))
-		{
-			uint16_t dst_addr = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
-			uint16_t size = W25X20CL_BLOCK * state;
-			src_addr += size;
-			dst_addr += size;
-			state++;
-			boot_reserved = state | (lang << 4);
-			if (size < header.size)
+			fprintf_P(lcdout, PSTR(ESC_H(1,3) "lng=%1hhd sta=%1hhx %04x"), lang, state, SP);
+			delay(1000);
+			boot_reserved = (state+1) | (lang << 4);
+			if ((state * 0x1000) < 0x211c)
 			{
-				fprintf_P(lcdout, PSTR(ESC_2J ESC_H(1,0) "Copying lang #%hhd" ESC_H(1,1) "size 0x%04x"), lang, size);
-				size = header.size - size;
-				if (size > W25X20CL_BLOCK) size = W25X20CL_BLOCK;
-
-//				delay(1000);
-//				cli();
-//				wdt_enable(WDTO_15MS);
-//				while(1);
 				cli();
-				w25x20cl_rd_data(src_addr, (uint8_t*)0x0800, 256);
-				bootapp_ram2flash(0x0800, dst_addr, 256);
+				for (uint16_t i = 0; i < 0x1000; i++)
+					ram_array[0x800 + i] = 0xee;
+				uint16_t size = 0x211c - state * 0x1000;
+				if (size > 0x1000) size = 0x1000;
+				w25x20cl_rd_data(0x25ba + state * 0x1000, (uint8_t*)0x0800, size);
+				bootapp_ram2flash(0x0800, 0x0500 + state * 0x1000, size);
 			}
-*/
-/*
-
-				
-				
-//				header.size - (4096*state);
-
-			fprintf_P(lcdout, PSTR(ESC_2J ESC_H(1,0) "Copying lang #%hhd" ESC_H(1,1) "state %hhd" ESC_H(1,2) "offs: %08lx" ESC_H(1,3) "remain %04x"), lang, state, offset, remain);
-			state++;
-			boot_reserved = state | (lang << 4);
-			if (state < 4)
-			{
-				_delay_ms(1000);
-				cli();
-				wdt_enable(WDTO_15MS);
-				while(1);
-			}*/
-//		}
+		}
 	}
 	boot_app_flags &= ~BOOT_APP_FLG_USER0;
 }
@@ -1170,6 +1132,96 @@ void setup()
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
+
+	lang_table_header_t header;
+	uint32_t src_addr = 0x00000;
+	if (lang_get_header(3, &header, &src_addr))
+	{
+//this is comparsion of some printing-methods regarding to flash space usage and code size/readability
+#define LT_PRINT_TEST 2
+//  flash usage
+//  total   p.test
+//0 252718  t+c  text code
+//1 253142  424  170  254
+//2 253040  322  164  158
+//3 253248  530  135  395
+#if (LT_PRINT_TEST==1) //not optimized printf
+		printf_P(_n(" _src_addr = 0x%08lx\n"), src_addr);
+		printf_P(_n(" _lt_magic = 0x%08lx %S\n"), header.magic, (header.magic==LANG_MAGIC)?_n("OK"):_n("NA"));
+		printf_P(_n(" _lt_size  = 0x%04x (%d)\n"), header.size, header.size);
+		printf_P(_n(" _lt_count = 0x%04x (%d)\n"), header.count, header.count);
+		printf_P(_n(" _lt_chsum = 0x%04x\n"), header.checksum);
+		printf_P(_n(" _lt_code  = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
+		printf_P(_n(" _lt_resv1 = 0x%08lx\n"), header.reserved1);
+#elif (LT_PRINT_TEST==2) //optimized printf
+		printf_P(
+		 _n(
+		  " _src_addr = 0x%08lx\n"
+		  " _lt_magic = 0x%08lx %S\n"
+		  " _lt_size  = 0x%04x (%d)\n"
+		  " _lt_count = 0x%04x (%d)\n"
+		  " _lt_chsum = 0x%04x\n"
+		  " _lt_code  = 0x%04x (%c%c)\n"
+		  " _lt_resv1 = 0x%08lx\n"
+		 ),
+		 src_addr,
+		 header.magic, (header.magic==LANG_MAGIC)?_n("OK"):_n("NA"),
+		 header.size, header.size,
+		 header.count, header.count,
+		 header.checksum,
+		 header.code, header.code >> 8, header.code & 0xff,
+		 header.reserved1
+		);
+#elif (LT_PRINT_TEST==3) //arduino print/println (leading zeros not solved)
+		MYSERIAL.print(" _src_addr = 0x");
+		MYSERIAL.println(src_addr, 16);
+		MYSERIAL.print(" _lt_magic = 0x");
+		MYSERIAL.print(header.magic, 16);
+		MYSERIAL.println((header.magic==LANG_MAGIC)?" OK":" NA");
+		MYSERIAL.print(" _lt_size  = 0x");
+		MYSERIAL.print(header.size, 16);
+		MYSERIAL.print(" (");
+		MYSERIAL.print(header.size, 10);
+		MYSERIAL.println(")");
+		MYSERIAL.print(" _lt_count = 0x");
+		MYSERIAL.print(header.count, 16);
+		MYSERIAL.print(" (");
+		MYSERIAL.print(header.count, 10);
+		MYSERIAL.println(")");
+		MYSERIAL.print(" _lt_chsum = 0x");
+		MYSERIAL.println(header.checksum, 16);
+		MYSERIAL.print(" _lt_code  = 0x");
+		MYSERIAL.print(header.code, 16);
+		MYSERIAL.print(" (");
+		MYSERIAL.print((char)(header.code >> 8), 0);
+		MYSERIAL.print((char)(header.code & 0xff), 0);
+		MYSERIAL.println(")");
+		MYSERIAL.print(" _lt_resv1 = 0x");
+		MYSERIAL.println(header.reserved1, 16);
+#endif //(LT_PRINT_TEST==)
+#undef LT_PRINT_TEST
+
+#if 0
+		w25x20cl_rd_data(0x25ba, (uint8_t*)&block_buffer, 1024);
+		for (uint16_t i = 0; i < 1024; i++)
+		{
+			if ((i % 16) == 0) printf_P(_n("%04x:"), 0x25ba+i);
+			printf_P(_n(" %02x"), ((uint8_t*)&block_buffer)[i]);
+			if ((i % 16) == 15) putchar('\n');
+		}
+#endif
+#if 1
+		for (uint16_t i = 0; i < 1024*10; i++)
+		{
+			if ((i % 16) == 0) printf_P(_n("%04x:"), 0x500+i);
+			printf_P(_n(" %02x"), pgm_read_byte((uint8_t*)(0x500+i)));
+			if ((i % 16) == 15) putchar('\n');
+		}
+#endif
+	}
+	else
+		printf_P(_n("lang_get_header failed!\n"));
+
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
@@ -1458,7 +1510,8 @@ void setup()
 //#ifdef DEBUG_SEC_LANG
 
 	uint16_t sec_lang_code = lang_get_code(1);
-	printf_P(_n("SEC_LANG_CODE=0x%04x (%c%c)\n"), sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
+	uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+	printf_P(_n("lang_selected=%d\nlang_table=0x%04x\nSEC_LANG_CODE=0x%04x (%c%c)\n"), lang_selected, ui, sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
 
 //	lang_print_sec_lang(uartout);
 //#endif //DEBUG_SEC_LANG
