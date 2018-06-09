@@ -101,6 +101,7 @@ extern uint8_t lang_selected;
 extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
 extern const char* lang_get_sec_lang_str(const char* s);
+#define _SEC_LANG_TABLE ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00)
 #endif //(LANG_MODE != 0)
 
 //selects 

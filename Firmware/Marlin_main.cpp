@@ -1013,7 +1013,7 @@ void __test(uint8_t lang)
 #ifdef W25X20CL
 
 // language upgrade from external flash
-#define LANGBOOT_BLOCKSIZE 0x0400  
+#define LANGBOOT_BLOCKSIZE 0x1000  
 #define LANGBOOT_RAMBUFFER 0x0800
 
 void upgrade_sec_lang_from_external_flash()
@@ -1022,22 +1022,22 @@ void upgrade_sec_lang_from_external_flash()
 	{
 		uint8_t lang = boot_reserved >> 4;
 		uint8_t state = boot_reserved & 0xf;
-//		lang_table_header_t header;
-//		uint32_t src_addr = 0x00000;
-//		if (lang_get_header(lang, &header, &src_addr))
+		lang_table_header_t header;
+		uint32_t src_addr;
+		if (lang_get_header(lang, &header, &src_addr))
 		{
-			fprintf_P(lcdout, PSTR(ESC_H(1,3) "lng=%1hhd sta=%1hhx %04x"), lang, state, SP);
+			fprintf_P(lcdout, PSTR(ESC_H(1,3) "lng=%1hhd sta=%1hhx %04x"), lang, state, header.size);
 			delay(1000);
 			boot_reserved = (state+1) | (lang << 4);
-			if ((state * 0x1000) < 0x211c)
+			if ((state * LANGBOOT_BLOCKSIZE) < 0x211c)
 			{
 				cli();
-				for (uint16_t i = 0; i < 0x1000; i++)
-					ram_array[0x800 + i] = 0xee;
-				uint16_t size = 0x211c - state * 0x1000;
-				if (size > 0x1000) size = 0x1000;
-				w25x20cl_rd_data(0x25ba + state * 0x1000, (uint8_t*)0x0800, size);
-				bootapp_ram2flash(0x0800, 0x0500 + state * 0x1000, size);
+//				for (uint16_t i = 0; i < LANGBOOT_BLOCKSIZE; i++)
+//					ram_array[0x800 + i] = 0xee;
+				uint16_t size = 0x211c - state * LANGBOOT_BLOCKSIZE;
+				if (size > LANGBOOT_BLOCKSIZE) size = LANGBOOT_BLOCKSIZE;
+				w25x20cl_rd_data(0x25ba + state * LANGBOOT_BLOCKSIZE, (uint8_t*)LANGBOOT_RAMBUFFER, size);
+				bootapp_ram2flash(LANGBOOT_RAMBUFFER, _SEC_LANG_TABLE + state * LANGBOOT_BLOCKSIZE, size);
 			}
 		}
 	}
@@ -1213,8 +1213,8 @@ void setup()
 #if 1
 		for (uint16_t i = 0; i < 1024*10; i++)
 		{
-			if ((i % 16) == 0) printf_P(_n("%04x:"), 0x500+i);
-			printf_P(_n(" %02x"), pgm_read_byte((uint8_t*)(0x500+i)));
+			if ((i % 16) == 0) printf_P(_n("%04x:"), _SEC_LANG_TABLE+i);
+			printf_P(_n(" %02x"), pgm_read_byte((uint8_t*)(_SEC_LANG_TABLE+i)));
 			if ((i % 16) == 15) putchar('\n');
 		}
 #endif
