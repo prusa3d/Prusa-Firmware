@@ -331,7 +331,6 @@ static LongTimer safetyTimer;
 bool mesh_bed_leveling_flag = false;
 bool mesh_bed_run_from_menu = false;
 
-//unsigned char lang_selected = 0;
 int8_t FarmMode = 0;
 
 bool prusa_sd_card_upload = false;
@@ -761,8 +760,7 @@ void factory_reset(char level, bool quiet)
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
-            
-            lcd_force_language_selection();
+			eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
             break;
          
 		//Level 1: Reset statistics
@@ -793,7 +791,7 @@ void factory_reset(char level, bool quiet)
             //lcd_print_at_PGM(1,2,PSTR("Shipping prep"));
             
             // Force language selection at the next boot up.
-            lcd_force_language_selection();
+			eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
@@ -1024,6 +1022,8 @@ void upgrade_sec_lang_from_external_flash()
 				w25x20cl_rd_data(src_addr + state * LANGBOOT_BLOCKSIZE, (uint8_t*)LANGBOOT_RAMBUFFER, size);
 				bootapp_ram2flash(LANGBOOT_RAMBUFFER, _SEC_LANG_TABLE + state * LANGBOOT_BLOCKSIZE, size);
 			}
+			else
+				eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_SEC);
 		}
 	}
 	boot_app_flags &= ~BOOT_APP_FLG_USER0;
@@ -1484,13 +1484,7 @@ void setup()
 	list_sec_lang_from_external_flash();
 #endif //DEBUG_W25X20CL
 
-	lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
-	if (lang_selected >= LANG_NUM)
-	{
-//		lcd_mylang();
-		lang_selected = 0;
-	}
-	lang_select(lang_selected);
+	lang_select(eeprom_read_byte((uint8_t*)EEPROM_LANG));
 
 //#ifdef DEBUG_SEC_LANG
 
@@ -3211,8 +3205,10 @@ void process_commands()
         trace();
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
+
 	} else if (code_seen("SN")) { 
         gcode_PRUSA_SN();
+
 	} else if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_VERSION);
@@ -3222,19 +3218,12 @@ void process_commands()
       SERIAL_PROTOCOLLN(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
     } else if(code_seen("Lang")) {
-      lcd_force_language_selection();
-    } else if(code_seen("Lz")) {
+	  eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
+
+	} else if(code_seen("Lz")) {
       EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
-      
-    } else if (code_seen("SERIAL LOW")) {
-        MYSERIAL.println("SERIAL LOW");
-        MYSERIAL.begin(BAUDRATE);
-        return;
-    } else if (code_seen("SERIAL HIGH")) {
-        MYSERIAL.println("SERIAL HIGH");
-        MYSERIAL.begin(1152000);
-        return;
-    } else if(code_seen("Beat")) {
+
+	} else if(code_seen("Beat")) {
         // Kick farm link timer
         kicktime = millis();
 
@@ -5354,15 +5343,7 @@ Sigma_Exit:
       #endif
       #ifdef ULTIPANEL
         powersupply = false;
-        LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR("."))); //!!
-        
-        /*
-        MACHNAME = "Prusa i3"
-        MSGOFF = "Vypnuto"
-        "Prusai3"" ""vypnuto""."
-        
-        "Prusa i3"" "_T(MSG_ALL)[lang_selected][50]"."
-        */
+        LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR(".")));
         lcd_update();
       #endif
 	  break;
@@ -6025,7 +6006,7 @@ Sigma_Exit:
     break;
     case 509: //M509 Force language selection
     {
-        lcd_force_language_selection();
+		eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
         SERIAL_ECHO_START;
         SERIAL_PROTOCOLPGM(("LANG SEL FORCED"));
     }

@@ -8,7 +8,6 @@
 #include "Configuration_prusa.h"
 
 //internationalized messages
-const char MSG_ALL[] PROGMEM_I1 = ISTR("All"); ////c=19 r=1
 const char MSG_AUTO_HOME[] PROGMEM_I1 = ISTR("Auto home"); ////c=0 r=0
 const char MSG_AUTO_MODE_ON[] PROGMEM_I1 = ISTR("Mode [auto power]"); ////c=0 r=0
 const char MSG_BABYSTEP_Z[] PROGMEM_I1 = ISTR("Live adjust Z"); ////c=0 r=0

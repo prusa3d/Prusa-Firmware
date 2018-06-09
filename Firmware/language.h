@@ -75,9 +75,6 @@ typedef struct
 // Default language ID, if no language is selected.
 #define LANG_ID_DEFAULT LANG_ID_PRI
 
-// Number of languages available in the language table.
-#define LANG_NUM 2
-
 // Magic number at begin of lang table.
 #define LANG_MAGIC 0x4bb45aa5
 

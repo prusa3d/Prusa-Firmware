@@ -5,7 +5,6 @@
 
 // LCD Menu Messages
 //internationalized messages
-extern const char MSG_ALL[];
 extern const char MSG_AUTO_HOME[];
 extern const char MSG_AUTO_MODE_ON[];
 extern const char MSG_BABYSTEP_Z[];

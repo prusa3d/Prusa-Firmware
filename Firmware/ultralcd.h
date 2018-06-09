@@ -25,7 +25,6 @@
   void lcd_loading_filament();
   void lcd_change_success();
   void lcd_loading_color();
-  void lcd_force_language_selection();
   void lcd_sdcard_stop();
   void lcd_sdcard_pause();
   void lcd_print_stop();

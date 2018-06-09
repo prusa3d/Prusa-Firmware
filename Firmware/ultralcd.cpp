@@ -412,38 +412,12 @@ static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const boo
 
 /* Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent */
 
-// Language selection dialog not active.
-#define LANGSEL_OFF 0
-// Language selection dialog modal, entered from the info screen. This is the case on firmware boot up,
-// if the language index stored in the EEPROM is not valid.
-#define LANGSEL_MODAL 1
-// Language selection dialog entered from the Setup menu.
-#define LANGSEL_ACTIVE 2
-// Language selection dialog status
-unsigned char langsel = LANGSEL_OFF;
-
-void set_language_from_EEPROM() {
-  unsigned char eep = eeprom_read_byte((unsigned char*)EEPROM_LANG);
-  if (eep < LANG_NUM)
-  {
-    lang_selected = eep;
-    // Language is valid, no need to enter the language selection screen.
-    langsel = LANGSEL_OFF;
-  }
-  else
-  {
-    lang_selected = LANG_ID_DEFAULT;
-    // Invalid language, enter the language selection screen in a modal mode.
-    langsel = LANGSEL_MODAL;
-  }
-}
 
 static void lcd_status_screen()
 {
   if (firstrun == 1) 
   {
     firstrun = 0;
-    set_language_from_EEPROM();
      
       if(lcd_status_message_level == 0){
           strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
@@ -455,11 +429,6 @@ static void lcd_status_screen()
 		eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
 	}
 	
-	if (langsel) {
-      //strncpy_P(lcd_status_message, PSTR(">>>>>>>>> PRESS v"), LCD_WIDTH);
-      // Entering the language selection screen in a modal mode.
-      
-    }
   }
 
   
@@ -551,9 +520,6 @@ static void lcd_status_screen()
       current_click = false;
     }
   }
-
-
-  //if (--langsel ==0) {langsel=1;current_click=true;}
 
   if (current_click && (lcd_commands_type != LCD_COMMAND_STOP_PRINT)) //click is aborted unless stop print finishes
   {
@@ -3726,16 +3692,8 @@ static void lcd_set_lang(unsigned char lang)
 		}
 		lang_boot_upgrade_start(lang);
 	}
-	lang_select(lang);
-/*
-	lang_selected = lang;
-	firstrun = 1;
-	eeprom_update_byte((unsigned char *)EEPROM_LANG, lang);
-	// langsel=0;
-	if (langsel == LANGSEL_MODAL)
-	// From modal mode to an active mode? This forces the menu to return to the setup menu.
-	langsel = LANGSEL_ACTIVE;
-*/
+	if (lang_select(lang))
+		eeprom_update_byte((unsigned char*)EEPROM_LANG, lang);
 }
 
 #ifdef PAT9125
@@ -3765,17 +3723,13 @@ void lcd_set_progress() {
 }
 #endif
 
-void lcd_force_language_selection() {
-  eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
-}
-
 #if (LANG_MODE != 0)
 static void lcd_language_menu()
 {
 	START_MENU();
-	if (langsel == LANGSEL_OFF)
-		MENU_ITEM(back, _T(MSG_SETTINGS), 0);
-	else if (langsel == LANGSEL_ACTIVE)
+//	if (langsel == LANGSEL_OFF)
+//		MENU_ITEM(back, _T(MSG_SETTINGS), 0);
+//	else if (langsel == LANGSEL_ACTIVE)
 		MENU_ITEM(back, _T(MSG_WATCH), 0);
 	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(0)), 0);
 //	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(1)), 1);
@@ -4569,190 +4523,7 @@ static void lcd_calibration_menu()
   
   END_MENU();
 }
-/*
-void lcd_mylang_top(int hlaska) {
-    lcd.setCursor(0,0);
-    lcd.print("                    ");
-    lcd.setCursor(0,0);
-    lcd_printPGM(_T(MSG_ALL)[hlaska-1][LANGUAGE_SELECT]);   
-}
 
-void lcd_mylang_drawmenu(int cursor) {
-  int first = 0;
-  if (cursor>2) first = cursor-2;
-  if (cursor==LANG_NUM) first = LANG_NUM-3;
-  lcd.setCursor(0, 1);
-  lcd.print("                    ");
-  lcd.setCursor(1, 1);
-  lcd_printPGM(_T(MSG_ALL)[first][LANGUAGE_NAME]);
-
-  lcd.setCursor(0, 2);
-  lcd.print("                    ");
-  lcd.setCursor(1, 2);
-  lcd_printPGM(_T(MSG_ALL)[first+1][LANGUAGE_NAME]);
-
-  lcd.setCursor(0, 3);
-  lcd.print("                    ");
-  lcd.setCursor(1, 3);
-  lcd_printPGM(_T(MSG_ALL)[first+2][LANGUAGE_NAME]);  
-  
-  if (cursor==1) lcd.setCursor(0, 1);
-  if (cursor>1 && cursor<LANG_NUM) lcd.setCursor(0, 2);
-  if (cursor==LANG_NUM) lcd.setCursor(0, 3);
-
-  lcd.print(">");
-  
-  if (cursor<LANG_NUM-1) {
-    lcd.setCursor(19,3);
-    lcd.print("\x01");
-  }
-  if (cursor>2) {
-    lcd.setCursor(19,1);
-    lcd.print("^");
-  }  
-}
-*/
-/*
-void lcd_mylang_drawmenu(int cursor)
-{
-	unsigned char lang_cnt = lang_get_count();
-  int first = 0;
-  if (cursor>3) first = cursor-3;
-  if (cursor==lang_cnt && lang_cnt>4) first = lang_cnt-4;
-  if (cursor==lang_cnt && lang_cnt==4) first = lang_cnt-4;
-
-
-  lcd.setCursor(0, 0);
-  lcd.print("                    ");
-  lcd.setCursor(1, 0);
-  lcd_printPGM(lang_get_name(first+0));
-
-  lcd.setCursor(0, 1);
-  lcd.print("                    ");
-  lcd.setCursor(1, 1);
-  lcd_printPGM(lang_get_name(first+1));
-
-  lcd.setCursor(0, 2);
-  lcd.print("                    ");
-
-  if (lang_cnt > 2){
-    lcd.setCursor(1, 2);
-    lcd_printPGM(lang_get_name(first+2));
-  }
-
-  lcd.setCursor(0, 3);
-  lcd.print("                    ");
-  if (lang_cnt>3) {
-    lcd.setCursor(1, 3);
-    lcd_printPGM(lang_get_name(first+3));
-  }
-  
-  if (cursor==1) lcd.setCursor(0, 0);
-  if (cursor==2) lcd.setCursor(0, 1);
-  if (cursor>2) lcd.setCursor(0, 2);
-  if (cursor==lang_cnt && lang_cnt>3) lcd.setCursor(0, 3);
-
-  lcd.print(">");
-  
-  if (cursor<lang_cnt-1 && lang_cnt>4) {
-    lcd.setCursor(19,3);
-    lcd.print("\x01");
-  }
-  if (cursor>3 && lang_cnt>4) {
-    lcd.setCursor(19,0);
-    lcd.print("^");
-  }
-}
-*/
-/*
-void lcd_mylang_drawcursor(int cursor) {
-  
-	unsigned char lang_cnt = lang_get_count();
-  if (cursor==1) lcd.setCursor(0, 1);
-  if (cursor>1 && cursor<lang_cnt) lcd.setCursor(0, 2);
-  if (cursor==lang_cnt) lcd.setCursor(0, 3);
-
-  lcd.print(">");
-  
-}
-*/
-/*
-void lcd_mylang()
-{
-  int enc_dif = 0;
-  int cursor_pos = 1;
-  lang_selected=255;
-  int hlaska=1;
-  int counter=0;
-  unsigned char lang_cnt = lang_get_count();
-  lcd_set_custom_characters_arrows();
-
-  lcd_implementation_clear();
-
-  //lcd_mylang_top(hlaska);
-
-  lcd_mylang_drawmenu(cursor_pos);
-
-  enc_dif = encoderDiff;
-
-  while ( (lang_selected == 255)  ) {
-
-    manage_heater();
-    manage_inactivity(true);
-
-    if ( abs((enc_dif - encoderDiff)) > 4 ) {
-
-      //if ( (abs(enc_dif - encoderDiff)) > 1 ) {
-        if (enc_dif > encoderDiff ) {
-          cursor_pos --;
-        }
-
-        if (enc_dif < encoderDiff  ) {
-          cursor_pos ++;
-        }
-
-        if (cursor_pos > lang_cnt) {
-          cursor_pos = lang_cnt;
-        }
-
-        if (cursor_pos < 1) {
-          cursor_pos = 1;
-        }
-
-        lcd_mylang_drawmenu(cursor_pos);
-        enc_dif = encoderDiff;
-        delay(100);
-      //}
-
-    } else delay(20);
-
-
-    if (lcd_clicked()) {
-
-      lcd_set_lang(cursor_pos-1);
-      delay(500);
-
-    }
-//    if (++counter == 80) {
-//      hlaska++;
-//      if(hlaska>LANG_NUM) hlaska=1;
-//      lcd_mylang_top(hlaska);
-//      lcd_mylang_drawcursor(cursor_pos);
-//      counter=0;
-//    }
-  };
-
-  if(MYSERIAL.available() > 1){
-    lang_selected = 0;
-    firstrun = 0;
-  }
-
-  lcd_set_custom_characters_degree();
-  lcd_implementation_clear();
-  lcd_return_to_status();
-
-}
-*/
 void bowden_menu() {
 	int enc_dif = encoderDiff;
 	int cursor_pos = 0;
@@ -4875,7 +4646,6 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	lcd_implementation_clear();
 	lcd_print_at_PGM(0,0,_T(MSG_UNLOAD_FILAMENT)); lcd.print(":");
 	lcd.setCursor(0, 1); lcd.print(">");
-	lcd_print_at_PGM(1,1,_T(MSG_ALL));
 	lcd_print_at_PGM(1,2,_i("Used during print"));////MSG_USED c=19 r=1
 	lcd_print_at_PGM(1,3,_i("Current"));////MSG_CURRENT c=19 r=1
 	char cursor_pos = 1;
