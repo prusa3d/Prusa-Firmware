@@ -616,7 +616,6 @@ void servo_init()
   #endif
 }
 
-static void lcd_language_menu();
 
 void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_print_from_ram_and_continue(float e_move);
@@ -760,7 +759,7 @@ void factory_reset(char level, bool quiet)
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
-			eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
+			lang_reset();
             break;
          
 		//Level 1: Reset statistics
@@ -791,12 +790,11 @@ void factory_reset(char level, bool quiet)
             //lcd_print_at_PGM(1,2,PSTR("Shipping prep"));
             
             // Force language selection at the next boot up.
-			eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
+			lang_reset();
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
             farm_no = 0;
-//*** MaR::180501_01
 			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
@@ -992,12 +990,12 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 	for (int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
 }
 
-#include "bootapp.h"
-
 
 #ifdef W25X20CL
 
-// language upgrade from external flash
+#include "bootapp.h" //bootloader support
+
+// language update from external flash
 #define LANGBOOT_BLOCKSIZE 0x1000  
 #define LANGBOOT_RAMBUFFER 0x0800
 
@@ -1095,15 +1093,16 @@ void setup()
 
 	lcd_splash();
 
+#ifdef W25X20CL
 	if (w25x20cl_init())
 		update_sec_lang_from_external_flash();
 	else
 		kill(_i("External SPI flash W25X20CL not responding."));
+#endif //W25X20CL
 
 	setup_killpin();
 	setup_powerhold();
 
-//*** MaR::180501_02b
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF)) 
@@ -1389,7 +1388,6 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
-//*** MaR::180501_02
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
@@ -1495,7 +1493,9 @@ void setup()
 	list_sec_lang_from_external_flash();
 #endif //DEBUG_W25X20CL
 
-	lang_select(eeprom_read_byte((uint8_t*)EEPROM_LANG));
+//	lang_reset();
+	if (!lang_select(eeprom_read_byte((uint8_t*)EEPROM_LANG)))
+		lcd_language();
 
 #ifdef DEBUG_SEC_LANG
 
@@ -3229,7 +3229,7 @@ void process_commands()
       SERIAL_PROTOCOLLN(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
     } else if(code_seen("Lang")) {
-	  eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
+	  lang_reset();
 
 	} else if(code_seen("Lz")) {
       EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
@@ -6017,7 +6017,7 @@ Sigma_Exit:
     break;
     case 509: //M509 Force language selection
     {
-		eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
+		lang_reset();
         SERIAL_ECHO_START;
         SERIAL_PROTOCOLPGM(("LANG SEL FORCED"));
     }

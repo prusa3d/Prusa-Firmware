@@ -214,7 +214,6 @@ static void lcd_prepare_menu();
 //static void lcd_move_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
-static void lcd_language_menu();
 static void lcd_control_temperature_menu();
 static void lcd_control_temperature_preheat_pla_settings_menu();
 static void lcd_control_temperature_preheat_abs_settings_menu();
@@ -3680,22 +3679,6 @@ static void lcd_crash_mode_set()
 #endif //TMC2130
  
 
-static void lcd_set_lang(unsigned char lang)
-{
-	if (lang > LANG_ID_SEC)
-	{
-		if (!lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language from XFLASH?"), false, true))
-		{
-			lcd_return_to_status();
-			lcd_update_enable(true);
-			return;
-		}
-		lang_boot_update_start(lang);
-	}
-	if (lang_select(lang))
-		eeprom_update_byte((unsigned char*)EEPROM_LANG, lang);
-}
-
 #ifdef PAT9125
 static void lcd_fsensor_state_set()
 {
@@ -3727,13 +3710,10 @@ void lcd_set_progress() {
 static void lcd_language_menu()
 {
 	START_MENU();
-//	if (langsel == LANGSEL_OFF)
-//		MENU_ITEM(back, _T(MSG_SETTINGS), 0);
-//	else if (langsel == LANGSEL_ACTIVE)
-		MENU_ITEM(back, _T(MSG_WATCH), 0);
+	if (lang_is_selected()) MENU_ITEM(back, _T(MSG_SETTINGS), 0);
 	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(0)), 0);
 //	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(1)), 1);
-	for (int i = 2; i < lang_get_count(); i++) //skip seconday language - solved in menu_action_setlang
+	for (int i = 2; i < lang_get_count(); i++) //skip seconday language - solved in lang_select
 		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i)), i);
 	END_MENU();
 }
@@ -3927,6 +3907,26 @@ void lcd_wizard() {
 		lcd_update_enable(true);
 		lcd_update(2);
 	}
+}
+
+void lcd_language()
+{
+	lcd_update_enable(true);
+	lcd_implementation_clear();
+	lcd_goto_menu(lcd_language_menu);
+	lcd_timeoutToStatus = -1; //infinite timeout
+	lcdDrawUpdate = 2;
+	while ((currentMenu != lcd_status_screen) && (!lang_is_selected()))
+	{
+		delay(50);
+		lcd_update();
+		manage_heater();
+		manage_inactivity(true);
+	}
+	if (lang_is_selected())
+		lcd_return_to_status();
+	else
+		lang_select(LANG_ID_PRI);
 }
 
 void lcd_wizard(int state) {
@@ -4167,7 +4167,6 @@ static void lcd_settings_menu()
 #ifdef TMC2130
   if(!farm_mode)
   {
-//*** MaR::180416_01a
     if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM(function, _T(MSG_STEALTH_MODE_OFF), lcd_silent_mode_set);
     else MENU_ITEM(function, _T(MSG_STEALTH_MODE_ON), lcd_silent_mode_set);
     if (SilentModeMenu == SILENT_MODE_NORMAL)
@@ -5725,7 +5724,6 @@ static void lcd_tune_menu()
 #ifdef TMC2130
      if(!farm_mode)
      {
-//*** MaR::180416_01b
           if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM(function, _T(MSG_STEALTH_MODE_OFF), lcd_silent_mode_set);
           else MENU_ITEM(function, _T(MSG_STEALTH_MODE_ON), lcd_silent_mode_set);
 
@@ -6551,7 +6549,6 @@ static bool lcd_selfcheck_pulleys(int axis)
 		st_current_set(0, 850); //set motor current higher
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], 200, active_extruder);
 		st_synchronize();
-//*** MaR::180416_02
           if (SilentModeMenu != SILENT_MODE_OFF) st_current_set(0, tmp_motor[0]); //set back to normal operation currents
 		else st_current_set(0, tmp_motor_loud[0]); //set motor current back			
 		current_position[axis] = current_position[axis] - move;
@@ -7118,18 +7115,16 @@ static void menu_action_gcode(const char* pgcode) {
 
 static void menu_action_setlang(unsigned char lang)
 {
-	if (lang <= LANG_ID_SEC)
+	if (!lang_select(lang))
 	{
-		lcd_set_lang(lang);
-		return;
+		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language from XFLASH?"), false, true))
+			lang_boot_update_start(lang);
+		lcd_update_enable(true);
+		lcd_implementation_clear();
+		lcd_goto_menu(lcd_language_menu);
+		lcd_timeoutToStatus = -1; //infinite timeout
+		lcdDrawUpdate = 2;
 	}
-	uint16_t code = lang_get_code(lang);
-	if (code == lang_get_code(1))
-	{
-		lcd_set_lang(1);
-		return;
-	}
-	lcd_set_lang(lang);
 }
 
 static void menu_action_function(menuFunc_t data) {

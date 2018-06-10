@@ -402,9 +402,9 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 // The pullups are needed if you directly connect a mechanical endswitch between the signal and ground pins.
 
-const bool X_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
-const bool Y_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
-const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of the endstop.
+#define X_MAX_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
+#define Y_MAX_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
+#define Z_MAX_ENDSTOP_INVERTING 1 // set to 1 to invert the logic of the endstop.
 //#define DISABLE_MAX_ENDSTOPS
 //#define DISABLE_MIN_ENDSTOPS
 
@@ -420,11 +420,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define E_ENABLE_ON 0 // For all extruders
 
 // Disables axis when it's not being used.
-#define DISABLE_X false
-#define DISABLE_Y false
-#define DISABLE_Z false
-#define DISABLE_E false // For all extruders
-#define DISABLE_INACTIVE_EXTRUDER true //disable only inactive extruders and keep active extruder enabled
+#define DISABLE_X 0
+#define DISABLE_Y 0
+#define DISABLE_Z 0
+#define DISABLE_E 0// For all extruders
+#define DISABLE_INACTIVE_EXTRUDER 1 //disable only inactive extruders and keep active extruder enabled
 
 
 // ENDSTOP SETTINGS:
@@ -434,11 +434,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 #define Z_HOME_DIR -1
 
 #ifdef DEBUG_DISABLE_SWLIMITS
-#define min_software_endstops false
-#define max_software_endstops false
+#define min_software_endstops 0
+#define max_software_endstops 0
 #else
-#define min_software_endstops true // If true, axis won't move to coordinates less than HOME_POS.
-#define max_software_endstops true  // If true, axis won't move to coordinates greater than the defined lengths below.
+#define min_software_endstops 1 // If true, axis won't move to coordinates less than HOME_POS.
+#define max_software_endstops 1  // If true, axis won't move to coordinates greater than the defined lengths below.
 #endif //DEBUG_DISABLE_SWLIMITS
 
 

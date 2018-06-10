@@ -1457,7 +1457,6 @@ void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl e
   #endif
 }
 
-//*** MaR::180416_03
 void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 {
     do

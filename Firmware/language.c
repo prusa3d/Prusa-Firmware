@@ -1,8 +1,10 @@
 //language.c
 #include "language.h"
 #include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 #include "bootapp.h"
 
+#include "Configuration.h"
 
 #ifdef W25X20CL
 #include "w25x20cl.h"
@@ -44,34 +46,32 @@ uint8_t lang_select(uint8_t lang)
 	if (lang == LANG_ID_PRI) //primary language
 	{
 		lang_table = 0;
-		lang_selected = 0;
-		return 1;
+		lang_selected = lang;
 	}
 #ifdef W25X20CL
+	if (lang_get_code(lang) == lang_get_code(LANG_ID_SEC)) lang = LANG_ID_SEC;
 	if (lang == LANG_ID_SEC) //current secondary language
 	{
-		uint16_t ui = _SEC_LANG_TABLE; //table pointer
-		if (pgm_read_dword(((uint32_t*)(ui + 0))) != LANG_MAGIC) return 0; //magic not valid
-		lang_table = ui; // set table pointer
-		lang_selected = 1; // set language id
-		return 1;
+		if (pgm_read_dword(((uint32_t*)_SEC_LANG_TABLE)) == LANG_MAGIC) //magic valid
+		{
+			lang_table = _SEC_LANG_TABLE; // set table pointer
+			lang_selected = lang; // set language id
+		}
 	}
 #else //W25X20CL
 #endif //W25X20CL
-/*
-	uint16_t ui = (uint16_t)&_SEC_LANG; //pointer to _SEC_LANG reserved space
-	ui += 0x00ff; //add 1 page
-	ui &= 0xff00; //align to page
-	lang_table = ui; //set table pointer
-	ui = pgm_read_word(((uint16_t*)(((char*)lang_table + 16)))); //read relative offset of first string (language name)
-	return (const char*)((char*)lang_table + ui); //return calculated pointer
-*/
+	if (lang_selected == lang)
+	{
+		eeprom_update_byte((unsigned char*)EEPROM_LANG, lang_selected);
+		return 1;
+	}
 	return 0;
 }
 
 uint8_t lang_get_count()
 {
 #ifdef W25X20CL
+	W25X20CL_SPI_ENTER();
 	uint8_t count = 2; //count = 1+n (primary + secondary + all in xflash)
 	uint32_t addr = 0x00000; //start of xflash
 	lang_table_header_t header; //table header structure
@@ -98,11 +98,11 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		if (offset) *offset = ui;
 		return (header == LANG_MAGIC)?1:0; //return 1 if magic valid
 	}
+	W25X20CL_SPI_ENTER();
 	uint32_t addr = 0x00000; //start of xflash
 	lang--;
 	while (1)
 	{
-		W25X20CL_SPI_ENTER();
 		w25x20cl_rd_data(addr, header, sizeof(lang_table_header_t)); //read table header from xflash
 		if (header->magic != LANG_MAGIC) break; //break if not valid
 		if (offset) *offset = addr;
@@ -124,6 +124,7 @@ uint16_t lang_get_code(uint8_t lang)
 		if (pgm_read_dword(((uint32_t*)(ui + 0))) != LANG_MAGIC) return LANG_CODE_XX; //magic not valid
 		return pgm_read_word(((uint32_t*)(ui + 10))); //return lang code from progmem
 	}
+	W25X20CL_SPI_ENTER();
 	uint32_t addr = 0x00000; //start of xflash
 	lang_table_header_t header; //table header structure
 	lang--;
@@ -158,6 +159,18 @@ const char* lang_get_name_by_code(uint16_t code)
 	case LANG_CODE_PL: return _n("Polski");
 	}
 	return _n("??");
+}
+
+void lang_reset(void)
+{
+	lang_selected = 0;
+	eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
+}
+
+uint8_t lang_is_selected(void)
+{
+	uint8_t lang_eeprom = eeprom_read_byte((unsigned char*)EEPROM_LANG);
+	return (lang_eeprom != LANG_ID_FORCE_SELECTION) && (lang_eeprom == lang_selected);
 }
 
 #ifdef DEBUG_SEC_LANG
