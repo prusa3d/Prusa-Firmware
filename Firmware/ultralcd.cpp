@@ -1564,7 +1564,7 @@ static void lcd_menu_fails_stats_total()
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
-	fprintf_P(lcdout, PSTR(ESC_H(0,0) "Total failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "Total failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
@@ -1584,7 +1584,7 @@ static void lcd_menu_fails_stats_print()
     uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
-	fprintf_P(lcdout, PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
 	if (lcd_clicked())
     {
         lcd_quick_feedback();
@@ -1626,7 +1626,7 @@ static void lcd_menu_fails_stats()
 {
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
-    fprintf_P(lcdout, PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Filam. runouts  %-3d" ESC_H(0,2) "Total failures" ESC_H(1,3) "Filam. runouts  %-3d"), filamentLast, filamentTotal);
+    lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Filam. runouts  %-3d" ESC_H(0,2) "Total failures" ESC_H(1,3) "Filam. runouts  %-3d"), filamentLast, filamentTotal);
     if (lcd_clicked())
     {
         menu_action_back();
@@ -1645,7 +1645,7 @@ extern char* __malloc_heap_end;
 static void lcd_menu_debug()
 {
 #ifdef DEBUG_STACK_MONITOR
-	fprintf_P(lcdout, PSTR(ESC_H(1,1) "RAM statistics" ESC_H(5,1) "SP_min: 0x%04x" ESC_H(1,2) "heap_start: 0x%04x" ESC_H(3,3) "heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
+	lcd_printf_P(PSTR(ESC_H(1,1) "RAM statistics" ESC_H(5,1) "SP_min: 0x%04x" ESC_H(1,2) "heap_start: 0x%04x" ESC_H(3,3) "heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
 #endif //DEBUG_STACK_MONITOR
 
 	if (lcd_clicked())
@@ -1658,11 +1658,11 @@ static void lcd_menu_debug()
 
 static void lcd_menu_temperatures()
 {
-	fprintf_P(lcdout, PSTR(ESC_H(1,0) "Nozzle:   %d%c" ESC_H(1,1) "Bed:      %d%c"), (int)current_temperature[0], '\x01', (int)current_temperature_bed, '\x01');
+	lcd_printf_P(PSTR(ESC_H(1,0) "Nozzle:   %d%c" ESC_H(1,1) "Bed:      %d%c"), (int)current_temperature[0], '\x01', (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
-	fprintf_P(lcdout, PSTR(ESC_H(1,2) "Ambient:  %d%c" ESC_H(1,3) "PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
+	lcd_printf_P(PSTR(ESC_H(1,2) "Ambient:  %d%c" ESC_H(1,3) "PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
 #else //AMBIENT_THERMISTOR
-	fprintf_P(lcdout, PSTR(ESC_H(1,2) "PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
+	lcd_printf_P(PSTR(ESC_H(1,2) "PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
 #endif //AMBIENT_THERMISTOR
 
 	if (lcd_clicked())
@@ -1680,8 +1680,8 @@ static void lcd_menu_voltages()
 {
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 //	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
-//	fprintf_P(lcdout, PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
-    fprintf_P(lcdout, PSTR( ESC_H(1,1)"PWR:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr))) ;
+//	lcd_printf_P(PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
+    lcd_printf_P(PSTR( ESC_H(1,1)"PWR:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr))) ;
     if (lcd_clicked())
     {
         menu_action_back();
@@ -1692,7 +1692,7 @@ static void lcd_menu_voltages()
 #ifdef TMC2130
 static void lcd_menu_belt_status()
 {
-    fprintf_P(lcdout, PSTR(ESC_H(1,0) "Belt status" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
+    lcd_printf_P(PSTR(ESC_H(1,0) "Belt status" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     if (lcd_clicked())
     {
         menu_action_back();
@@ -2084,103 +2084,68 @@ static void lcd_LoadFilament()
 
 void lcd_menu_statistics()
 {
-
 	if (IS_SD_PRINTING)
 	{
 		int _met = total_filament_used / 100000;
-		int _cm = (total_filament_used - (_met * 100000))/10;
-		
+		int _cm = (total_filament_used - (_met * 100000)) / 10;
 		int _t = (millis() - starttime) / 1000;
 		int _h = _t / 3600;
 		int _m = (_t - (_h * 3600)) / 60;
 		int _s = _t - ((_h * 3600) + (_m * 60));
-		
-		lcd.setCursor(0, 0);
-		lcd_printPGM(_i("Filament used:  "));////MSG_STATS_FILAMENTUSED c=20 r=0
-
-		lcd.setCursor(6, 1);
-		lcd.print(itostr3(_met));
-		lcd.print("m ");
-		lcd.print(ftostr32ns(_cm));
-		lcd.print("cm");
-		
-		lcd.setCursor(0, 2);
-		lcd_printPGM(_i("Print time:  "));////MSG_STATS_PRINTTIME c=20 r=0
-
-		lcd.setCursor(8, 3);
-		lcd.print(itostr2(_h));
-		lcd.print("h ");
-		lcd.print(itostr2(_m));
-		lcd.print("m ");
-		lcd.print(itostr2(_s));
-		lcd.print("s");
-
+//|01234567890123456789|
+//|Filament used:      |
+//|      000m 00.000cm |
+//|Print time:         |
+//|        00h 00m 00s |
+//----------------------
+		lcd_printf_P(_N(
+		  ESC_2J
+		  "%S:"
+		  ESC_H(6,1) "%8.2f m\n"
+		  "%S :"
+		  ESC_H(8,3) "%2dh %02dm %02d"
+		  ),
+		 _i("Filament used"),
+		 _met, _cm,
+		 _i("Print time"),
+		 _h, _m, _s
+		);
 		if (lcd_clicked())
 		{
 			lcd_quick_feedback();
-               menu_action_back();
+			menu_action_back();
 		}
 	}
 	else
 	{
 		unsigned long _filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED);
 		unsigned long _time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME); //in minutes
-		
 		uint8_t _hours, _minutes;
 		uint32_t _days;
-
-		float _filament_m = (float)_filament;
-		int _filament_km = (_filament >= 100000) ? _filament / 100000 : 0;
-		if (_filament_km > 0)  _filament_m = _filament - (_filament_km * 100000);
-
+		float _filament_m = (float)_filament/100;
+//		int _filament_km = (_filament >= 100000) ? _filament / 100000 : 0;
+//		if (_filament_km > 0)  _filament_m = _filament - (_filament_km * 100000);
 		_days = _time / 1440;
 		_hours = (_time - (_days * 1440)) / 60;
 		_minutes = _time - ((_days * 1440) + (_hours * 60));
-
-		lcd_implementation_clear();
-
-		lcd.setCursor(0, 0);
-		lcd_printPGM(_i("Total filament :"));////MSG_STATS_TOTALFILAMENT c=20 r=0
-		lcd.setCursor(17 - strlen(ftostr32ns(_filament_m)), 1);
-		lcd.print(ftostr32ns(_filament_m));
-
-		if (_filament_km > 0)
-		{
-			lcd.setCursor(17 - strlen(ftostr32ns(_filament_m)) - 3, 1);
-			lcd.print("km");
-			lcd.setCursor(17 - strlen(ftostr32ns(_filament_m)) - 8, 1);
-			lcd.print(itostr4(_filament_km));
-		}
-
-
-		lcd.setCursor(18, 1);
-		lcd.print("m");
-
-		lcd.setCursor(0, 2);
-		lcd_printPGM(_i("Total print time :"));;////MSG_STATS_TOTALPRINTTIME c=20 r=0
-
-		lcd.setCursor(18, 3);
-		lcd.print("m");
-		lcd.setCursor(14, 3);
-		lcd.print(itostr3(_minutes));
-
-		lcd.setCursor(14, 3);
-		lcd.print(":");
-
-		lcd.setCursor(12, 3);
-		lcd.print("h");
-		lcd.setCursor(9, 3);
-		lcd.print(itostr3(_hours));
-
-		lcd.setCursor(9, 3);
-		lcd.print(":");
-
-		lcd.setCursor(7, 3);
-		lcd.print("d");
-		lcd.setCursor(4, 3);
-		lcd.print(itostr3(_days));
-
-
+//|01234567890123456789|
+//|Total filament :    |
+//|           000.00 m |
+//|Total print time :  |
+//|     00d :00h :00 m |
+//----------------------
+		lcd_printf_P(_N(
+		  ESC_2J
+		  "%S :"
+		  ESC_H(9,1) "%8.2f m\n"
+		  "%S :\n"
+		  "%7ldd :%2hhdh :%02hhd m"
+		 ),
+		 _i("Total filament"),
+		 _filament_m,
+		 _i("Total print time"),
+		 _days, _hours, _minutes
+		);
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 		while (!lcd_clicked())
 		{
@@ -2189,9 +2154,8 @@ void lcd_menu_statistics()
 			delay(100);
 		}
 		KEEPALIVE_STATE(NOT_BUSY);
-
 		lcd_quick_feedback();
-          menu_action_back();
+		menu_action_back();
 	}
 }
 

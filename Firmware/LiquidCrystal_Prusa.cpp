@@ -344,9 +344,8 @@ void LiquidCrystal_Prusa::noAutoscroll(void) {
 void LiquidCrystal_Prusa::createChar(uint8_t location, uint8_t charmap[]) {
   location &= 0x7; // we only have 8 locations 0-7
   command(LCD_SETCGRAMADDR | (location << 3));
-  for (int i=0; i<8; i++) {
-    write(charmap[i]);
-  }
+  for (int i=0; i<8; i++)
+    send(charmap[i], HIGH);
 }
 
 /*********** mid level commands, for sending data/cmds */
