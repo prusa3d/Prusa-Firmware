@@ -6773,14 +6773,8 @@ Sigma_Exit:
 		if (code_seen('Y')) tmc2130_sg_thr[Y_AXIS] = code_value();
 		if (code_seen('Z')) tmc2130_sg_thr[Z_AXIS] = code_value();
 		if (code_seen('E')) tmc2130_sg_thr[E_AXIS] = code_value();
-		MYSERIAL.print("tmc2130_sg_thr[X]=");
-		MYSERIAL.println(tmc2130_sg_thr[X_AXIS], DEC);
-		MYSERIAL.print("tmc2130_sg_thr[Y]=");
-		MYSERIAL.println(tmc2130_sg_thr[Y_AXIS], DEC);
-		MYSERIAL.print("tmc2130_sg_thr[Z]=");
-		MYSERIAL.println(tmc2130_sg_thr[Z_AXIS], DEC);
-		MYSERIAL.print("tmc2130_sg_thr[E]=");
-		MYSERIAL.println(tmc2130_sg_thr[E_AXIS], DEC);
+		for (uint8_t a = X_AXIS; a <= E_AXIS; a++)
+			printf_P(_N("tmc2130_sg_thr[%c]=%d\n"), "XYZE"[a], tmc2130_sg_thr[a]);
     }
     break;
 
@@ -7111,10 +7105,7 @@ void FlushSerialRequestResend()
 {
   //char cmdbuffer[bufindr][100]="Resend:";
   MYSERIAL.flush();
-  SERIAL_PROTOCOLRPGM(_i("Resend: "));////MSG_RESEND c=0 r=0
-  SERIAL_PROTOCOLLN(gcode_LastN + 1);
-  previous_millis_cmd = millis();
-  SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+  printf_P(_N("%S: %ld\n%S\n"), _i("Resend"), gcode_LastN + 1, _T(MSG_OK));
 }
 
 // Confirm the execution of a command, if sent from a serial line.
@@ -7568,8 +7559,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 
 void kill(const char *full_screen_message, unsigned char id)
 {
-	SERIAL_ECHOPGM("KILL: ");
-	MYSERIAL.println(int(id));
+	printf_P(_N("KILL: %d\n"), id);
 	//return;
   cli(); // Stop interrupts
   disable_heater();
@@ -8130,9 +8120,7 @@ void temp_compensation_apply() {
 			//interpolation
 			z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
 		}
-		SERIAL_PROTOCOLPGM("\n");
-		SERIAL_PROTOCOLPGM("Z shift applied:");
-		MYSERIAL.print(z_shift_mm);
+		printf_P(_N("\nZ shift applied:%.3f\n"), z_shift_mm);
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
 		st_synchronize();
 		plan_set_z_position(current_position[Z_AXIS]);
@@ -8398,8 +8386,7 @@ void uvlo_()
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
 
     st_synchronize();
-    SERIAL_ECHOPGM("stps");
-    MYSERIAL.println(tmc2130_rd_MSCNT(Z_AXIS));
+    printf_P(_N("stps%d\n"), tmc2130_rd_MSCNT(Z_AXIS));
 
     disable_z();
     
@@ -8407,8 +8394,7 @@ void uvlo_()
 	eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
 	eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
     
-		SERIAL_ECHOLNPGM("UVLO - end");
-		MYSERIAL.println(millis() - time_start);
+		printf_P(_N("UVLO - end %d\n"), millis() - time_start);
     
 #if 0
     // Move the print head to the side of the print until all the power stored in the power supply capacitors is depleted.
@@ -8522,19 +8508,13 @@ void recover_print(uint8_t automatic) {
 	/*while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
 		delay_keep_alive(1000);
 	}*/
-	SERIAL_ECHOPGM("After waiting for temp:");
-	SERIAL_ECHOPGM("Current position X_AXIS:");
-	MYSERIAL.println(current_position[X_AXIS]);
-	SERIAL_ECHOPGM("Current position Y_AXIS:");
-	MYSERIAL.println(current_position[Y_AXIS]);
+
+	printf_P(_N("After waiting for temp:\nCurrent pos X_AXIS:%.3f\nCurrent pos Y_AXIS:%.3f\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
   // Restart the print.
 	restore_print_from_eeprom();
 
-	SERIAL_ECHOPGM("current_position[Z_AXIS]:");
-	MYSERIAL.print(current_position[Z_AXIS]);
-	SERIAL_ECHOPGM("current_position[E_AXIS]:");
-	MYSERIAL.print(current_position[E_AXIS]);
+	printf_P(_N("Current pos Z_AXIS:%.3f\nCurrent pos E_AXIS:%.3f\n"), current_position[Z_AXIS], current_position[E_AXIS]);
 }
 
 void recover_machine_state_after_power_panic()
@@ -8896,24 +8876,12 @@ void restore_print_from_ram_and_continue(float e_move)
 
 void print_world_coordinates()
 {
-  SERIAL_ECHOPGM("world coordinates: (");
-  MYSERIAL.print(current_position[X_AXIS], 3);
-  SERIAL_ECHOPGM(", ");
-  MYSERIAL.print(current_position[Y_AXIS], 3);
-  SERIAL_ECHOPGM(", ");
-  MYSERIAL.print(current_position[Z_AXIS], 3);
-  SERIAL_ECHOLNPGM(")");
+	printf_P(_N("world coordinates: (%.3f, %.3f, %.3f)\n"), current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS]);
 }
 
 void print_physical_coordinates()
 {
-  SERIAL_ECHOPGM("physical coordinates: (");
-  MYSERIAL.print(st_get_position_mm(X_AXIS), 3);
-  SERIAL_ECHOPGM(", ");
-  MYSERIAL.print(st_get_position_mm(Y_AXIS), 3);
-  SERIAL_ECHOPGM(", ");
-  MYSERIAL.print(st_get_position_mm(Z_AXIS), 3);
-  SERIAL_ECHOLNPGM(")");
+	printf_P(_N("physical coordinates: (%.3f, %.3f, %.3f)\n"), st_get_position_mm[X_AXIS], st_get_position_mm[Y_AXIS], st_get_position_mm[Z_AXIS]);
 }
 
 void print_mesh_bed_leveling_table()
