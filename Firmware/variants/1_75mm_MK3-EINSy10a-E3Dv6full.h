@@ -112,8 +112,9 @@
 
 #define Z_AXIS_ALWAYS_ON 1
 
-// Automatic recovery after crash is detected
-#define AUTOMATIC_RECOVERY_AFTER_CRASH
+//Crash detection
+#define CRASHDET_TIMER 45 //seconds
+#define CRASHDET_COUNTER_MAX 3 
 
 // New XYZ calibration
 #define NEW_XYZCAL
@@ -176,6 +177,7 @@
 #define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
 #define DEBUG_STEPPER_TIMER_MISSED // Stop on stepper timer overflow, beep and display a message.
 #define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.
+#define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
 
 //#define EXPERIMENTAL_FEATURES

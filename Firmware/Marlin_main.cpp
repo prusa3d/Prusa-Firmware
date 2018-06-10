@@ -186,6 +186,7 @@
 //        Call gcode file : "M32 P !filename#" and return to caller file after finishing (similar to #include).
 //        The '#' is necessary when calling from within sd files, as it stops buffer prereading
 // M42  - Change pin status via gcode Use M42 Px Sy to set pin x to value y, when omitting Px the onboard led will be used.
+// M73  - Show percent done and print time remaining
 // M80  - Turn on Power Supply
 // M81  - Turn off Power Supply
 // M82  - Set E codes absolute (default)
@@ -323,6 +324,7 @@ unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
 static LongTimer safetyTimer;
+static LongTimer crashDetTimer;
 
 //unsigned long load_filament_time;
 
@@ -448,6 +450,11 @@ uint8_t saved_filament_type;
 // save/restore printing
 bool saved_printing = false;
 
+// storing estimated time to end of print counted by slicer
+uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
+uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -677,6 +684,25 @@ void crashdet_detected(uint8_t mask)
 	    cmdqueue_pop_front();
 	}*/
 	st_synchronize();
+	static uint8_t crashDet_counter = 0;
+	bool automatic_recovery_after_crash = true;
+	bool yesno;
+
+	if (crashDet_counter++ == 0) {
+		crashDetTimer.start();
+	}
+	else if (crashDetTimer.expired(CRASHDET_TIMER * 1000ul)){
+		crashDetTimer.stop();
+		crashDet_counter = 0;
+	}
+	else if(crashDet_counter == CRASHDET_COUNTER_MAX){
+		automatic_recovery_after_crash = false;
+		crashDetTimer.stop();
+		crashDet_counter = 0;
+	}
+	else {
+		crashDetTimer.start();
+	}
 
 	lcd_update_enable(true);
 	lcd_implementation_clear();
@@ -693,17 +719,21 @@ void crashdet_detected(uint8_t mask)
 		eeprom_update_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) + 1);
 	}
     
-#ifdef AUTOMATIC_RECOVERY_AFTER_CRASH
-    bool yesno = true;
-#else
-    bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_CRASH_DETECTED), false);
-#endif
+
+
 	lcd_update_enable(true);
 	lcd_update(2);
 	lcd_setstatuspgm(_T(MSG_CRASH_DETECTED));
+	gcode_G28(true, true, false, false); //home X and Y
+	st_synchronize();
+
+	if(automatic_recovery_after_crash) 
+		yesno = true;
+	else 
+		yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);
+	lcd_update_enable(true);
 	if (yesno)
 	{
-		enquecommand_P(PSTR("G28 X Y"));
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}
 	else
@@ -720,10 +750,15 @@ void crashdet_recover()
 
 void crashdet_cancel()
 {
-	card.sdprinting = false;
-	card.closefile();
 	tmc2130_sg_stop_on_crash = true;
+	if (saved_printing_type == PRINTING_TYPE_SD) {
+		lcd_print_stop();
+	}else if(saved_printing_type == PRINTING_TYPE_USB){
+		SERIAL_ECHOLNPGM("// action:cancel"); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
+		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+	}
 }
+
 #endif //TMC2130
 
 void failstats_reset_print()
@@ -4620,7 +4655,7 @@ void process_commands()
       card.openFile(strchr_pointer + 4,true);
       break;
     case 24: //M24 - Start SD print
-	  if (!card.paused)
+	  if (!card.paused) 
 		failstats_reset_print();
       card.startFileprint();
       starttime=millis();
@@ -5102,6 +5137,22 @@ Sigma_Exit:
 	}
 #endif		// Z_PROBE_REPEATABILITY_TEST 
 #endif		// ENABLE_AUTO_BED_LEVELING
+	case 73: //M73 show percent done and time remaining
+		if(code_seen('P')) print_percent_done_normal = code_value();
+		if(code_seen('R')) print_time_remaining_normal = code_value();
+		if(code_seen('Q')) print_percent_done_silent = code_value();
+		if(code_seen('S')) print_time_remaining_silent = code_value();
+
+		SERIAL_ECHOPGM("NORMAL MODE: Percent done: ");
+		MYSERIAL.print(int(print_percent_done_normal));
+		SERIAL_ECHOPGM("; print time remaining in mins: ");
+		MYSERIAL.println(print_time_remaining_normal);
+		SERIAL_ECHOPGM("SILENT MODE: Percent done: ");
+		MYSERIAL.print(int(print_percent_done_silent));
+		SERIAL_ECHOPGM("; print time remaining in mins: ");
+		MYSERIAL.println(print_time_remaining_silent);
+
+		break;
 
     case 104: // M104
       if(setTargetedHotend(104)){
@@ -5402,6 +5453,8 @@ Sigma_Exit:
           #endif
         }
       }
+	  //in the end of print set estimated time to end of print and extruders used during print to default values for next print
+	  print_time_remaining_init();
 	  snmm_filaments_used = 0;
       break;
     case 85: // M85
@@ -7411,8 +7464,7 @@ static void handleSafetyTimer()
 #if (EXTRUDERS > 1)
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
-    if (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || saved_printing
-        || (lcd_commands_type == LCD_COMMAND_V2_CAL) || (!degTargetBed() && !degTargetHotend(0)))
+    if ((PRINTER_ACTIVE) || (!degTargetBed() && !degTargetHotend(0)))
     {
         safetyTimer.stop();
     }
@@ -8386,6 +8438,7 @@ void uvlo_()
 	eeprom_update_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_2), extruder_multiplier[2]);
 #endif
 #endif
+	eeprom_update_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY), (uint16_t)extrudemultiply);
 
     // Finaly store the "power outage" flag.
 	if(sd_print) eeprom_update_byte((uint8_t*)EEPROM_UVLO, 1);
@@ -8601,7 +8654,7 @@ void recover_machine_state_after_power_panic()
   extruder_multiplier[2] = eeprom_read_float((float*)(EEPROM_EXTRUDER_MULTIPLIER_2));
 #endif
 #endif
-
+  extrudemultiply = (int)eeprom_read_word((uint16_t*)(EEPROM_EXTRUDEMULTIPLY));
 }
 
 void restore_print_from_eeprom() {
@@ -8920,5 +8973,34 @@ void print_mesh_bed_leveling_table()
   SERIAL_ECHOLNPGM("");
 }
 
+uint16_t print_time_remaining() {
+	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
+	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_remaining_normal;
+	else print_t = print_time_remaining_silent;
+	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100 * print_t / feedmultiply;
+	return print_t;
+}
+
+uint8_t print_percent_done() {
+	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
+	uint8_t percent_done = 0;
+	if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100) {
+		percent_done = print_percent_done_normal;
+	}
+	else if (print_percent_done_silent <= 100) {
+		percent_done = print_percent_done_silent;
+	}
+	else {
+		percent_done = card.percentDone();
+	}
+	return percent_done;
+}
+
+static void print_time_remaining_init() {
+	print_time_remaining_normal = PRINT_TIME_REMAINING_INIT;
+	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
+	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
+	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+}
 
 #define FIL_LOAD_LENGTH 60
