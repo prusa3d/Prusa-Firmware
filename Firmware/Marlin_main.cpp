@@ -903,13 +903,17 @@ int uart_putchar(char c, FILE *stream)
 	return 0;
 }
 
+
 void lcd_splash()
 {
 //	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
 //	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 //	lcd.print_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
-    fputs_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"), lcdout);
+//    fputs_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"), lcdout);
+    lcd_puts_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"));
+//	lcd_printf_P(_N(ESC_2J "x:%.3f\ny:%.3f\nz:%.3f\ne:%.3f"), _x, _y, _z, _e);
 }
+
 
 void factory_reset() 
 {
@@ -1168,6 +1172,7 @@ void setup()
 	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
+
 
 #ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;

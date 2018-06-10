@@ -4,6 +4,9 @@
 #include "Marlin.h"
 #include "mesh_bed_calibration.h"
 
+extern int lcd_puts_P(const char* str);
+extern int lcd_printf_P(const char* format, ...);
+
 #ifdef ULTRA_LCD
 
 	static void lcd_language_menu();

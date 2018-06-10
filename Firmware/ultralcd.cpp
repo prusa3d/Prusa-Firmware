@@ -26,7 +26,22 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
-#define _STRINGIFY(s) #s
+
+#include <stdarg.h>
+
+int lcd_puts_P(const char* str)
+{
+	return fputs_P(str, lcdout);
+}
+
+int lcd_printf_P(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	int ret = vfprintf_P(lcdout, format, args);
+	va_end(args);
+	return ret;
+}
 
 
 int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added to encoderPosition every LCD update */
@@ -4058,8 +4073,7 @@ void lcd_wizard(int state) {
 		}
 	}
 
-	SERIAL_ECHOPGM("State: ");
-	MYSERIAL.println(state);
+	printf_P(_N("State: %d\n"), state);
 	switch (state) { //final message
 	case 0: //user dont want to use wizard
 		msg = _T(MSG_WIZARD_QUIT);
@@ -6370,8 +6384,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 //end of second measurement, now check for possible errors:
 
 	for(int i = 0; i < 2; i++){ //check if measured axis length corresponds to expected length
-		SERIAL_ECHOPGM("Measured axis length:");
-		MYSERIAL.println(measured_axis_length[i]);
+		printf_P(_N("Measured axis length:%.3f\n"), measured_axis_length[i]);
 		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
 			enable_endstops(false);
 
@@ -6390,8 +6403,7 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		}
 	}
 
-	SERIAL_ECHOPGM("Axis length difference:");
-	MYSERIAL.println(abs(measured_axis_length[0] - measured_axis_length[1]));
+		printf_P(_N("Axis length difference:%.3f\n"), abs(measured_axis_length[0] - measured_axis_length[1]));
 	
 		if (abs(measured_axis_length[0] - measured_axis_length[1]) > 1) { //check if difference between first and second measurement is low
 			//loose pulleys
