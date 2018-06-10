@@ -371,7 +371,15 @@ float extruder_multiplier[EXTRUDERS] = {1.0
     #endif
   #endif
 };
+
 float current_position[NUM_AXIS] = { 0.0, 0.0, 0.0, 0.0 };
+//shortcuts for more readable code
+#define _x current_position[X_AXIS]
+#define _y current_position[Y_AXIS]
+#define _z current_position[Z_AXIS]
+#define _e current_position[E_AXIS]
+
+
 float add_homing[3]={0,0,0};
 
 float min_pos[3] = { X_MIN_POS, Y_MIN_POS, Z_MIN_POS };
@@ -439,6 +447,7 @@ bool cancel_heatup = false ;
   #define host_keepalive();
   #define KEEPALIVE_STATE(n);
 #endif
+
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
@@ -635,7 +644,6 @@ extern int8_t CrashDetectMenu;
 
 void crashdet_enable()
 {
-//	MYSERIAL.println("crashdet_enable"); 
 	tmc2130_sg_stop_on_crash = true;
 	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0xFF); 
 	CrashDetectMenu = 1;
@@ -644,7 +652,6 @@ void crashdet_enable()
 
 void crashdet_disable()
 {
-//	MYSERIAL.println("crashdet_disable"); 
 	tmc2130_sg_stop_on_crash = false;
 	tmc2130_sg_crash = 0;
 	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
@@ -1333,12 +1340,12 @@ void setup()
 	if (crashdet && !farm_mode)
 	{
 		crashdet_enable();
-	    MYSERIAL.println("CrashDetect ENABLED!");
+	    puts_P(_N("CrashDetect ENABLED!"));
 	}
 	else
 	{
 		crashdet_disable();
-	    MYSERIAL.println("CrashDetect DISABLED");
+	    puts_P(_N("CrashDetect DISABLED"));
 	}
 
 #ifdef TMC2130_LINEARITY_CORRECTION
@@ -1406,7 +1413,6 @@ void setup()
 #ifdef TMC2130
 
   if (1) {
-///    SERIAL_ECHOPGM("initial zsteps on power up: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_AXIS));
     // try to run to zero phase before powering the Z motor.    
     // Move in negative direction
     WRITE(Z_DIR_PIN,INVERT_Z_DIR);
@@ -1418,7 +1424,6 @@ void setup()
       WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
       delay(2);
     }
-//    SERIAL_ECHOPGM("initial zsteps after reset: "); MYSERIAL.println(tmc2130_rd_MSCNT(Z_AXIS));
   }
 #endif //TMC2130
 
@@ -1688,21 +1693,17 @@ void setup()
 */
       manage_heater(); // Update temperatures 
 #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
-      MYSERIAL.println("Power panic detected!"); 
-      MYSERIAL.print("Current bed temp:"); 
-      MYSERIAL.println(degBed()); 
-      MYSERIAL.print("Saved bed temp:"); 
-      MYSERIAL.println((float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED)); 
+		printf_P(_N("Power panic detected!\nCurrent bed temp:%d\nSaved bed temp:%d\n"), (int)degBed(), eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED))
 #endif 
      if ( degBed() > ( (float)eeprom_read_byte((uint8_t*)EEPROM_UVLO_TARGET_BED) - AUTOMATIC_UVLO_BED_TEMP_OFFSET) ){ 
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
-        MYSERIAL.println("Automatic recovery!"); 
+        puts_P(_N("Automatic recovery!")); 
           #endif 
          recover_print(1); 
       } 
       else{ 
           #ifdef DEBUG_UVLO_AUTOMATIC_RECOVER 
-        MYSERIAL.println("Normal recovery!"); 
+        puts_P(_N("Normal recovery!")); 
           #endif 
           if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) ) recover_print(0); 
           else { 
@@ -1726,7 +1727,7 @@ void setup()
 #ifdef PAT9125
 void fsensor_init() {
 	int pat9125 = pat9125_init();
-	printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
+	printf_P(_N("PAT9125_init:%d\n"), pat9125);
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
      filament_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
 	if (!pat9125)
@@ -3110,7 +3111,8 @@ static void gcode_PRUSA_SN()
 {
     if (farm_mode) {
         selectedSerialPort = 0;
-        MSerial.write(";S");
+        putchar(';');
+        putchar('S');
         int numbersRead = 0;
         ShortTimer timeout;
         timeout.start();
@@ -3119,14 +3121,14 @@ static void gcode_PRUSA_SN()
             while (MSerial.available() > 0) {
                 uint8_t serial_char = MSerial.read();
                 selectedSerialPort = 1;
-                MSerial.write(serial_char);
+                putchar(serial_char);
                 numbersRead++;
                 selectedSerialPort = 0;
             }
             if (timeout.expired(100u)) break;
         }
         selectedSerialPort = 1;
-        MSerial.write('\n');
+        putchar('\n');
 #if 0
         for (int b = 0; b < 3; b++) {
             tone(BEEPER, 110);
@@ -3136,7 +3138,7 @@ static void gcode_PRUSA_SN()
         }
 #endif
     } else {
-        MYSERIAL.println("Not in farm mode.");
+        puts_P(_N("Not in farm mode."));
     }
 }
 
@@ -3217,22 +3219,16 @@ void process_commands()
 			}	  
 		}
 		else if (code_seen("PRN")) {
-		  MYSERIAL.println(status_number);
+		  printf_P(_N("%d"), status_number);
 
         }else if (code_seen("FAN")) {
-            MYSERIAL.print("E0:");
-            MYSERIAL.print(60*fan_speed[0]);
-            MYSERIAL.println(" RPM");
-            MYSERIAL.print("PRN0:");
-            MYSERIAL.print(60*fan_speed[1]);
-            MYSERIAL.println(" RPM");
-            
-        }else if (code_seen("fn")) {
+			printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
+		}else if (code_seen("fn")) {
 		  if (farm_mode) {
-			  MYSERIAL.println(farm_no);
+			printf_P(_N("%d"), farm_no);
 		  }
 		  else {
-			  MYSERIAL.println("Not in farm mode.");
+			  puts_P(_N("Not in farm mode."));
 		  }
 		  
 		}
@@ -3736,14 +3732,9 @@ void process_commands()
             feedrate = homing_feedrate[Z_AXIS];
 
             find_bed_induction_sensor_point_z(-10.f, 3);
-            SERIAL_PROTOCOLRPGM(_T(MSG_BED));
-            SERIAL_PROTOCOLPGM(" X: ");
-            MYSERIAL.print(current_position[X_AXIS], 5);
-            SERIAL_PROTOCOLPGM(" Y: ");
-            MYSERIAL.print(current_position[Y_AXIS], 5);
-            SERIAL_PROTOCOLPGM(" Z: ");
-            MYSERIAL.print(current_position[Z_AXIS], 5);
-            SERIAL_PROTOCOLPGM("\n");
+
+			printf_P(_N("%S X: %.5f Y: %.5f Z: %.5f\n"), _T(MSG_BED), _x, _y, _z);
+
             clean_up_after_endstop_move();
         }
         break;
@@ -3751,11 +3742,8 @@ void process_commands()
 
 	case 75:
 	{
-		for (int i = 40; i <= 110; i++) {
-			MYSERIAL.print(i);
-			MYSERIAL.print("  ");
-			MYSERIAL.println(temp_comp_interpolation(i));// / axis_steps_per_unit[Z_AXIS]);
-		}
+		for (int i = 40; i <= 110; i++)
+			printf_P(_N("%d  %.2f"), i, temp_comp_interpolation(i));
 	}
 	break;
 
@@ -3818,8 +3806,7 @@ void process_commands()
 			float start_temp = 5 * (int)(current_temperature_pinda / 5);
 			if (start_temp < 35) start_temp = 35;
 			if (start_temp < current_temperature_pinda) start_temp += 5;
-			SERIAL_ECHOPGM("start temperature: ");
-			MYSERIAL.println(start_temp);
+			printf_P(_N("start temperature: %.1f\n"), start_temp);
 
 //			setTargetHotend(200, 0);
 			setTargetBed(70 + (start_temp - 30));
@@ -3859,23 +3846,12 @@ void process_commands()
 			}
 			zero_z = current_position[Z_AXIS];
 
-			//current_position[Z_AXIS]
-			SERIAL_ECHOLNPGM("");
-			SERIAL_ECHOPGM("ZERO: ");
-			MYSERIAL.print(current_position[Z_AXIS]);
-			SERIAL_ECHOLNPGM("");
+			printf_P(_N("\nZERO: %.3f\n"), current_position[Z_AXIS]);
 
 			int i = -1; for (; i < 5; i++)
 			{
 				float temp = (40 + i * 5);
-				SERIAL_ECHOPGM("Step: ");
-				MYSERIAL.print(i + 2);
-				SERIAL_ECHOLNPGM("/6 (skipped)");
-				SERIAL_ECHOPGM("PINDA temperature: ");
-				MYSERIAL.print((40 + i*5));
-				SERIAL_ECHOPGM(" Z shift (mm):");
-				MYSERIAL.print(0);
-				SERIAL_ECHOLNPGM("");
+				printf_P(_N("\nStep: %d/6 (skipped)\nPINDA temperature: %d Z shift (mm):0\n"), i + 2, (40 + i*5));
 				if (i >= 0) EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 				if (start_temp <= temp) break;
 			}
@@ -3883,9 +3859,7 @@ void process_commands()
 			for (i++; i < 5; i++)
 			{
 				float temp = (40 + i * 5);
-				SERIAL_ECHOPGM("Step: ");
-				MYSERIAL.print(i + 2);
-				SERIAL_ECHOLNPGM("/6");
+				printf_P(_N("\nStep: %d/6\n"), i + 2);
 				custom_message_state = i + 2;
 				setTargetBed(50 + 10 * (temp - 30) / 5);
 //				setTargetHotend(255, 0);
@@ -3915,12 +3889,7 @@ void process_commands()
 				}
 				z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
 
-				SERIAL_ECHOLNPGM("");
-				SERIAL_ECHOPGM("PINDA temperature: ");
-				MYSERIAL.print(current_temperature_pinda);
-				SERIAL_ECHOPGM(" Z shift (mm):");
-				MYSERIAL.print(current_position[Z_AXIS] - zero_z);
-				SERIAL_ECHOLNPGM("");
+				printf_P(_N("\nPINDA temperature: %.1f Z shift (mm): %.3f"), current_temperature_pinda, current_position[Z_AXIS] - zero_z);
 
 				EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
 
@@ -3944,7 +3913,7 @@ void process_commands()
 			enquecommand_front_P((PSTR("G28 W0")));
 			break;
 		}
-		SERIAL_ECHOLNPGM("PINDA probe calibration start");
+		puts_P(_N("PINDA probe calibration start"));
 		custom_message = true;
 		custom_message_type = 4;
 		custom_message_state = 1;
@@ -3978,16 +3947,10 @@ void process_commands()
 		find_bed_induction_sensor_point_z(-1.f);
 		zero_z = current_position[Z_AXIS];
 
-		//current_position[Z_AXIS]
-		SERIAL_ECHOLNPGM("");
-		SERIAL_ECHOPGM("ZERO: ");
-		MYSERIAL.print(current_position[Z_AXIS]);
-		SERIAL_ECHOLNPGM("");
+		printf_P(_N("\nZERO: %.3f\n"), current_position[Z_AXIS]);
 
 		for (int i = 0; i<5; i++) {
-			SERIAL_ECHOPGM("Step: ");
-			MYSERIAL.print(i+2);
-			SERIAL_ECHOLNPGM("/6");
+			printf_P(_N("\nStep: %d/6\n"), i + 2);
 			custom_message_state = i + 2;
 			t_c = 60 + i * 10;
 
@@ -4014,12 +3977,7 @@ void process_commands()
 			find_bed_induction_sensor_point_z(-1.f);
 			z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
 
-			SERIAL_ECHOLNPGM("");
-			SERIAL_ECHOPGM("Temperature: ");
-			MYSERIAL.print(t_c);
-			SERIAL_ECHOPGM(" Z shift (mm):");
-			MYSERIAL.print(current_position[Z_AXIS] - zero_z);
-			SERIAL_ECHOLNPGM("");
+			printf_P(_N("\nTemperature: %d  Z shift (mm): %.3f\n"), t_c, current_position[Z_AXIS] - zero_z);
 
 			EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i*2, &z_shift);
 			
@@ -4029,7 +3987,7 @@ void process_commands()
 		custom_message = false;
 
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
-		SERIAL_ECHOLNPGM("Temperature calibration done. Continue with pressing the knob.");
+		puts_P(_N("Temperature calibration done."));
 			disable_x();
 			disable_y();
 			disable_z();
@@ -4087,7 +4045,7 @@ void process_commands()
 
 			}
 			fan_speed[1];
-			MYSERIAL.print(i); SERIAL_ECHOPGM(": "); MYSERIAL.println(fan_speed[1]);
+			printf_P(_N("%d: %d\n"), i, fan_speed[1]);
 		}
 	}break;
 
@@ -5143,15 +5101,11 @@ Sigma_Exit:
 		if(code_seen('Q')) print_percent_done_silent = code_value();
 		if(code_seen('S')) print_time_remaining_silent = code_value();
 
-		SERIAL_ECHOPGM("NORMAL MODE: Percent done: ");
-		MYSERIAL.print(int(print_percent_done_normal));
-		SERIAL_ECHOPGM("; print time remaining in mins: ");
-		MYSERIAL.println(print_time_remaining_normal);
-		SERIAL_ECHOPGM("SILENT MODE: Percent done: ");
-		MYSERIAL.print(int(print_percent_done_silent));
-		SERIAL_ECHOPGM("; print time remaining in mins: ");
-		MYSERIAL.println(print_time_remaining_silent);
-
+		{
+			const char* _msg_mode_done_remain = _N("%S MODE: Percent done: %d; print time remaining in mins: %d\n");
+			printf_P(_msg_mode_done_remain, _N("NORMAL"), int(print_percent_done_normal), print_time_remaining_normal);
+			printf_P(_msg_mode_done_remain, _N("SILENT"), int(print_percent_done_silent), print_time_remaining_silent);
+		}
 		break;
 
     case 104: // M104

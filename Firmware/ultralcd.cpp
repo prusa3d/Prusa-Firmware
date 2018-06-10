@@ -5429,12 +5429,9 @@ void lcd_confirm_print()
 
 }
 
-static void lcd_test_menu()
+/*static void lcd_test_menu()
 {
-	lang_boot_update_start(3);
-	lcd_update_enable(true);
-	lcd_return_to_status();
-}
+}*/
 
 static void lcd_main_menu()
 {
@@ -5605,7 +5602,7 @@ static void lcd_main_menu()
 #endif
 
   MENU_ITEM(submenu, _i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
-  MENU_ITEM(submenu, _i("Test"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
+//  MENU_ITEM(submenu, _i("Test"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
 
   END_MENU();
 
