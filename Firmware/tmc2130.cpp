@@ -5,11 +5,8 @@
 #include "tmc2130.h"
 #include "LiquidCrystal_Prusa.h"
 #include "ultralcd.h"
-#ifndef NEW_SPI
-#include <SPI.h>
-#else //NEW_SPI
+#include "language.h"
 #include "spi.h"
-#endif //NEW_SPI
 
 
 extern LiquidCrystal_Prusa lcd;
@@ -161,9 +158,6 @@ void tmc2130_init()
 	SET_INPUT(Y_TMC2130_DIAG);
 	SET_INPUT(Z_TMC2130_DIAG);
 	SET_INPUT(E0_TMC2130_DIAG);
-#ifndef NEW_SPI
-	SPI.begin();
-#endif //NEW_SPI
 	for (int axis = 0; axis < 2; axis++) // X Y axes
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
@@ -386,7 +380,6 @@ bool tmc2130_wait_standstill_xy(int timeout)
 
 void tmc2130_check_overtemp()
 {
-	const static char TMC_OVERTEMP_MSG[] PROGMEM = "TMC DRIVER OVERTEMP ";
 	static uint32_t checktime = 0;
 	if (millis() - checktime > 1000 )
 	{
@@ -397,11 +390,11 @@ void tmc2130_check_overtemp()
 			tmc2130_rd(i, TMC2130_REG_DRV_STATUS, &drv_status);
 			if (drv_status & ((uint32_t)1 << 26))
 			{ // BIT 26 - over temp prewarning ~120C (+-20C)
-				SERIAL_ERRORRPGM(TMC_OVERTEMP_MSG);
+				SERIAL_ERRORRPGM(MSG_TMC_OVERTEMP);
 				SERIAL_ECHOLN(i);
 				for (int j = 0; j < 4; j++)
 					tmc2130_wr(j, TMC2130_REG_CHOPCONF, 0x00010000);
-				kill(TMC_OVERTEMP_MSG);
+				kill(MSG_TMC_OVERTEMP);
 			}
 
 		}
@@ -628,59 +621,6 @@ inline void tmc2130_cs_high(uint8_t axis)
 	}
 }
 
-#ifndef NEW_SPI
-
-uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval)
-{
-	//datagram1 - request
-	printf_P(PSTR("tmc2130_tx %d 0x%02hhx, 0x%08lx\n"), axis, addr, wval);
-	SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
-	printf_P(PSTR(" SPCR = 0x%02hhx\n"), SPCR);
-	printf_P(PSTR(" SPSR = 0x%02hhx\n"), SPSR);
-	tmc2130_cs_low(axis);
-	SPI.transfer(addr); // address
-	SPI.transfer((wval >> 24) & 0xff); // MSB
-	SPI.transfer((wval >> 16) & 0xff);
-	SPI.transfer((wval >> 8) & 0xff);
-	SPI.transfer(wval & 0xff); // LSB
-	tmc2130_cs_high(axis);
-	SPI.endTransaction();
-}
-
-uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
-{
-	//datagram1 - request
-	SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
-	tmc2130_cs_low(axis);
-	SPI.transfer(addr); // address
-	SPI.transfer(0); // MSB
-	SPI.transfer(0);
-	SPI.transfer(0);
-	SPI.transfer(0); // LSB
-	tmc2130_cs_high(axis);
-	SPI.endTransaction();
-	//datagram2 - response
-	SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
-	tmc2130_cs_low(axis);
-	uint8_t stat = SPI.transfer(0); // status
-	uint32_t val32 = 0;
-	val32 = SPI.transfer(0); // MSB
-	val32 = (val32 << 8) | SPI.transfer(0);
-	val32 = (val32 << 8) | SPI.transfer(0);
-	val32 = (val32 << 8) | SPI.transfer(0); // LSB
-	tmc2130_cs_high(axis);
-	SPI.endTransaction();
-	if (rval != 0) *rval = val32;
-	return stat;
-}
-
-#else //NEW_SPI
-
-//Arduino SPI
-//#define TMC2130_SPI_ENTER()    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3))
-//#define TMC2130_SPI_TXRX       SPI.transfer
-//#define TMC2130_SPI_LEAVE      SPI.endTransaction
-
 //spi
 #define TMC2130_SPI_ENTER()    spi_setup(TMC2130_SPCR, TMC2130_SPSR)
 #define TMC2130_SPI_TXRX       spi_txrx
@@ -726,8 +666,6 @@ uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
 	if (rval != 0) *rval = val32;
 	return stat;
 }
-
-#endif //NEW_SPI
 
 
 void tmc2130_eeprom_load_config()

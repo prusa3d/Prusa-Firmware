@@ -82,9 +82,7 @@
 #include "swspi.h"
 #endif //SWSPI
 
-#ifdef NEW_SPI
 #include "spi.h"
-#endif //NEW_SPI
 
 #ifdef SWI2C
 #include "swi2c.h"
@@ -333,7 +331,6 @@ static LongTimer crashDetTimer;
 bool mesh_bed_leveling_flag = false;
 bool mesh_bed_run_from_menu = false;
 
-//unsigned char lang_selected = 0;
 int8_t FarmMode = 0;
 
 bool prusa_sd_card_upload = false;
@@ -624,7 +621,6 @@ void servo_init()
   #endif
 }
 
-static void lcd_language_menu();
 
 void stop_and_save_print_to_ram(float z_move, float e_move);
 void restore_print_from_ram_and_continue(float e_move);
@@ -796,8 +792,7 @@ void factory_reset(char level, bool quiet)
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
-            
-            lcd_force_language_selection();
+			lang_reset();
             break;
          
 		//Level 1: Reset statistics
@@ -828,12 +823,11 @@ void factory_reset(char level, bool quiet)
             //lcd_print_at_PGM(1,2,PSTR("Shipping prep"));
             
             // Force language selection at the next boot up.
-            lcd_force_language_selection();
+			lang_reset();
             // Force the "Follow calibration flow" message at the next boot up.
             calibration_status_store(CALIBRATION_STATUS_Z_CALIBRATION);
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1); //run wizard
             farm_no = 0;
-//*** MaR::180501_01
 			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
@@ -1002,7 +996,7 @@ void show_fw_version_warnings() {
     lcd_print_at_PGM(0, 3, PSTR(FW_REPOSITORY));
     lcd_wait_for_click();
     break;
-	default: lcd_show_fullscreen_message_and_wait_P(_i("WARNING: This is an unofficial, unsupported build. Use at your own risk!")); break;////MSG_FW_VERSION_UNKNOWN c=20 r=8
+//	default: lcd_show_fullscreen_message_and_wait_P(_i("WARNING: This is an unofficial, unsupported build. Use at your own risk!")); break;////MSG_FW_VERSION_UNKNOWN c=20 r=8
 	}
 	lcd_update_enable(true);
 }
@@ -1029,36 +1023,55 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 	for (int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
 }
 
-#include "bootapp.h"
 
-void __test()
-{
-	cli();
-	boot_app_magic = 0x55aa55aa;
-	boot_app_flags = BOOT_APP_FLG_USER0;
-	boot_reserved = 0x00;
-	wdt_enable(WDTO_15MS);
-	while(1);
-}
+#if (LANG_MODE != 0) //secondary language support
 
 #ifdef W25X20CL
 
-void upgrade_sec_lang_from_external_flash()
+#include "bootapp.h" //bootloader support
+
+// language update from external flash
+#define LANGBOOT_BLOCKSIZE 0x1000  
+#define LANGBOOT_RAMBUFFER 0x0800
+
+void update_sec_lang_from_external_flash()
 {
-	if ((boot_app_magic == 0x55aa55aa) && (boot_app_flags & BOOT_APP_FLG_USER0))
+	if ((boot_app_magic == BOOT_APP_MAGIC) && (boot_app_flags & BOOT_APP_FLG_USER0))
 	{
-		fprintf_P(lcdout, PSTR(ESC_2J ESC_H(1,1) "TEST %d"), boot_reserved);
-		boot_reserved++;
-		if (boot_reserved < 4)
+		uint8_t lang = boot_reserved >> 4;
+		uint8_t state = boot_reserved & 0xf;
+		lang_table_header_t header;
+		uint32_t src_addr;
+		if (lang_get_header(lang, &header, &src_addr))
 		{
-			_delay_ms(1000);
-			cli();
-			wdt_enable(WDTO_15MS);
-			while(1);
+			fputs_P(PSTR(ESC_H(1,3) "Language update."), lcdout);
+			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
+			delay(100);
+			boot_reserved = (state + 1) | (lang << 4);
+			if ((state * LANGBOOT_BLOCKSIZE) < header.size)
+			{
+				cli();
+				uint16_t size = header.size - state * LANGBOOT_BLOCKSIZE;
+				if (size > LANGBOOT_BLOCKSIZE) size = LANGBOOT_BLOCKSIZE;
+				w25x20cl_rd_data(src_addr + state * LANGBOOT_BLOCKSIZE, (uint8_t*)LANGBOOT_RAMBUFFER, size);
+				if (state == 0)
+				{
+					//TODO - check header integrity
+				}
+				bootapp_ram2flash(LANGBOOT_RAMBUFFER, _SEC_LANG_TABLE + state * LANGBOOT_BLOCKSIZE, size);
+			}
+			else
+			{
+				//TODO - check sec lang data integrity
+				eeprom_update_byte((unsigned char *)EEPROM_LANG, LANG_ID_SEC);
+			}
 		}
 	}
 	boot_app_flags &= ~BOOT_APP_FLG_USER0;
 }
+
+
+#ifdef DEBUG_W25X20CL
 
 uint8_t lang_xflash_enum_codes(uint16_t* codes)
 {
@@ -1079,7 +1092,7 @@ uint8_t lang_xflash_enum_codes(uint16_t* codes)
 		printf_P(_n(" _lt_size         = 0x%04x (%d)\n"), header.size, header.size);
 		printf_P(_n(" _lt_count        = 0x%04x (%d)\n"), header.count, header.count);
 		printf_P(_n(" _lt_chsum        = 0x%04x\n"), header.checksum);
-		printf_P(_n(" _lt_code         = 0x%04x\n"), header.code);
+		printf_P(_n(" _lt_code         = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
 		printf_P(_n(" _lt_resv1        = 0x%08lx\n"), header.reserved1);
 
 		addr += header.size;
@@ -1096,7 +1109,11 @@ void list_sec_lang_from_external_flash()
 	printf_P(_n("XFlash lang count = %hhd\n"), count);
 }
 
+#endif //DEBUG_W25X20CL
+
 #endif //W25X20CL
+
+#endif //(LANG_MODE != 0)
 
 
 // "Setup" function is called by the Arduino framework on startup.
@@ -1104,20 +1121,25 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
-#ifdef NEW_SPI
-	spi_init();
-#endif //NEW_SPI
-
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
-	upgrade_sec_lang_from_external_flash();
+	spi_init();
 
 	lcd_splash();
+
+#if (LANG_MODE != 0) //secondary language support
+#ifdef W25X20CL
+	if (w25x20cl_init())
+		update_sec_lang_from_external_flash();
+	else
+		kill(_i("External SPI flash W25X20CL not responding."));
+#endif //W25X20CL
+#endif //(LANG_MODE != 0)
+
 	setup_killpin();
 	setup_powerhold();
 
-//*** MaR::180501_02b
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE); 
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || ((uint16_t)farm_no == 0xFFFF)) 
@@ -1140,6 +1162,97 @@ void setup()
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
+#ifdef DEBUG_SEC_LANG
+	lang_table_header_t header;
+	uint32_t src_addr = 0x00000;
+	if (lang_get_header(3, &header, &src_addr))
+	{
+//this is comparsion of some printing-methods regarding to flash space usage and code size/readability
+#define LT_PRINT_TEST 2
+//  flash usage
+//  total   p.test
+//0 252718  t+c  text code
+//1 253142  424  170  254
+//2 253040  322  164  158
+//3 253248  530  135  395
+#if (LT_PRINT_TEST==1) //not optimized printf
+		printf_P(_n(" _src_addr = 0x%08lx\n"), src_addr);
+		printf_P(_n(" _lt_magic = 0x%08lx %S\n"), header.magic, (header.magic==LANG_MAGIC)?_n("OK"):_n("NA"));
+		printf_P(_n(" _lt_size  = 0x%04x (%d)\n"), header.size, header.size);
+		printf_P(_n(" _lt_count = 0x%04x (%d)\n"), header.count, header.count);
+		printf_P(_n(" _lt_chsum = 0x%04x\n"), header.checksum);
+		printf_P(_n(" _lt_code  = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
+		printf_P(_n(" _lt_resv1 = 0x%08lx\n"), header.reserved1);
+#elif (LT_PRINT_TEST==2) //optimized printf
+		printf_P(
+		 _n(
+		  " _src_addr = 0x%08lx\n"
+		  " _lt_magic = 0x%08lx %S\n"
+		  " _lt_size  = 0x%04x (%d)\n"
+		  " _lt_count = 0x%04x (%d)\n"
+		  " _lt_chsum = 0x%04x\n"
+		  " _lt_code  = 0x%04x (%c%c)\n"
+		  " _lt_resv1 = 0x%08lx\n"
+		 ),
+		 src_addr,
+		 header.magic, (header.magic==LANG_MAGIC)?_n("OK"):_n("NA"),
+		 header.size, header.size,
+		 header.count, header.count,
+		 header.checksum,
+		 header.code, header.code >> 8, header.code & 0xff,
+		 header.reserved1
+		);
+#elif (LT_PRINT_TEST==3) //arduino print/println (leading zeros not solved)
+		MYSERIAL.print(" _src_addr = 0x");
+		MYSERIAL.println(src_addr, 16);
+		MYSERIAL.print(" _lt_magic = 0x");
+		MYSERIAL.print(header.magic, 16);
+		MYSERIAL.println((header.magic==LANG_MAGIC)?" OK":" NA");
+		MYSERIAL.print(" _lt_size  = 0x");
+		MYSERIAL.print(header.size, 16);
+		MYSERIAL.print(" (");
+		MYSERIAL.print(header.size, 10);
+		MYSERIAL.println(")");
+		MYSERIAL.print(" _lt_count = 0x");
+		MYSERIAL.print(header.count, 16);
+		MYSERIAL.print(" (");
+		MYSERIAL.print(header.count, 10);
+		MYSERIAL.println(")");
+		MYSERIAL.print(" _lt_chsum = 0x");
+		MYSERIAL.println(header.checksum, 16);
+		MYSERIAL.print(" _lt_code  = 0x");
+		MYSERIAL.print(header.code, 16);
+		MYSERIAL.print(" (");
+		MYSERIAL.print((char)(header.code >> 8), 0);
+		MYSERIAL.print((char)(header.code & 0xff), 0);
+		MYSERIAL.println(")");
+		MYSERIAL.print(" _lt_resv1 = 0x");
+		MYSERIAL.println(header.reserved1, 16);
+#endif //(LT_PRINT_TEST==)
+#undef LT_PRINT_TEST
+
+#if 0
+		w25x20cl_rd_data(0x25ba, (uint8_t*)&block_buffer, 1024);
+		for (uint16_t i = 0; i < 1024; i++)
+		{
+			if ((i % 16) == 0) printf_P(_n("%04x:"), 0x25ba+i);
+			printf_P(_n(" %02x"), ((uint8_t*)&block_buffer)[i]);
+			if ((i % 16) == 15) putchar('\n');
+		}
+#endif
+#if 1
+		for (uint16_t i = 0; i < 1024*10; i++)
+		{
+			if ((i % 16) == 0) printf_P(_n("%04x:"), _SEC_LANG_TABLE+i);
+			printf_P(_n(" %02x"), pgm_read_byte((uint8_t*)(_SEC_LANG_TABLE+i)));
+			if ((i % 16) == 15) putchar('\n');
+		}
+#endif
+	}
+	else
+		printf_P(_n("lang_get_header failed!\n"));
+
+
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
 	for (int i = 0; i < 4096; ++i) {
@@ -1153,6 +1266,8 @@ void setup()
 	}
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: done");
 #endif
+
+#endif //DEBUG_SEC_LANG
 
 	// Check startup - does nothing if bootloader sets MCUSR to 0
 	byte mcu = MCUSR;
@@ -1310,7 +1425,6 @@ void setup()
 #if defined(Z_AXIS_ALWAYS_ON)
 	enable_z();
 #endif
-//*** MaR::180501_02
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
 	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
@@ -1404,37 +1518,35 @@ void setup()
   // If they differ, an update procedure may need to be performed. At the end of this block, the current firmware version
   // is being written into the EEPROM, so the update procedure will be triggered only once.
 
-	spi_setup(TMC2130_SPCR, TMC2130_SPSR);
-	puts_P(_n("w25x20cl init: "));
-	if (w25x20cl_ini())
-	{
-		uint8_t uid[8]; // 64bit unique id
-		w25x20cl_rd_uid(uid);
-		puts_P(_n("OK, UID="));
-		for (uint8_t i = 0; i < 8; i ++)
-			printf_P(PSTR("%02hhx"), uid[i]);
-		putchar('\n');
-		list_sec_lang_from_external_flash();
-	}
-	else
-		puts_P(_n("NG!\n"));
 
+#if (LANG_MODE != 0) //secondary language support
 
-	lang_selected = eeprom_read_byte((uint8_t*)EEPROM_LANG);
-	if (lang_selected >= LANG_NUM)
-	{
-//		lcd_mylang();
-		lang_selected = 0;
-	}
-	lang_select(lang_selected);
+#ifdef DEBUG_W25X20CL
+	W25X20CL_SPI_ENTER();
+	uint8_t uid[8]; // 64bit unique id
+	w25x20cl_rd_uid(uid);
+	puts_P(_n("W25X20CL UID="));
+	for (uint8_t i = 0; i < 8; i ++)
+		printf_P(PSTR("%02hhx"), uid[i]);
+	putchar('\n');
+	list_sec_lang_from_external_flash();
+#endif //DEBUG_W25X20CL
 
-	uint16_t sec_lang_code = lang_get_code(1);
-	printf_P(_n("SEC_LANG_CODE=0x%04x (%c%c)\n"), sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
+//	lang_reset();
+	if (!lang_select(eeprom_read_byte((uint8_t*)EEPROM_LANG)))
+		lcd_language();
 
 #ifdef DEBUG_SEC_LANG
-	lang_print_sec_lang(uartout);
+
+	uint16_t sec_lang_code = lang_get_code(1);
+	uint16_t ui = _SEC_LANG_TABLE; //table pointer
+	printf_P(_n("lang_selected=%d\nlang_table=0x%04x\nSEC_LANG_CODE=0x%04x (%c%c)\n"), lang_selected, ui, sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
+
+//	lang_print_sec_lang(uartout);
 #endif //DEBUG_SEC_LANG
-	
+
+#endif //(LANG_MODE != 0)
+
 	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 		temp_cal_active = false;
@@ -2259,7 +2371,7 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 #ifdef TMC2130
 		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
 			FORCE_HIGH_POWER_END;
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return; 
 		}
 #endif //TMC2130
@@ -2275,7 +2387,7 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 #ifdef TMC2130
 		if (READ(Z_TMC2130_DIAG) != 0) { //Z crash
 			FORCE_HIGH_POWER_END;
-			kill(MSG_BED_LEVELING_FAILED_POINT_LOW);
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 			return; 
 		}
 #endif //TMC2130
@@ -3145,8 +3257,10 @@ void process_commands()
         trace();
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
+
 	} else if (code_seen("SN")) { 
         gcode_PRUSA_SN();
+
 	} else if(code_seen("Fir")){
 
       SERIAL_PROTOCOLLN(FW_VERSION);
@@ -3156,19 +3270,12 @@ void process_commands()
       SERIAL_PROTOCOLLN(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
     } else if(code_seen("Lang")) {
-      lcd_force_language_selection();
-    } else if(code_seen("Lz")) {
+	  lang_reset();
+
+	} else if(code_seen("Lz")) {
       EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
-      
-    } else if (code_seen("SERIAL LOW")) {
-        MYSERIAL.println("SERIAL LOW");
-        MYSERIAL.begin(BAUDRATE);
-        return;
-    } else if (code_seen("SERIAL HIGH")) {
-        MYSERIAL.println("SERIAL HIGH");
-        MYSERIAL.begin(1152000);
-        return;
-    } else if(code_seen("Beat")) {
+
+	} else if(code_seen("Beat")) {
         // Kick farm link timer
         kicktime = millis();
 
@@ -5055,7 +5162,7 @@ Sigma_Exit:
       setWatch();
       break;
     case 112: //  M112 -Emergency Stop
-      kill("", 3);
+      kill(_n(""), 3);
       break;
     case 140: // M140 set bed temp
       if (code_seen('S')) setTargetBed(code_value());
@@ -5304,15 +5411,7 @@ Sigma_Exit:
       #endif
       #ifdef ULTIPANEL
         powersupply = false;
-        LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR("."))); //!!
-        
-        /*
-        MACHNAME = "Prusa i3"
-        MSGOFF = "Vypnuto"
-        "Prusai3"" ""vypnuto""."
-        
-        "Prusa i3"" "_T(MSG_ALL)[lang_selected][50]"."
-        */
+        LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR(".")));
         lcd_update();
       #endif
 	  break;
@@ -5977,7 +6076,7 @@ Sigma_Exit:
     break;
     case 509: //M509 Force language selection
     {
-        lcd_force_language_selection();
+		lang_reset();
         SERIAL_ECHO_START;
         SERIAL_PROTOCOLPGM(("LANG SEL FORCED"));
     }
@@ -7439,7 +7538,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 
   if( (millis() - previous_millis_cmd) >  max_inactive_time )
     if(max_inactive_time)
-      kill("", 4);
+      kill(_n(""), 4);
   if(stepper_inactive_time)  {
     if( (millis() - previous_millis_cmd) >  stepper_inactive_time )
     {

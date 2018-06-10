@@ -5,7 +5,6 @@
 
 // LCD Menu Messages
 //internationalized messages
-extern const char MSG_ALL[];
 extern const char MSG_AUTO_HOME[];
 extern const char MSG_AUTO_MODE_ON[];
 extern const char MSG_BABYSTEP_Z[];
@@ -116,3 +115,4 @@ extern const char MSG_Z_MAX[];
 extern const char MSG_Z_MIN[];
 extern const char MSG_ZPROBE_OUT[];
 extern const char MSG_ZPROBE_ZOFFSET[];
+extern const char MSG_TMC_OVERTEMP[];

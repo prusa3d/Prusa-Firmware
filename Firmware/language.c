@@ -1,8 +1,10 @@
 //language.c
 #include "language.h"
 #include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 #include "bootapp.h"
 
+#include "Configuration.h"
 
 #ifdef W25X20CL
 #include "w25x20cl.h"
@@ -18,6 +20,8 @@ uint8_t lang_select(uint8_t lang) { return 0; }
 uint8_t lang_get_count() { return 1; }
 uint16_t lang_get_code(uint8_t lang) { return LANG_CODE_EN; }
 const char* lang_get_name_by_code(uint16_t code) { return _n("English"); }
+void lang_reset(void) { }
+uint8_t lang_is_selected(void) { return 1; }
 
 #else //(LANG_MODE == 0) //secondary languages in progmem or xflash
 
@@ -39,49 +43,37 @@ const char* lang_get_translation(const char* s)
 	return (const char*)((char*)lang_table + ui); //return calculated pointer
 }
 
-const char* lang_get_sec_lang_str(const char* s)
-{
-	uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
-	lang_table_t* _lang_table = ui; //table pointer
-	ui = pgm_read_word(((uint16_t*)s)); //read string id
-	if (ui == 0xffff) return s + 2; //translation not found
-	ui = pgm_read_word(((uint16_t*)(((char*)_lang_table + 16 + ui*2)))); //read relative offset
-	return (const char*)((char*)_lang_table + ui); //return calculated pointer
-}
-
 uint8_t lang_select(uint8_t lang)
 {
 	if (lang == LANG_ID_PRI) //primary language
 	{
 		lang_table = 0;
-		lang_selected = 0;
-		return 1;
+		lang_selected = lang;
 	}
 #ifdef W25X20CL
+	if (lang_get_code(lang) == lang_get_code(LANG_ID_SEC)) lang = LANG_ID_SEC;
 	if (lang == LANG_ID_SEC) //current secondary language
 	{
-		uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
-		if (pgm_read_dword(((uint32_t*)(ui + 0))) != LANG_MAGIC) return 0; //magic not valid
-		lang_table = ui; // set table pointer
-		lang_selected = 1; // set language id
-		return 1;
+		if (pgm_read_dword(((uint32_t*)_SEC_LANG_TABLE)) == LANG_MAGIC) //magic valid
+		{
+			lang_table = _SEC_LANG_TABLE; // set table pointer
+			lang_selected = lang; // set language id
+		}
 	}
 #else //W25X20CL
 #endif //W25X20CL
-/*
-	uint16_t ui = (uint16_t)&_SEC_LANG; //pointer to _SEC_LANG reserved space
-	ui += 0x00ff; //add 1 page
-	ui &= 0xff00; //align to page
-	lang_table = ui; //set table pointer
-	ui = pgm_read_word(((uint16_t*)(((char*)lang_table + 16)))); //read relative offset of first string (language name)
-	return (const char*)((char*)lang_table + ui); //return calculated pointer
-*/
+	if (lang_selected == lang)
+	{
+		eeprom_update_byte((unsigned char*)EEPROM_LANG, lang_selected);
+		return 1;
+	}
 	return 0;
 }
 
 uint8_t lang_get_count()
 {
 #ifdef W25X20CL
+	W25X20CL_SPI_ENTER();
 	uint8_t count = 2; //count = 1+n (primary + secondary + all in xflash)
 	uint32_t addr = 0x00000; //start of xflash
 	lang_table_header_t header; //table header structure
@@ -97,16 +89,44 @@ uint8_t lang_get_count()
 #endif //W25X20CL
 }
 
-uint16_t lang_get_code(uint8_t lang)
+uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* offset)
 {
+	if (lang == LANG_ID_PRI) return 0; //primary lang not supported for this function
 #ifdef W25X20CL
-	if (lang == LANG_ID_PRI) return LANG_CODE_EN; //primary lang = EN
 	if (lang == LANG_ID_SEC)
 	{
-		uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+		uint16_t ui = _SEC_LANG_TABLE; //table pointer
+		memcpy_P(header, ui, sizeof(lang_table_header_t)); //read table header from progmem
+		if (offset) *offset = ui;
+		return (header == LANG_MAGIC)?1:0; //return 1 if magic valid
+	}
+	W25X20CL_SPI_ENTER();
+	uint32_t addr = 0x00000; //start of xflash
+	lang--;
+	while (1)
+	{
+		w25x20cl_rd_data(addr, header, sizeof(lang_table_header_t)); //read table header from xflash
+		if (header->magic != LANG_MAGIC) break; //break if not valid
+		if (offset) *offset = addr;
+		if (--lang == 0) return 1;
+		addr += header->size; //calc address of next table
+	}
+	return 0;
+#else //W25X20CL
+#endif //W25X20CL
+}
+
+uint16_t lang_get_code(uint8_t lang)
+{
+	if (lang == LANG_ID_PRI) return LANG_CODE_EN; //primary lang = EN
+#ifdef W25X20CL
+	if (lang == LANG_ID_SEC)
+	{
+		uint16_t ui = _SEC_LANG_TABLE; //table pointer
 		if (pgm_read_dword(((uint32_t*)(ui + 0))) != LANG_MAGIC) return LANG_CODE_XX; //magic not valid
 		return pgm_read_word(((uint32_t*)(ui + 10))); //return lang code from progmem
 	}
+	W25X20CL_SPI_ENTER();
 	uint32_t addr = 0x00000; //start of xflash
 	lang_table_header_t header; //table header structure
 	lang--;
@@ -122,7 +142,7 @@ uint16_t lang_get_code(uint8_t lang)
 
 //	if (lang == LANG_ID_SEC)
 //	{
-//		uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+//		uint16_t ui = _SEC_LANG_TABLE; //table pointer
 //		if (pgm_read_dword(((uint32_t*)(ui + 0))) == LANG_MAGIC) //magic num is OK
 //			return pgm_read_word(((uint16_t*)(ui + 10))); //read language code
 //	}
@@ -141,22 +161,24 @@ const char* lang_get_name_by_code(uint16_t code)
 	case LANG_CODE_PL: return _n("Polski");
 	}
 	return _n("??");
+}
 
-//	if (lang == LANG_ID_UNDEFINED) lang = lang_selected;
-//	if (lang == LANG_ID_PRI) return _T(MSG_LANGUAGE_NAME + 2);
-//	if (lang == LANG_ID_SEC)
-//	{
-//		uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
-//		if (pgm_read_dword(((uint32_t*)(ui + 0))) == LANG_MAGIC) //magic num is OK
-//			return lang_get_sec_lang_str(MSG_LANGUAGE_NAME);
-//	}
-//	return 0;
+void lang_reset(void)
+{
+	lang_selected = 0;
+	eeprom_update_byte((unsigned char*)EEPROM_LANG, LANG_ID_FORCE_SELECTION);
+}
+
+uint8_t lang_is_selected(void)
+{
+	uint8_t lang_eeprom = eeprom_read_byte((unsigned char*)EEPROM_LANG);
+	return (lang_eeprom != LANG_ID_FORCE_SELECTION) && (lang_eeprom == lang_selected);
 }
 
 #ifdef DEBUG_SEC_LANG
 const char* lang_get_sec_lang_str_by_id(uint16_t id)
 {
-	uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	return ui + pgm_read_word(((uint16_t*)(ui + 16 + id * 2))); //read relative offset and return calculated pointer
 }
 
@@ -180,7 +202,7 @@ uint16_t lang_print_sec_lang(FILE* out)
 	printf_P(_n(" _lt_resv1        = 0x%08lx\n"), _lt_resv1);
 	if (_lt_magic != LANG_MAGIC) return 0;
 	puts_P(_n(" strings:\n"));
-	uint16_t ui = ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00); //table pointer
+	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	for (ui = 0; ui < _lt_count; ui++)
 		fprintf_P(out, _n("  %3d %S\n"), ui, lang_get_sec_lang_str_by_id(ui));
 	return _lt_count;
@@ -189,5 +211,10 @@ uint16_t lang_print_sec_lang(FILE* out)
 
 #endif //(LANG_MODE == 0)
 
-//const char MSG_LANGUAGE_NAME[] PROGMEM_I1 = ISTR("English"); ////c=0 r=0
 
+void lang_boot_update_start(uint8_t lang)
+{
+	uint8_t cnt = lang_get_count();
+	if ((lang < 2) || (lang > cnt)) return; //only languages from xflash can be selected
+	bootapp_reboot_user0(lang << 4);
+}

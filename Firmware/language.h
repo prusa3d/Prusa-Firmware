@@ -75,9 +75,6 @@ typedef struct
 // Default language ID, if no language is selected.
 #define LANG_ID_DEFAULT LANG_ID_PRI
 
-// Number of languages available in the language table.
-#define LANG_NUM 2
-
 // Magic number at begin of lang table.
 #define LANG_MAGIC 0x4bb45aa5
 
@@ -100,21 +97,30 @@ extern uint8_t lang_selected;
 #if (LANG_MODE != 0)
 extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
-extern const char* lang_get_sec_lang_str(const char* s);
+#define _SEC_LANG_TABLE ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00)
 #endif //(LANG_MODE != 0)
 
-//selects 
+//selects language, eeprom is updated in case of success
 extern uint8_t lang_select(uint8_t lang);
-
-//get total number of languages (primary + all in xflash)
-extern uint8_t lang_get_count();
+//returns total number of languages (primary + all in xflash)
+extern uint8_t lang_get_count(void);
+//reads lang table header and offset in xflash or progmem
+extern uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* offset);
+//reads lang code from xflash or progmem
 extern uint16_t lang_get_code(uint8_t lang);
+//returns localized language name (text for menu item)
 extern const char* lang_get_name_by_code(uint16_t code);
+//reset language to "LANG_ID_FORCE_SELECTION", epprom is updated
+extern void lang_reset(void);
+//returns 1 if language is selected
+extern uint8_t lang_is_selected(void);
 
 #ifdef DEBUG_SEC_LANG
 extern const char* lang_get_sec_lang_str_by_id(uint16_t id);
 extern uint16_t lang_print_sec_lang(FILE* out);
 #endif //DEBUG_SEC_LANG
+
+extern void lang_boot_update_start(uint8_t lang);
 
 #if defined(__cplusplus)
 }
@@ -122,9 +128,6 @@ extern uint16_t lang_print_sec_lang(FILE* out);
 
 #define CAT2(_s1, _s2) _s1
 #define CAT4(_s1, _s2, _s3, _s4) _s1
-
-//Localized language name
-//extern const char MSG_LANGUAGE_NAME[];
 
 #include "messages.h"
 

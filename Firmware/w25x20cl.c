@@ -36,17 +36,18 @@
 
 //#define _SPI_TX swspi_tx
 //#define _SPI_RX swspi_rx
-#define _SPI_TX(b) spi_txrx(b)
-#define _SPI_RX() spi_txrx(0xff)
+#define _SPI_TX(b)   spi_txrx(b)
+#define _SPI_RX()    spi_txrx(0xff)
 
 
 int w25x20cl_mfrid_devid(void);
 
 
-int8_t w25x20cl_ini(void)
+int8_t w25x20cl_init(void)
 {
 	PIN_OUT(W25X20CL_PIN_CS);
 	_CS_HIGH();
+	W25X20CL_SPI_ENTER();
 	if (!w25x20cl_mfrid_devid()) return 0;
 	return 1;
 }

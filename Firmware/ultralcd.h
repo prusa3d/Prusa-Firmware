@@ -6,6 +6,8 @@
 
 #ifdef ULTRA_LCD
 
+	static void lcd_language_menu();
+
   void lcd_update(uint8_t lcdDrawUpdateOverride = 0);
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
   void lcd_update_enable(bool enable);
@@ -25,7 +27,6 @@
   void lcd_loading_filament();
   void lcd_change_success();
   void lcd_loading_color();
-  void lcd_force_language_selection();
   void lcd_sdcard_stop();
   void lcd_sdcard_pause();
   void lcd_print_stop();
@@ -299,6 +300,8 @@ void display_loading();
  void lcd_set_degree();
  void lcd_set_progress();
 #endif
+
+void lcd_language();
 
 void lcd_wizard();
 void lcd_wizard(int state);

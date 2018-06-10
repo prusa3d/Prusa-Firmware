@@ -143,7 +143,7 @@
 //#define Y_DUAL_STEPPER_DRIVERS
 
 // Define if the two Y drives need to rotate in opposite directions
-#define INVERT_Y2_VS_Y_DIR true
+#define INVERT_Y2_VS_Y_DIR 1
 
 #ifdef Y_DUAL_STEPPER_DRIVERS
   #undef EXTRUDERS
@@ -160,13 +160,13 @@
 #define Z_HOME_RETRACT_MM 2
 //#define QUICK_HOME  //if this is defined, if both x and y are to be homed, a diagonal move will be performed initially.
 
-#define AXIS_RELATIVE_MODES {false, false, false, false}
+#define AXIS_RELATIVE_MODES {0, 0, 0, 0}
 #define MAX_STEP_FREQUENCY 40000 // Max step frequency for Ultimaker (5000 pps / half step). Toshiba steppers are 4x slower, but Prusa3D does not use those.
 //By default pololu step drivers require an active high signal. However, some high power drivers require an active low signal as step.
-#define INVERT_X_STEP_PIN false
-#define INVERT_Y_STEP_PIN false
-#define INVERT_Z_STEP_PIN false
-#define INVERT_E_STEP_PIN false
+#define INVERT_X_STEP_PIN 0
+#define INVERT_Y_STEP_PIN 0
+#define INVERT_Z_STEP_PIN 0
+#define INVERT_E_STEP_PIN 0
 
 //default stepper release if idle
 #define DEFAULT_STEPPER_DEACTIVE_TIME 60
@@ -206,7 +206,7 @@
 //#define CHDK 4        //Pin for triggering CHDK to take a picture see how to use it here http://captain-slow.dk/2014/03/09/3d-printing-timelapses/
 #define CHDK_DELAY 50 //How long in ms the pin should stay HIGH before going LOW again
 
-#define SD_FINISHED_STEPPERRELEASE true  //if sd support and the file is finished: disable steppers?
+#define SD_FINISHED_STEPPERRELEASE 1  //if sd support and the file is finished: disable steppers?
 #define SD_FINISHED_RELEASECOMMAND "M84 X Y Z E" // You might want to keep the z enabled so your bed stays in place.
 
 #define SDCARD_RATHERRECENTFIRST  //reverse file order of sd card menu display. Its sorted practically after the file system block order.
@@ -241,7 +241,7 @@
 	
 	// SD Card Sorting options
 	// In current firmware Prusa Firmware version,
-	// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to false.
+	// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to 0.
 	#ifdef SDCARD_SORT_ALPHA
 	  #define SD_SORT_TIME 0
 	  #define SD_SORT_ALPHA 1
@@ -249,11 +249,11 @@
 	
 	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
 	  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
-	  #define SDSORT_GCODE       false  // Allow turning sorting on/off with LCD and M34 g-code.
-	  #define SDSORT_USES_RAM    false  // Pre-allocate a static array for faster pre-sorting.
-	  #define SDSORT_USES_STACK  false  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
-	  #define SDSORT_CACHE_NAMES false  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
-	  #define SDSORT_DYNAMIC_RAM false  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
+	  #define SDSORT_GCODE       0  // Allow turning sorting on/off with LCD and M34 g-code.
+	  #define SDSORT_USES_RAM    0  // Pre-allocate a static array for faster pre-sorting.
+	  #define SDSORT_USES_STACK  0  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
+	  #define SDSORT_CACHE_NAMES 0  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
+	  #define SDSORT_DYNAMIC_RAM 0  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
 	#endif
 	
 	#if defined(SDCARD_SORT_ALPHA)
@@ -283,7 +283,7 @@
 #define BABYSTEPPING
 #ifdef BABYSTEPPING
   #define BABYSTEP_XY  //not only z, but also XY in the menu. more clutter, more functions
-  #define BABYSTEP_INVERT_Z false  //true for inverse movements in Z
+  #define BABYSTEP_INVERT_Z 0  //1 for inverse movements in Z
   #define BABYSTEP_Z_MULTIPLICATOR 2 //faster z movements
 
   #ifdef COREXY
