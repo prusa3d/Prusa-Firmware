@@ -1501,71 +1501,49 @@ void lcd_cooldown()
 
 static void lcd_menu_extruder_info()
 {
+//|01234567890123456789|
+//|Nozzle FAN:      RPM|
+//|Print FAN:       RPM|
+//|Fil. Xd:    Yd:     |
+//|Int:      Shut:     |
+//----------------------
     int fan_speed_RPM[2];
-    
-#ifdef PAT9125
-    pat9125_update();
-#endif //PAT9125
-    
-    fan_speed_RPM[0] = 60*fan_speed[0];
+    // Display Nozzle fan RPM
+	fan_speed_RPM[0] = 60*fan_speed[0];
     fan_speed_RPM[1] = 60*fan_speed[1];
-    
-    // Display Nozzle fan RPM
-    
-    lcd.setCursor(0, 0);
-    lcd_printPGM(_i("Nozzle FAN:"));////MSG_INFO_NOZZLE_FAN c=11 r=1
-    
-    lcd.setCursor(11, 0);
-    lcd.print("         ");
-    lcd.setCursor(12, 0);
-    lcd.print(itostr4(fan_speed_RPM[0]));
-    lcd.print(" RPM");
-    
-    // Display Nozzle fan RPM
-    
-#if (defined(TACH_1))
-    lcd.setCursor(0, 1);
-    lcd_printPGM(_i("Print FAN: "));////MSG_INFO_PRINT_FAN c=11 r=1
-    
-    lcd.setCursor(11, 1);
-    lcd.print("         ");
-    lcd.setCursor(12, 1);
-    lcd.print(itostr4(fan_speed_RPM[1]));
-    lcd.print(" RPM");
-#endif
     
 #ifdef PAT9125
 	// Display X and Y difference from Filament sensor    
-    lcd.setCursor(0, 2);
-    lcd.print("Fil. Xd:");
-    lcd.print(itostr3(pat9125_x));
-    lcd.print("   ");
-    lcd.setCursor(12, 2);
-    lcd.print("Yd:");
-    lcd.print(itostr3(pat9125_y));
-    
     // Display Light intensity from Filament sensor
-    /* Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
-     value ranges from 0(darkest) to 255(brightest). */
-    lcd.setCursor(0, 3);
-    
-    lcd.print("Int:             ");
-    lcd.setCursor(5, 3);
-    lcd.print(itostr3(pat9125_b));
-    
+    //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
+    //  value ranges from 0(darkest) to 255(brightest).
     // Display LASER shutter time from Filament sensor
-    /* Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
-     auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
-     When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to
-     46. */
-    
-    lcd.setCursor(10, 3);
-    
-    lcd.print("Shut:    ");
-    lcd.setCursor(15, 3);
-    lcd.print(itostr3(pat9125_s));
+    //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
+    //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
+    //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
+    pat9125_update();
+	lcd_printf_P(_N(
+	  ESC_H(0,0)
+	  "Nozzle FAN: %4d RPM\n"
+	  "Print FAN:  %4d RPM\n"
+	  "Fil. Xd:%3d Yd:%3d\n"
+	  "Int: %3d  Shut: %3d\n"
+	 ),
+	 fan_speed_RPM[0],
+	 fan_speed_RPM[1],
+	 pat9125_x, pat9125_y,
+	 pat9125_b, pat9125_s
+	);
+#else //PAT9125
+	printf_P(_N(
+	  ESC_H(0,0)
+	  "Nozzle FAN: %4d RPM\n"
+	  "Print FAN:  %4d RPM\n"
+	 ),
+	 fan_speed_RPM[0],
+	 fan_speed_RPM[1]
+	);
 #endif //PAT9125
-
     
     if (lcd_clicked())
     {
