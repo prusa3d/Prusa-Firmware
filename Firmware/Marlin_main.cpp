@@ -989,6 +989,8 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 }
 
 
+#if (LANG_MODE != 0) //secondary language support
+
 #ifdef W25X20CL
 
 #include "bootapp.h" //bootloader support
@@ -1076,6 +1078,8 @@ void list_sec_lang_from_external_flash()
 
 #endif //W25X20CL
 
+#endif //(LANG_MODE != 0)
+
 
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
@@ -1089,12 +1093,14 @@ void setup()
 
 	lcd_splash();
 
+#if (LANG_MODE != 0) //secondary language support
 #ifdef W25X20CL
 	if (w25x20cl_init())
 		update_sec_lang_from_external_flash();
 	else
 		kill(_i("External SPI flash W25X20CL not responding."));
 #endif //W25X20CL
+#endif //(LANG_MODE != 0)
 
 	setup_killpin();
 	setup_powerhold();
@@ -1478,6 +1484,8 @@ void setup()
   // is being written into the EEPROM, so the update procedure will be triggered only once.
 
 
+#if (LANG_MODE != 0) //secondary language support
+
 #ifdef DEBUG_W25X20CL
 	W25X20CL_SPI_ENTER();
 	uint8_t uid[8]; // 64bit unique id
@@ -1501,7 +1509,9 @@ void setup()
 
 //	lang_print_sec_lang(uartout);
 #endif //DEBUG_SEC_LANG
-	
+
+#endif //(LANG_MODE != 0)
+
 	if (eeprom_read_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_TEMP_CAL_ACTIVE, 0);
 		temp_cal_active = false;
