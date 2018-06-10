@@ -82,9 +82,7 @@
 #include "swspi.h"
 #endif //SWSPI
 
-#ifdef NEW_SPI
 #include "spi.h"
-#endif //NEW_SPI
 
 #ifdef SWI2C
 #include "swi2c.h"
@@ -1087,9 +1085,7 @@ void setup()
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
-#ifdef NEW_SPI
 	spi_init();
-#endif //NEW_SPI
 
 	lcd_splash();
 

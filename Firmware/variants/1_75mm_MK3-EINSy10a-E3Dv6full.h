@@ -118,9 +118,6 @@
 // New XYZ calibration
 #define NEW_XYZCAL
 
-// Do not use Arduino SPI 
-#define NEW_SPI
-
 // Watchdog support
 #define WATCHDOG
 
