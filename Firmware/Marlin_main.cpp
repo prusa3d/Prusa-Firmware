@@ -693,7 +693,6 @@ void crashdet_detected(uint8_t mask)
 	st_synchronize();
 	static uint8_t crashDet_counter = 0;
 	bool automatic_recovery_after_crash = true;
-	bool yesno;
 
 	if (crashDet_counter++ == 0) {
 		crashDetTimer.start();
@@ -734,18 +733,25 @@ void crashdet_detected(uint8_t mask)
 	gcode_G28(true, true, false, false); //home X and Y
 	st_synchronize();
 
-	if(automatic_recovery_after_crash) 
-		yesno = true;
-	else 
-		yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);
-	lcd_update_enable(true);
-	if (yesno)
-	{
+	if (automatic_recovery_after_crash) {
 		enquecommand_P(PSTR("CRASH_RECOVER"));
-	}
-	else
-	{
-		enquecommand_P(PSTR("CRASH_CANCEL"));
+	}else{
+		HotendTempBckp = degTargetHotend(active_extruder);
+		setTargetHotend(0, active_extruder);
+		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);
+		lcd_update_enable(true);
+		if (yesno)
+		{
+			char cmd1[10];
+			strcpy(cmd1, "M109 S");
+			strcat(cmd1, ftostr3(HotendTempBckp));
+			enquecommand(cmd1);
+			enquecommand_P(PSTR("CRASH_RECOVER"));
+		}
+		else
+		{
+			enquecommand_P(PSTR("CRASH_CANCEL"));
+		}
 	}
 }
 
