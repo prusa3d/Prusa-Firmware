@@ -30,7 +30,7 @@ uint8_t tmc2130_current_h[4] = TMC2130_CURRENTS_H;
 uint8_t tmc2130_current_r[4] = TMC2130_CURRENTS_R;
 
 //running currents for homing
-uint8_t tmc2130_current_r_home[4] = {8, 10, 20, 18};
+uint8_t tmc2130_current_r_home[4] = TMC2130_CURRENTS_R_HOME;
 
 
 //pwm_ampl
@@ -45,8 +45,18 @@ uint8_t tmc2130_pwm_freq[4] = {TMC2130_PWM_FREQ_X, TMC2130_PWM_FREQ_Y, TMC2130_P
 uint8_t tmc2130_mres[4] = {0, 0, 0, 0}; //will be filed at begin of init
 
 
-uint8_t tmc2130_sg_thr[4] = {TMC2130_SG_THRS_X, TMC2130_SG_THRS_Y, TMC2130_SG_THRS_Z, TMC2130_SG_THRS_E};
-uint8_t tmc2130_sg_thr_home[4] = {3, 3, TMC2130_SG_THRS_Z, TMC2130_SG_THRS_E};
+uint8_t tmc2130_sg_thr[4] =      {TMC2130_SG_THRS_X,        TMC2130_SG_THRS_Y,        TMC2130_SG_THRS_Z,        TMC2130_SG_THRS_E};
+uint8_t tmc2130_sg_thr_home[4] = {TMC2130_HOMING_SG_THRS_X, TMC2130_HOMING_SG_THRS_Y, TMC2130_HOMING_SG_THRS_Z, TMC2130_HOMING_SG_THRS_E};
+
+
+uint8_t tmc2130_intpol[4] = TMC2130_STEP_INTERPOLATION;
+uint8_t tmc2130_toff = TMC2130_TOFF_XYZ;
+uint8_t tmc2130_hstrt = TMC2130_HSTART;
+uint8_t tmc2130_hend = TMC2130_HEND;
+uint8_t tmc2130_fd3 = TMC2130_FAST_DECAY3;
+uint8_t tmc2130_rndtf = TMC2130_RANDOM_OFF_TIME;
+uint8_t tmc2130_chm = TMC2130_CHOP_MODE;
+uint8_t tmc2130_tbl = TMC2130_BLANKING_TIME;
 
 
 uint8_t tmc2130_sg_homing_axes_mask = 0x00;
@@ -417,14 +427,14 @@ void tmc2130_check_overtemp()
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
-	uint8_t intpol = 1;
-	uint8_t toff = TMC2130_TOFF_XYZ; // toff = 3 (fchop = 27.778kHz)
-	uint8_t hstrt = 5; //initial 4, modified to 5
-	uint8_t hend = 1;
-	uint8_t fd3 = 0;
-	uint8_t rndtf = 0; //random off time
-	uint8_t chm = 0; //spreadCycle
-	uint8_t tbl = 2; //blanking time
+	uint8_t intpol = tmc2130_intpol[axis];
+	uint8_t toff = tmc2130_toff; // toff = 3 (fchop = 27.778kHz)
+	uint8_t hstrt = tmc2130_hstrt; //initial 4, modified to 5
+	uint8_t hend = tmc2130_hend; // 1
+	uint8_t fd3 = tmc2130_fd3; // 0
+	uint8_t rndtf = tmc2130_rndtf; //random off time 0
+	uint8_t chm = tmc2130_chm; //spreadCycle 0
+	uint8_t tbl = tmc2130_tbl; //blanking time 2
 	if (axis == E_AXIS)
 	{
 #ifdef TMC2130_CNSTOFF_E
@@ -452,24 +462,61 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 void tmc2130_set_current_h(uint8_t axis, uint8_t current)
 {
 	DBG(_n("tmc2130_set_current_h(axis=%d, current=%d\n"), axis, current);
-	tmc2130_current_h[axis] = current;
-	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	if (current < 64)
+	{
+		tmc2130_current_h[axis] = current;
+		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	}
+	else
+	{
+		DBG(_n("ERROR: current > 63, tmc2130_current_h[%d] not set."), axis);
+	}
 }
 
 void tmc2130_set_current_r(uint8_t axis, uint8_t current)
 {
 	DBG(_n("tmc2130_set_current_r(axis=%d, current=%d\n"), axis, current);
-	tmc2130_current_r[axis] = current;
-	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	if (current < 64)
+	{
+		tmc2130_current_r[axis] = current;
+		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	}
+	else
+	{
+		DBG(_n("ERROR: current > 63, tmc2130_current_r[%d] not set."), axis);
+	}
+}
+
+void tmc2130_set_current_r_home(uint8_t axis, uint8_t current)
+{
+	DBG(_n("tmc2130_set_current_r_home(axis=%d, current=%d\n"), axis, current);
+	if (current < 64)
+	{
+		tmc2130_current_r_home[axis] = current;
+	}
+	else
+	{
+		DBG(_n("ERROR: current > 63, tmc2130_current_r_home[%d] not set."), axis);
+	}
 }
 
 void tmc2130_print_currents()
 {
-	DBG(_n("tmc2130_print_currents()\n\tH\tR\nX\t%d\t%d\nY\t%d\t%d\nZ\t%d\t%d\nE\t%d\t%d\n"),
-		tmc2130_current_h[0], tmc2130_current_r[0],
-		tmc2130_current_h[1], tmc2130_current_r[1],
-		tmc2130_current_h[2], tmc2130_current_r[2],
-		tmc2130_current_h[3], tmc2130_current_r[3]
+	DBG(_n("tmc2130_print_currents()\n\tHold\tRun\tHome\nX\t%d\t%d\t%d\nY\t%d\t%d\t%d\nZ\t%d\t%d\t%d\nE\t%d\t%d\t%d\n"),
+		tmc2130_current_h[0], tmc2130_current_r[0], tmc2130_current_r_home[0],
+		tmc2130_current_h[1], tmc2130_current_r[1], tmc2130_current_r_home[1],
+		tmc2130_current_h[2], tmc2130_current_r[2], tmc2130_current_r_home[2],
+		tmc2130_current_h[3], tmc2130_current_r[3], tmc2130_current_r_home[3]
+	);
+}
+
+void tmc2130_print_sgt()
+{
+	DBG(_n("tmc2130_print_sgt()\n\tPrinting:\tHoming:\nX\t%d\t%d\nY\t%d\t%d\nZ\t%d\t%d\nE\t%d\t%d\n"),
+		tmc2130_sg_thr[0], tmc2130_sg_thr_home[0],
+		tmc2130_sg_thr[1], tmc2130_sg_thr_home[1],
+		tmc2130_sg_thr[2], tmc2130_sg_thr_home[2],
+		tmc2130_sg_thr[3], tmc2130_sg_thr_home[3]
 	);
 }
 

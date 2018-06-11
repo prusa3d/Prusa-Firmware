@@ -7,11 +7,15 @@ extern uint8_t tmc2130_mode;
 //holding and running currents
 extern uint8_t tmc2130_current_h[4];
 extern uint8_t tmc2130_current_r[4];
+extern uint8_t tmc2130_current_r_home[4];
 //microstep resolution (0 means 256usteps, 8 means 1ustep
 extern uint8_t tmc2130_mres[4];
 
 //flags for axis stall detection
 extern uint8_t tmc2130_sg_thr[4];
+extern uint8_t tmc2130_sg_thr_home[4];
+extern uint8_t tmc2130_pwm_ampl[4];
+extern uint8_t tmc2130_pwm_grad[4];
 
 extern bool tmc2130_sg_stop_on_crash;
 extern uint8_t tmc2130_sg_crash; //crash mask
@@ -67,7 +71,10 @@ extern void tmc2130_print_currents();
 extern void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl);
 //set PWM_GRAD for any axis (M918)
 extern void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_ampl);
-
+//set homing current for any axis (M922)
+extern void tmc2130_set_current_r_home(uint8_t axis, uint8_t current);
+//print sgt values (M919)
+extern void tmc2130_print_sgt();
 
 extern uint16_t tmc2130_rd_MSCNT(uint8_t axis);
 extern uint32_t tmc2130_rd_MSCURACT(uint8_t axis);
