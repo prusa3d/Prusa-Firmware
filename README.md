@@ -55,19 +55,33 @@ _note: this file is created in the directory `"Firmware/"`_
 # 3. Automated tests
 ## Prerequisites
 c++11 compiler e.g. g++ 6.3.1
+
 cmake
+
 build system - ninja or gnu make
+
 ## Building
 Create folder where you want to build tests.
+
 Example:
-cd ..
-mkdir Prusa-Firmware-test
+
+`cd ..`
+
+`mkdir Prusa-Firmware-test`
+
 Generate build scripts in target folder.
+
 Example:
-cd Prusa-Firmware-test
-cmake -G "Eclipse CDT4 - Ninja" ../Prusa-Firmware
+
+`cd Prusa-Firmware-test`
+
+`cmake -G "Eclipse CDT4 - Ninja" ../Prusa-Firmware`
+
 Build it.
+
 Example:
-ninja
+
+`ninja`
+
 ## Runing
-./tests
+`./tests`
