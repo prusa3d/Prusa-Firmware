@@ -13,6 +13,18 @@
 class TimerRemaining : public LongTimer
 {
 public:
+    TimerRemaining() : m_period(){}
+    void start() = delete;
+    bool expired(unsigned long msPeriod) = delete;
+    /**
+     * @brief Start timer
+     * @param msPeriod Time to expire in milliseconds
+     */
+    void start(unsigned long msPeriod)
+    {
+        m_period = msPeriod;
+        LongTimer::start();
+    }
     /**
      * @brief Time remaining to expiration
      *
@@ -20,20 +32,31 @@ public:
      * @return time remaining to expiration in milliseconds
      * @retval 0 Timer has expired, or was not even started.
      */
-    unsigned long remaining(unsigned long msPeriod)
+    unsigned long remaining()
     {
-      if (!m_isRunning) return 0;
-      if (expired(msPeriod)) return 0;
+      if (!running()) return 0;
+      if (expired()) return 0;
       const unsigned long now = millis();
-      if ((m_started <=  m_started + msPeriod) || (now < m_started))
+      if ((started() <=  started() + m_period) || (now < started()))
       {
-          return (m_started + msPeriod - now);
+          return (started() + m_period - now);
       }
       else //(now >= m_started)
       {
-          return ULONG_MAX - now + (m_started + msPeriod);
+          return ULONG_MAX - now + (started() + m_period);
       }
     }
+    /**
+     * @brief Timer has expired.
+     * @retval true Timer has expired.
+     * @retval false Timer has not expired.
+     */
+    bool expired()
+    {
+        return LongTimer::expired(m_period);
+    }
+private:
+    unsigned long m_period; //!< Timer period in milliseconds.
 };
 
 #endif // ifndef TIMERREMAINING_H

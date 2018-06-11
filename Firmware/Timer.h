@@ -23,6 +23,8 @@ public:
     bool running(){return m_isRunning;}
     bool expired(T msPeriod);
 protected:
+    T started(){return m_started;}
+private:
     bool m_isRunning;
     T m_started;
 };

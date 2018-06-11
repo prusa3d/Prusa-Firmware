@@ -6,6 +6,7 @@
 
 #include "catch.hpp"
 #include "../Firmware/Timer.h"
+#include "../Firmware/TimerRemaining.h"
 
 unsigned long millis()
 {
@@ -31,4 +32,7 @@ TEST_CASE( "LongTimer tested.", "[timer]" )
     timer.start();
     REQUIRE( timer.expired(1) == false );
     REQUIRE( timer.running() == true);
+
+    TimerRemaining otherTimer;
+    otherTimer.start(100);
 }
