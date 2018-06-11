@@ -2564,23 +2564,30 @@ void force_high_power_mode(bool start_high_power_section) {
 }
 #endif //TMC2130
 
-void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib){
-      st_synchronize();
+void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib) {
+	st_synchronize();
 
 #if 0
-      SERIAL_ECHOPGM("G28, initial ");  print_world_coordinates();
-      SERIAL_ECHOPGM("G28, initial ");  print_physical_coordinates();
+	SERIAL_ECHOPGM("G28, initial ");  print_world_coordinates();
+	SERIAL_ECHOPGM("G28, initial ");  print_physical_coordinates();
 #endif
 
-      // Flag for the display update routine and to disable the print cancelation during homing.
-	  homing_flag = true;
-     
-      // Either all X,Y,Z codes are present, or none of them.
-      bool home_all_axes = home_x == home_y && home_x == home_z;
-      if (home_all_axes)
-        // No X/Y/Z code provided means to home all axes.
-        home_x = home_y = home_z = true;
+	// Flag for the display update routine and to disable the print cancelation during homing.
+	homing_flag = true;
 
+	// Either all X,Y,Z codes are present, or none of them.
+	bool home_all_axes = home_x == home_y && home_x == home_z;
+	if (home_all_axes)
+		// No X/Y/Z code provided means to home all axes.
+		home_x = home_y = home_z = true;
+
+	//if we are homing all axes, first move z higher to protect heatbed/steel sheet
+	if (home_all_axes) {
+		current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
+		feedrate = homing_feedrate[Z_AXIS];
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
+		st_synchronize();
+	}
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
 #endif //ENABLE_AUTO_BED_LEVELING
