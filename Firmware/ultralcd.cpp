@@ -2223,22 +2223,32 @@ static void lcd_move_e()
  */
 static void lcd_menu_xyz_y_min()
 {
-    lcd.setCursor(0,0);
-    lcd_printPGM(_i("Y distance from min:"));////MSG_Y_DISTANCE_FROM_MIN c=20 r=1
-    lcd_print_at_PGM(0, 1, separator);
-    lcd_print_at_PGM(0, 2, _i("Left:"));////MSG_LEFT c=12 r=1
-    lcd_print_at_PGM(0, 3, _i("Right:"));////MSG_RIGHT c=12 r=1
-
-    float distanceMin[2];
+//|01234567890123456789|
+//|Y distance from min:|
+//|--------------------|
+//|Left:      N/A      |
+//|Right:     N/A      |
+//----------------------
+	float distanceMin[2];
     count_xyz_details(distanceMin);
-
-    for (int i = 0; i < 2; i++) {
-        if(distanceMin[i] < 200) {
-            lcd_print_at_PGM(11, i + 2, PSTR(""));
-            lcd.print(distanceMin[i]);
-            lcd_print_at_PGM((distanceMin[i] < 0) ? 17 : 16, i + 2, PSTR("mm"));
-        } else lcd_print_at_PGM(11, i + 2, PSTR("N/A"));
-    }
+	lcd_printf_P(_N(
+	  ESC_H(0,0)
+	  "%S:\n"
+	  "%S\n"
+	  "%S:\n"
+	  "%S:"
+	 ),
+	 _i("Y distance from min"),
+	 separator,
+	 _i("Left"),
+	 _i("Right")
+	);
+	for (uint8_t i = 0; i < 2; i++)
+	{
+		lcd.setCursor(11,2+i);
+		if (distanceMin[i] >= 200) lcd_puts_P(_N("N/A"));
+		else lcd_printf_P(_N("%6.2fmm"), distanceMin[i]);
+	}
     if (lcd_clicked())
     {
         lcd_goto_menu(lcd_menu_xyz_skew);
@@ -2247,28 +2257,33 @@ static void lcd_menu_xyz_y_min()
 /**
  * @brief Show measured axis skewness
  */
+float _deg(float rad)
+{
+	return rad * 180 / M_PI;
+}
+
 static void lcd_menu_xyz_skew()
 {
-    float angleDiff;
-    angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
-
-    lcd.setCursor(0,0);
-    lcd_printPGM(_i("Measured skew:"));////MSG_MEASURED_SKEW c=15 r=1
-    if (angleDiff < 100) {
-        lcd.setCursor(15, 0);
-        lcd.print(angleDiff * 180 / M_PI);
-        lcd.print(LCD_STR_DEGREE);
-    }else lcd_print_at_PGM(16, 0, PSTR("N/A"));
-    lcd_print_at_PGM(0, 1, separator);
-    lcd_print_at_PGM(0, 2, _i("Slight skew:"));////MSG_SLIGHT_SKEW c=15 r=1
-    lcd_print_at_PGM(15, 2, PSTR(""));
-    lcd.print(bed_skew_angle_mild * 180 / M_PI);
-    lcd.print(LCD_STR_DEGREE);
-    lcd_print_at_PGM(0, 3, _i("Severe skew:"));////MSG_SEVERE_SKEW c=15 r=1
-    lcd_print_at_PGM(15, 3, PSTR(""));
-    lcd.print(bed_skew_angle_extreme * 180 / M_PI);
-    lcd.print(LCD_STR_DEGREE);
-
+//|01234567890123456789|
+//|Measured skew:  N/A |
+//|--------------------|
+//|Slight skew:   0.12°|
+//|Severe skew:   0.25°|
+//----------------------
+    float angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
+	lcd_printf_P(_N(
+	  ESC_H(0,0)
+	  "%S:  N/A\n"
+	  "%S\n"
+	  "%S:  %5.2f\x01\n"
+	  "%S:  %5.2f\x01"
+	 ),
+	 _i("Measured skew"),
+	 separator,
+	 _i("Slight skew"), _deg(bed_skew_angle_mild),
+	 _i("Severe skew"), _deg(bed_skew_angle_extreme)
+	);
+	if (angleDiff < 100) lcd_printf_P(_N(ESC_H(15,0)"%4.2f\x01"), _deg(angleDiff));
     if (lcd_clicked())
     {
         lcd_goto_menu(lcd_menu_xyz_offset);
