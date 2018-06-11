@@ -6568,6 +6568,7 @@ Sigma_Exit:
 			process_commands();
 		    cmdqueue_pop_front();
 		}
+		KEEPALIVE_STATE(IN_HANDLER);
 		fsensor_enable();
 		fsensor_restore_print_and_continue();
 	  }
