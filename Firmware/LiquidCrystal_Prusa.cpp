@@ -273,7 +273,7 @@ void LiquidCrystal_Prusa::setCursor(uint8_t col, uint8_t row)
   if ( row >= _numlines ) {
     row = _numlines-1;    // we count rows starting w/0
   }
-  
+  _currline = row;  
   command(LCD_SETDDRAMADDR | (col + row_offsets[row]));
 }
 
@@ -344,9 +344,8 @@ void LiquidCrystal_Prusa::noAutoscroll(void) {
 void LiquidCrystal_Prusa::createChar(uint8_t location, uint8_t charmap[]) {
   location &= 0x7; // we only have 8 locations 0-7
   command(LCD_SETCGRAMADDR | (location << 3));
-  for (int i=0; i<8; i++) {
-    write(charmap[i]);
-  }
+  for (int i=0; i<8; i++)
+    send(charmap[i], HIGH);
 }
 
 /*********** mid level commands, for sending data/cmds */
@@ -356,6 +355,12 @@ inline void LiquidCrystal_Prusa::command(uint8_t value) {
 }
 
 inline size_t LiquidCrystal_Prusa::write(uint8_t value) {
+  if (value == '\n')
+  {
+    if (_currline > 3) _currline = -1;
+	setCursor(0, _currline + 1); // LF
+	return 1;
+  }
   if (_escape[0] || (value == 0x1b))
     return escape_write(value);
   send(value, HIGH);
@@ -421,7 +426,7 @@ inline size_t LiquidCrystal_Prusa::escape_write(uint8_t chr)
 			break;
 		case '2':
 			if (chr == 'J') // escape = "\x1b[2J"
-				{ clear(); break; } // EraseScreen
+				{ clear(); _currline = 0; break; } // EraseScreen
 		default:
 			if (e_2_is_num && // escape = "\x1b[%1d"
 				((chr == ';') || // escape = "\x1b[%1d;"
