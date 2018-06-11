@@ -22,7 +22,7 @@ public:
     void stop(){m_isRunning = false;}
     bool running(){return m_isRunning;}
     bool expired(T msPeriod);
-private:
+protected:
     bool m_isRunning;
     T m_started;
 };
