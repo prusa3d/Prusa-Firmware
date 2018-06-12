@@ -4,15 +4,6 @@
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
 
-#MSG_FACTOR c=0 r=0
-" \002 Fact"
-
-#MSG_MAX c=0 r=0
-" \002 Max"
-
-#MSG_MIN c=0 r=0
-" \002 Min"
-
 #MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
 " cold extrusion prevented"
 
@@ -49,9 +40,6 @@
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
 
-#MSG_ALL c=19 r=1
-"All"
-
 #MSG_PRESS c=20 r=0
 "and press the knob"
 
@@ -78,12 +66,6 @@
 
 #MSG_SELFTEST_AXIS c=0 r=0
 "Axis"
-
-#MSG_BABYSTEPPING_X c=0 r=0
-"Babystepping X"
-
-#MSG_BABYSTEPPING_Y c=0 r=0
-"Babystepping Y"
 
 #MSG_SELFTEST_BEDHEATER c=0 r=0
 "Bed / Heater"
@@ -118,9 +100,6 @@
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
 
-#MSG_CALIBRATE_E c=20 r=1
-"Calibrate E"
-
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
 
@@ -147,9 +126,6 @@
 
 #MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
 "Cannot enter subdir: "
-
-#MSG_SD_CANT_OPEN_SUBDIR c=0 r=0
-"Cannot open subdir"
 
 #MSG_SD_INSERTED c=0 r=0
 "Card inserted"
@@ -190,9 +166,6 @@
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 
-#MSG_CLEAN_NOZZLE_E c=20 r=8
-"E calibration finished. Please clean the nozzle. Click when done."
-
 #MSG_EXTRUDER_CORRECTION c=9 r=0
 "E-correct"
 
@@ -211,9 +184,6 @@
 #MSG_SELFTEST_ENDSTOPS c=0 r=0
 "Endstops"
 
-#MSG_LANGUAGE_NAME c=0 r=0
-"English"
-
 #MSG_Enqueing c=0 r=0
 "enqueing \x22"
 
@@ -228,18 +198,6 @@
 
 #MSG_ERROR c=0 r=0
 "ERROR:"
-
-#MSG_EXTRUDER_1 c=17 r=1
-"Extruder 1"
-
-#MSG_EXTRUDER_2 c=17 r=1
-"Extruder 2"
-
-#MSG_EXTRUDER_3 c=17 r=1
-"Extruder 3"
-
-#MSG_EXTRUDER_4 c=17 r=1
-"Extruder 4"
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
 "Extruder fan:"
@@ -292,9 +250,6 @@
 #MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
 "Filament sensor:"
 
-#MSG_STATS_FILAMENTUSED c=20 r=0
-"Filament used:  "
-
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
 
@@ -346,14 +301,8 @@
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
 
-#MSG_CHANGE_EXTR c=20 r=1
-"Change extruder"
-
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
-
-#MSG_CNG_SDCARD c=0 r=0
-"Change SD card"
 
 #MSG_CHANGE_SUCCESS c=0 r=0
 "Change success!"
@@ -406,9 +355,6 @@
 #MSG_WATCH c=0 r=0
 "Info screen"
 
-#MSG_INIT_SDCARD c=0 r=0
-"Init. SD card"
-
 #MSG_FILAMENT_LOADING_T0 c=20 r=4
 "Insert filament into extruder 1. Click when done."
 
@@ -448,26 +394,8 @@
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
 
-#MSG_LEFT c=12 r=1
-"Left:"
-
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
-
-#MSG_LOAD_ALL c=0 r=0
-"Load all"
-
-#MSG_LOAD_FILAMENT_1 c=17 r=0
-"Load filament 1"
-
-#MSG_LOAD_FILAMENT_2 c=17 r=0
-"Load filament 2"
-
-#MSG_LOAD_FILAMENT_3 c=17 r=0
-"Load filament 3"
-
-#MSG_LOAD_FILAMENT_4 c=17 r=0
-"Load filament 4"
 
 #MSG_LOAD_FILAMENT c=17 r=0
 "Load filament"
@@ -505,12 +433,6 @@
 #MSG_MAIN c=0 r=0
 "Main"
 
-#MSG_MARK_FIL c=20 r=8
-"Mark filament 100mm from extruder body. Click when done."
-
-#MSG_MEASURED_SKEW c=15 r=1
-"Measured skew:"
-
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60 r=0
 "Measuring reference height of calibration point"
 
@@ -547,9 +469,6 @@
 #MSG_MOVE_Z c=0 r=0
 "Move Z"
 
-#MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
-"New firmware version available:"
-
 #MSG_ERR_NO_CHECKSUM c=0 r=0
 "No Checksum with line number, Last Line: "
 
@@ -558,9 +477,6 @@
 
 #MSG_NO_CARD c=0 r=0
 "No SD card"
-
-#MSG_ERR_NO_THERMISTORS c=0 r=0
-"No thermistors - no temperature"
 
 #MSG_NO c=0 r=0
 "No"
@@ -577,17 +493,8 @@
 #MSG_WIZARD_WILL_PREHEAT c=20 r=4
 "Now I will preheat nozzle for PLA."
 
-#MSG_INFO_NOZZLE_FAN c=11 r=1
-"Nozzle FAN:"
-
 #MSG_NOZZLE c=0 r=0
 "Nozzle"
-
-#MSG_NOZZLE1 c=0 r=0
-"Nozzle2"
-
-#MSG_NOZZLE2 c=0 r=0
-"Nozzle3"
 
 #MSG_OK c=0 r=0
 "ok"
@@ -606,9 +513,6 @@
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
-
-#MSG_PICK_Z c=0 r=0
-"Pick print"
 
 #MSG_PID_RUNNING c=20 r=1
 "PID cal.           "
@@ -661,9 +565,6 @@
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
 
-#MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20 r=0
-"Please upgrade."
-
 #MSG_PLEASE_WAIT c=20 r=0
 "Please wait"
 
@@ -679,17 +580,11 @@
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
 
-#MSG_PREPARE_FILAMENT c=20 r=1
-"Prepare new filament"
-
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
-
-#MSG_INFO_PRINT_FAN c=11 r=1
-"Print FAN: "
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
@@ -699,12 +594,6 @@
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
-
-#MSG_STATS_PRINTTIME c=20 r=0
-"Print time:  "
-
-#MSG_PRINTER_DISCONNECTED c=20 r=1
-"Printer disconnected"
 
 #MSG_ERR_KILLED c=0 r=0
 "Printer halted. kill() called!"
@@ -730,9 +619,6 @@
 #MSG_M119_REPORT c=0 r=0
 "Reporting endstop status"
 
-#MSG_RESEND c=0 r=0
-"Resend: "
-
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
 
@@ -747,12 +633,6 @@
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
-
-#MSG_RIGHT c=12 r=1
-"Right:"
-
-#MSG_E_CAL_KNOB c=20 r=8
-"Rotate knob until mark reaches extruder body. Click when done."
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
@@ -808,17 +688,11 @@
 #MSG_SETTINGS c=0 r=0
 "Settings"
 
-#MSG_SEVERE_SKEW c=15 r=1
-"Severe skew:"
-
 #MSG_SHOW_END_STOPS c=17 r=1
 "Show end stops"
 
 #MSG_DWELL c=0 r=0
 "Sleep..."
-
-#MSG_SLIGHT_SKEW c=15 r=1
-"Slight skew:"
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
@@ -877,9 +751,6 @@
 #MSG_TEMP_CAL_FAILED c=20 r=8
 "Temperature calibration failed"
 
-#MSG_PINDA_NOT_CALIBRATED c=20 r=4
-"Temperature calibration has not been run yet"
-
 #MSG_TEMP_CALIBRATION_DONE c=20 r=12
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 
@@ -889,32 +760,11 @@
 #MSG_MENU_TEMPERATURES c=15 r=1
 "Temperatures"
 
-#MSG_STATS_TOTALFILAMENT c=20 r=0
-"Total filament :"
-
-#MSG_STATS_TOTALPRINTTIME c=20 r=0
-"Total print time :"
-
 #MSG_ENDSTOP_HIT c=0 r=0
 "TRIGGERED"
 
 #MSG_TUNE c=0 r=0
 "Tune"
-
-#MSG_UNLOAD_ALL c=0 r=0
-"Unload all"
-
-#MSG_UNLOAD_FILAMENT_1 c=17 r=0
-"Unload filament 1"
-
-#MSG_UNLOAD_FILAMENT_2 c=17 r=0
-"Unload filament 2"
-
-#MSG_UNLOAD_FILAMENT_3 c=17 r=0
-"Unload filament 3"
-
-#MSG_UNLOAD_FILAMENT_4 c=17 r=0
-"Unload filament 4"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -949,9 +799,6 @@
 #MSG_CHANGED_PRINTER c=20 r=4
 "Warning: printer type changed."
 
-#MSG_FW_VERSION_UNKNOWN c=20 r=8
-"WARNING: This is an unofficial, unsupported build. Use at your own risk!"
-
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
 
@@ -970,50 +817,11 @@
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"
 
-#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
-"XYZ calibration all right. Skew will be corrected automatically."
-
-#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
-"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
-
-#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
-"XYZ calibration compromised. Front calibration points not reachable."
-
-#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
-"XYZ calibration compromised. Left front calibration point not reachable."
-
-#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
-"XYZ calibration compromised. Right front calibration point not reachable."
-
-#MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND c=20 r=8
-"XYZ calibration failed. Bed calibration point was not found."
-
-#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=8
-"XYZ calibration failed. Front calibration points not reachable."
-
-#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_LEFT_FAR c=20 r=8
-"XYZ calibration failed. Left front calibration point not reachable."
-
 #MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 "XYZ calibration failed. Please consult the manual."
 
-#MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=8
-"XYZ calibration failed. Right front calibration point not reachable."
-
-#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
-"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-
-#MSG_Y_DISTANCE_FROM_MIN c=20 r=1
-"Y distance from min:"
-
 #MSG_YES c=0 r=0
 "Yes"
-
-#MSG_FW_VERSION_ALPHA c=20 r=8
-"You are using firmware alpha version. This is development version. Using this version is not recommended and may cause printer damage."
-
-#MSG_FW_VERSION_BETA c=20 r=8
-"You are using firmware beta version. This is development version. Using this version is not recommended and may cause printer damage."
 
 #MSG_WIZARD_QUIT c=20 r=8
 "You can always resume the Wizard from Calibration -> Wizard."

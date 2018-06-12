@@ -25,4 +25,4 @@ cat ../lang_en.txt | sed 's/\\/\\\\/g' | while read -r s; do
   fi
 #  echo
  fi
-done > lang_$LANG.txt
+done > lang_en_$LANG.txt
