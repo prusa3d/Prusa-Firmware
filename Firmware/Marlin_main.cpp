@@ -8631,7 +8631,7 @@ void restore_print_from_eeprom() {
 	for (int i = 0; i < depth; i++) {
 		for (int j = 0; j < 8; j++) {
 			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
-			
+
 		}
 		dir_name[8] = '\0';
 		MYSERIAL.println(dir_name);
@@ -8640,15 +8640,13 @@ void restore_print_from_eeprom() {
 
 	for (int i = 0; i < 8; i++) {
 		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
-		
+
 	}
 	filename[8] = '\0';
 
 	MYSERIAL.print(filename);
 	strcat_P(filename, PSTR(".gco"));
 	sprintf_P(cmd, PSTR("M23 %s"), filename);
-	for (c = &cmd[4]; *c; c++)
-		 *c = tolower(*c);
 	enquecommand(cmd);
 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
 	SERIAL_ECHOPGM("Position read from eeprom:");
