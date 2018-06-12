@@ -1,6 +1,6 @@
 #MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
 "  [off"
-""
+"\x00"
 
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
@@ -28,7 +28,7 @@
 
 #MSG_MEASURED_OFFSET c=0 r=0
 "[0;0] point offset"
-""
+"\x00"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
@@ -224,7 +224,7 @@
 
 #MSG_EXTRUDER_CORRECTION c=9 r=0
 "E-correct"
-""
+"\x00"
 
 #MSG_END_FILE_LIST c=0 r=0
 "End file list"
@@ -956,7 +956,7 @@
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
-""
+"\x00"
 
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
