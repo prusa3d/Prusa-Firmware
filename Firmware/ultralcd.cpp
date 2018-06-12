@@ -5400,9 +5400,15 @@ void lcd_confirm_print()
 
 }
 
-/*static void lcd_test_menu()
+#include "w25x20cl.h"
+
+static void lcd_test_menu()
 {
-}*/
+	W25X20CL_SPI_ENTER();
+	w25x20cl_enable_wr();
+	w25x20cl_chip_erase();
+	w25x20cl_disable_wr();
+}
 
 static void lcd_main_menu()
 {
@@ -5573,7 +5579,7 @@ static void lcd_main_menu()
 #endif
 
   MENU_ITEM(submenu, _i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
-//  MENU_ITEM(submenu, _i("Test"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
+  MENU_ITEM(submenu, _i("W25x20XL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
 
   END_MENU();
 
