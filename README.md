@@ -77,6 +77,10 @@ Example:
 
 `cmake -G "Eclipse CDT4 - Ninja" ../Prusa-Firmware`
 
+or for DEBUG build:
+
+`cmake -G "Eclipse CDT4 - Ninja" -DCMAKE_BUILD_TYPE=Debug ../Prusa-Firmware`
+
 Build it.
 
 Example:
