@@ -51,3 +51,41 @@ or you can also save the output code to the file (in so called `HEX`-format) `"F
 `Sketch->ExportCompiledBinary`  
 and then upload it to the printer using the program `"FirmwareUpdater"`  
 _note: this file is created in the directory `"Firmware/"`_  
+
+# 3. Automated tests
+## Prerequisites
+c++11 compiler e.g. g++ 6.3.1
+
+cmake
+
+build system - ninja or gnu make
+
+## Building
+Create folder where you want to build tests.
+
+Example:
+
+`cd ..`
+
+`mkdir Prusa-Firmware-test`
+
+Generate build scripts in target folder.
+
+Example:
+
+`cd Prusa-Firmware-test`
+
+`cmake -G "Eclipse CDT4 - Ninja" ../Prusa-Firmware`
+
+or for DEBUG build:
+
+`cmake -G "Eclipse CDT4 - Ninja" -DCMAKE_BUILD_TYPE=Debug ../Prusa-Firmware`
+
+Build it.
+
+Example:
+
+`ninja`
+
+## Runing
+`./tests`
