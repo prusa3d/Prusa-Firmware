@@ -37,14 +37,7 @@ public:
       if (!running()) return 0;
       if (expired()) return 0;
       const unsigned long now = millis();
-      if ((started() <=  started() + m_period) || (now < started()))
-      {
-          return (started() + m_period - now);
-      }
-      else //(now >= m_started)
-      {
-          return ULONG_MAX - now + (started() + m_period);
-      }
+      return (started() + m_period - now);
     }
     /**
      * @brief Timer has expired.
