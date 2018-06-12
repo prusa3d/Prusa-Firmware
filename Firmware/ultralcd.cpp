@@ -7138,6 +7138,7 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
 	  if (strcmp((cmd + i + 4), end) == 0) { 
 		  //filename is shorter then 8.3, store '\0' character on position where ".gco" string was found to terminate stored string properly
  		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, '\0');
+		  break;
 	  }
 	  else {
 		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, cmd[i + 4]);

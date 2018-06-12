@@ -8631,7 +8631,6 @@ void restore_print_from_eeprom() {
 	for (int i = 0; i < depth; i++) {
 		for (int j = 0; j < 8; j++) {
 			dir_name[j] = eeprom_read_byte((uint8_t*)EEPROM_DIRS + j + 8 * i);
-
 		}
 		dir_name[8] = '\0';
 		MYSERIAL.println(dir_name);
@@ -8640,7 +8639,6 @@ void restore_print_from_eeprom() {
 
 	for (int i = 0; i < 8; i++) {
 		filename[i] = eeprom_read_byte((uint8_t*)EEPROM_FILENAME + i);
-
 	}
 	filename[8] = '\0';
 
