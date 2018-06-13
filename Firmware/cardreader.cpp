@@ -523,8 +523,11 @@ void CardReader::getStatus()
     SERIAL_PROTOCOL(itostr2(time%60));
     SERIAL_PROTOCOLPGM("\n");
   }
+  else if (paused) {
+	SERIAL_PROTOCOLLNPGM("SD print paused");
+  }
   else if (saved_printing) {
-	  SERIAL_PROTOCOLLNPGM("Print saved");
+	SERIAL_PROTOCOLLNPGM("Print saved");
   }
   else {
     SERIAL_PROTOCOLLNPGM("Not SD printing");
