@@ -194,6 +194,7 @@
 // M84  - Disable steppers until next move,
 //        or use S<seconds> to specify an inactivity timeout, after which the steppers will be disabled.  S0 to disable the timeout.
 // M85  - Set inactivity shutdown timer with parameter S<seconds>. To disable set zero (default)
+// M86  - Set safety timer expiration time with parameter S<seconds>; M86 S0 will disable safety timer
 // M92  - Set axis_steps_per_unit - same syntax as G92
 // M104 - Set extruder target temp
 // M105 - Read current temp
@@ -492,6 +493,7 @@ const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
 static unsigned long previous_millis_cmd = 0;
 unsigned long max_inactive_time = 0;
 static unsigned long stepper_inactive_time = DEFAULT_STEPPER_DEACTIVE_TIME*1000l;
+static unsigned long safetytimer_inactive_time = DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul;
 
 unsigned long starttime=0;
 unsigned long stoptime=0;
@@ -5434,6 +5436,15 @@ Sigma_Exit:
         max_inactive_time = code_value() * 1000;
       }
       break;
+#ifdef SAFETYTIMER
+	case 86: // M86 - set safety timer expiration time in seconds; M86 S0 will disable safety timer
+	  //when safety timer expires heatbed and nozzle target temperatures are set to zero
+	  if (code_seen('S')) {
+	    safetytimer_inactive_time = code_value() * 1000;
+		safetyTimer.start();
+	  }
+	  break;
+#endif
     case 92: // M92
       for(int8_t i=0; i < NUM_AXIS; i++)
       {
@@ -7436,7 +7447,7 @@ static void handleSafetyTimer()
     {
         safetyTimer.start();
     }
-    else if (safetyTimer.expired(1800000ul)) //30 min
+    else if (safetyTimer.expired(safetytimer_inactive_time)) //30 min
     {
         setTargetBed(0);
         setTargetHotend(0, 0);

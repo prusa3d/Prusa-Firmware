@@ -43,7 +43,7 @@ void Timer<T>::start()
 template<typename T>
 bool Timer<T>::expired(T msPeriod)
 {
-    if (!m_isRunning) return false;
+    if ((!m_isRunning) || (!msPeriod)) return false;
     bool expired = false;
     const T now = millis();
     if (m_started <=  m_started + msPeriod)
