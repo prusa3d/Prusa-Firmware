@@ -7137,8 +7137,18 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
   for (c = &cmd[4]; *c; c++)
     *c = tolower(*c);
 
+  const char end[5] = ".gco";
+
+  //we are storing just first 8 characters of 8.3 filename assuming that extension is always ".gco"
   for (int i = 0; i < 8; i++) {
-	  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, filename[i]);
+	  if (strcmp((cmd + i + 4), end) == 0) { 
+		  //filename is shorter then 8.3, store '\0' character on position where ".gco" string was found to terminate stored string properly
+ 		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, '\0');
+		  break;
+	  }
+	  else {
+		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, cmd[i + 4]);
+	  }
   }
 
   uint8_t depth = (uint8_t)card.getWorkDirDepth();
