@@ -1,6 +1,6 @@
 #MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
 "  [off"
-"[inactivo"
+"  [ina"
 
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
@@ -196,7 +196,7 @@
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Det. choque [inactivo]"
+"Det. choque [ina]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -588,19 +588,19 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Modo [Normal]"
+"Modo     [Normal]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Modo [silencio]"
+"Modo   [silencio]"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
-"Modo [Silencio]"
+"Modo   [Silencio]"
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
-"Modo [fuerza auto]"
+"Modo[fuerza auto]"
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
@@ -864,7 +864,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [FlshAir]"
-"Tarj. SD [FlshAir]"
+"Tarj.SD [FlshAir]"
 
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
@@ -892,11 +892,11 @@
 
 #MSG_SELFTEST_START c=20 r=0
 "Self test start  "
-"Iniciar Selftest"
+"Iniciar Selftest "
 
 #MSG_SELFTEST c=0 r=0
 "Selftest         "
-"Selftest"
+"Selftest         "
 
 #MSG_SELFTEST_ERROR c=0 r=0
 "Selftest error !"
@@ -904,7 +904,7 @@
 
 #MSG_SELFTEST_FAILED c=20 r=0
 "Selftest failed  "
-"Fallo Selftest"
+"Fallo Selftest   "
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
@@ -936,11 +936,11 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [Time]"
-"Orden: [Fecha]"
+"Orden:    [Fecha]"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [Alphabet]"
-"Orden: [Alfabético]"
+"Orden:[Alfabétic]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
@@ -988,11 +988,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Cal. temp. [ON]"
+"Cal. temp.   [ON]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Cal. temp. [OFF]"
+"Cal. temp.  [OFF]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
