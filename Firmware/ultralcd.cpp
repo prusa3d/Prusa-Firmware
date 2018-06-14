@@ -4147,12 +4147,13 @@ static void lcd_settings_menu()
     }
     else MENU_ITEM(submenu, _T(MSG_CRASHDETECT_NA), lcd_crash_mode_info);
   }
+
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
-  MENU_ITEM_EDIT(wfac, _i("X-correct"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
-  MENU_ITEM_EDIT(wfac, _i("Y-correct"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
-  MENU_ITEM_EDIT(wfac, _i("Z-correct"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
+//  MENU_ITEM_EDIT(wfac, _i("X-corr"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
+//  MENU_ITEM_EDIT(wfac, _i("Y-corr"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
+//  MENU_ITEM_EDIT(wfac, _i("Z-corr"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
-  MENU_ITEM_EDIT(wfac, _i("E-correct"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
+//  MENU_ITEM_EDIT(wfac, _i("E-corr"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 #endif //TMC2130
 
   if (temp_cal_active == false) {
@@ -7137,8 +7138,18 @@ static void menu_action_sdfile(const char* filename, char* longFilename)
   for (c = &cmd[4]; *c; c++)
     *c = tolower(*c);
 
+  const char end[5] = ".gco";
+
+  //we are storing just first 8 characters of 8.3 filename assuming that extension is always ".gco"
   for (int i = 0; i < 8; i++) {
-	  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, filename[i]);
+	  if (strcmp((cmd + i + 4), end) == 0) { 
+		  //filename is shorter then 8.3, store '\0' character on position where ".gco" string was found to terminate stored string properly
+ 		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, '\0');
+		  break;
+	  }
+	  else {
+		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, cmd[i + 4]);
+	  }
   }
 
   uint8_t depth = (uint8_t)card.getWorkDirDepth();

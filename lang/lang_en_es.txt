@@ -188,7 +188,7 @@
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Det. choque [activo]"
+"Det. choque [act]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
@@ -224,7 +224,7 @@
 
 #MSG_EXTRUDER_CORRECTION c=9 r=0
 "E-correct"
-"E-correcion"
+"E-correct"
 
 #MSG_END_FILE_LIST c=0 r=0
 "End file list"
@@ -280,15 +280,15 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"Autocarga Fil. [activo]"
+"Autocarg f. [act]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
-"Autocarga Fil. [N/D]"
+"Autocarg f. [N/D]"
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
-"Autocarga f. [inactiva]"
+"Autocarg f. [ina]"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -300,11 +300,11 @@
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Comprobación de ventiladores [activo]"
+"Com. ventil [act]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Comprobación de ventiladores [inactiva]"
+"Com. ventil [ina]"
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
@@ -316,7 +316,7 @@
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
-"Sensor de Fil. [inactivo]"
+"Sensor Fil. [act]"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -848,11 +848,11 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"Puerto RPi [activo]"
+"Puerto RPi  [act]"
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"Puerto RPi [inactivo]"
+"Puerto RPi  [ina]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
