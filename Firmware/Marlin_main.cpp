@@ -7428,11 +7428,13 @@ void handle_status_leds(void) {
 
 #ifdef SAFETYTIMER
 /**
- * @brief Turn off heating after 30 minutes of inactivity
+ * @brief Turn off heating after safetytimer_inactive_time milliseconds of inactivity
  *
  * Full screen blocking notification message is shown after heater turning off.
  * Paused print is not considered inactivity, as nozzle is cooled anyway and bed cooling would
  * damage print.
+ *
+ * If safetytimer_inactive_time is zero, feature is disabled (heating is never turned off because of inactivity)
  */
 static void handleSafetyTimer()
 {
@@ -7447,7 +7449,7 @@ static void handleSafetyTimer()
     {
         safetyTimer.start();
     }
-    else if (safetyTimer.expired(safetytimer_inactive_time)) //30 min
+    else if (safetyTimer.expired(safetytimer_inactive_time))
     {
         setTargetBed(0);
         setTargetHotend(0, 0);
