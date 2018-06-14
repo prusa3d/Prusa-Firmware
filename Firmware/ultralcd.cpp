@@ -3684,9 +3684,16 @@ static void lcd_language_menu()
 	START_MENU();
 	if (lang_is_selected()) MENU_ITEM(back, _T(MSG_SETTINGS), 0);
 	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(0)), 0);
-//	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(1)), 1);
-	for (int i = 2; i < lang_get_count(); i++) //skip seconday language - solved in lang_select
-		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i)), i);
+	uint8_t cnt = lang_get_count();
+#ifdef W25X20CL
+	if (cnt == 2) //display secondary language in case of clear xflash 
+		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(1)), 1);
+	else
+		for (int i = 2; i < cnt; i++) //skip seconday language - solved in lang_select
+#else //W25X20CL
+		for (int i = 1; i < cnt; i++) //all seconday languages
+#endif //W25X20CL
+			MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i)), i);
 	END_MENU();
 }
 #endif //(LANG_MODE != 0)
