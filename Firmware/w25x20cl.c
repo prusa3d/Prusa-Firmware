@@ -122,7 +122,7 @@ void w25x20cl_page_program_P(uint32_t addr, uint8_t* data, uint16_t cnt)
 void w25x20cl_erase(uint8_t cmd, uint32_t addr)
 {
 	_CS_LOW();
-	_SPI_TX(_CMD_SECTOR_ERASE);          // send command 0x20
+	_SPI_TX(cmd);          			     // send command 0x20
 	_SPI_TX(((uint8_t*)&addr)[2]);       // send addr bits 16..23
 	_SPI_TX(((uint8_t*)&addr)[1]);       // send addr bits 8..15
 	_SPI_TX(((uint8_t*)&addr)[0]);       // send addr bits 0..7
@@ -176,4 +176,9 @@ int w25x20cl_mfrid_devid(void)
 	uint8_t w25x20cl_devid = _SPI_RX();  // receive devid
 	_CS_HIGH();
 	return ((w25x20cl_mfrid == _MFRID) && (w25x20cl_devid == _DEVID));
+}
+
+void w25x20cl_wait_busy(void)
+{
+	while (w25x20cl_rd_status_reg() & W25X20CL_STATUS_BUSY) ;
 }
