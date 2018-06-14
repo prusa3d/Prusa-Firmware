@@ -7439,7 +7439,7 @@ static void handleSafetyTimer()
 #if (EXTRUDERS > 1)
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
-    if ((PRINTER_ACTIVE) || (!degTargetBed() && !degTargetHotend(0)))
+    if ((PRINTER_ACTIVE) || (!degTargetBed() && !degTargetHotend(0)) || (!safetytimer_inactive_time))
     {
         safetyTimer.stop();
     }
