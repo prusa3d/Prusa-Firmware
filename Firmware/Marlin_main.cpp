@@ -99,6 +99,7 @@
 
 #ifdef W25X20CL
 #include "w25x20cl.h"
+#include "optiboot_w25x20cl.h"
 #endif //W25X20CL
 
 #ifdef BLINKM
@@ -1138,6 +1139,10 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+#ifdef W25X20CL
+  // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+  optiboot_w25x20cl_enter();
+#endif
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
