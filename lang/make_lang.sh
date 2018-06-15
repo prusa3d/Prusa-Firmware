@@ -86,7 +86,7 @@ lt_count=$(grep -c '^' lang_$LANG.txt)
 lt_data_size=$(wc -c lang_$LANG.dat | cut -f1 -d' ')
 lt_offs_size=$((2 * $lt_count))
 lt_size=$((16 + $lt_offs_size + $lt_data_size))
-lt_chsum=1
+lt_chsum=0
 lt_code='\xff\xff'
 lt_resv1='\xff\xff\xff\xff'
 
@@ -137,6 +137,11 @@ echo "OK" >&2
 echo -n "  writing text data ($lt_data_size bytes)..." >&2
 dd if=./lang_$LANG.dat of=./lang_$LANG.bin bs=1 count=$lt_data_size seek=$((16 + $lt_offs_size)) conv=notrunc 2>/dev/null
 echo "OK" >&2
+
+#calculate and update checksum
+lt_chsum=$(cat lang_$LANG.bin | xxd | cut -c11-49 | tr ' ' "\n" | sed '/^$/d' | awk 'BEGIN { sum = 0; } { sum += strtonum("0x"$1); if (sum > 0xffff) sum -= 0x10000; } END { printf("%x\n", sum); }')
+/bin/echo -n -e $(echo -n $((0x$lt_chsum)) | awk "$awk_ui16") |\
+ dd of=lang_$LANG.bin bs=1 count=2 seek=8 conv=notrunc 2>/dev/null
 
 echo " lang_table details:" >&2
 echo "  lt_count = $lt_count" >&2
