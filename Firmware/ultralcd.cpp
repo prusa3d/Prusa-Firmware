@@ -190,7 +190,7 @@ float pid_temp = DEFAULT_PID_TEMP;
 
 bool long_press_active = false;
 static ShortTimer longPressTimer;
-unsigned long button_blanking_time = millis();
+static ShortTimer buttonBlanking;
 bool button_pressed = false;
 
 bool menuExiting = false;
@@ -7548,8 +7548,8 @@ void lcd_buttons_update()
   if (lcd_update_enabled == true) { //if we are in non-modal mode, long press can be used and short press triggers with button release
 	  if (READ(BTN_ENC) == 0) { //button is pressed	  
 		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-		  if (millis() > button_blanking_time) {
-			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
+		  if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
+			  buttonBlanking.start();
 			  if (button_pressed == false && long_press_active == false) {
 			      longPressTimer.start();
 				  button_pressed = true;
@@ -7565,7 +7565,7 @@ void lcd_buttons_update()
 	  }
 	  else { //button not pressed
 		  if (button_pressed) { //button was released
-			  button_blanking_time = millis() + BUTTON_BLANKING_TIME;
+		      buttonBlanking.start();
 
 			  if (long_press_active == false) { //button released before long press gets activated
 					  newbutton |= EN_C;
