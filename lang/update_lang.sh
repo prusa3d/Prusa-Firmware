@@ -40,9 +40,15 @@ echo -n " checking symbols..." >&2
 #find symbol _SEC_LANG in section '.text'
 sec_lang=$(cat text.sym | grep -E "\b_SEC_LANG\b")
 if [ -z "$sec_lang" ]; then echo "NG!\n  symbol _SEC_LANG not found!" >&2; finish 1; fi
+#find symbol _PRI_LANG_SIGNATURE in section '.text'
+pri_lang=$(cat text.sym | grep -E "\b_PRI_LANG_SIGNATURE\b")
+if [ -z "$pri_lang" ]; then echo "NG!\n  symbol _PRI_LANG_SIGNATURE not found!" >&2; finish 1; fi
 echo "OK" >&2
 
 echo " calculating vars:" >&2
+#get pri_lang addres
+pri_lang_addr='0x'$(echo $pri_lang | cut -f1 -d' ')
+echo "  pri_lang_addr   =$pri_lang_addr" >&2
 #get addres and size
 sec_lang_addr='0x'$(echo $sec_lang | cut -f1 -d' ')
 sec_lang_size='0x'$(echo $sec_lang | cut -f2 -d' ')
@@ -62,6 +68,7 @@ printf "  lang_file_size  =0x%04x (=%d bytes)\n" $lang_file_size $lang_file_size
 if [ $lang_file_size -gt $lang_table_size ]; then echo "Lanaguage binary file size too big!" >&2; finish 1; fi
 
 echo "updating 'firmware.bin'..." >&2
+
 dd if=lang_$LANG.bin of=firmware.bin bs=1 seek=$lang_table_addr conv=notrunc 2>/dev/null
 
 #convert bin to hex

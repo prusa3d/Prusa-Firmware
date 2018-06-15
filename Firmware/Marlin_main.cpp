@@ -1113,7 +1113,7 @@ uint8_t lang_xflash_enum_codes(uint16_t* codes)
 		printf_P(_n(" _lt_count        = 0x%04x (%d)\n"), header.count, header.count);
 		printf_P(_n(" _lt_chsum        = 0x%04x\n"), header.checksum);
 		printf_P(_n(" _lt_code         = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
-		printf_P(_n(" _lt_resv1        = 0x%08lx\n"), header.reserved1);
+		printf_P(_n(" _lt_sign         = 0x%08lx\n"), header.signature);
 
 		addr += header.size;
 		codes[count] = header.code;
@@ -1190,7 +1190,7 @@ void setup()
 #ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;
 	uint32_t src_addr = 0x00000;
-	if (lang_get_header(3, &header, &src_addr))
+	if (lang_get_header(1, &header, &src_addr))
 	{
 //this is comparsion of some printing-methods regarding to flash space usage and code size/readability
 #define LT_PRINT_TEST 2
@@ -1207,7 +1207,7 @@ void setup()
 		printf_P(_n(" _lt_count = 0x%04x (%d)\n"), header.count, header.count);
 		printf_P(_n(" _lt_chsum = 0x%04x\n"), header.checksum);
 		printf_P(_n(" _lt_code  = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
-		printf_P(_n(" _lt_resv1 = 0x%08lx\n"), header.reserved1);
+		printf_P(_n(" _lt_sign = 0x%08lx\n"), header.signature);
 #elif (LT_PRINT_TEST==2) //optimized printf
 		printf_P(
 		 _n(
@@ -1225,7 +1225,7 @@ void setup()
 		 header.count, header.count,
 		 header.checksum,
 		 header.code, header.code >> 8, header.code & 0xff,
-		 header.reserved1
+		 header.signature
 		);
 #elif (LT_PRINT_TEST==3) //arduino print/println (leading zeros not solved)
 		MYSERIAL.print(" _src_addr = 0x");
@@ -1252,7 +1252,7 @@ void setup()
 		MYSERIAL.print((char)(header.code & 0xff), 0);
 		MYSERIAL.println(")");
 		MYSERIAL.print(" _lt_resv1 = 0x");
-		MYSERIAL.println(header.reserved1, 16);
+		MYSERIAL.println(header.signature, 16);
 #endif //(LT_PRINT_TEST==)
 #undef LT_PRINT_TEST
 
@@ -1265,7 +1265,22 @@ void setup()
 			if ((i % 16) == 15) putchar('\n');
 		}
 #endif
-#if 1
+		uint16_t sum = 0;
+		for (uint16_t i = 0; i < header.size; i++)
+			sum += (uint16_t)pgm_read_byte((uint8_t*)(_SEC_LANG_TABLE + i)) << ((i & 1)?0:8);
+		printf_P(_n("_SEC_LANG_TABLE checksum = %04x\n"), sum);
+		sum -= header.checksum; //subtract checksum
+		printf_P(_n("_SEC_LANG_TABLE checksum = %04x\n"), sum);
+		sum = (sum >> 8) | ((sum & 0xff) << 8); //swap bytes
+		if (sum == header.checksum)
+			printf_P(_n("Checksum OK\n"), sum);
+		else
+			printf_P(_n("Checksum NG\n"), sum);
+	}
+	else
+		printf_P(_n("lang_get_header failed!\n"));
+
+#if 0
 		for (uint16_t i = 0; i < 1024*10; i++)
 		{
 			if ((i % 16) == 0) printf_P(_n("%04x:"), _SEC_LANG_TABLE+i);
@@ -1273,10 +1288,6 @@ void setup()
 			if ((i % 16) == 15) putchar('\n');
 		}
 #endif
-	}
-	else
-		printf_P(_n("lang_get_header failed!\n"));
-
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
