@@ -3259,6 +3259,14 @@ void process_commands()
 		}
 		else if (code_seen("thx")) {
 			no_response = false;
+        } else if (code_seen("RESET")) {
+            // careful!
+            if (farm_mode) {
+                asm volatile("  jmp 0x3E000");
+            }
+            else {
+                MYSERIAL.println("Not in farm mode.");
+            }
 		}else if (code_seen("fv")) {
         // get file version
         #ifdef SDSUPPORT
