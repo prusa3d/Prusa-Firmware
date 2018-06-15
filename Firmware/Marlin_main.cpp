@@ -525,6 +525,7 @@ static float saved_pos[4] = { 0, 0, 0, 0 };
 static float saved_feedrate2 = 0;
 static uint8_t saved_active_extruder = 0;
 static bool saved_extruder_under_pressure = false;
+static bool saved_extruder_relative_mode = false;
 
 //===========================================================================
 //=============================Routines======================================
@@ -660,12 +661,12 @@ void crashdet_disable()
 
 void crashdet_stop_and_save_print()
 {
-	stop_and_save_print_to_ram(10, -2); //XY - no change, Z 10mm up, E -2mm retract
+	stop_and_save_print_to_ram(10, -DEFAULT_RETRACTION); //XY - no change, Z 10mm up, E -1mm retract
 }
 
 void crashdet_restore_print_and_continue()
 {
-	restore_print_from_ram_and_continue(2); //XYZ = orig, E +2mm unretract
+	restore_print_from_ram_and_continue(DEFAULT_RETRACTION); //XYZ = orig, E +1mm unretract
 //	babystep_apply();
 }
 
@@ -8774,11 +8775,11 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
         uint16_t value;
     } sdlen_single;
     int _bufindr = bufindr;
-    for (int _buflen  = buflen; _buflen > 0; ++ iline) {
+	for (int _buflen  = buflen; _buflen > 0; ++ iline) {
         if (cmdbuffer[_bufindr] == CMDBUFFER_CURRENT_TYPE_SDCARD) {
             sdlen_single.lohi.lo = cmdbuffer[_bufindr + 1];
             sdlen_single.lohi.hi = cmdbuffer[_bufindr + 2];
-        }
+        }		 
         SERIAL_ECHOPGM("Buffer line (from buffer): ");
         MYSERIAL.print(int(iline), DEC);
         SERIAL_ECHOPGM(", type: ");
@@ -8789,7 +8790,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
         MYSERIAL.println(cmdbuffer + _bufindr + CMDHDRSIZE);
 
         SERIAL_ECHOPGM("Buffer line (from file): ");
-        MYSERIAL.print(int(iline), DEC);
         MYSERIAL.println(int(iline), DEC);
         for (; sdlen_single.value > 0; -- sdlen_single.value)
           MYSERIAL.print(char(card.get()));
@@ -8836,10 +8836,17 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     char buf[48];
 
 	// First unretract (relative extrusion)
+	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
+	if(!saved_extruder_relative_mode){
+	  strcpy_P(buf, PSTR("M83"));
+	  enquecommand(buf, false);
+	}
+	
+	//retract 45mm/s
 	strcpy_P(buf, PSTR("G1 E"));
 	dtostrf(e_move, 6, 3, buf + strlen(buf));
 	strcat_P(buf, PSTR(" F"));
-	dtostrf(retract_feedrate*60, 8, 3, buf + strlen(buf));
+	dtostrf(2700, 8, 3, buf + strlen(buf));
 	enquecommand(buf, false);
 
 	// Then lift Z axis
@@ -8868,10 +8875,19 @@ void restore_print_from_ram_and_continue(float e_move)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
 	feedrate = saved_feedrate2; //restore feedrate
+	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS]/13, active_extruder);
+	//first move print head in XY to the saved position:
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
 	st_synchronize();
+	//then move Z
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
+	st_synchronize();
+	//and finaly unretract (35mm/s)
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], 35, active_extruder);
+	st_synchronize();
+
 	memcpy(current_position, saved_pos, sizeof(saved_pos));
 	memcpy(destination, current_position, sizeof(destination));
 	if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
