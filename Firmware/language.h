@@ -52,7 +52,7 @@ typedef struct
 	uint16_t count;      //+6
 	uint16_t checksum;   //+8
 	uint16_t code;       //+10
-	uint32_t reserved1;  //+12
+	uint32_t signature;  //+12
 } lang_table_header_t;
 
 //lang_table_t structure - (size= 16byte + 2*count)
@@ -98,10 +98,13 @@ extern uint8_t lang_selected;
 extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
 #define _SEC_LANG_TABLE ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00)
+//extern const uint32_t _PRI_LANG_SIGNATURE;
 #endif //(LANG_MODE != 0)
 
 //selects language, eeprom is updated in case of success
 extern uint8_t lang_select(uint8_t lang);
+//performs checksum test of secondary language data
+extern uint8_t lang_check(uint16_t addr);
 //returns total number of languages (primary + all in xflash)
 extern uint8_t lang_get_count(void);
 //reads lang table header and offset in xflash or progmem
