@@ -9,7 +9,6 @@
 #include "stepper.h"
 #include "ConfigurationStore.h"
 #include <string.h>
-#include "Timer.h"
 
 #include "util.h"
 #include "mesh_bed_leveling.h"
@@ -193,6 +192,7 @@ static ShortTimer longPressTimer;
 static ShortTimer buttonBlanking;
 bool button_pressed = false;
 
+static bool forceMenuExpire = false;
 bool menuExiting = false;
 
 #ifdef FILAMENT_LCD_DISPLAY
@@ -696,7 +696,7 @@ void lcd_commands()
 		float extr = count_e(0.2, width, length);
 		float extr_short_segment = count_e(0.2, width, width);
 
-		if (lcd_commands_step>1) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
+		if (lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 		if (lcd_commands_step == 0)
 		{
 			lcd_commands_step = 10;
@@ -722,7 +722,7 @@ void lcd_commands()
 		}
 		if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			enquecommand_P(PSTR("G1 Z0.250 F7200.000"));
 			enquecommand_P(PSTR("G1 X50.0 E80.0 F1000.0"));
 			enquecommand_P(PSTR("G1 X160.0 E20.0 F1000.0"));
@@ -746,7 +746,7 @@ void lcd_commands()
 		}
 		if (lcd_commands_step == 8 && !blocks_queued() && cmd_buffer_empty()) //draw meander
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 
 
 			enquecommand_P(PSTR("G1 X50 Y155"));
@@ -771,7 +771,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 7 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			strcpy(cmd1, "G1 X50 Y35 E");
 			strcat(cmd1, ftostr43(extr));
 			enquecommand(cmd1);
@@ -804,7 +804,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			for (int i = 4; i < 8; i++) {
 				strcpy(cmd1, "G1 X70 Y");
 				strcat(cmd1, ftostr32(35 - i*width * 2));
@@ -833,7 +833,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			for (int i = 8; i < 12; i++) {
 				strcpy(cmd1, "G1 X70 Y");
 				strcat(cmd1, ftostr32(35 - i*width * 2));
@@ -862,7 +862,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			for (int i = 12; i < 16; i++) {
 				strcpy(cmd1, "G1 X70 Y");
 				strcat(cmd1, ftostr32(35 - i*width * 2));
@@ -891,7 +891,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
 			enquecommand_P(PSTR("G4 S0"));
 			enquecommand_P(PSTR("G1 E-4 F2100.00000"));
@@ -960,7 +960,7 @@ void lcd_commands()
 		float length = 20 - width;
 		float extr = count_e(0.2, width, length);
 		float extr_short_segment = count_e(0.2, width, width);
-		if(lcd_commands_step>1) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
+		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 		if (lcd_commands_step == 0)
 		{
 			lcd_commands_step = 9;
@@ -997,7 +997,7 @@ void lcd_commands()
 		}
 		if (lcd_commands_step == 7 && !blocks_queued() && cmd_buffer_empty()) //draw meander
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 
 
 			//just opposite direction
@@ -1045,7 +1045,7 @@ void lcd_commands()
 		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
 		{
 
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 
 			for (int i = 0; i < 4; i++) {
 				strcpy(cmd1, "G1 X70 Y");
@@ -1075,7 +1075,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			for (int i = 4; i < 8; i++) {
 				strcpy(cmd1, "G1 X70 Y");
 				strcat(cmd1, ftostr32(35 - i*width * 2));
@@ -1104,7 +1104,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			for (int i = 8; i < 12; i++) {
 				strcpy(cmd1, "G1 X70 Y");
 				strcat(cmd1, ftostr32(35 - i*width * 2));
@@ -1133,7 +1133,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			for (int i = 12; i < 16; i++) {
 				strcpy(cmd1, "G1 X70 Y");
 				strcat(cmd1, ftostr32(35 - i*width * 2));
@@ -1162,7 +1162,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 2 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
 			enquecommand_P(PSTR("M107")); //turn off printer fan
 			enquecommand_P(PSTR("M104 S0")); // turn off temperature
@@ -1170,7 +1170,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 Z10 F1300.000"));
 			enquecommand_P(PSTR("G1 X10 Y180 F4000")); //home X axis
 			enquecommand_P(PSTR("M84"));// disable motors
-			lcd_timeoutToStatus = millis() - 1; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
+			forceMenuExpire = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 			lcd_commands_step = 1;
 		}
 		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty())
@@ -2378,7 +2378,7 @@ static void _lcd_babystep(int axis, const char *msg)
 		//SERIAL_ECHO("Z baby step: ");
 		//SERIAL_ECHO(menuData.babyStep.babystepMem[2]);
         // Wait 90 seconds before closing the live adjust dialog.
-        lcd_timeoutToStatus = millis() + 90000;
+        lcd_timeoutToStatus.start();
     }
 
   if (encoderPosition != 0) 
@@ -3886,7 +3886,7 @@ void lcd_language()
 	lcd_update_enable(true);
 	lcd_implementation_clear();
 	lcd_goto_menu(lcd_language_menu);
-	lcd_timeoutToStatus = -1; //infinite timeout
+	lcd_timeoutToStatus.stop(); //infinite timeout
 	lcdDrawUpdate = 2;
 	while ((currentMenu != lcd_status_screen) && (!lang_is_selected()))
 	{
@@ -4278,7 +4278,7 @@ static void lcd_homing_accuracy_menu_advanced_back()
 
 static void lcd_homing_accuracy_menu_advanced()
 {
-	lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	lcd_timeoutToStatus.start();
 	START_MENU();
 	MENU_ITEM(back, PSTR("Homing accuracy"), lcd_homing_accuracy_menu_advanced_back);
 	MENU_ITEM(function, PSTR("Reset def. steps"), lcd_homing_accuracy_menu_advanced_reset);
@@ -4359,7 +4359,7 @@ static void lcd_ustep_resolution_reset_def_xyze()
 
 static void lcd_ustep_resolution_menu()
 {
-	lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	lcd_timeoutToStatus.start();
 	START_MENU();
 	MENU_ITEM(back, PSTR("Experimental"), lcd_ustep_resolution_menu_back);
 	MENU_ITEM(function, PSTR("Reset defaults"),  lcd_ustep_resolution_reset_def_xyze);
@@ -4407,7 +4407,7 @@ static void lcd_ustep_linearity_menu_reset()
 
 static void lcd_ustep_linearity_menu()
 {
-	lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	lcd_timeoutToStatus.start();
 	START_MENU();
 	MENU_ITEM(back, PSTR("Experimental"), lcd_ustep_linearity_menu_back);
 	MENU_ITEM(function, PSTR("Reset correction"), lcd_ustep_linearity_menu_reset);
@@ -7095,7 +7095,7 @@ static void menu_action_setlang(unsigned char lang)
 		lcd_update_enable(true);
 		lcd_implementation_clear();
 		lcd_goto_menu(lcd_language_menu);
-		lcd_timeoutToStatus = -1; //infinite timeout
+		lcd_timeoutToStatus.stop(); //infinite timeout
 		lcdDrawUpdate = 2;
 	}
 }
@@ -7255,7 +7255,7 @@ void lcd_init()
 //#include <avr/pgmspace.h>
 
 static volatile bool lcd_update_enabled = true;
-unsigned long lcd_timeoutToStatus = 0;
+LongTimer lcd_timeoutToStatus;
 
 void lcd_update_enable(bool enabled)
 {
@@ -7267,7 +7267,7 @@ void lcd_update_enable(bool enabled)
             encoderDiff = 0;
             // Enabling the normal LCD update procedure.
             // Reset the timeout interval.
-            lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+            lcd_timeoutToStatus.start();
             // Force the keypad update now.
             lcd_next_update_millis = millis() - 1;
             // Full update.
@@ -7285,6 +7285,24 @@ void lcd_update_enable(bool enabled)
             // Clear the LCD always, or let it to the caller?
         }
     }
+}
+static inline bool z_menu_expired()
+{
+    return (currentMenu == lcd_babystep_z
+         && lcd_timeoutToStatus.expired(LCD_TIMEOUT_TO_STATUS_BABYSTEP_Z));
+}
+static inline bool other_menu_expired()
+{
+    return (currentMenu != lcd_status_screen
+            && currentMenu != lcd_babystep_z
+            && lcd_timeoutToStatus.expired(LCD_TIMEOUT_TO_STATUS));
+}
+static inline bool forced_menu_expire()
+{
+    bool retval = (currentMenu != lcd_status_screen
+            && forceMenuExpire);
+    forceMenuExpire = false;
+    return retval;
 }
 
 void lcd_update(uint8_t lcdDrawUpdateOverride)
@@ -7366,10 +7384,10 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		    lcdDrawUpdate = 1;
 		  encoderPosition += encoderDiff / ENCODER_PULSES_PER_STEP;
 		  encoderDiff = 0;
-		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		  lcd_timeoutToStatus.start();
 	  }
 
-	  if (LCD_CLICKED) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	  if (LCD_CLICKED) lcd_timeoutToStatus.start();
 #endif//ULTIPANEL
 
 	  (*currentMenu)();
@@ -7379,7 +7397,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 #endif
 
 #ifdef ULTIPANEL
-	  if (lcd_timeoutToStatus < millis() && currentMenu != lcd_status_screen)
+	  if (z_menu_expired() || other_menu_expired() || forced_menu_expire())
 	  {
       // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
       // to give it a chance to save its state.
@@ -7547,7 +7565,7 @@ void lcd_buttons_update()
 #if BTN_ENC > 0
   if (lcd_update_enabled == true) { //if we are in non-modal mode, long press can be used and short press triggers with button release
 	  if (READ(BTN_ENC) == 0) { //button is pressed	  
-		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		  lcd_timeoutToStatus.start();
 		  if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
 			  buttonBlanking.start();
 			  if (button_pressed == false && long_press_active == false) {
