@@ -23,8 +23,8 @@ if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
 if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
 #
 # Selected language:
-LANG=$1
-#if [ -z "$LANG" ]; then LANG='cz'; fi
+LNG=$1
+#if [ -z "$LNG" ]; then LNG='cz'; fi
 #
 # Params:
 IGNORE_MISSING_TEXT=1
@@ -99,8 +99,8 @@ echo "OK" >&2
 
 #update _SEC_LANG in binary file if language is selected
 echo -n "  secondary language data..." >&2
-if [ ! -z "$LANG" ]; then
- ./update_lang.sh $LANG 2>./update_lang.out
+if [ ! -z "$LNG" ]; then
+ ./update_lang.sh $LNG 2>./update_lang.out
  if [ $? -ne 0 ]; then echo "NG! - check update_lang.out file" >&2; finish 1; fi
  echo "OK" >&2
  finish 0

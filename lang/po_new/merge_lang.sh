@@ -2,14 +2,14 @@
 #
 #
 
-LANG=$1
-if [ -z "$LANG" ]; then exit -1; fi
+LNG=$1
+if [ -z "$LNG" ]; then exit -1; fi
 
 #convert '\\e' sequencies to 'x1b' and '\\' to '\'
-cat $LANG.po | sed 's/\\\\e/\\x1b/g;s/\\\\/\\/g' > $LANG'_filtered.po'
+cat $LNG.po | sed 's/\\\\e/\\x1b/g;s/\\\\/\\/g' > $LNG'_filtered.po'
 
 #join lines with multi-line string constants
-cat $LANG'_filtered.po' | sed ':a;N;$!ba;s/\x22\n\x22//g' > $LANG'_new.po'
+cat $LNG'_filtered.po' | sed ':a;N;$!ba;s/\x22\n\x22//g' > $LNG'_new.po'
 
 #generate dictionary
 cat ../lang_en.txt | sed 's/\\/\\\\/g' | while read -r s; do
@@ -17,7 +17,7 @@ cat ../lang_en.txt | sed 's/\\/\\\\/g' | while read -r s; do
  if [ "${s:0:1}" = "\"" ]; then
 #  /bin/echo -e "$s"
   s=$(/bin/echo -e "$s")
-  s2=$(grep -F -A1 -B0  "$s" "$LANG"_new.po | tail -n1 | sed 's/^msgstr //')
+  s2=$(grep -F -A1 -B0  "$s" "$LNG"_new.po | tail -n1 | sed 's/^msgstr //')
   if [ -z "$s2" ]; then
    echo '"\x00"'
   else
@@ -25,4 +25,4 @@ cat ../lang_en.txt | sed 's/\\/\\\\/g' | while read -r s; do
   fi
 #  echo
  fi
-done > lang_en_$LANG.txt
+done > lang_en_$LNG.txt
