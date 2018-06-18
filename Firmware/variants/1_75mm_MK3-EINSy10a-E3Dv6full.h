@@ -149,6 +149,7 @@
 //#define DEBUG_BUILD
 //#define DEBUG_SEC_LANG   //secondary language debug output at startup
 //#define DEBUG_W25X20CL   //debug external spi flash
+//#define DEBUG_MENU_PRINTF_TEST
 #ifdef DEBUG_BUILD
 //#define _NO_ASM
 #define DEBUG_DCODES //D codes

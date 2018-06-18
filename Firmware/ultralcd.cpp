@@ -27,23 +27,6 @@
 #endif //TMC2130
 
 
-#include <stdarg.h>
-
-int lcd_puts_P(const char* str)
-{
-	return fputs_P(str, lcdout);
-}
-
-int lcd_printf_P(const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	int ret = vfprintf_P(lcdout, format, args);
-	va_end(args);
-	return ret;
-}
-
-
 int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added to encoderPosition every LCD update */
 
 extern int lcd_change_fil_state;
@@ -315,7 +298,6 @@ static void menu_action_setting_edit_callback_long5(const char* pstr, unsigned l
 #endif
 #endif
 
-
 /* Helper macros for menus */
 #define START_MENU() do { \
     if (encoderPosition > 0x8000) encoderPosition = 0; \
@@ -425,6 +407,48 @@ static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const boo
 }
 
 /* Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent */
+
+
+#include <stdarg.h>
+
+int lcd_puts_P(const char* str)
+{
+	return fputs_P(str, lcdout);
+}
+
+int lcd_printf_P(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	int ret = vfprintf_P(lcdout, format, args);
+	va_end(args);
+	return ret;
+}
+
+#ifdef DEBUG_MENU_PRINTF_TEST
+int menu_item_printf_P(uint8_t& item, uint8_t line, const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	int ret = 0;
+	if (item == line)
+	{
+		if (lcdDrawUpdate)
+		{
+			//ret = 
+		    lcd.setCursor(0, line);
+			lcd.print(' ');
+			int cnt = vfprintf_P(lcdout, format, args);
+			for (int i = cnt; i < 19; i++)
+				lcd.print(' ');
+			lcd.print('>');
+		}
+	}
+	item++;
+	va_end(args);
+	return ret;
+}
+#endif //DEBUG_MENU_PRINTF_TEST
 
 
 static void lcd_status_screen()
@@ -5588,6 +5612,10 @@ static void lcd_main_menu()
 
   MENU_ITEM(submenu, _i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
   MENU_ITEM(submenu, _i("W25x20XL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
+
+#ifdef DEBUG_MENU_PRINTF_TEST
+	menu_item_printf_P(_menuItemNr, _lineNr, _N("Test %d %d %d"), 0, 1, 2);
+#endif //DEBUG_MENU_PRINTF_TEST
 
   END_MENU();
 
