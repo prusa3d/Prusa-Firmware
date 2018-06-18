@@ -99,6 +99,7 @@
 
 #ifdef W25X20CL
 #include "w25x20cl.h"
+#include "optiboot_w25x20cl.h"
 #endif //W25X20CL
 
 #ifdef BLINKM
@@ -194,6 +195,7 @@
 // M84  - Disable steppers until next move,
 //        or use S<seconds> to specify an inactivity timeout, after which the steppers will be disabled.  S0 to disable the timeout.
 // M85  - Set inactivity shutdown timer with parameter S<seconds>. To disable set zero (default)
+// M86  - Set safety timer expiration time with parameter S<seconds>; M86 S0 will disable safety timer
 // M92  - Set axis_steps_per_unit - same syntax as G92
 // M104 - Set extruder target temp
 // M105 - Read current temp
@@ -492,6 +494,7 @@ const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
 static unsigned long previous_millis_cmd = 0;
 unsigned long max_inactive_time = 0;
 static unsigned long stepper_inactive_time = DEFAULT_STEPPER_DEACTIVE_TIME*1000l;
+static unsigned long safetytimer_inactive_time = DEFAULT_SAFETYTIMER_TIME_MINS*60*1000ul;
 
 unsigned long starttime=0;
 unsigned long stoptime=0;
@@ -1111,7 +1114,7 @@ uint8_t lang_xflash_enum_codes(uint16_t* codes)
 		printf_P(_n(" _lt_count        = 0x%04x (%d)\n"), header.count, header.count);
 		printf_P(_n(" _lt_chsum        = 0x%04x\n"), header.checksum);
 		printf_P(_n(" _lt_code         = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
-		printf_P(_n(" _lt_resv1        = 0x%08lx\n"), header.reserved1);
+		printf_P(_n(" _lt_sign         = 0x%08lx\n"), header.signature);
 
 		addr += header.size;
 		codes[count] = header.code;
@@ -1139,6 +1142,10 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+#ifdef W25X20CL
+  // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+  optiboot_w25x20cl_enter();
+#endif
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
@@ -1184,7 +1191,7 @@ void setup()
 #ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;
 	uint32_t src_addr = 0x00000;
-	if (lang_get_header(3, &header, &src_addr))
+	if (lang_get_header(1, &header, &src_addr))
 	{
 //this is comparsion of some printing-methods regarding to flash space usage and code size/readability
 #define LT_PRINT_TEST 2
@@ -1201,7 +1208,7 @@ void setup()
 		printf_P(_n(" _lt_count = 0x%04x (%d)\n"), header.count, header.count);
 		printf_P(_n(" _lt_chsum = 0x%04x\n"), header.checksum);
 		printf_P(_n(" _lt_code  = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
-		printf_P(_n(" _lt_resv1 = 0x%08lx\n"), header.reserved1);
+		printf_P(_n(" _lt_sign = 0x%08lx\n"), header.signature);
 #elif (LT_PRINT_TEST==2) //optimized printf
 		printf_P(
 		 _n(
@@ -1219,7 +1226,7 @@ void setup()
 		 header.count, header.count,
 		 header.checksum,
 		 header.code, header.code >> 8, header.code & 0xff,
-		 header.reserved1
+		 header.signature
 		);
 #elif (LT_PRINT_TEST==3) //arduino print/println (leading zeros not solved)
 		MYSERIAL.print(" _src_addr = 0x");
@@ -1246,7 +1253,7 @@ void setup()
 		MYSERIAL.print((char)(header.code & 0xff), 0);
 		MYSERIAL.println(")");
 		MYSERIAL.print(" _lt_resv1 = 0x");
-		MYSERIAL.println(header.reserved1, 16);
+		MYSERIAL.println(header.signature, 16);
 #endif //(LT_PRINT_TEST==)
 #undef LT_PRINT_TEST
 
@@ -1259,7 +1266,22 @@ void setup()
 			if ((i % 16) == 15) putchar('\n');
 		}
 #endif
-#if 1
+		uint16_t sum = 0;
+		for (uint16_t i = 0; i < header.size; i++)
+			sum += (uint16_t)pgm_read_byte((uint8_t*)(_SEC_LANG_TABLE + i)) << ((i & 1)?0:8);
+		printf_P(_n("_SEC_LANG_TABLE checksum = %04x\n"), sum);
+		sum -= header.checksum; //subtract checksum
+		printf_P(_n("_SEC_LANG_TABLE checksum = %04x\n"), sum);
+		sum = (sum >> 8) | ((sum & 0xff) << 8); //swap bytes
+		if (sum == header.checksum)
+			printf_P(_n("Checksum OK\n"), sum);
+		else
+			printf_P(_n("Checksum NG\n"), sum);
+	}
+	else
+		printf_P(_n("lang_get_header failed!\n"));
+
+#if 0
 		for (uint16_t i = 0; i < 1024*10; i++)
 		{
 			if ((i % 16) == 0) printf_P(_n("%04x:"), _SEC_LANG_TABLE+i);
@@ -1267,10 +1289,6 @@ void setup()
 			if ((i % 16) == 15) putchar('\n');
 		}
 #endif
-	}
-	else
-		printf_P(_n("lang_get_header failed!\n"));
-
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
@@ -5435,6 +5453,15 @@ Sigma_Exit:
         max_inactive_time = code_value() * 1000;
       }
       break;
+#ifdef SAFETYTIMER
+	case 86: // M86 - set safety timer expiration time in seconds; M86 S0 will disable safety timer
+	  //when safety timer expires heatbed and nozzle target temperatures are set to zero
+	  if (code_seen('S')) {
+	    safetytimer_inactive_time = code_value() * 1000;
+		safetyTimer.start();
+	  }
+	  break;
+#endif
     case 92: // M92
       for(int8_t i=0; i < NUM_AXIS; i++)
       {
@@ -7418,18 +7445,20 @@ void handle_status_leds(void) {
 
 #ifdef SAFETYTIMER
 /**
- * @brief Turn off heating after 30 minutes of inactivity
+ * @brief Turn off heating after safetytimer_inactive_time milliseconds of inactivity
  *
  * Full screen blocking notification message is shown after heater turning off.
  * Paused print is not considered inactivity, as nozzle is cooled anyway and bed cooling would
  * damage print.
+ *
+ * If safetytimer_inactive_time is zero, feature is disabled (heating is never turned off because of inactivity)
  */
 static void handleSafetyTimer()
 {
 #if (EXTRUDERS > 1)
 #error Implemented only for one extruder.
 #endif //(EXTRUDERS > 1)
-    if ((PRINTER_ACTIVE) || (!degTargetBed() && !degTargetHotend(0)))
+    if ((PRINTER_ACTIVE) || (!degTargetBed() && !degTargetHotend(0)) || (!safetytimer_inactive_time))
     {
         safetyTimer.stop();
     }
@@ -7437,7 +7466,7 @@ static void handleSafetyTimer()
     {
         safetyTimer.start();
     }
-    else if (safetyTimer.expired(1800000ul)) //30 min
+    else if (safetyTimer.expired(safetytimer_inactive_time))
     {
         setTargetBed(0);
         setTargetHotend(0, 0);

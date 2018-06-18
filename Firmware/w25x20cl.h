@@ -34,8 +34,9 @@ extern void w25x20cl_sector_erase(uint32_t addr);
 extern void w25x20cl_block32_erase(uint32_t addr);
 extern void w25x20cl_block64_erase(uint32_t addr);
 extern void w25x20cl_chip_erase(void);
+extern void w25x20cl_page_program(uint32_t addr, uint8_t* data, uint16_t cnt);
 extern void w25x20cl_rd_uid(uint8_t* uid);
-
+extern void w25x20cl_wait_busy(void);
 
 #if defined(__cplusplus)
 }

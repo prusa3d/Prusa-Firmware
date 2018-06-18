@@ -27,23 +27,6 @@
 #endif //TMC2130
 
 
-#include <stdarg.h>
-
-int lcd_puts_P(const char* str)
-{
-	return fputs_P(str, lcdout);
-}
-
-int lcd_printf_P(const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	int ret = vfprintf_P(lcdout, format, args);
-	va_end(args);
-	return ret;
-}
-
-
 int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added to encoderPosition every LCD update */
 
 extern int lcd_change_fil_state;
@@ -315,7 +298,6 @@ static void menu_action_setting_edit_callback_long5(const char* pstr, unsigned l
 #endif
 #endif
 
-
 /* Helper macros for menus */
 #define START_MENU() do { \
     if (encoderPosition > 0x8000) encoderPosition = 0; \
@@ -425,6 +407,48 @@ static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const boo
 }
 
 /* Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent */
+
+
+#include <stdarg.h>
+
+int lcd_puts_P(const char* str)
+{
+	return fputs_P(str, lcdout);
+}
+
+int lcd_printf_P(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	int ret = vfprintf_P(lcdout, format, args);
+	va_end(args);
+	return ret;
+}
+
+#ifdef DEBUG_MENU_PRINTF_TEST
+int menu_item_printf_P(uint8_t& item, uint8_t line, const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	int ret = 0;
+	if (item == line)
+	{
+		if (lcdDrawUpdate)
+		{
+			//ret = 
+		    lcd.setCursor(0, line);
+			lcd.print(' ');
+			int cnt = vfprintf_P(lcdout, format, args);
+			for (int i = cnt; i < 19; i++)
+				lcd.print(' ');
+			lcd.print('>');
+		}
+	}
+	item++;
+	va_end(args);
+	return ret;
+}
+#endif //DEBUG_MENU_PRINTF_TEST
 
 
 static void lcd_status_screen()
@@ -3682,11 +3706,18 @@ void lcd_set_progress() {
 static void lcd_language_menu()
 {
 	START_MENU();
-	if (lang_is_selected()) MENU_ITEM(back, _T(MSG_SETTINGS), 0);
-	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(0)), 0);
-//	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(1)), 1);
-	for (int i = 2; i < lang_get_count(); i++) //skip seconday language - solved in lang_select
-		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i)), i);
+	if (lang_is_selected()) MENU_ITEM(back, _T(MSG_SETTINGS), 0); //
+	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(0)), 0); //primary language
+	uint8_t cnt = lang_get_count();
+#ifdef W25X20CL
+	if (cnt == 2) //display secondary language in case of clear xflash 
+		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(1)), 1);
+	else
+		for (int i = 2; i < cnt; i++) //skip seconday language - solved in lang_select (MK3)
+#else //W25X20CL
+		for (int i = 1; i < cnt; i++) //all seconday languages (MK2/25)
+#endif //W25X20CL
+			MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i)), i);
 	END_MENU();
 }
 #endif //(LANG_MODE != 0)
@@ -4149,11 +4180,11 @@ static void lcd_settings_menu()
   }
 
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
-//  MENU_ITEM_EDIT(wfac, _i("X-corr"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
-//  MENU_ITEM_EDIT(wfac, _i("Y-corr"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
-//  MENU_ITEM_EDIT(wfac, _i("Z-corr"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
+  MENU_ITEM_EDIT(wfac, _i("X-correct"),  &tmc2130_wave_fac[X_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
+  MENU_ITEM_EDIT(wfac, _i("Y-correct"),  &tmc2130_wave_fac[Y_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
+  MENU_ITEM_EDIT(wfac, _i("Z-correct"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
-//  MENU_ITEM_EDIT(wfac, _i("E-corr"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
+  MENU_ITEM_EDIT(wfac, _i("E-correct"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 #endif //TMC2130
 
   if (temp_cal_active == false) {
@@ -5582,6 +5613,10 @@ static void lcd_main_menu()
   MENU_ITEM(submenu, _i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
   MENU_ITEM(submenu, _i("W25x20XL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
 
+#ifdef DEBUG_MENU_PRINTF_TEST
+	menu_item_printf_P(_menuItemNr, _lineNr, _N("Test %d %d %d"), 0, 1, 2);
+#endif //DEBUG_MENU_PRINTF_TEST
+
   END_MENU();
 
 }
@@ -6059,7 +6094,7 @@ char *wfac_to_str5(const uint8_t &x)
 	    conv[0] = '[';
 	    ftostr43(((float)((uint16_t)x + 1000) / 1000), 1);
 	    }
-	else strcpy_P(conv, _i("  [off"));////MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
+	else strncpy_P(conv, _i("  [off"), 6);////MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
 	conv[6] = ']';
 	conv[7] = ' ';
 	conv[8] = 0;

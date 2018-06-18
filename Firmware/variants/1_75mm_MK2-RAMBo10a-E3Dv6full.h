@@ -422,6 +422,10 @@ THERMISTORS SETTINGS
 
 #define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
 
+// Safety timer
+#define SAFETYTIMER
+#define DEFAULT_SAFETYTIMER_TIME_MINS 30
+
 #define M600_TIMEOUT 600  //seconds
 
 #ifndef SNMM

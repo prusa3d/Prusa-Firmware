@@ -106,6 +106,7 @@
 
 // Safety timer
 #define SAFETYTIMER
+#define DEFAULT_SAFETYTIMER_TIME_MINS 30
 
 // Filament sensor
 #define PAT9125
