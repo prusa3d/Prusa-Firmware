@@ -1,25 +1,24 @@
 #!/bin/sh
 #
-# makelang.sh - multi-language support script
-#  for generating lang_xx.bin (secondary language binary file)
+# lang-build.sh - multi-language support script
+#  generate lang_xx.bin (language binary file)
 #
 # Input files:
 #  lang_en.txt
 #  lang_en_xx.txt
 #
 # Output files:
-#  lang_en.tmp (temporary, will be removed when finished)
-#  lang_en_xx.tmp ==||==
-#  lang_en_xx.dif ==||==
-#  lang_xx.txt
 #
 #
 # Selected language:
 LNG=$1
 if [ -z "$LNG" ]; then LNG='cz'; fi
 #
-#
 
+#awk code to format ui16 variables for dd
+awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
+
+#exiting function
 finish()
 {
  if [ $1 -eq 0 ]; then
@@ -36,6 +35,95 @@ finish()
  exit $1
 }
 
+#returns hexadecial data for lang code
+lang_code()
+# $1 - language code ('en', 'cz'...)
+{
+ case "$1" in
+  *en*) echo '\x6e\x65' ;;
+  *cz*) echo '\x73\x63' ;;
+  *de*) echo '\x65\x64' ;;
+  *es*) echo '\x73\x65' ;;
+  *fr*) echo '\x72\x66' ;;
+  *it*) echo '\x74\x69' ;;
+  *pl*) echo '\x6c\x70' ;;
+ esac
+ echo '??'
+}
+
+#
+write_header()
+# $1 - lang
+# $2 - size
+# $3 - count
+# $4 - checksum
+# $5 - signature
+{
+ /bin/echo -n -e "\xa5\x5a\xb4\x4b" |\
+  dd of=lang_$1.bin bs=1 count=4 seek=0 conv=notrunc 2>/dev/null
+ /bin/echo -n -e $(echo -n "$(($2))" | awk "$awk_ui16") |\
+  dd of=lang_$1.bin bs=1 count=2 seek=4 conv=notrunc 2>/dev/null
+ /bin/echo -n -e $(echo -n "$(($3))" | awk "$awk_ui16") |\
+  dd of=lang_$1.bin bs=1 count=2 seek=6 conv=notrunc 2>/dev/null
+ /bin/echo -n -e $(echo -n "$(($4))" | awk "$awk_ui16") |\
+  dd of=lang_$1.bin bs=1 count=2 seek=8 conv=notrunc 2>/dev/null
+ /bin/echo -n -e "$(lang_code $1)" |\
+  dd of=lang_$1.bin bs=1 count=2 seek=10 conv=notrunc 2>/dev/null
+ sig_h=$(($5 / 65536))
+ /bin/echo -n -e $(echo -n "$sig_h" | awk "$awk_ui16") |\
+  dd of=lang_$1.bin bs=1 count=2 seek=14 conv=notrunc 2>/dev/null
+ sig_l=$(($5 - $sig_h * 65536))
+ /bin/echo -n -e $(echo -n "$sig_l" | awk "$awk_ui16") |\
+  dd of=lang_$1.bin bs=1 count=2 seek=12 conv=notrunc 2>/dev/null
+}
+
+make_lang2()
+# $1 - lang ('en', 'cz'...)
+{
+ rm -f lang_$LNG.tmp
+ rm -f lang_$LNG.dat
+ rm -f lang_$LNG.bin
+ LNG=$1
+ #create lang_xx.tmp - different processing for 'en' language
+ if [ "$LNG" = "en" ]; then
+  #remove comments and empty lines
+  cat lang_en.txt | sed '/^$/d;/^#/d'
+ else
+  #remove comments and empty lines, print lines with translated text only
+  cat lang_en_$LNG.txt | sed '/^$/d;/^#/d' | sed -n 'n;p'
+ fi | sed 's/^\"\\x00\"$/\"\"/' > lang_$LNG.tmp
+ #create lang_xx.dat (binary text data file)
+ cat lang_$LNG.tmp | sed 's/^\"/printf \"/;s/"$/\\x00\"/' | sh >lang_$LNG.dat
+ #calculate number of strings
+ count=$(grep -c '^"' lang_$LNG.tmp)
+ echo "count="$count
+ #calculate text data offset
+ offs=$((16 + 2 * $count))
+ echo "offs="$offs
+ #calculate text data size
+ size=$(($offs + $(wc -c lang_$LNG.dat | cut -f1 -d' ')))
+ echo "size="$size
+ #write header with empty signature and checksum
+ write_header $LNG $size $count 0x0000 0x00000000
+ #write offset table
+ cat lang_$LNG.tmp | sed 's/^\"//;s/\"$//' |\
+  sed 's/\\x[0-9a-f][0-9a-f]/\./g;s/\\[0-7][0-7][0-7]/\./g;s/\ /\./g' |\
+  awk 'BEGIN { o='$offs';} { h=int(o/256); printf("%c%c",int(o-256*h), h); o+=(length($0)+1); }' |\
+  dd of=./lang_$LNG.bin bs=1 seek=16 conv=notrunc 2>/dev/null
+ #write binary text data
+ dd if=./lang_$LNG.dat of=./lang_$LNG.bin bs=1 seek=$offs conv=notrunc 2>/dev/null
+ #calculate and update checksum
+ chsum=$(cat lang_$LNG.bin | xxd | cut -c11-49 | tr ' ' "\n" | sed '/^$/d' | awk 'BEGIN { sum = 0; } { sum += strtonum("0x"$1); if (sum > 0xffff) sum -= 0x10000; } END { printf("%x\n", sum); }')
+ /bin/echo -n -e $(echo -n $((0x$chsum)) | awk "$awk_ui16") |\
+  dd of=lang_$LNG.bin bs=1 count=2 seek=8 conv=notrunc 2>/dev/null
+ #remove temporary files
+ rm -f lang_$LNG.tmp
+ rm -f lang_$LNG.dat
+}
+
+make_lang2 $1
+exit
+
 make_lang()
 {
 LNG=$1
@@ -46,6 +134,7 @@ echo "selected language=$LNG" >&2
 #check if input files exists
 echo -n " checking input files..." >&2
 if [ ! -e lang_en.txt ]; then echo "NG!  file lang_en.txt not found!" >&2; exit 1; fi
+
 if [ ! -e lang_en_$LNG.txt ]; then echo "NG!  file lang_en_$LNG.txt not found!" >&2; exit 1; fi
 echo "OK" >&2
 
@@ -109,8 +198,6 @@ echo "OK" >&2
 echo " generating lang_$LNG.bin:" >&2
 #create empty file
 dd if=/dev/zero of=lang_$LNG.bin bs=1 count=$lt_size 2>/dev/null
-#awk code to format ui16 variables for dd
-awk_ui16='{ h=int($1/256); printf("\\x%02x\\x%02x\n", int($1-256*h), h); }'
 
 #write data to binary file with dd
 
@@ -138,11 +225,6 @@ echo -n "  writing text data ($lt_data_size bytes)..." >&2
 dd if=./lang_$LNG.dat of=./lang_$LNG.bin bs=1 count=$lt_data_size seek=$((16 + $lt_offs_size)) conv=notrunc 2>/dev/null
 echo "OK" >&2
 
-#update signature
-echo -n "  updating signature..." >&2
-dd if=lang_en.bin of=lang_$LNG.bin bs=1 count=4 skip=6 seek=12 conv=notrunc 2>/dev/null
-echo "OK" >&2
-
 #calculate and update checksum
 lt_chsum=$(cat lang_$LNG.bin | xxd | cut -c11-49 | tr ' ' "\n" | sed '/^$/d' | awk 'BEGIN { sum = 0; } { sum += strtonum("0x"$1); if (sum > 0xffff) sum -= 0x10000; } END { printf("%x\n", sum); }')
 /bin/echo -n -e $(echo -n $((0x$lt_chsum)) | awk "$awk_ui16") |\
@@ -157,7 +239,6 @@ echo "  lt_chsum = $lt_chsum" >&2
 echo $LNG
 
 if [ "$LNG" = "all" ]; then
- ./lang-build.sh en
  make_lang cz
  make_lang de
  make_lang es

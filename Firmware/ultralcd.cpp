@@ -5611,7 +5611,7 @@ static void lcd_main_menu()
 #endif
 
   MENU_ITEM(submenu, _i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
-  MENU_ITEM(submenu, _i("W25x20XL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
+  MENU_ITEM(submenu, _i("W25x20CL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
 
 #ifdef DEBUG_MENU_PRINTF_TEST
 	menu_item_printf_P(_menuItemNr, _lineNr, _N("Test %d %d %d"), 0, 1, 2);

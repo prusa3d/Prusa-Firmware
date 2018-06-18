@@ -80,7 +80,7 @@ else
  echo "OK" >&2
 fi
 
-#update progmem1 id entries in binary file
+#extract binary file
 echo -n " extracting binary..." >&2
 $OBJCOPY -I ihex -O binary $INOHEX ./firmware.bin
 echo "OK" >&2
@@ -96,6 +96,26 @@ cat textaddr.txt | grep "^ADDR OK" | cut -f3- -d' ' | sed "s/^0000/0x/" |\
   /bin/echo -n -e $data | dd of=./firmware.bin bs=1 count=2 seek=$addr conv=notrunc oflag=nonblock 2>/dev/null
  done
 echo "OK" >&2
+
+#update primary language signature in binary file
+echo -n "  primary language signature..." >&2
+if [ -e lang_en.bin ]; then
+ #find symbol _PRI_LANG_SIGNATURE in section '.text'
+ pri_lang=$(cat text.sym | grep -E "\b_PRI_LANG_SIGNATURE\b")
+ if [ -z "$pri_lang" ]; then echo "NG!\n  symbol _PRI_LANG_SIGNATURE not found!" >&2; finish 1; fi
+ #get pri_lang address
+ pri_lang_addr='0x'$(echo $pri_lang | cut -f1 -d' ')
+ #read header from primary language binary file
+ header=$(dd if=lang_en.bin bs=1 count=16 2>/dev/null | xxd | cut -c11-49 | sed 's/\([0-9a-f][0-9a-f]\)[\ ]*/\1 /g')
+ #read checksum and count data as 4 byte signature
+ chscnt=$(echo $header | cut -c18-29 | sed "s/ /\\\\x/g")
+ /bin/echo -e -n "$chscnt" |\
+  dd of=firmware.bin bs=1 count=4 seek=$(($pri_lang_addr)) conv=notrunc 2>/dev/null
+ echo "OK" >&2
+else
+ echo "NG! - file lang_en.bin not found!" >&2;
+ finish 1
+fi
 
 #update _SEC_LANG in binary file if language is selected
 echo -n "  secondary language data..." >&2
