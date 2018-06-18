@@ -92,6 +92,8 @@ uint8_t lang_check(uint16_t addr)
 uint8_t lang_get_count()
 {
 #ifdef W25X20CL
+	if (pgm_read_dword(((uint32_t*)(_PRI_LANG_SIGNATURE))) == 0xffffffff)
+		return 1; //signature not set - only primary language will be available
 	W25X20CL_SPI_ENTER();
 	uint8_t count = 2; //count = 1+n (primary + secondary + all in xflash)
 	uint32_t addr = 0x00000; //start of xflash
