@@ -7160,8 +7160,8 @@ void FlushSerialRequestResend()
 void ClearToSend()
 {
     previous_millis_cmd = millis();
-    if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR))
-        SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+	if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)) 
+		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
 }
 
 #if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
@@ -8926,6 +8926,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	}
 	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
 		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
+		serial_count = 0; 
 		FlushSerialRequestResend();
 	}
 	else {

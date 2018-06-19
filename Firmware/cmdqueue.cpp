@@ -91,7 +91,7 @@ bool cmdqueue_pop_front()
 
 void cmdqueue_reset()
 {
-    bufindr = 0;
+	bufindr = 0;
     bufindw = 0;
     buflen = 0;
     cmdbuffer_front_already_processed = false;
@@ -385,7 +385,8 @@ void get_command()
 		rx_buffer_full = true;                //sets flag that buffer was full    
 	}
 
-  while (MYSERIAL.available() > 0) {
+  // start of serial line processing loop
+  while (MYSERIAL.available() > 0 && !saved_printing) {  //is print is saved (crash detection or filament detection), dont process data from serial line
 	
     char serial_char = MYSERIAL.read();
 /*    if (selectedSerialPort == 1)
