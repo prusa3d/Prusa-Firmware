@@ -385,7 +385,8 @@ void get_command()
 		rx_buffer_full = true;                //sets flag that buffer was full    
 	}
 
-  while (MYSERIAL.available() > 0) {
+  // start of serial line processing loop
+  while (MYSERIAL.available() > 0 && !saved_printing) {  //is print is saved (crash detection or filament detection), dont process data from serial line
 	
     char serial_char = MYSERIAL.read();
 /*    if (selectedSerialPort == 1)
