@@ -91,7 +91,7 @@ bool cmdqueue_pop_front()
 
 void cmdqueue_reset()
 {
-	bufindr = 0;
+    bufindr = 0;
     bufindw = 0;
     buflen = 0;
     cmdbuffer_front_already_processed = false;
