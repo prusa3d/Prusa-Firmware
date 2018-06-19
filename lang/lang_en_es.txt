@@ -76,7 +76,7 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"La carga automatica de filamento solo funciona si el sensor de filamento está activado..."
+"La carga automatica de filamento solo funciona si el sensor de filamento esta activado..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
@@ -132,7 +132,7 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"Se fue la luz. ¿Reanudar la impresion?"
+"Se fue la luz. Reanudar la impresion?"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -252,7 +252,7 @@
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
-"Error - se ha sobre-escrito la memoria estática"
+"Error - se ha sobre-escrito la memoria estatica"
 
 #MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
 "error writing to file"
@@ -260,7 +260,7 @@
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
-"ERROR: El sensor de filamento no responde, por favor comprueba la conexión."
+"ERROR: El sensor de filamento no responde, por favor comprueba la conexion."
 
 #MSG_ERROR c=0 r=0
 "ERROR:"
@@ -336,7 +336,7 @@
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
-"Archivo incompleto. ¿Continuar de todos modos?"
+"Archivo incompleto. Continuar de todos modos?"
 
 #MSG_SD_FILE_OPENED c=0 r=0
 "File opened: "
@@ -508,7 +508,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"¿Esta colocada la lamina de acero sobre la base?"
+"Esta colocada la lamina de acero sobre la base?"
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 "Iteration "
@@ -584,7 +584,7 @@
 
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
-"Nivelación Mesh Level"
+"Nivelacion Mesh Level"
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
@@ -668,7 +668,7 @@
 
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
-"Se han encontrado ajustes anteriores. Se ajustará el PID, los pasos del extrusor, etc"
+"Se han encontrado ajustes anteriores. Se ajustara el PID, los pasos del extrusor, etc"
 
 #MSG_SD_OPEN_FILE_FAIL c=0 r=0
 "open failed, File: "
@@ -820,7 +820,7 @@
 
 #MSG_RECOVERING_PRINT c=20 r=1
 "Recovering print    "
-"Recuperando impresión"
+"Recuperando impresion"
 
 #MSG_M119_REPORT c=0 r=0
 "Reporting endstop status"
@@ -908,7 +908,7 @@
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
-"Se realizará el auto-test para calibrar con precisión la vuelta a la posición inicial sin sensores."
+"Se realizara el auto-test para calibrar con precision la vuelta a la posicion inicial sin sensores."
 
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
@@ -940,7 +940,7 @@
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [Alphabet]"
-"Orden:[Alfabétic]"
+"Orden:[Alfabetic]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
@@ -1052,7 +1052,7 @@
 
 #MSG_WAITING_TEMP_PINDA c=20 r=3
 "Waiting for PINDA probe cooling"
-"Esperando a que se enfríe la sonda PINDA"
+"Esperando a que se enfrie la sonda PINDA"
 
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
@@ -1068,7 +1068,7 @@
 
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
-"¿Se cargocon exito el filamento?"
+"Se cargocon exito el filamento?"
 
 #MSG_SELFTEST_WIRINGERROR c=0 r=0
 "Wiring error"
