@@ -812,9 +812,7 @@ static void updateTemperaturesFromRawValues()
     //Reset the watchdog after we know we have a temperature measurement.
     watchdog_reset();
 
-    CRITICAL_SECTION_START;
     temp_meas_ready = false;
-    CRITICAL_SECTION_END;
 }
 
 
@@ -1403,6 +1401,12 @@ int read_max6675()
 // Timer 0 is shared with millies
 ISR(TIMER0_COMPB_vect)
 {
+  static bool inside = false;
+  if (inside)
+    return;
+  inside = true;
+  sei();
+
   //these variables are only accesible from the ISR, but static, so they don't lose their value
   static unsigned char temp_count = 0;
   static unsigned long raw_temp_0_value = 0;
@@ -1955,6 +1959,8 @@ ISR(TIMER0_COMPB_vect)
     }
   }
 #endif //BABYSTEPPING
+
+  inside = false;
 }
 
 #ifdef PIDTEMP

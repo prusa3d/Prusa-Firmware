@@ -991,6 +991,10 @@ void factory_reset(char level, bool quiet)
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+  LOGIC_ANALYZER_CH2_ENABLE;
+  LOGIC_ANALYZER_CH7_ENABLE;
+  LOGIC_ANALYZER_SERIAL_TX_ENABLE;
+
   WRITE(X_TMC2130_CS, HIGH);
   WRITE(Y_TMC2130_CS, HIGH);
   WRITE(Z_TMC2130_CS, HIGH);
@@ -1079,6 +1083,11 @@ void setup()
 
   tmc2130_mode = TMC2130_MODE_NORMAL;
   tmc2130_init();
+
+  enable_x_();
+  enable_y_();
+  enable_z_();
+  enable_e0_();
 
 	setup_photpin();
 	servo_init();
@@ -1315,6 +1324,69 @@ int serial_read_stream() {
     }
 }
 
+void push_raw_gcode_to_planner_queue()
+{
+  //SERIAL_ECHOPGM("Processing a raw GCODE command, len ");
+  //SERIAL_ECHO((int)(*(unsigned char*)(cmdbuffer+bufindr+1)));
+  //SERIAL_ECHOLNPGM("");
+  //SERIAL_ECHOPGM("Processing a raw GCODE command, block_t: ");
+  //SERIAL_ECHO((int)sizeof(block_t));
+  //SERIAL_ECHOLNPGM("");
+  for (;;) {
+    // Calculate the buffer head after we push this byte
+    int next_buffer_head = block_buffer_head;
+    if (++ next_buffer_head == BLOCK_BUFFER_SIZE)
+      next_buffer_head = 0; 
+    // If the buffer is full: good! That means we are well ahead of the robot. 
+    if (block_buffer_tail == next_buffer_head)
+      break;
+    //WRITE(BEEPER, HIGH);
+    WRITE_NC(LOGIC_ANALYZER_CH2, true);
+    // Mark the block as raw.
+    block_buffer[block_buffer_head].busy = 2;
+    block_buffer[block_buffer_head].fan_speed = fanSpeed;
+    uint8_t len = *(unsigned char*)(CMDBUFFER_CURRENT_STRING + 1);
+    block_buffer[block_buffer_head].raw_length = len;
+    memcpy(block_buffer[block_buffer_head].raw_data, (void*)(CMDBUFFER_CURRENT_STRING + 2), len);
+    //WRITE(BEEPER, LOW);
+    WRITE_NC(LOGIC_ANALYZER_CH2, false);
+    cmdqueue_pop_front();
+    // Enable motors.
+    enable_x();
+    enable_y();
+    enable_e0();
+#if 0
+    //SERIAL_ECHOPGM("Raw line enqueued, length: ");
+    //SERIAL_ECHO((int)((uint8_t*)(block_buffer + block_buffer_head))[1]);
+    //SERIAL_ECHOPGM(", type ");
+    //SERIAL_ECHO((int)(block_buffer[block_buffer_head]).busy);
+    //SERIAL_ECHOLNPGM("");
+    for (int i = 0; i < len; i += 2) {
+      SERIAL_ECHOPGM("Event ");
+      SERIAL_ECHO(i / 2);
+      SERIAL_ECHOPGM(", axes ");
+      uint8_t axes = ((uint8_t*)(block_buffer + block_buffer_head))[2 + i];
+      for (int j = 0; j < 8; ++ j, axes >>= 1)
+        SERIAL_ECHO((axes & 1) ? '1' : '0');
+      SERIAL_ECHOPGM(", time ");
+      SERIAL_ECHO((int)((uint8_t*)(block_buffer + block_buffer_head))[3 + i]);
+      SERIAL_ECHOLNPGM("");
+    }
+#endif
+    // Move the buffer head. From now the block may be picked up by the stepper interrupt controller.
+    block_buffer_head = next_buffer_head;
+    if (buflen == 0 || *(unsigned char*)(CMDBUFFER_CURRENT_STRING) != 128)
+      break;
+  }
+}
+
+void get_command_push_raw_gcode_to_planner_queue()
+{ 
+  get_command();
+  if(buflen && *(unsigned char*)(CMDBUFFER_CURRENT_STRING) == 128)
+    push_raw_gcode_to_planner_queue();
+}
+
 // The loop() function is called in an endless loop by the Arduino framework from the default main() routine.
 // Before loop(), the setup() function is called by the main() routine.
 void loop()
@@ -1344,8 +1416,10 @@ void loop()
   #ifdef SDSUPPORT
   card.checkautostart(false);
   #endif
-  if(buflen)
-  {
+  if(buflen) {
+    if (*(unsigned char*)(CMDBUFFER_CURRENT_STRING) == 128) {
+      push_raw_gcode_to_planner_queue();
+    } else {
     #ifdef SDSUPPORT
       if(card.saving)
       {
@@ -1370,6 +1444,7 @@ void loop()
       if (! cmdbuffer_front_already_processed)
           cmdqueue_pop_front();
       cmdbuffer_front_already_processed = false;
+    }
   }
 }
   //check heater every n milliseconds
@@ -1381,9 +1456,12 @@ void loop()
 
 void get_command()
 {
+  WRITE_NC(LOGIC_ANALYZER_CH7, true);
     // Test and reserve space for the new command string.
-	if (!cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1)) 
+	if (!cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1)) {
+    WRITE_NC(LOGIC_ANALYZER_CH7, false);
 		return;
+  }
 	
 	bool rx_buffer_full = false; //flag that serial rx buffer is full
 
@@ -1409,6 +1487,7 @@ void get_command()
     {
       if(!serial_count) { //if empty line
         comment_mode = false; //for new command
+        WRITE_NC(LOGIC_ANALYZER_CH7, false);
         return;
       }
       cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
@@ -1429,6 +1508,7 @@ void get_command()
                 //Serial.println(gcode_N);
                 FlushSerialRequestResend();
                 serial_count = 0;
+                WRITE_NC(LOGIC_ANALYZER_CH7, false);
                 return;
             }
 
@@ -1444,6 +1524,7 @@ void get_command()
                 SERIAL_ERRORLN(gcode_LastN);
                 FlushSerialRequestResend();
                 serial_count = 0;
+                WRITE_NC(LOGIC_ANALYZER_CH7, false);
                 return;
                 }
                 // If no errors, remove the checksum and continue parsing.
@@ -1456,6 +1537,7 @@ void get_command()
                 SERIAL_ERRORLN(gcode_LastN);
                 FlushSerialRequestResend();
                 serial_count = 0;
+                WRITE_NC(LOGIC_ANALYZER_CH7, false);
                 return;
             }
 
@@ -1471,6 +1553,7 @@ void get_command()
             SERIAL_ERRORRPGM(MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM);
             SERIAL_ERRORLN(gcode_LastN);
             serial_count = 0;
+            WRITE_NC(LOGIC_ANALYZER_CH7, false);
             return;
           }
         } // end of '*' command
@@ -1513,8 +1596,10 @@ void get_command()
       serial_count = 0; //clear buffer
       // Don't call cmdqueue_could_enqueue_back if there are no characters waiting
       // in the queue, as this function will reserve the memory.
-      if (MYSERIAL.available() == 0 || ! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))
+      if (MYSERIAL.available() == 0 || ! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1)) {
+          WRITE_NC(LOGIC_ANALYZER_CH7, false);
           return;
+        }
     } // end of "end of line" processing
     else {
       // Not an "end of line" symbol. Store the new character into a buffer.
@@ -1537,6 +1622,7 @@ void get_command()
             
             SERIAL_ECHOPGM("TIMEOUT:");
             //memset(cmdbuffer, 0 , sizeof(cmdbuffer));
+            WRITE_NC(LOGIC_ANALYZER_CH7, false);
             return;
         }
     }
@@ -1552,6 +1638,7 @@ void get_command()
   if(!card.sdprinting || serial_count!=0){
     // If there is a half filled buffer from serial line, wait until return before
     // continuing with the serial line.
+     WRITE_NC(LOGIC_ANALYZER_CH7, false);
      return;
   }
 
@@ -1565,6 +1652,42 @@ void get_command()
   // Reads whole lines from the SD card. Never leaves a half-filled line in the cmdbuffer.
   while( !card.eof() && !stop_buffering) {
     int16_t n=card.get();
+    if (n == 128) {
+      // SERIAL_ECHOLNPGM("Raw gcode");
+      // Special character: a raw movement line.
+      uint8_t len = card.get();
+      //SERIAL_ECHOPGM("Len");
+      //SERIAL_ECHO((int)len);
+      //SERIAL_ECHOLNPGM("");
+      unsigned char *ptr = (unsigned char*)(cmdbuffer + bufindw);
+      *ptr ++ = CMDBUFFER_CURRENT_TYPE_SDCARD;
+      *ptr ++ = 128;
+      *ptr ++ = len;
+      n = card.read((void*)ptr, len);
+      ptr += len;
+      if (n != len)
+        SERIAL_ECHOLNPGM("Wrong number of bytes received");
+      bufindw += len + 2 + 2; // command indicator, command, length, data, zero
+      if (bufindw == sizeof(cmdbuffer))
+          bufindw = 0;
+      comment_mode = false; //for new command
+      serial_count = 0; //clear buffer
+      *ptr = 0;
+      ++ buflen;
+      // Read the end of line indicator.
+      n = card.get();
+      if (n != '\n')
+        SERIAL_ECHOLNPGM("EOL NOT received");
+      //else
+      //  SERIAL_ECHOLNPGM("EOL received");
+      // The following line will reserve buffer space if available.
+      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1)) {
+          WRITE_NC(LOGIC_ANALYZER_CH7, false);
+          return;
+      }
+      // Read other lines.
+      continue;
+    }
     char serial_char = (char)n;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
@@ -1602,6 +1725,7 @@ void get_command()
       if(!serial_count)
       {
         comment_mode = false; //for new command
+        WRITE_NC(LOGIC_ANALYZER_CH7, false);
         return; //if empty line
       }
       cmdbuffer[bufindw+serial_count+1] = 0; //terminate string
@@ -1613,8 +1737,10 @@ void get_command()
       comment_mode = false; //for new command
       serial_count = 0; //clear buffer
       // The following line will reserve buffer space if available.
-      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1))
+      if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE-1)) {
+          WRITE_NC(LOGIC_ANALYZER_CH7, false);
           return;
+        }
     }
     else
     {
@@ -1622,8 +1748,8 @@ void get_command()
       if(!comment_mode) cmdbuffer[bufindw+1+serial_count++] = serial_char;
     }
   }
-
   #endif //SDSUPPORT
+  WRITE_NC(LOGIC_ANALYZER_CH7, false);
 }
 
 

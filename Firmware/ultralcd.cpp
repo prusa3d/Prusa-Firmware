@@ -378,21 +378,25 @@ static void lcd_status_screen()
 
 
     if (ReInitLCD == 30) {
+      #if 0
       lcd_implementation_init( // to maybe revive the LCD if static electricity killed it.
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
         currentMenu == lcd_status_screen
 #endif
       );
+      #endif
       ReInitLCD = 0 ;
     } else {
 
       if ((ReInitLCD % 10) == 0) {
         //lcd_implementation_nodisplay();
+        #if 0
         lcd_implementation_init_noclear( // to maybe revive the LCD if static electricity killed it.
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
           currentMenu == lcd_status_screen
 #endif
         );
+        #endif
 
       }
 

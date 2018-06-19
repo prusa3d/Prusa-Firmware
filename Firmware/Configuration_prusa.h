@@ -21,7 +21,7 @@ GENERAL SETTINGS
 // Prusa Single extruder multiple material suport
 //#define SNMM
 #define MK3
-#define EINSY_HIGH_SAMPLE_RATE
+// #define EINSY_HIGH_SAMPLE_RATE
 
 #define ENABLE_LEVELING_FADE_HEIGHT
 

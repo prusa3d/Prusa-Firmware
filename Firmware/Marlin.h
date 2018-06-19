@@ -116,70 +116,29 @@ void ramming();
 void manage_inactivity(bool ignore_stepper_queue=false);
 
 #if defined(X_ENABLE_PIN) && X_ENABLE_PIN > -1
-  #define  enable_x() WRITE(X_ENABLE_PIN, X_ENABLE_ON)
-  #define disable_x() { WRITE(X_ENABLE_PIN,!X_ENABLE_ON); axis_known_position[X_AXIS] = false; }
-#else
+  #define enable_x_() WRITE(X_ENABLE_PIN, X_ENABLE_ON)
+  #define disable_x_() { WRITE(X_ENABLE_PIN,!X_ENABLE_ON); axis_known_position[X_AXIS] = false; }
   #define enable_x() ;
   #define disable_x() ;
 #endif
 
 #if defined(Y_ENABLE_PIN) && Y_ENABLE_PIN > -1
-  #ifdef Y_DUAL_STEPPER_DRIVERS
-    #define  enable_y() { WRITE(Y_ENABLE_PIN, Y_ENABLE_ON); WRITE(Y2_ENABLE_PIN,  Y_ENABLE_ON); }
-    #define disable_y() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); WRITE(Y2_ENABLE_PIN, !Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
-  #else
-    #define  enable_y() WRITE(Y_ENABLE_PIN, Y_ENABLE_ON)
-    #define disable_y() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
-  #endif
-#else
+  #define enable_y_() WRITE(Y_ENABLE_PIN, Y_ENABLE_ON)
+  #define disable_y_() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
   #define enable_y() ;
   #define disable_y() ;
 #endif
 
 #if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1 
-	#if defined(Z_AXIS_ALWAYS_ON)
-		  #ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-		  #else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define  disable_z() ;
-		  #endif
-	#else
-		#ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-		#else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-		#endif
-	#endif
-#else
+	#define enable_z_() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+	#define disable_z_() ;
   #define enable_z() ;
   #define disable_z() ;
 #endif
 
-
-
-
-//#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1
-//#ifdef Z_DUAL_STEPPER_DRIVERS
-//#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-//#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-//#else
-//#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-//#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-//#endif
-//#else
-//#define enable_z() ;
-//#define disable_z() ;
-//#endif
-
-
 #if defined(E0_ENABLE_PIN) && (E0_ENABLE_PIN > -1)
-  #define enable_e0() WRITE(E0_ENABLE_PIN, E_ENABLE_ON)
-  #define disable_e0() WRITE(E0_ENABLE_PIN,!E_ENABLE_ON)
-#else
+  #define enable_e0_() WRITE(E0_ENABLE_PIN, E_ENABLE_ON)
+  #define disable_e0_() WRITE(E0_ENABLE_PIN,!E_ENABLE_ON)
   #define enable_e0()  /* nothing */
   #define disable_e0() /* nothing */
 #endif

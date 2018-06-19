@@ -44,50 +44,62 @@ enum BlockFlag {
 
 // This struct is used when buffering the setup for each linear movement "nominal" values are as specified in 
 // the source g-code and may never actually be reached if acceleration management is active.
-typedef struct {
-  // Fields used by the bresenham algorithm for tracing the line
-  // steps_x.y,z, step_event_count, acceleration_rate, direction_bits and active_extruder are set by plan_buffer_line().
-  long steps_x, steps_y, steps_z, steps_e;  // Step count along each axis
-  unsigned long step_event_count;           // The number of step events required to complete this block
-  long acceleration_rate;                   // The acceleration rate used for acceleration calculation
-  unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
-  unsigned char active_extruder;            // Selects the active extruder
-  // accelerate_until and decelerate_after are set by calculate_trapezoid_for_block() and they need to be synchronized with the stepper interrupt controller.
-  long accelerate_until;                    // The index of the step event on which to stop acceleration
-  long decelerate_after;                    // The index of the step event on which to start decelerating
+typedef union {
+  struct {
+    // Busy flag: Currently processed.
+    // Misused for the raw movement algorithm.
+    volatile char busy;
 
-  // Fields used by the motion planner to manage acceleration
-//  float speed_x, speed_y, speed_z, speed_e;        // Nominal mm/sec for each axis
-  // The nominal speed for this block in mm/sec.
-  // This speed may or may not be reached due to the jerk and acceleration limits.
-  float nominal_speed;
-  // Entry speed at previous-current junction in mm/sec, respecting the acceleration and jerk limits.
-  // The entry speed limit of the current block equals the exit speed of the preceding block.
-  float entry_speed;
-  // Maximum allowable junction entry speed in mm/sec. This value is also a maximum exit speed of the previous block.
-  float max_entry_speed;
-  // The total travel of this block in mm
-  float millimeters;
-  // acceleration mm/sec^2
-  float acceleration;
+    // Fields used by the bresenham algorithm for tracing the line
+    // steps_x.y,z, step_event_count, acceleration_rate, direction_bits and active_extruder are set by plan_buffer_line().
+    long steps_x, steps_y, steps_z, steps_e;  // Step count along each axis
+    unsigned long step_event_count;           // The number of step events required to complete this block
+    long acceleration_rate;                   // The acceleration rate used for acceleration calculation
+    unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
+    unsigned char active_extruder;            // Selects the active extruder
+    // accelerate_until and decelerate_after are set by calculate_trapezoid_for_block() and they need to be synchronized with the stepper interrupt controller.
+    long accelerate_until;                    // The index of the step event on which to stop acceleration
+    long decelerate_after;                    // The index of the step event on which to start decelerating
 
-  // Bit flags defined by the BlockFlag enum.
-  bool flag;
+    // Fields used by the motion planner to manage acceleration
+  //  float speed_x, speed_y, speed_z, speed_e;        // Nominal mm/sec for each axis
+    // The nominal speed for this block in mm/sec.
+    // This speed may or may not be reached due to the jerk and acceleration limits.
+    float nominal_speed;
+    // Entry speed at previous-current junction in mm/sec, respecting the acceleration and jerk limits.
+    // The entry speed limit of the current block equals the exit speed of the preceding block.
+    float entry_speed;
+    // Maximum allowable junction entry speed in mm/sec. This value is also a maximum exit speed of the previous block.
+    float max_entry_speed;
+    // The total travel of this block in mm
+    float millimeters;
+    // acceleration mm/sec^2
+    float acceleration;
 
-  // Settings for the trapezoid generator (runs inside an interrupt handler).
-  // Changing the following values in the planner needs to be synchronized with the interrupt handler by disabling the interrupts.
-  //FIXME nominal_rate, initial_rate and final_rate are limited to uint16_t by MultiU24X24toH16 in the stepper interrupt anyway!
-  unsigned long nominal_rate;                        // The nominal step rate for this block in step_events/sec 
-  unsigned long initial_rate;                        // The jerk-adjusted step rate at start of block  
-  unsigned long final_rate;                          // The minimal rate at exit
-  unsigned long acceleration_st;                     // acceleration steps/sec^2
-  //FIXME does it have to be unsigned long? Probably uint8_t would be just fine.
-  unsigned long fan_speed;
-  volatile char busy;
+    // Bit flags defined by the BlockFlag enum.
+    bool flag;
+
+    // Settings for the trapezoid generator (runs inside an interrupt handler).
+    // Changing the following values in the planner needs to be synchronized with the interrupt handler by disabling the interrupts.
+    //FIXME nominal_rate, initial_rate and final_rate are limited to uint16_t by MultiU24X24toH16 in the stepper interrupt anyway!
+    unsigned long nominal_rate;                        // The nominal step rate for this block in step_events/sec 
+    unsigned long initial_rate;                        // The jerk-adjusted step rate at start of block  
+    unsigned long final_rate;                          // The minimal rate at exit
+    unsigned long acceleration_st;                     // acceleration steps/sec^2
 
 
-  // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
-  float speed_factor;
+    // Pre-calculated division for the calculate_trapezoid_for_block() routine to run faster.
+    float speed_factor;
+  };
+
+  struct {
+    unsigned char raw_flag;
+    unsigned char raw_length;
+    unsigned char raw_data[80];
+    //FIXME does it have to be unsigned long? Probably uint8_t would be just fine.
+    unsigned int  fan_speed;
+  };
+
 } block_t;
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -166,7 +178,8 @@ FORCE_INLINE block_t *plan_get_current_block()
     return(NULL); 
   }
   block_t *block = &block_buffer[block_buffer_tail];
-  block->busy = true;
+  if (! block->busy)
+    block->busy = true;
   return(block);
 }
 

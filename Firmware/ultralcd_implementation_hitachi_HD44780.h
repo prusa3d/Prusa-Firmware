@@ -652,6 +652,7 @@ void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str)
     lcd.print(str);
 }
 
+extern void get_command_push_raw_gcode_to_planner_queue();
 /*
 
 20x4   |01234567890123456789|
@@ -692,6 +693,8 @@ static void lcd_implementation_status_screen()
     lcd.print(' ');
 #endif
 
+    get_command_push_raw_gcode_to_planner_queue();
+
     //Print the Bedtemperature
     lcd.setCursor(0, 1);
     tHotend=int(degBed() + 0.5);
@@ -728,6 +731,8 @@ static void lcd_implementation_status_screen()
       planner_queue_min_reset();
     }
 #endif
+
+    get_command_push_raw_gcode_to_planner_queue();
 	
     //Print SD status
     lcd.setCursor(0, 2);
@@ -786,7 +791,7 @@ static void lcd_implementation_status_screen()
 #endif
 	}
 
-
+    get_command_push_raw_gcode_to_planner_queue();
 
     //Print time elapsed
     lcd.setCursor(LCD_WIDTH - 8 -1, 2);
@@ -809,6 +814,8 @@ static void lcd_implementation_status_screen()
 
     // If heating in progress, set flag
 	if (heating_status != 0) { custom_message = true; }
+
+  get_command_push_raw_gcode_to_planner_queue();
 
     // If printing from SD, show what we are printing
 	if ((IS_SD_PRINTING) && !custom_message)
@@ -988,7 +995,9 @@ static void lcd_implementation_status_screen()
 			lcd.print(lcd_status_message);
 		}
 	}
-    
+
+  get_command_push_raw_gcode_to_planner_queue();
+
     // Fill the rest of line to have nice and clean output
     for(int fillspace = 0; fillspace<20;fillspace++)
 	{

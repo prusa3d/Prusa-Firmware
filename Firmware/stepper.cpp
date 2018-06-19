@@ -331,22 +331,30 @@ ISR(TIMER1_COMPA_vect)
     // Anything in the buffer?
     current_block = plan_get_current_block();
     if (current_block != NULL) {
-      // The busy flag is set by the plan_get_current_block() call.
-      // current_block->busy = true;
-      trapezoid_generator_reset();
-      counter_x = -(current_block->step_event_count >> 1);
-      counter_y = counter_x;
-      counter_z = counter_x;
-      counter_e = counter_x;
-      step_events_completed = 0;
+      if (current_block->busy == 2) {
+        // This is a raw block.
+        counter_x = ((unsigned char*)current_block)[1];
+        // Stored in bytes, converted to number of steps.
+        counter_x >>= 1;
+        counter_y = 2;
+      } else {
+        // The busy flag is set by the plan_get_current_block() call.
+        // current_block->busy = true;
+        trapezoid_generator_reset();
+        counter_x = -(current_block->step_event_count >> 1);
+        counter_y = counter_x;
+        counter_z = counter_x;
+        counter_e = counter_x;
+        step_events_completed = 0;
 
-      #ifdef Z_LATE_ENABLE
-        if(current_block->steps_z > 0) {
-          enable_z();
-          OCR1A = 2000; //1ms wait
-          return;
-        }
-      #endif
+        #ifdef Z_LATE_ENABLE
+          if(current_block->steps_z > 0) {
+            enable_z();
+            OCR1A = 2000; //1ms wait
+            return;
+          }
+        #endif
+      }
     }
     else {
         OCR1A=2000; // 1kHz.
@@ -354,6 +362,49 @@ ISR(TIMER1_COMPA_vect)
   }
 
   if (current_block != NULL) {
+    if (current_block->busy == 2) {
+      // This is a raw block.
+      out_bits = ((unsigned char*)current_block)[counter_y ++];
+      LOGIC_ANALYZER_SERIAL_TX_WRITE_NC((int)(out_bits) + 0x100);
+      WRITE(X_DIR_PIN, (out_bits & (0x10<<X_AXIS)) ? INVERT_X_DIR : !INVERT_X_DIR);
+      WRITE(Y_DIR_PIN, (out_bits & (0x10<<Y_AXIS)) ? INVERT_Y_DIR : !INVERT_Y_DIR);
+      WRITE(Z_DIR_PIN, (out_bits & (0x10<<Z_AXIS)) ? INVERT_Z_DIR : !INVERT_Z_DIR);
+      WRITE(E0_DIR_PIN, (out_bits & (0x10<<E_AXIS)) ? INVERT_E0_DIR : !INVERT_E0_DIR);
+//      uint16_t old_time = TCNT1;
+      if (out_bits & (1<<X_AXIS))
+        WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN);
+      if (out_bits & (1<<Y_AXIS))
+        WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
+      if (out_bits & (1<<Z_AXIS))
+        WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
+      if (out_bits & (1<<E_AXIS))
+        WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
+      if (out_bits & (1<<X_AXIS))
+        WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
+      if (out_bits & (1<<Y_AXIS))
+        WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
+      if (out_bits & (1<<Z_AXIS))
+        WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
+      if (out_bits & (1<<E_AXIS))
+        WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
+      // Plan the next tick.
+      out_bits = ((unsigned char*)current_block)[counter_y ++];
+      LOGIC_ANALYZER_SERIAL_TX_WRITE_NC((int)(out_bits));
+      OCR1A = out_bits;
+      if (-- counter_x == 0) {
+        current_block = NULL;
+        plan_discard_current_block();
+        LOGIC_ANALYZER_SERIAL_TX_WRITE_NC(0x1ff);
+      }
+      // Don't run the ISR faster than possible
+      // Is there a 8us time left before the next interrupt triggers?
+      if (OCR1A < TCNT1 + 8) {
+        // Fix the next interrupt to be executed after 8us from now.
+        OCR1A = TCNT1 + 8;
+      }
+      return;
+    }
+
     // Set directions TO DO This should be done once during init of trapezoid. Endstops -> interrupt
     out_bits = current_block->direction_bits;
 

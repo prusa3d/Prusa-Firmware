@@ -480,10 +480,17 @@ void check_axes_activity()
     while(block_index != block_buffer_head)
     {
       block = &block_buffer[block_index];
-      if(block->steps_x != 0) x_active++;
-      if(block->steps_y != 0) y_active++;
-      if(block->steps_z != 0) z_active++;
-      if(block->steps_e != 0) e_active++;
+      if (block->busy == 2) {
+        ++ x_active;
+        ++ y_active;
+        ++ z_active;
+        ++ e_active;
+      } else {
+        if(block->steps_x != 0) x_active++;
+        if(block->steps_y != 0) y_active++;
+        if(block->steps_z != 0) z_active++;
+        if(block->steps_e != 0) e_active++;
+      }
       block_index = (block_index+1) & (BLOCK_BUFFER_SIZE - 1);
     }
   }
@@ -978,7 +985,7 @@ Having the real displacement of the head, we can calculate the total movement le
   // Acceleration of the segment, in mm/sec^2
   block->acceleration = block->acceleration_st / steps_per_mm;
 
-#if 1
+#if 0
   // Oversample diagonal movements by a power of 2 up to 8x
   // to achieve more accurate diagonal movements.
   uint8_t bresenham_oversample = 1;

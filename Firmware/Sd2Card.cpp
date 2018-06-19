@@ -88,7 +88,7 @@ static inline __attribute__((always_inline))
 static uint8_t spiRec() {
   uint8_t data = 0;
   // no interrupts during byte receive - about 8 us
-  cli();
+//  cli();
   // output pin high - like sending 0XFF
   fastDigitalWrite(SPI_MOSI_PIN, HIGH);
 
@@ -106,7 +106,7 @@ static uint8_t spiRec() {
     fastDigitalWrite(SPI_SCK_PIN, LOW);
   }
   // enable interrupts
-  sei();
+//  sei();
   return data;
 }
 //------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ static void spiRead(uint8_t* buf, uint16_t nbyte) {
 /** Soft SPI send byte */
 static void spiSend(uint8_t data) {
   // no interrupts during byte send - about 8 us
-  cli();
+//  cli();
   for (uint8_t i = 0; i < 8; i++) {
     fastDigitalWrite(SPI_SCK_PIN, LOW);
 
@@ -138,7 +138,7 @@ static void spiSend(uint8_t data) {
 
   fastDigitalWrite(SPI_SCK_PIN, LOW);
   // enable interrupts
-  sei();
+//  sei();
 }
 //------------------------------------------------------------------------------
 /** Soft SPI send block */

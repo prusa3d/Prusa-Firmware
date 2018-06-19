@@ -66,6 +66,7 @@
 #define READ(IO)  _READ(IO)
 /// Write to a pin wrapper
 #define WRITE(IO, v)  _WRITE(IO, v)
+#define WRITE_NC(IO, v) _WRITE_NC(IO, v)
 
 /// toggle a pin wrapper
 #define TOGGLE(IO)  _TOGGLE(IO)
