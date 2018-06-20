@@ -4397,6 +4397,7 @@ void process_commands()
 		}
 		KEEPALIVE_STATE(NOT_BUSY);
 		// Restore custom message state
+		lcd_setstatuspgm(_T(WELCOME_MSG));
 		custom_message = custom_message_old;
 		custom_message_type = custom_message_type_old;
 		custom_message_state = custom_message_state_old;
@@ -8940,8 +8941,8 @@ void restore_print_from_ram_and_continue(float e_move)
 	else {
 		//not sd printing nor usb printing
 	}
+	lcd_setstatuspgm(_T(WELCOME_MSG));
 	saved_printing = false;
-	
 }
 
 void print_world_coordinates()
