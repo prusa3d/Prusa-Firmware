@@ -5,6 +5,7 @@
 #include "bootapp.h"
 
 #include "Configuration.h"
+#include "pins.h"
 
 #ifdef W25X20CL
 #include "w25x20cl.h"
