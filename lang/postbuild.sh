@@ -117,6 +117,11 @@ else
  finish 1
 fi
 
+#convert bin to hex
+echo -n " converting to hex..." >&2
+$OBJCOPY -I binary -O ihex ./firmware.bin ./firmware.hex
+echo "OK" >&2
+
 #update _SEC_LANG in binary file if language is selected
 echo -n "  secondary language data..." >&2
 if [ ! -z "$LNG" ]; then
@@ -154,9 +159,20 @@ else
 # echo "skipped" >&2
 fi
 
-#convert bin to hex
-#echo -n " converting to hex..." >&2
-#$OBJCOPY -I binary -O ihex ./firmware.bin ./firmware.hex
-#echo "OK" >&2
+#create binary file with all languages
+rm -f lang.bin
+if [ -e lang_cz.bin ]; then cat lang_cz.bin >> lang.bin; fi
+if [ -e lang_de.bin ]; then cat lang_de.bin >> lang.bin; fi
+if [ -e lang_es.bin ]; then cat lang_es.bin >> lang.bin; fi
+if [ -e lang_it.bin ]; then cat lang_it.bin >> lang.bin; fi
+if [ -e lang_pl.bin ]; then cat lang_pl.bin >> lang.bin; fi
+
+#convert lang.bin to lang.hex
+echo -n " converting to hex..." >&2
+$OBJCOPY -I binary -O ihex ./lang.bin ./lang.hex
+echo "OK" >&2
+
+#append languages to hex file
+cat ./lang.hex >> firmware.hex
 
 finish 0

@@ -90,7 +90,8 @@ generate_binary()
   cat lang_en_$1.txt | sed '/^$/d;/^#/d' | sed -n 'n;p'
  fi | sed 's/^\"\\x00\"$/\"\"/' > lang_$1.tmp
  #create lang_xx.dat (binary text data file)
- cat lang_$1.tmp | sed 's/^\"/printf \"/;s/"$/\\x00\"/' | sh >lang_$1.dat
+# cat lang_$1.tmp | sed 's/^\"/\/bin\/echo -e \"/;s/"$/\\x00\"/' > lang_$1.shx
+ cat lang_$1.tmp | sed 's/^\"/\/bin\/echo -e \"/;s/"$/\\x00\"/' | sh >lang_$1.dat
  #calculate number of strings
  count=$(grep -c '^"' lang_$1.tmp)
  echo "count="$count >&2
@@ -118,8 +119,8 @@ generate_binary()
  /bin/echo -n -e $(echo -n $((0x$chsum)) | awk "$awk_ui16") |\
   dd of=lang_$1.bin bs=1 count=2 seek=8 conv=notrunc 2>/dev/null
  #remove temporary files
- rm -f lang_$1.tmp
- rm -f lang_$1.dat
+# rm -f lang_$1.tmp
+# rm -f lang_$1.dat
 }
 
 if [ -z "$1" ]; then set 'all'; fi
