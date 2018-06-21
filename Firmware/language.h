@@ -2,7 +2,7 @@
 #ifndef LANGUAGE_H
 #define LANGUAGE_H
 
-#define W25X20CL
+//#define W25X20CL
 
 #include "config.h"
 #include <inttypes.h>
