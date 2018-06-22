@@ -23,10 +23,10 @@ than do it
 `Tools->Board->BoardsManager`  
 from viewed list select an item `"RAMBo"` (will probably be labeled as `"RepRap Arduino-compatible Mother Board (RAMBo) by UltiMachine"`  
 _note: select this item for any variant of board used in printers `'Prusa i3 MKx'`, that is for `RAMBo-mini x.y` and `EINSy x.y` to_  
-'clicking' the item will display the installation button; select choice `"1.0.1"` from the list(last known version as of the date of issue of this document)  
+'clicking' the item will display the installation button; select choice `"1.0.1"` from the list (last known version as of the date of issue of this document)  
 _(after installation, the item is labeled as `"INSTALLED"` and can then be used for target board selection)_  
 
-   3. modify platform.txt to enable float printf support:
+   3. modify `platform.txt` to enable float printf support:
    `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
 
 # 2. Source code compilation
