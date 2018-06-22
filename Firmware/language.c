@@ -153,7 +153,6 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		if (--lang == 0) return 1;
 		addr += header->size; //calc address of next table
 	}
-	return 0;
 #else //W25X20CL
 	if (lang == LANG_ID_SEC)
 	{
@@ -163,6 +162,7 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		return (header->magic == LANG_MAGIC)?1:0; //return 1 if magic valid
 	}
 #endif //W25X20CL
+	return 0;
 }
 
 uint16_t lang_get_code(uint8_t lang)
@@ -187,11 +187,13 @@ uint16_t lang_get_code(uint8_t lang)
 		addr += header.size; //calc address of next table
 	}
 #else //W25X20CL
-	if (lang == LANG_ID_SEC)
+	uint16_t table = _SEC_LANG_TABLE;
+	uint8_t count = 1; //count = 1 (primary)
+	while (pgm_read_dword((uint32_t*)table) == LANG_MAGIC) //magic valid
 	{
-		uint16_t ui = _SEC_LANG_TABLE; //table pointer
-		if (pgm_read_dword(((uint32_t*)(ui + 0))) == LANG_MAGIC) //magic num is OK
-			return pgm_read_word(((uint16_t*)(ui + 10))); //read language code
+		if (count == lang) return pgm_read_word(((uint16_t*)(table + 10))); //read language code
+		table += pgm_read_word((uint16_t*)(table + 4));
+		count++;
 	}
 #endif //W25X20CL
 	return LANG_CODE_XX;
