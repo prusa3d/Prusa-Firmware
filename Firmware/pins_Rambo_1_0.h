@@ -16,7 +16,7 @@
 
 #define PAT9125_SWI2C
 #define PAT9125_SWI2C_SDA      20 //SDA on P3
-#define PAT9125_SWI2C_SCL      21 //SCL on P3
+#define PAT9125_SWI2C_SCL      84 //PH2 on P3, sensor cable must be rewired
 #define PAT9125_SWI2C_CFG    0xb1 //2us clock delay, 2048 cycles timeout
 
 //#define PAT9125_HWI2C
