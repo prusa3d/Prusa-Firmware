@@ -63,7 +63,7 @@ l=0
 #create lang_xx_2.tmp (temporary text file from dictionary)
 cat lang_$1.tmp | sed 's/^\"/printf \"\\x22/;s/"$/\\x22\\x0a\"/' | sh >lang_$1_2.tmp
 #compare temporary files
-diff lang_$1_2.tmp lang_$1_2.tmp >lang_$1_check.dif
+diff -a lang_$1_1.tmp lang_$1_2.tmp >lang_$1_check.dif
 dif=$(cat lang_$1_check.dif)
 if [ -z "$dif" ]; then
  echo 'binary data OK'
