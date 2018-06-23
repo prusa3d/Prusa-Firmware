@@ -492,6 +492,14 @@ inline void menu_item_dummy(void)
 	_menuItemNr++;
 }
 
+uint8_t menu_item_ret(void)
+{
+	lcd_implementation_quick_feedback();
+	lcdDrawUpdate = 2;
+	button_pressed = false;
+	return 1;
+}
+
 #define MENU_ITEM_TEXT_P(str) if (menu_item_text_P(str)) return
 uint8_t menu_item_text_P(const char* str)
 {
@@ -499,12 +507,7 @@ uint8_t menu_item_text_P(const char* str)
 	{
 		if (lcdDrawUpdate) menu_draw_item_puts_P(' ', str);
 		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
-		{
-			lcd_implementation_quick_feedback();
-			lcdDrawUpdate = 2;
-			button_pressed = false;
-			return 1;
-		}
+			return menu_item_ret();
 	}
 	_menuItemNr++;
 	return 0;
@@ -518,12 +521,9 @@ uint8_t menu_item_submenu_P(const char* str, menuFunc_t submenu)
 		if (lcdDrawUpdate) menu_draw_item_puts_P(LCD_STR_ARROW_RIGHT[0], str);
 		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
 		{
-			lcd_implementation_quick_feedback();
-			lcdDrawUpdate = 2;
-			button_pressed = false;
 			menuStack.push(currentMenu, encoderPosition);
 			lcd_goto_menu(submenu, 0, false, true);
-			return 1;
+			return menu_item_ret();
 		}
 	}
 	_menuItemNr++;
@@ -539,12 +539,9 @@ uint8_t menu_item_back_P(const char* str)
 		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
 		{
 			MenuStack::Record record = menuStack.pop();
-			lcd_implementation_quick_feedback();
-			lcdDrawUpdate = 2;
-			button_pressed = false;
 			lcd_goto_menu(record.menu, false, true);
 			encoderPosition = record.position;
-			return 1;
+			return menu_item_ret();
 		}
 	}
 	_menuItemNr++;
@@ -560,10 +557,7 @@ uint8_t menu_item_function_P(const char* str, menuFunc_t func)
 		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
 		{
 			if (func) func();
-			lcd_implementation_quick_feedback();
-			lcdDrawUpdate = 2;
-			button_pressed = false;
-			return 1;
+			return menu_item_ret();
 		}
 	}
 	_menuItemNr++;
@@ -579,10 +573,7 @@ uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
 		{
 			if (str_gcode) enquecommand_P(str_gcode);
-			lcd_implementation_quick_feedback();
-			lcdDrawUpdate = 2;
-			button_pressed = false;
-			return 1;
+			return menu_item_ret();
 		}
 	}
 	_menuItemNr++;
