@@ -1353,8 +1353,6 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* pst
         lcd.print(' ');
 }
 
-#define lcd_implementation_drawmenu_setlang_selected(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, '>', ' ')
-#define lcd_implementation_drawmenu_setlang(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, ' ', ' ')
 
 static void lcd_implementation_quick_feedback()
 {

@@ -247,7 +247,6 @@ static void lcd_delta_calibrate_menu();
 static void lcd_quick_feedback();//Cause an LCD refresh, and give the user visual or audible feedback that something has happened
 
 /* Different types of actions that can be used in menu items. */
-static void menu_action_setlang(unsigned char lang);
 static void menu_action_sdfile(const char* filename, char* longFilename);
 static void menu_action_sddirectory(const char* filename, char* longFilename);
 static void menu_action_setting_edit_bool(const char* pstr, bool* ptr);
@@ -317,7 +316,7 @@ bool wasClicked = false;
     _menuItemNr++;\
   } while(0)
 
-#define MENU_ITEM_DUMMY() do { _menuItemNr++; } while(0)
+//#define MENU_ITEM_DUMMY() do { _menuItemNr++; } while(0)
 #define MENU_ITEM_EDIT(type, label, args...) MENU_ITEM(setting_edit_ ## type, label, (label) , ## args )
 #define MENU_ITEM_EDIT_CALLBACK(type, label, args...) MENU_ITEM(setting_edit_callback_ ## type, label, (label) , ## args )
 
@@ -354,7 +353,7 @@ uint8_t lcdDrawUpdate = 2;                  /* Set to none-zero when the LCD nee
 /**
  * @brief Go to menu
  *
- * In MENU_ITEM_SUBMENU_P(,... ) use MENU_ITEM(back,...) or
+ * In MENU_ITEM_SUBMENU_P(str, func) use MENU_ITEM_BACK_P(str) or
  * menu_back() and menu_submenu() instead, otherwise menuStack will be broken.
  *
  * It is acceptable to call lcd_goto_menu(menu) directly from MENU_ITEM(function,...), if destination menu
@@ -393,8 +392,9 @@ static void lcd_goto_menu(menuFunc_t menu, const uint32_t encoder = 0, const boo
 		asm("sei");
 }
 
-/* Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent */
 
+////////////////////////////////////////////////////////////////////////////////
+// New Menu implementation
 
 #include <stdarg.h>
 
@@ -453,7 +453,7 @@ void menu_submenu(menuFunc_t submenu)
 	menuStack.push(currentMenu, encoderPosition);
 	lcd_goto_menu(submenu);
 }
-
+/*
 int menu_item_printf_P(char type_char, const char* format, ...)
 {
 	va_list args;
@@ -471,13 +471,51 @@ int menu_item_printf_P(char type_char, const char* format, ...)
 	va_end(args);
 	return ret;
 }
+*/
+int menu_draw_item_puts_P(char type_char, const char* str)
+{
+    lcd.setCursor(0, _drawLineNr);
+//	if ((encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
+//		lcd.print('>');
+//	else
+//		lcd.print(' ');
+	int cnt = lcd_printf_P(_N("%c%-18S%c"), ((encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)?'>':' ', str, type_char);
+//	for (cnt++ < 18; i++)
+//		lcd.print(' ');
+//	lcd.print(type_char);
+	return cnt;
+}
+
+#define MENU_ITEM_DUMMY() menu_item_dummy()
+inline void menu_item_dummy(void)
+{
+	_menuItemNr++;
+}
+
+#define MENU_ITEM_TEXT_P(str) if (menu_item_text_P(str)) return
+uint8_t menu_item_text_P(const char* str)
+{
+	if (_menuItemNr == _lineNr)
+	{
+		if (lcdDrawUpdate) menu_draw_item_puts_P(' ', str);
+		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
+		{
+			lcd_implementation_quick_feedback();
+			lcdDrawUpdate = 2;
+			button_pressed = false;
+			return 1;
+		}
+	}
+	_menuItemNr++;
+	return 0;
+}
 
 #define MENU_ITEM_SUBMENU_P(str, submenu) if (menu_item_submenu_P(str, submenu)) return
 uint8_t menu_item_submenu_P(const char* str, menuFunc_t submenu)
 {
 	if (_menuItemNr == _lineNr)
 	{
-		if (lcdDrawUpdate) menu_item_printf_P(LCD_STR_ARROW_RIGHT[0], str);
+		if (lcdDrawUpdate) menu_draw_item_puts_P(LCD_STR_ARROW_RIGHT[0], str);
 		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
 		{
 			lcd_implementation_quick_feedback();
@@ -497,7 +535,7 @@ uint8_t menu_item_back_P(const char* str)
 {
 	if (_menuItemNr == _lineNr)
 	{
-		if (lcdDrawUpdate) menu_item_printf_P(LCD_STR_UPLEVEL[0], str);
+		if (lcdDrawUpdate) menu_draw_item_puts_P(LCD_STR_UPLEVEL[0], str);
 		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
 		{
 			MenuStack::Record record = menuStack.pop();
@@ -518,7 +556,7 @@ uint8_t menu_item_function_P(const char* str, menuFunc_t func)
 {
 	if (_menuItemNr == _lineNr)
 	{
-		if (lcdDrawUpdate) menu_item_printf_P(' ', str);
+		if (lcdDrawUpdate) menu_draw_item_puts_P(' ', str);
 		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
 		{
 			if (func) func();
@@ -537,7 +575,7 @@ uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 {
 	if (_menuItemNr == _lineNr)
 	{
-		if (lcdDrawUpdate) menu_item_printf_P(' ', str);
+		if (lcdDrawUpdate) menu_draw_item_puts_P(' ', str);
 		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
 		{
 			if (str_gcode) enquecommand_P(str_gcode);
@@ -550,6 +588,23 @@ uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 	_menuItemNr++;
 	return 0;
 }
+
+//#define MENU_ITEM_SDDIR_P(str, str_fn, str_desc) if (menu_item_sddir_P(str, str_fn, str_desc)) return
+#define MENU_ITEM_SDDIR_P(str, str_fn, str_desc) MENU_ITEM(sddirectory, str, str_fn, str_desc)
+uint8_t menu_item_sddir_P(const char* str, const char* str_fn, char* str_desc)
+{
+
+}
+
+//#define MENU_ITEM_SDFILE_P(str, str_fn, str_desc) if (menu_item_sdfile_P(str, str_fn, str_desc)) return
+#define MENU_ITEM_SDFILE_P(str, str_fn, str_desc) MENU_ITEM(sdfile, str, str_fn, str_desc)
+uint8_t menu_item_sdfile_P(const char* str, const char* str_fn, char* str_desc)
+{
+
+}
+
+
+/* Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent */
 
 static void lcd_status_screen()
 {
@@ -3804,21 +3859,50 @@ void lcd_set_progress() {
 #endif
 
 #if (LANG_MODE != 0)
+
+void menu_setlang(unsigned char lang)
+{
+	if (!lang_select(lang))
+	{
+		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language from XFLASH?"), false, true))
+			lang_boot_update_start(lang);
+		lcd_update_enable(true);
+		lcd_implementation_clear();
+		lcd_goto_menu(lcd_language_menu);
+		lcd_timeoutToStatus = -1; //infinite timeout
+		lcdDrawUpdate = 2;
+	}
+}
+
 static void lcd_language_menu()
 {
 	MENU_BEGIN();
 	if (lang_is_selected()) MENU_ITEM_BACK_P(_T(MSG_SETTINGS)); //
-	MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(0)), 0); //primary language
+	if (menu_item_text_P(lang_get_name_by_code(lang_get_code(0)))) //primary language
+	{
+		menu_setlang(0);
+		return;
+	}
 	uint8_t cnt = lang_get_count();
 #ifdef W25X20CL
 	if (cnt == 2) //display secondary language in case of clear xflash 
-		MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(1)), 1);
+	{
+		if (menu_item_text_P(lang_get_name_by_code(lang_get_code(1))))
+		{
+			menu_setlang(1);
+			return;
+		}
+	}
 	else
 		for (int i = 2; i < cnt; i++) //skip seconday language - solved in lang_select (MK3)
 #else //W25X20CL
 		for (int i = 1; i < cnt; i++) //all seconday languages (MK2/25)
 #endif //W25X20CL
-			MENU_ITEM(setlang, lang_get_name_by_code(lang_get_code(i)), i);
+			if (menu_item_text_P(lang_get_name_by_code(lang_get_code(i))))
+			{
+				menu_setlang(i);
+				return;
+			}
 	MENU_END();
 }
 #endif //(LANG_MODE != 0)
@@ -5600,10 +5684,10 @@ static void lcd_main_menu()
 #endif
                 if (card.filenameIsDir)
                 {
-                    MENU_ITEM(sddirectory, _T(MSG_CARD_MENU), card.filename, card.longFilename);
+                    MENU_ITEM_SDDIR_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
                 } else {
                     
-                    MENU_ITEM(sdfile, _T(MSG_CARD_MENU), card.filename, card.longFilename);
+                    MENU_ITEM_SDFILE_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
                     
                     
                     
@@ -5718,8 +5802,6 @@ static void lcd_main_menu()
   MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
 
   MENU_ITEM_SUBMENU_P(_i("W25x20CL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
-
-//	menu_item_printf_P('#', _N("Test %d %d %d"), 0, 1, 2);
 
   MENU_END();
 
@@ -6055,9 +6137,9 @@ void lcd_sdcard_menu()
 		#endif
 			
 		if (card.filenameIsDir)
-			MENU_ITEM(sddirectory, _T(MSG_CARD_MENU), card.filename, card.longFilename);
+			MENU_ITEM_SDDIR_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
 		else
-			MENU_ITEM(sdfile, _T(MSG_CARD_MENU), card.filename, card.longFilename);
+			MENU_ITEM_SDFILE_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
     } else {
       MENU_ITEM_DUMMY();
     }
@@ -6117,11 +6199,11 @@ void lcd_sdcard_menu()
 #endif
 				if (card.filenameIsDir)
 				{
-					MENU_ITEM(sddirectory, _T(MSG_CARD_MENU), card.filename, card.longFilename);
+					MENU_ITEM_SDDIR_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
 				}
 				else {
 					
-					MENU_ITEM(sdfile, _T(MSG_CARD_MENU), card.filename, description[i]);
+					MENU_ITEM_SDFILE_P(_T(MSG_CARD_MENU), card.filename, description[i]);
 				}
 			}
 			else {
@@ -7201,20 +7283,6 @@ static void lcd_quick_feedback()
 }
 
 /** Menu action functions **/
-
-static void menu_action_setlang(unsigned char lang)
-{
-	if (!lang_select(lang))
-	{
-		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language from XFLASH?"), false, true))
-			lang_boot_update_start(lang);
-		lcd_update_enable(true);
-		lcd_implementation_clear();
-		lcd_goto_menu(lcd_language_menu);
-		lcd_timeoutToStatus = -1; //infinite timeout
-		lcdDrawUpdate = 2;
-	}
-}
 
 static bool check_file(const char* filename) {
 	if (farm_mode) return true;
