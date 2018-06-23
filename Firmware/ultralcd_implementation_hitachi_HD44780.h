@@ -1352,16 +1352,7 @@ static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* pst
     while(n--)
         lcd.print(' ');
 }
-#define lcd_implementation_drawmenu_back_selected(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, LCD_STR_UPLEVEL[0], LCD_STR_UPLEVEL[0])
-#define lcd_implementation_drawmenu_back(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, ' ', LCD_STR_UPLEVEL[0])
-#define lcd_implementation_drawmenu_back_RAM_selected(row, str, data) lcd_implementation_drawmenu_generic_RAM(row, str, LCD_STR_UPLEVEL[0], LCD_STR_UPLEVEL[0])
-#define lcd_implementation_drawmenu_back_RAM(row, str, data) lcd_implementation_drawmenu_generic_RAM(row, str, ' ', LCD_STR_UPLEVEL[0])
-#define lcd_implementation_drawmenu_submenu_selected(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, '>', LCD_STR_ARROW_RIGHT[0])
-#define lcd_implementation_drawmenu_submenu(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, ' ', LCD_STR_ARROW_RIGHT[0])
-#define lcd_implementation_drawmenu_gcode_selected(row, pstr, gcode) lcd_implementation_drawmenu_generic(row, pstr, '>', ' ')
-#define lcd_implementation_drawmenu_gcode(row, pstr, gcode) lcd_implementation_drawmenu_generic(row, pstr, ' ', ' ')
-#define lcd_implementation_drawmenu_function_selected(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, '>', ' ')
-#define lcd_implementation_drawmenu_function(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, ' ', ' ')
+
 #define lcd_implementation_drawmenu_setlang_selected(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, '>', ' ')
 #define lcd_implementation_drawmenu_setlang(row, pstr, data) lcd_implementation_drawmenu_generic(row, pstr, ' ', ' ')
 
