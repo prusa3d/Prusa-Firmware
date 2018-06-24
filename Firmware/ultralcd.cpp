@@ -448,6 +448,21 @@ void menu_back(void)
 	encoderPosition = record.position;
 }
 
+void menu_back_if_clicked(void)
+{
+	if (lcd_clicked())
+		menu_back();
+}
+
+void menu_back_if_clicked_fb(void)
+{
+	if (lcd_clicked())
+	{
+        lcd_quick_feedback();
+		menu_back();
+	}
+}
+
 void menu_submenu(menuFunc_t submenu)
 {
 	menuStack.push(currentMenu, encoderPosition);
@@ -1715,10 +1730,7 @@ static void lcd_menu_extruder_info()
 	);
 #endif //PAT9125
     
-    if (lcd_clicked())
-    {
-        menu_back();
-    }
+    menu_back_if_clicked();
 }
 
 #if defined(TMC2130) && defined(PAT9125)
@@ -1735,11 +1747,7 @@ static void lcd_menu_fails_stats_total()
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
 	lcd_printf_P(PSTR(ESC_H(0,0) "Total failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	if (lcd_clicked())
-    {
-        lcd_quick_feedback();
-        menu_back();
-    }
+	menu_back_if_clicked_fb();
 }
 
 static void lcd_menu_fails_stats_print()
@@ -1755,11 +1763,7 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
 	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	if (lcd_clicked())
-    {
-        lcd_quick_feedback();
-		menu_back();
-    }    
+	menu_back_if_clicked_fb();
 }
 /**
  * @brief Open fail statistics menu
@@ -1797,10 +1801,7 @@ static void lcd_menu_fails_stats()
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Filam. runouts  %-3d" ESC_H(0,2) "Total failures" ESC_H(1,3) "Filam. runouts  %-3d"), filamentLast, filamentTotal);
-    if (lcd_clicked())
-    {
-        menu_back();
-    }
+    menu_back_if_clicked();
 }
 #endif //TMC2130
 
@@ -1818,11 +1819,7 @@ static void lcd_menu_debug()
 	lcd_printf_P(PSTR(ESC_H(1,1) "RAM statistics" ESC_H(5,1) "SP_min: 0x%04x" ESC_H(1,2) "heap_start: 0x%04x" ESC_H(3,3) "heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
 #endif //DEBUG_STACK_MONITOR
 
-	if (lcd_clicked())
-    {
-        lcd_quick_feedback();
-        menu_back();
-    }
+	menu_back_if_clicked_fb();
 }
 #endif /* DEBUG_BUILD */
 
@@ -1835,10 +1832,7 @@ static void lcd_menu_temperatures()
 	lcd_printf_P(PSTR(ESC_H(1,2) "PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
 #endif //AMBIENT_THERMISTOR
 
-	if (lcd_clicked())
-    {
-        menu_back();
-    }
+    menu_back_if_clicked();
 }
 
 #if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
@@ -1852,10 +1846,7 @@ static void lcd_menu_voltages()
 //	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 //	lcd_printf_P(PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
     lcd_printf_P(PSTR( ESC_H(1,1)"PWR:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr))) ;
-    if (lcd_clicked())
-    {
-        menu_back();
-    }
+    menu_back_if_clicked();
 }
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
@@ -1863,10 +1854,7 @@ static void lcd_menu_voltages()
 static void lcd_menu_belt_status()
 {
     lcd_printf_P(PSTR(ESC_H(1,0) "Belt status" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
-    if (lcd_clicked())
-    {
-        menu_back();
-    }
+    menu_back_if_clicked();
 }
 #endif //TMC2130
 
@@ -2226,7 +2214,7 @@ static void lcd_menu_AutoLoadFilament()
         lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
         if (ptimer->expired(2000ul)) menu_back();
     }
-    if (lcd_clicked()) menu_back();
+    menu_back_if_clicked();
 }
 #endif //PAT9125
 
@@ -2281,11 +2269,7 @@ void lcd_menu_statistics()
 		 _i("Print time"),
 		 _h, _m, _s
 		);
-		if (lcd_clicked())
-		{
-			lcd_quick_feedback();
-			menu_back();
-		}
+		menu_back_if_clicked_fb();
 	}
 	else
 	{
@@ -2421,9 +2405,7 @@ static void lcd_menu_xyz_y_min()
 		else lcd_printf_P(_N("%6.2fmm"), distanceMin[i]);
 	}
     if (lcd_clicked())
-    {
         lcd_goto_menu(lcd_menu_xyz_skew);
-    }
 }
 /**
  * @brief Show measured axis skewness
@@ -2456,9 +2438,7 @@ static void lcd_menu_xyz_skew()
 	);
 	if (angleDiff < 100) lcd_printf_P(_N(ESC_H(15,0)"%4.2f\x01"), _deg(angleDiff));
     if (lcd_clicked())
-    {
         lcd_goto_menu(lcd_menu_xyz_offset);
-    }
 }
 /**
  * @brief Show measured bed offset from expected position
@@ -2482,10 +2462,7 @@ static void lcd_menu_xyz_offset()
         lcd.print(cntr[i]);
         lcd_print_at_PGM((cntr[i] < 0) ? 17 : 16, i + 2, PSTR("mm"));
     }
-    if (lcd_clicked())
-    {
-        menu_back();
-    }
+    menu_back_if_clicked();
 }
 
 // Save a single axis babystep value.
@@ -3720,8 +3697,7 @@ static void lcd_crash_mode_info()
 		fputs_P(_i("\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"), lcdout);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 		tim = millis();
 	}
-	if (lcd_clicked())
-          menu_back();
+    menu_back_if_clicked();
 }
 
 static void lcd_crash_mode_info2()
@@ -3733,8 +3709,7 @@ static void lcd_crash_mode_info2()
 		fputs_P(_i("\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"), lcdout);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 		tim = millis();
 	}
-	if (lcd_clicked())
-          menu_back();
+    menu_back_if_clicked();
 }
 #endif //TMC2130
 
@@ -3749,8 +3724,7 @@ uint8_t nlines;
           lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament available only when filament sensor is turned on..."), nlines); ////MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 		tim = millis();
 	}
-	if (lcd_clicked())
-          menu_back();
+    menu_back_if_clicked();
 }
 
 static void lcd_fsensor_fail()
@@ -3763,8 +3737,7 @@ uint8_t nlines;
           lcd_display_message_fullscreen_nonBlocking_P(_i("ERROR: Filament sensor is not responding, please check connection."), nlines);////MSG_FSENS_NOT_RESPONDING c=20 r=4
 		tim = millis();
 	}
-	if (lcd_clicked())
-          menu_back();
+    menu_back_if_clicked();
 }
 #endif //PAT9125
 
