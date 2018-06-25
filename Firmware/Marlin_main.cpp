@@ -3274,7 +3274,13 @@ void process_commands()
         } else if (code_seen("RESET")) {
             // careful!
             if (farm_mode) {
-                asm volatile("  jmp 0x3E000");
+#ifdef WATCHDOG
+				wdt_enable(WDTO_15MS);
+				cli();
+				while(1);
+#else //WATCHDOG
+                asm volatile("jmp 0x3E000");
+#endif //WATCHDOG
             }
             else {
                 MYSERIAL.println("Not in farm mode.");
