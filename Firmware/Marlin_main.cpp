@@ -1179,9 +1179,11 @@ void setup()
 		important_status = 8;
 		prusa_statistics(8);
 		selectedSerialPort = 1;
+#ifdef TMC2130
 		//increased extruder current (PFW363)
 		tmc2130_current_h[E_AXIS] = 36;
 		tmc2130_current_r[E_AXIS] = 36;
+#endif //TMC2130
 		//disabled filament autoload (PFW360)
 		filament_autoload_enabled = false;
 		eeprom_update_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED, 0);
