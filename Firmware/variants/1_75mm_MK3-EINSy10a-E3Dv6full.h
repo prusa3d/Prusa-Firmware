@@ -468,6 +468,8 @@
 // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
 
+//connect message when communication with monitoring broken
+//#define FARM_CONNECT_MESSAGE
 
 /*-----------------------------------
  PREHEAT SETTINGS

@@ -1174,11 +1174,17 @@ void setup()
 	selectedSerialPort = eeprom_read_byte((uint8_t*)EEPROM_SECOND_SERIAL_ACTIVE);
 	if (selectedSerialPort == 0xFF) selectedSerialPort = 0;
 	if (farm_mode)
-	{ 
+	{
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
 		selectedSerialPort = 1;
+		//increased extruder current (PFW363)
+		tmc2130_current_h[E_AXIS] = 36;
+		tmc2130_current_r[E_AXIS] = 36;
+		//disabled filament autoload (PFW360)
+		filament_autoload_enabled = false;
+		eeprom_update_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED, 0);
 	}
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
@@ -3274,7 +3280,13 @@ void process_commands()
         } else if (code_seen("RESET")) {
             // careful!
             if (farm_mode) {
-                asm volatile("  jmp 0x3E000");
+#ifdef WATCHDOG
+				wdt_enable(WDTO_15MS);
+				cli();
+				while(1);
+#else //WATCHDOG
+                asm volatile("jmp 0x3E000");
+#endif //WATCHDOG
             }
             else {
                 MYSERIAL.println("Not in farm mode.");
