@@ -699,7 +699,7 @@ static inline void lcd_print_percent_done() {
 	{
 		lcd_printPGM(PSTR("---"));
 	}
-	lcd.print('%');
+	lcd_printPGM(PSTR("% "));
 }
 
 static inline void lcd_print_time() {
@@ -718,8 +718,14 @@ static inline void lcd_print_time() {
 		lcd.print(itostr2(print_t/60));
         lcd.print(':');
         lcd.print(itostr2(print_t%60));	
-		(print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) ? lcd.print('R') : lcd.print(' ');
-		(feedmultiply == 100) ? lcd.print(' ') : lcd.print('?');
+		if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+		{
+			lcd.print('R');
+			(feedmultiply == 100) ? lcd.print(' ') : lcd.print('?');
+		}
+		else {
+			lcd_printPGM(PSTR("  "));
+		}
     }else{
         lcd_printPGM(PSTR("--:--  "));
     }
