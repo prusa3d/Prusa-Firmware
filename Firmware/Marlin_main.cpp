@@ -8861,7 +8861,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	saved_active_extruder = active_extruder; //save active_extruder
 
 	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
-
+	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 //	card.closefile();
@@ -8875,7 +8875,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     char buf[48];
 
 	// First unretract (relative extrusion)
-	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
 	if(!saved_extruder_relative_mode){
 	  strcpy_P(buf, PSTR("M83"));
 	  enquecommand(buf, false);
