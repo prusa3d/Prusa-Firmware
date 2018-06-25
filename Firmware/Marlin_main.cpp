@@ -8946,6 +8946,7 @@ void restore_print_from_ram_and_continue(float e_move)
 		card.setIndex(saved_sdpos);
 		sdpos_atomic = saved_sdpos;
 		card.sdprinting = true;
+		printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 	}
 	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
 		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
