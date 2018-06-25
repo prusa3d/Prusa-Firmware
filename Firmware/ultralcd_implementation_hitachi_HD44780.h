@@ -828,7 +828,7 @@ if (print_sd_status)
 	// Farm number display
 	if (farm_mode)
 	{
-		lcd.setCursor(0, 6);
+		lcd.setCursor(6, 2);
 		lcd_printPGM(PSTR(" F"));
 		lcd.print(farm_no);
 		lcd_printPGM(PSTR("  "));

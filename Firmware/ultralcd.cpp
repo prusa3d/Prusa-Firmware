@@ -7451,7 +7451,9 @@ static void lcd_send_status() {
 		//send important status messages periodicaly
 		prusa_statistics(important_status, saved_filament_type);
 		NcTime = millis();
+#ifdef FARM_CONNECT_MESSAGE
 		lcd_connect_printer();
+#endif //FARM_CONNECT_MESSAGE
 	}
 }
 
