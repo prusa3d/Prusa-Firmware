@@ -462,7 +462,10 @@ const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
 
-#define HEATBED_V2
+// New XYZ calibration (HEATBED_V2 required!)
+#ifdef HEATBED_V2
+  #define NEW_XYZCAL
+#endif
 
 #define M600_TIMEOUT 600  //seconds
 
