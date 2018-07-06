@@ -117,14 +117,14 @@ const float bed_ref_points[] PROGMEM = {
     13.f  - BED_ZERO_REF_X,   8.4f - BED_ZERO_REF_Y,
     115.f - BED_ZERO_REF_X,   8.4f - BED_ZERO_REF_Y,
     216.f - BED_ZERO_REF_X,   8.4f - BED_ZERO_REF_Y,
-    
-    216.f - BED_ZERO_REF_X, 104.4f - BED_ZERO_REF_Y,
-    115.f - BED_ZERO_REF_X, 104.4f - BED_ZERO_REF_Y,
-    13.f  - BED_ZERO_REF_X, 104.4f - BED_ZERO_REF_Y,
 
-    13.f  - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
-    115.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
-    216.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
+    216.f - BED_ZERO_REF_X, 106.4f - BED_ZERO_REF_Y,
+    115.f - BED_ZERO_REF_X, 106.4f - BED_ZERO_REF_Y,
+    13.f  - BED_ZERO_REF_X, 106.4f - BED_ZERO_REF_Y,
+
+    13.f  - BED_ZERO_REF_X, 204.4f - BED_ZERO_REF_Y,
+    115.f - BED_ZERO_REF_X, 204.4f - BED_ZERO_REF_Y,
+    216.f - BED_ZERO_REF_X, 204.4f - BED_ZERO_REF_Y
 };
 
 #endif //not HEATBED_V2
@@ -283,26 +283,26 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                 for (uint8_t i = 0; i < npts; ++i) {
                     // First for the residuum in the x axis:
                     if (r != 1 && c != 1) {
-                        float a = 
+                        float a =
                              (r == 0) ? 1.f :
                             ((r == 2) ? (-s1 * measured_pts[2 * i]) :
                                         (-c2 * measured_pts[2 * i + 1]));
-                        float b = 
+                        float b =
                              (c == 0) ? 1.f :
                             ((c == 2) ? (-s1 * measured_pts[2 * i]) :
                                         (-c2 * measured_pts[2 * i + 1]));
                         float w = point_weight_x(i, npts, measured_pts[2 * i + 1]);
                         acc += a * b * w;
                     }
-                    // Second for the residuum in the y axis. 
+                    // Second for the residuum in the y axis.
                     // The first row of the points have a low weight, because their position may not be known
                     // with a sufficient accuracy.
                     if (r != 0 && c != 0) {
-                        float a = 
+                        float a =
                              (r == 1) ? 1.f :
                             ((r == 2) ? ( c1 * measured_pts[2 * i]) :
                                         (-s2 * measured_pts[2 * i + 1]));
-                        float b = 
+                        float b =
                              (c == 1) ? 1.f :
                             ((c == 2) ? ( c1 * measured_pts[2 * i]) :
                                         (-s2 * measured_pts[2 * i + 1]));
@@ -316,7 +316,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
             acc = 0.f;
             for (uint8_t i = 0; i < npts; ++i) {
                 {
-                    float j = 
+                    float j =
                          (r == 0) ? 1.f :
                         ((r == 1) ? 0.f :
                         ((r == 2) ? (-s1 * measured_pts[2 * i]) :
@@ -326,7 +326,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                     acc += j * fx * w;
                 }
                 {
-                    float j = 
+                    float j =
                          (r == 0) ? 0.f :
                         ((r == 1) ? 1.f :
                         ((r == 2) ? ( c1 * measured_pts[2 * i]) :
@@ -392,7 +392,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     BedSkewOffsetDetectionResultType result = BED_SKEW_OFFSET_DETECTION_PERFECT;
     {
         angleDiff = fabs(a2 - a1);
-		eeprom_update_float((float*)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later 
+		eeprom_update_float((float*)(EEPROM_XYZ_CAL_SKEW), angleDiff); //storing xyz cal. skew to be able to show in support menu later
         if (angleDiff > bed_skew_angle_mild)
             result = (angleDiff > bed_skew_angle_extreme) ?
                 BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME :
@@ -474,7 +474,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
 			if (err > BED_CALIBRATION_POINT_OFFSET_MAX_EUCLIDIAN) {
 				result = BED_SKEW_OFFSET_DETECTION_FITTING_FAILED;
 				#ifdef SUPPORT_VERBOSITY
-				if(verbosity_level >= 20) SERIAL_ECHOPGM(", error > max. error euclidian"); 
+				if(verbosity_level >= 20) SERIAL_ECHOPGM(", error > max. error euclidian");
 				#endif // SUPPORT_VERBOSITY
 			}
         }
@@ -1169,7 +1169,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 		// we have to let the planner know where we are right now as it is not where we said to go.
 		update_current_position_xyz();
 		enable_z_endstop(false);
-		
+
 		for (int8_t iter = 0; iter < 2; ++iter) {
 			/*SERIAL_ECHOPGM("iter: ");
 			MYSERIAL.println(iter);
@@ -1188,7 +1188,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			invert_z_endstop(true);
 			for (int iteration = 0; iteration < 8; iteration++) {
 
-				found = false;				
+				found = false;
 				enable_z_endstop(true);
 				go_xy(init_x_position + 16.0f, current_position[Y_AXIS], feedrate / 5);
 				update_current_position_xyz();
@@ -1214,7 +1214,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 				current_position[X_AXIS] = 0.5f * (a + b);
 				go_xy(current_position[X_AXIS], init_y_position, feedrate / 5);
 				found = true;
-				
+
 				// Search in the Y direction along a cross.
 				found = false;
 				enable_z_endstop(true);
@@ -1290,7 +1290,7 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			break;
 		}
 	}
-	
+
 	enable_z_endstop(false);
 	invert_z_endstop(false);
 	return found;
@@ -1776,7 +1776,7 @@ canceled:
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS (8.f)
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y (0.1f)
 inline bool improve_bed_induction_sensor_point3(int verbosity_level)
-{	
+{
     float center_old_x = current_position[X_AXIS];
     float center_old_y = current_position[Y_AXIS];
     float a, b;
@@ -2141,7 +2141,7 @@ inline void scan_bed_induction_sensor_point()
 #define MESH_BED_CALIBRATION_SHOW_LCD
 
 BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level, uint8_t &too_far_mask)
-{	
+{
     // Don't let the manage_inactivity() function remove power from the motors.
     refresh_cmd_timeout();
 
@@ -2152,13 +2152,13 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
     float *vec_y = vec_x + 2;
     float *cntr  = vec_y + 2;
     memset(pts, 0, sizeof(float) * 7 * 7);
-	uint8_t iteration = 0; 
+	uint8_t iteration = 0;
 	BedSkewOffsetDetectionResultType result;
 
 //    SERIAL_ECHOLNPGM("find_bed_offset_and_skew verbosity level: ");
 //    SERIAL_ECHO(int(verbosity_level));
 //    SERIAL_ECHOPGM("");
-	
+
 #ifdef NEW_XYZCAL
 	{
 #else //NEW_XYZCAL
@@ -2170,7 +2170,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 20) {
 		SERIAL_ECHOLNPGM("Vectors: ");
-		
+
 			SERIAL_ECHOPGM("vec_x[0]:");
 			MYSERIAL.print(vec_x[0], 5);
 			SERIAL_ECHOLNPGM("");
@@ -2237,7 +2237,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		else {
 			// if first iteration failed, count corrected point coordinates as initial
 			// Use the coorrected coordinate, which is a result of find_bed_offset_and_skew().
-			
+
 			current_position[X_AXIS] = vec_x[0] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[0] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[0];
 			current_position[Y_AXIS] = vec_x[1] * pgm_read_float(bed_ref_points_4 + k * 2) + vec_y[1] * pgm_read_float(bed_ref_points_4 + k * 2 + 1) + cntr[1];
 
@@ -2269,7 +2269,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 #ifndef NEW_XYZCAL
 #ifndef HEATBED_V2
-		
+
 			if (k == 0 || k == 1) {
 				// Improve the position of the 1st row sensor points by a zig-zag movement.
 				find_bed_induction_sensor_point_z();
@@ -2308,11 +2308,11 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			pt[0] += (current_position[X_AXIS]/(iteration + 1)); //count average
 			pt[1] = (pt[1] * iteration) / (iteration + 1);
 			pt[1] += (current_position[Y_AXIS] / (iteration + 1));
-			
-			
+
+
 			//pt[0] += current_position[X_AXIS];
 			//if(iteration > 0) pt[0] = pt[0] / 2;
-						
+
 			//pt[1] += current_position[Y_AXIS];
 			//if (iteration > 0) pt[1] = pt[1] / 2;
 
@@ -2342,7 +2342,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			#endif // SUPPORT_VERBOSITY
 		}
 		delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
-		
+
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 20) {
 			// Test the positions. Are the positions reproducible? Now the calibration is active in the planner.
@@ -2369,7 +2369,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		}
 		result = calculate_machine_skew_and_offset_LS(pts, 4, bed_ref_points_4, vec_x, vec_y, cntr, verbosity_level);
 		delay_keep_alive(0); //manage_heater, reset watchdog, manage inactivity
-		
+
 		if (result >= 0) {
 			world2machine_update(vec_x, vec_y, cntr);
 #if 1
@@ -2424,11 +2424,11 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 			}
 			#endif // SUPPORT_VERBOSITY
 			return result;
-		}		
+		}
 		if (result == BED_SKEW_OFFSET_DETECTION_FITTING_FAILED && too_far_mask == 2) return result; //if fitting failed and front center point is out of reach, terminate calibration and inform user
 		iteration++;
 	}
-	return result;    
+	return result;
 }
 
 #ifndef NEW_XYZCAL
@@ -2761,7 +2761,7 @@ void go_home_with_z_lift()
     go_to_current(homing_feedrate[X_AXIS]/60);
     // Third move up to a safe height.
     current_position[Z_AXIS] = Z_MIN_POS;
-    go_to_current(homing_feedrate[Z_AXIS]/60);    
+    go_to_current(homing_feedrate[Z_AXIS]/60);
 }
 
 // Sample the 9 points of the bed and store them into the EEPROM as a reference.
@@ -2985,10 +2985,10 @@ void babystep_load()
     if(calibration_status() < CALIBRATION_STATUS_LIVE_ADJUST)
     {
         check_babystep(); //checking if babystep is in allowed range, otherwise setting babystep to 0
-        
+
         // End of G80: Apply the baby stepping value.
         EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
-                            
+
     #if 0
         SERIAL_ECHO("Z baby step: ");
         SERIAL_ECHO(babystepLoadZ);
@@ -3023,7 +3023,7 @@ void babystep_undo()
 
 void babystep_reset()
 {
-      babystepLoadZ = 0;    
+      babystepLoadZ = 0;
 }
 
 void count_xyz_details(float (&distanceMin)[2]) {
