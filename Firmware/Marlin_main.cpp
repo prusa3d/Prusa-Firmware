@@ -1196,6 +1196,8 @@ void setup()
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
+	uart2_init();
+
 
 #ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;
