@@ -4862,6 +4862,8 @@ void bowden_menu() {
 	}
 }
 
+#ifdef SNMM
+
 static char snmm_stop_print_menu() { //menu for choosing which filaments will be unloaded in stop print
 	lcd_implementation_clear();
 	lcd_print_at_PGM(0,0,_T(MSG_UNLOAD_FILAMENT)); lcd.print(":");
@@ -4994,6 +4996,7 @@ char choose_extruder_menu() {
 
 }
 
+#endif
 
 char reset_menu() {
 #ifdef SNMM
@@ -5097,7 +5100,7 @@ static void lcd_disable_farm_mode() {
 }
 
 
-#ifdef SNMM
+#if defined (SNMM) || defined(SNMM_V2) 
 
 static void extr_mov(float shift, float feed_rate) { //move extruder no matter what the current heater temperature is
 	set_extrude_min_temp(.0);
@@ -5291,6 +5294,10 @@ static void extr_adj_2() {
 static void extr_adj_3() {
 	change_extr(3);
 	extr_adj(3);
+}
+static void extr_adj_4() {
+	change_extr(4);
+	extr_adj(4);
 }
 
 static void load_all() {
@@ -5806,7 +5813,7 @@ static void lcd_main_menu()
 		MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
 	MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
 	#endif
-	#ifdef SNMM
+	#if defined (SNMM) || defined (SNMM_V2)
 	MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
 	MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), fil_unload_menu);
 	MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20 r=1
