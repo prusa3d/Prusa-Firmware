@@ -117,6 +117,10 @@ union MenuData
         bool initialized;
         bool endstopsEnabledPrevious;
     } _lcd_moveMenu;
+	struct sdcard_menu_t
+	{
+		uint8_t viewState;
+	} sdcard_menu;
 };
 
 // State of the currently active menu.
@@ -295,6 +299,7 @@ static void menu_action_setting_edit_callback_long5(const char* pstr, unsigned l
 uint8_t _lineNr = 0;
 uint8_t _menuItemNr = 0;
 uint8_t _drawLineNr = 0;
+
 bool wasClicked = false;
 
 #define MENU_ITEM(type, label, args...) do { \
@@ -468,6 +473,20 @@ void menu_submenu(menuFunc_t submenu)
 	menuStack.push(currentMenu, encoderPosition);
 	lcd_goto_menu(submenu);
 }
+
+uint8_t menu_item_ret(void)
+{
+	lcd_implementation_quick_feedback();
+	lcdDrawUpdate = 2;
+	button_pressed = false;
+	return 1;
+}
+
+uint8_t menu_enc_is_at_item(void)
+{
+	return ((encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr);
+}
+
 /*
 int menu_item_printf_P(char type_char, const char* format, ...)
 {
@@ -490,14 +509,7 @@ int menu_item_printf_P(char type_char, const char* format, ...)
 int menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd.setCursor(0, _drawLineNr);
-//	if ((encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
-//		lcd.print('>');
-//	else
-//		lcd.print(' ');
-	int cnt = lcd_printf_P(_N("%c%-18S%c"), ((encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)?'>':' ', str, type_char);
-//	for (cnt++ < 18; i++)
-//		lcd.print(' ');
-//	lcd.print(type_char);
+	int cnt = lcd_printf_P(_N("%c%-18S%c"), menu_enc_is_at_item()?'>':' ', str, type_char);
 	return cnt;
 }
 
@@ -507,34 +519,26 @@ inline void menu_item_dummy(void)
 	_menuItemNr++;
 }
 
-uint8_t menu_item_ret(void)
-{
-	lcd_implementation_quick_feedback();
-	lcdDrawUpdate = 2;
-	button_pressed = false;
-	return 1;
-}
-
-#define MENU_ITEM_TEXT_P(str) if (menu_item_text_P(str)) return
+#define MENU_ITEM_TEXT_P(str) do { if (menu_item_text_P(str)) return; } while (0)
 uint8_t menu_item_text_P(const char* str)
 {
 	if (_menuItemNr == _lineNr)
 	{
 		if (lcdDrawUpdate) menu_draw_item_puts_P(' ', str);
-		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
+		if (wasClicked && menu_enc_is_at_item())
 			return menu_item_ret();
 	}
 	_menuItemNr++;
 	return 0;
 }
 
-#define MENU_ITEM_SUBMENU_P(str, submenu) if (menu_item_submenu_P(str, submenu)) return
+#define MENU_ITEM_SUBMENU_P(str, submenu) do { if (menu_item_submenu_P(str, submenu)) return; } while (0)
 uint8_t menu_item_submenu_P(const char* str, menuFunc_t submenu)
 {
 	if (_menuItemNr == _lineNr)
 	{
 		if (lcdDrawUpdate) menu_draw_item_puts_P(LCD_STR_ARROW_RIGHT[0], str);
-		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
+		if (wasClicked && menu_enc_is_at_item())
 		{
 			menuStack.push(currentMenu, encoderPosition);
 			lcd_goto_menu(submenu, 0, false, true);
@@ -545,13 +549,13 @@ uint8_t menu_item_submenu_P(const char* str, menuFunc_t submenu)
 	return 0;
 }
 
-#define MENU_ITEM_BACK_P(str) if (menu_item_back_P(str)) return
+#define MENU_ITEM_BACK_P(str) do { if (menu_item_back_P(str)) return; } while (0)
 uint8_t menu_item_back_P(const char* str)
 {
 	if (_menuItemNr == _lineNr)
 	{
 		if (lcdDrawUpdate) menu_draw_item_puts_P(LCD_STR_UPLEVEL[0], str);
-		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
+		if (wasClicked && menu_enc_is_at_item())
 		{
 			MenuStack::Record record = menuStack.pop();
 			lcd_goto_menu(record.menu, false, true);
@@ -563,13 +567,13 @@ uint8_t menu_item_back_P(const char* str)
 	return 0;
 }
 
-#define MENU_ITEM_FUNCTION_P(str, func) if (menu_item_function_P(str, func)) return
+#define MENU_ITEM_FUNCTION_P(str, func) do { if (menu_item_function_P(str, func)) return; } while (0)
 uint8_t menu_item_function_P(const char* str, menuFunc_t func)
 {
 	if (_menuItemNr == _lineNr)
 	{
 		if (lcdDrawUpdate) menu_draw_item_puts_P(' ', str);
-		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
+		if (wasClicked && menu_enc_is_at_item())
 		{
 			if (func) func();
 			return menu_item_ret();
@@ -579,13 +583,13 @@ uint8_t menu_item_function_P(const char* str, menuFunc_t func)
 	return 0;
 }
 
-#define MENU_ITEM_GCODE_P(str, str_gcode) if (menu_item_gcode_P(str, str_gcode)) return
+#define MENU_ITEM_GCODE_P(str, str_gcode) do { if (menu_item_gcode_P(str, str_gcode)) return; } while (0)
 uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 {
 	if (_menuItemNr == _lineNr)
 	{
 		if (lcdDrawUpdate) menu_draw_item_puts_P(' ', str);
-		if (wasClicked && (encoderPosition / ENCODER_STEPS_PER_MENU_ITEM) == _menuItemNr)
+		if (wasClicked && menu_enc_is_at_item())
 		{
 			if (str_gcode) enquecommand_P(str_gcode);
 			return menu_item_ret();
@@ -595,18 +599,76 @@ uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 	return 0;
 }
 
-//#define MENU_ITEM_SDDIR_P(str, str_fn, str_desc) if (menu_item_sddir_P(str, str_fn, str_desc)) return
-#define MENU_ITEM_SDDIR_P(str, str_fn, str_desc) MENU_ITEM(sddirectory, str, str_fn, str_desc)
-uint8_t menu_item_sddir_P(const char* str, const char* str_fn, char* str_desc)
+//#define MENU_ITEM_SDDIR(str, str_fn, str_fnl) do { if (menu_item_sddir(str, str_fn, str_fnl)) return; } while (0)
+#define MENU_ITEM_SDDIR(str, str_fn, str_fnl) MENU_ITEM(sddirectory, str, str_fn, str_fnl)
+uint8_t menu_item_sddir(const char* str, const char* str_fn, char* str_fnl)
 {
-
+//	str_fnl[18] = 0;
+//	printf_P(_N("menu dir %d '%s' '%s'\n"), _drawLineNr, str_fn, str_fnl);
+	if (_menuItemNr == _lineNr)
+	{
+		if (lcdDrawUpdate)
+		{
+			lcd.setCursor(0, _drawLineNr);
+			int cnt = lcd_printf_P(_N("%c%c%-18s"), menu_enc_is_at_item()?'>':' ', LCD_STR_FOLDER[0], str_fnl[0]?str_fnl:str_fn);
+//			int cnt = lcd_printf_P(_N("%c%c%-18s"), menu_enc_is_at_item()?'>':' ', LCD_STR_FOLDER[0], str_fn);
+		}
+		if (wasClicked && menu_enc_is_at_item())
+		{
+			uint8_t depth = (uint8_t)card.getWorkDirDepth();
+			strcpy(dir_names[depth], str_fn);
+//			printf_P(PSTR("%s\n"), dir_names[depth]);
+			card.chdir(str_fn);
+			encoderPosition = 0;
+			return menu_item_ret();
+		}
+	}
+	_menuItemNr++;
+	return 0;
 }
 
-//#define MENU_ITEM_SDFILE_P(str, str_fn, str_desc) if (menu_item_sdfile_P(str, str_fn, str_desc)) return
-#define MENU_ITEM_SDFILE_P(str, str_fn, str_desc) MENU_ITEM(sdfile, str, str_fn, str_desc)
-uint8_t menu_item_sdfile_P(const char* str, const char* str_fn, char* str_desc)
+//#define MENU_ITEM_SDFILE(str, str_fn, str_fnl) do { if (menu_item_sdfile(str, str_fn, str_fnl)) return; } while (0)
+#define MENU_ITEM_SDFILE(str, str_fn, str_fnl) MENU_ITEM(sdfile, str, str_fn, str_fnl)
+uint8_t menu_item_sdfile(const char* str, const char* str_fn, char* str_fnl)
 {
+//	printf_P(_N("menu sdfile\n"));
+//	str_fnl[19] = 0;
+//	printf_P(_N("menu file %d '%s' '%s'\n"), _drawLineNr, str_fn, str_fnl);
+	if (_menuItemNr == _lineNr)
+	{
+		if (lcdDrawUpdate)
+		{
+//			printf_P(_N("menu file %d %d '%s'\n"), _drawLineNr, menuData.sdcard_menu.viewState, str_fnl[0]?str_fnl:str_fn);
+			lcd.setCursor(0, _drawLineNr);
+/*			if (menu_enc_is_at_item())
+			{
+				lcd_printf_P(_N("%c%-19s"), menu_enc_is_at_item()?'>':' ', (str_fnl[0]?str_fnl:str_fn) + 1);
+				if (menuData.sdcard_menu.viewState == 0)
+				{
+					menuData.sdcard_menu.viewState++;
+					lcd_printf_P(_N("%c%-19s"), menu_enc_is_at_item()?'>':' ', (str_fnl[0]?str_fnl:str_fn) + 1);
+				}
+				else if (menuData.sdcard_menu.viewState == 1)
+				{
+					lcd_printf_P(_N("%c%-19s"), menu_enc_is_at_item()?'>':' ', (str_fnl[0]?str_fnl:str_fn) + 2);
+				}
+			}
+			else*/
+			{
+				str_fnl[19] = 0;
+				lcd_printf_P(_N("%c%-19s"), menu_enc_is_at_item()?'>':' ', str_fnl[0]?str_fnl:str_fn);
+			}
 
+//			int cnt = lcd_printf_P(_N("%c%-19s"), menu_enc_is_at_item()?'>':' ', str_fnl);
+//			int cnt = lcd_printf_P(_N("%cTESTIK.gcode"), menu_enc_is_at_item()?'>':' ');
+		}
+		if (wasClicked && menu_enc_is_at_item())
+		{
+			return menu_item_ret();
+		}
+	}
+	_menuItemNr++;
+	return 0;
 }
 
 
@@ -4322,11 +4384,11 @@ static void lcd_settings_menu()
 #ifdef TMC2130
   if(!farm_mode)
   {
-    if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_OFF), lcd_silent_mode_set);
+	if (SilentModeMenu == SILENT_MODE_NORMAL) { MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_OFF), lcd_silent_mode_set); }
     else MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_ON), lcd_silent_mode_set);
     if (SilentModeMenu == SILENT_MODE_NORMAL)
     {
-      if (CrashDetectMenu == 0) MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_OFF), lcd_crash_mode_set);
+	  if (CrashDetectMenu == 0) { MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_OFF), lcd_crash_mode_set); }
       else MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_ON), lcd_crash_mode_set);
     }
     else MENU_ITEM_SUBMENU_P(_T(MSG_CRASHDETECT_NA), lcd_crash_mode_info);
@@ -5648,10 +5710,10 @@ static void lcd_main_menu()
 #endif
                 if (card.filenameIsDir)
                 {
-                    MENU_ITEM_SDDIR_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
+                    MENU_ITEM_SDDIR(_T(MSG_CARD_MENU), card.filename, card.longFilename);
                 } else {
                     
-                    MENU_ITEM_SDFILE_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
+                    MENU_ITEM_SDFILE(_T(MSG_CARD_MENU), card.filename, card.longFilename);
                     
                     
                     
@@ -6059,6 +6121,7 @@ void getFileDescription(char *name, char *description) {
 
 void lcd_sdcard_menu()
 {
+  printf_P(_N("menu sd\n"));
   uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
   int tempScrool = 0;
   if (presort_flag == true) {
@@ -6069,6 +6132,7 @@ void lcd_sdcard_menu()
     //delay(100);
     return; // nothing to do (so don't thrash the SD card)
   uint16_t fileCnt = card.getnrfilenames();
+
 
   MENU_BEGIN();
   MENU_ITEM_BACK_P(_T(MSG_MAIN));
@@ -6101,9 +6165,9 @@ void lcd_sdcard_menu()
 		#endif
 			
 		if (card.filenameIsDir)
-			MENU_ITEM_SDDIR_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
+			MENU_ITEM_SDDIR(_T(MSG_CARD_MENU), card.filename, card.longFilename);
 		else
-			MENU_ITEM_SDFILE_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
+			MENU_ITEM_SDFILE(_T(MSG_CARD_MENU), card.filename, card.longFilename);
     } else {
       MENU_ITEM_DUMMY();
     }
@@ -6163,11 +6227,11 @@ void lcd_sdcard_menu()
 #endif
 				if (card.filenameIsDir)
 				{
-					MENU_ITEM_SDDIR_P(_T(MSG_CARD_MENU), card.filename, card.longFilename);
+					MENU_ITEM_SDDIR(_T(MSG_CARD_MENU), card.filename, card.longFilename);
 				}
 				else {
 					
-					MENU_ITEM_SDFILE_P(_T(MSG_CARD_MENU), card.filename, description[i]);
+					MENU_ITEM_SDFILE(_T(MSG_CARD_MENU), card.filename, description[i]);
 				}
 			}
 			else {
