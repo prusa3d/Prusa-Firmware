@@ -27,9 +27,9 @@
 #define W25X20CL_SPSR          SPI_SPSR(W25X20CL_SPI_RATE)
 
 //LANG - Multi-language support
-//#define LANG_MODE               0 // primary language only
-#define LANG_MODE               1 // sec. language support
-#define LANG_SIZE_RESERVED 0x2400 // reserved space for secondary language (~10kb)
+//#define LANG_MODE                      0 // primary language only
+#define LANG_MODE                        1 // sec. language support
+#define LANG_SIZE_RESERVED          0x2400 // reserved space for secondary language (~12kb)
 //#define LANG_SIZE_RESERVED 0x1ef8 // reserved space for secondary language (~10kb)
 
 
