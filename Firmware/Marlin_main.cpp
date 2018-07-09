@@ -71,6 +71,7 @@
 #include "math.h"
 #include "util.h"
 #include "Timer.h"
+#include "uart2.h"
 
 #include <avr/wdt.h>
 #include <avr/pgmspace.h>
@@ -7021,6 +7022,45 @@ Sigma_Exit:
 			  tmp_extruder = code_value();
 		  }
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
+
+#ifdef SNMM_V2
+		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
+          switch (tmp_extruder) 
+          {
+          case 1:
+              
+              fprintf_P(uart2io, PSTR("T1\n"));
+              break;
+          case 2:
+              
+              fprintf_P(uart2io, PSTR("T2\n"));
+              break;
+          case 3:
+              
+              fprintf_P(uart2io, PSTR("T3\n"));
+              break;
+          case 4:
+              
+              fprintf_P(uart2io, PSTR("T4\n"));
+              break;
+          default:
+              
+              fprintf_P(uart2io, PSTR("T0\n"));
+              break;
+          }
+
+          
+
+          
+              // get response
+            uart2_rx_clr();
+              while (!uart2_rx_ok())
+              {
+                  //printf_P(PSTR("waiting..\n"));
+                  delay_keep_alive(100);
+              }
+#endif
+
 #ifdef SNMM
           
     #ifdef LIN_ADVANCE
