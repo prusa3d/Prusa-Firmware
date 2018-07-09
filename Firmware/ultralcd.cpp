@@ -2488,7 +2488,7 @@ static void lcd_menu_xyz_skew()
     float angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
 	lcd_printf_P(_N(
 	  ESC_H(0,0)
-	  "%S:  N/A\n"
+	  "%S:\n"
 	  "%S\n"
 	  "%S:  %5.2f\x01\n"
 	  "%S:  %5.2f\x01"
@@ -2498,7 +2498,10 @@ static void lcd_menu_xyz_skew()
 	 _i("Slight skew"), _deg(bed_skew_angle_mild),
 	 _i("Severe skew"), _deg(bed_skew_angle_extreme)
 	);
-	if (angleDiff < 100) lcd_printf_P(_N(ESC_H(15,0)"%4.2f\x01"), _deg(angleDiff));
+	if (angleDiff < 100)
+		lcd_printf_P(_N(ESC_H(15,0)"%4.2f\x01"), _deg(angleDiff));
+	else
+		lcd_puts_P(_N(ESC_H(15,0)"N/A"));
     if (lcd_clicked())
         lcd_goto_menu(lcd_menu_xyz_offset);
 }
@@ -7624,7 +7627,9 @@ static void lcd_send_status() {
 		//send important status messages periodicaly
 		prusa_statistics(important_status, saved_filament_type);
 		NcTime = millis();
+#ifdef FARM_CONNECT_MESSAGE
 		lcd_connect_printer();
+#endif //FARM_CONNECT_MESSAGE
 	}
 }
 

@@ -1174,11 +1174,19 @@ void setup()
 	selectedSerialPort = eeprom_read_byte((uint8_t*)EEPROM_SECOND_SERIAL_ACTIVE);
 	if (selectedSerialPort == 0xFF) selectedSerialPort = 0;
 	if (farm_mode)
-	{ 
+	{
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
 		selectedSerialPort = 1;
+#ifdef TMC2130
+		//increased extruder current (PFW363)
+		tmc2130_current_h[E_AXIS] = 36;
+		tmc2130_current_r[E_AXIS] = 36;
+#endif //TMC2130
+		//disabled filament autoload (PFW360)
+		filament_autoload_enabled = false;
+		eeprom_update_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED, 0);
 	}
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
@@ -3274,7 +3282,13 @@ void process_commands()
         } else if (code_seen("RESET")) {
             // careful!
             if (farm_mode) {
-                asm volatile("  jmp 0x3E000");
+#ifdef WATCHDOG
+				wdt_enable(WDTO_15MS);
+				cli();
+				while(1);
+#else //WATCHDOG
+                asm volatile("jmp 0x3E000");
+#endif //WATCHDOG
             }
             else {
                 MYSERIAL.println("Not in farm mode.");
@@ -8861,7 +8875,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	saved_active_extruder = active_extruder; //save active_extruder
 
 	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
-
+	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 //	card.closefile();
@@ -8875,7 +8889,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     char buf[48];
 
 	// First unretract (relative extrusion)
-	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
 	if(!saved_extruder_relative_mode){
 	  strcpy_P(buf, PSTR("M83"));
 	  enquecommand(buf, false);
@@ -8933,6 +8946,7 @@ void restore_print_from_ram_and_continue(float e_move)
 		card.setIndex(saved_sdpos);
 		sdpos_atomic = saved_sdpos;
 		card.sdprinting = true;
+		printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 	}
 	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
 		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
