@@ -26,6 +26,9 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
+#ifdef SNMM_V2
+#include "uart2.h"
+#endif //SNMM_V2
 
 int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added to encoderPosition every LCD update */
 
@@ -5111,6 +5114,7 @@ static void extr_mov(float shift, float feed_rate) { //move extruder no matter w
 
 
 void change_extr(int extr) { //switches multiplexer for extruders
+#ifndef SNMM_V2
 	st_synchronize();
 	delay(100);
 
@@ -5146,6 +5150,7 @@ void change_extr(int extr) { //switches multiplexer for extruders
 		break;
 	}
 	delay(100);
+#endif
 }
 
 static int get_ext_nr() { //reads multiplexer input pins and return current extruder number (counted from 0)
@@ -5164,6 +5169,19 @@ void display_loading() {
 
 void extr_adj(int extruder) //loading filament for SNMM
 {
+#ifdef SNMM_V2
+	printf_P(PSTR("L%d \n"),extruder);
+    fprintf_P(uart2io, PSTR("L%d\n"), extruder);
+	           
+	// get response
+    uart2_rx_clr();
+    while (!uart2_rx_ok())
+    {
+      //printf_P(PSTR("waiting..\n"));
+      delay_keep_alive(100);
+    }
+#else
+
 	bool correct;
 	max_feedrate[E_AXIS] =80;
 	//max_feedrate[E_AXIS] = 50;
@@ -5200,10 +5218,26 @@ void extr_adj(int extruder) //loading filament for SNMM
 	lcd_update_enable(true);
 	lcd_return_to_status();
 	lcdDrawUpdate = 2;
+#endif
 }
 
 
 void extr_unload() { //unloads filament
+#ifdef SNMM_V2
+	printf_P(PSTR("U\n"));
+    fprintf_P(uart2io, PSTR("U\n"));
+	           
+	// get response
+    uart2_rx_clr();
+    while (!uart2_rx_ok())
+    {
+      //printf_P(PSTR("waiting..\n"));
+      delay_keep_alive(100);
+    }
+#else //SNMM_V2
+
+
+
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 	uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
@@ -5274,7 +5308,7 @@ void extr_unload() { //unloads filament
 	lcd_return_to_status();
 
 
-
+#endif //SNMM_V2
 
 }
 
@@ -5387,6 +5421,10 @@ static void extr_unload_3() {
 	change_extr(3);
 	extr_unload();
 }
+static void extr_unload_4() {
+	change_extr(4);
+	extr_unload();
+}
 
 
 static void fil_load_menu()
@@ -5398,7 +5436,11 @@ static void fil_load_menu()
 	MENU_ITEM_FUNCTION_P(_i("Load filament 2"), extr_adj_1);////MSG_LOAD_FILAMENT_2 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Load filament 3"), extr_adj_2);////MSG_LOAD_FILAMENT_3 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Load filament 4"), extr_adj_3);////MSG_LOAD_FILAMENT_4 c=17 r=0
-	
+
+#ifdef SNMM_V2
+	MENU_ITEM_FUNCTION_P(_i("Load filament 5"), extr_adj_4);
+#endif
+
 	MENU_END();
 }
 
@@ -5411,6 +5453,10 @@ static void fil_unload_menu()
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 2"), extr_unload_1);////MSG_UNLOAD_FILAMENT_2 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 3"), extr_unload_2);////MSG_UNLOAD_FILAMENT_3 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 4"), extr_unload_3);////MSG_UNLOAD_FILAMENT_4 c=17 r=0
+
+#ifdef SNMM_V2
+	MENU_ITEM_FUNCTION_P(_i("Unload filament 5"), extr_unload_4);////MSG_UNLOAD_FILAMENT_4 c=17 r=0
+#endif
 
 	MENU_END();
 }

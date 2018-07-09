@@ -3099,7 +3099,7 @@ void gcode_M114()
 
 void gcode_M701()
 {
-#ifdef SNMM
+#if defined (SNMM) || defined (SNMM_V2)
 	extr_adj(snmm_extruder);//loads current extruder
 #else
 	enable_z();
@@ -6932,7 +6932,7 @@ Sigma_Exit:
 	break;
 	case 702:
 	{
-#ifdef SNMM
+#if defined (SNMM) || defined (SNMM_V2) 
 		if (code_seen('U')) {
 			extr_unload_used(); //unload all filaments which were used in current print
 		}
