@@ -3245,16 +3245,59 @@ void process_commands()
 	}
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("TMC_"), 4) == 0)
 	{
-		if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_WAVE_E"), 10) == 0)
+		if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_WAVE_"), 9) == 0)
 		{
-			uint8_t fac = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
-			tmc2130_set_wave(E_AXIS, 247, fac);
+			uint8_t axis = *(CMDBUFFER_CURRENT_STRING + 13);
+			axis = (axis == 'E')?3:(axis - 'X');
+			if (axis < 4)
+			{
+				uint8_t fac = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
+				tmc2130_set_wave(axis, 247, fac);
+			}
 		}
-		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_STEP_E"), 10) == 0)
+		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_STEP_"), 9) == 0)
 		{
-			uint8_t step = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
-			uint16_t res = tmc2130_get_res(E_AXIS);
-			tmc2130_goto_step(E_AXIS, step & (4*res - 1), 2, 1000, res);
+			uint8_t axis = *(CMDBUFFER_CURRENT_STRING + 13);
+			axis = (axis == 'E')?3:(axis - 'X');
+			if (axis < 4)
+			{
+				uint8_t step = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
+				uint16_t res = tmc2130_get_res(axis);
+				tmc2130_goto_step(axis, step & (4*res - 1), 2, 1000, res);
+			}
+		}
+		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_CHOP_"), 9) == 0)
+		{
+			uint8_t axis = *(CMDBUFFER_CURRENT_STRING + 13);
+			axis = (axis == 'E')?3:(axis - 'X');
+			if (axis < 4)
+			{
+				uint8_t chop0 = tmc2130_chopper_config[axis].toff;
+				uint8_t chop1 = tmc2130_chopper_config[axis].hstr;
+				uint8_t chop2 = tmc2130_chopper_config[axis].hend;
+				uint8_t chop3 = tmc2130_chopper_config[axis].tbl;
+				char* str_end = 0;
+				if (CMDBUFFER_CURRENT_STRING[14])
+				{
+					chop0 = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, &str_end, 10) & 15;
+					if (str_end && *str_end)
+					{
+						chop1 = (uint8_t)strtol(str_end, &str_end, 10) & 7;
+						if (str_end && *str_end)
+						{
+							chop2 = (uint8_t)strtol(str_end, &str_end, 10) & 15;
+							if (str_end && *str_end)
+								chop3 = (uint8_t)strtol(str_end, &str_end, 10) & 3;
+						}
+					}
+				}
+				tmc2130_chopper_config[axis].toff = chop0;
+				tmc2130_chopper_config[axis].hstr = chop1 & 7;
+				tmc2130_chopper_config[axis].hend = chop2 & 15;
+				tmc2130_chopper_config[axis].tbl = chop3 & 3;
+				tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+				//printf_P(_N("TMC_SET_CHOP_%c %hhd %hhd %hhd %hhd\n"), "xyze"[axis], chop0, chop1, chop2, chop3);
+			}
 		}
 	}
 #endif //TMC2130
