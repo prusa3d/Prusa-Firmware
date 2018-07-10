@@ -851,7 +851,7 @@ if (print_sd_status)
         
 	}
 	else {
-#ifdef SNMM
+#ifdef SNMM 
 		lcd_printPGM(PSTR(" E"));
 		lcd.print(get_ext_nr() + 1);
 

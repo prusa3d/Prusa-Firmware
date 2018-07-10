@@ -158,7 +158,7 @@ extern void crashdet_disable();
 #endif //TMC2130
 
 
-#ifdef SNMM
+#if defined (SNMM) || defined (SNMM_V2)
 uint8_t snmm_extruder = 0;
 #endif
 
@@ -4865,7 +4865,7 @@ void bowden_menu() {
 	}
 }
 
-#ifdef SNMM
+//#ifdef SNMM
 
 static char snmm_stop_print_menu() { //menu for choosing which filaments will be unloaded in stop print
 	lcd_implementation_clear();
@@ -4912,7 +4912,11 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 
 char choose_extruder_menu() {
 
+#ifdef SNMM_V2
+	int items_no = 5;
+#else
 	int items_no = 4;
+#endif
 	int first = 0;
 	int enc_dif = 0;
 	char cursor_pos = 1;
@@ -4999,7 +5003,7 @@ char choose_extruder_menu() {
 
 }
 
-#endif
+//#endif
 
 char reset_menu() {
 #ifdef SNMM
@@ -5154,7 +5158,11 @@ void change_extr(int extr) { //switches multiplexer for extruders
 }
 
 static int get_ext_nr() { //reads multiplexer input pins and return current extruder number (counted from 0)
+#ifdef SNMM_V2
+	return(snmm_extruder); //update needed
+#else 
 	return(2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
+#endif
 }
 
 
@@ -5169,17 +5177,31 @@ void display_loading() {
 
 void extr_adj(int extruder) //loading filament for SNMM
 {
+
 #ifdef SNMM_V2
-	printf_P(PSTR("L%d \n"),extruder);
+    printf_P(PSTR("L%d \n"),extruder);
     fprintf_P(uart2io, PSTR("L%d\n"), extruder);
-	           
+	
+	//show which filament is currently loaded
+	lcd_update_enable(false);
+	lcd_implementation_clear();
+	lcd.setCursor(0, 1); lcd_printPGM(_T(MSG_LOADING_FILAMENT));
+	//if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd.setCursor(0, 1);
+	//else lcd.print(" ");
+	lcd.print(" ");
+	lcd.print(snmm_extruder + 1);
+
 	// get response
     uart2_rx_clr();
-    while (!uart2_rx_ok())
+	while (!uart2_rx_ok())
     {
       //printf_P(PSTR("waiting..\n"));
       delay_keep_alive(100);
     }
+	lcd_update_enable(true);
+	
+	
+	//lcd_return_to_status();
 #else
 
 	bool correct;
@@ -5223,26 +5245,39 @@ void extr_adj(int extruder) //loading filament for SNMM
 
 
 void extr_unload() { //unloads filament
-#ifdef SNMM_V2
-	printf_P(PSTR("U\n"));
-    fprintf_P(uart2io, PSTR("U\n"));
-	           
-	// get response
-    uart2_rx_clr();
-    while (!uart2_rx_ok())
-    {
-      //printf_P(PSTR("waiting..\n"));
-      delay_keep_alive(100);
-    }
-#else //SNMM_V2
-
-
-
+	#ifndef SNMM_V2
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 	uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+	#endif
 
 	if (degHotend0() > EXTRUDE_MINTEMP) {
+		#ifdef SNMM_V2
+		st_synchronize();
+		
+		//show which filament is currently unloaded
+		lcd_update_enable(false);
+		lcd_implementation_clear();
+		lcd.setCursor(0, 1); lcd_printPGM(_T(MSG_UNLOADING_FILAMENT));
+		lcd.print(" ");
+		lcd.print(snmm_extruder + 1);
+
+		current_position[E_AXIS] -= 80;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
+		st_synchronize();
+		printf_P(PSTR("U0\n"));
+		fprintf_P(uart2io, PSTR("U0\n"));
+
+		// get response
+		uart2_rx_clr();
+		while (!uart2_rx_ok())
+		{
+			//printf_P(PSTR("waiting..\n"));
+			delay_keep_alive(100);
+		}
+		lcd_update_enable(true);
+		#else //SNMM_V2
+
 		lcd_implementation_clear();
 		lcd_display_message_fullscreen_P(PSTR(""));
 		max_feedrate[E_AXIS] = 50;
@@ -5292,6 +5327,7 @@ void extr_unload() { //unloads filament
 		lcd_update_enable(true);
 		lcd_return_to_status();
 		max_feedrate[E_AXIS] = 50;
+		#endif //SNMM_V2
 	}
 	else {
 
@@ -5304,41 +5340,68 @@ void extr_unload() { //unloads filament
 		delay(2000);
 		lcd_implementation_clear();
 	}
-
-	lcd_return_to_status();
-
-
-#endif //SNMM_V2
-
+	//lcd_return_to_status();
 }
 
 //wrapper functions for loading filament
 static void extr_adj_0(){
+	#ifdef SNMM_V2
+	enquecommand_P(PSTR("M701 E0"));
+	#else
 	change_extr(0);
 	extr_adj(0);
+	#endif
 }
 static void extr_adj_1() {
+	#ifdef SNMM_V2
+	enquecommand_P(PSTR("M701 E1"));
+	#else
 	change_extr(1);
 	extr_adj(1);
+	#endif
 }
 static void extr_adj_2() {
+	#ifdef SNMM_V2
+	enquecommand_P(PSTR("M701 E2"));
+	#else
 	change_extr(2);
 	extr_adj(2);
+	#endif
 }
 static void extr_adj_3() {
+	#ifdef SNMM_V2
+	enquecommand_P(PSTR("M701 E3"));
+	#else
 	change_extr(3);
 	extr_adj(3);
+	#endif
 }
 static void extr_adj_4() {
+	#ifdef SNMM_V2
+	enquecommand_P(PSTR("M701 E4"));
+	#else
 	change_extr(4);
 	extr_adj(4);
+	#endif
 }
 
 static void load_all() {
+	#ifdef SNMM_V2
+	enquecommand_P(PSTR("M701 E0"));
+	enquecommand_P(PSTR("M701 E1"));
+	enquecommand_P(PSTR("M701 E2"));
+	enquecommand_P(PSTR("M701 E3"));
+	enquecommand_P(PSTR("M701 E4"));
+	#else
 	for (int i = 0; i < 4; i++) {
+
+		
+
 		change_extr(i);
 		extr_adj(i);
+
 	}
+	#endif
 }
 
 //wrapper functions for changing extruders
@@ -5850,20 +5913,25 @@ static void lcd_main_menu()
   } 
   else 
   {
-	#ifndef SNMM
-#ifdef PAT9125
+	#if defined (SNMM) || defined (SNMM_V2)
+	MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
+    #ifdef SNMM_V2
+	MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
+    #else
+	MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), fil_unload_menu);
+	MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20 r=1
+    #endif
+
+	#else
+	  #ifdef PAT9125
 	if ( ((filament_autoload_enabled == true) && (fsensor_enabled == true)))
         MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=17 r=0
 	else
-#endif //PAT9125
+      #endif //PAT9125
 		MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
 	MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
-	#endif
-	#if defined (SNMM) || defined (SNMM_V2)
-	MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
-	MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), fil_unload_menu);
-	MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20 r=1
-	#endif
+    #endif
+
 	MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
 

@@ -6927,6 +6927,14 @@ Sigma_Exit:
     break;
 	case 701: //M701: load filament
 	{
+		#ifdef SNMM_V2
+		if (code_seen('E'))
+		{
+			snmm_extruder = code_value();
+		}
+		#endif
+		
+
 		gcode_M701();
 	}
 	break;
@@ -6940,7 +6948,7 @@ Sigma_Exit:
 			extr_unload(); //unload just current filament 
 		}
 		else {
-			extr_unload_all(); //unload all filaments
+			  extr_unload_all(); //unload all filaments
 		}
 #else
 #ifdef PAT9125
@@ -7061,6 +7069,21 @@ Sigma_Exit:
                   //printf_P(PSTR("waiting..\n"));
                   delay_keep_alive(100);
               }
+			  snmm_extruder = tmp_extruder; //filament change is finished
+
+		  if (*(strchr_pointer + index) == '?') { // for single material usage with mmu
+			  bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
+			  if (!saved_e_relative_mode) {
+				  enquecommand_front_P(PSTR("M82")); // set extruder to relative mode
+			  }
+			  enquecommand_front_P((PSTR("G1 E7.2000 F562")));
+			  enquecommand_front_P((PSTR("G1 E14.4000 F871")));
+			  enquecommand_front_P((PSTR("G1 E36.0000 F1393")));
+			  enquecommand_front_P((PSTR("G1 E14.4000 F871")));			  
+			  if (!saved_e_relative_mode) {
+				  enquecommand_front_P(PSTR("M83")); // set extruder to relative mode
+			  }
+		  }
 #endif
 
 #ifdef SNMM

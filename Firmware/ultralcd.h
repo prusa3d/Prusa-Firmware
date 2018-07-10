@@ -136,9 +136,9 @@ extern int lcd_printf_P(const char* format, ...);
   #endif
   extern int8_t SilentModeMenu;
 
-#ifdef SNMM
+#if defined (SNMM) || defined (SNMM_V2) 
   extern uint8_t snmm_extruder;
-#endif // SNMM
+#endif // defined (SNMM) || defined (SNMM_V2)
 
   extern bool cancel_heatup;
   extern bool isPrintPaused;
