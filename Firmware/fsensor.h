@@ -15,6 +15,9 @@ extern void fsensor_unblock();
 extern bool fsensor_enable();
 extern void fsensor_disable();
 
+extern bool filament_autoload_enabled;
+extern void fautoload_set(bool State);
+
 //update (perform M600 on filament runout)
 extern void fsensor_update();
 
