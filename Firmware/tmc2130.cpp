@@ -62,6 +62,13 @@ uint8_t tmc2130_home_fsteps[2] = {48, 48};
 
 uint8_t tmc2130_wave_fac[4] = {0, 0, 0, 0};
 
+tmc2130_chopper_config_t tmc2130_chopper_config[4] = {
+	{TMC2130_TOFF_XYZ, 5, 1, 2, 0},
+	{TMC2130_TOFF_XYZ, 5, 1, 2, 0},
+	{TMC2130_TOFF_XYZ, 5, 1, 2, 0},
+	{TMC2130_TOFF_E, 5, 1, 2, 0}
+};
+
 bool tmc2130_sg_stop_on_crash = true;
 uint8_t tmc2130_sg_diag_mask = 0x00;
 uint8_t tmc2130_sg_crash = 0;
@@ -418,13 +425,13 @@ void tmc2130_check_overtemp()
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
 	uint8_t intpol = 1;
-	uint8_t toff = TMC2130_TOFF_XYZ; // toff = 3 (fchop = 27.778kHz)
-	uint8_t hstrt = 5; //initial 4, modified to 5
-	uint8_t hend = 1;
+	uint8_t toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
+	uint8_t hstrt = tmc2130_chopper_config[axis].hstr; //initial 4, modified to 5
+	uint8_t hend = tmc2130_chopper_config[axis].hend; //original value = 1
 	uint8_t fd3 = 0;
 	uint8_t rndtf = 0; //random off time
 	uint8_t chm = 0; //spreadCycle
-	uint8_t tbl = 2; //blanking time
+	uint8_t tbl = tmc2130_chopper_config[axis].tbl; //blanking time, original value = 2
 	if (axis == E_AXIS)
 	{
 #ifdef TMC2130_CNSTOFF_E
@@ -434,9 +441,11 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 		hend = 0; //sine wave offset
 		chm = 1; // constant off time mod
 #endif //TMC2130_CNSTOFF_E
-		toff = TMC2130_TOFF_E; // toff = 3-5
+//		toff = TMC2130_TOFF_E; // toff = 3-5
 //		rndtf = 1;
 	}
+	DBG(_n("tmc2130_setup_chopper(axis=%hhd, mres=%hhd, curh=%hhd, curr=%hhd\n"), axis, mres, current_h, current_r);
+	DBG(_n(" toff=%hhd, hstr=%hhd, hend=%hhd, tbl=%hhd\n"), toff, hstrt, hend, tbl);
 	if (current_r <= 31)
 	{
 		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 1, 0, 0, 0, mres, intpol, 0, 0);
@@ -475,10 +484,7 @@ void tmc2130_print_currents()
 
 void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 {
-	MYSERIAL.print("tmc2130_set_pwm_ampl ");
-	MYSERIAL.print((int)axis);
-	MYSERIAL.print(" ");
-	MYSERIAL.println((int)pwm_ampl);
+	DBG(_n("tmc2130_set_pwm_ampl(axis=%hhd, pwm_ampl=%hhd\n"), axis, pwm_ampl);
 	tmc2130_pwm_ampl[axis] = pwm_ampl;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -486,10 +492,7 @@ void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 
 void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_grad)
 {
-	MYSERIAL.print("tmc2130_set_pwm_grad ");
-	MYSERIAL.print((int)axis);
-	MYSERIAL.print(" ");
-	MYSERIAL.println((int)pwm_grad);
+	DBG(_n("tmc2130_set_pwm_grad(axis=%hhd, pwm_grad=%hhd\n"), axis, pwm_grad);
 	tmc2130_pwm_grad[axis] = pwm_grad;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);

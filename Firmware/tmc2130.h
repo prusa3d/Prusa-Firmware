@@ -36,6 +36,19 @@ extern uint8_t tmc2130_home_fsteps[2];
 
 extern uint8_t tmc2130_wave_fac[4];
 
+#pragma pack(push)
+#pragma pack(1)
+typedef struct
+{
+	uint8_t toff:4;
+	uint8_t hstr:3;
+	uint8_t hend:4;
+	uint8_t tbl:2;
+	uint8_t res:3;
+} tmc2130_chopper_config_t;
+#pragma pack(pop)
+
+extern tmc2130_chopper_config_t tmc2130_chopper_config[4];
 
 //initialize tmc2130
 extern void tmc2130_init();
@@ -55,6 +68,7 @@ extern void tmc2130_sg_meassure_start(uint8_t axis);
 //stop current stallguard meassuring and report result
 extern uint16_t tmc2130_sg_meassure_stop();
 
+extern void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r);
 
 //set holding current for any axis (M911)
 extern void tmc2130_set_current_h(uint8_t axis, uint8_t current);
@@ -79,6 +93,7 @@ extern bool tmc2130_wait_standstill_xy(int timeout);
 
 extern void tmc2130_eeprom_load_config();
 extern void tmc2130_eeprom_save_config();
+
 
 #pragma pack(push)
 #pragma pack(1)

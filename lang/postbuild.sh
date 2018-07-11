@@ -23,8 +23,8 @@ if [ -z "$CONFIG_OK" ]; then eval "$(cat config.sh)"; fi
 if [ -z "$CONFIG_OK" ] | [ $CONFIG_OK -eq 0 ]; then echo 'Config NG!' >&2; exit 1; fi
 #
 # Selected language:
-LANG=$1
-#if [ -z "$LANG" ]; then LANG='cz'; fi
+LNG=$1
+#if [ -z "$LNG" ]; then LNG='cz'; fi
 #
 # Params:
 IGNORE_MISSING_TEXT=1
@@ -80,7 +80,7 @@ else
  echo "OK" >&2
 fi
 
-#update progmem1 id entries in binary file
+#extract binary file
 echo -n " extracting binary..." >&2
 $OBJCOPY -I ihex -O binary $INOHEX ./firmware.bin
 echo "OK" >&2
@@ -97,10 +97,35 @@ cat textaddr.txt | grep "^ADDR OK" | cut -f3- -d' ' | sed "s/^0000/0x/" |\
  done
 echo "OK" >&2
 
+#update primary language signature in binary file
+echo -n "  primary language signature..." >&2
+if [ -e lang_en.bin ]; then
+ #find symbol _PRI_LANG_SIGNATURE in section '.text'
+ pri_lang=$(cat text.sym | grep -E "\b_PRI_LANG_SIGNATURE\b")
+ if [ -z "$pri_lang" ]; then echo "NG!\n  symbol _PRI_LANG_SIGNATURE not found!" >&2; finish 1; fi
+ #get pri_lang address
+ pri_lang_addr='0x'$(echo $pri_lang | cut -f1 -d' ')
+ #read header from primary language binary file
+ header=$(dd if=lang_en.bin bs=1 count=16 2>/dev/null | xxd | cut -c11-49 | sed 's/\([0-9a-f][0-9a-f]\)[\ ]*/\1 /g')
+ #read checksum and count data as 4 byte signature
+ chscnt=$(echo $header | cut -c18-29 | sed "s/ /\\\\x/g")
+ /bin/echo -e -n "$chscnt" |\
+  dd of=firmware.bin bs=1 count=4 seek=$(($pri_lang_addr)) conv=notrunc 2>/dev/null
+ echo "OK" >&2
+else
+ echo "NG! - file lang_en.bin not found!" >&2;
+ finish 1
+fi
+
+#convert bin to hex
+echo -n " converting to hex..." >&2
+$OBJCOPY -I binary -O ihex ./firmware.bin ./firmware.hex
+echo "OK" >&2
+
 #update _SEC_LANG in binary file if language is selected
 echo -n "  secondary language data..." >&2
-if [ ! -z "$LANG" ]; then
- ./update_lang.sh $LANG 2>./update_lang.out
+if [ ! -z "$LNG" ]; then
+ ./update_lang.sh $LNG 2>./update_lang.out
  if [ $? -ne 0 ]; then echo "NG! - check update_lang.out file" >&2; finish 1; fi
  echo "OK" >&2
  finish 0
@@ -134,9 +159,20 @@ else
 # echo "skipped" >&2
 fi
 
-#convert bin to hex
-#echo -n " converting to hex..." >&2
-#$OBJCOPY -I binary -O ihex ./firmware.bin ./firmware.hex
-#echo "OK" >&2
+#create binary file with all languages
+rm -f lang.bin
+if [ -e lang_cz.bin ]; then cat lang_cz.bin >> lang.bin; fi
+if [ -e lang_de.bin ]; then cat lang_de.bin >> lang.bin; fi
+if [ -e lang_es.bin ]; then cat lang_es.bin >> lang.bin; fi
+if [ -e lang_it.bin ]; then cat lang_it.bin >> lang.bin; fi
+if [ -e lang_pl.bin ]; then cat lang_pl.bin >> lang.bin; fi
+
+#convert lang.bin to lang.hex
+echo -n " converting to hex..." >&2
+$OBJCOPY -I binary -O ihex ./lang.bin ./lang.hex
+echo "OK" >&2
+
+#append languages to hex file
+cat ./lang.hex >> firmware.hex
 
 finish 0

@@ -5,6 +5,7 @@
 #include "Marlin.h"
 #include "w25x20cl.h"
 #include "stk500.h"
+#include "bootapp.h"
 
 #define OPTIBOOT_MAJVER 6
 #define OPTIBOOT_CUSTOMVER 0
@@ -98,6 +99,7 @@ extern struct block_t *block_buffer;
 
 void optiboot_w25x20cl_enter()
 {
+  if (boot_app_flags & BOOT_APP_FLG_USER0) return;
   uint8_t ch;
   uint8_t rampz = 0;
   register uint16_t address = 0;

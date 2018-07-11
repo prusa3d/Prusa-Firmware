@@ -5,6 +5,7 @@
 #include "bootapp.h"
 
 #include "Configuration.h"
+#include "pins.h"
 
 #ifdef W25X20CL
 #include "w25x20cl.h"
@@ -27,6 +28,9 @@ uint8_t lang_is_selected(void) { return 1; }
 
 //reserved xx kbytes for secondary language table
 const char _SEC_LANG[LANG_SIZE_RESERVED] PROGMEM_I2 = "_SEC_LANG";
+
+//primary language signature
+const uint32_t _PRI_LANG_SIGNATURE[1] __attribute__((section(".progmem0"))) = {0xffffffff};
 
 //lang_table pointer
 lang_table_t* lang_table = 0;
@@ -56,11 +60,28 @@ uint8_t lang_select(uint8_t lang)
 	{
 		if (pgm_read_dword(((uint32_t*)_SEC_LANG_TABLE)) == LANG_MAGIC) //magic valid
 		{
-			lang_table = _SEC_LANG_TABLE; // set table pointer
-			lang_selected = lang; // set language id
+			if (lang_check(_SEC_LANG_TABLE))
+				if (pgm_read_dword(((uint32_t*)(_SEC_LANG_TABLE + 12))) == pgm_read_dword(((uint32_t*)(_PRI_LANG_SIGNATURE)))) //signature valid
+				{
+					lang_table = _SEC_LANG_TABLE; // set table pointer
+					lang_selected = lang; // set language id
+				}
 		}
 	}
 #else //W25X20CL
+	if (lang == LANG_ID_SEC)
+	{
+		uint16_t table = _SEC_LANG_TABLE;
+		if (pgm_read_dword(((uint32_t*)table)) == LANG_MAGIC) //magic valid
+		{
+			if (lang_check(table))
+				if (pgm_read_dword(((uint32_t*)(table + 12))) == pgm_read_dword(((uint32_t*)(_PRI_LANG_SIGNATURE)))) //signature valid
+				{
+					lang_table = table; // set table pointer
+					lang_selected = lang; // set language id
+				}
+		}
+	}
 #endif //W25X20CL
 	if (lang_selected == lang)
 	{
@@ -70,8 +91,22 @@ uint8_t lang_select(uint8_t lang)
 	return 0;
 }
 
+uint8_t lang_check(uint16_t addr)
+{
+	uint16_t sum = 0;
+	uint16_t size = pgm_read_word((uint16_t*)(addr + 4));
+	uint16_t lt_sum = pgm_read_word((uint16_t*)(addr + 8));
+	uint16_t i; for (i = 0; i < size; i++)
+		sum += (uint16_t)pgm_read_byte((uint8_t*)(addr + i)) << ((i & 1)?0:8);
+	sum -= lt_sum; //subtract checksum
+	sum = (sum >> 8) | ((sum & 0xff) << 8); //swap bytes
+	return (sum == lt_sum);
+}
+
 uint8_t lang_get_count()
 {
+	if (pgm_read_dword(((uint32_t*)(_PRI_LANG_SIGNATURE))) == 0xffffffff)
+		return 1; //signature not set - only primary language will be available
 #ifdef W25X20CL
 	W25X20CL_SPI_ENTER();
 	uint8_t count = 2; //count = 1+n (primary + secondary + all in xflash)
@@ -84,9 +119,16 @@ uint8_t lang_get_count()
 		addr += header.size; //calc address of next table
 		count++; //inc counter
 	}
-	return count;
 #else //W25X20CL
+	uint16_t table = _SEC_LANG_TABLE;
+	uint8_t count = 1; //count = 1 (primary)
+	while (pgm_read_dword(((uint32_t*)table)) == LANG_MAGIC) //magic valid
+	{
+		table += pgm_read_word((uint16_t*)(table + 4));
+		count++;
+	}
 #endif //W25X20CL
+	return count;
 }
 
 uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* offset)
@@ -98,7 +140,7 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		uint16_t ui = _SEC_LANG_TABLE; //table pointer
 		memcpy_P(header, ui, sizeof(lang_table_header_t)); //read table header from progmem
 		if (offset) *offset = ui;
-		return (header == LANG_MAGIC)?1:0; //return 1 if magic valid
+		return (header->magic == LANG_MAGIC)?1:0; //return 1 if magic valid
 	}
 	W25X20CL_SPI_ENTER();
 	uint32_t addr = 0x00000; //start of xflash
@@ -111,9 +153,16 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		if (--lang == 0) return 1;
 		addr += header->size; //calc address of next table
 	}
-	return 0;
 #else //W25X20CL
+	if (lang == LANG_ID_SEC)
+	{
+		uint16_t ui = _SEC_LANG_TABLE; //table pointer
+		memcpy_P(header, ui, sizeof(lang_table_header_t)); //read table header from progmem
+		if (offset) *offset = ui;
+		return (header->magic == LANG_MAGIC)?1:0; //return 1 if magic valid
+	}
 #endif //W25X20CL
+	return 0;
 }
 
 uint16_t lang_get_code(uint8_t lang)
@@ -138,14 +187,15 @@ uint16_t lang_get_code(uint8_t lang)
 		addr += header.size; //calc address of next table
 	}
 #else //W25X20CL
+	uint16_t table = _SEC_LANG_TABLE;
+	uint8_t count = 1; //count = 1 (primary)
+	while (pgm_read_dword((uint32_t*)table) == LANG_MAGIC) //magic valid
+	{
+		if (count == lang) return pgm_read_word(((uint16_t*)(table + 10))); //read language code
+		table += pgm_read_word((uint16_t*)(table + 4));
+		count++;
+	}
 #endif //W25X20CL
-
-//	if (lang == LANG_ID_SEC)
-//	{
-//		uint16_t ui = _SEC_LANG_TABLE; //table pointer
-//		if (pgm_read_dword(((uint32_t*)(ui + 0))) == LANG_MAGIC) //magic num is OK
-//			return pgm_read_word(((uint16_t*)(ui + 10))); //read language code
-//	}
 	return LANG_CODE_XX;
 }
 

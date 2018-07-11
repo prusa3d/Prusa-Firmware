@@ -71,6 +71,7 @@
 #include "math.h"
 #include "util.h"
 #include "Timer.h"
+#include "uart2.h"
 
 #include <avr/wdt.h>
 #include <avr/pgmspace.h>
@@ -528,6 +529,7 @@ static float saved_pos[4] = { 0, 0, 0, 0 };
 static float saved_feedrate2 = 0;
 static uint8_t saved_active_extruder = 0;
 static bool saved_extruder_under_pressure = false;
+static bool saved_extruder_relative_mode = false;
 
 //===========================================================================
 //=============================Routines======================================
@@ -663,12 +665,12 @@ void crashdet_disable()
 
 void crashdet_stop_and_save_print()
 {
-	stop_and_save_print_to_ram(10, -2); //XY - no change, Z 10mm up, E -2mm retract
+	stop_and_save_print_to_ram(10, -DEFAULT_RETRACTION); //XY - no change, Z 10mm up, E -1mm retract
 }
 
 void crashdet_restore_print_and_continue()
 {
-	restore_print_from_ram_and_continue(2); //XYZ = orig, E +2mm unretract
+	restore_print_from_ram_and_continue(DEFAULT_RETRACTION); //XYZ = orig, E +1mm unretract
 //	babystep_apply();
 }
 
@@ -847,6 +849,15 @@ void factory_reset(char level, bool quiet)
 			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
+
+            eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+            eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+
+            fsensor_enable();
                        
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
@@ -1113,7 +1124,7 @@ uint8_t lang_xflash_enum_codes(uint16_t* codes)
 		printf_P(_n(" _lt_count        = 0x%04x (%d)\n"), header.count, header.count);
 		printf_P(_n(" _lt_chsum        = 0x%04x\n"), header.checksum);
 		printf_P(_n(" _lt_code         = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
-		printf_P(_n(" _lt_resv1        = 0x%08lx\n"), header.reserved1);
+		printf_P(_n(" _lt_sign         = 0x%08lx\n"), header.signature);
 
 		addr += header.size;
 		codes[count] = header.code;
@@ -1173,11 +1184,19 @@ void setup()
 	selectedSerialPort = eeprom_read_byte((uint8_t*)EEPROM_SECOND_SERIAL_ACTIVE);
 	if (selectedSerialPort == 0xFF) selectedSerialPort = 0;
 	if (farm_mode)
-	{ 
+	{
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
 		selectedSerialPort = 1;
+#ifdef TMC2130
+		//increased extruder current (PFW363)
+		tmc2130_current_h[E_AXIS] = 36;
+		tmc2130_current_r[E_AXIS] = 36;
+#endif //TMC2130
+		//disabled filament autoload (PFW360)
+		filament_autoload_enabled = false;
+		eeprom_update_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED, 0);
 	}
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
@@ -1186,11 +1205,13 @@ void setup()
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
+	uart2_init();
+
 
 #ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;
 	uint32_t src_addr = 0x00000;
-	if (lang_get_header(3, &header, &src_addr))
+	if (lang_get_header(1, &header, &src_addr))
 	{
 //this is comparsion of some printing-methods regarding to flash space usage and code size/readability
 #define LT_PRINT_TEST 2
@@ -1207,7 +1228,7 @@ void setup()
 		printf_P(_n(" _lt_count = 0x%04x (%d)\n"), header.count, header.count);
 		printf_P(_n(" _lt_chsum = 0x%04x\n"), header.checksum);
 		printf_P(_n(" _lt_code  = 0x%04x (%c%c)\n"), header.code, header.code >> 8, header.code & 0xff);
-		printf_P(_n(" _lt_resv1 = 0x%08lx\n"), header.reserved1);
+		printf_P(_n(" _lt_sign = 0x%08lx\n"), header.signature);
 #elif (LT_PRINT_TEST==2) //optimized printf
 		printf_P(
 		 _n(
@@ -1225,7 +1246,7 @@ void setup()
 		 header.count, header.count,
 		 header.checksum,
 		 header.code, header.code >> 8, header.code & 0xff,
-		 header.reserved1
+		 header.signature
 		);
 #elif (LT_PRINT_TEST==3) //arduino print/println (leading zeros not solved)
 		MYSERIAL.print(" _src_addr = 0x");
@@ -1252,7 +1273,7 @@ void setup()
 		MYSERIAL.print((char)(header.code & 0xff), 0);
 		MYSERIAL.println(")");
 		MYSERIAL.print(" _lt_resv1 = 0x");
-		MYSERIAL.println(header.reserved1, 16);
+		MYSERIAL.println(header.signature, 16);
 #endif //(LT_PRINT_TEST==)
 #undef LT_PRINT_TEST
 
@@ -1265,7 +1286,22 @@ void setup()
 			if ((i % 16) == 15) putchar('\n');
 		}
 #endif
-#if 1
+		uint16_t sum = 0;
+		for (uint16_t i = 0; i < header.size; i++)
+			sum += (uint16_t)pgm_read_byte((uint8_t*)(_SEC_LANG_TABLE + i)) << ((i & 1)?0:8);
+		printf_P(_n("_SEC_LANG_TABLE checksum = %04x\n"), sum);
+		sum -= header.checksum; //subtract checksum
+		printf_P(_n("_SEC_LANG_TABLE checksum = %04x\n"), sum);
+		sum = (sum >> 8) | ((sum & 0xff) << 8); //swap bytes
+		if (sum == header.checksum)
+			printf_P(_n("Checksum OK\n"), sum);
+		else
+			printf_P(_n("Checksum NG\n"), sum);
+	}
+	else
+		printf_P(_n("lang_get_header failed!\n"));
+
+#if 0
 		for (uint16_t i = 0; i < 1024*10; i++)
 		{
 			if ((i % 16) == 0) printf_P(_n("%04x:"), _SEC_LANG_TABLE+i);
@@ -1273,10 +1309,6 @@ void setup()
 			if ((i % 16) == 15) putchar('\n');
 		}
 #endif
-	}
-	else
-		printf_P(_n("lang_get_header failed!\n"));
-
 
 #if 0
 	SERIAL_ECHOLN("Reading eeprom from 0 to 100: start");
@@ -3222,16 +3254,59 @@ void process_commands()
 	}
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("TMC_"), 4) == 0)
 	{
-		if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_WAVE_E"), 10) == 0)
+		if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_WAVE_"), 9) == 0)
 		{
-			uint8_t fac = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
-			tmc2130_set_wave(E_AXIS, 247, fac);
+			uint8_t axis = *(CMDBUFFER_CURRENT_STRING + 13);
+			axis = (axis == 'E')?3:(axis - 'X');
+			if (axis < 4)
+			{
+				uint8_t fac = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
+				tmc2130_set_wave(axis, 247, fac);
+			}
 		}
-		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_STEP_E"), 10) == 0)
+		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_STEP_"), 9) == 0)
 		{
-			uint8_t step = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
-			uint16_t res = tmc2130_get_res(E_AXIS);
-			tmc2130_goto_step(E_AXIS, step & (4*res - 1), 2, 1000, res);
+			uint8_t axis = *(CMDBUFFER_CURRENT_STRING + 13);
+			axis = (axis == 'E')?3:(axis - 'X');
+			if (axis < 4)
+			{
+				uint8_t step = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, NULL, 10);
+				uint16_t res = tmc2130_get_res(axis);
+				tmc2130_goto_step(axis, step & (4*res - 1), 2, 1000, res);
+			}
+		}
+		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_CHOP_"), 9) == 0)
+		{
+			uint8_t axis = *(CMDBUFFER_CURRENT_STRING + 13);
+			axis = (axis == 'E')?3:(axis - 'X');
+			if (axis < 4)
+			{
+				uint8_t chop0 = tmc2130_chopper_config[axis].toff;
+				uint8_t chop1 = tmc2130_chopper_config[axis].hstr;
+				uint8_t chop2 = tmc2130_chopper_config[axis].hend;
+				uint8_t chop3 = tmc2130_chopper_config[axis].tbl;
+				char* str_end = 0;
+				if (CMDBUFFER_CURRENT_STRING[14])
+				{
+					chop0 = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 14, &str_end, 10) & 15;
+					if (str_end && *str_end)
+					{
+						chop1 = (uint8_t)strtol(str_end, &str_end, 10) & 7;
+						if (str_end && *str_end)
+						{
+							chop2 = (uint8_t)strtol(str_end, &str_end, 10) & 15;
+							if (str_end && *str_end)
+								chop3 = (uint8_t)strtol(str_end, &str_end, 10) & 3;
+						}
+					}
+				}
+				tmc2130_chopper_config[axis].toff = chop0;
+				tmc2130_chopper_config[axis].hstr = chop1 & 7;
+				tmc2130_chopper_config[axis].hend = chop2 & 15;
+				tmc2130_chopper_config[axis].tbl = chop3 & 3;
+				tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+				//printf_P(_N("TMC_SET_CHOP_%c %hhd %hhd %hhd %hhd\n"), "xyze"[axis], chop0, chop1, chop2, chop3);
+			}
 		}
 	}
 #endif //TMC2130
@@ -3259,6 +3334,20 @@ void process_commands()
 		}
 		else if (code_seen("thx")) {
 			no_response = false;
+        } else if (code_seen("RESET")) {
+            // careful!
+            if (farm_mode) {
+#ifdef WATCHDOG
+				wdt_enable(WDTO_15MS);
+				cli();
+				while(1);
+#else //WATCHDOG
+                asm volatile("jmp 0x3E000");
+#endif //WATCHDOG
+            }
+            else {
+                MYSERIAL.println("Not in farm mode.");
+            }
 		}else if (code_seen("fv")) {
         // get file version
         #ifdef SDSUPPORT
@@ -4377,6 +4466,7 @@ void process_commands()
 		}
 		KEEPALIVE_STATE(NOT_BUSY);
 		// Restore custom message state
+		lcd_setstatuspgm(_T(WELCOME_MSG));
 		custom_message = custom_message_old;
 		custom_message_type = custom_message_type_old;
 		custom_message_state = custom_message_state_old;
@@ -6986,6 +7076,45 @@ Sigma_Exit:
 			  tmp_extruder = code_value();
 		  }
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
+
+#ifdef SNMM_V2
+		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
+          switch (tmp_extruder) 
+          {
+          case 1:
+              
+              fprintf_P(uart2io, PSTR("T1\n"));
+              break;
+          case 2:
+              
+              fprintf_P(uart2io, PSTR("T2\n"));
+              break;
+          case 3:
+              
+              fprintf_P(uart2io, PSTR("T3\n"));
+              break;
+          case 4:
+              
+              fprintf_P(uart2io, PSTR("T4\n"));
+              break;
+          default:
+              
+              fprintf_P(uart2io, PSTR("T0\n"));
+              break;
+          }
+
+          
+
+          
+              // get response
+            uart2_rx_clr();
+              while (!uart2_rx_ok())
+              {
+                  //printf_P(PSTR("waiting..\n"));
+                  delay_keep_alive(100);
+              }
+#endif
+
 #ifdef SNMM
           
     #ifdef LIN_ADVANCE
@@ -7148,8 +7277,8 @@ void FlushSerialRequestResend()
 void ClearToSend()
 {
     previous_millis_cmd = millis();
-    if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR))
-        SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+	if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)) 
+		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
 }
 
 #if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
@@ -7297,6 +7426,7 @@ void clamp_to_software_endstops(float target[3])
             float de = e - current_position[E_AXIS];
             for (int i = 1; i < n_segments; ++ i) {
                 float t = float(i) / float(n_segments);
+                if (saved_printing || (mbl.active == false)) return;
                 plan_buffer_line(
                                  current_position[X_AXIS] + t * dx,
                                  current_position[Y_AXIS] + t * dy,
@@ -8792,11 +8922,11 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
         uint16_t value;
     } sdlen_single;
     int _bufindr = bufindr;
-    for (int _buflen  = buflen; _buflen > 0; ++ iline) {
+	for (int _buflen  = buflen; _buflen > 0; ++ iline) {
         if (cmdbuffer[_bufindr] == CMDBUFFER_CURRENT_TYPE_SDCARD) {
             sdlen_single.lohi.lo = cmdbuffer[_bufindr + 1];
             sdlen_single.lohi.hi = cmdbuffer[_bufindr + 2];
-        }
+        }		 
         SERIAL_ECHOPGM("Buffer line (from buffer): ");
         MYSERIAL.print(int(iline), DEC);
         SERIAL_ECHOPGM(", type: ");
@@ -8807,7 +8937,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
         MYSERIAL.println(cmdbuffer + _bufindr + CMDHDRSIZE);
 
         SERIAL_ECHOPGM("Buffer line (from file): ");
-        MYSERIAL.print(int(iline), DEC);
         MYSERIAL.println(int(iline), DEC);
         for (; sdlen_single.value > 0; -- sdlen_single.value)
           MYSERIAL.print(char(card.get()));
@@ -8840,7 +8969,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	saved_active_extruder = active_extruder; //save active_extruder
 
 	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
-
+	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 //	card.closefile();
@@ -8854,10 +8983,16 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
     char buf[48];
 
 	// First unretract (relative extrusion)
+	if(!saved_extruder_relative_mode){
+	  strcpy_P(buf, PSTR("M83"));
+	  enquecommand(buf, false);
+	}
+	
+	//retract 45mm/s
 	strcpy_P(buf, PSTR("G1 E"));
 	dtostrf(e_move, 6, 3, buf + strlen(buf));
 	strcat_P(buf, PSTR(" F"));
-	dtostrf(retract_feedrate*60, 8, 3, buf + strlen(buf));
+	dtostrf(2700, 8, 3, buf + strlen(buf));
 	enquecommand(buf, false);
 
 	// Then lift Z axis
@@ -8886,26 +9021,37 @@ void restore_print_from_ram_and_continue(float e_move)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
 	feedrate = saved_feedrate2; //restore feedrate
+	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], homing_feedrate[Z_AXIS]/13, active_extruder);
+	//first move print head in XY to the saved position:
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
 	st_synchronize();
+	//then move Z
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
+	st_synchronize();
+	//and finaly unretract (35mm/s)
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], 35, active_extruder);
+	st_synchronize();
+
 	memcpy(current_position, saved_pos, sizeof(saved_pos));
 	memcpy(destination, current_position, sizeof(destination));
 	if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
 		card.setIndex(saved_sdpos);
 		sdpos_atomic = saved_sdpos;
 		card.sdprinting = true;
+		printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 	}
 	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
 		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
+		serial_count = 0; 
 		FlushSerialRequestResend();
 	}
 	else {
 		//not sd printing nor usb printing
 	}
+	lcd_setstatuspgm(_T(WELCOME_MSG));
 	saved_printing = false;
-	
 }
 
 void print_world_coordinates()

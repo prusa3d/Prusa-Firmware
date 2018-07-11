@@ -76,11 +76,11 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Il caricamento automatico del filamento è disponibile solo quando il sensore è acceso..."
+"Il caricamento automatico del filamento e disponibile solo quando il sensore e acceso..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Il caricamento automatico è attivo, premete la manopola e inserite il filamento..."
+"Il caricamento automatico e attivo, premete la manopola e inserite il filamento..."
 
 #MSG_SELFTEST_AXIS_LENGTH c=0 r=0
 "Axis length"
@@ -132,7 +132,7 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
-"C'è stato un Blackout. Recuperare la stampa?"
+"C'e stato un Blackout. Recuperare la stampa?"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -252,7 +252,7 @@
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
-"Errore - la memoria statica è stata sovrascritta"
+"Errore - la memoria statica e stata sovrascritta"
 
 #MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
 "error writing to file"
@@ -292,7 +292,7 @@
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
-"Velocità ventola"
+"Velocita ventola"
 
 #MSG_SELFTEST_FAN c=20 r=0
 "Fan test"
@@ -356,7 +356,7 @@
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
-"Per primo avvierò l'autotest per controllare gli errori di assemblaggio più comuni."
+"Per primo avviero l'autotest per controllare gli errori di assemblaggio piu comuni."
 
 #MSG_FLOW c=0 r=0
 "Flow"
@@ -456,11 +456,11 @@
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
-"Adesso avviero una Calibrazione XYZ. Può durare circa 12 min."
+"Adesso avviero una Calibrazione XYZ. Puo durare circa 12 min."
 
 #MSG_WIZARD_Z_CAL c=20 r=8
 "I will run z calibration now."
-"Adesso avvierò la Calibrazione Z."
+"Adesso avviero la Calibrazione Z."
 
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
@@ -656,7 +656,7 @@
 
 #MSG_WIZARD_WILL_PREHEAT c=20 r=4
 "Now I will preheat nozzle for PLA."
-"Adesso preriscalderò l'ugello per PLA."
+"Adesso preriscaldero l'ugello per PLA."
 
 #MSG_NOZZLE c=0 r=0
 "Nozzle"
@@ -804,7 +804,7 @@
 
 #MSG_ERR_STOPPED c=0 r=0
 "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
-"La stampante si è fermata a causa di errori. Correggete l'errore e usate M999 per riavviare. (La temperatura viene resettate. Impostatela dopo il riavvio)"
+"La stampante si e fermata a causa di errori. Correggete l'errore e usate M999 per riavviare. (La temperatura viene resettate. Impostatela dopo il riavvio)"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK3 ready."
@@ -908,7 +908,7 @@
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
-"Verrà effettuato un self test per calibrare l'homing senza sensori"
+"Verra effettuato un self test per calibrare l'homing senza sensori"
 
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
@@ -928,7 +928,7 @@
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
-"Alcuni file non saranno ordinati. Il numero massimo di file in una cartella è 100 perché siano ordinati."
+"Alcuni file non saranno ordinati. Il numero massimo di file in una cartella e 100 perche siano ordinati."
 
 #MSG_SORT_NONE c=17 r=1
 "Sort:      [None]"
@@ -948,7 +948,7 @@
 
 #MSG_SPEED c=0 r=0
 "Speed"
-"Velocità"
+"Velocita"
 
 #MSG_SELFTEST_FAN_YES c=19 r=0
 "Spinning"
@@ -964,7 +964,7 @@
 
 #MSG_STEPPER_TOO_HIGH c=0 r=0
 "Steprate too high: "
-"Velocità passo troppo alta: "
+"Velocita passo troppo alta: "
 
 #MSG_STOP_PRINT c=0 r=0
 "Stop print"
@@ -1004,7 +1004,7 @@
 
 #MSG_TEMP_CALIBRATION_DONE c=20 r=12
 "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
-"Calibrazione temperatura completata e attiva. Può essere disattivata dal menù Impostazioni ->Cal. Temp."
+"Calibrazione temperatura completata e attiva. Puo essere disattivata dal menu Impostazioni ->Cal. Temp."
 
 #MSG_TEMPERATURE c=0 r=0
 "Temperature"

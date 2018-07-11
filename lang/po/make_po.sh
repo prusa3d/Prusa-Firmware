@@ -5,11 +5,11 @@
 #
 SRCDIR="../../Firmware"
 #
-LANG=$1
-if [ -z "$LANG" ]; then LANG=cz; fi
+LNG=$1
+if [ -z "$LNG" ]; then LNG=cz; fi
 #
 
-if [ "$LANG" == "all" ]; then
+if [ "$LNG" == "all" ]; then
  ./make_po.sh cz
  ./make_po.sh de
  ./make_po.sh es
@@ -19,13 +19,13 @@ if [ "$LANG" == "all" ]; then
 fi
 
 echo "make_po.sh started" >&2
-echo " selected language=$LANG" >&2
+echo " selected language=$LNG" >&2
 
 #remove output file if exists
-if [ -e lang_$LANG.po ]; then rm lang_$LANG.po; fi
+if [ -e lang_$LNG.po ]; then rm lang_$LNG.po; fi
 
 lang_name=$(\
- case "$LANG" in
+ case "$LNG" in
   *en*) echo "English" ;;
   *cz*) echo "Czech" ;;
   *de*) echo "German" ;;
@@ -35,7 +35,7 @@ lang_name=$(\
  esac)
 
 lang_short=$(\
- case "$LANG" in
+ case "$LNG" in
   *en*) echo "en" ;;
   *cz*) echo "cs" ;;
   *de*) echo "de" ;;
@@ -47,29 +47,29 @@ lang_short=$(\
 po_date=$(date)
 
 #write po header
-echo "# Translation of Prusa-Firmware into $lang_name." > lang_$LANG.po
-echo "#" >> lang_$LANG.po
-echo 'msgid ""' >> lang_$LANG.po
-echo 'msgstr ""' >> lang_$LANG.po
-echo '"MIME-Version: 1.0\n"' >> lang_$LANG.po
-echo '"Content-Type: text/plain; charset=UTF-8\n"' >> lang_$LANG.po
-echo '"Content-Transfer-Encoding: 8bit\n"' >> lang_$LANG.po
-echo '"Language: '$lang_short'\n"' >> lang_$LANG.po
-echo '"Project-Id-Version: Prusa-Firmware\n"' >> lang_$LANG.po
-echo '"POT-Creation-Date: '$po_date'\n"' >> lang_$LANG.po
-echo '"PO-Revision-Date: '$po_date'\n"' >> lang_$LANG.po
-echo '"Language-Team: \n"' >> lang_$LANG.po
-echo '"X-Generator: Poedit 2.0.7\n"' >> lang_$LANG.po
-echo '"X-Poedit-SourceCharset: UTF-8\n"' >> lang_$LANG.po
-echo '"Last-Translator: \n"' >> lang_$LANG.po
-echo '"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"' >> lang_$LANG.po
-echo >> lang_$LANG.po
+echo "# Translation of Prusa-Firmware into $lang_name." > lang_$LNG.po
+echo "#" >> lang_$LNG.po
+echo 'msgid ""' >> lang_$LNG.po
+echo 'msgstr ""' >> lang_$LNG.po
+echo '"MIME-Version: 1.0\n"' >> lang_$LNG.po
+echo '"Content-Type: text/plain; charset=UTF-8\n"' >> lang_$LNG.po
+echo '"Content-Transfer-Encoding: 8bit\n"' >> lang_$LNG.po
+echo '"Language: '$lang_short'\n"' >> lang_$LNG.po
+echo '"Project-Id-Version: Prusa-Firmware\n"' >> lang_$LNG.po
+echo '"POT-Creation-Date: '$po_date'\n"' >> lang_$LNG.po
+echo '"PO-Revision-Date: '$po_date'\n"' >> lang_$LNG.po
+echo '"Language-Team: \n"' >> lang_$LNG.po
+echo '"X-Generator: Poedit 2.0.7\n"' >> lang_$LNG.po
+echo '"X-Poedit-SourceCharset: UTF-8\n"' >> lang_$LNG.po
+echo '"Last-Translator: \n"' >> lang_$LNG.po
+echo '"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"' >> lang_$LNG.po
+echo >> lang_$LNG.po
 
 #list .cpp, .c and .h files
 files=$(ls "$SRCDIR"/*.cpp "$SRCDIR"/*.c "$SRCDIR"/*.h)
 
-num_texts=$(grep '^#' -c ../lang_en_$LANG.txt)
-num_texts_nt=$(grep '^\"\\x00\"' -c ../lang_en_$LANG.txt)
+num_texts=$(grep '^#' -c ../lang_en_$LNG.txt)
+num_texts_nt=$(grep '^\"\\x00\"' -c ../lang_en_$LNG.txt)
 echo " $num_texts texts, $num_texts_nt not translated" >&2
 
 #loop over all messages
@@ -77,7 +77,7 @@ s0=''
 s1=''
 s2=''
 num=1
-cat ../lang_en_$LANG.txt | sed "s/\\\\/\\\\\\\\/g" | while read -r s; do
+cat ../lang_en_$LNG.txt | sed "s/\\\\/\\\\\\\\/g" | while read -r s; do
  if [ "$s" == "" ]; then
   echo "  processing $num of $num_texts" >&2
   if [ "$s0" == "\"\\\\x00\"" ]; then
@@ -103,11 +103,11 @@ cat ../lang_en_$LANG.txt | sed "s/\\\\/\\\\\\\\/g" | while read -r s; do
  s2=$s1
  s1=$s0
  s0=$s
-done >> lang_$LANG.po
+done >> lang_$LNG.po
 
 #replace LF with CRLF
 sync
-sed -i 's/$/\r/' lang_$LANG.po
+sed -i 's/$/\r/' lang_$LNG.po
 
 echo "make_po.sh finished" >&2
 #read
