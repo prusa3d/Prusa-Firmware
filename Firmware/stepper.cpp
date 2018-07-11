@@ -407,12 +407,68 @@ ISR(TIMER1_COMPA_vect) {
   }
 }
 
+uint8_t last_dir_bits = 0;
+
+#ifdef BACKLASH_X
+uint8_t st_backlash_x = 0;
+#endif //BACKLASH_X
+#ifdef BACKLASH_Y
+uint8_t st_backlash_y = 0;
+#endif //BACKLASH_Y
+
 FORCE_INLINE void stepper_next_block()
 {
   // Anything in the buffer?
   //WRITE_NC(LOGIC_ANALYZER_CH2, true);
   current_block = plan_get_current_block();
   if (current_block != NULL) {
+#ifdef BACKLASH_X
+	if (current_block->steps_x.wide)
+	{ //X-axis movement
+		if ((current_block->direction_bits ^ last_dir_bits) & 1)
+		{
+			printf_P(PSTR("BL %d\n"), (current_block->direction_bits & 1)?st_backlash_x:-st_backlash_x);
+			if (current_block->direction_bits & 1)
+				WRITE_NC(X_DIR_PIN, INVERT_X_DIR);
+			else
+				WRITE_NC(X_DIR_PIN, !INVERT_X_DIR);
+			_delay_us(100);
+			for (uint8_t i = 0; i < st_backlash_x; i++)
+			{
+				WRITE_NC(X_STEP_PIN, !INVERT_X_STEP_PIN);
+				_delay_us(100);
+				WRITE_NC(X_STEP_PIN, INVERT_X_STEP_PIN);
+				_delay_us(900);
+			}
+		}
+		last_dir_bits &= ~1;
+		last_dir_bits |= current_block->direction_bits & 1;
+	}
+#endif
+#ifdef BACKLASH_Y
+	if (current_block->steps_y.wide)
+	{ //Y-axis movement
+		if ((current_block->direction_bits ^ last_dir_bits) & 2)
+		{
+			printf_P(PSTR("BL %d\n"), (current_block->direction_bits & 2)?st_backlash_y:-st_backlash_y);
+			if (current_block->direction_bits & 2)
+				WRITE_NC(Y_DIR_PIN, INVERT_Y_DIR);
+			else
+				WRITE_NC(Y_DIR_PIN, !INVERT_Y_DIR);
+			_delay_us(100);
+			for (uint8_t i = 0; i < st_backlash_y; i++)
+			{
+				WRITE_NC(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
+				_delay_us(100);
+				WRITE_NC(Y_STEP_PIN, INVERT_Y_STEP_PIN);
+				_delay_us(900);
+			}
+		}
+		last_dir_bits &= ~2;
+		last_dir_bits |= current_block->direction_bits & 2;
+	}
+#endif
+
 #ifdef PAT9125
     fsensor_counter = 0;
     fsensor_st_block_begin(current_block);
@@ -996,6 +1052,7 @@ FORCE_INLINE void isr() {
       fsensor_st_block_chunk(current_block, fsensor_counter);
 	    fsensor_counter = 0;
 #endif //PAT9125
+
       current_block = NULL;
       plan_discard_current_block();
     }

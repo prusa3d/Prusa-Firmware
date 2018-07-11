@@ -1142,16 +1142,17 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
-#ifdef W25X20CL
-  // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
-  optiboot_w25x20cl_enter();
-#endif
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
 	spi_init();
 
 	lcd_splash();
+
+#ifdef W25X20CL
+  // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+  optiboot_w25x20cl_enter();
+#endif
 
 #if (LANG_MODE != 0) //secondary language support
 #ifdef W25X20CL
@@ -3187,6 +3188,13 @@ static void gcode_PRUSA_SN()
     }
 }
 
+#ifdef BACKLASH_X
+extern uint8_t st_backlash_x;
+#endif //BACKLASH_X
+#ifdef BACKLASH_Y
+extern uint8_t st_backlash_y;
+#endif //BACKLASH_Y
+
 void process_commands()
 {
 	if (!buflen) return; //empty command
@@ -3297,6 +3305,22 @@ void process_commands()
 			}
 		}
 	}
+#ifdef BACKLASH_X
+	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("BACKLASH_X"), 10) == 0)
+	{
+		uint8_t bl = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 10, NULL, 10);
+		st_backlash_x = bl;
+		printf_P(_N("st_backlash_x = %hhd\n"), st_backlash_x);
+	}
+#endif //BACKLASH_X
+#ifdef BACKLASH_Y
+	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("BACKLASH_Y"), 10) == 0)
+	{
+		uint8_t bl = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 10, NULL, 10);
+		st_backlash_y = bl;
+		printf_P(_N("st_backlash_y = %hhd\n"), st_backlash_y);
+	}
+#endif //BACKLASH_Y
 #endif //TMC2130
 
   else if(code_seen("PRUSA")){

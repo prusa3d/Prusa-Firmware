@@ -135,6 +135,9 @@
 // Filament sensor
 #define PAT9125
 
+// Backlash - 
+//#define BACKLASH_X
+//#define BACKLASH_Y
 
 // Disable some commands
 #define _DISABLE_M42_M226
