@@ -15,6 +15,7 @@
 #define AMBIENT_THERMISTOR
 #define PINDA_THERMISTOR
 
+#define W25X20CL                 // external 256kB flash
 
 #define SWI2C                    // enable software i2c
 #define SWI2C_A8                 // 8bit address functions

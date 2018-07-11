@@ -1,4 +1,4 @@
-/*
+/**
  * @file
  * @author Marek Bel
  */
@@ -10,10 +10,10 @@
  * @brief simple timer
  *
  * Simple and memory saving implementation. Should handle timer register wrap around well.
- * Maximum period is at least 49 days. Resolution is one millisecond. To save memory, doesn't store timer period.
- * If you wish timer which is storing period, derive from this. If you need time intervals smaller than 65 seconds
- * consider implementing timer with smaller underlying type.
+ * Resolution is one millisecond. To save memory, doesn't store timer period.
+ * If you wish timer which is storing period, derive from this.
  */
+template <class T>
 class Timer
 {
 public:
@@ -21,10 +21,33 @@ public:
     void start();
     void stop(){m_isRunning = false;}
     bool running(){return m_isRunning;}
-    bool expired(unsigned long msPeriod);
+    bool expired(T msPeriod);
+protected:
+    T started(){return m_started;}
 private:
     bool m_isRunning;
-    unsigned long m_started;
+    T m_started;
 };
+
+/**
+ * @brief Timer unsigned long specialization
+ *
+ * Maximum period is at least 49 days.
+ */
+#if __cplusplus>=201103L
+using LongTimer = Timer<unsigned long>;
+#else
+typedef Timer<unsigned long> LongTimer;
+#endif
+/**
+ * @brief Timer unsigned short specialization
+ *
+ * Maximum period is at least 65 seconds.
+ */
+#if __cplusplus>=201103L
+using ShortTimer = Timer<unsigned short>;
+#else
+typedef Timer<unsigned short> ShortTimer;
+#endif
 
 #endif /* TIMER_H */

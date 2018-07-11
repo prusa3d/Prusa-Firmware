@@ -289,11 +289,11 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
     }
 
     if (upgrade) {
-        lcd_display_message_fullscreen_P(MSG_NEW_FIRMWARE_AVAILABLE);
+        lcd_display_message_fullscreen_P(_i("New firmware version available:"));////MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
         lcd_print_at_PGM(0, 2, PSTR(""));
         for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
             lcd_implementation_write(*c);
-        lcd_print_at_PGM(0, 3, MSG_NEW_FIRMWARE_PLEASE_UPGRADE);
+        lcd_print_at_PGM(0, 3, _i("Please upgrade."));////MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20 r=0
         tone(BEEPER, 1000);
         delay_keep_alive(50);
         noTone(BEEPER);

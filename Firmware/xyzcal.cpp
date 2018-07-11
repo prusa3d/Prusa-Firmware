@@ -21,7 +21,9 @@
 
 #define DBG(args...) printf_P(args)
 //#define DBG(args...)
+#ifndef _n
 #define _n PSTR
+#endif //_n
 
 #define _X ((int16_t)count_position[X_AXIS])
 #define _Y ((int16_t)count_position[Y_AXIS])
@@ -384,8 +386,12 @@ void xyzcal_adjust_pixels(uint8_t* pixels, uint16_t* histo)
 	for (l = 14; l > 8; l--)
 		if (histo[l] >= 10)
 			break;
-	uint8_t pix_min = (max_l << 4) / 2;
+	uint8_t pix_min = 0;
 	uint8_t pix_max = l << 4;
+	if (histo[0] < (32*32 - 144))
+	{
+		pix_min = (max_l << 4) / 2;
+	}
 	uint8_t pix_dif = pix_max - pix_min;
 	DBG(_n(" min=%d max=%d dif=%d\n"), pix_min, pix_max, pix_dif);
 	for (int16_t i = 0; i < 32*32; i++)
@@ -488,7 +494,8 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	xyzcal_lineXYZ_to(_X, _Y, z0 + 400, 500, -1);
 	xyzcal_lineXYZ_to(_X, _Y, z0 - 400, 500, 1);
 
-	z0 = _Z;
+	z0 = _Z - 20;
+	xyzcal_lineXYZ_to(_X, _Y, z0, 500, 0);
 
 //	xyzcal_lineXYZ_to(x0, y0, z0 - 100, 500, 1);
 //	z0 = _Z;
@@ -678,16 +685,16 @@ uint8_t xyzcal_xycoords2point(int16_t x, int16_t y)
 }
 
 //MK3
-#if ((MOTHERBOARD == 310))
+#if ((MOTHERBOARD == BOARD_EINSY_1_0a))
 const int16_t PROGMEM xyzcal_point_xcoords[4] = {1200, 22000, 22000, 1200};
 const int16_t PROGMEM xyzcal_point_ycoords[4] = {600, 600, 19800, 19800};
-#endif //((MOTHERBOARD == 310))
+#endif //((MOTHERBOARD == BOARD_EINSY_1_0a))
 
 //MK2.5
-#if ((MOTHERBOARD == 200) || (MOTHERBOARD == 203))
+#if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
 const int16_t PROGMEM xyzcal_point_xcoords[4] = {1200, 22000, 22000, 1200};
 const int16_t PROGMEM xyzcal_point_ycoords[4] = {700, 700, 19800, 19800};
-#endif //((MOTHERBOARD == 200) || (MOTHERBOARD == 203))
+#endif //((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
 
 const uint16_t PROGMEM xyzcal_point_pattern[12] = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
 

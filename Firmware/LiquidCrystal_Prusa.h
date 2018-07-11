@@ -2,7 +2,8 @@
 #define LiquidCrystal_Prusa_h
 
 #include <inttypes.h>
-#include "Print.h"
+#include <stddef.h>
+//#include "Print.h"
 
 // commands
 #define LCD_CLEARDISPLAY 0x01
@@ -42,7 +43,7 @@
 #define LCD_5x10DOTS 0x04
 #define LCD_5x8DOTS 0x00
 
-class LiquidCrystal_Prusa : public Print {
+class LiquidCrystal_Prusa/* : public Print */{
 public:
   LiquidCrystal_Prusa(uint8_t rs, uint8_t enable,
 		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
@@ -81,10 +82,34 @@ public:
 
   void createChar(uint8_t, uint8_t[]);
   void setCursor(uint8_t, uint8_t); 
-  virtual size_t write(uint8_t);
+//  virtual size_t write(uint8_t);
+  size_t write(uint8_t);
   void command(uint8_t);
-  
-  using Print::write;
+
+    void print(const char*);
+    void print(char, int = 0);
+    void print(unsigned char, int = 0);
+    void print(int, int = 10);
+    void print(unsigned int, int = 10);
+    void print(long, int = 10);
+    void print(unsigned long, int = 10);
+    void print(double, int = 2);
+
+//    void println(const String &s);
+    void println(const char[]);
+    void println(char, int = 0);
+    void println(unsigned char, int = 0);
+    void println(int, int = 10);
+    void println(unsigned int, int = 10);
+    void println(long, int = 10);
+    void println(unsigned long, int = 10);
+    void println(double, int = 2);
+    void println(void);
+
+	void printNumber(unsigned long n, uint8_t base);
+	void printFloat(double number, uint8_t digits);
+
+//  using Print::write;
 private:
   void send(uint8_t, uint8_t);
   void write4bits(uint8_t);

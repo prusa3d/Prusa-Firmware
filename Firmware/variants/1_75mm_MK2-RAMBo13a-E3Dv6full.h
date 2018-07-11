@@ -42,17 +42,17 @@ AXIS SETTINGS
 
 
 // Endstop inverting
-const bool X_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
-const bool Y_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
-const bool Z_MIN_ENDSTOP_INVERTING = false; // set to true to invert the logic of the endstop.
+#define X_MIN_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
+#define Y_MIN_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
+#define Z_MIN_ENDSTOP_INVERTING 0 // set to 1 to invert the logic of the endstop.
 
 // Direction inverting
-#define INVERT_X_DIR false    // for Mendel set to false, for Orca set to true
-#define INVERT_Y_DIR false    // for Mendel set to true, for Orca set to false
-#define INVERT_Z_DIR false    // for Mendel set to false, for Orca set to true
-#define INVERT_E0_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
-#define INVERT_E1_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
-#define INVERT_E2_DIR true    // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_X_DIR 0    // for Mendel set to 0, for Orca set to 1
+#define INVERT_Y_DIR 0    // for Mendel set to 1, for Orca set to 0
+#define INVERT_Z_DIR 0    // for Mendel set to 0, for Orca set to 1
+#define INVERT_E0_DIR 1    // for direct drive extruder v9 set to 1, for geared extruder set to 0
+#define INVERT_E1_DIR 1    // for direct drive extruder v9 set to 1, for geared extruder set to 0
+#define INVERT_E2_DIR 1    // for direct drive extruder v9 set to 1, for geared extruder set to 0
 
 
 // Home position
@@ -203,7 +203,7 @@ MOTOR CURRENT SETTINGS
 #define DIGIPOT_MOTOR_CURRENT_LOUD {135,135,135,135,135}
 
 // Motor Current settings for RAMBo mini PWM value = MotorCurrentSetting * 255 / range
-#if MOTHERBOARD == 203 || MOTHERBOARD == 200
+#if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
 #define MOTOR_CURRENT_PWM_RANGE 2000
 #define DEFAULT_PWM_MOTOR_CURRENT  {270, 830, 450} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {540, 830, 500} // {XY,Z,E}
@@ -403,7 +403,7 @@ THERMISTORS SETTINGS
 #define PINDA_MAX_T 100
 
 #define PING_TIME 60 //time in s
-#define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid false triggering when dealing with long gcodes
+#define PING_TIME_LONG 600 //10 min; used when length of commands buffer > 0 to avoid 0 triggering when dealing with long gcodes
 #define PING_ALLERT_PERIOD 60 //time in s
 
 #define NC_TIME 10 //time in s for periodic important status messages sending which needs reponse from monitoring
@@ -421,6 +421,10 @@ THERMISTORS SETTINGS
 #endif
 
 #define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
+
+// Safety timer
+#define SAFETYTIMER
+#define DEFAULT_SAFETYTIMER_TIME_MINS 30
 
 #define M600_TIMEOUT 600  //seconds
 

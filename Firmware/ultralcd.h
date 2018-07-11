@@ -4,7 +4,12 @@
 #include "Marlin.h"
 #include "mesh_bed_calibration.h"
 
+extern int lcd_puts_P(const char* str);
+extern int lcd_printf_P(const char* format, ...);
+
 #ifdef ULTRA_LCD
+
+	static void lcd_language_menu();
 
   void lcd_update(uint8_t lcdDrawUpdateOverride = 0);
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
@@ -25,14 +30,13 @@
   void lcd_loading_filament();
   void lcd_change_success();
   void lcd_loading_color();
-  void lcd_force_language_selection();
   void lcd_sdcard_stop();
   void lcd_sdcard_pause();
   void lcd_print_stop();
   void prusa_statistics(int _message, uint8_t _col_nr = 0);
   void lcd_confirm_print();
   unsigned char lcd_choose_color();
-void lcd_mylang();
+//void lcd_mylang();
   bool lcd_detected(void);
 
   static void lcd_selftest_v();
@@ -120,6 +124,16 @@ void lcd_mylang();
   extern int farm_no;
   extern int farm_timer;
   extern int farm_status;
+  #ifdef TMC2130
+    #define SILENT_MODE_NORMAL 0
+    #define SILENT_MODE_STEALTH 1
+    #define SILENT_MODE_OFF SILENT_MODE_NORMAL
+  #else
+    #define SILENT_MODE_POWER 0
+    #define SILENT_MODE_SILENT 1
+    #define SILENT_MODE_AUTO 2
+    #define SILENT_MODE_OFF SILENT_MODE_POWER
+  #endif
   extern int8_t SilentModeMenu;
 
 #ifdef SNMM
@@ -229,7 +243,7 @@ extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 void change_extr(int extr);
 static void lcd_colorprint_change();
 static int get_ext_nr();
-static void extr_adj(int extruder);
+void extr_adj(int extruder);
 static void extr_adj_0();
 static void extr_adj_1();
 static void extr_adj_2();
@@ -253,7 +267,6 @@ static float count_e(float layer_heigth, float extrusion_width, float extrusion_
 static void lcd_babystep_z();
 
 void stack_error();
-static void lcd_ping_allert();
 void lcd_printer_connected();
 void lcd_ping();
 
@@ -270,6 +283,10 @@ void lcd_wait_for_cool_down();
 void adjust_bed_reset();
 void lcd_extr_cal_reset();
 
+void lcd_temp_cal_show_result(bool result);
+bool lcd_wait_for_pinda(float temp);
+
+
 union MenuData;
 
 void bowden_menu();
@@ -282,12 +299,12 @@ void lcd_temp_calibration_set();
 
 void display_loading();
 
-void lcd_service_mode_show_result();
-
 #if !SDSORT_USES_RAM
  void lcd_set_degree();
  void lcd_set_progress();
 #endif
+
+void lcd_language();
 
 void lcd_wizard();
 void lcd_wizard(int state);

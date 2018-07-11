@@ -259,11 +259,11 @@ void MarlinSerial::println(void)
   print('\n');  
 }
 
-void MarlinSerial::println(const String &s)
+/*void MarlinSerial::println(const String &s)
 {
   print(s);
   println();
-}
+}*/
 
 void MarlinSerial::println(const char c[])
 {

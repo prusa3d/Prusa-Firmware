@@ -101,8 +101,6 @@ static bool check_endstops = true;
 static bool check_z_endstop = false;
 static bool z_endstop_invert = false;
 
-int8_t SilentMode = 0;
-
 volatile long count_position[NUM_AXIS] = { 0, 0, 0, 0};
 volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 
@@ -229,18 +227,18 @@ void checkHitEndstops()
 {
  if( endstop_x_hit || endstop_y_hit || endstop_z_hit) {
    SERIAL_ECHO_START;
-   SERIAL_ECHORPGM(MSG_ENDSTOPS_HIT);
+   SERIAL_ECHORPGM(_T(MSG_ENDSTOPS_HIT));
    if(endstop_x_hit) {
      SERIAL_ECHOPAIR(" X:",(float)endstops_trigsteps[X_AXIS]/axis_steps_per_unit[X_AXIS]);
-     LCD_MESSAGERPGM(CAT2(MSG_ENDSTOPS_HIT, PSTR("X")));
+     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT), PSTR("X")));
    }
    if(endstop_y_hit) {
      SERIAL_ECHOPAIR(" Y:",(float)endstops_trigsteps[Y_AXIS]/axis_steps_per_unit[Y_AXIS]);
-     LCD_MESSAGERPGM(CAT2(MSG_ENDSTOPS_HIT, PSTR("Y")));
+     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT), PSTR("Y")));
    }
    if(endstop_z_hit) {
      SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/axis_steps_per_unit[Z_AXIS]);
-     LCD_MESSAGERPGM(CAT2(MSG_ENDSTOPS_HIT,PSTR("Z")));
+     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT),PSTR("Z")));
    }
    SERIAL_ECHOLN("");
    endstop_x_hit=false;
@@ -344,7 +342,7 @@ FORCE_INLINE unsigned short calc_timer(uint16_t step_rate) {
     timer = (unsigned short)pgm_read_word_near(table_address);
     timer -= (((unsigned short)pgm_read_word_near(table_address+2) * (unsigned char)(step_rate & 0x0007))>>3);
   }
-  if(timer < 100) { timer = 100; MYSERIAL.print(MSG_STEPPER_TOO_HIGH); MYSERIAL.println(step_rate); }//(20kHz this should never happen)
+  if(timer < 100) { timer = 100; MYSERIAL.print(_i("Steprate too high: ")); MYSERIAL.println(step_rate); }//(20kHz this should never happen)////MSG_STEPPER_TOO_HIGH c=0 r=0
   return timer;
 }
 
@@ -1472,13 +1470,13 @@ void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 
 void st_current_init() //Initialize Digipot Motor Current
 {  
-  EEPROM_read_st(EEPROM_SILENT,(uint8_t*)&SilentMode,sizeof(SilentMode));
+uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
   SilentModeMenu = SilentMode;
   #ifdef MOTOR_CURRENT_PWM_XY_PIN
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_Z_PIN, OUTPUT);
     pinMode(MOTOR_CURRENT_PWM_E_PIN, OUTPUT);
-    if((SilentMode == 0) || (farm_mode) ){
+    if((SilentMode == SILENT_MODE_OFF) || (farm_mode) ){
 
      motor_current_setting[0] = motor_current_setting_loud[0];
      motor_current_setting[1] = motor_current_setting_loud[1];

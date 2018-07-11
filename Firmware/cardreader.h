@@ -133,7 +133,7 @@ private:
 
 #ifdef DEBUG_SD_SPEED_TEST
 public:
-#endif DEBUG_SD_SPEED_TEST
+#endif //DEBUG_SD_SPEED_TEST
   Sd2Card card;
 
 private:
