@@ -1152,16 +1152,17 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
-#ifdef W25X20CL
-  // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
-  optiboot_w25x20cl_enter();
-#endif
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
 	spi_init();
 
 	lcd_splash();
+
+	#ifdef W25X20CL
+	// Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+	optiboot_w25x20cl_enter();
+	#endif
 
 #if (LANG_MODE != 0) //secondary language support
 #ifdef W25X20CL
