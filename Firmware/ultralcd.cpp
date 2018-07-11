@@ -1,5 +1,6 @@
 #include "temperature.h"
 #include "ultralcd.h"
+#include "fsensor.h"
 #ifdef ULTRA_LCD
 #include "MenuStack.h"
 #include "Marlin.h"
@@ -2042,8 +2043,7 @@ void lcd_set_fan_check() {
 }
 
 void lcd_set_filament_autoload() {
-	filament_autoload_enabled = !filament_autoload_enabled;
-	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
+     fautoload_set(!filament_autoload_enabled);
 }
 
 void lcd_unLoadFilament()

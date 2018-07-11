@@ -858,6 +858,7 @@ void factory_reset(char level, bool quiet)
             eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
 
             fsensor_enable();
+            fautoload_set(true);
                        
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
