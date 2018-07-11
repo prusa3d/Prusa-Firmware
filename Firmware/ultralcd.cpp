@@ -2110,7 +2110,7 @@ void lcd_menu_statistics()
 {
 	if (IS_SD_PRINTING)
 	{
-		int _met = total_filament_used / 100000;
+		float _met = ((float)total_filament_used) / (100000.f);
 		int _cm = (total_filament_used - (_met * 100000)) / 10;
 		int _t = (millis() - starttime) / 1000;
 		int _h = _t / 3600;
@@ -2125,12 +2125,12 @@ void lcd_menu_statistics()
 		lcd_printf_P(_N(
 		  ESC_2J
 		  "%S:"
-		  ESC_H(6,1) "%8.2f m\n"
+		  ESC_H(6,1) "%8.2fm \n"
 		  "%S :"
 		  ESC_H(8,3) "%2dh %02dm %02d"
 		  ),
 		 _i("Filament used"),
-		 _met, _cm,
+		 _met,
 		 _i("Print time"),
 		 _h, _m, _s
 		);
