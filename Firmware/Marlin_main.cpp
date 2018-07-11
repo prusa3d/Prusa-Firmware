@@ -848,6 +848,16 @@ void factory_reset(char level, bool quiet)
 			farm_mode = false;
 			eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
+
+            eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+            eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_X_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_CRASH_COUNT_Y_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
+            eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
+
+            fsensor_enable();
+            fautoload_set(true);
                        
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
@@ -1142,16 +1152,17 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
-#ifdef W25X20CL
-  // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
-  optiboot_w25x20cl_enter();
-#endif
     lcd_init();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 
 	spi_init();
 
 	lcd_splash();
+
+	#ifdef W25X20CL
+	// Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+	optiboot_w25x20cl_enter();
+	#endif
 
 #if (LANG_MODE != 0) //secondary language support
 #ifdef W25X20CL
@@ -3102,6 +3113,8 @@ void gcode_M701()
 	enable_z();
 	custom_message = true;
 	custom_message_type = 2;
+
+	if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
 
 	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 	current_position[E_AXIS] += 70;
