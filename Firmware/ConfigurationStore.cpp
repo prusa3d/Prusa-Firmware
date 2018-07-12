@@ -154,132 +154,62 @@ void Config_StoreSettings(uint16_t offset, uint8_t level)
 #ifndef DISABLE_M503
 void Config_PrintSettings(uint8_t level)
 {  // Always have this function, even with EEPROM_SETTINGS disabled, the current values will be shown
-	
-	SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Steps per unit:");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("  M92 X",axis_steps_per_unit[X_AXIS]);
-    SERIAL_ECHOPAIR(" Y",axis_steps_per_unit[Y_AXIS]);
-    SERIAL_ECHOPAIR(" Z",axis_steps_per_unit[Z_AXIS]);
-    SERIAL_ECHOPAIR(" E",axis_steps_per_unit[E_AXIS]);
-    SERIAL_ECHOLN("");
-      
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Maximum feedrates (mm/s):");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("  M203 X", max_feedrate[X_AXIS]);
-    SERIAL_ECHOPAIR(" Y", max_feedrate[Y_AXIS]); 
-    SERIAL_ECHOPAIR(" Z", max_feedrate[Z_AXIS]); 
-    SERIAL_ECHOPAIR(" E", max_feedrate[E_AXIS]);
-    SERIAL_ECHOLN("");
-
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Maximum Acceleration (mm/s2):");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("  M201 X" ,max_acceleration_units_per_sq_second[X_AXIS] ); 
-    SERIAL_ECHOPAIR(" Y" , max_acceleration_units_per_sq_second[Y_AXIS] ); 
-    SERIAL_ECHOPAIR(" Z" ,max_acceleration_units_per_sq_second[Z_AXIS] );
-    SERIAL_ECHOPAIR(" E" ,max_acceleration_units_per_sq_second[E_AXIS]);
-    SERIAL_ECHOLN("");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Acceleration: S=acceleration, T=retract acceleration");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("  M204 S",acceleration ); 
-    SERIAL_ECHOPAIR(" T" ,retract_acceleration);
-    SERIAL_ECHOLN("");
-
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Advanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("  M205 S",minimumfeedrate ); 
-    SERIAL_ECHOPAIR(" T" ,mintravelfeedrate ); 
-    SERIAL_ECHOPAIR(" B" ,minsegmenttime ); 
-    SERIAL_ECHOPAIR(" X" ,max_jerk[X_AXIS] ); 
-    SERIAL_ECHOPAIR(" Y" ,max_jerk[Y_AXIS] ); 
-    SERIAL_ECHOPAIR(" Z" ,max_jerk[Z_AXIS] ); 
-    SERIAL_ECHOPAIR(" E" ,max_jerk[E_AXIS] ); 
-    SERIAL_ECHOLN(""); 
-
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Home offset (mm):");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("  M206 X",add_homing[X_AXIS] );
-    SERIAL_ECHOPAIR(" Y" ,add_homing[Y_AXIS] );
-    SERIAL_ECHOPAIR(" Z" ,add_homing[Z_AXIS] );
-    SERIAL_ECHOLN("");
+	printf_P(PSTR(
+		"%SSteps per unit:\n%S  M92 X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SMaximum feedrates (mm/s):\n%S  M203 X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SMaximum Acceleration (mm/s2):\n%S  M201 X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SAcceleration: S=acceleration, T=retract acceleration\n%S  M204 S%.2f T%.2f\n"
+		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%.2f X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
+		),
+		echomagic, echomagic, axis_steps_per_unit[X_AXIS], axis_steps_per_unit[Y_AXIS], axis_steps_per_unit[Z_AXIS], axis_steps_per_unit[E_AXIS],
+		echomagic, echomagic, max_feedrate[X_AXIS], max_feedrate[Y_AXIS], max_feedrate[Z_AXIS], max_feedrate[E_AXIS],
+		echomagic, echomagic, max_acceleration_units_per_sq_second[X_AXIS], max_acceleration_units_per_sq_second[Y_AXIS], max_acceleration_units_per_sq_second[Z_AXIS], max_acceleration_units_per_sq_second[E_AXIS],
+		echomagic, echomagic, acceleration, retract_acceleration,
+		echomagic, echomagic, minimumfeedrate, mintravelfeedrate, minsegmenttime, max_jerk[X_AXIS], max_jerk[Y_AXIS], max_jerk[Z_AXIS], max_jerk[E_AXIS],
+		echomagic, echomagic, add_homing[X_AXIS], add_homing[Y_AXIS], add_homing[Z_AXIS]
+	);
 #ifdef PIDTEMP
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("PID settings:");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("   M301 P",Kp); 
-    SERIAL_ECHOPAIR(" I" ,unscalePID_i(Ki)); 
-    SERIAL_ECHOPAIR(" D" ,unscalePID_d(Kd));
-    SERIAL_ECHOLN(""); 
+	printf_P(PSTR("%SPID settings:\n%S   M301 P%.2f I%.2f D%.2f\n"),
+		echomagic, echomagic, Kp, unscalePID_i(Ki), unscalePID_d(Kd));
 #endif
 #ifdef PIDTEMPBED
-	SERIAL_ECHO_START;
-	SERIAL_ECHOLNPGM("PID heatbed settings:");
-	SERIAL_ECHO_START;
-	SERIAL_ECHOPAIR("   M304 P", bedKp);
-	SERIAL_ECHOPAIR(" I", unscalePID_i(bedKi));
-	SERIAL_ECHOPAIR(" D", unscalePID_d(bedKd));
-	SERIAL_ECHOLN("");
+	printf_P(PSTR("%SPID heatbed settings:\n%S   M304 P%.2f I%.2f D%.2f\n"),
+		echomagic, echomagic, bedKp, unscalePID_i(bedKi), unscalePID_d(bedKd));
 #endif
 #ifdef FWRETRACT
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Retract: S=Length (mm) F:Speed (mm/m) Z: ZLift (mm)");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("   M207 S",retract_length); 
-    SERIAL_ECHOPAIR(" F" ,retract_feedrate*60); 
-    SERIAL_ECHOPAIR(" Z" ,retract_zlift);
-    SERIAL_ECHOLN(""); 
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Recover: S=Extra length (mm) F:Speed (mm/m)");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("   M208 S",retract_recover_length);
-    SERIAL_ECHOPAIR(" F", retract_recover_feedrate*60);
-	SERIAL_ECHOLN("");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Auto-Retract: S=0 to disable, 1 to interpret extrude-only moves as retracts or recoveries");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("   M209 S", (unsigned long)(autoretract_enabled ? 1 : 0));
-    SERIAL_ECHOLN("");
+	printf_P(PSTR(
+		"%SRetract: S=Length (mm) F:Speed (mm/m) Z: ZLift (mm)\n%S   M207 S%.2f F%.2f Z%.2f\n"
+		"%SRecover: S=Extra length (mm) F:Speed (mm/m)\n%S   M208 S%.2f F%.2f\n"
+		"%SAuto-Retract: S=0 to disable, 1 to interpret extrude-only moves as retracts or recoveries\n%S   M209 S%.2f\n"
+		),
+		echomagic, echomagic, retract_length, retract_feedrate*60, retract_zlift,
+		echomagic, echomagic, retract_recover_length, retract_recover_feedrate*60,
+		echomagic, echomagic, (unsigned long)(autoretract_enabled ? 1 : 0)
+	);
 #if EXTRUDERS > 1
-    SERIAL_ECHO_START;
-    SERIAL_ECHOLNPGM("Multi-extruder settings:");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("   Swap retract length (mm):    ", retract_length_swap);
-    SERIAL_ECHOLN("");
-    SERIAL_ECHO_START;
-    SERIAL_ECHOPAIR("   Swap rec. addl. length (mm): ", retract_recover_length_swap);
-    SERIAL_ECHOLN("");
+	printf_P(PSTR("%SMulti-extruder settings:\n%S   Swap retract length (mm):    %.2f\n%S   Swap rec. addl. length (mm): %.2f\n"),
+		echomagic, echomagic, retract_length_swap, echomagic, retract_recover_length_swap);
 #endif
-    SERIAL_ECHO_START;
-    if (volumetric_enabled) {
-        SERIAL_ECHOLNPGM("Filament settings:");
-        SERIAL_ECHO_START;
-        SERIAL_ECHOPAIR("   M200 D", filament_size[0]);
-        SERIAL_ECHOLN(""); 
+	if (volumetric_enabled) {
+		printf_P(PSTR("%SFilament settings:\n%S   M200 D%.2f\n"),
+			echomagic, echomagic, filament_size[0]);
 #if EXTRUDERS > 1
-		SERIAL_ECHO_START;
-        SERIAL_ECHOPAIR("   M200 T1 D", filament_size[1]);
-        SERIAL_ECHOLN(""); 
+		printf_P(PSTR("%S   M200 T1 D%.2f\n"),
+			echomagic, echomagic, filament_size[1]);
 #if EXTRUDERS > 2
-		SERIAL_ECHO_START;
-        SERIAL_ECHOPAIR("   M200 T2 D", filament_size[2]);
-		SERIAL_ECHOLN("");
+		printf_P(PSTR("%S   M200 T1 D%.2f\n"),
+			echomagic, echomagic, filament_size[2]);
 #endif
 #endif
     } else {
-        SERIAL_ECHOLNPGM("Filament settings: Disabled");
+        puts_P(PSTR("Filament settings: Disabled"));
     }
 #endif
 	if (level >= 10) {
 #ifdef LIN_ADVANCE
-		SERIAL_ECHO_START;
-		SERIAL_ECHOLNPGM("Linear advance settings:");
-		SERIAL_ECHOPAIR("   M900 K", extruder_advance_k);
-		SERIAL_ECHOPAIR("   E/D = ", advance_ed_ratio);
+		printf_P(PSTR("%SLinear advance settings:\n   M900 K%.2f   E/D = %.2f\n"),
+			echomagic, extruder_advance_k, advance_ed_ratio);
 #endif //LIN_ADVANCE
 	}
 }
