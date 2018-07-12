@@ -2845,11 +2845,11 @@ bool sample_mesh_and_store_reference()
     {
         // Verify the span of the Z values.
         float zmin = mbl.z_values[0][0];
-        float zmax = zmax;
+        float zmax = zmin;
         for (int8_t j = 0; j < 3; ++ j)
            for (int8_t i = 0; i < 3; ++ i) {
                 zmin = min(zmin, mbl.z_values[j][i]);
-                zmax = min(zmax, mbl.z_values[j][i]);
+                zmax = max(zmax, mbl.z_values[j][i]);
            }
         if (zmax - zmin > 3.f) {
             // The span of the Z offsets is extreme. Give up.

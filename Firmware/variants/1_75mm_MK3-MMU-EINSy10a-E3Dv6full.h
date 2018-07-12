@@ -18,9 +18,10 @@
 
 // Electronics
 #define MOTHERBOARD BOARD_EINSY_1_0a
+
 #define STEEL_SHEET
 #define HAS_SECOND_SERIAL_PORT
-
+#define SNMM_V2
 
 // Uncomment the below for the E3D PT100 temperature sensor (with or without PT100 Amplifier)
 //#define E3D_PT100_EXTRUDER_WITH_AMP
@@ -135,9 +136,6 @@
 // Filament sensor
 #define PAT9125
 
-// Backlash - 
-//#define BACKLASH_X
-//#define BACKLASH_Y
 
 // Disable some commands
 #define _DISABLE_M42_M226

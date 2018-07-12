@@ -86,6 +86,12 @@ void fsensor_disable()
 	FSensorStateMenu = 0;
 }
 
+void fautoload_set(bool State)
+{
+	filament_autoload_enabled = State;
+	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
+}
+
 void pciSetup(byte pin)
 {
 	*digitalPinToPCMSK(pin) |= bit (digitalPinToPCMSKbit(pin)); // enable pin
