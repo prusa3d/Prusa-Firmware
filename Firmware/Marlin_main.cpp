@@ -9062,7 +9062,7 @@ void print_world_coordinates()
 
 void print_physical_coordinates()
 {
-	printf_P(_N("physical coordinates: (%.3f, %.3f, %.3f)\n"), st_get_position_mm[X_AXIS], st_get_position_mm[Y_AXIS], st_get_position_mm[Z_AXIS]);
+	printf_P(_N("physical coordinates: (%.3f, %.3f, %.3f)\n"), st_get_position_mm(X_AXIS), st_get_position_mm(Y_AXIS), st_get_position_mm(Z_AXIS));
 }
 
 void print_mesh_bed_leveling_table()
