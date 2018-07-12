@@ -971,6 +971,9 @@ Having the real displacement of the head, we can calculate the total movement le
 	}
     if(fabs(current_speed[i]) > max_fr)
       speed_factor = min(speed_factor, max_fr / fabs(current_speed[i]));
+#else //FEEDRATE_LIMIT
+    if(fabs(current_speed[i]) > max_feedrate[i])
+      speed_factor = min(speed_factor, max_feedrate[i] / fabs(current_speed[i]));
 #endif //FEEDRATE_LIMIT
 #else //TMC2130
     if(fabs(current_speed[i]) > max_feedrate[i])
