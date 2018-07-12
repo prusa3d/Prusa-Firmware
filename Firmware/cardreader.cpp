@@ -968,7 +968,6 @@ void CardReader::presort() {
 	delay(300);
 	lcd_set_degree();
 	lcd_implementation_clear();
-	lcd_update(2);
 #endif
 	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);

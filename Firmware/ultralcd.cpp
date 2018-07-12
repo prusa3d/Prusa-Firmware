@@ -575,6 +575,7 @@ uint8_t menu_item_function_P(const char* str, menuFunc_t func)
 		if (lcdDrawUpdate) menu_draw_item_puts_P(' ', str);
 		if (wasClicked && menu_enc_is_at_item())
 		{
+			wasClicked = false;
 			if (func) func();
 			return menu_item_ret();
 		}
@@ -6124,7 +6125,6 @@ void getFileDescription(char *name, char *description) {
 
 void lcd_sdcard_menu()
 {
-  printf_P(_N("menu sd\n"));
   uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
   int tempScrool = 0;
   if (presort_flag == true) {
