@@ -135,7 +135,6 @@ union Data
 static MenuStack menuStack;
 int8_t ReInitLCD = 0;
 
-int8_t SDscrool = 0;
 
 int8_t SilentModeMenu = SILENT_MODE_OFF;
 
@@ -5664,7 +5663,6 @@ static void lcd_test_menu()
 static void lcd_main_menu()
 {
 
-  SDscrool = 0;
   MENU_BEGIN();
 
   // Majkl superawesome menu
@@ -6022,7 +6020,6 @@ static void lcd_sd_refresh()
 #endif
 static void lcd_sd_updir()
 {
-  SDscrool = 0;
   card.updir();
   currentMenuViewOffset = 0;
 }
