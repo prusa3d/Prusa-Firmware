@@ -17,15 +17,12 @@
 
 #define W25X20CL                 // external 256kB flash
 
-#define SWI2C                    // enable software i2c
-#define SWI2C_A8                 // 8bit address functions
+
+#define SWI2C_SDA      20 //SDA on P3
+#define SWI2C_SCL      21 //SCL on P3
 
 #define PAT9125_SWI2C
-#define PAT9125_SWI2C_SDA      20 //SDA on P3
-#define PAT9125_SWI2C_SCL      21 //SCL on P3
-#define PAT9125_SWI2C_CFG    0xb1 //2us clock delay, 2048 cycles timeout
 
-//#define PAT9125_HWI2C
 
 #define X_TMC2130_CS           41
 #define X_TMC2130_DIAG         64 // !!! changed from 40 (EINY03)

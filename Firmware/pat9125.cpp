@@ -80,7 +80,7 @@ int pat9125_init()
 	swspi_init();
 #endif //PAT9125_SWSPI
 #ifdef PAT9125_SWI2C
-	swi2c_init(PAT9125_SWI2C_SDA, PAT9125_SWI2C_SCL, PAT9125_SWI2C_CFG);
+	swi2c_init();
 #endif //PAT9125_SWI2C
 #ifdef PAT9125_HWI2C
 	Wire.begin();
