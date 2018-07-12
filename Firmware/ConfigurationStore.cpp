@@ -203,7 +203,7 @@ void Config_PrintSettings(uint8_t level)
 #endif
 #endif
     } else {
-        puts_P(PSTR("Filament settings: Disabled"));
+        printf_P(PSTR("%SFilament settings: Disabled\n"), echomagic);
     }
 #endif
 	if (level >= 10) {
