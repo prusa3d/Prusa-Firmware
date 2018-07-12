@@ -1,3 +1,4 @@
+/** @file */
 //language.h
 #ifndef LANGUAGE_H
 #define LANGUAGE_H
@@ -22,11 +23,14 @@
 #define STRINGIFY_(n) #n
 #define STRINGIFY(n) STRINGIFY_(n)
 
-//section progmem0 will be used for localized translated strings
+/** @def PROGMEM_I2
+ *  @brief section progmem0 will be used for localized translated strings */
 #define PROGMEM_I2 __attribute__((section(".progmem0")))
-//section progmem1 will be used for localized strings in english
+/** @def PROGMEM_I1
+ *  @brief section progmem1 will be used for localized strings in english */
 #define PROGMEM_I1 __attribute__((section(".progmem1")))
-//section progmem2 will be used for not localized strings in english
+/** @def PROGMEM_N1
+ *  @brief section progmem2 will be used for not localized strings in english */
 #define PROGMEM_N1 __attribute__((section(".progmem2")))
 
 #if (LANG_MODE == 0) //primary language only
@@ -43,7 +47,7 @@
 #define _N(s) (__extension__({static const char __c[] PROGMEM_N1 = s; &__c[0];}))
 #define _n(s) _N(s)
 
-//lang_table_header_t structure - (size= 16byte)
+/** @brief lang_table_header_t structure - (size= 16byte) */
 typedef struct
 {
 	uint32_t magic;      //+0 
@@ -54,67 +58,76 @@ typedef struct
 	uint32_t signature;  //+12
 } lang_table_header_t;
 
-//lang_table_t structure - (size= 16byte + 2*count)
+/** @brief lang_table_t structure - (size= 16byte + 2*count) */
 typedef struct
 {
 	lang_table_header_t header;
 	uint16_t table[];
 } lang_table_t;
 
-// Language indices into their particular symbol tables.
+/** @name Language indices into their particular symbol tables.*/
+///@{
 #define LANG_ID_PRI 0
 #define LANG_ID_SEC 1
+///@}
 
-// Language is not defined and it shall be selected from the menu.
+/** @def LANG_ID_FORCE_SELECTION
+ *  @brief Language is not defined and it shall be selected from the menu.*/
 #define LANG_ID_FORCE_SELECTION 254
 
-// Language is not defined on a virgin RAMBo board.
+/** @def LANG_ID_UNDEFINED
+ *  @brief Language is not defined on a virgin RAMBo board. */
 #define LANG_ID_UNDEFINED 255
 
-// Default language ID, if no language is selected.
+/** @def LANG_ID_DEFAULT
+ *  @brief Default language ID, if no language is selected. */
 #define LANG_ID_DEFAULT LANG_ID_PRI
 
-// Magic number at begin of lang table.
+/** @def LANG_MAGIC
+ *  @brief Magic number at begin of lang table. */
 #define LANG_MAGIC 0x4bb45aa5
 
-// Language codes (ISO639-1)
-#define LANG_CODE_XX 0x3f3f //'??'
-#define LANG_CODE_EN 0x656e //'en'
-#define LANG_CODE_CZ 0x6373 //'cs'
-#define LANG_CODE_DE 0x6465 //'de'
-#define LANG_CODE_ES 0x6573 //'es'
-#define LANG_CODE_IT 0x6974 //'it'
-#define LANG_CODE_PL 0x706c //'pl'
+/** @name Language codes (ISO639-1)*/
+///@{
+#define LANG_CODE_XX 0x3f3f //!<'??'
+#define LANG_CODE_EN 0x656e //!<'en'
+#define LANG_CODE_CZ 0x6373 //!<'cs'
+#define LANG_CODE_DE 0x6465 //!<'de'
+#define LANG_CODE_ES 0x6573 //!<'es'
+#define LANG_CODE_IT 0x6974 //!<'it'
+#define LANG_CODE_PL 0x706c //!<'pl'
+///@}
 
 #if defined(__cplusplus)
 extern "C" {
 #endif //defined(__cplusplus)
 
-// Currectly active language selection.
+/** @brief Currectly active language selection.*/
 extern uint8_t lang_selected;
 
 #if (LANG_MODE != 0)
 extern const char _SEC_LANG[LANG_SIZE_RESERVED];
 extern const char* lang_get_translation(const char* s);
+/** @def _SEC_LANG_TABLE
+ *  @brief Align table to start of 256 byte page */
 #define _SEC_LANG_TABLE ((((uint16_t)&_SEC_LANG) + 0x00ff) & 0xff00)
-//extern const uint32_t _PRI_LANG_SIGNATURE;
 #endif //(LANG_MODE != 0)
 
-//selects language, eeprom is updated in case of success
+/** @brief selects language, eeprom is updated in case of success */
 extern uint8_t lang_select(uint8_t lang);
-//performs checksum test of secondary language data
+/** @brief performs checksum test of secondary language data */
 extern uint8_t lang_check(uint16_t addr);
-//returns total number of languages (primary + all in xflash)
+/** @return total number of languages (primary + all in xflash) */
 extern uint8_t lang_get_count(void);
-//reads lang table header and offset in xflash or progmem
+/** @brief reads lang table header and offset in xflash or progmem */
 extern uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* offset);
-//reads lang code from xflash or progmem
+/** @brief reads lang code from xflash or progmem */
 extern uint16_t lang_get_code(uint8_t lang);
-//returns localized language name (text for menu item)
+/** @return localized language name (text for menu item) */
 extern const char* lang_get_name_by_code(uint16_t code);
-//reset language to "LANG_ID_FORCE_SELECTION", epprom is updated
+/** @brief reset language to "LANG_ID_FORCE_SELECTION", epprom is updated */
 extern void lang_reset(void);
-//returns 1 if language is selected
+/** @retval 1 language is selected */
 extern uint8_t lang_is_selected(void);
 
 #ifdef DEBUG_SEC_LANG
