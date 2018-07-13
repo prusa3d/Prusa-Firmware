@@ -9,8 +9,6 @@ extern int lcd_printf_P(const char* format, ...);
 
 #ifdef ULTRA_LCD
 
-	static void lcd_language_menu();
-
   void lcd_update(uint8_t lcdDrawUpdateOverride = 0, bool forceRedraw = false);
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
   void lcd_update_enable(bool enable);

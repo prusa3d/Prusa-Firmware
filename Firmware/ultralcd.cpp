@@ -209,6 +209,7 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
 
 /* Different menus */
 static void lcd_status_screen();
+static void lcd_language_menu();
 #ifdef ULTIPANEL
 extern bool powersupply;
 static void lcd_main_menu();
