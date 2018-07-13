@@ -6499,8 +6499,7 @@ bool lcd_selftest()
 	}
 	lcd_reset_alert_level();
 	enquecommand_P(PSTR("M84"));
-	lcd_implementation_clear();
-	lcd_next_update_millis.start();
+	lcd_update_enable(true);
 	
 	if (_result)
 	{
@@ -7209,7 +7208,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay)
 {
 
-	lcd_next_update_millis.stop();
+    lcd_update_enable(false);
 
 	int _step_block = 0;
 	const char *_indicator = (_progress > _progress_scale) ? "-" : "|";
