@@ -37,27 +37,8 @@ extern int lcd_printf_P(const char* format, ...);
 //void lcd_mylang();
   bool lcd_detected(void);
 
-  static void lcd_selftest_v();
   extern bool lcd_selftest();
-  static bool lcd_selfcheck_endstops();
 
-#ifdef TMC2130
-  static void reset_crash_det(char axis);
-  static bool lcd_selfcheck_axis_sg(char axis);
-  static bool lcd_selfcheck_axis(int _axis, int _travel);
-#else
-  static bool lcd_selfcheck_endstops();
-  static bool lcd_selfcheck_axis(int _axis, int _travel);
-  static bool lcd_selfcheck_pulleys(int axis);
-#endif //TMC2130
-
-  static bool lcd_selfcheck_check_heater(bool _isbed);
-  static int  lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay);
-  static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
-  static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite);
-  static bool lcd_selftest_fan_dialog(int _fan);
-  static bool lcd_selftest_fsensor();
-  static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
   void lcd_menu_statistics(); 
 
   extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
@@ -84,7 +65,6 @@ extern int lcd_printf_P(const char* format, ...);
   void lcd_setcontrast(uint8_t value);
 #endif
 
-  static unsigned char blink = 0;	// Variable for visualization of fan rotation in GLCD
 
   #define LCD_MESSAGEPGM(x) lcd_setstatuspgm(PSTR(x))
   #define LCD_ALERTMESSAGEPGM(x) lcd_setalertstatuspgm(PSTR(x))
@@ -239,30 +219,11 @@ extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
 
 
 void change_extr(int extr);
-static void lcd_colorprint_change();
-static int get_ext_nr();
 void extr_adj(int extruder);
-static void extr_adj_0();
-static void extr_adj_1();
-static void extr_adj_2();
-static void extr_adj_3();
-static void fil_load_menu();
-static void fil_unload_menu();
-static void extr_unload_0();
-static void extr_unload_1();
-static void extr_unload_2();
-static void extr_unload_3();
-static void lcd_disable_farm_mode();
-static void lcd_set_fan_check();
+
 void extr_unload_all(); 
 void extr_unload_used();
 void extr_unload();
-static char snmm_stop_print_menu();
-#ifdef SDCARD_SORT_ALPHA
- static void lcd_sort_type_set();
-#endif
-static float count_e(float layer_heigth, float extrusion_width, float extrusion_length);
-static void lcd_babystep_z();
 
 void stack_error();
 void lcd_printer_connected();
@@ -306,8 +267,5 @@ void lcd_language();
 
 void lcd_wizard();
 void lcd_wizard(int state);
-
-static void lcd_send_status();
-static void lcd_connect_printer();
 
 #endif //ULTRALCD_H
