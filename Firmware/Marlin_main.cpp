@@ -803,7 +803,6 @@ int  er_progress = 0;
 void factory_reset(char level, bool quiet)
 {	
 	lcd_implementation_clear();
-	int cursor_pos = 0;
     switch (level) {
                    
         // Level 0: Language reset
@@ -1920,7 +1919,6 @@ void host_keepalive() {
 void loop()
 {
 	KEEPALIVE_STATE(NOT_BUSY);
-	bool stack_integrity = true;
 
 	if ((usb_printing_counter > 0) && ((millis()-_usb_timer) > 1000))
 	{
@@ -4254,10 +4252,11 @@ void process_commands()
 		// The move to the first calibration point.
 		current_position[X_AXIS] = pgm_read_float(bed_ref_points);
 		current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
-		bool clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 
 		#ifdef SUPPORT_VERBOSITY
-		if (verbosity_level >= 1) {
+		if (verbosity_level >= 1)
+		{
+		    bool clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			clamped ? SERIAL_PROTOCOLPGM("First calibration point clamped.\n") : SERIAL_PROTOCOLPGM("No clamping for first calibration point.\n");
 		}
 		#endif //SUPPORT_VERBOSITY
