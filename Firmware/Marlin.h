@@ -419,7 +419,6 @@ extern void fsensor_init();
 //estimated time to end of the print
 extern uint16_t print_time_remaining();
 extern uint8_t print_percent_done();
-static void print_time_remaining_init();
 
 #ifdef HOST_KEEPALIVE_FEATURE
 

@@ -535,8 +535,9 @@ static bool saved_extruder_relative_mode = false;
 //=============================Routines======================================
 //===========================================================================
 
-void get_arc_coordinates();
-bool setTargetedHotend(int code);
+static void get_arc_coordinates();
+static bool setTargetedHotend(int code);
+static void print_time_remaining_init();
 
 void serial_echopair_P(const char *s_P, float v)
     { serialprintPGM(s_P); SERIAL_ECHO(v); }
