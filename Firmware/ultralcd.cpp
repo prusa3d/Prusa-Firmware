@@ -2482,8 +2482,8 @@ static void lcd_menu_xyz_skew()
 //|01234567890123456789|
 //|Measured skew:  N/A |
 //|--------------------|
-//|Slight skew:   0.12°|
-//|Severe skew:   0.25°|
+//|Slight skew:   0.12d|
+//|Severe skew:   0.25d|
 //----------------------
     float angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
 	lcd_printf_P(_N(
@@ -7498,126 +7498,149 @@ void lcd_update_enable(bool enabled)
     }
 }
 
+static inline void debugBlink()
+{
+#ifdef DEBUG_BLINK_ACTIVE
+        static bool active_led = false;
+        active_led = !active_led;
+        pinMode(LED_PIN, OUTPUT);
+        digitalWrite(LED_PIN, active_led?HIGH:LOW);
+#endif //DEBUG_BLINK_ACTIVE
+}
+
+static inline void handleReprapKeyboard()
+{
+#ifdef REPRAPWORLD_KEYPAD
+        if (REPRAPWORLD_KEYPAD_MOVE_Z_UP)
+        {
+            reprapworld_keypad_move_z_up();
+        }
+        if (REPRAPWORLD_KEYPAD_MOVE_Z_DOWN)
+        {
+            reprapworld_keypad_move_z_down();
+        }
+        if (REPRAPWORLD_KEYPAD_MOVE_X_LEFT)
+        {
+            reprapworld_keypad_move_x_left();
+        }
+        if (REPRAPWORLD_KEYPAD_MOVE_X_RIGHT)
+        {
+            reprapworld_keypad_move_x_right();
+        }
+        if (REPRAPWORLD_KEYPAD_MOVE_Y_DOWN)
+        {
+            reprapworld_keypad_move_y_down();
+        }
+        if (REPRAPWORLD_KEYPAD_MOVE_Y_UP)
+        {
+            reprapworld_keypad_move_y_up();
+        }
+        if (REPRAPWORLD_KEYPAD_MOVE_HOME)
+        {
+            reprapworld_keypad_move_home();
+        }
+#endif
+}
+
+static inline void readSlowButtons()
+{
+#ifdef LCD_HAS_SLOW_BUTTONS
+    slow_buttons = lcd_implementation_read_slow_buttons(); // buttons which take too long to read in interrupt context
+#endif
+}
+
+/**
+ * @brief Handle keyboard input and update display
+ *
+ * @param lcdDrawUpdateOverride
+ * @param forceRedraw if true, force redraw of display regardless of timer
+ */
 void lcd_update(uint8_t lcdDrawUpdateOverride, bool forceRedraw)
 {
 
-	if (lcdDrawUpdate < lcdDrawUpdateOverride)
-		lcdDrawUpdate = lcdDrawUpdateOverride;
+    if (lcdDrawUpdate < lcdDrawUpdateOverride)
+    {
+        lcdDrawUpdate = lcdDrawUpdateOverride;
+    }
 
-	if (!lcd_update_enabled)
-		return;
+    if (!lcd_update_enabled) return;
 
-#ifdef LCD_HAS_SLOW_BUTTONS
-  slow_buttons = lcd_implementation_read_slow_buttons(); // buttons which take too long to read in interrupt context
-#endif
-  
-  lcd_buttons_update();
-
+    readSlowButtons();
+    lcd_buttons_update();
 
 #if (SDCARDDETECT > 0)
-  if ((IS_SD_INSERTED != lcd_oldcardstatus && lcd_detected()))
-  {
-	  lcdDrawUpdate = 2;
-	  lcd_oldcardstatus = IS_SD_INSERTED;
-	  lcd_implementation_init( // to maybe revive the LCD if static electricity killed it.
+    if ((IS_SD_INSERTED != lcd_oldcardstatus && lcd_detected()))
+    {
+        lcdDrawUpdate = 2;
+        lcd_oldcardstatus = IS_SD_INSERTED;
+        lcd_implementation_init( // to maybe revive the LCD if static electricity killed it.
 #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-		  currentMenu == lcd_status_screen
+            currentMenu == lcd_status_screen
 #endif
-	  );
+            );
 
-	  if (lcd_oldcardstatus)
-	  {
-		  card.initsd();
-		  LCD_MESSAGERPGM(_i("Card inserted"));////MSG_SD_INSERTED c=0 r=0
-		  //get_description();
-	  }
-	  else
-	  {
-		  card.release();
-		  LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=0 r=0
-	  }
-  }
-#endif//CARDINSERTED
+        if (lcd_oldcardstatus)
+        {
+            card.initsd();
+            LCD_MESSAGERPGM(_i("Card inserted"));////MSG_SD_INSERTED c=0 r=0
+        }
+        else
+        {
+            card.release();
+            LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=0 r=0
+        }
+    }
+#endif //(SDCARDDETECT > 0)
 
-  if (lcd_next_update_millis.expired(LCD_UPDATE_INTERVAL) || forceRedraw)
-  {
-      lcd_next_update_millis.start();
-#ifdef DEBUG_BLINK_ACTIVE
-	static bool active_led = false;
-	active_led = !active_led;
-	pinMode(LED_PIN, OUTPUT);
-	digitalWrite(LED_PIN, active_led?HIGH:LOW);
-#endif //DEBUG_BLINK_ACTIVE
-
+    if (lcd_next_update_millis.expired(LCD_UPDATE_INTERVAL) || forceRedraw)
+    {
+        lcd_next_update_millis.start();
+        debugBlink();
 
 #ifdef ULTIPANEL
-#ifdef REPRAPWORLD_KEYPAD
-	  if (REPRAPWORLD_KEYPAD_MOVE_Z_UP) {
-		  reprapworld_keypad_move_z_up();
-	  }
-	  if (REPRAPWORLD_KEYPAD_MOVE_Z_DOWN) {
-		  reprapworld_keypad_move_z_down();
-	  }
-	  if (REPRAPWORLD_KEYPAD_MOVE_X_LEFT) {
-		  reprapworld_keypad_move_x_left();
-	  }
-	  if (REPRAPWORLD_KEYPAD_MOVE_X_RIGHT) {
-		  reprapworld_keypad_move_x_right();
-	  }
-	  if (REPRAPWORLD_KEYPAD_MOVE_Y_DOWN) {
-		  reprapworld_keypad_move_y_down();
-	  }
-	  if (REPRAPWORLD_KEYPAD_MOVE_Y_UP) {
-		  reprapworld_keypad_move_y_up();
-	  }
-	  if (REPRAPWORLD_KEYPAD_MOVE_HOME) {
-		  reprapworld_keypad_move_home();
-	  }
-#endif
-	  if (abs(encoderDiff) >= ENCODER_PULSES_PER_STEP)
-	  {
-      if (lcdDrawUpdate == 0)
-		    lcdDrawUpdate = 1;
-		  encoderPosition += encoderDiff / ENCODER_PULSES_PER_STEP;
-		  encoderDiff = 0;
-		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-	  }
+        handleReprapKeyboard();
 
-	  if (LCD_CLICKED) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+        if (abs(encoderDiff) >= ENCODER_PULSES_PER_STEP)
+        {
+            if (lcdDrawUpdate == 0) lcdDrawUpdate = 1;
+            encoderPosition += encoderDiff / ENCODER_PULSES_PER_STEP;
+            encoderDiff = 0;
+            lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+        }
+
+        if (LCD_CLICKED) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 #endif//ULTIPANEL
 
-	  (*currentMenu)();
-
-#ifdef LCD_HAS_STATUS_INDICATORS
-	  lcd_implementation_update_indicators();
-#endif
-
-#ifdef ULTIPANEL
-	  if (lcd_timeoutToStatus < millis() && currentMenu != lcd_status_screen)
-	  {
-      // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
-      // to give it a chance to save its state.
-      // This is useful for example, when the babystep value has to be written into EEPROM.
-      if (currentMenu != NULL) {
-        menuExiting = true;
         (*currentMenu)();
-        menuExiting = false;
-      }
-	      lcd_implementation_clear();
-		  lcd_return_to_status();
-		  lcdDrawUpdate = 2;
-	  }
+        lcd_implementation_update_indicators();
+
+#ifdef ULTIPANEL
+        if (lcd_timeoutToStatus < millis() && currentMenu != lcd_status_screen)
+        {
+            // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
+            // to give it a chance to save its state.
+            // This is useful for example, when the babystep value has to be written into EEPROM.
+            if (currentMenu != NULL)
+            {
+                menuExiting = true;
+                (*currentMenu)();
+                menuExiting = false;
+            }
+            lcd_implementation_clear();
+            lcd_return_to_status();
+            lcdDrawUpdate = 2;
+        }
 #endif//ULTIPANEL
-	  if (lcdDrawUpdate == 2) lcd_implementation_clear();
-	  if (lcdDrawUpdate) lcdDrawUpdate--;
-	  }
-	if (!SdFatUtil::test_stack_integrity()) stack_error();
+        if (lcdDrawUpdate == 2) lcd_implementation_clear();
+        if (lcdDrawUpdate) lcdDrawUpdate--;
+    }
+    if (!SdFatUtil::test_stack_integrity()) stack_error();
 #ifdef DEBUG_STEPPER_TIMER_MISSED
-  if (stepper_timer_overflow_state) stepper_timer_overflow();
+    if (stepper_timer_overflow_state) stepper_timer_overflow();
 #endif /* DEBUG_STEPPER_TIMER_MISSED */
-	lcd_ping(); //check that we have received ping command if we are in farm mode
-	lcd_send_status();
-	if (lcd_commands_type == LCD_COMMAND_V2_CAL) lcd_commands();
+    lcd_ping(); //check that we have received ping command if we are in farm mode
+    lcd_send_status();
+    if (lcd_commands_type == LCD_COMMAND_V2_CAL) lcd_commands();
 }
 
 void lcd_printer_connected() {
