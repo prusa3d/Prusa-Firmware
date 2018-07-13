@@ -344,7 +344,7 @@ bool lcd_oldcardstatus;
 #endif //ULTIPANEL
 
 menuFunc_t currentMenu = lcd_status_screen; /* function pointer to the currently active menu */
-uint32_t lcd_next_update_millis;
+ShortTimer lcd_next_update_millis;
 uint8_t lcd_status_update_delay;
 bool ignore_click = false;
 bool wait_for_unclick;
@@ -6500,7 +6500,7 @@ bool lcd_selftest()
 	lcd_reset_alert_level();
 	enquecommand_P(PSTR("M84"));
 	lcd_implementation_clear();
-	lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
+	lcd_next_update_millis.start();
 	
 	if (_result)
 	{
@@ -7209,7 +7209,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay)
 {
 
-	lcd_next_update_millis = millis() + (LCD_UPDATE_INTERVAL * 10000);
+	lcd_next_update_millis.stop();
 
 	int _step_block = 0;
 	const char *_indicator = (_progress > _progress_scale) ? "-" : "|";
@@ -7410,6 +7410,7 @@ static void menu_action_setting_edit_callback_bool(const char* pstr, bool* ptr, 
 void lcd_init()
 {
   lcd_implementation_init();
+  lcd_next_update_millis.start();
 
 #ifdef NEWPANEL
   SET_INPUT(BTN_EN1);
@@ -7479,8 +7480,6 @@ void lcd_update_enable(bool enabled)
             // Enabling the normal LCD update procedure.
             // Reset the timeout interval.
             lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-            // Force the keypad update now.
-            lcd_next_update_millis = millis() - 1;
             // Full update.
             lcd_implementation_clear();
       #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
@@ -7491,14 +7490,15 @@ void lcd_update_enable(bool enabled)
             else
                 lcd_set_custom_characters_arrows();
       #endif
-            lcd_update(2);
+            // Force the keypad update now.
+            lcd_update(2,true);
         } else {
             // Clear the LCD always, or let it to the caller?
         }
     }
 }
 
-void lcd_update(uint8_t lcdDrawUpdateOverride)
+void lcd_update(uint8_t lcdDrawUpdateOverride, bool forceRedraw)
 {
 
 	if (lcdDrawUpdate < lcdDrawUpdateOverride)
@@ -7512,6 +7512,7 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 #endif
   
   lcd_buttons_update();
+
 
 #if (SDCARDDETECT > 0)
   if ((IS_SD_INSERTED != lcd_oldcardstatus && lcd_detected()))
@@ -7538,14 +7539,16 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
   }
 #endif//CARDINSERTED
 
-  if (lcd_next_update_millis < millis())
+  if (lcd_next_update_millis.expired(LCD_UPDATE_INTERVAL) || forceRedraw)
   {
+      lcd_next_update_millis.start();
 #ifdef DEBUG_BLINK_ACTIVE
 	static bool active_led = false;
 	active_led = !active_led;
 	pinMode(LED_PIN, OUTPUT);
 	digitalWrite(LED_PIN, active_led?HIGH:LOW);
 #endif //DEBUG_BLINK_ACTIVE
+
 
 #ifdef ULTIPANEL
 #ifdef REPRAPWORLD_KEYPAD
@@ -7607,7 +7610,6 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 #endif//ULTIPANEL
 	  if (lcdDrawUpdate == 2) lcd_implementation_clear();
 	  if (lcdDrawUpdate) lcdDrawUpdate--;
-	  lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
 	  }
 	if (!SdFatUtil::test_stack_integrity()) stack_error();
 #ifdef DEBUG_STEPPER_TIMER_MISSED
