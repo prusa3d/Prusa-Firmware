@@ -186,7 +186,6 @@
 #define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
 
-//#define EXPERIMENTAL_FEATURES
 #define TMC2130_LINEARITY_CORRECTION
 #define TMC2130_LINEARITY_CORRECTION_XYZ
 //#define TMC2130_VARIABLE_RESOLUTION

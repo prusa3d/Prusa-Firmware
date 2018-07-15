@@ -142,11 +142,7 @@ extern int lcd_printf_P(const char* format, ...);
 
   extern bool cancel_heatup;
   extern bool isPrintPaused;
-  
-  #ifdef FILAMENT_LCD_DISPLAY
-        extern unsigned long message_millis;
-  #endif
-    
+      
   void lcd_buzz(long duration,uint16_t freq);
   bool lcd_clicked();
 

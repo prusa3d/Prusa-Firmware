@@ -215,14 +215,6 @@ extern volatile uint16_t buttons;  //an extended version of the last checked but
   LCD_CLASS lcd(LCD_PINS_RS, LCD_PINS_ENABLE, LCD_PINS_D4, LCD_PINS_D5,LCD_PINS_D6,LCD_PINS_D7);  //RS,Enable,D4,D5,D6,D7
 #endif
 
-#if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-  static uint16_t progressBarTick = 0;
-  #if PROGRESS_MSG_EXPIRE > 0
-    static uint16_t messageTick = 0;
-  #endif
-  #define LCD_STR_PROGRESS  "\x03\x04\x05"
-#endif
-
 /* Custom characters defined in the first 8 characters of the LCD */
 #define LCD_STR_BEDTEMP     "\x00"
 #define LCD_STR_DEGREE      "\x01"
@@ -236,11 +228,8 @@ extern volatile uint16_t buttons;  //an extended version of the last checked but
 #define LCD_STR_ARROW_DOWN  "\x01"
 #define LCD_STR_ARROW_RIGHT "\x7E"  /* from the default character set */
 
-static void lcd_set_custom_characters(
-  #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-    bool progress_bar_set=true
-  #endif
-) {
+static void lcd_set_custom_characters()
+{
   byte bedTemp[8] = {
     B00000,
     B11111,
@@ -383,66 +372,16 @@ static void lcd_set_custom_characters(
   }; 
 
 
-  #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-    static bool char_mode = false;
-    byte progress[3][8] = { {
-      B00000,
-      B10000,
-      B10000,
-      B10000,
-      B10000,
-      B10000,
-      B10000,
-      B00000
-    }, {
-      B00000,
-      B10100,
-      B10100,
-      B10100,
-      B10100,
-      B10100,
-      B10100,
-      B00000
-    }, {
-      B00000,
-      B10101,
-      B10101,
-      B10101,
-      B10101,
-      B10101,
-      B10101,
-      B00000
-    } };
-    if (progress_bar_set != char_mode) {
-      char_mode = progress_bar_set;
-      lcd.createChar(LCD_STR_BEDTEMP[0], bedTemp);
-      lcd.createChar(LCD_STR_DEGREE[0], degree);
-      lcd.createChar(LCD_STR_THERMOMETER[0], thermometer);
-      lcd.createChar(LCD_STR_FEEDRATE[0], feedrate);
-      lcd.createChar(LCD_STR_CLOCK[0], clock);
-      if (progress_bar_set) {
-        // Progress bar characters for info screen
-        for (int i=3; i--;) lcd.createChar(LCD_STR_PROGRESS[i], progress[i]);
-      }
-      else {
-        // Custom characters for submenus
-        lcd.createChar(LCD_STR_UPLEVEL[0], uplevel);
-        lcd.createChar(LCD_STR_REFRESH[0], refresh);
-        lcd.createChar(LCD_STR_FOLDER[0], folder);
-      }
-    }
-  #else
-    lcd.createChar(LCD_STR_BEDTEMP[0], bedTemp);
-    lcd.createChar(LCD_STR_DEGREE[0], degree);
-    lcd.createChar(LCD_STR_THERMOMETER[0], thermometer);
-    lcd.createChar(LCD_STR_UPLEVEL[0], uplevel);
-    lcd.createChar(LCD_STR_REFRESH[0], refresh);
-    lcd.createChar(LCD_STR_FOLDER[0], folder);
-    lcd.createChar(LCD_STR_FEEDRATE[0], feedrate);
-    lcd.createChar(LCD_STR_CLOCK[0], clock);
-    //lcd.createChar(LCD_STR_ARROW_UP[0], arrup);
-    //lcd.createChar(LCD_STR_ARROW_DOWN[0], arrdown);
-  #endif
+	lcd.createChar(LCD_STR_BEDTEMP[0], bedTemp);
+	lcd.createChar(LCD_STR_DEGREE[0], degree);
+	lcd.createChar(LCD_STR_THERMOMETER[0], thermometer);
+	lcd.createChar(LCD_STR_UPLEVEL[0], uplevel);
+	lcd.createChar(LCD_STR_REFRESH[0], refresh);
+	lcd.createChar(LCD_STR_FOLDER[0], folder);
+	lcd.createChar(LCD_STR_FEEDRATE[0], feedrate);
+	lcd.createChar(LCD_STR_CLOCK[0], clock);
+	//lcd.createChar(LCD_STR_ARROW_UP[0], arrup);
+	//lcd.createChar(LCD_STR_ARROW_DOWN[0], arrdown);
 }
 
 void lcd_set_custom_characters_arrows()
@@ -522,11 +461,8 @@ void lcd_set_custom_characters_degree()
 }
 
 
-static void lcd_implementation_init(
-  #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-    bool progress_bar_set=true
-  #endif
-) {
+static void lcd_implementation_init()
+{
 
 #if defined(LCD_I2C_TYPE_PCF8575)
     lcd.begin(LCD_WIDTH, LCD_HEIGHT);
@@ -552,21 +488,14 @@ static void lcd_implementation_init(
     lcd.begin(LCD_WIDTH, LCD_HEIGHT);
 #endif
 
-    lcd_set_custom_characters(
-        #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-            progress_bar_set
-        #endif
-    );
+    lcd_set_custom_characters();
 
     lcd.clear();
 }
 
 
-static void lcd_implementation_init_noclear(
-  #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-    bool progress_bar_set=true
-  #endif
-) {
+static void lcd_implementation_init_noclear()
+{
 
 #if defined(LCD_I2C_TYPE_PCF8575)
     lcd.begin_noclear(LCD_WIDTH, LCD_HEIGHT);
@@ -592,12 +521,7 @@ static void lcd_implementation_init_noclear(
     lcd.begin_noclear(LCD_WIDTH, LCD_HEIGHT);
 #endif
 
-    lcd_set_custom_characters(
-        #if defined(LCD_PROGRESS_BAR) && defined(SDSUPPORT)
-            progress_bar_set
-        #endif
-    );
-
+    lcd_set_custom_characters();
 
 }
 

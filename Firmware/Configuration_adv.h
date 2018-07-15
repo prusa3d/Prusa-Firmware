@@ -260,20 +260,6 @@
 	  #define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
 	#endif
 
-// Show a progress bar on the LCD when printing from SD?
-//#define LCD_PROGRESS_BAR
-
-#ifdef LCD_PROGRESS_BAR
-  // Amount of time (ms) to show the bar
-  #define PROGRESS_BAR_BAR_TIME 2000
-  // Amount of time (ms) to show the status message
-  #define PROGRESS_BAR_MSG_TIME 3000
-  // Amount of time (ms) to retain the status message (0=forever)
-  #define PROGRESS_MSG_EXPIRE   0
-  // Enable this to show messages for MSG_TIME then hide them
-  //#define PROGRESS_MSG_ONCE
-#endif
-
 // Enable the option to stop SD printing when hitting and endstops, needs to be enabled from the LCD menu when this option is enabled.
 //#define ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 
