@@ -2630,9 +2630,9 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
 	homing_flag = true;
 
 	// Which axes should be homed?
-    bool home_x = home_x_axis;
-    bool home_y = home_y_axis;
-    bool home_z = home_z_axis;
+	bool home_x = home_x_axis;
+	bool home_y = home_y_axis;
+	bool home_z = home_z_axis;
 
 	// Either all X,Y,Z codes are present, or none of them.
 	bool home_all_axes = home_x == home_y && home_x == home_z;
@@ -2746,7 +2746,7 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
         current_position[X_AXIS]=home_x_value+add_homing[X_AXIS];
 
       if(home_y_axis && home_y_value != 0)
-		    current_position[Y_AXIS]=home_y_value+add_homing[Y_AXIS];
+        current_position[Y_AXIS]=home_y_value+add_homing[Y_AXIS];
 
       #if Z_HOME_DIR < 0                      // If homing towards BED do Z last
         #ifndef Z_SAFE_HOMING
@@ -3618,27 +3618,26 @@ void process_commands()
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
     {
-	  long home_x_value = 0;
+      long home_x_value = 0;
       long home_y_value = 0;
-	  long home_z_value = 0;
-	  // Which axes should be homed?
+      long home_z_value = 0;
+      // Which axes should be homed?
       bool home_x = code_seen(axis_codes[X_AXIS]);
-	  home_x_value = code_value_long();
+      home_x_value = code_value_long();
       bool home_y = code_seen(axis_codes[Y_AXIS]);
       home_y_value = code_value_long();
-	  bool home_z = code_seen(axis_codes[Z_AXIS]);
-	  home_z_value = code_value_long();
-	  bool without_mbl = code_seen('W');
+      bool home_z = code_seen(axis_codes[Z_AXIS]);
+      home_z_value = code_value_long();
+      bool without_mbl = code_seen('W');
       // calibrate?
       bool calib = code_seen('C');
-
-	  gcode_G28(home_x, home_x_value, home_y, home_y_value, home_z, home_z_value, calib, without_mbl);
-	  if ((home_x || home_y || without_mbl || home_z) == false) {
-		  // Push the commands to the front of the message queue in the reverse order!
-		  // There shall be always enough space reserved for these commands.
-		  goto case_G80;
-	  }
-	  break;
+      gcode_G28(home_x, home_x_value, home_y, home_y_value, home_z, home_z_value, calib, without_mbl);
+      if ((home_x || home_y || without_mbl || home_z) == false) {
+         // Push the commands to the front of the message queue in the reverse order!
+         // There shall be always enough space reserved for these commands.
+         goto case_G80;
+      }
+      break;
     }
 #ifdef ENABLE_AUTO_BED_LEVELING
     case 29: // G29 Detailed Z-Probe, probes the bed at 3 or more points.
