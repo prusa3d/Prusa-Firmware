@@ -277,30 +277,6 @@ void lcd_implementation_init_noclear(void)
 }
 
 
-/* Arduino < 1.0.0 is missing a function to print PROGMEM strings, so we need to implement our own */
-void lcd_printPGM(const char* str)
-{
-    char c;
-    while((c = pgm_read_byte(str++)) != '\0')
-    {
-        lcd.write(c);
-    }
-}
-
-void lcd_print_at_PGM(uint8_t x, uint8_t y, const char* str)
-{
-    lcd.setCursor(x, y);
-    char c;
-    while((c = pgm_read_byte(str++)) != '\0')
-    {
-        lcd.write(c);
-    }
-}
-
-void lcd_implementation_write(char c)
-{
-    lcd.write(c);
-}
 
 void lcd_print(int8_t i)
 {
@@ -352,7 +328,7 @@ void lcd_print_at(uint8_t x, uint8_t y, const char *str)
 void lcd_drawedit(const char* pstr, char* value)
 {
     lcd.setCursor(1, 1);
-    lcd_printPGM(pstr);
+    lcd_puts_P(pstr);
     lcd.print(':');
    #if LCD_WIDTH < 20
       lcd.setCursor(LCD_WIDTH - strlen(value), 1);
@@ -365,7 +341,7 @@ void lcd_drawedit(const char* pstr, char* value)
 void lcd_drawedit_2(const char* pstr, char* value)
 {
     lcd.setCursor(0, 1);
-    lcd_printPGM(pstr);
+    lcd_puts_P(pstr);
     lcd.print(':');
 
     lcd.setCursor((LCD_WIDTH - strlen(value))/2, 3);

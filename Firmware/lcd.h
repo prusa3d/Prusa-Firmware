@@ -174,9 +174,6 @@ extern void lcd_set_custom_characters_degree(void);
 extern void lcd_implementation_init(void);
 extern void lcd_implementation_init_noclear(void);
 
-// Arduino < 1.0.0 is missing a function to print PROGMEM strings, so we need to implement our own
-extern void lcd_printPGM(const char* str);
-extern void lcd_print_at_PGM(uint8_t x, uint8_t y, const char* str);
 extern void lcd_print(int8_t i);
 extern void lcd_print_at(uint8_t x, uint8_t y, int8_t i);
 extern void lcd_print(int i);

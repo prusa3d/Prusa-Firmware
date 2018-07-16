@@ -762,7 +762,7 @@ void CardReader::presort() {
 		#if !SDSORT_USES_RAM
 			lcd_set_progress();
 		#endif
-		lcd_print_at_PGM(0, 1, _i("Sorting files"));////MSG_SORTING c=20 r=1
+		lcd_puts_at_P(0, 1, _i("Sorting files"));////MSG_SORTING c=20 r=1
 
 		// Sort order is always needed. May be static or dynamic.
 		#if SDSORT_DYNAMIC_RAM

@@ -838,8 +838,8 @@ void factory_reset(char level, bool quiet)
 
         // Level 2: Prepare for shipping
         case 2:
-			//lcd_printPGM(PSTR("Factory RESET"));
-            //lcd_print_at_PGM(1,2,PSTR("Shipping prep"));
+			//lcd_puts_P(PSTR("Factory RESET"));
+            //lcd_puts_at_P(1,2,PSTR("Shipping prep"));
             
             // Force language selection at the next boot up.
 			lang_reset();
@@ -870,15 +870,15 @@ void factory_reset(char level, bool quiet)
 			// Level 3: erase everything, whole EEPROM will be set to 0xFF
 
 		case 3:
-			lcd_printPGM(PSTR("Factory RESET"));
-			lcd_print_at_PGM(1, 2, PSTR("ERASING all data"));
+			lcd_puts_P(PSTR("Factory RESET"));
+			lcd_puts_at_P(1, 2, PSTR("ERASING all data"));
 
 			WRITE(BEEPER, HIGH);
 			_delay_ms(100);
 			WRITE(BEEPER, LOW);
 
 			er_progress = 0;
-			lcd_print_at_PGM(3, 3, PSTR("      "));
+			lcd_puts_at_P(3, 3, PSTR("      "));
 			lcd_print_at(3, 3, er_progress);
 
 			// Erase EEPROM
@@ -887,9 +887,9 @@ void factory_reset(char level, bool quiet)
 
 				if (i % 41 == 0) {
 					er_progress++;
-					lcd_print_at_PGM(3, 3, PSTR("      "));
+					lcd_puts_at_P(3, 3, PSTR("      "));
 					lcd_print_at(3, 3, er_progress);
-					lcd_printPGM(PSTR("%"));
+					lcd_puts_P(PSTR("%"));
 				}
 
 			}
@@ -928,8 +928,8 @@ int uart_putchar(char c, FILE *stream)
 
 void lcd_splash()
 {
-//	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
-//	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
+//	lcd_puts_at_P(0, 1, PSTR("   Original Prusa   "));
+//	lcd_puts_at_P(0, 2, PSTR("    3D  Printers    "));
 //	lcd.print_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
 //    fputs_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"), lcdout);
     lcd_puts_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"));
@@ -948,7 +948,7 @@ void factory_reset()
 			lcd_clear();
 
 
-			lcd_printPGM(PSTR("Factory RESET"));
+			lcd_puts_P(PSTR("Factory RESET"));
 
 
 			SET_OUTPUT(BEEPER);
@@ -1020,13 +1020,13 @@ void show_fw_version_warnings() {
     lcd_update_enable(false);
     lcd_clear();
   #if FW_DEV_VERSION == FW_VERSION_DEVEL
-    lcd_print_at_PGM(0, 0, PSTR("Development build !!"));
+    lcd_puts_at_P(0, 0, PSTR("Development build !!"));
   #else
-    lcd_print_at_PGM(0, 0, PSTR("Debbugging build !!!"));
+    lcd_puts_at_P(0, 0, PSTR("Debbugging build !!!"));
   #endif
-    lcd_print_at_PGM(0, 1, PSTR("May destroy printer!"));
-    lcd_print_at_PGM(0, 2, PSTR("ver ")); lcd_printPGM(PSTR(FW_VERSION_FULL));
-    lcd_print_at_PGM(0, 3, PSTR(FW_REPOSITORY));
+    lcd_puts_at_P(0, 1, PSTR("May destroy printer!"));
+    lcd_puts_at_P(0, 2, PSTR("ver ")); lcd_puts_P(PSTR(FW_VERSION_FULL));
+    lcd_puts_at_P(0, 3, PSTR(FW_REPOSITORY));
     lcd_wait_for_click();
     break;
 //	default: lcd_show_fullscreen_message_and_wait_P(_i("WARNING: This is an unofficial, unsupported build. Use at your own risk!")); break;////MSG_FW_VERSION_UNKNOWN c=20 r=8
@@ -1823,7 +1823,7 @@ int serial_read_stream() {
     setTargetBed(0);
 
     lcd_clear();
-    lcd_printPGM(PSTR(" Upload in progress"));
+    lcd_puts_P(PSTR(" Upload in progress"));
 
     // first wait for how many bytes we will receive
     uint32_t bytesToReceive;
@@ -2282,7 +2282,7 @@ bool calibrate_z_auto()
 {
 	//lcd_display_message_fullscreen_P(_T(MSG_CALIBRATE_Z_AUTO));
 	lcd_clear();
-	lcd_print_at_PGM(0,1, _T(MSG_CALIBRATE_Z_AUTO));
+	lcd_puts_at_P(0,1, _T(MSG_CALIBRATE_Z_AUTO));
 	bool endstops_enabled  = enable_endstops(true);
 	int axis_up_dir = -home_dir(Z_AXIS);
 	tmc2130_home_enter(Z_AXIS_MASK);
@@ -2968,7 +2968,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
 			lcd_print_at(0, 2, 1);
-			lcd_printPGM(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
+			lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 		}
 		// Move the print head close to the bed.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -7609,9 +7609,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
                     lcd_update_enable(false);
                     lcd_clear();
                     lcd.setCursor(0, 0);
-                    lcd_printPGM(_T(MSG_ERROR));
+                    lcd_puts_P(_T(MSG_ERROR));
                     lcd.setCursor(0, 2);
-                    lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
+                    lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
                     delay(2000);
                     lcd_clear();
                     lcd_update_enable(true);
