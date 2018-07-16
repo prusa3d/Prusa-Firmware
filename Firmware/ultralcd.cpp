@@ -500,7 +500,9 @@ uint8_t menu_item_sddir(const char* str, const char* str_fn, char* str_fnl)
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_clicked = false;
+			lcd_update_enabled = 0;
 			menu_action_sddirectory(str_fn, str_fnl);
+			lcd_update_enabled = 1;
 			return menu_item_ret();
 		}
 	}
