@@ -2,7 +2,8 @@
 #define ULTRALCD_H
 
 #include "Marlin.h"
-#include "mesh_bed_calibration.h"
+//#include "mesh_bed_calibration.h"
+#include "conv2str.h"
 
 extern int lcd_puts_P(const char* str);
 extern int lcd_printf_P(const char* format, ...);
@@ -75,8 +76,9 @@ extern void menu_lcd_lcdupdate_func(void);
   #ifndef TMC2130
   extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
   #endif
+
   // Show the result of the calibration process on the LCD screen.
-  extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
+  extern void lcd_bed_calibration_show_result(uint8_t result, uint8_t point_too_far_mask);
 
   extern void lcd_diag_show_end_stops();
 
@@ -131,37 +133,6 @@ extern void menu_lcd_lcdupdate_func(void);
   void lcd_ignore_click(bool b=true);
   void lcd_commands();
   
-
-char *itostr2(const uint8_t &x);
-char *itostr31(const int &xx);
-char *itostr3(const int &xx);
-char *itostr3left(const int &xx);
-char *itostr4(const int &xx);
-
-char *ftostr3(const float &x);
-char *ftostr31ns(const float &x); // float to string without sign character
-char *ftostr31(const float &x);
-char *ftostr32(const float &x);
-char *ftostr32ns(const float &x);
-char *ftostr43(const float &x, uint8_t offset = 0);
-char *ftostr12ns(const float &x);
-char *ftostr13ns(const float &x);
-char *ftostr32sp(const float &x); // remove zero-padding from ftostr32
-char *ftostr5(const float &x);
-char *ftostr51(const float &x);
-char *ftostr52(const float &x);
-
-
-extern void lcd_implementation_clear();
-extern void lcd_printPGM(const char* str);
-extern void lcd_print_at_PGM(uint8_t x, uint8_t y, const char* str);
-extern void lcd_print(const char *str);
-extern void lcd_print(int8_t i);
-extern void lcd_print_at(uint8_t x, uint8_t y, int8_t i);
-extern void lcd_print(int i);
-extern void lcd_print_at(uint8_t x, uint8_t y, int i);
-extern void lcd_print(float f);
-extern void lcd_print_at(uint8_t x, uint8_t y, const char *str);
 
 
 void change_extr(int extr);
