@@ -68,13 +68,6 @@ void Config_StoreSettings(uint16_t offset, uint8_t level)
   EEPROM_WRITE_VAR(i,max_jerk[Z_AXIS]);
   EEPROM_WRITE_VAR(i,max_jerk[E_AXIS]);
   EEPROM_WRITE_VAR(i,add_homing);
-  #ifndef ULTIPANEL
-  int plaPreheatHotendTemp = PLA_PREHEAT_HOTEND_TEMP, plaPreheatHPBTemp = PLA_PREHEAT_HPB_TEMP, plaPreheatFanSpeed = PLA_PREHEAT_FAN_SPEED;
-  int absPreheatHotendTemp = ABS_PREHEAT_HOTEND_TEMP, absPreheatHPBTemp = ABS_PREHEAT_HPB_TEMP, absPreheatFanSpeed = ABS_PREHEAT_FAN_SPEED;
-  
-
-  
-  #endif
 /*  EEPROM_WRITE_VAR(i,plaPreheatHotendTemp);
   EEPROM_WRITE_VAR(i,plaPreheatHPBTemp);
   EEPROM_WRITE_VAR(i,plaPreheatFanSpeed);
@@ -100,10 +93,7 @@ void Config_StoreSettings(uint16_t offset, uint8_t level)
 	EEPROM_WRITE_VAR(i, bedKi);
 	EEPROM_WRITE_VAR(i, bedKd);
   #endif
-  #ifndef DOGLCD
-    int lcd_contrast = 32;
-  #endif
-  EEPROM_WRITE_VAR(i,lcd_contrast);
+//  EEPROM_WRITE_VAR(i,lcd_contrast);
   #ifdef FWRETRACT
   EEPROM_WRITE_VAR(i,autoretract_enabled);
   EEPROM_WRITE_VAR(i,retract_length);
@@ -247,11 +237,6 @@ bool Config_RetrieveSettings(uint16_t offset, uint8_t level)
 		if (max_jerk[X_AXIS] > DEFAULT_XJERK) max_jerk[X_AXIS] = DEFAULT_XJERK;
 		if (max_jerk[Y_AXIS] > DEFAULT_YJERK) max_jerk[Y_AXIS] = DEFAULT_YJERK;
         EEPROM_READ_VAR(i,add_homing);
-        #ifndef ULTIPANEL
-        int plaPreheatHotendTemp, plaPreheatHPBTemp, plaPreheatFanSpeed;
-        int absPreheatHotendTemp, absPreheatHPBTemp, absPreheatFanSpeed;
-
-        #endif
 	/*
         EEPROM_READ_VAR(i,plaPreheatHotendTemp);
         EEPROM_READ_VAR(i,plaPreheatHPBTemp);
@@ -275,10 +260,7 @@ bool Config_RetrieveSettings(uint16_t offset, uint8_t level)
 		EEPROM_READ_VAR(i, bedKi);
 		EEPROM_READ_VAR(i, bedKd);
 		#endif
-		#ifndef DOGLCD
-        int lcd_contrast;
-        #endif
-        EEPROM_READ_VAR(i,lcd_contrast);
+//        EEPROM_READ_VAR(i,lcd_contrast);
 
 		#ifdef FWRETRACT
 		EEPROM_READ_VAR(i,autoretract_enabled);
@@ -362,9 +344,6 @@ void Config_ResetDefault()
 
 #ifdef ENABLE_AUTO_BED_LEVELING
     zprobe_zoffset = -Z_PROBE_OFFSET_FROM_EXTRUDER;
-#endif
-#ifdef DOGLCD
-    lcd_contrast = DEFAULT_LCD_CONTRAST;
 #endif
 #ifdef PIDTEMP
     Kp = DEFAULT_Kp;

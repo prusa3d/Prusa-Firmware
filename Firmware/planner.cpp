@@ -646,10 +646,10 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
           manage_heater(); 
           // Vojtech: Don't disable motors inside the planner!
           manage_inactivity(false); 
-          lcd_update();
+          lcd_update(0);
       } while (block_buffer_tail == next_buffer_head);
       if (waiting_inside_plan_buffer_line_print_aborted) {
-          // Inside the lcd_update() routine the print has been aborted.
+          // Inside the lcd_update(0) routine the print has been aborted.
           // Cancel the print, do not plan the current line this routine is waiting on.
 #ifdef PLANNER_DIAGNOSTICS
           planner_update_queue_min_counter();

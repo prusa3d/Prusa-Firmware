@@ -30,6 +30,7 @@
 
 
 #include "Marlin.h"
+#include "lcd.h"
 #include "ultralcd.h"
 #include "temperature.h"
 #include "cardreader.h"
@@ -403,7 +404,7 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 	  pid_cycle = 0;
       return;
     }
-    lcd_update();
+    lcd_update(0);
   }
 }
 
@@ -1332,7 +1333,7 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 	disable_e1();
 	disable_e2();
 	manage_heater();
-	lcd_update();
+	lcd_update(0);
 	WRITE(BEEPER, HIGH);
 	delayMicroseconds(500);
 	WRITE(BEEPER, LOW);

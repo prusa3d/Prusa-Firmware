@@ -58,8 +58,11 @@
 #endif
 
 #include "printers.h"
+
+#include "lcd.h"
+#include "menu.h"
 #include "ultralcd.h"
-#include "Configuration_prusa.h"
+
 #include "planner.h"
 #include "stepper.h"
 #include "temperature.h"
@@ -167,7 +170,7 @@
 // G92 - Set current position to coordinates given
 
 // M Codes
-// M0   - Unconditional stop - Wait for user to press a button on the LCD (Only if ULTRA_LCD is enabled)
+// M0   - Unconditional stop - Wait for user to press a button on the LCD
 // M1   - Same as M0
 // M17  - Enable/Power all stepper motors
 // M18  - Disable all stepper motors; same as M84
@@ -431,13 +434,11 @@ int fanSpeed=0;
   float retract_recover_feedrate = RETRACT_RECOVER_FEEDRATE;
 #endif
 
-#ifdef ULTIPANEL
   #ifdef PS_DEFAULT_OFF
     bool powersupply = false;
   #else
 	  bool powersupply = true;
   #endif
-#endif
 
 bool cancel_heatup = false ;
 
@@ -2022,7 +2023,7 @@ void loop()
   manage_heater();
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
-  lcd_update();
+  lcd_update(0);
 #ifdef PAT9125
 	fsensor_update();
 #endif //PAT9125
@@ -3487,7 +3488,7 @@ void process_commands()
                           cnt++;
                           manage_heater();
                           manage_inactivity(true);
-                          //lcd_update();
+                          //lcd_update(0);
                           if(cnt==0)
                           {
                           #if BEEPER > 0
@@ -3512,11 +3513,6 @@ void process_commands()
                           
                             counterBeep++;
                           #else
-                      #if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
-                              lcd_buzz(1000/6,100);
-                      #else
-                        lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS,LCD_FEEDBACK_FREQUENCY_HZ);
-                      #endif
                           #endif
                           }
                         }
@@ -3653,7 +3649,7 @@ void process_commands()
       while(millis() < codenum) {
         manage_heater();
         manage_inactivity();
-        lcd_update();
+        lcd_update(0);
       }
       break;
       #ifdef FWRETRACT
@@ -4663,7 +4659,6 @@ void process_commands()
 	  } else
     switch((int)code_value())
     {
-#ifdef ULTIPANEL
 
     case 0: // M0 - Unconditional stop - Wait for user button press on LCD
     case 1: // M1 - Conditional stop - Wait for user button press on LCD
@@ -4699,18 +4694,16 @@ void process_commands()
         while(millis() < codenum && !lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
-          lcd_update();
+          lcd_update(0);
         }
 		KEEPALIVE_STATE(IN_HANDLER);
         lcd_ignore_click(false);
       }else{
-          if (!lcd_detected())
-            break;
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(!lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
-          lcd_update();
+          lcd_update(0);
         }
 		KEEPALIVE_STATE(IN_HANDLER);
       }
@@ -4720,7 +4713,6 @@ void process_commands()
         LCD_MESSAGERPGM(_T(WELCOME_MSG));
     }
     break;
-#endif
     case 17:
         LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE c=0 r=0
         enable_x();
@@ -5442,7 +5434,7 @@ Sigma_Exit:
           }
           manage_heater();
           manage_inactivity();
-          lcd_update();
+          lcd_update(0);
         }
         LCD_MESSAGERPGM(_T(MSG_BED_DONE));
 		KEEPALIVE_STATE(IN_HANDLER);
@@ -5479,11 +5471,9 @@ Sigma_Exit:
             WRITE(SUICIDE_PIN, HIGH);
         #endif
 
-        #ifdef ULTIPANEL
           powersupply = true;
           LCD_MESSAGERPGM(_T(WELCOME_MSG));
-          lcd_update();
-        #endif
+          lcd_update(0);
         break;
       #endif
 
@@ -5503,11 +5493,9 @@ Sigma_Exit:
         SET_OUTPUT(PS_ON_PIN);
         WRITE(PS_ON_PIN, PS_ON_ASLEEP);
       #endif
-      #ifdef ULTIPANEL
         powersupply = false;
         LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR(".")));
-        lcd_update();
-      #endif
+        lcd_update(0);
 	  break;
 
     case 82:
@@ -5967,7 +5955,7 @@ Sigma_Exit:
             while(digitalRead(pin_number) != target){
               manage_heater();
               manage_inactivity();
-              lcd_update();
+              lcd_update(0);
             }
           }
         }
@@ -6025,10 +6013,6 @@ Sigma_Exit:
           tone(BEEPER, beepS);
           delay(beepP);
           noTone(BEEPER);
-        #elif defined(ULTRALCD)
-		  lcd_buzz(beepS, beepP);
-		#elif defined(LCD_USE_I2C_BUZZER)
-		  lcd_buzz(beepP, beepS);
         #endif
       }
       else
@@ -6117,18 +6101,6 @@ Sigma_Exit:
       #endif //chdk end if
      }
     break;
-#ifdef DOGLCD
-    case 250: // M250  Set LCD contrast value: C<value> (value 0..63)
-     {
-	  if (code_seen('C')) {
-	   lcd_setcontrast( ((int)code_value())&63 );
-          }
-          SERIAL_PROTOCOLPGM("lcd contrast value: ");
-          SERIAL_PROTOCOL(lcd_contrast);
-          SERIAL_PROTOCOLLN("");
-     }
-    break;
-#endif
     #ifdef PREVENT_DANGEROUS_EXTRUDE
     case 302: // allow cold extrudes, or set the minimum extrude temperature
     {
@@ -6355,11 +6327,6 @@ Sigma_Exit:
 				
 				counterBeep++;
 #else
-#if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
-				lcd_buzz(1000 / 6, 100);
-#else
-				lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS, LCD_FEEDBACK_FREQUENCY_HZ);
-#endif
 #endif
 			}
 			
@@ -6757,7 +6724,7 @@ Sigma_Exit:
 			}
 			manage_heater();
 			manage_inactivity();
-			lcd_update();
+			lcd_update(0);
 		}
 		LCD_MESSAGERPGM(_T(MSG_OK));
 
@@ -7778,7 +7745,7 @@ void kill(const char *full_screen_message, unsigned char id)
 
   // FMC small patch to update the LCD before ending
   sei();   // enable interrupts
-  for ( int i=5; i--; lcd_update())
+  for ( int i=5; i--; lcd_update(0))
   {
      delay(200);	
   }
@@ -7953,7 +7920,7 @@ void delay_keep_alive(unsigned int ms)
         manage_heater();
         // Manage inactivity, but don't disable steppers on timeout.
         manage_inactivity(true);
-        lcd_update();
+        lcd_update(0);
         if (ms == 0)
             break;
         else if (ms >= 50) {
@@ -8005,7 +7972,7 @@ void wait_for_heater(long codenum) {
 		}
 			manage_heater();
 			manage_inactivity();
-			lcd_update();
+			lcd_update(0);
 #ifdef TEMP_RESIDENCY_TIME
 			/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
 			or when current temp falls outside the hysteresis after target temp was reached */

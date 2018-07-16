@@ -95,11 +95,9 @@
 #define KILL_PIN            -1  // 80 with Smart Controller LCD
 #define SUICIDE_PIN         -1  // PIN that has to be turned on right after start, to keep power flowing.
 
-#ifdef ULTRA_LCD
 
 //#define KILL_PIN            32
 
-#ifdef NEWPANEL
 
 //#define LCD_PWM_PIN         -1//32  // lcd backlight brightnes pwm control pin
 //#define LCD_PWM_MAX       0x0f  // lcd pwm maximum value (0x07=64Hz, 0x0f=32Hz, 0x1f=16Hz)
@@ -122,8 +120,6 @@
 #define TACH_0                 79 // !!! changed from 81 (EINY03)
 #define TACH_1                 80 
 
-#endif //NEWPANEL
-#endif //ULTRA_LCD
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.

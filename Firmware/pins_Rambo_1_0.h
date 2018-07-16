@@ -83,11 +83,9 @@
 #define SUICIDE_PIN         -1  // PIN that has to be turned on right after start, to keep power flowing.
 #define TACH_0				30	// noctua extruder fan
 
-#ifdef ULTRA_LCD
 
 //#define KILL_PIN            32
 
-#ifdef NEWPANEL
 
 #define BEEPER              78  // Beeper on AUX-4
 #define LCD_PINS_RS         38
@@ -105,8 +103,6 @@
 #define SDCARDDETECT           72
 
 
-#endif //NEWPANEL
-#endif //ULTRA_LCD
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.

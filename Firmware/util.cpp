@@ -304,7 +304,7 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
         lcd_wait_for_click();
         lcd_update_enable(true);
         lcd_implementation_clear();
-        lcd_update();
+        lcd_update(0);
     }
 
     // Succeeded.

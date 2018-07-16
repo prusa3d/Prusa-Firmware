@@ -7,13 +7,13 @@
 extern int lcd_puts_P(const char* str);
 extern int lcd_printf_P(const char* format, ...);
 
-#ifdef ULTRA_LCD
+extern void menu_lcd_longpress_func(void);
+extern void menu_lcd_charsetup_func(void);
+extern void menu_lcd_lcdupdate_func(void);
 
 	static void lcd_language_menu();
 
-  void lcd_update(uint8_t lcdDrawUpdateOverride = 0);
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
-  void lcd_update_enable(bool enable);
   void lcd_init();
   void lcd_setstatus(const char* message);
   void lcd_setstatuspgm(const char* message);
@@ -37,7 +37,6 @@ extern int lcd_printf_P(const char* format, ...);
   void lcd_confirm_print();
   unsigned char lcd_choose_color();
 //void lcd_mylang();
-  bool lcd_detected(void);
 
   static void lcd_selftest_v();
   extern bool lcd_selftest();
@@ -81,10 +80,6 @@ extern int lcd_printf_P(const char* format, ...);
 
   extern void lcd_diag_show_end_stops();
 
-#ifdef DOGLCD
-  extern int lcd_contrast;
-  void lcd_setcontrast(uint8_t value);
-#endif
 
   static unsigned char blink = 0;	// Variable for visualization of fan rotation in GLCD
 
@@ -93,18 +88,7 @@ extern int lcd_printf_P(const char* format, ...);
   #define LCD_MESSAGERPGM(x) lcd_setstatuspgm((x))
   #define LCD_ALERTMESSAGERPGM(x) lcd_setalertstatuspgm((x))
 
-  #define LCD_UPDATE_INTERVAL 100
-  #define LCD_TIMEOUT_TO_STATUS 30000
 
-  #ifdef ULTIPANEL
-  void lcd_buttons_update();
-  extern volatile uint8_t buttons;  //the last checked buttons in a bit array.
-  #ifdef REPRAPWORLD_KEYPAD
-    extern volatile uint8_t buttons_reprapworld_keypad; // to store the keypad shift register values
-  #endif
-  #else
-  FORCE_INLINE void lcd_buttons_update() {}
-  #endif
 
 
   // To be used in lcd_commands_type.
@@ -143,65 +127,10 @@ extern int lcd_printf_P(const char* format, ...);
   extern bool cancel_heatup;
   extern bool isPrintPaused;
       
-  void lcd_buzz(long duration,uint16_t freq);
-  bool lcd_clicked();
 
   void lcd_ignore_click(bool b=true);
   void lcd_commands();
   
-  #ifdef NEWPANEL
-    #define EN_C (1<<BLEN_C)
-    #define EN_B (1<<BLEN_B)
-    #define EN_A (1<<BLEN_A)
-
-    #define LCD_CLICKED (buttons&EN_C)
-    #ifdef REPRAPWORLD_KEYPAD
-  	  #define EN_REPRAPWORLD_KEYPAD_F3 (1<<BLEN_REPRAPWORLD_KEYPAD_F3)
-  	  #define EN_REPRAPWORLD_KEYPAD_F2 (1<<BLEN_REPRAPWORLD_KEYPAD_F2)
-  	  #define EN_REPRAPWORLD_KEYPAD_F1 (1<<BLEN_REPRAPWORLD_KEYPAD_F1)
-  	  #define EN_REPRAPWORLD_KEYPAD_UP (1<<BLEN_REPRAPWORLD_KEYPAD_UP)
-  	  #define EN_REPRAPWORLD_KEYPAD_RIGHT (1<<BLEN_REPRAPWORLD_KEYPAD_RIGHT)
-  	  #define EN_REPRAPWORLD_KEYPAD_MIDDLE (1<<BLEN_REPRAPWORLD_KEYPAD_MIDDLE)
-  	  #define EN_REPRAPWORLD_KEYPAD_DOWN (1<<BLEN_REPRAPWORLD_KEYPAD_DOWN)
-  	  #define EN_REPRAPWORLD_KEYPAD_LEFT (1<<BLEN_REPRAPWORLD_KEYPAD_LEFT)
-
-  	  #define LCD_CLICKED ((buttons&EN_C) || (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_F1))
-  	  #define REPRAPWORLD_KEYPAD_MOVE_Z_UP (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_F2)
-  	  #define REPRAPWORLD_KEYPAD_MOVE_Z_DOWN (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_F3)
-  	  #define REPRAPWORLD_KEYPAD_MOVE_X_LEFT (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_LEFT)
-  	  #define REPRAPWORLD_KEYPAD_MOVE_X_RIGHT (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_RIGHT)
-  	  #define REPRAPWORLD_KEYPAD_MOVE_Y_DOWN (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_DOWN)
-  	  #define REPRAPWORLD_KEYPAD_MOVE_Y_UP (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_UP)
-  	  #define REPRAPWORLD_KEYPAD_MOVE_HOME (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_MIDDLE)
-    #endif //REPRAPWORLD_KEYPAD
-  #else
-    //atomic, do not change
-    #define B_LE (1<<BL_LE)
-    #define B_UP (1<<BL_UP)
-    #define B_MI (1<<BL_MI)
-    #define B_DW (1<<BL_DW)
-    #define B_RI (1<<BL_RI)
-    #define B_ST (1<<BL_ST)
-    #define EN_B (1<<BLEN_B)
-    #define EN_A (1<<BLEN_A)
-    
-    #define LCD_CLICKED ((buttons&B_MI)||(buttons&B_ST))
-  #endif//NEWPANEL
-
-#else //no LCD
-  FORCE_INLINE void 
-  {}
-  FORCE_INLINE void lcd_init() {}
-  FORCE_INLINE void lcd_setstatus(const char* message) {}
-  FORCE_INLINE void lcd_buttons_update() {}
-  FORCE_INLINE void lcd_reset_alert_level() {}
-  FORCE_INLINE void lcd_buzz(long duration,uint16_t freq) {}
-  FORCE_INLINE bool lcd_detected(void) { return true; }
-
-  #define LCD_MESSAGEPGM(x) 
-  #define LCD_ALERTMESSAGEPGM(x) 
-
-#endif //ULTRA_LCD
 
 char *itostr2(const uint8_t &x);
 char *itostr31(const int &xx);

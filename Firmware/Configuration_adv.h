@@ -178,9 +178,7 @@
 
 
 //Comment to disable setting feedrate multiplier via encoder
-#ifdef ULTIPANEL
-    #define ULTIPANEL_FEEDMULTIPLY
-#endif
+#define ULTIPANEL_FEEDMULTIPLY
 
 // minimum time in microseconds that a movement needs to take if the buffer is emptied.
 #define DEFAULT_MINSEGMENTTIME        20000
@@ -328,10 +326,7 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 // in the pins.h file.  When using a push button pulling the pin to ground this will need inverted.  This setting should
 // be commented out otherwise
 #define SDCARDDETECTINVERTED
-
-#ifdef ULTIPANEL
- #undef SDCARDDETECTINVERTED
-#endif
+#undef SDCARDDETECTINVERTED
 
 // Power Signal Control Definitions
 // By default use ATX definition
