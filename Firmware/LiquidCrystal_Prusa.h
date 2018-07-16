@@ -79,11 +79,10 @@ public:
   void autoscroll();
   void noAutoscroll();
 
-  void createChar_P(uint8_t, const uint8_t*);
   void setCursor(uint8_t, uint8_t); 
   size_t write(uint8_t);
   void command(uint8_t);
-private:
+public:
   void send(uint8_t, uint8_t);
   void write4bits(uint8_t);
   void write8bits(uint8_t);

@@ -4,8 +4,50 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <avr/pgmspace.h>
+#include <avr/delay.h>
 #include "Timer.h"
 
+/*
+
+// commands
+#define LCD_CLEARDISPLAY 0x01
+#define LCD_RETURNHOME 0x02
+#define LCD_ENTRYMODESET 0x04
+#define LCD_DISPLAYCONTROL 0x08
+#define LCD_CURSORSHIFT 0x10
+#define LCD_FUNCTIONSET 0x20
+#define LCD_SETCGRAMADDR 0x40
+#define LCD_SETDDRAMADDR 0x80
+
+// flags for display entry mode
+#define LCD_ENTRYRIGHT 0x00
+#define LCD_ENTRYLEFT 0x02
+#define LCD_ENTRYSHIFTINCREMENT 0x01
+#define LCD_ENTRYSHIFTDECREMENT 0x00
+
+// flags for display on/off control
+#define LCD_DISPLAYON 0x04
+#define LCD_DISPLAYOFF 0x00
+#define LCD_CURSORON 0x02
+#define LCD_CURSOROFF 0x00
+#define LCD_BLINKON 0x01
+#define LCD_BLINKOFF 0x00
+
+// flags for display/cursor shift
+#define LCD_DISPLAYMOVE 0x08
+#define LCD_CURSORMOVE 0x00
+#define LCD_MOVERIGHT 0x04
+#define LCD_MOVELEFT 0x00
+
+// flags for function set
+#define LCD_8BITMODE 0x10
+#define LCD_4BITMODE 0x00
+#define LCD_2LINE 0x08
+#define LCD_1LINE 0x00
+#define LCD_5x10DOTS 0x04
+#define LCD_5x8DOTS 0x00
+
+*/
 
 LiquidCrystal_Prusa lcd(LCD_PINS_RS, LCD_PINS_ENABLE, LCD_PINS_D4, LCD_PINS_D5,LCD_PINS_D6,LCD_PINS_D7);  //RS,Enable,D4,D5,D6,D7
 
@@ -23,27 +65,51 @@ int lcd_putchar(char c, FILE *stream)
 
 void lcd_command(uint8_t value)
 {
-	lcd.command(value);
+	lcd.send(value, LOW);
 }
 
 uint8_t lcd_write(uint8_t value)
 {
-	return lcd.write(value);
+	if (value == '\n')
+	{
+		if (lcd._currline > 3) lcd._currline = -1;
+		lcd_set_cursor(0, lcd._currline + 1); // LF
+		return 1;
+	}
+	if (lcd._escape[0] || (value == 0x1b))
+		return lcd.escape_write(value);
+	lcd.send(value, HIGH);
+	return 1; // assume sucess
 }
-
-
-
 
 void lcd_clear(void)
 {
-    lcd.clear();
+	lcd_command(LCD_CLEARDISPLAY);  // clear display, set cursor position to zero
+	_delay_us(1600);  // this command takes a long time
 }
 
-void lcd_set_cursor(uint8_t c, uint8_t r)
+void lcd_set_cursor(uint8_t col, uint8_t row)
 {
-//	lcd_printf_P(PSTR("\x1b[%hhu;%hhuH"), r, c);
-	lcd.setCursor(c, r);
+	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
+	if ( row >= lcd._numlines )
+		row = lcd._numlines-1;    // we count rows starting w/0
+	lcd._currline = row;  
+	lcd_command(LCD_SETDDRAMADDR | (col + row_offsets[row]));
 }
+
+// Allows us to fill the first 8 CGRAM locations
+// with custom characters
+void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
+{
+  location &= 0x7; // we only have 8 locations 0-7
+  lcd_command(LCD_SETCGRAMADDR | (location << 3));
+  for (int i=0; i<8; i++)
+    lcd.send(pgm_read_byte(&charmap[i]), HIGH);
+}
+
+
+
+
 
 int lcd_putc(int c)
 {
@@ -388,7 +454,7 @@ void lcd_implementation_init(void)
 {
     lcd.begin(LCD_WIDTH, LCD_HEIGHT);
     lcd_set_custom_characters();
-    lcd.clear();
+    lcd_clear();
 }
 
 
@@ -567,21 +633,21 @@ const uint8_t lcd_chardata_arrdown[8] PROGMEM = {
 
 void lcd_set_custom_characters(void)
 {
-	lcd.createChar_P(LCD_STR_BEDTEMP[0], lcd_chardata_bedTemp);
-	lcd.createChar_P(LCD_STR_DEGREE[0], lcd_chardata_degree);
-	lcd.createChar_P(LCD_STR_THERMOMETER[0], lcd_chardata_thermometer);
-	lcd.createChar_P(LCD_STR_UPLEVEL[0], lcd_chardata_uplevel);
-	lcd.createChar_P(LCD_STR_REFRESH[0], lcd_chardata_refresh);
-	lcd.createChar_P(LCD_STR_FOLDER[0], lcd_chardata_folder);
-	lcd.createChar_P(LCD_STR_FEEDRATE[0], lcd_chardata_feedrate);
-	lcd.createChar_P(LCD_STR_CLOCK[0], lcd_chardata_clock);
-	//lcd.createChar_P(LCD_STR_ARROW_UP[0], lcd_chardata_arrup);
-	//lcd.createChar_P(LCD_STR_ARROW_DOWN[0], lcd_chardata_arrdown);
+	lcd_createChar_P(LCD_STR_BEDTEMP[0], lcd_chardata_bedTemp);
+	lcd_createChar_P(LCD_STR_DEGREE[0], lcd_chardata_degree);
+	lcd_createChar_P(LCD_STR_THERMOMETER[0], lcd_chardata_thermometer);
+	lcd_createChar_P(LCD_STR_UPLEVEL[0], lcd_chardata_uplevel);
+	lcd_createChar_P(LCD_STR_REFRESH[0], lcd_chardata_refresh);
+	lcd_createChar_P(LCD_STR_FOLDER[0], lcd_chardata_folder);
+	lcd_createChar_P(LCD_STR_FEEDRATE[0], lcd_chardata_feedrate);
+	lcd_createChar_P(LCD_STR_CLOCK[0], lcd_chardata_clock);
+	//lcd_createChar_P(LCD_STR_ARROW_UP[0], lcd_chardata_arrup);
+	//lcd_createChar_P(LCD_STR_ARROW_DOWN[0], lcd_chardata_arrdown);
 }
 
 void lcd_set_custom_characters_arrows(void)
 {
-	lcd.createChar_P(1, lcd_chardata_arrdown);
+	lcd_createChar_P(1, lcd_chardata_arrdown);
 }
 
 const uint8_t lcd_chardata_progress[8] PROGMEM = {
@@ -596,7 +662,7 @@ const uint8_t lcd_chardata_progress[8] PROGMEM = {
 
 void lcd_set_custom_characters_progress(void)
 {
-	lcd.createChar_P(1, lcd_chardata_progress);
+	lcd_createChar_P(1, lcd_chardata_progress);
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
@@ -620,12 +686,12 @@ const uint8_t lcd_chardata_confirm[8] PROGMEM = {
 
 void lcd_set_custom_characters_nextpage(void)
 {
-	lcd.createChar_P(1, lcd_chardata_arr2down);
-	lcd.createChar_P(2, lcd_chardata_confirm);
+	lcd_createChar_P(1, lcd_chardata_arr2down);
+	lcd_createChar_P(2, lcd_chardata_confirm);
 }
 
 void lcd_set_custom_characters_degree(void)
 {
-	lcd.createChar_P(1, lcd_chardata_degree);
+	lcd_createChar_P(1, lcd_chardata_degree);
 }
 

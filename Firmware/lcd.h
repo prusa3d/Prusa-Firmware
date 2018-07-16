@@ -23,6 +23,39 @@ extern void lcd_command(uint8_t value);
 
 extern uint8_t lcd_write(uint8_t value);
 
+extern void lcd_clear(void);
+
+extern void lcd_set_cursor(uint8_t col, uint8_t row);
+
+extern void lcd_createChar_P(uint8_t, const uint8_t*);
+
+
+extern int lcd_putc(int c);
+extern int lcd_puts_P(const char* str);
+extern int lcd_puts_at_P(uint8_t c, uint8_t r, const char* str);
+extern int lcd_printf_P(const char* format, ...);
+
+extern void lcd_printNumber(unsigned long n, uint8_t base);
+extern void lcd_printFloat(double number, uint8_t digits);
+
+extern void lcd_print(const char*);
+extern void lcd_print(char, int = 0);
+extern void lcd_print(unsigned char, int = 0);
+extern void lcd_print(int, int = 10);
+extern void lcd_print(unsigned int, int = 10);
+extern void lcd_print(long, int = 10);
+extern void lcd_print(unsigned long, int = 10);
+extern void lcd_print(double, int = 2);
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -68,27 +101,6 @@ extern lcd_charsetup_func_t lcd_charsetup_func;
 
 extern lcd_lcdupdate_func_t lcd_lcdupdate_func;
 
-
-
-
-extern void lcd_clear(void);
-extern void lcd_set_cursor(uint8_t c, uint8_t r);
-extern int lcd_putc(int c);
-extern int lcd_puts_P(const char* str);
-extern int lcd_puts_at_P(uint8_t c, uint8_t r, const char* str);
-extern int lcd_printf_P(const char* format, ...);
-
-extern void lcd_printNumber(unsigned long n, uint8_t base);
-extern void lcd_printFloat(double number, uint8_t digits);
-
-extern void lcd_print(const char*);
-extern void lcd_print(char, int = 0);
-extern void lcd_print(unsigned char, int = 0);
-extern void lcd_print(int, int = 10);
-extern void lcd_print(unsigned int, int = 10);
-extern void lcd_print(long, int = 10);
-extern void lcd_print(unsigned long, int = 10);
-extern void lcd_print(double, int = 2);
 
 
 
