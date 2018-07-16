@@ -161,8 +161,6 @@ extern void lcd_set_custom_characters_degree(void);
 
 extern void lcd_implementation_init(void);
 extern void lcd_implementation_init_noclear(void);
-extern void lcd_implementation_nodisplay(void);
-extern void lcd_implementation_display(void);
 extern void lcd_implementation_clear(void);
 
 // Arduino < 1.0.0 is missing a function to print PROGMEM strings, so we need to implement our own

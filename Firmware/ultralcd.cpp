@@ -969,14 +969,12 @@ static void lcd_status_screen()
 
       if ((ReInitLCD % 10) == 0)
 	  {
-        //lcd_implementation_nodisplay();
         lcd_implementation_init_noclear(); //to maybe revive the LCD if static electricity killed it.
       }
 
     }
 
 
-    //lcd_implementation_display();
     lcd_implementation_status_screen();
     //lcd_implementation_clear();
 

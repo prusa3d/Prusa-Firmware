@@ -393,13 +393,13 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
     if (file.open(curDir, fname, O_READ)) 
     {
       filesize = file.fileSize();
-      SERIAL_PROTOCOLRPGM(_i("File opened: "));////MSG_SD_FILE_OPENED c=0 r=0
+      SERIAL_PROTOCOLRPGM(_N("File opened: "));////MSG_SD_FILE_OPENED c=0 r=0
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLRPGM(_n(" Size: "));////MSG_SD_SIZE c=0 r=0
       SERIAL_PROTOCOLLN(filesize);
       sdpos = 0;
       
-      SERIAL_PROTOCOLLNRPGM(_i("File selected"));////MSG_SD_FILE_SELECTED c=0 r=0
+      SERIAL_PROTOCOLLNRPGM(_N("File selected"));////MSG_SD_FILE_SELECTED c=0 r=0
       getfilename(0, fname);
       lcd_setstatus(longFilename[0] ? longFilename : fname);
       lcd_setstatus("SD-PRINTING         ");
@@ -422,7 +422,7 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
     else
     {
       saving = true;
-      SERIAL_PROTOCOLRPGM(_i("Writing to file: "));////MSG_SD_WRITE_TO_FILE c=0 r=0
+      SERIAL_PROTOCOLRPGM(_N("Writing to file: "));////MSG_SD_WRITE_TO_FILE c=0 r=0
       SERIAL_PROTOCOLLN(name);
       lcd_setstatus(fname);
     }
@@ -514,7 +514,7 @@ void CardReader::getStatus()
   if(sdprinting){
     SERIAL_PROTOCOL(longFilename);
     SERIAL_PROTOCOLPGM("\n");
-    SERIAL_PROTOCOLRPGM(_i("SD printing byte "));////MSG_SD_PRINTING_BYTE c=0 r=0
+    SERIAL_PROTOCOLRPGM(_N("SD printing byte "));////MSG_SD_PRINTING_BYTE c=0 r=0
     SERIAL_PROTOCOL(sdpos);
     SERIAL_PROTOCOLPGM("/");
     SERIAL_PROTOCOLLN(filesize);

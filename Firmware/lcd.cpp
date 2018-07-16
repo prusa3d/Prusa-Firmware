@@ -246,16 +246,7 @@ void lcd_implementation_init_noclear(void)
 }
 
 
-void lcd_implementation_nodisplay(void)
-{
-    lcd.noDisplay();
-}
-void lcd_implementation_display(void)
-{
-    lcd.display();
-}
-
-void lcd_implementation_clear(void)
+	void lcd_implementation_clear(void)
 {
     lcd.clear();
 }
