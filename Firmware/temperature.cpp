@@ -30,7 +30,6 @@
 
 
 #include "Marlin.h"
-#include "lcd.h"
 #include "ultralcd.h"
 #include "temperature.h"
 #include "cardreader.h"

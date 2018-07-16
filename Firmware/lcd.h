@@ -3,6 +3,28 @@
 #define _LCD_H
 
 #include <inttypes.h>
+#include <stdio.h>
+
+
+////////////////////////////////////
+// Create LCD class instance and chipset-specific information
+#include "LiquidCrystal_Prusa.h"
+extern LiquidCrystal_Prusa lcd;
+
+
+extern FILE _lcdout;
+
+#define lcdout (&_lcdout)
+
+
+extern int lcd_putchar(char c, FILE *stream);
+
+extern void lcd_command(uint8_t value);
+
+extern uint8_t lcd_write(uint8_t value);
+
+
+
 
 
 #define LCD_UPDATE_INTERVAL    100
@@ -56,6 +78,17 @@ extern int lcd_puts_P(const char* str);
 extern int lcd_puts_at_P(uint8_t c, uint8_t r, const char* str);
 extern int lcd_printf_P(const char* format, ...);
 
+extern void lcd_printNumber(unsigned long n, uint8_t base);
+extern void lcd_printFloat(double number, uint8_t digits);
+
+extern void lcd_print(const char*);
+extern void lcd_print(char, int = 0);
+extern void lcd_print(unsigned char, int = 0);
+extern void lcd_print(int, int = 10);
+extern void lcd_print(unsigned int, int = 10);
+extern void lcd_print(long, int = 10);
+extern void lcd_print(unsigned long, int = 10);
+extern void lcd_print(double, int = 2);
 
 
 
@@ -145,11 +178,6 @@ extern void lcd_buttons_update(void);
 #define encrot3 1
 
 
-////////////////////////////////////
-// Create LCD class instance and chipset-specific information
-#include "LiquidCrystal_Prusa.h"
-#define LCD_CLASS LiquidCrystal_Prusa
-extern LCD_CLASS lcd;
 
 
 //Custom characters defined in the first 8 characters of the LCD
@@ -173,14 +201,6 @@ extern void lcd_set_custom_characters_degree(void);
 
 extern void lcd_implementation_init(void);
 extern void lcd_implementation_init_noclear(void);
-
-extern void lcd_print(int8_t i);
-extern void lcd_print_at(uint8_t x, uint8_t y, int8_t i);
-extern void lcd_print(int i);
-extern void lcd_print_at(uint8_t x, uint8_t y, int i);
-extern void lcd_print(float f);
-extern void lcd_print(const char *str);
-extern void lcd_print_at(uint8_t x, uint8_t y, const char *str);
 
 extern void lcd_drawedit(const char* pstr, char* value);
 extern void lcd_drawedit_2(const char* pstr, char* value);

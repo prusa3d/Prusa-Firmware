@@ -59,7 +59,6 @@
 
 #include "printers.h"
 
-#include "lcd.h"
 #include "menu.h"
 #include "ultralcd.h"
 
@@ -879,7 +878,8 @@ void factory_reset(char level, bool quiet)
 
 			er_progress = 0;
 			lcd_puts_at_P(3, 3, PSTR("      "));
-			lcd_print_at(3, 3, er_progress);
+			lcd_set_cursor(3, 3);
+			lcd_print(er_progress);
 
 			// Erase EEPROM
 			for (int i = 0; i < 4096; i++) {
@@ -888,7 +888,8 @@ void factory_reset(char level, bool quiet)
 				if (i % 41 == 0) {
 					er_progress++;
 					lcd_puts_at_P(3, 3, PSTR("      "));
-					lcd_print_at(3, 3, er_progress);
+					lcd_set_cursor(3, 3);
+					lcd_print(er_progress);
 					lcd_puts_P(PSTR("%"));
 				}
 
@@ -909,13 +910,6 @@ void factory_reset(char level, bool quiet)
 #include "LiquidCrystal_Prusa.h"
 extern LiquidCrystal_Prusa lcd;
 
-FILE _lcdout = {0};
-
-int lcd_putchar(char c, FILE *stream)
-{
-	lcd.write(c);
-	return 0;
-}
 
 FILE _uartout = {0};
 
@@ -930,7 +924,7 @@ void lcd_splash()
 {
 //	lcd_puts_at_P(0, 1, PSTR("   Original Prusa   "));
 //	lcd_puts_at_P(0, 2, PSTR("    3D  Printers    "));
-//	lcd.print_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
+//	lcd_puts_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
 //    fputs_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"), lcdout);
     lcd_puts_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"));
 //	lcd_printf_P(_N(ESC_2J "x:%.3f\ny:%.3f\nz:%.3f\ne:%.3f"), _x, _y, _z, _e);
@@ -2967,7 +2961,8 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		    lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
-			lcd_print_at(0, 2, 1);
+			lcd_set_cursor(0, 2);
+			lcd_print(1);
 			lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 		}
 		// Move the print head close to the bed.
@@ -6365,8 +6360,8 @@ Sigma_Exit:
 				}
 				else {
 					counterBeep = 20; //beeper will be inactive during waiting for nozzle preheat
-					lcd.setCursor(1, 4);
-					lcd.print(ftostr3(degHotend(active_extruder)));
+					lcd_set_cursor(1, 4);
+					lcd_print(ftostr3(degHotend(active_extruder)));
 				}
 				break;
 

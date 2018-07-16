@@ -4,7 +4,6 @@
 #include "stepper.h"
 #include "temperature.h"
 #include "language.h"
-#include "lcd.h"
 
 #ifdef SDSUPPORT
 
@@ -890,7 +889,11 @@ void CardReader::presort() {
 				#if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
 				int8_t percent = (counter * 100) / total;//((counter * 100) / pow((fileCnt-1),2));
 				for (int column = 0; column < 20; column++) {
-					if (column < (percent / 5)) lcd_print_at(column, 2, "\x01"); //simple progress bar
+					if (column < (percent / 5))
+					{
+						lcd_set_cursor(column, 2);
+						lcd_print('\x01'); //simple progress bar
+					}
 				}
 				counter++;
 				#endif
@@ -965,7 +968,11 @@ void CardReader::presort() {
 		sort_count = fileCnt;
 	}
 #if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
-	for (int column = 0; column <= 19; column++)	lcd_print_at(column, 2, "\x01"); //simple progress bar	
+	for (int column = 0; column <= 19; column++)
+	{
+		lcd_set_cursor(column, 2);
+		lcd_print('\x01'); //simple progress bar
+	}
 	delay(300);
 	lcd_set_degree();
 	lcd_clear();

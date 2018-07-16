@@ -238,14 +238,14 @@ void LiquidCrystal_Prusa::begin_noclear(uint8_t cols, uint8_t lines, uint8_t dot
   // set the entry mode
   command(LCD_ENTRYMODESET | _displaymode);
   delayMicroseconds(60);
-
+/*
   setCursor(8,0);
   print("    ");
   setCursor(8,1);
   print("    ");
   setCursor(6,2);
   print("      ");
-
+*/
 
 }
 
@@ -351,11 +351,11 @@ void LiquidCrystal_Prusa::createChar_P(uint8_t location, const uint8_t* charmap)
 
 /*********** mid level commands, for sending data/cmds */
 
-inline void LiquidCrystal_Prusa::command(uint8_t value) {
+void LiquidCrystal_Prusa::command(uint8_t value) {
   send(value, LOW);
 }
 
-inline size_t LiquidCrystal_Prusa::write(uint8_t value) {
+size_t LiquidCrystal_Prusa::write(uint8_t value) {
   if (value == '\n')
   {
     if (_currline > 3) _currline = -1;
@@ -374,7 +374,7 @@ inline size_t LiquidCrystal_Prusa::write(uint8_t value) {
 //CursorShow   "\x1b[?25h"
 //CursorHide   "\x1b[?25l"
 
-inline size_t LiquidCrystal_Prusa::escape_write(uint8_t chr)
+size_t LiquidCrystal_Prusa::escape_write(uint8_t chr)
 {
 #define escape_cnt (_escape[0])        //escape character counter
 #define is_num_msk (_escape[1])        //numeric character bit mask
@@ -549,171 +549,4 @@ void LiquidCrystal_Prusa::write8bits(uint8_t value) {
   }
   
   pulseEnable();
-}
-
-void LiquidCrystal_Prusa::print(const char* s)
-{
-	while (*s) write(*(s++));
-}
-
-void LiquidCrystal_Prusa::print(char c, int base)
-{
-  print((long) c, base);
-}
-
-void LiquidCrystal_Prusa::print(unsigned char b, int base)
-{
-  print((unsigned long) b, base);
-}
-
-void LiquidCrystal_Prusa::print(int n, int base)
-{
-  print((long) n, base);
-}
-
-void LiquidCrystal_Prusa::print(unsigned int n, int base)
-{
-  print((unsigned long) n, base);
-}
-
-void LiquidCrystal_Prusa::print(long n, int base)
-{
-  if (base == 0) {
-    write(n);
-  } else if (base == 10) {
-    if (n < 0) {
-      print('-');
-      n = -n;
-    }
-    printNumber(n, 10);
-  } else {
-    printNumber(n, base);
-  }
-}
-
-void LiquidCrystal_Prusa::print(unsigned long n, int base)
-{
-  if (base == 0) write(n);
-  else printNumber(n, base);
-}
-
-void LiquidCrystal_Prusa::print(double n, int digits)
-{
-  printFloat(n, digits);
-}
-
-void LiquidCrystal_Prusa::println(void)
-{
-  print('\r');
-  print('\n');  
-}
-
-/*void LiquidCrystal_Prusa::println(const String &s)
-{
-  print(s);
-  println();
-}*/
-
-void LiquidCrystal_Prusa::println(const char c[])
-{
-  print(c);
-  println();
-}
-
-void LiquidCrystal_Prusa::println(char c, int base)
-{
-  print(c, base);
-  println();
-}
-
-void LiquidCrystal_Prusa::println(unsigned char b, int base)
-{
-  print(b, base);
-  println();
-}
-
-void LiquidCrystal_Prusa::println(int n, int base)
-{
-  print(n, base);
-  println();
-}
-
-void LiquidCrystal_Prusa::println(unsigned int n, int base)
-{
-  print(n, base);
-  println();
-}
-
-void LiquidCrystal_Prusa::println(long n, int base)
-{
-  print(n, base);
-  println();
-}
-
-void LiquidCrystal_Prusa::println(unsigned long n, int base)
-{
-  print(n, base);
-  println();
-}
-
-void LiquidCrystal_Prusa::println(double n, int digits)
-{
-  print(n, digits);
-  println();
-}
-
-void LiquidCrystal_Prusa::printNumber(unsigned long n, uint8_t base)
-{
-  unsigned char buf[8 * sizeof(long)]; // Assumes 8-bit chars. 
-  unsigned long i = 0;
-
-  if (n == 0) {
-    print('0');
-    return;
-  } 
-
-  while (n > 0) {
-    buf[i++] = n % base;
-    n /= base;
-  }
-
-  for (; i > 0; i--)
-    print((char) (buf[i - 1] < 10 ?
-      '0' + buf[i - 1] :
-      'A' + buf[i - 1] - 10));
-}
-
-void LiquidCrystal_Prusa::printFloat(double number, uint8_t digits) 
-{ 
-  // Handle negative numbers
-  if (number < 0.0)
-  {
-     print('-');
-     number = -number;
-  }
-
-  // Round correctly so that print(1.999, 2) prints as "2.00"
-  double rounding = 0.5;
-  for (uint8_t i=0; i<digits; ++i)
-    rounding /= 10.0;
-  
-  number += rounding;
-
-  // Extract the integer part of the number and print it
-  unsigned long int_part = (unsigned long)number;
-  double remainder = number - (double)int_part;
-  print(int_part);
-
-  // Print the decimal point, but only if there are digits beyond
-  if (digits > 0)
-    print("."); 
-
-  // Extract digits from the remainder one at a time
-  while (digits-- > 0)
-  {
-    remainder *= 10.0;
-    int toPrint = int(remainder);
-    print(toPrint);
-    remainder -= toPrint; 
-  } 
 }

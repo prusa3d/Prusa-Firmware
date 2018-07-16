@@ -414,9 +414,9 @@ void tmc2130_check_overtemp()
 		for (int i = 0; i < 4; i++)
 		{
 			tmc2130_sg_change = false;
-			lcd.setCursor(0 + i*4, 3);
-			lcd.print(itostr3(tmc2130_sg_cnt[i]));
-			lcd.print(' ');
+			lcd_set_cursor(0 + i*4, 3);
+			lcd_print(itostr3(tmc2130_sg_cnt[i]));
+			lcd_print(' ');
 		}
 	}
 #endif //DEBUG_CRASHDET_COUNTERS

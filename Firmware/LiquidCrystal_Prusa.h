@@ -3,7 +3,6 @@
 
 #include <inttypes.h>
 #include <stddef.h>
-//#include "Print.h"
 
 // commands
 #define LCD_CLEARDISPLAY 0x01
@@ -82,34 +81,8 @@ public:
 
   void createChar_P(uint8_t, const uint8_t*);
   void setCursor(uint8_t, uint8_t); 
-//  virtual size_t write(uint8_t);
   size_t write(uint8_t);
   void command(uint8_t);
-
-    void print(const char*);
-    void print(char, int = 0);
-    void print(unsigned char, int = 0);
-    void print(int, int = 10);
-    void print(unsigned int, int = 10);
-    void print(long, int = 10);
-    void print(unsigned long, int = 10);
-    void print(double, int = 2);
-
-//    void println(const String &s);
-    void println(const char[]);
-    void println(char, int = 0);
-    void println(unsigned char, int = 0);
-    void println(int, int = 10);
-    void println(unsigned int, int = 10);
-    void println(long, int = 10);
-    void println(unsigned long, int = 10);
-    void println(double, int = 2);
-    void println(void);
-
-	void printNumber(unsigned long n, uint8_t base);
-	void printFloat(double number, uint8_t digits);
-
-//  using Print::write;
 private:
   void send(uint8_t, uint8_t);
   void write4bits(uint8_t);

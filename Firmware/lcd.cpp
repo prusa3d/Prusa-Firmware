@@ -6,8 +6,19 @@
 #include <avr/pgmspace.h>
 #include "Timer.h"
 
-extern FILE _lcdout;
-#define lcdout (&_lcdout)
+
+LiquidCrystal_Prusa lcd(LCD_PINS_RS, LCD_PINS_ENABLE, LCD_PINS_D4, LCD_PINS_D5,LCD_PINS_D6,LCD_PINS_D7);  //RS,Enable,D4,D5,D6,D7
+
+
+
+
+FILE _lcdout = {0};
+
+int lcd_putchar(char c, FILE *stream)
+{
+	lcd_write(c);
+	return 0;
+}
 
 
 void lcd_command(uint8_t value)
@@ -58,6 +69,118 @@ int lcd_printf_P(const char* format, ...)
 	va_end(args);
 	return ret;
 }
+
+
+
+
+void lcd_print(const char* s)
+{
+	while (*s) lcd_write(*(s++));
+}
+
+void lcd_print(char c, int base)
+{
+	lcd_print((long) c, base);
+}
+
+void lcd_print(unsigned char b, int base)
+{
+	lcd_print((unsigned long) b, base);
+}
+
+void lcd_print(int n, int base)
+{
+	lcd_print((long) n, base);
+}
+
+void lcd_print(unsigned int n, int base)
+{
+	lcd_print((unsigned long) n, base);
+}
+
+void lcd_print(long n, int base)
+{
+	if (base == 0)
+		lcd_write(n);
+	else if (base == 10)
+	{
+		if (n < 0)
+		{
+			lcd_print('-');
+			n = -n;
+		}
+		lcd_printNumber(n, 10);
+	}
+	else
+		lcd_printNumber(n, base);
+}
+
+void lcd_print(unsigned long n, int base)
+{
+	if (base == 0)
+		lcd_write(n);
+	else
+		lcd_printNumber(n, base);
+}
+
+void lcd_print(double n, int digits)
+{
+  lcd_printFloat(n, digits);
+}
+
+
+void lcd_printNumber(unsigned long n, uint8_t base)
+{
+	unsigned char buf[8 * sizeof(long)]; // Assumes 8-bit chars. 
+	unsigned long i = 0;
+	if (n == 0)
+	{
+		lcd_print('0');
+		return;
+	} 
+	while (n > 0)
+	{
+		buf[i++] = n % base;
+		n /= base;
+	}
+	for (; i > 0; i--)
+		lcd_print((char) (buf[i - 1] < 10 ?	'0' + buf[i - 1] : 'A' + buf[i - 1] - 10));
+}
+
+void lcd_printFloat(double number, uint8_t digits) 
+{ 
+	// Handle negative numbers
+	if (number < 0.0)
+	{
+		lcd_print('-');
+		number = -number;
+	}
+	// Round correctly so that print(1.999, 2) prints as "2.00"
+	double rounding = 0.5;
+	for (uint8_t i=0; i<digits; ++i)
+		rounding /= 10.0;
+	number += rounding;
+	// Extract the integer part of the number and print it
+	unsigned long int_part = (unsigned long)number;
+	double remainder = number - (double)int_part;
+	lcd_print(int_part);
+	// Print the decimal point, but only if there are digits beyond
+	if (digits > 0)
+		lcd_print('.'); 
+	// Extract digits from the remainder one at a time
+	while (digits-- > 0)
+	{
+		remainder *= 10.0;
+		int toPrint = int(remainder);
+		lcd_print(toPrint);
+		remainder -= toPrint; 
+	} 
+}
+
+
+
+
+
 
 
 
@@ -259,7 +382,6 @@ void lcd_buttons_update(void)
 
 
 
-LCD_CLASS lcd(LCD_PINS_RS, LCD_PINS_ENABLE, LCD_PINS_D4, LCD_PINS_D5,LCD_PINS_D6,LCD_PINS_D7);  //RS,Enable,D4,D5,D6,D7
 
 
 void lcd_implementation_init(void)
@@ -278,76 +400,31 @@ void lcd_implementation_init_noclear(void)
 
 
 
-void lcd_print(int8_t i)
-{
-    lcd.print(i);
-}
-
-void lcd_print_at(uint8_t x, uint8_t y, int8_t i)
-{
-    lcd.setCursor(x, y);
-    lcd.print(i);
-}
-
-void lcd_print(int i)
-{
-    lcd.print(i);
-}
-
-void lcd_print_at(uint8_t x, uint8_t y, int i)
-{
-    lcd.setCursor(x, y);
-    lcd.print(i);
-}
-
-void lcd_print(float f)
-{
-    lcd.print(f);
-}
-
-void lcd_print(const char *str)
-{
-    lcd.print(str);
-}
-
-void lcd_print_at(uint8_t x, uint8_t y, const char *str)
-{
-    lcd.setCursor(x, y);
-    lcd.print(str);
-}
-
-
-
-
-
-
-
-
 
 
 void lcd_drawedit(const char* pstr, char* value)
 {
-    lcd.setCursor(1, 1);
+    lcd_set_cursor(1, 1);
     lcd_puts_P(pstr);
-    lcd.print(':');
+    lcd_print(':');
    #if LCD_WIDTH < 20
-      lcd.setCursor(LCD_WIDTH - strlen(value), 1);
+      lcd_set_cursor(LCD_WIDTH - strlen(value), 1);
     #else
-      lcd.setCursor(LCD_WIDTH -1 - strlen(value), 1);
+      lcd_set_cursor(LCD_WIDTH -1 - strlen(value), 1);
    #endif
-    lcd.print(value);
+    lcd_print(value);
 }
 
 void lcd_drawedit_2(const char* pstr, char* value)
 {
-    lcd.setCursor(0, 1);
+    lcd_set_cursor(0, 1);
     lcd_puts_P(pstr);
-    lcd.print(':');
+    lcd_print(':');
 
-    lcd.setCursor((LCD_WIDTH - strlen(value))/2, 3);
+    lcd_set_cursor((LCD_WIDTH - strlen(value))/2, 3);
 
-    lcd.print(value);
-    lcd.print(" mm");
+    lcd_print(value);
+    lcd_print(" mm");
 }
 
 

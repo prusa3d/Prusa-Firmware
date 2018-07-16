@@ -117,13 +117,13 @@ int menu_item_printf_P(char type_char, const char* format, ...)
 	int ret = 0;
     lcd_set_cursor(0, menu_row);
 	if (lcd_encoder == menu_item)
-		lcd.print('>');
+		lcd_print('>');
 	else
-		lcd.print(' ');
+		lcd_print(' ');
 	int cnt = vfprintf_P(lcdout, format, args);
 	for (int i = cnt; i < 18; i++)
-		lcd.print(' ');
-	lcd.print(type_char);
+		lcd_print(' ');
+	lcd_print(type_char);
 	va_end(args);
 	return ret;
 }

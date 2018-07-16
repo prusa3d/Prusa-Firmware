@@ -1,6 +1,5 @@
 #include "Configuration.h"
 
-#include "lcd.h"
 #include "ultralcd.h"
 #include "language.h"
 #include "util.h"

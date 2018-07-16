@@ -2204,7 +2204,8 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		// Don't let the manage_inactivity() function remove power from the motors.
 		refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-		lcd_print_at(0, next_line, k + 1);
+		lcd_set_cursor(0, next_line);
+		lcd_print(k + 1);
 		lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 
 		if (iteration > 0) {
@@ -2782,7 +2783,8 @@ bool sample_mesh_and_store_reference()
     if (next_line > 3)
         next_line = 3;
     // display "point xx of yy"
-    lcd_print_at(0, next_line, 1);
+	lcd_set_cursor(0, next_line);
+    lcd_print(1);
     lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
@@ -2828,7 +2830,8 @@ bool sample_mesh_and_store_reference()
         go_to_current(homing_feedrate[X_AXIS]/60);
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         // display "point xx of yy"
-        lcd_print_at(0, next_line, mesh_point+1);
+		lcd_set_cursor(0, next_line);
+        lcd_print(mesh_point+1);
         lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um

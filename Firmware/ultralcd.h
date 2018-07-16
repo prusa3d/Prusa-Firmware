@@ -2,7 +2,7 @@
 #define ULTRALCD_H
 
 #include "Marlin.h"
-//#include "mesh_bed_calibration.h"
+#include "lcd.h"
 #include "conv2str.h"
 
 extern int lcd_puts_P(const char* str);
