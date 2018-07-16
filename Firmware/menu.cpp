@@ -103,7 +103,7 @@ void menu_submenu(menu_func_t submenu)
 
 uint8_t menu_item_ret(void)
 {
-	lcd_implementation_quick_feedback();
+	lcd_beeper_quick_feedback();
 	lcd_draw_update = 2;
 	lcd_button_pressed = false;
 	return 1;

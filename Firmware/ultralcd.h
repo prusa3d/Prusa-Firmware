@@ -155,14 +155,13 @@ char *ftostr52(const float &x);
 extern void lcd_implementation_clear();
 extern void lcd_printPGM(const char* str);
 extern void lcd_print_at_PGM(uint8_t x, uint8_t y, const char* str);
-extern void lcd_implementation_write(char c);
-extern void lcd_implementation_print(const char *str);
-extern void lcd_implementation_print(int8_t i);
-extern void lcd_implementation_print_at(uint8_t x, uint8_t y, int8_t i);
-extern void lcd_implementation_print(int i);
-extern void lcd_implementation_print_at(uint8_t x, uint8_t y, int i);
-extern void lcd_implementation_print(float f);
-extern void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str);
+extern void lcd_print(const char *str);
+extern void lcd_print(int8_t i);
+extern void lcd_print_at(uint8_t x, uint8_t y, int8_t i);
+extern void lcd_print(int i);
+extern void lcd_print_at(uint8_t x, uint8_t y, int i);
+extern void lcd_print(float f);
+extern void lcd_print_at(uint8_t x, uint8_t y, const char *str);
 
 
 void change_extr(int extr);

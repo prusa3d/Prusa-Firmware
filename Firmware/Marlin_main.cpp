@@ -879,7 +879,7 @@ void factory_reset(char level, bool quiet)
 
 			er_progress = 0;
 			lcd_print_at_PGM(3, 3, PSTR("      "));
-			lcd_implementation_print_at(3, 3, er_progress);
+			lcd_print_at(3, 3, er_progress);
 
 			// Erase EEPROM
 			for (int i = 0; i < 4096; i++) {
@@ -888,7 +888,7 @@ void factory_reset(char level, bool quiet)
 				if (i % 41 == 0) {
 					er_progress++;
 					lcd_print_at_PGM(3, 3, PSTR("      "));
-					lcd_implementation_print_at(3, 3, er_progress);
+					lcd_print_at(3, 3, er_progress);
 					lcd_printPGM(PSTR("%"));
 				}
 
@@ -2967,7 +2967,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		    lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
-			lcd_implementation_print_at(0, 2, 1);
+			lcd_print_at(0, 2, 1);
 			lcd_printPGM(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 		}
 		// Move the print head close to the bed.

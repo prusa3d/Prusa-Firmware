@@ -46,7 +46,7 @@ void lcd_set_cursor(uint8_t c, uint8_t r)
 	lcd_printf_P(PSTR("\x1b[%hhu;%hhuH"), r, c);
 }
 
-void lcd_implementation_quick_feedback(void)
+void lcd_beeper_quick_feedback(void)
 {
 	SET_OUTPUT(BEEPER);
 	for(int8_t i = 0; i < 10; i++)
@@ -62,7 +62,7 @@ void lcd_quick_feedback(void)
 {
   lcd_draw_update = 2;
   lcd_button_pressed = false;  
-  lcd_implementation_quick_feedback();
+  lcd_beeper_quick_feedback();
 }
 
 int lcd_puts_P(const char* str)
@@ -284,39 +284,39 @@ void lcd_implementation_write(char c)
     lcd.write(c);
 }
 
-void lcd_implementation_print(int8_t i)
+void lcd_print(int8_t i)
 {
     lcd.print(i);
 }
 
-void lcd_implementation_print_at(uint8_t x, uint8_t y, int8_t i)
-{
-    lcd.setCursor(x, y);
-    lcd.print(i);
-}
-
-void lcd_implementation_print(int i)
-{
-    lcd.print(i);
-}
-
-void lcd_implementation_print_at(uint8_t x, uint8_t y, int i)
+void lcd_print_at(uint8_t x, uint8_t y, int8_t i)
 {
     lcd.setCursor(x, y);
     lcd.print(i);
 }
 
-void lcd_implementation_print(float f)
+void lcd_print(int i)
+{
+    lcd.print(i);
+}
+
+void lcd_print_at(uint8_t x, uint8_t y, int i)
+{
+    lcd.setCursor(x, y);
+    lcd.print(i);
+}
+
+void lcd_print(float f)
 {
     lcd.print(f);
 }
 
-void lcd_implementation_print(const char *str)
+void lcd_print(const char *str)
 {
     lcd.print(str);
 }
 
-void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str)
+void lcd_print_at(uint8_t x, uint8_t y, const char *str)
 {
     lcd.setCursor(x, y);
     lcd.print(str);
@@ -331,111 +331,7 @@ void lcd_implementation_print_at(uint8_t x, uint8_t y, const char *str)
 
 
 
-
-
-
-
-
-
-
-
-void lcd_implementation_drawmenu_generic(uint8_t row, const char* pstr, char pre_char, char post_char)
-{
-    char c;
-    //Use all characters in narrow LCDs
-  #if LCD_WIDTH < 20
-      uint8_t n = LCD_WIDTH - 1 - 1;
-    #else
-      uint8_t n = LCD_WIDTH - 1 - 2;
-  #endif
-    lcd.setCursor(0, row);
-    lcd.print(pre_char);
-    while( ((c = pgm_read_byte(pstr)) != '\0') && (n>0) )
-    {
-        lcd.print(c);
-        pstr++;
-        n--;
-    }
-    while(n--)
-        lcd.print(' ');
-    lcd.print(post_char);
-    lcd.print(' ');
-}
-
-void lcd_implementation_drawmenu_generic_RAM(uint8_t row, const char* str, char pre_char, char post_char)
-{
-    char c;
-    //Use all characters in narrow LCDs
-  #if LCD_WIDTH < 20
-      uint8_t n = LCD_WIDTH - 1 - 1;
-    #else
-      uint8_t n = LCD_WIDTH - 1 - 2;
-  #endif
-    lcd.setCursor(0, row);
-    lcd.print(pre_char);
-    while( ((c = *str) != '\0') && (n>0) )
-    {
-        lcd.print(c);
-        str++;
-        n--;
-    }
-    while(n--)
-        lcd.print(' ');
-    lcd.print(post_char);
-    lcd.print(' ');
-}
-
-void lcd_implementation_drawmenu_setting_edit_generic(uint8_t row, const char* pstr, char pre_char, char* data)
-{
-    char c;
-    //Use all characters in narrow LCDs
-  #if LCD_WIDTH < 20
-      uint8_t n = LCD_WIDTH - 1 - 1 - strlen(data);
-    #else
-      uint8_t n = LCD_WIDTH - 1 - 2 - strlen(data);
-  #endif
-    lcd.setCursor(0, row);
-    lcd.print(pre_char);
-    while( ((c = pgm_read_byte(pstr)) != '\0') && (n>0) )
-    {
-        lcd.print(c);
-        pstr++;
-        n--;
-    }
-    lcd.print(':');
-    while(n--)
-        lcd.print(' ');
-    lcd.print(data);
-}
-void lcd_implementation_drawmenu_setting_edit_generic_P(uint8_t row, const char* pstr, char pre_char, const char* data)
-{
-    char c;
-    //Use all characters in narrow LCDs
-  #if LCD_WIDTH < 20
-      uint8_t n = LCD_WIDTH - 1 - 1 - strlen_P(data);
-    #else
-      uint8_t n = LCD_WIDTH - 1 - 2 - strlen_P(data);
-  #endif
-    lcd.setCursor(0, row);
-    lcd.print(pre_char);
-    while( ((c = pgm_read_byte(pstr)) != '\0') && (n>0) )
-    {
-        lcd.print(c);
-        pstr++;
-        n--;
-    }
-    lcd.print(':');
-    while(n--)
-        lcd.print(' ');
-    lcd_printPGM(data);
-}
-
-
-
-
-
-
-void lcd_implementation_drawedit(const char* pstr, char* value)
+void lcd_drawedit(const char* pstr, char* value)
 {
     lcd.setCursor(1, 1);
     lcd_printPGM(pstr);
@@ -448,7 +344,7 @@ void lcd_implementation_drawedit(const char* pstr, char* value)
     lcd.print(value);
 }
 
-void lcd_implementation_drawedit_2(const char* pstr, char* value)
+void lcd_drawedit_2(const char* pstr, char* value)
 {
     lcd.setCursor(0, 1);
     lcd_printPGM(pstr);
