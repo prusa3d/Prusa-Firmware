@@ -9,6 +9,62 @@
 extern FILE _lcdout;
 #define lcdout (&_lcdout)
 
+
+void lcd_command(uint8_t value)
+{
+	lcd.command(value);
+}
+
+uint8_t lcd_write(uint8_t value)
+{
+	return lcd.write(value);
+}
+
+
+
+
+void lcd_clear(void)
+{
+    lcd.clear();
+}
+
+void lcd_set_cursor(uint8_t c, uint8_t r)
+{
+//	lcd_printf_P(PSTR("\x1b[%hhu;%hhuH"), r, c);
+	lcd.setCursor(c, r);
+}
+
+int lcd_putc(int c)
+{
+	return fputc(c, lcdout);
+}
+
+int lcd_puts_P(const char* str)
+{
+	return fputs_P(str, lcdout);
+}
+
+int lcd_puts_at_P(uint8_t c, uint8_t r, const char* str)
+{
+	lcd_set_cursor(c, r);
+	return fputs_P(str, lcdout);
+}
+
+int lcd_printf_P(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	int ret = vfprintf_P(lcdout, format, args);
+	va_end(args);
+	return ret;
+}
+
+
+
+
+
+
+
 uint8_t lcd_draw_update = 2;
 int32_t lcd_encoder = 0;
 uint8_t lcd_encoder_bits = 0;
@@ -41,11 +97,6 @@ uint8_t lcd_clicked(void)
     return clicked;
 }
 
-void lcd_set_cursor(uint8_t c, uint8_t r)
-{
-	lcd_printf_P(PSTR("\x1b[%hhu;%hhuH"), r, c);
-}
-
 void lcd_beeper_quick_feedback(void)
 {
 	SET_OUTPUT(BEEPER);
@@ -64,26 +115,6 @@ void lcd_quick_feedback(void)
   lcd_button_pressed = false;  
   lcd_beeper_quick_feedback();
 }
-
-int lcd_puts_P(const char* str)
-{
-	return fputs_P(str, lcdout);
-}
-
-int lcd_putc(int c)
-{
-	return fputc(c, lcdout);
-}
-
-int lcd_printf_P(const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-	int ret = vfprintf_P(lcdout, format, args);
-	va_end(args);
-	return ret;
-}
-
 
 
 
@@ -119,7 +150,7 @@ void lcd_update_enable(uint8_t enabled)
 			// Force the keypad update now.
 			lcd_next_update_millis = millis() - 1;
 			// Full update.
-			lcd_implementation_clear();
+			lcd_clear();
 			if (lcd_charsetup_func)
 				lcd_charsetup_func();
 			lcd_update(2);
@@ -246,10 +277,6 @@ void lcd_implementation_init_noclear(void)
 }
 
 
-void lcd_implementation_clear(void)
-{
-    lcd.clear();
-}
 /* Arduino < 1.0.0 is missing a function to print PROGMEM strings, so we need to implement our own */
 void lcd_printPGM(const char* str)
 {

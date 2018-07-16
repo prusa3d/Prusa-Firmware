@@ -758,7 +758,7 @@ void CardReader::presort() {
 			lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=4
 			fileCnt = SDSORT_LIMIT;
 		}
-		lcd_implementation_clear();
+		lcd_clear();
 		#if !SDSORT_USES_RAM
 			lcd_set_progress();
 		#endif
@@ -968,7 +968,7 @@ void CardReader::presort() {
 	for (int column = 0; column <= 19; column++)	lcd_print_at(column, 2, "\x01"); //simple progress bar	
 	delay(300);
 	lcd_set_degree();
-	lcd_implementation_clear();
+	lcd_clear();
 #endif
 	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);

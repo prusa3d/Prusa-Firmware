@@ -46,18 +46,30 @@ extern lcd_charsetup_func_t lcd_charsetup_func;
 
 extern lcd_lcdupdate_func_t lcd_lcdupdate_func;
 
+
+
+
+extern void lcd_clear(void);
+extern void lcd_set_cursor(uint8_t c, uint8_t r);
+extern int lcd_putc(int c);
+extern int lcd_puts_P(const char* str);
+extern int lcd_puts_at_P(uint8_t c, uint8_t r, const char* str);
+extern int lcd_printf_P(const char* format, ...);
+
+
+
+
+
+
 extern uint8_t lcd_clicked(void);
 
-extern void lcd_set_cursor(uint8_t c, uint8_t r);
 
 extern void lcd_beeper_quick_feedback(void);
 
 //Cause an LCD refresh, and give the user visual or audible feedback that something has happened
 extern void lcd_quick_feedback(void);
 
-extern int lcd_puts_P(const char* str);
-extern int lcd_putc(int c);
-extern int lcd_printf_P(const char* format, ...);
+
 
 
 
@@ -161,7 +173,6 @@ extern void lcd_set_custom_characters_degree(void);
 
 extern void lcd_implementation_init(void);
 extern void lcd_implementation_init_noclear(void);
-extern void lcd_implementation_clear(void);
 
 // Arduino < 1.0.0 is missing a function to print PROGMEM strings, so we need to implement our own
 extern void lcd_printPGM(const char* str);

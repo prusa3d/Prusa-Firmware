@@ -717,7 +717,7 @@ void crashdet_detected(uint8_t mask)
 	}
 
 	lcd_update_enable(true);
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd_update(2);
 
 	if (mask & X_AXIS_MASK)
@@ -802,7 +802,7 @@ void failstats_reset_print()
 int  er_progress = 0;
 void factory_reset(char level, bool quiet)
 {	
-	lcd_implementation_clear();
+	lcd_clear();
 	int cursor_pos = 0;
     switch (level) {
                    
@@ -945,7 +945,7 @@ void factory_reset()
 		_delay_ms(1000);
 		if (!READ(BTN_ENC))
 		{
-			lcd_implementation_clear();
+			lcd_clear();
 
 
 			lcd_printPGM(PSTR("Factory RESET"));
@@ -1018,7 +1018,7 @@ void show_fw_version_warnings() {
   case(FW_VERSION_DEVEL):
 	case(FW_VERSION_DEBUG):
     lcd_update_enable(false);
-    lcd_implementation_clear();
+    lcd_clear();
   #if FW_DEV_VERSION == FW_VERSION_DEVEL
     lcd_print_at_PGM(0, 0, PSTR("Development build !!"));
   #else
@@ -1708,7 +1708,7 @@ void setup()
   KEEPALIVE_STATE(IN_PROCESS);
 #endif //DEBUG_DISABLE_STARTMSGS
   lcd_update_enable(true);
-  lcd_implementation_clear();
+  lcd_clear();
   lcd_update(2);
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
@@ -1822,7 +1822,7 @@ int serial_read_stream() {
     setTargetHotend(0, 0);
     setTargetBed(0);
 
-    lcd_implementation_clear();
+    lcd_clear();
     lcd_printPGM(PSTR(" Upload in progress"));
 
     // first wait for how many bytes we will receive
@@ -2281,7 +2281,7 @@ bool check_commands() {
 bool calibrate_z_auto()
 {
 	//lcd_display_message_fullscreen_P(_T(MSG_CALIBRATE_Z_AUTO));
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd_print_at_PGM(0,1, _T(MSG_CALIBRATE_Z_AUTO));
 	bool endstops_enabled  = enable_endstops(true);
 	int axis_up_dir = -home_dir(Z_AXIS);
@@ -7607,13 +7607,13 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
                 else
                 {
                     lcd_update_enable(false);
-                    lcd_implementation_clear();
+                    lcd_clear();
                     lcd.setCursor(0, 0);
                     lcd_printPGM(_T(MSG_ERROR));
                     lcd.setCursor(0, 2);
                     lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
                     delay(2000);
-                    lcd_implementation_clear();
+                    lcd_clear();
                     lcd_update_enable(true);
                 }
                 

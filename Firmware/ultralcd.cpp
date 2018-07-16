@@ -978,7 +978,7 @@ static void lcd_status_screen()
 
 
     lcd_implementation_status_screen();
-    //lcd_implementation_clear();
+    //lcd_clear();
 
 	if (farm_mode)
 	{
@@ -1227,7 +1227,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("M204 S1000"));
 			enquecommand_P(PSTR("G1 F4000"));
 
-			lcd_implementation_clear();
+			lcd_clear();
 			menu_goto(lcd_babystep_z, 0, false, true);
 
 
@@ -1469,7 +1469,7 @@ void lcd_commands()
 		if (lcd_commands_step == 8 && !blocks_queued() && cmd_buffer_empty())
 		{
 
-			lcd_implementation_clear();
+			lcd_clear();
 			menu_depth = 0;
 			menu_submenu(lcd_babystep_z);
 			enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
@@ -2291,14 +2291,14 @@ void lcd_unLoadFilament()
 
   } else {
 
-    lcd_implementation_clear();
+    lcd_clear();
     lcd.setCursor(0, 0);
     lcd_printPGM(_T(MSG_ERROR));
     lcd.setCursor(0, 2);
     lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
 
     delay(2000);
-    lcd_implementation_clear();
+    lcd_clear();
   }
 
   menu_back();
@@ -2306,7 +2306,7 @@ void lcd_unLoadFilament()
 
 void lcd_change_filament() {
 
-  lcd_implementation_clear();
+  lcd_clear();
 
   lcd.setCursor(0, 1);
 
@@ -2318,7 +2318,7 @@ void lcd_change_filament() {
 
 void lcd_wait_interact() {
 
-  lcd_implementation_clear();
+  lcd_clear();
 
   lcd.setCursor(0, 1);
 #ifdef SNMM 
@@ -2334,7 +2334,7 @@ void lcd_wait_interact() {
 
 void lcd_change_success() {
 
-  lcd_implementation_clear();
+  lcd_clear();
 
   lcd.setCursor(0, 2);
 
@@ -2346,7 +2346,7 @@ void lcd_change_success() {
 
 void lcd_loading_color() {
 
-  lcd_implementation_clear();
+  lcd_clear();
 
   lcd.setCursor(0, 0);
 
@@ -2375,7 +2375,7 @@ void lcd_loading_color() {
 void lcd_loading_filament() {
 
 
-  lcd_implementation_clear();
+  lcd_clear();
 
   lcd.setCursor(0, 0);
 
@@ -2413,7 +2413,7 @@ void lcd_alright() {
 
 
 
-  lcd_implementation_clear();
+  lcd_clear();
 
   lcd.setCursor(0, 0);
 
@@ -2489,7 +2489,7 @@ void lcd_alright() {
   };
 
 
-  lcd_implementation_clear();
+  lcd_clear();
   lcd_return_to_status();
 
 }
@@ -2529,13 +2529,13 @@ static void lcd_LoadFilament()
   else
   {
 
-    lcd_implementation_clear();
+    lcd_clear();
     lcd.setCursor(0, 0);
     lcd_printPGM(_T(MSG_ERROR));
     lcd.setCursor(0, 2);
     lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
     delay(2000);
-    lcd_implementation_clear();
+    lcd_clear();
   }
 }
 
@@ -2658,7 +2658,7 @@ static void lcd_move_e()
   if (LCD_CLICKED) menu_back();
 }
 	else {
-		lcd_implementation_clear();
+		lcd_clear();
 		lcd.setCursor(0, 0);
 		lcd_printPGM(_T(MSG_ERROR));
 		lcd.setCursor(0, 2);
@@ -2940,7 +2940,7 @@ static void lcd_adjust_bed()
 
 void pid_extruder() {
 
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd.setCursor(1, 0);
 	lcd_printPGM(_i("Set temperature:"));////MSG_SET_TEMPERATURE c=19 r=1
 	pid_temp += int(lcd_encoder);
@@ -2965,7 +2965,7 @@ void lcd_adjust_z() {
 
 
 
-  lcd_implementation_clear();
+  lcd_clear();
   lcd.setCursor(0, 0);
   lcd_printPGM(_i("Auto adjust Z?"));////MSG_ADJUSTZ c=0 r=0
   lcd.setCursor(1, 1);
@@ -3036,7 +3036,7 @@ void lcd_adjust_z() {
     }
   };
 
-  lcd_implementation_clear();
+  lcd_clear();
   lcd_return_to_status();
 
 }
@@ -3283,7 +3283,7 @@ const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
 {
     // Disable update of the screen by the usual lcd_update(0) routine.
     lcd_update_enable(false);
-    lcd_implementation_clear();
+    lcd_clear();
     return lcd_display_message_fullscreen_nonBlocking_P(msg, nlines);
 }
 
@@ -3586,7 +3586,7 @@ static void menu_show_end_stops() {
 void lcd_diag_show_end_stops()
 {
     int enc_dif = lcd_encoder_diff;
-    lcd_implementation_clear();
+    lcd_clear();
     for (;;) {
         manage_heater();
         manage_inactivity(true);
@@ -3598,7 +3598,7 @@ void lcd_diag_show_end_stops()
             break;
         }
     }
-    lcd_implementation_clear();
+    lcd_clear();
     lcd_return_to_status();
 }
 
@@ -3826,7 +3826,7 @@ void lcd_pick_babystep(){
     
     
     
-    lcd_implementation_clear();
+    lcd_clear();
     
     lcd.setCursor(0, 0);
     
@@ -3916,7 +3916,7 @@ void lcd_pick_babystep(){
         }
     };
     
-    lcd_implementation_clear();
+    lcd_clear();
     lcd_return_to_status();
 }
 */
@@ -4116,7 +4116,7 @@ void menu_setlang(unsigned char lang)
 		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language from XFLASH?"), false, true))
 			lang_boot_update_start(lang);
 		lcd_update_enable(true);
-		lcd_implementation_clear();
+		lcd_clear();
 		menu_goto(lcd_language_menu, 0, true, true);
 		lcd_timeoutToStatus = -1; //infinite timeout
 		lcd_draw_update = 2;
@@ -4225,7 +4225,7 @@ void lcd_calibrate_pinda() {
 		unsigned long msg_millis;
 
 		lcd_show_fullscreen_message_and_wait_P(_i("Mark filament 100mm from extruder body. Click when done."));////MSG_MARK_FIL c=20 r=8
-		lcd_implementation_clear();
+		lcd_clear();
 		
 		
 		lcd.setCursor(0, 1); lcd_printPGM(_T(MSG_PLEASE_WAIT));
@@ -4266,7 +4266,7 @@ void lcd_calibrate_pinda() {
 		if (e_steps_per_unit < MIN_E_STEPS_PER_UNIT) e_steps_per_unit = MIN_E_STEPS_PER_UNIT;				
 		if (e_steps_per_unit > MAX_E_STEPS_PER_UNIT) e_steps_per_unit = MAX_E_STEPS_PER_UNIT;
 
-		lcd_implementation_clear();
+		lcd_clear();
 
 		axis_steps_per_unit[E_AXIS] = e_steps_per_unit;
 		enquecommand_P(PSTR("M500")); //store settings to eeprom
@@ -4281,13 +4281,13 @@ void lcd_calibrate_pinda() {
 	}
 	else
 	{
-		lcd_implementation_clear();
+		lcd_clear();
 		lcd.setCursor(0, 0);
 		lcd_printPGM(_T(MSG_ERROR));
 		lcd.setCursor(0, 2);
 		lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
 		delay(2000);
-		lcd_implementation_clear();
+		lcd_clear();
 	}
 	lcd_return_to_status();
 }
@@ -4347,7 +4347,7 @@ void lcd_wizard() {
 void lcd_language()
 {
 	lcd_update_enable(true);
-	lcd_implementation_clear();
+	lcd_clear();
 	menu_goto(lcd_language_menu, 0, true, true);
 	lcd_timeoutToStatus = -1; //infinite timeout
 	lcd_draw_update = 2;
@@ -4452,7 +4452,7 @@ void lcd_wizard(int state) {
 #endif //PAT9125
 			lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 			lcd_update_enable(false);
-			lcd_implementation_clear();
+			lcd_clear();
 			lcd_print_at_PGM(0, 2, _T(MSG_LOADING_FILAMENT));
 #ifdef SNMM
 			change_extr(0);
@@ -4768,7 +4768,7 @@ static void lcd_calibration_menu()
 void bowden_menu() {
 	int enc_dif = lcd_encoder_diff;
 	int cursor_pos = 0;
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd.setCursor(0, 0);
 	lcd.print(">");
 	for (int i = 0; i < 4; i++) {
@@ -4825,7 +4825,7 @@ void bowden_menu() {
 			delay(10);
 			while (lcd_clicked());
 
-			lcd_implementation_clear();
+			lcd_clear();
 			while (1) {
 
 				manage_heater();
@@ -4861,7 +4861,7 @@ void bowden_menu() {
 					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
 					if (lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Continue with another bowden?"))) {
 						lcd_update_enable(true);
-						lcd_implementation_clear();
+						lcd_clear();
 						enc_dif = lcd_encoder_diff;
 						lcd.setCursor(0, cursor_pos);
 						lcd.print(">");
@@ -4884,7 +4884,7 @@ void bowden_menu() {
 }
 
 static char snmm_stop_print_menu() { //menu for choosing which filaments will be unloaded in stop print
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd_print_at_PGM(0,0,_T(MSG_UNLOAD_FILAMENT)); lcd.print(":");
 	lcd.setCursor(0, 1); lcd.print(">");
 	lcd_print_at_PGM(1,2,_i("Used during print"));////MSG_USED c=19 r=1
@@ -4934,7 +4934,7 @@ char choose_extruder_menu() {
 	char cursor_pos = 1;
 	
 	enc_dif = lcd_encoder_diff;
-	lcd_implementation_clear();
+	lcd_clear();
 	
 	lcd_printPGM(_T(MSG_CHOOSE_EXTRUDER));
 	lcd.setCursor(0, 1);
@@ -4968,7 +4968,7 @@ char choose_extruder_menu() {
 					cursor_pos = 3;
 					if (first < items_no - 3) {
 						first++;
-						lcd_implementation_clear();
+						lcd_clear();
 						lcd_printPGM(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
 							lcd_print_at_PGM(1, i + 1, _T(MSG_EXTRUDER));
@@ -4980,7 +4980,7 @@ char choose_extruder_menu() {
 					cursor_pos = 1;
 					if (first > 0) {
 						first--;
-						lcd_implementation_clear();
+						lcd_clear();
 						lcd_printPGM(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
 							lcd_print_at_PGM(1, i + 1, _T(MSG_EXTRUDER));
@@ -5036,7 +5036,7 @@ char reset_menu() {
 #endif // SNMM
 
 	enc_dif = lcd_encoder_diff;
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd.setCursor(0, 0);
 	lcd.print(">");
 
@@ -5065,7 +5065,7 @@ char reset_menu() {
 					cursor_pos = 3;
 					if (first < items_no - 4) {
 						first++;
-						lcd_implementation_clear();
+						lcd_clear();
 					}
 				}
 
@@ -5073,7 +5073,7 @@ char reset_menu() {
 					cursor_pos = 0;
 					if (first > 0) {
 						first--;
-						lcd_implementation_clear();
+						lcd_clear();
 					}
 				}
 				lcd.setCursor(0, 0);
@@ -5185,7 +5185,7 @@ void extr_adj(int extruder) //loading filament for SNMM
 	max_feedrate[E_AXIS] =80;
 	//max_feedrate[E_AXIS] = 50;
 	START:
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd.setCursor(0, 0); 
 	switch (extruder) {
 	case 1: lcd_display_message_fullscreen_P(_T(MSG_FILAMENT_LOADING_T1)); break;
@@ -5206,7 +5206,7 @@ void extr_adj(int extruder) //loading filament for SNMM
 	//extr_mov(BOWDEN_LENGTH/2.f, 500); //dividing by 2 is there because of max. extrusion length limitation (x_max + y_max)
 	//extr_mov(BOWDEN_LENGTH/2.f, 500);
 	extr_mov(bowden_length[extruder], 500);
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd.setCursor(0, 0); lcd_printPGM(_T(MSG_LOADING_FILAMENT));
 	if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd.setCursor(0, 1);
 	else lcd.print(" ");
@@ -5226,7 +5226,7 @@ void extr_unload() { //unloads filament
 	uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 
 	if (degHotend0() > EXTRUDE_MINTEMP) {
-		lcd_implementation_clear();
+		lcd_clear();
 		lcd_display_message_fullscreen_P(PSTR(""));
 		max_feedrate[E_AXIS] = 50;
 		lcd.setCursor(0, 0); lcd_printPGM(_T(MSG_UNLOADING_FILAMENT));
@@ -5278,14 +5278,14 @@ void extr_unload() { //unloads filament
 	}
 	else {
 
-		lcd_implementation_clear();
+		lcd_clear();
 		lcd.setCursor(0, 0);
 		lcd_printPGM(_T(MSG_ERROR));
 		lcd.setCursor(0, 2);
 		lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
 
 		delay(2000);
-		lcd_implementation_clear();
+		lcd_clear();
 	}
 
 	lcd_return_to_status();
@@ -5347,13 +5347,13 @@ void extr_unload_all() {
 		}
 	}
 	else {
-		lcd_implementation_clear();
+		lcd_clear();
 		lcd.setCursor(0, 0);
 		lcd_printPGM(_T(MSG_ERROR));
 		lcd.setCursor(0, 2);
 		lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
 		delay(2000);
-		lcd_implementation_clear();
+		lcd_clear();
 		lcd_return_to_status();
 	}
 }
@@ -5371,13 +5371,13 @@ void extr_unload_used() {
 		snmm_filaments_used = 0;
 	}
 	else {
-		lcd_implementation_clear();
+		lcd_clear();
 		lcd.setCursor(0, 0);
 		lcd_printPGM(_T(MSG_ERROR));
 		lcd.setCursor(0, 2);
 		lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
 		delay(2000);
-		lcd_implementation_clear();
+		lcd_clear();
 		lcd_return_to_status();
 	}
 }
@@ -5447,7 +5447,7 @@ static void lcd_farm_no()
 	int enc_dif = 0;
 	int _farmno = farm_no;
 	int _ret = 0;
-	lcd_implementation_clear();
+	lcd_clear();
 
 	lcd.setCursor(0, 0);
 	lcd.print("Farm no");
@@ -5523,7 +5523,7 @@ unsigned char lcd_choose_color() {
 	int enc_dif = 0;
 	unsigned char cursor_pos = 1;
 	enc_dif = lcd_encoder_diff;
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd.setCursor(0, 1);
 	lcd.print(">");
 
@@ -5553,7 +5553,7 @@ unsigned char lcd_choose_color() {
 					cursor_pos = active_rows;
 					if (first < items_no - active_rows) {
 						first++;
-						lcd_implementation_clear();
+						lcd_clear();
 					}
 				}
 
@@ -5561,7 +5561,7 @@ unsigned char lcd_choose_color() {
 					cursor_pos = 1;
 					if (first > 0) {
 						first--;
-						lcd_implementation_clear();
+						lcd_clear();
 					}
 				}
 				lcd.setCursor(0, 1);
@@ -5601,7 +5601,7 @@ void lcd_confirm_print()
 	int _t = 0;
 
 	enc_dif = lcd_encoder_diff;
-	lcd_implementation_clear();
+	lcd_clear();
 
 	lcd.setCursor(0, 0);
 	lcd.print("Print ok ?");
@@ -6174,7 +6174,7 @@ bool lcd_selftest()
 	int _progress = 0;
 	bool _result = true;
 	lcd_wait_for_cool_down();
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd.setCursor(0, 0); lcd_printPGM(_i("Self test start  "));////MSG_SELFTEST_START c=20 r=0
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
@@ -6333,7 +6333,7 @@ bool lcd_selftest()
 	}
 	lcd_reset_alert_level();
 	enquecommand_P(PSTR("M84"));
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
 	
 	if (_result)
@@ -6764,7 +6764,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 	manage_heater();
 	manage_inactivity();
 
-	lcd_implementation_clear();
+	lcd_clear();
 
 	lcd.setCursor(0, 0);
 	lcd_printPGM(_i("Selftest error !"));////MSG_SELFTEST_ERROR c=0 r=0
@@ -6889,7 +6889,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 {
 
 	bool _result = check_opposite;
-	lcd_implementation_clear();
+	lcd_clear();
 
 	lcd.setCursor(0, 0); lcd_printPGM(_T(MSG_SELFTEST_FAN));
 	
@@ -7048,7 +7048,7 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	int _step_block = 0;
 	const char *_indicator = (_progress > _progress_scale) ? "-" : "|";
 
-	if (_clear) lcd_implementation_clear();
+	if (_clear) lcd_clear();
 
 
 	lcd.setCursor(0, 0);
@@ -7270,7 +7270,7 @@ static void lcd_send_status() {
 
 static void lcd_connect_printer() {
 	lcd_update_enable(false);
-	lcd_implementation_clear();
+	lcd_clear();
 	
 	bool pressed = false;
 	int i = 0;
@@ -7439,11 +7439,11 @@ void menu_lcd_lcdupdate_func(void)
         (*menu_menu)();
         menuExiting = false;
       }
-	      lcd_implementation_clear();
+	      lcd_clear();
 		  lcd_return_to_status();
 		  lcd_draw_update = 2;
 	  }
-	  if (lcd_draw_update == 2) lcd_implementation_clear();
+	  if (lcd_draw_update == 2) lcd_clear();
 	  if (lcd_draw_update) lcd_draw_update--;
 	  lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
 	  }
