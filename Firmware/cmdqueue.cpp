@@ -476,6 +476,7 @@ void get_command()
             SERIAL_ERROR_START;
             SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM c=0 r=0
             SERIAL_ERRORLN(gcode_LastN);
+			FlushSerialRequestResend();
             serial_count = 0;
             return;
         }
