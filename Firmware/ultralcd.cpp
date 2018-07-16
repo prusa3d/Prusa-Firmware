@@ -644,12 +644,12 @@ static void lcd_implementation_status_screen()
     {
       uint8_t queue = planner_queue_min();
       if (queue < (BLOCK_BUFFER_SIZE >> 1)) {
-        lcd.write('!');
+        lcd_putc('!');
       } else {
-        lcd.write((char)(queue / 10) + '0');
+        lcd_putc((char)(queue / 10) + '0');
         queue %= 10;
       }
-      lcd.write((char)queue + '0');
+      lcd_putc((char)queue + '0');
       planner_queue_min_reset();
     }
 #else /* PLANNER_DIAGNOSTICS */
@@ -963,7 +963,7 @@ static void lcd_status_screen()
 
     if (ReInitLCD == 30)
 	{
-      lcd_implementation_init(); // to maybe revive the LCD if static electricity killed it.
+      lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
       ReInitLCD = 0 ;
     }
 	else
@@ -971,7 +971,7 @@ static void lcd_status_screen()
 
       if ((ReInitLCD % 10) == 0)
 	  {
-        lcd_implementation_init_noclear(); //to maybe revive the LCD if static electricity killed it.
+        lcd_refresh_noclear(); //to maybe revive the LCD if static electricity killed it.
       }
 
     }
@@ -1037,7 +1037,7 @@ static void lcd_status_screen()
   {
 	menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
     menu_submenu(lcd_main_menu);
-    lcd_implementation_init(); // to maybe revive the LCD if static electricity killed it.
+    lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
   }
 
 #ifdef ULTIPANEL_FEEDMULTIPLY
@@ -1875,7 +1875,7 @@ static float count_e(float layer_heigth, float extrusion_width, float extrusion_
 
 static void lcd_return_to_status()
 {
-	lcd_implementation_init(); // to maybe revive the LCD if static electricity killed it.
+	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, false, true);
 	menu_depth = 0;
 }
@@ -7225,9 +7225,10 @@ void menu_action_sddirectory(const char* filename, char* longFilename)
 
 /** LCD API **/
 
-void lcd_init()
+void ultralcd_init()
 {
-	lcd_implementation_init();
+	lcd_init();
+//	lcd_refresh();
 	lcd_longpress_func = menu_lcd_longpress_func;
 	lcd_charsetup_func = menu_lcd_charsetup_func;
 	lcd_lcdupdate_func = menu_lcd_lcdupdate_func;
@@ -7399,7 +7400,7 @@ void menu_lcd_lcdupdate_func(void)
   {
 	  lcd_draw_update = 2;
 	  lcd_oldcardstatus = IS_SD_INSERTED;
-	  lcd_implementation_init(); // to maybe revive the LCD if static electricity killed it.
+	  lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 
 	  if (lcd_oldcardstatus)
 	  {

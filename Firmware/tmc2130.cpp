@@ -3,13 +3,13 @@
 #ifdef TMC2130
 
 #include "tmc2130.h"
-#include "LiquidCrystal_Prusa.h"
+//#include "LiquidCrystal_Prusa.h"
 #include "ultralcd.h"
 #include "language.h"
 #include "spi.h"
 
 
-extern LiquidCrystal_Prusa lcd;
+//extern LiquidCrystal_Prusa lcd;
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
 #define TMC2130_GCONF_SGSENS 0x00003180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])

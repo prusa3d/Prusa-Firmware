@@ -33,4 +33,3 @@
 #include "Configuration.h"
 #include "pins.h"
 
-#include "LiquidCrystal_Prusa.h" // library for character LCD

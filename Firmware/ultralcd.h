@@ -15,7 +15,7 @@ extern void menu_lcd_lcdupdate_func(void);
 	static void lcd_language_menu();
 
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
-  void lcd_init();
+  void ultralcd_init();
   void lcd_setstatus(const char* message);
   void lcd_setstatuspgm(const char* message);
   void lcd_setalertstatuspgm(const char* message);

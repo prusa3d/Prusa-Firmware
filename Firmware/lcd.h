@@ -8,26 +8,46 @@
 
 ////////////////////////////////////
 // Create LCD class instance and chipset-specific information
-#include "LiquidCrystal_Prusa.h"
-extern LiquidCrystal_Prusa lcd;
+//#include "LiquidCrystal_Prusa.h"
+//extern LiquidCrystal_Prusa lcd;
 
 
 extern FILE _lcdout;
 
 #define lcdout (&_lcdout)
-
-
 extern int lcd_putchar(char c, FILE *stream);
 
-extern void lcd_command(uint8_t value);
 
-extern uint8_t lcd_write(uint8_t value);
+extern void lcd_init(void);
+
+extern void lcd_refresh(void);
+
+extern void lcd_refresh_noclear(void);
+
+
 
 extern void lcd_clear(void);
+
+extern void lcd_home(void);
+
+
+/*extern void lcd_no_display(void);
+extern void lcd_display(void);
+extern void lcd_no_blink(void);
+extern void lcd_blink(void);
+extern void lcd_no_cursor(void);
+extern void lcd_cursor(void);
+extern void lcd_scrollDisplayLeft(void);
+extern void lcd_scrollDisplayRight(void);
+extern void lcd_leftToRight(void);
+extern void lcd_rightToLeft(void);
+extern void lcd_autoscroll(void);
+extern void lcd_no_autoscroll(void);*/
 
 extern void lcd_set_cursor(uint8_t col, uint8_t row);
 
 extern void lcd_createChar_P(uint8_t, const uint8_t*);
+
 
 
 extern int lcd_putc(int c);
@@ -47,6 +67,10 @@ extern void lcd_print(long, int = 10);
 extern void lcd_print(unsigned long, int = 10);
 extern void lcd_print(double, int = 2);
 
+#define ESC_2J     "\x1b[2J"
+#define ESC_25h    "\x1b[?25h"
+#define ESC_25l    "\x1b[?25l"
+#define ESC_H(c,r) "\x1b["#r";"#c"H"
 
 
 
@@ -145,19 +169,6 @@ extern void lcd_buttons_update(void);
 
 
 
-
-
-
-
-
-
-
-
-#include "Configuration_prusa.h"
-#include "Marlin.h"
-
-
-
 /**
 * Implementation of the LCD display routines for a Hitachi HD44780 display. These are common LCD character displays.
 * When selecting the Russian language, a slightly different LCD implementation is used to handle UTF8 characters.
@@ -210,9 +221,6 @@ extern void lcd_set_custom_characters_arrows(void);
 extern void lcd_set_custom_characters_progress(void);
 extern void lcd_set_custom_characters_nextpage(void);
 extern void lcd_set_custom_characters_degree(void);
-
-extern void lcd_implementation_init(void);
-extern void lcd_implementation_init_noclear(void);
 
 extern void lcd_drawedit(const char* pstr, char* value);
 extern void lcd_drawedit_2(const char* pstr, char* value);

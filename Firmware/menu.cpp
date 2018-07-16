@@ -6,6 +6,8 @@
 #include <stdarg.h>
 #include <avr/pgmspace.h>
 #include "lcd.h"
+#include "Configuration.h"
+#include "Marlin.h"
 
 
 

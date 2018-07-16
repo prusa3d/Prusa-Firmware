@@ -907,8 +907,8 @@ void factory_reset(char level, bool quiet)
     
 
 }
-#include "LiquidCrystal_Prusa.h"
-extern LiquidCrystal_Prusa lcd;
+//#include "LiquidCrystal_Prusa.h"
+//extern LiquidCrystal_Prusa lcd;
 
 
 FILE _uartout = {0};
@@ -1148,8 +1148,7 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
-    lcd_init();
-	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
+    ultralcd_init();
 
 	spi_init();
 
@@ -1157,7 +1156,7 @@ void setup()
 
 #ifdef W25X20CL
   // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
-  optiboot_w25x20cl_enter();
+ // optiboot_w25x20cl_enter();
 #endif
 
 #if (LANG_MODE != 0) //secondary language support
@@ -7603,9 +7602,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
                 {
                     lcd_update_enable(false);
                     lcd_clear();
-                    lcd.setCursor(0, 0);
+                    lcd_set_cursor(0, 0);
                     lcd_puts_P(_T(MSG_ERROR));
-                    lcd.setCursor(0, 2);
+                    lcd_set_cursor(0, 2);
                     lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
                     delay(2000);
                     lcd_clear();
