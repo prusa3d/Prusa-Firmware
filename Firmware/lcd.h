@@ -6,11 +6,6 @@
 #include <stdio.h>
 
 
-////////////////////////////////////
-// Create LCD class instance and chipset-specific information
-//#include "LiquidCrystal_Prusa.h"
-//extern LiquidCrystal_Prusa lcd;
-
 
 extern FILE _lcdout;
 

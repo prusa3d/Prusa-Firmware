@@ -15,9 +15,6 @@
 #include "fastio.h"
 
 
-
-
-
 // commands
 #define LCD_CLEARDISPLAY 0x01
 #define LCD_RETURNHOME 0x02
@@ -55,11 +52,6 @@
 #define LCD_1LINE 0x00
 #define LCD_5x10DOTS 0x04
 #define LCD_5x8DOTS 0x00
-
-
-
-//LiquidCrystal_Prusa lcd(LCD_PINS_RS, LCD_PINS_ENABLE, LCD_PINS_D4, LCD_PINS_D5,LCD_PINS_D6,LCD_PINS_D7);  //RS,Enable,D4,D5,D6,D7
-//LiquidCrystal_Prusa lcd;  //RS,Enable,D4,D5,D6,D7
 
 
 FILE _lcdout = {0};
@@ -254,6 +246,7 @@ void lcd_init(void)
 	if (fourbitmode) lcd_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
 	else lcd_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
 	lcd_begin(LCD_WIDTH, LCD_HEIGHT, LCD_5x8DOTS, 1);
+	//lcd_clear();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 }
 
