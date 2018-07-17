@@ -205,16 +205,6 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 //=============================   functions      ============================
 //===========================================================================
 
-#if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
-static float temp_runaway_status[4];
-static float temp_runaway_target[4];
-static float temp_runaway_timer[4];
-static int temp_runaway_error_counter[4];
-
-static void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
-static void temp_runaway_stop(bool isPreheat, bool isBed);
-#endif
-
   void PID_autotune(float temp, int extruder, int ncycles)
   {
   pid_number_of_cycles = ncycles;
@@ -1483,7 +1473,7 @@ void bed_min_temp_error(void) {
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
     Stop();
-#endif
+#endif*/
 }
 
 #ifdef HEATER_0_USES_MAX6675
