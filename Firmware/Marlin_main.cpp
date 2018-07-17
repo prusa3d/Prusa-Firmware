@@ -3116,6 +3116,8 @@ void gcode_M701()
 	custom_message = true;
 	custom_message_type = 2;
 
+	if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
+
 	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 	current_position[E_AXIS] += 70;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
