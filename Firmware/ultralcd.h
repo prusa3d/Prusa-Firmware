@@ -3,7 +3,6 @@
 
 #include "Marlin.h"
 #include "mesh_bed_calibration.h"
-#include "Timer.h"
 
 extern int lcd_puts_P(const char* str);
 extern int lcd_printf_P(const char* format, ...);
@@ -95,8 +94,7 @@ extern int lcd_printf_P(const char* format, ...);
   #define LCD_ALERTMESSAGERPGM(x) lcd_setalertstatuspgm((x))
 
   #define LCD_UPDATE_INTERVAL 100
-  #define LCD_TIMEOUT_TO_STATUS 30000ul //!< Generic timeout to status screen in ms, when no user action.
-  #define LCD_TIMEOUT_TO_STATUS_BABYSTEP_Z 90000ul //!< Specific timeout for lcd_babystep_z screen in ms.
+  #define LCD_TIMEOUT_TO_STATUS 30000
 
   #ifdef ULTIPANEL
   void lcd_buttons_update();
@@ -119,7 +117,7 @@ extern int lcd_printf_P(const char* format, ...);
   #define LCD_COMMAND_PID_EXTRUDER 7 
   #define LCD_COMMAND_V2_CAL 8
 
-  extern LongTimer lcd_timeoutToStatus;
+  extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
   
   extern uint8_t farm_mode;
