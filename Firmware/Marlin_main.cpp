@@ -8082,7 +8082,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	int ix = 0;
 	int iy = 0;
 
-	char* filename_wldsd = "wldsd.txt";
+	const char* filename_wldsd = "wldsd.txt";
 	char data_wldsd[70];
 	char numb_wldsd[10];
 
