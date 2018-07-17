@@ -1,6 +1,7 @@
 //sm4.c - simple 4-axis stepper control
 
 #include "sm4.h"
+#include <math.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 

@@ -2,7 +2,7 @@
 
 #include "adc.h"
 #include <avr/io.h>
-
+#include <stdio.h>
 
 uint8_t adc_state;
 uint8_t adc_count;
