@@ -1,6 +1,6 @@
 //pat9125.c
 #include "pat9125.h"
-#include <avr/delay.h>
+#include <util/delay.h>
 #include <avr/pgmspace.h>
 #include "config.h"
 #include <stdio.h>

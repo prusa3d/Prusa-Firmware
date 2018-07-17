@@ -1473,7 +1473,7 @@ void bed_min_temp_error(void) {
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
     Stop();
-#endif*/
+#endif
 }
 
 #ifdef HEATER_0_USES_MAX6675

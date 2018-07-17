@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <avr/pgmspace.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 #include "Timer.h"
 
 #include "Configuration.h"

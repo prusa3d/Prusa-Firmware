@@ -1,5 +1,7 @@
 // unification for AVR and RPI
-#define __AVR
+#ifndef __AVR
+# define __AVR
+#endif
 
 #ifdef __AVR
 	//#include "Arduino.h"
