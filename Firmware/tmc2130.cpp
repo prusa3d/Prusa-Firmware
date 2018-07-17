@@ -639,6 +639,7 @@ uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval)
 	TMC2130_SPI_TXRX(wval & 0xff); // LSB
 	tmc2130_cs_high(axis);
 	TMC2130_SPI_LEAVE();
+	return 0;
 }
 
 uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)

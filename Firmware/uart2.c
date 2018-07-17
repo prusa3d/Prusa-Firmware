@@ -45,6 +45,7 @@ uint8_t uart2_rx_clr(void)
 {
 	rbuf_w(uart2_ibuf) = 0;
 	rbuf_r(uart2_ibuf) = 0;
+	return 0;
 }
 
 uint8_t uart2_rx_ok(void)

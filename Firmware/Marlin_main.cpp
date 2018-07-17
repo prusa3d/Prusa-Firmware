@@ -1873,6 +1873,7 @@ int serial_read_stream() {
         }
 
     }
+	return 0;
 }
 
 #ifdef HOST_KEEPALIVE_FEATURE
