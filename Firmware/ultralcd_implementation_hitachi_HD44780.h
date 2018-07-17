@@ -1390,9 +1390,10 @@ static void lcd_implementation_quick_feedback()
 #endif
 }
 
-#ifdef LCD_HAS_STATUS_INDICATORS
+
 static void lcd_implementation_update_indicators()
 {
+#ifdef LCD_HAS_STATUS_INDICATORS
   #if defined(LCD_I2C_PANELOLU2) || defined(LCD_I2C_VIKI)
     //set the LEDS - referred to as backlights by the LiquidTWI2 library 
     static uint8_t ledsprev = 0;
@@ -1408,8 +1409,8 @@ static void lcd_implementation_update_indicators()
       ledsprev = leds;
     }
   #endif
-}
 #endif
+}
 
 #ifdef LCD_HAS_SLOW_BUTTONS
 extern uint32_t blocking_enc;
