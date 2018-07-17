@@ -8,6 +8,22 @@
 #define ADC_OVRSAMPL      16        //oversampling multiplier
 #define ADC_CALLBACK      adc_ready //callback function ()
 
+//SWI2C configuration
+#define SWI2C
+//#define SWI2C_SDA         20 //SDA on P3
+//#define SWI2C_SCL         21 //SCL on P3
+#define SWI2C_A8
+#define SWI2C_DEL         20 //2us clock delay
+#define SWI2C_TMO         2048 //2048 cycles timeout
+
+//PAT9125 configuration
+#define PAT9125_SWI2C
+#define PAT9125_I2C_ADDR  0x75  //ID=LO
+//#define PAT9125_I2C_ADDR  0x79  //ID=HI
+//#define PAT9125_I2C_ADDR  0x73  //ID=NC
+#define PAT9125_XRES      0
+#define PAT9125_YRES      200
+
 //SM4 configuration
 #define SM4_DEFDELAY      500       //default step delay [us]
 

@@ -178,9 +178,7 @@
 
 
 //Comment to disable setting feedrate multiplier via encoder
-#ifdef ULTIPANEL
-    #define ULTIPANEL_FEEDMULTIPLY
-#endif
+#define ULTIPANEL_FEEDMULTIPLY
 
 // minimum time in microseconds that a movement needs to take if the buffer is emptied.
 #define DEFAULT_MINSEGMENTTIME        20000
@@ -260,20 +258,6 @@
 	  #define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
 	#endif
 
-// Show a progress bar on the LCD when printing from SD?
-//#define LCD_PROGRESS_BAR
-
-#ifdef LCD_PROGRESS_BAR
-  // Amount of time (ms) to show the bar
-  #define PROGRESS_BAR_BAR_TIME 2000
-  // Amount of time (ms) to show the status message
-  #define PROGRESS_BAR_MSG_TIME 3000
-  // Amount of time (ms) to retain the status message (0=forever)
-  #define PROGRESS_MSG_EXPIRE   0
-  // Enable this to show messages for MSG_TIME then hide them
-  //#define PROGRESS_MSG_ONCE
-#endif
-
 // Enable the option to stop SD printing when hitting and endstops, needs to be enabled from the LCD menu when this option is enabled.
 //#define ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 
@@ -342,10 +326,7 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 // in the pins.h file.  When using a push button pulling the pin to ground this will need inverted.  This setting should
 // be commented out otherwise
 #define SDCARDDETECTINVERTED
-
-#ifdef ULTIPANEL
- #undef SDCARDDETECTINVERTED
-#endif
+#undef SDCARDDETECTINVERTED
 
 // Power Signal Control Definitions
 // By default use ATX definition

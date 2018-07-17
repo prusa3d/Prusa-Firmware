@@ -9,8 +9,6 @@
 #include "fastio.h"
 #include "cmdqueue.h"
 
-//#include "LiquidCrystal_Prusa.h"
-//extern LiquidCrystal_Prusa lcd;
 
 
 #define FSENSOR_ERR_MAX          5  //filament sensor max error count
@@ -84,6 +82,12 @@ void fsensor_disable()
 	fsensor_enabled = false;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
 	FSensorStateMenu = 0;
+}
+
+void fautoload_set(bool State)
+{
+	filament_autoload_enabled = State;
+	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
 }
 
 void pciSetup(byte pin)

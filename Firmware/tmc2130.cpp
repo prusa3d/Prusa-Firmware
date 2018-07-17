@@ -3,13 +3,11 @@
 #ifdef TMC2130
 
 #include "tmc2130.h"
-#include "LiquidCrystal_Prusa.h"
 #include "ultralcd.h"
 #include "language.h"
 #include "spi.h"
 
 
-extern LiquidCrystal_Prusa lcd;
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
 #define TMC2130_GCONF_SGSENS 0x00003180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])
@@ -61,6 +59,13 @@ uint8_t tmc2130_home_bsteps[2] = {48, 48};
 uint8_t tmc2130_home_fsteps[2] = {48, 48};
 
 uint8_t tmc2130_wave_fac[4] = {0, 0, 0, 0};
+
+tmc2130_chopper_config_t tmc2130_chopper_config[4] = {
+	{TMC2130_TOFF_XYZ, 5, 1, 2, 0},
+	{TMC2130_TOFF_XYZ, 5, 1, 2, 0},
+	{TMC2130_TOFF_XYZ, 5, 1, 2, 0},
+	{TMC2130_TOFF_E, 5, 1, 2, 0}
+};
 
 bool tmc2130_sg_stop_on_crash = true;
 uint8_t tmc2130_sg_diag_mask = 0x00;
@@ -407,9 +412,9 @@ void tmc2130_check_overtemp()
 		for (int i = 0; i < 4; i++)
 		{
 			tmc2130_sg_change = false;
-			lcd.setCursor(0 + i*4, 3);
-			lcd.print(itostr3(tmc2130_sg_cnt[i]));
-			lcd.print(' ');
+			lcd_set_cursor(0 + i*4, 3);
+			lcd_print(itostr3(tmc2130_sg_cnt[i]));
+			lcd_print(' ');
 		}
 	}
 #endif //DEBUG_CRASHDET_COUNTERS
@@ -418,13 +423,13 @@ void tmc2130_check_overtemp()
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r)
 {
 	uint8_t intpol = 1;
-	uint8_t toff = TMC2130_TOFF_XYZ; // toff = 3 (fchop = 27.778kHz)
-	uint8_t hstrt = 5; //initial 4, modified to 5
-	uint8_t hend = 1;
+	uint8_t toff = tmc2130_chopper_config[axis].toff; // toff = 3 (fchop = 27.778kHz)
+	uint8_t hstrt = tmc2130_chopper_config[axis].hstr; //initial 4, modified to 5
+	uint8_t hend = tmc2130_chopper_config[axis].hend; //original value = 1
 	uint8_t fd3 = 0;
 	uint8_t rndtf = 0; //random off time
 	uint8_t chm = 0; //spreadCycle
-	uint8_t tbl = 2; //blanking time
+	uint8_t tbl = tmc2130_chopper_config[axis].tbl; //blanking time, original value = 2
 	if (axis == E_AXIS)
 	{
 #ifdef TMC2130_CNSTOFF_E
@@ -434,9 +439,11 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 		hend = 0; //sine wave offset
 		chm = 1; // constant off time mod
 #endif //TMC2130_CNSTOFF_E
-		toff = TMC2130_TOFF_E; // toff = 3-5
+//		toff = TMC2130_TOFF_E; // toff = 3-5
 //		rndtf = 1;
 	}
+	DBG(_n("tmc2130_setup_chopper(axis=%hhd, mres=%hhd, curh=%hhd, curr=%hhd\n"), axis, mres, current_h, current_r);
+	DBG(_n(" toff=%hhd, hstr=%hhd, hend=%hhd, tbl=%hhd\n"), toff, hstrt, hend, tbl);
 	if (current_r <= 31)
 	{
 		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 1, 0, 0, 0, mres, intpol, 0, 0);
@@ -444,7 +451,7 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 	}
 	else
 	{
-		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, 0, 0, tbl, 0, 0, 0, 0, mres, intpol, 0, 0);
+		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 0, 0, 0, 0, mres, intpol, 0, 0);
 		tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | (((current_r >> 1) & 0x1f) << 8) | ((current_h >> 1) & 0x1f));
 	}
 }
@@ -475,10 +482,7 @@ void tmc2130_print_currents()
 
 void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 {
-	MYSERIAL.print("tmc2130_set_pwm_ampl ");
-	MYSERIAL.print((int)axis);
-	MYSERIAL.print(" ");
-	MYSERIAL.println((int)pwm_ampl);
+	DBG(_n("tmc2130_set_pwm_ampl(axis=%hhd, pwm_ampl=%hhd\n"), axis, pwm_ampl);
 	tmc2130_pwm_ampl[axis] = pwm_ampl;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -486,10 +490,7 @@ void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 
 void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_grad)
 {
-	MYSERIAL.print("tmc2130_set_pwm_grad ");
-	MYSERIAL.print((int)axis);
-	MYSERIAL.print(" ");
-	MYSERIAL.println((int)pwm_grad);
+	DBG(_n("tmc2130_set_pwm_grad(axis=%hhd, pwm_grad=%hhd\n"), axis, pwm_grad);
 	tmc2130_pwm_grad[axis] = pwm_grad;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -865,7 +866,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	if (fac1000 < TMC2130_WAVE_FAC1000_MIN) fac1000 = 0;
 	if (fac1000 > TMC2130_WAVE_FAC1000_MAX) fac1000 = TMC2130_WAVE_FAC1000_MAX;
 	float fac = 0;
-	if (fac1000) fac = (float)((uint16_t)fac1000 + 1000) / 1000; //correction factor
+	if (fac1000) fac = ((float)((uint16_t)fac1000 + 1000) / 1000); //correction factor
 	printf_P(PSTR(" factor: %s\n"), ftostr43(fac));
 	uint8_t vA = 0;                //value of currentA
 	uint8_t va = 0;                //previous vA

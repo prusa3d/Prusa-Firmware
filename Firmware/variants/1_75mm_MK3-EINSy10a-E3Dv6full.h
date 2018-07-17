@@ -96,15 +96,17 @@
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 
 //Silent mode limits
-#define SILENT_MAX_ACCEL  960 // max axxeleration in silent mode in mm/s^2
-#define SILENT_MAX_ACCEL_ST (100*SILENT_MAX_ACCEL) // max accel in steps/s^2
-#define SILENT_MAX_FEEDRATE 172  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
+//#define SILENT_MAX_ACCEL  960 // max axxeleration in silent mode in mm/s^2
+//#define SILENT_MAX_ACCEL_ST (100*SILENT_MAX_ACCEL) // max accel in steps/s^2
+//#define SILENT_MAX_FEEDRATE 172  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
 
 //Normal mode limits
-#define NORMAL_MAX_ACCEL 2500 // Y-axis max axxeleration in normal mode in mm/s^2
-#define NORMAL_MAX_ACCEL_ST (100*NORMAL_MAX_ACCEL) // max accel in steps/s^2
-#define NORMAL_MAX_FEEDRATE 200  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
+//#define NORMAL_MAX_ACCEL 2500 // Y-axis max axxeleration in normal mode in mm/s^2
+//#define NORMAL_MAX_ACCEL_ST (100*NORMAL_MAX_ACCEL) // max accel in steps/s^2
+//#define NORMAL_MAX_FEEDRATE 200  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
 
+//#define FEEDRATE_LIMIT                 //limitation method for normal/silent
+//#define ACCEL_LIMIT                 //limitation method for normal/silent
 //#define SIMPLE_ACCEL_LIMIT          //new limitation method for normal/silent
 
 //number of bytes from end of the file to start check
@@ -135,6 +137,9 @@
 // Filament sensor
 #define PAT9125
 
+// Backlash - 
+//#define BACKLASH_X
+//#define BACKLASH_Y
 
 // Disable some commands
 #define _DISABLE_M42_M226
@@ -172,7 +177,6 @@
 //#define DEBUG_DISABLE_FORCE_SELFTEST //disable force selftest
 //#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
 //#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
-//#define DEBUG_BLINK_ACTIVE
 //#define DEBUG_DISABLE_FANCHECK     //disable fan check (no ISR INT7, check disabled)
 //#define DEBUG_DISABLE_FSENSORCHECK //disable fsensor check (no ISR INT7, check disabled)
 #define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
@@ -181,7 +185,6 @@
 #define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
 
-//#define EXPERIMENTAL_FEATURES
 #define TMC2130_LINEARITY_CORRECTION
 #define TMC2130_LINEARITY_CORRECTION_XYZ
 //#define TMC2130_VARIABLE_RESOLUTION
