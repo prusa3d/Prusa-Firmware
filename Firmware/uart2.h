@@ -18,7 +18,7 @@ extern FILE _uart2io;
 
 extern void uart2_init(void);
 
-extern void uart2_rx_clr(void);
+extern uint8_t uart2_rx_clr(void);
 
 extern uint8_t uart2_rx_ok(void);
 

@@ -878,7 +878,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	uint8_t x[3] = {255,255,255};  //X segment bounds (MSLUTSEL)
 	uint8_t s = 0;                 //current segment
 	int8_t b;                      //encoded bit value
-    int8_t dA;                     //delta value
+	uint8_t dA;                    //delta value
 	int i;                         //microstep index
 	uint32_t reg;                  //tmc2130 register
 	tmc2130_wr_MSLUTSTART(axis, 0, amp);
