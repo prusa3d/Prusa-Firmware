@@ -972,7 +972,7 @@ void CardReader::presort() {
 #endif
 	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);
-	lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+	lcd_timeoutToStatus.start();
 }
 
 void CardReader::flush_presort() {
