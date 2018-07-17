@@ -58,8 +58,10 @@
 #endif
 
 #include "printers.h"
+
+#include "menu.h"
 #include "ultralcd.h"
-#include "Configuration_prusa.h"
+
 #include "planner.h"
 #include "stepper.h"
 #include "temperature.h"
@@ -167,7 +169,7 @@
 // G92 - Set current position to coordinates given
 
 // M Codes
-// M0   - Unconditional stop - Wait for user to press a button on the LCD (Only if ULTRA_LCD is enabled)
+// M0   - Unconditional stop - Wait for user to press a button on the LCD
 // M1   - Same as M0
 // M17  - Enable/Power all stepper motors
 // M18  - Disable all stepper motors; same as M84
@@ -431,13 +433,11 @@ int fanSpeed=0;
   float retract_recover_feedrate = RETRACT_RECOVER_FEEDRATE;
 #endif
 
-#ifdef ULTIPANEL
   #ifdef PS_DEFAULT_OFF
     bool powersupply = false;
   #else
 	  bool powersupply = true;
   #endif
-#endif
 
 bool cancel_heatup = false ;
 
@@ -716,7 +716,7 @@ void crashdet_detected(uint8_t mask)
 	}
 
 	lcd_update_enable(true);
-	lcd_implementation_clear();
+	lcd_clear();
 	lcd_update(2);
 
 	if (mask & X_AXIS_MASK)
@@ -801,7 +801,7 @@ void failstats_reset_print()
 int  er_progress = 0;
 void factory_reset(char level, bool quiet)
 {	
-	lcd_implementation_clear();
+	lcd_clear();
 	int cursor_pos = 0;
     switch (level) {
                    
@@ -837,8 +837,8 @@ void factory_reset(char level, bool quiet)
 
         // Level 2: Prepare for shipping
         case 2:
-			//lcd_printPGM(PSTR("Factory RESET"));
-            //lcd_print_at_PGM(1,2,PSTR("Shipping prep"));
+			//lcd_puts_P(PSTR("Factory RESET"));
+            //lcd_puts_at_P(1,2,PSTR("Shipping prep"));
             
             // Force language selection at the next boot up.
 			lang_reset();
@@ -869,16 +869,17 @@ void factory_reset(char level, bool quiet)
 			// Level 3: erase everything, whole EEPROM will be set to 0xFF
 
 		case 3:
-			lcd_printPGM(PSTR("Factory RESET"));
-			lcd_print_at_PGM(1, 2, PSTR("ERASING all data"));
+			lcd_puts_P(PSTR("Factory RESET"));
+			lcd_puts_at_P(1, 2, PSTR("ERASING all data"));
 
 			WRITE(BEEPER, HIGH);
 			_delay_ms(100);
 			WRITE(BEEPER, LOW);
 
 			er_progress = 0;
-			lcd_print_at_PGM(3, 3, PSTR("      "));
-			lcd_implementation_print_at(3, 3, er_progress);
+			lcd_puts_at_P(3, 3, PSTR("      "));
+			lcd_set_cursor(3, 3);
+			lcd_print(er_progress);
 
 			// Erase EEPROM
 			for (int i = 0; i < 4096; i++) {
@@ -886,9 +887,10 @@ void factory_reset(char level, bool quiet)
 
 				if (i % 41 == 0) {
 					er_progress++;
-					lcd_print_at_PGM(3, 3, PSTR("      "));
-					lcd_implementation_print_at(3, 3, er_progress);
-					lcd_printPGM(PSTR("%"));
+					lcd_puts_at_P(3, 3, PSTR("      "));
+					lcd_set_cursor(3, 3);
+					lcd_print(er_progress);
+					lcd_puts_P(PSTR("%"));
 				}
 
 			}
@@ -905,16 +907,7 @@ void factory_reset(char level, bool quiet)
     
 
 }
-#include "LiquidCrystal_Prusa.h"
-extern LiquidCrystal_Prusa lcd;
 
-FILE _lcdout = {0};
-
-int lcd_putchar(char c, FILE *stream)
-{
-	lcd.write(c);
-	return 0;
-}
 
 FILE _uartout = {0};
 
@@ -927,9 +920,9 @@ int uart_putchar(char c, FILE *stream)
 
 void lcd_splash()
 {
-//	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
-//	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
-//	lcd.print_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
+//	lcd_puts_at_P(0, 1, PSTR("   Original Prusa   "));
+//	lcd_puts_at_P(0, 2, PSTR("    3D  Printers    "));
+//	lcd_puts_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
 //    fputs_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"), lcdout);
     lcd_puts_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"));
 //	lcd_printf_P(_N(ESC_2J "x:%.3f\ny:%.3f\nz:%.3f\ne:%.3f"), _x, _y, _z, _e);
@@ -944,10 +937,10 @@ void factory_reset()
 		_delay_ms(1000);
 		if (!READ(BTN_ENC))
 		{
-			lcd_implementation_clear();
+			lcd_clear();
 
 
-			lcd_printPGM(PSTR("Factory RESET"));
+			lcd_puts_P(PSTR("Factory RESET"));
 
 
 			SET_OUTPUT(BEEPER);
@@ -1017,15 +1010,15 @@ void show_fw_version_warnings() {
   case(FW_VERSION_DEVEL):
 	case(FW_VERSION_DEBUG):
     lcd_update_enable(false);
-    lcd_implementation_clear();
+    lcd_clear();
   #if FW_DEV_VERSION == FW_VERSION_DEVEL
-    lcd_print_at_PGM(0, 0, PSTR("Development build !!"));
+    lcd_puts_at_P(0, 0, PSTR("Development build !!"));
   #else
-    lcd_print_at_PGM(0, 0, PSTR("Debbugging build !!!"));
+    lcd_puts_at_P(0, 0, PSTR("Debbugging build !!!"));
   #endif
-    lcd_print_at_PGM(0, 1, PSTR("May destroy printer!"));
-    lcd_print_at_PGM(0, 2, PSTR("ver ")); lcd_printPGM(PSTR(FW_VERSION_FULL));
-    lcd_print_at_PGM(0, 3, PSTR(FW_REPOSITORY));
+    lcd_puts_at_P(0, 1, PSTR("May destroy printer!"));
+    lcd_puts_at_P(0, 2, PSTR("ver ")); lcd_puts_P(PSTR(FW_VERSION_FULL));
+    lcd_puts_at_P(0, 3, PSTR(FW_REPOSITORY));
     lcd_wait_for_click();
     break;
 //	default: lcd_show_fullscreen_message_and_wait_P(_i("WARNING: This is an unofficial, unsupported build. Use at your own risk!")); break;////MSG_FW_VERSION_UNKNOWN c=20 r=8
@@ -1153,17 +1146,16 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
-    lcd_init();
-	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
+    ultralcd_init();
 
 	spi_init();
 
 	lcd_splash();
 
-	#ifdef W25X20CL
-	// Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
-	optiboot_w25x20cl_enter();
-	#endif
+#ifdef W25X20CL
+  // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+ // optiboot_w25x20cl_enter();
+#endif
 
 #if (LANG_MODE != 0) //secondary language support
 #ifdef W25X20CL
@@ -1707,7 +1699,7 @@ void setup()
   KEEPALIVE_STATE(IN_PROCESS);
 #endif //DEBUG_DISABLE_STARTMSGS
   lcd_update_enable(true);
-  lcd_implementation_clear();
+  lcd_clear();
   lcd_update(2);
   // Store the currently running firmware into an eeprom,
   // so the next time the firmware gets updated, it will know from which version it has been updated.
@@ -1821,8 +1813,8 @@ int serial_read_stream() {
     setTargetHotend(0, 0);
     setTargetBed(0);
 
-    lcd_implementation_clear();
-    lcd_printPGM(PSTR(" Upload in progress"));
+    lcd_clear();
+    lcd_puts_P(PSTR(" Upload in progress"));
 
     // first wait for how many bytes we will receive
     uint32_t bytesToReceive;
@@ -2022,7 +2014,7 @@ void loop()
   manage_heater();
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
-  lcd_update();
+  lcd_update(0);
 #ifdef PAT9125
 	fsensor_update();
 #endif //PAT9125
@@ -2280,8 +2272,8 @@ bool check_commands() {
 bool calibrate_z_auto()
 {
 	//lcd_display_message_fullscreen_P(_T(MSG_CALIBRATE_Z_AUTO));
-	lcd_implementation_clear();
-	lcd_print_at_PGM(0,1, _T(MSG_CALIBRATE_Z_AUTO));
+	lcd_clear();
+	lcd_puts_at_P(0,1, _T(MSG_CALIBRATE_Z_AUTO));
 	bool endstops_enabled  = enable_endstops(true);
 	int axis_up_dir = -home_dir(Z_AXIS);
 	tmc2130_home_enter(Z_AXIS_MASK);
@@ -2971,8 +2963,9 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		    lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
 			KEEPALIVE_STATE(IN_HANDLER);
 			lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
-			lcd_implementation_print_at(0, 2, 1);
-			lcd_printPGM(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
+			lcd_set_cursor(0, 2);
+			lcd_print(1);
+			lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 		}
 		// Move the print head close to the bed.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -3213,6 +3206,13 @@ static void gcode_PRUSA_SN()
     }
 }
 
+#ifdef BACKLASH_X
+extern uint8_t st_backlash_x;
+#endif //BACKLASH_X
+#ifdef BACKLASH_Y
+extern uint8_t st_backlash_y;
+#endif //BACKLASH_Y
+
 void process_commands()
 {
 	if (!buflen) return; //empty command
@@ -3323,6 +3323,22 @@ void process_commands()
 			}
 		}
 	}
+#ifdef BACKLASH_X
+	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("BACKLASH_X"), 10) == 0)
+	{
+		uint8_t bl = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 10, NULL, 10);
+		st_backlash_x = bl;
+		printf_P(_N("st_backlash_x = %hhd\n"), st_backlash_x);
+	}
+#endif //BACKLASH_X
+#ifdef BACKLASH_Y
+	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("BACKLASH_Y"), 10) == 0)
+	{
+		uint8_t bl = (uint8_t)strtol(CMDBUFFER_CURRENT_STRING + 10, NULL, 10);
+		st_backlash_y = bl;
+		printf_P(_N("st_backlash_y = %hhd\n"), st_backlash_y);
+	}
+#endif //BACKLASH_Y
 #endif //TMC2130
 
   else if(code_seen("PRUSA")){
@@ -3478,7 +3494,7 @@ void process_commands()
                           cnt++;
                           manage_heater();
                           manage_inactivity(true);
-                          //lcd_update();
+                          //lcd_update(0);
                           if(cnt==0)
                           {
                           #if BEEPER > 0
@@ -3503,11 +3519,6 @@ void process_commands()
                           
                             counterBeep++;
                           #else
-                      #if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
-                              lcd_buzz(1000/6,100);
-                      #else
-                        lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS,LCD_FEEDBACK_FREQUENCY_HZ);
-                      #endif
                           #endif
                           }
                         }
@@ -3644,7 +3655,7 @@ void process_commands()
       while(millis() < codenum) {
         manage_heater();
         manage_inactivity();
-        lcd_update();
+        lcd_update(0);
       }
       break;
       #ifdef FWRETRACT
@@ -4664,7 +4675,6 @@ void process_commands()
 	  } else
     switch((int)code_value())
     {
-#ifdef ULTIPANEL
 
     case 0: // M0 - Unconditional stop - Wait for user button press on LCD
     case 1: // M1 - Conditional stop - Wait for user button press on LCD
@@ -4700,18 +4710,16 @@ void process_commands()
         while(millis() < codenum && !lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
-          lcd_update();
+          lcd_update(0);
         }
 		KEEPALIVE_STATE(IN_HANDLER);
         lcd_ignore_click(false);
       }else{
-          if (!lcd_detected())
-            break;
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
         while(!lcd_clicked()){
           manage_heater();
           manage_inactivity(true);
-          lcd_update();
+          lcd_update(0);
         }
 		KEEPALIVE_STATE(IN_HANDLER);
       }
@@ -4721,7 +4729,6 @@ void process_commands()
         LCD_MESSAGERPGM(_T(WELCOME_MSG));
     }
     break;
-#endif
     case 17:
         LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE c=0 r=0
         enable_x();
@@ -4734,9 +4741,9 @@ void process_commands()
 
 #ifdef SDSUPPORT
     case 20: // M20 - list SD card
-      SERIAL_PROTOCOLLNRPGM(_i("Begin file list"));////MSG_BEGIN_FILE_LIST c=0 r=0
+      SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST c=0 r=0
       card.ls();
-      SERIAL_PROTOCOLLNRPGM(_i("End file list"));////MSG_END_FILE_LIST c=0 r=0
+      SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST c=0 r=0
       break;
     case 21: // M21 - init SD card
 
@@ -5443,7 +5450,7 @@ Sigma_Exit:
           }
           manage_heater();
           manage_inactivity();
-          lcd_update();
+          lcd_update(0);
         }
         LCD_MESSAGERPGM(_T(MSG_BED_DONE));
 		KEEPALIVE_STATE(IN_HANDLER);
@@ -5480,11 +5487,9 @@ Sigma_Exit:
             WRITE(SUICIDE_PIN, HIGH);
         #endif
 
-        #ifdef ULTIPANEL
           powersupply = true;
           LCD_MESSAGERPGM(_T(WELCOME_MSG));
-          lcd_update();
-        #endif
+          lcd_update(0);
         break;
       #endif
 
@@ -5504,11 +5509,9 @@ Sigma_Exit:
         SET_OUTPUT(PS_ON_PIN);
         WRITE(PS_ON_PIN, PS_ON_ASLEEP);
       #endif
-      #ifdef ULTIPANEL
         powersupply = false;
         LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR(".")));
-        lcd_update();
-      #endif
+        lcd_update(0);
 	  break;
 
     case 82:
@@ -5641,7 +5644,7 @@ Sigma_Exit:
       enable_endstops(true) ;
       break;
     case 119: // M119
-    SERIAL_PROTOCOLRPGM(_i("Reporting endstop status"));////MSG_M119_REPORT c=0 r=0
+    SERIAL_PROTOCOLRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT c=0 r=0
     SERIAL_PROTOCOLLN("");
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN c=0 r=0
@@ -5968,7 +5971,7 @@ Sigma_Exit:
             while(digitalRead(pin_number) != target){
               manage_heater();
               manage_inactivity();
-              lcd_update();
+              lcd_update(0);
             }
           }
         }
@@ -6026,10 +6029,6 @@ Sigma_Exit:
           tone(BEEPER, beepS);
           delay(beepP);
           noTone(BEEPER);
-        #elif defined(ULTRALCD)
-		  lcd_buzz(beepS, beepP);
-		#elif defined(LCD_USE_I2C_BUZZER)
-		  lcd_buzz(beepP, beepS);
         #endif
       }
       else
@@ -6118,18 +6117,6 @@ Sigma_Exit:
       #endif //chdk end if
      }
     break;
-#ifdef DOGLCD
-    case 250: // M250  Set LCD contrast value: C<value> (value 0..63)
-     {
-	  if (code_seen('C')) {
-	   lcd_setcontrast( ((int)code_value())&63 );
-          }
-          SERIAL_PROTOCOLPGM("lcd contrast value: ");
-          SERIAL_PROTOCOL(lcd_contrast);
-          SERIAL_PROTOCOLLN("");
-     }
-    break;
-#endif
     #ifdef PREVENT_DANGEROUS_EXTRUDE
     case 302: // allow cold extrudes, or set the minimum extrude temperature
     {
@@ -6356,11 +6343,6 @@ Sigma_Exit:
 				
 				counterBeep++;
 #else
-#if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
-				lcd_buzz(1000 / 6, 100);
-#else
-				lcd_buzz(LCD_FEEDBACK_FREQUENCY_DURATION_MS, LCD_FEEDBACK_FREQUENCY_HZ);
-#endif
 #endif
 			}
 			
@@ -6399,8 +6381,8 @@ Sigma_Exit:
 				}
 				else {
 					counterBeep = 20; //beeper will be inactive during waiting for nozzle preheat
-					lcd.setCursor(1, 4);
-					lcd.print(ftostr3(degHotend(active_extruder)));
+					lcd_set_cursor(1, 4);
+					lcd_print(ftostr3(degHotend(active_extruder)));
 				}
 				break;
 
@@ -6758,7 +6740,7 @@ Sigma_Exit:
 			}
 			manage_heater();
 			manage_inactivity();
-			lcd_update();
+			lcd_update(0);
 		}
 		LCD_MESSAGERPGM(_T(MSG_OK));
 
@@ -7641,13 +7623,13 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
                 else
                 {
                     lcd_update_enable(false);
-                    lcd_implementation_clear();
-                    lcd.setCursor(0, 0);
-                    lcd_printPGM(_T(MSG_ERROR));
-                    lcd.setCursor(0, 2);
-                    lcd_printPGM(_T(MSG_PREHEAT_NOZZLE));
+                    lcd_clear();
+                    lcd_set_cursor(0, 0);
+                    lcd_puts_P(_T(MSG_ERROR));
+                    lcd_set_cursor(0, 2);
+                    lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
                     delay(2000);
-                    lcd_implementation_clear();
+                    lcd_clear();
                     lcd_update_enable(true);
                 }
                 
@@ -7779,7 +7761,7 @@ void kill(const char *full_screen_message, unsigned char id)
 
   // FMC small patch to update the LCD before ending
   sei();   // enable interrupts
-  for ( int i=5; i--; lcd_update())
+  for ( int i=5; i--; lcd_update(0))
   {
      delay(200);	
   }
@@ -7954,7 +7936,7 @@ void delay_keep_alive(unsigned int ms)
         manage_heater();
         // Manage inactivity, but don't disable steppers on timeout.
         manage_inactivity(true);
-        lcd_update();
+        lcd_update(0);
         if (ms == 0)
             break;
         else if (ms >= 50) {
@@ -8006,7 +7988,7 @@ void wait_for_heater(long codenum) {
 		}
 			manage_heater();
 			manage_inactivity();
-			lcd_update();
+			lcd_update(0);
 #ifdef TEMP_RESIDENCY_TIME
 			/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
 			or when current temp falls outside the hysteresis after target temp was reached */

@@ -392,13 +392,13 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
     if (file.open(curDir, fname, O_READ)) 
     {
       filesize = file.fileSize();
-      SERIAL_PROTOCOLRPGM(_i("File opened: "));////MSG_SD_FILE_OPENED c=0 r=0
+      SERIAL_PROTOCOLRPGM(_N("File opened: "));////MSG_SD_FILE_OPENED c=0 r=0
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLRPGM(_n(" Size: "));////MSG_SD_SIZE c=0 r=0
       SERIAL_PROTOCOLLN(filesize);
       sdpos = 0;
       
-      SERIAL_PROTOCOLLNRPGM(_i("File selected"));////MSG_SD_FILE_SELECTED c=0 r=0
+      SERIAL_PROTOCOLLNRPGM(_N("File selected"));////MSG_SD_FILE_SELECTED c=0 r=0
       getfilename(0, fname);
       lcd_setstatus(longFilename[0] ? longFilename : fname);
       lcd_setstatus("SD-PRINTING         ");
@@ -421,7 +421,7 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
     else
     {
       saving = true;
-      SERIAL_PROTOCOLRPGM(_i("Writing to file: "));////MSG_SD_WRITE_TO_FILE c=0 r=0
+      SERIAL_PROTOCOLRPGM(_N("Writing to file: "));////MSG_SD_WRITE_TO_FILE c=0 r=0
       SERIAL_PROTOCOLLN(name);
       lcd_setstatus(fname);
     }
@@ -513,7 +513,7 @@ void CardReader::getStatus()
   if(sdprinting){
     SERIAL_PROTOCOL(longFilename);
     SERIAL_PROTOCOLPGM("\n");
-    SERIAL_PROTOCOLRPGM(_i("SD printing byte "));////MSG_SD_PRINTING_BYTE c=0 r=0
+    SERIAL_PROTOCOLRPGM(_N("SD printing byte "));////MSG_SD_PRINTING_BYTE c=0 r=0
     SERIAL_PROTOCOL(sdpos);
     SERIAL_PROTOCOLPGM("/");
     SERIAL_PROTOCOLLN(filesize);
@@ -757,11 +757,11 @@ void CardReader::presort() {
 			lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=4
 			fileCnt = SDSORT_LIMIT;
 		}
-		lcd_implementation_clear();
+		lcd_clear();
 		#if !SDSORT_USES_RAM
 			lcd_set_progress();
 		#endif
-		lcd_print_at_PGM(0, 1, _i("Sorting files"));////MSG_SORTING c=20 r=1
+		lcd_puts_at_P(0, 1, _i("Sorting files"));////MSG_SORTING c=20 r=1
 
 		// Sort order is always needed. May be static or dynamic.
 		#if SDSORT_DYNAMIC_RAM
@@ -889,7 +889,11 @@ void CardReader::presort() {
 				#if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
 				int8_t percent = (counter * 100) / total;//((counter * 100) / pow((fileCnt-1),2));
 				for (int column = 0; column < 20; column++) {
-					if (column < (percent / 5)) lcd_implementation_print_at(column, 2, "\x01"); //simple progress bar
+					if (column < (percent / 5))
+					{
+						lcd_set_cursor(column, 2);
+						lcd_print('\x01'); //simple progress bar
+					}
 				}
 				counter++;
 				#endif
@@ -964,11 +968,14 @@ void CardReader::presort() {
 		sort_count = fileCnt;
 	}
 #if !SDSORT_USES_RAM //show progresss bar only if slow sorting method is used
-	for (int column = 0; column <= 19; column++)	lcd_implementation_print_at(column, 2, "\x01"); //simple progress bar	
+	for (int column = 0; column <= 19; column++)
+	{
+		lcd_set_cursor(column, 2);
+		lcd_print('\x01'); //simple progress bar
+	}
 	delay(300);
 	lcd_set_degree();
-	lcd_implementation_clear();
-	lcd_update(2);
+	lcd_clear();
 #endif
 	lcd_update(2);
 	KEEPALIVE_STATE(NOT_BUSY);

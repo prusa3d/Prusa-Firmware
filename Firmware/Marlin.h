@@ -62,8 +62,7 @@
   #define MYSERIAL MSerial
 #endif
 
-extern FILE _lcdout;
-#define lcdout (&_lcdout)
+#include "lcd.h"
 
 extern FILE _uartout;
 #define uartout (&_uartout)

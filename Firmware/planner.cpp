@@ -646,10 +646,10 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
           manage_heater(); 
           // Vojtech: Don't disable motors inside the planner!
           manage_inactivity(false); 
-          lcd_update();
+          lcd_update(0);
       } while (block_buffer_tail == next_buffer_head);
       if (waiting_inside_plan_buffer_line_print_aborted) {
-          // Inside the lcd_update() routine the print has been aborted.
+          // Inside the lcd_update(0) routine the print has been aborted.
           // Cancel the print, do not plan the current line this routine is waiting on.
 #ifdef PLANNER_DIAGNOSTICS
           planner_update_queue_min_counter();
@@ -954,6 +954,7 @@ Having the real displacement of the head, we can calculate the total movement le
   {
     current_speed[i] = delta_mm[i] * inverse_second;
 #ifdef TMC2130
+#ifdef FEEDRATE_LIMIT
 	float max_fr = max_feedrate[i];
 	if (i < 2) // X, Y
 	{
@@ -970,6 +971,10 @@ Having the real displacement of the head, we can calculate the total movement le
 	}
     if(fabs(current_speed[i]) > max_fr)
       speed_factor = min(speed_factor, max_fr / fabs(current_speed[i]));
+#else //FEEDRATE_LIMIT
+    if(fabs(current_speed[i]) > max_feedrate[i])
+      speed_factor = min(speed_factor, max_feedrate[i] / fabs(current_speed[i]));
+#endif //FEEDRATE_LIMIT
 #else //TMC2130
     if(fabs(current_speed[i]) > max_feedrate[i])
       speed_factor = min(speed_factor, max_feedrate[i] / fabs(current_speed[i]));
@@ -1015,6 +1020,7 @@ Having the real displacement of the head, we can calculate the total movement le
 	if (block->steps_z.wide && (block->acceleration_st > axis_steps_per_sqr_second[Z_AXIS])) block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
 	if (block->steps_e.wide && (block->acceleration_st > axis_steps_per_sqr_second[E_AXIS])) block->acceleration_st = axis_steps_per_sqr_second[E_AXIS];
 #else // SIMPLE_ACCEL_LIMIT
+#ifdef ACCEL_LIMIT
 	if (tmc2130_mode == TMC2130_MODE_SILENT)
 	{
 		if ((block->steps_x.wide > block->step_event_count.wide / 2) || (block->steps_y.wide > block->step_event_count.wide / 2))
@@ -1033,6 +1039,7 @@ Having the real displacement of the head, we can calculate the total movement le
       block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
     if(((float)block->acceleration_st * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
       block->acceleration_st = axis_steps_per_sqr_second[E_AXIS];
+#endif // ACCEL_LIMIT
 #endif // SIMPLE_ACCEL_LIMIT
 #else //TMC2130
     // Limit acceleration per axis

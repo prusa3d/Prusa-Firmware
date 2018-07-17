@@ -11,15 +11,10 @@
 
 #define PINDA_THERMISTOR
 
-#define SWI2C                    // enable software i2c
-#define SWI2C_A8                 // 8bit address functions
+#define SWI2C_SDA      20 //SDA on P3
+#define SWI2C_SCL      21 //SCL on P3
 
-#define PAT9125_SWI2C
-#define PAT9125_SWI2C_SDA      20 //SDA on P3
-#define PAT9125_SWI2C_SCL      21 //SCL on P3
-#define PAT9125_SWI2C_CFG    0xb1 //2us clock delay, 2048 cycles timeout
 
-//#define PAT9125_HWI2C
 
 #define X_STEP_PIN             37
 #define X_DIR_PIN              48
@@ -88,11 +83,9 @@
 #define SUICIDE_PIN         -1  // PIN that has to be turned on right after start, to keep power flowing.
 #define TACH_0				30	// noctua extruder fan
 
-#ifdef ULTRA_LCD
 
 //#define KILL_PIN            32
 
-#ifdef NEWPANEL
 
 #define BEEPER              84  // Beeper on AUX-4
 #define LCD_PINS_RS         82
@@ -110,8 +103,6 @@
 #define SDCARDDETECT           15
 
 
-#endif //NEWPANEL
-#endif //ULTRA_LCD
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.

@@ -3,13 +3,11 @@
 #ifdef TMC2130
 
 #include "tmc2130.h"
-#include "LiquidCrystal_Prusa.h"
 #include "ultralcd.h"
 #include "language.h"
 #include "spi.h"
 
 
-extern LiquidCrystal_Prusa lcd;
 
 #define TMC2130_GCONF_NORMAL 0x00000000 // spreadCycle
 #define TMC2130_GCONF_SGSENS 0x00003180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])
@@ -414,9 +412,9 @@ void tmc2130_check_overtemp()
 		for (int i = 0; i < 4; i++)
 		{
 			tmc2130_sg_change = false;
-			lcd.setCursor(0 + i*4, 3);
-			lcd.print(itostr3(tmc2130_sg_cnt[i]));
-			lcd.print(' ');
+			lcd_set_cursor(0 + i*4, 3);
+			lcd_print(itostr3(tmc2130_sg_cnt[i]));
+			lcd_print(' ');
 		}
 	}
 #endif //DEBUG_CRASHDET_COUNTERS
@@ -453,7 +451,7 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 	}
 	else
 	{
-		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, 0, 0, tbl, 0, 0, 0, 0, mres, intpol, 0, 0);
+		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 0, 0, 0, 0, mres, intpol, 0, 0);
 		tmc2130_wr(axis, TMC2130_REG_IHOLD_IRUN, 0x000f0000 | (((current_r >> 1) & 0x1f) << 8) | ((current_h >> 1) & 0x1f));
 	}
 }
@@ -868,7 +866,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	if (fac1000 < TMC2130_WAVE_FAC1000_MIN) fac1000 = 0;
 	if (fac1000 > TMC2130_WAVE_FAC1000_MAX) fac1000 = TMC2130_WAVE_FAC1000_MAX;
 	float fac = 0;
-	if (fac1000) fac = (float)((uint16_t)fac1000 + 1000) / 1000; //correction factor
+	if (fac1000) fac = ((float)((uint16_t)fac1000 + 1000) / 1000); //correction factor
 	printf_P(PSTR(" factor: %s\n"), ftostr43(fac));
 	uint8_t vA = 0;                //value of currentA
 	uint8_t va = 0;                //previous vA
