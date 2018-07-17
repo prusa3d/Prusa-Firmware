@@ -4534,7 +4534,7 @@ void lcd_wizard(int state) {
 	lcd_return_to_status();
 	lcd_update(2);
 }
-
+/*
 void lcd_settings_linearity_correction_menu(void)
 {
 	MENU_BEGIN();
@@ -4555,7 +4555,7 @@ void lcd_settings_linearity_correction_menu(void)
 	MENU_ITEM_EDIT_int3_P(_i("E-correct"),  &corr[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 	MENU_END();
 }
-
+*/
 static void lcd_settings_menu()
 {
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -4632,7 +4632,7 @@ static void lcd_settings_menu()
     else MENU_ITEM_SUBMENU_P(_T(MSG_CRASHDETECT_NA), lcd_crash_mode_info);
   }
 
-  MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
+//  MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
 #endif //TMC2130
 
   if (temp_cal_active == false) {
