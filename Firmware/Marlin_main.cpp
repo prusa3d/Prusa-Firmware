@@ -2906,9 +2906,9 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	if (!onlyZ)
 	{
 		setTargetBed(0);
-		setTargetHotend(0, 0);
-		setTargetHotend(0, 1);
-		setTargetHotend(0, 2);
+		setTargetHotend0(0);
+		setTargetHotend1(0);
+		setTargetHotend2(0);
 		adjust_bed_reset(); //reset bed level correction
 	}
 
@@ -6353,9 +6353,9 @@ Sigma_Exit:
 				if (millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
 					lcd_display_message_fullscreen_P(_i("Press knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
 					wait_for_user_state = 1;
-					setTargetHotend(0, 0);
-					setTargetHotend(0, 1);
-					setTargetHotend(0, 2);
+					setTargetHotend0(0);
+					setTargetHotend1(0);
+					setTargetHotend2(0);
 					st_synchronize();
 					disable_e0();
 					disable_e1();
@@ -8407,9 +8407,9 @@ void long_pause() //long pause print
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
 
 	//set nozzle target temperature to 0
-	setTargetHotend(0, 0);
-	setTargetHotend(0, 1);
-	setTargetHotend(0, 2);
+	setTargetHotend0(0);
+	setTargetHotend1(0);
+	setTargetHotend2(0);
 
 	//Move XY to side
 	current_position[X_AXIS] = X_PAUSE_POS;
