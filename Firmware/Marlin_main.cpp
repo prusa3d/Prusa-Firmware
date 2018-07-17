@@ -735,7 +735,7 @@ void crashdet_detected(uint8_t mask)
 	lcd_update_enable(true);
 	lcd_update(2);
 	lcd_setstatuspgm(_T(MSG_CRASH_DETECTED));
-	gcode_G28(true, true, false, false); //home X and Y
+	gcode_G28(true, true, false); //home X and Y
 	st_synchronize();
 
 	if (automatic_recovery_after_crash) {
@@ -2609,7 +2609,11 @@ void force_high_power_mode(bool start_high_power_section) {
 }
 #endif //TMC2130
 
-void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib) {
+void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis) {
+	gcode_G28(home_x_axis, 0, home_y_axis, 0, home_z_axis, 0, false, true);
+}
+
+void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl) {
 	st_synchronize();
 
 #if 0
@@ -2619,6 +2623,11 @@ void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib) {
 
 	// Flag for the display update routine and to disable the print cancelation during homing.
 	homing_flag = true;
+
+	// Which axes should be homed?
+	bool home_x = home_x_axis;
+	bool home_y = home_y_axis;
+	bool home_z = home_z_axis;
 
 	// Either all X,Y,Z codes are present, or none of them.
 	bool home_all_axes = home_x == home_y && home_x == home_z;
@@ -2728,11 +2737,11 @@ void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib) {
 #endif //TMC2130
 
 
-      if(code_seen(axis_codes[X_AXIS]) && code_value_long() != 0)
-        current_position[X_AXIS]=code_value()+add_homing[X_AXIS];
+      if(home_x_axis && home_x_value != 0)
+        current_position[X_AXIS]=home_x_value+add_homing[X_AXIS];
 
-      if(code_seen(axis_codes[Y_AXIS]) && code_value_long() != 0)
-		    current_position[Y_AXIS]=code_value()+add_homing[Y_AXIS];
+      if(home_y_axis && home_y_value != 0)
+        current_position[Y_AXIS]=home_y_value+add_homing[Y_AXIS];
 
       #if Z_HOME_DIR < 0                      // If homing towards BED do Z last
         #ifndef Z_SAFE_HOMING
@@ -2827,8 +2836,8 @@ void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib) {
         #endif // Z_SAFE_HOMING
       #endif // Z_HOME_DIR < 0
 
-      if(code_seen(axis_codes[Z_AXIS]) && code_value_long() != 0)
-        current_position[Z_AXIS]=code_value()+add_homing[Z_AXIS];
+      if(home_z_axis && home_z_value != 0)
+        current_position[Z_AXIS]=home_z_value+add_homing[Z_AXIS];
       #ifdef ENABLE_AUTO_BED_LEVELING
         if(home_z)
           current_position[Z_AXIS] += zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
@@ -2860,7 +2869,7 @@ void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib) {
     world2machine_update_current();
 
 #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))
-	if (code_seen(axis_codes[X_AXIS]) || code_seen(axis_codes[Y_AXIS]) || code_seen('W') || code_seen(axis_codes[Z_AXIS]))
+	if (home_x_axis || home_y_axis || without_mbl || home_z_axis)
 		{
       if (! home_z && mbl_was_active) {
         // Re-enable the mesh bed leveling if only the X and Y axes were re-homed.
@@ -2873,10 +2882,6 @@ void gcode_G28(bool home_x, bool home_y, bool home_z, bool calib) {
 		{
 			st_synchronize();
 			homing_flag = false;
-			// Push the commands to the front of the message queue in the reverse order!
-			// There shall be always enough space reserved for these commands.
-			enquecommand_front_P((PSTR("G80")));
-			//goto case_G80;
 	  }
 #endif
 
@@ -3110,10 +3115,17 @@ void gcode_M701()
 	custom_message = true;
 	custom_message_type = 2;
 
-	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
-	current_position[E_AXIS] += 70;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+	
 
+	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
+	current_position[E_AXIS] += 40;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+	st_synchronize();
+
+	if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
+	current_position[E_AXIS] += 30;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+	st_synchronize();
 	current_position[E_AXIS] += 25;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
 	st_synchronize();
@@ -3356,6 +3368,8 @@ void process_commands()
             // careful!
             if (farm_mode) {
 #ifdef WATCHDOG
+                boot_app_magic = BOOT_APP_MAGIC;
+                boot_app_flags = BOOT_APP_FLG_RUN;
 				wdt_enable(WDTO_15MS);
 				cli();
 				while(1);
@@ -3663,16 +3677,26 @@ void process_commands()
       #endif //FWRETRACT
     case 28: //G28 Home all Axis one at a time
     {
+      long home_x_value = 0;
+      long home_y_value = 0;
+      long home_z_value = 0;
       // Which axes should be homed?
       bool home_x = code_seen(axis_codes[X_AXIS]);
+      home_x_value = code_value_long();
       bool home_y = code_seen(axis_codes[Y_AXIS]);
+      home_y_value = code_value_long();
       bool home_z = code_seen(axis_codes[Z_AXIS]);
+      home_z_value = code_value_long();
+      bool without_mbl = code_seen('W');
       // calibrate?
       bool calib = code_seen('C');
-
-	  gcode_G28(home_x, home_y, home_z, calib);
-	  
-	  break;
+      gcode_G28(home_x, home_x_value, home_y, home_y_value, home_z, home_z_value, calib, without_mbl);
+      if ((home_x || home_y || without_mbl || home_z) == false) {
+         // Push the commands to the front of the message queue in the reverse order!
+         // There shall be always enough space reserved for these commands.
+         goto case_G80;
+      }
+      break;
     }
 #ifdef ENABLE_AUTO_BED_LEVELING
     case 29: // G29 Detailed Z-Probe, probes the bed at 3 or more points.
@@ -3912,7 +3936,7 @@ void process_commands()
 				current_position[X_AXIS] = pgm_read_float(bed_ref_points_4);
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 				st_synchronize();
-				gcode_G28(false, false, true, false);
+				gcode_G28(false, false, true);
 
 			}
 			if ((current_temperature_pinda > 35) && (farm_mode == false)) {
