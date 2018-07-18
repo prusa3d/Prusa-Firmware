@@ -38,7 +38,6 @@ uint8_t fsensor_int_pin_old = 0;
 int16_t fsensor_chunk_len = FSENSOR_CHUNK_LEN;
 bool fsensor_enabled = true;
 bool fsensor_not_responding = false;
-//bool fsensor_ignore_error = true;
 bool fsensor_M600 = false;
 uint8_t fsensor_err_cnt = 0;
 int16_t fsensor_st_cnt = 0;
@@ -50,6 +49,10 @@ uint16_t fsensor_autoload_y = 0;
 uint8_t fsensor_autoload_c = 0;
 uint32_t fsensor_autoload_last_millis = 0;
 uint8_t fsensor_autoload_sum = 0;
+
+uint32_t fsensor_st_sum = 0;
+uint32_t fsensor_yd_sum = 0;
+uint32_t fsensor_er_sum = 0;
 
 void fsensor_block()
 {
@@ -70,12 +73,16 @@ bool fsensor_enable()
 	else
 		fsensor_not_responding = true;
 	fsensor_enabled = pat9125?true:false;
-//	fsensor_ignore_error = true;
 	fsensor_M600 = false;
 	fsensor_err_cnt = 0;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled?0x01:0x00); 
 	FSensorStateMenu = fsensor_enabled?1:0;
 //	printf_P(PSTR("fsensor_enable - end %d\n"), fsensor_enabled?1:0);
+
+	fsensor_st_sum = 0;
+	fsensor_yd_sum = 0;
+	fsensor_er_sum = 0;
+
 	return fsensor_enabled;
 }
 
@@ -196,10 +203,17 @@ ISR(PCINT2_vect)
 		if (st_cnt > 0) //positive movement
 		{
 			if (pat9125_y <= 0)
+			{
 				fsensor_err_cnt++;
+				fsensor_er_sum++;
+			}
 			else
+			{
 				if (fsensor_err_cnt)
 					fsensor_err_cnt--;
+				fsensor_st_sum += st_cnt;
+				fsensor_yd_sum += pat9125_y;
+			}
 		}
 		else //negative movement
 		{
@@ -211,7 +225,10 @@ ISR(PCINT2_vect)
 
 #ifdef DEBUG_FSENSOR_LOG
 	if (fsensor_log)
+	{
 		printf_P(_N("FSENSOR cnt=%d dy=%d err=%d %S\n"), st_cnt, pat9125_y, fsensor_err_cnt, (fsensor_err_cnt > old_err_cnt)?_N("NG!"):_N("OK"));
+		printf_P(_N("FSENSOR st_sum=%lu yd_sum=%lu er_sum=%lu\n"), fsensor_st_sum, fsensor_yd_sum, fsensor_er_sum);
+	}
 #endif //DEBUG_FSENSOR_LOG
 
 	pat9125_y = 0;
@@ -247,7 +264,7 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 
 void fsensor_update()
 {
-	if (!fsensor_enabled) return;
+	if (!fsensor_enabled || fsensor_M600) return;
 	if (fsensor_err_cnt > FSENSOR_ERR_MAX)
 	{
 		fsensor_stop_and_save_print();
@@ -274,7 +291,7 @@ void fsensor_update()
 			eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
 			enquecommand_front_P((PSTR("M600")));
 			fsensor_M600 = true;
-			fsensor_enabled = false;
+//			fsensor_enabled = false;
 		}
 	}
 }
