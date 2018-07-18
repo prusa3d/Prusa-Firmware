@@ -7124,6 +7124,10 @@ Sigma_Exit:
               fprintf_P(uart2io, PSTR("T0\n"));
               break;
           }
+
+		  bool response = mmu_get_reponse();
+		  if (!response) mmu_not_responding();
+
     	  snmm_extruder = tmp_extruder; //filament change is finished
 
 		  if (*(strchr_pointer + index) == '?') { // for single material usage with mmu
