@@ -3367,8 +3367,6 @@ void process_commands()
 		}	
 		else if (code_seen("MMURES")) {
 			fprintf_P(uart2io, PSTR("x0"));
-			bool response = mmu_get_reponse();
-			if (!response) printf_P(PSTR("MMU not responding"));
 		}
 		else if (code_seen("RESET")) {
             // careful!
@@ -7124,7 +7122,18 @@ Sigma_Exit:
               fprintf_P(uart2io, PSTR("T0\n"));
               break;
           }
-    	  snmm_extruder = tmp_extruder; //filament change is finished
+
+          
+
+          
+              // get response
+            uart2_rx_clr();
+              while (!uart2_rx_ok())
+              {
+                  //printf_P(PSTR("waiting..\n"));
+                  delay_keep_alive(100);
+              }
+			  snmm_extruder = tmp_extruder; //filament change is finished
 
 		  if (*(strchr_pointer + index) == '?') { // for single material usage with mmu
 			  bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
@@ -9129,23 +9138,6 @@ static void print_time_remaining_init() {
 	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
 	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
-}
-
-bool mmu_get_reponse() {
-	bool response = true;
-	LongTimer mmu_get_reponse_timeout;
-    uart2_rx_clr();
-	
-	mmu_get_reponse_timeout.start();
-	while (!uart2_rx_ok())
-    {
-      delay_keep_alive(100);
-	  if (mmu_get_reponse_timeout.expired(30 * 1000ul)) { //PINDA cooling from 60 C to 35 C takes about 7 minutes
-			response = false;
-			break;
-	  }
-    }
-	return response;
 }
 
 #define FIL_LOAD_LENGTH 60

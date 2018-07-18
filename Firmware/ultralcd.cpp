@@ -3070,7 +3070,7 @@ bool lcd_wait_for_pinda(float temp) {
 	}
 	lcd_set_custom_characters_arrows();
 	lcd_update_enable(true);
-	return(target_temp_reached);
+	return target_temp_reached;
 }
 
 void lcd_wait_for_heater() {

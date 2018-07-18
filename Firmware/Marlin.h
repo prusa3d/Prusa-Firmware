@@ -465,3 +465,5 @@ void gcode_M701();
 #define UVLO !(PINE & (1<<4))
 
 void proc_commands();
+
+bool mmu_get_reponse();
