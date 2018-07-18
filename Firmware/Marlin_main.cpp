@@ -3364,7 +3364,8 @@ void process_commands()
 		}
 		else if (code_seen("thx")) {
 			no_response = false;
-        } else if (code_seen("RESET")) {
+		}		
+		else if (code_seen("RESET")) {
             // careful!
             if (farm_mode) {
 #ifdef WATCHDOG

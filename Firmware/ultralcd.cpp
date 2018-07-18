@@ -5205,13 +5205,18 @@ void extr_adj(int extruder) //loading filament for SNMM
     fprintf_P(uart2io, PSTR("L%d\n"), extruder);
 	
 	//show which filament is currently loaded
+	
+
+
+
+
 	lcd_update_enable(false);
-	lcd_implementation_clear();
-	lcd.setCursor(0, 1); lcd_printPGM(_T(MSG_LOADING_FILAMENT));
+	lcd_clear();
+	lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 	//if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd.setCursor(0, 1);
 	//else lcd.print(" ");
-	lcd.print(" ");
-	lcd.print(snmm_extruder + 1);
+	lcd_print(" ");
+	lcd_print(snmm_extruder + 1);
 
 	// get response
     uart2_rx_clr();
@@ -5279,10 +5284,10 @@ void extr_unload() { //unloads filament
 		
 		//show which filament is currently unloaded
 		lcd_update_enable(false);
-		lcd_implementation_clear();
-		lcd.setCursor(0, 1); lcd_printPGM(_T(MSG_UNLOADING_FILAMENT));
-		lcd.print(" ");
-		lcd.print(snmm_extruder + 1);
+		lcd_clear();
+		lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
+		lcd_print(" ");
+		lcd_print(snmm_extruder + 1);
 
 		current_position[E_AXIS] -= 80;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
