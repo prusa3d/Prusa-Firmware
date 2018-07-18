@@ -3368,7 +3368,7 @@ void process_commands()
 		else if (code_seen("MMURES")) {
 			fprintf_P(uart2io, PSTR("x0"));
 			bool response = mmu_get_reponse();
-			if (!response) printf_P(PSTR("MMU not responding"));
+			if (!response) mmu_not_responding();
 		}
 		else if (code_seen("RESET")) {
             // careful!
@@ -9146,6 +9146,10 @@ bool mmu_get_reponse() {
 	  }
     }
 	return response;
+}
+
+void mmu_not_responding() {
+	printf_P(PSTR("MMU not responding"));
 }
 
 #define FIL_LOAD_LENGTH 60

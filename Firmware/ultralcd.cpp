@@ -5219,12 +5219,8 @@ void extr_adj(int extruder) //loading filament for SNMM
 	lcd_print(snmm_extruder + 1);
 
 	// get response
-    uart2_rx_clr();
-	while (!uart2_rx_ok())
-    {
-      //printf_P(PSTR("waiting..\n"));
-      delay_keep_alive(100);
-    }
+	bool reponse = mmu_get_reponse();
+	if (!response) mmu_not_responding();
 	lcd_update_enable(true);
 	
 	
@@ -5296,12 +5292,9 @@ void extr_unload() { //unloads filament
 		fprintf_P(uart2io, PSTR("U0\n"));
 
 		// get response
-		uart2_rx_clr();
-		while (!uart2_rx_ok())
-		{
-			//printf_P(PSTR("waiting..\n"));
-			delay_keep_alive(100);
-		}
+		bool reponse = mmu_get_reponse();
+		if (!response) mmu_not_responding();
+
 		lcd_update_enable(true);
 		#else //SNMM_V2
 
