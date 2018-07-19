@@ -6163,13 +6163,15 @@ static void lcd_sd_updir()
   menu_top = 0;
 }
 
-void lcd_print_stop() {
+void lcd_print_stop()
+{
 	cancel_heatup = true;
 #ifdef MESH_BED_LEVELING
 	mbl.active = false;
 #endif
 	// Stop the stoppers, update the position from the stoppers.
-	if (mesh_bed_leveling_flag == false && homing_flag == false) {
+	if (mesh_bed_leveling_flag == false && homing_flag == false)
+	{
 		planner_abort_hard();
 		// Because the planner_abort_hard() initialized current_position[Z] from the stepper,
 		// Z baystep is no more applied. Reset it.
@@ -6178,20 +6180,16 @@ void lcd_print_stop() {
 	// Clean the input command queue.
 	cmdqueue_reset();
 	lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
-	lcd_update(2);
 	card.sdprinting = false;
 	card.closefile();
-
 	stoptime = millis();
 	unsigned long t = (stoptime - starttime - pause_time) / 1000; //time in s
 	pause_time = 0;
 	save_statistics(total_filament_used, t);
-
 	lcd_return_to_status();
 	lcd_ignore_click(true);
 	lcd_commands_step = 0;
 	lcd_commands_type = LCD_COMMAND_STOP_PRINT;
-
 	// Turn off the print fan
 	SET_OUTPUT(FAN_PIN);
 	WRITE(FAN_PIN, 0);
@@ -7502,6 +7500,7 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
+	move_menu_scale = 1.0;
 	menu_submenu(lcd_move_z);
 }
 
