@@ -856,7 +856,7 @@ void factory_reset(char level, bool quiet)
             eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
 
             fsensor_enable();
-            fautoload_set(true);
+            fsensor_autoload_set(true);
                        
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
@@ -3107,6 +3107,8 @@ void gcode_M114()
 
 void gcode_M701()
 {
+	printf_P(PSTR("gcode_M701 begin\n"));
+
 #if defined (SNMM) || defined (SNMM_V2)
 	extr_adj(snmm_extruder);//loads current extruder
 #else
@@ -3114,7 +3116,13 @@ void gcode_M701()
 	custom_message = true;
 	custom_message_type = 2;
 
-	
+	bool old_watch_runout = fsensor_watch_runout;
+	fsensor_watch_runout = false;
+	fsensor_st_sum = 0;
+	fsensor_yd_sum = 0;
+	fsensor_er_sum = 0;
+	fsensor_yd_min = 255;
+	fsensor_yd_max = 0;
 
 	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 	current_position[E_AXIS] += 40;
@@ -3156,6 +3164,11 @@ void gcode_M701()
 	custom_message_type = 0;
 #endif
 
+	fsensor_err_cnt = 0;
+	fsensor_watch_runout = old_watch_runout;
+	printf_P(_N("\nFSENSOR st_sum=%lu yd_sum=%lu er_sum=%lu\n"), fsensor_st_sum, fsensor_yd_sum, fsensor_er_sum);
+	printf_P(_N("\nFSENSOR yd_min=%hhu yd_max=%hhu yd_avg=%hhu\n"), fsensor_yd_min, fsensor_yd_max, fsensor_yd_sum * FSENSOR_CHUNK_LEN / fsensor_st_sum);
+	printf_P(PSTR("gcode_M701 end\n"));
 }
 /**
  * @brief Get serial number from 32U2 processor
@@ -6543,15 +6556,14 @@ Sigma_Exit:
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 #ifdef PAT9125
-		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_start();
+		if (filament_autoload_enabled && (old_fsensor_enabled || !fsensor_watch_runout)) fsensor_autoload_check_start();
 #endif //PAT9125
-//		  printf_P(PSTR("M600 PAT9125 filament_autoload_enabled=%d, old_fsensor_enabled=%d, fsensor_M600=%d"), filament_autoload_enabled, old_fsensor_enabled, fsensor_M600);
         while(!lcd_clicked())
 		{
           manage_heater();
           manage_inactivity(true);
 #ifdef PAT9125
-		  if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600) && fsensor_check_autoload())
+		  if (filament_autoload_enabled && (old_fsensor_enabled || !fsensor_watch_runout) && fsensor_check_autoload())
 		  {
 			tone(BEEPER, 1000);
 			delay_keep_alive(50);
@@ -6567,7 +6579,7 @@ Sigma_Exit:
 
         }
 #ifdef PAT9125
-		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_stop();
+		if (filament_autoload_enabled && (old_fsensor_enabled || !fsensor_watch_runout)) fsensor_autoload_check_stop();
 #endif //PAT9125
 		//WRITE(BEEPER, LOW);
 		KEEPALIVE_STATE(IN_HANDLER);
@@ -6717,6 +6729,7 @@ Sigma_Exit:
 	  custom_message_type = 0;
 
 #ifdef PAT9125
+/*
 //      fsensor_enabled = old_fsensor_enabled; //temporary solution for unexpected restarting
 
 	  if (fsensor_M600)
@@ -6733,6 +6746,7 @@ Sigma_Exit:
 		fsensor_restore_print_and_continue();
 	  }
 	fsensor_M600 = false;
+*/
 #endif //PAT9125
         
     }
@@ -7659,7 +7673,7 @@ static void handleSafetyTimer()
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef PAT9125
-	if (fsensor_enabled && filament_autoload_enabled && !fsensor_M600 && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+	if (fsensor_enabled && filament_autoload_enabled && fsensor_watch_runout && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 	{
 		if (fsensor_autoload_enabled)
 		{

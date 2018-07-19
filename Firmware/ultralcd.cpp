@@ -146,8 +146,6 @@ int8_t FSensorStateMenu = 1;
 
 int8_t CrashDetectMenu = 1;
 
-extern void fsensor_block();
-extern void fsensor_unblock();
 
 extern bool fsensor_enable();
 extern void fsensor_disable();
@@ -2282,7 +2280,7 @@ void lcd_set_fan_check() {
 }
 
 void lcd_set_filament_autoload() {
-     fautoload_set(!filament_autoload_enabled);
+     fsensor_autoload_set(!filament_autoload_enabled);
 }
 
 void lcd_unLoadFilament()
@@ -4465,9 +4463,6 @@ void lcd_wizard(int state) {
 			state = 7;
 			break;
 		case 7: //load filament 
-#ifdef PAT9125
-			fsensor_block();
-#endif //PAT9125
 			lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 			lcd_update_enable(false);
 			lcd_clear();
@@ -4476,9 +4471,6 @@ void lcd_wizard(int state) {
 			change_extr(0);
 #endif
 			gcode_M701();
-#ifdef PAT9125
-			fsensor_unblock();
-#endif //PAT9125
 			state = 9;
 			break;
 		case 8:
