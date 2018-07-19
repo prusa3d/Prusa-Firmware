@@ -953,32 +953,8 @@ Having the real displacement of the head, we can calculate the total movement le
   for(int i=0; i < 4; i++)
   {
     current_speed[i] = delta_mm[i] * inverse_second;
-#ifdef TMC2130
-#ifdef FEEDRATE_LIMIT
-	float max_fr = max_feedrate[i];
-	if (i < 2) // X, Y
-	{
-		if (tmc2130_mode == TMC2130_MODE_SILENT)
-		{
-			if (max_fr > SILENT_MAX_FEEDRATE)
-				max_fr = SILENT_MAX_FEEDRATE;
-		}
-		else
-		{
-			if (max_fr > NORMAL_MAX_FEEDRATE)
-				max_fr = NORMAL_MAX_FEEDRATE;
-		}
-	}
-    if(fabs(current_speed[i]) > max_fr)
-      speed_factor = min(speed_factor, max_fr / fabs(current_speed[i]));
-#else //FEEDRATE_LIMIT
-    if(fabs(current_speed[i]) > max_feedrate[i])
+	if(fabs(current_speed[i]) > max_feedrate[i])
       speed_factor = min(speed_factor, max_feedrate[i] / fabs(current_speed[i]));
-#endif //FEEDRATE_LIMIT
-#else //TMC2130
-    if(fabs(current_speed[i]) > max_feedrate[i])
-      speed_factor = min(speed_factor, max_feedrate[i] / fabs(current_speed[i]));
-#endif //TMC2130
   }
 
   // Correct the speed  
@@ -1003,45 +979,6 @@ Having the real displacement of the head, we can calculate the total movement le
   else
   {
     block->acceleration_st = ceil(acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
-#ifdef TMC2130
-#ifdef SIMPLE_ACCEL_LIMIT // in some cases can be acceleration limited inproperly
-	if (tmc2130_mode == TMC2130_MODE_SILENT)
-	{
-		if (block->steps_x.wide || block->steps_y.wide)
-			if (block->acceleration_st > SILENT_MAX_ACCEL_ST) block->acceleration_st = SILENT_MAX_ACCEL_ST;
-	}
-	else
-	{
-		if (block->steps_x.wide || block->steps_y.wide)
-			if (block->acceleration_st > NORMAL_MAX_ACCEL_ST) block->acceleration_st = NORMAL_MAX_ACCEL_ST;
-	}
-	if (block->steps_x.wide && (block->acceleration_st > axis_steps_per_sqr_second[X_AXIS])) block->acceleration_st = axis_steps_per_sqr_second[X_AXIS];
-	if (block->steps_y.wide && (block->acceleration_st > axis_steps_per_sqr_second[Y_AXIS])) block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS];
-	if (block->steps_z.wide && (block->acceleration_st > axis_steps_per_sqr_second[Z_AXIS])) block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
-	if (block->steps_e.wide && (block->acceleration_st > axis_steps_per_sqr_second[E_AXIS])) block->acceleration_st = axis_steps_per_sqr_second[E_AXIS];
-#else // SIMPLE_ACCEL_LIMIT
-#ifdef ACCEL_LIMIT
-	if (tmc2130_mode == TMC2130_MODE_SILENT)
-	{
-		if ((block->steps_x.wide > block->step_event_count.wide / 2) || (block->steps_y.wide > block->step_event_count.wide / 2))
-			if (block->acceleration_st > SILENT_MAX_ACCEL_ST) block->acceleration_st = SILENT_MAX_ACCEL_ST;
-	}
-	else
-	{
-		if ((block->steps_x.wide > block->step_event_count.wide / 2) || (block->steps_y.wide > block->step_event_count.wide / 2))
-			if (block->acceleration_st > NORMAL_MAX_ACCEL_ST) block->acceleration_st = NORMAL_MAX_ACCEL_ST;
-	}
-    if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
-      block->acceleration_st = axis_steps_per_sqr_second[X_AXIS];
-    if(((float)block->acceleration_st * (float)block->steps_y.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Y_AXIS])
-      block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS];
-    if(((float)block->acceleration_st * (float)block->steps_z.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Z_AXIS])
-      block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
-    if(((float)block->acceleration_st * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
-      block->acceleration_st = axis_steps_per_sqr_second[E_AXIS];
-#endif // ACCEL_LIMIT
-#endif // SIMPLE_ACCEL_LIMIT
-#else //TMC2130
     // Limit acceleration per axis
     //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
     if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
@@ -1052,7 +989,6 @@ Having the real displacement of the head, we can calculate the total movement le
       block->acceleration_st = axis_steps_per_sqr_second[E_AXIS];
     if(((float)block->acceleration_st * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > axis_steps_per_sqr_second[Z_AXIS])
       block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
-#endif //TMC2130
   }
   // Acceleration of the segment, in mm/sec^2
   block->acceleration = block->acceleration_st / steps_per_mm;

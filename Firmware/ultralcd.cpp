@@ -2665,7 +2665,7 @@ static void lcd_move_e()
 		if (lcd_draw_update)
 		{
 		    lcd_set_cursor(0, 1);
-			menu_draw_float31(' ', name, current_position[E_AXIS]);
+			menu_draw_float31(' ', PSTR("Extruder"), current_position[E_AXIS]);
 		}
 		if (LCD_CLICKED) menu_back();
 	}
@@ -2856,7 +2856,10 @@ static void _lcd_babystep(int axis, const char *msg)
 		lcd_draw_update = 1;
 	}
 	if (lcd_draw_update)
-		lcd_drawedit_2(msg, ftostr13ns(menuData.babyStep.babystepMemMM[axis]));
+	{
+	    lcd_set_cursor(0, 1);
+		menu_draw_float31(' ', msg, menuData.babyStep.babystepMemMM[axis]);
+	}
 	if (LCD_CLICKED || menuExiting)
 	{
 		// Only update the EEPROM when leaving the menu.

@@ -247,7 +247,7 @@ void menu_draw_float31(char chr, const char* str, float val)
 	char spaces[21];
 	strcpy_P(spaces, menu_20x_space);
 	spaces[12 - text_len] = 0;
-	lcd_printf_P(menu_draw_float31, chr, str, spaces, val);
+	lcd_printf_P(menu_fmt_float31, chr, str, spaces, val);
 }
 
 #define _menu_data (*((menu_data_edit_t*)menu_data))
