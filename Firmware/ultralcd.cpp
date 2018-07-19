@@ -4066,8 +4066,9 @@ static void lcd_silent_mode_set() {
 //	  MYSERIAL.print("standstill OK");
 //  else
 //	  MYSERIAL.print("standstill NG!");
-  cli();
+	cli();
 	tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+	update_mode_profile();
 	tmc2130_init();
   // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
   // Be safe than sorry, reset the stepper timer before re-enabling interrupts.

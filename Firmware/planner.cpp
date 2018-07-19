@@ -72,9 +72,20 @@
 //===========================================================================
 
 unsigned long minsegmenttime;
-float max_feedrate[NUM_AXIS]; // set the max speeds
+
+// Use M203 to override by software
+float max_feedrate_normal[NUM_AXIS];       // max speeds for normal mode
+float max_feedrate_silent[NUM_AXIS];       // max speeds for silent mode
+float* max_feedrate = max_feedrate_normal;
+
+// Use M92 to override by software
 float axis_steps_per_unit[NUM_AXIS];
-unsigned long max_acceleration_units_per_sq_second[NUM_AXIS]; // Use M201 to override by software
+
+// Use M201 to override by software
+unsigned long max_acceleration_units_per_sq_second_normal[NUM_AXIS];
+unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
+unsigned long* max_acceleration_units_per_sq_second = max_acceleration_units_per_sq_second_normal;
+
 float minimumfeedrate;
 float acceleration;         // Normal acceleration mm/s^2  THIS IS THE DEFAULT ACCELERATION for all moves. M204 SXXXX
 float retract_acceleration; //  mm/s^2   filament pull-pack and push-forward  while standing still in the other axis M204 TXXXX
@@ -1283,11 +1294,28 @@ void set_extrude_min_temp(float temp)
 void reset_acceleration_rates()
 {
 	for(int8_t i=0; i < NUM_AXIS; i++)
-        {
         axis_steps_per_sqr_second[i] = max_acceleration_units_per_sq_second[i] * axis_steps_per_unit[i];
-        }
 }
-unsigned char number_of_blocks() {
+
+#ifdef TMC2130
+void update_mode_profile()
+{
+	if (tmc2130_mode == TMC2130_MODE_NORMAL)
+	{
+		max_feedrate = max_feedrate_normal;
+		max_acceleration_units_per_sq_second = max_acceleration_units_per_sq_second_normal;
+	}
+	else if (tmc2130_mode == TMC2130_MODE_SILENT)
+	{
+		max_feedrate = max_feedrate_silent;
+		max_acceleration_units_per_sq_second = max_acceleration_units_per_sq_second_silent;
+	}
+	reset_acceleration_rates();
+}
+#endif //TMC2130
+
+unsigned char number_of_blocks()
+{
 	return (block_buffer_head + BLOCK_BUFFER_SIZE - block_buffer_tail) & (BLOCK_BUFFER_SIZE - 1);
 }
 #ifdef PLANNER_DIAGNOSTICS

@@ -1378,7 +1378,6 @@ void setup()
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	if (silentMode == 0xff) silentMode = 0;
-//	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_mode = TMC2130_MODE_NORMAL;
 	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
 	if (crashdet && !farm_mode)
@@ -1432,6 +1431,7 @@ void setup()
 
 #ifdef TMC2130
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+	update_mode_profile();
 	tmc2130_init();
 #endif //TMC2130
     
@@ -2600,6 +2600,7 @@ void force_high_power_mode(bool start_high_power_section) {
 		st_synchronize();
 		cli();
 		tmc2130_mode = (start_high_power_section == true) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
+		update_mode_profile();
 		tmc2130_init();
     // We may have missed a stepper timer interrupt due to the time spent in the tmc2130_init() routine.
     // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
@@ -6910,6 +6911,7 @@ Sigma_Exit:
 	case 914: // M914 Set normal mode
     {
 		tmc2130_mode = TMC2130_MODE_NORMAL;
+		update_mode_profile();
 		tmc2130_init();
     }
     break;
@@ -6917,6 +6919,7 @@ Sigma_Exit:
 	case 915: // M915 Set silent mode
     {
 		tmc2130_mode = TMC2130_MODE_SILENT;
+		update_mode_profile();
 		tmc2130_init();
     }
     break;
