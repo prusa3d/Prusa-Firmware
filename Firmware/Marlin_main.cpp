@@ -9094,6 +9094,7 @@ void mmu_switch_extruder(uint8_t extruder) {
 }
 
 void mmu_M600_load_filament() {
+#ifdef SNMM_V2
 		  bool response = false;
 		  tmp_extruder = choose_extruder_menu();
 		  lcd_update_enable(false);
@@ -9133,6 +9134,7 @@ void mmu_M600_load_filament() {
     	  snmm_extruder = tmp_extruder; //filament change is finished
 
 		  mmu_load_to_nozzle();
+#endif
 }
 
 void M600_load_filament_movements() {
