@@ -6227,7 +6227,7 @@ Sigma_Exit:
     {
 #ifdef PAT9125
 		bool old_fsensor_enabled = fsensor_enabled;
-		fsensor_enabled = false; //temporary solution for unexpected restarting
+//		fsensor_enabled = false; //temporary solution for unexpected restarting
 #endif //PAT9125
 
 		st_synchronize();
@@ -6584,7 +6584,7 @@ Sigma_Exit:
 	  custom_message_type = 0;
 
 #ifdef PAT9125
-      fsensor_enabled = old_fsensor_enabled; //temporary solution for unexpected restarting
+//      fsensor_enabled = old_fsensor_enabled; //temporary solution for unexpected restarting
 
 	  if (fsensor_M600)
 	  {
@@ -6596,10 +6596,10 @@ Sigma_Exit:
 		    cmdqueue_pop_front();
 		}
 		KEEPALIVE_STATE(IN_HANDLER);
-		fsensor_enable();
+//		fsensor_enable();
 		fsensor_restore_print_and_continue();
 	  }
-
+	fsensor_M600 = false;
 #endif //PAT9125
         
     }
@@ -6926,7 +6926,7 @@ Sigma_Exit:
 #else
 #ifdef PAT9125
 		bool old_fsensor_enabled = fsensor_enabled;
-		fsensor_enabled = false;
+//		fsensor_enabled = false;
 #endif //PAT9125
 		custom_message = true;
 		custom_message_type = 2;
@@ -6970,7 +6970,7 @@ Sigma_Exit:
 		custom_message = false;
 		custom_message_type = 0;
 #ifdef PAT9125
-		fsensor_enabled = old_fsensor_enabled;
+//		fsensor_enabled = old_fsensor_enabled;
 #endif //PAT9125
 #endif	
 	}
