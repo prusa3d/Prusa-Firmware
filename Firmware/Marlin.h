@@ -50,7 +50,7 @@
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
 
-#include "WString.h"
+//#include "WString.h"
 
 #ifdef AT90USB
    #ifdef BTENABLED
@@ -343,10 +343,21 @@ extern unsigned long t_fan_rising_edge;
 extern bool mesh_bed_leveling_flag;
 extern bool mesh_bed_run_from_menu;
 
-extern float distance_from_min[2];
 extern bool sortAlpha;
 
 extern char dir_names[3][9];
+
+// save/restore printing
+extern bool saved_printing;
+
+//estimated time to end of the print
+extern uint8_t print_percent_done_normal;
+extern uint16_t print_time_remaining_normal;
+extern uint8_t print_percent_done_silent;
+extern uint16_t print_time_remaining_silent;
+#define PRINT_TIME_REMAINING_INIT 65535
+#define PRINT_PERCENT_DONE_INIT 255
+#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused)
 
 extern void calculate_extruder_multipliers();
 
@@ -400,6 +411,11 @@ extern void print_mesh_bed_leveling_table();
 extern void fsensor_init();
 #endif //PAT9125
 
+//estimated time to end of the print
+extern uint16_t print_time_remaining();
+extern uint8_t print_percent_done();
+static void print_time_remaining_init();
+
 #ifdef HOST_KEEPALIVE_FEATURE
 
 // States for managing Marlin and host communication
@@ -435,6 +451,9 @@ void force_high_power_mode(bool start_high_power_section);
 #endif //TMC2130
 
 // G-codes
+void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl);
+void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
+
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
 void gcode_M701();

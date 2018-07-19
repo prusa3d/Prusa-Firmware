@@ -227,18 +227,18 @@ void checkHitEndstops()
 {
  if( endstop_x_hit || endstop_y_hit || endstop_z_hit) {
    SERIAL_ECHO_START;
-   SERIAL_ECHORPGM(MSG_ENDSTOPS_HIT);
+   SERIAL_ECHORPGM(_T(MSG_ENDSTOPS_HIT));
    if(endstop_x_hit) {
      SERIAL_ECHOPAIR(" X:",(float)endstops_trigsteps[X_AXIS]/axis_steps_per_unit[X_AXIS]);
-     LCD_MESSAGERPGM(CAT2(MSG_ENDSTOPS_HIT, PSTR("X")));
+     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT), PSTR("X")));
    }
    if(endstop_y_hit) {
      SERIAL_ECHOPAIR(" Y:",(float)endstops_trigsteps[Y_AXIS]/axis_steps_per_unit[Y_AXIS]);
-     LCD_MESSAGERPGM(CAT2(MSG_ENDSTOPS_HIT, PSTR("Y")));
+     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT), PSTR("Y")));
    }
    if(endstop_z_hit) {
      SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/axis_steps_per_unit[Z_AXIS]);
-     LCD_MESSAGERPGM(CAT2(MSG_ENDSTOPS_HIT,PSTR("Z")));
+     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT),PSTR("Z")));
    }
    SERIAL_ECHOLN("");
    endstop_x_hit=false;
@@ -342,7 +342,7 @@ FORCE_INLINE unsigned short calc_timer(uint16_t step_rate) {
     timer = (unsigned short)pgm_read_word_near(table_address);
     timer -= (((unsigned short)pgm_read_word_near(table_address+2) * (unsigned char)(step_rate & 0x0007))>>3);
   }
-  if(timer < 100) { timer = 100; MYSERIAL.print(MSG_STEPPER_TOO_HIGH); MYSERIAL.println(step_rate); }//(20kHz this should never happen)
+  if(timer < 100) { timer = 100; MYSERIAL.print(_i("Steprate too high: ")); MYSERIAL.println(step_rate); }//(20kHz this should never happen)////MSG_STEPPER_TOO_HIGH c=0 r=0
   return timer;
 }
 
@@ -1457,7 +1457,6 @@ void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl e
   #endif
 }
 
-//*** MaR::180416_03
 void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 {
     do

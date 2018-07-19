@@ -94,7 +94,7 @@ void CardReader::lsDive(const char *prepend, SdFile parent, const char * const m
 				if (!dir.open(parent, lfilename, O_READ)) {
 					if (lsAction == LS_SerialPrint) {
 						//SERIAL_ECHO_START();
-						//SERIAL_ECHOPGM(MSG_SD_CANT_OPEN_SUBDIR);
+						//SERIAL_ECHOPGM(_i("Cannot open subdir"));////MSG_SD_CANT_OPEN_SUBDIR c=0 r=0
 						//SERIAL_ECHOLN(lfilename);
 					}
 				}
@@ -183,23 +183,23 @@ void CardReader::initsd()
   {
     //if (!card.init(SPI_HALF_SPEED,SDSS))
     SERIAL_ECHO_START;
-    SERIAL_ECHOLNRPGM(MSG_SD_INIT_FAIL);
+    SERIAL_ECHOLNRPGM(_i("SD init fail"));////MSG_SD_INIT_FAIL c=0 r=0
   }
   else if (!volume.init(&card))
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(MSG_SD_VOL_INIT_FAIL);
+    SERIAL_ERRORLNRPGM(_i("volume.init failed"));////MSG_SD_VOL_INIT_FAIL c=0 r=0
   }
   else if (!root.openRoot(&volume)) 
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(MSG_SD_OPENROOT_FAIL);
+    SERIAL_ERRORLNRPGM(_i("openRoot failed"));////MSG_SD_OPENROOT_FAIL c=0 r=0
   }
   else 
   {
     cardOK = true;
     SERIAL_ECHO_START;
-    SERIAL_ECHOLNRPGM(MSG_SD_CARD_OK);
+    SERIAL_ECHOLNRPGM(_i("SD card ok"));////MSG_SD_CARD_OK c=0 r=0
   }
   workDir=root;
   curDir=&root;
@@ -211,7 +211,7 @@ void CardReader::initsd()
   /*
   if(!workDir.openRoot(&volume))
   {
-    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
+    SERIAL_ECHOLNPGM(_T(MSG_SD_WORKDIR_FAIL));
   }
   */
   
@@ -221,7 +221,7 @@ void CardReader::setroot()
 {
   /*if(!workDir.openRoot(&volume))
   {
-    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
+    SERIAL_ECHOLNPGM(_T(MSG_SD_WORKDIR_FAIL));
   }*/
   workDir=root;
   
@@ -360,7 +360,7 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
         SERIAL_ECHOLN(subdirname);
         if(!myDir.open(curDir,subdirname,O_READ))
         {
-          SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+          SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
           SERIAL_PROTOCOL(subdirname);
           SERIAL_PROTOCOLLNPGM(".");
           return;
@@ -392,20 +392,20 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
     if (file.open(curDir, fname, O_READ)) 
     {
       filesize = file.fileSize();
-      SERIAL_PROTOCOLRPGM(MSG_SD_FILE_OPENED);
+      SERIAL_PROTOCOLRPGM(_i("File opened: "));////MSG_SD_FILE_OPENED c=0 r=0
       SERIAL_PROTOCOL(fname);
-      SERIAL_PROTOCOLRPGM(MSG_SD_SIZE);
+      SERIAL_PROTOCOLRPGM(_n(" Size: "));////MSG_SD_SIZE c=0 r=0
       SERIAL_PROTOCOLLN(filesize);
       sdpos = 0;
       
-      SERIAL_PROTOCOLLNRPGM(MSG_SD_FILE_SELECTED);
+      SERIAL_PROTOCOLLNRPGM(_i("File selected"));////MSG_SD_FILE_SELECTED c=0 r=0
       getfilename(0, fname);
       lcd_setstatus(longFilename[0] ? longFilename : fname);
       lcd_setstatus("SD-PRINTING         ");
     }
     else
     {
-      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+      SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLLNPGM(".");
     }
@@ -414,14 +414,14 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
   { //write
     if (!file.open(curDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC))
     {
-      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
+      SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLLNPGM(".");
     }
     else
     {
       saving = true;
-      SERIAL_PROTOCOLRPGM(MSG_SD_WRITE_TO_FILE);
+      SERIAL_PROTOCOLRPGM(_i("Writing to file: "));////MSG_SD_WRITE_TO_FILE c=0 r=0
       SERIAL_PROTOCOLLN(name);
       lcd_setstatus(fname);
     }
@@ -513,7 +513,7 @@ void CardReader::getStatus()
   if(sdprinting){
     SERIAL_PROTOCOL(longFilename);
     SERIAL_PROTOCOLPGM("\n");
-    SERIAL_PROTOCOLRPGM(MSG_SD_PRINTING_BYTE);
+    SERIAL_PROTOCOLRPGM(_i("SD printing byte "));////MSG_SD_PRINTING_BYTE c=0 r=0
     SERIAL_PROTOCOL(sdpos);
     SERIAL_PROTOCOLPGM("/");
     SERIAL_PROTOCOLLN(filesize);
@@ -523,7 +523,13 @@ void CardReader::getStatus()
     SERIAL_PROTOCOL(itostr2(time%60));
     SERIAL_PROTOCOLPGM("\n");
   }
-  else{
+  else if (paused) {
+	SERIAL_PROTOCOLLNPGM("SD print paused");
+  }
+  else if (saved_printing) {
+	SERIAL_PROTOCOLLNPGM("Print saved");
+  }
+  else {
     SERIAL_PROTOCOLLNPGM("Not SD printing");
   }
 }
@@ -546,7 +552,7 @@ void CardReader::write_command(char *buf)
   if (file.writeError)
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
+    SERIAL_ERRORLNRPGM(_T(MSG_SD_ERR_WRITE_TO_FILE));
   }
 }
 
@@ -558,7 +564,7 @@ void CardReader::write_command_no_newline(char *buf)
   if (file.writeError)
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
+    SERIAL_ERRORLNRPGM(_T(MSG_SD_ERR_WRITE_TO_FILE));
     MYSERIAL.println("An error while writing to the SD Card.");
   }
 }
@@ -673,7 +679,7 @@ void CardReader::chdir(const char * relpath)
   if(!newfile.open(*parent,relpath, O_READ))
   {
    SERIAL_ECHO_START;
-   SERIAL_ECHORPGM(MSG_SD_CANT_ENTER_SUBDIR);
+   SERIAL_ECHORPGM(_i("Cannot enter subdir: "));////MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
    SERIAL_ECHOLN(relpath);
   }
   else
@@ -748,14 +754,14 @@ void CardReader::presort() {
 		// Never sort more than the max allowed
 		// If you use folders to organize, 20 may be enough
 		if (fileCnt > SDSORT_LIMIT) {
-			lcd_show_fullscreen_message_and_wait_P(MSG_FILE_CNT);
+			lcd_show_fullscreen_message_and_wait_P(_i("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."));////MSG_FILE_CNT c=20 r=4
 			fileCnt = SDSORT_LIMIT;
 		}
 		lcd_implementation_clear();
 		#if !SDSORT_USES_RAM
 			lcd_set_progress();
 		#endif
-		lcd_print_at_PGM(0, 1, MSG_SORTING);
+		lcd_print_at_PGM(0, 1, _i("Sorting files"));////MSG_SORTING c=20 r=1
 
 		// Sort order is always needed. May be static or dynamic.
 		#if SDSORT_DYNAMIC_RAM

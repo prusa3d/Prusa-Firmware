@@ -742,7 +742,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
       de_float = 0;
 #endif
       SERIAL_ECHO_START;
-      SERIAL_ECHOLNRPGM(MSG_ERR_COLD_EXTRUDE_STOP);
+      SERIAL_ECHOLNRPGM(_i(" cold extrusion prevented"));////MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
     }
     
     #ifdef PREVENT_LENGTHY_EXTRUDE
@@ -754,7 +754,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
         de_float = 0;
 #endif
       SERIAL_ECHO_START;
-      SERIAL_ECHOLNRPGM(MSG_ERR_LONG_EXTRUDE_STOP);
+      SERIAL_ECHOLNRPGM(_n(" too long extrusion prevented"));////MSG_ERR_LONG_EXTRUDE_STOP c=0 r=0
     }
     #endif
   }

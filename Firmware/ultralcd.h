@@ -4,7 +4,12 @@
 #include "Marlin.h"
 #include "mesh_bed_calibration.h"
 
+extern int lcd_puts_P(const char* str);
+extern int lcd_printf_P(const char* format, ...);
+
 #ifdef ULTRA_LCD
+
+	static void lcd_language_menu();
 
   void lcd_update(uint8_t lcdDrawUpdateOverride = 0);
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
@@ -25,14 +30,13 @@
   void lcd_loading_filament();
   void lcd_change_success();
   void lcd_loading_color();
-  void lcd_force_language_selection();
   void lcd_sdcard_stop();
   void lcd_sdcard_pause();
   void lcd_print_stop();
   void prusa_statistics(int _message, uint8_t _col_nr = 0);
   void lcd_confirm_print();
   unsigned char lcd_choose_color();
-void lcd_mylang();
+//void lcd_mylang();
   bool lcd_detected(void);
 
   static void lcd_selftest_v();
@@ -263,7 +267,6 @@ static float count_e(float layer_heigth, float extrusion_width, float extrusion_
 static void lcd_babystep_z();
 
 void stack_error();
-static void lcd_ping_allert();
 void lcd_printer_connected();
 void lcd_ping();
 
@@ -296,12 +299,12 @@ void lcd_temp_calibration_set();
 
 void display_loading();
 
-void lcd_service_mode_show_result();
-
 #if !SDSORT_USES_RAM
  void lcd_set_degree();
  void lcd_set_progress();
 #endif
+
+void lcd_language();
 
 void lcd_wizard();
 void lcd_wizard(int state);

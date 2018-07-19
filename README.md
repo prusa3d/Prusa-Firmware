@@ -1,9 +1,12 @@
-# 1. Developement environment preparing
+# 1. Development environment preparation
 
    1. install `"Arduino Software IDE"` for your preferred operating system  
 `https://www.arduino.cc -> Software->Downloads`  
 it is strongly recommended to use older version `"1.6.8"`, by which we can assure correct compilation results  
 _note: in versions `1.7.x` and `1.8.x` there are known some C/C++ compilator disasters, which disallow correct source code compilation (you can obtain `"... internal compiler error: in extract_insn, at ..."` error message, for example); we are not able to affect this situation afraid_  
+_note: in the case of persistent compilation problems, check the version of the currently used C/C++ compiler (GCC) - should be `4.8.1`; version can be verified by entering the command  
+`avr-gcc --version`  
+if you are not sure where the file is placed (depends on how `"Arduino Software IDE"` was installed), you can use the search feature within the file system_  
 _note: name collision for `"LiquidCrystal"` library known from previous versions is now obsolete (so there is no need to delete or rename original file/-s)_
 
    2. add (`UltiMachine`) `RAMBo` board into the list of Arduino target boards  
@@ -23,6 +26,8 @@ _note: select this item for any variant of board used in printers `'Prusa i3 MKx
 'clicking' the item will display the installation button; select choice `"1.0.1"` from the list(last known version as of the date of issue of this document)  
 _(after installation, the item is labeled as `"INSTALLED"` and can then be used for target board selection)_  
 
+   3. modify platform.txt to enable float printf support:
+   `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
 
 # 2. Source code compilation
 
@@ -48,3 +53,41 @@ or you can also save the output code to the file (in so called `HEX`-format) `"F
 `Sketch->ExportCompiledBinary`  
 and then upload it to the printer using the program `"FirmwareUpdater"`  
 _note: this file is created in the directory `"Firmware/"`_  
+
+# 3. Automated tests
+## Prerequisites
+c++11 compiler e.g. g++ 6.3.1
+
+cmake
+
+build system - ninja or gnu make
+
+## Building
+Create folder where you want to build tests.
+
+Example:
+
+`cd ..`
+
+`mkdir Prusa-Firmware-test`
+
+Generate build scripts in target folder.
+
+Example:
+
+`cd Prusa-Firmware-test`
+
+`cmake -G "Eclipse CDT4 - Ninja" ../Prusa-Firmware`
+
+or for DEBUG build:
+
+`cmake -G "Eclipse CDT4 - Ninja" -DCMAKE_BUILD_TYPE=Debug ../Prusa-Firmware`
+
+Build it.
+
+Example:
+
+`ninja`
+
+## Runing
+`./tests`

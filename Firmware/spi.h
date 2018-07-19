@@ -15,7 +15,11 @@
 #define DD_MOSI 2
 #define DD_MISO 3
 
-inline void spi_init()
+#if defined(__cplusplus)
+extern "C" {
+#endif //defined(__cplusplus)
+
+static inline void spi_init()
 {
 	DDRB &= ~((1 << DD_SCK) | (1 << DD_MOSI) | (1 << DD_MISO));
 	DDRB |= (1 << DD_SS) | (1 << DD_SCK) | (1 << DD_MOSI);
@@ -25,17 +29,21 @@ inline void spi_init()
 	SPSR = 0x00;
 }
 
-inline void spi_setup(uint8_t spcr, uint8_t spsr)
+static inline void spi_setup(uint8_t spcr, uint8_t spsr)
 {
 	SPCR = spcr;
 	SPSR = spsr;
 }
 
-inline uint8_t spi_txrx(uint8_t tx)
+static inline uint8_t spi_txrx(uint8_t tx)
 {
 	SPDR = tx;
 	while (!(SPSR & (1 << SPIF)));
 	return SPDR;
 }
+
+#if defined(__cplusplus)
+}
+#endif //defined(__cplusplus)
 
 #endif //SPI_H
