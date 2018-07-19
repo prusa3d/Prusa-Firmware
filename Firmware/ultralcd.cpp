@@ -7383,6 +7383,7 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
+	move_menu_scale = 1.0;
 	menu_submenu(lcd_move_z);
 }
 
