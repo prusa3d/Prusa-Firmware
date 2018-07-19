@@ -5765,16 +5765,29 @@ Sigma_Exit:
       }
       break;
     case 201: // M201
-      for(int8_t i=0; i < NUM_AXIS; i++)
-      {
-        if(code_seen(axis_codes[i]))
-        {
-          max_acceleration_units_per_sq_second[i] = code_value();
-        }
-      }
-      // steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
-      reset_acceleration_rates();
-      break;
+		for (int8_t i = 0; i < NUM_AXIS; i++)
+		{
+			if (code_seen(axis_codes[i]))
+			{
+				int val = code_value();
+#ifdef TMC2130
+				if ((i == X_AXIS) || (i == Y_AXIS))
+				{
+					int max_val = 0;
+					if (tmc2130_mode == TMC2130_MODE_NORMAL)
+						max_val = NORMAL_MAX_ACCEL_XY;
+					else if (tmc2130_mode == TMC2130_MODE_SILENT)
+						max_val = SILENT_MAX_ACCEL_XY;
+					if (val > max_val)
+						val = max_val;
+				}
+#endif
+				max_acceleration_units_per_sq_second[i] = val;
+			}
+		}
+		// steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
+		reset_acceleration_rates();
+		break;
     #if 0 // Not used for Sprinter/grbl gen6
     case 202: // M202
       for(int8_t i=0; i < NUM_AXIS; i++) {
@@ -5783,10 +5796,27 @@ Sigma_Exit:
       break;
     #endif
     case 203: // M203 max feedrate mm/sec
-      for(int8_t i=0; i < NUM_AXIS; i++) {
-        if(code_seen(axis_codes[i])) max_feedrate[i] = code_value();
-      }
-      break;
+		for (int8_t i = 0; i < NUM_AXIS; i++)
+		{
+			if (code_seen(axis_codes[i]))
+			{
+				float val = code_value();
+#ifdef TMC2130
+				if ((i == X_AXIS) || (i == Y_AXIS))
+				{
+					float max_val = 0;
+					if (tmc2130_mode == TMC2130_MODE_NORMAL)
+						max_val = NORMAL_MAX_FEEDRATE_XY;
+					else if (tmc2130_mode == TMC2130_MODE_SILENT)
+						max_val = SILENT_MAX_FEEDRATE_XY;
+					if (val > max_val)
+						val = max_val;
+				}
+#endif //TMC2130
+				max_feedrate[i] = val;
+			}
+		}
+		break;
     case 204: // M204 acclereration S normal moves T filmanent only moves
       {
         if(code_seen('S')) acceleration = code_value() ;
