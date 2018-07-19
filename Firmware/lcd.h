@@ -217,8 +217,6 @@ extern void lcd_set_custom_characters_progress(void);
 extern void lcd_set_custom_characters_nextpage(void);
 extern void lcd_set_custom_characters_degree(void);
 
-extern void lcd_drawedit(const char* pstr, char* value);
-extern void lcd_drawedit_2(const char* pstr, char* value);
 
 
 #endif //_LCD_H
