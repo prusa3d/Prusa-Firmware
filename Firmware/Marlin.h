@@ -471,3 +471,4 @@ void mmu_not_responding();
 void mmu_load_to_nozzle();
 void M600_load_filament();
 void mmu_M600_load_filament();
+void M600_load_filament_movements();

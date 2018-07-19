@@ -6231,7 +6231,6 @@ Sigma_Exit:
 #endif //PAT9125
 
 		st_synchronize();
-		float target[4];
 		float lastpos[4];
 
         if (farm_mode)
@@ -6247,10 +6246,6 @@ Sigma_Exit:
 
 		float HotendTempBckp = degTargetHotend(active_extruder);
 		int fanSpeedBckp = fanSpeed;
-        target[X_AXIS]=current_position[X_AXIS];
-        target[Y_AXIS]=current_position[Y_AXIS];
-        target[Z_AXIS]=current_position[Z_AXIS];
-        target[E_AXIS]=current_position[E_AXIS];
         lastpos[X_AXIS]=current_position[X_AXIS];
         lastpos[Y_AXIS]=current_position[Y_AXIS];
         lastpos[Z_AXIS]=current_position[Z_AXIS];
@@ -6259,27 +6254,27 @@ Sigma_Exit:
         //Restract extruder
         if(code_seen('E'))
         {
-          target[E_AXIS]+= code_value();
+          current_position[E_AXIS]+= code_value();
         }
         else
         {
           #ifdef FILAMENTCHANGE_FIRSTRETRACT
-            target[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT ;
+            current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT ;
           #endif
         }
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
 
         //Lift Z
         if(code_seen('Z'))
         {
-          target[Z_AXIS]+= code_value();
+          current_position[Z_AXIS]+= code_value();
         }
         else
         {
           #ifdef FILAMENTCHANGE_ZADD
-            target[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
-            if(target[Z_AXIS] < 10){
-              target[Z_AXIS]+= 10 ;
+            current_position[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
+            if(current_position[Z_AXIS] < 10){
+              current_position[Z_AXIS]+= 10 ;
               TooLowZ = 1;
             }else{
               TooLowZ = 0;
@@ -6288,30 +6283,30 @@ Sigma_Exit:
      
           
         }
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
 
         //Move XY to side
         if(code_seen('X'))
         {
-          target[X_AXIS]+= code_value();
+          current_position[X_AXIS]+= code_value();
         }
         else
         {
           #ifdef FILAMENTCHANGE_XPOS
-            target[X_AXIS]= FILAMENTCHANGE_XPOS ;
+            current_position[X_AXIS]= FILAMENTCHANGE_XPOS ;
           #endif
         }
         if(code_seen('Y'))
         {
-          target[Y_AXIS]= code_value();
+          current_position[Y_AXIS]= code_value();
         }
         else
         {
           #ifdef FILAMENTCHANGE_YPOS
-            target[Y_AXIS]= FILAMENTCHANGE_YPOS ;
+            current_position[Y_AXIS]= FILAMENTCHANGE_YPOS ;
           #endif
         }
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
 		st_synchronize();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
@@ -6398,7 +6393,7 @@ Sigma_Exit:
 
 			if (code_seen('L'))
 			{
-				target[E_AXIS] += code_value();
+				current_position[E_AXIS] += code_value();
 			}
 			else
 			{
@@ -6406,32 +6401,32 @@ Sigma_Exit:
 
 #else
 #ifdef FILAMENTCHANGE_FINALRETRACT
-				target[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
+				current_position[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
 #endif
 #endif // SNMM
 			}
 
 #ifdef SNMM
-			target[E_AXIS] += 12;
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500, active_extruder);
-			target[E_AXIS] += 6;
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
-			target[E_AXIS] += (FIL_LOAD_LENGTH * -1);
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5000, active_extruder);
+			current_position[E_AXIS] += 12;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3500, active_extruder);
+			current_position[E_AXIS] += 6;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000, active_extruder);
+			current_position[E_AXIS] += (FIL_LOAD_LENGTH * -1);
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000, active_extruder);
 			st_synchronize();
-			target[E_AXIS] += (FIL_COOLING);
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-			target[E_AXIS] += (FIL_COOLING*-1);
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-			target[E_AXIS] += (bowden_length[snmm_extruder] * -1);
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
+			current_position[E_AXIS] += (FIL_COOLING);
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+			current_position[E_AXIS] += (FIL_COOLING*-1);
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+			current_position[E_AXIS] += (bowden_length[snmm_extruder] * -1);
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000, active_extruder);
 			st_synchronize();
 
 #else
-			//		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
-			//plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3500 / 60, active_extruder);
+			//		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+			//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3500 / 60, active_extruder);
             
-            target[E_AXIS] -= FILAMENTCHANGE_FINALRETRACT;
+            current_position[E_AXIS] -= FILAMENTCHANGE_FINALRETRACT;
             st_synchronize();
 #ifdef TMC2130
             uint8_t tmc2130_current_r_bckp = tmc2130_current_r[E_AXIS];
@@ -6444,14 +6439,14 @@ Sigma_Exit:
 
 #endif //TMC2130
 
-            target[E_AXIS] -= 45;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 5200 / 60, active_extruder);
+            current_position[E_AXIS] -= 45;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
             st_synchronize();
-            target[E_AXIS] -= 15;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
+            current_position[E_AXIS] -= 15;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
             st_synchronize();
-            target[E_AXIS] -= 20;
-            plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000 / 60, active_extruder);
+            current_position[E_AXIS] -= 20;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
             st_synchronize();
 
 #ifdef TMC2130            
@@ -6506,10 +6501,12 @@ Sigma_Exit:
 #ifdef SNMM_V2
 		mmu_M600_load_filament();
 #else		
-		M600_load_filament();
+		M600_load_filament(old_fsensor_enabled);
 #endif    
 
-
+		//Wait for user to check the state
+        lcd_change_fil_state = 0;
+		
 		while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
           lcd_change_fil_state = 0;
 		  KEEPALIVE_STATE(PAUSED_FOR_USER);
@@ -6519,39 +6516,17 @@ Sigma_Exit:
             
              // Filament failed to load so load it again
              case 2:
-#ifdef SNMM
-				 display_loading();
-				 do {
-					 target[E_AXIS] += 0.002;
-					 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
-					 delay_keep_alive(2);
-				 } while (!lcd_clicked());
-
-				 st_synchronize();
-				 target[E_AXIS] += bowden_length[snmm_extruder];
-				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
-				 target[E_AXIS] += FIL_LOAD_LENGTH - 60;
-				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
-				 target[E_AXIS] += 40;
-				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
-				 target[E_AXIS] += 10;
-				 plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-
+#ifdef SNMM_V2
+                     mmu_M600_load_filament(); //change to "wrong filament loaded" option?
 #else
-                     target[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
-#endif                
-                     target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
-
-                     lcd_loading_filament();
-
+                     M600_load_filament_movements();
+#endif
                      break;
 
              // Filament loaded properly but color is not clear
              case 3:
-                     target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-                     plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 2, active_extruder); 
+                     current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
+                     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2, active_extruder); 
                      lcd_loading_color();
                      break;
                  
@@ -6566,34 +6541,37 @@ Sigma_Exit:
         
 
       //Not let's go back to print
-		fanSpeed = fanSpeedBckp;
+	  fanSpeed = fanSpeedBckp;
 
       //Feed a little of filament to stabilize pressure
-      target[E_AXIS]+= FILAMENTCHANGE_RECFEED;
-      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder);
+      current_position[E_AXIS]+= FILAMENTCHANGE_RECFEED;
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder);
         
       //Retract
-      target[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT;
-      plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+      current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT;
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
         
 
         
-      //plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 70, active_extruder); //should do nothing
+      //plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 70, active_extruder); //should do nothing
       
       //Move XY back
-      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
       
       //Move Z back
-      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
+      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
         
         
-      target[E_AXIS]= target[E_AXIS] - FILAMENTCHANGE_FIRSTRETRACT;
+      current_position[E_AXIS]= current_position[E_AXIS] - FILAMENTCHANGE_FIRSTRETRACT;
         
       //Unretract       
-      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
         
       //Set E position to original  
       plan_set_e_position(lastpos[E_AXIS]);
+
+	  memcpy(current_position, lastpos, sizeof(lastpos));
+	  memcpy(destination, current_position, sizeof(current_position));
        
       //Recover feed rate 
       feedmultiply=feedmultiplyBckp;
@@ -9092,7 +9070,7 @@ void mmu_load_to_nozzle() {
 	
 	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
 	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = true;
-	target[E_AXIS] += 7.2f;
+	current_position[E_AXIS] += 7.2f;
     float feedrate = 562;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
     st_synchronize();
@@ -9118,6 +9096,11 @@ void mmu_switch_extruder(uint8_t extruder) {
 void mmu_M600_load_filament() {
 		  bool response = false;
 		  tmp_extruder = choose_extruder_menu();
+		  lcd_update_enable(false);
+		  lcd_clear();
+		  lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
+		  lcd_print(" ");
+		  lcd_print(snmm_extruder + 1);
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
           switch (tmp_extruder) 
@@ -9152,23 +9135,51 @@ void mmu_M600_load_filament() {
 		  mmu_load_to_nozzle();
 }
 
-void M600_load_filament() {
-#if 0
+void M600_load_filament_movements() {
+#ifdef SNMM
+				 display_loading();
+				 do {
+					 current_position[E_AXIS] += 0.002;
+					 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+					 delay_keep_alive(2);
+				 } while (!lcd_clicked());
+
+				 st_synchronize();
+				 current_position[E_AXIS] += bowden_length[snmm_extruder];
+				 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000, active_extruder);
+				 current_position[E_AXIS] += FIL_LOAD_LENGTH - 60;
+				 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1400, active_extruder);
+				 current_position[E_AXIS] += 40;
+				 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
+				 current_position[E_AXIS] += 10;
+				 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+
+#else
+                     current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
+                     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
+#endif                
+                     current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
+                     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
+
+                     lcd_loading_filament();
+}
+
+void M600_load_filament(bool fsensor_enabled) {
+
 		lcd_wait_interact();
 
 		//load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 #ifdef PAT9125
-		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_start();
+		if (filament_autoload_enabled && (fsensor_enabled || fsensor_M600)) fsensor_autoload_check_start();
 #endif //PAT9125
-//		  printf_P(PSTR("M600 PAT9125 filament_autoload_enabled=%d, old_fsensor_enabled=%d, fsensor_M600=%d"), filament_autoload_enabled, old_fsensor_enabled, fsensor_M600);
         while(!lcd_clicked())
 		{
           manage_heater();
           manage_inactivity(true);
 #ifdef PAT9125
-		  if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600) && fsensor_check_autoload())
+		  if (filament_autoload_enabled && (fsensor_enabled || fsensor_M600) && fsensor_check_autoload())
 		  {
 			tone(BEEPER, 1000);
 			delay_keep_alive(50);
@@ -9176,65 +9187,19 @@ void M600_load_filament() {
 			  break;
 		  }
 #endif //PAT9125
-/*#ifdef SNMM
-		  target[E_AXIS] += 0.002;
-		  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
-
-#endif // SNMM*/
 
         }
 #ifdef PAT9125
-		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_stop();
+		if (filament_autoload_enabled && (fsensor_enabled || fsensor_M600)) fsensor_autoload_check_stop();
 #endif //PAT9125
-		//WRITE(BEEPER, LOW);
 		KEEPALIVE_STATE(IN_HANDLER);
 
-
-#ifdef SNMM
-		display_loading();
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-		do {
-			target[E_AXIS] += 0.002;
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
-			delay_keep_alive(2);
-		} while (!lcd_clicked());
-		KEEPALIVE_STATE(IN_HANDLER);
-		/*if (millis() - load_filament_time > 2) {
-			load_filament_time = millis();
-			target[E_AXIS] += 0.001;
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
-		}*/
-
-        //Filament inserted     
-		//Feed the filament to the end of nozzle quickly   		
-		st_synchronize();
-		target[E_AXIS] += bowden_length[snmm_extruder];
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
-		target[E_AXIS] += FIL_LOAD_LENGTH - 60;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
-		target[E_AXIS] += 40;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
-		target[E_AXIS] += 10;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-		//Extrude some filament
-        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
-#else
-		target[E_AXIS] += FILAMENTCHANGE_FIRSTFEED;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder);
-		//Extrude some filament
-        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
-
-#endif // SNMM
-		//Wait for user to check the state
-        lcd_change_fil_state = 0;
-        lcd_loading_filament();
+		M600_load_filament_movements();
 
 		tone(BEEPER, 500);
 		delay_keep_alive(50);
 		noTone(BEEPER);
-#endif
+
 }
 
 #define FIL_LOAD_LENGTH 60
