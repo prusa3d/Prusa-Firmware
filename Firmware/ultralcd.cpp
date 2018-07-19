@@ -1728,7 +1728,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X50 Y" STRINGIFY(Y_MAX_POS) " E0 F7000"));
 			#endif
 			lcd_ignore_click(false);
-			#ifdef SNMM
+			#if defined (SNMM) || defined (SNMM_V2)
 			lcd_commands_step = 8;
 			#else
 			lcd_commands_step = 3;
@@ -1749,7 +1749,7 @@ void lcd_commands()
 			lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
 			cancel_heatup = true;
 			setTargetBed(0);
-			#ifndef SNMM
+			#if !(defined (SNMM) || defined (SNMM_V2))
 			setTargetHotend(0, 0);	//heating when changing filament for multicolor
 			setTargetHotend(0, 1);
 			setTargetHotend(0, 2);
@@ -1760,12 +1760,16 @@ void lcd_commands()
 			lcd_commands_step = 5;
 		}
 		if (lcd_commands_step == 7 && !blocks_queued()) {
+			#ifdef SNMM_V2
+			enquecommand_P(PSTR("M702 C")); //current
+			#else //SNMM_V2
 			switch(snmm_stop_print_menu()) {
 				case 0: enquecommand_P(PSTR("M702")); break;//all 
 				case 1: enquecommand_P(PSTR("M702 U")); break; //used
 				case 2: enquecommand_P(PSTR("M702 C")); break; //current
 				default: enquecommand_P(PSTR("M702")); break;
 			}
+			#endif //SNMM_V2
 			lcd_commands_step = 3;
 		}
 		if (lcd_commands_step == 8 && !blocks_queued()) { //step 8 is here for delay (going to next step after execution of all gcodes from step 4)
