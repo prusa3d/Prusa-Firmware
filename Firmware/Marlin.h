@@ -469,3 +469,5 @@ void proc_commands();
 bool mmu_get_reponse();
 void mmu_not_responding();
 void mmu_load_to_nozzle();
+void M600_load_filament();
+void mmu_M600_load_filament();

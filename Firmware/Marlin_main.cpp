@@ -6327,14 +6327,6 @@ Sigma_Exit:
 			manage_heater();
 			manage_inactivity(true);
 
-			/*#ifdef SNMM
-			target[E_AXIS] += 0.002;
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
-
-			#endif // SNMM*/
-
-			//if (cnt == 0)
-			{
 #if BEEPER > 0
 				if (counterBeep == 500) {
 					counterBeep = 0;
@@ -6348,9 +6340,7 @@ Sigma_Exit:
 				}
 				
 				counterBeep++;
-#else
 #endif
-			}
 			
 			switch (wait_for_user_state) {
 			case 0: 
@@ -6512,89 +6502,13 @@ Sigma_Exit:
 			//lcd_return_to_status();
 			lcd_update_enable(true);
 		
-        //Wait for user to insert filament
-        lcd_wait_interact();
-		//load_filament_time = millis();
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
+        //Wait for user to insert filament and load filament to nozzle
+#ifdef SNMM_V2
+		mmu_M600_load_filament();
+#else		
+		M600_load_filament();
+#endif    
 
-#ifdef PAT9125
-		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_start();
-#endif //PAT9125
-//		  printf_P(PSTR("M600 PAT9125 filament_autoload_enabled=%d, old_fsensor_enabled=%d, fsensor_M600=%d"), filament_autoload_enabled, old_fsensor_enabled, fsensor_M600);
-        while(!lcd_clicked())
-		{
-          manage_heater();
-          manage_inactivity(true);
-#ifdef PAT9125
-		  if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600) && fsensor_check_autoload())
-		  {
-			tone(BEEPER, 1000);
-			delay_keep_alive(50);
-			noTone(BEEPER);
-			  break;
-		  }
-#endif //PAT9125
-/*#ifdef SNMM
-		  target[E_AXIS] += 0.002;
-		  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
-
-#endif // SNMM*/
-
-        }
-#ifdef PAT9125
-		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_stop();
-#endif //PAT9125
-		//WRITE(BEEPER, LOW);
-		KEEPALIVE_STATE(IN_HANDLER);
-
-
-#ifdef SNMM
-		display_loading();
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-		do {
-			target[E_AXIS] += 0.002;
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
-			delay_keep_alive(2);
-		} while (!lcd_clicked());
-		KEEPALIVE_STATE(IN_HANDLER);
-		/*if (millis() - load_filament_time > 2) {
-			load_filament_time = millis();
-			target[E_AXIS] += 0.001;
-			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
-		}*/
-
-        //Filament inserted     
-		//Feed the filament to the end of nozzle quickly   		
-		st_synchronize();
-		target[E_AXIS] += bowden_length[snmm_extruder];
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
-		target[E_AXIS] += FIL_LOAD_LENGTH - 60;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
-		target[E_AXIS] += 40;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
-		target[E_AXIS] += 10;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-		//Extrude some filament
-        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
-#else
-		target[E_AXIS] += FILAMENTCHANGE_FIRSTFEED;
-		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder);
-		//Extrude some filament
-        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
-
-#endif // SNMM
-        
-
-        
-        //Wait for user to check the state
-        lcd_change_fil_state = 0;
-        lcd_loading_filament();
-
-		tone(BEEPER, 500);
-		delay_keep_alive(50);
-		noTone(BEEPER);
 
 		while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
           lcd_change_fil_state = 0;
@@ -9163,7 +9077,7 @@ void mmu_not_responding() {
 }
 
 void mmu_load_to_nozzle() {
-	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
+	/*bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
 	if (!saved_e_relative_mode) {
 		enquecommand_front_P(PSTR("M82")); // set extruder to relative mode
 	}
@@ -9171,9 +9085,156 @@ void mmu_load_to_nozzle() {
 		enquecommand_front_P((PSTR("G1 E14.4000 F871")));
 		enquecommand_front_P((PSTR("G1 E36.0000 F1393")));
 		enquecommand_front_P((PSTR("G1 E14.4000 F871")));			  
-		if (!saved_e_relative_mode) {
-		  enquecommand_front_P(PSTR("M83")); // set extruder to relative mode
-		}
+	if (!saved_e_relative_mode) {
+	    enquecommand_front_P(PSTR("M83")); // set extruder to relative mode
+	}*/
+	st_synchronize();
+	
+	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
+	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = true;
+	target[E_AXIS] += 7.2f;
+    float feedrate = 562;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
+    st_synchronize();
+	current_position[E_AXIS] += 14.4f;
+	feedrate = 871;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
+    st_synchronize();
+	current_position[E_AXIS] += 36.0f;
+	feedrate = 1393;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
+    st_synchronize();
+	current_position[E_AXIS] += 14.4f;
+	feedrate = 871;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
+    st_synchronize();
+	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = false;
+}
+
+void mmu_switch_extruder(uint8_t extruder) {
+
+}
+
+void mmu_M600_load_filament() {
+		  bool response = false;
+		  tmp_extruder = choose_extruder_menu();
+		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
+		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
+          switch (tmp_extruder) 
+          {
+          case 1:
+              
+              fprintf_P(uart2io, PSTR("T1\n"));
+              break;
+          case 2:
+              
+              fprintf_P(uart2io, PSTR("T2\n"));
+              break;
+          case 3:
+              
+              fprintf_P(uart2io, PSTR("T3\n"));
+              break;
+          case 4:
+              
+              fprintf_P(uart2io, PSTR("T4\n"));
+              break;
+          default:
+              
+              fprintf_P(uart2io, PSTR("T0\n"));
+              break;
+          }
+
+		  response = mmu_get_reponse();
+		  if (!response) mmu_not_responding();
+
+    	  snmm_extruder = tmp_extruder; //filament change is finished
+
+		  mmu_load_to_nozzle();
+}
+
+void M600_load_filament() {
+#if 0
+		lcd_wait_interact();
+
+		//load_filament_time = millis();
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
+
+#ifdef PAT9125
+		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_start();
+#endif //PAT9125
+//		  printf_P(PSTR("M600 PAT9125 filament_autoload_enabled=%d, old_fsensor_enabled=%d, fsensor_M600=%d"), filament_autoload_enabled, old_fsensor_enabled, fsensor_M600);
+        while(!lcd_clicked())
+		{
+          manage_heater();
+          manage_inactivity(true);
+#ifdef PAT9125
+		  if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600) && fsensor_check_autoload())
+		  {
+			tone(BEEPER, 1000);
+			delay_keep_alive(50);
+			noTone(BEEPER);
+			  break;
+		  }
+#endif //PAT9125
+/*#ifdef SNMM
+		  target[E_AXIS] += 0.002;
+		  plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
+
+#endif // SNMM*/
+
+        }
+#ifdef PAT9125
+		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_stop();
+#endif //PAT9125
+		//WRITE(BEEPER, LOW);
+		KEEPALIVE_STATE(IN_HANDLER);
+
+
+#ifdef SNMM
+		display_loading();
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
+		do {
+			target[E_AXIS] += 0.002;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 500, active_extruder);
+			delay_keep_alive(2);
+		} while (!lcd_clicked());
+		KEEPALIVE_STATE(IN_HANDLER);
+		/*if (millis() - load_filament_time > 2) {
+			load_filament_time = millis();
+			target[E_AXIS] += 0.001;
+			plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1000, active_extruder);
+		}*/
+
+        //Filament inserted     
+		//Feed the filament to the end of nozzle quickly   		
+		st_synchronize();
+		target[E_AXIS] += bowden_length[snmm_extruder];
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 3000, active_extruder);
+		target[E_AXIS] += FIL_LOAD_LENGTH - 60;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 1400, active_extruder);
+		target[E_AXIS] += 40;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
+		target[E_AXIS] += 10;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+		//Extrude some filament
+        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
+#else
+		target[E_AXIS] += FILAMENTCHANGE_FIRSTFEED;
+		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder);
+		//Extrude some filament
+        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
+
+#endif // SNMM
+		//Wait for user to check the state
+        lcd_change_fil_state = 0;
+        lcd_loading_filament();
+
+		tone(BEEPER, 500);
+		delay_keep_alive(50);
+		noTone(BEEPER);
+#endif
 }
 
 #define FIL_LOAD_LENGTH 60
