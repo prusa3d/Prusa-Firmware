@@ -56,8 +56,8 @@ void Config_StoreSettings(uint16_t offset, uint8_t level)
   int i = offset;
   EEPROM_WRITE_VAR(i,ver); // invalidate data first 
   EEPROM_WRITE_VAR(i,axis_steps_per_unit);
-  EEPROM_WRITE_VAR(i,max_feedrate);  
-  EEPROM_WRITE_VAR(i,max_acceleration_units_per_sq_second);
+  EEPROM_WRITE_VAR(i,max_feedrate_normal);
+  EEPROM_WRITE_VAR(i,max_acceleration_units_per_sq_second_normal);
   EEPROM_WRITE_VAR(i,acceleration);
   EEPROM_WRITE_VAR(i,retract_acceleration);
   EEPROM_WRITE_VAR(i,minimumfeedrate);
@@ -126,12 +126,9 @@ void Config_StoreSettings(uint16_t offset, uint8_t level)
   }
 #endif //LIN_ADVANCE
 
-/*  MYSERIAL.print("Top address used:\n");
-  MYSERIAL.print(i); 
-  MYSERIAL.print("; (0x");
-  MYSERIAL.print(i, HEX);
-  MYSERIAL.println(")");
-*/ 
+  EEPROM_WRITE_VAR(i,max_feedrate_silent);
+  EEPROM_WRITE_VAR(i,max_acceleration_units_per_sq_second_silent);
+
   char ver2[4]=EEPROM_VERSION;
   i=offset;
   EEPROM_WRITE_VAR(i,ver2); // validate data
@@ -144,10 +141,30 @@ void Config_StoreSettings(uint16_t offset, uint8_t level)
 #ifndef DISABLE_M503
 void Config_PrintSettings(uint8_t level)
 {  // Always have this function, even with EEPROM_SETTINGS disabled, the current values will be shown
+#ifdef TMC2130
+	printf_P(PSTR(
+		"%SSteps per unit:\n%S  M92 X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SMaximum feedrates - normal (mm/s):\n%S  M203 X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SMaximum feedrates - stealth (mm/s):\n%S  M203 X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SMaximum acceleration - normal (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
+		"%SMaximum acceleration - stealth (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
+		"%SAcceleration: S=acceleration, T=retract acceleration\n%S  M204 S%.2f T%.2f\n"
+		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%.2f X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
+		),
+		echomagic, echomagic, axis_steps_per_unit[X_AXIS], axis_steps_per_unit[Y_AXIS], axis_steps_per_unit[Z_AXIS], axis_steps_per_unit[E_AXIS],
+		echomagic, echomagic, max_feedrate_normal[X_AXIS], max_feedrate_normal[Y_AXIS], max_feedrate_normal[Z_AXIS], max_feedrate_normal[E_AXIS],
+		echomagic, echomagic, max_feedrate_silent[X_AXIS], max_feedrate_silent[Y_AXIS], max_feedrate_silent[Z_AXIS], max_feedrate_silent[E_AXIS],
+		echomagic, echomagic, max_acceleration_units_per_sq_second_normal[X_AXIS], max_acceleration_units_per_sq_second_normal[Y_AXIS], max_acceleration_units_per_sq_second_normal[Z_AXIS], max_acceleration_units_per_sq_second_normal[E_AXIS],
+		echomagic, echomagic, max_acceleration_units_per_sq_second_silent[X_AXIS], max_acceleration_units_per_sq_second_silent[Y_AXIS], max_acceleration_units_per_sq_second_silent[Z_AXIS], max_acceleration_units_per_sq_second_silent[E_AXIS],
+		echomagic, echomagic, acceleration, retract_acceleration,
+		echomagic, echomagic, minimumfeedrate, mintravelfeedrate, minsegmenttime, max_jerk[X_AXIS], max_jerk[Y_AXIS], max_jerk[Z_AXIS], max_jerk[E_AXIS],
+		echomagic, echomagic, add_homing[X_AXIS], add_homing[Y_AXIS], add_homing[Z_AXIS]
+#else //TMC2130
 	printf_P(PSTR(
 		"%SSteps per unit:\n%S  M92 X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SMaximum feedrates (mm/s):\n%S  M203 X%.2f Y%.2f Z%.2f E%.2f\n"
-		"%SMaximum Acceleration (mm/s2):\n%S  M201 X%.2f Y%.2f Z%.2f E%.2f\n"
+		"%SMaximum acceleration (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
 		"%SAcceleration: S=acceleration, T=retract acceleration\n%S  M204 S%.2f T%.2f\n"
 		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%.2f X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
@@ -158,6 +175,7 @@ void Config_PrintSettings(uint8_t level)
 		echomagic, echomagic, acceleration, retract_acceleration,
 		echomagic, echomagic, minimumfeedrate, mintravelfeedrate, minsegmenttime, max_jerk[X_AXIS], max_jerk[Y_AXIS], max_jerk[Z_AXIS], max_jerk[E_AXIS],
 		echomagic, echomagic, add_homing[X_AXIS], add_homing[Y_AXIS], add_homing[Z_AXIS]
+#endif //TMC2130
 	);
 #ifdef PIDTEMP
 	printf_P(PSTR("%SPID settings:\n%S   M301 P%.2f I%.2f D%.2f\n"),
@@ -219,11 +237,10 @@ bool Config_RetrieveSettings(uint16_t offset, uint8_t level)
     {
         // version number match
         EEPROM_READ_VAR(i,axis_steps_per_unit);
-        EEPROM_READ_VAR(i,max_feedrate);  
-        EEPROM_READ_VAR(i,max_acceleration_units_per_sq_second);
+        EEPROM_READ_VAR(i,max_feedrate_normal);
+        EEPROM_READ_VAR(i,max_acceleration_units_per_sq_second_normal);
         
         // steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
-		reset_acceleration_rates();
         
         EEPROM_READ_VAR(i,acceleration);
         EEPROM_READ_VAR(i,retract_acceleration);
@@ -293,6 +310,11 @@ bool Config_RetrieveSettings(uint16_t offset, uint8_t level)
 #endif //LIN_ADVANCE
     calculate_extruder_multipliers();
 
+        EEPROM_READ_VAR(i,max_feedrate_silent);  
+        EEPROM_READ_VAR(i,max_acceleration_units_per_sq_second_silent);
+
+		reset_acceleration_rates();
+
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
         SERIAL_ECHO_START;
@@ -321,14 +343,18 @@ void Config_ResetDefault()
     float tmp1[]=DEFAULT_AXIS_STEPS_PER_UNIT;
     float tmp2[]=DEFAULT_MAX_FEEDRATE;
     long tmp3[]=DEFAULT_MAX_ACCELERATION;
+    float tmp4[]=DEFAULT_MAX_FEEDRATE_SILENT;
+    long tmp5[]=DEFAULT_MAX_ACCELERATION_SILENT;
     for (short i=0;i<4;i++) 
     {
         axis_steps_per_unit[i]=tmp1[i];  
-        max_feedrate[i]=tmp2[i];  
-        max_acceleration_units_per_sq_second[i]=tmp3[i];
+        max_feedrate_normal[i]=tmp2[i];  
+        max_acceleration_units_per_sq_second_normal[i]=tmp3[i];
+        max_feedrate_silent[i]=tmp4[i];  
+        max_acceleration_units_per_sq_second_silent[i]=tmp5[i];
     }
-    
-    // steps per sq second need to be updated to agree with the units per sq second
+
+	// steps per sq second need to be updated to agree with the units per sq second
     reset_acceleration_rates();
     
     acceleration=DEFAULT_ACCELERATION;

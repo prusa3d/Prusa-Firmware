@@ -16,8 +16,6 @@ const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 #define FSENSOR_ERR_MAX         10  //filament sensor max error count
 #define FSENSOR_INT_PIN         63  //filament sensor interrupt pin PK1
 #define FSENSOR_INT_PIN_MSK   0x02  //filament sensor interrupt pin mask (bit1)
-//#define FSENSOR_CHUNK_LEN      280  //filament sensor chunk length in steps - 1mm
-#define FSENSOR_CHUNK_LEN      180  //filament sensor chunk length in steps - 0.64mm
 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
@@ -36,11 +34,15 @@ void fsensor_restore_print_and_continue()
 //uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
 uint8_t fsensor_int_pin_old = 0;
 int16_t fsensor_chunk_len = FSENSOR_CHUNK_LEN;
+
 bool fsensor_enabled = true;
+bool fsensor_watch_runout = true;
 bool fsensor_not_responding = false;
-bool fsensor_M600 = false;
+
 uint8_t fsensor_err_cnt = 0;
 int16_t fsensor_st_cnt = 0;
+
+
 uint8_t fsensor_log = 1;
 
 //autoload enable/disable flag
@@ -53,15 +55,8 @@ uint8_t fsensor_autoload_sum = 0;
 uint32_t fsensor_st_sum = 0;
 uint32_t fsensor_yd_sum = 0;
 uint32_t fsensor_er_sum = 0;
-
-void fsensor_block()
-{
-	fsensor_enabled = false;
-}
-
-void fsensor_unblock() {
-	fsensor_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FSENSOR) == 0x01);
-}
+uint8_t fsensor_yd_min = 255;
+uint8_t fsensor_yd_max = 0;
 
 bool fsensor_enable()
 {
@@ -73,7 +68,7 @@ bool fsensor_enable()
 	else
 		fsensor_not_responding = true;
 	fsensor_enabled = pat9125?true:false;
-	fsensor_M600 = false;
+	fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled?0x01:0x00); 
 	FSensorStateMenu = fsensor_enabled?1:0;
@@ -94,7 +89,7 @@ void fsensor_disable()
 	FSensorStateMenu = 0;
 }
 
-void fautoload_set(bool State)
+void fsensor_autoload_set(bool State)
 {
 	filament_autoload_enabled = State;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
@@ -211,9 +206,14 @@ ISR(PCINT2_vect)
 			{
 				if (fsensor_err_cnt)
 					fsensor_err_cnt--;
-				fsensor_st_sum += st_cnt;
-				fsensor_yd_sum += pat9125_y;
+				if (st_cnt == FSENSOR_CHUNK_LEN)
+				{
+					if (fsensor_yd_min > pat9125_y) fsensor_yd_min = pat9125_y;
+					if (fsensor_yd_max < pat9125_y) fsensor_yd_max = pat9125_y;
+				}
 			}
+			fsensor_st_sum += st_cnt;
+			fsensor_yd_sum += pat9125_y;
 		}
 		else //negative movement
 		{
@@ -264,36 +264,35 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 
 void fsensor_update()
 {
-	if (!fsensor_enabled || fsensor_M600) return;
-	if (fsensor_err_cnt > FSENSOR_ERR_MAX)
-	{
-		fsensor_stop_and_save_print();
-
-		fsensor_err_cnt = 0;
-
-		enquecommand_front_P((PSTR("G1 E-3 F200")));
-		process_commands();
-	    cmdqueue_pop_front();
-		st_synchronize();
-
-		enquecommand_front_P((PSTR("G1 E3 F200")));
-		process_commands();
-	    cmdqueue_pop_front();
-		st_synchronize();
-
-		if (fsensor_err_cnt == 0)
+	if (fsensor_enabled && fsensor_watch_runout)
+		if (fsensor_err_cnt > FSENSOR_ERR_MAX)
 		{
-			fsensor_restore_print_and_continue();
+			fsensor_stop_and_save_print();
+
+			fsensor_err_cnt = 0;
+
+			enquecommand_front_P((PSTR("G1 E-3 F200")));
+			process_commands();
+			cmdqueue_pop_front();
+			st_synchronize();
+
+			enquecommand_front_P((PSTR("G1 E3 F200")));
+			process_commands();
+			cmdqueue_pop_front();
+			st_synchronize();
+
+			if (fsensor_err_cnt == 0)
+			{
+				fsensor_restore_print_and_continue();
+			}
+			else
+			{
+				eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+				eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
+				enquecommand_front_P((PSTR("M600")));
+				fsensor_watch_runout = false;
+			}
 		}
-		else
-		{
-			eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
-			eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-			enquecommand_front_P((PSTR("M600")));
-			fsensor_M600 = true;
-//			fsensor_enabled = false;
-		}
-	}
 }
 
 #endif //PAT9125

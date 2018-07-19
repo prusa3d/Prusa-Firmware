@@ -159,9 +159,20 @@ void plan_set_e_position(const float &e);
 void check_axes_activity();
 
 extern unsigned long minsegmenttime;
-extern float max_feedrate[NUM_AXIS]; // set the max speeds
+
+// Use M203 to override by software
+extern float max_feedrate_normal[NUM_AXIS];
+extern float max_feedrate_silent[NUM_AXIS];
+extern float* max_feedrate;
+
+// Use M92 to override by software
 extern float axis_steps_per_unit[NUM_AXIS];
-extern unsigned long max_acceleration_units_per_sq_second[NUM_AXIS]; // Use M201 to override by software
+
+// Use M201 to override by software
+extern unsigned long max_acceleration_units_per_sq_second_normal[NUM_AXIS];
+extern unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
+extern unsigned long* max_acceleration_units_per_sq_second; 
+
 extern float minimumfeedrate;
 extern float acceleration;         // Normal acceleration mm/s^2  THIS IS THE DEFAULT ACCELERATION for all moves. M204 SXXXX
 extern float retract_acceleration; //  mm/s^2   filament pull-pack and push-forward  while standing still in the other axis M204 TXXXX
@@ -240,6 +251,8 @@ void set_extrude_min_temp(float temp);
 
 void reset_acceleration_rates();
 #endif
+
+void update_mode_profile();
 
 unsigned char number_of_blocks();
 

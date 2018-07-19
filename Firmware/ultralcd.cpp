@@ -146,8 +146,6 @@ int8_t FSensorStateMenu = 1;
 
 int8_t CrashDetectMenu = 1;
 
-extern void fsensor_block();
-extern void fsensor_unblock();
 
 extern bool fsensor_enable();
 extern void fsensor_disable();
@@ -2282,7 +2280,7 @@ void lcd_set_fan_check() {
 }
 
 void lcd_set_filament_autoload() {
-     fautoload_set(!filament_autoload_enabled);
+     fsensor_autoload_set(!filament_autoload_enabled);
 }
 
 void lcd_unLoadFilament()
@@ -2616,67 +2614,75 @@ void lcd_menu_statistics()
 }
 
 
-static void _lcd_move(const char *name, int axis, int min, int max) {
-    if (!menuData._lcd_moveMenu.initialized)
-    {
-        menuData._lcd_moveMenu.endstopsEnabledPrevious = enable_endstops(false);
-        menuData._lcd_moveMenu.initialized = true;
-    }
-
-	if (lcd_encoder != 0) {
-    refresh_cmd_timeout();
-    if (! planner_queue_full()) {
-      current_position[axis] += float((int)lcd_encoder) * move_menu_scale;
-      if (min_software_endstops && current_position[axis] < min) current_position[axis] = min;
-      if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
-      lcd_encoder = 0;
-      world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[axis] / 60, active_extruder);
-      lcd_draw_update = 1;
-    }
-  }
-  if (lcd_draw_update) lcd_drawedit(name, ftostr31(current_position[axis]));
-  if (menuExiting || LCD_CLICKED) (void)enable_endstops(menuData._lcd_moveMenu.endstopsEnabledPrevious);
-  if (LCD_CLICKED) menu_back();
+static void _lcd_move(const char *name, int axis, int min, int max)
+{
+	if (!menuData._lcd_moveMenu.initialized)
+	{
+		menuData._lcd_moveMenu.endstopsEnabledPrevious = enable_endstops(false);
+		menuData._lcd_moveMenu.initialized = true;
+	}
+	if (lcd_encoder != 0)
+	{
+		refresh_cmd_timeout();
+		if (! planner_queue_full())
+		{
+			current_position[axis] += float((int)lcd_encoder) * move_menu_scale;
+			if (min_software_endstops && current_position[axis] < min) current_position[axis] = min;
+			if (max_software_endstops && current_position[axis] > max) current_position[axis] = max;
+			lcd_encoder = 0;
+			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[axis] / 60, active_extruder);
+			lcd_draw_update = 1;
+		}
+	}
+	if (lcd_draw_update)
+	{
+	    lcd_set_cursor(0, 1);
+		menu_draw_float31(' ', name, current_position[axis]);
+	}
+	if (menuExiting || LCD_CLICKED) (void)enable_endstops(menuData._lcd_moveMenu.endstopsEnabledPrevious);
+	if (LCD_CLICKED) menu_back();
 }
 
 
 static void lcd_move_e()
 {
-	if (degHotend0() > EXTRUDE_MINTEMP) {
-  if (lcd_encoder != 0)
-  {
-    refresh_cmd_timeout();
-    if (! planner_queue_full()) {
-      current_position[E_AXIS] += float((int)lcd_encoder) * move_menu_scale;
-      lcd_encoder = 0;
-      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[E_AXIS] / 60, active_extruder);
-      lcd_draw_update = 1;
-    }
-  }
-  if (lcd_draw_update)
-  {
-    lcd_drawedit(PSTR("Extruder"), ftostr31(current_position[E_AXIS]));
-  }
-  if (LCD_CLICKED) menu_back();
-}
-	else {
+	if (degHotend0() > EXTRUDE_MINTEMP)
+	{
+		if (lcd_encoder != 0)
+		{
+			refresh_cmd_timeout();
+			if (! planner_queue_full())
+			{
+				current_position[E_AXIS] += float((int)lcd_encoder) * move_menu_scale;
+				lcd_encoder = 0;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[E_AXIS] / 60, active_extruder);
+				lcd_draw_update = 1;
+			}
+		}
+		if (lcd_draw_update)
+		{
+		    lcd_set_cursor(0, 1);
+			menu_draw_float31(' ', PSTR("Extruder"), current_position[E_AXIS]);
+		}
+		if (LCD_CLICKED) menu_back();
+	}
+	else
+	{
 		lcd_clear();
 		lcd_set_cursor(0, 0);
 		lcd_puts_P(_T(MSG_ERROR));
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-
 		delay(2000);
 		lcd_return_to_status();
 	}
 }
-/**
- * @brief Show measured Y distance of front calibration points from Y_MIN_POS
- *
- * If those points are detected too close to edge of reachable area, their confidence is lowered.
- * This functionality is applied more often for MK2 printers.
- */
+
+
+//@brief Show measured Y distance of front calibration points from Y_MIN_POS
+//If those points are detected too close to edge of reachable area, their confidence is lowered.
+//This functionality is applied more often for MK2 printers.
 static void lcd_menu_xyz_y_min()
 {
 //|01234567890123456789|
@@ -2708,9 +2714,8 @@ static void lcd_menu_xyz_y_min()
     if (lcd_clicked())
         menu_goto(lcd_menu_xyz_skew, 0, true, true);
 }
-/**
- * @brief Show measured axis skewness
- */
+
+//@brief Show measured axis skewness
 float _deg(float rad)
 {
 	return rad * 180 / M_PI;
@@ -2807,56 +2812,61 @@ static void lcd_move_z() {
  */
 static void _lcd_babystep(int axis, const char *msg) 
 {
-    if (menuData.babyStep.status == 0) {
-        // Menu was entered.
-        // Initialize its status.
-        menuData.babyStep.status = 1;
+	if (menuData.babyStep.status == 0)
+	{
+		// Menu was entered.
+		// Initialize its status.
+		menuData.babyStep.status = 1;
 		check_babystep();
 
 		EEPROM_read_B(EEPROM_BABYSTEP_X, &menuData.babyStep.babystepMem[0]);
-        EEPROM_read_B(EEPROM_BABYSTEP_Y, &menuData.babyStep.babystepMem[1]);
-        EEPROM_read_B(EEPROM_BABYSTEP_Z, &menuData.babyStep.babystepMem[2]);
-		
-        menuData.babyStep.babystepMemMM[0] = menuData.babyStep.babystepMem[0]/axis_steps_per_unit[X_AXIS];
-        menuData.babyStep.babystepMemMM[1] = menuData.babyStep.babystepMem[1]/axis_steps_per_unit[Y_AXIS];
-        menuData.babyStep.babystepMemMM[2] = menuData.babyStep.babystepMem[2]/axis_steps_per_unit[Z_AXIS];
-        lcd_draw_update = 1;
+		EEPROM_read_B(EEPROM_BABYSTEP_Y, &menuData.babyStep.babystepMem[1]);
+		EEPROM_read_B(EEPROM_BABYSTEP_Z, &menuData.babyStep.babystepMem[2]);
+
+		menuData.babyStep.babystepMemMM[0] = menuData.babyStep.babystepMem[0]/axis_steps_per_unit[X_AXIS];
+		menuData.babyStep.babystepMemMM[1] = menuData.babyStep.babystepMem[1]/axis_steps_per_unit[Y_AXIS];
+		menuData.babyStep.babystepMemMM[2] = menuData.babyStep.babystepMem[2]/axis_steps_per_unit[Z_AXIS];
+		lcd_draw_update = 1;
 		//SERIAL_ECHO("Z baby step: ");
 		//SERIAL_ECHO(menuData.babyStep.babystepMem[2]);
-        // Wait 90 seconds before closing the live adjust dialog.
-        lcd_timeoutToStatus = millis() + 90000;
-    }
-
-  if (lcd_encoder != 0) 
-  {
-	if (homing_flag) lcd_encoder = 0;
-
-    menuData.babyStep.babystepMem[axis] += (int)lcd_encoder;
-	if (axis == 2) {
-		if (menuData.babyStep.babystepMem[axis] < Z_BABYSTEP_MIN) menuData.babyStep.babystepMem[axis] = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
-		else  if (menuData.babyStep.babystepMem[axis] > Z_BABYSTEP_MAX) menuData.babyStep.babystepMem[axis] = Z_BABYSTEP_MAX; //0
-		else {
-			CRITICAL_SECTION_START
-				babystepsTodo[axis] += (int)lcd_encoder;
-			CRITICAL_SECTION_END		
-		}
+		// Wait 90 seconds before closing the live adjust dialog.
+		lcd_timeoutToStatus = millis() + 90000;
 	}
-    menuData.babyStep.babystepMemMM[axis] = menuData.babyStep.babystepMem[axis]/axis_steps_per_unit[axis]; 
-	  delay(50);
-	  lcd_encoder = 0;
-    lcd_draw_update = 1;
-  }
-  if (lcd_draw_update)
-    lcd_drawedit_2(msg, ftostr13ns(menuData.babyStep.babystepMemMM[axis]));
-  if (LCD_CLICKED || menuExiting) {
-    // Only update the EEPROM when leaving the menu.
-    EEPROM_save_B(
-      (axis == X_AXIS) ? EEPROM_BABYSTEP_X : ((axis == Y_AXIS) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z),
-      &menuData.babyStep.babystepMem[axis]);
 
-    if(Z_AXIS == axis) calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-  }
-  if (LCD_CLICKED) menu_back();
+	if (lcd_encoder != 0) 
+	{
+		if (homing_flag) lcd_encoder = 0;
+		menuData.babyStep.babystepMem[axis] += (int)lcd_encoder;
+		if (axis == 2)
+		{
+			if (menuData.babyStep.babystepMem[axis] < Z_BABYSTEP_MIN) menuData.babyStep.babystepMem[axis] = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
+			else if (menuData.babyStep.babystepMem[axis] > Z_BABYSTEP_MAX) menuData.babyStep.babystepMem[axis] = Z_BABYSTEP_MAX; //0
+			else
+			{
+				CRITICAL_SECTION_START
+				babystepsTodo[axis] += (int)lcd_encoder;
+				CRITICAL_SECTION_END		
+			}
+		}
+		menuData.babyStep.babystepMemMM[axis] = menuData.babyStep.babystepMem[axis]/axis_steps_per_unit[axis]; 
+		delay(50);
+		lcd_encoder = 0;
+		lcd_draw_update = 1;
+	}
+	if (lcd_draw_update)
+	{
+	    lcd_set_cursor(0, 1);
+		menu_draw_float31(' ', msg, menuData.babyStep.babystepMemMM[axis]);
+	}
+	if (LCD_CLICKED || menuExiting)
+	{
+		// Only update the EEPROM when leaving the menu.
+		EEPROM_save_B(
+		(axis == X_AXIS) ? EEPROM_BABYSTEP_X : ((axis == Y_AXIS) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z),
+		&menuData.babyStep.babystepMem[axis]);
+		if(Z_AXIS == axis) calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+	}
+	if (LCD_CLICKED) menu_back();
 }
 
 static void lcd_babystep_x() {
@@ -4054,8 +4064,9 @@ static void lcd_silent_mode_set() {
 //	  MYSERIAL.print("standstill OK");
 //  else
 //	  MYSERIAL.print("standstill NG!");
-  cli();
+	cli();
 	tmc2130_mode = (SilentModeMenu != SILENT_MODE_NORMAL)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+	update_mode_profile();
 	tmc2130_init();
   // We may have missed a stepper timer interrupt due to the time spent in tmc2130_init.
   // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
@@ -4452,9 +4463,6 @@ void lcd_wizard(int state) {
 			state = 7;
 			break;
 		case 7: //load filament 
-#ifdef PAT9125
-			fsensor_block();
-#endif //PAT9125
 			lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 			lcd_update_enable(false);
 			lcd_clear();
@@ -4463,9 +4471,6 @@ void lcd_wizard(int state) {
 			change_extr(0);
 #endif
 			gcode_M701();
-#ifdef PAT9125
-			fsensor_unblock();
-#endif //PAT9125
 			state = 9;
 			break;
 		case 8:
@@ -7515,60 +7520,58 @@ void menu_lcd_charsetup_func(void)
 void menu_lcd_lcdupdate_func(void)
 {
 #if (SDCARDDETECT > 0)
-  if ((IS_SD_INSERTED != lcd_oldcardstatus))
-  {
-	  lcd_draw_update = 2;
-	  lcd_oldcardstatus = IS_SD_INSERTED;
-	  lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-
-	  if (lcd_oldcardstatus)
-	  {
-		  card.initsd();
-		  LCD_MESSAGERPGM(_i("Card inserted"));////MSG_SD_INSERTED c=0 r=0
-		  //get_description();
-	  }
-	  else
-	  {
-		  card.release();
-		  LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=0 r=0
-	  }
-  }
+	if ((IS_SD_INSERTED != lcd_oldcardstatus))
+	{
+		lcd_draw_update = 2;
+		lcd_oldcardstatus = IS_SD_INSERTED;
+		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
+		if (lcd_oldcardstatus)
+		{
+			card.initsd();
+			LCD_MESSAGERPGM(_i("Card inserted"));////MSG_SD_INSERTED c=0 r=0
+			//get_description();
+		}
+		else
+		{
+			card.release();
+			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=0 r=0
+		}
+	}
 #endif//CARDINSERTED
+	if (lcd_next_update_millis < millis())
+	{
+		if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
+		{
+			if (lcd_draw_update == 0)
+			lcd_draw_update = 1;
+			lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
+			lcd_encoder_diff = 0;
+			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+		}
 
-  if (lcd_next_update_millis < millis())
-  {
+		if (LCD_CLICKED) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
 
-	  if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP)
-	  {
-      if (lcd_draw_update == 0)
-		    lcd_draw_update = 1;
-		  lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
-		  lcd_encoder_diff = 0;
-		  lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-	  }
+		(*menu_menu)();
 
-	  if (LCD_CLICKED) lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-
-	  (*menu_menu)();
-
-	  if (lcd_timeoutToStatus < millis() && menu_menu != lcd_status_screen)
-	  {
-      // Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
-      // to give it a chance to save its state.
-      // This is useful for example, when the babystep value has to be written into EEPROM.
-      if (menu_menu != NULL) {
-        menuExiting = true;
-        (*menu_menu)();
-        menuExiting = false;
-      }
-	      lcd_clear();
-		  lcd_return_to_status();
-		  lcd_draw_update = 2;
-	  }
-	  if (lcd_draw_update == 2) lcd_clear();
-	  if (lcd_draw_update) lcd_draw_update--;
-	  lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
-	  }
+		if (lcd_timeoutToStatus < millis() && menu_menu != lcd_status_screen)
+		{
+		// Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
+		// to give it a chance to save its state.
+		// This is useful for example, when the babystep value has to be written into EEPROM.
+			if (menu_menu != NULL)
+			{
+				menuExiting = true;
+				(*menu_menu)();
+				menuExiting = false;
+			}
+			lcd_clear();
+			lcd_return_to_status();
+			lcd_draw_update = 2;
+		}
+		if (lcd_draw_update == 2) lcd_clear();
+		if (lcd_draw_update) lcd_draw_update--;
+		lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
+	}
 	if (!SdFatUtil::test_stack_integrity()) stack_error();
 	lcd_ping(); //check that we have received ping command if we are in farm mode
 	lcd_send_status();
