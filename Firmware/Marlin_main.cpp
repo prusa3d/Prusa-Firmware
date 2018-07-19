@@ -3366,7 +3366,7 @@ void process_commands()
 			no_response = false;
 		}	
 		else if (code_seen("MMURES")) {
-			fprintf_P(uart2io, PSTR("x0"));
+			fprintf_P(uart2io, PSTR("X0"));
 			bool response = mmu_get_reponse();
 			if (!response) mmu_not_responding();
 		}
@@ -6478,13 +6478,22 @@ Sigma_Exit:
 			//finish moves
 			st_synchronize();
 
-			lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
-			
 			//disable extruder steppers so filament can be removed
 			disable_e0();
 			disable_e1();
 			disable_e2();
 			delay(100);
+
+#ifdef SNMM_V2
+			fprintf_P(uart2io, PSTR("U0\n"));
+
+			// get response
+			bool response = mmu_get_reponse();
+			if (!response) mmu_not_responding();
+#else
+			lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
+			
+
 			 
 			
 			WRITE(BEEPER, HIGH);
@@ -6495,6 +6504,7 @@ Sigma_Exit:
 				counterBeep++;
 			}
 			WRITE(BEEPER, LOW);
+#endif
 
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, true);////MSG_UNLOAD_SUCCESSFUL c=20 r=2
@@ -6564,14 +6574,19 @@ Sigma_Exit:
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
 		target[E_AXIS] += 10;
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
+		//Extrude some filament
+        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
 #else
 		target[E_AXIS] += FILAMENTCHANGE_FIRSTFEED;
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder);
-#endif // SNMM
-        
-        //Extrude some filament
+		//Extrude some filament
         target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
         plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
+
+#endif // SNMM
+        
+
         
         //Wait for user to check the state
         lcd_change_fil_state = 0;
@@ -7131,17 +7146,8 @@ Sigma_Exit:
     	  snmm_extruder = tmp_extruder; //filament change is finished
 
 		  if (*(strchr_pointer + index) == '?') { // for single material usage with mmu
-			  bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
-			  if (!saved_e_relative_mode) {
-				  enquecommand_front_P(PSTR("M82")); // set extruder to relative mode
-			  }
-			  enquecommand_front_P((PSTR("G1 E7.2000 F562")));
-			  enquecommand_front_P((PSTR("G1 E14.4000 F871")));
-			  enquecommand_front_P((PSTR("G1 E36.0000 F1393")));
-			  enquecommand_front_P((PSTR("G1 E14.4000 F871")));			  
-			  if (!saved_e_relative_mode) {
-				  enquecommand_front_P(PSTR("M83")); // set extruder to relative mode
-			  }
+			  mmu_load_to_nozzle();
+
 		  }
 #endif
 
@@ -9154,6 +9160,20 @@ bool mmu_get_reponse() {
 
 void mmu_not_responding() {
 	printf_P(PSTR("MMU not responding"));
+}
+
+void mmu_load_to_nozzle() {
+	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
+	if (!saved_e_relative_mode) {
+		enquecommand_front_P(PSTR("M82")); // set extruder to relative mode
+	}
+		enquecommand_front_P((PSTR("G1 E7.2000 F562")));
+		enquecommand_front_P((PSTR("G1 E14.4000 F871")));
+		enquecommand_front_P((PSTR("G1 E36.0000 F1393")));
+		enquecommand_front_P((PSTR("G1 E14.4000 F871")));			  
+		if (!saved_e_relative_mode) {
+		  enquecommand_front_P(PSTR("M83")); // set extruder to relative mode
+		}
 }
 
 #define FIL_LOAD_LENGTH 60
