@@ -1464,10 +1464,10 @@ void lcd_commands()
 			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
 #ifdef SNMM_V2
 			enquecommand_P(PSTR("T?"));
 #endif //SNMM_V2
-			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
 			lcd_commands_step = 8;
