@@ -126,8 +126,6 @@
 
 
 #include "ultralcd.h"
-//-//
-#include "sound.h"
 
 #include "cmdqueue.h"
 
@@ -1151,8 +1149,6 @@ void setup()
 	spi_init();
 
 	lcd_splash();
-//-//
-     Sound_Init();
 
 #ifdef W25X20CL
   // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
@@ -6363,8 +6359,6 @@ Sigma_Exit:
 		unsigned long waiting_start_time = millis();
 		uint8_t wait_for_user_state = 0;
 		lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
-//-//
-bool bFirst=true;
 		while (!(wait_for_user_state == 0 && lcd_clicked())){
 
 			//cnt++;
@@ -6385,13 +6379,7 @@ bool bFirst=true;
 				}
 				SET_OUTPUT(BEEPER);
 				if (counterBeep == 0) {
-//-//
-//if(eSoundMode==e_SOUND_MODE_LOUD)
-if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
-{
-bFirst=false;
 					WRITE(BEEPER, HIGH);
-}
 				}
 				if (counterBeep == 20) {
 					WRITE(BEEPER, LOW);
@@ -7113,11 +7101,7 @@ bFirst=false;
 		disable_e2();
 		delay(100);
 
-//-//
-//if(eSoundMode==e_SOUND_MODE_LOUD)
-//     Sound_MakeSound_tmp();
-Sound_MakeSound(e_SOUND_CLASS_Prompt,e_SOUND_TYPE_StandardPrompt);
-/*
+
 		WRITE(BEEPER, HIGH);
 		uint8_t counterBeep = 0;
 		while (!lcd_clicked() && (counterBeep < 50)) {
@@ -7126,13 +7110,6 @@ Sound_MakeSound(e_SOUND_CLASS_Prompt,e_SOUND_TYPE_StandardPrompt);
 			counterBeep++;
 		}
 		WRITE(BEEPER, LOW);
-*/
-uint8_t counterBeep = 0;
-while (!lcd_clicked() && (counterBeep < 50)) {
-	delay_keep_alive(100);
-	counterBeep++;
-}
-//-//
 		st_synchronize();	
 		while (lcd_clicked()) delay_keep_alive(100);
 
