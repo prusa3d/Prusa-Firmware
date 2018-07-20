@@ -1464,6 +1464,9 @@ void lcd_commands()
 			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+#ifdef SNMM_V2
+			enquecommand_P(PSTR("T?"));
+#endif //SNMM_V2
 			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
@@ -1655,8 +1658,12 @@ void lcd_commands()
 		if (lcd_commands_step == 2 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			enquecommand_P(PSTR("M107")); //turn off printer fan			
+			#ifdef SNMM_V2
+			enquecommand_P(PSTR("M702 C"));
+			#else //SNMM_V2
 			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
-			enquecommand_P(PSTR("M107")); //turn off printer fan
+			#endif //SNMM_V2
 			enquecommand_P(PSTR("M104 S0")); // turn off temperature
 			enquecommand_P(PSTR("M140 S0")); // turn off heatbed
 			enquecommand_P(PSTR("G1 Z10 F1300.000"));
@@ -4317,6 +4324,9 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 }
 
 void lcd_v2_calibration() {
+#ifdef SNMM_V2
+	lcd_commands_type = LCD_COMMAND_V2_CAL;
+#else //SNMM_V2
 	bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
 	if (loaded) {
 		lcd_commands_type = LCD_COMMAND_V2_CAL;
@@ -4333,6 +4343,7 @@ void lcd_v2_calibration() {
 			}
 		}
 	}
+#endif //SNMM_V2
 	lcd_return_to_status();
 	lcd_update_enable(true);
 }
