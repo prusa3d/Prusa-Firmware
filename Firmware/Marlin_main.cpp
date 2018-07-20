@@ -9128,14 +9128,14 @@ void M600_load_filament(bool fsensor_enabled) {
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 #ifdef PAT9125
-		if (filament_autoload_enabled && (fsensor_enabled || fsensor_watch_runout)) fsensor_autoload_check_start();
+		if (fsensor_watch_autoload && (fsensor_enabled || fsensor_watch_runout)) fsensor_autoload_check_start();
 #endif //PAT9125
         while(!lcd_clicked())
 		{
           manage_heater();
           manage_inactivity(true);
 #ifdef PAT9125
-		  if (filament_autoload_enabled && (fsensor_enabled || fsensor_watch_runout) && fsensor_check_autoload())
+		  if (fsensor_watch_autoload && (fsensor_enabled || fsensor_watch_runout) && fsensor_check_autoload())
 		  {
 			tone(BEEPER, 1000);
 			delay_keep_alive(50);
@@ -9146,7 +9146,7 @@ void M600_load_filament(bool fsensor_enabled) {
 
         }
 #ifdef PAT9125
-		if (filament_autoload_enabled && (fsensor_enabled || fsensor_watch_runout)) fsensor_autoload_check_stop();
+		if (fsensor_watch_autoload && (fsensor_enabled || fsensor_watch_runout)) fsensor_autoload_check_stop();
 #endif //PAT9125
 		KEEPALIVE_STATE(IN_HANDLER);
 
