@@ -38,7 +38,7 @@
 
 extern int lcd_change_fil_state;
 extern bool fans_check_enabled;
-extern bool filament_autoload_enabled;
+extern bool fsensor_autoload_enabled;
 
 #ifdef PAT9125
 extern bool fsensor_not_responding;
@@ -2280,7 +2280,7 @@ void lcd_set_fan_check() {
 }
 
 void lcd_set_filament_autoload() {
-     fsensor_autoload_set(!filament_autoload_enabled);
+     fsensor_autoload_set(!fsensor_autoload_enabled);
 }
 
 void lcd_unLoadFilament()
@@ -4102,7 +4102,7 @@ static void lcd_fsensor_state_set()
 	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
     if (!FSensorStateMenu) {
         fsensor_disable();
-        if (filament_autoload_enabled)
+        if (fsensor_autoload_enabled)
             menu_submenu(lcd_filament_autoload_info);
     }else{
         fsensor_enable();
@@ -4609,7 +4609,7 @@ static void lcd_settings_menu()
       MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_ON), lcd_fsensor_state_set);
      
 
-      if (filament_autoload_enabled) {
+      if (fsensor_autoload_enabled) {
           MENU_ITEM_FUNCTION_P(_i("F. autoload  [on]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_ON c=17 r=1
       }
       else {
@@ -5948,7 +5948,7 @@ static void lcd_main_menu()
 
 	#else
 	  #ifdef PAT9125
-	if ( ((filament_autoload_enabled == true) && (fsensor_enabled == true)))
+	if ( ((fsensor_autoload_enabled == true) && (fsensor_enabled == true)))
         MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=17 r=0
 	else
       #endif //PAT9125

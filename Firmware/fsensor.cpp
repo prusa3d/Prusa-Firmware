@@ -21,12 +21,43 @@ extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
 extern int8_t FSensorStateMenu;
 
-void fsensor_stop_and_save_print()
+void fsensor_init(void)
+{
+	int pat9125 = pat9125_init();
+	printf_P(_N("PAT9125_init:%d\n"), pat9125);
+	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+     fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
+	if (!pat9125)
+	{
+		fsensor = 0; //disable sensor
+		fsensor_not_responding = true;
+	}
+	else {
+		fsensor_not_responding = false;
+	}
+	puts_P(PSTR("FSensor "));
+	if (fsensor)
+	{
+		puts_P(PSTR("ENABLED\n"));
+		fsensor_enable();
+	}
+	else
+	{
+		puts_P(PSTR("DISABLED\n"));
+		fsensor_disable();
+	}
+#ifdef DEBUG_DISABLE_FSENSORCHECK
+	fsensor_autoload_enabled = false;
+	fsensor_disable();
+#endif //DEBUG_DISABLE_FSENSORCHECK
+}
+
+void fsensor_stop_and_save_print(void)
 {
 	stop_and_save_print_to_ram(0, 0); //XYZE - no change	
 }
 
-void fsensor_restore_print_and_continue()
+void fsensor_restore_print_and_continue(void)
 {
 	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
 }
@@ -46,7 +77,7 @@ int16_t fsensor_st_cnt = 0;
 uint8_t fsensor_log = 1;
 
 //autoload enable/disable flag
-bool fsensor_autoload_enabled = false;
+bool fsensor_watch_autoload = false;
 uint16_t fsensor_autoload_y = 0;
 uint8_t fsensor_autoload_c = 0;
 uint32_t fsensor_autoload_last_millis = 0;
@@ -55,10 +86,10 @@ uint8_t fsensor_autoload_sum = 0;
 uint32_t fsensor_st_sum = 0;
 uint32_t fsensor_yd_sum = 0;
 uint32_t fsensor_er_sum = 0;
-uint8_t fsensor_yd_min = 255;
-uint8_t fsensor_yd_max = 0;
+uint16_t fsensor_yd_min = 65535;
+uint16_t fsensor_yd_max = 0;
 
-bool fsensor_enable()
+bool fsensor_enable(void)
 {
 //	puts_P(PSTR("fsensor_enable\n"));
 	int pat9125 = pat9125_init();
@@ -81,7 +112,7 @@ bool fsensor_enable()
 	return fsensor_enabled;
 }
 
-void fsensor_disable()
+void fsensor_disable(void)
 {
 //	puts_P(PSTR("fsensor_disable\n"));
 	fsensor_enabled = false;
@@ -91,8 +122,8 @@ void fsensor_disable()
 
 void fsensor_autoload_set(bool State)
 {
-	filament_autoload_enabled = State;
-	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, filament_autoload_enabled);
+	fsensor_autoload_enabled = State;
+	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, fsensor_autoload_enabled);
 }
 
 void pciSetup(byte pin)
@@ -100,19 +131,6 @@ void pciSetup(byte pin)
 	*digitalPinToPCMSK(pin) |= bit (digitalPinToPCMSKbit(pin)); // enable pin
 	PCIFR |= bit (digitalPinToPCICRbit(pin)); // clear any outstanding interrupt
 	PCICR |= bit (digitalPinToPCICRbit(pin)); // enable interrupt for the group 
-}
-
-void fsensor_setup_interrupt()
-{
-//	uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
-//	uint8_t fsensor_int_pcmsk = digitalPinToPCMSKbit(pin);
-//	uint8_t fsensor_int_pcicr = digitalPinToPCICRbit(pin);
-
-	pinMode(FSENSOR_INT_PIN, OUTPUT);
-	digitalWrite(FSENSOR_INT_PIN, LOW);
-	fsensor_int_pin_old = 0;
-
-	pciSetup(FSENSOR_INT_PIN);
 }
 
 void fsensor_autoload_check_start(void)
@@ -123,14 +141,14 @@ void fsensor_autoload_check_start(void)
 		printf_P(ERRMSG_PAT9125_NOT_RESP, 3);
 		fsensor_disable();
 		fsensor_not_responding = true;
-		fsensor_autoload_enabled = false;
+		fsensor_watch_autoload = false;
 		return;
 	}
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
 	fsensor_autoload_sum = 0;
 	fsensor_autoload_last_millis = millis();
-	fsensor_autoload_enabled = true;
+	fsensor_watch_autoload = true;
 	fsensor_err_cnt = 0;
 }
 
@@ -138,7 +156,7 @@ void fsensor_autoload_check_stop(void)
 {
 //	puts_P(PSTR("fsensor_autoload_check_stop\n"));
 	fsensor_autoload_sum = 0;
-	fsensor_autoload_enabled = false;
+	fsensor_watch_autoload = false;
 	fsensor_err_cnt = 0;
 }
 
@@ -208,8 +226,8 @@ ISR(PCINT2_vect)
 					fsensor_err_cnt--;
 				if (st_cnt == FSENSOR_CHUNK_LEN)
 				{
-					if (fsensor_yd_min > pat9125_y) fsensor_yd_min = pat9125_y;
-					if (fsensor_yd_max < pat9125_y) fsensor_yd_max = pat9125_y;
+					if (fsensor_yd_min > pat9125_y) fsensor_yd_min = (fsensor_yd_min + pat9125_y) / 2;
+					if (fsensor_yd_max < pat9125_y) fsensor_yd_max = (fsensor_yd_max + pat9125_y) / 2;
 				}
 			}
 			fsensor_st_sum += st_cnt;
@@ -262,7 +280,7 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 //		_WRITE(fsensor_int_pin, LOW);
 }
 
-void fsensor_update()
+void fsensor_update(void)
 {
 	if (fsensor_enabled && fsensor_watch_runout)
 		if (fsensor_err_cnt > FSENSOR_ERR_MAX)
@@ -294,5 +312,19 @@ void fsensor_update()
 			}
 		}
 }
+
+void fsensor_setup_interrupt(void)
+{
+//	uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
+//	uint8_t fsensor_int_pcmsk = digitalPinToPCMSKbit(pin);
+//	uint8_t fsensor_int_pcicr = digitalPinToPCICRbit(pin);
+
+	pinMode(FSENSOR_INT_PIN, OUTPUT);
+	digitalWrite(FSENSOR_INT_PIN, LOW);
+	fsensor_int_pin_old = 0;
+
+	pciSetup(FSENSOR_INT_PIN);
+}
+
 
 #endif //PAT9125
