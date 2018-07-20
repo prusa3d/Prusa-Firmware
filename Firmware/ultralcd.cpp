@@ -1463,6 +1463,9 @@ void lcd_commands()
 			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
+#ifdef SNMM_V2
+			enquecommand_P(PSTR("T?"));
+#endif //SNMM_V2
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
 			lcd_commands_step = 8;
@@ -1653,8 +1656,12 @@ void lcd_commands()
 		if (lcd_commands_step == 2 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			enquecommand_P(PSTR("M107")); //turn off printer fan			
+			#ifdef SNMM_V2
+			enquecommand_P(PSTR("M702 C"));
+			#else //SNMM_V2
 			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
-			enquecommand_P(PSTR("M107")); //turn off printer fan
+			#endif //SNMM_V2
 			enquecommand_P(PSTR("M104 S0")); // turn off temperature
 			enquecommand_P(PSTR("M140 S0")); // turn off heatbed
 			enquecommand_P(PSTR("G1 Z10 F1300.000"));
@@ -1726,7 +1733,7 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X50 Y" STRINGIFY(Y_MAX_POS) " E0 F7000"));
 			#endif
 			lcd_ignore_click(false);
-			#ifdef SNMM
+			#if defined (SNMM) || defined (SNMM_V2)
 			lcd_commands_step = 8;
 			#else
 			lcd_commands_step = 3;
@@ -1747,7 +1754,7 @@ void lcd_commands()
 			lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
 			cancel_heatup = true;
 			setTargetBed(0);
-			#ifndef SNMM
+			#if !(defined (SNMM) || defined (SNMM_V2))
 			setTargetHotend(0, 0);	//heating when changing filament for multicolor
 			setTargetHotend(0, 1);
 			setTargetHotend(0, 2);
@@ -1758,12 +1765,16 @@ void lcd_commands()
 			lcd_commands_step = 5;
 		}
 		if (lcd_commands_step == 7 && !blocks_queued()) {
+			#ifdef SNMM_V2
+			enquecommand_P(PSTR("M702 C")); //current
+			#else //SNMM_V2
 			switch(snmm_stop_print_menu()) {
 				case 0: enquecommand_P(PSTR("M702")); break;//all 
 				case 1: enquecommand_P(PSTR("M702 U")); break; //used
 				case 2: enquecommand_P(PSTR("M702 C")); break; //current
 				default: enquecommand_P(PSTR("M702")); break;
 			}
+			#endif //SNMM_V2
 			lcd_commands_step = 3;
 		}
 		if (lcd_commands_step == 8 && !blocks_queued()) { //step 8 is here for delay (going to next step after execution of all gcodes from step 4)
@@ -4324,6 +4335,9 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 }
 
 void lcd_v2_calibration() {
+#ifdef SNMM_V2
+	lcd_commands_type = LCD_COMMAND_V2_CAL;
+#else //SNMM_V2
 	bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
 	if (loaded) {
 		lcd_commands_type = LCD_COMMAND_V2_CAL;
@@ -4340,6 +4354,7 @@ void lcd_v2_calibration() {
 			}
 		}
 	}
+#endif //SNMM_V2
 	lcd_return_to_status();
 	lcd_update_enable(true);
 }
