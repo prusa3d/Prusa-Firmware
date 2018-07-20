@@ -181,6 +181,11 @@
 #define EEPROM_EXTRUDEMULTIPLY (EEPROM_EXTRUDER_MULTIPLIER_2 - 2)                              // uint16
 
 
+//
+#define EEPROM_UVLO_TINY_CURRENT_POSITION_Z (EEPROM_EXTRUDEMULTIPLY-4) // float
+#define EEPROM_UVLO_TINY_Z_MICROSTEPS (EEPROM_UVLO_TINY_CURRENT_POSITION_Z-2) // uint16
+
+
 //TMC2130 configuration
 #define EEPROM_TMC_AXIS_SIZE  //axis configuration block size
 #define EEPROM_TMC_X (EEPROM_TMC + 0 * EEPROM_TMC_AXIS_SIZE) //X axis configuration blok
