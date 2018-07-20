@@ -1,17 +1,15 @@
 #ifndef FSENSOR_H
 #define FSENSOR_H
 
-#include "planner.h"
+#include <inttypes.h>
 
-#define FSENSOR_CHUNK_LEN      180  //filament sensor chunk length in steps - 0.64mm
-#define FSENSOR_ERR_MAX         10  //filament sensor maximum error count for runout detection
 
-//Optical quality meassurement params
-#define FSENSOR_OQ_MAX_ER      5    //maximum error count for loading (~150mm)
-#define FSENSOR_OQ_MIN_YD      2    //minimum yd per chunk
-#define FSENSOR_OQ_MAX_YD      200  //maximum yd per chunk
-#define FSENSOR_OQ_MAX_PD      3    //maximum positive deviation (= yd_max/yd_avg)
-#define FSENSOR_OQ_MAX_ND      5    //maximum negative deviation (= yd_avg/yd_min)
+//minimum meassured chunk length in steps
+extern int16_t fsensor_chunk_len;
+//enable/disable flag
+extern bool fsensor_enabled;
+//not responding flag
+extern bool fsensor_not_responding;
 
 
 //save restore printing
@@ -46,23 +44,9 @@ extern void fsensor_oq_meassure_stop(void);
 extern bool fsensor_oq_result(void);
 
 //callbacks from stepper
+#include "planner.h"
 extern void fsensor_st_block_begin(block_t* bl);
 extern void fsensor_st_block_chunk(block_t* bl, int cnt);
-
-//minimum meassured chunk length in steps
-extern int16_t fsensor_chunk_len;
-//enable/disable flag
-extern bool fsensor_enabled;
-//watch runout flag
-extern bool fsensor_watch_runout;
-//not responding flag
-extern bool fsensor_not_responding;
-
-//error counter
-extern uint8_t fsensor_err_cnt;
-
-//autoload enable/disable flag
-extern bool fsensor_watch_autoload;
 
 
 #endif //FSENSOR_H

@@ -1,13 +1,22 @@
 #include "Marlin.h"
 
-#ifdef PAT9125
-
 #include "fsensor.h"
 #include "pat9125.h"
 #include "stepper.h"
 #include "planner.h"
 #include "fastio.h"
 #include "cmdqueue.h"
+
+//Basic params
+#define FSENSOR_CHUNK_LEN      180  //filament sensor chunk length in steps - 0.64mm
+#define FSENSOR_ERR_MAX         10  //filament sensor maximum error count for runout detection
+
+//Optical quality meassurement params
+#define FSENSOR_OQ_MAX_ER      5    //maximum error count for loading (~150mm)
+#define FSENSOR_OQ_MIN_YD      2    //minimum yd per chunk
+#define FSENSOR_OQ_MAX_YD      200  //maximum yd per chunk
+#define FSENSOR_OQ_MAX_PD      3    //maximum positive deviation (= yd_max/yd_avg)
+#define FSENSOR_OQ_MAX_ND      5    //maximum negative deviation (= yd_avg/yd_min)
 
 
 const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
@@ -413,6 +422,3 @@ void fsensor_setup_interrupt(void)
 
 	pciSetup(FSENSOR_INT_PIN);
 }
-
-
-#endif //PAT9125
