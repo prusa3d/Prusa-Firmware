@@ -3162,13 +3162,14 @@ void gcode_M701()
 	loading_flag = false;
 	custom_message = false;
 	custom_message_type = 0;
-#endif
+
 
 	fsensor_err_cnt = 0;
 	fsensor_watch_runout = old_watch_runout;
 	printf_P(_N("\nFSENSOR st_sum=%lu yd_sum=%lu er_sum=%lu\n"), fsensor_st_sum, fsensor_yd_sum, fsensor_er_sum);
 	printf_P(_N("\nFSENSOR yd_min=%hhu yd_max=%hhu yd_avg=%hhu\n"), fsensor_yd_min, fsensor_yd_max, fsensor_yd_sum * FSENSOR_CHUNK_LEN / fsensor_st_sum);
 	printf_P(PSTR("gcode_M701 end\n"));
+#endif
 }
 /**
  * @brief Get serial number from 32U2 processor
@@ -6620,27 +6621,6 @@ Sigma_Exit:
 	  lcd_setstatuspgm(_T(WELCOME_MSG));
 	  custom_message = false;
 	  custom_message_type = 0;
-
-#ifdef PAT9125
-/*
-//      fsensor_enabled = old_fsensor_enabled; //temporary solution for unexpected restarting
-
-	  if (fsensor_M600)
-	  {
-		cmdqueue_pop_front(); //hack because M600 repeated 2x when enqueued to front
-		st_synchronize();
-		while (!is_buffer_empty())
-		{
-			process_commands();
-		    cmdqueue_pop_front();
-		}
-		KEEPALIVE_STATE(IN_HANDLER);
-//		fsensor_enable();
-		fsensor_restore_print_and_continue();
-	  }
-	fsensor_M600 = false;
-*/
-#endif //PAT9125
         
     }
     break;
@@ -9062,7 +9042,7 @@ bool mmu_get_reponse() {
 	while (!uart2_rx_ok())
     {
       delay_keep_alive(100);
-	  if (mmu_get_reponse_timeout.expired(30 * 1000ul)) { //PINDA cooling from 60 C to 35 C takes about 7 minutes
+	  if (mmu_get_reponse_timeout.expired(180 * 1000ul)) { //3 minutes timeout
 			response = false;
 			break;
 	  }
@@ -9171,14 +9151,14 @@ void M600_load_filament(bool fsensor_enabled) {
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 #ifdef PAT9125
-		if (filament_autoload_enabled && (fsensor_enabled || fsensor_M600)) fsensor_autoload_check_start();
+		if (filament_autoload_enabled && (fsensor_enabled || fsensor_watch_runout)) fsensor_autoload_check_start();
 #endif //PAT9125
         while(!lcd_clicked())
 		{
           manage_heater();
           manage_inactivity(true);
 #ifdef PAT9125
-		  if (filament_autoload_enabled && (fsensor_enabled || fsensor_M600) && fsensor_check_autoload())
+		  if (filament_autoload_enabled && (fsensor_enabled || fsensor_watch_runout) && fsensor_check_autoload())
 		  {
 			tone(BEEPER, 1000);
 			delay_keep_alive(50);
@@ -9189,7 +9169,7 @@ void M600_load_filament(bool fsensor_enabled) {
 
         }
 #ifdef PAT9125
-		if (filament_autoload_enabled && (fsensor_enabled || fsensor_M600)) fsensor_autoload_check_stop();
+		if (filament_autoload_enabled && (fsensor_enabled || fsensor_watch_runout)) fsensor_autoload_check_stop();
 #endif //PAT9125
 		KEEPALIVE_STATE(IN_HANDLER);
 
