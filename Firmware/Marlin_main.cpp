@@ -7008,29 +7008,7 @@ Sigma_Exit:
 
 #ifdef SNMM_V2
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
-          switch (tmp_extruder) 
-          {
-          case 1:
-              
-              fprintf_P(uart2io, PSTR("T1\n"));
-              break;
-          case 2:
-              
-              fprintf_P(uart2io, PSTR("T2\n"));
-              break;
-          case 3:
-              
-              fprintf_P(uart2io, PSTR("T3\n"));
-              break;
-          case 4:
-              
-              fprintf_P(uart2io, PSTR("T4\n"));
-              break;
-          default:
-              
-              fprintf_P(uart2io, PSTR("T0\n"));
-              break;
-          }
+		  fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
 
 		  bool response = mmu_get_reponse();
 		  if (!response) mmu_not_responding();
@@ -9104,30 +9082,7 @@ void mmu_M600_load_filament() {
 		  lcd_print(snmm_extruder + 1);
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
-          switch (tmp_extruder) 
-          {
-          case 1:
-              
-              fprintf_P(uart2io, PSTR("T1\n"));
-              break;
-          case 2:
-              
-              fprintf_P(uart2io, PSTR("T2\n"));
-              break;
-          case 3:
-              
-              fprintf_P(uart2io, PSTR("T3\n"));
-              break;
-          case 4:
-              
-              fprintf_P(uart2io, PSTR("T4\n"));
-              break;
-          default:
-              
-              fprintf_P(uart2io, PSTR("T0\n"));
-              break;
-          }
-
+		  fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
 		  response = mmu_get_reponse();
 		  if (!response) mmu_not_responding();
 
