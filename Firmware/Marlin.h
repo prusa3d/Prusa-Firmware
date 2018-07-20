@@ -396,6 +396,7 @@ void serialecho_temperatures();
 bool check_commands();
 
 void uvlo_();
+void uvlo_tiny();
 void recover_print(uint8_t automatic); 
 void setup_uvlo_interrupt();
 
@@ -403,7 +404,8 @@ void setup_uvlo_interrupt();
 void setup_fan_interrupt();
 #endif
 
-extern void recover_machine_state_after_power_panic();
+//extern void recover_machine_state_after_power_panic();
+extern void recover_machine_state_after_power_panic(bool bTiny);
 extern void restore_print_from_eeprom();
 extern void position_menu();
 
@@ -465,7 +467,3 @@ void gcode_M701();
 #define UVLO !(PINE & (1<<4))
 
 void proc_commands();
-
-bool mmu_get_reponse();
-void mmu_not_responding();
-void mmu_load_to_nozzle();
