@@ -19,37 +19,6 @@ extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
 extern int8_t FSensorStateMenu;
 
-void fsensor_init(void)
-{
-	int pat9125 = pat9125_init();
-	printf_P(_N("PAT9125_init:%d\n"), pat9125);
-	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
-     fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
-	if (!pat9125)
-	{
-		fsensor = 0; //disable sensor
-		fsensor_not_responding = true;
-	}
-	else {
-		fsensor_not_responding = false;
-	}
-	puts_P(PSTR("FSensor "));
-	if (fsensor)
-	{
-		puts_P(PSTR("ENABLED\n"));
-		fsensor_enable();
-	}
-	else
-	{
-		puts_P(PSTR("DISABLED\n"));
-		fsensor_disable();
-	}
-#ifdef DEBUG_DISABLE_FSENSORCHECK
-	fsensor_autoload_enabled = false;
-	fsensor_disable();
-#endif //DEBUG_DISABLE_FSENSORCHECK
-}
-
 void fsensor_stop_and_save_print(void)
 {
 	stop_and_save_print_to_ram(0, 0); //XYZE - no change	
@@ -64,38 +33,91 @@ void fsensor_restore_print_and_continue(void)
 uint8_t fsensor_int_pin_old = 0;
 int16_t fsensor_chunk_len = FSENSOR_CHUNK_LEN;
 
+//enabled = initialized and sampled every chunk event
 bool fsensor_enabled = true;
+//runout watching is done in fsensor_update (called from main loop)
 bool fsensor_watch_runout = true;
+//not responding - is set if any communication error occured durring initialization or readout
 bool fsensor_not_responding = false;
 
+//number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
+//variable for accumolating step count
 int16_t fsensor_st_cnt = 0;
 
-
+//log flag: 0=log disabled, 1=log enabled
 uint8_t fsensor_log = 1;
 
-//autoload enable/disable flag
+////////////////////////////////////////////////////////////////////////////////
+//filament autoload variables
+
+//autoload feature enabled
+bool fsensor_autoload_enabled = true;
+
+//autoload watching enable/disable flag
 bool fsensor_watch_autoload = false;
+//
 uint16_t fsensor_autoload_y = 0;
+//
 uint8_t fsensor_autoload_c = 0;
+//
 uint32_t fsensor_autoload_last_millis = 0;
+//
 uint8_t fsensor_autoload_sum = 0;
 
-//filament optical quality meassurement
+////////////////////////////////////////////////////////////////////////////////
+//filament optical quality meassurement variables
+
+//meassurement enable/disable flag
 bool fsensor_oq_meassure = false;
+//skip-chunk counter, for accurate meassurement is necesary to skip first chunk...
 uint8_t  fsensor_oq_skipchunk;
-uint32_t fsensor_oq_st_sum;
-uint32_t fsensor_oq_yd_sum;
+//sum of steps in positive direction movements
+uint16_t fsensor_oq_st_sum;
+//sum of deltas in positive direction movements
+uint16_t fsensor_oq_yd_sum;
+//sum of errors durring meassurement
 uint16_t fsensor_oq_er_sum;
+//max error counter value durring meassurement
 uint8_t  fsensor_oq_er_max;
+//minimum delta value
 uint16_t fsensor_oq_yd_min;
+//maximum delta value
 uint16_t fsensor_oq_yd_max;
 
 
-bool fsensor_enable(void)
+void fsensor_init(void)
 {
 	int pat9125 = pat9125_init();
-    printf_P(PSTR("PAT9125_init:%d\n"), pat9125);
+	printf_P(_N("PAT9125_init:%d\n"), pat9125);
+	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
+	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
+	if (!pat9125)
+	{
+		fsensor = 0; //disable sensor
+		fsensor_not_responding = true;
+	}
+	else
+	{
+		fsensor_not_responding = false;
+	}
+	puts_P(PSTR("FSensor "));
+	if (fsensor)
+	{
+		fsensor_enable();
+		puts_P(PSTR("ENABLED\n"));
+	}
+	else
+	{
+		fsensor_disable();
+		puts_P(PSTR("DISABLED\n"));
+	}
+}
+
+bool fsensor_enable(void)
+{
+	uint8_t pat9125 = pat9125_init();
+    printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
 	if (pat9125)
 		fsensor_not_responding = false;
 	else
@@ -113,7 +135,6 @@ bool fsensor_enable(void)
 
 void fsensor_disable(void)
 {
-//	puts_P(PSTR("fsensor_disable\n"));
 	fsensor_enabled = false;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x00); 
 	FSensorStateMenu = 0;
@@ -134,41 +155,54 @@ void pciSetup(byte pin)
 
 void fsensor_autoload_check_start(void)
 {
-//	puts_P(PSTR("fsensor_autoload_check_start\n"));
+	if (!fsensor_enabled) return;
+	if (!fsensor_autoload_enabled) return;
+	if (fsensor_watch_autoload) return;
 	if (!pat9125_update_y()) //update sensor
 	{
-		printf_P(ERRMSG_PAT9125_NOT_RESP, 3);
 		fsensor_disable();
 		fsensor_not_responding = true;
 		fsensor_watch_autoload = false;
+		printf_P(ERRMSG_PAT9125_NOT_RESP, 3);
 		return;
 	}
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
 	fsensor_autoload_sum = 0;
 	fsensor_autoload_last_millis = millis();
+	fsensor_watch_runout = false;
 	fsensor_watch_autoload = true;
 	fsensor_err_cnt = 0;
 }
 
 void fsensor_autoload_check_stop(void)
 {
-//	puts_P(PSTR("fsensor_autoload_check_stop\n"));
+	if (!fsensor_enabled) return;
+	if (!fsensor_autoload_enabled) return;
+	if (!fsensor_watch_autoload) return;
 	fsensor_autoload_sum = 0;
 	fsensor_watch_autoload = false;
+	fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
 }
 
 bool fsensor_check_autoload(void)
 {
+	if (!fsensor_enabled) return false;
+	if (!fsensor_autoload_enabled) return false;
+	if (!fsensor_watch_autoload)
+	{
+		fsensor_autoload_check_start();
+		return false;
+	}
 	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
 	if ((millis() - fsensor_autoload_last_millis) < 25) return false;
 	fsensor_autoload_last_millis = millis();
 	if (!pat9125_update_y())
 	{
-		printf_P(ERRMSG_PAT9125_NOT_RESP, 2);
 		fsensor_disable();
 		fsensor_not_responding = true;
+		printf_P(ERRMSG_PAT9125_NOT_RESP, 2);
 		return false; //update sensor
 	}
 	int16_t dy = fsensor_autoload_y - pat9125_y;
@@ -210,7 +244,12 @@ void fsensor_oq_meassure_start(void)
 
 void fsensor_oq_meassure_stop(void)
 {
+	printf_P(PSTR("fsensor_oq_meassure_stop\n"));
+	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
+	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum);
 	fsensor_oq_meassure = false;
+	fsensor_err_cnt = 0;
+	fsensor_watch_runout = true;
 }
 
 bool fsensor_oq_result(void)
@@ -241,9 +280,9 @@ ISR(PCINT2_vect)
 	uint8_t old_err_cnt = fsensor_err_cnt;
 	if (!pat9125_update_y())
 	{
-		printf_P(ERRMSG_PAT9125_NOT_RESP, 1);
 		fsensor_disable();
 		fsensor_not_responding = true;
+		printf_P(ERRMSG_PAT9125_NOT_RESP, 1);
 	}
 	if (st_cnt != 0)
 	{ //movement
@@ -308,8 +347,6 @@ void fsensor_st_block_begin(block_t* bl)
 		if (_READ(63)) _WRITE(63, LOW);
 		else _WRITE(63, HIGH);
 	}
-//		PINK |= FSENSOR_INT_PIN_MSK; //toggle pin
-//		_WRITE(fsensor_int_pin, LOW);
 }
 
 void fsensor_st_block_chunk(block_t* bl, int cnt)
@@ -321,8 +358,6 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 		if (_READ(63)) _WRITE(63, LOW);
 		else _WRITE(63, HIGH);
 	}
-//		PINK |= FSENSOR_INT_PIN_MSK; //toggle pin
-//		_WRITE(fsensor_int_pin, LOW);
 }
 
 void fsensor_update(void)

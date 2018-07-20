@@ -133,6 +133,7 @@
 
 // Filament sensor
 #define PAT9125
+#define FILAMENT_SENSOR
 
 // Backlash - 
 //#define BACKLASH_X

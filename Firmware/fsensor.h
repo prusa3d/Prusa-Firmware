@@ -18,12 +18,14 @@
 extern void fsensor_stop_and_save_print(void);
 extern void fsensor_restore_print_and_continue(void);
 
+//initialize
 extern void fsensor_init(void);
 
 //enable/disable
 extern bool fsensor_enable(void);
 extern void fsensor_disable(void);
 
+//autoload feature enabled
 extern bool fsensor_autoload_enabled;
 extern void fsensor_autoload_set(bool State);
 
@@ -56,19 +58,11 @@ extern bool fsensor_watch_runout;
 //not responding flag
 extern bool fsensor_not_responding;
 
+//error counter
 extern uint8_t fsensor_err_cnt;
 
 //autoload enable/disable flag
 extern bool fsensor_watch_autoload;
 
-//filament optical quality meassurement
-extern bool     fsensor_oq_meassure;
-extern uint8_t  fsensor_oq_skipchunk;
-extern uint32_t fsensor_oq_st_sum;
-extern uint32_t fsensor_oq_yd_sum;
-extern uint16_t fsensor_oq_er_sum;
-extern uint8_t  fsensor_oq_er_max;
-extern uint16_t fsensor_oq_yd_min;
-extern uint16_t fsensor_oq_yd_max;
 
 #endif //FSENSOR_H

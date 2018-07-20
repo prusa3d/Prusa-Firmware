@@ -27,6 +27,10 @@
 #include "pat9125.h"
 #endif //PAT9125
 
+#ifdef FILAMENT_SENSOR
+#include "fsensor.h"
+#endif //FILAMENT_SENSOR
+
 #ifdef TMC2130
 #include "tmc2130.h"
 #endif //TMC2130
@@ -38,12 +42,7 @@
 
 extern int lcd_change_fil_state;
 extern bool fans_check_enabled;
-extern bool fsensor_autoload_enabled;
 
-#ifdef PAT9125
-extern bool fsensor_not_responding;
-extern bool fsensor_enabled;
-#endif //PAT9125
 
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
@@ -2506,7 +2505,7 @@ void lcd_alright() {
 
 }
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 static void lcd_menu_AutoLoadFilament()
 {
     if (degHotend0() > EXTRUDE_MINTEMP)
@@ -2526,7 +2525,7 @@ static void lcd_menu_AutoLoadFilament()
     }
     menu_back_if_clicked();
 }
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 static void lcd_LoadFilament()
 {
@@ -4024,7 +4023,7 @@ static void lcd_crash_mode_info2()
 }
 #endif //TMC2130
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 static void lcd_filament_autoload_info()
 {
 uint8_t nlines;
@@ -4050,7 +4049,7 @@ uint8_t nlines;
 	}
     menu_back_if_clicked();
 }
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 
 static void lcd_silent_mode_set() {
@@ -4107,7 +4106,7 @@ static void lcd_crash_mode_set()
 #endif //TMC2130
  
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 static void lcd_fsensor_state_set()
 {
 	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
@@ -4121,7 +4120,7 @@ static void lcd_fsensor_state_set()
             menu_submenu(lcd_fsensor_fail);
     }
 }
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 
 #if !SDSORT_USES_RAM
@@ -4581,130 +4580,120 @@ void lcd_settings_linearity_correction_menu(void)
 */
 static void lcd_settings_menu()
 {
-  EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
-  MENU_BEGIN();
-  MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
+	MENU_BEGIN();
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 
+	MENU_ITEM_SUBMENU_P(_i("Temperature"), lcd_control_temperature_menu);////MSG_TEMPERATURE c=0 r=0
+	if (!homing_flag)
+	MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_1mm);////MSG_MOVE_AXIS c=0 r=0
+	if (!isPrintPaused)
+	MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=0 r=0
 
-  MENU_ITEM_SUBMENU_P(_i("Temperature"), lcd_control_temperature_menu);////MSG_TEMPERATURE c=0 r=0
-  if (!homing_flag)
-  {
-	  MENU_ITEM_SUBMENU_P(_i("Move axis"), lcd_move_menu_1mm);////MSG_MOVE_AXIS c=0 r=0
-  }
-  if (!isPrintPaused)
-  {
-	  MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=0 r=0
-  }
 #ifndef TMC2130
-  if (!farm_mode) { //dont show in menu if we are in farm mode
-	  switch (SilentModeMenu) {
-	  case SILENT_MODE_POWER: MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_OFF), lcd_silent_mode_set); break;
-	  case SILENT_MODE_SILENT: MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_ON), lcd_silent_mode_set); break;
-	  case SILENT_MODE_AUTO: MENU_ITEM_FUNCTION_P(_T(MSG_AUTO_MODE_ON), lcd_silent_mode_set); break;
-	  default: MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_OFF), lcd_silent_mode_set); break; // (probably) not needed
-	  }
-  }
+	if (!farm_mode)
+	{ //dont show in menu if we are in farm mode
+		switch (SilentModeMenu)
+		{
+		case SILENT_MODE_POWER: MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_OFF), lcd_silent_mode_set); break;
+		case SILENT_MODE_SILENT: MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_ON), lcd_silent_mode_set); break;
+		case SILENT_MODE_AUTO: MENU_ITEM_FUNCTION_P(_T(MSG_AUTO_MODE_ON), lcd_silent_mode_set); break;
+		default: MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_OFF), lcd_silent_mode_set); break; // (probably) not needed
+		}
+	}
 #endif //TMC2130
 
-#ifdef PAT9125
-#ifndef DEBUG_DISABLE_FSENSORCHECK
-  if (FSensorStateMenu == 0) {
-      if (fsensor_not_responding){
-          // Filament sensor not working
-          MENU_ITEM_FUNCTION_P(_i("Fil. sensor [N/A]"), lcd_fsensor_state_set);////MSG_FSENSOR_NA c=0 r=0
-          MENU_ITEM_SUBMENU_P(_T(MSG_FSENS_AUTOLOAD_NA), lcd_fsensor_fail);
-      }
-      else{
-          // Filament sensor turned off, working, no problems
-          MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_OFF), lcd_fsensor_state_set);
-          MENU_ITEM_SUBMENU_P(_T(MSG_FSENS_AUTOLOAD_NA), lcd_filament_autoload_info);
-      }
-  } else {
-      // Filament sensor turned on, working, no problems
-      MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_ON), lcd_fsensor_state_set);
-     
+#ifdef FILAMENT_SENSOR
+	if (FSensorStateMenu == 0)
+	{
+		if (fsensor_not_responding)
+		{
+			// Filament sensor not working
+			MENU_ITEM_FUNCTION_P(_i("Fil. sensor [N/A]"), lcd_fsensor_state_set);////MSG_FSENSOR_NA c=0 r=0
+			MENU_ITEM_SUBMENU_P(_T(MSG_FSENS_AUTOLOAD_NA), lcd_fsensor_fail);
+		}
+		else
+		{
+			// Filament sensor turned off, working, no problems
+			MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_OFF), lcd_fsensor_state_set);
+			MENU_ITEM_SUBMENU_P(_T(MSG_FSENS_AUTOLOAD_NA), lcd_filament_autoload_info);
+		}
+	}
+	else
+	{
+		// Filament sensor turned on, working, no problems
+		MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_ON), lcd_fsensor_state_set);
+		if (fsensor_autoload_enabled)
+			MENU_ITEM_FUNCTION_P(_i("F. autoload  [on]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_ON c=17 r=1
+		else
+			MENU_ITEM_FUNCTION_P(_i("F. autoload [off]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_OFF c=17 r=1
+	}
+#endif //FILAMENT_SENSOR
 
-      if (fsensor_autoload_enabled) {
-          MENU_ITEM_FUNCTION_P(_i("F. autoload  [on]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_ON c=17 r=1
-      }
-      else {
-          MENU_ITEM_FUNCTION_P(_i("F. autoload [off]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-      }
-      
-  }
-#endif //DEBUG_DISABLE_FSENSORCHECK
-#endif //PAT9125
-
-  if (fans_check_enabled == true) {
-	  MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
-  }
-  else {
-	  MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
-  }
+	if (fans_check_enabled == true)
+		MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
+	else
+		MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
 
 #ifdef TMC2130
-  if(!farm_mode)
-  {
-	if (SilentModeMenu == SILENT_MODE_NORMAL) { MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_OFF), lcd_silent_mode_set); }
-    else MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_ON), lcd_silent_mode_set);
-    if (SilentModeMenu == SILENT_MODE_NORMAL)
-    {
-	  if (CrashDetectMenu == 0) { MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_OFF), lcd_crash_mode_set); }
-      else MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_ON), lcd_crash_mode_set);
-    }
-    else MENU_ITEM_SUBMENU_P(_T(MSG_CRASHDETECT_NA), lcd_crash_mode_info);
-  }
+	if(!farm_mode)
+	{
+		if (SilentModeMenu == SILENT_MODE_NORMAL) { MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_OFF), lcd_silent_mode_set); }
+		else MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_ON), lcd_silent_mode_set);
+		if (SilentModeMenu == SILENT_MODE_NORMAL)
+		{
+			if (CrashDetectMenu == 0) { MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_OFF), lcd_crash_mode_set); }
+			else MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_ON), lcd_crash_mode_set);
+		}
+		else MENU_ITEM_SUBMENU_P(_T(MSG_CRASHDETECT_NA), lcd_crash_mode_info);
+	}
 
 //  MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
 #endif //TMC2130
 
-  if (temp_cal_active == false) {
+  if (temp_cal_active == false)
 	  MENU_ITEM_FUNCTION_P(_i("Temp. cal.  [off]"), lcd_temp_calibration_set);////MSG_TEMP_CALIBRATION_OFF c=20 r=1
-  }
-  else {
+  else
 	  MENU_ITEM_FUNCTION_P(_i("Temp. cal.   [on]"), lcd_temp_calibration_set);////MSG_TEMP_CALIBRATION_ON c=20 r=1
-  }
+
 #ifdef HAS_SECOND_SERIAL_PORT
-  if (selectedSerialPort == 0) {
-	  MENU_ITEM_FUNCTION_P(_i("RPi port    [off]"), lcd_second_serial_set);////MSG_SECOND_SERIAL_OFF c=17 r=1
-  }
-  else {
-	  MENU_ITEM_FUNCTION_P(_i("RPi port     [on]"), lcd_second_serial_set);////MSG_SECOND_SERIAL_ON c=17 r=1
-  }
+	if (selectedSerialPort == 0)
+		MENU_ITEM_FUNCTION_P(_i("RPi port    [off]"), lcd_second_serial_set);////MSG_SECOND_SERIAL_OFF c=17 r=1
+	else
+		MENU_ITEM_FUNCTION_P(_i("RPi port     [on]"), lcd_second_serial_set);////MSG_SECOND_SERIAL_ON c=17 r=1
 #endif //HAS_SECOND_SERIAL
 
-  if (!isPrintPaused && !homing_flag)
-	{
+	if (!isPrintPaused && !homing_flag)
 		MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);
-	}
 
 #if (LANG_MODE != 0)
 	MENU_ITEM_SUBMENU_P(_i("Select language"), lcd_language_menu);////MSG_LANGUAGE_SELECT c=0 r=0
 #endif //(LANG_MODE != 0)
 
-  if (card.ToshibaFlashAir_isEnabled()) {
-    MENU_ITEM_FUNCTION_P(_i("SD card [FlshAir]"), lcd_toshiba_flash_air_compatibility_toggle);////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-  } else {
-    MENU_ITEM_FUNCTION_P(_i("SD card  [normal]"), lcd_toshiba_flash_air_compatibility_toggle);////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
-  }
+	if (card.ToshibaFlashAir_isEnabled())
+		MENU_ITEM_FUNCTION_P(_i("SD card [FlshAir]"), lcd_toshiba_flash_air_compatibility_toggle);////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
+	else
+		MENU_ITEM_FUNCTION_P(_i("SD card  [normal]"), lcd_toshiba_flash_air_compatibility_toggle);////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 
-  #ifdef SDCARD_SORT_ALPHA
-	  if (!farm_mode) {
-	  uint8_t sdSort;
-	  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
-	  switch (sdSort) {
+#ifdef SDCARD_SORT_ALPHA
+	if (!farm_mode)
+	{
+		uint8_t sdSort;
+		EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
+		switch (sdSort)
+		{
 		  case SD_SORT_TIME: MENU_ITEM_FUNCTION_P(_i("Sort:      [Time]"), lcd_sort_type_set); break;////MSG_SORT_TIME c=17 r=1
 		  case SD_SORT_ALPHA: MENU_ITEM_FUNCTION_P(_i("Sort:  [Alphabet]"), lcd_sort_type_set); break;////MSG_SORT_ALPHA c=17 r=1
 		  default: MENU_ITEM_FUNCTION_P(_i("Sort:      [None]"), lcd_sort_type_set);////MSG_SORT_NONE c=17 r=1
-	  }
-  }
-  #endif // SDCARD_SORT_ALPHA
+		}
+	}
+#endif // SDCARD_SORT_ALPHA
     
-    if (farm_mode)
-    {
-        MENU_ITEM_SUBMENU_P(PSTR("Farm number"), lcd_farm_no);
+	if (farm_mode)
+	{
+		MENU_ITEM_SUBMENU_P(PSTR("Farm number"), lcd_farm_no);
 		MENU_ITEM_FUNCTION_P(PSTR("Disable farm mode"), lcd_disable_farm_mode);
-    }
+	}
 
 	MENU_END();
 }
@@ -5962,7 +5951,7 @@ static void lcd_main_menu()
     #endif
 
 	#else
-	  #ifdef PAT9125
+	  #ifdef FILAMENT_SENSOR
 	if ( ((fsensor_autoload_enabled == true) && (fsensor_enabled == true)))
         MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=17 r=0
 	else
@@ -6092,16 +6081,14 @@ static void lcd_tune_menu()
 	MENU_ITEM_FUNCTION_P(_T(MSG_FILAMENTCHANGE), lcd_colorprint_change);//7
 #endif
 
-#ifndef DEBUG_DISABLE_FSENSORCHECK
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	if (FSensorStateMenu == 0) {
 		MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_OFF), lcd_fsensor_state_set);
 	}
 	else {
 		MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_ON), lcd_fsensor_state_set);
 	}
-#endif //PAT9125
-#endif //DEBUG_DISABLE_FSENSORCHECK
+#endif //FILAMENT_SENSOR
 
 #ifdef TMC2130
      if(!farm_mode)
@@ -6454,16 +6441,16 @@ bool lcd_selftest()
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(8, _progress, 3, true, 2000); //bed ok
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 		_progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
 		_result = lcd_selftest_fsensor();
-#endif // PAT9125
+#endif // FILAMENT_SENSOR
 	}
 	if (_result)
 	{
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 		_progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
-#endif // PAT9125
+#endif // FILAMENT_SENSOR
 		_progress = lcd_selftest_screen(11, _progress, 3, true, 5000); //all correct
 	}
 	else
@@ -7012,17 +6999,18 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 
 }
 
-#ifdef PAT9125
-static bool lcd_selftest_fsensor() {
+#ifdef FILAMENT_SENSOR
+static bool lcd_selftest_fsensor(void)
+{
 	fsensor_init();
 	if (fsensor_not_responding)
 	{
 		const char *_err;
 		lcd_selftest_error(11, _err, _err);
 	}
-	return(!fsensor_not_responding);
+	return (!fsensor_not_responding);
 }
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 {

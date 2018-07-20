@@ -110,7 +110,7 @@
 
 // Filament sensor
 #define PAT9125
-
+#define FILAMENT_SENSOR
 
 
 //#define DEBUG_BUILD
@@ -137,7 +137,6 @@
 //#define DEBUG_XSTEP_DUP_PIN 21   //duplicate x-step output to pin 21 (SCL on P3)
 //#define DEBUG_YSTEP_DUP_PIN 21   //duplicate y-step output to pin 21 (SCL on P3)
 //#define DEBUG_DISABLE_FANCHECK     //disable fan check (no ISR INT7, check disabled)
-//#define DEBUG_DISABLE_FSENSORCHECK //disable fsensor check (no ISR INT7, check disabled)
 //#define DEBUG_DUMP_TO_2ND_SERIAL   //dump received characters to 2nd serial line
 //#define DEBUG_STEPPER_TIMER_MISSED // Stop on stepper timer overflow, beep and display a message.
 //#define PLANNER_DIAGNOSTICS // Show the planner queue status on printer display.

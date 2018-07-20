@@ -58,7 +58,7 @@ extern void menu_lcd_lcdupdate_func(void);
   static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
   static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite);
   static bool lcd_selftest_fan_dialog(int _fan);
-  static bool lcd_selftest_fsensor();
+  static bool lcd_selftest_fsensor(void);
   static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
   void lcd_menu_statistics(); 
 
