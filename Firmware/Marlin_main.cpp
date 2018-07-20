@@ -7490,14 +7490,14 @@ static void handleSafetyTimer()
 
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 	{
 		if (fsensor_check_autoload())
 		{
+			fsensor_autoload_check_stop();
             if (degHotend0() > EXTRUDE_MINTEMP)
             {
-                fsensor_autoload_check_stop();
                 tone(BEEPER, 1000);
                 delay_keep_alive(50);
                 noTone(BEEPER);
@@ -7520,7 +7520,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 	}
 	else
 		fsensor_autoload_check_stop();
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 #ifdef SAFETYTIMER
 	handleSafetyTimer();

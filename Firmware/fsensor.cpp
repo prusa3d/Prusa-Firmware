@@ -57,13 +57,13 @@ bool fsensor_autoload_enabled = true;
 //autoload watching enable/disable flag
 bool fsensor_watch_autoload = false;
 //
-uint16_t fsensor_autoload_y = 0;
+uint16_t fsensor_autoload_y;
 //
-uint8_t fsensor_autoload_c = 0;
+uint8_t fsensor_autoload_c;
 //
-uint32_t fsensor_autoload_last_millis = 0;
+uint32_t fsensor_autoload_last_millis;
 //
-uint8_t fsensor_autoload_sum = 0;
+uint8_t fsensor_autoload_sum;
 
 ////////////////////////////////////////////////////////////////////////////////
 //filament optical quality meassurement variables
@@ -155,6 +155,7 @@ void pciSetup(byte pin)
 
 void fsensor_autoload_check_start(void)
 {
+//	puts_P(_N("fsensor_autoload_check_start\n"));
 	if (!fsensor_enabled) return;
 	if (!fsensor_autoload_enabled) return;
 	if (fsensor_watch_autoload) return;
@@ -166,6 +167,7 @@ void fsensor_autoload_check_start(void)
 		printf_P(ERRMSG_PAT9125_NOT_RESP, 3);
 		return;
 	}
+	puts_P(_N(" autoload enabled\n"));
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
 	fsensor_autoload_sum = 0;
@@ -177,9 +179,13 @@ void fsensor_autoload_check_start(void)
 
 void fsensor_autoload_check_stop(void)
 {
+//	puts_P(_N("fsensor_autoload_check_stop\n"));
 	if (!fsensor_enabled) return;
+//	puts_P(_N("fsensor_autoload_check_stop 1\n"));
 	if (!fsensor_autoload_enabled) return;
+//	puts_P(_N("fsensor_autoload_check_stop 2\n"));
 	if (!fsensor_watch_autoload) return;
+	puts_P(_N(" autoload disabled\n"));
 	fsensor_autoload_sum = 0;
 	fsensor_watch_autoload = false;
 	fsensor_watch_runout = true;
@@ -198,19 +204,19 @@ bool fsensor_check_autoload(void)
 	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
 	if ((millis() - fsensor_autoload_last_millis) < 25) return false;
 	fsensor_autoload_last_millis = millis();
-	if (!pat9125_update_y())
+	if (!pat9125_update_y()) //update sensor
 	{
 		fsensor_disable();
 		fsensor_not_responding = true;
 		printf_P(ERRMSG_PAT9125_NOT_RESP, 2);
-		return false; //update sensor
+		return false;
 	}
-	int16_t dy = fsensor_autoload_y - pat9125_y;
-	if (dy) //? y value is different
+	int16_t dy = pat9125_y - fsensor_autoload_y;
+	if (dy) //? dy value is nonzero
 	{
-		if (dy < 0) //? delta-y value is positive (inserting)
+		if (dy > 0) //? delta-y value is positive (inserting)
 		{
-			fsensor_autoload_sum -= dy;
+			fsensor_autoload_sum += dy;
 			fsensor_autoload_c += 3; //increment change counter by 3
 		}
 		else if (fsensor_autoload_c > 1)
@@ -220,10 +226,15 @@ bool fsensor_check_autoload(void)
 	else if (fsensor_autoload_c > 0)
 		fsensor_autoload_c--;
 	if (fsensor_autoload_c == 0) fsensor_autoload_sum = 0;
-//	if (fsensor_autoload_c != fsensor_autoload_c_old)
-//		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
-	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
+//	puts_P(_N("fsensor_check_autoload\n"));
+	if (fsensor_autoload_c != fsensor_autoload_c_old)
+		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
+//	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
+	if ((fsensor_autoload_c >= 10) && (fsensor_autoload_sum > 20))
+	{
+		puts_P(_N("fsensor_check_autoload = true !!!\n"));
 		return true;
+	}
 	return false;
 }
 
@@ -246,7 +257,7 @@ void fsensor_oq_meassure_stop(void)
 {
 	printf_P(PSTR("fsensor_oq_meassure_stop\n"));
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
-	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum);
+	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum));
 	fsensor_oq_meassure = false;
 	fsensor_err_cnt = 0;
 	fsensor_watch_runout = true;
@@ -257,7 +268,7 @@ bool fsensor_oq_result(void)
 	printf(_N("fsensor_oq_result\n"));
 	if (fsensor_oq_er_sum > FSENSOR_OQ_MAX_ER) return false;
 	printf(_N(" er_sum OK\n"));
-	uint8_t yd_avg = fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum;
+	uint8_t yd_avg = (uint16_t)((uint32_t)fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum);
 	if ((yd_avg < FSENSOR_OQ_MIN_YD) || (yd_avg > FSENSOR_OQ_MAX_YD)) return false;
 	printf(_N(" yd_avg OK\n"));
 	if (fsensor_oq_yd_max > (yd_avg * FSENSOR_OQ_MAX_PD)) return false;
@@ -328,8 +339,8 @@ ISR(PCINT2_vect)
 #ifdef DEBUG_FSENSOR_LOG
 	if (fsensor_log)
 	{
-		printf_P(_N("FSENSOR cnt=%d dy=%d err=%d %S\n"), st_cnt, pat9125_y, fsensor_err_cnt, (fsensor_err_cnt > old_err_cnt)?_N("NG!"):_N("OK"));
-		printf_P(_N("FSENSOR st_sum=%lu yd_sum=%lu er_sum=%u er_max=%u\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
+		printf_P(_N("FSENSOR cnt=%d dy=%d err=%hhu %S\n"), st_cnt, pat9125_y, fsensor_err_cnt, (fsensor_err_cnt > old_err_cnt)?_N("NG!"):_N("OK"));
+		printf_P(_N("FSENSOR st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	}
 #endif //DEBUG_FSENSOR_LOG
 
@@ -395,9 +406,6 @@ void fsensor_update(void)
 
 void fsensor_setup_interrupt(void)
 {
-//	uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
-//	uint8_t fsensor_int_pcmsk = digitalPinToPCMSKbit(pin);
-//	uint8_t fsensor_int_pcicr = digitalPinToPCICRbit(pin);
 
 	pinMode(FSENSOR_INT_PIN, OUTPUT);
 	digitalWrite(FSENSOR_INT_PIN, LOW);
