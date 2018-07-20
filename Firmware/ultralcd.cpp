@@ -31,6 +31,9 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
+//-//
+#include "sound.h"
+
 #ifdef SNMM_V2
 #include "uart2.h"
 #endif //SNMM_V2
@@ -4112,6 +4115,11 @@ static void lcd_fsensor_state_set()
 }
 #endif //PAT9125
 
+//-//
+static void lcd_sound_state_set(void)
+{
+Sound_CycleState();
+}
 
 #if !SDSORT_USES_RAM
 void lcd_set_degree() {
@@ -4668,7 +4676,7 @@ static void lcd_settings_menu()
 #endif //(LANG_MODE != 0)
 
   if (card.ToshibaFlashAir_isEnabled()) {
-    MENU_ITEM_FUNCTION_P(_i("SD card [FlshAir]"), lcd_toshiba_flash_air_compatibility_toggle);////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
+    MENU_ITEM_FUNCTION_P(_i("SD card [flshAir]"), lcd_toshiba_flash_air_compatibility_toggle);////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
   } else {
     MENU_ITEM_FUNCTION_P(_i("SD card  [normal]"), lcd_toshiba_flash_air_compatibility_toggle);////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
   }
@@ -4678,13 +4686,33 @@ static void lcd_settings_menu()
 	  uint8_t sdSort;
 	  EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));
 	  switch (sdSort) {
-		  case SD_SORT_TIME: MENU_ITEM_FUNCTION_P(_i("Sort:      [Time]"), lcd_sort_type_set); break;////MSG_SORT_TIME c=17 r=1
-		  case SD_SORT_ALPHA: MENU_ITEM_FUNCTION_P(_i("Sort:  [Alphabet]"), lcd_sort_type_set); break;////MSG_SORT_ALPHA c=17 r=1
-		  default: MENU_ITEM_FUNCTION_P(_i("Sort:      [None]"), lcd_sort_type_set);////MSG_SORT_NONE c=17 r=1
+		  case SD_SORT_TIME: MENU_ITEM_FUNCTION_P(_i("Sort:      [time]"), lcd_sort_type_set); break;////MSG_SORT_TIME c=17 r=1
+		  case SD_SORT_ALPHA: MENU_ITEM_FUNCTION_P(_i("Sort:  [alphabet]"), lcd_sort_type_set); break;////MSG_SORT_ALPHA c=17 r=1
+		  default: MENU_ITEM_FUNCTION_P(_i("Sort:      [none]"), lcd_sort_type_set);////MSG_SORT_NONE c=17 r=1
 	  }
   }
   #endif // SDCARD_SORT_ALPHA
-    
+
+//-//
+switch(eSoundMode)
+     {
+     case e_SOUND_MODE_LOUD:
+          MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
+          break;
+     case e_SOUND_MODE_ONCE:
+          MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ONCE),lcd_sound_state_set);
+          break;
+     case e_SOUND_MODE_SILENT:
+          MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);
+          break;
+     case e_SOUND_MODE_MUTE:
+          MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_MUTE),lcd_sound_state_set);
+          break;
+     default:
+          MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
+     }
+//-//
+
     if (farm_mode)
     {
         MENU_ITEM_SUBMENU_P(PSTR("Farm number"), lcd_farm_no);
