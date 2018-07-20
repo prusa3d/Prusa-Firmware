@@ -9042,7 +9042,7 @@ bool mmu_get_reponse() {
 	while (!uart2_rx_ok())
     {
       delay_keep_alive(100);
-	  if (mmu_get_reponse_timeout.expired(30 * 1000ul)) { //PINDA cooling from 60 C to 35 C takes about 7 minutes
+	  if (mmu_get_reponse_timeout.expired(180 * 1000ul)) { //3 minutes timeout
 			response = false;
 			break;
 	  }
