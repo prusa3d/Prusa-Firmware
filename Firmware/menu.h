@@ -89,7 +89,15 @@ extern uint8_t menu_item_gcode_P(const char* str, const char* str_gcode);
 
 
 extern const char menu_fmt_int3[];
+
+extern const char menu_fmt_float31[];
+
+extern void menu_draw_int3(char chr, const char* str, int16_t val);
+
+extern void menu_draw_float31(char chr, const char* str, float val);
+
 extern void _menu_edit_int3(void);
+
 #define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_int3(str, pval, minval, maxval)) return; } while (0)
 //#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) MENU_ITEM_EDIT(int3, str, pval, minval, maxval)
 extern uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int16_t max_val);

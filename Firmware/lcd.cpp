@@ -844,44 +844,6 @@ void lcd_buttons_update(void)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-void lcd_drawedit(const char* pstr, char* value)
-{
-    lcd_set_cursor(1, 1);
-    lcd_puts_P(pstr);
-    lcd_print(':');
-   #if LCD_WIDTH < 20
-      lcd_set_cursor(LCD_WIDTH - strlen(value), 1);
-    #else
-      lcd_set_cursor(LCD_WIDTH -1 - strlen(value), 1);
-   #endif
-    lcd_print(value);
-}
-
-void lcd_drawedit_2(const char* pstr, char* value)
-{
-    lcd_set_cursor(0, 1);
-    lcd_puts_P(pstr);
-    lcd_print(':');
-
-    lcd_set_cursor((LCD_WIDTH - strlen(value))/2, 3);
-
-    lcd_print(value);
-    lcd_print(" mm");
-}
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // Custom character data
 
