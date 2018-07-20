@@ -3,8 +3,16 @@
 
 #include "planner.h"
 
-//#define FSENSOR_CHUNK_LEN      280  //filament sensor chunk length in steps - 1mm
 #define FSENSOR_CHUNK_LEN      180  //filament sensor chunk length in steps - 0.64mm
+#define FSENSOR_ERR_MAX         10  //filament sensor maximum error count for runout detection
+
+//Optical quality meassurement params
+#define FSENSOR_OQ_MAX_ER      5    //maximum error count for loading (~150mm)
+#define FSENSOR_OQ_MIN_YD      2    //minimum yd per chunk
+#define FSENSOR_OQ_MAX_YD      200  //maximum yd per chunk
+#define FSENSOR_OQ_MAX_PD      3    //maximum positive deviation (= yd_max/yd_avg)
+#define FSENSOR_OQ_MAX_ND      5    //maximum negative deviation (= yd_avg/yd_min)
+
 
 //save restore printing
 extern void fsensor_stop_and_save_print(void);
@@ -25,14 +33,15 @@ extern void fsensor_update(void);
 //setup pin-change interrupt
 extern void fsensor_setup_interrupt(void);
 
-//
+//autoload support
 extern void fsensor_autoload_check_start(void);
-
-//
 extern void fsensor_autoload_check_stop(void);
-
-//
 extern bool fsensor_check_autoload(void);
+
+//optical quality meassurement support
+extern void fsensor_oq_meassure_start(void);
+extern void fsensor_oq_meassure_stop(void);
+extern bool fsensor_oq_result(void);
 
 //callbacks from stepper
 extern void fsensor_st_block_begin(block_t* bl);
@@ -52,11 +61,14 @@ extern uint8_t fsensor_err_cnt;
 //autoload enable/disable flag
 extern bool fsensor_watch_autoload;
 
-
-extern uint32_t fsensor_st_sum;
-extern uint32_t fsensor_yd_sum;
-extern uint32_t fsensor_er_sum;
-extern uint16_t fsensor_yd_min;
-extern uint16_t fsensor_yd_max;
+//filament optical quality meassurement
+extern bool     fsensor_oq_meassure;
+extern uint8_t  fsensor_oq_skipchunk;
+extern uint32_t fsensor_oq_st_sum;
+extern uint32_t fsensor_oq_yd_sum;
+extern uint16_t fsensor_oq_er_sum;
+extern uint8_t  fsensor_oq_er_max;
+extern uint16_t fsensor_oq_yd_min;
+extern uint16_t fsensor_oq_yd_max;
 
 #endif //FSENSOR_H

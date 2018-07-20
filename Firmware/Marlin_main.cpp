@@ -3085,12 +3085,7 @@ void gcode_M701()
 	custom_message_type = 2;
 
 	bool old_watch_runout = fsensor_watch_runout;
-	fsensor_watch_runout = false;
-	fsensor_st_sum = 0;
-	fsensor_yd_sum = 0;
-	fsensor_er_sum = 0;
-	fsensor_yd_min = 65535;
-	fsensor_yd_max = 0;
+	fsensor_oq_meassure_start();
 
 	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 	current_position[E_AXIS] += 40;
@@ -3132,11 +3127,25 @@ void gcode_M701()
 	custom_message_type = 0;
 #endif
 
+	fsensor_oq_meassure_stop();
+
 	fsensor_err_cnt = 0;
 	fsensor_watch_runout = old_watch_runout;
-	printf_P(_N("\nFSENSOR st_sum=%lu yd_sum=%lu er_sum=%lu\n"), fsensor_st_sum, fsensor_yd_sum, fsensor_er_sum);
-	printf_P(_N("\nFSENSOR yd_min=%hhu yd_max=%hhu yd_avg=%hhu\n"), fsensor_yd_min, fsensor_yd_max, fsensor_yd_sum * FSENSOR_CHUNK_LEN / fsensor_st_sum);
+
+	printf_P(_N("\nFSENSOR st_sum=%lu yd_sum=%lu er_sum=%u er_max=%u\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
+	printf_P(_N("\nFSENSOR yd_min=%hhu yd_max=%hhu yd_avg=%hhu\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum);
 	printf_P(PSTR("gcode_M701 end\n"));
+
+
+	if (!fsensor_oq_result())
+	{
+		bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(
+			_i("Filament sensor low response, disable it?"), false, true);
+		lcd_update_enable(true);
+		lcd_update(2);
+		if (disable)
+			fsensor_disable();
+	}
 }
 /**
  * @brief Get serial number from 32U2 processor
