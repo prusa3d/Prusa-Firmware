@@ -5748,18 +5748,19 @@ Sigma_Exit:
 			{
 				int val = code_value();
 #ifdef TMC2130
+				int val_silent = val;
 				if ((i == X_AXIS) || (i == Y_AXIS))
 				{
-					int max_val = 0;
-					if (tmc2130_mode == TMC2130_MODE_NORMAL)
-						max_val = NORMAL_MAX_ACCEL_XY;
-					else if (tmc2130_mode == TMC2130_MODE_SILENT)
-						max_val = SILENT_MAX_ACCEL_XY;
-					if (val > max_val)
-						val = max_val;
+					if (val > NORMAL_MAX_ACCEL_XY)
+						val = NORMAL_MAX_ACCEL_XY;
+					if (val_silent > SILENT_MAX_ACCEL_XY)
+						val_silent = SILENT_MAX_ACCEL_XY;
 				}
-#endif
+				max_acceleration_units_per_sq_second_normal[i] = val;
+				max_acceleration_units_per_sq_second_silent[i] = val_silent;
+#else //TMC2130
 				max_acceleration_units_per_sq_second[i] = val;
+#endif //TMC2130
 			}
 		}
 		// steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
@@ -5779,18 +5780,19 @@ Sigma_Exit:
 			{
 				float val = code_value();
 #ifdef TMC2130
+				float val_silent = val;
 				if ((i == X_AXIS) || (i == Y_AXIS))
 				{
-					float max_val = 0;
-					if (tmc2130_mode == TMC2130_MODE_NORMAL)
-						max_val = NORMAL_MAX_FEEDRATE_XY;
-					else if (tmc2130_mode == TMC2130_MODE_SILENT)
-						max_val = SILENT_MAX_FEEDRATE_XY;
-					if (val > max_val)
-						val = max_val;
+					if (val > NORMAL_MAX_FEEDRATE_XY)
+						val = NORMAL_MAX_FEEDRATE_XY;
+					if (val_silent > SILENT_MAX_FEEDRATE_XY)
+						val_silent = SILENT_MAX_FEEDRATE_XY;
 				}
-#endif //TMC2130
+				max_feedrate_normal[i] = val;
+				max_feedrate_silent[i] = val_silent;
+#else //TMC2130
 				max_feedrate[i] = val;
+#endif //TMC2130
 			}
 		}
 		break;
