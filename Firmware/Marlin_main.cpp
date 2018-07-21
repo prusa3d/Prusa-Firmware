@@ -3121,16 +3121,11 @@ void gcode_M701()
 	custom_message = false;
 	custom_message_type = 0;
 
-
 	fsensor_oq_meassure_stop();
-
-
-
 
 	if (!fsensor_oq_result())
 	{
-		bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(
-			_i("Filament sensor low response, disable it?"), false, true);
+		bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
 		lcd_update_enable(true);
 		lcd_update(2);
 		if (disable)
@@ -3192,6 +3187,9 @@ extern uint8_t st_backlash_x;
 #ifdef BACKLASH_Y
 extern uint8_t st_backlash_y;
 #endif //BACKLASH_Y
+
+uint16_t gcode_in_progress = 0;
+uint16_t mcode_in_progress = 0;
 
 void process_commands()
 {
@@ -3420,7 +3418,8 @@ void process_commands()
     // nothing, this is a version line
   } else if(code_seen('G'))
   {
-    switch((int)code_value())
+	gcode_in_progress = (int)code_value();
+    switch (gcode_in_progress)
     {
     case 0: // G0 -> G1
     case 1: // G1
@@ -4647,10 +4646,12 @@ void process_commands()
 	default:
 		printf_P(PSTR("Unknown G code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
+	gcode_in_progress = 0;
   } // end if(code_seen('G'))
 
   else if(code_seen('M'))
   {
+
 	  int index;
 	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 	   
@@ -4659,7 +4660,10 @@ void process_commands()
 		  printf_P(PSTR("Invalid M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
 
 	  } else
-    switch((int)code_value())
+	  {
+	  mcode_in_progress = (int)code_value();
+
+    switch(mcode_in_progress)
     {
 
     case 0: // M0 - Unconditional stop - Wait for user button press on LCD
@@ -6233,10 +6237,6 @@ Sigma_Exit:
     #ifdef FILAMENTCHANGEENABLE
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
     {
-#ifdef PAT9125
-		bool old_fsensor_enabled = fsensor_enabled;
-//		fsensor_enabled = false; //temporary solution for unexpected restarting
-#endif //PAT9125
 
 		st_synchronize();
 		float lastpos[4];
@@ -6509,7 +6509,7 @@ Sigma_Exit:
 #ifdef SNMM_V2
 		mmu_M600_load_filament();
 #else		
-		M600_load_filament(old_fsensor_enabled);
+		M600_load_filament();
 #endif    
 
 		//Wait for user to check the state
@@ -6915,10 +6915,6 @@ Sigma_Exit:
 			  extr_unload_all(); //unload all filaments
 		}
 #else
-#ifdef PAT9125
-		bool old_fsensor_enabled = fsensor_enabled;
-//		fsensor_enabled = false;
-#endif //PAT9125
 		custom_message = true;
 		custom_message_type = 2;
 		lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT)); 
@@ -6960,9 +6956,6 @@ Sigma_Exit:
 		lcd_setstatuspgm(_T(WELCOME_MSG));
 		custom_message = false;
 		custom_message_type = 0;
-#ifdef PAT9125
-//		fsensor_enabled = old_fsensor_enabled;
-#endif //PAT9125
 #endif	
 	}
 	break;
@@ -6976,7 +6969,8 @@ Sigma_Exit:
 	default: 
 		printf_P(PSTR("Unknown M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
-	
+	mcode_in_progress = 0;
+	}
   } // end if(code_seen('M')) (end of M codes)
 
   else if(code_seen('T'))
@@ -7493,35 +7487,38 @@ static void handleSafetyTimer()
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-	if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+	if (mcode_in_progress != 600) //M600 not in progress
 	{
-		if (fsensor_check_autoload())
+		if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 		{
-			fsensor_autoload_check_stop();
-            if (degHotend0() > EXTRUDE_MINTEMP)
-            {
-                tone(BEEPER, 1000);
-                delay_keep_alive(50);
-                noTone(BEEPER);
-                loading_flag = true;
-                enquecommand_front_P((PSTR("M701")));
-            }
-            else
-            {
-                lcd_update_enable(false);
-                lcd_clear();
-                lcd_set_cursor(0, 0);
-                lcd_puts_P(_T(MSG_ERROR));
-                lcd_set_cursor(0, 2);
-                lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-                delay(2000);
-                lcd_clear();
-                lcd_update_enable(true);
-            }
+			if (fsensor_check_autoload())
+			{
+				fsensor_autoload_check_stop();
+				if (degHotend0() > EXTRUDE_MINTEMP)
+				{
+					tone(BEEPER, 1000);
+					delay_keep_alive(50);
+					noTone(BEEPER);
+					loading_flag = true;
+					enquecommand_front_P((PSTR("M701")));
+				}
+				else
+				{
+					lcd_update_enable(false);
+					lcd_clear();
+					lcd_set_cursor(0, 0);
+					lcd_puts_P(_T(MSG_ERROR));
+					lcd_set_cursor(0, 2);
+					lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
+					delay(2000);
+					lcd_clear();
+					lcd_update_enable(true);
+				}
+			}
 		}
+		else
+			fsensor_autoload_check_stop();
 	}
-	else
-		fsensor_autoload_check_stop();
 #endif //FILAMENT_SENSOR
 
 #ifdef SAFETYTIMER
@@ -9104,41 +9101,57 @@ void M600_load_filament_movements() {
                      lcd_loading_filament();
 }
 
-void M600_load_filament(bool fsensor_enabled) {
+void M600_load_filament()
+{
+	lcd_wait_interact();
 
-		lcd_wait_interact();
-
-		//load_filament_time = millis();
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
+	//load_filament_time = millis();
+	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 #ifdef PAT9125
-		fsensor_autoload_check_start();
+	fsensor_autoload_check_start();
 #endif //PAT9125
-        while(!lcd_clicked())
-		{
-          manage_heater();
-          manage_inactivity(true);
+	while(!lcd_clicked())
+	{
+		manage_heater();
+		manage_inactivity(true);
 #ifdef PAT9125
-		  if (fsensor_check_autoload())
-		  {
+		if (fsensor_check_autoload())
+		{
 			tone(BEEPER, 1000);
 			delay_keep_alive(50);
 			noTone(BEEPER);
-			  break;
-		  }
+			break;
+		}
 #endif //PAT9125
-
-        }
+	}
 #ifdef PAT9125
-		fsensor_autoload_check_stop();
+	fsensor_autoload_check_stop();
 #endif //PAT9125
-		KEEPALIVE_STATE(IN_HANDLER);
+	KEEPALIVE_STATE(IN_HANDLER);
 
-		M600_load_filament_movements();
+#ifdef PAT9125
+	fsensor_oq_meassure_start();
+#endif //PAT9125
 
-		tone(BEEPER, 500);
-		delay_keep_alive(50);
-		noTone(BEEPER);
+	M600_load_filament_movements();
+
+	tone(BEEPER, 500);
+	delay_keep_alive(50);
+	noTone(BEEPER);
+
+#ifdef PAT9125
+	fsensor_oq_meassure_stop();
+
+	if (!fsensor_oq_result())
+	{
+		bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
+		lcd_update_enable(true);
+		lcd_update(2);
+		if (disable)
+			fsensor_disable();
+	}
+#endif //PAT9125
 
 }
 
