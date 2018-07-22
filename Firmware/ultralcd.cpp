@@ -23,10 +23,6 @@
 
 #include "SdFatUtil.h"
 
-#ifdef PAT9125
-#include "pat9125.h"
-#endif //PAT9125
-
 #ifdef FILAMENT_SENSOR
 #include "fsensor.h"
 #endif //FILAMENT_SENSOR
@@ -221,9 +217,9 @@ static void lcd_menu_extruder_info();
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
-#if defined(TMC2130) || defined(PAT9125)
+#if defined(TMC2130) || defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats();
-#endif //TMC2130 or PAT9125
+#endif //TMC2130 or FILAMENT_SENSOR
 
 void lcd_finishstatus();
 
@@ -2008,7 +2004,7 @@ static void lcd_menu_extruder_info()
 	fan_speed_RPM[0] = 60*fan_speed[0];
     fan_speed_RPM[1] = 60*fan_speed[1];
     
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	// Display X and Y difference from Filament sensor    
     // Display Light intensity from Filament sensor
     //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
@@ -2017,7 +2013,7 @@ static void lcd_menu_extruder_info()
     //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
     //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
     //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
-    pat9125_update();
+/*    pat9125_update();
 	lcd_printf_P(_N(
 	  ESC_H(0,0)
 	  "Nozzle FAN: %4d RPM\n"
@@ -2029,8 +2025,8 @@ static void lcd_menu_extruder_info()
 	 fan_speed_RPM[1],
 	 pat9125_x, pat9125_y,
 	 pat9125_b, pat9125_s
-	);
-#else //PAT9125
+	);*/
+#else //FILAMENT_SENSOR
 	printf_P(_N(
 	  ESC_H(0,0)
 	  "Nozzle FAN: %4d RPM\n"
@@ -2039,12 +2035,12 @@ static void lcd_menu_extruder_info()
 	 fan_speed_RPM[0],
 	 fan_speed_RPM[1]
 	);
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
     
     menu_back_if_clicked();
 }
 
-#if defined(TMC2130) && defined(PAT9125)
+#if defined(TMC2130) && defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats_total()
 {
 //01234567890123456789
@@ -2091,7 +2087,7 @@ static void lcd_menu_fails_stats()
 	MENU_ITEM_SUBMENU_P(PSTR("Total"), lcd_menu_fails_stats_total);
 	MENU_END();
 }
-#elif defined(PAT9125)
+#elif defined(FILAMENT_SENSOR)
 /**
  * @brief Print last print and total filament run outs
  *
@@ -2113,6 +2109,13 @@ static void lcd_menu_fails_stats()
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Filam. runouts  %-3d" ESC_H(0,2) "Total failures" ESC_H(1,3) "Filam. runouts  %-3d"), filamentLast, filamentTotal);
     menu_back_if_clicked();
+}
+#else
+static void lcd_menu_fails_stats()
+{
+	MENU_BEGIN();
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	MENU_END();
 }
 #endif //TMC2130
 
@@ -5955,7 +5958,7 @@ static void lcd_main_menu()
 	if ( ((fsensor_autoload_enabled == true) && (fsensor_enabled == true)))
         MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=17 r=0
 	else
-      #endif //PAT9125
+      #endif //FILAMENT_SENSOR
 		MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
 	MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
     #endif
@@ -5970,7 +5973,7 @@ static void lcd_main_menu()
 	  MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS c=0 r=0
   }
     
-#if defined(TMC2130) || defined(PAT9125)
+#if defined(TMC2130) || defined(FILAMENT_SENSOR)
   MENU_ITEM_SUBMENU_P(PSTR("Fail stats"), lcd_menu_fails_stats);
 #endif
 

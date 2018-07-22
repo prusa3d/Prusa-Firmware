@@ -39,7 +39,7 @@ extern void fsensor_autoload_check_stop(void);
 extern bool fsensor_check_autoload(void);
 
 //optical quality meassurement support
-extern void fsensor_oq_meassure_start(void);
+extern void fsensor_oq_meassure_start(uint8_t skip);
 extern void fsensor_oq_meassure_stop(void);
 extern bool fsensor_oq_result(void);
 

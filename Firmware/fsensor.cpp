@@ -13,11 +13,11 @@
 #define FSENSOR_ERR_MAX         10  //filament sensor maximum error count for runout detection
 
 //Optical quality meassurement params
-#define FSENSOR_OQ_MAX_ES      5    //maximum error sum while loading (length 95mm = 144chunks)
-#define FSENSOR_OQ_MAX_EM      1    //maximum error counter value while loading
+#define FSENSOR_OQ_MAX_ES      6    //maximum error sum while loading (length ~64mm = 100chunks)
+#define FSENSOR_OQ_MAX_EM      2    //maximum error counter value while loading
 #define FSENSOR_OQ_MIN_YD      2    //minimum yd per chunk (applied to avg value)
 #define FSENSOR_OQ_MAX_YD      200  //maximum yd per chunk (applied to avg value)
-#define FSENSOR_OQ_MAX_PD      3    //maximum positive deviation (= yd_max/yd_avg)
+#define FSENSOR_OQ_MAX_PD      4    //maximum positive deviation (= yd_max/yd_avg)
 #define FSENSOR_OQ_MAX_ND      5    //maximum negative deviation (= yd_avg/yd_min)
 #define FSENSOR_OQ_MAX_SH      13   //maximum shutter value
 
@@ -51,14 +51,18 @@ bool fsensor_enabled = true;
 bool fsensor_watch_runout = true;
 //not responding - is set if any communication error occured durring initialization or readout
 bool fsensor_not_responding = false;
+//printing saved
+bool fsensor_printing_saved = false;
 
 //number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
-//variable for accumolating step count
+//variable for accumolating step count (updated callbacks from stepper and ISR)
 int16_t fsensor_st_cnt = 0;
+//last dy value from pat9125 sensor (used in ISR)
+uint8_t fsensor_dy_old = 0;
 
 //log flag: 0=log disabled, 1=log enabled
-uint8_t fsensor_log = 1;
+uint8_t fsensor_log = 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 //filament autoload variables
@@ -85,7 +89,7 @@ bool fsensor_oq_meassure = false;
 //skip-chunk counter, for accurate meassurement is necesary to skip first chunk...
 uint8_t  fsensor_oq_skipchunk;
 //number of samples from start of meassurement
-uint8_t fsensor_oq_cnt;
+uint8_t fsensor_oq_samples;
 //sum of steps in positive direction movements
 uint16_t fsensor_oq_st_sum;
 //sum of deltas in positive direction movements
@@ -114,20 +118,12 @@ void fsensor_init(void)
 		fsensor_not_responding = true;
 	}
 	else
-	{
 		fsensor_not_responding = false;
-	}
-	puts_P(PSTR("FSensor "));
 	if (fsensor)
-	{
 		fsensor_enable();
-		puts_P(PSTR("ENABLED\n"));
-	}
 	else
-	{
 		fsensor_disable();
-		puts_P(PSTR("DISABLED\n"));
-	}
+	printf_P(PSTR("FSensor %S\n"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED\n")));
 }
 
 bool fsensor_enable(void)
@@ -142,6 +138,7 @@ bool fsensor_enable(void)
 	fsensor_watch_runout = true;
 	fsensor_oq_meassure = false;
 	fsensor_err_cnt = 0;
+	fsensor_dy_old = 0;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled?0x01:0x00); 
 	FSensorStateMenu = fsensor_enabled?1:0;
 
@@ -246,7 +243,7 @@ bool fsensor_check_autoload(void)
 	if (fsensor_autoload_c != fsensor_autoload_c_old)
 		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
 //	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
-	if ((fsensor_autoload_c >= 10) && (fsensor_autoload_sum > 20))
+	if ((fsensor_autoload_c >= 10) && (fsensor_autoload_sum > 15))
 	{
 		puts_P(_N("fsensor_check_autoload = true !!!\n"));
 		return true;
@@ -254,11 +251,11 @@ bool fsensor_check_autoload(void)
 	return false;
 }
 
-void fsensor_oq_meassure_start(void)
+void fsensor_oq_meassure_start(uint8_t skip)
 {
 	printf_P(PSTR("fsensor_oq_meassure_start\n"));
-	fsensor_oq_skipchunk = 10;
-	fsensor_oq_cnt = 0;
+	fsensor_oq_skipchunk = skip;
+	fsensor_oq_samples = 0;
 	fsensor_oq_st_sum = 0;
 	fsensor_oq_yd_sum = 0;
 	fsensor_oq_er_sum = 0;
@@ -274,12 +271,12 @@ void fsensor_oq_meassure_start(void)
 
 void fsensor_oq_meassure_stop(void)
 {
-	printf_P(PSTR("fsensor_oq_meassure_stop, %hhu samples\n"), fsensor_oq_cnt);
+	printf_P(PSTR("fsensor_oq_meassure_stop, %hhu samples\n"), fsensor_oq_samples);
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
-	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_cnt));
+	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
 	fsensor_oq_meassure = false;
-	fsensor_err_cnt = 0;
 	fsensor_watch_runout = true;
+	fsensor_err_cnt = 0;
 }
 
 const char _OK[] PROGMEM = "OK";
@@ -299,7 +296,7 @@ bool fsensor_oq_result(void)
 	printf_P(_N(" yd_max = %u %S\n"), fsensor_oq_yd_max, (res_yd_max?_OK:_NG));
 	bool res_yd_min = (fsensor_oq_yd_min >= (yd_avg / FSENSOR_OQ_MAX_ND));
 	printf_P(_N(" yd_min = %u %S\n"), fsensor_oq_yd_min, (res_yd_min?_OK:_NG));
-	uint8_t sh_avg = (fsensor_oq_sh_sum / fsensor_oq_cnt);
+	uint8_t sh_avg = (fsensor_oq_sh_sum / fsensor_oq_samples);
 	bool res_sh_avg = (sh_avg <= FSENSOR_OQ_MAX_SH);
 	printf_P(_N(" sh_avg = %hhu %S\n"), sh_avg, (res_sh_avg?_OK:_NG));
 	bool res = res_er_sum && res_er_max && res_yd_avg && res_yd_max && res_yd_min && res_sh_avg;
@@ -329,15 +326,16 @@ ISR(PCINT2_vect)
 	{ //movement
 		if (st_cnt > 0) //positive movement
 		{
-			if (pat9125_y <= 0)
-			{
+			if (pat9125_y < 0)
 				fsensor_err_cnt++;
-			}
-			else
+			else if (pat9125_y > 0)
 			{
 				if (fsensor_err_cnt)
 					fsensor_err_cnt--;
 			}
+			else //(pat9125_y == 0)
+				if (fsensor_dy_old <= 0)
+					fsensor_err_cnt++;
 			if (fsensor_oq_meassure)
 			{
 				if (fsensor_oq_skipchunk)
@@ -349,10 +347,10 @@ ISR(PCINT2_vect)
 				{
 					if (st_cnt == FSENSOR_CHUNK_LEN)
 					{
-						if (fsensor_oq_yd_min > pat9125_y) fsensor_oq_yd_min = (fsensor_oq_yd_min + pat9125_y) / 2;
-						if (fsensor_oq_yd_max < pat9125_y) fsensor_oq_yd_max = (fsensor_oq_yd_max + pat9125_y) / 2;
+						if (pat9125_y > 0) if (fsensor_oq_yd_min > pat9125_y) fsensor_oq_yd_min = (fsensor_oq_yd_min + pat9125_y) / 2;
+						if (pat9125_y >= 0) if (fsensor_oq_yd_max < pat9125_y) fsensor_oq_yd_max = (fsensor_oq_yd_max + pat9125_y) / 2;
 					}
-					fsensor_oq_cnt++;
+					fsensor_oq_samples++;
 					fsensor_oq_st_sum += st_cnt;
 					fsensor_oq_yd_sum += pat9125_y;
 					if (fsensor_err_cnt > old_err_cnt)
@@ -375,11 +373,13 @@ ISR(PCINT2_vect)
 	if (fsensor_log)
 	{
 		printf_P(_N("FSENSOR cnt=%d dy=%d err=%hhu %S\n"), st_cnt, pat9125_y, fsensor_err_cnt, (fsensor_err_cnt > old_err_cnt)?_N("NG!"):_N("OK"));
-		printf_P(_N("FSENSOR st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
+		if (fsensor_oq_meassure) printf_P(_N("FSENSOR st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu yd_max=%u\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max, fsensor_oq_yd_max);
 	}
 #endif //DEBUG_FSENSOR_LOG
 
+	fsensor_dy_old = pat9125_y;
 	pat9125_y = 0;
+
 	_lock = false;
 	return;
 }
@@ -408,10 +408,19 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 
 void fsensor_update(void)
 {
-	if (fsensor_enabled && fsensor_watch_runout)
-		if (fsensor_err_cnt > FSENSOR_ERR_MAX)
+	if (fsensor_enabled)
+	{
+		if (fsensor_printing_saved)
+		{
+			fsensor_printing_saved = false;
+			fsensor_watch_runout = true;
+			fsensor_err_cnt = 0;
+			fsensor_restore_print_and_continue();
+		}
+		else if (fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 		{
 			fsensor_stop_and_save_print();
+			fsensor_printing_saved = true;
 
 			fsensor_err_cnt = 0;
 
@@ -437,6 +446,7 @@ void fsensor_update(void)
 				fsensor_watch_runout = false;
 			}
 		}
+	}
 }
 
 void fsensor_setup_interrupt(void)

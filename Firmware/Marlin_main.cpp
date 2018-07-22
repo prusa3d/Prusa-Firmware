@@ -91,10 +91,9 @@
 #include "swi2c.h"
 #endif //SWI2C
 
-#ifdef PAT9125
-#include "pat9125.h"
+#ifdef FILAMENT_SENSOR
 #include "fsensor.h"
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -686,12 +685,6 @@ void crashdet_stop_and_save_print2()
 
 void crashdet_detected(uint8_t mask)
 {
-//	printf("CRASH_DETECTED");
-/*	while (!is_buffer_empty())
-	{
-		process_commands();
-	    cmdqueue_pop_front();
-	}*/
 	st_synchronize();
 	static uint8_t crashDet_counter = 0;
 	bool automatic_recovery_after_crash = true;
@@ -854,8 +847,10 @@ void factory_reset(char level, bool quiet)
             eeprom_update_word((uint16_t *)EEPROM_FERROR_COUNT_TOT, 0);
             eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
 
-            fsensor_enable();
+#ifdef FILAMENT_SENSOR
+			fsensor_enable();
             fsensor_autoload_set(true);
+#endif //FILAMENT_SENSOR
                        
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
@@ -1185,8 +1180,10 @@ void setup()
 		tmc2130_current_h[E_AXIS] = 36;
 		tmc2130_current_r[E_AXIS] = 36;
 #endif //TMC2130
+#ifdef FILAMENT_SENSOR
 		//disabled filament autoload (PFW360)
 		fsensor_autoload_set(false);
+#endif //FILAMENT_SENSOR
 	}
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
@@ -1438,9 +1435,9 @@ void setup()
 	// It does not make sense to load the correction matrix until the machine is homed.
 	world2machine_reset();
     
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	fsensor_init();
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 
 #if defined(CONTROLLERFAN_PIN) && (CONTROLLERFAN_PIN > -1)
@@ -1622,9 +1619,9 @@ void setup()
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	fsensor_setup_interrupt();
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 	for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]); 
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
@@ -1977,9 +1974,9 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update(0);
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	fsensor_update();
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 #ifdef TMC2130
 	tmc2130_check_overtemp();
 	if (tmc2130_sg_crash)
@@ -3075,12 +3072,14 @@ void gcode_M701()
 
 #if defined (SNMM) || defined (SNMM_V2)
 	extr_adj(snmm_extruder);//loads current extruder
-#else
+#else //defined (SNMM) || defined (SNMM_V2)
 	enable_z();
 	custom_message = true;
 	custom_message_type = 2;
 
-	fsensor_oq_meassure_start();
+#ifdef FILAMENT_SENSOR
+	fsensor_oq_meassure_start(40);
+#endif //FILAMENT_SENSOR
 
 	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 	current_position[E_AXIS] += 40;
@@ -3121,6 +3120,7 @@ void gcode_M701()
 	custom_message = false;
 	custom_message_type = 0;
 
+#ifdef FILAMENT_SENSOR
 	fsensor_oq_meassure_stop();
 
 	if (!fsensor_oq_result())
@@ -3131,7 +3131,8 @@ void gcode_M701()
 		if (disable)
 			fsensor_disable();
 	}
-#endif
+#endif //FILAMENT_SENSOR
+#endif //defined (SNMM) || defined (SNMM_V2)
 }
 /**
  * @brief Get serial number from 32U2 processor
@@ -3419,6 +3420,7 @@ void process_commands()
   } else if(code_seen('G'))
   {
 	gcode_in_progress = (int)code_value();
+//	printf_P(_N("BEGIN G-CODE=%u\n"), gcode_in_progress);
     switch (gcode_in_progress)
     {
     case 0: // G0 -> G1
@@ -4646,6 +4648,7 @@ void process_commands()
 	default:
 		printf_P(PSTR("Unknown G code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
+//	printf_P(_N("END G-CODE=%u\n"), gcode_in_progress);
 	gcode_in_progress = 0;
   } // end if(code_seen('G'))
 
@@ -4662,6 +4665,7 @@ void process_commands()
 	  } else
 	  {
 	  mcode_in_progress = (int)code_value();
+//	printf_P(_N("BEGIN M-CODE=%u\n"), mcode_in_progress);
 
     switch(mcode_in_progress)
     {
@@ -6969,6 +6973,7 @@ Sigma_Exit:
 	default: 
 		printf_P(PSTR("Unknown M code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
+//	printf_P(_N("END M-CODE=%u\n"), mcode_in_progress);
 	mcode_in_progress = 0;
 	}
   } // end if(code_seen('M')) (end of M codes)
@@ -7136,10 +7141,10 @@ Sigma_Exit:
 		dcode_2130(); break;
 #endif //TMC2130
 
-#ifdef PAT9125
-	case 9125: // D9125 - PAT9125
+#ifdef FILAMENT_SENSOR
+	case 9125: // D9125 - FILAMENT_SENSOR
 		dcode_9125(); break;
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 	}
   }
@@ -9108,14 +9113,14 @@ void M600_load_filament()
 	//load_filament_time = millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	fsensor_autoload_check_start();
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 	while(!lcd_clicked())
 	{
 		manage_heater();
 		manage_inactivity(true);
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 		if (fsensor_check_autoload())
 		{
 			tone(BEEPER, 1000);
@@ -9123,16 +9128,16 @@ void M600_load_filament()
 			noTone(BEEPER);
 			break;
 		}
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 	}
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	fsensor_autoload_check_stop();
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 	KEEPALIVE_STATE(IN_HANDLER);
 
-#ifdef PAT9125
-	fsensor_oq_meassure_start();
-#endif //PAT9125
+#ifdef FILAMENT_SENSOR
+	fsensor_oq_meassure_start(70);
+#endif //FILAMENT_SENSOR
 
 	M600_load_filament_movements();
 
@@ -9140,7 +9145,7 @@ void M600_load_filament()
 	delay_keep_alive(50);
 	noTone(BEEPER);
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	fsensor_oq_meassure_stop();
 
 	if (!fsensor_oq_result())
@@ -9151,7 +9156,7 @@ void M600_load_filament()
 		if (disable)
 			fsensor_disable();
 	}
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 }
 

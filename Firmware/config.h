@@ -22,7 +22,7 @@
 //#define PAT9125_I2C_ADDR  0x79  //ID=HI
 //#define PAT9125_I2C_ADDR  0x73  //ID=NC
 #define PAT9125_XRES      0
-#define PAT9125_YRES      200
+#define PAT9125_YRES      240
 
 //SM4 configuration
 #define SM4_DEFDELAY      500       //default step delay [us]
