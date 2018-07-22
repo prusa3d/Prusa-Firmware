@@ -80,7 +80,9 @@ extern void lcd_print(double, int = 2);
 
 
 #define LCD_UPDATE_INTERVAL    100
-#define LCD_TIMEOUT_TO_STATUS  30000
+#define LCD_TIMEOUT_TO_STATUS 30000ul //!< Generic timeout to status screen in ms, when no user action.
+#define LCD_TIMEOUT_TO_STATUS_BABYSTEP_Z 90000ul //!< Specific timeout for lcd_babystep_z screen in ms.
+
 
 
 typedef void (*lcd_longpress_func_t)(void);

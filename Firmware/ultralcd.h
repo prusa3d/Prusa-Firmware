@@ -4,6 +4,7 @@
 #include "Marlin.h"
 #include "lcd.h"
 #include "conv2str.h"
+#include "Timer.h"
 
 extern int lcd_puts_P(const char* str);
 extern int lcd_printf_P(const char* format, ...);

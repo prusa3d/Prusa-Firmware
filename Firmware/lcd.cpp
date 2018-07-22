@@ -662,7 +662,7 @@ int8_t lcd_encoder_diff = 0;
 uint8_t lcd_buttons = 0;
 uint8_t lcd_button_pressed = 0;
 uint8_t lcd_update_enabled = 1;
-uint32_t lcd_timeoutToStatus = 0;
+LongTimer lcd_timeoutToStatus;
 
 uint32_t lcd_next_update_millis = 0;
 uint8_t lcd_status_update_delay = 0;
@@ -712,7 +712,6 @@ void lcd_quick_feedback(void)
 
 
 
-
 void lcd_update(uint8_t lcdDrawUpdateOverride)
 {
 	if (lcd_draw_update < lcdDrawUpdateOverride)
@@ -735,7 +734,7 @@ void lcd_update_enable(uint8_t enabled)
 			lcd_encoder_diff = 0;
 			// Enabling the normal LCD update procedure.
 			// Reset the timeout interval.
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			// Force the keypad update now.
 			lcd_next_update_millis = millis() - 1;
 			// Full update.
@@ -762,7 +761,7 @@ void lcd_buttons_update(void)
 	{ //if we are in non-modal mode, long press can be used and short press triggers with button release
 		if (READ(BTN_ENC) == 0)
 		{ //button is pressed	  
-			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
+			lcd_timeoutToStatus.start();
 			if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
 				buttonBlanking.start();
 				if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
