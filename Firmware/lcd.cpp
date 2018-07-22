@@ -675,7 +675,7 @@ lcd_charsetup_func_t lcd_charsetup_func = 0;
 
 lcd_lcdupdate_func_t lcd_lcdupdate_func = 0;
 
-uint32_t lcd_button_blanking_time = millis();
+static ShortTimer buttonBlanking;
 ShortTimer longPressTimer;
 
 
@@ -763,9 +763,8 @@ void lcd_buttons_update(void)
 		if (READ(BTN_ENC) == 0)
 		{ //button is pressed	  
 			lcd_timeoutToStatus = millis() + LCD_TIMEOUT_TO_STATUS;
-			if (millis() > lcd_button_blanking_time)
-			{
-				lcd_button_blanking_time = millis() + BUTTON_BLANKING_TIME;
+			if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
+				buttonBlanking.start();
 				if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
 				{
 					longPressTimer.start();
@@ -786,7 +785,7 @@ void lcd_buttons_update(void)
 		{ //button not pressed
 			if (lcd_button_pressed)
 			{ //button was released
-				lcd_button_blanking_time = millis() + BUTTON_BLANKING_TIME;
+				buttonBlanking.start();
 				if (lcd_long_press_active == 0)
 				{ //button released before long press gets activated
 					newbutton |= EN_C;
