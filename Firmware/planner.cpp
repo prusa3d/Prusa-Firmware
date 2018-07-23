@@ -109,6 +109,8 @@ static float previous_speed[NUM_AXIS]; // Speed of previous path line segment
 static float previous_nominal_speed; // Nominal speed of previous path line segment
 static float previous_safe_speed; // Exit speed limited by a jerk to full halt of a previous last segment.
 
+uint8_t maxlimit_status;
+
 #ifdef AUTOTEMP
 float autotemp_max=250;
 float autotemp_min=210;
@@ -961,11 +963,15 @@ Having the real displacement of the head, we can calculate the total movement le
   // Calculate and limit speed in mm/sec for each axis
   float current_speed[4];
   float speed_factor = 1.0; //factor <=1 do decrease speed
+//  maxlimit_status &= ~0xf;
   for(int i=0; i < 4; i++)
   {
     current_speed[i] = delta_mm[i] * inverse_second;
 	if(fabs(current_speed[i]) > max_feedrate[i])
+	{
       speed_factor = min(speed_factor, max_feedrate[i] / fabs(current_speed[i]));
+	  maxlimit_status |= (1 << i);
+	}
   }
 
   // Correct the speed  
@@ -993,13 +999,13 @@ Having the real displacement of the head, we can calculate the total movement le
     // Limit acceleration per axis
     //FIXME Vojtech: One shall rather limit a projection of the acceleration vector instead of using the limit.
     if(((float)block->acceleration_st * (float)block->steps_x.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[X_AXIS])
-      block->acceleration_st = axis_steps_per_sqr_second[X_AXIS];
+	{  block->acceleration_st = axis_steps_per_sqr_second[X_AXIS]; maxlimit_status |= (X_AXIS_MASK << 4); }
     if(((float)block->acceleration_st * (float)block->steps_y.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[Y_AXIS])
-      block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS];
+	{  block->acceleration_st = axis_steps_per_sqr_second[Y_AXIS]; maxlimit_status |= (Y_AXIS_MASK << 4); }
     if(((float)block->acceleration_st * (float)block->steps_e.wide / (float)block->step_event_count.wide) > axis_steps_per_sqr_second[E_AXIS])
-      block->acceleration_st = axis_steps_per_sqr_second[E_AXIS];
+	{  block->acceleration_st = axis_steps_per_sqr_second[E_AXIS]; maxlimit_status |= (Z_AXIS_MASK << 4); }
     if(((float)block->acceleration_st * (float)block->steps_z.wide / (float)block->step_event_count.wide ) > axis_steps_per_sqr_second[Z_AXIS])
-      block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS];
+	{  block->acceleration_st = axis_steps_per_sqr_second[Z_AXIS]; maxlimit_status |= (E_AXIS_MASK << 4); }
   }
   // Acceleration of the segment, in mm/sec^2
   block->acceleration = block->acceleration_st / steps_per_mm;

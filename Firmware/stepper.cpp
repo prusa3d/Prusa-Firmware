@@ -36,10 +36,10 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 #include "fsensor.h"
 int fsensor_counter = 0; //counter for e-steps
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
 #ifdef DEBUG_STACK_MONITOR
 uint16_t SP_min = 0x21FF;
@@ -469,10 +469,10 @@ FORCE_INLINE void stepper_next_block()
 	}
 #endif
 
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
     fsensor_counter = 0;
     fsensor_st_block_begin(current_block);
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
     // The busy flag is set by the plan_get_current_block() call.
     // current_block->busy = true;
     // Initializes the trapezoid generator from the current block. Called whenever a new
@@ -760,9 +760,9 @@ FORCE_INLINE void stepper_tick_lowres()
 #ifdef LIN_ADVANCE
       ++ e_steps;
 #else
-  #ifdef PAT9125
+  #ifdef FILAMENT_SENSOR
       ++ fsensor_counter;
-  #endif //PAT9125
+  #endif //FILAMENT_SENSOR
       WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #endif
     }
@@ -825,9 +825,9 @@ FORCE_INLINE void stepper_tick_highres()
 #ifdef LIN_ADVANCE
       ++ e_steps;
 #else
-  #ifdef PAT9125
+  #ifdef FILAMENT_SENSOR
       ++ fsensor_counter;
-  #endif //PAT9125
+  #endif //FILAMENT_SENSOR
       WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #endif
     }
@@ -900,9 +900,9 @@ FORCE_INLINE void isr() {
         estep_loops = (e_steps & 0x0ff00) ? 4 : e_steps;
         if (step_loops < estep_loops)
           estep_loops = step_loops;
-    #ifdef PAT9125
+    #ifdef FILAMENT_SENSOR
         fsensor_counter += estep_loops;
-    #endif //PAT9125
+    #endif //FILAMENT_SENSOR
         do {
           WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
           -- e_steps;
@@ -1026,9 +1026,9 @@ FORCE_INLINE void isr() {
       if (eISR_Rate == 0) {
         // There is not enough time to fit even a single additional tick.
         // Tick all the extruder ticks now.
-    #ifdef PAT9125
+    #ifdef FILAMENT_SENSOR
         fsensor_counter += e_steps;
-    #endif //PAT9125
+    #endif //FILAMENT_SENSOR
         MSerial.checkRx(); // Check for serial chars.
         do {
           WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
@@ -1048,21 +1048,21 @@ FORCE_INLINE void isr() {
 
     // If current block is finished, reset pointer
     if (step_events_completed.wide >= current_block->step_event_count.wide) {
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
       fsensor_st_block_chunk(current_block, fsensor_counter);
 	    fsensor_counter = 0;
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
 
       current_block = NULL;
       plan_discard_current_block();
     }
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
   	else if (fsensor_counter >= fsensor_chunk_len)
   	{
       fsensor_st_block_chunk(current_block, fsensor_counter);
   	  fsensor_counter = 0;
   	}
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
   }
 
 #ifdef TMC2130
