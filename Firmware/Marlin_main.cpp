@@ -4665,6 +4665,7 @@ void process_commands()
 		farm_mode = 1;
 		PingTime = millis();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
+		EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
           SilentModeMenu = SILENT_MODE_OFF;
           eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 		break;
