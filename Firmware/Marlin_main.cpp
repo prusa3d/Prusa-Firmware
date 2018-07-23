@@ -532,8 +532,9 @@ static bool saved_extruder_relative_mode = false;
 //=============================Routines======================================
 //===========================================================================
 
-void get_arc_coordinates();
-bool setTargetedHotend(int code);
+static void get_arc_coordinates();
+static bool setTargetedHotend(int code);
+static void print_time_remaining_init();
 
 void serial_echopair_P(const char *s_P, float v)
     { serialprintPGM(s_P); SERIAL_ECHO(v); }
@@ -1871,7 +1872,6 @@ void host_keepalive() {
 void loop()
 {
 	KEEPALIVE_STATE(NOT_BUSY);
-	bool stack_integrity = true;
 
 	if ((usb_printing_counter > 0) && ((millis()-_usb_timer) > 1000))
 	{
@@ -4274,10 +4274,11 @@ void process_commands()
 		// The move to the first calibration point.
 		current_position[X_AXIS] = pgm_read_float(bed_ref_points);
 		current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
-		bool clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 
 		#ifdef SUPPORT_VERBOSITY
-		if (verbosity_level >= 1) {
+		if (verbosity_level >= 1)
+		{
+		    bool clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			clamped ? SERIAL_PROTOCOLPGM("First calibration point clamped.\n") : SERIAL_PROTOCOLPGM("No clamping for first calibration point.\n");
 		}
 		#endif //SUPPORT_VERBOSITY
@@ -8950,7 +8951,7 @@ void print_world_coordinates()
 
 void print_physical_coordinates()
 {
-	printf_P(_N("physical coordinates: (%.3f, %.3f, %.3f)\n"), st_get_position_mm[X_AXIS], st_get_position_mm[Y_AXIS], st_get_position_mm[Z_AXIS]);
+	printf_P(_N("physical coordinates: (%.3f, %.3f, %.3f)\n"), st_get_position_mm(X_AXIS), st_get_position_mm(Y_AXIS), st_get_position_mm(Z_AXIS));
 }
 
 void print_mesh_bed_leveling_table()

@@ -41,7 +41,7 @@ void uart2_init(void)
 	fdev_setup_stream(uart2io, uart2_putchar, uart2_getchar, _FDEV_SETUP_WRITE | _FDEV_SETUP_READ); //setup uart2 i/o stream
 }
 
-uint8_t uart2_rx_clr(void)
+void uart2_rx_clr(void)
 {
 	rbuf_w(uart2_ibuf) = 0;
 	rbuf_r(uart2_ibuf) = 0;
