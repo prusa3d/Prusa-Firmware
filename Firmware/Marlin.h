@@ -466,7 +466,7 @@ void gcode_M701();
 
 void proc_commands();
 
-bool mmu_get_reponse();
+bool mmu_get_reponse(bool timeout);
 void mmu_not_responding();
 void mmu_load_to_nozzle();
 void M600_load_filament(bool fsensor_enabled);
