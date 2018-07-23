@@ -411,9 +411,6 @@ extern void print_world_coordinates();
 extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
 
-#ifdef PAT9125
-extern void fsensor_init();
-#endif //PAT9125
 
 //estimated time to end of the print
 extern uint16_t print_time_remaining();
@@ -465,9 +462,9 @@ void gcode_M701();
 
 void proc_commands();
 
-bool mmu_get_reponse();
+bool mmu_get_reponse(bool timeout);
 void mmu_not_responding();
 void mmu_load_to_nozzle();
-void M600_load_filament(bool fsensor_enabled);
+void M600_load_filament();
 void mmu_M600_load_filament();
 void M600_load_filament_movements();

@@ -133,6 +133,7 @@
 
 // Filament sensor
 #define PAT9125
+#define FILAMENT_SENSOR
 
 // Backlash - 
 //#define BACKLASH_X
@@ -377,13 +378,6 @@
 #define DEFAULT_PWM_MOTOR_CURRENT  {400, 750, 750} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {400, 750, 750} // {XY,Z,E}
 #endif
-
-/*------------------------------------
- PAT9125 SETTINGS
- *------------------------------------*/
-
-#define PAT9125_XRES			0
-#define PAT9125_YRES			255
 
 /*------------------------------------
  BED SETTINGS

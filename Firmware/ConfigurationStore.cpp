@@ -313,6 +313,20 @@ bool Config_RetrieveSettings(uint16_t offset, uint8_t level)
         EEPROM_READ_VAR(i,max_feedrate_silent);  
         EEPROM_READ_VAR(i,max_acceleration_units_per_sq_second_silent);
 
+#ifdef TMC2130
+		for (uint8_t j = X_AXIS; j <= Y_AXIS; j++)
+		{
+			if (max_feedrate_normal[j] > NORMAL_MAX_FEEDRATE_XY)
+				max_feedrate_normal[j] = NORMAL_MAX_FEEDRATE_XY;
+			if (max_feedrate_silent[j] > SILENT_MAX_FEEDRATE_XY)
+				max_feedrate_silent[j] = SILENT_MAX_FEEDRATE_XY;
+			if (max_acceleration_units_per_sq_second_normal[j] > NORMAL_MAX_ACCEL_XY)
+				max_acceleration_units_per_sq_second_normal[j] = NORMAL_MAX_ACCEL_XY;
+			if (max_acceleration_units_per_sq_second_silent[j] > SILENT_MAX_ACCEL_XY)
+				max_acceleration_units_per_sq_second_silent[j] = SILENT_MAX_ACCEL_XY;
+		}
+#endif //TMC2130
+
 		reset_acceleration_rates();
 
 		// Call updatePID (similar to when we have processed M301)

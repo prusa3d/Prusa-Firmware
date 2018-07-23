@@ -99,6 +99,9 @@ uint8_t pat9125_rd_reg(uint8_t addr);
 void pat9125_wr_reg(uint8_t addr, uint8_t data);
 uint8_t pat9125_wr_reg_verify(uint8_t addr, uint8_t data);
 
+extern FILE _uartout;
+#define uartout (&_uartout)
+
 
 uint8_t pat9125_init(void)
 {
@@ -162,8 +165,11 @@ uint8_t pat9125_init(void)
 	pat9125_PID1 = pat9125_rd_reg(PAT9125_PID1);
 	pat9125_PID2 = pat9125_rd_reg(PAT9125_PID2);
 #endif //PAT9125_NEW_INIT
-	pat9125_wr_reg(PAT9125_RES_X, 0);
-	pat9125_wr_reg(PAT9125_RES_Y, 200);
+
+	pat9125_wr_reg(PAT9125_RES_X, PAT9125_XRES);
+	pat9125_wr_reg(PAT9125_RES_Y, PAT9125_YRES);
+	fprintf_P(uartout, PSTR("PAT9125_RES_X=%hhu\n"), pat9125_rd_reg(PAT9125_RES_X));
+	fprintf_P(uartout, PSTR("PAT9125_RES_Y=%hhu\n"), pat9125_rd_reg(PAT9125_RES_Y));
 	return 1;
 }
 
