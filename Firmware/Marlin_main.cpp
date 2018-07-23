@@ -3380,8 +3380,6 @@ void process_commands()
 		}	
 		else if (code_seen("MMURES")) {
 			fprintf_P(uart2io, PSTR("X0"));
-			bool response = mmu_get_reponse();
-			if (!response) mmu_not_responding();
 		}
 		else if (code_seen("RESET")) {
             // careful!
@@ -6512,7 +6510,7 @@ Sigma_Exit:
 			fprintf_P(uart2io, PSTR("U0\n"));
 
 			// get response
-			bool response = mmu_get_reponse();
+			bool response = mmu_get_reponse(false);
 			if (!response) mmu_not_responding();
 #else
 			lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
@@ -7032,7 +7030,7 @@ Sigma_Exit:
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
 		  fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
 
-		  bool response = mmu_get_reponse();
+		  bool response = mmu_get_reponse(false);
 		  if (!response) mmu_not_responding();
 
     	  snmm_extruder = tmp_extruder; //filament change is finished
@@ -9033,7 +9031,7 @@ static void print_time_remaining_init() {
 	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 }
 
-bool mmu_get_reponse() {
+bool mmu_get_reponse(bool timeout) {
 	bool response = true;
 	LongTimer mmu_get_reponse_timeout;
     uart2_rx_clr();
@@ -9042,7 +9040,7 @@ bool mmu_get_reponse() {
 	while (!uart2_rx_ok())
     {
       delay_keep_alive(100);
-	  if (mmu_get_reponse_timeout.expired(180 * 1000ul)) { //3 minutes timeout
+	  if (timeout && mmu_get_reponse_timeout.expired(180 * 1000ul)) { //3 minutes timeout
 			response = false;
 			break;
 	  }
@@ -9105,7 +9103,7 @@ void mmu_M600_load_filament() {
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
 		  fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
-		  response = mmu_get_reponse();
+		  response = mmu_get_reponse(false);
 		  if (!response) mmu_not_responding();
 
     	  snmm_extruder = tmp_extruder; //filament change is finished
