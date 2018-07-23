@@ -137,8 +137,13 @@
 #define EEPROM_EXTRUDER_MULTIPLIER_2 (EEPROM_EXTRUDER_MULTIPLIER_1 - 4)                        //float
 #define EEPROM_EXTRUDEMULTIPLY (EEPROM_EXTRUDER_MULTIPLIER_2 - 2)                              // uint16
 
+//
+#define EEPROM_UVLO_TINY_CURRENT_POSITION_Z (EEPROM_EXTRUDEMULTIPLY-4) // float
+#define EEPROM_UVLO_TINY_Z_MICROSTEPS (EEPROM_UVLO_TINY_CURRENT_POSITION_Z-2) // uint16
+
 // Sound Mode
-#define EEPROM_SOUND_MODE (EEPROM_EXTRUDEMULTIPLY-1) // uint8
+//#define EEPROM_SOUND_MODE (EEPROM_EXTRUDEMULTIPLY-1) // uint8
+#define EEPROM_SOUND_MODE (EEPROM_UVLO_TINY_Z_MICROSTEPS-1) // uint8
 
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!

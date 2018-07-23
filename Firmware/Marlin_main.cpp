@@ -486,7 +486,9 @@ static float feedrate = 1500.0, next_feedrate, saved_feedrate;
 // Also there is bool axis_relative_modes[] per axis flag.
 static bool relative_mode = false;  
 
+#ifndef _DISABLE_M42_M226
 const int sensitive_pins[] = SENSITIVE_PINS; // Sensitive pin list for M42
+#endif //_DISABLE_M42_M226
 
 //static float tt = 0;
 //static float bt = 0;
@@ -858,7 +860,7 @@ void factory_reset(char level, bool quiet)
             eeprom_update_word((uint16_t *)EEPROM_POWER_COUNT_TOT, 0);
 
             fsensor_enable();
-            fsensor_autoload_set(true);
+            fautoload_set(true);
                        
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
@@ -1380,6 +1382,7 @@ void setup()
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	if (silentMode == 0xff) silentMode = 0;
+//	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 	tmc2130_mode = TMC2130_MODE_NORMAL;
 	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
 	if (crashdet && !farm_mode)
@@ -1433,7 +1436,6 @@ void setup()
 
 #ifdef TMC2130
 	tmc2130_mode = silentMode?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
-	update_mode_profile();
 	tmc2130_init();
 #endif //TMC2130
     
@@ -1727,7 +1729,11 @@ void setup()
 #endif //TMC2130
 
 #ifdef UVLO_SUPPORT
-  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
+//-//
+MYSERIAL.println(">>> Setup");
+MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_UVLO),DEC);
+//  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
+  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO
 /*
 	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false))	recover_print();
 	  else {
@@ -1753,7 +1759,8 @@ void setup()
           #endif 
           if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) ) recover_print(0); 
           else { 
-              eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
+//-//
+//              eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
               lcd_update_enable(true); 
               lcd_update(2); 
               lcd_setstatuspgm(_T(WELCOME_MSG)); 
@@ -2602,7 +2609,6 @@ void force_high_power_mode(bool start_high_power_section) {
 		st_synchronize();
 		cli();
 		tmc2130_mode = (start_high_power_section == true) ? TMC2130_MODE_NORMAL : TMC2130_MODE_SILENT;
-		update_mode_profile();
 		tmc2130_init();
     // We may have missed a stepper timer interrupt due to the time spent in the tmc2130_init() routine.
     // Be safe than sorry, reset the stepper timer before re-enabling interrupts.
@@ -3111,22 +3117,14 @@ void gcode_M114()
 
 void gcode_M701()
 {
-	printf_P(PSTR("gcode_M701 begin\n"));
-
-#if defined (SNMM) || defined (SNMM_V2)
+#ifdef SNMM
 	extr_adj(snmm_extruder);//loads current extruder
 #else
 	enable_z();
 	custom_message = true;
 	custom_message_type = 2;
 
-	bool old_watch_runout = fsensor_watch_runout;
-	fsensor_watch_runout = false;
-	fsensor_st_sum = 0;
-	fsensor_yd_sum = 0;
-	fsensor_er_sum = 0;
-	fsensor_yd_min = 255;
-	fsensor_yd_max = 0;
+	
 
 	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 	current_position[E_AXIS] += 40;
@@ -3168,11 +3166,6 @@ void gcode_M701()
 	custom_message_type = 0;
 #endif
 
-	fsensor_err_cnt = 0;
-	fsensor_watch_runout = old_watch_runout;
-	printf_P(_N("\nFSENSOR st_sum=%lu yd_sum=%lu er_sum=%lu\n"), fsensor_st_sum, fsensor_yd_sum, fsensor_er_sum);
-	printf_P(_N("\nFSENSOR yd_min=%hhu yd_max=%hhu yd_avg=%hhu\n"), fsensor_yd_min, fsensor_yd_max, fsensor_yd_sum * FSENSOR_CHUNK_LEN / fsensor_st_sum);
-	printf_P(PSTR("gcode_M701 end\n"));
 }
 /**
  * @brief Get serial number from 32U2 processor
@@ -3380,13 +3373,7 @@ void process_commands()
 		}
 		else if (code_seen("thx")) {
 			no_response = false;
-		}	
-		else if (code_seen("MMURES")) {
-			fprintf_P(uart2io, PSTR("X0"));
-			bool response = mmu_get_reponse();
-			if (!response) mmu_not_responding();
-		}
-		else if (code_seen("RESET")) {
+        } else if (code_seen("RESET")) {
             // careful!
             if (farm_mode) {
 #ifdef WATCHDOG
@@ -4783,6 +4770,8 @@ void process_commands()
       card.openFile(strchr_pointer + 4,true);
       break;
     case 24: //M24 - Start SD print
+//-//
+eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
 	  if (!card.paused) 
 		failstats_reset_print();
       card.startFileprint();
@@ -4886,6 +4875,7 @@ void process_commands()
       autotempShutdown();
       }
       break;
+#ifndef _DISABLE_M42_M226
     case 42: //M42 -Change pin status via gcode
       if (code_seen('S'))
       {
@@ -4913,6 +4903,7 @@ void process_commands()
         }
       }
      break;
+#endif //_DISABLE_M42_M226
     case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
 
 		// Reset the baby step value and the baby step applied flag.
@@ -5778,29 +5769,16 @@ Sigma_Exit:
       }
       break;
     case 201: // M201
-		for (int8_t i = 0; i < NUM_AXIS; i++)
-		{
-			if (code_seen(axis_codes[i]))
-			{
-				int val = code_value();
-#ifdef TMC2130
-				if ((i == X_AXIS) || (i == Y_AXIS))
-				{
-					int max_val = 0;
-					if (tmc2130_mode == TMC2130_MODE_NORMAL)
-						max_val = NORMAL_MAX_ACCEL_XY;
-					else if (tmc2130_mode == TMC2130_MODE_SILENT)
-						max_val = SILENT_MAX_ACCEL_XY;
-					if (val > max_val)
-						val = max_val;
-				}
-#endif
-				max_acceleration_units_per_sq_second[i] = val;
-			}
-		}
-		// steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
-		reset_acceleration_rates();
-		break;
+      for(int8_t i=0; i < NUM_AXIS; i++)
+      {
+        if(code_seen(axis_codes[i]))
+        {
+          max_acceleration_units_per_sq_second[i] = code_value();
+        }
+      }
+      // steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
+      reset_acceleration_rates();
+      break;
     #if 0 // Not used for Sprinter/grbl gen6
     case 202: // M202
       for(int8_t i=0; i < NUM_AXIS; i++) {
@@ -5809,27 +5787,10 @@ Sigma_Exit:
       break;
     #endif
     case 203: // M203 max feedrate mm/sec
-		for (int8_t i = 0; i < NUM_AXIS; i++)
-		{
-			if (code_seen(axis_codes[i]))
-			{
-				float val = code_value();
-#ifdef TMC2130
-				if ((i == X_AXIS) || (i == Y_AXIS))
-				{
-					float max_val = 0;
-					if (tmc2130_mode == TMC2130_MODE_NORMAL)
-						max_val = NORMAL_MAX_FEEDRATE_XY;
-					else if (tmc2130_mode == TMC2130_MODE_SILENT)
-						max_val = SILENT_MAX_FEEDRATE_XY;
-					if (val > max_val)
-						val = max_val;
-				}
-#endif //TMC2130
-				max_feedrate[i] = val;
-			}
-		}
-		break;
+      for(int8_t i=0; i < NUM_AXIS; i++) {
+        if(code_seen(axis_codes[i])) max_feedrate[i] = code_value();
+      }
+      break;
     case 204: // M204 acclereration S normal moves T filmanent only moves
       {
         if(code_seen('S')) acceleration = code_value() ;
@@ -5976,6 +5937,7 @@ Sigma_Exit:
     }
     break;
 
+#ifndef _DISABLE_M42_M226
 	case 226: // M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
 	{
       if(code_seen('P')){
@@ -6027,6 +5989,7 @@ Sigma_Exit:
       }
     }
     break;
+#endif //_DISABLE_M42_M226
 
     #if NUM_SERVOS > 0
     case 280: // M280 - set servo position absolute. P: servo index, S: angle or microseconds
@@ -6269,7 +6232,7 @@ Sigma_Exit:
     {
 #ifdef PAT9125
 		bool old_fsensor_enabled = fsensor_enabled;
-//		fsensor_enabled = false; //temporary solution for unexpected restarting
+		fsensor_enabled = false; //temporary solution for unexpected restarting
 #endif //PAT9125
 
 		st_synchronize();
@@ -6391,7 +6354,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
 {
 bFirst=false;
 					WRITE(BEEPER, HIGH);
-}
+}                         
 				}
 				if (counterBeep == 20) {
 					WRITE(BEEPER, LOW);
@@ -6528,22 +6491,13 @@ bFirst=false;
 			//finish moves
 			st_synchronize();
 
+			lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
+			
 			//disable extruder steppers so filament can be removed
 			disable_e0();
 			disable_e1();
 			disable_e2();
 			delay(100);
-
-#ifdef SNMM_V2
-			fprintf_P(uart2io, PSTR("U0\n"));
-
-			// get response
-			bool response = mmu_get_reponse();
-			if (!response) mmu_not_responding();
-#else
-			lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
-			
-
 			 
 			
 			WRITE(BEEPER, HIGH);
@@ -6554,7 +6508,6 @@ bFirst=false;
 				counterBeep++;
 			}
 			WRITE(BEEPER, LOW);
-#endif
 
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, true);////MSG_UNLOAD_SUCCESSFUL c=20 r=2
@@ -6568,14 +6521,15 @@ bFirst=false;
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 #ifdef PAT9125
-		if (filament_autoload_enabled && (old_fsensor_enabled || !fsensor_watch_runout)) fsensor_autoload_check_start();
+		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_start();
 #endif //PAT9125
+//		  printf_P(PSTR("M600 PAT9125 filament_autoload_enabled=%d, old_fsensor_enabled=%d, fsensor_M600=%d"), filament_autoload_enabled, old_fsensor_enabled, fsensor_M600);
         while(!lcd_clicked())
 		{
           manage_heater();
           manage_inactivity(true);
 #ifdef PAT9125
-		  if (filament_autoload_enabled && (old_fsensor_enabled || !fsensor_watch_runout) && fsensor_check_autoload())
+		  if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600) && fsensor_check_autoload())
 		  {
 			tone(BEEPER, 1000);
 			delay_keep_alive(50);
@@ -6591,7 +6545,7 @@ bFirst=false;
 
         }
 #ifdef PAT9125
-		if (filament_autoload_enabled && (old_fsensor_enabled || !fsensor_watch_runout)) fsensor_autoload_check_stop();
+		if (filament_autoload_enabled && (old_fsensor_enabled || fsensor_M600)) fsensor_autoload_check_stop();
 #endif //PAT9125
 		//WRITE(BEEPER, LOW);
 		KEEPALIVE_STATE(IN_HANDLER);
@@ -6623,19 +6577,14 @@ bFirst=false;
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 400, active_extruder);
 		target[E_AXIS] += 10;
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], 50, active_extruder);
-		//Extrude some filament
-        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
 #else
 		target[E_AXIS] += FILAMENTCHANGE_FIRSTFEED;
 		plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder);
-		//Extrude some filament
-        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
-
 #endif // SNMM
         
-
+        //Extrude some filament
+        target[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
+        plan_buffer_line(target[X_AXIS], target[Y_AXIS], target[Z_AXIS], target[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
         
         //Wait for user to check the state
         lcd_change_fil_state = 0;
@@ -6741,8 +6690,7 @@ bFirst=false;
 	  custom_message_type = 0;
 
 #ifdef PAT9125
-/*
-//      fsensor_enabled = old_fsensor_enabled; //temporary solution for unexpected restarting
+      fsensor_enabled = old_fsensor_enabled; //temporary solution for unexpected restarting
 
 	  if (fsensor_M600)
 	  {
@@ -6754,11 +6702,10 @@ bFirst=false;
 		    cmdqueue_pop_front();
 		}
 		KEEPALIVE_STATE(IN_HANDLER);
-//		fsensor_enable();
+		fsensor_enable();
 		fsensor_restore_print_and_continue();
 	  }
-	fsensor_M600 = false;
-*/
+
 #endif //PAT9125
         
     }
@@ -6961,7 +6908,6 @@ bFirst=false;
 	case 914: // M914 Set normal mode
     {
 		tmc2130_mode = TMC2130_MODE_NORMAL;
-		update_mode_profile();
 		tmc2130_init();
     }
     break;
@@ -6969,7 +6915,6 @@ bFirst=false;
 	case 915: // M915 Set silent mode
     {
 		tmc2130_mode = TMC2130_MODE_SILENT;
-		update_mode_profile();
 		tmc2130_init();
     }
     break;
@@ -7061,20 +7006,12 @@ bFirst=false;
     break;
 	case 701: //M701: load filament
 	{
-		#ifdef SNMM_V2
-		if (code_seen('E'))
-		{
-			snmm_extruder = code_value();
-		}
-		#endif
-		
-
 		gcode_M701();
 	}
 	break;
 	case 702:
 	{
-#if defined (SNMM) || defined (SNMM_V2) 
+#ifdef SNMM
 		if (code_seen('U')) {
 			extr_unload_used(); //unload all filaments which were used in current print
 		}
@@ -7082,12 +7019,12 @@ bFirst=false;
 			extr_unload(); //unload just current filament 
 		}
 		else {
-			  extr_unload_all(); //unload all filaments
+			extr_unload_all(); //unload all filaments
 		}
 #else
 #ifdef PAT9125
 		bool old_fsensor_enabled = fsensor_enabled;
-//		fsensor_enabled = false;
+		fsensor_enabled = false;
 #endif //PAT9125
 		custom_message = true;
 		custom_message_type = 2;
@@ -7142,7 +7079,7 @@ while (!lcd_clicked() && (counterBeep < 50)) {
 		custom_message = false;
 		custom_message_type = 0;
 #ifdef PAT9125
-//		fsensor_enabled = old_fsensor_enabled;
+		fsensor_enabled = old_fsensor_enabled;
 #endif //PAT9125
 #endif	
 	}
@@ -7204,15 +7141,16 @@ while (!lcd_clicked() && (counterBeep < 50)) {
               break;
           }
 
-		  bool response = mmu_get_reponse();
-		  if (!response) mmu_not_responding();
+          
 
-    	  snmm_extruder = tmp_extruder; //filament change is finished
-
-		  if (*(strchr_pointer + index) == '?') { // for single material usage with mmu
-			  mmu_load_to_nozzle();
-
-		  }
+          
+              // get response
+            uart2_rx_clr();
+              while (!uart2_rx_ok())
+              {
+                  //printf_P(PSTR("waiting..\n"));
+                  delay_keep_alive(100);
+              }
 #endif
 
 #ifdef SNMM
@@ -7696,7 +7634,7 @@ static void handleSafetyTimer()
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef PAT9125
-	if (fsensor_enabled && filament_autoload_enabled && fsensor_watch_runout && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+	if (fsensor_enabled && filament_autoload_enabled && !fsensor_M600 && !moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 	{
 		if (fsensor_autoload_enabled)
 		{
@@ -8533,6 +8471,8 @@ void uvlo_()
 {
 	unsigned long time_start = millis();
 	bool sd_print = card.sdprinting;
+//-//
+MYSERIAL.println(">>> uvlo()");
     // Conserve power as soon as possible.
     disable_x();
     disable_y();
@@ -8689,6 +8629,51 @@ void uvlo_()
         
     };
 }
+
+
+void uvlo_tiny()
+{
+uint16_t z_microsteps=0;
+bool sd_print=card.sdprinting;
+
+MYSERIAL.println(">>> uvloTiny()");
+// Conserve power as soon as possible.
+disable_x();
+disable_y();
+disable_e0();
+    
+#ifdef TMC2130
+tmc2130_set_current_h(Z_AXIS, 20);
+tmc2130_set_current_r(Z_AXIS, 20);
+#endif //TMC2130
+
+// Read out the current Z motor microstep counter
+#ifdef TMC2130
+z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
+#endif //TMC2130
+
+planner_abort_hard();
+sei();
+plan_buffer_line(
+     current_position[X_AXIS], 
+     current_position[Y_AXIS], 
+     current_position[Z_AXIS]+UVLO_Z_AXIS_SHIFT+float((1024-z_microsteps+7)>>4)/axis_steps_per_unit[Z_AXIS], 
+     current_position[E_AXIS],
+     40, active_extruder);
+st_synchronize();
+disable_z();
+
+// Finaly store the "power outage" flag.
+//if(sd_print)
+     eeprom_update_byte((uint8_t*)EEPROM_UVLO,2);
+
+eeprom_update_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS),z_microsteps);
+eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), current_position[Z_AXIS]);
+
+// Increment power failure counter
+eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
+eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
+}
 #endif //UVLO_SUPPORT
 
 #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
@@ -8741,7 +8726,20 @@ void setup_uvlo_interrupt() {
 ISR(INT4_vect) {
 	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
 	SERIAL_ECHOLNPGM("INT4");
-	if (IS_SD_PRINTING) uvlo_();
+//-//
+//	if (IS_SD_PRINTING) uvlo_();
+//if(IS_SD_PRINTING && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO))) ) uvlo_();
+if(IS_SD_PRINTING && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO))) ) uvlo_();
+if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)) uvlo_tiny();
+/*
+if(IS_SD_PRINTING)
+     {
+MYSERIAL.println(">>> ");
+     if(!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))
+          uvlo_();
+     else uvlo_tiny();
+     }
+*/
 }
 
 void recover_print(uint8_t automatic) {
@@ -8750,10 +8748,17 @@ void recover_print(uint8_t automatic) {
 	lcd_update(2);
 	lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20 r=1
 
-  recover_machine_state_after_power_panic(); //recover position, temperatures and extrude_multipliers
+//-//
+//  recover_machine_state_after_power_panic(); //recover position, temperatures and extrude_multipliers
+MYSERIAL.println(">>> RecoverPrint");
+MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_UVLO),DEC);
+bool bTiny=(eeprom_read_byte((uint8_t*)EEPROM_UVLO)==2);
+recover_machine_state_after_power_panic(bTiny); //recover position, temperatures and extrude_multipliers
 
   // Lift the print head, so one may remove the excess priming material.
-  if (current_position[Z_AXIS] < 25)
+//-//
+//if (current_position[Z_AXIS] < 25)
+if(!bTiny&&(current_position[Z_AXIS]<25))
     enquecommand_P(PSTR("G1 Z25 F800"));
   // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine transformation status.
 	enquecommand_P(PSTR("G28 X Y"));
@@ -8771,7 +8776,10 @@ void recover_print(uint8_t automatic) {
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
 
   // Mark the power panic status as inactive.
-	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
+//-//
+MYSERIAL.println("===== before");
+//	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
+MYSERIAL.println("===== after");
 	/*while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
 		delay_keep_alive(1000);
 	}*/
@@ -8782,9 +8790,10 @@ void recover_print(uint8_t automatic) {
 	restore_print_from_eeprom();
 
 	printf_P(_N("Current pos Z_AXIS:%.3f\nCurrent pos E_AXIS:%.3f\n"), current_position[Z_AXIS], current_position[E_AXIS]);
+MYSERIAL.println("===== konec");
 }
 
-void recover_machine_state_after_power_panic()
+void recover_machine_state_after_power_panic(bool bTiny)
 {
   char cmd[30];
   // 1) Recover the logical cordinates at the time of the power panic.
@@ -8793,8 +8802,16 @@ void recover_machine_state_after_power_panic()
   current_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
   // Recover the logical coordinate of the Z axis at the time of the power panic.
   // The current position after power panic is moved to the next closest 0th full step.
-  current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
+//-//
+//  current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
+//    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
+  if(bTiny)
+    current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z)) + 
+    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
+  else
+    current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
     UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
+//-//
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS)) {
 	  current_position[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
 	  sprintf_P(cmd, PSTR("G92 E"));
@@ -8927,6 +8944,8 @@ void restore_print_from_eeprom() {
   // Set a position in the file.
   sprintf_P(cmd, PSTR("M26 S%lu"), position);
   enquecommand(cmd);
+//-//
+enquecommand_P(PSTR("G4 S0")); 
   // Start SD print.
   enquecommand_P(PSTR("M24")); 
 }
@@ -9203,41 +9222,6 @@ static void print_time_remaining_init() {
 	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
 	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
-}
-
-bool mmu_get_reponse() {
-	bool response = true;
-	LongTimer mmu_get_reponse_timeout;
-    uart2_rx_clr();
-	
-	mmu_get_reponse_timeout.start();
-	while (!uart2_rx_ok())
-    {
-      delay_keep_alive(100);
-	  if (mmu_get_reponse_timeout.expired(30 * 1000ul)) { //PINDA cooling from 60 C to 35 C takes about 7 minutes
-			response = false;
-			break;
-	  }
-    }
-	return response;
-}
-
-void mmu_not_responding() {
-	printf_P(PSTR("MMU not responding"));
-}
-
-void mmu_load_to_nozzle() {
-	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
-	if (!saved_e_relative_mode) {
-		enquecommand_front_P(PSTR("M82")); // set extruder to relative mode
-	}
-		enquecommand_front_P((PSTR("G1 E7.2000 F562")));
-		enquecommand_front_P((PSTR("G1 E14.4000 F871")));
-		enquecommand_front_P((PSTR("G1 E36.0000 F1393")));
-		enquecommand_front_P((PSTR("G1 E14.4000 F871")));			  
-		if (!saved_e_relative_mode) {
-		  enquecommand_front_P(PSTR("M83")); // set extruder to relative mode
-		}
 }
 
 #define FIL_LOAD_LENGTH 60
