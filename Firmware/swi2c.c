@@ -1,7 +1,7 @@
 //swi2c.c
 #include "swi2c.h"
 #include <avr/io.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 #include <avr/pgmspace.h>
 #include "Configuration_prusa.h"
 #include "pins.h"
