@@ -24,6 +24,7 @@
 #include "SdFatUtil.h"
 
 #ifdef FILAMENT_SENSOR
+#include "pat9125.h"
 #include "fsensor.h"
 #endif //FILAMENT_SENSOR
 
@@ -1999,11 +2000,19 @@ static void lcd_menu_extruder_info()
 //|Fil. Xd:    Yd:     |
 //|Int:      Shut:     |
 //----------------------
-    int fan_speed_RPM[2];
-    // Display Nozzle fan RPM
+	int fan_speed_RPM[2];
+	// Display Nozzle fan RPM
 	fan_speed_RPM[0] = 60*fan_speed[0];
-    fan_speed_RPM[1] = 60*fan_speed[1];
-    
+	fan_speed_RPM[1] = 60*fan_speed[1];
+	lcd_printf_P(_N(
+	  ESC_H(0,0)
+	  "Nozzle FAN: %4d RPM\n"
+	  "Print FAN:  %4d RPM\n"
+	 ),
+	 fan_speed_RPM[0],
+	 fan_speed_RPM[1]
+	);
+
 #ifdef FILAMENT_SENSOR
 	// Display X and Y difference from Filament sensor    
     // Display Light intensity from Filament sensor
@@ -2013,28 +2022,21 @@ static void lcd_menu_extruder_info()
     //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
     //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
     //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
-/*    pat9125_update();
-	lcd_printf_P(_N(
-	  ESC_H(0,0)
-	  "Nozzle FAN: %4d RPM\n"
-	  "Print FAN:  %4d RPM\n"
-	  "Fil. Xd:%3d Yd:%3d\n"
-	  "Int: %3d  Shut: %3d\n"
-	 ),
-	 fan_speed_RPM[0],
-	 fan_speed_RPM[1],
-	 pat9125_x, pat9125_y,
-	 pat9125_b, pat9125_s
-	);*/
-#else //FILAMENT_SENSOR
-	printf_P(_N(
-	  ESC_H(0,0)
-	  "Nozzle FAN: %4d RPM\n"
-	  "Print FAN:  %4d RPM\n"
-	 ),
-	 fan_speed_RPM[0],
-	 fan_speed_RPM[1]
-	);
+
+	if (!fsensor_enabled)
+		lcd_puts_P(_N("Filament sensor\n" "is disabled."));
+	else
+	{
+		if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+			pat9125_update();
+		lcd_printf_P(_N(
+		  "Fil. Xd:%3d Yd:%3d\n"
+		  "Int: %3d  Shut: %3d"
+		 ),
+		 pat9125_x, pat9125_y,
+		 pat9125_b, pat9125_s
+		);
+	}
 #endif //FILAMENT_SENSOR
     
     menu_back_if_clicked();
@@ -2172,6 +2174,7 @@ static void lcd_menu_belt_status()
 }
 #endif //TMC2130
 
+#ifdef RESUME_DEBUG 
 extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
 
@@ -2184,6 +2187,7 @@ static void lcd_menu_test_restore()
 {
 	restore_print_from_ram_and_continue(0.8);
 }
+#endif //RESUME_DEBUG 
 
 static void lcd_preheat_menu()
 {
