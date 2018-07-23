@@ -1041,12 +1041,14 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 	for (int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
 }
 
+#ifdef BOOTAPP
+#include "bootapp.h" //bootloader support
+#endif //BOOTAPP
 
 #if (LANG_MODE != 0) //secondary language support
 
 #ifdef W25X20CL
 
-#include "bootapp.h" //bootloader support
 
 // language update from external flash
 #define LANGBOOT_BLOCKSIZE 0x1000  
@@ -1146,16 +1148,16 @@ void setup()
 	lcd_splash();
 
 #ifdef W25X20CL
-  // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
-  optiboot_w25x20cl_enter();
+	if (!w25x20cl_init())
+		kill(_i("External SPI flash W25X20CL not responding."));
+	// Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+	optiboot_w25x20cl_enter();
 #endif
 
 #if (LANG_MODE != 0) //secondary language support
 #ifdef W25X20CL
 	if (w25x20cl_init())
 		update_sec_lang_from_external_flash();
-	else
-		kill(_i("External SPI flash W25X20CL not responding."));
 #endif //W25X20CL
 #endif //(LANG_MODE != 0)
 
