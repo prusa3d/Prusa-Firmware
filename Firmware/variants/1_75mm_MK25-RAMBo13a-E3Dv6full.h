@@ -484,6 +484,6 @@
 
 #define M600_TIMEOUT 600  //seconds
 
-#define SUPPORT_VERBOSITY
+//#define SUPPORT_VERBOSITY
 
 #endif //__CONFIGURATION_PRUSA_H
