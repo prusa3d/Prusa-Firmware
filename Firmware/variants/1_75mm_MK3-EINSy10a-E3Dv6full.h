@@ -99,11 +99,11 @@
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 
 //Silent mode limits
-#define SILENT_MAX_ACCEL_XY      960  // max acceleration in silent mode in mm/s^2
+#define SILENT_MAX_ACCEL_XY      960ul  // max acceleration in silent mode in mm/s^2
 #define SILENT_MAX_FEEDRATE_XY   172  // max feedrate in mm/s
 
 //Normal mode limits
-#define NORMAL_MAX_ACCEL_XY     2500  // max acceleration in normal mode in mm/s^2
+#define NORMAL_MAX_ACCEL_XY     2500ul  // max acceleration in normal mode in mm/s^2
 #define NORMAL_MAX_FEEDRATE_XY   200  // max feedrate in mm/s
 
 //number of bytes from end of the file to start check
