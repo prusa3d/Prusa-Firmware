@@ -467,3 +467,7 @@ void gcode_M701();
 #define UVLO !(PINE & (1<<4))
 
 void proc_commands();
+
+bool mmu_get_reponse();
+void mmu_not_responding();
+void mmu_load_to_nozzle();
