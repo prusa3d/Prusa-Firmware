@@ -4,6 +4,7 @@
 
 #include <inttypes.h>
 #include <stdio.h>
+#include "Timer.h"
 
 
 
@@ -108,7 +109,7 @@ extern uint8_t lcd_button_pressed;
 
 extern uint8_t lcd_update_enabled;
 
-extern uint32_t lcd_timeoutToStatus;
+extern LongTimer lcd_timeoutToStatus;
 
 extern uint32_t lcd_next_update_millis;
 

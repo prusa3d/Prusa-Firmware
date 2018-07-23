@@ -4,7 +4,6 @@
 #include "Marlin.h"
 #include "lcd.h"
 #include "conv2str.h"
-#include "Timer.h"
 
 extern int lcd_puts_P(const char* str);
 extern int lcd_printf_P(const char* format, ...);
@@ -104,7 +103,6 @@ extern void menu_lcd_lcdupdate_func(void);
   #define LCD_COMMAND_PID_EXTRUDER 7 
   #define LCD_COMMAND_V2_CAL 8
 
-  extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
   
   extern uint8_t farm_mode;

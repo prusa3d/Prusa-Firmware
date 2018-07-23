@@ -2840,7 +2840,7 @@ static void _lcd_babystep(int axis, const char *msg)
 		//SERIAL_ECHO("Z baby step: ");
 		//SERIAL_ECHO(menuData.babyStep.babystepMem[2]);
 		// Wait 90 seconds before closing the live adjust dialog.
-		lcd_timeoutToStatus = millis() + 90000;
+		lcd_timeoutToStatus.start();
 	}
 
 	if (lcd_encoder != 0) 
@@ -7533,18 +7533,18 @@ void menu_lcd_charsetup_func(void)
 
 static inline bool z_menu_expired()
 {
-    return (currentMenu == lcd_babystep_z
+    return (menu_menu == lcd_babystep_z
          && lcd_timeoutToStatus.expired(LCD_TIMEOUT_TO_STATUS_BABYSTEP_Z));
 }
 static inline bool other_menu_expired()
 {
-    return (currentMenu != lcd_status_screen
-            && currentMenu != lcd_babystep_z
+    return (menu_menu != lcd_status_screen
+            && menu_menu != lcd_babystep_z
             && lcd_timeoutToStatus.expired(LCD_TIMEOUT_TO_STATUS));
 }
 static inline bool forced_menu_expire()
 {
-    bool retval = (currentMenu != lcd_status_screen
+    bool retval = (menu_menu != lcd_status_screen
             && forceMenuExpire);
     forceMenuExpire = false;
     return retval;

@@ -662,7 +662,6 @@ int8_t lcd_encoder_diff = 0;
 uint8_t lcd_buttons = 0;
 uint8_t lcd_button_pressed = 0;
 uint8_t lcd_update_enabled = 1;
-LongTimer lcd_timeoutToStatus;
 
 uint32_t lcd_next_update_millis = 0;
 uint8_t lcd_status_update_delay = 0;
@@ -677,6 +676,7 @@ lcd_lcdupdate_func_t lcd_lcdupdate_func = 0;
 
 static ShortTimer buttonBlanking;
 ShortTimer longPressTimer;
+LongTimer lcd_timeoutToStatus;
 
 
 uint8_t lcd_clicked(void)
