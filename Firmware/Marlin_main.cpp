@@ -1147,7 +1147,7 @@ void setup()
 
 #ifdef W25X20CL
   // Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
- // optiboot_w25x20cl_enter();
+  optiboot_w25x20cl_enter();
 #endif
 
 #if (LANG_MODE != 0) //secondary language support
