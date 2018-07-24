@@ -6328,7 +6328,6 @@ Sigma_Exit:
 		st_synchronize();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-		uint8_t cnt = 0;
 		int counterBeep = 0;	
 		fanSpeed = 0;
 		unsigned long waiting_start_time = millis();
@@ -6338,7 +6337,6 @@ Sigma_Exit:
 bool bFirst=true;
 		while (!(wait_for_user_state == 0 && lcd_clicked())){
 
-			//cnt++;
 			manage_heater();
 			manage_inactivity(true);
 
