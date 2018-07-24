@@ -8217,7 +8217,7 @@ float temp_comp_interpolation(float inp_temperature) {
 
 	//cubic spline interpolation
 
-	int n, i, j, k;
+	int n, i, j;
 	float h[10], a, b, c, d, sum, s[10] = { 0 }, x[10], F[10], f[10], m[10][10] = { 0 }, temp;
 	int shift[10];
 	int temp_C[10];
