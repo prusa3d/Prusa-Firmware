@@ -8756,7 +8756,6 @@ void restore_print_from_eeprom() {
 	int feedrate_rec;
 	uint8_t fan_speed_rec;
 	char cmd[30];
-	char* c;
 	char filename[13];
 	uint8_t depth = 0;
 	char dir_name[9];
