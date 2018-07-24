@@ -1039,7 +1039,7 @@ uint8_t check_printer_version()
 
 void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 {
-	for (int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
+	for (unsigned int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
 }
 
 #ifdef BOOTAPP
