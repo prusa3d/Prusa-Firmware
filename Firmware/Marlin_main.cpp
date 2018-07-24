@@ -8753,7 +8753,6 @@ void recover_machine_state_after_power_panic(bool bTiny)
 }
 
 void restore_print_from_eeprom() {
-	float x_rec, y_rec, z_pos;
 	int feedrate_rec;
 	uint8_t fan_speed_rec;
 	char cmd[30];
