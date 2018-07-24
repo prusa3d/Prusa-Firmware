@@ -4190,7 +4190,6 @@ void process_commands()
 				delay_keep_alive(100);
 
 			}
-			fan_speed[1];
 			printf_P(_N("%d: %d\n"), i, fan_speed[1]);
 		}
 	}break;
