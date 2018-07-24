@@ -4215,14 +4215,16 @@ void process_commands()
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
-		int8_t verbosity_level = 0;
-		static bool run = false;
+        static bool run = false;
 
+#ifdef SUPPORT_VERBOSITY
+		int8_t verbosity_level = 0;
 		if (code_seen('V')) {
 			// Just 'V' without a number counts as V1.
 			char c = strchr_pointer[1];
 			verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
 		}
+#endif //SUPPORT_VERBOSITY
 		// Firstly check if we know where we are
 		if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
 			// We don't know where we are! HOME!
