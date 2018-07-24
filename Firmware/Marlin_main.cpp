@@ -5733,8 +5733,6 @@ Sigma_Exit:
             break;
           }
         }
-
-        float area = .0;
         if(code_seen('D')) {
 		  float diameter = (float)code_value();
 		  if (diameter == 0.0) {
