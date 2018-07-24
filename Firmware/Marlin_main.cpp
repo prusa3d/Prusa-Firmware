@@ -795,7 +795,6 @@ int  er_progress = 0;
 void factory_reset(char level, bool quiet)
 {	
 	lcd_clear();
-	int cursor_pos = 0;
     switch (level) {
                    
         // Level 0: Language reset
