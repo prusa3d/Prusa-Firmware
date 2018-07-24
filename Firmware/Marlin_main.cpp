@@ -5764,9 +5764,9 @@ Sigma_Exit:
 		{
 			if (code_seen(axis_codes[i]))
 			{
-				int val = code_value();
+				unsigned long val = code_value();
 #ifdef TMC2130
-				int val_silent = val;
+				unsigned long val_silent = val;
 				if ((i == X_AXIS) || (i == Y_AXIS))
 				{
 					if (val > NORMAL_MAX_ACCEL_XY)
