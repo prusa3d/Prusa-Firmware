@@ -1052,7 +1052,7 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 
 
 // language update from external flash
-#define LANGBOOT_BLOCKSIZE 0x1000  
+#define LANGBOOT_BLOCKSIZE 0x1000u
 #define LANGBOOT_RAMBUFFER 0x0800
 
 void update_sec_lang_from_external_flash()
