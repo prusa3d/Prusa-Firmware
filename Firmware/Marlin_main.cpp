@@ -6264,7 +6264,6 @@ Sigma_Exit:
         }
         
         feedmultiplyBckp=feedmultiply;
-        int8_t TooLowZ = 0;
 
 		float HotendTempBckp = degTargetHotend(active_extruder);
 		int fanSpeedBckp = fanSpeed;
@@ -6297,9 +6296,6 @@ Sigma_Exit:
             current_position[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
             if(current_position[Z_AXIS] < 10){
               current_position[Z_AXIS]+= 10 ;
-              TooLowZ = 1;
-            }else{
-              TooLowZ = 0;
             }
           #endif
      
