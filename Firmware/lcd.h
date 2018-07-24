@@ -4,6 +4,7 @@
 
 #include <inttypes.h>
 #include <stdio.h>
+#include "Timer.h"
 
 
 
@@ -80,7 +81,9 @@ extern void lcd_print(double, int = 2);
 
 
 #define LCD_UPDATE_INTERVAL    100
-#define LCD_TIMEOUT_TO_STATUS  30000
+#define LCD_TIMEOUT_TO_STATUS 30000ul //!< Generic timeout to status screen in ms, when no user action.
+#define LCD_TIMEOUT_TO_STATUS_BABYSTEP_Z 90000ul //!< Specific timeout for lcd_babystep_z screen in ms.
+
 
 
 typedef void (*lcd_longpress_func_t)(void);
@@ -106,7 +109,7 @@ extern uint8_t lcd_button_pressed;
 
 extern uint8_t lcd_update_enabled;
 
-extern uint32_t lcd_timeoutToStatus;
+extern LongTimer lcd_timeoutToStatus;
 
 extern uint32_t lcd_next_update_millis;
 

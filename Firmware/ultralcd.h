@@ -82,7 +82,6 @@ extern void menu_lcd_lcdupdate_func(void);
   #define LCD_COMMAND_PID_EXTRUDER 7 
   #define LCD_COMMAND_V2_CAL 8
 
-  extern unsigned long lcd_timeoutToStatus;
   extern int lcd_commands_type;
   
   extern uint8_t farm_mode;
