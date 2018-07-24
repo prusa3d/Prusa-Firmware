@@ -7089,9 +7089,13 @@ while (!lcd_clicked() && (counterBeep < 50)) {
 			  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
 		  }
 		  else {
-			  boolean make_move = false;
+#if EXTRUDERS > 1
+		      boolean make_move = false;
+#endif
 			  if (code_seen('F')) {
+#if EXTRUDERS > 1
 				  make_move = true;
+#endif
 				  next_feedrate = code_value();
 				  if (next_feedrate > 0.0) {
 					  feedrate = next_feedrate;
