@@ -668,16 +668,6 @@ uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
 	return stat;
 }
 
-
-void tmc2130_eeprom_load_config()
-{
-}
-
-void tmc2130_eeprom_save_config()
-{
-
-}
-
 #define _GET_PWR_X      (READ(X_ENABLE_PIN) == X_ENABLE_ON)
 #define _GET_PWR_Y      (READ(Y_ENABLE_PIN) == Y_ENABLE_ON)
 #define _GET_PWR_Z      (READ(Z_ENABLE_PIN) == Z_ENABLE_ON)
