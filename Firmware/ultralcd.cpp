@@ -852,7 +852,7 @@ if (print_sd_status)
 				lcd_set_cursor(7, 3);
 				lcd_puts_P(PSTR("             "));
 
-				for (int dots = 0; dots < heating_status_counter; dots++)
+				for (unsigned int dots = 0; dots < heating_status_counter; dots++)
 				{
 					lcd_set_cursor(7 + dots, 3);
 					lcd_print('.');
