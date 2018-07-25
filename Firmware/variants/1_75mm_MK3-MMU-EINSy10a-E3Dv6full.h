@@ -112,7 +112,7 @@
 //#define SIMPLE_ACCEL_LIMIT          //new limitation method for normal/silent
 
 //number of bytes from end of the file to start check
-#define END_FILE_SECTION 10000
+#define END_FILE_SECTION 20000
 
 #define Z_AXIS_ALWAYS_ON 1
 
