@@ -20,6 +20,7 @@ static void Sound_DoSound_Prompt(void);
 
 void Sound_Init(void)
 {
+SET_OUTPUT(BEEPER);
 eSoundMode=(eSOUND_MODE)eeprom_read_byte((uint8_t*)EEPROM_SOUND_MODE);
 if(eSoundMode==e_SOUND_MODE_NULL)
      Sound_Default();                             // je potreba provest i ulozeni do EEPROM
