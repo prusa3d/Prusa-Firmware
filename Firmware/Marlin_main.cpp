@@ -8808,7 +8808,6 @@ void restore_print_from_eeprom() {
 	enquecommand(cmd);
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
 	{
-	  float extruder_abs_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
 	  enquecommand_P(PSTR("M82")); //E axis abslute mode
 	}
   // Set the fan speed saved at the power panic.
