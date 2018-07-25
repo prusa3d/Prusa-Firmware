@@ -8830,7 +8830,9 @@ enquecommand_P(PSTR("G4 S0"));
 void stop_and_save_print_to_ram(float z_move, float e_move)
 {
 	if (saved_printing) return;
+#if 0
 	unsigned char nplanner_blocks;
+#endif
 	unsigned char nlines;
 	uint16_t sdlen_planner;
 	uint16_t sdlen_cmdqueue;
@@ -8838,7 +8840,9 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 
 	cli();
 	if (card.sdprinting) {
+#if 0
 		nplanner_blocks = number_of_blocks();
+#endif
 		saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
 		sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
 		saved_sdpos -= sdlen_planner;
