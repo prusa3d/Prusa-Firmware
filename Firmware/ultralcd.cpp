@@ -1804,9 +1804,7 @@ void lcd_commands()
 			cancel_heatup = true;
 			setTargetBed(0);
 			#if !(defined (SNMM) || defined (SNMM_V2))
-			setTargetHotend(0, 0);	//heating when changing filament for multicolor
-			setTargetHotend(0, 1);
-			setTargetHotend(0, 2);
+			setAllTargetHotends(0);
 			#endif
 			manage_heater();
 			custom_message = true;
@@ -2036,9 +2034,7 @@ void lcd_preheat_flex()
 
 void lcd_cooldown()
 {
-  setTargetHotend0(0);
-  setTargetHotend1(0);
-  setTargetHotend2(0);
+  setAllTargetHotends(0);
   setTargetBed(0);
   fanSpeed = 0;
   lcd_return_to_status();
@@ -3126,7 +3122,7 @@ void lcd_adjust_z() {
 
 bool lcd_wait_for_pinda(float temp) {
 	lcd_set_custom_characters_degree();
-	setTargetHotend(0, 0);
+	setAllTargetHotends(0);
 	setTargetBed(0);
 	LongTimer pinda_timeout;
 	pinda_timeout.start();
@@ -3166,7 +3162,7 @@ void lcd_wait_for_heater() {
 
 void lcd_wait_for_cool_down() {
 	lcd_set_custom_characters_degree();
-	setTargetHotend(0,0);
+	setAllTargetHotends(0);
 	setTargetBed(0);
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(_i("Waiting for nozzle and bed cooling"));////MSG_WAITING_TEMP c=20 r=3
