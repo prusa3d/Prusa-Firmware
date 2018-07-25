@@ -475,8 +475,6 @@ uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated re
 const char axis_codes[NUM_AXIS] = {'X', 'Y', 'Z', 'E'};
 float destination[NUM_AXIS] = {  0.0, 0.0, 0.0, 0.0};
 
-static float delta[3] = {0.0, 0.0, 0.0};
-
 // For tracing an arc
 static float offset[3] = {0.0, 0.0, 0.0};
 static float feedrate = 1500.0, next_feedrate, saved_feedrate;
