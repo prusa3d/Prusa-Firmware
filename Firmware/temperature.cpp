@@ -1373,8 +1373,7 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 
 void disable_heater()
 {
-  for(int i=0;i<EXTRUDERS;i++)
-    setTargetHotend(0,i);
+  setAllTargetHotends(0);
   setTargetBed(0);
   #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1
   target_temperature[0]=0;

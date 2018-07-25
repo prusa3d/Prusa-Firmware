@@ -475,8 +475,6 @@ uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated re
 const char axis_codes[NUM_AXIS] = {'X', 'Y', 'Z', 'E'};
 float destination[NUM_AXIS] = {  0.0, 0.0, 0.0, 0.0};
 
-static float delta[3] = {0.0, 0.0, 0.0};
-
 // For tracing an arc
 static float offset[3] = {0.0, 0.0, 0.0};
 static float feedrate = 1500.0, next_feedrate, saved_feedrate;
@@ -1778,9 +1776,9 @@ void trace();
 char chunk[CHUNK_SIZE+SAFETY_MARGIN];
 int chunkHead = 0;
 
-int serial_read_stream() {
+void serial_read_stream() {
 
-    setTargetHotend(0, 0);
+    setAllTargetHotends(0);
     setTargetBed(0);
 
     lcd_clear();
@@ -1839,9 +1837,7 @@ int serial_read_stream() {
             card.closefile();
             prusa_sd_card_upload = false;
             SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
-            return 0;
         }
-
     }
 }
 
@@ -2876,9 +2872,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 	if (!onlyZ)
 	{
 		setTargetBed(0);
-		setTargetHotend(0, 0);
-		setTargetHotend(0, 1);
-		setTargetHotend(0, 2);
+		setAllTargetHotends(0);
 		adjust_bed_reset(); //reset bed level correction
 	}
 
@@ -5264,7 +5258,10 @@ Sigma_Exit:
       if(setTargetedHotend(104)){
         break;
       }
-      if (code_seen('S')) setTargetHotend(code_value(), tmp_extruder);
+      if (code_seen('S'))
+      {
+          setTargetHotendSafe(code_value(), tmp_extruder);
+      }
       setWatch();
       break;
     case 112: //  M112 -Emergency Stop
@@ -5377,10 +5374,10 @@ Sigma_Exit:
         autotemp_enabled=false;
       #endif
       if (code_seen('S')) {
-        setTargetHotend(code_value(), tmp_extruder);
+          setTargetHotendSafe(code_value(), tmp_extruder);
               CooldownNoWait = true;
             } else if (code_seen('R')) {
-              setTargetHotend(code_value(), tmp_extruder);
+                setTargetHotendSafe(code_value(), tmp_extruder);
         CooldownNoWait = false;
       }
       #ifdef AUTOTEMP
@@ -6368,9 +6365,7 @@ bFirst=false;
 				if (millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
 					lcd_display_message_fullscreen_P(_i("Press knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
 					wait_for_user_state = 1;
-					setTargetHotend(0, 0);
-					setTargetHotend(0, 1);
-					setTargetHotend(0, 2);
+					setAllTargetHotends(0);
 					st_synchronize();
 					disable_e0();
 					disable_e1();
@@ -7510,7 +7505,7 @@ static void handleSafetyTimer()
     else if (safetyTimer.expired(safetytimer_inactive_time))
     {
         setTargetBed(0);
-        setTargetHotend(0, 0);
+        setAllTargetHotends(0);
         lcd_show_fullscreen_message_and_wait_P(_i("Heating disabled by safety timer."));////MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
     }
 }
@@ -8315,9 +8310,7 @@ void long_pause() //long pause print
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
 
 	//set nozzle target temperature to 0
-	setTargetHotend(0, 0);
-	setTargetHotend(0, 1);
-	setTargetHotend(0, 2);
+	setAllTargetHotends(0);
 
 	//Move XY to side
 	current_position[X_AXIS] = X_PAUSE_POS;
@@ -8832,7 +8825,9 @@ enquecommand_P(PSTR("G4 S0"));
 void stop_and_save_print_to_ram(float z_move, float e_move)
 {
 	if (saved_printing) return;
+#if 0
 	unsigned char nplanner_blocks;
+#endif
 	unsigned char nlines;
 	uint16_t sdlen_planner;
 	uint16_t sdlen_cmdqueue;
@@ -8840,7 +8835,9 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 
 	cli();
 	if (card.sdprinting) {
+#if 0
 		nplanner_blocks = number_of_blocks();
+#endif
 		saved_sdpos = sdpos_atomic; //atomic sd position of last command added in queue
 		sdlen_planner = planner_calc_sd_length(); //length of sd commands in planner
 		saved_sdpos -= sdlen_planner;
