@@ -795,7 +795,6 @@ int  er_progress = 0;
 void factory_reset(char level, bool quiet)
 {	
 	lcd_clear();
-	int cursor_pos = 0;
     switch (level) {
                    
         // Level 0: Language reset
@@ -1040,7 +1039,7 @@ uint8_t check_printer_version()
 
 void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 {
-	for (int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
+	for (unsigned int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
 }
 
 #ifdef BOOTAPP
@@ -1053,7 +1052,7 @@ void erase_eeprom_section(uint16_t offset, uint16_t bytes)
 
 
 // language update from external flash
-#define LANGBOOT_BLOCKSIZE 0x1000  
+#define LANGBOOT_BLOCKSIZE 0x1000u
 #define LANGBOOT_RAMBUFFER 0x0800
 
 void update_sec_lang_from_external_flash()
@@ -1476,8 +1475,8 @@ void setup()
 #endif
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
 	EEPROM_read_B(EEPROM_FARM_NUMBER, &farm_no);
-	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == 0xFFFF)) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode 
-	if (farm_no == 0xFFFF) farm_no = 0;
+	if ((farm_mode == 0xFF && farm_no == 0) || (farm_no == static_cast<int>(0xFFFF))) farm_mode = false; //if farm_mode has not been stored to eeprom yet and farm number is set to zero or EEPROM is fresh, deactivate farm mode
+	if (farm_no == static_cast<int>(0xFFFF)) farm_no = 0;
 	if (farm_mode)
 	{
 		prusa_statistics(8);
@@ -4191,7 +4190,6 @@ void process_commands()
 				delay_keep_alive(100);
 
 			}
-			fan_speed[1];
 			printf_P(_N("%d: %d\n"), i, fan_speed[1]);
 		}
 	}break;
@@ -4216,14 +4214,16 @@ void process_commands()
 	case_G80:
 	{
 		mesh_bed_leveling_flag = true;
-		int8_t verbosity_level = 0;
-		static bool run = false;
+        static bool run = false;
 
+#ifdef SUPPORT_VERBOSITY
+		int8_t verbosity_level = 0;
 		if (code_seen('V')) {
 			// Just 'V' without a number counts as V1.
 			char c = strchr_pointer[1];
 			verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
 		}
+#endif //SUPPORT_VERBOSITY
 		// Firstly check if we know where we are
 		if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] && axis_known_position[Z_AXIS])) {
 			// We don't know where we are! HOME!
@@ -4304,7 +4304,6 @@ void process_commands()
 		int iy = 0;
 
 		int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
-		int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS] / 60;
 		int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
 		bool has_z = is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
 		#ifdef SUPPORT_VERBOSITY
@@ -5734,8 +5733,6 @@ Sigma_Exit:
             break;
           }
         }
-
-        float area = .0;
         if(code_seen('D')) {
 		  float diameter = (float)code_value();
 		  if (diameter == 0.0) {
@@ -5767,9 +5764,9 @@ Sigma_Exit:
 		{
 			if (code_seen(axis_codes[i]))
 			{
-				int val = code_value();
+				unsigned long val = code_value();
 #ifdef TMC2130
-				int val_silent = val;
+				unsigned long val_silent = val;
 				if ((i == X_AXIS) || (i == Y_AXIS))
 				{
 					if (val > NORMAL_MAX_ACCEL_XY)
@@ -6267,7 +6264,6 @@ Sigma_Exit:
         }
         
         feedmultiplyBckp=feedmultiply;
-        int8_t TooLowZ = 0;
 
 		float HotendTempBckp = degTargetHotend(active_extruder);
 		int fanSpeedBckp = fanSpeed;
@@ -6300,9 +6296,6 @@ Sigma_Exit:
             current_position[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
             if(current_position[Z_AXIS] < 10){
               current_position[Z_AXIS]+= 10 ;
-              TooLowZ = 1;
-            }else{
-              TooLowZ = 0;
             }
           #endif
      
@@ -6335,7 +6328,6 @@ Sigma_Exit:
 		st_synchronize();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-		uint8_t cnt = 0;
 		int counterBeep = 0;	
 		fanSpeed = 0;
 		unsigned long waiting_start_time = millis();
@@ -6345,7 +6337,6 @@ Sigma_Exit:
 bool bFirst=true;
 		while (!(wait_for_user_state == 0 && lcd_clicked())){
 
-			//cnt++;
 			manage_heater();
 			manage_inactivity(true);
 
@@ -7098,9 +7089,13 @@ while (!lcd_clicked() && (counterBeep < 50)) {
 			  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
 		  }
 		  else {
-			  boolean make_move = false;
+#if EXTRUDERS > 1
+		      boolean make_move = false;
+#endif
 			  if (code_seen('F')) {
+#if EXTRUDERS > 1
 				  make_move = true;
+#endif
 				  next_feedrate = code_value();
 				  if (next_feedrate > 0.0) {
 					  feedrate = next_feedrate;
@@ -8030,7 +8025,6 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
 
 	int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
-	int Z_PROBE_FEEDRATE = homing_feedrate[Z_AXIS] / 60;
 	int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
 
 	setup_for_endstop_move(false);
@@ -8197,7 +8191,6 @@ void temp_compensation_start() {
 
 void temp_compensation_apply() {
 	int i_add;
-	int compensation_value;
 	int z_shift = 0;
 	float z_shift_mm;
 
@@ -8224,7 +8217,7 @@ float temp_comp_interpolation(float inp_temperature) {
 
 	//cubic spline interpolation
 
-	int n, i, j, k;
+	int n, i, j;
 	float h[10], a, b, c, d, sum, s[10] = { 0 }, x[10], F[10], f[10], m[10][10] = { 0 }, temp;
 	int shift[10];
 	int temp_C[10];
@@ -8760,11 +8753,9 @@ void recover_machine_state_after_power_panic(bool bTiny)
 }
 
 void restore_print_from_eeprom() {
-	float x_rec, y_rec, z_pos;
 	int feedrate_rec;
 	uint8_t fan_speed_rec;
 	char cmd[30];
-	char* c;
 	char filename[13];
 	uint8_t depth = 0;
 	char dir_name[9];
@@ -8817,7 +8808,6 @@ void restore_print_from_eeprom() {
 	enquecommand(cmd);
 	if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS))
 	{
-	  float extruder_abs_pos = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
 	  enquecommand_P(PSTR("M82")); //E axis abslute mode
 	}
   // Set the fan speed saved at the power panic.
