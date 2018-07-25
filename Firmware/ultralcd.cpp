@@ -6708,7 +6708,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
 #ifdef TMC2130
-		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1))
+		if (((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 #else //TMC2130
 		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
