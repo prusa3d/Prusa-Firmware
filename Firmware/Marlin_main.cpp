@@ -535,6 +535,9 @@ static void get_arc_coordinates();
 static bool setTargetedHotend(int code);
 static void print_time_remaining_init();
 
+uint16_t gcode_in_progress = 0;
+uint16_t mcode_in_progress = 0;
+
 void serial_echopair_P(const char *s_P, float v)
     { serialprintPGM(s_P); SERIAL_ECHO(v); }
 void serial_echopair_P(const char *s_P, double v)
@@ -1974,7 +1977,8 @@ void loop()
   checkHitEndstops();
   lcd_update(0);
 #ifdef FILAMENT_SENSOR
-	fsensor_update();
+	if (mcode_in_progress != 600) //M600 not in progress
+		fsensor_update();
 #endif //FILAMENT_SENSOR
 #ifdef TMC2130
 	tmc2130_check_overtemp();
@@ -3186,8 +3190,6 @@ extern uint8_t st_backlash_x;
 extern uint8_t st_backlash_y;
 #endif //BACKLASH_Y
 
-uint16_t gcode_in_progress = 0;
-uint16_t mcode_in_progress = 0;
 
 void process_commands()
 {
@@ -7101,11 +7103,11 @@ Sigma_Exit:
 	  }
   } // end if(code_seen('T')) (end of T codes)
 
-#ifdef DEBUG_DCODES
   else if (code_seen('D')) // D codes (debug)
   {
     switch((int)code_value())
     {
+#ifdef DEBUG_DCODES
 	case -1: // D-1 - Endless loop
 		dcode__1(); break;
 	case 0: // D0 - Reset
@@ -7114,8 +7116,12 @@ Sigma_Exit:
 		dcode_1(); break;
 	case 2: // D2 - Read/Write RAM
 		dcode_2(); break;
+#endif //DEBUG_DCODES
+#ifdef DEBUG_DCODE3
 	case 3: // D3 - Read/Write EEPROM
 		dcode_3(); break;
+#endif //DEBUG_DCODE3
+#ifdef DEBUG_DCODES
 	case 4: // D4 - Read/Write PIN
 		dcode_4(); break;
 	case 5: // D5 - Read/Write FLASH
@@ -7144,9 +7150,9 @@ Sigma_Exit:
 		dcode_9125(); break;
 #endif //FILAMENT_SENSOR
 
+#endif //DEBUG_DCODES
 	}
   }
-#endif //DEBUG_DCODES
 
   else
   {

@@ -113,6 +113,7 @@
 #define PAT9125
 #define FILAMENT_SENSOR
 
+#define DEBUG_DCODE3
 
 //#define DEBUG_BUILD
 #ifdef DEBUG_BUILD

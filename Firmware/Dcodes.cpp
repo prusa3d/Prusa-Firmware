@@ -1,5 +1,146 @@
 #include "Dcodes.h"
-#include "Marlin.h"
+//#include "Marlin.h"
+#include "language.h"
+#include "cmdqueue.h"
+#include <stdio.h>
+#include <avr/pgmspace.h>
+
+
+#define DBG(args...) printf_P(args)
+
+inline void print_hex_nibble(uint8_t val)
+{
+	putchar((val > 9)?(val - 10 + 'a'):(val + '0'));
+}
+
+void print_hex_byte(uint8_t val)
+{
+	print_hex_nibble(val >> 4);
+	print_hex_nibble(val & 15);
+}
+
+void print_hex_word(uint16_t val)
+{
+	print_hex_byte(val >> 8);
+	print_hex_byte(val & 255);
+}
+
+void print_eeprom(uint16_t address, uint16_t count, uint8_t countperline = 16)
+{
+	while (count)
+	{
+		print_hex_word(address);
+		putchar(' ');
+		uint8_t count_line = countperline;
+		while (count && count_line)
+		{
+			uint8_t data = 0;
+			putchar(' ');
+			print_hex_byte(eeprom_read_byte((uint8_t*)address++));
+			count_line--;
+			count--;
+		}
+		putchar('\n');
+	}
+}
+
+int parse_hex(char* hex, uint8_t* data, int count)
+{
+	int parsed = 0;
+	while (*hex)
+	{
+		if (count && (parsed >= count)) break;
+		char c = *(hex++);
+		if (c == ' ') continue;
+		if (c == '\n') break;
+		uint8_t val = 0x00;
+		if ((c >= '0') && (c <= '9')) val |= ((c - '0') << 4);
+		else if ((c >= 'a') && (c <= 'f')) val |= ((c - 'a' + 10) << 4);
+		else return -parsed;
+		c = *(hex++);
+		if ((c >= '0') && (c <= '9')) val |= (c - '0');
+		else if ((c >= 'a') && (c <= 'f')) val |= (c - 'a' + 10);
+		else return -parsed;
+		data[parsed] = val;
+		parsed++;
+	}
+	return parsed;
+}
+
+
+void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperline = 16)
+{
+	while (count)
+	{
+		if (type == 2)
+			print_hex_nibble(address >> 16);
+		print_hex_word(address);
+		putchar(' ');
+		uint8_t count_line = countperline;
+		while (count && count_line)
+		{
+			uint8_t data = 0;
+			switch (type)
+			{
+			case 0: data = *((uint8_t*)address++); break;
+			case 1: data = eeprom_read_byte((uint8_t*)address++); break;
+			case 2: data = pgm_read_byte_far((uint8_t*)address++); break;
+			}
+			putchar(' ');
+			print_hex_byte(data);
+			count_line--;
+			count--;
+		}
+		putchar('\n');
+	}
+}
+
+#ifdef DEBUG_DCODE3
+#define EEPROM_SIZE 0x1000
+void dcode_3()
+{
+	DBG(_N("D3 - Read/Write EEPROM\n"));
+	uint16_t address = 0x0000; //default 0x0000
+	uint16_t count = EEPROM_SIZE; //default 0x1000 (entire eeprom)
+	if (code_seen('A')) // Address (0x0000-0x0fff)
+		address = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
+	if (code_seen('C')) // Count (0x0001-0x1000)
+		count = (int)code_value();
+	address &= 0x1fff;
+	if (count > EEPROM_SIZE) count = EEPROM_SIZE;
+	if ((address + count) > EEPROM_SIZE) count = EEPROM_SIZE - address;
+	if (code_seen('X')) // Data
+	{
+		uint8_t data[16];
+		count = parse_hex(strchr_pointer + 1, data, 16);
+		if (count > 0)
+		{
+			for (int i = 0; i < count; i++)
+				eeprom_write_byte((uint8_t*)(address + i), data[i]);
+			printf_P(_N("%d bytes written to EEPROM at address 0x%04x"), count, address);
+			putchar('\n');
+		}
+		else
+			count = 0;
+	}
+	print_mem(address, count, 1);
+/*	while (count)
+	{
+		print_hex_word(address);
+		putchar(' ');
+		uint8_t countperline = 16;
+		while (count && countperline)
+		{
+			uint8_t data = eeprom_read_byte((uint8_t*)address++);
+			putchar(' ');
+			print_hex_byte(data);
+			countperline--;
+			count--;
+		}
+		putchar('\n');
+	}*/
+}
+#endif //DEBUG_DCODE3
 
 #ifdef DEBUG_DCODES
 
@@ -29,75 +170,8 @@ extern float current_temperature_pinda;
 extern float axis_steps_per_unit[NUM_AXIS];
 
 
-inline void print_hex_nibble(uint8_t val)
-{
-	putchar((val > 9)?(val - 10 + 'a'):(val + '0'));
-}
-
-void print_hex_byte(uint8_t val)
-{
-	print_hex_nibble(val >> 4);
-	print_hex_nibble(val & 15);
-}
-
-void print_hex_word(uint16_t val)
-{
-	print_hex_byte(val >> 8);
-	print_hex_byte(val & 255);
-}
-
-void print_mem(uint32_t address, uint16_t count, uint8_t type, uint8_t countperline = 16)
-{
-	while (count)
-	{
-		if (type == 2)
-			print_hex_nibble(address >> 16);
-		print_hex_word(address);
-		putchar(' ');
-		uint8_t count_line = countperline;
-		while (count && count_line)
-		{
-			uint8_t data = 0;
-			switch (type)
-			{
-			case 0: data = *((uint8_t*)address++); break;
-			case 1: data = eeprom_read_byte((uint8_t*)address++); break;
-			case 2: data = pgm_read_byte_far((uint8_t*)address++); break;
-			}
-			putchar(' ');
-			print_hex_byte(data);
-			count_line--;
-			count--;
-		}
-		putchar('\n');
-	}
-}
-
 //#define LOG(args...) printf(args)
 #define LOG(args...)
-
-int parse_hex(char* hex, uint8_t* data, int count)
-{
-	int parsed = 0;
-	while (*hex)
-	{
-		if (count && (parsed >= count)) break;
-		char c = *(hex++);
-		if (c == ' ') continue;
-		if (c == '\n') break;
-		uint8_t val = 0x00;
-		if ((c >= '0') && (c <= '9')) val |= ((c - '0') << 4);
-		else if ((c >= 'a') && (c <= 'f')) val |= ((c - 'a' + 10) << 4);
-		else return -parsed;
-		c = *(hex++);
-		if ((c >= '0') && (c <= '9')) val |= (c - '0');
-		else if ((c >= 'a') && (c <= 'f')) val |= (c - 'a' + 10);
-		else return -parsed;
-		data[parsed] = val;
-		parsed++;
-	}
-	return parsed;
-}
 
 void dcode__1()
 {
@@ -168,52 +242,6 @@ void dcode_2()
 		while (count && countperline)
 		{
 			uint8_t data = *((uint8_t*)address++);
-			putchar(' ');
-			print_hex_byte(data);
-			countperline--;
-			count--;
-		}
-		putchar('\n');
-	}*/
-}
-
-void dcode_3()
-{
-	LOG("D3 - Read/Write EEPROM\n");
-	uint16_t address = 0x0000; //default 0x0000
-	uint16_t count = 0x2000; //default 0x2000 (entire eeprom)
-	if (code_seen('A')) // Address (0x0000-0x1fff)
-		address = (strchr_pointer[1] == 'x')?strtol(strchr_pointer + 2, 0, 16):(int)code_value();
-	if (code_seen('C')) // Count (0x0001-0x2000)
-		count = (int)code_value();
-	address &= 0x1fff;
-	if (count > 0x2000) count = 0x2000;
-	if ((address + count) > 0x2000) count = 0x2000 - address;
-	if (code_seen('X')) // Data
-	{
-		uint8_t data[16];
-		count = parse_hex(strchr_pointer + 1, data, 16);
-		if (count > 0)
-		{
-			for (int i = 0; i < count; i++)
-				eeprom_write_byte((uint8_t*)(address + i), data[i]);
-			LOG(count, DEC);
-			LOG(" bytes written to EEPROM at address ");
-			print_hex_word(address);
-			putchar('\n');
-		}
-		else
-			count = 0;
-	}
-	print_mem(address, count, 1);
-/*	while (count)
-	{
-		print_hex_word(address);
-		putchar(' ');
-		uint8_t countperline = 16;
-		while (count && countperline)
-		{
-			uint8_t data = eeprom_read_byte((uint8_t*)address++);
 			putchar(' ');
 			print_hex_byte(data);
 			countperline--;

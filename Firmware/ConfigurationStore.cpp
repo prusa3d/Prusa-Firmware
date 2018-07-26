@@ -9,8 +9,16 @@
 #include "mesh_bed_leveling.h"
 #endif
 
-void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
+#ifdef DEBUG_EEPROM_WRITE
+#define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value), #value)
+#else //DEBUG_EEPROM_WRITE
+#define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value), 0)
+#endif //DEBUG_EEPROM_WRITE
+void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size, char* name)
 {
+#ifdef DEBUG_EEPROM_WRITE
+	printf_P(PSTR("EEPROM_WRITE_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);
+#endif //DEBUG_EEPROM_WRITE
 	while (size--) {
 		uint8_t * const p = (uint8_t * const)pos;
 		uint8_t v = *value;
@@ -28,9 +36,17 @@ void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
 	};
 
 }
-#define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value))
-void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
+
+#ifdef DEBUG_EEPROM_READ
+#define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value), #value)
+#else //DEBUG_EEPROM_READ
+#define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value), 0)
+#endif //DEBUG_EEPROM_READ
+void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size, char* name)
 {
+#ifdef DEBUG_EEPROM_READ
+	printf_P(PSTR("EEPROM_READ_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);
+#endif //DEBUG_EEPROM_READ
     do
     {
         *value = eeprom_read_byte((unsigned char*)pos);
@@ -38,7 +54,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
         value++;
     }while(--size);
 }
-#define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value))
+
 //======================================================================================
 #define EEPROM_OFFSET 20
 // IMPORTANT:  Whenever there are changes made to the variables stored in EEPROM
