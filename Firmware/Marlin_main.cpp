@@ -6991,7 +6991,7 @@ Sigma_Exit:
 		  }
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 
-#ifdef SNMM_V2
+#if defined (SNMM_V2)
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
 		  fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
 
@@ -7004,9 +7004,8 @@ Sigma_Exit:
 			  mmu_load_to_nozzle();
 
 		  }
-#endif
+#elif defined(SNMM)
 
-#ifdef SNMM
           
     #ifdef LIN_ADVANCE
           if (snmm_extruder != tmp_extruder)
@@ -7053,7 +7052,7 @@ Sigma_Exit:
 		  }
 		  delay(100);
 
-#else
+#else //SNMM and SNMM_V2 undefined:
 		  if (tmp_extruder >= EXTRUDERS) {
 			  SERIAL_ECHO_START;
 			  SERIAL_ECHOPGM("T");
@@ -7061,19 +7060,19 @@ Sigma_Exit:
 			  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
 		  }
 		  else {
-#if EXTRUDERS > 1
+			#if EXTRUDERS > 1
 		      boolean make_move = false;
-#endif
+			#endif
 			  if (code_seen('F')) {
-#if EXTRUDERS > 1
+			#if EXTRUDERS > 1
 				  make_move = true;
-#endif
+			#endif
 				  next_feedrate = code_value();
 				  if (next_feedrate > 0.0) {
 					  feedrate = next_feedrate;
 				  }
 			  }
-#if EXTRUDERS > 1
+			#if EXTRUDERS > 1
 			  if (tmp_extruder != active_extruder) {
 				  // Save current position to return to after applying extruder offset
 				  memcpy(destination, current_position, sizeof(destination));
@@ -7092,7 +7091,7 @@ Sigma_Exit:
 					  prepare_move();
 				  }
 			  }
-#endif
+			#endif
 			  SERIAL_ECHO_START;
 			  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER c=0 r=0
 			  SERIAL_PROTOCOLLN((int)active_extruder);
