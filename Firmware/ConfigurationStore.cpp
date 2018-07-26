@@ -109,7 +109,10 @@ void Config_StoreSettings(uint16_t offset)
 	EEPROM_WRITE_VAR(i, bedKi);
 	EEPROM_WRITE_VAR(i, bedKd);
   #endif
-//  EEPROM_WRITE_VAR(i,lcd_contrast);
+
+  int lcd_contrast = 0;
+  EEPROM_WRITE_VAR(i,lcd_contrast);
+
   #ifdef FWRETRACT
   EEPROM_WRITE_VAR(i,autoretract_enabled);
   EEPROM_WRITE_VAR(i,retract_length);
@@ -288,7 +291,9 @@ bool Config_RetrieveSettings(uint16_t offset)
 		EEPROM_READ_VAR(i, bedKi);
 		EEPROM_READ_VAR(i, bedKd);
 		#endif
-//        EEPROM_READ_VAR(i,lcd_contrast);
+
+		int lcd_contrast;
+		EEPROM_READ_VAR(i,lcd_contrast);
 
 		#ifdef FWRETRACT
 		EEPROM_READ_VAR(i,autoretract_enabled);
