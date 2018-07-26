@@ -147,6 +147,8 @@
 #define MINTEMP_MINAMBIENT      25
 #define MINTEMP_MINAMBIENT_RAW  978
 
+#define DEBUG_DCODE3
+
 //#define DEBUG_BUILD
 //#define DEBUG_SEC_LANG   //secondary language debug output at startup
 //#define DEBUG_W25X20CL   //debug external spi flash

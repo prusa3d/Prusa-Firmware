@@ -7125,11 +7125,11 @@ while (!lcd_clicked() && (counterBeep < 50)) {
 	  }
   } // end if(code_seen('T')) (end of T codes)
 
-#ifdef DEBUG_DCODES
   else if (code_seen('D')) // D codes (debug)
   {
     switch((int)code_value())
     {
+#ifdef DEBUG_DCODES
 	case -1: // D-1 - Endless loop
 		dcode__1(); break;
 	case 0: // D0 - Reset
@@ -7138,8 +7138,12 @@ while (!lcd_clicked() && (counterBeep < 50)) {
 		dcode_1(); break;
 	case 2: // D2 - Read/Write RAM
 		dcode_2(); break;
+#endif //DEBUG_DCODES
+#ifdef DEBUG_DCODE3
 	case 3: // D3 - Read/Write EEPROM
 		dcode_3(); break;
+#endif //DEBUG_DCODE3
+#ifdef DEBUG_DCODES
 	case 4: // D4 - Read/Write PIN
 		dcode_4(); break;
 	case 5: // D5 - Read/Write FLASH
@@ -7168,9 +7172,9 @@ while (!lcd_clicked() && (counterBeep < 50)) {
 		dcode_9125(); break;
 #endif //FILAMENT_SENSOR
 
+#endif //DEBUG_DCODES
 	}
   }
-#endif //DEBUG_DCODES
 
   else
   {
