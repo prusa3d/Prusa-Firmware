@@ -7,9 +7,9 @@ extern bool Stopped;
 // Reserve BUFSIZE lines of length MAX_CMD_SIZE plus CMDBUFFER_RESERVE_FRONT.
 char cmdbuffer[BUFSIZE * (MAX_CMD_SIZE + 1) + CMDBUFFER_RESERVE_FRONT];
 // Head of the circular buffer, where to read.
-int bufindr = 0;
+size_t bufindr = 0;
 // Tail of the buffer, where to write.
-int bufindw = 0;
+static size_t bufindw = 0;
 // Number of lines in cmdbuffer.
 int buflen = 0;
 // Flag for processing the current command inside the main Arduino loop().
@@ -100,7 +100,7 @@ void cmdqueue_reset()
 // How long a string could be pushed to the front of the command queue?
 // If yes, adjust bufindr to the new position, where the new command could be enqued.
 // len_asked does not contain the zero terminator size.
-bool cmdqueue_could_enqueue_front(int len_asked)
+static bool cmdqueue_could_enqueue_front(size_t len_asked)
 {
     // MAX_CMD_SIZE has to accommodate the zero terminator.
     if (len_asked >= MAX_CMD_SIZE)
@@ -145,7 +145,7 @@ bool cmdqueue_could_enqueue_front(int len_asked)
 // len_asked does not contain the zero terminator size.
 // This function may update bufindw, therefore for the power panic to work, this function must be called
 // with the interrupts disabled!
-bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update)
+static bool cmdqueue_could_enqueue_back(size_t len_asked, bool atomic_update = false)
 {
     // MAX_CMD_SIZE has to accommodate the zero terminator.
     if (len_asked >= MAX_CMD_SIZE)
@@ -161,7 +161,7 @@ bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update)
         // serial data.
         // How much memory to reserve for the commands pushed to the front?
         // End of the queue, when pushing to the end.
-        int endw = bufindw + len_asked + (1 + CMDHDRSIZE);
+        size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
         if (bufindw < bufindr)
             // Simple case. There is a contiguous space between the write buffer and the read buffer.
             return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
@@ -187,7 +187,7 @@ bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update)
     } else {
         // How much memory to reserve for the commands pushed to the front?
         // End of the queue, when pushing to the end.
-        int endw = bufindw + len_asked + (1 + CMDHDRSIZE);
+        size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
         if (bufindw < bufindr)
             // Simple case. There is a contiguous space between the write buffer and the read buffer.
             return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
@@ -274,7 +274,7 @@ void cmdqueue_dump_to_serial()
 // Currently the maximum length of a command piped through this function is around 20 characters
 void enquecommand(const char *cmd, bool from_progmem)
 {
-    int len = from_progmem ? strlen_P(cmd) : strlen(cmd);
+    size_t len = from_progmem ? strlen_P(cmd) : strlen(cmd);
     // Does cmd fit the queue while leaving sufficient space at the front for the chained commands?
     // If it fits, it may move bufindw, so it points to a contiguous buffer, which fits cmd.
     if (cmdqueue_could_enqueue_back(len)) {
@@ -317,7 +317,7 @@ bool cmd_buffer_empty()
 
 void enquecommand_front(const char *cmd, bool from_progmem)
 {
-    int len = from_progmem ? strlen_P(cmd) : strlen(cmd);
+    size_t len = from_progmem ? strlen_P(cmd) : strlen(cmd);
     // Does cmd fit the queue? This call shall move bufindr, so the command may be copied.
     if (cmdqueue_could_enqueue_front(len)) {
         cmdbuffer[bufindr] = CMDBUFFER_CURRENT_TYPE_UI;
@@ -375,14 +375,10 @@ void get_command()
     // Test and reserve space for the new command string.
     if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1, true))
       return;
-    
-    bool rx_buffer_full = false; //flag that serial rx buffer is full
 
 	if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
 		MYSERIAL.flush();
 		SERIAL_ECHOLNPGM("Full RX Buffer");   //if buffer was full, there is danger that reading of last gcode will not be completed
-
-		rx_buffer_full = true;                //sets flag that buffer was full    
 	}
 
   // start of serial line processing loop
@@ -548,13 +544,6 @@ void get_command()
         }
     }
 
-    //add comment
-   /*if (rx_buffer_full == true && serial_count > 0) {   //if rx buffer was full and string was not properly terminated
-        rx_buffer_full = false;
-        bufindw = bufindw - serial_count;               //adjust tail of the buffer to prepare buffer for writing new command
-        serial_count = 0;
-    }*/
-
   #ifdef SDSUPPORT
   if(!card.sdprinting || serial_count!=0){
     // If there is a half filled buffer from serial line, wait until return before
@@ -682,7 +671,7 @@ uint16_t cmdqueue_calc_sd_length()
         uint16_t value;
     } sdlen_single;
     uint16_t sdlen = 0;
-    for (int _buflen = buflen, _bufindr = bufindr;;) {
+    for (size_t _buflen = buflen, _bufindr = bufindr;;) {
         if (cmdbuffer[_bufindr] == CMDBUFFER_CURRENT_TYPE_SDCARD) {
             sdlen_single.lohi.lo = cmdbuffer[_bufindr + 1];
             sdlen_single.lohi.hi = cmdbuffer[_bufindr + 2];
