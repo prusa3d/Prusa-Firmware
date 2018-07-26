@@ -189,11 +189,11 @@ void Config_PrintSettings(uint8_t level)
 	printf_P(PSTR(
 		"%SRetract: S=Length (mm) F:Speed (mm/m) Z: ZLift (mm)\n%S   M207 S%.2f F%.2f Z%.2f\n"
 		"%SRecover: S=Extra length (mm) F:Speed (mm/m)\n%S   M208 S%.2f F%.2f\n"
-		"%SAuto-Retract: S=0 to disable, 1 to interpret extrude-only moves as retracts or recoveries\n%S   M209 S%.2f\n"
+		"%SAuto-Retract: S=0 to disable, 1 to interpret extrude-only moves as retracts or recoveries\n%S   M209 S%d\n"
 		),
 		echomagic, echomagic, retract_length, retract_feedrate*60, retract_zlift,
 		echomagic, echomagic, retract_recover_length, retract_recover_feedrate*60,
-		echomagic, echomagic, (unsigned long)(autoretract_enabled ? 1 : 0)
+		echomagic, echomagic, (autoretract_enabled ? 1 : 0)
 	);
 #if EXTRUDERS > 1
 	printf_P(PSTR("%SMulti-extruder settings:\n%S   Swap retract length (mm):    %.2f\n%S   Swap rec. addl. length (mm): %.2f\n"),
