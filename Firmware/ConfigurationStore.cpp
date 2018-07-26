@@ -50,7 +50,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 #define EEPROM_VERSION "V2"
 
 #ifdef EEPROM_SETTINGS
-void Config_StoreSettings(uint16_t offset, uint8_t level) 
+void Config_StoreSettings(uint16_t offset) 
 {
   char ver[4]= "000";
   int i = offset;
@@ -119,12 +119,7 @@ void Config_StoreSettings(uint16_t offset, uint8_t level)
   #endif
   #endif
 
-#ifdef LIN_ADVANCE
-  if (level >= 10) {
-	  EEPROM_WRITE_VAR(i, extruder_advance_k);
-	  EEPROM_WRITE_VAR(i, advance_ed_ratio);
-  }
-#endif //LIN_ADVANCE
+
 
   EEPROM_WRITE_VAR(i,max_feedrate_silent);
   EEPROM_WRITE_VAR(i,max_acceleration_units_per_sq_second_silent);
@@ -225,7 +220,7 @@ void Config_PrintSettings(uint8_t level)
 
 
 #ifdef EEPROM_SETTINGS
-bool Config_RetrieveSettings(uint16_t offset, uint8_t level)
+bool Config_RetrieveSettings(uint16_t offset)
 {
     int i=offset;
 	bool previous_settings_retrieved = true;
@@ -302,12 +297,7 @@ bool Config_RetrieveSettings(uint16_t offset, uint8_t level)
 		EEPROM_READ_VAR(i, filament_size[2]);
 #endif
 #endif
-#ifdef LIN_ADVANCE
-		if (level >= 10) {
-			EEPROM_READ_VAR(i, extruder_advance_k);
-			EEPROM_READ_VAR(i, advance_ed_ratio);
-		}
-#endif //LIN_ADVANCE
+
     calculate_extruder_multipliers();
 
         EEPROM_READ_VAR(i,max_feedrate_silent);  
