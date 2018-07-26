@@ -125,7 +125,6 @@
 
 
 #include "ultralcd.h"
-//-//
 #include "sound.h"
 
 #include "cmdqueue.h"
@@ -1145,8 +1144,7 @@ void setup()
 	spi_init();
 
 	lcd_splash();
-//-//
-     Sound_Init();
+     Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
 
 #ifdef W25X20CL
 	if (!w25x20cl_init())
@@ -1720,10 +1718,6 @@ void setup()
 #endif //TMC2130
 
 #ifdef UVLO_SUPPORT
-//-//
-MYSERIAL.println(">>> Setup");
-MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_UVLO),DEC);
-//  if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) == 1) { //previous print was terminated by UVLO
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO) != 0) { //previous print was terminated by UVLO
 /*
 	  if (lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false))	recover_print();
@@ -1750,8 +1744,7 @@ MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_UVLO),DEC);
           #endif 
           if ( lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_RECOVER_PRINT), false) ) recover_print(0); 
           else { 
-//-//
-//              eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
+              eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0); 
               lcd_update_enable(true); 
               lcd_update(2); 
               lcd_setstatuspgm(_T(WELCOME_MSG)); 
@@ -3348,6 +3341,10 @@ void process_commands()
 		else if (code_seen("thx")) {
 			no_response = false;
 		}	
+		else if (code_seen("uvlo")) {
+               eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
+               enquecommand_P(PSTR("M24")); 
+		}	
 		else if (code_seen("MMURES")) {
 			fprintf_P(uart2io, PSTR("X0"));
 		}
@@ -4759,8 +4756,6 @@ void process_commands()
       card.openFile(strchr_pointer + 4,true);
       break;
     case 24: //M24 - Start SD print
-//-//
-eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
 	  if (!card.paused) 
 		failstats_reset_print();
       card.startFileprint();
@@ -6330,8 +6325,7 @@ Sigma_Exit:
 		unsigned long waiting_start_time = millis();
 		uint8_t wait_for_user_state = 0;
 		lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
-//-//
-bool bFirst=true;
+          bool bFirst=true;
 		while (!(wait_for_user_state == 0 && lcd_clicked())){
 
 			manage_heater();
@@ -6343,13 +6337,10 @@ bool bFirst=true;
 				}
 				SET_OUTPUT(BEEPER);
 				if (counterBeep == 0) {
-//-//
-//if(eSoundMode==e_SOUND_MODE_LOUD)
-if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
-{
-bFirst=false;
-					WRITE(BEEPER, HIGH);
-}
+                         if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst)) {
+                              bFirst=false;
+					     WRITE(BEEPER, HIGH);
+                         }
 				}
 				if (counterBeep == 20) {
 					WRITE(BEEPER, LOW);
@@ -6950,26 +6941,12 @@ bFirst=false;
 		disable_e2();
 		delay(100);
 
-//-//
-//if(eSoundMode==e_SOUND_MODE_LOUD)
-//     Sound_MakeSound_tmp();
-Sound_MakeSound(e_SOUND_CLASS_Prompt,e_SOUND_TYPE_StandardPrompt);
-/*
-		WRITE(BEEPER, HIGH);
-		uint8_t counterBeep = 0;
-		while (!lcd_clicked() && (counterBeep < 50)) {
-			if (counterBeep > 5) WRITE(BEEPER, LOW);
-			delay_keep_alive(100);
-			counterBeep++;
-		}
-		WRITE(BEEPER, LOW);
-*/
-uint8_t counterBeep = 0;
-while (!lcd_clicked() && (counterBeep < 50)) {
-	delay_keep_alive(100);
-	counterBeep++;
-}
-//-//
+          Sound_MakeSound(e_SOUND_CLASS_Prompt,e_SOUND_TYPE_StandardPrompt);
+          uint8_t counterBeep = 0;
+          while (!lcd_clicked() && (counterBeep < 50)) {
+	         delay_keep_alive(100);
+	         counterBeep++;
+          }
 		st_synchronize();	
 		while (lcd_clicked()) delay_keep_alive(100);
 
@@ -8342,8 +8319,6 @@ void uvlo_()
 {
 	unsigned long time_start = millis();
 	bool sd_print = card.sdprinting;
-//-//
-MYSERIAL.println(">>> uvlo()");
     // Conserve power as soon as possible.
     disable_x();
     disable_y();
@@ -8481,33 +8456,17 @@ MYSERIAL.println(">>> uvlo()");
     st_synchronize();
 #endif
     
-
-		cli();
-    volatile unsigned int ppcount = 0;
-    SET_OUTPUT(BEEPER);
-    WRITE(BEEPER, HIGH);
-    for(ppcount = 0; ppcount < 2000; ppcount ++){
-        asm("nop");//50ns on 20Mhz, 62.5ns on 16Mhz
-    }
-    WRITE(BEEPER, LOW);
-    while(1){
-#if 1
-        WRITE(BEEPER, LOW);
-        for(ppcount = 0; ppcount < 8000; ppcount ++){
-             asm("nop");//50ns on 20Mhz, 62.5ns on 16Mhz
-        }
-#endif
-        
-    };
+wdt_enable(WDTO_500MS);
+WRITE(BEEPER,HIGH);
+while(1)
+     ;
 }
 
 
 void uvlo_tiny()
 {
 uint16_t z_microsteps=0;
-bool sd_print=card.sdprinting;
 
-MYSERIAL.println(">>> uvloTiny()");
 // Conserve power as soon as possible.
 disable_x();
 disable_y();
@@ -8528,6 +8487,7 @@ sei();
 plan_buffer_line(
      current_position[X_AXIS], 
      current_position[Y_AXIS], 
+//     current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/axis_steps_per_unit[Z_AXIS], 
      current_position[Z_AXIS]+UVLO_Z_AXIS_SHIFT+float((1024-z_microsteps+7)>>4)/axis_steps_per_unit[Z_AXIS], 
      current_position[E_AXIS],
      40, active_extruder);
@@ -8544,6 +8504,11 @@ eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), current_posit
 // Increment power failure counter
 eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
 eeprom_update_word((uint16_t*)EEPROM_POWER_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) + 1);
+
+wdt_enable(WDTO_500MS);
+WRITE(BEEPER,HIGH);
+while(1)
+     ;
 }
 #endif //UVLO_SUPPORT
 
@@ -8597,20 +8562,8 @@ void setup_uvlo_interrupt() {
 ISR(INT4_vect) {
 	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
 	SERIAL_ECHOLNPGM("INT4");
-//-//
-//	if (IS_SD_PRINTING) uvlo_();
-//if(IS_SD_PRINTING && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO))) ) uvlo_();
-if(IS_SD_PRINTING && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO))) ) uvlo_();
-if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)) uvlo_tiny();
-/*
-if(IS_SD_PRINTING)
-     {
-MYSERIAL.println(">>> ");
-     if(!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))
-          uvlo_();
-     else uvlo_tiny();
-     }
-*/
+     if(IS_SD_PRINTING && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO))) ) uvlo_();
+     if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)) uvlo_tiny();
 }
 
 void recover_print(uint8_t automatic) {
@@ -8619,18 +8572,12 @@ void recover_print(uint8_t automatic) {
 	lcd_update(2);
 	lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20 r=1
 
-//-//
-//  recover_machine_state_after_power_panic(); //recover position, temperatures and extrude_multipliers
-MYSERIAL.println(">>> RecoverPrint");
-MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_UVLO),DEC);
-bool bTiny=(eeprom_read_byte((uint8_t*)EEPROM_UVLO)==2);
-recover_machine_state_after_power_panic(bTiny); //recover position, temperatures and extrude_multipliers
+     bool bTiny=(eeprom_read_byte((uint8_t*)EEPROM_UVLO)==2);
+     recover_machine_state_after_power_panic(bTiny); //recover position, temperatures and extrude_multipliers
 
   // Lift the print head, so one may remove the excess priming material.
-//-//
-//if (current_position[Z_AXIS] < 25)
-if(!bTiny&&(current_position[Z_AXIS]<25))
-    enquecommand_P(PSTR("G1 Z25 F800"));
+     if(!bTiny&&(current_position[Z_AXIS]<25))
+          enquecommand_P(PSTR("G1 Z25 F800"));
   // Home X and Y axes. Homing just X and Y shall not touch the babystep and the world2machine transformation status.
 	enquecommand_P(PSTR("G28 X Y"));
   // Set the target bed and nozzle temperatures and wait.
@@ -8645,15 +8592,6 @@ if(!bTiny&&(current_position[Z_AXIS]<25))
         enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure 
     } 
 	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
-
-  // Mark the power panic status as inactive.
-//-//
-MYSERIAL.println("===== before");
-//	eeprom_update_byte((uint8_t*)EEPROM_UVLO, 0);
-MYSERIAL.println("===== after");
-	/*while ((abs(degHotend(0)- target_temperature[0])>5) || (abs(degBed() -target_temperature_bed)>3)) { //wait for heater and bed to reach target temp
-		delay_keep_alive(1000);
-	}*/
 
 	printf_P(_N("After waiting for temp:\nCurrent pos X_AXIS:%.3f\nCurrent pos Y_AXIS:%.3f\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
@@ -8672,16 +8610,12 @@ void recover_machine_state_after_power_panic(bool bTiny)
   current_position[Y_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4));
   // Recover the logical coordinate of the Z axis at the time of the power panic.
   // The current position after power panic is moved to the next closest 0th full step.
-//-//
-//  current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
-//    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
   if(bTiny)
     current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z)) + 
     UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
   else
     current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
     UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
-//-//
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS)) {
 	  current_position[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
 	  sprintf_P(cmd, PSTR("G92 E"));
@@ -8811,10 +8745,8 @@ void restore_print_from_eeprom() {
   // Set a position in the file.
   sprintf_P(cmd, PSTR("M26 S%lu"), position);
   enquecommand(cmd);
-//-//
-enquecommand_P(PSTR("G4 S0")); 
-  // Start SD print.
-  enquecommand_P(PSTR("M24")); 
+  enquecommand_P(PSTR("G4 S0")); 
+  enquecommand_P(PSTR("PRUSA uvlo"));
 }
 #endif //UVLO_SUPPORT
 
