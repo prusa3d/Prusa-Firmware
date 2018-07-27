@@ -228,7 +228,7 @@ const char menu_20x_space[] PROGMEM = "                    ";
 
 const char menu_fmt_int3[] PROGMEM = "%c%.15S:%s%3d";
 
-const char menu_fmt_float31[] PROGMEM = "%c%.12S:%s%+06.3f";
+const char menu_fmt_float31[] PROGMEM = "%c%.12S:%s%+06.1f";
 
 void menu_draw_int3(char chr, const char* str, int16_t val)
 {
@@ -240,6 +240,7 @@ void menu_draw_int3(char chr, const char* str, int16_t val)
 	lcd_printf_P(menu_fmt_int3, chr, str, spaces, val);
 }
 
+//draw up to 12 chars of text, ':' and float number in format +123.0
 void menu_draw_float31(char chr, const char* str, float val)
 {
 	int text_len = strlen_P(str);
