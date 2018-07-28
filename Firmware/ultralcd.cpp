@@ -1242,12 +1242,14 @@ void lcd_commands()
 		}
 		if (lcd_commands_step == 10 && !blocks_queued() && cmd_buffer_empty())
 		{
-			enquecommand_P(PSTR("M107"));
-			enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
-			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
-			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
-			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
-			enquecommand_P(PSTR("T0"));
+			if (degHotend(0)<200) {
+				enquecommand_P(PSTR("M107"));
+				enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+				enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+				enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+				enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+				enquecommand_P(PSTR("T0"));
+			};
 			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
 			enquecommand_P(PSTR("G87")); //sets calibration status
 			enquecommand_P(PSTR("G28"));
@@ -1506,11 +1508,13 @@ void lcd_commands()
 		}
 		if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
 		{
-			enquecommand_P(PSTR("M107"));
-			enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
-			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
-			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
-			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+			if (degHotend(0)<200) {
+				enquecommand_P(PSTR("M107"));
+				enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+				enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+				enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+				enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+			};
 			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
 #ifdef SNMM_V2
 			enquecommand_P(PSTR("T?"));
@@ -4398,19 +4402,25 @@ void lcd_v2_calibration() {
 #ifdef SNMM_V2
 	lcd_commands_type = LCD_COMMAND_V2_CAL;
 #else //SNMM_V2
-	bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
+	bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA loaded in the extruder?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
 	if (loaded) {
 		lcd_commands_type = LCD_COMMAND_V2_CAL;
 	}
 	else {
-		lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
-		for (int i = 0; i < 20; i++) { //wait max. 2s
-			delay_keep_alive(100);
-			if (lcd_clicked()) {
-				while (lcd_clicked());
-				delay(10);
-				while (lcd_clicked());
-				break;
+		bool other = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is another type loaded AND heated?"), false, true);
+		if (other) {
+			lcd_commands_type = LCD_COMMAND_V2_CAL;
+		}
+		else{
+			lcd_display_message_fullscreen_P(_i("Please load PLA, or heat."));////MSG_PLEASE_LOAD_PLA c=20 r=4
+			for (int i = 0; i < 20; i++) { //wait max. 2s
+				delay_keep_alive(100);
+				if (lcd_clicked()) {
+					while (lcd_clicked());
+					delay(10);
+					while (lcd_clicked());
+					break;
+				}
 			}
 		}
 	}
