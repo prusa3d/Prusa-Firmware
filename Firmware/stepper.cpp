@@ -26,6 +26,7 @@
 #include "planner.h"
 #include "temperature.h"
 #include "ultralcd.h"
+#include "sound.h"
 #include "language.h"
 #include "cardreader.h"
 #include "speed_lookuptable.h"
@@ -399,6 +400,7 @@ ISR(TIMER1_COMPA_vect) {
       stepper_timer_overflow_state = true;
       stepper_timer_overflow_last = TCNT1 - OCR1A;
       // Beep, the beeper will be cleared at the stepper_timer_overflow() called from the main thread.
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       WRITE(BEEPER, HIGH);
     }
 #endif
