@@ -33,11 +33,13 @@ extern int8_t FSensorStateMenu;
 
 void fsensor_stop_and_save_print(void)
 {
+	printf_P(PSTR("fsensor_stop_and_save_print\n"));
 	stop_and_save_print_to_ram(0, 0); //XYZE - no change	
 }
 
 void fsensor_restore_print_and_continue(void)
 {
+	printf_P(PSTR("fsensor_restore_print_and_continue\n"));
 	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
 }
 
@@ -240,12 +242,12 @@ bool fsensor_check_autoload(void)
 		fsensor_autoload_c--;
 	if (fsensor_autoload_c == 0) fsensor_autoload_sum = 0;
 //	puts_P(_N("fsensor_check_autoload\n"));
-	if (fsensor_autoload_c != fsensor_autoload_c_old)
-		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
+//	if (fsensor_autoload_c != fsensor_autoload_c_old)
+//		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
 //	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
 	if ((fsensor_autoload_c >= 10) && (fsensor_autoload_sum > 15))
 	{
-		puts_P(_N("fsensor_check_autoload = true !!!\n"));
+//		puts_P(_N("fsensor_check_autoload = true !!!\n"));
 		return true;
 	}
 	return false;
@@ -253,6 +255,7 @@ bool fsensor_check_autoload(void)
 
 void fsensor_oq_meassure_start(uint8_t skip)
 {
+	if (!fsensor_enabled) return;
 	printf_P(PSTR("fsensor_oq_meassure_start\n"));
 	fsensor_oq_skipchunk = skip;
 	fsensor_oq_samples = 0;
@@ -271,6 +274,7 @@ void fsensor_oq_meassure_start(uint8_t skip)
 
 void fsensor_oq_meassure_stop(void)
 {
+	if (!fsensor_enabled) return;
 	printf_P(PSTR("fsensor_oq_meassure_stop, %hhu samples\n"), fsensor_oq_samples);
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
@@ -284,6 +288,7 @@ const char _NG[] PROGMEM = "NG!";
 
 bool fsensor_oq_result(void)
 {
+	if (!fsensor_enabled) return true;
 	printf_P(_N("fsensor_oq_result\n"));
 	bool res_er_sum = (fsensor_oq_er_sum <= FSENSOR_OQ_MAX_ES);
 	printf_P(_N(" er_sum = %u %S\n"), fsensor_oq_er_sum, (res_er_sum?_OK:_NG));
@@ -412,10 +417,10 @@ void fsensor_update(void)
 	{
 		if (fsensor_printing_saved)
 		{
+			fsensor_restore_print_and_continue();
 			fsensor_printing_saved = false;
 			fsensor_watch_runout = true;
 			fsensor_err_cnt = 0;
-			fsensor_restore_print_and_continue();
 		}
 		else if (fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 		{
@@ -423,6 +428,19 @@ void fsensor_update(void)
 			fsensor_printing_saved = true;
 
 			fsensor_err_cnt = 0;
+/*
+			st_synchronize();
+			for (int axis = X_AXIS; axis <= E_AXIS; axis++)
+				current_position[axis] = st_get_position_mm(axis);
+
+			current_position[E_AXIS] -= 3;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+			st_synchronize();
+
+			current_position[E_AXIS] += 3;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+			st_synchronize();
+*/
 
 			enquecommand_front_P((PSTR("G1 E-3 F200")));
 			process_commands();
@@ -437,9 +455,11 @@ void fsensor_update(void)
 			if (fsensor_err_cnt == 0)
 			{
 				fsensor_restore_print_and_continue();
+				fsensor_printing_saved = false;
 			}
 			else
 			{
+//				printf_P(PSTR("fsensor_update - M600\n"));
 				eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 				eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
 				enquecommand_front_P((PSTR("M600")));

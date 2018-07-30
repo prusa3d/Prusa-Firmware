@@ -31,7 +31,6 @@
 #include "tmc2130.h"
 #endif //TMC2130
 
-//-//
 #include "sound.h"
 
 #ifdef SNMM_V2
@@ -852,7 +851,7 @@ if (print_sd_status)
 				lcd_set_cursor(7, 3);
 				lcd_puts_P(PSTR("             "));
 
-				for (int dots = 0; dots < heating_status_counter; dots++)
+				for (unsigned int dots = 0; dots < heating_status_counter; dots++)
 				{
 					lcd_set_cursor(7 + dots, 3);
 					lcd_print('.');
@@ -1804,9 +1803,7 @@ void lcd_commands()
 			cancel_heatup = true;
 			setTargetBed(0);
 			#if !(defined (SNMM) || defined (SNMM_V2))
-			setTargetHotend(0, 0);	//heating when changing filament for multicolor
-			setTargetHotend(0, 1);
-			setTargetHotend(0, 2);
+			setAllTargetHotends(0);
 			#endif
 			manage_heater();
 			custom_message = true;
@@ -2036,9 +2033,7 @@ void lcd_preheat_flex()
 
 void lcd_cooldown()
 {
-  setTargetHotend0(0);
-  setTargetHotend1(0);
-  setTargetHotend2(0);
+  setAllTargetHotends(0);
   setTargetBed(0);
   fanSpeed = 0;
   lcd_return_to_status();
@@ -3126,7 +3121,7 @@ void lcd_adjust_z() {
 
 bool lcd_wait_for_pinda(float temp) {
 	lcd_set_custom_characters_degree();
-	setTargetHotend(0, 0);
+	setAllTargetHotends(0);
 	setTargetBed(0);
 	LongTimer pinda_timeout;
 	pinda_timeout.start();
@@ -3166,7 +3161,7 @@ void lcd_wait_for_heater() {
 
 void lcd_wait_for_cool_down() {
 	lcd_set_custom_characters_degree();
-	setTargetHotend(0,0);
+	setAllTargetHotends(0);
 	setTargetBed(0);
 	while ((degHotend(0)>MAX_HOTEND_TEMP_CALIBRATION) || (degBed() > MAX_BED_TEMP_CALIBRATION)) {
 		lcd_display_message_fullscreen_P(_i("Waiting for nozzle and bed cooling"));////MSG_WAITING_TEMP c=20 r=3
@@ -6069,6 +6064,7 @@ static void lcd_main_menu()
 
 void stack_error() {
 	SET_OUTPUT(BEEPER);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
 	WRITE(BEEPER, HIGH);
 	delay(1000);
 	WRITE(BEEPER, LOW);
@@ -6544,8 +6540,7 @@ bool lcd_selftest()
 	}
 	lcd_reset_alert_level();
 	enquecommand_P(PSTR("M84"));
-	lcd_clear();
-	lcd_next_update_millis = millis() + LCD_UPDATE_INTERVAL;
+	lcd_update_enable(true);
 	
 	if (_result)
 	{
@@ -6713,7 +6708,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
 #ifdef TMC2130
-		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1))
+		if (((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
 #else //TMC2130
 		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
@@ -7255,7 +7250,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bool _clear, int _delay)
 {
 
-	lcd_next_update_millis = millis() + (LCD_UPDATE_INTERVAL * 10000);
+    lcd_update_enable(false);
 
 	int _step_block = 0;
 	const char *_indicator = (_progress > _progress_scale) ? "-" : "|";

@@ -702,11 +702,12 @@ void CardReader::updir()
   {
     --workDirDepth;
     workDir = workDirParents[0];
-	int d;
-    for (int d = 0; d < workDirDepth; d++)
-      workDirParents[d] = workDirParents[d+1];
+    for (unsigned int d = 0; d < workDirDepth; d++)
+    {
+        workDirParents[d] = workDirParents[d+1];
+    }
 	#ifdef SDCARD_SORT_ALPHA
-		presort();
+    presort();
 	#endif
   }
 }

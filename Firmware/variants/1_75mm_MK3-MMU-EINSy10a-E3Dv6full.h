@@ -100,19 +100,15 @@
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 
 //Silent mode limits
-#define SILENT_MAX_ACCEL  960ul // max axxeleration in silent mode in mm/s^2
-#define SILENT_MAX_ACCEL_ST (100*SILENT_MAX_ACCEL) // max accel in steps/s^2
-#define SILENT_MAX_FEEDRATE 172  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
+#define SILENT_MAX_ACCEL_XY      960ul  // max acceleration in silent mode in mm/s^2
+#define SILENT_MAX_FEEDRATE_XY   172  // max feedrate in mm/s
 
 //Normal mode limits
-#define NORMAL_MAX_ACCEL 2500ul // Y-axis max axxeleration in normal mode in mm/s^2
-#define NORMAL_MAX_ACCEL_ST (100*NORMAL_MAX_ACCEL) // max accel in steps/s^2
-#define NORMAL_MAX_FEEDRATE 200  //max feedrate in mm/s, because mode switched to normal for homming , this value limits also homing, it should be greater (172mm/s=9600mm/min>2700mm/min)
-
-//#define SIMPLE_ACCEL_LIMIT          //new limitation method for normal/silent
+#define NORMAL_MAX_ACCEL_XY     2500ul  // max acceleration in normal mode in mm/s^2
+#define NORMAL_MAX_FEEDRATE_XY   200  // max feedrate in mm/s
 
 //number of bytes from end of the file to start check
-#define END_FILE_SECTION 10000
+#define END_FILE_SECTION 20000
 
 #define Z_AXIS_ALWAYS_ON 1
 
@@ -138,10 +134,12 @@
 
 // Filament sensor
 #define PAT9125
+#define FILAMENT_SENSOR
 
+// Backlash - 
+//#define BACKLASH_X
+//#define BACKLASH_Y
 
-// Disable some commands
-#define _DISABLE_M42_M226
 
 // Minimum ambient temperature limit to start triggering MINTEMP errors [C]
 // this value is litlebit higher that real limit, because ambient termistor is on the board and is temperated from it,
@@ -383,13 +381,6 @@
 #define DEFAULT_PWM_MOTOR_CURRENT  {400, 750, 750} // {XY,Z,E}
 #define DEFAULT_PWM_MOTOR_CURRENT_LOUD  {400, 750, 750} // {XY,Z,E}
 #endif
-
-/*------------------------------------
- PAT9125 SETTINGS
- *------------------------------------*/
-
-#define PAT9125_XRES			0
-#define PAT9125_YRES			255
 
 /*------------------------------------
  BED SETTINGS

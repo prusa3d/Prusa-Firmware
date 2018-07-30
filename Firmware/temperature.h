@@ -142,6 +142,16 @@ FORCE_INLINE void setTargetHotend(const float &celsius, uint8_t extruder) {
   target_temperature[extruder] = celsius;
 };
 
+static inline void setTargetHotendSafe(const float &celsius, uint8_t extruder)
+{
+    if (extruder<EXTRUDERS) target_temperature[extruder] = celsius;
+}
+
+static inline void setAllTargetHotends(const float &celsius)
+{
+    for(int i=0;i<EXTRUDERS;i++) setTargetHotend(celsius,i);
+}
+
 FORCE_INLINE void setTargetBed(const float &celsius) {  
   target_temperature_bed = celsius;
 };

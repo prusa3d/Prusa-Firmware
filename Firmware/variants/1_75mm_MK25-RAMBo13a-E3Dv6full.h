@@ -96,7 +96,7 @@
 #define MANUAL_FEEDRATE {2700, 2700, 1000, 100}   // set the speeds for manual moves (mm/min)
 
 //number of bytes from end of the file to start check
-#define END_FILE_SECTION 10000
+#define END_FILE_SECTION 20000
 
 #define Z_AXIS_ALWAYS_ON 1
 
@@ -114,6 +114,7 @@
 #define PAT9125
 #define FILAMENT_SENSOR
 
+#define DEBUG_DCODE3
 
 //#define DEBUG_BUILD
 #ifdef DEBUG_BUILD
