@@ -96,6 +96,8 @@ extern void menu_draw_int3(char chr, const char* str, int16_t val);
 
 extern void menu_draw_float31(char chr, const char* str, float val);
 
+extern void menu_draw_float13(char chr, const char* str, float val);
+
 extern void _menu_edit_int3(void);
 
 #define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_int3(str, pval, minval, maxval)) return; } while (0)
