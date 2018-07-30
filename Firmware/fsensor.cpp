@@ -255,6 +255,7 @@ bool fsensor_check_autoload(void)
 
 void fsensor_oq_meassure_start(uint8_t skip)
 {
+	if (!fsensor_enabled) return;
 	printf_P(PSTR("fsensor_oq_meassure_start\n"));
 	fsensor_oq_skipchunk = skip;
 	fsensor_oq_samples = 0;
@@ -273,6 +274,7 @@ void fsensor_oq_meassure_start(uint8_t skip)
 
 void fsensor_oq_meassure_stop(void)
 {
+	if (!fsensor_enabled) return;
 	printf_P(PSTR("fsensor_oq_meassure_stop, %hhu samples\n"), fsensor_oq_samples);
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * FSENSOR_CHUNK_LEN / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
@@ -286,6 +288,7 @@ const char _NG[] PROGMEM = "NG!";
 
 bool fsensor_oq_result(void)
 {
+	if (!fsensor_enabled) return true;
 	printf_P(_N("fsensor_oq_result\n"));
 	bool res_er_sum = (fsensor_oq_er_sum <= FSENSOR_OQ_MAX_ES);
 	printf_P(_N(" er_sum = %u %S\n"), fsensor_oq_er_sum, (res_er_sum?_OK:_NG));
