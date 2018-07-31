@@ -3125,13 +3125,14 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
 		st_synchronize();
 
 			
-		if (!automatic) {
+#if !defined(SNMM_V2) && !defined(SNMM)
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, true);////MSG_UNLOAD_SUCCESSFUL c=20 r=2
 			if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
 			
 			lcd_update_enable(true);
 		}
+#endif
 
 #ifdef SNMM_V2
 		mmu_M600_load_filament(automatic);
