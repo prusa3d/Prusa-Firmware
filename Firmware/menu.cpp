@@ -224,11 +224,15 @@ uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 	return 0;
 }
 
+
 const char menu_20x_space[] PROGMEM = "                    ";
 
 const char menu_fmt_int3[] PROGMEM = "%c%.15S:%s%3d";
 
 const char menu_fmt_float31[] PROGMEM = "%c%.12S:%s%+06.1f";
+
+const char menu_fmt_float13[] PROGMEM = "%c%.12S:%s%+06.3f";
+
 
 void menu_draw_int3(char chr, const char* str, int16_t val)
 {
@@ -249,6 +253,17 @@ void menu_draw_float31(char chr, const char* str, float val)
 	strcpy_P(spaces, menu_20x_space);
 	spaces[12 - text_len] = 0;
 	lcd_printf_P(menu_fmt_float31, chr, str, spaces, val);
+}
+
+//draw up to 12 chars of text, ':' and float number in format +1.234
+void menu_draw_float13(char chr, const char* str, float val)
+{
+	int text_len = strlen_P(str);
+	if (text_len > 12) text_len = 12;
+	char spaces[21];
+	strcpy_P(spaces, menu_20x_space);
+	spaces[12 - text_len] = 0;
+	lcd_printf_P(menu_fmt_float13, chr, str, spaces, val);
 }
 
 #define _menu_data (*((menu_data_edit_t*)menu_data))

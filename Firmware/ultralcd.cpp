@@ -2921,7 +2921,7 @@ static void _lcd_babystep(int axis, const char *msg)
 	if (lcd_draw_update)
 	{
 	    lcd_set_cursor(0, 1);
-		menu_draw_float31(' ', msg, menuData.babyStep.babystepMemMM[axis]);
+		menu_draw_float13(' ', msg, menuData.babyStep.babystepMemMM[axis]);
 	}
 	if (LCD_CLICKED || menuExiting)
 	{
