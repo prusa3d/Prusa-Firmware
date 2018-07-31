@@ -5308,8 +5308,8 @@ void extr_adj(int extruder) //loading filament for SNMM
 	lcd_print(snmm_extruder + 1);
 
 	// get response
-	bool response = mmu_get_reponse(false);
-	if (!response) mmu_not_responding();
+	manage_response();
+
 	lcd_update_enable(true);
 	
 	
@@ -5381,8 +5381,7 @@ void extr_unload() { //unloads filament
 		fprintf_P(uart2io, PSTR("U0\n"));
 
 		// get response
-		bool response = mmu_get_reponse(false);
-		if (!response) mmu_not_responding();
+		manage_response();
 
 		lcd_update_enable(true);
 		#else //SNMM_V2
@@ -6165,7 +6164,7 @@ static void lcd_silent_mode_set_tune() {
 
 static void lcd_colorprint_change() {
 	
-	enquecommand_P(PSTR("M600 AUTO"));
+	enquecommand_P(PSTR("M600"));
 	
 	custom_message = true;
 	custom_message_type = 2; //just print status message
