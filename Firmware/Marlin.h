@@ -354,6 +354,9 @@ extern char dir_names[3][9];
 // save/restore printing
 extern bool saved_printing;
 
+//save/restore printing in case that mmu is not responding
+extern bool mmu_print_saved;
+
 //estimated time to end of the print
 extern uint8_t print_percent_done_normal;
 extern uint16_t print_time_remaining_normal;
