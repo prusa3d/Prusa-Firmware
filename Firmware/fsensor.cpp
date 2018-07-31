@@ -301,8 +301,16 @@ bool fsensor_oq_result(void)
 	printf_P(_N(" yd_max = %u %S\n"), fsensor_oq_yd_max, (res_yd_max?_OK:_NG));
 	bool res_yd_min = (fsensor_oq_yd_min >= (yd_avg / FSENSOR_OQ_MAX_ND));
 	printf_P(_N(" yd_min = %u %S\n"), fsensor_oq_yd_min, (res_yd_min?_OK:_NG));
+
+	uint16_t yd_dev = (fsensor_oq_yd_max - yd_avg) + (yd_avg - fsensor_oq_yd_min);
+	uint16_t yd_qua = 10 * yd_avg / (yd_dev + 1);
+	printf_P(_N(" yd_dev = %u\n"), yd_dev);
+	printf_P(_N(" yd_qua = %u\n"), yd_qua);
+
 	uint8_t sh_avg = (fsensor_oq_sh_sum / fsensor_oq_samples);
 	bool res_sh_avg = (sh_avg <= FSENSOR_OQ_MAX_SH);
+	if (yd_qua >= 8) res_sh_avg = true;
+
 	printf_P(_N(" sh_avg = %hhu %S\n"), sh_avg, (res_sh_avg?_OK:_NG));
 	bool res = res_er_sum && res_er_max && res_yd_avg && res_yd_max && res_yd_min && res_sh_avg;
 	printf_P(_N("fsensor_oq_result %S\n"), (res?_OK:_NG));
