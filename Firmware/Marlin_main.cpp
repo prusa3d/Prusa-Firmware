@@ -3073,204 +3073,62 @@ void gcode_M114()
 	SERIAL_PROTOCOLLN("");
 }
 
-void gcode_M600(bool automatic) {
+void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float e_shift_late, bool low_z) {
 		st_synchronize();
 		float lastpos[4];
 
-        if (farm_mode)
-            
-        {
-            
-            prusa_statistics(22);
-            
-        }
-        
-        feedmultiplyBckp=feedmultiply;
-        int8_t TooLowZ = 0;
+		if (farm_mode)
+		{
+			prusa_statistics(22);
+		}
 
-		float HotendTempBckp = degTargetHotend(active_extruder);
+		//First backup current position and settings
+        feedmultiplyBckp=feedmultiply;
+        float HotendTempBckp = degTargetHotend(active_extruder);
 		int fanSpeedBckp = fanSpeed;
         lastpos[X_AXIS]=current_position[X_AXIS];
         lastpos[Y_AXIS]=current_position[Y_AXIS];
         lastpos[Z_AXIS]=current_position[Z_AXIS];
         lastpos[E_AXIS]=current_position[E_AXIS];
 
-        //Restract extruder
-        if(code_seen('E'))
-        {
-          current_position[E_AXIS]+= code_value();
-        }
-        else
-        {
-          #ifdef FILAMENTCHANGE_FIRSTRETRACT
-            current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTRETRACT ;
-          #endif
-        }
+		//Retract E
+        current_position[E_AXIS]+= e_shift;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+		st_synchronize();
 
         //Lift Z
-        if(code_seen('Z'))
-        {
-          current_position[Z_AXIS]+= code_value();
-        }
-        else
-        {
-          #ifdef FILAMENTCHANGE_ZADD
-            current_position[Z_AXIS]+= FILAMENTCHANGE_ZADD ;
-            if(current_position[Z_AXIS] < 10){
-              current_position[Z_AXIS]+= 10 ;
-              TooLowZ = 1;
-            }else{
-              TooLowZ = 0;
-            }
-          #endif
-     
-          
-        }
+        current_position[Z_AXIS]+= z_shift;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
-
-        //Move XY to side
-        if(code_seen('X'))
-        {
-          current_position[X_AXIS]+= code_value();
-        }
-        else
-        {
-          #ifdef FILAMENTCHANGE_XPOS
-            current_position[X_AXIS]= FILAMENTCHANGE_XPOS ;
-          #endif
-        }
-        if(code_seen('Y'))
-        {
-          current_position[Y_AXIS]= code_value();
-        }
-        else
-        {
-          #ifdef FILAMENTCHANGE_YPOS
-            current_position[Y_AXIS]= FILAMENTCHANGE_YPOS ;
-          #endif
-        }
+		st_synchronize();
+        
+		//Move XY to side
+        current_position[X_AXIS]= x_position;
+        current_position[Y_AXIS]= y_position;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
 		st_synchronize();
+		
+		//Beep, manage nozzle heater and wait for user to start unload filament
 		if(!automatic) M600_wait_for_user();
 		
 		lcd_change_fil_state = 0;
 		
-
 		// Unload filament
-			lcd_display_message_fullscreen_P(_T(MSG_UNLOADING_FILAMENT));
-			KEEPALIVE_STATE(IN_HANDLER);
-			custom_message = true;
-			lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
-
-			if (code_seen('L'))
-			{
-				current_position[E_AXIS] += code_value();
-			}
-			else
-			{
-#ifdef SNMM
-
+#if defined (SNMM) || defined (SNMM_V2) 
+		extr_unload(); //unload just current filament
 #else
-#ifdef FILAMENTCHANGE_FINALRETRACT
-				current_position[E_AXIS] += FILAMENTCHANGE_FINALRETRACT;
-#endif
-#endif // SNMM
-			}
-
-#ifdef SNMM
-			current_position[E_AXIS] += 12;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3500, active_extruder);
-			current_position[E_AXIS] += 6;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000, active_extruder);
-			current_position[E_AXIS] += (FIL_LOAD_LENGTH * -1);
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000, active_extruder);
-			st_synchronize();
-			current_position[E_AXIS] += (FIL_COOLING);
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
-			current_position[E_AXIS] += (FIL_COOLING*-1);
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
-			current_position[E_AXIS] += (bowden_length[snmm_extruder] * -1);
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000, active_extruder);
-			st_synchronize();
-
-#else
-			//		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
-			//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3500 / 60, active_extruder);
-            
-            current_position[E_AXIS] -= FILAMENTCHANGE_FINALRETRACT;
-            st_synchronize();
-#ifdef TMC2130
-            uint8_t tmc2130_current_r_bckp = tmc2130_current_r[E_AXIS];
-            tmc2130_set_current_r(E_AXIS, TMC2130_UNLOAD_CURRENT_R);
-#else 
-
-			st_current_set(2, 200); //set lower E motor current for unload to protect filament sensor and ptfe tube
-			float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
-			float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
-
-#endif //TMC2130
-
-            current_position[E_AXIS] -= 45;
-            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
-            st_synchronize();
-            current_position[E_AXIS] -= 15;
-            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
-            st_synchronize();
-            current_position[E_AXIS] -= 20;
-            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
-            st_synchronize();
-
-#ifdef TMC2130            
-            tmc2130_set_current_r(E_AXIS, tmc2130_current_r_bckp);
-#else
-			uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-			if(silentMode != SILENT_MODE_POWER) st_current_set(2, tmp_motor[2]); //set E back to normal operation currents
-			else st_current_set(2, tmp_motor_loud[2]);		
-#endif //TMC2130
-
-#endif // SNMM
-
-
-			//finish moves
-			st_synchronize();
-
-			//disable extruder steppers so filament can be removed
-			disable_e0();
-			disable_e1();
-			disable_e2();
-			delay(100);
-
-#ifdef SNMM_V2
-			fprintf_P(uart2io, PSTR("U0\n"));
-
-			// get response
-			bool response = mmu_get_reponse(false);
-			if (!response) mmu_not_responding();
-#else
-			lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
-			
-
-			 
-			
-			WRITE(BEEPER, HIGH);
-			counterBeep = 0;
-			while(!lcd_clicked() && (counterBeep < 50)) {
-				if(counterBeep > 5) WRITE(BEEPER, LOW);
-				delay_keep_alive(100);
-				counterBeep++;
-			}
-			WRITE(BEEPER, LOW);
-#endif
+		unload_filament(); //unload filament fopr single material (used also in M702)
+#endif 
+		//finish moves
+		st_synchronize();
 
 			
-			if (!automatic) {
-				KEEPALIVE_STATE(PAUSED_FOR_USER);
-				lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, true);////MSG_UNLOAD_SUCCESSFUL c=20 r=2
-				if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
-				//lcd_return_to_status();
-				lcd_update_enable(true);
-			}
+		if (!automatic) {
+			KEEPALIVE_STATE(PAUSED_FOR_USER);
+			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, true);////MSG_UNLOAD_SUCCESSFUL c=20 r=2
+			if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
+			
+			lcd_update_enable(true);
+		}
 
 #ifdef SNMM_V2
 		mmu_M600_load_filament(automatic);
@@ -6508,12 +6366,87 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     #ifdef FILAMENTCHANGEENABLE
     case 600: //Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
 	{
-		if (code_seen("AUTO") && defined(SNMM_V2)) {
-			gcode_M600(true);
+		st_synchronize();
+
+		float x_position = current_position[X_AXIS];
+		float y_position = current_position[Y_AXIS];
+		float z_shift = 0;
+		float e_shift_init = 0;
+		float e_shift_late = 0;
+		bool automatic = false;
+		bool TooLowZ = false;
+		
+        //Retract extruder
+        if(code_seen('E'))
+        {
+          e_shift_init = code_value();
+        }
+        else
+        {
+          #ifdef FILAMENTCHANGE_FIRSTRETRACT
+            e_shift_init = FILAMENTCHANGE_FIRSTRETRACT ;
+          #endif
+        }
+
+		
+		if (code_seen('L'))
+		{
+			e_shift_late = code_value();
 		}
-		else {
-			gcode_M600(false);
+		else
+		{
+		  #ifdef FILAMENTCHANGE_FINALRETRACT
+			e_shift_late = FILAMENTCHANGE_FINALRETRACT;
+		  #endif	
 		}
+
+        //Lift Z
+        if(code_seen('Z'))
+        {
+          z_shift = code_value();
+        }
+        else
+        {
+          #ifdef FILAMENTCHANGE_ZADD
+            z_shift= FILAMENTCHANGE_ZADD ;
+            if(current_position[Z_AXIS] < 25){
+              z_shift+= 25 ;
+              TooLowZ = true;
+            }else{
+              TooLowZ = false;
+            }
+          #endif
+        }
+		//Move XY to side
+        if(code_seen('X'))
+        {
+          x_position = code_value();
+        }
+        else
+        {
+          #ifdef FILAMENTCHANGE_XPOS
+			x_position = FILAMENTCHANGE_XPOS;
+          #endif
+        }
+        if(code_seen('Y'))
+        {
+          y_position = code_value();
+        }
+        else
+        {
+          #ifdef FILAMENTCHANGE_YPOS
+            y_position = FILAMENTCHANGE_YPOS ;
+          #endif
+        }
+
+#ifdef SNMM_V2
+		if (code_seen("AUTO")) {
+			automatic = true;
+		}
+#endif //SNMM_V2
+
+		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late, TooLowZ);
+	
 	}
     break;
     #endif //FILAMENTCHANGEENABLE
@@ -6835,47 +6768,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			extr_unload(); //unload just current filament 
 		}
 		else {
-			  extr_unload_all(); //unload all filaments
+			extr_unload_all(); //unload all filaments
 		}
 #else
-		custom_message = true;
-		custom_message_type = 2;
-		lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT)); 
-
-//		extr_unload2();
-		
-		current_position[E_AXIS] -= 45;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
-        st_synchronize();
-        current_position[E_AXIS] -= 15;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
-        st_synchronize();
-        current_position[E_AXIS] -= 20;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
-		st_synchronize();
-
-		lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
-
-		//disable extruder steppers so filament can be removed
-		disable_e0();
-		disable_e1();
-		disable_e2();
-		delay(100);
-
-          Sound_MakeSound(e_SOUND_CLASS_Prompt,e_SOUND_TYPE_StandardPrompt);
-          uint8_t counterBeep = 0;
-          while (!lcd_clicked() && (counterBeep < 50)) {
-	         delay_keep_alive(100);
-	         counterBeep++;
-          }
-		st_synchronize();	
-		while (lcd_clicked()) delay_keep_alive(100);
-
-		lcd_update_enable(true);
-	
-		lcd_setstatuspgm(_T(WELCOME_MSG));
-		custom_message = false;
-		custom_message_type = 0;
+		unload_filament();
 #endif	
 	}
 	break;
@@ -9025,7 +8921,7 @@ void M600_check_state() {
 				// Filament failed to load so load it again
 				case 2:
 					#ifdef SNMM_V2
-					mmu_M600_load_filament(); //change to "wrong filament loaded" option?
+					mmu_M600_load_filament(false); //nonautomatic load; change to "wrong filament loaded" option?
 					#else
 					M600_load_filament_movements();
 					#endif
@@ -9134,12 +9030,17 @@ void M600_wait_for_user() {
 void mmu_M600_load_filament(bool automatic) {
 #ifdef SNMM_V2
 		  bool response = false;
-		  tmp_extruder = choose_extruder_menu();
+		  if (!automatic) {
+			  tmp_extruder = choose_extruder_menu();
+		  }
+		  else {
+			  tmp_extruder = (tmp_extruder+1)%5;
+		  }
 		  lcd_update_enable(false);
 		  lcd_clear();
 		  lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 		  lcd_print(" ");
-		  lcd_print(snmm_extruder + 1);
+		  lcd_print(tmp_extruder + 1);
 		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
 		  fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
