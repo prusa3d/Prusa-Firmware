@@ -10,7 +10,7 @@
 
 //Basic params
 #define FSENSOR_CHUNK_LEN      180  //filament sensor chunk length in steps - 0.64mm
-#define FSENSOR_ERR_MAX         10  //filament sensor maximum error count for runout detection
+#define FSENSOR_ERR_MAX          8  //filament sensor maximum error count for runout detection
 
 //Optical quality meassurement params
 #define FSENSOR_OQ_MAX_ES      6    //maximum error sum while loading (length ~64mm = 100chunks)
@@ -242,10 +242,10 @@ bool fsensor_check_autoload(void)
 		fsensor_autoload_c--;
 	if (fsensor_autoload_c == 0) fsensor_autoload_sum = 0;
 //	puts_P(_N("fsensor_check_autoload\n"));
-//	if (fsensor_autoload_c != fsensor_autoload_c_old)
-//		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
+	if (fsensor_autoload_c != fsensor_autoload_c_old)
+		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
 //	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
-	if ((fsensor_autoload_c >= 10) && (fsensor_autoload_sum > 15))
+	if ((fsensor_autoload_c >= 12) && (fsensor_autoload_sum > 20))
 	{
 //		puts_P(_N("fsensor_check_autoload = true !!!\n"));
 		return true;
@@ -340,14 +340,19 @@ ISR(PCINT2_vect)
 		if (st_cnt > 0) //positive movement
 		{
 			if (pat9125_y < 0)
-				fsensor_err_cnt++;
+			{
+				if (fsensor_err_cnt)
+					fsensor_err_cnt += 2;
+				else
+					fsensor_err_cnt++;
+			}
 			else if (pat9125_y > 0)
 			{
 				if (fsensor_err_cnt)
 					fsensor_err_cnt--;
 			}
 			else //(pat9125_y == 0)
-				if (fsensor_dy_old <= 0)
+				if ((fsensor_dy_old <= 0) || (fsensor_err_cnt))
 					fsensor_err_cnt++;
 			if (fsensor_oq_meassure)
 			{
@@ -365,7 +370,7 @@ ISR(PCINT2_vect)
 					}
 					fsensor_oq_samples++;
 					fsensor_oq_st_sum += st_cnt;
-					fsensor_oq_yd_sum += pat9125_y;
+					if (pat9125_y > 0) fsensor_oq_yd_sum += pat9125_y;
 					if (fsensor_err_cnt > old_err_cnt)
 						fsensor_oq_er_sum += (fsensor_err_cnt - old_err_cnt);
 					if (fsensor_oq_er_max < fsensor_err_cnt)
@@ -385,7 +390,7 @@ ISR(PCINT2_vect)
 #ifdef DEBUG_FSENSOR_LOG
 	if (fsensor_log)
 	{
-		printf_P(_N("FSENSOR cnt=%d dy=%d err=%hhu %S\n"), st_cnt, pat9125_y, fsensor_err_cnt, (fsensor_err_cnt > old_err_cnt)?_N("NG!"):_N("OK"));
+		printf_P(_N("FSENSOR cnt=%d dy=%d err=%hhu dy_old=%hhu %S\n"), st_cnt, pat9125_y, fsensor_err_cnt, fsensor_dy_old, (fsensor_err_cnt > old_err_cnt)?_N("NG!"):_N("OK"));
 		if (fsensor_oq_meassure) printf_P(_N("FSENSOR st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu yd_max=%u\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max, fsensor_oq_yd_max);
 	}
 #endif //DEBUG_FSENSOR_LOG
@@ -432,15 +437,19 @@ void fsensor_update(void)
 		}
 		else if (fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 		{
+			bool autoload_enabled_tmp = fsensor_autoload_enabled;
+			fsensor_autoload_enabled = false;
+
 			fsensor_stop_and_save_print();
 			fsensor_printing_saved = true;
 
 			fsensor_err_cnt = 0;
-/*
-			st_synchronize();
-			for (int axis = X_AXIS; axis <= E_AXIS; axis++)
-				current_position[axis] = st_get_position_mm(axis);
+			fsensor_oq_meassure_start(0);
 
+//			st_synchronize();
+//			for (int axis = X_AXIS; axis <= E_AXIS; axis++)
+//				current_position[axis] = st_get_position_mm(axis);
+/*
 			current_position[E_AXIS] -= 3;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
 			st_synchronize();
@@ -460,19 +469,26 @@ void fsensor_update(void)
 			cmdqueue_pop_front();
 			st_synchronize();
 
-			if (fsensor_err_cnt == 0)
+			fsensor_oq_meassure_stop();
+
+			bool err = false;
+			err |= (fsensor_oq_er_sum > 1);
+			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
+			if (!err)
 			{
+				printf_P(PSTR("fsensor_err_cnt = 0\n"));
 				fsensor_restore_print_and_continue();
 				fsensor_printing_saved = false;
 			}
 			else
 			{
-//				printf_P(PSTR("fsensor_update - M600\n"));
+				printf_P(PSTR("fsensor_update - M600\n"));
 				eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 				eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
 				enquecommand_front_P((PSTR("M600")));
 				fsensor_watch_runout = false;
 			}
+			fsensor_autoload_enabled = autoload_enabled_tmp;
 		}
 	}
 }
