@@ -3117,9 +3117,9 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
 		
 		// Unload filament
 #if defined (SNMM) || defined (SNMM_V2) 
-		extr_unload(); //unload just current filament
+		extr_unload(); //unload just current filament for multimaterial printers (used also in M702)
 #else
-		unload_filament(); //unload filament fopr single material (used also in M702)
+		unload_filament(); //unload filament for single material (used also in M702)
 #endif 
 		//finish moves
 		st_synchronize();
@@ -3159,7 +3159,7 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
       st_synchronize();  
       
 	  //Unretract
-      current_position[E_AXIS]= current_position[E_AXIS] - FILAMENTCHANGE_FIRSTRETRACT;
+      current_position[E_AXIS]= current_position[E_AXIS] - e_shift;
       plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
 	  st_synchronize();
 
@@ -9075,11 +9075,16 @@ void M600_wait_for_user() {
 		WRITE(BEEPER, LOW);
 }
 
-void mmu_M600_load_filament(bool automatic) {
+void mmu_M600_load_filament(bool automatic) { 
+	//load filament for mmu v2
 #ifdef SNMM_V2
 		  bool response = false;
+		  bool yes = false;
 		  if (!automatic) {
-			  tmp_extruder = choose_extruder_menu();
+			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
+			  if(yes) tmp_extruder = choose_extruder_menu();
+			  else tmp_extruder = snmm_extruder;
+
 		  }
 		  else {
 			  tmp_extruder = (tmp_extruder+1)%5;
@@ -9130,6 +9135,7 @@ void M600_load_filament_movements() {
 }
 
 void M600_load_filament() {
+	//load filament for single material and SNMM 
 	lcd_wait_interact();
 
 	//load_filament_time = millis();

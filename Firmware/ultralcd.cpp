@@ -5356,7 +5356,7 @@ void extr_adj(int extruder) //loading filament for SNMM
 }
 
 
-void extr_unload() { //unloads filament
+void extr_unload() { //unload just current filament for multimaterial printers
 	#ifndef SNMM_V2
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
