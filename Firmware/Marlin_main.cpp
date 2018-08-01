@@ -3464,7 +3464,9 @@ void process_commands()
                enquecommand_P(PSTR("M24")); 
 		}	
 		else if (code_seen("MMURES")) {
-			fprintf_P(uart2io, PSTR("X0"));
+
+			printf_P(PSTR("X0\n"));
+			fprintf_P(uart2io, PSTR("X0\n"));
 		}
 		else if (code_seen("RESET")) {
             // careful!
