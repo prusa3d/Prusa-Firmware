@@ -129,7 +129,7 @@ void tmc2130_wr_TPWMTHRS(uint8_t axis, uint32_t val32);
 void tmc2130_wr_THIGH(uint8_t axis, uint32_t val32);
 
 #define tmc2130_rd(axis, addr, rval) tmc2130_rx(axis, addr, rval)
-#define tmc2130_wr(axis, addr, wval) tmc2130_tx(axis, addr | 0x80, wval)
+#define tmc2130_wr(axis, addr, wval) tmc2130_tx(axis, (addr) | 0x80, wval)
 
 uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval);
 uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval);
