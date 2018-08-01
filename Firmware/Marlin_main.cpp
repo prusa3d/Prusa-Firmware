@@ -8847,7 +8847,7 @@ bool mmu_get_response(bool timeout) {
 	while (!uart2_rx_ok())
     {
       delay_keep_alive(100);
-	  if (timeout && mmu_get_reponse_timeout.expired(20 * 60 * 1000ul)) { //20 minutes timeout
+	  if (timeout && mmu_get_reponse_timeout.expired(5 * 60 * 1000ul)) { //5 minutes timeout
 			response = false;
 			break;
 	  }
@@ -8893,13 +8893,13 @@ void manage_response() {
 				  st_synchronize();
 			  }
 			  printf_P(PSTR("MMU not responding\n"));
-			  lcd_show_fullscreen_message_and_wait_P(_i("MMU was not responding. Pres knob to resume nozzle target temperature;"));
+			  lcd_show_fullscreen_message_and_wait_P(_i("MMU needs user attention. Please press knob to resume nozzle target temperature."));
 			  setTargetHotend(hotend_temp_bckp, active_extruder);
 			  while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) {
 				  delay_keep_alive(1000);
 				  lcd_wait_for_heater();
 			  }			
-			  lcd_display_message_fullscreen_P(_i("Now check MMU."));
+			  lcd_display_message_fullscreen_P(_i("Now check MMU. Fix the issue and then press knob on MMU unit."));
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU start responding\n"));
