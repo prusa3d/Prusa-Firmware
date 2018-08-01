@@ -6308,9 +6308,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 		printf_P(PSTR("Extruder: %d; "), extruder);
 		switch (filament) {
-			case FILAMENT_FLEX: printf_P(PSTR("Flex")); break;
-			case FILAMENT_PVA: printf_P(PSTR("PVA")); break;
-			default: printf_P(PSTR("Default")); break;
+			case FILAMENT_FLEX: printf_P(PSTR("Flex\n")); break;
+			case FILAMENT_PVA: printf_P(PSTR("PVA\n")); break;
+			default: printf_P(PSTR("Default\n")); break;
 		}
 		printf_P(PSTR("F%d%d\n"), extruder, filament);
 		fprintf_P(uart2io, PSTR("F%d%d\n"), extruder, filament);
