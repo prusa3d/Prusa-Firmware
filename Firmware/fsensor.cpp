@@ -101,9 +101,9 @@ uint16_t fsensor_oq_er_sum;
 //max error counter value durring meassurement
 uint8_t  fsensor_oq_er_max;
 //minimum delta value
-uint16_t fsensor_oq_yd_min;
+int16_t fsensor_oq_yd_min;
 //maximum delta value
-uint16_t fsensor_oq_yd_max;
+int16_t fsensor_oq_yd_max;
 //sum of shutter value
 uint16_t fsensor_oq_sh_sum;
 
