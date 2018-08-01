@@ -218,7 +218,9 @@ bool fsensor_check_autoload(void)
 		fsensor_autoload_check_start();
 		return false;
 	}
+#if 0
 	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
+#endif
 	if ((millis() - fsensor_autoload_last_millis) < 25) return false;
 	fsensor_autoload_last_millis = millis();
 	if (!pat9125_update_y()) //update sensor
@@ -243,9 +245,11 @@ bool fsensor_check_autoload(void)
 	else if (fsensor_autoload_c > 0)
 		fsensor_autoload_c--;
 	if (fsensor_autoload_c == 0) fsensor_autoload_sum = 0;
-//	puts_P(_N("fsensor_check_autoload\n"));
-//	if (fsensor_autoload_c != fsensor_autoload_c_old)
-//		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
+#if 0
+  	puts_P(_N("fsensor_check_autoload\n"));
+  	if (fsensor_autoload_c != fsensor_autoload_c_old)
+  		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
+#endif
 //	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
 	if ((fsensor_autoload_c >= 12) && (fsensor_autoload_sum > 20))
 	{
