@@ -3092,7 +3092,6 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
 
 		//First backup current position and settings
         feedmultiplyBckp=feedmultiply;
-        float HotendTempBckp = degTargetHotend(active_extruder);
 		int fanSpeedBckp = fanSpeed;
         lastpos[X_AXIS]=current_position[X_AXIS];
         lastpos[Y_AXIS]=current_position[Y_AXIS];
@@ -9066,9 +9065,7 @@ void M600_wait_for_user() {
 				if (millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
 					lcd_display_message_fullscreen_P(_i("Press knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
 					wait_for_user_state = 1;
-					setTargetHotend(0, 0);
-					setTargetHotend(0, 1);
-					setTargetHotend(0, 2);
+					setAllTargetHotends(0);
 					st_synchronize();
 					disable_e0();
 					disable_e1();
