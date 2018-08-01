@@ -8,6 +8,7 @@
 #include "lcd.h"
 #include "Configuration.h"
 #include "Marlin.h"
+#include "ultralcd.h"
 
 
 
@@ -269,7 +270,7 @@ void menu_draw_float13(char chr, const char* str, float val)
 	lcd_printf_P(menu_fmt_float13, chr, str, spaces, val);
 }
 
-#define _menu_data (*((menu_data_edit_t*)menu_data))
+#define _menu_data menuData.edit_menu
 void _menu_edit_int3(void)
 {
 	if (lcd_draw_update)

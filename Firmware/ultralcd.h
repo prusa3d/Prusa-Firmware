@@ -4,6 +4,7 @@
 #include "Marlin.h"
 #include "lcd.h"
 #include "conv2str.h"
+#include "menu.h"
 
 extern int lcd_puts_P(const char* str);
 extern int lcd_printf_P(const char* format, ...);
@@ -11,6 +12,91 @@ extern int lcd_printf_P(const char* format, ...);
 extern void menu_lcd_longpress_func(void);
 extern void menu_lcd_charsetup_func(void);
 extern void menu_lcd_lcdupdate_func(void);
+
+struct EditMenuParentState
+{
+    //prevMenu and prevEncoderPosition are used to store the previous menu location when editing settings.
+    menu_func_t prevMenu;
+    uint16_t prevEncoderPosition;
+    //Variables used when editing values.
+    const char* editLabel;
+    void* editValue;
+    int32_t minEditValue, maxEditValue;
+    // menu_func_t callbackFunc;
+};
+
+union MenuData
+{
+    struct BabyStep
+    {
+        // 29B total
+        int8_t status;
+        int babystepMem[3];
+        float babystepMemMM[3];
+    } babyStep;
+
+    struct SupportMenu
+    {
+        // 6B+16B=22B total
+        int8_t status;
+        bool is_flash_air;
+        uint8_t ip[4];
+        char ip_str[3*4+3+1];
+    } supportMenu;
+
+    struct AdjustBed
+    {
+        // 6+13+16=35B
+        // editMenuParentState is used when an edit menu is entered, so it knows
+        // the return menu and encoder state.
+        struct EditMenuParentState editMenuParentState;
+        int8_t status;
+        int8_t left;
+        int8_t right;
+        int8_t front;
+        int8_t rear;
+        int    left2;
+        int    right2;
+        int    front2;
+        int    rear2;
+    } adjustBed;
+
+    struct TuneMenu
+    {
+        // editMenuParentState is used when an edit menu is entered, so it knows
+        // the return menu and encoder state.
+        struct EditMenuParentState editMenuParentState;
+        // To recognize, whether the menu has been just initialized.
+        int8_t  status;
+        // Backup of extrudemultiply, to recognize, that the value has been changed and
+        // it needs to be applied.
+        int16_t extrudemultiply;
+    } tuneMenu;
+
+    // editMenuParentState is used when an edit menu is entered, so it knows
+    // the return menu and encoder state.
+    struct EditMenuParentState editMenuParentState;
+
+    struct AutoLoadFilamentMenu
+    {
+        //ShortTimer timer;
+        char dummy;
+    } autoLoadFilamentMenu;
+    struct _Lcd_moveMenu
+    {
+        bool initialized;
+        bool endstopsEnabledPrevious;
+    } _lcd_moveMenu;
+    struct sdcard_menu_t
+    {
+        uint8_t viewState;
+    } sdcard_menu;
+    menu_data_edit_t edit_menu;
+};
+
+// State of the currently active menu.
+// C Union manages sharing of the static memory by all the menus.
+extern union MenuData menuData;
 
 
   // Call with a false parameter to suppress the LCD update from various places like the planner or the temp control.
