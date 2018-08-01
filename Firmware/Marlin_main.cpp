@@ -8895,7 +8895,7 @@ void manage_response() {
 			  printf_P(PSTR("MMU not responding\n"));
 			  lcd_show_fullscreen_message_and_wait_P(_i("MMU was not responding. Pres knob to resume nozzle target temperature;"));
 			  setTargetHotend(hotend_temp_bckp, active_extruder);
-			  while (abs(degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) {
+			  while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) {
 				  delay_keep_alive(1000);
 				  lcd_wait_for_heater();
 			  }			
