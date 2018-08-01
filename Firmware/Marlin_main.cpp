@@ -3351,8 +3351,8 @@ void process_commands()
 	  if(code_seen("CRASH_DETECTED"))
 	  {
 		  uint8_t mask = 0;
-		  if (code_seen("X")) mask |= X_AXIS_MASK;
-		  if (code_seen("Y")) mask |= Y_AXIS_MASK;
+		  if (code_seen('X')) mask |= X_AXIS_MASK;
+		  if (code_seen('Y')) mask |= Y_AXIS_MASK;
 		  crashdet_detected(mask);
 	  }
 	  else if(code_seen("CRASH_RECOVER"))
@@ -4281,10 +4281,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 		if (code_seen('X')) dimension_x = code_value();
 		if (code_seen('Y')) dimension_y = code_value();
-		if (code_seen('XP')) points_x = code_value();
-		if (code_seen('YP')) points_y = code_value();
-		if (code_seen('XO')) offset_x = code_value();
-		if (code_seen('YO')) offset_y = code_value();
+		if (code_seen("XP")) { strchr_pointer+=1; points_x = code_value(); }
+		if (code_seen("YP")) { strchr_pointer+=1; points_y = code_value(); }
+		if (code_seen("XO")) { strchr_pointer+=1; offset_x = code_value(); }
+		if (code_seen("YO")) { strchr_pointer+=1; offset_y = code_value(); }
 		
 		bed_analysis(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
 		
@@ -7775,7 +7775,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	int ix = 0;
 	int iy = 0;
 
-	char* filename_wldsd = "wldsd.txt";
+	const char* filename_wldsd = "wldsd.txt";
 	char data_wldsd[70];
 	char numb_wldsd[10];
 

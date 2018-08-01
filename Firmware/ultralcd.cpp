@@ -3573,7 +3573,7 @@ void lcd_bed_calibration_show_result(uint8_t result, uint8_t point_too_far_mask)
         else if (point_too_far_mask == 2 || point_too_far_mask == 7)
             // Only the center point or all the three front points.
             msg = _i("XYZ calibration failed. Front calibration points not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=8
-        else if (point_too_far_mask & 1 == 0)
+        else if ((point_too_far_mask & 1) == 0)
             // The right and maybe the center point out of reach.
             msg = _i("XYZ calibration failed. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=8
         else
@@ -3585,7 +3585,7 @@ void lcd_bed_calibration_show_result(uint8_t result, uint8_t point_too_far_mask)
             if (point_too_far_mask == 2 || point_too_far_mask == 7)
                 // Only the center point or all the three front points.
                 msg = _i("XYZ calibration compromised. Front calibration points not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
-            else if (point_too_far_mask & 1 == 0)
+            else if ((point_too_far_mask & 1) == 0)
                 // The right and maybe the center point out of reach.
                 msg = _i("XYZ calibration compromised. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
             else
@@ -3648,11 +3648,11 @@ static void lcd_show_end_stops() {
 	lcd_set_cursor(0, 0);
 	lcd_puts_P((PSTR("End stops diag")));
 	lcd_set_cursor(0, 1);
-	lcd_puts_P((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("X1")) : (PSTR("X0")));
+	lcd_puts_P((READ(X_MIN_PIN) ^ (bool)X_MIN_ENDSTOP_INVERTING) ? (PSTR("X1")) : (PSTR("X0")));
 	lcd_set_cursor(0, 2);
-	lcd_puts_P((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Y1")) : (PSTR("Y0")));
+	lcd_puts_P((READ(Y_MIN_PIN) ^ (bool)Y_MIN_ENDSTOP_INVERTING) ? (PSTR("Y1")) : (PSTR("Y0")));
 	lcd_set_cursor(0, 3);
-	lcd_puts_P((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Z1")) : (PSTR("Z0")));
+	lcd_puts_P((READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING) ? (PSTR("Z1")) : (PSTR("Z0")));
 }
 
 static void menu_show_end_stops() {
@@ -6685,13 +6685,12 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			enable_endstops(false);
 
 			const char *_error_1;
-			const char *_error_2;
 
 			if (axis == X_AXIS) _error_1 = "X";
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(9, _error_1, _error_2);
+			lcd_selftest_error(9, _error_1, NULL);
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -6704,13 +6703,12 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		if (abs(measured_axis_length[0] - measured_axis_length[1]) > 1) { //check if difference between first and second measurement is low
 			//loose pulleys
 			const char *_error_1;
-			const char *_error_2;
 
 			if (axis == X_AXIS) _error_1 = "X";
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(8, _error_1, _error_2);
+			lcd_selftest_error(8, _error_1, NULL);
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -6748,11 +6746,11 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
 #ifdef TMC2130
-		if (((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
+		if ((READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING))
 #else //TMC2130
-		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
-			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
-			((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
+		if ((READ(X_MIN_PIN) ^ (bool)X_MIN_ENDSTOP_INVERTING) ||
+			(READ(Y_MIN_PIN) ^ (bool)Y_MIN_ENDSTOP_INVERTING) ||
+			(READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING))
 #endif //TMC2130
 		{
 			if (_axis == 0)
@@ -7125,8 +7123,7 @@ static bool lcd_selftest_fsensor(void)
 	fsensor_init();
 	if (fsensor_not_responding)
 	{
-		const char *_err;
-		lcd_selftest_error(11, _err, _err);
+		lcd_selftest_error(11, NULL, NULL);
 	}
 	return (!fsensor_not_responding);
 }
@@ -7281,8 +7278,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 	}
 	if (!_result)
 	{
-		const char *_err;
-		lcd_selftest_error(_errno, _err, _err);
+		lcd_selftest_error(_errno, NULL, NULL);
 	}
 	return _result;
 }
