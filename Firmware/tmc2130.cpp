@@ -860,8 +860,8 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	printf_P(PSTR(" factor: %s\n"), ftostr43(fac));
 	uint8_t vA = 0;                //value of currentA
 	uint8_t va = 0;                //previous vA
-	uint8_t d0 = 0;                //delta0
-	uint8_t d1 = 1;                //delta1
+	int8_t d0 = 0;                //delta0
+	int8_t d1 = 1;                //delta1
 	uint8_t w[4] = {1,1,1,1};      //W bits (MSLUTSEL)
 	uint8_t x[3] = {255,255,255};  //X segment bounds (MSLUTSEL)
 	uint8_t s = 0;                 //current segment
@@ -872,7 +872,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	tmc2130_wr_MSLUTSTART(axis, 0, amp);
 	for (i = 0; i < 256; i++)
 	{
-		if ((i & 31) == 0)
+		if ((i & 0x1f) == 0)
 			reg = 0;
 		// calculate value
 		if (fac == 0) // default TMC wave
