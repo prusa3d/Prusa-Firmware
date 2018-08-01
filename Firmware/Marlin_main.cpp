@@ -6297,7 +6297,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	case 403: //M403 set filament type (material) for particular extruder and send this information to mmu
 	{
 		//currently three different materials are needed (default, flex and PVA) 
-		//store this information for future use in different load/unload profiles etc.
+		//add storing this information for different load/unload profiles etc. in the future
+		//firmware does not wait for "ok" from mmu
+
 		uint8_t extruder;
 		uint8_t filament;
 
