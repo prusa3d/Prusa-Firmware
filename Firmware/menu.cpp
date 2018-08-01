@@ -75,7 +75,10 @@ void menu_end(void)
 
 void menu_back(void)
 {
-	if (menu_depth > 0) menu_goto(menu_stack[--menu_depth].menu, menu_stack[menu_depth].position, true, true);
+	if (menu_depth > 0) {
+		menu_depth--;		
+		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, true);
+	}
 }
 
 void menu_back_if_clicked(void)
