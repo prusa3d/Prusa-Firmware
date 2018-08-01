@@ -130,8 +130,7 @@ union MenuData
 
 // State of the currently active menu.
 // C Union manages sharing of the static memory by all the menus.
-//union MenuData menuData = { 0 };
-#define menuData (*((MenuData*)menu_data))
+union MenuData menuData = { 0 };
 
 
 int8_t ReInitLCD = 0;
