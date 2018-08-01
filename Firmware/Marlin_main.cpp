@@ -140,6 +140,11 @@
 #define PRINTING_TYPE_SD 0
 #define PRINTING_TYPE_USB 1
 
+//filament types 
+#define FILAMENT_DEFAULT 0
+#define FILAMENT_FLEX 1
+#define FILAMENT_PVA 2
+
 // look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
 // http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
 
@@ -6288,6 +6293,27 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       st_synchronize();
     }
     break;
+
+	case 403: //M403 set filament type (material) for particular extruder and send this information to mmu
+	{
+		//currently three different materials are needed (default, flex and PVA) 
+		//store this information for future use in different load/unload profiles etc.
+		uint8_t extruder;
+		uint8_t filament;
+
+		if(code_seen('E')) extruder = code_value();
+		if(code_seen('F')) filament = code_value();
+
+		printf_P(PSTR("Extruder: %d; "), extruder);
+		switch (filament) {
+			case FILAMENT_FLEX: printf_P(PSTR("Flex")); break;
+			case FILAMENT_PVA: printf_P(PSTR("PVA")); break;
+			default: printf_P(PSTR("Default")); break;
+		}
+		printf_P(PSTR("F%d%d\n"), extruder, filament);
+		fprintf_P(uart2io, PSTR("F%d%d\n"), extruder, filament);
+	}
+	break;
 
     case 500: // M500 Store settings in EEPROM
     {
