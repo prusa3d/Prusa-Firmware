@@ -120,6 +120,8 @@ void extr_unload_all();
 void extr_unload_used();
 void extr_unload();
 
+void unload_filament();
+
 void stack_error();
 void lcd_printer_connected();
 void lcd_ping();

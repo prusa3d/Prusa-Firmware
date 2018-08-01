@@ -5308,8 +5308,8 @@ void extr_adj(int extruder) //loading filament for SNMM
 	lcd_print(snmm_extruder + 1);
 
 	// get response
-	bool response = mmu_get_reponse(false);
-	if (!response) mmu_not_responding();
+	manage_response();
+
 	lcd_update_enable(true);
 	
 	
@@ -5381,8 +5381,7 @@ void extr_unload() { //unloads filament
 		fprintf_P(uart2io, PSTR("U0\n"));
 
 		// get response
-		bool response = mmu_get_reponse(false);
-		if (!response) mmu_not_responding();
+		manage_response();
 
 		lcd_update_enable(true);
 		#else //SNMM_V2
@@ -5552,7 +5551,6 @@ void extr_unload_all() {
 }
 
 //unloading just used filament (for snmm)
-
 void extr_unload_used() {
 	if (degHotend0() > EXTRUDE_MINTEMP) {
 		for (int i = 0; i < 4; i++) {
@@ -5598,6 +5596,48 @@ static void extr_unload_4() {
 	extr_unload();
 }
 
+//unload filament for single material printer (used in M702 gcode)
+void unload_filament() {
+	custom_message = true;
+	custom_message_type = 2;
+	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
+
+	//		extr_unload2();
+
+	current_position[E_AXIS] -= 45;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
+	st_synchronize();
+	current_position[E_AXIS] -= 15;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+	st_synchronize();
+	current_position[E_AXIS] -= 20;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+	st_synchronize();
+
+	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
+
+	//disable extruder steppers so filament can be removed
+	disable_e0();
+	disable_e1();
+	disable_e2();
+	delay(100);
+
+	Sound_MakeSound(e_SOUND_CLASS_Prompt, e_SOUND_TYPE_StandardPrompt);
+	uint8_t counterBeep = 0;
+	while (!lcd_clicked() && (counterBeep < 50)) {
+		delay_keep_alive(100);
+		counterBeep++;
+	}
+	st_synchronize();
+	while (lcd_clicked()) delay_keep_alive(100);
+
+	lcd_update_enable(true);
+
+	lcd_setstatuspgm(_T(WELCOME_MSG));
+	custom_message = false;
+	custom_message_type = 0;
+
+}
 
 static void fil_load_menu()
 {
