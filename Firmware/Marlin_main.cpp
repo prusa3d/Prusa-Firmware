@@ -3131,7 +3131,7 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
 			if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
 			
 			lcd_update_enable(true);
-		}
+		
 #endif
 
 #ifdef SNMM_V2
@@ -9129,8 +9129,7 @@ void M600_load_filament_movements() {
                      lcd_loading_filament();
 }
 
-void M600_load_filament()
-{
+void M600_load_filament() {
 	lcd_wait_interact();
 
 	//load_filament_time = millis();
