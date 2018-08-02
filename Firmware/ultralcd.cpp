@@ -3584,7 +3584,6 @@ static void menu_show_end_stops() {
 // Otherwise the Z calibration is not changed and false is returned.
 void lcd_diag_show_end_stops()
 {
-    int enc_dif = lcd_encoder_diff;
     lcd_clear();
     for (;;) {
         manage_heater();
