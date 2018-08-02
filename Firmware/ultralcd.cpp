@@ -118,19 +118,15 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
 static void lcd_status_screen();
 static void lcd_language_menu();
 
-extern bool powersupply;
 static void lcd_main_menu();
 static void lcd_tune_menu();
-static void lcd_prepare_menu();
 //static void lcd_move_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
 static void lcd_control_temperature_menu();
-static void lcd_control_temperature_preheat_pla_settings_menu();
-static void lcd_control_temperature_preheat_abs_settings_menu();
-static void lcd_control_motion_menu();
-static void lcd_control_volumetric_menu();
+#ifdef LINEARITY_CORRECTION
 static void lcd_settings_menu_back();
+#endif //LINEARITY_CORRECTION
 
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
@@ -146,7 +142,6 @@ static void lcd_menu_fails_stats();
 #endif //TMC2130 or FILAMENT_SENSOR
 
 static void lcd_selftest_v();
-static bool lcd_selfcheck_endstops();
 
 #ifdef TMC2130
 static void reset_crash_det(unsigned char axis);
@@ -166,7 +161,10 @@ static bool lcd_selftest_fan_dialog(int _fan);
 static bool lcd_selftest_fsensor();
 static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
+#ifdef SNMM
 static int get_ext_nr();
+#endif //SNMM
+#if defined (SNMM) || defined(SNMM_V2)
 static void extr_adj_0();
 static void extr_adj_1();
 static void extr_adj_2();
@@ -177,6 +175,7 @@ static void extr_unload_0();
 static void extr_unload_1();
 static void extr_unload_2();
 static void extr_unload_3();
+#endif // SNMM || SNMM_V2
 static void lcd_disable_farm_mode();
 static void lcd_set_fan_check();
 static char snmm_stop_print_menu();
@@ -186,11 +185,12 @@ static char snmm_stop_print_menu();
 static float count_e(float layer_heigth, float extrusion_width, float extrusion_length);
 static void lcd_babystep_z();
 static void lcd_send_status();
+#ifdef FARM_CONNECT_MESSAGE
 static void lcd_connect_printer();
+#endif //FARM_CONNECT_MESSAGE
 
 void lcd_finishstatus();
 
-static void lcd_control_retract_menu();
 static void lcd_sdcard_menu();
 
 #ifdef DELTA_CALIBRATION_MENU
@@ -2853,12 +2853,6 @@ static void _lcd_babystep(int axis, const char *msg)
 	if (LCD_CLICKED) menu_back();
 }
 
-static void lcd_babystep_x() {
-  _lcd_babystep(X_AXIS, (_i("Babystepping X")));////MSG_BABYSTEPPING_X c=0 r=0
-}
-static void lcd_babystep_y() {
-  _lcd_babystep(Y_AXIS, (_i("Babystepping Y")));////MSG_BABYSTEPPING_Y c=0 r=0
-}
 static void lcd_babystep_z() {
 	_lcd_babystep(Z_AXIS, (_i("Adjusting Z")));////MSG_BABYSTEPPING_Z c=20 r=0
 }
@@ -3574,10 +3568,12 @@ static void lcd_show_end_stops() {
 	lcd_puts_P((READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING) ? (PSTR("Z1")) : (PSTR("Z0")));
 }
 
+#ifndef TMC2130
 static void menu_show_end_stops() {
     lcd_show_end_stops();
     if (LCD_CLICKED) menu_back();
 }
+#endif // not defined TMC2130
 
 // Lets the user move the Z carriage up to the end stoppers.
 // When done, it sets the current Z to Z_MAX_POS and returns true.
@@ -4534,7 +4530,7 @@ void lcd_wizard(int state) {
 	lcd_return_to_status();
 	lcd_update(2);
 }
-/*
+#ifdef LINEARITY_CORRECTION
 void lcd_settings_linearity_correction_menu(void)
 {
 	MENU_BEGIN();
@@ -4555,7 +4551,7 @@ void lcd_settings_linearity_correction_menu(void)
 	MENU_ITEM_EDIT_int3_P(_i("E-correct"),  &corr[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 	MENU_END();
 }
-*/
+#endif //LINEARITY_CORRECTION
 static void lcd_settings_menu()
 {
 	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -4625,8 +4621,9 @@ static void lcd_settings_menu()
 		}
 		else MENU_ITEM_SUBMENU_P(_T(MSG_CRASHDETECT_NA), lcd_crash_mode_info);
 	}
-
-//  MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
+#ifdef LINEARITY_CORRECTION
+    MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
+#endif //LINEARITY_CORRECTION
 #endif //TMC2130
 
   if (temp_cal_active == false)
@@ -4696,11 +4693,7 @@ switch(eSoundMode)
 	MENU_END();
 }
 
-static void lcd_selftest_()
-{
-	lcd_selftest();
-}
-
+#ifdef LINEARITY_CORRECTION
 #ifdef TMC2130
 static void lcd_ustep_linearity_menu_save()
 {
@@ -4727,8 +4720,8 @@ static void lcd_settings_menu_back()
     if (changed) tmc2130_init();
 #endif //TMC2130
     menu_menu = lcd_main_menu;
-//    lcd_main_menu();
 }
+#endif //LINEARITY_CORRECTION
 
 
 static void lcd_calibration_menu()
@@ -5186,6 +5179,7 @@ void change_extr(int extr) { //switches multiplexer for extruders
 #endif
 }
 
+#ifdef SNMM
 static int get_ext_nr() { //reads multiplexer input pins and return current extruder number (counted from 0)
 #ifdef SNMM_V2
 	return(snmm_extruder); //update needed
@@ -5193,6 +5187,7 @@ static int get_ext_nr() { //reads multiplexer input pins and return current extr
 	return(2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
 #endif
 }
+#endif //SNMM
 
 
 void display_loading() {
@@ -5835,6 +5830,7 @@ void lcd_confirm_print()
 
 #include "w25x20cl.h"
 
+#ifdef LCD_TEST
 static void lcd_test_menu()
 {
 	W25X20CL_SPI_ENTER();
@@ -5842,6 +5838,7 @@ static void lcd_test_menu()
 	w25x20cl_chip_erase();
 	w25x20cl_disable_wr();
 }
+#endif //LCD_TEST
 
 static void lcd_main_menu()
 {
@@ -6013,8 +6010,9 @@ static void lcd_main_menu()
 #endif
 
   MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
-
-//  MENU_ITEM_SUBMENU_P(_i("W25x20CL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
+#ifdef LCD_TEST
+    MENU_ITEM_SUBMENU_P(_i("W25x20CL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
+#endif //LCD_TEST
 
   MENU_END();
 
@@ -6051,34 +6049,6 @@ void stepper_timer_overflow() {
 }
 #endif /* DEBUG_STEPPER_TIMER_MISSED */
 
-#ifdef SDSUPPORT
-static void lcd_autostart_sd()
-{
-  card.lastnr = 0;
-  card.setroot();
-  card.checkautostart(true);
-}
-#endif
-
-
-
-static void lcd_silent_mode_set_tune() {
-  switch (SilentModeMenu) {
-#ifdef TMC2130
-	case SILENT_MODE_NORMAL: SilentModeMenu = SILENT_MODE_STEALTH; break;
-	case SILENT_MODE_STEALTH: SilentModeMenu = SILENT_MODE_NORMAL; break;
-	default: SilentModeMenu = SILENT_MODE_NORMAL; break; // (probably) not needed
-#else
-	case SILENT_MODE_POWER: SilentModeMenu = SILENT_MODE_SILENT; break;
-	case SILENT_MODE_SILENT: SilentModeMenu = SILENT_MODE_AUTO; break;
-	case SILENT_MODE_AUTO: SilentModeMenu = SILENT_MODE_POWER; break;
-	default: SilentModeMenu = SILENT_MODE_POWER; break; // (probably) not needed
-#endif //TMC2130
-  }
-  eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
-  st_current_init();
-  menu_back();
-}
 
 static void lcd_colorprint_change() {
 	
@@ -6172,12 +6142,6 @@ static void lcd_tune_menu()
           }
 
 	MENU_END();
-}
-
-static void lcd_move_menu_01mm()
-{
-  move_menu_scale = 0.1;
-  lcd_move_menu_axis();
 }
 
 static void lcd_control_temperature_menu()
@@ -6830,7 +6794,6 @@ static bool lcd_selfcheck_pulleys(int axis)
 	}
 	return(true);
 }
-#endif //TMC2130
 
 
 static bool lcd_selfcheck_endstops()
@@ -6863,7 +6826,7 @@ static bool lcd_selfcheck_endstops()
 	manage_inactivity(true);
 	return _result;
 }
-//#endif //not defined TMC2130
+#endif //not defined TMC2130
 
 static bool lcd_selfcheck_check_heater(bool _isbed)
 {
@@ -7450,6 +7413,7 @@ static void lcd_send_status() {
 	}
 }
 
+#ifdef FARM_CONNECT_MESSAGE
 static void lcd_connect_printer() {
 	lcd_update_enable(false);
 	lcd_clear();
@@ -7482,6 +7446,7 @@ static void lcd_connect_printer() {
 	lcd_update_enable(true);
 	lcd_update(2);
 }
+#endif //FARM_CONNECT_MESSAGE
 
 void lcd_ping() { //chceck if printer is connected to monitoring when in farm mode
 	if (farm_mode) {
@@ -7543,19 +7508,6 @@ uint8_t get_message_level()
 {
 	return lcd_status_message_level;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 void menu_lcd_longpress_func(void)
