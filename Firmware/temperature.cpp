@@ -1552,17 +1552,17 @@ extern "C" {
 
 void adc_ready(void) //callback from adc when sampling finished
 {
-	current_temperature_raw[0] = adc_values[TEMP_0_PIN]; //heater
-	current_temperature_raw_pinda = adc_values[TEMP_PINDA_PIN];
-	current_temperature_bed_raw = adc_values[TEMP_BED_PIN];
+	current_temperature_raw[0] = adc_values[ADC_PIN_IDX(TEMP_0_PIN)]; //heater
+	current_temperature_raw_pinda = adc_values[ADC_PIN_IDX(TEMP_PINDA_PIN)];
+	current_temperature_bed_raw = adc_values[ADC_PIN_IDX(TEMP_BED_PIN)];
 #ifdef VOLT_PWR_PIN
-	current_voltage_raw_pwr = adc_values[VOLT_PWR_PIN];
+	current_voltage_raw_pwr = adc_values[ADC_PIN_IDX(VOLT_PWR_PIN)];
 #endif
 #ifdef AMBIENT_THERMISTOR
-	current_temperature_raw_ambient = adc_values[TEMP_AMBIENT_PIN];
+	current_temperature_raw_ambient = adc_values[ADC_PIN_IDX(TEMP_AMBIENT_PIN)];
 #endif //AMBIENT_THERMISTOR
 #ifdef VOLT_BED_PIN
-	current_voltage_raw_bed = adc_values[VOLT_BED_PIN]; // 6->9
+	current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
 #endif
 	temp_meas_ready = true;
 }

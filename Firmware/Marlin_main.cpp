@@ -140,6 +140,11 @@
 #define PRINTING_TYPE_SD 0
 #define PRINTING_TYPE_USB 1
 
+//filament types 
+#define FILAMENT_DEFAULT 0
+#define FILAMENT_FLEX 1
+#define FILAMENT_PVA 2
+
 // look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
 // http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
 
@@ -3117,9 +3122,9 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
 		
 		// Unload filament
 #if defined (SNMM) || defined (SNMM_V2) 
-		extr_unload(); //unload just current filament
+		extr_unload(); //unload just current filament for multimaterial printers (used also in M702)
 #else
-		unload_filament(); //unload filament fopr single material (used also in M702)
+		unload_filament(); //unload filament for single material (used also in M702)
 #endif 
 		//finish moves
 		st_synchronize();
@@ -3159,7 +3164,7 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
       st_synchronize();  
       
 	  //Unretract
-      current_position[E_AXIS]= current_position[E_AXIS] - FILAMENTCHANGE_FIRSTRETRACT;
+      current_position[E_AXIS]= current_position[E_AXIS] - e_shift;
       plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
 	  st_synchronize();
 
@@ -3351,8 +3356,8 @@ void process_commands()
 	  if(code_seen("CRASH_DETECTED"))
 	  {
 		  uint8_t mask = 0;
-		  if (code_seen("X")) mask |= X_AXIS_MASK;
-		  if (code_seen("Y")) mask |= Y_AXIS_MASK;
+		  if (code_seen('X')) mask |= X_AXIS_MASK;
+		  if (code_seen('Y')) mask |= Y_AXIS_MASK;
 		  crashdet_detected(mask);
 	  }
 	  else if(code_seen("CRASH_RECOVER"))
@@ -3464,7 +3469,9 @@ void process_commands()
                enquecommand_P(PSTR("M24")); 
 		}	
 		else if (code_seen("MMURES")) {
-			fprintf_P(uart2io, PSTR("X0"));
+
+			printf_P(PSTR("X0\n"));
+			fprintf_P(uart2io, PSTR("X0\n"));
 		}
 		else if (code_seen("RESET")) {
             // careful!
@@ -4281,10 +4288,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 		if (code_seen('X')) dimension_x = code_value();
 		if (code_seen('Y')) dimension_y = code_value();
-		if (code_seen('XP')) points_x = code_value();
-		if (code_seen('YP')) points_y = code_value();
-		if (code_seen('XO')) offset_x = code_value();
-		if (code_seen('YO')) offset_y = code_value();
+		if (code_seen("XP")) { strchr_pointer+=1; points_x = code_value(); }
+		if (code_seen("YP")) { strchr_pointer+=1; points_y = code_value(); }
+		if (code_seen("XO")) { strchr_pointer+=1; offset_x = code_value(); }
+		if (code_seen("YO")) { strchr_pointer+=1; offset_y = code_value(); }
 		
 		bed_analysis(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
 		
@@ -6289,6 +6296,29 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
+	case 403: //M403 set filament type (material) for particular extruder and send this information to mmu
+	{
+		//currently three different materials are needed (default, flex and PVA) 
+		//add storing this information for different load/unload profiles etc. in the future
+		//firmware does not wait for "ok" from mmu
+
+		uint8_t extruder;
+		uint8_t filament;
+
+		if(code_seen('E')) extruder = code_value();
+		if(code_seen('F')) filament = code_value();
+
+		printf_P(PSTR("Extruder: %d; "), extruder);
+		switch (filament) {
+			case FILAMENT_FLEX: printf_P(PSTR("Flex\n")); break;
+			case FILAMENT_PVA: printf_P(PSTR("PVA\n")); break;
+			default: printf_P(PSTR("Default\n")); break;
+		}
+		printf_P(PSTR("F%d%d\n"), extruder, filament);
+		fprintf_P(uart2io, PSTR("F%d%d\n"), extruder, filament);
+	}
+	break;
+
     case 500: // M500 Store settings in EEPROM
     {
         Config_StoreSettings(EEPROM_OFFSET);
@@ -7775,7 +7805,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	int ix = 0;
 	int iy = 0;
 
-	char* filename_wldsd = "wldsd.txt";
+	const char* filename_wldsd = "wldsd.txt";
 	char data_wldsd[70];
 	char numb_wldsd[10];
 
@@ -9075,11 +9105,16 @@ void M600_wait_for_user() {
 		WRITE(BEEPER, LOW);
 }
 
-void mmu_M600_load_filament(bool automatic) {
+void mmu_M600_load_filament(bool automatic) { 
+	//load filament for mmu v2
 #ifdef SNMM_V2
 		  bool response = false;
+		  bool yes = false;
 		  if (!automatic) {
-			  tmp_extruder = choose_extruder_menu();
+			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
+			  if(yes) tmp_extruder = choose_extruder_menu();
+			  else tmp_extruder = snmm_extruder;
+
 		  }
 		  else {
 			  tmp_extruder = (tmp_extruder+1)%5;
@@ -9130,6 +9165,7 @@ void M600_load_filament_movements() {
 }
 
 void M600_load_filament() {
+	//load filament for single material and SNMM 
 	lcd_wait_interact();
 
 	//load_filament_time = millis();

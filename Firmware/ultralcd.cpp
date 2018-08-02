@@ -48,90 +48,10 @@ char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 static void lcd_sd_updir();
 
-struct EditMenuParentState
-{
-    //prevMenu and prevEncoderPosition are used to store the previous menu location when editing settings.
-    menu_func_t prevMenu;
-    uint16_t prevEncoderPosition;
-    //Variables used when editing values.
-    const char* editLabel;
-    void* editValue;
-    int32_t minEditValue, maxEditValue;
-    // menu_func_t callbackFunc;
-};
-
-union MenuData
-{ 
-    struct BabyStep
-    {
-        // 29B total
-        int8_t status;
-        int babystepMem[3];
-        float babystepMemMM[3];
-    } babyStep;
-
-    struct SupportMenu
-    {
-        // 6B+16B=22B total
-        int8_t status;
-        bool is_flash_air;
-        uint8_t ip[4];
-        char ip_str[3*4+3+1];
-    } supportMenu;
-
-    struct AdjustBed
-    {
-        // 6+13+16=35B
-        // editMenuParentState is used when an edit menu is entered, so it knows
-        // the return menu and encoder state.
-        struct EditMenuParentState editMenuParentState;
-        int8_t status;
-        int8_t left;
-        int8_t right;
-        int8_t front;
-        int8_t rear;
-        int    left2;
-        int    right2;
-        int    front2;
-        int    rear2;
-    } adjustBed;
-
-    struct TuneMenu
-    {
-        // editMenuParentState is used when an edit menu is entered, so it knows
-        // the return menu and encoder state.
-        struct EditMenuParentState editMenuParentState;
-        // To recognize, whether the menu has been just initialized.
-        int8_t  status;
-        // Backup of extrudemultiply, to recognize, that the value has been changed and
-        // it needs to be applied.
-        int16_t extrudemultiply;
-    } tuneMenu;
-
-    // editMenuParentState is used when an edit menu is entered, so it knows
-    // the return menu and encoder state.
-    struct EditMenuParentState editMenuParentState;
-
-    struct AutoLoadFilamentMenu
-    {
-        //ShortTimer timer;
-		char dummy;
-    } autoLoadFilamentMenu;
-    struct _Lcd_moveMenu
-    {
-        bool initialized;
-        bool endstopsEnabledPrevious;
-    } _lcd_moveMenu;
-	struct sdcard_menu_t
-	{
-		uint8_t viewState;
-	} sdcard_menu;
-};
 
 // State of the currently active menu.
 // C Union manages sharing of the static memory by all the menus.
-//union MenuData menuData = { 0 };
-#define menuData (*((MenuData*)menu_data))
+union MenuData menuData = { 0 };
 
 
 int8_t ReInitLCD = 0;
@@ -3573,7 +3493,7 @@ void lcd_bed_calibration_show_result(uint8_t result, uint8_t point_too_far_mask)
         else if (point_too_far_mask == 2 || point_too_far_mask == 7)
             // Only the center point or all the three front points.
             msg = _i("XYZ calibration failed. Front calibration points not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_BOTH_FAR c=20 r=8
-        else if (point_too_far_mask & 1 == 0)
+        else if ((point_too_far_mask & 1) == 0)
             // The right and maybe the center point out of reach.
             msg = _i("XYZ calibration failed. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_FAILED_FRONT_RIGHT_FAR c=20 r=8
         else
@@ -3585,7 +3505,7 @@ void lcd_bed_calibration_show_result(uint8_t result, uint8_t point_too_far_mask)
             if (point_too_far_mask == 2 || point_too_far_mask == 7)
                 // Only the center point or all the three front points.
                 msg = _i("XYZ calibration compromised. Front calibration points not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
-            else if (point_too_far_mask & 1 == 0)
+            else if ((point_too_far_mask & 1) == 0)
                 // The right and maybe the center point out of reach.
                 msg = _i("XYZ calibration compromised. Right front calibration point not reachable.");////MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
             else
@@ -3648,11 +3568,11 @@ static void lcd_show_end_stops() {
 	lcd_set_cursor(0, 0);
 	lcd_puts_P((PSTR("End stops diag")));
 	lcd_set_cursor(0, 1);
-	lcd_puts_P((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("X1")) : (PSTR("X0")));
+	lcd_puts_P((READ(X_MIN_PIN) ^ (bool)X_MIN_ENDSTOP_INVERTING) ? (PSTR("X1")) : (PSTR("X0")));
 	lcd_set_cursor(0, 2);
-	lcd_puts_P((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Y1")) : (PSTR("Y0")));
+	lcd_puts_P((READ(Y_MIN_PIN) ^ (bool)Y_MIN_ENDSTOP_INVERTING) ? (PSTR("Y1")) : (PSTR("Y0")));
 	lcd_set_cursor(0, 3);
-	lcd_puts_P((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING == 1) ? (PSTR("Z1")) : (PSTR("Z0")));
+	lcd_puts_P((READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING) ? (PSTR("Z1")) : (PSTR("Z0")));
 }
 
 static void menu_show_end_stops() {
@@ -5356,7 +5276,7 @@ void extr_adj(int extruder) //loading filament for SNMM
 }
 
 
-void extr_unload() { //unloads filament
+void extr_unload() { //unload just current filament for multimaterial printers
 	#ifndef SNMM_V2
 	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
 	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
@@ -6234,6 +6154,25 @@ static void lcd_tune_menu()
 		}
 	}
 #endif //TMC2130
+
+     switch(eSoundMode)
+          {
+          case e_SOUND_MODE_LOUD:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
+               break;
+          case e_SOUND_MODE_ONCE:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ONCE),lcd_sound_state_set);
+               break;
+          case e_SOUND_MODE_SILENT:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);
+               break;
+          case e_SOUND_MODE_MUTE:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_MUTE),lcd_sound_state_set);
+               break;
+          default:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
+          }
+
 	MENU_END();
 }
 
@@ -6685,13 +6624,12 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 			enable_endstops(false);
 
 			const char *_error_1;
-			const char *_error_2;
 
 			if (axis == X_AXIS) _error_1 = "X";
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(9, _error_1, _error_2);
+			lcd_selftest_error(9, _error_1, NULL);
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -6704,13 +6642,12 @@ static bool lcd_selfcheck_axis_sg(char axis) {
 		if (abs(measured_axis_length[0] - measured_axis_length[1]) > 1) { //check if difference between first and second measurement is low
 			//loose pulleys
 			const char *_error_1;
-			const char *_error_2;
 
 			if (axis == X_AXIS) _error_1 = "X";
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(8, _error_1, _error_2);
+			lcd_selftest_error(8, _error_1, NULL);
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -6748,11 +6685,11 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
 #ifdef TMC2130
-		if (((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
+		if ((READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING))
 #else //TMC2130
-		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
-			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
-			((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1))
+		if ((READ(X_MIN_PIN) ^ (bool)X_MIN_ENDSTOP_INVERTING) ||
+			(READ(Y_MIN_PIN) ^ (bool)Y_MIN_ENDSTOP_INVERTING) ||
+			(READ(Z_MIN_PIN) ^ (bool)Z_MIN_ENDSTOP_INVERTING))
 #endif //TMC2130
 		{
 			if (_axis == 0)
@@ -7125,8 +7062,7 @@ static bool lcd_selftest_fsensor(void)
 	fsensor_init();
 	if (fsensor_not_responding)
 	{
-		const char *_err;
-		lcd_selftest_error(11, _err, _err);
+		lcd_selftest_error(11, NULL, NULL);
 	}
 	return (!fsensor_not_responding);
 }
@@ -7281,8 +7217,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 	}
 	if (!_result)
 	{
-		const char *_err;
-		lcd_selftest_error(_errno, _err, _err);
+		lcd_selftest_error(_errno, NULL, NULL);
 	}
 	return _result;
 }

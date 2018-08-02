@@ -129,10 +129,10 @@ void tmc2130_wr_TPWMTHRS(uint8_t axis, uint32_t val32);
 void tmc2130_wr_THIGH(uint8_t axis, uint32_t val32);
 
 #define tmc2130_rd(axis, addr, rval) tmc2130_rx(axis, addr, rval)
-#define tmc2130_wr(axis, addr, wval) tmc2130_tx(axis, addr | 0x80, wval)
+#define tmc2130_wr(axis, addr, wval) tmc2130_tx(axis, (addr) | 0x80, wval)
 
-uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval);
-uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval);
+static void tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval);
+static uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval);
 
 
 void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r);
@@ -627,7 +627,7 @@ inline void tmc2130_cs_high(uint8_t axis)
 #define TMC2130_SPI_TXRX       spi_txrx
 #define TMC2130_SPI_LEAVE()
 
-uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval)
+static void tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval)
 {
 	//datagram1 - request
 	TMC2130_SPI_ENTER();
@@ -641,7 +641,7 @@ uint8_t tmc2130_tx(uint8_t axis, uint8_t addr, uint32_t wval)
 	TMC2130_SPI_LEAVE();
 }
 
-uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
+static uint8_t tmc2130_rx(uint8_t axis, uint8_t addr, uint32_t* rval)
 {
 	//datagram1 - request
 	TMC2130_SPI_ENTER();
@@ -860,8 +860,8 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	printf_P(PSTR(" factor: %s\n"), ftostr43(fac));
 	uint8_t vA = 0;                //value of currentA
 	uint8_t va = 0;                //previous vA
-	uint8_t d0 = 0;                //delta0
-	uint8_t d1 = 1;                //delta1
+	int8_t d0 = 0;                //delta0
+	int8_t d1 = 1;                //delta1
 	uint8_t w[4] = {1,1,1,1};      //W bits (MSLUTSEL)
 	uint8_t x[3] = {255,255,255};  //X segment bounds (MSLUTSEL)
 	uint8_t s = 0;                 //current segment
@@ -872,7 +872,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	tmc2130_wr_MSLUTSTART(axis, 0, amp);
 	for (i = 0; i < 256; i++)
 	{
-		if ((i & 31) == 0)
+		if ((i & 0x1f) == 0)
 			reg = 0;
 		// calculate value
 		if (fac == 0) // default TMC wave
