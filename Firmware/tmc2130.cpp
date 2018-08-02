@@ -846,6 +846,7 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 		delayMicroseconds(100);
 	}
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	tmc2130_set_pwr(axis, pwr);
 }
 
 void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
