@@ -9096,7 +9096,6 @@ void M600_wait_for_user() {
 void mmu_M600_load_filament(bool automatic)
 { 
 	//load filament for mmu v2
-	bool response = false;
 	bool yes = false;
 	if (!automatic)
 	{
