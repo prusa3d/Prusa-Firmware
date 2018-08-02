@@ -911,7 +911,7 @@ const uint8_t lcd_chardata_folder[8] PROGMEM = {
 	B00000,
 	B00000}; //thanks joris
 
-const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
+/*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
 	B11100,
 	B10000,
 	B11000,
@@ -919,7 +919,7 @@ const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
 	B00101,
 	B00110,
 	B00101,
-	B00000}; //thanks Sonny Mounicou
+	B00000};*/ //thanks Sonny Mounicou
 
 /*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
 	B11100,
@@ -941,7 +941,7 @@ const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
 	B01100,
 	B10011};*/
 
-/*const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
+const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
 	B00000,
 	B00100,
 	B10010,
@@ -949,7 +949,7 @@ const uint8_t lcd_chardata_feedrate[8] PROGMEM = {
 	B10010,
 	B00100,
 	B00000,
-	B00000};*/
+	B00000};
 
 const uint8_t lcd_chardata_clock[8] PROGMEM = {
 	B00000,
