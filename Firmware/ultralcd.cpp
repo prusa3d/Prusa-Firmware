@@ -1112,11 +1112,11 @@ void lcd_commands()
 			
 			if (axis_relative_modes[3] == false) {
 				enquecommand_P(PSTR("M83")); // set extruder to relative mode
-			enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
+			enquecommand_P(PSTR("G1 E"  STRINGIFY(default_retraction))); //unretract
 				enquecommand_P(PSTR("M82")); // set extruder to absolute mode
 			}
 			else {
-				enquecommand_P(PSTR("G1 E"  STRINGIFY(DEFAULT_RETRACTION))); //unretract
+				enquecommand_P(PSTR("G1 E"  STRINGIFY(default_retraction))); //unretract
 			}
 			
 			lcd_commands_step = 1;

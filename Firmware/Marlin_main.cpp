@@ -297,6 +297,17 @@ byte b[2];
 int value;
 };
 
+//used for PINDA temp calibration and pause print
+#define DEFAULT_RETRACTION    1
+#define DEFAULT_RETRACTION_MM 4 //MM
+
+#ifdef SNMM_V2
+float default_retraction = DEFAULT_RETRACTION;
+#else //SNMM_V2
+float default_retraction = DEFAULT_RETRACTION_MM;
+#endif //SNMM_V2
+
+
 float homing_feedrate[] = HOMING_FEEDRATE;
 // Currently only the extruder axis may be switched to a relative mode.
 // Other axes are always absolute or relative based on the common relative_mode flag.
@@ -672,12 +683,12 @@ void crashdet_disable()
 
 void crashdet_stop_and_save_print()
 {
-	stop_and_save_print_to_ram(10, -DEFAULT_RETRACTION); //XY - no change, Z 10mm up, E -1mm retract
+	stop_and_save_print_to_ram(10, -default_retraction); //XY - no change, Z 10mm up, E -1mm retract
 }
 
 void crashdet_restore_print_and_continue()
 {
-	restore_print_from_ram_and_continue(DEFAULT_RETRACTION); //XYZ = orig, E +1mm unretract
+	restore_print_from_ram_and_continue(default_retraction); //XYZ = orig, E +1mm unretract
 //	babystep_apply();
 }
 
@@ -4611,7 +4622,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 //		SERIAL_ECHOLNPGM("Go home finished");
 		//unretract (after PINDA preheat retraction)
 		if (degHotend(active_extruder) > EXTRUDE_MINTEMP && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
-			current_position[E_AXIS] += DEFAULT_RETRACTION;
+			current_position[E_AXIS] += default_retraction;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 		}
 		KEEPALIVE_STATE(NOT_BUSY);
@@ -7980,7 +7991,7 @@ void temp_compensation_start() {
 	custom_message_state = PINDA_HEAT_T + 1;
 	lcd_update(2);
 	if (degHotend(active_extruder) > EXTRUDE_MINTEMP) {
-		current_position[E_AXIS] -= DEFAULT_RETRACTION;
+		current_position[E_AXIS] -= default_retraction;
 	}
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 	
@@ -8119,7 +8130,7 @@ void long_pause() //long pause print
 	pause_lastpos[E_AXIS] = current_position[E_AXIS];
 
 	//retract
-	current_position[E_AXIS] -= DEFAULT_RETRACTION;
+	current_position[E_AXIS] -= default_retraction;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400, active_extruder);
 
 	//lift z
@@ -8218,7 +8229,7 @@ void uvlo_()
       current_position[X_AXIS], 
       current_position[Y_AXIS], 
       current_position[Z_AXIS], 
-      current_position[E_AXIS] - DEFAULT_RETRACTION,
+      current_position[E_AXIS] - default_retraction,
       95, active_extruder);
     
         st_synchronize();
@@ -8228,7 +8239,7 @@ void uvlo_()
       current_position[X_AXIS], 
       current_position[Y_AXIS], 
       current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / axis_steps_per_unit[Z_AXIS], 
-      current_position[E_AXIS] - DEFAULT_RETRACTION,
+      current_position[E_AXIS] - default_retraction,
       40, active_extruder);
     
     st_synchronize();
@@ -8238,7 +8249,7 @@ void uvlo_()
                      current_position[X_AXIS],
                      current_position[Y_AXIS],
                      current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / axis_steps_per_unit[Z_AXIS],
-                     current_position[E_AXIS] - DEFAULT_RETRACTION,
+                     current_position[E_AXIS] - default_retraction,
                      40, active_extruder);
     st_synchronize();
     disable_e0();
@@ -8432,7 +8443,7 @@ void recover_print(uint8_t automatic) {
     if(automatic == 0){ 
         enquecommand_P(PSTR("G1 E5 F120")); //Extrude some filament to stabilize pessure 
     } 
-	enquecommand_P(PSTR("G1 E"  STRINGIFY(-DEFAULT_RETRACTION)" F480"));
+	enquecommand_P(PSTR("G1 E"  STRINGIFY(-default_retraction)" F480"));
 
 	printf_P(_N("After waiting for temp:\nCurrent pos X_AXIS:%.3f\nCurrent pos Y_AXIS:%.3f\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
@@ -8570,7 +8581,7 @@ void restore_print_from_eeprom() {
 	strcpy_P(cmd, PSTR("G1 Z")); strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z))));
 	enquecommand(cmd);
   // Unretract.
-	enquecommand_P(PSTR("G1 E"  STRINGIFY(2*DEFAULT_RETRACTION)" F480"));
+	enquecommand_P(PSTR("G1 E"  STRINGIFY(2*default_retraction)" F480"));
   // Set the feedrate saved at the power panic.
 	sprintf_P(cmd, PSTR("G1 F%d"), feedrate_rec);
 	enquecommand(cmd);
