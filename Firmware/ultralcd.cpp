@@ -2530,7 +2530,6 @@ void lcd_menu_statistics()
 	if (IS_SD_PRINTING)
 	{
 		float _met = ((float)total_filament_used) / (100000.f);
-		int _cm = (total_filament_used - (_met * 100000)) / 10;
 		int _t = (millis() - starttime) / 1000;
 		int _h = _t / 3600;
 		int _m = (_t - (_h * 3600)) / 60;
