@@ -7454,7 +7454,6 @@ static void lcd_connect_printer() {
 	lcd_update_enable(false);
 	lcd_clear();
 	
-	bool pressed = false;
 	int i = 0;
 	int t = 0;
 	lcd_set_custom_characters_progress();
