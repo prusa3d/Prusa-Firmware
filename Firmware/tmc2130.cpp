@@ -869,7 +869,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	int8_t b;                      //encoded bit value
     int8_t dA;                     //delta value
 	int i;                         //microstep index
-	uint32_t reg;                  //tmc2130 register
+	uint32_t reg = 0;              //tmc2130 register
 	tmc2130_wr_MSLUTSTART(axis, 0, amp);
 	for (i = 0; i < 256; i++)
 	{
