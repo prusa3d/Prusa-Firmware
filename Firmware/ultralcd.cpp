@@ -149,7 +149,7 @@ static void lcd_selftest_v();
 static bool lcd_selfcheck_endstops();
 
 #ifdef TMC2130
-static void reset_crash_det(char axis);
+static void reset_crash_det(unsigned char axis);
 static bool lcd_selfcheck_axis_sg(char axis);
 static bool lcd_selfcheck_axis(int _axis, int _travel);
 #else
@@ -6536,7 +6536,7 @@ bool lcd_selftest()
 
 #ifdef TMC2130
 
-static void reset_crash_det(char axis) {
+static void reset_crash_det(unsigned char axis) {
 	current_position[axis] += 10;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 	st_synchronize();
