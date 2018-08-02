@@ -291,11 +291,6 @@ CardReader card;
 unsigned long PingTime = millis();
 unsigned long NcTime;
 
-union Data
-{
-byte b[2];
-int value;
-};
 
 //used for PINDA temp calibration and pause print
 #define DEFAULT_RETRACTION    1
