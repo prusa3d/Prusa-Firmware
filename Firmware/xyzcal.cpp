@@ -285,7 +285,7 @@ void xyzcal_scan_pixels_32x32(int16_t cx, int16_t cy, int16_t min_z, int16_t max
 	xyzcal_lineXYZ_to(cx, cy, z, 2*delay_us, 0);
 	for (uint8_t r = 0; r < 32; r++)
 	{
-		int8_t _pinda = _PINDA;
+//		int8_t _pinda = _PINDA;
 		xyzcal_lineXYZ_to((r&1)?(cx+1024):(cx-1024), cy - 1024 + r*64, z, 2*delay_us, 0);
 		xyzcal_lineXYZ_to(_X, _Y, min_z, delay_us, 1);
 		xyzcal_lineXYZ_to(_X, _Y, max_z, delay_us, -1);
@@ -330,7 +330,7 @@ void xyzcal_scan_pixels_32x32(int16_t cx, int16_t cy, int16_t min_z, int16_t max
 				}
 				sm4_do_step(X_AXIS_MASK);
 				delayMicroseconds(600);
-				_pinda = pinda;
+//				_pinda = pinda;
 			}
 			sum >>= 6; //div 64
 			if (z_sum < 0)
