@@ -150,7 +150,7 @@ static bool lcd_selfcheck_endstops();
 
 #ifdef TMC2130
 static void reset_crash_det(unsigned char axis);
-static bool lcd_selfcheck_axis_sg(char axis);
+static bool lcd_selfcheck_axis_sg(unsigned char axis);
 static bool lcd_selfcheck_axis(int _axis, int _travel);
 #else
 static bool lcd_selfcheck_endstops();
@@ -6543,7 +6543,7 @@ static void reset_crash_det(unsigned char axis) {
 	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET)) tmc2130_sg_stop_on_crash = true;
 }
 
-static bool lcd_selfcheck_axis_sg(char axis) {
+static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 // each axis length is measured twice	
 	float axis_length, current_position_init, current_position_final;
 	float measured_axis_length[2];
