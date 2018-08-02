@@ -6296,7 +6296,7 @@ void lcd_sdcard_stop()
 void lcd_sdcard_menu()
 {
   uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
-  int tempScrool = 0;
+
   if (presort_flag == true) {
 	  presort_flag = false;
 	  card.presort();
