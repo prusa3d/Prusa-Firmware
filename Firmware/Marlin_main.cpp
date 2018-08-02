@@ -144,6 +144,7 @@
 #define FILAMENT_DEFAULT 0
 #define FILAMENT_FLEX 1
 #define FILAMENT_PVA 2
+#define FILAMENT_UNDEFINED 255
 
 // look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
 // http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
@@ -6301,8 +6302,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		//add storing this information for different load/unload profiles etc. in the future
 		//firmware does not wait for "ok" from mmu
 
-		uint8_t extruder;
-		uint8_t filament;
+		uint8_t extruder = 255;
+		uint8_t filament = FILAMENT_UNDEFINED;
 
 		if(code_seen('E')) extruder = code_value();
 		if(code_seen('F')) filament = code_value();
