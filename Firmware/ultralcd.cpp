@@ -6234,6 +6234,25 @@ static void lcd_tune_menu()
 		}
 	}
 #endif //TMC2130
+
+     switch(eSoundMode)
+          {
+          case e_SOUND_MODE_LOUD:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
+               break;
+          case e_SOUND_MODE_ONCE:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ONCE),lcd_sound_state_set);
+               break;
+          case e_SOUND_MODE_SILENT:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);
+               break;
+          case e_SOUND_MODE_MUTE:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_MUTE),lcd_sound_state_set);
+               break;
+          default:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
+          }
+
 	MENU_END();
 }
 
