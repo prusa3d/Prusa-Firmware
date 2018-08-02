@@ -594,11 +594,6 @@
 
 #define MIN_PRINT_FAN_SPEED 75
 
-#if defined (SNMM) || defined (SNMM_V2)
-#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
-#else
-#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
-#endif
 
 // How much shall the print head be lifted on power panic?
 // Ideally the Z axis will reach a zero phase of the stepper driver on power outage. To simplify this,
