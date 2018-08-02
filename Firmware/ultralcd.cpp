@@ -33,10 +33,9 @@
 
 #include "sound.h"
 
-#ifdef SNMM_V2
 #include "uart2.h"
-#endif //SNMM_V2
 
+#include "mmu.h"
 
 extern int lcd_change_fil_state;
 extern bool fans_check_enabled;
@@ -73,9 +72,6 @@ extern void crashdet_disable();
 #endif //TMC2130
 
 
-#if defined (SNMM) || defined (SNMM_V2)
-uint8_t snmm_extruder = 0;
-#endif
 
 #ifdef SDCARD_SORT_ALPHA
  bool presort_flag = false;
@@ -166,17 +162,8 @@ static bool lcd_selftest_fan_dialog(int _fan);
 static bool lcd_selftest_fsensor();
 static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
-static int get_ext_nr();
-static void extr_adj_0();
-static void extr_adj_1();
-static void extr_adj_2();
-static void extr_adj_3();
 static void fil_load_menu();
 static void fil_unload_menu();
-static void extr_unload_0();
-static void extr_unload_1();
-static void extr_unload_2();
-static void extr_unload_3();
 static void lcd_disable_farm_mode();
 static void lcd_set_fan_check();
 static char snmm_stop_print_menu();
@@ -1431,9 +1418,8 @@ void lcd_commands()
 			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
-#ifdef SNMM_V2
-			enquecommand_P(PSTR("T?"));
-#endif //SNMM_V2
+			if (mmu_enabled)
+				enquecommand_P(PSTR("T?"));
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
 			lcd_commands_step = 8;
@@ -1625,11 +1611,10 @@ void lcd_commands()
 		{
 			lcd_timeoutToStatus.start();
 			enquecommand_P(PSTR("M107")); //turn off printer fan			
-			#ifdef SNMM_V2
-			enquecommand_P(PSTR("M702 C"));
-			#else //SNMM_V2
-			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
-			#endif //SNMM_V2
+			if (mmu_enabled)
+				enquecommand_P(PSTR("M702 C"));
+			else
+				enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
 			enquecommand_P(PSTR("M104 S0")); // turn off temperature
 			enquecommand_P(PSTR("M140 S0")); // turn off heatbed
 			enquecommand_P(PSTR("G1 Z10 F1300.000"));
@@ -1701,11 +1686,10 @@ void lcd_commands()
 			enquecommand_P(PSTR("G1 X50 Y" STRINGIFY(Y_MAX_POS) " E0 F7000"));
 			#endif
 			lcd_ignore_click(false);
-			#if defined (SNMM) || defined (SNMM_V2)
-			lcd_commands_step = 8;
-			#else
-			lcd_commands_step = 3;
-			#endif
+			if (mmu_enabled)
+				lcd_commands_step = 8;
+			else
+				lcd_commands_step = 3;
 		}
 		if (lcd_commands_step == 5 && !blocks_queued())
 		{
@@ -1722,25 +1706,25 @@ void lcd_commands()
 			lcd_setstatuspgm(_T(MSG_PRINT_ABORTED));
 			cancel_heatup = true;
 			setTargetBed(0);
-			#if !(defined (SNMM) || defined (SNMM_V2))
-			setAllTargetHotends(0);
-			#endif
+			if (mmu_enabled)
+				setAllTargetHotends(0);
 			manage_heater();
 			custom_message = true;
 			custom_message_type = 2;
 			lcd_commands_step = 5;
 		}
-		if (lcd_commands_step == 7 && !blocks_queued()) {
-			#ifdef SNMM_V2
-			enquecommand_P(PSTR("M702 C")); //current
-			#else //SNMM_V2
-			switch(snmm_stop_print_menu()) {
+		if (lcd_commands_step == 7 && !blocks_queued())
+		{
+			if (mmu_enabled)
+				enquecommand_P(PSTR("M702 C")); //current
+			else
+				switch(snmm_stop_print_menu())
+				{
 				case 0: enquecommand_P(PSTR("M702")); break;//all 
 				case 1: enquecommand_P(PSTR("M702 U")); break; //used
 				case 2: enquecommand_P(PSTR("M702 C")); break; //current
 				default: enquecommand_P(PSTR("M702")); break;
-			}
-			#endif //SNMM_V2
+				}
 			lcd_commands_step = 3;
 		}
 		if (lcd_commands_step == 8 && !blocks_queued()) { //step 8 is here for delay (going to next step after execution of all gcodes from step 4)
@@ -1851,7 +1835,7 @@ static float count_e(float layer_heigth, float extrusion_width, float extrusion_
 	return extr;
 }
 
-static void lcd_return_to_status()
+void lcd_return_to_status()
 {
 	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, false, true);
@@ -3284,7 +3268,13 @@ const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines)
     // Disable update of the screen by the usual lcd_update(0) routine.
     lcd_update_enable(false);
     lcd_clear();
+//	uint8_t nlines;
     return lcd_display_message_fullscreen_nonBlocking_P(msg, nlines);
+}
+const char* lcd_display_message_fullscreen_P(const char *msg) 
+{
+  uint8_t nlines;
+  return lcd_display_message_fullscreen_P(msg, nlines);
 }
 
 
@@ -4313,27 +4303,29 @@ void lcd_toshiba_flash_air_compatibility_toggle()
    eeprom_update_byte((uint8_t*)EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY, card.ToshibaFlashAir_isEnabled());
 }
 
-void lcd_v2_calibration() {
-#ifdef SNMM_V2
-	lcd_commands_type = LCD_COMMAND_V2_CAL;
-#else //SNMM_V2
-	bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
-	if (loaded) {
+void lcd_v2_calibration()
+{
+	if (mmu_enabled)
 		lcd_commands_type = LCD_COMMAND_V2_CAL;
-	}
-	else {
-		lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
-		for (int i = 0; i < 20; i++) { //wait max. 2s
-			delay_keep_alive(100);
-			if (lcd_clicked()) {
-				while (lcd_clicked());
-				delay(10);
-				while (lcd_clicked());
-				break;
+	else
+	{
+		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
+		if (loaded) {
+			lcd_commands_type = LCD_COMMAND_V2_CAL;
+		}
+		else {
+			lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
+			for (int i = 0; i < 20; i++) { //wait max. 2s
+				delay_keep_alive(100);
+				if (lcd_clicked()) {
+					while (lcd_clicked());
+					delay(10);
+					while (lcd_clicked());
+					break;
+				}
 			}
 		}
 	}
-#endif //SNMM_V2
 	lcd_return_to_status();
 	lcd_update_enable(true);
 }
@@ -4942,13 +4934,9 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	
 }
 
-char choose_extruder_menu() {
-
-#ifdef SNMM_V2
-	int items_no = 5;
-#else
-	int items_no = 4;
-#endif
+char choose_extruder_menu()
+{
+	int items_no = mmu_enabled?5:4;
 	int first = 0;
 	int enc_dif = 0;
 	char cursor_pos = 1;
@@ -5138,384 +5126,6 @@ static void lcd_disable_farm_mode()
 }
 
 
-#if defined (SNMM) || defined(SNMM_V2) 
-
-static void extr_mov(float shift, float feed_rate) { //move extruder no matter what the current heater temperature is
-	set_extrude_min_temp(.0);
-	current_position[E_AXIS] += shift;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feed_rate, active_extruder);
-	set_extrude_min_temp(EXTRUDE_MINTEMP);
-}
-
-
-void change_extr(int extr) { //switches multiplexer for extruders
-#ifndef SNMM_V2
-	st_synchronize();
-	delay(100);
-
-	disable_e0();
-	disable_e1();
-	disable_e2();
-
-	snmm_extruder = extr;
-
-	pinMode(E_MUX0_PIN, OUTPUT);
-	pinMode(E_MUX1_PIN, OUTPUT);
-
-	switch (extr) {
-	case 1:
-		WRITE(E_MUX0_PIN, HIGH);
-		WRITE(E_MUX1_PIN, LOW);
-		
-		break;
-	case 2:
-		WRITE(E_MUX0_PIN, LOW);
-		WRITE(E_MUX1_PIN, HIGH);
-		
-		break;
-	case 3:
-		WRITE(E_MUX0_PIN, HIGH);
-		WRITE(E_MUX1_PIN, HIGH);
-		
-		break;
-	default:
-		WRITE(E_MUX0_PIN, LOW);
-		WRITE(E_MUX1_PIN, LOW);
-		
-		break;
-	}
-	delay(100);
-#endif
-}
-
-static int get_ext_nr() { //reads multiplexer input pins and return current extruder number (counted from 0)
-#ifdef SNMM_V2
-	return(snmm_extruder); //update needed
-#else 
-	return(2 * READ(E_MUX1_PIN) + READ(E_MUX0_PIN));
-#endif
-}
-
-
-void display_loading() {
-	switch (snmm_extruder) {
-	case 1: lcd_display_message_fullscreen_P(_T(MSG_FILAMENT_LOADING_T1)); break;
-	case 2: lcd_display_message_fullscreen_P(_T(MSG_FILAMENT_LOADING_T2)); break;
-	case 3: lcd_display_message_fullscreen_P(_T(MSG_FILAMENT_LOADING_T3)); break;
-	default: lcd_display_message_fullscreen_P(_T(MSG_FILAMENT_LOADING_T0)); break;
-	}
-}
-
-void extr_adj(int extruder) //loading filament for SNMM
-{
-
-#ifdef SNMM_V2
-    printf_P(PSTR("L%d \n"),extruder);
-    fprintf_P(uart2io, PSTR("L%d\n"), extruder);
-	
-	//show which filament is currently loaded
-	
-
-
-
-
-	lcd_update_enable(false);
-	lcd_clear();
-	lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
-	//if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd.setCursor(0, 1);
-	//else lcd.print(" ");
-	lcd_print(" ");
-	lcd_print(snmm_extruder + 1);
-
-	// get response
-	manage_response();
-
-	lcd_update_enable(true);
-	
-	
-	//lcd_return_to_status();
-#else
-
-	bool correct;
-	max_feedrate[E_AXIS] =80;
-	//max_feedrate[E_AXIS] = 50;
-	START:
-	lcd_clear();
-	lcd_set_cursor(0, 0); 
-	switch (extruder) {
-	case 1: lcd_display_message_fullscreen_P(_T(MSG_FILAMENT_LOADING_T1)); break;
-	case 2: lcd_display_message_fullscreen_P(_T(MSG_FILAMENT_LOADING_T2)); break;
-	case 3: lcd_display_message_fullscreen_P(_T(MSG_FILAMENT_LOADING_T3)); break;
-	default: lcd_display_message_fullscreen_P(_T(MSG_FILAMENT_LOADING_T0)); break;   
-	}
-	KEEPALIVE_STATE(PAUSED_FOR_USER);
-	do{
-		extr_mov(0.001,1000);
-		delay_keep_alive(2);
-	} while (!lcd_clicked());
-	//delay_keep_alive(500);
-	KEEPALIVE_STATE(IN_HANDLER);
-	st_synchronize();
-	//correct = lcd_show_fullscreen_message_yes_no_and_wait_P(MSG_FIL_LOADED_CHECK, false);
-	//if (!correct) goto	START;
-	//extr_mov(BOWDEN_LENGTH/2.f, 500); //dividing by 2 is there because of max. extrusion length limitation (x_max + y_max)
-	//extr_mov(BOWDEN_LENGTH/2.f, 500);
-	extr_mov(bowden_length[extruder], 500);
-	lcd_clear();
-	lcd_set_cursor(0, 0); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
-	if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd_set_cursor(0, 1);
-	else lcd_print(" ");
-	lcd_print(snmm_extruder + 1);
-	lcd_set_cursor(0, 2); lcd_puts_P(_T(MSG_PLEASE_WAIT));
-	st_synchronize();
-	max_feedrate[E_AXIS] = 50;
-	lcd_update_enable(true);
-	lcd_return_to_status();
-	lcdDrawUpdate = 2;
-#endif
-}
-
-
-void extr_unload() { //unload just current filament for multimaterial printers
-	#ifndef SNMM_V2
-	float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
-	float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
-	uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
-	#endif
-
-	if (degHotend0() > EXTRUDE_MINTEMP) {
-		#ifdef SNMM_V2
-		st_synchronize();
-		
-		//show which filament is currently unloaded
-		lcd_update_enable(false);
-		lcd_clear();
-		lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-		lcd_print(" ");
-		lcd_print(snmm_extruder + 1);
-
-		current_position[E_AXIS] -= 80;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-		st_synchronize();
-		printf_P(PSTR("U0\n"));
-		fprintf_P(uart2io, PSTR("U0\n"));
-
-		// get response
-		manage_response();
-
-		lcd_update_enable(true);
-		#else //SNMM_V2
-
-		lcd_clear();
-		lcd_display_message_fullscreen_P(PSTR(""));
-		max_feedrate[E_AXIS] = 50;
-		lcd_set_cursor(0, 0); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-		lcd_print(" ");
-		lcd_print(snmm_extruder + 1);
-		lcd_set_cursor(0, 2); lcd_puts_P(_T(MSG_PLEASE_WAIT));
-		if (current_position[Z_AXIS] < 15) {
-			current_position[Z_AXIS] += 15; //lifting in Z direction to make space for extrusion
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 25, active_extruder);
-		}
-		
-		current_position[E_AXIS] += 10; //extrusion
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 10, active_extruder);
-		st_current_set(2, E_MOTOR_HIGH_CURRENT);
-		if (current_temperature[0] < 230) { //PLA & all other filaments
-			current_position[E_AXIS] += 5.4;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2800 / 60, active_extruder);
-			current_position[E_AXIS] += 3.2;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-			current_position[E_AXIS] += 3;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3400 / 60, active_extruder);
-		}
-		else { //ABS
-			current_position[E_AXIS] += 3.1;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
-			current_position[E_AXIS] += 3.1;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-			current_position[E_AXIS] += 4;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-			/*current_position[X_AXIS] += 23; //delay
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder); //delay
-			current_position[X_AXIS] -= 23; //delay
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder); //delay*/
-			delay_keep_alive(4700);
-		}
-	
-		max_feedrate[E_AXIS] = 80;
-		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
-		current_position[E_AXIS] -= (bowden_length[snmm_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
-		st_synchronize();
-		//st_current_init();
-		if (SilentMode != SILENT_MODE_OFF) st_current_set(2, tmp_motor[2]); //set back to normal operation currents
-		else st_current_set(2, tmp_motor_loud[2]);
-		lcd_update_enable(true);
-		lcd_return_to_status();
-		max_feedrate[E_AXIS] = 50;
-		#endif //SNMM_V2
-	}
-	else {
-
-		lcd_clear();
-		lcd_set_cursor(0, 0);
-		lcd_puts_P(_T(MSG_ERROR));
-		lcd_set_cursor(0, 2);
-		lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-
-		delay(2000);
-		lcd_clear();
-	}
-	//lcd_return_to_status();
-}
-
-//wrapper functions for loading filament
-static void extr_adj_0(){
-	#ifdef SNMM_V2
-	enquecommand_P(PSTR("M701 E0"));
-	#else
-	change_extr(0);
-	extr_adj(0);
-	#endif
-}
-static void extr_adj_1() {
-	#ifdef SNMM_V2
-	enquecommand_P(PSTR("M701 E1"));
-	#else
-	change_extr(1);
-	extr_adj(1);
-	#endif
-}
-static void extr_adj_2() {
-	#ifdef SNMM_V2
-	enquecommand_P(PSTR("M701 E2"));
-	#else
-	change_extr(2);
-	extr_adj(2);
-	#endif
-}
-static void extr_adj_3() {
-	#ifdef SNMM_V2
-	enquecommand_P(PSTR("M701 E3"));
-	#else
-	change_extr(3);
-	extr_adj(3);
-	#endif
-}
-static void extr_adj_4() {
-	#ifdef SNMM_V2
-	enquecommand_P(PSTR("M701 E4"));
-	#else
-	change_extr(4);
-	extr_adj(4);
-	#endif
-}
-
-static void load_all() {
-	#ifdef SNMM_V2
-	enquecommand_P(PSTR("M701 E0"));
-	enquecommand_P(PSTR("M701 E1"));
-	enquecommand_P(PSTR("M701 E2"));
-	enquecommand_P(PSTR("M701 E3"));
-	enquecommand_P(PSTR("M701 E4"));
-	#else
-	for (int i = 0; i < 4; i++) {
-
-		
-
-		change_extr(i);
-		extr_adj(i);
-
-	}
-	#endif
-}
-
-//wrapper functions for changing extruders
-static void extr_change_0() {
-	change_extr(0);
-	lcd_return_to_status();
-}
-static void extr_change_1() {
-	change_extr(1);
-	lcd_return_to_status();
-}
-static void extr_change_2() {
-	change_extr(2);
-	lcd_return_to_status();
-}
-static void extr_change_3() {
-	change_extr(3);
-	lcd_return_to_status();
-}
-
-//wrapper functions for unloading filament
-void extr_unload_all() {
-	if (degHotend0() > EXTRUDE_MINTEMP) {
-		for (int i = 0; i < 4; i++) {
-			change_extr(i);
-			extr_unload();
-		}
-	}
-	else {
-		lcd_clear();
-		lcd_set_cursor(0, 0);
-		lcd_puts_P(_T(MSG_ERROR));
-		lcd_set_cursor(0, 2);
-		lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-		delay(2000);
-		lcd_clear();
-		lcd_return_to_status();
-	}
-}
-
-//unloading just used filament (for snmm)
-void extr_unload_used() {
-	if (degHotend0() > EXTRUDE_MINTEMP) {
-		for (int i = 0; i < 4; i++) {
-			if (snmm_filaments_used & (1 << i)) {
-				change_extr(i);
-				extr_unload();
-			}
-		}
-		snmm_filaments_used = 0;
-	}
-	else {
-		lcd_clear();
-		lcd_set_cursor(0, 0);
-		lcd_puts_P(_T(MSG_ERROR));
-		lcd_set_cursor(0, 2);
-		lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-		delay(2000);
-		lcd_clear();
-		lcd_return_to_status();
-	}
-}
-
-
-
-static void extr_unload_0() {
-	change_extr(0);
-	extr_unload();
-}
-static void extr_unload_1() {
-	change_extr(1);
-	extr_unload();
-}
-static void extr_unload_2() {
-	change_extr(2);
-	extr_unload();
-}
-static void extr_unload_3() {
-	change_extr(3);
-	extr_unload();
-}
-static void extr_unload_4() {
-	change_extr(4);
-	extr_unload();
-}
-
 static void fil_load_menu()
 {
 	MENU_BEGIN();
@@ -5526,9 +5136,8 @@ static void fil_load_menu()
 	MENU_ITEM_FUNCTION_P(_i("Load filament 3"), extr_adj_2);////MSG_LOAD_FILAMENT_3 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Load filament 4"), extr_adj_3);////MSG_LOAD_FILAMENT_4 c=17 r=0
 
-#ifdef SNMM_V2
-	MENU_ITEM_FUNCTION_P(_i("Load filament 5"), extr_adj_4);
-#endif
+	if (mmu_enabled)
+		MENU_ITEM_FUNCTION_P(_i("Load filament 5"), extr_adj_4);
 
 	MENU_END();
 }
@@ -5543,9 +5152,8 @@ static void fil_unload_menu()
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 3"), extr_unload_2);////MSG_UNLOAD_FILAMENT_3 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 4"), extr_unload_3);////MSG_UNLOAD_FILAMENT_4 c=17 r=0
 
-#ifdef SNMM_V2
-	MENU_ITEM_FUNCTION_P(_i("Unload filament 5"), extr_unload_4);////MSG_UNLOAD_FILAMENT_4 c=17 r=0
-#endif
+	if (mmu_enabled)
+		MENU_ITEM_FUNCTION_P(_i("Unload filament 5"), extr_unload_4);////MSG_UNLOAD_FILAMENT_4 c=17 r=0
 
 	MENU_END();
 }
@@ -5561,10 +5169,10 @@ static void change_extr_menu(){
 	MENU_END();
 }
 
-#endif
 
 //unload filament for single material printer (used in M702 gcode)
-void unload_filament() {
+void unload_filament()
+{
 	custom_message = true;
 	custom_message_type = 2;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
@@ -5981,25 +5589,27 @@ static void lcd_main_menu()
   } 
   else 
   {
-	#if defined (SNMM) || defined (SNMM_V2)
-	MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
-    #ifdef SNMM_V2
-	MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
-    #else
-	MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), fil_unload_menu);
-	MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20 r=1
-    #endif
-
-	#else
-	  #ifdef FILAMENT_SENSOR
-	if ( ((fsensor_autoload_enabled == true) && (fsensor_enabled == true)))
-        MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=17 r=0
+	if (mmu_enabled)
+	{
+		MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
+		if (mmu_enabled)
+			MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
+		else
+		{
+			MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), fil_unload_menu);
+			MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20 r=1
+		}
+	}
 	else
-      #endif //FILAMENT_SENSOR
-		MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
-	MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
-    #endif
-
+	{
+#ifdef FILAMENT_SENSOR
+		if ( ((fsensor_autoload_enabled == true) && (fsensor_enabled == true)))
+			MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=17 r=0
+		else
+#endif //FILAMENT_SENSOR
+			MENU_ITEM_FUNCTION_P(_T(MSG_LOAD_FILAMENT), lcd_LoadFilament);
+		MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), lcd_unLoadFilament);
+	}
 	MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
 
