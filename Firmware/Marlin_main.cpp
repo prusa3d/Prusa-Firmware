@@ -920,7 +920,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 }
 
 
-FILE _uartout = {0};
+FILE _uartout; //= {0}; Global variable is always zero initialized. No need to explicitly state this.
 
 int uart_putchar(char c, FILE *stream)
 {
