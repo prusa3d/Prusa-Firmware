@@ -477,11 +477,6 @@
 
 #define MIN_PRINT_FAN_SPEED 75
 
-#ifdef SNMM
-#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
-#else
-#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
-#endif
 
 #define M600_TIMEOUT 600  //seconds
 

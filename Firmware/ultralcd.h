@@ -128,9 +128,8 @@ extern union MenuData menuData;
 
   void lcd_menu_statistics(); 
 
-  extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
-  inline const char* lcd_display_message_fullscreen_P(const char *msg) 
-    { uint8_t nlines; return lcd_display_message_fullscreen_P(msg, nlines); }
+extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
+extern const char* lcd_display_message_fullscreen_P(const char *msg);
 
   extern void lcd_wait_for_click();
   extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
@@ -186,10 +185,7 @@ extern union MenuData menuData;
   #endif
   extern int8_t SilentModeMenu;
 
-#if defined (SNMM) || defined (SNMM_V2) 
-  extern uint8_t snmm_extruder;
-#endif // defined (SNMM) || defined (SNMM_V2)
-
+  
   extern bool cancel_heatup;
   extern bool isPrintPaused;
       
