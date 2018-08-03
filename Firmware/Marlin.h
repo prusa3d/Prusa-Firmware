@@ -467,7 +467,7 @@ void gcode_M701();
 
 void proc_commands();
 
-void manage_response();
+void manage_response(bool move_axes, bool turn_off_nozzle);
 bool mmu_get_response(bool timeout, bool clear);
 void mmu_not_responding();
 void mmu_load_to_nozzle();

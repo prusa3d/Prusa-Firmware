@@ -6834,7 +6834,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
 		  fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
 
-		  manage_response();
+		  manage_response(true, true);
 
     	  snmm_extruder = tmp_extruder; //filament change is finished
 
@@ -8890,7 +8890,7 @@ bool mmu_get_response(bool timeout, bool clear) {
 }
 
 
-void manage_response() {
+void manage_response(bool move_axes, bool turn_off_nozzle) {
 	
 	bool response = false;
 	mmu_print_saved = false;
@@ -8911,31 +8911,34 @@ void manage_response() {
 				  mmu_print_saved = true;
 				  
 				  hotend_temp_bckp = degTargetHotend(active_extruder);
-				  z_position_bckp = current_position[Z_AXIS];
-				  x_position_bckp = current_position[X_AXIS];
-				  y_position_bckp = current_position[Y_AXIS];
-
-				  //lift z
-				  current_position[Z_AXIS] += Z_PAUSE_LIFT;
-				  if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
-				  st_synchronize();
-				  //set nozzle target temperature to 0
-				  setAllTargetHotends(0);
-
-				  //Move XY to side
-				  current_position[X_AXIS] = X_PAUSE_POS;
-				  current_position[Y_AXIS] = Y_PAUSE_POS;
-				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
-				  st_synchronize();
-
-				  printf_P(PSTR("MMU not responding\n"));
-				  lcd_show_fullscreen_message_and_wait_P(_i("MMU needs user attention. Please press knob to resume nozzle target temperature."));
-				  setTargetHotend(hotend_temp_bckp, active_extruder);
-				  while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) {
-					delay_keep_alive(1000);
-					lcd_wait_for_heater();
-				  }	
+				  if (move_axes) {
+					  z_position_bckp = current_position[Z_AXIS];
+					  x_position_bckp = current_position[X_AXIS];
+					  y_position_bckp = current_position[Y_AXIS];
+				  
+					  //lift z
+					  current_position[Z_AXIS] += Z_PAUSE_LIFT;
+					  if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+					  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
+					  st_synchronize();
+					  					  
+					  //Move XY to side
+					  current_position[X_AXIS] = X_PAUSE_POS;
+					  current_position[Y_AXIS] = Y_PAUSE_POS;
+					  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+					  st_synchronize();
+				  }
+				  if (turn_off_nozzle) {
+					  //set nozzle target temperature to 0
+					  setAllTargetHotends(0);
+					  printf_P(PSTR("MMU not responding\n"));
+					  lcd_show_fullscreen_message_and_wait_P(_i("MMU needs user attention. Please press knob to resume nozzle target temperature."));
+					  setTargetHotend(hotend_temp_bckp, active_extruder);
+					  while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) {
+						  delay_keep_alive(1000);
+						  lcd_wait_for_heater();
+					  }
+				  }
 			  }
 			  lcd_display_message_fullscreen_P(_i("Check MMU. Fix the issue and then press button on MMU unit."));
 		  }
@@ -8943,13 +8946,18 @@ void manage_response() {
 			  printf_P(PSTR("MMU start responding\n"));
 			  lcd_clear();
 			  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming..."));
-			  current_position[X_AXIS] = x_position_bckp;
-			  current_position[Y_AXIS] = y_position_bckp;
-			  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
-			  st_synchronize();
-			  current_position[Z_AXIS] = z_position_bckp;
-			  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
-			  st_synchronize();			  
+			  if (move_axes) {
+				  current_position[X_AXIS] = x_position_bckp;
+				  current_position[Y_AXIS] = y_position_bckp;
+				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+				  st_synchronize();
+				  current_position[Z_AXIS] = z_position_bckp;
+				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
+				  st_synchronize();
+			  }
+			  else {
+				  delay_keep_alive(1000); //delay just for showing MMU OK message for a while in case that there are no xyz movements
+			  }
 		  }
 	}
 	if (lcd_update_was_enabled) lcd_update_enable(true);
@@ -9121,7 +9129,7 @@ void mmu_M600_load_filament(bool automatic) {
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
 		  fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
 
-		  manage_response();
+		  manage_response(false, true);
     	  snmm_extruder = tmp_extruder; //filament change is finished
 
 		  mmu_load_to_nozzle();
