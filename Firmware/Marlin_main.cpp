@@ -2965,15 +2965,6 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 
 		if (st_get_position_mm(Z_AXIS) == MESH_HOME_Z_SEARCH)
 		{
-
-			int8_t verbosity_level = 0;
-			if (code_seen('V'))
-			{
-				// Just 'V' without a number counts as V1.
-				char c = strchr_pointer[1];
-				verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
-			}
-
 			if (onlyZ)
 			{
 				clean_up_after_endstop_move();
