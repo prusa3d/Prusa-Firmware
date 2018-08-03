@@ -3092,8 +3092,9 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
 
 		//First backup current position and settings
         feedmultiplyBckp=feedmultiply;
-        float HotendTempBckp = degTargetHotend(active_extruder);
-		int fanSpeedBckp = fanSpeed;
+        HotendTempBckp = degTargetHotend(active_extruder);
+		fanSpeedBckp = fanSpeed;
+
         lastpos[X_AXIS]=current_position[X_AXIS];
         lastpos[Y_AXIS]=current_position[Y_AXIS];
         lastpos[Z_AXIS]=current_position[Z_AXIS];
@@ -8868,11 +8869,14 @@ static void print_time_remaining_init() {
 	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 }
 
-bool mmu_get_response(bool timeout) {
+bool mmu_get_response(bool timeout, bool clear) {
+	//waits for "ok" from mmu
+	//function returns true if "ok" was received
+	//if timeout is set to true function return false if there is no "ok" received before timeout
 	bool response = true;
 	LongTimer mmu_get_reponse_timeout;
-    uart2_rx_clr();
-	
+    if (clear) uart2_rx_clr();
+	KEEPALIVE_STATE(IN_PROCESS);
 	mmu_get_reponse_timeout.start();
 	while (!uart2_rx_ok())
     {
@@ -8887,15 +8891,18 @@ bool mmu_get_response(bool timeout) {
 
 
 void manage_response() {
+	
 	bool response = false;
 	mmu_print_saved = false;
 	bool lcd_update_was_enabled = false;
-	float hotend_temp_bckp;
-	float z_position_bckp, x_position_bckp, y_position_bckp;
+	float hotend_temp_bckp = degTargetHotend(active_extruder);
+	float z_position_bckp = current_position[Z_AXIS];
+	float x_position_bckp = current_position[X_AXIS];
+	float y_position_bckp = current_position[Y_AXIS];	
 	while(!response) {
-		  response = mmu_get_response(true);
-		  if (!response) {
-			  if (!mmu_print_saved) { //first occurence
+		  response = mmu_get_response(true, !mmu_print_saved); //wait for "ok" from mmu
+		  if (!response) { //no "ok" was received in reserved time frame, user will fix the issue on mmu unit
+			  if (!mmu_print_saved) { //first occurence, we are saving current position, park print head in certain position and disable nozzle heater
 				  if (lcd_update_enabled) {
 					  lcd_update_was_enabled = true;
 					  lcd_update_enable(false);
@@ -8921,15 +8928,16 @@ void manage_response() {
 				  current_position[Y_AXIS] = Y_PAUSE_POS;
 				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
 				  st_synchronize();
+
+				  printf_P(PSTR("MMU not responding\n"));
+				  lcd_show_fullscreen_message_and_wait_P(_i("MMU needs user attention. Please press knob to resume nozzle target temperature."));
+				  setTargetHotend(hotend_temp_bckp, active_extruder);
+				  while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) {
+					delay_keep_alive(1000);
+					lcd_wait_for_heater();
+				  }	
 			  }
-			  printf_P(PSTR("MMU not responding\n"));
-			  lcd_show_fullscreen_message_and_wait_P(_i("MMU needs user attention. Please press knob to resume nozzle target temperature."));
-			  setTargetHotend(hotend_temp_bckp, active_extruder);
-			  while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) {
-				  delay_keep_alive(1000);
-				  lcd_wait_for_heater();
-			  }			
-			  lcd_display_message_fullscreen_P(_i("Now check MMU. Fix the issue and then press knob on MMU unit."));
+			  lcd_display_message_fullscreen_P(_i("Check MMU. Fix the issue and then press button on MMU unit."));
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU start responding\n"));
@@ -8948,17 +8956,6 @@ void manage_response() {
 }
 
 void mmu_load_to_nozzle() {
-	/*bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
-	if (!saved_e_relative_mode) {
-		enquecommand_front_P(PSTR("M82")); // set extruder to relative mode
-	}
-		enquecommand_front_P((PSTR("G1 E7.2000 F562")));
-		enquecommand_front_P((PSTR("G1 E14.4000 F871")));
-		enquecommand_front_P((PSTR("G1 E36.0000 F1393")));
-		enquecommand_front_P((PSTR("G1 E14.4000 F871")));			  
-	if (!saved_e_relative_mode) {
-	    enquecommand_front_P(PSTR("M83")); // set extruder to relative mode
-	}*/
 	st_synchronize();
 	
 	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
@@ -9022,45 +9019,41 @@ void M600_check_state() {
 }
 
 void M600_wait_for_user() {
+		//Beep, manage nozzle heater and wait for user to start unload filament
+
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-		int counterBeep = 0;	
-
+		int counterBeep = 0;
 		unsigned long waiting_start_time = millis();
 		uint8_t wait_for_user_state = 0;
 		lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
-		//-//
 		bool bFirst=true;
 
-
-			while (!(wait_for_user_state == 0 && lcd_clicked())){
-
+		while (!(wait_for_user_state == 0 && lcd_clicked())){
 			manage_heater();
 			manage_inactivity(true);
 
-				#if BEEPER > 0
-				if (counterBeep == 500) {
-					counterBeep = 0;
+			#if BEEPER > 0
+			if (counterBeep == 500) {
+				counterBeep = 0;
+			}
+			SET_OUTPUT(BEEPER);
+			if (counterBeep == 0) {
+				if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
+				{
+					bFirst=false;
+					WRITE(BEEPER, HIGH);
 				}
-				SET_OUTPUT(BEEPER);
-				if (counterBeep == 0) {
-					//-//
-					//if(eSoundMode==e_SOUND_MODE_LOUD)
-					if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
-					{
-						bFirst=false;
-						WRITE(BEEPER, HIGH);
-					}
-				}
-				if (counterBeep == 20) {
-					WRITE(BEEPER, LOW);
-				}
+			}
+			if (counterBeep == 20) {
+				WRITE(BEEPER, LOW);
+			}
 				
-				counterBeep++;
-#endif
+			counterBeep++;
+			#endif //BEEPER > 0
 			
 			switch (wait_for_user_state) {
-			case 0: 
+			case 0: //nozzle is hot, waiting for user to press the knob to unload filament
 				delay_keep_alive(4);
 
 				if (millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
@@ -9075,7 +9068,7 @@ void M600_wait_for_user() {
 					disable_e2();
 				}
 				break;
-			case 1:
+			case 1: //nozzle target temperature is set to zero, waiting for user to start nozzle preheat
 				delay_keep_alive(4);
 		
 				if (lcd_clicked()) {
@@ -9085,7 +9078,7 @@ void M600_wait_for_user() {
 					wait_for_user_state = 2;
 				}
 				break;
-			case 2:
+			case 2: //waiting for nozzle to reach target temperature
 
 				if (abs(degTargetHotend(active_extruder) - degHotend(active_extruder)) < 1) {
 					lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
