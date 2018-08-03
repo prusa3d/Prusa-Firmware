@@ -3053,8 +3053,8 @@ bool lcd_wait_for_pinda(float temp) {
 }
 
 void lcd_wait_for_heater() {
-	lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-
+		lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
+		lcd_set_degree();
 		lcd_set_cursor(0, 4);
 		lcd_print(LCD_STR_THERMOMETER[0]);
 		lcd_print(ftostr3(degHotend(active_extruder)));
