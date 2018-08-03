@@ -157,7 +157,7 @@ uint8_t lcd_write(uint8_t value)
 	return 1; // assume sucess
 }
 
-void lcd_begin(uint8_t cols, uint8_t lines, uint8_t dotsize, uint8_t clear)
+static void lcd_begin(uint8_t cols, uint8_t lines, uint8_t dotsize, uint8_t clear)
 {
 	if (lines > 1) lcd_displayfunction |= LCD_2LINE;
 	lcd_numlines = lines;
