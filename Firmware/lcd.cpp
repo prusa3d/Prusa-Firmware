@@ -157,7 +157,7 @@ uint8_t lcd_write(uint8_t value)
 	return 1; // assume sucess
 }
 
-static void lcd_begin(uint8_t cols, uint8_t lines, uint8_t dotsize, uint8_t clear)
+static void lcd_begin(uint8_t lines, uint8_t dotsize, uint8_t clear)
 {
 	if (lines > 1) lcd_displayfunction |= LCD_2LINE;
 	lcd_numlines = lines;
@@ -247,20 +247,20 @@ void lcd_init(void)
 	pinMode(lcd_enable_pin, OUTPUT);
 	if (fourbitmode) lcd_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
 	else lcd_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
-	lcd_begin(LCD_WIDTH, LCD_HEIGHT, LCD_5x8DOTS, 1);
+	lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 1);
 	//lcd_clear();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 }
 
 void lcd_refresh(void)
 {
-    lcd_begin(LCD_WIDTH, LCD_HEIGHT, LCD_5x8DOTS, 1);
+    lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 1);
     lcd_set_custom_characters();
 }
 
 void lcd_refresh_noclear(void)
 {
-    lcd_begin(LCD_WIDTH, LCD_HEIGHT, LCD_5x8DOTS, 0);
+    lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 0);
     lcd_set_custom_characters();
 }
 
