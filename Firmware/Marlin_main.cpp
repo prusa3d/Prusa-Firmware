@@ -9125,6 +9125,10 @@ void mmu_M600_load_filament(bool automatic) {
     	  snmm_extruder = tmp_extruder; //filament change is finished
 
 		  mmu_load_to_nozzle();
+
+		  st_synchronize();
+		  current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
+		  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2, active_extruder); 
 #endif
 }
 
