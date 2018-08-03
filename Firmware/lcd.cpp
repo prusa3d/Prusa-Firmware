@@ -56,7 +56,7 @@
 #define LCD_5x8DOTS 0x00
 
 
-FILE _lcdout = {0};
+FILE _lcdout; // = {0}; Global variable is always zero initialized, no need to explicitly state that.
 
 
 uint8_t lcd_rs_pin; // LOW: command.  HIGH: character.
