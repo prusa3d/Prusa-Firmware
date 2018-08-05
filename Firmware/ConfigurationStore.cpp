@@ -11,10 +11,11 @@
 
 #ifdef DEBUG_EEPROM_WRITE
 #define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value), #value)
+static void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size, char* name)
 #else //DEBUG_EEPROM_WRITE
-#define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value), 0)
+#define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value))
+static void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
 #endif //DEBUG_EEPROM_WRITE
-void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size, char* name)
 {
 #ifdef DEBUG_EEPROM_WRITE
 	printf_P(PSTR("EEPROM_WRITE_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);
@@ -39,10 +40,11 @@ void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size, char* name)
 
 #ifdef DEBUG_EEPROM_READ
 #define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value), #value)
+static void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size, char* name)
 #else //DEBUG_EEPROM_READ
-#define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value), 0)
+#define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value))
+static void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 #endif //DEBUG_EEPROM_READ
-void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size, char* name)
 {
 #ifdef DEBUG_EEPROM_READ
 	printf_P(PSTR("EEPROM_READ_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);

@@ -146,6 +146,7 @@
 #define FILAMENT_DEFAULT 0
 #define FILAMENT_FLEX 1
 #define FILAMENT_PVA 2
+#define FILAMENT_UNDEFINED 255
 
 // look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
 // http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
@@ -919,7 +920,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 }
 
 
-FILE _uartout = {0};
+FILE _uartout; //= {0}; Global variable is always zero initialized. No need to explicitly state this.
 
 int uart_putchar(char c, FILE *stream)
 {
@@ -2964,15 +2965,6 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 
 		if (st_get_position_mm(Z_AXIS) == MESH_HOME_Z_SEARCH)
 		{
-
-			int8_t verbosity_level = 0;
-			if (code_seen('V'))
-			{
-				// Just 'V' without a number counts as V1.
-				char c = strchr_pointer[1];
-				verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
-			}
-
 			if (onlyZ)
 			{
 				clean_up_after_endstop_move();
@@ -3096,7 +3088,6 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
 
 		//First backup current position and settings
         feedmultiplyBckp=feedmultiply;
-        float HotendTempBckp = degTargetHotend(active_extruder);
 		int fanSpeedBckp = fanSpeed;
         lastpos[X_AXIS]=current_position[X_AXIS];
         lastpos[Y_AXIS]=current_position[Y_AXIS];
@@ -6302,8 +6293,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		//add storing this information for different load/unload profiles etc. in the future
 		//firmware does not wait for "ok" from mmu
 
-		uint8_t extruder;
-		uint8_t filament;
+		uint8_t extruder = 255;
+		uint8_t filament = FILAMENT_UNDEFINED;
 
 		if(code_seen('E')) extruder = code_value();
 		if(code_seen('F')) filament = code_value();
@@ -9056,9 +9047,7 @@ void M600_wait_for_user() {
 				if (millis() > waiting_start_time + (unsigned long)M600_TIMEOUT * 1000) {
 					lcd_display_message_fullscreen_P(_i("Press knob to preheat nozzle and continue."));////MSG_PRESS_TO_PREHEAT c=20 r=4
 					wait_for_user_state = 1;
-					setTargetHotend(0, 0);
-					setTargetHotend(0, 1);
-					setTargetHotend(0, 2);
+					setAllTargetHotends(0);
 					st_synchronize();
 					disable_e0();
 					disable_e1();
@@ -9098,7 +9087,6 @@ void M600_wait_for_user() {
 void mmu_M600_load_filament(bool automatic)
 { 
 	//load filament for mmu v2
-	bool response = false;
 	bool yes = false;
 	if (!automatic)
 	{

@@ -1425,9 +1425,7 @@ void babystep(const uint8_t axis,const bool direction)
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
-    {
-    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
-    }
+    delayMicroseconds(1);
     WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE(DEBUG_XSTEP_DUP_PIN,INVERT_X_STEP_PIN);
@@ -1451,9 +1449,7 @@ void babystep(const uint8_t axis,const bool direction)
 #ifdef DEBUG_YSTEP_DUP_PIN
     WRITE(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
-    {
-    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
-    }
+    delayMicroseconds(1);
     WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
 #ifdef DEBUG_YSTEP_DUP_PIN
     WRITE(DEBUG_YSTEP_DUP_PIN,INVERT_Y_STEP_PIN);
@@ -1480,10 +1476,7 @@ void babystep(const uint8_t axis,const bool direction)
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
     #endif
-    //wait a tiny bit
-    {
-    volatile float x=1./float(axis+1); //absolutely useless
-    }
+    delayMicroseconds(1);
     WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, INVERT_Z_STEP_PIN);
@@ -1568,7 +1561,6 @@ void st_current_set(uint8_t driver, int current)
 
 void microstep_init()
 {
-  const uint8_t microstep_modes[] = MICROSTEP_MODES;
 
   #if defined(E1_MS1_PIN) && E1_MS1_PIN > -1
   pinMode(E1_MS1_PIN,OUTPUT);
@@ -1576,6 +1568,7 @@ void microstep_init()
   #endif
 
   #if defined(X_MS1_PIN) && X_MS1_PIN > -1
+  const uint8_t microstep_modes[] = MICROSTEP_MODES;
   pinMode(X_MS1_PIN,OUTPUT);
   pinMode(X_MS2_PIN,OUTPUT);  
   pinMode(Y_MS1_PIN,OUTPUT);

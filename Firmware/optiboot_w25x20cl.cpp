@@ -272,7 +272,6 @@ void optiboot_w25x20cl_enter()
     /* Read memory block mode, length is big endian.  */
     else if(ch == STK_READ_PAGE) {
       uint32_t addr = (((uint32_t)rampz) << 16) | address;
-      uint8_t desttype;
       register pagelen_t i;
       // Read the page length, with the length transferred each nibble separately to work around
       // the Prusa's USB to serial infamous semicolon issue.
@@ -280,8 +279,8 @@ void optiboot_w25x20cl_enter()
       length |= ((pagelen_t)getch()) << 8;
       length |= getch();
       length |= getch();
-      // Read the destination type. It should always be 'F' as flash.
-      desttype = getch();
+      // Read the destination type. It should always be 'F' as flash. It is not checked.
+      (void)getch();
       verifySpace();
       w25x20cl_wait_busy();
       w25x20cl_rd_data(addr, buff, length);
