@@ -3515,7 +3515,7 @@ void process_commands()
 
 	} else if(code_seen("Fir")){
 
-      SERIAL_PROTOCOLLN(FW_VERSION);
+      SERIAL_PROTOCOLLN(FW_VERSION_FULL);
 
     } else if(code_seen("Rev")){
 
