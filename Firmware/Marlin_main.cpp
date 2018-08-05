@@ -2297,43 +2297,43 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 #endif //TMC2130
 
 
-        // Move right a bit, so that the print head does not touch the left end position,
-        // and the following left movement has a chance to achieve the required velocity
+        // Move away a bit, so that the print head does not touch the end position,
+        // and the following movement to endstop has a chance to achieve the required velocity
         // for the stall guard to work.
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 		set_destination_to_current();
 //        destination[axis] = 11.f;
-        destination[axis] = 3.f;
+        destination[axis] = -3.f * axis_home_dir;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
-        // Move left away from the possible collision with the collision detection disabled.
+        // Move away from the possible collision with opposite endstop with the collision detection disabled.
         endstops_hit_on_purpose();
         enable_endstops(false);
         current_position[axis] = 0;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-        destination[axis] = - 1.;
+        destination[axis] = 1. * axis_home_dir;
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
         // Now continue to move up to the left end stop with the collision detection enabled.
         enable_endstops(true);
-        destination[axis] = - 1.1 * max_length(axis);
+        destination[axis] = 1.1 * axis_home_dir * max_length(axis);
         plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
         st_synchronize();
 		for (uint8_t i = 0; i < cnt; i++)
 		{
-			// Move right from the collision to a known distance from the left end stop with the collision detection disabled.
+			// Move away from the collision to a known distance from the left end stop with the collision detection disabled.
 			endstops_hit_on_purpose();
 			enable_endstops(false);
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-			destination[axis] = 10.f;
+			destination[axis] = -10.f * axis_home_dir;
 			plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
 			st_synchronize();
 			endstops_hit_on_purpose();
 			// Now move left up to the collision, this time with a repeatable velocity.
 			enable_endstops(true);
-			destination[axis] = - 11.f;
+			destination[axis] = 11.f * axis_home_dir;
 #ifdef TMC2130
 			feedrate = homing_feedrate[axis];
 #else //TMC2130
@@ -2357,10 +2357,10 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 		{
 			tmc2130_goto_step(axis, orig, 2, 1000, tmc2130_get_res(axis));
 			if (back > 0)
-				tmc2130_do_steps(axis, back, 1, 1000);
+				tmc2130_do_steps(axis, back, -axis_home_dir, 1000);
 		}
 		else
-			tmc2130_do_steps(axis, 8, 2, 1000);
+			tmc2130_do_steps(axis, 8, -axis_home_dir, 1000);
 		tmc2130_home_exit();
 #endif //TMC2130
 
@@ -2368,9 +2368,9 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
         axis_known_position[axis] = true;
         // Move from minimum
 #ifdef TMC2130
-        float dist = 0.01f * tmc2130_home_fsteps[axis];
+        float dist = - axis_home_dir * 0.01f * tmc2130_home_fsteps[axis];
 #else //TMC2130
-        float dist = 0.01f * 64;
+        float dist = - axis_home_dir * 0.01f * 64;
 #endif //TMC2130
         current_position[axis] -= dist;
         plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
