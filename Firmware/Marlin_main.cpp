@@ -6580,8 +6580,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
 			int16_t usteps = code_value();
 			if (code_seen('I')) {
-				byte index = code_value();
-				if ((index >= 0) && (index < 5)) {
+			    uint8_t index = code_value();
+				if (index < 5) {
 					EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + index * 2, &usteps);
 					SERIAL_PROTOCOLLN("OK");
 					SERIAL_PROTOCOLLN("index, temp, ustep, um");
