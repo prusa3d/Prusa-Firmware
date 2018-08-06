@@ -325,7 +325,7 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
                 const size_t maxLen = 12;
                 char subdirname[maxLen+1];
                 subdirname[maxLen] = 0;
-                const size_t len = (dirname_end-dirname_start)>maxLen ? maxLen : dirname_end-dirname_start;
+                const size_t len = ((static_cast<size_t>(dirname_end-dirname_start))>maxLen) ? maxLen : (dirname_end-dirname_start);
                 strncpy(subdirname, dirname_start, len);
                 SERIAL_ECHOLN(subdirname);
                 if (!dir.open(curDir, subdirname, O_READ))
