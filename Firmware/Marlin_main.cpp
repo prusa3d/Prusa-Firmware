@@ -8991,10 +8991,6 @@ void mmu_load_to_nozzle() {
 	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = false;
 }
 
-void mmu_switch_extruder(uint8_t extruder) {
-
-}
-
 void M600_check_state() {
 		//Wait for user to check the state
 		lcd_change_fil_state = 0;
