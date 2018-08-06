@@ -343,16 +343,16 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
   curDir=&root;
   const char *fname=name;
   
-  char *dirname_start,*dirname_end;
+  const char *dirname_start,*dirname_end;
   if(name[0]=='/')
   {
-    dirname_start=strchr(name,'/')+1;
-    while(dirname_start>0)
+    dirname_start = name + 1;
+    while(*dirname_start)
     {
       dirname_end=strchr(dirname_start,'/');
       //SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-name));
       //SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-name));
-      if(dirname_end>0 && dirname_end>dirname_start)
+      if(dirname_end && dirname_end>dirname_start)
       {
         char subdirname[13];
         strncpy(subdirname, dirname_start, dirname_end-dirname_start);
