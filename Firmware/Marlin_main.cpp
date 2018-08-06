@@ -1166,6 +1166,8 @@ void setup()
 	lcd_splash();
      Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
 
+     mmu_init();
+     
 #ifdef W25X20CL
 	if (!w25x20cl_init())
 		kill(_i("External SPI flash W25X20CL not responding."));
@@ -3469,8 +3471,10 @@ void process_commands()
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
-		else if (code_seen("MMURES")) {
-
+		else if (code_seen("mmurst_hw")) {      // !!! MUST BE before "mmurst" (see 'code_seen()' implementation)
+			mmu_resetHW();
+		}
+		else if ((code_seen("MMURES"))||(code_seen("mmurst"))) {
 			printf_P(PSTR("X0\n"));
 			fprintf_P(uart2io, PSTR("X0\n"));
 		}
