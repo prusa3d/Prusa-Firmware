@@ -107,7 +107,7 @@ void extr_adj(int extruder) //loading filament for SNMM
 	lcd_print(snmm_extruder + 1);
 
 	// get response
-	manage_response();
+	manage_response(false, false);
 
 	lcd_update_enable(true);
 	
@@ -182,7 +182,7 @@ void extr_unload()
 		fprintf_P(uart2io, PSTR("U0\n"));
 
 		// get response
-		manage_response();
+		manage_response(false, true);
 
 		lcd_update_enable(true);
 #else //SNMM
