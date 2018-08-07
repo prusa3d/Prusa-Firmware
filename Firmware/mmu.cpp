@@ -12,7 +12,7 @@
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
 extern void lcd_return_to_status();
 
-#define MMU_TIMEOUT 1000
+#define MMU_TIMEOUT 100
 
 bool mmu_enabled = false;
 
@@ -193,7 +193,7 @@ void extr_adj(int extruder) //loading filament for SNMM
 	lcd_print(mmu_extruder + 1);
 
 	// get response
-	manage_response();
+	manage_response(false, false);
 
 	lcd_update_enable(true);
 	
@@ -268,7 +268,7 @@ void extr_unload()
 		fprintf_P(uart2io, PSTR("U0\n"));
 
 		// get response
-		manage_response();
+		manage_response(false, true);
 
 		lcd_update_enable(true);
 #else //SNMM
