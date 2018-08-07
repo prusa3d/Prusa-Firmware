@@ -1054,7 +1054,11 @@ extern bool xyzcal_find_bed_induction_sensor_point_xy();
 #endif //HEATBED_V2
 
 #ifdef HEATBED_V2
-inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
+inline bool find_bed_induction_sensor_point_xy(int
+#if !defined (NEW_XYZCAL) && defined (SUPPORT_VERBOSITY)
+        verbosity_level
+#endif
+        )
 {
 #ifdef NEW_XYZCAL
 	return xyzcal_find_bed_induction_sensor_point_xy();
