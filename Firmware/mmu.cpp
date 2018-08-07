@@ -29,7 +29,11 @@ void extr_mov(float shift, float feed_rate)
 }
 
 
-void change_extr(int extr) { //switches multiplexer for extruders
+void change_extr(int
+#ifdef SNMM
+        extr
+#endif //SNMM
+        ) { //switches multiplexer for extruders
 #ifdef SNMM
 	st_synchronize();
 	delay(100);
