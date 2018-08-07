@@ -1496,16 +1496,16 @@ void babystep(const uint8_t axis,const bool direction)
 }
 #endif //BABYSTEPPING
 
+#if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
 void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl example
 {
-  #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
     digitalWrite(DIGIPOTSS_PIN,LOW); // take the SS pin low to select the chip
     SPI.transfer(address); //  send in the address and value via SPI:
     SPI.transfer(value);
     digitalWrite(DIGIPOTSS_PIN,HIGH); // take the SS pin high to de-select the chip:
     //delay(10);
-  #endif
 }
+#endif
 
 void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 {
