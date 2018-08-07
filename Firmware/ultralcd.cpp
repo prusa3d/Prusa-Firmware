@@ -50,7 +50,7 @@ static void lcd_sd_updir();
 
 // State of the currently active menu.
 // C Union manages sharing of the static memory by all the menus.
-union MenuData menuData = { 0 };
+union MenuData menuData;
 
 
 int8_t ReInitLCD = 0;
