@@ -132,7 +132,7 @@ const float bed_ref_points[] PROGMEM = {
 static inline float sqr(float x) { return x * x; }
 
 #ifdef HEATBED_V2
-static inline bool point_on_1st_row(const uint8_t i)
+static inline bool point_on_1st_row(const uint8_t /*i*/)
 {
 	return false;
 }
