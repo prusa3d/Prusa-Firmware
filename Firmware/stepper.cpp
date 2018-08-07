@@ -104,8 +104,6 @@ static bool z_endstop_invert = false;
 volatile long count_position[NUM_AXIS] = { 0, 0, 0, 0};
 volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 
-uint8_t LastStepMask = 0;
-
 #ifdef LIN_ADVANCE
 
   static uint16_t nextMainISR = 0;
@@ -714,7 +712,6 @@ FORCE_INLINE void stepper_tick_lowres()
     counter_x.lo += current_block->steps_x.lo;
     if (counter_x.lo > 0) {
       WRITE_NC(X_STEP_PIN, !INVERT_X_STEP_PIN);
-      LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
       WRITE_NC(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
@@ -729,7 +726,6 @@ FORCE_INLINE void stepper_tick_lowres()
     counter_y.lo += current_block->steps_y.lo;
     if (counter_y.lo > 0) {
       WRITE_NC(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
-      LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
       WRITE_NC(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
@@ -744,7 +740,6 @@ FORCE_INLINE void stepper_tick_lowres()
     counter_z.lo += current_block->steps_z.lo;
     if (counter_z.lo > 0) {
       WRITE_NC(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
-      LastStepMask |= Z_AXIS_MASK;
       counter_z.lo -= current_block->step_event_count.lo;
       count_position[Z_AXIS]+=count_direction[Z_AXIS];
       WRITE_NC(Z_STEP_PIN, INVERT_Z_STEP_PIN);
@@ -779,7 +774,6 @@ FORCE_INLINE void stepper_tick_highres()
     counter_x.wide += current_block->steps_x.wide;
     if (counter_x.wide > 0) {
       WRITE_NC(X_STEP_PIN, !INVERT_X_STEP_PIN);
-      LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
       WRITE_NC(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
@@ -794,7 +788,6 @@ FORCE_INLINE void stepper_tick_highres()
     counter_y.wide += current_block->steps_y.wide;
     if (counter_y.wide > 0) {
       WRITE_NC(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
-      LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
       WRITE_NC(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
@@ -809,7 +802,6 @@ FORCE_INLINE void stepper_tick_highres()
     counter_z.wide += current_block->steps_z.wide;
     if (counter_z.wide > 0) {
       WRITE_NC(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
-      LastStepMask |= Z_AXIS_MASK;
       counter_z.wide -= current_block->step_event_count.wide;
       count_position[Z_AXIS]+=count_direction[Z_AXIS];
       WRITE_NC(Z_STEP_PIN, INVERT_Z_STEP_PIN);
@@ -846,8 +838,6 @@ FORCE_INLINE void isr() {
   // If there is no current block, attempt to pop one from the buffer
   if (current_block == NULL)
     stepper_next_block();
-
-	LastStepMask = 0;
 
   if (current_block != NULL) 
   {
@@ -1066,7 +1056,7 @@ FORCE_INLINE void isr() {
   }
 
 #ifdef TMC2130
-	tmc2130_st_isr(LastStepMask);
+	tmc2130_st_isr();
 #endif //TMC2130
 
   //WRITE_NC(LOGIC_ANALYZER_CH0, false);
@@ -1421,7 +1411,6 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); 
-	LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
@@ -1445,7 +1434,6 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); 
-	LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
     WRITE(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
@@ -1472,7 +1460,6 @@ void babystep(const uint8_t axis,const bool direction)
     #endif
     //perform step 
     WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); 
-	LastStepMask |= Z_AXIS_MASK;
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
     #endif

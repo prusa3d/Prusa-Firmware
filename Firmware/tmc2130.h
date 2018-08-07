@@ -53,7 +53,7 @@ extern tmc2130_chopper_config_t tmc2130_chopper_config[4];
 //initialize tmc2130
 extern void tmc2130_init();
 //check diag pins (called from stepper isr)
-extern void tmc2130_st_isr(uint8_t last_step_mask);
+extern void tmc2130_st_isr();
 //update stall guard (called from st_synchronize inside the loop)
 extern bool tmc2130_update_sg();
 //temperature watching (called from )

@@ -235,7 +235,7 @@ uint8_t tmc2130_sample_diag()
 
 extern bool is_usb_printing;
 
-void tmc2130_st_isr(uint8_t last_step_mask)
+void tmc2130_st_isr()
 {
 	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false) return;
 	uint8_t crash = 0;
