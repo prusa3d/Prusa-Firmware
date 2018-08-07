@@ -803,9 +803,8 @@ void failstats_reset_print()
 // Factory reset function
 // This function is used to erase parts or whole EEPROM memory which is used for storing calibration and and so on.
 // Level input parameter sets depth of reset
-// Quiet parameter masks all waitings for user interact.
 int  er_progress = 0;
-void factory_reset(char level, bool quiet)
+static void factory_reset(char level)
 {	
 	lcd_clear();
     switch (level) {
@@ -967,7 +966,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			_delay_ms(2000);
 
 			char level = reset_menu();
-			factory_reset(level, false);
+			factory_reset(level);
 
 			switch (level) {
 			case 0: _delay_ms(0); break;
@@ -3525,7 +3524,7 @@ void process_commands()
 
     } else if(code_seen("FR")) {
         // Factory full reset
-        factory_reset(0,true);        
+        factory_reset(0);
     }
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
