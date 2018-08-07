@@ -2,8 +2,31 @@
 
 #include <inttypes.h>
 
+
 extern bool mmu_enabled;
-extern uint8_t snmm_extruder;
+
+extern uint8_t mmu_extruder;
+
+extern int8_t mmu_finda;
+
+extern int16_t mmu_version;
+
+
+extern int mmu_puts_P(const char* str);
+
+extern int mmu_printf_P(const char* format, ...);
+
+extern int8_t mmu_rx_ok(void);
+
+
+extern bool mmu_init(void);
+
+extern bool mmu_reset(void);
+
+extern int8_t mmu_read_finda(void);
+
+extern int16_t mmu_read_version(void);
+
 
 extern void extr_mov(float shift, float feed_rate);
 extern void change_extr(int extr);
