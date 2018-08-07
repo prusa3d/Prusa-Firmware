@@ -187,8 +187,8 @@ static void lcd_delta_calibrate_menu();
 
 
 /* Different types of actions that can be used in menu items. */
-void menu_action_sdfile(const char* filename, char* longFilename);
-void menu_action_sddirectory(const char* filename, char* longFilename);
+static void menu_action_sdfile(const char* filename);
+static void menu_action_sddirectory(const char* filename);
 
 #define ENCODER_FEEDRATE_DEADZONE 10
 
@@ -289,7 +289,7 @@ static inline void lcd_print_time() {
 }
 
 
-void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* pstr, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* longFilename)
 {
     char c;
     int enc_dif = lcd_encoder_diff;
@@ -341,7 +341,7 @@ void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* pstr, 
     while(n--)
         lcd_print(' ');
 }
-void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* pstr, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* filename, char* longFilename)
 {
     char c;
     uint8_t n = LCD_WIDTH - 1;
@@ -361,7 +361,7 @@ void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* pstr, const cha
     while(n--)
         lcd_print(' ');
 }
-void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const char* pstr, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const char* filename, char* longFilename)
 {
     char c;
     uint8_t n = LCD_WIDTH - 2;
@@ -382,7 +382,7 @@ void lcd_implementation_drawmenu_sddirectory_selected(uint8_t row, const char* p
     while(n--)
         lcd_print(' ');
 }
-void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* pstr, const char* filename, char* longFilename)
+static void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* filename, char* longFilename)
 {
     char c;
     uint8_t n = LCD_WIDTH - 2;
@@ -406,7 +406,7 @@ void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* pstr, cons
 
 
 
-#define MENU_ITEM_SDDIR(str, str_fn, str_fnl) do { if (menu_item_sddir(str, str_fn, str_fnl)) return; } while (0)
+#define MENU_ITEM_SDDIR(str_fn, str_fnl) do { if (menu_item_sddir(str_fn, str_fnl)) return; } while (0)
 //#define MENU_ITEM_SDDIR(str, str_fn, str_fnl) MENU_ITEM(sddirectory, str, str_fn, str_fnl)
 //extern uint8_t menu_item_sddir(const char* str, const char* str_fn, char* str_fnl);
 
@@ -415,7 +415,7 @@ void lcd_implementation_drawmenu_sddirectory(uint8_t row, const char* pstr, cons
 //extern uint8_t menu_item_sdfile(const char* str, const char* str_fn, char* str_fnl);
 
 
-uint8_t menu_item_sddir(const char* str, const char* str_fn, char* str_fnl)
+uint8_t menu_item_sddir(const char* str_fn, char* str_fnl)
 {
 #ifdef NEW_SD_MENU
 //	str_fnl[18] = 0;
@@ -446,15 +446,15 @@ uint8_t menu_item_sddir(const char* str, const char* str_fn, char* str_fnl)
 		if (lcd_draw_update)
 		{
 			if (lcd_encoder == menu_item)
-				lcd_implementation_drawmenu_sddirectory_selected(menu_row, str, str_fn, str_fnl);
+				lcd_implementation_drawmenu_sddirectory_selected(menu_row, str_fn, str_fnl);
 			else
-				lcd_implementation_drawmenu_sddirectory(menu_row, str, str_fn, str_fnl);
+				lcd_implementation_drawmenu_sddirectory(menu_row, str_fn, str_fnl);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_clicked = false;
 			lcd_update_enabled = 0;
-			menu_action_sddirectory(str_fn, str_fnl);
+			menu_action_sddirectory(str_fn);
 			lcd_update_enabled = 1;
 			return menu_item_ret();
 		}
@@ -465,7 +465,11 @@ uint8_t menu_item_sddir(const char* str, const char* str_fn, char* str_fnl)
 #endif //NEW_SD_MENU
 }
 
-uint8_t menu_item_sdfile(const char* str, const char* str_fn, char* str_fnl)
+static uint8_t menu_item_sdfile(const char*
+#ifdef NEW_SD_MENU
+        str
+#endif //NEW_SD_MENU
+         ,const char* str_fn, char* str_fnl)
 {
 #ifdef NEW_SD_MENU
 //	printf_P(PSTR("menu sdfile\n"));
@@ -512,13 +516,13 @@ uint8_t menu_item_sdfile(const char* str, const char* str_fn, char* str_fnl)
 		if (lcd_draw_update)
 		{
 			if (lcd_encoder == menu_item)
-				lcd_implementation_drawmenu_sdfile_selected(menu_row, str, str_fn, str_fnl);
+				lcd_implementation_drawmenu_sdfile_selected(menu_row, str_fnl);
 			else
-				lcd_implementation_drawmenu_sdfile(menu_row, str, str_fn, str_fnl);
+				lcd_implementation_drawmenu_sdfile(menu_row, str_fn, str_fnl);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
-			menu_action_sdfile(str_fn, str_fnl);
+			menu_action_sdfile(str_fn);
 			return menu_item_ret();
 		}
 	}
@@ -5910,7 +5914,7 @@ void lcd_sdcard_menu()
 		#endif
 			
 		if (card.filenameIsDir)
-			MENU_ITEM_SDDIR(_T(MSG_CARD_MENU), card.filename, card.longFilename);
+			MENU_ITEM_SDDIR(card.filename, card.longFilename);
 		else
 			MENU_ITEM_SDFILE(_T(MSG_CARD_MENU), card.filename, card.longFilename);
     } else {
@@ -6917,7 +6921,7 @@ static bool check_file(const char* filename) {
 	
 }
 
-void menu_action_sdfile(const char* filename, char* longFilename)
+static void menu_action_sdfile(const char* filename)
 {
   loading_flag = false;
   char cmd[30];
@@ -6962,7 +6966,7 @@ void menu_action_sdfile(const char* filename, char* longFilename)
   lcd_return_to_status();
 }
 
-void menu_action_sddirectory(const char* filename, char* longFilename)
+void menu_action_sddirectory(const char* filename)
 {
 	uint8_t depth = (uint8_t)card.getWorkDirDepth();
 
