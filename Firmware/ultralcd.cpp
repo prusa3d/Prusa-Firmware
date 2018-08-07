@@ -37,7 +37,6 @@
 
 #include "mmu.h"
 
-extern int lcd_change_fil_state;
 extern bool fans_check_enabled;
 
 
