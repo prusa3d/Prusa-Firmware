@@ -963,7 +963,11 @@ static inline void update_current_position_z()
 }
 
 // At the current position, find the Z stop.
-inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int verbosity_level)
+inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
+#ifdef SUPPORT_VERBOSITY
+    verbosity_level
+#endif //SUPPORT_VERBOSITY
+        )
 {
 #ifdef TMC2130
 	FORCE_HIGH_POWER_START;
