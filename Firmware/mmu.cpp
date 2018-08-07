@@ -421,3 +421,20 @@ void extr_unload_4()
 	change_extr(4);
 	extr_unload();
 }
+
+
+void mmu_init()
+{
+digitalWrite(MMU_RST_PIN,HIGH);                   // PORTxn <- 1, after it DDxn <- 1
+pinMode(MMU_RST_PIN,OUTPUT);
+// may be useful ???
+//mmu_resetHW();
+}
+
+void mmu_resetHW()
+{
+digitalWrite(MMU_RST_PIN,LOW);
+// (probably) minimal pulse width is enough
+//delayMicroseconds(MMU_RST_DELAY);
+digitalWrite(MMU_RST_PIN,HIGH);
+}
