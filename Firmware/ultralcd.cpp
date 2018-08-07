@@ -5188,7 +5188,7 @@ void unload_filament()
 	disable_e2();
 	delay(100);
 
-	Sound_MakeSound(e_SOUND_CLASS_Prompt, e_SOUND_TYPE_StandardPrompt);
+	Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
 	uint8_t counterBeep = 0;
 	while (!lcd_clicked() && (counterBeep < 50)) {
 		delay_keep_alive(100);

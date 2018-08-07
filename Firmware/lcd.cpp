@@ -691,7 +691,7 @@ void lcd_beeper_quick_feedback(void)
 {
 	SET_OUTPUT(BEEPER);
 //-//
-Sound_MakeSound(e_SOUND_CLASS_Echo,e_SOUND_TYPE_ButtonEcho);
+Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 /*
 	for(int8_t i = 0; i < 10; i++)
 	{
