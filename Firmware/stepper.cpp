@@ -1549,15 +1549,16 @@ uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 
 
 
-
+#ifdef MOTOR_CURRENT_PWM_XY_PIN
 void st_current_set(uint8_t driver, int current)
 {
-  #ifdef MOTOR_CURRENT_PWM_XY_PIN
   if (driver == 0) analogWrite(MOTOR_CURRENT_PWM_XY_PIN, (long)current * 255L / (long)MOTOR_CURRENT_PWM_RANGE);
   if (driver == 1) analogWrite(MOTOR_CURRENT_PWM_Z_PIN, (long)current * 255L / (long)MOTOR_CURRENT_PWM_RANGE);
   if (driver == 2) analogWrite(MOTOR_CURRENT_PWM_E_PIN, (long)current * 255L / (long)MOTOR_CURRENT_PWM_RANGE);
-  #endif
 }
+#else //MOTOR_CURRENT_PWM_XY_PIN
+void st_current_set(uint8_t, int ){}
+#endif //MOTOR_CURRENT_PWM_XY_PIN
 
 void microstep_init()
 {
