@@ -209,7 +209,10 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     float        *vec_x,
     float        *vec_y,
     float        *cntr,
-    int8_t        verbosity_level
+    int8_t
+#ifdef SUPPORT_VERBOSITY
+    verbosity_level
+#endif //SUPPORT_VERBOSITY
     )
 {
 	float angleDiff;
