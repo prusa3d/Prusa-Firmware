@@ -87,7 +87,7 @@ uint8_t check_pinda_1()
 
 uint8_t xyzcal_dm = 0;
 
-void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de)
+void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t)
 {
 //	DBG(_n("xyzcal_update_pos dx=%d dy=%d dz=%d dir=%02x\n"), dx, dy, dz, xyzcal_dm);
 	if (xyzcal_dm&1) count_position[0] -= dx; else count_position[0] += dx;
