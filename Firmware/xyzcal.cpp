@@ -32,8 +32,6 @@
 
 #define _PI 3.14159265F
 
-extern volatile long count_position[NUM_AXIS];
-
 uint8_t check_pinda_0();
 uint8_t check_pinda_1();
 void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de);

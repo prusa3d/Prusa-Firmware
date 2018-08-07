@@ -90,6 +90,7 @@ extern bool x_min_endstop;
 extern bool x_max_endstop;
 extern bool y_min_endstop;
 extern bool y_max_endstop;
+extern volatile long count_position[NUM_AXIS];
 
 void quickStop();
 
