@@ -221,7 +221,7 @@ static void lcd_begin(uint8_t lines, uint8_t dotsize, uint8_t clear)
 	lcd_escape[0] = 0;
 }
 
-int lcd_putchar(char c, FILE *stream)
+int lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
 	return 0;
