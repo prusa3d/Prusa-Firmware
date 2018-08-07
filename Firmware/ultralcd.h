@@ -5,6 +5,7 @@
 #include "lcd.h"
 #include "conv2str.h"
 #include "menu.h"
+#include "mesh_bed_calibration.h"
 
 extern int lcd_puts_P(const char* str);
 extern int lcd_printf_P(const char* format, ...);
@@ -143,7 +144,7 @@ extern const char* lcd_display_message_fullscreen_P(const char *msg);
   #endif
 
   // Show the result of the calibration process on the LCD screen.
-  extern void lcd_bed_calibration_show_result(uint8_t result, uint8_t point_too_far_mask);
+  extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
 
   extern void lcd_diag_show_end_stops();
 
