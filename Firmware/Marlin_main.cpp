@@ -475,9 +475,9 @@ bool mmu_print_saved = false;
 
 // storing estimated time to end of print counted by slicer
 uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
-uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint32_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
-uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint32_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 
 //===========================================================================
 //=============================Private Variables=============================
