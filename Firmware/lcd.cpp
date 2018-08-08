@@ -755,6 +755,7 @@ void lcd_update_enable(uint8_t enabled)
 	}
 }
 
+extern LongTimer safetyTimer;
 void lcd_buttons_update(void)
 {
 	static bool _lock = false;

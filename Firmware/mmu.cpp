@@ -34,6 +34,8 @@ int8_t mmu_finda = -1;
 
 int16_t mmu_version = -1;
 
+int16_t mmu_build = -1;
+
 
 //clear rx buffer
 void mmu_clr_rx_buf(void)
@@ -100,6 +102,7 @@ bool mmu_reset(void)
 	while ((mmu_rx_start() <= 0) && (--timeout))
 		delay_keep_alive(MMU_TODELAY);
 	mmu_enabled = timeout?true:false;
+	mmu_enabled = true;
 	return mmu_enabled;
 }
 

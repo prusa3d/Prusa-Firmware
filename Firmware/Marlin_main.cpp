@@ -336,8 +336,8 @@ float pause_lastpos[4];
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
-static LongTimer safetyTimer;
-static LongTimer crashDetTimer;
+LongTimer safetyTimer;
+LongTimer crashDetTimer;
 
 //unsigned long load_filament_time;
 
