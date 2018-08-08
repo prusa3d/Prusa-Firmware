@@ -87,7 +87,7 @@ uint8_t check_pinda_1()
 
 uint8_t xyzcal_dm = 0;
 
-void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de)
+void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t)
 {
 //	DBG(_n("xyzcal_update_pos dx=%d dy=%d dz=%d dir=%02x\n"), dx, dy, dz, xyzcal_dm);
 	if (xyzcal_dm&1) count_position[0] -= dx; else count_position[0] += dx;
@@ -108,11 +108,9 @@ uint16_t xyzcal_sm4_ac2 = (uint32_t)xyzcal_sm4_ac * 1024 / 10000;
 //float xyzcal_sm4_vm = 10000;
 #endif //SM4_ACCEL_TEST
 
+#ifdef SM4_ACCEL_TEST
 uint16_t xyzcal_calc_delay(uint16_t nd, uint16_t dd)
 {
-	return xyzcal_sm4_delay;
-#ifdef SM4_ACCEL_TEST
-
 	uint16_t del_us = 0;
 	if (xyzcal_sm4_v & 0xf000) //>=4096
 	{
@@ -138,9 +136,13 @@ uint16_t xyzcal_calc_delay(uint16_t nd, uint16_t dd)
 //	return xyzcal_sm4_delay;
 //	DBG(_n("xyzcal_calc_delay nd=%d dd=%d v=%d  del_us=%d\n"), nd, dd, xyzcal_sm4_v, del_us);
 	return 0;
-#endif //SM4_ACCEL_TEST
 }
-
+#else //SM4_ACCEL_TEST
+uint16_t xyzcal_calc_delay(uint16_t, uint16_t)
+{
+    return xyzcal_sm4_delay;
+}
+#endif //SM4_ACCEL_TEST
 
 bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_t check_pinda)
 {

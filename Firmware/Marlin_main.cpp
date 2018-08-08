@@ -803,9 +803,8 @@ void failstats_reset_print()
 // Factory reset function
 // This function is used to erase parts or whole EEPROM memory which is used for storing calibration and and so on.
 // Level input parameter sets depth of reset
-// Quiet parameter masks all waitings for user interact.
 int  er_progress = 0;
-void factory_reset(char level, bool quiet)
+static void factory_reset(char level)
 {	
 	lcd_clear();
     switch (level) {
@@ -922,7 +921,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 FILE _uartout; //= {0}; Global variable is always zero initialized. No need to explicitly state this.
 
-int uart_putchar(char c, FILE *stream)
+int uart_putchar(char c, FILE *)
 {
 	MYSERIAL.write(c);
 	return 0;
@@ -967,7 +966,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			_delay_ms(2000);
 
 			char level = reset_menu();
-			factory_reset(level, false);
+			factory_reset(level);
 
 			switch (level) {
 			case 0: _delay_ms(0); break;
@@ -3077,106 +3076,112 @@ void gcode_M114()
 	SERIAL_PROTOCOLLN("");
 }
 
-void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float e_shift_late) {
-		st_synchronize();
-		float lastpos[4];
+static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
+{
+    st_synchronize();
+    float lastpos[4];
 
-		if (farm_mode)
-		{
-			prusa_statistics(22);
-		}
+    if (farm_mode)
+    {
+        prusa_statistics(22);
+    }
 
-		//First backup current position and settings
-        feedmultiplyBckp=feedmultiply;
-        HotendTempBckp = degTargetHotend(active_extruder);
-		fanSpeedBckp = fanSpeed;
+    //First backup current position and settings
+    feedmultiplyBckp = feedmultiply;
+    HotendTempBckp = degTargetHotend(active_extruder);
+    fanSpeedBckp = fanSpeed;
 
-        lastpos[X_AXIS]=current_position[X_AXIS];
-        lastpos[Y_AXIS]=current_position[Y_AXIS];
-        lastpos[Z_AXIS]=current_position[Z_AXIS];
-        lastpos[E_AXIS]=current_position[E_AXIS];
+    lastpos[X_AXIS] = current_position[X_AXIS];
+    lastpos[Y_AXIS] = current_position[Y_AXIS];
+    lastpos[Z_AXIS] = current_position[Z_AXIS];
+    lastpos[E_AXIS] = current_position[E_AXIS];
 
-		//Retract E
-        current_position[E_AXIS]+= e_shift;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
-		st_synchronize();
+    //Retract E
+    current_position[E_AXIS] += e_shift;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+            current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+    st_synchronize();
 
-        //Lift Z
-        current_position[Z_AXIS]+= z_shift;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
-		st_synchronize();
-        
-		//Move XY to side
-        current_position[X_AXIS]= x_position;
-        current_position[Y_AXIS]= y_position;
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
-		st_synchronize();
-		
-		//Beep, manage nozzle heater and wait for user to start unload filament
-		if(!automatic) M600_wait_for_user();
-		
-		lcd_change_fil_state = 0;
-		
-		// Unload filament
-		if (mmu_enabled)
-			extr_unload(); //unload just current filament for multimaterial printers (used also in M702)
-		else
-			unload_filament(); //unload filament for single material (used also in M702)
-		//finish moves
-		st_synchronize();
+    //Lift Z
+    current_position[Z_AXIS] += z_shift;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+            current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
+    st_synchronize();
 
-		if (!mmu_enabled)
-		{
-			KEEPALIVE_STATE(PAUSED_FOR_USER);
-			lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"), false, true);////MSG_UNLOAD_SUCCESSFUL c=20 r=2
-			if (lcd_change_fil_state == 0) lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
-			lcd_update_enable(true);
-		}
+    //Move XY to side
+    current_position[X_AXIS] = x_position;
+    current_position[Y_AXIS] = y_position;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+            current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
+    st_synchronize();
 
-		if (mmu_enabled)
-			mmu_M600_load_filament(automatic);
-		else
-			M600_load_filament();
+    //Beep, manage nozzle heater and wait for user to start unload filament
+    if (!automatic) M600_wait_for_user();
 
-		if(!automatic) M600_check_state();
+    lcd_change_fil_state = 0;
 
-      //Not let's go back to print
-	  fanSpeed = fanSpeedBckp;
+    // Unload filament
+    if (mmu_enabled) extr_unload();	//unload just current filament for multimaterial printers (used also in M702)
+    else unload_filament(); //unload filament for single material (used also in M702)
+    //finish moves
+    st_synchronize();
 
-      //Feed a little of filament to stabilize pressure
-	  if (!automatic) {
-		  current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-		  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder);
-	  }
-      
-      //Move XY back
-      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
-      st_synchronize();
-      //Move Z back
-      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_ZFEED, active_extruder);
-      st_synchronize();  
-      
-	  //Unretract
-      current_position[E_AXIS]= current_position[E_AXIS] - e_shift;
-      plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
-	  st_synchronize();
+    if (!mmu_enabled)
+    {
+        KEEPALIVE_STATE(PAUSED_FOR_USER);
+        lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"),
+                false, true); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
+        if (lcd_change_fil_state == 0)
+            lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
+        lcd_update_enable(true);
+    }
 
-      //Set E position to original  
-      plan_set_e_position(lastpos[E_AXIS]);
+    if (mmu_enabled) mmu_M600_load_filament(automatic);
+    else M600_load_filament();
 
-	  memcpy(current_position, lastpos, sizeof(lastpos));
-	  memcpy(destination, current_position, sizeof(current_position));
-       
-      //Recover feed rate 
-      feedmultiply=feedmultiplyBckp;
-      char cmd[9];
-      sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
-      enquecommand(cmd);
-      
-	  lcd_setstatuspgm(_T(WELCOME_MSG));
-	  custom_message = false;
-	  custom_message_type = 0;
-        
+    if (!automatic) M600_check_state();
+
+    //Not let's go back to print
+    fanSpeed = fanSpeedBckp;
+
+    //Feed a little of filament to stabilize pressure
+    if (!automatic)
+    {
+        current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+                current_position[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder);
+    }
+
+    //Move XY back
+    plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],
+            FILAMENTCHANGE_XYFEED, active_extruder);
+    st_synchronize();
+    //Move Z back
+    plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS],
+            FILAMENTCHANGE_ZFEED, active_extruder);
+    st_synchronize();
+
+    //Unretract
+    current_position[E_AXIS] = current_position[E_AXIS] - e_shift;
+    plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS],
+            FILAMENTCHANGE_RFEED, active_extruder);
+    st_synchronize();
+
+    //Set E position to original
+    plan_set_e_position(lastpos[E_AXIS]);
+
+    memcpy(current_position, lastpos, sizeof(lastpos));
+    memcpy(destination, current_position, sizeof(current_position));
+
+    //Recover feed rate
+    feedmultiply = feedmultiplyBckp;
+    char cmd[9];
+    sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
+    enquecommand(cmd);
+
+    lcd_setstatuspgm(_T(WELCOME_MSG));
+    custom_message = false;
+    custom_message_type = 0;
 }
 
 
@@ -3525,7 +3530,7 @@ void process_commands()
 
     } else if(code_seen("FR")) {
         // Factory full reset
-        factory_reset(0,true);        
+        factory_reset(0);
     }
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
@@ -6580,8 +6585,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		else if (code_seen('S')) { // Sxxx Iyyy - Set compensation ustep value S for compensation table index I
 			int16_t usteps = code_value();
 			if (code_seen('I')) {
-				byte index = code_value();
-				if ((index >= 0) && (index < 5)) {
+			    uint8_t index = code_value();
+				if (index < 5) {
 					EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + index * 2, &usteps);
 					SERIAL_PROTOCOLLN("OK");
 					SERIAL_PROTOCOLLN("index, temp, ustep, um");
@@ -8989,10 +8994,6 @@ void mmu_load_to_nozzle() {
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
     st_synchronize();
 	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = false;
-}
-
-void mmu_switch_extruder(uint8_t extruder) {
-
 }
 
 void M600_check_state() {

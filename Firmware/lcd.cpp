@@ -221,7 +221,7 @@ static void lcd_begin(uint8_t lines, uint8_t dotsize, uint8_t clear)
 	lcd_escape[0] = 0;
 }
 
-int lcd_putchar(char c, FILE *stream)
+int lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
 	return 0;
@@ -691,7 +691,7 @@ void lcd_beeper_quick_feedback(void)
 {
 	SET_OUTPUT(BEEPER);
 //-//
-Sound_MakeSound(e_SOUND_CLASS_Echo,e_SOUND_TYPE_ButtonEcho);
+Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 /*
 	for(int8_t i = 0; i < 10; i++)
 	{

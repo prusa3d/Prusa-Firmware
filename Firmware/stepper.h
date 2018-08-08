@@ -92,8 +92,9 @@ extern bool y_min_endstop;
 extern bool y_max_endstop;
 
 void quickStop();
-
+#if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
 void digitalPotWrite(int address, int value);
+#endif //defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
 void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2);
 void microstep_mode(uint8_t driver, uint8_t stepping);
 void st_current_init();

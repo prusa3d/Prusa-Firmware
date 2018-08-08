@@ -148,7 +148,7 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		  #else
 			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define  disable_z() ;
+			#define  disable_z() {}
 		  #endif
 	#else
 		#ifdef Z_DUAL_STEPPER_DRIVERS
@@ -160,8 +160,8 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 		#endif
 	#endif
 #else
-  #define enable_z() ;
-  #define disable_z() ;
+  #define enable_z() {}
+  #define disable_z() {}
 #endif
 
 
