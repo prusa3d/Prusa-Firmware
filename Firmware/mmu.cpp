@@ -102,7 +102,7 @@ bool mmu_reset(void)
 	while ((mmu_rx_start() <= 0) && (--timeout))
 		delay_keep_alive(MMU_TODELAY);
 	mmu_enabled = timeout?true:false;
-	mmu_enabled = true;
+//	mmu_enabled = true;
 	return mmu_enabled;
 }
 
