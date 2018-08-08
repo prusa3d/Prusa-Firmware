@@ -7,6 +7,8 @@ extern bool mmu_enabled;
 
 extern uint8_t mmu_extruder;
 
+extern uint8_t tmp_extruder;
+
 extern int8_t mmu_finda;
 
 extern int16_t mmu_version;
@@ -26,6 +28,17 @@ extern bool mmu_reset(void);
 extern int8_t mmu_read_finda(void);
 
 extern int16_t mmu_read_version(void);
+
+extern int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament);
+
+
+extern bool mmu_get_response(bool timeout);
+
+extern void manage_response(bool move_axes, bool turn_off_nozzle);
+
+extern void mmu_load_to_nozzle();
+
+extern void mmu_M600_load_filament(bool automatic);
 
 
 extern void extr_mov(float shift, float feed_rate);
