@@ -282,6 +282,7 @@ extern bool axis_known_position[3];
 extern float zprobe_zoffset;
 extern int fanSpeed;
 extern void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
+extern int8_t lcd_change_fil_state;
 
 
 #ifdef FAN_SOFT_PWM
