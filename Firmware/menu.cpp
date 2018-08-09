@@ -116,7 +116,7 @@ uint8_t menu_item_ret(void)
 }
 
 /*
-int menu_item_printf_P(char type_char, const char* format, ...)
+int menu_draw_item_printf_P(char type_char, const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -134,12 +134,14 @@ int menu_item_printf_P(char type_char, const char* format, ...)
 	return ret;
 }
 */
+
 int menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
 	int cnt = lcd_printf_P(PSTR("%c%-18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
 	return cnt;
 }
+
 /*
 int menu_draw_item_puts_P_int16(char type_char, const char* str, int16_t val, )
 {
@@ -148,6 +150,7 @@ int menu_draw_item_puts_P_int16(char type_char, const char* str, int16_t val, )
 	return cnt;
 }
 */
+
 void menu_item_dummy(void)
 {
 	menu_item++;
