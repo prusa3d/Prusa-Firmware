@@ -2,8 +2,7 @@
 
    1. nainstalujte vývojové prostředí `"Arduino Software IDE"` pro operační prostředí, které jste zvyklí používat  
 `https://www.arduino.cc -> Software->Downloads`  
-důrazně doporučujeme použít starší verzi `"1.6.8"`, u které jsme schopni garantovat bezproblémový překlad a správné výsledky  
-_pozn.: ve verzích `1.7.x` a `1.8.x` jsou k datu vydání tohoto dokumentu evidovány chyby v překladači jazyka C/C++, které znemožňují překlad zdrojového kódu (můžete např. obdržet chybové hlášení `"... internal compiler error: in extract_insn, at ..."`); tuto nepříjemnou situaci bohužel nedokážeme nijak ovlivnit_  
+doporučujeme použít starší verzi `"1.6.9"`, kterou používáme na našem build serveru pro překlad oficiálních buildů 
 _pozn.: v případě přetrvávajících potíží s překladem zkontrolujte verzi aktuálně použitého překladače jazyka C/C++ (GCC) - měla by být `4.8.1`; verzi ověříte zadáním příkazu  
 `avr-gcc --version`  
 pokud si nejste jisti umístěním souboru (závisí na způsobu, jakým bylo `"Arduino Software IDE"` nainstalováno), použijte funkci vyhledání v rámci systému souborů_  
@@ -26,6 +25,10 @@ _pozn.: tuto položku zvolte pro všechny varianty desek použitých v tiskárn�
 'kliknutím' na položku se zobrazí tlačítko pro instalaci; ve výběrovém seznamu zvolte verzi `"1.0.1"` (poslední známá verze k datu vydání tohoto dokumentu)  
 _(po provedení instalace je položka označena poznámkou `"INSTALLED"` a lze ji následně použít při výběru cílové desky)_  
 
+   3. modify platform.txt to enable float printf support:
+add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags="
+example:
+`"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
 
 # 2. Překlad zdrojoveho kódu
 
