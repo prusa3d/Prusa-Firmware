@@ -143,7 +143,7 @@
 #define WRITE_LOGIC_ANALYZER_CH4(value) if (value) PORTK |= (1 << 0); else PORTK &= ~(1 << 0) // PK0
 #define LOGIC_ANALYZER_CH5		16				// PH0 (RXD2)
 #define LOGIC_ANALYZER_CH6		17				// PH1 (TXD2)
-#ifndef SNMMP
+#ifndef SNMM
 	#define LOGIC_ANALYZER_CH7 		76				// PJ5
 #endif
 
