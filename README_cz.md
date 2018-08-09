@@ -26,7 +26,9 @@ _pozn.: tuto položku zvolte pro všechny varianty desek použitých v tiskárn�
 _(po provedení instalace je položka označena poznámkou `"INSTALLED"` a lze ji následně použít při výběru cílové desky)_  
 
    3. modify platform.txt to enable float printf support:
-add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags="
+   
+add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags=" before existing flag "-Wl,--gc-sections"
+
 example:
 `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
 

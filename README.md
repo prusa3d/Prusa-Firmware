@@ -26,7 +26,9 @@ _note: select this item for any variant of board used in printers `'Prusa i3 MKx
 _(after installation, the item is labeled as `"INSTALLED"` and can then be used for target board selection)_  
 
    3. modify platform.txt to enable float printf support:
-add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags="
+   
+add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags=" before existing flag "-Wl,--gc-sections"
+
 example:
 `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
 
