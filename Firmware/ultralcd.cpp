@@ -33,8 +33,6 @@
 
 #include "sound.h"
 
-#include "uart2.h"
-
 #include "mmu.h"
 
 extern bool fans_check_enabled;

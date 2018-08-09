@@ -14,13 +14,10 @@ extern "C" {
 extern FILE _uart2io;
 #define uart2io (&_uart2io)
 
-//extern uint8_t uart2_ibuf[10];
 
 extern void uart2_init(void);
 
-extern void uart2_rx_clr(void);
-
-extern uint8_t uart2_rx_ok(void);
+extern int8_t uart2_rx_str_P(const char* str);
 
 
 #if defined(__cplusplus)
