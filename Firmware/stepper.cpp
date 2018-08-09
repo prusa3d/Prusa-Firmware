@@ -526,7 +526,7 @@ FORCE_INLINE void stepper_next_block()
 #ifndef LIN_ADVANCE
       WRITE(E0_DIR_PIN, 
   #ifdef SNMM
-        (snmm_extruder == 0 || snmm_extruder == 2) ? !INVERT_E0_DIR :
+        (mmu_extruder == 0 || mmu_extruder == 2) ? !INVERT_E0_DIR :
   #endif // SNMM
         INVERT_E0_DIR);
 #endif /* LIN_ADVANCE */
@@ -535,7 +535,7 @@ FORCE_INLINE void stepper_next_block()
 #ifndef LIN_ADVANCE
       WRITE(E0_DIR_PIN,
   #ifdef SNMM
-        (snmm_extruder == 0 || snmm_extruder == 2) ? INVERT_E0_DIR :
+        (mmu_extruder == 0 || mmu_extruder == 2) ? INVERT_E0_DIR :
   #endif // SNMM
         !INVERT_E0_DIR);
 #endif /* LIN_ADVANCE */
@@ -876,7 +876,7 @@ FORCE_INLINE void isr() {
           bool neg = e_steps < 0;
           bool dir =
         #ifdef SNMM
-            (neg == (snmm_extruder & 1))
+            (neg == (mmu_extruder & 1))
         #else
             neg
         #endif

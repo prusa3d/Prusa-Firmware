@@ -73,7 +73,6 @@
 #include "math.h"
 #include "util.h"
 #include "Timer.h"
-#include "uart2.h"
 
 #include <avr/wdt.h>
 #include <avr/pgmspace.h>
@@ -1214,8 +1213,6 @@ void setup()
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
-	uart2_init();
-
 
 #ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;
@@ -1770,7 +1767,8 @@ void setup()
               lcd_setstatuspgm(_T(WELCOME_MSG)); 
           } 
            
-      } 
+      }
+
 	   
   }
 #endif //UVLO_SUPPORT
@@ -1779,6 +1777,12 @@ void setup()
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
 #endif //WATCHDOG
+
+	  puts_P(_N("Checking MMU unit..."));
+	  if (mmu_init())
+		  printf_P(_N("MMU ENABLED, finda=%hhd, version=%d\n"), mmu_finda, mmu_version);
+	  else
+		  puts_P(_N("MMU DISABLED"));
 }
 
 
@@ -3190,7 +3194,7 @@ void gcode_M701()
 	printf_P(PSTR("gcode_M701 begin\n"));
 
 	if (mmu_enabled)
-		extr_adj(snmm_extruder);//loads current extruder
+		extr_adj(mmu_extruder);//loads current extruder
 	else
 	{
 		enable_z();
@@ -3459,17 +3463,26 @@ void process_commands()
 		  }
 		  
 		}
-		else if (code_seen("thx")) {
+		else if (code_seen("thx"))
+		{
 			no_response = false;
 		}	
-		else if (code_seen("uvlo")) {
+		else if (code_seen("uvlo"))
+		{
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
-		else if (code_seen("MMURES")) {
-
-			printf_P(PSTR("X0\n"));
-			fprintf_P(uart2io, PSTR("X0\n"));
+		else if (code_seen("MMURES"))
+		{
+			mmu_reset();
+		}
+		else if (code_seen("MMUFIN"))
+		{
+			mmu_read_finda();
+		}
+		else if (code_seen("MMUVER"))
+		{
+			mmu_read_version();
 		}
 		else if (code_seen("RESET")) {
             // careful!
@@ -6334,7 +6347,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			default: printf_P(PSTR("Default\n")); break;
 		}
 		printf_P(PSTR("F%d%d\n"), extruder, filament);
-		fprintf_P(uart2io, PSTR("F%d%d\n"), extruder, filament);
+		mmu_printf_P(PSTR("F%d%d\n"), extruder, filament);
 	}
 	break;
 
@@ -6785,7 +6798,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	case 701: //M701: load filament
 	{
 		if (mmu_enabled && code_seen('E'))
-			snmm_extruder = code_value();
+			mmu_extruder = code_value();
 		gcode_M701();
 	}
 	break;
@@ -6840,11 +6853,11 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 if (mmu_enabled)
 {
 		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
-		  fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
+		  mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
 
 		  manage_response(true, true);
 
-    	  snmm_extruder = tmp_extruder; //filament change is finished
+    	  mmu_extruder = tmp_extruder; //filament change is finished
 
 		  if (*(strchr_pointer + index) == '?')// for single material usage with mmu
 			  mmu_load_to_nozzle();
@@ -6854,11 +6867,11 @@ else
 #ifdef SNMM
 
 	#ifdef LIN_ADVANCE
-          if (snmm_extruder != tmp_extruder)
+          if (mmu_extruder != tmp_extruder)
             clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
 	#endif
           
-		  snmm_extruder = tmp_extruder;
+		  mmu_extruder = tmp_extruder;
 
 		  
 		  delay(100);
@@ -8878,16 +8891,15 @@ static void print_time_remaining_init() {
 	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 }
 
-bool mmu_get_response(bool timeout, bool clear) {
+bool mmu_get_response(bool timeout) {
 	//waits for "ok" from mmu
 	//function returns true if "ok" was received
 	//if timeout is set to true function return false if there is no "ok" received before timeout
 	bool response = true;
 	LongTimer mmu_get_reponse_timeout;
-    if (clear) uart2_rx_clr();
 	KEEPALIVE_STATE(IN_PROCESS);
 	mmu_get_reponse_timeout.start();
-	while (!uart2_rx_ok())
+	while (mmu_rx_ok() <= 0)
     {
       delay_keep_alive(100);
 	  if (timeout && mmu_get_reponse_timeout.expired(5 * 60 * 1000ul)) { //5 minutes timeout
@@ -8909,7 +8921,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle) {
 	float x_position_bckp = current_position[X_AXIS];
 	float y_position_bckp = current_position[Y_AXIS];	
 	while(!response) {
-		  response = mmu_get_response(true, !mmu_print_saved); //wait for "ok" from mmu
+		  response = mmu_get_response(true); //wait for "ok" from mmu
 		  if (!response) { //no "ok" was received in reserved time frame, user will fix the issue on mmu unit
 			  if (!mmu_print_saved) { //first occurence, we are saving current position, park print head in certain position and disable nozzle heater
 				  if (lcd_update_enabled) {
@@ -9116,7 +9128,7 @@ void mmu_M600_load_filament(bool automatic)
 	{
 		yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
 		if (yes) tmp_extruder = choose_extruder_menu();
-		else tmp_extruder = snmm_extruder;
+		else tmp_extruder = mmu_extruder;
 	}
 	else
 	{
@@ -9129,9 +9141,9 @@ void mmu_M600_load_filament(bool automatic)
 	lcd_print(tmp_extruder + 1);
 	snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 	printf_P(PSTR("T code: %d \n"), tmp_extruder);
-	fprintf_P(uart2io, PSTR("T%d\n"), tmp_extruder);
+	mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
 	manage_response(false, true);
-    snmm_extruder = tmp_extruder; //filament change is finished
+    mmu_extruder = tmp_extruder; //filament change is finished
 	mmu_load_to_nozzle();
 
 	st_synchronize();
@@ -9151,7 +9163,7 @@ void M600_load_filament_movements()
 	}
 	while (!lcd_clicked());
 	st_synchronize();
-	current_position[E_AXIS] += bowden_length[snmm_extruder];
+	current_position[E_AXIS] += bowden_length[mmu_extruder];
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000, active_extruder);
 	current_position[E_AXIS] += FIL_LOAD_LENGTH - 60;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1400, active_extruder);
