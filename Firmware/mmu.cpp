@@ -26,6 +26,8 @@ extern char choose_extruder_menu();
 
 bool mmu_enabled = false;
 
+int8_t mmu_state = -1;
+
 uint8_t mmu_extruder = 0;
 
 uint8_t tmp_extruder = 0;
@@ -34,7 +36,7 @@ int8_t mmu_finda = -1;
 
 int16_t mmu_version = -1;
 
-int16_t mmu_build = -1;
+int16_t mmu_buildnr = -1;
 
 
 //clear rx buffer
@@ -73,60 +75,81 @@ int8_t mmu_rx_start(void)
 	return uart2_rx_str_P(PSTR("start\n"));
 }
 
-//initialize mmu_unit
-bool mmu_init(void)
+//initialize mmu2 unit - first part - should be done at begining of startup process
+void mmu_init(void)
 {
 	digitalWrite(MMU_RST_PIN, HIGH);
 	pinMode(MMU_RST_PIN, OUTPUT);              //setup reset pin
 	uart2_init();                              //init uart2
 	_delay_ms(10);                             //wait 10ms for sure
-	if (mmu_reset())                           //reset mmu
-	{
-		mmu_read_finda();
-		mmu_read_version();
-		return true;
-	}
-	return false;
+	mmu_reset();                               //reset mmu (HW or SW), do not wait for response
+	mmu_state = -1;
 }
 
-bool mmu_reset(void)
+//mmu main loop - state machine processing
+void mmu_loop(void)
 {
-#ifdef MMU_HWRESET
+//	printf_P(PSTR("MMU loop, state=%d\n"), mmu_state);
+	switch (mmu_state)
+	{
+	case 0:
+		return;
+	case -1:
+		if (mmu_rx_start() > 0)
+		{
+			puts_P(PSTR("MMU => 'start'"));
+			puts_P(PSTR("MMU <= 'S1'"));
+		    mmu_puts_P(PSTR("S1\n")); //send 'read version' request
+			mmu_state = -2;
+		}
+		else if (millis() > 30000) //30sec after reset disable mmu
+		{
+			puts_P(PSTR("MMU not responding - DISABLED"));
+			mmu_state = 0;
+		}
+		return;
+	case -2:
+		if (mmu_rx_ok() > 0)
+		{
+			fscanf_P(uart2io, PSTR("%u"), &mmu_version); //scan version from buffer
+			printf_P(PSTR("MMU => '%dok'\n"), mmu_version);
+			puts_P(PSTR("MMU <= 'S2'"));
+		    mmu_puts_P(PSTR("S2\n")); //send 'read buildnr' request
+			mmu_state = -3;
+		}
+		return;
+	case -3:
+		if (mmu_rx_ok() > 0)
+		{
+			fscanf_P(uart2io, PSTR("%u"), &mmu_buildnr); //scan buildnr from buffer
+			printf_P(PSTR("MMU => '%dok'\n"), mmu_buildnr);
+			puts_P(PSTR("MMU <= 'P0'"));
+		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
+			mmu_state = -4;
+		}
+		return;
+	case -4:
+		if (mmu_rx_ok() > 0)
+		{
+			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
+			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
+			puts_P(PSTR("MMU - ENABLED"));
+			mmu_enabled = true;
+			mmu_state = 1;
+		}
+		return;
+	}
+}
+
+void mmu_reset(void)
+{
+#ifdef MMU_HWRESET                             //HW - pulse reset pin
 	digitalWrite(MMU_RST_PIN, LOW);
 	_delay_us(100);
 	digitalWrite(MMU_RST_PIN, HIGH);
-#else
-    mmu_puts_P(PSTR("X0\n"));                  //send command
+#else                                          //SW - send X0 command
+    mmu_puts_P(PSTR("X0\n"));
 #endif
-	unsigned char timeout = MMU_TIMEOUT;       //timeout = 10x100ms
-	while ((mmu_rx_start() <= 0) && (--timeout))
-		delay_keep_alive(MMU_TODELAY);
-	mmu_enabled = timeout?true:false;
-//	mmu_enabled = true;
-	return mmu_enabled;
-}
-
-int8_t mmu_read_finda(void)
-{
-    mmu_puts_P(PSTR("P0\n"));
-	unsigned char timeout = MMU_TIMEOUT;       //10x100ms
-	while ((mmu_rx_ok() <= 0) && (--timeout))
-		delay_keep_alive(MMU_TODELAY);
-	mmu_finda = -1;
-	if (timeout)
-		fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda);
-	return mmu_finda;
-}
-
-int16_t mmu_read_version(void)
-{
-    mmu_puts_P(PSTR("S1\n"));
-	unsigned char timeout = MMU_TIMEOUT;       //10x100ms
-	while ((mmu_rx_ok() <= 0) && (--timeout))
-		delay_keep_alive(MMU_TODELAY);
-	if (timeout)
-		fscanf_P(uart2io, PSTR("%u"), &mmu_version);
-	return mmu_version;
 }
 
 int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament)

@@ -225,9 +225,7 @@ bool wait_for_unclick;
 
 
 
-
-
-
+const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
 
@@ -2177,7 +2175,8 @@ static void lcd_preheat_menu()
 
 static void lcd_support_menu()
 {
-    if (menuData.supportMenu.status == 0 || lcd_draw_update == 2) {
+    if (menuData.supportMenu.status == 0 || lcd_draw_update == 2)
+	{
         // Menu was entered or SD card status has changed (plugged in or removed).
         // Initialize its status.
         menuData.supportMenu.status = 1;
@@ -2189,7 +2188,8 @@ static void lcd_support_menu()
     } else if (menuData.supportMenu.is_flash_air && 
         menuData.supportMenu.ip[0] == 0 && menuData.supportMenu.ip[1] == 0 && 
         menuData.supportMenu.ip[2] == 0 && menuData.supportMenu.ip[3] == 0 &&
-        ++ menuData.supportMenu.status == 16) {
+        ++ menuData.supportMenu.status == 16)
+	{
         // Waiting for the FlashAir card to get an IP address from a router. Force an update.
         menuData.supportMenu.status = 0;
     }
@@ -2214,22 +2214,41 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(_i("prusa3d.com"));////MSG_PRUSA3D c=0 r=0
   MENU_ITEM_BACK_P(_i("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=0 r=0
   MENU_ITEM_BACK_P(_i("howto.prusa3d.com"));////MSG_PRUSA3D_HOWTO c=0 r=0
-  MENU_ITEM_BACK_P(PSTR("------------"));
+  MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR(FILAMENT_SIZE));
   MENU_ITEM_BACK_P(PSTR(ELECTRONICS));
   MENU_ITEM_BACK_P(PSTR(NOZZLE_TYPE));
-  MENU_ITEM_BACK_P(PSTR("------------"));
+  MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17 r=1
   MENU_ITEM_BACK_P(PSTR(__DATE__));
 
+	MENU_ITEM_BACK_P(STR_SEPARATOR);
+	if (mmu_enabled)
+	{
+		MENU_ITEM_BACK_P(PSTR("MMU2 connected"));
+		MENU_ITEM_BACK_P(PSTR(" FW:"));
+		if (((menu_item - 1) == menu_line) && lcd_draw_update)
+		{
+		    lcd_set_cursor(6, menu_row);
+			if ((mmu_version > 0) && (mmu_buildnr > 0))
+				lcd_printf_P(PSTR("%d.%d.%d-%d"), mmu_version/100, mmu_version%100/10, mmu_version%10, mmu_buildnr);
+			else
+				lcd_puts_P(PSTR("unknown")); 
+		}
+	}
+	else
+		MENU_ITEM_BACK_P(PSTR("MMU2       N/A"));
+
+
   // Show the FlashAir IP address, if the card is available.
   if (menuData.supportMenu.is_flash_air) {
-      MENU_ITEM_BACK_P(PSTR("------------"));
+      MENU_ITEM_BACK_P(STR_SEPARATOR);
       MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));
 ///!      MENU_ITEM(back_RAM, menuData.supportMenu.ip_str, 0);
   }
+
   #ifndef MK1BP
-  MENU_ITEM_BACK_P(PSTR("------------"));
+  MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=19 r=1
   MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=15 r=1
 

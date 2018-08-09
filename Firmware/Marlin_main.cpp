@@ -1157,7 +1157,9 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
-    ultralcd_init();
+	mmu_init();
+	
+	ultralcd_init();
 
 	spi_init();
 
@@ -1777,11 +1779,6 @@ void setup()
   wdt_enable(WDTO_4S);
 #endif //WATCHDOG
 
-	  puts_P(_N("Checking MMU unit..."));
-	  if (mmu_init())
-		  printf_P(_N("MMU ENABLED, finda=%hhd, version=%d\n"), mmu_finda, mmu_version);
-	  else
-		  puts_P(_N("MMU DISABLED"));
 }
 
 
@@ -2015,7 +2012,7 @@ void loop()
 		}
 	}
 #endif //TMC2130
-
+	mmu_loop();
 }
 
 #define DEFINE_PGM_READ_ANY(type, reader)       \
@@ -3477,14 +3474,6 @@ void process_commands()
 		else if (code_seen("MMURES"))
 		{
 			mmu_reset();
-		}
-		else if (code_seen("MMUFIN"))
-		{
-			mmu_read_finda();
-		}
-		else if (code_seen("MMUVER"))
-		{
-			mmu_read_version();
 		}
 		else if (code_seen("RESET")) {
             // careful!
