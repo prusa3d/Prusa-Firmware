@@ -21,7 +21,6 @@ extern char choose_extruder_menu();
 #define MMU_TIMEOUT 10
 
 #define MMU_HWRESET
-#define MMU_RST_PIN 76
 
 
 bool mmu_enabled = false;

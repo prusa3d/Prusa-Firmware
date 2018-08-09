@@ -64,11 +64,13 @@
 #define E0_MS1_PIN             65
 #define E0_MS2_PIN             66
 
+// Used pins for MMUv1 and MMUv2
 #ifdef SNMM 
-  #define E_MUX0_PIN 17
-  #define E_MUX1_PIN 16
+  #define E_MUX0_PIN 17 //Controls the super switch on MMUv1
+  #define E_MUX1_PIN 16 //Controls the super switch on MMUv1
 #endif
-
+#define MMU_RST_PIN 23 //Hardware reset pin for MMUv2 controller z-max pin
+//End MMU pins
 
 #define MOTOR_CURRENT_PWM_XY_PIN 46
 #define MOTOR_CURRENT_PWM_Z_PIN  45

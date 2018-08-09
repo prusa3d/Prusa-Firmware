@@ -87,6 +87,14 @@
 #define E0_MS1_PIN          -1
 #define E0_MS2_PIN          -1
 
+// Used pins for MMUv1 and MMUv2
+#ifdef SNMM 
+  #define E_MUX0_PIN 14 //Controls the super switch on MMUv1
+  #define E_MUX1_PIN 15//Controls the super switch on MMUv1
+  #endif
+#define MMU_RST_PIN 76 //Hardware reset pin for MMUv2 controller
+// End MMU pins
+
 #define SDPOWER             -1
 #define SDSS                77
 #define LED_PIN             13
@@ -135,7 +143,9 @@
 #define WRITE_LOGIC_ANALYZER_CH4(value) if (value) PORTK |= (1 << 0); else PORTK &= ~(1 << 0) // PK0
 #define LOGIC_ANALYZER_CH5		16				// PH0 (RXD2)
 #define LOGIC_ANALYZER_CH6		17				// PH1 (TXD2)
-#define LOGIC_ANALYZER_CH7 		76				// PJ5
+#ifndef SNMMP
+	#define LOGIC_ANALYZER_CH7 		76				// PJ5
+#endif
 
 #define LOGIC_ANALYZER_CH0_ENABLE do { SET_OUTPUT(LOGIC_ANALYZER_CH0); WRITE(LOGIC_ANALYZER_CH0, false); } while (0)
 #define LOGIC_ANALYZER_CH1_ENABLE do { SET_OUTPUT(LOGIC_ANALYZER_CH1); WRITE(LOGIC_ANALYZER_CH1, false); } while (0)
