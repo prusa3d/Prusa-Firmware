@@ -359,11 +359,11 @@ extern bool mmu_print_saved;
 
 //estimated time to end of the print
 extern uint8_t print_percent_done_normal;
-extern uint16_t print_time_remaining_normal;
+extern uint32_t print_time_remaining_normal;
 extern uint8_t print_percent_done_silent;
-extern uint16_t print_time_remaining_silent;
-#define PRINT_TIME_REMAINING_INIT 65535
-#define PRINT_PERCENT_DONE_INIT 255
+extern uint32_t print_time_remaining_silent;
+#define PRINT_TIME_REMAINING_INIT 0xffffffff
+#define PRINT_PERCENT_DONE_INIT   0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
 
 extern void calculate_extruder_multipliers();
@@ -467,12 +467,8 @@ void gcode_M701();
 
 void proc_commands();
 
-void manage_response(bool move_axes, bool turn_off_nozzle);
-bool mmu_get_response(bool timeout);
-void mmu_not_responding();
-void mmu_load_to_nozzle();
+
 void M600_load_filament();
-void mmu_M600_load_filament(bool automatic);
 void M600_load_filament_movements();
 void M600_wait_for_user();
 void M600_check_state();

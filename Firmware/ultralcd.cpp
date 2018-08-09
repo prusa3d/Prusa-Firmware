@@ -604,12 +604,13 @@ static void lcd_implementation_status_screen()
     //Print Feedrate
     lcd_set_cursor(LCD_WIDTH - 8-2, 1);
     lcd_puts_P(PSTR("  "));
+/*
 	if (maxlimit_status)
 	{
 		maxlimit_status = 0;
 		lcd_print('!');
 	}
-	else
+	else*/
 		lcd_print(LCD_STR_FEEDRATE[0]);
     lcd_print(itostr3(feedmultiply));
     lcd_puts_P(PSTR("%     "));
@@ -1958,6 +1959,9 @@ static void lcd_menu_extruder_info()
 	// Display Nozzle fan RPM
 	fan_speed_RPM[0] = 60*fan_speed[0];
 	fan_speed_RPM[1] = 60*fan_speed[1];
+
+	lcd_timeoutToStatus.stop(); //infinite timeout
+
 	lcd_printf_P(_N(
 	  ESC_H(0,0)
 	  "Nozzle FAN: %4d RPM\n"
@@ -2005,6 +2009,7 @@ static void lcd_menu_fails_stats_total()
 // Filam. runouts  000
 // Crash  X 000  Y 000
 //////////////////////
+	lcd_timeoutToStatus.stop(); //infinite timeout
     uint16_t power = eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
@@ -2021,6 +2026,7 @@ static void lcd_menu_fails_stats_print()
 // Filam. runouts  000
 // Crash  X 000  Y 000
 //////////////////////
+	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t power = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
     uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
@@ -2061,6 +2067,7 @@ static void lcd_menu_fails_stats()
  */
 static void lcd_menu_fails_stats()
 {
+	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Filam. runouts  %-3d" ESC_H(0,2) "Total failures" ESC_H(1,3) "Filam. runouts  %-3d"), filamentLast, filamentTotal);
@@ -2069,6 +2076,7 @@ static void lcd_menu_fails_stats()
 #else
 static void lcd_menu_fails_stats()
 {
+	lcd_timeoutToStatus.stop(); //infinite timeout
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_END();
@@ -2095,6 +2103,8 @@ static void lcd_menu_debug()
 
 static void lcd_menu_temperatures()
 {
+	lcd_timeoutToStatus.stop(); //infinite timeout
+
 	lcd_printf_P(PSTR(ESC_H(1,0) "Nozzle:   %d%c" ESC_H(1,1) "Bed:      %d%c"), (int)current_temperature[0], '\x01', (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
 	lcd_printf_P(PSTR(ESC_H(1,2) "Ambient:  %d%c" ESC_H(1,3) "PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
@@ -2112,6 +2122,7 @@ static void lcd_menu_temperatures()
 #define VOLT_DIV_REF 5
 static void lcd_menu_voltages()
 {
+	lcd_timeoutToStatus.stop(); //infinite timeout
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 //	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 //	lcd_printf_P(PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
