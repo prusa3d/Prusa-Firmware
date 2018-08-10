@@ -88,6 +88,7 @@ unsigned long display_time; //just timer for showing pid finished message on lcd
 float pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
+static bool autoDeplete;
 
 
 static float manual_feedrate[] = MANUAL_FEEDRATE;
@@ -4659,6 +4660,11 @@ do\
 }\
 while (0)
 
+static void auto_deplete_switch()
+{
+    autoDeplete = !autoDeplete;
+    eeprom_update_byte((unsigned char *)EEPROM_AUTO_DEPLETE, autoDeplete);
+}
 static void lcd_settings_menu()
 {
 	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -4672,6 +4678,9 @@ static void lcd_settings_menu()
 	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=0 r=0
 
 	SETTINGS_FILAMENT_SENSOR;
+
+    if (autoDeplete) MENU_ITEM_FUNCTION_P(_i("Auto deplete [on]"), auto_deplete_switch);
+    else MENU_ITEM_FUNCTION_P(_i("Auto deplete[off]"), auto_deplete_switch);
 
 	if (fans_check_enabled == true)
 		MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
@@ -7056,6 +7065,12 @@ void menu_action_sddirectory(const char* filename, char* longFilename)
 
 void ultralcd_init()
 {
+    {
+        uint8_t autoDepleteRaw = eeprom_read_byte(reinterpret_cast<uint8_t*>(EEPROM_AUTO_DEPLETE));
+        if (0xff == autoDepleteRaw) autoDeplete = false;
+        else autoDeplete = autoDepleteRaw;
+
+    }
 	lcd_init();
 	lcd_refresh();
 	lcd_longpress_func = menu_lcd_longpress_func;
