@@ -4679,8 +4679,11 @@ static void lcd_settings_menu()
 
 	SETTINGS_FILAMENT_SENSOR;
 
-    if (autoDeplete) MENU_ITEM_FUNCTION_P(_i("Auto deplete [on]"), auto_deplete_switch);
-    else MENU_ITEM_FUNCTION_P(_i("Auto deplete[off]"), auto_deplete_switch);
+	if (mmu_enabled)
+	{
+        if (autoDeplete) MENU_ITEM_FUNCTION_P(_i("Auto deplete [on]"), auto_deplete_switch);
+        else MENU_ITEM_FUNCTION_P(_i("Auto deplete[off]"), auto_deplete_switch);
+	}
 
 	if (fans_check_enabled == true)
 		MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
