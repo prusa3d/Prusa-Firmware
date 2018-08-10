@@ -4664,10 +4664,14 @@ static void lcd_settings_menu()
 	if (!isPrintPaused)
 	    MENU_ITEM_GCODE_P(_i("Disable steppers"), PSTR("M84"));////MSG_DISABLE_STEPPERS c=0 r=0
 
+	if (mmu_enabled)
+	{
         if (autoDeplete)
             MENU_ITEM_FUNCTION_P(_i("Auto deplete [on]"), auto_deplete_switch);////MSG_FANS_CHECK_ON c=17 r=1
         else
             MENU_ITEM_FUNCTION_P(_i("Auto deplete[off]"), auto_deplete_switch);////MSG_FANS_CHECK_OFF c=17 r=1
+	}
+
 	settings_filament_sensor();
 
 	if (fans_check_enabled == true)
