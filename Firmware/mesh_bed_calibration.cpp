@@ -2984,13 +2984,14 @@ static int babystepLoadZ = 0;
 
 void babystep_load()
 {
+	babystepLoadZ = 0;
     // Apply Z height correction aka baby stepping before mesh bed leveling gets activated.
-    if(calibration_status() < CALIBRATION_STATUS_LIVE_ADJUST)
+    if (calibration_status() < CALIBRATION_STATUS_LIVE_ADJUST)
     {
         check_babystep(); //checking if babystep is in allowed range, otherwise setting babystep to 0
         
         // End of G80: Apply the baby stepping value.
-        EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
+        EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepLoadZ);
                             
     #if 0
         SERIAL_ECHO("Z baby step: ");
@@ -3026,7 +3027,7 @@ void babystep_undo()
 
 void babystep_reset()
 {
-      babystepLoadZ = 0;    
+	babystepLoadZ = 0;    
 }
 
 void count_xyz_details(float (&distanceMin)[2]) {

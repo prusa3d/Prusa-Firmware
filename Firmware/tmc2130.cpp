@@ -77,7 +77,8 @@ bool tmc2130_sg_change = false;
 
 bool skip_debug_msg = false;
 
-#define DBG(args...) printf_P(args)
+#define DBG(args...)
+//printf_P(args)
 #ifndef _n
 #define _n PSTR
 #endif //_n

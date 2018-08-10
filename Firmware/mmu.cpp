@@ -26,7 +26,7 @@ extern char choose_extruder_menu();
 
 bool mmu_enabled = false;
 
-int8_t mmu_state = -1;
+int8_t mmu_state = 0;
 
 uint8_t mmu_extruder = 0;
 

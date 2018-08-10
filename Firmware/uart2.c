@@ -34,6 +34,8 @@ int uart2_getchar(FILE *stream)
 //uart init (io + FILE stream)
 void uart2_init(void)
 {
+	DDRH &=	~0x01;
+	PORTH |= 0x01;
 	rbuf_ini(uart2_ibuf, sizeof(uart2_ibuf) - 4);
 	UCSR2A |= (1 << U2X2); // baudrate multiplier
 	UBRR2L = UART_BAUD_SELECT(UART2_BAUD, F_CPU); // select baudrate

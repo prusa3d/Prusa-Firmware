@@ -972,41 +972,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			case 2: _delay_ms(0); break;
 			case 3: _delay_ms(0); break;
 			}
-			// _delay_ms(100);
-			/*
-			#ifdef MESH_BED_LEVELING
-			_delay_ms(2000);
-
-			if (!READ(BTN_ENC))
-			{
-			WRITE(BEEPER, HIGH);
-			_delay_ms(100);
-			WRITE(BEEPER, LOW);
-			_delay_ms(200);
-			WRITE(BEEPER, HIGH);
-			_delay_ms(100);
-			WRITE(BEEPER, LOW);
-
-			int _z = 0;
-			calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-			EEPROM_save_B(EEPROM_BABYSTEP_X, &_z);
-			EEPROM_save_B(EEPROM_BABYSTEP_Y, &_z);
-			EEPROM_save_B(EEPROM_BABYSTEP_Z, &_z);
-			}
-			else
-			{
-
-			WRITE(BEEPER, HIGH);
-			_delay_ms(100);
-			WRITE(BEEPER, LOW);
-			}
-			#endif // mesh */
 
 		}
-	}
-	else
-	{
-		//_delay_ms(1000);  // wait 1sec to display the splash screen // what's this and why do we need it?? - andre
 	}
 	KEEPALIVE_STATE(IN_HANDLER);
 }
@@ -7732,7 +7699,8 @@ void wait_for_heater(long codenum) {
 	}
 }
 
-void check_babystep() {
+void check_babystep()
+{
 	int babystep_z;
 	EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystep_z);
 	if ((babystep_z < Z_BABYSTEP_MIN) || (babystep_z > Z_BABYSTEP_MAX)) {
