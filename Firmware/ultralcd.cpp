@@ -120,7 +120,7 @@ static void lcd_control_temperature_preheat_pla_settings_menu();
 static void lcd_control_temperature_preheat_abs_settings_menu();
 static void lcd_control_motion_menu();
 static void lcd_control_volumetric_menu();
-static void lcd_settings_menu_back();
+//static void lcd_settings_menu_back();
 
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
@@ -2846,6 +2846,10 @@ static void _lcd_babystep(int axis, const char *msg)
 		EEPROM_read_B(EEPROM_BABYSTEP_Y, &_md->babystepMem[1]);
 		EEPROM_read_B(EEPROM_BABYSTEP_Z, &_md->babystepMem[2]);
 
+		// same logic as in babystep_load
+	    if (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST)
+			_md->babystepMem[2] = 0;
+
 		_md->babystepMemMM[0] = _md->babystepMem[0]/axis_steps_per_unit[X_AXIS];
 		_md->babystepMemMM[1] = _md->babystepMem[1]/axis_steps_per_unit[Y_AXIS];
 		_md->babystepMemMM[2] = _md->babystepMem[2]/axis_steps_per_unit[Z_AXIS];
@@ -3014,7 +3018,7 @@ void pid_extruder() {
 	}
 
 }
-
+/*
 void lcd_adjust_z() {
   int enc_dif = 0;
   int cursor_pos = 1;
@@ -3097,7 +3101,7 @@ void lcd_adjust_z() {
   lcd_clear();
   lcd_return_to_status();
 
-}
+}*/
 
 bool lcd_wait_for_pinda(float temp) {
 	lcd_set_custom_characters_degree();
@@ -4781,6 +4785,7 @@ static void lcd_ustep_linearity_menu_save()
 }
 #endif //TMC2130
 
+/*
 static void lcd_settings_menu_back()
 {
 #ifdef TMC2130
@@ -4799,7 +4804,7 @@ static void lcd_settings_menu_back()
     menu_menu = lcd_main_menu;
 //    lcd_main_menu();
 }
-
+*/
 
 static void lcd_calibration_menu()
 {

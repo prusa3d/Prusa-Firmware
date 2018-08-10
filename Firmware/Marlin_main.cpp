@@ -7699,7 +7699,8 @@ void wait_for_heater(long codenum) {
 	}
 }
 
-void check_babystep() {
+void check_babystep()
+{
 	int babystep_z;
 	EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystep_z);
 	if ((babystep_z < Z_BABYSTEP_MIN) || (babystep_z > Z_BABYSTEP_MAX)) {
