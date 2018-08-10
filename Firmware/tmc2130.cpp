@@ -77,7 +77,8 @@ bool tmc2130_sg_change = false;
 
 bool skip_debug_msg = false;
 
-#define DBG(args...) printf_P(args)
+#define DBG(args...)
+//printf_P(args)
 #ifndef _n
 #define _n PSTR
 #endif //_n
@@ -150,7 +151,7 @@ uint16_t __tcoolthrs(uint8_t axis)
 
 void tmc2130_init()
 {
-	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
+//	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
 	WRITE(X_TMC2130_CS, HIGH);
 	WRITE(Y_TMC2130_CS, HIGH);
 	WRITE(Z_TMC2130_CS, HIGH);
@@ -442,8 +443,8 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 //		toff = TMC2130_TOFF_E; // toff = 3-5
 //		rndtf = 1;
 	}
-	DBG(_n("tmc2130_setup_chopper(axis=%hhd, mres=%hhd, curh=%hhd, curr=%hhd\n"), axis, mres, current_h, current_r);
-	DBG(_n(" toff=%hhd, hstr=%hhd, hend=%hhd, tbl=%hhd\n"), toff, hstrt, hend, tbl);
+//	DBG(_n("tmc2130_setup_chopper(axis=%hhd, mres=%hhd, curh=%hhd, curr=%hhd\n"), axis, mres, current_h, current_r);
+//	DBG(_n(" toff=%hhd, hstr=%hhd, hend=%hhd, tbl=%hhd\n"), toff, hstrt, hend, tbl);
 	if (current_r <= 31)
 	{
 		tmc2130_wr_CHOPCONF(axis, toff, hstrt, hend, fd3, 0, rndtf, chm, tbl, 1, 0, 0, 0, mres, intpol, 0, 0);
@@ -458,31 +459,31 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 
 void tmc2130_set_current_h(uint8_t axis, uint8_t current)
 {
-	DBG(_n("tmc2130_set_current_h(axis=%d, current=%d\n"), axis, current);
+//	DBG(_n("tmc2130_set_current_h(axis=%d, current=%d\n"), axis, current);
 	tmc2130_current_h[axis] = current;
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 }
 
 void tmc2130_set_current_r(uint8_t axis, uint8_t current)
 {
-	DBG(_n("tmc2130_set_current_r(axis=%d, current=%d\n"), axis, current);
+//	DBG(_n("tmc2130_set_current_r(axis=%d, current=%d\n"), axis, current);
 	tmc2130_current_r[axis] = current;
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 }
 
 void tmc2130_print_currents()
 {
-	DBG(_n("tmc2130_print_currents()\n\tH\tR\nX\t%d\t%d\nY\t%d\t%d\nZ\t%d\t%d\nE\t%d\t%d\n"),
-		tmc2130_current_h[0], tmc2130_current_r[0],
-		tmc2130_current_h[1], tmc2130_current_r[1],
-		tmc2130_current_h[2], tmc2130_current_r[2],
-		tmc2130_current_h[3], tmc2130_current_r[3]
-	);
+//	DBG(_n("tmc2130_print_currents()\n\tH\tR\nX\t%d\t%d\nY\t%d\t%d\nZ\t%d\t%d\nE\t%d\t%d\n"),
+//		tmc2130_current_h[0], tmc2130_current_r[0],
+//		tmc2130_current_h[1], tmc2130_current_r[1],
+//		tmc2130_current_h[2], tmc2130_current_r[2],
+//		tmc2130_current_h[3], tmc2130_current_r[3]
+//	);
 }
 
 void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 {
-	DBG(_n("tmc2130_set_pwm_ampl(axis=%hhd, pwm_ampl=%hhd\n"), axis, pwm_ampl);
+//	DBG(_n("tmc2130_set_pwm_ampl(axis=%hhd, pwm_ampl=%hhd\n"), axis, pwm_ampl);
 	tmc2130_pwm_ampl[axis] = pwm_ampl;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -490,7 +491,7 @@ void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
 
 void tmc2130_set_pwm_grad(uint8_t axis, uint8_t pwm_grad)
 {
-	DBG(_n("tmc2130_set_pwm_grad(axis=%hhd, pwm_grad=%hhd\n"), axis, pwm_grad);
+//	DBG(_n("tmc2130_set_pwm_grad(axis=%hhd, pwm_grad=%hhd\n"), axis, pwm_grad);
 	tmc2130_pwm_grad[axis] = pwm_grad;
 	if (((axis == 0) || (axis == 1)) && (tmc2130_mode == TMC2130_MODE_SILENT))
 		tmc2130_wr_PWMCONF(axis, tmc2130_pwm_ampl[axis], tmc2130_pwm_grad[axis], tmc2130_pwm_freq[axis], tmc2130_pwm_auto[axis], 0, 0);
@@ -852,12 +853,12 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 {
 // TMC2130 wave compression algorithm
 // optimized for minimal memory requirements
-	printf_P(PSTR("tmc2130_set_wave %hhd %hhd\n"), axis, fac1000);
+//	printf_P(PSTR("tmc2130_set_wave %hhd %hhd\n"), axis, fac1000);
 	if (fac1000 < TMC2130_WAVE_FAC1000_MIN) fac1000 = 0;
 	if (fac1000 > TMC2130_WAVE_FAC1000_MAX) fac1000 = TMC2130_WAVE_FAC1000_MAX;
 	float fac = 0;
 	if (fac1000) fac = ((float)((uint16_t)fac1000 + 1000) / 1000); //correction factor
-	printf_P(PSTR(" factor: %s\n"), ftostr43(fac));
+//	printf_P(PSTR(" factor: %s\n"), ftostr43(fac));
 	uint8_t vA = 0;                //value of currentA
 	uint8_t va = 0;                //previous vA
 	int8_t d0 = 0;                //delta0
