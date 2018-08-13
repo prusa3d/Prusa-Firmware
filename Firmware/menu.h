@@ -16,15 +16,6 @@ typedef struct
     uint8_t position;
 } menu_record_t;
 
-typedef struct
-{
-    //Variables used when editing values.
-    const char* editLabel;
-    void* editValue;
-    int32_t minEditValue;
-	int32_t maxEditValue;
-} menu_data_edit_t;
-
 extern menu_record_t menu_stack[MENU_DEPTH_MAX];
 
 extern uint8_t menu_data[MENU_DATA_SIZE];
@@ -63,7 +54,7 @@ extern void menu_submenu(menu_func_t submenu);
 
 extern uint8_t menu_item_ret(void);
 
-//int menu_item_printf_P(char type_char, const char* format, ...);
+//extern int menu_draw_item_printf_P(char type_char, const char* format, ...);
 
 extern int menu_draw_item_puts_P(char type_char, const char* str);
 
