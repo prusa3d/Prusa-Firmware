@@ -686,17 +686,17 @@ uint8_t xyzcal_xycoords2point(int16_t x, int16_t y)
 
 //MK3
 #if ((MOTHERBOARD == BOARD_EINSY_1_0a))
-const int16_t PROGMEM xyzcal_point_xcoords[4] = {1200, 22000, 22000, 1200};
-const int16_t PROGMEM xyzcal_point_ycoords[4] = {600, 600, 19800, 19800};
+const int16_t xyzcal_point_xcoords[4] PROGMEM = {1200, 22000, 22000, 1200};
+const int16_t xyzcal_point_ycoords[4] PROGMEM = {600, 600, 19800, 19800};
 #endif //((MOTHERBOARD == BOARD_EINSY_1_0a))
 
 //MK2.5
 #if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
-const int16_t PROGMEM xyzcal_point_xcoords[4] = {1200, 22000, 22000, 1200};
-const int16_t PROGMEM xyzcal_point_ycoords[4] = {700, 700, 19800, 19800};
+const int16_t xyzcal_point_xcoords[4] PROGMEM = {1200, 22000, 22000, 1200};
+const int16_t xyzcal_point_ycoords[4] PROGMEM = {700, 700, 19800, 19800};
 #endif //((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
 
-const uint16_t PROGMEM xyzcal_point_pattern[12] = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
+const uint16_t xyzcal_point_pattern[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
 
 bool xyzcal_searchZ(void)
 {
@@ -747,7 +747,7 @@ bool xyzcal_scan_and_process(void)
 	uint16_t* pattern = (uint16_t*)(histo + 2*16);
 	for (uint8_t i = 0; i < 12; i++)
 	{
-		pattern[i] = pgm_read_word_far((uint16_t*)(xyzcal_point_pattern + i));
+		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
 //		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
 	}
 	uint8_t c = 0;
@@ -777,8 +777,8 @@ bool xyzcal_find_bed_induction_sensor_point_xy(void)
 	int16_t y = _Y;
 	int16_t z = _Z;
 	uint8_t point = xyzcal_xycoords2point(x, y);
-	x = pgm_read_word_far((uint16_t*)(xyzcal_point_xcoords + point));
-	y = pgm_read_word_far((uint16_t*)(xyzcal_point_ycoords + point));
+	x = pgm_read_word((uint16_t*)(xyzcal_point_xcoords + point));
+	y = pgm_read_word((uint16_t*)(xyzcal_point_ycoords + point));
 	DBG(_n("point=%d x=%d y=%d z=%d\n"), point, x, y, z);
 	xyzcal_meassure_enter();
 	xyzcal_lineXYZ_to(x, y, z, 200, 0);
