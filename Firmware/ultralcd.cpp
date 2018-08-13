@@ -44,12 +44,6 @@ char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 static void lcd_sd_updir();
 
-
-// State of the currently active menu.
-// C Union manages sharing of the static memory by all the menus.
-union MenuData menuData;
-
-
 int8_t ReInitLCD = 0;
 
 
@@ -116,11 +110,14 @@ static void lcd_tune_menu();
 //static void lcd_move_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
-static void lcd_control_temperature_menu();
 #ifdef LINEARITY_CORRECTION
 static void lcd_settings_menu_back();
 #endif //LINEARITY_CORRECTION
-
+static void lcd_control_temperature_menu();
+static void lcd_control_temperature_preheat_pla_settings_menu();
+static void lcd_control_temperature_preheat_abs_settings_menu();
+static void lcd_control_motion_menu();
+static void lcd_control_volumetric_menu();
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
 static void prusa_stat_temperatures();
@@ -225,9 +222,7 @@ bool wait_for_unclick;
 
 
 
-
-
-
+const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
 
@@ -608,12 +603,13 @@ static void lcd_implementation_status_screen()
     //Print Feedrate
     lcd_set_cursor(LCD_WIDTH - 8-2, 1);
     lcd_puts_P(PSTR("  "));
+/*
 	if (maxlimit_status)
 	{
 		maxlimit_status = 0;
 		lcd_print('!');
 	}
-	else
+	else*/
 		lcd_print(LCD_STR_FEEDRATE[0]);
     lcd_print(itostr3(feedmultiply));
     lcd_puts_P(PSTR("%     "));
@@ -1958,6 +1954,9 @@ static void lcd_menu_extruder_info()
 	// Display Nozzle fan RPM
 	fan_speed_RPM[0] = 60*fan_speed[0];
 	fan_speed_RPM[1] = 60*fan_speed[1];
+
+	lcd_timeoutToStatus.stop(); //infinite timeout
+
 	lcd_printf_P(_N(
 	  ESC_H(0,0)
 	  "Nozzle FAN: %4d RPM\n"
@@ -2005,6 +2004,7 @@ static void lcd_menu_fails_stats_total()
 // Filam. runouts  000
 // Crash  X 000  Y 000
 //////////////////////
+	lcd_timeoutToStatus.stop(); //infinite timeout
     uint16_t power = eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
@@ -2021,6 +2021,7 @@ static void lcd_menu_fails_stats_print()
 // Filam. runouts  000
 // Crash  X 000  Y 000
 //////////////////////
+	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t power = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
     uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
@@ -2061,6 +2062,7 @@ static void lcd_menu_fails_stats()
  */
 static void lcd_menu_fails_stats()
 {
+	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Filam. runouts  %-3d" ESC_H(0,2) "Total failures" ESC_H(1,3) "Filam. runouts  %-3d"), filamentLast, filamentTotal);
@@ -2069,6 +2071,7 @@ static void lcd_menu_fails_stats()
 #else
 static void lcd_menu_fails_stats()
 {
+	lcd_timeoutToStatus.stop(); //infinite timeout
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_END();
@@ -2095,6 +2098,8 @@ static void lcd_menu_debug()
 
 static void lcd_menu_temperatures()
 {
+	lcd_timeoutToStatus.stop(); //infinite timeout
+
 	lcd_printf_P(PSTR(ESC_H(1,0) "Nozzle:   %d%c" ESC_H(1,1) "Bed:      %d%c"), (int)current_temperature[0], '\x01', (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
 	lcd_printf_P(PSTR(ESC_H(1,2) "Ambient:  %d%c" ESC_H(1,3) "PINDA:    %d%c"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
@@ -2112,6 +2117,7 @@ static void lcd_menu_temperatures()
 #define VOLT_DIV_REF 5
 static void lcd_menu_voltages()
 {
+	lcd_timeoutToStatus.stop(); //infinite timeout
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 //	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 //	lcd_printf_P(PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
@@ -2170,21 +2176,34 @@ static void lcd_preheat_menu()
 
 static void lcd_support_menu()
 {
-    if (menuData.supportMenu.status == 0 || lcd_draw_update == 2) {
+	typedef struct
+	{	// 22bytes total
+		int8_t status;                 // 1byte
+		bool is_flash_air;             // 1byte
+		uint8_t ip[4];                 // 4bytes
+		char ip_str[3*4+3+1];          // 16bytes
+	} _menu_data_t;
+#if (22 > MENU_DATA_SIZE)
+#error "check MENU_DATA_SIZE definition!"
+#endif
+	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
+    if (_md->status == 0 || lcd_draw_update == 2)
+	{
         // Menu was entered or SD card status has changed (plugged in or removed).
         // Initialize its status.
-        menuData.supportMenu.status = 1;
-        menuData.supportMenu.is_flash_air = card.ToshibaFlashAir_isEnabled() && card.ToshibaFlashAir_GetIP(menuData.supportMenu.ip);
-        if (menuData.supportMenu.is_flash_air)
-            sprintf_P(menuData.supportMenu.ip_str, PSTR("%d.%d.%d.%d"), 
-                menuData.supportMenu.ip[0], menuData.supportMenu.ip[1], 
-                menuData.supportMenu.ip[2], menuData.supportMenu.ip[3]);
-    } else if (menuData.supportMenu.is_flash_air && 
-        menuData.supportMenu.ip[0] == 0 && menuData.supportMenu.ip[1] == 0 && 
-        menuData.supportMenu.ip[2] == 0 && menuData.supportMenu.ip[3] == 0 &&
-        ++ menuData.supportMenu.status == 16) {
+        _md->status = 1;
+        _md->is_flash_air = card.ToshibaFlashAir_isEnabled() && card.ToshibaFlashAir_GetIP(_md->ip);
+        if (_md->is_flash_air)
+            sprintf_P(_md->ip_str, PSTR("%d.%d.%d.%d"), 
+                _md->ip[0], _md->ip[1], 
+                _md->ip[2], _md->ip[3]);
+    } else if (_md->is_flash_air && 
+        _md->ip[0] == 0 && _md->ip[1] == 0 && 
+        _md->ip[2] == 0 && _md->ip[3] == 0 &&
+        ++ _md->status == 16)
+	{
         // Waiting for the FlashAir card to get an IP address from a router. Force an update.
-        menuData.supportMenu.status = 0;
+        _md->status = 0;
     }
 
   MENU_BEGIN();
@@ -2207,22 +2226,41 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(_i("prusa3d.com"));////MSG_PRUSA3D c=0 r=0
   MENU_ITEM_BACK_P(_i("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM c=0 r=0
   MENU_ITEM_BACK_P(_i("howto.prusa3d.com"));////MSG_PRUSA3D_HOWTO c=0 r=0
-  MENU_ITEM_BACK_P(PSTR("------------"));
+  MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR(FILAMENT_SIZE));
   MENU_ITEM_BACK_P(PSTR(ELECTRONICS));
   MENU_ITEM_BACK_P(PSTR(NOZZLE_TYPE));
-  MENU_ITEM_BACK_P(PSTR("------------"));
+  MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(_i("Date:"));////MSG_DATE c=17 r=1
   MENU_ITEM_BACK_P(PSTR(__DATE__));
 
+	MENU_ITEM_BACK_P(STR_SEPARATOR);
+	if (mmu_enabled)
+	{
+		MENU_ITEM_BACK_P(PSTR("MMU2 connected"));
+		MENU_ITEM_BACK_P(PSTR(" FW:"));
+		if (((menu_item - 1) == menu_line) && lcd_draw_update)
+		{
+		    lcd_set_cursor(6, menu_row);
+			if ((mmu_version > 0) && (mmu_buildnr > 0))
+				lcd_printf_P(PSTR("%d.%d.%d-%d"), mmu_version/100, mmu_version%100/10, mmu_version%10, mmu_buildnr);
+			else
+				lcd_puts_P(PSTR("unknown")); 
+		}
+	}
+	else
+		MENU_ITEM_BACK_P(PSTR("MMU2       N/A"));
+
+
   // Show the FlashAir IP address, if the card is available.
-  if (menuData.supportMenu.is_flash_air) {
-      MENU_ITEM_BACK_P(PSTR("------------"));
+  if (_md->is_flash_air) {
+      MENU_ITEM_BACK_P(STR_SEPARATOR);
       MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));
-///!      MENU_ITEM(back_RAM, menuData.supportMenu.ip_str, 0);
+///!      MENU_ITEM(back_RAM, _md->ip_str, 0);
   }
+
   #ifndef MK1BP
-  MENU_ITEM_BACK_P(PSTR("------------"));
+  MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=19 r=1
   MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=15 r=1
 
@@ -2476,7 +2514,7 @@ static void lcd_menu_AutoLoadFilament()
     }
     else
     {
-		ShortTimer* ptimer = (ShortTimer*)&(menuData.autoLoadFilamentMenu.dummy);
+		ShortTimer* ptimer = (ShortTimer*)&(menu_data[0]);
         if (!ptimer->running()) ptimer->start();
         lcd_set_cursor(0, 0);
         lcd_puts_P(_T(MSG_ERROR));
@@ -2586,10 +2624,19 @@ void lcd_menu_statistics()
 
 static void _lcd_move(const char *name, int axis, int min, int max)
 {
-	if (!menuData._lcd_moveMenu.initialized)
+	typedef struct
+	{	// 2bytes total
+		bool initialized;              // 1byte
+		bool endstopsEnabledPrevious;  // 1byte
+	} _menu_data_t;
+#if (2 > MENU_DATA_SIZE)
+#error "check MENU_DATA_SIZE definition!"
+#endif
+	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
+	if (!_md->initialized)
 	{
-		menuData._lcd_moveMenu.endstopsEnabledPrevious = enable_endstops(false);
-		menuData._lcd_moveMenu.initialized = true;
+		_md->endstopsEnabledPrevious = enable_endstops(false);
+		_md->initialized = true;
 	}
 	if (lcd_encoder != 0)
 	{
@@ -2610,7 +2657,7 @@ static void _lcd_move(const char *name, int axis, int min, int max)
 	    lcd_set_cursor(0, 1);
 		menu_draw_float31(' ', name, current_position[axis]);
 	}
-	if (menuExiting || LCD_CLICKED) (void)enable_endstops(menuData._lcd_moveMenu.endstopsEnabledPrevious);
+	if (menuExiting || LCD_CLICKED) (void)enable_endstops(_md->endstopsEnabledPrevious);
 	if (LCD_CLICKED) menu_back();
 }
 
@@ -2782,23 +2829,37 @@ static void lcd_move_z() {
  */
 static void _lcd_babystep(int axis, const char *msg) 
 {
-	if (menuData.babyStep.status == 0)
+	typedef struct
+	{	// 19bytes total
+		int8_t status;                 // 1byte
+		int babystepMem[3];            // 6bytes
+		float babystepMemMM[3];        // 12bytes
+	} _menu_data_t;
+#if (19 > MENU_DATA_SIZE)
+#error "check MENU_DATA_SIZE definition!"
+#endif
+	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
+	if (_md->status == 0)
 	{
 		// Menu was entered.
 		// Initialize its status.
-		menuData.babyStep.status = 1;
+		_md->status = 1;
 		check_babystep();
 
-		EEPROM_read_B(EEPROM_BABYSTEP_X, &menuData.babyStep.babystepMem[0]);
-		EEPROM_read_B(EEPROM_BABYSTEP_Y, &menuData.babyStep.babystepMem[1]);
-		EEPROM_read_B(EEPROM_BABYSTEP_Z, &menuData.babyStep.babystepMem[2]);
+		EEPROM_read_B(EEPROM_BABYSTEP_X, &_md->babystepMem[0]);
+		EEPROM_read_B(EEPROM_BABYSTEP_Y, &_md->babystepMem[1]);
+		EEPROM_read_B(EEPROM_BABYSTEP_Z, &_md->babystepMem[2]);
 
-		menuData.babyStep.babystepMemMM[0] = menuData.babyStep.babystepMem[0]/axis_steps_per_unit[X_AXIS];
-		menuData.babyStep.babystepMemMM[1] = menuData.babyStep.babystepMem[1]/axis_steps_per_unit[Y_AXIS];
-		menuData.babyStep.babystepMemMM[2] = menuData.babyStep.babystepMem[2]/axis_steps_per_unit[Z_AXIS];
+		// same logic as in babystep_load
+	    if (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST)
+			_md->babystepMem[2] = 0;
+
+		_md->babystepMemMM[0] = _md->babystepMem[0]/axis_steps_per_unit[X_AXIS];
+		_md->babystepMemMM[1] = _md->babystepMem[1]/axis_steps_per_unit[Y_AXIS];
+		_md->babystepMemMM[2] = _md->babystepMem[2]/axis_steps_per_unit[Z_AXIS];
 		lcd_draw_update = 1;
 		//SERIAL_ECHO("Z baby step: ");
-		//SERIAL_ECHO(menuData.babyStep.babystepMem[2]);
+		//SERIAL_ECHO(_md->babystepMem[2]);
 		// Wait 90 seconds before closing the live adjust dialog.
 		lcd_timeoutToStatus.start();
 	}
@@ -2806,11 +2867,11 @@ static void _lcd_babystep(int axis, const char *msg)
 	if (lcd_encoder != 0) 
 	{
 		if (homing_flag) lcd_encoder = 0;
-		menuData.babyStep.babystepMem[axis] += (int)lcd_encoder;
+		_md->babystepMem[axis] += (int)lcd_encoder;
 		if (axis == 2)
 		{
-			if (menuData.babyStep.babystepMem[axis] < Z_BABYSTEP_MIN) menuData.babyStep.babystepMem[axis] = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
-			else if (menuData.babyStep.babystepMem[axis] > Z_BABYSTEP_MAX) menuData.babyStep.babystepMem[axis] = Z_BABYSTEP_MAX; //0
+			if (_md->babystepMem[axis] < Z_BABYSTEP_MIN) _md->babystepMem[axis] = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
+			else if (_md->babystepMem[axis] > Z_BABYSTEP_MAX) _md->babystepMem[axis] = Z_BABYSTEP_MAX; //0
 			else
 			{
 				CRITICAL_SECTION_START
@@ -2818,7 +2879,7 @@ static void _lcd_babystep(int axis, const char *msg)
 				CRITICAL_SECTION_END		
 			}
 		}
-		menuData.babyStep.babystepMemMM[axis] = menuData.babyStep.babystepMem[axis]/axis_steps_per_unit[axis]; 
+		_md->babystepMemMM[axis] = _md->babystepMem[axis]/axis_steps_per_unit[axis]; 
 		delay(50);
 		lcd_encoder = 0;
 		lcd_draw_update = 1;
@@ -2826,14 +2887,14 @@ static void _lcd_babystep(int axis, const char *msg)
 	if (lcd_draw_update)
 	{
 	    lcd_set_cursor(0, 1);
-		menu_draw_float13(' ', msg, menuData.babyStep.babystepMemMM[axis]);
+		menu_draw_float13(' ', msg, _md->babystepMemMM[axis]);
 	}
 	if (LCD_CLICKED || menuExiting)
 	{
 		// Only update the EEPROM when leaving the menu.
 		EEPROM_save_B(
 		(axis == X_AXIS) ? EEPROM_BABYSTEP_X : ((axis == Y_AXIS) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z),
-		&menuData.babyStep.babystepMem[axis]);
+		&_md->babystepMem[axis]);
 		if(Z_AXIS == axis) calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 	}
 	if (LCD_CLICKED) menu_back();
@@ -2845,72 +2906,94 @@ static void lcd_babystep_z() {
 
 static void lcd_adjust_bed();
 
+typedef struct
+{	// 13bytes total
+	int8_t status;                   // 1byte
+	int8_t left;                     // 1byte
+	int8_t right;                    // 1byte
+	int8_t front;                    // 1byte
+	int8_t rear;                     // 1byte
+	int    left2;                    // 2byte
+	int    right2;                   // 2byte
+	int    front2;                   // 2byte
+	int    rear2;                    // 2byte
+} _menu_data_adjust_bed_t;
+#if (13 > MENU_DATA_SIZE)
+#error "check MENU_DATA_SIZE definition!"
+#endif
+
 static void lcd_adjust_bed_reset()
 {
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT , 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
-    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR , 0);
-    menuData.adjustBed.status = 0;
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT , 0);
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR , 0);
+	_menu_data_adjust_bed_t* _md = (_menu_data_adjust_bed_t*)&(menu_data[0]);
+	_md->status = 0;
 }
 
-void adjust_bed_reset() {
+void adjust_bed_reset()
+{
+	_menu_data_adjust_bed_t* _md = (_menu_data_adjust_bed_t*)&(menu_data[0]);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT, 0);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR, 0);
-	menuData.adjustBed.left = menuData.adjustBed.left2 = 0;
-	menuData.adjustBed.right = menuData.adjustBed.right2 = 0;
-	menuData.adjustBed.front = menuData.adjustBed.front2 = 0;
-	menuData.adjustBed.rear = menuData.adjustBed.rear2 = 0;
+	_md->left = _md->left2 = 0;
+	_md->right = _md->right2 = 0;
+	_md->front = _md->front2 = 0;
+	_md->rear = _md->rear2 = 0;
 }
+
 #define BED_ADJUSTMENT_UM_MAX 50
 
 static void lcd_adjust_bed()
 {
-    if (menuData.adjustBed.status == 0) {
+	_menu_data_adjust_bed_t* _md = (_menu_data_adjust_bed_t*)&(menu_data[0]);
+    if (_md->status == 0)
+	{
         // Menu was entered.
         // Initialize its status.
-        menuData.adjustBed.status = 1;
+        _md->status = 1;
         bool valid = false;
-        menuData.adjustBed.left  = menuData.adjustBed.left2  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT);
-        menuData.adjustBed.right = menuData.adjustBed.right2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT);
-        menuData.adjustBed.front = menuData.adjustBed.front2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT);
-        menuData.adjustBed.rear  = menuData.adjustBed.rear2  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR);
+        _md->left  = _md->left2  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT);
+        _md->right = _md->right2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT);
+        _md->front = _md->front2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT);
+        _md->rear  = _md->rear2  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR);
         if (eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1 && 
-            menuData.adjustBed.left  >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.left  <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.right >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.right <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.front >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.front <= BED_ADJUSTMENT_UM_MAX &&
-            menuData.adjustBed.rear  >= -BED_ADJUSTMENT_UM_MAX && menuData.adjustBed.rear  <= BED_ADJUSTMENT_UM_MAX)
+            _md->left  >= -BED_ADJUSTMENT_UM_MAX && _md->left  <= BED_ADJUSTMENT_UM_MAX &&
+            _md->right >= -BED_ADJUSTMENT_UM_MAX && _md->right <= BED_ADJUSTMENT_UM_MAX &&
+            _md->front >= -BED_ADJUSTMENT_UM_MAX && _md->front <= BED_ADJUSTMENT_UM_MAX &&
+            _md->rear  >= -BED_ADJUSTMENT_UM_MAX && _md->rear  <= BED_ADJUSTMENT_UM_MAX)
             valid = true;
         if (! valid) {
             // Reset the values: simulate an edit.
-            menuData.adjustBed.left2  = 0;
-            menuData.adjustBed.right2 = 0;
-            menuData.adjustBed.front2 = 0;
-            menuData.adjustBed.rear2  = 0;
+            _md->left2  = 0;
+            _md->right2 = 0;
+            _md->front2 = 0;
+            _md->rear2  = 0;
         }
         lcd_draw_update = 1;
         eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
     }
 
-    if (menuData.adjustBed.left  != menuData.adjustBed.left2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT,  menuData.adjustBed.left  = menuData.adjustBed.left2);
-    if (menuData.adjustBed.right != menuData.adjustBed.right2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, menuData.adjustBed.right = menuData.adjustBed.right2);
-    if (menuData.adjustBed.front != menuData.adjustBed.front2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT, menuData.adjustBed.front = menuData.adjustBed.front2);
-    if (menuData.adjustBed.rear  != menuData.adjustBed.rear2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR,  menuData.adjustBed.rear  = menuData.adjustBed.rear2);
+    if (_md->left  != _md->left2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT,  _md->left  = _md->left2);
+    if (_md->right != _md->right2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, _md->right = _md->right2);
+    if (_md->front != _md->front2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT, _md->front = _md->front2);
+    if (_md->rear  != _md->rear2)
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR,  _md->rear  = _md->rear2);
 
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-    MENU_ITEM_EDIT_int3_P(_i("Left side [um]"),  &menuData.adjustBed.left2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14 r=1
-    MENU_ITEM_EDIT_int3_P(_i("Right side[um]"), &menuData.adjustBed.right2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14 r=1
-    MENU_ITEM_EDIT_int3_P(_i("Front side[um]"), &menuData.adjustBed.front2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14 r=1
-    MENU_ITEM_EDIT_int3_P(_i("Rear side [um]"),  &menuData.adjustBed.rear2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_REAR c=14 r=1
+    MENU_ITEM_EDIT_int3_P(_i("Left side [um]"),  &_md->left2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14 r=1
+    MENU_ITEM_EDIT_int3_P(_i("Right side[um]"), &_md->right2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14 r=1
+    MENU_ITEM_EDIT_int3_P(_i("Front side[um]"), &_md->front2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14 r=1
+    MENU_ITEM_EDIT_int3_P(_i("Rear side [um]"),  &_md->rear2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_REAR c=14 r=1
     MENU_ITEM_FUNCTION_P(_i("Reset"), lcd_adjust_bed_reset);////MSG_BED_CORRECTION_RESET c=0 r=0
     MENU_END();
 }
@@ -2933,7 +3016,7 @@ void pid_extruder() {
 	}
 
 }
-
+/*
 void lcd_adjust_z() {
   int enc_dif = 0;
   int cursor_pos = 1;
@@ -3016,7 +3099,7 @@ void lcd_adjust_z() {
   lcd_clear();
   lcd_return_to_status();
 
-}
+}*/
 
 bool lcd_wait_for_pinda(float temp) {
 	lcd_set_custom_characters_degree();
@@ -4717,7 +4800,6 @@ static void lcd_settings_menu_back()
 }
 #endif //LINEARITY_CORRECTION
 
-
 static void lcd_calibration_menu()
 {
   MENU_BEGIN();
@@ -5672,15 +5754,30 @@ static void lcd_colorprint_change() {
 
 static void lcd_tune_menu()
 {
-  if (menuData.tuneMenu.status == 0) {
-    // Menu was entered. Mark the menu as entered and save the current extrudemultiply value.
-    menuData.tuneMenu.status = 1;
-    menuData.tuneMenu.extrudemultiply = extrudemultiply;
-  } else if (menuData.tuneMenu.extrudemultiply != extrudemultiply) {
-    // extrudemultiply has been changed from the child menu. Apply the new value.
-    menuData.tuneMenu.extrudemultiply = extrudemultiply;
-    calculate_extruder_multipliers();
-  }
+	typedef struct
+	{	// 3bytes total
+		// To recognize, whether the menu has been just initialized.
+		int8_t  status;                                 // 1byte
+		// Backup of extrudemultiply, to recognize, that the value has been changed and
+		// it needs to be applied.
+		int16_t extrudemultiply;                        // 2byte
+	} _menu_data_t;
+#if (3 > MENU_DATA_SIZE)
+#error "check MENU_DATA_SIZE definition!"
+#endif
+	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
+	if (_md->status == 0)
+	{
+		// Menu was entered. Mark the menu as entered and save the current extrudemultiply value.
+		_md->status = 1;
+		_md->extrudemultiply = extrudemultiply;
+	}
+	else if (_md->extrudemultiply != extrudemultiply)
+	{
+		// extrudemultiply has been changed from the child menu. Apply the new value.
+		_md->extrudemultiply = extrudemultiply;
+		calculate_extruder_multipliers();
+	}
 
   EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
 
