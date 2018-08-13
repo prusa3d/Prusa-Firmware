@@ -337,8 +337,8 @@ float pause_lastpos[4];
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
-static LongTimer safetyTimer;
-static LongTimer crashDetTimer;
+LongTimer safetyTimer;
+LongTimer crashDetTimer;
 
 //unsigned long load_filament_time;
 
@@ -476,9 +476,9 @@ bool mmu_print_saved = false;
 
 // storing estimated time to end of print counted by slicer
 uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
-uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint32_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
-uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint32_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -509,7 +509,6 @@ unsigned long starttime=0;
 unsigned long stoptime=0;
 unsigned long _usb_timer = 0;
 
-static uint8_t tmp_extruder;
 
 bool extruder_under_pressure = true;
 
@@ -973,41 +972,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			case 2: _delay_ms(0); break;
 			case 3: _delay_ms(0); break;
 			}
-			// _delay_ms(100);
-			/*
-			#ifdef MESH_BED_LEVELING
-			_delay_ms(2000);
-
-			if (!READ(BTN_ENC))
-			{
-			WRITE(BEEPER, HIGH);
-			_delay_ms(100);
-			WRITE(BEEPER, LOW);
-			_delay_ms(200);
-			WRITE(BEEPER, HIGH);
-			_delay_ms(100);
-			WRITE(BEEPER, LOW);
-
-			int _z = 0;
-			calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-			EEPROM_save_B(EEPROM_BABYSTEP_X, &_z);
-			EEPROM_save_B(EEPROM_BABYSTEP_Y, &_z);
-			EEPROM_save_B(EEPROM_BABYSTEP_Z, &_z);
-			}
-			else
-			{
-
-			WRITE(BEEPER, HIGH);
-			_delay_ms(100);
-			WRITE(BEEPER, LOW);
-			}
-			#endif // mesh */
 
 		}
-	}
-	else
-	{
-		//_delay_ms(1000);  // wait 1sec to display the splash screen // what's this and why do we need it?? - andre
 	}
 	KEEPALIVE_STATE(IN_HANDLER);
 }
@@ -1158,7 +1124,9 @@ void list_sec_lang_from_external_flash()
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
-    ultralcd_init();
+	mmu_init();
+	
+	ultralcd_init();
 
 	spi_init();
 
@@ -1778,11 +1746,6 @@ void setup()
   wdt_enable(WDTO_4S);
 #endif //WATCHDOG
 
-	  puts_P(_N("Checking MMU unit..."));
-	  if (mmu_init())
-		  printf_P(_N("MMU ENABLED, finda=%hhd, version=%d\n"), mmu_finda, mmu_version);
-	  else
-		  puts_P(_N("MMU DISABLED"));
 }
 
 
@@ -2016,7 +1979,7 @@ void loop()
 		}
 	}
 #endif //TMC2130
-
+	mmu_loop();
 }
 
 #define DEFINE_PGM_READ_ANY(type, reader)       \
@@ -3475,14 +3438,6 @@ void process_commands()
 		else if (code_seen("MMURES"))
 		{
 			mmu_reset();
-		}
-		else if (code_seen("MMUFIN"))
-		{
-			mmu_read_finda();
-		}
-		else if (code_seen("MMUVER"))
-		{
-			mmu_read_version();
 		}
 		else if (code_seen("RESET")) {
             // careful!
@@ -6333,21 +6288,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		//currently three different materials are needed (default, flex and PVA) 
 		//add storing this information for different load/unload profiles etc. in the future
 		//firmware does not wait for "ok" from mmu
-
-		uint8_t extruder = 255;
-		uint8_t filament = FILAMENT_UNDEFINED;
-
-		if(code_seen('E')) extruder = code_value();
-		if(code_seen('F')) filament = code_value();
-
-		printf_P(PSTR("Extruder: %d; "), extruder);
-		switch (filament) {
-			case FILAMENT_FLEX: printf_P(PSTR("Flex\n")); break;
-			case FILAMENT_PVA: printf_P(PSTR("PVA\n")); break;
-			default: printf_P(PSTR("Default\n")); break;
+		if (mmu_enabled)
+		{
+			uint8_t extruder = 255;
+			uint8_t filament = FILAMENT_UNDEFINED;
+			if(code_seen('E')) extruder = code_value();
+			if(code_seen('F')) filament = code_value();
+			mmu_set_filament_type(extruder, filament);
 		}
-		printf_P(PSTR("F%d%d\n"), extruder, filament);
-		mmu_printf_P(PSTR("F%d%d\n"), extruder, filament);
 	}
 	break;
 
@@ -7748,7 +7696,8 @@ void wait_for_heater(long codenum) {
 	}
 }
 
-void check_babystep() {
+void check_babystep()
+{
 	int babystep_z;
 	EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystep_z);
 	if ((babystep_z < Z_BABYSTEP_MIN) || (babystep_z > Z_BABYSTEP_MAX)) {
@@ -8869,7 +8818,8 @@ uint16_t print_time_remaining() {
 	return print_t;
 }
 
-uint8_t print_percent_done() {
+uint8_t print_percent_done()
+{
 	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
 	uint8_t percent_done = 0;
 	if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100) {
@@ -8884,131 +8834,16 @@ uint8_t print_percent_done() {
 	return percent_done;
 }
 
-static void print_time_remaining_init() {
+static void print_time_remaining_init()
+{
 	print_time_remaining_normal = PRINT_TIME_REMAINING_INIT;
 	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
 	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 }
 
-bool mmu_get_response(bool timeout) {
-	//waits for "ok" from mmu
-	//function returns true if "ok" was received
-	//if timeout is set to true function return false if there is no "ok" received before timeout
-	bool response = true;
-	LongTimer mmu_get_reponse_timeout;
-	KEEPALIVE_STATE(IN_PROCESS);
-	mmu_get_reponse_timeout.start();
-	while (mmu_rx_ok() <= 0)
-    {
-      delay_keep_alive(100);
-	  if (timeout && mmu_get_reponse_timeout.expired(5 * 60 * 1000ul)) { //5 minutes timeout
-			response = false;
-			break;
-	  }
-    }
-	return response;
-}
-
-
-void manage_response(bool move_axes, bool turn_off_nozzle) {
-	
-	bool response = false;
-	mmu_print_saved = false;
-	bool lcd_update_was_enabled = false;
-	float hotend_temp_bckp = degTargetHotend(active_extruder);
-	float z_position_bckp = current_position[Z_AXIS];
-	float x_position_bckp = current_position[X_AXIS];
-	float y_position_bckp = current_position[Y_AXIS];	
-	while(!response) {
-		  response = mmu_get_response(true); //wait for "ok" from mmu
-		  if (!response) { //no "ok" was received in reserved time frame, user will fix the issue on mmu unit
-			  if (!mmu_print_saved) { //first occurence, we are saving current position, park print head in certain position and disable nozzle heater
-				  if (lcd_update_enabled) {
-					  lcd_update_was_enabled = true;
-					  lcd_update_enable(false);
-				  }
-				  st_synchronize();
-				  mmu_print_saved = true;
-				  
-				  hotend_temp_bckp = degTargetHotend(active_extruder);
-				  if (move_axes) {
-					  z_position_bckp = current_position[Z_AXIS];
-					  x_position_bckp = current_position[X_AXIS];
-					  y_position_bckp = current_position[Y_AXIS];
-				  
-					  //lift z
-					  current_position[Z_AXIS] += Z_PAUSE_LIFT;
-					  if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-					  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
-					  st_synchronize();
-					  					  
-					  //Move XY to side
-					  current_position[X_AXIS] = X_PAUSE_POS;
-					  current_position[Y_AXIS] = Y_PAUSE_POS;
-					  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
-					  st_synchronize();
-				  }
-				  if (turn_off_nozzle) {
-					  //set nozzle target temperature to 0
-					  setAllTargetHotends(0);
-					  printf_P(PSTR("MMU not responding\n"));
-					  lcd_show_fullscreen_message_and_wait_P(_i("MMU needs user attention. Please press knob to resume nozzle target temperature."));
-					  setTargetHotend(hotend_temp_bckp, active_extruder);
-					  while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) {
-						  delay_keep_alive(1000);
-						  lcd_wait_for_heater();
-					  }
-				  }
-			  }
-			  lcd_display_message_fullscreen_P(_i("Check MMU. Fix the issue and then press button on MMU unit."));
-		  }
-		  else if (mmu_print_saved) {
-			  printf_P(PSTR("MMU start responding\n"));
-			  lcd_clear();
-			  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming..."));
-			  if (move_axes) {
-				  current_position[X_AXIS] = x_position_bckp;
-				  current_position[Y_AXIS] = y_position_bckp;
-				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
-				  st_synchronize();
-				  current_position[Z_AXIS] = z_position_bckp;
-				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
-				  st_synchronize();
-			  }
-			  else {
-				  delay_keep_alive(1000); //delay just for showing MMU OK message for a while in case that there are no xyz movements
-			  }
-		  }
-	}
-	if (lcd_update_was_enabled) lcd_update_enable(true);
-}
-
-void mmu_load_to_nozzle() {
-	st_synchronize();
-	
-	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
-	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = true;
-	current_position[E_AXIS] += 7.2f;
-    float feedrate = 562;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
-    st_synchronize();
-	current_position[E_AXIS] += 14.4f;
-	feedrate = 871;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
-    st_synchronize();
-	current_position[E_AXIS] += 36.0f;
-	feedrate = 1393;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
-    st_synchronize();
-	current_position[E_AXIS] += 14.4f;
-	feedrate = 871;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
-    st_synchronize();
-	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = false;
-}
-
-void M600_check_state() {
+void M600_check_state()
+{
 		//Wait for user to check the state
 		lcd_change_fil_state = 0;
 		
@@ -9118,37 +8953,6 @@ void M600_wait_for_user() {
 
 		}
 		WRITE(BEEPER, LOW);
-}
-
-void mmu_M600_load_filament(bool automatic)
-{ 
-	//load filament for mmu v2
-	bool yes = false;
-	if (!automatic)
-	{
-		yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
-		if (yes) tmp_extruder = choose_extruder_menu();
-		else tmp_extruder = mmu_extruder;
-	}
-	else
-	{
-		tmp_extruder = (tmp_extruder+1)%5;
-	}
-	lcd_update_enable(false);
-	lcd_clear();
-	lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
-	lcd_print(" ");
-	lcd_print(tmp_extruder + 1);
-	snmm_filaments_used |= (1 << tmp_extruder); //for stop print
-	printf_P(PSTR("T code: %d \n"), tmp_extruder);
-	mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
-	manage_response(false, true);
-    mmu_extruder = tmp_extruder; //filament change is finished
-	mmu_load_to_nozzle();
-
-	st_synchronize();
-	current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2, active_extruder);
 }
 
 void M600_load_filament_movements()

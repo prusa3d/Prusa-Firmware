@@ -116,7 +116,7 @@ uint8_t menu_item_ret(void)
 }
 
 /*
-int menu_item_printf_P(char type_char, const char* format, ...)
+int menu_draw_item_printf_P(char type_char, const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -134,12 +134,14 @@ int menu_item_printf_P(char type_char, const char* format, ...)
 	return ret;
 }
 */
+
 int menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
 	int cnt = lcd_printf_P(PSTR("%c%-18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
 	return cnt;
 }
+
 /*
 int menu_draw_item_puts_P_int16(char type_char, const char* str, int16_t val, )
 {
@@ -148,6 +150,7 @@ int menu_draw_item_puts_P_int16(char type_char, const char* str, int16_t val, )
 	return cnt;
 }
 */
+
 void menu_item_dummy(void)
 {
 	menu_item++;
@@ -270,25 +273,35 @@ void menu_draw_float13(char chr, const char* str, float val)
 	lcd_printf_P(menu_fmt_float13, chr, str, spaces, val);
 }
 
-#define _menu_data menuData.edit_menu
+typedef struct
+{
+    //Variables used when editing values.
+    const char* editLabel;
+    void* editValue;
+    int32_t minEditValue;
+	int32_t maxEditValue;
+} menu_data_edit_t;
+
 void _menu_edit_int3(void)
 {
+	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (lcd_draw_update)
 	{
-		if (lcd_encoder < _menu_data.minEditValue) lcd_encoder = _menu_data.minEditValue;
-		if (lcd_encoder > _menu_data.maxEditValue) lcd_encoder = _menu_data.maxEditValue;
+		if (lcd_encoder < _md->minEditValue) lcd_encoder = _md->minEditValue;
+		if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
 		lcd_set_cursor(0, 1);
-		menu_draw_int3(' ', _menu_data.editLabel, (int)lcd_encoder);
+		menu_draw_int3(' ', _md->editLabel, (int)lcd_encoder);
 	}
 	if (LCD_CLICKED)
 	{
-		*((int*)(_menu_data.editValue)) = (int)lcd_encoder;
+		*((int*)(_md->editValue)) = (int)lcd_encoder;
 		menu_back();
 	}
 }
 
 uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int16_t max_val)
 {
+	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (menu_item == menu_line)
 	{
 		if (lcd_draw_update) 
@@ -299,10 +312,10 @@ uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_submenu(_menu_edit_int3);
-			_menu_data.editLabel = str;
-			_menu_data.editValue = pval;
-			_menu_data.minEditValue = min_val;
-			_menu_data.maxEditValue = max_val;
+			_md->editLabel = str;
+			_md->editValue = pval;
+			_md->minEditValue = min_val;
+			_md->maxEditValue = max_val;
 			lcd_encoder = *pval;
 			return menu_item_ret();
 		}

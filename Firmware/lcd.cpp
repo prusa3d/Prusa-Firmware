@@ -754,6 +754,7 @@ void lcd_update_enable(uint8_t enabled)
 	}
 }
 
+extern LongTimer safetyTimer;
 void lcd_buttons_update(void)
 {
 	static bool _lock = false;
@@ -769,6 +770,7 @@ void lcd_buttons_update(void)
 			lcd_timeoutToStatus.start();
 			if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
 				buttonBlanking.start();
+		        safetyTimer.start();
 				if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
 				{
 					longPressTimer.start();
