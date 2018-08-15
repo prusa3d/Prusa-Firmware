@@ -2682,6 +2682,12 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
 		else
 			tmc2130_home_calibrate(Y_AXIS);
 	  }
+#else
+      if(home_x)
+        homeaxis(X_AXIS);
+
+      if(home_y)
+        homeaxis(Y_AXIS);
 #endif //TMC2130
 
 
