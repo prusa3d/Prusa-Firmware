@@ -430,6 +430,11 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	}
 }
 
+//! update (perform M600 on filament runout)
+//!
+//! Works only if filament sensor is enabled.
+//! When the filament sensor error count is larger then FSENSOR_ERR_MAX, pauses print, tries to move filament back and forth.
+//! If there is still no plausible signal from filament sensor plans M600 (Filament change).
 void fsensor_update(void)
 {
 	if (fsensor_enabled)
@@ -451,19 +456,6 @@ void fsensor_update(void)
 
 			fsensor_err_cnt = 0;
 			fsensor_oq_meassure_start(0);
-
-//			st_synchronize();
-//			for (int axis = X_AXIS; axis <= E_AXIS; axis++)
-//				current_position[axis] = st_get_position_mm(axis);
-/*
-			current_position[E_AXIS] -= 3;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
-			st_synchronize();
-
-			current_position[E_AXIS] += 3;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
-			st_synchronize();
-*/
 
 			enquecommand_front_P((PSTR("G1 E-3 F200")));
 			process_commands();
