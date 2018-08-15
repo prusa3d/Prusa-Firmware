@@ -233,11 +233,11 @@ static inline void lcd_print_percent_done() {
 	}
 	else if(IS_SD_PRINTING)
 	{
-		lcd_puts_P(PSTR("SD"));
+		lcd_puts_P(PSTR("SD "));
 	}
 	else
 	{
-		lcd_puts_P(PSTR("  "));
+		lcd_puts_P(PSTR("   "));
 	}
 	if (IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT)))
 	{
@@ -247,7 +247,7 @@ static inline void lcd_print_percent_done() {
 	{
 		lcd_puts_P(PSTR("---"));
 	}
-	lcd_puts_P(PSTR("% "));
+	lcd_puts_P(PSTR("%     "));
 }
 
 static inline void lcd_print_time() {
@@ -555,7 +555,7 @@ static void lcd_implementation_status_screen()
     lcd_puts_P(PSTR("  Z"));
     if (custom_message_type == 1) {
         // In a bed calibration mode.
-        lcd_puts_P(PSTR("   --- "));
+        lcd_puts_P(PSTR("---.-- "));
     } else {
         lcd_print(ftostr32sp(current_position[Z_AXIS] + 0.00001));
         lcd_print(' ');
@@ -636,7 +636,7 @@ if (print_sd_status)
 	// Farm number display
 	if (farm_mode)
 	{
-		lcd_set_cursor(6, 2);
+		lcd_set_cursor(7, 2);
 		lcd_puts_P(PSTR(" F"));
 		lcd_print(farm_no);
 		lcd_puts_P(PSTR("  "));
@@ -658,7 +658,7 @@ if (print_sd_status)
 		lcd_print(get_ext_nr() + 1);
 
 #else
-		lcd_set_cursor(LCD_WIDTH - 8 - 2, 2);
+		lcd_set_cursor(LCD_WIDTH - 7, 2);
 		lcd_puts_P(PSTR(" "));
 #endif
 	}
@@ -811,7 +811,7 @@ if (print_sd_status)
 					if (custom_message_state > 3 && custom_message_state <= 10 )
 					{
 						lcd_set_cursor(0, 3);
-						lcd_puts_P(PSTR("                   "));
+						lcd_puts_P(PSTR("                    "));
 						lcd_set_cursor(0, 3);
 						lcd_puts_P(_i("Calibration done"));////MSG_HOMEYZ_DONE c=0 r=0
 						custom_message_state--;
@@ -1990,7 +1990,7 @@ static void lcd_menu_extruder_info()
     menu_back_if_clicked();
 }
 
-#if defined(TMC2130) && defined(FILAMENT_SENSOR)
+#if defined(TMC2130) //&& defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats_total()
 {
 //01234567890123456789
@@ -2004,8 +2004,11 @@ static void lcd_menu_fails_stats_total()
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
-	lcd_printf_P(PSTR(ESC_H(0,0) "Total failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	menu_back_if_clicked_fb();
+    #ifdef FILAMENT_SENSOR
+    lcd_printf_P(PSTR(ESC_H(1,2) "Filam. runouts  %-3d"), filam);
+    #endif
+    lcd_printf_P(PSTR(ESC_H(0,0) "Total failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, crashX, crashY);
+    menu_back_if_clicked_fb();
 }
 
 static void lcd_menu_fails_stats_print()
@@ -2021,8 +2024,11 @@ static void lcd_menu_fails_stats_print()
     uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
-	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	menu_back_if_clicked_fb();
+    #ifdef FILAMENT_SENSOR
+    lcd_printf_P(PSTR(ESC_H(1,2) "Filam. runouts  %-3d"), filam);
+    #endif
+    lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, crashX, crashY);
+    menu_back_if_clicked_fb();
 }
 /**
  * @brief Open fail statistics menu
@@ -2562,10 +2568,10 @@ void lcd_menu_statistics()
 //----------------------
 		lcd_printf_P(_N(
 		  ESC_2J
-		  "%S:"
-		  ESC_H(6,1) "%8.2fm \n"
-		  "%S :"
-		  ESC_H(8,3) "%2dh %02dm %02d"
+		  "%S :\n"
+		  ESC_H(8,1) "%8.2f m\n"
+		  "%S :\n"
+		  ESC_H(8,3) "%02dh %02dm %02ds"
 		  ),
 		 _i("Filament used"),
 		 _met,
@@ -2594,10 +2600,10 @@ void lcd_menu_statistics()
 //----------------------
 		lcd_printf_P(_N(
 		  ESC_2J
-		  "%S :"
-		  ESC_H(9,1) "%8.2f m\n"
 		  "%S :\n"
-		  "%7ldd :%2hhdh :%02hhd m"
+		  ESC_H(8,1) "%8.2f m\n"
+		  "%S :\n"
+		  "%7ldd :%02hhdh :%02hhdm"
 		 ),
 		 _i("Total filament"),
 		 _filament_m,
