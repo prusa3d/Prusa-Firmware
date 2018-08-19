@@ -8817,7 +8817,7 @@ uint16_t print_time_remaining() {
 	return print_t;
 }
 
-uint8_t print_percent_done()
+uint8_t calc_percent_done()
 {
 	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
 	uint8_t percent_done = 0;

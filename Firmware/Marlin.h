@@ -416,7 +416,7 @@ extern void print_mesh_bed_leveling_table();
 
 //estimated time to end of the print
 extern uint16_t print_time_remaining();
-extern uint8_t print_percent_done();
+extern uint8_t calc_percent_done();
 
 #ifdef HOST_KEEPALIVE_FEATURE
 

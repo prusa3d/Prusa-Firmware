@@ -227,62 +227,6 @@ bool wait_for_unclick;
 const char STR_SEPARATOR[] PROGMEM = "------------";
 
 
-
-
-static inline void lcd_print_percent_done() {
-	if (is_usb_printing)
-	{
-		lcd_puts_P(PSTR("USB"));
-	}
-	else if(IS_SD_PRINTING)
-	{
-		lcd_puts_P(PSTR("SD"));
-	}
-	else
-	{
-		lcd_puts_P(PSTR("  "));
-	}
-	if (IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT)))
-	{
-		lcd_print(itostr3(print_percent_done()));
-	}
-	else
-	{
-		lcd_puts_P(PSTR("---"));
-	}
-	lcd_puts_P(PSTR("% "));
-}
-
-static inline void lcd_print_time() {
-	//if remaining print time estimation is available print it else print elapsed time
-	//uses 8 characters
-	uint16_t print_t = 0;
-	if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT){
-		print_t = print_time_remaining();
-	}
-	else if(starttime != 0){
-		print_t = millis() / 60000 - starttime / 60000;	
-	}
-	lcd_print(LCD_STR_CLOCK[0]);
-	if((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)||(starttime != 0)))
-	{
-		lcd_print(itostr2(print_t/60));
-        lcd_print(':');
-        lcd_print(itostr2(print_t%60));	
-		if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
-		{
-			lcd_print('R');
-			(feedmultiply == 100) ? lcd_print(' ') : lcd_print('?');
-		}
-		else {
-			lcd_puts_P(PSTR("  "));
-		}
-    }else{
-        lcd_puts_P(PSTR("--:--  "));
-    }
-}
-
-
 void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* pstr, const char* filename, char* longFilename)
 {
     char c;
@@ -335,6 +279,7 @@ void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, const char* pstr, 
     while(n--)
         lcd_print(' ');
 }
+
 void lcd_implementation_drawmenu_sdfile(uint8_t row, const char* pstr, const char* filename, char* longFilename)
 {
     char c;
@@ -521,12 +466,144 @@ uint8_t menu_item_sdfile(const char* str, const char* str_fn, char* str_fnl)
 #endif //NEW_SD_MENU
 }
 
+// Print temperature (nozzle/bed) (9 chars total)
+void lcdui_print_temp(char type, int val_current, int val_target)
+{
+	int chars = lcd_printf_P(_N("%c%3d/%d%c"), type, val_current, val_target, LCD_STR_DEGREE[0]);
+	lcd_space(9 - chars);
+}
+
+// Print Z-coordinate (8 chars total)
+void lcdui_print_Z_coord(void)
+{
+	int chars = 8;
+    if (custom_message_type == CUSTOM_MSG_TYPE_MESHBL)
+        lcd_puts_P(_N("Z   --- "));
+    else
+		chars = lcd_printf_P(_N("Z%6.2f "), current_position[Z_AXIS]);
+//	lcd_space(8 - chars);
+}
+
+#ifdef PLANNER_DIAGNOSTICS
+// Print planner diagnostics (8 chars total)
+void lcdui_print_planner_diag(void)
+{
+	lcd_set_cursor(LCD_WIDTH - 8-2, 1);
+	lcd_print(LCD_STR_FEEDRATE[0]);
+	lcd_print(itostr3(feedmultiply));
+	lcd_puts_P(PSTR("%  Q"));
+	{
+		uint8_t queue = planner_queue_min();
+		if (queue < (BLOCK_BUFFER_SIZE >> 1))
+		lcd_putc('!');
+		else
+		{
+			lcd_putc((char)(queue / 10) + '0');
+			queue %= 10;
+		}
+		lcd_putc((char)queue + '0');
+		planner_queue_min_reset();
+	}
+}
+#endif // PLANNER_DIAGNOSTICS
+
+// Print feedrate (8 chars total)
+void lcdui_print_feedrate(void)
+{
+	int chars = lcd_printf_P(_N("%c%3d%%"), LCD_STR_FEEDRATE[0], feedmultiply);
+	lcd_space(8 - chars);
+}
+
+// Print percent done in form "USB---%", " SD---%", "   ---%" (7 chars total)
+void lcdui_print_percent_done(void)
+{
+	const char* src = is_usb_printing?_N("USB"):(IS_SD_PRINTING?_N(" SD"):_N("   "));
+	char per[4];
+	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
+	sprintf_P(per, num?_N("%3hhd"):_N("---"), calc_percent_done());
+	int chars = lcd_printf_P(_N("%3S%3s%%"), src, per);
+//	lcd_space(7 - chars);
+}
+
+// Print extruder status (5 chars total)
+void lcdui_print_extruder(void)
+{
+	int chars = lcd_printf_P(_N(" T0  "));
+//	lcd_space(5 - chars);
+}
+
+// Print farm number (5 chars total)
+void lcdui_print_farm(void)
+{
+	int chars = lcd_printf_P(_N(" F0  "));
+//	lcd_space(5 - chars);
+/*
+	// Farm number display
+	if (farm_mode)
+	{
+		lcd_set_cursor(6, 2);
+		lcd_puts_P(PSTR(" F"));
+		lcd_print(farm_no);
+		lcd_puts_P(PSTR("  "));
+        
+        // Beat display
+        lcd_set_cursor(LCD_WIDTH - 1, 0);
+        if ( (millis() - kicktime) < 60000 ) {
+        
+            lcd_puts_P(PSTR("L"));
+        
+        }else{
+            lcd_puts_P(PSTR(" "));
+        }
+        
+	}
+	else {
+#ifdef SNMM
+		lcd_puts_P(PSTR(" E"));
+		lcd_print(get_ext_nr() + 1);
+
+#else
+		lcd_set_cursor(LCD_WIDTH - 8 - 2, 2);
+		lcd_puts_P(PSTR(" "));
+#endif
+	}
+*/
+}
+
+#ifdef CMD_DIAGNOSTICS
+// Print CMD queue diagnostic (8 chars total)
+void lcdui_print_cmd_diag(void)
+{
+	lcd_set_cursor(LCD_WIDTH - 8 -1, 2);
+	lcd_puts_P(PSTR("      C"));
+	lcd_print(buflen);	// number of commands in cmd buffer
+	if (buflen < 9) lcd_puts_P(" ");
+}
+#endif //CMD_DIAGNOSTICS
+
+// Print time (8 chars total)
+void lcdui_print_time(void)
+{
+	//if remaining print time estimation is available print it else print elapsed time
+	uint16_t print_t = 0;
+	if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+		print_t = print_time_remaining();
+	else if(starttime != 0)
+		print_t = millis() / 60000 - starttime / 60000;
+	int chars = 0;
+	if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
+	{
+		char suff = (print_time_remaining_normal == PRINT_TIME_REMAINING_INIT)?' ':'R';
+		chars = lcd_printf_P(_N("%c%02u:%02u%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff);
+	}
+	else
+		chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
+	lcd_space(8 - chars);
+}
 
 //Print status line on status screen
 void lcdui_print_status_line(void)
 {
-    lcd_set_cursor(0, 3);
-
 	if (IS_SD_PRINTING)
 	{
 		if (strcmp(longFilenameOLD, card.longFilename) != 0)
@@ -688,155 +765,68 @@ void lcdui_print_status_line(void)
 void lcdui_print_status_screen(void)
 {
 //|01234567890123456789|
-//|T 000/000D  Z000.0  |
+//|N 000/000D  Z000.0  |
 //|B 000/000D  F100%   |
-//|SD100%      T--:--  |
+//|USB100% T0  t--:--  |
 //|Status line.........|
 //----------------------
+//N - nozzle temp symbol LCD_STR_THERMOMETER
+//B - bed temp symbol LCD_STR_BEDTEMP
+//F - feedrate symbol LCD_STR_FEEDRATE
+//t - clock symbol LCD_STR_THERMOMETER
 
-    int tHotend=int(degHotend(0) + 0.5);
-    int tTarget=int(degTargetHotend(0) + 0.5);
+    lcd_set_cursor(0, 0); //line 0
 
-    //Print the hotend temperature
-    lcd_set_cursor(0, 0);
-    lcd_print(LCD_STR_THERMOMETER[0]);
-    lcd_print(itostr3(tHotend));
-    lcd_print('/');
-    lcd_print(itostr3left(tTarget));
-    lcd_puts_P(PSTR(LCD_STR_DEGREE " "));
-    lcd_puts_P(PSTR("  "));
+    //Print the hotend temperature (9 chars total)
+	lcdui_print_temp(LCD_STR_THERMOMETER[0], (int)(degHotend(0) + 0.5), (int)(degTargetHotend(0) + 0.5));
 
-    //Print the Z coordinates
-    lcd_set_cursor(LCD_WIDTH - 8-2, 0);
-#if 1
-    lcd_puts_P(PSTR("  Z"));
-    if (custom_message_type == CUSTOM_MSG_TYPE_MESHBL) {
-        // In a bed calibration mode.
-        lcd_puts_P(PSTR("   --- "));
-    } else {
-        lcd_print(ftostr32sp(current_position[Z_AXIS] + 0.00001));
-        lcd_print(' ');
-    }
-#else
-    lcd_puts_P(PSTR(" Queue:"));
-    lcd_print(int(moves_planned()));
-    lcd_print(' ');
-#endif
+	lcd_space(3); //3 spaces
 
-    //Print the Bedtemperature
-    lcd_set_cursor(0, 1);
-    tHotend=int(degBed() + 0.5);
-    tTarget=int(degTargetBed() + 0.5);
-    lcd_print(LCD_STR_BEDTEMP[0]);
-    lcd_print(itostr3(tHotend));
-    lcd_print('/');
-    lcd_print(itostr3left(tTarget));
-    lcd_puts_P(PSTR(LCD_STR_DEGREE " "));
-    lcd_puts_P(PSTR("  "));
+    //Print Z-coordinate (8 chars total)
+	lcdui_print_Z_coord();
+
+    lcd_set_cursor(0, 1); //line 1
+
+	//Print the Bed temperature (9 chars total)
+	lcdui_print_temp(LCD_STR_BEDTEMP[0], (int)(degBed() + 0.5), (int)(degTargetBed() + 0.5));
+
+	lcd_space(3); //3 spaces
 
 #ifdef PLANNER_DIAGNOSTICS
-    //Print Feedrate
-    lcd_set_cursor(LCD_WIDTH - 8-2, 1);
-    lcd_print(LCD_STR_FEEDRATE[0]);
-    lcd_print(itostr3(feedmultiply));
-    lcd_puts_P(PSTR("%  Q"));
-    {
-      uint8_t queue = planner_queue_min();
-      if (queue < (BLOCK_BUFFER_SIZE >> 1)) {
-        lcd_putc('!');
-      } else {
-        lcd_putc((char)(queue / 10) + '0');
-        queue %= 10;
-      }
-      lcd_putc((char)queue + '0');
-      planner_queue_min_reset();
-    }
-#else /* PLANNER_DIAGNOSTICS */
-    //Print Feedrate
-    lcd_set_cursor(LCD_WIDTH - 8-2, 1);
-    lcd_puts_P(PSTR("  "));
-/*
-	if (maxlimit_status)
-	{
-		maxlimit_status = 0;
-		lcd_print('!');
-	}
-	else*/
-		lcd_print(LCD_STR_FEEDRATE[0]);
-    lcd_print(itostr3(feedmultiply));
-    lcd_puts_P(PSTR("%     "));
-#endif /* PLANNER_DIAGNOSTICS */
+	//Print planner diagnostics (8 chars)
+	lcdui_print_planner_diag();
+#else // PLANNER_DIAGNOSTICS
+    //Print Feedrate (8 chars)
+	lcdui_print_feedrate();
+#endif // PLANNER_DIAGNOSTICS
 
-	bool print_sd_status = true;
-	
-#ifdef PINDA_THERMISTOR
-//	if (farm_mode && (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL))
-	if (false)
-	{
-		lcd_set_cursor(0, 2);
-		lcd_puts_P(PSTR("P"));
-		lcd_print(ftostr3(current_temperature_pinda));
-		lcd_puts_P(PSTR(LCD_STR_DEGREE " "));
-		print_sd_status = false;
-	}
-#endif //PINDA_THERMISTOR
+	lcd_set_cursor(0, 2); //line 2
 
+	//Print SD status (7 chars)
+	lcdui_print_percent_done();
 
-if (print_sd_status)
-{
-    //Print SD status
-    lcd_set_cursor(0, 2);
-	lcd_print_percent_done();
-
-}
-
-	// Farm number display
-	if (farm_mode)
-	{
-		lcd_set_cursor(6, 2);
-		lcd_puts_P(PSTR(" F"));
-		lcd_print(farm_no);
-		lcd_puts_P(PSTR("  "));
-        
-        // Beat display
-        lcd_set_cursor(LCD_WIDTH - 1, 0);
-        if ( (millis() - kicktime) < 60000 ) {
-        
-            lcd_puts_P(PSTR("L"));
-        
-        }else{
-            lcd_puts_P(PSTR(" "));
-        }
-        
-	}
-	else {
-#ifdef SNMM
-		lcd_puts_P(PSTR(" E"));
-		lcd_print(get_ext_nr() + 1);
-
-#else
-		lcd_set_cursor(LCD_WIDTH - 8 - 2, 2);
-		lcd_puts_P(PSTR(" "));
-#endif
-	}
+	if (mmu_enabled)
+		//Print extruder status (5 chars)
+		lcdui_print_extruder();
+	else if (farm_mode)
+		//Print farm number (5 chars)
+		lcdui_print_farm();
+	else
+		lcd_space(5); //5 spaces
 
 #ifdef CMD_DIAGNOSTICS
-	lcd_set_cursor(LCD_WIDTH - 8 -1, 2);
-	lcd_puts_P(PSTR("      C"));
-	lcd_print(buflen);	// number of commands in cmd buffer
-	if (buflen < 9) lcd_puts_P(" ");
+    //Print cmd queue diagnostics (8chars)
+	lcdui_print_cmd_diag();
 #else
-    //Print time
-	lcd_set_cursor(LCD_WIDTH - 8, 2);
-	lcd_print_time();
+    //Print time (8chars)
+	lcdui_print_time();
 #endif //CMD_DIAGNOSTICS
 
-#ifdef DEBUG_DISABLE_LCD_STATUS_LINE
-	return;
-#endif //DEBUG_DISABLE_LCD_STATUS_LINE
+    lcd_set_cursor(0, 3); //line 3
 
-
+#ifndef DEBUG_DISABLE_LCD_STATUS_LINE
 	lcdui_print_status_line();
+#endif //DEBUG_DISABLE_LCD_STATUS_LINE
 
 }
 
