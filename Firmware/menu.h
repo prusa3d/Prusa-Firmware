@@ -4,8 +4,9 @@
 
 #include <inttypes.h>
 
-#define MENU_DEPTH_MAX 4
-#define MENU_DATA_SIZE 32
+#define MENU_DEPTH_MAX       4
+#define MENU_DATA_SIZE      32
+#define MENU_DATA_EDIT_SIZE 12
 
 //Function pointer to menu functions.
 typedef void (*menu_func_t)(void);
@@ -25,11 +26,14 @@ extern uint8_t menu_depth;
 extern uint8_t menu_line;
 extern uint8_t menu_item;
 extern uint8_t menu_row;
-;
+
 //scroll offset in the current menu
 extern uint8_t menu_top;
 
 extern uint8_t menu_clicked;
+
+extern uint8_t menu_entering;
+extern uint8_t menu_leaving;
 
 //function pointer to the currently active menu
 extern menu_func_t menu_menu;
@@ -46,11 +50,15 @@ extern void menu_end(void);
 
 extern void menu_back(void);
 
+extern void menu_back_no_reset(void);
+
 extern void menu_back_if_clicked(void);
 
 extern void menu_back_if_clicked_fb(void);
 
 extern void menu_submenu(menu_func_t submenu);
+
+extern void menu_submenu_no_reset(menu_func_t submenu);
 
 extern uint8_t menu_item_ret(void);
 

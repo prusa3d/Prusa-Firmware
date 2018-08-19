@@ -2843,6 +2843,14 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
 #endif
 }
 
+void adjust_bed_reset()
+{
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT, 0);
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
+	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR, 0);
+}
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 {

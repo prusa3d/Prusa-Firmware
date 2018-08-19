@@ -84,7 +84,6 @@ unsigned long display_time; //just timer for showing pid finished message on lcd
 float pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
-bool menuExiting = false;
 
 
 static float manual_feedrate[] = MANUAL_FEEDRATE;
@@ -2653,7 +2652,7 @@ static void _lcd_move(const char *name, int axis, int min, int max)
 	    lcd_set_cursor(0, 1);
 		menu_draw_float31(' ', name, current_position[axis]);
 	}
-	if (menuExiting || LCD_CLICKED) (void)enable_endstops(_md->endstopsEnabledPrevious);
+	if (menu_leaving || LCD_CLICKED) (void)enable_endstops(_md->endstopsEnabledPrevious);
 	if (LCD_CLICKED) menu_back();
 }
 
@@ -2885,7 +2884,7 @@ static void _lcd_babystep(int axis, const char *msg)
 	    lcd_set_cursor(0, 1);
 		menu_draw_float13(' ', msg, _md->babystepMemMM[axis]);
 	}
-	if (LCD_CLICKED || menuExiting)
+	if (LCD_CLICKED || menu_leaving)
 	{
 		// Only update the EEPROM when leaving the menu.
 		EEPROM_save_B(
@@ -2896,35 +2895,36 @@ static void _lcd_babystep(int axis, const char *msg)
 	if (LCD_CLICKED) menu_back();
 }
 
-static void lcd_babystep_x() {
+static void lcd_babystep_x()
+{
   _lcd_babystep(X_AXIS, (_i("Babystepping X")));////MSG_BABYSTEPPING_X c=0 r=0
 }
-static void lcd_babystep_y() {
+
+static void lcd_babystep_y()
+{
   _lcd_babystep(Y_AXIS, (_i("Babystepping Y")));////MSG_BABYSTEPPING_Y c=0 r=0
 }
-static void lcd_babystep_z() {
+
+static void lcd_babystep_z()
+{
 	_lcd_babystep(Z_AXIS, (_i("Adjusting Z")));////MSG_BABYSTEPPING_Z c=20 r=0
 }
 
-static void lcd_adjust_bed();
 
 typedef struct
-{	// 13bytes total
+{	// 12bytes + 9bytes = 21bytes total
+	uint8_t reserved[MENU_DATA_EDIT_SIZE]; //12 bytes reserved for number editing functions
 	int8_t status;                   // 1byte
-	int8_t left;                     // 1byte
-	int8_t right;                    // 1byte
-	int8_t front;                    // 1byte
-	int8_t rear;                     // 1byte
-	int    left2;                    // 2byte
-	int    right2;                   // 2byte
-	int    front2;                   // 2byte
-	int    rear2;                    // 2byte
+	int16_t left;                    // 2byte
+	int16_t right;                   // 2byte
+	int16_t front;                   // 2byte
+	int16_t rear;                    // 2byte
 } _menu_data_adjust_bed_t;
-#if (13 > MENU_DATA_SIZE)
+#if (21 > MENU_DATA_SIZE)
 #error "check MENU_DATA_SIZE definition!"
 #endif
 
-static void lcd_adjust_bed_reset()
+void lcd_adjust_bed_reset(void)
 {
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT , 0);
@@ -2935,73 +2935,48 @@ static void lcd_adjust_bed_reset()
 	_md->status = 0;
 }
 
-void adjust_bed_reset()
-{
-	_menu_data_adjust_bed_t* _md = (_menu_data_adjust_bed_t*)&(menu_data[0]);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT, 0);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
-	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR, 0);
-	_md->left = _md->left2 = 0;
-	_md->right = _md->right2 = 0;
-	_md->front = _md->front2 = 0;
-	_md->rear = _md->rear2 = 0;
-}
-
 #define BED_ADJUSTMENT_UM_MAX 50
 
-static void lcd_adjust_bed()
+void lcd_adjust_bed(void)
 {
 	_menu_data_adjust_bed_t* _md = (_menu_data_adjust_bed_t*)&(menu_data[0]);
     if (_md->status == 0)
 	{
         // Menu was entered.
-        // Initialize its status.
+		_md->left  = 0;
+		_md->right = 0;
+		_md->front = 0;
+		_md->rear  = 0;
+        if (eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1)
+		{
+			_md->left  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT);
+			_md->right = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT);
+			_md->front = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT);
+			_md->rear  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR);
+		}
         _md->status = 1;
-        bool valid = false;
-        _md->left  = _md->left2  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT);
-        _md->right = _md->right2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT);
-        _md->front = _md->front2 = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT);
-        _md->rear  = _md->rear2  = eeprom_read_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR);
-        if (eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1 && 
-            _md->left  >= -BED_ADJUSTMENT_UM_MAX && _md->left  <= BED_ADJUSTMENT_UM_MAX &&
-            _md->right >= -BED_ADJUSTMENT_UM_MAX && _md->right <= BED_ADJUSTMENT_UM_MAX &&
-            _md->front >= -BED_ADJUSTMENT_UM_MAX && _md->front <= BED_ADJUSTMENT_UM_MAX &&
-            _md->rear  >= -BED_ADJUSTMENT_UM_MAX && _md->rear  <= BED_ADJUSTMENT_UM_MAX)
-            valid = true;
-        if (! valid) {
-            // Reset the values: simulate an edit.
-            _md->left2  = 0;
-            _md->right2 = 0;
-            _md->front2 = 0;
-            _md->rear2  = 0;
-        }
-        lcd_draw_update = 1;
-        eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
     }
-
-    if (_md->left  != _md->left2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT,  _md->left  = _md->left2);
-    if (_md->right != _md->right2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, _md->right = _md->right2);
-    if (_md->front != _md->front2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT, _md->front = _md->front2);
-    if (_md->rear  != _md->rear2)
-        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR,  _md->rear  = _md->rear2);
-
     MENU_BEGIN();
-    MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-    MENU_ITEM_EDIT_int3_P(_i("Left side [um]"),  &_md->left2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14 r=1
-    MENU_ITEM_EDIT_int3_P(_i("Right side[um]"), &_md->right2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14 r=1
-    MENU_ITEM_EDIT_int3_P(_i("Front side[um]"), &_md->front2, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14 r=1
-    MENU_ITEM_EDIT_int3_P(_i("Rear side [um]"),  &_md->rear2,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_REAR c=14 r=1
+	// leaving menu - this condition must be immediately before MENU_ITEM_BACK_P
+	if (((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving)
+	{
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT,  _md->left);
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, _md->right);
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT, _md->front);
+        eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR,  _md->rear);
+        eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
+	}
+	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+	MENU_ITEM_EDIT_int3_P(_i("Left side [um]"),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14 r=1
+    MENU_ITEM_EDIT_int3_P(_i("Right side[um]"), &_md->right, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14 r=1
+    MENU_ITEM_EDIT_int3_P(_i("Front side[um]"), &_md->front, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14 r=1
+    MENU_ITEM_EDIT_int3_P(_i("Rear side [um]"),  &_md->rear,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_REAR c=14 r=1
     MENU_ITEM_FUNCTION_P(_i("Reset"), lcd_adjust_bed_reset);////MSG_BED_CORRECTION_RESET c=0 r=0
     MENU_END();
 }
 
-void pid_extruder() {
-
+void pid_extruder()
+{
 	lcd_clear();
 	lcd_set_cursor(1, 0);
 	lcd_puts_P(_i("Set temperature:"));////MSG_SET_TEMPERATURE c=19 r=1
@@ -7338,14 +7313,14 @@ void menu_lcd_lcdupdate_func(void)
 
 		if (z_menu_expired() || other_menu_expired() || forced_menu_expire())
 		{
-		// Exiting a menu. Let's call the menu function the last time with menuExiting flag set to true
+		// Exiting a menu. Let's call the menu function the last time with menu_leaving flag set to true
 		// to give it a chance to save its state.
 		// This is useful for example, when the babystep value has to be written into EEPROM.
 			if (menu_menu != NULL)
 			{
-				menuExiting = true;
+				menu_leaving = 1;
 				(*menu_menu)();
-				menuExiting = false;
+				menu_leaving = 0;
 			}
 			lcd_clear();
 			lcd_return_to_status();
