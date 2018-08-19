@@ -528,8 +528,8 @@ void lcdui_print_percent_done(void)
 // Print extruder status (5 chars total)
 void lcdui_print_extruder(void)
 {
-	int chars = lcd_printf_P(_N(" T0  "));
-//	lcd_space(5 - chars);
+	int chars = lcd_printf_P(_N(" T%u"), mmu_extruder);
+	lcd_space(5 - chars);
 }
 
 // Print farm number (5 chars total)
