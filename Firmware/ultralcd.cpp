@@ -66,13 +66,17 @@ extern void crashdet_disable();
 #endif //TMC2130
 
 
-
 #ifdef SDCARD_SORT_ALPHA
- bool presort_flag = false;
+bool presort_flag = false;
 #endif
 
-int lcd_commands_type=LCD_COMMAND_IDLE;
-int lcd_commands_step=0;
+int lcd_commands_type = LCD_COMMAND_IDLE;
+int lcd_commands_step = 0;
+
+unsigned int custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+unsigned int custom_message_state = 0;
+
+
 bool isPrintPaused = false;
 uint8_t farm_mode = 0;
 int farm_no = 0;
@@ -518,24 +522,178 @@ uint8_t menu_item_sdfile(const char* str, const char* str_fn, char* str_fnl)
 }
 
 
-
-
-
-
-
-
-
-/*
-
-20x4   |01234567890123456789|
-       |T 000/000D  Z000.0  |
-       |B 000/000D  F100%   |
-       |SD100%      T--:--  |
-       |Status line.........|
-*/
-static void lcd_implementation_status_screen()
+//Print status line on status screen
+void lcdui_print_status_line(void)
 {
-   
+    lcd_set_cursor(0, 3);
+
+	if (IS_SD_PRINTING)
+	{
+		if (strcmp(longFilenameOLD, card.longFilename) != 0)
+		{
+			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
+			sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
+			scrollstuff = 0;
+		}
+	}
+
+	if (heating_status)
+	{ // If heating flag, show progress of heating
+		heating_status_counter++;
+		if (heating_status_counter > 13)
+		{
+			heating_status_counter = 0;
+		}
+		lcd_set_cursor(7, 3);
+		lcd_puts_P(PSTR("             "));
+
+		for (unsigned int dots = 0; dots < heating_status_counter; dots++)
+		{
+			lcd_set_cursor(7 + dots, 3);
+			lcd_print('.');
+		}
+		switch (heating_status)
+		{
+		case 1:
+			lcd_set_cursor(0, 3);
+			lcd_puts_P(_T(MSG_HEATING));
+			break;
+		case 2:
+			lcd_set_cursor(0, 3);
+			lcd_puts_P(_T(MSG_HEATING_COMPLETE));
+			heating_status = 0;
+			heating_status_counter = 0;
+			break;
+		case 3:
+			lcd_set_cursor(0, 3);
+			lcd_puts_P(_T(MSG_BED_HEATING));
+			break;
+		case 4:
+			lcd_set_cursor(0, 3);
+			lcd_puts_P(_T(MSG_BED_DONE));
+			heating_status = 0;
+			heating_status_counter = 0;
+			break;
+		default:
+			break;
+		}
+	}
+	else if ((IS_SD_PRINTING) && (custom_message_type == CUSTOM_MSG_TYPE_STATUS))
+	{ // If printing from SD, show what we are printing
+		if(strlen(card.longFilename) > LCD_WIDTH)
+		{
+			int inters = 0;
+			int gh = scrollstuff;
+			while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
+			{
+				if (card.longFilename[gh] == '\0')
+				{
+					lcd_set_cursor(gh - scrollstuff, 3);
+					lcd_print(card.longFilename[gh - 1]);
+					scrollstuff = 0;
+					gh = scrollstuff;
+					inters = 1;
+				}
+				else
+				{
+					lcd_set_cursor(gh - scrollstuff, 3);
+					lcd_print(card.longFilename[gh - 1]);
+					gh++;
+				}
+			}
+			scrollstuff++;
+		}
+		else
+		{
+			lcd_print(longFilenameOLD);
+		}
+	}
+	else
+	{ // Otherwise check for other special events
+   		switch (custom_message_type)
+		{
+		case CUSTOM_MSG_TYPE_STATUS: // Nothing special, print status message normally
+			lcd_print(lcd_status_message);
+			break;
+		case CUSTOM_MSG_TYPE_MESHBL: // If mesh bed leveling in progress, show the status
+			if (custom_message_state > 10)
+			{
+				lcd_set_cursor(0, 3);
+				lcd_puts_P(PSTR("                    "));
+				lcd_set_cursor(0, 3);
+				lcd_puts_P(_T(MSG_CALIBRATE_Z_AUTO));
+				lcd_puts_P(PSTR(" : "));
+				lcd_print(custom_message_state-10);
+			}
+			else
+			{
+				if (custom_message_state == 3)
+				{
+					lcd_puts_P(_T(WELCOME_MSG));
+					lcd_setstatuspgm(_T(WELCOME_MSG));
+					custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+				}
+				if (custom_message_state > 3 && custom_message_state <= 10 )
+				{
+					lcd_set_cursor(0, 3);
+					lcd_puts_P(PSTR("                   "));
+					lcd_set_cursor(0, 3);
+					lcd_puts_P(_i("Calibration done"));////MSG_HOMEYZ_DONE c=0 r=0
+					custom_message_state--;
+				}
+			}
+			break;
+		case CUSTOM_MSG_TYPE_F_LOAD: // If loading filament, print status
+			lcd_print(lcd_status_message);
+			break;
+		case CUSTOM_MSG_TYPE_PIDCAL: // PID tuning in progress
+			lcd_print(lcd_status_message);
+			if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0)
+			{
+				lcd_set_cursor(10, 3);
+				lcd_print(itostr3(pid_cycle));
+				lcd_print('/');
+				lcd_print(itostr3left(pid_number_of_cycles));
+			}
+			break;
+		case CUSTOM_MSG_TYPE_TEMCAL: // PINDA temp calibration in progress
+			{
+				char progress[4];
+				lcd_set_cursor(0, 3);
+				lcd_puts_P(_T(MSG_TEMP_CALIBRATION));
+				lcd_set_cursor(12, 3);
+				sprintf(progress, "%d/6", custom_message_state);
+				lcd_print(progress);
+			}
+			break;
+		case CUSTOM_MSG_TYPE_TEMPRE: // temp compensation preheat
+			lcd_set_cursor(0, 3);
+			lcd_puts_P(_i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
+			if (custom_message_state <= PINDA_HEAT_T)
+			{
+				lcd_puts_P(PSTR(": "));
+				lcd_print(custom_message_state); //seconds
+				lcd_print(' ');
+			}
+			break;
+		}
+	}
+    
+    // Fill the rest of line to have nice and clean output
+	for(int fillspace = 0; fillspace < 20; fillspace++)
+		if ((lcd_status_message[fillspace] <= 31 ))
+			lcd_print(' ');
+}
+
+void lcdui_print_status_screen(void)
+{
+//|01234567890123456789|
+//|T 000/000D  Z000.0  |
+//|B 000/000D  F100%   |
+//|SD100%      T--:--  |
+//|Status line.........|
+//----------------------
+
     int tHotend=int(degHotend(0) + 0.5);
     int tTarget=int(degTargetHotend(0) + 0.5);
 
@@ -552,7 +710,7 @@ static void lcd_implementation_status_screen()
     lcd_set_cursor(LCD_WIDTH - 8-2, 0);
 #if 1
     lcd_puts_P(PSTR("  Z"));
-    if (custom_message_type == 1) {
+    if (custom_message_type == CUSTOM_MSG_TYPE_MESHBL) {
         // In a bed calibration mode.
         lcd_puts_P(PSTR("   --- "));
     } else {
@@ -612,7 +770,7 @@ static void lcd_implementation_status_screen()
 	bool print_sd_status = true;
 	
 #ifdef PINDA_THERMISTOR
-//	if (farm_mode && (custom_message_type == 4))
+//	if (farm_mode && (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL))
 	if (false)
 	{
 		lcd_set_cursor(0, 2);
@@ -677,365 +835,131 @@ if (print_sd_status)
 	return;
 #endif //DEBUG_DISABLE_LCD_STATUS_LINE
 
-    //Print status line
-    lcd_set_cursor(0, 3);
 
-    // If heating in progress, set flag
-	if (heating_status != 0) { custom_message = true; }
+	lcdui_print_status_line();
 
-	if (IS_SD_PRINTING) {
-		if (strcmp(longFilenameOLD, card.longFilename) != 0)
-		{
-			memset(longFilenameOLD, '\0', strlen(longFilenameOLD));
-			sprintf_P(longFilenameOLD, PSTR("%s"), card.longFilename);
-			scrollstuff = 0;
-		}
-	}
-
-    // If printing from SD, show what we are printing
-	if ((IS_SD_PRINTING) && !custom_message
-#ifdef DEBUG_BUILD
-    && lcd_status_message[0] == 0
-#endif /* DEBUG_BUILD */
-    )
-
-	{
-      if(strlen(card.longFilename) > LCD_WIDTH)
-      {
-
-			  int inters = 0;
-			  int gh = scrollstuff;
-			  while (((gh - scrollstuff) < LCD_WIDTH) && (inters == 0))
-			  {
-
-				  if (card.longFilename[gh] == '\0')
-				  {
-					  lcd_set_cursor(gh - scrollstuff, 3);
-					  lcd_print(card.longFilename[gh - 1]);
-					  scrollstuff = 0;
-					  gh = scrollstuff;
-					  inters = 1;
-				  }
-				  else
-				  {
-					  lcd_set_cursor(gh - scrollstuff, 3);
-					  lcd_print(card.longFilename[gh - 1]);
-					  gh++;
-				  }
-
-
-			  }
-			  scrollstuff++;
-      }
-      else
-      {
-			  lcd_print(longFilenameOLD);
-      }
-	}
-	    
-    // If not, check for other special events
-	else
-	{
-        
-		if (custom_message)
-		{
-            // If heating flag, show progress of heating.
-			if (heating_status != 0)
-			{
-				heating_status_counter++;
-				if (heating_status_counter > 13)
-				{
-					heating_status_counter = 0;
-				}
-				lcd_set_cursor(7, 3);
-				lcd_puts_P(PSTR("             "));
-
-				for (unsigned int dots = 0; dots < heating_status_counter; dots++)
-				{
-					lcd_set_cursor(7 + dots, 3);
-					lcd_print('.');
-				}
-
-				switch (heating_status)
-				{
-				case 1:
-					lcd_set_cursor(0, 3);
-					lcd_puts_P(_T(MSG_HEATING));
-					break;
-				case 2:
-					lcd_set_cursor(0, 3);
-					lcd_puts_P(_T(MSG_HEATING_COMPLETE));
-					heating_status = 0;
-					heating_status_counter = 0;
-					custom_message = false;
-					break;
-				case 3:
-					lcd_set_cursor(0, 3);
-					lcd_puts_P(_T(MSG_BED_HEATING));
-					break;
-				case 4:
-					lcd_set_cursor(0, 3);
-					lcd_puts_P(_T(MSG_BED_DONE));
-					heating_status = 0;
-					heating_status_counter = 0;
-					custom_message = false;
-					break;
-				default:
-					break;
-				}
-			}
-            
-            // If mesh bed leveling in progress, show the status
-            
-			if (custom_message_type == 1)
-			{
-				if (custom_message_state > 10)
-				{
-					lcd_set_cursor(0, 3);
-					lcd_puts_P(PSTR("                    "));
-					lcd_set_cursor(0, 3);
-					lcd_puts_P(_T(MSG_CALIBRATE_Z_AUTO));
-					lcd_puts_P(PSTR(" : "));
-					lcd_print(custom_message_state-10);
-				}
-				else
-				{
-					if (custom_message_state == 3)
-					{
-						lcd_puts_P(_T(WELCOME_MSG));
-						lcd_setstatuspgm(_T(WELCOME_MSG));
-						custom_message = false;
-						custom_message_type = 0;
-					}
-					if (custom_message_state > 3 && custom_message_state <= 10 )
-					{
-						lcd_set_cursor(0, 3);
-						lcd_puts_P(PSTR("                   "));
-						lcd_set_cursor(0, 3);
-						lcd_puts_P(_i("Calibration done"));////MSG_HOMEYZ_DONE c=0 r=0
-						custom_message_state--;
-					}
-				}
-
-			}
-            // If loading filament, print status
-			if (custom_message_type == 2)
-			{
-				lcd_print(lcd_status_message);
-			}
-			// PID tuning in progress
-			if (custom_message_type == 3) {
-				lcd_print(lcd_status_message);
-				if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0) {
-					lcd_set_cursor(10, 3);
-					lcd_print(itostr3(pid_cycle));
-					
-					lcd_print('/');
-					lcd_print(itostr3left(pid_number_of_cycles));
-				}
-			}
-			// PINDA temp calibration in progress
-			if (custom_message_type == 4) {
-				char progress[4];
-				lcd_set_cursor(0, 3);
-				lcd_puts_P(_T(MSG_TEMP_CALIBRATION));
-				lcd_set_cursor(12, 3);
-				sprintf(progress, "%d/6", custom_message_state);
-				lcd_print(progress);
-			}
-			// temp compensation preheat
-			if (custom_message_type == 5) {
-				lcd_set_cursor(0, 3);
-				lcd_puts_P(_i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
-				if (custom_message_state <= PINDA_HEAT_T) {
-					lcd_puts_P(PSTR(": "));
-					lcd_print(custom_message_state); //seconds
-					lcd_print(' ');
-					
-				}
-			}
-
-
-		}
-	else
-		{
-            // Nothing special, print status message normally
-			lcd_print(lcd_status_message);
-		}
-	}
-    
-    // Fill the rest of line to have nice and clean output
-    for(int fillspace = 0; fillspace<20;fillspace++)
-	{
-      if((lcd_status_message[fillspace] > 31 ))
-	  {
-      }
-	  else
-	  {
-        lcd_print(' ');
-      }
-    }
-	
 }
 
-
-/* Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent */
-
+// Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent
 static void lcd_status_screen()
 {
-  if (firstrun == 1) 
-  {
-    firstrun = 0;
-     
-      if(lcd_status_message_level == 0){
-          strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
-		lcd_finishstatus();
-      }
-	if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
+	if (firstrun == 1) 
 	{
-		eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
-		eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+		firstrun = 0;
+		if(lcd_status_message_level == 0)
+		{
+			strncpy_P(lcd_status_message, _T(WELCOME_MSG), LCD_WIDTH);
+			lcd_finishstatus();
+		}
+		if (eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 1) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 2) == 255 && eeprom_read_byte((uint8_t *)EEPROM_TOTALTIME + 3) == 255)
+		{
+			eeprom_update_dword((uint32_t *)EEPROM_TOTALTIME, 0);
+			eeprom_update_dword((uint32_t *)EEPROM_FILAMENTUSED, 0);
+		}
 	}
-	
-  }
 
-  
-  if (lcd_status_update_delay)
-    lcd_status_update_delay--;
-  else
-    lcd_draw_update = 1;
-  if (lcd_draw_update)
-  {
-    ReInitLCD++;
-
-
-    if (ReInitLCD == 30)
-	{
-      lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-      ReInitLCD = 0 ;
-    }
+	if (lcd_status_update_delay)
+		lcd_status_update_delay--;
 	else
+		lcd_draw_update = 1;
+
+
+	if (lcd_draw_update)
 	{
-
-      if ((ReInitLCD % 10) == 0)
-	  {
-        lcd_refresh_noclear(); //to maybe revive the LCD if static electricity killed it.
-      }
-
-    }
-
-
-    lcd_implementation_status_screen();
-    //lcd_clear();
-
-	if (farm_mode)
-	{
-		farm_timer--;
-		if (farm_timer < 1)
+		ReInitLCD++;
+		if (ReInitLCD == 30)
 		{
-			farm_timer = 10;
-			prusa_statistics(0);
+			lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
+			ReInitLCD = 0 ;
 		}
-		switch (farm_timer)
+		else
 		{
-		case 8:
-			prusa_statistics(21);
-			break;
-		case 5:
-			if (IS_SD_PRINTING)
+			if ((ReInitLCD % 10) == 0)
+				lcd_refresh_noclear(); //to maybe revive the LCD if static electricity killed it.
+		}
+
+		lcdui_print_status_screen();
+
+		if (farm_mode)
+		{
+			farm_timer--;
+			if (farm_timer < 1)
 			{
-				prusa_statistics(20);
+				farm_timer = 10;
+				prusa_statistics(0);
 			}
-			break;
-		}
-	} // end of farm_mode
+			switch (farm_timer)
+			{
+			case 8:
+				prusa_statistics(21);
+				break;
+			case 5:
+				if (IS_SD_PRINTING)
+					prusa_statistics(20);
+				break;
+			}
+		} // end of farm_mode
 
+		lcd_status_update_delay = 10;   /* redraw the main screen every second. This is easier then trying keep track of all things that change on the screen */
+		if (lcd_commands_type != LCD_COMMAND_IDLE)
+			lcd_commands();
+	} // end of lcd_draw_update
 
+	bool current_click = LCD_CLICKED;
 
-
-
-    lcd_status_update_delay = 10;   /* redraw the main screen every second. This is easier then trying keep track of all things that change on the screen */
-	if (lcd_commands_type != LCD_COMMAND_IDLE)
+	if (ignore_click)
 	{
-		lcd_commands();
+		if (wait_for_unclick)
+		{
+			if (!current_click)
+				ignore_click = wait_for_unclick = false;
+			else
+				current_click = false;
+		}
+		else if (current_click)
+		{
+			lcd_quick_feedback();
+			wait_for_unclick = true;
+			current_click = false;
+		}
 	}
-	
 
-  } // end of lcd_draw_update
-
-  bool current_click = LCD_CLICKED;
-
-  if (ignore_click) {
-    if (wait_for_unclick) {
-      if (!current_click) {
-        ignore_click = wait_for_unclick = false;
-      }
-      else {
-        current_click = false;
-      }
-    }
-    else if (current_click) {
-      lcd_quick_feedback();
-      wait_for_unclick = true;
-      current_click = false;
-    }
-  }
-
-  if (current_click && (lcd_commands_type != LCD_COMMAND_STOP_PRINT)) //click is aborted unless stop print finishes
-  {
-	menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
-    menu_submenu(lcd_main_menu);
-    lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-  }
+	if (current_click && (lcd_commands_type != LCD_COMMAND_STOP_PRINT)) //click is aborted unless stop print finishes
+	{
+		menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
+		menu_submenu(lcd_main_menu);
+		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
+	}
 
 #ifdef ULTIPANEL_FEEDMULTIPLY
-  // Dead zone at 100% feedrate
-  if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
-      (feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
-  {
-    lcd_encoder = 0;
-    feedmultiply = 100;
-  }
-
-  if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
-  {
-    feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
-    lcd_encoder = 0;
-  }
-  else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
-  {
-    feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
-    lcd_encoder = 0;
-  }
-  else if (feedmultiply != 100)
-  {
-    feedmultiply += int(lcd_encoder);
-    lcd_encoder = 0;
-  }
+	// Dead zone at 100% feedrate
+	if ((feedmultiply < 100 && (feedmultiply + int(lcd_encoder)) > 100) ||
+		(feedmultiply > 100 && (feedmultiply + int(lcd_encoder)) < 100))
+	{
+		lcd_encoder = 0;
+		feedmultiply = 100;
+	}
+	if (feedmultiply == 100 && int(lcd_encoder) > ENCODER_FEEDRATE_DEADZONE)
+	{
+		feedmultiply += int(lcd_encoder) - ENCODER_FEEDRATE_DEADZONE;
+		lcd_encoder = 0;
+	}
+	else if (feedmultiply == 100 && int(lcd_encoder) < -ENCODER_FEEDRATE_DEADZONE)
+	{
+		feedmultiply += int(lcd_encoder) + ENCODER_FEEDRATE_DEADZONE;
+		lcd_encoder = 0;
+	}
+	else if (feedmultiply != 100)
+	{
+		feedmultiply += int(lcd_encoder);
+		lcd_encoder = 0;
+	}
 #endif //ULTIPANEL_FEEDMULTIPLY
 
-  if (feedmultiply < 10)
-    feedmultiply = 10;
-  else if (feedmultiply > 999)
-    feedmultiply = 999;
-
-  /*if (farm_mode && !printer_connected) {
-	  lcd_set_cursor(0, 3);
-	  lcd_puts_P(_i("Printer disconnected"));////MSG_PRINTER_DISCONNECTED c=20 r=1
-  }*/
-
-
-//#define FSENS_FACTOR (2580.8/50) //filament sensor factor [steps / encoder counts]
-//#define FSENS_FACTOR (2580.8/45.3) //filament sensor factor [steps / encoder counts]
-  //lcd_set_cursor(0, 3);
-  //lcd_print("                    ");
-  //lcd_set_cursor(0, 3);
-  //lcd_print(pat9125_x);
-  //lcd_set_cursor(6, 3);
-  //lcd_print(pat9125_y);
-  //lcd_set_cursor(12, 3);
-  //lcd_print(pat9125_b);
-
+	if (feedmultiply < 10)
+		feedmultiply = 10;
+	else if (feedmultiply > 999)
+		feedmultiply = 999;
 }
 
 
@@ -1636,7 +1560,6 @@ void lcd_commands()
 		if (lcd_commands_step == 0) 
 		{ 
 			lcd_commands_step = 6; 
-			custom_message = true;	
 		}
 
 		if (lcd_commands_step == 1 && !blocks_queued())
@@ -1644,8 +1567,7 @@ void lcd_commands()
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
 			lcd_setstatuspgm(_T(WELCOME_MSG));
-			custom_message_type = 0;
-			custom_message = false;
+			custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 			isPrintPaused = false;
 		}
 		if (lcd_commands_step == 2 && !blocks_queued())
@@ -1701,8 +1623,7 @@ void lcd_commands()
 			if (mmu_enabled)
 				setAllTargetHotends(0);
 			manage_heater();
-			custom_message = true;
-			custom_message_type = 2;
+			custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 			lcd_commands_step = 5;
 		}
 		if (lcd_commands_step == 7 && !blocks_queued())
@@ -1732,7 +1653,7 @@ void lcd_commands()
 	if (lcd_commands_type == LCD_COMMAND_FARM_MODE_CONFIRM)   /// farm mode confirm
 	{
 
-		if (lcd_commands_step == 0) { lcd_commands_step = 6; custom_message = true; }
+		if (lcd_commands_step == 0) { lcd_commands_step = 6; }
 
 		if (lcd_commands_step == 1 && !blocks_queued())
 		{
@@ -1775,9 +1696,8 @@ void lcd_commands()
 		char cmd1[30];
 		
 		if (lcd_commands_step == 0) {
-			custom_message_type = 3;
+			custom_message_type = CUSTOM_MSG_TYPE_PIDCAL;
 			custom_message_state = 1;
-			custom_message = true;
 			lcd_draw_update = 3;
 			lcd_commands_step = 3;
 		}
@@ -1810,8 +1730,7 @@ void lcd_commands()
 		}
 		if ((lcd_commands_step == 1) && ((millis()- display_time)>2000)) { //calibration finished message
 			lcd_setstatuspgm(_T(WELCOME_MSG));
-			custom_message_type = 0;
-			custom_message = false;
+			custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 			pid_temp = DEFAULT_PID_TEMP;
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
@@ -2524,7 +2443,7 @@ static void lcd_LoadFilament()
 {
   if (degHotend0() > EXTRUDE_MINTEMP)
   {
-      custom_message = true;
+      custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
       loading_flag = true;
       enquecommand_P(PSTR("M701")); //load filament
       SERIAL_ECHOLN("Loading filament");
@@ -3581,8 +3500,7 @@ void lcd_bed_calibration_show_result(uint8_t result, uint8_t point_too_far_mask)
 
 void lcd_temp_cal_show_result(bool result) {
 	
-	custom_message_type = 0;
-	custom_message = false;
+	custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 	disable_x();
 	disable_y();
 	disable_z();
@@ -5229,8 +5147,7 @@ static void change_extr_menu(){
 //unload filament for single material printer (used in M702 gcode)
 void unload_filament()
 {
-	custom_message = true;
-	custom_message_type = 2;
+	custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
 	//		extr_unload2();
@@ -5265,8 +5182,7 @@ void unload_filament()
 	lcd_update_enable(true);
 
 	lcd_setstatuspgm(_T(WELCOME_MSG));
-	custom_message = false;
-	custom_message_type = 0;
+	custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 
 }
 
@@ -5752,8 +5668,7 @@ static void lcd_colorprint_change() {
 	
 	enquecommand_P(PSTR("M600"));
 	
-	custom_message = true;
-	custom_message_type = 2; //just print status message
+	custom_message_type = CUSTOM_MSG_TYPE_F_LOAD; //just print status message
 	lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
 	lcd_return_to_status();
 	lcd_draw_update = 3;

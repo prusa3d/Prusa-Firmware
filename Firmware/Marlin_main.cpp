@@ -353,11 +353,12 @@ unsigned int status_number = 0;
 unsigned long total_filament_used;
 unsigned int heating_status;
 unsigned int heating_status_counter;
-bool custom_message;
 bool loading_flag = false;
-unsigned int custom_message_type;
-unsigned int custom_message_state;
+
+
+
 char snmm_filaments_used = 0;
+
 
 bool fan_state[2];
 int fan_edge_counter[2];
@@ -3157,8 +3158,7 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
       enquecommand(cmd);
       
 	  lcd_setstatuspgm(_T(WELCOME_MSG));
-	  custom_message = false;
-	  custom_message_type = 0;
+	  custom_message_type = CUSTOM_MSG_TYPE_STATUS;
         
 }
 
@@ -3172,8 +3172,7 @@ void gcode_M701()
 	else
 	{
 		enable_z();
-		custom_message = true;
-		custom_message_type = 2;
+		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 
 #ifdef FILAMENT_SENSOR
 		fsensor_oq_meassure_start(40);
@@ -3215,8 +3214,7 @@ void gcode_M701()
 		lcd_setstatuspgm(_T(WELCOME_MSG));
 		disable_z();
 		loading_flag = false;
-		custom_message = false;
-		custom_message_type = 0;
+		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 
 #ifdef FILAMENT_SENSOR
 		fsensor_oq_meassure_stop();
@@ -4051,10 +4049,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 //			setTargetHotend(200, 0);
 			setTargetBed(70 + (start_temp - 30));
 
-			custom_message = true;
-			custom_message_type = 4;
+			custom_message_type = CUSTOM_MSG_TYPE_TEMCAL;
 			custom_message_state = 1;
-			custom_message = _T(MSG_TEMP_CALIBRATION);
+			lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
 			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			current_position[X_AXIS] = PINDA_PREHEAT_X;
@@ -4154,10 +4151,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			break;
 		}
 		puts_P(_N("PINDA probe calibration start"));
-		custom_message = true;
-		custom_message_type = 4;
+		custom_message_type = CUSTOM_MSG_TYPE_TEMCAL;
 		custom_message_state = 1;
-		custom_message = _T(MSG_TEMP_CALIBRATION);
+		lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
 		current_position[X_AXIS] = PINDA_PREHEAT_X;
 		current_position[Y_AXIS] = PINDA_PREHEAT_Y;
 		current_position[Z_AXIS] = PINDA_PREHEAT_Z;
@@ -4223,8 +4219,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			
 		
 		}
-		custom_message_type = 0;
-		custom_message = false;
+		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 		puts_P(_N("Temperature calibration done."));
@@ -4358,11 +4353,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			break;
 		}
 		// Save custom message state, set a new custom message state to display: Calibrating point 9.
-		bool custom_message_old = custom_message;
 		unsigned int custom_message_type_old = custom_message_type;
 		unsigned int custom_message_state_old = custom_message_state;
-		custom_message = true;
-		custom_message_type = 1;
+		custom_message_type = CUSTOM_MSG_TYPE_MESHBL;
 		custom_message_state = (MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) + 10;
 		lcd_update(1);
 
@@ -4594,7 +4587,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		KEEPALIVE_STATE(NOT_BUSY);
 		// Restore custom message state
 		lcd_setstatuspgm(_T(WELCOME_MSG));
-		custom_message = custom_message_old;
 		custom_message_type = custom_message_type_old;
 		custom_message_state = custom_message_state_old;
 		mesh_bed_leveling_flag = false;
@@ -7804,11 +7796,9 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 		enquecommand_front_P((PSTR("G1 Z5")));
 		return;
 	}
-	bool custom_message_old = custom_message;
 	unsigned int custom_message_type_old = custom_message_type;
 	unsigned int custom_message_state_old = custom_message_state;
-	custom_message = true;
-	custom_message_type = 1;
+	custom_message_type = CUSTOM_MSG_TYPE_MESHBL;
 	custom_message_state = (x_points_num * y_points_num) + 10;
 	lcd_update(1);
 
@@ -7958,8 +7948,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 
 void temp_compensation_start() {
 	
-	custom_message = true;
-	custom_message_type = 5;
+	custom_message_type = CUSTOM_MSG_TYPE_TEMPRE;
 	custom_message_state = PINDA_HEAT_T + 1;
 	lcd_update(2);
 	if (degHotend(active_extruder) > EXTRUDE_MINTEMP) {
@@ -7980,9 +7969,8 @@ void temp_compensation_start() {
 		if (custom_message_state == 99 || custom_message_state == 9) lcd_update(2); //force whole display redraw if number of digits changed
 		else lcd_update(1);
 	}	
-	custom_message_type = 0;
+	custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 	custom_message_state = 0;
-	custom_message = false;
 }
 
 void temp_compensation_apply() {
