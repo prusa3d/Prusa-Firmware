@@ -50,6 +50,7 @@ extern int lcd_putc(int c);
 extern int lcd_puts_P(const char* str);
 extern int lcd_puts_at_P(uint8_t c, uint8_t r, const char* str);
 extern int lcd_printf_P(const char* format, ...);
+extern void lcd_space(uint8_t n);
 
 extern void lcd_printNumber(unsigned long n, uint8_t base);
 extern void lcd_printFloat(double number, uint8_t digits);

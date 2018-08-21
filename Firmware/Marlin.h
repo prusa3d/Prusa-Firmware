@@ -315,9 +315,6 @@ void save_statistics(unsigned long _total_filament_used, unsigned long _total_pr
 extern unsigned int heating_status;
 extern unsigned int status_number;
 extern unsigned int heating_status_counter;
-extern bool custom_message;
-extern unsigned int custom_message_type;
-extern unsigned int custom_message_state;
 extern char snmm_filaments_used;
 extern unsigned long PingTime;
 extern unsigned long NcTime;
@@ -364,7 +361,7 @@ extern uint8_t print_percent_done_silent;
 extern uint32_t print_time_remaining_silent;
 #define PRINT_TIME_REMAINING_INIT 0xffffffff
 #define PRINT_PERCENT_DONE_INIT   0xff
-#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
+#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
 
 extern void calculate_extruder_multipliers();
 
@@ -419,7 +416,7 @@ extern void print_mesh_bed_leveling_table();
 
 //estimated time to end of the print
 extern uint16_t print_time_remaining();
-extern uint8_t print_percent_done();
+extern uint8_t calc_percent_done();
 
 #ifdef HOST_KEEPALIVE_FEATURE
 
