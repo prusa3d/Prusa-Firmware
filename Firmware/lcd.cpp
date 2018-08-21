@@ -537,7 +537,10 @@ int lcd_printf_P(const char* format, ...)
 	return ret;
 }
 
-
+void lcd_space(uint8_t n)
+{
+	while (n--) lcd_putc(' ');
+}
 
 
 void lcd_print(const char* s)

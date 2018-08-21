@@ -28,6 +28,9 @@ uint8_t menu_top = 0;
 
 uint8_t menu_clicked = 0;
 
+uint8_t menu_entering = 0;
+uint8_t menu_leaving = 0;
+
 menu_func_t menu_menu = 0;
 
 
@@ -76,9 +79,19 @@ void menu_end(void)
 
 void menu_back(void)
 {
-	if (menu_depth > 0) {
+	if (menu_depth > 0)
+	{
 		menu_depth--;		
 		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, true);
+	}
+}
+
+void menu_back_no_reset(void)
+{
+	if (menu_depth > 0)
+	{
+		menu_depth--;		
+		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, false);
 	}
 }
 
@@ -104,6 +117,16 @@ void menu_submenu(menu_func_t submenu)
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
 		menu_goto(submenu, 0, true, true);
+	}
+}
+
+void menu_submenu_no_reset(menu_func_t submenu)
+{
+	if (menu_depth <= MENU_DEPTH_MAX)
+	{
+		menu_stack[menu_depth].menu = menu_menu;
+		menu_stack[menu_depth++].position = lcd_encoder;
+		menu_goto(submenu, 0, true, false);
 	}
 }
 
@@ -295,7 +318,7 @@ void _menu_edit_int3(void)
 	if (LCD_CLICKED)
 	{
 		*((int*)(_md->editValue)) = (int)lcd_encoder;
-		menu_back();
+		menu_back_no_reset();
 	}
 }
 
@@ -311,7 +334,7 @@ uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
-			menu_submenu(_menu_edit_int3);
+			menu_submenu_no_reset(_menu_edit_int3);
 			_md->editLabel = str;
 			_md->editValue = pval;
 			_md->minEditValue = min_val;
