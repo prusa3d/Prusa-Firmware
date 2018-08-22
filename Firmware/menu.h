@@ -14,7 +14,7 @@ typedef void (*menu_func_t)(void);
 typedef struct 
 {
     menu_func_t menu;
-    uint8_t position;
+    int8_t position;
 } menu_record_t;
 
 extern menu_record_t menu_stack[MENU_DEPTH_MAX];
