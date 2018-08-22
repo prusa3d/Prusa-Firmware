@@ -19,6 +19,9 @@ extern int32_t lcd_encoder;
 static menu_record_t menu_stack[MENU_DEPTH_MAX];
 
 uint8_t menu_data[MENU_DATA_SIZE];
+#ifndef __AVR__
+#error "menu_data is non-portable to non 8bit processor"
+#endif
 
 uint8_t menu_depth = 0;
 
