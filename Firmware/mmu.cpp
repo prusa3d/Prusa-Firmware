@@ -322,6 +322,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 				  }
 			  }
 			  lcd_display_message_fullscreen_P(_i("Check MMU. Fix the issue and then press button on MMU unit."));
+			  delay_keep_alive(1000);
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU start responding\n"));
