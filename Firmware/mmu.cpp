@@ -239,7 +239,6 @@ bool mmu_get_response(void)
 	while (!mmu_ready)
 	{
 //		mmu_loop();
-		manage_heater();
 		if (mmu_state != 3)
 			break;
 		delay_keep_alive(100);
