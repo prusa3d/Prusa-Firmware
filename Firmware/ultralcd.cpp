@@ -5660,12 +5660,12 @@ static void lcd_colorprint_change() {
 static void lcd_tune_menu()
 {
 	typedef struct
-	{	// 3bytes total
-		// To recognize, whether the menu has been just initialized.
-		int8_t  status;                                 // 1byte
-		// Backup of extrudemultiply, to recognize, that the value has been changed and
-		// it needs to be applied.
-		int16_t extrudemultiply;                        // 2byte
+	{
+	    menu_data_edit_t reserved; //!< reserved for number editing functions
+		int8_t  status; //!< To recognize, whether the menu has been just initialized.
+		//! Backup of extrudemultiply, to recognize, that the value has been changed and
+		//! it needs to be applied.
+		int16_t extrudemultiply;
 	} _menu_data_t;
 	static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
