@@ -14,8 +14,9 @@
 
 extern int32_t lcd_encoder;
 
+#define MENU_DEPTH_MAX       4
 
-menu_record_t menu_stack[MENU_DEPTH_MAX];
+static menu_record_t menu_stack[MENU_DEPTH_MAX];
 
 uint8_t menu_data[MENU_DATA_SIZE];
 
@@ -32,6 +33,8 @@ uint8_t menu_entering = 0;
 uint8_t menu_leaving = 0;
 
 menu_func_t menu_menu = 0;
+
+static_assert(sizeof(menu_data)>= sizeof(menu_data_edit_t),"menu_data_edit_t doesn't fit into menu_data");
 
 
 void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state)
@@ -295,15 +298,6 @@ void menu_draw_float13(char chr, const char* str, float val)
 	spaces[12 - text_len] = 0;
 	lcd_printf_P(menu_fmt_float13, chr, str, spaces, val);
 }
-
-typedef struct
-{
-    //Variables used when editing values.
-    const char* editLabel;
-    void* editValue;
-    int32_t minEditValue;
-	int32_t maxEditValue;
-} menu_data_edit_t;
 
 void _menu_edit_int3(void)
 {

@@ -2086,9 +2086,7 @@ static void lcd_support_menu()
 		uint8_t ip[4];                 // 4bytes
 		char ip_str[3*4+3+1];          // 16bytes
 	} _menu_data_t;
-#if (22 > MENU_DATA_SIZE)
-#error "check MENU_DATA_SIZE definition!"
-#endif
+    static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
     if (_md->status == 0 || lcd_draw_update == 2)
 	{
@@ -2417,6 +2415,7 @@ static void lcd_menu_AutoLoadFilament()
     }
     else
     {
+        static_assert(sizeof(menu_data)>=sizeof(ShortTimer), "ShortTimer doesn't fit into menu_data");
 		ShortTimer* ptimer = (ShortTimer*)&(menu_data[0]);
         if (!ptimer->running()) ptimer->start();
         lcd_set_cursor(0, 0);
@@ -2533,9 +2532,7 @@ static void _lcd_move(const char *name, int axis, int min, int max)
 		bool initialized;              // 1byte
 		bool endstopsEnabledPrevious;  // 1byte
 	} _menu_data_t;
-#if (2 > MENU_DATA_SIZE)
-#error "check MENU_DATA_SIZE definition!"
-#endif
+	static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
 	if (!_md->initialized)
 	{
@@ -2739,9 +2736,7 @@ static void _lcd_babystep(int axis, const char *msg)
 		int babystepMem[3];            // 6bytes
 		float babystepMemMM[3];        // 12bytes
 	} _menu_data_t;
-#if (19 > MENU_DATA_SIZE)
-#error "check MENU_DATA_SIZE definition!"
-#endif
+	static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
 	if (_md->status == 0)
 	{
@@ -2822,16 +2817,14 @@ static void lcd_babystep_z()
 
 typedef struct
 {	// 12bytes + 9bytes = 21bytes total
-	uint8_t reserved[MENU_DATA_EDIT_SIZE]; //12 bytes reserved for number editing functions
+    menu_data_edit_t reserved; //12 bytes reserved for number editing functions
 	int8_t status;                   // 1byte
 	int16_t left;                    // 2byte
 	int16_t right;                   // 2byte
 	int16_t front;                   // 2byte
 	int16_t rear;                    // 2byte
 } _menu_data_adjust_bed_t;
-#if (21 > MENU_DATA_SIZE)
-#error "check MENU_DATA_SIZE definition!"
-#endif
+static_assert(sizeof(menu_data)>= sizeof(_menu_data_adjust_bed_t),"_menu_data_adjust_bed_t doesn't fit into menu_data");
 
 void lcd_adjust_bed_reset(void)
 {
@@ -5674,9 +5667,7 @@ static void lcd_tune_menu()
 		// it needs to be applied.
 		int16_t extrudemultiply;                        // 2byte
 	} _menu_data_t;
-#if (3 > MENU_DATA_SIZE)
-#error "check MENU_DATA_SIZE definition!"
-#endif
+	static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
 	if (_md->status == 0)
 	{
