@@ -5,8 +5,6 @@
 
 extern bool mmu_enabled;
 
-extern int8_t mmu_state;
-
 extern uint8_t mmu_extruder;
 
 extern uint8_t tmp_extruder;

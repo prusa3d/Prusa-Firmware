@@ -28,7 +28,7 @@ bool mmu_enabled = false;
 
 bool mmu_ready = false;
 
-int8_t mmu_state = 0;
+static int8_t mmu_state = 0;
 
 uint8_t mmu_cmd = 0;
 
