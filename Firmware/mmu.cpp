@@ -480,7 +480,7 @@ void extr_adj(int extruder) //loading filament for SNMM
 {
 #ifndef SNMM
     printf_P(PSTR("L%d \n"),extruder);
-    fprintf_P(uart2io, PSTR("L%d\n"), extruder);
+    mmu_printf_P(PSTR("L%d\n"), extruder);
 	
 	//show which filament is currently loaded
 	
