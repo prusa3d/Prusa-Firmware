@@ -6803,9 +6803,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 if (mmu_enabled)
 {
-		  //printf_P(PSTR("T code: %d \n"), tmp_extruder);
-		  //mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
-		  mmu_command(MMU_CMD_T0 + tmp_extruder);
+		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
+		  mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
 
 		  manage_response(true, true);
 

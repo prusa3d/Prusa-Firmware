@@ -17,13 +17,6 @@ extern int16_t mmu_version;
 extern int16_t mmu_buildnr;
 
 
-#define MMU_CMD_NONE 0
-#define MMU_CMD_T0   0x10
-#define MMU_CMD_T1   0x11
-#define MMU_CMD_T2   0x12
-#define MMU_CMD_T3   0x13
-#define MMU_CMD_T4   0x14
-
 extern int mmu_puts_P(const char* str);
 
 extern int mmu_printf_P(const char* format, ...);
@@ -40,9 +33,8 @@ extern void mmu_reset(void);
 
 extern int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament);
 
-extern void mmu_command(uint8_t cmd);
 
-extern bool mmu_get_response(void);
+extern bool mmu_get_response(bool timeout);
 
 extern void manage_response(bool move_axes, bool turn_off_nozzle);
 
