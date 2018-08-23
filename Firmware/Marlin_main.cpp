@@ -5808,10 +5808,10 @@ Sigma_Exit:
     case 200: // M200 D<millimeters> set filament diameter and set E axis units to cubic millimeters (use S0 to set back to millimeters).
       {
 
-        tmp_extruder = active_extruder;
+        uint8_t extruder = active_extruder;
         if(code_seen('T')) {
-          tmp_extruder = code_value();
-		  if(tmp_extruder >= EXTRUDERS) {
+          extruder = code_value();
+		  if(extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
             SERIAL_ECHO(_i("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
             break;
@@ -5825,7 +5825,7 @@ Sigma_Exit:
 			// for all extruders
 		    volumetric_enabled = false;
 		  } else {
-            filament_size[tmp_extruder] = (float)code_value();
+            filament_size[extruder] = (float)code_value();
 			// make sure all extruders have some sane value for the filament size
 			filament_size[0] = (filament_size[0] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : filament_size[0]);
             #if EXTRUDERS > 1
@@ -7425,7 +7425,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       handle_status_leds();
   #endif
   check_axes_activity();
-//  mmu_loop();
+  mmu_loop();
 }
 
 void kill(const char *full_screen_message, unsigned char id)

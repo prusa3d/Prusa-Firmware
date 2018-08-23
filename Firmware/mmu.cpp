@@ -28,12 +28,13 @@ bool mmu_enabled = false;
 
 bool mmu_ready = false;
 
-int8_t mmu_state = 0;
+static int8_t mmu_state = 0;
 
 uint8_t mmu_cmd = 0;
 
 uint8_t mmu_extruder = 0;
 
+//! This variable probably has no meaning and is planed to be removed
 uint8_t tmp_extruder = 0;
 
 int8_t mmu_finda = -1;
@@ -177,7 +178,8 @@ void mmu_loop(void)
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			mmu_state = 1;
-			mmu_ready = true;
+			if (mmu_cmd == 0)
+				mmu_ready = true;
 		}
 		else if ((mmu_last_request + 30000) < millis())
 		{ //resend request after timeout (30s)
@@ -228,19 +230,26 @@ void mmu_command(uint8_t cmd)
 
 bool mmu_get_response(void)
 {
+//	printf_P(PSTR("mmu_get_response - begin\n"));
 	KEEPALIVE_STATE(IN_PROCESS);
+	while (mmu_cmd != 0)
+	{
+//		mmu_loop();
+		delay_keep_alive(100);
+	}
 	while (!mmu_ready)
 	{
-		mmu_loop();
+//		mmu_loop();
 		if (mmu_state != 3)
 			break;
+		delay_keep_alive(100);
 	}
 	bool ret = mmu_ready;
 	mmu_ready = false;
+//	printf_P(PSTR("mmu_get_response - end %d\n"), ret?1:0);
 	return ret;
 
-/*	printf_P(PSTR("mmu_get_response - begin\n"));
-	//waits for "ok" from mmu
+/*	//waits for "ok" from mmu
 	//function returns true if "ok" was received
 	//if timeout is set to true function return false if there is no "ok" received before timeout
 	bool response = true;
@@ -313,6 +322,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 				  }
 			  }
 			  lcd_display_message_fullscreen_P(_i("Check MMU. Fix the issue and then press button on MMU unit."));
+			  delay_keep_alive(1000);
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU start responding\n"));
@@ -363,29 +373,27 @@ void mmu_load_to_nozzle()
 void mmu_M600_load_filament(bool automatic)
 { 
 	//load filament for mmu v2
-		  bool yes = false;
+		  uint8_t filament = mmu_extruder;
 		  if (!automatic) {
-			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
-			  if(yes) tmp_extruder = choose_extruder_menu();
-			  else tmp_extruder = mmu_extruder;
-
+		      bool yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
+			  if(yes) filament = choose_extruder_menu();
 		  }
 		  else {
-			  tmp_extruder = (tmp_extruder+1)%5;
+			  filament = (filament+1)%5;
 		  }
 		  lcd_update_enable(false);
 		  lcd_clear();
 		  lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 		  lcd_print(" ");
-		  lcd_print(tmp_extruder + 1);
-		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
+		  lcd_print(filament + 1);
+		  snmm_filaments_used |= (1 << filament); //for stop print
 
-//		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
-//		  mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
-		  mmu_command(MMU_CMD_T0 + tmp_extruder);
+//		  printf_P(PSTR("T code: %d \n"), filament);
+//		  mmu_printf_P(PSTR("T%d\n"), filament);
+		  mmu_command(MMU_CMD_T0 + filament);
 
 		  manage_response(false, true);
-    	  mmu_extruder = tmp_extruder; //filament change is finished
+    	  mmu_extruder = filament; //filament change is finished
 
 		  mmu_load_to_nozzle();
 
