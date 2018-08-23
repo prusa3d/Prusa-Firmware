@@ -532,7 +532,11 @@ void lcdui_print_percent_done(void)
 // Print extruder status (5 chars total)
 void lcdui_print_extruder(void)
 {
-	int chars = lcd_printf_P(_N(" T%u"), mmu_extruder);
+	int chars = 0;
+	if (mmu_extruder == tmp_extruder)
+		chars = lcd_printf_P(_N(" T%u"), mmu_extruder);
+	else
+		chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder, tmp_extruder);
 	lcd_space(5 - chars);
 }
 
