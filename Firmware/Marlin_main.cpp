@@ -6808,7 +6808,7 @@ if (mmu_enabled)
 		  mmu_command(MMU_CMD_T0 + tmp_extruder);
 
 		  manage_response(true, true);
-
+		  mmu_command(MMU_CMD_C0);
     	  mmu_extruder = tmp_extruder; //filament change is finished
 
 		  if (*(strchr_pointer + index) == '?')// for single material usage with mmu
