@@ -269,8 +269,11 @@ const char menu_fmt_float31[] PROGMEM = "%c%.12S:%s%+06.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%.12S:%s%+06.3f";
 
+template<typename T>
+void menu_draw_P(char chr, const char* str, int16_t val);
 
-void menu_draw_int3(char chr, const char* str, int16_t val)
+template<>
+void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
 {
 	int text_len = strlen_P(str);
 	if (text_len > 15) text_len = 15;
@@ -302,7 +305,8 @@ void menu_draw_float13(char chr, const char* str, float val)
 	lcd_printf_P(menu_fmt_float13, chr, str, spaces, val);
 }
 
-void _menu_edit_int3(void)
+template <typename T>
+void _menu_edit_P(void)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (lcd_draw_update)
@@ -310,7 +314,7 @@ void _menu_edit_int3(void)
 		if (lcd_encoder < _md->minEditValue) lcd_encoder = _md->minEditValue;
 		if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
 		lcd_set_cursor(0, 1);
-		menu_draw_int3(' ', _md->editLabel, (int)lcd_encoder);
+		menu_draw_P<T>(' ', _md->editLabel, (int)lcd_encoder);
 	}
 	if (LCD_CLICKED)
 	{
@@ -319,7 +323,8 @@ void _menu_edit_int3(void)
 	}
 }
 
-uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int16_t max_val)
+template <typename T>
+uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (menu_item == menu_line)
@@ -327,11 +332,11 @@ uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int
 		if (lcd_draw_update) 
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_int3((lcd_encoder == menu_item)?'>':' ', str, *pval);
+			menu_draw_P<T>((lcd_encoder == menu_item)?'>':' ', str, *pval);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
-			menu_submenu_no_reset(_menu_edit_int3);
+			menu_submenu_no_reset(_menu_edit_P<T>);
 			_md->editLabel = str;
 			_md->editValue = pval;
 			_md->minEditValue = min_val;
@@ -343,6 +348,8 @@ uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int
 	menu_item++;
 	return 0;
 }
+
+template uint8_t menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
 
 #undef _menu_data
 
