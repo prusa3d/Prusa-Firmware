@@ -92,7 +92,7 @@ void menu_back(void)
 	}
 }
 
-void menu_back_no_reset(void)
+static void menu_back_no_reset(void)
 {
 	if (menu_depth > 0)
 	{
@@ -126,7 +126,7 @@ void menu_submenu(menu_func_t submenu)
 	}
 }
 
-void menu_submenu_no_reset(menu_func_t submenu)
+static void menu_submenu_no_reset(menu_func_t submenu)
 {
 	if (menu_depth <= MENU_DEPTH_MAX)
 	{
@@ -164,7 +164,7 @@ int menu_draw_item_printf_P(char type_char, const char* format, ...)
 }
 */
 
-int menu_draw_item_puts_P(char type_char, const char* str)
+static int menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
 	int cnt = lcd_printf_P(PSTR("%c%-18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
@@ -270,7 +270,7 @@ const char menu_fmt_float31[] PROGMEM = "%c%.12S:%s%+06.1f";
 const char menu_fmt_float13[] PROGMEM = "%c%.12S:%s%+06.3f";
 
 template<typename T>
-void menu_draw_P(char chr, const char* str, int16_t val);
+static void menu_draw_P(char chr, const char* str, int16_t val);
 
 template<>
 void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
@@ -306,7 +306,7 @@ void menu_draw_float13(char chr, const char* str, float val)
 }
 
 template <typename T>
-void _menu_edit_P(void)
+static void _menu_edit_P(void)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (lcd_draw_update)
