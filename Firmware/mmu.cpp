@@ -178,7 +178,8 @@ void mmu_loop(void)
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			mmu_state = 1;
-			mmu_ready = true;
+			if (mmu_cmd == 0)
+				mmu_ready = true;
 		}
 		else if ((mmu_last_request + 30000) < millis())
 		{ //resend request after timeout (30s)
@@ -229,19 +230,26 @@ void mmu_command(uint8_t cmd)
 
 bool mmu_get_response(void)
 {
+//	printf_P(PSTR("mmu_get_response - begin\n"));
 	KEEPALIVE_STATE(IN_PROCESS);
+	while (mmu_cmd != 0)
+	{
+//		mmu_loop();
+		delay_keep_alive(100);
+	}
 	while (!mmu_ready)
 	{
-		mmu_loop();
+//		mmu_loop();
 		if (mmu_state != 3)
 			break;
+		delay_keep_alive(100);
 	}
 	bool ret = mmu_ready;
 	mmu_ready = false;
+//	printf_P(PSTR("mmu_get_response - end %d\n"), ret?1:0);
 	return ret;
 
-/*	printf_P(PSTR("mmu_get_response - begin\n"));
-	//waits for "ok" from mmu
+/*	//waits for "ok" from mmu
 	//function returns true if "ok" was received
 	//if timeout is set to true function return false if there is no "ok" received before timeout
 	bool response = true;
@@ -314,6 +322,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 				  }
 			  }
 			  lcd_display_message_fullscreen_P(_i("Check MMU. Fix the issue and then press button on MMU unit."));
+			  delay_keep_alive(1000);
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU start responding\n"));
