@@ -286,6 +286,27 @@ void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
 	lcd_printf_P(menu_fmt_int3, chr, str, spaces, val);
 }
 
+template<>
+void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
+{
+    menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
+    int text_len = strlen_P(str);
+    if (text_len > 15) text_len = 15;
+    char spaces[21];
+    strcpy_P(spaces, menu_20x_space);
+    spaces[12 - text_len] = 0;
+    float factor = 1.0 + static_cast<float>(val) / 1000.0;
+    if (val <= _md->minEditValue)
+    {
+        lcd_printf_P(menu_fmt_float13off, chr, str, spaces);
+        lcd_puts_P(_i(" [off]"));
+    }
+    else
+    {
+        lcd_printf_P(menu_fmt_float13, chr, str, spaces, factor);
+    }
+}
+
 //draw up to 12 chars of text, ':' and float number in format +123.0
 void menu_draw_float31(char chr, const char* str, float val)
 {
@@ -306,27 +327,6 @@ void menu_draw_float13(char chr, const char* str, float val)
 	strcpy_P(spaces, menu_20x_space);
 	spaces[12 - text_len] = 0;
 	lcd_printf_P(menu_fmt_float13, chr, str, spaces, val);
-}
-
-template<>
-void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
-{
-    menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
-    int text_len = strlen_P(str);
-    if (text_len > 15) text_len = 15;
-    char spaces[21];
-    strcpy_P(spaces, menu_20x_space);
-    spaces[12 - text_len] = 0;
-    float factor = 1.0 + static_cast<float>(val) / 1000.0;
-    if (val <= _md->minEditValue)
-    {
-        lcd_printf_P(menu_fmt_float13off, chr, str, spaces);
-        lcd_puts_P(_i(" [off]"));
-    }
-    else
-    {
-        lcd_printf_P(menu_fmt_float13, chr, str, spaces, factor);
-    }
 }
 
 template <typename T>
