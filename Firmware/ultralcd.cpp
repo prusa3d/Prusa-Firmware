@@ -123,7 +123,7 @@ static void lcd_control_temperature_preheat_pla_settings_menu();
 static void lcd_control_temperature_preheat_abs_settings_menu();
 static void lcd_control_motion_menu();
 static void lcd_control_volumetric_menu();
-static void lcd_settings_linearity_correction_menu_back();
+static void lcd_settings_linearity_correction_menu_save();
 
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
@@ -4488,12 +4488,7 @@ void lcd_wizard(int state) {
 void lcd_settings_linearity_correction_menu(void)
 {
 	MENU_BEGIN();
-	if (menu_item_back_P(_T(MSG_MAIN)))
-	{
-		lcd_settings_linearity_correction_menu_back();
-		return;
-	}
-//	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
 	//tmc2130_wave_fac[X_AXIS]
 
@@ -4503,6 +4498,10 @@ void lcd_settings_linearity_correction_menu(void)
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
 	MENU_ITEM_EDIT_int3_P(_i("E-correct"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 	MENU_END();
+	if(menu_leaving)
+	{
+	    lcd_settings_linearity_correction_menu_save();
+	}
 }
 
 static void lcd_settings_menu()
@@ -4661,7 +4660,7 @@ static void lcd_ustep_linearity_menu_save()
 #endif //TMC2130
 
 
-static void lcd_settings_linearity_correction_menu_back()
+static void lcd_settings_linearity_correction_menu_save()
 {
 #ifdef TMC2130
     bool changed = false;
@@ -4676,8 +4675,6 @@ static void lcd_settings_linearity_correction_menu_back()
     lcd_ustep_linearity_menu_save();
     if (changed) tmc2130_init();
 #endif //TMC2130
-    menu_menu = lcd_settings_menu;
-//    lcd_main_menu();
 }
 
 
