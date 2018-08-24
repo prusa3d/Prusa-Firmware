@@ -162,6 +162,13 @@ void mmu_loop(void)
 				mmu_printf_P(PSTR("T%d\n"), extruder);
 				mmu_state = 3; // wait for response
 			}
+			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
+			{
+			    int filament = mmu_cmd - MMU_CMD_L0;
+			    printf_P(PSTR("MMU <= 'L%d'\n"), filament);
+			    mmu_printf_P(PSTR("L%d\n"), filament);
+			    mmu_state = 3; // wait for response
+			}
 			else if (mmu_cmd == MMU_CMD_C0)
 			{
 				printf_P(PSTR("MMU <= 'C0'\n"));
@@ -327,6 +334,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 				  }
 			  }
 			  lcd_display_message_fullscreen_P(_i("Check MMU. Fix the issue and then press button on MMU unit."));
+			  delay_keep_alive(1000);
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU start responding\n"));
@@ -485,8 +493,13 @@ void display_loading()
 void extr_adj(int extruder) //loading filament for SNMM
 {
 #ifndef SNMM
-    printf_P(PSTR("L%d \n"),extruder);
-    fprintf_P(uart2io, PSTR("L%d\n"), extruder);
+    uint8_t cmd = MMU_CMD_L0 + extruder;
+    if (cmd > MMU_CMD_L4)
+    {
+        printf_P(PSTR("Filament out of range %d \n"),extruder);
+        return;
+    }
+    mmu_command(cmd);
 	
 	//show which filament is currently loaded
 	
@@ -496,7 +509,7 @@ void extr_adj(int extruder) //loading filament for SNMM
 	//if(strlen(_T(MSG_LOADING_FILAMENT))>18) lcd.setCursor(0, 1);
 	//else lcd.print(" ");
 	lcd_print(" ");
-	lcd_print(mmu_extruder + 1);
+	lcd_print(extruder + 1);
 
 	// get response
 	manage_response(false, false);
