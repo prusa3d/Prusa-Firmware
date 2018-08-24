@@ -318,7 +318,7 @@ void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
     strcpy_P(spaces, menu_20x_space);
     spaces[12 - text_len] = 0;
     float factor = 1.0 + static_cast<float>(val) / 1000.0;
-    if (val == _md->minEditValue)
+    if (val <= _md->minEditValue)
     {
         lcd_printf_P(menu_fmt_float13off, chr, str, spaces);
         lcd_puts_P(_i(" [off]"));
