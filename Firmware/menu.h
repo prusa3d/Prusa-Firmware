@@ -97,7 +97,7 @@ extern void menu_draw_float31(char chr, const char* str, float val);
 extern void menu_draw_float13(char chr, const char* str, float val);
 
 
-#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_P<int16_t*>(str, pval, minval, maxval)) return; } while (0)
+#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)
 //#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) MENU_ITEM_EDIT(int3, str, pval, minval, maxval)
 template <typename T>
 extern uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val);

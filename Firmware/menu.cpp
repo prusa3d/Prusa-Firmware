@@ -9,6 +9,7 @@
 #include "Configuration.h"
 #include "Marlin.h"
 #include "ultralcd.h"
+#include "language.h"
 
 
 
@@ -269,6 +270,8 @@ const char menu_fmt_float31[] PROGMEM = "%c%.12S:%s%+06.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%.12S:%s%+06.3f";
 
+const char menu_fmt_float13off[] PROGMEM = "%c%.12S:%s%";
+
 template<typename T>
 static void menu_draw_P(char chr, const char* str, int16_t val);
 
@@ -303,6 +306,27 @@ void menu_draw_float13(char chr, const char* str, float val)
 	strcpy_P(spaces, menu_20x_space);
 	spaces[12 - text_len] = 0;
 	lcd_printf_P(menu_fmt_float13, chr, str, spaces, val);
+}
+
+template<>
+void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
+{
+    menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
+    int text_len = strlen_P(str);
+    if (text_len > 15) text_len = 15;
+    char spaces[21];
+    strcpy_P(spaces, menu_20x_space);
+    spaces[12 - text_len] = 0;
+    float factor = 1.0 + static_cast<float>(val) / 1000.0;
+    if (val == _md->minEditValue)
+    {
+        lcd_printf_P(menu_fmt_float13off, chr, str, spaces);
+        lcd_puts_P(_i(" [off]"));
+    }
+    else
+    {
+        lcd_printf_P(menu_fmt_float13, chr, str, spaces, factor);
+    }
 }
 
 template <typename T>
@@ -350,6 +374,7 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 }
 
 template uint8_t menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
+template uint8_t menu_item_edit_P<uint8_t*>(const char* str, uint8_t *pval, int16_t min_val, int16_t max_val);
 
 #undef _menu_data
 
