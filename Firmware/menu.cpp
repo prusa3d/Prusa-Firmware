@@ -342,7 +342,7 @@ static void _menu_edit_P(void)
 	}
 	if (LCD_CLICKED)
 	{
-		*((int*)(_md->editValue)) = (int)lcd_encoder;
+		*((T)(_md->editValue)) = lcd_encoder;
 		menu_back_no_reset();
 	}
 }
