@@ -123,7 +123,7 @@ static void lcd_control_temperature_preheat_pla_settings_menu();
 static void lcd_control_temperature_preheat_abs_settings_menu();
 static void lcd_control_motion_menu();
 static void lcd_control_volumetric_menu();
-//static void lcd_settings_menu_back();
+static void lcd_settings_linearity_correction_menu_back();
 
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
@@ -4484,13 +4484,13 @@ void lcd_wizard(int state) {
 	lcd_return_to_status();
 	lcd_update(2);
 }
-/*
+
 void lcd_settings_linearity_correction_menu(void)
 {
 	MENU_BEGIN();
 	if (menu_item_back_P(_T(MSG_MAIN)))
 	{
-		lcd_settings_menu_back();
+		lcd_settings_linearity_correction_menu_back();
 		return;
 	}
 //	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
@@ -4505,7 +4505,7 @@ void lcd_settings_linearity_correction_menu(void)
 	MENU_ITEM_EDIT_int3_P(_i("E-correct"),  &corr[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 	MENU_END();
 }
-*/
+
 static void lcd_settings_menu()
 {
 	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -4576,7 +4576,7 @@ static void lcd_settings_menu()
 		else MENU_ITEM_SUBMENU_P(_T(MSG_CRASHDETECT_NA), lcd_crash_mode_info);
 	}
 
-//  MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
+    MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
 #endif //TMC2130
 
   if (temp_cal_active == false)
@@ -4661,8 +4661,8 @@ static void lcd_ustep_linearity_menu_save()
 }
 #endif //TMC2130
 
-/*
-static void lcd_settings_menu_back()
+
+static void lcd_settings_linearity_correction_menu_back()
 {
 #ifdef TMC2130
     bool changed = false;
@@ -4677,10 +4677,10 @@ static void lcd_settings_menu_back()
     lcd_ustep_linearity_menu_save();
     if (changed) tmc2130_init();
 #endif //TMC2130
-    menu_menu = lcd_main_menu;
+    menu_menu = lcd_settings_menu;
 //    lcd_main_menu();
 }
-*/
+
 
 static void lcd_calibration_menu()
 {
