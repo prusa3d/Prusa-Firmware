@@ -19,6 +19,7 @@ extern char choose_extruder_menu();
 
 #define MMU_TODELAY 100
 #define MMU_TIMEOUT 10
+#define MMU_CMD_TIMEOUT 300000ul //milliseconds (5min timeout)
 
 #define MMU_HWRESET
 #define MMU_RST_PIN 76
@@ -187,7 +188,7 @@ void mmu_loop(void)
 			if (mmu_cmd == 0)
 				mmu_ready = true;
 		}
-		else if ((mmu_last_request + 30000) < millis())
+		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (30s)
 			mmu_state = 1;
 		}
@@ -199,7 +200,7 @@ void mmu_loop(void)
 			mmu_ready = true;
 			mmu_state = 1;
 		}
-		else if ((mmu_last_request + 30000) < millis())
+		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (30s)
 			mmu_state = 1;
 		}
