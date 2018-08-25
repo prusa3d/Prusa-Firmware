@@ -4,9 +4,7 @@
 
 #include <inttypes.h>
 
-#define MENU_DEPTH_MAX       4
 #define MENU_DATA_SIZE      32
-#define MENU_DATA_EDIT_SIZE 12
 
 //Function pointer to menu functions.
 typedef void (*menu_func_t)(void);
@@ -17,7 +15,14 @@ typedef struct
     int8_t position;
 } menu_record_t;
 
-extern menu_record_t menu_stack[MENU_DEPTH_MAX];
+typedef struct
+{
+    //Variables used when editing values.
+    const char* editLabel;
+    void* editValue;
+    int32_t minEditValue;
+    int32_t maxEditValue;
+} menu_data_edit_t;
 
 extern uint8_t menu_data[MENU_DATA_SIZE];
 
