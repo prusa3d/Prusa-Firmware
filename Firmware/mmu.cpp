@@ -23,6 +23,7 @@ extern char choose_extruder_menu();
 #define MMU_HWRESET
 #define MMU_RST_PIN 76
 
+#define MMU_REQUIRED_FW_BUILDNR 81
 
 bool mmu_enabled = false;
 
@@ -137,6 +138,9 @@ void mmu_loop(void)
 		{
 			fscanf_P(uart2io, PSTR("%u"), &mmu_buildnr); //scan buildnr from buffer
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_buildnr);
+			bool version_valid = mmu_check_version();
+			if (!version_valid) mmu_show_warning();
+			else puts_P(PSTR("MMU version valid"));
 			puts_P(PSTR("MMU <= 'P0'"));
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = -4;
@@ -825,4 +829,15 @@ void extr_unload_4()
 {
 	change_extr(4);
 	extr_unload();
+}
+
+bool mmu_check_version()
+{
+	return (mmu_buildnr >= MMU_REQUIRED_FW_BUILDNR);
+}
+
+void mmu_show_warning()
+{
+	printf_P(PSTR("MMU2 firmware version invalid. Required version: build number %d or higher."), MMU_REQUIRED_FW_BUILDNR);
+	kill(_i("Please update firmware in your MMU2. Waiting for reset."));
 }

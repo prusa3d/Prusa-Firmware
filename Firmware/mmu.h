@@ -80,3 +80,7 @@ extern void extr_unload_1();
 extern void extr_unload_2();
 extern void extr_unload_3();
 extern void extr_unload_4();
+
+extern bool mmu_check_version();
+extern void mmu_show_warning();
+
