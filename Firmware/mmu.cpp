@@ -177,13 +177,13 @@ void mmu_loop(void)
 			else if (mmu_cmd == MMU_CMD_C0)
 			{
 				printf_P(PSTR("MMU <= 'C0'\n"));
-				mmu_puts_P(PSTR("C0\n")); //send continue loading
+				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = 3;
 			}
 			else if (mmu_cmd == MMU_CMD_U0)
 			{
 				printf_P(PSTR("MMU <= 'U0'\n"));
-				mmu_puts_P(PSTR("U0\n")); //send continue loading
+				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
 				mmu_state = 3;
 			}
 			mmu_cmd = 0;
