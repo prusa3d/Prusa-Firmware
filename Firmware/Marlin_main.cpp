@@ -3162,8 +3162,11 @@ void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
 
-	if (mmu_enabled)
-		extr_adj(mmu_extruder);//loads current extruder
+	if (mmu_enabled) 
+	{
+		extr_adj(tmp_extruder);//loads current extruder
+		mmu_extruder = tmp_extruder;
+	}
 	else
 	{
 		enable_z();
@@ -6744,7 +6747,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	case 701: //M701: load filament
 	{
 		if (mmu_enabled && code_seen('E'))
-			mmu_extruder = code_value();
+			tmp_extruder = code_value();
 		gcode_M701();
 	}
 	break;
