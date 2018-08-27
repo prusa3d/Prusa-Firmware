@@ -418,11 +418,10 @@ void mmu_M600_load_filament(bool automatic)
 
 		  bool response = false;
 		  bool yes = false;
+		  tmp_extruder = mmu_extruder;
 		  if (!automatic) {
 			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
 			  if(yes) tmp_extruder = choose_extruder_menu();
-			  else tmp_extruder = mmu_extruder;
-
 		  }
 		  else {
 			  tmp_extruder = (tmp_extruder+1)%5;
@@ -443,6 +442,7 @@ void mmu_M600_load_filament(bool automatic)
     	  mmu_extruder = tmp_extruder; //filament change is finished
 
 		  mmu_load_to_nozzle();
+
 
 		  st_synchronize();
 		  current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
