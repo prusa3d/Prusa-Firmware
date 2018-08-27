@@ -3408,7 +3408,9 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-
+	else if (code_seen("FSENSOR_RECOVER")) {
+		fsensor_restore_print_and_continue();
+  }
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
 			if (farm_mode) {

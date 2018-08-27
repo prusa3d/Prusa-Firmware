@@ -7,6 +7,8 @@
 #include "uart2.h"
 #include "temperature.h"
 #include "Configuration_prusa.h"
+#include "fsensor.h"
+#include "cardreader.h"
 
 
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
@@ -16,6 +18,7 @@ extern void lcd_return_to_status();
 extern void lcd_wait_for_heater();
 extern char choose_extruder_menu();
 
+#define CHECK_FINDA ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
 #define MMU_TODELAY 100
 #define MMU_TIMEOUT 10
@@ -182,7 +185,7 @@ void mmu_loop(void)
 			}
 			mmu_cmd = 0;
 		}
-		else if ((mmu_last_response + 1000) < millis()) //request every 1s
+		else if ((mmu_last_response + 800) < millis()) //request every 800ms
 		{
 			puts_P(PSTR("MMU <= 'P0'"));
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
@@ -194,6 +197,12 @@ void mmu_loop(void)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
+			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
+			if (!mmu_finda && CHECK_FINDA) {
+				fsensor_stop_and_save_print();
+				enquecommand_front_P(PSTR("FSENSOR_RECOVER")); //then recover
+				enquecommand_front_P(PSTR("M600")); //save print and run M600 command
+			}
 			mmu_state = 1;
 			if (mmu_cmd == 0)
 				mmu_ready = true;
