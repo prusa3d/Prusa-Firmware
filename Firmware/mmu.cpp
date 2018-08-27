@@ -178,7 +178,13 @@ void mmu_loop(void)
 			else if (mmu_cmd == MMU_CMD_C0)
 			{
 				printf_P(PSTR("MMU <= 'C0'\n"));
-				mmu_puts_P(PSTR("C0\n")); //send continue loading
+				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
+				mmu_state = 3;
+			}
+			else if (mmu_cmd == MMU_CMD_U0)
+			{
+				printf_P(PSTR("MMU <= 'U0'\n"));
+				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
 				mmu_state = 3;
 			}
 			mmu_cmd = 0;
@@ -596,9 +602,8 @@ void extr_unload()
 		current_position[E_AXIS] -= 80;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
 		st_synchronize();
-		printf_P(PSTR("U0\n"));
-		fprintf_P(uart2io, PSTR("U0\n"));
 
+		mmu_command(MMU_CMD_U0);
 		// get response
 		manage_response(false, true);
 

@@ -8846,8 +8846,7 @@ void M600_check_state()
 {
 		//Wait for user to check the state
 		lcd_change_fil_state = 0;
-		
-		while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
+		while (lcd_change_fil_state != 1){
 			lcd_change_fil_state = 0;
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			lcd_alright();
@@ -8874,7 +8873,7 @@ void M600_check_state()
 					lcd_update_enable(true);
 					break;
 			}
-	}
+		}
 }
 
 void M600_wait_for_user() {
@@ -9039,7 +9038,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			fsensor_disable();
 	}
 #endif //FILAMENT_SENSOR
-
+	lcd_update_enable(false);
 }
 
 #define FIL_LOAD_LENGTH 60
