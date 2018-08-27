@@ -9,6 +9,7 @@
 #include "Configuration_prusa.h"
 #include "fsensor.h"
 #include "cardreader.h"
+#include "ultralcd.h"
 
 
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
@@ -192,7 +193,7 @@ void mmu_loop(void)
 			}
 			mmu_cmd = 0;
 		}
-		else if ((mmu_last_response + 800) < millis()) //request every 800ms
+		else if ((mmu_last_response + 300) < millis()) //request every 300ms
 		{
 			puts_P(PSTR("MMU <= 'P0'"));
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
@@ -208,7 +209,8 @@ void mmu_loop(void)
 			if (!mmu_finda && CHECK_FINDA && fsensor_enabled) {
 				fsensor_stop_and_save_print();
 				enquecommand_front_P(PSTR("FSENSOR_RECOVER")); //then recover
-				enquecommand_front_P(PSTR("M600")); //save print and run M600 command
+				if (lcd_autoDeplete) enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
+				else enquecommand_front_P(PSTR("M600")); //save print and run M600 command
 			}
 			mmu_state = 1;
 			if (mmu_cmd == 0)

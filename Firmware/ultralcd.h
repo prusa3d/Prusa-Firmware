@@ -111,6 +111,7 @@ extern int8_t SilentModeMenu;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;
+extern bool lcd_autoDeplete;
 
 
 void lcd_ignore_click(bool b=true);

@@ -88,7 +88,7 @@ unsigned long display_time; //just timer for showing pid finished message on lcd
 float pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
-static bool autoDeplete;
+bool lcd_autoDeplete;
 
 
 static float manual_feedrate[] = MANUAL_FEEDRATE;
@@ -4662,8 +4662,8 @@ while (0)
 
 static void auto_deplete_switch()
 {
-    autoDeplete = !autoDeplete;
-    eeprom_update_byte((unsigned char *)EEPROM_AUTO_DEPLETE, autoDeplete);
+    lcd_autoDeplete = !lcd_autoDeplete;
+    eeprom_update_byte((unsigned char *)EEPROM_AUTO_DEPLETE, lcd_autoDeplete);
 }
 static void lcd_settings_menu()
 {
@@ -4681,7 +4681,7 @@ static void lcd_settings_menu()
 
 	if (mmu_enabled)
 	{
-        if (autoDeplete) MENU_ITEM_FUNCTION_P(_i("Auto deplete [on]"), auto_deplete_switch);
+        if (lcd_autoDeplete) MENU_ITEM_FUNCTION_P(_i("Auto deplete [on]"), auto_deplete_switch);
         else MENU_ITEM_FUNCTION_P(_i("Auto deplete[off]"), auto_deplete_switch);
 	}
 
@@ -7070,8 +7070,8 @@ void ultralcd_init()
 {
     {
         uint8_t autoDepleteRaw = eeprom_read_byte(reinterpret_cast<uint8_t*>(EEPROM_AUTO_DEPLETE));
-        if (0xff == autoDepleteRaw) autoDeplete = false;
-        else autoDeplete = autoDepleteRaw;
+        if (0xff == autoDepleteRaw) lcd_autoDeplete = false;
+        else lcd_autoDeplete = autoDepleteRaw;
 
     }
 	lcd_init();
