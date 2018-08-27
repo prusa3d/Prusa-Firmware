@@ -19,7 +19,8 @@ extern char choose_extruder_menu();
 
 #define MMU_TODELAY 100
 #define MMU_TIMEOUT 10
-#define MMU_CMD_TIMEOUT 300000ul //milliseconds (5min timeout)
+#define MMU_CMD_TIMEOUT 300000ul //5min timeout for mmu commands (except P0)
+#define MMU_P0_TIMEOUT 3000ul //timeout for P0 command: 3seconds
 
 #define MMU_HWRESET
 #define MMU_RST_PIN 76
@@ -198,7 +199,7 @@ void mmu_loop(void)
 			if (mmu_cmd == 0)
 				mmu_ready = true;
 		}
-		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
+		else if ((mmu_last_request + MMU_P0_TIMEOUT) < millis())
 		{ //resend request after timeout (30s)
 			mmu_state = 1;
 		}
@@ -211,7 +212,7 @@ void mmu_loop(void)
 			mmu_state = 1;
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
-		{ //resend request after timeout (30s)
+		{ //resend request after timeout (5 min)
 			mmu_state = 1;
 		}
 		return;
@@ -307,7 +308,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 				  }
 				  st_synchronize();
 				  mmu_print_saved = true;
-				  
+				  printf_P(PSTR("MMU not responding\n"));
 				  hotend_temp_bckp = degTargetHotend(active_extruder);
 				  if (move_axes) {
 					  z_position_bckp = current_position[Z_AXIS];
@@ -329,23 +330,28 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 				  if (turn_off_nozzle) {
 					  //set nozzle target temperature to 0
 					  setAllTargetHotends(0);
-					  printf_P(PSTR("MMU not responding\n"));
-					  lcd_show_fullscreen_message_and_wait_P(_i("MMU needs user attention. Please press knob to resume nozzle target temperature."));
-					  setTargetHotend(hotend_temp_bckp, active_extruder);
-					  while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) {
-						  delay_keep_alive(1000);
-						  lcd_wait_for_heater();
-					  }
 				  }
 			  }
-			  lcd_display_message_fullscreen_P(_i("Check MMU. Fix the issue and then press button on MMU unit."));
+			  lcd_display_message_fullscreen_P(_i("MMU needs user attention. Fix the issue and then press button on MMU unit."));
 			  delay_keep_alive(1000);
 		  }
 		  else if (mmu_print_saved) {
-			  printf_P(PSTR("MMU start responding\n"));
-			  lcd_clear();
-			  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming..."));
+			  printf_P(PSTR("MMU starts responding\n"));
+			  if (turn_off_nozzle) 
+			  {
+				lcd_clear();
+				setTargetHotend(hotend_temp_bckp, active_extruder);
+				lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature..."));
+				delay_keep_alive(3000);
+				while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) 
+				{
+					delay_keep_alive(1000);
+					lcd_wait_for_heater();
+				}
+			  }			  
 			  if (move_axes) {
+				  lcd_clear();
+				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming position..."));
 				  current_position[X_AXIS] = x_position_bckp;
 				  current_position[Y_AXIS] = y_position_bckp;
 				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
@@ -355,6 +361,8 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 				  st_synchronize();
 			  }
 			  else {
+				  lcd_clear();
+				  lcd_display_message_fullscreen_P(_i("MMU OK. Resuming..."));
 				  delay_keep_alive(1000); //delay just for showing MMU OK message for a while in case that there are no xyz movements
 			  }
 		  }
