@@ -1962,8 +1962,8 @@ void loop()
   checkHitEndstops();
   lcd_update(0);
 #ifdef FILAMENT_SENSOR
-	if (mcode_in_progress != 600) //M600 not in progress
-		fsensor_update();
+  if (mcode_in_progress != 600 && !mmu_enabled) //M600 not in progress
+	  fsensor_update();
 #endif //FILAMENT_SENSOR
 #ifdef TMC2130
 	tmc2130_check_overtemp();
@@ -3173,7 +3173,10 @@ void gcode_M701()
 		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 
 #ifdef FILAMENT_SENSOR
-		fsensor_oq_meassure_start(40);
+		if (mmu_enabled == false)
+		{
+			fsensor_oq_meassure_start(40);
+		}
 #endif //FILAMENT_SENSOR
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
@@ -3215,15 +3218,18 @@ void gcode_M701()
 		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 
 #ifdef FILAMENT_SENSOR
-		fsensor_oq_meassure_stop();
-
-		if (!fsensor_oq_result())
+		if (mmu_enabled == false) 
 		{
-			bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
-			lcd_update_enable(true);
-			lcd_update(2);
-			if (disable)
-				fsensor_disable();
+			fsensor_oq_meassure_stop();
+
+			if (!fsensor_oq_result())
+			{
+				bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
+				lcd_update_enable(true);
+				lcd_update(2);
+				if (disable)
+					fsensor_disable();
+			}
 		}
 #endif //FILAMENT_SENSOR
 	}
@@ -3411,7 +3417,9 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-
+	else if (code_seen("FSENSOR_RECOVER")) {
+		fsensor_restore_print_and_continue();
+  }
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
 			if (farm_mode) {
@@ -7304,38 +7312,41 @@ static void handleSafetyTimer()
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-	if (mcode_in_progress != 600) //M600 not in progress
+	if (mmu_enabled == false)
 	{
-		if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+		if (mcode_in_progress != 600) //M600 not in progress
 		{
-			if (fsensor_check_autoload())
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 			{
-				fsensor_autoload_check_stop();
-				if (degHotend0() > EXTRUDE_MINTEMP)
+				if (fsensor_check_autoload())
 				{
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-					tone(BEEPER, 1000);
-					delay_keep_alive(50);
-					noTone(BEEPER);
-					loading_flag = true;
-					enquecommand_front_P((PSTR("M701")));
-				}
-				else
-				{
-					lcd_update_enable(false);
-					lcd_clear();
-					lcd_set_cursor(0, 0);
-					lcd_puts_P(_T(MSG_ERROR));
-					lcd_set_cursor(0, 2);
-					lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-					delay(2000);
-					lcd_clear();
-					lcd_update_enable(true);
+					fsensor_autoload_check_stop();
+					if (degHotend0() > EXTRUDE_MINTEMP)
+					{
+						if ((eSoundMode == e_SOUND_MODE_LOUD) || (eSoundMode == e_SOUND_MODE_ONCE))
+							tone(BEEPER, 1000);
+						delay_keep_alive(50);
+						noTone(BEEPER);
+						loading_flag = true;
+						enquecommand_front_P((PSTR("M701")));
+					}
+					else
+					{
+						lcd_update_enable(false);
+						lcd_clear();
+						lcd_set_cursor(0, 0);
+						lcd_puts_P(_T(MSG_ERROR));
+						lcd_set_cursor(0, 2);
+						lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
+						delay(2000);
+						lcd_clear();
+						lcd_update_enable(true);
+					}
 				}
 			}
+			else
+				fsensor_autoload_check_stop();
 		}
-		else
-			fsensor_autoload_check_stop();
 	}
 #endif //FILAMENT_SENSOR
 
