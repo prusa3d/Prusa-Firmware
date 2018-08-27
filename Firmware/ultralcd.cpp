@@ -1882,20 +1882,22 @@ static void lcd_menu_extruder_info()
     //  Shutter register is an index of LASER shutter time. It is automatically controlled by the chip's internal
     //  auto-exposure algorithm. When the chip is tracking on a good reflection surface, the Shutter is small.
     //  When the chip is tracking on a poor reflection surface, the Shutter is large. Value ranges from 0 to 46.
-
-	if (!fsensor_enabled)
-		lcd_puts_P(_N("Filament sensor\n" "is disabled."));
-	else
+	if (mmu_enabled == false)
 	{
-		if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
-			pat9125_update();
-		lcd_printf_P(_N(
-		  "Fil. Xd:%3d Yd:%3d\n"
-		  "Int: %3d  Shut: %3d"
-		 ),
-		 pat9125_x, pat9125_y,
-		 pat9125_b, pat9125_s
-		);
+		if (!fsensor_enabled)
+			lcd_puts_P(_N("Filament sensor\n" "is disabled."));
+		else
+		{
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+				pat9125_update();
+			lcd_printf_P(_N(
+				"Fil. Xd:%3d Yd:%3d\n"
+				"Int: %3d  Shut: %3d"
+			),
+				pat9125_x, pat9125_y,
+				pat9125_b, pat9125_s
+			);
+		}
 	}
 #endif //FILAMENT_SENSOR
     
@@ -4040,15 +4042,16 @@ static void lcd_crash_mode_set()
 static void lcd_fsensor_state_set()
 {
 	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
-    if (!FSensorStateMenu) {
-        fsensor_disable();
-        if (fsensor_autoload_enabled)
-            menu_submenu(lcd_filament_autoload_info);
-    }else{
-        fsensor_enable();
-        if (fsensor_not_responding)
-            menu_submenu(lcd_fsensor_fail);
-    }
+	if (!FSensorStateMenu) {
+		fsensor_disable();
+		if (fsensor_autoload_enabled && !mmu_enabled)
+			menu_submenu(lcd_filament_autoload_info);
+	}
+	else {
+		fsensor_enable();
+		if (fsensor_not_responding && !mmu_enabled)
+			menu_submenu(lcd_fsensor_fail);
+	}
 }
 #endif //FILAMENT_SENSOR
 
@@ -4546,17 +4549,23 @@ static void lcd_settings_menu()
 		{
 			// Filament sensor turned off, working, no problems
 			MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_OFF), lcd_fsensor_state_set);
-			MENU_ITEM_SUBMENU_P(_T(MSG_FSENS_AUTOLOAD_NA), lcd_filament_autoload_info);
+			if (mmu_enabled == false)
+			{
+				MENU_ITEM_SUBMENU_P(_T(MSG_FSENS_AUTOLOAD_NA), lcd_filament_autoload_info);
+			}
 		}
 	}
 	else
 	{
 		// Filament sensor turned on, working, no problems
 		MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_ON), lcd_fsensor_state_set);
-		if (fsensor_autoload_enabled)
-			MENU_ITEM_FUNCTION_P(_i("F. autoload  [on]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_ON c=17 r=1
-		else
-			MENU_ITEM_FUNCTION_P(_i("F. autoload [off]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_OFF c=17 r=1
+		if (mmu_enabled == false)
+		{
+			if (fsensor_autoload_enabled)
+				MENU_ITEM_FUNCTION_P(_i("F. autoload  [on]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_ON c=17 r=1
+			else
+				MENU_ITEM_FUNCTION_P(_i("F. autoload [off]"), lcd_set_filament_autoload);////MSG_FSENS_AUTOLOAD_OFF c=17 r=1
+		}
 	}
 #endif //FILAMENT_SENSOR
 
@@ -5558,7 +5567,7 @@ static void lcd_main_menu()
 	else
 	{
 #ifdef FILAMENT_SENSOR
-		if ( ((fsensor_autoload_enabled == true) && (fsensor_enabled == true)))
+		if ((fsensor_autoload_enabled == true) && (fsensor_enabled == true) && (mmu_enabled == false))
 			MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=17 r=0
 		else
 #endif //FILAMENT_SENSOR
@@ -6079,14 +6088,19 @@ bool lcd_selftest()
 	{
 		_progress = lcd_selftest_screen(8, _progress, 3, true, 2000); //bed ok
 #ifdef FILAMENT_SENSOR
-		_progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
-		_result = lcd_selftest_fsensor();
+		if (mmu_enabled == false) {
+			_progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
+			_result = lcd_selftest_fsensor();
+		}
 #endif // FILAMENT_SENSOR
 	}
 	if (_result)
 	{
 #ifdef FILAMENT_SENSOR
-		_progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
+		if (mmu_enabled == false)
+		{
+			_progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
+		}
 #endif // FILAMENT_SENSOR
 		_progress = lcd_selftest_screen(11, _progress, 3, true, 5000); //all correct
 	}

@@ -41,6 +41,8 @@
 int fsensor_counter = 0; //counter for e-steps
 #endif //FILAMENT_SENSOR
 
+#include "mmu.h"
+
 #ifdef DEBUG_STACK_MONITOR
 uint16_t SP_min = 0x21FF;
 #endif //DEBUG_STACK_MONITOR
@@ -470,8 +472,11 @@ FORCE_INLINE void stepper_next_block()
 #endif
 
 #ifdef FILAMENT_SENSOR
-    fsensor_counter = 0;
-    fsensor_st_block_begin(current_block);
+	if (mmu_enabled == false)
+	{
+		fsensor_counter = 0;
+		fsensor_st_block_begin(current_block);
+	}
 #endif //FILAMENT_SENSOR
     // The busy flag is set by the plan_get_current_block() call.
     // current_block->busy = true;
@@ -901,7 +906,10 @@ FORCE_INLINE void isr() {
         if (step_loops < estep_loops)
           estep_loops = step_loops;
     #ifdef FILAMENT_SENSOR
-        fsensor_counter += estep_loops;
+		if (mmu_enabled == false)
+		{
+			fsensor_counter += estep_loops;
+		}
     #endif //FILAMENT_SENSOR
         do {
           WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
@@ -1027,7 +1035,9 @@ FORCE_INLINE void isr() {
         // There is not enough time to fit even a single additional tick.
         // Tick all the extruder ticks now.
     #ifdef FILAMENT_SENSOR
-        fsensor_counter += e_steps;
+		  if (mmu_enabled == false) {
+			  fsensor_counter += e_steps;
+		  }
     #endif //FILAMENT_SENSOR
         MSerial.checkRx(); // Check for serial chars.
         do {
@@ -1049,15 +1059,17 @@ FORCE_INLINE void isr() {
     // If current block is finished, reset pointer
     if (step_events_completed.wide >= current_block->step_event_count.wide) {
 #ifdef FILAMENT_SENSOR
-      fsensor_st_block_chunk(current_block, fsensor_counter);
-	    fsensor_counter = 0;
+		if (mmu_enabled == false) {
+			fsensor_st_block_chunk(current_block, fsensor_counter);
+			fsensor_counter = 0;
+		}
 #endif //FILAMENT_SENSOR
 
       current_block = NULL;
       plan_discard_current_block();
     }
 #ifdef FILAMENT_SENSOR
-  	else if (fsensor_counter >= fsensor_chunk_len)
+  	else if ((fsensor_counter >= fsensor_chunk_len) && (mmu_enabled == false))
   	{
       fsensor_st_block_chunk(current_block, fsensor_counter);
   	  fsensor_counter = 0;
