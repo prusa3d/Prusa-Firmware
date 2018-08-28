@@ -4493,6 +4493,7 @@ void lcd_wizard(int state) {
 	lcd_update(2);
 }
 
+#ifdef TMC2130
 void lcd_settings_linearity_correction_menu(void)
 {
 	MENU_BEGIN();
@@ -4511,6 +4512,7 @@ void lcd_settings_linearity_correction_menu(void)
 	    lcd_settings_linearity_correction_menu_save();
 	}
 }
+#endif // TMC2130
 
 #ifdef FILAMENT_SENSOR
 #define SETTINGS_FILAMENT_SENSOR \

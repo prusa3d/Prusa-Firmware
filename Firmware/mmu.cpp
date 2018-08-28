@@ -10,14 +10,7 @@
 #include "fsensor.h"
 #include "cardreader.h"
 #include "ultralcd.h"
-
-
-extern const char* lcd_display_message_fullscreen_P(const char *msg);
-extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
-extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
-extern void lcd_return_to_status();
-extern void lcd_wait_for_heater();
-extern char choose_extruder_menu();
+#include "sound.h"
 
 #define CHECK_FINDA ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
@@ -412,6 +405,43 @@ void mmu_load_to_nozzle()
 	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = false;
 }
 
+void mmu_M600_wait_and_beep() {
+		//Beep and wait for user to remove old filament and prepare new filament for load
+
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
+
+		int counterBeep = 0;
+		lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament."));
+		bool bFirst=true;
+
+		while (!lcd_clicked()){
+			manage_heater();
+			manage_inactivity(true);
+
+			#if BEEPER > 0
+			if (counterBeep == 500) {
+				counterBeep = 0;
+			}
+			SET_OUTPUT(BEEPER);
+			if (counterBeep == 0) {
+				if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
+				{
+					bFirst=false;
+					WRITE(BEEPER, HIGH);
+				}
+			}
+			if (counterBeep == 20) {
+				WRITE(BEEPER, LOW);
+			}
+				
+			counterBeep++;
+			#endif //BEEPER > 0
+
+			delay_keep_alive(4);
+		}
+		WRITE(BEEPER, LOW);
+}
+
 void mmu_M600_load_filament(bool automatic)
 { 
 	//load filament for mmu v2
@@ -420,9 +450,15 @@ void mmu_M600_load_filament(bool automatic)
 		  bool yes = false;
 		  tmp_extruder = mmu_extruder;
 		  if (!automatic) {
+			  mmu_M600_wait_and_beep();
+#ifdef MMU_M600_SWITCH_EXTRUDER
 			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
 			  if(yes) tmp_extruder = choose_extruder_menu();
-		  }
+			  else tmp_extruder = mmu_extruder;
+#else 
+			  tmp_extruder = mmu_extruder; 
+#endif //MMU_M600_SWITCH_EXTRUDER
+      }
 		  else {
 			  tmp_extruder = (tmp_extruder+1)%5;
 		  }
