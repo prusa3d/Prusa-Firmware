@@ -543,8 +543,9 @@ static bool saved_extruder_relative_mode = false;
 //===========================================================================
 
 static void get_arc_coordinates();
-static bool setTargetedHotend(int code);
+static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
+static void wait_for_heater(long codenum, uint8_t extruder);
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -5353,15 +5354,18 @@ Sigma_Exit:
 		break;
 
     case 104: // M104
-      if(setTargetedHotend(104)){
-        break;
-      }
-      if (code_seen('S'))
-      {
-          setTargetHotendSafe(code_value(), tmp_extruder);
-      }
-      setWatch();
-      break;
+    {
+          uint8_t extruder;
+          if(setTargetedHotend(104,extruder)){
+            break;
+          }
+          if (code_seen('S'))
+          {
+              setTargetHotendSafe(code_value(), extruder);
+          }
+          setWatch();
+          break;
+    }
     case 112: //  M112 -Emergency Stop
       kill(_n(""), 3);
       break;
@@ -5369,14 +5373,16 @@ Sigma_Exit:
       if (code_seen('S')) setTargetBed(code_value());
       break;
     case 105 : // M105
-      if(setTargetedHotend(105)){
+    {
+      uint8_t extruder;
+      if(setTargetedHotend(105, extruder)){
         break;
         }
       #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1
         SERIAL_PROTOCOLPGM("ok T:");
-        SERIAL_PROTOCOL_F(degHotend(tmp_extruder),1);
+        SERIAL_PROTOCOL_F(degHotend(extruder),1);
         SERIAL_PROTOCOLPGM(" /");
-        SERIAL_PROTOCOL_F(degTargetHotend(tmp_extruder),1);
+        SERIAL_PROTOCOL_F(degTargetHotend(extruder),1);
         #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
           SERIAL_PROTOCOLPGM(" B:");
           SERIAL_PROTOCOL_F(degBed(),1);
@@ -5401,7 +5407,7 @@ Sigma_Exit:
         SERIAL_PROTOCOL((EXTRUDER_WATTS * getHeaterPower(tmp_extruder))/127);
         SERIAL_PROTOCOLPGM("W");
       #else
-        SERIAL_PROTOCOL(getHeaterPower(tmp_extruder));
+        SERIAL_PROTOCOL(getHeaterPower(extruder));
       #endif
 
         SERIAL_PROTOCOLPGM(" B@:");
@@ -5459,9 +5465,11 @@ Sigma_Exit:
 		KEEPALIVE_STATE(NOT_BUSY);
       return;
       break;
+    }
     case 109:
     {// M109 - Wait for extruder heater to reach target.
-      if(setTargetedHotend(109)){
+      uint8_t extruder;
+      if(setTargetedHotend(109, extruder)){
         break;
       }
       LCD_MESSAGERPGM(_T(MSG_HEATING));
@@ -5472,10 +5480,10 @@ Sigma_Exit:
         autotemp_enabled=false;
       #endif
       if (code_seen('S')) {
-          setTargetHotendSafe(code_value(), tmp_extruder);
+          setTargetHotendSafe(code_value(), extruder);
               CooldownNoWait = true;
             } else if (code_seen('R')) {
-                setTargetHotendSafe(code_value(), tmp_extruder);
+                setTargetHotendSafe(code_value(), extruder);
         CooldownNoWait = false;
       }
       #ifdef AUTOTEMP
@@ -5492,13 +5500,13 @@ Sigma_Exit:
       codenum = millis();
 
       /* See if we are heating up or cooling down */
-      target_direction = isHeatingHotend(tmp_extruder); // true if heating, false if cooling
+      target_direction = isHeatingHotend(extruder); // true if heating, false if cooling
 	  
 	  KEEPALIVE_STATE(NOT_BUSY);
 
       cancel_heatup = false;
 
-	  wait_for_heater(codenum); //loops until target temperature is reached
+	  wait_for_heater(codenum, extruder); //loops until target temperature is reached
 
         LCD_MESSAGERPGM(_T(MSG_HEATING_COMPLETE));
 		KEEPALIVE_STATE(IN_HANDLER);
@@ -6024,25 +6032,26 @@ Sigma_Exit:
     #if EXTRUDERS > 1
     case 218: // M218 - set hotend offset (in mm), T<extruder_number> X<offset_on_X> Y<offset_on_Y>
     {
-      if(setTargetedHotend(218)){
+      uint8_t extruder;
+      if(setTargetedHotend(218, extruder)){
         break;
       }
       if(code_seen('X'))
       {
-        extruder_offset[X_AXIS][tmp_extruder] = code_value();
+        extruder_offset[X_AXIS][extruder] = code_value();
       }
       if(code_seen('Y'))
       {
-        extruder_offset[Y_AXIS][tmp_extruder] = code_value();
+        extruder_offset[Y_AXIS][extruder] = code_value();
       }
       SERIAL_ECHO_START;
       SERIAL_ECHORPGM(MSG_HOTEND_OFFSET);
-      for(tmp_extruder = 0; tmp_extruder < EXTRUDERS; tmp_extruder++)
+      for(extruder = 0; extruder < EXTRUDERS; extruder++)
       {
          SERIAL_ECHO(" ");
-         SERIAL_ECHO(extruder_offset[X_AXIS][tmp_extruder]);
+         SERIAL_ECHO(extruder_offset[X_AXIS][extruder]);
          SERIAL_ECHO(",");
-         SERIAL_ECHO(extruder_offset[Y_AXIS][tmp_extruder]);
+         SERIAL_ECHO(extruder_offset[Y_AXIS][extruder]);
       }
       SERIAL_ECHOLN("");
     }break;
@@ -6062,10 +6071,11 @@ Sigma_Exit:
         int tmp_code = code_value();
         if (code_seen('T'))
         {
-          if(setTargetedHotend(221)){
+          uint8_t extruder;
+          if(setTargetedHotend(221, extruder)){
             break;
           }
-          extruder_multiply[tmp_extruder] = tmp_code;
+          extruder_multiply[extruder] = tmp_code;
         }
         else
         {
@@ -7571,11 +7581,21 @@ void setPwmFrequency(uint8_t pin, int val)
 }
 #endif //FAST_PWM_FAN
 
-bool setTargetedHotend(int code){
-  tmp_extruder = active_extruder;
+//! @brief Get and validate extruder number
+//!
+//! If it is not specified, active_extruder is returned in parameter extruder.
+//! @param [in] code M code number
+//! @param [out] extruder
+//! @return error
+//! @retval true Invalid extruder specified in T code
+//! @retval false Valid extruder specified in T code, or not specifiead
+
+bool setTargetedHotend(int code, uint8_t &extruder)
+{
+  extruder = active_extruder;
   if(code_seen('T')) {
-    tmp_extruder = code_value();
-    if(tmp_extruder >= EXTRUDERS) {
+      extruder = code_value();
+    if(extruder >= EXTRUDERS) {
       SERIAL_ECHO_START;
       switch(code){
         case 104:
@@ -7594,7 +7614,7 @@ bool setTargetedHotend(int code){
           SERIAL_ECHO(_i("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
           break;
       }
-      SERIAL_PROTOCOLLN((int)tmp_extruder);
+      SERIAL_PROTOCOLLN((int)extruder);
       return true;
     }
   }
@@ -7659,7 +7679,7 @@ void delay_keep_alive(unsigned int ms)
     }
 }
 
-void wait_for_heater(long codenum) {
+static void wait_for_heater(long codenum, uint8_t extruder) {
 
 #ifdef TEMP_RESIDENCY_TIME
 	long residencyStart;
@@ -7675,9 +7695,9 @@ void wait_for_heater(long codenum) {
 		{ //Print Temp Reading and remaining time every 1 second while heating up/cooling down
 			if (!farm_mode) {
 				SERIAL_PROTOCOLPGM("T:");
-				SERIAL_PROTOCOL_F(degHotend(tmp_extruder), 1);
+				SERIAL_PROTOCOL_F(degHotend(extruder), 1);
 				SERIAL_PROTOCOLPGM(" E:");
-				SERIAL_PROTOCOL((int)tmp_extruder);
+				SERIAL_PROTOCOL((int)extruder);
 
 #ifdef TEMP_RESIDENCY_TIME
 				SERIAL_PROTOCOLPGM(" W:");
@@ -7702,9 +7722,9 @@ void wait_for_heater(long codenum) {
 #ifdef TEMP_RESIDENCY_TIME
 			/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
 			or when current temp falls outside the hysteresis after target temp was reached */
-			if ((residencyStart == -1 && target_direction && (degHotend(tmp_extruder) >= (degTargetHotend(tmp_extruder) - TEMP_WINDOW))) ||
-				(residencyStart == -1 && !target_direction && (degHotend(tmp_extruder) <= (degTargetHotend(tmp_extruder) + TEMP_WINDOW))) ||
-				(residencyStart > -1 && labs(degHotend(tmp_extruder) - degTargetHotend(tmp_extruder)) > TEMP_HYSTERESIS))
+			if ((residencyStart == -1 && target_direction && (degHotend(extruder) >= (degTargetHotend(extruder) - TEMP_WINDOW))) ||
+				(residencyStart == -1 && !target_direction && (degHotend(extruder) <= (degTargetHotend(extruder) + TEMP_WINDOW))) ||
+				(residencyStart > -1 && labs(degHotend(extruder) - degTargetHotend(extruder)) > TEMP_HYSTERESIS))
 			{
 				residencyStart = millis();
 			}
