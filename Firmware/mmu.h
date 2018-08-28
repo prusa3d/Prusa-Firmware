@@ -30,6 +30,13 @@ extern int16_t mmu_buildnr;
 #define MMU_CMD_L4   0x24
 #define MMU_CMD_C0   0x30
 #define MMU_CMD_U0   0x40
+#define MMU_CMD_E0   0x50
+#define MMU_CMD_E1   0x51
+#define MMU_CMD_E2   0x52
+#define MMU_CMD_E3   0x53
+#define MMU_CMD_E4   0x54
+#define MMU_CMD_R0   0x60
+
 
 extern int mmu_puts_P(const char* str);
 

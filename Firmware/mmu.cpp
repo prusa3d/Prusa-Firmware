@@ -103,6 +103,7 @@ void mmu_init(void)
 //mmu main loop - state machine processing
 void mmu_loop(void)
 {
+	int filament = 0;
 //	printf_P(PSTR("MMU loop, state=%d\n"), mmu_state);
 	switch (mmu_state)
 	{
@@ -160,14 +161,14 @@ void mmu_loop(void)
 		{
 			if ((mmu_cmd >= MMU_CMD_T0) && (mmu_cmd <= MMU_CMD_T4))
 			{
-				int extruder = mmu_cmd - MMU_CMD_T0;
-				printf_P(PSTR("MMU <= 'T%d'\n"), extruder);
-				mmu_printf_P(PSTR("T%d\n"), extruder);
+				filament = mmu_cmd - MMU_CMD_T0;
+				printf_P(PSTR("MMU <= 'T%d'\n"), filament);
+				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = 3; // wait for response
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
 			{
-			    int filament = mmu_cmd - MMU_CMD_L0;
+			    filament = mmu_cmd - MMU_CMD_L0;
 			    printf_P(PSTR("MMU <= 'L%d'\n"), filament);
 			    mmu_printf_P(PSTR("L%d\n"), filament);
 			    mmu_state = 3; // wait for response
@@ -183,6 +184,19 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'U0'\n"));
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
 				mmu_state = 3;
+			}
+			else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
+			{
+				int filament = mmu_cmd - MMU_CMD_E0;
+				printf_P(PSTR("MMU <= 'E%d'\n"), filament);
+				mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
+				mmu_state = 3; // wait for response
+			}
+			else if (mmu_cmd == MMU_CMD_R0)
+			{
+				printf_P(PSTR("MMU <= 'R0'\n"));
+				mmu_puts_P(PSTR("R0\n")); //send recover after eject
+				mmu_state = 3; // wait for response
 			}
 			mmu_cmd = 0;
 		}
@@ -214,7 +228,7 @@ void mmu_loop(void)
 			mmu_state = 1;
 		}
 		return;
-	case 3: //response to commands T0-T4
+	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
 			printf_P(PSTR("MMU => 'ok'\n"));
@@ -899,4 +913,9 @@ void mmu_show_warning()
 {
 	printf_P(PSTR("MMU2 firmware version invalid. Required version: build number %d or higher."), MMU_REQUIRED_FW_BUILDNR);
 	kill(_i("Please update firmware in your MMU2. Waiting for reset."));
+}
+
+static void mmu_eject_filament(uint8_t filament)
+{
+	if (filament < 5) mmu_command(MMU_CMD_E0 + filament);
 }
