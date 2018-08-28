@@ -1355,6 +1355,7 @@ void setup()
 	plan_init();  // Initialize planner;
 
 	factory_reset();
+     lcd_encoder_diff=0;
 
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
