@@ -154,7 +154,7 @@ void plan_set_position(float x, float y, float z, const float &e);
 void plan_set_z_position(const float &z);
 void plan_set_e_position(const float &e);
 
-
+extern bool e_active();
 
 void check_axes_activity();
 
