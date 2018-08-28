@@ -3555,6 +3555,27 @@ void lcd_diag_show_end_stops()
     lcd_return_to_status();
 }
 
+#ifdef TMC2130
+static void lcd_show_pinda_state()
+{
+lcd_set_cursor(0, 0);
+lcd_puts_P((PSTR("P.I.N.D.A. state")));
+lcd_set_cursor(0, 2);
+lcd_puts_P(READ(Z_MIN_PIN)?(PSTR("Z1 (LED off)")):(PSTR("Z0 (LED on) "))); // !!! both strings must have same length (due to dynamic refreshing)
+}
+
+static void menu_show_pinda_state()
+{
+lcd_timeoutToStatus.stop();
+lcd_show_pinda_state();
+if(LCD_CLICKED)
+     {
+     lcd_timeoutToStatus.start();
+     menu_back();
+     }
+}
+#endif // defined TMC2130
+
 
 
 void prusa_statistics(int _message, uint8_t _fil_nr) {
@@ -4792,7 +4813,9 @@ static void lcd_calibration_menu()
 
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=0 r=0
 	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17 r=1
-#ifndef TMC2130
+#ifdef TMC2130
+    MENU_ITEM_SUBMENU_P(_i("Show pinda state"), menu_show_pinda_state);
+#else
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=17 r=1
 #endif
 #ifndef MK1BP
