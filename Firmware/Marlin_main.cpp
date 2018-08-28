@@ -6793,132 +6793,132 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
   else if(code_seen('T'))
   {
-	  int index;
-	  st_synchronize();
-	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
-	   
-	  if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
-		  SERIAL_ECHOLNPGM("Invalid T code.");
-	  }
-	  else {
-		  if (*(strchr_pointer + index) == '?') {
-			  tmp_extruder = choose_extruder_menu();
-		  }
-		  else {
-			  tmp_extruder = code_value();
-		  }
-		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
+      int index;
+      st_synchronize();
+      for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 
-if (mmu_enabled)
-{
-		  //printf_P(PSTR("T code: %d \n"), tmp_extruder);
-		  //mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
-		  mmu_command(MMU_CMD_T0 + tmp_extruder);
+      if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
+          SERIAL_ECHOLNPGM("Invalid T code.");
+      }
+      else {
+          if (*(strchr_pointer + index) == '?') {
+              tmp_extruder = choose_extruder_menu();
+          }
+          else {
+              tmp_extruder = code_value();
+          }
+          snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 
-		  manage_response(true, true);
-		  mmu_command(MMU_CMD_C0);
-    	  mmu_extruder = tmp_extruder; //filament change is finished
+          if (mmu_enabled)
+          {
+              //printf_P(PSTR("T code: %d \n"), tmp_extruder);
+              //mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
+              mmu_command(MMU_CMD_T0 + tmp_extruder);
 
-		  if (*(strchr_pointer + index) == '?')// for single material usage with mmu
-			  mmu_load_to_nozzle();
-}
-else
-{
+              manage_response(true, true);
+              mmu_command(MMU_CMD_C0);
+              mmu_extruder = tmp_extruder; //filament change is finished
+
+              if (*(strchr_pointer + index) == '?')// for single material usage with mmu
+                  mmu_load_to_nozzle();
+          }
+          else
+          {
 #ifdef SNMM
 
-	#ifdef LIN_ADVANCE
-          if (mmu_extruder != tmp_extruder)
-            clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
-	#endif
-          
-		  mmu_extruder = tmp_extruder;
+#ifdef LIN_ADVANCE
+              if (mmu_extruder != tmp_extruder)
+                  clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
+#endif
 
-		  
-		  delay(100);
+              mmu_extruder = tmp_extruder;
 
-		  disable_e0();
-		  disable_e1();
-		  disable_e2();
 
-		  pinMode(E_MUX0_PIN, OUTPUT);
-		  pinMode(E_MUX1_PIN, OUTPUT);
+              delay(100);
 
-		  delay(100);
-		  SERIAL_ECHO_START;
-		  SERIAL_ECHO("T:");
-		  SERIAL_ECHOLN((int)tmp_extruder);
-		  switch (tmp_extruder) {
-		  case 1:
-			  WRITE(E_MUX0_PIN, HIGH);
-			  WRITE(E_MUX1_PIN, LOW);
+              disable_e0();
+              disable_e1();
+              disable_e2();
 
-			  break;
-		  case 2:
-			  WRITE(E_MUX0_PIN, LOW);
-			  WRITE(E_MUX1_PIN, HIGH);
+              pinMode(E_MUX0_PIN, OUTPUT);
+              pinMode(E_MUX1_PIN, OUTPUT);
 
-			  break;
-		  case 3:
-			  WRITE(E_MUX0_PIN, HIGH);
-			  WRITE(E_MUX1_PIN, HIGH);
+              delay(100);
+              SERIAL_ECHO_START;
+              SERIAL_ECHO("T:");
+              SERIAL_ECHOLN((int)tmp_extruder);
+              switch (tmp_extruder) {
+              case 1:
+                  WRITE(E_MUX0_PIN, HIGH);
+                  WRITE(E_MUX1_PIN, LOW);
 
-			  break;
-		  default:
-			  WRITE(E_MUX0_PIN, LOW);
-			  WRITE(E_MUX1_PIN, LOW);
+                  break;
+              case 2:
+                  WRITE(E_MUX0_PIN, LOW);
+                  WRITE(E_MUX1_PIN, HIGH);
 
-			  break;
-		  }
-		  delay(100);
+                  break;
+              case 3:
+                  WRITE(E_MUX0_PIN, HIGH);
+                  WRITE(E_MUX1_PIN, HIGH);
+
+                  break;
+              default:
+                  WRITE(E_MUX0_PIN, LOW);
+                  WRITE(E_MUX1_PIN, LOW);
+
+                  break;
+              }
+              delay(100);
 
 #else //SNMM
-		  if (tmp_extruder >= EXTRUDERS) {
-			  SERIAL_ECHO_START;
-			  SERIAL_ECHOPGM("T");
-			  SERIAL_PROTOCOLLN((int)tmp_extruder);
-			  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
-		  }
-		  else {
-			#if EXTRUDERS > 1
-		      boolean make_move = false;
-			#endif
-			  if (code_seen('F')) {
-			#if EXTRUDERS > 1
-				  make_move = true;
-			#endif
-				  next_feedrate = code_value();
-				  if (next_feedrate > 0.0) {
-					  feedrate = next_feedrate;
-				  }
-			  }
-			#if EXTRUDERS > 1
-			  if (tmp_extruder != active_extruder) {
-				  // Save current position to return to after applying extruder offset
-				  memcpy(destination, current_position, sizeof(destination));
-				  // Offset extruder (only by XY)
-				  int i;
-				  for (i = 0; i < 2; i++) {
-					  current_position[i] = current_position[i] -
-						  extruder_offset[i][active_extruder] +
-						  extruder_offset[i][tmp_extruder];
-				  }
-				  // Set the new active extruder and position
-				  active_extruder = tmp_extruder;
-				  plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-				  // Move to the old position if 'F' was in the parameters
-				  if (make_move && Stopped == false) {
-					  prepare_move();
-				  }
-			  }
-			#endif
-			  SERIAL_ECHO_START;
-			  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER c=0 r=0
-			  SERIAL_PROTOCOLLN((int)active_extruder);
-		  }
+              if (tmp_extruder >= EXTRUDERS) {
+                  SERIAL_ECHO_START;
+                  SERIAL_ECHOPGM("T");
+                  SERIAL_PROTOCOLLN((int)tmp_extruder);
+                  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
+              }
+              else {
+#if EXTRUDERS > 1
+                  boolean make_move = false;
+#endif
+                  if (code_seen('F')) {
+#if EXTRUDERS > 1
+                      make_move = true;
+#endif
+                      next_feedrate = code_value();
+                      if (next_feedrate > 0.0) {
+                          feedrate = next_feedrate;
+                      }
+                  }
+#if EXTRUDERS > 1
+                  if (tmp_extruder != active_extruder) {
+                      // Save current position to return to after applying extruder offset
+                      memcpy(destination, current_position, sizeof(destination));
+                      // Offset extruder (only by XY)
+                      int i;
+                      for (i = 0; i < 2; i++) {
+                          current_position[i] = current_position[i] -
+                                  extruder_offset[i][active_extruder] +
+                                  extruder_offset[i][tmp_extruder];
+                      }
+                      // Set the new active extruder and position
+                      active_extruder = tmp_extruder;
+                      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+                      // Move to the old position if 'F' was in the parameters
+                      if (make_move && Stopped == false) {
+                          prepare_move();
+                      }
+                  }
+#endif
+                  SERIAL_ECHO_START;
+                  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER c=0 r=0
+                  SERIAL_PROTOCOLLN((int)active_extruder);
+              }
 
 #endif //SNMM
-}
-	  }
+          }
+      }
   } // end if(code_seen('T')) (end of T codes)
 
   else if (code_seen('D')) // D codes (debug)
