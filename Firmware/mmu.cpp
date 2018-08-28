@@ -455,10 +455,8 @@ void mmu_M600_load_filament(bool automatic)
 			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
 			  if(yes) tmp_extruder = choose_extruder_menu();
 			  else tmp_extruder = mmu_extruder;
-#else 
-			  tmp_extruder = mmu_extruder; 
 #endif //MMU_M600_SWITCH_EXTRUDER
-      }
+		  }
 		  else {
 			  tmp_extruder = (tmp_extruder+1)%5;
 		  }
