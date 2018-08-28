@@ -3124,6 +3124,8 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
 
 		if(!automatic) M600_check_state();
 
+		lcd_update_enable(true);
+
       //Not let's go back to print
 	  fanSpeed = fanSpeedBckp;
 
@@ -8881,7 +8883,6 @@ void M600_check_state()
 				// Everything good             
 				default:
 					lcd_change_success();
-					lcd_update_enable(true);
 					break;
 			}
 		}

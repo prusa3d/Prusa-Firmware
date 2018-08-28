@@ -12,7 +12,6 @@
 #include "ultralcd.h"
 #include "sound.h"
 
-
 #define CHECK_FINDA ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
 #define MMU_TODELAY 100
@@ -187,7 +186,7 @@ void mmu_loop(void)
 			}
 			mmu_cmd = 0;
 		}
-		else if ((mmu_last_response + 800) < millis()) //request every 800ms
+		else if ((mmu_last_response + 300) < millis()) //request every 300ms
 		{
 			puts_P(PSTR("MMU <= 'P0'"));
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
@@ -203,7 +202,8 @@ void mmu_loop(void)
 			if (!mmu_finda && CHECK_FINDA && fsensor_enabled) {
 				fsensor_stop_and_save_print();
 				enquecommand_front_P(PSTR("FSENSOR_RECOVER")); //then recover
-				enquecommand_front_P(PSTR("M600")); //save print and run M600 command
+				if (lcd_autoDeplete) enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
+				else enquecommand_front_P(PSTR("M600")); //save print and run M600 command
 			}
 			mmu_state = 1;
 			if (mmu_cmd == 0)
@@ -448,6 +448,7 @@ void mmu_M600_load_filament(bool automatic)
 
 		  bool response = false;
 		  bool yes = false;
+		  tmp_extruder = mmu_extruder;
 		  if (!automatic) {
 			  mmu_M600_wait_and_beep();
 #ifdef MMU_M600_SWITCH_EXTRUDER
@@ -457,7 +458,7 @@ void mmu_M600_load_filament(bool automatic)
 #else 
 			  tmp_extruder = mmu_extruder; 
 #endif //MMU_M600_SWITCH_EXTRUDER
-		  }
+      }
 		  else {
 			  tmp_extruder = (tmp_extruder+1)%5;
 		  }
@@ -477,6 +478,7 @@ void mmu_M600_load_filament(bool automatic)
     	  mmu_extruder = tmp_extruder; //filament change is finished
 
 		  mmu_load_to_nozzle();
+
 
 		  st_synchronize();
 		  current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
