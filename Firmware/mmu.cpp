@@ -380,6 +380,12 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 	if (lcd_update_was_enabled) lcd_update_enable(true);
 }
 
+//! @brief load filament to nozzle of multimaterial printer
+//!
+//! This function is used only only after T? (user select filament) and M600 (change filament).
+//! It is not used after T0 .. T4 command (select filament), in such case, gcode is responsible for loading
+//! filament to nozzle.
+//!
 void mmu_load_to_nozzle()
 {
 	st_synchronize();

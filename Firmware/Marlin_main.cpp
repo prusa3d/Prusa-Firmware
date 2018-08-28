@@ -6797,7 +6797,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       st_synchronize();
       for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 
-      if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
+      if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '4') && *(strchr_pointer + index) != '?') {
           SERIAL_ECHOLNPGM("Invalid T code.");
       }
       else {
@@ -6811,8 +6811,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
           if (mmu_enabled)
           {
-              //printf_P(PSTR("T code: %d \n"), tmp_extruder);
-              //mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
               mmu_command(MMU_CMD_T0 + tmp_extruder);
 
               manage_response(true, true);
@@ -6820,7 +6818,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
               mmu_extruder = tmp_extruder; //filament change is finished
 
               if (*(strchr_pointer + index) == '?')// for single material usage with mmu
+              {
                   mmu_load_to_nozzle();
+              }
           }
           else
           {
