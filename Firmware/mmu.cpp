@@ -22,7 +22,7 @@
 #define MMU_HWRESET
 #define MMU_RST_PIN 76
 
-#define MMU_REQUIRED_FW_BUILDNR 81
+#define MMU_REQUIRED_FW_BUILDNR 83
 
 bool mmu_enabled = false;
 
@@ -470,7 +470,6 @@ void mmu_M600_load_filament(bool automatic)
 		  bool yes = false;
 		  tmp_extruder = mmu_extruder;
 		  if (!automatic) {
-			  mmu_M600_wait_and_beep();
 #ifdef MMU_M600_SWITCH_EXTRUDER
 			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
 			  if(yes) tmp_extruder = choose_extruder_menu();
@@ -790,6 +789,36 @@ void extr_adj_4()
 #endif
 }
 
+void mmu_eject_fil_0()
+{
+	mmu_eject_filament(0, true);
+}
+
+void mmu_eject_fil_1()
+{
+	mmu_eject_filament(1, true);
+}
+
+void mmu_eject_fil_2()
+{
+	mmu_eject_filament(2, true);
+}
+
+void mmu_eject_fil_3()
+{
+	mmu_eject_filament(3, true);
+}
+
+void mmu_eject_fil_4()
+{
+	mmu_eject_filament(4, true);
+}
+
+void mmu_eject_fil_5()
+{
+	mmu_eject_filament(5, true);
+}
+
 void load_all()
 {
 #ifndef SNMM
@@ -921,7 +950,21 @@ void mmu_show_warning()
 	kill(_i("Please update firmware in your MMU2. Waiting for reset."));
 }
 
-static void mmu_eject_filament(uint8_t filament)
+void mmu_eject_filament(uint8_t filament, bool recover)
 {
-	if (filament < 5) mmu_command(MMU_CMD_E0 + filament);
+	if (filament < 5) 
+	{
+		mmu_command(MMU_CMD_E0 + filament);
+		manage_response(false, false);
+		if (recover)
+		{
+			lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
+			mmu_command(MMU_CMD_R0);
+			manage_response(false, false);
+		}
+	}
+	else
+	{
+		puts_P(PSTR("Filament nr out of range!"));
+	}
 }

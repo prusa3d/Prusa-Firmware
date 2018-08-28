@@ -3120,7 +3120,20 @@ void gcode_M600(bool automatic, float x_position, float y_position, float z_shif
 		}
 
 		if (mmu_enabled)
+		{
+			if (saved_printing) mmu_eject_filament(mmu_extruder, false); //if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
+			if (!automatic) mmu_M600_wait_and_beep();
+			if (saved_printing) {
+
+				lcd_clear();
+				lcd_set_cursor(0, 2);
+				lcd_puts_P(_T(MSG_PLEASE_WAIT));
+
+				mmu_command(MMU_CMD_R0);
+				manage_response(false, false);
+			}
 			mmu_M600_load_filament(automatic);
+		}
 		else
 			M600_load_filament();
 

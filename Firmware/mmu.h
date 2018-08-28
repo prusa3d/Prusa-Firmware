@@ -91,4 +91,9 @@ extern void extr_unload_4();
 
 extern bool mmu_check_version();
 extern void mmu_show_warning();
-
+extern void mmu_eject_filament(uint8_t filament, bool recover);
+extern void mmu_eject_fil_0();
+extern void mmu_eject_fil_1();
+extern void mmu_eject_fil_2();
+extern void mmu_eject_fil_3();
+extern void mmu_eject_fil_4();

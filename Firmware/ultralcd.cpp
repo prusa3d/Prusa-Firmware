@@ -5203,6 +5203,19 @@ static void fil_load_menu()
 	MENU_END();
 }
 
+static void mmu_fil_eject_menu()
+{
+	MENU_BEGIN();
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 1"), mmu_eject_fil_0);
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 2"), mmu_eject_fil_1);
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 3"), mmu_eject_fil_2);
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 4"), mmu_eject_fil_3);
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 5"), mmu_eject_fil_4);
+
+	MENU_END();
+}
+
 static void fil_unload_menu()
 {
 	MENU_BEGIN();
@@ -5651,6 +5664,7 @@ static void lcd_main_menu()
 	if (mmu_enabled)
 	{
 		MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
+		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
 		if (mmu_enabled)
 			MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
 		else
