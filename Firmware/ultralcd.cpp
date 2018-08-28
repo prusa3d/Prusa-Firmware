@@ -4492,11 +4492,11 @@ void lcd_wizard(int state) {
 	lcd_update(2);
 }
 
+#ifdef TMC2130
 void lcd_settings_linearity_correction_menu(void)
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-#ifdef TMC2130
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
 	//tmc2130_wave_fac[X_AXIS]
 
@@ -4505,13 +4505,13 @@ void lcd_settings_linearity_correction_menu(void)
 	MENU_ITEM_EDIT_int3_P(_i("Z-correct"),  &tmc2130_wave_fac[Z_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
 	MENU_ITEM_EDIT_int3_P(_i("E-correct"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
-#endif
 	MENU_END();
 	if(menu_leaving)
 	{
 	    lcd_settings_linearity_correction_menu_save();
 	}
 }
+#endif // TMC2130
 
 static void lcd_settings_menu()
 {

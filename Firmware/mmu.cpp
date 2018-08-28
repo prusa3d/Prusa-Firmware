@@ -9,15 +9,9 @@
 #include "Configuration_prusa.h"
 #include "fsensor.h"
 #include "cardreader.h"
+#include "ultralcd.h"
 #include "sound.h"
 
-
-extern const char* lcd_display_message_fullscreen_P(const char *msg);
-extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
-extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
-extern void lcd_return_to_status();
-extern void lcd_wait_for_heater();
-extern char choose_extruder_menu();
 
 #define CHECK_FINDA ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
