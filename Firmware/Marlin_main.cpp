@@ -1962,8 +1962,8 @@ void loop()
   checkHitEndstops();
   lcd_update(0);
 #ifdef FILAMENT_SENSOR
-	if (mcode_in_progress != 600) //M600 not in progress
-		fsensor_update();
+  if (mcode_in_progress != 600 && !mmu_enabled) //M600 not in progress
+	  fsensor_update();
 #endif //FILAMENT_SENSOR
 #ifdef TMC2130
 	tmc2130_check_overtemp();
@@ -3092,7 +3092,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     st_synchronize();
 
     //Beep, manage nozzle heater and wait for user to start unload filament
-    if (!automatic) M600_wait_for_user();
+    if(!mmu_enabled) M600_wait_for_user();
 
     lcd_change_fil_state = 0;
 
@@ -3117,6 +3117,8 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     if (!automatic) M600_check_state();
 
+		lcd_update_enable(true);
+
     //Not let's go back to print
     fanSpeed = fanSpeedBckp;
 
@@ -3135,12 +3137,6 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     //Move Z back
     plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS],
             FILAMENTCHANGE_ZFEED, active_extruder);
-    st_synchronize();
-
-    //Unretract
-    current_position[E_AXIS] = current_position[E_AXIS] - e_shift;
-    plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], lastpos[Z_AXIS], current_position[E_AXIS],
-            FILAMENTCHANGE_RFEED, active_extruder);
     st_synchronize();
 
     //Set E position to original
@@ -3164,15 +3160,21 @@ void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
 
-	if (mmu_enabled)
-		extr_adj(mmu_extruder);//loads current extruder
+	if (mmu_enabled) 
+	{
+		extr_adj(tmp_extruder);//loads current extruder
+		mmu_extruder = tmp_extruder;
+	}
 	else
 	{
 		enable_z();
 		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 
 #ifdef FILAMENT_SENSOR
-		fsensor_oq_meassure_start(40);
+		if (mmu_enabled == false)
+		{
+			fsensor_oq_meassure_start(40);
+		}
 #endif //FILAMENT_SENSOR
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
@@ -3214,15 +3216,18 @@ void gcode_M701()
 		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 
 #ifdef FILAMENT_SENSOR
-		fsensor_oq_meassure_stop();
-
-		if (!fsensor_oq_result())
+		if (mmu_enabled == false) 
 		{
-			bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
-			lcd_update_enable(true);
-			lcd_update(2);
-			if (disable)
-				fsensor_disable();
+			fsensor_oq_meassure_stop();
+
+			if (!fsensor_oq_result())
+			{
+				bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
+				lcd_update_enable(true);
+				lcd_update(2);
+				if (disable)
+					fsensor_disable();
+			}
 		}
 #endif //FILAMENT_SENSOR
 	}
@@ -3410,7 +3415,9 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-
+	else if (code_seen("FSENSOR_RECOVER")) {
+		fsensor_restore_print_and_continue();
+  }
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //PRUSA Ping
 			if (farm_mode) {
@@ -6746,7 +6753,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	case 701: //M701: load filament
 	{
 		if (mmu_enabled && code_seen('E'))
-			mmu_extruder = code_value();
+			tmp_extruder = code_value();
 		gcode_M701();
 	}
 	break;
@@ -6805,7 +6812,7 @@ if (mmu_enabled)
 		  mmu_command(MMU_CMD_T0 + tmp_extruder);
 
 		  manage_response(true, true);
-
+		  mmu_command(MMU_CMD_C0);
     	  mmu_extruder = tmp_extruder; //filament change is finished
 
 		  if (*(strchr_pointer + index) == '?')// for single material usage with mmu
@@ -7303,38 +7310,41 @@ static void handleSafetyTimer()
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
 #ifdef FILAMENT_SENSOR
-	if (mcode_in_progress != 600) //M600 not in progress
+	if (mmu_enabled == false)
 	{
-		if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+		if (mcode_in_progress != 600) //M600 not in progress
 		{
-			if (fsensor_check_autoload())
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 			{
-				fsensor_autoload_check_stop();
-				if (degHotend0() > EXTRUDE_MINTEMP)
+				if (fsensor_check_autoload())
 				{
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-					tone(BEEPER, 1000);
-					delay_keep_alive(50);
-					noTone(BEEPER);
-					loading_flag = true;
-					enquecommand_front_P((PSTR("M701")));
-				}
-				else
-				{
-					lcd_update_enable(false);
-					lcd_clear();
-					lcd_set_cursor(0, 0);
-					lcd_puts_P(_T(MSG_ERROR));
-					lcd_set_cursor(0, 2);
-					lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-					delay(2000);
-					lcd_clear();
-					lcd_update_enable(true);
+					fsensor_autoload_check_stop();
+					if (degHotend0() > EXTRUDE_MINTEMP)
+					{
+						if ((eSoundMode == e_SOUND_MODE_LOUD) || (eSoundMode == e_SOUND_MODE_ONCE))
+							tone(BEEPER, 1000);
+						delay_keep_alive(50);
+						noTone(BEEPER);
+						loading_flag = true;
+						enquecommand_front_P((PSTR("M701")));
+					}
+					else
+					{
+						lcd_update_enable(false);
+						lcd_clear();
+						lcd_set_cursor(0, 0);
+						lcd_puts_P(_T(MSG_ERROR));
+						lcd_set_cursor(0, 2);
+						lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
+						delay(2000);
+						lcd_clear();
+						lcd_update_enable(true);
+					}
 				}
 			}
+			else
+				fsensor_autoload_check_stop();
 		}
-		else
-			fsensor_autoload_check_stop();
 	}
 #endif //FILAMENT_SENSOR
 
@@ -8844,8 +8854,7 @@ void M600_check_state()
 {
 		//Wait for user to check the state
 		lcd_change_fil_state = 0;
-		
-		while ((lcd_change_fil_state == 0)||(lcd_change_fil_state != 1)){
+		while (lcd_change_fil_state != 1){
 			lcd_change_fil_state = 0;
 			KEEPALIVE_STATE(PAUSED_FOR_USER);
 			lcd_alright();
@@ -8869,10 +8878,9 @@ void M600_check_state()
 				// Everything good             
 				default:
 					lcd_change_success();
-					lcd_update_enable(true);
 					break;
 			}
-	}
+		}
 }
 
 void M600_wait_for_user() {
@@ -9035,7 +9043,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			fsensor_disable();
 	}
 #endif //FILAMENT_SENSOR
-
+	lcd_update_enable(false);
 }
 
 #define FIL_LOAD_LENGTH 60
