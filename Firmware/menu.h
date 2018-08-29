@@ -4,8 +4,7 @@
 
 #include <inttypes.h>
 
-#define MENU_DEPTH_MAX 4
-#define MENU_DATA_SIZE 32
+#define MENU_DATA_SIZE      32
 
 //Function pointer to menu functions.
 typedef void (*menu_func_t)(void);
@@ -13,10 +12,17 @@ typedef void (*menu_func_t)(void);
 typedef struct 
 {
     menu_func_t menu;
-    uint8_t position;
+    int8_t position;
 } menu_record_t;
 
-extern menu_record_t menu_stack[MENU_DEPTH_MAX];
+typedef struct
+{
+    //Variables used when editing values.
+    const char* editLabel;
+    void* editValue;
+    int32_t minEditValue;
+    int32_t maxEditValue;
+} menu_data_edit_t;
 
 extern uint8_t menu_data[MENU_DATA_SIZE];
 
@@ -25,11 +31,14 @@ extern uint8_t menu_depth;
 extern uint8_t menu_line;
 extern uint8_t menu_item;
 extern uint8_t menu_row;
-;
+
 //scroll offset in the current menu
 extern uint8_t menu_top;
 
 extern uint8_t menu_clicked;
+
+extern uint8_t menu_entering;
+extern uint8_t menu_leaving;
 
 //function pointer to the currently active menu
 extern menu_func_t menu_menu;
@@ -56,7 +65,6 @@ extern uint8_t menu_item_ret(void);
 
 //extern int menu_draw_item_printf_P(char type_char, const char* format, ...);
 
-extern int menu_draw_item_puts_P(char type_char, const char* str);
 
 //int menu_draw_item_puts_P_int16(char type_char, const char* str, int16_t val, );
 
@@ -83,17 +91,16 @@ extern const char menu_fmt_int3[];
 
 extern const char menu_fmt_float31[];
 
-extern void menu_draw_int3(char chr, const char* str, int16_t val);
 
 extern void menu_draw_float31(char chr, const char* str, float val);
 
 extern void menu_draw_float13(char chr, const char* str, float val);
 
-extern void _menu_edit_int3(void);
 
-#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_int3(str, pval, minval, maxval)) return; } while (0)
+#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)
 //#define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) MENU_ITEM_EDIT(int3, str, pval, minval, maxval)
-extern uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int16_t max_val);
+template <typename T>
+extern uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val);
 
 
 #endif //_MENU_H
