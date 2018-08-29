@@ -814,11 +814,6 @@ void mmu_eject_fil_4()
 	mmu_eject_filament(4, true);
 }
 
-void mmu_eject_fil_5()
-{
-	mmu_eject_filament(5, true);
-}
-
 void load_all()
 {
 #ifndef SNMM
