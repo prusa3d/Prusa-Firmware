@@ -954,13 +954,37 @@ void mmu_eject_filament(uint8_t filament, bool recover)
 {
 	if (filament < 5) 
 	{
-		mmu_command(MMU_CMD_E0 + filament);
-		manage_response(false, false);
-		if (recover)
+
+		if (degHotend0() > EXTRUDE_MINTEMP)
 		{
-			lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
-			mmu_command(MMU_CMD_R0);
+			st_synchronize();
+			lcd_update_enable(false);
+			lcd_clear();
+			lcd_set_cursor(0, 1); lcd_puts_P(_i("Ejecting filament"));
+			current_position[E_AXIS] -= 80;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
+			st_synchronize();
+
+			lcd_update_enable(true);
+
+			mmu_command(MMU_CMD_E0 + filament);
 			manage_response(false, false);
+			if (recover)
+			{
+				lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
+				mmu_command(MMU_CMD_R0);
+				manage_response(false, false);
+			}
+		}
+		else
+		{
+			lcd_clear();
+			lcd_set_cursor(0, 0);
+			lcd_puts_P(_T(MSG_ERROR));
+			lcd_set_cursor(0, 2);
+			lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
+			delay(2000);
+			lcd_clear();
 		}
 	}
 	else
