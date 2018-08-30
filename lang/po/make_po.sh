@@ -15,6 +15,7 @@ if [ "$LNG" == "all" ]; then
  ./make_po.sh es
  ./make_po.sh it
  ./make_po.sh pl
+ ./make-po.sh fr
  exit 0
 fi
 
@@ -27,6 +28,7 @@ if [ -e lang_$LNG.po ]; then rm lang_$LNG.po; fi
 lang_name=$(\
  case "$LNG" in
   *en*) echo "English" ;;
+  *fr*) echo "French" ;;
   *cz*) echo "Czech" ;;
   *de*) echo "German" ;;
   *es*) echo "Spanish" ;;
@@ -37,6 +39,7 @@ lang_name=$(\
 lang_short=$(\
  case "$LNG" in
   *en*) echo "en" ;;
+  *fr*) echo "fr" ;;
   *cz*) echo "cs" ;;
   *de*) echo "de" ;;
   *it*) echo "it" ;;

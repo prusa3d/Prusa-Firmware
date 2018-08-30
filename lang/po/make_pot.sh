@@ -23,6 +23,7 @@ po_date=$(date)
 #cat ../lang_en_es.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_es.tmp
 #cat ../lang_en_it.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_it.tmp
 #cat ../lang_en_pl.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_pl.tmp
+#cat ../lang_en_fr.txt | sed "/^$/d;/^#/d" | sed '{N;s/\n/ /}' | sed -n '/\"\\x00\"$/p' | sed 's/ \"\\x00\"$//' > lang_pot_fr.tmp
 
 #cat lang_pot_cz.tmp lang_pot_de.tmp lang_pot_es.tmp lang_pot_it.tmp lang_pot_pl.tmp | sort -u > lang_pot.tmp
 
