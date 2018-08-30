@@ -4404,6 +4404,7 @@ void lcd_wizard(int state) {
 			break;
 		case 5: //is filament loaded?
 				//start to preheat nozzle and bed to save some time later
+               lcd_commands_type = LCD_COMMAND_V2_CAL;
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
@@ -4441,6 +4442,7 @@ void lcd_wizard(int state) {
 #ifdef SNMM
 			change_extr(0);
 #endif
+               loading_flag = true;
 			gcode_M701();
 			state = 9;
 			break;
