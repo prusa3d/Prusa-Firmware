@@ -3192,10 +3192,7 @@ void gcode_M701()
 		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 
 #ifdef FILAMENT_SENSOR
-		if (mmu_enabled == false)
-		{
-			fsensor_oq_meassure_start(40);
-		}
+		fsensor_oq_meassure_start(40);
 #endif //FILAMENT_SENSOR
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
