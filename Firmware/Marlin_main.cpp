@@ -544,8 +544,9 @@ static bool saved_extruder_relative_mode = false;
 //===========================================================================
 
 static void get_arc_coordinates();
-static bool setTargetedHotend(int code);
+static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
+static void wait_for_heater(long codenum, uint8_t extruder);
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -1355,6 +1356,7 @@ void setup()
 	plan_init();  // Initialize planner;
 
 	factory_reset();
+     lcd_encoder_diff=0;
 
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
@@ -3112,8 +3114,25 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         lcd_update_enable(true);
     }
 
-    if (mmu_enabled) mmu_M600_load_filament(automatic);
-    else M600_load_filament();
+    if (mmu_enabled)
+    {
+        if (!automatic) {
+            if (saved_printing) mmu_eject_filament(mmu_extruder, false); //if M600 was invoked by filament senzor (FINDA) eject filament so user can easily remove it
+            mmu_M600_wait_and_beep();
+            if (saved_printing) {
+
+                lcd_clear();
+                lcd_set_cursor(0, 2);
+                lcd_puts_P(_T(MSG_PLEASE_WAIT));
+
+                mmu_command(MMU_CMD_R0);
+                manage_response(false, false);
+            }
+        }
+        mmu_M600_load_filament(automatic);
+    }
+    else
+        M600_load_filament();
 
     if (!automatic) M600_check_state();
 
@@ -3171,10 +3190,7 @@ void gcode_M701()
 		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 
 #ifdef FILAMENT_SENSOR
-		if (mmu_enabled == false)
-		{
-			fsensor_oq_meassure_start(40);
-		}
+		fsensor_oq_meassure_start(40);
 #endif //FILAMENT_SENSOR
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
@@ -5349,15 +5365,18 @@ Sigma_Exit:
 		break;
 
     case 104: // M104
-      if(setTargetedHotend(104)){
-        break;
-      }
-      if (code_seen('S'))
-      {
-          setTargetHotendSafe(code_value(), tmp_extruder);
-      }
-      setWatch();
-      break;
+    {
+          uint8_t extruder;
+          if(setTargetedHotend(104,extruder)){
+            break;
+          }
+          if (code_seen('S'))
+          {
+              setTargetHotendSafe(code_value(), extruder);
+          }
+          setWatch();
+          break;
+    }
     case 112: //  M112 -Emergency Stop
       kill(_n(""), 3);
       break;
@@ -5365,14 +5384,16 @@ Sigma_Exit:
       if (code_seen('S')) setTargetBed(code_value());
       break;
     case 105 : // M105
-      if(setTargetedHotend(105)){
+    {
+      uint8_t extruder;
+      if(setTargetedHotend(105, extruder)){
         break;
         }
       #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1
         SERIAL_PROTOCOLPGM("ok T:");
-        SERIAL_PROTOCOL_F(degHotend(tmp_extruder),1);
+        SERIAL_PROTOCOL_F(degHotend(extruder),1);
         SERIAL_PROTOCOLPGM(" /");
-        SERIAL_PROTOCOL_F(degTargetHotend(tmp_extruder),1);
+        SERIAL_PROTOCOL_F(degTargetHotend(extruder),1);
         #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
           SERIAL_PROTOCOLPGM(" B:");
           SERIAL_PROTOCOL_F(degBed(),1);
@@ -5397,7 +5418,7 @@ Sigma_Exit:
         SERIAL_PROTOCOL((EXTRUDER_WATTS * getHeaterPower(tmp_extruder))/127);
         SERIAL_PROTOCOLPGM("W");
       #else
-        SERIAL_PROTOCOL(getHeaterPower(tmp_extruder));
+        SERIAL_PROTOCOL(getHeaterPower(extruder));
       #endif
 
         SERIAL_PROTOCOLPGM(" B@:");
@@ -5455,9 +5476,11 @@ Sigma_Exit:
 		KEEPALIVE_STATE(NOT_BUSY);
       return;
       break;
+    }
     case 109:
     {// M109 - Wait for extruder heater to reach target.
-      if(setTargetedHotend(109)){
+      uint8_t extruder;
+      if(setTargetedHotend(109, extruder)){
         break;
       }
       LCD_MESSAGERPGM(_T(MSG_HEATING));
@@ -5468,10 +5491,10 @@ Sigma_Exit:
         autotemp_enabled=false;
       #endif
       if (code_seen('S')) {
-          setTargetHotendSafe(code_value(), tmp_extruder);
+          setTargetHotendSafe(code_value(), extruder);
               CooldownNoWait = true;
             } else if (code_seen('R')) {
-                setTargetHotendSafe(code_value(), tmp_extruder);
+                setTargetHotendSafe(code_value(), extruder);
         CooldownNoWait = false;
       }
       #ifdef AUTOTEMP
@@ -5488,13 +5511,13 @@ Sigma_Exit:
       codenum = millis();
 
       /* See if we are heating up or cooling down */
-      target_direction = isHeatingHotend(tmp_extruder); // true if heating, false if cooling
+      target_direction = isHeatingHotend(extruder); // true if heating, false if cooling
 	  
 	  KEEPALIVE_STATE(NOT_BUSY);
 
       cancel_heatup = false;
 
-	  wait_for_heater(codenum); //loops until target temperature is reached
+	  wait_for_heater(codenum, extruder); //loops until target temperature is reached
 
         LCD_MESSAGERPGM(_T(MSG_HEATING_COMPLETE));
 		KEEPALIVE_STATE(IN_HANDLER);
@@ -6020,25 +6043,26 @@ Sigma_Exit:
     #if EXTRUDERS > 1
     case 218: // M218 - set hotend offset (in mm), T<extruder_number> X<offset_on_X> Y<offset_on_Y>
     {
-      if(setTargetedHotend(218)){
+      uint8_t extruder;
+      if(setTargetedHotend(218, extruder)){
         break;
       }
       if(code_seen('X'))
       {
-        extruder_offset[X_AXIS][tmp_extruder] = code_value();
+        extruder_offset[X_AXIS][extruder] = code_value();
       }
       if(code_seen('Y'))
       {
-        extruder_offset[Y_AXIS][tmp_extruder] = code_value();
+        extruder_offset[Y_AXIS][extruder] = code_value();
       }
       SERIAL_ECHO_START;
       SERIAL_ECHORPGM(MSG_HOTEND_OFFSET);
-      for(tmp_extruder = 0; tmp_extruder < EXTRUDERS; tmp_extruder++)
+      for(extruder = 0; extruder < EXTRUDERS; extruder++)
       {
          SERIAL_ECHO(" ");
-         SERIAL_ECHO(extruder_offset[X_AXIS][tmp_extruder]);
+         SERIAL_ECHO(extruder_offset[X_AXIS][extruder]);
          SERIAL_ECHO(",");
-         SERIAL_ECHO(extruder_offset[Y_AXIS][tmp_extruder]);
+         SERIAL_ECHO(extruder_offset[Y_AXIS][extruder]);
       }
       SERIAL_ECHOLN("");
     }break;
@@ -6058,10 +6082,11 @@ Sigma_Exit:
         int tmp_code = code_value();
         if (code_seen('T'))
         {
-          if(setTargetedHotend(221)){
+          uint8_t extruder;
+          if(setTargetedHotend(221, extruder)){
             break;
           }
-          extruder_multiply[tmp_extruder] = tmp_code;
+          extruder_multiply[extruder] = tmp_code;
         }
         else
         {
@@ -6789,132 +6814,132 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
   else if(code_seen('T'))
   {
-	  int index;
-	  st_synchronize();
-	  for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
-	   
-	  if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '9') && *(strchr_pointer + index) != '?') {
-		  SERIAL_ECHOLNPGM("Invalid T code.");
-	  }
-	  else {
-		  if (*(strchr_pointer + index) == '?') {
-			  tmp_extruder = choose_extruder_menu();
-		  }
-		  else {
-			  tmp_extruder = code_value();
-		  }
-		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
+      int index;
+      st_synchronize();
+      for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 
-if (mmu_enabled)
-{
-		  //printf_P(PSTR("T code: %d \n"), tmp_extruder);
-		  //mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
-		  mmu_command(MMU_CMD_T0 + tmp_extruder);
+      if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '4') && *(strchr_pointer + index) != '?') {
+          SERIAL_ECHOLNPGM("Invalid T code.");
+      }
+      else {
+          if (*(strchr_pointer + index) == '?') {
+              tmp_extruder = choose_extruder_menu();
+          }
+          else {
+              tmp_extruder = code_value();
+          }
+          snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 
-		  manage_response(true, true);
-		  mmu_command(MMU_CMD_C0);
-    	  mmu_extruder = tmp_extruder; //filament change is finished
+          if (mmu_enabled)
+          {
+              mmu_command(MMU_CMD_T0 + tmp_extruder);
 
-		  if (*(strchr_pointer + index) == '?')// for single material usage with mmu
-			  mmu_load_to_nozzle();
-}
-else
-{
+              manage_response(true, true);
+              mmu_command(MMU_CMD_C0);
+              mmu_extruder = tmp_extruder; //filament change is finished
+
+              if (*(strchr_pointer + index) == '?')// for single material usage with mmu
+              {
+                  mmu_load_to_nozzle();
+              }
+          }
+          else
+          {
 #ifdef SNMM
 
-	#ifdef LIN_ADVANCE
-          if (mmu_extruder != tmp_extruder)
-            clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
-	#endif
-          
-		  mmu_extruder = tmp_extruder;
+#ifdef LIN_ADVANCE
+              if (mmu_extruder != tmp_extruder)
+                  clear_current_adv_vars(); //Check if the selected extruder is not the active one and reset LIN_ADVANCE variables if so.
+#endif
 
-		  
-		  delay(100);
+              mmu_extruder = tmp_extruder;
 
-		  disable_e0();
-		  disable_e1();
-		  disable_e2();
 
-		  pinMode(E_MUX0_PIN, OUTPUT);
-		  pinMode(E_MUX1_PIN, OUTPUT);
+              delay(100);
 
-		  delay(100);
-		  SERIAL_ECHO_START;
-		  SERIAL_ECHO("T:");
-		  SERIAL_ECHOLN((int)tmp_extruder);
-		  switch (tmp_extruder) {
-		  case 1:
-			  WRITE(E_MUX0_PIN, HIGH);
-			  WRITE(E_MUX1_PIN, LOW);
+              disable_e0();
+              disable_e1();
+              disable_e2();
 
-			  break;
-		  case 2:
-			  WRITE(E_MUX0_PIN, LOW);
-			  WRITE(E_MUX1_PIN, HIGH);
+              pinMode(E_MUX0_PIN, OUTPUT);
+              pinMode(E_MUX1_PIN, OUTPUT);
 
-			  break;
-		  case 3:
-			  WRITE(E_MUX0_PIN, HIGH);
-			  WRITE(E_MUX1_PIN, HIGH);
+              delay(100);
+              SERIAL_ECHO_START;
+              SERIAL_ECHO("T:");
+              SERIAL_ECHOLN((int)tmp_extruder);
+              switch (tmp_extruder) {
+              case 1:
+                  WRITE(E_MUX0_PIN, HIGH);
+                  WRITE(E_MUX1_PIN, LOW);
 
-			  break;
-		  default:
-			  WRITE(E_MUX0_PIN, LOW);
-			  WRITE(E_MUX1_PIN, LOW);
+                  break;
+              case 2:
+                  WRITE(E_MUX0_PIN, LOW);
+                  WRITE(E_MUX1_PIN, HIGH);
 
-			  break;
-		  }
-		  delay(100);
+                  break;
+              case 3:
+                  WRITE(E_MUX0_PIN, HIGH);
+                  WRITE(E_MUX1_PIN, HIGH);
+
+                  break;
+              default:
+                  WRITE(E_MUX0_PIN, LOW);
+                  WRITE(E_MUX1_PIN, LOW);
+
+                  break;
+              }
+              delay(100);
 
 #else //SNMM
-		  if (tmp_extruder >= EXTRUDERS) {
-			  SERIAL_ECHO_START;
-			  SERIAL_ECHOPGM("T");
-			  SERIAL_PROTOCOLLN((int)tmp_extruder);
-			  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
-		  }
-		  else {
-			#if EXTRUDERS > 1
-		      boolean make_move = false;
-			#endif
-			  if (code_seen('F')) {
-			#if EXTRUDERS > 1
-				  make_move = true;
-			#endif
-				  next_feedrate = code_value();
-				  if (next_feedrate > 0.0) {
-					  feedrate = next_feedrate;
-				  }
-			  }
-			#if EXTRUDERS > 1
-			  if (tmp_extruder != active_extruder) {
-				  // Save current position to return to after applying extruder offset
-				  memcpy(destination, current_position, sizeof(destination));
-				  // Offset extruder (only by XY)
-				  int i;
-				  for (i = 0; i < 2; i++) {
-					  current_position[i] = current_position[i] -
-						  extruder_offset[i][active_extruder] +
-						  extruder_offset[i][tmp_extruder];
-				  }
-				  // Set the new active extruder and position
-				  active_extruder = tmp_extruder;
-				  plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-				  // Move to the old position if 'F' was in the parameters
-				  if (make_move && Stopped == false) {
-					  prepare_move();
-				  }
-			  }
-			#endif
-			  SERIAL_ECHO_START;
-			  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER c=0 r=0
-			  SERIAL_PROTOCOLLN((int)active_extruder);
-		  }
+              if (tmp_extruder >= EXTRUDERS) {
+                  SERIAL_ECHO_START;
+                  SERIAL_ECHOPGM("T");
+                  SERIAL_PROTOCOLLN((int)tmp_extruder);
+                  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
+              }
+              else {
+#if EXTRUDERS > 1
+                  boolean make_move = false;
+#endif
+                  if (code_seen('F')) {
+#if EXTRUDERS > 1
+                      make_move = true;
+#endif
+                      next_feedrate = code_value();
+                      if (next_feedrate > 0.0) {
+                          feedrate = next_feedrate;
+                      }
+                  }
+#if EXTRUDERS > 1
+                  if (tmp_extruder != active_extruder) {
+                      // Save current position to return to after applying extruder offset
+                      memcpy(destination, current_position, sizeof(destination));
+                      // Offset extruder (only by XY)
+                      int i;
+                      for (i = 0; i < 2; i++) {
+                          current_position[i] = current_position[i] -
+                                  extruder_offset[i][active_extruder] +
+                                  extruder_offset[i][tmp_extruder];
+                      }
+                      // Set the new active extruder and position
+                      active_extruder = tmp_extruder;
+                      plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+                      // Move to the old position if 'F' was in the parameters
+                      if (make_move && Stopped == false) {
+                          prepare_move();
+                      }
+                  }
+#endif
+                  SERIAL_ECHO_START;
+                  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER c=0 r=0
+                  SERIAL_PROTOCOLLN((int)active_extruder);
+              }
 
 #endif //SNMM
-}
-	  }
+          }
+      }
   } // end if(code_seen('T')) (end of T codes)
 
   else if (code_seen('D')) // D codes (debug)
@@ -7567,11 +7592,21 @@ void setPwmFrequency(uint8_t pin, int val)
 }
 #endif //FAST_PWM_FAN
 
-bool setTargetedHotend(int code){
-  tmp_extruder = active_extruder;
+//! @brief Get and validate extruder number
+//!
+//! If it is not specified, active_extruder is returned in parameter extruder.
+//! @param [in] code M code number
+//! @param [out] extruder
+//! @return error
+//! @retval true Invalid extruder specified in T code
+//! @retval false Valid extruder specified in T code, or not specifiead
+
+bool setTargetedHotend(int code, uint8_t &extruder)
+{
+  extruder = active_extruder;
   if(code_seen('T')) {
-    tmp_extruder = code_value();
-    if(tmp_extruder >= EXTRUDERS) {
+      extruder = code_value();
+    if(extruder >= EXTRUDERS) {
       SERIAL_ECHO_START;
       switch(code){
         case 104:
@@ -7590,7 +7625,7 @@ bool setTargetedHotend(int code){
           SERIAL_ECHO(_i("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
           break;
       }
-      SERIAL_PROTOCOLLN((int)tmp_extruder);
+      SERIAL_PROTOCOLLN((int)extruder);
       return true;
     }
   }
@@ -7655,7 +7690,7 @@ void delay_keep_alive(unsigned int ms)
     }
 }
 
-void wait_for_heater(long codenum) {
+static void wait_for_heater(long codenum, uint8_t extruder) {
 
 #ifdef TEMP_RESIDENCY_TIME
 	long residencyStart;
@@ -7671,9 +7706,9 @@ void wait_for_heater(long codenum) {
 		{ //Print Temp Reading and remaining time every 1 second while heating up/cooling down
 			if (!farm_mode) {
 				SERIAL_PROTOCOLPGM("T:");
-				SERIAL_PROTOCOL_F(degHotend(tmp_extruder), 1);
+				SERIAL_PROTOCOL_F(degHotend(extruder), 1);
 				SERIAL_PROTOCOLPGM(" E:");
-				SERIAL_PROTOCOL((int)tmp_extruder);
+				SERIAL_PROTOCOL((int)extruder);
 
 #ifdef TEMP_RESIDENCY_TIME
 				SERIAL_PROTOCOLPGM(" W:");
@@ -7698,9 +7733,9 @@ void wait_for_heater(long codenum) {
 #ifdef TEMP_RESIDENCY_TIME
 			/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
 			or when current temp falls outside the hysteresis after target temp was reached */
-			if ((residencyStart == -1 && target_direction && (degHotend(tmp_extruder) >= (degTargetHotend(tmp_extruder) - TEMP_WINDOW))) ||
-				(residencyStart == -1 && !target_direction && (degHotend(tmp_extruder) <= (degTargetHotend(tmp_extruder) + TEMP_WINDOW))) ||
-				(residencyStart > -1 && labs(degHotend(tmp_extruder) - degTargetHotend(tmp_extruder)) > TEMP_HYSTERESIS))
+			if ((residencyStart == -1 && target_direction && (degHotend(extruder) >= (degTargetHotend(extruder) - TEMP_WINDOW))) ||
+				(residencyStart == -1 && !target_direction && (degHotend(extruder) <= (degTargetHotend(extruder) + TEMP_WINDOW))) ||
+				(residencyStart > -1 && labs(degHotend(extruder) - degTargetHotend(extruder)) > TEMP_HYSTERESIS))
 			{
 				residencyStart = millis();
 			}

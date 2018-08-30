@@ -3551,6 +3551,27 @@ void lcd_diag_show_end_stops()
     lcd_return_to_status();
 }
 
+#ifdef TMC2130
+static void lcd_show_pinda_state()
+{
+lcd_set_cursor(0, 0);
+lcd_puts_P((PSTR("P.I.N.D.A. state")));
+lcd_set_cursor(0, 2);
+lcd_puts_P(READ(Z_MIN_PIN)?(PSTR("Z1 (LED off)")):(PSTR("Z0 (LED on) "))); // !!! both strings must have same length (due to dynamic refreshing)
+}
+
+static void menu_show_pinda_state()
+{
+lcd_timeoutToStatus.stop();
+lcd_show_pinda_state();
+if(LCD_CLICKED)
+     {
+     lcd_timeoutToStatus.start();
+     menu_back();
+     }
+}
+#endif // defined TMC2130
+
 
 
 void prusa_statistics(int _message, uint8_t _fil_nr) {
@@ -4379,6 +4400,7 @@ void lcd_wizard(int state) {
 			break;
 		case 5: //is filament loaded?
 				//start to preheat nozzle and bed to save some time later
+               lcd_commands_type = LCD_COMMAND_V2_CAL;
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
@@ -4416,6 +4438,7 @@ void lcd_wizard(int state) {
 #ifdef SNMM
 			change_extr(0);
 #endif
+               loading_flag = true;
 			gcode_M701();
 			state = 9;
 			break;
@@ -4784,7 +4807,9 @@ static void lcd_calibration_menu()
 
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=0 r=0
 	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17 r=1
-#ifndef TMC2130
+#ifdef TMC2130
+    MENU_ITEM_SUBMENU_P(_i("Show pinda state"), menu_show_pinda_state);
+#else
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=17 r=1
 #endif
 #ifndef MK1BP
@@ -5171,6 +5196,19 @@ static void fil_load_menu()
 	MENU_END();
 }
 
+static void mmu_fil_eject_menu()
+{
+	MENU_BEGIN();
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 1"), mmu_eject_fil_0);
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 2"), mmu_eject_fil_1);
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 3"), mmu_eject_fil_2);
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 4"), mmu_eject_fil_3);
+	MENU_ITEM_FUNCTION_P(_i("Eject filament 5"), mmu_eject_fil_4);
+
+	MENU_END();
+}
+
 static void fil_unload_menu()
 {
 	MENU_BEGIN();
@@ -5552,7 +5590,7 @@ static void lcd_main_menu()
     
         
     }*/
-    
+ 
   if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
 	MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
@@ -5621,6 +5659,7 @@ static void lcd_main_menu()
 	if (mmu_enabled)
 	{
 		MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
+		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
 		if (mmu_enabled)
 			MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
 		else
