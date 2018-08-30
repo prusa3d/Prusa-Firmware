@@ -348,6 +348,7 @@ extern bool sortAlpha;
 
 extern char dir_names[3][9];
 
+extern int8_t lcd_change_fil_state;
 // save/restore printing
 extern bool saved_printing;
 
