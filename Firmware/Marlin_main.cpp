@@ -934,7 +934,8 @@ void lcd_splash()
 //	lcd_puts_at_P(0, 2, PSTR("    3D  Printers    "));
 //	lcd_puts_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
 //    fputs_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"), lcdout);
-    lcd_puts_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"));
+//    lcd_puts_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"));
+    lcd_puts_P(PSTR(ESC_2J ESC_H(1,1) "Zaribo Research" ESC_H(3,2) "and Development"));
 //	lcd_printf_P(_N(ESC_2J "x:%.3f\ny:%.3f\nz:%.3f\ne:%.3f"), _x, _y, _z, _e);
 }
 
