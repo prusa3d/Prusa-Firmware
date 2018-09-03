@@ -466,13 +466,11 @@ void mmu_M600_wait_and_beep() {
 void mmu_M600_load_filament(bool automatic)
 { 
 	//load filament for mmu v2
-		  bool yes = false;
 		  tmp_extruder = mmu_extruder;
 		  if (!automatic) {
 #ifdef MMU_M600_SWITCH_EXTRUDER
-			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
+		      bool yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
 			  if(yes) tmp_extruder = choose_extruder_menu();
-			  else tmp_extruder = mmu_extruder;
 #endif //MMU_M600_SWITCH_EXTRUDER
 		  }
 		  else {
