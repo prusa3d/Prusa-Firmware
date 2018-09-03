@@ -482,12 +482,10 @@ void lcdui_print_temp(char type, int val_current, int val_target)
 // Print Z-coordinate (8 chars total)
 void lcdui_print_Z_coord(void)
 {
-	int chars = 8;
     if (custom_message_type == CUSTOM_MSG_TYPE_MESHBL)
         lcd_puts_P(_N("Z   --- "));
     else
-		chars = lcd_printf_P(_N("Z%6.2f "), current_position[Z_AXIS]);
-//	lcd_space(8 - chars);
+		lcd_printf_P(_N("Z%6.2f "), current_position[Z_AXIS]);
 }
 
 #ifdef PLANNER_DIAGNOSTICS
