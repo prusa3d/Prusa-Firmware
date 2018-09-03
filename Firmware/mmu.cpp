@@ -11,6 +11,7 @@
 #include "cardreader.h"
 #include "ultralcd.h"
 #include "sound.h"
+#include <avr/pgmspace.h>
 
 #define CHECK_FINDA ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
@@ -645,60 +646,36 @@ void extr_adj(int extruder) //loading filament for SNMM
 #endif
 }
 
+struct E_step
+{
+    float extrude;   //!< extrude distance in mm
+    float feed_rate; //!< feed rate in mm/s
+};
+static const E_step ramming_sequence[] PROGMEM =
+{
+    {1.0,   1000.0/60},
+    {1.0,   1500.0/60},
+    {2.0,   2000.0/60},
+    {1.5,   3000.0/60},
+    {2.5,   4000.0/60},
+    {-15.0, 5000.0/60},
+    {-14.0, 1200.0/60},
+    {-6.0,  600.0/60},
+    {10.0,  700.0/60},
+    {-10.0, 400.0/60},
+    {-50.0, 2000.0/60},
+};
+
 //! @brief Unload sequence to optimize shape of the tip of the unloaded filament
-//!
-//! Ideas to minimize flash consumption of this code:
-//!
-//! Create const array of extrude and feed_rate on stack, call increment current_position, plan_buffer_line() and st_synchronize()
-//! in loop iterating over array.
-//!
-//! Same as previous, but create array in PROGMEM and call PGM_read instructions in a loop.
-//!
 static void filament_ramming()
 {
-    current_position[E_AXIS] += 1;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] += 1;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1500 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] += 2;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] += 1.5;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] += 2.5;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 4000 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] -= 15;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] -= 14;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1200 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] -= 6;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] += 10;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 700 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] -= 10;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
-    st_synchronize();
-
-    current_position[E_AXIS] -= 50;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
-    st_synchronize();
+    for(uint8_t i = 0; i < (sizeof(ramming_sequence)/sizeof(E_step));++i)
+    {
+        current_position[E_AXIS] += pgm_read_float(&(ramming_sequence[i].extrude));
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+                current_position[E_AXIS], pgm_read_float(&(ramming_sequence[i].feed_rate)), active_extruder);
+        st_synchronize();
+    }
 }
 
 void extr_unload()
