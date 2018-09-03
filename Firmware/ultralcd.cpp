@@ -525,8 +525,7 @@ void lcdui_print_percent_done(void)
 	char per[4];
 	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
 	sprintf_P(per, num?_N("%3hhd"):_N("---"), calc_percent_done());
-	int chars = lcd_printf_P(_N("%3S%3s%%"), src, per);
-//	lcd_space(7 - chars);
+	lcd_printf_P(_N("%3S%3s%%"), src, per);
 }
 
 // Print extruder status (5 chars total)
