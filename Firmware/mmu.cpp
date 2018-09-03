@@ -645,6 +645,61 @@ void extr_adj(int extruder) //loading filament for SNMM
 #endif
 }
 
+//! @brief Unload sequence to optimize shape of the tip of the unloaded filament
+//!
+//! Ideas to minimize flash consumption of this code:
+//!
+//! Create const array of extrude and feed_rate on stack, call increment current_position, plan_buffer_line() and st_synchronize()
+//! in loop iterating over array.
+//!
+//! Same as previous, but create array in PROGMEM and call PGM_read instructions in a loop.
+//!
+static void filament_ramming()
+{
+    current_position[E_AXIS] += 1;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] += 1;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1500 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] += 2;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] += 1.5;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] += 2.5;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 4000 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] -= 15;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5000 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] -= 14;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1200 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] -= 6;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] += 10;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 700 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] -= 10;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder);
+    st_synchronize();
+
+    current_position[E_AXIS] -= 50;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
+    st_synchronize();
+}
 
 void extr_unload()
 { //unload just current filament for multimaterial printers
@@ -666,9 +721,7 @@ void extr_unload()
 		lcd_print(" ");
 		lcd_print(mmu_extruder + 1);
 
-		current_position[E_AXIS] -= 80;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-		st_synchronize();
+		filament_ramming();
 
 		mmu_command(MMU_CMD_U0);
 		// get response
