@@ -538,6 +538,7 @@ static float saved_feedrate2 = 0;
 static uint8_t saved_active_extruder = 0;
 static bool saved_extruder_under_pressure = false;
 static bool saved_extruder_relative_mode = false;
+static int saved_fanSpeed = 0;
 
 //===========================================================================
 //=============================Routines======================================
@@ -8745,6 +8746,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 
 	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
 	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
+	saved_fanSpeed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 //	card.closefile();
@@ -8797,6 +8799,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	active_extruder = saved_active_extruder; //restore active_extruder
 	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
+	fanSpeed = saved_fanSpeed;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
 	//first move print head in XY to the saved position:
