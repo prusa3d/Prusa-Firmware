@@ -4358,7 +4358,7 @@ void lcd_wizard(int state) {
 	while (!end) {
 		switch (state) {
 		case 0: // run wizard?
-			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
+			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
 				state = 1;
 				eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
