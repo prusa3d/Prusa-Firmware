@@ -9,15 +9,20 @@
 #include "Configuration.h"
 #include "Marlin.h"
 #include "ultralcd.h"
+#include "language.h"
 
 
 
 extern int32_t lcd_encoder;
 
+#define MENU_DEPTH_MAX       4
 
-menu_record_t menu_stack[MENU_DEPTH_MAX];
+static menu_record_t menu_stack[MENU_DEPTH_MAX];
 
 uint8_t menu_data[MENU_DATA_SIZE];
+#ifndef __AVR__
+#error "menu_data is non-portable to non 8bit processor"
+#endif
 
 uint8_t menu_depth = 0;
 
@@ -32,6 +37,8 @@ uint8_t menu_entering = 0;
 uint8_t menu_leaving = 0;
 
 menu_func_t menu_menu = 0;
+
+static_assert(sizeof(menu_data)>= sizeof(menu_data_edit_t),"menu_data_edit_t doesn't fit into menu_data");
 
 
 void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bool reset_menu_state)
@@ -86,7 +93,7 @@ void menu_back(void)
 	}
 }
 
-void menu_back_no_reset(void)
+static void menu_back_no_reset(void)
 {
 	if (menu_depth > 0)
 	{
@@ -120,7 +127,7 @@ void menu_submenu(menu_func_t submenu)
 	}
 }
 
-void menu_submenu_no_reset(menu_func_t submenu)
+static void menu_submenu_no_reset(menu_func_t submenu)
 {
 	if (menu_depth <= MENU_DEPTH_MAX)
 	{
@@ -158,7 +165,7 @@ int menu_draw_item_printf_P(char type_char, const char* format, ...)
 }
 */
 
-int menu_draw_item_puts_P(char type_char, const char* str)
+static int menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
 	int cnt = lcd_printf_P(PSTR("%c%-18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
@@ -263,8 +270,13 @@ const char menu_fmt_float31[] PROGMEM = "%c%.12S:%s%+06.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%.12S:%s%+06.3f";
 
+const char menu_fmt_float13off[] PROGMEM = "%c%.12S:%s%";
 
-void menu_draw_int3(char chr, const char* str, int16_t val)
+template<typename T>
+static void menu_draw_P(char chr, const char* str, int16_t val);
+
+template<>
+void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
 {
 	int text_len = strlen_P(str);
 	if (text_len > 15) text_len = 15;
@@ -272,6 +284,27 @@ void menu_draw_int3(char chr, const char* str, int16_t val)
 	strcpy_P(spaces, menu_20x_space);
 	spaces[15 - text_len] = 0;
 	lcd_printf_P(menu_fmt_int3, chr, str, spaces, val);
+}
+
+template<>
+void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
+{
+    menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
+    int text_len = strlen_P(str);
+    if (text_len > 15) text_len = 15;
+    char spaces[21];
+    strcpy_P(spaces, menu_20x_space);
+    spaces[12 - text_len] = 0;
+    float factor = 1.0 + static_cast<float>(val) / 1000.0;
+    if (val <= _md->minEditValue)
+    {
+        lcd_printf_P(menu_fmt_float13off, chr, str, spaces);
+        lcd_puts_P(_i(" [off]"));
+    }
+    else
+    {
+        lcd_printf_P(menu_fmt_float13, chr, str, spaces, factor);
+    }
 }
 
 //draw up to 12 chars of text, ':' and float number in format +123.0
@@ -296,16 +329,8 @@ void menu_draw_float13(char chr, const char* str, float val)
 	lcd_printf_P(menu_fmt_float13, chr, str, spaces, val);
 }
 
-typedef struct
-{
-    //Variables used when editing values.
-    const char* editLabel;
-    void* editValue;
-    int32_t minEditValue;
-	int32_t maxEditValue;
-} menu_data_edit_t;
-
-void _menu_edit_int3(void)
+template <typename T>
+static void _menu_edit_P(void)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (lcd_draw_update)
@@ -313,16 +338,17 @@ void _menu_edit_int3(void)
 		if (lcd_encoder < _md->minEditValue) lcd_encoder = _md->minEditValue;
 		if (lcd_encoder > _md->maxEditValue) lcd_encoder = _md->maxEditValue;
 		lcd_set_cursor(0, 1);
-		menu_draw_int3(' ', _md->editLabel, (int)lcd_encoder);
+		menu_draw_P<T>(' ', _md->editLabel, (int)lcd_encoder);
 	}
 	if (LCD_CLICKED)
 	{
-		*((int*)(_md->editValue)) = (int)lcd_encoder;
+		*((T)(_md->editValue)) = lcd_encoder;
 		menu_back_no_reset();
 	}
 }
 
-uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int16_t max_val)
+template <typename T>
+uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_val)
 {
 	menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
 	if (menu_item == menu_line)
@@ -330,11 +356,11 @@ uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int
 		if (lcd_draw_update) 
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_int3((lcd_encoder == menu_item)?'>':' ', str, *pval);
+			menu_draw_P<T>((lcd_encoder == menu_item)?'>':' ', str, *pval);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
-			menu_submenu_no_reset(_menu_edit_int3);
+			menu_submenu_no_reset(_menu_edit_P<T>);
 			_md->editLabel = str;
 			_md->editValue = pval;
 			_md->minEditValue = min_val;
@@ -346,6 +372,9 @@ uint8_t menu_item_edit_int3(const char* str, int16_t* pval, int16_t min_val, int
 	menu_item++;
 	return 0;
 }
+
+template uint8_t menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int16_t min_val, int16_t max_val);
+template uint8_t menu_item_edit_P<uint8_t*>(const char* str, uint8_t *pval, int16_t min_val, int16_t max_val);
 
 #undef _menu_data
 

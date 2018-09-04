@@ -348,6 +348,7 @@ extern bool sortAlpha;
 
 extern char dir_names[3][9];
 
+extern int8_t lcd_change_fil_state;
 // save/restore printing
 extern bool saved_printing;
 
@@ -359,6 +360,9 @@ extern uint8_t print_percent_done_normal;
 extern uint32_t print_time_remaining_normal;
 extern uint8_t print_percent_done_silent;
 extern uint32_t print_time_remaining_silent;
+extern uint16_t mcode_in_progress;
+extern uint16_t gcode_in_progress;
+
 #define PRINT_TIME_REMAINING_INIT 0xffffffff
 #define PRINT_PERCENT_DONE_INIT   0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
@@ -391,7 +395,6 @@ uint8_t check_printer_version();
 float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
 #endif //PINDA_THERMISTOR
 
-void wait_for_heater(long codenum);
 void serialecho_temperatures();
 bool check_commands();
 
