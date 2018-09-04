@@ -536,6 +536,7 @@ static float saved_pos[4] = { 0, 0, 0, 0 };
 // Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
 static float saved_feedrate2 = 0;
 static uint8_t saved_active_extruder = 0;
+static float saved_extruder_temperature = 0.0;
 static bool saved_extruder_under_pressure = false;
 static bool saved_extruder_relative_mode = false;
 static int saved_fanSpeed = 0;
@@ -8743,6 +8744,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	planner_abort_hard(); //abort printing
 	memcpy(saved_pos, current_position, sizeof(saved_pos));
 	saved_active_extruder = active_extruder; //save active_extruder
+	saved_extruder_temperature = degTargetHotend(active_extruder);
 
 	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
 	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
@@ -8797,6 +8799,10 @@ void restore_print_from_ram_and_continue(float e_move)
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
+	setTargetHotendSafe(saved_extruder_temperature,saved_active_extruder);
+	heating_status = 1;
+	wait_for_heater(millis(),saved_active_extruder);
+	heating_status = 2;
 	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
 	fanSpeed = saved_fanSpeed;

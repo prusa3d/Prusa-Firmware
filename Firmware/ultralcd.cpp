@@ -5522,30 +5522,17 @@ static void lcd_test_menu()
 
 static void pause_print()
 {
+    lcd_clear();
+    lcd_puts_P(_i("Pausing"));
+    lcd_setstatuspgm(_i("Print paused"));
     stop_and_save_print_to_ram(0.0,0.0);
     long_pause();
+    lcd_return_to_status();
 }
 static void resume_print()
 {
-    lcd_set_cursor(0, 0);
-    lcdui_print_temp(LCD_STR_THERMOMETER[0], (int)(degHotend(0) + 0.5), (int)(degTargetHotend(0) + 0.5));
-    lcd_space(3);
-    lcd_puts_P(_T(MSG_HEATING));
-    if (!blocks_queued())
-    {
-        if ((0 == menu_data[0]))
-        {
-            char cmd1[30];
-            strcpy(cmd1, "M109 S");
-            strcat(cmd1, ftostr3(HotendTempBckp));
-            enquecommand(cmd1);
-            menu_data[0] = 1;
-        } else if (1 != heating_status)
-        {
-            restore_print_from_ram_and_continue(0.0);
-            menu_back();
-        }
-    }
+    lcd_return_to_status();
+    restore_print_from_ram_and_continue(0.0);
 }
 
 static void lcd_main_menu()
@@ -5645,7 +5632,7 @@ static void lcd_main_menu()
 			}
 			else
 			{
-				MENU_ITEM_SUBMENU_P(_i("Resume print"), resume_print);////MSG_RESUME_PRINT c=0 r=0
+			    MENU_ITEM_SUBMENU_P(_i("Resume print"), resume_print);////MSG_RESUME_PRINT c=0 r=0
 			}
 			MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
 		}
