@@ -7,6 +7,7 @@
 #include "planner.h"
 #include "fastio.h"
 #include "cmdqueue.h"
+#include "ultralcd.h"
 
 //Basic params
 #define FSENSOR_CHUNK_LEN    0.64F  //filament sensor chunk length 0.64mm
@@ -26,10 +27,6 @@ const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 
 #define FSENSOR_INT_PIN         63  //filament sensor interrupt pin PK1
 #define FSENSOR_INT_PIN_MSK   0x02  //filament sensor interrupt pin mask (bit1)
-
-extern void stop_and_save_print_to_ram(float z_move, float e_move);
-extern void restore_print_from_ram_and_continue(float e_move);
-extern int8_t FSensorStateMenu;
 
 void fsensor_stop_and_save_print(void)
 {

@@ -82,6 +82,7 @@ extern void lcd_diag_show_end_stops();
 #define LCD_COMMAND_V2_CAL 8
 
 extern int lcd_commands_type;
+extern int8_t FSensorStateMenu;
 
 #define CUSTOM_MSG_TYPE_STATUS 0 // status message from lcd_status_message variable
 #define CUSTOM_MSG_TYPE_MESHBL 1 // Mesh bed leveling in progress

@@ -649,9 +649,6 @@ void servo_init()
 }
 
 
-void stop_and_save_print_to_ram(float z_move, float e_move);
-void restore_print_from_ram_and_continue(float e_move);
-
 bool fans_check_enabled = true;
 
 

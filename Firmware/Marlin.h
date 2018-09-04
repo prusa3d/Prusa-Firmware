@@ -419,6 +419,9 @@ extern void print_world_coordinates();
 extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
 
+extern void stop_and_save_print_to_ram(float z_move, float e_move);
+extern void restore_print_from_ram_and_continue(float e_move);
+
 
 //estimated time to end of the print
 extern uint16_t print_time_remaining();

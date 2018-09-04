@@ -5520,6 +5520,15 @@ static void lcd_test_menu()
 }
 #endif //LCD_TEST
 
+static void pause_print()
+{
+    stop_and_save_print_to_ram(0.0,0.0);
+}
+static void resume_print()
+{
+    restore_print_from_ram_and_continue(0.0);
+}
+
 static void lcd_main_menu()
 {
 
@@ -5613,11 +5622,11 @@ static void lcd_main_menu()
 		if (mesh_bed_leveling_flag == false && homing_flag == false) {
 			if (card.sdprinting)
 			{
-				MENU_ITEM_FUNCTION_P(_i("Pause print"), lcd_sdcard_pause);////MSG_PAUSE_PRINT c=0 r=0
+				MENU_ITEM_FUNCTION_P(_i("Pause print"), pause_print);////MSG_PAUSE_PRINT c=0 r=0
 			}
 			else
 			{
-				MENU_ITEM_FUNCTION_P(_i("Resume print"), lcd_sdcard_resume);////MSG_RESUME_PRINT c=0 r=0
+				MENU_ITEM_FUNCTION_P(_i("Resume print"), resume_print);////MSG_RESUME_PRINT c=0 r=0
 			}
 			MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
 		}
