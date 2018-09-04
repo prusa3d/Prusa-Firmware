@@ -5523,9 +5523,17 @@ static void lcd_test_menu()
 static void pause_print()
 {
     stop_and_save_print_to_ram(0.0,0.0);
+    long_pause();
 }
 static void resume_print()
 {
+    char cmd1[30];
+    strcpy(cmd1, "M104 S");
+    strcat(cmd1, ftostr3(HotendTempBckp));
+    enquecommand(cmd1);
+    strcpy(cmd1, "M109 S");
+    strcat(cmd1, ftostr3(HotendTempBckp));
+    enquecommand(cmd1);
     restore_print_from_ram_and_continue(0.0);
 }
 
