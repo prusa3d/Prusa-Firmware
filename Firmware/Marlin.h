@@ -349,6 +349,7 @@ extern bool sortAlpha;
 
 extern char dir_names[3][9];
 
+extern int8_t lcd_change_fil_state;
 // save/restore printing
 extern bool saved_printing;
 
@@ -397,7 +398,6 @@ uint8_t check_printer_version();
 float temp_compensation_pinda_thermistor_offset(float temperature_pinda);
 #endif //PINDA_THERMISTOR
 
-void wait_for_heater(long codenum);
 void serialecho_temperatures();
 bool check_commands();
 

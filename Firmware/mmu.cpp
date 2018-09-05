@@ -22,7 +22,7 @@
 #define MMU_HWRESET
 #define MMU_RST_PIN 76
 
-#define MMU_REQUIRED_FW_BUILDNR 81
+#define MMU_REQUIRED_FW_BUILDNR 83
 
 bool mmu_enabled = false;
 
@@ -104,6 +104,7 @@ void mmu_init(void)
 //mmu main loop - state machine processing
 void mmu_loop(void)
 {
+	int filament = 0;
 //	printf_P(PSTR("MMU loop, state=%d\n"), mmu_state);
 	switch (mmu_state)
 	{
@@ -161,14 +162,14 @@ void mmu_loop(void)
 		{
 			if ((mmu_cmd >= MMU_CMD_T0) && (mmu_cmd <= MMU_CMD_T4))
 			{
-				int extruder = mmu_cmd - MMU_CMD_T0;
-				printf_P(PSTR("MMU <= 'T%d'\n"), extruder);
-				mmu_printf_P(PSTR("T%d\n"), extruder);
+				filament = mmu_cmd - MMU_CMD_T0;
+				printf_P(PSTR("MMU <= 'T%d'\n"), filament);
+				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = 3; // wait for response
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
 			{
-			    int filament = mmu_cmd - MMU_CMD_L0;
+			    filament = mmu_cmd - MMU_CMD_L0;
 			    printf_P(PSTR("MMU <= 'L%d'\n"), filament);
 			    mmu_printf_P(PSTR("L%d\n"), filament);
 			    mmu_state = 3; // wait for response
@@ -184,6 +185,19 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'U0'\n"));
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
 				mmu_state = 3;
+			}
+			else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
+			{
+				int filament = mmu_cmd - MMU_CMD_E0;
+				printf_P(PSTR("MMU <= 'E%d'\n"), filament);
+				mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
+				mmu_state = 3; // wait for response
+			}
+			else if (mmu_cmd == MMU_CMD_R0)
+			{
+				printf_P(PSTR("MMU <= 'R0'\n"));
+				mmu_puts_P(PSTR("R0\n")); //send recover after eject
+				mmu_state = 3; // wait for response
 			}
 			mmu_cmd = 0;
 		}
@@ -215,7 +229,7 @@ void mmu_loop(void)
 			mmu_state = 1;
 		}
 		return;
-	case 3: //response to commands T0-T4
+	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
 			printf_P(PSTR("MMU => 'ok'\n"));
@@ -381,6 +395,12 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 	if (lcd_update_was_enabled) lcd_update_enable(true);
 }
 
+//! @brief load filament to nozzle of multimaterial printer
+//!
+//! This function is used only only after T? (user select filament) and M600 (change filament).
+//! It is not used after T0 .. T4 command (select filament), in such case, gcode is responsible for loading
+//! filament to nozzle.
+//!
 void mmu_load_to_nozzle()
 {
 	st_synchronize();
@@ -449,15 +469,12 @@ void mmu_M600_load_filament(bool automatic)
 		  bool yes = false;
 		  tmp_extruder = mmu_extruder;
 		  if (!automatic) {
-			  mmu_M600_wait_and_beep();
 #ifdef MMU_M600_SWITCH_EXTRUDER
 			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
 			  if(yes) tmp_extruder = choose_extruder_menu();
 			  else tmp_extruder = mmu_extruder;
-#else 
-			  tmp_extruder = mmu_extruder; 
 #endif //MMU_M600_SWITCH_EXTRUDER
-      }
+		  }
 		  else {
 			  tmp_extruder = (tmp_extruder+1)%5;
 		  }
@@ -775,6 +792,31 @@ void extr_adj_4()
 #endif
 }
 
+void mmu_eject_fil_0()
+{
+	mmu_eject_filament(0, true);
+}
+
+void mmu_eject_fil_1()
+{
+	mmu_eject_filament(1, true);
+}
+
+void mmu_eject_fil_2()
+{
+	mmu_eject_filament(2, true);
+}
+
+void mmu_eject_fil_3()
+{
+	mmu_eject_filament(3, true);
+}
+
+void mmu_eject_fil_4()
+{
+	mmu_eject_filament(4, true);
+}
+
 void load_all()
 {
 #ifndef SNMM
@@ -904,4 +946,47 @@ void mmu_show_warning()
 {
 	printf_P(PSTR("MMU2 firmware version invalid. Required version: build number %d or higher."), MMU_REQUIRED_FW_BUILDNR);
 	kill(_i("Please update firmware in your MMU2. Waiting for reset."));
+}
+
+void mmu_eject_filament(uint8_t filament, bool recover)
+{
+	if (filament < 5) 
+	{
+
+		if (degHotend0() > EXTRUDE_MINTEMP)
+		{
+			st_synchronize();
+			lcd_update_enable(false);
+			lcd_clear();
+			lcd_set_cursor(0, 1); lcd_puts_P(_i("Ejecting filament"));
+			current_position[E_AXIS] -= 80;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
+			st_synchronize();
+
+			lcd_update_enable(true);
+
+			mmu_command(MMU_CMD_E0 + filament);
+			manage_response(false, false);
+			if (recover)
+			{
+				lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
+				mmu_command(MMU_CMD_R0);
+				manage_response(false, false);
+			}
+		}
+		else
+		{
+			lcd_clear();
+			lcd_set_cursor(0, 0);
+			lcd_puts_P(_T(MSG_ERROR));
+			lcd_set_cursor(0, 2);
+			lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
+			delay(2000);
+			lcd_clear();
+		}
+	}
+	else
+	{
+		puts_P(PSTR("Filament nr out of range!"));
+	}
 }
