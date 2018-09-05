@@ -1665,7 +1665,7 @@ void setup()
 	  }
 	  else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
 		  // Show the message.
-		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_CALIBRATION_FLOW));
+		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_Z_CALIBRATION_FLOW));
 	  }
   }
 

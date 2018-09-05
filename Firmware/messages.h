@@ -40,6 +40,7 @@ extern const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[];
 extern const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2[];
 extern const char MSG_FINISHING_MOVEMENTS[];
 extern const char MSG_FOLLOW_CALIBRATION_FLOW[];
+extern const char MSG_FOLLOW_Z_CALIBRATION_FLOW[];
 extern const char MSG_FSENS_AUTOLOAD_NA[];
 extern const char MSG_FSENSOR_OFF[];
 extern const char MSG_FSENSOR_ON[];
