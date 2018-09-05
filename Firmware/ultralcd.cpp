@@ -967,18 +967,8 @@ void lcd_commands()
 {	
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
 	{
-		if(lcd_commands_step == 0) {
-			if (card.sdprinting) {
-				card.pauseSDPrint();
-				lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
-				lcd_draw_update = 3;
-				lcd_commands_step = 1;
-			}
-			else {
-				lcd_commands_type = 0;
-			}
-		}
-		if (lcd_commands_step == 1 && !blocks_queued() && !homing_flag) {
+		if (!blocks_queued() && !homing_flag)
+		{
 			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
 			isPrintPaused = true;
 			long_pause();
@@ -5522,12 +5512,13 @@ static void lcd_test_menu()
 
 static void pause_print()
 {
-    lcd_clear();
     lcd_puts_P(_i("Pausing"));
-    lcd_setstatuspgm(_i("Print paused"));
     stop_and_save_print_to_ram(0.0,0.0);
-    long_pause();
-    lcd_return_to_status();
+    if (LCD_COMMAND_IDLE == lcd_commands_type)
+    {
+        lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
+        lcd_return_to_status();
+    }
 }
 static void resume_print()
 {
@@ -5628,7 +5619,7 @@ static void lcd_main_menu()
 		if (mesh_bed_leveling_flag == false && homing_flag == false) {
 			if (card.sdprinting)
 			{
-				MENU_ITEM_FUNCTION_P(_i("Pause print"), pause_print);////MSG_PAUSE_PRINT c=0 r=0
+				MENU_ITEM_SUBMENU_P(_i("Pause print"), pause_print);////MSG_PAUSE_PRINT c=0 r=0
 			}
 			else
 			{
