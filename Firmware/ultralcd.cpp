@@ -482,12 +482,10 @@ void lcdui_print_temp(char type, int val_current, int val_target)
 // Print Z-coordinate (8 chars total)
 void lcdui_print_Z_coord(void)
 {
-	int chars = 8;
     if (custom_message_type == CUSTOM_MSG_TYPE_MESHBL)
         lcd_puts_P(_N("Z   --- "));
     else
-		chars = lcd_printf_P(_N("Z%6.2f "), current_position[Z_AXIS]);
-//	lcd_space(8 - chars);
+		lcd_printf_P(_N("Z%6.2f "), current_position[Z_AXIS]);
 }
 
 #ifdef PLANNER_DIAGNOSTICS
@@ -527,8 +525,7 @@ void lcdui_print_percent_done(void)
 	char per[4];
 	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
 	sprintf_P(per, num?_N("%3hhd"):_N("---"), calc_percent_done());
-	int chars = lcd_printf_P(_N("%3S%3s%%"), src, per);
-//	lcd_space(7 - chars);
+	lcd_printf_P(_N("%3S%3s%%"), src, per);
 }
 
 // Print extruder status (5 chars total)
