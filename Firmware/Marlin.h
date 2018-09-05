@@ -379,6 +379,7 @@ extern void delay_keep_alive(unsigned int ms);
 extern void check_babystep();
 
 extern void long_pause();
+extern void crashdet_stop_and_save_print();
 
 #ifdef DIS
 
