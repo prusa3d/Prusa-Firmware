@@ -975,68 +975,8 @@ void lcd_commands()
 			lcd_commands_type = 0;
 			lcd_commands_step = 0;
 		}
-
 	}
 
-	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE_RESUME) {
-		char cmd1[30];
-		if (lcd_commands_step == 0) {
-
-			lcd_draw_update = 3;
-			lcd_commands_step = 4;
-		}
-		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty()) {	//recover feedmultiply; cmd_buffer_empty() ensures that card.sdprinting is synchronized with buffered commands and thus print cant be paused until resume is finished
-			
-			sprintf_P(cmd1, PSTR("M220 S%d"), saved_feedmultiply);
-			enquecommand(cmd1);
-			isPrintPaused = false;
-			pause_time += (millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
-			card.startFileprint();
-			lcd_commands_step = 0;
-			lcd_commands_type = 0;
-		}
-		if (lcd_commands_step == 2 && !blocks_queued()) {	//turn on fan, move Z and unretract
-			
-			sprintf_P(cmd1, PSTR("M106 S%d"), fanSpeedBckp);
-			enquecommand(cmd1);
-			strcpy(cmd1, "G1 Z");
-			strcat(cmd1, ftostr32(pause_lastpos[Z_AXIS]));
-			enquecommand(cmd1);
-			
-			if (axis_relative_modes[3] == false) {
-				enquecommand_P(PSTR("M83")); // set extruder to relative mode
-			enquecommand_P(PSTR("G1 E"  STRINGIFY(default_retraction))); //unretract
-				enquecommand_P(PSTR("M82")); // set extruder to absolute mode
-			}
-			else {
-				enquecommand_P(PSTR("G1 E"  STRINGIFY(default_retraction))); //unretract
-			}
-			
-			lcd_commands_step = 1;
-		}
-		if (lcd_commands_step == 3 && !blocks_queued()) {	//wait for nozzle to reach target temp
-			
-			strcpy(cmd1, "M109 S");
-			strcat(cmd1, ftostr3(HotendTempBckp));
-			enquecommand(cmd1);			
-			lcd_commands_step = 2;
-		}
-		if (lcd_commands_step == 4 && !blocks_queued()) {	//set temperature back and move xy
-			
-			strcpy(cmd1, "M104 S");
-			strcat(cmd1, ftostr3(HotendTempBckp));
-			enquecommand(cmd1);
-			enquecommand_P(PSTR("G90")); //absolute positioning
-			strcpy(cmd1, "G1 X");
-			strcat(cmd1, ftostr32(pause_lastpos[X_AXIS]));
-			strcat(cmd1, " Y");
-			strcat(cmd1, ftostr32(pause_lastpos[Y_AXIS]));
-			enquecommand(cmd1);
-			
-			lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
-			lcd_commands_step = 3;
-		}
-	}
 
 #ifdef SNMM
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL)
@@ -1744,17 +1684,15 @@ void lcd_return_to_status()
 }
 
 
-void lcd_sdcard_pause() {
+void lcd_pause_print() {
 	lcd_return_to_status();
-	lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
-
+	stop_and_save_print_to_ram(0.0,0.0);
+	if (LCD_COMMAND_IDLE == lcd_commands_type)
+	{
+	    lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
+	}
 }
 
-static void lcd_sdcard_resume() {
-	lcd_return_to_status();
-	lcd_reset_alert_level(); //for fan speed error
-	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
-}
 
 float move_menu_scale;
 static void lcd_move_menu_axis();
@@ -5510,20 +5448,14 @@ static void lcd_test_menu()
 }
 #endif //LCD_TEST
 
-static void pause_print()
-{
-    lcd_puts_P(_i("Pausing"));
-    stop_and_save_print_to_ram(0.0,0.0);
-    if (LCD_COMMAND_IDLE == lcd_commands_type)
-    {
-        lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
-        lcd_return_to_status();
-    }
-}
-static void resume_print()
+void lcd_resume_print()
 {
     lcd_return_to_status();
+    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
+    lcd_reset_alert_level(); //for fan speed error
     restore_print_from_ram_and_continue(0.0);
+    pause_time += (millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
+    isPrintPaused = false;
 }
 
 static void lcd_main_menu()
@@ -5619,11 +5551,11 @@ static void lcd_main_menu()
 		if (mesh_bed_leveling_flag == false && homing_flag == false) {
 			if (card.sdprinting)
 			{
-				MENU_ITEM_SUBMENU_P(_i("Pause print"), pause_print);////MSG_PAUSE_PRINT c=0 r=0
+				MENU_ITEM_FUNCTION_P(_i("Pause print"), lcd_pause_print);////MSG_PAUSE_PRINT c=0 r=0
 			}
 			else
 			{
-			    MENU_ITEM_SUBMENU_P(_i("Resume print"), resume_print);////MSG_RESUME_PRINT c=0 r=0
+			    MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT c=0 r=0
 			}
 			MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
 		}

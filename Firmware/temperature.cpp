@@ -512,7 +512,7 @@ void fanSpeedError(unsigned char _fan) {
 		}
 		else {
 			isPrintPaused = true;
-			lcd_sdcard_pause();
+			lcd_pause_print();
 		}
 	}
 	else {

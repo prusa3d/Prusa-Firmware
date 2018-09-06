@@ -32,7 +32,8 @@ void lcd_loading_filament();
 void lcd_change_success();
 void lcd_loading_color();
 void lcd_sdcard_stop();
-void lcd_sdcard_pause();
+void lcd_pause_print();
+void lcd_resume_print();
 void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
 void lcd_confirm_print();
@@ -77,7 +78,6 @@ extern void lcd_diag_show_end_stops();
 #define LCD_COMMAND_STOP_PRINT 2
 #define LCD_COMMAND_FARM_MODE_CONFIRM 4
 #define LCD_COMMAND_LONG_PAUSE 5
-#define LCD_COMMAND_LONG_PAUSE_RESUME 6
 #define LCD_COMMAND_PID_EXTRUDER 7 
 #define LCD_COMMAND_V2_CAL 8
 

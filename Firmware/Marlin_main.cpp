@@ -333,7 +333,6 @@ int8_t lcd_change_fil_state = 0;
 int feedmultiplyBckp = 100;
 float HotendTempBckp = 0;
 int fanSpeedBckp = 0;
-float pause_lastpos[4];
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
@@ -6479,13 +6478,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	}
     break;
     #endif //FILAMENTCHANGEENABLE
-	case 601: {
-		if(lcd_commands_type == 0)  lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
+	case 601:
+	{
+		lcd_pause_print();
 	}
 	break;
 
 	case 602: {
-		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
+		lcd_resume_print();
 	}
 	break;
 
@@ -8124,13 +8124,6 @@ void long_pause() //long pause print
 	HotendTempBckp = degTargetHotend(active_extruder);
 	fanSpeedBckp = fanSpeed;
 	start_pause_print = millis();
-		
-
-	//save position
-	pause_lastpos[X_AXIS] = current_position[X_AXIS];
-	pause_lastpos[Y_AXIS] = current_position[Y_AXIS];
-	pause_lastpos[Z_AXIS] = current_position[Z_AXIS];
-	pause_lastpos[E_AXIS] = current_position[E_AXIS];
 
 	//retract
 	current_position[E_AXIS] -= default_retraction;

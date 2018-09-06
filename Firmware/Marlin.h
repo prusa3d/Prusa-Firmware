@@ -337,7 +337,6 @@ extern uint8_t active_extruder;
 extern int saved_feedmultiply;
 extern float HotendTempBckp;
 extern int fanSpeedBckp;
-extern float pause_lastpos[4];
 extern unsigned long pause_time;
 extern unsigned long start_pause_print;
 extern unsigned long t_fan_rising_edge;
