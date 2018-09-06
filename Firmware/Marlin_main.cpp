@@ -331,7 +331,6 @@ unsigned int  usb_printing_counter;
 int8_t lcd_change_fil_state = 0;
 
 int feedmultiplyBckp = 100;
-float HotendTempBckp = 0;
 int fanSpeedBckp = 0;
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
@@ -3059,7 +3058,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     //First backup current position and settings
     feedmultiplyBckp = feedmultiply;
-    HotendTempBckp = degTargetHotend(active_extruder);
+    float HotendTempBckp = degTargetHotend(active_extruder);
     fanSpeedBckp = fanSpeed;
 
     lastpos[X_AXIS] = current_position[X_AXIS];
@@ -3087,7 +3086,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     st_synchronize();
 
     //Beep, manage nozzle heater and wait for user to start unload filament
-    if(!mmu_enabled) M600_wait_for_user();
+    if(!mmu_enabled) M600_wait_for_user(HotendTempBckp);
 
     lcd_change_fil_state = 0;
 
@@ -8116,7 +8115,6 @@ void long_pause() //long pause print
 	
 	//save currently set parameters to global variables
 	saved_feedmultiply = feedmultiply; 
-	HotendTempBckp = degTargetHotend(active_extruder);
 	fanSpeedBckp = fanSpeed;
 	start_pause_print = millis();
 
@@ -8912,7 +8910,7 @@ void M600_check_state()
 		}
 }
 
-void M600_wait_for_user() {
+void M600_wait_for_user(float HotendTempBckp) {
 		//Beep, manage nozzle heater and wait for user to start unload filament
 
 		KEEPALIVE_STATE(PAUSED_FOR_USER);

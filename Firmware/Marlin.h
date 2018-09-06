@@ -335,7 +335,6 @@ extern uint8_t active_extruder;
 
 //Long pause
 extern int saved_feedmultiply;
-extern float HotendTempBckp;
 extern int fanSpeedBckp;
 extern unsigned long pause_time;
 extern unsigned long start_pause_print;
@@ -476,5 +475,5 @@ void proc_commands();
 
 void M600_load_filament();
 void M600_load_filament_movements();
-void M600_wait_for_user();
+void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state();
