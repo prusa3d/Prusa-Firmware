@@ -11,6 +11,7 @@
 #include "cardreader.h"
 #include "ultralcd.h"
 #include "sound.h"
+#include <avr/pgmspace.h>
 
 #define CHECK_FINDA ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
@@ -642,6 +643,37 @@ void extr_adj(int extruder) //loading filament for SNMM
 #endif
 }
 
+struct E_step
+{
+    float extrude;   //!< extrude distance in mm
+    float feed_rate; //!< feed rate in mm/s
+};
+static const E_step ramming_sequence[] PROGMEM =
+{
+    {1.0,   1000.0/60},
+    {1.0,   1500.0/60},
+    {2.0,   2000.0/60},
+    {1.5,   3000.0/60},
+    {2.5,   4000.0/60},
+    {-15.0, 5000.0/60},
+    {-14.0, 1200.0/60},
+    {-6.0,  600.0/60},
+    {10.0,  700.0/60},
+    {-10.0, 400.0/60},
+    {-50.0, 2000.0/60},
+};
+
+//! @brief Unload sequence to optimize shape of the tip of the unloaded filament
+static void filament_ramming()
+{
+    for(uint8_t i = 0; i < (sizeof(ramming_sequence)/sizeof(E_step));++i)
+    {
+        current_position[E_AXIS] += pgm_read_float(&(ramming_sequence[i].extrude));
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+                current_position[E_AXIS], pgm_read_float(&(ramming_sequence[i].feed_rate)), active_extruder);
+        st_synchronize();
+    }
+}
 
 void extr_unload()
 { //unload just current filament for multimaterial printers
@@ -663,9 +695,7 @@ void extr_unload()
 		lcd_print(" ");
 		lcd_print(mmu_extruder + 1);
 
-		current_position[E_AXIS] -= 80;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-		st_synchronize();
+		filament_ramming();
 
 		mmu_command(MMU_CMD_U0);
 		// get response
