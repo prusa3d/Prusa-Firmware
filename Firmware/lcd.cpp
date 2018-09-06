@@ -687,7 +687,7 @@ LongTimer lcd_timeoutToStatus;
 uint8_t lcd_clicked(void)
 {
 	bool clicked = LCD_CLICKED;
-	if(clicked) lcd_button_pressed = 1;
+	if(clicked) lcd_button_pressed = 0;
     return clicked;
 }
 
