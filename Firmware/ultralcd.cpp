@@ -970,7 +970,6 @@ void lcd_commands()
 		if (!blocks_queued() && !homing_flag)
 		{
 			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
-			isPrintPaused = true;
 			long_pause();
 			lcd_commands_type = 0;
 			lcd_commands_step = 0;
@@ -1687,6 +1686,7 @@ void lcd_return_to_status()
 void lcd_pause_print() {
 	lcd_return_to_status();
 	stop_and_save_print_to_ram(0.0,0.0);
+	isPrintPaused = true;
 	if (LCD_COMMAND_IDLE == lcd_commands_type)
 	{
 	    lcd_commands_type = LCD_COMMAND_LONG_PAUSE;

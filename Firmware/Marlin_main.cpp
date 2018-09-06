@@ -329,7 +329,6 @@ unsigned int  usb_printing_counter;
 
 int8_t lcd_change_fil_state = 0;
 
-int feedmultiplyBckp = 100;
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
@@ -3056,7 +3055,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     }
 
     //First backup current position and settings
-    feedmultiplyBckp = feedmultiply;
+    int feedmultiplyBckp = feedmultiply;
     float HotendTempBckp = degTargetHotend(active_extruder);
     int fanSpeedBckp = fanSpeed;
 
@@ -3541,7 +3540,7 @@ void process_commands()
             
             if(READ(FR_SENS)){
 
-                        feedmultiplyBckp=feedmultiply;
+                        int feedmultiplyBckp=feedmultiply;
                         float target[4];
                         float lastpos[4];
                         target[X_AXIS]=current_position[X_AXIS];

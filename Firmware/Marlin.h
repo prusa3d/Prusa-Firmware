@@ -334,8 +334,6 @@ extern uint8_t active_extruder;
 #endif
 
 //Long pause
-extern int saved_feedmultiply;
-extern int fanSpeedBckp;
 extern unsigned long pause_time;
 extern unsigned long start_pause_print;
 extern unsigned long t_fan_rising_edge;
