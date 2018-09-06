@@ -745,16 +745,11 @@ void crashdet_detected(uint8_t mask)
 	if (automatic_recovery_after_crash) {
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}else{
-		HotendTempBckp = degTargetHotend(active_extruder);
 		setTargetHotend(0, active_extruder);
 		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);
 		lcd_update_enable(true);
 		if (yesno)
 		{
-			char cmd1[10];
-			strcpy(cmd1, "M109 S");
-			strcat(cmd1, ftostr3(HotendTempBckp));
-			enquecommand(cmd1);
 			enquecommand_P(PSTR("CRASH_RECOVER"));
 		}
 		else
