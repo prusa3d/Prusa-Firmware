@@ -306,7 +306,6 @@ float homing_feedrate[] = HOMING_FEEDRATE;
 // Other axes are always absolute or relative based on the common relative_mode flag.
 bool axis_relative_modes[] = AXIS_RELATIVE_MODES;
 int feedmultiply=100; //100->1 200->2
-int saved_feedmultiply;
 int extrudemultiply=100; //100->1 200->2
 int extruder_multiply[EXTRUDERS] = {100
   #if EXTRUDERS > 1
@@ -330,10 +329,6 @@ unsigned int  usb_printing_counter;
 
 int8_t lcd_change_fil_state = 0;
 
-int feedmultiplyBckp = 100;
-float HotendTempBckp = 0;
-int fanSpeedBckp = 0;
-float pause_lastpos[4];
 unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
@@ -536,8 +531,10 @@ static float saved_pos[4] = { 0, 0, 0, 0 };
 // Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
 static float saved_feedrate2 = 0;
 static uint8_t saved_active_extruder = 0;
+static float saved_extruder_temperature = 0.0;
 static bool saved_extruder_under_pressure = false;
 static bool saved_extruder_relative_mode = false;
+static int saved_fanSpeed = 0;
 
 //===========================================================================
 //=============================Routines======================================
@@ -649,9 +646,6 @@ void servo_init()
 }
 
 
-void stop_and_save_print_to_ram(float z_move, float e_move);
-void restore_print_from_ram_and_continue(float e_move);
-
 bool fans_check_enabled = true;
 
 
@@ -747,16 +741,11 @@ void crashdet_detected(uint8_t mask)
 	if (automatic_recovery_after_crash) {
 		enquecommand_P(PSTR("CRASH_RECOVER"));
 	}else{
-		HotendTempBckp = degTargetHotend(active_extruder);
 		setTargetHotend(0, active_extruder);
 		bool yesno = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Crash detected. Resume print?"), false);
 		lcd_update_enable(true);
 		if (yesno)
 		{
-			char cmd1[10];
-			strcpy(cmd1, "M109 S");
-			strcat(cmd1, ftostr3(HotendTempBckp));
-			enquecommand(cmd1);
 			enquecommand_P(PSTR("CRASH_RECOVER"));
 		}
 		else
@@ -2017,23 +2006,24 @@ static void axis_is_at_home(int axis) {
 inline void set_current_to_destination() { memcpy(current_position, destination, sizeof(current_position)); }
 inline void set_destination_to_current() { memcpy(destination, current_position, sizeof(destination)); }
 
-
-static void setup_for_endstop_move(bool enable_endstops_now = true) {
+//! @return original feedmultiply
+static int setup_for_endstop_move(bool enable_endstops_now = true) {
     saved_feedrate = feedrate;
-    saved_feedmultiply = feedmultiply;
+    int l_feedmultiply = feedmultiply;
     feedmultiply = 100;
     previous_millis_cmd = millis();
     
     enable_endstops(enable_endstops_now);
+    return l_feedmultiply;
 }
 
-static void clean_up_after_endstop_move() {
+static void clean_up_after_endstop_move(int original_feedmultiply) {
 #ifdef ENDSTOPS_ONLY_FOR_HOMING
     enable_endstops(false);
 #endif
     
     feedrate = saved_feedrate;
-    feedmultiply = saved_feedmultiply;
+    feedmultiply = original_feedmultiply;
     previous_millis_cmd = millis();
 }
 
@@ -2618,7 +2608,7 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
         babystep_undo();
 
       saved_feedrate = feedrate;
-      saved_feedmultiply = feedmultiply;
+      int l_feedmultiply = feedmultiply;
       feedmultiply = 100;
       previous_millis_cmd = millis();
 
@@ -2804,7 +2794,7 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
       #endif
 
       feedrate = saved_feedrate;
-      feedmultiply = saved_feedmultiply;
+      feedmultiply = l_feedmultiply;
       previous_millis_cmd = millis();
       endstops_hit_on_purpose();
 #ifndef MESH_BED_LEVELING
@@ -2884,7 +2874,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 
 	// Home in the XY plane.
 	//set_destination_to_current();
-	setup_for_endstop_move();
+	int l_feedmultiply = setup_for_endstop_move();
 	lcd_display_message_fullscreen_P(_T(MSG_AUTO_HOME));
 	home_xy();
 
@@ -2944,7 +2934,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 		{
 			if (onlyZ)
 			{
-				clean_up_after_endstop_move();
+				clean_up_after_endstop_move(l_feedmultiply);
 				// Z only calibration.
 				// Load the machine correction matrix
 				world2machine_initialize();
@@ -2969,7 +2959,7 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 				// Complete XYZ calibration.
 				uint8_t point_too_far_mask = 0;
 				BedSkewOffsetDetectionResultType result = find_bed_offset_and_skew(verbosity_level, point_too_far_mask);
-				clean_up_after_endstop_move();
+				clean_up_after_endstop_move(l_feedmultiply);
 				// Print head up.
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
@@ -2986,10 +2976,10 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 					mbl.reset();
 					world2machine_reset();
 					// Home in the XY plane.
-					setup_for_endstop_move();
+					int l_feedmultiply = setup_for_endstop_move();
 					home_xy();
 					result = improve_bed_offset_and_skew(1, verbosity_level, point_too_far_mask);
-					clean_up_after_endstop_move();
+					clean_up_after_endstop_move(l_feedmultiply);
 					// Print head up.
 					current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
@@ -3065,9 +3055,9 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     }
 
     //First backup current position and settings
-    feedmultiplyBckp = feedmultiply;
-    HotendTempBckp = degTargetHotend(active_extruder);
-    fanSpeedBckp = fanSpeed;
+    int feedmultiplyBckp = feedmultiply;
+    float HotendTempBckp = degTargetHotend(active_extruder);
+    int fanSpeedBckp = fanSpeed;
 
     lastpos[X_AXIS] = current_position[X_AXIS];
     lastpos[Y_AXIS] = current_position[Y_AXIS];
@@ -3094,7 +3084,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     st_synchronize();
 
     //Beep, manage nozzle heater and wait for user to start unload filament
-    if(!mmu_enabled) M600_wait_for_user();
+    if(!mmu_enabled) M600_wait_for_user(HotendTempBckp);
 
     lcd_change_fil_state = 0;
 
@@ -3550,7 +3540,7 @@ void process_commands()
             
             if(READ(FR_SENS)){
 
-                        feedmultiplyBckp=feedmultiply;
+                        int feedmultiplyBckp=feedmultiply;
                         float target[4];
                         float lastpos[4];
                         target[X_AXIS]=current_position[X_AXIS];
@@ -3832,7 +3822,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             current_position[Y_AXIS] = uncorrected_position.y;
             current_position[Z_AXIS] = uncorrected_position.z;
             plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-            setup_for_endstop_move();
+            int l_feedmultiply = setup_for_endstop_move();
 
             feedrate = homing_feedrate[Z_AXIS];
 #ifdef AUTO_BED_LEVELING_GRID
@@ -3898,7 +3888,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                 xProbe += xInc;
               }
             }
-            clean_up_after_endstop_move();
+            clean_up_after_endstop_move(l_feedmultiply);
 
             // solve lsq problem
             double *plane_equation_coefficients = qr_solve(AUTO_BED_LEVELING_GRID_POINTS*AUTO_BED_LEVELING_GRID_POINTS, 3, eqnAMatrix, eqnBVector);
@@ -3927,7 +3917,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             // probe 3
             float z_at_pt_3 = probe_pt(ABL_PROBE_PT_3_X, ABL_PROBE_PT_3_Y, current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS);
 
-            clean_up_after_endstop_move();
+            clean_up_after_endstop_move(l_feedmultiply);
 
             set_bed_level_equation_3pts(z_at_pt_1, z_at_pt_2, z_at_pt_3);
 
@@ -3953,7 +3943,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         {
             st_synchronize();
             // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
-            setup_for_endstop_move();
+            int l_feedmultiply = setup_for_endstop_move();
 
             feedrate = homing_feedrate[Z_AXIS];
 
@@ -3967,7 +3957,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             SERIAL_PROTOCOL(current_position[Z_AXIS]);
             SERIAL_PROTOCOLPGM("\n");
 
-            clean_up_after_endstop_move();
+            clean_up_after_endstop_move(l_feedmultiply);
         }
         break;
 #else
@@ -3985,7 +3975,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         {
             st_synchronize();
             // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
-            setup_for_endstop_move();
+            int l_feedmultiply = setup_for_endstop_move();
 
             feedrate = homing_feedrate[Z_AXIS];
 
@@ -3993,7 +3983,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 			printf_P(_N("%S X: %.5f Y: %.5f Z: %.5f\n"), _T(MSG_BED), _x, _y, _z);
 
-            clean_up_after_endstop_move();
+            clean_up_after_endstop_move(l_feedmultiply);
         }
         break;
 	
@@ -4418,7 +4408,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			has_z ? SERIAL_PROTOCOLPGM("Z jitter data from Z cal. valid.\n") : SERIAL_PROTOCOLPGM("Z jitter data from Z cal. not valid.\n");
 		}
 		#endif // SUPPORT_VERBOSITY
-		setup_for_endstop_move(false); //save feedrate and feedmultiply, sets feedmultiply to 100
+		int l_feedmultiply = setup_for_endstop_move(false); //save feedrate and feedmultiply, sets feedmultiply to 100
 		const char *kill_message = NULL;
 		while (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
 			// Get coords of a measuring point.
@@ -4525,7 +4515,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			kill(kill_message);
 			SERIAL_ECHOLNPGM("killed");
 		}
-		clean_up_after_endstop_move();
+		clean_up_after_endstop_move(l_feedmultiply);
 //		SERIAL_ECHOLNPGM("clean up finished ");
 
 		bool apply_temp_comp = true;
@@ -4649,9 +4639,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
          */
         case 82:
             SERIAL_PROTOCOLLNPGM("Finding bed ");
-            setup_for_endstop_move();
+            int l_feedmultiply = setup_for_endstop_move();
             find_bed_induction_sensor_point_z();
-            clean_up_after_endstop_move();
+            clean_up_after_endstop_move(l_feedmultiply);
             SERIAL_PROTOCOLPGM("Bed found at: ");
             SERIAL_PROTOCOL_F(current_position[Z_AXIS], 5);
             SERIAL_PROTOCOLPGM("\n");
@@ -5078,7 +5068,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         st_synchronize();
         // Home in the XY plane.
         set_destination_to_current();
-        setup_for_endstop_move();
+        int l_feedmultiply = setup_for_endstop_move();
         home_xy();
         int8_t verbosity_level = 0;
         if (code_seen('V')) {
@@ -5087,7 +5077,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             verbosity_level = (c == ' ' || c == '\t' || c == 0) ? 1 : code_value_short();
         }
         bool success = scan_bed_induction_points(verbosity_level);
-        clean_up_after_endstop_move();
+        clean_up_after_endstop_move(l_feedmultiply);
         // Print head up.
         current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS],current_position[Z_AXIS] , current_position[E_AXIS], homing_feedrate[Z_AXIS]/40, active_extruder);
@@ -5217,7 +5207,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 // Then retrace the right amount and use that in subsequent probes
 //
 
-	setup_for_endstop_move();
+	int l_feedmultiply = setup_for_endstop_move();
 	run_z_probe();
 
 	current_position[Z_AXIS] = Z_current = st_get_position_mm(Z_AXIS);
@@ -5281,7 +5271,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			do_blocking_move_to( X_probe_location, Y_probe_location, Z_start_location); // Go back to the probe location
 		}
 
-		setup_for_endstop_move();
+		int l_feedmultiply = setup_for_endstop_move();
                 run_z_probe();
 
 		sample_set[n] = current_position[Z_AXIS];
@@ -5332,9 +5322,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 	delay(1000);
 
-        clean_up_after_endstop_move();
+    clean_up_after_endstop_move(l_feedmultiply);
 
-//      enable_endstops(true);
+//  enable_endstops(true);
 
 	if (verbose_level > 0) {
 		SERIAL_PROTOCOLPGM("Mean: ");
@@ -6480,13 +6470,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	}
     break;
     #endif //FILAMENTCHANGEENABLE
-	case 601: {
-		if(lcd_commands_type == 0)  lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
+	case 601:
+	{
+		lcd_pause_print();
 	}
 	break;
 
 	case 602: {
-		if(lcd_commands_type == 0)	lcd_commands_type = LCD_COMMAND_LONG_PAUSE_RESUME;
+		lcd_resume_print();
 	}
 	break;
 
@@ -7857,7 +7848,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
 	int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
 
-	setup_for_endstop_move(false);
+	int l_feedmultiply = setup_for_endstop_move(false);
 
 	SERIAL_PROTOCOLPGM("Num X,Y: ");
 	SERIAL_PROTOCOL(x_points_num);
@@ -7986,7 +7977,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 
 	}
 	card.closefile();
-
+	clean_up_after_endstop_move(l_feedmultiply);
 }
 #endif
 
@@ -8120,18 +8111,7 @@ void long_pause() //long pause print
 {
 	st_synchronize();
 	
-	//save currently set parameters to global variables
-	saved_feedmultiply = feedmultiply; 
-	HotendTempBckp = degTargetHotend(active_extruder);
-	fanSpeedBckp = fanSpeed;
 	start_pause_print = millis();
-		
-
-	//save position
-	pause_lastpos[X_AXIS] = current_position[X_AXIS];
-	pause_lastpos[Y_AXIS] = current_position[Y_AXIS];
-	pause_lastpos[Z_AXIS] = current_position[Z_AXIS];
-	pause_lastpos[E_AXIS] = current_position[E_AXIS];
 
 	//retract
 	current_position[E_AXIS] -= default_retraction;
@@ -8141,9 +8121,6 @@ void long_pause() //long pause print
 	current_position[Z_AXIS] += Z_PAUSE_LIFT;
 	if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
-
-	//set nozzle target temperature to 0
-	setAllTargetHotends(0);
 
 	//Move XY to side
 	current_position[X_AXIS] = X_PAUSE_POS;
@@ -8745,9 +8722,11 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	planner_abort_hard(); //abort printing
 	memcpy(saved_pos, current_position, sizeof(saved_pos));
 	saved_active_extruder = active_extruder; //save active_extruder
+	saved_extruder_temperature = degTargetHotend(active_extruder);
 
 	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
 	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
+	saved_fanSpeed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 //	card.closefile();
@@ -8798,8 +8777,13 @@ void restore_print_from_ram_and_continue(float e_move)
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
+	setTargetHotendSafe(saved_extruder_temperature,saved_active_extruder);
+	heating_status = 1;
+	wait_for_heater(millis(),saved_active_extruder);
+	heating_status = 2;
 	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
+	fanSpeed = saved_fanSpeed;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
 	//first move print head in XY to the saved position:
@@ -8918,7 +8902,7 @@ void M600_check_state()
 		}
 }
 
-void M600_wait_for_user() {
+void M600_wait_for_user(float HotendTempBckp) {
 		//Beep, manage nozzle heater and wait for user to start unload filament
 
 		KEEPALIVE_STATE(PAUSED_FOR_USER);

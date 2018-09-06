@@ -500,9 +500,6 @@ void checkFanSpeed()
 	}
 }
 
-extern void stop_and_save_print_to_ram(float z_move, float e_move);
-extern void restore_print_from_ram_and_continue(float e_move);
-
 void fanSpeedError(unsigned char _fan) {
 	if (get_message_level() != 0 && isPrintPaused) return; 
 	//to ensure that target temp. is not set to zero in case taht we are resuming print 
@@ -511,8 +508,7 @@ void fanSpeedError(unsigned char _fan) {
 			lcd_print_stop();
 		}
 		else {
-			isPrintPaused = true;
-			lcd_sdcard_pause();
+			lcd_pause_print();
 		}
 	}
 	else {

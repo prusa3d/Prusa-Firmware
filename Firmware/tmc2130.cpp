@@ -13,12 +13,6 @@
 #define TMC2130_GCONF_SGSENS 0x00003180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])
 #define TMC2130_GCONF_SILENT 0x00000004 // stealthChop
 
-//externals for debuging
-extern float current_position[4];
-extern void st_get_position_xy(long &x, long &y);
-extern long st_get_position(uint8_t axis);
-extern void crashdet_stop_and_save_print();
-extern void crashdet_stop_and_save_print2();
 
 //mode
 uint8_t tmc2130_mode = TMC2130_MODE_NORMAL;
