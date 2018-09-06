@@ -1683,14 +1683,16 @@ void lcd_return_to_status()
 }
 
 
-void lcd_pause_print() {
-	lcd_return_to_status();
-	stop_and_save_print_to_ram(0.0,0.0);
-	isPrintPaused = true;
-	if (LCD_COMMAND_IDLE == lcd_commands_type)
-	{
-	    lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
-	}
+void lcd_pause_print()
+{
+    lcd_return_to_status();
+    stop_and_save_print_to_ram(0.0,0.0);
+    setAllTargetHotends(0);
+    isPrintPaused = true;
+    if (LCD_COMMAND_IDLE == lcd_commands_type)
+    {
+        lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
+    }
 }
 
 
