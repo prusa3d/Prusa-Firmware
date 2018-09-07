@@ -472,9 +472,9 @@ bool mmu_print_saved = false;
 
 // storing estimated time to end of print counted by slicer
 uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
-uint32_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
-uint32_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -8839,9 +8839,13 @@ void print_mesh_bed_leveling_table()
 
 uint16_t print_time_remaining() {
 	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
+#ifdef TMC2130 
 	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_remaining_normal;
 	else print_t = print_time_remaining_silent;
-	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100 * print_t / feedmultiply;
+#else
+	print_t = print_time_remaining_normal;
+#endif //TMC2130
+	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100ul * print_t / feedmultiply;
 	return print_t;
 }
 
@@ -8849,12 +8853,18 @@ uint8_t calc_percent_done()
 {
 	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
 	uint8_t percent_done = 0;
+#ifdef TMC2130
 	if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100) {
 		percent_done = print_percent_done_normal;
 	}
 	else if (print_percent_done_silent <= 100) {
 		percent_done = print_percent_done_silent;
 	}
+#else
+	if (print_percent_done_normal <= 100) {
+		percent_done = print_percent_done_normal;
+	}
+#endif //TMC2130
 	else {
 		percent_done = card.percentDone();
 	}

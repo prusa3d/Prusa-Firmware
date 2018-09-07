@@ -354,9 +354,9 @@ extern bool mmu_print_saved;
 
 //estimated time to end of the print
 extern uint8_t print_percent_done_normal;
-extern uint32_t print_time_remaining_normal;
+extern uint16_t print_time_remaining_normal;
 extern uint8_t print_percent_done_silent;
-extern uint32_t print_time_remaining_silent;
+extern uint16_t print_time_remaining_silent;
 
 #define PRINT_TIME_REMAINING_INIT 0xffff
 
