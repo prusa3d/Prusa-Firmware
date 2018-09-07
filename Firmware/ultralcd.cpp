@@ -597,8 +597,15 @@ void lcdui_print_time(void)
 	int chars = 0;
 	if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
 	{
-		char suff = (print_time_remaining_normal == PRINT_TIME_REMAINING_INIT)?' ':'R';
-		chars = lcd_printf_P(_N("%c%02u:%02u%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff);
+          char suff = ' ';
+          char suff_doubt = ' ';
+		if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+          {
+               suff = 'R';
+               if (feedmultiply != 100)
+                    suff_doubt = '?';
+          }
+		chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
 	}
 	else
 		chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
