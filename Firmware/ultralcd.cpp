@@ -1460,14 +1460,12 @@ void lcd_commands()
 		{
 			lcd_timeoutToStatus.start();
 			enquecommand_P(PSTR("M107")); //turn off printer fan			
-			if (mmu_enabled)
-				enquecommand_P(PSTR("M702 C"));
-			else
-				enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
+			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000")); //retract
 			enquecommand_P(PSTR("M104 S0")); // turn off temperature
 			enquecommand_P(PSTR("M140 S0")); // turn off heatbed
-			enquecommand_P(PSTR("G1 Z10 F1300.000"));
-			enquecommand_P(PSTR("G1 X10 Y180 F4000")); //home X axis
+			enquecommand_P(PSTR("G1 Z10 F1300.000")); //lift Z
+			enquecommand_P(PSTR("G1 X10 Y180 F4000")); //Go to parking position
+			if (mmu_enabled) enquecommand_P(PSTR("M702 C")); //unload from nozzle
 			enquecommand_P(PSTR("M84"));// disable motors
 			forceMenuExpire = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 			lcd_commands_step = 1;
