@@ -4364,7 +4364,6 @@ void lcd_wizard(int state) {
 		printf_P(PSTR("Wizard state: %d"), state);
 		switch (state) {
 		case 0: // run wizard?
-			wizard_active = true;
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
 				state = 1;
@@ -4517,7 +4516,6 @@ void lcd_wizard(int state) {
 	}
 	if (state != 9) {
 		lcd_show_fullscreen_message_and_wait_P(msg);
-		wizard_active = false;
 	}
 	lcd_update_enable(true);
 	lcd_return_to_status();
@@ -5014,18 +5012,18 @@ char choose_extruder_menu()
 	
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
-	
-	lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+	if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+	else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 	lcd_set_cursor(0, 1);
 	lcd_print(">");
 	for (int i = 0; i < 3; i++) {
-		lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+		lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 	}
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 
 		for (int i = 0; i < 3; i++) {
-			lcd_set_cursor(2 + strlen_P(_T(MSG_EXTRUDER)), i+1);
+			lcd_set_cursor(2 + strlen_P( mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER)), i+1);
 			lcd_print(first + i + 1);
 		}
 
@@ -5048,9 +5046,10 @@ char choose_extruder_menu()
 					if (first < items_no - 3) {
 						first++;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1,  mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 						}
 					}
 				}
@@ -5060,9 +5059,10 @@ char choose_extruder_menu()
 					if (first > 0) {
 						first--;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 						}
 					}
 				}
