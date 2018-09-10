@@ -1257,9 +1257,9 @@ void lcd_commands()
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 		if (lcd_commands_step == 0)
 		{
-			lcd_commands_step = 9;
+			lcd_commands_step = 10;
 		}
-		if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 10 && !blocks_queued() && cmd_buffer_empty())
 		{
 			enquecommand_P(PSTR("M107"));
 			enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
@@ -1267,26 +1267,54 @@ void lcd_commands()
 			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
-			if (mmu_enabled)
-				enquecommand_P(PSTR("T?"));
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
-			lcd_commands_step = 8;
+
+            lcd_commands_step = 9;
 		}
+        if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
+        {
+            lcd_clear();
+            menu_depth = 0;
+            menu_submenu(lcd_babystep_z);
+
+            if (mmu_enabled)
+            {
+                const uint8_t filament = 0;
+                strcpy(cmd1, "T");
+                strcat(cmd1, itostr3left(filament));
+                enquecommand(cmd1);
+                enquecommand_P(PSTR("M83")); //intro line
+                enquecommand_P(PSTR("G1 Y-3.0 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 Z0.4 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 X55.0 E32.0 F1073.0")); //intro line
+                enquecommand_P(PSTR("G1 X5.0 E32.0 F1800.0")); //intro line
+                enquecommand_P(PSTR("G1 X55.0 E8.0 F2000.0")); //intro line
+                enquecommand_P(PSTR("G1 Z0.3 F1000.0")); //intro line
+                enquecommand_P(PSTR("G92 E0.0")); //intro line
+                enquecommand_P(PSTR("G1 X240.0 E25.0  F2200.0")); //intro line
+                enquecommand_P(PSTR("G1 Y-2.0 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 X55.0 E25 F1400.0")); //intro line
+                enquecommand_P(PSTR("G1 Z0.20 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 X5.0 E4.0 F1000.0")); //intro line
+
+            } else
+            {
+                enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0")); //intro line
+            }
+
+            lcd_commands_step = 8;
+        }
 		if (lcd_commands_step == 8 && !blocks_queued() && cmd_buffer_empty())
 		{
 
-			lcd_clear();
-			menu_depth = 0;
-			menu_submenu(lcd_babystep_z);
-			enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
-			enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0")); //intro line			
 			enquecommand_P(PSTR("G92 E0.0"));
 			enquecommand_P(PSTR("G21")); //set units to millimeters
 			enquecommand_P(PSTR("G90")); //use absolute coordinates
 			enquecommand_P(PSTR("M83")); //use relative distances for extrusion
 			enquecommand_P(PSTR("G1 E-1.50000 F2100.00000"));
-			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
+			enquecommand_P(PSTR("G1 Z5 F7200.000"));
 			enquecommand_P(PSTR("M204 S1000")); //set acceleration
 			enquecommand_P(PSTR("G1 F4000"));
 			lcd_commands_step = 7;
@@ -1316,6 +1344,7 @@ void lcd_commands()
 
 
 			enquecommand_P(PSTR("G1 X50 Y155"));
+			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
 			enquecommand_P(PSTR("G1 F1080"));
 			enquecommand_P(PSTR("G1 X75 Y155 E2.5"));
 			enquecommand_P(PSTR("G1 X100 Y155 E2"));
@@ -4335,7 +4364,13 @@ void lcd_wizard(int state) {
                lcd_commands_type = LCD_COMMAND_V2_CAL;
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
-			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+			if (mmu_enabled)
+			{
+			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament 1 loaded?"), false);////c=20 r=2
+			} else
+			{
+			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+			}
 			if (wizard_event) state = 8;
 			else state = 6;
 
