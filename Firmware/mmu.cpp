@@ -173,39 +173,51 @@ void mmu_loop(void)
 			if ((mmu_cmd >= MMU_CMD_T0) && (mmu_cmd <= MMU_CMD_T4))
 			{
 				filament = mmu_cmd - MMU_CMD_T0;
+#ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'T%d'\n"), filament);
+#endif //MMU_DEBUG
 				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = 3; // wait for response
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
 			{
 			    filament = mmu_cmd - MMU_CMD_L0;
+#ifdef MMU_DEBUG
 			    printf_P(PSTR("MMU <= 'L%d'\n"), filament);
+#endif //MMU_DEBUG
 			    mmu_printf_P(PSTR("L%d\n"), filament);
 			    mmu_state = 3; // wait for response
 			}
 			else if (mmu_cmd == MMU_CMD_C0)
 			{
+#ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'C0'\n"));
+#endif //MMU_DEBUG
 				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = 3;
 			}
 			else if (mmu_cmd == MMU_CMD_U0)
 			{
+#ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'U0'\n"));
+#endif //MMU_DEBUG
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
 				mmu_state = 3;
 			}
 			else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
 			{
 				int filament = mmu_cmd - MMU_CMD_E0;
+#ifdef MMU_DEBUG				
 				printf_P(PSTR("MMU <= 'E%d'\n"), filament);
+#endif //MMU_DEBUG
 				mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
 				mmu_state = 3; // wait for response
 			}
 			else if (mmu_cmd == MMU_CMD_R0)
 			{
+#ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'R0'\n"));
+#endif //MMU_DEBUG
 				mmu_puts_P(PSTR("R0\n")); //send recover after eject
 				mmu_state = 3; // wait for response
 			}
@@ -224,7 +236,9 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
+#endif //MMU_DEBUG
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FINDA && fsensor_enabled) {
 				fsensor_stop_and_save_print();
@@ -244,7 +258,9 @@ void mmu_loop(void)
 	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => 'ok'\n"));
+#endif //MMU_DEBUG
 			mmu_ready = true;
 			mmu_state = 1;
 		}
