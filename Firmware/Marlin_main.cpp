@@ -476,6 +476,8 @@ uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated re
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 
+bool wizard_active = false; //autoload temporarily disabled during wizard
+
 //===========================================================================
 //=============================Private Variables=============================
 //===========================================================================
@@ -7330,7 +7332,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 	{
 		if (mcode_in_progress != 600) //M600 not in progress
 		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active)
 			{
 				if (fsensor_check_autoload())
 				{
