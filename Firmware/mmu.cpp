@@ -113,8 +113,10 @@ void mmu_loop(void)
 	case -1:
 		if (mmu_rx_start() > 0)
 		{
+#ifdef MMU_DEBUG
 			puts_P(PSTR("MMU => 'start'"));
 			puts_P(PSTR("MMU <= 'S1'"));
+#endif //MMU_DEBUG
 		    mmu_puts_P(PSTR("S1\n")); //send 'read version' request
 			mmu_state = -2;
 		}
@@ -128,9 +130,11 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%u"), &mmu_version); //scan version from buffer
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_version);
 			puts_P(PSTR("MMU <= 'S2'"));
-		    mmu_puts_P(PSTR("S2\n")); //send 'read buildnr' request
+#endif //MMU_DEBUG
+			mmu_puts_P(PSTR("S2\n")); //send 'read buildnr' request
 			mmu_state = -3;
 		}
 		return;
@@ -138,11 +142,15 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%u"), &mmu_buildnr); //scan buildnr from buffer
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_buildnr);
+#endif //MMU_DEBUG
 			bool version_valid = mmu_check_version();
 			if (!version_valid) mmu_show_warning();
 			else puts_P(PSTR("MMU version valid"));
+#ifdef MMU_DEBUG
 			puts_P(PSTR("MMU <= 'P0'"));
+#endif //MMU_DEBUG
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = -4;
 		}
@@ -151,7 +159,9 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
+#endif //MMU_DEBUG
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
 			mmu_state = 1;
@@ -203,7 +213,9 @@ void mmu_loop(void)
 		}
 		else if ((mmu_last_response + 300) < millis()) //request every 300ms
 		{
+#ifdef MMU_DEBUG
 			puts_P(PSTR("MMU <= 'P0'"));
+#endif //MMU_DEBUG
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = 2;
 		}

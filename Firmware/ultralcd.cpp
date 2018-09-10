@@ -530,7 +530,7 @@ void lcdui_print_extruder(void)
 {
 	int chars = 0;
 	if (mmu_extruder == tmp_extruder)
-		chars = lcd_printf_P(_N(" T%u"), mmu_extruder+1);
+		chars = lcd_printf_P(_N(" F%u"), mmu_extruder+1);
 	else
 		chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder+1, tmp_extruder+1);
 	lcd_space(5 - chars);
@@ -4361,8 +4361,10 @@ void lcd_wizard(int state) {
 	int wizard_event;
 	const char *msg = NULL;
 	while (!end) {
+		printf_P(PSTR("Wizard state: %d"), state);
 		switch (state) {
 		case 0: // run wizard?
+			wizard_active = true;
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
 				state = 1;
@@ -4408,7 +4410,6 @@ void lcd_wizard(int state) {
 			break;
 		case 5: //is filament loaded?
 				//start to preheat nozzle and bed to save some time later
-               lcd_commands_type = LCD_COMMAND_V2_CAL;
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
@@ -4446,7 +4447,7 @@ void lcd_wizard(int state) {
 #ifdef SNMM
 			change_extr(0);
 #endif
-               loading_flag = true;
+            loading_flag = true;
 			gcode_M701();
 			state = 9;
 			break;
@@ -4480,7 +4481,7 @@ void lcd_wizard(int state) {
 		}
 	}
 
-	printf_P(_N("State: %d\n"), state);
+	printf_P(_N("Wizard end state: %d\n"), state);
 	switch (state) { //final message
 	case 0: //user dont want to use wizard
 		msg = _T(MSG_WIZARD_QUIT);
@@ -4514,7 +4515,10 @@ void lcd_wizard(int state) {
 		break;
 
 	}
-	if (state != 9) lcd_show_fullscreen_message_and_wait_P(msg);
+	if (state != 9) {
+		lcd_show_fullscreen_message_and_wait_P(msg);
+		wizard_active = false;
+	}
 	lcd_update_enable(true);
 	lcd_return_to_status();
 	lcd_update(2);
