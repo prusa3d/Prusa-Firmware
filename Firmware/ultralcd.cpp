@@ -4364,6 +4364,7 @@ void lcd_wizard(int state) {
 		printf_P(PSTR("Wizard state: %d"), state);
 		switch (state) {
 		case 0: // run wizard?
+			wizard_active = true;
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
 				state = 1;
@@ -4516,6 +4517,7 @@ void lcd_wizard(int state) {
 	}
 	if (state != 9) {
 		lcd_show_fullscreen_message_and_wait_P(msg);
+		wizard_active = false;
 	}
 	lcd_update_enable(true);
 	lcd_return_to_status();
