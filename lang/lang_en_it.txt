@@ -242,6 +242,22 @@
 "Eject filament 1"
 "Espelli filamento 1"
 
+#MSG_EJECT_FILAMENT2 c=17 r=1
+"Eject filament 2"
+"Espelli filamento 2"
+
+#MSG_EJECT_FILAMENT3 c=17 r=1
+"Eject filament 3"
+"Espelli filamento 3"
+
+#MSG_EJECT_FILAMENT4 c=17 r=1
+"Eject filament 4"
+"Espelli filamento 4"
+
+#MSG_EJECT_FILAMENT5 c=17 r=1
+"Eject filament 5"
+"Espelli filamento 5"
+
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 "Espellendo filamento"
