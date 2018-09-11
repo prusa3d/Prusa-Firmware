@@ -344,7 +344,7 @@
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
-"\x00"
+"Fil. sensor [zap]"
 
 #MSG_RESPONSE_POOR c=20 r=2
 "Fil. sensor response is poor, disable it?"
@@ -716,7 +716,7 @@
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
-"\x00"
+"Netoci se"
 
 #MSG_WIZARD_V2_CAL c=20 r=8
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
@@ -1204,7 +1204,7 @@
 
 #MSG_WIZARD_QUIT c=20 r=8
 "You can always resume the Wizard from Calibration -> Wizard."
-"\x00"
+"Wizarda muzete kdykoliv znovu spustit z menu Calibration -> Wizard"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
 "XYZ calibration all right. Skew will be corrected automatically."
