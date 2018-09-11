@@ -1223,3 +1223,9 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 "XYZ calibration compromised. Left front calibration point not reachable."
+
+#MSG_UNLOAD_ALL c=17 r=0
+"Unload all"
+
+#MSG_UNLOAD_FILAMENT_1 c=17 r=0
+"Unload filament 1"

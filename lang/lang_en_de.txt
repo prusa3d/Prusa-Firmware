@@ -1229,3 +1229,27 @@
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 "XYZ calibration compromised. Left front calibration point not reachable."
 "XYZ-Kalibrierung ungenau. Linker vorderer Kalibrierpunkt ist zu weit vorne."
+
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+"Alle laden"
+
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+"Filament 1 laden"
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+"Filament 2 laden"
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+"Filament 3 laden"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+"Filament 4 laden"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+"Filament 5 laden"

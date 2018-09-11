@@ -1230,3 +1230,28 @@
 "XYZ calibration compromised. Left front calibration point not reachable."
 "Kalibracja XYZ niedokladna. Lewy przedni punkt zbyt wysuniety do przodu."
 
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+"Zalad. wszystkie"
+
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+"Zaladowac fil. 1"
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+"Zaladowac fil. 2"
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+"Zaladowac fil. 3"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+"Zaladowac fil. 4"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+"Zaladowac fil. 5"
+
+
