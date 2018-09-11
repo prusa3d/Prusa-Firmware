@@ -283,6 +283,9 @@
 #MSG_FILAMENT_USED c=19 r=1
 "Filament used"
 
+#MSG_PRINT_TIME c=19 r=1
+"Filament used"
+
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
 

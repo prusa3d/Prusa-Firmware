@@ -378,6 +378,10 @@
 "Filament used"
 "Filamento utilizzato"
 
+#MSG_PRINT_TIME c=19 r=1
+"Print time"
+"Tempo di stampa"
+
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
 "File incompleto. Continuare comunque?"
