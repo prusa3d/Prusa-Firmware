@@ -482,6 +482,14 @@
 "Choose extruder:"
 "Seleziona estrusore:"
 
+#MSG_CHOOSE_FILAMENT c=20 r=1
+"Choose filament:"
+"Seleziona filamento:"
+
+#MSG_FILAMENT c=17 r=1
+"Filament"
+"Filamento"
+
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
 "Adesso avviero una Calibrazione XYZ. Puo durare circa 12 min."
