@@ -152,7 +152,7 @@ bool lcd_wait_for_pinda(float temp);
 
 void bowden_menu();
 char reset_menu();
-char choose_extruder_menu();
+char choose_menu_P(const char *header, const char *item);
 
 void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();

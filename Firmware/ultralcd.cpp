@@ -4969,7 +4969,7 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	
 }
 
-char choose_extruder_menu()
+char choose_menu_P(const char *header, const char *item)
 {
 	int items_no = mmu_enabled?5:4;
 	int first = 0;
@@ -4979,17 +4979,17 @@ char choose_extruder_menu()
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
 	
-	lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+	lcd_puts_P(header);
 	lcd_set_cursor(0, 1);
 	lcd_print(">");
 	for (int i = 0; i < 3; i++) {
-		lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+		lcd_puts_at_P(1, i + 1, item);
 	}
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 
 		for (int i = 0; i < 3; i++) {
-			lcd_set_cursor(2 + strlen_P(_T(MSG_EXTRUDER)), i+1);
+			lcd_set_cursor(2 + strlen_P(item), i+1);
 			lcd_print(first + i + 1);
 		}
 
@@ -5012,9 +5012,9 @@ char choose_extruder_menu()
 					if (first < items_no - 3) {
 						first++;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						lcd_puts_P(header);
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1, item);
 						}
 					}
 				}
@@ -5024,9 +5024,9 @@ char choose_extruder_menu()
 					if (first > 0) {
 						first--;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						lcd_puts_P(header);
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1, item);
 						}
 					}
 				}

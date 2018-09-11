@@ -6816,7 +6816,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       }
       else {
           if (*(strchr_pointer + index) == '?') {
-              tmp_extruder = choose_extruder_menu();
+              tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER));
           }
           else {
               tmp_extruder = code_value();
