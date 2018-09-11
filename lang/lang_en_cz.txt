@@ -1257,3 +1257,7 @@
 #MSG_LOAD_FILAMENT_5 c=17 r=0
 "Load filament 5"
 "Zavest filament 5"
+
+#MSG_OFF c=0 r=0
+" [off]"
+" [vyp]"
