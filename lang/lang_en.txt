@@ -361,6 +361,12 @@
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
 
+#MSG_CHOOSE_FILAMENT c=20 r=1
+"Choose filament:"
+
+#MSG_FILAMENT c=17 r=1
+"Filament"
+
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
 
