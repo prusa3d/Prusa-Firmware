@@ -1205,3 +1205,27 @@
 #MSG_WIZARD_QUIT c=20 r=8
 "You can always resume the Wizard from Calibration -> Wizard."
 "E possibile riprendere il Wizard in qualsiasi momento attraverso Calibrazione -> Wizard."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+"XYZ calibration all right. Skew will be corrected automatically."
+"Calibrazion XYZ corretta. La distorsione verra' automaticamente compensata."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"Calibrazion XYZ corretta. Assi X/Y leggermente storti. Ben fatto!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari. Complimenti!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+"XYZ calibration compromised. Front calibration points not reachable."
+"Calibrazione XYZ compromessa. Punti anteriori non raggiungibili."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+"XYZ calibration compromised. Right front calibration point not reachable."
+"Calibrazione XYZ compromessa. Punto anteriore destro non raggiungibile."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+"XYZ calibration compromised. Left front calibration point not reachable."
+"Calibrazione XYZ compromessa. Punto anteriore sinistro non raggiungibile."
