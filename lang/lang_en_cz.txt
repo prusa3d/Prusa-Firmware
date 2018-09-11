@@ -4,7 +4,7 @@
 
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
-"\x00"
+" PlannerBufferBytes: "
 
 #MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
 " cold extrusion prevented"
@@ -196,15 +196,15 @@
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Crash det.  [zap]"
+"Crash det. [zap]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"\x00"
+"Crash det. [N/A]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Crash det.  [vyp]"
+"Crash det. [vyp]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -212,7 +212,7 @@
 
 #MSG_CURRENT c=19 r=1
 "Current"
-"\x00"
+"Pouze aktualni"
 
 #MSG_DATE c=17 r=1
 "Date:"
@@ -244,19 +244,19 @@
 
 #MSG_EJECT_FILAMENT2 c=17 r=1
 "Eject filament 2"
-"Vysunout filament 2"
+"\x00"
 
 #MSG_EJECT_FILAMENT3 c=17 r=1
 "Eject filament 3"
-"Vysunout filament 3"
+"\x00"
 
 #MSG_EJECT_FILAMENT4 c=17 r=1
 "Eject filament 4"
-"Vysunout filament 4"
+"\x00"
 
 #MSG_EJECT_FILAMENT5 c=17 r=1
 "Eject filament 5"
-"Vysunout filament 5"
+"\x00"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -344,7 +344,7 @@
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
-"Fil. sensor [zap]"
+"Fil. senzor [zap]"
 
 #MSG_RESPONSE_POOR c=20 r=2
 "Fil. sensor response is poor, disable it?"
@@ -352,7 +352,7 @@
 
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
-"\x00"
+"Fil. senzor [N/A]"
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
@@ -360,7 +360,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Je barva cista?"
+"Filament vytlacen a spravne barvy?"
 
 #MSG_NOT_LOADED c=19 r=0
 "Filament not loaded"
@@ -376,11 +376,11 @@
 
 #MSG_FILAMENT_USED c=19 r=1
 "Filament used"
-"Spotrebovano fil."
+"Spotrebovano filamentu"
 
 #MSG_PRINT_TIME c=19 r=1
 "Print time"
-"Cas tisku" 
+"\x00"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -420,7 +420,7 @@
 
 #MSG_BED_CORRECTION_FRONT c=14 r=1
 "Front side[um]"
-"Vpredu    [um]"
+"Vpredu [um]"
 
 #MSG_SELFTEST_FANS c=0 r=0
 "Front/left fans"
@@ -428,7 +428,7 @@
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=0 r=0
 "Heater/Thermistor"
-"Heater/Termistor"
+"\x00"
 
 #MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
 "Heating disabled by safety timer."
@@ -468,11 +468,11 @@
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
-"Kontruji bed"
+"Kontrola bed "
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20 r=0
 "Checking endstops"
-"Kontroluji endstopy"
+"Kontrola endstops"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20 r=0
 "Checking hotend  "
@@ -484,15 +484,15 @@
 
 #MSG_SELFTEST_CHECK_X c=20 r=0
 "Checking X axis  "
-"\x00"
+"Kontrola X axis "
 
 #MSG_SELFTEST_CHECK_Y c=20 r=0
 "Checking Y axis  "
-"\x00"
+"Kontrola Y axis "
 
 #MSG_SELFTEST_CHECK_Z c=20 r=0
 "Checking Z axis  "
-"\x00"
+"Kontrola Z axis "
 
 #MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
 "checksum mismatch, Last Line: "
@@ -504,11 +504,11 @@
 
 #MSG_CHOOSE_FILAMENT c=20 r=1
 "Choose filament:"
-"Vyberte filament:"
+"\x00"
 
 #MSG_FILAMENT c=17 r=1
 "Filament"
-"Filament"
+"\x00"
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
@@ -660,15 +660,15 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Mod      [Normal]"
+"Mod [Normal]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Mod       [tichy]"
+"Mod [tichy]"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
-"Mod     [Stealth]"
+"Mod [Stealth]"
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
@@ -676,7 +676,7 @@
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Mod  [vys. vykon]"
+"Mod [vys. vykon]"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -936,11 +936,11 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"RPi port    [zap]"
+"RPi port [zap]"
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"RPi port    [vyp]"
+"RPi port [vyp]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -948,7 +948,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 "SD card  [normal]"
-"SD card  [normal]"
+"SD card [normal]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [FlshAir]"
@@ -1020,11 +1020,11 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort:      [none]"
-"Trideni   [Zadne]"
+"\x00"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"Trideni     [Cas]"
+"\x00"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
@@ -1036,19 +1036,19 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Zvuk    [hlasity]"
+"Zvuk [hlasity]"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Zvuk    [vypnuto]"
+"Zvuk [vypnuto]"
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
-"Zvuk     [jednou]"
+"Zvuk [jednou]"
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Zvuk      [tichy]"
+"Zvuk [tichy]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -1092,11 +1092,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Tepl. kal.  [zap]"
+"Tepl. kal. [zap]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Tepl. kal.  [vyp]"
+"Tepl. kal. [vyp]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1160,7 +1160,7 @@
 
 #MSG_WAITING_TEMP_PINDA c=20 r=3
 "Waiting for PINDA probe cooling"
-"\x00"
+"Cekani na zchladnuti PINDA"
 
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
@@ -1256,8 +1256,8 @@
 
 #MSG_LOAD_FILAMENT_5 c=17 r=0
 "Load filament 5"
-"Zavest filament 5"
+"\x00"
 
 #MSG_OFF c=0 r=0
 " [off]"
-" [vyp]"
+"\x00"
