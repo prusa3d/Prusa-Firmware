@@ -4279,8 +4279,12 @@ void lcd_v2_calibration()
 {
 	if (mmu_enabled)
 	{
-	    lcd_commands_step = 20 + choose_menu_P(_i("Select PLA filament:"),_i("Filament")); ////c=20 r=1 ////c=17 r=1
-		lcd_commands_type = LCD_COMMAND_V2_CAL;
+	    const uint8_t filament = choose_menu_P(_i("Select PLA filament:"),_i("Filament"),_i("Cancel")); ////c=20 r=1 ////c=17 r=1 ////c=19 r=1
+	    if (filament < 5)
+	    {
+	        lcd_commands_step = 20 + filament;
+	        lcd_commands_type = LCD_COMMAND_V2_CAL;
+	    }
 	}
 	else
 	{
@@ -5006,85 +5010,95 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 //!
 //! Create list of items with header. Header can not be selected.
 //! Each item has text description passed by function parameter and
-//! number. There are 5 items, if mmu_enabled, 4 otherwise.
+//! number. There are 5 numbered items, if mmu_enabled, 4 otherwise.
 //! Items are numbered from 1 to 4 or 5. But index returned starts at 0.
+//! There can be last item with different text and no number.
 //!
 //! @param header Header text
 //! @param item Item text
+//! @param last_item Last item text, or nullptr if there is no Last item
 //! @return selected item index, first item index is 0
-char choose_menu_P(const char *header, const char *item)
+uint8_t choose_menu_P(const char *header, const char *item, const char *last_item)
 {
-	int items_no = mmu_enabled?5:4;
-	int first = 0;
-	int enc_dif = 0;
-	char cursor_pos = 1;
+    //following code should handle 3 to 127 number of items well
+    const int8_t items_no = last_item?(mmu_enabled?6:5):(mmu_enabled?5:4);
+    const uint8_t item_len = item?strlen_P(item):0;
+	int8_t first = 0;
+	int8_t enc_dif = lcd_encoder_diff;
+	int8_t cursor_pos = 1;
 	
-	enc_dif = lcd_encoder_diff;
 	lcd_clear();
 	
-	lcd_puts_P(header);
-	lcd_set_cursor(0, 1);
-	lcd_print(">");
-	for (int i = 0; i < 3; i++) {
-		lcd_puts_at_P(1, i + 1, item);
-	}
+
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
-	while (1) {
-
-		for (int i = 0; i < 3; i++) {
-			lcd_set_cursor(2 + strlen_P(item), i+1);
-			lcd_print(first + i + 1);
-		}
-
+	while (1)
+	{
 		manage_heater();
 		manage_inactivity(true);
 
-		if (abs((enc_dif - lcd_encoder_diff)) > 4) {
+		if (abs((enc_dif - lcd_encoder_diff)) > 4)
+		{
+            if (enc_dif > lcd_encoder_diff)
+            {
+                cursor_pos--;
+            }
 
-			if ((abs(enc_dif - lcd_encoder_diff)) > 1) {
-				if (enc_dif > lcd_encoder_diff) {
-					cursor_pos--;
-				}
-
-				if (enc_dif < lcd_encoder_diff) {
-					cursor_pos++;
-				}
-
-				if (cursor_pos > 3) {
-					cursor_pos = 3;
-					if (first < items_no - 3) {
-						first++;
-						lcd_clear();
-						lcd_puts_P(header);
-						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, item);
-						}
-					}
-				}
-
-				if (cursor_pos < 1) {
-					cursor_pos = 1;
-					if (first > 0) {
-						first--;
-						lcd_clear();
-						lcd_puts_P(header);
-						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, item);
-						}
-					}
-				}
-				lcd_set_cursor(0, 1);
-				lcd_print(" ");
-				lcd_set_cursor(0, 2);
-				lcd_print(" ");
-				lcd_set_cursor(0, 3);
-				lcd_print(" ");
-				lcd_set_cursor(0, cursor_pos);
-				lcd_print(">");
-				enc_dif = lcd_encoder_diff;
-				delay(100);
-			}
+            if (enc_dif < lcd_encoder_diff)
+            {
+                cursor_pos++;
+            }
+            enc_dif = lcd_encoder_diff;
 		}
+
+		if (cursor_pos > 3)
+		{
+            cursor_pos = 3;
+            if (first < items_no - 3)
+            {
+                first++;
+                lcd_clear();
+            }
+        }
+
+        if (cursor_pos < 1)
+        {
+            cursor_pos = 1;
+            if (first > 0)
+            {
+                first--;
+                lcd_clear();
+            }
+        }
+
+        if (header) lcd_puts_at_P(0,0,header);
+
+        const bool last_visible = (first == items_no - 3);
+        const int8_t ordinary_items = (last_item&&last_visible)?2:3;
+
+        for (int i = 0; i < ordinary_items; i++)
+        {
+            if (item) lcd_puts_at_P(1, i + 1, item);
+        }
+
+        for (int i = 0; i < ordinary_items; i++)
+        {
+            lcd_set_cursor(2 + item_len, i+1);
+            lcd_print(first + i + 1);
+        }
+
+        if (last_item&&last_visible) lcd_puts_at_P(1, 3, last_item);
+
+
+        lcd_set_cursor(0, 1);
+        lcd_print(" ");
+        lcd_set_cursor(0, 2);
+        lcd_print(" ");
+        lcd_set_cursor(0, 3);
+        lcd_print(" ");
+        lcd_set_cursor(0, cursor_pos);
+        lcd_print(">");
+
+        delay(100);
 
 		if (lcd_clicked())
 		{
