@@ -240,7 +240,23 @@
 
 #MSG_EJECT_FILAMENT1 c=17 r=1
 "Eject filament 1"
-"Expulsar filamento 1"
+"Expulsar filam. 1"
+
+#MSG_EJECT_FILAMENT2 c=17 r=1
+"Eject filament 2"
+"Expulsar filam. 2"
+
+#MSG_EJECT_FILAMENT3 c=17 r=1
+"Eject filament 3"
+"Expulsar filam. 3"
+
+#MSG_EJECT_FILAMENT4 c=17 r=1
+"Eject filament 4"
+"Expulsar filam. 4"
+
+#MSG_EJECT_FILAMENT5 c=17 r=1
+"Eject filament 5"
+"Expulsar filam. 5"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
