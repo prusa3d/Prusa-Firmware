@@ -4373,8 +4373,11 @@ void lcd_wizard(int state) {
 			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 			}
 			if (wizard_event) state = 8;
-			else state = 6;
-
+			else
+			{
+			    if(mmu_enabled) state = 7;
+			    else state = 6;
+			}
 			break;
 		case 6: //waiting for preheat nozzle for PLA;
 #ifndef SNMM
@@ -4399,7 +4402,13 @@ void lcd_wizard(int state) {
 			state = 7;
 			break;
 		case 7: //load filament 
-			lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+		    if (mmu_enabled)
+		    {
+		        lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
+		    } else
+		    {
+			    lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+		    }
 			lcd_update_enable(false);
 			lcd_clear();
 			lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
