@@ -487,6 +487,7 @@
 "Seleziona filamento:"
 
 #MSG_FILAMENT c=17 r=1
+"Filament"
 "Filamento"
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
