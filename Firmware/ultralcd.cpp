@@ -530,7 +530,7 @@ void lcdui_print_extruder(void)
 {
 	int chars = 0;
 	if (mmu_extruder == tmp_extruder)
-		chars = lcd_printf_P(_N(" T%u"), mmu_extruder+1);
+		chars = lcd_printf_P(_N(" F%u"), mmu_extruder+1);
 	else
 		chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder+1, tmp_extruder+1);
 	lcd_space(5 - chars);
@@ -5014,18 +5014,18 @@ char choose_extruder_menu()
 	
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
-	
-	lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+	if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+	else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 	lcd_set_cursor(0, 1);
 	lcd_print(">");
 	for (int i = 0; i < 3; i++) {
-		lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+		lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 	}
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 
 		for (int i = 0; i < 3; i++) {
-			lcd_set_cursor(2 + strlen_P(_T(MSG_EXTRUDER)), i+1);
+			lcd_set_cursor(2 + strlen_P( mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER)), i+1);
 			lcd_print(first + i + 1);
 		}
 
@@ -5048,9 +5048,10 @@ char choose_extruder_menu()
 					if (first < items_no - 3) {
 						first++;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1,  mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 						}
 					}
 				}
@@ -5060,9 +5061,10 @@ char choose_extruder_menu()
 					if (first > 0) {
 						first--;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 						}
 					}
 				}
