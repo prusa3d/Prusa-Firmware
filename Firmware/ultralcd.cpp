@@ -1256,7 +1256,8 @@ void lcd_commands()
 		float extr = count_e(0.2, width, length);
 		float extr_short_segment = count_e(0.2, width, width);
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
-		if (lcd_commands_step == 0)
+
+		if (lcd_commands_step == 0 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_commands_step = 10;
 		}
@@ -1286,11 +1287,17 @@ void lcd_commands()
             lcd_commands_step = 10;
         }
 
-		if (lcd_commands_step == 10 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 10)
 		{
 			enquecommand_P(PSTR("M107"));
 			enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+            if (mmu_enabled)
+            {
+                strcpy(cmd1, "T");
+                strcat(cmd1, itostr3left(filament));
+                enquecommand(cmd1);
+            }
 			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
@@ -1307,9 +1314,6 @@ void lcd_commands()
 
             if (mmu_enabled)
             {
-                strcpy(cmd1, "T");
-                strcat(cmd1, itostr3left(filament));
-                enquecommand(cmd1);
                 enquecommand_P(PSTR("M83")); //intro line
                 enquecommand_P(PSTR("G1 Y-3.0 F1000.0")); //intro line
                 enquecommand_P(PSTR("G1 Z0.4 F1000.0")); //intro line
@@ -4274,7 +4278,10 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 void lcd_v2_calibration()
 {
 	if (mmu_enabled)
+	{
+	    lcd_commands_step = 20 + choose_menu_P(_i("Select PLA filament:"),_i("Filament")); ////c=20 r=1 ////c=17 r=1
 		lcd_commands_type = LCD_COMMAND_V2_CAL;
+	}
 	else
 	{
 		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
@@ -4995,6 +5002,16 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	
 }
 
+//! @brief Select one of numbered items
+//!
+//! Create list of items with header. Header can not be selected.
+//! Each item has text description passed by function parameter and
+//! number. There are 5 items, if mmu_enabled, 4 otherwise.
+//! Items are numbered from 1 to 4 or 5. But index returned starts at 0.
+//!
+//! @param header Header text
+//! @param item Item text
+//! @return selected item index, first item index is 0
 char choose_menu_P(const char *header, const char *item)
 {
 	int items_no = mmu_enabled?5:4;
@@ -5067,21 +5084,14 @@ char choose_menu_P(const char *header, const char *item)
 				enc_dif = lcd_encoder_diff;
 				delay(100);
 			}
-
 		}
 
-		if (lcd_clicked()) {
-			lcd_update(2);
-			while (lcd_clicked());
-			delay(10);
-			while (lcd_clicked());
-			KEEPALIVE_STATE(IN_HANDLER);
+		if (lcd_clicked())
+		{
+		    KEEPALIVE_STATE(IN_HANDLER);
 			return(cursor_pos + first - 1);
-			
 		}
-
 	}
-
 }
 
 //#endif
