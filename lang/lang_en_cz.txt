@@ -428,7 +428,7 @@
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=0 r=0
 "Heater/Thermistor"
-"\x00"
+"Heater/Termistor"
 
 #MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
 "Heating disabled by safety timer."
@@ -468,11 +468,11 @@
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
-"\x00"
+"Kontruji bed"
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20 r=0
 "Checking endstops"
-"\x00"
+"Kontroluji endstopy"
 
 #MSG_SELFTEST_CHECK_HOTEND c=20 r=0
 "Checking hotend  "
@@ -564,7 +564,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"\x00"
+"Je tiskovy plat na heatbed?"
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 "Iteration "
