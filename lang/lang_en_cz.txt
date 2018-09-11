@@ -344,7 +344,7 @@
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
-"\x00"
+"Fil. sensor [zap]"
 
 #MSG_RESPONSE_POOR c=20 r=2
 "Fil. sensor response is poor, disable it?"
@@ -360,7 +360,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"\x00"
+"Je barva cista?"
 
 #MSG_NOT_LOADED c=19 r=0
 "Filament not loaded"
@@ -376,7 +376,7 @@
 
 #MSG_FILAMENT_USED c=19 r=1
 "Filament used"
-"Spotrebovano filamentu"
+"Spotrebovano fil."
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -716,7 +716,7 @@
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
-"\x00"
+"Netoci se"
 
 #MSG_WIZARD_V2_CAL c=20 r=8
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
@@ -1204,4 +1204,52 @@
 
 #MSG_WIZARD_QUIT c=20 r=8
 "You can always resume the Wizard from Calibration -> Wizard."
-"\x00"
+"Wizarda muzete kdykoliv znovu spustit z menu Calibration -> Wizard"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+"XYZ calibration all right. Skew will be corrected automatically."
+"Kalibrace XYZ v poradku. Zkoseni bude automaticky vyrovnano pri tisku."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"Kalibrace XYZ v poradku. X/Y osy mirne zkosene. Dobra prace!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"Kalibrace XYZ v poradku. X/Y osy jsou kolme. Gratuluji!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+"XYZ calibration compromised. Front calibration points not reachable."
+"Kalibrace XYZ nepresna. Predni kalibracni body moc vpredu."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+"XYZ calibration compromised. Right front calibration point not reachable."
+"Kalibrace XYZ nepresna. Pravy predni bod moc vpredu."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+"XYZ calibration compromised. Left front calibration point not reachable."
+"Kalibrace XYZ nepresna. Levy predni bod moc vpredu."
+
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+"Zavest vse"
+
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+"Zavest filament 1"
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+"Zavest filament 2"
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+"Zavest filament 3"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+"Zavest filament 4"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+"Zavest filament 5"

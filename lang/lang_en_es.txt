@@ -1205,3 +1205,51 @@
 #MSG_WIZARD_QUIT c=20 r=8
 "You can always resume the Wizard from Calibration -> Wizard."
 "Siempre puedes acceder al asistente desde Calibracion -> Wizard."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+"XYZ calibration all right. Skew will be corrected automatically."
+"Calibracion XYZ correcta. La inclinacion se corregira automaticamente."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"Calibracion XYZ correcta. Los ejes X / Y estan ligeramente inclinados. Buen trabajo!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"Calibracion XYZ ok. Ejes X/Y perpendiculares. Enhorabuena!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+"XYZ calibration compromised. Front calibration points not reachable."
+"Calibrazion XYZ comprometida. Puntos frontales no alcanzables."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+"XYZ calibration compromised. Right front calibration point not reachable."
+"Calibrazion XYZ comprometida. Punto frontal derecho no alcanzable."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+"XYZ calibration compromised. Left front calibration point not reachable."
+"Calibrazion XYZ comprometida. Punto frontal izquierdo no alcanzable."
+
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+"Intr. todos fil."
+
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+"Introducir fil. 1"
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+"Introducir fil. 2"
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+"Introducir fil. 3"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+"Introducir fil. 4"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+"Introducir fil. 5"

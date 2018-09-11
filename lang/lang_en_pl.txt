@@ -1206,3 +1206,52 @@
 "You can always resume the Wizard from Calibration -> Wizard."
 "Zawsze mozesz uruchomic Asystenta ponownie przez Kalibracja -> Asystent."
 
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+"XYZ calibration all right. Skew will be corrected automatically."
+"Kalibracja XYZ prawidlowa. Skosy beda automatycznie wyrownane przy druku."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"Kalibracja XYZ prawidlowa. Osie X/Y lekko skosne. Dobra robota!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"Kalibracja XYZ ok. Osie X/Y sa prostopadle. Gratulacje!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+"XYZ calibration compromised. Front calibration points not reachable."
+"Kalibr. XYZ niedokladna. Przednie punkty kalibr. Zbyt wys. do przodu."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+"XYZ calibration compromised. Right front calibration point not reachable."
+"Kalibracja XYZ niedokladna. Prawy przedni punkt zbyt wysuniety do przodu."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+"XYZ calibration compromised. Left front calibration point not reachable."
+"Kalibracja XYZ niedokladna. Lewy przedni punkt zbyt wysuniety do przodu."
+
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+"Zalad. wszystkie"
+
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+"Zaladowac fil. 1"
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+"Zaladowac fil. 2"
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+"Zaladowac fil. 3"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+"Zaladowac fil. 4"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+"Zaladowac fil. 5"
+
+
