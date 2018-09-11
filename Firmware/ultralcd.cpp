@@ -1250,6 +1250,7 @@ void lcd_commands()
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL)
 	{
 		char cmd1[30];
+		uint8_t filament = 0;
 		float width = 0.4;
 		float length = 20 - width;
 		float extr = count_e(0.2, width, length);
@@ -1259,6 +1260,32 @@ void lcd_commands()
 		{
 			lcd_commands_step = 10;
 		}
+		if (lcd_commands_step == 20 && !blocks_queued() && cmd_buffer_empty())
+		{
+            filament = 0;
+            lcd_commands_step = 10;
+		}
+        if (lcd_commands_step == 21 && !blocks_queued() && cmd_buffer_empty())
+        {
+            filament = 1;
+            lcd_commands_step = 10;
+        }
+        if (lcd_commands_step == 22 && !blocks_queued() && cmd_buffer_empty())
+        {
+            filament = 2;
+            lcd_commands_step = 10;
+        }
+        if (lcd_commands_step == 23 && !blocks_queued() && cmd_buffer_empty())
+        {
+            filament = 3;
+            lcd_commands_step = 10;
+        }
+        if (lcd_commands_step == 24 && !blocks_queued() && cmd_buffer_empty())
+        {
+            filament = 4;
+            lcd_commands_step = 10;
+        }
+
 		if (lcd_commands_step == 10 && !blocks_queued() && cmd_buffer_empty())
 		{
 			enquecommand_P(PSTR("M107"));
@@ -1280,7 +1307,6 @@ void lcd_commands()
 
             if (mmu_enabled)
             {
-                const uint8_t filament = 0;
                 strcpy(cmd1, "T");
                 strcat(cmd1, itostr3left(filament));
                 enquecommand(cmd1);
