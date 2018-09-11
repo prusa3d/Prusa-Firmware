@@ -284,7 +284,7 @@
 "Filament used"
 
 #MSG_PRINT_TIME c=19 r=1
-"Filament used"
+"Print time"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -942,3 +942,6 @@
 
 #MSG_LOAD_FILAMENT_5 c=17 r=0
 "Load filament 5"
+
+#MSG_OFF c=0 r=0
+" [off]"
