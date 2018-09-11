@@ -1,6 +1,6 @@
 #MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
 "  [off"
-"[vyp"
+"  [vyp"
 
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
@@ -196,15 +196,15 @@
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Crash det. [zap]"
+"Crash det.  [zap]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Crash det. [N/A]"
+"Crash det.  [N/A]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Crash det. [vyp]"
+"Crash det.  [vyp]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -244,19 +244,19 @@
 
 #MSG_EJECT_FILAMENT2 c=17 r=1
 "Eject filament 2"
-"\x00"
+"Vysunout filament 2"
 
 #MSG_EJECT_FILAMENT3 c=17 r=1
 "Eject filament 3"
-"\x00"
+"Vysunout filament 3"
 
 #MSG_EJECT_FILAMENT4 c=17 r=1
 "Eject filament 4"
-"\x00"
+"Vysunout filament 5"
 
 #MSG_EJECT_FILAMENT5 c=17 r=1
 "Eject filament 5"
-"\x00"
+"Vysunout filament 5"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
@@ -380,7 +380,7 @@
 
 #MSG_PRINT_TIME c=19 r=1
 "Print time"
-"\x00"
+"Cas tisku"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -428,7 +428,7 @@
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=0 r=0
 "Heater/Thermistor"
-"\x00"
+"Heater/Termistor"
 
 #MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
 "Heating disabled by safety timer."
@@ -504,7 +504,7 @@
 
 #MSG_CHOOSE_FILAMENT c=20 r=1
 "Choose filament:"
-"\x00"
+"Vyberte filament:"
 
 #MSG_FILAMENT c=17 r=1
 "Filament"
@@ -660,15 +660,15 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Mod [Normal]"
+"Mod      [Normal]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Mod [tichy]"
+"Mod       [tichy]"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
-"Mod [Stealth]"
+"Mod     [Stealth]"
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
@@ -676,7 +676,7 @@
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Mod [vys. vykon]"
+"Mod  [vys. vykon]"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -1020,11 +1020,11 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort:      [none]"
-"\x00"
+"Trideni   [Zadne]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"\x00"
+"Trideni     [Cas]"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
@@ -1036,19 +1036,19 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Zvuk [hlasity]"
+"Zvuk    [hlasity]"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Zvuk [vypnuto]"
+"Zvuk    [vypnuto]"
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
-"Zvuk [jednou]"
+"Zvuk     [jednou]"
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Zvuk [tichy]"
+"Zvuk      [tichy]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -1092,7 +1092,7 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Tepl. kal. [zap]"
+"Tepl. kal.  [zap]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
@@ -1256,8 +1256,8 @@
 
 #MSG_LOAD_FILAMENT_5 c=17 r=0
 "Load filament 5"
-"\x00"
+"Zavest filament 5"
 
 #MSG_OFF c=0 r=0
 " [off]"
-"\x00"
+" [vyp]"
