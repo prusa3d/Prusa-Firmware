@@ -1684,7 +1684,7 @@ void lcd_return_to_status()
 	menu_depth = 0;
 }
 
-
+//! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
     lcd_return_to_status();
@@ -5458,6 +5458,9 @@ static void lcd_test_menu()
 }
 #endif //LCD_TEST
 
+//! @brief Resume paused print
+//! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
+//! as restore_print_from_ram_and_continue() calls lcd_update() internally.
 void lcd_resume_print()
 {
     lcd_return_to_status();
