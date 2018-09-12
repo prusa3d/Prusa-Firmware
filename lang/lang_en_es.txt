@@ -210,6 +210,10 @@
 "Crash detected."
 "Choque detectado."
 
+#
+"Crash detected. Resume print?"
+"Choque detectado. Reanudar impres?"
+
 #MSG_CURRENT c=19 r=1
 "Current"
 "Actual"
@@ -582,6 +586,10 @@
 "Left side [um]"
 "Izquierda [um]"
 
+#
+"Lin. correction"
+"\x00"
+
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
 "Micropaso Eje Z"
@@ -891,6 +899,10 @@
 "Impresora parada debido a errores. Arregle el error y use M999 para reinicio. (Temperatura se resetea. Ajustar despues de reinicio)"
 
 #WELCOME_MSG c=20 r=0
+"Prusa i3 MK2.5 ready."
+"Prusa i3 MK2.5 prep."
+
+#WELCOME_MSG c=20 r=0
 "Prusa i3 MK3 ready."
 "Prusa i3 MK3 prep."
 
@@ -1010,6 +1022,10 @@
 "Show end stops"
 "Mostrar endstops"
 
+#
+"Show pinda state"
+"\x00"
+
 #MSG_DWELL c=0 r=0
 "Sleep..."
 "En reposo..."
@@ -1121,6 +1137,14 @@
 #MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "Todavia es necesario hacer una calibracion Z. Por favor siga el manual, capitulo Primeros pasos, seccion Calibracion del flujo."
+
+#
+"Total filament"
+"\x00"
+
+#
+"Total print time"
+"\x00"
 
 #MSG_ENDSTOP_HIT c=0 r=0
 "TRIGGERED"
