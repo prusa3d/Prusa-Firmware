@@ -16,7 +16,7 @@
 #
 # Selected language:
 LNG=$1
-if [ -z "$LNG" ]; then LNG='cz'; fi
+if [ -z "$LNG" ]; then LNG='all'; fi
 #
 #
 
@@ -95,6 +95,7 @@ case "$LNG" in
  *cz*) lt_code='\x73\x63' ;;
  *de*) lt_code='\x65\x64' ;;
  *es*) lt_code='\x73\x65' ;;
+ *fr*) lt_code='\x71\x66' ;;
  *it*) lt_code='\x74\x69' ;;
  *pl*) lt_code='\x6c\x70' ;;
 esac
@@ -161,6 +162,7 @@ if [ "$LNG" = "all" ]; then
  make_lang cz
  make_lang de
  make_lang es
+ make_lang fr
  make_lang it
  make_lang pl
  exit 0
