@@ -533,7 +533,7 @@ void lcdui_print_extruder(void)
 {
 	int chars = 0;
 	if (mmu_extruder == tmp_extruder)
-		chars = lcd_printf_P(_N(" T%u"), mmu_extruder+1);
+		chars = lcd_printf_P(_N(" F%u"), mmu_extruder+1);
 	else
 		chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder+1, tmp_extruder+1);
 	lcd_space(5 - chars);
@@ -1684,7 +1684,7 @@ void lcd_return_to_status()
 	menu_depth = 0;
 }
 
-
+//! @brief Pause print, disable nozzle heater, move to park position
 void lcd_pause_print()
 {
     lcd_return_to_status();
@@ -4934,18 +4934,18 @@ char choose_extruder_menu()
 	
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
-	
-	lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+	if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+	else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 	lcd_set_cursor(0, 1);
 	lcd_print(">");
 	for (int i = 0; i < 3; i++) {
-		lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+		lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 	}
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 
 		for (int i = 0; i < 3; i++) {
-			lcd_set_cursor(2 + strlen_P(_T(MSG_EXTRUDER)), i+1);
+			lcd_set_cursor(2 + strlen_P( mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER)), i+1);
 			lcd_print(first + i + 1);
 		}
 
@@ -4968,9 +4968,10 @@ char choose_extruder_menu()
 					if (first < items_no - 3) {
 						first++;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1,  mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 						}
 					}
 				}
@@ -4980,9 +4981,10 @@ char choose_extruder_menu()
 					if (first > 0) {
 						first--;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 						}
 					}
 				}
@@ -5120,7 +5122,7 @@ static void fil_load_menu()
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_FUNCTION_P(_i("Load all"), load_all);////MSG_LOAD_ALL c=0 r=0
+	MENU_ITEM_FUNCTION_P(_i("Load all"), load_all);////MSG_LOAD_ALL c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Load filament 1"), extr_adj_0);////MSG_LOAD_FILAMENT_1 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Load filament 2"), extr_adj_1);////MSG_LOAD_FILAMENT_2 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Load filament 3"), extr_adj_2);////MSG_LOAD_FILAMENT_3 c=17 r=0
@@ -5149,14 +5151,14 @@ static void fil_unload_menu()
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_FUNCTION_P(_i("Unload all"), extr_unload_all);////MSG_UNLOAD_ALL c=0 r=0
+	MENU_ITEM_FUNCTION_P(_i("Unload all"), extr_unload_all);////MSG_UNLOAD_ALL c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 1"), extr_unload_0);////MSG_UNLOAD_FILAMENT_1 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 2"), extr_unload_1);////MSG_UNLOAD_FILAMENT_2 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 3"), extr_unload_2);////MSG_UNLOAD_FILAMENT_3 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 4"), extr_unload_3);////MSG_UNLOAD_FILAMENT_4 c=17 r=0
 
 	if (mmu_enabled)
-		MENU_ITEM_FUNCTION_P(_i("Unload filament 5"), extr_unload_4);////MSG_UNLOAD_FILAMENT_4 c=17 r=0
+		MENU_ITEM_FUNCTION_P(_i("Unload filament 5"), extr_unload_4);////MSG_UNLOAD_FILAMENT_5 c=17 r=0
 
 	MENU_END();
 }
@@ -5456,6 +5458,9 @@ static void lcd_test_menu()
 }
 #endif //LCD_TEST
 
+//! @brief Resume paused print
+//! @todo It is not good to call restore_print_from_ram_and_continue() from function called by lcd_update(),
+//! as restore_print_from_ram_and_continue() calls lcd_update() internally.
 void lcd_resume_print()
 {
     lcd_return_to_status();
