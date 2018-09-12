@@ -256,7 +256,7 @@
 
 #MSG_EJECT_FILAMENT4 c=17 r=1
 "Eject filament 4"
-"Vysunout filament 5"
+"Vysunout filament 4"
 
 #MSG_EJECT_FILAMENT5 c=17 r=1
 "Eject filament 5"
