@@ -464,8 +464,6 @@ bool no_response = false;
 uint8_t important_status;
 uint8_t saved_filament_type;
 
-// save/restore printing
-bool saved_printing = false;
 
 // save/restore printing in case that mmu was not responding 
 bool mmu_print_saved = false;
@@ -526,17 +524,20 @@ unsigned long chdkHigh = 0;
 boolean chdkActive = false;
 #endif
 
-// save/restore printing
-static uint32_t saved_sdpos = 0;
+//! @name RAM save/restore printing
+//! @{
+bool saved_printing = false; //!< Print is paused and saved in RAM
+static uint32_t saved_sdpos = 0; //!< SD card position, or line number in case of USB printing
 static uint8_t saved_printing_type = PRINTING_TYPE_SD;
 static float saved_pos[4] = { 0, 0, 0, 0 };
-// Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
+//! Feedrate hopefully derived from an active block of the planner at the time the print has been canceled, in mm/min.
 static float saved_feedrate2 = 0;
 static uint8_t saved_active_extruder = 0;
-static float saved_extruder_temperature = 0.0;
+static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
 static bool saved_extruder_under_pressure = false;
 static bool saved_extruder_relative_mode = false;
-static int saved_fanSpeed = 0;
+static int saved_fanSpeed = 0; //!< Print fan speed
+//! @}
 
 //===========================================================================
 //=============================Routines======================================
@@ -2019,6 +2020,7 @@ static int setup_for_endstop_move(bool enable_endstops_now = true) {
     return l_feedmultiply;
 }
 
+//! @param original_feedmultiply feedmultiply to restore
 static void clean_up_after_endstop_move(int original_feedmultiply) {
 #ifdef ENDSTOPS_ONLY_FOR_HOMING
     enable_endstops(false);
@@ -6815,8 +6817,15 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           SERIAL_ECHOLNPGM("Invalid T code.");
       }
       else {
-          if (*(strchr_pointer + index) == '?') {
-              tmp_extruder = choose_menu_P(_i("Choose filament:"), _i("Filament")); ////c=20 r=1 ////c=17 r=1
+          if (*(strchr_pointer + index) == '?')
+          {
+              if(mmu_enabled)
+              {
+                  tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+              } else
+              {
+                  tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER));
+              }
           }
           else {
               tmp_extruder = code_value();
@@ -8586,9 +8595,14 @@ void restore_print_from_eeprom() {
 #endif //UVLO_SUPPORT
 
 
-////////////////////////////////////////////////////////////////////////////////
-// save/restore printing
-
+//! @brief Immediately stop print moves
+//!
+//! Immediately stop print moves, save current extruder temperature and position to RAM.
+//! If printing from sd card, position in file is saved.
+//! If printing from USB, line number is saved.
+//!
+//! @param z_move
+//! @param e_move
 void stop_and_save_print_to_ram(float z_move, float e_move)
 {
 	if (saved_printing) return;
@@ -8773,6 +8787,14 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
   }
 }
 
+//! @brief Restore print from ram
+//!
+//! Restore print saved by stop_and_save_print_to_ram(). Is blocking,
+//! waits for extruder temperature restore, then restores position and continues
+//! print moves.
+//! Internaly lcd_update() is called by wait_for_heater().
+//!
+//! @param e_move
 void restore_print_from_ram_and_continue(float e_move)
 {
 	if (!saved_printing) return;
@@ -8914,8 +8936,13 @@ void M600_check_state()
 		}
 }
 
+//! @brief Wait for user action
+//!
+//! Beep, manage nozzle heater and wait for user to start unload filament
+//! If times out, active extruder temperature is set to 0.
+//!
+//! @param HotendTempBckp Temperature to be restored for active extruder, after user resolves MMU problem.
 void M600_wait_for_user(float HotendTempBckp) {
-		//Beep, manage nozzle heater and wait for user to start unload filament
 
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
