@@ -49,6 +49,12 @@
 #MSG_ADJUSTZ c=0 r=0
 "Auto adjust Z?"
 
+#MSG_AUTO_DEPLETE_ON c=17 r=1
+"Auto deplete [on]"
+
+# MSG_AUTO_DEPLETE_OFF c=17 r=1
+"Auto deplete[off]"
+
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
 
@@ -151,6 +157,9 @@
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
 
+#
+"Crash detected. Resume print?"
+
 #MSG_CURRENT c=19 r=1
 "Current"
 
@@ -168,6 +177,27 @@
 
 #MSG_EXTRUDER_CORRECTION c=9 r=0
 "E-correct"
+
+#MSG_EJECT_FILAMENT c=17 r=1
+"Eject filament"
+
+#MSG_EJECT_FILAMENT1 c=17 r=1
+"Eject filament 1"
+
+#MSG_EJECT_FILAMENT2 c=17 r=1
+"Eject filament 2"
+
+#MSG_EJECT_FILAMENT3 c=17 r=1
+"Eject filament 3"
+
+#MSG_EJECT_FILAMENT4 c=17 r=1
+"Eject filament 4"
+
+#MSG_EJECT_FILAMENT5 c=17 r=1
+"Eject filament 5"
+
+#MSG_EJECTING_FILAMENT c=20 r=1
+"Ejecting filament"
 
 #MSG_END_FILE_LIST c=0 r=0
 "End file list"
@@ -232,6 +262,9 @@
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
 
+#MSG_RESPONSE_POOR c=20 r=2
+"Fil. sensor response is poor, disable it?"
+
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
 
@@ -249,6 +282,12 @@
 
 #MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
 "Filament sensor:"
+
+#MSG_FILAMENT_USED c=19 r=1
+"Filament used"
+
+#MSG_PRINT_TIME c=19 r=1
+"Print time"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -340,6 +379,12 @@
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
 
+#MSG_CHOOSE_FILAMENT c=20 r=1
+"Choose filament:"
+
+#MSG_FILAMENT c=17 r=1
+"Filament"
+
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
 
@@ -394,6 +439,9 @@
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
 
+#
+"Lin. correction"
+
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
 
@@ -438,6 +486,18 @@
 
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
+
+#MSG_MMU_NEEDS_ATTENTION c=20 r=4
+"MMU needs user attention. Fix the issue and then press button on MMU unit."
+
+#MSG_MMU_OK_RESUMING_POSITION c=20 r=4
+"MMU OK. Resuming position..."
+
+#MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
+"MMU OK. Resuming temperature..."
+
+#MSG_MMU_OK_RESUMING c=20 r=4
+"MMU OK. Resuming..."
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
@@ -562,8 +622,17 @@
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
 
+#MSG_EJECT_REMOVE c=20 r=4
+"Please remove filament and then press the knob."
+
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
+
+#MSG_RUN_XYZ c=20 r=4
+"Please run XYZ calibration first."
+
+#MSG_UPDATE_MMU2_FW c=20 r=4
+"Please update firmware in your MMU2. Waiting for reset."
 
 #MSG_PLEASE_WAIT c=20 r=0
 "Please wait"
@@ -605,6 +674,9 @@
 "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
 
 #WELCOME_MSG c=20 r=0
+"Prusa i3 MK2.5 ready."
+
+#WELCOME_MSG c=20 r=0
 "Prusa i3 MK3 ready."
 
 #MSG_PRUSA3D c=0 r=0
@@ -615,6 +687,9 @@
 
 #MSG_RECOVERING_PRINT c=20 r=1
 "Recovering print    "
+
+#MSG_REMOVE_OLD_FILAMENT c=20 r=4
+"Remove old filament and press the knob to start loading new filament."
 
 #MSG_M119_REPORT c=0 r=0
 "Reporting endstop status"
@@ -691,6 +766,9 @@
 #MSG_SHOW_END_STOPS c=17 r=1
 "Show end stops"
 
+#
+"Show pinda state"
+
 #MSG_DWELL c=0 r=0
 "Sleep..."
 
@@ -698,16 +776,28 @@
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [None]"
+"Sort:      [none]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [Time]"
+"Sort:      [time]"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [Alphabet]"
+"Sort:  [alphabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
+
+#MSG_SOUND_LOUD c=17 r=1
+"Sound      [loud]"
+
+#MSG_SOUND_MUTE c=17 r=1
+"Sound      [mute]"
+
+#MSG_SOUND_ONCE c=17 r=1
+"Sound      [once]"
+
+#MSG_SOUND_SILENT c=17 r=1
+"Sound    [silent]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -759,6 +849,15 @@
 
 #MSG_MENU_TEMPERATURES c=15 r=1
 "Temperatures"
+
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+"There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
+
+#
+"Total filament"
+
+#
+"Total print time"
 
 #MSG_ENDSTOP_HIT c=0 r=0
 "TRIGGERED"
@@ -826,3 +925,41 @@
 #MSG_WIZARD_QUIT c=20 r=8
 "You can always resume the Wizard from Calibration -> Wizard."
 
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+"XYZ calibration all right. Skew will be corrected automatically."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+"XYZ calibration compromised. Front calibration points not reachable."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+"XYZ calibration compromised. Right front calibration point not reachable."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+"XYZ calibration compromised. Left front calibration point not reachable."
+
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+
+#MSG_OFF c=0 r=0
+" [off]"
