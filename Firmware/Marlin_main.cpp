@@ -6817,8 +6817,15 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           SERIAL_ECHOLNPGM("Invalid T code.");
       }
       else {
-          if (*(strchr_pointer + index) == '?') {
-              tmp_extruder = choose_menu_P(_i("Choose filament:"), _i("Filament")); ////c=20 r=1 ////c=17 r=1
+          if (*(strchr_pointer + index) == '?')
+          {
+              if(mmu_enabled)
+              {
+                  tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+              } else
+              {
+                  tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER));
+              }
           }
           else {
               tmp_extruder = code_value();
