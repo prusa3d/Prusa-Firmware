@@ -8,7 +8,7 @@
 
 #MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
 " cold extrusion prevented"
-" stopp, Extruder kalt!"
+" stopp, Extruder kalt"
 
 #MSG_FREE_MEMORY c=0 r=0
 " Free Memory: "
@@ -65,6 +65,14 @@
 #MSG_ADJUSTZ c=0 r=0
 "Auto adjust Z?"
 "Auto Z einstellen?"
+
+#MSG_AUTO_DEPLETE_ON c=17 r=1
+"Auto deplete [on]"
+"Restemodus   [an]"
+
+# MSG_AUTO_DEPLETE_OFF c=17 r=1
+"Auto deplete[off]"
+"Restemodus  [aus]"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
@@ -188,19 +196,23 @@
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Crash-Erkennung [an]"
+"Crash Erk.   [an]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Crash-Erkennung [nv]"
+"Crash Erk.   [nv]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Crash-Erkennung[aus]"
+"Crash Erk.  [aus]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
 "Crash erkannt."
+
+#
+"Crash detected. Resume print?"
+"Crash erkannt. Druck fortsetzen?"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -225,6 +237,34 @@
 #MSG_EXTRUDER_CORRECTION c=9 r=0
 "E-correct"
 "E-Korrektur"
+
+#MSG_EJECT_FILAMENT c=17 r=1
+"Eject filament"
+"Filamentauswurf"
+
+#MSG_EJECT_FILAMENT1 c=17 r=1
+"Eject filament 1"
+"Filamentauswurf 1"
+
+#MSG_EJECT_FILAMENT2 c=17 r=1
+"Eject filament 2"
+"Filamentauswurf 2"
+
+#MSG_EJECT_FILAMENT3 c=17 r=1
+"Eject filament 3"
+"Filamentauswurf 3"
+
+#MSG_EJECT_FILAMENT4 c=17 r=1
+"Eject filament 4"
+"Filamentauswurf 4"
+
+#MSG_EJECT_FILAMENT5 c=17 r=1
+"Eject filament 5"
+"Filamentauswurf 5"
+
+#MSG_EJECTING_FILAMENT c=20 r=1
+"Ejecting filament"
+"Werfe Filament aus"
 
 #MSG_END_FILE_LIST c=0 r=0
 "End file list"
@@ -280,15 +320,15 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"F.Autoladen [an]"
+"F.Autoladen  [an]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
-"F. Auto Laden [nv]"
+"F. Autoload  [nv]"
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
-"F. Auto Laden [aus]"
+"F. Autoload [aus]"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -300,23 +340,27 @@
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Luefter Check [an]"
+"Luefter Chk. [an]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Luefter Check [aus]"
+"Luefter Chk.[aus]"
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
-"Filamentsensor [an]"
+"Fil. Sensor  [an]"
+
+#MSG_RESPONSE_POOR c=20 r=2
+"Fil. sensor response is poor, disable it?"
+"Fil. Sensorsignal ist schlecht, ausschalten?"
 
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
-"Filamentsensor [nv]"
+"Fil. Sensor  [nv]"
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
-"Filamentsensor [aus]"
+"Fil. Sensor [aus]"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -333,6 +377,14 @@
 #MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
 "Filament sensor:"
 "Filamentsensor:"
+
+#MSG_FILAMENT_USED c=19 r=1
+"Filament used"
+"Filament benutzt"
+
+#MSG_PRINT_TIME c=19 r=1
+"Print time"
+"Druckzeit"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -454,6 +506,14 @@
 "Choose extruder:"
 "Extruder waehlen:"
 
+#MSG_CHOOSE_FILAMENT c=20 r=1
+"Choose filament:"
+"Filament waehlen:"
+
+#MSG_FILAMENT c=17 r=1
+"Filament"
+"Filament"
+
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
 "Ich werde jetzt die XYZ-Kalibrierung durchfuehren. Es wird ca. 12 Minuten dauern."
@@ -526,6 +586,10 @@
 "Left side [um]"
 "Links [um]"
 
+#
+"Lin. correction"
+"\x00"
+
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
 "Z einstellen"
@@ -584,15 +648,31 @@
 
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
-"Mesh Bett Ausgleich"
+"Mesh Bett Ausglei."
+
+#MSG_MMU_NEEDS_ATTENTION c=20 r=4
+"MMU needs user attention. Fix the issue and then press button on MMU unit."
+"MMU hat eine Stoerung. Beseitigen Sie das Problem und druecken Sie den Knopf an der MMU."
+
+#MSG_MMU_OK_RESUMING_POSITION c=20 r=4
+"MMU OK. Resuming position..."
+"MMU OK. Position wiederherstellen..."
+
+#MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
+"MMU OK. Resuming temperature..."
+"MMU OK. Temperatur wiederherstellen..."
+
+#MSG_MMU_OK_RESUMING c=20 r=4
+"MMU OK. Resuming..."
+"MMU OK.  Weiterdrucken..."
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Modus [Normal]"
+"Modus    [Normal]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Modus [leise]"
+"Modus     [leise]"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -600,11 +680,11 @@
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
-"Modus [Auto Power]"
+"Modus[Auto Power]"
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Modus[Hohe Leistung]"
+"Modus[Hohe Leist]"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -750,9 +830,21 @@
 "Please pull out filament immediately"
 "Bitte ziehen Sie das Filament sofort heraus"
 
+#MSG_EJECT_REMOVE c=20 r=4
+"Please remove filament and then press the knob."
+"Bitte Filament entfernen und dann den Knopf druecken."
+
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
 "Bitte entfernen Sie das Stahlblech vom Heizbett."
+
+#MSG_RUN_XYZ c=20 r=4
+"Please run XYZ calibration first."
+"Bitte zuerst XYZ Kalibrierung ausfuehren."
+
+#MSG_UPDATE_MMU2_FW c=20 r=4
+"Please update firmware in your MMU2. Waiting for reset."
+"Bitte aktualisieren Sie die Firmware in der MMU2. Warte auf Reset."
 
 #MSG_PLEASE_WAIT c=20 r=0
 "Please wait"
@@ -807,6 +899,10 @@
 "Drucker aufgrund von Fehlern gestoppt. Fehler beheben und mit M999 neu starten. (Temperatur wird zurueckgesetzt. Nach dem Neustart neu einstellen!)"
 
 #WELCOME_MSG c=20 r=0
+"Prusa i3 MK2.5 ready."
+"Prusa i3 MK2.5 bereit"
+
+#WELCOME_MSG c=20 r=0
 "Prusa i3 MK3 ready."
 "Prusa i3 MK3 bereit."
 
@@ -822,13 +918,17 @@
 "Recovering print    "
 "Druck wiederherst    "
 
+#MSG_REMOVE_OLD_FILAMENT c=20 r=4
+"Remove old filament and press the knob to start loading new filament."
+"Entfernen Sie das alte Filament und druecken Sie den Knopf, um das neue zu laden."
+
 #MSG_M119_REPORT c=0 r=0
 "Reporting endstop status"
 "Statusbericht Endanschlag"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
-"XYZ Kalibr. zuruecksetzen."
+"XYZ Kalib.zurueck"
 
 #MSG_BED_CORRECTION_RESET c=0 r=0
 "Reset"
@@ -864,7 +964,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [FlshAir]"
-"SD Karte [FlashAir]"
+"SD Kart.[FlshAir]"
 
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
@@ -922,6 +1022,10 @@
 "Show end stops"
 "Endschalter Status"
 
+#
+"Show pinda state"
+"\x00"
+
 #MSG_DWELL c=0 r=0
 "Sleep..."
 "Schlafzustand..."
@@ -931,20 +1035,36 @@
 "Einige Dateien wur- den nicht sortiert. Max. Dateien pro Verzeichnis = 100."
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [None]"
+"Sort:      [none]"
 "Sort.:    [Keine]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [Time]"
-"Sort.: [Zeit]"
+"Sort:      [time]"
+"Sort.:     [Zeit]"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [Alphabet]"
-"Sort.: [Alphab.]"
+"Sort:  [alphabet]"
+"Sort.: [Alphabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
 "Sortiere Dateien"
+
+#MSG_SOUND_LOUD c=17 r=1
+"Sound      [loud]"
+"Sound      [laut]"
+
+#MSG_SOUND_MUTE c=17 r=1
+"Sound      [mute]"
+"Sound     [stumm]"
+
+#MSG_SOUND_ONCE c=17 r=1
+"Sound      [once]"
+"Sound    [einmal]"
+
+#MSG_SOUND_SILENT c=17 r=1
+"Sound    [silent]"
+"Sound     [leise]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -988,11 +1108,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Temp. Kal. [AN]"
+"Temp. Kal.   [AN]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Temp. Kal. [AUS]"
+"Temp. Kal.  [AUS]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1013,6 +1133,18 @@
 #MSG_MENU_TEMPERATURES c=15 r=1
 "Temperatures"
 "Temperaturen"
+
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+"There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
+"Es ist noch notwendig die Z-Kalibrierung auszufuehren. Bitte befolgen Sie das Handbuch, Kapitel Erste Schritte, Abschnitt Kalibrierablauf."
+
+#
+"Total filament"
+"\x00"
+
+#
+"Total print time"
+"\x00"
 
 #MSG_ENDSTOP_HIT c=0 r=0
 "TRIGGERED"
@@ -1102,3 +1234,54 @@
 "You can always resume the Wizard from Calibration -> Wizard."
 "Sie koennen den Assistenten immer im Menu neu starten: Kalibrierung -> Assistent"
 
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+"XYZ calibration all right. Skew will be corrected automatically."
+"XYZ Kalibrierung in Ordnung. Schiefheit wird automatisch korrigiert."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"XYZ Kalibrierung in Ordnung. X/Y Achsen sind etwas schief."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"XYZ-Kalibrierung OK. X/Y-Achsen sind senkrecht zueinander. Glueckwunsch!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+"XYZ calibration compromised. Front calibration points not reachable."
+"XYZ-Kalibrierung ungenau. Vordere Kalibrierpunkte sind zu weit vorne."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+"XYZ calibration compromised. Right front calibration point not reachable."
+"XYZ-Kalibrierung ungenau. Rechter vorderer Kalibrierpunkt ist zu weit vorne."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+"XYZ calibration compromised. Left front calibration point not reachable."
+"XYZ-Kalibrierung ungenau. Linker vorderer Kalibrierpunkt ist zu weit vorne."
+
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+"Alle laden"
+
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+"Filament 1 laden"
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+"Filament 2 laden"
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+"Filament 3 laden"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+"Filament 4 laden"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+"Filament 5 laden"
+
+#MSG_OFF c=0 r=0
+" [off]"
+" [AUS]"

@@ -151,6 +151,11 @@ else
   ./update_lang.sh es 2>./update_lang_es.out 1>/dev/null
   if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
  fi
+ if [ -e lang_fr.bin ]; then
+  echo -n " French : " >&2
+  ./update_lang.sh fr 2>./update_lang_fr.out 1>/dev/null
+  if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
+ fi
  if [ -e lang_pl.bin ]; then
   echo -n " Polish : " >&2
   ./update_lang.sh pl 2>./update_lang_pl.out 1>/dev/null

@@ -5,6 +5,6 @@
 # de  German   Deutsch
 # cs  Czech    Cestina
 # es  Spanish  Espanol
-# fr  
+# fr  French   Francais
 # it  Italian  Italiano
 # pl  Polish   Polski

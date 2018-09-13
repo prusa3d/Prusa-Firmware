@@ -11,6 +11,7 @@
 #include "cardreader.h"
 #include "ultralcd.h"
 #include "sound.h"
+#include <avr/pgmspace.h>
 
 #define CHECK_FINDA ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
@@ -112,8 +113,10 @@ void mmu_loop(void)
 	case -1:
 		if (mmu_rx_start() > 0)
 		{
+#ifdef MMU_DEBUG
 			puts_P(PSTR("MMU => 'start'"));
 			puts_P(PSTR("MMU <= 'S1'"));
+#endif //MMU_DEBUG
 		    mmu_puts_P(PSTR("S1\n")); //send 'read version' request
 			mmu_state = -2;
 		}
@@ -127,9 +130,11 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%u"), &mmu_version); //scan version from buffer
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_version);
 			puts_P(PSTR("MMU <= 'S2'"));
-		    mmu_puts_P(PSTR("S2\n")); //send 'read buildnr' request
+#endif //MMU_DEBUG
+			mmu_puts_P(PSTR("S2\n")); //send 'read buildnr' request
 			mmu_state = -3;
 		}
 		return;
@@ -137,11 +142,15 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%u"), &mmu_buildnr); //scan buildnr from buffer
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_buildnr);
+#endif //MMU_DEBUG
 			bool version_valid = mmu_check_version();
 			if (!version_valid) mmu_show_warning();
 			else puts_P(PSTR("MMU version valid"));
+#ifdef MMU_DEBUG
 			puts_P(PSTR("MMU <= 'P0'"));
+#endif //MMU_DEBUG
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = -4;
 		}
@@ -150,7 +159,9 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
+#endif //MMU_DEBUG
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
 			mmu_state = 1;
@@ -162,39 +173,51 @@ void mmu_loop(void)
 			if ((mmu_cmd >= MMU_CMD_T0) && (mmu_cmd <= MMU_CMD_T4))
 			{
 				filament = mmu_cmd - MMU_CMD_T0;
+#ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'T%d'\n"), filament);
+#endif //MMU_DEBUG
 				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = 3; // wait for response
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
 			{
 			    filament = mmu_cmd - MMU_CMD_L0;
+#ifdef MMU_DEBUG
 			    printf_P(PSTR("MMU <= 'L%d'\n"), filament);
+#endif //MMU_DEBUG
 			    mmu_printf_P(PSTR("L%d\n"), filament);
 			    mmu_state = 3; // wait for response
 			}
 			else if (mmu_cmd == MMU_CMD_C0)
 			{
+#ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'C0'\n"));
+#endif //MMU_DEBUG
 				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = 3;
 			}
 			else if (mmu_cmd == MMU_CMD_U0)
 			{
+#ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'U0'\n"));
+#endif //MMU_DEBUG
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
 				mmu_state = 3;
 			}
 			else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
 			{
 				int filament = mmu_cmd - MMU_CMD_E0;
+#ifdef MMU_DEBUG				
 				printf_P(PSTR("MMU <= 'E%d'\n"), filament);
+#endif //MMU_DEBUG
 				mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
 				mmu_state = 3; // wait for response
 			}
 			else if (mmu_cmd == MMU_CMD_R0)
 			{
+#ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'R0'\n"));
+#endif //MMU_DEBUG
 				mmu_puts_P(PSTR("R0\n")); //send recover after eject
 				mmu_state = 3; // wait for response
 			}
@@ -202,7 +225,9 @@ void mmu_loop(void)
 		}
 		else if ((mmu_last_response + 300) < millis()) //request every 300ms
 		{
+#ifdef MMU_DEBUG
 			puts_P(PSTR("MMU <= 'P0'"));
+#endif //MMU_DEBUG
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = 2;
 		}
@@ -211,7 +236,9 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
+#endif //MMU_DEBUG
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FINDA && fsensor_enabled) {
 				fsensor_stop_and_save_print();
@@ -231,7 +258,9 @@ void mmu_loop(void)
 	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
+#ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => 'ok'\n"));
+#endif //MMU_DEBUG
 			mmu_ready = true;
 			mmu_state = 1;
 		}
@@ -642,6 +671,37 @@ void extr_adj(int extruder) //loading filament for SNMM
 #endif
 }
 
+struct E_step
+{
+    float extrude;   //!< extrude distance in mm
+    float feed_rate; //!< feed rate in mm/s
+};
+static const E_step ramming_sequence[] PROGMEM =
+{
+    {1.0,   1000.0/60},
+    {1.0,   1500.0/60},
+    {2.0,   2000.0/60},
+    {1.5,   3000.0/60},
+    {2.5,   4000.0/60},
+    {-15.0, 5000.0/60},
+    {-14.0, 1200.0/60},
+    {-6.0,  600.0/60},
+    {10.0,  700.0/60},
+    {-10.0, 400.0/60},
+    {-50.0, 2000.0/60},
+};
+
+//! @brief Unload sequence to optimize shape of the tip of the unloaded filament
+static void filament_ramming()
+{
+    for(uint8_t i = 0; i < (sizeof(ramming_sequence)/sizeof(E_step));++i)
+    {
+        current_position[E_AXIS] += pgm_read_float(&(ramming_sequence[i].extrude));
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+                current_position[E_AXIS], pgm_read_float(&(ramming_sequence[i].feed_rate)), active_extruder);
+        st_synchronize();
+    }
+}
 
 void extr_unload()
 { //unload just current filament for multimaterial printers
@@ -663,9 +723,7 @@ void extr_unload()
 		lcd_print(" ");
 		lcd_print(mmu_extruder + 1);
 
-		current_position[E_AXIS] -= 80;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-		st_synchronize();
+		filament_ramming();
 
 		mmu_command(MMU_CMD_U0);
 		// get response
