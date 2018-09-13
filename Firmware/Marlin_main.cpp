@@ -6818,7 +6818,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       }
       else {
           if (*(strchr_pointer + index) == '?') {
-              tmp_extruder = choose_extruder_menu();
+              tmp_extruder = choose_menu_P(_i("Choose filament:"), _i("Filament")); ////c=20 r=1 ////c=17 r=1
           }
           else {
               tmp_extruder = code_value();

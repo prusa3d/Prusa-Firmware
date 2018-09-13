@@ -1250,43 +1250,101 @@ void lcd_commands()
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL)
 	{
 		char cmd1[30];
+		uint8_t filament = 0;
 		float width = 0.4;
 		float length = 20 - width;
 		float extr = count_e(0.2, width, length);
 		float extr_short_segment = count_e(0.2, width, width);
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
-		if (lcd_commands_step == 0)
+
+		if (lcd_commands_step == 0 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_commands_step = 9;
+			lcd_commands_step = 10;
 		}
-		if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
+		if (lcd_commands_step == 20 && !blocks_queued() && cmd_buffer_empty())
+		{
+            filament = 0;
+            lcd_commands_step = 10;
+		}
+        if (lcd_commands_step == 21 && !blocks_queued() && cmd_buffer_empty())
+        {
+            filament = 1;
+            lcd_commands_step = 10;
+        }
+        if (lcd_commands_step == 22 && !blocks_queued() && cmd_buffer_empty())
+        {
+            filament = 2;
+            lcd_commands_step = 10;
+        }
+        if (lcd_commands_step == 23 && !blocks_queued() && cmd_buffer_empty())
+        {
+            filament = 3;
+            lcd_commands_step = 10;
+        }
+        if (lcd_commands_step == 24 && !blocks_queued() && cmd_buffer_empty())
+        {
+            filament = 4;
+            lcd_commands_step = 10;
+        }
+
+		if (lcd_commands_step == 10)
 		{
 			enquecommand_P(PSTR("M107"));
 			enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
+            if (mmu_enabled)
+            {
+                strcpy(cmd1, "T");
+                strcat(cmd1, itostr3left(filament));
+                enquecommand(cmd1);
+            }
 			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
 			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
-			if (mmu_enabled)
-				enquecommand_P(PSTR("T?"));
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
-			lcd_commands_step = 8;
+
+            lcd_commands_step = 9;
 		}
+        if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
+        {
+            lcd_clear();
+            menu_depth = 0;
+            menu_submenu(lcd_babystep_z);
+
+            if (mmu_enabled)
+            {
+                enquecommand_P(PSTR("M83")); //intro line
+                enquecommand_P(PSTR("G1 Y-3.0 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 Z0.4 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 X55.0 E32.0 F1073.0")); //intro line
+                enquecommand_P(PSTR("G1 X5.0 E32.0 F1800.0")); //intro line
+                enquecommand_P(PSTR("G1 X55.0 E8.0 F2000.0")); //intro line
+                enquecommand_P(PSTR("G1 Z0.3 F1000.0")); //intro line
+                enquecommand_P(PSTR("G92 E0.0")); //intro line
+                enquecommand_P(PSTR("G1 X240.0 E25.0  F2200.0")); //intro line
+                enquecommand_P(PSTR("G1 Y-2.0 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 X55.0 E25 F1400.0")); //intro line
+                enquecommand_P(PSTR("G1 Z0.20 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 X5.0 E4.0 F1000.0")); //intro line
+
+            } else
+            {
+                enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
+                enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0")); //intro line
+            }
+
+            lcd_commands_step = 8;
+        }
 		if (lcd_commands_step == 8 && !blocks_queued() && cmd_buffer_empty())
 		{
 
-			lcd_clear();
-			menu_depth = 0;
-			menu_submenu(lcd_babystep_z);
-			enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
-			enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0")); //intro line			
 			enquecommand_P(PSTR("G92 E0.0"));
 			enquecommand_P(PSTR("G21")); //set units to millimeters
 			enquecommand_P(PSTR("G90")); //use absolute coordinates
 			enquecommand_P(PSTR("M83")); //use relative distances for extrusion
 			enquecommand_P(PSTR("G1 E-1.50000 F2100.00000"));
-			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
+			enquecommand_P(PSTR("G1 Z5 F7200.000"));
 			enquecommand_P(PSTR("M204 S1000")); //set acceleration
 			enquecommand_P(PSTR("G1 F4000"));
 			lcd_commands_step = 7;
@@ -1316,6 +1374,7 @@ void lcd_commands()
 
 
 			enquecommand_P(PSTR("G1 X50 Y155"));
+			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
 			enquecommand_P(PSTR("G1 F1080"));
 			enquecommand_P(PSTR("G1 X75 Y155 E2.5"));
 			enquecommand_P(PSTR("G1 X100 Y155 E2"));
@@ -4219,7 +4278,10 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 void lcd_v2_calibration()
 {
 	if (mmu_enabled)
+	{
+	    lcd_commands_step = 20 + choose_menu_P(_i("Select PLA filament:"),_i("Filament")); ////c=20 r=1 ////c=17 r=1
 		lcd_commands_type = LCD_COMMAND_V2_CAL;
+	}
 	else
 	{
 		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
@@ -4336,10 +4398,19 @@ void lcd_wizard(int state) {
 				//start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
-			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+			if (mmu_enabled)
+			{
+			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament 1 loaded?"), false);////c=20 r=2
+			} else
+			{
+			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+			}
 			if (wizard_event) state = 8;
-			else state = 6;
-
+			else
+			{
+			    if(mmu_enabled) state = 7;
+			    else state = 6;
+			}
 			break;
 		case 6: //waiting for preheat nozzle for PLA;
 #ifndef SNMM
@@ -4364,7 +4435,13 @@ void lcd_wizard(int state) {
 			state = 7;
 			break;
 		case 7: //load filament 
-			lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+		    if (mmu_enabled)
+		    {
+		        lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
+		    } else
+		    {
+			    lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+		    }
 			lcd_update_enable(false);
 			lcd_clear();
 			lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
@@ -4925,7 +5002,17 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	
 }
 
-char choose_extruder_menu()
+//! @brief Select one of numbered items
+//!
+//! Create list of items with header. Header can not be selected.
+//! Each item has text description passed by function parameter and
+//! number. There are 5 items, if mmu_enabled, 4 otherwise.
+//! Items are numbered from 1 to 4 or 5. But index returned starts at 0.
+//!
+//! @param header Header text
+//! @param item Item text
+//! @return selected item index, first item index is 0
+char choose_menu_P(const char *header, const char *item)
 {
 	int items_no = mmu_enabled?5:4;
 	int first = 0;
@@ -4934,18 +5021,18 @@ char choose_extruder_menu()
 	
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
-	if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
-	else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+	
+	lcd_puts_P(header);
 	lcd_set_cursor(0, 1);
 	lcd_print(">");
 	for (int i = 0; i < 3; i++) {
-		lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
+		lcd_puts_at_P(1, i + 1, item);
 	}
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 
 		for (int i = 0; i < 3; i++) {
-			lcd_set_cursor(2 + strlen_P( mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER)), i+1);
+			lcd_set_cursor(2 + strlen_P(item), i+1);
 			lcd_print(first + i + 1);
 		}
 
@@ -4968,10 +5055,9 @@ char choose_extruder_menu()
 					if (first < items_no - 3) {
 						first++;
 						lcd_clear();
-						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
-						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						lcd_puts_P(header);
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1,  mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1, item);
 						}
 					}
 				}
@@ -4981,10 +5067,9 @@ char choose_extruder_menu()
 					if (first > 0) {
 						first--;
 						lcd_clear();
-						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
-						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						lcd_puts_P(header);
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1, item);
 						}
 					}
 				}
@@ -4999,21 +5084,14 @@ char choose_extruder_menu()
 				enc_dif = lcd_encoder_diff;
 				delay(100);
 			}
-
 		}
 
-		if (lcd_clicked()) {
-			lcd_update(2);
-			while (lcd_clicked());
-			delay(10);
-			while (lcd_clicked());
-			KEEPALIVE_STATE(IN_HANDLER);
+		if (lcd_clicked())
+		{
+		    KEEPALIVE_STATE(IN_HANDLER);
 			return(cursor_pos + first - 1);
-			
 		}
-
 	}
-
 }
 
 //#endif
