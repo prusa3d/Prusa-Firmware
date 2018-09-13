@@ -168,6 +168,24 @@ void lcd_set_progress();
 void lcd_language();
 
 void lcd_wizard();
-void lcd_wizard(int state);
+
+//! @brief Wizard state
+enum class WizState : uint8_t
+{
+    Run,            //!< run wizard? Entry point.
+    Restore,        //!< restore calibration status
+    Selftest,
+    Xyz,            //!< xyz calibration
+    Z,              //!< z calibration
+    IsFil,          //!< Is filament loaded? Entry point for 1st layer calibration
+    Preheat,        //!< waiting for preheat nozzle for PLA
+    LoadFil,        //!< Load filament
+    IsPla,          //!< Is PLA filament?
+    Lay1Cal,        //!< First layer calibration
+    RepeatLay1Cal,  //!< Repeat first layer calibration?
+    Finish,         //!< Deactivate wizard
+};
+
+void lcd_wizard(WizState state);
 
 #endif //ULTRALCD_H

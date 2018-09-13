@@ -1635,7 +1635,7 @@ void setup()
 	  erase_eeprom_section(EEPROM_OFFSET, 156); 							   //erase M500 part of eeprom
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
-	  lcd_wizard(0);
+	  lcd_wizard(WizState::Run);
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 0) { //dont show calibration status messages if wizard is currently active
 	  if (calibration_status() == CALIBRATION_STATUS_ASSEMBLED ||
@@ -2849,6 +2849,11 @@ void adjust_bed_reset()
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR, 0);
 }
 
+//! @brief Calibrate XYZ
+//! @param onlyZ if true, calibrate only Z axis
+//! @param verbosity_level
+//! @retval true Succeeded
+//! @retval false Failed
 bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 {
 	bool final_result = false;

@@ -1239,7 +1239,7 @@ void lcd_commands()
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
-				lcd_wizard(10);
+				lcd_wizard(WizState::RepeatLay1Cal);
 			}
 		}
 
@@ -1535,7 +1535,7 @@ void lcd_commands()
 			lcd_commands_step = 0;
 			lcd_commands_type = 0;			
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
-				lcd_wizard(10);
+				lcd_wizard(WizState::RepeatLay1Cal);
 			}
 		}
 
@@ -4316,7 +4316,7 @@ void lcd_wizard() {
 	}
 	if (result) {
 		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
-		lcd_wizard(0);
+		lcd_wizard(WizState::Run);
 	}
 	else {
 		lcd_return_to_status();
@@ -4345,19 +4345,20 @@ void lcd_language()
 		lang_select(LANG_ID_PRI);
 }
 
-void lcd_wizard(int state) {
-
+void lcd_wizard(WizState state)
+{
+    using S = WizState;
 	bool end = false;
 	int wizard_event;
 	const char *msg = NULL;
 	while (!end) {
 		printf_P(PSTR("Wizard state: %d"), state);
 		switch (state) {
-		case 0: // run wizard?
+		case S::Run: //Run wizard?
 			wizard_active = true;
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
-				state = 1;
+				state = S::Restore;
 				eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 1);
 			}
 			else {
@@ -4365,40 +4366,40 @@ void lcd_wizard(int state) {
 				end = true;
 			}
 			break;
-		case 1: // restore calibration status
+		case S::Restore: // restore calibration status
 			switch (calibration_status()) {
-			case CALIBRATION_STATUS_ASSEMBLED: state = 2; break; //run selftest
-			case CALIBRATION_STATUS_XYZ_CALIBRATION: state = 3; break; //run xyz cal.
-			case CALIBRATION_STATUS_Z_CALIBRATION: state = 4; break; //run z cal.
-			case CALIBRATION_STATUS_LIVE_ADJUST: state = 5; break; //run live adjust
+			case CALIBRATION_STATUS_ASSEMBLED: state = S::Selftest; break; //run selftest
+			case CALIBRATION_STATUS_XYZ_CALIBRATION: state = S::Xyz; break; //run xyz cal.
+			case CALIBRATION_STATUS_Z_CALIBRATION: state = S::Z; break; //run z cal.
+			case CALIBRATION_STATUS_LIVE_ADJUST: state = S::IsFil; break; //run live adjust
 			case CALIBRATION_STATUS_CALIBRATED: end = true; eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0); break;
-			default: state = 2; break; //if calibration status is unknown, run wizard from the beginning
+			default: state = S::Selftest; break; //if calibration status is unknown, run wizard from the beginning
 			}
 			break; 
-		case 2: //selftest
+		case S::Selftest:
 			lcd_show_fullscreen_message_and_wait_P(_i("First, I will run the selftest to check most common assembly problems."));////MSG_WIZARD_SELFTEST c=20 r=8
 			wizard_event = lcd_selftest();
 			if (wizard_event) {
 				calibration_status_store(CALIBRATION_STATUS_XYZ_CALIBRATION);
-				state = 3;
+				state = S::Xyz;
 			}
 			else end = true;
 			break;
-		case 3: //xyz cal.
+		case S::Xyz: //xyz calibration
 			lcd_show_fullscreen_message_and_wait_P(_i("I will run xyz calibration now. It will take approx. 12 mins."));////MSG_WIZARD_XYZ_CAL c=20 r=8
 			wizard_event = gcode_M45(false, 0);
-			if (wizard_event) state = 5;
+			if (wizard_event) state = S::IsFil;
 			else end = true;
 			break;
-		case 4: //z cal.
+		case S::Z: //z calibration
 			lcd_show_fullscreen_message_and_wait_P(_i("I will run z calibration now."));////MSG_WIZARD_Z_CAL c=20 r=8
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
 			if (!wizard_event) lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 			wizard_event = gcode_M45(true, 0);
-			if (wizard_event) state = 11; //shipped, no need to set first layer, go to final message directly
+			if (wizard_event) state = S::Finish; //shipped, no need to set first layer, go to final message directly
 			else end = true;
 			break;
-		case 5: //is filament loaded?
+		case S::IsFil: //is filament loaded?
 				//start to preheat nozzle and bed to save some time later
 			setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
 			setTargetBed(PLA_PREHEAT_HPB_TEMP);
@@ -4409,14 +4410,14 @@ void lcd_wizard(int state) {
 			{
 			    wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is filament loaded?"), false);////MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 			}
-			if (wizard_event) state = 8;
+			if (wizard_event) state = S::IsPla;
 			else
 			{
-			    if(mmu_enabled) state = 7;
-			    else state = 6;
+			    if(mmu_enabled) state = S::LoadFil;
+			    else state = S::Preheat;
 			}
 			break;
-		case 6: //waiting for preheat nozzle for PLA;
+		case S::Preheat:
 #ifndef SNMM
 			lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));////MSG_WIZARD_WILL_PREHEAT c=20 r=4
 			current_position[Z_AXIS] = 100; //move in z axis to make space for loading filament
@@ -4436,9 +4437,9 @@ void lcd_wizard(int state) {
 				delay_keep_alive(1000);
 			}
 #endif //not SNMM
-			state = 7;
+			state = S::LoadFil;
 			break;
-		case 7: //load filament 
+		case S::LoadFil: //load filament
 		    if (mmu_enabled)
 		    {
 		        lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
@@ -4454,30 +4455,30 @@ void lcd_wizard(int state) {
 #endif
             loading_flag = true;
 			gcode_M701();
-			state = 9;
+			state = S::Lay1Cal;
 			break;
-		case 8:
+		case S::IsPla:
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is it PLA filament?"), false, true);////MSG_WIZARD_PLA_FILAMENT c=20 r=2
-			if (wizard_event) state = 9;
+			if (wizard_event) state = S::Lay1Cal;
 			else end = true;
 			break;
-		case 9:
+		case S::Lay1Cal:
 			lcd_show_fullscreen_message_and_wait_P(_i("Now I will calibrate distance between tip of the nozzle and heatbed surface."));////MSG_WIZARD_V2_CAL c=20 r=8
 			lcd_show_fullscreen_message_and_wait_P(_i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."));////MSG_WIZARD_V2_CAL_2 c=20 r=12
 			lcd_commands_type = LCD_COMMAND_V2_CAL;
 			end = true;
 			break;
-		case 10: //repeat first layer cal.?
+		case S::RepeatLay1Cal: //repeat first layer cal.?
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Do you want to repeat last step to readjust distance between nozzle and heatbed?"), false);////MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 			if (wizard_event) {
 				lcd_show_fullscreen_message_and_wait_P(_i("Please clean heatbed and then press the knob."));////MSG_WIZARD_CLEAN_HEATBED c=20 r=8
-				state = 9;
+				state = S::Lay1Cal;
 			}
 			else {
-				state = 11;
+				state = S::Finish;
 			}
 			break;
-		case 11: //we are finished
+		case S::Finish: //we are finished
 			eeprom_write_byte((uint8_t*)EEPROM_WIZARD_ACTIVE, 0);
 			end = true;
 			break;
@@ -4488,27 +4489,27 @@ void lcd_wizard(int state) {
 
 	printf_P(_N("Wizard end state: %d\n"), state);
 	switch (state) { //final message
-	case 0: //user dont want to use wizard
+	case S::Run: //user dont want to use wizard
 		msg = _T(MSG_WIZARD_QUIT);
 		break;
 
-	case 1: //printer was already calibrated
+	case S::Restore: //printer was already calibrated
 		msg = _T(MSG_WIZARD_DONE);
 		break;
-	case 2: //selftest
+	case S::Selftest: //selftest
 		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
 		break;
-	case 3: //xyz cal.
+	case S::Xyz: //xyz cal.
 		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
 		break;
-	case 4: //z cal.
+	case S::Z: //z cal.
 		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
 		break;
-	case 8:
+	case S::IsPla:
 		msg = _i("Please load PLA filament and then resume Wizard by rebooting the printer.");////MSG_WIZARD_INSERT_CORRECT_FILAMENT c=20 r=8
 		break;
-	case 9: break; //exit wizard for v2 calibration, which is implemted in lcd_commands (we need lcd_update running)
-	case 11: //we are finished
+	case S::Lay1Cal: break; //exit wizard for v2 calibration, which is implemted in lcd_commands (we need lcd_update running)
+	case S::Finish: //we are finished
 
 		msg = _T(MSG_WIZARD_DONE);
 		lcd_reset_alert_level();
@@ -4520,7 +4521,7 @@ void lcd_wizard(int state) {
 		break;
 
 	}
-	if (state != 9) {
+	if (state != S::Lay1Cal) {
 		lcd_show_fullscreen_message_and_wait_P(msg);
 		wizard_active = false;
 	}
