@@ -1,3 +1,5 @@
+//! @file
+
 #include "temperature.h"
 #include "ultralcd.h"
 #include "fsensor.h"
@@ -3296,11 +3298,32 @@ void lcd_wait_for_click()
     }
 }
 
+//! @brief Show multiple screen message with yes and no possible choices and wait with possible timeout
+//! @param msg Message to show
+//! @param allow_timeouting if true, allows time outing of the screen
+//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
+//! @retval 1 yes choice selected by user
+//! @retval 0 no choice selected by user
+//! @retval -1 screen timed out
 int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes) //currently just max. n*4 + 3 lines supported (set in language header files)
+{
+    return lcd_show_multiscreen_message_two_choices_and_wait_P(msg, allow_timeouting, default_yes, _T(MSG_YES), _T(MSG_NO));
+}
+//! @brief Show multiple screen message with two possible choices and wait with possible timeout
+//! @param msg Message to show
+//! @param allow_timeouting if true, allows time outing of the screen
+//! @param default_first if true, fist choice is selected by default, otherwise second choice is preselected
+//! @param first_choice text caption of first possible choice
+//! @param second_choice text caption of second possible choice
+//! @retval 1 first choice selected by user
+//! @retval 0 second choice selected by user
+//! @retval -1 screen timed out
+int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_first,
+        const char *first_choice, const char *second_choice)
 {
 	const char *msg_next = lcd_display_message_fullscreen_P(msg);
 	bool multi_screen = msg_next != NULL;
-	bool yes = default_yes ? true : false;
+	bool yes = default_first ? true : false;
 
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = millis();
@@ -3357,15 +3380,22 @@ int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allo
 			lcd_set_cursor(0, 3);
 			if (yes) lcd_puts_P(PSTR(">"));
 			lcd_set_cursor(1, 3);
-			lcd_puts_P(_T(MSG_YES));
+			lcd_puts_P(first_choice);
 			lcd_set_cursor(7, 3);
 			if (!yes) lcd_puts_P(PSTR(">"));
 			lcd_set_cursor(8, 3);
-			lcd_puts_P(_T(MSG_NO));
+			lcd_puts_P(second_choice);
 		}
 	}
 }
 
+//! @brief Show single screen message with yes and no possible choices and wait with possible timeout
+//! @param msg Message to show
+//! @param allow_timeouting if true, allows time outing of the screen
+//! @param default_yes if true, yes choice is selected by default, otherwise no choice is preselected
+//! @retval 1 yes choice selected by user
+//! @retval 0 no choice selected by user
+//! @retval -1 screen timed out
 int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes)
 {
 
@@ -4345,6 +4375,54 @@ void lcd_language()
 		lang_select(LANG_ID_PRI);
 }
 
+static void pla_preheat()
+{
+    lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));////MSG_WIZARD_WILL_PREHEAT c=20 r=4
+    current_position[Z_AXIS] = 100; //move in z axis to make space for loading filament
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
+    delay_keep_alive(2000);
+    lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
+    while (abs(degHotend(0) - PLA_PREHEAT_HOTEND_TEMP) > 3) {
+        lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
+
+        lcd_set_cursor(0, 4);
+        lcd_print(LCD_STR_THERMOMETER[0]);
+        lcd_print(ftostr3(degHotend(0)));
+        lcd_print("/");
+        lcd_print(PLA_PREHEAT_HOTEND_TEMP);
+        lcd_print(LCD_STR_DEGREE);
+        lcd_set_custom_characters();
+        delay_keep_alive(1000);
+    }
+}
+
+//! @brief Printer first run wizard (Selftest and calibration)
+//!
+//!
+//! First layer calibration with MMU state diagram
+//!
+//! @startuml
+//! [*] --> IsFil
+//! IsFil : Is filament 1 loaded?
+//! isPLA : Is filament 1 PLA?
+//! unload : Eject or Unload?
+//! load : Push the button to start loading PLA Filament 1
+//!
+//! IsFil --> isPLA   : yes
+//! IsFil --> load    : no
+//! isPLA --> unload     : no
+//! unload --> load      : eject
+//! unload --> load      : unload
+//! load --> calibration : click
+//! isPLA --> calibration : yes
+//! @enduml
+//!
+//! @param state Entry point of the wizard
+//!
+//!   state                 | description
+//!  ---------------------- | ----------------
+//! WizState::Run           | Main entry point
+//! WizState::RepeatLay1Cal | Entry point after passing 1st layer calibration
 void lcd_wizard(WizState state)
 {
     using S = WizState;
@@ -4419,26 +4497,30 @@ void lcd_wizard(WizState state)
 			break;
 		case S::Preheat:
 #ifndef SNMM
-			lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));////MSG_WIZARD_WILL_PREHEAT c=20 r=4
-			current_position[Z_AXIS] = 100; //move in z axis to make space for loading filament
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
-			delay_keep_alive(2000);
-			lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-			while (abs(degHotend(0) - PLA_PREHEAT_HOTEND_TEMP) > 3) {
-				lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-
-				lcd_set_cursor(0, 4);
-				lcd_print(LCD_STR_THERMOMETER[0]);
-				lcd_print(ftostr3(degHotend(0)));
-				lcd_print("/");
-				lcd_print(PLA_PREHEAT_HOTEND_TEMP);
-				lcd_print(LCD_STR_DEGREE);
-				lcd_set_custom_characters();
-				delay_keep_alive(1000);
-			}
+		    pla_preheat();
 #endif //not SNMM
 			state = S::LoadFil;
 			break;
+		case S::Unload:
+		    pla_preheat();
+            if(mmu_enabled)
+            {
+                int8_t unload = lcd_show_multiscreen_message_two_choices_and_wait_P(
+                        _i("Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube.")
+                        ,false, true, _i("Unload"), _i("Eject"));
+                if (unload)
+                {
+                    extr_unload_0();
+                } else
+                {
+                    mmu_eject_fil_0();
+                }
+            } else
+            {
+                unload_filament();
+            }
+            state = S::LoadFil;
+            break;
 		case S::LoadFil: //load filament
 		    if (mmu_enabled)
 		    {
@@ -4460,7 +4542,7 @@ void lcd_wizard(WizState state)
 		case S::IsPla:
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is it PLA filament?"), false, true);////MSG_WIZARD_PLA_FILAMENT c=20 r=2
 			if (wizard_event) state = S::Lay1Cal;
-			else end = true;
+			else state = S::Unload;
 			break;
 		case S::Lay1Cal:
 			lcd_show_fullscreen_message_and_wait_P(_i("Now I will calibrate distance between tip of the nozzle and heatbed surface."));////MSG_WIZARD_V2_CAL c=20 r=8
@@ -4504,9 +4586,6 @@ void lcd_wizard(WizState state)
 		break;
 	case S::Z: //z cal.
 		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
-		break;
-	case S::IsPla:
-		msg = _i("Please load PLA filament and then resume Wizard by rebooting the printer.");////MSG_WIZARD_INSERT_CORRECT_FILAMENT c=20 r=8
 		break;
 	case S::Lay1Cal: break; //exit wizard for v2 calibration, which is implemted in lcd_commands (we need lcd_update running)
 	case S::Finish: //we are finished
