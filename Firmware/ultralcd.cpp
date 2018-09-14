@@ -4583,23 +4583,14 @@ void lcd_wizard(WizState state)
 
 	printf_P(_N("Wizard end state: %d\n"), state);
 	switch (state) { //final message
-	case S::Run: //user dont want to use wizard
-		msg = _T(MSG_WIZARD_QUIT);
-		break;
-
 	case S::Restore: //printer was already calibrated
 		msg = _T(MSG_WIZARD_DONE);
 		break;
 	case S::Selftest: //selftest
-		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
-		break;
 	case S::Xyz: //xyz cal.
-		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
-		break;
 	case S::Z: //z cal.
 		msg = _T(MSG_WIZARD_CALIBRATION_FAILED);
 		break;
-	case S::Lay1Cal: break; //exit wizard for v2 calibration, which is implemted in lcd_commands (we need lcd_update running)
 	case S::Finish: //we are finished
 
 		msg = _T(MSG_WIZARD_DONE);
