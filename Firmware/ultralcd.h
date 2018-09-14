@@ -180,7 +180,8 @@ enum class WizState : uint8_t
     Xyz,            //!< xyz calibration
     Z,              //!< z calibration
     IsFil,          //!< Is filament loaded? Entry point for 1st layer calibration
-    Preheat,        //!< waiting for preheat nozzle for PLA
+    PreheatPla,     //!< waiting for preheat nozzle for PLA
+    Preheat,        //!< Preheat for any material
     Unload,         //!< Unload filament
     LoadFil,        //!< Load filament
     IsPla,          //!< Is PLA filament?

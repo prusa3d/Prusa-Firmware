@@ -1787,55 +1787,61 @@ void lcd_preheat_farm_nozzle()
 void lcd_preheat_pla()
 {
   setTargetHotend0(PLA_PREHEAT_HOTEND_TEMP);
-  setTargetBed(PLA_PREHEAT_HPB_TEMP);
+  if (!wizard_active) setTargetBed(PLA_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
+  if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
 void lcd_preheat_abs()
 {
   setTargetHotend0(ABS_PREHEAT_HOTEND_TEMP);
-  setTargetBed(ABS_PREHEAT_HPB_TEMP);
+  if (!wizard_active) setTargetBed(ABS_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
+  if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
 void lcd_preheat_pp()
 {
   setTargetHotend0(PP_PREHEAT_HOTEND_TEMP);
-  setTargetBed(PP_PREHEAT_HPB_TEMP);
+  if (!wizard_active) setTargetBed(PP_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
+  if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
 void lcd_preheat_pet()
 {
   setTargetHotend0(PET_PREHEAT_HOTEND_TEMP);
-  setTargetBed(PET_PREHEAT_HPB_TEMP);
+  if (!wizard_active) setTargetBed(PET_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
+  if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
 void lcd_preheat_hips()
 {
   setTargetHotend0(HIPS_PREHEAT_HOTEND_TEMP);
-  setTargetBed(HIPS_PREHEAT_HPB_TEMP);
+  if (!wizard_active) setTargetBed(HIPS_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
+  if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
 void lcd_preheat_flex()
 {
   setTargetHotend0(FLEX_PREHEAT_HOTEND_TEMP);
-  setTargetBed(FLEX_PREHEAT_HPB_TEMP);
+  if (!wizard_active) setTargetBed(FLEX_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
+  if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
 
@@ -2061,7 +2067,7 @@ static void lcd_preheat_menu()
 {
   MENU_BEGIN();
 
-  MENU_ITEM_BACK_P(_T(MSG_MAIN));
+  if (!wizard_active) MENU_ITEM_BACK_P(_T(MSG_MAIN));
 
   if (farm_mode) {
 	  MENU_ITEM_FUNCTION_P(PSTR("farm   -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FARM_PREHEAT_HPB_TEMP)), lcd_preheat_farm);
@@ -2075,7 +2081,7 @@ static void lcd_preheat_menu()
 	  MENU_ITEM_FUNCTION_P(PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(HIPS_PREHEAT_HPB_TEMP)), lcd_preheat_hips);
 	  MENU_ITEM_FUNCTION_P(PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)), lcd_preheat_pp);
 	  MENU_ITEM_FUNCTION_P(PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FLEX_PREHEAT_HPB_TEMP)), lcd_preheat_flex);
-	  MENU_ITEM_FUNCTION_P(_T(MSG_COOLDOWN), lcd_cooldown);
+	  if (!wizard_active) MENU_ITEM_FUNCTION_P(_T(MSG_COOLDOWN), lcd_cooldown);
   }
   
 
@@ -4375,21 +4381,20 @@ void lcd_language()
 		lang_select(LANG_ID_PRI);
 }
 
-static void pla_preheat()
+static void wait_preheat()
 {
-    lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));////MSG_WIZARD_WILL_PREHEAT c=20 r=4
     current_position[Z_AXIS] = 100; //move in z axis to make space for loading filament
     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
     delay_keep_alive(2000);
     lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-    while (abs(degHotend(0) - PLA_PREHEAT_HOTEND_TEMP) > 3) {
+    while (abs(degHotend(0) - degTargetHotend(0)) > 3) {
         lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 
         lcd_set_cursor(0, 4);
         lcd_print(LCD_STR_THERMOMETER[0]);
         lcd_print(ftostr3(degHotend(0)));
         lcd_print("/");
-        lcd_print(PLA_PREHEAT_HOTEND_TEMP);
+        lcd_print(degTargetHotend(0));
         lcd_print(LCD_STR_DEGREE);
         lcd_set_custom_characters();
         delay_keep_alive(1000);
@@ -4492,17 +4497,23 @@ void lcd_wizard(WizState state)
 			else
 			{
 			    if(mmu_enabled) state = S::LoadFil;
-			    else state = S::Preheat;
+			    else state = S::PreheatPla;
 			}
 			break;
-		case S::Preheat:
+		case S::PreheatPla:
 #ifndef SNMM
-		    pla_preheat();
+		    lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));////MSG_WIZARD_WILL_PREHEAT c=20 r=4
+		    wait_preheat();
 #endif //not SNMM
 			state = S::LoadFil;
 			break;
+		case S::Preheat:
+		    menu_goto(lcd_preheat_menu,0,false,true);
+		    lcd_show_fullscreen_message_and_wait_P(_i("Select nozzle preheat temperature which matches your material."));
+		    end = true; // Leave wizard temporarily for lcd_preheat_menu
+		    break;
 		case S::Unload:
-		    pla_preheat();
+		    wait_preheat();
             if(mmu_enabled)
             {
                 int8_t unload = lcd_show_multiscreen_message_two_choices_and_wait_P(
@@ -4542,12 +4553,13 @@ void lcd_wizard(WizState state)
 		case S::IsPla:
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is it PLA filament?"), false, true);////MSG_WIZARD_PLA_FILAMENT c=20 r=2
 			if (wizard_event) state = S::Lay1Cal;
-			else state = S::Unload;
+			else state = S::Preheat;
 			break;
 		case S::Lay1Cal:
 			lcd_show_fullscreen_message_and_wait_P(_i("Now I will calibrate distance between tip of the nozzle and heatbed surface."));////MSG_WIZARD_V2_CAL c=20 r=8
 			lcd_show_fullscreen_message_and_wait_P(_i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."));////MSG_WIZARD_V2_CAL_2 c=20 r=12
 			lcd_commands_type = LCD_COMMAND_V2_CAL;
+			lcd_return_to_status();
 			end = true;
 			break;
 		case S::RepeatLay1Cal: //repeat first layer cal.?
@@ -4600,12 +4612,11 @@ void lcd_wizard(WizState state)
 		break;
 
 	}
-	if (state != S::Lay1Cal) {
+	if (!((S::Lay1Cal == state) || (S::Preheat == state))) {
 		lcd_show_fullscreen_message_and_wait_P(msg);
 		wizard_active = false;
 	}
 	lcd_update_enable(true);
-	lcd_return_to_status();
 	lcd_update(2);
 }
 
