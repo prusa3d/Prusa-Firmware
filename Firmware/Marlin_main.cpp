@@ -476,9 +476,11 @@ bool mmu_print_saved = false;
 
 // storing estimated time to end of print counted by slicer
 uint8_t print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
-uint32_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint16_t print_time_remaining_normal = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
 uint8_t print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
-uint32_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+uint16_t print_time_remaining_silent = PRINT_TIME_REMAINING_INIT; //estimated remaining print time in minutes
+
+bool wizard_active = false; //autoload temporarily disabled during wizard
 
 //===========================================================================
 //=============================Private Variables=============================
@@ -1665,7 +1667,7 @@ void setup()
 	  }
 	  else if (calibration_status() == CALIBRATION_STATUS_Z_CALIBRATION) {
 		  // Show the message.
-		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_CALIBRATION_FLOW));
+		  lcd_show_fullscreen_message_and_wait_P(_T(MSG_FOLLOW_Z_CALIBRATION_FLOW));
 	  }
   }
 
@@ -3192,10 +3194,7 @@ void gcode_M701()
 		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 
 #ifdef FILAMENT_SENSOR
-		if (mmu_enabled == false)
-		{
-			fsensor_oq_meassure_start(40);
-		}
+		fsensor_oq_meassure_start(40);
 #endif //FILAMENT_SENSOR
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
@@ -7344,7 +7343,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 	{
 		if (mcode_in_progress != 600) //M600 not in progress
 		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active)
 			{
 				if (fsensor_check_autoload())
 				{
@@ -8860,9 +8859,13 @@ void print_mesh_bed_leveling_table()
 
 uint16_t print_time_remaining() {
 	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
+#ifdef TMC2130 
 	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_remaining_normal;
 	else print_t = print_time_remaining_silent;
-	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100 * print_t / feedmultiply;
+#else
+	print_t = print_time_remaining_normal;
+#endif //TMC2130
+	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100ul * print_t / feedmultiply;
 	return print_t;
 }
 
@@ -8870,12 +8873,18 @@ uint8_t calc_percent_done()
 {
 	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
 	uint8_t percent_done = 0;
+#ifdef TMC2130
 	if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100) {
 		percent_done = print_percent_done_normal;
 	}
 	else if (print_percent_done_silent <= 100) {
 		percent_done = print_percent_done_silent;
 	}
+#else
+	if (print_percent_done_normal <= 100) {
+		percent_done = print_percent_done_normal;
+	}
+#endif //TMC2130
 	else {
 		percent_done = card.percentDone();
 	}

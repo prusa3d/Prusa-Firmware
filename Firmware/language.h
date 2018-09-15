@@ -94,6 +94,7 @@ typedef struct
 #define LANG_CODE_CZ 0x6373 //!<'cs'
 #define LANG_CODE_DE 0x6465 //!<'de'
 #define LANG_CODE_ES 0x6573 //!<'es'
+#define LANG_CODE_FR 0x6671 //!<'fr'
 #define LANG_CODE_IT 0x6974 //!<'it'
 #define LANG_CODE_PL 0x706c //!<'pl'
 ///@}

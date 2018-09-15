@@ -35,7 +35,6 @@
 
 #include "mmu.h"
 
-extern int lcd_change_fil_state;
 extern bool fans_check_enabled;
 
 
@@ -531,7 +530,7 @@ void lcdui_print_extruder(void)
 {
 	int chars = 0;
 	if (mmu_extruder == tmp_extruder)
-		chars = lcd_printf_P(_N(" T%u"), mmu_extruder+1);
+		chars = lcd_printf_P(_N(" F%u"), mmu_extruder+1);
 	else
 		chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder+1, tmp_extruder+1);
 	lcd_space(5 - chars);
@@ -598,8 +597,15 @@ void lcdui_print_time(void)
 	int chars = 0;
 	if ((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) || (starttime != 0)))
 	{
-		char suff = (print_time_remaining_normal == PRINT_TIME_REMAINING_INIT)?' ':'R';
-		chars = lcd_printf_P(_N("%c%02u:%02u%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff);
+          char suff = ' ';
+          char suff_doubt = ' ';
+		if (print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)
+          {
+               suff = 'R';
+               if (feedmultiply != 100)
+                    suff_doubt = '?';
+          }
+		chars = lcd_printf_P(_N("%c%02u:%02u%c%c"), LCD_STR_CLOCK[0], print_t / 60, print_t % 60, suff, suff_doubt);
 	}
 	else
 		chars = lcd_printf_P(_N("%c--:--  "), LCD_STR_CLOCK[0]);
@@ -1526,14 +1532,12 @@ void lcd_commands()
 		{
 			lcd_timeoutToStatus.start();
 			enquecommand_P(PSTR("M107")); //turn off printer fan			
-			if (mmu_enabled)
-				enquecommand_P(PSTR("M702 C"));
-			else
-				enquecommand_P(PSTR("G1 E-0.07500 F2100.00000"));
+			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000")); //retract
 			enquecommand_P(PSTR("M104 S0")); // turn off temperature
 			enquecommand_P(PSTR("M140 S0")); // turn off heatbed
-			enquecommand_P(PSTR("G1 Z10 F1300.000"));
-			enquecommand_P(PSTR("G1 X10 Y180 F4000")); //home X axis
+			enquecommand_P(PSTR("G1 Z10 F1300.000")); //lift Z
+			enquecommand_P(PSTR("G1 X10 Y180 F4000")); //Go to parking position
+			if (mmu_enabled) enquecommand_P(PSTR("M702 C")); //unload from nozzle
 			enquecommand_P(PSTR("M84"));// disable motors
 			forceMenuExpire = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 			lcd_commands_step = 1;
@@ -4367,8 +4371,10 @@ void lcd_wizard(int state) {
 	int wizard_event;
 	const char *msg = NULL;
 	while (!end) {
+		printf_P(PSTR("Wizard state: %d"), state);
 		switch (state) {
 		case 0: // run wizard?
+			wizard_active = true;
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
 				state = 1;
@@ -4451,6 +4457,7 @@ void lcd_wizard(int state) {
 #ifdef SNMM
 			change_extr(0);
 #endif
+            loading_flag = true;
 			gcode_M701();
 			state = 9;
 			break;
@@ -4484,7 +4491,7 @@ void lcd_wizard(int state) {
 		}
 	}
 
-	printf_P(_N("State: %d\n"), state);
+	printf_P(_N("Wizard end state: %d\n"), state);
 	switch (state) { //final message
 	case 0: //user dont want to use wizard
 		msg = _T(MSG_WIZARD_QUIT);
@@ -4518,7 +4525,10 @@ void lcd_wizard(int state) {
 		break;
 
 	}
-	if (state != 9) lcd_show_fullscreen_message_and_wait_P(msg);
+	if (state != 9) {
+		lcd_show_fullscreen_message_and_wait_P(msg);
+		wizard_active = false;
+	}
 	lcd_update_enable(true);
 	lcd_return_to_status();
 	lcd_update(2);
@@ -5014,18 +5024,18 @@ char choose_extruder_menu()
 	
 	enc_dif = lcd_encoder_diff;
 	lcd_clear();
-	
-	lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+	if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+	else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 	lcd_set_cursor(0, 1);
 	lcd_print(">");
 	for (int i = 0; i < 3; i++) {
-		lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+		lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 	}
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	while (1) {
 
 		for (int i = 0; i < 3; i++) {
-			lcd_set_cursor(2 + strlen_P(_T(MSG_EXTRUDER)), i+1);
+			lcd_set_cursor(2 + strlen_P( mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER)), i+1);
 			lcd_print(first + i + 1);
 		}
 
@@ -5048,9 +5058,10 @@ char choose_extruder_menu()
 					if (first < items_no - 3) {
 						first++;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1,  mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 						}
 					}
 				}
@@ -5060,9 +5071,10 @@ char choose_extruder_menu()
 					if (first > 0) {
 						first--;
 						lcd_clear();
-						lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
+						if (mmu_enabled) lcd_puts_P(_T(MSG_CHOOSE_FILAMENT));
+						else lcd_puts_P(_T(MSG_CHOOSE_EXTRUDER));
 						for (int i = 0; i < 3; i++) {
-							lcd_puts_at_P(1, i + 1, _T(MSG_EXTRUDER));
+							lcd_puts_at_P(1, i + 1, mmu_enabled ? _T(MSG_FILAMENT) : _T(MSG_EXTRUDER));
 						}
 					}
 				}
@@ -5201,7 +5213,7 @@ static void fil_load_menu()
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_FUNCTION_P(_i("Load all"), load_all);////MSG_LOAD_ALL c=0 r=0
+	MENU_ITEM_FUNCTION_P(_i("Load all"), load_all);////MSG_LOAD_ALL c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Load filament 1"), extr_adj_0);////MSG_LOAD_FILAMENT_1 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Load filament 2"), extr_adj_1);////MSG_LOAD_FILAMENT_2 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Load filament 3"), extr_adj_2);////MSG_LOAD_FILAMENT_3 c=17 r=0
@@ -5230,14 +5242,14 @@ static void fil_unload_menu()
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_FUNCTION_P(_i("Unload all"), extr_unload_all);////MSG_UNLOAD_ALL c=0 r=0
+	MENU_ITEM_FUNCTION_P(_i("Unload all"), extr_unload_all);////MSG_UNLOAD_ALL c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 1"), extr_unload_0);////MSG_UNLOAD_FILAMENT_1 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 2"), extr_unload_1);////MSG_UNLOAD_FILAMENT_2 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 3"), extr_unload_2);////MSG_UNLOAD_FILAMENT_3 c=17 r=0
 	MENU_ITEM_FUNCTION_P(_i("Unload filament 4"), extr_unload_3);////MSG_UNLOAD_FILAMENT_4 c=17 r=0
 
 	if (mmu_enabled)
-		MENU_ITEM_FUNCTION_P(_i("Unload filament 5"), extr_unload_4);////MSG_UNLOAD_FILAMENT_4 c=17 r=0
+		MENU_ITEM_FUNCTION_P(_i("Unload filament 5"), extr_unload_4);////MSG_UNLOAD_FILAMENT_5 c=17 r=0
 
 	MENU_END();
 }

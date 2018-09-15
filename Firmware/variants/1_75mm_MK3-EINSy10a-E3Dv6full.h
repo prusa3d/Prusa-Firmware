@@ -183,6 +183,7 @@
 #define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
 
+#define LINEARITY_CORRECTION
 #define TMC2130_LINEARITY_CORRECTION
 #define TMC2130_LINEARITY_CORRECTION_XYZ
 //#define TMC2130_VARIABLE_RESOLUTION
@@ -611,5 +612,7 @@
 #define M600_TIMEOUT 600  //seconds
 
 //#define SUPPORT_VERBOSITY
+
+//#define MMU_DEBUG //print communication between MMU2 and printer on serial
 
 #endif //__CONFIGURATION_PRUSA_H
