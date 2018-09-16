@@ -4565,7 +4565,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				SERIAL_ERROR_START;
 				SERIAL_ECHOPGM("Excessive bed leveling correction: ");
 				SERIAL_ECHO(offset);
-				SERIAL_ECHOLNPGM(" microns");
+				SERIAL_ECHOLNPGM(" mm");
 			}
 			else {
 				switch (i) {
