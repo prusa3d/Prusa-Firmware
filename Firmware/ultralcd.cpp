@@ -3244,6 +3244,7 @@ const char* lcd_display_message_fullscreen_P(const char *msg)
  */
 void lcd_show_fullscreen_message_and_wait_P(const char *msg)
 {
+    LcdUpdateDisabler lcdUpdateDisabler;
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
     bool multi_screen = msg_next != NULL;
 	lcd_set_custom_characters_nextpage();

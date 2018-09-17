@@ -1020,16 +1020,16 @@ void mmu_eject_filament(uint8_t filament, bool recover)
                 current_position[E_AXIS] -= 80;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
                 st_synchronize();
-			}
+                mmu_command(MMU_CMD_E0 + filament);
+                manage_response(false, false);
+                if (recover)
+                {
+                    lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
+                    mmu_command(MMU_CMD_R0);
+                    manage_response(false, false);
+                }
 
-			mmu_command(MMU_CMD_E0 + filament);
-			manage_response(false, false);
-			if (recover)
-			{
-				lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
-				mmu_command(MMU_CMD_R0);
-				manage_response(false, false);
-			}
+            }
 		}
 		else
 		{
