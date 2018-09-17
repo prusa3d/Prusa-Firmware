@@ -1012,14 +1012,15 @@ void mmu_eject_filament(uint8_t filament, bool recover)
 		if (degHotend0() > EXTRUDE_MINTEMP)
 		{
 			st_synchronize();
-			lcd_update_enable(false);
-			lcd_clear();
-			lcd_set_cursor(0, 1); lcd_puts_P(_i("Ejecting filament"));
-			current_position[E_AXIS] -= 80;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-			st_synchronize();
 
-			lcd_update_enable(true);
+			{
+			    LcdUpdateDisabler disableLcdUpdate;
+                lcd_clear();
+                lcd_set_cursor(0, 1); lcd_puts_P(_i("Ejecting filament"));
+                current_position[E_AXIS] -= 80;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
+                st_synchronize();
+			}
 
 			mmu_command(MMU_CMD_E0 + filament);
 			manage_response(false, false);
