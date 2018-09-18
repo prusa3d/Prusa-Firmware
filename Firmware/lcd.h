@@ -1,4 +1,4 @@
-//lcd.h
+//! @file
 #ifndef _LCD_H
 #define _LCD_H
 
@@ -186,7 +186,16 @@ extern void lcd_buttons_update(void);
 #define EN_A (1<<BLEN_A)
 #define BLEN_C 2 
 #define EN_C (1<<BLEN_C) 
-  
+
+//! @brief Was button clicked?
+//!
+//! Doesn't consume button click event. See lcd_clicked()
+//! for function consuming the event.
+//!
+//! Generally is used in non-modal menus.
+//!
+//! @retval 0 button was not clicked
+//! @retval 1 button was clicked
 #define LCD_CLICKED (lcd_buttons&EN_C)
 
 ////////////////////////

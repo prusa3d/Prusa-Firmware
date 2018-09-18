@@ -686,6 +686,9 @@ LongTimer lcd_timeoutToStatus;
 //! @brief Was button clicked?
 //!
 //! Consume click event, following call would return 0.
+//! See #LCD_CLICKED macro for version not consuming the event.
+//!
+//! Generally is used in modal dialogs.
 //!
 //! @retval 0 not clicked
 //! @retval nonzero clicked
