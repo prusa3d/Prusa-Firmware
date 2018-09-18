@@ -7104,7 +7104,6 @@ void ultralcd_init()
   WRITE(SDCARDDETECT, HIGH);
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)
-  lcd_buttons_update();
   lcd_encoder_diff = 0;
 }
 

@@ -726,7 +726,6 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		lcd_draw_update = lcdDrawUpdateOverride;
 	if (!lcd_update_enabled)
 		return;
-	lcd_buttons_update();
 	if (lcd_lcdupdate_func)
 		lcd_lcdupdate_func();
 }
@@ -760,9 +759,6 @@ void lcd_update_enable(uint8_t enabled)
 extern LongTimer safetyTimer;
 void lcd_buttons_update(void)
 {
-	static bool _lock = false;
-	if (_lock) return;
-	_lock = true;
 	uint8_t newbutton = 0;
 	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
 	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
@@ -848,7 +844,6 @@ void lcd_buttons_update(void)
 		}
 	}
 	lcd_encoder_bits = enc;
-	_lock = false;
 }
 
 
