@@ -463,6 +463,8 @@ static uint8_t menu_item_sdfile(const char*
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
+		    lcd_button_pressed = 0;
+		    lcd_buttons &= 0xff^EN_C;
 			menu_action_sdfile(str_fn);
 			return menu_item_ret();
 		}
