@@ -236,8 +236,7 @@ uint8_t menu_item_function_P(const char* str, menu_func_t func)
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			menu_clicked = false;
-            lcd_button_pressed = 0;
-            lcd_buttons &= 0xff^EN_C;
+			lcd_consume_click();
 			lcd_update_enabled = 0;
 			if (func) func();
 			lcd_update_enabled = 1;

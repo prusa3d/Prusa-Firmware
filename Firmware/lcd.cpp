@@ -683,13 +683,18 @@ ShortTimer longPressTimer;
 LongTimer lcd_timeoutToStatus;
 
 
+//! @brief Was button clicked?
+//!
+//! Consume click event, following call would return 0.
+//!
+//! @retval 0 not clicked
+//! @retval nonzero clicked
 uint8_t lcd_clicked(void)
 {
 	bool clicked = LCD_CLICKED;
 	if(clicked)
 	{
-	    lcd_button_pressed = 0;
-	    lcd_buttons &= 0xff^EN_C;
+	    lcd_consume_click();
 	}
     return clicked;
 }
