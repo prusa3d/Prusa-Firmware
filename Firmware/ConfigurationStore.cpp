@@ -57,13 +57,14 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size, char* name)
 
 //======================================================================================
 #define EEPROM_OFFSET 20
+#define EEPROM_M500_SIZE 188 //bytes
 // IMPORTANT:  Whenever there are changes made to the variables stored in EEPROM
-// in the functions below, also increment the version number. This makes sure that
+// in the functions below, also increment the version number and update EEPROM_M500_SIZE. This makes sure that
 // the default values are used whenever there is a change to the data, to prevent
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
-#define EEPROM_VERSION "V2"
+#define EEPROM_VERSION "V3"
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings(uint16_t offset) 
@@ -142,12 +143,17 @@ void Config_StoreSettings(uint16_t offset)
 
   EEPROM_WRITE_VAR(i,max_feedrate_silent);
   EEPROM_WRITE_VAR(i,max_acceleration_units_per_sq_second_silent);
-
-  char ver2[4]=EEPROM_VERSION;
-  i=offset;
-  EEPROM_WRITE_VAR(i,ver2); // validate data
-  SERIAL_ECHO_START;
-  SERIAL_ECHOLNPGM("Settings Stored");
+  if (EEPROM_M500_SIZE + EEPROM_OFFSET == i) {
+	  char ver2[4] = EEPROM_VERSION;
+	  i = offset;
+	  EEPROM_WRITE_VAR(i, ver2); // validate data
+	  SERIAL_ECHO_START;
+	  SERIAL_ECHOLNPGM("Settings Stored");
+  }
+  else { //size of eeprom M500 section probably changed by mistake and data are not valid; do not validate data by storing eeprom version
+	  //M500 EEPROM section will be erased on next printer reboot and default vaules will be used
+	  puts_P(PSTR("Data stored to EEPROM not valid."));
+  }
 }
 #endif //EEPROM_SETTINGS
 
