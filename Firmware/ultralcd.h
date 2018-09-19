@@ -52,6 +52,8 @@ extern void lcd_wait_for_click();
 extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
 // 0: no, 1: yes, -1: timeouted
 extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
+extern int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes,
+        const char *first_choice, const char *second_choice);
 extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 // Ask the user to move the Z axis up to the end stoppers and let
 // the user confirm that it has been done.
@@ -168,6 +170,26 @@ void lcd_set_progress();
 void lcd_language();
 
 void lcd_wizard();
-void lcd_wizard(int state);
+
+//! @brief Wizard state
+enum class WizState : uint8_t
+{
+    Run,            //!< run wizard? Entry point.
+    Restore,        //!< restore calibration status
+    Selftest,
+    Xyz,            //!< xyz calibration
+    Z,              //!< z calibration
+    IsFil,          //!< Is filament loaded? Entry point for 1st layer calibration
+    PreheatPla,     //!< waiting for preheat nozzle for PLA
+    Preheat,        //!< Preheat for any material
+    Unload,         //!< Unload filament
+    LoadFil,        //!< Load filament
+    IsPla,          //!< Is PLA filament?
+    Lay1Cal,        //!< First layer calibration
+    RepeatLay1Cal,  //!< Repeat first layer calibration?
+    Finish,         //!< Deactivate wizard
+};
+
+void lcd_wizard(WizState state);
 
 #endif //ULTRALCD_H
