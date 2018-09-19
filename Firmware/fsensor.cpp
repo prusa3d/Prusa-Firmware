@@ -31,17 +31,6 @@ extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
 extern int8_t FSensorStateMenu;
 
-void fsensor_stop_and_save_print(void)
-{
-	printf_P(PSTR("fsensor_stop_and_save_print\n"));
-	stop_and_save_print_to_ram(0, 0); //XYZE - no change	
-}
-
-void fsensor_restore_print_and_continue(void)
-{
-	printf_P(PSTR("fsensor_restore_print_and_continue\n"));
-	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
-}
 
 //uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
 uint8_t fsensor_int_pin_old = 0;
@@ -107,6 +96,17 @@ uint16_t fsensor_oq_yd_max;
 //sum of shutter value
 uint16_t fsensor_oq_sh_sum;
 
+void fsensor_stop_and_save_print(void)
+{
+    printf_P(PSTR("fsensor_stop_and_save_print\n"));
+    stop_and_save_print_to_ram(0, 0); //XYZE - no change
+}
+
+void fsensor_restore_print_and_continue(void)
+{
+    printf_P(PSTR("fsensor_restore_print_and_continue\n"));
+    restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+}
 
 void fsensor_init(void)
 {
