@@ -2483,7 +2483,7 @@ void lcd_menu_statistics()
 		  "%S:"
 		  ESC_H(6,1) "%8.2fm \n"
 		  "%S :"
-		  ESC_H(8,3) "%2dh %02dm %02d"
+		  ESC_H(8,3) "%2dh %02dm %02ds"
 		  ),
 		 _i("Filament used"),
 		 _met,
