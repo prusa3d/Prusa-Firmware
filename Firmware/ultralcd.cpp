@@ -2466,18 +2466,18 @@ void lcd_menu_statistics()
 {
 	if (IS_SD_PRINTING)
 	{
-		float _met = ((float)total_filament_used) / (100000.f);
-		int _cm = (total_filament_used - (_met * 100000)) / 10;
-		uint32_t _t = (millis() - starttime) / 1000;
-		int _h = _t / 3600;
-		int _m = (_t - (_h * 3600ul)) / 60;
-		int _s = _t - ((_h * 3600ul) + (_m * 60));
 //|01234567890123456789|
 //|Filament used:      |
 //|      000m 00.000cm |
 //|Print time:         |
 //|        00h 00m 00s |
 //----------------------
+		const float _met = ((float)total_filament_used) / (100000.f);
+		const uint32_t _t = (millis() - starttime) / 1000ul;
+		const int _h = _t / 3600;
+		const int _m = (_t - (_h * 3600ul)) / 60ul;
+		const int _s = _t - ((_h * 3600ul) + (_m * 60ul));
+
 		lcd_printf_P(_N(
 		  ESC_2J
 		  "%S:"
