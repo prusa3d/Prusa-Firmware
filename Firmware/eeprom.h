@@ -183,6 +183,6 @@
 #define EEPROM_FIRMWARE_PRUSA_MAGIC 0
 
 #define EEPROM_OFFSET 20 //offset for storing settings using M500
-//#define EEPROM_OFFSET 
+#define EEPROM_M500_SIZE 188 //size of M500 eeprom section in bytes
 
 #endif // EEPROM_H

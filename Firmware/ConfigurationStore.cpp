@@ -56,8 +56,6 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size, char* name)
 }
 
 //======================================================================================
-#define EEPROM_OFFSET 20
-#define EEPROM_M500_SIZE 188 //bytes
 // IMPORTANT:  Whenever there are changes made to the variables stored in EEPROM
 // in the functions below, also increment the version number and update EEPROM_M500_SIZE. This makes sure that
 // the default values are used whenever there is a change to the data, to prevent
