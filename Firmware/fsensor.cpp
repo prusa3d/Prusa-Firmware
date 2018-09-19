@@ -31,17 +31,6 @@ extern void stop_and_save_print_to_ram(float z_move, float e_move);
 extern void restore_print_from_ram_and_continue(float e_move);
 extern int8_t FSensorStateMenu;
 
-void fsensor_stop_and_save_print(void)
-{
-	printf_P(PSTR("fsensor_stop_and_save_print\n"));
-	stop_and_save_print_to_ram(0, 0); //XYZE - no change	
-}
-
-void fsensor_restore_print_and_continue(void)
-{
-	printf_P(PSTR("fsensor_restore_print_and_continue\n"));
-	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
-}
 
 //uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
 uint8_t fsensor_int_pin_old = 0;
@@ -53,8 +42,6 @@ bool fsensor_enabled = true;
 bool fsensor_watch_runout = true;
 //not responding - is set if any communication error occured durring initialization or readout
 bool fsensor_not_responding = false;
-//printing saved
-bool fsensor_printing_saved = false;
 
 //number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
@@ -107,6 +94,19 @@ uint16_t fsensor_oq_yd_max;
 //sum of shutter value
 uint16_t fsensor_oq_sh_sum;
 
+void fsensor_stop_and_save_print(void)
+{
+    printf_P(PSTR("fsensor_stop_and_save_print\n"));
+    stop_and_save_print_to_ram(0, 0); //XYZE - no change
+}
+
+void fsensor_restore_print_and_continue(void)
+{
+    printf_P(PSTR("fsensor_restore_print_and_continue\n"));
+    fsensor_watch_runout = true;
+    fsensor_err_cnt = 0;
+    restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
+}
 
 void fsensor_init(void)
 {
@@ -428,70 +428,59 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 
 void fsensor_update(void)
 {
-	if (fsensor_enabled)
+	if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 	{
-		if (fsensor_printing_saved)
-		{
-			fsensor_restore_print_and_continue();
-			fsensor_printing_saved = false;
-			fsensor_watch_runout = true;
-			fsensor_err_cnt = 0;
-		}
-		else if (fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
-		{
-			bool autoload_enabled_tmp = fsensor_autoload_enabled;
-			fsensor_autoload_enabled = false;
+        bool autoload_enabled_tmp = fsensor_autoload_enabled;
+        fsensor_autoload_enabled = false;
 
-			fsensor_stop_and_save_print();
-			fsensor_printing_saved = true;
+        fsensor_stop_and_save_print();
 
-			fsensor_err_cnt = 0;
-			fsensor_oq_meassure_start(0);
+        fsensor_err_cnt = 0;
+        fsensor_oq_meassure_start(0);
 
 //			st_synchronize();
 //			for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 //				current_position[axis] = st_get_position_mm(axis);
 /*
-			current_position[E_AXIS] -= 3;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
-			st_synchronize();
+        current_position[E_AXIS] -= 3;
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+        st_synchronize();
 
-			current_position[E_AXIS] += 3;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
-			st_synchronize();
+        current_position[E_AXIS] += 3;
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
+        st_synchronize();
 */
 
-			enquecommand_front_P((PSTR("G1 E-3 F200")));
-			process_commands();
-			cmdqueue_pop_front();
-			st_synchronize();
+        enquecommand_front_P((PSTR("G1 E-3 F200")));
+        process_commands();
+        cmdqueue_pop_front();
+        st_synchronize();
 
-			enquecommand_front_P((PSTR("G1 E3 F200")));
-			process_commands();
-			cmdqueue_pop_front();
-			st_synchronize();
+        enquecommand_front_P((PSTR("G1 E3 F200")));
+        process_commands();
+        cmdqueue_pop_front();
+        st_synchronize();
 
-			fsensor_oq_meassure_stop();
+        fsensor_oq_meassure_stop();
 
-			bool err = false;
-			err |= (fsensor_oq_er_sum > 1);
-			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
-			if (!err)
-			{
-				printf_P(PSTR("fsensor_err_cnt = 0\n"));
-				fsensor_restore_print_and_continue();
-				fsensor_printing_saved = false;
-			}
-			else
-			{
-				printf_P(PSTR("fsensor_update - M600\n"));
-				eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
-				eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-				enquecommand_front_P((PSTR("M600")));
-				fsensor_watch_runout = false;
-			}
-			fsensor_autoload_enabled = autoload_enabled_tmp;
-		}
+        bool err = false;
+        err |= (fsensor_oq_er_sum > 1);
+        err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
+        if (!err)
+        {
+            printf_P(PSTR("fsensor_err_cnt = 0\n"));
+            fsensor_restore_print_and_continue();
+        }
+        else
+        {
+            printf_P(PSTR("fsensor_update - M600\n"));
+            eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+            eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
+            enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
+            enquecommand_front_P((PSTR("M600")));
+            fsensor_watch_runout = false;
+        }
+        fsensor_autoload_enabled = autoload_enabled_tmp;
 	}
 }
 
