@@ -463,6 +463,9 @@ void fsensor_update(void)
 
         fsensor_oq_meassure_stop();
 
+		eeprom_update_word((uint16_t*)EEPROM_FCHECK_COUNT, eeprom_read_word((uint16_t*)EEPROM_FCHECK_COUNT) + 1);
+        eeprom_update_word((uint16_t*)EEPROM_FCHECK_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FCHECK_COUNT_TOT) + 1);
+
         bool err = false;
         err |= (fsensor_oq_er_sum > 1);
         err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
@@ -477,7 +480,7 @@ void fsensor_update(void)
             eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
             eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
             enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
-            enquecommand_front_P((PSTR("M600")));
+            //enquecommand_front_P((PSTR("M600")));
             fsensor_watch_runout = false;
         }
         fsensor_autoload_enabled = autoload_enabled_tmp;
