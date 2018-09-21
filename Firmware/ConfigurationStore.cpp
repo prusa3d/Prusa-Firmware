@@ -62,7 +62,7 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size, char* name)
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
-#define EEPROM_VERSION "V3"
+#define EEPROM_VERSION "V2"
 
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings(uint16_t offset) 
@@ -323,10 +323,18 @@ bool Config_RetrieveSettings(uint16_t offset)
 #endif
 #endif
 
-    calculate_extruder_multipliers();
-
+		calculate_extruder_multipliers();
+		int max_feedrate_silent_address = i;
         EEPROM_READ_VAR(i,max_feedrate_silent);  
         EEPROM_READ_VAR(i,max_acceleration_units_per_sq_second_silent);
+
+		//if max_feedrate_silent and max_acceleration_units_per_sq_second_silent were never stored to eeprom, use default values:
+	    float tmp_feedrate[]=DEFAULT_MAX_FEEDRATE_SILENT;
+		unsigned long tmp_acceleration[]=DEFAULT_MAX_ACCELERATION_SILENT;
+		for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++) {
+			if (eeprom_read_dword((uint32_t*)(max_feedrate_silent_address + axis * 4)) == 0xffffffff) max_feedrate_silent[axis] = tmp_feedrate[axis];
+			if (max_acceleration_units_per_sq_second_silent[axis] == 0xffffffff) max_acceleration_units_per_sq_second_silent[axis] = tmp_acceleration[axis];
+		}
 
 #ifdef TMC2130
 		for (uint8_t j = X_AXIS; j <= Y_AXIS; j++)
