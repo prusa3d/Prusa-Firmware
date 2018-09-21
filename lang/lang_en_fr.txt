@@ -32,7 +32,7 @@
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-"\x1b[2JLa detection de crash\x1b[1;0Hpeut etre active\x1b[2;0Hqu'en mode Normal"
+"\x1b[2JLa detection de crash\x1b[1;0Hpeut etre activee\x1b[2;0Hqu'en mode Normal"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
@@ -84,7 +84,7 @@
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"AutoCharge du filament uniquement si le capteur de filament est active."
+"AutoCharge du filament uniquement si le capteur de filament est actif."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
@@ -116,7 +116,7 @@
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
-"Echec du nivellement. Capt. non declenche. Debris sur buse ? En attente d'un reset."
+"Echec du nivellement. Capteur non declenche. Debris sur buse ? En attente d'un reset."
 
 #MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
 "Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
@@ -124,7 +124,7 @@
 
 #MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
 "Bed leveling failed. Sensor triggered too high. Waiting for reset."
-"Echec du nivellement. Capt. declenche trop trop haut. En attente d'un reset."
+"Echec du nivellement. Capteur declenche trop trop haut. En attente d'un reset."
 
 #MSG_BED c=0 r=0
 "Bed"
@@ -180,7 +180,7 @@
 
 #MSG_SD_INSERTED c=0 r=0
 "Card inserted"
-"Carte  inseree"
+"Carte inseree"
 
 #MSG_SD_REMOVED c=0 r=0
 "Card removed"
@@ -304,11 +304,11 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
 "Extruder fan:"
-"Ventilo extrudeur:"
+"Ventilation extrudeur:"
 
 #MSG_INFO_EXTRUDER c=15 r=1
 "Extruder info"
-"Infos extrudeur"
+"Info extrudeur"
 
 #MSG_MOVE_E c=0 r=0
 "Extruder"
@@ -348,7 +348,7 @@
 
 #MSG_RESPONSE_POOR c=20 r=2
 "Fil. sensor response is poor, disable it?"
-"La reponse du capteur de fil. est pauvre, le desactiver ?"
+"La reponse du capteur de filament est pauvre, le desactiver ?"
 
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
@@ -380,7 +380,7 @@
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
-"Fichier incomplet. Continuer qd meme ?"
+"Fichier incomplet. Continuer quand meme ?"
 
 #MSG_SD_FILE_OPENED c=0 r=0
 "File opened: "
@@ -448,7 +448,7 @@
 
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
-"Changer filament"
+"Changer le filament"
 
 #MSG_CHANGE_SUCCESS c=0 r=0
 "Change success!"
@@ -456,11 +456,11 @@
 
 #MSG_CORRECTLY c=20 r=0
 "Changed correctly?"
-"Change correctement?"
+"Le changement est correct ?"
 
 #MSG_CHANGING_FILAMENT c=20 r=0
 "Changing filament!"
-"Changement filament!"
+"Changement du filament!"
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
@@ -496,11 +496,11 @@
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
-"Choisir extrudeur:"
+"Choisir extrudeur :"
 
 #MSG_CHOOSE_FILAMENT c=20 r=1
 "Choose filament:"
-"Choisir filament:"
+"Choisir filament :"
 
 #MSG_FILAMENT c=17 r=1
 "Filament"
@@ -508,7 +508,7 @@
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
-"Je vais maintenant lancer la calibration xyz. Cela prendra 12 min environ."
+"Je vais maintenant lancer la calibration xyz. Cela prendra 12 mins environ."
 
 #MSG_WIZARD_Z_CAL c=20 r=8
 "I will run z calibration now."
@@ -572,7 +572,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
-"Ventilo tete gauche?"
+"Ventilateur tete gauche?"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
@@ -640,7 +640,7 @@
 
 #MSG_MMU_NEEDS_ATTENTION c=20 r=4
 "MMU needs user attention. Fix the issue and then press button on MMU unit."
-"La MMU requiert votre attention. Reglez le probleme puis appuyez sur le bouton on sur l'unite MMU."
+"La MMU requiert votre attention. Reglez le probleme puis appuyez sur le bouton sur l'unite MMU."
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -720,7 +720,7 @@
 
 #MSG_WIZARD_V2_CAL c=20 r=8
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
-"Maintenant je vais calibrer la distance entre la pointe de la buse et le surface du lit chauffant."
+"Maintenant je vais calibrer la distance entre la pointe de la buse et la surface du lit chauffant."
 
 #MSG_WIZARD_WILL_PREHEAT c=20 r=4
 "Now I will preheat nozzle for PLA."
@@ -788,11 +788,11 @@
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
-"Merci de verifier notre manuel et de corriger le  probleme. Poursuivez alors l'assistant en redemarrant l'imprimante."
+"Merci de verifier notre manuel et de corriger le probleme. Poursuivez alors l'assistant en redemarrant l'imprimante."
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 "Please insert PLA filament to the extruder, then press knob to load it."
-"Inserez du filament PLA dans l'extrudeur, puis appuyez sur le bouton pour le charger."
+"Inserez le filament PLA dans l'extrudeur, puis appuyez sur le bouton pour le charger."
 
 #MSG_WIZARD_INSERT_CORRECT_FILAMENT c=20 r=8
 "Please load PLA filament and then resume Wizard by rebooting the printer."
@@ -1056,7 +1056,7 @@
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
-"Une temperature ambiante stable de 21-26C et une base  stable sont requis."
+"Une temperature ambiante stable de 21-26C et une base stable sont requis."
 
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
@@ -1204,28 +1204,36 @@
 
 #MSG_WIZARD_QUIT c=20 r=8
 "You can always resume the Wizard from Calibration -> Wizard."
-"Vous pouvez toujours poursuivre l'assistant dans Calibration-> Assistant."
+"Vous pouvez toujours poursuivre l'assistant dans Calibration -> Assistant."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
 "XYZ calibration all right. Skew will be corrected automatically."
+"La calibration XYZ est bonne. Les defaults seront corriges automatiquement."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"La calibration XYZ est bonne. Les axes X/Y sont legerement decales. Bon boulot !"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"La calibration XYZ est parfaite. Les axes X/Y sont perpendiculaires. Felicitations !"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 "XYZ calibration compromised. Front calibration points not reachable."
+"La calibration XYZ est defectueuse. Les points de calibration de l'avant sont inatteignables."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 "XYZ calibration compromised. Right front calibration point not reachable."
+"La calibration XYZ est defectueuse. Les points de calibration de l'avant-droit sont inatteignables."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 "XYZ calibration compromised. Left front calibration point not reachable."
+"La calibration XYZ est defectueuse. Les points de calibration de l'avant-gauche sont inatteignables."
 
 #MSG_UNLOAD_ALL c=17 r=0
 "Unload all"
+"Tout retirer"
 
 #MSG_UNLOAD_FILAMENT_1 c=17 r=0
 "Unload filament 1"
+"Retirer le filament 1"
