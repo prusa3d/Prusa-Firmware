@@ -274,7 +274,7 @@ typedef struct
     float retract_recover_length;
     float retract_recover_feedrate;
     bool volumetric_enabled;
-    float filament_size;
+    float filament_size[1];
     float max_feedrate_silent[4];
     unsigned long max_acceleration_units_per_sq_second_silent[4];
 } __attribute__ ((packed)) M500_conf;
@@ -288,8 +288,8 @@ static const M500_conf default_conf PROGMEM =
     DEFAULT_ACCELERATION,
     DEFAULT_RETRACT_ACCELERATION,
     DEFAULT_MINIMUMFEEDRATE,
-    DEFAULT_MINSEGMENTTIME,
     DEFAULT_MINTRAVELFEEDRATE,
+    DEFAULT_MINSEGMENTTIME,
     {DEFAULT_XJERK, DEFAULT_YJERK, DEFAULT_ZJERK, DEFAULT_EJERK},
     {0,0,0},
     -(Z_PROBE_OFFSET_FROM_EXTRUDER),
@@ -303,8 +303,13 @@ static const M500_conf default_conf PROGMEM =
     false,
     RETRACT_LENGTH,
     RETRACT_FEEDRATE,
-
-
+    RETRACT_ZLIFT,
+    RETRACT_RECOVER_LENGTH,
+    RETRACT_RECOVER_FEEDRATE,
+    false,
+    {DEFAULT_NOMINAL_FILAMENT_DIA},
+    DEFAULT_MAX_FEEDRATE_SILENT,
+    DEFAULT_MAX_ACCELERATION_SILENT,
 };
 
 static_assert (sizeof(M500_conf) == 188, "sizeof(M500_conf) has changed, ensure that version has been incremented, "
