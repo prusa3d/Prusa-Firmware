@@ -242,6 +242,10 @@ void Config_PrintSettings(uint8_t level)
 
 static_assert (EXTRUDERS == 1, "ConfigurationStore M500_conf not implemented for more extruders.");
 static_assert (NUM_AXIS == 4, "ConfigurationStore M500_conf not implemented for more axis.");
+#ifdef ENABLE_AUTO_BED_LEVELING
+static_assert (false, "zprobe_zoffset was not initialized in printers in field to -(Z_PROBE_OFFSET_FROM_EXTRUDER), so it contains"
+        "0.0, if this is not acceptable, increment EEPROM_VERSION to force use default_conf");
+#endif
 typedef struct
 {
     char version[4];
@@ -262,7 +266,7 @@ typedef struct
     float bedKp;
     float bedKi;
     float bedKd;
-    int lcd_contrast;
+    int lcd_contrast; //!< unused
     bool autoretract_enabled;
     float retract_length;
     float retract_feedrate;
@@ -274,6 +278,38 @@ typedef struct
     float max_feedrate_silent[4];
     unsigned long max_acceleration_units_per_sq_second_silent[4];
 } __attribute__ ((packed)) M500_conf;
+
+static const M500_conf default_conf PROGMEM =
+{
+    EEPROM_VERSION,
+    DEFAULT_AXIS_STEPS_PER_UNIT,
+    DEFAULT_MAX_FEEDRATE,
+    DEFAULT_MAX_ACCELERATION,
+    DEFAULT_ACCELERATION,
+    DEFAULT_RETRACT_ACCELERATION,
+    DEFAULT_MINIMUMFEEDRATE,
+    DEFAULT_MINSEGMENTTIME,
+    DEFAULT_MINTRAVELFEEDRATE,
+    {DEFAULT_XJERK, DEFAULT_YJERK, DEFAULT_ZJERK, DEFAULT_EJERK},
+    {0,0,0},
+    -(Z_PROBE_OFFSET_FROM_EXTRUDER),
+    DEFAULT_Kp,
+    DEFAULT_Ki*PID_dT,
+    DEFAULT_Kd/PID_dT,
+    DEFAULT_bedKp,
+    DEFAULT_bedKi*PID_dT,
+    DEFAULT_bedKd/PID_dT,
+    0,
+    false,
+    RETRACT_LENGTH,
+    RETRACT_FEEDRATE,
+
+
+};
+
+static_assert (sizeof(M500_conf) == 188, "sizeof(M500_conf) has changed, ensure that version has been incremented, "
+        "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized");
+
 bool Config_RetrieveSettings(uint16_t offset)
 {
     int i=offset;
@@ -440,7 +476,7 @@ void Config_ResetDefault()
     updatePID();
     
 #ifdef PID_ADD_EXTRUSION_RATE
-    Kc = DEFAULT_Kc;
+    Kc = DEFAULT_Kc; //this is not stored by Config_StoreSettings
 #endif//PID_ADD_EXTRUSION_RATE
 #endif//PIDTEMP
 
