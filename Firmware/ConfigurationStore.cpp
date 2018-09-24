@@ -360,7 +360,7 @@ bool Config_RetrieveSettings(uint16_t offset)
 			SERIAL_ECHOLNPGM("Stored settings retrieved");
 
 		}
-	    else { //size of eeprom M500 section probably changed by mistake and data are not valid; default values will be used
+		else { //size of eeprom M500 section probably changed by mistake and data are not valid; default values will be used
 			puts_P(PSTR("Data read from EEPROM not valid."));
 			Config_ResetDefault();
 			previous_settings_retrieved = false;
