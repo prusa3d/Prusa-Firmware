@@ -5875,7 +5875,7 @@ Sigma_Exit:
 						val_silent = SILENT_MAX_ACCEL_XY;
 				}
 				cs.max_acceleration_units_per_sq_second_normal[i] = val;
-				max_acceleration_units_per_sq_second_silent[i] = val_silent;
+				cs.max_acceleration_units_per_sq_second_silent[i] = val_silent;
 #else //TMC2130
 				max_acceleration_units_per_sq_second[i] = val;
 #endif //TMC2130
@@ -5907,7 +5907,7 @@ Sigma_Exit:
 						val_silent = SILENT_MAX_FEEDRATE_XY;
 				}
 				cs.max_feedrate_normal[i] = val;
-				max_feedrate_silent[i] = val_silent;
+				cs.max_feedrate_silent[i] = val_silent;
 #else //TMC2130
 				max_feedrate[i] = val;
 #endif //TMC2130

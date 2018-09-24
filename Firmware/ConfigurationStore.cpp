@@ -99,9 +99,9 @@ void Config_PrintSettings(uint8_t level)
 		),
 		echomagic, echomagic, cs.axis_steps_per_unit[X_AXIS], cs.axis_steps_per_unit[Y_AXIS], cs.axis_steps_per_unit[Z_AXIS], cs.axis_steps_per_unit[E_AXIS],
 		echomagic, echomagic, cs.max_feedrate_normal[X_AXIS], cs.max_feedrate_normal[Y_AXIS], cs.max_feedrate_normal[Z_AXIS], cs.max_feedrate_normal[E_AXIS],
-		echomagic, echomagic, max_feedrate_silent[X_AXIS], max_feedrate_silent[Y_AXIS], max_feedrate_silent[Z_AXIS], max_feedrate_silent[E_AXIS],
+		echomagic, echomagic, cs.max_feedrate_silent[X_AXIS], cs.max_feedrate_silent[Y_AXIS], cs.max_feedrate_silent[Z_AXIS], cs.max_feedrate_silent[E_AXIS],
 		echomagic, echomagic, cs.max_acceleration_units_per_sq_second_normal[X_AXIS], cs.max_acceleration_units_per_sq_second_normal[Y_AXIS], cs.max_acceleration_units_per_sq_second_normal[Z_AXIS], cs.max_acceleration_units_per_sq_second_normal[E_AXIS],
-		echomagic, echomagic, max_acceleration_units_per_sq_second_silent[X_AXIS], max_acceleration_units_per_sq_second_silent[Y_AXIS], max_acceleration_units_per_sq_second_silent[Z_AXIS], max_acceleration_units_per_sq_second_silent[E_AXIS],
+		echomagic, echomagic, cs.max_acceleration_units_per_sq_second_silent[X_AXIS], cs.max_acceleration_units_per_sq_second_silent[Y_AXIS], cs.max_acceleration_units_per_sq_second_silent[Z_AXIS], cs.max_acceleration_units_per_sq_second_silent[E_AXIS],
 		echomagic, echomagic, cs.acceleration, cs.retract_acceleration,
 		echomagic, echomagic, cs.minimumfeedrate, cs.mintravelfeedrate, cs.minsegmenttime, cs.max_jerk[X_AXIS], cs.max_jerk[Y_AXIS], cs.max_jerk[Z_AXIS], cs.max_jerk[E_AXIS],
 		echomagic, echomagic, cs.add_homing[X_AXIS], cs.add_homing[Y_AXIS], cs.add_homing[Z_AXIS]
@@ -250,12 +250,12 @@ bool Config_RetrieveSettings(uint16_t offset)
 		{
 			if (cs.max_feedrate_normal[j] > NORMAL_MAX_FEEDRATE_XY)
 				cs.max_feedrate_normal[j] = NORMAL_MAX_FEEDRATE_XY;
-			if (max_feedrate_silent[j] > SILENT_MAX_FEEDRATE_XY)
-				max_feedrate_silent[j] = SILENT_MAX_FEEDRATE_XY;
+			if (cs.max_feedrate_silent[j] > SILENT_MAX_FEEDRATE_XY)
+				cs.max_feedrate_silent[j] = SILENT_MAX_FEEDRATE_XY;
 			if (cs.max_acceleration_units_per_sq_second_normal[j] > NORMAL_MAX_ACCEL_XY)
 				cs.max_acceleration_units_per_sq_second_normal[j] = NORMAL_MAX_ACCEL_XY;
-			if (max_acceleration_units_per_sq_second_silent[j] > SILENT_MAX_ACCEL_XY)
-				max_acceleration_units_per_sq_second_silent[j] = SILENT_MAX_ACCEL_XY;
+			if (cs.max_acceleration_units_per_sq_second_silent[j] > SILENT_MAX_ACCEL_XY)
+				cs.max_acceleration_units_per_sq_second_silent[j] = SILENT_MAX_ACCEL_XY;
 		}
 #endif //TMC2130
 

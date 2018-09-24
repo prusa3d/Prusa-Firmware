@@ -73,12 +73,10 @@
 //===========================================================================
 
 // Use M203 to override by software
-float max_feedrate_silent[NUM_AXIS];       // max speeds for silent mode
 float* max_feedrate = cs.max_feedrate_normal;
 
 
 // Use M201 to override by software
-unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
 unsigned long* max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_normal;
 unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
@@ -1318,8 +1316,8 @@ void update_mode_profile()
 	}
 	else if (tmc2130_mode == TMC2130_MODE_SILENT)
 	{
-		max_feedrate = max_feedrate_silent;
-		max_acceleration_units_per_sq_second = max_acceleration_units_per_sq_second_silent;
+		max_feedrate = cs.max_feedrate_silent;
+		max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_silent;
 	}
 	reset_acceleration_rates();
 }

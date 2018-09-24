@@ -159,12 +159,10 @@ extern bool e_active();
 void check_axes_activity();
 
 // Use M203 to override by software
-extern float max_feedrate_silent[NUM_AXIS];
 extern float* max_feedrate;
 
 
 // Use M201 to override by software
-extern unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
 extern unsigned long* max_acceleration_units_per_sq_second; 
 extern unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
