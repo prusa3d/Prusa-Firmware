@@ -278,7 +278,6 @@ extern float destination[NUM_AXIS] ;
 extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
-extern float zprobe_zoffset;
 extern int fanSpeed;
 extern void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 

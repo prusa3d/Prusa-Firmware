@@ -396,7 +396,6 @@ float current_position[NUM_AXIS] = { 0.0, 0.0, 0.0, 0.0 };
 float min_pos[3] = { X_MIN_POS, Y_MIN_POS, Z_MIN_POS };
 float max_pos[3] = { X_MAX_POS, Y_MAX_POS, Z_MAX_POS };
 bool axis_known_position[3] = {false, false, false};
-float zprobe_zoffset;
 
 // Extruder offset
 #if EXTRUDERS > 1
@@ -2058,7 +2057,7 @@ static void set_bed_level_equation_lsq(double *plane_equation_coefficients)
     current_position[Z_AXIS] = corrected_position.z;
 
     // put the bed at 0 so we don't go below it.
-    current_position[Z_AXIS] = zprobe_zoffset; // in the lsq we reach here after raising the extruder due to the loop structure
+    current_position[Z_AXIS] = cs.zprobe_zoffset; // in the lsq we reach here after raising the extruder due to the loop structure
 
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 }
@@ -2086,7 +2085,7 @@ static void set_bed_level_equation_3pts(float z_at_pt_1, float z_at_pt_2, float 
     current_position[Z_AXIS] = corrected_position.z;
 
     // put the bed at 0 so we don't go below it.
-    current_position[Z_AXIS] = zprobe_zoffset;
+    current_position[Z_AXIS] = cs.zprobe_zoffset;
 
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 
@@ -2790,7 +2789,7 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
         current_position[Z_AXIS]=home_z_value+cs.add_homing[Z_AXIS];
       #ifdef ENABLE_AUTO_BED_LEVELING
         if(home_z)
-          current_position[Z_AXIS] += zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
+          current_position[Z_AXIS] += cs.zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
       #endif
       
       // Set the planner and stepper routine positions.
@@ -6376,7 +6375,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         value = code_value();
         if ((Z_PROBE_OFFSET_RANGE_MIN <= value) && (value <= Z_PROBE_OFFSET_RANGE_MAX))
         {
-          zprobe_zoffset = -value; // compare w/ line 278 of ConfigurationStore.cpp
+          cs.zprobe_zoffset = -value; // compare w/ line 278 of ConfigurationStore.cpp
           SERIAL_ECHO_START;
           SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", _T(MSG_OK),PSTR("")));
           SERIAL_PROTOCOLLN("");
@@ -6396,7 +6395,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       {
           SERIAL_ECHO_START;
           SERIAL_ECHOLNRPGM(CAT2(MSG_ZPROBE_ZOFFSET, PSTR(" : ")));
-          SERIAL_ECHO(-zprobe_zoffset);
+          SERIAL_ECHO(-cs.zprobe_zoffset);
           SERIAL_PROTOCOLLN("");
       }
       break;
