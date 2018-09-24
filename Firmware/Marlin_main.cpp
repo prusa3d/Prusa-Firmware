@@ -5924,7 +5924,7 @@ Sigma_Exit:
 					if (val_silent > SILENT_MAX_FEEDRATE_XY)
 						val_silent = SILENT_MAX_FEEDRATE_XY;
 				}
-				max_feedrate_normal[i] = val;
+				cs.max_feedrate_normal[i] = val;
 				max_feedrate_silent[i] = val_silent;
 #else //TMC2130
 				max_feedrate[i] = val;

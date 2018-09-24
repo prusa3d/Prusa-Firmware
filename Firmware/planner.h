@@ -161,7 +161,6 @@ void check_axes_activity();
 extern unsigned long minsegmenttime;
 
 // Use M203 to override by software
-extern float max_feedrate_normal[NUM_AXIS];
 extern float max_feedrate_silent[NUM_AXIS];
 extern float* max_feedrate;
 

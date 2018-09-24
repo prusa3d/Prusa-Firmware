@@ -98,7 +98,7 @@ void Config_PrintSettings(uint8_t level)
 		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
 		),
 		echomagic, echomagic, cs.axis_steps_per_unit[X_AXIS], cs.axis_steps_per_unit[Y_AXIS], cs.axis_steps_per_unit[Z_AXIS], cs.axis_steps_per_unit[E_AXIS],
-		echomagic, echomagic, max_feedrate_normal[X_AXIS], max_feedrate_normal[Y_AXIS], max_feedrate_normal[Z_AXIS], max_feedrate_normal[E_AXIS],
+		echomagic, echomagic, cs.max_feedrate_normal[X_AXIS], cs.max_feedrate_normal[Y_AXIS], cs.max_feedrate_normal[Z_AXIS], cs.max_feedrate_normal[E_AXIS],
 		echomagic, echomagic, max_feedrate_silent[X_AXIS], max_feedrate_silent[Y_AXIS], max_feedrate_silent[Z_AXIS], max_feedrate_silent[E_AXIS],
 		echomagic, echomagic, max_acceleration_units_per_sq_second_normal[X_AXIS], max_acceleration_units_per_sq_second_normal[Y_AXIS], max_acceleration_units_per_sq_second_normal[Z_AXIS], max_acceleration_units_per_sq_second_normal[E_AXIS],
 		echomagic, echomagic, max_acceleration_units_per_sq_second_silent[X_AXIS], max_acceleration_units_per_sq_second_silent[Y_AXIS], max_acceleration_units_per_sq_second_silent[Z_AXIS], max_acceleration_units_per_sq_second_silent[E_AXIS],
@@ -240,8 +240,8 @@ bool Config_RetrieveSettings(uint16_t offset)
 #ifdef TMC2130
 		for (uint8_t j = X_AXIS; j <= Y_AXIS; j++)
 		{
-			if (max_feedrate_normal[j] > NORMAL_MAX_FEEDRATE_XY)
-				max_feedrate_normal[j] = NORMAL_MAX_FEEDRATE_XY;
+			if (cs.max_feedrate_normal[j] > NORMAL_MAX_FEEDRATE_XY)
+				cs.max_feedrate_normal[j] = NORMAL_MAX_FEEDRATE_XY;
 			if (max_feedrate_silent[j] > SILENT_MAX_FEEDRATE_XY)
 				max_feedrate_silent[j] = SILENT_MAX_FEEDRATE_XY;
 			if (max_acceleration_units_per_sq_second_normal[j] > NORMAL_MAX_ACCEL_XY)

@@ -75,9 +75,8 @@
 unsigned long minsegmenttime;
 
 // Use M203 to override by software
-float max_feedrate_normal[NUM_AXIS];       // max speeds for normal mode
 float max_feedrate_silent[NUM_AXIS];       // max speeds for silent mode
-float* max_feedrate = max_feedrate_normal;
+float* max_feedrate = cs.max_feedrate_normal;
 
 
 // Use M201 to override by software
@@ -1324,7 +1323,7 @@ void update_mode_profile()
 {
 	if (tmc2130_mode == TMC2130_MODE_NORMAL)
 	{
-		max_feedrate = max_feedrate_normal;
+		max_feedrate = cs.max_feedrate_normal;
 		max_acceleration_units_per_sq_second = max_acceleration_units_per_sq_second_normal;
 	}
 	else if (tmc2130_mode == TMC2130_MODE_SILENT)
