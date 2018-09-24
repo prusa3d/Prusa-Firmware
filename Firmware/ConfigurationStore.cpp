@@ -245,6 +245,23 @@ bool Config_RetrieveSettings(uint16_t offset)
         calculate_extruder_multipliers();
 
 
+		//if max_feedrate_silent and max_acceleration_units_per_sq_second_silent were never stored to eeprom, use default values:
+        {
+            const uint32_t erased = 0xffffffff;
+            bool initialized = false;
+            for (uint8_t i = 0; i < (sizeof(cs.max_feedrate_silent)/sizeof(cs.max_feedrate_silent[0])); ++i)
+            {
+                if(erased != reinterpret_cast<uint32_t&>(cs.max_feedrate_silent[i])) initialized = true;
+                if(erased != reinterpret_cast<uint32_t&>(cs.max_acceleration_units_per_sq_second_silent[i])) initialized = true;
+            }
+            if (!initialized)
+            {
+                memcpy_P(&cs.max_feedrate_silent,&default_conf.max_feedrate_silent, sizeof(cs.max_feedrate_silent));
+                memcpy_P(&cs.max_acceleration_units_per_sq_second_silent,&default_conf.max_acceleration_units_per_sq_second_silent,
+                        sizeof(cs.max_acceleration_units_per_sq_second_silent));
+            }
+        }
+
 #ifdef TMC2130
 		for (uint8_t j = X_AXIS; j <= Y_AXIS; j++)
 		{
