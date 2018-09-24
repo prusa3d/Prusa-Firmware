@@ -84,7 +84,6 @@ unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
 unsigned long* max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_normal;
 
 float minimumfeedrate;
-float retract_acceleration; //  mm/s^2   filament pull-pack and push-forward  while standing still in the other axis M204 TXXXX
 // Jerk is a maximum immediate velocity change.
 float max_jerk[NUM_AXIS];
 float mintravelfeedrate;
@@ -1004,7 +1003,7 @@ Having the real displacement of the head, we can calculate the total movement le
   float steps_per_mm = block->step_event_count.wide/block->millimeters;
   if(block->steps_x.wide == 0 && block->steps_y.wide == 0 && block->steps_z.wide == 0)
   {
-    block->acceleration_st = ceil(retract_acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
+    block->acceleration_st = ceil(cs.retract_acceleration * steps_per_mm); // convert to: acceleration steps/sec^2
   }
   else
   {

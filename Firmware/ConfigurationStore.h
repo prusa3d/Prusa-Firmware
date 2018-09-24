@@ -11,7 +11,7 @@ typedef struct
     float max_feedrate_normal[4];
     unsigned long max_acceleration_units_per_sq_second_normal[4];
     float acceleration; //!< Normal acceleration mm/s^2  THIS IS THE DEFAULT ACCELERATION for all moves. M204 SXXXX
-    float retract_acceleration;
+    float retract_acceleration; //!< mm/s^2 filament pull-pack and push-forward while standing still in the other axis M204 TXXXX
     float minimumfeedrate;
     float mintravelfeedrate;
     unsigned long minsegmenttime;

@@ -5944,13 +5944,13 @@ Sigma_Exit:
           cs.acceleration = code_value();
           // Interpret the T value as retract acceleration in the old Marlin format.
           if(code_seen('T'))
-            retract_acceleration = code_value();
+            cs.retract_acceleration = code_value();
         } else {
           // New acceleration format, compatible with the upstream Marlin.
           if(code_seen('P'))
             cs.acceleration = code_value();
           if(code_seen('R'))
-            retract_acceleration = code_value();
+            cs.retract_acceleration = code_value();
           if(code_seen('T')) {
             // Interpret the T value as the travel acceleration in the new Marlin format.
             //FIXME Prusa3D firmware currently does not support travel acceleration value independent from the extruding acceleration value.
