@@ -144,7 +144,7 @@ void Config_PrintSettings(uint8_t level)
 	printf_P(PSTR("%SMulti-extruder settings:\n%S   Swap retract length (mm):    %.2f\n%S   Swap rec. addl. length (mm): %.2f\n"),
 		echomagic, echomagic, retract_length_swap, echomagic, retract_recover_length_swap);
 #endif
-	if (volumetric_enabled) {
+	if (cs.volumetric_enabled) {
 		printf_P(PSTR("%SFilament settings:\n%S   M200 D%.2f\n"),
 			echomagic, echomagic, filament_size[0]);
 #if EXTRUDERS > 1

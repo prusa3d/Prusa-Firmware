@@ -368,7 +368,6 @@ char dir_names[3][9];
 
 bool sortAlpha = false;
 
-bool volumetric_enabled = false;
 float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
   #if EXTRUDERS > 1
       , DEFAULT_NOMINAL_FILAMENT_DIA
@@ -5847,7 +5846,7 @@ Sigma_Exit:
 			// setting any extruder filament size disables volumetric on the assumption that
 			// slicers either generate in extruder values as cubic mm or as as filament feeds
 			// for all extruders
-		    volumetric_enabled = false;
+		    cs.volumetric_enabled = false;
 		  } else {
             filament_size[extruder] = (float)code_value();
 			// make sure all extruders have some sane value for the filament size
@@ -5858,7 +5857,7 @@ Sigma_Exit:
 			filament_size[2] = (filament_size[2] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : filament_size[2]);
             #endif
             #endif
-			volumetric_enabled = true;
+			cs.volumetric_enabled = true;
 		  }
         } else {
           //reserved for setting filament diameter via UFID or filament measuring device
@@ -7646,7 +7645,7 @@ void save_statistics(unsigned long _total_filament_used, unsigned long _total_pr
 
 float calculate_extruder_multiplier(float diameter) {
   float out = 1.f;
-  if (volumetric_enabled && diameter > 0.f) {
+  if (cs.volumetric_enabled && diameter > 0.f) {
     float area = M_PI * diameter * diameter * 0.25;
     out = 1.f / area;
   }
