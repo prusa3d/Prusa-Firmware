@@ -9,6 +9,8 @@
 #include "mesh_bed_leveling.h"
 #endif
 
+M500_conf cs;
+
 #ifdef DEBUG_EEPROM_WRITE
 #define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value), #value)
 #else //DEBUG_EEPROM_WRITE
@@ -68,84 +70,13 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size, char* name)
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings(uint16_t offset) 
 {
-  char ver[4]= "000";
   int i = offset;
-  EEPROM_WRITE_VAR(i,ver); // invalidate data first 
-  EEPROM_WRITE_VAR(i,axis_steps_per_unit);
-  EEPROM_WRITE_VAR(i,max_feedrate_normal);
-  EEPROM_WRITE_VAR(i,max_acceleration_units_per_sq_second_normal);
-  EEPROM_WRITE_VAR(i,acceleration);
-  EEPROM_WRITE_VAR(i,retract_acceleration);
-  EEPROM_WRITE_VAR(i,minimumfeedrate);
-  EEPROM_WRITE_VAR(i,mintravelfeedrate);
-  EEPROM_WRITE_VAR(i,minsegmenttime);
-  EEPROM_WRITE_VAR(i,max_jerk[X_AXIS]);
-  EEPROM_WRITE_VAR(i,max_jerk[Y_AXIS]);
-  EEPROM_WRITE_VAR(i,max_jerk[Z_AXIS]);
-  EEPROM_WRITE_VAR(i,max_jerk[E_AXIS]);
-  EEPROM_WRITE_VAR(i,add_homing);
-/*  EEPROM_WRITE_VAR(i,plaPreheatHotendTemp);
-  EEPROM_WRITE_VAR(i,plaPreheatHPBTemp);
-  EEPROM_WRITE_VAR(i,plaPreheatFanSpeed);
-  EEPROM_WRITE_VAR(i,absPreheatHotendTemp);
-  EEPROM_WRITE_VAR(i,absPreheatHPBTemp);
-  EEPROM_WRITE_VAR(i,absPreheatFanSpeed);
-*/
+  strcpy(cs.version,"000"); //!< invalidate data first @TODO use erase to save one erase cycle
   
-  EEPROM_WRITE_VAR(i,zprobe_zoffset);
-  #ifdef PIDTEMP
-    EEPROM_WRITE_VAR(i,Kp);
-    EEPROM_WRITE_VAR(i,Ki);
-    EEPROM_WRITE_VAR(i,Kd);
-  #else
-		float dummy = 3000.0f;
-    EEPROM_WRITE_VAR(i,dummy);
-		dummy = 0.0f;
-    EEPROM_WRITE_VAR(i,dummy);
-    EEPROM_WRITE_VAR(i,dummy);
-  #endif
-  #ifdef PIDTEMPBED
-	EEPROM_WRITE_VAR(i, bedKp);
-	EEPROM_WRITE_VAR(i, bedKi);
-	EEPROM_WRITE_VAR(i, bedKd);
-  #endif
-
-  int lcd_contrast = 0;
-  EEPROM_WRITE_VAR(i,lcd_contrast);
-
-  #ifdef FWRETRACT
-  EEPROM_WRITE_VAR(i,autoretract_enabled);
-  EEPROM_WRITE_VAR(i,retract_length);
-  #if EXTRUDERS > 1
-  EEPROM_WRITE_VAR(i,retract_length_swap);
-  #endif
-  EEPROM_WRITE_VAR(i,retract_feedrate);
-  EEPROM_WRITE_VAR(i,retract_zlift);
-  EEPROM_WRITE_VAR(i,retract_recover_length);
-  #if EXTRUDERS > 1
-  EEPROM_WRITE_VAR(i,retract_recover_length_swap);
-  #endif
-  EEPROM_WRITE_VAR(i,retract_recover_feedrate);
-  #endif
-
-  // Save filament sizes
-  EEPROM_WRITE_VAR(i, volumetric_enabled);
-  EEPROM_WRITE_VAR(i, filament_size[0]);
-  #if EXTRUDERS > 1
-  EEPROM_WRITE_VAR(i, filament_size[1]);
-  #if EXTRUDERS > 2
-  EEPROM_WRITE_VAR(i, filament_size[2]);
-  #endif
-  #endif
-
-
-
-  EEPROM_WRITE_VAR(i,max_feedrate_silent);
-  EEPROM_WRITE_VAR(i,max_acceleration_units_per_sq_second_silent);
-
-  char ver2[4]=EEPROM_VERSION;
-  i=offset;
-  EEPROM_WRITE_VAR(i,ver2); // validate data
+  _EEPROM_writeData(i,reinterpret_cast<uint8_t*>(&cs),sizeof(cs),0);
+  strcpy(cs.version,EEPROM_VERSION); // // validate data
+  i = offset;
+  EEPROM_WRITE_VAR(i,cs.version); // validate data
   SERIAL_ECHO_START;
   SERIAL_ECHOLNPGM("Settings Stored");
 }
@@ -246,38 +177,7 @@ static_assert (NUM_AXIS == 4, "ConfigurationStore M500_conf not implemented for 
 static_assert (false, "zprobe_zoffset was not initialized in printers in field to -(Z_PROBE_OFFSET_FROM_EXTRUDER), so it contains"
         "0.0, if this is not acceptable, increment EEPROM_VERSION to force use default_conf");
 #endif
-typedef struct
-{
-    char version[4];
-    float axis_steps_per_unit[4];
-    float max_feedrate_normal[4];
-    unsigned long max_acceleration_units_per_sq_second_normal[4];
-    float acceleration;
-    float retract_acceleration;
-    float minimumfeedrate;
-    float mintravelfeedrate;
-    unsigned long minsegmenttime;
-    float max_jerk[4];
-    float add_homing[3];
-    float zprobe_zoffset;
-    float Kp;
-    float Ki;
-    float Kd;
-    float bedKp;
-    float bedKi;
-    float bedKd;
-    int lcd_contrast; //!< unused
-    bool autoretract_enabled;
-    float retract_length;
-    float retract_feedrate;
-    float retract_zlift;
-    float retract_recover_length;
-    float retract_recover_feedrate;
-    bool volumetric_enabled;
-    float filament_size[1];
-    float max_feedrate_silent[4];
-    unsigned long max_acceleration_units_per_sq_second_silent[4];
-} __attribute__ ((packed)) M500_conf;
+
 
 static const M500_conf default_conf PROGMEM =
 {
@@ -315,90 +215,27 @@ static const M500_conf default_conf PROGMEM =
 static_assert (sizeof(M500_conf) == 188, "sizeof(M500_conf) has changed, ensure that version has been incremented, "
         "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized");
 
+//!
+//! @retval true Stored or default settings retrieved
+//! @retval false default settings retrieved, eeprom was erased.
 bool Config_RetrieveSettings(uint16_t offset)
 {
     int i=offset;
 	bool previous_settings_retrieved = true;
-    char stored_ver[4];
     char ver[4]=EEPROM_VERSION;
-    EEPROM_READ_VAR(i,stored_ver); //read stored version
-    //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << stored_ver << "]");
-    if (strncmp(ver,stored_ver,3) == 0)
+    EEPROM_READ_VAR(i,cs.version); //read stored version
+    //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << cs.version << "]");
+    if (strncmp(ver,cs.version,3) == 0)  // version number match
     {
-        // version number match
-        EEPROM_READ_VAR(i,axis_steps_per_unit);
-        EEPROM_READ_VAR(i,max_feedrate_normal);
-        EEPROM_READ_VAR(i,max_acceleration_units_per_sq_second_normal);
+        i=offset;
+
+        EEPROM_READ_VAR(i,cs);
+
         
-        // steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
-        
-        EEPROM_READ_VAR(i,acceleration);
-        EEPROM_READ_VAR(i,retract_acceleration);
-        EEPROM_READ_VAR(i,minimumfeedrate);
-        EEPROM_READ_VAR(i,mintravelfeedrate);
-        EEPROM_READ_VAR(i,minsegmenttime);
-        EEPROM_READ_VAR(i,max_jerk[X_AXIS]);
-        EEPROM_READ_VAR(i,max_jerk[Y_AXIS]);
-		EEPROM_READ_VAR(i,max_jerk[Z_AXIS]);
-		EEPROM_READ_VAR(i,max_jerk[E_AXIS]);
 		if (max_jerk[X_AXIS] > DEFAULT_XJERK) max_jerk[X_AXIS] = DEFAULT_XJERK;
 		if (max_jerk[Y_AXIS] > DEFAULT_YJERK) max_jerk[Y_AXIS] = DEFAULT_YJERK;
-        EEPROM_READ_VAR(i,add_homing);
-	/*
-        EEPROM_READ_VAR(i,plaPreheatHotendTemp);
-        EEPROM_READ_VAR(i,plaPreheatHPBTemp);
-        EEPROM_READ_VAR(i,plaPreheatFanSpeed);
-        EEPROM_READ_VAR(i,absPreheatHotendTemp);
-        EEPROM_READ_VAR(i,absPreheatHPBTemp);
-        EEPROM_READ_VAR(i,absPreheatFanSpeed);
-        */
+        calculate_extruder_multipliers();
 
-        
-        EEPROM_READ_VAR(i,zprobe_zoffset);
-        #ifndef PIDTEMP
-        float Kp,Ki,Kd;
-        #endif
-        // do not need to scale PID values as the values in EEPROM are already scaled		
-        EEPROM_READ_VAR(i,Kp);
-        EEPROM_READ_VAR(i,Ki);
-        EEPROM_READ_VAR(i,Kd);
-		#ifdef PIDTEMPBED
-		EEPROM_READ_VAR(i, bedKp);
-		EEPROM_READ_VAR(i, bedKi);
-		EEPROM_READ_VAR(i, bedKd);
-		#endif
-
-		int lcd_contrast;
-		EEPROM_READ_VAR(i,lcd_contrast);
-
-		#ifdef FWRETRACT
-		EEPROM_READ_VAR(i,autoretract_enabled);
-		EEPROM_READ_VAR(i,retract_length);
-		#if EXTRUDERS > 1
-		EEPROM_READ_VAR(i,retract_length_swap);
-		#endif
-		EEPROM_READ_VAR(i,retract_feedrate);
-		EEPROM_READ_VAR(i,retract_zlift);
-		EEPROM_READ_VAR(i,retract_recover_length);
-		#if EXTRUDERS > 1
-		EEPROM_READ_VAR(i,retract_recover_length_swap);
-		#endif
-		EEPROM_READ_VAR(i,retract_recover_feedrate);
-		#endif
-
-		EEPROM_READ_VAR(i, volumetric_enabled);
-		EEPROM_READ_VAR(i, filament_size[0]);
-#if EXTRUDERS > 1
-		EEPROM_READ_VAR(i, filament_size[1]);
-#if EXTRUDERS > 2
-		EEPROM_READ_VAR(i, filament_size[2]);
-#endif
-#endif
-
-    calculate_extruder_multipliers();
-
-        EEPROM_READ_VAR(i,max_feedrate_silent);  
-        EEPROM_READ_VAR(i,max_acceleration_units_per_sq_second_silent);
 
 #ifdef TMC2130
 		for (uint8_t j = X_AXIS; j <= Y_AXIS; j++)
@@ -441,73 +278,18 @@ bool Config_RetrieveSettings(uint16_t offset)
 
 void Config_ResetDefault()
 {
-    float tmp1[]=DEFAULT_AXIS_STEPS_PER_UNIT;
-    float tmp2[]=DEFAULT_MAX_FEEDRATE;
-    long tmp3[]=DEFAULT_MAX_ACCELERATION;
-    float tmp4[]=DEFAULT_MAX_FEEDRATE_SILENT;
-    long tmp5[]=DEFAULT_MAX_ACCELERATION_SILENT;
-    for (short i=0;i<4;i++) 
-    {
-        axis_steps_per_unit[i]=tmp1[i];  
-        max_feedrate_normal[i]=tmp2[i];  
-        max_acceleration_units_per_sq_second_normal[i]=tmp3[i];
-        max_feedrate_silent[i]=tmp4[i];  
-        max_acceleration_units_per_sq_second_silent[i]=tmp5[i];
-    }
+    memcpy_P(&cs,&default_conf, sizeof(cs));
 
 	// steps per sq second need to be updated to agree with the units per sq second
     reset_acceleration_rates();
     
-    acceleration=DEFAULT_ACCELERATION;
-    retract_acceleration=DEFAULT_RETRACT_ACCELERATION;
-    minimumfeedrate=DEFAULT_MINIMUMFEEDRATE;
-    minsegmenttime=DEFAULT_MINSEGMENTTIME;       
-    mintravelfeedrate=DEFAULT_MINTRAVELFEEDRATE;
-    max_jerk[X_AXIS] = DEFAULT_XJERK;
-    max_jerk[Y_AXIS] = DEFAULT_YJERK;
-    max_jerk[Z_AXIS] = DEFAULT_ZJERK;
-    max_jerk[E_AXIS] = DEFAULT_EJERK;
-    add_homing[X_AXIS] = add_homing[Y_AXIS] = add_homing[Z_AXIS] = 0;
-
-#ifdef ENABLE_AUTO_BED_LEVELING
-    zprobe_zoffset = -Z_PROBE_OFFSET_FROM_EXTRUDER;
-#endif
 #ifdef PIDTEMP
-    Kp = DEFAULT_Kp;
-    Ki = scalePID_i(DEFAULT_Ki);
-    Kd = scalePID_d(DEFAULT_Kd);
-    
-    // call updatePID (similar to when we have processed M301)
     updatePID();
-    
 #ifdef PID_ADD_EXTRUSION_RATE
     Kc = DEFAULT_Kc; //this is not stored by Config_StoreSettings
 #endif//PID_ADD_EXTRUSION_RATE
 #endif//PIDTEMP
 
-#ifdef FWRETRACT
-	autoretract_enabled = false;
-	retract_length = RETRACT_LENGTH;
-#if EXTRUDERS > 1
-	retract_length_swap = RETRACT_LENGTH_SWAP;
-#endif
-	retract_feedrate = RETRACT_FEEDRATE;
-	retract_zlift = RETRACT_ZLIFT;
-	retract_recover_length = RETRACT_RECOVER_LENGTH;
-#if EXTRUDERS > 1
-	retract_recover_length_swap = RETRACT_RECOVER_LENGTH_SWAP;
-#endif
-	retract_recover_feedrate = RETRACT_RECOVER_FEEDRATE;
-#endif
-
-	volumetric_enabled = false;
-	filament_size[0] = DEFAULT_NOMINAL_FILAMENT_DIA;
-#if EXTRUDERS > 1
-	filament_size[1] = DEFAULT_NOMINAL_FILAMENT_DIA;
-#if EXTRUDERS > 2
-	filament_size[2] = DEFAULT_NOMINAL_FILAMENT_DIA;
-#endif
-#endif
 	calculate_extruder_multipliers();
 
 SERIAL_ECHO_START;
