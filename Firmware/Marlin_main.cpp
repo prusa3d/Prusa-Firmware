@@ -368,14 +368,7 @@ char dir_names[3][9];
 
 bool sortAlpha = false;
 
-float filament_size[EXTRUDERS] = { DEFAULT_NOMINAL_FILAMENT_DIA
-  #if EXTRUDERS > 1
-      , DEFAULT_NOMINAL_FILAMENT_DIA
-    #if EXTRUDERS > 2
-       , DEFAULT_NOMINAL_FILAMENT_DIA
-    #endif
-  #endif
-};
+
 float extruder_multiplier[EXTRUDERS] = {1.0
   #if EXTRUDERS > 1
     , 1.0
@@ -5848,13 +5841,13 @@ Sigma_Exit:
 			// for all extruders
 		    cs.volumetric_enabled = false;
 		  } else {
-            filament_size[extruder] = (float)code_value();
+            cs.filament_size[extruder] = (float)code_value();
 			// make sure all extruders have some sane value for the filament size
-			filament_size[0] = (filament_size[0] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : filament_size[0]);
+			cs.filament_size[0] = (cs.filament_size[0] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[0]);
             #if EXTRUDERS > 1
-			filament_size[1] = (filament_size[1] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : filament_size[1]);
+			cs.filament_size[1] = (cs.filament_size[1] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[1]);
             #if EXTRUDERS > 2
-			filament_size[2] = (filament_size[2] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : filament_size[2]);
+			cs.filament_size[2] = (cs.filament_size[2] == 0.0 ? DEFAULT_NOMINAL_FILAMENT_DIA : cs.filament_size[2]);
             #endif
             #endif
 			cs.volumetric_enabled = true;
@@ -7655,11 +7648,11 @@ float calculate_extruder_multiplier(float diameter) {
 }
 
 void calculate_extruder_multipliers() {
-	extruder_multiplier[0] = calculate_extruder_multiplier(filament_size[0]);
+	extruder_multiplier[0] = calculate_extruder_multiplier(cs.filament_size[0]);
 #if EXTRUDERS > 1
-	extruder_multiplier[1] = calculate_extruder_multiplier(filament_size[1]);
+	extruder_multiplier[1] = calculate_extruder_multiplier(cs.filament_size[1]);
 #if EXTRUDERS > 2
-	extruder_multiplier[2] = calculate_extruder_multiplier(filament_size[2]);
+	extruder_multiplier[2] = calculate_extruder_multiplier(cs.filament_size[2]);
 #endif
 #endif
 }

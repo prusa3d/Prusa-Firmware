@@ -146,13 +146,13 @@ void Config_PrintSettings(uint8_t level)
 #endif
 	if (cs.volumetric_enabled) {
 		printf_P(PSTR("%SFilament settings:\n%S   M200 D%.2f\n"),
-			echomagic, echomagic, filament_size[0]);
+			echomagic, echomagic, cs.filament_size[0]);
 #if EXTRUDERS > 1
 		printf_P(PSTR("%S   M200 T1 D%.2f\n"),
-			echomagic, echomagic, filament_size[1]);
+			echomagic, echomagic, cs.filament_size[1]);
 #if EXTRUDERS > 2
 		printf_P(PSTR("%S   M200 T1 D%.2f\n"),
-			echomagic, echomagic, filament_size[2]);
+			echomagic, echomagic, cs.filament_size[2]);
 #endif
 #endif
     } else {
@@ -171,13 +171,17 @@ void Config_PrintSettings(uint8_t level)
 
 #ifdef EEPROM_SETTINGS
 
-static_assert (EXTRUDERS == 1, "ConfigurationStore M500_conf not implemented for more extruders.");
-static_assert (NUM_AXIS == 4, "ConfigurationStore M500_conf not implemented for more axis.");
+static_assert (EXTRUDERS == 1, "ConfigurationStore M500_conf not implemented for more extruders, fix filament_size array size.");
+static_assert (NUM_AXIS == 4, "ConfigurationStore M500_conf not implemented for more axis."
+        "Fix axis_steps_per_unit max_feedrate_normal max_acceleration_units_per_sq_second_normal max_jerk max_feedrate_silent"
+        " max_acceleration_units_per_sq_second_silent array size.");
 #ifdef ENABLE_AUTO_BED_LEVELING
 static_assert (false, "zprobe_zoffset was not initialized in printers in field to -(Z_PROBE_OFFSET_FROM_EXTRUDER), so it contains"
         "0.0, if this is not acceptable, increment EEPROM_VERSION to force use default_conf");
 #endif
 
+static_assert (sizeof(M500_conf) == 188, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
+        "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized");
 
 static const M500_conf default_conf PROGMEM =
 {
@@ -207,13 +211,17 @@ static const M500_conf default_conf PROGMEM =
     RETRACT_RECOVER_LENGTH,
     RETRACT_RECOVER_FEEDRATE,
     false,
-    {DEFAULT_NOMINAL_FILAMENT_DIA},
+    {DEFAULT_NOMINAL_FILAMENT_DIA,
+#if EXTRUDERS > 1
+    DEFAULT_NOMINAL_FILAMENT_DIA,
+#if EXTRUDERS > 2
+    DEFAULT_NOMINAL_FILAMENT_DIA,
+#endif
+#endif
+    },
     DEFAULT_MAX_FEEDRATE_SILENT,
     DEFAULT_MAX_ACCELERATION_SILENT,
 };
-
-static_assert (sizeof(M500_conf) == 188, "sizeof(M500_conf) has changed, ensure that version has been incremented, "
-        "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized");
 
 //!
 //! @retval true Stored or default settings retrieved

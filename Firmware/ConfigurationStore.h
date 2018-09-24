@@ -32,7 +32,7 @@ typedef struct
     float retract_recover_length;
     float retract_recover_feedrate;
     bool volumetric_enabled;
-    float filament_size[1];
+    float filament_size[1]; //!< cross-sectional area of filament (in millimeters), typically around 1.75 or 2.85, 0 disables the volumetric calculations for the extruder.
     float max_feedrate_silent[4];
     unsigned long max_acceleration_units_per_sq_second_silent[4];
 } __attribute__ ((packed)) M500_conf;
