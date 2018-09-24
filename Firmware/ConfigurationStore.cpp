@@ -100,7 +100,7 @@ void Config_PrintSettings(uint8_t level)
 		echomagic, echomagic, cs.axis_steps_per_unit[X_AXIS], cs.axis_steps_per_unit[Y_AXIS], cs.axis_steps_per_unit[Z_AXIS], cs.axis_steps_per_unit[E_AXIS],
 		echomagic, echomagic, cs.max_feedrate_normal[X_AXIS], cs.max_feedrate_normal[Y_AXIS], cs.max_feedrate_normal[Z_AXIS], cs.max_feedrate_normal[E_AXIS],
 		echomagic, echomagic, max_feedrate_silent[X_AXIS], max_feedrate_silent[Y_AXIS], max_feedrate_silent[Z_AXIS], max_feedrate_silent[E_AXIS],
-		echomagic, echomagic, max_acceleration_units_per_sq_second_normal[X_AXIS], max_acceleration_units_per_sq_second_normal[Y_AXIS], max_acceleration_units_per_sq_second_normal[Z_AXIS], max_acceleration_units_per_sq_second_normal[E_AXIS],
+		echomagic, echomagic, cs.max_acceleration_units_per_sq_second_normal[X_AXIS], cs.max_acceleration_units_per_sq_second_normal[Y_AXIS], cs.max_acceleration_units_per_sq_second_normal[Z_AXIS], cs.max_acceleration_units_per_sq_second_normal[E_AXIS],
 		echomagic, echomagic, max_acceleration_units_per_sq_second_silent[X_AXIS], max_acceleration_units_per_sq_second_silent[Y_AXIS], max_acceleration_units_per_sq_second_silent[Z_AXIS], max_acceleration_units_per_sq_second_silent[E_AXIS],
 		echomagic, echomagic, acceleration, retract_acceleration,
 		echomagic, echomagic, minimumfeedrate, mintravelfeedrate, minsegmenttime, max_jerk[X_AXIS], max_jerk[Y_AXIS], max_jerk[Z_AXIS], max_jerk[E_AXIS],
@@ -244,8 +244,8 @@ bool Config_RetrieveSettings(uint16_t offset)
 				cs.max_feedrate_normal[j] = NORMAL_MAX_FEEDRATE_XY;
 			if (max_feedrate_silent[j] > SILENT_MAX_FEEDRATE_XY)
 				max_feedrate_silent[j] = SILENT_MAX_FEEDRATE_XY;
-			if (max_acceleration_units_per_sq_second_normal[j] > NORMAL_MAX_ACCEL_XY)
-				max_acceleration_units_per_sq_second_normal[j] = NORMAL_MAX_ACCEL_XY;
+			if (cs.max_acceleration_units_per_sq_second_normal[j] > NORMAL_MAX_ACCEL_XY)
+				cs.max_acceleration_units_per_sq_second_normal[j] = NORMAL_MAX_ACCEL_XY;
 			if (max_acceleration_units_per_sq_second_silent[j] > SILENT_MAX_ACCEL_XY)
 				max_acceleration_units_per_sq_second_silent[j] = SILENT_MAX_ACCEL_XY;
 		}

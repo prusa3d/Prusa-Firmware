@@ -166,7 +166,6 @@ extern float* max_feedrate;
 
 
 // Use M201 to override by software
-extern unsigned long max_acceleration_units_per_sq_second_normal[NUM_AXIS];
 extern unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
 extern unsigned long* max_acceleration_units_per_sq_second; 
 

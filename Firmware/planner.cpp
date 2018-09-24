@@ -80,9 +80,8 @@ float* max_feedrate = cs.max_feedrate_normal;
 
 
 // Use M201 to override by software
-unsigned long max_acceleration_units_per_sq_second_normal[NUM_AXIS];
 unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
-unsigned long* max_acceleration_units_per_sq_second = max_acceleration_units_per_sq_second_normal;
+unsigned long* max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_normal;
 
 float minimumfeedrate;
 float acceleration;         // Normal acceleration mm/s^2  THIS IS THE DEFAULT ACCELERATION for all moves. M204 SXXXX
@@ -1324,7 +1323,7 @@ void update_mode_profile()
 	if (tmc2130_mode == TMC2130_MODE_NORMAL)
 	{
 		max_feedrate = cs.max_feedrate_normal;
-		max_acceleration_units_per_sq_second = max_acceleration_units_per_sq_second_normal;
+		max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_normal;
 	}
 	else if (tmc2130_mode == TMC2130_MODE_SILENT)
 	{
