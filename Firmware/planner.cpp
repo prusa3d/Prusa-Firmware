@@ -85,7 +85,6 @@ unsigned long* max_acceleration_units_per_sq_second = cs.max_acceleration_units_
 
 // Jerk is a maximum immediate velocity change.
 float max_jerk[NUM_AXIS];
-float mintravelfeedrate;
 unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -909,7 +908,7 @@ block->steps_y.wide = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-p
 
   if (block->steps_e.wide == 0)
   {
-    if(feed_rate<mintravelfeedrate) feed_rate=mintravelfeedrate;
+    if(feed_rate<cs.mintravelfeedrate) feed_rate=cs.mintravelfeedrate;
   }
   else
   {
