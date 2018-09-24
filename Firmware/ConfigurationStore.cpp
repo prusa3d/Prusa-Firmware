@@ -136,8 +136,8 @@ void Config_PrintSettings(uint8_t level)
 		"%SRecover: S=Extra length (mm) F:Speed (mm/m)\n%S   M208 S%.2f F%.2f\n"
 		"%SAuto-Retract: S=0 to disable, 1 to interpret extrude-only moves as retracts or recoveries\n%S   M209 S%d\n"
 		),
-		echomagic, echomagic, retract_length, retract_feedrate*60, retract_zlift,
-		echomagic, echomagic, retract_recover_length, retract_recover_feedrate*60,
+		echomagic, echomagic, cs.retract_length, cs.retract_feedrate*60, cs.retract_zlift,
+		echomagic, echomagic, cs.retract_recover_length, cs.retract_recover_feedrate*60,
 		echomagic, echomagic, (cs.autoretract_enabled ? 1 : 0)
 	);
 #if EXTRUDERS > 1

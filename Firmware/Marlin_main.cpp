@@ -428,13 +428,8 @@ int fanSpeed=0;
   #endif
   };
 
-  float retract_length = RETRACT_LENGTH;
   float retract_length_swap = RETRACT_LENGTH_SWAP;
-  float retract_feedrate = RETRACT_FEEDRATE;
-  float retract_zlift = RETRACT_ZLIFT;
-  float retract_recover_length = RETRACT_RECOVER_LENGTH;
   float retract_recover_length_swap = RETRACT_RECOVER_LENGTH_SWAP;
-  float retract_recover_feedrate = RETRACT_RECOVER_FEEDRATE;
 #endif
 
   #ifdef PS_DEFAULT_OFF
@@ -2416,13 +2411,13 @@ void refresh_cmd_timeout(void)
       destination[Y_AXIS]=current_position[Y_AXIS];
       destination[Z_AXIS]=current_position[Z_AXIS];
       destination[E_AXIS]=current_position[E_AXIS];
-      current_position[E_AXIS]+=(swapretract?retract_length_swap:retract_length)*float(extrudemultiply)*0.01f;
+      current_position[E_AXIS]+=(swapretract?retract_length_swap:cs.retract_length)*float(extrudemultiply)*0.01f;
       plan_set_e_position(current_position[E_AXIS]);
       float oldFeedrate = feedrate;
-      feedrate=retract_feedrate*60;
+      feedrate=cs.retract_feedrate*60;
       retracted[active_extruder]=true;
       prepare_move();
-      current_position[Z_AXIS]-=retract_zlift;
+      current_position[Z_AXIS]-=cs.retract_zlift;
       plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
       prepare_move();
       feedrate = oldFeedrate;
@@ -2431,12 +2426,12 @@ void refresh_cmd_timeout(void)
       destination[Y_AXIS]=current_position[Y_AXIS];
       destination[Z_AXIS]=current_position[Z_AXIS];
       destination[E_AXIS]=current_position[E_AXIS];
-      current_position[Z_AXIS]+=retract_zlift;
+      current_position[Z_AXIS]+=cs.retract_zlift;
       plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-      current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(retract_length+retract_recover_length))*float(extrudemultiply)*0.01f;
+      current_position[E_AXIS]-=(swapretract?(retract_length_swap+retract_recover_length_swap):(cs.retract_length+cs.retract_recover_length))*float(extrudemultiply)*0.01f;
       plan_set_e_position(current_position[E_AXIS]);
       float oldFeedrate = feedrate;
-      feedrate=retract_recover_feedrate*60;
+      feedrate=cs.retract_recover_feedrate*60;
       retracted[active_extruder]=false;
       prepare_move();
       feedrate = oldFeedrate;
@@ -5978,26 +5973,26 @@ Sigma_Exit:
     {
       if(code_seen('S'))
       {
-        retract_length = code_value() ;
+        cs.retract_length = code_value() ;
       }
       if(code_seen('F'))
       {
-        retract_feedrate = code_value()/60 ;
+        cs.retract_feedrate = code_value()/60 ;
       }
       if(code_seen('Z'))
       {
-        retract_zlift = code_value() ;
+        cs.retract_zlift = code_value() ;
       }
     }break;
     case 208: // M208 - set retract recover length S[positive mm surplus to the M207 S*] F[feedrate mm/min]
     {
       if(code_seen('S'))
       {
-        retract_recover_length = code_value() ;
+        cs.retract_recover_length = code_value() ;
       }
       if(code_seen('F'))
       {
-        retract_recover_feedrate = code_value()/60 ;
+        cs.retract_recover_feedrate = code_value()/60 ;
       }
     }break;
     case 209: // M209 - S<1=true/0=false> enable automatic retract detect if the slicer did not support G10/11: every normal extrude-only move will be classified as retract depending on the direction.

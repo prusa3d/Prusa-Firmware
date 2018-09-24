@@ -288,8 +288,8 @@ extern unsigned char fanSpeedSoftPwm;
 
 #ifdef FWRETRACT
 extern bool retracted[EXTRUDERS];
-extern float retract_length, retract_length_swap, retract_feedrate, retract_zlift;
-extern float retract_recover_length, retract_recover_length_swap, retract_recover_feedrate;
+extern float retract_length_swap;
+extern float retract_recover_length_swap;
 #endif
 
 #ifdef HOST_KEEPALIVE_FEATURE
