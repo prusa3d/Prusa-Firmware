@@ -224,8 +224,8 @@ static const M500_conf default_conf PROGMEM =
 };
 
 //!
-//! @retval true Stored or default settings retrieved
-//! @retval false default settings retrieved, eeprom was erased.
+//! @retval true Stored settings retrieved or default settings retrieved in case EEPROM has been erased.
+//! @retval false default settings retrieved, because of older version or corrupted data
 bool Config_RetrieveSettings(uint16_t offset)
 {
     int i=offset;
