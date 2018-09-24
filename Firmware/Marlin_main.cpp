@@ -5700,7 +5700,7 @@ Sigma_Exit:
             float value = code_value();
             if(value < 20.0) {
               float factor = cs.axis_steps_per_unit[i] / value; // increase e constants if M92 E14 is given for netfab.
-              max_jerk[E_AXIS] *= factor;
+              cs.max_jerk[E_AXIS] *= factor;
               max_feedrate[i] *= factor;
               axis_steps_per_sqr_second[i] *= factor;
             }
@@ -5964,12 +5964,12 @@ Sigma_Exit:
       if(code_seen('S')) cs.minimumfeedrate = code_value();
       if(code_seen('T')) cs.mintravelfeedrate = code_value();
       if(code_seen('B')) cs.minsegmenttime = code_value() ;
-      if(code_seen('X')) max_jerk[X_AXIS] = max_jerk[Y_AXIS] = code_value();
-      if(code_seen('Y')) max_jerk[Y_AXIS] = code_value();
-      if(code_seen('Z')) max_jerk[Z_AXIS] = code_value();
-      if(code_seen('E')) max_jerk[E_AXIS] = code_value();
-		if (max_jerk[X_AXIS] > DEFAULT_XJERK) max_jerk[X_AXIS] = DEFAULT_XJERK;
-		if (max_jerk[Y_AXIS] > DEFAULT_YJERK) max_jerk[Y_AXIS] = DEFAULT_YJERK;
+      if(code_seen('X')) cs.max_jerk[X_AXIS] = cs.max_jerk[Y_AXIS] = code_value();
+      if(code_seen('Y')) cs.max_jerk[Y_AXIS] = code_value();
+      if(code_seen('Z')) cs.max_jerk[Z_AXIS] = code_value();
+      if(code_seen('E')) cs.max_jerk[E_AXIS] = code_value();
+		if (cs.max_jerk[X_AXIS] > DEFAULT_XJERK) cs.max_jerk[X_AXIS] = DEFAULT_XJERK;
+		if (cs.max_jerk[Y_AXIS] > DEFAULT_YJERK) cs.max_jerk[Y_AXIS] = DEFAULT_YJERK;
     }
     break;
     case 206: // M206 additional homing offset

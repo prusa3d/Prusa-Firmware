@@ -15,7 +15,7 @@ typedef struct
     float minimumfeedrate;
     float mintravelfeedrate;
     unsigned long minsegmenttime;
-    float max_jerk[4];
+    float max_jerk[4]; //!< Jerk is a maximum immediate velocity change.
     float add_homing[3];
     float zprobe_zoffset;
     float Kp;

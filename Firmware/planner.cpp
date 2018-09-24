@@ -80,9 +80,6 @@ float* max_feedrate = cs.max_feedrate_normal;
 // Use M201 to override by software
 unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
 unsigned long* max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_normal;
-
-// Jerk is a maximum immediate velocity change.
-float max_jerk[NUM_AXIS];
 unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
 #ifdef ENABLE_AUTO_BED_LEVELING
@@ -1042,20 +1039,20 @@ Having the real displacement of the head, we can calculate the total movement le
   bool  limited = false;
   for (uint8_t axis = 0; axis < 4; ++ axis) {
       float jerk = fabs(current_speed[axis]);
-      if (jerk > max_jerk[axis]) {
+      if (jerk > cs.max_jerk[axis]) {
           // The actual jerk is lower, if it has been limited by the XY jerk.
           if (limited) {
               // Spare one division by a following gymnastics:
               // Instead of jerk *= safe_speed / block->nominal_speed,
               // multiply max_jerk[axis] by the divisor.
               jerk *= safe_speed;
-              float mjerk = max_jerk[axis] * block->nominal_speed;
+              float mjerk = cs.max_jerk[axis] * block->nominal_speed;
               if (jerk > mjerk) {
                   safe_speed *= mjerk / jerk;
                   limited = true;
               }
           } else {
-              safe_speed = max_jerk[axis];
+              safe_speed = cs.max_jerk[axis];
               limited = true;
           }
       }
@@ -1108,8 +1105,8 @@ Having the real displacement of the head, we can calculate the total movement le
                       (v_entry - v_exit) :
                       // axis reversal
                       max(- v_exit, v_entry));
-          if (jerk > max_jerk[axis]) {
-              v_factor *= max_jerk[axis] / jerk;
+          if (jerk > cs.max_jerk[axis]) {
+              v_factor *= cs.max_jerk[axis] / jerk;
               limited = true;
           }
       }

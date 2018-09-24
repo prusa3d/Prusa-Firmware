@@ -166,9 +166,6 @@ extern float* max_feedrate;
 // Use M201 to override by software
 extern unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
 extern unsigned long* max_acceleration_units_per_sq_second; 
-
-// Jerk is a maximum immediate velocity change.
-extern float max_jerk[NUM_AXIS];
 extern unsigned long axis_steps_per_sqr_second[NUM_AXIS];
 
 extern long position[NUM_AXIS];
