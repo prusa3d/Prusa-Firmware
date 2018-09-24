@@ -169,7 +169,6 @@ extern float* max_feedrate;
 extern unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
 extern unsigned long* max_acceleration_units_per_sq_second; 
 
-extern float minimumfeedrate;
 // Jerk is a maximum immediate velocity change.
 extern float max_jerk[NUM_AXIS];
 extern float mintravelfeedrate;

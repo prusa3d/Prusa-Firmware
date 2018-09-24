@@ -83,7 +83,6 @@ float* max_feedrate = cs.max_feedrate_normal;
 unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
 unsigned long* max_acceleration_units_per_sq_second = cs.max_acceleration_units_per_sq_second_normal;
 
-float minimumfeedrate;
 // Jerk is a maximum immediate velocity change.
 float max_jerk[NUM_AXIS];
 float mintravelfeedrate;
@@ -914,7 +913,7 @@ block->steps_y.wide = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-p
   }
   else
   {
-    if(feed_rate<minimumfeedrate) feed_rate=minimumfeedrate;
+    if(feed_rate<cs.minimumfeedrate) feed_rate=cs.minimumfeedrate;
   } 
 
 /* This part of the code calculates the total length of the movement. 

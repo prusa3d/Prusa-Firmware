@@ -5961,7 +5961,7 @@ Sigma_Exit:
       break;
     case 205: //M205 advanced settings:  minimum travel speed S=while printing T=travel only,  B=minimum segment time X= maximum xy jerk, Z=maximum Z jerk
     {
-      if(code_seen('S')) minimumfeedrate = code_value();
+      if(code_seen('S')) cs.minimumfeedrate = code_value();
       if(code_seen('T')) mintravelfeedrate = code_value();
       if(code_seen('B')) minsegmenttime = code_value() ;
       if(code_seen('X')) max_jerk[X_AXIS] = max_jerk[Y_AXIS] = code_value();
