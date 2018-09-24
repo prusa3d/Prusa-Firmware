@@ -9,7 +9,7 @@
 #include "mesh_bed_leveling.h"
 #endif
 
-M500_conf cs;
+//M500_conf cs;
 
 #ifdef DEBUG_EEPROM_WRITE
 #define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value), #value)

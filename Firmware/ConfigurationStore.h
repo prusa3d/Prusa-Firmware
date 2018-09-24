@@ -37,7 +37,7 @@ typedef struct
     unsigned long max_acceleration_units_per_sq_second_silent[4];
 } __attribute__ ((packed)) M500_conf;
 
-extern M500_conf cs;
+//extern M500_conf cs;
 
 void Config_ResetDefault();
 
