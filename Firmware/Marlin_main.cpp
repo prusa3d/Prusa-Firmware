@@ -1641,7 +1641,7 @@ void setup()
 
   if (!previous_settings_retrieved) {
 	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
-	  erase_eeprom_section(EEPROM_OFFSET, 156); 							   //erase M500 part of eeprom
+	  erase_eeprom_section(EEPROM_OFFSET, EEPROM_M500_SIZE); 							   //erase M500 part of eeprom
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);

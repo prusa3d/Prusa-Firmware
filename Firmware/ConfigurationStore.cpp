@@ -56,9 +56,8 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size, char* name)
 }
 
 //======================================================================================
-#define EEPROM_OFFSET 20
 // IMPORTANT:  Whenever there are changes made to the variables stored in EEPROM
-// in the functions below, also increment the version number. This makes sure that
+// in the functions below, also increment the version number and update EEPROM_M500_SIZE. This makes sure that
 // the default values are used whenever there is a change to the data, to prevent
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
@@ -142,12 +141,17 @@ void Config_StoreSettings(uint16_t offset)
 
   EEPROM_WRITE_VAR(i,max_feedrate_silent);
   EEPROM_WRITE_VAR(i,max_acceleration_units_per_sq_second_silent);
-
-  char ver2[4]=EEPROM_VERSION;
-  i=offset;
-  EEPROM_WRITE_VAR(i,ver2); // validate data
-  SERIAL_ECHO_START;
-  SERIAL_ECHOLNPGM("Settings Stored");
+  if (EEPROM_M500_SIZE + EEPROM_OFFSET == i) {
+	  char ver2[4] = EEPROM_VERSION;
+	  i = offset;
+	  EEPROM_WRITE_VAR(i, ver2); // validate data
+	  SERIAL_ECHO_START;
+	  SERIAL_ECHOLNPGM("Settings Stored");
+  }
+  else { //size of eeprom M500 section probably changed by mistake and data are not valid; do not validate data by storing eeprom version
+	  //M500 EEPROM section will be erased on next printer reboot and default vaules will be used
+	  puts_P(PSTR("Data stored to EEPROM not valid."));
+  }
 }
 #endif //EEPROM_SETTINGS
 
@@ -319,10 +323,18 @@ bool Config_RetrieveSettings(uint16_t offset)
 #endif
 #endif
 
-    calculate_extruder_multipliers();
-
+		calculate_extruder_multipliers();
+		int max_feedrate_silent_address = i;
         EEPROM_READ_VAR(i,max_feedrate_silent);  
         EEPROM_READ_VAR(i,max_acceleration_units_per_sq_second_silent);
+
+		//if max_feedrate_silent and max_acceleration_units_per_sq_second_silent were never stored to eeprom, use default values:
+	    float tmp_feedrate[]=DEFAULT_MAX_FEEDRATE_SILENT;
+		unsigned long tmp_acceleration[]=DEFAULT_MAX_ACCELERATION_SILENT;
+		for (uint8_t axis = X_AXIS; axis <= E_AXIS; axis++) {
+			if (eeprom_read_dword((uint32_t*)(max_feedrate_silent_address + axis * 4)) == 0xffffffff) max_feedrate_silent[axis] = tmp_feedrate[axis];
+			if (max_acceleration_units_per_sq_second_silent[axis] == 0xffffffff) max_acceleration_units_per_sq_second_silent[axis] = tmp_acceleration[axis];
+		}
 
 #ifdef TMC2130
 		for (uint8_t j = X_AXIS; j <= Y_AXIS; j++)
@@ -342,8 +354,18 @@ bool Config_RetrieveSettings(uint16_t offset)
 
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
-        SERIAL_ECHO_START;
-        SERIAL_ECHOLNPGM("Stored settings retrieved");
+
+		if (EEPROM_M500_SIZE + EEPROM_OFFSET == i) {
+			SERIAL_ECHO_START;
+			SERIAL_ECHOLNPGM("Stored settings retrieved");
+
+		}
+		else { //size of eeprom M500 section probably changed by mistake and data are not valid; default values will be used
+			puts_P(PSTR("Data read from EEPROM not valid."));
+			Config_ResetDefault();
+			previous_settings_retrieved = false;
+		}
+
     }
     else
     {
