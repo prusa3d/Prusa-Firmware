@@ -81,9 +81,6 @@ extern int current_voltage_raw_bed;
   float unscalePID_d(float d);
 
 #endif
-#ifdef PIDTEMPBED
-  extern float bedKp,bedKi,bedKd;
-#endif
   
   
 #ifdef BABYSTEPPING

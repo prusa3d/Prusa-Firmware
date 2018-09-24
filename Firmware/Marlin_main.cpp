@@ -6240,18 +6240,18 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     #ifdef PIDTEMPBED
     case 304: // M304
       {
-        if(code_seen('P')) bedKp = code_value();
-        if(code_seen('I')) bedKi = scalePID_i(code_value());
-        if(code_seen('D')) bedKd = scalePID_d(code_value());
+        if(code_seen('P')) cs.bedKp = code_value();
+        if(code_seen('I')) cs.bedKi = scalePID_i(code_value());
+        if(code_seen('D')) cs.bedKd = scalePID_d(code_value());
 
         updatePID();
        	SERIAL_PROTOCOLRPGM(_T(MSG_OK));
         SERIAL_PROTOCOL(" p:");
-        SERIAL_PROTOCOL(bedKp);
+        SERIAL_PROTOCOL(cs.bedKp);
         SERIAL_PROTOCOL(" i:");
-        SERIAL_PROTOCOL(unscalePID_i(bedKi));
+        SERIAL_PROTOCOL(unscalePID_i(cs.bedKi));
         SERIAL_PROTOCOL(" d:");
-        SERIAL_PROTOCOL(unscalePID_d(bedKd));
+        SERIAL_PROTOCOL(unscalePID_d(cs.bedKd));
         SERIAL_PROTOCOLLN("");
       }
       break;

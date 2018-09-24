@@ -128,7 +128,7 @@ void Config_PrintSettings(uint8_t level)
 #endif
 #ifdef PIDTEMPBED
 	printf_P(PSTR("%SPID heatbed settings:\n%S   M304 P%.2f I%.2f D%.2f\n"),
-		echomagic, echomagic, bedKp, unscalePID_i(bedKi), unscalePID_d(bedKd));
+		echomagic, echomagic, cs.bedKp, unscalePID_i(cs.bedKi), unscalePID_d(cs.bedKd));
 #endif
 #ifdef FWRETRACT
 	printf_P(PSTR(
