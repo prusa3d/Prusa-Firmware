@@ -354,8 +354,18 @@ bool Config_RetrieveSettings(uint16_t offset)
 
 		// Call updatePID (similar to when we have processed M301)
 		updatePID();
-        SERIAL_ECHO_START;
-        SERIAL_ECHOLNPGM("Stored settings retrieved");
+
+		if (EEPROM_M500_SIZE + EEPROM_OFFSET == i) {
+			SERIAL_ECHO_START;
+			SERIAL_ECHOLNPGM("Stored settings retrieved");
+
+		}
+	    else { //size of eeprom M500 section probably changed by mistake and data are not valid; default values will be used
+			puts_P(PSTR("Data read from EEPROM not valid."));
+			Config_ResetDefault();
+			previous_settings_retrieved = false;
+		}
+
     }
     else
     {
