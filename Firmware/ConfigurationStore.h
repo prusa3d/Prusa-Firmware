@@ -10,7 +10,7 @@ typedef struct
     float axis_steps_per_unit[4];
     float max_feedrate_normal[4];
     unsigned long max_acceleration_units_per_sq_second_normal[4];
-    float acceleration;
+    float acceleration; //!< Normal acceleration mm/s^2  THIS IS THE DEFAULT ACCELERATION for all moves. M204 SXXXX
     float retract_acceleration;
     float minimumfeedrate;
     float mintravelfeedrate;

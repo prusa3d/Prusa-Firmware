@@ -170,7 +170,6 @@ extern unsigned long max_acceleration_units_per_sq_second_silent[NUM_AXIS];
 extern unsigned long* max_acceleration_units_per_sq_second; 
 
 extern float minimumfeedrate;
-extern float acceleration;         // Normal acceleration mm/s^2  THIS IS THE DEFAULT ACCELERATION for all moves. M204 SXXXX
 extern float retract_acceleration; //  mm/s^2   filament pull-pack and push-forward  while standing still in the other axis M204 TXXXX
 // Jerk is a maximum immediate velocity change.
 extern float max_jerk[NUM_AXIS];
