@@ -411,7 +411,6 @@ uint8_t active_extruder = 0;
 int fanSpeed=0;
 
 #ifdef FWRETRACT
-  bool autoretract_enabled=false;
   bool retracted[EXTRUDERS]={false
     #if EXTRUDERS > 1
     , false
@@ -3721,7 +3720,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			total_filament_used = total_filament_used + ((destination[E_AXIS] - current_position[E_AXIS]) * 100);
 		}
           #ifdef FWRETRACT
-            if(autoretract_enabled)
+            if(cs.autoretract_enabled)
             if( !(code_seen('X') || code_seen('Y') || code_seen('Z')) && code_seen('E')) {
               float echange=destination[E_AXIS]-current_position[E_AXIS];
 
@@ -6010,7 +6009,7 @@ Sigma_Exit:
         {
           case 0: 
           {
-            autoretract_enabled=false;
+            cs.autoretract_enabled=false;
             retracted[0]=false;
             #if EXTRUDERS > 1
               retracted[1]=false;
@@ -6021,7 +6020,7 @@ Sigma_Exit:
           }break;
           case 1: 
           {
-            autoretract_enabled=true;
+            cs.autoretract_enabled=true;
             retracted[0]=false;
             #if EXTRUDERS > 1
               retracted[1]=false;

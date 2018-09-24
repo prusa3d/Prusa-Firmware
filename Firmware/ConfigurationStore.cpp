@@ -138,7 +138,7 @@ void Config_PrintSettings(uint8_t level)
 		),
 		echomagic, echomagic, retract_length, retract_feedrate*60, retract_zlift,
 		echomagic, echomagic, retract_recover_length, retract_recover_feedrate*60,
-		echomagic, echomagic, (autoretract_enabled ? 1 : 0)
+		echomagic, echomagic, (cs.autoretract_enabled ? 1 : 0)
 	);
 #if EXTRUDERS > 1
 	printf_P(PSTR("%SMulti-extruder settings:\n%S   Swap retract length (mm):    %.2f\n%S   Swap rec. addl. length (mm): %.2f\n"),
