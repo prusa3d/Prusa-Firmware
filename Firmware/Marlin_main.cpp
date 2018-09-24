@@ -3054,13 +3054,13 @@ void gcode_M114()
 	SERIAL_PROTOCOL(current_position[E_AXIS]);
 
 	SERIAL_PROTOCOLRPGM(_n(" Count X: "));////MSG_COUNT_X c=0 r=0
-	SERIAL_PROTOCOL(float(st_get_position(X_AXIS)) / axis_steps_per_unit[X_AXIS]);
+	SERIAL_PROTOCOL(float(st_get_position(X_AXIS)) / cs.axis_steps_per_unit[X_AXIS]);
 	SERIAL_PROTOCOLPGM(" Y:");
-	SERIAL_PROTOCOL(float(st_get_position(Y_AXIS)) / axis_steps_per_unit[Y_AXIS]);
+	SERIAL_PROTOCOL(float(st_get_position(Y_AXIS)) / cs.axis_steps_per_unit[Y_AXIS]);
 	SERIAL_PROTOCOLPGM(" Z:");
-	SERIAL_PROTOCOL(float(st_get_position(Z_AXIS)) / axis_steps_per_unit[Z_AXIS]);
+	SERIAL_PROTOCOL(float(st_get_position(Z_AXIS)) / cs.axis_steps_per_unit[Z_AXIS]);
 	SERIAL_PROTOCOLPGM(" E:");
-	SERIAL_PROTOCOL(float(st_get_position(E_AXIS)) / axis_steps_per_unit[E_AXIS]);
+	SERIAL_PROTOCOL(float(st_get_position(E_AXIS)) / cs.axis_steps_per_unit[E_AXIS]);
 
 	SERIAL_PROTOCOLLN("");
 }
@@ -3942,7 +3942,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             // The following code correct the Z height difference from z-probe position and hotend tip position.
             // The Z height on homing is measured by Z-Probe, but the probe is quite far from the hotend.
             // When the bed is uneven, this height must be corrected.
-            real_z = float(st_get_position(Z_AXIS))/axis_steps_per_unit[Z_AXIS];  //get the real Z (since the auto bed leveling is already correcting the plane)
+            real_z = float(st_get_position(Z_AXIS))/cs.axis_steps_per_unit[Z_AXIS];  //get the real Z (since the auto bed leveling is already correcting the plane)
             x_tmp = current_position[X_AXIS] + X_PROBE_OFFSET_FROM_EXTRUDER;
             y_tmp = current_position[Y_AXIS] + Y_PROBE_OFFSET_FROM_EXTRUDER;
             z_tmp = current_position[Z_AXIS];
@@ -4148,7 +4148,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 					lcd_temp_cal_show_result(find_z_result);
 					break;
 				}
-				z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
+				z_shift = (int)((current_position[Z_AXIS] - zero_z)*cs.axis_steps_per_unit[Z_AXIS]);
 
 				printf_P(_N("\nPINDA temperature: %.1f Z shift (mm): %.3f"), current_temperature_pinda, current_position[Z_AXIS] - zero_z);
 
@@ -4235,7 +4235,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 			st_synchronize();
 			find_bed_induction_sensor_point_z(-1.f);
-			z_shift = (int)((current_position[Z_AXIS] - zero_z)*axis_steps_per_unit[Z_AXIS]);
+			z_shift = (int)((current_position[Z_AXIS] - zero_z)*cs.axis_steps_per_unit[Z_AXIS]);
 
 			printf_P(_N("\nTemperature: %d  Z shift (mm): %.3f\n"), t_c, current_position[Z_AXIS] - zero_z);
 
@@ -5699,15 +5699,15 @@ Sigma_Exit:
           if(i == 3) { // E
             float value = code_value();
             if(value < 20.0) {
-              float factor = axis_steps_per_unit[i] / value; // increase e constants if M92 E14 is given for netfab.
+              float factor = cs.axis_steps_per_unit[i] / value; // increase e constants if M92 E14 is given for netfab.
               max_jerk[E_AXIS] *= factor;
               max_feedrate[i] *= factor;
               axis_steps_per_sqr_second[i] *= factor;
             }
-            axis_steps_per_unit[i] = value;
+            cs.axis_steps_per_unit[i] = value;
           }
           else {
-            axis_steps_per_unit[i] = code_value();
+            cs.axis_steps_per_unit[i] = code_value();
           }
         }
       }
@@ -5905,7 +5905,7 @@ Sigma_Exit:
     #if 0 // Not used for Sprinter/grbl gen6
     case 202: // M202
       for(int8_t i=0; i < NUM_AXIS; i++) {
-        if(code_seen(axis_codes[i])) axis_travel_steps_per_sqr_second[i] = code_value() * axis_steps_per_unit[i];
+        if(code_seen(axis_codes[i])) axis_travel_steps_per_sqr_second[i] = code_value() * cs.axis_steps_per_unit[i];
       }
       break;
     #endif
@@ -6548,7 +6548,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			for (uint8_t i = 0; i < 6; i++)
 			{
 				if(i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i-1) * 2, &usteps);
-				float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
+				float mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
 				i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 				SERIAL_PROTOCOLPGM(", ");
 				SERIAL_PROTOCOL(35 + (i * 5));
@@ -6591,7 +6591,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 					{
 						usteps = 0;
 						if (i>0) EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + (i - 1) * 2, &usteps);
-						float mm = ((float)usteps) / axis_steps_per_unit[Z_AXIS];
+						float mm = ((float)usteps) / cs.axis_steps_per_unit[Z_AXIS];
 						i == 0 ? SERIAL_PROTOCOLPGM("n/a") : SERIAL_PROTOCOL(i - 1);
 						SERIAL_PROTOCOLPGM(", ");
 						SERIAL_PROTOCOL(35 + (i * 5));
@@ -6740,13 +6740,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				if (res_new > res)
 				{
 					uint16_t fac = (res_new / res);
-					axis_steps_per_unit[axis] *= fac;
+					cs.axis_steps_per_unit[axis] *= fac;
 					position[E_AXIS] *= fac;
 				}
 				else
 				{
 					uint16_t fac = (res / res_new);
-					axis_steps_per_unit[axis] /= fac;
+					cs.axis_steps_per_unit[axis] /= fac;
 					position[E_AXIS] /= fac;
 				}
 			}
@@ -7450,8 +7450,8 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
      float oldepos=current_position[E_AXIS];
      float oldedes=destination[E_AXIS];
      plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS],
-                      destination[E_AXIS]+EXTRUDER_RUNOUT_EXTRUDE*EXTRUDER_RUNOUT_ESTEPS/axis_steps_per_unit[E_AXIS],
-                      EXTRUDER_RUNOUT_SPEED/60.*EXTRUDER_RUNOUT_ESTEPS/axis_steps_per_unit[E_AXIS], active_extruder);
+                      destination[E_AXIS]+EXTRUDER_RUNOUT_EXTRUDE*EXTRUDER_RUNOUT_ESTEPS/cs.axis_steps_per_unit[E_AXIS],
+                      EXTRUDER_RUNOUT_SPEED/60.*EXTRUDER_RUNOUT_ESTEPS/cs.axis_steps_per_unit[E_AXIS], active_extruder);
      current_position[E_AXIS]=oldepos;
      destination[E_AXIS]=oldedes;
      plan_set_e_position(oldepos);
@@ -8030,10 +8030,10 @@ void temp_compensation_apply() {
 		if (target_temperature_bed % 10 == 0 && target_temperature_bed >= 60 && target_temperature_bed <= 100) {
 			i_add = (target_temperature_bed - 60) / 10;
 			EEPROM_read_B(EEPROM_PROBE_TEMP_SHIFT + i_add * 2, &z_shift);
-			z_shift_mm = z_shift / axis_steps_per_unit[Z_AXIS];
+			z_shift_mm = z_shift / cs.axis_steps_per_unit[Z_AXIS];
 		}else {
 			//interpolation
-			z_shift_mm = temp_comp_interpolation(target_temperature_bed) / axis_steps_per_unit[Z_AXIS];
+			z_shift_mm = temp_comp_interpolation(target_temperature_bed) / cs.axis_steps_per_unit[Z_AXIS];
 		}
 		printf_P(_N("\nZ shift applied:%.3f\n"), z_shift_mm);
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS] - z_shift_mm, current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
@@ -8116,7 +8116,7 @@ float temp_compensation_pinda_thermistor_offset(float temperature_pinda)
 {
 	if (!temp_cal_active) return 0;
 	if (!calibration_status_pinda()) return 0;
-	return temp_comp_interpolation(temperature_pinda) / axis_steps_per_unit[Z_AXIS];
+	return temp_comp_interpolation(temperature_pinda) / cs.axis_steps_per_unit[Z_AXIS];
 }
 #endif //PINDA_THERMISTOR
 
@@ -8246,7 +8246,7 @@ void uvlo_()
 		plan_buffer_line(
       current_position[X_AXIS], 
       current_position[Y_AXIS], 
-      current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / axis_steps_per_unit[Z_AXIS], 
+      current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS], 
       current_position[E_AXIS] - default_retraction,
       40, active_extruder);
     
@@ -8256,7 +8256,7 @@ void uvlo_()
     plan_buffer_line(
                      current_position[X_AXIS],
                      current_position[Y_AXIS],
-                     current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / axis_steps_per_unit[Z_AXIS],
+                     current_position[Z_AXIS] + UVLO_Z_AXIS_SHIFT + float((1024 - z_microsteps + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS],
                      current_position[E_AXIS] - default_retraction,
                      40, active_extruder);
     st_synchronize();
@@ -8348,7 +8348,7 @@ plan_buffer_line(
      current_position[X_AXIS], 
      current_position[Y_AXIS], 
 //     current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/axis_steps_per_unit[Z_AXIS], 
-     current_position[Z_AXIS]+UVLO_Z_AXIS_SHIFT+float((1024-z_microsteps+7)>>4)/axis_steps_per_unit[Z_AXIS], 
+     current_position[Z_AXIS]+UVLO_Z_AXIS_SHIFT+float((1024-z_microsteps+7)>>4)/cs.axis_steps_per_unit[Z_AXIS], 
      current_position[E_AXIS],
      40, active_extruder);
 st_synchronize();
@@ -8472,10 +8472,10 @@ void recover_machine_state_after_power_panic(bool bTiny)
   // The current position after power panic is moved to the next closest 0th full step.
   if(bTiny)
     current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z)) + 
-    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
+    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS)) + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS];
   else
     current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
-    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / axis_steps_per_unit[Z_AXIS];
+    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS];
   if (eeprom_read_byte((uint8_t*)EEPROM_UVLO_E_ABS)) {
 	  current_position[E_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E));
 	  sprintf_P(cmd, PSTR("G92 E"));

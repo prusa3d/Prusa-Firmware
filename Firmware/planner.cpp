@@ -57,6 +57,7 @@
 #include "temperature.h"
 #include "ultralcd.h"
 #include "language.h"
+#include "ConfigurationStore.h"
 
 #ifdef MESH_BED_LEVELING
 #include "mesh_bed_leveling.h"
@@ -78,8 +79,6 @@ float max_feedrate_normal[NUM_AXIS];       // max speeds for normal mode
 float max_feedrate_silent[NUM_AXIS];       // max speeds for silent mode
 float* max_feedrate = max_feedrate_normal;
 
-// Use M92 to override by software
-float axis_steps_per_unit[NUM_AXIS];
 
 // Use M201 to override by software
 unsigned long max_acceleration_units_per_sq_second_normal[NUM_AXIS];
@@ -623,9 +622,9 @@ void planner_abort_hard()
         else {
             float t = float(step_events_completed) / float(current_block->step_event_count);
             float vec[3] = { 
-              current_block->steps_x / axis_steps_per_unit[X_AXIS],
-              current_block->steps_y / axis_steps_per_unit[Y_AXIS],
-              current_block->steps_z / axis_steps_per_unit[Z_AXIS]
+              current_block->steps_x / cs.axis_steps_per_unit[X_AXIS],
+              current_block->steps_y / cs.axis_steps_per_unit[Y_AXIS],
+              current_block->steps_z / cs.axis_steps_per_unit[Z_AXIS]
             };
             float pos1[3], pos2[3];
             for (int8_t i = 0; i < 3; ++ i) {
@@ -743,18 +742,18 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
   // Calculate target position in absolute steps
   //this should be done after the wait, because otherwise a M92 code within the gcode disrupts this calculation somehow
   long target[4];
-  target[X_AXIS] = lround(x*axis_steps_per_unit[X_AXIS]);
-  target[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
+  target[X_AXIS] = lround(x*cs.axis_steps_per_unit[X_AXIS]);
+  target[Y_AXIS] = lround(y*cs.axis_steps_per_unit[Y_AXIS]);
 #ifdef MESH_BED_LEVELING
     if (mbl.active){
-        target[Z_AXIS] = lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]);
+        target[Z_AXIS] = lround((z+mbl.get_z(x, y))*cs.axis_steps_per_unit[Z_AXIS]);
     }else{
-        target[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
+        target[Z_AXIS] = lround(z*cs.axis_steps_per_unit[Z_AXIS]);
     }
 #else
-    target[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
+    target[Z_AXIS] = lround(z*cs.axis_steps_per_unit[Z_AXIS]);
 #endif // ENABLE_MESH_BED_LEVELING
-  target[E_AXIS] = lround(e*axis_steps_per_unit[E_AXIS]);
+  target[E_AXIS] = lround(e*cs.axis_steps_per_unit[E_AXIS]);
   
 #ifdef LIN_ADVANCE
     const float mm_D_float = sqrt(sq(x - position_float[X_AXIS]) + sq(y - position_float[Y_AXIS]));
@@ -776,7 +775,7 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
     }
     
     #ifdef PREVENT_LENGTHY_EXTRUDE
-    if(labs(target[E_AXIS]-position[E_AXIS])>axis_steps_per_unit[E_AXIS]*EXTRUDE_MAXLENGTH)
+    if(labs(target[E_AXIS]-position[E_AXIS])>cs.axis_steps_per_unit[E_AXIS]*EXTRUDE_MAXLENGTH)
     {
       position[E_AXIS]=target[E_AXIS]; //behave as if the move really took place, but ignore E part
 #ifdef LIN_ADVANCE
@@ -931,17 +930,17 @@ Having the real displacement of the head, we can calculate the total movement le
 */ 
   #ifndef COREXY
     float delta_mm[4];
-    delta_mm[X_AXIS] = (target[X_AXIS]-position[X_AXIS])/axis_steps_per_unit[X_AXIS];
-    delta_mm[Y_AXIS] = (target[Y_AXIS]-position[Y_AXIS])/axis_steps_per_unit[Y_AXIS];
+    delta_mm[X_AXIS] = (target[X_AXIS]-position[X_AXIS])/cs.axis_steps_per_unit[X_AXIS];
+    delta_mm[Y_AXIS] = (target[Y_AXIS]-position[Y_AXIS])/cs.axis_steps_per_unit[Y_AXIS];
   #else
     float delta_mm[6];
-    delta_mm[X_HEAD] = (target[X_AXIS]-position[X_AXIS])/axis_steps_per_unit[X_AXIS];
-    delta_mm[Y_HEAD] = (target[Y_AXIS]-position[Y_AXIS])/axis_steps_per_unit[Y_AXIS];
-    delta_mm[X_AXIS] = ((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]))/axis_steps_per_unit[X_AXIS];
-    delta_mm[Y_AXIS] = ((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]))/axis_steps_per_unit[Y_AXIS];
+    delta_mm[X_HEAD] = (target[X_AXIS]-position[X_AXIS])/cs.axis_steps_per_unit[X_AXIS];
+    delta_mm[Y_HEAD] = (target[Y_AXIS]-position[Y_AXIS])/cs.axis_steps_per_unit[Y_AXIS];
+    delta_mm[X_AXIS] = ((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]))/cs.axis_steps_per_unit[X_AXIS];
+    delta_mm[Y_AXIS] = ((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]))/cs.axis_steps_per_unit[Y_AXIS];
   #endif
-  delta_mm[Z_AXIS] = (target[Z_AXIS]-position[Z_AXIS])/axis_steps_per_unit[Z_AXIS];
-  delta_mm[E_AXIS] = (target[E_AXIS]-position[E_AXIS])/axis_steps_per_unit[E_AXIS];
+  delta_mm[Z_AXIS] = (target[Z_AXIS]-position[Z_AXIS])/cs.axis_steps_per_unit[Z_AXIS];
+  delta_mm[E_AXIS] = (target[E_AXIS]-position[E_AXIS])/cs.axis_steps_per_unit[E_AXIS];
   if ( block->steps_x.wide <=dropsegments && block->steps_y.wide <=dropsegments && block->steps_z.wide <=dropsegments )
   {
     block->millimeters = fabs(delta_mm[E_AXIS]);
@@ -1188,7 +1187,7 @@ Having the real displacement of the head, we can calculate the total movement le
                           extruder_advance_k
                           * ((advance_ed_ratio < 0.000001) ? de_float / mm_D_float : advance_ed_ratio) // Use the fixed ratio, if set
                           * (block->nominal_speed / (float)block->nominal_rate)
-                          * axis_steps_per_unit[E_AXIS] * 256.0
+                          * cs.axis_steps_per_unit[E_AXIS] * 256.0
                           );
 #endif
     
@@ -1263,16 +1262,16 @@ void plan_set_position(float x, float y, float z, const float &e)
         y = world2machine_rotation_and_skew[1][0] * tmpx + world2machine_rotation_and_skew[1][1] * tmpy + world2machine_shift[1];
     }
 
-  position[X_AXIS] = lround(x*axis_steps_per_unit[X_AXIS]);
-  position[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
+  position[X_AXIS] = lround(x*cs.axis_steps_per_unit[X_AXIS]);
+  position[Y_AXIS] = lround(y*cs.axis_steps_per_unit[Y_AXIS]);
 #ifdef MESH_BED_LEVELING
   position[Z_AXIS] = mbl.active ? 
-    lround((z+mbl.get_z(x, y))*axis_steps_per_unit[Z_AXIS]) :
-    lround(z*axis_steps_per_unit[Z_AXIS]);
+    lround((z+mbl.get_z(x, y))*cs.axis_steps_per_unit[Z_AXIS]) :
+    lround(z*cs.axis_steps_per_unit[Z_AXIS]);
 #else
-  position[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
+  position[Z_AXIS] = lround(z*cs.axis_steps_per_unit[Z_AXIS]);
 #endif // ENABLE_MESH_BED_LEVELING
-  position[E_AXIS] = lround(e*axis_steps_per_unit[E_AXIS]);
+  position[E_AXIS] = lround(e*cs.axis_steps_per_unit[E_AXIS]);
 #ifdef LIN_ADVANCE
   position_float[X_AXIS] = x;
   position_float[Y_AXIS] = y;
@@ -1293,7 +1292,7 @@ void plan_set_z_position(const float &z)
 	#ifdef LIN_ADVANCE
 	position_float[Z_AXIS] = z;
 	#endif
-    position[Z_AXIS] = lround(z*axis_steps_per_unit[Z_AXIS]);
+    position[Z_AXIS] = lround(z*cs.axis_steps_per_unit[Z_AXIS]);
     st_set_position(position[X_AXIS], position[Y_AXIS], position[Z_AXIS], position[E_AXIS]);
 }
 
@@ -1302,7 +1301,7 @@ void plan_set_e_position(const float &e)
   #ifdef LIN_ADVANCE
   position_float[E_AXIS] = e;
   #endif
-  position[E_AXIS] = lround(e*axis_steps_per_unit[E_AXIS]);  
+  position[E_AXIS] = lround(e*cs.axis_steps_per_unit[E_AXIS]);  
   st_set_e_position(position[E_AXIS]);
 }
 
@@ -1317,7 +1316,7 @@ void set_extrude_min_temp(float temp)
 void reset_acceleration_rates()
 {
 	for(int8_t i=0; i < NUM_AXIS; i++)
-        axis_steps_per_sqr_second[i] = max_acceleration_units_per_sq_second[i] * axis_steps_per_unit[i];
+        axis_steps_per_sqr_second[i] = max_acceleration_units_per_sq_second[i] * cs.axis_steps_per_unit[i];
 }
 
 #ifdef TMC2130

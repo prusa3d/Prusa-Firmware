@@ -3009,7 +3009,7 @@ void babystep_apply()
 {
     babystep_load();
 #ifdef BABYSTEP_LOADZ_BY_PLANNER
-    shift_z(- float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+    shift_z(- float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
 #else
     babystepsTodoZadd(babystepLoadZ);
 #endif /* BABYSTEP_LOADZ_BY_PLANNER */
@@ -3018,7 +3018,7 @@ void babystep_apply()
 void babystep_undo()
 {
 #ifdef BABYSTEP_LOADZ_BY_PLANNER
-      shift_z(float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+      shift_z(float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
 #else
       babystepsTodoZsubtract(babystepLoadZ);
 #endif /* BABYSTEP_LOADZ_BY_PLANNER */

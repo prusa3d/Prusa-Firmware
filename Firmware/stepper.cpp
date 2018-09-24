@@ -42,6 +42,7 @@ int fsensor_counter = 0; //counter for e-steps
 #endif //FILAMENT_SENSOR
 
 #include "mmu.h"
+#include "ConfigurationStore.h"
 
 #ifdef DEBUG_STACK_MONITOR
 uint16_t SP_min = 0x21FF;
@@ -231,15 +232,15 @@ void checkHitEndstops()
    SERIAL_ECHO_START;
    SERIAL_ECHORPGM(_T(MSG_ENDSTOPS_HIT));
    if(endstop_x_hit) {
-     SERIAL_ECHOPAIR(" X:",(float)endstops_trigsteps[X_AXIS]/axis_steps_per_unit[X_AXIS]);
+     SERIAL_ECHOPAIR(" X:",(float)endstops_trigsteps[X_AXIS]/cs.axis_steps_per_unit[X_AXIS]);
 //     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT), PSTR("X")));
    }
    if(endstop_y_hit) {
-     SERIAL_ECHOPAIR(" Y:",(float)endstops_trigsteps[Y_AXIS]/axis_steps_per_unit[Y_AXIS]);
+     SERIAL_ECHOPAIR(" Y:",(float)endstops_trigsteps[Y_AXIS]/cs.axis_steps_per_unit[Y_AXIS]);
 //     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT), PSTR("Y")));
    }
    if(endstop_z_hit) {
-     SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/axis_steps_per_unit[Z_AXIS]);
+     SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/cs.axis_steps_per_unit[Z_AXIS]);
 //     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT),PSTR("Z")));
    }
    SERIAL_ECHOLN("");
@@ -1390,7 +1391,7 @@ void st_get_position_xy(long &x, long &y)
 float st_get_position_mm(uint8_t axis)
 {
   float steper_position_in_steps = st_get_position(axis);
-  return steper_position_in_steps / axis_steps_per_unit[axis];
+  return steper_position_in_steps / cs.axis_steps_per_unit[axis];
 }
 
 

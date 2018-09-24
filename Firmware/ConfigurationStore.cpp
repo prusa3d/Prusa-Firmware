@@ -9,7 +9,7 @@
 #include "mesh_bed_leveling.h"
 #endif
 
-//M500_conf cs;
+M500_conf cs;
 
 #ifdef DEBUG_EEPROM_WRITE
 #define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value), #value)
@@ -97,7 +97,7 @@ void Config_PrintSettings(uint8_t level)
 		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%.2f X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
 		),
-		echomagic, echomagic, axis_steps_per_unit[X_AXIS], axis_steps_per_unit[Y_AXIS], axis_steps_per_unit[Z_AXIS], axis_steps_per_unit[E_AXIS],
+		echomagic, echomagic, cs.axis_steps_per_unit[X_AXIS], cs.axis_steps_per_unit[Y_AXIS], cs.axis_steps_per_unit[Z_AXIS], cs.axis_steps_per_unit[E_AXIS],
 		echomagic, echomagic, max_feedrate_normal[X_AXIS], max_feedrate_normal[Y_AXIS], max_feedrate_normal[Z_AXIS], max_feedrate_normal[E_AXIS],
 		echomagic, echomagic, max_feedrate_silent[X_AXIS], max_feedrate_silent[Y_AXIS], max_feedrate_silent[Z_AXIS], max_feedrate_silent[E_AXIS],
 		echomagic, echomagic, max_acceleration_units_per_sq_second_normal[X_AXIS], max_acceleration_units_per_sq_second_normal[Y_AXIS], max_acceleration_units_per_sq_second_normal[Z_AXIS], max_acceleration_units_per_sq_second_normal[E_AXIS],
@@ -114,7 +114,7 @@ void Config_PrintSettings(uint8_t level)
 		"%SAdvanced variables: S=Min feedrate (mm/s), T=Min travel feedrate (mm/s), B=minimum segment time (ms), X=maximum XY jerk (mm/s),  Z=maximum Z jerk (mm/s),  E=maximum E jerk (mm/s)\n%S  M205 S%.2f T%.2f B%.2f X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
 		),
-		echomagic, echomagic, axis_steps_per_unit[X_AXIS], axis_steps_per_unit[Y_AXIS], axis_steps_per_unit[Z_AXIS], axis_steps_per_unit[E_AXIS],
+		echomagic, echomagic, cs.axis_steps_per_unit[X_AXIS], cs.axis_steps_per_unit[Y_AXIS], cs.axis_steps_per_unit[Z_AXIS], cs.axis_steps_per_unit[E_AXIS],
 		echomagic, echomagic, max_feedrate[X_AXIS], max_feedrate[Y_AXIS], max_feedrate[Z_AXIS], max_feedrate[E_AXIS],
 		echomagic, echomagic, max_acceleration_units_per_sq_second[X_AXIS], max_acceleration_units_per_sq_second[Y_AXIS], max_acceleration_units_per_sq_second[Z_AXIS], max_acceleration_units_per_sq_second[E_AXIS],
 		echomagic, echomagic, acceleration, retract_acceleration,

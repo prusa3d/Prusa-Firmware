@@ -2764,9 +2764,9 @@ static void _lcd_babystep(int axis, const char *msg)
 	    if (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST)
 			_md->babystepMem[2] = 0;
 
-		_md->babystepMemMM[0] = _md->babystepMem[0]/axis_steps_per_unit[X_AXIS];
-		_md->babystepMemMM[1] = _md->babystepMem[1]/axis_steps_per_unit[Y_AXIS];
-		_md->babystepMemMM[2] = _md->babystepMem[2]/axis_steps_per_unit[Z_AXIS];
+		_md->babystepMemMM[0] = _md->babystepMem[0]/cs.axis_steps_per_unit[X_AXIS];
+		_md->babystepMemMM[1] = _md->babystepMem[1]/cs.axis_steps_per_unit[Y_AXIS];
+		_md->babystepMemMM[2] = _md->babystepMem[2]/cs.axis_steps_per_unit[Z_AXIS];
 		lcd_draw_update = 1;
 		//SERIAL_ECHO("Z baby step: ");
 		//SERIAL_ECHO(_md->babystepMem[2]);
@@ -2789,7 +2789,7 @@ static void _lcd_babystep(int axis, const char *msg)
 				CRITICAL_SECTION_END		
 			}
 		}
-		_md->babystepMemMM[axis] = _md->babystepMem[axis]/axis_steps_per_unit[axis]; 
+		_md->babystepMemMM[axis] = _md->babystepMem[axis]/cs.axis_steps_per_unit[axis]; 
 		delay(50);
 		lcd_encoder = 0;
 		lcd_draw_update = 1;

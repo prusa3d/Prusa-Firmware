@@ -165,8 +165,6 @@ extern float max_feedrate_normal[NUM_AXIS];
 extern float max_feedrate_silent[NUM_AXIS];
 extern float* max_feedrate;
 
-// Use M92 to override by software
-extern float axis_steps_per_unit[NUM_AXIS];
 
 // Use M201 to override by software
 extern unsigned long max_acceleration_units_per_sq_second_normal[NUM_AXIS];
