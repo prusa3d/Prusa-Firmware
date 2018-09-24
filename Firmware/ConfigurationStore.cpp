@@ -124,7 +124,7 @@ void Config_PrintSettings(uint8_t level)
 	);
 #ifdef PIDTEMP
 	printf_P(PSTR("%SPID settings:\n%S   M301 P%.2f I%.2f D%.2f\n"),
-		echomagic, echomagic, Kp, unscalePID_i(Ki), unscalePID_d(Kd));
+		echomagic, echomagic, cs.Kp, unscalePID_i(cs.Ki), unscalePID_d(cs.Kd));
 #endif
 #ifdef PIDTEMPBED
 	printf_P(PSTR("%SPID heatbed settings:\n%S   M304 P%.2f I%.2f D%.2f\n"),

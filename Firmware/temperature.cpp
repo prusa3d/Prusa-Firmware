@@ -39,6 +39,7 @@
 
 #include <avr/wdt.h>
 #include "adc.h"
+#include "ConfigurationStore.h"
 
 
 //===========================================================================
@@ -79,9 +80,6 @@ float current_temperature_bed = 0.0;
   float _Kp, _Ki, _Kd;
   int pid_cycle, pid_number_of_cycles;
   bool pid_tuning_finished = false;
-  float Kp=DEFAULT_Kp;
-  float Ki=(DEFAULT_Ki*PID_dT);
-  float Kd=(DEFAULT_Kd/PID_dT);
   #ifdef PID_ADD_EXTRUSION_RATE
     float Kc=DEFAULT_Kc;
   #endif
@@ -422,7 +420,7 @@ void updatePID()
 {
 #ifdef PIDTEMP
   for(int e = 0; e < EXTRUDERS; e++) { 
-     temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / Ki;  
+     temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;  
   }
 #endif
 #ifdef PIDTEMPBED
@@ -638,14 +636,14 @@ void manage_heater()
             temp_iState[e] = 0.0;
             pid_reset[e] = false;
           }
-          pTerm[e] = Kp * pid_error[e];
+          pTerm[e] = cs.Kp * pid_error[e];
           temp_iState[e] += pid_error[e];
           temp_iState[e] = constrain(temp_iState[e], temp_iState_min[e], temp_iState_max[e]);
-          iTerm[e] = Ki * temp_iState[e];
+          iTerm[e] = cs.Ki * temp_iState[e];
 
           //K1 defined in Configuration.h in the PID settings
           #define K2 (1.0-K1)
-          dTerm[e] = (Kd * (pid_input - temp_dState[e]))*K2 + (K1 * dTerm[e]);
+          dTerm[e] = (cs.Kd * (pid_input - temp_dState[e]))*K2 + (K1 * dTerm[e]);
           pid_output = pTerm[e] + iTerm[e] - dTerm[e];
           if (pid_output > PID_MAX) {
             if (pid_error[e] > 0 )  temp_iState[e] -= pid_error[e]; // conditional un-integration
@@ -1040,7 +1038,7 @@ void tp_init()
     maxttemp[e] = maxttemp[0];
 #ifdef PIDTEMP
     temp_iState_min[e] = 0.0;
-    temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / Ki;
+    temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;
 #endif //PIDTEMP
 #ifdef PIDTEMPBED
     temp_iState_min_bed = 0.0;

@@ -6212,9 +6212,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     #ifdef PIDTEMP
     case 301: // M301
       {
-        if(code_seen('P')) Kp = code_value();
-        if(code_seen('I')) Ki = scalePID_i(code_value());
-        if(code_seen('D')) Kd = scalePID_d(code_value());
+        if(code_seen('P')) cs.Kp = code_value();
+        if(code_seen('I')) cs.Ki = scalePID_i(code_value());
+        if(code_seen('D')) cs.Kd = scalePID_d(code_value());
 
         #ifdef PID_ADD_EXTRUSION_RATE
         if(code_seen('C')) Kc = code_value();
@@ -6223,11 +6223,11 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         updatePID();
         SERIAL_PROTOCOLRPGM(_T(MSG_OK));
         SERIAL_PROTOCOL(" p:");
-        SERIAL_PROTOCOL(Kp);
+        SERIAL_PROTOCOL(cs.Kp);
         SERIAL_PROTOCOL(" i:");
-        SERIAL_PROTOCOL(unscalePID_i(Ki));
+        SERIAL_PROTOCOL(unscalePID_i(cs.Ki));
         SERIAL_PROTOCOL(" d:");
-        SERIAL_PROTOCOL(unscalePID_d(Kd));
+        SERIAL_PROTOCOL(unscalePID_d(cs.Kd));
         #ifdef PID_ADD_EXTRUSION_RATE
         SERIAL_PROTOCOL(" c:");
         //Kc does not have scaling applied above, or in resetting defaults
