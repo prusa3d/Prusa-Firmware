@@ -393,9 +393,6 @@ float current_position[NUM_AXIS] = { 0.0, 0.0, 0.0, 0.0 };
 #define _z current_position[Z_AXIS]
 #define _e current_position[E_AXIS]
 
-
-float add_homing[3]={0,0,0};
-
 float min_pos[3] = { X_MIN_POS, Y_MIN_POS, Z_MIN_POS };
 float max_pos[3] = { X_MAX_POS, Y_MAX_POS, Z_MAX_POS };
 bool axis_known_position[3] = {false, false, false};
@@ -2010,9 +2007,9 @@ XYZ_CONSTS_FROM_CONFIG(float, home_retract_mm, HOME_RETRACT_MM);
 XYZ_CONSTS_FROM_CONFIG(signed char, home_dir,  HOME_DIR);
 
 static void axis_is_at_home(int axis) {
-  current_position[axis] = base_home_pos(axis) + add_homing[axis];
-  min_pos[axis] =          base_min_pos(axis) + add_homing[axis];
-  max_pos[axis] =          base_max_pos(axis) + add_homing[axis];
+  current_position[axis] = base_home_pos(axis) + cs.add_homing[axis];
+  min_pos[axis] =          base_min_pos(axis) + cs.add_homing[axis];
+  max_pos[axis] =          base_max_pos(axis) + cs.add_homing[axis];
 }
 
 
@@ -2691,10 +2688,10 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
 
 
       if(home_x_axis && home_x_value != 0)
-        current_position[X_AXIS]=home_x_value+add_homing[X_AXIS];
+        current_position[X_AXIS]=home_x_value+cs.add_homing[X_AXIS];
 
       if(home_y_axis && home_y_value != 0)
-        current_position[Y_AXIS]=home_y_value+add_homing[Y_AXIS];
+        current_position[Y_AXIS]=home_y_value+cs.add_homing[Y_AXIS];
 
       #if Z_HOME_DIR < 0                      // If homing towards BED do Z last
         #ifndef Z_SAFE_HOMING
@@ -2790,7 +2787,7 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
       #endif // Z_HOME_DIR < 0
 
       if(home_z_axis && home_z_value != 0)
-        current_position[Z_AXIS]=home_z_value+add_homing[Z_AXIS];
+        current_position[Z_AXIS]=home_z_value+cs.add_homing[Z_AXIS];
       #ifdef ENABLE_AUTO_BED_LEVELING
         if(home_z)
           current_position[Z_AXIS] += zprobe_zoffset;  //Add Z_Probe offset (the distance is negative)
@@ -4743,7 +4740,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
              plan_set_e_position(current_position[E_AXIS]);
            }
            else {
-		current_position[i] = code_value()+add_homing[i];
+		current_position[i] = code_value()+cs.add_homing[i];
             plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
            }
         }
@@ -5975,7 +5972,7 @@ Sigma_Exit:
     case 206: // M206 additional homing offset
       for(int8_t i=0; i < 3; i++)
       {
-        if(code_seen(axis_codes[i])) add_homing[i] = code_value();
+        if(code_seen(axis_codes[i])) cs.add_homing[i] = code_value();
       }
       break;
     #ifdef FWRETRACT
@@ -7142,7 +7139,7 @@ void clamp_to_software_endstops(float target[3])
         float negative_z_offset = 0;
         #ifdef ENABLE_AUTO_BED_LEVELING
             if (Z_PROBE_OFFSET_FROM_EXTRUDER < 0) negative_z_offset = negative_z_offset + Z_PROBE_OFFSET_FROM_EXTRUDER;
-            if (add_homing[Z_AXIS] < 0) negative_z_offset = negative_z_offset + add_homing[Z_AXIS];
+            if (cs.add_homing[Z_AXIS] < 0) negative_z_offset = negative_z_offset + cs.add_homing[Z_AXIS];
         #endif
         if (target[Z_AXIS] < min_pos[Z_AXIS]+negative_z_offset) target[Z_AXIS] = min_pos[Z_AXIS]+negative_z_offset;
     }

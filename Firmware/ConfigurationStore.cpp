@@ -104,7 +104,7 @@ void Config_PrintSettings(uint8_t level)
 		echomagic, echomagic, max_acceleration_units_per_sq_second_silent[X_AXIS], max_acceleration_units_per_sq_second_silent[Y_AXIS], max_acceleration_units_per_sq_second_silent[Z_AXIS], max_acceleration_units_per_sq_second_silent[E_AXIS],
 		echomagic, echomagic, cs.acceleration, cs.retract_acceleration,
 		echomagic, echomagic, cs.minimumfeedrate, cs.mintravelfeedrate, cs.minsegmenttime, cs.max_jerk[X_AXIS], cs.max_jerk[Y_AXIS], cs.max_jerk[Z_AXIS], cs.max_jerk[E_AXIS],
-		echomagic, echomagic, add_homing[X_AXIS], add_homing[Y_AXIS], add_homing[Z_AXIS]
+		echomagic, echomagic, cs.add_homing[X_AXIS], cs.add_homing[Y_AXIS], cs.add_homing[Z_AXIS]
 #else //TMC2130
 	printf_P(PSTR(
 		"%SSteps per unit:\n%S  M92 X%.2f Y%.2f Z%.2f E%.2f\n"
@@ -119,7 +119,7 @@ void Config_PrintSettings(uint8_t level)
 		echomagic, echomagic, max_acceleration_units_per_sq_second[X_AXIS], max_acceleration_units_per_sq_second[Y_AXIS], max_acceleration_units_per_sq_second[Z_AXIS], max_acceleration_units_per_sq_second[E_AXIS],
 		echomagic, echomagic, cs.acceleration, cs.retract_acceleration,
 		echomagic, echomagic, cs.minimumfeedrate, cs.mintravelfeedrate, cs.minsegmenttime, cs.max_jerk[X_AXIS], cs.max_jerk[Y_AXIS], cs.max_jerk[Z_AXIS], cs.max_jerk[E_AXIS],
-		echomagic, echomagic, add_homing[X_AXIS], add_homing[Y_AXIS], add_homing[Z_AXIS]
+		echomagic, echomagic, cs.add_homing[X_AXIS], cs.add_homing[Y_AXIS], cs.add_homing[Z_AXIS]
 #endif //TMC2130
 	);
 #ifdef PIDTEMP
