@@ -5963,7 +5963,7 @@ Sigma_Exit:
     {
       if(code_seen('S')) cs.minimumfeedrate = code_value();
       if(code_seen('T')) cs.mintravelfeedrate = code_value();
-      if(code_seen('B')) minsegmenttime = code_value() ;
+      if(code_seen('B')) cs.minsegmenttime = code_value() ;
       if(code_seen('X')) max_jerk[X_AXIS] = max_jerk[Y_AXIS] = code_value();
       if(code_seen('Y')) max_jerk[Y_AXIS] = code_value();
       if(code_seen('Z')) max_jerk[Z_AXIS] = code_value();

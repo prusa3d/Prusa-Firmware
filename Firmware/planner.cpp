@@ -72,8 +72,6 @@
 //=============================public variables ============================
 //===========================================================================
 
-unsigned long minsegmenttime;
-
 // Use M203 to override by software
 float max_feedrate_silent[NUM_AXIS];       // max speeds for silent mode
 float* max_feedrate = cs.max_feedrate_normal;
@@ -961,9 +959,9 @@ Having the real displacement of the head, we can calculate the total movement le
   if (moves_queued > 1 && moves_queued < (BLOCK_BUFFER_SIZE >> 1)) {
       // segment time in micro seconds
       unsigned long segment_time = lround(1000000.0/inverse_second);
-      if (segment_time < minsegmenttime)
+      if (segment_time < cs.minsegmenttime)
           // buffer is draining, add extra time.  The amount of time added increases if the buffer is still emptied more.
-          inverse_second=1000000.0/(segment_time+lround(2*(minsegmenttime-segment_time)/moves_queued));
+          inverse_second=1000000.0/(segment_time+lround(2*(cs.minsegmenttime-segment_time)/moves_queued));
   }
 #endif // SLOWDOWN
 
