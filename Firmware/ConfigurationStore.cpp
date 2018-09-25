@@ -181,7 +181,9 @@ static_assert (false, "zprobe_zoffset was not initialized in printers in field t
 #endif
 
 static_assert (sizeof(M500_conf) == 188, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
-        "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized");
+        "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized."
+        "If this is caused by change to more then 8bit processor, decide whether make this struct packed to save EEPROM,"
+        "leave as it is to keep fast code, or reorder struct members to pack more tightly.");
 
 static const M500_conf default_conf PROGMEM =
 {
