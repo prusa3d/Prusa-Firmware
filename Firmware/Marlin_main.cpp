@@ -3235,19 +3235,16 @@ void gcode_M701()
 		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 
 #ifdef FILAMENT_SENSOR
-		if (mmu_enabled == false) 
-		{
-			fsensor_oq_meassure_stop();
+        fsensor_oq_meassure_stop();
 
-			if (!fsensor_oq_result())
-			{
-				bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
-				lcd_update_enable(true);
-				lcd_update(2);
-				if (disable)
-					fsensor_disable();
-			}
-		}
+        if (!fsensor_oq_result())
+        {
+            bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
+            lcd_update_enable(true);
+            lcd_update(2);
+            if (disable)
+                fsensor_disable();
+        }
 #endif //FILAMENT_SENSOR
 	}
 }
