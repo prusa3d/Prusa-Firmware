@@ -3192,9 +3192,9 @@ void gcode_M701()
 		enable_z();
 		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 
-#ifdef FILAMENT_SENSOR
+#ifdef FSENSOR_QUALITY
 		fsensor_oq_meassure_start(40);
-#endif //FILAMENT_SENSOR
+#endif //FSENSOR_QUALITY
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 		current_position[E_AXIS] += 40;
@@ -3234,7 +3234,7 @@ void gcode_M701()
 		loading_flag = false;
 		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 
-#ifdef FILAMENT_SENSOR
+#ifdef FSENSOR_QUALITY
         fsensor_oq_meassure_stop();
 
         if (!fsensor_oq_result())
@@ -3245,7 +3245,7 @@ void gcode_M701()
             if (disable)
                 fsensor_disable();
         }
-#endif //FILAMENT_SENSOR
+#endif //FSENSOR_QUALITY
 	}
 }
 /**
@@ -9068,9 +9068,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 #endif //FILAMENT_SENSOR
 	KEEPALIVE_STATE(IN_HANDLER);
 
-#ifdef FILAMENT_SENSOR
+#ifdef FSENSOR_QUALITY
 	fsensor_oq_meassure_start(70);
-#endif //FILAMENT_SENSOR
+#endif //FSENSOR_QUALITY
 
 	M600_load_filament_movements();
 
@@ -9079,7 +9079,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	delay_keep_alive(50);
 	noTone(BEEPER);
 
-#ifdef FILAMENT_SENSOR
+#ifdef FSENSOR_QUALITY
 	fsensor_oq_meassure_stop();
 
 	if (!fsensor_oq_result())
@@ -9090,7 +9090,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (disable)
 			fsensor_disable();
 	}
-#endif //FILAMENT_SENSOR
+#endif //FSENSOR_QUALITY
 	lcd_update_enable(false);
 }
 
