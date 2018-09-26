@@ -147,135 +147,6 @@
 #define FILAMENT_PVA 2
 #define FILAMENT_UNDEFINED 255
 
-// look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
-// http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
-
-//Implemented Codes
-//-------------------
-
-// PRUSA CODES
-// P F - Returns FW versions
-// P R - Returns revision of printer
-
-// G0  -> G1
-// G1  - Coordinated Movement X Y Z E
-// G2  - CW ARC
-// G3  - CCW ARC
-// G4  - Dwell S<seconds> or P<milliseconds>
-// G10 - retract filament according to settings of M207
-// G11 - retract recover filament according to settings of M208
-// G28 - Home all Axis
-// G29 - Detailed Z-Probe, probes the bed at 3 or more points.  Will fail if you haven't homed yet.
-// G30 - Single Z Probe, probes bed at current XY location.
-// G31 - Dock sled (Z_PROBE_SLED only)
-// G32 - Undock sled (Z_PROBE_SLED only)
-// G80 - Automatic mesh bed leveling
-// G81 - Print bed profile
-// G90 - Use Absolute Coordinates
-// G91 - Use Relative Coordinates
-// G92 - Set current position to coordinates given
-
-// M Codes
-// M0   - Unconditional stop - Wait for user to press a button on the LCD
-// M1   - Same as M0
-// M17  - Enable/Power all stepper motors
-// M18  - Disable all stepper motors; same as M84
-// M20  - List SD card
-// M21  - Init SD card
-// M22  - Release SD card
-// M23  - Select SD file (M23 filename.g)
-// M24  - Start/resume SD print
-// M25  - Pause SD print
-// M26  - Set SD position in bytes (M26 S12345)
-// M27  - Report SD print status
-// M28  - Start SD write (M28 filename.g)
-// M29  - Stop SD write
-// M30  - Delete file from SD (M30 filename.g)
-// M31  - Output time since last M109 or SD card start to serial
-// M32  - Select file and start SD print (Can be used _while_ printing from SD card files):
-//        syntax "M32 /path/filename#", or "M32 S<startpos bytes> !filename#"
-//        Call gcode file : "M32 P !filename#" and return to caller file after finishing (similar to #include).
-//        The '#' is necessary when calling from within sd files, as it stops buffer prereading
-// M42  - Change pin status via gcode Use M42 Px Sy to set pin x to value y, when omitting Px the onboard led will be used.
-// M73  - Show percent done and print time remaining
-// M80  - Turn on Power Supply
-// M81  - Turn off Power Supply
-// M82  - Set E codes absolute (default)
-// M83  - Set E codes relative while in Absolute Coordinates (G90) mode
-// M84  - Disable steppers until next move,
-//        or use S<seconds> to specify an inactivity timeout, after which the steppers will be disabled.  S0 to disable the timeout.
-// M85  - Set inactivity shutdown timer with parameter S<seconds>. To disable set zero (default)
-// M86  - Set safety timer expiration time with parameter S<seconds>; M86 S0 will disable safety timer
-// M92  - Set axis_steps_per_unit - same syntax as G92
-// M104 - Set extruder target temp
-// M105 - Read current temp
-// M106 - Fan on
-// M107 - Fan off
-// M109 - Sxxx Wait for extruder current temp to reach target temp. Waits only when heating
-//        Rxxx Wait for extruder current temp to reach target temp. Waits when heating and cooling
-//        IF AUTOTEMP is enabled, S<mintemp> B<maxtemp> F<factor>. Exit autotemp by any M109 without F
-// M112 - Emergency stop
-// M113 - Get or set the timeout interval for Host Keepalive "busy" messages
-// M114 - Output current position to serial port
-// M115 - Capabilities string
-// M117 - display message
-// M119 - Output Endstop status to serial port
-// M126 - Solenoid Air Valve Open (BariCUDA support by jmil)
-// M127 - Solenoid Air Valve Closed (BariCUDA vent to atmospheric pressure by jmil)
-// M128 - EtoP Open (BariCUDA EtoP = electricity to air pressure transducer by jmil)
-// M129 - EtoP Closed (BariCUDA EtoP = electricity to air pressure transducer by jmil)
-// M140 - Set bed target temp
-// M150 - Set BlinkM Color Output R: Red<0-255> U(!): Green<0-255> B: Blue<0-255> over i2c, G for green does not work.
-// M190 - Sxxx Wait for bed current temp to reach target temp. Waits only when heating
-//        Rxxx Wait for bed current temp to reach target temp. Waits when heating and cooling
-// M200 D<millimeters>- set filament diameter and set E axis units to cubic millimeters (use S0 to set back to millimeters).
-// M201 - Set max acceleration in units/s^2 for print moves (M201 X1000 Y1000)
-// M202 - Set max acceleration in units/s^2 for travel moves (M202 X1000 Y1000) Unused in Marlin!!
-// M203 - Set maximum feedrate that your machine can sustain (M203 X200 Y200 Z300 E10000) in mm/sec
-// M204 - Set default acceleration: S normal moves T filament only moves (M204 S3000 T7000) in mm/sec^2  also sets minimum segment time in ms (B20000) to prevent buffer under-runs and M20 minimum feedrate
-// M205 -  advanced settings:  minimum travel speed S=while printing T=travel only,  B=minimum segment time X= maximum xy jerk, Z=maximum Z jerk, E=maximum E jerk
-// M206 - set additional homing offset
-// M207 - set retract length S[positive mm] F[feedrate mm/min] Z[additional zlift/hop], stays in mm regardless of M200 setting
-// M208 - set recover=unretract length S[positive mm surplus to the M207 S*] F[feedrate mm/sec]
-// M209 - S<1=true/0=false> enable automatic retract detect if the slicer did not support G10/11: every normal extrude-only move will be classified as retract depending on the direction.
-// M218 - set hotend offset (in mm): T<extruder_number> X<offset_on_X> Y<offset_on_Y>
-// M220 S<factor in percent>- set speed factor override percentage
-// M221 S<factor in percent>- set extrude factor override percentage
-// M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
-// M240 - Trigger a camera to take a photograph
-// M250 - Set LCD contrast C<contrast value> (value 0..63)
-// M280 - set servo position absolute. P: servo index, S: angle or microseconds
-// M300 - Play beep sound S<frequency Hz> P<duration ms>
-// M301 - Set PID parameters P I and D
-// M302 - Allow cold extrudes, or set the minimum extrude S<temperature>.
-// M303 - PID relay autotune S<temperature> sets the target temperature. (default target temperature = 150C)
-// M304 - Set bed PID parameters P I and D
-// M400 - Finish all moves
-// M401 - Lower z-probe if present
-// M402 - Raise z-probe if present
-// M404 - N<dia in mm> Enter the nominal filament width (3mm, 1.75mm ) or will display nominal filament width without parameters
-// M405 - Turn on Filament Sensor extrusion control.  Optional D<delay in cm> to set delay in centimeters between sensor and extruder 
-// M406 - Turn off Filament Sensor extrusion control 
-// M407 - Displays measured filament diameter 
-// M500 - stores parameters in EEPROM
-// M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
-// M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
-// M503 - print the current settings (from memory not from EEPROM)
-// M509 - force language selection on next restart
-// M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
-// M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
-// M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
-// M860 - Wait for PINDA thermistor to reach target temperature.
-// M861 - Set / Read PINDA temperature compensation offsets
-// M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
-// M907 - Set digital trimpot motor current using axis codes.
-// M908 - Control digital trimpot directly.
-// M350 - Set microstepping mode.
-// M351 - Toggle MS1 MS2 pins directly.
-
-// M928 - Start SD logging (M928 filename.g) - ended by M29
-// M999 - Restart after being stopped by error
-
 //Stepper Movement Variables
 
 //===========================================================================
@@ -3302,7 +3173,136 @@ extern uint8_t st_backlash_x;
 extern uint8_t st_backlash_y;
 #endif //BACKLASH_Y
 
-
+//! @brief Parse and process commands
+//!
+//! look here for descriptions of G-codes: http://linuxcnc.org/handbook/gcode/g-code.html
+//! http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
+//!
+//! Implemented Codes
+//! -------------------
+//!
+//!@n PRUSA CODES
+//!@n P F - Returns FW versions
+//!@n P R - Returns revision of printer
+//!
+//!@n G0  -> G1
+//!@n G1  - Coordinated Movement X Y Z E
+//!@n G2  - CW ARC
+//!@n G3  - CCW ARC
+//!@n G4  - Dwell S<seconds> or P<milliseconds>
+//!@n G10 - retract filament according to settings of M207
+//!@n G11 - retract recover filament according to settings of M208
+//!@n G28 - Home all Axis
+//!@n G29 - Detailed Z-Probe, probes the bed at 3 or more points.  Will fail if you haven't homed yet.
+//!@n G30 - Single Z Probe, probes bed at current XY location.
+//!@n G31 - Dock sled (Z_PROBE_SLED only)
+//!@n G32 - Undock sled (Z_PROBE_SLED only)
+//!@n G80 - Automatic mesh bed leveling
+//!@n G81 - Print bed profile
+//!@n G90 - Use Absolute Coordinates
+//!@n G91 - Use Relative Coordinates
+//!@n G92 - Set current position to coordinates given
+//!
+//!@n M Codes
+//!@n M0   - Unconditional stop - Wait for user to press a button on the LCD
+//!@n M1   - Same as M0
+//!@n M17  - Enable/Power all stepper motors
+//!@n M18  - Disable all stepper motors; same as M84
+//!@n M20  - List SD card
+//!@n M21  - Init SD card
+//!@n M22  - Release SD card
+//!@n M23  - Select SD file (M23 filename.g)
+//!@n M24  - Start/resume SD print
+//!@n M25  - Pause SD print
+//!@n M26  - Set SD position in bytes (M26 S12345)
+//!@n M27  - Report SD print status
+//!@n M28  - Start SD write (M28 filename.g)
+//!@n M29  - Stop SD write
+//!@n M30  - Delete file from SD (M30 filename.g)
+//!@n M31  - Output time since last M109 or SD card start to serial
+//!@n M32  - Select file and start SD print (Can be used _while_ printing from SD card files):
+//!          syntax "M32 /path/filename#", or "M32 S<startpos bytes> !filename#"
+//!          Call gcode file : "M32 P !filename#" and return to caller file after finishing (similar to #include).
+//!          The '#' is necessary when calling from within sd files, as it stops buffer prereading
+//!@n M42  - Change pin status via gcode Use M42 Px Sy to set pin x to value y, when omitting Px the onboard led will be used.
+//!@n M73  - Show percent done and print time remaining
+//!@n M80  - Turn on Power Supply
+//!@n M81  - Turn off Power Supply
+//!@n M82  - Set E codes absolute (default)
+//!@n M83  - Set E codes relative while in Absolute Coordinates (G90) mode
+//!@n M84  - Disable steppers until next move,
+//!          or use S<seconds> to specify an inactivity timeout, after which the steppers will be disabled.  S0 to disable the timeout.
+//!@n M85  - Set inactivity shutdown timer with parameter S<seconds>. To disable set zero (default)
+//!@n M86  - Set safety timer expiration time with parameter S<seconds>; M86 S0 will disable safety timer
+//!@n M92  - Set axis_steps_per_unit - same syntax as G92
+//!@n M104 - Set extruder target temp
+//!@n M105 - Read current temp
+//!@n M106 - Fan on
+//!@n M107 - Fan off
+//!@n M109 - Sxxx Wait for extruder current temp to reach target temp. Waits only when heating
+//!          Rxxx Wait for extruder current temp to reach target temp. Waits when heating and cooling
+//!        IF AUTOTEMP is enabled, S<mintemp> B<maxtemp> F<factor>. Exit autotemp by any M109 without F
+//!@n M112 - Emergency stop
+//!@n M113 - Get or set the timeout interval for Host Keepalive "busy" messages
+//!@n M114 - Output current position to serial port
+//!@n M115 - Capabilities string
+//!@n M117 - display message
+//!@n M119 - Output Endstop status to serial port
+//!@n M126 - Solenoid Air Valve Open (BariCUDA support by jmil)
+//!@n M127 - Solenoid Air Valve Closed (BariCUDA vent to atmospheric pressure by jmil)
+//!@n M128 - EtoP Open (BariCUDA EtoP = electricity to air pressure transducer by jmil)
+//!@n M129 - EtoP Closed (BariCUDA EtoP = electricity to air pressure transducer by jmil)
+//!@n M140 - Set bed target temp
+//!@n M150 - Set BlinkM Color Output R: Red<0-255> U(!): Green<0-255> B: Blue<0-255> over i2c, G for green does not work.
+//!@n M190 - Sxxx Wait for bed current temp to reach target temp. Waits only when heating
+//!          Rxxx Wait for bed current temp to reach target temp. Waits when heating and cooling
+//!@n M200 D<millimeters>- set filament diameter and set E axis units to cubic millimeters (use S0 to set back to millimeters).
+//!@n M201 - Set max acceleration in units/s^2 for print moves (M201 X1000 Y1000)
+//!@n M202 - Set max acceleration in units/s^2 for travel moves (M202 X1000 Y1000) Unused in Marlin!!
+//!@n M203 - Set maximum feedrate that your machine can sustain (M203 X200 Y200 Z300 E10000) in mm/sec
+//!@n M204 - Set default acceleration: S normal moves T filament only moves (M204 S3000 T7000) in mm/sec^2  also sets minimum segment time in ms (B20000) to prevent buffer under-runs and M20 minimum feedrate
+//!@n M205 -  advanced settings:  minimum travel speed S=while printing T=travel only,  B=minimum segment time X= maximum xy jerk, Z=maximum Z jerk, E=maximum E jerk
+//!@n M206 - set additional homing offset
+//!@n M207 - set retract length S[positive mm] F[feedrate mm/min] Z[additional zlift/hop], stays in mm regardless of M200 setting
+//!@n M208 - set recover=unretract length S[positive mm surplus to the M207 S*] F[feedrate mm/sec]
+//!@n M209 - S<1=true/0=false> enable automatic retract detect if the slicer did not support G10/11: every normal extrude-only move will be classified as retract depending on the direction.
+//!@n M218 - set hotend offset (in mm): T<extruder_number> X<offset_on_X> Y<offset_on_Y>
+//!@n M220 S<factor in percent>- set speed factor override percentage
+//!@n M221 S<factor in percent>- set extrude factor override percentage
+//!@n M226 P<pin number> S<pin state>- Wait until the specified pin reaches the state required
+//!@n M240 - Trigger a camera to take a photograph
+//!@n M250 - Set LCD contrast C<contrast value> (value 0..63)
+//!@n M280 - set servo position absolute. P: servo index, S: angle or microseconds
+//!@n M300 - Play beep sound S<frequency Hz> P<duration ms>
+//!@n M301 - Set PID parameters P I and D
+//!@n M302 - Allow cold extrudes, or set the minimum extrude S<temperature>.
+//!@n M303 - PID relay autotune S<temperature> sets the target temperature. (default target temperature = 150C)
+//!@n M304 - Set bed PID parameters P I and D
+//!@n M400 - Finish all moves
+//!@n M401 - Lower z-probe if present
+//!@n M402 - Raise z-probe if present
+//!@n M404 - N<dia in mm> Enter the nominal filament width (3mm, 1.75mm ) or will display nominal filament width without parameters
+//!@n M405 - Turn on Filament Sensor extrusion control.  Optional D<delay in cm> to set delay in centimeters between sensor and extruder
+//!@n M406 - Turn off Filament Sensor extrusion control
+//!@n M407 - Displays measured filament diameter
+//!@n M500 - stores parameters in EEPROM
+//!@n M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
+//!@n M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
+//!@n M503 - print the current settings (from memory not from EEPROM)
+//!@n M509 - force language selection on next restart
+//!@n M540 - Use S[0|1] to enable or disable the stop SD card print on endstop hit (requires ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
+//!@n M600 - Pause for filament change X[pos] Y[pos] Z[relative lift] E[initial retract] L[later retract distance for removal]
+//!@n M605 - Set dual x-carriage movement mode: S<mode> [ X<duplication x-offset> R<duplication temp offset> ]
+//!@n M860 - Wait for PINDA thermistor to reach target temperature.
+//!@n M861 - Set / Read PINDA temperature compensation offsets
+//!@n M900 - Set LIN_ADVANCE options, if enabled. See Configuration_adv.h for details.
+//!@n M907 - Set digital trimpot motor current using axis codes.
+//!@n M908 - Control digital trimpot directly.
+//!@n M350 - Set microstepping mode.
+//!@n M351 - Toggle MS1 MS2 pins directly.
+//!
+//!@n M928 - Start SD logging (M928 filename.g) - ended by M29
+//!@n M999 - Restart after being stopped by error
 void process_commands()
 {
 	if (!buflen) return; //empty command
@@ -3344,21 +3344,21 @@ void process_commands()
 #ifdef TMC2130
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
 	{
-	  if(code_seen("CRASH_DETECTED"))
+	  if(code_seen("CRASH_DETECTED")) //! CRASH_DETECTED
 	  {
 		  uint8_t mask = 0;
 		  if (code_seen('X')) mask |= X_AXIS_MASK;
 		  if (code_seen('Y')) mask |= Y_AXIS_MASK;
 		  crashdet_detected(mask);
 	  }
-	  else if(code_seen("CRASH_RECOVER"))
+	  else if(code_seen("CRASH_RECOVER")) //! CRASH_RECOVER
 		  crashdet_recover();
-	  else if(code_seen("CRASH_CANCEL"))
+	  else if(code_seen("CRASH_CANCEL")) //! CRASH_CANCEL
 		  crashdet_cancel();
 	}
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("TMC_"), 4) == 0)
 	{
-		if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_WAVE_"), 9) == 0)
+		if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_WAVE_"), 9) == 0) //! TMC_SET_WAVE_
 		{
 			uint8_t axis = *(CMDBUFFER_CURRENT_STRING + 13);
 			axis = (axis == 'E')?3:(axis - 'X');
@@ -3368,7 +3368,7 @@ void process_commands()
 				tmc2130_set_wave(axis, 247, fac);
 			}
 		}
-		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_STEP_"), 9) == 0)
+		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_STEP_"), 9) == 0) //! TMC_SET_STEP_
 		{
 			uint8_t axis = *(CMDBUFFER_CURRENT_STRING + 13);
 			axis = (axis == 'E')?3:(axis - 'X');
@@ -3379,7 +3379,7 @@ void process_commands()
 				tmc2130_goto_step(axis, step & (4*res - 1), 2, 1000, res);
 			}
 		}
-		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_CHOP_"), 9) == 0)
+		else if (strncmp_P(CMDBUFFER_CURRENT_STRING + 4, PSTR("SET_CHOP_"), 9) == 0) //! TMC_SET_CHOP_
 		{
 			uint8_t axis = *(CMDBUFFER_CURRENT_STRING + 13);
 			axis = (axis == 'E')?3:(axis - 'X');
@@ -3430,22 +3430,22 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-	else if (code_seen("FSENSOR_RECOVER")) {
+	else if (code_seen("FSENSOR_RECOVER")) { //! FSENSOR_RECOVER
 		fsensor_restore_print_and_continue();
   }
   else if(code_seen("PRUSA")){
-		if (code_seen("Ping")) {  //PRUSA Ping
+		if (code_seen("Ping")) {  //! PRUSA Ping
 			if (farm_mode) {
 				PingTime = millis();
 				//MYSERIAL.print(farm_no); MYSERIAL.println(": OK");
 			}	  
 		}
-		else if (code_seen("PRN")) {
+		else if (code_seen("PRN")) { //! PRUSA PRN
 		  printf_P(_N("%d"), status_number);
 
-        }else if (code_seen("FAN")) {
+        }else if (code_seen("FAN")) { //! PRUSA FAN
 			printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
-		}else if (code_seen("fn")) {
+		}else if (code_seen("fn")) { //! PRUSA fn
 		  if (farm_mode) {
 			printf_P(_N("%d"), farm_no);
 		  }
@@ -3454,20 +3454,20 @@ void process_commands()
 		  }
 		  
 		}
-		else if (code_seen("thx"))
+		else if (code_seen("thx")) //! PRUSA thx
 		{
 			no_response = false;
 		}	
-		else if (code_seen("uvlo"))
+		else if (code_seen("uvlo")) //! PRUSA uvlo
 		{
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
-		else if (code_seen("MMURES"))
+		else if (code_seen("MMURES")) //! PRUSA MMURES
 		{
 			mmu_reset();
 		}
-		else if (code_seen("RESET")) {
+		else if (code_seen("RESET")) { //! PRUSA RESET
             // careful!
             if (farm_mode) {
 #ifdef WATCHDOG
@@ -3483,7 +3483,7 @@ void process_commands()
             else {
                 MYSERIAL.println("Not in farm mode.");
             }
-		}else if (code_seen("fv")) {
+		}else if (code_seen("fv")) { //! PRUSA fv
         // get file version
         #ifdef SDSUPPORT
         card.openFile(strchr_pointer + 3,true);
@@ -3498,33 +3498,33 @@ void process_commands()
 
         #endif // SDSUPPORT
 
-    } else if (code_seen("M28")) {
+    } else if (code_seen("M28")) { //! PRUSA M28
         trace();
         prusa_sd_card_upload = true;
         card.openFile(strchr_pointer+4,false);
 
-	} else if (code_seen("SN")) { 
+	} else if (code_seen("SN")) { //! PRUSA SN
         gcode_PRUSA_SN();
 
-	} else if(code_seen("Fir")){
+	} else if(code_seen("Fir")){ //! PRUSA Fir
 
       SERIAL_PROTOCOLLN(FW_VERSION_FULL);
 
-    } else if(code_seen("Rev")){
+    } else if(code_seen("Rev")){ //! PRUSA Rev
 
       SERIAL_PROTOCOLLN(FILAMENT_SIZE "-" ELECTRONICS "-" NOZZLE_TYPE );
 
-    } else if(code_seen("Lang")) {
+    } else if(code_seen("Lang")) { //! PRUSA Lang
 	  lang_reset();
 
-	} else if(code_seen("Lz")) {
+	} else if(code_seen("Lz")) { //! PRUSA Lz
       EEPROM_save_B(EEPROM_BABYSTEP_Z,0);
 
-	} else if(code_seen("Beat")) {
+	} else if(code_seen("Beat")) { //! PRUSA Beat
         // Kick farm link timer
         kicktime = millis();
 
-    } else if(code_seen("FR")) {
+    } else if(code_seen("FR")) { //! PRUSA FR
         // Factory full reset
         factory_reset(0);
     }
@@ -4004,7 +4004,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	}
 	break;
 
-	case 76: //PINDA probe temperature calibration
+	case 76: //! G76 - PINDA probe temperature calibration
 	{
 #ifdef PINDA_THERMISTOR
 		if (true)
@@ -4263,12 +4263,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 #ifdef DIS
 	case 77:
 	{
-		//G77 X200 Y150 XP100 YP15 XO10 Y015
-
-		//for 9 point mesh bed leveling G77 X203 Y196 XP3 YP3 XO0 YO0
-
-
-		//G77 X232 Y218 XP116 YP109 XO-11 YO0 
+		//! G77 X200 Y150 XP100 YP15 XO10 Y015
+		//! for 9 point mesh bed leveling G77 X203 Y196 XP3 YP3 XO0 YO0
+		//! G77 X232 Y218 XP116 YP109 XO-11 YO0
 
 		float dimension_x = 40;
 		float dimension_y = 40;
@@ -4307,12 +4304,12 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	*      mesh to compensate for variable bed height
 	*
 	* The S0 report the points as below
-	*
+	* @code{.unparsed}
 	*  +----> X-axis
 	*  |
 	*  |
 	*  v Y-axis
-	*
+	* @endcode
 	*/
 
 	case 80:
@@ -4745,7 +4742,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       }
       break;
 
-	case 98: // G98 (activate farm mode)
+	case 98: //! G98 (activate farm mode)
 		farm_mode = 1;
 		PingTime = millis();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
@@ -4754,7 +4751,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 		break;
 
-	case 99: // G99 (deactivate farm mode)
+	case 99: //! G99 (deactivate farm mode)
 		farm_mode = 0;
 		lcd_printer_connected();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
@@ -5000,7 +4997,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         }
       }
      break;
-    case 44: // M44: Prusa3D: Reset the bed skew and offset calibration.
+    case 44: //! M44: Prusa3D: Reset the bed skew and offset calibration.
 
 		// Reset the baby step value and the baby step applied flag.
 		calibration_status_store(CALIBRATION_STATUS_ASSEMBLED);
@@ -5014,7 +5011,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         world2machine_revert_to_uncorrected();
         break;
 
-    case 45: // M45: Prusa3D: bed skew and offset with manual Z up
+    case 45: //! M45: Prusa3D: bed skew and offset with manual Z up
     {
 		int8_t verbosity_level = 0;
 		bool only_Z = code_seen('Z');
@@ -5054,14 +5051,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     */
 
     case 47:
-        // M47: Prusa3D: Show end stops dialog on the display.
+        //! M47: Prusa3D: Show end stops dialog on the display.
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
         lcd_diag_show_end_stops();
 		KEEPALIVE_STATE(IN_HANDLER);
         break;
 
 #if 0
-    case 48: // M48: scan the bed induction sensor points, print the sensor trigger coordinates to the serial line for visualization on the PC.
+    case 48: //! M48: scan the bed induction sensor points, print the sensor trigger coordinates to the serial line for visualization on the PC.
     {
         // Disable the default update procedure of the display. We will do a modal dialog.
         lcd_update_enable(false);
@@ -5096,23 +5093,22 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
 #endif
 
-// M48 Z-Probe repeatability measurement function.
-//
-// Usage:   M48 <n #_samples> <X X_position_for_samples> <Y Y_position_for_samples> <V Verbose_Level> <L legs_of_movement_prior_to_doing_probe>
-//	
-// This function assumes the bed has been homed.  Specificaly, that a G28 command
-// as been issued prior to invoking the M48 Z-Probe repeatability measurement function.
-// Any information generated by a prior G29 Bed leveling command will be lost and need to be
-// regenerated.
-//
-// The number of samples will default to 10 if not specified.  You can use upper or lower case
-// letters for any of the options EXCEPT n.  n must be in lower case because Marlin uses a capital
-// N for its communication protocol and will get horribly confused if you send it a capital N.
-//
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 #ifdef Z_PROBE_REPEATABILITY_TEST 
-
+    //! M48 Z-Probe repeatability measurement function.
+    //!
+    //! Usage:   M48 <n #_samples> <X X_position_for_samples> <Y Y_position_for_samples> <V Verbose_Level> <L legs_of_movement_prior_to_doing_probe>
+    //!
+    //! This function assumes the bed has been homed.  Specificaly, that a G28 command
+    //! as been issued prior to invoking the M48 Z-Probe repeatability measurement function.
+    //! Any information generated by a prior G29 Bed leveling command will be lost and need to be
+    //! regenerated.
+    //!
+    //! The number of samples will default to 10 if not specified.  You can use upper or lower case
+    //! letters for any of the options EXCEPT n.  n must be in lower case because Marlin uses a capital
+    //! N for its communication protocol and will get horribly confused if you send it a capital N.
+    //!
     case 48: // M48 Z-Probe repeatability
         {
             #if Z_MIN_PIN == -1
@@ -5578,7 +5574,7 @@ Sigma_Exit:
         break;
 
     #if defined(FAN_PIN) && FAN_PIN > -1
-      case 106: //M106 Fan On
+      case 106: //!M106 Sxxx Fan On S<speed> 0 .. 255
         if (code_seen('S')){
            fanSpeed=constrain(code_value(),0,255);
         }
@@ -5707,7 +5703,7 @@ Sigma_Exit:
         }
       }
       break;
-    case 110:   // M110 - reset line pos
+    case 110:   //! M110 N<line number> - reset line pos
       if (code_seen('N'))
 	    gcode_LastN = code_value_long();
     break;
@@ -5754,10 +5750,10 @@ Sigma_Exit:
     case 114: // M114
 		gcode_M114();
       break;
-    case 120: // M120
+    case 120: //! M120 - Disable endstops
       enable_endstops(false) ;
       break;
-    case 121: // M121
+    case 121: //! M121 - Enable endstops
       enable_endstops(true) ;
       break;
     case 119: // M119
@@ -5928,9 +5924,9 @@ Sigma_Exit:
 		}
 		break;
     case 204:
-      // M204 acclereration settings.
-      // Supporting old format: M204 S[normal moves] T[filmanent only moves]
-      // and new format:        M204 P[printing moves] R[filmanent only moves] T[travel moves] (as of now T is ignored)
+      //! M204 acclereration settings.
+      //!@n Supporting old format: M204 S[normal moves] T[filmanent only moves]
+      //!@n and new format:        M204 P[printing moves] R[filmanent only moves] T[travel moves] (as of now T is ignored)
       {
         if(code_seen('S')) {
           // Legacy acceleration format. This format is used by the legacy Marlin, MK2 or MK3 firmware,
@@ -6314,11 +6310,11 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
-	case 403: //M403 set filament type (material) for particular extruder and send this information to mmu
+	case 403: //! M403 set filament type (material) for particular extruder and send this information to mmu
 	{
-		//currently three different materials are needed (default, flex and PVA) 
-		//add storing this information for different load/unload profiles etc. in the future
-		//firmware does not wait for "ok" from mmu
+		//! currently three different materials are needed (default, flex and PVA)
+		//! add storing this information for different load/unload profiles etc. in the future
+		//!firmware does not wait for "ok" from mmu
 		if (mmu_enabled)
 		{
 			uint8_t extruder = 255;
@@ -6479,13 +6475,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	}
     break;
     #endif //FILAMENTCHANGEENABLE
-	case 601:
+	case 601: //! M601 - Pause print
 	{
 		lcd_pause_print();
 	}
 	break;
 
-	case 602: {
+	case 602: { //! M602 - Resume print
 		lcd_resume_print();
 	}
 	break;
@@ -6644,13 +6640,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 #ifdef TMC2130
 
-	case 910: // M910 TMC2130 init
+	case 910: //! M910 - TMC2130 init
     {
 		tmc2130_init();
     }
     break;
 
-	case 911: // M911 Set TMC2130 holding currents
+	case 911: //! M911 - Set TMC2130 holding currents
     {
 		if (code_seen('X')) tmc2130_set_current_h(0, code_value());
 		if (code_seen('Y')) tmc2130_set_current_h(1, code_value());
@@ -6659,7 +6655,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
-	case 912: // M912 Set TMC2130 running currents
+	case 912: //! M912 - Set TMC2130 running currents
     {
 		if (code_seen('X')) tmc2130_set_current_r(0, code_value());
 		if (code_seen('Y')) tmc2130_set_current_r(1, code_value());
@@ -6668,13 +6664,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
-	case 913: // M913 Print TMC2130 currents
+	case 913: //! M913 - Print TMC2130 currents
     {
 		tmc2130_print_currents();
     }
     break;
 
-	case 914: // M914 Set normal mode
+	case 914: //! M914 - Set normal mode
     {
 		tmc2130_mode = TMC2130_MODE_NORMAL;
 		update_mode_profile();
@@ -6682,7 +6678,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
-	case 915: // M915 Set silent mode
+	case 915: //! M915 - Set silent mode
     {
 		tmc2130_mode = TMC2130_MODE_SILENT;
 		update_mode_profile();
@@ -6690,7 +6686,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
-	case 916: // M916 Set sg_thrs
+	case 916: //! M916 - Set sg_thrs
     {
 		if (code_seen('X')) tmc2130_sg_thr[X_AXIS] = code_value();
 		if (code_seen('Y')) tmc2130_sg_thr[Y_AXIS] = code_value();
@@ -6701,7 +6697,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
-	case 917: // M917 Set TMC2130 pwm_ampl
+	case 917: //! M917 - Set TMC2130 pwm_ampl
     {
 		if (code_seen('X')) tmc2130_set_pwm_ampl(0, code_value());
 		if (code_seen('Y')) tmc2130_set_pwm_ampl(1, code_value());
@@ -6710,7 +6706,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
-	case 918: // M918 Set TMC2130 pwm_grad
+	case 918: //! M918 - Set TMC2130 pwm_grad
     {
 		if (code_seen('X')) tmc2130_set_pwm_grad(0, code_value());
 		if (code_seen('Y')) tmc2130_set_pwm_grad(1, code_value());
@@ -6721,7 +6717,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 #endif //TMC2130
 
-    case 350: // M350 Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
+    case 350: //! M350 - Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {
 	#ifdef TMC2130
 		if(code_seen('E'))
@@ -6757,7 +6753,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	#endif //TMC2130
     }
     break;
-    case 351: // M351 Toggle MS1 MS2 pins directly, S# determines MS1 or MS2, X# sets the pin high/low.
+    case 351: //! M351 - Toggle MS1 MS2 pins directly, S# determines MS1 or MS2, X# sets the pin high/low.
     {
       #if defined(X_MS1_PIN) && X_MS1_PIN > -1
       if(code_seen('S')) switch((int)code_value())
@@ -6775,23 +6771,23 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       #endif
     }
     break;
-	case 701: //M701: load filament
+	case 701: //! M701 - load filament
 	{
 		if (mmu_enabled && code_seen('E'))
 			tmp_extruder = code_value();
 		gcode_M701();
 	}
 	break;
-	case 702:
+	case 702: //! M702 [U C] -
 	{
 		if (mmu_enabled)
 		{
 			if (code_seen('U'))
-				extr_unload_used(); //unload all filaments which were used in current print
+				extr_unload_used(); //! if "U" unload all filaments which were used in current print
 			else if (code_seen('C'))
-				extr_unload(); //unload just current filament 
+				extr_unload(); //! if "C" unload just current filament
 			else
-				extr_unload_all(); //unload all filaments
+				extr_unload_all(); //! otherwise unload all filaments
 		}
 		else
 			unload_filament();
@@ -6811,7 +6807,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	mcode_in_progress = 0;
 	}
   } // end if(code_seen('M')) (end of M codes)
-
+  //! T<extruder nr.> - select extruder in case of multi extruder printer
+  //! select filament in case of MMU_V2
+  //! if extruder is "?", open menu to let the user select extruder/filament
+  //!
+  //!  For MMU_V2:
+  //! @n T<n> Gcode to extrude must follow immediately to load to extruder wheels
+  //! @n T? Gcode to extrude doesn't have to follow, load to extruder wheels is done automatically
   else if(code_seen('T'))
   {
       int index;
@@ -6954,45 +6956,45 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     switch((int)code_value())
     {
 #ifdef DEBUG_DCODES
-	case -1: // D-1 - Endless loop
+	case -1: //! D-1 - Endless loop
 		dcode__1(); break;
-	case 0: // D0 - Reset
+	case 0: //! D0 - Reset
 		dcode_0(); break;
-	case 1: // D1 - Clear EEPROM
+	case 1: //! D1 - Clear EEPROM
 		dcode_1(); break;
-	case 2: // D2 - Read/Write RAM
+	case 2: //! D2 - Read/Write RAM
 		dcode_2(); break;
 #endif //DEBUG_DCODES
 #ifdef DEBUG_DCODE3
-	case 3: // D3 - Read/Write EEPROM
+	case 3: //! D3 - Read/Write EEPROM
 		dcode_3(); break;
 #endif //DEBUG_DCODE3
 #ifdef DEBUG_DCODES
-	case 4: // D4 - Read/Write PIN
+	case 4: //! D4 - Read/Write PIN
 		dcode_4(); break;
-	case 5: // D5 - Read/Write FLASH
+	case 5: //! D5 - Read/Write FLASH
 //		dcode_5(); break;
 		break;
-	case 6: // D6 - Read/Write external FLASH
+	case 6: //! D6 - Read/Write external FLASH
 		dcode_6(); break;
-	case 7: // D7 - Read/Write Bootloader
+	case 7: //! D7 - Read/Write Bootloader
 		dcode_7(); break;
-	case 8: // D8 - Read/Write PINDA
+	case 8: //! D8 - Read/Write PINDA
 		dcode_8(); break;
-	case 9: // D9 - Read/Write ADC
+	case 9: //! D9 - Read/Write ADC
 		dcode_9(); break;
 
-	case 10: // D10 - XYZ calibration = OK
+	case 10: //! D10 - XYZ calibration = OK
 		dcode_10(); break;
     
 
 #ifdef TMC2130
-	case 2130: // D9125 - TMC2130
+	case 2130: //! D2130 - TMC2130
 		dcode_2130(); break;
 #endif //TMC2130
 
 #ifdef FILAMENT_SENSOR
-	case 9125: // D9125 - FILAMENT_SENSOR
+	case 9125: //! D9125 - FILAMENT_SENSOR
 		dcode_9125(); break;
 #endif //FILAMENT_SENSOR
 
