@@ -2,7 +2,7 @@
 
    1. install `"Arduino Software IDE"` for your preferred operating system  
 `https://www.arduino.cc -> Software->Downloads`  
-it is strongly recommended to use older version `"1.6.9"`, by which we can assure correct compilation results  
+it is strongly recommended to use older version `"1.6.13"`, by which we can assure correct compilation results  
 _note: in versions `1.7.x` and `1.8.x` there are known some C/C++ compilator disasters, which disallow correct source code compilation (you can obtain `"... internal compiler error: in extract_insn, at ..."` error message, for example); we are not able to affect this situation afraid_  
 _note: in the case of persistent compilation problems, check the version of the currently used C/C++ compiler (GCC) - should be `4.8.1`; version can be verified by entering the command  
 `avr-gcc --version`  
@@ -26,8 +26,9 @@ _note: select this item for any variant of board used in printers `'Prusa i3 MKx
 'clicking' the item will display the installation button; select choice `"1.0.1"` from the list(last known version as of the date of issue of this document)  
 _(after installation, the item is labeled as `"INSTALLED"` and can then be used for target board selection)_  
 
-   3. modify platform.txt to enable float printf support:
+   3. create a file called platform.local.txt in your arduino preferences directory (for linux this directory is in ~/.arduino15/packages/arduino/hardware/avr/1.6.13, for other platforms see the arduino documentation).  This file is needed to enable float printf support.  The contents of this file should be a single line as follows:
    `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
+(If your firmware shows a ? mark for Z position, that indicates that this file is not configured properly)
 
 # 2. Source code compilation
 
