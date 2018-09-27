@@ -37,6 +37,9 @@
 
 #include "mmu.h"
 
+#include "static_assert.h"
+
+
 extern bool fans_check_enabled;
 
 

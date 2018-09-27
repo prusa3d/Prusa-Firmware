@@ -10,6 +10,7 @@
 #include "Marlin.h"
 #include "ultralcd.h"
 #include "language.h"
+#include "static_assert.h"
 
 
 
