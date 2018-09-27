@@ -463,10 +463,12 @@ void fsensor_update(void)
         cmdqueue_pop_front();
         st_synchronize();
 
+		uint8_t err_cnt = fsensor_err_cnt;
         fsensor_oq_meassure_stop();
 
         bool err = false;
-        err |= (fsensor_oq_er_sum > 1);
+        err |= (fsensor_oq_er_sum > 2);
+        err |= (err_cnt > 1);
         err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
         if (!err)
         {
