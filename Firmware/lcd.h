@@ -1,4 +1,4 @@
-//lcd.h
+//! @file
 #ifndef _LCD_H
 #define _LCD_H
 
@@ -131,7 +131,6 @@ extern lcd_lcdupdate_func_t lcd_lcdupdate_func;
 
 extern uint8_t lcd_clicked(void);
 
-
 extern void lcd_beeper_quick_feedback(void);
 
 //Cause an LCD refresh, and give the user visual or audible feedback that something has happened
@@ -210,7 +209,16 @@ private:
 #define EN_A (1<<BLEN_A)
 #define BLEN_C 2 
 #define EN_C (1<<BLEN_C) 
-  
+
+//! @brief Was button clicked?
+//!
+//! Doesn't consume button click event. See lcd_clicked()
+//! for function consuming the event.
+//!
+//! Generally is used in non-modal menus.
+//!
+//! @retval 0 button was not clicked
+//! @retval 1 button was clicked
 #define LCD_CLICKED (lcd_buttons&EN_C)
 
 ////////////////////////
@@ -244,6 +252,12 @@ extern void lcd_set_custom_characters_progress(void);
 extern void lcd_set_custom_characters_nextpage(void);
 extern void lcd_set_custom_characters_degree(void);
 
+//! @brief Consume click event
+inline void lcd_consume_click()
+{
+    lcd_button_pressed = 0;
+    lcd_buttons &= 0xff^EN_C;
+}
 
 
 #endif //_LCD_H

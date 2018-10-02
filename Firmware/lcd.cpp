@@ -683,10 +683,22 @@ ShortTimer longPressTimer;
 LongTimer lcd_timeoutToStatus;
 
 
+//! @brief Was button clicked?
+//!
+//! Consume click event, following call would return 0.
+//! See #LCD_CLICKED macro for version not consuming the event.
+//!
+//! Generally is used in modal dialogs.
+//!
+//! @retval 0 not clicked
+//! @retval nonzero clicked
 uint8_t lcd_clicked(void)
 {
 	bool clicked = LCD_CLICKED;
-	if(clicked) lcd_button_pressed = 0;
+	if(clicked)
+	{
+	    lcd_consume_click();
+	}
     return clicked;
 }
 
@@ -709,7 +721,7 @@ Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 void lcd_quick_feedback(void)
 {
   lcd_draw_update = 2;
-  lcd_button_pressed = false;  
+  lcd_button_pressed = false;
   lcd_beeper_quick_feedback();
 }
 
@@ -726,7 +738,6 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		lcd_draw_update = lcdDrawUpdateOverride;
 	if (!lcd_update_enabled)
 		return;
-	lcd_buttons_update();
 	if (lcd_lcdupdate_func)
 		lcd_lcdupdate_func();
 }
@@ -760,57 +771,45 @@ void lcd_update_enable(uint8_t enabled)
 extern LongTimer safetyTimer;
 void lcd_buttons_update(void)
 {
-	static bool _lock = false;
-	if (_lock) return;
-	_lock = true;
 	uint8_t newbutton = 0;
 	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
 	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
-	if (lcd_update_enabled)
-	{ //if we are in non-modal mode, long press can be used and short press triggers with button release
-		if (READ(BTN_ENC) == 0)
-		{ //button is pressed	  
-			lcd_timeoutToStatus.start();
-			if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
-				buttonBlanking.start();
-		        safetyTimer.start();
-				if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
-				{
-					longPressTimer.start();
-					lcd_button_pressed = 1;
-				}
-				else
-				{
-					if (longPressTimer.expired(LONG_PRESS_TIME))
-					{
-						lcd_long_press_active = 1;
-						if (lcd_longpress_func)
-							lcd_longpress_func();
-					}
-				}
-			}
-		}
-		else
-		{ //button not pressed
-			if (lcd_button_pressed)
-			{ //button was released
-				buttonBlanking.start();
-				if (lcd_long_press_active == 0)
-				{ //button released before long press gets activated
-					newbutton |= EN_C;
-				}
-				//else if (menu_menu == lcd_move_z) lcd_quick_feedback(); 
-				//lcd_button_pressed is set back to false via lcd_quick_feedback function
-			}
-			else
-				lcd_long_press_active = 0;
-		}
-	}
-	else
-	{ //we are in modal mode
-		if (READ(BTN_ENC) == 0)
-			newbutton |= EN_C; 
-	}
+
+    if (READ(BTN_ENC) == 0)
+    { //button is pressed
+        lcd_timeoutToStatus.start();
+        if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
+            buttonBlanking.start();
+            safetyTimer.start();
+            if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
+            {
+                //long press is not possible in modal mode
+                if (lcd_update_enabled) longPressTimer.start();
+                lcd_button_pressed = 1;
+            }
+            else if (longPressTimer.expired(LONG_PRESS_TIME))
+            {
+                lcd_long_press_active = 1;
+                if (lcd_longpress_func)
+                    lcd_longpress_func();
+            }
+        }
+    }
+    else
+    { //button not pressed
+        if (lcd_button_pressed)
+        { //button was released
+            buttonBlanking.start();
+            if (lcd_long_press_active == 0)
+            { //button released before long press gets activated
+                newbutton |= EN_C;
+            }
+            //else if (menu_menu == lcd_move_z) lcd_quick_feedback();
+            //lcd_button_pressed is set back to false via lcd_quick_feedback function
+        }
+        else
+            lcd_long_press_active = 0;
+    }
 
 	lcd_buttons = newbutton;
 	//manage encoder rotation
@@ -848,7 +847,6 @@ void lcd_buttons_update(void)
 		}
 	}
 	lcd_encoder_bits = enc;
-	_lock = false;
 }
 
 

@@ -465,6 +465,7 @@ static uint8_t menu_item_sdfile(const char*
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
+		    lcd_consume_click();
 			menu_action_sdfile(str_fn);
 			return menu_item_ret();
 		}
@@ -3260,9 +3261,6 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
         for (uint8_t i = 0; i < 100; ++ i) {
             delay_keep_alive(50);
             if (lcd_clicked()) {
-                while (lcd_clicked()) ;
-                delay(10);
-                while (lcd_clicked()) ;
 				if (msg_next == NULL) {
 					KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
@@ -3296,9 +3294,6 @@ void lcd_wait_for_click()
         manage_heater();
         manage_inactivity(true);
         if (lcd_clicked()) {
-            while (lcd_clicked()) ;
-            delay(10);
-            while (lcd_clicked()) ;
 			KEEPALIVE_STATE(IN_HANDLER);
             return;
         }
@@ -3366,9 +3361,6 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 				}
 			}
 			if (lcd_clicked()) {
-				while (lcd_clicked());
-				delay(10);
-				while (lcd_clicked());
 				if (msg_next == NULL) {
 					//KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
@@ -3450,9 +3442,6 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 				enc_dif = lcd_encoder_diff;
 		}
 		if (lcd_clicked()) {
-			while (lcd_clicked());
-			delay(10);
-			while (lcd_clicked());
 			KEEPALIVE_STATE(IN_HANDLER);
 			return yes;
 		}
@@ -3569,9 +3558,6 @@ void lcd_diag_show_end_stops()
         manage_inactivity(true);
         lcd_show_end_stops();
         if (lcd_clicked()) {
-            while (lcd_clicked()) ;
-            delay(10);
-            while (lcd_clicked()) ;
             break;
         }
     }
@@ -4334,9 +4320,6 @@ void lcd_v2_calibration()
 			for (int i = 0; i < 20; i++) { //wait max. 2s
 				delay_keep_alive(100);
 				if (lcd_clicked()) {
-					while (lcd_clicked());
-					delay(10);
-					while (lcd_clicked());
 					break;
 				}
 			}
@@ -4982,9 +4965,6 @@ void bowden_menu() {
 		}
 
 		if (lcd_clicked()) {
-			while (lcd_clicked());
-			delay(10);
-			while (lcd_clicked());
 
 			lcd_clear();
 			while (1) {
@@ -5016,9 +4996,6 @@ void bowden_menu() {
 				}
 				delay(100);
 				if (lcd_clicked()) {
-					while (lcd_clicked());
-					delay(10);
-					while (lcd_clicked());
 					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
 					if (lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Continue with another bowden?"))) {
 						lcd_update_enable(true);
@@ -5079,9 +5056,6 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 			}
 		}
 		if (lcd_clicked()) {
-			while (lcd_clicked());
-			delay(10);
-			while (lcd_clicked());
 			KEEPALIVE_STATE(IN_HANDLER);
 			return(cursor_pos - 1);
 		}
@@ -5268,9 +5242,6 @@ char reset_menu() {
 		}
 
 		if (lcd_clicked()) {
-			while (lcd_clicked());
-			delay(10);
-			while (lcd_clicked());
 			return(cursor_pos + first);
 		}
 
@@ -5527,9 +5498,6 @@ unsigned char lcd_choose_color() {
 		}
 
 		if (lcd_clicked()) {
-			while (lcd_clicked());
-			delay(10);
-			while (lcd_clicked());
 			switch(cursor_pos + first - 1) {
 			case 0: return 1; break;
 			case 1: return 0; break;
@@ -7220,7 +7188,6 @@ void ultralcd_init()
   WRITE(SDCARDDETECT, HIGH);
   lcd_oldcardstatus = IS_SD_INSERTED;
 #endif//(SDCARDDETECT > 0)
-  lcd_buttons_update();
   lcd_encoder_diff = 0;
 }
 
