@@ -446,6 +446,8 @@ void fsensor_update(void)
 	{
         bool autoload_enabled_tmp = fsensor_autoload_enabled;
         fsensor_autoload_enabled = false;
+        bool oq_meassure_enabled_tmp = fsensor_oq_meassure_enabled;
+		fsensor_oq_meassure_enabled = true;
 
         fsensor_stop_and_save_print();
 
@@ -482,14 +484,11 @@ void fsensor_update(void)
 
         bool err = false;
         err |= (err_cnt > 1);
-#ifdef FSENSOR_QUALITY
-		if (fsensor_oq_meassure_enabled)
-		{
-			err |= (fsensor_oq_er_sum > 2);
-			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
-		}
-#endif //FSENSOR_QUALITY
-        if (!err)
+
+		err |= (fsensor_oq_er_sum > 2);
+		err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
+
+		if (!err)
         {
             printf_P(PSTR("fsensor_err_cnt = 0\n"));
             fsensor_restore_print_and_continue();
@@ -504,6 +503,7 @@ void fsensor_update(void)
             fsensor_watch_runout = false;
         }
         fsensor_autoload_enabled = autoload_enabled_tmp;
+		fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
 	}
 }
 
