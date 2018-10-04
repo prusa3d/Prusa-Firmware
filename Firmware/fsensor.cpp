@@ -218,7 +218,7 @@ bool fsensor_check_autoload(void)
 		fsensor_autoload_check_start();
 		return false;
 	}
-	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
+//	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
 	if ((millis() - fsensor_autoload_last_millis) < 25) return false;
 	fsensor_autoload_last_millis = millis();
 	if (!pat9125_update_y()) //update sensor

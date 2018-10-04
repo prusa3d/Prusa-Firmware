@@ -1614,7 +1614,9 @@ void st_current_set(uint8_t driver, int current)
 
 void microstep_init()
 {
+  #if defined(X_MS1_PIN) && X_MS1_PIN > -1
   const uint8_t microstep_modes[] = MICROSTEP_MODES;
+  #endif
 
   #if defined(E1_MS1_PIN) && E1_MS1_PIN > -1
   pinMode(E1_MS1_PIN,OUTPUT);

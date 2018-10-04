@@ -34,7 +34,6 @@ void print_eeprom(uint16_t address, uint16_t count, uint8_t countperline = 16)
 		uint8_t count_line = countperline;
 		while (count && count_line)
 		{
-			uint8_t data = 0;
 			putchar(' ');
 			print_hex_byte(eeprom_read_byte((uint8_t*)address++));
 			count_line--;

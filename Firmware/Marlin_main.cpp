@@ -2259,7 +2259,6 @@ void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
 ((LETTER##_MIN_PIN > -1 && LETTER##_HOME_DIR==-1) || (LETTER##_MAX_PIN > -1 && LETTER##_HOME_DIR==1))
     if ((axis==X_AXIS)?HOMEAXIS_DO(X):(axis==Y_AXIS)?HOMEAXIS_DO(Y):0)
 	{
-        int axis_home_dir = home_dir(axis);
         feedrate = homing_feedrate[axis];
 
 #ifdef TMC2130

@@ -3559,7 +3559,6 @@ static void menu_show_end_stops() {
 // Otherwise the Z calibration is not changed and false is returned.
 void lcd_diag_show_end_stops()
 {
-    int enc_dif = lcd_encoder_diff;
     lcd_clear();
     for (;;) {
         manage_heater();
@@ -6022,7 +6021,6 @@ void lcd_sdcard_stop()
 void lcd_sdcard_menu()
 {
   uint8_t sdSort = eeprom_read_byte((uint8_t*)EEPROM_SD_SORT);
-  int tempScrool = 0;
   if (presort_flag == true) {
 	  presort_flag = false;
 	  card.presort();
@@ -7191,7 +7189,6 @@ static void lcd_connect_printer() {
 	lcd_update_enable(false);
 	lcd_clear();
 	
-	bool pressed = false;
 	int i = 0;
 	int t = 0;
 	lcd_set_custom_characters_progress();

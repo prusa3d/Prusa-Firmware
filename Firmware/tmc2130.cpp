@@ -825,7 +825,6 @@ void tmc2130_goto_step(uint8_t axis, uint8_t step, uint8_t dir, uint16_t delay_u
 
 void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 {
-	uint8_t pwr = tmc2130_get_pwr(axis);
 	tmc2130_set_pwr(axis, 0);
 	tmc2130_setup_chopper(axis, tmc2130_usteps2mres(256), tmc2130_current_h[axis], tmc2130_current_r[axis]);
 	tmc2130_goto_step(axis, 0, 2, 100, 256);

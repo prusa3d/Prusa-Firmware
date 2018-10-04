@@ -506,7 +506,7 @@ uint8_t lcd_escape_write(uint8_t chr)
 		break;
 	}
 	escape_cnt = 0; // reset escape
-end:
+
 	return 1; // assume sucess
 }
 

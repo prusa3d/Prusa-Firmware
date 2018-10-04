@@ -495,8 +495,6 @@ void mmu_M600_load_filament(bool automatic)
 { 
 	//load filament for mmu v2
 
-		  bool response = false;
-		  bool yes = false;
 		  tmp_extruder = mmu_extruder;
 		  if (!automatic) {
 #ifdef MMU_M600_SWITCH_EXTRUDER
