@@ -6321,8 +6321,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		//firmware does not wait for "ok" from mmu
 		if (mmu_enabled)
 		{
-			uint8_t extruder;
-			uint8_t filament;
+			uint8_t extruder = 0;
+			uint8_t filament = 0;
 			if(code_seen('E')) extruder = code_value();
 			if(code_seen('F')) filament = code_value();
 			mmu_set_filament_type(extruder, filament);
