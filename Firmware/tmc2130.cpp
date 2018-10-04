@@ -793,7 +793,7 @@ void tmc2130_do_steps(uint8_t axis, uint16_t steps, uint8_t dir, uint16_t delay_
 void tmc2130_goto_step(uint8_t axis, uint8_t step, uint8_t dir, uint16_t delay_us, uint16_t microstep_resolution)
 {
 	printf_P(PSTR("tmc2130_goto_step %d %d %d %d \n"), axis, step, dir, delay_us, microstep_resolution);
-	uint8_t shift; for (shift = 0; shift < 8; shift++) if (microstep_resolution == (256 >> shift)) break;
+	uint8_t shift; for (shift = 0; shift < 8; shift++) if (microstep_resolution == ((uint16_t)256 >> shift)) break;
 	uint16_t cnt = 4 * (1 << (8 - shift));
 	uint16_t mscnt = tmc2130_rd_MSCNT(axis);
 	if (dir == 2)
@@ -805,7 +805,7 @@ void tmc2130_goto_step(uint8_t axis, uint8_t step, uint8_t dir, uint16_t delay_u
 			dir ^= 1;
 			steps = -steps;
 		}
-		if (steps > (cnt / 2))
+		if (steps > (int)(cnt / 2))
 		{
 			dir ^= 1;
 			steps = cnt - steps;
@@ -829,7 +829,7 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 	tmc2130_setup_chopper(axis, tmc2130_usteps2mres(256), tmc2130_current_h[axis], tmc2130_current_r[axis]);
 	tmc2130_goto_step(axis, 0, 2, 100, 256);
 	tmc2130_set_dir(axis, tmc2130_get_inv(axis)?0:1);
-	for (int i = 0; i <= 255; i++)
+	for (uint8_t i = 0; i <= 255; i++)
 	{
 		uint32_t val = tmc2130_rd_MSCURACT(axis);
 		uint16_t mscnt = tmc2130_rd_MSCNT(axis);
