@@ -453,11 +453,13 @@ void fsensor_update(void)
 
         enquecommand_front_P((PSTR("G1 E-3 F200")));
         process_commands();
+		KEEPALIVE_STATE(IN_HANDLER);
         cmdqueue_pop_front();
         st_synchronize();
 
         enquecommand_front_P((PSTR("G1 E3 F200")));
         process_commands();
+		KEEPALIVE_STATE(IN_HANDLER);
         cmdqueue_pop_front();
         st_synchronize();
 
