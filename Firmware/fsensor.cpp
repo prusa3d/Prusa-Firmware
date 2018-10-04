@@ -42,6 +42,8 @@ bool fsensor_enabled = true;
 bool fsensor_watch_runout = true;
 //not responding - is set if any communication error occured durring initialization or readout
 bool fsensor_not_responding = false;
+//enable/disable quality meassurement
+bool fsensor_oq_meassure_enabled = false;
 
 //number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
@@ -114,6 +116,8 @@ void fsensor_init(void)
     printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
+	uint8_t oq_meassure_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_OQ_MEASS_ENABLED);
+	fsensor_oq_meassure_enabled = (oq_meassure_enabled == 1)?true:false;
 	fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * axis_steps_per_unit[E_AXIS]);
 
 	if (!pat9125)
@@ -255,9 +259,16 @@ bool fsensor_check_autoload(void)
 	return false;
 }
 
+void fsensor_oq_meassure_set(bool State)
+{
+	fsensor_oq_meassure_enabled = State;
+	eeprom_update_byte((unsigned char *)EEPROM_FSENS_OQ_MEASS_ENABLED, fsensor_oq_meassure_enabled);
+}
+
 void fsensor_oq_meassure_start(uint8_t skip)
 {
 	if (!fsensor_enabled) return;
+	if (!fsensor_oq_meassure_enabled) return;
 	printf_P(PSTR("fsensor_oq_meassure_start\n"));
 	fsensor_oq_skipchunk = skip;
 	fsensor_oq_samples = 0;
@@ -277,6 +288,7 @@ void fsensor_oq_meassure_start(uint8_t skip)
 void fsensor_oq_meassure_stop(void)
 {
 	if (!fsensor_enabled) return;
+	if (!fsensor_oq_meassure_enabled) return;
 	printf_P(PSTR("fsensor_oq_meassure_stop, %hhu samples\n"), fsensor_oq_samples);
 	printf_P(_N(" st_sum=%u yd_sum=%u er_sum=%u er_max=%hhu\n"), fsensor_oq_st_sum, fsensor_oq_yd_sum, fsensor_oq_er_sum, fsensor_oq_er_max);
 	printf_P(_N(" yd_min=%u yd_max=%u yd_avg=%u sh_avg=%u\n"), fsensor_oq_yd_min, fsensor_oq_yd_max, (uint16_t)((uint32_t)fsensor_oq_yd_sum * fsensor_chunk_len / fsensor_oq_st_sum), (uint16_t)(fsensor_oq_sh_sum / fsensor_oq_samples));
@@ -291,6 +303,7 @@ const char _NG[] PROGMEM = "NG!";
 bool fsensor_oq_result(void)
 {
 	if (!fsensor_enabled) return true;
+	if (!fsensor_oq_meassure_enabled) return true;
 	printf_P(_N("fsensor_oq_result\n"));
 	bool res_er_sum = (fsensor_oq_er_sum <= FSENSOR_OQ_MAX_ES);
 	printf_P(_N(" er_sum = %u %S\n"), fsensor_oq_er_sum, (res_er_sum?_OK:_NG));
@@ -305,9 +318,10 @@ bool fsensor_oq_result(void)
 	printf_P(_N(" yd_min = %u %S\n"), fsensor_oq_yd_min, (res_yd_min?_OK:_NG));
 
 	uint16_t yd_dev = (fsensor_oq_yd_max - yd_avg) + (yd_avg - fsensor_oq_yd_min);
-	uint16_t yd_qua = 10 * yd_avg / (yd_dev + 1);
 	printf_P(_N(" yd_dev = %u\n"), yd_dev);
-	printf_P(_N(" yd_qua = %u\n"), yd_qua);
+
+	uint16_t yd_qua = 10 * yd_avg / (yd_dev + 1);
+	printf_P(_N(" yd_qua = %u %S\n"), yd_qua, ((yd_qua >= 8)?_OK:_NG));
 
 	uint8_t sh_avg = (fsensor_oq_sh_sum / fsensor_oq_samples);
 	bool res_sh_avg = (sh_avg <= FSENSOR_OQ_MAX_SH);
@@ -467,9 +481,14 @@ void fsensor_update(void)
         fsensor_oq_meassure_stop();
 
         bool err = false;
-        err |= (fsensor_oq_er_sum > 2);
         err |= (err_cnt > 1);
-        err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
+#ifdef FSENSOR_QUALITY
+		if (fsensor_oq_meassure_enabled)
+		{
+			err |= (fsensor_oq_er_sum > 2);
+			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
+		}
+#endif //FSENSOR_QUALITY
         if (!err)
         {
             printf_P(PSTR("fsensor_err_cnt = 0\n"));

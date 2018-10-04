@@ -146,6 +146,8 @@
 #define EEPROM_SOUND_MODE (EEPROM_UVLO_TINY_Z_MICROSTEPS-1) // uint8
 #define EEPROM_AUTO_DEPLETE (EEPROM_SOUND_MODE-1) //bool
 
+#define EEPROM_FSENS_OQ_MEASS_ENABLED (EEPROM_AUTO_DEPLETE - 1) //bool
+
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

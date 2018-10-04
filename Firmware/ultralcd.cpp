@@ -2209,6 +2209,12 @@ void lcd_set_filament_autoload() {
      fsensor_autoload_set(!fsensor_autoload_enabled);
 }
 
+void lcd_set_filament_oq_meass()
+{
+     fsensor_oq_meassure_set(!fsensor_oq_meassure_enabled);
+}
+
+
 void lcd_unLoadFilament()
 {
 
@@ -4594,6 +4600,10 @@ do\
                 MENU_ITEM_FUNCTION_P(_i("F. autoload  [on]"), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_ON c=17 r=1*/\
             else\
                 MENU_ITEM_FUNCTION_P(_i("F. autoload [off]"), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_OFF c=17 r=1*/\
+            if (fsensor_oq_meassure_enabled)\
+                MENU_ITEM_FUNCTION_P(_i("F. OQ meass. [on]"), lcd_set_filament_oq_meass);/*////MSG_FSENS_OQMEASS_ON c=17 r=1*/\
+            else\
+                MENU_ITEM_FUNCTION_P(_i("F. OQ meass.[off]"), lcd_set_filament_oq_meass);/*////MSG_FSENS_OQMEASS_OFF c=17 r=1*/\
         }\
     }\
 }\
