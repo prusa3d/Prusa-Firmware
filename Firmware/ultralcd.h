@@ -59,7 +59,7 @@ extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
 #endif
 
 // Show the result of the calibration process on the LCD screen.
-extern void lcd_bed_calibration_show_result(uint8_t result, uint8_t point_too_far_mask);
+extern void lcd_bed_calibration_show_result(int8_t result, uint8_t point_too_far_mask);
 
 extern void lcd_diag_show_end_stops();
 
