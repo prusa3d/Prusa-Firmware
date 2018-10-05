@@ -102,4 +102,4 @@ Example:
 `./tests`
 
 # 4. Documentation
-run doxygen in Firmware folder
+run [doxygen](http://www.doxygen.nl/) in Firmware folder
