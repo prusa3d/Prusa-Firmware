@@ -756,7 +756,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 			// Erase EEPROM
 			for (int i = 0; i < 4096; i++) {
-				eeprom_write_byte((uint8_t*)i, 0xFF);
+				eeprom_update_byte((uint8_t*)i, 0xFF);
 
 				if (i % 41 == 0) {
 					er_progress++;
