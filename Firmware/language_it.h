@@ -57,7 +57,6 @@
 #define MSG_BABYSTEP_Z                      "Compensazione Z"
 #define MSG_ADJUSTZ			    			"Autoregolare Z?"
 #define MSG_PICK_Z			    			"Pick print"
-
 #define MSG_SETTINGS                        "Impostazioni"
 #define MSG_PREHEAT                         "Preriscalda"
 #define MSG_HEATING                         "Riscaldamento..."
@@ -71,7 +70,6 @@
 #define MSG_PRESS							"e cliccare manopola"
 #define MSG_INSERT_FILAMENT					"Inserire filamento"
 #define MSG_CHANGING_FILAMENT				"Cambiando filam."
-
 #define MSG_PLEASE_WAIT						"Aspetta"
 #define MSG_PREHEAT_NOZZLE                  "Preris. ugello!"
 #define MSG_HEATING_COMPLETE                "Riscald. completo"
@@ -82,13 +80,11 @@
 #define MSG_LOADING_FILAMENT				"Caricando filam."
 #define MSG_UNLOAD_FILAMENT                 "Scarica filamento"
 #define MSG_LOAD_FILAMENT                   "Carica filamento"
-
 #define MSG_SILENT_MODE_ON		    "Modo [silenzioso]"
 #define MSG_SILENT_MODE_OFF		    "Mode      [forte]"
 #define MSG_AUTO_MODE_ON			"Mode       [auto]"
 #define MSG_REBOOT			    "Riavvia stampante"
 #define MSG_TAKE_EFFECT			    " per attualizzare"
-
 #define MSG_Enqueing                        "enqueing \""
 #define MSG_POWERUP                         "PowerUp"
 #define MSG_CONFIGURATION_VER               " Last Updated: "
@@ -134,13 +130,11 @@
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
 #define MSG_BABYSTEPPING_Z                  "Compensazione Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
-
 #define MSG_LANGUAGE_NAME		    "Italiano"
 #define MSG_LANGUAGE_SELECT		    "Seleziona lingua"
 #define MSG_PRUSA3D			    "prusa3d.com"
 #define MSG_PRUSA3D_FORUM		    "forum.prusa3d.com"
 #define MSG_PRUSA3D_HOWTO		    "howto.prusa3d.com"
-
 #define MSG_SELFTEST_ERROR		    "Autotest negativo"
 #define MSG_SELFTEST_PLEASECHECK	    "Verificare:"	
 #define MSG_SELFTEST_NOTCONNECTED	    "Non connesso"
@@ -152,13 +146,11 @@
 #define MSG_SELFTEST_ENDSTOP		    "Finecorsa"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT	    "Finec. fuori por."
 #define MSG_SELFTEST_OK			    "Autotest OK"
-
 #define MSG_SELFTEST_FAN					"Prova del ventilator"
 #define MSG_SELFTEST_COOLING_FAN			"Vent di stampa ant.?"
 #define MSG_SELFTEST_EXTRUDER_FAN        "Vent SX sull'ugello?"
 #define MSG_SELFTEST_FAN_YES				"Gira"
 #define MSG_SELFTEST_FAN_NO					"Non si gira"
-
 #define MSG_STATS_TOTALFILAMENT		    "Filamento tot:"
 #define MSG_STATS_TOTALPRINTTIME	    "Tempo stampa tot:"
 #define MSG_STATS_FILAMENTUSED		    "Filamento usato:"
@@ -178,19 +170,13 @@
 #define MSG_HOMEYZ                          "Calibra Z"
 #define MSG_HOMEYZ_PROGRESS                 "Calibrando Z"
 #define MSG_HOMEYZ_DONE		            "Calibrazione OK"
-
-
-
 #define MSG_SHOW_END_STOPS					"Stato finecorsa"
 #define MSG_CALIBRATE_BED					"Calibra XYZ"
 #define MSG_CALIBRATE_BED_RESET					"Reset XYZ calibr."
-
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP 				"Calibrazione XYZ. Ruotare la manopola per alzare il carrello Z fino all'altezza massima. Click per terminare."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z 				"Calibrazione Z. Ruotare la manopola per alzare il carrello Z fino all'altezza massima. Click per terminare."
-
 #define MSG_CONFIRM_NOZZLE_CLEAN					"Pulire l'ugello per la calibrazione, poi fare click."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP				"I carrelli Z sin/des sono altezza max?"
-
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1			"Ricerca del letto punto di calibraz."
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2			" su 4"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1		"Perfezion. il letto punto di calibraz."
@@ -198,7 +184,6 @@
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1		"Misurare l'altezza di riferimento del punto di calibrazione"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2		" su 9"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Reiterazione "
-
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND		"Calibrazione XYZ fallita. Il punto di calibrazione sul letto non e' stato trovato."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED		"Calibrazione XYZ fallita. Si prega di consultare il manuale."
 #define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT			"Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari. Complimenti!"
@@ -210,36 +195,29 @@
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR	"Calibrazione XYZ compromessa. Punto anteriore sinistro non raggiungibile."
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR	"Calibrazione XYZ compromessa. Punto anteriore destro non raggiungibile."
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR	"Calibrazione XYZ compromessa. Punti anteriori non raggiungibili."
-
 #define MSG_BED_LEVELING_FAILED_POINT_LOW				"Livellamento letto fallito.NoRispSensor Residui su ugello? In attesa di reset."
 #define MSG_BED_LEVELING_FAILED_POINT_HIGH				"Livellamento letto fallito.Risp sensore troppo prestoIn attesa di reset."
 #define MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED		"Livellamento letto fallito. Sensore discon. o Cavo Dann. In attesa di reset."
-
 #define MSG_NEW_FIRMWARE_AVAILABLE						"Nuova versione del firmware disponibile"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE					"Prega aggiorna."
-
 #define MSG_FOLLOW_CALIBRATION_FLOW						"Stampante ancora non calibrata. Si prega di seguire il manuale, capitolo PRIMI PASSI, sezione della calibrazione."
 #define MSG_BABYSTEP_Z_NOT_SET							"Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo First steps, sezione First layer calibration."
-
 #define MSG_BED_CORRECTION_MENU							"Correz. liv.letto"
 #define MSG_BED_CORRECTION_LEFT							"Sinistra  [um]"
 #define MSG_BED_CORRECTION_RIGHT						"Destra    [um]"
 #define MSG_BED_CORRECTION_FRONT						"Fronte    [um]"
 #define MSG_BED_CORRECTION_REAR							"Retro     [um]"
 #define MSG_BED_CORRECTION_RESET						"Reset"			
-
 #define MSG_MESH_BED_LEVELING							"Mesh livel. letto"
 #define MSG_MENU_CALIBRATION							"Calibrazione"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
-
 #define MSG_LOOSE_PULLEY								"Puleggia lenta"
 #define MSG_FILAMENT_LOADING_T0							"Inserire filamento nell'estrusore 1. Click per continuare."
 #define MSG_FILAMENT_LOADING_T1							"Inserire filamento nell'estrusore 2. Click per continuare."
 #define MSG_FILAMENT_LOADING_T2							"Inserire filamento nell'estrusore 3. Click per continuare."
 #define MSG_FILAMENT_LOADING_T3							"Inserire filamento nell'estrusore 4. Click per continuare."
 #define MSG_CHANGE_EXTR									"Cambio estrusore."
-
 #define MSG_FIL_ADJUSTING								"Filamento in fase di regolazione. Attendere prego."
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ				"I filamenti sono regolati. Si prega di pulire l'ugello per la calibrazione. Click per continuare."
 #define MSG_CALIBRATE_E									"Calibra E"
@@ -250,7 +228,6 @@
 #define MSG_FILAMENT_CLEAN								"Il colore e' nitido?"
 #define MSG_UNLOADING_FILAMENT							"Rilasc. filamento"
 #define MSG_PAPER										"Porre un foglio sotto l'ugello durante la calibrazione dei primi 4 punti. In caso l'ugello muova il foglio spegnere prontamente la stampante."
-
 #define MSG_FINISHING_MOVEMENTS							"Arresto in corso"
 #define MSG_PRINT_PAUSED								"Stampa in pausa"
 #define MSG_RESUMING_PRINT								"Stampa in ripresa"
@@ -258,7 +235,6 @@
 #define MSG_SET_TEMPERATURE								"Imposta temperatura"
 #define MSG_PID_FINISHED								"Cal. PID completa"
 #define MSG_PID_RUNNING									"Cal. PID"
-
 #define MSG_CALIBRATE_PINDA								"Calibrare"
 #define MSG_CALIBRATION_PINDA_MENU						"Taratura temp."
 #define MSG_PINDA_NOT_CALIBRATED						"Taratura della temperatura non ancora eseguita"
@@ -267,7 +243,6 @@
 #define MSG_TEMP_CALIBRATION_DONE						"Taratura temperatura terminata. Fare click per continuare."
 #define MSG_TEMP_CALIBRATION_ON							"Cal. temp. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Cal. temp. [OFF]"
-
 #define MSG_LOAD_ALL									"Caricare tutti"
 #define MSG_LOAD_FILAMENT_1								"Caricare fil. 1"
 #define MSG_LOAD_FILAMENT_2								"Caricare fil. 2"

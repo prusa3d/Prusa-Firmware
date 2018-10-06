@@ -1,10 +1,11 @@
 /**
- * English
- *
- * LCD Menu Messages
- * Please note these are limited to 17 characters!
- *
- */
+* English
+*
+* LCD Menu Messages
+* Please note these are limited to 17 characters!
+*
+*/
+
 #define WELCOME_MSG                         CUSTOM_MENDEL_NAME " ok"
 #define MSG_SD_INSERTED                     "Karta vlozena"
 #define MSG_SD_REMOVED                      "Karta vyjmuta"
@@ -65,11 +66,9 @@
 #define MSG_BABYSTEP_Z                      "Doladeni osy Z"
 #define MSG_ADJUSTZ							"Auto doladit Z ?"
 #define MSG_PICK_Z							"Vyberte vytisk"
-
 #define MSG_HOMEYZ                          "Kalibrovat Z"
 #define MSG_HOMEYZ_PROGRESS                 "Kalibruji Z"
 #define MSG_HOMEYZ_DONE		                "Kalibrace OK"
-
 #define MSG_SETTINGS                         "Nastaveni"
 #define MSG_PREHEAT                         "Predehrev"
 #define MSG_UNLOAD_FILAMENT                 "Vyjmout filament"
@@ -84,7 +83,6 @@
 #define MSG_UNLOAD_FILAMENT_4				"Vyjmout filam. 4"
 #define MSG_UNLOAD_ALL						"Vyjmout vse"
 #define MSG_LOAD_ALL						"Zavest vse"
-
 #define MSG_RECTRACT                        "Rectract"
 #define MSG_ERROR                       "CHYBA:"
 #define MSG_PREHEAT_NOZZLE              "Predehrejte trysku!"
@@ -101,13 +99,11 @@
 #define MSG_PRESS				"a stisknete tlacitko"
 #define MSG_INSERT_FILAMENT		"Vlozte filament"
 #define MSG_CHANGING_FILAMENT	"Vymena filamentu!"
-
 #define MSG_SILENT_MODE_ON					"Mod       [tichy]"
 #define MSG_SILENT_MODE_OFF					"Mod  [vys. vykon]" 
 #define MSG_AUTO_MODE_ON					"Mod [automaticky]"
 #define MSG_REBOOT							"Restartujte tiskarnu"
 #define MSG_TAKE_EFFECT						" pro projeveni zmen"	
-
 #define MSG_Enqueing                        "enqueing \""
 #define MSG_POWERUP                         "PowerUp"
 #define MSG_CONFIGURATION_VER               " Last Updated: "
@@ -136,7 +132,6 @@
 #define MSG_M119_REPORT                     "Reporting endstop status"
 #define MSG_ENDSTOP_HIT                     "TRIGGERED"
 #define MSG_ENDSTOP_OPEN                    "open"
-
 #define MSG_SD_CANT_OPEN_SUBDIR             "Cannot open subdir"
 #define MSG_SD_INIT_FAIL                    "SD init fail"
 #define MSG_SD_VOL_INIT_FAIL                "volume.init failed"
@@ -151,7 +146,6 @@
 #define MSG_SD_NOT_PRINTING                 "Not SD printing"
 #define MSG_SD_ERR_WRITE_TO_FILE            "error writing to file"
 #define MSG_SD_CANT_ENTER_SUBDIR            "Cannot enter subdir: "
-
 #define MSG_STEPPER_TOO_HIGH                "Steprate too high: "
 #define MSG_ENDSTOPS_HIT                    "endstops hit: "
 #define MSG_ERR_COLD_EXTRUDE_STOP           " cold extrusion prevented"
@@ -159,17 +153,14 @@
 #define MSG_BABYSTEPPING_Y                  "Babystepping Y"
 #define MSG_BABYSTEPPING_Z                  "Dostavovani Z"
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
-
 #define MSG_LANGUAGE_NAME					"Cestina"
 #define MSG_LANGUAGE_SELECT					"Vyber jazyka"
- #define MSG_PRUSA3D						"prusa3d.cz"
- #define MSG_PRUSA3D_FORUM					"forum.prusa3d.cz"
- #define MSG_PRUSA3D_HOWTO					"howto.prusa3d.cz"
-
+#define MSG_PRUSA3D						"prusa3d.cz"
+#define MSG_PRUSA3D_FORUM					"forum.prusa3d.cz"
+#define MSG_PRUSA3D_HOWTO					"howto.prusa3d.cz"
 #define MSG_HOMEYZ                          "Kalibrovat Z"
 #define MSG_HOMEYZ_PROGRESS                 "Kalibruji Z"
 #define MSG_HOMEYZ_DONE		                "Kalibrace OK"
-
 #define MSG_SELFTEST_ERROR					"Selftest error !"
 #define MSG_SELFTEST_PLEASECHECK			"Zkontrolujte :"	
 #define MSG_SELFTEST_NOTCONNECTED			"Nezapojeno    "
@@ -181,18 +172,15 @@
 #define MSG_SELFTEST_ENDSTOP				"Endstop"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT			"Endstop not hit"
 #define MSG_SELFTEST_OK						"Self test OK"
-
 #define MSG_SELFTEST_FAN					"Test ventilatoru"
 #define MSG_SELFTEST_COOLING_FAN			"Predni tiskovy vent?"
 #define MSG_SELFTEST_EXTRUDER_FAN			"Levy vent na trysce?"
 #define MSG_SELFTEST_FAN_YES				"Toci se"
 #define MSG_SELFTEST_FAN_NO					"Netoci se"
-
 #define MSG_STATS_TOTALFILAMENT				"Filament celkem :"
 #define MSG_STATS_TOTALPRINTTIME			"Celkovy cas :"
 #define MSG_STATS_FILAMENTUSED				"Filament :  "
 #define MSG_STATS_PRINTTIME					"Cas tisku :  "
-
 #define MSG_SELFTEST_START					"Self test start  "
 #define MSG_SELFTEST_CHECK_ENDSTOPS			"Kontrola endstops"
 #define MSG_SELFTEST_CHECK_HOTEND			"Kontrola hotend  "  
@@ -203,20 +191,15 @@
 #define MSG_SELFTEST_CHECK_ALLCORRECT		"Vse OK           "
 #define MSG_SELFTEST						"Selftest         "
 #define MSG_SELFTEST_FAILED					"Selftest selhal  "
-
 #define MSG_STATISTICS						"Statistika  "
 #define MSG_USB_PRINTING					"Tisk z USB  "
-
 #define MSG_SHOW_END_STOPS					"Stav konc. spin."
 #define MSG_CALIBRATE_BED					"Kalibrace XYZ"
 #define MSG_CALIBRATE_BED_RESET				"Reset XYZ kalibr."
-
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP		"Kalibrace XYZ. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z		"Kalibrace Z. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
-
 #define MSG_CONFIRM_NOZZLE_CLEAN			"Pro uspesnou kalibraci ocistete prosim tiskovou trysku. Potvrdte tlacitkem."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP		"Dojely oba Z voziky k~hornimu dorazu?"
-
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1	"Hledam kalibracni bod podlozky"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE2	" z 4"
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1	"Zlepsuji presnost kalibracniho bodu"
@@ -224,7 +207,6 @@
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Merim referencni vysku kalibracniho bodu"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" z 9"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iterace "
-
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND			"Kalibrace XYZ selhala. Kalibracni bod podlozky nenalezen."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED			"Kalibrace XYZ selhala. Nahlednete do manualu."
 #define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT					"Kalibrace XYZ v poradku. X/Y osy jsou kolme. Gratuluji!"
@@ -236,35 +218,29 @@
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR	"Kalibrace XYZ nepresna. Levy predni bod moc vpredu."
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR	"Kalibrace XYZ nepresna. Pravy predni bod moc vpredu."
 #define MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR	"Kalibrace XYZ nepresna. Predni kalibracni body moc vpredu."
-
 #define MSG_BED_LEVELING_FAILED_POINT_LOW						"Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
 #define MSG_BED_LEVELING_FAILED_POINT_HIGH						"Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset."
 #define MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED				"Kalibrace Z selhala. Sensor je odpojeny nebo preruseny kabel. Cekam na reset."
-
 #define MSG_NEW_FIRMWARE_AVAILABLE								"Vysla nova verze firmware:"
 #define MSG_NEW_FIRMWARE_PLEASE_UPGRADE							"Prosim aktualizujte."
 #define MSG_FOLLOW_CALIBRATION_FLOW                        		"Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace."
 #define MSG_BABYSTEP_Z_NOT_SET                          		"Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy."
-
 #define MSG_BED_CORRECTION_MENU									"Korekce podlozky"
 #define MSG_BED_CORRECTION_LEFT									"Vlevo  [um]"
 #define MSG_BED_CORRECTION_RIGHT								"Vpravo [um]"
 #define MSG_BED_CORRECTION_FRONT								"Vpredu [um]"
 #define MSG_BED_CORRECTION_REAR									"Vzadu  [um]"
 #define MSG_BED_CORRECTION_RESET								"Reset"
-
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Kalibrace"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
-
 #define MSG_LOOSE_PULLEY								"Uvolnena remenicka"
 #define MSG_FILAMENT_LOADING_T0							"Vlozte filament do extruderu 1. Potvrdte tlacitkem."
 #define MSG_FILAMENT_LOADING_T1							"Vlozte filament do extruderu 2. Potvrdte tlacitkem."
 #define MSG_FILAMENT_LOADING_T2							"Vlozte filament do extruderu 3. Potvrdte tlacitkem."
 #define MSG_FILAMENT_LOADING_T3							"Vlozte filament do extruderu 4. Potvrdte tlacitkem."
 #define MSG_CHANGE_EXTR									"Zmenit extruder"
-
 #define MSG_FIL_ADJUSTING								"Probiha srovnani filamentu. Prosim cekejte."
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ				"Filamenty jsou srovnany. Pro uspesnou kalibraci prosim ocistete trysku. Po te potvrdte tlacitkem."
 #define MSG_CALIBRATE_E									"Kalibrovat E"
@@ -274,9 +250,7 @@
 #define MSG_WAITING_TEMP								"Cekani na zchladnuti trysky a podlozky."
 #define MSG_FILAMENT_CLEAN								"Je barva cista?" 
 #define MSG_UNLOADING_FILAMENT							"Vysouvam filament"
-
 #define MSG_PAPER										"Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, vypnete tiskarnu."
-
 #define MSG_FINISHING_MOVEMENTS							"Dokoncovani pohybu"
 #define MSG_PRINT_PAUSED								"Tisk pozastaven"
 #define MSG_RESUMING_PRINT								"Obnovovani tisku"
@@ -284,7 +258,6 @@
 #define MSG_SET_TEMPERATURE								"Nastavte teplotu:"
 #define MSG_PID_FINISHED								"PID kal. ukoncena"
 #define MSG_PID_RUNNING									"PID kal.           "
-
 #define MSG_CALIBRATE_PINDA								"Zkalibrovat"
 #define MSG_CALIBRATION_PINDA_MENU						"Teplot. kalibrace"
 #define MSG_PINDA_NOT_CALIBRATED						"Tiskarna nebyla teplotne zkalibrovana"

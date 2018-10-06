@@ -1,10 +1,10 @@
 /**
- * Spanish
- *
- * LCD Menu Messages
- * Please note these are limited to 17 characters!
- *
- */
+* Spanish
+*
+* LCD Menu Messages
+* Please note these are limited to 17 characters!
+*
+*/
 
 #define WELCOME_MSG                         CUSTOM_MENDEL_NAME " prep."
 #define MSG_SD_INSERTED                     "Tarjeta insertada"
@@ -42,7 +42,6 @@
 #define MSG_BABYSTEP_Z                      "Micropaso Eje Z"
 #define MSG_ADJUSTZ			    "Ajustar Eje Z"			
 #define MSG_PICK_Z			    "Esc. Modelo Adecuado"
-
 #define MSG_SETTINGS                        "Configuracion"
 #define MSG_PREHEAT                         "Precalentar"
 #define MSG_UNLOAD_FILAMENT                 "Soltar filamento"
@@ -77,9 +76,7 @@
 #define MSG_PRUSA3D_FORUM					"forum.prusa3d.com"
 #define MSG_PRUSA3D_HOWTO					"howto.prusa3d.com"
 
-
 // Do not translate those!
-
 #define MSG_Enqueing                        "enqueing \""
 #define MSG_POWERUP                         "PowerUp"
 #define MSG_CONFIGURATION_VER               " Last Updated: "
@@ -150,11 +147,9 @@
 #define MSG_BABYSTEP_X                      "Babystep X"
 #define MSG_BABYSTEP_Y                      "Babystep Y"
 #define MSG_RECTRACT                        "Rectract"
-
 #define MSG_HOMEYZ                          "Calibrar Z"
 #define MSG_HOMEYZ_PROGRESS                 "Calibrando Z"
 #define MSG_HOMEYZ_DONE                     "Calibracion OK"
-
 #define MSG_SELFTEST_ERROR                  "Autotest error!"
 #define MSG_SELFTEST_PLEASECHECK            "Controla :"   
 #define MSG_SELFTEST_NOTCONNECTED           "No hay conexion  "
@@ -166,18 +161,15 @@
 #define MSG_SELFTEST_ENDSTOP                "Tope final"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT         "Tope no alcanzado"
 #define MSG_SELFTEST_OK                     "Self test OK"
-
 #define MSG_SELFTEST_FAN					"Test ventiladores"
 #define MSG_SELFTEST_COOLING_FAN			"Vent. frontal?"
 #define MSG_SELFTEST_EXTRUDER_FAN			"Vent. izquierdo?"
 #define MSG_SELFTEST_FAN_YES				"Ventilador gira"
 #define MSG_SELFTEST_FAN_NO					"Ventilador no gira"
-
 #define MSG_STATS_TOTALFILAMENT             "Filamento total:"
 #define MSG_STATS_TOTALPRINTTIME            "Tiempo total :"
 #define MSG_STATS_FILAMENTUSED              "Filamento usado:  "
 #define MSG_STATS_PRINTTIME                 "Tiempo de imp.:"
-
 #define MSG_SELFTEST_START                  "Inicio Selftest"
 #define MSG_SELFTEST_CHECK_ENDSTOPS         "Control topes"
 #define MSG_SELFTEST_CHECK_HOTEND           "Control hotend " 
@@ -188,16 +180,13 @@
 #define MSG_SELFTEST_CHECK_ALLCORRECT       "Todo bien"
 #define MSG_SELFTEST                        "Selftest"
 #define MSG_SELFTEST_FAILED                 "Fallo Selftest"
-
 #define MSG_STATISTICS                      "Estadisticas  "
 #define MSG_USB_PRINTING                    "Impresion con USB "
-
 #define MSG_SHOW_END_STOPS                  "Ensena tope final"
 #define MSG_CALIBRATE_BED                   "Calibra XYZ"
 #define MSG_CALIBRATE_BED_RESET             "Reset XYZ calibr."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP        "Calibrando XYZ. Gira el boton para subir el extrusor hasta tocar los topes superiores. Despues haz clic."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z       "Calibrando Z. Gira el boton para subir el extrusor hasta tocar los topes superiores. Despues haz clic."
-
 #define MSG_CONFIRM_NOZZLE_CLEAN            "Limpia nozzle para calibracion. Click cuando acabes."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP     "Carros Z izq./der. estan arriba maximo?"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1  "Buscando punto de calibracion heatbed"
@@ -206,7 +195,6 @@
 #define MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2   " de 9"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1	"Midiendo altura del punto de calibracion"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2	" de 9"
-
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Reiteracion "
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Calibracion XYZ fallada. Puntos de calibracion en heatbed no encontrados."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED            "Calibracion XYZ fallada. Consulta el manual por favor."
@@ -232,19 +220,16 @@
 #define MSG_BED_CORRECTION_FRONT                                "Frontal   [um]"
 #define MSG_BED_CORRECTION_REAR                                 "Trasera   [um]"
 #define MSG_BED_CORRECTION_RESET                                "Reset"
-
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Calibracion"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
-
 #define MSG_LOOSE_PULLEY								"Polea suelta"
 #define MSG_FILAMENT_LOADING_T0							"Insertar filamento en el extrusor 1. Haz clic una vez terminado."
 #define MSG_FILAMENT_LOADING_T1							"Insertar filamento en el extrusor 2. Haz clic una vez terminado."
 #define MSG_FILAMENT_LOADING_T2							"Insertar filamento en el extrusor 3. Haz clic una vez terminado."
 #define MSG_FILAMENT_LOADING_T3							"Insertar filamento en el extrusor 4. Haz clic una vez terminado."
 #define MSG_CHANGE_EXTR									"Cambiar extrusor."
-
 #define MSG_FIL_ADJUSTING								"Ajustando filamentos. Espera por favor."
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ				"Filamentos ajustados. Limpia nozzle para calibracion. Haz clic una vez terminado."
 #define MSG_CALIBRATE_E									"Calibrar E"
@@ -255,7 +240,6 @@
 #define MSG_FILAMENT_CLEAN								"Es el nuevo color nitido?"
 #define MSG_UNLOADING_FILAMENT							"Soltando filamento"
 #define MSG_PAPER										"Colocar una hoja de papel sobre la superficie de impresion durante la calibracion de los primeros 4 puntos. Si la boquilla mueve el papel, apagar impresora inmediatamente."
-
 #define MSG_FINISHING_MOVEMENTS							"Term. movimientos"
 #define MSG_PRINT_PAUSED								"Impresion en pausa"
 #define MSG_RESUMING_PRINT								"Reanudar impresion"
@@ -263,7 +247,6 @@
 #define MSG_SET_TEMPERATURE								"Establecer temp.:"
 #define MSG_PID_FINISHED								"Cal. PID terminada"
 #define MSG_PID_RUNNING									"Cal. PID           "
-
 #define MSG_CALIBRATE_PINDA								"Calibrar"
 #define MSG_CALIBRATION_PINDA_MENU						"Calibracion temp."
 #define MSG_PINDA_NOT_CALIBRATED						"La temperatura de calibracion no ha sido ajustada"
@@ -272,11 +255,7 @@
 #define MSG_TEMP_CALIBRATION_DONE						"Calibracon temperatura terminada. Haz clic para continuar."
 #define MSG_TEMP_CALIBRATION_ON							"Cal. temp. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF						"Cal. temp. [OFF]"
-
 #define MSG_PREPARE_FILAMENT							"Preparar filamento"
-
-
-
 #define MSG_LOAD_ALL									"Intr. todos fil."
 #define MSG_LOAD_FILAMENT_1								"Introducir fil. 1"
 #define MSG_LOAD_FILAMENT_2								"Introducir fil. 2"

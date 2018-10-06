@@ -1,10 +1,10 @@
 /**
- * Polish
- *
- * LCD Menu Messages
- * Please note these are limited to 17 characters!
- *
- */
+* Polish
+*
+* LCD Menu Messages
+* Please note these are limited to 17 characters!
+*
+*/
 
 #define WELCOME_MSG                         CUSTOM_MENDEL_NAME " gotowa"
 #define MSG_SD_INSERTED                     "Karta wlozona"
@@ -78,8 +78,7 @@
 
 
 // Do not translate those!
- 
-#define MSG_Enqueing                        "enqueing \""
+#define MSG_Enqueing                        "enqueing \\"
 #define MSG_POWERUP                         "PowerUp"
 #define MSG_CONFIGURATION_VER               " Last Updated: "
 #define MSG_FREE_MEMORY                     " Free Memory: "
@@ -126,14 +125,10 @@
 #define MSG_SERIAL_ERROR_MENU_STRUCTURE     "Error in menu structure"
 #define MSG_SET_HOME_OFFSETS                "Nastav pocatek home"
 #define MSG_SET_ORIGIN                      "Nastav pocatek"
-
 #define MSG_SWITCH_PS_ON                    "Vypnout zdroj"
 #define MSG_SWITCH_PS_OFF                   "Zapnout zdroj"
-
 #define MSG_NOZZLE1                         "Tryska2"
 #define MSG_NOZZLE2                         "Tryska3"
-
-
 #define MSG_FLOW0                           "Prutok 0"
 #define MSG_FLOW1                           "Prutok 1"
 #define MSG_FLOW2                           "Prutok 2"
@@ -141,26 +136,21 @@
 #define MSG_MIN                             " \002 Min"
 #define MSG_MAX                             " \002 Max"
 #define MSG_FACTOR                          " \002 Fact"
-
- #define MSG_MOTION                          "Pohyb"
+#define MSG_MOTION                          "Pohyb"
 #define MSG_VOLUMETRIC                      "Filament"
 #define MSG_VOLUMETRIC_ENABLED                  "E in mm3"
 #define MSG_STORE_EPROM                     "Store memory"
 #define MSG_LOAD_EPROM                      "Ulozit pamet"
 #define MSG_RESTORE_FAILSAFE                "Obnovit vychozi"
 #define MSG_REFRESH                         "\xF8" "Obnovit"
-
 #define MSG_INIT_SDCARD                     "Inic. SD"
 #define MSG_CNG_SDCARD                      "Vymenit SD"
 #define MSG_BABYSTEP_X                      "Babystep X"
 #define MSG_BABYSTEP_Y                      "Babystep Y"
-
- #define MSG_RECTRACT                        "Rectract"
-
+#define MSG_RECTRACT                        "Rectract"
 #define MSG_HOMEYZ                          "Kalibruj Z"
 #define MSG_HOMEYZ_PROGRESS                 "Kalibruje Z"
 #define MSG_HOMEYZ_DONE                     "Kalibracja OK"
-
 #define MSG_SELFTEST_ERROR                  "Selftest error !"
 #define MSG_SELFTEST_PLEASECHECK            "Skontroluj :"   
 #define MSG_SELFTEST_NOTCONNECTED           "Nie podlaczono   "
@@ -172,18 +162,15 @@
 #define MSG_SELFTEST_ENDSTOP                "Endstop"
 #define MSG_SELFTEST_ENDSTOP_NOTHIT         "Endstop not hit"
 #define MSG_SELFTEST_OK                     "Self test OK"
-
 #define MSG_SELFTEST_FAN					"Test wentylatora"
 #define MSG_SELFTEST_COOLING_FAN			"Przedni went. druku?"
 #define MSG_SELFTEST_EXTRUDER_FAN			"Lewy went na dysze?"
 #define MSG_SELFTEST_FAN_YES				"Kreci sie"
 #define MSG_SELFTEST_FAN_NO					"Nie kreci sie"
-
 #define MSG_STATS_TOTALFILAMENT             "Filament lacznie :"
 #define MSG_STATS_TOTALPRINTTIME            "Czas calkowity :"
 #define MSG_STATS_FILAMENTUSED              "Filament :  "
 #define MSG_STATS_PRINTTIME                 "Czas druku :  "
-
 #define MSG_SELFTEST_START                  "Self test start  "
 #define MSG_SELFTEST_CHECK_ENDSTOPS         "Kontrola endstops"
 #define MSG_SELFTEST_CHECK_HOTEND           "Kontrola hotend  " 
@@ -194,16 +181,13 @@
 #define MSG_SELFTEST_CHECK_ALLCORRECT       "Wszystko OK      "
 #define MSG_SELFTEST                        "Selftest         "
 #define MSG_SELFTEST_FAILED                 "Selftest nieudany"
-
 #define MSG_STATISTICS                      "Statystyka  "
 #define MSG_USB_PRINTING                    "Druk z USB  "
-
 #define MSG_SHOW_END_STOPS                  "Pokaz krancowki"
 #define MSG_CALIBRATE_BED                   "Kalibracja XYZ"
 #define MSG_CALIBRATE_BED_RESET             "Reset kalibr. XYZ"
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP        "Kalibracja XYZ. Przekrec galke, aby przesunac os Z do gornych krancowek. Nacisnij, by potwierdzic."
 #define MSG_MOVE_CARRIAGE_TO_THE_TOP_Z      "Kalibracja Z. Przekrec galke, aby przesunac os Z do gornych krancowek. Nacisnij, by potwierdzic."
-
 #define MSG_CONFIRM_NOZZLE_CLEAN            		"Dla prawidl. kalibracji prosze oczyscic dysze. Potw. guzikiem."
 #define MSG_CONFIRM_CARRIAGE_AT_THE_TOP     		"Oba wozki dojechaly do gornej ramy?"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_LINE1  		"Szukam punktu kalibracyjnego podkladki"
@@ -213,7 +197,6 @@
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1		"Okreslam wysokosc odniesienia punktu kalibracyjnego"
 #define MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2		" z 9"
 #define MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION	"Iteracja "
-
 #define MSG_BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND           "Kalibr. XYZ nieudana. Kalibracyjny punkt podkladki nieznaleziony."
 #define MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED            "Kalibracja XYZ niepowiedziona. Sprawdzic w instrukcji."
 #define MSG_BED_SKEW_OFFSET_DETECTION_PERFECT                   "Kalibracja XYZ ok. Osie X/Y sa prostopadle. Gratulacje!"
@@ -238,19 +221,16 @@
 #define MSG_BED_CORRECTION_FRONT                                "Do przodu [um]"
 #define MSG_BED_CORRECTION_REAR                                 "Do tylu  [um]"
 #define MSG_BED_CORRECTION_RESET                                "Reset"
-
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Kalibracja"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"karta SD [normal]"
 #define MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"karta SD[FlshAir]"
-
 #define MSG_LOOSE_PULLEY										"Kolo pasowe"
 #define MSG_FILAMENT_LOADING_T0									"Wloz filament do ekstrudera 1. Potwierdz przyciskiem."
 #define MSG_FILAMENT_LOADING_T1									"Wloz filament do ekstrudera 2. Potwierdz przyciskiem."
 #define MSG_FILAMENT_LOADING_T2									"Wloz filament do ekstrudera 3. Potwierdz przyciskiem."
 #define MSG_FILAMENT_LOADING_T3									"Wloz filament do ekstrudera 4. Potwierdz przyciskiem."
 #define MSG_CHANGE_EXTR											"Zmienic ekstruder"
-
 #define MSG_FIL_ADJUSTING										"Przebiega wyrownanie filamentow. Prosze czekac."
 #define MSG_CONFIRM_NOZZLE_CLEAN_FIL_ADJ						"Dla prawidlowej kalibracji prosze oczyscic dysze. Potem potwierdzic przyciskiem."
 #define MSG_CALIBRATE_E											"Kalibruj E"
@@ -261,7 +241,6 @@
 #define MSG_FILAMENT_CLEAN										"Czy kolor jest czysty?"
 #define MSG_UNLOADING_FILAMENT									"Wysuwam filament"
 #define MSG_PAPER												"Umiesc kartke papieru na podkladce i trzymaj pod dysza podczas pomiaru pierwszych 4 punktow. Jesli dysza zahaczy o papier, wylacz drukarke."
-
 #define MSG_FINISHING_MOVEMENTS									"Konczenie druku"
 #define MSG_PRINT_PAUSED										"Druk zatrzymany"
 #define MSG_RESUMING_PRINT										"Wznawianie druku"
@@ -269,7 +248,6 @@
 #define MSG_SET_TEMPERATURE										"Ustawic temperature"
 #define MSG_PID_FINISHED										"Kal. PID zakonczona"
 #define MSG_PID_RUNNING											"Kal. PID"
-
 #define MSG_CALIBRATE_PINDA										"Skalibrowac"
 #define MSG_CALIBRATION_PINDA_MENU								"Cieplna kalibr."
 #define MSG_PINDA_NOT_CALIBRATED								"Cieplna kalibracja nie byla przeprowadzona"
@@ -279,7 +257,6 @@
 #define MSG_TEMP_CALIBRATION_ON									"Ciepl. kal. [ON]"
 #define MSG_TEMP_CALIBRATION_OFF								"Ciepl. kal. [OFF]"
 #define MSG_PREPARE_FILAMENT									"Przygotuj filament"
-
 #define MSG_LOAD_ALL											"Zalad. wszystkie"
 #define MSG_LOAD_FILAMENT_1										"Zaladowac fil. 1"
 #define MSG_LOAD_FILAMENT_2										"Zaladowac fil. 2"
