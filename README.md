@@ -1,3 +1,12 @@
+# Table of contents
+
+<!--ts-->
+   * [Development environment preparation](#1-development-environment-preparation)
+   * [Source code compilation](#2-source-code-compilation)
+   * [Automated tests](#3-automated-tests)
+   * [Documentation](#4-documentation)
+<!--te-->
+
 # 1. Development environment preparation
 
    1. install `"Arduino Software IDE"` for your preferred operating system  
@@ -91,3 +100,6 @@ Example:
 
 ## Runing
 `./tests`
+
+# 4. Documentation
+run [doxygen](http://www.doxygen.nl/) in Firmware folder

@@ -361,11 +361,29 @@ ISR(TIMER1_COMPA_vect) {
   bool run_main_isr = false;
   if (e_steps) {
     //WRITE_NC(LOGIC_ANALYZER_CH7, true);
+	uint8_t cnt = 0;
     for (uint8_t i = estep_loops; e_steps && i --;) {
         WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
         -- e_steps;
+		cnt++;
         WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
     }
+#ifdef FILAMENT_SENSOR
+		if (READ(E0_DIR_PIN) == INVERT_E0_DIR)
+		{
+			if (count_direction[E_AXIS] == 1)
+				fsensor_counter -= cnt;
+			else
+				fsensor_counter += cnt;
+		}
+		else
+		{
+			if (count_direction[E_AXIS] == 1)
+				fsensor_counter += cnt;
+			else
+				fsensor_counter -= cnt;
+		}
+#endif //FILAMENT_SENSOR
     if (e_steps) {
       // Plan another Linear Advance tick.
       OCR1A = eISR_Rate;
@@ -472,11 +490,8 @@ FORCE_INLINE void stepper_next_block()
 #endif
 
 #ifdef FILAMENT_SENSOR
-	if (mmu_enabled == false)
-	{
-		fsensor_counter = 0;
-		fsensor_st_block_begin(current_block);
-	}
+	fsensor_counter = 0;
+	fsensor_st_block_begin(current_block);
 #endif //FILAMENT_SENSOR
     // The busy flag is set by the plan_get_current_block() call.
     // current_block->busy = true;
@@ -765,9 +780,9 @@ FORCE_INLINE void stepper_tick_lowres()
 #ifdef LIN_ADVANCE
       ++ e_steps;
 #else
-  #ifdef FILAMENT_SENSOR
-      ++ fsensor_counter;
-  #endif //FILAMENT_SENSOR
+	#ifdef FILAMENT_SENSOR
+	  ++ fsensor_counter;
+	#endif //FILAMENT_SENSOR
       WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #endif
     }
@@ -887,8 +902,8 @@ FORCE_INLINE void isr() {
       if (e_steps) {
         //WRITE_NC(LOGIC_ANALYZER_CH7, true);
         // Set the step direction.
+		bool neg = e_steps < 0;
         {
-          bool neg = e_steps < 0;
           bool dir =
         #ifdef SNMM
             (neg == (mmu_extruder & 1))
@@ -905,12 +920,22 @@ FORCE_INLINE void isr() {
         estep_loops = (e_steps & 0x0ff00) ? 4 : e_steps;
         if (step_loops < estep_loops)
           estep_loops = step_loops;
-    #ifdef FILAMENT_SENSOR
-		if (mmu_enabled == false)
+#ifdef FILAMENT_SENSOR
+		if (READ(E0_DIR_PIN) == INVERT_E0_DIR)
 		{
-			fsensor_counter += estep_loops;
+			if (count_direction[E_AXIS] == 1)
+				fsensor_counter -= estep_loops;
+			else
+				fsensor_counter += estep_loops;
 		}
-    #endif //FILAMENT_SENSOR
+		else
+		{
+			if (count_direction[E_AXIS] == 1)
+				fsensor_counter += estep_loops;
+			else
+				fsensor_counter -= estep_loops;
+		}
+#endif //FILAMENT_SENSOR
         do {
           WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
           -- e_steps;
@@ -1034,12 +1059,23 @@ FORCE_INLINE void isr() {
       if (eISR_Rate == 0) {
         // There is not enough time to fit even a single additional tick.
         // Tick all the extruder ticks now.
-    #ifdef FILAMENT_SENSOR
-		  if (mmu_enabled == false) {
-			  fsensor_counter += e_steps;
-		  }
-    #endif //FILAMENT_SENSOR
         MSerial.checkRx(); // Check for serial chars.
+#ifdef FILAMENT_SENSOR
+		if (READ(E0_DIR_PIN) == INVERT_E0_DIR)
+		{
+			if (count_direction[E_AXIS] == 1)
+				fsensor_counter -= e_steps;
+			else
+				fsensor_counter += e_steps;
+		}
+		else
+		{
+			if (count_direction[E_AXIS] == 1)
+				fsensor_counter += e_steps;
+			else
+				fsensor_counter -= e_steps;
+		}
+#endif //FILAMENT_SENSOR
         do {
           WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
           -- e_steps;
@@ -1059,17 +1095,15 @@ FORCE_INLINE void isr() {
     // If current block is finished, reset pointer
     if (step_events_completed.wide >= current_block->step_event_count.wide) {
 #ifdef FILAMENT_SENSOR
-		if (mmu_enabled == false) {
-			fsensor_st_block_chunk(current_block, fsensor_counter);
-			fsensor_counter = 0;
-		}
+		fsensor_st_block_chunk(current_block, fsensor_counter);
+		fsensor_counter = 0;
 #endif //FILAMENT_SENSOR
 
       current_block = NULL;
       plan_discard_current_block();
     }
 #ifdef FILAMENT_SENSOR
-  	else if ((fsensor_counter >= fsensor_chunk_len) && (mmu_enabled == false))
+  	else if ((fsensor_counter >= fsensor_chunk_len))
   	{
       fsensor_st_block_chunk(current_block, fsensor_counter);
   	  fsensor_counter = 0;

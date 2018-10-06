@@ -1,3 +1,5 @@
+//! @file
+
 #include "temperature.h"
 #include "ultralcd.h"
 #include "fsensor.h"
@@ -34,6 +36,9 @@
 #include "sound.h"
 
 #include "mmu.h"
+
+#include "static_assert.h"
+
 
 extern bool fans_check_enabled;
 
@@ -2462,28 +2467,45 @@ static void lcd_LoadFilament()
   }
 }
 
+//! @brief Show filament used a print time
+//!
+//! If printing current print statistics are shown
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Filament used:      |
+//! |         00.00m     |
+//! |Print time:         |
+//! |        00h 00m 00s |
+//! ----------------------
+//! @endcode
+//!
+//! If not printing, total statistics are shown
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Total filament :    |
+//! |           000.00 m |
+//! |Total print time :  |
+//! |     00d :00h :00 m |
+//! ----------------------
+//! @endcode
 void lcd_menu_statistics()
 {
 	if (IS_SD_PRINTING)
 	{
-		float _met = ((float)total_filament_used) / (100000.f);
-		int _cm = (total_filament_used - (_met * 100000)) / 10;
-		int _t = (millis() - starttime) / 1000;
-		int _h = _t / 3600;
-		int _m = (_t - (_h * 3600)) / 60;
-		int _s = _t - ((_h * 3600) + (_m * 60));
-//|01234567890123456789|
-//|Filament used:      |
-//|      000m 00.000cm |
-//|Print time:         |
-//|        00h 00m 00s |
-//----------------------
+		const float _met = ((float)total_filament_used) / (100000.f);
+		const uint32_t _t = (millis() - starttime) / 1000ul;
+		const int _h = _t / 3600;
+		const int _m = (_t - (_h * 3600ul)) / 60ul;
+		const int _s = _t - ((_h * 3600ul) + (_m * 60ul));
+
 		lcd_printf_P(_N(
 		  ESC_2J
 		  "%S:"
 		  ESC_H(6,1) "%8.2fm \n"
 		  "%S :"
-		  ESC_H(8,3) "%2dh %02dm %02d"
+		  ESC_H(8,3) "%2dh %02dm %02ds"
 		  ),
 		 _i("Filament used"),
 		 _met,
@@ -2504,12 +2526,7 @@ void lcd_menu_statistics()
 		_days = _time / 1440;
 		_hours = (_time - (_days * 1440)) / 60;
 		_minutes = _time - ((_days * 1440) + (_hours * 60));
-//|01234567890123456789|
-//|Total filament :    |
-//|           000.00 m |
-//|Total print time :  |
-//|     00d :00h :00 m |
-//----------------------
+
 		lcd_printf_P(_N(
 		  ESC_2J
 		  "%S :"
