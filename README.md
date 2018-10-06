@@ -46,7 +46,7 @@ Copy the contents of the ArduinoAddons/Arduino_1.6.x directory from the download
 ### Step 3c - Add the bootloader
 
 Download the bootloader image from:
-https://raw.githubusercontent.com/arduino/Arduino/master/hardware/arduino/avr/bootloaders/stk500v2/stk500boot_v2_mega2560.hex
+https://github.com/arduino/Arduino-stk500v2-bootloader/blob/master/goodHexFiles/stk500boot_v2_mega2560.hex
 
 Save a copy of it on each of the following directories:
 * Arduino/hardware/arduino/avr/bootloaders/stk500v2/
