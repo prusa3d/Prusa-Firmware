@@ -866,11 +866,6 @@ uint8_t check_printer_version()
 	return version_changed;
 }
 
-void erase_eeprom_section(uint16_t offset, uint16_t bytes)
-{
-	for (unsigned int i = offset; i < (offset+bytes); i++) eeprom_write_byte((uint8_t*)i, 0xFF);
-}
-
 #ifdef BOOTAPP
 #include "bootapp.h" //bootloader support
 #endif //BOOTAPP
@@ -1187,7 +1182,7 @@ void setup()
 	bool previous_settings_retrieved = false; 
 	uint8_t hw_changed = check_printer_version();
 	if (!(hw_changed & 0b10)) { //if printer version wasn't changed, check for eeprom version and retrieve settings from eeprom in case that version wasn't changed
-		previous_settings_retrieved = Config_RetrieveSettings(EEPROM_OFFSET);
+		previous_settings_retrieved = Config_RetrieveSettings();
 	} 
 	else { //printer version was changed so use default settings 
 		Config_ResetDefault();
@@ -1485,7 +1480,7 @@ void setup()
 
   if (!previous_settings_retrieved) {
 	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
-	  erase_eeprom_section(EEPROM_OFFSET, 156); 							   //erase M500 part of eeprom
+	  Config_StoreSettings();
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(WizState::Run);
@@ -6310,12 +6305,12 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
     case 500: // M500 Store settings in EEPROM
     {
-        Config_StoreSettings(EEPROM_OFFSET);
+        Config_StoreSettings();
     }
     break;
     case 501: // M501 Read settings from EEPROM
     {
-        Config_RetrieveSettings(EEPROM_OFFSET);
+        Config_RetrieveSettings();
     }
     break;
     case 502: // M502 Revert to default settings

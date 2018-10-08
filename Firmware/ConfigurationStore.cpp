@@ -1,3 +1,5 @@
+//! @file
+
 #include "Marlin.h"
 #include "planner.h"
 #include "temperature.h"
@@ -11,74 +13,67 @@
 
 M500_conf cs;
 
+//! @brief Write data to EEPROM
+//! @param pos destination in EEPROM, 0 is start
+//! @param value value to be written
+//! @param size size of type pointed by value
+//! @param name name of variable written, used only for debug input if DEBUG_EEPROM_WRITE defined
+//! @retval true success
+//! @retval false failed
 #ifdef DEBUG_EEPROM_WRITE
-#define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value), #value)
-static void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size, char* name)
+static bool EEPROM_writeData(uint8_t* pos, uint8_t* value, uint8_t size, const char* name)
 #else //DEBUG_EEPROM_WRITE
-#define EEPROM_WRITE_VAR(pos, value) _EEPROM_writeData(pos, (uint8_t*)&value, sizeof(value))
-static void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
+static bool EEPROM_writeData(uint8_t* pos, uint8_t* value, uint8_t size, const char*)
 #endif //DEBUG_EEPROM_WRITE
 {
 #ifdef DEBUG_EEPROM_WRITE
 	printf_P(PSTR("EEPROM_WRITE_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);
 #endif //DEBUG_EEPROM_WRITE
-	while (size--) {
-		uint8_t * const p = (uint8_t * const)pos;
-		uint8_t v = *value;
-		// EEPROM has only ~100,000 write cycles,
-		// so only write bytes that have changed!
-		if (v != eeprom_read_byte(p)) {
-			eeprom_write_byte(p, v);
-			if (eeprom_read_byte(p) != v) {
-				SERIAL_ECHOLNPGM("EEPROM Error");
-				return;
-			}
-		}
+	while (size--)
+	{
+
+        eeprom_update_byte(pos, *value);
+        if (eeprom_read_byte(pos) != *value) {
+            SERIAL_ECHOLNPGM("EEPROM Error");
+            return false;
+        }
+
 		pos++;
 		value++;
-	};
-
+	}
+    return true;
 }
 
 #ifdef DEBUG_EEPROM_READ
-#define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value), #value)
-static void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size, char* name)
+static void EEPROM_readData(uint8_t* pos, uint8_t* value, uint8_t size, const char* name)
 #else //DEBUG_EEPROM_READ
-#define EEPROM_READ_VAR(pos, value) _EEPROM_readData(pos, (uint8_t*)&value, sizeof(value))
-static void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
+static void EEPROM_readData(uint8_t* pos, uint8_t* value, uint8_t size, const char*)
 #endif //DEBUG_EEPROM_READ
 {
 #ifdef DEBUG_EEPROM_READ
 	printf_P(PSTR("EEPROM_READ_VAR addr=0x%04x size=0x%02hhx name=%s\n"), pos, size, name);
 #endif //DEBUG_EEPROM_READ
-    do
+    while(size--)
     {
-        *value = eeprom_read_byte((unsigned char*)pos);
+        *value = eeprom_read_byte(pos);
         pos++;
         value++;
-    }while(--size);
+    }
 }
-
-//======================================================================================
-#define EEPROM_OFFSET 20
-// IMPORTANT:  Whenever there are changes made to the variables stored in EEPROM
-// in the functions below, also increment the version number. This makes sure that
-// the default values are used whenever there is a change to the data, to prevent
-// wrong data being written to the variables.
-// ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
 
 #define EEPROM_VERSION "V2"
 
 #ifdef EEPROM_SETTINGS
-void Config_StoreSettings(uint16_t offset) 
+void Config_StoreSettings()
 {
-  int i = offset;
   strcpy(cs.version,"000"); //!< invalidate data first @TODO use erase to save one erase cycle
   
-  _EEPROM_writeData(i,reinterpret_cast<uint8_t*>(&cs),sizeof(cs),0);
-  strcpy(cs.version,EEPROM_VERSION); // // validate data
-  i = offset;
-  EEPROM_WRITE_VAR(i,cs.version); // validate data
+  if (EEPROM_writeData(reinterpret_cast<uint8_t*>(EEPROM_M500_base),reinterpret_cast<uint8_t*>(&cs),sizeof(cs),0), "cs, invalid version")
+  {
+      strcpy(cs.version,EEPROM_VERSION); //!< validate data if write succeed
+      EEPROM_writeData(reinterpret_cast<uint8_t*>(EEPROM_M500_base->version), reinterpret_cast<uint8_t*>(cs.version), sizeof(cs.version), "cs.version valid");
+  }
+
   SERIAL_ECHO_START;
   SERIAL_ECHOLNPGM("Settings Stored");
 }
@@ -227,21 +222,19 @@ static const M500_conf default_conf PROGMEM =
     DEFAULT_MAX_ACCELERATION_SILENT,
 };
 
-//!
-//! @retval true Stored settings retrieved or default settings retrieved in case EEPROM has been erased.
-//! @retval false default settings retrieved, because of older version or corrupted data
-bool Config_RetrieveSettings(uint16_t offset)
+//! @brief Read M500 configuration
+//! @retval true Succeeded. Stored settings retrieved or default settings retrieved in case EEPROM has been erased.
+//! @retval false Failed. Default settings has been retrieved, because of older version or corrupted data.
+bool Config_RetrieveSettings()
 {
-    int i=offset;
 	bool previous_settings_retrieved = true;
     char ver[4]=EEPROM_VERSION;
-    EEPROM_READ_VAR(i,cs.version); //read stored version
+    EEPROM_readData(reinterpret_cast<uint8_t*>(EEPROM_M500_base->version), reinterpret_cast<uint8_t*>(cs.version), sizeof(cs.version), "cs.version"); //read stored version
     //  SERIAL_ECHOLN("Version: [" << ver << "] Stored version: [" << cs.version << "]");
     if (strncmp(ver,cs.version,3) == 0)  // version number match
     {
-        i=offset;
 
-        EEPROM_READ_VAR(i,cs);
+        EEPROM_readData(reinterpret_cast<uint8_t*>(EEPROM_M500_base), reinterpret_cast<uint8_t*>(&cs), sizeof(cs), "cs");
 
         
 		if (cs.max_jerk[X_AXIS] > DEFAULT_XJERK) cs.max_jerk[X_AXIS] = DEFAULT_XJERK;
@@ -255,8 +248,11 @@ bool Config_RetrieveSettings(uint16_t offset)
             bool initialized = false;
             for (uint8_t i = 0; i < (sizeof(cs.max_feedrate_silent)/sizeof(cs.max_feedrate_silent[0])); ++i)
             {
-                if(erased != reinterpret_cast<uint32_t&>(cs.max_feedrate_silent[i])) initialized = true;
-                if(erased != reinterpret_cast<uint32_t&>(cs.max_acceleration_units_per_sq_second_silent[i])) initialized = true;
+                for(uint8_t j = 0; j < sizeof(float); ++j)
+                {
+                    if(0xff != reinterpret_cast<uint8_t*>(&(cs.max_feedrate_silent[i]))[j]) initialized = true;
+                }
+                if(erased != cs.max_acceleration_units_per_sq_second_silent[i]) initialized = true;
             }
             if (!initialized)
             {
@@ -292,9 +288,10 @@ bool Config_RetrieveSettings(uint16_t offset)
         Config_ResetDefault();
 		//Return false to inform user that eeprom version was changed and firmware is using default hardcoded settings now.
 		//In case that storing to eeprom was not used yet, do not inform user that hardcoded settings are used.
-		if (eeprom_read_byte((uint8_t *)offset) != 0xFF ||
-			eeprom_read_byte((uint8_t *)offset + 1) != 0xFF ||
-			eeprom_read_byte((uint8_t *)offset + 2) != 0xFF) {
+		if (eeprom_read_byte(reinterpret_cast<uint8_t*>(&(EEPROM_M500_base->version[0]))) != 0xFF ||
+			eeprom_read_byte(reinterpret_cast<uint8_t*>(&(EEPROM_M500_base->version[1]))) != 0xFF ||
+			eeprom_read_byte(reinterpret_cast<uint8_t*>(&(EEPROM_M500_base->version[2]))) != 0xFF)
+		{
 			previous_settings_retrieved = false;
 		}
     }

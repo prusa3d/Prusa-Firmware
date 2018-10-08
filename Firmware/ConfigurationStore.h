@@ -3,6 +3,8 @@
 #define EEPROM_SETTINGS
 
 #include "Configuration.h"
+#include <stdint.h>
+#include <avr/eeprom.h>
 
 typedef struct
 {
@@ -48,8 +50,8 @@ FORCE_INLINE void Config_PrintSettings() {}
 #endif
 
 #ifdef EEPROM_SETTINGS
-void Config_StoreSettings(uint16_t offset);
-bool Config_RetrieveSettings(uint16_t offset);
+void Config_StoreSettings();
+bool Config_RetrieveSettings();
 #else
 FORCE_INLINE void Config_StoreSettings() {}
 FORCE_INLINE void Config_RetrieveSettings() { Config_ResetDefault(); Config_PrintSettings(); }
