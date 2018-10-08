@@ -69,7 +69,7 @@ echo "OK" >&2
 
 #check for messages declared in progmem1, but not found in lang_en.txt
 echo -n " checking textaddr.txt..." >&2
-if cat textaddr.txt | grep "^ADDR NF" >/dev/null; then
+if cat textaddr.txt | grep "^ADDR NF" > missing_in_lang_en.txt; then
  echo "NG! - some texts not found in lang_en.txt!"
  if [ $IGNORE_MISSING_TEXT -eq 0 ]; then
   finish 1
