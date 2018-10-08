@@ -13,12 +13,6 @@
 #define TMC2130_GCONF_SGSENS 0x00003180 // spreadCycle with stallguard (stall activates DIAG0 and DIAG1 [pushpull])
 #define TMC2130_GCONF_SILENT 0x00000004 // stealthChop
 
-//externals for debuging
-extern float current_position[4];
-extern void st_get_position_xy(long &x, long &y);
-extern long st_get_position(uint8_t axis);
-extern void crashdet_stop_and_save_print();
-extern void crashdet_stop_and_save_print2();
 
 //mode
 uint8_t tmc2130_mode = TMC2130_MODE_NORMAL;
@@ -236,7 +230,7 @@ uint8_t tmc2130_sample_diag()
 
 extern bool is_usb_printing;
 
-void tmc2130_st_isr(uint8_t last_step_mask)
+void tmc2130_st_isr()
 {
 	if (tmc2130_mode == TMC2130_MODE_SILENT || tmc2130_sg_stop_on_crash == false) return;
 	uint8_t crash = 0;
@@ -793,7 +787,7 @@ void tmc2130_do_steps(uint8_t axis, uint16_t steps, uint8_t dir, uint16_t delay_
 void tmc2130_goto_step(uint8_t axis, uint8_t step, uint8_t dir, uint16_t delay_us, uint16_t microstep_resolution)
 {
 	printf_P(PSTR("tmc2130_goto_step %d %d %d %d \n"), axis, step, dir, delay_us, microstep_resolution);
-	uint8_t shift; for (shift = 0; shift < 8; shift++) if (microstep_resolution == (256 >> shift)) break;
+	uint8_t shift; for (shift = 0; shift < 8; shift++) if (microstep_resolution == (256u >> shift)) break;
 	uint16_t cnt = 4 * (1 << (8 - shift));
 	uint16_t mscnt = tmc2130_rd_MSCNT(axis);
 	if (dir == 2)
@@ -805,7 +799,7 @@ void tmc2130_goto_step(uint8_t axis, uint8_t step, uint8_t dir, uint16_t delay_u
 			dir ^= 1;
 			steps = -steps;
 		}
-		if (steps > (cnt / 2))
+		if (steps > static_cast<int>(cnt / 2))
 		{
 			dir ^= 1;
 			steps = cnt - steps;
@@ -830,7 +824,7 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 	tmc2130_setup_chopper(axis, tmc2130_usteps2mres(256), tmc2130_current_h[axis], tmc2130_current_r[axis]);
 	tmc2130_goto_step(axis, 0, 2, 100, 256);
 	tmc2130_set_dir(axis, tmc2130_get_inv(axis)?0:1);
-	for (int i = 0; i <= 255; i++)
+	for (unsigned int i = 0; i <= 255; i++)
 	{
 		uint32_t val = tmc2130_rd_MSCURACT(axis);
 		uint16_t mscnt = tmc2130_rd_MSCNT(axis);
@@ -847,6 +841,7 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 		delayMicroseconds(100);
 	}
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
+	tmc2130_set_pwr(axis, pwr);
 }
 
 void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
@@ -869,7 +864,7 @@ void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000)
 	int8_t b;                      //encoded bit value
     int8_t dA;                     //delta value
 	int i;                         //microstep index
-	uint32_t reg;                  //tmc2130 register
+	uint32_t reg = 0;              //tmc2130 register
 	tmc2130_wr_MSLUTSTART(axis, 0, amp);
 	for (i = 0; i < 256; i++)
 	{

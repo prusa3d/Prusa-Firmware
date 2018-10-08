@@ -175,7 +175,6 @@ static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
 static float analog2tempAmbient(int raw);
-static float analog2tempPINDA(int raw);
 static void updateTemperaturesFromRawValues();
 
 enum TempRunawayStates
@@ -493,9 +492,6 @@ void checkFanSpeed()
 	}
 }
 
-extern void stop_and_save_print_to_ram(float z_move, float e_move);
-extern void restore_print_from_ram_and_continue(float e_move);
-
 void fanSpeedError(unsigned char _fan) {
 	if (get_message_level() != 0 && isPrintPaused) return; 
 	//to ensure that target temp. is not set to zero in case taht we are resuming print 
@@ -504,8 +500,7 @@ void fanSpeedError(unsigned char _fan) {
 			lcd_print_stop();
 		}
 		else {
-			isPrintPaused = true;
-			lcd_sdcard_pause();
+			lcd_pause_print();
 		}
 	}
 	else {
@@ -927,35 +922,6 @@ static float analog2tempBed(int raw) {
     return 0;
   #endif
 }
-
-#ifdef PINDA_THERMISTOR
-
-static float analog2tempPINDA(int raw) {
-
-	float celsius = 0;
-	byte i;
-
-	for (i = 1; i<BEDTEMPTABLE_LEN; i++)
-	{
-		if (PGM_RD_W(BEDTEMPTABLE[i][0]) > raw)
-		{
-			celsius = PGM_RD_W(BEDTEMPTABLE[i - 1][1]) +
-				(raw - PGM_RD_W(BEDTEMPTABLE[i - 1][0])) *
-				(float)(PGM_RD_W(BEDTEMPTABLE[i][1]) - PGM_RD_W(BEDTEMPTABLE[i - 1][1])) /
-				(float)(PGM_RD_W(BEDTEMPTABLE[i][0]) - PGM_RD_W(BEDTEMPTABLE[i - 1][0]));
-			break;
-		}
-	}
-
-	// Overflow: Set to last value in the table
-	if (i == BEDTEMPTABLE_LEN) celsius = PGM_RD_W(BEDTEMPTABLE[i - 1][1]);
-
-	return celsius;
-}
-
-
-#endif //PINDA_THERMISTOR
-
 
 #ifdef AMBIENT_THERMISTOR
 static float analog2tempAmbient(int raw)

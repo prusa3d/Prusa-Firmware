@@ -5,6 +5,7 @@
 #include "lcd.h"
 #include "conv2str.h"
 #include "menu.h"
+#include "mesh_bed_calibration.h"
 
 extern int lcd_puts_P(const char* str);
 extern int lcd_printf_P(const char* format, ...);
@@ -31,7 +32,8 @@ void lcd_loading_filament();
 void lcd_change_success();
 void lcd_loading_color();
 void lcd_sdcard_stop();
-void lcd_sdcard_pause();
+void lcd_pause_print();
+void lcd_resume_print();
 void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
 void lcd_confirm_print();
@@ -50,6 +52,8 @@ extern void lcd_wait_for_click();
 extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
 // 0: no, 1: yes, -1: timeouted
 extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
+extern int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool allow_timeouting, bool default_yes,
+        const char *first_choice, const char *second_choice);
 extern int8_t lcd_show_multiscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
 // Ask the user to move the Z axis up to the end stoppers and let
 // the user confirm that it has been done.
@@ -59,7 +63,7 @@ extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
 #endif
 
 // Show the result of the calibration process on the LCD screen.
-extern void lcd_bed_calibration_show_result(uint8_t result, uint8_t point_too_far_mask);
+  extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
 
 extern void lcd_diag_show_end_stops();
 
@@ -76,11 +80,11 @@ extern void lcd_diag_show_end_stops();
 #define LCD_COMMAND_STOP_PRINT 2
 #define LCD_COMMAND_FARM_MODE_CONFIRM 4
 #define LCD_COMMAND_LONG_PAUSE 5
-#define LCD_COMMAND_LONG_PAUSE_RESUME 6
 #define LCD_COMMAND_PID_EXTRUDER 7 
 #define LCD_COMMAND_V2_CAL 8
 
 extern int lcd_commands_type;
+extern int8_t FSensorStateMenu;
 
 #define CUSTOM_MSG_TYPE_STATUS 0 // status message from lcd_status_message variable
 #define CUSTOM_MSG_TYPE_MESHBL 1 // Mesh bed leveling in progress
@@ -150,7 +154,7 @@ bool lcd_wait_for_pinda(float temp);
 
 void bowden_menu();
 char reset_menu();
-char choose_extruder_menu();
+uint8_t choose_menu_P(const char *header, const char *item, const char *last_item = nullptr);
 
 void lcd_pinda_calibration_menu();
 void lcd_calibrate_pinda();
@@ -166,6 +170,26 @@ void lcd_set_progress();
 void lcd_language();
 
 void lcd_wizard();
-void lcd_wizard(int state);
+
+//! @brief Wizard state
+enum class WizState : uint8_t
+{
+    Run,            //!< run wizard? Entry point.
+    Restore,        //!< restore calibration status
+    Selftest,
+    Xyz,            //!< xyz calibration
+    Z,              //!< z calibration
+    IsFil,          //!< Is filament loaded? Entry point for 1st layer calibration
+    PreheatPla,     //!< waiting for preheat nozzle for PLA
+    Preheat,        //!< Preheat for any material
+    Unload,         //!< Unload filament
+    LoadFil,        //!< Load filament
+    IsPla,          //!< Is PLA filament?
+    Lay1Cal,        //!< First layer calibration
+    RepeatLay1Cal,  //!< Repeat first layer calibration?
+    Finish,         //!< Deactivate wizard
+};
+
+void lcd_wizard(WizState state);
 
 #endif //ULTRALCD_H

@@ -59,7 +59,7 @@ switch(eSoundMode)
 Sound_SaveMode();
 }
 
-void Sound_MakeSound(eSOUND_CLASS eSoundClass,eSOUND_TYPE eSoundType)
+void Sound_MakeSound(eSOUND_TYPE eSoundType)
 {
 switch(eSoundMode)
      {

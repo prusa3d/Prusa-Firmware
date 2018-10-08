@@ -2,8 +2,7 @@
 
    1. install `"Arduino Software IDE"` for your preferred operating system  
 `https://www.arduino.cc -> Software->Downloads`  
-it is strongly recommended to use older version `"1.6.9"`, by which we can assure correct compilation results  
-_note: in versions `1.7.x` and `1.8.x` there are known some C/C++ compilator disasters, which disallow correct source code compilation (you can obtain `"... internal compiler error: in extract_insn, at ..."` error message, for example); we are not able to affect this situation afraid_  
+it is recommended to use older version `"1.6.9"`, as it is used on out build server to produce official builds.  
 _note: in the case of persistent compilation problems, check the version of the currently used C/C++ compiler (GCC) - should be `4.8.1`; version can be verified by entering the command  
 `avr-gcc --version`  
 if you are not sure where the file is placed (depends on how `"Arduino Software IDE"` was installed), you can use the search feature within the file system_  
@@ -26,8 +25,10 @@ _note: select this item for any variant of board used in printers `'Prusa i3 MKx
 'clicking' the item will display the installation button; select choice `"1.0.1"` from the list(last known version as of the date of issue of this document)  
 _(after installation, the item is labeled as `"INSTALLED"` and can then be used for target board selection)_  
 
-   3. modify platform.txt to enable float printf support:
-   `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
+   3. modify platform.txt to enable float printf support:  
+add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags=" before existing flag "-Wl,--gc-sections"  
+example:  
+`"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
 
 # 2. Source code compilation
 

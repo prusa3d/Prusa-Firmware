@@ -27,7 +27,6 @@ extern void fsensor_disable(void);
 extern bool fsensor_autoload_enabled;
 extern void fsensor_autoload_set(bool State);
 
-//update (perform M600 on filament runout)
 extern void fsensor_update(void);
 
 //setup pin-change interrupt

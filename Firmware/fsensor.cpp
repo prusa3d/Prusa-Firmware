@@ -7,6 +7,7 @@
 #include "planner.h"
 #include "fastio.h"
 #include "cmdqueue.h"
+#include "ultralcd.h"
 #include "ConfigurationStore.h"
 
 //Basic params
@@ -27,10 +28,6 @@ const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 
 #define FSENSOR_INT_PIN         63  //filament sensor interrupt pin PK1
 #define FSENSOR_INT_PIN_MSK   0x02  //filament sensor interrupt pin mask (bit1)
-
-extern void stop_and_save_print_to_ram(float z_move, float e_move);
-extern void restore_print_from_ram_and_continue(float e_move);
-extern int8_t FSensorStateMenu;
 
 void fsensor_stop_and_save_print(void)
 {
@@ -102,9 +99,9 @@ uint16_t fsensor_oq_er_sum;
 //max error counter value durring meassurement
 uint8_t  fsensor_oq_er_max;
 //minimum delta value
-uint16_t fsensor_oq_yd_min;
+int16_t fsensor_oq_yd_min;
 //maximum delta value
-uint16_t fsensor_oq_yd_max;
+int16_t fsensor_oq_yd_max;
 //sum of shutter value
 uint16_t fsensor_oq_sh_sum;
 
@@ -219,7 +216,9 @@ bool fsensor_check_autoload(void)
 		fsensor_autoload_check_start();
 		return false;
 	}
+#if 0
 	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
+#endif
 	if ((millis() - fsensor_autoload_last_millis) < 25) return false;
 	fsensor_autoload_last_millis = millis();
 	if (!pat9125_update_y()) //update sensor
@@ -244,9 +243,11 @@ bool fsensor_check_autoload(void)
 	else if (fsensor_autoload_c > 0)
 		fsensor_autoload_c--;
 	if (fsensor_autoload_c == 0) fsensor_autoload_sum = 0;
-//	puts_P(_N("fsensor_check_autoload\n"));
-//	if (fsensor_autoload_c != fsensor_autoload_c_old)
-//		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
+#if 0
+  	puts_P(_N("fsensor_check_autoload\n"));
+  	if (fsensor_autoload_c != fsensor_autoload_c_old)
+  		printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
+#endif
 //	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
 	if ((fsensor_autoload_c >= 12) && (fsensor_autoload_sum > 20))
 	{
@@ -427,6 +428,11 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	}
 }
 
+//! update (perform M600 on filament runout)
+//!
+//! Works only if filament sensor is enabled.
+//! When the filament sensor error count is larger then FSENSOR_ERR_MAX, pauses print, tries to move filament back and forth.
+//! If there is still no plausible signal from filament sensor plans M600 (Filament change).
 void fsensor_update(void)
 {
 	if (fsensor_enabled)
@@ -448,19 +454,6 @@ void fsensor_update(void)
 
 			fsensor_err_cnt = 0;
 			fsensor_oq_meassure_start(0);
-
-//			st_synchronize();
-//			for (int axis = X_AXIS; axis <= E_AXIS; axis++)
-//				current_position[axis] = st_get_position_mm(axis);
-/*
-			current_position[E_AXIS] -= 3;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
-			st_synchronize();
-
-			current_position[E_AXIS] += 3;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200 / 60, active_extruder);
-			st_synchronize();
-*/
 
 			enquecommand_front_P((PSTR("G1 E-3 F200")));
 			process_commands();

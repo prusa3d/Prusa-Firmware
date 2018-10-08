@@ -148,7 +148,7 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		  #else
 			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define  disable_z() ;
+			#define  disable_z() {}
 		  #endif
 	#else
 		#ifdef Z_DUAL_STEPPER_DRIVERS
@@ -160,8 +160,8 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 		#endif
 	#endif
 #else
-  #define enable_z() ;
-  #define disable_z() ;
+  #define enable_z() {}
+  #define disable_z() {}
 #endif
 
 
@@ -278,6 +278,7 @@ extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
 extern void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
+extern int8_t lcd_change_fil_state;
 
 
 #ifdef FAN_SOFT_PWM
@@ -328,10 +329,6 @@ extern uint8_t active_extruder;
 #endif
 
 //Long pause
-extern int saved_feedmultiply;
-extern float HotendTempBckp;
-extern int fanSpeedBckp;
-extern float pause_lastpos[4];
 extern unsigned long pause_time;
 extern unsigned long start_pause_print;
 extern unsigned long t_fan_rising_edge;
@@ -355,12 +352,14 @@ extern uint8_t print_percent_done_normal;
 extern uint16_t print_time_remaining_normal;
 extern uint8_t print_percent_done_silent;
 extern uint16_t print_time_remaining_silent;
+
+#define PRINT_TIME_REMAINING_INIT 0xffff
+
 extern uint16_t mcode_in_progress;
 extern uint16_t gcode_in_progress;
 
 extern bool wizard_active; //autoload temporarily disabled during wizard
 
-#define PRINT_TIME_REMAINING_INIT 0xffff
 #define PRINT_PERCENT_DONE_INIT   0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
 
@@ -373,6 +372,7 @@ extern void delay_keep_alive(unsigned int ms);
 extern void check_babystep();
 
 extern void long_pause();
+extern void crashdet_stop_and_save_print();
 
 #ifdef DIS
 
@@ -412,6 +412,9 @@ extern void position_menu();
 extern void print_world_coordinates();
 extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
+
+extern void stop_and_save_print_to_ram(float z_move, float e_move);
+extern void restore_print_from_ram_and_continue(float e_move);
 
 
 //estimated time to end of the print
@@ -467,5 +470,5 @@ void proc_commands();
 
 void M600_load_filament();
 void M600_load_filament_movements();
-void M600_wait_for_user();
+void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state();
