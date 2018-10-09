@@ -1,3 +1,5 @@
+//! @file
+
 #include "Marlin.h"
 
 #include "fsensor.h"
@@ -9,24 +11,27 @@
 #include "cmdqueue.h"
 #include "ultralcd.h"
 
-//Basic params
-#define FSENSOR_CHUNK_LEN    0.64F  //filament sensor chunk length 0.64mm
-#define FSENSOR_ERR_MAX         17  //filament sensor maximum error count for runout detection
+//! @name Basic parameters
+//! @{
+#define FSENSOR_CHUNK_LEN    0.64F  //!< filament sensor chunk length 0.64mm
+#define FSENSOR_ERR_MAX         17  //!< filament sensor maximum error count for runout detection
+//! @}
 
-//Optical quality meassurement params
-#define FSENSOR_OQ_MAX_ES      6    //maximum error sum while loading (length ~64mm = 100chunks)
-#define FSENSOR_OQ_MAX_EM      2    //maximum error counter value while loading
-#define FSENSOR_OQ_MIN_YD      2    //minimum yd per chunk (applied to avg value)
-#define FSENSOR_OQ_MAX_YD      200  //maximum yd per chunk (applied to avg value)
-#define FSENSOR_OQ_MAX_PD      4    //maximum positive deviation (= yd_max/yd_avg)
-#define FSENSOR_OQ_MAX_ND      5    //maximum negative deviation (= yd_avg/yd_min)
-#define FSENSOR_OQ_MAX_SH      13   //maximum shutter value
-
+//! @name Optical quality measurement parameters
+//! @{
+#define FSENSOR_OQ_MAX_ES      6    //!< maximum error sum while loading (length ~64mm = 100chunks)
+#define FSENSOR_OQ_MAX_EM      2    //!< maximum error counter value while loading
+#define FSENSOR_OQ_MIN_YD      2    //!< minimum yd per chunk (applied to avg value)
+#define FSENSOR_OQ_MAX_YD      200  //!< maximum yd per chunk (applied to avg value)
+#define FSENSOR_OQ_MAX_PD      4    //!< maximum positive deviation (= yd_max/yd_avg)
+#define FSENSOR_OQ_MAX_ND      5    //!< maximum negative deviation (= yd_avg/yd_min)
+#define FSENSOR_OQ_MAX_SH      13   //!< maximum shutter value
+//! @}
 
 const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 
-#define FSENSOR_INT_PIN         63  //filament sensor interrupt pin PK1
-#define FSENSOR_INT_PIN_MSK   0x02  //filament sensor interrupt pin mask (bit1)
+#define FSENSOR_INT_PIN         63  //!< filament sensor interrupt pin PK1
+#define FSENSOR_INT_PIN_MSK   0x02  //!< filament sensor interrupt pin mask (bit1)
 
 void fsensor_stop_and_save_print(void)
 {
@@ -44,32 +49,32 @@ void fsensor_restore_print_and_continue(void)
 uint8_t fsensor_int_pin_old = 0;
 int16_t fsensor_chunk_len = 0;
 
-//enabled = initialized and sampled every chunk event
+//! enabled = initialized and sampled every chunk event
 bool fsensor_enabled = true;
-//runout watching is done in fsensor_update (called from main loop)
+//! runout watching is done in fsensor_update (called from main loop)
 bool fsensor_watch_runout = true;
-//not responding - is set if any communication error occured durring initialization or readout
+//! not responding - is set if any communication error occurred during initialization or readout
 bool fsensor_not_responding = false;
-//printing saved
+//! printing saved
 bool fsensor_printing_saved = false;
 
-//number of errors, updated in ISR
+//! number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
-//variable for accumolating step count (updated callbacks from stepper and ISR)
+//! variable for accumulating step count (updated callbacks from stepper and ISR)
 int16_t fsensor_st_cnt = 0;
-//last dy value from pat9125 sensor (used in ISR)
+//! last dy value from pat9125 sensor (used in ISR)
 int16_t fsensor_dy_old = 0;
 
-//log flag: 0=log disabled, 1=log enabled
+//! log flag: 0=log disabled, 1=log enabled
 uint8_t fsensor_log = 1;
 
-////////////////////////////////////////////////////////////////////////////////
-//filament autoload variables
 
-//autoload feature enabled
+//! @name filament autoload variables
+//! @{
+
+//! autoload feature enabled
 bool fsensor_autoload_enabled = true;
-
-//autoload watching enable/disable flag
+//! autoload watching enable/disable flag
 bool fsensor_watch_autoload = false;
 //
 uint16_t fsensor_autoload_y;
@@ -79,31 +84,33 @@ uint8_t fsensor_autoload_c;
 uint32_t fsensor_autoload_last_millis;
 //
 uint8_t fsensor_autoload_sum;
+//! @}
 
-////////////////////////////////////////////////////////////////////////////////
-//filament optical quality meassurement variables
 
-//meassurement enable/disable flag
+//! @name filament optical quality measurement variables
+//! @{
+
+//! Measurement enable/disable flag
 bool fsensor_oq_meassure = false;
-//skip-chunk counter, for accurate meassurement is necesary to skip first chunk...
+//! skip-chunk counter, for accurate measurement is necessary to skip first chunk...
 uint8_t  fsensor_oq_skipchunk;
-//number of samples from start of meassurement
+//! number of samples from start of measurement
 uint8_t fsensor_oq_samples;
-//sum of steps in positive direction movements
+//! sum of steps in positive direction movements
 uint16_t fsensor_oq_st_sum;
-//sum of deltas in positive direction movements
+//! sum of deltas in positive direction movements
 uint16_t fsensor_oq_yd_sum;
-//sum of errors durring meassurement
+//! sum of errors during measurement
 uint16_t fsensor_oq_er_sum;
-//max error counter value durring meassurement
+//! max error counter value during measurement
 uint8_t  fsensor_oq_er_max;
-//minimum delta value
+//! minimum delta value
 int16_t fsensor_oq_yd_min;
-//maximum delta value
+//! maximum delta value
 int16_t fsensor_oq_yd_max;
-//sum of shutter value
+//! sum of shutter value
 uint16_t fsensor_oq_sh_sum;
-
+//! @}
 
 void fsensor_init(void)
 {
@@ -427,7 +434,7 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	}
 }
 
-//! update (perform M600 on filament runout)
+//! @brief filament sensor update (perform M600 on filament runout)
 //!
 //! Works only if filament sensor is enabled.
 //! When the filament sensor error count is larger then FSENSOR_ERR_MAX, pauses print, tries to move filament back and forth.
