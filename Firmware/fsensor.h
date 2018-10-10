@@ -10,6 +10,8 @@ extern int16_t fsensor_chunk_len;
 extern bool fsensor_enabled;
 //not responding flag
 extern bool fsensor_not_responding;
+//enable/disable quality meassurement
+extern bool fsensor_oq_meassure_enabled;
 
 
 //save restore printing
@@ -39,6 +41,7 @@ extern void fsensor_autoload_check_stop(void);
 extern bool fsensor_check_autoload(void);
 
 //optical quality meassurement support
+extern void fsensor_oq_meassure_set(bool State);
 extern void fsensor_oq_meassure_start(uint8_t skip);
 extern void fsensor_oq_meassure_stop(void);
 extern bool fsensor_oq_result(void);

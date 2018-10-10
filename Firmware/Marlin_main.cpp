@@ -1964,10 +1964,6 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update(0);
-#ifdef FILAMENT_SENSOR
-  if (mcode_in_progress != 600 && !mmu_enabled) //M600 not in progress
-	  fsensor_update();
-#endif //FILAMENT_SENSOR
 #ifdef TMC2130
 	tmc2130_check_overtemp();
 	if (tmc2130_sg_crash)
@@ -7368,7 +7364,10 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 				}
 			}
 			else
+			{
 				fsensor_autoload_check_stop();
+				fsensor_update();
+			}
 		}
 	}
 #endif //FILAMENT_SENSOR
