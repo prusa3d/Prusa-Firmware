@@ -10,6 +10,7 @@
 #include "fastio.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
+#include "ConfigurationStore.h"
 
 //! @name Basic parameters
 //! @{
@@ -118,7 +119,7 @@ void fsensor_init(void)
     printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
-	fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * axis_steps_per_unit[E_AXIS]);
+	fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * cs.axis_steps_per_unit[E_AXIS]);
 
 	if (!pat9125)
 	{

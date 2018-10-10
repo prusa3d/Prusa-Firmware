@@ -73,16 +73,13 @@ extern int current_voltage_raw_bed;
 
 #ifdef PIDTEMP
   extern int pid_cycle, pid_number_of_cycles;
-  extern float Kp,Ki,Kd,Kc,_Kp,_Ki,_Kd;
+  extern float Kc,_Kp,_Ki,_Kd;
   extern bool pid_tuning_finished;
   float scalePID_i(float i);
   float scalePID_d(float d);
   float unscalePID_i(float i);
   float unscalePID_d(float d);
 
-#endif
-#ifdef PIDTEMPBED
-  extern float bedKp,bedKi,bedKd;
 #endif
   
   
