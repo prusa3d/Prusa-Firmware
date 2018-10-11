@@ -146,7 +146,7 @@ void dcode_3()
 
 #include "ConfigurationStore.h"
 #include "cmdqueue.h"
-#include "pat9125.h"
+#include "pat91xx.h"
 #include "adc.h"
 #include "temperature.h"
 #include <avr/wdt.h>
@@ -634,38 +634,38 @@ void dcode_2130()
 }
 #endif //TMC2130
 
-#ifdef PAT9125
-void dcode_9125()
+#if (defined(PAT9125)||defined(PAT9130))
+void dcode_91xx()
 {
-	LOG("D9125 - PAT9125\n");
+	LOG("D9100 - PAT91xx\n");
 	if ((strchr_pointer[1+4] == '?') || (strchr_pointer[1+4] == 0))
 	{
-//		printf("res_x=%d res_y=%d x=%d y=%d b=%d s=%d\n", pat9125_xres, pat9125_yres, pat9125_x, pat9125_y, pat9125_b, pat9125_s);
-		printf("x=%d y=%d b=%d s=%d\n", pat9125_x, pat9125_y, pat9125_b, pat9125_s);
+//		printf("res_x=%d res_y=%d x=%d y=%d b=%d s=%d\n", pat91xx_xres, pat91xx_yres, pat91xx_x, pat91xx_y, pat91xx_b, pat91xx_s);
+		printf("x=%d y=%d b=%d s=%d\n", pat91xx_x, pat91xx_y, pat91xx_b, pat91xx_s);
 		return;
 	}
 	if (strchr_pointer[1+4] == '!')
 	{
-		pat9125_update();
-		printf("x=%d y=%d b=%d s=%d\n", pat9125_x, pat9125_y, pat9125_b, pat9125_s);
+		pat91xx_update();
+		printf("x=%d y=%d b=%d s=%d\n", pat91xx_x, pat91xx_y, pat91xx_b, pat91xx_s);
 		return;
 	}
 /*
 	if (code_seen('R'))
 	{
 		unsigned char res = (int)code_value();
-		LOG("pat9125_init(xres=yres=%d)=%d\n", res, pat9125_init(res, res));
+		LOG("pat91xx_init(xres=yres=%d)=%d\n", res, pat91xx_init(res, res));
 	}
 */
 	if (code_seen('X'))
 	{
-		pat9125_x = (int)code_value();
-		LOG("pat9125_x=%d\n", pat9125_x);
+		pat91xx_x = (int)code_value();
+		LOG("pat91xx_x=%d\n", pat91xx_x);
 	}
 	if (code_seen('Y'))
 	{
-		pat9125_y = (int)code_value();
-		LOG("pat9125_y=%d\n", pat9125_y);
+		pat91xx_y = (int)code_value();
+		LOG("pat91xx_y=%d\n", pat91xx_y);
 	}
 	if (code_seen('L'))
 	{
@@ -673,7 +673,7 @@ void dcode_9125()
 		LOG("fsensor_log=%d\n", fsensor_log);
 	}
 }
-#endif //PAT9125
+#endif //PAT91xx
 
 
 #endif //DEBUG_DCODES
