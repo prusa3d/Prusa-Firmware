@@ -1105,24 +1105,24 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 	static int __preheat_counter[2] = { 0,0};
 	static int __preheat_errors[2] = { 0,0};
 		
-	
-#ifdef 	TEMP_RUNAWAY_BED_TIMEOUT
-	if (_isbed)
-	{
-		__hysteresis = TEMP_RUNAWAY_BED_HYSTERESIS;
-		__timeout = TEMP_RUNAWAY_BED_TIMEOUT;
-	}
-#endif
-#ifdef 	TEMP_RUNAWAY_EXTRUDER_TIMEOUT
-	if (!_isbed)
-	{
-		__hysteresis = TEMP_RUNAWAY_EXTRUDER_HYSTERESIS;
-		__timeout = TEMP_RUNAWAY_EXTRUDER_TIMEOUT;
-	}
-#endif
 
 	if (millis() - temp_runaway_timer[_heater_id] > 2000)
 	{
+
+#ifdef 	TEMP_RUNAWAY_BED_TIMEOUT
+          if (_isbed)
+          {
+               __hysteresis = TEMP_RUNAWAY_BED_HYSTERESIS;
+               __timeout = TEMP_RUNAWAY_BED_TIMEOUT;
+          }
+#endif
+#ifdef 	TEMP_RUNAWAY_EXTRUDER_TIMEOUT
+          if (!_isbed)
+          {
+               __hysteresis = TEMP_RUNAWAY_EXTRUDER_HYSTERESIS;
+               __timeout = TEMP_RUNAWAY_EXTRUDER_TIMEOUT;
+          }
+#endif
 
 		temp_runaway_timer[_heater_id] = millis();
 		if (_output == 0)
@@ -1147,42 +1147,36 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 			}
 		}
 
-		if (temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
+		if ((_current_temperature < _target_temperature)  && (temp_runaway_status[_heater_id] == TempRunaway_PREHEAT))
 		{
-			if (_current_temperature < ((_isbed) ? (0.8 * _target_temperature) : 150)) //check only in area where temperature is changing fastly for heater, check to 0.8 x target temperature for bed
+			__preheat_counter[_heater_id]++;
+			if (__preheat_counter[_heater_id] > ((_isbed) ? 16 : 8)) // periodicaly check if current temperature changes
 			{
-				__preheat_counter[_heater_id]++;
-				//SERIAL_ECHOPGM("counter[0]:");  MYSERIAL.println(__preheat_counter[0]);
-				//SERIAL_ECHOPGM("counter[1]:");  MYSERIAL.println(__preheat_counter[1]);
-				//SERIAL_ECHOPGM("_isbed"); MYSERIAL.println(_isbed);
-				if (__preheat_counter[_heater_id] > ((_isbed) ? 16 : 8)) // periodicaly check if current temperature changes
-				{
-					/*SERIAL_ECHOLNPGM("Heater:");
-					MYSERIAL.print(_heater_id);
-					SERIAL_ECHOPGM(" Current temperature:");
-					MYSERIAL.print(_current_temperature);
-					SERIAL_ECHOPGM(" Tstart:");
-					MYSERIAL.print(__preheat_start[_heater_id]);*/
-					
-					if (_current_temperature - __preheat_start[_heater_id] < 2) {
-						__preheat_errors[_heater_id]++;
-						/*SERIAL_ECHOPGM(" Preheat errors:");
-						MYSERIAL.println(__preheat_errors[_heater_id]);*/
-					}
-					else {
-						//SERIAL_ECHOLNPGM("");
-						__preheat_errors[_heater_id] = 0;
-					}
-
-					if (__preheat_errors[_heater_id] > ((_isbed) ? 2 : 5)) 
-					{
-						if (farm_mode) { prusa_statistics(0); }
-						temp_runaway_stop(true, _isbed);
-						if (farm_mode) { prusa_statistics(91); }
-					}
-					__preheat_start[_heater_id] = _current_temperature;
-					__preheat_counter[_heater_id] = 0;
+				/*SERIAL_ECHOPGM("Heater:");
+				MYSERIAL.print(_heater_id);
+				SERIAL_ECHOPGM(" T:");
+				MYSERIAL.print(_current_temperature);
+				SERIAL_ECHOPGM(" Tstart:");
+				MYSERIAL.print(__preheat_start[_heater_id]);*/
+				
+				if (_current_temperature - __preheat_start[_heater_id] < 2) {
+					__preheat_errors[_heater_id]++;
+					/*SERIAL_ECHOPGM(" Preheat errors:");
+					MYSERIAL.println(__preheat_errors[_heater_id]);*/
 				}
+				else {
+					//SERIAL_ECHOLNPGM("");
+					__preheat_errors[_heater_id] = 0;
+				}
+
+				if (__preheat_errors[_heater_id] > ((_isbed) ? 2 : 5)) 
+				{
+					if (farm_mode) { prusa_statistics(0); }
+					temp_runaway_stop(true, _isbed);
+					if (farm_mode) { prusa_statistics(91); }
+				}
+				__preheat_start[_heater_id] = _current_temperature;
+				__preheat_counter[_heater_id] = 0;
 			}
 		}
 
@@ -1192,7 +1186,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 			temp_runaway_check_active = false;
 		}
 
-		if (!temp_runaway_check_active && _output > 0)
+		if (_output > 0)
 		{
 			temp_runaway_check_active = true;
 		}
@@ -1201,7 +1195,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 		if (temp_runaway_check_active)
 		{			
 			//	we are in range
-			if (_target_temperature - __hysteresis < _current_temperature && _current_temperature < _target_temperature + __hysteresis)
+			if ((_current_temperature > (_target_temperature - __hysteresis)) && (_current_temperature < (_target_temperature + __hysteresis)))
 			{
 				temp_runaway_check_active = false;
 				temp_runaway_error_counter[_heater_id] = 0;
@@ -1233,6 +1227,9 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 		card.sdprinting = false;
 		card.closefile();
 	}
+	// Clean the input command queue 
+	// This is necessary, because in command queue there can be commands which would later set heater or bed temperature.
+	cmdqueue_reset();
 	
 	disable_heater();
 	disable_x();

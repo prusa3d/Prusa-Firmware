@@ -1,0 +1,18 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Firmware/.vs/Firmware/v14
+/Firmware/Doc/html/search
+/Firmware/Doc/html
+/Firmware/Doc/latex
+/Firmware/__vm
+/html
+/latex
+/Doxyfile
+/Firmware/Configuration_prusa.h
+/Firmware/Marlin_main.cpp~RF12cfae7.TMP
+/Firmware/Firmware.vcxproj.filters
+/Firmware/Firmware.vcxproj
+/Firmware/Firmware.sln
+/Firmware/Firmware - Shortcut.lnk
