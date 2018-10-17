@@ -58,9 +58,21 @@ union MenuData
         char ip_str[3*4+3+1];
     } supportMenu;
 
+#if defined(MBC_8POINT)
     struct AdjustBed
     {
-        // 6+13+16=35B
+	// 18+9+24=51B
+        // editMenuParentState is used when an edit menu is entered, so it knows
+        // the return menu and encoder state.
+        struct EditMenuParentState editMenuParentState;
+        int8_t	status;
+        int16_t	offset[8];	// Set point
+	int16_t	disply[8];	// Temp point
+    } adjustBed;
+#else
+    struct AdjustBed
+    {
+        // 18+5+16=39B
         // editMenuParentState is used when an edit menu is entered, so it knows
         // the return menu and encoder state.
         struct EditMenuParentState editMenuParentState;
@@ -74,11 +86,25 @@ union MenuData
         int    front2;
         int    rear2;
     } adjustBed;
-
+#endif
     // editMenuParentState is used when an edit menu is entered, so it knows
     // the return menu and encoder state.
     struct EditMenuParentState editMenuParentState;
 };
+
+#if defined(MBC_8POINT)
+
+const char * const *MBCPointName[] = {
+	MSG_BED_CORRECTION_P1_LANG_TABLE,
+	MSG_BED_CORRECTION_P2_LANG_TABLE,
+	MSG_BED_CORRECTION_P3_LANG_TABLE,
+	MSG_BED_CORRECTION_P4_LANG_TABLE,
+	MSG_BED_CORRECTION_P5_LANG_TABLE,
+	MSG_BED_CORRECTION_P6_LANG_TABLE,
+	MSG_BED_CORRECTION_P7_LANG_TABLE,
+	MSG_BED_CORRECTION_P8_LANG_TABLE,
+};
+#endif
 
 // State of the currently active menu.
 // C Union manages sharing of the static memory by all the menus.
@@ -224,6 +250,8 @@ static void menu_action_setlang(unsigned char lang);
 static void menu_action_sdfile(const char* filename, char* longFilename);
 static void menu_action_sddirectory(const char* filename, char* longFilename);
 static void menu_action_setting_edit_int3(const char* pstr, int* ptr, int minValue, int maxValue);
+static void menu_action_setting_edit_int4(const char* pstr, int* ptr, int minValue, int maxValue);
+
 #if 0
 static void menu_action_setting_edit_bool(const char* pstr, bool* ptr);
 static void menu_action_setting_edit_float3(const char* pstr, float* ptr, float minValue, float maxValue);
@@ -2056,6 +2084,76 @@ static void lcd_babystep_z() {
 
 static void lcd_adjust_bed();
 
+#if defined(MBC_8POINT)
+static void lcd_mbc_offsets_clear()
+{
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
+    for (int i = 0; i < 16; i += 2)
+    {
+        eeprom_update_word((uint16_t *)(EEPROM_BED_CORRECTION_OFFSETS + i), 0);
+    }
+}
+
+static void lcd_adjust_bed_reset()
+{
+    lcd_mbc_offsets_clear();
+    lcd_goto_menu(lcd_adjust_bed, 0, false);
+    // Because we did not leave the menu, the menuData did not reset.
+    // Force refresh of the bed leveling data.
+    menuData.adjustBed.status = 0;
+}
+
+void adjust_bed_reset()
+{
+    lcd_mbc_offsets_clear();
+    memset(menuData.adjustBed.offset, 0, sizeof(menuData.adjustBed.offset));
+    memset(menuData.adjustBed.disply, 0, sizeof(menuData.adjustBed.disply));
+}
+
+// Limit of signed byte stored (x2)
+#define BED_ADJUSTMENT_UM_MAX 500
+
+static void lcd_adjust_bed()
+{
+    if (menuData.adjustBed.status == 0) {
+        // Menu was entered.
+        // Initialize its status.
+        menuData.adjustBed.status = 1;
+        bool valid = true;
+        if (eeprom_read_byte((unsigned char *)EEPROM_BED_CORRECTION_VALID) == 1)
+	{
+	    for (uint8_t i = 0; i < 8; i++)
+            {
+		int val = eeprom_read_word((uint16_t *)(EEPROM_BED_CORRECTION_OFFSETS + 2 * i));
+		menuData.adjustBed.offset[i] = menuData.adjustBed.disply[i] = val;
+		if (abs(val) > BED_ADJUSTMENT_UM_MAX)
+		    valid = false;
+	    }
+	} else {
+	    valid = false;
+	}
+
+        if (!valid) {
+            // Reset the values: simulate an edit.
+	    memset(menuData.adjustBed.disply, 0, sizeof(menuData.adjustBed.disply));
+        }
+        lcdDrawUpdate = 1;
+        eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
+    }
+
+    START_MENU();
+    MENU_ITEM(back, MSG_SETTINGS, lcd_calibration_menu);
+    for (uint8_t i = 0; i < 8; i++)
+    {
+        menuData.adjustBed.offset[i] = menuData.adjustBed.disply[i];
+	eeprom_update_word((uint16_t *)(EEPROM_BED_CORRECTION_OFFSETS + 2 * i), menuData.adjustBed.offset[i]);
+	MENU_ITEM_EDIT(int4, LANG_TABLE_SELECT(MBCPointName[i]), &menuData.adjustBed.disply[i], -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);
+    }
+    MENU_ITEM(function, MSG_BED_CORRECTION_RESET, lcd_adjust_bed_reset);
+    END_MENU();
+}
+
+#else
 static void lcd_adjust_bed_reset()
 {
     eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
@@ -2128,6 +2226,7 @@ static void lcd_adjust_bed()
     MENU_ITEM(function, MSG_BED_CORRECTION_RESET, lcd_adjust_bed_reset);
     END_MENU();
 }
+#endif
 
 void pid_extruder() {
 
@@ -5116,6 +5215,8 @@ void lcd_sdcard_menu()
   */
 
 menu_edit_type(int, int3, itostr3, 1)
+menu_edit_type(int, int4, itostr4, 1)
+
 #if defined(AUTOTEMP)
 menu_edit_type(float, float3, ftostr3, 1)
 menu_edit_type(float, float32, ftostr32, 100)
@@ -6556,12 +6657,14 @@ char *itostr3left(const int &xx)
   return conv;
 }
 
-// Convert int to rj string with 1234 format
-char *itostr4(const int &xx) {
-  conv[0] = xx >= 1000 ? (xx / 1000) % 10 + '0' : ' ';
+// Convert int to rj string with 1234 or -123 format
+char *itostr4(const int &x)
+{
+  int xx = abs(x);
+  conv[0] = (x < 0) ? '-' : (xx >= 1000) ? (xx / 1000) % 10 + '0' : ' ';
   conv[1] = xx >= 100 ? (xx / 100) % 10 + '0' : ' ';
   conv[2] = xx >= 10 ? (xx / 10) % 10 + '0' : ' ';
-  conv[3] = xx % 10 + '0';
+  conv[3] = (xx) % 10 + '0';
   conv[4] = 0;
   return conv;
 }

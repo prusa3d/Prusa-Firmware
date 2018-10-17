@@ -222,10 +222,21 @@
 #define MSG_BABYSTEP_Z_NOT_SET							"Distanza tra la punta dell'ugello e la superficie del letto non ancora imposta. Si prega di seguire il manuale, capitolo First steps, sezione First layer calibration."
 
 #define MSG_BED_CORRECTION_MENU							"Correz. liv.letto"
-#define MSG_BED_CORRECTION_LEFT							"Sinistra  [um]"
-#define MSG_BED_CORRECTION_RIGHT						"Destra    [um]"
-#define MSG_BED_CORRECTION_FRONT						"Fronte    [um]"
-#define MSG_BED_CORRECTION_REAR							"Retro     [um]"
+#ifdef MBC_8POINT
+#define MSG_BED_CORRECTION_P1		"Punto a [um]"
+#define MSG_BED_CORRECTION_P2		"Punto b [um]"
+#define MSG_BED_CORRECTION_P3		"Punto c [um]"
+#define MSG_BED_CORRECTION_P4		"Punto d [um]"
+#define MSG_BED_CORRECTION_P5		"Punto e [um]"
+#define MSG_BED_CORRECTION_P6		"Punto f [um]"
+#define MSG_BED_CORRECTION_P7		"Punto g [um]"
+#define MSG_BED_CORRECTION_P8		"Punto h [um]"
+#else
+//#define MSG_BED_CORRECTION_LEFT							"Sinistra  [um]"
+//#define MSG_BED_CORRECTION_RIGHT						"Destra    [um]"
+//#define MSG_BED_CORRECTION_FRONT						"Fronte    [um]"
+//#define MSG_BED_CORRECTION_REAR							"Retro     [um]"
+#endif
 #define MSG_BED_CORRECTION_RESET						"Reset"			
 
 #define MSG_MESH_BED_LEVELING							"Mesh livel. letto"

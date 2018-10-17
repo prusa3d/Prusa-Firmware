@@ -3499,6 +3499,55 @@ void process_commands()
 		}
 		#endif // SUPPORT_VERBOSITY
 
+#if defined(MBC_8POINT)
+		for (uint8_t i = 0; i < 8; ++i) {
+			long correction = 0;
+
+			if (code_seen('a' + i))
+				correction = code_value_long();
+			else if (eeprom_bed_correction_valid) {
+				correction = (int16_t)eeprom_read_word((uint16_t *)(EEPROM_BED_CORRECTION_OFFSETS + 2 * i));
+			}
+			if (correction == 0)
+				continue;
+
+			// Allow G-code override up to +/- 500um
+			if (abs(correction) > 500) {
+				SERIAL_ERROR_START;
+				SERIAL_ECHOPGM("MBC offset: ");
+				SERIAL_ECHO(correction);
+				SERIAL_ECHOLNPGM(", out of range");
+			} else {
+				float offset = float(correction) * 0.001f;
+				switch ('a' + i) {
+				case 'a':
+				   mbl.z_values[0][0] += offset;  // Front/left
+				   break;
+				case 'b':
+				   mbl.z_values[0][1] += offset;  // Front/center
+				   break;
+				case 'c':
+				   mbl.z_values[0][2] += offset;  // Front/right
+				   break;
+				case 'd':
+				   mbl.z_values[1][0] += offset;  // Middle/left
+				   break;
+				case 'e':
+				   mbl.z_values[1][2] += offset;  // Middle/right
+				   break;
+				case 'f':
+				   mbl.z_values[2][0] += offset;  // Rear/left
+				   break;
+				case 'g':
+				   mbl.z_values[2][1] += offset;  // Rear/center
+				   break;
+				case 'h':
+				   mbl.z_values[2][2] += offset;  // Rear/right
+				   break;
+				}
+			}
+		}
+#else
 		for (uint8_t i = 0; i < 4; ++i) {
 			unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
 			long correction = 0;
@@ -3548,6 +3597,7 @@ void process_commands()
 				}
 			}
 		}
+#endif
 		SERIAL_ECHOLNPGM("Bed leveling correction finished");
 		mbl.upsample_3x3(); //bilinear interpolation from 3x3 to 7x7 points while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 		SERIAL_ECHOLNPGM("Upsample finished");

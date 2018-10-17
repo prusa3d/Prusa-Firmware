@@ -247,10 +247,21 @@
 #define MSG_BABYSTEP_Z_NOT_SET                          		"Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy."
 
 #define MSG_BED_CORRECTION_MENU									"Korekce podlozky"
-#define MSG_BED_CORRECTION_LEFT									"Vlevo  [um]"
-#define MSG_BED_CORRECTION_RIGHT								"Vpravo [um]"
-#define MSG_BED_CORRECTION_FRONT								"Vpredu [um]"
-#define MSG_BED_CORRECTION_REAR									"Vzadu  [um]"
+#ifdef MBC_8POINT
+#define MSG_BED_CORRECTION_P1		"Bod a [um]"
+#define MSG_BED_CORRECTION_P2		"Bod b [um]"
+#define MSG_BED_CORRECTION_P3		"Bod c [um]"
+#define MSG_BED_CORRECTION_P4		"Bod d [um]"
+#define MSG_BED_CORRECTION_P5		"Bod e [um]"
+#define MSG_BED_CORRECTION_P6		"Bod f [um]"
+#define MSG_BED_CORRECTION_P7		"Bod g [um]"
+#define MSG_BED_CORRECTION_P8		"Bod h [um]"
+#else
+//#define MSG_BED_CORRECTION_LEFT									"Vlevo  [um]"
+//#define MSG_BED_CORRECTION_RIGHT								"Vpravo [um]"
+//#define MSG_BED_CORRECTION_FRONT								"Vpredu [um]"
+//#define MSG_BED_CORRECTION_REAR									"Vzadu  [um]"
+#endif
 #define MSG_BED_CORRECTION_RESET								"Reset"
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"

@@ -33,15 +33,21 @@
 #define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-1)
 #define EEPROM_FARM_NUMBER (EEPROM_FARM_MODE-3)
 
-// Correction of the bed leveling, in micrometers.
-// Maximum 50 micrometers allowed.
-// Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
+// Bed correction is valid if set to 1. If set to zero or 255,
+//   the BED_CORRECTION_OFFSETS bytes are invalid.
 #define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
+#ifdef MBC_8POINT
+// 4 Unused bytes (available for future options)
+#define EEPROM_UNUSED  (EEPROM_BED_CORRECTION_VALID-1)
+#define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_UNUSED-4)
+#else
+// Old style MBC offsets
 #define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
 #define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
 #define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
 #define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
 #define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
+#endif
 #define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1)
 #define EEPROM_PROBE_TEMP_SHIFT (EEPROM_PRINT_FLAG - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
 #define EEPROM_TEMP_CAL_ACTIVE (EEPROM_PROBE_TEMP_SHIFT - 1)
@@ -50,6 +56,11 @@
 #define EEPROM_SD_SORT (EEPROM_CALIBRATION_STATUS_PINDA - 1) //0 -time, 1-alpha, 2-none
 #define EEPROM_XYZ_CAL_SKEW (EEPROM_SD_SORT - 4)
 #define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
+
+// E^2 address of custom MBC offsets array.
+// Correction of the bed leveling, in micrometers.
+// Current Range is: +/- 500um (stored as int16.
+#define EEPROM_BED_CORRECTION_OFFSETS	(EEPROM_WIZARD_ACTIVE - 16)
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
@@ -60,7 +71,6 @@
 #define EEPROM_FIRMWARE_VERSION_MAJOR     FW_PRUSA3D_MAGIC_LEN
 // Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
 #define EEPROM_FIRMWARE_PRUSA_MAGIC 0
-
 
 // This configuration file contains the basic settings.
 // Advanced settings can be found in Configuration_adv.h
