@@ -25,13 +25,13 @@
 
 /** @def PROGMEM_I2
  *  @brief section progmem0 will be used for localized translated strings */
-#define PROGMEM_I2 __attribute__((section(".progmem0")))
+#define PROGMEM_I2 __attribute__((section(".loc_sec")))
 /** @def PROGMEM_I1
  *  @brief section progmem1 will be used for localized strings in english */
-#define PROGMEM_I1 __attribute__((section(".progmem1")))
+#define PROGMEM_I1 __attribute__((section(".loc_pri")))
 /** @def PROGMEM_N1
  *  @brief section progmem2 will be used for not localized strings in english */
-#define PROGMEM_N1 __attribute__((section(".progmem2")))
+#define PROGMEM_N1 __attribute__((section(".noloc")))
 
 #if (LANG_MODE == 0) //primary language only
 #define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = s; &__c[0];}))
