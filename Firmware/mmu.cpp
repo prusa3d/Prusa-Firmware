@@ -11,6 +11,7 @@
 #include "cardreader.h"
 #include "ultralcd.h"
 #include "sound.h"
+#include "printers.h"
 #include <avr/pgmspace.h>
 
 #define CHECK_FINDA ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
@@ -22,8 +23,6 @@
 
 #define MMU_HWRESET
 #define MMU_RST_PIN 76
-
-#define MMU_REQUIRED_FW_BUILDNR 83
 
 bool mmu_enabled = false;
 
@@ -148,13 +147,35 @@ void mmu_loop(void)
 			bool version_valid = mmu_check_version();
 			if (!version_valid) mmu_show_warning();
 			else puts_P(PSTR("MMU version valid"));
+
+			if ((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3_SNMM))
+			{
+#ifdef MMU_DEBUG
+				puts_P(PSTR("MMU <= 'P0'"));
+#endif //MMU_DEBUG
+				mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
+				mmu_state = -4;
+			}
+			else
+			{
+#ifdef MMU_DEBUG
+				puts_P(PSTR("MMU <= 'M1'"));
+#endif //MMU_DEBUG
+				mmu_puts_P(PSTR("M1\n")); //set mmu mode to stealth
+				mmu_state = -5;
+			}
+
+		}
+		return;
+	case -5:
+		if (mmu_rx_ok() > 0)
+		{
 #ifdef MMU_DEBUG
 			puts_P(PSTR("MMU <= 'P0'"));
 #endif //MMU_DEBUG
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = -4;
 		}
-		return;
 	case -4:
 		if (mmu_rx_ok() > 0)
 		{
