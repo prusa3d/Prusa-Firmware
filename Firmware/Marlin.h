@@ -64,7 +64,10 @@
 
 #include "lcd.h"
 
+extern "C" {
 extern FILE _uartout;
+}
+
 #define uartout (&_uartout)
 
 #define SERIAL_PROTOCOL(x) (MYSERIAL.print(x))
