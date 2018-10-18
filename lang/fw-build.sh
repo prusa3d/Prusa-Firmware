@@ -57,7 +57,7 @@ echo "  objects OK" >&2
 
 #run progmem.sh - examine content of progmem1
 echo -n " running progmem.sh..." >&2
-./progmem.sh 1 2>progmem.out
+./progmemX.sh 1 2>progmem.out
 if [ $? -ne 0 ]; then echo "NG! - check progmem.out file" >&2; finish 1; fi
 echo "OK" >&2
 
@@ -169,6 +169,7 @@ rm -f lang.bin
 if [ -e lang_cz.bin ]; then cat lang_cz.bin >> lang.bin; fi
 if [ -e lang_de.bin ]; then cat lang_de.bin >> lang.bin; fi
 if [ -e lang_es.bin ]; then cat lang_es.bin >> lang.bin; fi
+if [ -e lang_fr.bin ]; then cat lang_fr.bin >> lang.bin; fi
 if [ -e lang_it.bin ]; then cat lang_it.bin >> lang.bin; fi
 if [ -e lang_pl.bin ]; then cat lang_pl.bin >> lang.bin; fi
 
