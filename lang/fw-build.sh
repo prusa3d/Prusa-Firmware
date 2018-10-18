@@ -57,7 +57,7 @@ echo "  objects OK" >&2
 
 #run progmem.sh - examine content of progmem1
 echo -n " running progmem.sh..." >&2
-./progmemX.sh 1 2>progmem.out
+./progmem.sh 1 2>progmem.out
 if [ $? -ne 0 ]; then echo "NG! - check progmem.out file" >&2; finish 1; fi
 echo "OK" >&2
 
