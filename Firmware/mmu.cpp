@@ -21,8 +21,9 @@
 #define MMU_CMD_TIMEOUT 300000ul //5min timeout for mmu commands (except P0)
 #define MMU_P0_TIMEOUT 3000ul //timeout for P0 command: 3seconds
 
-#define MMU_HWRESET
+#ifdef MMU_HWRESET
 #define MMU_RST_PIN 76
+#endif //MMU_HWRESET
 
 bool mmu_enabled = false;
 
@@ -92,8 +93,10 @@ int8_t mmu_rx_start(void)
 //initialize mmu2 unit - first part - should be done at begining of startup process
 void mmu_init(void)
 {
+#ifdef MMU_HWRESET
 	digitalWrite(MMU_RST_PIN, HIGH);
 	pinMode(MMU_RST_PIN, OUTPUT);              //setup reset pin
+#endif //MMU_HWRESET
 	uart2_init();                              //init uart2
 	_delay_ms(10);                             //wait 10ms for sure
 	mmu_reset();                               //reset mmu (HW or SW), do not wait for response
