@@ -179,6 +179,7 @@ void mmu_loop(void)
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = -4;
 		}
+		return;
 	case -4:
 		if (mmu_rx_ok() > 0)
 		{
