@@ -1180,6 +1180,9 @@ void setup()
 	}
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
+#ifndef W25X20CL
+	SERIAL_PROTOCOLLNPGM("start");
+#endif //W25X20CL
 	stdout = uartout;
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
