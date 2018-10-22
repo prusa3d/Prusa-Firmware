@@ -34,22 +34,6 @@ const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 #define FSENSOR_INT_PIN         63  //!< filament sensor interrupt pin PK1
 #define FSENSOR_INT_PIN_MSK   0x02  //!< filament sensor interrupt pin mask (bit1)
 
-extern void stop_and_save_print_to_ram(float z_move, float e_move);
-extern void restore_print_from_ram_and_continue(float e_move);
-extern int8_t FSensorStateMenu;
-
-void fsensor_stop_and_save_print(void)
-{
-	printf_P(PSTR("fsensor_stop_and_save_print\n"));
-	stop_and_save_print_to_ram(0, 0); //XYZE - no change	
-}
-
-void fsensor_restore_print_and_continue(void)
-{
-	printf_P(PSTR("fsensor_restore_print_and_continue\n"));
-	restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
-}
-
 //uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
 uint8_t fsensor_int_pin_old = 0;
 int16_t fsensor_chunk_len = 0;
