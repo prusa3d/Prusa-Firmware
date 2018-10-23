@@ -169,6 +169,7 @@ rm -f lang.bin
 if [ -e lang_cz.bin ]; then cat lang_cz.bin >> lang.bin; fi
 if [ -e lang_de.bin ]; then cat lang_de.bin >> lang.bin; fi
 if [ -e lang_es.bin ]; then cat lang_es.bin >> lang.bin; fi
+if [ -e lang_fr.bin ]; then cat lang_fr.bin >> lang.bin; fi
 if [ -e lang_it.bin ]; then cat lang_it.bin >> lang.bin; fi
 if [ -e lang_pl.bin ]; then cat lang_pl.bin >> lang.bin; fi
 
