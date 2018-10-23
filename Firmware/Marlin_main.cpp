@@ -920,8 +920,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 }
 
-
+extern "C" {
 FILE _uartout = {0};
+}
 
 int uart_putchar(char c, FILE *stream)
 {
@@ -1575,7 +1576,7 @@ void setup()
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer
 	printf_P(_n("lang_selected=%d\nlang_table=0x%04x\nSEC_LANG_CODE=0x%04x (%c%c)\n"), lang_selected, ui, sec_lang_code, sec_lang_code >> 8, sec_lang_code & 0xff);
 
-//	lang_print_sec_lang(uartout);
+	lang_print_sec_lang(uartout);
 #endif //DEBUG_SEC_LANG
 
 #endif //(LANG_MODE != 0)
@@ -6959,9 +6960,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 #ifdef DEBUG_DCODES
 	case 4: // D4 - Read/Write PIN
 		dcode_4(); break;
+#endif //DEBUG_DCODES
+#ifdef DEBUG_DCODE5
 	case 5: // D5 - Read/Write FLASH
-//		dcode_5(); break;
+		dcode_5(); break;
 		break;
+#endif //DEBUG_DCODE5
+#ifdef DEBUG_DCODES
 	case 6: // D6 - Read/Write external FLASH
 		dcode_6(); break;
 	case 7: // D7 - Read/Write Bootloader

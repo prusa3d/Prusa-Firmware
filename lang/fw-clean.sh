@@ -43,6 +43,7 @@ rm_if_exists update_lang.out
 rm_if_exists update_lang_cz.out
 rm_if_exists update_lang_de.out
 rm_if_exists update_lang_es.out
+rm_if_exists update_lang_fr.out
 rm_if_exists update_lang_it.out
 rm_if_exists update_lang_pl.out
 rm_if_exists lang.bin
