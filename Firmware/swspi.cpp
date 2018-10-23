@@ -1,24 +1,14 @@
-#include "uni_avr_rpi.h"
-
-#ifdef __SWSPI
 #include "swspi.h"
 
-#ifdef __RPI
-//#define swspi_miso	9
-#define swspi_miso	10
-#define swspi_mosi	10
-#define swspi_sck	11
-#define SWSPI_CS	7
-#endif //__RPI
 
-
-#define SWSPI_DEL	0x0f //delay mask (0-3. bit, delay = 1 << DEL [us])
+#define SWSPI_DLY	0x0f //delay mask (0-3. bit, delay = 1 << DEL [us])
 #define SWSPI_POL	0x10 //polarity mask (4. bit, 1=inverted)
 #define SWSPI_PHA	0x20 //phase mask (5. bit)
 #define SWSPI_DOR	0x40 //data order mask (6. bit, 0=MSB first, 1=LSB first)
 
 #define SWSPI_SCK_UP if (swspi_cfg & SWSPI_POL) GPIO_CLR(swspi_sck); else GPIO_SET(swspi_sck);
 #define SWSPI_SCK_DN if (swspi_cfg & SWSPI_POL) GPIO_SET(swspi_sck); else GPIO_CLR(swspi_sck);
+#define SWSPI_DELAY(_cfg) (1 << (_cfg & SWSPI_DLY))
 
 unsigned char swspi_miso = 0;
 unsigned char swspi_mosi = 0;
@@ -40,7 +30,7 @@ void swspi_init(unsigned char miso, unsigned char mosi, unsigned char sck, unsig
 
 void swspi_tx(unsigned char tx)
 {
-	int delay = 1 << (swspi_cfg & SWSPI_DEL));
+	int delay = SWSPI_DELAY(swspi_cfg);
 	if (swspi_miso == swspi_mosi) GPIO_OUT(swspi_mosi);
 	unsigned char i = 0; for (; i < 8; i++)
 	{
@@ -56,8 +46,8 @@ void swspi_tx(unsigned char tx)
 
 unsigned char swspi_rx()
 {
-	int delay = 1 << (swspi_cfg & SWSPI_DEL));
-	if (swspi_miso == swspi_mosi) GPIO_OUT(swspi_mosi);
+	int delay = SWSPI_DELAY(swspi_cfg);
+	if (swspi_miso == swspi_mosi) GPIO_INP(swspi_miso);
 	unsigned char rx = 0;
 	unsigned char i = 0; for (; i < 8; i++)
 	{
@@ -73,7 +63,7 @@ unsigned char swspi_rx()
 
 unsigned char swspi_txrx(unsigned char tx)
 {
-	int delay = 1 << (swspi_cfg & SWSPI_DEL));
+	int delay = SWSPI_DELAY(swspi_cfg);
 	unsigned char rx = 0;
 	unsigned char i = 0; for (; i < 8; i++)
 	{
@@ -89,5 +79,3 @@ unsigned char swspi_txrx(unsigned char tx)
 	}
 	return rx;
 }
-
-#endif //__SWSPI
