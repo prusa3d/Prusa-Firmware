@@ -111,6 +111,7 @@
 
 // Filament sensor
 #define PAT9125
+//#define PAT9130
 #define FILAMENT_SENSOR
 
 #define DEBUG_DCODE3

@@ -132,7 +132,8 @@
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
 
 // Filament sensor
-#define PAT9125
+//#define PAT9125
+//#define PAT9130
 #define FILAMENT_SENSOR
 
 // Backlash - 
