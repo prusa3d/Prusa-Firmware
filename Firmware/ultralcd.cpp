@@ -25,7 +25,7 @@
 #include "SdFatUtil.h"
 
 #ifdef FILAMENT_SENSOR
-#include "pat9125.h"
+#include "pat91xx.h"
 #include "fsensor.h"
 #endif //FILAMENT_SENSOR
 
@@ -1899,13 +1899,13 @@ static void lcd_menu_extruder_info()
 		else
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
-				pat9125_update();
+				pat91xx_update();
 			lcd_printf_P(_N(
 				"Fil. Xd:%3d Yd:%3d\n"
 				"Int: %3d  Shut: %3d"
 			),
-				pat9125_x, pat9125_y,
-				pat9125_b, pat9125_s
+				pat91xx_x, pat91xx_y,
+				pat91xx_b, pat91xx_s
 			);
 		}
 	}
@@ -2208,12 +2208,6 @@ void lcd_set_fan_check() {
 void lcd_set_filament_autoload() {
      fsensor_autoload_set(!fsensor_autoload_enabled);
 }
-
-void lcd_set_filament_oq_meass()
-{
-     fsensor_oq_meassure_set(!fsensor_oq_meassure_enabled);
-}
-
 
 void lcd_unLoadFilament()
 {
@@ -4600,10 +4594,6 @@ do\
                 MENU_ITEM_FUNCTION_P(_i("F. autoload  [on]"), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_ON c=17 r=1*/\
             else\
                 MENU_ITEM_FUNCTION_P(_i("F. autoload [off]"), lcd_set_filament_autoload);/*////MSG_FSENS_AUTOLOAD_OFF c=17 r=1*/\
-            if (fsensor_oq_meassure_enabled)\
-                MENU_ITEM_FUNCTION_P(_i("F. OQ meass. [on]"), lcd_set_filament_oq_meass);/*////MSG_FSENS_OQMEASS_ON c=17 r=1*/\
-            else\
-                MENU_ITEM_FUNCTION_P(_i("F. OQ meass.[off]"), lcd_set_filament_oq_meass);/*////MSG_FSENS_OQMEASS_OFF c=17 r=1*/\
         }\
     }\
 }\

@@ -20,9 +20,9 @@ extern void dcode_10(); //D10 - XYZ calibration = OK
 extern void dcode_2130(); //D2130 - TMC2130
 #endif //TMC2130
 
-#ifdef PAT9125
-extern void dcode_9125(); //D9125 - PAT9125
-#endif //PAT9125
+#if (defined(PAT9125)||defined(PAT9130))
+extern void dcode_91xx(); //D9100 - PAT91xx
+#endif //PAT91xx
 
 
 #endif //DCODES_H
