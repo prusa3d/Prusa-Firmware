@@ -1181,7 +1181,6 @@ void setup()
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
 	stdout = uartout;
-	SERIAL_PROTOCOLLNPGM("start");
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
@@ -1642,7 +1641,7 @@ void setup()
 
   if (!previous_settings_retrieved) {
 	  lcd_show_fullscreen_message_and_wait_P(_i("Old settings found. Default PID, Esteps etc. will be set.")); //if EEPROM version or printer type was changed, inform user that default setting were loaded////MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
-	  erase_eeprom_section(EEPROM_OFFSET, 156); 							   //erase M500 part of eeprom
+	  erase_eeprom_section(EEPROM_OFFSET, EEPROM_M500_SIZE); 							   //erase M500 part of eeprom
   }
   if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 	  lcd_wizard(0);
@@ -1965,10 +1964,6 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update(0);
-#ifdef FILAMENT_SENSOR
-  if (mcode_in_progress != 600 && !mmu_enabled) //M600 not in progress
-	  fsensor_update();
-#endif //FILAMENT_SENSOR
 #ifdef TMC2130
 	tmc2130_check_overtemp();
 	if (tmc2130_sg_crash)
@@ -3193,9 +3188,9 @@ void gcode_M701()
 		enable_z();
 		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 
-#ifdef FILAMENT_SENSOR
+#ifdef FSENSOR_QUALITY
 		fsensor_oq_meassure_start(40);
-#endif //FILAMENT_SENSOR
+#endif //FSENSOR_QUALITY
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 		current_position[E_AXIS] += 40;
@@ -3235,21 +3230,18 @@ void gcode_M701()
 		loading_flag = false;
 		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 
-#ifdef FILAMENT_SENSOR
-		if (mmu_enabled == false) 
-		{
-			fsensor_oq_meassure_stop();
+#ifdef FSENSOR_QUALITY
+        fsensor_oq_meassure_stop();
 
-			if (!fsensor_oq_result())
-			{
-				bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
-				lcd_update_enable(true);
-				lcd_update(2);
-				if (disable)
-					fsensor_disable();
-			}
-		}
-#endif //FILAMENT_SENSOR
+        if (!fsensor_oq_result())
+        {
+            bool disable = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Fil. sensor response is poor, disable it?"), false, true);
+            lcd_update_enable(true);
+            lcd_update(2);
+            if (disable)
+                fsensor_disable();
+        }
+#endif //FSENSOR_QUALITY
 	}
 }
 /**
@@ -7372,7 +7364,10 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 				}
 			}
 			else
+			{
 				fsensor_autoload_check_stop();
+				fsensor_update();
+			}
 		}
 	}
 #endif //FILAMENT_SENSOR
@@ -9072,9 +9067,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 #endif //FILAMENT_SENSOR
 	KEEPALIVE_STATE(IN_HANDLER);
 
-#ifdef FILAMENT_SENSOR
+#ifdef FSENSOR_QUALITY
 	fsensor_oq_meassure_start(70);
-#endif //FILAMENT_SENSOR
+#endif //FSENSOR_QUALITY
 
 	M600_load_filament_movements();
 
@@ -9083,7 +9078,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	delay_keep_alive(50);
 	noTone(BEEPER);
 
-#ifdef FILAMENT_SENSOR
+#ifdef FSENSOR_QUALITY
 	fsensor_oq_meassure_stop();
 
 	if (!fsensor_oq_result())
@@ -9094,7 +9089,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (disable)
 			fsensor_disable();
 	}
-#endif //FILAMENT_SENSOR
+#endif //FSENSOR_QUALITY
 	lcd_update_enable(false);
 }
 
