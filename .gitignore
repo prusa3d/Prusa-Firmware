@@ -1,6 +1,8 @@
 .settings
 .project
 .cproject
+notes.txt
+git.bat
 Debug
 Firmware/Configuration_prusa.h
 Firmware/Doc
