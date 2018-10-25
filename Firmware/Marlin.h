@@ -64,9 +64,13 @@
 
 #include "lcd.h"
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 extern FILE _uartout;
+#ifdef __cplusplus
 }
+#endif
 
 #define uartout (&_uartout)
 
