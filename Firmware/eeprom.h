@@ -184,7 +184,10 @@
 // Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
 #define EEPROM_FIRMWARE_PRUSA_MAGIC 0
 
-#define EEPROM_OFFSET 20 //offset for storing settings using M500
-#define EEPROM_M500_SIZE 188 //size of M500 eeprom section in bytes; if EEPROM_M500_SIZE increases it is necessary to update also EEPROM_VERSION
+#ifdef __cplusplus
+#include "ConfigurationStore.h"
+static M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf*>(20); //offset for storing settings using M500
+#endif
+
 
 #endif // EEPROM_H

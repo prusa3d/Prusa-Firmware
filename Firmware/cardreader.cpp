@@ -288,6 +288,76 @@ void CardReader::getAbsFilename(char *t)
   else
     t[0]=0;
 }
+/**
+ * @brief Dive into subfolder
+ *
+ * Method sets curDir to point to root, in case fileName is null.
+ * Method sets curDir to point to workDir, in case fileName path is relative
+ * (doesn't start with '/')
+ * Method sets curDir to point to dir, which is specified by absolute path
+ * specified by fileName. In such case fileName is updated so it points to
+ * file name without the path.
+ *
+ * @param[in,out] fileName
+ *  expects file name including path
+ *  in case of absolute path, file name without path is returned
+ * @param[in,out] dir SdFile object to operate with,
+ *  in case of absolute path, curDir is modified to point to dir,
+ *  so it is not possible to create on stack inside this function,
+ *  as curDir would point to destroyed object.
+ */
+void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
+{
+    curDir=&root;
+    if (!fileName) return;
+
+    const char *dirname_start, *dirname_end;
+    if (fileName[0] == '/') // absolute path
+    {
+        dirname_start = fileName + 1;
+        while (*dirname_start)
+        {
+            dirname_end = strchr(dirname_start, '/');
+            //SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-name));
+            //SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-name));
+            if (dirname_end && dirname_end > dirname_start)
+            {
+                const size_t maxLen = 12;
+                char subdirname[maxLen+1];
+                subdirname[maxLen] = 0;
+                const size_t len = ((static_cast<size_t>(dirname_end-dirname_start))>maxLen) ? maxLen : (dirname_end-dirname_start);
+                strncpy(subdirname, dirname_start, len);
+                SERIAL_ECHOLN(subdirname);
+                if (!dir.open(curDir, subdirname, O_READ))
+                {
+                    SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
+                    SERIAL_PROTOCOL(subdirname);
+                    SERIAL_PROTOCOLLNPGM(".");
+                    return;
+                }
+                else
+                {
+                    //SERIAL_ECHOLN("dive ok");
+                }
+
+                curDir = &dir;
+                dirname_start = dirname_end + 1;
+            }
+            else // the reminder after all /fsa/fdsa/ is the filename
+            {
+                fileName = dirname_start;
+                //SERIAL_ECHOLN("remaider");
+                //SERIAL_ECHOLN(fname);
+                break;
+            }
+
+        }
+    }
+    else //relative path
+    {
+        curDir = &workDir;
+    }
+}
 
 void CardReader::openFile(const char* name,bool read, bool replace_current/*=true*/)
 {
@@ -340,53 +410,9 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
   
  
   SdFile myDir;
-  curDir=&root;
   const char *fname=name;
-  
-  char *dirname_start,*dirname_end;
-  if(name[0]=='/')
-  {
-    dirname_start=strchr(name,'/')+1;
-    while(dirname_start>0)
-    {
-      dirname_end=strchr(dirname_start,'/');
-      //SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-name));
-      //SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-name));
-      if(dirname_end>0 && dirname_end>dirname_start)
-      {
-        char subdirname[13];
-        strncpy(subdirname, dirname_start, dirname_end-dirname_start);
-        subdirname[dirname_end-dirname_start]=0;
-        SERIAL_ECHOLN(subdirname);
-        if(!myDir.open(curDir,subdirname,O_READ))
-        {
-          SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
-          SERIAL_PROTOCOL(subdirname);
-          SERIAL_PROTOCOLLNPGM(".");
-          return;
-        }
-        else
-        {
-          //SERIAL_ECHOLN("dive ok");
-        }
-          
-        curDir=&myDir; 
-        dirname_start=dirname_end+1;
-      }
-      else // the reminder after all /fsa/fdsa/ is the filename
-      {
-        fname=dirname_start;
-        //SERIAL_ECHOLN("remaider");
-        //SERIAL_ECHOLN(fname);
-        break;
-      }
-      
-    }
-  }
-  else //relative path
-  {
-    curDir=&workDir;
-  }
+  diveSubfolder(fname,myDir);
+
   if(read)
   {
     if (file.open(curDir, fname, O_READ)) 
@@ -431,60 +457,14 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
 
 void CardReader::removeFile(const char* name)
 {
-  if(!cardOK)
-    return;
-  file.close();
-  sdprinting = false;
-  
-  
-  SdFile myDir;
-  curDir=&root;
-  const char *fname=name;
-  
-  char *dirname_start,*dirname_end;
-  if(name[0]=='/')
-  {
-    dirname_start=strchr(name,'/')+1;
-    while(dirname_start>0)
-    {
-      dirname_end=strchr(dirname_start,'/');
-      //SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-name));
-      //SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-name));
-      if(dirname_end>0 && dirname_end>dirname_start)
-      {
-        char subdirname[13];
-        strncpy(subdirname, dirname_start, dirname_end-dirname_start);
-        subdirname[dirname_end-dirname_start]=0;
-        SERIAL_ECHOLN(subdirname);
-        if(!myDir.open(curDir,subdirname,O_READ))
-        {
-          SERIAL_PROTOCOLRPGM("open failed, File: ");
-          SERIAL_PROTOCOL(subdirname);
-          SERIAL_PROTOCOLLNPGM(".");
-          return;
-        }
-        else
-        {
-          //SERIAL_ECHOLN("dive ok");
-        }
-          
-        curDir=&myDir; 
-        dirname_start=dirname_end+1;
-      }
-      else // the reminder after all /fsa/fdsa/ is the filename
-      {
-        fname=dirname_start;
-        //SERIAL_ECHOLN("remaider");
-        //SERIAL_ECHOLN(fname);
-        break;
-      }
-      
-    }
-  }
-  else //relative path
-  {
-    curDir=&workDir;
-  }
+    if(!cardOK) return;
+    file.close();
+    sdprinting = false;
+
+    SdFile myDir;
+    const char *fname=name;
+    diveSubfolder(fname,myDir);
+
     if (file.remove(curDir, fname)) 
     {
       SERIAL_PROTOCOLPGM("File deleted:");
