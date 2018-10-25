@@ -4574,7 +4574,7 @@ do\
 {\
     if (FSensorStateMenu == 0)\
     {\
-        if (fsensor_not_responding)\
+        if (fsensor_not_responding && (mmu_enabled == false))\
         {\
             /* Filament sensor not working*/\
             MENU_ITEM_FUNCTION_P(_i("Fil. sensor [N/A]"), lcd_fsensor_state_set);/*////MSG_FSENSOR_NA c=0 r=0*/\
@@ -4584,7 +4584,7 @@ do\
         {\
             /* Filament sensor turned off, working, no problems*/\
             MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_OFF), lcd_fsensor_state_set);\
-            if (mmu_enabled == false)if (mmu_enabled == false)\
+            if (mmu_enabled == false)\
             {\
                 MENU_ITEM_SUBMENU_P(_T(MSG_FSENS_AUTOLOAD_NA), lcd_filament_autoload_info);\
             }\
