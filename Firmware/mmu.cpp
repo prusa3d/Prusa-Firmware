@@ -29,12 +29,13 @@ bool mmu_enabled = false;
 
 bool mmu_ready = false;
 
-int8_t mmu_state = 0;
+static int8_t mmu_state = 0;
 
 uint8_t mmu_cmd = 0;
 
 uint8_t mmu_extruder = 0;
 
+//! This variable probably has no meaning and is planed to be removed
 uint8_t tmp_extruder = 0;
 
 int8_t mmu_finda = -1;
@@ -494,15 +495,11 @@ void mmu_M600_wait_and_beep() {
 void mmu_M600_load_filament(bool automatic)
 { 
 	//load filament for mmu v2
-
-		  bool response = false;
-		  bool yes = false;
 		  tmp_extruder = mmu_extruder;
 		  if (!automatic) {
 #ifdef MMU_M600_SWITCH_EXTRUDER
-			  yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
+		      bool yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
 			  if(yes) tmp_extruder = choose_extruder_menu();
-			  else tmp_extruder = mmu_extruder;
 #endif //MMU_M600_SWITCH_EXTRUDER
 		  }
 		  else {
@@ -541,7 +538,11 @@ void extr_mov(float shift, float feed_rate)
 }
 
 
-void change_extr(int extr) { //switches multiplexer for extruders
+void change_extr(int
+#ifdef SNMM
+        extr
+#endif //SNMM
+        ) { //switches multiplexer for extruders
 #ifdef SNMM
 	st_synchronize();
 	delay(100);
@@ -1011,23 +1012,24 @@ void mmu_eject_filament(uint8_t filament, bool recover)
 		if (degHotend0() > EXTRUDE_MINTEMP)
 		{
 			st_synchronize();
-			lcd_update_enable(false);
-			lcd_clear();
-			lcd_set_cursor(0, 1); lcd_puts_P(_i("Ejecting filament"));
-			current_position[E_AXIS] -= 80;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-			st_synchronize();
 
-			lcd_update_enable(true);
-
-			mmu_command(MMU_CMD_E0 + filament);
-			manage_response(false, false);
-			if (recover)
 			{
-				lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
-				mmu_command(MMU_CMD_R0);
-				manage_response(false, false);
-			}
+			    LcdUpdateDisabler disableLcdUpdate;
+                lcd_clear();
+                lcd_set_cursor(0, 1); lcd_puts_P(_i("Ejecting filament"));
+                current_position[E_AXIS] -= 80;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
+                st_synchronize();
+                mmu_command(MMU_CMD_E0 + filament);
+                manage_response(false, false);
+                if (recover)
+                {
+                    lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
+                    mmu_command(MMU_CMD_R0);
+                    manage_response(false, false);
+                }
+
+            }
 		}
 		else
 		{

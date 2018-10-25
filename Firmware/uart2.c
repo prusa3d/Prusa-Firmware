@@ -16,7 +16,7 @@ uint8_t uart2_ibuf[14] = {0, 0};
 FILE _uart2io = {0};
 
 
-int uart2_putchar(char c, FILE *stream)
+int uart2_putchar(char c, FILE *stream __attribute__((unused)))
 {
 	while (!uart2_txready);
 	UDR2 = c; // transmit byte
@@ -25,7 +25,7 @@ int uart2_putchar(char c, FILE *stream)
 	return 0;
 }
 
-int uart2_getchar(FILE *stream)
+int uart2_getchar(FILE *stream __attribute__((unused)))
 {
 	if (rbuf_empty(uart2_ibuf)) return -1;
 	return rbuf_get(uart2_ibuf);
