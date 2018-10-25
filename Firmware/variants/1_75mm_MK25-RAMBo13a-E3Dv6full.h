@@ -484,6 +484,7 @@
 
 //#define SUPPORT_VERBOSITY
 
+#define MMU_REQUIRED_FW_BUILDNR 132
 //#define MMU_DEBUG //print communication between MMU2 and printer on serial
 
 #endif //__CONFIGURATION_PRUSA_H
