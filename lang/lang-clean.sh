@@ -21,7 +21,7 @@ rm_if_exists()
 
 clean_lang()
 {
- if [ "$1" == "en" ]; then
+ if [ "$1" = "en" ]; then
   rm_if_exists lang_$1.tmp
  else
   rm_if_exists lang_$1.tmp
