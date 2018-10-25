@@ -11,6 +11,7 @@
 #include "cmdqueue.h"
 #include "ultralcd.h"
 #include "ConfigurationStore.h"
+#include "mmu.h"
 
 //! @name Basic parameters
 //! @{
@@ -143,21 +144,27 @@ void fsensor_init(void)
 
 bool fsensor_enable(void)
 {
-	uint8_t pat9125 = pat9125_init();
-    printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
-	if (pat9125)
-		fsensor_not_responding = false;
-	else
-		fsensor_not_responding = true;
-	fsensor_enabled = pat9125?true:false;
-	fsensor_watch_runout = true;
-	fsensor_oq_meassure = false;
-	fsensor_err_cnt = 0;
-	fsensor_dy_old = 0;
-	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled?0x01:0x00); 
-	FSensorStateMenu = fsensor_enabled?1:0;
-
-
+	if (mmu_enabled == false) { //filament sensor is pat9125, enable only if it is working
+		uint8_t pat9125 = pat9125_init();
+		printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
+		if (pat9125)
+			fsensor_not_responding = false;
+		else
+			fsensor_not_responding = true;
+		fsensor_enabled = pat9125 ? true : false;
+		fsensor_watch_runout = true;
+		fsensor_oq_meassure = false;
+		fsensor_err_cnt = 0;
+		fsensor_dy_old = 0;
+		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled ? 0x01 : 0x00);
+		FSensorStateMenu = fsensor_enabled ? 1 : 0;
+	}
+	else //filament sensor is FINDA, always enable 
+	{
+		fsensor_enabled = true;
+		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x01);
+		FSensorStateMenu = 1;
+	}
 	return fsensor_enabled;
 }
 
