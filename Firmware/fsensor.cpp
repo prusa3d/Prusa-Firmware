@@ -161,9 +161,22 @@ bool fsensor_enable(void)
 	}
 	else //filament sensor is FINDA, always enable 
 	{
-		fsensor_enabled = true;
-		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x01);
-		FSensorStateMenu = 1;
+  /**
+   * Enabling fsensor for load detection (hopfully jams as well)
+   */
+    uint8_t pat9125 = pat9125_init();
+    printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
+    if (pat9125)
+      fsensor_not_responding = false;
+    else
+      fsensor_not_responding = true;
+    fsensor_enabled = pat9125 ? true : false;
+    fsensor_autoload_enabled = true;
+    fsensor_oq_meassure = false;
+    fsensor_err_cnt = 0;
+    fsensor_dy_old = 0;
+    eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled ? 0x01 : 0x00);
+    FSensorStateMenu = fsensor_enabled ? 1 : 0;
 	}
 	return fsensor_enabled;
 }
@@ -271,8 +284,13 @@ bool fsensor_check_autoload(void)
 //	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
 	if ((fsensor_autoload_c >= 12) && (fsensor_autoload_sum > 20))
 	{
-//		puts_P(_N("fsensor_check_autoload = true !!!\n"));
-		return true;
+		puts_P(_N("fsensor_check_autoload = true !!!\n"));
+		if (mmu_enabled) {
+      mmu_puts_P(PSTR("FS\n"));
+      mmuFilamentLoading = false;
+      fsensor_autoload_check_stop();
+		  //mmuFilamentLoadSeen = true;
+		} else return true;
 	}
 	return false;
 }

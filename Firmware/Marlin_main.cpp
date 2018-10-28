@@ -7329,7 +7329,6 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			{
 				if (fsensor_check_autoload())
 				{
-					fsensor_autoload_check_stop();
 					if (degHotend0() > EXTRUDE_MINTEMP)
 					{
 						if ((eSoundMode == e_SOUND_MODE_LOUD) || (eSoundMode == e_SOUND_MODE_ONCE))
@@ -7359,6 +7358,16 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 				fsensor_update();
 			}
 		}
+	} else {
+    if (mcode_in_progress != 600) //M600 not in progress
+    {
+      if ((lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active && mmuFilamentLoading) {
+        fsensor_check_autoload();
+      } else {
+        fsensor_autoload_check_stop();
+        fsensor_update();
+      }
+    }
 	}
 #endif //FILAMENT_SENSOR
 

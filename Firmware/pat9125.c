@@ -26,6 +26,8 @@
 #define PAT9125_BANK_SELECTION	0x7f
 
 
+
+#define PAT9125_NEW_INIT
 #ifdef PAT9125_SWSPI
 #include "swspi.h"
 #endif //PAT9125_SWSPI

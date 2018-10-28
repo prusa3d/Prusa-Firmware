@@ -4098,7 +4098,7 @@ static void lcd_fsensor_state_set()
 	FSensorStateMenu = !FSensorStateMenu; //set also from fsensor_enable() and fsensor_disable()
 	if (!FSensorStateMenu) {
 		fsensor_disable();
-		if (fsensor_autoload_enabled && !mmu_enabled)
+		if (fsensor_autoload_enabled)
 			menu_submenu(lcd_filament_autoload_info);
 	}
 	else {
@@ -7426,4 +7426,3 @@ void menu_lcd_lcdupdate_func(void)
 	lcd_send_status();
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL) lcd_commands();
 }
-

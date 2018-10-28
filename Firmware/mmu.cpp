@@ -18,7 +18,7 @@
 
 #define MMU_TODELAY 100
 #define MMU_TIMEOUT 10
-#define MMU_CMD_TIMEOUT 300000ul //5min timeout for mmu commands (except P0)
+#define MMU_CMD_TIMEOUT 60000ul //1min timeout for mmu commands (except P0)
 #define MMU_P0_TIMEOUT 3000ul //timeout for P0 command: 3seconds
 
 #ifdef MMU_HWRESET
@@ -28,6 +28,10 @@
 bool mmu_enabled = false;
 
 bool mmu_ready = false;
+
+//bool mmuFilamentLoadSeen = false;
+bool mmuFilamentLoading = false;
+int lastLoadedFilament = 0;
 
 static int8_t mmu_state = 0;
 
@@ -46,7 +50,6 @@ int16_t mmu_buildnr = -1;
 
 uint32_t mmu_last_request = 0;
 uint32_t mmu_last_response = 0;
-
 
 //clear rx buffer
 void mmu_clr_rx_buf(void)
@@ -81,6 +84,14 @@ int8_t mmu_rx_ok(void)
 	int8_t res = uart2_rx_str_P(PSTR("ok\n"));
 	if (res == 1) mmu_last_response = millis();
 	return res;
+}
+
+//check 'ok' response
+int8_t mmu_rx_not_ok(void)
+{
+  int8_t res = uart2_rx_str_P(PSTR("not_ok\n"));
+  if (res == 1) mmu_last_response = millis();
+  return res;
 }
 
 //check 'start' response
@@ -203,6 +214,14 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'T%d'\n"), filament);
 #endif //MMU_DEBUG
 				mmu_printf_P(PSTR("T%d\n"), filament);
+        if (lastLoadedFilament != filament) {
+          fsensor_enable();
+          fsensor_autoload_enabled = true;
+          mmuFilamentLoading = true;
+          //mmuFilamentLoadSeen = false;
+          lastLoadedFilament = filament;
+        }
+        //last_filament = filament;
 				mmu_state = 3; // wait for response
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
@@ -219,7 +238,7 @@ void mmu_loop(void)
 #ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'C0'\n"));
 #endif //MMU_DEBUG
-				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
+        mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = 3;
 			}
 			else if (mmu_cmd == MMU_CMD_U0)
@@ -228,6 +247,7 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'U0'\n"));
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
+        lastLoadedFilament = -10;
 				mmu_state = 3;
 			}
 			else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
@@ -284,11 +304,19 @@ void mmu_loop(void)
 	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
+      if (!mmuFilamentLoading) {
+      //    mmu_puts_P(PSTR("C1\n")); //send 'cut retry'
+      //    mmuFilamentLoading = false;
+      //} else {
 #ifdef MMU_DEBUG
-			printf_P(PSTR("MMU => 'ok'\n"));
+  			printf_P(PSTR("MMU => 'ok'\n"));
 #endif //MMU_DEBUG
-			mmu_ready = true;
-			mmu_state = 1;
+  			mmu_ready = true;
+  			mmu_state = 1;
+      }
+		} else if (mmu_rx_not_ok() > 0) {
+      // do something with error responses from MMU
+      mmuFilamentLoading = false;
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (5 min)
@@ -543,7 +571,7 @@ void mmu_M600_load_filament(bool automatic)
 
 		  manage_response(false, true);
 		  mmu_command(MMU_CMD_C0);
-    	  mmu_extruder = tmp_extruder; //filament change is finished
+    	mmu_extruder = tmp_extruder; //filament change is finished
 
 		  mmu_load_to_nozzle();
 
