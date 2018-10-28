@@ -2,7 +2,7 @@
 #define CMDQUEUE_H
 
 #include "Marlin.h"
-#include "language_all.h"
+#include "language.h"
 
 
 // String circular buffer. Commands may be pushed to the buffer from both sides:
@@ -22,6 +22,8 @@
 // to the planner queue, but not yet removed from the cmdqueue. 
 // This is a temporary state to reduce stepper interrupt locking time.
 #define CMDBUFFER_CURRENT_TYPE_TO_BE_REMOVED 5
+//Command in cmdbuffer was sent over USB and contains line number
+#define CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR 6
 
 // How much space to reserve for the chained commands
 // of type CMDBUFFER_CURRENT_TYPE_CHAINED,
@@ -30,8 +32,7 @@
 #define CMDBUFFER_RESERVE_FRONT       (5*21)
 
 extern char cmdbuffer[BUFSIZE * (MAX_CMD_SIZE + 1) + CMDBUFFER_RESERVE_FRONT];
-extern int bufindr;
-extern int bufindw;
+extern size_t bufindr;
 extern int buflen;
 extern bool cmdbuffer_front_already_processed;
 
@@ -57,8 +58,6 @@ extern long Stopped_gcode_LastN;
 
 extern bool cmdqueue_pop_front();
 extern void cmdqueue_reset();
-extern bool cmdqueue_could_enqueue_front(int len_asked);
-extern bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update = false);
 #ifdef CMDBUFFER_DEBUG
 extern void cmdqueue_dump_to_serial_single_line(int nr, const char *p);
 extern void cmdqueue_dump_to_serial();

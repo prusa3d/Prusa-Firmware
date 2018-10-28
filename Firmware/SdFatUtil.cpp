@@ -46,13 +46,10 @@ int SdFatUtil::FreeRam() {
 
 void SdFatUtil::set_stack_guard()
 {	
-	char i = 0;
 	uint32_t *stack_guard;
 
 	stack_guard = (uint32_t*)&__bss_end;
-	//for (i = 0; i < 10; i++) {
-		*stack_guard = STACK_GUARD_TEST_VALUE;
-	//}
+    *stack_guard = STACK_GUARD_TEST_VALUE;
 }
 
 bool SdFatUtil::test_stack_integrity()
@@ -63,12 +60,9 @@ bool SdFatUtil::test_stack_integrity()
 
 uint32_t SdFatUtil::get_stack_guard_test_value()
 {
-	//static char i = 0;
 	uint32_t* stack_guard;
 	uint32_t output;
 	stack_guard = (uint32_t*)&__bss_end;
-	//output = *(stack_guard + i);
-	//i++;
 	output = *stack_guard;
 	return(output);
 }

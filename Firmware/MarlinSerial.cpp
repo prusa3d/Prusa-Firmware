@@ -99,13 +99,6 @@ ISR(USART1_RX_vect)
 #endif
 #endif
 
-// Constructors ////////////////////////////////////////////////////////////////
-
-MarlinSerial::MarlinSerial()
-{
-
-}
-
 // Public Methods //////////////////////////////////////////////////////////////
 
 void MarlinSerial::begin(long baud)
@@ -266,11 +259,11 @@ void MarlinSerial::println(void)
   print('\n');  
 }
 
-void MarlinSerial::println(const String &s)
+/*void MarlinSerial::println(const String &s)
 {
   print(s);
   println();
-}
+}*/
 
 void MarlinSerial::println(const char c[])
 {

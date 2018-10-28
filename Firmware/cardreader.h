@@ -19,9 +19,9 @@ public:
   //this is to delay autostart and hence the initialisaiton of the sd card to some seconds after the normal init, so the device is available quick after a reset
 
   void checkautostart(bool x); 
-  void openFile(char* name,bool read,bool replace_current=true);
-  void openLogFile(char* name);
-  void removeFile(char* name);
+  void openFile(const char* name,bool read,bool replace_current=true);
+  void openLogFile(const char* name);
+  void removeFile(const char* name);
   void closefile(bool store_location=false);
   void release();
   void startFileprint();
@@ -131,7 +131,12 @@ private:
 
 #endif // SDCARD_SORT_ALPHA
 
+#ifdef DEBUG_SD_SPEED_TEST
+public:
+#endif //DEBUG_SD_SPEED_TEST
   Sd2Card card;
+
+private:
   SdVolume volume;
   SdFile file;
   #define SD_PROCEDURE_DEPTH 1
@@ -149,6 +154,8 @@ private:
   LsAction lsAction; //stored for recursion.
   int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
+
+  void diveSubfolder (const char *fileName, SdFile& dir);
   void lsDive(const char *prepend, SdFile parent, const char * const match=NULL);
 #ifdef SDCARD_SORT_ALPHA
   void flush_presort();

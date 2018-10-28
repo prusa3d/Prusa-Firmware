@@ -127,8 +127,6 @@
 //END AUTOSET LOCATIONS OF LIMIT SWITCHES -ZP
 
 
-//#define Z_LATE_ENABLE // Enable Z the last moment. Needed if your Z driver overheats.
-
 // A single Z stepper driver is usually used to drive 2 stepper motors.
 // Uncomment this define to utilize a separate stepper driver for each Z axis motor.
 // Only a few motherboards support this, like RAMPS, which have dual extruder support (the 2nd, often unused, extruder driver is used
@@ -145,7 +143,7 @@
 //#define Y_DUAL_STEPPER_DRIVERS
 
 // Define if the two Y drives need to rotate in opposite directions
-#define INVERT_Y2_VS_Y_DIR true
+#define INVERT_Y2_VS_Y_DIR 1
 
 #ifdef Y_DUAL_STEPPER_DRIVERS
   #undef EXTRUDERS
@@ -162,13 +160,13 @@
 #define Z_HOME_RETRACT_MM 2
 //#define QUICK_HOME  //if this is defined, if both x and y are to be homed, a diagonal move will be performed initially.
 
-#define AXIS_RELATIVE_MODES {false, false, false, false}
+#define AXIS_RELATIVE_MODES {0, 0, 0, 0}
 #define MAX_STEP_FREQUENCY 40000 // Max step frequency for Ultimaker (5000 pps / half step). Toshiba steppers are 4x slower, but Prusa3D does not use those.
 //By default pololu step drivers require an active high signal. However, some high power drivers require an active low signal as step.
-#define INVERT_X_STEP_PIN false
-#define INVERT_Y_STEP_PIN false
-#define INVERT_Z_STEP_PIN false
-#define INVERT_E_STEP_PIN false
+#define INVERT_X_STEP_PIN 0
+#define INVERT_Y_STEP_PIN 0
+#define INVERT_Z_STEP_PIN 0
+#define INVERT_E_STEP_PIN 0
 
 //default stepper release if idle
 #define DEFAULT_STEPPER_DEACTIVE_TIME 60
@@ -180,9 +178,7 @@
 
 
 //Comment to disable setting feedrate multiplier via encoder
-#ifdef ULTIPANEL
-    #define ULTIPANEL_FEEDMULTIPLY
-#endif
+#define ULTIPANEL_FEEDMULTIPLY
 
 // minimum time in microseconds that a movement needs to take if the buffer is emptied.
 #define DEFAULT_MINSEGMENTTIME        20000
@@ -201,14 +197,6 @@
 #define MICROSTEP_MODES {16,16,16,16,16} // [1,2,4,8,16]
 
 
-
-// uncomment to enable an I2C based DIGIPOT like on the Azteeg X3 Pro
-//#define DIGIPOT_I2C
-// Number of channels available for I2C digipot, For Azteeg X3 Pro we have 8
-#define DIGIPOT_I2C_NUM_CHANNELS 8
-// actual motor currents in Amps, need as many here as DIGIPOT_I2C_NUM_CHANNELS
-#define DIGIPOT_I2C_MOTOR_CURRENTS {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
-
 //===========================================================================
 //=============================Additional Features===========================
 //===========================================================================
@@ -216,7 +204,7 @@
 //#define CHDK 4        //Pin for triggering CHDK to take a picture see how to use it here http://captain-slow.dk/2014/03/09/3d-printing-timelapses/
 #define CHDK_DELAY 50 //How long in ms the pin should stay HIGH before going LOW again
 
-#define SD_FINISHED_STEPPERRELEASE true  //if sd support and the file is finished: disable steppers?
+#define SD_FINISHED_STEPPERRELEASE 1  //if sd support and the file is finished: disable steppers?
 #define SD_FINISHED_RELEASECOMMAND "M84 X Y Z E" // You might want to keep the z enabled so your bed stays in place.
 
 #define SDCARD_RATHERRECENTFIRST  //reverse file order of sd card menu display. Its sorted practically after the file system block order.
@@ -251,7 +239,7 @@
 	
 	// SD Card Sorting options
 	// In current firmware Prusa Firmware version,
-	// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to false.
+	// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to 0.
 	#ifdef SDCARD_SORT_ALPHA
 	  #define SD_SORT_TIME 0
 	  #define SD_SORT_ALPHA 1
@@ -259,40 +247,16 @@
 	
 	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
 	  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
-	  #define SDSORT_GCODE       false  // Allow turning sorting on/off with LCD and M34 g-code.
-	  #define SDSORT_USES_RAM    false  // Pre-allocate a static array for faster pre-sorting.
-	  #define SDSORT_USES_STACK  false  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
-	  #define SDSORT_CACHE_NAMES false  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
-	  #define SDSORT_DYNAMIC_RAM false  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
+	  #define SDSORT_GCODE       0  // Allow turning sorting on/off with LCD and M34 g-code.
+	  #define SDSORT_USES_RAM    0  // Pre-allocate a static array for faster pre-sorting.
+	  #define SDSORT_USES_STACK  0  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
+	  #define SDSORT_CACHE_NAMES 0  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
+	  #define SDSORT_DYNAMIC_RAM 0  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
 	#endif
 	
 	#if defined(SDCARD_SORT_ALPHA)
 	  #define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
 	#endif
-
-// Show a progress bar on the LCD when printing from SD?
-//#define LCD_PROGRESS_BAR
-
-#ifdef LCD_PROGRESS_BAR
-  // Amount of time (ms) to show the bar
-  #define PROGRESS_BAR_BAR_TIME 2000
-  // Amount of time (ms) to show the status message
-  #define PROGRESS_BAR_MSG_TIME 3000
-  // Amount of time (ms) to retain the status message (0=forever)
-  #define PROGRESS_MSG_EXPIRE   0
-  // Enable this to show messages for MSG_TIME then hide them
-  //#define PROGRESS_MSG_ONCE
-#endif
-
-// The hardware watchdog should reset the microcontroller disabling all outputs, in case the firmware gets stuck and doesn't do temperature regulation.
-//#define USE_WATCHDOG
-
-#ifdef USE_WATCHDOG
-// If you have a watchdog reboot in an ArduinoMega2560 then the device will hang forever, as a watchdog reset will leave the watchdog on.
-// The "WATCHDOG_RESET_MANUAL" goes around this by not using the hardware reset.
-//  However, THIS FEATURE IS UNSAFE!, as it will only work if interrupts are disabled. And the code could hang in an interrupt routine with interrupts disabled.
-//#define WATCHDOG_RESET_MANUAL
-#endif
 
 // Enable the option to stop SD printing when hitting and endstops, needs to be enabled from the LCD menu when this option is enabled.
 //#define ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
@@ -303,7 +267,7 @@
 #define BABYSTEPPING
 #ifdef BABYSTEPPING
   #define BABYSTEP_XY  //not only z, but also XY in the menu. more clutter, more functions
-  #define BABYSTEP_INVERT_Z false  //true for inverse movements in Z
+  #define BABYSTEP_INVERT_Z 0  //1 for inverse movements in Z
   #define BABYSTEP_Z_MULTIPLICATOR 2 //faster z movements
 
   #ifdef COREXY
@@ -318,7 +282,7 @@
     * K=0 means advance disabled.
     * See Marlin documentation for calibration instructions.
     */
-//#define LIN_ADVANCE
+#define LIN_ADVANCE
 
 #ifdef LIN_ADVANCE
   #define LIN_ADVANCE_K 0 //Try around 45 for PLA, around 25 for ABS.
@@ -362,10 +326,7 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 // in the pins.h file.  When using a push button pulling the pin to ground this will need inverted.  This setting should
 // be commented out otherwise
 #define SDCARDDETECTINVERTED
-
-#ifdef ULTIPANEL
- #undef SDCARDDETECTINVERTED
-#endif
+#undef SDCARDDETECTINVERTED
 
 // Power Signal Control Definitions
 // By default use ATX definition

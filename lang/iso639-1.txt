@@ -1,0 +1,10 @@
+#language codes ISO639-1
+# iso english  localized
+#-----------------------
+# en  English  English
+# de  German   Deutsch
+# cs  Czech    Cestina
+# es  Spanish  Espanol
+# fr  French   Francais
+# it  Italian  Italiano
+# pl  Polish   Polski

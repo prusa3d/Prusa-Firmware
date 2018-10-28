@@ -1,11 +1,15 @@
 #include "Marlin.h"
 #include "Configuration.h"
 #include "ConfigurationStore.h"
-#include "language_all.h"
+#include "language.h"
 #include "mesh_bed_calibration.h"
 #include "mesh_bed_leveling.h"
 #include "stepper.h"
 #include "ultralcd.h"
+
+#ifdef TMC2130
+#include "tmc2130.h"
+#endif //TMC2130
 
 uint8_t world2machine_correction_mode;
 float   world2machine_rotation_and_skew[2][2];
@@ -20,7 +24,7 @@ float   world2machine_shift[2];
 #define WEIGHT_FIRST_ROW_Y_LOW  (0.0f)
 
 #define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER) // -22 + 23 = 1
-#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER) // -0.6 + 5 = 4.4
+#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER + 4.f) // -0.6 + 5 + 4 = 8.4
 
 // Scaling of the real machine axes against the programmed dimensions in the firmware.
 // The correction is tiny, here around 0.5mm on 250mm length.
@@ -53,13 +57,36 @@ const float bed_skew_angle_extreme = (0.25f * M_PI / 180.f);
 
 #ifdef HEATBED_V2
 
-// Positions of the bed reference points in the machine coordinates, referenced to the P.I.N.D.A sensor.
-// The points are the following: center front, center right, center rear, center left.
+/**
+ * [0,0] bed print area point X coordinate in bed coordinates ver. 05d/24V
+ */
+#define BED_PRINT_ZERO_REF_X 2.f
+/**
+ * [0,0] bed print area point Y coordinate in bed coordinates ver. 05d/24V
+ */
+#define BED_PRINT_ZERO_REF_Y 9.4f
+
+/**
+ * @brief Positions of the bed reference points in print area coordinates. ver. 05d/24V
+ *
+ * Numeral constants are in bed coordinates, subtracting macro defined values converts it to print area coordinates.
+ *
+ * The points are the following:
+ * MK2: center front, center right, center rear, center left.
+ * MK25 and MK3: front left, front right, rear right, rear left
+ */
 const float bed_ref_points_4[] PROGMEM = {
-	13.f - BED_ZERO_REF_X,   10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X,  10.4f - BED_ZERO_REF_Y,
-	221.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
-	13.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
+	37.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_X,
+	18.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	18.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	245.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y,
+
+	37.f - BED_PRINT_ZERO_REF_X - X_PROBE_OFFSET_FROM_EXTRUDER  - SHEET_PRINT_ZERO_REF_X,
+	210.4f - BED_PRINT_ZERO_REF_Y - Y_PROBE_OFFSET_FROM_EXTRUDER - SHEET_PRINT_ZERO_REF_Y
 };
 
 const float bed_ref_points[] PROGMEM = {
@@ -104,16 +131,23 @@ const float bed_ref_points[] PROGMEM = {
 
 static inline float sqr(float x) { return x * x; }
 
+#ifdef HEATBED_V2
+static inline bool point_on_1st_row(const uint8_t /*i*/)
+{
+	return false;
+}
+#else //HEATBED_V2
 static inline bool point_on_1st_row(const uint8_t i)
 {
-	return (i < 2);
+	return (i < 3);
 }
+#endif //HEATBED_V2
 
 // Weight of a point coordinate in a least squares optimization.
 // The first row of points may not be fully reachable
 // and the y values may be shortened a bit by the bed carriage
 // pulling the belt up.
-static inline float point_weight_x(const uint8_t i, const uint8_t npts, const float &y)
+static inline float point_weight_x(const uint8_t i, const float &y)
 {
     float w = 1.f;
     if (point_on_1st_row(i)) {
@@ -135,7 +169,7 @@ static inline float point_weight_x(const uint8_t i, const uint8_t npts, const fl
 // The first row of points may not be fully reachable
 // and the y values may be shortened a bit by the bed carriage
 // pulling the belt up.
-static inline float point_weight_y(const uint8_t i, const uint8_t npts, const float &y)
+static inline float point_weight_y(const uint8_t i, const float &y)
 {
     float w = 1.f;
     if (point_on_1st_row(i)) {
@@ -152,23 +186,33 @@ static inline float point_weight_y(const uint8_t i, const uint8_t npts, const fl
     }
     return w;
 }
-
-// Non-Linear Least Squares fitting of the bed to the measured induction points
-// using the Gauss-Newton method.
-// This method will maintain a unity length of the machine axes,
-// which is the correct approach if the sensor points are not measured precisely.
+/**
+ * @brief Calculate machine skew and offset
+ *
+ * Non-Linear Least Squares fitting of the bed to the measured induction points
+ * using the Gauss-Newton method.
+ * This method will maintain a unity length of the machine axes,
+ * which is the correct approach if the sensor points are not measured precisely.
+ * @param measured_pts Matrix of 2D points (maximum 18 floats)
+ * @param npts Number of points (maximum 9)
+ * @param true_pts
+ * @param [out] vec_x Resulting correction matrix. X axis vector
+ * @param [out] vec_y Resulting correction matrix. Y axis vector
+ * @param [out] cntr  Resulting correction matrix. [0;0] pont offset
+ * @param verbosity_level
+ * @return BedSkewOffsetDetectionResultType
+ */
 BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
-    // Matrix of maximum 9 2D points (18 floats)
     const float  *measured_pts,
     uint8_t       npts,
     const float  *true_pts,
-    // Resulting correction matrix.
     float        *vec_x,
     float        *vec_y,
     float        *cntr,
-    // Temporary values, 49-18-(2*3)=25 floats
-    //    , float *temp
-    int8_t        verbosity_level
+    int8_t
+#ifdef SUPPORT_VERBOSITY
+    verbosity_level
+#endif //SUPPORT_VERBOSITY
     )
 {
 	float angleDiff;
@@ -250,7 +294,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                              (c == 0) ? 1.f :
                             ((c == 2) ? (-s1 * measured_pts[2 * i]) :
                                         (-c2 * measured_pts[2 * i + 1]));
-                        float w = point_weight_x(i, npts, measured_pts[2 * i + 1]);
+                        float w = point_weight_x(i, measured_pts[2 * i + 1]);
                         acc += a * b * w;
                     }
                     // Second for the residuum in the y axis. 
@@ -265,7 +309,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                              (c == 1) ? 1.f :
                             ((c == 2) ? ( c1 * measured_pts[2 * i]) :
                                         (-s2 * measured_pts[2 * i + 1]));
-                        float w = point_weight_y(i, npts, measured_pts[2 * i + 1]);
+                        float w = point_weight_y(i, measured_pts[2 * i + 1]);
                         acc += a * b * w;
                     }
                 }
@@ -281,7 +325,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                         ((r == 2) ? (-s1 * measured_pts[2 * i]) :
                                     (-c2 * measured_pts[2 * i + 1])));
                     float fx = c1 * measured_pts[2 * i] - s2 * measured_pts[2 * i + 1] + cntr[0] - pgm_read_float(true_pts + i * 2);
-                    float w = point_weight_x(i, npts, measured_pts[2 * i + 1]);
+                    float w = point_weight_x(i, measured_pts[2 * i + 1]);
                     acc += j * fx * w;
                 }
                 {
@@ -291,7 +335,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
                         ((r == 2) ? ( c1 * measured_pts[2 * i]) :
                                     (-s2 * measured_pts[2 * i + 1])));
                     float fy = s1 * measured_pts[2 * i] + c2 * measured_pts[2 * i + 1] + cntr[1] - pgm_read_float(true_pts + i * 2 + 1);
-                    float w = point_weight_y(i, npts, measured_pts[2 * i + 1]);
+                    float w = point_weight_y(i, measured_pts[2 * i + 1]);
                     acc += j * fy * w;
                 }
             }
@@ -412,7 +456,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
 				#ifdef SUPPORT_VERBOSITY
 				if(verbosity_level >= 20) SERIAL_ECHOPGM("Point on first row");
 				#endif // SUPPORT_VERBOSITY
-				float w = point_weight_y(i, npts, measured_pts[2 * i + 1]);
+				float w = point_weight_y(i, measured_pts[2 * i + 1]);
 				if (sqrt(errX) > BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_X ||
 					(w != 0.f && sqrt(errY) > BED_CALIBRATION_POINT_OFFSET_MAX_1ST_ROW_Y)) {
 					result = BED_SKEW_OFFSET_DETECTION_FITTING_FAILED;
@@ -509,7 +553,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
         for (int8_t i = 0; i < npts; ++ i) {
             float x = vec_x[0] * measured_pts[i * 2] + vec_y[0] * measured_pts[i * 2 + 1];
             float y = vec_x[1] * measured_pts[i * 2] + vec_y[1] * measured_pts[i * 2 + 1];
-            float w = point_weight_x(i, npts, y);
+            float w = point_weight_x(i, y);
 			cntr[0] += w * (pgm_read_float(true_pts + i * 2) - x);
 			wx += w;
 			#ifdef SUPPORT_VERBOSITY
@@ -526,7 +570,7 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
 				MYSERIAL.print(wx);
 			}
 			#endif // SUPPORT_VERBOSITY
-            w = point_weight_y(i, npts, y);
+            w = point_weight_y(i, y);
 			cntr[1] += w * (pgm_read_float(true_pts + i * 2 + 1) - y);
 			wy += w;
 			#ifdef SUPPORT_VERBOSITY
@@ -642,6 +686,9 @@ BedSkewOffsetDetectionResultType calculate_machine_skew_and_offset_LS(
     return result;
 }
 
+/**
+ * @brief Erase calibration data stored in EEPROM
+ */
 void reset_bed_offset_and_skew()
 {
     eeprom_update_dword((uint32_t*)(EEPROM_BED_CALIBRATION_CENTER+0), 0x0FFFFFFFF);
@@ -696,6 +743,12 @@ static void world2machine_update(const float vec_x[2], const float vec_y[2], con
     }
 }
 
+/**
+ * @brief Set calibration matrix to identity
+ *
+ * In contrast with world2machine_revert_to_uncorrected(), it doesn't wait for finishing moves
+ * nor updates the current position with the absolute values.
+ */
 void world2machine_reset()
 {
     const float vx[] = { 1.f, 0.f };
@@ -704,15 +757,36 @@ void world2machine_reset()
     world2machine_update(vx, vy, cntr);
 }
 
+/**
+ * @brief Get calibration matrix default value
+ *
+ * This is used if no valid calibration data can be read from EEPROM.
+ * @param [out] vec_x axis x vector
+ * @param [out] vec_y axis y vector
+ * @param [out] cntr offset vector
+ */
+static void world2machine_default(float vec_x[2], float vec_y[2], float cntr[2])
+{
+    vec_x[0] = 1.f;
+    vec_x[1] = 0.f;
+    vec_y[0] = 0.f;
+    vec_y[1] = 1.f;
+    cntr[0] =  0.f;
+#ifdef DEFAULT_Y_OFFSET
+    cntr[1] = DEFAULT_Y_OFFSET;
+#else
+    cntr[1] = 0.f;
+#endif
+}
+/**
+ * @brief Set calibration matrix to identity and update current position with absolute position
+ *
+ * Wait for the motors to stop and then update the current position with the absolute values.
+ */
 void world2machine_revert_to_uncorrected()
 {
     if (world2machine_correction_mode != WORLD2MACHINE_CORRECTION_NONE) {
-        // Reset the machine correction matrix.
-        const float vx[] = { 1.f, 0.f };
-        const float vy[] = { 0.f, 1.f };
-        const float cntr[] = { 0.f, 0.f };
-        world2machine_update(vx, vy, cntr);
-        // Wait for the motors to stop and update the current position with the absolute values.
+        world2machine_reset();
         st_synchronize();
         current_position[X_AXIS] = st_get_position_mm(X_AXIS);
         current_position[Y_AXIS] = st_get_position_mm(Y_AXIS);
@@ -725,88 +799,129 @@ static inline bool vec_undef(const float v[2])
     return vx[0] == 0x0FFFFFFFF || vx[1] == 0x0FFFFFFFF;
 }
 
-void world2machine_initialize()
+
+/**
+ * @brief Read calibration data from EEPROM
+ *
+ * If no calibration data has been stored in EEPROM or invalid,
+ * world2machine_default() is used.
+ *
+ * If stored calibration data is invalid, EEPROM storage is cleared.
+ * @param [out] vec_x axis x vector
+ * @param [out] vec_y axis y vector
+ * @param [out] cntr offset vector
+ */
+void world2machine_read_valid(float vec_x[2], float vec_y[2], float cntr[2])
 {
-    //SERIAL_ECHOLNPGM("world2machine_initialize");
-    float cntr[2] = {
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0)),
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4))
-    };
-    float vec_x[2] = {
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0)),
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4))
-    };
-    float vec_y[2] = {
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0)),
-        eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4))
-    };
+    vec_x[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +0));
+    vec_x[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_X +4));
+    vec_y[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +0));
+    vec_y[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y +4));
+    cntr[0] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+0));
+    cntr[1] = eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER+4));
 
     bool reset = false;
-    if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y)) {
-//        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
+    if (vec_undef(cntr) || vec_undef(vec_x) || vec_undef(vec_y))
+    {
+#if 0
+        SERIAL_ECHOLNPGM("Undefined bed correction matrix.");
+#endif
         reset = true;
     }
-    else {
+    else
+    {
         // Length of the vec_x shall be close to unity.
         float l = sqrt(vec_x[0] * vec_x[0] + vec_x[1] * vec_x[1]);
-        if (l < 0.9 || l > 1.1) {
-//			SERIAL_ECHOLNPGM("X vector length:");
-//			MYSERIAL.println(l);
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
+        if (l < 0.9 || l > 1.1)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("X vector length:");
+            MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the X vector out of range.");
+#endif
             reset = true;
         }
         // Length of the vec_y shall be close to unity.
         l = sqrt(vec_y[0] * vec_y[0] + vec_y[1] * vec_y[1]);
-        if (l < 0.9 || l > 1.1) {
-//			SERIAL_ECHOLNPGM("Y vector length:");
-//			MYSERIAL.println(l);
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the Y vector out of range.");
+        if (l < 0.9 || l > 1.1)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("Y vector length:");
+            MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Length of the Y vector out of range.");
+#endif
             reset = true;
         }
         // Correction of the zero point shall be reasonably small.
         l = sqrt(cntr[0] * cntr[0] + cntr[1] * cntr[1]);
-        if (l > 15.f) {
-//			SERIAL_ECHOLNPGM("Zero point correction:");
-//			MYSERIAL.println(l);
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Shift out of range.");
+        if (l > 15.f)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("Zero point correction:");
+            MYSERIAL.println(l);
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. Shift out of range.");
+#endif
             reset = true;
         }
         // vec_x and vec_y shall be nearly perpendicular.
         l = vec_x[0] * vec_y[0] + vec_x[1] * vec_y[1];
-        if (fabs(l) > 0.1f) {
-//            SERIAL_ECHOLNPGM("Invalid bed correction matrix. X/Y axes are far from being perpendicular.");
+        if (fabs(l) > 0.1f)
+        {
+#if 0
+            SERIAL_ECHOLNPGM("Invalid bed correction matrix. X/Y axes are far from being perpendicular.");
+#endif
             reset = true;
         }
     }
 
-    if (reset) {
-//        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
+    if (reset)
+    {
+#if 0
+        SERIAL_ECHOLNPGM("Invalid bed correction matrix. Resetting to identity.");
+#endif
         reset_bed_offset_and_skew();
-        world2machine_reset();
-    } else {
-        world2machine_update(vec_x, vec_y, cntr);
-        /*
-        SERIAL_ECHOPGM("world2machine_initialize() loaded: ");
-        MYSERIAL.print(world2machine_rotation_and_skew[0][0], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_rotation_and_skew[0][1], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_rotation_and_skew[1][0], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_rotation_and_skew[1][1], 5);
-        SERIAL_ECHOPGM(", offset ");
-        MYSERIAL.print(world2machine_shift[0], 5);
-        SERIAL_ECHOPGM(", ");
-        MYSERIAL.print(world2machine_shift[1], 5);
-        SERIAL_ECHOLNPGM("");
-        */
+        world2machine_default(vec_x, vec_y, cntr);
     }
 }
 
-// When switching from absolute to corrected coordinates,
-// this will get the absolute coordinates from the servos,
-// applies the inverse world2machine transformation
-// and stores the result into current_position[x,y].
+/**
+ * @brief Read and apply validated calibration data from EEPROM
+ */
+void world2machine_initialize()
+{
+#if 0
+    SERIAL_ECHOLNPGM("world2machine_initialize");
+#endif
+    float vec_x[2];
+    float vec_y[2];
+    float cntr[2];
+    world2machine_read_valid(vec_x, vec_y, cntr);
+    world2machine_update(vec_x, vec_y, cntr);
+#if 0
+    SERIAL_ECHOPGM("world2machine_initialize() loaded: ");
+    MYSERIAL.print(world2machine_rotation_and_skew[0][0], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_rotation_and_skew[0][1], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_rotation_and_skew[1][0], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_rotation_and_skew[1][1], 5);
+    SERIAL_ECHOPGM(", offset ");
+    MYSERIAL.print(world2machine_shift[0], 5);
+    SERIAL_ECHOPGM(", ");
+    MYSERIAL.print(world2machine_shift[1], 5);
+    SERIAL_ECHOLNPGM("");
+#endif
+}
+
+/**
+ * @brief Update current position after switching to corrected coordinates
+ *
+ * When switching from absolute to corrected coordinates,
+ * this will get the absolute coordinates from the servos,
+ * applies the inverse world2machine transformation
+ * and stores the result into current_position[x,y].
+ */
 void world2machine_update_current()
 {
     float x = current_position[X_AXIS] - world2machine_shift[0];
@@ -848,8 +963,16 @@ static inline void update_current_position_z()
 }
 
 // At the current position, find the Z stop.
-inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int verbosity_level)
+inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, int
+#ifdef SUPPORT_VERBOSITY
+    verbosity_level
+#endif //SUPPORT_VERBOSITY
+        )
 {
+#ifdef TMC2130
+	FORCE_HIGH_POWER_START;
+#endif
+
 	#ifdef SUPPORT_VERBOSITY
     if(verbosity_level >= 10) SERIAL_ECHOLNPGM("find bed induction sensor point z");
 	#endif // SUPPORT_VERBOSITY
@@ -865,8 +988,11 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     update_current_position_z();
     if (! endstop_z_hit_on_purpose())
         goto error;
-
-    for (uint8_t i = 0; i < n_iter; ++ i) {
+#ifdef TMC2130
+	if (READ(Z_TMC2130_DIAG) != 0) goto error; //crash Z detected
+#endif //TMC2130
+    for (uint8_t i = 0; i < n_iter; ++ i)
+	{
         // Move up the retract distance.
         current_position[Z_AXIS] += .5f;
         go_to_current(homing_feedrate[Z_AXIS]/60);
@@ -877,49 +1003,79 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
         update_current_position_z();
         if (! endstop_z_hit_on_purpose())
             goto error;
+#ifdef TMC2130
+		if (READ(Z_TMC2130_DIAG) != 0) goto error; //crash Z detected
+#endif //TMC2130
 //        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
 //        MYSERIAL.print(current_position[Z_AXIS], 5);
 //        SERIAL_ECHOLNPGM("");
+		float dz = i?abs(current_position[Z_AXIS] - (z / i)):0;
         z += current_position[Z_AXIS];
+//		printf_P(PSTR(" Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
+		if (dz > 0.05) goto error;//deviation > 50um
     }
     current_position[Z_AXIS] = z;
     if (n_iter > 1)
         current_position[Z_AXIS] /= float(n_iter);
 
+
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
 //    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 3");
-    return true;
+#ifdef TMC2130
+	FORCE_HIGH_POWER_END;
+#endif
+	return true;
 
 error:
 //    SERIAL_ECHOLNPGM("find_bed_induction_sensor_point_z 4");
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
-    return false;
+#ifdef TMC2130
+	FORCE_HIGH_POWER_END;
+#endif
+	return false;
 }
 
+#ifdef NEW_XYZCAL
+extern bool xyzcal_find_bed_induction_sensor_point_xy();
+#endif //NEW_XYZCAL
 // Search around the current_position[X,Y],
 // look for the induction sensor response.
 // Adjust the  current_position[X,Y,Z] to the center of the target dot and its response Z coordinate.
 #define FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS (8.f)
-#define FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS (6.f)
+#define FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS (4.f)
 #define FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP  (1.f)
+#ifdef HEATBED_V2
+#define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (2.f)
+#define FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR  (0.03f)
+#else //HEATBED_V2
 #define FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP   (0.2f)
-inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
+#endif //HEATBED_V2
+
+#ifdef HEATBED_V2
+inline bool find_bed_induction_sensor_point_xy(int
+#if !defined (NEW_XYZCAL) && defined (SUPPORT_VERBOSITY)
+        verbosity_level
+#endif
+        )
 {
+#ifdef NEW_XYZCAL
+	return xyzcal_find_bed_induction_sensor_point_xy();
+#else //NEW_XYZCAL
 	#ifdef SUPPORT_VERBOSITY
-	if(verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
+	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
 	#endif // SUPPORT_VERBOSITY
 	float feedrate = homing_feedrate[X_AXIS] / 60.f;
-    bool found = false;
+	bool found = false;
 
-    {
-        float x0 = current_position[X_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
-        float x1 = current_position[X_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
-        float y0 = current_position[Y_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
-        float y1 = current_position[Y_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
-        uint8_t nsteps_y;
-        uint8_t i;
+	{
+		float x0 = current_position[X_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
+		float x1 = current_position[X_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
+		float y0 = current_position[Y_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
+		float y1 = current_position[Y_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
+		uint8_t nsteps_y;
+		uint8_t i;
 		if (x0 < X_MIN_POS) {
 			x0 = X_MIN_POS;
 			#ifdef SUPPORT_VERBOSITY
@@ -944,163 +1100,417 @@ inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
 			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("Y searching radius higher than X_MAX. Clamping was done.");
 			#endif // SUPPORT_VERBOSITY
 		}
-        nsteps_y = int(ceil((y1 - y0) / FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP));
+		nsteps_y = int(ceil((y1 - y0) / FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP));
 
-        enable_endstops(false);
-        bool  dir_positive = true;
+		enable_endstops(false);
+		bool  dir_positive = true;
+		float z_error = 2 * FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP;
+		float find_bed_induction_sensor_point_z_step = FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP;
+		float initial_z_position = current_position[Z_AXIS];
 
-//        go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
-        go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
-        // Continously lower the Z axis.
-        endstops_hit_on_purpose();
-        enable_z_endstop(true);
-        while (current_position[Z_AXIS] > -10.f) {
-            // Do nsteps_y zig-zag movements.
-            current_position[Y_AXIS] = y0;
-            for (i = 0; i < nsteps_y; current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++ i) {
-                // Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
-                current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
-                go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
-                dir_positive = ! dir_positive;
-                if (endstop_z_hit_on_purpose())
-                    goto endloop;
-            }
-            for (i = 0; i < nsteps_y; current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++ i) {
-                // Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
-                current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
-                go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
-                dir_positive = ! dir_positive;
-                if (endstop_z_hit_on_purpose())
-                    goto endloop;
-            }
-        }
-        endloop:
-//        SERIAL_ECHOLN("First hit");
+		//        go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
+		go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
+		// Continously lower the Z axis.
+		endstops_hit_on_purpose();
+		enable_z_endstop(true);
+		bool direction = false;
+		while (current_position[Z_AXIS] > -10.f && z_error > FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR) {
+			// Do nsteps_y zig-zag movements.
 
-        // we have to let the planner know where we are right now as it is not where we said to go.
-        update_current_position_xyz();
+			SERIAL_ECHOPGM("z_error: ");
+			MYSERIAL.println(z_error);
+			current_position[Y_AXIS] = direction ? y1 : y0;
+			initial_z_position = current_position[Z_AXIS];
+			for (i = 0; i < (nsteps_y - 1); (direction == false) ? (current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1)) : (current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1)), ++i) {
+				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
+				current_position[Z_AXIS] -= find_bed_induction_sensor_point_z_step / float(nsteps_y - 1);
+				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
+				dir_positive = !dir_positive;
+				if (endstop_z_hit_on_purpose()) {
+					update_current_position_xyz();
+					z_error = initial_z_position - current_position[Z_AXIS] + find_bed_induction_sensor_point_z_step;
+					if (z_error > FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR) {
+						find_bed_induction_sensor_point_z_step = z_error / 2;
+						current_position[Z_AXIS] += z_error;
+						enable_z_endstop(false);
+						(direction == false) ? go_xyz(x0, y0, current_position[Z_AXIS], feedrate) : go_xyz(x0, y1, current_position[Z_AXIS], feedrate);
+						enable_z_endstop(true);
+					}
+					goto endloop;
+				}
+			}
+			for (i = 0; i < (nsteps_y - 1); (direction == false) ? (current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1)) : (current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1)), ++i) {
+				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
+				current_position[Z_AXIS] -= find_bed_induction_sensor_point_z_step / float(nsteps_y - 1);
+				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
+				dir_positive = !dir_positive;
+				if (endstop_z_hit_on_purpose()) {
+					update_current_position_xyz();
+					z_error = initial_z_position - current_position[Z_AXIS];
+					if (z_error > FIND_BED_INDUCTION_SENSOR_POINT_MAX_Z_ERROR) {
+						find_bed_induction_sensor_point_z_step = z_error / 2;
+						current_position[Z_AXIS] += z_error;
+						enable_z_endstop(false);
+						direction = !direction;
+						(direction == false) ? go_xyz(x0, y0, current_position[Z_AXIS], feedrate) : go_xyz(x0, y1, current_position[Z_AXIS], feedrate);
+						enable_z_endstop(true);
+					}
+					goto endloop;
+				}
+			}
+		endloop:;
+		}
+		#ifdef SUPPORT_VERBOSITY
+		if (verbosity_level >= 20) {
+			SERIAL_ECHO("First hit");
+			SERIAL_ECHO("- X: ");
+			MYSERIAL.print(current_position[X_AXIS]);
+			SERIAL_ECHO("; Y: ");
+			MYSERIAL.print(current_position[Y_AXIS]);
+			SERIAL_ECHO("; Z: ");
+			MYSERIAL.println(current_position[Z_AXIS]);
+		}
+		#endif //SUPPORT_VERBOSITY
+		//lcd_show_fullscreen_message_and_wait_P(PSTR("First hit"));
+		//lcd_update_enable(true);
 
-        // Search in this plane for the first hit. Zig-zag first in X, then in Y axis.
-        for (int8_t iter = 0; iter < 3; ++ iter) {
-            if (iter > 0) {
-                // Slightly lower the Z axis to get a reliable trigger.
-                current_position[Z_AXIS] -= 0.02f;
-                go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
-            }
+		float init_x_position = current_position[X_AXIS];
+		float init_y_position = current_position[Y_AXIS];
 
-            // Do nsteps_y zig-zag movements.
-            float a, b;
-            enable_endstops(false);
-            enable_z_endstop(false);
-            current_position[Y_AXIS] = y0;
-            go_xy(x0, current_position[Y_AXIS], feedrate);
-            enable_z_endstop(true);
-            found = false;
-            for (i = 0, dir_positive = true; i < nsteps_y; current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++ i, dir_positive = ! dir_positive) {
-                go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
-                if (endstop_z_hit_on_purpose()) {
-                    found = true;
-                    break;
-                }
-            }
-            update_current_position_xyz();
-            if (! found) {
-//                SERIAL_ECHOLN("Search in Y - not found");
-                continue;
-            }
-//            SERIAL_ECHOLN("Search in Y - found");
-            a = current_position[Y_AXIS];
+		// we have to let the planner know where we are right now as it is not where we said to go.
+		update_current_position_xyz();
+		enable_z_endstop(false);
+		
+		for (int8_t iter = 0; iter < 2; ++iter) {
+			/*SERIAL_ECHOPGM("iter: ");
+			MYSERIAL.println(iter);
+			SERIAL_ECHOPGM("1 - current_position[Z_AXIS]: ");
+			MYSERIAL.println(current_position[Z_AXIS]);*/
 
-            enable_z_endstop(false);
-            current_position[Y_AXIS] = y1;
-            go_xy(x0, current_position[Y_AXIS], feedrate);
-            enable_z_endstop(true);
-            found = false;
-            for (i = 0, dir_positive = true; i < nsteps_y; current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++ i, dir_positive = ! dir_positive) {
-                go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
-                if (endstop_z_hit_on_purpose()) {
-                    found = true;
-                    break;
-                }
-            }
-            update_current_position_xyz();
-            if (! found) {
-//                SERIAL_ECHOLN("Search in Y2 - not found");
-                continue;
-            }
-//            SERIAL_ECHOLN("Search in Y2 - found");
-            b = current_position[Y_AXIS];
-            current_position[Y_AXIS] = 0.5f * (a + b);
+			// Slightly lower the Z axis to get a reliable trigger.
+			current_position[Z_AXIS] -= 0.1f;
+			go_xyz(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], homing_feedrate[Z_AXIS] / (60 * 10));
 
-            // Search in the X direction along a cross.
-            found = false;
-            enable_z_endstop(false);
-            go_xy(x0, current_position[Y_AXIS], feedrate);
-            enable_z_endstop(true);
-            go_xy(x1, current_position[Y_AXIS], feedrate);
-            update_current_position_xyz();
-            if (! endstop_z_hit_on_purpose()) {
-//                SERIAL_ECHOLN("Search X span 0 - not found");
-                continue;
-            }
-//            SERIAL_ECHOLN("Search X span 0 - found");
-            a = current_position[X_AXIS];
-            enable_z_endstop(false);
-            go_xy(x1, current_position[Y_AXIS], feedrate);
-            enable_z_endstop(true);
-            go_xy(x0, current_position[Y_AXIS], feedrate);
-            update_current_position_xyz();
-            if (! endstop_z_hit_on_purpose()) {
-//                SERIAL_ECHOLN("Search X span 1 - not found");
-                continue;
-            }
-//            SERIAL_ECHOLN("Search X span 1 - found");
-            b = current_position[X_AXIS];
-            // Go to the center.
-            enable_z_endstop(false);
-            current_position[X_AXIS] = 0.5f * (a + b);
-            go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
-            found = true;
+			SERIAL_ECHOPGM("2 - current_position[Z_AXIS]: ");
+			MYSERIAL.println(current_position[Z_AXIS]);
+			// Do nsteps_y zig-zag movements.
+			float a, b;
+			float avg[2] = { 0,0 };
+			invert_z_endstop(true);
+			for (int iteration = 0; iteration < 8; iteration++) {
+
+				found = false;				
+				enable_z_endstop(true);
+				go_xy(init_x_position + 16.0f, current_position[Y_AXIS], feedrate / 5);
+				update_current_position_xyz();
+				if (!endstop_z_hit_on_purpose()) {
+					//                SERIAL_ECHOLN("Search X span 0 - not found");
+					continue;
+				}
+				//            SERIAL_ECHOLN("Search X span 0 - found");
+				a = current_position[X_AXIS];
+				enable_z_endstop(false);
+				go_xy(init_x_position, current_position[Y_AXIS], feedrate / 5);
+				enable_z_endstop(true);
+				go_xy(init_x_position - 16.0f, current_position[Y_AXIS], feedrate / 5);
+				update_current_position_xyz();
+				if (!endstop_z_hit_on_purpose()) {
+					//                SERIAL_ECHOLN("Search X span 1 - not found");
+					continue;
+				}
+				//            SERIAL_ECHOLN("Search X span 1 - found");
+				b = current_position[X_AXIS];
+				// Go to the center.
+				enable_z_endstop(false);
+				current_position[X_AXIS] = 0.5f * (a + b);
+				go_xy(current_position[X_AXIS], init_y_position, feedrate / 5);
+				found = true;
+				
+				// Search in the Y direction along a cross.
+				found = false;
+				enable_z_endstop(true);
+				go_xy(current_position[X_AXIS], init_y_position + 16.0f, feedrate / 5);
+				update_current_position_xyz();
+				if (!endstop_z_hit_on_purpose()) {
+					//                SERIAL_ECHOLN("Search Y2 span 0 - not found");
+					continue;
+				}
+				//            SERIAL_ECHOLN("Search Y2 span 0 - found");
+				a = current_position[Y_AXIS];
+				enable_z_endstop(false);
+				go_xy(current_position[X_AXIS], init_y_position, feedrate / 5);
+				enable_z_endstop(true);
+				go_xy(current_position[X_AXIS], init_y_position - 16.0f, feedrate / 5);
+				update_current_position_xyz();
+				if (!endstop_z_hit_on_purpose()) {
+					//                SERIAL_ECHOLN("Search Y2 span 1 - not found");
+					continue;
+				}
+				//            SERIAL_ECHOLN("Search Y2 span 1 - found");
+				b = current_position[Y_AXIS];
+				// Go to the center.
+				enable_z_endstop(false);
+				current_position[Y_AXIS] = 0.5f * (a + b);
+				go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate / 5);
+
+				#ifdef SUPPORT_VERBOSITY
+				if (verbosity_level >= 20) {
+					SERIAL_ECHOPGM("ITERATION: ");
+					MYSERIAL.println(iteration);
+					SERIAL_ECHOPGM("CURRENT POSITION X: ");
+					MYSERIAL.println(current_position[X_AXIS]);
+					SERIAL_ECHOPGM("CURRENT POSITION Y: ");
+					MYSERIAL.println(current_position[Y_AXIS]);
+				}
+				#endif //SUPPORT_VERBOSITY
+
+				if (iteration > 0) {
+					// Average the last 7 measurements.
+					avg[X_AXIS] += current_position[X_AXIS];
+					avg[Y_AXIS] += current_position[Y_AXIS];
+				}
+
+				init_x_position = current_position[X_AXIS];
+				init_y_position = current_position[Y_AXIS];
+
+				found = true;
+
+			}
+			invert_z_endstop(false);
+			avg[X_AXIS] *= (1.f / 7.f);
+			avg[Y_AXIS] *= (1.f / 7.f);
+
+			current_position[X_AXIS] = avg[X_AXIS];
+			current_position[Y_AXIS] = avg[Y_AXIS];
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) {
+				SERIAL_ECHOPGM("AVG CURRENT POSITION X: ");
+				MYSERIAL.println(current_position[X_AXIS]);
+				SERIAL_ECHOPGM("AVG CURRENT POSITION Y: ");
+				MYSERIAL.println(current_position[Y_AXIS]);
+			}
+			#endif // SUPPORT_VERBOSITY
+			go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) {
+				lcd_show_fullscreen_message_and_wait_P(PSTR("Final position"));
+				lcd_update_enable(true);
+			}
+			#endif //SUPPORT_VERBOSITY
+
+			break;
+		}
+	}
+	
+	enable_z_endstop(false);
+	invert_z_endstop(false);
+	return found;
+#endif //NEW_XYZCAL
+}
+#else //HEATBED_V2
+inline bool find_bed_induction_sensor_point_xy(int verbosity_level)
+{
+#ifdef NEW_XYZCAL
+	return xyzcal_find_bed_induction_sensor_point_xy();
+#else //NEW_XYZCAL
+	#ifdef SUPPORT_VERBOSITY
+	if (verbosity_level >= 10) MYSERIAL.println("find bed induction sensor point xy");
+	#endif // SUPPORT_VERBOSITY
+	float feedrate = homing_feedrate[X_AXIS] / 60.f;
+	bool found = false;
+
+	{
+		float x0 = current_position[X_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
+		float x1 = current_position[X_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_X_RADIUS;
+		float y0 = current_position[Y_AXIS] - FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
+		float y1 = current_position[Y_AXIS] + FIND_BED_INDUCTION_SENSOR_POINT_Y_RADIUS;
+		uint8_t nsteps_y;
+		uint8_t i;
+		if (x0 < X_MIN_POS) {
+			x0 = X_MIN_POS;
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("X searching radius lower than X_MIN. Clamping was done.");
+			#endif // SUPPORT_VERBOSITY
+		}
+		if (x1 > X_MAX_POS) {
+			x1 = X_MAX_POS;
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("X searching radius higher than X_MAX. Clamping was done.");
+			#endif // SUPPORT_VERBOSITY
+		}
+		if (y0 < Y_MIN_POS_FOR_BED_CALIBRATION) {
+			y0 = Y_MIN_POS_FOR_BED_CALIBRATION;
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("Y searching radius lower than Y_MIN. Clamping was done.");
+			#endif // SUPPORT_VERBOSITY
+		}
+		if (y1 > Y_MAX_POS) {
+			y1 = Y_MAX_POS;
+			#ifdef SUPPORT_VERBOSITY
+			if (verbosity_level >= 20) SERIAL_ECHOLNPGM("Y searching radius higher than X_MAX. Clamping was done.");
+			#endif // SUPPORT_VERBOSITY
+		}
+		nsteps_y = int(ceil((y1 - y0) / FIND_BED_INDUCTION_SENSOR_POINT_XY_STEP));
+
+		enable_endstops(false);
+		bool  dir_positive = true;
+
+		//        go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS]/60);
+		go_xyz(x0, y0, current_position[Z_AXIS], feedrate);
+		// Continously lower the Z axis.
+		endstops_hit_on_purpose();
+		enable_z_endstop(true);
+		while (current_position[Z_AXIS] > -10.f) {
+			// Do nsteps_y zig-zag movements.
+			current_position[Y_AXIS] = y0;
+			for (i = 0; i < nsteps_y; current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++i) {
+				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
+				current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
+				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
+				dir_positive = !dir_positive;
+				if (endstop_z_hit_on_purpose())
+					goto endloop;
+			}
+			for (i = 0; i < nsteps_y; current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++i) {
+				// Run with a slightly decreasing Z axis, zig-zag movement. Stop at the Z end-stop.
+				current_position[Z_AXIS] -= FIND_BED_INDUCTION_SENSOR_POINT_Z_STEP / float(nsteps_y);
+				go_xyz(dir_positive ? x1 : x0, current_position[Y_AXIS], current_position[Z_AXIS], feedrate);
+				dir_positive = !dir_positive;
+				if (endstop_z_hit_on_purpose())
+					goto endloop;
+			}
+		}
+	endloop:
+		//        SERIAL_ECHOLN("First hit");
+
+		// we have to let the planner know where we are right now as it is not where we said to go.
+		update_current_position_xyz();
+
+		// Search in this plane for the first hit. Zig-zag first in X, then in Y axis.
+		for (int8_t iter = 0; iter < 3; ++iter) {
+			if (iter > 0) {
+				// Slightly lower the Z axis to get a reliable trigger.
+				current_position[Z_AXIS] -= 0.02f;
+				go_xyz(current_position[X_AXIS], current_position[Y_AXIS], MESH_HOME_Z_SEARCH, homing_feedrate[Z_AXIS] / 60);
+			}
+
+			// Do nsteps_y zig-zag movements.
+			float a, b;
+			enable_endstops(false);
+			enable_z_endstop(false);
+			current_position[Y_AXIS] = y0;
+			go_xy(x0, current_position[Y_AXIS], feedrate);
+			enable_z_endstop(true);
+			found = false;
+			for (i = 0, dir_positive = true; i < nsteps_y; current_position[Y_AXIS] += (y1 - y0) / float(nsteps_y - 1), ++i, dir_positive = !dir_positive) {
+				go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
+				if (endstop_z_hit_on_purpose()) {
+					found = true;
+					break;
+				}
+			}
+			update_current_position_xyz();
+			if (!found) {
+				//                SERIAL_ECHOLN("Search in Y - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search in Y - found");
+			a = current_position[Y_AXIS];
+
+			enable_z_endstop(false);
+			current_position[Y_AXIS] = y1;
+			go_xy(x0, current_position[Y_AXIS], feedrate);
+			enable_z_endstop(true);
+			found = false;
+			for (i = 0, dir_positive = true; i < nsteps_y; current_position[Y_AXIS] -= (y1 - y0) / float(nsteps_y - 1), ++i, dir_positive = !dir_positive) {
+				go_xy(dir_positive ? x1 : x0, current_position[Y_AXIS], feedrate);
+				if (endstop_z_hit_on_purpose()) {
+					found = true;
+					break;
+				}
+			}
+			update_current_position_xyz();
+			if (!found) {
+				//                SERIAL_ECHOLN("Search in Y2 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search in Y2 - found");
+			b = current_position[Y_AXIS];
+			current_position[Y_AXIS] = 0.5f * (a + b);
+
+			// Search in the X direction along a cross.
+			found = false;
+			enable_z_endstop(false);
+			go_xy(x0, current_position[Y_AXIS], feedrate);
+			enable_z_endstop(true);
+			go_xy(x1, current_position[Y_AXIS], feedrate);
+			update_current_position_xyz();
+			if (!endstop_z_hit_on_purpose()) {
+				//                SERIAL_ECHOLN("Search X span 0 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search X span 0 - found");
+			a = current_position[X_AXIS];
+			enable_z_endstop(false);
+			go_xy(x1, current_position[Y_AXIS], feedrate);
+			enable_z_endstop(true);
+			go_xy(x0, current_position[Y_AXIS], feedrate);
+			update_current_position_xyz();
+			if (!endstop_z_hit_on_purpose()) {
+				//                SERIAL_ECHOLN("Search X span 1 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search X span 1 - found");
+			b = current_position[X_AXIS];
+			// Go to the center.
+			enable_z_endstop(false);
+			current_position[X_AXIS] = 0.5f * (a + b);
+			go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
+			found = true;
 
 #if 1
-            // Search in the Y direction along a cross.
-            found = false;
-            enable_z_endstop(false);
-            go_xy(current_position[X_AXIS], y0, feedrate);
-            enable_z_endstop(true);
-            go_xy(current_position[X_AXIS], y1, feedrate);
-            update_current_position_xyz();
-            if (! endstop_z_hit_on_purpose()) {
-//                SERIAL_ECHOLN("Search Y2 span 0 - not found");
-                continue;
-            }
-//            SERIAL_ECHOLN("Search Y2 span 0 - found");
-            a = current_position[Y_AXIS];
-            enable_z_endstop(false);
-            go_xy(current_position[X_AXIS], y1, feedrate);
-            enable_z_endstop(true);
-            go_xy(current_position[X_AXIS], y0, feedrate);
-            update_current_position_xyz();
-            if (! endstop_z_hit_on_purpose()) {
-//                SERIAL_ECHOLN("Search Y2 span 1 - not found");
-                continue;
-            }
-//            SERIAL_ECHOLN("Search Y2 span 1 - found");
-            b = current_position[Y_AXIS];
-            // Go to the center.
-            enable_z_endstop(false);
-            current_position[Y_AXIS] = 0.5f * (a + b);
-            go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
-            found = true;
+			// Search in the Y direction along a cross.
+			found = false;
+			enable_z_endstop(false);
+			go_xy(current_position[X_AXIS], y0, feedrate);
+			enable_z_endstop(true);
+			go_xy(current_position[X_AXIS], y1, feedrate);
+			update_current_position_xyz();
+			if (!endstop_z_hit_on_purpose()) {
+				//                SERIAL_ECHOLN("Search Y2 span 0 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search Y2 span 0 - found");
+			a = current_position[Y_AXIS];
+			enable_z_endstop(false);
+			go_xy(current_position[X_AXIS], y1, feedrate);
+			enable_z_endstop(true);
+			go_xy(current_position[X_AXIS], y0, feedrate);
+			update_current_position_xyz();
+			if (!endstop_z_hit_on_purpose()) {
+				//                SERIAL_ECHOLN("Search Y2 span 1 - not found");
+				continue;
+			}
+			//            SERIAL_ECHOLN("Search Y2 span 1 - found");
+			b = current_position[Y_AXIS];
+			// Go to the center.
+			enable_z_endstop(false);
+			current_position[Y_AXIS] = 0.5f * (a + b);
+			go_xy(current_position[X_AXIS], current_position[Y_AXIS], feedrate);
+			found = true;
 #endif
-            break;
-        }
-    }
+			break;
+		}
+	}
 
-    enable_z_endstop(false);
-    return found;
+	enable_z_endstop(false);
+	return found;
+#endif //NEW_XYZCAL
 }
 
+#endif //HEATBED_V2
+
+#ifndef NEW_XYZCAL
 // Search around the current_position[X,Y,Z].
 // It is expected, that the induction sensor is switched on at the current position.
 // Look around this center point by painting a star around the point.
@@ -1190,7 +1600,9 @@ inline bool improve_bed_induction_sensor_point()
     enable_z_endstop(endstop_z_enabled);
     return found;
 }
+#endif //NEW_XYZCAL
 
+#ifndef NEW_XYZCAL
 static inline void debug_output_point(const char *type, const float &x, const float &y, const float &z)
 {
     SERIAL_ECHOPGM("Measured ");
@@ -1203,7 +1615,9 @@ static inline void debug_output_point(const char *type, const float &x, const fl
     MYSERIAL.print(z, 5);
     SERIAL_ECHOLNPGM("");
 }
+#endif //NEW_XYZCAL
 
+#ifndef NEW_XYZCAL
 // Search around the current_position[X,Y,Z].
 // It is expected, that the induction sensor is switched on at the current position.
 // Look around this center point by painting a star around the point.
@@ -1363,12 +1777,14 @@ canceled:
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
     return false;
 }
+#endif //NEW_XYZCAL
 
+#ifndef NEW_XYZCAL
 // Searching the front points, where one cannot move the sensor head in front of the sensor point.
 // Searching in a zig-zag movement in a plane for the maximum width of the response.
 // This function may set the current_position[Y_AXIS] below Y_MIN_POS, if the function succeeded.
 // If this function failed, the Y coordinate will never be outside the working space.
-#define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS (4.f)
+#define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_RADIUS (8.f)
 #define IMPROVE_BED_INDUCTION_SENSOR_POINT3_SEARCH_STEP_FINE_Y (0.1f)
 inline bool improve_bed_induction_sensor_point3(int verbosity_level)
 {	
@@ -1684,7 +2100,9 @@ canceled:
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
     return false;
 }
+#endif //NEW_XYZCAL
 
+#ifndef NEW_XYZCAL
 // Scan the mesh bed induction points one by one by a left-right zig-zag movement,
 // write the trigger coordinates to the serial line.
 // Useful for visualizing the behavior of the bed induction detector.
@@ -1729,6 +2147,7 @@ inline void scan_bed_induction_sensor_point()
     current_position[Y_AXIS] = center_old_y;
     go_xy(current_position[X_AXIS], current_position[Y_AXIS], homing_feedrate[X_AXIS] / 60.f);
 }
+#endif //NEW_XYZCAL
 
 #define MESH_BED_CALIBRATION_SHOW_LCD
 
@@ -1751,7 +2170,11 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 //    SERIAL_ECHO(int(verbosity_level));
 //    SERIAL_ECHOPGM("");
 	
+#ifdef NEW_XYZCAL
+	{
+#else //NEW_XYZCAL
 	while (iteration < 3) {
+#endif //NEW_XYZCAL
 
 		SERIAL_ECHOPGM("Iteration: ");
 		MYSERIAL.println(int(iteration + 1));
@@ -1781,7 +2204,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		#endif // SUPPORT_VERBOSITY
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1), next_line);
     if (next_line > 3)
         next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -1792,12 +2215,13 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		// Don't let the manage_inactivity() function remove power from the motors.
 		refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-		lcd_implementation_print_at(0, next_line, k + 1);
-		lcd_printPGM(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2);
+		lcd_set_cursor(0, next_line);
+		lcd_print(k + 1);
+		lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 
 		if (iteration > 0) {
-			lcd_print_at_PGM(0, next_line + 1, MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION);
-			lcd_implementation_print(int(iteration + 1));
+			lcd_puts_at_P(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
+			lcd_print(int(iteration + 1));
 		}
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		float *pt = pts + k * 2;
@@ -1855,7 +2279,8 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		#endif // SUPPORT_VERBOSITY
 		if (!find_bed_induction_sensor_point_xy(verbosity_level))
 			return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
-#if 1
+#ifndef NEW_XYZCAL
+#ifndef HEATBED_V2
 		
 			if (k == 0 || k == 1) {
 				// Improve the position of the 1st row sensor points by a zig-zag movement.
@@ -1876,6 +2301,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 					// not found
 					return BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND;
 			}
+#endif //HEATBED_V2
 #endif
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 10)
@@ -2017,6 +2443,7 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 	return result;    
 }
 
+#ifndef NEW_XYZCAL
 BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8_t verbosity_level, uint8_t &too_far_mask)
 {
     // Don't let the manage_inactivity() function remove power from the motors.
@@ -2051,7 +2478,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_i("Improving bed calibration point"), next_line);////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
     if (next_line > 3)
         next_line = 3;
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
@@ -2063,8 +2490,8 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         refresh_cmd_timeout();
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-        lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2);
+        lcd_print_at(0, next_line, mesh_point+1);
+        lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.
@@ -2228,12 +2655,11 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         // In case of success, update the too_far_mask from the calculated points.
         for (uint8_t mesh_point = 0; mesh_point < 2; ++ mesh_point) {
             float y = vec_x[1] * pgm_read_float(bed_ref_points_4+mesh_point*2) + vec_y[1] * pgm_read_float(bed_ref_points_4+mesh_point*2+1) + cntr[1];
-			distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 20) {
 				SERIAL_ECHOLNPGM("");
 				SERIAL_ECHOPGM("Distance from min:");
-				MYSERIAL.print(distance_from_min[mesh_point]);
+				MYSERIAL.print(y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 				SERIAL_ECHOLNPGM("");
 				SERIAL_ECHOPGM("y:");
 				MYSERIAL.print(y);
@@ -2292,16 +2718,7 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
     }
 	#endif // SUPPORT_VERBOSITY
 
-	//make space
-	current_position[Z_AXIS] += 150;
-	go_to_current(homing_feedrate[Z_AXIS] / 60);
-	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder););
-
-	lcd_show_fullscreen_message_and_wait_P(MSG_PLACE_STEEL_SHEET);
-
-    // Sample Z heights for the mesh bed leveling.
-    // In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
-    if (! sample_mesh_and_store_reference())
+	if(!sample_z())
         goto canceled;
 
     enable_endstops(endstops_enabled);
@@ -2321,6 +2738,23 @@ canceled:
     enable_endstops(endstops_enabled);
     enable_z_endstop(endstop_z_enabled);
     return result;
+}
+#endif //NEW_XYZCAL
+
+bool sample_z() {
+	bool sampled = true;
+	//make space
+	current_position[Z_AXIS] += 150;
+	go_to_current(homing_feedrate[Z_AXIS] / 60);
+	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate, active_extruder););
+
+	lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
+
+	// Sample Z heights for the mesh bed leveling.
+	// In addition, store the results into an eeprom, to be used later for verification of the bed leveling process.
+	if (!sample_mesh_and_store_reference()) sampled = false;
+
+	return sampled;
 }
 
 void go_home_with_z_lift()
@@ -2356,12 +2790,13 @@ bool sample_mesh_and_store_reference()
 
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
     uint8_t next_line;
-    lcd_display_message_fullscreen_P(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1, next_line);
+    lcd_display_message_fullscreen_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1), next_line);
     if (next_line > 3)
         next_line = 3;
     // display "point xx of yy"
-    lcd_implementation_print_at(0, next_line, 1);
-    lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
+	lcd_set_cursor(0, next_line);
+    lcd_print(1);
+    lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Sample Z heights for the mesh bed leveling.
@@ -2377,8 +2812,21 @@ bool sample_mesh_and_store_reference()
         memcpy(destination, current_position, sizeof(destination));
         enable_endstops(true);
         homeaxis(Z_AXIS);
+
+#ifdef TMC2130
+		if (!axis_known_position[Z_AXIS] && (READ(Z_TMC2130_DIAG) != 0)) //Z crash
+		{
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+			return false;
+		}
+#endif //TMC2130
+
         enable_endstops(false);
-        find_bed_induction_sensor_point_z();
+		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
+		{
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+			return false;
+		}
         mbl.set_z(0, 0, current_position[Z_AXIS]);
     }
     for (int8_t mesh_point = 1; mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS; ++ mesh_point) {
@@ -2393,10 +2841,15 @@ bool sample_mesh_and_store_reference()
         go_to_current(homing_feedrate[X_AXIS]/60);
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         // display "point xx of yy"
-        lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2);
+		lcd_set_cursor(0, next_line);
+        lcd_print(mesh_point+1);
+        lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
-        find_bed_induction_sensor_point_z();
+		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
+		{
+			kill(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+			return false;
+		}
         // Get cords of measuring point
         int8_t ix = mesh_point % MESH_MEAS_NUM_X_POINTS;
         int8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
@@ -2406,11 +2859,11 @@ bool sample_mesh_and_store_reference()
     {
         // Verify the span of the Z values.
         float zmin = mbl.z_values[0][0];
-        float zmax = zmax;
+        float zmax = zmin;
         for (int8_t j = 0; j < 3; ++ j)
            for (int8_t i = 0; i < 3; ++ i) {
                 zmin = min(zmin, mbl.z_values[j][i]);
-                zmax = min(zmax, mbl.z_values[j][i]);
+                zmax = max(zmax, mbl.z_values[j][i]);
            }
         if (zmax - zmin > 3.f) {
             // The span of the Z offsets is extreme. Give up.
@@ -2462,6 +2915,7 @@ bool sample_mesh_and_store_reference()
     return true;
 }
 
+#ifndef NEW_XYZCAL
 bool scan_bed_induction_points(int8_t verbosity_level)
 {
     // Don't let the manage_inactivity() function remove power from the motors.
@@ -2508,7 +2962,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
             current_position[Y_AXIS] = Y_MIN_POS_FOR_BED_CALIBRATION;
         go_to_current(homing_feedrate[X_AXIS]/60);
         find_bed_induction_sensor_point_z();
-        scan_bed_induction_sensor_point();
+		scan_bed_induction_sensor_point();
     }
     // Don't let the manage_inactivity() function remove power from the motors.
     refresh_cmd_timeout();
@@ -2523,6 +2977,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
     enable_z_endstop(endstop_z_enabled);
     return true;
 }
+#endif //NEW_XYZCAL
 
 // Shift a Z axis by a given delta.
 // To replace loading of the babystep correction.
@@ -2540,13 +2995,14 @@ static int babystepLoadZ = 0;
 
 void babystep_load()
 {
+	babystepLoadZ = 0;
     // Apply Z height correction aka baby stepping before mesh bed leveling gets activated.
-    if(calibration_status() < CALIBRATION_STATUS_LIVE_ADJUST)
+    if (calibration_status() < CALIBRATION_STATUS_LIVE_ADJUST)
     {
         check_babystep(); //checking if babystep is in allowed range, otherwise setting babystep to 0
         
         // End of G80: Apply the baby stepping value.
-        EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
+        EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepLoadZ);
                             
     #if 0
         SERIAL_ECHO("Z baby step: ");
@@ -2564,7 +3020,7 @@ void babystep_apply()
 {
     babystep_load();
 #ifdef BABYSTEP_LOADZ_BY_PLANNER
-    shift_z(- float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+    shift_z(- float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
 #else
     babystepsTodoZadd(babystepLoadZ);
 #endif /* BABYSTEP_LOADZ_BY_PLANNER */
@@ -2573,7 +3029,7 @@ void babystep_apply()
 void babystep_undo()
 {
 #ifdef BABYSTEP_LOADZ_BY_PLANNER
-      shift_z(float(babystepLoadZ) / float(axis_steps_per_unit[Z_AXIS]));
+      shift_z(float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
 #else
       babystepsTodoZsubtract(babystepLoadZ);
 #endif /* BABYSTEP_LOADZ_BY_PLANNER */
@@ -2582,11 +3038,10 @@ void babystep_undo()
 
 void babystep_reset()
 {
-      babystepLoadZ = 0;    
+	babystepLoadZ = 0;    
 }
 
-void count_xyz_details() {
-	float a1, a2;
+void count_xyz_details(float (&distanceMin)[2]) {
 	float cntr[2] = {
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 0)),
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_CENTER + 4))
@@ -2599,18 +3054,14 @@ void count_xyz_details() {
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 0)),
 		eeprom_read_float((float*)(EEPROM_BED_CALIBRATION_VEC_Y + 4))
 	};
+#if 0
 	a2 = -1 * asin(vec_y[0] / MACHINE_AXIS_SCALE_Y);
 	a1 = asin(vec_x[1] / MACHINE_AXIS_SCALE_X);
-	//angleDiff = fabs(a2 - a1);
+	angleDiff = fabs(a2 - a1);
+#endif
 	for (uint8_t mesh_point = 0; mesh_point < 2; ++mesh_point) {
 		float y = vec_x[1] * pgm_read_float(bed_ref_points_4 + mesh_point * 2) + vec_y[1] * pgm_read_float(bed_ref_points_4 + mesh_point * 2 + 1) + cntr[1];
-		distance_from_min[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
+		distanceMin[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 	}
 }
-
-/*countDistanceFromMin() {
-
-}*/
-
-
 

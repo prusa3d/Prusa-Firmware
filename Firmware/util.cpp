@@ -1,6 +1,7 @@
 #include "Configuration.h"
 
 #include "ultralcd.h"
+#include "sound.h"
 #include "language.h"
 #include "util.h"
 
@@ -239,6 +240,34 @@ inline int8_t is_provided_version_newer(const char *version_string)
     return 0;
 }
 
+bool force_selftest_if_fw_version()
+{
+	//if fw version used before flashing new firmware (fw version currently stored in eeprom) is lower then 3.1.2-RC2, function returns true to force selftest
+
+	uint16_t ver_eeprom[4];
+	uint16_t ver_with_calibration[4] = {3, 1, 2, 4}; //hardcoded 3.1.2-RC2 version
+	bool force_selftest = false;
+
+	ver_eeprom[0] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR);
+	ver_eeprom[1] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR);
+	ver_eeprom[2] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION);
+	ver_eeprom[3] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR);
+
+	for (uint8_t i = 0; i < 4; ++i) {
+		if (ver_with_calibration[i] > ver_eeprom[i]) {
+			force_selftest = true;
+			break;
+		}
+		else if (ver_with_calibration[i] < ver_eeprom[i])
+			break;
+	}
+
+	//force selftest also in case that version used before flashing new firmware was 3.2.0-RC1
+	if ((ver_eeprom[0] == 3) && (ver_eeprom[1] == 2) && (ver_eeprom[2] == 0) && (ver_eeprom[3] == 3)) force_selftest = true;
+	
+	return force_selftest;
+}
+
 bool show_upgrade_dialog_if_version_newer(const char *version_string)
 {
     uint16_t ver_gcode[4], ver_current[4];
@@ -261,22 +290,24 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
     }
 
     if (upgrade) {
-        lcd_display_message_fullscreen_P(MSG_NEW_FIRMWARE_AVAILABLE);
-        lcd_print_at_PGM(0, 2, PSTR(""));
+        lcd_display_message_fullscreen_P(_i("New firmware version available:"));////MSG_NEW_FIRMWARE_AVAILABLE c=20 r=2
+        lcd_puts_at_P(0, 2, PSTR(""));
         for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
-            lcd_implementation_write(*c);
-        lcd_print_at_PGM(0, 3, MSG_NEW_FIRMWARE_PLEASE_UPGRADE);
+            lcd_putc(*c);
+        lcd_puts_at_P(0, 3, _i("Please upgrade."));////MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20 r=0
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         tone(BEEPER, 1000);
         delay_keep_alive(50);
         noTone(BEEPER);
         delay_keep_alive(500);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         tone(BEEPER, 1000);
         delay_keep_alive(50);
         noTone(BEEPER);
         lcd_wait_for_click();
         lcd_update_enable(true);
-        lcd_implementation_clear();
-        lcd_update();
+        lcd_clear();
+        lcd_update(0);
     }
 
     // Succeeded.
