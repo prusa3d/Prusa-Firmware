@@ -304,19 +304,11 @@ void mmu_loop(void)
 	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
-      if (!mmuFilamentLoading) {
-      //    mmu_puts_P(PSTR("C1\n")); //send 'cut retry'
-      //    mmuFilamentLoading = false;
-      //} else {
 #ifdef MMU_DEBUG
-  			printf_P(PSTR("MMU => 'ok'\n"));
+			printf_P(PSTR("MMU => 'ok'\n"));
 #endif //MMU_DEBUG
-  			mmu_ready = true;
-  			mmu_state = 1;
-      }
-		} else if (mmu_rx_not_ok() > 0) {
-      // do something with error responses from MMU
-      mmuFilamentLoading = false;
+			mmu_ready = true;
+			mmu_state = 1;
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (5 min)
@@ -325,6 +317,7 @@ void mmu_loop(void)
 		return;
 	}
 }
+
 
 void mmu_reset(void)
 {
