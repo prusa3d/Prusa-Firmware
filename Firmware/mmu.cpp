@@ -304,11 +304,23 @@ void mmu_loop(void)
 	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
-#ifdef MMU_DEBUG
-			printf_P(PSTR("MMU => 'ok'\n"));
-#endif //MMU_DEBUG
-			mmu_ready = true;
-			mmu_state = 1;
+			/**
+			* Started implementing FS0 & FS1 comms to MMU for FS0 to
+			* only have MMU return 'ok\n', FS1 to have MMU stop load as MK3-Sensor has been reached.
+			*/
+      			if (!mmuFilamentLoading) {
+		#ifdef MMU_DEBUG
+  				printf_P(PSTR("MMU => 'ok'\n"));
+		#endif //MMU_DEBUG
+  				mmu_ready = true;
+  				mmu_state = 1;
+      			} else {
+				if (mmuFilamentLoadSeen) {
+					mmuFilamentLoading = false;
+					mmuFilamentSeen = false;
+	      				mmu_printf_P(PSTR("FS%d\n"), 1);
+      				} else mmu_printf_P(PSTR("FS%d\n"), 0);
+			}
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (5 min)
