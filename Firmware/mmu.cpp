@@ -940,6 +940,7 @@ void extr_change_3()
 	lcd_return_to_status();
 }
 
+#ifdef SNMM
 //wrapper functions for unloading filament
 void extr_unload_all()
 {
@@ -987,6 +988,7 @@ void extr_unload_used()
 		lcd_return_to_status();
 	}
 }
+#endif //SNMM
 
 void extr_unload_0()
 {

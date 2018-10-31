@@ -3021,6 +3021,8 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 }
 
 
+
+
 void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
@@ -3057,18 +3059,7 @@ void gcode_M701()
 		noTone(BEEPER);
 
 		if (!farm_mode && loading_flag) {
-			bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, true);
-
-			while (!clean) {
-				lcd_update_enable(true);
-				lcd_update(2);
-				current_position[E_AXIS] += 25;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
-				st_synchronize();
-				clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, true);
-
-			}
-
+			lcd_load_filament_color_check();
 		}
 		lcd_update_enable(true);
 		lcd_update(2);
@@ -6753,17 +6744,23 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	break;
 	case 702: //! M702 [U C] -
 	{
-		if (mmu_enabled)
-		{
-			if (code_seen('U'))
-				extr_unload_used(); //! if "U" unload all filaments which were used in current print
-			else if (code_seen('C'))
-				extr_unload(); //! if "C" unload just current filament
-			else
-				extr_unload_all(); //! otherwise unload all filaments
-		}
+#ifdef SNMM
+		if (code_seen('U'))
+			extr_unload_used(); //! if "U" unload all filaments which were used in current print
+		else if (code_seen('C'))
+			extr_unload(); //! if "C" unload just current filament
 		else
-			unload_filament();
+			extr_unload_all(); //! otherwise unload all filaments
+#else
+		if (code_seen('C')) {
+			if(mmu_enabled) extr_unload(); //! if "C" unload current filament; if mmu is not present no action is performed
+		}
+		else {
+			if(mmu_enabled) extr_unload(); //! unload current filament
+			else unload_filament();
+		}
+
+#endif //SNMM
 	}
 	break;
 
@@ -6779,7 +6776,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 //	printf_P(_N("END M-CODE=%u\n"), mcode_in_progress);
 	mcode_in_progress = 0;
 	}
-  } // end if(code_seen('M')) (end of M codes)
+  }
+  // end if(code_seen('M')) (end of M codes)
   //! T<extruder nr.> - select extruder in case of multi extruder printer
   //! select filament in case of MMU_V2
   //! if extruder is "?", open menu to let the user select extruder/filament
@@ -6793,9 +6791,27 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       st_synchronize();
       for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 
-      if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '4') && *(strchr_pointer + index) != '?') {
+	  *(strchr_pointer + index) = tolower(*(strchr_pointer + index));
+
+      if ((*(strchr_pointer + index) < '0' || *(strchr_pointer + index) > '4') && *(strchr_pointer + index) != '?' && *(strchr_pointer + index) != 'x' && *(strchr_pointer + index) != 'c') {
           SERIAL_ECHOLNPGM("Invalid T code.");
       }
+	  else if (*(strchr_pointer + index) == 'x'){ //load to bondtech gears; if mmu is not present do nothing
+		if (mmu_enabled)
+		{
+			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+			mmu_command(MMU_CMD_T0 + tmp_extruder);
+			manage_response(true, true);
+		}
+	  }
+	  else if (*(strchr_pointer + index) == 'c') { //load to from bondtech gears to nozzle (nozzle should be preheated)
+	  	if (mmu_enabled) 
+		{
+			mmu_command(MMU_CMD_C0);
+			mmu_extruder = tmp_extruder; //filament change is finished
+			mmu_load_to_nozzle();
+		}
+	  }
       else {
           if (*(strchr_pointer + index) == '?')
           {

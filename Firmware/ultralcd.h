@@ -38,6 +38,7 @@ void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
 void lcd_confirm_print();
 unsigned char lcd_choose_color();
+void lcd_load_filament_color_check();
 //void lcd_mylang();
 
 extern bool lcd_selftest();
@@ -126,8 +127,10 @@ void lcd_commands();
 void change_extr(int extr);
 void extr_adj(int extruder);
 
+#ifdef SNMM
 void extr_unload_all(); 
 void extr_unload_used();
+#endif //SNMM
 void extr_unload();
 
 void unload_filament();

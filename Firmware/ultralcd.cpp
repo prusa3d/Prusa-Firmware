@@ -2426,6 +2426,19 @@ void lcd_alright() {
 
 }
 
+void lcd_load_filament_color_check()
+{
+	bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, true);
+	while (!clean) {
+		lcd_update_enable(true);
+		lcd_update(2);
+		current_position[E_AXIS] += 25;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
+		st_synchronize();
+		clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, true);
+	}
+}
+
 #ifdef FILAMENT_SENSOR
 static void lcd_menu_AutoLoadFilament()
 {
@@ -2458,6 +2471,32 @@ static void lcd_LoadFilament()
       enquecommand_P(PSTR("M701")); //load filament
       SERIAL_ECHOLN("Loading filament");
       lcd_return_to_status();
+  }
+  else
+  {
+
+    lcd_clear();
+    lcd_set_cursor(0, 0);
+    lcd_puts_P(_T(MSG_ERROR));
+    lcd_set_cursor(0, 2);
+    lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
+    delay(2000);
+    lcd_clear();
+  }
+}
+
+static void lcd_mmu_load_to_nozzle()
+{
+  if (degHotend0() > EXTRUDE_MINTEMP)
+  {
+	tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+	mmu_command(MMU_CMD_T0 + tmp_extruder);
+	manage_response(true, true);
+	mmu_command(MMU_CMD_C0);
+	mmu_extruder = tmp_extruder; //filament change is finished
+	mmu_load_to_nozzle();
+	lcd_load_filament_color_check();
+    lcd_return_to_status();
   }
   else
   {
@@ -5189,8 +5228,6 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 	}
 }
 
-//#endif
-
 char reset_menu() {
 #ifdef SNMM
 	int items_no = 5;
@@ -5288,6 +5325,8 @@ static void lcd_disable_farm_mode()
 	
 }
 
+
+
 static void fil_load_menu()
 {
 	MENU_BEGIN();
@@ -5317,6 +5356,7 @@ static void mmu_fil_eject_menu()
 	MENU_END();
 }
 
+#ifdef SNMM
 static void fil_unload_menu()
 {
 	MENU_BEGIN();
@@ -5332,6 +5372,7 @@ static void fil_unload_menu()
 
 	MENU_END();
 }
+#endif //SNMM
 
 static void change_extr_menu(){
 	MENU_BEGIN();
@@ -5777,17 +5818,16 @@ static void lcd_main_menu()
 	if (mmu_enabled)
 	{
 		MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
+		MENU_ITEM_FUNCTION_P(_i("Load to nozzle"), lcd_mmu_load_to_nozzle);
 		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
-		if (mmu_enabled)
-			MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
-		else
-		{
-			MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), fil_unload_menu);
-			MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20 r=1
-		}
+		MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
 	}
 	else
 	{
+#ifdef SNMM
+		MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), fil_unload_menu);
+		MENU_ITEM_SUBMENU_P(_i("Change extruder"), change_extr_menu);////MSG_CHANGE_EXTR c=20 r=1
+#endif
 #ifdef FILAMENT_SENSOR
 		if ((fsensor_autoload_enabled == true) && (fsensor_enabled == true) && (mmu_enabled == false))
 			MENU_ITEM_SUBMENU_P(_i("AutoLoad filament"), lcd_menu_AutoLoadFilament);////MSG_AUTOLOAD_FILAMENT c=17 r=0

@@ -79,8 +79,10 @@ extern void extr_change_0();
 extern void extr_change_1();
 extern void extr_change_2();
 extern void extr_change_3();
+#ifdef SNMM
 extern void extr_unload_all();
 extern void extr_unload_used();
+#endif //SNMM
 extern void extr_unload_0();
 extern void extr_unload_1();
 extern void extr_unload_2();
