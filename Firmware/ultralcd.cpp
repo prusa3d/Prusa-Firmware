@@ -113,7 +113,6 @@ static const char* lcd_display_message_fullscreen_nonBlocking_P(const char *msg,
 /* Different menus */
 static void lcd_status_screen();
 static void lcd_language_menu();
-
 static void lcd_main_menu();
 static void lcd_tune_menu();
 //static void lcd_move_menu();
@@ -2222,15 +2221,7 @@ void lcd_unLoadFilament()
 	  enquecommand_P(PSTR("M702")); //unload filament
 
   } else {
-
-    lcd_clear();
-    lcd_set_cursor(0, 0);
-    lcd_puts_P(_T(MSG_ERROR));
-    lcd_set_cursor(0, 2);
-    lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-
-    delay(2000);
-    lcd_clear();
+	  show_preheat_nozzle_warning();
   }
 
   menu_back();
@@ -2426,15 +2417,24 @@ void lcd_alright() {
 
 }
 
+void show_preheat_nozzle_warning()
+{	
+    lcd_clear();
+    lcd_set_cursor(0, 0);
+    lcd_puts_P(_T(MSG_ERROR));
+    lcd_set_cursor(0, 2);
+    lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
+    delay(2000);
+    lcd_clear();
+}
+
 void lcd_load_filament_color_check()
 {
 	bool clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, true);
 	while (!clean) {
 		lcd_update_enable(true);
 		lcd_update(2);
-		current_position[E_AXIS] += 25;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
-		st_synchronize();
+		load_filament_final_feed();
 		clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, true);
 	}
 }
@@ -2474,42 +2474,10 @@ static void lcd_LoadFilament()
   }
   else
   {
-
-    lcd_clear();
-    lcd_set_cursor(0, 0);
-    lcd_puts_P(_T(MSG_ERROR));
-    lcd_set_cursor(0, 2);
-    lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-    delay(2000);
-    lcd_clear();
+	  show_preheat_nozzle_warning();
   }
 }
 
-static void lcd_mmu_load_to_nozzle()
-{
-  if (degHotend0() > EXTRUDE_MINTEMP)
-  {
-	tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
-	mmu_command(MMU_CMD_T0 + tmp_extruder);
-	manage_response(true, true);
-	mmu_command(MMU_CMD_C0);
-	mmu_extruder = tmp_extruder; //filament change is finished
-	mmu_load_to_nozzle();
-	lcd_load_filament_color_check();
-    lcd_return_to_status();
-  }
-  else
-  {
-
-    lcd_clear();
-    lcd_set_cursor(0, 0);
-    lcd_puts_P(_T(MSG_ERROR));
-    lcd_set_cursor(0, 2);
-    lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-    delay(2000);
-    lcd_clear();
-  }
-}
 
 //! @brief Show filament used a print time
 //!
@@ -2659,12 +2627,7 @@ static void lcd_move_e()
 	}
 	else
 	{
-		lcd_clear();
-		lcd_set_cursor(0, 0);
-		lcd_puts_P(_T(MSG_ERROR));
-		lcd_set_cursor(0, 2);
-		lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-		delay(2000);
+		show_preheat_nozzle_warning();
 		lcd_return_to_status();
 	}
 }
@@ -4333,13 +4296,7 @@ void lcd_calibrate_pinda() {
 	}
 	else
 	{
-		lcd_clear();
-		lcd_set_cursor(0, 0);
-		lcd_puts_P(_T(MSG_ERROR));
-		lcd_set_cursor(0, 2);
-		lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-		delay(2000);
-		lcd_clear();
+		show_preheat_nozzle_warning();
 	}
 	lcd_return_to_status();
 }
@@ -5343,6 +5300,18 @@ static void fil_load_menu()
 	MENU_END();
 }
 
+static void mmu_load_to_nozzle_menu()
+{
+	MENU_BEGIN();
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	MENU_ITEM_FUNCTION_P(_i("Load filament 1"), mmu_load_to_nozzle_0);
+	MENU_ITEM_FUNCTION_P(_i("Load filament 2"), mmu_load_to_nozzle_1);
+	MENU_ITEM_FUNCTION_P(_i("Load filament 3"), mmu_load_to_nozzle_2);
+	MENU_ITEM_FUNCTION_P(_i("Load filament 4"), mmu_load_to_nozzle_3);
+	MENU_ITEM_FUNCTION_P(_i("Load filament 5"), mmu_load_to_nozzle_4);
+	MENU_END();
+}
+
 static void mmu_fil_eject_menu()
 {
 	MENU_BEGIN();
@@ -5372,7 +5341,7 @@ static void fil_unload_menu()
 
 	MENU_END();
 }
-#endif //SNMM
+
 
 static void change_extr_menu(){
 	MENU_BEGIN();
@@ -5384,7 +5353,7 @@ static void change_extr_menu(){
 
 	MENU_END();
 }
-
+#endif //SNMM
 
 //unload filament for single material printer (used in M702 gcode)
 void unload_filament()
@@ -5818,7 +5787,7 @@ static void lcd_main_menu()
 	if (mmu_enabled)
 	{
 		MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
-		MENU_ITEM_FUNCTION_P(_i("Load to nozzle"), lcd_mmu_load_to_nozzle);
+		MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);
 		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
 		MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
 	}

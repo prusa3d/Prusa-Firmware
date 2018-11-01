@@ -24,6 +24,7 @@ uint8_t get_message_level();
 void lcd_adjust_z();
 void lcd_pick_babystep();
 void lcd_alright();
+void show_preheat_nozzle_warning();
 void EEPROM_save_B(int pos, int* value);
 void EEPROM_read_B(int pos, int* value);
 void lcd_wait_interact();

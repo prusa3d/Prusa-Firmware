@@ -3049,10 +3049,8 @@ void gcode_M701()
 		if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
 		current_position[E_AXIS] += 30;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
-		st_synchronize();
-		current_position[E_AXIS] += 25;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100 / 60, active_extruder); //slow sequence
-		st_synchronize();
+		
+		load_filament_final_feed(); //slow sequence
 
 		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)) tone(BEEPER, 500);
 		delay_keep_alive(50);
@@ -7358,13 +7356,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 					else
 					{
 						lcd_update_enable(false);
-						lcd_clear();
-						lcd_set_cursor(0, 0);
-						lcd_puts_P(_T(MSG_ERROR));
-						lcd_set_cursor(0, 2);
-						lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-						delay(2000);
-						lcd_clear();
+						show_preheat_nozzle_warning();
 						lcd_update_enable(true);
 					}
 				}
@@ -8906,6 +8898,14 @@ static void print_time_remaining_init()
 	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
 }
 
+void load_filament_final_feed()
+{
+	st_synchronize();
+	current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 100/60, active_extruder);
+	st_synchronize();
+}
+
 void M600_check_state()
 {
 		//Wait for user to check the state
@@ -8926,8 +8926,7 @@ void M600_check_state()
 
 				// Filament loaded properly but color is not clear
 				case 3:
-					current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2, active_extruder); 
+					load_filament_final_feed();
 					lcd_loading_color();
 					break;
                  
@@ -9046,8 +9045,7 @@ void M600_load_filament_movements()
 	current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
 #endif                
-	current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED ;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder); 
+	load_filament_final_feed();
 	lcd_loading_filament();
 }
 

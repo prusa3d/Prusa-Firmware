@@ -478,3 +478,4 @@ void M600_load_filament();
 void M600_load_filament_movements();
 void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state();
+void load_filament_final_feed();
