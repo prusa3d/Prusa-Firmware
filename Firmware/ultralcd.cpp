@@ -2236,17 +2236,6 @@ void lcd_unLoadFilament()
   menu_back();
 }
 
-void lcd_change_filament() {
-
-  lcd_clear();
-
-  lcd_set_cursor(0, 1);
-
-  lcd_puts_P(_i("Changing filament!"));////MSG_CHANGING_FILAMENT c=20 r=0
-
-
-}
-
 
 void lcd_wait_interact() {
 
