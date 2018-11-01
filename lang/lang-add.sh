@@ -7,7 +7,8 @@
 #  lang_add.txt
 # Updated files:
 #  lang_en.txt and all lang_en_xx.txt
-#  
+#
+
 
 # insert single text to english dictionary
 # $1 - text to insert
@@ -53,7 +54,13 @@ cat lang_add.txt | sed 's/^/"/;s/$/"/' | while read new_s; do
 		echo
 		insert_en "$new_s"
 		insert_xx "$new_s" 'cz'
+		insert_xx "$new_s" 'de'
+		insert_xx "$new_s" 'es'
+		insert_xx "$new_s" 'fr'
+		insert_xx "$new_s" 'it'
+		insert_xx "$new_s" 'pl'
 	fi
 done
 
+read x
 exit 0
