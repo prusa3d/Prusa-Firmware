@@ -158,6 +158,10 @@
 "Calibration"
 "Kalibrierung"
 
+#
+"Cancel"
+"\x00"
+
 #MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
 "Cannot enter subdir: "
 "Kann Unterverzeichnis nicht oeffnen: "
@@ -177,6 +181,10 @@
 #MSG_COOLDOWN c=0 r=0
 "Cooldown"
 "Abkuehlen"
+
+#
+"Copy selected language from XFLASH?"
+"\x00"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
@@ -246,6 +254,10 @@
 "Eject filament 5"
 "Filamentauswurf 5"
 
+#
+"Eject"
+"\x00"
+
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 "Werfe Filament aus"
@@ -285,6 +297,26 @@
 #MSG_ERROR c=0 r=0
 "ERROR:"
 "FEHLER:"
+
+#
+"External SPI flash W25X20CL not responding."
+"\x00"
+
+#
+"Extruder 1"
+"\x00"
+
+#
+"Extruder 2"
+"\x00"
+
+#
+"Extruder 3"
+"\x00"
+
+#
+"Extruder 4"
+"\x00"
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
 "Extruder fan:"
@@ -426,6 +458,10 @@
 "howto.prusa3d.com"
 "\x00"
 
+#
+"Change extruder"
+"\x00"
+
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
 "Filament-Wechsel"
@@ -518,6 +554,10 @@
 "Insert filament into extruder 4. Click when done."
 "Filament in Extruder 4 einlegen. Klicken wenn fertig."
 
+#
+"Is filament 1 loaded?"
+"\x00"
+
 #MSG_INSERT_FILAMENT c=20 r=0
 "Insert filament"
 "Filament einlegen"
@@ -549,6 +589,10 @@
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
 "Linker Luefter?"
+
+#
+"Left"
+"\x00"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
@@ -630,6 +674,10 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Temperatur wiederherstellen..."
 
+#
+"Measured skew"
+"\x00"
+
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 "MMU OK.  Weiterdrucken..."
@@ -693,6 +741,10 @@
 #MSG_SELFTEST_NOTCONNECTED c=0 r=0
 "Not connected"
 "Nicht angeschlossen"
+
+#
+"New firmware version available:"
+"\x00"
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
@@ -794,6 +846,10 @@
 "Please press the knob to unload filament"
 "Bitte druecken Sie den Knopf um das  Filament zu entladen."
 
+#
+"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
+"\x00"
+
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
 "Bitte ziehen Sie das Filament sofort heraus"
@@ -833,6 +889,10 @@
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
 "Vorheizen der Duese. Bitte warten."
+
+#
+"Please upgrade."
+"\x00"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
@@ -914,6 +974,10 @@
 "RPi port     [on]"
 "RPi Port     [an]"
 
+#
+"Resend"
+"\x00"
+
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
 "RPi Port    [aus]"
@@ -933,6 +997,10 @@
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
 "SD Karte ok"
+
+#
+"Right"
+"\x00"
 
 #MSG_SD_INIT_FAIL c=0 r=0
 "SD init fail"
@@ -970,6 +1038,14 @@
 "Selftest will be run to calibrate accurate sensorless rehoming."
 "Selbsttest im Gang, um die genaue Rueck- kehr zum Nullpunkt ohne Sensor zu kalibrieren"
 
+#
+"Select nozzle preheat temperature which matches your material."
+"\x00"
+
+#
+"Select PLA filament:"
+"\x00"
+
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Temp. einstellen:"
@@ -1002,6 +1078,10 @@
 "Sort:      [time]"
 "Sort.:     [Zeit]"
 
+#
+"Severe skew"
+"\x00"
+
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
 "Sort.: [Alphabet]"
@@ -1013,6 +1093,10 @@
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
 "Sound      [laut]"
+
+#
+"Slight skew"
+"\x00"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1109,6 +1193,14 @@
 #MSG_TUNE c=0 r=0
 "Tune"
 "Feineinstellung"
+
+#
+"Unload"
+"\x00"
+
+#
+"Unload all"
+"\x00"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
