@@ -2268,6 +2268,7 @@ void lcd_change_success() {
 
 
 void lcd_loading_color() {
+	//we are extruding 25mm with feedrate 200mm/min -> 7.5 seconds for whole action, 0.375 s for one character
 
   lcd_clear();
 
@@ -2282,10 +2283,11 @@ void lcd_loading_color() {
 
     lcd_set_cursor(i, 3);
     lcd_print(".");
-    for (int j = 0; j < 10 ; j++) {
+	//0.375 s delay:
+    for (int j = 0; j < 5 ; j++) {
       manage_heater();
       manage_inactivity(true);
-      delay(85);
+      delay(75);
 
     }
 
