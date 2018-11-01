@@ -1,7 +1,3 @@
-#MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
-"  [off"
-"  [aus"
-
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
 " PlannerPufferBytes: "
@@ -38,10 +34,6 @@
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 "\x1b[2JWARNUNG:\x1b[1;0HCrash Erkennung\x1b[2;0Hdeaktiviert im\x1b[3;0HStealth Modus"
 
-#MSG_REFRESH c=0 r=0
-"\xf8Refresh"
-"\x00"
-
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 "Z wurde eingestellt"
@@ -61,10 +53,6 @@
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 "Sind linke+rechte Z- Schlitten ganz oben?"
-
-#MSG_ADJUSTZ c=0 r=0
-"Auto adjust Z?"
-"Auto Z einstellen?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "Auto deplete [on]"
@@ -129,10 +117,6 @@
 #MSG_BED c=0 r=0
 "Bed"
 "Bett"
-
-#MSG_BEGIN_FILE_LIST c=0 r=0
-"Begin file list"
-"Beginn Dateiliste"
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
@@ -266,10 +250,6 @@
 "Ejecting filament"
 "Werfe Filament aus"
 
-#MSG_END_FILE_LIST c=0 r=0
-"End file list"
-"Ende Dateiliste"
-
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
 "Ende nicht getroffen"
@@ -390,14 +370,6 @@
 "File incomplete. Continue anyway?"
 "Datei unvollstaendig Trotzdem fortfahren?"
 
-#MSG_SD_FILE_OPENED c=0 r=0
-"File opened: "
-"Datei geoeffnet: "
-
-#MSG_SD_FILE_SELECTED c=0 r=0
-"File selected"
-"Datei ausgewaehlt"
-
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
 "Bewegung beenden"
@@ -465,10 +437,6 @@
 #MSG_CORRECTLY c=20 r=0
 "Changed correctly?"
 "Wechsel ok?"
-
-#MSG_CHANGING_FILAMENT c=20 r=0
-"Changing filament!"
-"Filament-Wechsel!"
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
@@ -922,10 +890,6 @@
 "Remove old filament and press the knob to start loading new filament."
 "Entfernen Sie das alte Filament und druecken Sie den Knopf, um das neue zu laden."
 
-#MSG_M119_REPORT c=0 r=0
-"Reporting endstop status"
-"Statusbericht Endanschlag"
-
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
 "XYZ Kalib.zurueck"
@@ -973,10 +937,6 @@
 #MSG_SD_INIT_FAIL c=0 r=0
 "SD init fail"
 "SD Init fehlerhaft"
-
-#MSG_SD_PRINTING_BYTE c=0 r=0
-"SD printing byte "
-"SD drucke Byte "
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -1081,10 +1041,6 @@
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
 "Statistiken "
-
-#MSG_STEPPER_TOO_HIGH c=0 r=0
-"Steprate too high: "
-"Schrittrate zu hoch: "
 
 #MSG_STOP_PRINT c=0 r=0
 "Stop print"
@@ -1209,14 +1165,6 @@
 #MSG_WIZARD c=17 r=1
 "Wizard"
 "Assistent"
-
-#MSG_SD_WORKDIR_FAIL c=0 r=0
-"workDir open failed"
-"Arbeitsverzeichnis oeffnen misslungen"
-
-#MSG_SD_WRITE_TO_FILE c=0 r=0
-"Writing to file: "
-"Schreibe in Datei: "
 
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"

@@ -1,6 +1,3 @@
-#MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
-"  [off"
-
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
 
@@ -28,9 +25,6 @@
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 
-#MSG_REFRESH c=0 r=0
-"\xf8Refresh"
-
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 
@@ -45,9 +39,6 @@
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
-
-#MSG_ADJUSTZ c=0 r=0
-"Auto adjust Z?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "Auto deplete [on]"
@@ -96,9 +87,6 @@
 
 #MSG_BED c=0 r=0
 "Bed"
-
-#MSG_BEGIN_FILE_LIST c=0 r=0
-"Begin file list"
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
@@ -199,9 +187,6 @@
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 
-#MSG_END_FILE_LIST c=0 r=0
-"End file list"
-
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
 
@@ -292,12 +277,6 @@
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
 
-#MSG_SD_FILE_OPENED c=0 r=0
-"File opened: "
-
-#MSG_SD_FILE_SELECTED c=0 r=0
-"File selected"
-
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
 
@@ -348,9 +327,6 @@
 
 #MSG_CORRECTLY c=20 r=0
 "Changed correctly?"
-
-#MSG_CHANGING_FILAMENT c=20 r=0
-"Changing filament!"
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
@@ -691,9 +667,6 @@
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
 
-#MSG_M119_REPORT c=0 r=0
-"Reporting endstop status"
-
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
 
@@ -729,9 +702,6 @@
 
 #MSG_SD_INIT_FAIL c=0 r=0
 "SD init fail"
-
-#MSG_SD_PRINTING_BYTE c=0 r=0
-"SD printing byte "
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -810,9 +780,6 @@
 
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
-
-#MSG_STEPPER_TOO_HIGH c=0 r=0
-"Steprate too high: "
 
 #MSG_STOP_PRINT c=0 r=0
 "Stop print"
@@ -909,9 +876,6 @@
 
 #MSG_SD_WORKDIR_FAIL c=0 r=0
 "workDir open failed"
-
-#MSG_SD_WRITE_TO_FILE c=0 r=0
-"Writing to file: "
 
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"

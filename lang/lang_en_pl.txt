@@ -1,7 +1,3 @@
-#MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
-"  [off"
-"  [wyl"
-
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
 " PlannerBufferBytes: "
@@ -38,10 +34,6 @@
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 "\x1b[2JUWAGA:\x1b[1;0HWykrywanie zderzen\x1b[2;0Hwylaczone w\x1b[3;0Htrybie Stealth"
 
-#MSG_REFRESH c=0 r=0
-"\xf8Refresh"
-"\x00"
-
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 "Dostrajanie Z"
@@ -61,10 +53,6 @@
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 "Obydwa konce osi dojechaly do gornych ogranicznikow?"
-
-#MSG_ADJUSTZ c=0 r=0
-"Auto adjust Z?"
-"Autodostroic Z?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "Auto deplete [on]"
@@ -129,10 +117,6 @@
 #MSG_BED c=0 r=0
 "Bed"
 "Stol"
-
-#MSG_BEGIN_FILE_LIST c=0 r=0
-"Begin file list"
-"Poczatek listy plikowogranicznikow"
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
@@ -266,10 +250,6 @@
 "Ejecting filament"
 "Wysuwanie filamentu"
 
-#MSG_END_FILE_LIST c=0 r=0
-"End file list"
-"Koniec listy plikow"
-
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
 "Krancowka nie aktyw"
@@ -390,14 +370,6 @@
 "File incomplete. Continue anyway?"
 "Plik niekompletny. Kontynowac?"
 
-#MSG_SD_FILE_OPENED c=0 r=0
-"File opened: "
-"Otwarty plik: "
-
-#MSG_SD_FILE_SELECTED c=0 r=0
-"File selected"
-"Wybrano plik"
-
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
 "Konczenie druku"
@@ -465,10 +437,6 @@
 #MSG_CORRECTLY c=20 r=0
 "Changed correctly?"
 "Wymiana ok?"
-
-#MSG_CHANGING_FILAMENT c=20 r=0
-"Changing filament!"
-"Wymiana filamentu!"
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
@@ -922,10 +890,6 @@
 "Remove old filament and press the knob to start loading new filament."
 "Wyciagnij poprzedni filament i nacisnij pokretlo aby zaladowac nowy."
 
-#MSG_M119_REPORT c=0 r=0
-"Reporting endstop status"
-"Raportowanie statusu krancowek"
-
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
 "Reset kalibr. XYZ"
@@ -973,10 +937,6 @@
 #MSG_SD_INIT_FAIL c=0 r=0
 "SD init fail"
 "Inicjalizacja karty SD nieudana"
-
-#MSG_SD_PRINTING_BYTE c=0 r=0
-"SD printing byte "
-"\x00"
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -1081,10 +1041,6 @@
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
 "Statystyki  "
-
-#MSG_STEPPER_TOO_HIGH c=0 r=0
-"Steprate too high: "
-"Liczba krokow zbyt wysoka: "
 
 #MSG_STOP_PRINT c=0 r=0
 "Stop print"
@@ -1209,14 +1165,6 @@
 #MSG_WIZARD c=17 r=1
 "Wizard"
 "Asystent"
-
-#MSG_SD_WORKDIR_FAIL c=0 r=0
-"workDir open failed"
-"blad otwierania workDir"
-
-#MSG_SD_WRITE_TO_FILE c=0 r=0
-"Writing to file: "
-"Zapis do pliku: "
 
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"
