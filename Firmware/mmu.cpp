@@ -139,13 +139,14 @@ void mmu_loop(void)
 			puts_P(PSTR("MMU => 'start'"));
 			puts_P(PSTR("MMU <= 'S1'"));
 #endif //MMU_DEBUG
-		    mmu_puts_P(PSTR("S1\n")); //send 'read version' request
+		  mmu_puts_P(PSTR("S1\n")); //send 'read version' request
 			mmu_state = -2;
 		}else if (mmu_rx_sensFilatBoot() > 0)
     {
       printf_P(PSTR("MMU => '%Sensed Filament at Boot'\n"), mmu_finda);
-      enquecommand_front_P(PSTR("M104 S210"));
+      //enquecommand_front_P(PSTR("M104 S210"));
       enquecommand_front_P(PSTR("M109 S210"));
+      delay(200);
       extr_unload_at_boot();
       mmu_puts_P(PSTR("FB\n")); //Advise unloaded to above bondtech for retraction
     }
@@ -232,8 +233,7 @@ void mmu_loop(void)
         if (lastLoadedFilament != filament) {
           fsensor_enable();
           fsensor_autoload_enabled = true;
-          mmuFilamentMK3Moving = true;
-          //mmuFilamentLoadSeen = false;
+          mmuFilamentMK3Moving = false;
           lastLoadedFilament = filament;
         }
 				mmu_state = 3; // wait for response
@@ -261,9 +261,8 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'U0'\n"));
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
-        fsensor_enable();
         fsensor_autoload_enabled = true;
-        mmuFilamentMK3Moving = true;
+        mmuFilamentMK3Moving = false;
         lastLoadedFilament = -10;
 				mmu_state = 3;
 			}
@@ -320,13 +319,13 @@ void mmu_loop(void)
 	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
-      if (!mmuFilamentMK3Moving) {
+      if (mmuFilamentMK3Moving) {
           printf_P(PSTR("MMU => 'ok'\n"));
   			  mmu_ready = true;
   			  mmu_state = 1;
       }
 		} else if (mmu_rx_not_ok() > 0) {
-      printf_P(PSTR("MMU => 'not ok'\n"));
+      printf_P(PSTR("MMU => 'not ok/processing'\n"));
     }
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (5 min)
