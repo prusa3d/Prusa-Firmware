@@ -332,6 +332,9 @@ bool wizard_active = false; //autoload temporarily disabled during wizard
 //===========================================================================
 //=============================Private Variables=============================
 //===========================================================================
+#define MSG_BED_LEVELING_FAILED "Some problem encountered, Z-leveling enforced ..."
+#define MSG_BED_LEVELING_FAILED_TIMEOUT 30
+
 const char axis_codes[NUM_AXIS] = {'X', 'Y', 'Z', 'E'};
 float destination[NUM_AXIS] = {  0.0, 0.0, 0.0, 0.0};
 
@@ -4491,8 +4494,24 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
 		st_synchronize();
 		if (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
-			kill(kill_message);
-			SERIAL_ECHOLNPGM("killed");
+               Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
+               lcd_display_message_fullscreen_P(_i(MSG_BED_LEVELING_FAILED));
+               lcd_wait_for_click_delay(MSG_BED_LEVELING_FAILED_TIMEOUT);
+#ifdef TMC2130
+               calibrate_z_auto();                // Z-leveling (X-assembly stay up!!!)
+#else // TMC2130
+               lcd_calibrate_z_end_stop_manual(true); // Z-leveling (X-assembly stay up!!!)
+#endif // TMC2130
+               // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
+               current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+               plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+               st_synchronize();
+               //
+               custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
+               lcd_update_enable(true);           // display / status-line recovery
+               gcode_G28(true, true, false);      // X & Y-homing (must be after Z-homing (problem with spool-holder)!)
+               repeatcommand_front();             // re-run (i.e. of "G80")
+               break;
 		}
 		clean_up_after_endstop_move(l_feedmultiply);
 //		SERIAL_ECHOLNPGM("clean up finished ");
