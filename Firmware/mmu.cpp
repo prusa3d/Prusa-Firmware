@@ -376,6 +376,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 	float z_position_bckp = current_position[Z_AXIS];
 	float x_position_bckp = current_position[X_AXIS];
 	float y_position_bckp = current_position[Y_AXIS];	
+	uint8_t screen = 0; //used for showing multiscreen messages
 	while(!response)
 	{
 		  response = mmu_get_response(); //wait for "ok" from mmu
@@ -411,8 +412,33 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 					  setAllTargetHotends(0);
 				  }
 			  }
-			  lcd_display_message_fullscreen_P(_i("MMU needs user attention. Fix the issue and then press button on MMU unit."));
-			  delay_keep_alive(1000);
+
+			  //first three lines are used for printing multiscreen message; last line contains measured and target nozzle temperature
+			  if (screen == 0) { //screen 0
+				  lcd_display_message_fullscreen_P(_i("MMU needs user attention."));
+				  screen++;
+			  }
+			  else {  //screen 1
+				  if((degTargetHotend(active_extruder) == 0) && turn_off_nozzle) lcd_display_message_fullscreen_P(_i("Press the knob to resume nozzle temperature."));
+				  else lcd_display_message_fullscreen_P(_i("Fix the issue and then press button on MMU unit."));
+				  screen=0;
+			  }
+
+			  lcd_set_degree();
+			  lcd_set_cursor(0, 4); //line 4
+			  //Print the hotend temperature (9 chars total) and fill rest of the line with space
+			  int chars = lcd_printf_P(_N("%c%3d/%d%c"), LCD_STR_THERMOMETER[0],(int)(degHotend(active_extruder) + 0.5), (int)(degTargetHotend(active_extruder) + 0.5), LCD_STR_DEGREE[0]);
+			  lcd_space(9 - chars);
+
+
+			  //5 seconds delay
+			  for (uint8_t i = 0; i < 50; i++) {
+				  if (lcd_clicked()) {
+					  setTargetHotend(hotend_temp_bckp, active_extruder);
+					  break;
+				  }
+				  delay_keep_alive(100);
+			  }
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU starts responding\n"));
@@ -420,8 +446,10 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 			  {
 				lcd_clear();
 				setTargetHotend(hotend_temp_bckp, active_extruder);
-				lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature..."));
-				delay_keep_alive(3000);
+				if (((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5)) {
+					lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature..."));
+					delay_keep_alive(3000);
+				}
 				while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) 
 				{
 					delay_keep_alive(1000);
