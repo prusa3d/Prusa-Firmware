@@ -129,6 +129,7 @@ void extr_adj(int extruder);
 void extr_unload_all(); 
 void extr_unload_used();
 void extr_unload();
+void extr_unload_at_boot();
 
 void unload_filament();
 

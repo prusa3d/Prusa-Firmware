@@ -287,9 +287,8 @@ bool fsensor_check_autoload(void)
 		puts_P(_N("fsensor_check_autoload = true !!!\n"));
 		if (mmu_enabled) {
       			mmu_puts_P(PSTR("FS\n"));
-      			mmuFilamentLoading = false;
+      			mmuFilamentMK3Moving = false;
       			fsensor_autoload_check_stop();
-			mmuFilamentLoadSeen = true;
 		} else return true;
 	}
 	return false;

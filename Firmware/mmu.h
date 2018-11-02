@@ -46,6 +46,8 @@ extern int8_t mmu_rx_ok(void);
 
 extern int8_t mmu_rx_not_ok(void);
 
+extern int8_t mmu_rx_sensFilatBoot(void);
+
 extern void mmu_init(void);
 
 extern void mmu_loop(void);
@@ -72,6 +74,7 @@ extern int get_ext_nr();
 extern void display_loading();
 extern void extr_adj(int extruder);
 extern void extr_unload();
+extern void extr_unload_at_boot();
 extern void extr_adj_0();
 extern void extr_adj_1();
 extern void extr_adj_2();
