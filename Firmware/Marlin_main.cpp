@@ -7361,11 +7361,11 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 	} else {
     if (mcode_in_progress != 600) //M600 not in progress
     {
-      if ((lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active && !mmuFilamentMK3Moving) {
+      if ((lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active && mmuFSensorLoading) {
         fsensor_check_autoload();
       } else {
         fsensor_autoload_check_stop();
-        fsensor_update();
+        //fsensor_update();
       }
     }
 	}

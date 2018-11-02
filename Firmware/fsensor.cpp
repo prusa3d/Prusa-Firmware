@@ -286,15 +286,11 @@ bool fsensor_check_autoload(void)
 	{
 		puts_P(_N("fsensor_check_autoload = true !!!\n"));
 		if (mmu_enabled) {
-      			//mmu_puts_P(PSTR("FS\n"));
       	mmuFilamentMK3Moving = true;
       	fsensor_autoload_check_stop();
-		} else return true;
-	} else if ((fsensor_autoload_c <= -12) && (fsensor_autoload_sum < -20))
-  {
-         mmuFilamentMK3Moving = true;
-         fsensor_autoload_check_stop();
-  }
+		}
+		return true;
+	}
 	return false;
 }
 

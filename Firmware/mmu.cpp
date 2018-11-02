@@ -31,6 +31,7 @@ bool mmu_ready = false;
 
 //bool mmuFilamentLoadSeen = false;
 bool mmuFilamentMK3Moving = false;
+bool mmuFSensorLoading = false;
 int lastLoadedFilament = 0;
 
 static int8_t mmu_state = 0;
@@ -141,7 +142,7 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
 		  mmu_puts_P(PSTR("S1\n")); //send 'read version' request
 			mmu_state = -2;
-		}else if (mmu_rx_sensFilatBoot() > 0)
+		} /*else if (mmu_rx_sensFilatBoot() > 0)
     {
       printf_P(PSTR("MMU => '%Sensed Filament at Boot'\n"), mmu_finda);
       //enquecommand_front_P(PSTR("M104 S210"));
@@ -149,7 +150,7 @@ void mmu_loop(void)
       delay(200);
       extr_unload_at_boot();
       mmu_puts_P(PSTR("FB\n")); //Advise unloaded to above bondtech for retraction
-    }
+    }*/
 		else if (millis() > 30000) //30sec after reset disable mmu
 		{
 			puts_P(PSTR("MMU not responding - DISABLED"));
@@ -231,6 +232,7 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
 				mmu_printf_P(PSTR("T%d\n"), filament);
         if (lastLoadedFilament != filament) {
+          mmuFSensorLoading = true;
           fsensor_enable();
           fsensor_autoload_enabled = true;
           mmuFilamentMK3Moving = false;
@@ -261,8 +263,6 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'U0'\n"));
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
-        fsensor_autoload_enabled = true;
-        mmuFilamentMK3Moving = false;
         lastLoadedFilament = -10;
 				mmu_state = 3;
 			}
@@ -319,13 +319,17 @@ void mmu_loop(void)
 	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
-      if (mmuFilamentMK3Moving) {
+      if (!mmuFSensorLoading) {
+          printf_P(PSTR("MMU => 'ok'\n"));
+          mmu_ready = true;
+          mmu_state = 1;
+      } else if (mmuFilamentMK3Moving) {
           printf_P(PSTR("MMU => 'ok'\n"));
   			  mmu_ready = true;
   			  mmu_state = 1;
-      }
+      } else printf_P(PSTR("MMU => 'waiting for filament @ MK3 Sensor'\n"));
 		} else if (mmu_rx_not_ok() > 0) {
-      printf_P(PSTR("MMU => 'not ok/processing'\n"));
+      printf_P(PSTR("MMU => 'not ok'\n"));
     }
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (5 min)
