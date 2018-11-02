@@ -146,7 +146,8 @@ void mmu_loop(void)
       printf_P(PSTR("MMU => '%Sensed Filament at Boot'\n"), mmu_finda);
       enquecommand_front_P(PSTR("M104 S210"));
       enquecommand_front_P(PSTR("M109 S210"));
-      enquecommand_front_P(PSTR("M702 C"));
+      extr_unload_at_boot();
+      mmu_puts_P(PSTR("FB\n")); //Advise unloaded to above bondtech for retraction
     }
 		else if (millis() > 30000) //30sec after reset disable mmu
 		{
@@ -838,6 +839,99 @@ void extr_unload()
 		lcd_clear();
 	}
 	//lcd_return_to_status();
+}
+
+void extr_unload_at_boot()
+{ //unload just current filament for multimaterial printers
+#ifdef SNMM
+  float tmp_motor[3] = DEFAULT_PWM_MOTOR_CURRENT;
+  float tmp_motor_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
+  uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+#endif
+
+  if (degHotend0() > EXTRUDE_MINTEMP)
+  {
+#ifndef SNMM
+    st_synchronize();
+    
+    //show which filament is currently unloaded
+    lcd_update_enable(false);
+    lcd_clear();
+    lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
+    lcd_print(" ");
+    lcd_print(mmu_extruder + 1);
+
+    filament_ramming();
+
+    //mmu_command(MMU_CMD_U0);
+    // get response
+    manage_response(false, true);
+
+    lcd_update_enable(true);
+#else //SNMM
+
+    lcd_clear();
+    lcd_display_message_fullscreen_P(PSTR(""));
+    max_feedrate[E_AXIS] = 50;
+    lcd_set_cursor(0, 0); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
+    lcd_print(" ");
+    lcd_print(mmu_extruder + 1);
+    lcd_set_cursor(0, 2); lcd_puts_P(_T(MSG_PLEASE_WAIT));
+    if (current_position[Z_AXIS] < 15) {
+      current_position[Z_AXIS] += 15; //lifting in Z direction to make space for extrusion
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 25, active_extruder);
+    }
+    
+    current_position[E_AXIS] += 10; //extrusion
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 10, active_extruder);
+    st_current_set(2, E_MOTOR_HIGH_CURRENT);
+    if (current_temperature[0] < 230) { //PLA & all other filaments
+      current_position[E_AXIS] += 5.4;
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2800 / 60, active_extruder);
+      current_position[E_AXIS] += 3.2;
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+      current_position[E_AXIS] += 3;
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3400 / 60, active_extruder);
+    }
+    else { //ABS
+      current_position[E_AXIS] += 3.1;
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2000 / 60, active_extruder);
+      current_position[E_AXIS] += 3.1;
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
+      current_position[E_AXIS] += 4;
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
+      /*current_position[X_AXIS] += 23; //delay
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder); //delay
+      current_position[X_AXIS] -= 23; //delay
+      plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600 / 60, active_extruder); //delay*/
+      delay_keep_alive(4700);
+    }
+  
+    max_feedrate[E_AXIS] = 80;
+    current_position[E_AXIS] -= (bowden_length[mmu_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+    current_position[E_AXIS] -= (bowden_length[mmu_extruder] + 60 + FIL_LOAD_LENGTH) / 2;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 500, active_extruder);
+    st_synchronize();
+    //st_current_init();
+    if (SilentMode != SILENT_MODE_OFF) st_current_set(2, tmp_motor[2]); //set back to normal operation currents
+    else st_current_set(2, tmp_motor_loud[2]);
+    lcd_update_enable(true);
+    lcd_return_to_status();
+    max_feedrate[E_AXIS] = 50;
+#endif //SNMM
+  }
+  else
+  {
+    lcd_clear();
+    lcd_set_cursor(0, 0);
+    lcd_puts_P(_T(MSG_ERROR));
+    lcd_set_cursor(0, 2);
+    lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
+    delay(2000);
+    lcd_clear();
+  }
+  //lcd_return_to_status();
 }
 
 //wrapper functions for loading filament
