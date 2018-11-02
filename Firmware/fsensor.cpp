@@ -8,6 +8,7 @@
 #include "stepper.h"
 #include "planner.h"
 #include "fastio.h"
+#include "io_atmega2560.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
 #include "ConfigurationStore.h"
@@ -32,8 +33,8 @@
 
 const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 
-#define FSENSOR_INT_PIN         63  //!< filament sensor interrupt pin PK1
-#define FSENSOR_INT_PIN_MSK   0x02  //!< filament sensor interrupt pin mask (bit1)
+#define FSENSOR_INT_PIN         74  //!< filament sensor interrupt pin PJ7
+#define FSENSOR_INT_PIN_MSK   0x80  //!< filament sensor interrupt pin mask (bit7)
 
 //uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
 uint8_t fsensor_int_pin_old = 0;
@@ -442,8 +443,8 @@ void fsensor_st_block_begin(block_t* bl)
 	if (((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8)) || 
 		((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8)))
 	{
-		if (_READ(63)) _WRITE(63, LOW);
-		else _WRITE(63, HIGH);
+		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
+		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
 	}
 }
 
@@ -453,8 +454,8 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
 	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
 	{
-		if (_READ(63)) _WRITE(63, LOW);
-		else _WRITE(63, HIGH);
+		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
+		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
 	}
 }
 
