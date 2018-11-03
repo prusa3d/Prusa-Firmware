@@ -32,9 +32,9 @@ bool mmu_ready = false;
 //bool mmuFilamentLoadSeen = false;
 bool mmuFilamentMK3Moving = false;
 bool mmuFSensorLoading = false;
-int lastLoadedFilament = 0;
+int lastLoadedFilament = -10;
 
-static int8_t mmu_state = 0;
+int8_t mmu_state = 0;
 
 uint8_t mmu_cmd = 0;
 
@@ -230,7 +230,6 @@ void mmu_loop(void)
 #ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'T%d'\n"), filament);
 #endif //MMU_DEBUG
-				mmu_printf_P(PSTR("T%d\n"), filament);
         if (lastLoadedFilament != filament) {
           mmuFSensorLoading = true;
           fsensor_enable();
@@ -238,6 +237,7 @@ void mmu_loop(void)
           mmuFilamentMK3Moving = false;
           lastLoadedFilament = filament;
         }
+        mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = 3; // wait for response
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
@@ -254,6 +254,7 @@ void mmu_loop(void)
 #ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'C0'\n"));
 #endif //MMU_DEBUG
+        delay(200);
         mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = 3;
 			}
@@ -290,7 +291,7 @@ void mmu_loop(void)
 #ifdef MMU_DEBUG
 			puts_P(PSTR("MMU <= 'P0'"));
 #endif //MMU_DEBUG
-		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
+		  mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = 2;
 		}
 		return;
@@ -325,6 +326,7 @@ void mmu_loop(void)
           mmu_state = 1;
       } else if (mmuFilamentMK3Moving) {
           printf_P(PSTR("MMU => 'ok'\n"));
+          mmu_puts_P(PSTR("FS\n"));
   			  mmu_ready = true;
   			  mmu_state = 1;
       } else printf_P(PSTR("MMU => 'waiting for filament @ MK3 Sensor'\n"));
