@@ -285,10 +285,10 @@ bool fsensor_check_autoload(void)
 	if ((fsensor_autoload_c >= 12) && (fsensor_autoload_sum > 20))
 	{
 		puts_P(_N("fsensor_check_autoload = true !!!\n"));
-		if (mmu_enabled) {
+		//if (mmu_enabled) {
       	mmuFilamentMK3Moving = true;
       	fsensor_autoload_check_stop();
-		}
+		//}
 		return true;
 	}
 	return false;

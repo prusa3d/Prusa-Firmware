@@ -29,7 +29,6 @@ bool mmu_enabled = false;
 
 bool mmu_ready = false;
 
-//bool mmuFilamentLoadSeen = false;
 bool mmuFilamentMK3Moving = false;
 bool mmuFSensorLoading = false;
 int lastLoadedFilament = -10;
@@ -230,15 +229,18 @@ void mmu_loop(void)
 #ifdef MMU_DEBUG
 				printf_P(PSTR("MMU <= 'T%d'\n"), filament);
 #endif //MMU_DEBUG
+        fsensor_enable();
+        delay(100);
+        mmu_printf_P(PSTR("T%d\n"), filament);
+        mmu_state = 3; // wait for response
         if (lastLoadedFilament != filament) {
+          fsensor_autoload_check_start();
           mmuFSensorLoading = true;
-          fsensor_enable();
+          //fsensor_enable();
           fsensor_autoload_enabled = true;
           mmuFilamentMK3Moving = false;
-          lastLoadedFilament = filament;
         }
-        mmu_printf_P(PSTR("T%d\n"), filament);
-				mmu_state = 3; // wait for response
+        lastLoadedFilament = filament;
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
 			{
@@ -320,18 +322,21 @@ void mmu_loop(void)
 	case 3: //response to mmu commands
 		if (mmu_rx_ok() > 0)
 		{
-      if (!mmuFSensorLoading) {
+      if (mmuFSensorLoading == false) {
+          delay(100);
           printf_P(PSTR("MMU => 'ok'\n"));
           mmu_ready = true;
           mmu_state = 1;
-      } else if (mmuFilamentMK3Moving) {
-          printf_P(PSTR("MMU => 'ok'\n"));
-          mmu_puts_P(PSTR("FS\n"));
-  			  mmu_ready = true;
-  			  mmu_state = 1;
-      } else printf_P(PSTR("MMU => 'waiting for filament @ MK3 Sensor'\n"));
+      } else if (mmuFilamentMK3Moving == true) {
+          //mmu_puts_P(PSTR("FS\n"));
+          mmu_printf_P(PSTR("FS%d\n"), 1);
+          printf_P(PSTR("MMU => 'Advised of filament seen at extruder'\n"));
+  			  mmuFSensorLoading = false;
+      } else {
+          printf_P(PSTR("MMU => 'waiting for filament @ MK3 Sensor'\n"));
+      }
 		} else if (mmu_rx_not_ok() > 0) {
-      printf_P(PSTR("MMU => 'not ok'\n"));
+      printf_P(PSTR("MMU => 'Waiting'\n"));
     }
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (5 min)
