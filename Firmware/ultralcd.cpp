@@ -3311,17 +3311,29 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
     }
 }
 
-void lcd_wait_for_click()
+bool lcd_wait_for_click_delay(uint16_t nDelay)
+// nDelay :: timeout [s] (0 ~ no timeout)
+// true ~ clicked, false ~ delayed
 {
+bool bDelayed;
+long nTime0 = millis()/1000;
+
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
     for (;;) {
         manage_heater();
         manage_inactivity(true);
-        if (lcd_clicked()) {
+        bDelayed = ((millis()/1000-nTime0) > nDelay);
+        bDelayed = (bDelayed && (nDelay != 0));   // 0 ~ no timeout, always waiting for click
+        if (lcd_clicked() || bDelayed) {
 			KEEPALIVE_STATE(IN_HANDLER);
-            return;
+            return(!bDelayed);
         }
     }
+}
+
+void lcd_wait_for_click()
+{
+lcd_wait_for_click_delay(0);
 }
 
 //! @brief Show multiple screen message with yes and no possible choices and wait with possible timeout
