@@ -3077,8 +3077,6 @@ void lcd_wait_for_cool_down() {
 #ifndef TMC2130
 bool lcd_calibrate_z_end_stop_manual(bool only_z)
 {
-    bool clean_nozzle_asked = false;
-
     // Don't know where we are. Let's claim we are Z=0, so the soft end stops will not be triggered when moving up.
     current_position[Z_AXIS] = 0;
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
@@ -3125,13 +3123,6 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
                 previous_millis_msg = millis();
             }
         }
-
-        if (! clean_nozzle_asked) {
-            lcd_show_fullscreen_message_and_wait_P(_T(MSG_CONFIRM_NOZZLE_CLEAN));
-            clean_nozzle_asked = true;
-        }
-		
-
         // Let the user confirm, that the Z carriage is at the top end stoppers.
         int8_t result = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Are left and right Z~carriages all up?"), false);////MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
         if (result == -1)
@@ -3146,22 +3137,6 @@ calibrated:
     // during the search for the induction points.
     current_position[Z_AXIS] = Z_MAX_POS-3.f;
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
-    
-    
-    if(only_z){
-        lcd_display_message_fullscreen_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1));
-        lcd_set_cursor(0, 3);
-        lcd_print(1);
-        lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
-    }else{
-		//lcd_show_fullscreen_message_and_wait_P(_T(MSG_PAPER));
-        lcd_display_message_fullscreen_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE1));
-        lcd_set_cursor(0, 2);
-        lcd_print(1);
-        lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
-    }
-    
-    
     return true;
 
 canceled:
