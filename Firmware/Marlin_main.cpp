@@ -2958,8 +2958,8 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         if (lcd_change_fil_state == 0)
 		{
 			lcd_clear();
-            lcd_set_cursor(0, 2);
-            lcd_puts_P(_T(MSG_PLEASE_WAIT));
+			lcd_set_cursor(0, 2);
+			lcd_puts_P(_T(MSG_PLEASE_WAIT));
 			current_position[X_AXIS] -= 100;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
 				current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
