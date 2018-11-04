@@ -5186,6 +5186,7 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 		if (lcd_clicked())
 		{
 		    KEEPALIVE_STATE(IN_HANDLER);
+			lcd_encoder_diff = 0;
 			return(cursor_pos + first - 1);
 		}
 	}
