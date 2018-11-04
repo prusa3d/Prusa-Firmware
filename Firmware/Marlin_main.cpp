@@ -2956,7 +2956,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         lcd_change_fil_state = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Was filament unload successful?"),
                 false, true); ////MSG_UNLOAD_SUCCESSFUL c=20 r=2
         if (lcd_change_fil_state == 0)
-		{
+        {
 			lcd_clear();
 			lcd_set_cursor(0, 2);
 			lcd_puts_P(_T(MSG_PLEASE_WAIT));
@@ -2966,7 +2966,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 			st_synchronize();
 			lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
 			lcd_update_enable(true);
-		}
+        }
     }
 
     if (mmu_enabled)
