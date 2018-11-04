@@ -4602,6 +4602,7 @@ void lcd_wizard(WizState state)
 		msg = _T(MSG_WIZARD_DONE);
 		lcd_reset_alert_level();
 		lcd_setstatuspgm(_T(WELCOME_MSG));
+		lcd_return_to_status(); 
 		break;
 
 	default:
