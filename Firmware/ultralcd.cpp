@@ -4368,18 +4368,58 @@ static void wait_preheat()
     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 60, active_extruder);
     delay_keep_alive(2000);
     lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
-    while (abs(degHotend(0) - degTargetHotend(0)) > 3) {
+	lcd_set_custom_characters();
+	while (abs(degHotend(0) - degTargetHotend(0)) > 3) {
         lcd_display_message_fullscreen_P(_T(MSG_WIZARD_HEATING));
 
         lcd_set_cursor(0, 4);
-        lcd_print(LCD_STR_THERMOMETER[0]);
-        lcd_print(ftostr3(degHotend(0)));
-        lcd_print("/");
-        lcd_print(degTargetHotend(0));
-        lcd_print(LCD_STR_DEGREE);
-        lcd_set_custom_characters();
+	    //Print the hotend temperature (9 chars total)
+		lcdui_print_temp(LCD_STR_THERMOMETER[0], (int)(degHotend(0) + 0.5), (int)(degTargetHotend(0) + 0.5));
         delay_keep_alive(1000);
     }
+	
+}
+
+static void lcd_wizard_unload()
+{
+	if(mmu_enabled)
+	{
+		int8_t unload = lcd_show_multiscreen_message_two_choices_and_wait_P(
+		_i("Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube.")
+		,false, true, _i("Unload"), _i("Eject"));
+		if (unload)
+		{
+			extr_unload_0();
+		} 
+		else
+		{
+			mmu_eject_fil_0();
+		}
+	} 
+	else
+	{
+			unload_filament();
+	}
+}
+
+static void lcd_wizard_load()
+{
+	if (mmu_enabled)
+	{
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
+	} 
+	else
+	{
+		lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+	}	
+	lcd_update_enable(false);
+	lcd_clear();
+	lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
+#ifdef SNMM
+	change_extr(0);
+#endif
+	loading_flag = true;
+	gcode_M701();
 }
 
 //! @brief Printer first run wizard (Selftest and calibration)
@@ -4456,11 +4496,25 @@ void lcd_wizard(WizState state)
 			else end = true;
 			break;
 		case S::Z: //z calibration
+			lcd_show_fullscreen_message_and_wait_P(_i("Please remove shipping helpers first."));
+			lcd_show_fullscreen_message_and_wait_P(_i("Now remove the test print from steel sheet."));
 			lcd_show_fullscreen_message_and_wait_P(_i("I will run z calibration now."));////MSG_WIZARD_Z_CAL c=20 r=8
 			wizard_event = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_STEEL_SHEET_CHECK), false, false);
 			if (!wizard_event) lcd_show_fullscreen_message_and_wait_P(_T(MSG_PLACE_STEEL_SHEET));
 			wizard_event = gcode_M45(true, 0);
-			if (wizard_event) state = S::Finish; //shipped, no need to set first layer, go to final message directly
+			if (wizard_event) {
+				//current filament needs to be unloaded and then new filament should be loaded
+				//start to preheat nozzle for unloading remaining PLA filament
+				setTargetHotend(PLA_PREHEAT_HOTEND_TEMP, 0);
+				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));
+				wait_preheat();
+				//unload current filament
+				lcd_wizard_unload();
+				//load filament
+				lcd_wizard_load();
+				setTargetHotend(0, 0); //we are finished, cooldown nozzle
+				state = S::Finish; //shipped, no need to set first layer, go to final message directly
+			}
 			else end = true;
 			break;
 		case S::IsFil: //is filament loaded?
@@ -4495,40 +4549,11 @@ void lcd_wizard(WizState state)
 		    break;
 		case S::Unload:
 		    wait_preheat();
-            if(mmu_enabled)
-            {
-                int8_t unload = lcd_show_multiscreen_message_two_choices_and_wait_P(
-                        _i("Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube.")
-                        ,false, true, _i("Unload"), _i("Eject"));
-                if (unload)
-                {
-                    extr_unload_0();
-                } else
-                {
-                    mmu_eject_fil_0();
-                }
-            } else
-            {
-                unload_filament();
-            }
+			lcd_wizard_unload();
             state = S::LoadFil;
             break;
 		case S::LoadFil: //load filament
-		    if (mmu_enabled)
-		    {
-		        lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
-		    } else
-		    {
-			    lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the extruder, then press knob to load it."));////MSG_WIZARD_LOAD_FILAMENT c=20 r=8
-		    }
-			lcd_update_enable(false);
-			lcd_clear();
-			lcd_puts_at_P(0, 2, _T(MSG_LOADING_FILAMENT));
-#ifdef SNMM
-			change_extr(0);
-#endif
-            loading_flag = true;
-			gcode_M701();
+			lcd_wizard_load();
 			state = S::Lay1Cal;
 			break;
 		case S::IsPla:
