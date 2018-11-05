@@ -9,7 +9,7 @@
 //Function pointer to menu functions.
 typedef void (*menu_func_t)(void);
 
-typedef struct 
+typedef struct
 {
     menu_func_t menu;
     int8_t position;

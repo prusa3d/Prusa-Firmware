@@ -43,7 +43,7 @@ inline bool is_digit(char c)
 // Parse a major.minor.revision version number.
 // Return true if valid.
 inline bool parse_version(const char *str, uint16_t version[4])
-{   
+{
 #if 0
     SERIAL_ECHOPGM("Parsing version string ");
     SERIAL_ECHO(str);
@@ -117,22 +117,22 @@ inline bool parse_version(const char *str, uint16_t version[4])
 inline bool strncmp_PP(const char *p1, const char *p2, uint8_t n)
 {
     for (; n > 0; -- n, ++ p1, ++ p2) {
-		if (pgm_read_byte(p1) >= 65 && pgm_read_byte(p1) <= 92) //p1 is upper case (p2 is always lowercase)
-		{
-			if ((pgm_read_byte(p1)+32) < pgm_read_byte(p2))
-				return -1;
-			if ((pgm_read_byte(p1)+32) > pgm_read_byte(p2))
-				return 1;
-		}
-		else if (pgm_read_byte(p1) == 0) {
-			return 0;
-		}
-		else { //p1 is lowercase
-			if (pgm_read_byte(p1) < pgm_read_byte(p2))
-				return -1;
-			if (pgm_read_byte(p1) > pgm_read_byte(p2))
-				return 1;
-		}            
+        if (pgm_read_byte(p1) >= 65 && pgm_read_byte(p1) <= 92) //p1 is upper case (p2 is always lowercase)
+        {
+            if ((pgm_read_byte(p1)+32) < pgm_read_byte(p2))
+                return -1;
+            if ((pgm_read_byte(p1)+32) > pgm_read_byte(p2))
+                return 1;
+        }
+        else if (pgm_read_byte(p1) == 0) {
+            return 0;
+        }
+        else { //p1 is lowercase
+            if (pgm_read_byte(p1) < pgm_read_byte(p2))
+                return -1;
+            if (pgm_read_byte(p1) > pgm_read_byte(p2))
+                return 1;
+        }
     }
     return 0;
 }
@@ -140,7 +140,7 @@ inline bool strncmp_PP(const char *p1, const char *p2, uint8_t n)
 // Parse a major.minor.revision version number.
 // Return true if valid.
 inline bool parse_version_P(const char *str, uint16_t version[4])
-{    
+{
 #if 0
     SERIAL_ECHOPGM("Parsing version string ");
     SERIAL_ECHORPGM(str);
@@ -165,7 +165,8 @@ inline bool parse_version_P(const char *str, uint16_t version[4])
     uint8_t n = minor - major - 1;
     if (n > 4)
         return false;
-    memcpy_P(buf, major, n); buf[n] = 0;
+    memcpy_P(buf, major, n);
+    buf[n] = 0;
     char *endptr = NULL;
     version[0] = strtol(buf, &endptr, 10);
     if (*endptr != 0)
@@ -173,7 +174,8 @@ inline bool parse_version_P(const char *str, uint16_t version[4])
     n = rev - minor - 1;
     if (n > 4)
         return false;
-    memcpy_P(buf, minor, n); buf[n] = 0;
+    memcpy_P(buf, minor, n);
+    buf[n] = 0;
     version[1] = strtol(buf, &endptr, 10);
     if (*endptr != 0)
         return false;
@@ -242,30 +244,30 @@ inline int8_t is_provided_version_newer(const char *version_string)
 
 bool force_selftest_if_fw_version()
 {
-	//if fw version used before flashing new firmware (fw version currently stored in eeprom) is lower then 3.1.2-RC2, function returns true to force selftest
+    //if fw version used before flashing new firmware (fw version currently stored in eeprom) is lower then 3.1.2-RC2, function returns true to force selftest
 
-	uint16_t ver_eeprom[4];
-	uint16_t ver_with_calibration[4] = {3, 1, 2, 4}; //hardcoded 3.1.2-RC2 version
-	bool force_selftest = false;
+    uint16_t ver_eeprom[4];
+    uint16_t ver_with_calibration[4] = {3, 1, 2, 4}; //hardcoded 3.1.2-RC2 version
+    bool force_selftest = false;
 
-	ver_eeprom[0] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR);
-	ver_eeprom[1] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR);
-	ver_eeprom[2] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION);
-	ver_eeprom[3] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR);
+    ver_eeprom[0] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR);
+    ver_eeprom[1] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR);
+    ver_eeprom[2] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION);
+    ver_eeprom[3] = eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR);
 
-	for (uint8_t i = 0; i < 4; ++i) {
-		if (ver_with_calibration[i] > ver_eeprom[i]) {
-			force_selftest = true;
-			break;
-		}
-		else if (ver_with_calibration[i] < ver_eeprom[i])
-			break;
-	}
+    for (uint8_t i = 0; i < 4; ++i) {
+        if (ver_with_calibration[i] > ver_eeprom[i]) {
+            force_selftest = true;
+            break;
+        }
+        else if (ver_with_calibration[i] < ver_eeprom[i])
+            break;
+    }
 
-	//force selftest also in case that version used before flashing new firmware was 3.2.0-RC1
-	if ((ver_eeprom[0] == 3) && (ver_eeprom[1] == 2) && (ver_eeprom[2] == 0) && (ver_eeprom[3] == 3)) force_selftest = true;
-	
-	return force_selftest;
+    //force selftest also in case that version used before flashing new firmware was 3.2.0-RC1
+    if ((ver_eeprom[0] == 3) && (ver_eeprom[1] == 2) && (ver_eeprom[2] == 0) && (ver_eeprom[3] == 3)) force_selftest = true;
+
+    return force_selftest;
 }
 
 bool show_upgrade_dialog_if_version_newer(const char *version_string)
@@ -295,13 +297,13 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
         for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
             lcd_putc(*c);
         lcd_puts_at_P(0, 3, _i("Please upgrade."));////MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20 r=0
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-        tone(BEEPER, 1000);
+        if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+            tone(BEEPER, 1000);
         delay_keep_alive(50);
         noTone(BEEPER);
         delay_keep_alive(500);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-        tone(BEEPER, 1000);
+        if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+            tone(BEEPER, 1000);
         delay_keep_alive(50);
         noTone(BEEPER);
         lcd_wait_for_click();

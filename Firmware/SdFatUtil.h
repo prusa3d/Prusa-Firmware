@@ -34,14 +34,14 @@
 #define PgmPrintln(x) SerialPrintln_P(PSTR(x))
 
 namespace SdFatUtil {
-  int FreeRam();
-  void print_P( PGM_P str);
-  void println_P( PGM_P str);
-  void SerialPrint_P(PGM_P str);
-  void SerialPrintln_P(PGM_P str);
-  void set_stack_guard();
-  bool test_stack_integrity();
-  uint32_t get_stack_guard_test_value();
+int FreeRam();
+void print_P( PGM_P str);
+void println_P( PGM_P str);
+void SerialPrint_P(PGM_P str);
+void SerialPrintln_P(PGM_P str);
+void set_stack_guard();
+bool test_stack_integrity();
+uint32_t get_stack_guard_test_value();
 }
 
 using namespace SdFatUtil;  // NOLINT

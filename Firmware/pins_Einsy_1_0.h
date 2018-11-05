@@ -6,7 +6,7 @@
 
 #define KNOWN_BOARD
 #ifndef __AVR_ATmega2560__
-  #error Oops!  Make sure you have 'Arduino Mega 2560 or Rambo' selected from the 'Tools -> Boards' menu.
+#error Oops!  Make sure you have 'Arduino Mega 2560 or Rambo' selected from the 'Tools -> Boards' menu.
 #endif
 
 #define TMC2130
@@ -119,7 +119,7 @@
 #define SDCARDDETECT           15
 
 #define TACH_0                 79 // !!! changed from 81 (EINY03)
-#define TACH_1                 80 
+#define TACH_1                 80
 
 
 // Support for an 8 bit logic analyzer, for example the Saleae.

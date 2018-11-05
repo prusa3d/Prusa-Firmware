@@ -27,67 +27,70 @@ unsigned char swspi_cfg = 0;
 
 void swspi_init(unsigned char miso, unsigned char mosi, unsigned char sck, unsigned char cfg)
 {
-	swspi_miso = miso;
-	swspi_mosi = mosi;
-	swspi_sck = sck;
-	swspi_cfg = cfg;
-	GPIO_INP(swspi_miso);
-	GPIO_OUT(swspi_mosi);
-	GPIO_OUT(swspi_sck);
-	GPIO_CLR(swspi_mosi);
-	SWSPI_SCK_DN;
+    swspi_miso = miso;
+    swspi_mosi = mosi;
+    swspi_sck = sck;
+    swspi_cfg = cfg;
+    GPIO_INP(swspi_miso);
+    GPIO_OUT(swspi_mosi);
+    GPIO_OUT(swspi_sck);
+    GPIO_CLR(swspi_mosi);
+    SWSPI_SCK_DN;
 }
 
 void swspi_tx(unsigned char tx)
 {
-	int delay = 1 << (swspi_cfg & SWSPI_DEL));
-	if (swspi_miso == swspi_mosi) GPIO_OUT(swspi_mosi);
-	unsigned char i = 0; for (; i < 8; i++)
-	{
-		if (tx & 0x80) GPIO_SET(swspi_mosi);
-		else GPIO_CLR(swspi_mosi);
-	    DELAY(delay);
-		SWSPI_SCK_UP;
-	    DELAY(delay);
-		SWSPI_SCK_DN;
-		tx <<= 1;
-	}
+    int delay = 1 << (swspi_cfg & SWSPI_DEL));
+    if (swspi_miso == swspi_mosi) GPIO_OUT(swspi_mosi);
+    unsigned char i = 0;
+    for (; i < 8; i++)
+{
+    if (tx & 0x80) GPIO_SET(swspi_mosi);
+        else GPIO_CLR(swspi_mosi);
+        DELAY(delay);
+        SWSPI_SCK_UP;
+        DELAY(delay);
+        SWSPI_SCK_DN;
+        tx <<= 1;
+    }
 }
 
 unsigned char swspi_rx()
 {
-	int delay = 1 << (swspi_cfg & SWSPI_DEL));
-	if (swspi_miso == swspi_mosi) GPIO_OUT(swspi_mosi);
-	unsigned char rx = 0;
-	unsigned char i = 0; for (; i < 8; i++)
-	{
-		rx <<= 1;
-	    DELAY(delay);
-		SWSPI_SCK_UP;
-	    DELAY(delay);
-		rx |= GPIO_GET(swspi_miso)?1:0;
-		SWSPI_SCK_DN;
-	}
-	return rx;
+    int delay = 1 << (swspi_cfg & SWSPI_DEL));
+    if (swspi_miso == swspi_mosi) GPIO_OUT(swspi_mosi);
+    unsigned char rx = 0;
+    unsigned char i = 0;
+    for (; i < 8; i++)
+{
+    rx <<= 1;
+    DELAY(delay);
+        SWSPI_SCK_UP;
+        DELAY(delay);
+        rx |= GPIO_GET(swspi_miso)?1:0;
+        SWSPI_SCK_DN;
+    }
+    return rx;
 }
 
 unsigned char swspi_txrx(unsigned char tx)
 {
-	int delay = 1 << (swspi_cfg & SWSPI_DEL));
-	unsigned char rx = 0;
-	unsigned char i = 0; for (; i < 8; i++)
-	{
-		rx <<= 1;
-		if (tx & 0x80) GPIO_SET(swspi_mosi);
-		else GPIO_CLR(swspi_mosi);
-	    DELAY(delay);
-		SWSPI_SCK_UP;
-	    DELAY(delay);
-		rx |= GPIO_GET(swspi_miso)?1:0;
-		SWSPI_SCK_DN;
-		tx <<= 1;
-	}
-	return rx;
+    int delay = 1 << (swspi_cfg & SWSPI_DEL));
+    unsigned char rx = 0;
+    unsigned char i = 0;
+    for (; i < 8; i++)
+{
+    rx <<= 1;
+    if (tx & 0x80) GPIO_SET(swspi_mosi);
+        else GPIO_CLR(swspi_mosi);
+        DELAY(delay);
+        SWSPI_SCK_UP;
+        DELAY(delay);
+        rx |= GPIO_GET(swspi_miso)?1:0;
+        SWSPI_SCK_DN;
+        tx <<= 1;
+    }
+    return rx;
 }
 
 #endif //__SWSPI

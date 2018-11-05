@@ -47,7 +47,7 @@ SdFile::SdFile(const char* path, uint8_t oflag) : SdBaseFile(path, oflag) {
  *
  */
 int16_t SdFile::write(const void* buf, uint16_t nbyte) {
-  return SdBaseFile::write(buf, nbyte);
+    return SdBaseFile::write(buf, nbyte);
 }
 //------------------------------------------------------------------------------
 /** Write a byte to a file. Required by the Arduino Print class.
@@ -71,7 +71,7 @@ void SdFile::write(uint8_t b)
  * Use writeError to check for errors.
  */
 void SdFile::write(const char* str) {
-  SdBaseFile::write(str, strlen(str));
+    SdBaseFile::write(str, strlen(str));
 }
 //------------------------------------------------------------------------------
 /** Write a PROGMEM string to a file.
@@ -79,7 +79,7 @@ void SdFile::write(const char* str) {
  * Use writeError to check for errors.
  */
 void SdFile::write_P(PGM_P str) {
-  for (uint8_t c; (c = pgm_read_byte(str)); str++) write(c);
+    for (uint8_t c; (c = pgm_read_byte(str)); str++) write(c);
 }
 //------------------------------------------------------------------------------
 /** Write a PROGMEM string followed by CR/LF to a file.
@@ -87,8 +87,8 @@ void SdFile::write_P(PGM_P str) {
  * Use writeError to check for errors.
  */
 void SdFile::writeln_P(PGM_P str) {
-  write_P(str);
-  write_P(PSTR("\r\n"));
+    write_P(str);
+    write_P(PSTR("\r\n"));
 }
 
 

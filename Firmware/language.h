@@ -11,11 +11,11 @@
 #define PROTOCOL_VERSION "1.0"
 
 #ifndef CUSTOM_MENDEL_NAME
-    #define MACHINE_NAME "Mendel"
+#define MACHINE_NAME "Mendel"
 #endif
 
 #ifndef MACHINE_UUID
-   #define MACHINE_UUID "00000000-0000-0000-0000-000000000000"
+#define MACHINE_UUID "00000000-0000-0000-0000-000000000000"
 #endif
 
 #define MSG_FW_VERSION                   "Firmware"
@@ -49,19 +49,19 @@
 /** @brief lang_table_header_t structure - (size= 16byte) */
 typedef struct
 {
-	uint32_t magic;      //+0 
-	uint16_t size;       //+4
-	uint16_t count;      //+6
-	uint16_t checksum;   //+8
-	uint16_t code;       //+10
-	uint32_t signature;  //+12
+    uint32_t magic;      //+0
+    uint16_t size;       //+4
+    uint16_t count;      //+6
+    uint16_t checksum;   //+8
+    uint16_t code;       //+10
+    uint32_t signature;  //+12
 } lang_table_header_t;
 
 /** @brief lang_table_t structure - (size= 16byte + 2*count) */
 typedef struct
 {
-	lang_table_header_t header;
-	uint16_t table[];
+    lang_table_header_t header;
+    uint16_t table[];
 } lang_table_t;
 
 /** @name Language indices into their particular symbol tables.*/

@@ -29,8 +29,8 @@
 #ifdef __arm__
 extern "C" char* sbrk(int incr);
 int SdFatUtil::FreeRam() {
-  char top;
-  return &top - reinterpret_cast<char*>(sbrk(0));
+    char top;
+    return &top - reinterpret_cast<char*>(sbrk(0));
 }
 #else  // __arm__
 extern char *__brkval;
@@ -39,32 +39,32 @@ extern char __bss_end;
  * \return The number of free bytes.
  */
 int SdFatUtil::FreeRam() {
-  char top;
-  return __brkval ? &top - __brkval : &top - &__bss_end;
+    char top;
+    return __brkval ? &top - __brkval : &top - &__bss_end;
 }
 #endif  // __arm
 
 void SdFatUtil::set_stack_guard()
-{	
-	uint32_t *stack_guard;
+{
+    uint32_t *stack_guard;
 
-	stack_guard = (uint32_t*)&__bss_end;
+    stack_guard = (uint32_t*)&__bss_end;
     *stack_guard = STACK_GUARD_TEST_VALUE;
 }
 
 bool SdFatUtil::test_stack_integrity()
 {
-	uint32_t* stack_guard = (uint32_t*)&__bss_end;
-	return (*stack_guard == STACK_GUARD_TEST_VALUE);
+    uint32_t* stack_guard = (uint32_t*)&__bss_end;
+    return (*stack_guard == STACK_GUARD_TEST_VALUE);
 }
 
 uint32_t SdFatUtil::get_stack_guard_test_value()
 {
-	uint32_t* stack_guard;
-	uint32_t output;
-	stack_guard = (uint32_t*)&__bss_end;
-	output = *stack_guard;
-	return(output);
+    uint32_t* stack_guard;
+    uint32_t output;
+    stack_guard = (uint32_t*)&__bss_end;
+    output = *stack_guard;
+    return(output);
 }
 //------------------------------------------------------------------------------
 /** %Print a string in flash memory.
@@ -73,7 +73,7 @@ uint32_t SdFatUtil::get_stack_guard_test_value()
  * \param[in] str Pointer to string stored in flash memory.
  */
 void SdFatUtil::print_P( PGM_P str) {
-  for (uint8_t c; (c = pgm_read_byte(str)); str++) MYSERIAL.write(c);
+    for (uint8_t c; (c = pgm_read_byte(str)); str++) MYSERIAL.write(c);
 }
 //------------------------------------------------------------------------------
 /** %Print a string in flash memory followed by a CR/LF.
@@ -82,8 +82,8 @@ void SdFatUtil::print_P( PGM_P str) {
  * \param[in] str Pointer to string stored in flash memory.
  */
 void SdFatUtil::println_P( PGM_P str) {
-  print_P( str);
-  MYSERIAL.println();
+    print_P( str);
+    MYSERIAL.println();
 }
 //------------------------------------------------------------------------------
 /** %Print a string in flash memory to Serial.
@@ -91,7 +91,7 @@ void SdFatUtil::println_P( PGM_P str) {
  * \param[in] str Pointer to string stored in flash memory.
  */
 void SdFatUtil::SerialPrint_P(PGM_P str) {
-  print_P(str);
+    print_P(str);
 }
 //------------------------------------------------------------------------------
 /** %Print a string in flash memory to Serial followed by a CR/LF.
@@ -99,6 +99,6 @@ void SdFatUtil::SerialPrint_P(PGM_P str) {
  * \param[in] str Pointer to string stored in flash memory.
  */
 void SdFatUtil::SerialPrintln_P(PGM_P str) {
-  println_P( str);
+    println_P( str);
 }
 #endif

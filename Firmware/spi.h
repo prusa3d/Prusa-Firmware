@@ -21,25 +21,25 @@ extern "C" {
 
 static inline void spi_init()
 {
-	DDRB &= ~((1 << DD_SCK) | (1 << DD_MOSI) | (1 << DD_MISO));
-	DDRB |= (1 << DD_SS) | (1 << DD_SCK) | (1 << DD_MOSI);
-	PORTB &= ~((1 << DD_SCK) | (1 << DD_MOSI) | (1 << DD_MISO));
-	PORTB |= (1 << DD_SS);
-	SPCR = SPI_SPCR(0, 0, 0, 1, 0); //SPE=1, MSTR=1 (0x50)
-	SPSR = 0x00;
+    DDRB &= ~((1 << DD_SCK) | (1 << DD_MOSI) | (1 << DD_MISO));
+    DDRB |= (1 << DD_SS) | (1 << DD_SCK) | (1 << DD_MOSI);
+    PORTB &= ~((1 << DD_SCK) | (1 << DD_MOSI) | (1 << DD_MISO));
+    PORTB |= (1 << DD_SS);
+    SPCR = SPI_SPCR(0, 0, 0, 1, 0); //SPE=1, MSTR=1 (0x50)
+    SPSR = 0x00;
 }
 
 static inline void spi_setup(uint8_t spcr, uint8_t spsr)
 {
-	SPCR = spcr;
-	SPSR = spsr;
+    SPCR = spcr;
+    SPSR = spsr;
 }
 
 static inline uint8_t spi_txrx(uint8_t tx)
 {
-	SPDR = tx;
-	while (!(SPSR & (1 << SPIF)));
-	return SPDR;
+    SPDR = tx;
+    while (!(SPSR & (1 << SPIF)));
+    return SPDR;
 }
 
 #if defined(__cplusplus)
