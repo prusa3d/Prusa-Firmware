@@ -90,7 +90,7 @@ unsigned long display_time; //just timer for showing pid finished message on lcd
 float pid_temp = DEFAULT_PID_TEMP;
 
 static bool forceMenuExpire = false;
-bool lcd_autoDeplete;
+static bool lcd_autoDeplete;
 
 
 static float manual_feedrate[] = MANUAL_FEEDRATE;
@@ -4423,6 +4423,11 @@ static void lcd_wizard_load()
 	gcode_M701();
 }
 
+bool lcd_autoDepleteEnabled()
+{
+    return (lcd_autoDeplete && fsensor_enabled);
+}
+
 //! @brief Printer first run wizard (Selftest and calibration)
 //!
 //!
@@ -4685,6 +4690,39 @@ while(0)
 #define SETTINGS_FILAMENT_SENSOR do{}while(0)
 #endif //FILAMENT_SENSOR
 
+static void auto_deplete_switch()
+{
+    lcd_autoDeplete = !lcd_autoDeplete;
+    eeprom_update_byte((unsigned char *)EEPROM_AUTO_DEPLETE, lcd_autoDeplete);
+}
+
+static bool settingsAutoDeplete()
+{
+    if (mmu_enabled)
+    {
+        if (!fsensor_enabled)
+        {
+            if (menu_item_text_P(_i("Auto deplete[N/A]"))) return true;
+        }
+        else if (lcd_autoDeplete)
+        {
+            if (menu_item_function_P(_i("Auto deplete [on]"), auto_deplete_switch)) return true;
+        }
+        else
+        {
+            if (menu_item_function_P(_i("Auto deplete[off]"), auto_deplete_switch)) return true;
+        }
+    }
+    return false;
+}
+
+#define SETTINGS_AUTO_DEPLETE \
+do\
+{\
+    if(settingsAutoDeplete()) return;\
+}\
+while(0)\
+
 #ifdef TMC2130
 #define SETTINGS_SILENT_MODE \
 do\
@@ -4792,12 +4830,6 @@ do\
 }\
 while (0)
 
-static void auto_deplete_switch()
-{
-    lcd_autoDeplete = !lcd_autoDeplete;
-    eeprom_update_byte((unsigned char *)EEPROM_AUTO_DEPLETE, lcd_autoDeplete);
-}
-
 static void lcd_settings_menu()
 {
 	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -4812,11 +4844,7 @@ static void lcd_settings_menu()
 
 	SETTINGS_FILAMENT_SENSOR;
 
-	if (mmu_enabled)
-	{
-        if (lcd_autoDeplete) MENU_ITEM_FUNCTION_P(_i("Auto deplete [on]"), auto_deplete_switch);
-        else MENU_ITEM_FUNCTION_P(_i("Auto deplete[off]"), auto_deplete_switch);
-	}
+	SETTINGS_AUTO_DEPLETE;
 
 	if (fans_check_enabled == true)
 		MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
@@ -5927,6 +5955,8 @@ static void lcd_tune_menu()
 		MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_ON), lcd_fsensor_state_set);
 	}
 #endif //FILAMENT_SENSOR
+
+	SETTINGS_AUTO_DEPLETE;
 
 #ifdef TMC2130
      if(!farm_mode)

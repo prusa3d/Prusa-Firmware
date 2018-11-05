@@ -118,7 +118,6 @@ extern int8_t SilentModeMenu;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;
-extern bool lcd_autoDeplete;
 
 
 void lcd_ignore_click(bool b=true);
@@ -174,6 +173,7 @@ void lcd_set_progress();
 void lcd_language();
 
 void lcd_wizard();
+bool lcd_autoDepleteEnabled();
 
 //! @brief Wizard state
 enum class WizState : uint8_t
