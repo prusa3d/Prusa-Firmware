@@ -4690,15 +4690,36 @@ while(0)
 #define SETTINGS_FILAMENT_SENSOR do{}while(0)
 #endif //FILAMENT_SENSOR
 
+static void auto_deplete_switch()
+{
+    lcd_autoDeplete = !lcd_autoDeplete;
+    eeprom_update_byte((unsigned char *)EEPROM_AUTO_DEPLETE, lcd_autoDeplete);
+}
+
+static bool settingsAutoDeplete()
+{
+    if (mmu_enabled)
+    {
+        if (!fsensor_enabled)
+        {
+            if (menu_item_text_P(_i("Auto deplete[N/A]"))) return true;
+        }
+        else if (lcd_autoDeplete)
+        {
+            if (menu_item_function_P(_i("Auto deplete [on]"), auto_deplete_switch)) return true;
+        }
+        else
+        {
+            if (menu_item_function_P(_i("Auto deplete[off]"), auto_deplete_switch)) return true;
+        }
+    }
+    return false;
+}
+
 #define SETTINGS_AUTO_DEPLETE \
 do\
 {\
-    if (mmu_enabled)\
-    {\
-        if (!fsensor_enabled)         MENU_ITEM_TEXT_P(_i("Auto deplete[N/A]"));\
-        else if (lcd_autoDeplete) MENU_ITEM_FUNCTION_P(_i("Auto deplete [on]"), auto_deplete_switch);\
-        else                      MENU_ITEM_FUNCTION_P(_i("Auto deplete[off]"), auto_deplete_switch);\
-    }\
+    if(settingsAutoDeplete()) return;\
 }\
 while(0)\
 
@@ -4808,12 +4829,6 @@ do\
          }\
 }\
 while (0)
-
-static void auto_deplete_switch()
-{
-    lcd_autoDeplete = !lcd_autoDeplete;
-    eeprom_update_byte((unsigned char *)EEPROM_AUTO_DEPLETE, lcd_autoDeplete);
-}
 
 static void lcd_settings_menu()
 {
