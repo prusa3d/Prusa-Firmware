@@ -622,6 +622,7 @@ void crashdet_recover()
 
 void crashdet_cancel()
 {
+	saved_printing = false;
 	tmc2130_sg_stop_on_crash = true;
 	if (saved_printing_type == PRINTING_TYPE_SD) {
 		lcd_print_stop();
