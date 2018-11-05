@@ -211,7 +211,7 @@ void CardReader::initsd()
   /*
   if(!workDir.openRoot(&volume))
   {
-    SERIAL_ECHOLNPGM(_T(MSG_SD_WORKDIR_FAIL));
+    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
   }
   */
   
@@ -221,7 +221,7 @@ void CardReader::setroot()
 {
   /*if(!workDir.openRoot(&volume))
   {
-    SERIAL_ECHOLNPGM(_T(MSG_SD_WORKDIR_FAIL));
+    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
   }*/
   workDir=root;
   

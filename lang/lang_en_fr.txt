@@ -1,7 +1,3 @@
-#MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
-"  [off"
-"\x00"
-
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
 "  PlannerBufferBytes : "
@@ -38,10 +34,6 @@
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 "\x1b[2JATTENTION :\x1b[1;0HDetection de crash\x1b[2;0Hdesactivee en mode\x1b[3;0HFurtif"
 
-#MSG_REFRESH c=0 r=0
-"\xf8Refresh"
-"\x00"
-
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 "Ajustement de Z"
@@ -61,10 +53,6 @@
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 "Chariots Z gauche et droite tout en haut?"
-
-#MSG_ADJUSTZ c=0 r=0
-"Auto adjust Z?"
-"Ajustement Z auto ?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "Auto deplete [on]"
@@ -130,10 +118,6 @@
 "Bed"
 "Lit"
 
-#MSG_BEGIN_FILE_LIST c=0 r=0
-"Begin file list"
-"Debut liste fichiers"
-
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
 "Statut courroie"
@@ -170,6 +154,10 @@
 "Calibration done"
 "Calibration terminee"
 
+#
+"Cancel"
+"\x00"
+
 #MSG_MENU_CALIBRATION c=0 r=0
 "Calibration"
 "\x00"
@@ -190,6 +178,10 @@
 "Color not correct"
 "Couleur incorrecte"
 
+#
+"Copy selected language from XFLASH?"
+"\x00"
+
 #MSG_COOLDOWN c=0 r=0
 "Cooldown"
 "Refroidissement"
@@ -209,6 +201,10 @@
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
 "Crash detecte."
+
+#
+"Crash detected. Resume print?"
+"\x00"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -254,6 +250,10 @@
 "Eject filament 4"
 "Ejecter le fil. 4"
 
+#
+"Eject"
+"\x00"
+
 #MSG_EJECT_FILAMENT5 c=17 r=1
 "Eject filament 5"
 "Ejecter le fil. 5"
@@ -261,10 +261,6 @@
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 "Filament en cours d'ejection"
-
-#MSG_END_FILE_LIST c=0 r=0
-"End file list"
-"Fin liste fichiers"
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
@@ -297,6 +293,26 @@
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
 "ERREUR : Le capteur de filament ne repond pas, verifiez la connexion."
+
+#
+"External SPI flash W25X20CL not responding."
+"\x00"
+
+#
+"Extruder 1"
+"\x00"
+
+#
+"Extruder 2"
+"\x00"
+
+#
+"Extruder 3"
+"\x00"
+
+#
+"Extruder 4"
+"\x00"
 
 #MSG_ERROR c=0 r=0
 "ERROR:"
@@ -378,17 +394,13 @@
 "Filament used"
 "Filament utilise"
 
+#MSG_PRINT_TIME c=19 r=1
+"Print time"
+"\x00"
+
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
 "Fichier incomplet. Continuer qd meme ?"
-
-#MSG_SD_FILE_OPENED c=0 r=0
-"File opened: "
-"Fichier ouvert: "
-
-#MSG_SD_FILE_SELECTED c=0 r=0
-"File selected"
-"Fichier selectionne"
 
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
@@ -446,6 +458,10 @@
 "howto.prusa3d.com"
 "\x00"
 
+#
+"Change extruder"
+"\x00"
+
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
 "Changer filament"
@@ -457,10 +473,6 @@
 #MSG_CORRECTLY c=20 r=0
 "Changed correctly?"
 "Change correctement?"
-
-#MSG_CHANGING_FILAMENT c=20 r=0
-"Changing filament!"
-"Changement filament!"
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
@@ -542,6 +554,10 @@
 "Insert filament into extruder 4. Click when done."
 "Inserez le filament dans l'extrudeur 4. Cliquez une fois fait."
 
+#
+"Is filament 1 loaded?"
+"\x00"
+
 #MSG_INSERT_FILAMENT c=20 r=0
 "Insert filament"
 "Inserez le filament"
@@ -574,9 +590,17 @@
 "Left hotend fan?"
 "Ventilo tete gauche?"
 
+#
+"Left"
+"\x00"
+
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
 "Gauche [um]"
+
+#
+"Lin. correction"
+"Korekce lin."
 
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
@@ -625,6 +649,10 @@
 #MSG_M221_INVALID_EXTRUDER c=0 r=0
 "M221 Invalid extruder "
 "M221 extrudeur invalide "
+
+#
+"Measured skew"
+"\x00"
 
 #MSG_MAIN c=0 r=0
 "Main"
@@ -689,6 +717,10 @@
 #MSG_MOVE_Y c=0 r=0
 "Move Y"
 "Deplacer Y"
+
+#
+"New firmware version available:"
+"\x00"
 
 #MSG_MOVE_Z c=0 r=0
 "Move Z"
@@ -790,6 +822,10 @@
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 "Merci de verifier notre manuel et de corriger le  probleme. Poursuivez alors l'assistant en redemarrant l'imprimante."
 
+#
+"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
+"\x00"
+
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 "Please insert PLA filament to the extruder, then press knob to load it."
 "Inserez du filament PLA dans l'extrudeur, puis appuyez sur le bouton pour le charger."
@@ -829,6 +865,10 @@
 #MSG_RUN_XYZ c=20 r=4
 "Please run XYZ calibration first."
 "Veuillez d'abord lancer la calibration XYZ."
+
+#
+"Please upgrade."
+"\x00"
 
 #MSG_UPDATE_MMU2_FW c=20 r=4
 "Please update firmware in your MMU2. Waiting for reset."
@@ -887,6 +927,10 @@
 "Imprimante arretee a cause d'erreurs. Corrigez l'erreur et utilisez M999 pour redemarrer. (La temperature est reinitilisee. Parametrez la apres le redemarrage)"
 
 #WELCOME_MSG c=20 r=0
+"Prusa i3 MK2.5 ready."
+"Prusa i3 MK2.5 prete."
+
+#WELCOME_MSG c=20 r=0
 "Prusa i3 MK3 ready."
 "Prusa i3 MK3 prete."
 
@@ -902,13 +946,13 @@
 "Recovering print    "
 "Recup. impression    "
 
+#
+"Resend"
+"\x00"
+
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
 "Retirez l'ancien filament puis appuyez sur le bouton pour charger le nouveau."
-
-#MSG_M119_REPORT c=0 r=0
-"Reporting endstop status"
-"Retour du statut des butees"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -925,6 +969,10 @@
 #MSG_RESUMING_PRINT c=20 r=1
 "Resuming print"
 "Reprise de l'impr."
+
+#
+"Right"
+"\x00"
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
@@ -958,13 +1006,17 @@
 "SD init fail"
 "Echec init SD"
 
-#MSG_SD_PRINTING_BYTE c=0 r=0
-"SD printing byte "
-"Octet d'impression de la SD "
-
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
 "Recherche du point de calibration du lit"
+
+#
+"Select nozzle preheat temperature which matches your material."
+"\x00"
+
+#
+"Select PLA filament:"
+"\x00"
 
 #MSG_LANGUAGE_SELECT c=0 r=0
 "Select language"
@@ -998,6 +1050,10 @@
 "Set temperature:"
 "Regler temp. :"
 
+#
+"Severe skew"
+"\x00"
+
 #MSG_SETTINGS c=0 r=0
 "Settings"
 "Reglages"
@@ -1005,6 +1061,14 @@
 #MSG_SHOW_END_STOPS c=17 r=1
 "Show end stops"
 "Afficher butees"
+
+#
+"Show pinda state"
+"\x00"
+
+#
+"Slight skew"
+"\x00"
 
 #MSG_DWELL c=0 r=0
 "Sleep..."
@@ -1062,10 +1126,6 @@
 "Statistics  "
 "Statistiques  "
 
-#MSG_STEPPER_TOO_HIGH c=0 r=0
-"Steprate too high: "
-"Nombre de pas trop eleve: "
-
 #MSG_STOP_PRINT c=0 r=0
 "Stop print"
 "Arreter impression"
@@ -1118,6 +1178,14 @@
 "There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
 "Il y a encore besoin d'effectuer la calibration Z. Veuillez suivre le manuel, chapitre Premiers pas, section Processus de calibration."
 
+#
+"Total filament"
+"\x00"
+
+#
+"Total print time"
+"\x00"
+
 #MSG_ENDSTOP_HIT c=0 r=0
 "TRIGGERED"
 "ACTIVE"
@@ -1125,6 +1193,14 @@
 #MSG_TUNE c=0 r=0
 "Tune"
 "Regler"
+
+#
+"Unload"
+"\x00"
+
+#
+"Unload all"
+"\x00"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -1182,14 +1258,6 @@
 "Wizard"
 "Assistant"
 
-#MSG_SD_WORKDIR_FAIL c=0 r=0
-"workDir open failed"
-"Echec ouverture workDir"
-
-#MSG_SD_WRITE_TO_FILE c=0 r=0
-"Writing to file: "
-"Ecriture dans le fichier: "
-
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"
 "Details calib. XYZ"
@@ -1208,24 +1276,52 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
 "XYZ calibration all right. Skew will be corrected automatically."
+"\x00"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"\x00"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"\x00"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 "XYZ calibration compromised. Front calibration points not reachable."
+"\x00"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 "XYZ calibration compromised. Right front calibration point not reachable."
+"\x00"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 "XYZ calibration compromised. Left front calibration point not reachable."
+"\x00"
 
-#MSG_UNLOAD_ALL c=17 r=0
-"Unload all"
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+"\x00"
 
-#MSG_UNLOAD_FILAMENT_1 c=17 r=0
-"Unload filament 1"
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+"\x00"
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+"\x00"
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+"\x00"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+"\x00"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+"\x00"
+
+#MSG_OFF c=0 r=0
+" [off]"
+"\x00"

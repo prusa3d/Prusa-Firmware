@@ -1,7 +1,3 @@
-#MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
-"  [off"
-"  [inactivo"
-
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
 " PlannerBufferBytes: "
@@ -38,10 +34,6 @@
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 "\x1b[2JATENCION:\x1b[1;0HDec. choque\x1b[2;0Hdesactivada en\x1b[3;0HModo silencio"
 
-#MSG_REFRESH c=0 r=0
-"\xf8Refresh"
-"\x00"
-
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 "Ajustar Z"
@@ -61,10 +53,6 @@
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 "Carros Z izq./der. estan arriba maximo?"
-
-#MSG_ADJUSTZ c=0 r=0
-"Auto adjust Z?"
-"Ajustar Eje Z?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "Auto deplete [on]"
@@ -130,10 +118,6 @@
 "Bed"
 "Base calefactable"
 
-#MSG_BEGIN_FILE_LIST c=0 r=0
-"Begin file list"
-"Comienzo lista arch."
-
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
 "Estado de la correa"
@@ -174,6 +158,10 @@
 "Calibration"
 "Calibracion"
 
+#
+"Cancel"
+"\x00"
+
 #MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
 "Cannot enter subdir: "
 "Sin acceso subdir: "
@@ -193,6 +181,10 @@
 #MSG_COOLDOWN c=0 r=0
 "Cooldown"
 "Enfriar"
+
+#
+"Copy selected language from XFLASH?"
+"\x00"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
@@ -262,13 +254,13 @@
 "Eject filament 5"
 "Expulsar filam. 5"
 
+#
+"Eject"
+"\x00"
+
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 "Expulsando filamento"
-
-#MSG_END_FILE_LIST c=0 r=0
-"End file list"
-"Fin lista arch."
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
@@ -304,6 +296,26 @@
 
 #MSG_ERROR c=0 r=0
 "ERROR:"
+"\x00"
+
+#
+"External SPI flash W25X20CL not responding."
+"\x00"
+
+#
+"Extruder 1"
+"\x00"
+
+#
+"Extruder 2"
+"\x00"
+
+#
+"Extruder 3"
+"\x00"
+
+#
+"Extruder 4"
 "\x00"
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
@@ -390,14 +402,6 @@
 "File incomplete. Continue anyway?"
 "Archivo incompleto. Continuar de todos modos?"
 
-#MSG_SD_FILE_OPENED c=0 r=0
-"File opened: "
-"Arch. abierto: "
-
-#MSG_SD_FILE_SELECTED c=0 r=0
-"File selected"
-"Arch. elegido"
-
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
 "Term. movimientos"
@@ -454,6 +458,10 @@
 "howto.prusa3d.com"
 "\x00"
 
+#
+"Change extruder"
+"\x00"
+
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
 "Cambiar filamento"
@@ -465,10 +473,6 @@
 #MSG_CORRECTLY c=20 r=0
 "Changed correctly?"
 "Cambio correcto?"
-
-#MSG_CHANGING_FILAMENT c=20 r=0
-"Changing filament!"
-"Cambiando filamento!"
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
@@ -550,6 +554,10 @@
 "Insert filament into extruder 4. Click when done."
 "Insertar filamento en el extrusor 4. Haz clic una vez terminado."
 
+#
+"Is filament 1 loaded?"
+"\x00"
+
 #MSG_INSERT_FILAMENT c=20 r=0
 "Insert filament"
 "Introducir filamento"
@@ -581,6 +589,10 @@
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
 "Vent. izquierdo?"
+
+#
+"Left"
+"\x00"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
@@ -662,6 +674,10 @@
 "MMU OK. Resuming temperature..."
 "MMU OK. Restaurando temperatura..."
 
+#
+"Measured skew"
+"\x00"
+
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 "MMU OK. Resumiendo..."
@@ -725,6 +741,10 @@
 #MSG_SELFTEST_NOTCONNECTED c=0 r=0
 "Not connected"
 "No hay conexion"
+
+#
+"New firmware version available:"
+"\x00"
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
@@ -826,6 +846,10 @@
 "Please press the knob to unload filament"
 "Por favor, pulsa el dial para descargar el filamento"
 
+#
+"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
+"\x00"
+
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
 "Por favor retire el filamento de inmediato"
@@ -865,6 +889,10 @@
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
 "Precalentando nozzle. Espera por favor."
+
+#
+"Please upgrade."
+"\x00"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
@@ -922,10 +950,6 @@
 "Remove old filament and press the knob to start loading new filament."
 "Retire el filamento viejo y presione el dial para comenzar a cargar el nuevo filamento."
 
-#MSG_M119_REPORT c=0 r=0
-"Reporting endstop status"
-"Estado endstop"
-
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
 "\x00"
@@ -950,6 +974,10 @@
 "RPi port     [on]"
 "Puerto RPi  [act]"
 
+#
+"Resend"
+"\x00"
+
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
 "Puerto RPi  [ina]"
@@ -970,13 +998,13 @@
 "SD card ok"
 "Tarj. SD ok"
 
+#
+"Right"
+"\x00"
+
 #MSG_SD_INIT_FAIL c=0 r=0
 "SD init fail"
 "Error init SD"
-
-#MSG_SD_PRINTING_BYTE c=0 r=0
-"SD printing byte "
-"SD byte impresion "
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -1010,6 +1038,14 @@
 "Selftest will be run to calibrate accurate sensorless rehoming."
 "Se realizara el auto-test para calibrar con precision la vuelta a la posicion inicial sin sensores."
 
+#
+"Select nozzle preheat temperature which matches your material."
+"\x00"
+
+#
+"Select PLA filament:"
+"\x00"
+
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Establecer temp.:"
@@ -1042,6 +1078,10 @@
 "Sort:      [time]"
 "Orden:    [Fecha]"
 
+#
+"Severe skew"
+"\x00"
+
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
 "Orden: [Alfabet.]"
@@ -1053,6 +1093,10 @@
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
 "Sonido     [alto]"
+
+#
+"Slight skew"
+"\x00"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1081,10 +1125,6 @@
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
 "Estadisticas "
-
-#MSG_STEPPER_TOO_HIGH c=0 r=0
-"Steprate too high: "
-"Pasos muy altos: "
 
 #MSG_STOP_PRINT c=0 r=0
 "Stop print"
@@ -1154,6 +1194,14 @@
 "Tune"
 "Ajustar"
 
+#
+"Unload"
+"\x00"
+
+#
+"Unload all"
+"\x00"
+
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
 "Soltar filamento"
@@ -1209,14 +1257,6 @@
 #MSG_WIZARD c=17 r=1
 "Wizard"
 "\x00"
-
-#MSG_SD_WORKDIR_FAIL c=0 r=0
-"workDir open failed"
-"error al abrir workDir"
-
-#MSG_SD_WRITE_TO_FILE c=0 r=0
-"Writing to file: "
-"Escribiendo al arch.: "
 
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"

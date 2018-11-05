@@ -77,7 +77,6 @@ const char MSG_RESUMING_PRINT[] PROGMEM_I1 = ISTR("Resuming print"); ////c=0 r=0
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////c=20 r=4
 const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_I1 = ISTR("error writing to file"); ////c=0 r=0
 const char MSG_SD_OPEN_FILE_FAIL[] PROGMEM_I1 = ISTR("open failed, File: "); ////c=0 r=0
-const char MSG_SD_WORKDIR_FAIL[] PROGMEM_I1 = ISTR("workDir open failed"); ////c=0 r=0
 const char MSG_SELFTEST_COOLING_FAN[] PROGMEM_I1 = ISTR("Front print fan?"); ////c=20 r=0
 const char MSG_SELFTEST_EXTRUDER_FAN[] PROGMEM_I1 = ISTR("Left hotend fan?"); ////c=20 r=0
 const char MSG_SELFTEST_FAILED[] PROGMEM_I1 = ISTR("Selftest failed  "); ////c=20 r=0
@@ -108,6 +107,7 @@ const char MSG_WIZARD_QUIT[] PROGMEM_I1 = ISTR("You can always resume the Wizard
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////c=0 r=0
 const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " ready."); ////c=20 r=0
 //not internationalized messages
+const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////c=0 r=0
 const char MSG_BROWNOUT_RESET[] PROGMEM_N1 = " Brown out Reset"; ////c=0 r=0
 const char MSG_EXTERNAL_RESET[] PROGMEM_N1 = " External Reset"; ////c=0 r=0
 const char MSG_FILE_SAVED[] PROGMEM_N1 = "Done saving file."; ////c=0 r=0
