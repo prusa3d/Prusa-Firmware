@@ -338,10 +338,10 @@ void mmu_loop(void)
 		} else if (mmu_rx_not_ok() > 0) {
       printf_P(PSTR("MMU => 'Waiting'\n"));
     }
-		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
+		/*else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (5 min)
 			mmu_state = 1;
-		}
+		}*/
 		return;
 	}
 }

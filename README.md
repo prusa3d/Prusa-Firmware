@@ -7,6 +7,9 @@
    * [Documentation](#4-documentation)
 <!--te-->
 
+This FW is for use with MMU2, in combination with MMU2-FW https://github.com/TheZeroBeast/MM-control-01
+
+
 # 1. Development environment preparation
 
    1. install `"Arduino Software IDE"` for your preferred operating system  
