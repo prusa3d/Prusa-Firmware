@@ -183,7 +183,7 @@
 #define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
 
-#define FSENSOR_QUALITY
+//#define FSENSOR_QUALITY
 
 
 #define LINEARITY_CORRECTION
