@@ -5927,6 +5927,11 @@ static void lcd_tune_menu()
 		MENU_ITEM_FUNCTION_P(_T(MSG_FSENSOR_ON), lcd_fsensor_state_set);
 	}
 #endif //FILAMENT_SENSOR
+    if (mmu_enabled)
+    {
+        if (lcd_autoDeplete) MENU_ITEM_FUNCTION_P(_i("Auto deplete [on]"), auto_deplete_switch);
+        else MENU_ITEM_FUNCTION_P(_i("Auto deplete[off]"), auto_deplete_switch);
+    }
 
 #ifdef TMC2130
      if(!farm_mode)
