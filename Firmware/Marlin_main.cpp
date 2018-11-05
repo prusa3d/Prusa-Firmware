@@ -6617,6 +6617,17 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
     case 907: // M907 Set digital trimpot motor current using axis codes.
     {
+#ifdef TMC2130
+        for (int i = 0; i < NUM_AXIS; i++)
+			if(code_seen(axis_codes[i]))
+			{
+				long cur = code_value_long();
+				if (cur > MOTOR_CURRENT_PWM_RANGE) cur = MOTOR_CURRENT_PWM_RANGE;
+				tmc2130_set_current_h(i, (uint8_t)cur);
+				tmc2130_set_current_r(i, (uint8_t)cur);
+			}
+
+#else //TMC2130
       #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
         for(int i=0;i<NUM_AXIS;i++) if(code_seen(axis_codes[i])) st_current_set(i,code_value());
         if(code_seen('B')) st_current_set(4,code_value());
@@ -6631,6 +6642,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       #ifdef MOTOR_CURRENT_PWM_E_PIN
         if(code_seen('E')) st_current_set(2, code_value());
       #endif
+#endif //TMC2130
     }
     break;
     case 908: // M908 Control digital trimpot directly.
@@ -6644,7 +6656,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
-#ifdef TMC2130
+#ifdef TMC2130_SERVICE_CODES_M910_M918
 
 	case 910: //! M910 - TMC2130 init
     {
@@ -6669,7 +6681,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         if (code_seen('E')) tmc2130_set_current_r(3, code_value());
     }
     break;
-
 	case 913: //! M913 - Print TMC2130 currents
     {
 		tmc2130_print_currents();
@@ -6721,7 +6732,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
 
-#endif //TMC2130
+#endif //TMC2130_SERVICE_CODES_M910_M918
 
     case 350: //! M350 - Set microstepping mode. Warning: Steps per unit remains unchanged. S code sets stepping mode for all drivers.
     {
