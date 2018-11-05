@@ -31,6 +31,7 @@ bool mmu_ready = false;
 
 bool mmuFilamentMK3Moving = false;
 bool mmuFSensorLoading = false;
+bool singleLog = true;
 int lastLoadedFilament = -10;
 
 int8_t mmu_state = 0;
@@ -78,18 +79,74 @@ int mmu_printf_P(const char* format, ...)
     return r;
 }
 
+//check 'sensing Filament at Boot' response
+int8_t mmu_rx_echo(void)
+{
+    int8_t res = 0;
+    switch (mmu_cmd)
+    {
+      case MMU_CMD_T0: // T0
+        res = uart2_rx_str_P(PSTR("T0\n"));
+        break;
+      case MMU_CMD_T1: // T1
+        res = uart2_rx_str_P(PSTR("T1\n"));
+        break;
+      case MMU_CMD_T2: // T2
+        res = uart2_rx_str_P(PSTR("T2\n"));
+        break;
+      case MMU_CMD_T3: // T3
+        res = uart2_rx_str_P(PSTR("T3\n"));
+        break;
+      case MMU_CMD_T4: // T4
+        res = uart2_rx_str_P(PSTR("T4\n"));
+        break;
+      case MMU_CMD_L0: // L0
+        res = uart2_rx_str_P(PSTR("L0\n"));
+        break;
+      case MMU_CMD_L1: // L1
+        res = uart2_rx_str_P(PSTR("L1\n"));
+        break;
+      case MMU_CMD_L2: // L2
+        res = uart2_rx_str_P(PSTR("L2\n"));
+        break;
+      case MMU_CMD_L3: // L3
+        res = uart2_rx_str_P(PSTR("L3\n"));
+        break;
+      case MMU_CMD_L4: // L4
+        res = uart2_rx_str_P(PSTR("L4\n"));
+        break;
+      case MMU_CMD_C0: // C0
+        res = uart2_rx_str_P(PSTR("C0\n"));
+        break;
+      case MMU_CMD_U0: // U0
+        res = uart2_rx_str_P(PSTR("U0\n"));
+        break;
+      case MMU_CMD_E0: // E0
+        res = uart2_rx_str_P(PSTR("E0\n"));
+        break;
+      case MMU_CMD_E1: // E1
+        res = uart2_rx_str_P(PSTR("E1\n"));
+        break;
+      case MMU_CMD_E2: // E2
+        res = uart2_rx_str_P(PSTR("E2\n"));
+        break;
+      case MMU_CMD_E3: // E3
+        res = uart2_rx_str_P(PSTR("E3\n"));
+        break;
+      case MMU_CMD_E4: // E4
+        res = uart2_rx_str_P(PSTR("E4\n"));
+        break;
+      case MMU_CMD_R0: // R0
+        res = uart2_rx_str_P(PSTR("R0\n"));
+        break;
+    }
+    return res;
+}
+
 //check 'ok' response
 int8_t mmu_rx_ok(void)
 {
     int8_t res = uart2_rx_str_P(PSTR("ok\n"));
-    if (res == 1) mmu_last_response = millis();
-    return res;
-}
-
-//check 'sensing Filament at Boot' response
-int8_t mmu_rx_sensFilatBoot()
-{
-    int8_t res = uart2_rx_str_P(PSTR("FB\n")); // FB stands for filament boot
     if (res == 1) mmu_last_response = millis();
     return res;
 }
@@ -124,6 +181,20 @@ void mmu_init(void)
 }
 
 //mmu main loop - state machine processing
+/**
+ * MMU States
+ * -1 >> -2 MMURX Start, respond with S1 (30s timeout to disabled state)
+ * -2 >> -3 MMURX ok, respond with S2
+ * -3 >> -4 MMURX ok, respond with P0(READ FINDA) if MK3 and goto -4
+ *       -5           respond with M1(MODE STEALTH) if MK2.5 and goto -5
+ * -4 >>  1 MMURX ok, mmu_ready
+ * -5 >>  1 MMURX ok, mmu_ready
+ *  1 >>  ? MMU CMD Request from MK3
+ *  2 >>  1 MMURX ok, Finda State
+ *  3 >>  1 MMURX ok, mmu commands response
+ * 10 >>  3 MMUECHO, confirm receipt of cmd (timeout 250ms to resend)
+ */
+
 void mmu_loop(void)
 {
     int filament = 0;
@@ -141,15 +212,7 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
             mmu_puts_P(PSTR("S1\n")); //send 'read version' request
             mmu_state = -2;
-        } /*else if (mmu_rx_sensFilatBoot() > 0)
-    {
-      printf_P(PSTR("MMU => '%Sensed Filament at Boot'\n"), mmu_finda);
-      //enquecommand_front_P(PSTR("M104 S210"));
-      enquecommand_front_P(PSTR("M109 S210"));
-      delay(200);
-      extr_unload_at_boot();
-      mmu_puts_P(PSTR("FB\n")); //Advise unloaded to above bondtech for retraction
-    }*/
+        }
         else if (millis() > 30000) //30sec after reset disable mmu
         {
             puts_P(PSTR("MMU not responding - DISABLED"));
@@ -226,17 +289,13 @@ void mmu_loop(void)
             if ((mmu_cmd >= MMU_CMD_T0) && (mmu_cmd <= MMU_CMD_T4))
             {
                 filament = mmu_cmd - MMU_CMD_T0;
-#ifdef MMU_DEBUG
                 printf_P(PSTR("MMU <= 'T%d'\n"), filament);
-#endif //MMU_DEBUG
-                fsensor_enable();
-                delay(100);
-                mmu_printf_P(PSTR("T%d\n"), filament);
-                mmu_state = 3; // wait for response
+                fsensor_enable();  // RMM:TODO Not sure if this is the best place to ensure enabled
+                mmu_state = 10; // mmu_state = 3; // wait for response
                 if (lastLoadedFilament != filament) {
+                    mmu_printf_P(PSTR("T%d\n"), filament);
                     fsensor_autoload_check_start();
                     mmuFSensorLoading = true;
-                    //fsensor_enable();
                     fsensor_autoload_enabled = true;
                     mmuFilamentMK3Moving = false;
                 }
@@ -245,54 +304,42 @@ void mmu_loop(void)
             else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
             {
                 filament = mmu_cmd - MMU_CMD_L0;
-#ifdef MMU_DEBUG
                 printf_P(PSTR("MMU <= 'L%d'\n"), filament);
-#endif //MMU_DEBUG
                 mmu_printf_P(PSTR("L%d\n"), filament);
-                mmu_state = 3; // wait for response
+                mmu_state = 10; // mmu_state = 3; // wait for response
             }
             else if (mmu_cmd == MMU_CMD_C0)
             {
-#ifdef MMU_DEBUG
                 printf_P(PSTR("MMU <= 'C0'\n"));
-#endif //MMU_DEBUG
                 delay(200);
                 mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
-                mmu_state = 3;
+                mmu_state = 10; // mmu_state = 3;
             }
             else if (mmu_cmd == MMU_CMD_U0)
             {
-#ifdef MMU_DEBUG
                 printf_P(PSTR("MMU <= 'U0'\n"));
-#endif //MMU_DEBUG
                 mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
                 lastLoadedFilament = -10;
-                mmu_state = 3;
+                mmu_state = 10; // mmu_state = 3;
             }
             else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
             {
                 int filament = mmu_cmd - MMU_CMD_E0;
-#ifdef MMU_DEBUG
                 printf_P(PSTR("MMU <= 'E%d'\n"), filament);
-#endif //MMU_DEBUG
                 mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
-                mmu_state = 3; // wait for response
+                mmu_state = 10; // mmu_state = 3; // wait for response
             }
             else if (mmu_cmd == MMU_CMD_R0)
             {
-#ifdef MMU_DEBUG
                 printf_P(PSTR("MMU <= 'R0'\n"));
-#endif //MMU_DEBUG
                 mmu_puts_P(PSTR("R0\n")); //send recover after eject
-                mmu_state = 3; // wait for response
+                mmu_state = 10; // mmu_state = 3; // wait for response
             }
             mmu_cmd = 0;
         }
         else if ((mmu_last_response + 300) < millis()) //request every 300ms
         {
-#ifdef MMU_DEBUG
             puts_P(PSTR("MMU <= 'P0'"));
-#endif //MMU_DEBUG
             mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
             mmu_state = 2;
         }
@@ -301,9 +348,7 @@ void mmu_loop(void)
         if (mmu_rx_ok() > 0)
         {
             fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
-#ifdef MMU_DEBUG
             printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
-#endif //MMU_DEBUG
             if (!mmu_finda && CHECK_FINDA && fsensor_enabled) {
                 fsensor_stop_and_save_print();
                 enquecommand_front_P(PSTR("FSENSOR_RECOVER")); //then recover
@@ -330,18 +375,32 @@ void mmu_loop(void)
             } else if (mmuFilamentMK3Moving == true) {
                 //mmu_puts_P(PSTR("FS\n"));
                 mmu_printf_P(PSTR("FS%d\n"), 1);
-                printf_P(PSTR("MMU => 'Advised of filament seen at extruder'\n"));
+                printf_P(PSTR("MMU <= 'Filament seen at extruder'\n"));
                 mmuFSensorLoading = false;
+                singleLog = true;
             } else {
-                printf_P(PSTR("MMU => 'waiting for filament @ MK3 Sensor'\n"));
+                if (singleLog) {
+                  printf_P(PSTR("MMU => 'waiting for filament @ MK3 Sensor'\n"));
+                  singleLog = false;
+                }
             }
         } else if (mmu_rx_not_ok() > 0) {
-            printf_P(PSTR("MMU => 'Waiting'\n"));
+            printf_P(PSTR("MMU => 'Error State, do something here??'\n"));
         }
         /*else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
         { //resend request after timeout (5 min)
         	mmu_state = 1;
         }*/
+        return;
+    case 10: //echo response, comms confirmation
+        if (mmu_rx_echo() > 0)
+        {
+            printf_P(PSTR("MMU => 'CMD ACK'\n"));
+            mmu_puts_P(PSTR("!!\n")); // Advise MMU CMD is correct, execute
+            mmu_state = 3;            // Do normal Await command completion confirmation
+        } else if ((mmu_last_request + 250) < millis()) {  // Timeout if echo doesn't match request, resend cmd
+            mmu_state = 1;
+        }
         return;
     }
 }

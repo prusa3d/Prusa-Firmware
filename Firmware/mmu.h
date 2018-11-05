@@ -28,7 +28,6 @@ extern int16_t mmu_buildnr;
 #define MMU_CMD_L3   0x23
 #define MMU_CMD_L4   0x24
 #define MMU_CMD_C0   0x30
-#define MMU_CMD_C1   0x31
 #define MMU_CMD_U0   0x40
 #define MMU_CMD_E0   0x50
 #define MMU_CMD_E1   0x51
@@ -41,6 +40,8 @@ extern int16_t mmu_buildnr;
 extern int mmu_puts_P(const char* str);
 
 extern int mmu_printf_P(const char* format, ...);
+
+extern int8_t mmu_rx_echo(void);
 
 extern int8_t mmu_rx_ok(void);
 
