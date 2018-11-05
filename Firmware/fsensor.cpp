@@ -171,7 +171,7 @@ bool fsensor_enable(void)
         else
             fsensor_not_responding = true;
         fsensor_enabled = true;
-        fsensor_autoload_enabled = true;
+        fsensor_autoload_set(true);
         fsensor_oq_meassure = false;
         fsensor_err_cnt = 0;
         fsensor_dy_old = 0;
