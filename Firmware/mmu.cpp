@@ -409,7 +409,7 @@ void mmu_loop(void)
             }
             mmu_cmd = 0;
         }
-        else if ((mmu_last_response + 300) < millis()) //request every 300ms
+        else if ((mmu_last_response + 500) < millis()) //request every 500ms
         {
             mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
             mmu_state = 2;
@@ -457,6 +457,8 @@ void mmu_loop(void)
             }
         } else if (mmu_rx_not_ok() > 0) {
             printf_P(PSTR("MMU => 'Error State, do something here??'\n"));
+            mmu_ready = false;
+            mmu_state = 20;
         }
         /*else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
         { //resend request after timeout (5 min)
@@ -474,6 +476,15 @@ void mmu_loop(void)
             mmu_state = 1;
         }
         return;
+    case 20: //
+        if (mmu_rx_ok() > 0)
+        {
+            //if ok received then go back to ready
+            mmu_state = 1;
+            mmu_ready = true;
+        } else if (mmu_rx_not_ok() > 0) {
+            //do nothing at this stage
+        }
     }
 }
 
@@ -511,13 +522,12 @@ bool mmu_get_response(void)
     KEEPALIVE_STATE(IN_PROCESS);
     while (mmu_cmd != 0)
     {
-//		mmu_loop();
         delay_keep_alive(100);
     }
     while (!mmu_ready)
     {
-//		mmu_loop();
-        if (mmu_state != 3 || mmu_state != 10) break;
+        //if ((mmu_last_response + MMU_CMD_TIMEOUT) < millis()) break;
+        if ((mmu_state != 3) || (mmu_state != 10)) break;
         delay_keep_alive(100);
     }
     bool ret = mmu_ready;
