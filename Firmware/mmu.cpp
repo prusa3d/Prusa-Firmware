@@ -371,6 +371,9 @@ void mmu_loop(void)
                     mmuFSensorLoading = true;
                     fsensor_autoload_enabled = true;
                     //mmuFilamentMK3Moving = false;
+                } else {
+                  mmu_state = 1;
+                  mmu_ready = true;
                 }
                 lastLoadedFilament = filament;
             }
