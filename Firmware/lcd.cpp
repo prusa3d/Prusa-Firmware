@@ -768,7 +768,6 @@ void lcd_update_enable(uint8_t enabled)
 	}
 }
 
-extern LongTimer safetyTimer;
 void lcd_buttons_update(void)
 {
     static uint8_t lcd_long_press_active = 0;

@@ -204,7 +204,7 @@ unsigned long pause_time = 0;
 unsigned long start_pause_print = millis();
 unsigned long t_fan_rising_edge = millis();
 LongTimer safetyTimer;
-LongTimer crashDetTimer;
+static LongTimer crashDetTimer;
 
 //unsigned long load_filament_time;
 
