@@ -2529,6 +2529,9 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
 		else
 			tmc2130_home_calibrate(Y_AXIS);
 	  }
+#else //TMC2130
+      if(home_x) homeaxis(X_AXIS);
+      if(home_y) homeaxis(Y_AXIS);
 #endif //TMC2130
 
 
@@ -4495,18 +4498,24 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		st_synchronize();
 		if (mesh_point != MESH_MEAS_NUM_X_POINTS * MESH_MEAS_NUM_Y_POINTS) {
                Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
-               lcd_display_message_fullscreen_P(_i(MSG_BED_LEVELING_FAILED));
-               lcd_wait_for_click_delay(MSG_BED_LEVELING_FAILED_TIMEOUT);
+               bool bState;
+               do   {                             // repeat until Z-leveling o.k.
+                    lcd_display_message_fullscreen_P(_i(MSG_BED_LEVELING_FAILED));
 #ifdef TMC2130
-               calibrate_z_auto();                // Z-leveling (X-assembly stay up!!!)
+                    lcd_wait_for_click_delay(MSG_BED_LEVELING_FAILED_TIMEOUT);
+                    calibrate_z_auto();           // Z-leveling (X-assembly stay up!!!)
 #else // TMC2130
-               lcd_calibrate_z_end_stop_manual(true); // Z-leveling (X-assembly stay up!!!)
+                    lcd_wait_for_click_delay(0);  // ~ no timeout
+                    lcd_calibrate_z_end_stop_manual(true); // Z-leveling (X-assembly stay up!!!)
 #endif // TMC2130
-               // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
-               current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
-               plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
-               st_synchronize();
-               //
+                    // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
+                    bState=enable_z_endstop(true);
+                    current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+                    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+                    st_synchronize();
+                    enable_z_endstop(bState);
+                    } while(st_get_position_mm(Z_AXIS) > MESH_HOME_Z_SEARCH); // i.e. Z-leveling not o.k.
+               plan_set_z_position(MESH_HOME_Z_SEARCH);
                custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
                lcd_update_enable(true);           // display / status-line recovery
                gcode_G28(true, true, false);      // X & Y-homing (must be after Z-homing (problem with spool-holder)!)
