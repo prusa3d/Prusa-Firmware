@@ -783,14 +783,14 @@ void lcd_buttons_update(void)
             safetyTimer.start();
             if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
             {
-                //long press is not possible in modal mode
-                if (lcd_update_enabled) longPressTimer.start();
+                longPressTimer.start();
                 lcd_button_pressed = 1;
             }
             else if (longPressTimer.expired(LONG_PRESS_TIME))
             {
                 lcd_long_press_active = 1;
-                if (lcd_longpress_func)
+                //long press is not possible in modal mode
+                if (lcd_longpress_func && lcd_update_enabled)
                     lcd_longpress_func();
             }
         }
