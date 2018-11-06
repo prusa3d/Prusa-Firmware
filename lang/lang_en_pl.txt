@@ -58,6 +58,10 @@
 "Auto deplete [on]"
 "Wyk. resztek [wl]"
 
+#
+"Auto deplete[N/A]"
+"\x00"
+
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "Auto deplete[off]"
 "Wyk. resztek[wyl]"
@@ -414,6 +418,10 @@
 "First, I will run the selftest to check most common assembly problems."
 "Najpierw wlacze selftest w celu sprawdzenia najczestszych problemow podczas montazu."
 
+#
+"Fix the issue and then press button on MMU unit."
+"\x00"
+
 #MSG_FLOW c=0 r=0
 "Flow"
 "Przeplyw"
@@ -630,6 +638,10 @@
 "M105 Invalid extruder "
 "M105 Nieprawidlowy ekstruder "
 
+#
+"Load to nozzle"
+"\x00"
+
 #MSG_M109_INVALID_EXTRUDER c=0 r=0
 "M109 Invalid extruder "
 "M109 Nieprawidlowy ekstruder "
@@ -685,6 +697,10 @@
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
 "Tryb      [cichy]"
+
+#
+"MMU needs user attention."
+"\x00"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -742,6 +758,10 @@
 "New firmware version available:"
 "\x00"
 
+#
+"No "
+"\x00"
+
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
 "Nie kreci sie"
@@ -773,6 +793,10 @@
 #MSG_ENDSTOP_OPEN c=0 r=0
 "open"
 "otworz"
+
+#
+"Now remove the test print from steel sheet."
+"\x00"
 
 #MSG_SD_OPENROOT_FAIL c=0 r=0
 "openRoot failed"
@@ -870,6 +894,10 @@
 "PowerUp"
 "Uruchamianie"
 
+#
+"Please remove shipping helpers first."
+"\x00"
+
 #MSG_PREHEAT_NOZZLE c=20 r=0
 "Preheat the nozzle!"
 "Nagrzej dysze!"
@@ -910,6 +938,10 @@
 "Printer halted. kill() called!"
 "Drukarka zatrzymana. Wywolano komende kill()!"
 
+#
+"Press the knob to resume nozzle temperature."
+"\x00"
+
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "Drukarka nie zostala jeszcze skalibrowana. Kieruj sie Samouczkiem: rozdzial Pierwsze Kroki, sekcja Konfiguracja przed drukowaniem."
@@ -941,6 +973,10 @@
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
 "Wyciagnij poprzedni filament i nacisnij pokretlo aby zaladowac nowy."
+
+#
+"Prusa i3 MK2 ready."
+"\x00"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -1094,6 +1130,10 @@
 "Sound      [mute]"
 "Dzwiek[Wylaczony]"
 
+#
+"Some problem encountered, Z-leveling enforced ..."
+"\x00"
+
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
 "Dzwiek    [1-raz]"
@@ -1226,6 +1266,10 @@
 "Waiting for PINDA probe cooling"
 "Czekam az spadnie temp. sondy PINDA"
 
+#
+"Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
+"\x00"
+
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
 "Ostrzezenie: typ drukarki i plyta glowna ulegly zmianie."
@@ -1274,6 +1318,10 @@
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
 "Kalibracja XYZ prawidlowa. Osie X/Y lekko skosne. Dobra robota!"
 
+#
+"X-correct"
+"\x00"
+
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
 "Kalibracja XYZ ok. Osie X/Y sa prostopadle. Gratulacje!"
@@ -1298,13 +1346,37 @@
 "Load filament 1"
 "Zaladowac fil. 1"
 
+#
+"XYZ calibration failed. Bed calibration point was not found."
+"\x00"
+
+#
+"XYZ calibration failed. Front calibration points not reachable."
+"\x00"
+
+#
+"XYZ calibration failed. Left front calibration point not reachable."
+"\x00"
+
 #MSG_LOAD_FILAMENT_2 c=17 r=0
 "Load filament 2"
 "Zaladowac fil. 2"
 
+#
+"XYZ calibration failed. Right front calibration point not reachable."
+"\x00"
+
 #MSG_LOAD_FILAMENT_3 c=17 r=0
 "Load filament 3"
 "Zaladowac fil. 3"
+
+#
+"Y distance from min"
+"\x00"
+
+#
+"Y-correct"
+"\x00"
 
 #MSG_LOAD_FILAMENT_4 c=17 r=0
 "Load filament 4"

@@ -43,6 +43,9 @@
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "Auto deplete [on]"
 
+#
+"Auto deplete[N/A]"
+
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "Auto deplete[off]"
 
@@ -310,6 +313,9 @@
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
 
+#
+"Fix the issue and then press button on MMU unit."
+
 #MSG_FLOW c=0 r=0
 "Flow"
 
@@ -472,6 +478,9 @@
 #MSG_M105_INVALID_EXTRUDER c=0 r=0
 "M105 Invalid extruder "
 
+#
+"Load to nozzle"
+
 #MSG_M109_INVALID_EXTRUDER c=0 r=0
 "M109 Invalid extruder "
 
@@ -513,6 +522,9 @@
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
+
+#
+"MMU needs user attention."
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -556,6 +568,9 @@
 #
 "New firmware version available:"
 
+#
+"No "
+
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
 
@@ -579,6 +594,9 @@
 
 #MSG_ENDSTOP_OPEN c=0 r=0
 "open"
+
+#
+"Now remove the test print from steel sheet."
 
 #MSG_SD_OPENROOT_FAIL c=0 r=0
 "openRoot failed"
@@ -652,6 +670,9 @@
 #MSG_POWERUP c=0 r=0
 "PowerUp"
 
+#
+"Please remove shipping helpers first."
+
 #MSG_PREHEAT_NOZZLE c=20 r=0
 "Preheat the nozzle!"
 
@@ -682,6 +703,9 @@
 #MSG_ERR_KILLED c=0 r=0
 "Printer halted. kill() called!"
 
+#
+"Press the knob to resume nozzle temperature."
+
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 
@@ -705,6 +729,9 @@
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
+
+#
+"Prusa i3 MK2 ready."
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -820,6 +847,9 @@
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
 
+#
+"Some problem encountered, Z-leveling enforced ..."
+
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
 
@@ -919,6 +949,9 @@
 #MSG_WAITING_TEMP_PINDA c=20 r=3
 "Waiting for PINDA probe cooling"
 
+#
+"Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
+
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
 
@@ -955,6 +988,9 @@
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
 
+#
+"X-correct"
+
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
 
@@ -973,11 +1009,29 @@
 #MSG_LOAD_FILAMENT_1 c=17 r=0
 "Load filament 1"
 
+#
+"XYZ calibration failed. Bed calibration point was not found."
+
+#
+"XYZ calibration failed. Front calibration points not reachable."
+
+#
+"XYZ calibration failed. Left front calibration point not reachable."
+
 #MSG_LOAD_FILAMENT_2 c=17 r=0
 "Load filament 2"
 
+#
+"XYZ calibration failed. Right front calibration point not reachable."
+
 #MSG_LOAD_FILAMENT_3 c=17 r=0
 "Load filament 3"
+
+#
+"Y distance from min"
+
+#
+"Y-correct"
 
 #MSG_LOAD_FILAMENT_4 c=17 r=0
 "Load filament 4"
