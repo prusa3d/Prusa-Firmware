@@ -14,8 +14,10 @@
 # $1 - text to insert
 insert_en()
 {
+	#replace '[' and ']' in string with '\[' and '\]'
+	str=$(echo "$1" | sed "s/\[/\\\[/g;s/\]/\\\]/g")
 	# extract english texts, merge new text, grep line number
-	ln=$((cat lang_en.txt; echo $1) | sed "/^$/d;/^#/d" | sort | grep -n "$1" | sed "s/:.*//")
+	ln=$((cat lang_en.txt; echo "$1") | sed "/^$/d;/^#/d" | sort | grep -n "$str" | sed "s/:.*//")
 	# calculate position for insertion
 	ln=$((3*(ln-2)+1))
 	# insert new text
@@ -29,8 +31,13 @@ insert_en()
 # $2 - sufix
 insert_xx()
 {
-	ln=$((cat lang_en_$2.txt; echo $1) | sed "/^$/d;/^#/d" | sed -n 'p;n' | sort | grep -n "$1" | sed "s/:.*//")
+	#replace '[' and ']' in string with '\[' and '\]'
+	str=$(echo "$1" | sed "s/\[/\\\[/g;s/\]/\\\]/g")
+	# extract english texts, merge new text, grep line number
+	ln=$((cat lang_en_$2.txt; echo $1) | sed "/^$/d;/^#/d" | sed -n 'p;n' | sort | grep -n "$str" | sed "s/:.*//")
+	# calculate position for insertion
 	ln=$((4*(ln-2)+1))
+	# insert new text
 	sed -i "$ln"'i\\' lang_en_$2.txt
 	sed -i "$ln"'i\"\x00"\' lang_en_$2.txt
 	sed -i "$ln"'i\'"$1"'\' lang_en_$2.txt
@@ -38,7 +45,7 @@ insert_xx()
 }
 
 # check if input file exists
-if ![ -e lang_add.txt ]; then
+if ! [ -e lang_add.txt ]; then
 	echo "file lang_add.txt not found"
 	exit 1
 fi
