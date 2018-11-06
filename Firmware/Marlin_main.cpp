@@ -7456,9 +7456,6 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
         {
             if ((lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active && mmuFSensorLoading) {
                 fsensor_check_autoload();
-            } else {
-                fsensor_autoload_check_stop();
-                //fsensor_update();
             }
         }
     }
