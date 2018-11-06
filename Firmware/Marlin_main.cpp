@@ -4514,8 +4514,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
                     st_synchronize();
                     enable_z_endstop(bState);
-                    } while(st_get_position_mm(Z_AXIS) > MESH_HOME_Z_SEARCH); // i.e. Z-leveling not o.k.
-               plan_set_z_position(MESH_HOME_Z_SEARCH);
+                    } while (st_get_position_mm(Z_AXIS) > MESH_HOME_Z_SEARCH); // i.e. Z-leveling not o.k.
                custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
                lcd_update_enable(true);           // display / status-line recovery
                gcode_G28(true, true, false);      // X & Y-homing (must be after Z-homing (problem with spool-holder)!)
