@@ -496,9 +496,6 @@
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
 
-#MSG_MMU_NEEDS_ATTENTION c=20 r=4
-"MMU needs user attention. Fix the issue and then press button on MMU unit."
-
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
 
@@ -618,9 +615,6 @@
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 "Please insert PLA filament to the extruder, then press knob to load it."
-
-#MSG_WIZARD_INSERT_CORRECT_FILAMENT c=20 r=8
-"Please load PLA filament and then resume Wizard by rebooting the printer."
 
 #MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load PLA filament first."
@@ -743,7 +737,7 @@
 "SD card  [normal]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-"SD card [FlshAir]"
+"SD card [flshAir]"
 
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
