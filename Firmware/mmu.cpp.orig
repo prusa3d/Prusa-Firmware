@@ -87,58 +87,58 @@ int8_t mmu_rx_echo(void)
     int8_t res = 0;
     switch (mmu_cmd)
     {
-    case MMU_CMD_T0: // T0
+      case MMU_CMD_T0: // T0
         res = uart2_rx_str_P(PSTR("T0\n"));
         break;
-    case MMU_CMD_T1: // T1
+      case MMU_CMD_T1: // T1
         res = uart2_rx_str_P(PSTR("T1\n"));
         break;
-    case MMU_CMD_T2: // T2
+      case MMU_CMD_T2: // T2
         res = uart2_rx_str_P(PSTR("T2\n"));
         break;
-    case MMU_CMD_T3: // T3
+      case MMU_CMD_T3: // T3
         res = uart2_rx_str_P(PSTR("T3\n"));
         break;
-    case MMU_CMD_T4: // T4
+      case MMU_CMD_T4: // T4
         res = uart2_rx_str_P(PSTR("T4\n"));
         break;
-    case MMU_CMD_L0: // L0
+      case MMU_CMD_L0: // L0
         res = uart2_rx_str_P(PSTR("L0\n"));
         break;
-    case MMU_CMD_L1: // L1
+      case MMU_CMD_L1: // L1
         res = uart2_rx_str_P(PSTR("L1\n"));
         break;
-    case MMU_CMD_L2: // L2
+      case MMU_CMD_L2: // L2
         res = uart2_rx_str_P(PSTR("L2\n"));
         break;
-    case MMU_CMD_L3: // L3
+      case MMU_CMD_L3: // L3
         res = uart2_rx_str_P(PSTR("L3\n"));
         break;
-    case MMU_CMD_L4: // L4
+      case MMU_CMD_L4: // L4
         res = uart2_rx_str_P(PSTR("L4\n"));
         break;
-    case MMU_CMD_C0: // C0
+      case MMU_CMD_C0: // C0
         res = uart2_rx_str_P(PSTR("C0\n"));
         break;
-    case MMU_CMD_U0: // U0
+      case MMU_CMD_U0: // U0
         res = uart2_rx_str_P(PSTR("U0\n"));
         break;
-    case MMU_CMD_E0: // E0
+      case MMU_CMD_E0: // E0
         res = uart2_rx_str_P(PSTR("E0\n"));
         break;
-    case MMU_CMD_E1: // E1
+      case MMU_CMD_E1: // E1
         res = uart2_rx_str_P(PSTR("E1\n"));
         break;
-    case MMU_CMD_E2: // E2
+      case MMU_CMD_E2: // E2
         res = uart2_rx_str_P(PSTR("E2\n"));
         break;
-    case MMU_CMD_E3: // E3
+      case MMU_CMD_E3: // E3
         res = uart2_rx_str_P(PSTR("E3\n"));
         break;
-    case MMU_CMD_E4: // E4
+      case MMU_CMD_E4: // E4
         res = uart2_rx_str_P(PSTR("E4\n"));
         break;
-    case MMU_CMD_R0: // R0
+      case MMU_CMD_R0: // R0
         res = uart2_rx_str_P(PSTR("R0\n"));
         break;
     }
@@ -202,9 +202,7 @@ void mmu_init(void)
 void mmu_loop(void)
 {
     int filament = 0;
-#ifdef MMU_DEBUG
-    if (last_state != mmu_state) printf_P(PSTR("MMU loop, state=%d\n"), mmu_state);
-#endif //MMU_DEBUG
+  	if (last_state != mmu_state) printf_P(PSTR("MMU loop, state=%d\n"), mmu_state);
     last_state = mmu_state;
     switch (mmu_state)
     {
@@ -293,61 +291,61 @@ void mmu_loop(void)
     case 1:
         if (mmu_cmd && !ack_received) //command request ?
         {
-            switch (mmu_cmd) {
-            case MMU_CMD_T0:
-                mmu_puts_P(PSTR("T0\n"));
-                break;
-            case MMU_CMD_T1:
-                mmu_puts_P(PSTR("T1\n"));
-                break;
-            case MMU_CMD_T2:
-                mmu_puts_P(PSTR("T2\n"));
-                break;
-            case MMU_CMD_T3:
-                mmu_puts_P(PSTR("T3\n"));
-                break;
-            case MMU_CMD_T4:
-                mmu_puts_P(PSTR("T4\n"));
-                break;
-            case MMU_CMD_L0:
-                mmu_puts_P(PSTR("L0\n"));
-                break;
-            case MMU_CMD_L1:
-                mmu_puts_P(PSTR("L1\n"));
-                break;
-            case MMU_CMD_L2:
-                mmu_puts_P(PSTR("L2\n"));
-                break;
-            case MMU_CMD_L3:
-                mmu_puts_P(PSTR("L3\n"));
-                break;
-            case MMU_CMD_L4:
-                mmu_puts_P(PSTR("L4\n"));
-                break;
-            case MMU_CMD_C0:
-                mmu_puts_P(PSTR("C0\n"));
-                break;
-            case MMU_CMD_U0:
-                mmu_puts_P(PSTR("U0\n"));
-                break;
-            case MMU_CMD_E0:
-                mmu_puts_P(PSTR("E0\n"));
-                break;
-            case MMU_CMD_E1:
-                mmu_puts_P(PSTR("E1\n"));
-                break;
-            case MMU_CMD_E2:
-                mmu_puts_P(PSTR("E2\n"));
-                break;
-            case MMU_CMD_E3:
-                mmu_puts_P(PSTR("E3\n"));
-                break;
-            case MMU_CMD_E4:
-                mmu_puts_P(PSTR("E4\n"));
-                break;
-            case MMU_CMD_R0:
-                mmu_puts_P(PSTR("R0\n"));
-                break;
+              switch (mmu_cmd) {
+                case MMU_CMD_T0:
+                  mmu_puts_P(PSTR("T0\n"));
+                  break;
+                case MMU_CMD_T1:
+                  mmu_puts_P(PSTR("T1\n"));
+                  break;
+                case MMU_CMD_T2:
+                  mmu_puts_P(PSTR("T2\n"));
+                  break;
+                case MMU_CMD_T3:
+                  mmu_puts_P(PSTR("T3\n"));
+                  break;
+                case MMU_CMD_T4:
+                  mmu_puts_P(PSTR("T4\n"));
+                  break;
+                case MMU_CMD_L0:
+                  mmu_puts_P(PSTR("L0\n"));
+                  break;
+                case MMU_CMD_L1:
+                  mmu_puts_P(PSTR("L1\n"));
+                  break;
+                case MMU_CMD_L2:
+                  mmu_puts_P(PSTR("L2\n"));
+                  break;
+                case MMU_CMD_L3:
+                  mmu_puts_P(PSTR("L3\n"));
+                  break;
+                case MMU_CMD_L4:
+                  mmu_puts_P(PSTR("L4\n"));
+                  break;
+                case MMU_CMD_C0:
+                  mmu_puts_P(PSTR("C0\n"));
+                  break;
+                case MMU_CMD_U0:
+                  mmu_puts_P(PSTR("U0\n"));
+                  break;
+                case MMU_CMD_E0:
+                  mmu_puts_P(PSTR("E0\n"));
+                  break;
+                case MMU_CMD_E1:
+                  mmu_puts_P(PSTR("E1\n"));
+                  break;
+                case MMU_CMD_E2:
+                  mmu_puts_P(PSTR("E2\n"));
+                  break;
+                case MMU_CMD_E3:
+                  mmu_puts_P(PSTR("E3\n"));
+                  break;
+                case MMU_CMD_E4:
+                  mmu_puts_P(PSTR("E4\n"));
+                  break;
+                case MMU_CMD_R0:
+                  mmu_puts_P(PSTR("R0\n"));
+                  break;
             }
             mmu_state = 10;
         } else if (mmu_cmd && ack_received) {
@@ -356,11 +354,11 @@ void mmu_loop(void)
             {
                 filament = mmu_cmd - MMU_CMD_T0;
                 if (lastLoadedFilament != filament) {
+                    fsensor_enable();  // RMM:TODO Not sure if this is the best place to ensure enabled
                     printf_P(PSTR("MMU <= 'T%d'\n"), filament);
                     mmu_puts_P(PSTR("EE\n")); // Advise MMU CMD is correct, execute
                     //mmu_printf_P(PSTR("T%d\n"), filament);
                     mmu_state = 3; // wait for response
-                    fsensor_enable();  // RMM:TODO Not sure if this is the best place to ensure enabled
                     fsensor_autoload_check_start();
                     mmuFSensorLoading = true;
                     fsensor_autoload_enabled = true;
@@ -378,8 +376,8 @@ void mmu_loop(void)
             }
             else if (mmu_cmd == MMU_CMD_C0)
             {
-                delay(100);
                 printf_P(PSTR("MMU <= 'C0'\n"));
+                delay(100);
                 //mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
                 mmu_puts_P(PSTR("EE\n")); // Advise MMU CMD is correct, execute
                 mmu_state = 3;
@@ -444,16 +442,16 @@ void mmu_loop(void)
                 mmu_ready = true;
                 mmu_state = 1;
             } else if (mmuFilamentMK3Moving == true) {
+                //mmu_puts_P(PSTR("FS\n"));
                 mmu_printf_P(PSTR("FS%d\n"), 1);
                 printf_P(PSTR("MMU <= 'Filament seen at extruder'\n"));
                 mmuFSensorLoading = false;
                 singleLog = true;
             } else {
                 if (singleLog) {
-                    printf_P(PSTR("MMU => 'waiting for filament @ MK3 Sensor'\n"));
-                    singleLog = false;
+                  printf_P(PSTR("MMU => 'waiting for filament @ MK3 Sensor'\n"));
+                  singleLog = false;
                 }
-                mmu_printf_P(PSTR("FS%d\n"), 0);
             }
         } else if (mmu_rx_not_ok() > 0) {
             printf_P(PSTR("MMU => 'Error State, do something here??'\n"));
@@ -512,13 +510,14 @@ bool mmu_get_response(void)
     while (mmu_cmd != 0)
     {
 //		mmu_loop();
-        delay_keep_alive(100);
+        delay_keep_alive(150);
     }
     while (!mmu_ready)
     {
 //		mmu_loop();
-        if (mmu_state != 3 || mmu_state != 10) break;
-        delay_keep_alive(100);
+        if (mmu_state != 3 || mmu_state != 10)
+            break;
+        delay_keep_alive(150);
     }
     bool ret = mmu_ready;
     mmu_ready = false;
