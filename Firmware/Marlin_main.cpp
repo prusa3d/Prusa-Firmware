@@ -3423,9 +3423,11 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
+#ifdef PAT9125
 	else if (code_seen("FSENSOR_RECOVER")) { //! FSENSOR_RECOVER
 		fsensor_restore_print_and_continue();
   }
+#endif //PAT9125
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //! PRUSA Ping
 			if (farm_mode) {
