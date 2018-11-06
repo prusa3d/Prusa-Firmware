@@ -455,15 +455,13 @@ void mmu_loop(void)
                 }
                 mmu_printf_P(PSTR("FS%d\n"), 0);
             }
-        } else if (mmu_rx_not_ok() > 0) {
-            printf_P(PSTR("MMU => 'Error State, do something here??'\n"));
+        }
+        else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
+        { //resend request after timeout (5 min)
+        	printf_P(PSTR("MMU => 'Error State, do something here??'\n"));
             mmu_ready = false;
             mmu_state = 20;
         }
-        /*else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
-        { //resend request after timeout (5 min)
-        	mmu_state = 1;
-        }*/
         return;
     case 10: //echo response, comms confirmation
         if (mmu_rx_echo() > 0)
@@ -482,8 +480,6 @@ void mmu_loop(void)
             //if ok received then go back to ready
             mmu_state = 1;
             mmu_ready = true;
-        } else if (mmu_rx_not_ok() > 0) {
-            //do nothing at this stage
         }
     }
 }
