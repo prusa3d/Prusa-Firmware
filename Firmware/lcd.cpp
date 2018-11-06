@@ -670,7 +670,7 @@ uint8_t lcd_update_enabled = 1;
 uint32_t lcd_next_update_millis = 0;
 uint8_t lcd_status_update_delay = 0;
 
-uint8_t lcd_long_press_active = 0;
+
 
 lcd_longpress_func_t lcd_longpress_func = 0;
 
@@ -771,6 +771,7 @@ void lcd_update_enable(uint8_t enabled)
 extern LongTimer safetyTimer;
 void lcd_buttons_update(void)
 {
+    static uint8_t lcd_long_press_active = 0;
 	uint8_t newbutton = 0;
 	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
 	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;

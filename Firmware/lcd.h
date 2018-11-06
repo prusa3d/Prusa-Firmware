@@ -116,8 +116,6 @@ extern uint32_t lcd_next_update_millis;
 
 extern uint8_t lcd_status_update_delay;
 
-extern uint8_t lcd_long_press_active;
-
 extern lcd_longpress_func_t lcd_longpress_func;
 
 extern lcd_charsetup_func_t lcd_charsetup_func;
