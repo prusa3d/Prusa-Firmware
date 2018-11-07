@@ -6896,6 +6896,7 @@ Sigma_Exit:
                 mmu_command(MMU_CMD_T0 + tmp_extruder);
 
                 manage_response(true, true);
+                delay(10);
                 mmu_command(MMU_CMD_C0);
                 mmu_extruder = tmp_extruder; //filament change is finished
 

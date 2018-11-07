@@ -287,6 +287,7 @@ bool fsensor_check_autoload(void)
     {
         //puts_P(_N("fsensor_check_autoload = true !!!\n"));
         if (mmu_enabled) mmu_command(MMU_CMD_FS);
+        fsensor_autoload_check_stop();
         fsensor_autoload_enabled = false;
         return true;
     }
