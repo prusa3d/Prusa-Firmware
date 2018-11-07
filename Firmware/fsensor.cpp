@@ -33,8 +33,13 @@
 
 const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 
-#define FSENSOR_INT_PIN         74  //!< filament sensor interrupt pin PJ7
-#define FSENSOR_INT_PIN_MSK   0x80  //!< filament sensor interrupt pin mask (bit7)
+#define FSENSOR_INT_PIN          75 //!< filament sensor interrupt pin PJ4
+#define FSENSOR_INT_PIN_MASK   0x10 //!< filament sensor interrupt pin mask (bit4)
+#define FSENSOR_INT_PIN_VECT PCINT1_vect
+#define FSENSOR_INT_PIN_PIN_REG PINJ
+#define FSENSOR_INT_PIN_PCMSK_REG PCMSK1
+#define FSENSOR_INT_PIN_PCMSK_BIT PCINT13
+#define FSENSOR_INT_PIN_PCICR_BIT PCIE1
 
 //uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
 uint8_t fsensor_int_pin_old = 0;
@@ -352,10 +357,10 @@ bool fsensor_oq_result(void)
 	return res;
 }
 
-ISR(PCINT2_vect)
+ISR(FSENSOR_INT_PIN_VECT)
 {
-	if (!((fsensor_int_pin_old ^ PINK) & FSENSOR_INT_PIN_MSK)) return;
-	fsensor_int_pin_old = PINK;
+	if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
+	fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
 	static bool _lock = false;
 	if (_lock) return;
 	_lock = true;
@@ -525,5 +530,9 @@ void fsensor_setup_interrupt(void)
 	digitalWrite(FSENSOR_INT_PIN, LOW);
 	fsensor_int_pin_old = 0;
 
-	pciSetup(FSENSOR_INT_PIN);
+	//pciSetup(FSENSOR_INT_PIN);
+     // interrupt registers settings
+     FSENSOR_INT_PIN_PCMSK_REG|=bit(FSENSOR_INT_PIN_PCMSK_BIT);
+     PCIFR|=bit(FSENSOR_INT_PIN_PCICR_BIT);
+     PCICR|=bit(FSENSOR_INT_PIN_PCICR_BIT);
 }
