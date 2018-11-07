@@ -362,18 +362,18 @@ void mmu_loop(void)
             {
                 filament = mmu_cmd - MMU_CMD_T0;
                 if (lastLoadedFilament != filament) {
+                    fsensor_enable();  // RMM:TODO Not sure if this is the best place to ensure enabled
                     printf_P(PSTR("MMU <= 'T%d'\n"), filament);
                     mmu_puts_P(PSTR("EE\n")); // Advise MMU CMD is correct, execute
                     //mmu_printf_P(PSTR("T%d\n"), filament);
                     mmu_state = 3; // wait for response
-                    fsensor_enable();  // RMM:TODO Not sure if this is the best place to ensure enabled
                     fsensor_autoload_check_start();
                     mmuFSensorLoading = true;
                     fsensor_autoload_enabled = true;
                     //mmuFilamentMK3Moving = false;
                 } else {
-                  mmu_state = 1;
-                  mmu_ready = true;
+                  mmu_puts_P(PSTR("EE\n")); // Advise MMU CMD is correct, execute
+                  mmu_state = 3;
                 }
                 lastLoadedFilament = filament;
             }
@@ -481,7 +481,8 @@ void mmu_loop(void)
             ack_received = true;
             mmu_state = 1;            // Do normal Await command completion confirmation
         } else if ((mmu_last_request + 1000) < millis()) {  // Timeout if echo doesn't match request, resend cmd
-            printf_P(PSTR("MMU => 'CMD RETRY'\n"));
+            //printf_P(PSTR("MMU => 'CMD RETRY'\n"));
+            printf_P(PSTR("MMU => 'CMD RETRY %d'\n"), mmu_cmd);
             mmu_state = 1;
         }
         return;
