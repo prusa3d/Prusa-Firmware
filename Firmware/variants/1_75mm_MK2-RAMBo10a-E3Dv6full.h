@@ -81,7 +81,9 @@ AXIS SETTINGS
 #define HOMING_FEEDRATE {3000, 3000, 800, 0}  // set the homing speeds (mm/min)
 
 #define DEFAULT_MAX_FEEDRATE          {500, 500, 12, 120}    // (mm/sec)
+#define DEFAULT_MAX_FEEDRATE_SILENT         {172, 172, 12, 120}      // (mm/sec)   max feedrate (M203), silent mode
 #define DEFAULT_MAX_ACCELERATION      {9000,9000,500,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_MAX_ACCELERATION_SILENT     {960, 960, 200, 5000}    // (mm/sec^2) max acceleration (M201), silent mode
 
 #define DEFAULT_ACCELERATION          1500    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  1500   // X, Y, Z and E max acceleration in mm/s^2 for retracts
@@ -423,8 +425,10 @@ THERMISTORS SETTINGS
 
 #define M600_TIMEOUT 600  //seconds
 
+#define MMU_REQUIRED_FW_BUILDNR 132
+
 #ifndef SNMM
-#define SUPPORT_VERBOSITY
+//#define SUPPORT_VERBOSITY
 #endif
 
 #endif //__CONFIGURATION_PRUSA_H

@@ -58,6 +58,10 @@
 "Auto deplete [on]"
 "Purge auto   [on]"
 
+#
+"Auto deplete[N/A]"
+"\x00"
+
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "Auto deplete[off]"
 "Purge auto  [off]"
@@ -414,6 +418,10 @@
 "First, I will run the selftest to check most common assembly problems."
 "D'abord, je vais lancer l'autotest pour verifier les problemes d'assemblage les plus communs."
 
+#
+"Fix the issue and then press button on MMU unit."
+"\x00"
+
 #MSG_FLOW c=0 r=0
 "Flow"
 "Flux"
@@ -630,6 +638,10 @@
 "M105 Invalid extruder "
 "M105 extrudeur invalide "
 
+#
+"Load to nozzle"
+"\x00"
+
 #MSG_M109_INVALID_EXTRUDER c=0 r=0
 "M109 Invalid extruder "
 "M109 extrudeur invalide "
@@ -666,10 +678,6 @@
 "Mesh Bed Leveling"
 "Nivelage du lit par maillage"
 
-#MSG_MMU_NEEDS_ATTENTION c=20 r=4
-"MMU needs user attention. Fix the issue and then press button on MMU unit."
-"La MMU requiert votre attention. Reglez le probleme puis appuyez sur le bouton on sur l'unite MMU."
-
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
 "MMU OK. Reprise de la position ..."
@@ -689,6 +697,10 @@
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
 "Mode [silencieux]"
+
+#
+"MMU needs user attention."
+"\x00"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -746,6 +758,10 @@
 "Not connected"
 "Non connecte"
 
+#
+"No "
+"\x00"
+
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
 "Ne tourne pas"
@@ -777,6 +793,10 @@
 #MSG_ENDSTOP_OPEN c=0 r=0
 "open"
 "ouvrir"
+
+#
+"Now remove the test print from steel sheet."
+"\x00"
 
 #MSG_SD_OPENROOT_FAIL c=0 r=0
 "openRoot failed"
@@ -830,10 +850,6 @@
 "Please insert PLA filament to the extruder, then press knob to load it."
 "Inserez du filament PLA dans l'extrudeur, puis appuyez sur le bouton pour le charger."
 
-#MSG_WIZARD_INSERT_CORRECT_FILAMENT c=20 r=8
-"Please load PLA filament and then resume Wizard by rebooting the printer."
-"Chargez le filament PLA et poursuivez l'assistant en redemarrant l'imprimante."
-
 #MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load PLA filament first."
 "Chargez d'abord le filament PLA."
@@ -878,6 +894,10 @@
 "Please wait"
 "Merci de patienter"
 
+#
+"Please remove shipping helpers first."
+"\x00"
+
 #MSG_POWERUP c=0 r=0
 "PowerUp"
 "Demarrage"
@@ -918,6 +938,10 @@
 "Printer halted. kill() called!"
 "Imprimante stoppee. kill() appelee !"
 
+#
+"Press the knob to resume nozzle temperature."
+"\x00"
+
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "L'imprimante n'a pas encore ete calibree. Suivez le manuel, chapitre Premiers pas, section Processus de calibration"
@@ -948,6 +972,10 @@
 
 #
 "Resend"
+"\x00"
+
+#
+"Prusa i3 MK2 ready."
 "\x00"
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
@@ -995,8 +1023,8 @@
 "Carte SD [normal]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-"SD card [FlshAir]"
-"Carte SD[FlshAir]"
+"SD card [flshAir]"
+"Carte SD[flshAir]"
 
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
@@ -1101,6 +1129,10 @@
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
 "Son        [muet]"
+
+#
+"Some problem encountered, Z-leveling enforced ..."
+"\x00"
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -1234,6 +1266,10 @@
 "Waiting for PINDA probe cooling"
 "Attente du refroidissement de la sonde PINDA"
 
+#
+"Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
+"\x00"
+
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
 "Attention : Types d'imprimante et de carte mere modifies."
@@ -1282,6 +1318,10 @@
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
 "\x00"
 
+#
+"X-correct"
+"\x00"
+
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
 "\x00"
@@ -1306,12 +1346,36 @@
 "Load filament 1"
 "\x00"
 
+#
+"XYZ calibration failed. Bed calibration point was not found."
+"\x00"
+
+#
+"XYZ calibration failed. Front calibration points not reachable."
+"\x00"
+
+#
+"XYZ calibration failed. Left front calibration point not reachable."
+"\x00"
+
 #MSG_LOAD_FILAMENT_2 c=17 r=0
 "Load filament 2"
 "\x00"
 
+#
+"XYZ calibration failed. Right front calibration point not reachable."
+"\x00"
+
 #MSG_LOAD_FILAMENT_3 c=17 r=0
 "Load filament 3"
+"\x00"
+
+#
+"Y distance from min"
+"\x00"
+
+#
+"Y-correct"
 "\x00"
 
 #MSG_LOAD_FILAMENT_4 c=17 r=0
