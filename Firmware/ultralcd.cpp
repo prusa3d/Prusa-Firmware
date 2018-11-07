@@ -1258,7 +1258,7 @@ void lcd_commands()
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL)
 	{
 		char cmd1[30];
-		uint8_t filament = 0;
+		static uint8_t filament = 0;
 		float width = 0.4;
 		float length = 20 - width;
 		float extr = count_e(0.2, width, length);
@@ -1300,14 +1300,8 @@ void lcd_commands()
 			enquecommand_P(PSTR("M107"));
 			enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
-            if (mmu_enabled)
-            {
-                strcpy(cmd1, "T");
-                strcat(cmd1, itostr3left(filament));
-                enquecommand(cmd1);
-            }
 			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
-			enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
+            enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
 			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
 			enquecommand_P(PSTR("G28"));
 			enquecommand_P(PSTR("G92 E0.0"));
@@ -1325,6 +1319,9 @@ void lcd_commands()
                 enquecommand_P(PSTR("M83")); //intro line
                 enquecommand_P(PSTR("G1 Y-3.0 F1000.0")); //intro line
                 enquecommand_P(PSTR("G1 Z0.4 F1000.0")); //intro line
+                strcpy(cmd1, "T");
+                strcat(cmd1, itostr3left(filament));
+                enquecommand(cmd1);
                 enquecommand_P(PSTR("G1 X55.0 E32.0 F1073.0")); //intro line
                 enquecommand_P(PSTR("G1 X5.0 E32.0 F1800.0")); //intro line
                 enquecommand_P(PSTR("G1 X55.0 E8.0 F2000.0")); //intro line
