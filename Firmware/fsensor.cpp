@@ -172,11 +172,12 @@ bool fsensor_enable(void)
             fsensor_not_responding = true;
         fsensor_enabled = true;
         fsensor_autoload_set(true);
+        fsensor_autoload_enabled = false;
         fsensor_oq_meassure = false;
         fsensor_err_cnt = 0;
         fsensor_dy_old = 0;
-        eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, fsensor_enabled ? 0x01 : 0x00);
-        FSensorStateMenu = fsensor_enabled ? 1 : 0;
+        eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x01);
+        FSensorStateMenu = 1;
     }
     return fsensor_enabled;
 }
@@ -215,7 +216,7 @@ void fsensor_autoload_check_start(void)
         printf_P(ERRMSG_PAT9125_NOT_RESP, 3);
         return;
     }
-    if (mmu_enabled) puts_P(_N("fsensor_autoload_check_start - autoload ENABLED\n"));
+    if (!mmu_enabled) puts_P(_N("fsensor_autoload_check_start - autoload ENABLED\n"));
     fsensor_autoload_y = pat9125_y; //save current y value
     fsensor_autoload_c = 0; //reset number of changes counter
     fsensor_autoload_sum = 0;
@@ -233,7 +234,7 @@ void fsensor_autoload_check_stop(void)
     if (!fsensor_autoload_enabled) return;
 //	puts_P(_N("fsensor_autoload_check_stop 2\n"));
     if (!fsensor_watch_autoload) return;
-    if (mmu_enabled) puts_P(_N("fsensor_autoload_check_stop - autoload DISABLED\n"));
+    if (!mmu_enabled) puts_P(_N("fsensor_autoload_check_stop - autoload DISABLED\n"));
     fsensor_autoload_sum = 0;
     fsensor_watch_autoload = false;
     fsensor_watch_runout = true;
@@ -285,11 +286,8 @@ bool fsensor_check_autoload(void)
     if ((fsensor_autoload_c >= 12) && (fsensor_autoload_sum > 20))
     {
         //puts_P(_N("fsensor_check_autoload = true !!!\n"));
-        if (mmu_enabled) {
-            //mmuFilamentMK3Moving = true;
-            mmu_command(MMU_CMD_FS);
-            fsensor_autoload_check_stop();
-        }
+        if (mmu_enabled) mmu_command(MMU_CMD_FS);
+        fsensor_autoload_enabled = false;
         return true;
     }
     return false;
