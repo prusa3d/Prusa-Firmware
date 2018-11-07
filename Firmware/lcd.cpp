@@ -670,7 +670,7 @@ uint8_t lcd_update_enabled = 1;
 uint32_t lcd_next_update_millis = 0;
 uint8_t lcd_status_update_delay = 0;
 
-uint8_t lcd_long_press_active = 0;
+
 
 lcd_longpress_func_t lcd_longpress_func = 0;
 
@@ -768,9 +768,9 @@ void lcd_update_enable(uint8_t enabled)
 	}
 }
 
-extern LongTimer safetyTimer;
 void lcd_buttons_update(void)
 {
+    static uint8_t lcd_long_press_active = 0;
 	uint8_t newbutton = 0;
 	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
 	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
@@ -783,14 +783,14 @@ void lcd_buttons_update(void)
             safetyTimer.start();
             if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
             {
-                //long press is not possible in modal mode
-                if (lcd_update_enabled) longPressTimer.start();
+                longPressTimer.start();
                 lcd_button_pressed = 1;
             }
             else if (longPressTimer.expired(LONG_PRESS_TIME))
             {
                 lcd_long_press_active = 1;
-                if (lcd_longpress_func)
+                //long press is not possible in modal mode
+                if (lcd_longpress_func && lcd_update_enabled)
                     lcd_longpress_func();
             }
         }

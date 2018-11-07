@@ -21,6 +21,7 @@
 #include "fastio.h"
 #include "Configuration.h"
 #include "pins.h"
+#include "Timer.h"
 
 #ifndef AT90USB
 #define  HardwareSerial_h // trick to disable the standard HWserial
@@ -366,6 +367,8 @@ extern uint16_t mcode_in_progress;
 extern uint16_t gcode_in_progress;
 
 extern bool wizard_active; //autoload temporarily disabled during wizard
+
+extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT   0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
