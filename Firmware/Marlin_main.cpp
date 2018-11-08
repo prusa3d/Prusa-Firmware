@@ -4499,7 +4499,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
                bool bState;
                do   {                             // repeat until Z-leveling o.k.
-                    lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-leveling enforced ..."));
+                    lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-levelling enforced ..."));
 #ifdef TMC2130
                     lcd_wait_for_click_delay(MSG_BED_LEVELING_FAILED_TIMEOUT);
                     calibrate_z_auto();           // Z-leveling (X-assembly stay up!!!)
