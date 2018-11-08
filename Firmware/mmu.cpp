@@ -482,13 +482,13 @@ void mmu_loop(void)
     case 10: //echo response, comms confirmation
         if (mmu_rx_echo() > 0)
         {
-            printf_P(PSTR("MMU => 'CMD ACK 0x%X'\n"));
+            printf_P(PSTR("MMU => 'CMD ACK 0x%2X'\n"), mmu_cmd);
             //mmu_puts_P(PSTR("EE\n")); // Advise MMU CMD is correct, execute
             ack_received = true;
             mmu_state = 1;            // Do normal Await command completion confirmation
         } else if ((mmu_last_request + 1000) < millis()) {  // Timeout if echo doesn't match request, resend cmd
             //printf_P(PSTR("MMU => 'CMD RETRY'\n"));
-            printf_P(PSTR("MMU => 'CMD RETRY 0x%X'\n"), mmu_cmd);
+            printf_P(PSTR("MMU => 'CMD RETRY 0x%2X'\n"), mmu_cmd);
             mmu_state = 1;
         }
         return;
