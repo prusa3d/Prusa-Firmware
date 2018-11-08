@@ -33,13 +33,14 @@
 
 const char ERRMSG_PAT9125_NOT_RESP[] PROGMEM = "PAT9125 not responding (%d)!\n";
 
+// PJ7 can not be used (does not have PinChangeInterrupt possibility)
 #define FSENSOR_INT_PIN          75 //!< filament sensor interrupt pin PJ4
 #define FSENSOR_INT_PIN_MASK   0x10 //!< filament sensor interrupt pin mask (bit4)
-#define FSENSOR_INT_PIN_VECT PCINT1_vect
-#define FSENSOR_INT_PIN_PIN_REG PINJ
-#define FSENSOR_INT_PIN_PCMSK_REG PCMSK1
-#define FSENSOR_INT_PIN_PCMSK_BIT PCINT13
-#define FSENSOR_INT_PIN_PCICR_BIT PCIE1
+#define FSENSOR_INT_PIN_PIN_REG PINJ              // PIN register @ PJ4
+#define FSENSOR_INT_PIN_VECT PCINT1_vect          // PinChange ISR @ PJ4
+#define FSENSOR_INT_PIN_PCMSK_REG PCMSK1          // PinChangeMaskRegister @ PJ4
+#define FSENSOR_INT_PIN_PCMSK_BIT PCINT13         // PinChange Interrupt / PinChange Enable Mask @ PJ4
+#define FSENSOR_INT_PIN_PCICR_BIT PCIE1           // PinChange Interrupt Enable / Flag @ PJ4
 
 //uint8_t fsensor_int_pin = FSENSOR_INT_PIN;
 uint8_t fsensor_int_pin_old = 0;
@@ -189,6 +190,7 @@ void fsensor_autoload_set(bool State)
 
 void pciSetup(byte pin)
 {
+// !!! "digitalPinTo?????bit()" does not provide the correct results for some MCU pins
 	*digitalPinToPCMSK(pin) |= bit (digitalPinToPCMSKbit(pin)); // enable pin
 	PCIFR |= bit (digitalPinToPCICRbit(pin)); // clear any outstanding interrupt
 	PCICR |= bit (digitalPinToPCICRbit(pin)); // enable interrupt for the group 
@@ -448,6 +450,7 @@ void fsensor_st_block_begin(block_t* bl)
 	if (((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8)) || 
 		((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8)))
 	{
+// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
 		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
 		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
 	}
@@ -459,6 +462,7 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
 	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
 	{
+// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
 		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
 		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
 	}
@@ -531,8 +535,9 @@ void fsensor_setup_interrupt(void)
 	fsensor_int_pin_old = 0;
 
 	//pciSetup(FSENSOR_INT_PIN);
-     // interrupt registers settings
-     FSENSOR_INT_PIN_PCMSK_REG|=bit(FSENSOR_INT_PIN_PCMSK_BIT);
-     PCIFR|=bit(FSENSOR_INT_PIN_PCICR_BIT);
-     PCICR|=bit(FSENSOR_INT_PIN_PCICR_BIT);
+// !!! "pciSetup()" does not provide the correct results for some MCU pins
+// so interrupt registers settings:
+     FSENSOR_INT_PIN_PCMSK_REG |= bit(FSENSOR_INT_PIN_PCMSK_BIT); // enable corresponding PinChangeInterrupt (individual pin)
+     PCIFR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // clear previous occasional interrupt (set of pins)
+     PCICR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // enable corresponding PinChangeInterrupt (set of pins)
 }
