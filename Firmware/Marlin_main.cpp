@@ -332,7 +332,6 @@ bool wizard_active = false; //autoload temporarily disabled during wizard
 //===========================================================================
 //=============================Private Variables=============================
 //===========================================================================
-#define MSG_BED_LEVELING_FAILED "Some problem encountered, Z-leveling enforced ..."
 #define MSG_BED_LEVELING_FAILED_TIMEOUT 30
 
 const char axis_codes[NUM_AXIS] = {'X', 'Y', 'Z', 'E'};
@@ -4516,7 +4515,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
                bool bState;
                do   {                             // repeat until Z-leveling o.k.
-                    lcd_display_message_fullscreen_P(_i(MSG_BED_LEVELING_FAILED));
+                    lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-levelling enforced ..."));
 #ifdef TMC2130
                     lcd_wait_for_click_delay(MSG_BED_LEVELING_FAILED_TIMEOUT);
                     calibrate_z_auto();           // Z-leveling (X-assembly stay up!!!)
@@ -4531,6 +4530,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                     st_synchronize();
                     enable_z_endstop(bState);
                     } while (st_get_position_mm(Z_AXIS) > MESH_HOME_Z_SEARCH); // i.e. Z-leveling not o.k.
+//               plan_set_z_position(MESH_HOME_Z_SEARCH); // is not necessary ('do-while' loop always ends at the expected Z-position)
                custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
                lcd_update_enable(true);           // display / status-line recovery
                gcode_G28(true, true, false);      // X & Y-homing (must be after Z-homing (problem with spool-holder)!)
