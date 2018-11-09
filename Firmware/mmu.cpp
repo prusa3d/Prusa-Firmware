@@ -374,8 +374,8 @@ void mmu_loop(void)
                     mmu_puts_P(PSTR("EE\n")); // Advise MMU CMD is correct, execute
                     mmu_state = 3; // wait for response
                 } else {
-                  mmu_puts_P(PSTR("EE\n")); // Advise MMU CMD is correct, execute
-                  mmu_state = 3;
+                    mmu_puts_P(PSTR("EE\n")); // Advise MMU CMD is correct, execute
+                    mmu_state = 3;
                 }
                 lastLoadedFilament = filament;
             }
@@ -441,7 +441,7 @@ void mmu_loop(void)
             }
             mmu_state = 1;
             //if (mmu_cmd == 0)
-                //mmu_ready = true;
+            //mmu_ready = true;
         }
         else if ((mmu_last_request + MMU_P0_TIMEOUT) < millis())
         {   //resend request after timeout (30s)
@@ -460,8 +460,8 @@ void mmu_loop(void)
         } else if (mmu_rx_ok() > 0)
         {
             if (mmuFSensorLoading == true) {
-              mmuFSensorLoading = false;
-              printf_P(PSTR("MMU => 'ok :)'\n"));
+                mmuFSensorLoading = false;
+                printf_P(PSTR("MMU => 'ok :)'\n"));
             }
             printf_P(PSTR("MMU => 'ok'\n"));
             mmu_ready = true;
@@ -473,8 +473,8 @@ void mmu_loop(void)
             mmu_state = 20;
         }
         else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
-        { //resend request after timeout (5 min)
-        	  printf_P(PSTR("MMU => 'Erro 5m Timeout'\n"));
+        {   //resend request after timeout (5 min)
+            printf_P(PSTR("MMU => 'Erro 5m Timeout'\n"));
             mmu_ready = false;
             mmu_state = 20;
         }
@@ -541,9 +541,9 @@ bool mmu_get_response(void)
     while (!mmu_ready)
     {
         if ((mmu_state == 3) || (mmu_state == 10) || (mmuFSensorLoading)) {
-          delay_keep_alive(100);
+            delay_keep_alive(100);
         } else {
-          break;
+            break;
         }
     }
     bool ret = mmu_ready;
