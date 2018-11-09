@@ -7457,7 +7457,6 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
     {
       if(blocks_queued() == false && ignore_stepper_queue == false) {
         disable_x();
-//        SERIAL_ECHOLNPGM("manage_inactivity - disable Y");
         disable_y();
         disable_z();
         disable_e0();
@@ -7791,7 +7790,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 				codenum = millis();
 		}
 			manage_heater();
-			manage_inactivity();
+			manage_inactivity(true); //do not disable steppers
 			lcd_update(0);
 #ifdef TEMP_RESIDENCY_TIME
 			/* start/restart the TEMP_RESIDENCY_TIME timer whenever we reach target temp for the first time
