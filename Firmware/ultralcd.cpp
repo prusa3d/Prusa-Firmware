@@ -5677,6 +5677,7 @@ void lcd_resume_print()
     lcd_reset_alert_level(); //for fan speed error
     restore_print_from_ram_and_continue(0.0);
     pause_time += (millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
+	refresh_cmd_timeout();
     isPrintPaused = false;
 }
 
