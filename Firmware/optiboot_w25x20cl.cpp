@@ -130,7 +130,7 @@ void optiboot_w25x20cl_enter()
     }
     // Send the initial magic string.
     while (ptr != end)
-      putch(pgm_read_byte_far(ptr ++));
+      putch(pgm_read_byte(ptr ++));
     watchdogReset();
     // Wait for one second until a magic string (constant entry_magic) is received
     // from the serial line.
@@ -145,7 +145,7 @@ void optiboot_w25x20cl_enter()
           return;
       }
       ch = UDR0;
-      if (pgm_read_byte_far(ptr ++) != ch)
+      if (pgm_read_byte(ptr ++) != ch)
           // Magic was not received correctly, continue with the application
           return;
       watchdogReset();
@@ -153,7 +153,7 @@ void optiboot_w25x20cl_enter()
     // Send the cfm magic string.
     ptr = entry_magic_cfm;
     while (ptr != end)
-      putch(pgm_read_byte_far(ptr ++));
+      putch(pgm_read_byte(ptr ++));
   }
 
   spi_init();
