@@ -3081,6 +3081,7 @@ void gcode_M701()
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
 		
 		load_filament_final_feed(); //slow sequence
+		st_synchronize();
 
 		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)) tone(BEEPER, 500);
 		delay_keep_alive(50);
@@ -8968,7 +8969,6 @@ void load_filament_final_feed()
 	st_synchronize();
 	current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200/60, active_extruder);
-	st_synchronize();
 }
 
 void M600_check_state()
@@ -8991,10 +8991,9 @@ void M600_check_state()
 
 				// Filament loaded properly but color is not clear
 				case 3:
-					st_synchronize();
-					current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED;
-					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200/60, active_extruder);
+					load_filament_final_feed();
 					lcd_loading_color();
+					st_synchronize();
 					break;
                  
 				// Everything good             
@@ -9114,6 +9113,7 @@ void M600_load_filament_movements()
 #endif                
 	load_filament_final_feed();
 	lcd_loading_filament();
+	st_synchronize();
 }
 
 void M600_load_filament() {
