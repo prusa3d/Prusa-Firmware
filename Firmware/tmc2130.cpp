@@ -467,12 +467,12 @@ void tmc2130_set_current_r(uint8_t axis, uint8_t current)
 
 void tmc2130_print_currents()
 {
-//	DBG(_n("tmc2130_print_currents()\n\tH\tR\nX\t%d\t%d\nY\t%d\t%d\nZ\t%d\t%d\nE\t%d\t%d\n"),
-//		tmc2130_current_h[0], tmc2130_current_r[0],
-//		tmc2130_current_h[1], tmc2130_current_r[1],
-//		tmc2130_current_h[2], tmc2130_current_r[2],
-//		tmc2130_current_h[3], tmc2130_current_r[3]
-//	);
+	printf_P(_n("tmc2130_print_currents()\n\tH\tR\nX\t%d\t%d\nY\t%d\t%d\nZ\t%d\t%d\nE\t%d\t%d\n"),
+		tmc2130_current_h[0], tmc2130_current_r[0],
+		tmc2130_current_h[1], tmc2130_current_r[1],
+		tmc2130_current_h[2], tmc2130_current_r[2],
+		tmc2130_current_h[3], tmc2130_current_r[3]
+	);
 }
 
 void tmc2130_set_pwm_ampl(uint8_t axis, uint8_t pwm_ampl)
