@@ -2254,19 +2254,7 @@ void lcd_change_success() {
 
 }
 
-
-void lcd_loading_color() {
-	//we are extruding 25mm with feedrate 200mm/min -> 7.5 seconds for whole action, 0.375 s for one character
-
-  lcd_clear();
-
-  lcd_set_cursor(0, 0);
-
-  lcd_puts_P(_i("Loading color"));////MSG_LOADING_COLOR c=0 r=0
-  lcd_set_cursor(0, 2);
-  lcd_puts_P(_T(MSG_PLEASE_WAIT));
-
-
+static void lcd_loading_progress_bar() {
   for (int i = 0; i < 20; i++) {
 
     lcd_set_cursor(i, 3);
@@ -2281,7 +2269,20 @@ void lcd_loading_color() {
 
 
   }
+}
 
+
+void lcd_loading_color() {
+	//we are extruding 25mm with feedrate 200mm/min -> 7.5 seconds for whole action, 0.375 s for one character
+
+  lcd_clear();
+
+  lcd_set_cursor(0, 0);
+
+  lcd_puts_P(_i("Loading color"));////MSG_LOADING_COLOR c=0 r=0
+  lcd_set_cursor(0, 2);
+  lcd_puts_P(_T(MSG_PLEASE_WAIT));
+  lcd_loading_progress_bar();
 }
 
 
@@ -2295,7 +2296,7 @@ void lcd_loading_filament() {
   lcd_puts_P(_T(MSG_LOADING_FILAMENT));
   lcd_set_cursor(0, 2);
   lcd_puts_P(_T(MSG_PLEASE_WAIT));
-
+#ifdef SNMM
   for (int i = 0; i < 20; i++) {
 
     lcd_set_cursor(i, 3);
@@ -2303,17 +2304,15 @@ void lcd_loading_filament() {
     for (int j = 0; j < 10 ; j++) {
       manage_heater();
       manage_inactivity(true);
-#ifdef SNMM
-      delay(153);
-#else
-	  delay(137);
-#endif
 
+      delay(153);
     }
 
 
   }
-
+#else //SNMM
+  lcd_loading_progress_bar();
+#endif //SNMM
 }
 
 
@@ -2425,6 +2424,7 @@ void lcd_load_filament_color_check()
 		lcd_update_enable(true);
 		lcd_update(2);
 		load_filament_final_feed();
+		st_synchronize();
 		clean = lcd_show_fullscreen_message_yes_no_and_wait_P(_T(MSG_FILAMENT_CLEAN), false, true);
 	}
 }
