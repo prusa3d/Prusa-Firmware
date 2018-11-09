@@ -706,6 +706,7 @@ void mmu_M600_load_filament(bool automatic)
 {
     //load filament for mmu v2
     tmp_extruder = mmu_extruder;
+    lastLoadedFilament = -10;
     if (!automatic) {
 #ifdef MMU_M600_SWITCH_EXTRUDER
         bool yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
