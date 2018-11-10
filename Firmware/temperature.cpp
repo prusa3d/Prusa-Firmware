@@ -31,6 +31,7 @@
 
 #include "Marlin.h"
 #include "ultralcd.h"
+#include "sound.h"
 #include "temperature.h"
 #include "cardreader.h"
 
@@ -204,6 +205,16 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 //===========================================================================
 //=============================   functions      ============================
 //===========================================================================
+
+#if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
+static float temp_runaway_status[4];
+static float temp_runaway_target[4];
+static float temp_runaway_timer[4];
+static int temp_runaway_error_counter[4];
+
+static void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
+static void temp_runaway_stop(bool isPreheat, bool isBed);
+#endif
 
   void PID_autotune(float temp, int extruder, int ncycles)
   {
@@ -403,7 +414,7 @@ unsigned long watchmillis[EXTRUDERS] = ARRAY_BY_EXTRUDERS(0,0,0);
 	  pid_cycle = 0;
       return;
     }
-    lcd_update();
+    lcd_update(0);
   }
 }
 
@@ -513,6 +524,7 @@ void fanSpeedError(unsigned char _fan) {
 	case 0:
 			SERIAL_ECHOLNPGM("Extruder fan speed is lower then expected");
 			if (get_message_level() == 0) {
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
 				WRITE(BEEPER, HIGH);
 				delayMicroseconds(200);
 				WRITE(BEEPER, LOW);
@@ -523,6 +535,7 @@ void fanSpeedError(unsigned char _fan) {
 	case 1:
 			SERIAL_ECHOLNPGM("Print fan speed is lower then expected");
 			if (get_message_level() == 0) {
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
 				WRITE(BEEPER, HIGH);
 				delayMicroseconds(200);
 				WRITE(BEEPER, LOW);
@@ -1332,7 +1345,8 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 	disable_e1();
 	disable_e2();
 	manage_heater();
-	lcd_update();
+	lcd_update(0);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
 	WRITE(BEEPER, HIGH);
 	delayMicroseconds(500);
 	WRITE(BEEPER, LOW);
@@ -1363,8 +1377,7 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 
 void disable_heater()
 {
-  for(int i=0;i<EXTRUDERS;i++)
-    setTargetHotend(0,i);
+  setAllTargetHotends(0);
   setTargetBed(0);
   #if defined(TEMP_0_PIN) && TEMP_0_PIN > -1
   target_temperature[0]=0;
@@ -1418,6 +1431,7 @@ void max_temp_error(uint8_t e) {
     SET_OUTPUT(BEEPER);
     WRITE(FAN_PIN, 1);
     WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
     WRITE(BEEPER, 1);
     // fanSpeed will consumed by the check_axes_activity() routine.
     fanSpeed=255;
@@ -1473,7 +1487,7 @@ void bed_min_temp_error(void) {
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
     Stop();
-#endif*/
+#endif
 }
 
 #ifdef HEATER_0_USES_MAX6675
@@ -1538,17 +1552,17 @@ extern "C" {
 
 void adc_ready(void) //callback from adc when sampling finished
 {
-	current_temperature_raw[0] = adc_values[TEMP_0_PIN]; //heater
-	current_temperature_raw_pinda = adc_values[TEMP_PINDA_PIN];
-	current_temperature_bed_raw = adc_values[TEMP_BED_PIN];
+	current_temperature_raw[0] = adc_values[ADC_PIN_IDX(TEMP_0_PIN)]; //heater
+	current_temperature_raw_pinda = adc_values[ADC_PIN_IDX(TEMP_PINDA_PIN)];
+	current_temperature_bed_raw = adc_values[ADC_PIN_IDX(TEMP_BED_PIN)];
 #ifdef VOLT_PWR_PIN
-	current_voltage_raw_pwr = adc_values[VOLT_PWR_PIN];
+	current_voltage_raw_pwr = adc_values[ADC_PIN_IDX(VOLT_PWR_PIN)];
 #endif
 #ifdef AMBIENT_THERMISTOR
-	current_temperature_raw_ambient = adc_values[TEMP_AMBIENT_PIN];
+	current_temperature_raw_ambient = adc_values[ADC_PIN_IDX(TEMP_AMBIENT_PIN)];
 #endif //AMBIENT_THERMISTOR
 #ifdef VOLT_BED_PIN
-	current_voltage_raw_bed = adc_values[VOLT_BED_PIN]; // 6->9
+	current_voltage_raw_bed = adc_values[ADC_PIN_IDX(VOLT_BED_PIN)]; // 6->9
 #endif
 	temp_meas_ready = true;
 }

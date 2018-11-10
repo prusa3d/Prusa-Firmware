@@ -36,6 +36,19 @@ extern uint8_t tmc2130_home_fsteps[2];
 
 extern uint8_t tmc2130_wave_fac[4];
 
+#pragma pack(push)
+#pragma pack(1)
+typedef struct
+{
+	uint8_t toff:4;
+	uint8_t hstr:3;
+	uint8_t hend:4;
+	uint8_t tbl:2;
+	uint8_t res:3;
+} tmc2130_chopper_config_t;
+#pragma pack(pop)
+
+extern tmc2130_chopper_config_t tmc2130_chopper_config[4];
 
 //initialize tmc2130
 extern void tmc2130_init();
@@ -55,6 +68,7 @@ extern void tmc2130_sg_meassure_start(uint8_t axis);
 //stop current stallguard meassuring and report result
 extern uint16_t tmc2130_sg_meassure_stop();
 
+extern void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_t current_r);
 
 //set holding current for any axis (M911)
 extern void tmc2130_set_current_h(uint8_t axis, uint8_t current);
@@ -76,37 +90,6 @@ extern uint8_t tmc2130_usteps2mres(uint16_t usteps);
 #define tmc2130_mres2usteps(mres) ((uint16_t)256 >> mres)
 
 extern bool tmc2130_wait_standstill_xy(int timeout);
-
-extern void tmc2130_eeprom_load_config();
-extern void tmc2130_eeprom_save_config();
-
-#pragma pack(push)
-#pragma pack(1)
-struct
-{
-	uint8_t mres:5;             // mres       - byte 0, bit 0..4     microstep resolution
-	uint8_t reserved_0_0:2;     // reserved   - byte 0, bit 5..6
-	uint8_t intpol:1;           // intpol     - byte 0, bit 7        linear interpolation to 255 usteps
-	uint8_t pwm_ampl:8;         // pwm_ampl   - byte 1, bit 0..7     pwm amplitude for silent mode
-	uint8_t pwm_grad:4;         // pwm_grad   - byte 2, bit 0..3     pwm gradient for silent mode
-	uint8_t pwm_freq:2;         // pwm_freq   - byte 2, bit 4..5     pwm frequency for silent mode
-	uint8_t reserved_2_0:2;     // reserved   - byte 2, bit 6..7
-	uint16_t tcoolthrs:16;      // tcoolthrs  - byte 3..4            coolstep threshold / middle sensitivity
-	int8_t  sg_thrs:8;          // sg_thrs    - byte 5, bit 0..7     stallguard sensitivity in high power / middle sensitivity
-	int8_t  current_h:6;        // current_h  - byte 6, bit 0..5     holding current for high power mode
-	uint8_t reserved_6_0:2;     // reserved   - byte 6, bit 6..7
-	int8_t  current_r:6;        // current_r  - byte 7, bit 0..5     running current for high power mode
-	uint8_t reserved_7_0:2;     // reserved   - byte 7, bit 6..7
-	int8_t  home_sg_thrs:8;     // sg_thrs    - byte 8, bit 0..7     stallguard sensitivity for homing
-	int8_t  home_current:6;     // current_r  - byte 9, bit 0..5     running current for homing
-	uint8_t reserved_9_0:2;     // reserved   - byte 9, bit 6..7
-	int8_t  home_dtcoolthrs:8;  // dtcoolthrs - byte 10, bit 0..7    delta tcoolthrs for homing
-	int8_t  dtcoolthrs_low:8;   // dtcoolthrs - byte 11, bit 0..7    delta tcoolthrs for low sensitivity (based on value for middle sensitivity)
-	int8_t  dtcoolthrs_high:8;  // dtcoolthrs - byte 12, bit 0..7    delta tcoolthrs for high sensitivity (based on value for middle sensitivity)
-	int8_t  sg_thrs_low:8;      // sg_thrs    - byte 13, bit 0..7    stallguard sensitivity in high power / low sensitivity
-	int8_t  sg_thrs_high:8;     // sg_thrs    - byte 14, bit 0..7    stallguard sensitivity in high power / high sensitivity
-} tmc2130_axis_config;
-#pragma pack(pop)
 
 extern uint16_t tmc2130_get_res(uint8_t axis);
 extern void tmc2130_set_res(uint8_t axis, uint16_t res);

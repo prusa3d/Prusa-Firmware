@@ -32,8 +32,7 @@
 #define CMDBUFFER_RESERVE_FRONT       (5*21)
 
 extern char cmdbuffer[BUFSIZE * (MAX_CMD_SIZE + 1) + CMDBUFFER_RESERVE_FRONT];
-extern int bufindr;
-extern int bufindw;
+extern size_t bufindr;
 extern int buflen;
 extern bool cmdbuffer_front_already_processed;
 
@@ -59,8 +58,6 @@ extern long Stopped_gcode_LastN;
 
 extern bool cmdqueue_pop_front();
 extern void cmdqueue_reset();
-extern bool cmdqueue_could_enqueue_front(int len_asked);
-extern bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update = false);
 #ifdef CMDBUFFER_DEBUG
 extern void cmdqueue_dump_to_serial_single_line(int nr, const char *p);
 extern void cmdqueue_dump_to_serial();

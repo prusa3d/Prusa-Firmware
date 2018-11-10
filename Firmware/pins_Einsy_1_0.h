@@ -16,16 +16,13 @@
 #define PINDA_THERMISTOR
 
 #define W25X20CL                 // external 256kB flash
+#define BOOTAPP                  // bootloader support
 
-#define SWI2C                    // enable software i2c
-#define SWI2C_A8                 // 8bit address functions
 
-#define PAT9125_SWI2C
-#define PAT9125_SWI2C_SDA      20 //SDA on P3
-#define PAT9125_SWI2C_SCL      21 //SCL on P3
-#define PAT9125_SWI2C_CFG    0xb1 //2us clock delay, 2048 cycles timeout
+#define SWI2C_SDA      20 //SDA on P3
+#define SWI2C_SCL      21 //SCL on P3
 
-//#define PAT9125_HWI2C
+
 
 #define X_TMC2130_CS           41
 #define X_TMC2130_DIAG         64 // !!! changed from 40 (EINY03)
@@ -99,11 +96,9 @@
 #define KILL_PIN            -1  // 80 with Smart Controller LCD
 #define SUICIDE_PIN         -1  // PIN that has to be turned on right after start, to keep power flowing.
 
-#ifdef ULTRA_LCD
 
 //#define KILL_PIN            32
 
-#ifdef NEWPANEL
 
 //#define LCD_PWM_PIN         -1//32  // lcd backlight brightnes pwm control pin
 //#define LCD_PWM_MAX       0x0f  // lcd pwm maximum value (0x07=64Hz, 0x0f=32Hz, 0x1f=16Hz)
@@ -126,8 +121,6 @@
 #define TACH_0                 79 // !!! changed from 81 (EINY03)
 #define TACH_1                 80 
 
-#endif //NEWPANEL
-#endif //ULTRA_LCD
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.

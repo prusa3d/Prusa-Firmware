@@ -142,6 +142,16 @@ FORCE_INLINE void setTargetHotend(const float &celsius, uint8_t extruder) {
   target_temperature[extruder] = celsius;
 };
 
+static inline void setTargetHotendSafe(const float &celsius, uint8_t extruder)
+{
+    if (extruder<EXTRUDERS) target_temperature[extruder] = celsius;
+}
+
+static inline void setAllTargetHotends(const float &celsius)
+{
+    for(int i=0;i<EXTRUDERS;i++) setTargetHotend(celsius,i);
+}
+
 FORCE_INLINE void setTargetBed(const float &celsius) {  
   target_temperature_bed = celsius;
 };
@@ -187,16 +197,6 @@ FORCE_INLINE bool isCoolingBed() {
 #endif
 #if EXTRUDERS > 3
 #error Invalid number of extruders
-#endif
-
-#if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
-static float temp_runaway_status[4];
-static float temp_runaway_target[4];
-static float temp_runaway_timer[4];
-static int temp_runaway_error_counter[4];
-
-void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed);
-void temp_runaway_stop(bool isPreheat, bool isBed);
 #endif
 
 int getHeaterPower(int heater);

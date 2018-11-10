@@ -3,9 +3,10 @@
 #include "sm4.h"
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <math.h>
+#include "Arduino.h"
 
 #include "boards.h"
-#define bool int8_t
 #define false 0
 #define true 1
 #include "Configuration_prusa.h"

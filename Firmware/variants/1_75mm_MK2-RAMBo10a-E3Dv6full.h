@@ -414,13 +414,8 @@ THERMISTORS SETTINGS
 
 #define DEFAULT_PID_TEMP 210
 
-#ifdef SNMM
-#define DEFAULT_RETRACTION 4 //used for PINDA temp calibration and pause print
-#else
-#define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
-#endif
 
-#define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
+#define END_FILE_SECTION 20000 //number of bytes from end of file used for checking if file is complete
 
 // Safety timer
 #define SAFETYTIMER

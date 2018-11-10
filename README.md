@@ -2,7 +2,7 @@
 
    1. install `"Arduino Software IDE"` for your preferred operating system  
 `https://www.arduino.cc -> Software->Downloads`  
-it is strongly recommended to use older version `"1.6.8"`, by which we can assure correct compilation results  
+it is strongly recommended to use older version `"1.6.9"`, by which we can assure correct compilation results  
 _note: in versions `1.7.x` and `1.8.x` there are known some C/C++ compilator disasters, which disallow correct source code compilation (you can obtain `"... internal compiler error: in extract_insn, at ..."` error message, for example); we are not able to affect this situation afraid_  
 _note: in the case of persistent compilation problems, check the version of the currently used C/C++ compiler (GCC) - should be `4.8.1`; version can be verified by entering the command  
 `avr-gcc --version`  

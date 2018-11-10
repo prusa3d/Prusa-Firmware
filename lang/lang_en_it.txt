@@ -8,15 +8,15 @@
 
 #MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
 " cold extrusion prevented"
-"\x00"
+" evitata estrusione fredda"
 
 #MSG_FREE_MEMORY c=0 r=0
 " Free Memory: "
-"Memoria Libera: "
+" Memoria Libera: "
 
 #MSG_CONFIGURATION_VER c=0 r=0
 " Last Updated: "
-"Ultimo aggiornamento: "
+" Ultimo aggiornamento: "
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 " of 4"
@@ -24,7 +24,7 @@
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14 r=0
 " of 9"
-"su 9"
+" su 9"
 
 #MSG_MEASURED_OFFSET c=0 r=0
 "[0;0] point offset"
@@ -32,11 +32,11 @@
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-"\x00"
+"\x1b[2JRilev. impatto\x1b[1;0Hattivabile solo\x1b[2;0Hin Modalita normale"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
-"\x00"
+"\x1b[2JATTENZIONE:\x1b[1;0HRilev. impatto\x1b[2;0Hdisattivato in\x1b[3;0HModalita silenziosa"
 
 #MSG_REFRESH c=0 r=0
 "\xf8Refresh"
@@ -48,7 +48,7 @@
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20 r=0
 "All correct      "
-"Nessun errore"
+"Nessun errore      "
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -66,17 +66,25 @@
 "Auto adjust Z?"
 "Autoregolare Z?"
 
+#MSG_AUTO_DEPLETE_ON c=17 r=1
+"Auto deplete [on]"
+"Esaurim.auto [on]"
+
+# MSG_AUTO_DEPLETE_OFF c=17 r=1
+"Auto deplete[off]"
+"Esaurim.auto[off]"
+
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
 "Trova origine"
 
 #MSG_AUTOLOAD_FILAMENT c=17 r=0
 "AutoLoad filament"
-"Autocaricamento filamento"
+"Autocaric. filam."
 
 #MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
 "Autoloading filament available only when filament sensor is turned on..."
-"Il caricamento automatico del filamento e disponibile solo quando il sensore e acceso..."
+"Caricamento auto. filam. disp. solo con il sensore attivo..."
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
@@ -92,7 +100,7 @@
 
 #MSG_SELFTEST_BEDHEATER c=0 r=0
 "Bed / Heater"
-"Letto/Riscald."
+"Letto / Riscald"
 
 #MSG_BED_DONE c=0 r=0
 "Bed done"
@@ -188,19 +196,23 @@
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Rilevamento imp. [on]"
+"Rilevam.imp. [on]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Rilevamento imp. [N/A]"
+"Rilevam.imp.[N/A]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Rilevamento imp. [off]"
+"Rilevam.imp.[off]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
 "Rilevato impatto."
+
+#
+"Crash detected. Resume print?"
+"Rilevato impatto. Riprendi stampa?"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -226,13 +238,41 @@
 "E-correct"
 "Correzione-E"
 
+#MSG_EJECT_FILAMENT c=17 r=1
+"Eject filament"
+"Espelli filamento"
+
+#MSG_EJECT_FILAMENT1 c=17 r=1
+"Eject filament 1"
+"Espelli filamento 1"
+
+#MSG_EJECT_FILAMENT2 c=17 r=1
+"Eject filament 2"
+"Espelli filamento 2"
+
+#MSG_EJECT_FILAMENT3 c=17 r=1
+"Eject filament 3"
+"Espelli filamento 3"
+
+#MSG_EJECT_FILAMENT4 c=17 r=1
+"Eject filament 4"
+"Espelli filamento 4"
+
+#MSG_EJECT_FILAMENT5 c=17 r=1
+"Eject filament 5"
+"Espelli filamento 5"
+
+#MSG_EJECTING_FILAMENT c=20 r=1
+"Ejecting filament"
+"Espellendo filamento"
+
 #MSG_END_FILE_LIST c=0 r=0
 "End file list"
 "Fine lista file"
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
-"Finec. fuori por."
+"Finecorsa fuori portata"
 
 #MSG_SELFTEST_ENDSTOP c=0 r=0
 "Endstop"
@@ -260,7 +300,7 @@
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
-"ERRORE: il sensore del filamento non risponde, per favore controllate la connessione"
+"ERRORE: il sensore filam. non risponde, Controllare conness."
 
 #MSG_ERROR c=0 r=0
 "ERROR:"
@@ -280,15 +320,15 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"Autocaricamento f. [on]"
+"Autocaric.f. [on]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
-"Autocaricamento f. [N/A]"
+"Autocaric.f.[N/A]"
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
-"Autocaricamento f. [off]"
+"Autocaric.f.[off]"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -300,23 +340,27 @@
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Controllo ventole [on]"
+"Controllo ven[on]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Controllo ventole [off]"
+"Controllo v.[off]"
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
-"Sensore filamenti [On]"
+"Sensore fil. [On]"
+
+#MSG_RESPONSE_POOR c=20 r=2
+"Fil. sensor response is poor, disable it?"
+"Risposta Sens. Fil. debole, disattivare?"
 
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
-"Sensore fil. [N/A]"
+"Sensore fil.[N/A]"
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
-"Sensore filamenti [off]"
+"Sensore fil.[off]"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -328,11 +372,19 @@
 
 #MSG_FILAMENT_SENSOR c=20 r=0
 "Filament sensor"
-"Sensore filamento "
+"Sensore filam."
 
 #MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
 "Filament sensor:"
-"Sensore del filamento:"
+"Sensore filam.:"
+
+#MSG_FILAMENT_USED c=19 r=1
+"Filament used"
+"Filamento utilizzato"
+
+#MSG_PRINT_TIME c=19 r=1
+"Print time"
+"Tempo di stampa"
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
@@ -368,7 +420,7 @@
 
 #MSG_SELFTEST_COOLING_FAN c=20 r=0
 "Front print fan?"
-"Ventola di stampa frontale?"
+"Ventola frontale?"
 
 #MSG_BED_CORRECTION_FRONT c=14 r=1
 "Front side[um]"
@@ -388,11 +440,11 @@
 
 #MSG_HEATING_COMPLETE c=20 r=0
 "Heating done."
-"Riscald. completo"
+"Riscald. completo."
 
 #MSG_HEATING c=0 r=0
 "Heating"
-"Riscaldamento..."
+"Riscaldamento"
 
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
@@ -420,7 +472,7 @@
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
-"Verifica piano"
+"Verifica piano     "
 
 #MSG_SELFTEST_CHECK_ENDSTOPS c=20 r=0
 "Checking endstops"
@@ -428,31 +480,39 @@
 
 #MSG_SELFTEST_CHECK_HOTEND c=20 r=0
 "Checking hotend  "
-"Verifica ugello"
+"Verifica ugello  "
 
 #MSG_SELFTEST_CHECK_FSENSOR c=20 r=0
 "Checking sensors "
-"Controllo sensori"
+"Controllo sensori "
 
 #MSG_SELFTEST_CHECK_X c=20 r=0
 "Checking X axis  "
-"Verifica asse X"
+"Verifica asse X  "
 
 #MSG_SELFTEST_CHECK_Y c=20 r=0
 "Checking Y axis  "
-"Verifica asse Y"
+"Verifica asse Y  "
 
 #MSG_SELFTEST_CHECK_Z c=20 r=0
 "Checking Z axis  "
-"Verifica asse Z"
+"Verifica asse Z  "
 
 #MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
 "checksum mismatch, Last Line: "
-"\x00"
+"mancata corrispondenza di checksum, ultima riga: "
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
 "Seleziona estrusore:"
+
+#MSG_CHOOSE_FILAMENT c=20 r=1
+"Choose filament:"
+"Seleziona filamento:"
+
+#MSG_FILAMENT c=17 r=1
+"Filament"
+"Filamento"
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
@@ -468,7 +528,7 @@
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Improving bed calibration point"
-"Perfezion. il letto punto di calibraz."
+"Perfezion. punto di calibraz. letto"
 
 #MSG_WATCH c=0 r=0
 "Info screen"
@@ -476,19 +536,19 @@
 
 #MSG_FILAMENT_LOADING_T0 c=20 r=4
 "Insert filament into extruder 1. Click when done."
-"Inserire filamento nell'estrusore 1. Click per continuare."
+"Inserire filamento nell'estrusore 1. Click per continuare"
 
 #MSG_FILAMENT_LOADING_T1 c=20 r=4
 "Insert filament into extruder 2. Click when done."
-"Inserire filamento nell'estrusore 2. Clicca per continuare."
+"Inserire filamento nell'estrusore 2. Click per continuare"
 
 #MSG_FILAMENT_LOADING_T2 c=20 r=4
 "Insert filament into extruder 3. Click when done."
-"Inserire filamento nell'estrusore 3. Click per continuare."
+"Inserire filamento nell'estrusore 3. Click per continuare"
 
 #MSG_FILAMENT_LOADING_T3 c=20 r=4
 "Insert filament into extruder 4. Click when done."
-"Inserire filamento nell'estrusore 4. Clicca per continuare."
+"Inserire filamento nell'estrusore 4. Click per continuare"
 
 #MSG_INSERT_FILAMENT c=20 r=0
 "Insert filament"
@@ -508,15 +568,15 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"La piastra d'acciaio si trova sul piano riscaldato?"
+"La piastra d'acciaio e sul piano riscaldato?"
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 "Iteration "
-"Iterazione"
+"Iterazione "
 
 #MSG_KILLED c=0 r=0
 "KILLED. "
-"IN TILT."
+"IN TILT. "
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
@@ -525,6 +585,10 @@
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
 "Lato sinistro [um]"
+
+#
+"Lin. correction"
+"\x00"
 
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
@@ -548,15 +612,15 @@
 
 #MSG_M104_INVALID_EXTRUDER c=0 r=0
 "M104 Invalid extruder "
-"M104 Estrusore non valido"
+"M104 Estrusore non valido "
 
 #MSG_M105_INVALID_EXTRUDER c=0 r=0
 "M105 Invalid extruder "
-"M105 Estrusore non valido"
+"M105 Estrusore non valido "
 
 #MSG_M109_INVALID_EXTRUDER c=0 r=0
 "M109 Invalid extruder "
-"M109 Estrusore non valido"
+"M109 Estrusore non valido "
 
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
@@ -564,15 +628,15 @@
 
 #MSG_M200_INVALID_EXTRUDER c=0 r=0
 "M200 Invalid extruder "
-"\x00"
+"M200 Estrusore non valido "
 
 #MSG_M218_INVALID_EXTRUDER c=0 r=0
 "M218 Invalid extruder "
-"M218 Estrusore non valido"
+"M218 Estrusore non valido "
 
 #MSG_M221_INVALID_EXTRUDER c=0 r=0
 "M221 Invalid extruder "
-"M221 Estrusore non valido"
+"M221 Estrusore non valido "
 
 #MSG_MAIN c=0 r=0
 "Main"
@@ -580,15 +644,31 @@
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60 r=0
 "Measuring reference height of calibration point"
-"Misurando altezza di riferimento del punto di calibrazione"
+"Misura altezza di rif. del punto di calib."
 
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
 "Mesh livel. letto"
 
+#MSG_MMU_NEEDS_ATTENTION c=20 r=4
+"MMU needs user attention. Fix the issue and then press button on MMU unit."
+"MMU richiede l'attenzione dell'utente. Risolvi il problema e quindi premi il bottone sull'unita MMU."
+
+#MSG_MMU_OK_RESUMING_POSITION c=20 r=4
+"MMU OK. Resuming position..."
+"MMU OK. riprendendo la posizione..."
+
+#MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
+"MMU OK. Resuming temperature..."
+"MMU OK. Ripristino temperatura..."
+
+#MSG_MMU_OK_RESUMING c=20 r=4
+"MMU OK. Resuming..."
+"MMU OK. Riprendendo..."
+
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Modo [normale]"
+"Modo    [normale]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
@@ -604,7 +684,7 @@
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Mode [forte]"
+"Mode      [forte]"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -628,7 +708,7 @@
 
 #MSG_ERR_NO_CHECKSUM c=0 r=0
 "No Checksum with line number, Last Line: "
-"\x00"
+"Nessun checksum con numero di riga, ultima riga: "
 
 #MSG_NO_MOVE c=0 r=0
 "No move."
@@ -648,7 +728,7 @@
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
-"Non si gira"
+"Non gira"
 
 #MSG_WIZARD_V2_CAL c=20 r=8
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
@@ -668,7 +748,7 @@
 
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
-"Sono state trovate impostazioni vecchie. I valori di default di PID, Esteps etc. saranno impostati"
+"Sono state trovate impostazioni vecchie. I valori di default di PID, Esteps etc. saranno impostati."
 
 #MSG_SD_OPEN_FILE_FAIL c=0 r=0
 "open failed, File: "
@@ -680,7 +760,7 @@
 
 #MSG_SD_OPENROOT_FAIL c=0 r=0
 "openRoot failed"
-"\x00"
+"openRoot fallito"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -688,7 +768,7 @@
 
 #MSG_PID_RUNNING c=20 r=1
 "PID cal.           "
-"Calibrazione PID"
+"Calibrazione PID.           "
 
 #MSG_PID_FINISHED c=20 r=1
 "PID cal. finished"
@@ -704,7 +784,7 @@
 
 #MSG_PAPER c=20 r=8
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
-"Porre un foglio sotto l'ugello durante la calibrazione dei primi 4 punti. In caso l'ugello muova il foglio spegnere prontamente la stampante."
+"Posizionare un foglio sotto l'ugello durante la calibrazione dei primi 4 punti. In caso l'ugello muova il foglio spegnere subito la stampante."
 
 #MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 "Please clean heatbed and then press the knob."
@@ -736,7 +816,7 @@
 
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
-"aprite l'assemblaggio estrusore e rimuovete il filamento manualmente."
+"Aprire la guida filam. e rimuovere il filam. a mano"
 
 #MSG_PLACE_STEEL_SHEET c=20 r=4
 "Please place steel sheet on heatbed."
@@ -744,15 +824,27 @@
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
-"Premete la manopola per scaricare il filamento "
+"Premete la manopola per scaricare il filamento"
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
-"Tirate fuori il filamento immediatamente"
+"Estrarre il filamento immediatamente"
+
+#MSG_EJECT_REMOVE c=20 r=4
+"Please remove filament and then press the knob."
+"Rimuovi il filamento e quindi premi la manopola."
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
-"Rimuovete la piastra di acciaio dal piano riscaldato"
+"Rimuovete la piastra di acciaio dal piano riscaldato."
+
+#MSG_RUN_XYZ c=20 r=4
+"Please run XYZ calibration first."
+"Esegui la calibrazione XYZ prima."
+
+#MSG_UPDATE_MMU2_FW c=20 r=4
+"Please update firmware in your MMU2. Waiting for reset."
+"Aggiorna il firmware sul tuo MMU2. In attesa di reset."
 
 #MSG_PLEASE_WAIT c=20 r=0
 "Please wait"
@@ -764,7 +856,7 @@
 
 #MSG_PREHEAT_NOZZLE c=20 r=0
 "Preheat the nozzle!"
-"Preris. ugello!"
+"Prerisc. ugello!"
 
 #MSG_PREHEAT c=0 r=0
 "Preheat"
@@ -796,7 +888,7 @@
 
 #MSG_ERR_KILLED c=0 r=0
 "Printer halted. kill() called!"
-"\x00"
+"Stampante ferma. kill () chiamato!"
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
@@ -805,6 +897,10 @@
 #MSG_ERR_STOPPED c=0 r=0
 "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
 "La stampante si e fermata a causa di errori. Correggete l'errore e usate M999 per riavviare. (La temperatura viene resettate. Impostatela dopo il riavvio)"
+
+#WELCOME_MSG c=20 r=0
+"Prusa i3 MK2.5 ready."
+"Prusa i3 MK2.5 pronta"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK3 ready."
@@ -820,15 +916,19 @@
 
 #MSG_RECOVERING_PRINT c=20 r=1
 "Recovering print    "
-"Recupero stampa"
+"Recupero stampa    "
+
+#MSG_REMOVE_OLD_FILAMENT c=20 r=4
+"Remove old filament and press the knob to start loading new filament."
+"Rimuovi il filamento precedente e premi la manopola per caricare il nuovo filamento."
 
 #MSG_M119_REPORT c=0 r=0
 "Reporting endstop status"
-"\x00"
+"Segnalazione dello stato finecorsa"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
-"\x00"
+"Reset calibrazione XYZ."
 
 #MSG_BED_CORRECTION_RESET c=0 r=0
 "Reset"
@@ -848,11 +948,11 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"Porta RPi [on]"
+"Porta RPi    [on]"
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"Porta RPi [off]"
+"Porta RPi   [off]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -860,15 +960,15 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 "SD card  [normal]"
-"Memoria SD [normale]"
+"Mem. SD [normale]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [FlshAir]"
-"Memoria SD [FlshAir]"
+"Mem. SD[FlashAir]"
 
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
-"\x00"
+"Memoria SD ok"
 
 #MSG_SD_INIT_FAIL c=0 r=0
 "SD init fail"
@@ -876,7 +976,7 @@
 
 #MSG_SD_PRINTING_BYTE c=0 r=0
 "SD printing byte "
-"\x00"
+"SD stampa byte "
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -892,11 +992,11 @@
 
 #MSG_SELFTEST_START c=20 r=0
 "Self test start  "
-"Avvia autotest"
+"Avvia autotest  "
 
 #MSG_SELFTEST c=0 r=0
 "Selftest         "
-"Autotest"
+"Autotest         "
 
 #MSG_SELFTEST_ERROR c=0 r=0
 "Selftest error !"
@@ -904,11 +1004,11 @@
 
 #MSG_SELFTEST_FAILED c=20 r=0
 "Selftest failed  "
-"Autotest fallito"
+"Autotest fallito  "
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
-"Verra effettuato un self test per calibrare l'homing senza sensori"
+"Verra effettuato un self test per calibrare l'homing senza sensori."
 
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
@@ -922,6 +1022,10 @@
 "Show end stops"
 "Stato finecorsa"
 
+#
+"Show pinda state"
+"\x00"
+
 #MSG_DWELL c=0 r=0
 "Sleep..."
 "Sospensione..."
@@ -931,20 +1035,36 @@
 "Alcuni file non saranno ordinati. Il numero massimo di file in una cartella e 100 perche siano ordinati."
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [None]"
+"Sort:      [none]"
 "Ordine: [Nessuno]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [Time]"
-"Ordine: [Tempo]"
+"Sort:      [time]"
+"Ordine:   [Tempo]"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [Alphabet]"
-"Ordine: [Alfabetico]"
+"Sort:  [alphabet]"
+"Ordine:[Alfabet.]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
 "Ordinando i file"
+
+#MSG_SOUND_LOUD c=17 r=1
+"Sound      [loud]"
+"Suono     [forte]"
+
+#MSG_SOUND_MUTE c=17 r=1
+"Sound      [mute]"
+"Suono      [mute]"
+
+#MSG_SOUND_ONCE c=17 r=1
+"Sound      [once]"
+"Suono   [singolo]"
+
+#MSG_SOUND_SILENT c=17 r=1
+"Sound    [silent]"
+"Suono[silenzioso]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -956,11 +1076,11 @@
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
-"Sono necessari una temperatura ambiente di 21-26C e una superficie rigida "
+"Sono necessari una temperatura ambiente di 21-26C e una superficie rigida."
 
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
-"Statistiche"
+"Statistiche  "
 
 #MSG_STEPPER_TOO_HIGH c=0 r=0
 "Steprate too high: "
@@ -972,7 +1092,7 @@
 
 #MSG_STOPPED c=0 r=0
 "STOPPED. "
-"ARRESTATO."
+"ARRESTATO. "
 
 #MSG_SUPPORT c=0 r=0
 "Support"
@@ -992,7 +1112,7 @@
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Calib. temp. [OFF]"
+"Calib. temp.[OFF]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1014,6 +1134,18 @@
 "Temperatures"
 "Temperature"
 
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+"There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
+"E ancora necessario effettuare la calibrazione Z. Segui il manuale, capitolo Primi Passi, sezione Sequenza di Calibrazione."
+
+#
+"Total filament"
+"\x00"
+
+#
+"Total print time"
+"\x00"
+
 #MSG_ENDSTOP_HIT c=0 r=0
 "TRIGGERED"
 "ATTIVATO"
@@ -1024,7 +1156,7 @@
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
-"Scarica filamento"
+"Scarica filam."
 
 #MSG_UNLOADING_FILAMENT c=20 r=1
 "Unloading filament"
@@ -1040,7 +1172,7 @@
 
 #MSG_SD_VOL_INIT_FAIL c=0 r=0
 "volume.init failed"
-"\x00"
+"volume.init fallito"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."
@@ -1060,7 +1192,7 @@
 
 #MSG_CHANGED_MOTHERBOARD c=20 r=4
 "Warning: motherboard type changed."
-"Avviso: tipo di scheda madre cambiato"
+"Avviso: tipo di scheda madre cambiato."
 
 #MSG_CHANGED_PRINTER c=20 r=4
 "Warning: printer type changed."
@@ -1080,7 +1212,7 @@
 
 #MSG_SD_WORKDIR_FAIL c=0 r=0
 "workDir open failed"
-"\x00"
+"workDir open fallito"
 
 #MSG_SD_WRITE_TO_FILE c=0 r=0
 "Writing to file: "
@@ -1102,3 +1234,54 @@
 "You can always resume the Wizard from Calibration -> Wizard."
 "E possibile riprendere il Wizard in qualsiasi momento attraverso Calibrazione -> Wizard."
 
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+"XYZ calibration all right. Skew will be corrected automatically."
+"Calibrazion XYZ corretta. La distorsione verra' automaticamente compensata."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"Calibrazion XYZ corretta. Assi X/Y leggermente storti. Ben fatto!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari. Complimenti!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+"XYZ calibration compromised. Front calibration points not reachable."
+"Calibrazione XYZ compromessa. Punti anteriori non raggiungibili."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+"XYZ calibration compromised. Right front calibration point not reachable."
+"Calibrazione XYZ compromessa. Punto anteriore destro non raggiungibile."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+"XYZ calibration compromised. Left front calibration point not reachable."
+"Calibrazione XYZ compromessa. Punto anteriore sinistro non raggiungibile."
+
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+"Caricare tutti"
+
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+"Caricare fil. 1"
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+"Caricare fil. 2"
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+"Caricare fil. 3"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+"Caricare fil. 4"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+"Caricare fil. 5"
+
+#MSG_OFF c=0 r=0
+" [off]"
+" [OFF]"

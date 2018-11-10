@@ -1,8 +1,9 @@
 //adc.c
 
 #include "adc.h"
+#include <stdio.h>
 #include <avr/io.h>
-
+#include <avr/pgmspace.h>
 
 uint8_t adc_state;
 uint8_t adc_count;
@@ -17,7 +18,7 @@ uint16_t adc_sim_mask;
 
 void adc_init(void)
 {
-	printf(("adc_init\n"));
+	printf_P(PSTR("adc_init\n"));
 	adc_sim_mask = 0x00;
 	ADCSRA |= (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 	ADMUX |= (1 << REFS0);

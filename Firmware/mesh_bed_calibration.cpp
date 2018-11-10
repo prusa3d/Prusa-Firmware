@@ -2204,12 +2204,13 @@ BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level
 		// Don't let the manage_inactivity() function remove power from the motors.
 		refresh_cmd_timeout();
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-		lcd_implementation_print_at(0, next_line, k + 1);
-		lcd_printPGM(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
+		lcd_set_cursor(0, next_line);
+		lcd_print(k + 1);
+		lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 
 		if (iteration > 0) {
-			lcd_print_at_PGM(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
-			lcd_implementation_print(int(iteration + 1));
+			lcd_puts_at_P(0, next_line + 1, _i("Iteration "));////MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
+			lcd_print(int(iteration + 1));
 		}
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		float *pt = pts + k * 2;
@@ -2478,8 +2479,8 @@ BedSkewOffsetDetectionResultType improve_bed_offset_and_skew(int8_t method, int8
         refresh_cmd_timeout();
         // Print the decrasing ID of the measurement point.
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
-        lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
+        lcd_print_at(0, next_line, mesh_point+1);
+        lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));////MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
         // Move up.
@@ -2782,8 +2783,9 @@ bool sample_mesh_and_store_reference()
     if (next_line > 3)
         next_line = 3;
     // display "point xx of yy"
-    lcd_implementation_print_at(0, next_line, 1);
-    lcd_printPGM(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
+	lcd_set_cursor(0, next_line);
+    lcd_print(1);
+    lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 
     // Sample Z heights for the mesh bed leveling.
@@ -2828,8 +2830,9 @@ bool sample_mesh_and_store_reference()
         go_to_current(homing_feedrate[X_AXIS]/60);
 #ifdef MESH_BED_CALIBRATION_SHOW_LCD
         // display "point xx of yy"
-        lcd_implementation_print_at(0, next_line, mesh_point+1);
-        lcd_printPGM(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
+		lcd_set_cursor(0, next_line);
+        lcd_print(mesh_point+1);
+        lcd_puts_P(_T(MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2));
 #endif /* MESH_BED_CALIBRATION_SHOW_LCD */
 		if (!find_bed_induction_sensor_point_z()) //Z crash or deviation > 50um
 		{
@@ -2845,11 +2848,11 @@ bool sample_mesh_and_store_reference()
     {
         // Verify the span of the Z values.
         float zmin = mbl.z_values[0][0];
-        float zmax = zmax;
+        float zmax = zmin;
         for (int8_t j = 0; j < 3; ++ j)
            for (int8_t i = 0; i < 3; ++ i) {
                 zmin = min(zmin, mbl.z_values[j][i]);
-                zmax = min(zmax, mbl.z_values[j][i]);
+                zmax = max(zmax, mbl.z_values[j][i]);
            }
         if (zmax - zmin > 3.f) {
             // The span of the Z offsets is extreme. Give up.
@@ -2981,13 +2984,14 @@ static int babystepLoadZ = 0;
 
 void babystep_load()
 {
+	babystepLoadZ = 0;
     // Apply Z height correction aka baby stepping before mesh bed leveling gets activated.
-    if(calibration_status() < CALIBRATION_STATUS_LIVE_ADJUST)
+    if (calibration_status() < CALIBRATION_STATUS_LIVE_ADJUST)
     {
         check_babystep(); //checking if babystep is in allowed range, otherwise setting babystep to 0
         
         // End of G80: Apply the baby stepping value.
-        EEPROM_read_B(EEPROM_BABYSTEP_Z,&babystepLoadZ);
+        EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystepLoadZ);
                             
     #if 0
         SERIAL_ECHO("Z baby step: ");
@@ -3023,7 +3027,7 @@ void babystep_undo()
 
 void babystep_reset()
 {
-      babystepLoadZ = 0;    
+	babystepLoadZ = 0;    
 }
 
 void count_xyz_details(float (&distanceMin)[2]) {

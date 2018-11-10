@@ -63,7 +63,7 @@ uint8_t lang_select(uint8_t lang)
 			if (lang_check(_SEC_LANG_TABLE))
 				if (pgm_read_dword(((uint32_t*)(_SEC_LANG_TABLE + 12))) == pgm_read_dword(((uint32_t*)(_PRI_LANG_SIGNATURE)))) //signature valid
 				{
-					lang_table = _SEC_LANG_TABLE; // set table pointer
+					lang_table = (lang_table_t*)(_SEC_LANG_TABLE); // set table pointer
 					lang_selected = lang; // set language id
 				}
 		}
@@ -138,7 +138,7 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 	if (lang == LANG_ID_SEC)
 	{
 		uint16_t ui = _SEC_LANG_TABLE; //table pointer
-		memcpy_P(header, ui, sizeof(lang_table_header_t)); //read table header from progmem
+		memcpy_P(header, (lang_table_t*)(_SEC_LANG_TABLE), sizeof(lang_table_header_t)); //read table header from progmem
 		if (offset) *offset = ui;
 		return (header->magic == LANG_MAGIC)?1:0; //return 1 if magic valid
 	}
@@ -147,13 +147,12 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 	lang--;
 	while (1)
 	{
-		w25x20cl_rd_data(addr, header, sizeof(lang_table_header_t)); //read table header from xflash
+		w25x20cl_rd_data(addr, (uint8_t*)(header), sizeof(lang_table_header_t)); //read table header from xflash
 		if (header->magic != LANG_MAGIC) break; //break if not valid
 		if (offset) *offset = addr;
 		if (--lang == 0) return 1;
 		addr += header->size; //calc address of next table
 	}
-	return 0;
 #else //W25X20CL
 	if (lang == LANG_ID_SEC)
 	{
@@ -163,6 +162,7 @@ uint8_t lang_get_header(uint8_t lang, lang_table_header_t* header, uint32_t* off
 		return (header->magic == LANG_MAGIC)?1:0; //return 1 if magic valid
 	}
 #endif //W25X20CL
+	return 0;
 }
 
 uint16_t lang_get_code(uint8_t lang)
@@ -187,11 +187,13 @@ uint16_t lang_get_code(uint8_t lang)
 		addr += header.size; //calc address of next table
 	}
 #else //W25X20CL
-	if (lang == LANG_ID_SEC)
+	uint16_t table = _SEC_LANG_TABLE;
+	uint8_t count = 1; //count = 1 (primary)
+	while (pgm_read_dword((uint32_t*)table) == LANG_MAGIC) //magic valid
 	{
-		uint16_t ui = _SEC_LANG_TABLE; //table pointer
-		if (pgm_read_dword(((uint32_t*)(ui + 0))) == LANG_MAGIC) //magic num is OK
-			return pgm_read_word(((uint16_t*)(ui + 10))); //read language code
+		if (count == lang) return pgm_read_word(((uint16_t*)(table + 10))); //read language code
+		table += pgm_read_word((uint16_t*)(table + 4));
+		count++;
 	}
 #endif //W25X20CL
 	return LANG_CODE_XX;
@@ -205,6 +207,7 @@ const char* lang_get_name_by_code(uint16_t code)
 	case LANG_CODE_CZ: return _n("Cestina");
 	case LANG_CODE_DE: return _n("Deutsch");
 	case LANG_CODE_ES: return _n("Espanol");
+	case LANG_CODE_FR: return _n("Francais");
 	case LANG_CODE_IT: return _n("Italiano");
 	case LANG_CODE_PL: return _n("Polski");
 	}

@@ -7,8 +7,8 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.3.1"
-#define FW_COMMIT_NR   845
+#define FW_VERSION "3.4.2"
+#define FW_COMMIT_NR   1360
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
@@ -44,177 +44,8 @@
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
-// The total size of the EEPROM is
-// 4096 for the Atmega2560
-#define EEPROM_TOP 4096
-#define EEPROM_SILENT 4095
-#define EEPROM_LANG 4094
-#define EEPROM_BABYSTEP_X 4092
-#define EEPROM_BABYSTEP_Y 4090
-#define EEPROM_BABYSTEP_Z 4088
-#define EEPROM_CALIBRATION_STATUS 4087
-#define EEPROM_BABYSTEP_Z0 4085
-#define EEPROM_FILAMENTUSED 4081
-// uint32_t
-#define EEPROM_TOTALTIME 4077
 
-#define EEPROM_BED_CALIBRATION_CENTER     (EEPROM_TOTALTIME-2*4)
-#define EEPROM_BED_CALIBRATION_VEC_X      (EEPROM_BED_CALIBRATION_CENTER-2*4)
-#define EEPROM_BED_CALIBRATION_VEC_Y      (EEPROM_BED_CALIBRATION_VEC_X-2*4)
-
-// Offsets of the Z heiths of the calibration points from the first point.
-// The offsets are saved as 16bit signed int, scaled to tenths of microns.
-#define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
-#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-1)
-#define EEPROM_FARM_NUMBER (EEPROM_FARM_MODE-3)
-
-// Correction of the bed leveling, in micrometers.
-// Maximum 50 micrometers allowed.
-// Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
-#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
-#define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
-#define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
-#define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
-#define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
-#define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
-#define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1)
-#define EEPROM_PROBE_TEMP_SHIFT (EEPROM_PRINT_FLAG - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
-#define EEPROM_TEMP_CAL_ACTIVE (EEPROM_PROBE_TEMP_SHIFT - 1)
-#define EEPROM_BOWDEN_LENGTH (EEPROM_TEMP_CAL_ACTIVE - 2*4) //4 x int for bowden lengths for multimaterial
-#define EEPROM_CALIBRATION_STATUS_PINDA (EEPROM_BOWDEN_LENGTH - 1) //0 - not calibrated; 1 - calibrated
-#define EEPROM_UVLO						(EEPROM_CALIBRATION_STATUS_PINDA - 1) //1 - uvlo during print
-#define EEPROM_UVLO_CURRENT_POSITION	(EEPROM_UVLO-2*4) // 2 x float for current_position in X and Y axes
-#define EEPROM_FILENAME (EEPROM_UVLO_CURRENT_POSITION - 8) //8chars to store filename without extension
-#define EEPROM_FILE_POSITION (EEPROM_FILENAME - 4) //32 bit for uint32_t file position 
-#define EEPROM_UVLO_CURRENT_POSITION_Z	(EEPROM_FILE_POSITION - 4) //float for current position in Z
-#define EEPROM_UVLO_TARGET_HOTEND		(EEPROM_UVLO_CURRENT_POSITION_Z - 1)
-#define EEPROM_UVLO_TARGET_BED			(EEPROM_UVLO_TARGET_HOTEND - 1)
-#define EEPROM_UVLO_FEEDRATE			(EEPROM_UVLO_TARGET_BED - 2)
-#define EEPROM_UVLO_FAN_SPEED			(EEPROM_UVLO_FEEDRATE - 1) 
-#define EEPROM_FAN_CHECK_ENABLED		(EEPROM_UVLO_FAN_SPEED - 1)
-#define EEPROM_UVLO_MESH_BED_LEVELING     (EEPROM_FAN_CHECK_ENABLED - 9*2)
-
-#define EEPROM_UVLO_Z_MICROSTEPS     (EEPROM_UVLO_MESH_BED_LEVELING - 2)
-#define EEPROM_UVLO_E_ABS            (EEPROM_UVLO_Z_MICROSTEPS - 1)
-#define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4)                 //float for current position in E
-
-// Crash detection mode EEPROM setting 
-#define EEPROM_CRASH_DET         (EEPROM_UVLO_CURRENT_POSITION_E - 5)           // float (orig EEPROM_UVLO_MESH_BED_LEVELING-12) 
-// Crash detection counter Y (last print)
-#define EEPROM_CRASH_COUNT_Y       (EEPROM_CRASH_DET - 1)                       // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-15)
-// Filament sensor on/off EEPROM setting 
-#define EEPROM_FSENSOR           (EEPROM_CRASH_COUNT_Y - 1)                     // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-14) 
-// Crash detection counter X (last print)
-#define EEPROM_CRASH_COUNT_X       (EEPROM_FSENSOR - 1)                         // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-15)
-// Filament runout/error coutner (last print)
-#define EEPROM_FERROR_COUNT      (EEPROM_CRASH_COUNT_X - 1)                     // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-16)
-// Power loss errors (last print)
-#define EEPROM_POWER_COUNT       (EEPROM_FERROR_COUNT - 1)                      // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-17)
-
-#define EEPROM_XYZ_CAL_SKEW (EEPROM_POWER_COUNT - 4)                            // float for skew backup
-#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
-#define EEPROM_BELTSTATUS_X (EEPROM_WIZARD_ACTIVE - 2)                          // uint16
-#define EEPROM_BELTSTATUS_Y (EEPROM_BELTSTATUS_X - 2)                           // uint16
-
-#define EEPROM_DIR_DEPTH        (EEPROM_BELTSTATUS_Y-1)
-#define EEPROM_DIRS  (EEPROM_DIR_DEPTH-80) //8 chars for each dir name, max 10 levels
-#define EEPROM_SD_SORT (EEPROM_DIRS - 1) //0 -time, 1-alpha, 2-none
-#define EEPROM_SECOND_SERIAL_ACTIVE (EEPROM_SD_SORT - 1)
-
-#define EEPROM_FSENS_AUTOLOAD_ENABLED (EEPROM_SECOND_SERIAL_ACTIVE - 1)
-
-// Crash detection counter X (total)
-#define EEPROM_CRASH_COUNT_X_TOT       (EEPROM_FSENS_AUTOLOAD_ENABLED - 2)     // uint16
-// Crash detection counter Y (total)
-#define EEPROM_CRASH_COUNT_Y_TOT       (EEPROM_CRASH_COUNT_X_TOT - 2)          // uint16
-// Filament runout/error coutner (total)
-#define EEPROM_FERROR_COUNT_TOT      (EEPROM_CRASH_COUNT_Y_TOT - 2)            // uint16
-// Power loss errors (total)
-#define EEPROM_POWER_COUNT_TOT       (EEPROM_FERROR_COUNT_TOT - 2)             // uint16
-
-////////////////////////////////////////
-// TMC2130 Accurate sensorless homing 
-
-// X-axis home origin (stepper phase in microsteps, 0..63 for 16ustep resolution)
-#define EEPROM_TMC2130_HOME_X_ORIGIN           (EEPROM_POWER_COUNT_TOT - 1)                    // uint8
-// X-axis home bsteps (number of microsteps backward)
-#define EEPROM_TMC2130_HOME_X_BSTEPS           (EEPROM_TMC2130_HOME_X_ORIGIN - 1)              // uint8
-// X-axis home fsteps (number of microsteps forward)
-#define EEPROM_TMC2130_HOME_X_FSTEPS           (EEPROM_TMC2130_HOME_X_BSTEPS - 1)              // uint8
-// Y-axis home origin (stepper phase in microsteps, 0..63 for 16ustep resolution)
-#define EEPROM_TMC2130_HOME_Y_ORIGIN           (EEPROM_TMC2130_HOME_X_FSTEPS - 1)              // uint8
-// X-axis home bsteps (number of microsteps backward)
-#define EEPROM_TMC2130_HOME_Y_BSTEPS           (EEPROM_TMC2130_HOME_Y_ORIGIN - 1)              // uint8
-// X-axis home fsteps (number of microsteps forward)
-#define EEPROM_TMC2130_HOME_Y_FSTEPS           (EEPROM_TMC2130_HOME_Y_BSTEPS - 1)              // uint8
-// Accurate homing enabled
-#define EEPROM_TMC2130_HOME_ENABLED            (EEPROM_TMC2130_HOME_Y_FSTEPS - 1)              // uint8
-
-
-////////////////////////////////////////
-// TMC2130 uStep linearity correction
-
-// Linearity correction factor (XYZE)
-#define EEPROM_TMC2130_WAVE_X_FAC              (EEPROM_TMC2130_HOME_ENABLED - 1)               // uint8
-#define EEPROM_TMC2130_WAVE_Y_FAC              (EEPROM_TMC2130_WAVE_X_FAC - 1)                 // uint8
-#define EEPROM_TMC2130_WAVE_Z_FAC              (EEPROM_TMC2130_WAVE_Y_FAC - 1)                 // uint8
-#define EEPROM_TMC2130_WAVE_E_FAC              (EEPROM_TMC2130_WAVE_Z_FAC - 1)                 // uint8
-
-
-////////////////////////////////////////
-// TMC2130 uStep resolution
-
-// microstep resolution (XYZE): usteps = (256 >> mres)
-#define EEPROM_TMC2130_X_MRES              (EEPROM_TMC2130_WAVE_E_FAC - 1)                     // uint8
-#define EEPROM_TMC2130_Y_MRES              (EEPROM_TMC2130_X_MRES - 1)                         // uint8
-#define EEPROM_TMC2130_Z_MRES              (EEPROM_TMC2130_Y_MRES - 1)                         // uint8
-#define EEPROM_TMC2130_E_MRES              (EEPROM_TMC2130_Z_MRES - 1)                         // uint8
-
-// HW
-#define EEPROM_PRINTER_TYPE          (EEPROM_TMC2130_E_MRES - 2)                               // uint16
-#define EEPROM_BOARD_TYPE            (EEPROM_PRINTER_TYPE - 2)                                 // uint16
-
-// Extruder multiplier for power panic
-#define EEPROM_EXTRUDER_MULTIPLIER_0 (EEPROM_BOARD_TYPE - 4)                                   //float
-#define EEPROM_EXTRUDER_MULTIPLIER_1 (EEPROM_EXTRUDER_MULTIPLIER_0 - 4)                        //float
-#define EEPROM_EXTRUDER_MULTIPLIER_2 (EEPROM_EXTRUDER_MULTIPLIER_1 - 4)                        //float
-#define EEPROM_EXTRUDEMULTIPLY (EEPROM_EXTRUDER_MULTIPLIER_2 - 2)                              // uint16
-
-
-//TMC2130 configuration
-#define EEPROM_TMC_AXIS_SIZE  //axis configuration block size
-#define EEPROM_TMC_X (EEPROM_TMC + 0 * EEPROM_TMC_AXIS_SIZE) //X axis configuration blok
-#define EEPROM_TMC_Y (EEPROM_TMC + 1 * EEPROM_TMC_AXIS_SIZE) //Y axis
-#define EEPROM_TMC_Z (EEPROM_TMC + 2 * EEPROM_TMC_AXIS_SIZE) //Z axis
-#define EEPROM_TMC_E (EEPROM_TMC + 3 * EEPROM_TMC_AXIS_SIZE) //E axis
-//TMC2130 - X axis
-#define EEPROM_TMC_X_USTEPS_INTPOL   (EEPROM_TMC_X +  0) // 1byte, bit 0..4 USTEPS, bit 7 INTPOL
-#define EEPROM_TMC_X_PWM_AMPL        (EEPROM_TMC_X +  1) // 1byte (0..255)
-#define EEPROM_TMC_X_PWM_GRAD_FREQ   (EEPROM_TMC_X +  2) // 1byte, bit 0..3 GRAD, bit 4..5 FREQ
-#define EEPROM_TMC_X_TCOOLTHRS       (EEPROM_TMC_X +  3) // 2bytes (0..)
-#define EEPROM_TMC_X_SG_THRS         (EEPROM_TMC_X +  5) // 1byte, (-64..+63)
-#define EEPROM_TMC_X_CURRENT_H       (EEPROM_TMC_X +  6) // 1byte, (0..63)
-#define EEPROM_TMC_X_CURRENT_R       (EEPROM_TMC_X +  7) // 1byte, (0..63)
-#define EEPROM_TMC_X_HOME_SG_THRS    (EEPROM_TMC_X +  8) // 1byte, (-64..+63)
-#define EEPROM_TMC_X_HOME_CURRENT_R  (EEPROM_TMC_X +  9) // 1byte, (-64..+63)
-#define EEPROM_TMC_X_HOME_DTCOOLTHRS (EEPROM_TMC_X + 10) // 1byte (-128..+127)
-#define EEPROM_TMC_X_DTCOOLTHRS_LOW  (EEPROM_TMC_X + 11) // 1byte (-128..+127)
-#define EEPROM_TMC_X_DTCOOLTHRS_HIGH (EEPROM_TMC_X + 12) // 1byte (-128..+127)
-#define EEPROM_TMC_X_SG_THRS_LOW     (EEPROM_TMC_X + 13) // 1byte, (-64..+63)
-#define EEPROM_TMC_X_SG_THRS_HIGH    (EEPROM_TMC_X + 14) // 1byte, (-64..+63)
-
-// Currently running firmware, each digit stored as uint16_t.
-// The flavor differentiates a dev, alpha, beta, release candidate or a release version.
-#define EEPROM_FIRMWARE_VERSION_END       (FW_PRUSA3D_MAGIC_LEN+8)
-#define EEPROM_FIRMWARE_VERSION_FLAVOR    (FW_PRUSA3D_MAGIC_LEN+6)
-#define EEPROM_FIRMWARE_VERSION_REVISION  (FW_PRUSA3D_MAGIC_LEN+4)
-#define EEPROM_FIRMWARE_VERSION_MINOR     (FW_PRUSA3D_MAGIC_LEN+2)
-#define EEPROM_FIRMWARE_VERSION_MAJOR     FW_PRUSA3D_MAGIC_LEN
-// Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
-#define EEPROM_FIRMWARE_PRUSA_MAGIC 0
-
-#define EEPROM_OFFSET 20 //offset for storing settings using M500
-//#define EEPROM_OFFSET 
+#include "eeprom.h"
 
 // This configuration file contains the basic settings.
 // Advanced settings can be found in Configuration_adv.h
@@ -621,154 +452,18 @@ your extruder heater takes 2 minutes to hit the target on heating.
 #define HOST_KEEPALIVE_INTERVAL 2 // Number of seconds between "busy" messages. Set with M113.
 
 //LCD and SD support
-#define ULTRA_LCD  //general LCD support, also 16x2
 #define SDSUPPORT // Enable SD Card Support in Hardware Console
 //#define SDSLOW // Use slower SD transfer mode (not normally needed - uncomment if you're getting volume init error)
 #define SD_CHECK_AND_RETRY // Use CRC checks and retries on the SD communication
 #define ENCODER_PULSES_PER_STEP 4 // Increase if you have a high resolution encoder
-#define ENCODER_STEPS_PER_MENU_ITEM 1 // Set according to ENCODER_PULSES_PER_STEP or your liking
-//#define ULTIMAKERCONTROLLER //as available from the Ultimaker online store.
-//#define ULTIPANEL  //the UltiPanel as on Thingiverse
-//#define LCD_FEEDBACK_FREQUENCY_HZ 1000	// this is the tone frequency the buzzer plays when on UI feedback. ie Screen Click
-//#define LCD_FEEDBACK_FREQUENCY_DURATION_MS 100 // the duration the buzzer plays the UI feedback sound. ie Screen Click
-
-// The MaKr3d Makr-Panel with graphic controller and SD support
-// http://reprap.org/wiki/MaKr3d_MaKrPanel
-//#define MAKRPANEL
+//#define ENCODER_STEPS_PER_MENU_ITEM 1 // Set according to ENCODER_PULSES_PER_STEP or your liking
 
 // The RepRapDiscount Smart Controller (white PCB)
 // http://reprap.org/wiki/RepRapDiscount_Smart_Controller
 #define REPRAP_DISCOUNT_SMART_CONTROLLER
-
-// The GADGETS3D G3D LCD/SD Controller (blue PCB)
-// http://reprap.org/wiki/RAMPS_1.3/1.4_GADGETS3D_Shield_with_Panel
-//#define G3D_PANEL
-
-// The RepRapWorld REPRAPWORLD_KEYPAD v1.1
-// http://reprapworld.com/?products_details&products_id=202&cPath=1591_1626
-//#define REPRAPWORLD_KEYPAD
-//#define REPRAPWORLD_KEYPAD_MOVE_STEP 10.0 // how much should be moved when a key is pressed, eg 10.0 means 10mm per click
-
-// The Elefu RA Board Control Panel
-// http://www.elefu.com/index.php?route=product/product&product_id=53
-// REMEMBER TO INSTALL LiquidCrystal_I2C.h in your ARDUINO library folder: https://github.com/kiyoshigawa/LiquidCrystal_I2C
-//#define RA_CONTROL_PANEL
-
-//automatic expansion
-#if defined (MAKRPANEL)
- #define SDSUPPORT
- #define ULTIPANEL
- #define NEWPANEL
- #define DEFAULT_LCD_CONTRAST 17
-#endif
-
-#if defined(ULTIMAKERCONTROLLER) || defined(REPRAP_DISCOUNT_SMART_CONTROLLER) || defined(G3D_PANEL)
- #define ULTIPANEL
- #define NEWPANEL
-#endif
-
-#if defined(REPRAPWORLD_KEYPAD)
-  #define NEWPANEL
-  #define ULTIPANEL
-#endif
-#if defined(RA_CONTROL_PANEL)
- #define ULTIPANEL
- #define NEWPANEL
- #define LCD_I2C_TYPE_PCA8574
- #define LCD_I2C_ADDRESS 0x27   // I2C Address of the port expander
-#endif
-
-//I2C PANELS
-
-//#define LCD_I2C_SAINSMART_YWROBOT
-#ifdef LCD_I2C_SAINSMART_YWROBOT
-  // This uses the LiquidCrystal_I2C library ( https://bitbucket.org/fmalpartida/new-LiquidCrystal_Prusa/wiki/Home )
-  // Make sure it is placed in the Arduino libraries directory.
-  #define LCD_I2C_TYPE_PCF8575
-  #define LCD_I2C_ADDRESS 0x27   // I2C Address of the port expander
-  #define NEWPANEL
-  #define ULTIPANEL
-#endif
-
-// PANELOLU2 LCD with status LEDs, separate encoder and click inputs
-//#define LCD_I2C_PANELOLU2
-#ifdef LCD_I2C_PANELOLU2
-  // This uses the LiquidTWI2 library v1.2.3 or later ( https://github.com/lincomatic/LiquidTWI2 )
-  // Make sure the LiquidTWI2 directory is placed in the Arduino or Sketchbook libraries subdirectory.
-  // (v1.2.3 no longer requires you to define PANELOLU in the LiquidTWI2.h library header file)
-  // Note: The PANELOLU2 encoder click input can either be directly connected to a pin
-  //       (if BTN_ENC defined to != -1) or read through I2C (when BTN_ENC == -1).
-  #define LCD_I2C_TYPE_MCP23017
-  #define LCD_I2C_ADDRESS 0x20 // I2C Address of the port expander
-  #define LCD_USE_I2C_BUZZER //comment out to disable buzzer on LCD
-  #define NEWPANEL
-  #define ULTIPANEL
-
-  #ifndef ENCODER_PULSES_PER_STEP
-	#define ENCODER_PULSES_PER_STEP 4
-  #endif
-
-  #ifndef ENCODER_STEPS_PER_MENU_ITEM
-	#define ENCODER_STEPS_PER_MENU_ITEM 2
-  #endif
-
-
-  #ifdef LCD_USE_I2C_BUZZER
-	#define LCD_FEEDBACK_FREQUENCY_HZ 1000
-	#define LCD_FEEDBACK_FREQUENCY_DURATION_MS 100
-  #endif
-
-#endif
-
-// Panucatt VIKI LCD with status LEDs, integrated click & L/R/U/P buttons, separate encoder inputs
-//#define LCD_I2C_VIKI
-#ifdef LCD_I2C_VIKI
-  // This uses the LiquidTWI2 library v1.2.3 or later ( https://github.com/lincomatic/LiquidTWI2 )
-  // Make sure the LiquidTWI2 directory is placed in the Arduino or Sketchbook libraries subdirectory.
-  // Note: The pause/stop/resume LCD button pin should be connected to the Arduino
-  //       BTN_ENC pin (or set BTN_ENC to -1 if not used)
-  #define LCD_I2C_TYPE_MCP23017
-  #define LCD_I2C_ADDRESS 0x20 // I2C Address of the port expander
-  #define LCD_USE_I2C_BUZZER //comment out to disable buzzer on LCD (requires LiquidTWI2 v1.2.3 or later)
-  #define NEWPANEL
-  #define ULTIPANEL
-#endif
-
-// Shift register panels
-// ---------------------
-// 2 wire Non-latching LCD SR from:
-// https://bitbucket.org/fmalpartida/new-LiquidCrystal_Prusa/wiki/schematics#!shiftregister-connection 
-
-//#define SAV_3DLCD
-#ifdef SAV_3DLCD
-   #define SR_LCD_2W_NL    // Non latching 2 wire shiftregister
-   #define NEWPANEL
-   #define ULTIPANEL
-#endif
-
-
-#ifdef ULTIPANEL
-//  #define NEWPANEL  //enable this if you have a click-encoder panel
-  #define SDSUPPORT
-  #define ULTRA_LCD
-  #ifdef DOGLCD // Change number of lines to match the DOG graphic display
-    #define LCD_WIDTH 20
-    #define LCD_HEIGHT 5
-  #else
-    #define LCD_WIDTH 20
-    #define LCD_HEIGHT 4
-  #endif
-#else //no panel but just LCD
-  #ifdef ULTRA_LCD
-  #ifdef DOGLCD // Change number of lines to match the 128x64 graphics display
-    #define LCD_WIDTH 20
-    #define LCD_HEIGHT 5
-  #else
-    #define LCD_WIDTH 16
-    #define LCD_HEIGHT 2
-  #endif
-  #endif
-#endif
+#define SDSUPPORT
+#define LCD_WIDTH 20
+#define LCD_HEIGHT 4
 
 
 // Increase the FAN pwm frequency. Removes the PWM noise but increases heating in the FET/Arduino

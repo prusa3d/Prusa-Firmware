@@ -32,6 +32,7 @@ const char MSG_Enqueing[] PROGMEM_I1 = ISTR("enqueing \""); ////c=0 r=0
 const char MSG_ERR_STOPPED[] PROGMEM_I1 = ISTR("Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"); ////c=0 r=0
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////c=0 r=0
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17 r=1
+const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17 r=1
 const char MSG_FAN_SPEED[] PROGMEM_I1 = ISTR("Fan speed"); ////c=14 r=0
 const char MSG_FILAMENT_CLEAN[] PROGMEM_I1 = ISTR("Filament extruding & with correct color?"); ////c=20 r=2
 const char MSG_FILAMENT_LOADING_T0[] PROGMEM_I1 = ISTR("Insert filament into extruder 1. Click when done."); ////c=20 r=4
@@ -43,6 +44,7 @@ const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[] PROGMEM_I1 = ISTR("Searching bed
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2[] PROGMEM_I1 = ISTR(" of 4"); ////c=14 r=0
 const char MSG_FINISHING_MOVEMENTS[] PROGMEM_I1 = ISTR("Finishing movements"); ////c=20 r=1
 const char MSG_FOLLOW_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=8
+const char MSG_FOLLOW_Z_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=8
 const char MSG_FSENS_AUTOLOAD_NA[] PROGMEM_I1 = ISTR("F. autoload [N/A]"); ////c=17 r=1
 const char MSG_FSENSOR_OFF[] PROGMEM_I1 = ISTR("Fil. sensor [off]"); ////c=0 r=0
 const char MSG_FSENSOR_ON[] PROGMEM_I1 = ISTR("Fil. sensor  [on]"); ////c=0 r=0
@@ -50,6 +52,7 @@ const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////c=0 r=0
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20 r=0
 const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////c=0 r=0
 const char MSG_CHOOSE_EXTRUDER[] PROGMEM_I1 = ISTR("Choose extruder:"); ////c=20 r=1
+const char MSG_CHOOSE_FILAMENT[] PROGMEM_I1 = ISTR("Choose filament:"); ////c=20 r=1
 const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); ////c=17 r=0
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////c=20 r=0
 const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal."); ////c=25 r=1
