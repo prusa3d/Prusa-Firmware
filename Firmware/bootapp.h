@@ -28,6 +28,7 @@
 extern "C" {
 #endif //defined(__cplusplus)
 
+extern void bootapp_print_vars(void);
 
 extern void bootapp_ram2flash(uint16_t rptr, uint16_t fptr, uint16_t size);
 

@@ -85,8 +85,8 @@ void sm4_set_dir(uint8_t axis, uint8_t dir)
 
 uint8_t sm4_get_dir_bits(void)
 {
-	uint8_t register dir_bits = 0;
-	uint8_t register portL = PORTL;
+    register uint8_t dir_bits = 0;
+    register uint8_t portL = PORTL;
 	//TODO -optimize in asm
 #if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
 	if (portL & 2) dir_bits |= 1;
@@ -106,7 +106,7 @@ uint8_t sm4_get_dir_bits(void)
 
 void sm4_set_dir_bits(uint8_t dir_bits)
 {
-	uint8_t register portL = PORTL;
+    register uint8_t portL = PORTL;
 	portL &= 0xb8; //set direction bits to zero
 	//TODO -optimize in asm
 #if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
@@ -129,7 +129,7 @@ void sm4_set_dir_bits(uint8_t dir_bits)
 void sm4_do_step(uint8_t axes_mask)
 {
 #if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3) || (MOTHERBOARD == BOARD_EINSY_1_0a))
-	uint8_t register portC = PORTC & 0xf0;
+    register uint8_t portC = PORTC & 0xf0;
 	PORTC = portC | (axes_mask & 0x0f); //set step signals by mask
 	asm("nop");
 	PORTC = portC; //set step signals to zero

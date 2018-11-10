@@ -3,6 +3,10 @@
 // Common serial messages
 #define MSG_MARLIN "Marlin"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif //defined(__cplusplus)
+
 // LCD Menu Messages
 //internationalized messages
 extern const char MSG_AUTO_HOME[];
@@ -119,3 +123,7 @@ extern const char MSG_Z_MIN[];
 extern const char MSG_ZPROBE_OUT[];
 extern const char MSG_ZPROBE_ZOFFSET[];
 extern const char MSG_TMC_OVERTEMP[];
+
+#if defined(__cplusplus)
+}
+#endif //defined(__cplusplus)

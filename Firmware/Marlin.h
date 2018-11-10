@@ -21,6 +21,7 @@
 #include "fastio.h"
 #include "Configuration.h"
 #include "pins.h"
+#include "Timer.h"
 
 #ifndef AT90USB
 #define  HardwareSerial_h // trick to disable the standard HWserial
@@ -64,7 +65,14 @@
 
 #include "lcd.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern FILE _uartout;
+#ifdef __cplusplus
+}
+#endif
+
 #define uartout (&_uartout)
 
 #define SERIAL_PROTOCOL(x) (MYSERIAL.print(x))
@@ -148,7 +156,7 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 		  #else
 			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define  disable_z() ;
+			#define  disable_z() {}
 		  #endif
 	#else
 		#ifdef Z_DUAL_STEPPER_DRIVERS
@@ -160,8 +168,8 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 		#endif
 	#endif
 #else
-  #define enable_z() ;
-  #define disable_z() ;
+  #define enable_z() {}
+  #define disable_z() {}
 #endif
 
 
@@ -269,19 +277,16 @@ extern float homing_feedrate[];
 extern bool axis_relative_modes[];
 extern int feedmultiply;
 extern int extrudemultiply; // Sets extrude multiply factor (in percent) for all extruders
-extern bool volumetric_enabled;
 extern int extruder_multiply[EXTRUDERS]; // sets extrude multiply factor (in percent) for each extruder individually
-extern float filament_size[EXTRUDERS]; // cross-sectional area of filament (in millimeters), typically around 1.75 or 2.85, 0 disables the volumetric calculations for the extruder.
 extern float volumetric_multiplier[EXTRUDERS]; // reciprocal of cross-sectional area of filament (in square millimeters), stored this way to reduce computational burden in planner
 extern float current_position[NUM_AXIS] ;
 extern float destination[NUM_AXIS] ;
-extern float add_homing[3];
 extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
-extern float zprobe_zoffset;
 extern int fanSpeed;
 extern void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
+extern int8_t lcd_change_fil_state;
 
 
 #ifdef FAN_SOFT_PWM
@@ -289,10 +294,9 @@ extern unsigned char fanSpeedSoftPwm;
 #endif
 
 #ifdef FWRETRACT
-extern bool autoretract_enabled;
 extern bool retracted[EXTRUDERS];
-extern float retract_length, retract_length_swap, retract_feedrate, retract_zlift;
-extern float retract_recover_length, retract_recover_length_swap, retract_recover_feedrate;
+extern float retract_length_swap;
+extern float retract_recover_length_swap;
 #endif
 
 #ifdef HOST_KEEPALIVE_FEATURE
@@ -333,10 +337,6 @@ extern uint8_t active_extruder;
 #endif
 
 //Long pause
-extern int saved_feedmultiply;
-extern float HotendTempBckp;
-extern int fanSpeedBckp;
-extern float pause_lastpos[4];
 extern unsigned long pause_time;
 extern unsigned long start_pause_print;
 extern unsigned long t_fan_rising_edge;
@@ -360,12 +360,16 @@ extern uint8_t print_percent_done_normal;
 extern uint16_t print_time_remaining_normal;
 extern uint8_t print_percent_done_silent;
 extern uint16_t print_time_remaining_silent;
+
+#define PRINT_TIME_REMAINING_INIT 0xffff
+
 extern uint16_t mcode_in_progress;
 extern uint16_t gcode_in_progress;
 
 extern bool wizard_active; //autoload temporarily disabled during wizard
 
-#define PRINT_TIME_REMAINING_INIT 0xffff
+extern LongTimer safetyTimer;
+
 #define PRINT_PERCENT_DONE_INIT   0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
 
@@ -378,6 +382,7 @@ extern void delay_keep_alive(unsigned int ms);
 extern void check_babystep();
 
 extern void long_pause();
+extern void crashdet_stop_and_save_print();
 
 #ifdef DIS
 
@@ -390,7 +395,6 @@ float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
 void show_fw_version_warnings();
-void erase_eeprom_section(uint16_t offset, uint16_t bytes);
 uint8_t check_printer_version();
 
 #ifdef PINDA_THERMISTOR
@@ -417,6 +421,9 @@ extern void position_menu();
 extern void print_world_coordinates();
 extern void print_physical_coordinates();
 extern void print_mesh_bed_leveling_table();
+
+extern void stop_and_save_print_to_ram(float z_move, float e_move);
+extern void restore_print_from_ram_and_continue(float e_move);
 
 
 //estimated time to end of the print
@@ -472,5 +479,6 @@ void proc_commands();
 
 void M600_load_filament();
 void M600_load_filament_movements();
-void M600_wait_for_user();
+void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state();
+void load_filament_final_feed();

@@ -39,6 +39,7 @@
 
 #include <avr/wdt.h>
 #include "adc.h"
+#include "ConfigurationStore.h"
 
 
 //===========================================================================
@@ -79,19 +80,10 @@ float current_temperature_bed = 0.0;
   float _Kp, _Ki, _Kd;
   int pid_cycle, pid_number_of_cycles;
   bool pid_tuning_finished = false;
-  float Kp=DEFAULT_Kp;
-  float Ki=(DEFAULT_Ki*PID_dT);
-  float Kd=(DEFAULT_Kd/PID_dT);
   #ifdef PID_ADD_EXTRUSION_RATE
     float Kc=DEFAULT_Kc;
   #endif
 #endif //PIDTEMP
-
-#ifdef PIDTEMPBED
-  float bedKp=DEFAULT_bedKp;
-  float bedKi=(DEFAULT_bedKi*PID_dT);
-  float bedKd=(DEFAULT_bedKd/PID_dT);
-#endif //PIDTEMPBED
   
 #ifdef FAN_SOFT_PWM
   unsigned char fanSpeedSoftPwm;
@@ -183,7 +175,6 @@ static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
 static float analog2tempAmbient(int raw);
-static float analog2tempPINDA(int raw);
 static void updateTemperaturesFromRawValues();
 
 enum TempRunawayStates
@@ -422,11 +413,11 @@ void updatePID()
 {
 #ifdef PIDTEMP
   for(int e = 0; e < EXTRUDERS; e++) { 
-     temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / Ki;  
+     temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;  
   }
 #endif
 #ifdef PIDTEMPBED
-  temp_iState_max_bed = PID_INTEGRAL_DRIVE_MAX / bedKi;  
+  temp_iState_max_bed = PID_INTEGRAL_DRIVE_MAX / cs.bedKi;  
 #endif
 }
   
@@ -501,9 +492,6 @@ void checkFanSpeed()
 	}
 }
 
-extern void stop_and_save_print_to_ram(float z_move, float e_move);
-extern void restore_print_from_ram_and_continue(float e_move);
-
 void fanSpeedError(unsigned char _fan) {
 	if (get_message_level() != 0 && isPrintPaused) return; 
 	//to ensure that target temp. is not set to zero in case taht we are resuming print 
@@ -512,8 +500,7 @@ void fanSpeedError(unsigned char _fan) {
 			lcd_print_stop();
 		}
 		else {
-			isPrintPaused = true;
-			lcd_sdcard_pause();
+			lcd_pause_print();
 		}
 	}
 	else {
@@ -638,14 +625,14 @@ void manage_heater()
             temp_iState[e] = 0.0;
             pid_reset[e] = false;
           }
-          pTerm[e] = Kp * pid_error[e];
+          pTerm[e] = cs.Kp * pid_error[e];
           temp_iState[e] += pid_error[e];
           temp_iState[e] = constrain(temp_iState[e], temp_iState_min[e], temp_iState_max[e]);
-          iTerm[e] = Ki * temp_iState[e];
+          iTerm[e] = cs.Ki * temp_iState[e];
 
           //K1 defined in Configuration.h in the PID settings
           #define K2 (1.0-K1)
-          dTerm[e] = (Kd * (pid_input - temp_dState[e]))*K2 + (K1 * dTerm[e]);
+          dTerm[e] = (cs.Kd * (pid_input - temp_dState[e]))*K2 + (K1 * dTerm[e]);
           pid_output = pTerm[e] + iTerm[e] - dTerm[e];
           if (pid_output > PID_MAX) {
             if (pid_error[e] > 0 )  temp_iState[e] -= pid_error[e]; // conditional un-integration
@@ -753,14 +740,14 @@ void manage_heater()
 
     #ifndef PID_OPENLOOP
 		  pid_error_bed = target_temperature_bed - pid_input;
-		  pTerm_bed = bedKp * pid_error_bed;
+		  pTerm_bed = cs.bedKp * pid_error_bed;
 		  temp_iState_bed += pid_error_bed;
 		  temp_iState_bed = constrain(temp_iState_bed, temp_iState_min_bed, temp_iState_max_bed);
-		  iTerm_bed = bedKi * temp_iState_bed;
+		  iTerm_bed = cs.bedKi * temp_iState_bed;
 
 		  //K1 defined in Configuration.h in the PID settings
 		  #define K2 (1.0-K1)
-		  dTerm_bed= (bedKd * (pid_input - temp_dState_bed))*K2 + (K1 * dTerm_bed);
+		  dTerm_bed= (cs.bedKd * (pid_input - temp_dState_bed))*K2 + (K1 * dTerm_bed);
 		  temp_dState_bed = pid_input;
 
 		  pid_output = pTerm_bed + iTerm_bed - dTerm_bed;
@@ -936,35 +923,6 @@ static float analog2tempBed(int raw) {
   #endif
 }
 
-#ifdef PINDA_THERMISTOR
-
-static float analog2tempPINDA(int raw) {
-
-	float celsius = 0;
-	byte i;
-
-	for (i = 1; i<BEDTEMPTABLE_LEN; i++)
-	{
-		if (PGM_RD_W(BEDTEMPTABLE[i][0]) > raw)
-		{
-			celsius = PGM_RD_W(BEDTEMPTABLE[i - 1][1]) +
-				(raw - PGM_RD_W(BEDTEMPTABLE[i - 1][0])) *
-				(float)(PGM_RD_W(BEDTEMPTABLE[i][1]) - PGM_RD_W(BEDTEMPTABLE[i - 1][1])) /
-				(float)(PGM_RD_W(BEDTEMPTABLE[i][0]) - PGM_RD_W(BEDTEMPTABLE[i - 1][0]));
-			break;
-		}
-	}
-
-	// Overflow: Set to last value in the table
-	if (i == BEDTEMPTABLE_LEN) celsius = PGM_RD_W(BEDTEMPTABLE[i - 1][1]);
-
-	return celsius;
-}
-
-
-#endif //PINDA_THERMISTOR
-
-
 #ifdef AMBIENT_THERMISTOR
 static float analog2tempAmbient(int raw)
 {
@@ -1040,11 +998,11 @@ void tp_init()
     maxttemp[e] = maxttemp[0];
 #ifdef PIDTEMP
     temp_iState_min[e] = 0.0;
-    temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / Ki;
+    temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;
 #endif //PIDTEMP
 #ifdef PIDTEMPBED
     temp_iState_min_bed = 0.0;
-    temp_iState_max_bed = PID_INTEGRAL_DRIVE_MAX / bedKi;
+    temp_iState_max_bed = PID_INTEGRAL_DRIVE_MAX / cs.bedKi;
 #endif //PIDTEMPBED
   }
 
@@ -1210,23 +1168,23 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 	static int __preheat_errors[2] = { 0,0};
 		
 
-#ifdef 	TEMP_RUNAWAY_BED_TIMEOUT
-	if (_isbed)
-	{
-		__hysteresis = TEMP_RUNAWAY_BED_HYSTERESIS;
-		__timeout = TEMP_RUNAWAY_BED_TIMEOUT;
-	}
-#endif
-#ifdef 	TEMP_RUNAWAY_EXTRUDER_TIMEOUT
-	if (!_isbed)
-	{
-		__hysteresis = TEMP_RUNAWAY_EXTRUDER_HYSTERESIS;
-		__timeout = TEMP_RUNAWAY_EXTRUDER_TIMEOUT;
-	}
-#endif
-
 	if (millis() - temp_runaway_timer[_heater_id] > 2000)
 	{
+
+#ifdef 	TEMP_RUNAWAY_BED_TIMEOUT
+          if (_isbed)
+          {
+               __hysteresis = TEMP_RUNAWAY_BED_HYSTERESIS;
+               __timeout = TEMP_RUNAWAY_BED_TIMEOUT;
+          }
+#endif
+#ifdef 	TEMP_RUNAWAY_EXTRUDER_TIMEOUT
+          if (!_isbed)
+          {
+               __hysteresis = TEMP_RUNAWAY_EXTRUDER_HYSTERESIS;
+               __timeout = TEMP_RUNAWAY_EXTRUDER_TIMEOUT;
+          }
+#endif
 
 		temp_runaway_timer[_heater_id] = millis();
 		if (_output == 0)
@@ -1251,39 +1209,36 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 			}
 		}
 
-		if (temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
+		if ((_current_temperature < _target_temperature)  && (temp_runaway_status[_heater_id] == TempRunaway_PREHEAT))
 		{
-			if (_current_temperature < ((_isbed) ? (0.8 * _target_temperature) : 150)) //check only in area where temperature is changing fastly for heater, check to 0.8 x target temperature for bed
+			__preheat_counter[_heater_id]++;
+			if (__preheat_counter[_heater_id] > ((_isbed) ? 16 : 8)) // periodicaly check if current temperature changes
 			{
-				__preheat_counter[_heater_id]++;
-				if (__preheat_counter[_heater_id] > ((_isbed) ? 16 : 8)) // periodicaly check if current temperature changes
-				{
-					/*SERIAL_ECHOPGM("Heater:");
-					MYSERIAL.print(_heater_id);
-					SERIAL_ECHOPGM(" T:");
-					MYSERIAL.print(_current_temperature);
-					SERIAL_ECHOPGM(" Tstart:");
-					MYSERIAL.print(__preheat_start[_heater_id]);*/
-					
-					if (_current_temperature - __preheat_start[_heater_id] < 2) {
-						__preheat_errors[_heater_id]++;
-						/*SERIAL_ECHOPGM(" Preheat errors:");
-						MYSERIAL.println(__preheat_errors[_heater_id]);*/
-					}
-					else {
-						//SERIAL_ECHOLNPGM("");
-						__preheat_errors[_heater_id] = 0;
-					}
-
-					if (__preheat_errors[_heater_id] > ((_isbed) ? 2 : 5)) 
-					{
-						if (farm_mode) { prusa_statistics(0); }
-						temp_runaway_stop(true, _isbed);
-						if (farm_mode) { prusa_statistics(91); }
-					}
-					__preheat_start[_heater_id] = _current_temperature;
-					__preheat_counter[_heater_id] = 0;
+				/*SERIAL_ECHOPGM("Heater:");
+				MYSERIAL.print(_heater_id);
+				SERIAL_ECHOPGM(" T:");
+				MYSERIAL.print(_current_temperature);
+				SERIAL_ECHOPGM(" Tstart:");
+				MYSERIAL.print(__preheat_start[_heater_id]);*/
+				
+				if (_current_temperature - __preheat_start[_heater_id] < 2) {
+					__preheat_errors[_heater_id]++;
+					/*SERIAL_ECHOPGM(" Preheat errors:");
+					MYSERIAL.println(__preheat_errors[_heater_id]);*/
 				}
+				else {
+					//SERIAL_ECHOLNPGM("");
+					__preheat_errors[_heater_id] = 0;
+				}
+
+				if (__preheat_errors[_heater_id] > ((_isbed) ? 2 : 5)) 
+				{
+					if (farm_mode) { prusa_statistics(0); }
+					temp_runaway_stop(true, _isbed);
+					if (farm_mode) { prusa_statistics(91); }
+				}
+				__preheat_start[_heater_id] = _current_temperature;
+				__preheat_counter[_heater_id] = 0;
 			}
 		}
 
@@ -1293,7 +1248,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 			temp_runaway_check_active = false;
 		}
 
-		if (!temp_runaway_check_active && _output > 0)
+		if (_output > 0)
 		{
 			temp_runaway_check_active = true;
 		}
@@ -1302,7 +1257,7 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 		if (temp_runaway_check_active)
 		{			
 			//	we are in range
-			if (_target_temperature - __hysteresis < _current_temperature && _current_temperature < _target_temperature + __hysteresis)
+			if ((_current_temperature > (_target_temperature - __hysteresis)) && (_current_temperature < (_target_temperature + __hysteresis)))
 			{
 				temp_runaway_check_active = false;
 				temp_runaway_error_counter[_heater_id] = 0;

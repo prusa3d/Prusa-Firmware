@@ -1,4 +1,4 @@
-//lcd.h
+//! @file
 #ifndef _LCD_H
 #define _LCD_H
 
@@ -116,8 +116,6 @@ extern uint32_t lcd_next_update_millis;
 
 extern uint8_t lcd_status_update_delay;
 
-extern uint8_t lcd_long_press_active;
-
 extern lcd_longpress_func_t lcd_longpress_func;
 
 extern lcd_charsetup_func_t lcd_charsetup_func;
@@ -130,7 +128,6 @@ extern lcd_lcdupdate_func_t lcd_lcdupdate_func;
 
 
 extern uint8_t lcd_clicked(void);
-
 
 extern void lcd_beeper_quick_feedback(void);
 
@@ -149,6 +146,29 @@ extern void lcd_update(uint8_t lcdDrawUpdateOverride);
 extern void lcd_update_enable(uint8_t enabled);
 
 extern void lcd_buttons_update(void);
+
+//! @brief Helper class to temporarily disable LCD updates
+//!
+//! When constructed (on stack), original state state of lcd_update_enabled is stored
+//! and LCD updates are disabled.
+//! When destroyed (gone out of scope), original state of LCD update is restored.
+//! It has zero overhead compared to storing bool saved = lcd_update_enabled
+//! and calling lcd_update_enable(false) and lcd_update_enable(saved).
+class LcdUpdateDisabler
+{
+public:
+    LcdUpdateDisabler(): m_updateEnabled(lcd_update_enabled)
+    {
+        lcd_update_enable(false);
+    }
+    ~LcdUpdateDisabler()
+    {
+        lcd_update_enable(m_updateEnabled);
+    }
+
+private:
+    bool m_updateEnabled;
+};
 
 
 
@@ -187,7 +207,16 @@ extern void lcd_buttons_update(void);
 #define EN_A (1<<BLEN_A)
 #define BLEN_C 2 
 #define EN_C (1<<BLEN_C) 
-  
+
+//! @brief Was button clicked?
+//!
+//! Doesn't consume button click event. See lcd_clicked()
+//! for function consuming the event.
+//!
+//! Generally is used in non-modal menus.
+//!
+//! @retval 0 button was not clicked
+//! @retval 1 button was clicked
 #define LCD_CLICKED (lcd_buttons&EN_C)
 
 ////////////////////////
@@ -221,6 +250,12 @@ extern void lcd_set_custom_characters_progress(void);
 extern void lcd_set_custom_characters_nextpage(void);
 extern void lcd_set_custom_characters_degree(void);
 
+//! @brief Consume click event
+inline void lcd_consume_click()
+{
+    lcd_button_pressed = 0;
+    lcd_buttons &= 0xff^EN_C;
+}
 
 
 #endif //_LCD_H

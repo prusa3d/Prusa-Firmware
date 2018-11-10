@@ -44,7 +44,7 @@ text=''
   text=$txt   
  else
   if [ -z "$addr" ]; then
-   echo "TEXT NF $num $txt"
+   if ! [ -z "$num" ]; then echo "TEXT NF $num $txt"; fi
   else
    if [ "$text" = "$txt" ]; then
     if [ ${#addr} -eq 8 ]; then
@@ -57,7 +57,7 @@ text=''
     addr=''
     text=''
    else
-    echo "TEXT NF $num $txt"
+    if ! [ -z "$num" ]; then echo "TEXT NF $num $txt"; fi
    fi
   fi
  fi

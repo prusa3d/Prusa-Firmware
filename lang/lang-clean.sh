@@ -24,13 +24,17 @@ clean_lang()
  if [ "$1" = "en" ]; then
   rm_if_exists lang_$1.tmp
  else
+  rm_if_exists lang_$1.tmp
   rm_if_exists lang_en_$1.tmp
   rm_if_exists lang_en_$1.dif
   rm_if_exists lang_$1.ofs
   rm_if_exists lang_$1.txt
  fi
+ rm_if_exists lang_$1_check.dif
  rm_if_exists lang_$1.bin
  rm_if_exists lang_$1.dat
+ rm_if_exists lang_$1_1.tmp
+ rm_if_exists lang_$1_2.tmp
 }
 
 echo "lang-clean.sh started" >&2

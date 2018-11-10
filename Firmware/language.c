@@ -227,6 +227,7 @@ uint8_t lang_is_selected(void)
 }
 
 #ifdef DEBUG_SEC_LANG
+#include <stdio.h>
 const char* lang_get_sec_lang_str_by_id(uint16_t id)
 {
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer
