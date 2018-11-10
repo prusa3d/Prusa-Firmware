@@ -21,7 +21,7 @@ static inline bool vec_undef(const float v[2])
     return vx[0] == 0x0FFFFFFFF || vx[1] == 0x0FFFFFFFF;
 }
 
-void mesh_bed_leveling::get_meas_xy(int ix, int iy, float &x, float &y, bool use_default)
+void mesh_bed_leveling::get_meas_xy(int ix, int iy, float &x, float &y, bool /*use_default*/)
 {
 #if 0
     float cntr[2] = {

@@ -71,7 +71,7 @@ void adc_cycle(void)
 		uint8_t index = adc_state & 0x0f;
 		if ((adc_sim_mask & (1 << index)) == 0)
 			adc_values[index] += ADC;
-		if (index++ >= ADC_CHAN_CNT)
+		if (++index >= ADC_CHAN_CNT)
 		{
 			index = 0;
 			adc_count++;

@@ -5,8 +5,6 @@
 
 extern bool mmu_enabled;
 
-extern int8_t mmu_state;
-
 extern uint8_t mmu_extruder;
 
 extern uint8_t tmp_extruder;
@@ -76,13 +74,20 @@ extern void extr_adj_1();
 extern void extr_adj_2();
 extern void extr_adj_3();
 extern void extr_adj_4();
+extern void mmu_load_to_nozzle_0();
+extern void mmu_load_to_nozzle_1();
+extern void mmu_load_to_nozzle_2();
+extern void mmu_load_to_nozzle_3();
+extern void mmu_load_to_nozzle_4();
 extern void load_all();
 extern void extr_change_0();
 extern void extr_change_1();
 extern void extr_change_2();
 extern void extr_change_3();
+#ifdef SNMM
 extern void extr_unload_all();
 extern void extr_unload_used();
+#endif //SNMM
 extern void extr_unload_0();
 extern void extr_unload_1();
 extern void extr_unload_2();
@@ -91,6 +96,7 @@ extern void extr_unload_4();
 
 extern bool mmu_check_version();
 extern void mmu_show_warning();
+extern void lcd_mmu_load_to_nozzle(uint8_t filament_nr);
 extern void mmu_eject_filament(uint8_t filament, bool recover);
 extern void mmu_eject_fil_0();
 extern void mmu_eject_fil_1();
