@@ -145,6 +145,8 @@
 //#define CMD_DIAGNOSTICS //Show cmd queue length on printer display
 #endif /* DEBUG_BUILD */
 
+//#define FSENSOR_QUALITY
+
 
 /*------------------------------------
  EXTRUDER SETTINGS
@@ -182,7 +184,7 @@
 #endif
 
 // Extrude mintemp
-#define EXTRUDE_MINTEMP 180
+#define EXTRUDE_MINTEMP 175
 
 // Extruder cooling fans
 #define EXTRUDER_0_AUTO_FAN_PIN   8
@@ -219,7 +221,7 @@
 #define FILAMENTCHANGE_FINALRETRACT -80
 
 #define FILAMENTCHANGE_FIRSTFEED 70
-#define FILAMENTCHANGE_FINALFEED 50
+#define FILAMENTCHANGE_FINALFEED 25
 #define FILAMENTCHANGE_RECFEED 5
 
 #define FILAMENTCHANGE_XYFEED 50
