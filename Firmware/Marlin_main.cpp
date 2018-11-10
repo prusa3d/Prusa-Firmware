@@ -2954,6 +2954,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 {
     st_synchronize();
     float lastpos[4];
+    mmuFSensorLoading = false;
 
     if (farm_mode)
     {
@@ -6896,11 +6897,13 @@ Sigma_Exit:
                 mmu_command(MMU_CMD_T0 + tmp_extruder);
 
                 manage_response(true, true);
+                delay(100);
                 mmu_command(MMU_CMD_C0);
                 mmu_extruder = tmp_extruder; //filament change is finished
 
                 if (*(strchr_pointer + index) == '?')// for single material usage with mmu
                 {
+                    delay(100);
                     mmu_load_to_nozzle();
                 }
             }
@@ -7452,14 +7455,8 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
             }
         }
     } else {
-        if (mcode_in_progress != 600) //M600 not in progress
-        {
-            if ((lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active && mmuFSensorLoading) {
-                fsensor_check_autoload();
-            } else {
-                fsensor_autoload_check_stop();
-                //fsensor_update();
-            }
+        if ((lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active && mmuFSensorLoading) {
+            fsensor_check_autoload();
         }
     }
 #endif //FILAMENT_SENSOR
