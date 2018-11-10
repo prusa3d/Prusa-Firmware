@@ -8,7 +8,7 @@
 
 // Firmware version
 #define FW_VERSION "5.0.1"
-#define FW_COMMIT_NR   2131
+#define FW_COMMIT_NR   2132
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
