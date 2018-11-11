@@ -422,7 +422,7 @@ void mmu_loop(void)
             }
             mmu_cmd = 0;
         }
-        else if ((mmu_last_response + 500) < millis()) //request every 500ms
+        else if (((mmu_last_response + 500) < millis()) && !mmuFSensorLoading) //request every 500ms
         {
             mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
             mmu_state = 2;
@@ -540,7 +540,7 @@ bool mmu_get_response(void)
     }
     while (!mmu_ready)
     {
-        if ((mmu_state == 3) || (mmu_state == 10) || (mmuFSensorLoading)) {
+        if ((mmu_state == 3) || (mmu_state == 10) || ((mmuFSensorLoading) && ((mmu_last_request + MMU_CMD_TIMEOUT) > millis()))) {
             delay_keep_alive(100);
         } else {
             break;
