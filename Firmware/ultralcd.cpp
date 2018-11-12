@@ -2254,7 +2254,7 @@ void lcd_change_success() {
 
 }
 
-static void lcd_loading_progress_bar(uint16_t loading_time_ms) {
+static void lcd_loading_progress_bar(uint16_t loading_time_ms) { 
 	
 	for (int i = 0; i < 20; i++) {
 		lcd_set_cursor(i, 3);
@@ -2277,7 +2277,7 @@ void lcd_loading_color() {
   lcd_puts_P(_i("Loading color"));////MSG_LOADING_COLOR c=0 r=0
   lcd_set_cursor(0, 2);
   lcd_puts_P(_T(MSG_PLEASE_WAIT));
-  lcd_loading_progress_bar(7500); //slow sequence: 7.5 seconds
+  lcd_loading_progress_bar((FILAMENTCHANGE_FINALFEED * 1000ul) / FILAMENTCHANGE_EFEED_FINAL); //show progress bar during filament loading slow sequence
 }
 
 
@@ -2306,7 +2306,9 @@ void lcd_loading_filament() {
 
   }
 #else //SNMM
-  lcd_loading_progress_bar(11000); //fast + slow sequence: 7.5 seconds
+  uint16_t slow_seq_time = (FILAMENTCHANGE_FINALFEED * 1000ul) / FILAMENTCHANGE_EFEED_FINAL;
+  uint16_t fast_seq_time = (FILAMENTCHANGE_FIRSTFEED * 1000ul) / FILAMENTCHANGE_EFEED_FIRST;
+  lcd_loading_progress_bar(slow_seq_time + fast_seq_time); //show progress bar for total time of filament loading fast + slow sequence
 #endif //SNMM
 }
 
