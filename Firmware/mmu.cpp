@@ -578,6 +578,7 @@ void mmu_M600_load_filament(bool automatic)
 }
 
 
+#ifdef SNMM
 void extr_mov(float shift, float feed_rate)
 { //move extruder no matter what the current heater temperature is
 	set_extrude_min_temp(.0);
@@ -585,6 +586,7 @@ void extr_mov(float shift, float feed_rate)
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feed_rate, active_extruder);
 	set_extrude_min_temp(EXTRUDE_MINTEMP);
 }
+#endif //SNMM
 
 
 void change_extr(int
