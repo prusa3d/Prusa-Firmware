@@ -998,4 +998,28 @@ bool tmc2130_home_calibrate(uint8_t axis)
 	return true;
 }
 
+uint8_t tmc2130_cur2val(float cur)
+{
+	if (cur < 0) cur = 0; //limit min
+	if (cur > 1029) cur = 1029; //limit max
+	//540mA is threshold for switch from high sense to low sense
+	//for higher currents is maximum current 1029mA
+	if (cur >= 540) return 63 * (float)cur / 1029;
+	//for lower currents must be the value divided by 1.125 (= 0.18*2/0.32)
+	return 63 * (float)cur / (1029 * 1.125);
+}
+
+float tmc2130_val2cur(uint8_t val)
+{
+	float rsense = 0.2; //0.2 ohm sense resistors
+	uint8_t vsense = (val & 0x20)?0:1; //vsense bit = val>31
+	float vfs = vsense?0.18:0.32; //vfs depends on vsense bit
+	uint8_t val2 = vsense?val:(val >> 1); //vals 32..63 shifted right (16..31)
+	// equation from datasheet (0.7071 ~= 1/sqrt(2))
+	float cur = ((float)(val2 + 1)/32) * (vfs/(rsense + 0.02)) * 0.7071;
+	return cur * 1000; //return current in mA
+}
+
+
+
 #endif //TMC2130
