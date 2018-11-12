@@ -2254,21 +2254,16 @@ void lcd_change_success() {
 
 }
 
-static void lcd_loading_progress_bar() {
-  for (int i = 0; i < 20; i++) {
-
-    lcd_set_cursor(i, 3);
-    lcd_print(".");
-	//0.375 s delay:
-    for (int j = 0; j < 5 ; j++) {
-      manage_heater();
-      manage_inactivity(true);
-      delay(75);
-
-    }
-
-
-  }
+static void lcd_loading_progress_bar(uint16_t loading_time_ms) {
+	
+	for (int i = 0; i < 20; i++) {
+		lcd_set_cursor(i, 3);
+		lcd_print(".");
+		//loading_time_ms/20 delay
+		for (int j = 0; j < 5; j++) {
+			delay_keep_alive(loading_time_ms / 100);
+		}
+	}
 }
 
 
@@ -2282,7 +2277,7 @@ void lcd_loading_color() {
   lcd_puts_P(_i("Loading color"));////MSG_LOADING_COLOR c=0 r=0
   lcd_set_cursor(0, 2);
   lcd_puts_P(_T(MSG_PLEASE_WAIT));
-  lcd_loading_progress_bar();
+  lcd_loading_progress_bar(7500); //slow sequence: 7.5 seconds
 }
 
 
@@ -2311,7 +2306,7 @@ void lcd_loading_filament() {
 
   }
 #else //SNMM
-  lcd_loading_progress_bar();
+  lcd_loading_progress_bar(11000); //fast + slow sequence: 7.5 seconds
 #endif //SNMM
 }
 
