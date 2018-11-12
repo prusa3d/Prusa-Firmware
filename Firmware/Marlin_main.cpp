@@ -8965,9 +8965,8 @@ static void print_time_remaining_init()
 
 void load_filament_final_feed()
 {
-	st_synchronize();
 	current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200/60, active_extruder);
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED_FINAL, active_extruder);
 }
 
 void M600_check_state()
@@ -8990,6 +8989,7 @@ void M600_check_state()
 
 				// Filament loaded properly but color is not clear
 				case 3:
+					st_synchronize();
 					load_filament_final_feed();
 					lcd_loading_color();
 					st_synchronize();
@@ -9108,7 +9108,7 @@ void M600_load_filament_movements()
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
 #else
 	current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED_FIRST, active_extruder); 
 #endif                
 	load_filament_final_feed();
 	lcd_loading_filament();
