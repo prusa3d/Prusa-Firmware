@@ -6632,10 +6632,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         for (int i = 0; i < NUM_AXIS; i++)
 			if(code_seen(axis_codes[i]))
 			{
-				long cur = code_value_long();
-				if (cur > MOTOR_CURRENT_PWM_RANGE) cur = MOTOR_CURRENT_PWM_RANGE;
-				tmc2130_set_current_h(i, (uint8_t)cur);
-				tmc2130_set_current_r(i, (uint8_t)cur);
+				long cur_mA = code_value_long();
+				uint8_t val = tmc2130_cur2val(cur_mA);
+				tmc2130_set_current_h(i, val);
+				tmc2130_set_current_r(i, val);
 			}
 
 #else //TMC2130
