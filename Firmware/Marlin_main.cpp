@@ -6852,7 +6852,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
   else if(code_seen('T'))
   {
       int index;
-	  bool load_to_nozzle = false;
+      bool load_to_nozzle = false;
       for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 
 	  *(strchr_pointer + index) = tolower(*(strchr_pointer + index));
@@ -6884,7 +6884,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
               if(mmu_enabled)
               {
                   tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
-				  load_to_nozzle = true;
+                  load_to_nozzle = true;
               } else
               {
                   tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER));
@@ -6893,7 +6893,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           else {
               tmp_extruder = code_value();
           }
-		  st_synchronize();
+          st_synchronize();
           snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 
           if (mmu_enabled)
