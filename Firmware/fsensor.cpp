@@ -184,6 +184,7 @@ void fsensor_disable(void)
 
 void fsensor_autoload_set(bool State)
 {
+	if (!State) fsensor_autoload_check_stop();
 	fsensor_autoload_enabled = State;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, fsensor_autoload_enabled);
 }
