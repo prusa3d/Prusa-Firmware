@@ -14,6 +14,10 @@
 #include "printers.h"
 #include <avr/pgmspace.h>
 
+#ifdef TMC2130
+#include "tmc2130.h"
+#endif //TMC2130
+
 #define CHECK_FINDA ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
 #define MMU_TODELAY 100
@@ -321,6 +325,15 @@ int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament)
 
 void mmu_command(uint8_t cmd)
 {
+#ifdef TMC2130
+	if ((cmd >= MMU_CMD_T0) && (cmd <= MMU_CMD_T4))
+	{
+		//disable extruder motor
+		tmc2130_set_pwr(E_AXIS, 0);
+		//printf_P(PSTR("E-axis disabled\n"));
+	}
+#endif //TMC2130
+
 	mmu_cmd = cmd;
 	mmu_ready = false;
 }
@@ -475,6 +488,11 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 		  }
 	}
 	if (lcd_update_was_enabled) lcd_update_enable(true);
+#ifdef TMC2130
+			//enable extruder motor (disabled in mmu_command, start of T-code processing)
+			tmc2130_set_pwr(E_AXIS, 1);
+			//printf_P(PSTR("E-axis enabled\n"));
+#endif //TMC2130
 }
 
 //! @brief load filament to nozzle of multimaterial printer

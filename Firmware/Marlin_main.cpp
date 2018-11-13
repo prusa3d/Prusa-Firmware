@@ -6636,6 +6636,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				uint8_t val = tmc2130_cur2val(cur_mA);
 				tmc2130_set_current_h(i, val);
 				tmc2130_set_current_r(i, val);
+				//if (i == E_AXIS) printf_P(PSTR("E-axis current=%ldmA\n"), cur_mA);
 			}
 
 #else //TMC2130
