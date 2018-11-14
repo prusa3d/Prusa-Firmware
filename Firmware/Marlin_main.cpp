@@ -4534,7 +4534,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 //               plan_set_z_position(MESH_HOME_Z_SEARCH); // is not necessary ('do-while' loop always ends at the expected Z-position)
                custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
                lcd_update_enable(true);           // display / status-line recovery
-               gcode_G28(true, true, false);      // X & Y-homing (must be after Z-homing (problem with spool-holder)!)
+               gcode_G28(true, true, true);       // X & Y & Z-homing (must be after individual Z-homing (problem with spool-holder)!)
                repeatcommand_front();             // re-run (i.e. of "G80")
                break;
 		}
