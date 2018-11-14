@@ -4,6 +4,7 @@
 
 
 extern bool mmu_enabled;
+extern bool mmuFSensorLoading;
 extern int8_t mmu_state;
 
 extern uint8_t mmu_extruder;

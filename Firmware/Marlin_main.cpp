@@ -2925,6 +2925,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 {
     st_synchronize();
     float lastpos[4];
+    mmuFSensorLoading = false;
 
     if (farm_mode)
     {
@@ -7438,7 +7439,11 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 				fsensor_update();
 			}
 		}
-	}
+	} else {
+        if ((lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active && mmuFSensorLoading) {
+            fsensor_check_autoload();
+        }
+  }
 #endif //FILAMENT_SENSOR
 
 #ifdef SAFETYTIMER
