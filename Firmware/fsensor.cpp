@@ -198,22 +198,22 @@ void fsensor_disable(void)
 
 void fsensor_autoload_set(bool State)
 {
-	if (!State) fsensor_autoload_check_stop();
-	fsensor_autoload_enabled = State;
-	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, fsensor_autoload_enabled);
+  if (!State) fsensor_autoload_check_stop();
+  fsensor_autoload_enabled = State;
+  eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, fsensor_autoload_enabled);
 }
 
 void pciSetup(byte pin)
 {
 // !!! "digitalPinTo?????bit()" does not provide the correct results for some MCU pins
-	*digitalPinToPCMSK(pin) |= bit (digitalPinToPCMSKbit(pin)); // enable pin
-	PCIFR |= bit (digitalPinToPCICRbit(pin)); // clear any outstanding interrupt
-	PCICR |= bit (digitalPinToPCICRbit(pin)); // enable interrupt for the group 
+  *digitalPinToPCMSK(pin) |= bit (digitalPinToPCMSKbit(pin)); // enable pin
+  PCIFR |= bit (digitalPinToPCICRbit(pin)); // clear any outstanding interrupt
+  PCICR |= bit (digitalPinToPCICRbit(pin)); // enable interrupt for the group 
 }
 
 void fsensor_autoload_check_start(void)
 {
-//	puts_P(_N("fsensor_autoload_check_start\n"));
+//  puts_P(_N("fsensor_autoload_check_start\n"));
     if (!fsensor_enabled) return;
     if (!fsensor_autoload_enabled) return;
     if (fsensor_watch_autoload) return;
@@ -237,11 +237,11 @@ void fsensor_autoload_check_start(void)
 
 void fsensor_autoload_check_stop(void)
 {
-//	puts_P(_N("fsensor_autoload_check_stop\n"));
+//  puts_P(_N("fsensor_autoload_check_stop\n"));
     if (!fsensor_enabled) return;
-//	puts_P(_N("fsensor_autoload_check_stop 1\n"));
+//  puts_P(_N("fsensor_autoload_check_stop 1\n"));
     if (!fsensor_autoload_enabled) return;
-//	puts_P(_N("fsensor_autoload_check_stop 2\n"));
+//  puts_P(_N("fsensor_autoload_check_stop 2\n"));
     if (!fsensor_watch_autoload) return;
     if (!mmu_enabled) puts_P(_N("fsensor_autoload_check_stop - autoload DISABLED\n"));
     fsensor_autoload_sum = 0;
@@ -291,10 +291,9 @@ bool fsensor_check_autoload(void)
     if (fsensor_autoload_c != fsensor_autoload_c_old)
         printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
 #endif
-//	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
+//  if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
     if ((fsensor_autoload_c >= 12) && (fsensor_autoload_sum > 20))
     {
-        //puts_P(_N("fsensor_check_autoload = true !!!\n"));
         if (mmu_enabled) mmu_command(MMU_CMD_FS);
         fsensor_autoload_check_stop();
         fsensor_autoload_enabled = false;
@@ -379,73 +378,73 @@ bool fsensor_oq_result(void)
 
 ISR(FSENSOR_INT_PIN_VECT)
 {
-	if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
-	fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
-	static bool _lock = false;
-	if (_lock) return;
-	_lock = true;
-	int st_cnt = fsensor_st_cnt;
-	fsensor_st_cnt = 0;
-	sei();
-	uint8_t old_err_cnt = fsensor_err_cnt;
-	uint8_t pat9125_res = fsensor_oq_meassure?pat9125_update():pat9125_update_y();
-	if (!pat9125_res)
-	{
-		fsensor_disable();
-		fsensor_not_responding = true;
-		printf_P(ERRMSG_PAT9125_NOT_RESP, 1);
-	}
-	if (st_cnt != 0)
-	{ //movement
-		if (st_cnt > 0) //positive movement
-		{
-			if (pat9125_y < 0)
-			{
-				if (fsensor_err_cnt)
-					fsensor_err_cnt += 2;
-				else
-					fsensor_err_cnt++;
-			}
-			else if (pat9125_y > 0)
-			{
-				if (fsensor_err_cnt)
-					fsensor_err_cnt--;
-			}
-			else //(pat9125_y == 0)
-				if (((fsensor_dy_old <= 0) || (fsensor_err_cnt)) && (st_cnt > (fsensor_chunk_len >> 1)))
-					fsensor_err_cnt++;
-			if (fsensor_oq_meassure)
-			{
-				if (fsensor_oq_skipchunk)
-				{
-					fsensor_oq_skipchunk--;
-					fsensor_err_cnt = 0;
-				}
-				else
-				{
-					if (st_cnt == fsensor_chunk_len)
-					{
-						if (pat9125_y > 0) if (fsensor_oq_yd_min > pat9125_y) fsensor_oq_yd_min = (fsensor_oq_yd_min + pat9125_y) / 2;
-						if (pat9125_y >= 0) if (fsensor_oq_yd_max < pat9125_y) fsensor_oq_yd_max = (fsensor_oq_yd_max + pat9125_y) / 2;
-					}
-					fsensor_oq_samples++;
-					fsensor_oq_st_sum += st_cnt;
-					if (pat9125_y > 0) fsensor_oq_yd_sum += pat9125_y;
-					if (fsensor_err_cnt > old_err_cnt)
-						fsensor_oq_er_sum += (fsensor_err_cnt - old_err_cnt);
-					if (fsensor_oq_er_max < fsensor_err_cnt)
-						fsensor_oq_er_max = fsensor_err_cnt;
-					fsensor_oq_sh_sum += pat9125_s;
-				}
-			}
-		}
-		else //negative movement
-		{
-		}
-	}
-	else
-	{ //no movement
-	}
+  if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
+  fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
+  static bool _lock = false;
+  if (_lock) return;
+  _lock = true;
+  int st_cnt = fsensor_st_cnt;
+  fsensor_st_cnt = 0;
+  sei();
+  uint8_t old_err_cnt = fsensor_err_cnt;
+  uint8_t pat9125_res = fsensor_oq_meassure?pat9125_update():pat9125_update_y();
+  if (!pat9125_res)
+  {
+    fsensor_disable();
+    fsensor_not_responding = true;
+    printf_P(ERRMSG_PAT9125_NOT_RESP, 1);
+  }
+  if (st_cnt != 0)
+  { //movement
+    if (st_cnt > 0) //positive movement
+    {
+      if (pat9125_y < 0)
+      {
+        if (fsensor_err_cnt)
+          fsensor_err_cnt += 2;
+        else
+          fsensor_err_cnt++;
+      }
+      else if (pat9125_y > 0)
+      {
+        if (fsensor_err_cnt)
+          fsensor_err_cnt--;
+      }
+      else //(pat9125_y == 0)
+        if (((fsensor_dy_old <= 0) || (fsensor_err_cnt)) && (st_cnt > (fsensor_chunk_len >> 1)))
+          fsensor_err_cnt++;
+      if (fsensor_oq_meassure)
+      {
+        if (fsensor_oq_skipchunk)
+        {
+          fsensor_oq_skipchunk--;
+          fsensor_err_cnt = 0;
+        }
+        else
+        {
+          if (st_cnt == fsensor_chunk_len)
+          {
+            if (pat9125_y > 0) if (fsensor_oq_yd_min > pat9125_y) fsensor_oq_yd_min = (fsensor_oq_yd_min + pat9125_y) / 2;
+            if (pat9125_y >= 0) if (fsensor_oq_yd_max < pat9125_y) fsensor_oq_yd_max = (fsensor_oq_yd_max + pat9125_y) / 2;
+          }
+          fsensor_oq_samples++;
+          fsensor_oq_st_sum += st_cnt;
+          if (pat9125_y > 0) fsensor_oq_yd_sum += pat9125_y;
+          if (fsensor_err_cnt > old_err_cnt)
+            fsensor_oq_er_sum += (fsensor_err_cnt - old_err_cnt);
+          if (fsensor_oq_er_max < fsensor_err_cnt)
+            fsensor_oq_er_max = fsensor_err_cnt;
+          fsensor_oq_sh_sum += pat9125_s;
+        }
+      }
+    }
+    else //negative movement
+    {
+    }
+  }
+  else
+  { //no movement
+  }
 
 #ifdef DEBUG_FSENSOR_LOG
     if (fsensor_log)
@@ -464,26 +463,26 @@ ISR(FSENSOR_INT_PIN_VECT)
 
 void fsensor_st_block_begin(block_t* bl)
 {
-	if (!fsensor_enabled) return;
-	if (((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8)) || 
-		((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8)))
-	{
+  if (!fsensor_enabled) return;
+  if (((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8)) || 
+    ((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8)))
+  {
 // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
-	}
+    if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
+    else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
+  }
 }
 
 void fsensor_st_block_chunk(block_t* bl, int cnt)
 {
-	if (!fsensor_enabled) return;
-	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
-	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
-	{
+  if (!fsensor_enabled) return;
+  fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
+  if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
+  {
 // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
-	}
+    if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
+    else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
+  }
 }
 
 //! @brief filament sensor update (perform M600 on filament runout)
@@ -552,7 +551,7 @@ void fsensor_setup_interrupt(void)
     digitalWrite(FSENSOR_INT_PIN, LOW);
     fsensor_int_pin_old = 0;
 
-	//pciSetup(FSENSOR_INT_PIN);
+  //pciSetup(FSENSOR_INT_PIN);
 // !!! "pciSetup()" does not provide the correct results for some MCU pins
 // so interrupt registers settings:
      FSENSOR_INT_PIN_PCMSK_REG |= bit(FSENSOR_INT_PIN_PCMSK_BIT); // enable corresponding PinChangeInterrupt (individual pin)

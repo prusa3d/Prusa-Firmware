@@ -43,7 +43,7 @@ void lcd_load_filament_color_check();
 
 extern bool lcd_selftest();
 
-void lcd_menu_statistics();
+void lcd_menu_statistics(); 
 
 extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
@@ -65,7 +65,7 @@ extern bool lcd_calibrate_z_end_stop_manual(bool only_z);
 #endif
 
 // Show the result of the calibration process on the LCD screen.
-extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
+  extern void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, uint8_t point_too_far_mask);
 
 extern void lcd_diag_show_end_stops();
 
@@ -82,7 +82,7 @@ extern void lcd_diag_show_end_stops();
 #define LCD_COMMAND_STOP_PRINT 2
 #define LCD_COMMAND_FARM_MODE_CONFIRM 4
 #define LCD_COMMAND_LONG_PAUSE 5
-#define LCD_COMMAND_PID_EXTRUDER 7
+#define LCD_COMMAND_PID_EXTRUDER 7 
 #define LCD_COMMAND_V2_CAL 8
 
 extern int lcd_commands_type;
@@ -132,7 +132,6 @@ void extr_unload_all();
 void extr_unload_used();
 #endif //SNMM
 void extr_unload();
-void extr_unload_at_boot();
 
 void unload_filament();
 

@@ -21,43 +21,43 @@ static void Sound_DoSound_Alert(bool bOnce);
 
 void Sound_Init(void)
 {
-    SET_OUTPUT(BEEPER);
-    eSoundMode=(eSOUND_MODE)eeprom_read_byte((uint8_t*)EEPROM_SOUND_MODE);
-    if(eSoundMode==e_SOUND_MODE_NULL)
-        Sound_Default();                             // je potreba provest i ulozeni do EEPROM
+SET_OUTPUT(BEEPER);
+eSoundMode=(eSOUND_MODE)eeprom_read_byte((uint8_t*)EEPROM_SOUND_MODE);
+if(eSoundMode==e_SOUND_MODE_NULL)
+     Sound_Default();                             // je potreba provest i ulozeni do EEPROM
 }
 
 void Sound_Default(void)
 {
-    eSoundMode=e_SOUND_MODE_DEFAULT;
-    Sound_SaveMode();
+eSoundMode=e_SOUND_MODE_DEFAULT;
+Sound_SaveMode();
 }
 
 void Sound_SaveMode(void)
 {
-    eeprom_update_byte((uint8_t*)EEPROM_SOUND_MODE,(uint8_t)eSoundMode);
+eeprom_update_byte((uint8_t*)EEPROM_SOUND_MODE,(uint8_t)eSoundMode);
 }
 
 void Sound_CycleState(void)
 {
-    switch(eSoundMode)
-    {
-    case e_SOUND_MODE_LOUD:
-        eSoundMode=e_SOUND_MODE_ONCE;
-        break;
-    case e_SOUND_MODE_ONCE:
-        eSoundMode=e_SOUND_MODE_SILENT;
-        break;
-    case e_SOUND_MODE_SILENT:
-        eSoundMode=e_SOUND_MODE_MUTE;
-        break;
-    case e_SOUND_MODE_MUTE:
-        eSoundMode=e_SOUND_MODE_LOUD;
-        break;
-    default:
-        eSoundMode=e_SOUND_MODE_LOUD;
-    }
-    Sound_SaveMode();
+switch(eSoundMode)
+     {
+     case e_SOUND_MODE_LOUD:
+          eSoundMode=e_SOUND_MODE_ONCE;
+          break;
+     case e_SOUND_MODE_ONCE:
+          eSoundMode=e_SOUND_MODE_SILENT;
+          break;
+     case e_SOUND_MODE_SILENT:
+          eSoundMode=e_SOUND_MODE_MUTE;
+          break;
+     case e_SOUND_MODE_MUTE:
+          eSoundMode=e_SOUND_MODE_LOUD;
+          break;
+     default:
+          eSoundMode=e_SOUND_MODE_LOUD;
+     }
+Sound_SaveMode();
 }
 
 void Sound_MakeSound(eSOUND_TYPE eSoundType)
@@ -94,22 +94,22 @@ switch(eSoundMode)
 
 static void Sound_DoSound_Echo(void)
 {
-    uint8_t nI;
+uint8_t nI;
 
-    for(nI=0; nI<10; nI++)
-    {
-        WRITE(BEEPER,HIGH);
-        delayMicroseconds(100);
-        WRITE(BEEPER,LOW);
-        delayMicroseconds(100);
-    }
+for(nI=0;nI<10;nI++)
+     {
+     WRITE(BEEPER,HIGH);
+     delayMicroseconds(100);
+     WRITE(BEEPER,LOW);
+     delayMicroseconds(100);
+     }
 }
 
 static void Sound_DoSound_Prompt(void)
 {
-    WRITE(BEEPER,HIGH);
-    delay_keep_alive(500);
-    WRITE(BEEPER,LOW);
+WRITE(BEEPER,HIGH);
+delay_keep_alive(500);
+WRITE(BEEPER,LOW);
 }
 
 static void Sound_DoSound_Alert(bool bOnce)
