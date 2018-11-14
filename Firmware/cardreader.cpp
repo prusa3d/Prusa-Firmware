@@ -208,27 +208,27 @@ void CardReader::initsd()
     presort();
 #endif
 
-    /*
-    if(!workDir.openRoot(&volume))
-    {
-      SERIAL_ECHOLNPGM(_T(MSG_SD_WORKDIR_FAIL));
-    }
-    */
-
+  /*
+  if(!workDir.openRoot(&volume))
+  {
+    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
+  }
+  */
+  
 }
 
 void CardReader::setroot()
 {
-    /*if(!workDir.openRoot(&volume))
-    {
-      SERIAL_ECHOLNPGM(_T(MSG_SD_WORKDIR_FAIL));
-    }*/
-    workDir=root;
-
-    curDir=&workDir;
-#ifdef SDCARD_SORT_ALPHA
-    presort();
-#endif
+  /*if(!workDir.openRoot(&volume))
+  {
+    SERIAL_ECHOLNPGM(MSG_SD_WORKDIR_FAIL);
+  }*/
+  workDir=root;
+  
+  curDir=&workDir;
+  #ifdef SDCARD_SORT_ALPHA
+	  presort();
+  #endif
 }
 void CardReader::release()
 {

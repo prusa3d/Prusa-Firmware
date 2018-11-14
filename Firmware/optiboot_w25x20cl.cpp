@@ -111,51 +111,51 @@ void optiboot_w25x20cl_enter()
     // bitmap of pages to be written. Bit is set to 1 if the page has already been erased.
     uint8_t pages_erased = 0;
 
-    // Handshake sequence: Initialize the serial line, flush serial line, send magic, receive magic.
-    // If the magic is not received on time, or it is not received correctly, continue to the application.
-    {
-        watchdogReset();
-        unsigned long  boot_timeout = 2000000;
-        unsigned long  boot_timer = 0;
-        const char    *ptr = entry_magic_send;
-        const char    *end = strlen_P(entry_magic_send) + ptr;
-        // Initialize the serial line.
-        UCSR0A |= (1 << U2X0);
-        UBRR0L = (((float)(F_CPU))/(((float)(115200))*8.0)-1.0+0.5);
-        UCSR0B = (1 << RXEN0) | (1 << TXEN0);
-        // Flush the serial line.
-        while (RECV_READY) {
-            watchdogReset();
-            // Dummy register read (discard)
-            (void)(*(char *)UDR0);
-        }
-        // Send the initial magic string.
-        while (ptr != end)
-            putch(pgm_read_byte_far(ptr ++));
-        watchdogReset();
-        // Wait for one second until a magic string (constant entry_magic) is received
-        // from the serial line.
-        ptr = entry_magic_receive;
-        end = strlen_P(entry_magic_receive) + ptr;
-        while (ptr != end) {
-            while (! RECV_READY) {
-                watchdogReset();
-                delayMicroseconds(1);
-                if (++ boot_timer > boot_timeout)
-                    // Timeout expired, continue with the application.
-                    return;
-            }
-            ch = UDR0;
-            if (pgm_read_byte_far(ptr ++) != ch)
-                // Magic was not received correctly, continue with the application
-                return;
-            watchdogReset();
-        }
-        // Send the cfm magic string.
-        ptr = entry_magic_cfm;
-        while (ptr != end)
-            putch(pgm_read_byte_far(ptr ++));
+  // Handshake sequence: Initialize the serial line, flush serial line, send magic, receive magic.
+  // If the magic is not received on time, or it is not received correctly, continue to the application.
+  {
+    watchdogReset();
+    unsigned long  boot_timeout = 2000000;
+    unsigned long  boot_timer = 0;
+    const char    *ptr = entry_magic_send;
+    const char    *end = strlen_P(entry_magic_send) + ptr;
+    // Initialize the serial line.
+    UCSR0A |= (1 << U2X0);
+    UBRR0L = (((float)(F_CPU))/(((float)(115200))*8.0)-1.0+0.5);
+    UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+    // Flush the serial line.
+    while (RECV_READY) {
+      watchdogReset();
+      // Dummy register read (discard)
+      (void)(*(char *)UDR0);
     }
+    // Send the initial magic string.
+    while (ptr != end)
+      putch(pgm_read_byte(ptr ++));
+    watchdogReset();
+    // Wait for one second until a magic string (constant entry_magic) is received
+    // from the serial line.
+    ptr = entry_magic_receive;
+    end = strlen_P(entry_magic_receive) + ptr;
+    while (ptr != end) {
+      while (! RECV_READY) {
+        watchdogReset();
+        delayMicroseconds(1);
+        if (++ boot_timer > boot_timeout)
+          // Timeout expired, continue with the application.
+          return;
+      }
+      ch = UDR0;
+      if (pgm_read_byte(ptr ++) != ch)
+          // Magic was not received correctly, continue with the application
+          return;
+      watchdogReset();
+    }
+    // Send the cfm magic string.
+    ptr = entry_magic_cfm;
+    while (ptr != end)
+      putch(pgm_read_byte(ptr ++));
+  }
 
     spi_init();
     w25x20cl_init();

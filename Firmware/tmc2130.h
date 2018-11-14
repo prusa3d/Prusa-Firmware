@@ -106,4 +106,7 @@ extern void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000);
 
 extern bool tmc2130_home_calibrate(uint8_t axis);
 
+extern uint8_t tmc2130_cur2val(float cur);
+extern float tmc2130_val2cur(uint8_t val);
+
 #endif //TMC2130_H

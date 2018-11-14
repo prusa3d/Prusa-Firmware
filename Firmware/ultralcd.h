@@ -24,10 +24,10 @@ uint8_t get_message_level();
 void lcd_adjust_z();
 void lcd_pick_babystep();
 void lcd_alright();
+void show_preheat_nozzle_warning();
 void EEPROM_save_B(int pos, int* value);
 void EEPROM_read_B(int pos, int* value);
 void lcd_wait_interact();
-void lcd_change_filament();
 void lcd_loading_filament();
 void lcd_change_success();
 void lcd_loading_color();
@@ -38,6 +38,7 @@ void lcd_print_stop();
 void prusa_statistics(int _message, uint8_t _col_nr = 0);
 void lcd_confirm_print();
 unsigned char lcd_choose_color();
+void lcd_load_filament_color_check();
 //void lcd_mylang();
 
 extern bool lcd_selftest();
@@ -49,6 +50,7 @@ extern const char* lcd_display_message_fullscreen_P(const char *msg);
 
 extern void lcd_return_to_status();
 extern void lcd_wait_for_click();
+extern bool lcd_wait_for_click_delay(uint16_t nDelay);
 extern void lcd_show_fullscreen_message_and_wait_P(const char *msg);
 // 0: no, 1: yes, -1: timeouted
 extern int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow_timeouting = true, bool default_yes = false);
@@ -116,7 +118,6 @@ extern int8_t SilentModeMenu;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;
-extern bool lcd_autoDeplete;
 
 
 void lcd_ignore_click(bool b=true);
@@ -126,8 +127,10 @@ void lcd_commands();
 void change_extr(int extr);
 void extr_adj(int extruder);
 
-void extr_unload_all();
+#ifdef SNMM
+void extr_unload_all(); 
 void extr_unload_used();
+#endif //SNMM
 void extr_unload();
 void extr_unload_at_boot();
 
@@ -171,6 +174,7 @@ void lcd_set_progress();
 void lcd_language();
 
 void lcd_wizard();
+bool lcd_autoDepleteEnabled();
 
 //! @brief Wizard state
 enum class WizState : uint8_t

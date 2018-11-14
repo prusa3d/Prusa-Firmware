@@ -1,7 +1,3 @@
-#MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
-"  [off"
-"\x00"
-
 #MSG_PLANNER_BUFFER_BYTES c=0 r=0
 "  PlannerBufferBytes: "
 " PlannerBufferBytes: "
@@ -38,10 +34,6 @@
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 "\x1b[2JATTENZIONE:\x1b[1;0HRilev. impatto\x1b[2;0Hdisattivato in\x1b[3;0HModalita silenziosa"
 
-#MSG_REFRESH c=0 r=0
-"\xf8Refresh"
-"\x00"
-
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 "Compensazione Z"
@@ -62,13 +54,13 @@
 "Are left and right Z~carriages all up?"
 "I carrelli Z sin/des sono altezza max?"
 
-#MSG_ADJUSTZ c=0 r=0
-"Auto adjust Z?"
-"Autoregolare Z?"
-
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "Auto deplete [on]"
 "Esaurim.auto [on]"
+
+#
+"Auto deplete[N/A]"
+"\x00"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "Auto deplete[off]"
@@ -130,10 +122,6 @@
 "Bed"
 "Letto"
 
-#MSG_BEGIN_FILE_LIST c=0 r=0
-"Begin file list"
-"Inizio lista file"
-
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
 "Stato delle cinghie"
@@ -174,6 +162,10 @@
 "Calibration"
 "Calibrazione"
 
+#
+"Cancel"
+"\x00"
+
 #MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
 "Cannot enter subdir: "
 "Impossibile accedere alla sottocartella: "
@@ -193,6 +185,10 @@
 #MSG_COOLDOWN c=0 r=0
 "Cooldown"
 "Raffredda"
+
+#
+"Copy selected language from XFLASH?"
+"\x00"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
@@ -262,13 +258,13 @@
 "Eject filament 5"
 "Espelli filamento 5"
 
+#
+"Eject"
+"\x00"
+
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
 "Espellendo filamento"
-
-#MSG_END_FILE_LIST c=0 r=0
-"End file list"
-"Fine lista file"
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
@@ -305,6 +301,26 @@
 #MSG_ERROR c=0 r=0
 "ERROR:"
 "ERRORE:"
+
+#
+"External SPI flash W25X20CL not responding."
+"\x00"
+
+#
+"Extruder 1"
+"\x00"
+
+#
+"Extruder 2"
+"\x00"
+
+#
+"Extruder 3"
+"\x00"
+
+#
+"Extruder 4"
+"\x00"
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
 "Extruder fan:"
@@ -390,14 +406,6 @@
 "File incomplete. Continue anyway?"
 "File incompleto. Continuare comunque?"
 
-#MSG_SD_FILE_OPENED c=0 r=0
-"File opened: "
-"File aperto: "
-
-#MSG_SD_FILE_SELECTED c=0 r=0
-"File selected"
-"File selezionato"
-
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
 "Finalizzando gli spostamenti"
@@ -409,6 +417,10 @@
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
 "Per primo avviero l'autotest per controllare gli errori di assemblaggio piu comuni."
+
+#
+"Fix the issue and then press button on MMU unit."
+"\x00"
 
 #MSG_FLOW c=0 r=0
 "Flow"
@@ -454,6 +466,10 @@
 "howto.prusa3d.com"
 "\x00"
 
+#
+"Change extruder"
+"\x00"
+
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
 "Cambia filamento"
@@ -465,10 +481,6 @@
 #MSG_CORRECTLY c=20 r=0
 "Changed correctly?"
 "Cambiato correttamente?"
-
-#MSG_CHANGING_FILAMENT c=20 r=0
-"Changing filament!"
-"Cambiando filam."
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
@@ -550,6 +562,10 @@
 "Insert filament into extruder 4. Click when done."
 "Inserire filamento nell'estrusore 4. Click per continuare"
 
+#
+"Is filament 1 loaded?"
+"\x00"
+
 #MSG_INSERT_FILAMENT c=20 r=0
 "Insert filament"
 "Inserire filamento"
@@ -581,6 +597,10 @@
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
 "Vent SX hotend?"
+
+#
+"Left"
+"\x00"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
@@ -618,6 +638,10 @@
 "M105 Invalid extruder "
 "M105 Estrusore non valido "
 
+#
+"Load to nozzle"
+"\x00"
+
 #MSG_M109_INVALID_EXTRUDER c=0 r=0
 "M109 Invalid extruder "
 "M109 Estrusore non valido "
@@ -650,10 +674,6 @@
 "Mesh Bed Leveling"
 "Mesh livel. letto"
 
-#MSG_MMU_NEEDS_ATTENTION c=20 r=4
-"MMU needs user attention. Fix the issue and then press button on MMU unit."
-"MMU richiede l'attenzione dell'utente. Risolvi il problema e quindi premi il bottone sull'unita MMU."
-
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
 "MMU OK. riprendendo la posizione..."
@@ -661,6 +681,10 @@
 #MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 "MMU OK. Resuming temperature..."
 "MMU OK. Ripristino temperatura..."
+
+#
+"Measured skew"
+"\x00"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -673,6 +697,10 @@
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
 "Modo [silenzioso]"
+
+#
+"MMU needs user attention."
+"\x00"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -726,6 +754,14 @@
 "Not connected"
 "Non connesso"
 
+#
+"New firmware version available:"
+"\x00"
+
+#
+"No "
+"\x00"
+
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
 "Non gira"
@@ -757,6 +793,10 @@
 #MSG_ENDSTOP_OPEN c=0 r=0
 "open"
 "apri"
+
+#
+"Now remove the test print from steel sheet."
+"\x00"
 
 #MSG_SD_OPENROOT_FAIL c=0 r=0
 "openRoot failed"
@@ -806,10 +846,6 @@
 "Please insert PLA filament to the extruder, then press knob to load it."
 "Per favore inserisci il filamento di PLA nell'estrusore, poi premi la manopola per caricare."
 
-#MSG_WIZARD_INSERT_CORRECT_FILAMENT c=20 r=8
-"Please load PLA filament and then resume Wizard by rebooting the printer."
-"Per favore carica filamento di PLA e riprendi il Wizard dopo aver riavviato la stampante."
-
 #MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load PLA filament first."
 "Per favore prima carica il filamento di PLA."
@@ -825,6 +861,10 @@
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
 "Premete la manopola per scaricare il filamento"
+
+#
+"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
+"\x00"
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -854,6 +894,10 @@
 "PowerUp"
 "Accendi"
 
+#
+"Please remove shipping helpers first."
+"\x00"
+
 #MSG_PREHEAT_NOZZLE c=20 r=0
 "Preheat the nozzle!"
 "Prerisc. ugello!"
@@ -865,6 +909,10 @@
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
 "Preriscaldando l'ugello. Attendere prego."
+
+#
+"Please upgrade."
+"\x00"
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
@@ -889,6 +937,10 @@
 #MSG_ERR_KILLED c=0 r=0
 "Printer halted. kill() called!"
 "Stampante ferma. kill () chiamato!"
+
+#
+"Press the knob to resume nozzle temperature."
+"\x00"
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
@@ -922,9 +974,9 @@
 "Remove old filament and press the knob to start loading new filament."
 "Rimuovi il filamento precedente e premi la manopola per caricare il nuovo filamento."
 
-#MSG_M119_REPORT c=0 r=0
-"Reporting endstop status"
-"Segnalazione dello stato finecorsa"
+#
+"Prusa i3 MK2 ready."
+"\x00"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -950,6 +1002,10 @@
 "RPi port     [on]"
 "Porta RPi    [on]"
 
+#
+"Resend"
+"\x00"
+
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
 "Porta RPi   [off]"
@@ -963,20 +1019,20 @@
 "Mem. SD [normale]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-"SD card [FlshAir]"
-"Mem. SD[FlashAir]"
+"SD card [flshAir]"
+"Mem. SD[flashAir]"
 
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
 "Memoria SD ok"
 
+#
+"Right"
+"\x00"
+
 #MSG_SD_INIT_FAIL c=0 r=0
 "SD init fail"
 "Inizializzazione Memoria SD Fallita"
-
-#MSG_SD_PRINTING_BYTE c=0 r=0
-"SD printing byte "
-"SD stampa byte "
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -1010,6 +1066,14 @@
 "Selftest will be run to calibrate accurate sensorless rehoming."
 "Verra effettuato un self test per calibrare l'homing senza sensori."
 
+#
+"Select nozzle preheat temperature which matches your material."
+"\x00"
+
+#
+"Select PLA filament:"
+"\x00"
+
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 "Imposta temperatura:"
@@ -1042,6 +1106,10 @@
 "Sort:      [time]"
 "Ordine:   [Tempo]"
 
+#
+"Severe skew"
+"\x00"
+
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
 "Ordine:[Alfabet.]"
@@ -1054,9 +1122,17 @@
 "Sound      [loud]"
 "Suono     [forte]"
 
+#
+"Slight skew"
+"\x00"
+
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
 "Suono      [mute]"
+
+#
+"Some problem encountered, Z-leveling enforced ..."
+"\x00"
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -1081,10 +1157,6 @@
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
 "Statistiche  "
-
-#MSG_STEPPER_TOO_HIGH c=0 r=0
-"Steprate too high: "
-"Velocita passo troppo alta: "
 
 #MSG_STOP_PRINT c=0 r=0
 "Stop print"
@@ -1154,6 +1226,14 @@
 "Tune"
 "Regola"
 
+#
+"Unload"
+"\x00"
+
+#
+"Unload all"
+"\x00"
+
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
 "Scarica filam."
@@ -1186,6 +1266,10 @@
 "Waiting for PINDA probe cooling"
 "In attesa del raffreddamento della sonda PINDA"
 
+#
+"Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
+"\x00"
+
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
 "Attenzione: tipo di stampante e di scheda madre cambiati."
@@ -1209,14 +1293,6 @@
 #MSG_WIZARD c=17 r=1
 "Wizard"
 "\x00"
-
-#MSG_SD_WORKDIR_FAIL c=0 r=0
-"workDir open failed"
-"workDir open fallito"
-
-#MSG_SD_WRITE_TO_FILE c=0 r=0
-"Writing to file: "
-"Scrittura su file: "
 
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"
@@ -1242,6 +1318,10 @@
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
 "Calibrazion XYZ corretta. Assi X/Y leggermente storti. Ben fatto!"
 
+#
+"X-correct"
+"\x00"
+
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
 "Calibrazione XYZ OK. Gli assi X/Y sono perpendicolari. Complimenti!"
@@ -1266,13 +1346,37 @@
 "Load filament 1"
 "Caricare fil. 1"
 
+#
+"XYZ calibration failed. Bed calibration point was not found."
+"\x00"
+
+#
+"XYZ calibration failed. Front calibration points not reachable."
+"\x00"
+
+#
+"XYZ calibration failed. Left front calibration point not reachable."
+"\x00"
+
 #MSG_LOAD_FILAMENT_2 c=17 r=0
 "Load filament 2"
 "Caricare fil. 2"
 
+#
+"XYZ calibration failed. Right front calibration point not reachable."
+"\x00"
+
 #MSG_LOAD_FILAMENT_3 c=17 r=0
 "Load filament 3"
 "Caricare fil. 3"
+
+#
+"Y distance from min"
+"\x00"
+
+#
+"Y-correct"
+"\x00"
 
 #MSG_LOAD_FILAMENT_4 c=17 r=0
 "Load filament 4"
