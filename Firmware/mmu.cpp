@@ -775,10 +775,9 @@ void mmu_M600_load_filament(bool automatic)
     mmu_command(MMU_CMD_T0 + tmp_extruder);
 
       manage_response(false, true);
-    delay(150);
+      delay(1500);
       mmu_command(MMU_CMD_C0);
-        mmu_extruder = tmp_extruder; //filament change is finished
-    delay(100);
+      mmu_extruder = tmp_extruder; //filament change is finished
       mmu_load_to_nozzle();
       load_filament_final_feed();
       st_synchronize();
@@ -1301,6 +1300,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
   lcd_print(tmp_extruder + 1);
   mmu_command(MMU_CMD_T0 + tmp_extruder);
   manage_response(true, true);
+  delay(1500);
   mmu_command(MMU_CMD_C0);
   mmu_extruder = tmp_extruder; //filament change is finished
   mmu_load_to_nozzle();

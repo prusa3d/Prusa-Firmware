@@ -6875,6 +6875,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	  	if (mmu_enabled) 
 		{
 			st_synchronize();
+      delay(1500);
 			mmu_command(MMU_CMD_C0);
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
@@ -6903,6 +6904,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
               mmu_command(MMU_CMD_T0 + tmp_extruder);
 
               manage_response(true, true);
+              delay(1500);
               mmu_command(MMU_CMD_C0);
               mmu_extruder = tmp_extruder; //filament change is finished
 
