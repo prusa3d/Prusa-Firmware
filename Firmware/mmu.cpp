@@ -421,7 +421,6 @@ void mmu_loop(void)
             {
                 printf_P(PSTR("MMU <= 'Filament seen at extruder'\n"));
                 mmu_puts_P(PSTR("EE\n"));
-                //mmuFSensorLoading = false;
                 mmu_state = 3; // wait for response
             }
             mmu_cmd = 0;
@@ -444,8 +443,6 @@ void mmu_loop(void)
               else enquecommand_front_P(PSTR("M600")); //save print and run M600 command
             }
             mmu_state = 1;
-            //if (mmu_cmd == 0)
-            //mmu_ready = true;
         }
         else if ((mmu_last_request + MMU_P0_TIMEOUT) < millis())
         {   //resend request after timeout (30s)
@@ -487,11 +484,9 @@ void mmu_loop(void)
         if (mmu_rx_echo() > 0)
         {
             printf_P(PSTR("MMU => 'CMD ACK 0x%2X'\n"), mmu_cmd);
-            //mmu_puts_P(PSTR("EE\n")); // Advise MMU CMD is correct, execute
             ack_received = true;
             mmu_state = 1;            // Do normal Await command completion confirmation
         } else if ((mmu_last_request + 1000) < millis()) {  // Timeout if echo doesn't match request, resend cmd
-            //printf_P(PSTR("MMU => 'CMD RETRY'\n"));
             printf_P(PSTR("MMU => 'CMD RETRY 0x%2X'\n"), mmu_cmd);
             mmu_state = 1;
         }
@@ -775,7 +770,6 @@ void mmu_M600_load_filament(bool automatic)
     mmu_command(MMU_CMD_T0 + tmp_extruder);
 
       manage_response(false, true);
-      delay(1500);
       mmu_command(MMU_CMD_C0);
       mmu_extruder = tmp_extruder; //filament change is finished
       mmu_load_to_nozzle();
@@ -1300,7 +1294,6 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
   lcd_print(tmp_extruder + 1);
   mmu_command(MMU_CMD_T0 + tmp_extruder);
   manage_response(true, true);
-  delay(1500);
   mmu_command(MMU_CMD_C0);
   mmu_extruder = tmp_extruder; //filament change is finished
   mmu_load_to_nozzle();
