@@ -177,7 +177,7 @@ bool fsensor_enable(void)
             fsensor_not_responding = false;
         else
             fsensor_not_responding = true;
-        fsensor_enabled = true;
+        fsensor_enabled = pat9125 ? true : false;
         fsensor_autoload_set(true);
         fsensor_autoload_enabled = false;
         fsensor_oq_meassure = false;
@@ -291,12 +291,13 @@ bool fsensor_check_autoload(void)
     if (fsensor_autoload_c != fsensor_autoload_c_old)
         printf_P(PSTR("fsensor_check_autoload dy=%d c=%d sum=%d\n"), dy, fsensor_autoload_c, fsensor_autoload_sum);
 #endif
-//  if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
     if ((fsensor_autoload_c >= 12) && (fsensor_autoload_sum > 20))
     {
-        if (mmu_enabled) mmu_command(MMU_CMD_FS);
-        fsensor_autoload_check_stop();
-        fsensor_autoload_enabled = false;
+        if (mmu_enabled) {
+          mmu_command(MMU_CMD_FS);
+          fsensor_autoload_check_stop();
+          fsensor_autoload_enabled = false;
+        }
         return true;
     }
     return false;

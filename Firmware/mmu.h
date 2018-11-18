@@ -47,14 +47,11 @@ extern int8_t mmu_rx_echo(void);
 
 extern int8_t mmu_rx_ok(void);
 
-extern int8_t mmu_rx_not_ok(void);
-
 extern int8_t mmu_rx_sensFilatBoot(void);
 
 extern void mmu_init(void);
 
 extern void mmu_loop(void);
-
 
 extern void mmu_reset(void);
 

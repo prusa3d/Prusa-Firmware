@@ -33,6 +33,7 @@
 #include "swi2c.h"
 #endif //PAT9125_SWI2C
 
+#define PAT9125_NEW_INIT
 
 uint8_t pat9125_PID1 = 0;
 uint8_t pat9125_PID2 = 0;

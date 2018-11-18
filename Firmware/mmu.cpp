@@ -22,7 +22,7 @@
 
 #define MMU_TODELAY 100
 #define MMU_TIMEOUT 10
-#define MMU_CMD_TIMEOUT 300000ul //5min timeout for mmu commands (except P0)
+#define MMU_CMD_TIMEOUT 30000ul  //300000ul //5min timeout for mmu commands (except P0)
 #define MMU_P0_TIMEOUT 3000ul //timeout for P0 command: 3seconds
 
 #ifdef MMU_HWRESET
@@ -34,6 +34,7 @@ bool mmu_enabled = false;
 bool mmu_ready = false;
 
 bool mmuFSensorLoading = false;
+bool alreadyLcdClicked = false;
 int lastLoadedFilament = -10;
 
 int8_t mmu_state = 0;
@@ -160,14 +161,6 @@ int8_t mmu_rx_ok(void)
     return res;
 }
 
-//check 'nk' response
-int8_t mmu_rx_not_ok(void)
-{
-    int8_t res = uart2_rx_str_P(PSTR("nk\n"));
-    if (res == 1) mmu_last_response = millis();
-    return res;
-}
-
 //check 'MK3 FSensor requested to look for load' response
 int8_t mmu_rx_fsensorLook(void)
 {
@@ -210,7 +203,6 @@ void mmu_init(void)
  *  2 >>  1 MMURX ok, Finda State
  *  3 >>  1 MMURX ok, mmu commands response
  * 10 >>  3 MMUECHO, confirm receipt of cmd (timeout 500ms to resend)
- * 20 >>  1 not_ok
  */
 
 void mmu_loop(void)
@@ -429,13 +421,14 @@ void mmu_loop(void)
         {
             mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
             mmu_state = 2;
+        } else if (((mmu_last_response + 500) < millis()) && mmuFSensorLoading) {
+          if (!fsensor_enabled) fsensor_enable();
         }
         return;
     case 2: //response to command P0
         if (mmu_rx_ok() > 0)
         {
             fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
-            //printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
             if (!mmu_finda && CHECK_FINDA && fsensor_enabled) {
               fsensor_stop_and_save_print();
               enquecommand_front_P(PSTR("FSENSOR_RECOVER")); //then recover
@@ -467,17 +460,6 @@ void mmu_loop(void)
             printf_P(PSTR("MMU => 'ok'\n"));
             mmu_ready = true;
             mmu_state = 1;
-        } else if(mmu_rx_not_ok() > 0)
-        {
-            printf_P(PSTR("MMU => 'fixTheProblem!!'\n"));
-            mmu_ready = false;
-            mmu_state = 20;
-        }
-        else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
-        {   //resend request after timeout (5 min)
-            printf_P(PSTR("MMU => 'Erro 5m Timeout'\n"));
-            mmu_ready = false;
-            mmu_state = 20;
         }
         return;
     case 10: //echo response, comms confirmation
@@ -491,13 +473,6 @@ void mmu_loop(void)
             mmu_state = 1;
         }
         return;
-    case 20: // MMU in fixTheProblem mode, we're waiting for an all good from it to continue.
-        if (mmu_rx_ok() > 0)
-        {
-            //if ok received then go back to ready
-            mmu_state = 1;
-            mmu_ready = true;
-        }
     }
 }
 
@@ -548,7 +523,7 @@ bool mmu_get_response(void)
     }
     while (!mmu_ready)
     {
-        if ((mmu_state == 3) || (mmu_state == 10) || ((mmuFSensorLoading) && ((mmu_last_request + MMU_CMD_TIMEOUT) > millis()))) {
+        if (((mmu_state == 3) || (mmu_state == 10) || (mmuFSensorLoading)) && ((mmu_last_request + MMU_CMD_TIMEOUT) > millis())) {
             delay_keep_alive(100);
         } else {
             break;
@@ -581,6 +556,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
           }
           st_synchronize();
           mmu_print_saved = true;
+          SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
           printf_P(PSTR("MMU not responding\n"));
           hotend_temp_bckp = degTargetHotend(active_extruder);
           if (move_axes) {
@@ -611,8 +587,17 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
           lcd_display_message_fullscreen_P(_i("MMU needs user attention."));
           screen++;
         }
-        else {  //screen 1
-          if((degTargetHotend(active_extruder) == 0) && turn_off_nozzle) lcd_display_message_fullscreen_P(_i("Press the knob to resume nozzle temperature."));
+        else if (screen == 1) {  //screen 1
+          if((degTargetHotend(active_extruder) == 0) && turn_off_nozzle) {
+            lcd_display_message_fullscreen_P(_i("Press the knob to resume nozzle temperature."));
+            screen = 0;
+          } else {
+            lcd_display_message_fullscreen_P(_i("Fix the issue and then press button on MMU unit."));
+            screen++;
+          }
+        } if (screen == 2) {  //screen 1
+          if(alreadyLcdClicked) lcd_display_message_fullscreen_P(_i("Press the knob, Manual Filament Sense to MMU."));
+          else if (!fsensor_enabled) lcd_display_message_fullscreen_P(_i("Fix the issue, MMU Button. FSensor Off :("));
           else lcd_display_message_fullscreen_P(_i("Fix the issue and then press button on MMU unit."));
           screen=0;
         }
@@ -626,14 +611,26 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 
         //5 seconds delay
         for (uint8_t i = 0; i < 50; i++) {
-          if (lcd_clicked()) {
+          if (lcd_clicked() && !alreadyLcdClicked) {
             setTargetHotend(hotend_temp_bckp, active_extruder);
+            alreadyLcdClicked = true;
+            if (mmuFSensorLoading) {
+              if (!fsensor_enabled) fsensor_enable(); 
+              if (!fsensor_autoload_enabled) fsensor_autoload_enabled  = true;
+              fsensor_autoload_check_stop();
+            } else if (lcd_clicked() && alreadyLcdClicked) {
+              mmu_command(MMU_CMD_FS); // manually tell MMU that filament is loaded
+              fsensor_autoload_check_stop();
+              fsensor_autoload_enabled = false;
+              alreadyLcdClicked = false;
+            }
             break;
           }
           delay_keep_alive(100);
         }
       }
       else if (mmu_print_saved) {
+        SERIAL_ECHOLNPGM("// action:resume"); //for octoprint
         printf_P(PSTR("MMU starts responding\n"));
         if (turn_off_nozzle) 
         {
