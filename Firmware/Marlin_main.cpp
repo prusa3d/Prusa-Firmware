@@ -1683,10 +1683,8 @@ void host_keepalive() {
      switch (busy_state) {
       case IN_HANDLER:
       case IN_PROCESS:
-        SERIAL_ECHO_START;  // RMM : TODO Working on finding why recover doesn't work after a long period waiting
-        if ((mmu_state == 1) && fsensor_enabled && mmuFSensorLoading && fsensor_autoload_enabled) SERIAL_ECHOLNPGM ("busy: MK3 Sensing Load for MMU");
-        if (mmu_state == -1) SERIAL_ECHOLNPGM("busy: MMU Reinited");
-        else SERIAL_ECHOLNPGM("busy: processing");
+        SERIAL_ECHO_START;
+        SERIAL_ECHOLNPGM("busy: processing");
         break;
       case PAUSED_FOR_USER:
         SERIAL_ECHO_START;
@@ -1697,7 +1695,7 @@ void host_keepalive() {
         SERIAL_ECHOLNPGM("busy: paused for input");
         break;
       default:
-	break;
+	      break;
     }
   }
   prev_busy_signal_ms = ms;

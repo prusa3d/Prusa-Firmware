@@ -22,7 +22,7 @@
 
 #define MMU_TODELAY 100
 #define MMU_TIMEOUT 10
-#define MMU_CMD_TIMEOUT 30000ul  //300000ul //5min timeout for mmu commands (except P0)
+#define MMU_CMD_TIMEOUT 60000ul  //300000ul //1min timeout for mmu commands (except P0)
 #define MMU_P0_TIMEOUT 3000ul //timeout for P0 command: 3seconds
 
 #ifdef MMU_HWRESET
@@ -32,9 +32,9 @@
 bool mmu_enabled = false;
 
 bool mmu_ready = false;
+bool isMMUPrintPaused = false;
 
 bool mmuFSensorLoading = false;
-bool alreadyLcdClicked = false;
 int lastLoadedFilament = -10;
 
 int8_t mmu_state = 0;
@@ -211,6 +211,8 @@ void mmu_loop(void)
 #ifdef MMU_DEBUG
     if (last_state != mmu_state) printf_P(PSTR("MMU loop, state=%d\n"), mmu_state);
 #endif //MMU_DEBUG
+    //if (mmu_print_saved && !isMMUPrintPaused) { printf_P(PSTR("// action:pause\n")); isMMUPrintPaused = true; }
+    //if (!mmu_print_saved && isMMUPrintPaused) { printf_P(PSTR("// action:resume\n")); isMMUPrintPaused = false; }
     last_state = mmu_state;
     switch (mmu_state)
     {
@@ -515,7 +517,6 @@ void mmu_command(uint8_t cmd)
 
 bool mmu_get_response(void)
 {
-//  printf_P(PSTR("mmu_get_response - begin\n"));
     KEEPALIVE_STATE(IN_PROCESS);
     while (mmu_cmd != 0)
     {
@@ -531,7 +532,6 @@ bool mmu_get_response(void)
     }
     bool ret = mmu_ready;
     mmu_ready = false;
-//  printf_P(PSTR("mmu_get_response - end %d\n"), ret?1:0);
     return ret;
 }
 
@@ -556,7 +556,6 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
           }
           st_synchronize();
           mmu_print_saved = true;
-          SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
           printf_P(PSTR("MMU not responding\n"));
           hotend_temp_bckp = degTargetHotend(active_extruder);
           if (move_axes) {
@@ -588,18 +587,9 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
           screen++;
         }
         else if (screen == 1) {  //screen 1
-          if((degTargetHotend(active_extruder) == 0) && turn_off_nozzle) {
-            lcd_display_message_fullscreen_P(_i("Press the knob to resume nozzle temperature."));
-            screen = 0;
-          } else {
-            lcd_display_message_fullscreen_P(_i("Fix the issue and then press button on MMU unit."));
-            screen++;
-          }
-        } if (screen == 2) {  //screen 1
-          if(alreadyLcdClicked) lcd_display_message_fullscreen_P(_i("Press the knob, Manual Filament Sense to MMU."));
-          else if (!fsensor_enabled) lcd_display_message_fullscreen_P(_i("Fix the issue, MMU Button. FSensor Off :("));
+          if((degTargetHotend(active_extruder) == 0) && turn_off_nozzle) lcd_display_message_fullscreen_P(_i("Press the knob to resume nozzle temperature."));
           else lcd_display_message_fullscreen_P(_i("Fix the issue and then press button on MMU unit."));
-          screen=0;
+          screen = 0;
         }
 
         lcd_set_degree();
@@ -611,18 +601,12 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
 
         //5 seconds delay
         for (uint8_t i = 0; i < 50; i++) {
-          if (lcd_clicked() && !alreadyLcdClicked) {
+          if (lcd_clicked()) {
             setTargetHotend(hotend_temp_bckp, active_extruder);
-            alreadyLcdClicked = true;
             if (mmuFSensorLoading) {
               if (!fsensor_enabled) fsensor_enable(); 
               if (!fsensor_autoload_enabled) fsensor_autoload_enabled  = true;
               fsensor_autoload_check_stop();
-            } else if (lcd_clicked() && alreadyLcdClicked) {
-              mmu_command(MMU_CMD_FS); // manually tell MMU that filament is loaded
-              fsensor_autoload_check_stop();
-              fsensor_autoload_enabled = false;
-              alreadyLcdClicked = false;
             }
             break;
           }
@@ -630,7 +614,6 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
         }
       }
       else if (mmu_print_saved) {
-        SERIAL_ECHOLNPGM("// action:resume"); //for octoprint
         printf_P(PSTR("MMU starts responding\n"));
         if (turn_off_nozzle) 
         {
@@ -645,7 +628,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
           delay_keep_alive(1000);
           lcd_wait_for_heater();
         }
-        }       
+        }
         if (move_axes) {
           lcd_clear();
           lcd_display_message_fullscreen_P(_i("MMU OK. Resuming position..."));
@@ -656,8 +639,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle)
           current_position[Z_AXIS] = z_position_bckp;
           plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
           st_synchronize();
-        }
-        else {
+        } else {
           lcd_clear();
           lcd_display_message_fullscreen_P(_i("MMU OK. Resuming..."));
           delay_keep_alive(1000); //delay just for showing MMU OK message for a while in case that there are no xyz movements
