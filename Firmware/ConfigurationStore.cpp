@@ -241,22 +241,19 @@ bool Config_RetrieveSettings()
 		if (cs.max_jerk[Y_AXIS] > DEFAULT_YJERK) cs.max_jerk[Y_AXIS] = DEFAULT_YJERK;
         calculate_extruder_multipliers();
 
-
 		//if max_feedrate_silent and max_acceleration_units_per_sq_second_silent were never stored to eeprom, use default values:
+        for (uint8_t i = 0; i < (sizeof(cs.max_feedrate_silent)/sizeof(cs.max_feedrate_silent[0])); ++i)
         {
             const uint32_t erased = 0xffffffff;
             bool initialized = false;
-            for (uint8_t i = 0; i < (sizeof(cs.max_feedrate_silent)/sizeof(cs.max_feedrate_silent[0])); ++i)
+
+            for(uint8_t j = 0; j < sizeof(float); ++j)
             {
-                initialized = false;
-                for(uint8_t j = 0; j < sizeof(float); ++j)
-                {
-                    if(0xff != reinterpret_cast<uint8_t*>(&(cs.max_feedrate_silent[i]))[j]) initialized = true;
-                }
-                if (!initialized) memcpy_P(&cs.max_feedrate_silent[i],&default_conf.max_feedrate_silent[i], sizeof(cs.max_feedrate_silent[i]));
-                if (erased == cs.max_acceleration_units_per_sq_second_silent[i]) {
-                    memcpy_P(&cs.max_acceleration_units_per_sq_second_silent[i],&default_conf.max_acceleration_units_per_sq_second_silent[i],sizeof(cs.max_acceleration_units_per_sq_second_silent[i]));
-                }
+                if(0xff != reinterpret_cast<uint8_t*>(&(cs.max_feedrate_silent[i]))[j]) initialized = true;
+            }
+            if (!initialized) memcpy_P(&cs.max_feedrate_silent[i],&default_conf.max_feedrate_silent[i], sizeof(cs.max_feedrate_silent[i]));
+            if (erased == cs.max_acceleration_units_per_sq_second_silent[i]) {
+                memcpy_P(&cs.max_acceleration_units_per_sq_second_silent[i],&default_conf.max_acceleration_units_per_sq_second_silent[i],sizeof(cs.max_acceleration_units_per_sq_second_silent[i]));
             }
         }
 
