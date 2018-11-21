@@ -56,15 +56,15 @@
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "Auto deplete [on]"
-"Spoj Civky [zap]"
+"Spoj Civky  [zap]"
 
 #
 "Auto deplete[N/A]"
-"Spoj Civky [N/A]"
+"Spoj Civky  [N/A]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "Auto deplete[off]"
-"Spoj Civky [vyp]"
+"Spoj Civky  [vyp]"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
@@ -192,15 +192,15 @@
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Crash det. [zap]"
+"Crash det.  [zap]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Crash det. [N/A]"
+"Crash det.  [N/A]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Crash det. [vyp]"
+"Crash det.  [vyp]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -692,11 +692,11 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Mod [Normal]"
+"Mod      [Normal]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Mod [tichy]"
+"Mod       [tichy]"
 
 #
 "MMU needs user attention."
@@ -704,7 +704,7 @@
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
-"Mod [tichy]"
+"Mod       [tichy]"
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
@@ -712,7 +712,7 @@
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Mod [vys. vykon]"
+"Mod  [vys. vykon]"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -1000,7 +1000,7 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"RPi port [zap]"
+"RPi port    [zap]"
 
 #
 "Resend"
@@ -1008,7 +1008,7 @@
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"RPi port [vyp]"
+"RPi port    [vyp]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -1016,7 +1016,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 "SD card  [normal]"
-"SD card [normal]"
+"SD card  [normal]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
@@ -1100,11 +1100,11 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort:      [none]"
-"Trideni [Zadne]"
+"Trideni   [Zadne]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"Trideni: [cas]"
+"Trideni:    [cas]"
 
 #
 "Severe skew"
@@ -1120,7 +1120,7 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Zvuk [hlasity]"
+"Zvuk    [hlasity]"
 
 #
 "Slight skew"
@@ -1128,7 +1128,7 @@
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Zvuk [vypnuto]"
+"Zvuk    [vypnuto]"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
@@ -1136,11 +1136,11 @@
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
-"Zvuk [jednou]"
+"Zvuk     [jednou]"
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Zvuk [tichy]"
+"Zvuk      [tichy]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -1180,11 +1180,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Tepl. kal. [zap]"
+"Tepl. kal.  [zap]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Tepl. kal. [vyp]"
+"Tepl. kal.  [vyp]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1388,4 +1388,4 @@
 
 #MSG_OFF c=0 r=0
 " [off]"
-"\x00"
+" [vyp]"

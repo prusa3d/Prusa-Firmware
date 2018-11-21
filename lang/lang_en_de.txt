@@ -60,7 +60,7 @@
 
 #
 "Auto deplete[N/A]"
-"Restemodus[N/V]"
+"Restemodus  [N/V]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "Auto deplete[off]"
@@ -196,7 +196,7 @@
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Crash Erk.  [nv]"
+"Crash Erk.   [nv]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
@@ -336,11 +336,11 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"F.Autoladen[an]"
+"F.Autoladen  [an]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
-"F. Autoload [nv]"
+"F. Autoload  [nv]"
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
@@ -356,11 +356,11 @@
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Luefter Chk.[an]"
+"Luefter Chk. [an]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Luefter Chk. [aus]"
+"Luefter Chk.[aus]"
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
@@ -372,7 +372,7 @@
 
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
-"Fil. Sensor [nv]"
+"Fil. Sensor  [nv]"
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
@@ -692,11 +692,11 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Modus [Normal]"
+"Modus    [Normal]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Modus [leise]"
+"Modus     [leise]"
 
 #
 "MMU needs user attention."
@@ -708,11 +708,11 @@
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
-"Modus [Auto Power]"
+"Modus[Auto Power]"
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Modus[Hohe Leistung]"
+"Modus[Hohe Leist]"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -872,7 +872,7 @@
 
 #MSG_EJECT_REMOVE c=20 r=4
 "Please remove filament and then press the knob."
-"Bitte Filament      entfernen und dann  den Knopf druecken"
+"Bitte Filament entfernen und dann den Knopf druecken"
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
@@ -1020,7 +1020,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
-"SD Karte [flshAir]"
+"SD Karte[flshAir]"
 
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
@@ -1104,7 +1104,7 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"Sort.: [Zeit]"
+"Sort.:     [Zeit]"
 
 #
 "Severe skew"
@@ -1180,11 +1180,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Temp. Kal. [AN]"
+"Temp. Kal.   [AN]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Temp. Kal. [AUS]"
+"Temp. Kal.  [AUS]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1388,4 +1388,4 @@
 
 #MSG_OFF c=0 r=0
 " [off]"
-"\x00"
+" [AUS]"

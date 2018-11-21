@@ -28,11 +28,11 @@
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-"[2JWykrywanie zderzen moze [1;0Hbyc wlaczone tylko w [2;0Htrybie Normalnym"
+"\x1b[2JWykrywanie zderzen moze\x1b[1;0Hbyc wlaczone tylko w\x1b[2;0Htrybie Normalnym"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
-"[2JUWAGA:[1;0HWykrywanie zderzen[2;0Hwylaczone w[3;0Htrybie Stealth"
+"\x1b[2JUWAGA:\x1b[1;0HWykrywanie zderzen\x1b[2;0Hwylaczone w\x1b[3;0Htrybie Stealth"
 
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
@@ -56,11 +56,11 @@
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "Auto deplete [on]"
-"Dok. resztek[wl]"
+"Dok. resztek [wl]"
 
 #
 "Auto deplete[N/A]"
-"Wykorzyst. reszt.[nd]"
+"Dok. resztek [nd]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "Auto deplete[off]"
@@ -192,15 +192,15 @@
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Wykr. zderzen [wl]"
+"Wykr.zderzen [wl]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Wykr. zderzen [n/d]"
+"Wykr.zderzen[n/d]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Wykr. zderzen [wyl]"
+"Wykr.zderzen[wyl]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -336,15 +336,15 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"Autolad. fil[wl]"
+"Autolad. fil [wl]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
-"Autoladowanie fil. [N/D]"
+"Autolad.fil.[N/D]"
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
-"Autolad. fil[wyl]"
+"Autolad.fil.[wyl]"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -356,15 +356,15 @@
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Sprawdzanie wentylatorow [wl]"
+"Sprawd.went. [wl]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Sprawdzanie wentylatorow [wyl]"
+"Sprawd.went.[wyl]"
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
-"Czuj. filamentu. [wl]"
+"Czuj. filam. [wl]"
 
 #MSG_RESPONSE_POOR c=20 r=2
 "Fil. sensor response is poor, disable it?"
@@ -372,11 +372,11 @@
 
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
-"Czuj. filamentu [N/D]"
+"Czuj. filam.[N/D]"
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
-"Czuj. fil. [wyl]"
+"Czuj. filam.[wyl]"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -692,11 +692,11 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Tryb [normalny]"
+"Tryb   [normalny]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Tryb [cichy]"
+"Tryb      [cichy]"
 
 #
 "MMU needs user attention."
@@ -704,15 +704,15 @@
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
-"Tryb [Stealth]"
+"Tryb    [Stealth]"
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
-"Tryb [automatyczny]"
+"Tryb [automatycz]"
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Tryb [wysoka wydajnosc]"
+"Tryb[wysoka wyd.]"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -1000,7 +1000,7 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"Port RPi [wl]"
+"Port RPi     [wl]"
 
 #
 "Resend"
@@ -1008,7 +1008,7 @@
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"Port RPi [wyl]"
+"Port RPi    [wyl]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -1016,11 +1016,11 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 "SD card  [normal]"
-"Karta SD [normalna]"
+"Karta SD [normal]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
-"Karta SD [FlashAir]"
+"Karta SD[FlshAir]"
 
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
@@ -1100,11 +1100,11 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort:      [none]"
-"Sortuj: [brak]"
+"Sortuj:    [brak]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"Sortuj: [czas]"
+"Sortuj:    [czas]"
 
 #
 "Severe skew"
@@ -1112,7 +1112,7 @@
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
-"Sortuj:[alfabet]"
+"Sortuj: [alfabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
@@ -1120,7 +1120,7 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Dzwiek [Glosny]"
+"Dzwiek   [Glosny]"
 
 #
 "Slight skew"
@@ -1128,7 +1128,7 @@
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Dzwiek [Wylaczony]"
+"Dzwiek[Wylaczony]"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
@@ -1136,11 +1136,11 @@
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
-"Dzwiek [1-raz]"
+"Dzwiek    [1-raz]"
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Dzwiek [Cichy]"
+"Dzwiek    [Cichy]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -1180,11 +1180,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Kalibr. temp. [wl]"
+"Kalibr. temp.[wl]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Kalibr. temp. [wyl]"
+"Kalibr.temp.[wyl]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1388,4 +1388,4 @@
 
 #MSG_OFF c=0 r=0
 " [off]"
-"\x00"
+" [wyl]"
