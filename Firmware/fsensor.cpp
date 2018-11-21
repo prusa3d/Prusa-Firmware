@@ -200,6 +200,7 @@ void pciSetup(byte pin)
 void fsensor_autoload_check_start(void)
 {
 //	puts_P(_N("fsensor_autoload_check_start\n"));
+	if (mmu_enabled) return;
 	if (!fsensor_enabled) return;
 	if (!fsensor_autoload_enabled) return;
 	if (fsensor_watch_autoload) return;
@@ -238,6 +239,7 @@ void fsensor_autoload_check_stop(void)
 
 bool fsensor_check_autoload(void)
 {
+	if (mmu_enabled) return false;
 	if (!fsensor_enabled) return false;
 	if (!fsensor_autoload_enabled) return false;
 	if (!fsensor_watch_autoload)
@@ -362,6 +364,7 @@ bool fsensor_oq_result(void)
 
 ISR(FSENSOR_INT_PIN_VECT)
 {
+	if (mmu_enabled) return;
 	if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
 	fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
 	static bool _lock = false;
