@@ -47,7 +47,7 @@
 #define EEPROM_UVLO_TARGET_HOTEND		(EEPROM_UVLO_CURRENT_POSITION_Z - 1)
 #define EEPROM_UVLO_TARGET_BED			(EEPROM_UVLO_TARGET_HOTEND - 1)
 #define EEPROM_UVLO_FEEDRATE			(EEPROM_UVLO_TARGET_BED - 2)
-#define EEPROM_UVLO_FAN_SPEED			(EEPROM_UVLO_FEEDRATE - 1) 
+#define EEPROM_UVLO_FAN_SPEED			(EEPROM_UVLO_FEEDRATE - 1)
 #define EEPROM_FAN_CHECK_ENABLED		(EEPROM_UVLO_FAN_SPEED - 1)
 #define EEPROM_UVLO_MESH_BED_LEVELING     (EEPROM_FAN_CHECK_ENABLED - 9*2)
 
@@ -55,11 +55,11 @@
 #define EEPROM_UVLO_E_ABS            (EEPROM_UVLO_Z_MICROSTEPS - 1)
 #define EEPROM_UVLO_CURRENT_POSITION_E	(EEPROM_UVLO_E_ABS - 4)                 //float for current position in E
 
-// Crash detection mode EEPROM setting 
+// Crash detection mode EEPROM setting
 #define EEPROM_CRASH_DET         (EEPROM_UVLO_CURRENT_POSITION_E - 5)           // float (orig EEPROM_UVLO_MESH_BED_LEVELING-12) 
 // Crash detection counter Y (last print)
 #define EEPROM_CRASH_COUNT_Y       (EEPROM_CRASH_DET - 1)                       // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-15)
-// Filament sensor on/off EEPROM setting 
+// Filament sensor on/off EEPROM setting
 #define EEPROM_FSENSOR           (EEPROM_CRASH_COUNT_Y - 1)                     // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-14) 
 // Crash detection counter X (last print)
 #define EEPROM_CRASH_COUNT_X       (EEPROM_FSENSOR - 1)                         // uint8 (orig EEPROM_UVLO_MESH_BED_LEVELING-15)
@@ -90,7 +90,7 @@
 #define EEPROM_POWER_COUNT_TOT       (EEPROM_FERROR_COUNT_TOT - 2)             // uint16
 
 ////////////////////////////////////////
-// TMC2130 Accurate sensorless homing 
+// TMC2130 Accurate sensorless homing
 
 // X-axis home origin (stepper phase in microsteps, 0..63 for 16ustep resolution)
 #define EEPROM_TMC2130_HOME_X_ORIGIN           (EEPROM_POWER_COUNT_TOT - 1)                    // uint8

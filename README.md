@@ -1,3 +1,7 @@
+# This FW is for use with MMU2, in combination with MMU2-FW https://github.com/TheZeroBeast/MM-control-01
+
+
+
 # Table of contents
 
 <!--ts-->
@@ -6,9 +10,6 @@
    * [Automated tests](#3-automated-tests)
    * [Documentation](#4-documentation)
 <!--te-->
-
-This FW is for use with MMU2, in combination with MMU2-FW https://github.com/TheZeroBeast/MM-control-01
-
 
 # 1. Development environment preparation
 

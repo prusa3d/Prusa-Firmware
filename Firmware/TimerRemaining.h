@@ -13,7 +13,7 @@
 class TimerRemaining : public LongTimer
 {
 public:
-    TimerRemaining() : m_period(){}
+    TimerRemaining() : m_period() {}
     void start() = delete;
     bool expired(unsigned long msPeriod) = delete;
     /**
@@ -34,10 +34,10 @@ public:
      */
     unsigned long remaining()
     {
-      if (!running()) return 0;
-      if (expired()) return 0;
-      const unsigned long now = millis();
-      return (started() + m_period - now);
+        if (!running()) return 0;
+        if (expired()) return 0;
+        const unsigned long now = millis();
+        return (started() + m_period - now);
     }
     /**
      * @brief Timer has expired.

@@ -13,9 +13,9 @@ extern const float bed_skew_angle_extreme;
 // Is the world2machine correction activated?
 enum World2MachineCorrectionMode
 {
-	WORLD2MACHINE_CORRECTION_NONE  = 0,
-	WORLD2MACHINE_CORRECTION_SHIFT = 1,
-	WORLD2MACHINE_CORRECTION_SKEW  = 2,
+    WORLD2MACHINE_CORRECTION_NONE  = 0,
+    WORLD2MACHINE_CORRECTION_SHIFT = 1,
+    WORLD2MACHINE_CORRECTION_SKEW  = 2,
 };
 extern uint8_t world2machine_correction_mode;
 // 2x2 transformation matrix from the world coordinates to the machine coordinates.
@@ -34,22 +34,22 @@ extern void world2machine_update_current();
 
 inline void world2machine(float &x, float &y)
 {
-	if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
-		// No correction.
-	} else {
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SKEW) {
-			// Firs the skew & rotation correction.
-			float out_x = world2machine_rotation_and_skew[0][0] * x + world2machine_rotation_and_skew[0][1] * y;
-			float out_y = world2machine_rotation_and_skew[1][0] * x + world2machine_rotation_and_skew[1][1] * y;
-			x = out_x;
-			y = out_y;
-		}
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SHIFT) {
-			// Then add the offset.
-			x += world2machine_shift[0];
-			y += world2machine_shift[1];
-		}
-	}
+    if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
+        // No correction.
+    } else {
+        if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SKEW) {
+            // Firs the skew & rotation correction.
+            float out_x = world2machine_rotation_and_skew[0][0] * x + world2machine_rotation_and_skew[0][1] * y;
+            float out_y = world2machine_rotation_and_skew[1][0] * x + world2machine_rotation_and_skew[1][1] * y;
+            x = out_x;
+            y = out_y;
+        }
+        if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SHIFT) {
+            // Then add the offset.
+            x += world2machine_shift[0];
+            y += world2machine_shift[1];
+        }
+    }
 }
 
 inline void world2machine(const float &x, const float &y, float &out_x, float &out_y)
@@ -61,48 +61,48 @@ inline void world2machine(const float &x, const float &y, float &out_x, float &o
 
 inline void machine2world(float x, float y, float &out_x, float &out_y)
 {
-	if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
-		// No correction.
-		out_x = x;
-		out_y = y;
-	} else {
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SHIFT) {
-			// Then add the offset.
-			x -= world2machine_shift[0];
-			y -= world2machine_shift[1];
-		}
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SKEW) {
-			// Firs the skew & rotation correction.
-			out_x = world2machine_rotation_and_skew_inv[0][0] * x + world2machine_rotation_and_skew_inv[0][1] * y;
-			out_y = world2machine_rotation_and_skew_inv[1][0] * x + world2machine_rotation_and_skew_inv[1][1] * y;
-		}
-	}
+    if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
+        // No correction.
+        out_x = x;
+        out_y = y;
+    } else {
+        if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SHIFT) {
+            // Then add the offset.
+            x -= world2machine_shift[0];
+            y -= world2machine_shift[1];
+        }
+        if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SKEW) {
+            // Firs the skew & rotation correction.
+            out_x = world2machine_rotation_and_skew_inv[0][0] * x + world2machine_rotation_and_skew_inv[0][1] * y;
+            out_y = world2machine_rotation_and_skew_inv[1][0] * x + world2machine_rotation_and_skew_inv[1][1] * y;
+        }
+    }
 }
 
 inline void machine2world(float &x, float &y)
 {
-	if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
-		// No correction.
-	} else {
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SHIFT) {
-			// Then add the offset.
-			x -= world2machine_shift[0];
-			y -= world2machine_shift[1];
-		}
-		if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SKEW) {
-			// Firs the skew & rotation correction.
-			float out_x = world2machine_rotation_and_skew_inv[0][0] * x + world2machine_rotation_and_skew_inv[0][1] * y;
-			float out_y = world2machine_rotation_and_skew_inv[1][0] * x + world2machine_rotation_and_skew_inv[1][1] * y;
-			x = out_x;
-			y = out_y;
-		}
-	}
+    if (world2machine_correction_mode == WORLD2MACHINE_CORRECTION_NONE) {
+        // No correction.
+    } else {
+        if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SHIFT) {
+            // Then add the offset.
+            x -= world2machine_shift[0];
+            y -= world2machine_shift[1];
+        }
+        if (world2machine_correction_mode & WORLD2MACHINE_CORRECTION_SKEW) {
+            // Firs the skew & rotation correction.
+            float out_x = world2machine_rotation_and_skew_inv[0][0] * x + world2machine_rotation_and_skew_inv[0][1] * y;
+            float out_y = world2machine_rotation_and_skew_inv[1][0] * x + world2machine_rotation_and_skew_inv[1][1] * y;
+            x = out_x;
+            y = out_y;
+        }
+    }
 }
 
 inline bool world2machine_clamp(float &x, float &y)
 {
-	bool clamped = false;
-	float tmpx, tmpy;
+    bool clamped = false;
+    float tmpx, tmpy;
     world2machine(x, y, tmpx, tmpy);
     if (tmpx < X_MIN_POS) {
         tmpx = X_MIN_POS;
@@ -137,14 +137,14 @@ extern void go_home_with_z_lift();
  */
 
 enum BedSkewOffsetDetectionResultType {
-	// Detection failed, some point was not found.
-	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1, //!< Point not found.
-	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2, //!< Fitting failed
-	
-	// Detection finished with success.
-	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,  //!< Perfect.
-	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,  //!< Mildly skewed.
-	BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2   //!< Extremely skewed.
+    // Detection failed, some point was not found.
+    BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1, //!< Point not found.
+    BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2, //!< Fitting failed
+
+    // Detection finished with success.
+    BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,  //!< Perfect.
+    BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,  //!< Mildly skewed.
+    BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME		= 2   //!< Extremely skewed.
 };
 
 extern BedSkewOffsetDetectionResultType find_bed_offset_and_skew(int8_t verbosity_level, uint8_t &too_far_mask);
@@ -162,7 +162,7 @@ extern bool is_bed_z_jitter_data_valid();
 // Useful for visualizing the behavior of the bed induction detector.
 extern bool scan_bed_induction_points(int8_t verbosity_level);
 
-// Load Z babystep value from the EEPROM into babystepLoadZ, 
+// Load Z babystep value from the EEPROM into babystepLoadZ,
 // but don't apply it through the planner. This is useful on wake up
 // after power panic, when it is expected, that the baby step has been already applied.
 extern void babystep_load();

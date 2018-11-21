@@ -42,44 +42,44 @@
 //List of pins which to ignore when asked to change by gcode, 0 and 1 are RX and TX, do not mess with those!
 #define _E0_PINS E0_STEP_PIN, E0_DIR_PIN, E0_ENABLE_PIN, HEATER_0_PIN,
 #if EXTRUDERS > 1
-  #define _E1_PINS E1_STEP_PIN, E1_DIR_PIN, E1_ENABLE_PIN, HEATER_1_PIN,
+#define _E1_PINS E1_STEP_PIN, E1_DIR_PIN, E1_ENABLE_PIN, HEATER_1_PIN,
 #else
-  #define _E1_PINS
+#define _E1_PINS
 #endif
 #if EXTRUDERS > 2
-  #define _E2_PINS E2_STEP_PIN, E2_DIR_PIN, E2_ENABLE_PIN, HEATER_2_PIN,
+#define _E2_PINS E2_STEP_PIN, E2_DIR_PIN, E2_ENABLE_PIN, HEATER_2_PIN,
 #else
-  #define _E2_PINS
+#define _E2_PINS
 #endif
 
 #ifdef X_STOP_PIN
-  #if X_HOME_DIR < 0
-    #define X_MIN_PIN X_STOP_PIN
-    #define X_MAX_PIN -1
-  #else
-    #define X_MIN_PIN -1
-    #define X_MAX_PIN X_STOP_PIN
-  #endif
+#if X_HOME_DIR < 0
+#define X_MIN_PIN X_STOP_PIN
+#define X_MAX_PIN -1
+#else
+#define X_MIN_PIN -1
+#define X_MAX_PIN X_STOP_PIN
+#endif
 #endif
 
 #ifdef Y_STOP_PIN
-  #if Y_HOME_DIR < 0
-    #define Y_MIN_PIN Y_STOP_PIN
-    #define Y_MAX_PIN -1
-  #else
-    #define Y_MIN_PIN -1
-    #define Y_MAX_PIN Y_STOP_PIN
-  #endif
+#if Y_HOME_DIR < 0
+#define Y_MIN_PIN Y_STOP_PIN
+#define Y_MAX_PIN -1
+#else
+#define Y_MIN_PIN -1
+#define Y_MAX_PIN Y_STOP_PIN
+#endif
 #endif
 
 #ifdef Z_STOP_PIN
-  #if Z_HOME_DIR < 0
-    #define Z_MIN_PIN Z_STOP_PIN
-    #define Z_MAX_PIN -1
-  #else
-    #define Z_MIN_PIN -1
-    #define Z_MAX_PIN Z_STOP_PIN
-  #endif
+#if Z_HOME_DIR < 0
+#define Z_MIN_PIN Z_STOP_PIN
+#define Z_MAX_PIN -1
+#else
+#define Z_MIN_PIN -1
+#define Z_MAX_PIN Z_STOP_PIN
+#endif
 #endif
 
 #ifdef DISABLE_MAX_ENDSTOPS
