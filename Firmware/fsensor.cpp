@@ -200,7 +200,6 @@ void pciSetup(byte pin)
 void fsensor_autoload_check_start(void)
 {
 //	puts_P(_N("fsensor_autoload_check_start\n"));
-	if (mmu_enabled) return;
 	if (!fsensor_enabled) return;
 	if (!fsensor_autoload_enabled) return;
 	if (fsensor_watch_autoload) return;
@@ -239,7 +238,6 @@ void fsensor_autoload_check_stop(void)
 
 bool fsensor_check_autoload(void)
 {
-	if (mmu_enabled) return false;
 	if (!fsensor_enabled) return false;
 	if (!fsensor_autoload_enabled) return false;
 	if (!fsensor_watch_autoload)
