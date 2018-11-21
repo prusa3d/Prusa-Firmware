@@ -4,7 +4,7 @@
 
 #MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
 " cold extrusion prevented"
-" stopp, Extruder kalt"
+" stopp, Extruder kalt!"
 
 #MSG_FREE_MEMORY c=0 r=0
 " Free Memory: "
@@ -60,7 +60,7 @@
 
 #
 "Auto deplete[N/A]"
-"\x00"
+"Restemodus  [N/V]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "Auto deplete[off]"
@@ -80,7 +80,7 @@
 
 #MSG_AUTOLOADING_ENABLED c=20 r=4
 "Autoloading filament is active, just press the knob and insert filament..."
-"Automatisches Laden Filament ist aktiv, Knopf druecken und  Filament einlegen..."
+"Automatisches Laden Filament ist aktiv, Knopf druecken und Filament einlegen..."
 
 #MSG_SELFTEST_AXIS_LENGTH c=0 r=0
 "Axis length"
@@ -164,7 +164,7 @@
 
 #
 "Cancel"
-"\x00"
+"Abbruch"
 
 #MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
 "Cannot enter subdir: "
@@ -188,7 +188,7 @@
 
 #
 "Copy selected language from XFLASH?"
-"\x00"
+"Gewaehlte Sprache vom Xflash kopieren?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
@@ -208,7 +208,7 @@
 
 #
 "Crash detected. Resume print?"
-"Crash erkannt. Druck fortsetzen?"
+"Crash erkannt. Druck fortfuehren?"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -244,27 +244,27 @@
 
 #MSG_EJECT_FILAMENT2 c=17 r=1
 "Eject filament 2"
-"Filamentauswurf 2"
+"Fil.2 auswerfen"
 
 #MSG_EJECT_FILAMENT3 c=17 r=1
 "Eject filament 3"
-"Filamentauswurf 3"
+"Fil.3 auswerfen"
 
 #MSG_EJECT_FILAMENT4 c=17 r=1
 "Eject filament 4"
-"Filamentauswurf 4"
+"Fil.4 auswerfen"
 
 #MSG_EJECT_FILAMENT5 c=17 r=1
 "Eject filament 5"
-"Filamentauswurf 5"
+"Fil.5 auswerfen"
 
 #
 "Eject"
-"\x00"
+"Auswurf"
 
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
-"Werfe Filament aus"
+"werfe Filament aus"
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
@@ -296,7 +296,7 @@
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
-"FEHLER: Filament- sensor reagiert nicht, bitte  Verbindung pruefen."
+"FEHLER: Filament- sensor reagiert nicht, bitte Verbindung pruefen."
 
 #MSG_ERROR c=0 r=0
 "ERROR:"
@@ -304,7 +304,7 @@
 
 #
 "External SPI flash W25X20CL not responding."
-"\x00"
+"Der externe SPI Flash W25X20CL antwortet nicht."
 
 #
 "Extruder 1"
@@ -420,7 +420,7 @@
 
 #
 "Fix the issue and then press button on MMU unit."
-"\x00"
+"Beseitigen Sie das Problem und druecken Sie dann den Knopf am MMU."
 
 #MSG_FLOW c=0 r=0
 "Flow"
@@ -468,7 +468,7 @@
 
 #
 "Change extruder"
-"\x00"
+"Wechsel Extruder"
 
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
@@ -520,11 +520,11 @@
 
 #MSG_CHOOSE_FILAMENT c=20 r=1
 "Choose filament:"
-"Filament waehlen:"
+"Waehle Filament:"
 
 #MSG_FILAMENT c=17 r=1
 "Filament"
-"Filament"
+"\x00"
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
@@ -564,7 +564,7 @@
 
 #
 "Is filament 1 loaded?"
-"\x00"
+"Wurde Filament 1 geladen?"
 
 #MSG_INSERT_FILAMENT c=20 r=0
 "Insert filament"
@@ -600,7 +600,7 @@
 
 #
 "Left"
-"\x00"
+"Links"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
@@ -608,7 +608,7 @@
 
 #
 "Lin. correction"
-"\x00"
+"Lineare Korrektur"
 
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
@@ -640,7 +640,7 @@
 
 #
 "Load to nozzle"
-"\x00"
+"In Druckduese laden"
 
 #MSG_M109_INVALID_EXTRUDER c=0 r=0
 "M109 Invalid extruder "
@@ -672,11 +672,11 @@
 
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
-"Mesh Bett Ausglei."
+"Mesh Bett Ausgleich"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
-"MMU OK. Position wiederherstellen..."
+"MMU OK. Position    wiederherstellen... "
 
 #MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 "MMU OK. Resuming temperature..."
@@ -684,7 +684,7 @@
 
 #
 "Measured skew"
-"\x00"
+"Schraeglauf"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -700,7 +700,7 @@
 
 #
 "MMU needs user attention."
-"\x00"
+"MMU erfordert Benutzereingriff."
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -756,11 +756,11 @@
 
 #
 "New firmware version available:"
-"\x00"
+"Neue Firmware- Version verfuegbar:"
 
 #
 "No "
-"\x00"
+"Nein"
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
@@ -796,7 +796,7 @@
 
 #
 "Now remove the test print from steel sheet."
-"\x00"
+"Testdruck jetzt von Stahlblech entfernen."
 
 #MSG_SD_OPENROOT_FAIL c=0 r=0
 "openRoot failed"
@@ -860,11 +860,11 @@
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
-"Bitte druecken Sie den Knopf um das  Filament zu entladen."
+"Bitte druecken Sie den Knopf um das Filament zu entladen."
 
 #
 "Please insert PLA filament to the first tube of MMU, then press the knob to load it."
-"\x00"
+"Legen Sie bitte PLA Filament in den ersten Schlauch der MMU und druecken Sie den Knopf,  um es zu laden."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -872,7 +872,7 @@
 
 #MSG_EJECT_REMOVE c=20 r=4
 "Please remove filament and then press the knob."
-"Bitte Filament entfernen und dann den Knopf druecken."
+"Bitte Filament entfernen und dann den Knopf druecken"
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
@@ -896,7 +896,7 @@
 
 #
 "Please remove shipping helpers first."
-"\x00"
+"Bitte zuerst Transportsicherungen entfernen."
 
 #MSG_PREHEAT_NOZZLE c=20 r=0
 "Preheat the nozzle!"
@@ -912,11 +912,11 @@
 
 #
 "Please upgrade."
-"\x00"
+"Bitte aktualisieren."
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
-"Bitte druecken Sie den Knopf um die  Duese vorzuheizen und fortzufahren."
+"Bitte druecken Sie den Knopf um die Duese vorzuheizen und fortzufahren."
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
@@ -940,11 +940,11 @@
 
 #
 "Press the knob to resume nozzle temperature."
-"\x00"
+"Druecken Sie den Knopf um die Duesentemperatur wiederherzustellen"
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
-"Drucker wurde noch  nicht kalibriert. Bitte folgen Sie dem Handbuch, Kapitel Erste Schritte, Abschnitt Kalibrie- rungsablauf."
+"Drucker wurde noch nicht kalibriert. Bitte folgen Sie dem Handbuch, Kapitel Erste Schritte, Abschnitt Kalibrie- rungsablauf."
 
 #MSG_ERR_STOPPED c=0 r=0
 "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
@@ -952,7 +952,7 @@
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."
-"Prusa i3 MK2.5 bereit"
+"Prusa i3 MK2.5 bereit."
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK3 ready."
@@ -976,11 +976,11 @@
 
 #
 "Prusa i3 MK2 ready."
-"\x00"
+"Prusa i3 MK2 bereit."
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
-"XYZ Kalib.zurueck"
+"XYZ Kalibr. zuruecksetzen."
 
 #MSG_BED_CORRECTION_RESET c=0 r=0
 "Reset"
@@ -1004,7 +1004,7 @@
 
 #
 "Resend"
-"\x00"
+"Wiederholen"
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
@@ -1020,7 +1020,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
-"SD Kart.[flshAir]"
+"SD Karte[flshAir]"
 
 #MSG_SD_CARD_OK c=0 r=0
 "SD card ok"
@@ -1028,7 +1028,7 @@
 
 #
 "Right"
-"\x00"
+"Rechts"
 
 #MSG_SD_INIT_FAIL c=0 r=0
 "SD init fail"
@@ -1068,11 +1068,11 @@
 
 #
 "Select nozzle preheat temperature which matches your material."
-"\x00"
+"Bitte Vorheiztemperatur auswaehlen, die Ihrem Material entspricht."
 
 #
 "Select PLA filament:"
-"\x00"
+"PLA Filament auswaehlen:"
 
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
@@ -1088,7 +1088,7 @@
 
 #
 "Show pinda state"
-"\x00"
+"Pinda-Status anzeigen"
 
 #MSG_DWELL c=0 r=0
 "Sleep..."
@@ -1108,7 +1108,7 @@
 
 #
 "Severe skew"
-"\x00"
+"Schwerer Schraeglauf"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
@@ -1124,7 +1124,7 @@
 
 #
 "Slight skew"
-"\x00"
+"Leichter Schraeglauf"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1132,7 +1132,7 @@
 
 #
 "Some problem encountered, Z-leveling enforced ..."
-"\x00"
+"Fehler aufgetreten, Z-Kalibrierung erforderlich..."
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -1212,11 +1212,11 @@
 
 #
 "Total filament"
-"\x00"
+"Gesamtes Filament"
 
 #
 "Total print time"
-"\x00"
+"Gesamte Druckzeit"
 
 #MSG_ENDSTOP_HIT c=0 r=0
 "TRIGGERED"
@@ -1228,11 +1228,11 @@
 
 #
 "Unload"
-"\x00"
+"Entladen"
 
 #
 "Unload all"
-"\x00"
+"Alles entladen"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -1268,7 +1268,7 @@
 
 #
 "Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
-"\x00"
+"Entladen Sie das Filament 1, wenn er aus dem hinteren MMU-Rohr herausragt. Verwenden Sie den Auswurf, wenn er im Rohr versteckt ist."
 
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
@@ -1312,31 +1312,31 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
 "XYZ calibration all right. Skew will be corrected automatically."
-"XYZ Kalibrierung in Ordnung. Schiefheit wird automatisch korrigiert."
+"XYZ Kalibrierung in Ordnung. Schraeglauf wird automatisch korrigiert."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
-"XYZ Kalibrierung in Ordnung. X/Y Achsen sind etwas schief."
+"XYZ Kalibrierung in Ordnung. X/Y Achsen sind etwas schraeg."
 
 #
 "X-correct"
-"\x00"
+"X-Korrektur"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
-"XYZ-Kalibrierung OK. X/Y-Achsen sind senkrecht zueinander. Glueckwunsch!"
+"XYZ-Kalibrierung ok. X/Y-Achsen sind senkrecht zueinander Glueckwunsch!"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 "XYZ calibration compromised. Front calibration points not reachable."
-"XYZ-Kalibrierung ungenau. Vordere Kalibrierpunkte sind zu weit vorne."
+"XYZ-Kalibrierung beeintraechtigt. Vordere Kalibrierpunkte nicht erreichbar."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 "XYZ calibration compromised. Right front calibration point not reachable."
-"XYZ-Kalibrierung ungenau. Rechter vorderer Kalibrierpunkt ist zu weit vorne."
+"XYZ-Kalibrierung beeintraechtigt. Rechter vorderer Kalibrierpunkt nicht erreichbar."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 "XYZ calibration compromised. Left front calibration point not reachable."
-"XYZ-Kalibrierung ungenau. Linker vorderer Kalibrierpunkt ist zu weit vorne."
+"XYZ-Kalibrierung beeintraechtigt. Linker vorderer Kalibrierpunkt nicht erreichbar."
 
 #MSG_LOAD_ALL c=17 r=0
 "Load all"
@@ -1348,15 +1348,15 @@
 
 #
 "XYZ calibration failed. Bed calibration point was not found."
-"\x00"
+"XYZ-Kalibrierung fehlgeschlagen. Bett-Kalibrierpunkt nicht gefunden."
 
 #
 "XYZ calibration failed. Front calibration points not reachable."
-"\x00"
+"XYZ-Kalibrierung fehlgeschlagen. Vordere Kalibrierpunkte nicht erreichbar."
 
 #
 "XYZ calibration failed. Left front calibration point not reachable."
-"\x00"
+"XYZ-Kalibrierung fehlgeschlagen. Linker vorderer Kalibrierpunkt nicht erreichbar."
 
 #MSG_LOAD_FILAMENT_2 c=17 r=0
 "Load filament 2"
@@ -1364,7 +1364,7 @@
 
 #
 "XYZ calibration failed. Right front calibration point not reachable."
-"\x00"
+"XYZ-Kalibrierung fehlgeschlagen. Rechter vorderer Kalibrierpunkt ist nicht erreichbar."
 
 #MSG_LOAD_FILAMENT_3 c=17 r=0
 "Load filament 3"
@@ -1372,11 +1372,11 @@
 
 #
 "Y distance from min"
-"\x00"
+"Y Entfernung vom Min"
 
 #
 "Y-correct"
-"\x00"
+"Y-Korrektur"
 
 #MSG_LOAD_FILAMENT_4 c=17 r=0
 "Load filament 4"
