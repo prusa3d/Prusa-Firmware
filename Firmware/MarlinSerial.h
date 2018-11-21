@@ -23,15 +23,15 @@
 #define MarlinSerial_h
 #include "Marlin.h"
 
-#if !defined(SERIAL_PORT) 
+#if !defined(SERIAL_PORT)
 #define SERIAL_PORT 0
 #endif
 
 // The presence of the UBRRH register is used to detect a UART.
 #define UART_PRESENT(port) ((port == 0 && (defined(UBRRH) || defined(UBRR0H))) || \
 						(port == 1 && defined(UBRR1H)) || (port == 2 && defined(UBRR2H)) || \
-						(port == 3 && defined(UBRR3H)))				
-						
+						(port == 3 && defined(UBRR3H)))
+
 // These are macros to build serial port register names for the selected SERIAL_PORT (C preprocessor
 // requires two levels of indirection to expand macro values properly)
 #define SERIAL_REGNAME(registerbase,number,suffix) SERIAL_REGNAME_INTERNAL(registerbase,number,suffix)
@@ -41,15 +41,15 @@
 #define SERIAL_REGNAME_INTERNAL(registerbase,number,suffix) registerbase##number##suffix
 #endif
 
-// Registers used by MarlinSerial class (these are expanded 
+// Registers used by MarlinSerial class (these are expanded
 // depending on selected serial port
 #define M_UCSRxA SERIAL_REGNAME(UCSR,SERIAL_PORT,A) // defines M_UCSRxA to be UCSRnA where n is the serial port number
-#define M_UCSRxB SERIAL_REGNAME(UCSR,SERIAL_PORT,B) 
-#define M_RXENx SERIAL_REGNAME(RXEN,SERIAL_PORT,)    
-#define M_TXENx SERIAL_REGNAME(TXEN,SERIAL_PORT,)    
-#define M_RXCIEx SERIAL_REGNAME(RXCIE,SERIAL_PORT,)    
-#define M_UDREx SERIAL_REGNAME(UDRE,SERIAL_PORT,)    
-#define M_UDRx SERIAL_REGNAME(UDR,SERIAL_PORT,)  
+#define M_UCSRxB SERIAL_REGNAME(UCSR,SERIAL_PORT,B)
+#define M_RXENx SERIAL_REGNAME(RXEN,SERIAL_PORT,)
+#define M_TXENx SERIAL_REGNAME(TXEN,SERIAL_PORT,)
+#define M_RXCIEx SERIAL_REGNAME(RXCIE,SERIAL_PORT,)
+#define M_UDREx SERIAL_REGNAME(UDRE,SERIAL_PORT,)
+#define M_UDRx SERIAL_REGNAME(UDR,SERIAL_PORT,)
 #define M_UBRRxH SERIAL_REGNAME(UBRR,SERIAL_PORT,H)
 #define M_UBRRxL SERIAL_REGNAME(UBRR,SERIAL_PORT,L)
 #define M_RXCx SERIAL_REGNAME(RXC,SERIAL_PORT,)
@@ -77,28 +77,28 @@ extern uint8_t selectedSerialPort;
 
 struct ring_buffer
 {
-  unsigned char buffer[RX_BUFFER_SIZE];
-  int head;
-  int tail;
+    unsigned char buffer[RX_BUFFER_SIZE];
+    int head;
+    int tail;
 };
 
 #if UART_PRESENT(SERIAL_PORT)
-  extern ring_buffer rx_buffer;
+extern ring_buffer rx_buffer;
 #endif
 
 class MarlinSerial //: public Stream
 {
 
-  public:
+public:
     static void begin(long);
     static void end();
     static int peek(void);
     static int read(void);
     static void flush(void);
-    
+
     static FORCE_INLINE int available(void)
     {
-      return (unsigned int)(RX_BUFFER_SIZE + rx_buffer.head - rx_buffer.tail) % RX_BUFFER_SIZE;
+        return (unsigned int)(RX_BUFFER_SIZE + rx_buffer.head - rx_buffer.tail) % RX_BUFFER_SIZE;
     }
     /*
     FORCE_INLINE void write(uint8_t c)
@@ -109,20 +109,20 @@ class MarlinSerial //: public Stream
       M_UDRx = c;
     }
     */
-	static void write(uint8_t c)
-	{
-		if (selectedSerialPort == 0)
-		{
-			while (!((M_UCSRxA) & (1 << M_UDREx)));
-			M_UDRx = c;
-		}
-		else if (selectedSerialPort == 1)
-		{
-			while (!((UCSR1A) & (1 << UDRE1)));
-			UDR1 = c;
-		}
-	}
-    
+    static void write(uint8_t c)
+    {
+        if (selectedSerialPort == 0)
+        {
+            while (!((M_UCSRxA) & (1 << M_UDREx)));
+            M_UDRx = c;
+        }
+        else if (selectedSerialPort == 1)
+        {
+            while (!((UCSR1A) & (1 << UDRE1)));
+            UDR1 = c;
+        }
+    }
+
     static void checkRx(void)
     {
         if (selectedSerialPort == 0) {
@@ -145,7 +145,7 @@ class MarlinSerial //: public Stream
                     }
                     //selectedSerialPort = 0;
 #ifdef DEBUG_DUMP_TO_2ND_SERIAL
-					UDR1 = c;
+                    UDR1 = c;
 #endif //DEBUG_DUMP_TO_2ND_SERIAL
                 }
             }
@@ -169,44 +169,44 @@ class MarlinSerial //: public Stream
                     }
                     //selectedSerialPort = 1;
 #ifdef DEBUG_DUMP_TO_2ND_SERIAL
-					M_UDRx = c;
+                    M_UDRx = c;
 #endif //DEBUG_DUMP_TO_2ND_SERIAL
                 }
             }
         }
     }
-    
-    
-    private:
+
+
+private:
     static void printNumber(unsigned long, uint8_t);
     static void printFloat(double, uint8_t);
-    
-    
-  public:
-    
+
+
+public:
+
     static FORCE_INLINE void write(const char *str)
     {
-      while (*str)
-        write(*str++);
+        while (*str)
+            write(*str++);
     }
 
 
     static FORCE_INLINE void write(const uint8_t *buffer, size_t size)
     {
-      while (size--)
-        write(*buffer++);
+        while (size--)
+            write(*buffer++);
     }
 
-/*    static FORCE_INLINE void print(const String &s)
-    {
-      for (int i = 0; i < (int)s.length(); i++) {
-        write(s[i]);
-      }
-    }*/
-    
+    /*    static FORCE_INLINE void print(const String &s)
+        {
+          for (int i = 0; i < (int)s.length(); i++) {
+            write(s[i]);
+          }
+        }*/
+
     static FORCE_INLINE void print(const char *str)
     {
-      write(str);
+        write(str);
     }
     static void print(char, int = BYTE);
     static void print(unsigned char, int = BYTE);
@@ -233,7 +233,7 @@ extern MarlinSerial MSerial;
 
 // Use the UART for BT in AT90USB configurations
 #if defined(AT90USB) && defined (BTENABLED)
-   extern HardwareSerial bt;
+extern HardwareSerial bt;
 #endif
 
 #endif

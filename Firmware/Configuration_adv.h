@@ -6,7 +6,7 @@
 //===========================================================================
 
 #ifdef BED_LIMIT_SWITCHING
-  #define BED_HYSTERESIS 2 //only disable heating if T>target+BED_HYSTERESIS and enable heating if T>target-BED_HYSTERESIS
+#define BED_HYSTERESIS 2 //only disable heating if T>target+BED_HYSTERESIS and enable heating if T>target-BED_HYSTERESIS
 #endif
 #define BED_CHECK_INTERVAL 5000 //ms between checks in bang-bang control
 
@@ -19,12 +19,12 @@
 //#define WATCH_TEMP_INCREASE 10  //Heat up at least 10 degree in 20 seconds
 
 #ifdef PIDTEMP
-  // this adds an experimental additional term to the heating power, proportional to the extrusion speed.
-  // if Kc is chosen well, the additional required power due to increased melting should be compensated.
-  #define PID_ADD_EXTRUSION_RATE
-  #ifdef PID_ADD_EXTRUSION_RATE
-    #define  DEFAULT_Kc (1) //heating power=Kc*(e_speed)
-  #endif
+// this adds an experimental additional term to the heating power, proportional to the extrusion speed.
+// if Kc is chosen well, the additional required power due to increased melting should be compensated.
+#define PID_ADD_EXTRUSION_RATE
+#ifdef PID_ADD_EXTRUSION_RATE
+#define  DEFAULT_Kc (1) //heating power=Kc*(e_speed)
+#endif
 #endif
 
 
@@ -37,7 +37,7 @@
 // on an Ultimaker, some initial testing worked with M109 S215 B260 F1 in the start.gcode
 //#define AUTOTEMP
 #ifdef AUTOTEMP
-  #define AUTOTEMP_OLDWEIGHT 0.98
+#define AUTOTEMP_OLDWEIGHT 0.98
 #endif
 
 //Show Temperature ADC value
@@ -83,46 +83,46 @@
 //// AUTOSET LOCATIONS OF LIMIT SWITCHES
 //// Added by ZetaPhoenix 09-15-2012
 #ifdef MANUAL_HOME_POSITIONS  // Use manual limit switch locations
-  #define X_HOME_POS MANUAL_X_HOME_POS
-  #define Y_HOME_POS MANUAL_Y_HOME_POS
-  #define Z_HOME_POS MANUAL_Z_HOME_POS
+#define X_HOME_POS MANUAL_X_HOME_POS
+#define Y_HOME_POS MANUAL_Y_HOME_POS
+#define Z_HOME_POS MANUAL_Z_HOME_POS
 #else //Set min/max homing switch positions based upon homing direction and min/max travel limits
-  //X axis
-  #if X_HOME_DIR == -1
-    #ifdef BED_CENTER_AT_0_0
-      #define X_HOME_POS X_MAX_LENGTH * -0.5
-    #else
-      #define X_HOME_POS X_MIN_POS
-    #endif //BED_CENTER_AT_0_0
-  #else
-    #ifdef BED_CENTER_AT_0_0
-      #define X_HOME_POS X_MAX_LENGTH * 0.5
-    #else
-      #define X_HOME_POS X_MAX_POS
-    #endif //BED_CENTER_AT_0_0
-  #endif //X_HOME_DIR == -1
+//X axis
+#if X_HOME_DIR == -1
+#ifdef BED_CENTER_AT_0_0
+#define X_HOME_POS X_MAX_LENGTH * -0.5
+#else
+#define X_HOME_POS X_MIN_POS
+#endif //BED_CENTER_AT_0_0
+#else
+#ifdef BED_CENTER_AT_0_0
+#define X_HOME_POS X_MAX_LENGTH * 0.5
+#else
+#define X_HOME_POS X_MAX_POS
+#endif //BED_CENTER_AT_0_0
+#endif //X_HOME_DIR == -1
 
-  //Y axis
-  #if Y_HOME_DIR == -1
-    #ifdef BED_CENTER_AT_0_0
-      #define Y_HOME_POS Y_MAX_LENGTH * -0.5
-    #else
-      #define Y_HOME_POS Y_MIN_POS
-    #endif //BED_CENTER_AT_0_0
-  #else
-    #ifdef BED_CENTER_AT_0_0
-      #define Y_HOME_POS Y_MAX_LENGTH * 0.5
-    #else
-      #define Y_HOME_POS Y_MAX_POS
-    #endif //BED_CENTER_AT_0_0
-  #endif //Y_HOME_DIR == -1
+//Y axis
+#if Y_HOME_DIR == -1
+#ifdef BED_CENTER_AT_0_0
+#define Y_HOME_POS Y_MAX_LENGTH * -0.5
+#else
+#define Y_HOME_POS Y_MIN_POS
+#endif //BED_CENTER_AT_0_0
+#else
+#ifdef BED_CENTER_AT_0_0
+#define Y_HOME_POS Y_MAX_LENGTH * 0.5
+#else
+#define Y_HOME_POS Y_MAX_POS
+#endif //BED_CENTER_AT_0_0
+#endif //Y_HOME_DIR == -1
 
-  // Z axis
-  #if Z_HOME_DIR == -1 //BED_CENTER_AT_0_0 not used
-    #define Z_HOME_POS Z_MIN_POS
-  #else
-    #define Z_HOME_POS Z_MAX_POS
-  #endif //Z_HOME_DIR == -1
+// Z axis
+#if Z_HOME_DIR == -1 //BED_CENTER_AT_0_0 not used
+#define Z_HOME_POS Z_MIN_POS
+#else
+#define Z_HOME_POS Z_MAX_POS
+#endif //Z_HOME_DIR == -1
 #endif //End auto min/max positions
 //END AUTOSET LOCATIONS OF LIMIT SWITCHES -ZP
 
@@ -135,8 +135,8 @@
 //#define Z_DUAL_STEPPER_DRIVERS
 
 #ifdef Z_DUAL_STEPPER_DRIVERS
-  #undef EXTRUDERS
-  #define EXTRUDERS 1
+#undef EXTRUDERS
+#define EXTRUDERS 1
 #endif
 
 // Same again but for Y Axis.
@@ -146,12 +146,12 @@
 #define INVERT_Y2_VS_Y_DIR 1
 
 #ifdef Y_DUAL_STEPPER_DRIVERS
-  #undef EXTRUDERS
-  #define EXTRUDERS 1
+#undef EXTRUDERS
+#define EXTRUDERS 1
 #endif
 
 #if defined (Z_DUAL_STEPPER_DRIVERS) && defined (Y_DUAL_STEPPER_DRIVERS)
-  #error "You cannot have dual drivers for both Y and Z"
+#error "You cannot have dual drivers for both Y and Z"
 #endif
 
 //homing hits the endstop, then retracts by this distance, before it tries to slowly bump again:
@@ -235,28 +235,28 @@
 *  - SDSORT_CACHE_NAMES will retain the sorted file listing in RAM. (Expensive!)
 *  - SDSORT_DYNAMIC_RAM only uses RAM when the SD menu is visible. (Use with caution!)
 */
-	#define SDCARD_SORT_ALPHA //Alphabetical sorting of SD files menu
-	
-	// SD Card Sorting options
-	// In current firmware Prusa Firmware version,
-	// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to 0.
-	#ifdef SDCARD_SORT_ALPHA
-	  #define SD_SORT_TIME 0
-	  #define SD_SORT_ALPHA 1
-	  #define SD_SORT_NONE 2
-	
-	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
-	  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
-	  #define SDSORT_GCODE       0  // Allow turning sorting on/off with LCD and M34 g-code.
-	  #define SDSORT_USES_RAM    0  // Pre-allocate a static array for faster pre-sorting.
-	  #define SDSORT_USES_STACK  0  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
-	  #define SDSORT_CACHE_NAMES 0  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
-	  #define SDSORT_DYNAMIC_RAM 0  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
-	#endif
-	
-	#if defined(SDCARD_SORT_ALPHA)
-	  #define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
-	#endif
+#define SDCARD_SORT_ALPHA //Alphabetical sorting of SD files menu
+
+// SD Card Sorting options
+// In current firmware Prusa Firmware version,
+// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to 0.
+#ifdef SDCARD_SORT_ALPHA
+#define SD_SORT_TIME 0
+#define SD_SORT_ALPHA 1
+#define SD_SORT_NONE 2
+
+#define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
+#define FOLDER_SORTING     -1     // -1=above  0=none  1=below
+#define SDSORT_GCODE       0  // Allow turning sorting on/off with LCD and M34 g-code.
+#define SDSORT_USES_RAM    0  // Pre-allocate a static array for faster pre-sorting.
+#define SDSORT_USES_STACK  0  // Prefer the stack for pre-sorting to give back some SRAM. (Negated by next 2 options.)
+#define SDSORT_CACHE_NAMES 0  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
+#define SDSORT_DYNAMIC_RAM 0  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
+#endif
+
+#if defined(SDCARD_SORT_ALPHA)
+#define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
+#endif
 
 // Enable the option to stop SD printing when hitting and endstops, needs to be enabled from the LCD menu when this option is enabled.
 //#define ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
@@ -266,13 +266,13 @@
 // does not respect endstops!
 #define BABYSTEPPING
 #ifdef BABYSTEPPING
-  #define BABYSTEP_XY  //not only z, but also XY in the menu. more clutter, more functions
-  #define BABYSTEP_INVERT_Z 0  //1 for inverse movements in Z
-  #define BABYSTEP_Z_MULTIPLICATOR 2 //faster z movements
+#define BABYSTEP_XY  //not only z, but also XY in the menu. more clutter, more functions
+#define BABYSTEP_INVERT_Z 0  //1 for inverse movements in Z
+#define BABYSTEP_Z_MULTIPLICATOR 2 //faster z movements
 
-  #ifdef COREXY
-    #error BABYSTEPPING not implemented for COREXY yet.
-  #endif
+#ifdef COREXY
+#error BABYSTEPPING not implemented for COREXY yet.
+#endif
 #endif
 
 /**
@@ -285,34 +285,34 @@
 #define LIN_ADVANCE
 
 #ifdef LIN_ADVANCE
-  #define LIN_ADVANCE_K 0 //Try around 45 for PLA, around 25 for ABS.
+#define LIN_ADVANCE_K 0 //Try around 45 for PLA, around 25 for ABS.
 
- /**
-        * Some Slicers produce Gcode with randomly jumping extrusion widths occasionally.
-        * For example within a 0.4mm perimeter it may produce a single segment of 0.05mm width.
-        * While this is harmless for normal printing (the fluid nature of the filament will
-        * close this very, very tiny gap), it throws off the LIN_ADVANCE pressure adaption.
-        *
-        * For this case LIN_ADVANCE_E_D_RATIO can be used to set the extrusion:distance ratio
-        * to a fixed value. Note that using a fixed ratio will lead to wrong nozzle pressures
-        * if the slicer is using variable widths or layer heights within one print!
-        *
-        * This option sets the default E:D ratio at startup. Use `M900` to override this value.
-        *
-        * Example: `M900 W0.4 H0.2 D1.75`, where:
-        *   - W is the extrusion width in mm
-        *   - H is the layer height in mm
-        *   - D is the filament diameter in mm
-        *
-        * Example: `M900 R0.0458` to set the ratio directly.
-        *
-        * Set to 0 to auto-detect the ratio based on given Gcode G1 print moves.
-        *
-        * Slic3r (including Prusa Slic3r) produces Gcode compatible with the automatic mode.
-        * Cura (as of this writing) may produce Gcode incompatible with the automatic mode.
-        */
+/**
+       * Some Slicers produce Gcode with randomly jumping extrusion widths occasionally.
+       * For example within a 0.4mm perimeter it may produce a single segment of 0.05mm width.
+       * While this is harmless for normal printing (the fluid nature of the filament will
+       * close this very, very tiny gap), it throws off the LIN_ADVANCE pressure adaption.
+       *
+       * For this case LIN_ADVANCE_E_D_RATIO can be used to set the extrusion:distance ratio
+       * to a fixed value. Note that using a fixed ratio will lead to wrong nozzle pressures
+       * if the slicer is using variable widths or layer heights within one print!
+       *
+       * This option sets the default E:D ratio at startup. Use `M900` to override this value.
+       *
+       * Example: `M900 W0.4 H0.2 D1.75`, where:
+       *   - W is the extrusion width in mm
+       *   - H is the layer height in mm
+       *   - D is the filament diameter in mm
+       *
+       * Example: `M900 R0.0458` to set the ratio directly.
+       *
+       * Set to 0 to auto-detect the ratio based on given Gcode G1 print moves.
+       *
+       * Slic3r (including Prusa Slic3r) produces Gcode compatible with the automatic mode.
+       * Cura (as of this writing) may produce Gcode incompatible with the automatic mode.
+       */
 #define LIN_ADVANCE_E_D_RATIO 0 // The calculated ratio (or 0) according to the formula W * H / ((D / 2) ^ 2 * PI)
-                                // Example: 0.4 * 0.2 / ((1.75 / 2) ^ 2 * PI) = 0.033260135
+// Example: 0.4 * 0.2 / ((1.75 / 2) ^ 2 * PI) = 0.033260135
 #endif
 
 // Arc interpretation settings:
@@ -331,17 +331,17 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 // Power Signal Control Definitions
 // By default use ATX definition
 #ifndef POWER_SUPPLY
-  #define POWER_SUPPLY 1
+#define POWER_SUPPLY 1
 #endif
 // 1 = ATX
 #if (POWER_SUPPLY == 1)
-  #define PS_ON_AWAKE  LOW
-  #define PS_ON_ASLEEP HIGH
+#define PS_ON_AWAKE  LOW
+#define PS_ON_ASLEEP HIGH
 #endif
 // 2 = X-Box 360 203W
 #if (POWER_SUPPLY == 2)
-  #define PS_ON_AWAKE  HIGH
-  #define PS_ON_ASLEEP LOW
+#define PS_ON_AWAKE  HIGH
+#define PS_ON_ASLEEP LOW
 #endif
 
 // Control heater 0 and heater 1 in parallel.
@@ -354,9 +354,9 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 // The number of linear motions that can be in the plan at any give time.
 // THE BLOCK_BUFFER_SIZE NEEDS TO BE A POWER OF 2, i.g. 8,16,32 because shifts and ors are used to do the ring-buffering.
 #if defined SDSUPPORT
-  #define BLOCK_BUFFER_SIZE 16   // SD,LCD,Buttons take more memory, block buffer needs to be smaller
+#define BLOCK_BUFFER_SIZE 16   // SD,LCD,Buttons take more memory, block buffer needs to be smaller
 #else
-  #define BLOCK_BUFFER_SIZE 16 // maximize block buffer
+#define BLOCK_BUFFER_SIZE 16 // maximize block buffer
 #endif
 
 
@@ -377,23 +377,23 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 
 #define FWRETRACT  //ONLY PARTIALLY TESTED
 #ifdef FWRETRACT
-  #define MIN_RETRACT 0.1                //minimum extruded mm to accept a automatic gcode retraction attempt
-  #define RETRACT_LENGTH 3               //default retract length (positive mm)
-  #define RETRACT_LENGTH_SWAP 13         //default swap retract length (positive mm), for extruder change
-  #define RETRACT_FEEDRATE 45            //default feedrate for retracting (mm/s)
-  #define RETRACT_ZLIFT 0                //default retract Z-lift
-  #define RETRACT_RECOVER_LENGTH 0       //default additional recover length (mm, added to retract length when recovering)
-  #define RETRACT_RECOVER_LENGTH_SWAP 0  //default additional swap recover length (mm, added to retract length when recovering from extruder change)
-  #define RETRACT_RECOVER_FEEDRATE 8     //default feedrate for recovering from retraction (mm/s)
+#define MIN_RETRACT 0.1                //minimum extruded mm to accept a automatic gcode retraction attempt
+#define RETRACT_LENGTH 3               //default retract length (positive mm)
+#define RETRACT_LENGTH_SWAP 13         //default swap retract length (positive mm), for extruder change
+#define RETRACT_FEEDRATE 45            //default feedrate for retracting (mm/s)
+#define RETRACT_ZLIFT 0                //default retract Z-lift
+#define RETRACT_RECOVER_LENGTH 0       //default additional recover length (mm, added to retract length when recovering)
+#define RETRACT_RECOVER_LENGTH_SWAP 0  //default additional swap recover length (mm, added to retract length when recovering from extruder change)
+#define RETRACT_RECOVER_FEEDRATE 8     //default feedrate for recovering from retraction (mm/s)
 #endif
 
 //adds support for experimental filament exchange support M600; requires display
 
 
 #ifdef FILAMENTCHANGEENABLE
-  #ifdef EXTRUDER_RUNOUT_PREVENT
-    #error EXTRUDER_RUNOUT_PREVENT currently incompatible with FILAMENTCHANGE
-  #endif
+#ifdef EXTRUDER_RUNOUT_PREVENT
+#error EXTRUDER_RUNOUT_PREVENT currently incompatible with FILAMENTCHANGE
+#endif
 #endif
 
 //===========================================================================
@@ -401,65 +401,65 @@ const unsigned int dropsegments=5; //everything with less than this number of st
 //===========================================================================
 
 #if EXTRUDERS > 1 && defined TEMP_SENSOR_1_AS_REDUNDANT
-  #error "You cannot use TEMP_SENSOR_1_AS_REDUNDANT if EXTRUDERS > 1"
+#error "You cannot use TEMP_SENSOR_1_AS_REDUNDANT if EXTRUDERS > 1"
 #endif
 
 #if EXTRUDERS > 1 && defined HEATERS_PARALLEL
-  #error "You cannot use HEATERS_PARALLEL if EXTRUDERS > 1"
+#error "You cannot use HEATERS_PARALLEL if EXTRUDERS > 1"
 #endif
 
 #if TEMP_SENSOR_0 > 0
-  #define THERMISTORHEATER_0 TEMP_SENSOR_0
-  #define HEATER_0_USES_THERMISTOR
+#define THERMISTORHEATER_0 TEMP_SENSOR_0
+#define HEATER_0_USES_THERMISTOR
 #endif
 #if TEMP_SENSOR_1 > 0
-  #define THERMISTORHEATER_1 TEMP_SENSOR_1
-  #define HEATER_1_USES_THERMISTOR
+#define THERMISTORHEATER_1 TEMP_SENSOR_1
+#define HEATER_1_USES_THERMISTOR
 #endif
 #if TEMP_SENSOR_2 > 0
-  #define THERMISTORHEATER_2 TEMP_SENSOR_2
-  #define HEATER_2_USES_THERMISTOR
+#define THERMISTORHEATER_2 TEMP_SENSOR_2
+#define HEATER_2_USES_THERMISTOR
 #endif
 #if TEMP_SENSOR_BED > 0
-  #define THERMISTORBED TEMP_SENSOR_BED
-  #define BED_USES_THERMISTOR
+#define THERMISTORBED TEMP_SENSOR_BED
+#define BED_USES_THERMISTOR
 #endif
 #if TEMP_SENSOR_PINDA > 0
-  #define THERMISTORPINDA TEMP_SENSOR_PINDA
+#define THERMISTORPINDA TEMP_SENSOR_PINDA
 #endif
 #if TEMP_SENSOR_AMBIENT > 0
-  #define THERMISTORAMBIENT TEMP_SENSOR_AMBIENT
+#define THERMISTORAMBIENT TEMP_SENSOR_AMBIENT
 #endif
 #if TEMP_SENSOR_0 == -1
-  #define HEATER_0_USES_AD595
+#define HEATER_0_USES_AD595
 #endif
 #if TEMP_SENSOR_1 == -1
-  #define HEATER_1_USES_AD595
+#define HEATER_1_USES_AD595
 #endif
 #if TEMP_SENSOR_2 == -1
-  #define HEATER_2_USES_AD595
+#define HEATER_2_USES_AD595
 #endif
 #if TEMP_SENSOR_BED == -1
-  #define BED_USES_AD595
+#define BED_USES_AD595
 #endif
 #if TEMP_SENSOR_0 == -2
-  #define HEATER_0_USES_MAX6675
+#define HEATER_0_USES_MAX6675
 #endif
 #if TEMP_SENSOR_0 == 0
-  #undef HEATER_0_MINTEMP
-  #undef HEATER_0_MAXTEMP
+#undef HEATER_0_MINTEMP
+#undef HEATER_0_MAXTEMP
 #endif
 #if TEMP_SENSOR_1 == 0
-  #undef HEATER_1_MINTEMP
-  #undef HEATER_1_MAXTEMP
+#undef HEATER_1_MINTEMP
+#undef HEATER_1_MAXTEMP
 #endif
 #if TEMP_SENSOR_2 == 0
-  #undef HEATER_2_MINTEMP
-  #undef HEATER_2_MAXTEMP
+#undef HEATER_2_MINTEMP
+#undef HEATER_2_MAXTEMP
 #endif
 #if TEMP_SENSOR_BED == 0
-  #undef BED_MINTEMP
-  #undef BED_MAXTEMP
+#undef BED_MINTEMP
+#undef BED_MAXTEMP
 #endif
 
 

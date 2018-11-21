@@ -25,12 +25,12 @@ extern void update_current_firmware_version_to_eeprom();
 
 
 inline int8_t eeprom_read_int8(unsigned char* addr) {
-	uint8_t v = eeprom_read_byte(addr);
-	return *reinterpret_cast<int8_t*>(&v);
+    uint8_t v = eeprom_read_byte(addr);
+    return *reinterpret_cast<int8_t*>(&v);
 }
 
 inline void eeprom_update_int8(unsigned char* addr, int8_t v) {
-	eeprom_update_byte(addr, *reinterpret_cast<uint8_t*>(&v));
+    eeprom_update_byte(addr, *reinterpret_cast<uint8_t*>(&v));
 }
 
 #endif /* UTIL_H */

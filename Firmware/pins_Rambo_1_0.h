@@ -6,7 +6,7 @@
 
 #define KNOWN_BOARD
 #ifndef __AVR_ATmega2560__
-  #error Oops!  Make sure you have 'Arduino Mega 2560 or Rambo' selected from the 'Tools -> Boards' menu.
+#error Oops!  Make sure you have 'Arduino Mega 2560 or Rambo' selected from the 'Tools -> Boards' menu.
 #endif
 
 #define PINDA_THERMISTOR
@@ -64,9 +64,9 @@
 #define E0_MS1_PIN             65
 #define E0_MS2_PIN             66
 
-#ifdef SNMM 
-  #define E_MUX0_PIN 17
-  #define E_MUX1_PIN 16
+#ifdef SNMM
+#define E_MUX0_PIN 17
+#define E_MUX1_PIN 16
 #endif
 
 

@@ -6,7 +6,9 @@
 
 mesh_bed_leveling mbl;
 
-mesh_bed_leveling::mesh_bed_leveling() { reset(); }
+mesh_bed_leveling::mesh_bed_leveling() {
+    reset();
+}
 
 void mesh_bed_leveling::reset() {
     active = 0;
@@ -116,16 +118,16 @@ void mesh_bed_leveling::upsample_3x3()
                 if (i == idx1)
                     continue;
                 float x = get_x(i);
-                #ifdef MBL_BILINEAR
+#ifdef MBL_BILINEAR
                 z_values[j][i] = (x < x1) ?
-                    ((z_values[j][idx0] * (x - x0) + z_values[j][idx1] * (x1 - x)) / (x1 - x0)) :
-                    ((z_values[j][idx1] * (x - x1) + z_values[j][idx2] * (x2 - x)) / (x2 - x1));
-                #else
-                z_values[j][i] = 
+                                 ((z_values[j][idx0] * (x - x0) + z_values[j][idx1] * (x1 - x)) / (x1 - x0)) :
+                                 ((z_values[j][idx1] * (x - x1) + z_values[j][idx2] * (x2 - x)) / (x2 - x1));
+#else
+                z_values[j][i] =
                     z_values[j][idx0] * (x - x1) * (x - x2) / ((x0 - x1) * (x0 - x2)) +
                     z_values[j][idx1] * (x - x0) * (x - x2) / ((x1 - x0) * (x1 - x2)) +
                     z_values[j][idx2] * (x - x0) * (x - x1) / ((x2 - x0) * (x2 - x1));
-                #endif
+#endif
             }
         }
     }
@@ -143,36 +145,36 @@ void mesh_bed_leveling::upsample_3x3()
                 if (j == idx1)
                     continue;
                 float y = get_y(j);
-                #ifdef MBL_BILINEAR
-                z_values[j][i] = (y < y1) ? 
-                    ((z_values[idx0][i] * (y - y0) + z_values[idx1][i] * (y1 - y)) / (y1 - y0)) :
-                    ((z_values[idx1][i] * (y - y1) + z_values[idx2][i] * (y2 - y)) / (y2 - y1));
-                #else
-                z_values[j][i] = 
+#ifdef MBL_BILINEAR
+                z_values[j][i] = (y < y1) ?
+                                 ((z_values[idx0][i] * (y - y0) + z_values[idx1][i] * (y1 - y)) / (y1 - y0)) :
+                                 ((z_values[idx1][i] * (y - y1) + z_values[idx2][i] * (y2 - y)) / (y2 - y1));
+#else
+                z_values[j][i] =
                     z_values[idx0][i] * (y - y1) * (y - y2) / ((y0 - y1) * (y0 - y2)) +
                     z_values[idx1][i] * (y - y0) * (y - y2) / ((y1 - y0) * (y1 - y2)) +
                     z_values[idx2][i] * (y - y0) * (y - y1) / ((y2 - y0) * (y2 - y1));
-                #endif
+#endif
             }
         }
     }
 
-/*
-    // Relax the non-measured points.
-    const float weight = 0.2f;
-    for (uint8_t iter = 0; iter < 20; ++ iter) {
-        for (int8_t j = 1; j < 6; ++ j) {
-            for (int8_t i = 1; i < 6; ++ i) {
-                if (i == 3 || j == 3)
-                    continue;
-                if ((i % 3) == 0 && (j % 3) == 0)
-                    continue;
-                float avg = 0.25f * (z_values[j][i-1]+z_values[j][i+1]+z_values[j-1][i]+z_values[j+1][i]);
-                z_values[j][i] = (1.f-weight)*z_values[j][i] + weight*avg;
+    /*
+        // Relax the non-measured points.
+        const float weight = 0.2f;
+        for (uint8_t iter = 0; iter < 20; ++ iter) {
+            for (int8_t j = 1; j < 6; ++ j) {
+                for (int8_t i = 1; i < 6; ++ i) {
+                    if (i == 3 || j == 3)
+                        continue;
+                    if ((i % 3) == 0 && (j % 3) == 0)
+                        continue;
+                    float avg = 0.25f * (z_values[j][i-1]+z_values[j][i+1]+z_values[j-1][i]+z_values[j+1][i]);
+                    z_values[j][i] = (1.f-weight)*z_values[j][i] + weight*avg;
+                }
             }
         }
-    }
-*/
+    */
 }
 #endif
 

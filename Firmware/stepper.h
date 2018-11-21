@@ -19,7 +19,7 @@
 */
 
 #ifndef stepper_h
-#define stepper_h 
+#define stepper_h
 
 #include "planner.h"
 
@@ -38,9 +38,9 @@ void st_init();
 void isr();
 
 #ifdef LIN_ADVANCE
-  void advance_isr();
-  void advance_isr_scheduler();
-  void clear_current_adv_vars(); //Used to reset the built up pretension and remaining esteps on filament change.
+void advance_isr();
+void advance_isr_scheduler();
+void clear_current_adv_vars(); //Used to reset the built up pretension and remaining esteps on filament change.
 #endif
 
 // Block until all buffered steps are executed
@@ -64,12 +64,12 @@ float st_get_position_mm(uint8_t axis);
 // to avoid a stepper timer overflow.
 FORCE_INLINE void st_reset_timer()
 {
-  // Clear a possible pending interrupt on OCR1A overflow.
-  TIFR1 |= 1 << OCF1A;
-  // Reset the counter.
-  TCNT1 = 0;
-  // Wake up after 1ms from now.
-  OCR1A = 2000;
+    // Clear a possible pending interrupt on OCR1A overflow.
+    TIFR1 |= 1 << OCF1A;
+    // Reset the counter.
+    TCNT1 = 0;
+    // Wake up after 1ms from now.
+    OCR1A = 2000;
 }
 
 void checkHitEndstops(); //call from somewhere to create an serial error message with the locations the endstops where hit, in case they were triggered
@@ -104,9 +104,9 @@ void microstep_init();
 void microstep_readings();
 
 #ifdef BABYSTEPPING
-  void babystep(const uint8_t axis,const bool direction); // perform a short step with a single stepper motor, outside of any convention
+void babystep(const uint8_t axis,const bool direction); // perform a short step with a single stepper motor, outside of any convention
 #endif
-     
+
 
 
 #endif

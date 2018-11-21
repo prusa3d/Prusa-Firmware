@@ -19,11 +19,17 @@ class Timer
 public:
     Timer();
     void start();
-    void stop(){m_isRunning = false;}
-    bool running(){return m_isRunning;}
+    void stop() {
+        m_isRunning = false;
+    }
+    bool running() {
+        return m_isRunning;
+    }
     bool expired(T msPeriod);
 protected:
-    T started(){return m_started;}
+    T started() {
+        return m_started;
+    }
 private:
     bool m_isRunning;
     T m_started;

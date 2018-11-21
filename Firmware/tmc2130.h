@@ -40,11 +40,11 @@ extern uint8_t tmc2130_wave_fac[4];
 #pragma pack(1)
 typedef struct
 {
-	uint8_t toff:4;
-	uint8_t hstr:3;
-	uint8_t hend:4;
-	uint8_t tbl:2;
-	uint8_t res:3;
+    uint8_t toff:4;
+    uint8_t hstr:3;
+    uint8_t hend:4;
+    uint8_t tbl:2;
+    uint8_t res:3;
 } tmc2130_chopper_config_t;
 #pragma pack(pop)
 

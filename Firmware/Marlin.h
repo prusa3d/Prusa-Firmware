@@ -54,13 +54,13 @@
 //#include "WString.h"
 
 #ifdef AT90USB
-   #ifdef BTENABLED
-         #define MYSERIAL bt
-   #else
-         #define MYSERIAL Serial
-   #endif // BTENABLED
+#ifdef BTENABLED
+#define MYSERIAL bt
 #else
-  #define MYSERIAL MSerial
+#define MYSERIAL Serial
+#endif // BTENABLED
+#else
+#define MYSERIAL MSerial
 #endif
 
 #include "lcd.h"
@@ -113,12 +113,12 @@ void serial_echopair_P(const char *s_P, unsigned long v);
 //Things to write to serial from Program memory. Saves 400 to 2k of RAM.
 FORCE_INLINE void serialprintPGM(const char *str)
 {
-  char ch=pgm_read_byte(str);
-  while(ch)
-  {
-    MYSERIAL.write(ch);
-    ch=pgm_read_byte(++str);
-  }
+    char ch=pgm_read_byte(str);
+    while(ch)
+    {
+        MYSERIAL.write(ch);
+        ch=pgm_read_byte(++str);
+    }
 }
 
 bool is_buffer_empty();
@@ -129,47 +129,47 @@ void ramming();
 void manage_inactivity(bool ignore_stepper_queue=false);
 
 #if defined(X_ENABLE_PIN) && X_ENABLE_PIN > -1
-  #define  enable_x() WRITE(X_ENABLE_PIN, X_ENABLE_ON)
-  #define disable_x() { WRITE(X_ENABLE_PIN,!X_ENABLE_ON); axis_known_position[X_AXIS] = false; }
+#define  enable_x() WRITE(X_ENABLE_PIN, X_ENABLE_ON)
+#define disable_x() { WRITE(X_ENABLE_PIN,!X_ENABLE_ON); axis_known_position[X_AXIS] = false; }
 #else
-  #define enable_x() ;
-  #define disable_x() ;
+#define enable_x() ;
+#define disable_x() ;
 #endif
 
 #if defined(Y_ENABLE_PIN) && Y_ENABLE_PIN > -1
-  #ifdef Y_DUAL_STEPPER_DRIVERS
-    #define  enable_y() { WRITE(Y_ENABLE_PIN, Y_ENABLE_ON); WRITE(Y2_ENABLE_PIN,  Y_ENABLE_ON); }
-    #define disable_y() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); WRITE(Y2_ENABLE_PIN, !Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
-  #else
-    #define  enable_y() WRITE(Y_ENABLE_PIN, Y_ENABLE_ON)
-    #define disable_y() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
-  #endif
+#ifdef Y_DUAL_STEPPER_DRIVERS
+#define  enable_y() { WRITE(Y_ENABLE_PIN, Y_ENABLE_ON); WRITE(Y2_ENABLE_PIN,  Y_ENABLE_ON); }
+#define disable_y() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); WRITE(Y2_ENABLE_PIN, !Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
 #else
-  #define enable_y() ;
-  #define disable_y() ;
+#define  enable_y() WRITE(Y_ENABLE_PIN, Y_ENABLE_ON)
+#define disable_y() { WRITE(Y_ENABLE_PIN,!Y_ENABLE_ON); axis_known_position[Y_AXIS] = false; }
+#endif
+#else
+#define enable_y() ;
+#define disable_y() ;
 #endif
 
-#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1 
-	#if defined(Z_AXIS_ALWAYS_ON)
-		  #ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-		  #else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define  disable_z() {}
-		  #endif
-	#else
-		#ifdef Z_DUAL_STEPPER_DRIVERS
-			#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-		#else
-			#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
-			#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
-		#endif
-	#endif
+#if defined(Z_ENABLE_PIN) && Z_ENABLE_PIN > -1
+#if defined(Z_AXIS_ALWAYS_ON)
+#ifdef Z_DUAL_STEPPER_DRIVERS
+#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
 #else
-  #define enable_z() {}
-  #define disable_z() {}
+#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+#define  disable_z() {}
+#endif
+#else
+#ifdef Z_DUAL_STEPPER_DRIVERS
+#define  enable_z() { WRITE(Z_ENABLE_PIN, Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN, Z_ENABLE_ON); }
+#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); WRITE(Z2_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+#else
+#define  enable_z() WRITE(Z_ENABLE_PIN, Z_ENABLE_ON)
+#define disable_z() { WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON); axis_known_position[Z_AXIS] = false; }
+#endif
+#endif
+#else
+#define enable_z() {}
+#define disable_z() {}
 #endif
 
 
@@ -190,27 +190,27 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 
 
 #if defined(E0_ENABLE_PIN) && (E0_ENABLE_PIN > -1)
-  #define enable_e0() WRITE(E0_ENABLE_PIN, E_ENABLE_ON)
-  #define disable_e0() WRITE(E0_ENABLE_PIN,!E_ENABLE_ON)
+#define enable_e0() WRITE(E0_ENABLE_PIN, E_ENABLE_ON)
+#define disable_e0() WRITE(E0_ENABLE_PIN,!E_ENABLE_ON)
 #else
-  #define enable_e0()  /* nothing */
-  #define disable_e0() /* nothing */
+#define enable_e0()  /* nothing */
+#define disable_e0() /* nothing */
 #endif
 
 #if (EXTRUDERS > 1) && defined(E1_ENABLE_PIN) && (E1_ENABLE_PIN > -1)
-  #define enable_e1() WRITE(E1_ENABLE_PIN, E_ENABLE_ON)
-  #define disable_e1() WRITE(E1_ENABLE_PIN,!E_ENABLE_ON)
+#define enable_e1() WRITE(E1_ENABLE_PIN, E_ENABLE_ON)
+#define disable_e1() WRITE(E1_ENABLE_PIN,!E_ENABLE_ON)
 #else
-  #define enable_e1()  /* nothing */
-  #define disable_e1() /* nothing */
+#define enable_e1()  /* nothing */
+#define disable_e1() /* nothing */
 #endif
 
 #if (EXTRUDERS > 2) && defined(E2_ENABLE_PIN) && (E2_ENABLE_PIN > -1)
-  #define enable_e2() WRITE(E2_ENABLE_PIN, E_ENABLE_ON)
-  #define disable_e2() WRITE(E2_ENABLE_PIN,!E_ENABLE_ON)
+#define enable_e2() WRITE(E2_ENABLE_PIN, E_ENABLE_ON)
+#define disable_e2() WRITE(E2_ENABLE_PIN,!E_ENABLE_ON)
 #else
-  #define enable_e2()  /* nothing */
-  #define disable_e2() /* nothing */
+#define enable_e2()  /* nothing */
+#define disable_e2() /* nothing */
 #endif
 
 
@@ -262,15 +262,17 @@ void refresh_cmd_timeout(void);
 extern volatile unsigned long timer0_millis;
 // An unsynchronized equivalent to a standard Arduino millis() function.
 // To be used inside an interrupt routine.
-FORCE_INLINE unsigned long millis_nc() { return timer0_millis; }
+FORCE_INLINE unsigned long millis_nc() {
+    return timer0_millis;
+}
 
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val);
 #endif
 
 #ifndef CRITICAL_SECTION_START
-  #define CRITICAL_SECTION_START  unsigned char _sreg = SREG; cli();
-  #define CRITICAL_SECTION_END    SREG = _sreg;
+#define CRITICAL_SECTION_START  unsigned char _sreg = SREG; cli();
+#define CRITICAL_SECTION_END    SREG = _sreg;
 #endif //CRITICAL_SECTION_START
 
 extern float homing_feedrate[];
@@ -375,7 +377,7 @@ extern LongTimer safetyTimer;
 
 extern void calculate_extruder_multipliers();
 
-// Similar to the default Arduino delay function, 
+// Similar to the default Arduino delay function,
 // but it keeps the background tasks running.
 extern void delay_keep_alive(unsigned int ms);
 
@@ -406,7 +408,7 @@ bool check_commands();
 
 void uvlo_();
 void uvlo_tiny();
-void recover_print(uint8_t automatic); 
+void recover_print(uint8_t automatic);
 void setup_uvlo_interrupt();
 
 #if defined(TACH_1) && TACH_1 >-1

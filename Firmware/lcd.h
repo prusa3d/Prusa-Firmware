@@ -197,16 +197,16 @@ private:
 ////////////////////////////////////
 // Setup button and encode mappings for each panel (into 'lcd_buttons' variable
 //
-// This is just to map common functions (across different panels) onto the same 
-// macro name. The mapping is independent of whether the button is directly connected or 
+// This is just to map common functions (across different panels) onto the same
+// macro name. The mapping is independent of whether the button is directly connected or
 // via a shift/i2c register.
 
 #define BLEN_B 1
 #define BLEN_A 0
 #define EN_B (1<<BLEN_B) // The two encoder pins are connected through BTN_EN1 and BTN_EN2
 #define EN_A (1<<BLEN_A)
-#define BLEN_C 2 
-#define EN_C (1<<BLEN_C) 
+#define BLEN_C 2
+#define EN_C (1<<BLEN_C)
 
 //! @brief Was button clicked?
 //!
