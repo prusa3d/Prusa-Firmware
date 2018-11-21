@@ -353,6 +353,16 @@
 #define FILAMENTCHANGE_EXFEED 2
 #define FILAMENTCHANGE_ZFEED 15
 
+#define FILAMENT_LOAD_FAST_SEQUENCE_FIRST_HALF 40 //E distance in mm for the first part of the fast filament loading sequence used in filament load (M701)
+#define FILAMENT_LOAD_FAST_SEQUENCE_SECOND_HALF 30 //E distance in mm for the second part of the fast filament loading sequence used in filament load (M701)
+#define FILAMENT_LOAD_FAST_SEQUENCE_FEED_RATE 400/60 // feedrate in mm/s for fast filament loading sequence used in filament load (M701) 
+
+#define FILAMENT_SINGLE_UNLOAD_FAST_SEQUENCE 45 //E distance in mm for fast filament unloading sequence used in filament unload (M702)
+#define FILAMENT_SINGLE_UNLOAD_SLOW_SEQUENCE_FIRST_HALF 15 //E distance in mm for the first part of the slow filament unloading sequence used in filament unload (M702)
+#define FILAMENT_SINGLE_UNLOAD_SLOW_SEQUENCE_SECOND_HALF 20 //E distance in mm for the second part of the slow filament unloading sequence used in filament unload (M702)
+#define FILAMENT_SINGLE_UNLOAD_FAST_SEQUENCE_FEED_RATE 5200 / 60 // feedrate in mm/s for fast filament unloading sequence used in filament unload (M702) 
+#define FILAMENT_SINGLE_UNLOAD_SLOW_SEQUENCE_FEED_RATE 1000 / 60 // feedrate in mm/s for fast filament unloading sequence used in filament unload (M702) 
+
 #endif
 
 /*------------------------------------

@@ -5392,14 +5392,14 @@ void unload_filament()
 
 	//		extr_unload2();
 
-	current_position[E_AXIS] -= 45;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
+	current_position[E_AXIS] -= FILAMENT_SINGLE_UNLOAD_FAST_SEQUENCE;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENT_SINGLE_UNLOAD_FAST_SEQUENCE_FEED_RATE, active_extruder);
 	st_synchronize();
-	current_position[E_AXIS] -= 15;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+	current_position[E_AXIS] -= FILAMENT_SINGLE_UNLOAD_SLOW_SEQUENCE_FIRST_HALF;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENT_SINGLE_UNLOAD_SLOW_SEQUENCE_FEED_RATE, active_extruder);
 	st_synchronize();
-	current_position[E_AXIS] -= 20;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
+	current_position[E_AXIS] -= FILAMENT_SINGLE_UNLOAD_SLOW_SEQUENCE_SECOND_HALF;
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENT_SINGLE_UNLOAD_SLOW_SEQUENCE_FEED_RATE, active_extruder);
 	st_synchronize();
 
 	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
