@@ -362,6 +362,7 @@ bool fsensor_oq_result(void)
 
 ISR(FSENSOR_INT_PIN_VECT)
 {
+	if (mmu_enabled) return;
 	if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
 	fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
 	static bool _lock = false;
