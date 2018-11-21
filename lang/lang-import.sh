@@ -23,6 +23,9 @@ fi
 #convert '\\e' sequencies to 'x1b' and '\\' to '\'
 cat $LNGISO.po | sed 's/\\e/\\x1b/g;s/\\\\/\\/g' > $LNG'_filtered.po'
 
+#replace '\n' with ' ' (single space)
+sed -i 's/ \\n/ /g;s/\\n/ /g' $LNG'_filtered.po'
+
 #replace in czech translation
 if [ "$LNG" = "cz" ]; then
  #replace 'ž' with 'z'
@@ -43,8 +46,6 @@ fi
 
 #replace in german translation
 if [ "$LNG" = "de" ]; then
- #replace '\n' with ' ' (single space)
- sed -i 's/ \\n/ /g;s/\\n/ /g' $LNG'_filtered.po'
  #replace 'ä' with 'ae'
  sed -i 's/\xc3\xa4/ae/g' $LNG'_filtered.po'
  #replace 'ü' with 'ue'
@@ -73,8 +74,6 @@ fi
 
 #replace in french translation
 if [ "$LNG" = "fr" ]; then
- #replace '\n' with ' ' (single space)
- sed -i 's/ \\n/ /g;s/\\n/ /g' $LNG'_filtered.po'
  #replace 'é' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
  #replace 'É' with 'E'
