@@ -5855,7 +5855,7 @@ Sigma_Exit:
           extruder = code_value();
 		  if(extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
-            SERIAL_ECHO(_i("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
+            SERIAL_ECHO(_n("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
             break;
           }
         }
@@ -7677,19 +7677,19 @@ bool setTargetedHotend(int code, uint8_t &extruder)
       SERIAL_ECHO_START;
       switch(code){
         case 104:
-          SERIAL_ECHORPGM(_i("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER c=0 r=0
           break;
         case 105:
-          SERIAL_ECHO(_i("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER c=0 r=0
           break;
         case 109:
-          SERIAL_ECHO(_i("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER c=0 r=0
           break;
         case 218:
-          SERIAL_ECHO(_i("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER c=0 r=0
           break;
         case 221:
-          SERIAL_ECHO(_i("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
           break;
       }
       SERIAL_PROTOCOLLN((int)extruder);

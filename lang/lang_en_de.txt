@@ -614,37 +614,13 @@
 "Loose pulley"
 "Lose Riemenscheibe"
 
-#MSG_M104_INVALID_EXTRUDER c=0 r=0
-"M104 Invalid extruder "
-"M104 Falscher Extruder "
-
-#MSG_M105_INVALID_EXTRUDER c=0 r=0
-"M105 Invalid extruder "
-"M105 Falscher Extruder "
-
 #
 "Load to nozzle"
 "In Druckduese laden"
 
-#MSG_M109_INVALID_EXTRUDER c=0 r=0
-"M109 Invalid extruder "
-"M109 Falscher Extruder "
-
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
 "M117 Erste-Schicht Kal."
-
-#MSG_M200_INVALID_EXTRUDER c=0 r=0
-"M200 Invalid extruder "
-"M200 Falscher Extruder "
-
-#MSG_M218_INVALID_EXTRUDER c=0 r=0
-"M218 Invalid extruder "
-"M218 Falscher Extruder "
-
-#MSG_M221_INVALID_EXTRUDER c=0 r=0
-"M221 Invalid extruder "
-"M221 Falscher Extruder "
 
 #MSG_MAIN c=0 r=0
 "Main"

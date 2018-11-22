@@ -460,29 +460,11 @@
 #MSG_LOOSE_PULLEY c=20 r=1
 "Loose pulley"
 
-#MSG_M104_INVALID_EXTRUDER c=0 r=0
-"M104 Invalid extruder "
-
-#MSG_M105_INVALID_EXTRUDER c=0 r=0
-"M105 Invalid extruder "
-
 #
 "Load to nozzle"
 
-#MSG_M109_INVALID_EXTRUDER c=0 r=0
-"M109 Invalid extruder "
-
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
-
-#MSG_M200_INVALID_EXTRUDER c=0 r=0
-"M200 Invalid extruder "
-
-#MSG_M218_INVALID_EXTRUDER c=0 r=0
-"M218 Invalid extruder "
-
-#MSG_M221_INVALID_EXTRUDER c=0 r=0
-"M221 Invalid extruder "
 
 #MSG_MAIN c=0 r=0
 "Main"
