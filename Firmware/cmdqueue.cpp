@@ -453,7 +453,7 @@ void get_command()
 			  else
 			  {
 				  SERIAL_ERROR_START;
-				  SERIAL_ERRORRPGM(_i("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM c=0 r=0
+				  SERIAL_ERRORRPGM(_n("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM c=0 r=0
 				  SERIAL_ERRORLN(gcode_LastN);
 				  FlushSerialRequestResend();
 				  serial_count = 0;

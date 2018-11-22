@@ -698,10 +698,6 @@
 "Move Z"
 "Ruch osi Z"
 
-#MSG_ERR_NO_CHECKSUM c=0 r=0
-"No Checksum with line number, Last Line: "
-"Brak sumy kontrolnej z numerem linii, ostatnia linia:"
-
 #MSG_NO_MOVE c=0 r=0
 "No move."
 "Brak ruchu."

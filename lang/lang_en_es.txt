@@ -698,10 +698,6 @@
 "Move Z"
 "Mover Z"
 
-#MSG_ERR_NO_CHECKSUM c=0 r=0
-"No Checksum with line number, Last Line: "
-"Sin Checksum con linea numero, Ult. Linea: "
-
 #MSG_NO_MOVE c=0 r=0
 "No move."
 "Sin movimiento"

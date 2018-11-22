@@ -523,9 +523,6 @@
 #MSG_MOVE_Z c=0 r=0
 "Move Z"
 
-#MSG_ERR_NO_CHECKSUM c=0 r=0
-"No Checksum with line number, Last Line: "
-
 #MSG_NO_MOVE c=0 r=0
 "No move."
 
