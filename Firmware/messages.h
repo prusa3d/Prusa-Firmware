@@ -63,7 +63,6 @@ extern const char MSG_NOZZLE[];
 extern const char MSG_PAPER[];
 extern const char MSG_PLACE_STEEL_SHEET[];
 extern const char MSG_PLEASE_WAIT[];
-extern const char MSG_POWERUP[];
 extern const char MSG_PREHEAT_NOZZLE[];
 extern const char MSG_PRESS_TO_UNLOAD[];
 extern const char MSG_PRINT_ABORTED[];
@@ -123,6 +122,7 @@ extern const char MSG_SD_ERR_WRITE_TO_FILE[];
 extern const char MSG_OK[];
 extern const char MSG_SD_OPEN_FILE_FAIL[];
 extern const char MSG_ENDSTOP_OPEN[];
+extern const char MSG_POWERUP[];
 
 #if defined(__cplusplus)
 }

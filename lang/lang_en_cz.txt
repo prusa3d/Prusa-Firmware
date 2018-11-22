@@ -838,10 +838,6 @@
 "Please wait"
 "Prosim cekejte"
 
-#MSG_POWERUP c=0 r=0
-"PowerUp"
-"Zapnuti"
-
 #
 "Please remove shipping helpers first."
 "Nejprve prosim sundejte transportni soucastky."

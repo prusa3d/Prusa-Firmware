@@ -628,9 +628,6 @@
 #MSG_PLEASE_WAIT c=20 r=0
 "Please wait"
 
-#MSG_POWERUP c=0 r=0
-"PowerUp"
-
 #
 "Please remove shipping helpers first."
 

@@ -838,10 +838,6 @@
 "Please wait"
 "Merci de patienter"
 
-#MSG_POWERUP c=0 r=0
-"PowerUp"
-"Demarrage"
-
 #
 "Please remove shipping helpers first."
 "Veuillez retirer d'abord les protections d'envoi."
