@@ -750,10 +750,6 @@
 "Nozzle FAN"
 "Vent buse"
 
-#MSG_SD_OPENROOT_FAIL c=0 r=0
-"openRoot failed"
-"Echec openRoot"
-
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
 "Pause de l'impres"

@@ -750,10 +750,6 @@
 "Nozzle FAN"
 "\x00"
 
-#MSG_SD_OPENROOT_FAIL c=0 r=0
-"openRoot failed"
-"Zugriff auf Hauptverzeichnis misslungen"
-
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
 "Druck pausieren"

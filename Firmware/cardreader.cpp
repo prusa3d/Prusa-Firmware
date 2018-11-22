@@ -193,7 +193,7 @@ void CardReader::initsd()
   else if (!root.openRoot(&volume)) 
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(_i("openRoot failed"));////MSG_SD_OPENROOT_FAIL c=0 r=0
+    SERIAL_ERRORLNRPGM(_n("openRoot failed"));////MSG_SD_OPENROOT_FAIL c=0 r=0
   }
   else 
   {
