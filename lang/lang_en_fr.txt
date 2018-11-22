@@ -68,7 +68,7 @@
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
-"Origine automatique"
+"Mise a 0 des axes"
 
 #MSG_AUTOLOAD_FILAMENT c=17 r=0
 "AutoLoad filament"
@@ -104,7 +104,7 @@
 
 #MSG_BED_CORRECTION_MENU c=0 r=0
 "Bed level correct"
-"Correction niveau lit"
+"Cor courbure du lit"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -612,7 +612,7 @@
 
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
-"Ajustement Z en direct"
+"Ajuster Z en dir"
 
 #MSG_LOAD_FILAMENT c=17 r=0
 "Load filament"
@@ -672,7 +672,7 @@
 
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
-"Nivelage du lit par maillage"
+"Nivelage du lit"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -804,7 +804,7 @@
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
-"Mettre en pause l'impression"
+"Pause de l'impres"
 
 #MSG_PID_RUNNING c=20 r=1
 "PID cal.           "
@@ -928,7 +928,7 @@
 
 #MSG_CARD_MENU c=0 r=0
 "Print from SD"
-"Imprimer depuis la SD"
+"Impr depuis la SD"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -1088,7 +1088,7 @@
 
 #
 "Show pinda state"
-"Afficher l'etat de la pinda"
+"Etat de la PINDA"
 
 #MSG_DWELL c=0 r=0
 "Sleep..."
@@ -1216,7 +1216,7 @@
 
 #
 "Total print time"
-"Temps d'impression total"
+"Temps total"
 
 #MSG_ENDSTOP_HIT c=0 r=0
 "TRIGGERED"
