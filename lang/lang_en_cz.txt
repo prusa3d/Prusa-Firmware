@@ -270,10 +270,6 @@
 "Error - static memory has been overwritten"
 "Chyba - Doslo k prepisu staticke pameti!"
 
-#MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
-"error writing to file"
-"chyba zapisu do souboru"
-
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
 "CHYBA: Filament senzor nereaguje, zkontrolujte zapojeni."

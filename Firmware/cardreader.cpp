@@ -532,7 +532,7 @@ void CardReader::write_command(char *buf)
   if (file.writeError)
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(_T(MSG_SD_ERR_WRITE_TO_FILE));
+    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
   }
 }
 
@@ -544,7 +544,7 @@ void CardReader::write_command_no_newline(char *buf)
   if (file.writeError)
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(_T(MSG_SD_ERR_WRITE_TO_FILE));
+    SERIAL_ERRORLNRPGM(MSG_SD_ERR_WRITE_TO_FILE);
     MYSERIAL.println("An error while writing to the SD Card.");
   }
 }

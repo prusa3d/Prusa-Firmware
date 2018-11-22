@@ -73,7 +73,6 @@ const char MSG_RECOVER_PRINT[] PROGMEM_I1 = ISTR("Blackout occurred. Recover pri
 const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\xF8" "Refresh"); ////c=0 r=0
 const char MSG_RESUMING_PRINT[] PROGMEM_I1 = ISTR("Resuming print"); ////c=0 r=0
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////c=20 r=4
-const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_I1 = ISTR("error writing to file"); ////c=0 r=0
 const char MSG_SD_OPEN_FILE_FAIL[] PROGMEM_I1 = ISTR("open failed, File: "); ////c=0 r=0
 const char MSG_SELFTEST_COOLING_FAN[] PROGMEM_I1 = ISTR("Front print fan?"); ////c=20 r=0
 const char MSG_SELFTEST_EXTRUDER_FAN[] PROGMEM_I1 = ISTR("Left hotend fan?"); ////c=20 r=0
@@ -122,3 +121,4 @@ const char MSG_ZPROBE_ZOFFSET[] PROGMEM_N1 = "Z Offset"; ////c=0 r=0
 const char MSG_TMC_OVERTEMP[] PROGMEM_N1 = "TMC DRIVER OVERTEMP"; ////c=0 r=0
 const char MSG_Enqueing[] PROGMEM_N1 = "enqueing \""; ////c=0 r=0
 const char MSG_ENDSTOPS_HIT[] PROGMEM_N1 = "endstops hit: "; ////c=0 r=0
+const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_N1 = "error writing to file"; ////c=0 r=0

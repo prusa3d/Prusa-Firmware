@@ -270,10 +270,6 @@
 "Error - static memory has been overwritten"
 "Blad - pamiec statyczna zostala nadpisana"
 
-#MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
-"error writing to file"
-"blad zapisywania pliku"
-
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
 "BLAD: Czujnik filamentu nie odpowiada, sprawdz polaczenie."

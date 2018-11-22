@@ -74,7 +74,6 @@ extern const char MSG_RECOVER_PRINT[];
 extern const char MSG_REFRESH[];
 extern const char MSG_REMOVE_STEEL_SHEET[];
 extern const char MSG_RESUMING_PRINT[];
-extern const char MSG_SD_ERR_WRITE_TO_FILE[];
 extern const char MSG_SD_OPEN_FILE_FAIL[];
 extern const char MSG_SD_WORKDIR_FAIL[];
 extern const char MSG_SELFTEST_COOLING_FAN[];
@@ -123,6 +122,7 @@ extern const char MSG_ZPROBE_ZOFFSET[];
 extern const char MSG_TMC_OVERTEMP[];
 extern const char MSG_Enqueing[];
 extern const char MSG_ENDSTOPS_HIT[];
+extern const char MSG_SD_ERR_WRITE_TO_FILE[];
 
 #if defined(__cplusplus)
 }

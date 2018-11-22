@@ -270,10 +270,6 @@
 "Error - static memory has been overwritten"
 "Erreur - la memoire statique a ete ecrasee"
 
-#MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
-"error writing to file"
-"erreur d'ecriture du fichier"
-
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
 "ERREUR : Le capteur de filament ne repond pas, verifiez la connexion."

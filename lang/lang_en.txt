@@ -202,9 +202,6 @@
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
 
-#MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
-"error writing to file"
-
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
 

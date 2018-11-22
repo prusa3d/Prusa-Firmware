@@ -270,10 +270,6 @@
 "Error - static memory has been overwritten"
 "Error - se ha sobre-escrito la memoria estatica"
 
-#MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
-"error writing to file"
-"error al escribir arch."
-
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
 "ERROR: El sensor de filamento no responde, por favor comprueba la conexion."
