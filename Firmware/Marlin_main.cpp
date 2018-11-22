@@ -1180,7 +1180,7 @@ void setup()
 	SERIAL_ECHO_START;
 	SERIAL_ECHORPGM(_i(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
 	SERIAL_ECHO(freeMemory());
-	SERIAL_ECHORPGM(_i("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
+	SERIAL_ECHORPGM(_n("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)

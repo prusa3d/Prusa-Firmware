@@ -1,7 +1,3 @@
-#MSG_PLANNER_BUFFER_BYTES c=0 r=0
-"  PlannerBufferBytes: "
-" PlannerPufferBytes: "
-
 #MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
 " cold extrusion prevented"
 " stopp, Extruder kalt!"
