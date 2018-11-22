@@ -1,7 +1,3 @@
-#MSG_CONFIGURATION_VER c=0 r=0
-" Last Updated: "
-" Ostatnia aktualizacja: "
-
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 " of 4"
 " z 4"
