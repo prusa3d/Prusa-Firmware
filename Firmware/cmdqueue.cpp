@@ -382,7 +382,7 @@ void get_command()
 	}
 
   // start of serial line processing loop
-  while (MYSERIAL.available() > 0 && !saved_printing) {  //is print is saved (crash detection or filament detection), dont process data from serial line
+  while ((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && isPrintPaused)) {  //is print is saved (crash detection or filament detection), dont process data from serial line
 	
     char serial_char = MYSERIAL.read();
 /*    if (selectedSerialPort == 1)
