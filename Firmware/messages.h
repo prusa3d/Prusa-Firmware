@@ -28,8 +28,6 @@ extern const char MSG_CRASHDETECT_OFF[];
 extern const char MSG_CRASHDETECT_ON[];
 extern const char MSG_ENDSTOP_HIT[];
 extern const char MSG_ENDSTOP_OPEN[];
-extern const char MSG_ENDSTOPS_HIT[];
-extern const char MSG_Enqueing[];
 extern const char MSG_ERR_STOPPED[];
 extern const char MSG_ERROR[];
 extern const char MSG_EXTRUDER[];
@@ -123,6 +121,8 @@ extern const char MSG_Z_MIN[];
 extern const char MSG_ZPROBE_OUT[];
 extern const char MSG_ZPROBE_ZOFFSET[];
 extern const char MSG_TMC_OVERTEMP[];
+extern const char MSG_Enqueing[];
+extern const char MSG_ENDSTOPS_HIT[];
 
 #if defined(__cplusplus)
 }

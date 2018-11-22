@@ -262,10 +262,6 @@
 "Endstop"
 "Koncovy spinac"
 
-#MSG_ENDSTOPS_HIT c=0 r=0
-"endstops hit: "
-"konc. spinace aktivovany: "
-
 #MSG_SELFTEST_ENDSTOPS c=0 r=0
 "Endstops"
 "Konc. spinace"

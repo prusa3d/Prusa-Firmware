@@ -262,10 +262,6 @@
 "Endstop"
 "Krancowka"
 
-#MSG_ENDSTOPS_HIT c=0 r=0
-"endstops hit: "
-"krancowki aktywowane:"
-
 #MSG_SELFTEST_ENDSTOPS c=0 r=0
 "Endstops"
 "Krancowki"
