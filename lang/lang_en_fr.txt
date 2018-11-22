@@ -46,6 +46,10 @@
 "All is done. Happy printing!"
 "Tout est termine. Bonne impression !"
 
+#
+"Ambient"
+"Ambiant"
+
 #MSG_PRESS c=20 r=0
 "and press the knob"
 "et pressez le bouton"
@@ -68,7 +72,7 @@
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
-"Origine automatique"
+"Mise a 0 des axes"
 
 #MSG_AUTOLOAD_FILAMENT c=17 r=0
 "AutoLoad filament"
@@ -104,7 +108,7 @@
 
 #MSG_BED_CORRECTION_MENU c=0 r=0
 "Bed level correct"
-"Correction niveau lit"
+"Cor courbure du lit"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -160,7 +164,7 @@
 
 #MSG_MENU_CALIBRATION c=0 r=0
 "Calibration"
-"\x00"
+"Calibration"
 
 #
 "Cancel"
@@ -210,6 +214,10 @@
 "Crash detected. Resume print?"
 "Crash detecte. Poursuivre l'impression ?"
 
+#
+"Crash"
+"Colision"
+
 #MSG_CURRENT c=19 r=1
 "Current"
 "Actuel"
@@ -236,11 +244,11 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-"Ejecter le filament"
+"Ejecter filament"
 
 #MSG_EJECT_FILAMENT1 c=17 r=1
 "Eject filament 1"
-"Ejecter le filament 1"
+"Ejecter fil. 1"
 
 #MSG_EJECT_FILAMENT2 c=17 r=1
 "Eject filament 2"
@@ -346,6 +354,10 @@
 "F. autoload [off]"
 "AutoCharg F [off]"
 
+#
+"Fail stats"
+"Statist. d'echec"
+
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
 "Vitesse ventil"
@@ -377,6 +389,10 @@
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
 "Capteur Fil.[off]"
+
+#
+"Filam. runouts"
+"Manque de flm"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -544,7 +560,7 @@
 
 #MSG_WATCH c=0 r=0
 "Info screen"
-"Ecran d'informations"
+"Ecran d'info"
 
 #MSG_FILAMENT_LOADING_T0 c=20 r=4
 "Insert filament into extruder 1. Click when done."
@@ -590,6 +606,14 @@
 "Iteration "
 "\x00"
 
+#
+"Last print failures"
+"Echecs d'impr. dern."
+
+#
+"Last print"
+"Derniere impress."
+
 #MSG_KILLED c=0 r=0
 "KILLED. "
 "TUE."
@@ -612,7 +636,7 @@
 
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
-"Ajustement Z en direct"
+"Ajuster Z en dir"
 
 #MSG_LOAD_FILAMENT c=17 r=0
 "Load filament"
@@ -640,7 +664,7 @@
 
 #
 "Load to nozzle"
-"Charger dans la buse"
+"Charger dans buse"
 
 #MSG_M109_INVALID_EXTRUDER c=0 r=0
 "M109 Invalid extruder "
@@ -672,7 +696,7 @@
 
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
-"Nivelage du lit par maillage"
+"Nivelage du lit"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -713,6 +737,10 @@
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
 "Mode[haute puiss]"
+
+#
+"MMU2 connected"
+"MMU2 connectée"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -798,13 +826,17 @@
 "Now remove the test print from steel sheet."
 "Retirez maintenant l'impression de test de la feuille d'acier."
 
+#
+"Nozzle FAN"
+"Vent buse"
+
 #MSG_SD_OPENROOT_FAIL c=0 r=0
 "openRoot failed"
 "Echec openRoot"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
-"Mettre en pause l'impression"
+"Pause de l'impres"
 
 #MSG_PID_RUNNING c=20 r=1
 "PID cal.           "
@@ -918,6 +950,10 @@
 "Press knob to preheat nozzle and continue."
 "Appuyez sur le bouton pour prechauffer la buse et continuer."
 
+#
+"Power failures"
+"Coupures"
+
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
 "Impression annulee"
@@ -928,7 +964,7 @@
 
 #MSG_CARD_MENU c=0 r=0
 "Print from SD"
-"Imprimer depuis la SD"
+"Impr depuis la SD"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -945,6 +981,10 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "L'imprimante n'a pas encore ete calibree. Suivez le manuel, chapitre Premiers pas, section Processus de calibration"
+
+#
+"Print FAN"
+"Vent extru"
 
 #MSG_ERR_STOPPED c=0 r=0
 "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
@@ -1088,7 +1128,7 @@
 
 #
 "Show pinda state"
-"Afficher l'etat de la pinda"
+"Etat de la PINDA"
 
 #MSG_DWELL c=0 r=0
 "Sleep..."
@@ -1133,6 +1173,10 @@
 #
 "Some problem encountered, Z-leveling enforced ..."
 "Problemes rencontres, nivellement de l'axe Z applique..."
+
+#
+"Some problem encountered, Z-levelling enforced ..."
+"\x00"
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -1216,7 +1260,7 @@
 
 #
 "Total print time"
-"Temps d'impression total"
+"Temps total"
 
 #MSG_ENDSTOP_HIT c=0 r=0
 "TRIGGERED"
@@ -1234,6 +1278,10 @@
 "Unload all"
 "Decharger tout"
 
+#
+"Total failures"
+"Echecs au total"
+
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
 "Decharger fil."
@@ -1242,6 +1290,10 @@
 "Unloading filament"
 "Dechargement fil."
 
+#
+"Total"
+"Total"
+
 #MSG_USED c=19 r=1
 "Used during print"
 "Utilise pdt impr."
@@ -1249,6 +1301,10 @@
 #MSG_MENU_VOLTAGES c=15 r=1
 "Voltages"
 "Tensions"
+
+#
+"unknown"
+"\x00"
 
 #MSG_SD_VOL_INIT_FAIL c=0 r=0
 "volume.init failed"
