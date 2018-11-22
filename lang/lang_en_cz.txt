@@ -59,16 +59,16 @@
 "Dojely oba Z voziky k~hornimu dorazu?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
-"Auto deplete [on]"
-"Spoj Civky  [zap]"
+"SpoolJoin    [on]"
+"SpoolJoin   [zap]"
 
 #
-"Auto deplete[N/A]"
-"Spoj Civky  [N/A]"
+"SpoolJoin   [N/A]"
+"SpoolJoin   [N/A]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
-"Auto deplete[off]"
-"Spoj Civky  [vyp]"
+"SpoolJoin   [off]"
+"SpoolJoin   [vyp]"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"

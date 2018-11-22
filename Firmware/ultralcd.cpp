@@ -4700,15 +4700,15 @@ static bool settingsAutoDeplete()
     {
         if (!fsensor_enabled)
         {
-            if (menu_item_text_P(_i("Auto deplete[N/A]"))) return true;
+            if (menu_item_text_P(_i("SpoolJoin   [N/A]"))) return true;
         }
         else if (lcd_autoDeplete)
         {
-            if (menu_item_function_P(_i("Auto deplete [on]"), auto_deplete_switch)) return true;
+            if (menu_item_function_P(_i("SpoolJoin    [on]"), auto_deplete_switch)) return true;
         }
         else
         {
-            if (menu_item_function_P(_i("Auto deplete[off]"), auto_deplete_switch)) return true;
+            if (menu_item_function_P(_i("SpoolJoin   [off]"), auto_deplete_switch)) return true;
         }
     }
     return false;

@@ -59,16 +59,16 @@
 "I carrelli Z sin/des sono altezza max?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
-"Auto deplete [on]"
-"Auto svuotam [on]"
+"SpoolJoin    [on]"
+"SpoolJoin    [on]"
 
 #
-"Auto deplete[N/A]"
-"Auto svuotam[N/A]"
+"SpoolJoin   [N/A]"
+"SpoolJoin   [N/A]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
-"Auto deplete[off]"
-"Auto svuotam[off]"
+"SpoolJoin   [off]"
+"SpoolJoin   [off]"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
