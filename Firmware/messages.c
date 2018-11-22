@@ -28,7 +28,6 @@ const char MSG_CRASHDETECT_ON[] PROGMEM_I1 = ISTR("Crash det.   [on]"); ////c=0 
 const char MSG_ENDSTOP_HIT[] PROGMEM_I1 = ISTR("TRIGGERED"); ////c=0 r=0
 const char MSG_ENDSTOP_OPEN[] PROGMEM_I1 = ISTR("open"); ////c=0 r=0
 const char MSG_ENDSTOPS_HIT[] PROGMEM_I1 = ISTR("endstops hit: "); ////c=0 r=0
-const char MSG_Enqueing[] PROGMEM_I1 = ISTR("enqueing \""); ////c=0 r=0
 const char MSG_ERR_STOPPED[] PROGMEM_I1 = ISTR("Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"); ////c=0 r=0
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////c=0 r=0
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17 r=1
@@ -122,3 +121,4 @@ const char MSG_Z_MIN[] PROGMEM_N1 = "z_min: "; ////c=0 r=0
 const char MSG_ZPROBE_OUT[] PROGMEM_N1 = "Z probe out. bed"; ////c=0 r=0
 const char MSG_ZPROBE_ZOFFSET[] PROGMEM_N1 = "Z Offset"; ////c=0 r=0
 const char MSG_TMC_OVERTEMP[] PROGMEM_N1 = "TMC DRIVER OVERTEMP"; ////c=0 r=0
+const char MSG_Enqueing[] PROGMEM_N1 = "enqueing \""; ////c=0 r=0
