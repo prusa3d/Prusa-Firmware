@@ -882,10 +882,6 @@
 "Print paused"
 "Druk wstrzymany"
 
-#MSG_ERR_KILLED c=0 r=0
-"Printer halted. kill() called!"
-"Drukarka zatrzymana. Wywolano komende kill()!"
-
 #
 "Press the knob to resume nozzle temperature."
 "Wcisnij pokretlo aby wznowic podgrzewanie dyszy."

@@ -882,10 +882,6 @@
 "Print paused"
 "Stampa in pausa"
 
-#MSG_ERR_KILLED c=0 r=0
-"Printer halted. kill() called!"
-"Stampante ferma. kill () chiamato!"
-
 #
 "Press the knob to resume nozzle temperature."
 "Premete la manopola per recuperare la temperatura dell'ugello."

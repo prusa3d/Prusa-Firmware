@@ -661,9 +661,6 @@
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
 
-#MSG_ERR_KILLED c=0 r=0
-"Printer halted. kill() called!"
-
 #
 "Press the knob to resume nozzle temperature."
 

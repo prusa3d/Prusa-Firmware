@@ -882,10 +882,6 @@
 "Print paused"
 "Tisk pozastaven"
 
-#MSG_ERR_KILLED c=0 r=0
-"Printer halted. kill() called!"
-"Tiskarna zastavena. Volano kill()!"
-
 #
 "Press the knob to resume nozzle temperature."
 "Pro pokracovani nahrivani trysky stisknete tlacitko."

@@ -7549,7 +7549,7 @@ void kill(const char *full_screen_message, unsigned char id)
   pinMode(PS_ON_PIN,INPUT);
 #endif
   SERIAL_ERROR_START;
-  SERIAL_ERRORLNRPGM(_i("Printer halted. kill() called!"));////MSG_ERR_KILLED c=0 r=0
+  SERIAL_ERRORLNRPGM(_n("Printer halted. kill() called!"));////MSG_ERR_KILLED c=0 r=0
   if (full_screen_message != NULL) {
       SERIAL_ERRORLNRPGM(full_screen_message);
       lcd_display_message_fullscreen_P(full_screen_message);
