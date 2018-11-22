@@ -614,10 +614,6 @@
 "Last print"
 "\x00"
 
-#MSG_KILLED c=0 r=0
-"KILLED. "
-"ZRUSENO."
-
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
 "Levy vent na trysce?"

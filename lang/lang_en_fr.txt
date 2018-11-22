@@ -614,10 +614,6 @@
 "Last print"
 "Derniere impress."
 
-#MSG_KILLED c=0 r=0
-"KILLED. "
-"TUE."
-
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
 "Ventilo tete gauche?"
