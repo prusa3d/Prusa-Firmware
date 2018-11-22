@@ -27,7 +27,6 @@ extern const char MSG_CRASHDETECT_NA[];
 extern const char MSG_CRASHDETECT_OFF[];
 extern const char MSG_CRASHDETECT_ON[];
 extern const char MSG_ENDSTOP_HIT[];
-extern const char MSG_ERR_STOPPED[];
 extern const char MSG_ERROR[];
 extern const char MSG_EXTRUDER[];
 extern const char MSG_FILAMENT[];
@@ -123,6 +122,7 @@ extern const char MSG_OK[];
 extern const char MSG_SD_OPEN_FILE_FAIL[];
 extern const char MSG_ENDSTOP_OPEN[];
 extern const char MSG_POWERUP[];
+extern const char MSG_ERR_STOPPED[];
 
 #if defined(__cplusplus)
 }

@@ -484,7 +484,7 @@ void get_command()
             if (Stopped == true) {
                 int gcode = strtol(strchr_pointer+1, NULL, 10);
                 if (gcode >= 0 && gcode <= 3) {
-                    SERIAL_ERRORLNRPGM(_T(MSG_ERR_STOPPED));
+                    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
                     LCD_MESSAGERPGM(_T(MSG_STOPPED));
                 }
             }

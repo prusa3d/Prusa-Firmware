@@ -670,9 +670,6 @@
 #
 "Print FAN"
 
-#MSG_ERR_STOPPED c=0 r=0
-"Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
-
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."
 

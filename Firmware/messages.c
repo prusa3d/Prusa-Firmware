@@ -26,7 +26,6 @@ const char MSG_CRASHDETECT_NA[] PROGMEM_I1 = ISTR("Crash det.  [N/A]"); ////c=0 
 const char MSG_CRASHDETECT_OFF[] PROGMEM_I1 = ISTR("Crash det.  [off]"); ////c=0 r=0
 const char MSG_CRASHDETECT_ON[] PROGMEM_I1 = ISTR("Crash det.   [on]"); ////c=0 r=0
 const char MSG_ENDSTOP_HIT[] PROGMEM_I1 = ISTR("TRIGGERED"); ////c=0 r=0
-const char MSG_ERR_STOPPED[] PROGMEM_I1 = ISTR("Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"); ////c=0 r=0
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////c=0 r=0
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17 r=1
 const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17 r=1
@@ -122,3 +121,4 @@ const char MSG_OK[] PROGMEM_N1 = "ok"; ////c=0 r=0
 const char MSG_SD_OPEN_FILE_FAIL[] PROGMEM_N1 = "open failed, File: "; ////c=0 r=0
 const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////c=0 r=0
 const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////c=0 r=0
+const char MSG_ERR_STOPPED[] PROGMEM_N1 = "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"; ////c=0 r=0
