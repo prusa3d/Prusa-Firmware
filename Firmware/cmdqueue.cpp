@@ -286,7 +286,7 @@ void enquecommand(const char *cmd, bool from_progmem)
         else
             strcpy(cmdbuffer + bufindw + CMDHDRSIZE, cmd);
         SERIAL_ECHO_START;
-        SERIAL_ECHORPGM(_T(MSG_Enqueing));
+        SERIAL_ECHORPGM(MSG_Enqueing);
         SERIAL_ECHO(cmdbuffer + bufindw + CMDHDRSIZE);
         SERIAL_ECHOLNPGM("\"");
         bufindw += len + (CMDHDRSIZE + 1);
@@ -298,7 +298,7 @@ void enquecommand(const char *cmd, bool from_progmem)
 #endif /* CMDBUFFER_DEBUG */
     } else {
         SERIAL_ERROR_START;
-        SERIAL_ECHORPGM(_T(MSG_Enqueing));
+        SERIAL_ECHORPGM(MSG_Enqueing);
         if (from_progmem)
             SERIAL_PROTOCOLRPGM(cmd);
         else
@@ -441,7 +441,7 @@ void get_command()
 					  checksum = checksum^(*p++);
 				  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
 					  SERIAL_ERROR_START;
-					  SERIAL_ERRORRPGM(_i("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
+					  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
 					  SERIAL_ERRORLN(gcode_LastN);
 					  FlushSerialRequestResend();
 					  serial_count = 0;
@@ -453,7 +453,7 @@ void get_command()
 			  else
 			  {
 				  SERIAL_ERROR_START;
-				  SERIAL_ERRORRPGM(_i("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM c=0 r=0
+				  SERIAL_ERRORRPGM(_n("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM c=0 r=0
 				  SERIAL_ERRORLN(gcode_LastN);
 				  FlushSerialRequestResend();
 				  serial_count = 0;
@@ -484,7 +484,7 @@ void get_command()
             if (Stopped == true) {
                 int gcode = strtol(strchr_pointer+1, NULL, 10);
                 if (gcode >= 0 && gcode <= 3) {
-                    SERIAL_ERRORLNRPGM(_T(MSG_ERR_STOPPED));
+                    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
                     LCD_MESSAGERPGM(_T(MSG_STOPPED));
                 }
             }

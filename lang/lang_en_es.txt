@@ -1,19 +1,3 @@
-#MSG_PLANNER_BUFFER_BYTES c=0 r=0
-"  PlannerBufferBytes: "
-" PlannerBufferBytes: "
-
-#MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
-" cold extrusion prevented"
-"extrusion en frio prevenida"
-
-#MSG_FREE_MEMORY c=0 r=0
-" Free Memory: "
-"Memoria Libre: "
-
-#MSG_CONFIGURATION_VER c=0 r=0
-" Last Updated: "
-"Ultima actualizacion: "
-
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 " of 4"
 " de 4"
@@ -59,16 +43,16 @@
 "Carros Z izq./der. estan arriba maximo?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
-"Auto deplete [on]"
-"Auto despleg.[on]"
+"SpoolJoin    [on]"
+"SpoolJoin    [on]"
 
 #
-"Auto deplete[N/A]"
-"Auto despleg[N/A]"
+"SpoolJoin   [N/A]"
+"SpoolJoin   [N/A]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
-"Auto deplete[off]"
-"Auto despleg[off]"
+"SpoolJoin   [off]"
+"SpoolJoin   [off]"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
@@ -170,10 +154,6 @@
 "Cancel"
 "Cancelar"
 
-#MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
-"Cannot enter subdir: "
-"Sin acceso subdir: "
-
 #MSG_SD_INSERTED c=0 r=0
 "Card inserted"
 "Tarjeta insertada"
@@ -191,8 +171,8 @@
 "Enfriar"
 
 #
-"Copy selected language from XFLASH?"
-"Copiar idioma seleccionado desde XFLASH?"
+"Copy selected language?"
+"Copiar idioma seleccionado?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
@@ -282,25 +262,13 @@
 "Endstop"
 "\x00"
 
-#MSG_ENDSTOPS_HIT c=0 r=0
-"endstops hit: "
-"endstops golpean: "
-
 #MSG_SELFTEST_ENDSTOPS c=0 r=0
 "Endstops"
-"\x00"
-
-#MSG_Enqueing c=0 r=0
-"enqueing \x22"
 "\x00"
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
 "Error - se ha sobre-escrito la memoria estatica"
-
-#MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
-"error writing to file"
-"error al escribir arch."
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
@@ -526,10 +494,6 @@
 "Checking Z axis  "
 "Control sensor Z"
 
-#MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
-"checksum mismatch, Last Line: "
-"inconcluencia checksum, Ult. Linea: "
-
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
 "Elegir extrusor:"
@@ -614,10 +578,6 @@
 "Last print"
 "\x00"
 
-#MSG_KILLED c=0 r=0
-"KILLED. "
-"PARADA DE EMERGENCIA"
-
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
 "Vent. izquierdo?"
@@ -654,37 +614,13 @@
 "Loose pulley"
 "Polea suelta"
 
-#MSG_M104_INVALID_EXTRUDER c=0 r=0
-"M104 Invalid extruder "
-"M104 Extrusor invalido"
-
-#MSG_M105_INVALID_EXTRUDER c=0 r=0
-"M105 Invalid extruder "
-"M105 Extrusor invalido"
-
 #
 "Load to nozzle"
 "Cargar a la boquilla"
 
-#MSG_M109_INVALID_EXTRUDER c=0 r=0
-"M109 Invalid extruder "
-"M109 Extrusor invalido"
-
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
 "M117 Cal. primera cap."
-
-#MSG_M200_INVALID_EXTRUDER c=0 r=0
-"M200 Invalid extruder "
-"M200 Extrusor invalido"
-
-#MSG_M218_INVALID_EXTRUDER c=0 r=0
-"M218 Invalid extruder "
-"M218 Extrusor invalido"
-
-#MSG_M221_INVALID_EXTRUDER c=0 r=0
-"M221 Invalid extruder "
-"M221 Extrusor invalido"
 
 #MSG_MAIN c=0 r=0
 "Main"
@@ -762,10 +698,6 @@
 "Move Z"
 "Mover Z"
 
-#MSG_ERR_NO_CHECKSUM c=0 r=0
-"No Checksum with line number, Last Line: "
-"Sin Checksum con linea numero, Ult. Linea: "
-
 #MSG_NO_MOVE c=0 r=0
 "No move."
 "Sin movimiento"
@@ -806,21 +738,9 @@
 "Nozzle"
 "Boquilla"
 
-#MSG_OK c=0 r=0
-"ok"
-"\x00"
-
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
 "Se han encontrado ajustes anteriores. Se ajustara el PID, los pasos del extrusor, etc"
-
-#MSG_SD_OPEN_FILE_FAIL c=0 r=0
-"open failed, File: "
-"error apertura, Arch.: "
-
-#MSG_ENDSTOP_OPEN c=0 r=0
-"open"
-"abrir"
 
 #
 "Now remove the test print from steel sheet."
@@ -829,10 +749,6 @@
 #
 "Nozzle FAN"
 "\x00"
-
-#MSG_SD_OPENROOT_FAIL c=0 r=0
-"openRoot failed"
-"fallo openRoot "
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -922,10 +838,6 @@
 "Please wait"
 "Por Favor Espere"
 
-#MSG_POWERUP c=0 r=0
-"PowerUp"
-"Encendido"
-
 #
 "Please remove shipping helpers first."
 "Por favor retira los soportes de envio primero."
@@ -970,10 +882,6 @@
 "Print paused"
 "Impresion en pausa"
 
-#MSG_ERR_KILLED c=0 r=0
-"Printer halted. kill() called!"
-"Impresora detenida. kill() activado!"
-
 #
 "Press the knob to resume nozzle temperature."
 "Presiona el dial para continuar con la temperatura de la boquilla."
@@ -985,10 +893,6 @@
 #
 "Print FAN"
 "\x00"
-
-#MSG_ERR_STOPPED c=0 r=0
-"Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
-"Impresora parada debido a errores. Arregle el error y use M999 para reinicio. (Temperatura se resetea. Ajustar despues de reinicio)"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."
@@ -1042,10 +946,6 @@
 "RPi port     [on]"
 "Puerto RPi  [act]"
 
-#
-"Resend"
-"Reenviar: "
-
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
 "Puerto RPi  [ina]"
@@ -1062,17 +962,9 @@
 "SD card [flshAir]"
 "Tarj. SD[FlshAir]"
 
-#MSG_SD_CARD_OK c=0 r=0
-"SD card ok"
-"Tarj. SD ok"
-
 #
 "Right"
 "Derecha"
-
-#MSG_SD_INIT_FAIL c=0 r=0
-"SD init fail"
-"Error init SD"
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -1130,10 +1022,6 @@
 "Show pinda state"
 "Mostrar estado pinda"
 
-#MSG_DWELL c=0 r=0
-"Sleep..."
-"En reposo..."
-
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Algunos archivos no se ordenaran. Maximo 100 archivos por carpeta para ordenar. "
@@ -1173,10 +1061,6 @@
 #
 "Some problem encountered, Z-leveling enforced ..."
 "Problema encontrado, nivelacion Z forzosa ..."
-
-#
-"Some problem encountered, Z-levelling enforced ..."
-"\x00"
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -1262,10 +1146,6 @@
 "Total print time"
 "Tiempo total :"
 
-#MSG_ENDSTOP_HIT c=0 r=0
-"TRIGGERED"
-"ACTIVADO"
-
 #MSG_TUNE c=0 r=0
 "Tune"
 "Ajustar"
@@ -1305,10 +1185,6 @@
 #
 "unknown"
 "\x00"
-
-#MSG_SD_VOL_INIT_FAIL c=0 r=0
-"volume.init failed"
-"fallo volume.init"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."

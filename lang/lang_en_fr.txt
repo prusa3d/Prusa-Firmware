@@ -1,19 +1,3 @@
-#MSG_PLANNER_BUFFER_BYTES c=0 r=0
-"  PlannerBufferBytes: "
-"  PlannerBufferBytes : "
-
-#MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
-" cold extrusion prevented"
-"extrusion a froid evitee"
-
-#MSG_FREE_MEMORY c=0 r=0
-" Free Memory: "
-"Memoire libre :"
-
-#MSG_CONFIGURATION_VER c=0 r=0
-" Last Updated: "
-"Derniere MAJ :"
-
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 " of 4"
 "de 4"
@@ -59,16 +43,16 @@
 "Chariots Z gauche et droite tout en haut?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
-"Auto deplete [on]"
-"Purge auto   [on]"
+"SpoolJoin    [on]"
+"SpoolJoin    [on]"
 
 #
-"Auto deplete[N/A]"
-"Vidage auto [N/A]"
+"SpoolJoin   [N/A]"
+"SpoolJoin   [N/A]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
-"Auto deplete[off]"
-"Purge auto  [off]"
+"SpoolJoin   [off]"
+"SpoolJoin   [off]"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
@@ -170,10 +154,6 @@
 "Cancel"
 "Annuler"
 
-#MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
-"Cannot enter subdir: "
-"Impossible d'entrer dans le repertoire :"
-
 #MSG_SD_INSERTED c=0 r=0
 "Card inserted"
 "Carte  inseree"
@@ -191,8 +171,8 @@
 "Refroidissement"
 
 #
-"Copy selected language from XFLASH?"
-"Copier la langue selectionne depuis la XFLASH ?"
+"Copy selected language?"
+"Copier la langue selectionne?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
@@ -244,7 +224,7 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-"Ejecter filament"
+"Ejecter le fil"
 
 #MSG_EJECT_FILAMENT1 c=17 r=1
 "Eject filament 1"
@@ -282,25 +262,13 @@
 "Endstop"
 "Butee"
 
-#MSG_ENDSTOPS_HIT c=0 r=0
-"endstops hit: "
-"butees atteintes :"
-
 #MSG_SELFTEST_ENDSTOPS c=0 r=0
 "Endstops"
 "Butees"
 
-#MSG_Enqueing c=0 r=0
-"enqueing \x22"
-"\x00"
-
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
 "Erreur - la memoire statique a ete ecrasee"
-
-#MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
-"error writing to file"
-"erreur d'ecriture du fichier"
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
@@ -526,10 +494,6 @@
 "Checking Z axis  "
 "Verification axe Z"
 
-#MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
-"checksum mismatch, Last Line: "
-"dissemblance du checksum, Derniere Ligne :"
-
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
 "Choisir extrudeur :"
@@ -614,10 +578,6 @@
 "Last print"
 "Derniere impress."
 
-#MSG_KILLED c=0 r=0
-"KILLED. "
-"TUE."
-
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
 "Ventilo tete gauche?"
@@ -654,37 +614,13 @@
 "Loose pulley"
 "Poulie lache"
 
-#MSG_M104_INVALID_EXTRUDER c=0 r=0
-"M104 Invalid extruder "
-"M104 extrudeur invalide"
-
-#MSG_M105_INVALID_EXTRUDER c=0 r=0
-"M105 Invalid extruder "
-"M105 extrudeur invalide"
-
 #
 "Load to nozzle"
-"Charger dans buse"
-
-#MSG_M109_INVALID_EXTRUDER c=0 r=0
-"M109 Invalid extruder "
-"M109 extrudeur invalide"
+"Charger le fil"
 
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
 "M117 Cal. 1ere couche"
-
-#MSG_M200_INVALID_EXTRUDER c=0 r=0
-"M200 Invalid extruder "
-"M200 extrudeur invalide"
-
-#MSG_M218_INVALID_EXTRUDER c=0 r=0
-"M218 Invalid extruder "
-"M218 extrudeur invalide"
-
-#MSG_M221_INVALID_EXTRUDER c=0 r=0
-"M221 Invalid extruder "
-"M221 extrudeur invalide"
 
 #MSG_MAIN c=0 r=0
 "Main"
@@ -762,10 +698,6 @@
 "Move Z"
 "Deplacer Z"
 
-#MSG_ERR_NO_CHECKSUM c=0 r=0
-"No Checksum with line number, Last Line: "
-"Pas de checksum avec numero de ligne, Derniere ligne :"
-
 #MSG_NO_MOVE c=0 r=0
 "No move."
 "Pas de mouvement."
@@ -806,21 +738,9 @@
 "Nozzle"
 "Buse"
 
-#MSG_OK c=0 r=0
-"ok"
-"\x00"
-
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
 "Anciens reglages trouves. Le PID, les Esteps etc. par defaut seront pris."
-
-#MSG_SD_OPEN_FILE_FAIL c=0 r=0
-"open failed, File: "
-"Echec ouverture, Fichier :"
-
-#MSG_ENDSTOP_OPEN c=0 r=0
-"open"
-"ouvrir"
 
 #
 "Now remove the test print from steel sheet."
@@ -829,10 +749,6 @@
 #
 "Nozzle FAN"
 "Vent buse"
-
-#MSG_SD_OPENROOT_FAIL c=0 r=0
-"openRoot failed"
-"Echec openRoot"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -922,10 +838,6 @@
 "Please wait"
 "Merci de patienter"
 
-#MSG_POWERUP c=0 r=0
-"PowerUp"
-"Demarrage"
-
 #
 "Please remove shipping helpers first."
 "Veuillez retirer d'abord les protections d'envoi."
@@ -970,10 +882,6 @@
 "Print paused"
 "Impression en pause"
 
-#MSG_ERR_KILLED c=0 r=0
-"Printer halted. kill() called!"
-"Imprimante stoppee. kill() appelee !"
-
 #
 "Press the knob to resume nozzle temperature."
 "Appuyez sur le bouton pour poursuivre la mise en temperature de la buse."
@@ -985,10 +893,6 @@
 #
 "Print FAN"
 "Vent extru"
-
-#MSG_ERR_STOPPED c=0 r=0
-"Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
-"Imprimante arretee a cause d'erreurs. Corrigez l'erreur et utilisez M999 pour redemarrer. (La temperature est reinitilisee. Parametrez la apres le redemarrage)"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."
@@ -1042,10 +946,6 @@
 "RPi port     [on]"
 "Port RPi     [on]"
 
-#
-"Resend"
-"Renvoyer"
-
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
 "Port RPi    [off]"
@@ -1062,17 +962,9 @@
 "SD card [flshAir]"
 "Carte SD[flshAir]"
 
-#MSG_SD_CARD_OK c=0 r=0
-"SD card ok"
-"Carte SD ok"
-
 #
 "Right"
 "Droite"
-
-#MSG_SD_INIT_FAIL c=0 r=0
-"SD init fail"
-"Echec init SD"
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -1130,10 +1022,6 @@
 "Show pinda state"
 "Etat de la PINDA"
 
-#MSG_DWELL c=0 r=0
-"Sleep..."
-"Repos..."
-
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Certains fichiers ne seront pas tries. Max 100 fichiers tries par dossier."
@@ -1173,10 +1061,6 @@
 #
 "Some problem encountered, Z-leveling enforced ..."
 "Problemes rencontres, nivellement de l'axe Z applique..."
-
-#
-"Some problem encountered, Z-levelling enforced ..."
-"\x00"
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -1262,10 +1146,6 @@
 "Total print time"
 "Temps total"
 
-#MSG_ENDSTOP_HIT c=0 r=0
-"TRIGGERED"
-"ACTIVE"
-
 #MSG_TUNE c=0 r=0
 "Tune"
 "Regler"
@@ -1305,10 +1185,6 @@
 #
 "unknown"
 "\x00"
-
-#MSG_SD_VOL_INIT_FAIL c=0 r=0
-"volume.init failed"
-"Echec volume.init"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."

@@ -627,7 +627,7 @@ void crashdet_cancel()
 		lcd_print_stop();
 	}else if(saved_printing_type == PRINTING_TYPE_USB){
 		SERIAL_ECHOLNPGM("// action:cancel"); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
-		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 	}
 }
 
@@ -1150,12 +1150,12 @@ void setup()
 
 	// Check startup - does nothing if bootloader sets MCUSR to 0
 	byte mcu = MCUSR;
-/*	if (mcu & 1) SERIAL_ECHOLNRPGM(_T(MSG_POWERUP));
+/*	if (mcu & 1) SERIAL_ECHOLNRPGM(MSG_POWERUP);
 	if (mcu & 2) SERIAL_ECHOLNRPGM(MSG_EXTERNAL_RESET);
 	if (mcu & 4) SERIAL_ECHOLNRPGM(MSG_BROWNOUT_RESET);
 	if (mcu & 8) SERIAL_ECHOLNRPGM(MSG_WATCHDOG_RESET);
 	if (mcu & 32) SERIAL_ECHOLNRPGM(MSG_SOFTWARE_RESET);*/
-	if (mcu & 1) puts_P(_T(MSG_POWERUP));
+	if (mcu & 1) puts_P(MSG_POWERUP);
 	if (mcu & 2) puts_P(MSG_EXTERNAL_RESET);
 	if (mcu & 4) puts_P(MSG_BROWNOUT_RESET);
 	if (mcu & 8) puts_P(MSG_WATCHDOG_RESET);
@@ -1168,7 +1168,7 @@ void setup()
 #ifdef STRING_VERSION_CONFIG_H
 #ifdef STRING_CONFIG_H_AUTHOR
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_i(" Last Updated: "));////MSG_CONFIGURATION_VER c=0 r=0
+	SERIAL_ECHORPGM(_n(" Last Updated: "));////MSG_CONFIGURATION_VER c=0 r=0
 	SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
 	SERIAL_ECHORPGM(_n(" | Author: "));////MSG_AUTHOR c=0 r=0
 	SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
@@ -1178,9 +1178,9 @@ void setup()
 #endif
 
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_i(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
+	SERIAL_ECHORPGM(_n(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
 	SERIAL_ECHO(freeMemory());
-	SERIAL_ECHORPGM(_i("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
+	SERIAL_ECHORPGM(_n("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
@@ -1744,7 +1744,7 @@ void loop()
           if(card.logging)
             process_commands();
           else
-           SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+           SERIAL_PROTOCOLLNRPGM(MSG_OK);
         } else {
           card.closefile();
           SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
@@ -3748,7 +3748,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-	  if(codenum != 0) LCD_MESSAGERPGM(_i("Sleep..."));////MSG_DWELL c=0 r=0
+	  if(codenum != 0) LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL c=0 r=0
       st_synchronize();
       codenum += millis();  // keep track of when we started waiting
       previous_millis_cmd = millis();
@@ -4515,7 +4515,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
                bool bState;
                do   {                             // repeat until Z-leveling o.k.
-                    lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-levelling enforced ..."));
+                    lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-leveling enforced ..."));
 #ifdef TMC2130
                     lcd_wait_for_click_delay(MSG_BED_LEVELING_FAILED_TIMEOUT);
                     calibrate_z_auto();           // Z-leveling (X-assembly stay up!!!)
@@ -5778,54 +5778,54 @@ Sigma_Exit:
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN c=0 r=0
         if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX c=0 r=0
         if(READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN c=0 r=0
         if(READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX c=0 r=0
         if(READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MIN);
         if(READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MAX);
         if(READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
@@ -5854,7 +5854,7 @@ Sigma_Exit:
           extruder = code_value();
 		  if(extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
-            SERIAL_ECHO(_i("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
+            SERIAL_ECHO(_n("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
             break;
           }
         }
@@ -6187,7 +6187,7 @@ Sigma_Exit:
           }
         }
         else if (servo_index >= 0) {
-          SERIAL_PROTOCOL(_T(MSG_OK));
+          SERIAL_PROTOCOL(MSG_OK);
           SERIAL_PROTOCOL(" Servo ");
           SERIAL_PROTOCOL(servo_index);
           SERIAL_PROTOCOL(": ");
@@ -6232,7 +6232,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         #endif
 
         updatePID();
-        SERIAL_PROTOCOLRPGM(_T(MSG_OK));
+        SERIAL_PROTOCOLRPGM(MSG_OK);
         SERIAL_PROTOCOL(" p:");
         SERIAL_PROTOCOL(cs.Kp);
         SERIAL_PROTOCOL(" i:");
@@ -6256,7 +6256,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         if(code_seen('D')) cs.bedKd = scalePID_d(code_value());
 
         updatePID();
-       	SERIAL_PROTOCOLRPGM(_T(MSG_OK));
+       	SERIAL_PROTOCOLRPGM(MSG_OK);
         SERIAL_PROTOCOL(" p:");
         SERIAL_PROTOCOL(cs.bedKp);
         SERIAL_PROTOCOL(" i:");
@@ -6388,7 +6388,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         {
           cs.zprobe_zoffset = -value; // compare w/ line 278 of ConfigurationStore.cpp
           SERIAL_ECHO_START;
-          SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", _T(MSG_OK),PSTR("")));
+          SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", MSG_OK,PSTR("")));
           SERIAL_PROTOCOLLN("");
         }
         else
@@ -6542,7 +6542,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			manage_inactivity();
 			lcd_update(0);
 		}
-		LCD_MESSAGERPGM(_T(MSG_OK));
+		LCD_MESSAGERPGM(MSG_OK);
 
 		break;
 	}
@@ -7078,7 +7078,7 @@ void FlushSerialRequestResend()
 {
   //char cmdbuffer[bufindr][100]="Resend:";
   MYSERIAL.flush();
-  printf_P(_N("%S: %ld\n%S\n"), _i("Resend"), gcode_LastN + 1, _T(MSG_OK));
+  printf_P(_N("%S: %ld\n%S\n"), _n("Resend"), gcode_LastN + 1, MSG_OK);
 }
 
 // Confirm the execution of a command, if sent from a serial line.
@@ -7087,7 +7087,7 @@ void ClearToSend()
 {
     previous_millis_cmd = millis();
 	if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)) 
-		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
 #if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
@@ -7548,12 +7548,12 @@ void kill(const char *full_screen_message, unsigned char id)
   pinMode(PS_ON_PIN,INPUT);
 #endif
   SERIAL_ERROR_START;
-  SERIAL_ERRORLNRPGM(_i("Printer halted. kill() called!"));////MSG_ERR_KILLED c=0 r=0
+  SERIAL_ERRORLNRPGM(_n("Printer halted. kill() called!"));////MSG_ERR_KILLED c=0 r=0
   if (full_screen_message != NULL) {
       SERIAL_ERRORLNRPGM(full_screen_message);
       lcd_display_message_fullscreen_P(full_screen_message);
   } else {
-      LCD_ALERTMESSAGERPGM(_i("KILLED. "));////MSG_KILLED c=0 r=0
+      LCD_ALERTMESSAGERPGM(_n("KILLED. "));////MSG_KILLED c=0 r=0
   }
 
   // FMC small patch to update the LCD before ending
@@ -7581,7 +7581,7 @@ void Stop()
     Stopped = true;
     Stopped_gcode_LastN = gcode_LastN; // Save last g_code for restart
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(_T(MSG_ERR_STOPPED));
+    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
     LCD_MESSAGERPGM(_T(MSG_STOPPED));
   }
 }
@@ -7676,19 +7676,19 @@ bool setTargetedHotend(int code, uint8_t &extruder)
       SERIAL_ECHO_START;
       switch(code){
         case 104:
-          SERIAL_ECHORPGM(_i("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER c=0 r=0
           break;
         case 105:
-          SERIAL_ECHO(_i("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER c=0 r=0
           break;
         case 109:
-          SERIAL_ECHO(_i("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER c=0 r=0
           break;
         case 218:
-          SERIAL_ECHO(_i("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER c=0 r=0
           break;
         case 221:
-          SERIAL_ECHO(_i("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
           break;
       }
       SERIAL_PROTOCOLLN((int)extruder);
