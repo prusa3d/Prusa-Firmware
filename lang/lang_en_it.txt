@@ -154,10 +154,6 @@
 "Cancel"
 "Annulla"
 
-#MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
-"Cannot enter subdir: "
-"Impossibile accedere alla sottocartella: "
-
 #MSG_SD_INSERTED c=0 r=0
 "Card inserted"
 "SD inserita"

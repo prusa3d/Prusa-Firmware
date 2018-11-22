@@ -659,7 +659,7 @@ void CardReader::chdir(const char * relpath)
   if(!newfile.open(*parent,relpath, O_READ))
   {
    SERIAL_ECHO_START;
-   SERIAL_ECHORPGM(_i("Cannot enter subdir: "));////MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
+   SERIAL_ECHORPGM(_n("Cannot enter subdir: "));////MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
    SERIAL_ECHOLN(relpath);
   }
   else

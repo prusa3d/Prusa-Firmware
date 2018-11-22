@@ -115,9 +115,6 @@
 #
 "Cancel"
 
-#MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
-"Cannot enter subdir: "
-
 #MSG_SD_INSERTED c=0 r=0
 "Card inserted"
 

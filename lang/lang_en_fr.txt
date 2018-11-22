@@ -154,10 +154,6 @@
 "Cancel"
 "Annuler"
 
-#MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
-"Cannot enter subdir: "
-"Impossible d'entrer dans le repertoire :"
-
 #MSG_SD_INSERTED c=0 r=0
 "Card inserted"
 "Carte  inseree"
