@@ -889,9 +889,6 @@
 #
 "unknown"
 
-#MSG_SD_VOL_INIT_FAIL c=0 r=0
-"volume.init failed"
-
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."
 

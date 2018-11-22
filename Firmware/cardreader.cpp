@@ -188,7 +188,7 @@ void CardReader::initsd()
   else if (!volume.init(&card))
   {
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(_i("volume.init failed"));////MSG_SD_VOL_INIT_FAIL c=0 r=0
+    SERIAL_ERRORLNRPGM(_n("volume.init failed"));////MSG_SD_VOL_INIT_FAIL c=0 r=0
   }
   else if (!root.openRoot(&volume)) 
   {

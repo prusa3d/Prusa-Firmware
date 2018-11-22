@@ -1186,10 +1186,6 @@
 "unknown"
 "\x00"
 
-#MSG_SD_VOL_INIT_FAIL c=0 r=0
-"volume.init failed"
-"Dateisystem Init fehlerhaft"
-
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."
 "Warte auf Benutzer.."
