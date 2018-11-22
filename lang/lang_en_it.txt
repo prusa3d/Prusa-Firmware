@@ -738,10 +738,6 @@
 "Nozzle"
 "Ugello"
 
-#MSG_OK c=0 r=0
-"ok"
-"\x00"
-
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
 "Sono state trovate impostazioni vecchie. I valori di default di PID, Esteps etc. saranno impostati"

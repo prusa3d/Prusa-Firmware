@@ -61,7 +61,6 @@ extern const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[];
 extern const char MSG_MENU_CALIBRATION[];
 extern const char MSG_NO[];
 extern const char MSG_NOZZLE[];
-extern const char MSG_OK[];
 extern const char MSG_PAPER[];
 extern const char MSG_PLACE_STEEL_SHEET[];
 extern const char MSG_PLEASE_WAIT[];
@@ -123,6 +122,7 @@ extern const char MSG_TMC_OVERTEMP[];
 extern const char MSG_Enqueing[];
 extern const char MSG_ENDSTOPS_HIT[];
 extern const char MSG_SD_ERR_WRITE_TO_FILE[];
+extern const char MSG_OK[];
 
 #if defined(__cplusplus)
 }

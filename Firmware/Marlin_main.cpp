@@ -627,7 +627,7 @@ void crashdet_cancel()
 		lcd_print_stop();
 	}else if(saved_printing_type == PRINTING_TYPE_USB){
 		SERIAL_ECHOLNPGM("// action:cancel"); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
-		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 	}
 }
 
@@ -1744,7 +1744,7 @@ void loop()
           if(card.logging)
             process_commands();
           else
-           SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+           SERIAL_PROTOCOLLNRPGM(MSG_OK);
         } else {
           card.closefile();
           SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
@@ -6188,7 +6188,7 @@ Sigma_Exit:
           }
         }
         else if (servo_index >= 0) {
-          SERIAL_PROTOCOL(_T(MSG_OK));
+          SERIAL_PROTOCOL(MSG_OK);
           SERIAL_PROTOCOL(" Servo ");
           SERIAL_PROTOCOL(servo_index);
           SERIAL_PROTOCOL(": ");
@@ -6233,7 +6233,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         #endif
 
         updatePID();
-        SERIAL_PROTOCOLRPGM(_T(MSG_OK));
+        SERIAL_PROTOCOLRPGM(MSG_OK);
         SERIAL_PROTOCOL(" p:");
         SERIAL_PROTOCOL(cs.Kp);
         SERIAL_PROTOCOL(" i:");
@@ -6257,7 +6257,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         if(code_seen('D')) cs.bedKd = scalePID_d(code_value());
 
         updatePID();
-       	SERIAL_PROTOCOLRPGM(_T(MSG_OK));
+       	SERIAL_PROTOCOLRPGM(MSG_OK);
         SERIAL_PROTOCOL(" p:");
         SERIAL_PROTOCOL(cs.bedKp);
         SERIAL_PROTOCOL(" i:");
@@ -6389,7 +6389,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         {
           cs.zprobe_zoffset = -value; // compare w/ line 278 of ConfigurationStore.cpp
           SERIAL_ECHO_START;
-          SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", _T(MSG_OK),PSTR("")));
+          SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", MSG_OK,PSTR("")));
           SERIAL_PROTOCOLLN("");
         }
         else
@@ -6543,7 +6543,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			manage_inactivity();
 			lcd_update(0);
 		}
-		LCD_MESSAGERPGM(_T(MSG_OK));
+		LCD_MESSAGERPGM(MSG_OK);
 
 		break;
 	}
@@ -7079,7 +7079,7 @@ void FlushSerialRequestResend()
 {
   //char cmdbuffer[bufindr][100]="Resend:";
   MYSERIAL.flush();
-  printf_P(_N("%S: %ld\n%S\n"), _i("Resend"), gcode_LastN + 1, _T(MSG_OK));
+  printf_P(_N("%S: %ld\n%S\n"), _i("Resend"), gcode_LastN + 1, MSG_OK);
 }
 
 // Confirm the execution of a command, if sent from a serial line.
@@ -7088,7 +7088,7 @@ void ClearToSend()
 {
     previous_millis_cmd = millis();
 	if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)) 
-		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
 #if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3

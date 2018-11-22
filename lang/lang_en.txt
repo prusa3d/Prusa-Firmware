@@ -553,9 +553,6 @@
 #MSG_NOZZLE c=0 r=0
 "Nozzle"
 
-#MSG_OK c=0 r=0
-"ok"
-
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
 

@@ -60,7 +60,6 @@ const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); 
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////c=0 r=0
 const char MSG_NO[] PROGMEM_I1 = ISTR("No"); ////c=0 r=0
 const char MSG_NOZZLE[] PROGMEM_I1 = ISTR("Nozzle"); ////c=0 r=0
-const char MSG_OK[] PROGMEM_I1 = ISTR("ok"); ////c=0 r=0
 const char MSG_PAPER[] PROGMEM_I1 = ISTR("Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."); ////c=20 r=8
 const char MSG_PLACE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please place steel sheet on heatbed."); ////c=20 r=4
 const char MSG_PLEASE_WAIT[] PROGMEM_I1 = ISTR("Please wait"); ////c=20 r=0
@@ -122,3 +121,4 @@ const char MSG_TMC_OVERTEMP[] PROGMEM_N1 = "TMC DRIVER OVERTEMP"; ////c=0 r=0
 const char MSG_Enqueing[] PROGMEM_N1 = "enqueing \""; ////c=0 r=0
 const char MSG_ENDSTOPS_HIT[] PROGMEM_N1 = "endstops hit: "; ////c=0 r=0
 const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_N1 = "error writing to file"; ////c=0 r=0
+const char MSG_OK[] PROGMEM_N1 = "ok"; ////c=0 r=0
