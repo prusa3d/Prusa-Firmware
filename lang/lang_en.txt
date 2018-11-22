@@ -721,9 +721,6 @@
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
 
-#MSG_SD_CARD_OK c=0 r=0
-"SD card ok"
-
 #
 "Right"
 

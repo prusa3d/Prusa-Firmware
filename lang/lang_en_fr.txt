@@ -962,10 +962,6 @@
 "SD card [flshAir]"
 "Carte SD[flshAir]"
 
-#MSG_SD_CARD_OK c=0 r=0
-"SD card ok"
-"Carte SD ok"
-
 #
 "Right"
 "Droite"

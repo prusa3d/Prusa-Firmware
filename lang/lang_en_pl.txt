@@ -962,10 +962,6 @@
 "SD card [flshAir]"
 "Karta SD[FlshAir]"
 
-#MSG_SD_CARD_OK c=0 r=0
-"SD card ok"
-"Karta SD OK"
-
 #
 "Right"
 "Prawa"

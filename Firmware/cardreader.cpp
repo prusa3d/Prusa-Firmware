@@ -199,7 +199,7 @@ void CardReader::initsd()
   {
     cardOK = true;
     SERIAL_ECHO_START;
-    SERIAL_ECHOLNRPGM(_i("SD card ok"));////MSG_SD_CARD_OK c=0 r=0
+    SERIAL_ECHOLNRPGM(_n("SD card ok"));////MSG_SD_CARD_OK c=0 r=0
   }
   workDir=root;
   curDir=&root;
