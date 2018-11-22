@@ -1,7 +1,3 @@
-#MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
-" cold extrusion prevented"
-"zabraneno extruzi za studena"
-
 #MSG_FREE_MEMORY c=0 r=0
 " Free Memory: "
 "Volna pamet: "
