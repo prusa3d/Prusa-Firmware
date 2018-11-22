@@ -1086,10 +1086,6 @@
 "Some problem encountered, Z-leveling enforced ..."
 "Fehler aufgetreten, Z-Kalibrierung erforderlich..."
 
-#
-"Some problem encountered, Z-levelling enforced ..."
-"\x00"
-
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
 "Sound    [einmal]"

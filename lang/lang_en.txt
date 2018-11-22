@@ -814,9 +814,6 @@
 #
 "Some problem encountered, Z-leveling enforced ..."
 
-#
-"Some problem encountered, Z-levelling enforced ..."
-
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
 
