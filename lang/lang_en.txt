@@ -34,6 +34,9 @@
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
 
+#
+"Ambient"
+
 #MSG_PRESS c=20 r=0
 "and press the knob"
 
@@ -157,6 +160,9 @@
 #
 "Crash detected. Resume print?"
 
+#
+"Crash"
+
 #MSG_CURRENT c=19 r=1
 "Current"
 
@@ -259,6 +265,9 @@
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
 
+#
+"Fail stats"
+
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
 
@@ -282,6 +291,9 @@
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
+
+#
+"Filam. runouts"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -442,6 +454,12 @@
 #MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 "Iteration "
 
+#
+"Last print failures"
+
+#
+"Last print"
+
 #MSG_KILLED c=0 r=0
 "KILLED. "
 
@@ -535,6 +553,9 @@
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
 
+#
+"MMU2 connected"
+
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
 
@@ -597,6 +618,9 @@
 
 #
 "Now remove the test print from steel sheet."
+
+#
+"Nozzle FAN"
 
 #MSG_SD_OPENROOT_FAIL c=0 r=0
 "openRoot failed"
@@ -688,6 +712,9 @@
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
 
+#
+"Power failures"
+
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
 
@@ -708,6 +735,9 @@
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
+
+#
+"Print FAN"
 
 #MSG_ERR_STOPPED c=0 r=0
 "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
@@ -850,6 +880,9 @@
 #
 "Some problem encountered, Z-leveling enforced ..."
 
+#
+"Some problem encountered, Z-levelling enforced ..."
+
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
 
@@ -925,17 +958,26 @@
 #
 "Unload all"
 
+#
+"Total failures"
+
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
 
 #MSG_UNLOADING_FILAMENT c=20 r=1
 "Unloading filament"
 
+#
+"Total"
+
 #MSG_USED c=19 r=1
 "Used during print"
 
 #MSG_MENU_VOLTAGES c=15 r=1
 "Voltages"
+
+#
+"unknown"
 
 #MSG_SD_VOL_INIT_FAIL c=0 r=0
 "volume.init failed"

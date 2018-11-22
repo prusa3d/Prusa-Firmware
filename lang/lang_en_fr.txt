@@ -46,6 +46,10 @@
 "All is done. Happy printing!"
 "Tout est termine. Bonne impression !"
 
+#
+"Ambient"
+"\x00"
+
 #MSG_PRESS c=20 r=0
 "and press the knob"
 "et pressez le bouton"
@@ -210,6 +214,10 @@
 "Crash detected. Resume print?"
 "Crash detecte. Poursuivre l'impression ?"
 
+#
+"Crash"
+"\x00"
+
 #MSG_CURRENT c=19 r=1
 "Current"
 "Actuel"
@@ -346,6 +354,10 @@
 "F. autoload [off]"
 "AutoCharg F [off]"
 
+#
+"Fail stats"
+"\x00"
+
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
 "Vitesse ventil"
@@ -377,6 +389,10 @@
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
 "Capteur Fil.[off]"
+
+#
+"Filam. runouts"
+"\x00"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -590,6 +606,14 @@
 "Iteration "
 "\x00"
 
+#
+"Last print failures"
+"\x00"
+
+#
+"Last print"
+"\x00"
+
 #MSG_KILLED c=0 r=0
 "KILLED. "
 "TUE."
@@ -714,6 +738,10 @@
 "Mode [high power]"
 "Mode[haute puiss]"
 
+#
+"MMU2 connected"
+"\x00"
+
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
 "Moteur"
@@ -797,6 +825,10 @@
 #
 "Now remove the test print from steel sheet."
 "Retirez maintenant l'impression de test de la feuille d'acier."
+
+#
+"Nozzle FAN"
+"\x00"
 
 #MSG_SD_OPENROOT_FAIL c=0 r=0
 "openRoot failed"
@@ -918,6 +950,10 @@
 "Press knob to preheat nozzle and continue."
 "Appuyez sur le bouton pour prechauffer la buse et continuer."
 
+#
+"Power failures"
+"\x00"
+
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
 "Impression annulee"
@@ -945,6 +981,10 @@
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 "L'imprimante n'a pas encore ete calibree. Suivez le manuel, chapitre Premiers pas, section Processus de calibration"
+
+#
+"Print FAN"
+"\x00"
 
 #MSG_ERR_STOPPED c=0 r=0
 "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
@@ -1134,6 +1174,10 @@
 "Some problem encountered, Z-leveling enforced ..."
 "Problemes rencontres, nivellement de l'axe Z applique..."
 
+#
+"Some problem encountered, Z-levelling enforced ..."
+"\x00"
+
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
 "Son    [une fois]"
@@ -1234,6 +1278,10 @@
 "Unload all"
 "Decharger tout"
 
+#
+"Total failures"
+"\x00"
+
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
 "Decharger fil."
@@ -1242,6 +1290,10 @@
 "Unloading filament"
 "Dechargement fil."
 
+#
+"Total"
+"\x00"
+
 #MSG_USED c=19 r=1
 "Used during print"
 "Utilise pdt impr."
@@ -1249,6 +1301,10 @@
 #MSG_MENU_VOLTAGES c=15 r=1
 "Voltages"
 "Tensions"
+
+#
+"unknown"
+"\x00"
 
 #MSG_SD_VOL_INIT_FAIL c=0 r=0
 "volume.init failed"
