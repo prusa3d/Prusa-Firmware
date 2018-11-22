@@ -1146,10 +1146,6 @@
 "Total print time"
 "Tempo di stampa totale"
 
-#MSG_ENDSTOP_HIT c=0 r=0
-"TRIGGERED"
-"ATTIVATO"
-
 #MSG_TUNE c=0 r=0
 "Tune"
 "Regola"

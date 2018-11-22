@@ -1146,10 +1146,6 @@
 "Total print time"
 "Calkowity czas druku"
 
-#MSG_ENDSTOP_HIT c=0 r=0
-"TRIGGERED"
-"AKTYWOWANO"
-
 #MSG_TUNE c=0 r=0
 "Tune"
 "Strojenie"

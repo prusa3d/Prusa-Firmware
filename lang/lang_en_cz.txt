@@ -1146,10 +1146,6 @@
 "Total print time"
 "Celkovy cas tisku"
 
-#MSG_ENDSTOP_HIT c=0 r=0
-"TRIGGERED"
-"AKTIVNI"
-
 #MSG_TUNE c=0 r=0
 "Tune"
 "Ladit"

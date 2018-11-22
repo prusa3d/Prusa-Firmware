@@ -5779,7 +5779,7 @@ Sigma_Exit:
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN c=0 r=0
         if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
@@ -5788,7 +5788,7 @@ Sigma_Exit:
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX c=0 r=0
         if(READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
@@ -5797,7 +5797,7 @@ Sigma_Exit:
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN c=0 r=0
         if(READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
@@ -5806,7 +5806,7 @@ Sigma_Exit:
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX c=0 r=0
         if(READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
@@ -5815,7 +5815,7 @@ Sigma_Exit:
       #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MIN);
         if(READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
@@ -5824,7 +5824,7 @@ Sigma_Exit:
       #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MAX);
         if(READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }

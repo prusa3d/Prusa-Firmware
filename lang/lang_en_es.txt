@@ -1146,10 +1146,6 @@
 "Total print time"
 "Tiempo total :"
 
-#MSG_ENDSTOP_HIT c=0 r=0
-"TRIGGERED"
-"ACTIVADO"
-
 #MSG_TUNE c=0 r=0
 "Tune"
 "Ajustar"

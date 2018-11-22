@@ -1146,10 +1146,6 @@
 "Total print time"
 "Gesamte Druckzeit"
 
-#MSG_ENDSTOP_HIT c=0 r=0
-"TRIGGERED"
-"AUSGELOEST"
-
 #MSG_TUNE c=0 r=0
 "Tune"
 "Feineinstellung"
