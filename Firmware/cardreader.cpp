@@ -183,7 +183,7 @@ void CardReader::initsd()
   {
     //if (!card.init(SPI_HALF_SPEED,SDSS))
     SERIAL_ECHO_START;
-    SERIAL_ECHOLNRPGM(_i("SD init fail"));////MSG_SD_INIT_FAIL c=0 r=0
+    SERIAL_ECHOLNRPGM(_n("SD init fail"));////MSG_SD_INIT_FAIL c=0 r=0
   }
   else if (!volume.init(&card))
   {

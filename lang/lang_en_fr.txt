@@ -966,10 +966,6 @@
 "Right"
 "Droite"
 
-#MSG_SD_INIT_FAIL c=0 r=0
-"SD init fail"
-"Echec init SD"
-
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
 "Recherche du point de calibration du lit"
