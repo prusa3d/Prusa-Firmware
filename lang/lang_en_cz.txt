@@ -1022,10 +1022,6 @@
 "Show pinda state"
 "Zobrazit stav PINDA"
 
-#MSG_DWELL c=0 r=0
-"Sleep..."
-"Spankovy rezim..."
-
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Nektere soubory nebudou setrideny. Maximalni pocet souboru ve slozce pro setrideni je 100."

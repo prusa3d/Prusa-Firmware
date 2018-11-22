@@ -1022,10 +1022,6 @@
 "Show pinda state"
 "Etat de la PINDA"
 
-#MSG_DWELL c=0 r=0
-"Sleep..."
-"Repos..."
-
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Certains fichiers ne seront pas tries. Max 100 fichiers tries par dossier."
