@@ -244,7 +244,7 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-"Ejecter filament"
+"Ejecter le fil"
 
 #MSG_EJECT_FILAMENT1 c=17 r=1
 "Eject filament 1"
@@ -664,7 +664,7 @@
 
 #
 "Load to nozzle"
-"Charger dans buse"
+"Charger le fil"
 
 #MSG_M109_INVALID_EXTRUDER c=0 r=0
 "M109 Invalid extruder "
