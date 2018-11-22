@@ -742,10 +742,6 @@
 "Old settings found. Default PID, Esteps etc. will be set."
 "Znaleziono stare ustawienia. Zostana przywrocone domyslne ust. PID, Esteps, itp."
 
-#MSG_SD_OPEN_FILE_FAIL c=0 r=0
-"open failed, File: "
-"niepowodzenie otwarcia, Plik:"
-
 #MSG_ENDSTOP_OPEN c=0 r=0
 "open"
 "otworz"

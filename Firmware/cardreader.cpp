@@ -330,7 +330,7 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
                 SERIAL_ECHOLN(subdirname);
                 if (!dir.open(curDir, subdirname, O_READ))
                 {
-                    SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
+                    SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
                     SERIAL_PROTOCOL(subdirname);
                     SERIAL_PROTOCOLLNPGM(".");
                     return;
@@ -431,7 +431,7 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
     }
     else
     {
-      SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
+      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLLNPGM(".");
     }
@@ -440,7 +440,7 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
   { //write
     if (!file.open(curDir, fname, O_CREAT | O_APPEND | O_WRITE | O_TRUNC))
     {
-      SERIAL_PROTOCOLRPGM(_T(MSG_SD_OPEN_FILE_FAIL));
+      SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
       SERIAL_PROTOCOL(fname);
       SERIAL_PROTOCOLLNPGM(".");
     }

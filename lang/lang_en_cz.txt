@@ -742,10 +742,6 @@
 "Old settings found. Default PID, Esteps etc. will be set."
 "Neplatne hodnoty nastaveni. Bude pouzito vychozi PID, Esteps atd."
 
-#MSG_SD_OPEN_FILE_FAIL c=0 r=0
-"open failed, File: "
-"nelze otevrit, Soubor: "
-
 #MSG_ENDSTOP_OPEN c=0 r=0
 "open"
 "otevrit"
