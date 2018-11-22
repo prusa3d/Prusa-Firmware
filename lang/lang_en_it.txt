@@ -946,10 +946,6 @@
 "RPi port     [on]"
 "Porta RPi    [on]"
 
-#
-"Resend"
-"Ripeti"
-
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
 "Porta RPi   [off]"

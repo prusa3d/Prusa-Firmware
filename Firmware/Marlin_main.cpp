@@ -7079,7 +7079,7 @@ void FlushSerialRequestResend()
 {
   //char cmdbuffer[bufindr][100]="Resend:";
   MYSERIAL.flush();
-  printf_P(_N("%S: %ld\n%S\n"), _i("Resend"), gcode_LastN + 1, MSG_OK);
+  printf_P(_N("%S: %ld\n%S\n"), _n("Resend"), gcode_LastN + 1, MSG_OK);
 }
 
 // Confirm the execution of a command, if sent from a serial line.
