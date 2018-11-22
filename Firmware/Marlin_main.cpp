@@ -1178,7 +1178,7 @@ void setup()
 #endif
 
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_i(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
+	SERIAL_ECHORPGM(_n(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
 	SERIAL_ECHO(freeMemory());
 	SERIAL_ECHORPGM(_n("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);

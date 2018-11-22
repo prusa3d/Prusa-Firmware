@@ -1,7 +1,3 @@
-#MSG_FREE_MEMORY c=0 r=0
-" Free Memory: "
-"Volna pamet: "
-
 #MSG_CONFIGURATION_VER c=0 r=0
 " Last Updated: "
 "Naposledy aktualizovano:"
