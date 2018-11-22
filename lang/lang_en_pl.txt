@@ -1020,7 +1020,7 @@
 
 #
 "Show pinda state"
-"Stan sondy P.I.N.D.A."
+"Stan sondy PINDA"
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
