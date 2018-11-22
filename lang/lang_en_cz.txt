@@ -742,10 +742,6 @@
 "Old settings found. Default PID, Esteps etc. will be set."
 "Neplatne hodnoty nastaveni. Bude pouzito vychozi PID, Esteps atd."
 
-#MSG_ENDSTOP_OPEN c=0 r=0
-"open"
-"otevrit"
-
 #
 "Now remove the test print from steel sheet."
 "Nyni odstrante testovaci vytisk z tiskoveho platu."

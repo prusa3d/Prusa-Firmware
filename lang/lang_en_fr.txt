@@ -742,10 +742,6 @@
 "Old settings found. Default PID, Esteps etc. will be set."
 "Anciens reglages trouves. Le PID, les Esteps etc. par defaut seront pris."
 
-#MSG_ENDSTOP_OPEN c=0 r=0
-"open"
-"ouvrir"
-
 #
 "Now remove the test print from steel sheet."
 "Retirez maintenant l'impression de test de la feuille d'acier."

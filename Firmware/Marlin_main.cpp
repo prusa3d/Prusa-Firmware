@@ -5781,7 +5781,7 @@ Sigma_Exit:
         if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
@@ -5790,7 +5790,7 @@ Sigma_Exit:
         if(READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
@@ -5799,7 +5799,7 @@ Sigma_Exit:
         if(READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
@@ -5808,7 +5808,7 @@ Sigma_Exit:
         if(READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
@@ -5817,7 +5817,7 @@ Sigma_Exit:
         if(READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
@@ -5826,7 +5826,7 @@ Sigma_Exit:
         if(READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
