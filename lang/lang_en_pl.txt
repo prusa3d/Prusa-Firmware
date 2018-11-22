@@ -494,10 +494,6 @@
 "Checking Z axis  "
 "Kontrola osi Z"
 
-#MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
-"checksum mismatch, Last Line: "
-"suma kontrolna niezgodna, ostatnia linia:"
-
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
 "Wybierz ekstruder:"

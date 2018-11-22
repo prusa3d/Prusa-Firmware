@@ -441,7 +441,7 @@ void get_command()
 					  checksum = checksum^(*p++);
 				  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
 					  SERIAL_ERROR_START;
-					  SERIAL_ERRORRPGM(_i("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
+					  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
 					  SERIAL_ERRORLN(gcode_LastN);
 					  FlushSerialRequestResend();
 					  serial_count = 0;

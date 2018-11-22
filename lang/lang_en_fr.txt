@@ -494,10 +494,6 @@
 "Checking Z axis  "
 "Verification axe Z"
 
-#MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
-"checksum mismatch, Last Line: "
-"dissemblance du checksum, Derniere Ligne :"
-
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
 "Choisir extrudeur :"
