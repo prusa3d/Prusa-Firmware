@@ -191,8 +191,8 @@
 "Zchladit"
 
 #
-"Copy selected language from XFLASH?"
-"Kopirovat vybrany jazyk do XFLASH?"
+"Copy selected language?"
+"Kopirovat vybrany jazyk?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"

@@ -191,8 +191,8 @@
 "Raffredda"
 
 #
-"Copy selected language from XFLASH?"
-"Copiare la lingua selezionata da XFLASH?"
+"Copy selected language?"
+"Copiare la lingua selezionata?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"

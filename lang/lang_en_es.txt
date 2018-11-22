@@ -191,8 +191,8 @@
 "Enfriar"
 
 #
-"Copy selected language from XFLASH?"
-"Copiar idioma seleccionado desde XFLASH?"
+"Copy selected language?"
+"Copiar idioma seleccionado?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"

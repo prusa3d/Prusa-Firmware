@@ -191,8 +191,8 @@
 "Abkuehlen"
 
 #
-"Copy selected language from XFLASH?"
-"Gewaehlte Sprache vom Xflash kopieren?"
+"Copy selected language?"
+"Gewaehlte Sprache kopieren?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"

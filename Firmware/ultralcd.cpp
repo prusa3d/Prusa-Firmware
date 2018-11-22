@@ -4106,7 +4106,7 @@ void menu_setlang(unsigned char lang)
 {
 	if (!lang_select(lang))
 	{
-		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language from XFLASH?"), false, true))
+		if (lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Copy selected language?"), false, true))
 			lang_boot_update_start(lang);
 		lcd_update_enable(true);
 		lcd_clear();

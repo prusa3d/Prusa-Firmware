@@ -143,7 +143,7 @@
 "Cooldown"
 
 #
-"Copy selected language from XFLASH?"
+"Copy selected language?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"

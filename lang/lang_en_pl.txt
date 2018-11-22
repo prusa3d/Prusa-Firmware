@@ -191,8 +191,8 @@
 "Chlodzenie"
 
 #
-"Copy selected language from XFLASH?"
-"Skopiowac wybrany jezyk z XFLASH?"
+"Copy selected language?"
+"Skopiowac wybrany jezyk?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
