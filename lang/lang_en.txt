@@ -1,15 +1,3 @@
-#MSG_PLANNER_BUFFER_BYTES c=0 r=0
-"  PlannerBufferBytes: "
-
-#MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
-" cold extrusion prevented"
-
-#MSG_FREE_MEMORY c=0 r=0
-" Free Memory: "
-
-#MSG_CONFIGURATION_VER c=0 r=0
-" Last Updated: "
-
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 " of 4"
 
@@ -34,6 +22,9 @@
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
 
+#
+"Ambient"
+
 #MSG_PRESS c=20 r=0
 "and press the knob"
 
@@ -41,13 +32,13 @@
 "Are left and right Z~carriages all up?"
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
-"Auto deplete [on]"
+"SpoolJoin    [on]"
 
 #
-"Auto deplete[N/A]"
+"SpoolJoin   [N/A]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
-"Auto deplete[off]"
+"SpoolJoin   [off]"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
@@ -124,9 +115,6 @@
 #
 "Cancel"
 
-#MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
-"Cannot enter subdir: "
-
 #MSG_SD_INSERTED c=0 r=0
 "Card inserted"
 
@@ -140,7 +128,7 @@
 "Cooldown"
 
 #
-"Copy selected language from XFLASH?"
+"Copy selected language?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
@@ -156,6 +144,9 @@
 
 #
 "Crash detected. Resume print?"
+
+#
+"Crash"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -205,20 +196,11 @@
 #MSG_SELFTEST_ENDSTOP c=0 r=0
 "Endstop"
 
-#MSG_ENDSTOPS_HIT c=0 r=0
-"endstops hit: "
-
 #MSG_SELFTEST_ENDSTOPS c=0 r=0
 "Endstops"
 
-#MSG_Enqueing c=0 r=0
-"enqueing \x22"
-
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
-
-#MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
-"error writing to file"
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
@@ -259,6 +241,9 @@
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
 
+#
+"Fail stats"
+
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
 
@@ -282,6 +267,9 @@
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
+
+#
+"Filam. runouts"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -382,9 +370,6 @@
 #MSG_SELFTEST_CHECK_Z c=20 r=0
 "Checking Z axis  "
 
-#MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
-"checksum mismatch, Last Line: "
-
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
 
@@ -442,8 +427,11 @@
 #MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 "Iteration "
 
-#MSG_KILLED c=0 r=0
-"KILLED. "
+#
+"Last print failures"
+
+#
+"Last print"
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
@@ -472,29 +460,11 @@
 #MSG_LOOSE_PULLEY c=20 r=1
 "Loose pulley"
 
-#MSG_M104_INVALID_EXTRUDER c=0 r=0
-"M104 Invalid extruder "
-
-#MSG_M105_INVALID_EXTRUDER c=0 r=0
-"M105 Invalid extruder "
-
 #
 "Load to nozzle"
 
-#MSG_M109_INVALID_EXTRUDER c=0 r=0
-"M109 Invalid extruder "
-
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
-
-#MSG_M200_INVALID_EXTRUDER c=0 r=0
-"M200 Invalid extruder "
-
-#MSG_M218_INVALID_EXTRUDER c=0 r=0
-"M218 Invalid extruder "
-
-#MSG_M221_INVALID_EXTRUDER c=0 r=0
-"M221 Invalid extruder "
 
 #MSG_MAIN c=0 r=0
 "Main"
@@ -535,6 +505,9 @@
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
 
+#
+"MMU2 connected"
+
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
 
@@ -549,9 +522,6 @@
 
 #MSG_MOVE_Z c=0 r=0
 "Move Z"
-
-#MSG_ERR_NO_CHECKSUM c=0 r=0
-"No Checksum with line number, Last Line: "
 
 #MSG_NO_MOVE c=0 r=0
 "No move."
@@ -583,23 +553,14 @@
 #MSG_NOZZLE c=0 r=0
 "Nozzle"
 
-#MSG_OK c=0 r=0
-"ok"
-
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
-
-#MSG_SD_OPEN_FILE_FAIL c=0 r=0
-"open failed, File: "
-
-#MSG_ENDSTOP_OPEN c=0 r=0
-"open"
 
 #
 "Now remove the test print from steel sheet."
 
-#MSG_SD_OPENROOT_FAIL c=0 r=0
-"openRoot failed"
+#
+"Nozzle FAN"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -667,9 +628,6 @@
 #MSG_PLEASE_WAIT c=20 r=0
 "Please wait"
 
-#MSG_POWERUP c=0 r=0
-"PowerUp"
-
 #
 "Please remove shipping helpers first."
 
@@ -688,6 +646,9 @@
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
 
+#
+"Power failures"
+
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
 
@@ -700,17 +661,14 @@
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
 
-#MSG_ERR_KILLED c=0 r=0
-"Printer halted. kill() called!"
-
 #
 "Press the knob to resume nozzle temperature."
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 
-#MSG_ERR_STOPPED c=0 r=0
-"Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
+#
+"Print FAN"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."
@@ -751,9 +709,6 @@
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
 
-#
-"Resend"
-
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
 
@@ -766,14 +721,8 @@
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
 
-#MSG_SD_CARD_OK c=0 r=0
-"SD card ok"
-
 #
 "Right"
-
-#MSG_SD_INIT_FAIL c=0 r=0
-"SD init fail"
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -816,9 +765,6 @@
 
 #
 "Show pinda state"
-
-#MSG_DWELL c=0 r=0
-"Sleep..."
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
@@ -913,9 +859,6 @@
 #
 "Total print time"
 
-#MSG_ENDSTOP_HIT c=0 r=0
-"TRIGGERED"
-
 #MSG_TUNE c=0 r=0
 "Tune"
 
@@ -925,11 +868,17 @@
 #
 "Unload all"
 
+#
+"Total failures"
+
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
 
 #MSG_UNLOADING_FILAMENT c=20 r=1
 "Unloading filament"
+
+#
+"Total"
 
 #MSG_USED c=19 r=1
 "Used during print"
@@ -937,8 +886,8 @@
 #MSG_MENU_VOLTAGES c=15 r=1
 "Voltages"
 
-#MSG_SD_VOL_INIT_FAIL c=0 r=0
-"volume.init failed"
+#
+"unknown"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."
