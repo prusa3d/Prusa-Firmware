@@ -627,7 +627,7 @@ void crashdet_cancel()
 		lcd_print_stop();
 	}else if(saved_printing_type == PRINTING_TYPE_USB){
 		SERIAL_ECHOLNPGM("// action:cancel"); //for Octoprint: works the same as clicking "Abort" button in Octoprint GUI
-		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 	}
 }
 
@@ -1151,12 +1151,12 @@ void setup()
 
 	// Check startup - does nothing if bootloader sets MCUSR to 0
 	byte mcu = MCUSR;
-/*	if (mcu & 1) SERIAL_ECHOLNRPGM(_T(MSG_POWERUP));
+/*	if (mcu & 1) SERIAL_ECHOLNRPGM(MSG_POWERUP);
 	if (mcu & 2) SERIAL_ECHOLNRPGM(MSG_EXTERNAL_RESET);
 	if (mcu & 4) SERIAL_ECHOLNRPGM(MSG_BROWNOUT_RESET);
 	if (mcu & 8) SERIAL_ECHOLNRPGM(MSG_WATCHDOG_RESET);
 	if (mcu & 32) SERIAL_ECHOLNRPGM(MSG_SOFTWARE_RESET);*/
-	if (mcu & 1) puts_P(_T(MSG_POWERUP));
+	if (mcu & 1) puts_P(MSG_POWERUP);
 	if (mcu & 2) puts_P(MSG_EXTERNAL_RESET);
 	if (mcu & 4) puts_P(MSG_BROWNOUT_RESET);
 	if (mcu & 8) puts_P(MSG_WATCHDOG_RESET);
@@ -1169,7 +1169,7 @@ void setup()
 #ifdef STRING_VERSION_CONFIG_H
 #ifdef STRING_CONFIG_H_AUTHOR
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_i(" Last Updated: "));////MSG_CONFIGURATION_VER c=0 r=0
+	SERIAL_ECHORPGM(_n(" Last Updated: "));////MSG_CONFIGURATION_VER c=0 r=0
 	SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
 	SERIAL_ECHORPGM(_n(" | Author: "));////MSG_AUTHOR c=0 r=0
 	SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
@@ -1179,9 +1179,9 @@ void setup()
 #endif
 
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_i(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
+	SERIAL_ECHORPGM(_n(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
 	SERIAL_ECHO(freeMemory());
-	SERIAL_ECHORPGM(_i("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
+	SERIAL_ECHORPGM(_n("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
@@ -1745,7 +1745,7 @@ void loop()
           if(card.logging)
             process_commands();
           else
-           SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+           SERIAL_PROTOCOLLNRPGM(MSG_OK);
         } else {
           card.closefile();
           SERIAL_PROTOCOLLNRPGM(MSG_FILE_SAVED);
@@ -2987,7 +2987,6 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 				current_position[E_AXIS], FILAMENTCHANGE_XYFEED, active_extruder);
 			st_synchronize();
 			lcd_show_fullscreen_message_and_wait_P(_i("Please open idler and remove filament manually."));////MSG_CHECK_IDLER c=20 r=4
-			lcd_update_enable(true);
         }
     }
 
@@ -3750,7 +3749,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-	  if(codenum != 0) LCD_MESSAGERPGM(_i("Sleep..."));////MSG_DWELL c=0 r=0
+	  if(codenum != 0) LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL c=0 r=0
       st_synchronize();
       codenum += millis();  // keep track of when we started waiting
       previous_millis_cmd = millis();
@@ -4517,7 +4516,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                Sound_MakeSound(e_SOUND_TYPE_StandardAlert);
                bool bState;
                do   {                             // repeat until Z-leveling o.k.
-                    lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-levelling enforced ..."));
+                    lcd_display_message_fullscreen_P(_i("Some problem encountered, Z-leveling enforced ..."));
 #ifdef TMC2130
                     lcd_wait_for_click_delay(MSG_BED_LEVELING_FAILED_TIMEOUT);
                     calibrate_z_auto();           // Z-leveling (X-assembly stay up!!!)
@@ -4535,7 +4534,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 //               plan_set_z_position(MESH_HOME_Z_SEARCH); // is not necessary ('do-while' loop always ends at the expected Z-position)
                custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
                lcd_update_enable(true);           // display / status-line recovery
-               gcode_G28(true, true, false);      // X & Y-homing (must be after Z-homing (problem with spool-holder)!)
+               gcode_G28(true, true, true);       // X & Y & Z-homing (must be after individual Z-homing (problem with spool-holder)!)
                repeatcommand_front();             // re-run (i.e. of "G80")
                break;
 		}
@@ -5780,54 +5779,54 @@ Sigma_Exit:
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN c=0 r=0
         if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX c=0 r=0
         if(READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN c=0 r=0
         if(READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX c=0 r=0
         if(READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Z_MIN_PIN) && Z_MIN_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MIN);
         if(READ(Z_MIN_PIN)^Z_MIN_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Z_MAX_PIN) && Z_MAX_PIN > -1
         SERIAL_PROTOCOLRPGM(MSG_Z_MAX);
         if(READ(Z_MAX_PIN)^Z_MAX_ENDSTOP_INVERTING){
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_HIT));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
-          SERIAL_PROTOCOLRPGM(_T(MSG_ENDSTOP_OPEN));
+          SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_OPEN);
         }
         SERIAL_PROTOCOLLN("");
       #endif
@@ -5856,7 +5855,7 @@ Sigma_Exit:
           extruder = code_value();
 		  if(extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
-            SERIAL_ECHO(_i("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
+            SERIAL_ECHO(_n("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
             break;
           }
         }
@@ -6189,7 +6188,7 @@ Sigma_Exit:
           }
         }
         else if (servo_index >= 0) {
-          SERIAL_PROTOCOL(_T(MSG_OK));
+          SERIAL_PROTOCOL(MSG_OK);
           SERIAL_PROTOCOL(" Servo ");
           SERIAL_PROTOCOL(servo_index);
           SERIAL_PROTOCOL(": ");
@@ -6234,7 +6233,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         #endif
 
         updatePID();
-        SERIAL_PROTOCOLRPGM(_T(MSG_OK));
+        SERIAL_PROTOCOLRPGM(MSG_OK);
         SERIAL_PROTOCOL(" p:");
         SERIAL_PROTOCOL(cs.Kp);
         SERIAL_PROTOCOL(" i:");
@@ -6258,7 +6257,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         if(code_seen('D')) cs.bedKd = scalePID_d(code_value());
 
         updatePID();
-       	SERIAL_PROTOCOLRPGM(_T(MSG_OK));
+       	SERIAL_PROTOCOLRPGM(MSG_OK);
         SERIAL_PROTOCOL(" p:");
         SERIAL_PROTOCOL(cs.bedKp);
         SERIAL_PROTOCOL(" i:");
@@ -6390,7 +6389,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         {
           cs.zprobe_zoffset = -value; // compare w/ line 278 of ConfigurationStore.cpp
           SERIAL_ECHO_START;
-          SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", _T(MSG_OK),PSTR("")));
+          SERIAL_ECHOLNRPGM(CAT4(MSG_ZPROBE_ZOFFSET, " ", MSG_OK,PSTR("")));
           SERIAL_PROTOCOLLN("");
         }
         else
@@ -6544,7 +6543,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			manage_inactivity();
 			lcd_update(0);
 		}
-		LCD_MESSAGERPGM(_T(MSG_OK));
+		LCD_MESSAGERPGM(MSG_OK);
 
 		break;
 	}
@@ -6633,10 +6632,11 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         for (int i = 0; i < NUM_AXIS; i++)
 			if(code_seen(axis_codes[i]))
 			{
-				long cur = code_value_long();
-				if (cur > MOTOR_CURRENT_PWM_RANGE) cur = MOTOR_CURRENT_PWM_RANGE;
-				tmc2130_set_current_h(i, (uint8_t)cur);
-				tmc2130_set_current_r(i, (uint8_t)cur);
+				long cur_mA = code_value_long();
+				uint8_t val = tmc2130_cur2val(cur_mA);
+				tmc2130_set_current_h(i, val);
+				tmc2130_set_current_r(i, val);
+				//if (i == E_AXIS) printf_P(PSTR("E-axis current=%ldmA\n"), cur_mA);
 			}
 
 #else //TMC2130
@@ -6853,7 +6853,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
   else if(code_seen('T'))
   {
       int index;
-      st_synchronize();
+      bool load_to_nozzle = false;
       for (index = 1; *(strchr_pointer + index) == ' ' || *(strchr_pointer + index) == '\t'; index++);
 
 	  *(strchr_pointer + index) = tolower(*(strchr_pointer + index));
@@ -6865,6 +6865,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (mmu_enabled)
 		{
 			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+			st_synchronize();
 			mmu_command(MMU_CMD_T0 + tmp_extruder);
 			manage_response(true, true);
 		}
@@ -6872,6 +6873,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	  else if (*(strchr_pointer + index) == 'c') { //load to from bondtech gears to nozzle (nozzle should be preheated)
 	  	if (mmu_enabled) 
 		{
+			st_synchronize();
 			mmu_command(MMU_CMD_C0);
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
@@ -6883,6 +6885,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
               if(mmu_enabled)
               {
                   tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+                  load_to_nozzle = true;
               } else
               {
                   tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_EXTRUDER), _T(MSG_EXTRUDER));
@@ -6891,6 +6894,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           else {
               tmp_extruder = code_value();
           }
+          st_synchronize();
           snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 
           if (mmu_enabled)
@@ -6901,7 +6905,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
               mmu_command(MMU_CMD_C0);
               mmu_extruder = tmp_extruder; //filament change is finished
 
-              if (*(strchr_pointer + index) == '?')// for single material usage with mmu
+              if (load_to_nozzle)// for single material usage with mmu
               {
                   mmu_load_to_nozzle();
               }
@@ -7075,7 +7079,7 @@ void FlushSerialRequestResend()
 {
   //char cmdbuffer[bufindr][100]="Resend:";
   MYSERIAL.flush();
-  printf_P(_N("%S: %ld\n%S\n"), _i("Resend"), gcode_LastN + 1, _T(MSG_OK));
+  printf_P(_N("%S: %ld\n%S\n"), _n("Resend"), gcode_LastN + 1, MSG_OK);
 }
 
 // Confirm the execution of a command, if sent from a serial line.
@@ -7084,7 +7088,7 @@ void ClearToSend()
 {
     previous_millis_cmd = millis();
 	if ((CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB) || (CMDBUFFER_CURRENT_TYPE == CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR)) 
-		SERIAL_PROTOCOLLNRPGM(_T(MSG_OK));
+		SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 
 #if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 || MOTHERBOARD == BOARD_RAMBO_MINI_1_3
@@ -7545,12 +7549,12 @@ void kill(const char *full_screen_message, unsigned char id)
   pinMode(PS_ON_PIN,INPUT);
 #endif
   SERIAL_ERROR_START;
-  SERIAL_ERRORLNRPGM(_i("Printer halted. kill() called!"));////MSG_ERR_KILLED c=0 r=0
+  SERIAL_ERRORLNRPGM(_n("Printer halted. kill() called!"));////MSG_ERR_KILLED c=0 r=0
   if (full_screen_message != NULL) {
       SERIAL_ERRORLNRPGM(full_screen_message);
       lcd_display_message_fullscreen_P(full_screen_message);
   } else {
-      LCD_ALERTMESSAGERPGM(_i("KILLED. "));////MSG_KILLED c=0 r=0
+      LCD_ALERTMESSAGERPGM(_n("KILLED. "));////MSG_KILLED c=0 r=0
   }
 
   // FMC small patch to update the LCD before ending
@@ -7578,7 +7582,7 @@ void Stop()
     Stopped = true;
     Stopped_gcode_LastN = gcode_LastN; // Save last g_code for restart
     SERIAL_ERROR_START;
-    SERIAL_ERRORLNRPGM(_T(MSG_ERR_STOPPED));
+    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
     LCD_MESSAGERPGM(_T(MSG_STOPPED));
   }
 }
@@ -7673,19 +7677,19 @@ bool setTargetedHotend(int code, uint8_t &extruder)
       SERIAL_ECHO_START;
       switch(code){
         case 104:
-          SERIAL_ECHORPGM(_i("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER c=0 r=0
           break;
         case 105:
-          SERIAL_ECHO(_i("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER c=0 r=0
           break;
         case 109:
-          SERIAL_ECHO(_i("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER c=0 r=0
           break;
         case 218:
-          SERIAL_ECHO(_i("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER c=0 r=0
           break;
         case 221:
-          SERIAL_ECHO(_i("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
           break;
       }
       SERIAL_PROTOCOLLN((int)extruder);
@@ -8966,9 +8970,8 @@ static void print_time_remaining_init()
 
 void load_filament_final_feed()
 {
-	st_synchronize();
 	current_position[E_AXIS]+= FILAMENTCHANGE_FINALFEED;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 200/60, active_extruder);
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED_FINAL, active_extruder);
 }
 
 void M600_check_state()
@@ -8991,6 +8994,7 @@ void M600_check_state()
 
 				// Filament loaded properly but color is not clear
 				case 3:
+					st_synchronize();
 					load_filament_final_feed();
 					lcd_loading_color();
 					st_synchronize();
@@ -9109,7 +9113,7 @@ void M600_load_filament_movements()
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
 #else
 	current_position[E_AXIS]+= FILAMENTCHANGE_FIRSTFEED ;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED, active_extruder); 
+	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED_FIRST, active_extruder); 
 #endif                
 	load_filament_final_feed();
 	lcd_loading_filament();

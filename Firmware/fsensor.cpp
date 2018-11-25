@@ -184,6 +184,7 @@ void fsensor_disable(void)
 
 void fsensor_autoload_set(bool State)
 {
+	if (!State) fsensor_autoload_check_stop();
 	fsensor_autoload_enabled = State;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, fsensor_autoload_enabled);
 }
@@ -361,6 +362,7 @@ bool fsensor_oq_result(void)
 
 ISR(FSENSOR_INT_PIN_VECT)
 {
+	if (mmu_enabled) return;
 	if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
 	fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
 	static bool _lock = false;
