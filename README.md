@@ -1,13 +1,22 @@
 # Table of contents
 
 <!--ts-->
-   * [Development environment preparation](#1-development-environment-preparation)
-   * [Source code compilation](#2-source-code-compilation)
+   * [Linux build](#linux)
+   * [Windows build](#windows)
    * [Automated tests](#3-automated-tests)
    * [Documentation](#4-documentation)
 <!--te-->
 
-# 1. Development environment preparation
+
+# Build
+## Linux
+Run shell script build.sh to build for MK3 and flash with Sli3er.  
+If you have different printel model, follow step 2.a from Windows build first.  
+If you wish to flash from Arduino, follow step 2.b from Windows build first.  
+
+The script downloads Arduino with our modifications and Rambo board support installed, unpacks it into folder PF-build-env-\<version\> on the same level, as your Prusa-Firmware folder is located, builds firmware for MK3 using that Arduino in Prusa-Firmware-build folder on the same level as Prusa-Firmware, runs secondary language support scripts. Firmware with secondary language support is generated in lang subfolder. Use firmware.hex for MK3 variant. Use firmware_\<lang\>.hex for other printers. Don't forget to follow step 2.a first for non-MK3 printers.
+## Windows
+### 1. Development environment preparation
 
    1. install `"Arduino Software IDE"` for your preferred operating system  
 `https://www.arduino.cc -> Software->Downloads`  
@@ -39,11 +48,14 @@ add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags=" before existin
 example:  
 `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
 
-# 2. Source code compilation
+### 2. Source code compilation
 
 place the source codes corresponding to your printer model obtained from the repository into the selected directory on your disk  
 `https://github.com/prusa3d/Prusa-Firmware/`  
-in the subdirectory `"Firmware/variants/"` select the configuration file (`.h`) corresponding to your printer model, make copy named `"Configuration_prusa.h"` (or make simple renaming) and copy them into `"Firmware/"` directory  
+
+2.a In the subdirectory `"Firmware/variants/"` select the configuration file (`.h`) corresponding to your printer model, make copy named `"Configuration_prusa.h"` (or make simple renaming) and copy it into `"Firmware/"` directory.  
+
+2.b In file `"Firmware/config.h"` set LANG_MODE to 0.
 
 run `"Arduino IDE"`; select the file `"Firmware.ino"` from the subdirectory `"Firmware/"` at the location, where you placed the source codes  
 `File->Open`  
