@@ -50,7 +50,7 @@ example:
 
 ### 2. Source code compilation
 
-a.place the source codes corresponding to your printer model obtained from the repository into the selected directory on your disk  
+a. place the source codes corresponding to your printer model obtained from the repository into the selected directory on your disk  
 `https://github.com/prusa3d/Prusa-Firmware/`  
 
 b.<a name="2b"></a> In the subdirectory `"Firmware/variants/"` select the configuration file (`.h`) corresponding to your printer model, make copy named `"Configuration_prusa.h"` (or make simple renaming) and copy it into `"Firmware/"` directory.  
