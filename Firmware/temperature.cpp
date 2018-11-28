@@ -41,6 +41,9 @@
 #include "adc.h"
 #include "ConfigurationStore.h"
 
+#include "Timer.h"
+#include "Configuration_prusa.h"
+
 
 //===========================================================================
 //=============================public variables============================
@@ -151,6 +154,8 @@ static volatile bool temp_meas_ready = false;
 #else
   # define ARRAY_BY_EXTRUDERS(v1, v2, v3) { v1 }
 #endif
+
+static ShortTimer oTimer4minTempHeater,oTimer4minTempBed;
 
 // Init min and max temp with extreme values to prevent false errors during startup
 static int minttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_RAW_LO_TEMP , HEATER_1_RAW_LO_TEMP , HEATER_2_RAW_LO_TEMP );
@@ -596,6 +601,9 @@ void manage_heater()
 
   updateTemperaturesFromRawValues();
 
+  check_max_temp();
+  check_min_temp();
+
 #ifdef TEMP_RUNAWAY_BED_HYSTERESIS
   temp_runaway_check(0, target_temperature_bed, current_temperature_bed, (int)soft_pwm_bed, true);
 #endif
@@ -669,11 +677,7 @@ void manage_heater()
   #endif
 
     // Check if temperature is within the correct range
-#ifdef AMBIENT_THERMISTOR
-    if(((current_temperature_ambient < MINTEMP_MINAMBIENT) || (current_temperature[e] > minttemp[e])) && (current_temperature[e] < maxttemp[e])) 
-#else //AMBIENT_THERMISTOR
-    if((current_temperature[e] > minttemp[e]) && (current_temperature[e] < maxttemp[e])) 
-#endif //AMBIENT_THERMISTOR
+    if(current_temperature[e] < maxttemp[e])
     {
       soft_pwm[e] = (int)pid_output >> 1;
     }
@@ -763,11 +767,7 @@ void manage_heater()
       pid_output = constrain(target_temperature_bed, 0, MAX_BED_POWER);
     #endif //PID_OPENLOOP
 
-#ifdef AMBIENT_THERMISTOR
-	  if(((current_temperature_bed > BED_MINTEMP) || (current_temperature_ambient < MINTEMP_MINAMBIENT)) && (current_temperature_bed < BED_MAXTEMP)) 
-#else //AMBIENT_THERMISTOR
-	  if((current_temperature_bed > BED_MINTEMP) && (current_temperature_bed < BED_MAXTEMP)) 
-#endif //AMBIENT_THERMISTOR
+	  if(current_temperature_bed < BED_MAXTEMP)
 	  {
 	    soft_pwm_bed = (int)pid_output >> 1;
 	  }
@@ -777,7 +777,7 @@ void manage_heater()
 
     #elif !defined(BED_LIMIT_SWITCHING)
       // Check if temperature is within the correct range
-      if((current_temperature_bed > BED_MINTEMP) && (current_temperature_bed < BED_MAXTEMP))
+      if(current_temperature_bed < BED_MAXTEMP)
       {
         if(current_temperature_bed >= target_temperature_bed)
         {
@@ -795,7 +795,7 @@ void manage_heater()
       }
     #else //#ifdef BED_LIMIT_SWITCHING
       // Check if temperature is within the correct band
-      if((current_temperature_bed > BED_MINTEMP) && (current_temperature_bed < BED_MAXTEMP))
+      if(current_temperature_bed < BED_MAXTEMP)
       {
         if(current_temperature_bed > target_temperature_bed + BED_HYSTERESIS)
         {
@@ -1526,7 +1526,7 @@ void adc_ready(void) //callback from adc when sampling finished
 
 
 // Timer 0 is shared with millies
-ISR(TIMER0_COMPB_vect)
+ISR(TIMER0_COMPB_vect)                            // @ 1kHz ~ 1ms
 {
 	static bool _lock = false;
 	if (_lock) return;
@@ -1534,11 +1534,6 @@ ISR(TIMER0_COMPB_vect)
 	asm("sei");
 
 	if (!temp_meas_ready) adc_cycle();
-	else
-	{
-		check_max_temp();
-		check_min_temp();
-	}
 	lcd_buttons_update();
 
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
@@ -1931,26 +1926,49 @@ void check_min_temp_bed()
 
 void check_min_temp()
 {
+static bool bCheckingOnHeater=false;              // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over heaterMintemp)
+static bool bCheckingOnBed=false;                 // state variable, which allows to short no-checking delay (is set, when temperature is (first time) over bedMintemp)
 #ifdef AMBIENT_THERMISTOR
-	static uint8_t heat_cycles = 0;
-	if (current_temperature_raw_ambient > OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)
-	{
-		if (READ(HEATER_0_PIN) == HIGH)
-		{
-//			if ((heat_cycles % 10) == 0)
-//				printf_P(PSTR("X%d\n"), heat_cycles);
-			if (heat_cycles > 50) //reaction time 5-10s
-				check_min_temp_heater0();
-			else
-				heat_cycles++;
-		}
-		else
-			heat_cycles = 0;
-		return;
-	}
+if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // thermistor is NTC type, so operator is ">" ;-)
+     {                                            // ambient temperature is low
 #endif //AMBIENT_THERMISTOR
-	check_min_temp_heater0();
-	check_min_temp_bed();
+// *** 'common' part of code for MK2.5 & MK3
+// * nozzle checking
+if(target_temperature[active_extruder]>minttemp[active_extruder])
+     {                                            // ~ nozzle heating is on
+     bCheckingOnHeater=bCheckingOnHeater||(current_temperature[active_extruder]>=minttemp[active_extruder]); // for eventually delay cutting
+     if(oTimer4minTempHeater.expired(HEATER_MINTEMP_DELAY)||(!oTimer4minTempHeater.running())||bCheckingOnHeater)
+          {
+          bCheckingOnHeater=true;                 // not necessary
+		check_min_temp_heater0();               // delay is elapsed or temperature is/was over minTemp => periodical checking is active
+          }
+     }
+else {                                            // ~ nozzle heating is off
+     oTimer4minTempHeater.start();
+     bCheckingOnHeater=false;
+     }
+// * bed checking
+if(target_temperature_bed>BED_MINTEMP)
+     {                                            // ~ bed heating is on
+     bCheckingOnBed=bCheckingOnBed||(current_temperature_bed>=BED_MINTEMP); // for eventually delay cutting
+     if(oTimer4minTempBed.expired(BED_MINTEMP_DELAY)||(!oTimer4minTempBed.running())||bCheckingOnBed)
+          {
+          bCheckingOnBed=true;                    // not necessary
+		check_min_temp_bed();                   // delay is elapsed or temperature is/was over minTemp => periodical checking is active
+          }
+     }
+else {                                            // ~ bed heating is off
+     oTimer4minTempBed.start();
+     bCheckingOnBed=false;
+     }
+// *** end of 'common' part
+#ifdef AMBIENT_THERMISTOR
+     }
+else {                                            // ambient temperature is standard
+     check_min_temp_heater0();
+     check_min_temp_bed();
+     }
+#endif //AMBIENT_THERMISTOR
 }
  
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
