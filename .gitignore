@@ -1,0 +1,27 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Firmware/Configuration_prusa.h
+/Firmware/Firmware.vcxproj.filters
+/Firmware/Firmware.vcxproj
+/Firmware/Firmware.sln
+/Firmware/__vm
+/Firmware/Debug
+/Firmware/.vs/Firmware/v14
+/ArduinoAddons/Arduino_1.6.x/hardware/marlin/avr_/libraries/U8glib/utility
+/ArduinoAddons/Arduino_1.6.x/hardware/marlin/avr_/libraries/Wire
+/ArduinoAddons/Arduino_1.6.x/hardware/marlin/avr_/variants
+/ArduinoAddons/Arduino_1.6.x/hardware/marlin/avr_/platform.txt
+/ArduinoAddons/Arduino_1.6.x/hardware/marlin/avr_/platform.local.txt
+/ArduinoAddons/Arduino_1.6.x/hardware/marlin/avr_/boards.txt
+/ArduinoAddons/Arduino_1.6.x/hardware/marlin/avr_/libraries/U8glib
+/ArduinoAddons/Arduino_1.6.x/hardware/marlin/avr_/libraries/SPI
+/Firmware/variants/1_75mm_MK1-RAMBo13a-E3Dv6full.h
+/Firmware/variants/1_75mm_MK1-RAMBo10a-E3Dv6full.h
+/Firmware/variants/1_75mm_MK2-EINY01-E3Dv6full.h.bak
+/Firmware/variants/1_75mm_MK2-MultiMaterial-RAMBo13a-E3Dv6full.h
+/Firmware/variants/1_75mm_MK2-MultiMaterial-RAMBo10a-E3Dv6full.h
+*.bak
+/Firmware/Configuration_prusa_backup.h
+/Firmware/builds/1_75mm_MK3-EINY04-E3Dv6full
