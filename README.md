@@ -1,43 +1,106 @@
-# Original Prusa i3 MK2 Firmware
+# Table of contents
 
-## General instructions
+<!--ts-->
+   * [Development environment preparation](#1-development-environment-preparation)
+   * [Source code compilation](#2-source-code-compilation)
+   * [Automated tests](#3-automated-tests)
+   * [Documentation](#4-documentation)
+<!--te-->
 
-Pre-compiled hex output on PRUSA RESEARCH site: http://prusa3d.com/downloads/firmware/
+# 1. Development environment preparation
 
-Just download and flash it to the electronics
+   1. install `"Arduino Software IDE"` for your preferred operating system  
+`https://www.arduino.cc -> Software->Downloads`  
+it is recommended to use older version `"1.6.9"`, as it is used on out build server to produce official builds.  
+_note: in the case of persistent compilation problems, check the version of the currently used C/C++ compiler (GCC) - should be `4.8.1`; version can be verified by entering the command  
+`avr-gcc --version`  
+if you are not sure where the file is placed (depends on how `"Arduino Software IDE"` was installed), you can use the search feature within the file system_  
+_note: name collision for `"LiquidCrystal"` library known from previous versions is now obsolete (so there is no need to delete or rename original file/-s)_
 
+   2. add (`UltiMachine`) `RAMBo` board into the list of Arduino target boards  
+`File->Preferences->Settings`  
+into text field `"Additional Boards Manager URLs"`  
+type location  
+`"https://raw.githubusercontent.com/ultimachine/ArduinoAddons/master/package_ultimachine_index.json"`  
+or you can 'manually' modify the item  
+`"boardsmanager.additional.urls=....."`  
+at the file `"preferences.txt"` (this parameter allows you to write a comma-separated list of addresses)  
+_note: you can find location of this file on your disk by following way:  
+`File->Preferences->Settings`  (`"More preferences can be edited in file ..."`)_  
+than do it  
+`Tools->Board->BoardsManager`  
+from viewed list select an item `"RAMBo"` (will probably be labeled as `"RepRap Arduino-compatible Mother Board (RAMBo) by UltiMachine"`  
+_note: select this item for any variant of board used in printers `'Prusa i3 MKx'`, that is for `RAMBo-mini x.y` and `EINSy x.y` to_  
+'clicking' the item will display the installation button; select choice `"1.0.1"` from the list(last known version as of the date of issue of this document)  
+_(after installation, the item is labeled as `"INSTALLED"` and can then be used for target board selection)_  
 
-## Build instructions
+   3. modify platform.txt to enable float printf support:  
+add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags=" before existing flag "-Wl,--gc-sections"  
+example:  
+`"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
 
-### Step 1
+# 2. Source code compilation
 
-Install arduino
+place the source codes corresponding to your printer model obtained from the repository into the selected directory on your disk  
+`https://github.com/prusa3d/Prusa-Firmware/`  
+in the subdirectory `"Firmware/variants/"` select the configuration file (`.h`) corresponding to your printer model, make copy named `"Configuration_prusa.h"` (or make simple renaming) and copy them into `"Firmware/"` directory  
 
-### Step 2
+run `"Arduino IDE"`; select the file `"Firmware.ino"` from the subdirectory `"Firmware/"` at the location, where you placed the source codes  
+`File->Open`  
+make the desired code customizations; **all changes are on your own risk!**  
 
-Remove Liquid Crystal library from your arduino or rename it
+select the target board `"RAMBo"`  
+`Tools->Board->RAMBo`  
+_note: it is not possible to use any of the variants `"Arduino Mega …"`, even though it is the same MCU_  
 
-### Step 3
+run the compilation  
+`Sketch->Verify/Compile`  
 
-Install the arduino addon located in the root of this repo. Don't forget to install correct version!
+upload the result code into the connected printer  
+`Sketch->Upload`  
 
-### Step 4
+or you can also save the output code to the file (in so called `HEX`-format) `"Firmware.ino.rambo.hex"`:  
+`Sketch->ExportCompiledBinary`  
+and then upload it to the printer using the program `"FirmwareUpdater"`  
+_note: this file is created in the directory `"Firmware/"`_  
 
-Copy the configuration file matching your printer from variants folder to the the Firmware folder
+# 3. Automated tests
+## Prerequisites
+c++11 compiler e.g. g++ 6.3.1
 
-### Step 5
+cmake
 
-Rename it to "Configuration_prusa.h"
+build system - ninja or gnu make
 
-### Step 6
+## Building
+Create folder where you want to build tests.
 
-Compile the firmware
+Example:
 
-### Step 7
+`cd ..`
 
-Upload the firmware to board
+`mkdir Prusa-Firmware-test`
 
+Generate build scripts in target folder.
 
+Example:
 
+`cd Prusa-Firmware-test`
 
+`cmake -G "Eclipse CDT4 - Ninja" ../Prusa-Firmware`
 
+or for DEBUG build:
+
+`cmake -G "Eclipse CDT4 - Ninja" -DCMAKE_BUILD_TYPE=Debug ../Prusa-Firmware`
+
+Build it.
+
+Example:
+
+`ninja`
+
+## Runing
+`./tests`
+
+# 4. Documentation
+run [doxygen](http://www.doxygen.nl/) in Firmware folder

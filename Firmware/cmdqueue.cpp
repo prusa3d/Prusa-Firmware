@@ -7,9 +7,9 @@ extern bool Stopped;
 // Reserve BUFSIZE lines of length MAX_CMD_SIZE plus CMDBUFFER_RESERVE_FRONT.
 char cmdbuffer[BUFSIZE * (MAX_CMD_SIZE + 1) + CMDBUFFER_RESERVE_FRONT];
 // Head of the circular buffer, where to read.
-int bufindr = 0;
+size_t bufindr = 0;
 // Tail of the buffer, where to write.
-int bufindw = 0;
+static size_t bufindw = 0;
 // Number of lines in cmdbuffer.
 int buflen = 0;
 // Flag for processing the current command inside the main Arduino loop().
@@ -100,7 +100,7 @@ void cmdqueue_reset()
 // How long a string could be pushed to the front of the command queue?
 // If yes, adjust bufindr to the new position, where the new command could be enqued.
 // len_asked does not contain the zero terminator size.
-bool cmdqueue_could_enqueue_front(int len_asked)
+static bool cmdqueue_could_enqueue_front(size_t len_asked)
 {
     // MAX_CMD_SIZE has to accommodate the zero terminator.
     if (len_asked >= MAX_CMD_SIZE)
@@ -145,7 +145,7 @@ bool cmdqueue_could_enqueue_front(int len_asked)
 // len_asked does not contain the zero terminator size.
 // This function may update bufindw, therefore for the power panic to work, this function must be called
 // with the interrupts disabled!
-bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update)
+static bool cmdqueue_could_enqueue_back(size_t len_asked, bool atomic_update = false)
 {
     // MAX_CMD_SIZE has to accommodate the zero terminator.
     if (len_asked >= MAX_CMD_SIZE)
@@ -161,7 +161,7 @@ bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update)
         // serial data.
         // How much memory to reserve for the commands pushed to the front?
         // End of the queue, when pushing to the end.
-        int endw = bufindw + len_asked + (1 + CMDHDRSIZE);
+        size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
         if (bufindw < bufindr)
             // Simple case. There is a contiguous space between the write buffer and the read buffer.
             return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
@@ -187,7 +187,7 @@ bool cmdqueue_could_enqueue_back(int len_asked, bool atomic_update)
     } else {
         // How much memory to reserve for the commands pushed to the front?
         // End of the queue, when pushing to the end.
-        int endw = bufindw + len_asked + (1 + CMDHDRSIZE);
+        size_t endw = bufindw + len_asked + (1 + CMDHDRSIZE);
         if (bufindw < bufindr)
             // Simple case. There is a contiguous space between the write buffer and the read buffer.
             return endw + CMDBUFFER_RESERVE_FRONT <= bufindr;
@@ -274,7 +274,7 @@ void cmdqueue_dump_to_serial()
 // Currently the maximum length of a command piped through this function is around 20 characters
 void enquecommand(const char *cmd, bool from_progmem)
 {
-    int len = from_progmem ? strlen_P(cmd) : strlen(cmd);
+    size_t len = from_progmem ? strlen_P(cmd) : strlen(cmd);
     // Does cmd fit the queue while leaving sufficient space at the front for the chained commands?
     // If it fits, it may move bufindw, so it points to a contiguous buffer, which fits cmd.
     if (cmdqueue_could_enqueue_back(len)) {
@@ -317,7 +317,7 @@ bool cmd_buffer_empty()
 
 void enquecommand_front(const char *cmd, bool from_progmem)
 {
-    int len = from_progmem ? strlen_P(cmd) : strlen(cmd);
+    size_t len = from_progmem ? strlen_P(cmd) : strlen(cmd);
     // Does cmd fit the queue? This call shall move bufindr, so the command may be copied.
     if (cmdqueue_could_enqueue_front(len)) {
         cmdbuffer[bufindr] = CMDBUFFER_CURRENT_TYPE_UI;
@@ -360,26 +360,37 @@ bool is_buffer_empty()
     else return false;
 }
 
+void proc_commands() {
+	if (buflen)
+	{
+		process_commands();
+		if (!cmdbuffer_front_already_processed)
+			cmdqueue_pop_front();
+		cmdbuffer_front_already_processed = false;
+	}
+}
+
 void get_command()
 {
     // Test and reserve space for the new command string.
     if (! cmdqueue_could_enqueue_back(MAX_CMD_SIZE - 1, true))
       return;
-    
-    bool rx_buffer_full = false; //flag that serial rx buffer is full
 
-  while (MYSERIAL.available() > 0) {
-      if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
-          SERIAL_ECHOLNPGM("Full RX Buffer");   //if buffer was full, there is danger that reading of last gcode will not be completed
-          rx_buffer_full = true;                //sets flag that buffer was full    
-      }
+	if (MYSERIAL.available() == RX_BUFFER_SIZE - 1) { //compare number of chars buffered in rx buffer with rx buffer size
+		MYSERIAL.flush();
+		SERIAL_ECHOLNPGM("Full RX Buffer");   //if buffer was full, there is danger that reading of last gcode will not be completed
+	}
+
+  // start of serial line processing loop
+  while ((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && isPrintPaused)) {  //is print is saved (crash detection or filament detection), dont process data from serial line
+	
     char serial_char = MYSERIAL.read();
-    if (selectedSerialPort == 1)
+/*    if (selectedSerialPort == 1)
     {
         selectedSerialPort = 0; 
         MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
         selectedSerialPort = 1; 
-    } 
+    } */ //RP - removed
       TimeSent = millis();
       TimeNow = millis();
 
@@ -391,7 +402,6 @@ void get_command()
         continue;
     if(serial_char == '\n' ||
        serial_char == '\r' ||
-       (serial_char == ':' && comment_mode == false) ||
        serial_count >= (MAX_CMD_SIZE - 1) )
     {
       if(!serial_count) { //if empty line
@@ -400,67 +410,72 @@ void get_command()
       }
       cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0; //terminate string
       if(!comment_mode){
-        comment_mode = false; //for new command
-        if ((strchr_pointer = strstr(cmdbuffer+bufindw+CMDHDRSIZE, "PRUSA")) == NULL && (strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'N')) != NULL) {
-            if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'N')) != NULL)
-            {
-            // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
-            // and Marlin tests, whether the successive lines are stamped with an increasing line number ID.
-            gcode_N = (strtol(strchr_pointer+1, NULL, 10));
-            if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("M110")) == NULL) ) {
-                // M110 - set current line number.
-                // Line numbers not sent in succession.
-                SERIAL_ERROR_START;
-                SERIAL_ERRORRPGM(MSG_ERR_LINE_NO);
-                SERIAL_ERRORLN(gcode_LastN);
-                //Serial.println(gcode_N);
-                FlushSerialRequestResend();
-                serial_count = 0;
-                return;
-            }
+		  
+		  gcode_N = 0;
 
-            if((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*')) != NULL)
-            {
-                byte checksum = 0;
-                char *p = cmdbuffer+bufindw+CMDHDRSIZE;
-                while (p != strchr_pointer)
-                    checksum = checksum^(*p++);
-                if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
-                SERIAL_ERROR_START;
-                SERIAL_ERRORRPGM(MSG_ERR_CHECKSUM_MISMATCH);
-                SERIAL_ERRORLN(gcode_LastN);
-                FlushSerialRequestResend();
-                serial_count = 0;
-                return;
-                }
-                // If no errors, remove the checksum and continue parsing.
-                *strchr_pointer = 0;
-            }
-            else
-            {
-                SERIAL_ERROR_START;
-                SERIAL_ERRORRPGM(MSG_ERR_NO_CHECKSUM);
-                SERIAL_ERRORLN(gcode_LastN);
-                FlushSerialRequestResend();
-                serial_count = 0;
-                return;
-            }
+		  // Line numbers must be first in buffer
 
-            gcode_LastN = gcode_N;
-            //if no errors, continue parsing
-            } // end of 'N' command
-        }
-        else  // if we don't receive 'N' but still see '*'
+		  if ((strstr(cmdbuffer+bufindw+CMDHDRSIZE, "PRUSA") == NULL) &&
+			  (cmdbuffer[bufindw+CMDHDRSIZE] == 'N')) {
+
+			  // Line number met. When sending a G-code over a serial line, each line may be stamped with its index,
+			  // and Marlin tests, whether the successive lines are stamped with an increasing line number ID
+			  gcode_N = (strtol(cmdbuffer+bufindw+CMDHDRSIZE+1, NULL, 10));
+			  if(gcode_N != gcode_LastN+1 && (strstr_P(cmdbuffer+bufindw+CMDHDRSIZE, PSTR("M110")) == NULL) ) {
+				  // M110 - set current line number.
+				  // Line numbers not sent in succession.
+				  SERIAL_ERROR_START;
+				  SERIAL_ERRORRPGM(_n("Line Number is not Last Line Number+1, Last Line: "));////MSG_ERR_LINE_NO c=0 r=0
+				  SERIAL_ERRORLN(gcode_LastN);
+				  //Serial.println(gcode_N);
+				  FlushSerialRequestResend();
+				  serial_count = 0;
+				  return;
+			  }
+
+			  if((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*')) != NULL)
+			  {
+				  byte checksum = 0;
+				  char *p = cmdbuffer+bufindw+CMDHDRSIZE;
+				  while (p != strchr_pointer)
+					  checksum = checksum^(*p++);
+				  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
+					  SERIAL_ERROR_START;
+					  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
+					  SERIAL_ERRORLN(gcode_LastN);
+					  FlushSerialRequestResend();
+					  serial_count = 0;
+					  return;
+				  }
+				  // If no errors, remove the checksum and continue parsing.
+				  *strchr_pointer = 0;
+			  }
+			  else
+			  {
+				  SERIAL_ERROR_START;
+				  SERIAL_ERRORRPGM(_n("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM c=0 r=0
+				  SERIAL_ERRORLN(gcode_LastN);
+				  FlushSerialRequestResend();
+				  serial_count = 0;
+				  return;
+			  }
+
+			  // Don't parse N again with code_seen('N')
+			  cmdbuffer[bufindw + CMDHDRSIZE] = '$';
+			  //if no errors, continue parsing
+			  gcode_LastN = gcode_N;
+		}
+        // if we don't receive 'N' but still see '*'
+        if ((cmdbuffer[bufindw + CMDHDRSIZE] != 'N') && (cmdbuffer[bufindw + CMDHDRSIZE] != '$') && (strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*') != NULL))
         {
-          if((strchr(cmdbuffer+bufindw+CMDHDRSIZE, '*') != NULL))
-          {
+
             SERIAL_ERROR_START;
-            SERIAL_ERRORRPGM(MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM);
+            SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM c=0 r=0
             SERIAL_ERRORLN(gcode_LastN);
+			FlushSerialRequestResend();
             serial_count = 0;
             return;
-          }
-        } // end of '*' command
+        }
         if ((strchr_pointer = strchr(cmdbuffer+bufindw+CMDHDRSIZE, 'G')) != NULL) {
               if (! IS_SD_PRINTING) {
                       usb_printing_counter = 10;
@@ -470,7 +485,7 @@ void get_command()
                 int gcode = strtol(strchr_pointer+1, NULL, 10);
                 if (gcode >= 0 && gcode <= 3) {
                     SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
-                    LCD_MESSAGERPGM(MSG_STOPPED);
+                    LCD_MESSAGERPGM(_T(MSG_STOPPED));
                 }
             }
         } // end of 'G' command
@@ -480,7 +495,8 @@ void get_command()
           kill("", 2);
         
         // Store the current line into buffer, move to the next line.
-        cmdbuffer[bufindw] = CMDBUFFER_CURRENT_TYPE_USB;
+		// Store type of entry
+        cmdbuffer[bufindw] = gcode_N ? CMDBUFFER_CURRENT_TYPE_USB_WITH_LINENR : CMDBUFFER_CURRENT_TYPE_USB;
 #ifdef CMDBUFFER_DEBUG
         SERIAL_ECHO_START;
         SERIAL_ECHOPGM("Storing a command line to buffer: ");
@@ -528,13 +544,6 @@ void get_command()
         }
     }
 
-    //add comment
-    if (rx_buffer_full == true && serial_count > 0) {   //if rx buffer was full and string was not properly terminated
-        rx_buffer_full = false;
-        bufindw = bufindw - serial_count;               //adjust tail of the buffer to prepare buffer for writing new command
-        serial_count = 0;
-    }
-
   #ifdef SDSUPPORT
   if(!card.sdprinting || serial_count!=0){
     // If there is a half filled buffer from serial line, wait until return before
@@ -566,7 +575,7 @@ void get_command()
        serial_count >= (MAX_CMD_SIZE - 1) || n==-1)
     {
       if(card.eof()){
-        SERIAL_PROTOCOLLNRPGM(MSG_FILE_PRINTED);
+        SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED c=0 r=0
         stoptime=millis();
         char time[30];
         unsigned long t=(stoptime-starttime-pause_time)/1000;
@@ -623,6 +632,10 @@ void get_command()
       sd_count.value = 0;
 
       cli();
+      // This block locks the interrupts globally for 3.56 us,
+      // which corresponds to a maximum repeat frequency of 280.70 kHz.
+      // This blocking is safe in the context of a 10kHz stepper driver interrupt
+      // or a 115200 Bd serial line receive interrupt, which will not trigger faster than 12kHz.
       ++ buflen;
       bufindw += len;
       sdpos_atomic = card.get_sdpos()+1;
@@ -658,7 +671,7 @@ uint16_t cmdqueue_calc_sd_length()
         uint16_t value;
     } sdlen_single;
     uint16_t sdlen = 0;
-    for (int _buflen = buflen, _bufindr = bufindr;;) {
+    for (size_t _buflen = buflen, _bufindr = bufindr;;) {
         if (cmdbuffer[_bufindr] == CMDBUFFER_CURRENT_TYPE_SDCARD) {
             sdlen_single.lohi.lo = cmdbuffer[_bufindr + 1];
             sdlen_single.lohi.hi = cmdbuffer[_bufindr + 2];

@@ -19,17 +19,19 @@ public:
   //this is to delay autostart and hence the initialisaiton of the sd card to some seconds after the normal init, so the device is available quick after a reset
 
   void checkautostart(bool x); 
-  void openFile(char* name,bool read,bool replace_current=true);
-  void openLogFile(char* name);
-  void removeFile(char* name);
+  void openFile(const char* name,bool read,bool replace_current=true);
+  void openLogFile(const char* name);
+  void removeFile(const char* name);
   void closefile(bool store_location=false);
   void release();
   void startFileprint();
   void pauseSDPrint();
+  uint32_t getFileSize();
   void getStatus();
   void printingHasFinished();
 
   void getfilename(uint16_t nr, const char* const match=NULL);
+  void getfilename_simple(uint32_t position, const char * const match = NULL);
   uint16_t getnrfilenames();
   
   void getAbsFilename(char *t);
@@ -42,6 +44,19 @@ public:
   void updir();
   void setroot();
 
+  #ifdef SDCARD_SORT_ALPHA
+     void presort();
+	 #ifdef SDSORT_QUICKSORT
+		void swap(uint8_t left, uint8_t right);
+		void quicksort(uint8_t left, uint8_t right);
+	 #endif //SDSORT_QUICKSORT
+     void getfilename_sorted(const uint16_t nr);
+     #if SDSORT_GCODE
+	 FORCE_INLINE void setSortOn(bool b) { sort_alpha = b; presort(); }
+     FORCE_INLINE void setSortFolders(int i) { sort_folders = i; presort(); }
+     //FORCE_INLINE void setSortReverse(bool b) { sort_reverse = b; }
+	 #endif
+  #endif
 
   FORCE_INLINE bool isFileOpen() { return file.isOpen(); }
   FORCE_INLINE bool eof() { return sdpos>=filesize ;};
@@ -60,14 +75,68 @@ public:
   bool logging;
   bool sdprinting ;  
   bool cardOK ;
+  bool paused ;
   char filename[13];
+  uint16_t creationTime, creationDate;
+  uint32_t cluster, position;
   char longFilename[LONG_FILENAME_LENGTH];
   bool filenameIsDir;
   int lastnr; //last number of the autostart;
 private:
   SdFile root,*curDir,workDir,workDirParents[MAX_DIR_DEPTH];
   uint16_t workDirDepth;
+
+  // Sort files and folders alphabetically.
+#ifdef SDCARD_SORT_ALPHA
+  uint16_t sort_count;        // Count of sorted items in the current directory
+  #if SDSORT_GCODE
+  bool sort_alpha;          // Flag to enable / disable the feature
+  int sort_folders;         // Flag to enable / disable folder sorting
+							//bool sort_reverse;      // Flag to enable / disable reverse sorting
+  #endif
+
+							// By default the sort index is static
+  #if SDSORT_DYNAMIC_RAM
+  uint8_t *sort_order;
+  #else
+  uint8_t sort_order[SDSORT_LIMIT];
+  #endif
+  // Cache filenames to speed up SD menus.
+  #if SDSORT_USES_RAM
+
+  // If using dynamic ram for names, allocate on the heap.
+  #if SDSORT_CACHE_NAMES
+    #if SDSORT_DYNAMIC_RAM
+      char **sortshort, **sortnames;
+    #else
+      char sortshort[SDSORT_LIMIT][FILENAME_LENGTH];
+      char sortnames[SDSORT_LIMIT][FILENAME_LENGTH];
+    #endif
+  #elif !SDSORT_USES_STACK
+    char sortnames[SDSORT_LIMIT][FILENAME_LENGTH];
+    uint16_t creation_time[SDSORT_LIMIT];
+    uint16_t creation_date[SDSORT_LIMIT];
+  #endif
+
+  // Folder sorting uses an isDir array when caching items.
+  #if HAS_FOLDER_SORTING
+    #if SDSORT_DYNAMIC_RAM
+      uint8_t *isDir;
+    #elif (SDSORT_CACHE_NAMES) || !(SDSORT_USES_STACK)
+      uint8_t isDir[(SDSORT_LIMIT + 7) >> 3];
+    #endif
+  #endif
+
+  #endif // SDSORT_USES_RAM
+
+#endif // SDCARD_SORT_ALPHA
+
+#ifdef DEBUG_SD_SPEED_TEST
+public:
+#endif //DEBUG_SD_SPEED_TEST
   Sd2Card card;
+
+private:
   SdVolume volume;
   SdFile file;
   #define SD_PROCEDURE_DEPTH 1
@@ -85,7 +154,12 @@ private:
   LsAction lsAction; //stored for recursion.
   int16_t nrFiles; //counter for the files in the current directory and recycled as position counter for getting the nrFiles'th name in the directory.
   char* diveDirName;
+
+  void diveSubfolder (const char *fileName, SdFile& dir);
   void lsDive(const char *prepend, SdFile parent, const char * const match=NULL);
+#ifdef SDCARD_SORT_ALPHA
+  void flush_presort();
+#endif
 };
 extern CardReader card;
 #define IS_SD_PRINTING (card.sdprinting)

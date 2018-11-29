@@ -1,0 +1,1323 @@
+#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
+" of 4"
+" z 4"
+
+#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14 r=0
+" of 9"
+" z 9"
+
+#MSG_MEASURED_OFFSET c=0 r=0
+"[0;0] point offset"
+"[0;0] odsazeni bodu"
+
+#MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
+"\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
+"\x1b[2JCrash detekce muze\x1b[1;0Hbyt zapnuta pouze v\x1b[2;0HNormal modu"
+
+#MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+"\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
+"\x1b[2JPOZOR:\x1b[1;0HCrash detekce\x1b[2;0Hdeaktivovana ve\x1b[3;0HStealth modu"
+
+#MSG_BABYSTEPPING_Z c=20 r=0
+"Adjusting Z"
+"Dostavovani Z"
+
+#MSG_SELFTEST_CHECK_ALLCORRECT c=20 r=0
+"All correct      "
+"Vse OK "
+
+#MSG_WIZARD_DONE c=20 r=8
+"All is done. Happy printing!"
+"Vse je hotovo."
+
+#
+"Ambient"
+"\x00"
+
+#MSG_PRESS c=20 r=0
+"and press the knob"
+"a stisknete tlacitko"
+
+#MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
+"Are left and right Z~carriages all up?"
+"Dojely oba Z voziky k~hornimu dorazu?"
+
+#MSG_AUTO_DEPLETE_ON c=17 r=1
+"SpoolJoin    [on]"
+"SpoolJoin   [zap]"
+
+#
+"SpoolJoin   [N/A]"
+"SpoolJoin   [N/A]"
+
+# MSG_AUTO_DEPLETE_OFF c=17 r=1
+"SpoolJoin   [off]"
+"SpoolJoin   [vyp]"
+
+#MSG_AUTO_HOME c=0 r=0
+"Auto home"
+"\x00"
+
+#MSG_AUTOLOAD_FILAMENT c=17 r=0
+"AutoLoad filament"
+"AutoZavedeni fil."
+
+#MSG_AUTOLOADING_ONLY_IF_FSENS_ON c=20 r=4
+"Autoloading filament available only when filament sensor is turned on..."
+"Automaticke zavadeni filamentu je dostupne pouze pri zapnutem filament senzoru..."
+
+#MSG_AUTOLOADING_ENABLED c=20 r=4
+"Autoloading filament is active, just press the knob and insert filament..."
+"Automaticke zavadeni filamentu aktivni, stisknete tlacitko a vlozte filament..."
+
+#MSG_SELFTEST_AXIS_LENGTH c=0 r=0
+"Axis length"
+"Delka osy"
+
+#MSG_SELFTEST_AXIS c=0 r=0
+"Axis"
+"Osa"
+
+#MSG_SELFTEST_BEDHEATER c=0 r=0
+"Bed / Heater"
+"Podlozka / Topeni"
+
+#MSG_BED_DONE c=0 r=0
+"Bed done"
+"Bed OK."
+
+#MSG_BED_HEATING c=0 r=0
+"Bed Heating"
+"Zahrivani bed"
+
+#MSG_BED_CORRECTION_MENU c=0 r=0
+"Bed level correct"
+"Korekce podlozky"
+
+#MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
+"Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
+"Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
+
+#MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
+"Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
+"Kalibrace Z selhala. Sensor je odpojeny nebo preruseny kabel. Cekam na reset."
+
+#MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
+"Bed leveling failed. Sensor triggered too high. Waiting for reset."
+"Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset."
+
+#MSG_BED c=0 r=0
+"Bed"
+"Podlozka"
+
+#MSG_MENU_BELT_STATUS c=15 r=1
+"Belt status"
+"Stav remenu"
+
+#MSG_RECOVER_PRINT c=20 r=2
+"Blackout occurred. Recover print?"
+"Detekovan vypadek proudu.Obnovit tisk?"
+
+#MSG_CALIBRATE_BED c=0 r=0
+"Calibrate XYZ"
+"Kalibrace XYZ"
+
+#MSG_HOMEYZ c=0 r=0
+"Calibrate Z"
+"Kalibrovat Z"
+
+#MSG_CALIBRATE_PINDA c=17 r=1
+"Calibrate"
+"Zkalibrovat"
+
+#MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8
+"Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
+"Kalibrace XYZ. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
+
+#MSG_CALIBRATE_Z_AUTO c=20 r=2
+"Calibrating Z"
+"Kalibruji Z"
+
+#MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
+"Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done."
+"Kalibrace Z. Otacenim tlacitka posunte Z osu az k~hornimu dorazu. Potvrdte tlacitkem."
+
+#MSG_HOMEYZ_DONE c=0 r=0
+"Calibration done"
+"Kalibrace OK"
+
+#MSG_MENU_CALIBRATION c=0 r=0
+"Calibration"
+"Kalibrace"
+
+#
+"Cancel"
+"Zrusit"
+
+#MSG_SD_INSERTED c=0 r=0
+"Card inserted"
+"Karta vlozena"
+
+#MSG_SD_REMOVED c=0 r=0
+"Card removed"
+"Karta vyjmuta"
+
+#MSG_NOT_COLOR c=0 r=0
+"Color not correct"
+"Barva neni cista"
+
+#MSG_COOLDOWN c=0 r=0
+"Cooldown"
+"Zchladit"
+
+#
+"Copy selected language?"
+"Kopirovat vybrany jazyk?"
+
+#MSG_CRASHDETECT_ON c=0 r=0
+"Crash det.   [on]"
+"Crash det.  [zap]"
+
+#MSG_CRASHDETECT_NA c=0 r=0
+"Crash det.  [N/A]"
+"Crash det.  [N/A]"
+
+#MSG_CRASHDETECT_OFF c=0 r=0
+"Crash det.  [off]"
+"Crash det.  [vyp]"
+
+#MSG_CRASH_DETECTED c=20 r=1
+"Crash detected."
+"Detekovan naraz."
+
+#
+"Crash detected. Resume print?"
+"Detekovan naraz. Obnovit tisk?"
+
+#
+"Crash"
+"\x00"
+
+#MSG_CURRENT c=19 r=1
+"Current"
+"Pouze aktualni"
+
+#MSG_DATE c=17 r=1
+"Date:"
+"Datum:"
+
+#MSG_DISABLE_STEPPERS c=0 r=0
+"Disable steppers"
+"Vypnout motory"
+
+#MSG_BABYSTEP_Z_NOT_SET c=20 r=12
+"Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
+"Neni zkalibrovana vzdalenost trysky od tiskove podlozky. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Nastaveni prvni vrstvy."
+
+#MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
+"Do you want to repeat last step to readjust distance between nozzle and heatbed?"
+"Chcete opakovat posledni krok a pozmenit vzdalenost mezi tryskou a podlozkou?"
+
+#MSG_EXTRUDER_CORRECTION c=9 r=0
+"E-correct"
+"Korekce E"
+
+#MSG_EJECT_FILAMENT c=17 r=1
+"Eject filament"
+"Vysunout filament"
+
+#MSG_EJECT_FILAMENT1 c=17 r=1
+"Eject filament 1"
+"Vysunout filament 1"
+
+#MSG_EJECT_FILAMENT2 c=17 r=1
+"Eject filament 2"
+"Vysunout filament 2"
+
+#MSG_EJECT_FILAMENT3 c=17 r=1
+"Eject filament 3"
+"Vysunout filament 3"
+
+#MSG_EJECT_FILAMENT4 c=17 r=1
+"Eject filament 4"
+"Vysunout filament 4"
+
+#MSG_EJECT_FILAMENT5 c=17 r=1
+"Eject filament 5"
+"Vysunout filament 5"
+
+#
+"Eject"
+"Vysunout"
+
+#MSG_EJECTING_FILAMENT c=20 r=1
+"Ejecting filament"
+"Vysouvam filament"
+
+#MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
+"Endstop not hit"
+"Kon. spinac nesepnut"
+
+#MSG_SELFTEST_ENDSTOP c=0 r=0
+"Endstop"
+"Koncovy spinac"
+
+#MSG_SELFTEST_ENDSTOPS c=0 r=0
+"Endstops"
+"Konc. spinace"
+
+#MSG_STACK_ERROR c=20 r=4
+"Error - static memory has been overwritten"
+"Chyba - Doslo k prepisu staticke pameti!"
+
+#MSG_FSENS_NOT_RESPONDING c=20 r=4
+"ERROR: Filament sensor is not responding, please check connection."
+"CHYBA: Filament senzor nereaguje, zkontrolujte zapojeni."
+
+#MSG_ERROR c=0 r=0
+"ERROR:"
+"CHYBA:"
+
+#
+"External SPI flash W25X20CL not responding."
+"Externi SPI flash W25X20CL neodpovida."
+
+#
+"Extruder 1"
+"\x00"
+
+#
+"Extruder 2"
+"\x00"
+
+#
+"Extruder 3"
+"\x00"
+
+#
+"Extruder 4"
+"\x00"
+
+#MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
+"Extruder fan:"
+"Levy vent.:"
+
+#MSG_INFO_EXTRUDER c=15 r=1
+"Extruder info"
+"\x00"
+
+#MSG_MOVE_E c=0 r=0
+"Extruder"
+"\x00"
+
+#MSG_FSENS_AUTOLOAD_ON c=17 r=1
+"F. autoload  [on]"
+"F. autozav. [zap]"
+
+#MSG_FSENS_AUTOLOAD_NA c=17 r=1
+"F. autoload [N/A]"
+"F. autozav. [N/A]"
+
+#MSG_FSENS_AUTOLOAD_OFF c=17 r=1
+"F. autoload [off]"
+"F. autozav. [vyp]"
+
+#
+"Fail stats"
+"\x00"
+
+#MSG_FAN_SPEED c=14 r=0
+"Fan speed"
+"Rychlost vent."
+
+#MSG_SELFTEST_FAN c=20 r=0
+"Fan test"
+"Test ventilatoru"
+
+#MSG_FANS_CHECK_ON c=17 r=1
+"Fans check   [on]"
+"Kontr. vent.[zap]"
+
+#MSG_FANS_CHECK_OFF c=17 r=1
+"Fans check  [off]"
+"Kontr. vent.[vyp]"
+
+#MSG_FSENSOR_ON c=0 r=0
+"Fil. sensor  [on]"
+"Fil. senzor [zap]"
+
+#MSG_RESPONSE_POOR c=20 r=2
+"Fil. sensor response is poor, disable it?"
+"Senzor nerozpoznal filament, vypnout?"
+
+#MSG_FSENSOR_NA c=0 r=0
+"Fil. sensor [N/A]"
+"Fil. senzor [N/A]"
+
+#MSG_FSENSOR_OFF c=0 r=0
+"Fil. sensor [off]"
+"Fil. senzor [vyp]"
+
+#
+"Filam. runouts"
+"\x00"
+
+#MSG_FILAMENT_CLEAN c=20 r=2
+"Filament extruding & with correct color?"
+"Filament vytlacen a spravne barvy?"
+
+#MSG_NOT_LOADED c=19 r=0
+"Filament not loaded"
+"Filament nezaveden"
+
+#MSG_FILAMENT_SENSOR c=20 r=0
+"Filament sensor"
+"Senzor filamentu"
+
+#MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
+"Filament sensor:"
+"Senzor filamentu:"
+
+#MSG_FILAMENT_USED c=19 r=1
+"Filament used"
+"Spotrebovano filamentu"
+
+#MSG_PRINT_TIME c=19 r=1
+"Print time"
+"Cas tisku"
+
+#MSG_FILE_INCOMPLETE c=20 r=2
+"File incomplete. Continue anyway?"
+"Soubor nekompletni. Pokracovat?"
+
+#MSG_FINISHING_MOVEMENTS c=20 r=1
+"Finishing movements"
+"Dokoncovani pohybu"
+
+#MSG_V2_CALIBRATION c=17 r=1
+"First layer cal."
+"Kal. prvni vrstvy"
+
+#MSG_WIZARD_SELFTEST c=20 r=8
+"First, I will run the selftest to check most common assembly problems."
+"Nejdriv pomoci selftestu zkontoluji nejcastejsi chyby vznikajici pri sestaveni tiskarny."
+
+#
+"Fix the issue and then press button on MMU unit."
+"Opravte chybu a pote stisknete tlacitko na jednotce MMU."
+
+#MSG_FLOW c=0 r=0
+"Flow"
+"Prutok"
+
+#MSG_PRUSA3D_FORUM c=0 r=0
+"forum.prusa3d.com"
+"\x00"
+
+#MSG_SELFTEST_COOLING_FAN c=20 r=0
+"Front print fan?"
+"Predni tiskovy vent?"
+
+#MSG_BED_CORRECTION_FRONT c=14 r=1
+"Front side[um]"
+"Vpredu [um]"
+
+#MSG_SELFTEST_FANS c=0 r=0
+"Front/left fans"
+"Predni/levy vent."
+
+#MSG_SELFTEST_HEATERTHERMISTOR c=0 r=0
+"Heater/Thermistor"
+"Topeni/Termistor"
+
+#MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
+"Heating disabled by safety timer."
+"Zahrivani preruseno bezpecnostnim casovacem."
+
+#MSG_HEATING_COMPLETE c=20 r=0
+"Heating done."
+"Zahrivani OK."
+
+#MSG_HEATING c=0 r=0
+"Heating"
+"Zahrivani"
+
+#MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
+"Dobry den, jsem vase tiskarna Original Prusa i3. Chcete abych Vas provedla kalibracnim procesem?"
+
+#MSG_PRUSA3D_HOWTO c=0 r=0
+"howto.prusa3d.com"
+"\x00"
+
+#
+"Change extruder"
+"Zmenit extruder"
+
+#MSG_FILAMENTCHANGE c=0 r=0
+"Change filament"
+"Vymenit filament"
+
+#MSG_CHANGE_SUCCESS c=0 r=0
+"Change success!"
+"Zmena uspesna!"
+
+#MSG_CORRECTLY c=20 r=0
+"Changed correctly?"
+"Vymena ok?"
+
+#MSG_SELFTEST_CHECK_BED c=20 r=0
+"Checking bed     "
+"Kontrola podlozky"
+
+#MSG_SELFTEST_CHECK_ENDSTOPS c=20 r=0
+"Checking endstops"
+"Kontrola endstopu"
+
+#MSG_SELFTEST_CHECK_HOTEND c=20 r=0
+"Checking hotend  "
+"Kontrola hotend "
+
+#MSG_SELFTEST_CHECK_FSENSOR c=20 r=0
+"Checking sensors "
+"Kontrola senzoru"
+
+#MSG_SELFTEST_CHECK_X c=20 r=0
+"Checking X axis  "
+"Kontrola osy X"
+
+#MSG_SELFTEST_CHECK_Y c=20 r=0
+"Checking Y axis  "
+"Kontrola osy Y"
+
+#MSG_SELFTEST_CHECK_Z c=20 r=0
+"Checking Z axis  "
+"Kontrola osy Z"
+
+#MSG_CHOOSE_EXTRUDER c=20 r=1
+"Choose extruder:"
+"Vyberte extruder:"
+
+#MSG_CHOOSE_FILAMENT c=20 r=1
+"Choose filament:"
+"Vyber filament:"
+
+#MSG_FILAMENT c=17 r=1
+"Filament"
+"\x00"
+
+#MSG_WIZARD_XYZ_CAL c=20 r=8
+"I will run xyz calibration now. It will take approx. 12 mins."
+"Nyni provedu xyz kalibraci. Zabere to priblizne 12 min."
+
+#MSG_WIZARD_Z_CAL c=20 r=8
+"I will run z calibration now."
+"Nyni provedu z kalibraci."
+
+#MSG_WIZARD_V2_CAL_2 c=20 r=12
+"I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
+"Zacnu tisknout linku a Vy budete postupne snizovat trysku otacenim tlacitka dokud nedosahnete optimalni vysky. Prohlednete si obrazky v nasi prirucce v kapitole Kalibrace."
+
+#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
+"Improving bed calibration point"
+"Zlepsuji presnost kalibracniho bodu"
+
+#MSG_WATCH c=0 r=0
+"Info screen"
+"Informace"
+
+#MSG_FILAMENT_LOADING_T0 c=20 r=4
+"Insert filament into extruder 1. Click when done."
+"Vlozte filament do extruderu 1. Potvrdte tlacitkem."
+
+#MSG_FILAMENT_LOADING_T1 c=20 r=4
+"Insert filament into extruder 2. Click when done."
+"Vlozte filament do extruderu 2. Potvrdte tlacitkem."
+
+#MSG_FILAMENT_LOADING_T2 c=20 r=4
+"Insert filament into extruder 3. Click when done."
+"Vlozte filament do extruderu 3. Potvrdte tlacitkem."
+
+#MSG_FILAMENT_LOADING_T3 c=20 r=4
+"Insert filament into extruder 4. Click when done."
+"Vlozte filament do extruderu 4. Potvrdte tlacitkem."
+
+#
+"Is filament 1 loaded?"
+"Je filament 1 zaveden?"
+
+#MSG_INSERT_FILAMENT c=20 r=0
+"Insert filament"
+"Vlozte filament"
+
+#MSG_WIZARD_FILAMENT_LOADED c=20 r=2
+"Is filament loaded?"
+"Je filament zaveden?"
+
+#MSG_WIZARD_PLA_FILAMENT c=20 r=2
+"Is it PLA filament?"
+"Je to PLA filament?"
+
+#MSG_PLA_FILAMENT_LOADED c=20 r=2
+"Is PLA filament loaded?"
+"Je PLA filament zaveden?"
+
+#MSG_STEEL_SHEET_CHECK c=20 r=2
+"Is steel sheet on heatbed?"
+"Je tiskovy plat na podlozce?"
+
+#MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
+"Iteration "
+"Iterace "
+
+#
+"Last print failures"
+"\x00"
+
+#
+"Last print"
+"\x00"
+
+#MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
+"Left hotend fan?"
+"Levy vent na trysce?"
+
+#
+"Left"
+"Vlevo:"
+
+#MSG_BED_CORRECTION_LEFT c=14 r=1
+"Left side [um]"
+"Vlevo [um]"
+
+#
+"Lin. correction"
+"Korekce lin."
+
+#MSG_BABYSTEP_Z c=0 r=0
+"Live adjust Z"
+"Doladeni osy Z"
+
+#MSG_LOAD_FILAMENT c=17 r=0
+"Load filament"
+"Zavest filament"
+
+#MSG_LOADING_COLOR c=0 r=0
+"Loading color"
+"Cisteni barvy"
+
+#MSG_LOADING_FILAMENT c=20 r=0
+"Loading filament"
+"Zavadeni filamentu"
+
+#MSG_LOOSE_PULLEY c=20 r=1
+"Loose pulley"
+"Uvolnena remenicka"
+
+#
+"Load to nozzle"
+"Zavest do trysky"
+
+#MSG_M117_V2_CALIBRATION c=25 r=1
+"M117 First layer cal."
+"M117 Kal. prvni vrstvy"
+
+#MSG_MAIN c=0 r=0
+"Main"
+"Hlavni nabidka"
+
+#MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60 r=0
+"Measuring reference height of calibration point"
+"Merim referencni vysku kalibracniho bodu"
+
+#MSG_MESH_BED_LEVELING c=0 r=0
+"Mesh Bed Leveling"
+"\x00"
+
+#MSG_MMU_OK_RESUMING_POSITION c=20 r=4
+"MMU OK. Resuming position..."
+"MMU OK. Pokracuji v tisku..."
+
+#MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
+"MMU OK. Resuming temperature..."
+"MMU OK. Pokracuji v nahrivani..."
+
+#
+"Measured skew"
+"Merene zkoseni"
+
+#MSG_MMU_OK_RESUMING c=20 r=4
+"MMU OK. Resuming..."
+"MMU OK. Pokracuji..."
+
+#MSG_STEALTH_MODE_OFF c=0 r=0
+"Mode     [Normal]"
+"Mod      [Normal]"
+
+#MSG_SILENT_MODE_ON c=0 r=0
+"Mode     [silent]"
+"Mod       [tichy]"
+
+#
+"MMU needs user attention."
+"MMU potrebuje zasah uzivatele."
+
+#MSG_STEALTH_MODE_ON c=0 r=0
+"Mode    [Stealth]"
+"Mod       [tichy]"
+
+#MSG_AUTO_MODE_ON c=0 r=0
+"Mode [auto power]"
+"Mod [automaticky]"
+
+#MSG_SILENT_MODE_OFF c=0 r=0
+"Mode [high power]"
+"Mod  [vys. vykon]"
+
+#
+"MMU2 connected"
+"\x00"
+
+#MSG_SELFTEST_MOTOR c=0 r=0
+"Motor"
+"\x00"
+
+#MSG_MOVE_AXIS c=0 r=0
+"Move axis"
+"Posunout osu"
+
+#MSG_MOVE_X c=0 r=0
+"Move X"
+"Posunout X"
+
+#MSG_MOVE_Y c=0 r=0
+"Move Y"
+"Posunout Y"
+
+#MSG_MOVE_Z c=0 r=0
+"Move Z"
+"Posunout Z"
+
+#MSG_NO_MOVE c=0 r=0
+"No move."
+"Bez pohybu."
+
+#MSG_NO_CARD c=0 r=0
+"No SD card"
+"Zadna SD karta"
+
+#MSG_NO c=0 r=0
+"No"
+"Ne"
+
+#MSG_SELFTEST_NOTCONNECTED c=0 r=0
+"Not connected"
+"Nezapojeno "
+
+#
+"New firmware version available:"
+"Vysla nova verze firmware:"
+
+#
+"No "
+"Ne"
+
+#MSG_SELFTEST_FAN_NO c=19 r=0
+"Not spinning"
+"Netoci se"
+
+#MSG_WIZARD_V2_CAL c=20 r=8
+"Now I will calibrate distance between tip of the nozzle and heatbed surface."
+"Nyni zkalibruji vzdalenost mezi koncem trysky a povrchem podlozky."
+
+#MSG_WIZARD_WILL_PREHEAT c=20 r=4
+"Now I will preheat nozzle for PLA."
+"Nyni predehreji trysku pro PLA."
+
+#MSG_NOZZLE c=0 r=0
+"Nozzle"
+"Tryska"
+
+#MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
+"Old settings found. Default PID, Esteps etc. will be set."
+"Neplatne hodnoty nastaveni. Bude pouzito vychozi PID, Esteps atd."
+
+#
+"Now remove the test print from steel sheet."
+"Nyni odstrante testovaci vytisk z tiskoveho platu."
+
+#
+"Nozzle FAN"
+"\x00"
+
+#MSG_PAUSE_PRINT c=0 r=0
+"Pause print"
+"Pozastavit tisk"
+
+#MSG_PID_RUNNING c=20 r=1
+"PID cal.           "
+"PID kal. "
+
+#MSG_PID_FINISHED c=20 r=1
+"PID cal. finished"
+"PID kal. ukoncena"
+
+#MSG_PID_EXTRUDER c=17 r=1
+"PID calibration"
+"PID kalibrace"
+
+#MSG_PINDA_PREHEAT c=20 r=1
+"PINDA Heating"
+"Nahrivani PINDA"
+
+#MSG_PAPER c=20 r=8
+"Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
+"Umistete list papiru na podlozku a udrzujte jej pod tryskou behem mereni prvnich 4 bodu. Pokud tryska zachyti papir, okamzite vypnete tiskarnu."
+
+#MSG_WIZARD_CLEAN_HEATBED c=20 r=8
+"Please clean heatbed and then press the knob."
+"Prosim ocistete podlozku a stisknete tlacitko."
+
+#MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
+"Please clean the nozzle for calibration. Click when done."
+"Pro uspesnou kalibraci ocistete prosim tiskovou trysku. Potvrdte tlacitkem."
+
+#MSG_SELFTEST_PLEASECHECK c=0 r=0
+"Please check :"
+"Zkontrolujte :"
+
+#MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
+"Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
+"Prosim nahlednete do prirucky 3D tiskare a opravte problem. Pote obnovte Pruvodce restartovanim tiskarny."
+
+#MSG_WIZARD_LOAD_FILAMENT c=20 r=8
+"Please insert PLA filament to the extruder, then press knob to load it."
+"Prosim vlozte PLA filament do extruderu, pote stisknete tlacitko pro zavedeni filamentu."
+
+#MSG_PLEASE_LOAD_PLA c=20 r=4
+"Please load PLA filament first."
+"Nejdrive prosim zavedte PLA filament."
+
+#MSG_CHECK_IDLER c=20 r=4
+"Please open idler and remove filament manually."
+"Prosim otevrete idler a manualne odstrante filament."
+
+#MSG_PLACE_STEEL_SHEET c=20 r=4
+"Please place steel sheet on heatbed."
+"Umistete prosim tiskovy plat na podlozku"
+
+#MSG_PRESS_TO_UNLOAD c=20 r=4
+"Please press the knob to unload filament"
+"Pro vysunuti filamentu stisknete prosim tlacitko"
+
+#
+"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
+"Prosim vlozte PLA filament do trubicky MMU, pote stisknete tlacitko pro zavedeni filamentu."
+
+#MSG_PULL_OUT_FILAMENT c=20 r=4
+"Please pull out filament immediately"
+"Prosim vyjmete urychlene filament"
+
+#MSG_EJECT_REMOVE c=20 r=4
+"Please remove filament and then press the knob."
+"Prosim vyjmete filament a pote stisknete tlacitko."
+
+#MSG_REMOVE_STEEL_SHEET c=20 r=4
+"Please remove steel sheet from heatbed."
+"Odstrante prosim tiskovy plat z podlozky."
+
+#MSG_RUN_XYZ c=20 r=4
+"Please run XYZ calibration first."
+"Nejprve spustte kalibraci XYZ."
+
+#MSG_UPDATE_MMU2_FW c=20 r=4
+"Please update firmware in your MMU2. Waiting for reset."
+"Prosim aktualizujte firmware ve vasi MMU2 jednotce. Cekam na reset."
+
+#MSG_PLEASE_WAIT c=20 r=0
+"Please wait"
+"Prosim cekejte"
+
+#
+"Please remove shipping helpers first."
+"Nejprve prosim sundejte transportni soucastky."
+
+#MSG_PREHEAT_NOZZLE c=20 r=0
+"Preheat the nozzle!"
+"Predehrejte trysku!"
+
+#MSG_PREHEAT c=0 r=0
+"Preheat"
+"Predehrev"
+
+#MSG_WIZARD_HEATING c=20 r=3
+"Preheating nozzle. Please wait."
+"Predehrivam trysku. Prosim cekejte."
+
+#
+"Please upgrade."
+"Prosim aktualizujte."
+
+#MSG_PRESS_TO_PREHEAT c=20 r=4
+"Press knob to preheat nozzle and continue."
+"Pro nahrati trysky a pokracovani stisknete tlacitko."
+
+#
+"Power failures"
+"\x00"
+
+#MSG_PRINT_ABORTED c=20 r=0
+"Print aborted"
+"Tisk prerusen"
+
+#MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
+"Print fan:"
+"Tiskovy vent.:"
+
+#MSG_CARD_MENU c=0 r=0
+"Print from SD"
+"Tisk z SD"
+
+#MSG_PRINT_PAUSED c=20 r=1
+"Print paused"
+"Tisk pozastaven"
+
+#
+"Press the knob to resume nozzle temperature."
+"Pro pokracovani nahrivani trysky stisknete tlacitko."
+
+#MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
+"Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
+"Tiskarna nebyla jeste zkalibrovana. Postupujte prosim podle manualu, kapitola Zaciname, odstavec Postup kalibrace."
+
+#
+"Print FAN"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Prusa i3 MK2.5 ready."
+"Prusa i3 MK2.5 ok."
+
+#WELCOME_MSG c=20 r=0
+"Prusa i3 MK3 ready."
+"Prusa i3 MK3 ok."
+
+#MSG_PRUSA3D c=0 r=0
+"prusa3d.com"
+"\x00"
+
+#MSG_BED_CORRECTION_REAR c=14 r=1
+"Rear side [um]"
+"Vzadu [um]"
+
+#MSG_RECOVERING_PRINT c=20 r=1
+"Recovering print    "
+"Obnovovani tisku "
+
+#MSG_REMOVE_OLD_FILAMENT c=20 r=4
+"Remove old filament and press the knob to start loading new filament."
+"Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
+
+#
+"Prusa i3 MK2 ready."
+"Prusa i3 MK2 ok."
+
+#MSG_CALIBRATE_BED_RESET c=0 r=0
+"Reset XYZ calibr."
+"Reset XYZ kalibr."
+
+#MSG_BED_CORRECTION_RESET c=0 r=0
+"Reset"
+"\x00"
+
+#MSG_RESUME_PRINT c=0 r=0
+"Resume print"
+"Pokracovat"
+
+#MSG_RESUMING_PRINT c=20 r=1
+"Resuming print"
+"Obnoveni tisku"
+
+#MSG_BED_CORRECTION_RIGHT c=14 r=1
+"Right side[um]"
+"Vpravo [um]"
+
+#MSG_SECOND_SERIAL_ON c=17 r=1
+"RPi port     [on]"
+"RPi port    [zap]"
+
+#MSG_SECOND_SERIAL_OFF c=17 r=1
+"RPi port    [off]"
+"RPi port    [vyp]"
+
+#MSG_WIZARD_RERUN c=20 r=7
+"Running Wizard will delete current calibration results and start from the beginning. Continue?"
+"Spusteni Pruvodce vymaze ulozene vysledky vsech kalibraci a spusti kalibracni proces od zacatku. Pokracovat?"
+
+#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
+"SD card  [normal]"
+"SD card  [normal]"
+
+#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
+"SD card [flshAir]"
+"SD card [FlshAir]"
+
+#
+"Right"
+"Vpravo"
+
+#MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
+"Searching bed calibration point"
+"Hledam kalibracni bod podlozky"
+
+#MSG_LANGUAGE_SELECT c=0 r=0
+"Select language"
+"Vyber jazyka"
+
+#MSG_SELFTEST_OK c=0 r=0
+"Self test OK"
+"\x00"
+
+#MSG_SELFTEST_START c=20 r=0
+"Self test start  "
+"Self test start "
+
+#MSG_SELFTEST c=0 r=0
+"Selftest         "
+"Selftest "
+
+#MSG_SELFTEST_ERROR c=0 r=0
+"Selftest error !"
+"Chyba Selftestu!"
+
+#MSG_SELFTEST_FAILED c=20 r=0
+"Selftest failed  "
+"Selftest selhal "
+
+#MSG_FORCE_SELFTEST c=20 r=8
+"Selftest will be run to calibrate accurate sensorless rehoming."
+"Pro kalibraci presneho rehomovani bude nyni spusten selftest."
+
+#
+"Select nozzle preheat temperature which matches your material."
+"Vyberte teplotu predehrati trysky ktera odpovida vasemu materialu."
+
+#
+"Select PLA filament:"
+"Vyberte PLA filament:"
+
+#MSG_SET_TEMPERATURE c=19 r=1
+"Set temperature:"
+"Nastavte teplotu:"
+
+#MSG_SETTINGS c=0 r=0
+"Settings"
+"Nastaveni"
+
+#MSG_SHOW_END_STOPS c=17 r=1
+"Show end stops"
+"Stav konc. spin."
+
+#
+"Show pinda state"
+"Zobrazit stav PINDA"
+
+#MSG_FILE_CNT c=20 r=4
+"Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
+"Nektere soubory nebudou setrideny. Maximalni pocet souboru ve slozce pro setrideni je 100."
+
+#MSG_SORT_NONE c=17 r=1
+"Sort:      [none]"
+"Trideni   [Zadne]"
+
+#MSG_SORT_TIME c=17 r=1
+"Sort:      [time]"
+"Trideni:    [cas]"
+
+#
+"Severe skew"
+"Tezke zkoseni"
+
+#MSG_SORT_ALPHA c=17 r=1
+"Sort:  [alphabet]"
+"Trideni [Abeceda]"
+
+#MSG_SORTING c=20 r=1
+"Sorting files"
+"Trideni souboru"
+
+#MSG_SOUND_LOUD c=17 r=1
+"Sound      [loud]"
+"Zvuk    [hlasity]"
+
+#
+"Slight skew"
+"Lehke zkoseni"
+
+#MSG_SOUND_MUTE c=17 r=1
+"Sound      [mute]"
+"Zvuk    [vypnuto]"
+
+#
+"Some problem encountered, Z-leveling enforced ..."
+"Vyskytl se problem, srovnavam osu Z ..."
+
+#MSG_SOUND_ONCE c=17 r=1
+"Sound      [once]"
+"Zvuk     [jednou]"
+
+#MSG_SOUND_SILENT c=17 r=1
+"Sound    [silent]"
+"Zvuk      [tichy]"
+
+#MSG_SPEED c=0 r=0
+"Speed"
+"Rychlost"
+
+#MSG_SELFTEST_FAN_YES c=19 r=0
+"Spinning"
+"Toci se"
+
+#MSG_TEMP_CAL_WARNING c=20 r=4
+"Stable ambient temperature 21-26C is needed a rigid stand is required."
+"Je vyzadovana stabilni pokojova teplota 21-26C a pevna podlozka."
+
+#MSG_STATISTICS c=0 r=0
+"Statistics  "
+"Statistika "
+
+#MSG_STOP_PRINT c=0 r=0
+"Stop print"
+"Zastavit tisk"
+
+#MSG_STOPPED c=0 r=0
+"STOPPED. "
+"ZASTAVENO."
+
+#MSG_SUPPORT c=0 r=0
+"Support"
+"Podpora"
+
+#MSG_SELFTEST_SWAPPED c=0 r=0
+"Swapped"
+"Prohozene"
+
+#MSG_TEMP_CALIBRATION c=20 r=1
+"Temp. cal.          "
+"Tepl. kal. "
+
+#MSG_TEMP_CALIBRATION_ON c=20 r=1
+"Temp. cal.   [on]"
+"Tepl. kal.  [zap]"
+
+#MSG_TEMP_CALIBRATION_OFF c=20 r=1
+"Temp. cal.  [off]"
+"Tepl. kal.  [vyp]"
+
+#MSG_CALIBRATION_PINDA_MENU c=17 r=1
+"Temp. calibration"
+"Teplot. kalibrace"
+
+#MSG_TEMP_CAL_FAILED c=20 r=8
+"Temperature calibration failed"
+"Teplotni kalibrace selhala"
+
+#MSG_TEMP_CALIBRATION_DONE c=20 r=12
+"Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
+"Teplotni kalibrace dokoncena a je nyni aktivni. Teplotni kalibraci je mozno deaktivovat v menu Nastaveni->Tepl. kal."
+
+#MSG_TEMPERATURE c=0 r=0
+"Temperature"
+"Teplota"
+
+#MSG_MENU_TEMPERATURES c=15 r=1
+"Temperatures"
+"Teploty"
+
+#MSG_FOLLOW_Z_CALIBRATION_FLOW c=20 r=4
+"There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."
+"Je potreba kalibrovat osu Z. Prosim postupujte dle prirucky, kapitola Zaciname, sekce Postup kalibrace."
+
+#
+"Total filament"
+"Filament celkem"
+
+#
+"Total print time"
+"Celkovy cas tisku"
+
+#MSG_TUNE c=0 r=0
+"Tune"
+"Ladit"
+
+#
+"Unload"
+"Vysunout"
+
+#
+"Unload all"
+"Vyjmout vse"
+
+#
+"Total failures"
+"\x00"
+
+#MSG_UNLOAD_FILAMENT c=17 r=0
+"Unload filament"
+"Vyjmout filament"
+
+#MSG_UNLOADING_FILAMENT c=20 r=1
+"Unloading filament"
+"Vysouvam filament"
+
+#
+"Total"
+"\x00"
+
+#MSG_USED c=19 r=1
+"Used during print"
+"Pouzite behem tisku"
+
+#MSG_MENU_VOLTAGES c=15 r=1
+"Voltages"
+"Napeti"
+
+#
+"unknown"
+"\x00"
+
+#MSG_USERWAIT c=0 r=0
+"Wait for user..."
+"Ceka se na uzivatele..."
+
+#MSG_WAITING_TEMP c=20 r=3
+"Waiting for nozzle and bed cooling"
+"Cekani na zchladnuti trysky a podlozky."
+
+#MSG_WAITING_TEMP_PINDA c=20 r=3
+"Waiting for PINDA probe cooling"
+"Cekani na zchladnuti PINDA"
+
+#
+"Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
+"Pouzijte vyjmout pro odstraneni filamentu 1 pokud presahuje z PTFE trubicky za tiskarnou. Pouzijte vysunout, pokud neni videt."
+
+#MSG_CHANGED_BOTH c=20 r=4
+"Warning: both printer type and motherboard type changed."
+"Varovani: doslo ke zmene typu tiskarny a motherboardu."
+
+#MSG_CHANGED_MOTHERBOARD c=20 r=4
+"Warning: motherboard type changed."
+"Varovani: doslo ke zmene typu motherboardu."
+
+#MSG_CHANGED_PRINTER c=20 r=4
+"Warning: printer type changed."
+"Varovani: doslo ke zmene typu tiskarny."
+
+#MSG_UNLOAD_SUCCESSFUL c=20 r=2
+"Was filament unload successful?"
+"Bylo vysunuti filamentu uspesne?"
+
+#MSG_SELFTEST_WIRINGERROR c=0 r=0
+"Wiring error"
+"Chyba zapojeni"
+
+#MSG_WIZARD c=17 r=1
+"Wizard"
+"Pruvodce"
+
+#MSG_XYZ_DETAILS c=19 r=1
+"XYZ cal. details"
+"Detaily XYZ kal."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
+"XYZ calibration failed. Please consult the manual."
+"Kalibrace XYZ selhala. Nahlednete do manualu."
+
+#MSG_YES c=0 r=0
+"Yes"
+"Ano"
+
+#MSG_WIZARD_QUIT c=20 r=8
+"You can always resume the Wizard from Calibration -> Wizard."
+"Pruvodce muzete kdykoliv znovu spustit z menu Kalibrace -> Pruvodce"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_EXTREME c=20 r=8
+"XYZ calibration all right. Skew will be corrected automatically."
+"Kalibrace XYZ v poradku. Zkoseni bude automaticky vyrovnano pri tisku."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
+"XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+"Kalibrace XYZ v poradku. X/Y osy mirne zkosene. Dobra prace!"
+
+#
+"X-correct"
+"Korekce X"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
+"XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
+"Kalibrace XYZ v poradku. X/Y osy jsou kolme. Gratuluji!"
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
+"XYZ calibration compromised. Front calibration points not reachable."
+"Kalibrace XYZ nepresna. Predni kalibracni body moc vpredu."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
+"XYZ calibration compromised. Right front calibration point not reachable."
+"Kalibrace XYZ nepresna. Pravy predni bod moc vpredu."
+
+#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
+"XYZ calibration compromised. Left front calibration point not reachable."
+"Kalibrace XYZ nepresna. Levy predni bod moc vpredu."
+
+#MSG_LOAD_ALL c=17 r=0
+"Load all"
+"Zavest vse"
+
+#MSG_LOAD_FILAMENT_1 c=17 r=0
+"Load filament 1"
+"Zavest filament 1"
+
+#
+"XYZ calibration failed. Bed calibration point was not found."
+"Kalibrace XYZ selhala. Kalibracni bod podlozky nenalezen."
+
+#
+"XYZ calibration failed. Front calibration points not reachable."
+"Kalibrace XYZ selhala. Predni kalibracni body moc vpredu. Srovnejte tiskarnu."
+
+#
+"XYZ calibration failed. Left front calibration point not reachable."
+"Kalibrace XYZ selhala. Levy predni bod moc vpredu. Srovnejte tiskarnu."
+
+#MSG_LOAD_FILAMENT_2 c=17 r=0
+"Load filament 2"
+"Zavest filament 2"
+
+#
+"XYZ calibration failed. Right front calibration point not reachable."
+"Kalibrace XYZ selhala. Pravy predni bod moc vpredu. Srovnejte tiskarnu."
+
+#MSG_LOAD_FILAMENT_3 c=17 r=0
+"Load filament 3"
+"Zavest filament 3"
+
+#
+"Y distance from min"
+"Y vzdalenost od min"
+
+#
+"Y-correct"
+"Korekce Y"
+
+#MSG_LOAD_FILAMENT_4 c=17 r=0
+"Load filament 4"
+"Zavest filament 4"
+
+#MSG_LOAD_FILAMENT_5 c=17 r=0
+"Load filament 5"
+"Zavest filament 5"
+
+#MSG_OFF c=0 r=0
+" [off]"
+" [vyp]"
