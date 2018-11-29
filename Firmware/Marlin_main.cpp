@@ -6083,17 +6083,17 @@ Sigma_Exit:
 
     case 220: // M220 S<factor in percent>- set speed factor override percentage
     {
-	  if (code_seen('B')) //backup current speed factor
-	  {
-		saved_feedmultiply_mm = feedmultiply;
-	  }
+      if (code_seen('B')) //backup current speed factor
+      {
+        saved_feedmultiply_mm = feedmultiply;
+      }
       if(code_seen('S'))
       {		
         feedmultiply = code_value() ;
       }
-	  if (code_seen('R')) { //restore previous feedmultiply
-		  feedmultiply = saved_feedmultiply_mm;
-	  }
+      if (code_seen('R')) { //restore previous feedmultiply
+        feedmultiply = saved_feedmultiply_mm;
+      }
     }
     break;
     case 221: // M221 S<factor in percent>- set extrude factor override percentage
