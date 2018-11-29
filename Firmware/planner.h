@@ -40,6 +40,28 @@ enum BlockFlag {
     // If set, the machine will start from a halt at the start of this block,
     // respecting the maximum allowed jerk.
     BLOCK_FLAG_START_FROM_FULL_HALT = 4,
+    // If set, the stepper interrupt expects, that the number of steps to tick will be lower
+    // than 32767, therefore the DDA algorithm may run with 16bit resolution only.
+    // In addition, the stepper routine will not do any end stop checking for higher performance.
+    BLOCK_FLAG_DDA_LOWRES = 8,
+};
+
+union dda_isteps_t
+{
+  int32_t     wide;
+  struct {
+    int16_t   lo;
+    int16_t   hi;
+  };
+};
+
+union dda_usteps_t
+{
+  uint32_t    wide;
+  struct {
+    uint16_t  lo;
+    uint16_t  hi;
+  };
 };
 
 // This struct is used when buffering the setup for each linear movement "nominal" values are as specified in 
@@ -47,8 +69,8 @@ enum BlockFlag {
 typedef struct {
   // Fields used by the bresenham algorithm for tracing the line
   // steps_x.y,z, step_event_count, acceleration_rate, direction_bits and active_extruder are set by plan_buffer_line().
-  long steps_x, steps_y, steps_z, steps_e;  // Step count along each axis
-  unsigned long step_event_count;           // The number of step events required to complete this block
+  dda_isteps_t steps_x, steps_y, steps_z, steps_e;  // Step count along each axis
+  dda_usteps_t step_event_count;            // The number of step events required to complete this block
   long acceleration_rate;                   // The acceleration rate used for acceleration calculation
   unsigned char direction_bits;             // The direction bit set for this block (refers to *_DIRECTION_BIT in config.h)
   unsigned char active_extruder;            // Selects the active extruder
@@ -72,7 +94,7 @@ typedef struct {
   float acceleration;
 
   // Bit flags defined by the BlockFlag enum.
-  bool flag;
+  uint8_t flag;
 
   // Settings for the trapezoid generator (runs inside an interrupt handler).
   // Changing the following values in the planner needs to be synchronized with the interrupt handler by disabling the interrupts.
@@ -132,21 +154,21 @@ void plan_set_position(float x, float y, float z, const float &e);
 void plan_set_z_position(const float &z);
 void plan_set_e_position(const float &e);
 
-
+extern bool e_active();
 
 void check_axes_activity();
 
-extern unsigned long minsegmenttime;
-extern float max_feedrate[NUM_AXIS]; // set the max speeds
-extern float axis_steps_per_unit[NUM_AXIS];
-extern unsigned long max_acceleration_units_per_sq_second[NUM_AXIS]; // Use M201 to override by software
-extern float minimumfeedrate;
-extern float acceleration;         // Normal acceleration mm/s^2  THIS IS THE DEFAULT ACCELERATION for all moves. M204 SXXXX
-extern float retract_acceleration; //  mm/s^2   filament pull-pack and push-forward  while standing still in the other axis M204 TXXXX
-// Jerk is a maximum immediate velocity change.
-extern float max_jerk[NUM_AXIS];
-extern float mintravelfeedrate;
+// Use M203 to override by software
+extern float* max_feedrate;
+
+
+// Use M201 to override by software
+extern unsigned long* max_acceleration_units_per_sq_second; 
 extern unsigned long axis_steps_per_sqr_second[NUM_AXIS];
+
+extern long position[NUM_AXIS];
+extern uint8_t maxlimit_status;
+
 
 #ifdef AUTOTEMP
     extern bool autotemp_enabled;
@@ -216,6 +238,8 @@ void set_extrude_min_temp(float temp);
 
 void reset_acceleration_rates();
 #endif
+
+void update_mode_profile();
 
 unsigned char number_of_blocks();
 

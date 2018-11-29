@@ -23,29 +23,17 @@
 * Rambo Pin Assignments 1.3
 ******************************************************************/
 
-#if MOTHERBOARD == 100 //100 - orig 301
-#include "pins_Rambo.h"
-#endif //MOTHERBOARD == 100
-
-#if MOTHERBOARD == 200 //200 - orig 102
+#if MOTHERBOARD == BOARD_RAMBO_MINI_1_0 //200 - orig 102
 #include "pins_Rambo_1_0.h"
-#endif //MOTHERBOARD == 200
+#endif //MOTHERBOARD == BOARD_RAMBO_MINI_1_0
 
-#if MOTHERBOARD == 203 //203 - orig 302
+#if MOTHERBOARD == BOARD_RAMBO_MINI_1_3 //203 - orig 302
 #include "pins_Rambo_1_3.h"
-#endif //MOTHERBOARD == 203
+#endif //MOTHERBOARD == BOARD_RAMBO_MINI_1_3
 
-#if MOTHERBOARD == 303 //303 - orig 300
-#include "pins_Einy_0_3.h"
-#endif //MOTHERBOARD == 303
-
-#if MOTHERBOARD == 304 //304 - orig 299
-#include "pins_Einy_0_4.h"
-#endif //MOTHERBOARD == 304
-
-#if MOTHERBOARD == 305 //305 - orig 298
-#include "pins_Einy_0_4.h"
-#endif //MOTHERBOARD == 305
+#if MOTHERBOARD == BOARD_EINSY_1_0a //310 - new
+#include "pins_Einsy_1_0.h"
+#endif //MOTHERBOARD == BOARD_EINSY_1_0a
 
 #ifndef KNOWN_BOARD
 #error Unknown MOTHERBOARD value in configuration.h

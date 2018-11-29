@@ -23,19 +23,8 @@
 
 #include "planner.h"
 
-#if EXTRUDERS > 2
-  #define WRITE_E_STEP(v) { if(current_block->active_extruder == 2) { WRITE(E2_STEP_PIN, v); } else { if(current_block->active_extruder == 1) { WRITE(E1_STEP_PIN, v); } else { WRITE(E0_STEP_PIN, v); }}}
-  #define NORM_E_DIR() { if(current_block->active_extruder == 2) { WRITE(E2_DIR_PIN, !INVERT_E2_DIR); } else { if(current_block->active_extruder == 1) { WRITE(E1_DIR_PIN, !INVERT_E1_DIR); } else { WRITE(E0_DIR_PIN, !INVERT_E0_DIR); }}}
-  #define REV_E_DIR() { if(current_block->active_extruder == 2) { WRITE(E2_DIR_PIN, INVERT_E2_DIR); } else { if(current_block->active_extruder == 1) { WRITE(E1_DIR_PIN, INVERT_E1_DIR); } else { WRITE(E0_DIR_PIN, INVERT_E0_DIR); }}}
-#elif EXTRUDERS > 1
-  #define WRITE_E_STEP(v) { if(current_block->active_extruder == 1) { WRITE(E1_STEP_PIN, v); } else { WRITE(E0_STEP_PIN, v); }}
-  #define NORM_E_DIR() { if(current_block->active_extruder == 1) { WRITE(E1_DIR_PIN, !INVERT_E1_DIR); } else { WRITE(E0_DIR_PIN, !INVERT_E0_DIR); }}
-  #define REV_E_DIR() { if(current_block->active_extruder == 1) { WRITE(E1_DIR_PIN, INVERT_E1_DIR); } else { WRITE(E0_DIR_PIN, INVERT_E0_DIR); }}
-#else
-  #define WRITE_E_STEP(v) WRITE(E0_STEP_PIN, v)
-  #define NORM_E_DIR() WRITE(E0_DIR_PIN, !INVERT_E0_DIR)
-  #define REV_E_DIR() WRITE(E0_DIR_PIN, INVERT_E0_DIR)
-#endif
+#define ENABLE_STEPPER_DRIVER_INTERRUPT()  TIMSK1 |= (1<<OCIE1A)
+#define DISABLE_STEPPER_DRIVER_INTERRUPT() TIMSK1 &= ~(1<<OCIE1A)
 
 #ifdef ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED
 extern bool abort_on_endstop_hit;
@@ -71,11 +60,18 @@ void st_get_position_xy(long &x, long &y);
 float st_get_position_mm(uint8_t axis);
 
 
-// The stepper subsystem goes to sleep when it runs out of things to execute. Call this
-// to notify the subsystem that it is time to go to work.
-void st_wake_up();
+// Call this function just before re-enabling the stepper driver interrupt and the global interrupts
+// to avoid a stepper timer overflow.
+FORCE_INLINE void st_reset_timer()
+{
+  // Clear a possible pending interrupt on OCR1A overflow.
+  TIFR1 |= 1 << OCF1A;
+  // Reset the counter.
+  TCNT1 = 0;
+  // Wake up after 1ms from now.
+  OCR1A = 2000;
+}
 
-  
 void checkHitEndstops(); //call from somewhere to create an serial error message with the locations the endstops where hit, in case they were triggered
 bool endstops_hit_on_purpose(); //avoid creation of the message, i.e. after homing and before a routine call of checkHitEndstops();
 bool endstop_z_hit_on_purpose();
@@ -83,6 +79,7 @@ bool endstop_z_hit_on_purpose();
 
 bool enable_endstops(bool check); // Enable/disable endstop checking. Return the old value.
 bool enable_z_endstop(bool check);
+void invert_z_endstop(bool endstop_invert);
 
 void checkStepperErrors(); //Print errors detected by the stepper
 
@@ -93,14 +90,16 @@ extern bool x_min_endstop;
 extern bool x_max_endstop;
 extern bool y_min_endstop;
 extern bool y_max_endstop;
+extern volatile long count_position[NUM_AXIS];
 
 void quickStop();
-
+#if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
 void digitalPotWrite(int address, int value);
+#endif //defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
 void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2);
 void microstep_mode(uint8_t driver, uint8_t stepping);
-void digipot_init();
-void digipot_current(uint8_t driver, int current);
+void st_current_init();
+void st_current_set(uint8_t driver, int current);
 void microstep_init();
 void microstep_readings();
 

@@ -18,6 +18,7 @@ enum FirmwareRevisionFlavorType
 };
 
 extern bool show_upgrade_dialog_if_version_newer(const char *version_string);
+extern bool force_selftest_if_fw_version();
 
 extern void update_current_firmware_version_to_eeprom();
 
