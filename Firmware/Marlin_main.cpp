@@ -3073,13 +3073,13 @@ void gcode_M701()
 #endif //FSENSOR_QUALITY
 
 		lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
-		current_position[E_AXIS] += 40;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+		current_position[E_AXIS] += FILAMENT_LOAD_FAST_SEQUENCE_FIRST_HALF;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENT_LOAD_FAST_SEQUENCE_FEED_RATE, active_extruder); //fast sequence
 		st_synchronize();
 
 		if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
-		current_position[E_AXIS] += 30;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+		current_position[E_AXIS] += FILAMENT_LOAD_FAST_SEQUENCE_SECOND_HALF;
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENT_LOAD_FAST_SEQUENCE_FEED_RATE, active_extruder); //fast sequence
 		
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
