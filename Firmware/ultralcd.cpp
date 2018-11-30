@@ -3781,26 +3781,12 @@ static void prusa_stat_temperatures()
 
 static void prusa_stat_printinfo()
 {
-	SERIAL_ECHO("[TFU:");
-	SERIAL_ECHO(total_filament_used);
-	SERIAL_ECHO("][PCD:");
-	SERIAL_ECHO(itostr3(card.percentDone()));
-	SERIAL_ECHO("][FEM:");
-	SERIAL_ECHO(itostr3(feedmultiply));
-	SERIAL_ECHO("][FNM:");
-	SERIAL_ECHO(longFilenameOLD);
-	SERIAL_ECHO("][TIM:");
-	if (starttime != 0)
-	{
-		SERIAL_ECHO(millis() / 1000 - starttime / 1000);
-	}
-	else
-	{
-		SERIAL_ECHO(0);
-	}
-	SERIAL_ECHO("][FWR:");
-	SERIAL_ECHO(FW_VERSION);
-	SERIAL_ECHO("]");
+	unsigned long stat_time = 0;
+	if (starttime != 0) stat_time = (millis() / 1000 - starttime / 1000);
+
+	//printf_P(PSTR("long FNM: %s\n"), card.filename);
+
+	printf_P(PSTR("[TFU:%lu][PCD:%d][FEM:%d][FNM:%s][TIM:%lu][FWR:%s]"), total_filament_used, card.percentDone(), feedmultiply, longFilenameOLD, stat_time, FW_VERSION);
 }
 
 /*
