@@ -395,6 +395,7 @@ static int saved_fanSpeed = 0; //!< Print fan speed
 //! @}
 
 static int saved_feedmultiply_mm = 100;
+bool allow_M601 = true;
 
 //===========================================================================
 //=============================Routines======================================
@@ -6503,12 +6504,15 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     #endif //FILAMENTCHANGEENABLE
 	case 601: //! M601 - Pause print
 	{
-		lcd_pause_print();
+    if(allow_M601){
+      lcd_pause_print();
+      allow_M601 = false;
+    }
 	}
 	break;
 
 	case 602: { //! M602 - Resume print
-		lcd_resume_print();
+    allow_M601 = true;
 	}
 	break;
 
