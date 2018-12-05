@@ -306,7 +306,7 @@ void CardReader::getAbsFilename(char *t)
  *  so it is not possible to create on stack inside this function,
  *  as curDir would point to destroyed object.
  */
-void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
+void CardReader::diveSubfolder (const char *(&fileName), SdFile& dir)
 {
     curDir=&root;
     if (!fileName) return;
@@ -319,8 +319,8 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
         while (*dirname_start)
         {
             dirname_end = strchr(dirname_start, '/');
-            //SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-fileName));
-            //SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-fileName));
+            SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-fileName));
+            SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-fileName));
             if (dirname_end && dirname_end > dirname_start)
             {
                 const size_t maxLen = 12;
@@ -328,9 +328,9 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
                 subdirname[maxLen] = 0;
                 const size_t len = ((static_cast<size_t>(dirname_end-dirname_start))>maxLen) ? maxLen : (dirname_end-dirname_start);
                 strncpy(subdirname, dirname_start, len);
-                SERIAL_ECHOLN(subdirname);
 				subdirname[dirname_end - dirname_start] = '\0';
-                if (!dir.open(curDir, subdirname, O_READ))
+                SERIAL_ECHOLN(subdirname);
+				/*if (!dir.open(curDir, subdirname, O_READ))
                 {
                     SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
                     SERIAL_PROTOCOL(subdirname);
@@ -347,6 +347,9 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
                 }
 
                 curDir = &dir;
+				*/
+				chdir(subdirname);
+
                 dirname_start = dirname_end + 1;
             }
             else // the reminder after all /fsa/fdsa/ is the filename
@@ -354,6 +357,7 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
                 fileName = dirname_start;
                 //SERIAL_ECHOLN("remaider");
                 //SERIAL_ECHOLN(fname);
+				curDir = &workDir;
                 break;
             }
 
@@ -438,7 +442,7 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
   SdFile myDir;
   const char *fname=name;
   diveSubfolder(fname,myDir);
-
+  printf_P(PSTR("M File name:%s\n"), fname);
   if(read)
   {
     if (file.open(curDir, fname, O_READ)) 
@@ -451,9 +455,9 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
       sdpos = 0;
       
       SERIAL_PROTOCOLLNRPGM(_N("File selected"));////MSG_SD_FILE_SELECTED c=0 r=0
-
+	  getfilename(0, fname);
       lcd_setstatus(longFilename[0] ? longFilename : fname);
-	  lcd_setstatus("SD-PRINTING         ");
+	  //lcd_setstatus("SD-PRINTING         ");
     }
     else
     {
