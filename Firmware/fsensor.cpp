@@ -477,6 +477,18 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 //! If there is still no plausible signal from filament sensor plans M600 (Filament change).
 void fsensor_update(void)
 {
+#ifdef NEW_FILAMENT_SENSOR
+	if (digitalRead(A8) == 1)
+	{
+		fsensor_stop_and_save_print();
+		printf_P(PSTR("fsensor_update - M600\n"));
+		eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+		eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
+		enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
+		enquecommand_front_P((PSTR("M600")));
+		fsensor_watch_runout = false;
+	}
+#else //NEW_FILAMENT_SENSOR
 	if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
 	{
         bool autoload_enabled_tmp = fsensor_autoload_enabled;
@@ -527,6 +539,7 @@ void fsensor_update(void)
         fsensor_autoload_enabled = autoload_enabled_tmp;
 		fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
 	}
+#endif //NEW_FILAMENT_SENSOR
 }
 
 void fsensor_setup_interrupt(void)
