@@ -13,6 +13,7 @@
 #include "sound.h"
 #include "printers.h"
 #include <avr/pgmspace.h>
+#include "io_atmega2560.h"
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -36,6 +37,10 @@ bool mmu_ready = false;
 static int8_t mmu_state = 0;
 
 uint8_t mmu_cmd = 0;
+
+#ifdef MMU_IDLER_SENSOR_PIN
+uint8_t mmu_idl_sens = 0;
+#endif //MMU_IDLER_SENSOR_PIN
 
 uint8_t mmu_extruder = 0;
 
@@ -106,6 +111,10 @@ void mmu_init(void)
 	_delay_ms(10);                             //wait 10ms for sure
 	mmu_reset();                               //reset mmu (HW or SW), do not wait for response
 	mmu_state = -1;
+#ifdef MMU_IDLER_SENSOR_PIN
+	PIN_INP(MMU_IDLER_SENSOR_PIN); //input mode
+	PIN_SET(MMU_IDLER_SENSOR_PIN); //pullup
+#endif //MMU_IDLER_SENSOR_PIN
 }
 
 //mmu main loop - state machine processing
@@ -208,6 +217,9 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
 				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = 3; // wait for response
+#ifdef MMU_IDLER_SENSOR_PIN
+				mmu_idl_sens = 1; //enable idler sensor
+#endif //MMU_IDLER_SENSOR_PIN
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
 			{
@@ -286,6 +298,19 @@ void mmu_loop(void)
 		}
 		return;
 	case 3: //response to mmu commands
+#ifdef MMU_IDLER_SENSOR_PIN
+		if (mmu_idl_sens)
+		{
+			if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)
+			{
+				mmu_puts_P(PSTR("A\n")); //send 'abort' request
+				mmu_idl_sens = 0;
+				//printf_P(PSTR("MMU IDLER_SENSOR = 0 - ABORT\n"));
+			}
+			//else
+				//printf_P(PSTR("MMU IDLER_SENSOR = 1 - WAIT\n"));
+		}
+#endif //MMU_IDLER_SENSOR_PIN
 		if (mmu_rx_ok() > 0)
 		{
 #ifdef MMU_DEBUG
