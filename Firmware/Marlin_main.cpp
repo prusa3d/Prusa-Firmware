@@ -1009,7 +1009,7 @@ void setup()
 		no_response = true; //we need confirmation by recieving PRUSA thx
 		important_status = 8;
 		prusa_statistics(8);
-//		selectedSerialPort = 1;
+		selectedSerialPort = 1;
 #ifdef TMC2130
 		//increased extruder current (PFW363)
 		tmc2130_current_h[E_AXIS] = 36;
