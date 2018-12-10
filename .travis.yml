@@ -1,19 +1,28 @@
 ---
-dist: trusty
-before_install:
-  - sudo apt-get install -y ninja-build
-script:
-  - bash -x test.sh
-  - bash -x build.sh
-  - rm Firmware/Configuration_prusa.h
-  - cp Firmware/variants/1_75mm_MK25-RAMBo13a-E3Dv6full.h Firmware/Configuration_prusa.h
-  - bash -x build.sh
-  - rm Firmware/Configuration_prusa.h
-  - cp Firmware/variants/1_75mm_MK25-RAMBo10a-E3Dv6full.h Firmware/Configuration_prusa.h
-  - bash -x build.sh
-  - rm Firmware/Configuration_prusa.h
-  - cp Firmware/variants/1_75mm_MK2-RAMBo13a-E3Dv6full.h Firmware/Configuration_prusa.h
-  - bash -x build.sh
-  - rm Firmware/Configuration_prusa.h
-  - cp Firmware/variants/1_75mm_MK2-RAMBo10a-E3Dv6full.h Firmware/Configuration_prusa.h
-  - bash -x build.sh
+language: c
+matrix:
+  include:
+    - env: TEST=build
+      dist: trusty
+      before_install:
+        - sudo apt-get install -y ninja-build
+      script:
+        - bash -x test.sh
+        - bash -x build.sh
+        - rm Firmware/Configuration_prusa.h
+        - cp Firmware/variants/1_75mm_MK25-RAMBo13a-E3Dv6full.h Firmware/Configuration_prusa.h
+        - bash -x build.sh
+        - rm Firmware/Configuration_prusa.h
+        - cp Firmware/variants/1_75mm_MK25-RAMBo10a-E3Dv6full.h Firmware/Configuration_prusa.h
+        - bash -x build.sh
+        - rm Firmware/Configuration_prusa.h
+        - cp Firmware/variants/1_75mm_MK2-RAMBo13a-E3Dv6full.h Firmware/Configuration_prusa.h
+        - bash -x build.sh
+        - rm Firmware/Configuration_prusa.h
+        - cp Firmware/variants/1_75mm_MK2-RAMBo10a-E3Dv6full.h Firmware/Configuration_prusa.h
+        - bash -x build.sh
+    - env: TEST=shellcheck
+      sudo: false
+      services:
+        - docker
+      script: ./Tests/shellcheck.sh
