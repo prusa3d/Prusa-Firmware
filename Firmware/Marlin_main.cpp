@@ -974,6 +974,10 @@ void setup()
 	
 	ultralcd_init();
 
+#if (LCD_BL_PIN != -1)
+	analogWrite(LCD_BL_PIN, 255); //set full brightnes
+#endif //(LCD_BL_PIN != -1)
+
 	spi_init();
 
 	lcd_splash();
@@ -1809,6 +1813,15 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update(0);
+#ifdef NEW_FILAMENT_SENSOR
+	if (mcode_in_progress != 600 && !mmu_enabled) //M600 not in progress
+	{
+		if (IS_SD_PRINTING)
+		{
+			fsensor_update();
+		}
+	}
+#endif //NEW_FILAMENT_SENSOR
 #ifdef TMC2130
 	tmc2130_check_overtemp();
 	if (tmc2130_sg_crash)
