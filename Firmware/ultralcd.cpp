@@ -3558,6 +3558,7 @@ static void menu_show_end_stops() {
 void lcd_diag_show_end_stops()
 {
     lcd_clear();
+	lcd_consume_click();
     for (;;) {
         manage_heater();
         manage_inactivity(true);
@@ -4316,6 +4317,7 @@ void lcd_v2_calibration()
 		}
 		else {
 			lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
+			lcd_consume_click();
 			for (int i = 0; i < 20; i++) { //wait max. 2s
 				delay_keep_alive(100);
 				if (lcd_clicked()) {
@@ -4982,7 +4984,7 @@ void bowden_menu() {
 
 	}
 	enc_dif = lcd_encoder_diff;
-
+	lcd_consume_click();
 	while (1) {
 
 		manage_heater();
@@ -5089,6 +5091,7 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	char cursor_pos = 1;
 	int enc_dif = 0;
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
+	lcd_consume_click();
 	while (1) {
 		manage_heater();
 		manage_inactivity(true);
@@ -5244,7 +5247,7 @@ char reset_menu() {
 	lcd_clear();
 	lcd_set_cursor(0, 0);
 	lcd_print(">");
-
+	lcd_consume_click();
 	while (1) {		
 
 		for (int i = 0; i < 4; i++) {
@@ -5520,7 +5523,7 @@ unsigned char lcd_choose_color() {
 	lcd_print(">");
 
 	active_rows = items_no < 3 ? items_no : 3;
-
+	lcd_consume_click();
 	while (1) {
 		lcd_puts_at_P(0, 0, PSTR("Choose color:"));
 		for (int i = 0; i < active_rows; i++) {
