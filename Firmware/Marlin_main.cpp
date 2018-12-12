@@ -129,6 +129,7 @@
 #include "sound.h"
 
 #include "cmdqueue.h"
+#include "io_atmega2560.h"
 
 // Macros for bit masks
 #define BIT(b) (1<<(b))
@@ -6911,8 +6912,16 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
               mmu_command(MMU_CMD_T0 + tmp_extruder);
 
               manage_response(true, true);
-              mmu_command(MMU_CMD_C0);
-              mmu_extruder = tmp_extruder; //filament change is finished
+#ifdef MMU_IDLER_SENSOR_PIN
+			  for (int i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++) {
+				  if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) break;		
+				  mmu_command(MMU_CMD_C0);
+				  manage_response(true, true);
+			  }
+#else 
+			  mmu_command(MMU_CMD_C0);
+#endif //MMU_IDLER_SENSOR_PIN
+			  mmu_extruder = tmp_extruder; //filament change is finished
 
               if (load_to_nozzle)// for single material usage with mmu
               {

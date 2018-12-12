@@ -237,6 +237,9 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = 3;
+#ifdef MMU_IDLER_SENSOR_PIN
+				mmu_idl_sens = 1; //enable idler sensor
+#endif //MMU_IDLER_SENSOR_PIN
 			}
 			else if (mmu_cmd == MMU_CMD_U0)
 			{
@@ -303,6 +306,9 @@ void mmu_loop(void)
 		{
 			if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)
 			{
+#ifdef MMU_DEBUG
+				printf_P(PSTR("MMU <= 'A'\n"), mmu_finda);
+#endif //MMU_DEBUG  
 				mmu_puts_P(PSTR("A\n")); //send 'abort' request
 				mmu_idl_sens = 0;
 				//printf_P(PSTR("MMU IDLER_SENSOR = 0 - ABORT\n"));
