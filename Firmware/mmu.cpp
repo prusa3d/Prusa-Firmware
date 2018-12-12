@@ -459,6 +459,8 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 	{
 		  response = mmu_get_response(move); //wait for "ok" from mmu
 		  if (!response) { //no "ok" was received in reserved time frame, user will fix the issue on mmu unit
+			  eeprom_update_byte((uint8_t*)EEPROM_MMU_FAIL, eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) + 1);
+              eeprom_update_word((uint16_t*)EEPROM_MMU_FAIL_TOT, eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) + 1);
 			  if (!mmu_print_saved) { //first occurence, we are saving current position, park print head in certain position and disable nozzle heater
 				  if (lcd_update_enabled) {
 					  lcd_update_was_enabled = true;
@@ -1231,6 +1233,8 @@ void mmu_continue_loading()
 				  manage_response(true, true, MMU_LOAD_MOVE);
 			  }
 			  if (PIN_GET(MMU_IDLER_SENSOR_PIN) != 0) {
+				  eeprom_update_byte((uint8_t*)EEPROM_MMU_FAIL, eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) + 1);
+				  eeprom_update_word((uint16_t*)EEPROM_MMU_FAIL_TOT, eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) + 1);
 				  char cmd[3];
 				  //pause print, show error message and then repeat last T-code
 				  stop_and_save_print_to_ram(0, 0);

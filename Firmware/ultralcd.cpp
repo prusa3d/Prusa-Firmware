@@ -38,7 +38,7 @@
 #include "mmu.h"
 
 #include "static_assert.h"
-
+#include "io_atmega2560.h"
 
 extern bool fans_check_enabled;
 
@@ -1955,7 +1955,7 @@ static void lcd_menu_fails_stats_print()
 	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
 	menu_back_if_clicked_fb();
 }
-/*
+
 static void lcd_menu_fails_stats_mmu_print()
 {
 //01234567890123456789
@@ -1965,33 +1965,30 @@ static void lcd_menu_fails_stats_mmu_print()
 // Crash  X 000  Y 000
 //////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
-    uint8_t power = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
-    uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
-    uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
-    uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
+    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
+    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
 //	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3)), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
 	menu_back_if_clicked_fb();
 }
 
 static void lcd_menu_fails_stats_mmu_total()
 {
 //01234567890123456789
-//Total failures
+//Last print failures
 // Power failures  000
 // Filam. runouts  000
 // Crash  X 000  Y 000
 //////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
-    uint16_t power = eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
-    uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
-    uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
-    uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
-//	lcd_printf_P(PSTR(ESC_H(0,0) "Total failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S  X %-3d  Y %-3d"), _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
+    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
+//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3)), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
 	menu_back_if_clicked_fb();
 }
-*/
+
+
 /**
  * @brief Open fail statistics menu
  *
@@ -2007,6 +2004,16 @@ static void lcd_menu_fails_stats()
 	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_total);
 	MENU_END();
 }
+
+static void lcd_menu_fails_stats_mmu()
+{
+	MENU_BEGIN();
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_mmu_print);
+	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_mmu_total);
+	MENU_END();
+}
+
 #elif defined(FILAMENT_SENSOR)
 /**
  * @brief Print last print and total filament run outs
@@ -3626,6 +3633,27 @@ static void menu_show_pinda_state()
 {
 lcd_timeoutToStatus.stop();
 lcd_show_pinda_state();
+if(LCD_CLICKED)
+     {
+     lcd_timeoutToStatus.start();
+     menu_back();
+     }
+}
+#endif // defined TMC2130
+
+#ifdef TMC2130
+static void lcd_show_idler_state()
+{
+lcd_set_cursor(0, 0);
+lcd_puts_P((PSTR("Idler state")));
+lcd_set_cursor(0, 2);
+lcd_puts_P((PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)?(PSTR("ON")):(PSTR("OFF"))); // !!! both strings must have same length (due to dynamic refreshing)
+}
+
+static void lcd_menu_show_idler_state()
+{
+lcd_timeoutToStatus.stop();
+lcd_show_idler_state();
 if(LCD_CLICKED)
      {
      lcd_timeoutToStatus.start();
@@ -5900,7 +5928,10 @@ static void lcd_main_menu()
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
   MENU_ITEM_SUBMENU_P(_i("Fail stats"), lcd_menu_fails_stats);
 #endif
-
+  if (mmu_enabled) {
+	  MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);
+	  MENU_ITEM_SUBMENU_P(_i("Show idler state"), lcd_menu_show_idler_state);
+  }
   MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
 #ifdef LCD_TEST
     MENU_ITEM_SUBMENU_P(_i("W25x20CL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
