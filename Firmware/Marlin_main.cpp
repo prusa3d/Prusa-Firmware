@@ -6857,8 +6857,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
   //! if extruder is "?", open menu to let the user select extruder/filament
   //!
   //!  For MMU_V2:
-  //! @n T<n> Gcode to extrude must follow immediately to load to extruder wheels
-  //! @n T? Gcode to extrude doesn't have to follow, load to extruder wheels is done automatically
+  //! @n T<n> Gcode to extrude at least 38.10 mm at feedrate 19.02 mm/s must follow immediately to load to extruder wheels.
+  //! @n T? Gcode to extrude shouldn't have to follow, load to extruder wheels is done automatically
+  //! @n Tx Same as T?, except nozzle doesn't have to be preheated. Tc must be placed after extruder nozzle is preheated to finish filament load.
+  //! @n Tc Load to nozzle after filament was prepared by Tc and extruder nozzle is already heated.
   else if(code_seen('T'))
   {
       int index;
