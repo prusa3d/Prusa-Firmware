@@ -6875,13 +6875,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (mmu_enabled)
 		{
 			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
-			if (tmp_extruder == mmu_extruder) {
+			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) {
 				printf_P(PSTR("Duplicit T-code ignored.\n"));
 				return; //dont execute the same T-code twice in a row
 			}
 			st_synchronize();
 			mmu_command(MMU_CMD_T0 + tmp_extruder);
-			manage_response(true, true);
+			manage_response(true, true, MMU_TCODE_MOVE);
 		}
 	  }
 	  else if (*(strchr_pointer + index) == 'c') { //load to from bondtech gears to nozzle (nozzle should be preheated)
@@ -6913,13 +6913,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
           if (mmu_enabled)
           {
-              if (tmp_extruder == mmu_extruder) {
+              if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) {
                   printf_P(PSTR("Duplicit T-code ignored.\n"));
                   return; //dont execute the same T-code twice in a row
               }
               mmu_command(MMU_CMD_T0 + tmp_extruder);
 
-              manage_response(true, true);
+			  manage_response(true, true, MMU_TCODE_MOVE);
 			  mmu_continue_loading();
 			  mmu_extruder = tmp_extruder; //filament change is finished
 

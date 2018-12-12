@@ -4,6 +4,7 @@
 
 
 extern bool mmu_enabled;
+extern bool mmu_fil_loaded;
 
 extern uint8_t mmu_extruder;
 
@@ -15,6 +16,13 @@ extern int16_t mmu_version;
 extern int16_t mmu_buildnr;
 
 #define MMU_FILAMENT_UNKNOWN 255
+
+#define MMU_UNLOAD_MOVE 1
+#define MMU_LOAD_MOVE 2
+#define MMU_TCODE_MOVE 3
+
+#define MMU_LOAD_FEEDRATE 19.02f //mm/s
+#define MMU_LOAD_TIME 1 //1000ms is load time for shortest allowed PTFE tubing and maximum loading speed
 
 #define MMU_CMD_NONE 0
 #define MMU_CMD_T0   0x10
@@ -55,9 +63,9 @@ extern int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament);
 
 extern void mmu_command(uint8_t cmd);
 
-extern bool mmu_get_response(void);
+extern bool mmu_get_response(uint8_t move = 0);
 
-extern void manage_response(bool move_axes, bool turn_off_nozzle);
+extern void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move = 0);
 
 extern void mmu_load_to_nozzle();
 
