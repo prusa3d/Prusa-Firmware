@@ -1233,8 +1233,8 @@ void mmu_continue_loading()
 				  manage_response(true, true, MMU_LOAD_MOVE);
 			  }
 			  if (PIN_GET(MMU_IDLER_SENSOR_PIN) != 0) {
-				  eeprom_update_byte((uint8_t*)EEPROM_MMU_FAIL, eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) + 1);
-				  eeprom_update_word((uint16_t*)EEPROM_MMU_FAIL_TOT, eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) + 1);
+				  eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) + 1);
+				  eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) + 1);
 				  char cmd[3];
 				  //pause print, show error message and then repeat last T-code
 				  stop_and_save_print_to_ram(0, 0);
