@@ -42,10 +42,10 @@ uint8_t mmu_cmd = 0;
 uint8_t mmu_idl_sens = 0;
 #endif //MMU_IDLER_SENSOR_PIN
 
-uint8_t mmu_extruder = 0;
+uint8_t mmu_extruder = MMU_FILAMENT_UNKNOWN;
 
 //! This variable probably has no meaning and is planed to be removed
-uint8_t tmp_extruder = 0;
+uint8_t tmp_extruder = MMU_FILAMENT_UNKNOWN;
 
 int8_t mmu_finda = -1;
 
@@ -307,7 +307,7 @@ void mmu_loop(void)
 			if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)
 			{
 #ifdef MMU_DEBUG
-				printf_P(PSTR("MMU <= 'A'\n"), mmu_finda);
+				printf_P(PSTR("MMU <= 'A'\n"));
 #endif //MMU_DEBUG  
 				mmu_puts_P(PSTR("A\n")); //send 'abort' request
 				mmu_idl_sens = 0;
@@ -619,7 +619,7 @@ void mmu_M600_load_filament(bool automatic)
 		  mmu_command(MMU_CMD_T0 + tmp_extruder);
 
 		  manage_response(false, true);
-		  mmu_command(MMU_CMD_C0);
+		  mmu_continue_loading();
     	  mmu_extruder = tmp_extruder; //filament change is finished
 		  mmu_load_to_nozzle();
 		  load_filament_final_feed();
@@ -822,7 +822,8 @@ void extr_unload()
 		lcd_clear();
 		lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
 		lcd_print(" ");
-		lcd_print(mmu_extruder + 1);
+		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print("?");
+		else lcd_print(mmu_extruder + 1);
 
 		filament_ramming();
 
@@ -1125,7 +1126,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
 	lcd_print(tmp_extruder + 1);
 	mmu_command(MMU_CMD_T0 + tmp_extruder);
 	manage_response(true, true);
-	mmu_command(MMU_CMD_C0);
+	mmu_continue_loading();
 	mmu_extruder = tmp_extruder; //filament change is finished
 	mmu_load_to_nozzle();
 	load_filament_final_feed();
@@ -1180,4 +1181,20 @@ void mmu_eject_filament(uint8_t filament, bool recover)
 	{
 		puts_P(PSTR("Filament nr out of range!"));
 	}
+}
+
+void mmu_continue_loading() 
+{
+#ifdef MMU_IDLER_SENSOR_PIN
+			  for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++) {
+#ifdef MMU_DEBUG
+				  printf_P(PSTR("Additional load attempt nr. %d\n"), i);
+#endif // MMU_DEBUG
+				  if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) break;		
+				  mmu_command(MMU_CMD_C0);
+				  manage_response(true, true);
+			  }
+#else 
+			  mmu_command(MMU_CMD_C0);
+#endif //MMU_IDLER_SENSOR_PIN
 }

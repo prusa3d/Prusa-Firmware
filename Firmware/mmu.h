@@ -14,6 +14,7 @@ extern int8_t mmu_finda;
 extern int16_t mmu_version;
 extern int16_t mmu_buildnr;
 
+#define MMU_FILAMENT_UNKNOWN 255
 
 #define MMU_CMD_NONE 0
 #define MMU_CMD_T0   0x10
@@ -103,3 +104,4 @@ extern void mmu_eject_fil_1();
 extern void mmu_eject_fil_2();
 extern void mmu_eject_fil_3();
 extern void mmu_eject_fil_4();
+extern void mmu_continue_loading();

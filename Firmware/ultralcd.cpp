@@ -537,10 +537,15 @@ void lcdui_print_percent_done(void)
 void lcdui_print_extruder(void)
 {
 	int chars = 0;
-	if (mmu_extruder == tmp_extruder)
-		chars = lcd_printf_P(_N(" F%u"), mmu_extruder+1);
+	if (mmu_extruder == tmp_extruder) {
+		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) chars = lcd_printf_P(_N(" F?"));
+		else chars = lcd_printf_P(_N(" F%u"), mmu_extruder + 1);
+	}
 	else
-		chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder+1, tmp_extruder+1);
+	{
+		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) chars = lcd_printf_P(_N(" ?>%u"), tmp_extruder + 1);
+		else chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder + 1, tmp_extruder + 1);
+	}
 	lcd_space(5 - chars);
 }
 

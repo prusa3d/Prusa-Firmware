@@ -6875,6 +6875,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (mmu_enabled)
 		{
 			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
+			if (tmp_extruder == mmu_extruder) {
+				printf_P(PSTR("Duplicit T-code ignored.\n"));
+				return; //dont execute the same T-code twice in a row
+			}
 			st_synchronize();
 			mmu_command(MMU_CMD_T0 + tmp_extruder);
 			manage_response(true, true);
@@ -6884,7 +6888,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	  	if (mmu_enabled) 
 		{
 			st_synchronize();
-			mmu_command(MMU_CMD_C0);
+			mmu_continue_loading();
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
 		}
@@ -6909,18 +6913,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
           if (mmu_enabled)
           {
+              if (tmp_extruder == mmu_extruder) {
+                  printf_P(PSTR("Duplicit T-code ignored.\n"));
+                  return; //dont execute the same T-code twice in a row
+              }
               mmu_command(MMU_CMD_T0 + tmp_extruder);
 
               manage_response(true, true);
-#ifdef MMU_IDLER_SENSOR_PIN
-			  for (int i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++) {
-				  if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) break;		
-				  mmu_command(MMU_CMD_C0);
-				  manage_response(true, true);
-			  }
-#else 
-			  mmu_command(MMU_CMD_C0);
-#endif //MMU_IDLER_SENSOR_PIN
+			  mmu_continue_loading();
 			  mmu_extruder = tmp_extruder; //filament change is finished
 
               if (load_to_nozzle)// for single material usage with mmu
