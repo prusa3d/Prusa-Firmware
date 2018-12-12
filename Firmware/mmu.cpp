@@ -857,7 +857,7 @@ void extr_unload()
 		lcd_clear();
 		lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
 		lcd_print(" ");
-		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print("?");
+		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
 		else lcd_print(mmu_extruder + 1);
 
 		filament_ramming();
@@ -1231,16 +1231,26 @@ void mmu_continue_loading()
 				  manage_response(true, true, MMU_LOAD_MOVE);
 			  }
 			  if (PIN_GET(MMU_IDLER_SENSOR_PIN) != 0) {
+				  char cmd[3];
 				  //pause print, show error message and then repeat last T-code
-				  if (card.sdprinting) {
-					  lcd_pause_print();
-				  }
-				  else 
-				  {
-					  setTargetHotend0(0);
-					  SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
-				  }
-				  LCD_ALERTMESSAGEPGM("MMU Load Error");
+				  stop_and_save_print_to_ram(0, 0);
+
+				  //lift z
+				  current_position[Z_AXIS] += Z_PAUSE_LIFT;
+				  if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
+				  st_synchronize();
+			  					  
+				  //Move XY to side
+				  current_position[X_AXIS] = X_PAUSE_POS;
+				  current_position[Y_AXIS] = Y_PAUSE_POS;
+				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+				  st_synchronize();
+				  //set nozzle target temperature to 0
+				  setAllTargetHotends(0);
+				  lcd_show_fullscreen_message_and_wait_P(_i("MMU load failed, fix the issue and pres the knob."));
+				  mmu_fil_loaded = false; //so we can retry same T-code again
+				  restore_print_from_ram_and_continue(0);
 			  }
 #else 
 			  mmu_command(MMU_CMD_C0);
