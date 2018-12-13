@@ -3647,7 +3647,7 @@ static void lcd_show_idler_state()
 lcd_set_cursor(0, 0);
 lcd_puts_P((PSTR("Idler state")));
 lcd_set_cursor(0, 2);
-lcd_puts_P((PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)?(PSTR("ON")):(PSTR("OFF"))); // !!! both strings must have same length (due to dynamic refreshing)
+lcd_puts_P((PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)?(PSTR("ON ")):(PSTR("OFF"))); // !!! both strings must have same length (due to dynamic refreshing)
 }
 
 static void lcd_menu_show_idler_state()
