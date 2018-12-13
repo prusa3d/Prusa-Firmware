@@ -1252,7 +1252,7 @@ void mmu_continue_loading()
 				  st_synchronize();
 				  //set nozzle target temperature to 0
 				  setAllTargetHotends(0);
-				  lcd_show_fullscreen_message_and_wait_P(_i("MMU load failed, fix the issue and pres the knob."));
+				  lcd_show_fullscreen_message_and_wait_P(_i("MMU load failed, fix the issue and press the knob."));
 				  mmu_fil_loaded = false; //so we can retry same T-code again
 				  restore_print_from_ram_and_continue(0);
 			  }
