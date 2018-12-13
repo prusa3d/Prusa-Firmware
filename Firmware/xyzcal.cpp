@@ -32,8 +32,6 @@
 
 #define _PI 3.14159265F
 
-extern volatile long count_position[NUM_AXIS];
-
 uint8_t check_pinda_0();
 uint8_t check_pinda_1();
 void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de);
@@ -87,7 +85,7 @@ uint8_t check_pinda_1()
 
 uint8_t xyzcal_dm = 0;
 
-void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de)
+void xyzcal_update_pos(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t)
 {
 //	DBG(_n("xyzcal_update_pos dx=%d dy=%d dz=%d dir=%02x\n"), dx, dy, dz, xyzcal_dm);
 	if (xyzcal_dm&1) count_position[0] -= dx; else count_position[0] += dx;
@@ -108,11 +106,9 @@ uint16_t xyzcal_sm4_ac2 = (uint32_t)xyzcal_sm4_ac * 1024 / 10000;
 //float xyzcal_sm4_vm = 10000;
 #endif //SM4_ACCEL_TEST
 
+#ifdef SM4_ACCEL_TEST
 uint16_t xyzcal_calc_delay(uint16_t nd, uint16_t dd)
 {
-	return xyzcal_sm4_delay;
-#ifdef SM4_ACCEL_TEST
-
 	uint16_t del_us = 0;
 	if (xyzcal_sm4_v & 0xf000) //>=4096
 	{
@@ -138,9 +134,13 @@ uint16_t xyzcal_calc_delay(uint16_t nd, uint16_t dd)
 //	return xyzcal_sm4_delay;
 //	DBG(_n("xyzcal_calc_delay nd=%d dd=%d v=%d  del_us=%d\n"), nd, dd, xyzcal_sm4_v, del_us);
 	return 0;
-#endif //SM4_ACCEL_TEST
 }
-
+#else //SM4_ACCEL_TEST
+uint16_t xyzcal_calc_delay(uint16_t, uint16_t)
+{
+    return xyzcal_sm4_delay;
+}
+#endif //SM4_ACCEL_TEST
 
 bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_t check_pinda)
 {
@@ -285,7 +285,7 @@ void xyzcal_scan_pixels_32x32(int16_t cx, int16_t cy, int16_t min_z, int16_t max
 	xyzcal_lineXYZ_to(cx, cy, z, 2*delay_us, 0);
 	for (uint8_t r = 0; r < 32; r++)
 	{
-		int8_t _pinda = _PINDA;
+//		int8_t _pinda = _PINDA;
 		xyzcal_lineXYZ_to((r&1)?(cx+1024):(cx-1024), cy - 1024 + r*64, z, 2*delay_us, 0);
 		xyzcal_lineXYZ_to(_X, _Y, min_z, delay_us, 1);
 		xyzcal_lineXYZ_to(_X, _Y, max_z, delay_us, -1);
@@ -330,7 +330,7 @@ void xyzcal_scan_pixels_32x32(int16_t cx, int16_t cy, int16_t min_z, int16_t max
 				}
 				sm4_do_step(X_AXIS_MASK);
 				delayMicroseconds(600);
-				_pinda = pinda;
+//				_pinda = pinda;
 			}
 			sum >>= 6; //div 64
 			if (z_sum < 0)

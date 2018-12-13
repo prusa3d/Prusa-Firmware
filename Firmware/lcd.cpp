@@ -56,7 +56,7 @@
 #define LCD_5x8DOTS 0x00
 
 
-FILE _lcdout = {0};
+FILE _lcdout; // = {0}; Global variable is always zero initialized, no need to explicitly state that.
 
 
 uint8_t lcd_rs_pin; // LOW: command.  HIGH: character.
@@ -157,7 +157,7 @@ uint8_t lcd_write(uint8_t value)
 	return 1; // assume sucess
 }
 
-void lcd_begin(uint8_t cols, uint8_t lines, uint8_t dotsize, uint8_t clear)
+static void lcd_begin(uint8_t lines, uint8_t dotsize, uint8_t clear)
 {
 	if (lines > 1) lcd_displayfunction |= LCD_2LINE;
 	lcd_numlines = lines;
@@ -221,7 +221,7 @@ void lcd_begin(uint8_t cols, uint8_t lines, uint8_t dotsize, uint8_t clear)
 	lcd_escape[0] = 0;
 }
 
-int lcd_putchar(char c, FILE *stream)
+int lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
 	return 0;
@@ -247,20 +247,20 @@ void lcd_init(void)
 	pinMode(lcd_enable_pin, OUTPUT);
 	if (fourbitmode) lcd_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
 	else lcd_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
-	lcd_begin(LCD_WIDTH, LCD_HEIGHT, LCD_5x8DOTS, 1);
+	lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 1);
 	//lcd_clear();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 }
 
 void lcd_refresh(void)
 {
-    lcd_begin(LCD_WIDTH, LCD_HEIGHT, LCD_5x8DOTS, 1);
+    lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 1);
     lcd_set_custom_characters();
 }
 
 void lcd_refresh_noclear(void)
 {
-    lcd_begin(LCD_WIDTH, LCD_HEIGHT, LCD_5x8DOTS, 0);
+    lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 0);
     lcd_set_custom_characters();
 }
 
@@ -506,7 +506,6 @@ uint8_t lcd_escape_write(uint8_t chr)
 		break;
 	}
 	escape_cnt = 0; // reset escape
-end:
 	return 1; // assume sucess
 }
 
@@ -671,7 +670,7 @@ uint8_t lcd_update_enabled = 1;
 uint32_t lcd_next_update_millis = 0;
 uint8_t lcd_status_update_delay = 0;
 
-uint8_t lcd_long_press_active = 0;
+
 
 lcd_longpress_func_t lcd_longpress_func = 0;
 
@@ -684,10 +683,22 @@ ShortTimer longPressTimer;
 LongTimer lcd_timeoutToStatus;
 
 
+//! @brief Was button clicked?
+//!
+//! Consume click event, following call would return 0.
+//! See #LCD_CLICKED macro for version not consuming the event.
+//!
+//! Generally is used in modal dialogs.
+//!
+//! @retval 0 not clicked
+//! @retval nonzero clicked
 uint8_t lcd_clicked(void)
 {
 	bool clicked = LCD_CLICKED;
-	if(clicked) lcd_button_pressed = 0;
+	if(clicked)
+	{
+	    lcd_consume_click();
+	}
     return clicked;
 }
 
@@ -695,7 +706,7 @@ void lcd_beeper_quick_feedback(void)
 {
 	SET_OUTPUT(BEEPER);
 //-//
-Sound_MakeSound(e_SOUND_CLASS_Echo,e_SOUND_TYPE_ButtonEcho);
+Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 /*
 	for(int8_t i = 0; i < 10; i++)
 	{
@@ -710,7 +721,7 @@ Sound_MakeSound(e_SOUND_CLASS_Echo,e_SOUND_TYPE_ButtonEcho);
 void lcd_quick_feedback(void)
 {
   lcd_draw_update = 2;
-  lcd_button_pressed = false;  
+  lcd_button_pressed = false;
   lcd_beeper_quick_feedback();
 }
 
@@ -727,7 +738,6 @@ void lcd_update(uint8_t lcdDrawUpdateOverride)
 		lcd_draw_update = lcdDrawUpdateOverride;
 	if (!lcd_update_enabled)
 		return;
-	lcd_buttons_update();
 	if (lcd_lcdupdate_func)
 		lcd_lcdupdate_func();
 }
@@ -758,60 +768,48 @@ void lcd_update_enable(uint8_t enabled)
 	}
 }
 
-extern LongTimer safetyTimer;
 void lcd_buttons_update(void)
 {
-	static bool _lock = false;
-	if (_lock) return;
-	_lock = true;
+    static uint8_t lcd_long_press_active = 0;
 	uint8_t newbutton = 0;
 	if (READ(BTN_EN1) == 0)  newbutton |= EN_A;
 	if (READ(BTN_EN2) == 0)  newbutton |= EN_B;
-	if (lcd_update_enabled)
-	{ //if we are in non-modal mode, long press can be used and short press triggers with button release
-		if (READ(BTN_ENC) == 0)
-		{ //button is pressed	  
-			lcd_timeoutToStatus.start();
-			if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
-				buttonBlanking.start();
-		        safetyTimer.start();
-				if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
-				{
-					longPressTimer.start();
-					lcd_button_pressed = 1;
-				}
-				else
-				{
-					if (longPressTimer.expired(LONG_PRESS_TIME))
-					{
-						lcd_long_press_active = 1;
-						if (lcd_longpress_func)
-							lcd_longpress_func();
-					}
-				}
-			}
-		}
-		else
-		{ //button not pressed
-			if (lcd_button_pressed)
-			{ //button was released
-				buttonBlanking.start();
-				if (lcd_long_press_active == 0)
-				{ //button released before long press gets activated
-					newbutton |= EN_C;
-				}
-				//else if (menu_menu == lcd_move_z) lcd_quick_feedback(); 
-				//lcd_button_pressed is set back to false via lcd_quick_feedback function
-			}
-			else
-				lcd_long_press_active = 0;
-		}
-	}
-	else
-	{ //we are in modal mode
-		if (READ(BTN_ENC) == 0)
-			newbutton |= EN_C; 
-	}
+
+    if (READ(BTN_ENC) == 0)
+    { //button is pressed
+        lcd_timeoutToStatus.start();
+        if (!buttonBlanking.running() || buttonBlanking.expired(BUTTON_BLANKING_TIME)) {
+            buttonBlanking.start();
+            safetyTimer.start();
+            if ((lcd_button_pressed == 0) && (lcd_long_press_active == 0))
+            {
+                longPressTimer.start();
+                lcd_button_pressed = 1;
+            }
+            else if (longPressTimer.expired(LONG_PRESS_TIME))
+            {
+                lcd_long_press_active = 1;
+                //long press is not possible in modal mode
+                if (lcd_longpress_func && lcd_update_enabled)
+                    lcd_longpress_func();
+            }
+        }
+    }
+    else
+    { //button not pressed
+        if (lcd_button_pressed)
+        { //button was released
+            buttonBlanking.start();
+            if (lcd_long_press_active == 0)
+            { //button released before long press gets activated
+                newbutton |= EN_C;
+            }
+            //else if (menu_menu == lcd_move_z) lcd_quick_feedback();
+            //lcd_button_pressed is set back to false via lcd_quick_feedback function
+        }
+        else
+            lcd_long_press_active = 0;
+    }
 
 	lcd_buttons = newbutton;
 	//manage encoder rotation
@@ -849,7 +847,6 @@ void lcd_buttons_update(void)
 		}
 	}
 	lcd_encoder_bits = enc;
-	_lock = false;
 }
 
 

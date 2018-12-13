@@ -42,6 +42,7 @@ int fsensor_counter = 0; //counter for e-steps
 #endif //FILAMENT_SENSOR
 
 #include "mmu.h"
+#include "ConfigurationStore.h"
 
 #ifdef DEBUG_STACK_MONITOR
 uint16_t SP_min = 0x21FF;
@@ -105,8 +106,6 @@ static bool z_endstop_invert = false;
 
 volatile long count_position[NUM_AXIS] = { 0, 0, 0, 0};
 volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
-
-uint8_t LastStepMask = 0;
 
 #ifdef LIN_ADVANCE
 
@@ -229,18 +228,18 @@ void checkHitEndstops()
 {
  if( endstop_x_hit || endstop_y_hit || endstop_z_hit) {
    SERIAL_ECHO_START;
-   SERIAL_ECHORPGM(_T(MSG_ENDSTOPS_HIT));
+   SERIAL_ECHORPGM(MSG_ENDSTOPS_HIT);
    if(endstop_x_hit) {
-     SERIAL_ECHOPAIR(" X:",(float)endstops_trigsteps[X_AXIS]/axis_steps_per_unit[X_AXIS]);
-//     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT), PSTR("X")));
+     SERIAL_ECHOPAIR(" X:",(float)endstops_trigsteps[X_AXIS]/cs.axis_steps_per_unit[X_AXIS]);
+//     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT), PSTR("X")));
    }
    if(endstop_y_hit) {
-     SERIAL_ECHOPAIR(" Y:",(float)endstops_trigsteps[Y_AXIS]/axis_steps_per_unit[Y_AXIS]);
-//     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT), PSTR("Y")));
+     SERIAL_ECHOPAIR(" Y:",(float)endstops_trigsteps[Y_AXIS]/cs.axis_steps_per_unit[Y_AXIS]);
+//     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT), PSTR("Y")));
    }
    if(endstop_z_hit) {
-     SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/axis_steps_per_unit[Z_AXIS]);
-//     LCD_MESSAGERPGM(CAT2(_T(MSG_ENDSTOPS_HIT),PSTR("Z")));
+     SERIAL_ECHOPAIR(" Z:",(float)endstops_trigsteps[Z_AXIS]/cs.axis_steps_per_unit[Z_AXIS]);
+//     LCD_MESSAGERPGM(CAT2((MSG_ENDSTOPS_HIT),PSTR("Z")));
    }
    SERIAL_ECHOLN("");
    endstop_x_hit=false;
@@ -344,7 +343,7 @@ FORCE_INLINE unsigned short calc_timer(uint16_t step_rate) {
     timer = (unsigned short)pgm_read_word_near(table_address);
     timer -= (((unsigned short)pgm_read_word_near(table_address+2) * (unsigned char)(step_rate & 0x0007))>>3);
   }
-  if(timer < 100) { timer = 100; MYSERIAL.print(_i("Steprate too high: ")); MYSERIAL.println(step_rate); }//(20kHz this should never happen)////MSG_STEPPER_TOO_HIGH c=0 r=0
+  if(timer < 100) { timer = 100; MYSERIAL.print(_N("Steprate too high: ")); MYSERIAL.println(step_rate); }//(20kHz this should never happen)////MSG_STEPPER_TOO_HIGH c=0 r=0
   return timer;
 }
 
@@ -734,7 +733,6 @@ FORCE_INLINE void stepper_tick_lowres()
     counter_x.lo += current_block->steps_x.lo;
     if (counter_x.lo > 0) {
       WRITE_NC(X_STEP_PIN, !INVERT_X_STEP_PIN);
-      LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
       WRITE_NC(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
@@ -749,7 +747,6 @@ FORCE_INLINE void stepper_tick_lowres()
     counter_y.lo += current_block->steps_y.lo;
     if (counter_y.lo > 0) {
       WRITE_NC(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
-      LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
       WRITE_NC(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
@@ -764,7 +761,6 @@ FORCE_INLINE void stepper_tick_lowres()
     counter_z.lo += current_block->steps_z.lo;
     if (counter_z.lo > 0) {
       WRITE_NC(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
-      LastStepMask |= Z_AXIS_MASK;
       counter_z.lo -= current_block->step_event_count.lo;
       count_position[Z_AXIS]+=count_direction[Z_AXIS];
       WRITE_NC(Z_STEP_PIN, INVERT_Z_STEP_PIN);
@@ -799,7 +795,6 @@ FORCE_INLINE void stepper_tick_highres()
     counter_x.wide += current_block->steps_x.wide;
     if (counter_x.wide > 0) {
       WRITE_NC(X_STEP_PIN, !INVERT_X_STEP_PIN);
-      LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
       WRITE_NC(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
@@ -814,7 +809,6 @@ FORCE_INLINE void stepper_tick_highres()
     counter_y.wide += current_block->steps_y.wide;
     if (counter_y.wide > 0) {
       WRITE_NC(Y_STEP_PIN, !INVERT_Y_STEP_PIN);
-      LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
       WRITE_NC(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
@@ -829,7 +823,6 @@ FORCE_INLINE void stepper_tick_highres()
     counter_z.wide += current_block->steps_z.wide;
     if (counter_z.wide > 0) {
       WRITE_NC(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
-      LastStepMask |= Z_AXIS_MASK;
       counter_z.wide -= current_block->step_event_count.wide;
       count_position[Z_AXIS]+=count_direction[Z_AXIS];
       WRITE_NC(Z_STEP_PIN, INVERT_Z_STEP_PIN);
@@ -866,8 +859,6 @@ FORCE_INLINE void isr() {
   // If there is no current block, attempt to pop one from the buffer
   if (current_block == NULL)
     stepper_next_block();
-
-	LastStepMask = 0;
 
   if (current_block != NULL) 
   {
@@ -1112,7 +1103,7 @@ FORCE_INLINE void isr() {
   }
 
 #ifdef TMC2130
-	tmc2130_st_isr(LastStepMask);
+	tmc2130_st_isr();
 #endif //TMC2130
 
   //WRITE_NC(LOGIC_ANALYZER_CH0, false);
@@ -1424,7 +1415,7 @@ void st_get_position_xy(long &x, long &y)
 float st_get_position_mm(uint8_t axis)
 {
   float steper_position_in_steps = st_get_position(axis);
-  return steper_position_in_steps / axis_steps_per_unit[axis];
+  return steper_position_in_steps / cs.axis_steps_per_unit[axis];
 }
 
 
@@ -1467,13 +1458,10 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(X_STEP_PIN, !INVERT_X_STEP_PIN); 
-	LastStepMask |= X_AXIS_MASK;
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
-    {
-    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
-    }
+    delayMicroseconds(1);
     WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE(DEBUG_XSTEP_DUP_PIN,INVERT_X_STEP_PIN);
@@ -1493,13 +1481,10 @@ void babystep(const uint8_t axis,const bool direction)
     
     //perform step 
     WRITE(Y_STEP_PIN, !INVERT_Y_STEP_PIN); 
-	LastStepMask |= Y_AXIS_MASK;
 #ifdef DEBUG_YSTEP_DUP_PIN
     WRITE(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
-    {
-    volatile float x=1./float(axis+1)/float(axis+2); //wait a tiny bit
-    }
+    delayMicroseconds(1);
     WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
 #ifdef DEBUG_YSTEP_DUP_PIN
     WRITE(DEBUG_YSTEP_DUP_PIN,INVERT_Y_STEP_PIN);
@@ -1522,14 +1507,10 @@ void babystep(const uint8_t axis,const bool direction)
     #endif
     //perform step 
     WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN); 
-	LastStepMask |= Z_AXIS_MASK;
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
     #endif
-    //wait a tiny bit
-    {
-    volatile float x=1./float(axis+1); //absolutely useless
-    }
+    delayMicroseconds(1);
     WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, INVERT_Z_STEP_PIN);
@@ -1549,16 +1530,16 @@ void babystep(const uint8_t axis,const bool direction)
 }
 #endif //BABYSTEPPING
 
+#if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
 void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl example
 {
-  #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
     digitalWrite(DIGIPOTSS_PIN,LOW); // take the SS pin low to select the chip
     SPI.transfer(address); //  send in the address and value via SPI:
     SPI.transfer(value);
     digitalWrite(DIGIPOTSS_PIN,HIGH); // take the SS pin high to de-select the chip:
     //delay(10);
-  #endif
 }
+#endif
 
 void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 {
@@ -1602,19 +1583,19 @@ uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 
 
 
-
+#ifdef MOTOR_CURRENT_PWM_XY_PIN
 void st_current_set(uint8_t driver, int current)
 {
-  #ifdef MOTOR_CURRENT_PWM_XY_PIN
   if (driver == 0) analogWrite(MOTOR_CURRENT_PWM_XY_PIN, (long)current * 255L / (long)MOTOR_CURRENT_PWM_RANGE);
   if (driver == 1) analogWrite(MOTOR_CURRENT_PWM_Z_PIN, (long)current * 255L / (long)MOTOR_CURRENT_PWM_RANGE);
   if (driver == 2) analogWrite(MOTOR_CURRENT_PWM_E_PIN, (long)current * 255L / (long)MOTOR_CURRENT_PWM_RANGE);
-  #endif
 }
+#else //MOTOR_CURRENT_PWM_XY_PIN
+void st_current_set(uint8_t, int ){}
+#endif //MOTOR_CURRENT_PWM_XY_PIN
 
 void microstep_init()
 {
-  const uint8_t microstep_modes[] = MICROSTEP_MODES;
 
   #if defined(E1_MS1_PIN) && E1_MS1_PIN > -1
   pinMode(E1_MS1_PIN,OUTPUT);
@@ -1622,6 +1603,7 @@ void microstep_init()
   #endif
 
   #if defined(X_MS1_PIN) && X_MS1_PIN > -1
+  const uint8_t microstep_modes[] = MICROSTEP_MODES;
   pinMode(X_MS1_PIN,OUTPUT);
   pinMode(X_MS2_PIN,OUTPUT);  
   pinMode(Y_MS1_PIN,OUTPUT);

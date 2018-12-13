@@ -3,6 +3,10 @@
 // Common serial messages
 #define MSG_MARLIN "Marlin"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif //defined(__cplusplus)
+
 // LCD Menu Messages
 //internationalized messages
 extern const char MSG_AUTO_HOME[];
@@ -22,11 +26,6 @@ extern const char MSG_CRASH_DETECTED[];
 extern const char MSG_CRASHDETECT_NA[];
 extern const char MSG_CRASHDETECT_OFF[];
 extern const char MSG_CRASHDETECT_ON[];
-extern const char MSG_ENDSTOP_HIT[];
-extern const char MSG_ENDSTOP_OPEN[];
-extern const char MSG_ENDSTOPS_HIT[];
-extern const char MSG_Enqueing[];
-extern const char MSG_ERR_STOPPED[];
 extern const char MSG_ERROR[];
 extern const char MSG_EXTRUDER[];
 extern const char MSG_FILAMENT[];
@@ -59,11 +58,9 @@ extern const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[];
 extern const char MSG_MENU_CALIBRATION[];
 extern const char MSG_NO[];
 extern const char MSG_NOZZLE[];
-extern const char MSG_OK[];
 extern const char MSG_PAPER[];
 extern const char MSG_PLACE_STEEL_SHEET[];
 extern const char MSG_PLEASE_WAIT[];
-extern const char MSG_POWERUP[];
 extern const char MSG_PREHEAT_NOZZLE[];
 extern const char MSG_PRESS_TO_UNLOAD[];
 extern const char MSG_PRINT_ABORTED[];
@@ -72,8 +69,6 @@ extern const char MSG_RECOVER_PRINT[];
 extern const char MSG_REFRESH[];
 extern const char MSG_REMOVE_STEEL_SHEET[];
 extern const char MSG_RESUMING_PRINT[];
-extern const char MSG_SD_ERR_WRITE_TO_FILE[];
-extern const char MSG_SD_OPEN_FILE_FAIL[];
 extern const char MSG_SD_WORKDIR_FAIL[];
 extern const char MSG_SELFTEST_COOLING_FAN[];
 extern const char MSG_SELFTEST_EXTRUDER_FAN[];
@@ -119,3 +114,16 @@ extern const char MSG_Z_MIN[];
 extern const char MSG_ZPROBE_OUT[];
 extern const char MSG_ZPROBE_ZOFFSET[];
 extern const char MSG_TMC_OVERTEMP[];
+extern const char MSG_Enqueing[];
+extern const char MSG_ENDSTOPS_HIT[];
+extern const char MSG_SD_ERR_WRITE_TO_FILE[];
+extern const char MSG_OK[];
+extern const char MSG_SD_OPEN_FILE_FAIL[];
+extern const char MSG_ENDSTOP_OPEN[];
+extern const char MSG_POWERUP[];
+extern const char MSG_ERR_STOPPED[];
+extern const char MSG_ENDSTOP_HIT[];
+
+#if defined(__cplusplus)
+}
+#endif //defined(__cplusplus)

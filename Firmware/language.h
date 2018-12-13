@@ -23,22 +23,21 @@
 #define STRINGIFY_(n) #n
 #define STRINGIFY(n) STRINGIFY_(n)
 
-/** @def PROGMEM_I2
- *  @brief section progmem0 will be used for localized translated strings */
-#define PROGMEM_I2 __attribute__((section(".progmem0")))
-/** @def PROGMEM_I1
- *  @brief section progmem1 will be used for localized strings in english */
-#define PROGMEM_I1 __attribute__((section(".progmem1")))
-/** @def PROGMEM_N1
- *  @brief section progmem2 will be used for not localized strings in english */
-#define PROGMEM_N1 __attribute__((section(".progmem2")))
-
 #if (LANG_MODE == 0) //primary language only
+#define PROGMEM_I2 __attribute__((section(".progmem0")))
+#define PROGMEM_I1 __attribute__((section(".progmem1")))
+#define PROGMEM_N1 __attribute__((section(".progmem2")))
 #define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = s; &__c[0];}))
 #define ISTR(s) s
 #define _i(s) _I(s)
 #define _T(s) s
 #else //(LANG_MODE == 0)
+// section .loc_sec (originaly .progmem0) will be used for localized translated strings
+#define PROGMEM_I2 __attribute__((section(".loc_sec")))
+// section .loc_pri (originaly .progmem1) will be used for localized strings in english
+#define PROGMEM_I1 __attribute__((section(".loc_pri")))
+// section .noloc (originaly progmem2) will be used for not localized strings in english
+#define PROGMEM_N1 __attribute__((section(".noloc")))
 #define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff" s; &__c[0];}))
 #define ISTR(s) "\xff\xff" s
 #define _i(s) lang_get_translation(_I(s))
@@ -94,7 +93,7 @@ typedef struct
 #define LANG_CODE_CZ 0x6373 //!<'cs'
 #define LANG_CODE_DE 0x6465 //!<'de'
 #define LANG_CODE_ES 0x6573 //!<'es'
-#define LANG_CODE_FR 0x6671 //!<'fr'
+#define LANG_CODE_FR 0x6672 //!<'fr'
 #define LANG_CODE_IT 0x6974 //!<'it'
 #define LANG_CODE_PL 0x706c //!<'pl'
 ///@}

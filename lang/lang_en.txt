@@ -1,18 +1,3 @@
-#MSG_EXTRUDER_CORRECTION_OFF c=6 r=0
-"  [off"
-
-#MSG_PLANNER_BUFFER_BYTES c=0 r=0
-"  PlannerBufferBytes: "
-
-#MSG_ERR_COLD_EXTRUDE_STOP c=0 r=0
-" cold extrusion prevented"
-
-#MSG_FREE_MEMORY c=0 r=0
-" Free Memory: "
-
-#MSG_CONFIGURATION_VER c=0 r=0
-" Last Updated: "
-
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14 r=0
 " of 4"
 
@@ -28,9 +13,6 @@
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 
-#MSG_REFRESH c=0 r=0
-"\xf8Refresh"
-
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 
@@ -40,20 +22,23 @@
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
 
+#
+"Ambient"
+
 #MSG_PRESS c=20 r=0
 "and press the knob"
 
 #MSG_CONFIRM_CARRIAGE_AT_THE_TOP c=20 r=2
 "Are left and right Z~carriages all up?"
 
-#MSG_ADJUSTZ c=0 r=0
-"Auto adjust Z?"
-
 #MSG_AUTO_DEPLETE_ON c=17 r=1
-"Auto deplete [on]"
+"SpoolJoin    [on]"
+
+#
+"SpoolJoin   [N/A]"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
-"Auto deplete[off]"
+"SpoolJoin   [off]"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
@@ -97,9 +82,6 @@
 #MSG_BED c=0 r=0
 "Bed"
 
-#MSG_BEGIN_FILE_LIST c=0 r=0
-"Begin file list"
-
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
 
@@ -130,8 +112,8 @@
 #MSG_MENU_CALIBRATION c=0 r=0
 "Calibration"
 
-#MSG_SD_CANT_ENTER_SUBDIR c=0 r=0
-"Cannot enter subdir: "
+#
+"Cancel"
 
 #MSG_SD_INSERTED c=0 r=0
 "Card inserted"
@@ -144,6 +126,9 @@
 
 #MSG_COOLDOWN c=0 r=0
 "Cooldown"
+
+#
+"Copy selected language?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
@@ -159,6 +144,9 @@
 
 #
 "Crash detected. Resume print?"
+
+#
+"Crash"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -196,11 +184,11 @@
 #MSG_EJECT_FILAMENT5 c=17 r=1
 "Eject filament 5"
 
+#
+"Eject"
+
 #MSG_EJECTING_FILAMENT c=20 r=1
 "Ejecting filament"
-
-#MSG_END_FILE_LIST c=0 r=0
-"End file list"
 
 #MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 "Endstop not hit"
@@ -208,26 +196,32 @@
 #MSG_SELFTEST_ENDSTOP c=0 r=0
 "Endstop"
 
-#MSG_ENDSTOPS_HIT c=0 r=0
-"endstops hit: "
-
 #MSG_SELFTEST_ENDSTOPS c=0 r=0
 "Endstops"
 
-#MSG_Enqueing c=0 r=0
-"enqueing \x22"
-
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
-
-#MSG_SD_ERR_WRITE_TO_FILE c=0 r=0
-"error writing to file"
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
 
 #MSG_ERROR c=0 r=0
 "ERROR:"
+
+#
+"External SPI flash W25X20CL not responding."
+
+#
+"Extruder 1"
+
+#
+"Extruder 2"
+
+#
+"Extruder 3"
+
+#
+"Extruder 4"
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
 "Extruder fan:"
@@ -246,6 +240,9 @@
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
+
+#
+"Fail stats"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -271,6 +268,9 @@
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
 
+#
+"Filam. runouts"
+
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
 
@@ -292,12 +292,6 @@
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
 
-#MSG_SD_FILE_OPENED c=0 r=0
-"File opened: "
-
-#MSG_SD_FILE_SELECTED c=0 r=0
-"File selected"
-
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
 
@@ -306,6 +300,9 @@
 
 #MSG_WIZARD_SELFTEST c=20 r=8
 "First, I will run the selftest to check most common assembly problems."
+
+#
+"Fix the issue and then press button on MMU unit."
 
 #MSG_FLOW c=0 r=0
 "Flow"
@@ -340,6 +337,9 @@
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
 
+#
+"Change extruder"
+
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
 
@@ -348,9 +348,6 @@
 
 #MSG_CORRECTLY c=20 r=0
 "Changed correctly?"
-
-#MSG_CHANGING_FILAMENT c=20 r=0
-"Changing filament!"
 
 #MSG_SELFTEST_CHECK_BED c=20 r=0
 "Checking bed     "
@@ -372,9 +369,6 @@
 
 #MSG_SELFTEST_CHECK_Z c=20 r=0
 "Checking Z axis  "
-
-#MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
-"checksum mismatch, Last Line: "
 
 #MSG_CHOOSE_EXTRUDER c=20 r=1
 "Choose extruder:"
@@ -412,6 +406,9 @@
 #MSG_FILAMENT_LOADING_T3 c=20 r=4
 "Insert filament into extruder 4. Click when done."
 
+#
+"Is filament 1 loaded?"
+
 #MSG_INSERT_FILAMENT c=20 r=0
 "Insert filament"
 
@@ -430,11 +427,17 @@
 #MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 "Iteration "
 
-#MSG_KILLED c=0 r=0
-"KILLED. "
+#
+"Last print failures"
+
+#
+"Last print"
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
+
+#
+"Left"
 
 #MSG_BED_CORRECTION_LEFT c=14 r=1
 "Left side [um]"
@@ -457,26 +460,11 @@
 #MSG_LOOSE_PULLEY c=20 r=1
 "Loose pulley"
 
-#MSG_M104_INVALID_EXTRUDER c=0 r=0
-"M104 Invalid extruder "
-
-#MSG_M105_INVALID_EXTRUDER c=0 r=0
-"M105 Invalid extruder "
-
-#MSG_M109_INVALID_EXTRUDER c=0 r=0
-"M109 Invalid extruder "
+#
+"Load to nozzle"
 
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
-
-#MSG_M200_INVALID_EXTRUDER c=0 r=0
-"M200 Invalid extruder "
-
-#MSG_M218_INVALID_EXTRUDER c=0 r=0
-"M218 Invalid extruder "
-
-#MSG_M221_INVALID_EXTRUDER c=0 r=0
-"M221 Invalid extruder "
 
 #MSG_MAIN c=0 r=0
 "Main"
@@ -487,14 +475,14 @@
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
 
-#MSG_MMU_NEEDS_ATTENTION c=20 r=4
-"MMU needs user attention. Fix the issue and then press button on MMU unit."
-
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
 
 #MSG_MMU_OK_RESUMING_TEMPERATURE c=20 r=4
 "MMU OK. Resuming temperature..."
+
+#
+"Measured skew"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -505,6 +493,9 @@
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
 
+#
+"MMU needs user attention."
+
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
 
@@ -513,6 +504,9 @@
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
+
+#
+"MMU2 connected"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -529,9 +523,6 @@
 #MSG_MOVE_Z c=0 r=0
 "Move Z"
 
-#MSG_ERR_NO_CHECKSUM c=0 r=0
-"No Checksum with line number, Last Line: "
-
 #MSG_NO_MOVE c=0 r=0
 "No move."
 
@@ -543,6 +534,12 @@
 
 #MSG_SELFTEST_NOTCONNECTED c=0 r=0
 "Not connected"
+
+#
+"New firmware version available:"
+
+#
+"No "
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
@@ -556,20 +553,14 @@
 #MSG_NOZZLE c=0 r=0
 "Nozzle"
 
-#MSG_OK c=0 r=0
-"ok"
-
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
 
-#MSG_SD_OPEN_FILE_FAIL c=0 r=0
-"open failed, File: "
+#
+"Now remove the test print from steel sheet."
 
-#MSG_ENDSTOP_OPEN c=0 r=0
-"open"
-
-#MSG_SD_OPENROOT_FAIL c=0 r=0
-"openRoot failed"
+#
+"Nozzle FAN"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -604,9 +595,6 @@
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 "Please insert PLA filament to the extruder, then press knob to load it."
 
-#MSG_WIZARD_INSERT_CORRECT_FILAMENT c=20 r=8
-"Please load PLA filament and then resume Wizard by rebooting the printer."
-
 #MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load PLA filament first."
 
@@ -618,6 +606,9 @@
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
+
+#
+"Please insert PLA filament to the first tube of MMU, then press the knob to load it."
 
 #MSG_PULL_OUT_FILAMENT c=20 r=4
 "Please pull out filament immediately"
@@ -637,8 +628,8 @@
 #MSG_PLEASE_WAIT c=20 r=0
 "Please wait"
 
-#MSG_POWERUP c=0 r=0
-"PowerUp"
+#
+"Please remove shipping helpers first."
 
 #MSG_PREHEAT_NOZZLE c=20 r=0
 "Preheat the nozzle!"
@@ -649,8 +640,14 @@
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
 
+#
+"Please upgrade."
+
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
+
+#
+"Power failures"
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
@@ -664,14 +661,14 @@
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
 
-#MSG_ERR_KILLED c=0 r=0
-"Printer halted. kill() called!"
+#
+"Press the knob to resume nozzle temperature."
 
 #MSG_FOLLOW_CALIBRATION_FLOW c=20 r=8
 "Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."
 
-#MSG_ERR_STOPPED c=0 r=0
-"Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"
+#
+"Print FAN"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."
@@ -691,8 +688,8 @@
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
 
-#MSG_M119_REPORT c=0 r=0
-"Reporting endstop status"
+#
+"Prusa i3 MK2 ready."
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -722,16 +719,10 @@
 "SD card  [normal]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-"SD card [FlshAir]"
+"SD card [flshAir]"
 
-#MSG_SD_CARD_OK c=0 r=0
-"SD card ok"
-
-#MSG_SD_INIT_FAIL c=0 r=0
-"SD init fail"
-
-#MSG_SD_PRINTING_BYTE c=0 r=0
-"SD printing byte "
+#
+"Right"
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
@@ -757,6 +748,12 @@
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
 
+#
+"Select nozzle preheat temperature which matches your material."
+
+#
+"Select PLA filament:"
+
 #MSG_SET_TEMPERATURE c=19 r=1
 "Set temperature:"
 
@@ -769,9 +766,6 @@
 #
 "Show pinda state"
 
-#MSG_DWELL c=0 r=0
-"Sleep..."
-
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 
@@ -780,6 +774,9 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
+
+#
+"Severe skew"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
@@ -790,8 +787,14 @@
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
 
+#
+"Slight skew"
+
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
+
+#
+"Some problem encountered, Z-leveling enforced ..."
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -810,9 +813,6 @@
 
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
-
-#MSG_STEPPER_TOO_HIGH c=0 r=0
-"Steprate too high: "
 
 #MSG_STOP_PRINT c=0 r=0
 "Stop print"
@@ -859,11 +859,17 @@
 #
 "Total print time"
 
-#MSG_ENDSTOP_HIT c=0 r=0
-"TRIGGERED"
-
 #MSG_TUNE c=0 r=0
 "Tune"
+
+#
+"Unload"
+
+#
+"Unload all"
+
+#
+"Total failures"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -871,14 +877,17 @@
 #MSG_UNLOADING_FILAMENT c=20 r=1
 "Unloading filament"
 
+#
+"Total"
+
 #MSG_USED c=19 r=1
 "Used during print"
 
 #MSG_MENU_VOLTAGES c=15 r=1
 "Voltages"
 
-#MSG_SD_VOL_INIT_FAIL c=0 r=0
-"volume.init failed"
+#
+"unknown"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."
@@ -888,6 +897,9 @@
 
 #MSG_WAITING_TEMP_PINDA c=20 r=3
 "Waiting for PINDA probe cooling"
+
+#
+"Use unload to remove filament 1 if it protrudes outside of the rear MMU tube. Use eject if it is hidden in tube."
 
 #MSG_CHANGED_BOTH c=20 r=4
 "Warning: both printer type and motherboard type changed."
@@ -907,12 +919,6 @@
 #MSG_WIZARD c=17 r=1
 "Wizard"
 
-#MSG_SD_WORKDIR_FAIL c=0 r=0
-"workDir open failed"
-
-#MSG_SD_WRITE_TO_FILE c=0 r=0
-"Writing to file: "
-
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"
 
@@ -930,6 +936,9 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_SKEW_MILD c=20 r=8
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
+
+#
+"X-correct"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
@@ -949,11 +958,29 @@
 #MSG_LOAD_FILAMENT_1 c=17 r=0
 "Load filament 1"
 
+#
+"XYZ calibration failed. Bed calibration point was not found."
+
+#
+"XYZ calibration failed. Front calibration points not reachable."
+
+#
+"XYZ calibration failed. Left front calibration point not reachable."
+
 #MSG_LOAD_FILAMENT_2 c=17 r=0
 "Load filament 2"
 
+#
+"XYZ calibration failed. Right front calibration point not reachable."
+
 #MSG_LOAD_FILAMENT_3 c=17 r=0
 "Load filament 3"
+
+#
+"Y distance from min"
+
+#
+"Y-correct"
 
 #MSG_LOAD_FILAMENT_4 c=17 r=0
 "Load filament 4"

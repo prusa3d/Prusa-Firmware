@@ -130,6 +130,7 @@ if [ "$1" = "all" ]; then
  generate_binary 'cz'
  generate_binary 'de'
  generate_binary 'es'
+ generate_binary 'fr'
  generate_binary 'it'
  generate_binary 'pl'
 else

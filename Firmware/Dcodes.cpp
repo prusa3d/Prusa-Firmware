@@ -34,7 +34,6 @@ void print_eeprom(uint16_t address, uint16_t count, uint8_t countperline = 16)
 		uint8_t count_line = countperline;
 		while (count && count_line)
 		{
-			uint8_t data = 0;
 			putchar(' ');
 			print_hex_byte(eeprom_read_byte((uint8_t*)address++));
 			count_line--;
@@ -115,7 +114,7 @@ void dcode_3()
 		count = parse_hex(strchr_pointer + 1, data, 16);
 		if (count > 0)
 		{
-			for (int i = 0; i < count; i++)
+			for (uint16_t i = 0; i < count; i++)
 				eeprom_write_byte((uint8_t*)(address + i), data[i]);
 			printf_P(_N("%d bytes written to EEPROM at address 0x%04x"), count, address);
 			putchar('\n');
@@ -142,7 +141,6 @@ void dcode_3()
 }
 #endif //DEBUG_DCODE3
 
-#ifdef DEBUG_DCODES
 
 #include "ConfigurationStore.h"
 #include "cmdqueue.h"
@@ -150,8 +148,9 @@ void dcode_3()
 #include "adc.h"
 #include "temperature.h"
 #include <avr/wdt.h>
+#include "bootapp.h"
 
-
+/*
 #define FLASHSIZE     0x40000
 
 #define RAMSIZE        0x2000
@@ -172,6 +171,8 @@ extern float axis_steps_per_unit[NUM_AXIS];
 
 //#define LOG(args...) printf(args)
 #define LOG(args...)
+*/
+#ifdef DEBUG_DCODES
 
 void dcode__1()
 {
@@ -279,10 +280,13 @@ void dcode_4()
 		}
 	}
 }
-/*
+#endif //DEBUG_DCODES
+
+#ifdef DEBUG_DCODE5
+
 void dcode_5()
 {
-	LOG("D5 - Read/Write FLASH\n");
+	printf_P(PSTR("D5 - Read/Write FLASH\n"));
 	uint32_t address = 0x0000; //default 0x0000
 	uint16_t count = 0x0400; //default 0x0400 (1kb block)
 	if (code_seen('A')) // Address (0x00000-0x3ffff)
@@ -306,17 +310,11 @@ void dcode_5()
 	{
 		if (bErase)
 		{
-			LOG(count, DEC);
-			LOG(" bytes of FLASH at address ");
-			print_hex_word(address);
-			putchar(" will be erased\n");
+			printf_P(PSTR("%d bytes of FLASH at address %05x will be erased\n"), count, address);
 		}
 		if (bCopy)
 		{
-			LOG(count, DEC);
-			LOG(" bytes will be written to FLASH at address ");
-			print_hex_word(address);
-			putchar('\n');
+			printf_P(PSTR("%d  bytes will be written to FLASH at address %05x\n"), count, address);
 		}
 		cli();
 		boot_app_magic = 0x55aa55aa;
@@ -324,6 +322,7 @@ void dcode_5()
 		boot_copy_size = (uint16_t)count;
 		boot_dst_addr = (uint32_t)address;
 		boot_src_addr = (uint32_t)(&data);
+		bootapp_print_vars();
 		wdt_enable(WDTO_15MS);
 		while(1);
 	}
@@ -344,7 +343,9 @@ void dcode_5()
 		putchar('\n');
 	}
 }
-*/
+#endif //DEBUG_DCODE5
+
+#ifdef DEBUG_DCODES
 
 void dcode_6()
 {
