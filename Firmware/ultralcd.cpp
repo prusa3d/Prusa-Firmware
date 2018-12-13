@@ -1960,9 +1960,9 @@ static void lcd_menu_fails_stats_mmu_print()
 {
 //01234567890123456789
 //Last print failures
-// Power failures  000
-// Filam. runouts  000
-// Crash  X 000  Y 000
+// MMU fails  000
+// MMU load fails  000
+//
 //////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
@@ -1976,9 +1976,9 @@ static void lcd_menu_fails_stats_mmu_total()
 {
 //01234567890123456789
 //Last print failures
-// Power failures  000
-// Filam. runouts  000
-// Crash  X 000  Y 000
+// MMU fails  000
+// MMU load fails  000
+//
 //////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
