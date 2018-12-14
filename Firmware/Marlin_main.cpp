@@ -4526,10 +4526,16 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                     lcd_calibrate_z_end_stop_manual(true); // Z-leveling (X-assembly stay up!!!)
 #endif // TMC2130
                     // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
-                    bState=enable_z_endstop(true);
+                    bState=enable_z_endstop(false);
+                    current_position[Z_AXIS] -= 1;
+                    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+                    st_synchronize();
+                    enable_z_endstop(true);
+                    tmc2130_home_enter(Z_AXIS_MASK);
                     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
                     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
                     st_synchronize();
+                    tmc2130_home_exit();
                     enable_z_endstop(bState);
                     } while (st_get_position_mm(Z_AXIS) > MESH_HOME_Z_SEARCH); // i.e. Z-leveling not o.k.
 //               plan_set_z_position(MESH_HOME_Z_SEARCH); // is not necessary ('do-while' loop always ends at the expected Z-position)
