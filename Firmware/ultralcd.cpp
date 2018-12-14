@@ -195,6 +195,9 @@ static void menu_action_sddirectory(const char* filename);
 
 #define ENCODER_FEEDRATE_DEADZONE 10
 
+#define STATE_NA 255
+#define STATE_OFF 0
+#define STATE_ON 1
 
 /*
 #define MENU_ITEM(type, label, args...) do { \
@@ -3620,49 +3623,60 @@ void lcd_diag_show_end_stops()
     lcd_return_to_status();
 }
 
-#ifdef TMC2130
-static void lcd_show_pinda_state()
+static void lcd_print_state(uint8_t state)
 {
-lcd_set_cursor(0, 0);
-lcd_puts_P((PSTR("P.I.N.D.A. state")));
-lcd_set_cursor(0, 2);
-lcd_puts_P(READ(Z_MIN_PIN)?(PSTR("Z1 (LED off)")):(PSTR("Z0 (LED on) "))); // !!! both strings must have same length (due to dynamic refreshing)
+	switch (state) {
+		case STATE_ON:
+			lcd_puts_P(_T(MSG_ON));
+		break;
+		case STATE_OFF:
+			lcd_puts_P(_T(MSG_OFF));
+		break;
+		default: 
+			lcd_puts_P(_i("N/A"));
+		break;
+	}
 }
 
-static void menu_show_pinda_state()
+static void lcd_show_sensors_state()
 {
-lcd_timeoutToStatus.stop();
-lcd_show_pinda_state();
-if(LCD_CLICKED)
-     {
-     lcd_timeoutToStatus.start();
-     menu_back();
-     }
-}
-#endif // defined TMC2130
+	//0: N/A; 1: OFF; 2: ON
+	uint8_t chars = 0;
+	uint8_t pinda_state = STATE_NA;
+	uint8_t finda_state = STATE_NA;
+	uint8_t idler_state = STATE_NA;
 
-#ifdef TMC2130
-static void lcd_show_idler_state()
+	pinda_state = READ(Z_MIN_PIN);
+	if (mmu_enabled) {
+		finda_state = mmu_finda;
+	}
+#ifdef MMU_IDLER_SENSOR_PIN
+	idler_state = !PIN_GET(MMU_IDLER_SENSOR_PIN);
+#endif
+	lcd_puts_at_P(0, 0, _i("Sensors state"));
+	lcd_puts_at_P(1, 1, _i("PINDA:"));
+	lcd_set_cursor(LCD_WIDTH - 4, 1);
+	lcd_print_state(pinda_state);
+	
+	lcd_puts_at_P(1, 2, _i("FINDA:"));
+	lcd_set_cursor(LCD_WIDTH - 4, 2);
+	lcd_print_state(finda_state);
+	
+	lcd_puts_at_P(1, 3, _i("IR:"));
+	lcd_set_cursor(LCD_WIDTH - 4, 3);
+	lcd_print_state(idler_state);
+}
+
+static void lcd_menu_show_sensors_state()
 {
-lcd_set_cursor(0, 0);
-lcd_puts_P((PSTR("Idler state")));
-lcd_set_cursor(0, 2);
-lcd_puts_P((PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)?(PSTR("ON ")):(PSTR("OFF"))); // !!! both strings must have same length (due to dynamic refreshing)
+	lcd_timeoutToStatus.stop();
+	lcd_show_sensors_state();
+	if(LCD_CLICKED)
+	{
+		lcd_timeoutToStatus.start();
+		menu_back();
+	}
 }
-
-static void lcd_menu_show_idler_state()
-{
-lcd_timeoutToStatus.stop();
-lcd_show_idler_state();
-if(LCD_CLICKED)
-     {
-     lcd_timeoutToStatus.start();
-     menu_back();
-     }
-}
-#endif // defined TMC2130
-
-
 
 void prusa_statistics(int _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
@@ -5020,7 +5034,7 @@ static void lcd_calibration_menu()
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=0 r=0
 	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17 r=1
 #ifdef TMC2130
-    MENU_ITEM_SUBMENU_P(_i("Show pinda state"), menu_show_pinda_state);
+    MENU_ITEM_SUBMENU_P(_i("Show sensors"), lcd_menu_show_sensors_state);
 #else
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=17 r=1
 #endif
@@ -5930,7 +5944,6 @@ static void lcd_main_menu()
 #endif
   if (mmu_enabled) {
 	  MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);
-	  MENU_ITEM_SUBMENU_P(_i("Show idler state"), lcd_menu_show_idler_state);
   }
   MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
 #ifdef LCD_TEST
