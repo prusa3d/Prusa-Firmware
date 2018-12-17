@@ -377,13 +377,6 @@ void mmu_load_step() {
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
 	st_synchronize();
 }
-
-void mmu_unload_step() {
-	current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * 0.1;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
-	st_synchronize();
-}
-
 bool mmu_get_response(uint8_t move)
 {
 	printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
@@ -406,7 +399,11 @@ bool mmu_get_response(uint8_t move)
 				mmu_load_step();
 				break;
 			case MMU_UNLOAD_MOVE:
-				mmu_unload_step();
+				current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+				st_synchronize();
+				disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
+				move = MMU_NO_MOVE;
 				break;
 			case MMU_TCODE_MOVE: //first do unload and then continue with infinite loading 
 				current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME;
@@ -414,6 +411,7 @@ bool mmu_get_response(uint8_t move)
 				st_synchronize();
 				move = MMU_LOAD_MOVE;
 				break;
+			case MMU_NO_MOVE:
 			default: 
 				delay_keep_alive(100);
 				break;

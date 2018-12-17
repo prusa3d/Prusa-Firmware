@@ -17,6 +17,7 @@ extern int16_t mmu_buildnr;
 
 #define MMU_FILAMENT_UNKNOWN 255
 
+#define MMU_NO_MOVE 0
 #define MMU_UNLOAD_MOVE 1
 #define MMU_LOAD_MOVE 2
 #define MMU_TCODE_MOVE 3
