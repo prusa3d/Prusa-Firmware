@@ -51,6 +51,8 @@ int16_t mmu_buildnr = -1;
 uint32_t mmu_last_request = 0;
 uint32_t mmu_last_response = 0;
 
+uint8_t mmu_last_cmd = 0;
+
 
 //clear rx buffer
 void mmu_clr_rx_buf(void)
@@ -251,6 +253,7 @@ void mmu_loop(void)
 				mmu_puts_P(PSTR("R0\n")); //send recover after eject
 				mmu_state = 3; // wait for response
 			}
+			mmu_last_cmd = mmu_cmd;
 			mmu_cmd = 0;
 		}
 		else if ((mmu_last_response + 300) < millis()) //request every 300ms
@@ -291,11 +294,20 @@ void mmu_loop(void)
 #ifdef MMU_DEBUG
 			printf_P(PSTR("MMU => 'ok'\n"));
 #endif //MMU_DEBUG
+			mmu_last_cmd = 0;
 			mmu_ready = true;
 			mmu_state = 1;
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (5 min)
+			if (mmu_last_cmd)
+			{
+#ifdef MMU_DEBUG
+				printf_P(PSTR("MMU retry\n"));
+#endif //MMU_DEBUG
+				mmu_cmd = mmu_last_cmd;
+//				mmu_last_cmd = 0; //resend just once
+			}
 			mmu_state = 1;
 		}
 		return;
