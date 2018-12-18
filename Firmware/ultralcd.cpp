@@ -2351,7 +2351,7 @@ void lcd_alright() {
 
 
   enc_dif = lcd_encoder_diff;
-
+  lcd_consume_click();
   while (lcd_change_fil_state == 0) {
 
     manage_heater();
