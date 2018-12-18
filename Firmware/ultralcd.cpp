@@ -136,6 +136,10 @@ static void lcd_menu_extruder_info();
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
+static void lcd_menu_fails_stats_mmu();
+static void lcd_menu_fails_stats_mmu_print();
+static void lcd_menu_fails_stats_mmu_total();
+
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats();
 #endif //TMC2130 or FILAMENT_SENSOR
