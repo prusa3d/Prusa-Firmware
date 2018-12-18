@@ -1922,6 +1922,15 @@ static void lcd_menu_extruder_info()
     menu_back_if_clicked();
 }
 
+static void lcd_menu_fails_stats_mmu()
+{
+	MENU_BEGIN();
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_mmu_print);
+	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_mmu_total);
+	MENU_END();
+}
+
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats_total()
 {
@@ -2005,15 +2014,6 @@ static void lcd_menu_fails_stats()
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_print);
 	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_total);
-	MENU_END();
-}
-
-static void lcd_menu_fails_stats_mmu()
-{
-	MENU_BEGIN();
-	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_mmu_print);
-	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_mmu_total);
 	MENU_END();
 }
 
