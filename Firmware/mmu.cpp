@@ -379,6 +379,11 @@ void mmu_load_step() {
 }
 bool mmu_get_response(uint8_t move)
 {
+	bool sensor_pin = false;
+	#ifdef MMU_IDLER_SENSOR_PIN
+	sensor_pin = true;
+	#endif //MMU_IDLER_SENSOR_PIN
+
 	printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
 	KEEPALIVE_STATE(IN_PROCESS);
 	while (mmu_cmd != 0)
@@ -399,7 +404,7 @@ bool mmu_get_response(uint8_t move)
 				mmu_load_step();
 				break;
 			case MMU_UNLOAD_MOVE:
-				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament is still detected by idler sensor, printer helps with unlading 
+				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0 && sensor_pin) //filament is still detected by idler sensor, printer helps with unlading 
 				{ 
 					printf_P(PSTR("Unload 1\n"));
 					current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
@@ -414,7 +419,7 @@ bool mmu_get_response(uint8_t move)
 				}
 				break;
 			case MMU_TCODE_MOVE: //first do unload and then continue with infinite loading movements
-				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament detected by idler sensor, we must unload first 
+				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0 && sensor_pin) //filament detected by idler sensor, we must unload first 
 				{ 
 					printf_P(PSTR("Unload 2\n"));
 					current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
