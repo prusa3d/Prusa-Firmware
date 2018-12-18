@@ -1931,6 +1931,38 @@ static void lcd_menu_fails_stats_mmu()
 	MENU_END();
 }
 
+static void lcd_menu_fails_stats_mmu_print()
+{
+//01234567890123456789
+//Last print failures
+// MMU fails  000
+// MMU load fails  000
+//
+//////////////////////
+	lcd_timeoutToStatus.stop(); //infinite timeout
+    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
+    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
+//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3)), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
+	menu_back_if_clicked_fb();
+}
+
+static void lcd_menu_fails_stats_mmu_total()
+{
+//01234567890123456789
+//Last print failures
+// MMU fails  000
+// MMU load fails  000
+//
+//////////////////////
+	lcd_timeoutToStatus.stop(); //infinite timeout
+    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
+    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
+//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3)), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
+	menu_back_if_clicked_fb();
+}
+
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats_total()
 {
@@ -1967,39 +1999,6 @@ static void lcd_menu_fails_stats_print()
 	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
 	menu_back_if_clicked_fb();
 }
-
-static void lcd_menu_fails_stats_mmu_print()
-{
-//01234567890123456789
-//Last print failures
-// MMU fails  000
-// MMU load fails  000
-//
-//////////////////////
-	lcd_timeoutToStatus.stop(); //infinite timeout
-    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
-    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
-//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3)), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
-	menu_back_if_clicked_fb();
-}
-
-static void lcd_menu_fails_stats_mmu_total()
-{
-//01234567890123456789
-//Last print failures
-// MMU fails  000
-// MMU load fails  000
-//
-//////////////////////
-	lcd_timeoutToStatus.stop(); //infinite timeout
-    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
-    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
-//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3)), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
-	menu_back_if_clicked_fb();
-}
-
 
 /**
  * @brief Open fail statistics menu
