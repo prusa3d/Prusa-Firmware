@@ -379,11 +379,6 @@ void mmu_load_step() {
 }
 bool mmu_get_response(uint8_t move)
 {
-	bool sensor_pin = false;
-	#ifdef MMU_IDLER_SENSOR_PIN
-	sensor_pin = true;
-	#endif //MMU_IDLER_SENSOR_PIN
-
 	printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
 	KEEPALIVE_STATE(IN_PROCESS);
 	while (mmu_cmd != 0)
@@ -404,7 +399,8 @@ bool mmu_get_response(uint8_t move)
 				mmu_load_step();
 				break;
 			case MMU_UNLOAD_MOVE:
-				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0 && sensor_pin) //filament is still detected by idler sensor, printer helps with unlading 
+#ifdef MMU_IDLER_SENSOR_PIN
+				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament is still detected by idler sensor, printer helps with unlading 
 				{ 
 					printf_P(PSTR("Unload 1\n"));
 					current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
@@ -412,14 +408,17 @@ bool mmu_get_response(uint8_t move)
 					st_synchronize();
 				}
 				else //filament was unloaded from idler, no additional movements needed 
+#endif //MMU_IDLER_SENSOR_PIN
 				{ 
 					printf_P(PSTR("Unloading finished 1\n"));
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
 					move = MMU_NO_MOVE;
 				}
+
 				break;
 			case MMU_TCODE_MOVE: //first do unload and then continue with infinite loading movements
-				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0 && sensor_pin) //filament detected by idler sensor, we must unload first 
+#ifdef MMU_IDLER_SENSOR_PIN
+				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament detected by idler sensor, we must unload first 
 				{ 
 					printf_P(PSTR("Unload 2\n"));
 					current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
@@ -427,6 +426,7 @@ bool mmu_get_response(uint8_t move)
 					st_synchronize();
 				}
 				else //delay to allow mmu unit to pull out filament from bondtech gears and then start with infinite loading 
+#endif //MMU_IDLER_SENSOR_PIN
 				{ 
 					printf_P(PSTR("Unloading finished 2\n"));
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
