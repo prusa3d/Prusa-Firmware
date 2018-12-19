@@ -6058,6 +6058,7 @@ static void lcd_sd_updir()
 
 void lcd_print_stop()
 {
+	saved_printing = false;
 	cancel_heatup = true;
 #ifdef MESH_BED_LEVELING
 	mbl.active = false;
@@ -6091,7 +6092,7 @@ void lcd_print_stop()
 
 void lcd_sdcard_stop()
 {
-	
+
 	lcd_set_cursor(0, 0);
 	lcd_puts_P(_T(MSG_STOP_PRINT));
 	lcd_set_cursor(2, 2);

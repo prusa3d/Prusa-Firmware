@@ -2793,10 +2793,15 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 		}
 			
+		bool endstops_enabled  = enable_endstops(false);
+        current_position[Z_AXIS] -= 1; //move 1mm down with disabled endstop
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+        st_synchronize();
+
 		// Move the print head close to the bed.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 
-		bool endstops_enabled  = enable_endstops(true);
+		enable_endstops(true);
 #ifdef TMC2130
 		tmc2130_home_enter(Z_AXIS_MASK);
 #endif //TMC2130
