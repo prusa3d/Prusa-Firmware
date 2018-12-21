@@ -38,9 +38,10 @@ static int8_t mmu_state = 0;
 
 uint8_t mmu_cmd = 0;
 
-#ifdef MMU_IDLER_SENSOR_PIN
+//idler ir sensor
 uint8_t mmu_idl_sens = 0;
-#endif //MMU_IDLER_SENSOR_PIN
+bool mmu_idler_sensor_detected = false; 
+
 
 uint8_t mmu_extruder = MMU_FILAMENT_UNKNOWN;
 
@@ -111,10 +112,25 @@ void mmu_init(void)
 	_delay_ms(10);                             //wait 10ms for sure
 	mmu_reset();                               //reset mmu (HW or SW), do not wait for response
 	mmu_state = -1;
-#ifdef MMU_IDLER_SENSOR_PIN
 	PIN_INP(MMU_IDLER_SENSOR_PIN); //input mode
 	PIN_SET(MMU_IDLER_SENSOR_PIN); //pullup
-#endif //MMU_IDLER_SENSOR_PIN
+}
+
+//returns true if idler IR sensor was detected, otherwise returns false
+bool check_for_idler_sensor() 
+{
+	bool detected = false;
+	//if MMU_IDLER_SENSOR_PIN input is low and pat9125sensor is not present we detected idler sensor
+	if ((PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) && fsensor_not_responding) 
+	{
+		  detected = true;
+		  //printf_P(PSTR("Idler IR sensor detected\n"));
+	}
+	else
+	{
+		  //printf_P(PSTR("Idler IR sensor not detected\n"));
+	}
+	return detected;
 }
 
 //mmu main loop - state machine processing
@@ -167,9 +183,9 @@ void mmu_loop(void)
 
 			if ((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3_SNMM))
 			{
-#ifdef MMU_DEBUG
+#if defined MMU_DEBUG && defined MMU_FINDA_DEBUG
 				puts_P(PSTR("MMU <= 'P0'"));
-#endif //MMU_DEBUG
+#endif //MMU_DEBUG && MMU_FINDA_DEBUG
 				mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 				mmu_state = -4;
 			}
@@ -187,9 +203,9 @@ void mmu_loop(void)
 	case -5:
 		if (mmu_rx_ok() > 0)
 		{
-#ifdef MMU_DEBUG
+#if defined MMU_DEBUG && defined MMU_FINDA_DEBUG
 			puts_P(PSTR("MMU <= 'P0'"));
-#endif //MMU_DEBUG
+#endif //MMU_DEBUG && MMU_FINDA_DEBUG
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = -4;
 		}
@@ -198,11 +214,13 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
-#ifdef MMU_DEBUG
+#if defined MMU_DEBUG && defined MMU_FINDA_DEBUG 
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
-#endif //MMU_DEBUG
+#endif //MMU_DEBUG && MMU_FINDA_DEBUG
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
+			//if we have filament loaded into the nozzle, we can decide if printer has idler sensor right now; otherwise we will will wait till start of T-code so it will be detected on beginning of second T-code
+			if(check_for_idler_sensor()) mmu_idler_sensor_detected = true;
 			mmu_state = 1;
 		}
 		return;
@@ -218,9 +236,7 @@ void mmu_loop(void)
 				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = 3; // wait for response
 				mmu_fil_loaded = true;
-#ifdef MMU_IDLER_SENSOR_PIN
-				mmu_idl_sens = 1; //enable idler sensor
-#endif //MMU_IDLER_SENSOR_PIN
+				if(mmu_idler_sensor_detected) mmu_idl_sens = 1; //if idler sensor detected, use it for T-code
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
 			{
@@ -238,9 +254,7 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = 3;
-#ifdef MMU_IDLER_SENSOR_PIN
-				mmu_idl_sens = 1; //enable idler sensor
-#endif //MMU_IDLER_SENSOR_PIN
+				if(mmu_idler_sensor_detected) mmu_idl_sens = 1; //if idler sensor detected use it for C0 code
 			}
 			else if (mmu_cmd == MMU_CMD_U0)
 			{
@@ -273,9 +287,10 @@ void mmu_loop(void)
 		}
 		else if ((mmu_last_response + 300) < millis()) //request every 300ms
 		{
-#ifdef MMU_DEBUG
+			if(check_for_idler_sensor()) mmu_idler_sensor_detected = true;
+#if defined MMU_DEBUG && defined MMU_FINDA_DEBUG
 			puts_P(PSTR("MMU <= 'P0'"));
-#endif //MMU_DEBUG
+#endif //MMU_DEBUG && MMU_FINDA_DEBUG
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = 2;
 		}
@@ -284,9 +299,9 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
-#ifdef MMU_DEBUG
+#if defined MMU_DEBUG && MMU_FINDA_DEBUG
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
-#endif //MMU_DEBUG
+#endif //MMU_DEBUG && MMU_FINDA_DEBUG
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FINDA && fsensor_enabled) {
 				fsensor_stop_and_save_print();
@@ -304,22 +319,22 @@ void mmu_loop(void)
 		}
 		return;
 	case 3: //response to mmu commands
-#ifdef MMU_IDLER_SENSOR_PIN
-		if (mmu_idl_sens)
-		{
-			if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)
+		if (mmu_idler_sensor_detected) {
+			if (mmu_idl_sens)
 			{
+				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)
+				{
 #ifdef MMU_DEBUG
-				printf_P(PSTR("MMU <= 'A'\n"));
+					printf_P(PSTR("MMU <= 'A'\n"));
 #endif //MMU_DEBUG  
-				mmu_puts_P(PSTR("A\n")); //send 'abort' request
-				mmu_idl_sens = 0;
-				//printf_P(PSTR("MMU IDLER_SENSOR = 0 - ABORT\n"));
+					mmu_puts_P(PSTR("A\n")); //send 'abort' request
+					mmu_idl_sens = 0;
+					//printf_P(PSTR("MMU IDLER_SENSOR = 0 - ABORT\n"));
+				}
+				//else
+					//printf_P(PSTR("MMU IDLER_SENSOR = 1 - WAIT\n"));
 			}
-			//else
-				//printf_P(PSTR("MMU IDLER_SENSOR = 1 - WAIT\n"));
 		}
-#endif //MMU_IDLER_SENSOR_PIN
 		if (mmu_rx_ok() > 0)
 		{
 #ifdef MMU_DEBUG
@@ -379,6 +394,8 @@ void mmu_load_step() {
 }
 bool mmu_get_response(uint8_t move)
 {
+	if (!mmu_idler_sensor_detected) move = MMU_NO_MOVE;
+
 	printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
 	KEEPALIVE_STATE(IN_PROCESS);
 	while (mmu_cmd != 0)
@@ -399,7 +416,6 @@ bool mmu_get_response(uint8_t move)
 				mmu_load_step();
 				break;
 			case MMU_UNLOAD_MOVE:
-#ifdef MMU_IDLER_SENSOR_PIN
 				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament is still detected by idler sensor, printer helps with unlading 
 				{ 
 					printf_P(PSTR("Unload 1\n"));
@@ -408,7 +424,6 @@ bool mmu_get_response(uint8_t move)
 					st_synchronize();
 				}
 				else //filament was unloaded from idler, no additional movements needed 
-#endif //MMU_IDLER_SENSOR_PIN
 				{ 
 					printf_P(PSTR("Unloading finished 1\n"));
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
@@ -417,7 +432,6 @@ bool mmu_get_response(uint8_t move)
 
 				break;
 			case MMU_TCODE_MOVE: //first do unload and then continue with infinite loading movements
-#ifdef MMU_IDLER_SENSOR_PIN
 				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament detected by idler sensor, we must unload first 
 				{ 
 					printf_P(PSTR("Unload 2\n"));
@@ -426,7 +440,6 @@ bool mmu_get_response(uint8_t move)
 					st_synchronize();
 				}
 				else //delay to allow mmu unit to pull out filament from bondtech gears and then start with infinite loading 
-#endif //MMU_IDLER_SENSOR_PIN
 				{ 
 					printf_P(PSTR("Unloading finished 2\n"));
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
@@ -1243,41 +1256,42 @@ void mmu_eject_filament(uint8_t filament, bool recover)
 
 void mmu_continue_loading() 
 {
-#ifdef MMU_IDLER_SENSOR_PIN
-			  for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++) {
 
-				  if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) return;	
+	if (mmu_idler_sensor_detected) {
+		for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++) {
+			if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) return;
 #ifdef MMU_DEBUG
-				  printf_P(PSTR("Additional load attempt nr. %d\n"), i);
+			printf_P(PSTR("Additional load attempt nr. %d\n"), i);
 #endif // MMU_DEBUG
-				  mmu_command(MMU_CMD_C0);
-				  manage_response(true, true, MMU_LOAD_MOVE);
-			  }
-			  if (PIN_GET(MMU_IDLER_SENSOR_PIN) != 0) {
-				  eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) + 1);
-				  eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) + 1);
-				  char cmd[3];
-				  //pause print, show error message and then repeat last T-code
-				  stop_and_save_print_to_ram(0, 0);
+			mmu_command(MMU_CMD_C0);
+			manage_response(true, true, MMU_LOAD_MOVE);
+		}
+		if (PIN_GET(MMU_IDLER_SENSOR_PIN) != 0) {
+			eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) + 1);
+			eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) + 1);
+			char cmd[3];
+			//pause print, show error message and then repeat last T-code
+			stop_and_save_print_to_ram(0, 0);
 
-				  //lift z
-				  current_position[Z_AXIS] += Z_PAUSE_LIFT;
-				  if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
-				  st_synchronize();
-			  					  
-				  //Move XY to side
-				  current_position[X_AXIS] = X_PAUSE_POS;
-				  current_position[Y_AXIS] = Y_PAUSE_POS;
-				  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
-				  st_synchronize();
-				  //set nozzle target temperature to 0
-				  setAllTargetHotends(0);
-				  lcd_show_fullscreen_message_and_wait_P(_i("MMU load failed, fix the issue and press the knob."));
-				  mmu_fil_loaded = false; //so we can retry same T-code again
-				  restore_print_from_ram_and_continue(0);
-			  }
-#else 
-			  mmu_command(MMU_CMD_C0);
-#endif //MMU_IDLER_SENSOR_PIN
+			//lift z
+			current_position[Z_AXIS] += Z_PAUSE_LIFT;
+			if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
+			st_synchronize();
+
+			//Move XY to side
+			current_position[X_AXIS] = X_PAUSE_POS;
+			current_position[Y_AXIS] = Y_PAUSE_POS;
+			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+			st_synchronize();
+			//set nozzle target temperature to 0
+			setAllTargetHotends(0);
+			lcd_show_fullscreen_message_and_wait_P(_i("MMU load failed, fix the issue and press the knob."));
+			mmu_fil_loaded = false; //so we can retry same T-code again
+			restore_print_from_ram_and_continue(0);
+		}
+	}
+	else { //mmu_idler_sensor_detected == false
+		mmu_command(MMU_CMD_C0);
+	}
 }

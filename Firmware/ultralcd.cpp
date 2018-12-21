@@ -3653,9 +3653,9 @@ static void lcd_show_sensors_state()
 	if (mmu_enabled) {
 		finda_state = mmu_finda;
 	}
-#ifdef MMU_IDLER_SENSOR_PIN
-	idler_state = !PIN_GET(MMU_IDLER_SENSOR_PIN);
-#endif
+	if (mmu_idler_sensor_detected) {
+		idler_state = !PIN_GET(MMU_IDLER_SENSOR_PIN);
+	}
 	lcd_puts_at_P(0, 0, _i("Sensors state"));
 	lcd_puts_at_P(1, 1, _i("PINDA:"));
 	lcd_set_cursor(LCD_WIDTH - 4, 1);
