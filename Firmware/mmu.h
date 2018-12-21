@@ -12,6 +12,7 @@ extern uint8_t tmp_extruder;
 
 extern int8_t mmu_finda;
 extern bool mmu_idler_sensor_detected;
+extern bool mmu_loading_flag;
 
 extern int16_t mmu_version;
 extern int16_t mmu_buildnr;

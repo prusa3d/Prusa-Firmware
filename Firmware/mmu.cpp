@@ -41,7 +41,7 @@ uint8_t mmu_cmd = 0;
 //idler ir sensor
 uint8_t mmu_idl_sens = 0;
 bool mmu_idler_sensor_detected = false; 
-
+bool mmu_loading_flag = false;
 
 uint8_t mmu_extruder = MMU_FILAMENT_UNKNOWN;
 
@@ -334,7 +334,7 @@ void mmu_loop(void)
 		if (mmu_idler_sensor_detected) {
 			if (mmu_idl_sens)
 			{
-				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0)
+				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0 && mmu_loading_flag)
 				{
 #ifdef MMU_DEBUG
 					printf_P(PSTR("MMU <= 'A'\n"));
@@ -424,6 +424,7 @@ void mmu_load_step() {
 }
 bool mmu_get_response(uint8_t move)
 {
+	mmu_loading_flag = false;
 	if (!mmu_idler_sensor_detected) move = MMU_NO_MOVE;
 
 	printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
@@ -443,6 +444,7 @@ bool mmu_get_response(uint8_t move)
 
 		switch (move) {
 			case MMU_LOAD_MOVE: 
+				mmu_loading_flag = true;
 				mmu_load_step();
 				break;
 			case MMU_UNLOAD_MOVE:
