@@ -16,6 +16,8 @@ extern bool mmu_idler_sensor_detected;
 extern int16_t mmu_version;
 extern int16_t mmu_buildnr;
 
+extern uint16_t mmu_power_failures;
+
 #define MMU_FILAMENT_UNKNOWN 255
 
 #define MMU_NO_MOVE 0
@@ -45,7 +47,7 @@ extern int16_t mmu_buildnr;
 #define MMU_CMD_E3   0x53
 #define MMU_CMD_E4   0x54
 #define MMU_CMD_R0   0x60
-
+#define MMU_CMD_S3	 0x73
 
 extern int mmu_puts_P(const char* str);
 

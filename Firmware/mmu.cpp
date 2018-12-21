@@ -57,6 +57,8 @@ int16_t mmu_buildnr = -1;
 uint32_t mmu_last_request = 0;
 uint32_t mmu_last_response = 0;
 
+uint16_t mmu_power_failures = 0;
+
 
 //clear rx buffer
 void mmu_clr_rx_buf(void)
@@ -283,6 +285,14 @@ void mmu_loop(void)
 				mmu_puts_P(PSTR("R0\n")); //send recover after eject
 				mmu_state = 3; // wait for response
 			}
+			else if (mmu_cmd == MMU_CMD_S3)
+			{
+#ifdef MMU_DEBUG
+				printf_P(PSTR("MMU <= 'S3'\n"));
+#endif //MMU_DEBUG
+				mmu_puts_P(PSTR("S3\n")); //send power failures request
+				mmu_state = 4; // power failures response
+			}
 			mmu_cmd = 0;
 		}
 		else if ((mmu_last_response + 300) < millis()) //request every 300ms
@@ -348,6 +358,15 @@ void mmu_loop(void)
 			mmu_state = 1;
 		}
 		return;
+	case 4:
+		if (mmu_rx_ok() > 0)
+		{
+			fscanf_P(uart2io, PSTR("%d"), &mmu_power_failures); //scan finda from buffer
+		}
+		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
+		{ //resend request after timeout (5 min)
+			mmu_state = 1;
+		}
 	}
 }
 
@@ -610,11 +629,11 @@ void mmu_load_to_nozzle()
 	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = true;
 	if (mmu_idler_sensor_detected)
 	{
-		current_position[E_AXIS] += 3f;
+		current_position[E_AXIS] += 3.0f;
 	}
 	else
 	{
-		current_position[E_AXIS] + 7.2f;
+		current_position[E_AXIS] += 7.2f;
 	}
     float feedrate = 562;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
