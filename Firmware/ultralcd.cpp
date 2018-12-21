@@ -2351,7 +2351,7 @@ void lcd_alright() {
 
 
   enc_dif = lcd_encoder_diff;
-
+  lcd_consume_click();
   while (lcd_change_fil_state == 0) {
 
     manage_heater();
@@ -3239,6 +3239,7 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
     bool multi_screen = msg_next != NULL;
 	lcd_set_custom_characters_nextpage();
+	lcd_consume_click();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	// Until confirmed by a button click.
 	for (;;) {
@@ -3283,7 +3284,7 @@ bool lcd_wait_for_click_delay(uint16_t nDelay)
 {
 bool bDelayed;
 long nTime0 = millis()/1000;
-
+	lcd_consume_click();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
     for (;;) {
         manage_heater();
@@ -3332,6 +3333,7 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = millis();
 	int8_t        enc_dif = lcd_encoder_diff;
+	lcd_consume_click();
 	//KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
 		for (uint8_t i = 0; i < 100; ++i) {
@@ -3421,6 +3423,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = millis();
 	int8_t        enc_dif = lcd_encoder_diff;
+	lcd_consume_click();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
 		if (allow_timeouting && millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
@@ -3555,6 +3558,7 @@ static void menu_show_end_stops() {
 void lcd_diag_show_end_stops()
 {
     lcd_clear();
+	lcd_consume_click();
     for (;;) {
         manage_heater();
         manage_inactivity(true);
@@ -4313,6 +4317,7 @@ void lcd_v2_calibration()
 		}
 		else {
 			lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
+			lcd_consume_click();
 			for (int i = 0; i < 20; i++) { //wait max. 2s
 				delay_keep_alive(100);
 				if (lcd_clicked()) {
@@ -4979,7 +4984,7 @@ void bowden_menu() {
 
 	}
 	enc_dif = lcd_encoder_diff;
-
+	lcd_consume_click();
 	while (1) {
 
 		manage_heater();
@@ -5086,6 +5091,7 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	char cursor_pos = 1;
 	int enc_dif = 0;
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
+	lcd_consume_click();
 	while (1) {
 		manage_heater();
 		manage_inactivity(true);
@@ -5241,7 +5247,7 @@ char reset_menu() {
 	lcd_clear();
 	lcd_set_cursor(0, 0);
 	lcd_print(">");
-
+	lcd_consume_click();
 	while (1) {		
 
 		for (int i = 0; i < 4; i++) {
@@ -5517,7 +5523,7 @@ unsigned char lcd_choose_color() {
 	lcd_print(">");
 
 	active_rows = items_no < 3 ? items_no : 3;
-
+	lcd_consume_click();
 	while (1) {
 		lcd_puts_at_P(0, 0, PSTR("Choose color:"));
 		for (int i = 0; i < active_rows; i++) {
@@ -6052,6 +6058,7 @@ static void lcd_sd_updir()
 
 void lcd_print_stop()
 {
+	saved_printing = false;
 	cancel_heatup = true;
 #ifdef MESH_BED_LEVELING
 	mbl.active = false;
@@ -6085,7 +6092,7 @@ void lcd_print_stop()
 
 void lcd_sdcard_stop()
 {
-	
+
 	lcd_set_cursor(0, 0);
 	lcd_puts_P(_T(MSG_STOP_PRINT));
 	lcd_set_cursor(2, 2);

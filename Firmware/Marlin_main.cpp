@@ -394,6 +394,8 @@ static bool saved_extruder_relative_mode = false;
 static int saved_fanSpeed = 0; //!< Print fan speed
 //! @}
 
+static int saved_feedmultiply_mm = 100;
+
 //===========================================================================
 //=============================Routines======================================
 //===========================================================================
@@ -2792,10 +2794,15 @@ bool gcode_M45(bool onlyZ, int8_t verbosity_level)
 			lcd_puts_P(_T(MSG_FIND_BED_OFFSET_AND_SKEW_LINE2));
 		}
 			
+		bool endstops_enabled  = enable_endstops(false);
+        current_position[Z_AXIS] -= 1; //move 1mm down with disabled endstop
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+        st_synchronize();
+
 		// Move the print head close to the bed.
 		current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 
-		bool endstops_enabled  = enable_endstops(true);
+		enable_endstops(true);
 #ifdef TMC2130
 		tmc2130_home_enter(Z_AXIS_MASK);
 #endif //TMC2130
@@ -4525,10 +4532,20 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                     lcd_calibrate_z_end_stop_manual(true); // Z-leveling (X-assembly stay up!!!)
 #endif // TMC2130
                     // ~ Z-homing (can not be used "G28", because X & Y-homing would have been done before (Z-homing))
-                    bState=enable_z_endstop(true);
+                    bState=enable_z_endstop(false);
+                    current_position[Z_AXIS] -= 1;
+                    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+                    st_synchronize();
+                    enable_z_endstop(true);
+#ifdef TMC2130
+                    tmc2130_home_enter(Z_AXIS_MASK);
+#endif // TMC2130
                     current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
                     plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
                     st_synchronize();
+#ifdef TMC2130
+                    tmc2130_home_exit();
+#endif // TMC2130
                     enable_z_endstop(bState);
                     } while (st_get_position_mm(Z_AXIS) > MESH_HOME_Z_SEARCH); // i.e. Z-leveling not o.k.
 //               plan_set_z_position(MESH_HOME_Z_SEARCH); // is not necessary ('do-while' loop always ends at the expected Z-position)
@@ -6079,11 +6096,19 @@ Sigma_Exit:
       SERIAL_ECHOLN("");
     }break;
     #endif
+
     case 220: // M220 S<factor in percent>- set speed factor override percentage
     {
-      if(code_seen('S'))
+      if (code_seen('B')) //backup current speed factor
       {
+        saved_feedmultiply_mm = feedmultiply;
+      }
+      if(code_seen('S'))
+      {		
         feedmultiply = code_value() ;
+      }
+      if (code_seen('R')) { //restore previous feedmultiply
+        feedmultiply = saved_feedmultiply_mm;
       }
     }
     break;
@@ -6848,8 +6873,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
   //! if extruder is "?", open menu to let the user select extruder/filament
   //!
   //!  For MMU_V2:
-  //! @n T<n> Gcode to extrude must follow immediately to load to extruder wheels
-  //! @n T? Gcode to extrude doesn't have to follow, load to extruder wheels is done automatically
+  //! @n T<n> Gcode to extrude at least 38.10 mm at feedrate 19.02 mm/s must follow immediately to load to extruder wheels.
+  //! @n T? Gcode to extrude shouldn't have to follow, load to extruder wheels is done automatically
+  //! @n Tx Same as T?, except nozzle doesn't have to be preheated. Tc must be placed after extruder nozzle is preheated to finish filament load.
+  //! @n Tc Load to nozzle after filament was prepared by Tc and extruder nozzle is already heated.
   else if(code_seen('T'))
   {
       int index;
