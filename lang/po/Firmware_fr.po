@@ -863,7 +863,7 @@ msgstr "Mode[haute puiss]"
 # 
 #: ultralcd.cpp:2158
 msgid "MMU2 connected"
-msgstr "MMU2 connectée"
+msgstr "MMU2 connecte"
 
 # MSG_SELFTEST_MOTOR
 #: messages.c:79
