@@ -6518,6 +6518,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     #endif //FILAMENTCHANGEENABLE
 	case 601: //! M601 - Pause print
 	{
+		cmdqueue_pop_front(); //trick because we want skip this command (M601) after restore
 		lcd_pause_print();
 	}
 	break;
