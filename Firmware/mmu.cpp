@@ -373,6 +373,12 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%d"), &mmu_power_failures); //scan finda from buffer
+#ifdef MMU_DEBUG
+			printf_P(PSTR("MMU => 'ok'\n"));
+#endif //MMU_DEBUG
+			mmu_last_cmd = 0;
+			mmu_ready = true;
+			mmu_state = 1;
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
 		{ //resend request after timeout (5 min)
