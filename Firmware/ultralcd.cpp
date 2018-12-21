@@ -3633,10 +3633,10 @@ static void lcd_print_state(uint8_t state)
 {
 	switch (state) {
 		case STATE_ON:
-			lcd_puts_P(_T(MSG_ON));
+			lcd_puts_P(_i("On "));
 		break;
 		case STATE_OFF:
-			lcd_puts_P(_T(MSG_OFF));
+			lcd_puts_P(_i("Off"));
 		break;
 		default: 
 			lcd_puts_P(_i("N/A"));
