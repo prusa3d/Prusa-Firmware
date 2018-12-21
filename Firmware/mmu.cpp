@@ -608,7 +608,14 @@ void mmu_load_to_nozzle()
 	
 	bool saved_e_relative_mode = axis_relative_modes[E_AXIS];
 	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = true;
-	current_position[E_AXIS] += 7.2f;
+	if (mmu_idler_sensor_detected)
+	{
+		current_position[E_AXIS] += 3f;
+	}
+	else
+	{
+		current_position[E_AXIS] + 7.2f;
+	}
     float feedrate = 562;
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
     st_synchronize();

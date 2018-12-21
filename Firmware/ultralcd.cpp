@@ -139,6 +139,7 @@ static void lcd_menu_xyz_offset();
 static void lcd_menu_fails_stats_mmu();
 static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
+static void lcd_menu_show_sensors_state();
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats();
@@ -2235,16 +2236,17 @@ static void lcd_support_menu()
   #ifndef MK1BP
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=19 r=1
-  MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=15 r=1
+  MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=18 r=1
+  MENU_ITEM_SUBMENU_P(_i("Show sensors"), lcd_menu_show_sensors_state);////MSG_INFO_SENSORS c=18 r=1
 
 #ifdef TMC2130
-  MENU_ITEM_SUBMENU_P(_i("Belt status"), lcd_menu_belt_status);////MSG_MENU_BELT_STATUS c=15 r=1
+  MENU_ITEM_SUBMENU_P(_i("Belt status"), lcd_menu_belt_status);////MSG_MENU_BELT_STATUS c=18 r=1
 #endif //TMC2130
     
-  MENU_ITEM_SUBMENU_P(_i("Temperatures"), lcd_menu_temperatures);////MSG_MENU_TEMPERATURES c=15 r=1
+  MENU_ITEM_SUBMENU_P(_i("Temperatures"), lcd_menu_temperatures);////MSG_MENU_TEMPERATURES c=18 r=1
 
 #if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
-  MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=15 r=1
+  MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=18 r=1
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 #ifdef DEBUG_BUILD
@@ -3656,7 +3658,7 @@ static void lcd_show_sensors_state()
 	if (mmu_idler_sensor_detected) {
 		idler_state = !PIN_GET(MMU_IDLER_SENSOR_PIN);
 	}
-	lcd_puts_at_P(0, 0, _i("Sensors state"));
+	lcd_puts_at_P(0, 0, _i("Sensor state"));
 	lcd_puts_at_P(1, 1, _i("PINDA:"));
 	lcd_set_cursor(LCD_WIDTH - 4, 1);
 	lcd_print_state(pinda_state);
@@ -5036,9 +5038,7 @@ static void lcd_calibration_menu()
 
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=0 r=0
 	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17 r=1
-#ifdef TMC2130
-    MENU_ITEM_SUBMENU_P(_i("Show sensors"), lcd_menu_show_sensors_state);
-#else
+#ifndef TMC2130
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=17 r=1
 #endif
 #ifndef MK1BP
