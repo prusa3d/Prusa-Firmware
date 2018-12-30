@@ -2,8 +2,8 @@
 
 #ifdef MESH_BED_LEVELING
 
-#define MEAS_NUM_X_DIST (float(MESH_MAX_X - MESH_MIN_X)/float(MESH_MEAS_NUM_X_POINTS - 1))
-#define MEAS_NUM_Y_DIST (float(MESH_MAX_Y - MESH_MIN_Y)/float(MESH_MEAS_NUM_Y_POINTS - 1))
+//#define MEAS_NUM_X_DIST (float(MESH_MAX_X - MESH_MIN_X)/float(MESH_MEAS_NUM_X_POINTS - 1))
+//#define MEAS_NUM_Y_DIST (float(MESH_MAX_Y - MESH_MIN_Y)/float(MESH_MEAS_NUM_Y_POINTS - 1))
 
 #define MESH_X_DIST (float(MESH_MAX_X - MESH_MIN_X)/float(MESH_NUM_X_POINTS - 1))
 #define MESH_Y_DIST (float(MESH_MAX_Y - MESH_MIN_Y)/float(MESH_NUM_Y_POINTS - 1))
@@ -27,7 +27,7 @@ public:
     // Measurement point for the Z probe.
     // If use_default=true, then the default positions for a correctly built printer are used.
     // Otherwise a correction matrix is pulled from the EEPROM if available.
-    static void get_meas_xy(int ix, int iy, float &x, float &y, bool use_default);
+    //static void get_meas_xy(int ix, int iy, float &x, float &y, bool use_default);
     
     void set_z(int ix, int iy, float z) { z_values[iy][ix] = z; }
     
