@@ -379,7 +379,7 @@ ISR(FSENSOR_INT_PIN_VECT)
 		fsensor_not_responding = true;
 		printf_P(ERRMSG_PAT9125_NOT_RESP, 1);
 	}
-	if (st_cnt != 0)
+	if (st_cnt != 0 && !loading_flag)
 	{ //movement
 		if (st_cnt > 0) //positive movement
 		{
