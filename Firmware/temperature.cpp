@@ -231,7 +231,7 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
 #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
     (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
     (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
-  unsigned long extruder_autofan_last_check = millis();
+  extruder_autofan_last_check = millis();
 #endif
 
   if ((extruder >= EXTRUDERS)
@@ -1991,5 +1991,3 @@ float unscalePID_d(float d)
 }
 
 #endif //PIDTEMP
-
-
