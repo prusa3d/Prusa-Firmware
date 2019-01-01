@@ -238,7 +238,7 @@ void mmu_loop(void)
 			}
 			else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
 			{
-				int filament = mmu_cmd - MMU_CMD_E0;
+				filament = mmu_cmd - MMU_CMD_E0;
 #ifdef MMU_DEBUG				
 				printf_P(PSTR("MMU <= 'E%d'\n"), filament);
 #endif //MMU_DEBUG
