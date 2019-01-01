@@ -229,7 +229,7 @@ inline bool parse_version_P(const char *str, uint16_t version[4])
 // 1 - yes, 0 - false, -1 - error;
 inline int8_t is_provided_version_newer(const char *version_string)
 {
-    uint16_t ver_gcode[3], ver_current[3];
+    uint16_t ver_gcode[4], ver_current[4];
     if (! parse_version(version_string, ver_gcode))
         return -1;
     if (! parse_version_P(FW_VERSION_STR, ver_current))
