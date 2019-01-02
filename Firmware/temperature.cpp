@@ -572,6 +572,8 @@ void manage_heater()
     else {
       soft_pwm[e] = 0;
     }
+    if(target_temperature[e]==0)
+      soft_pwm[e] = 0;
 
     #ifdef WATCH_TEMP_PERIOD
     if(watchmillis[e] && millis() - watchmillis[e] > WATCH_TEMP_PERIOD)
@@ -693,6 +695,8 @@ void manage_heater()
         WRITE(HEATER_BED_PIN,LOW);
       }
     #endif
+      if(target_temperature_bed==0)
+        soft_pwm_bed = 0;
   #endif
   
 //code for controlling the extruder rate based on the width sensor 
