@@ -14,7 +14,7 @@ static const uint8_t filamentCount = 5;
 
 static constexpr uint8_t allDepleted(uint8_t fCount)
 {
-    return fCount == 1 ? 1 : ((1 << (fCount - 1)) | allDepleted(fCount - 2));
+    return fCount == 1 ? 1 : ((1 << (fCount - 1)) | allDepleted(fCount - 1));
 }
 
 //! @brief Is filament available for printing?
