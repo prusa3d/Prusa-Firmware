@@ -13,6 +13,7 @@
 #include "sound.h"
 #include "printers.h"
 #include <avr/pgmspace.h>
+#include "AutoDeplete.h"
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -276,8 +277,15 @@ void mmu_loop(void)
 			if (!mmu_finda && CHECK_FINDA && fsensor_enabled) {
 				fsensor_stop_and_save_print();
 				enquecommand_front_P(PSTR("FSENSOR_RECOVER")); //then recover
-				if (lcd_autoDepleteEnabled()) enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
-				else enquecommand_front_P(PSTR("M600")); //save print and run M600 command
+				ad_markDepleted(mmu_extruder);
+				if (lcd_autoDepleteEnabled() && !ad_allDepleted())
+				{
+				    enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
+				}
+				else
+				{
+				    enquecommand_front_P(PSTR("M600")); //save print and run M600 command
+				}
 			}
 			mmu_state = 1;
 			if (mmu_cmd == 0)
@@ -337,14 +345,19 @@ int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament)
 
 void mmu_command(uint8_t cmd)
 {
-#ifdef TMC2130
 	if ((cmd >= MMU_CMD_T0) && (cmd <= MMU_CMD_T4))
 	{
 		//disable extruder motor
+#ifdef TMC2130
 		tmc2130_set_pwr(E_AXIS, 0);
-		//printf_P(PSTR("E-axis disabled\n"));
-	}
 #endif //TMC2130
+		//printf_P(PSTR("E-axis disabled\n"));
+		ad_markLoaded(cmd - MMU_CMD_T0);
+	}
+    if ((cmd >= MMU_CMD_L0) && (cmd <= MMU_CMD_L4))
+    {
+        ad_markLoaded(cmd - MMU_CMD_L0);
+    }
 
 	mmu_cmd = cmd;
 	mmu_ready = false;
@@ -586,7 +599,7 @@ void mmu_M600_load_filament(bool automatic)
 #endif //MMU_M600_SWITCH_EXTRUDER
 		  }
 		  else {
-			  tmp_extruder = (tmp_extruder+1)%5;
+			  tmp_extruder = ad_getAlternative(tmp_extruder);
 		  }
 		  lcd_update_enable(false);
 		  lcd_clear();
