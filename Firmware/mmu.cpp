@@ -1,4 +1,4 @@
-//mmu.cpp
+//! @file
 
 #include "mmu.h"
 #include "planner.h"
@@ -343,6 +343,11 @@ int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament)
 	return timeout?1:0;
 }
 
+//! @brief Enqueue MMUv2 command
+//!
+//! Call manage_response() after enqueuing to process command.
+//! If T command is enqueued, it disables current for extruder motor if TMC2130 driver present.
+//! If T or L command is enqueued, it marks filament loaded in AutoDeplete module.
 void mmu_command(uint8_t cmd)
 {
 	if ((cmd >= MMU_CMD_T0) && (cmd <= MMU_CMD_T4))
