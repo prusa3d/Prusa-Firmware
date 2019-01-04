@@ -56,7 +56,6 @@ void ad_markLoaded(uint8_t filament)
 uint8_t ad_getAlternative(uint8_t filament)
 {
     assert(filament < filamentCount);
-    if (ad_allDepleted()) return filament;
     for (uint8_t i = 0; i<filamentCount; ++i)
     {
         uint8_t nextFilament = (filament + i) % filamentCount;
