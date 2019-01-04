@@ -12,6 +12,8 @@
 static uint8_t depleted;
 static const uint8_t filamentCount = 5;
 
+//! @return binary 1 for all filaments
+//! @par fCount number of filaments
 static constexpr uint8_t allDepleted(uint8_t fCount)
 {
     return fCount == 1 ? 1 : ((1 << (fCount - 1)) | allDepleted(fCount - 1));
