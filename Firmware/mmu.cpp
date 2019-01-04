@@ -1355,10 +1355,8 @@ void mmu_continue_loading()
 			st_synchronize();
 			//set nozzle target temperature to 0
 			setAllTargetHotends(0);
-			lcd_show_fullscreen_message_and_wait_P(_i("MMU load failed, fix the issue and press the knob."));
-			
+			lcd_setstatuspgm(_i("MMU load failed     "));////MSG_RECOVERING_PRINT c=20 r=1
 			mmu_fil_loaded = false; //so we can retry same T-code again
-			restore_print_from_ram_and_continue(0);
 		}
 	}
 	else { //mmu_idler_sensor_detected == false
