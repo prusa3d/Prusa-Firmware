@@ -22,6 +22,7 @@
    and Philipp Tiefenbacher. */
 
 #include "Marlin.h"
+#include "fastio.h"
 #include "stepper.h"
 #include "planner.h"
 #include "temperature.h"
@@ -1533,10 +1534,10 @@ void babystep(const uint8_t axis,const bool direction)
 #if defined(DIGIPOTSS_PIN) && DIGIPOTSS_PIN > -1
 void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl example
 {
-    digitalWrite(DIGIPOTSS_PIN,LOW); // take the SS pin low to select the chip
+    WRITE(DIGIPOTSS_PIN,LOW); // take the SS pin low to select the chip
     SPI.transfer(address); //  send in the address and value via SPI:
     SPI.transfer(value);
-    digitalWrite(DIGIPOTSS_PIN,HIGH); // take the SS pin high to de-select the chip:
+    WRITE(DIGIPOTSS_PIN,HIGH); // take the SS pin high to de-select the chip:
     //delay(10);
 }
 #endif
@@ -1557,9 +1558,9 @@ void st_current_init() //Initialize Digipot Motor Current
 uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
   SilentModeMenu = SilentMode;
   #ifdef MOTOR_CURRENT_PWM_XY_PIN
-    pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
-    pinMode(MOTOR_CURRENT_PWM_Z_PIN, OUTPUT);
-    pinMode(MOTOR_CURRENT_PWM_E_PIN, OUTPUT);
+    SET_OUTPUT(MOTOR_CURRENT_PWM_XY_PIN);
+    SET_OUTPUT(MOTOR_CURRENT_PWM_Z_PIN);
+    SET_OUTPUT(MOTOR_CURRENT_PWM_E_PIN);
     if((SilentMode == SILENT_MODE_OFF) || (farm_mode) ){
 
      motor_current_setting[0] = motor_current_setting_loud[0];
@@ -1598,20 +1599,20 @@ void microstep_init()
 {
 
   #if defined(E1_MS1_PIN) && E1_MS1_PIN > -1
-  pinMode(E1_MS1_PIN,OUTPUT);
-  pinMode(E1_MS2_PIN,OUTPUT); 
+  SET_OUTPUT(E1_MS1_PIN);
+  SET_OUTPUT(E1_MS2_PIN);
   #endif
 
   #if defined(X_MS1_PIN) && X_MS1_PIN > -1
   const uint8_t microstep_modes[] = MICROSTEP_MODES;
-  pinMode(X_MS1_PIN,OUTPUT);
-  pinMode(X_MS2_PIN,OUTPUT);  
-  pinMode(Y_MS1_PIN,OUTPUT);
-  pinMode(Y_MS2_PIN,OUTPUT);
-  pinMode(Z_MS1_PIN,OUTPUT);
-  pinMode(Z_MS2_PIN,OUTPUT);
-  pinMode(E0_MS1_PIN,OUTPUT);
-  pinMode(E0_MS2_PIN,OUTPUT);
+  SET_OUTPUT(X_MS1_PIN);
+  SET_OUTPUT(X_MS2_PIN);
+  SET_OUTPUT(Y_MS1_PIN);
+  SET_OUTPUT(Y_MS2_PIN);
+  SET_OUTPUT(Z_MS1_PIN);
+  SET_OUTPUT(Z_MS2_PIN);
+  SET_OUTPUT(E0_MS1_PIN);
+  SET_OUTPUT(E0_MS2_PIN);
   for(int i=0;i<=4;i++) microstep_mode(i,microstep_modes[i]);
   #endif
 }
@@ -1623,22 +1624,22 @@ void microstep_ms(uint8_t driver, int8_t ms1, int8_t ms2)
 {
   if(ms1 > -1) switch(driver)
   {
-    case 0: digitalWrite( X_MS1_PIN,ms1); break;
-    case 1: digitalWrite( Y_MS1_PIN,ms1); break;
-    case 2: digitalWrite( Z_MS1_PIN,ms1); break;
-    case 3: digitalWrite(E0_MS1_PIN,ms1); break;
+    case 0: WRITE( X_MS1_PIN,ms1); break;
+    case 1: WRITE( Y_MS1_PIN,ms1); break;
+    case 2: WRITE( Z_MS1_PIN,ms1); break;
+    case 3: WRITE(E0_MS1_PIN,ms1); break;
     #if defined(E1_MS1_PIN) && E1_MS1_PIN > -1
-    case 4: digitalWrite(E1_MS1_PIN,ms1); break;
+    case 4: WRITE(E1_MS1_PIN,ms1); break;
     #endif
   }
   if(ms2 > -1) switch(driver)
   {
-    case 0: digitalWrite( X_MS2_PIN,ms2); break;
-    case 1: digitalWrite( Y_MS2_PIN,ms2); break;
-    case 2: digitalWrite( Z_MS2_PIN,ms2); break;
-    case 3: digitalWrite(E0_MS2_PIN,ms2); break;
+    case 0: WRITE( X_MS2_PIN,ms2); break;
+    case 1: WRITE( Y_MS2_PIN,ms2); break;
+    case 2: WRITE( Z_MS2_PIN,ms2); break;
+    case 3: WRITE(E0_MS2_PIN,ms2); break;
     #if defined(E1_MS2_PIN) && E1_MS2_PIN > -1
-    case 4: digitalWrite(E1_MS2_PIN,ms2); break;
+    case 4: WRITE(E1_MS2_PIN,ms2); break;
     #endif
   }
 }
@@ -1659,21 +1660,21 @@ void microstep_readings()
 {
       SERIAL_PROTOCOLPGM("MS1,MS2 Pins\n");
       SERIAL_PROTOCOLPGM("X: ");
-      SERIAL_PROTOCOL(   digitalRead(X_MS1_PIN));
-      SERIAL_PROTOCOLLN( digitalRead(X_MS2_PIN));
+      SERIAL_PROTOCOL(   READ(X_MS1_PIN));
+      SERIAL_PROTOCOLLN( READ(X_MS2_PIN));
       SERIAL_PROTOCOLPGM("Y: ");
-      SERIAL_PROTOCOL(   digitalRead(Y_MS1_PIN));
-      SERIAL_PROTOCOLLN( digitalRead(Y_MS2_PIN));
+      SERIAL_PROTOCOL(   READ(Y_MS1_PIN));
+      SERIAL_PROTOCOLLN( READ(Y_MS2_PIN));
       SERIAL_PROTOCOLPGM("Z: ");
-      SERIAL_PROTOCOL(   digitalRead(Z_MS1_PIN));
-      SERIAL_PROTOCOLLN( digitalRead(Z_MS2_PIN));
+      SERIAL_PROTOCOL(   READ(Z_MS1_PIN));
+      SERIAL_PROTOCOLLN( READ(Z_MS2_PIN));
       SERIAL_PROTOCOLPGM("E0: ");
-      SERIAL_PROTOCOL(   digitalRead(E0_MS1_PIN));
-      SERIAL_PROTOCOLLN( digitalRead(E0_MS2_PIN));
+      SERIAL_PROTOCOL(   READ(E0_MS1_PIN));
+      SERIAL_PROTOCOLLN( READ(E0_MS2_PIN));
       #if defined(E1_MS1_PIN) && E1_MS1_PIN > -1
       SERIAL_PROTOCOLPGM("E1: ");
-      SERIAL_PROTOCOL(   digitalRead(E1_MS1_PIN));
-      SERIAL_PROTOCOLLN( digitalRead(E1_MS2_PIN));
+      SERIAL_PROTOCOL(   READ(E1_MS1_PIN));
+      SERIAL_PROTOCOLLN( READ(E1_MS2_PIN));
       #endif
 }
 #endif //TMC2130
