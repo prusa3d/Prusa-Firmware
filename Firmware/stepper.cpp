@@ -546,7 +546,7 @@ FORCE_INLINE void stepper_next_block()
     }
     if ((out_bits & (1 << E_AXIS)) != 0) { // -direction
 #ifndef LIN_ADVANCE
-      WRITE(E0_DIR_PIN, 
+      WRITE_NC(E0_DIR_PIN, 
   #ifdef SNMM
         (mmu_extruder == 0 || mmu_extruder == 2) ? !INVERT_E0_DIR :
   #endif // SNMM
@@ -555,7 +555,7 @@ FORCE_INLINE void stepper_next_block()
       count_direction[E_AXIS] = -1;
     } else { // +direction
 #ifndef LIN_ADVANCE
-      WRITE(E0_DIR_PIN,
+      WRITE_NC(E0_DIR_PIN,
   #ifdef SNMM
         (mmu_extruder == 0 || mmu_extruder == 2) ? INVERT_E0_DIR :
   #endif // SNMM
@@ -770,7 +770,7 @@ FORCE_INLINE void stepper_tick_lowres()
     counter_e.lo += current_block->steps_e.lo;
     if (counter_e.lo > 0) {
 #ifndef LIN_ADVANCE
-      WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
+      WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
 #endif /* LIN_ADVANCE */
       counter_e.lo -= current_block->step_event_count.lo;
       count_position[E_AXIS] += count_direction[E_AXIS];
@@ -780,7 +780,7 @@ FORCE_INLINE void stepper_tick_lowres()
 	#ifdef FILAMENT_SENSOR
 	  ++ fsensor_counter;
 	#endif //FILAMENT_SENSOR
-      WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
+      WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #endif
     }
     if(++ step_events_completed.lo >= current_block->step_event_count.lo)
@@ -832,7 +832,7 @@ FORCE_INLINE void stepper_tick_highres()
     counter_e.wide += current_block->steps_e.wide;
     if (counter_e.wide > 0) {
 #ifndef LIN_ADVANCE
-      WRITE(E0_STEP_PIN, !INVERT_E_STEP_PIN);
+      WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
 #endif /* LIN_ADVANCE */
       counter_e.wide -= current_block->step_event_count.wide;
       count_position[E_AXIS]+=count_direction[E_AXIS];
@@ -842,7 +842,7 @@ FORCE_INLINE void stepper_tick_highres()
   #ifdef FILAMENT_SENSOR
       ++ fsensor_counter;
   #endif //FILAMENT_SENSOR
-      WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
+      WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #endif
     }
     if(++ step_events_completed.wide >= current_block->step_event_count.wide)
