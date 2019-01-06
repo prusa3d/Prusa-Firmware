@@ -48,6 +48,9 @@ rm_if_exists update_lang_it.out
 rm_if_exists update_lang_pl.out
 rm_if_exists lang.bin
 rm_if_exists lang.hex
+rm_if_exists not_tran.txt
+rm_if_exists not_used.txt
+rm_if_exists missing_in_lang_en.txt
 
 echo -n "fw-clean.sh finished" >&2
 if [ $result -eq 0 ]; then

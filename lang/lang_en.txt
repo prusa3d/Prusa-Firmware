@@ -334,6 +334,9 @@
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 
+#MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
+
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
 
@@ -675,6 +678,18 @@
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK3 ready."
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-320 ready."
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-220 ready."
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-320 ready."
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-220 ready."
 
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
