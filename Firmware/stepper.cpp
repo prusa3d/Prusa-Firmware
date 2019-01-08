@@ -1461,7 +1461,7 @@ void babystep(const uint8_t axis,const bool direction)
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE(DEBUG_XSTEP_DUP_PIN,!INVERT_X_STEP_PIN);
 #endif //DEBUG_XSTEP_DUP_PIN
-    delayMicroseconds(1);
+    _delay_us(1);
     WRITE(X_STEP_PIN, INVERT_X_STEP_PIN);
 #ifdef DEBUG_XSTEP_DUP_PIN
     WRITE(DEBUG_XSTEP_DUP_PIN,INVERT_X_STEP_PIN);
@@ -1484,7 +1484,7 @@ void babystep(const uint8_t axis,const bool direction)
 #ifdef DEBUG_YSTEP_DUP_PIN
     WRITE(DEBUG_YSTEP_DUP_PIN,!INVERT_Y_STEP_PIN);
 #endif //DEBUG_YSTEP_DUP_PIN
-    delayMicroseconds(1);
+    _delay_us(1);
     WRITE(Y_STEP_PIN, INVERT_Y_STEP_PIN);
 #ifdef DEBUG_YSTEP_DUP_PIN
     WRITE(DEBUG_YSTEP_DUP_PIN,INVERT_Y_STEP_PIN);
@@ -1510,7 +1510,7 @@ void babystep(const uint8_t axis,const bool direction)
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, !INVERT_Z_STEP_PIN);
     #endif
-    delayMicroseconds(1);
+    _delay_us(1);
     WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
     #ifdef Z_DUAL_STEPPER_DRIVERS
       WRITE(Z2_STEP_PIN, INVERT_Z_STEP_PIN);
