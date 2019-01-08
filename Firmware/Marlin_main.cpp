@@ -7446,7 +7446,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 					{
 						if ((eSoundMode == e_SOUND_MODE_LOUD) || (eSoundMode == e_SOUND_MODE_ONCE))
 							tone(BEEPER, 1000);
-						delay_keep_alive(50);
+						delay(50);
 						noTone(BEEPER);
 						loading_flag = true;
 						enquecommand_front_P((PSTR("M701")));
