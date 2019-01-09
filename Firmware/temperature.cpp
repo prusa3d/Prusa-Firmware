@@ -231,7 +231,7 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
 #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
     (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
     (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
-  unsigned long extruder_autofan_last_check = millis();
+  extruder_autofan_last_check = millis();
 #endif
 
   if ((extruder >= EXTRUDERS)
@@ -1042,10 +1042,10 @@ void tp_init()
     /* Using pinMode and digitalWrite, as that was the only way I could get it to compile */
     
     //Have to toggle SD card CS pin to low first, to enable firmware to talk with SD card
-	pinMode(SS_PIN, OUTPUT);
-	digitalWrite(SS_PIN,0);  
-	pinMode(MAX6675_SS, OUTPUT);
-	digitalWrite(MAX6675_SS,1);
+	SET_OUTPUT(SS_PIN);
+	WRITE(SS_PIN,0);
+	SET_OUTPUT(MAX6675_SS);
+	WRITE(MAX6675_SS,1);
   #endif
 
   adc_init();
@@ -1991,5 +1991,3 @@ float unscalePID_d(float d)
 }
 
 #endif //PIDTEMP
-
-
