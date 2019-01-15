@@ -465,14 +465,11 @@ bool mmu_get_response(uint8_t move)
 	KEEPALIVE_STATE(IN_PROCESS);
 	while (mmu_cmd != 0)
 	{
-//		mmu_loop();
 		delay_keep_alive(100);
 	}
 
 	while (!mmu_ready)
 	{
-//		mmu_loop();
-
 		if ((mmu_state != 3) && (mmu_last_cmd == 0))
 			break;
 
@@ -532,25 +529,6 @@ bool mmu_get_response(uint8_t move)
 	mmu_ready = false;
 //	printf_P(PSTR("mmu_get_response - end %d\n"), ret?1:0);
 	return ret;
-
-/*	//waits for "ok" from mmu
-	//function returns true if "ok" was received
-	//if timeout is set to true function return false if there is no "ok" received before timeout
-	bool response = true;
-	LongTimer mmu_get_reponse_timeout;
-	KEEPALIVE_STATE(IN_PROCESS);
-	mmu_get_reponse_timeout.start();
-	while (mmu_rx_ok() <= 0)
-	{
-		delay_keep_alive(100);
-		if (timeout && mmu_get_reponse_timeout.expired(5 * 60 * 1000ul))
-		{ //5 minutes timeout
-			response = false;
-			break;
-		}
-	}
-	printf_P(PSTR("mmu_get_response - end %d\n"), response?1:0);
-	return response;*/
 }
 
 
