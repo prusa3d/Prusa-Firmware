@@ -38,7 +38,7 @@
 #include "mmu.h"
 
 #include "static_assert.h"
-
+#include "io_atmega2560.h"
 
 extern bool fans_check_enabled;
 
@@ -136,6 +136,11 @@ static void lcd_menu_extruder_info();
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
+static void lcd_menu_fails_stats_mmu();
+static void lcd_menu_fails_stats_mmu_print();
+static void lcd_menu_fails_stats_mmu_total();
+static void lcd_menu_show_sensors_state();
+
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats();
 #endif //TMC2130 or FILAMENT_SENSOR
@@ -195,6 +200,9 @@ static void menu_action_sddirectory(const char* filename);
 
 #define ENCODER_FEEDRATE_DEADZONE 10
 
+#define STATE_NA 255
+#define STATE_OFF 0
+#define STATE_ON 1
 
 /*
 #define MENU_ITEM(type, label, args...) do { \
@@ -537,10 +545,15 @@ void lcdui_print_percent_done(void)
 void lcdui_print_extruder(void)
 {
 	int chars = 0;
-	if (mmu_extruder == tmp_extruder)
-		chars = lcd_printf_P(_N(" F%u"), mmu_extruder+1);
+	if (mmu_extruder == tmp_extruder) {
+		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) chars = lcd_printf_P(_N(" F?"));
+		else chars = lcd_printf_P(_N(" F%u"), mmu_extruder + 1);
+	}
 	else
-		chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder+1, tmp_extruder+1);
+	{
+		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) chars = lcd_printf_P(_N(" ?>%u"), tmp_extruder + 1);
+		else chars = lcd_printf_P(_N(" %u>%u"), mmu_extruder + 1, tmp_extruder + 1);
+	}
 	lcd_space(5 - chars);
 }
 
@@ -1914,6 +1927,48 @@ static void lcd_menu_extruder_info()
     menu_back_if_clicked();
 }
 
+static void lcd_menu_fails_stats_mmu()
+{
+	MENU_BEGIN();
+	MENU_ITEM_BACK_P(_T(MSG_MAIN));
+	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_mmu_print);
+	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_mmu_total);
+	MENU_END();
+}
+
+static void lcd_menu_fails_stats_mmu_print()
+{
+//01234567890123456789
+//Last print failures
+// MMU fails  000
+// MMU load fails  000
+//
+//////////////////////
+	lcd_timeoutToStatus.stop(); //infinite timeout
+    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
+    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
+//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3)), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
+	menu_back_if_clicked_fb();
+}
+
+static void lcd_menu_fails_stats_mmu_total()
+{
+//01234567890123456789
+//Last print failures
+// MMU fails  000
+// MMU load fails  000
+//
+//////////////////////
+	mmu_command(MMU_CMD_S3);
+	lcd_timeoutToStatus.stop(); //infinite timeout
+    uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
+    uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
+//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S %-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);
+	menu_back_if_clicked_fb();
+}
+
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats_total()
 {
@@ -1950,6 +2005,7 @@ static void lcd_menu_fails_stats_print()
 	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
 	menu_back_if_clicked_fb();
 }
+
 /**
  * @brief Open fail statistics menu
  *
@@ -1965,6 +2021,7 @@ static void lcd_menu_fails_stats()
 	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_total);
 	MENU_END();
 }
+
 #elif defined(FILAMENT_SENSOR)
 /**
  * @brief Print last print and total filament run outs
@@ -2180,16 +2237,17 @@ static void lcd_support_menu()
   #ifndef MK1BP
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=19 r=1
-  MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=15 r=1
+  MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=18 r=1
+  MENU_ITEM_SUBMENU_P(_i("Show sensors"), lcd_menu_show_sensors_state);////MSG_INFO_SENSORS c=18 r=1
 
 #ifdef TMC2130
-  MENU_ITEM_SUBMENU_P(_i("Belt status"), lcd_menu_belt_status);////MSG_MENU_BELT_STATUS c=15 r=1
+  MENU_ITEM_SUBMENU_P(_i("Belt status"), lcd_menu_belt_status);////MSG_MENU_BELT_STATUS c=18 r=1
 #endif //TMC2130
     
-  MENU_ITEM_SUBMENU_P(_i("Temperatures"), lcd_menu_temperatures);////MSG_MENU_TEMPERATURES c=15 r=1
+  MENU_ITEM_SUBMENU_P(_i("Temperatures"), lcd_menu_temperatures);////MSG_MENU_TEMPERATURES c=18 r=1
 
 #if defined (VOLT_BED_PIN) || defined (VOLT_PWR_PIN)
-  MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=15 r=1
+  MENU_ITEM_SUBMENU_P(_i("Voltages"), lcd_menu_voltages);////MSG_MENU_VOLTAGES c=18 r=1
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 #ifdef DEBUG_BUILD
@@ -2351,7 +2409,7 @@ void lcd_alright() {
 
 
   enc_dif = lcd_encoder_diff;
-
+  lcd_consume_click();
   while (lcd_change_fil_state == 0) {
 
     manage_heater();
@@ -3239,6 +3297,7 @@ void lcd_show_fullscreen_message_and_wait_P(const char *msg)
     const char *msg_next = lcd_display_message_fullscreen_P(msg);
     bool multi_screen = msg_next != NULL;
 	lcd_set_custom_characters_nextpage();
+	lcd_consume_click();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	// Until confirmed by a button click.
 	for (;;) {
@@ -3283,7 +3342,7 @@ bool lcd_wait_for_click_delay(uint16_t nDelay)
 {
 bool bDelayed;
 long nTime0 = millis()/1000;
-
+	lcd_consume_click();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
     for (;;) {
         manage_heater();
@@ -3332,6 +3391,7 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = millis();
 	int8_t        enc_dif = lcd_encoder_diff;
+	lcd_consume_click();
 	//KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
 		for (uint8_t i = 0; i < 100; ++i) {
@@ -3421,6 +3481,7 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 	// Wait for user confirmation or a timeout.
 	unsigned long previous_millis_cmd = millis();
 	int8_t        enc_dif = lcd_encoder_diff;
+	lcd_consume_click();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 	for (;;) {
 		if (allow_timeouting && millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
@@ -3555,6 +3616,7 @@ static void menu_show_end_stops() {
 void lcd_diag_show_end_stops()
 {
     lcd_clear();
+	lcd_consume_click();
     for (;;) {
         manage_heater();
         manage_inactivity(true);
@@ -3567,28 +3629,60 @@ void lcd_diag_show_end_stops()
     lcd_return_to_status();
 }
 
-#ifdef TMC2130
-static void lcd_show_pinda_state()
+static void lcd_print_state(uint8_t state)
 {
-lcd_set_cursor(0, 0);
-lcd_puts_P((PSTR("P.I.N.D.A. state")));
-lcd_set_cursor(0, 2);
-lcd_puts_P(READ(Z_MIN_PIN)?(PSTR("Z1 (LED off)")):(PSTR("Z0 (LED on) "))); // !!! both strings must have same length (due to dynamic refreshing)
+	switch (state) {
+		case STATE_ON:
+			lcd_puts_P(_i("On "));
+		break;
+		case STATE_OFF:
+			lcd_puts_P(_i("Off"));
+		break;
+		default: 
+			lcd_puts_P(_i("N/A"));
+		break;
+	}
 }
 
-static void menu_show_pinda_state()
+static void lcd_show_sensors_state()
 {
-lcd_timeoutToStatus.stop();
-lcd_show_pinda_state();
-if(LCD_CLICKED)
-     {
-     lcd_timeoutToStatus.start();
-     menu_back();
-     }
+	//0: N/A; 1: OFF; 2: ON
+	uint8_t chars = 0;
+	uint8_t pinda_state = STATE_NA;
+	uint8_t finda_state = STATE_NA;
+	uint8_t idler_state = STATE_NA;
+
+	pinda_state = READ(Z_MIN_PIN);
+	if (mmu_enabled) {
+		finda_state = mmu_finda;
+	}
+	if (mmu_idler_sensor_detected) {
+		idler_state = !PIN_GET(MMU_IDLER_SENSOR_PIN);
+	}
+	lcd_puts_at_P(0, 0, _i("Sensor state"));
+	lcd_puts_at_P(1, 1, _i("PINDA:"));
+	lcd_set_cursor(LCD_WIDTH - 4, 1);
+	lcd_print_state(pinda_state);
+	
+	lcd_puts_at_P(1, 2, _i("FINDA:"));
+	lcd_set_cursor(LCD_WIDTH - 4, 2);
+	lcd_print_state(finda_state);
+	
+	lcd_puts_at_P(1, 3, _i("IR:"));
+	lcd_set_cursor(LCD_WIDTH - 4, 3);
+	lcd_print_state(idler_state);
 }
-#endif // defined TMC2130
 
-
+static void lcd_menu_show_sensors_state()
+{
+	lcd_timeoutToStatus.stop();
+	lcd_show_sensors_state();
+	if(LCD_CLICKED)
+	{
+		lcd_timeoutToStatus.start();
+		menu_back();
+	}
+}
 
 void prusa_statistics(int _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
@@ -4313,6 +4407,7 @@ void lcd_v2_calibration()
 		}
 		else {
 			lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
+			lcd_consume_click();
 			for (int i = 0; i < 20; i++) { //wait max. 2s
 				delay_keep_alive(100);
 				if (lcd_clicked()) {
@@ -4944,9 +5039,7 @@ static void lcd_calibration_menu()
 
     MENU_ITEM_SUBMENU_P(_i("Bed level correct"), lcd_adjust_bed);////MSG_BED_CORRECTION_MENU c=0 r=0
 	MENU_ITEM_SUBMENU_P(_i("PID calibration"), pid_extruder);////MSG_PID_EXTRUDER c=17 r=1
-#ifdef TMC2130
-    MENU_ITEM_SUBMENU_P(_i("Show pinda state"), menu_show_pinda_state);
-#else
+#ifndef TMC2130
     MENU_ITEM_SUBMENU_P(_i("Show end stops"), menu_show_end_stops);////MSG_SHOW_END_STOPS c=17 r=1
 #endif
 #ifndef MK1BP
@@ -4979,7 +5072,7 @@ void bowden_menu() {
 
 	}
 	enc_dif = lcd_encoder_diff;
-
+	lcd_consume_click();
 	while (1) {
 
 		manage_heater();
@@ -5086,6 +5179,7 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 	char cursor_pos = 1;
 	int enc_dif = 0;
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
+	lcd_consume_click();
 	while (1) {
 		manage_heater();
 		manage_inactivity(true);
@@ -5241,7 +5335,7 @@ char reset_menu() {
 	lcd_clear();
 	lcd_set_cursor(0, 0);
 	lcd_print(">");
-
+	lcd_consume_click();
 	while (1) {		
 
 		for (int i = 0; i < 4; i++) {
@@ -5517,7 +5611,7 @@ unsigned char lcd_choose_color() {
 	lcd_print(">");
 
 	active_rows = items_no < 3 ? items_no : 3;
-
+	lcd_consume_click();
 	while (1) {
 		lcd_puts_at_P(0, 0, PSTR("Choose color:"));
 		for (int i = 0; i < active_rows; i++) {
@@ -5852,7 +5946,9 @@ static void lcd_main_menu()
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
   MENU_ITEM_SUBMENU_P(_i("Fail stats"), lcd_menu_fails_stats);
 #endif
-
+  if (mmu_enabled) {
+	  MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);
+  }
   MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT c=0 r=0
 #ifdef LCD_TEST
     MENU_ITEM_SUBMENU_P(_i("W25x20CL init"), lcd_test_menu);////MSG_SUPPORT c=0 r=0
@@ -6052,6 +6148,7 @@ static void lcd_sd_updir()
 
 void lcd_print_stop()
 {
+	saved_printing = false;
 	cancel_heatup = true;
 #ifdef MESH_BED_LEVELING
 	mbl.active = false;
@@ -6085,7 +6182,7 @@ void lcd_print_stop()
 
 void lcd_sdcard_stop()
 {
-	
+
 	lcd_set_cursor(0, 0);
 	lcd_puts_P(_T(MSG_STOP_PRINT));
 	lcd_set_cursor(2, 2);

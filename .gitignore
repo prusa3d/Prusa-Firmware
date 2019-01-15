@@ -1,4 +1,4 @@
-﻿.settings
+.settings
 .project
 .cproject
 Debug
@@ -35,3 +35,17 @@ Firmware/Doc
 /Firmware/variants/1_75mm_MK2-EINY01-E3Dv6full.h.bak
 /Firmware/variants/1_75mm_MK1-RAMBo13a-E3Dv6full.h
 /Firmware/variants/1_75mm_MK1-RAMBo10a-E3Dv6full.h
+/lang/*.bin
+/lang/*.hex
+/lang/*.dat
+/lang/*.tmp
+/lang/*.out
+/lang/not_tran.txt
+/lang/not_used.txt
+/lang/progmem1.chr
+/lang/progmem1.lss
+/lang/progmem1.txt
+/lang/progmem1.var
+/lang/text.sym
+/lang/textaddr.txt
+/build-env/
