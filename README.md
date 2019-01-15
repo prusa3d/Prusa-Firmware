@@ -20,7 +20,7 @@ The script downloads Arduino with our modifications and Rambo board support inst
 
    a. install `"Arduino Software IDE"` for your preferred operating system  
 `https://www.arduino.cc -> Software->Downloads`  
-it is recommended to use older version `"1.6.9"`, as it is used on out build server to produce official builds.  
+it is recommended to use version `"1.8.5"`, as it is used on out build server to produce official builds.  
 _note: in the case of persistent compilation problems, check the version of the currently used C/C++ compiler (GCC) - should be `4.8.1`; version can be verified by entering the command  
 `avr-gcc --version`  
 if you are not sure where the file is placed (depends on how `"Arduino Software IDE"` was installed), you can use the search feature within the file system_  
