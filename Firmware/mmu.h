@@ -71,7 +71,7 @@ extern void mmu_command(uint8_t cmd);
 
 extern bool mmu_get_response(uint8_t move = 0);
 
-extern void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move = 0);
+extern void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move = MMU_NO_MOVE);
 
 extern void mmu_load_to_nozzle();
 
