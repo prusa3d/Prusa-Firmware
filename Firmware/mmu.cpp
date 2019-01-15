@@ -241,7 +241,7 @@ void mmu_loop(void)
 				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = 3; // wait for response
 				mmu_fil_loaded = true;
-				if(mmu_idler_sensor_detected) mmu_idl_sens = 1; //if idler sensor detected, use it for T-code
+				mmu_idl_sens = 1;
 			}
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
 			{
@@ -259,7 +259,7 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = 3;
-				if(mmu_idler_sensor_detected) mmu_idl_sens = 1; //if idler sensor detected use it for C0 code
+				mmu_idl_sens = 1;
 			}
 			else if (mmu_cmd == MMU_CMD_U0)
 			{
@@ -333,22 +333,20 @@ void mmu_loop(void)
 		}
 		return;
 	case 3: //response to mmu commands
-		if (mmu_idler_sensor_detected) {
-			if (mmu_idl_sens)
-			{
-				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0 && mmu_loading_flag)
-				{
+        if (mmu_idl_sens)
+        {
+            if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0 && mmu_loading_flag)
+            {
 #ifdef MMU_DEBUG
-					printf_P(PSTR("MMU <= 'A'\n"));
+                printf_P(PSTR("MMU <= 'A'\n"));
 #endif //MMU_DEBUG  
-					mmu_puts_P(PSTR("A\n")); //send 'abort' request
-					mmu_idl_sens = 0;
-					//printf_P(PSTR("MMU IDLER_SENSOR = 0 - ABORT\n"));
-				}
-				//else
-					//printf_P(PSTR("MMU IDLER_SENSOR = 1 - WAIT\n"));
-			}
-		}
+                mmu_puts_P(PSTR("A\n")); //send 'abort' request
+                mmu_idl_sens = 0;
+                //printf_P(PSTR("MMU IDLER_SENSOR = 0 - ABORT\n"));
+            }
+            //else
+                //printf_P(PSTR("MMU IDLER_SENSOR = 1 - WAIT\n"));
+        }
 		if (mmu_rx_ok() > 0)
 		{
 #ifdef MMU_DEBUG
@@ -438,10 +436,30 @@ void mmu_load_step() {
 		st_synchronize();
 }
 
+//! @brief Is nozzle hot enough to move extruder wheels and do we have idler sensor?
+//!
+//! Do load steps only if temperature is higher then min. temp for safe extrusion and
+//! idler sensor present.
+//! Otherwise "cold extrusion prevented" would be send to serial line periodically
+//! and watchdog reset will be triggered by lack of keep_alive processing.
+//!
+//! @retval true temperature is high enough to move extruder
+//! @retval false temperature is not high enough to move extruder, turned
+//!         off E-stepper to prevent over-heating and allow filament pull-out if necessary
+bool can_extrude()
+{
+    if ((degHotend(active_extruder) < EXTRUDE_MINTEMP) || !mmu_idler_sensor_detected)
+    {
+        disable_e0();
+        delay_keep_alive(100);
+        return false;
+    }
+    return true;
+}
+
 bool mmu_get_response(uint8_t move)
 {
-	mmu_loading_flag = false;
-	if (!mmu_idler_sensor_detected) move = MMU_NO_MOVE;
+    mmu_loading_flag = false;
 
 	printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
 	KEEPALIVE_STATE(IN_PROCESS);
@@ -458,28 +476,23 @@ bool mmu_get_response(uint8_t move)
 		if ((mmu_state != 3) && (mmu_last_cmd == 0))
 			break;
 
-		//Do load steps only if temperature is higher then min. temp for safe extrusion.
-		//Otherwise "cold extrusion prevented" would be send to serial line periodically
-		if (degHotend(active_extruder) < EXTRUDE_MINTEMP) {
-			disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
-			delay_keep_alive(100);
-			continue;
-		}
-
 		switch (move) {
-			case MMU_LOAD_MOVE: 
-				mmu_loading_flag = true;
-				mmu_load_step();
+			case MMU_LOAD_MOVE:
+			    mmu_loading_flag = true;
+				if (can_extrude()) mmu_load_step();
 				//don't rely on "ok" signal from mmu unit; if filament detected by idler sensor during loading stop loading movements to prevent infinite loading
 				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) move = MMU_NO_MOVE;
 				break;
 			case MMU_UNLOAD_MOVE:
 				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament is still detected by idler sensor, printer helps with unlading 
-				{ 
-					printf_P(PSTR("Unload 1\n"));
-					current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
-					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
-					st_synchronize();
+				{
+				    if (can_extrude())
+				    {
+                        printf_P(PSTR("Unload 1\n"));
+                        current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
+                        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+                        st_synchronize();
+				    }
 				}
 				else //filament was unloaded from idler, no additional movements needed 
 				{ 
@@ -490,11 +503,14 @@ bool mmu_get_response(uint8_t move)
 				break;
 			case MMU_TCODE_MOVE: //first do unload and then continue with infinite loading movements
 				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament detected by idler sensor, we must unload first 
-				{ 
-					printf_P(PSTR("Unload 2\n"));
-					current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
-					plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
-					st_synchronize();
+				{
+                    if (can_extrude())
+                    {
+                        printf_P(PSTR("Unload 2\n"));
+                        current_position[E_AXIS] = current_position[E_AXIS] - MMU_LOAD_FEEDRATE * MMU_LOAD_TIME_MS*0.001;
+                        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+                        st_synchronize();
+                    }
 				}
 				else //delay to allow mmu unit to pull out filament from bondtech gears and then start with infinite loading 
 				{ 
@@ -502,6 +518,7 @@ bool mmu_get_response(uint8_t move)
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
 					delay_keep_alive(MMU_LOAD_TIME_MS);
 					move = MMU_LOAD_MOVE;
+					printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
 				}
 				break;
 			case MMU_NO_MOVE:
