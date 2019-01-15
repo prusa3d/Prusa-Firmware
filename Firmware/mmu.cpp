@@ -1363,6 +1363,7 @@ void mmu_continue_loading()
 			setAllTargetHotends(0);
 			lcd_setstatuspgm(_i("MMU load failed     "));////MSG_RECOVERING_PRINT c=20 r=1
 			mmu_fil_loaded = false; //so we can retry same T-code again
+			isPrintPaused = true;
 		}
 	}
 	else { //mmu_idler_sensor_detected == false
