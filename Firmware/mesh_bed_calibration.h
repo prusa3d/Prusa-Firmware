@@ -1,6 +1,17 @@
 #ifndef MESH_BED_CALIBRATION_H
 #define MESH_BED_CALIBRATION_H
 
+#define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER)
+#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER)
+
+#define BED_X0 (13.f - BED_ZERO_REF_X)
+#define BED_Y0 (10.4f - BED_ZERO_REF_Y)
+#define BED_Xn (216.f - BED_ZERO_REF_X)
+#define BED_Yn (202.4f - BED_ZERO_REF_Y)
+#define BED_X(i, n) ((float)i * (BED_Xn - BED_X0) / (n - 1) + BED_X0)
+#define BED_Y(i, n) ((float)i * (BED_Yn - BED_Y0) / (n - 1) + BED_Y0)
+
+
 // Exact positions of the print head above the bed reference points, in the world coordinates.
 // The world coordinates match the machine coordinates only in case, when the machine
 // is built properly, the end stops are at the correct positions and the axes are perpendicular.
@@ -153,7 +164,7 @@ enum BedSkewOffsetDetectionResultType {
 	// Detection failed, some point was not found.
 	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1,
 	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2,
-	
+
 	// Detection finished with success.
 	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,
 	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,
