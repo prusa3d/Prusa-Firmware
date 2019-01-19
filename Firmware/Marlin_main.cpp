@@ -3175,8 +3175,8 @@ void process_commands()
 		current_position[Z_AXIS] = 5;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 
-		current_position[X_AXIS] = BED_X0;
-		current_position[Y_AXIS] = BED_Y0;
+    current_position[X_AXIS] = pgm_read_float(bed_ref_points);
+		current_position[Y_AXIS] = pgm_read_float(bed_ref_points + 1);
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 3000 / 60, active_extruder);
 		st_synchronize();
 

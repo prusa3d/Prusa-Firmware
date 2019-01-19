@@ -57,6 +57,22 @@ const float bed_ref_points_4[] PROGMEM = {
     13.f  - BED_ZERO_REF_X, 104.4f - BED_ZERO_REF_Y
 };
 
+// Positions of the bed reference points in the machine coordinates, referenced to the P.I.N.D.A sensor.
+// The points are ordered in a zig-zag fashion to speed up the calibration.
+const float bed_ref_points[] PROGMEM = {
+    13.f  - BED_ZERO_REF_X,   6.4f - BED_ZERO_REF_Y,
+    115.f - BED_ZERO_REF_X,   6.4f - BED_ZERO_REF_Y,
+    216.f - BED_ZERO_REF_X,   6.4f - BED_ZERO_REF_Y,
+
+    216.f - BED_ZERO_REF_X, 104.4f - BED_ZERO_REF_Y,
+    115.f - BED_ZERO_REF_X, 104.4f - BED_ZERO_REF_Y,
+    13.f  - BED_ZERO_REF_X, 104.4f - BED_ZERO_REF_Y,
+
+    13.f  - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
+    115.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y,
+    216.f - BED_ZERO_REF_X, 202.4f - BED_ZERO_REF_Y
+};
+
 static inline float sqr(float x) { return x * x; }
 
 static inline bool point_on_1st_row(const uint8_t i, const uint8_t npts)
