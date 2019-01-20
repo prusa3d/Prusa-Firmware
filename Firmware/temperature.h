@@ -139,14 +139,14 @@ FORCE_INLINE float degTargetBed() {
 
 FORCE_INLINE void setTargetHotend(const float &celsius, uint8_t extruder) {  
   target_temperature[extruder] = celsius;
-  resetPID[extruder];
+  resetPID(extruder);
 };
 
 static inline void setTargetHotendSafe(const float &celsius, uint8_t extruder)
 {
     if (extruder<EXTRUDERS) {
       target_temperature[extruder] = celsius;
-      resetPID[extruder];
+      resetPID(extruder);
     }
 }
 
