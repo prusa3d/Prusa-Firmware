@@ -258,6 +258,7 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
   if (extruder<0)
   {
      soft_pwm_bed = (MAX_BED_POWER)/2;
+	 timer02_set_pwm0(soft_pwm_bed << 1);
      bias = d = (MAX_BED_POWER)/2;
    }
    else
@@ -294,7 +295,10 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
         if(millis() - t2 > 5000) { 
           heating=false;
           if (extruder<0)
+		  {
             soft_pwm_bed = (bias - d) >> 1;
+			timer02_set_pwm0(soft_pwm_bed << 1);
+		  }
           else
             soft_pwm[extruder] = (bias - d) >> 1;
           t1=millis();
@@ -348,7 +352,10 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
             }
           }
           if (extruder<0)
+		  {
             soft_pwm_bed = (bias + d) >> 1;
+			timer02_set_pwm0(soft_pwm_bed << 1);
+		  }
           else
             soft_pwm[extruder] = (bias + d) >> 1;
           pid_cycle++;
@@ -776,9 +783,11 @@ void manage_heater()
 #endif //AMBIENT_THERMISTOR
 	  {
 	    soft_pwm_bed = (int)pid_output >> 1;
+		timer02_set_pwm0(soft_pwm_bed << 1);
 	  }
 	  else {
 	    soft_pwm_bed = 0;
+		timer02_set_pwm0(soft_pwm_bed << 1);
 	  }
 
     #elif !defined(BED_LIMIT_SWITCHING)
@@ -788,15 +797,18 @@ void manage_heater()
         if(current_temperature_bed >= target_temperature_bed)
         {
           soft_pwm_bed = 0;
+		  timer02_set_pwm0(soft_pwm_bed << 1);
         }
         else 
         {
           soft_pwm_bed = MAX_BED_POWER>>1;
+		  timer02_set_pwm0(soft_pwm_bed << 1);
         }
       }
       else
       {
         soft_pwm_bed = 0;
+		timer02_set_pwm0(soft_pwm_bed << 1);
         WRITE(HEATER_BED_PIN,LOW);
       }
     #else //#ifdef BED_LIMIT_SWITCHING
@@ -806,15 +818,18 @@ void manage_heater()
         if(current_temperature_bed > target_temperature_bed + BED_HYSTERESIS)
         {
           soft_pwm_bed = 0;
+		  timer02_set_pwm0(soft_pwm_bed << 1);
         }
         else if(current_temperature_bed <= target_temperature_bed - BED_HYSTERESIS)
         {
           soft_pwm_bed = MAX_BED_POWER>>1;
+          timer02_set_pwm0(soft_pwm_bed << 1);
         }
       }
       else
       {
         soft_pwm_bed = 0;
+		timer02_set_pwm0(soft_pwm_bed << 1);
         WRITE(HEATER_BED_PIN,LOW);
       }
     #endif
@@ -1368,6 +1383,7 @@ void disable_heater()
   #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
     target_temperature_bed=0;
     soft_pwm_bed=0;
+	timer02_set_pwm0(soft_pwm_bed << 1);
     #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1  
       WRITE(HEATER_BED_PIN,LOW);
     #endif
