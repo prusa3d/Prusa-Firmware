@@ -484,6 +484,7 @@ void checkExtruderAutoFans()
 
 void resetPID(uint8_t extruder)                   // ready for eventually parameters adjusting
 {
+extruder=extruder;                                // only for compiler-warning elimination (if function do nothing)
 }
 
 void manage_heater()
