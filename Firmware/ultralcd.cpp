@@ -6418,21 +6418,25 @@ bool lcd_selftest()
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(8, _progress, 3, true, 2000); //bed ok
-#ifdef FILAMENT_SENSOR
-		if (mmu_enabled == false) {
-			_progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
-			_result = lcd_selftest_fsensor();
-		}
-#endif // FILAMENT_SENSOR
 	}
+
+#ifdef FILAMENT_SENSOR
+    if (mmu_enabled == false)
+    {
+        if (_result)
+        {
+            _progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
+            _result = lcd_selftest_fsensor();
+        }
+        if (_result)
+        {
+            _progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
+        }
+    }
+#endif // FILAMENT_SENSOR
+
 	if (_result)
 	{
-#ifdef FILAMENT_SENSOR
-		if (mmu_enabled == false)
-		{
-			_progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
-		}
-#endif // FILAMENT_SENSOR
 		_progress = lcd_selftest_screen(11, _progress, 3, true, 5000); //all correct
 	}
 	else
