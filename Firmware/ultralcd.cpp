@@ -7029,12 +7029,13 @@ static bool selftest_irsensor()
     mmu_wait_for_heater_blocking();
     uint8_t progress = lcd_selftest_screen(9, 0, 1, true, 0);
     mmu_filament_ramming();
+    progress = lcd_selftest_screen(9, progress, 1, true, 0);
     mmu_command(MMU_CMD_U0);
     manage_response(false, false);
 
     for(uint_least8_t i = 0; i < 200; ++i)
     {
-        if (0 == (i % 50)) progress = lcd_selftest_screen(9, progress, 1, true, 0);
+        if (0 == (i % 32)) progress = lcd_selftest_screen(9, progress, 1, true, 0);
 
         mmu_load_step(false);
         while (blocks_queued())
