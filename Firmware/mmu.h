@@ -1,5 +1,8 @@
 //! @file
 
+#ifndef MMU_H
+#define MMU_H
+
 #include <inttypes.h>
 
 
@@ -119,3 +122,8 @@ extern void mmu_eject_fil_2();
 extern void mmu_eject_fil_3();
 extern void mmu_eject_fil_4();
 extern void mmu_continue_loading();
+extern void mmu_filament_ramming();
+extern void mmu_wait_for_heater_blocking();
+extern void mmu_load_step(bool synchronize = true);
+
+#endif //MMU_H

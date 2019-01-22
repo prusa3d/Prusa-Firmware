@@ -163,6 +163,7 @@ static void lcd_selftest_screen_step(int _row, int _col, int _state, const char 
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite);
 static bool lcd_selftest_fan_dialog(int _fan);
 static bool lcd_selftest_fsensor();
+static bool selftest_irsensor();
 static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
 #ifdef SNMM
@@ -6421,17 +6422,20 @@ bool lcd_selftest()
 	}
 
 #ifdef FILAMENT_SENSOR
-    if (mmu_enabled == false)
+    if (_result)
     {
-        if (_result)
+        _progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
+        if (mmu_enabled)
         {
-            _progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
+            _result = selftest_irsensor();
+        } else
+        {
             _result = lcd_selftest_fsensor();
         }
-        if (_result)
-        {
-            _progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
-        }
+    }
+    if (_result)
+    {
+        _progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
     }
 #endif // FILAMENT_SENSOR
 
@@ -6990,6 +6994,49 @@ static bool lcd_selftest_fsensor(void)
 		lcd_selftest_error(11, NULL, NULL);
 	}
 	return (!fsensor_not_responding);
+}
+
+static bool selftest_irsensor()
+{
+    class TempBackup
+    {
+    public:
+        TempBackup():
+            m_temp(degTargetHotend(active_extruder)),
+            m_extruder(active_extruder){}
+        ~TempBackup(){setTargetHotend(m_temp,m_extruder);}
+    private:
+        float m_temp;
+        uint8_t m_extruder;
+    };
+
+    TempBackup tempBackup;
+    setTargetHotend(PLA_PREHEAT_HOTEND_TEMP,active_extruder);
+    mmu_wait_for_heater_blocking();
+    lcd_selftest_screen(9, 0, 3, true, 0);
+    mmu_filament_ramming();
+
+    for(uint_least8_t i = 0; i < 200; ++i)
+    {
+        mmu_load_step(false);
+        while (blocks_queued())
+        {
+            if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) return false;
+#ifdef TMC2130
+            manage_heater();
+            // Vojtech: Don't disable motors inside the planner!
+            if (!tmc2130_update_sg())
+            {
+                manage_inactivity(true);
+            }
+#else //TMC2130
+            manage_heater();
+            // Vojtech: Don't disable motors inside the planner!
+            manage_inactivity(true);
+#endif //TMC2130
+        }
+    }
+    return true;
 }
 #endif //FILAMENT_SENSOR
 
