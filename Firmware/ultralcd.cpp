@@ -7004,6 +7004,9 @@ static bool lcd_selftest_fsensor(void)
 //!  * Backup current active extruder temperature
 //!  * Pre-heat to PLA extrude temperature.
 //!  * Unload filament possibly present.
+//!  * Move extruder idler same way as during filament load
+//!    and sample MMU_IDLER_SENSOR_PIN.
+//!  * Check that pin doesn't go low.
 //!
 //! @retval true passed
 //! @retval false failed
@@ -7026,6 +7029,8 @@ static bool selftest_irsensor()
     mmu_wait_for_heater_blocking();
     lcd_selftest_screen(9, 0, 3, true, 0);
     mmu_filament_ramming();
+    mmu_command(MMU_CMD_U0);
+    manage_response(false, false);
 
     for(uint_least8_t i = 0; i < 200; ++i)
     {
