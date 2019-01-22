@@ -7218,7 +7218,7 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
     lcd_update_enable(false);
 
 	int _step_block = 0;
-	const char *_indicator = (_progress > _progress_scale) ? "-" : "|";
+	const char *_indicator = (_progress >= _progress_scale) ? "-" : "|";
 
 	if (_clear) lcd_clear();
 
@@ -7281,7 +7281,7 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	if (_delay > 0) delay_keep_alive(_delay);
 	_progress++;
 
-	return (_progress > _progress_scale * 2) ? 0 : _progress;
+	return (_progress >= _progress_scale * 2) ? 0 : _progress;
 }
 
 static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator)
