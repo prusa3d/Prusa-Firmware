@@ -7027,13 +7027,15 @@ static bool selftest_irsensor()
     TempBackup tempBackup;
     setTargetHotend(PLA_PREHEAT_HOTEND_TEMP,active_extruder);
     mmu_wait_for_heater_blocking();
-    lcd_selftest_screen(9, 0, 3, true, 0);
+    uint8_t progress = lcd_selftest_screen(9, 0, 1, true, 0);
     mmu_filament_ramming();
     mmu_command(MMU_CMD_U0);
     manage_response(false, false);
 
     for(uint_least8_t i = 0; i < 200; ++i)
     {
+        if (0 == (i % 50)) progress = lcd_selftest_screen(9, progress, 1, true, 0);
+
         mmu_load_step(false);
         while (blocks_queued())
         {
