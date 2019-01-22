@@ -450,6 +450,10 @@ void mmu_command(uint8_t cmd)
 	mmu_ready = false;
 }
 
+//! @brief Rotate extruder idler to catch filament
+//! @par synchronize
+//!  * true blocking call
+//!  * false non-blocking call
 void mmu_load_step(bool synchronize)
 {
 		current_position[E_AXIS] = current_position[E_AXIS] + MMU_LOAD_FEEDRATE * 0.1;
@@ -555,6 +559,10 @@ bool mmu_get_response(uint8_t move)
 	return response;*/
 }
 
+//! @brief Wait for active extruder to reach temperature set
+//!
+//! This function is blocking and showing lcd_wait_for_heater() screen
+//! which is constantly updated with nozzle temperature.
 void mmu_wait_for_heater_blocking()
 {
     while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5)

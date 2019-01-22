@@ -6996,6 +6996,17 @@ static bool lcd_selftest_fsensor(void)
 	return (!fsensor_not_responding);
 }
 
+//! @brief Self-test of infrared barrier filament sensor mounted on MK3S with MMUv2 printer
+//!
+//! Test whether sensor is not triggering filament presence when extruder idler is moving without filament.
+//!
+//! Steps:
+//!  * Backup current active extruder temperature
+//!  * Pre-heat to PLA extrude temperature.
+//!  * Unload filament possibly present.
+//!
+//! @retval true passed
+//! @retval false failed
 static bool selftest_irsensor()
 {
     class TempBackup
