@@ -587,9 +587,10 @@ void checkExtruderAutoFans()
 
 #endif // any extruder auto fan pins set
 
-void resetPID(uint8_t extruder)                   // ready for eventually parameters adjusting
+// ready for eventually parameters adjusting
+void resetPID(uint8_t)                            // only for compiler-warning elimination (if function do nothing)
+//void resetPID(uint8_t extruder)
 {
-extruder=extruder;                                // only for compiler-warning elimination (if function do nothing)
 }
 
 void manage_heater()
