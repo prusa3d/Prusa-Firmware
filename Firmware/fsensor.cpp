@@ -532,8 +532,8 @@ void fsensor_update(void)
 void fsensor_setup_interrupt(void)
 {
 
-	pinMode(FSENSOR_INT_PIN, OUTPUT);
-	digitalWrite(FSENSOR_INT_PIN, LOW);
+	SET_OUTPUT(FSENSOR_INT_PIN);
+	WRITE(FSENSOR_INT_PIN, LOW);
 	fsensor_int_pin_old = 0;
 
 	//pciSetup(FSENSOR_INT_PIN);
