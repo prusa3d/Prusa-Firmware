@@ -7640,6 +7640,7 @@ void Stop()
   disable_heater();
   if(Stopped == false) {
     Stopped = true;
+    lcd_print_stop();
     Stopped_gcode_LastN = gcode_LastN; // Save last g_code for restart
     SERIAL_ERROR_START;
     SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
