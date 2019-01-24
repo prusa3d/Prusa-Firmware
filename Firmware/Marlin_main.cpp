@@ -1481,9 +1481,9 @@ void setup()
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
 
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	fsensor_setup_interrupt();
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
 	for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]); 
 	
 #ifndef DEBUG_DISABLE_STARTMSGS

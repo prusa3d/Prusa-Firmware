@@ -388,7 +388,7 @@ bool fsensor_oq_result(void)
 	printf_P(_N("fsensor_oq_result %S\n"), (res?_OK:_NG));
 	return res;
 }
-
+#ifdef PAT9125
 ISR(FSENSOR_INT_PIN_VECT)
 {
 	if (mmu_enabled || ir_sensor_detected) return;
@@ -474,6 +474,23 @@ ISR(FSENSOR_INT_PIN_VECT)
 	_lock = false;
 	return;
 }
+
+void fsensor_setup_interrupt(void)
+{
+
+	pinMode(FSENSOR_INT_PIN, OUTPUT);
+	digitalWrite(FSENSOR_INT_PIN, LOW);
+	fsensor_int_pin_old = 0;
+
+	//pciSetup(FSENSOR_INT_PIN);
+// !!! "pciSetup()" does not provide the correct results for some MCU pins
+// so interrupt registers settings:
+     FSENSOR_INT_PIN_PCMSK_REG |= bit(FSENSOR_INT_PIN_PCMSK_BIT); // enable corresponding PinChangeInterrupt (individual pin)
+     PCIFR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // clear previous occasional interrupt (set of pins)
+     PCICR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // enable corresponding PinChangeInterrupt (set of pins)
+}
+
+#endif //PAT9125
 
 void fsensor_st_block_begin(block_t* bl)
 {
@@ -568,19 +585,4 @@ void fsensor_update(void)
 			enquecommand_front_P((PSTR("M600")));
 		}
 #endif //PAT9125
-}
-
-void fsensor_setup_interrupt(void)
-{
-
-	pinMode(FSENSOR_INT_PIN, OUTPUT);
-	digitalWrite(FSENSOR_INT_PIN, LOW);
-	fsensor_int_pin_old = 0;
-
-	//pciSetup(FSENSOR_INT_PIN);
-// !!! "pciSetup()" does not provide the correct results for some MCU pins
-// so interrupt registers settings:
-     FSENSOR_INT_PIN_PCMSK_REG |= bit(FSENSOR_INT_PIN_PCMSK_BIT); // enable corresponding PinChangeInterrupt (individual pin)
-     PCIFR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // clear previous occasional interrupt (set of pins)
-     PCICR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // enable corresponding PinChangeInterrupt (set of pins)
 }
