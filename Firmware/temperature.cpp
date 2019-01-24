@@ -45,6 +45,12 @@
 #include "Configuration_prusa.h"
 
 
+extern "C" {
+extern void timer02_init(void);
+extern void timer02_set_pwm0(uint8_t pwm0);
+}
+
+
 //===========================================================================
 //=============================public variables============================
 //===========================================================================
@@ -106,15 +112,15 @@ static volatile bool temp_meas_ready = false;
 
 #ifdef PIDTEMP
   //static cannot be external:
-  static float temp_iState[EXTRUDERS] = { 0 };
-  static float temp_dState[EXTRUDERS] = { 0 };
+  static float iState_sum[EXTRUDERS] = { 0 };
+  static float dState_last[EXTRUDERS] = { 0 };
   static float pTerm[EXTRUDERS];
   static float iTerm[EXTRUDERS];
   static float dTerm[EXTRUDERS];
   //int output;
   static float pid_error[EXTRUDERS];
-  static float temp_iState_min[EXTRUDERS];
-  static float temp_iState_max[EXTRUDERS];
+  static float iState_sum_min[EXTRUDERS];
+  static float iState_sum_max[EXTRUDERS];
   // static float pid_input[EXTRUDERS];
   // static float pid_output[EXTRUDERS];
   static bool pid_reset[EXTRUDERS];
@@ -257,6 +263,7 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
   if (extruder<0)
   {
      soft_pwm_bed = (MAX_BED_POWER)/2;
+	 timer02_set_pwm0(soft_pwm_bed << 1);
      bias = d = (MAX_BED_POWER)/2;
    }
    else
@@ -293,7 +300,10 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
         if(millis() - t2 > 5000) { 
           heating=false;
           if (extruder<0)
+		  {
             soft_pwm_bed = (bias - d) >> 1;
+			timer02_set_pwm0(soft_pwm_bed << 1);
+		  }
           else
             soft_pwm[extruder] = (bias - d) >> 1;
           t1=millis();
@@ -347,7 +357,10 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
             }
           }
           if (extruder<0)
+		  {
             soft_pwm_bed = (bias + d) >> 1;
+			timer02_set_pwm0(soft_pwm_bed << 1);
+		  }
           else
             soft_pwm[extruder] = (bias + d) >> 1;
           pid_cycle++;
@@ -418,7 +431,7 @@ void updatePID()
 {
 #ifdef PIDTEMP
   for(int e = 0; e < EXTRUDERS; e++) { 
-     temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;  
+     iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;  
   }
 #endif
 #ifdef PIDTEMPBED
@@ -587,6 +600,12 @@ void checkExtruderAutoFans()
 
 #endif // any extruder auto fan pins set
 
+// ready for eventually parameters adjusting
+void resetPID(uint8_t)                            // only for compiler-warning elimination (if function do nothing)
+//void resetPID(uint8_t extruder)
+{
+}
+
 void manage_heater()
 {
 #ifdef WATCHDOG
@@ -598,6 +617,7 @@ void manage_heater()
 
   if(temp_meas_ready != true)   //better readability
     return; 
+// more precisely - this condition partially stabilizes time interval for regulation values evaluation (@ ~ 230ms)
 
   updateTemperaturesFromRawValues();
 
@@ -619,38 +639,42 @@ void manage_heater()
     pid_input = current_temperature[e];
 
     #ifndef PID_OPENLOOP
-        pid_error[e] = target_temperature[e] - pid_input;
-        if(pid_error[e] > PID_FUNCTIONAL_RANGE) {
-          pid_output = BANG_MAX;
-          pid_reset[e] = true;
-        }
-        else if(pid_error[e] < -PID_FUNCTIONAL_RANGE || target_temperature[e] == 0) {
+        if(target_temperature[e] == 0) {
           pid_output = 0;
           pid_reset[e] = true;
-        }
-        else {
-          if(pid_reset[e] == true) {
-            temp_iState[e] = 0.0;
+        } else {
+          pid_error[e] = target_temperature[e] - pid_input;
+          if(pid_reset[e]) {
+            iState_sum[e] = 0.0;
+            dTerm[e] = 0.0;                       // 'dState_last[e]' initial setting is not necessary (see end of if-statement)
             pid_reset[e] = false;
           }
+#ifndef PonM
           pTerm[e] = cs.Kp * pid_error[e];
-          temp_iState[e] += pid_error[e];
-          temp_iState[e] = constrain(temp_iState[e], temp_iState_min[e], temp_iState_max[e]);
-          iTerm[e] = cs.Ki * temp_iState[e];
-
-          //K1 defined in Configuration.h in the PID settings
+          iState_sum[e] += pid_error[e];
+          iState_sum[e] = constrain(iState_sum[e], iState_sum_min[e], iState_sum_max[e]);
+          iTerm[e] = cs.Ki * iState_sum[e];
+          // K1 defined in Configuration.h in the PID settings
           #define K2 (1.0-K1)
-          dTerm[e] = (cs.Kd * (pid_input - temp_dState[e]))*K2 + (K1 * dTerm[e]);
-          pid_output = pTerm[e] + iTerm[e] - dTerm[e];
+          dTerm[e] = (cs.Kd * (pid_input - dState_last[e]))*K2 + (K1 * dTerm[e]); // e.g. digital filtration of derivative term changes
+          pid_output = pTerm[e] + iTerm[e] - dTerm[e]; // subtraction due to "Derivative on Measurement" method (i.e. derivative of input instead derivative of error is used)
           if (pid_output > PID_MAX) {
-            if (pid_error[e] > 0 )  temp_iState[e] -= pid_error[e]; // conditional un-integration
+            if (pid_error[e] > 0 ) iState_sum[e] -= pid_error[e]; // conditional un-integration
             pid_output=PID_MAX;
-          } else if (pid_output < 0){
-            if (pid_error[e] < 0 )  temp_iState[e] -= pid_error[e]; // conditional un-integration
+          } else if (pid_output < 0) {
+            if (pid_error[e] < 0 ) iState_sum[e] -= pid_error[e]; // conditional un-integration
             pid_output=0;
           }
+#else // PonM ("Proportional on Measurement" method)
+          iState_sum[e] += cs.Ki * pid_error[e];
+          iState_sum[e] -= cs.Kp * (pid_input - dState_last[e]);
+          iState_sum[e] = constrain(iState_sum[e], 0, PID_INTEGRAL_DRIVE_MAX);
+          dTerm[e] = cs.Kd * (pid_input - dState_last[e]);
+          pid_output = iState_sum[e] - dTerm[e];  // subtraction due to "Derivative on Measurement" method (i.e. derivative of input instead derivative of error is used)
+          pid_output = constrain(pid_output, 0, PID_MAX);
+#endif // PonM
         }
-        temp_dState[e] = pid_input;
+        dState_last[e] = pid_input;
     #else 
           pid_output = constrain(target_temperature[e], 0, PID_MAX);
     #endif //PID_OPENLOOP
@@ -667,7 +691,7 @@ void manage_heater()
     SERIAL_ECHO(" iTerm ");
     SERIAL_ECHO(iTerm[e]);
     SERIAL_ECHO(" dTerm ");
-    SERIAL_ECHOLN(dTerm[e]);
+    SERIAL_ECHOLN(-dTerm[e]);
     #endif //PID_DEBUG
   #else /* PID off */
     pid_output = 0;
@@ -677,16 +701,14 @@ void manage_heater()
   #endif
 
     // Check if temperature is within the correct range
-    if(current_temperature[e] < maxttemp[e])
+    if((current_temperature[e] < maxttemp[e]) && (target_temperature[e] != 0))
     {
       soft_pwm[e] = (int)pid_output >> 1;
     }
     else
-	{
+    {
       soft_pwm[e] = 0;
     }
-    if(target_temperature[e]==0)
-      soft_pwm[e] = 0;
 
     #ifdef WATCH_TEMP_PERIOD
     if(watchmillis[e] && millis() - watchmillis[e] > WATCH_TEMP_PERIOD)
@@ -772,9 +794,11 @@ void manage_heater()
 	  if(current_temperature_bed < BED_MAXTEMP)
 	  {
 	    soft_pwm_bed = (int)pid_output >> 1;
+		timer02_set_pwm0(soft_pwm_bed << 1);
 	  }
 	  else {
 	    soft_pwm_bed = 0;
+		timer02_set_pwm0(soft_pwm_bed << 1);
 	  }
 
     #elif !defined(BED_LIMIT_SWITCHING)
@@ -784,15 +808,18 @@ void manage_heater()
         if(current_temperature_bed >= target_temperature_bed)
         {
           soft_pwm_bed = 0;
+		  timer02_set_pwm0(soft_pwm_bed << 1);
         }
         else 
         {
           soft_pwm_bed = MAX_BED_POWER>>1;
+		  timer02_set_pwm0(soft_pwm_bed << 1);
         }
       }
       else
       {
         soft_pwm_bed = 0;
+		timer02_set_pwm0(soft_pwm_bed << 1);
         WRITE(HEATER_BED_PIN,LOW);
       }
     #else //#ifdef BED_LIMIT_SWITCHING
@@ -802,15 +829,18 @@ void manage_heater()
         if(current_temperature_bed > target_temperature_bed + BED_HYSTERESIS)
         {
           soft_pwm_bed = 0;
+		  timer02_set_pwm0(soft_pwm_bed << 1);
         }
         else if(current_temperature_bed <= target_temperature_bed - BED_HYSTERESIS)
         {
           soft_pwm_bed = MAX_BED_POWER>>1;
+          timer02_set_pwm0(soft_pwm_bed << 1);
         }
       }
       else
       {
         soft_pwm_bed = 0;
+		timer02_set_pwm0(soft_pwm_bed << 1);
         WRITE(HEATER_BED_PIN,LOW);
       }
     #endif
@@ -987,7 +1017,6 @@ static void updateTemperaturesFromRawValues()
     CRITICAL_SECTION_END;
 }
 
-
 void tp_init()
 {
 #if MB(RUMBA) && ((TEMP_SENSOR_0==-1)||(TEMP_SENSOR_1==-1)||(TEMP_SENSOR_2==-1)||(TEMP_SENSOR_BED==-1))
@@ -1001,8 +1030,8 @@ void tp_init()
     // populate with the first value 
     maxttemp[e] = maxttemp[0];
 #ifdef PIDTEMP
-    temp_iState_min[e] = 0.0;
-    temp_iState_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;
+    iState_sum_min[e] = 0.0;
+    iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;
 #endif //PIDTEMP
 #ifdef PIDTEMPBED
     temp_iState_min_bed = 0.0;
@@ -1054,10 +1083,12 @@ void tp_init()
 
   adc_init();
 
+  timer02_init();
+
   // Use timer0 for temperature measurement
   // Interleave temperature interrupt with millies interrupt
-  OCR0B = 128;
-  TIMSK0 |= (1<<OCIE0B);  
+  OCR2B = 128;
+  TIMSK2 |= (1<<OCIE2B);  
   
   // Wait for temperature measurement to settle
   delay(250);
@@ -1365,6 +1396,7 @@ void disable_heater()
   #if defined(TEMP_BED_PIN) && TEMP_BED_PIN > -1
     target_temperature_bed=0;
     soft_pwm_bed=0;
+	timer02_set_pwm0(soft_pwm_bed << 1);
     #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1  
       WRITE(HEATER_BED_PIN,LOW);
     #endif
@@ -1529,8 +1561,8 @@ void adc_ready(void) //callback from adc when sampling finished
 } // extern "C"
 
 
-// Timer 0 is shared with millies
-ISR(TIMER0_COMPB_vect)                            // @ 1kHz ~ 1ms
+// Timer2 (originaly timer0) is shared with millies
+ISR(TIMER2_COMPB_vect)
 {
 	static bool _lock = false;
 	if (_lock) return;
@@ -1597,7 +1629,7 @@ ISR(TIMER0_COMPB_vect)                            // @ 1kHz ~ 1ms
 #endif
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
     soft_pwm_b = soft_pwm_bed;
-    if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1); else WRITE(HEATER_BED_PIN,0);
+    //if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1); else WRITE(HEATER_BED_PIN,0);
 #endif
 #ifdef FAN_SOFT_PWM
     soft_pwm_fan = fanSpeedSoftPwm / 2;
@@ -1731,7 +1763,7 @@ ISR(TIMER0_COMPB_vect)                            // @ 1kHz ~ 1ms
 	  state_timer_heater_b = MIN_STATE_TIME;
 	}
 	state_heater_b = 1;
-	WRITE(HEATER_BED_PIN, 1);
+	//WRITE(HEATER_BED_PIN, 1);
       }
     } else {
       // turn OFF heather only if the minimum time is up 

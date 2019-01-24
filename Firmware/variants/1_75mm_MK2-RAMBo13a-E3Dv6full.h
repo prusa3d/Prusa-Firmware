@@ -441,4 +441,6 @@ THERMISTORS SETTINGS
 //#define SUPPORT_VERBOSITY
 #endif
 
+#define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
+
 #endif //__CONFIGURATION_PRUSA_H
