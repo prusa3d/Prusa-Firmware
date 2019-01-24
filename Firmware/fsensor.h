@@ -41,8 +41,10 @@ extern void fsensor_setup_interrupt(void);
 
 //! @name autoload support
 //! @{
+#ifdef PAT9125
 extern void fsensor_autoload_check_start(void);
 extern void fsensor_autoload_check_stop(void);
+#endif //PAT9125
 extern bool fsensor_check_autoload(void);
 //! @}
 

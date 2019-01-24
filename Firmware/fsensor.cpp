@@ -197,7 +197,9 @@ void fsensor_disable(void)
 
 void fsensor_autoload_set(bool State)
 {
+#ifdef PAT9125
 	if (!State) fsensor_autoload_check_stop();
+#endif //PAT9125
 	fsensor_autoload_enabled = State;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, fsensor_autoload_enabled);
 }
@@ -210,6 +212,7 @@ void pciSetup(byte pin)
 	PCICR |= bit (digitalPinToPCICRbit(pin)); // enable interrupt for the group 
 }
 
+#ifdef PAT9125
 void fsensor_autoload_check_start(void)
 {
 //	puts_P(_N("fsensor_autoload_check_start\n"));
@@ -236,7 +239,7 @@ void fsensor_autoload_check_start(void)
 
 void fsensor_autoload_check_stop(void)
 {
-#ifdef PAT9125
+
 //	puts_P(_N("fsensor_autoload_check_stop\n"));
 	if (!fsensor_enabled) return;
 //	puts_P(_N("fsensor_autoload_check_stop 1\n"));
@@ -248,8 +251,8 @@ void fsensor_autoload_check_stop(void)
 	fsensor_watch_autoload = false;
 	fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
-#endif //PAT9125
 }
+#endif //PAT9125
 
 bool fsensor_check_autoload(void)
 {

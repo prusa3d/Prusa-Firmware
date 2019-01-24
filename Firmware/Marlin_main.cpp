@@ -7471,7 +7471,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			{
 				if (fsensor_check_autoload())
 				{
+#ifdef PAT9125
 					fsensor_autoload_check_stop();
+#endif //PAT9125
 					if (degHotend0() > EXTRUDE_MINTEMP)
 					{
 						if ((eSoundMode == e_SOUND_MODE_LOUD) || (eSoundMode == e_SOUND_MODE_ONCE))
@@ -7491,7 +7493,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			}
 			else
 			{
+#ifdef PAT9125
 				fsensor_autoload_check_stop();
+#endif //PAT9125
 				fsensor_update();
 			}
 		}
@@ -9183,9 +9187,9 @@ void M600_load_filament() {
 	//load_filament_time = millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	fsensor_autoload_check_start();
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
 	while(!lcd_clicked())
 	{
 		manage_heater();
@@ -9201,9 +9205,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		}
 #endif //FILAMENT_SENSOR
 	}
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	fsensor_autoload_check_stop();
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
 	KEEPALIVE_STATE(IN_HANDLER);
 
 #ifdef FSENSOR_QUALITY
