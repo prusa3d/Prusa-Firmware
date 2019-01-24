@@ -1615,7 +1615,6 @@ void setup()
 	   
   }
 #endif //UVLO_SUPPORT
-
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
@@ -1835,15 +1834,6 @@ void loop()
   isPrintPaused ? manage_inactivity(true) : manage_inactivity(false);
   checkHitEndstops();
   lcd_update(0);
-#ifdef NEW_FILAMENT_SENSOR
-	if (mcode_in_progress != 600 && !mmu_enabled) //M600 not in progress
-	{
-		if (IS_SD_PRINTING)
-		{
-			fsensor_update();
-		}
-	}
-#endif //NEW_FILAMENT_SENSOR
 #ifdef TMC2130
 	tmc2130_check_overtemp();
 	if (tmc2130_sg_crash)
@@ -3462,11 +3452,11 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	else if (code_seen("FSENSOR_RECOVER")) { //! FSENSOR_RECOVER
 		fsensor_restore_print_and_continue();
   }
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //! PRUSA Ping
 			if (farm_mode) {
@@ -7113,7 +7103,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		dcode_8(); break;
 	case 9: //! D9 - Read/Write ADC
 		dcode_9(); break;
-
 	case 10: //! D10 - XYZ calibration = OK
 		dcode_10(); break;
     

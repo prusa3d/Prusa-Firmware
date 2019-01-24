@@ -11,7 +11,7 @@ extern uint8_t mmu_extruder;
 extern uint8_t tmp_extruder;
 
 extern int8_t mmu_finda;
-extern bool mmu_idler_sensor_detected;
+extern bool ir_sensor_detected;
 extern bool mmu_loading_flag;
 
 extern int16_t mmu_version;
@@ -56,7 +56,7 @@ extern int mmu_printf_P(const char* format, ...);
 
 extern int8_t mmu_rx_ok(void);
 
-extern bool check_for_idler_sensor();
+extern bool check_for_ir_sensor();
 
 extern void mmu_init(void);
 

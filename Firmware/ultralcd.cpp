@@ -3656,8 +3656,8 @@ static void lcd_show_sensors_state()
 	if (mmu_enabled) {
 		finda_state = mmu_finda;
 	}
-	if (mmu_idler_sensor_detected) {
-		idler_state = !PIN_GET(MMU_IDLER_SENSOR_PIN);
+	if (ir_sensor_detected) {
+		idler_state = !PIN_GET(IR_SENSOR_PIN);
 	}
 	lcd_puts_at_P(0, 0, _i("Sensor state"));
 	lcd_puts_at_P(1, 1, _i("PINDA:"));
@@ -6418,7 +6418,7 @@ bool lcd_selftest()
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(8, _progress, 3, true, 2000); //bed ok
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 		if (mmu_enabled == false) {
 			_progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
 			_result = lcd_selftest_fsensor();
