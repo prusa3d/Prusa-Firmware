@@ -6654,7 +6654,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 		else
 		{
-			_progress = lcd_selftest_screen(4 + _axis, _progress, 3, false, 0);
+			_progress = lcd_selftest_screen(3 + _axis, _progress, 3, false, 0);
 			_lcd_refresh = 0;
 		}
 
