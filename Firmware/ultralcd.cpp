@@ -6324,28 +6324,24 @@ bool lcd_selftest()
 		_result = true;
 #endif
 	}
-	
-	if (_result)
-	{
-		_progress = lcd_selftest_screen(3, _progress, 3, true, 1000);
-		_result = lcd_selfcheck_check_heater(false);
-	}
-
 
 	if (_result)
 	{
 		//current_position[Z_AXIS] += 15;									//move Z axis higher to avoid false triggering of Z end stop in case that we are very low - just above heatbed
-		_progress = lcd_selftest_screen(4, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(3, _progress, 3, true, 2000);
 #ifdef TMC2130
-		_result = lcd_selfcheck_axis_sg(X_AXIS);
+        _result = lcd_selfcheck_axis_sg(X_AXIS);
 #else
-		_result = lcd_selfcheck_axis(X_AXIS, X_MAX_POS);
+        _result = lcd_selfcheck_axis(X_AXIS, X_MAX_POS);
 #endif //TMC2130
 	}
 
+
+
+
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(4, _progress, 3, true, 0);
+		_progress = lcd_selftest_screen(3, _progress, 3, true, 0);
 
 #ifndef TMC2130
 		_result = lcd_selfcheck_pulleys(X_AXIS);
@@ -6355,7 +6351,7 @@ bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(5, _progress, 3, true, 1500);
+		_progress = lcd_selftest_screen(4, _progress, 3, true, 1500);
 #ifdef TMC2130
 		_result = lcd_selfcheck_axis_sg(Y_AXIS);
 #else
@@ -6365,7 +6361,7 @@ bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(5, _progress, 3, true, 0);
+		_progress = lcd_selftest_screen(4, _progress, 3, true, 0);
 #ifndef TMC2130
 		_result = lcd_selfcheck_pulleys(Y_AXIS);
 #endif // TMC2130
@@ -6386,7 +6382,7 @@ bool lcd_selftest()
 		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
-		_progress = lcd_selftest_screen(6, _progress, 3, true, 1500);
+		_progress = lcd_selftest_screen(5, _progress, 3, true, 1500);
 		_result = lcd_selfcheck_axis(2, Z_MAX_POS);
 		if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) {
 			enquecommand_P(PSTR("G28 W"));
@@ -6413,12 +6409,18 @@ bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(7, _progress, 3, true, 2000); //check bed
-		_result = lcd_selfcheck_check_heater(true);
+		_progress = lcd_selftest_screen(6, _progress, 3, true, 2000); //check bed
+		_result = lcd_selfcheck_check_heater(false);
 	}
+
+    if (_result)
+    {
+        _progress = lcd_selftest_screen(7, _progress, 3, true, 1000); //check nozzle
+        _result = lcd_selfcheck_check_heater(true);
+    }
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(8, _progress, 3, true, 2000); //bed ok
+		_progress = lcd_selftest_screen(8, _progress, 3, true, 2000); //nozzle ok
 	}
 
 #ifdef FILAMENT_SENSOR
@@ -7230,12 +7232,12 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	if (_step == 0) lcd_puts_P(_T(MSG_SELFTEST_FAN));
 	if (_step == 1) lcd_puts_P(_T(MSG_SELFTEST_FAN));
 	if (_step == 2) lcd_puts_P(_i("Checking endstops"));////MSG_SELFTEST_CHECK_ENDSTOPS c=20 r=0
-	if (_step == 3) lcd_puts_P(_i("Checking hotend  "));////MSG_SELFTEST_CHECK_HOTEND c=20 r=0
-	if (_step == 4) lcd_puts_P(_i("Checking X axis  "));////MSG_SELFTEST_CHECK_X c=20 r=0
-	if (_step == 5) lcd_puts_P(_i("Checking Y axis  "));////MSG_SELFTEST_CHECK_Y c=20 r=0
-	if (_step == 6) lcd_puts_P(_i("Checking Z axis  "));////MSG_SELFTEST_CHECK_Z c=20 r=0
-	if (_step == 7) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
-	if (_step == 8) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
+	if (_step == 3) lcd_puts_P(_i("Checking X axis  "));////MSG_SELFTEST_CHECK_X c=20 r=0
+	if (_step == 4) lcd_puts_P(_i("Checking Y axis  "));////MSG_SELFTEST_CHECK_Y c=20 r=0
+	if (_step == 5) lcd_puts_P(_i("Checking Z axis  "));////MSG_SELFTEST_CHECK_Z c=20 r=0
+	if (_step == 6) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
+	if (_step == 7
+	    || _step == 8) lcd_puts_P(_i("Checking hotend  "));////MSG_SELFTEST_CHECK_HOTEND c=20 r=0
 	if (_step == 9) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
 	if (_step == 10) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
 	if (_step == 11) lcd_puts_P(_i("All correct      "));////MSG_SELFTEST_CHECK_ALLCORRECT c=20 r=0
@@ -7263,20 +7265,21 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	else if (_step < 9)
 	{
 		//SERIAL_ECHOLNPGM("Other tests");
-		_step_block = 3;
-		lcd_selftest_screen_step(3, 9, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Hotend", _indicator);
 
-		_step_block = 4;
+		_step_block = 3;
 		lcd_selftest_screen_step(2, 2, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "X", _indicator);
 
-		_step_block = 5;
+		_step_block = 4;
 		lcd_selftest_screen_step(2, 8, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Y", _indicator);
 
-		_step_block = 6;
+		_step_block = 5;
 		lcd_selftest_screen_step(2, 14, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Z", _indicator);
 
-		_step_block = 7;
+		_step_block = 6;
 		lcd_selftest_screen_step(3, 0, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Bed", _indicator);
+
+        _step_block = 7;
+        lcd_selftest_screen_step(3, 9, ((_step == _step_block) ? 1 : (_step < _step_block) ? 0 : 2), "Hotend", _indicator);
 	}
 
 	if (_delay > 0) delay_keep_alive(_delay);
