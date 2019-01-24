@@ -306,7 +306,7 @@ void CardReader::getAbsFilename(char *t)
  *  so it is not possible to create on stack inside this function,
  *  as curDir would point to destroyed object.
  */
-void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
+void CardReader::diveSubfolder (const char *(&fileName), SdFile& dir)
 {
     curDir=&root;
     if (!fileName) return;
@@ -315,11 +315,12 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
     if (fileName[0] == '/') // absolute path
     {
         dirname_start = fileName + 1;
+		uint8_t depth = 0;
         while (*dirname_start)
         {
             dirname_end = strchr(dirname_start, '/');
-            //SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-name));
-            //SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-name));
+            SERIAL_ECHO("start:");SERIAL_ECHOLN((int)(dirname_start-fileName));
+            SERIAL_ECHO("end  :");SERIAL_ECHOLN((int)(dirname_end-fileName));
             if (dirname_end && dirname_end > dirname_start)
             {
                 const size_t maxLen = 12;
@@ -327,8 +328,9 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
                 subdirname[maxLen] = 0;
                 const size_t len = ((static_cast<size_t>(dirname_end-dirname_start))>maxLen) ? maxLen : (dirname_end-dirname_start);
                 strncpy(subdirname, dirname_start, len);
+				subdirname[dirname_end - dirname_start] = '\0';
                 SERIAL_ECHOLN(subdirname);
-                if (!dir.open(curDir, subdirname, O_READ))
+				/*if (!dir.open(curDir, subdirname, O_READ))
                 {
                     SERIAL_PROTOCOLRPGM(MSG_SD_OPEN_FILE_FAIL);
                     SERIAL_PROTOCOL(subdirname);
@@ -338,9 +340,16 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
                 else
                 {
                     //SERIAL_ECHOLN("dive ok");
+					//SERIAL_PROTOCOL(subdirname);
+					//save folder name and increment depth for power panic
+					strcpy(dir_names[depth], subdirname);
+					depth++;
                 }
 
                 curDir = &dir;
+				*/
+				chdir(subdirname);
+
                 dirname_start = dirname_end + 1;
             }
             else // the reminder after all /fsa/fdsa/ is the filename
@@ -348,10 +357,31 @@ void CardReader::diveSubfolder (const char *fileName, SdFile& dir)
                 fileName = dirname_start;
                 //SERIAL_ECHOLN("remaider");
                 //SERIAL_ECHOLN(fname);
+				curDir = &workDir;
                 break;
             }
 
         }
+		const char end[5] = ".gco";
+		//we are storing just first 8 characters of 8.3 filename assuming that extension is always ".gco"
+		for (int i = 0; i < 8; i++) {
+			if (strcmp(fileName+i, end) == 0) { 
+				//filename is shorter then 8.3, store '\0' character on position where ".gco" string was found to terminate stored string properly
+ 				eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, '\0');
+				break;
+			}
+			else {
+				eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, fileName[i]);
+			}
+		}
+		eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
+		for (uint8_t i = 0; i < depth; i++) {
+			for (int j = 0; j < 8; j++) {
+				eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
+			}
+		}
+
+
     }
     else //relative path
     {
@@ -412,7 +442,7 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
   SdFile myDir;
   const char *fname=name;
   diveSubfolder(fname,myDir);
-
+  printf_P(PSTR("M File name:%s\n"), fname);
   if(read)
   {
     if (file.open(curDir, fname, O_READ)) 
@@ -425,9 +455,9 @@ void CardReader::openFile(const char* name,bool read, bool replace_current/*=tru
       sdpos = 0;
       
       SERIAL_PROTOCOLLNRPGM(_N("File selected"));////MSG_SD_FILE_SELECTED c=0 r=0
-      getfilename(0, fname);
+	  getfilename(0, fname);
       lcd_setstatus(longFilename[0] ? longFilename : fname);
-      lcd_setstatus("SD-PRINTING         ");
+	  //lcd_setstatus("SD-PRINTING         ");
     }
     else
     {
