@@ -237,6 +237,8 @@ bool wait_for_unclick;
 // float raw_Ki, raw_Kd;
 #endif
 
+bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+
 
 
 const char STR_SEPARATOR[] PROGMEM = "------------";
@@ -5886,7 +5888,10 @@ static void lcd_main_menu()
 		if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
 		{
 			//if (farm_mode) MENU_ITEM_SUBMENU_P(MSG_FARM_CARD_MENU, lcd_farm_sdcard_menu);
-			/*else*/ MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
+			/*else*/ {
+                        bMain=true;               // flag ('fake parameter') for 'lcd_sdcard_menu()' function
+                        MENU_ITEM_SUBMENU_P(_T(MSG_CARD_MENU), lcd_sdcard_menu);
+                        }
 		}
 #if SDCARDDETECT < 1
       MENU_ITEM_GCODE_P(_i("Change SD card"), PSTR("M21"));  // SD-card changed by user////MSG_CNG_SDCARD c=0 r=0
@@ -5895,6 +5900,7 @@ static void lcd_main_menu()
 	
   } else 
   {
+    bMain=true;                                   // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
     MENU_ITEM_SUBMENU_P(_i("No SD card"), lcd_sdcard_menu);////MSG_NO_CARD c=0 r=0
 #if SDCARDDETECT < 1
     MENU_ITEM_GCODE_P(_i("Init. SD card"), PSTR("M21")); // Manually initialize the SD-card via user interface////MSG_INIT_SDCARD c=0 r=0
@@ -6227,7 +6233,10 @@ void lcd_sdcard_menu()
 
 
   MENU_BEGIN();
-  MENU_ITEM_BACK_P(_T(MSG_MAIN));
+  if(bMain)                                       // i.e. default menu-item
+    MENU_ITEM_BACK_P(_T(MSG_MAIN));
+  else                                            // i.e. menu-item after card insertion
+    MENU_ITEM_FUNCTION_P(_T(MSG_WATCH),lcd_return_to_status);
   card.getWorkDirName();
   if (card.filename[0] == '/')
   {
@@ -7519,7 +7528,9 @@ void menu_lcd_lcdupdate_func(void)
 		if (lcd_oldcardstatus)
 		{
 			card.initsd();
-			LCD_MESSAGERPGM(_i("Card inserted"));////MSG_SD_INSERTED c=0 r=0
+               LCD_MESSAGERPGM(_T(WELCOME_MSG));
+               bMain=false;                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+               menu_submenu(lcd_sdcard_menu);
 			//get_description();
 		}
 		else
