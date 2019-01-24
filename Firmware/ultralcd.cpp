@@ -6847,9 +6847,10 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	MYSERIAL.print("Opposite result:");
 	MYSERIAL.println(_opposite_result);
 	*/
-	if (_opposite_result < ((_isbed) ? 10 : 3))
+
+	if (_opposite_result < ((_isbed) ? 30 : 9))
 	{
-		if (_checked_result >= ((_isbed) ? 3 : 10))
+		if (_checked_result >= ((_isbed) ? 9 : 30))
 		{
 			_stepresult = true;
 		}
