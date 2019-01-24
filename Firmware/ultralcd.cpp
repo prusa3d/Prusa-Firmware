@@ -6410,13 +6410,13 @@ bool lcd_selftest()
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(6, _progress, 3, true, 2000); //check bed
-		_result = lcd_selfcheck_check_heater(false);
+		_result = lcd_selfcheck_check_heater(true);
 	}
 
     if (_result)
     {
         _progress = lcd_selftest_screen(7, _progress, 3, true, 1000); //check nozzle
-        _result = lcd_selfcheck_check_heater(true);
+        _result = lcd_selfcheck_check_heater(false);
     }
 	if (_result)
 	{
@@ -6821,7 +6821,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 		manage_heater();
 		manage_inactivity(true);
-		_progress = (_isbed) ? lcd_selftest_screen(7, _progress, 2, false, 400) : lcd_selftest_screen(3, _progress, 2, false, 400);
+		_progress = (_isbed) ? lcd_selftest_screen(6, _progress, 2, false, 400) : lcd_selftest_screen(7, _progress, 2, false, 400);
 		/*if (_isbed) {
 			MYSERIAL.print("Bed temp:");
 			MYSERIAL.println(degBed());
