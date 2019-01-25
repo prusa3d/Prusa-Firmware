@@ -160,7 +160,7 @@ static bool lcd_selfcheck_pulleys(int axis);
 static bool lcd_selfcheck_check_heater(bool _isbed);
 enum class testScreen
 {
-    extruderFan = -1,
+    extruderFan,
     printFan,
     fansOk,
     endStops,
