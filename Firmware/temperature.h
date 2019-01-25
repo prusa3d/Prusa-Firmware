@@ -27,8 +27,8 @@
   #include "stepper.h"
 #endif
 
-#define ENABLE_TEMPERATURE_INTERRUPT()  TIMSK2 |= (1<<OCIE2B)
-#define DISABLE_TEMPERATURE_INTERRUPT() TIMSK2 &= ~(1<<OCIE2B)
+#define ENABLE_TEMPERATURE_INTERRUPT()  TIMSK0 |= (1<<OCIE0B)
+#define DISABLE_TEMPERATURE_INTERRUPT() TIMSK0 &= ~(1<<OCIE0B)
 
 // public functions
 void tp_init();  //initialize the heating

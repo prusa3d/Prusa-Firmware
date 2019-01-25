@@ -45,12 +45,6 @@
 #include "Configuration_prusa.h"
 
 
-extern "C" {
-extern void timer02_init(void);
-extern void timer02_set_pwm0(uint8_t pwm0);
-}
-
-
 //===========================================================================
 //=============================public variables============================
 //===========================================================================
@@ -1017,6 +1011,7 @@ static void updateTemperaturesFromRawValues()
     CRITICAL_SECTION_END;
 }
 
+
 void tp_init()
 {
 #if MB(RUMBA) && ((TEMP_SENSOR_0==-1)||(TEMP_SENSOR_1==-1)||(TEMP_SENSOR_2==-1)||(TEMP_SENSOR_BED==-1))
@@ -1083,12 +1078,10 @@ void tp_init()
 
   adc_init();
 
-  timer02_init();
-
   // Use timer0 for temperature measurement
   // Interleave temperature interrupt with millies interrupt
-  OCR2B = 128;
-  TIMSK2 |= (1<<OCIE2B);  
+  OCR0B = 128;
+  TIMSK0 |= (1<<OCIE0B);  
   
   // Wait for temperature measurement to settle
   delay(250);
@@ -1561,8 +1554,8 @@ void adc_ready(void) //callback from adc when sampling finished
 } // extern "C"
 
 
-// Timer2 (originaly timer0) is shared with millies
-ISR(TIMER2_COMPB_vect)
+// Timer 0 is shared with millies
+ISR(TIMER0_COMPB_vect)
 {
 	static bool _lock = false;
 	if (_lock) return;
