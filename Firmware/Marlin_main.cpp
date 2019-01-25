@@ -78,6 +78,7 @@
 #include <avr/pgmspace.h>
 
 #include "Dcodes.h"
+#include "AutoDeplete.h"
 
 
 #ifdef SWSPI
@@ -6947,6 +6948,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           }
           else {
               tmp_extruder = code_value();
+              if (mmu_enabled && lcd_autoDepleteEnabled())
+              {
+                  tmp_extruder = ad_getAlternative(tmp_extruder);
+              }
           }
           st_synchronize();
           snmm_filaments_used |= (1 << tmp_extruder); //for stop print
@@ -7641,6 +7646,7 @@ void Stop()
   disable_heater();
   if(Stopped == false) {
     Stopped = true;
+    lcd_print_stop();
     Stopped_gcode_LastN = gcode_LastN; // Save last g_code for restart
     SERIAL_ERROR_START;
     SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
