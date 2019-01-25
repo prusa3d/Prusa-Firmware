@@ -7023,7 +7023,7 @@ static bool lcd_selftest_fsensor(void)
 //!  * Pre-heat to PLA extrude temperature.
 //!  * Unload filament possibly present.
 //!  * Move extruder idler same way as during filament load
-//!    and sample MMU_IDLER_SENSOR_PIN.
+//!    and sample IR_SENSOR_PIN.
 //!  * Check that pin doesn't go low.
 //!
 //! @retval true passed
@@ -7060,7 +7060,7 @@ static bool selftest_irsensor()
         mmu_load_step(false);
         while (blocks_queued())
         {
-            if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) return false;
+            if (PIN_GET(IR_SENSOR_PIN) == 0) return false;
 #ifdef TMC2130
             manage_heater();
             // Vojtech: Don't disable motors inside the planner!

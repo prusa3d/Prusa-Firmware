@@ -349,7 +349,7 @@ void mmu_loop(void)
 	case 3: //response to mmu commands
         if (mmu_idl_sens)
         {
-            if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0 && mmu_loading_flag)
+            if (PIN_GET(IR_SENSOR_PIN) == 0 && mmu_loading_flag)
             {
 #ifdef MMU_DEBUG
                 printf_P(PSTR("MMU <= 'A'\n"));
@@ -510,7 +510,7 @@ bool mmu_get_response(uint8_t move)
 				if (PIN_GET(IR_SENSOR_PIN) == 0) move = MMU_NO_MOVE;
 				break;
 			case MMU_UNLOAD_MOVE:
-				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament is still detected by idler sensor, printer helps with unlading 
+				if (PIN_GET(IR_SENSOR_PIN) == 0) //filament is still detected by idler sensor, printer helps with unlading 
 				{
 				    if (can_extrude())
 				    {
@@ -528,7 +528,7 @@ bool mmu_get_response(uint8_t move)
 				}
 				break;
 			case MMU_TCODE_MOVE: //first do unload and then continue with infinite loading movements
-				if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) //filament detected by idler sensor, we must unload first 
+				if (PIN_GET(IR_SENSOR_PIN) == 0) //filament detected by idler sensor, we must unload first 
 				{
                     if (can_extrude())
                     {
