@@ -448,10 +448,15 @@ void mmu_command(uint8_t cmd)
 	mmu_ready = false;
 }
 
-void mmu_load_step() {
+//! @brief Rotate extruder idler to catch filament
+//! @par synchronize
+//!  * true blocking call
+//!  * false non-blocking call
+void mmu_load_step(bool synchronize)
+{
 		current_position[E_AXIS] = current_position[E_AXIS] + MMU_LOAD_FEEDRATE * 0.1;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
-		st_synchronize();
+		if (synchronize) st_synchronize();
 }
 
 //! @brief Is nozzle hot enough to move extruder wheels and do we have idler sensor?
@@ -549,6 +554,18 @@ bool mmu_get_response(uint8_t move)
 	return ret;
 }
 
+//! @brief Wait for active extruder to reach temperature set
+//!
+//! This function is blocking and showing lcd_wait_for_heater() screen
+//! which is constantly updated with nozzle temperature.
+void mmu_wait_for_heater_blocking()
+{
+    while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5)
+    {
+        delay_keep_alive(1000);
+        lcd_wait_for_heater();
+    }
+}
 
 void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 {
@@ -643,11 +660,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 					lcd_display_message_fullscreen_P(_i("MMU OK. Resuming temperature..."));
 					delay_keep_alive(3000);
 				}
-				while ((degTargetHotend(active_extruder) - degHotend(active_extruder)) > 5) 
-				{
-					delay_keep_alive(1000);
-					lcd_wait_for_heater();
-				}
+                mmu_wait_for_heater_blocking();
 			  }			  
 			  if (move_axes) {
 				  lcd_clear();
@@ -950,7 +963,7 @@ static const E_step ramming_sequence[] PROGMEM =
 };
 
 //! @brief Unload sequence to optimize shape of the tip of the unloaded filament
-static void filament_ramming()
+void mmu_filament_ramming()
 {
     for(uint8_t i = 0; i < (sizeof(ramming_sequence)/sizeof(E_step));++i)
     {
@@ -982,7 +995,7 @@ void extr_unload()
 		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
 		else lcd_print(mmu_extruder + 1);
 
-		filament_ramming();
+		mmu_filament_ramming();
 
 		mmu_command(MMU_CMD_U0);
 		// get response
