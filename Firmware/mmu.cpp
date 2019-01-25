@@ -477,7 +477,7 @@ void mmu_load_step(bool synchronize)
 //!         off E-stepper to prevent over-heating and allow filament pull-out if necessary
 bool can_extrude()
 {
-    if ((degHotend(active_extruder) < EXTRUDE_MINTEMP) || !mmu_idler_sensor_detected)
+    if ((degHotend(active_extruder) < EXTRUDE_MINTEMP) || !ir_sensor_detected)
     {
         disable_e0();
         delay_keep_alive(100);
