@@ -7245,7 +7245,7 @@ static int lcd_selftest_screen(int _step, int _progress, int _progress_scale, bo
 	if (_step == 10) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
 	if (_step == 11) lcd_puts_P(_i("All correct      "));////MSG_SELFTEST_CHECK_ALLCORRECT c=20 r=0
 	if (_step == 12) lcd_puts_P(_T(MSG_SELFTEST_FAILED));
-	if (_step == 13) lcd_puts_P(PSTR("Calibrating home"));
+	if (_step == 13) lcd_puts_P(_i("Calibrating home"));////c=20 r=1
 
 	lcd_set_cursor(0, 1);
 	lcd_puts_P(separator);
