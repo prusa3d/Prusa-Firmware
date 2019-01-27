@@ -17,6 +17,7 @@
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
 
+#include "timer02.h"
 
 #include "fastio.h"
 #include "Configuration.h"

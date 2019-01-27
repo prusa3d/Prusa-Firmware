@@ -7809,10 +7809,10 @@ void delay_keep_alive(unsigned int ms)
         if (ms == 0)
             break;
         else if (ms >= 50) {
-            delay(50);
+            delay2(50);
             ms -= 50;
         } else {
-            delay(ms);
+			delay2(ms);
             ms = 0;
         }
     }

@@ -45,11 +45,6 @@
 #include "Configuration_prusa.h"
 
 
-extern "C" {
-extern void timer02_init(void);
-extern void timer02_set_pwm0(uint8_t pwm0);
-}
-
 
 //===========================================================================
 //=============================public variables============================

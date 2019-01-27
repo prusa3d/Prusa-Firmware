@@ -87,7 +87,6 @@ ISR(TIMER2_OVF_vect)
 	// (volatile variables must be read from memory on every access)
 	unsigned long m = timer0_millis;
 	unsigned char f = timer0_fract;
-
 	m += MILLIS_INC;
 	f += FRACT_INC;
 	if (f >= FRACT_MAX)
@@ -95,9 +94,45 @@ ISR(TIMER2_OVF_vect)
 		f -= FRACT_MAX;
 		m += 1;
 	}
-
 	timer0_fract = f;
 	timer0_millis = m;
 	timer0_overflow_count++;
 }
 
+unsigned long micros2()
+{
+	unsigned long m;
+	uint8_t oldSREG = SREG, t;
+	cli();
+	m = timer0_overflow_count;
+#if defined(TCNT2)
+	t = TCNT2;
+#elif defined(TCNT2L)
+	t = TCNT2L;
+#else
+	#error TIMER 2 not defined
+#endif
+#ifdef TIFR2
+	if ((TIFR2 & _BV(TOV2)) && (t < 255))
+		m++;
+#else
+	if ((TIFR & _BV(TOV2)) && (t < 255))
+		m++;
+#endif
+	SREG = oldSREG;	
+	return ((m << 8) + t) * (64 / clockCyclesPerMicrosecond());
+}
+
+void delay2(unsigned long ms)
+{
+	uint32_t start = micros2();
+	while (ms > 0)
+	{
+		yield();
+		while ( ms > 0 && (micros2() - start) >= 1000)
+		{
+			ms--;
+			start += 1000;
+		}
+	}
+}
