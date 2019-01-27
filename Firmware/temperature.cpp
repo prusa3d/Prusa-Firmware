@@ -840,7 +840,10 @@ void manage_heater()
       }
     #endif
       if(target_temperature_bed==0)
+	  {
         soft_pwm_bed = 0;
+		timer02_set_pwm0(soft_pwm_bed << 1);
+	  }
   #endif
   
 #ifdef HOST_KEEPALIVE_FEATURE
