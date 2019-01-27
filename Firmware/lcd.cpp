@@ -755,7 +755,7 @@ void lcd_update_enable(uint8_t enabled)
 			// Reset the timeout interval.
 			lcd_timeoutToStatus.start();
 			// Force the keypad update now.
-			lcd_next_update_millis = millis() - 1;
+			lcd_next_update_millis = _millis() - 1;
 			// Full update.
 			lcd_clear();
 			if (lcd_charsetup_func)

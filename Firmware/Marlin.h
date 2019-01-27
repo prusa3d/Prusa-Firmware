@@ -17,7 +17,22 @@
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
 
+
+//#define SYSTEM_TIMER_2
+
+#ifdef SYSTEM_TIMER_2
 #include "timer02.h"
+#define _millis millis2
+#define _micros micros2
+#define _delay delay2
+#else //SYSTEM_TIMER_2
+#define _millis millis
+#define _micros micros
+#define _delay delay
+#define timer02_set_pwm0(pwm0)
+#endif //SYSTEM_TIMER_2
+
+
 
 #include "fastio.h"
 #include "Configuration.h"
@@ -261,7 +276,7 @@ void refresh_cmd_timeout(void);
 // by disabling / enabling interrupts. This is costly, if the interrupts are known
 // to be disabled.
 extern volatile unsigned long timer0_millis;
-// An unsynchronized equivalent to a standard Arduino millis() function.
+// An unsynchronized equivalent to a standard Arduino _millis() function.
 // To be used inside an interrupt routine.
 FORCE_INLINE unsigned long millis_nc() { return timer0_millis; }
 
