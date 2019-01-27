@@ -697,9 +697,9 @@ uint16_t tmc2130_get_res(uint8_t axis)
 void tmc2130_set_res(uint8_t axis, uint16_t res)
 {
 	tmc2130_mres[axis] = tmc2130_usteps2mres(res);
-//	uint32_t u = micros();
+//	uint32_t u = micros2();
 	tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
-//	u = micros() - u;
+//	u = micros2() - u;
 //	printf_P(PSTR("tmc2130_setup_chopper %c %lu us"), "XYZE"[axis], u);
 }
 

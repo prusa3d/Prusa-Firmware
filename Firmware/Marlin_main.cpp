@@ -912,7 +912,7 @@ void update_sec_lang_from_external_flash()
 		{
 			fputs_P(PSTR(ESC_H(1,3) "Language update."), lcdout);
 			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
-			delay(100);
+			delay2(100);
 			boot_reserved = (state + 1) | (lang << 4);
 			if ((state * LANGBOOT_BLOCKSIZE) < header.size)
 			{
@@ -1310,9 +1310,9 @@ void setup()
     for (uint16_t phase = (tmc2130_rd_MSCNT(Z_AXIS) + 8) >> 4; phase > 0; -- phase) {
       // Until the phase counter is reset to zero.
       WRITE(Z_STEP_PIN, !INVERT_Z_STEP_PIN);
-      delay(2);
+      delay2(2);
       WRITE(Z_STEP_PIN, INVERT_Z_STEP_PIN);
-      delay(2);
+      delay2(2);
     }
   }
 #endif //TMC2130
@@ -1358,16 +1358,16 @@ void setup()
 		uint32_t sumw = 0;
 		for (int i = 0; i < 1024; i++)
 		{
-			uint32_t u = micros();
+			uint32_t u = micros2();
 			bool res = card.card.readBlock(i, buff);
-			u = micros() - u;
+			u = micros2() - u;
 			if (res)
 			{
 				printf_P(PSTR("readBlock %4d 512 bytes %lu us\n"), i, u);
 				sumr += u;
-				u = micros();
+				u = micros2();
 				res = card.card.writeBlock(i, buff);
-				u = micros() - u;
+				u = micros2() - u;
 				if (res)
 				{
 					printf_P(PSTR("writeBlock %4d 512 bytes %lu us\n"), i, u);
@@ -2317,9 +2317,9 @@ void refresh_cmd_timeout(void)
 void trace() {
 //if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     tone(BEEPER, 440);
-    delay(25);
+    delay2(25);
     noTone(BEEPER);
-    delay(20);
+    delay2(20);
 }
 /*
 void ramming() {
@@ -2380,7 +2380,7 @@ void ramming() {
 		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
 		//current_position[X_AXIS] -= 23; //delay
 		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 600/60, active_extruder); //delay
-		delay(4700);
+		delay2(4700);
 		max_feedrate[E_AXIS] = 80;
 		current_position[E_AXIS] -= 92;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 9900 / 60, active_extruder);
@@ -3176,9 +3176,9 @@ static void gcode_PRUSA_SN()
 #if 0
         for (int b = 0; b < 3; b++) {
             tone(BEEPER, 110);
-            delay(50);
+            delay2(50);
             noTone(BEEPER);
-            delay(50);
+            delay2(50);
         }
 #endif
     } else {
@@ -3611,7 +3611,7 @@ void process_commands()
                         disable_e0();
                         disable_e1();
                         disable_e2();
-                        delay(100);
+                        delay2(100);
                         
                         //LCD_ALERTMESSAGEPGM(_T(MSG_FILAMENTCHANGE));
                         uint8_t cnt=0;
@@ -5379,7 +5379,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 	}
 
-	delay(1000);
+	delay2(1000);
 
     clean_up_after_endstop_move(l_feedmultiply);
 
@@ -5668,7 +5668,7 @@ Sigma_Exit:
         disable_e2();
         finishAndDisableSteppers();
         fanSpeed = 0;
-        delay(1000); // Wait a little before to switch off
+        delay2(1000); // Wait a little before to switch off
       #if defined(SUICIDE_PIN) && SUICIDE_PIN > -1
         st_synchronize();
         suicide();
@@ -6221,7 +6221,7 @@ Sigma_Exit:
 #endif
             servos[servo_index].write(servo_position);
 #if defined (ENABLE_AUTO_BED_LEVELING) && (PROBE_SERVO_DEACTIVATION_DELAY > 0)
-              delay(PROBE_SERVO_DEACTIVATION_DELAY);
+              delay2(PROBE_SERVO_DEACTIVATION_DELAY);
               servos[servo_index].detach();
 #endif
           }
@@ -6254,13 +6254,13 @@ Sigma_Exit:
         #if BEEPER > 0
 if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           tone(BEEPER, beepS);
-          delay(beepP);
+          delay2(beepP);
           noTone(BEEPER);
         #endif
       }
       else
       {
-        delay(beepP);
+        delay2(beepP);
       }
     }
     break;
@@ -6333,7 +6333,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         WRITE(PHOTOGRAPH_PIN, LOW);
         _delay_ms(PULSE_LENGTH);
         }
-        delay(7.33);
+        delay2(7.33);
         for(int i=0; i < NUM_PULSES; i++) {
         WRITE(PHOTOGRAPH_PIN, HIGH);
         _delay_ms(PULSE_LENGTH);
@@ -6982,7 +6982,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
               mmu_extruder = tmp_extruder;
 
 
-              delay(100);
+              delay2(100);
 
               disable_e0();
               disable_e1();
@@ -6991,7 +6991,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
               pinMode(E_MUX0_PIN, OUTPUT);
               pinMode(E_MUX1_PIN, OUTPUT);
 
-              delay(100);
+              delay2(100);
               SERIAL_ECHO_START;
               SERIAL_ECHO("T:");
               SERIAL_ECHOLN((int)tmp_extruder);
@@ -7017,7 +7017,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
                   break;
               }
-              delay(100);
+              delay2(100);
 
 #else //SNMM
               if (tmp_extruder >= EXTRUDERS) {
@@ -7621,7 +7621,7 @@ void kill(const char *full_screen_message, unsigned char id)
   sei();   // enable interrupts
   for ( int i=5; i--; lcd_update(0))
   {
-     delay(200);	
+     delay2(200);	
   }
   cli();   // disable interrupts
   suicide();
@@ -8028,8 +8028,8 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 
 		
 		//MYSERIAL.println(data_wldsd);
-		//delay(1000);
-		//delay(3000);
+		//delay2(1000);
+		//delay2(3000);
 		//t1 = millis();
 		
 		//while (digitalRead(D_DATACLOCK) == LOW) {}

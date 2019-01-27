@@ -954,7 +954,7 @@ void CardReader::presort() {
 		lcd_set_cursor(column, 2);
 		lcd_print('\x01'); //simple progress bar
 	}
-	delay(300);
+	delay2(300);
 	lcd_set_degree();
 	lcd_clear();
 #endif

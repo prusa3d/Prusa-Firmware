@@ -815,7 +815,7 @@ void change_extr(int
         ) { //switches multiplexer for extruders
 #ifdef SNMM
 	st_synchronize();
-	delay(100);
+	delay2(100);
 
 	disable_e0();
 	disable_e1();
@@ -848,7 +848,7 @@ void change_extr(int
 		
 		break;
 	}
-	delay(100);
+	delay2(100);
 #endif
 }
 

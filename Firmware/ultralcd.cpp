@@ -281,8 +281,8 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* longF
 				j = 0;
 				break;
             }else{
-				if (j == 1) delay(3);	//wait around 1.2 s to start scrolling text
-				delay(1);				//then scroll with redrawing every 300 ms 
+				if (j == 1) delay2(3);	//wait around 1.2 s to start scrolling text
+				delay2(1);				//then scroll with redrawing every 300 ms 
             }
 
           }
@@ -2365,7 +2365,7 @@ void lcd_loading_filament() {
       manage_heater();
       manage_inactivity(true);
 
-      delay(153);
+      delay2(153);
     }
 
 
@@ -2445,7 +2445,7 @@ void lcd_alright() {
         lcd_set_cursor(0, cursor_pos);
         lcd_print(">");
         enc_dif = lcd_encoder_diff;
-        delay(100);
+        delay2(100);
       }
 
     }
@@ -2454,7 +2454,7 @@ void lcd_alright() {
     if (lcd_clicked()) {
 
       lcd_change_fil_state = cursor_pos;
-      delay(500);
+      delay2(500);
 
     }
 
@@ -2475,7 +2475,7 @@ void show_preheat_nozzle_warning()
     lcd_puts_P(_T(MSG_ERROR));
     lcd_set_cursor(0, 2);
     lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-    delay(2000);
+    delay2(2000);
     lcd_clear();
 }
 
@@ -2608,7 +2608,7 @@ void lcd_menu_statistics()
 		{
 			manage_heater();
 			manage_inactivity(true);
-			delay(100);
+			delay2(100);
 		}
 		KEEPALIVE_STATE(NOT_BUSY);
 		lcd_quick_feedback();
@@ -2866,7 +2866,7 @@ static void _lcd_babystep(int axis, const char *msg)
 			}
 		}
 		_md->babystepMemMM[axis] = _md->babystepMem[axis]/cs.axis_steps_per_unit[axis]; 
-		delay(50);
+		delay2(50);
 		lcd_encoder = 0;
 		lcd_draw_update = 1;
 	}
@@ -3029,7 +3029,7 @@ void lcd_adjust_z() {
         lcd_set_cursor(0, cursor_pos);
         lcd_print(">");
         enc_dif = lcd_encoder_diff;
-        delay(100);
+        delay2(100);
       }
 
     }
@@ -3049,7 +3049,7 @@ void lcd_adjust_z() {
         EEPROM_save_B(EEPROM_BABYSTEP_Y, &zero);
         EEPROM_save_B(EEPROM_BABYSTEP_Z, &zero);
       }
-      delay(500);
+      delay2(500);
     }
   };
 
@@ -3151,7 +3151,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
             manage_heater();
             manage_inactivity(true);
             if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
-                delay(50);
+                delay2(50);
                 previous_millis_cmd = millis();
                 lcd_encoder += abs(lcd_encoder_diff / ENCODER_PULSES_PER_STEP);
                 lcd_encoder_diff = 0;
@@ -3166,7 +3166,7 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
                 // Abort a move if in progress.
                 planner_abort_hard();
                 while (lcd_clicked()) ;
-                delay(10);
+                delay2(10);
                 while (lcd_clicked()) ;
                 break;
             }
@@ -3983,7 +3983,7 @@ void lcd_pick_babystep(){
                 
    
                 enc_dif = lcd_encoder_diff;
-                delay(100);
+                delay2(100);
             }
             
         }
@@ -3994,7 +3994,7 @@ void lcd_pick_babystep(){
             EEPROM_read_B(EEPROM_BABYSTEP_Z0+((fsm-1)*2),&babyStepZ);
             EEPROM_save_B(EEPROM_BABYSTEP_Z,&babyStepZ);
             calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-            delay(500);
+            delay2(500);
             
         }
     };
@@ -4448,7 +4448,7 @@ void lcd_language()
 	lcd_draw_update = 2;
 	while ((menu_menu != lcd_status_screen) && (!lang_is_selected()))
 	{
-		delay(50);
+		delay2(50);
 		lcd_update(0);
 		manage_heater();
 		manage_inactivity(true);
@@ -5111,7 +5111,7 @@ void bowden_menu() {
 				lcd_print(">");
 
 				enc_dif = lcd_encoder_diff;
-				delay(100);
+				delay2(100);
 		}
 
 		if (lcd_clicked()) {
@@ -5144,7 +5144,7 @@ void bowden_menu() {
 							enc_dif = lcd_encoder_diff;
 						}
 				}
-				delay(100);
+				delay2(100);
 				if (lcd_clicked()) {
 					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
 					if (lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Continue with another bowden?"))) {
@@ -5203,7 +5203,7 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
 				enc_dif = lcd_encoder_diff;
-				delay(100);
+				delay2(100);
 			}
 		}
 		if (lcd_clicked()) {
@@ -5304,7 +5304,7 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
         lcd_set_cursor(0, cursor_pos);
         lcd_print(">");
 
-        delay(100);
+        delay2(100);
 
 		if (lcd_clicked())
 		{
@@ -5386,7 +5386,7 @@ char reset_menu() {
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
 				enc_dif = lcd_encoder_diff;
-				delay(100);
+				delay2(100);
 			}
 
 		}
@@ -5509,7 +5509,7 @@ void unload_filament()
 	disable_e0();
 	disable_e1();
 	disable_e2();
-	delay(100);
+	delay2(100);
 
 	Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
 	uint8_t counterBeep = 0;
@@ -5574,11 +5574,11 @@ static void lcd_farm_no()
 
 		lcd_set_cursor(step, 3);
 		lcd_print("^");
-		delay(100);
+		delay2(100);
 
 		if (lcd_clicked())
 		{
-			delay(200);
+			delay2(200);
 			step++;
 			if(step == 3) {
 				_ret = 1;
@@ -5659,7 +5659,7 @@ unsigned char lcd_choose_color() {
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
 				enc_dif = lcd_encoder_diff;
-				delay(100);
+				delay2(100);
 
 		}
 
@@ -5713,7 +5713,7 @@ void lcd_confirm_print()
 		lcd_puts_P(_T(MSG_NO));
 		lcd_set_cursor(0, 1 + cursor_pos);
 		lcd_print(">");
-		delay(100);
+		delay2(100);
 
 		_t = _t + 1;
 		if (_t>100)
@@ -5806,7 +5806,7 @@ static void lcd_main_menu()
     
         int tempScrool = 0;
         if (lcd_draw_update == 0 && LCD_CLICKED == 0)
-            //delay(100);
+            //delay2(100);
             return; // nothing to do (so don't thrash the SD card)
         uint16_t fileCnt = card.getnrfilenames();
         
@@ -5969,7 +5969,7 @@ void stack_error() {
 	SET_OUTPUT(BEEPER);
 if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
 	WRITE(BEEPER, HIGH);
-	delay(1000);
+	delay2(1000);
 	WRITE(BEEPER, LOW);
 	lcd_display_message_fullscreen_P(_i("Error - static memory has been overwritten"));////MSG_STACK_ERROR c=20 r=4
 	//err_triggered = 1;
@@ -6228,7 +6228,7 @@ void lcd_sdcard_menu()
 	  card.presort();
   }
   if (lcd_draw_update == 0 && LCD_CLICKED == 0)
-    //delay(100);
+    //delay2(100);
     return; // nothing to do (so don't thrash the SD card)
   uint16_t fileCnt = card.getnrfilenames();
 
@@ -6292,7 +6292,7 @@ bool lcd_selftest()
 	#ifdef TMC2130
 	  FORCE_HIGH_POWER_START;
 	#endif // TMC2130
-	delay(2000);
+	delay2(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 
 	_progress = lcd_selftest_screen(-1, _progress, 3, true, 2000);
@@ -6670,7 +6670,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		manage_heater();
 		manage_inactivity(true);
 
-		//delay(100);
+		//delay2(100);
 		(_travel_done <= _travel) ? _travel_done++ : _stepdone = true;
 
 	} while (!_stepdone);
@@ -6788,7 +6788,7 @@ static bool lcd_selfcheck_endstops()
 		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) current_position[2] += 10;
 	}
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[0] / 60, active_extruder);
-	delay(500);
+	delay2(500);
 
 	if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 		((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) ||
@@ -6983,11 +6983,11 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		break;
 	}
 
-	delay(1000);
+	delay2(1000);
 	lcd_beeper_quick_feedback();
 
 	do {
-		delay(100);
+		delay2(100);
 		manage_heater();
 		manage_inactivity();
 	} while (!lcd_clicked());
@@ -7100,7 +7100,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 		analogWrite(FAN_PIN, 255);
 		break;
 	}
-	delay(500);
+	delay2(500);
 
 	lcd_set_cursor(1, 2); lcd_puts_P(_T(MSG_SELFTEST_FAN_YES));
 	lcd_set_cursor(0, 3); lcd_print(">");
@@ -7148,7 +7148,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 
 
 		manage_heater();
-		delay(100);
+		delay2(100);
 
 	} while (!lcd_clicked());
 	KEEPALIVE_STATE(IN_HANDLER);
@@ -7175,7 +7175,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		fanSpeed = 0;
 		manage_heater();			//turn off fan
 		setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, 1); //extruder fan
-		delay(2000);				//delay_keep_alive would turn off extruder fan, because temerature is too low
+		delay2(2000);				//delay_keep_alive would turn off extruder fan, because temerature is too low
 		manage_heater();			//count average fan speed from 2s delay and turn off fans
 		if (!fan_speed[0]) _result = false;
 		//SERIAL_ECHOPGM("Extruder fan speed: ");
