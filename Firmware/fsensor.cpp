@@ -215,7 +215,7 @@ void fsensor_autoload_check_start(void)
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
 	fsensor_autoload_sum = 0;
-	fsensor_autoload_last_millis = millis();
+	fsensor_autoload_last_millis = _millis();
 	fsensor_watch_runout = false;
 	fsensor_watch_autoload = true;
 	fsensor_err_cnt = 0;
@@ -248,8 +248,8 @@ bool fsensor_check_autoload(void)
 #if 0
 	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
 #endif
-	if ((millis() - fsensor_autoload_last_millis) < 25) return false;
-	fsensor_autoload_last_millis = millis();
+	if ((_millis() - fsensor_autoload_last_millis) < 25) return false;
+	fsensor_autoload_last_millis = _millis();
 	if (!pat9125_update_y()) //update sensor
 	{
 		fsensor_disable();

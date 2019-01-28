@@ -36,7 +36,7 @@ public:
     {
       if (!running()) return 0;
       if (expired()) return 0;
-      const unsigned long now = millis();
+      const unsigned long now = _millis();
       return (started() + m_period - now);
     }
     /**

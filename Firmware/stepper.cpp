@@ -1537,7 +1537,7 @@ void digitalPotWrite(int address, int value) // From Arduino DigitalPotControl e
     SPI.transfer(address); //  send in the address and value via SPI:
     SPI.transfer(value);
     digitalWrite(DIGIPOTSS_PIN,HIGH); // take the SS pin high to de-select the chip:
-    //delay(10);
+    //_delay(10);
 }
 #endif
 

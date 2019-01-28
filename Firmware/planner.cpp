@@ -535,9 +535,9 @@ void check_axes_activity()
     if (tail_fan_speed) {
       if (fan_kick_end == 0) {
         // Just starting up fan - run at full power.
-        fan_kick_end = millis() + FAN_KICKSTART_TIME;
+        fan_kick_end = _millis() + FAN_KICKSTART_TIME;
         tail_fan_speed = 255;
-      } else if (fan_kick_end > millis())
+      } else if (fan_kick_end > _millis())
         // Fan still spinning up.
         tail_fan_speed = 255;
     } else {
