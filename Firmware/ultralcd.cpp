@@ -9,6 +9,7 @@
 #include "temperature.h"
 #include "stepper.h"
 #include "ConfigurationStore.h"
+#include "printers.h"
 #include <string.h>
 
 
