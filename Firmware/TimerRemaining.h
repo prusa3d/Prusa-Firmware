@@ -8,6 +8,7 @@
 
 #include "Timer.h"
 #include "Arduino.h"
+#include "Marlin.h"
 #include <limits.h>
 
 class TimerRemaining : public LongTimer
