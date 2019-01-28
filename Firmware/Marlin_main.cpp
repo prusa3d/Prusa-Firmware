@@ -2092,8 +2092,8 @@ bool calibrate_z_auto()
 {
 	//lcd_display_message_fullscreen_P(_T(MSG_CALIBRATE_Z_AUTO));
 	lcd_clear();
-	lcd_puts_at_P(0,1, _T(MSG_CALIBRATE_Z_AUTO));
-	bool endstops_enabled  = enable_endstops(true);
+	lcd_puts_at_P(0, 1, _T(MSG_CALIBRATE_Z_AUTO));
+	bool endstops_enabled = enable_endstops(true);
 	int axis_up_dir = -home_dir(Z_AXIS);
 	tmc2130_home_enter(Z_AXIS_MASK);
 	current_position[Z_AXIS] = 0;
@@ -2101,21 +2101,26 @@ bool calibrate_z_auto()
 	set_destination_to_current();
 	destination[Z_AXIS] += (1.1 * max_length(Z_AXIS) * axis_up_dir);
 	feedrate = homing_feedrate[Z_AXIS];
-	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate / 60, active_extruder);
 	st_synchronize();
-//	current_position[axis] = 0;
-//	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	//	current_position[axis] = 0;
+	//	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	tmc2130_home_exit();
-    enable_endstops(false);
+	enable_endstops(false);
 	current_position[Z_AXIS] = 0;
 	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	set_destination_to_current();
 	destination[Z_AXIS] += 10 * axis_up_dir; //10mm up
 	feedrate = homing_feedrate[Z_AXIS] / 2;
-	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate / 60, active_extruder);
 	st_synchronize();
-    enable_endstops(endstops_enabled);
-    current_position[Z_AXIS] = Z_MAX_POS+2.0;
+	enable_endstops(endstops_enabled);
+	if (PRINTER_TYPE == PRINTER_MK3) {
+		current_position[Z_AXIS] = Z_MAX_POS + 2.0;
+	}
+	else {
+		current_position[Z_AXIS] = Z_MAX_POS + 9.0;
+	}
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	return true;
 }
