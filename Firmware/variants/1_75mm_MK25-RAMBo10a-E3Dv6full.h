@@ -113,7 +113,6 @@
 // Filament sensor
 #define FILAMENT_SENSOR
 #define PAT9125
-#define IR_SENSOR
 
 
 #define DEBUG_DCODE3
