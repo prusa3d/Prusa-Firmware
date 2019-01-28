@@ -7,7 +7,8 @@
 #define TIMERREMAINING_H
 
 #include "Timer.h"
-#include "Marlin.h"
+#include "Arduino.h"
+#include "system_timer.h"
 #include <limits.h>
 
 class TimerRemaining : public LongTimer
