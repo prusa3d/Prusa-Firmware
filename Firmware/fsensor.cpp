@@ -180,11 +180,11 @@ bool fsensor_enable(void)
 		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x01);
 		FSensorStateMenu = 1;
 	}
-#else
+#else // PAT9125
 	fsensor_enabled = true;
 	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x01);
 	FSensorStateMenu = 1;
-#endif
+#endif // PAT9125
 	return fsensor_enabled;
 }
 

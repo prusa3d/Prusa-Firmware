@@ -119,12 +119,14 @@ void mmu_init(void)
 	PIN_SET(IR_SENSOR_PIN); //pullup
 }
 
-//returns true if idler IR sensor was detected, otherwise returns false
+
+//if IR_SENSOR defined, always returns true
+//otherwise check for ir sensor and returns true if idler IR sensor was detected, otherwise returns false
 bool check_for_ir_sensor() 
 {
 #ifdef IR_SENSOR
 	return true;
-#endif //IR_SENSOR
+#else //IR_SENSOR
 
 	bool detected = false;
 	//if IR_SENSOR_PIN input is low and pat9125sensor is not present we detected idler sensor
@@ -142,6 +144,7 @@ bool check_for_ir_sensor()
 		//printf_P(PSTR("Idler IR sensor not detected\n"));
 	}
 	return detected;
+#endif //IR_SENSOR
 }
 
 //mmu main loop - state machine processing
