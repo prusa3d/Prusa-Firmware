@@ -3655,10 +3655,10 @@ static void lcd_print_state(uint8_t state)
 {
 	switch (state) {
 		case STATE_ON:
-			lcd_puts_P(_i("On "));
+			lcd_puts_P(_i("  1"));
 		break;
 		case STATE_OFF:
-			lcd_puts_P(_i("Off"));
+			lcd_puts_P(_i("  0"));
 		break;
 		default: 
 			lcd_puts_P(_i("N/A"));
@@ -5942,8 +5942,8 @@ static void lcd_main_menu()
 	{
 		MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
 		MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);
-		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
 		MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
+		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);		
 	}
 	else
 	{
