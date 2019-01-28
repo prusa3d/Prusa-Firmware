@@ -58,11 +58,11 @@
 
 FILE _lcdout; // = {0}; Global variable is always zero initialized, no need to explicitly state that.
 
+#define ENABLE_FOUR_BIT_MODE 1
 
-uint8_t lcd_rs_pin; // LOW: command.  HIGH: character.
-uint8_t lcd_rw_pin; // LOW: write to LCD.  HIGH: read from LCD.
-uint8_t lcd_enable_pin; // activated by a HIGH pulse.
-uint8_t lcd_data_pins[8];
+#define LCD_RS_PIN LCD_PINS_RS // LOW: command.  HIGH: character.
+#define LCD_RW_PIN  -1         // LOW: write to LCD.  HIGH: read from LCD.
+#define LCD_ENABLE_PIN  LCD_PINS_ENABLE // activated by a HIGH pulse.
 
 uint8_t lcd_displayfunction;
 uint8_t lcd_displaycontrol;
@@ -76,47 +76,59 @@ uint8_t lcd_escape[8];
 
 void lcd_pulseEnable(void)
 {
-	digitalWrite(lcd_enable_pin, LOW);
-	delayMicroseconds(1);    
-	digitalWrite(lcd_enable_pin, HIGH);
-	delayMicroseconds(1);    // enable pulse must be >450ns
-	digitalWrite(lcd_enable_pin, LOW);
-	delayMicroseconds(100);   // commands need > 37us to settle
+	WRITE(LCD_ENABLE_PIN, LOW);
+	_delay_us(1);
+	WRITE(LCD_ENABLE_PIN, HIGH);
+	_delay_us(1);    // enable pulse must be >450ns
+	WRITE(LCD_ENABLE_PIN, LOW);
+	_delay_us(50);   // commands need > 37us to settle
 }
 
+#ifdef ENABLE_FOUR_BIT_MODE
 void lcd_write4bits(uint8_t value)
 {
-	for (int i = 0; i < 4; i++)
-	{
-		pinMode(lcd_data_pins[i], OUTPUT);
-		digitalWrite(lcd_data_pins[i], (value >> i) & 0x01);
-	}
+	WRITE(LCD_PINS_D4, (value >> 0) & 0x01);
+	WRITE(LCD_PINS_D5, (value >> 1) & 0x01);
+	WRITE(LCD_PINS_D6, (value >> 2) & 0x01);
+	WRITE(LCD_PINS_D7, (value >> 3) & 0x01);
+
 	lcd_pulseEnable();
 }
-
+#else
 void lcd_write8bits(uint8_t value)
 {
-	for (int i = 0; i < 8; i++)
-	{
-		pinMode(lcd_data_pins[i], OUTPUT);
-		digitalWrite(lcd_data_pins[i], (value >> i) & 0x01);
-	}
+	WRITE(LCD_PINS_D4, (value >> 0) & 0x01);
+	WRITE(LCD_PINS_D5, (value >> 1) & 0x01);
+	WRITE(LCD_PINS_D6, (value >> 2) & 0x01);
+	WRITE(LCD_PINS_D7, (value >> 3) & 0x01);
+	WRITE(-1, (value >> 4) & 0x01);
+	WRITE(-1, (value >> 5) & 0x01);
+	WRITE(-1, (value >> 6) & 0x01);
+	WRITE(-1, (value >> 7) & 0x01);
+
 	lcd_pulseEnable();
 }
+#endif
 
 // write either command or data, with automatic 4/8-bit selection
 void lcd_send(uint8_t value, uint8_t mode)
 {
-	digitalWrite(lcd_rs_pin, mode);
+	WRITE(LCD_RS_PIN, mode);
 	// if there is a RW pin indicated, set it low to Write
-	if (lcd_rw_pin != 255) digitalWrite(lcd_rw_pin, LOW);
-	if (lcd_displayfunction & LCD_8BITMODE)
+#if (defined(LCD_RW_PIN) && (LCD_RW_PIN >-1))
+	WRITE(LCD_RW_PIN, LOW);
+#endif //(defined(LCD_RW_PIN) && (LCD_RW_PIN >-1))
+
+#ifndef ENABLE_FOUR_BIT_MODE
+	{
 		lcd_write8bits(value); 
-	else
+	}
+#else
 	{
 		lcd_write4bits(value>>4);
 		lcd_write4bits(value);
 	}
+#endif
 }
 
 void lcd_command(uint8_t value)
@@ -169,12 +181,15 @@ static void lcd_begin(uint8_t lines, uint8_t dotsize, uint8_t clear)
 	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
 	_delay_us(50000); 
 	// Now we pull both RS and R/W low to begin commands
-	digitalWrite(lcd_rs_pin, LOW);
-	digitalWrite(lcd_enable_pin, LOW);
-	if (lcd_rw_pin != 255)
-		digitalWrite(lcd_rw_pin, LOW);
+	WRITE(LCD_RS_PIN, LOW);
+	WRITE(LCD_ENABLE_PIN, LOW);
+
+#if (defined(LCD_RW_PIN) && (LCD_RW_PIN >-1))
+	WRITE(LCD_RW_PIN, LOW);
+#endif //(defined(LCD_RW_PIN) && (LCD_RW_PIN >-1))
+
 	//put the LCD into 4 bit or 8 bit mode
-	if (!(lcd_displayfunction & LCD_8BITMODE))
+#ifdef ENABLE_FOUR_BIT_MODE
 	{
 		// this is according to the hitachi HD44780 datasheet
 		// figure 24, pg 46
@@ -190,7 +205,7 @@ static void lcd_begin(uint8_t lines, uint8_t dotsize, uint8_t clear)
 		// finally, set to 4-bit interface
 		lcd_write4bits(0x02); 
 	}
-	else
+#else
 	{
 		// this is according to the hitachi HD44780 datasheet
 		// page 45 figure 23
@@ -203,6 +218,8 @@ static void lcd_begin(uint8_t lines, uint8_t dotsize, uint8_t clear)
 		// third go
 		lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);
 	}
+#endif
+
 	// finally, set # lines, font size, etc.
 	lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);  
 	_delay_us(60);
@@ -229,24 +246,39 @@ int lcd_putchar(char c, FILE *)
 
 void lcd_init(void)
 {
-	uint8_t fourbitmode = 1;
-	lcd_rs_pin = LCD_PINS_RS;
-	lcd_rw_pin = 255;
-	lcd_enable_pin = LCD_PINS_ENABLE;
-	lcd_data_pins[0] = LCD_PINS_D4;
-	lcd_data_pins[1] = LCD_PINS_D5;
-	lcd_data_pins[2] = LCD_PINS_D6;
-	lcd_data_pins[3] = LCD_PINS_D7; 
-	lcd_data_pins[4] = 0;
-	lcd_data_pins[5] = 0;
-	lcd_data_pins[6] = 0;
-	lcd_data_pins[7] = 0;
-	pinMode(lcd_rs_pin, OUTPUT);
-	// we can save 1 pin by not using RW. Indicate by passing 255 instead of pin#
-	if (lcd_rw_pin != 255) pinMode(lcd_rw_pin, OUTPUT);
-	pinMode(lcd_enable_pin, OUTPUT);
-	if (fourbitmode) lcd_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
-	else lcd_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
+	SET_OUTPUT(LCD_RS_PIN);
+	// we can save 1 pin by not using RW.
+#if (defined(LCD_RW_PIN) && (LCD_RW_PIN >-1))
+	SET_OUTPUT(LCD_RW_PIN);
+#endif //(defined(LCD_RW_PIN) && (LCD_RW_PIN >-1))
+
+	SET_OUTPUT(LCD_ENABLE_PIN);
+#ifdef ENABLE_FOUR_BIT_MODE
+	{
+		SET_OUTPUT(LCD_PINS_D4);
+		SET_OUTPUT(LCD_PINS_D5);
+		SET_OUTPUT(LCD_PINS_D6);
+		SET_OUTPUT(LCD_PINS_D7);
+
+		lcd_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
+	}
+#else
+	{
+		SET_OUTPUT(LCD_PINS_D4);
+		SET_OUTPUT(LCD_PINS_D5);
+		SET_OUTPUT(LCD_PINS_D6);
+		SET_OUTPUT(LCD_PINS_D7);
+
+		// set correct pins
+		SET_OUTPUT(-1);
+		SET_OUTPUT(-1);
+		SET_OUTPUT(-1);
+		SET_OUTPUT(-1);
+
+		lcd_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
+	}
+#endif
+
 	lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 1);
 	//lcd_clear();
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
@@ -711,9 +743,9 @@ Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 	for(int8_t i = 0; i < 10; i++)
 	{
 		WRITE(BEEPER,HIGH);
-		delayMicroseconds(100);
+		_delay_us((100);
 		WRITE(BEEPER,LOW);
-		delayMicroseconds(100);
+		_delay_us((100);
 	}
 */
 }
@@ -1048,4 +1080,3 @@ void lcd_set_custom_characters_degree(void)
 {
 	lcd_createChar_P(1, lcd_chardata_degree);
 }
-
