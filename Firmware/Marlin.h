@@ -18,7 +18,7 @@
 #include <avr/interrupt.h>
 
 
-//#define SYSTEM_TIMER_2
+#define SYSTEM_TIMER_2
 
 #ifdef SYSTEM_TIMER_2
 #include "timer02.h"
@@ -275,10 +275,22 @@ void refresh_cmd_timeout(void);
 // The standard Arduino timer() function returns this value atomically
 // by disabling / enabling interrupts. This is costly, if the interrupts are known
 // to be disabled.
+#ifdef SYSTEM_TIMER_2
+extern volatile unsigned long timer2_millis;
+#else //SYSTEM_TIMER_2
 extern volatile unsigned long timer0_millis;
+#endif //SYSTEM_TIMER_2
+
 // An unsynchronized equivalent to a standard Arduino _millis() function.
 // To be used inside an interrupt routine.
-FORCE_INLINE unsigned long millis_nc() { return timer0_millis; }
+
+FORCE_INLINE unsigned long millis_nc() { 
+#ifdef SYSTEM_TIMER_2
+	return timer2_millis;
+#else //SYSTEM_TIMER_2
+	return timer0_millis;
+#endif //SYSTEM_TIMER_2
+}
 
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val);
