@@ -991,6 +991,10 @@ void setup()
 	
 	ultralcd_init();
 
+#if (LCD_BL_PIN != -1)
+	analogWrite(LCD_BL_PIN, 255); //set full brightnes
+#endif //(LCD_BL_PIN != -1)
+
 	spi_init();
 
 	lcd_splash();
@@ -1478,9 +1482,9 @@ void setup()
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
 
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	fsensor_setup_interrupt();
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
 	for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]); 
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
@@ -1612,7 +1616,6 @@ void setup()
 	   
   }
 #endif //UVLO_SUPPORT
-
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
@@ -3450,11 +3453,11 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	else if (code_seen("FSENSOR_RECOVER")) { //! FSENSOR_RECOVER
 		fsensor_restore_print_and_continue();
   }
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //! PRUSA Ping
 			if (farm_mode) {
@@ -7105,7 +7108,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		dcode_8(); break;
 	case 9: //! D9 - Read/Write ADC
 		dcode_9(); break;
-
 	case 10: //! D10 - XYZ calibration = OK
 		dcode_10(); break;
     
@@ -7474,7 +7476,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			{
 				if (fsensor_check_autoload())
 				{
+#ifdef PAT9125
 					fsensor_autoload_check_stop();
+#endif //PAT9125
 					if (degHotend0() > EXTRUDE_MINTEMP)
 					{
 						if ((eSoundMode == e_SOUND_MODE_LOUD) || (eSoundMode == e_SOUND_MODE_ONCE))
@@ -7494,7 +7498,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			}
 			else
 			{
+#ifdef PAT9125
 				fsensor_autoload_check_stop();
+#endif //PAT9125
 				fsensor_update();
 			}
 		}
@@ -8329,8 +8335,8 @@ void uvlo_()
     // are in action.
     planner_abort_hard();
 
-    // Store the current extruder position.
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
+	// Store the current extruder position.
+	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
 
     // Clean the input command queue.
@@ -8686,8 +8692,7 @@ void restore_print_from_eeprom() {
 	enquecommand(cmd);
 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
 	SERIAL_ECHOPGM("Position read from eeprom:");
-	MYSERIAL.println(position);
-
+	MYSERIAL.println(position);	
   // E axis relative mode.
 	enquecommand_P(PSTR("M83"));
   // Move to the XY print position in logical coordinates, where the print has been killed.
@@ -9188,9 +9193,9 @@ void M600_load_filament() {
 	//load_filament_time = millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	fsensor_autoload_check_start();
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
 	while(!lcd_clicked())
 	{
 		manage_heater();
@@ -9206,9 +9211,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		}
 #endif //FILAMENT_SENSOR
 	}
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	fsensor_autoload_check_stop();
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
 	KEEPALIVE_STATE(IN_HANDLER);
 
 #ifdef FSENSOR_QUALITY

@@ -1057,7 +1057,7 @@ void tp_init()
     setPwmFrequency(FAN_PIN, 1); // No prescaling. Pwm frequency = F_CPU/256/8
     #endif
     #ifdef FAN_SOFT_PWM
-    soft_pwm_fan = fanSpeedSoftPwm / 2;
+    soft_pwm_fan = fanSpeedSoftPwm / (1 << (8 - FAN_SOFT_PWM_BITS));
     #endif
   #endif
 
@@ -1631,11 +1631,14 @@ ISR(TIMER2_COMPB_vect)
     soft_pwm_b = soft_pwm_bed;
     //if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1); else WRITE(HEATER_BED_PIN,0);
 #endif
-#ifdef FAN_SOFT_PWM
-    soft_pwm_fan = fanSpeedSoftPwm / 2;
-    if(soft_pwm_fan > 0) WRITE(FAN_PIN,1); else WRITE(FAN_PIN,0);
-#endif
   }
+#ifdef FAN_SOFT_PWM
+  if ((pwm_count & ((1 << FAN_SOFT_PWM_BITS) - 1)) == 0)
+  {
+    soft_pwm_fan = fanSpeedSoftPwm / (1 << (8 - FAN_SOFT_PWM_BITS));
+    if(soft_pwm_fan > 0) WRITE(FAN_PIN,1); else WRITE(FAN_PIN,0);
+  }
+#endif
   if(soft_pwm_0 < pwm_count)
   { 
     WRITE(HEATER_0_PIN,0);
@@ -1654,7 +1657,7 @@ ISR(TIMER2_COMPB_vect)
   if(soft_pwm_b < pwm_count) WRITE(HEATER_BED_PIN,0);
 #endif
 #ifdef FAN_SOFT_PWM
-  if(soft_pwm_fan < pwm_count) WRITE(FAN_PIN,0);
+  if (soft_pwm_fan < (pwm_count & ((1 << FAN_SOFT_PWM_BITS) - 1))) WRITE(FAN_PIN,0);
 #endif
   
   pwm_count += (1 << SOFT_PWM_SCALE);
@@ -1841,8 +1844,8 @@ ISR(TIMER2_COMPB_vect)
 #endif
   
 #ifdef FAN_SOFT_PWM
-  if (pwm_count == 0){
-    soft_pwm_fan = fanSpeedSoftPwm / 2;
+  if ((pwm_count & ((1 << FAN_SOFT_PWM_BITS) - 1)) == 0)
+    soft_pwm_fan = fanSpeedSoftPwm / (1 << (8 - FAN_SOFT_PWM_BITS));
     if (soft_pwm_fan > 0) WRITE(FAN_PIN,1); else WRITE(FAN_PIN,0);
   }
   if (soft_pwm_fan < pwm_count) WRITE(FAN_PIN,0);

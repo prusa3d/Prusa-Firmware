@@ -35,14 +35,16 @@ extern bool fsensor_autoload_enabled;
 extern void fsensor_autoload_set(bool State);
 
 extern void fsensor_update(void);
-
+#ifdef PAT9125
 //! setup pin-change interrupt
 extern void fsensor_setup_interrupt(void);
 
 //! @name autoload support
 //! @{
+
 extern void fsensor_autoload_check_start(void);
 extern void fsensor_autoload_check_stop(void);
+#endif //PAT9125
 extern bool fsensor_check_autoload(void);
 //! @}
 

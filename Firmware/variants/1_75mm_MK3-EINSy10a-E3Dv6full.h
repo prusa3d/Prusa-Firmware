@@ -133,9 +133,9 @@
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
 
 // Filament sensor
-#define PAT9125
 #define FILAMENT_SENSOR
-
+//#define PAT9125
+#define IR_SENSOR
 // Backlash - 
 //#define BACKLASH_X
 //#define BACKLASH_Y
@@ -623,7 +623,6 @@
 #define MMU_REQUIRED_FW_BUILDNR 83
 #define MMU_HWRESET
 #define MMU_DEBUG //print communication between MMU2 and printer on serial
-
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
 #endif //__CONFIGURATION_PRUSA_H

@@ -3678,8 +3678,8 @@ static void lcd_show_sensors_state()
 	if (mmu_enabled) {
 		finda_state = mmu_finda;
 	}
-	if (mmu_idler_sensor_detected) {
-		idler_state = !PIN_GET(MMU_IDLER_SENSOR_PIN);
+	if (ir_sensor_detected) {
+		idler_state = !PIN_GET(IR_SENSOR_PIN);
 	}
 	lcd_puts_at_P(0, 0, _i("Sensor state"));
 	lcd_puts_at_P(1, 1, _i("PINDA:"));
@@ -6450,25 +6450,31 @@ bool lcd_selftest()
 	{
 		_progress = lcd_selftest_screen(testScreen::hotendOk, _progress, 3, true, 2000); //nozzle ok
 	}
-
 #ifdef FILAMENT_SENSOR
     if (_result)
     {
-        _progress = lcd_selftest_screen(testScreen::fsensor, _progress, 3, true, 2000); //check filaments sensor
+
         if (mmu_enabled)
-        {
+        {        
+			_progress = lcd_selftest_screen(testScreen::fsensor, _progress, 3, true, 2000); //check filaments sensor
             _result = selftest_irsensor();
+		    if (_result)
+			{
+				_progress = lcd_selftest_screen(testScreen::fsensorOk, _progress, 3, true, 2000); //fil sensor OK
+			}
         } else
         {
+#ifdef PAT9125
+			_progress = lcd_selftest_screen(testScreen::fsensor, _progress, 3, true, 2000); //check filaments sensor
             _result = lcd_selftest_fsensor();
+			if (_result)
+			{
+				_progress = lcd_selftest_screen(testScreen::fsensorOk, _progress, 3, true, 2000); //fil sensor OK
+			}
+#endif //PAT9125
         }
     }
-    if (_result)
-    {
-        _progress = lcd_selftest_screen(testScreen::fsensorOk, _progress, 3, true, 2000); //fil sensor OK
-    }
-#endif // FILAMENT_SENSOR
-
+#endif //FILAMENT_SENSOR
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(testScreen::allCorrect, _progress, 3, true, 5000); //all correct
@@ -7036,7 +7042,7 @@ static bool lcd_selftest_fsensor(void)
 //!  * Pre-heat to PLA extrude temperature.
 //!  * Unload filament possibly present.
 //!  * Move extruder idler same way as during filament load
-//!    and sample MMU_IDLER_SENSOR_PIN.
+//!    and sample IR_SENSOR_PIN.
 //!  * Check that pin doesn't go low.
 //!
 //! @retval true passed
@@ -7073,7 +7079,7 @@ static bool selftest_irsensor()
         mmu_load_step(false);
         while (blocks_queued())
         {
-            if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) return false;
+            if (PIN_GET(IR_SENSOR_PIN) == 0) return false;
 #ifdef TMC2130
             manage_heater();
             // Vojtech: Don't disable motors inside the planner!
