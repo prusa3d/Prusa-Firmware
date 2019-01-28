@@ -6456,20 +6456,20 @@ bool lcd_selftest()
 
         if (mmu_enabled)
         {        
-			_progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
+			_progress = lcd_selftest_screen(testScreen::fsensor, _progress, 3, true, 2000); //check filaments sensor
             _result = selftest_irsensor();
 		    if (_result)
 			{
-				_progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
+				_progress = lcd_selftest_screen(testScreen::fsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
         } else
         {
 #ifdef PAT9125
-			_progress = lcd_selftest_screen(9, _progress, 3, true, 2000); //check filaments sensor
+			_progress = lcd_selftest_screen(testScreen::fsensor, _progress, 3, true, 2000); //check filaments sensor
             _result = lcd_selftest_fsensor();
 			if (_result)
 			{
-				_progress = lcd_selftest_screen(10, _progress, 3, true, 2000); //fil sensor OK
+				_progress = lcd_selftest_screen(testScreen::fsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
 #endif //PAT9125
         }
