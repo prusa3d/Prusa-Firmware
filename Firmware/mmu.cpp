@@ -318,11 +318,13 @@ void mmu_loop(void)
 			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 #endif //MMU_DEBUG && MMU_FINDA_DEBUG
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
-			if (!mmu_finda && CHECK_FINDA && fsensor_enabled) {
+			bool badLoad = PIN_GET(MMU_IDLER_SENSOR_PIN) && mmu_idler_sensor_detected;
+			if ( CHECK_FINDA && ((fsensor_enabled && !mmu_finda) || badLoad))
+			{
 				fsensor_stop_and_save_print();
 				enquecommand_front_P(PSTR("FSENSOR_RECOVER")); //then recover
 				ad_markDepleted(mmu_extruder);
-				if (lcd_autoDepleteEnabled() && !ad_allDepleted())
+				if (lcd_autoDepleteEnabled() && !ad_allDepleted() && !badLoad)
 				{
 				    enquecommand_front_P(PSTR("M600 AUTO")); //save print and run M600 command
 				}
