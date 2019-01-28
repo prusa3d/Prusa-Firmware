@@ -1539,7 +1539,7 @@ void adc_ready(void) //callback from adc when sampling finished
 
 
 // Timer 0 is shared with millies
-ISR(TIMER0_COMPB_vect)
+ISR(TIMER0_COMPB_vect)                            // @ 1kHz ~ 1ms
 {
 	static bool _lock = false;
 	if (_lock) return;
