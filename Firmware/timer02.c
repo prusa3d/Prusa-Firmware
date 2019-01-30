@@ -22,6 +22,7 @@ void timer02_set_pwm0(uint8_t pwm0)
 		TCCR0A &= ~(2 << COM0B0);
 		OCR0B = 0;
 	}
+	timer02_pwm0 = pwm0;
 }
 
 void timer02_init(void)
