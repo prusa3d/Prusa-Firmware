@@ -41,7 +41,7 @@ CardReader::CardReader()
     WRITE(SDPOWER,HIGH);
   #endif //SDPOWER
   
-  autostart_atmillis=millis()+5000;
+  autostart_atmillis=_millis()+5000;
 }
 
 char *createFilename(char *buffer,const dir_t &p) //buffer>12characters
@@ -497,7 +497,7 @@ void CardReader::getStatus()
     SERIAL_PROTOCOL(sdpos);
     SERIAL_PROTOCOLPGM("/");
     SERIAL_PROTOCOLLN(filesize);
-    uint16_t time = millis()/60000 - starttime/60000;
+    uint16_t time = _millis()/60000 - starttime/60000;
     SERIAL_PROTOCOL(itostr2(time/60));
     SERIAL_PROTOCOL(':');
     SERIAL_PROTOCOL(itostr2(time%60));
@@ -556,7 +556,7 @@ void CardReader::checkautostart(bool force)
   {
     if(!autostart_stilltocheck)
       return;
-    if(autostart_atmillis<millis())
+    if(autostart_atmillis<_millis())
       return;
   }
   autostart_stilltocheck=false;
@@ -954,7 +954,7 @@ void CardReader::presort() {
 		lcd_set_cursor(column, 2);
 		lcd_print('\x01'); //simple progress bar
 	}
-	delay(300);
+	_delay(300);
 	lcd_set_degree();
 	lcd_clear();
 #endif

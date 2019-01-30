@@ -72,7 +72,7 @@ int mmu_puts_P(const char* str)
 {
 	mmu_clr_rx_buf();                          //clear rx buffer
     int r = fputs_P(str, uart2io);             //send command
-	mmu_last_request = millis();
+	mmu_last_request = _millis();
 	return r;
 }
 
@@ -84,7 +84,7 @@ int mmu_printf_P(const char* format, ...)
 	mmu_clr_rx_buf();                          //clear rx buffer
 	int r = vfprintf_P(uart2io, format, args); //send command
 	va_end(args);
-	mmu_last_request = millis();
+	mmu_last_request = _millis();
 	return r;
 }
 
@@ -92,7 +92,7 @@ int mmu_printf_P(const char* format, ...)
 int8_t mmu_rx_ok(void)
 {
 	int8_t res = uart2_rx_str_P(PSTR("ok\n"));
-	if (res == 1) mmu_last_response = millis();
+	if (res == 1) mmu_last_response = _millis();
 	return res;
 }
 
@@ -100,7 +100,7 @@ int8_t mmu_rx_ok(void)
 int8_t mmu_rx_start(void)
 {
 	int8_t res = uart2_rx_str_P(PSTR("start\n"));
-	if (res == 1) mmu_last_response = millis();
+	if (res == 1) mmu_last_response = _millis();
 	return res;
 }
 
@@ -167,7 +167,7 @@ void mmu_loop(void)
 		    mmu_puts_P(PSTR("S1\n")); //send 'read version' request
 			mmu_state = -2;
 		}
-		else if (millis() > 30000) //30sec after reset disable mmu
+		else if (_millis() > 30000) //30sec after reset disable mmu
 		{
 			puts_P(PSTR("MMU not responding - DISABLED"));
 			mmu_state = 0;
@@ -307,7 +307,7 @@ void mmu_loop(void)
 			mmu_last_cmd = mmu_cmd;
 			mmu_cmd = 0;
 		}
-		else if ((mmu_last_response + 300) < millis()) //request every 300ms
+		else if ((mmu_last_response + 300) < _millis()) //request every 300ms
 		{
 #ifndef IR_SENSOR
 			if(check_for_ir_sensor()) ir_sensor_detected = true;
@@ -344,7 +344,7 @@ void mmu_loop(void)
 			if (mmu_cmd == 0)
 				mmu_ready = true;
 		}
-		else if ((mmu_last_request + MMU_P0_TIMEOUT) < millis())
+		else if ((mmu_last_request + MMU_P0_TIMEOUT) < _millis())
 		{ //resend request after timeout (30s)
 			mmu_state = 1;
 		}
@@ -374,7 +374,7 @@ void mmu_loop(void)
 			mmu_ready = true;
 			mmu_state = 1;
 		}
-		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
+		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
 		{ //resend request after timeout (5 min)
 			if (mmu_last_cmd)
 			{
@@ -404,7 +404,7 @@ void mmu_loop(void)
 			mmu_ready = true;
 			mmu_state = 1;
 		}
-		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < millis())
+		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
 		{ //resend request after timeout (5 min)
 			mmu_state = 1;
 		}
@@ -824,7 +824,7 @@ void change_extr(int
         ) { //switches multiplexer for extruders
 #ifdef SNMM
 	st_synchronize();
-	delay(100);
+	_delay(100);
 
 	disable_e0();
 	disable_e1();
@@ -857,7 +857,7 @@ void change_extr(int
 		
 		break;
 	}
-	delay(100);
+	_delay(100);
 #endif
 }
 
