@@ -1822,6 +1822,15 @@ void lcd_preheat_farm_nozzle()
 	setWatch(); // heater sanity check timer
 }
 
+void lcd_preheat_hotend()
+{
+  setTargetHotend0(HOTEND_PREHEAT_HOTEND_TEMP);
+  lcd_return_to_status();
+  setWatch(); // heater sanity check timer
+  if (wizard_active) lcd_wizard(WizState::Unload);
+}
+
+
 void lcd_preheat_pla()
 {
   setTargetHotend0(PLA_PREHEAT_HOTEND_TEMP);
@@ -2160,6 +2169,7 @@ static void lcd_preheat_menu()
 	  MENU_ITEM_FUNCTION_P(_T(MSG_COOLDOWN), lcd_cooldown);
 	  MENU_ITEM_FUNCTION_P(PSTR("ABS    -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
   } else {
+	  MENU_ITEM_FUNCTION_P(PSTR("Hotend - " STRINGIFY(HOTEND_PREHEAT_HOTEND_TEMP)), lcd_preheat_hotend);
 	  MENU_ITEM_FUNCTION_P(PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)), lcd_preheat_pla);
 	  MENU_ITEM_FUNCTION_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)), lcd_preheat_pet);
 	  MENU_ITEM_FUNCTION_P(PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
