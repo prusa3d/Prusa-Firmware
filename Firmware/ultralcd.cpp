@@ -1919,7 +1919,7 @@ static void lcd_menu_extruder_info()
 	 fan_speed_RPM[1]
 	);
 
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	// Display X and Y difference from Filament sensor    
     // Display Light intensity from Filament sensor
     //  Frame_Avg register represents the average brightness of all pixels within a frame (324 pixels). This
@@ -1945,7 +1945,7 @@ static void lcd_menu_extruder_info()
 			);
 		}
 	}
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
     
     menu_back_if_clicked();
 }
