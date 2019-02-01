@@ -7260,7 +7260,12 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 		if (check_opposite == true) lcd_puts_P(_T(MSG_SELFTEST_EXTRUDER_FAN));
 		else lcd_puts_P(_T(MSG_SELFTEST_COOLING_FAN));
 		SET_OUTPUT(FAN_PIN);
+#ifdef FAN_SOFT_PWM
+		fanSpeedSoftPwm = 255;
+#else //FAN_SOFT_PWM
 		analogWrite(FAN_PIN, 255);
+#endif //FAN_SOFT_PWM
+
 		break;
 	}
 	_delay(500);
@@ -7285,7 +7290,11 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 		case 1:
 			// object cooling fan
 			SET_OUTPUT(FAN_PIN);
+#ifdef FAN_SOFT_PWM
+			fanSpeedSoftPwm = 255;
+#else //FAN_SOFT_PWM
 			analogWrite(FAN_PIN, 255);
+#endif //FAN_SOFT_PWM
 			break;
 		}
 
@@ -7318,8 +7327,11 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 	SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 	WRITE(EXTRUDER_0_AUTO_FAN_PIN, 0);
 	SET_OUTPUT(FAN_PIN);
+#ifdef FAN_SOFT_PWM
+	fanSpeedSoftPwm = 0;
+#else //FAN_SOFT_PWM
 	analogWrite(FAN_PIN, 0);
-
+#endif //FAN_SOFT_PWM
 	fanSpeed = 0;
 	manage_heater();
 
