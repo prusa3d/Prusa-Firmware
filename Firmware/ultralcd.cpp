@@ -2442,9 +2442,10 @@ void lcd_wait_interact() {
 #else
   lcd_puts_P(_i("Insert filament"));////MSG_INSERT_FILAMENT c=20 r=0
 #endif
-  lcd_set_cursor(0, 2);
-  lcd_puts_P(_i("and press the knob"));////MSG_PRESS c=20 r=0
-
+  if (!fsensor_autoload_enabled) {
+	  lcd_set_cursor(0, 2);
+	  lcd_puts_P(_i("and press the knob"));////MSG_PRESS c=20 r=0
+  }
 }
 
 

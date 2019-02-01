@@ -3081,6 +3081,11 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
     enquecommand(cmd);
 
+#ifdef IR_SENSOR
+	//this will set fsensor_watch_autoload to correct value and prevent possible M701 gcode enqueuing when M600 is finished
+	fsensor_check_autoload();
+#endif //IR_SENSOR
+
     lcd_setstatuspgm(_T(WELCOME_MSG));
     custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 }
