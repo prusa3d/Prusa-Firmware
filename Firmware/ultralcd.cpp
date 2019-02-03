@@ -3064,8 +3064,6 @@ void lcd_adjust_bed_reset(void)
 	_md->status = 0;
 }
 
-#define BED_ADJUSTMENT_UM_MAX 50
-
 void lcd_adjust_bed(void)
 {
 	_menu_data_adjust_bed_t* _md = (_menu_data_adjust_bed_t*)&(menu_data[0]);
