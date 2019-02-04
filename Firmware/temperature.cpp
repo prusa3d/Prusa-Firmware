@@ -462,7 +462,7 @@ void setExtruderAutoFanState(int pin, bool state)
   // this idiom allows both digital and PWM fan outputs (see M42 handling).
   pinMode(pin, OUTPUT);
   digitalWrite(pin, newFanSpeed);
-  analogWrite(pin, newFanSpeed);
+  //analogWrite(pin, newFanSpeed);
 }
 
 #if (defined(FANCHECK) && (((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1)))))
@@ -1355,7 +1355,12 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode
 		SET_OUTPUT(EXTRUDER_0_AUTO_FAN_PIN);
 		SET_OUTPUT(FAN_PIN);
 		WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
+#ifdef FAN_SOFT_PWM
+		fanSpeedSoftPwm = 255;
+#else //FAN_SOFT_PWM
 		analogWrite(FAN_PIN, 255);
+#endif //FAN_SOFT_PWM
+
 		fanSpeed = 255;
 		delayMicroseconds(2000);
 	}
