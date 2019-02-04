@@ -301,8 +301,8 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* longF
 				j = 0;
 				break;
             }else{
-				if (j == 1) _delay(3);	//wait around 1.2 s to start scrolling text
-				_delay(1);				//then scroll with redrawing every 300 ms 
+				if (j == 1) _delay_ms(3);	//wait around 1.2 s to start scrolling text
+				_delay_ms(1);				//then scroll with redrawing every 300 ms 
             }
 
           }
