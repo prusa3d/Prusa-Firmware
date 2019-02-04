@@ -4620,14 +4620,15 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			}
 			if (correction == 0)
 				continue;
-			float offset = float(correction) * 0.001f;
-			if (fabs(offset) > 0.101f) {
+			
+			if (labs(correction) > BED_ADJUSTMENT_UM_MAX) {
 				SERIAL_ERROR_START;
 				SERIAL_ECHOPGM("Excessive bed leveling correction: ");
-				SERIAL_ECHO(offset);
+				SERIAL_ECHO(correction);
 				SERIAL_ECHOLNPGM(" microns");
 			}
 			else {
+				float offset = float(correction) * 0.001f;
 				switch (i) {
 				case 0:
 					for (uint8_t row = 0; row < 3; ++row) {
