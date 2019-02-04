@@ -142,6 +142,7 @@
 
 #define PRINTING_TYPE_SD 0
 #define PRINTING_TYPE_USB 1
+#define PRINTING_TYPE_NONE 2
 
 //filament types 
 #define FILAMENT_DEFAULT 0
@@ -8777,7 +8778,8 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 		 saved_printing_type = PRINTING_TYPE_USB;
 	}
 	else {
-		//not sd printing nor usb printing
+		 saved_printing_type = PRINTING_TYPE_NONE;
+		 //not sd printing nor usb printing
 	}
 
 #if 0
@@ -8942,10 +8944,12 @@ void restore_print_from_ram_and_continue(float e_move)
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
-	setTargetHotendSafe(saved_extruder_temperature,saved_active_extruder);
-	heating_status = 1;
-	wait_for_heater(_millis(),saved_active_extruder);
-	heating_status = 2;
+	if (saved_extruder_temperature) {
+		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
+		heating_status = 1;
+		wait_for_heater(_millis(), saved_active_extruder);
+		heating_status = 2;
+	}
 	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
 	fanSpeed = saved_fanSpeed;
