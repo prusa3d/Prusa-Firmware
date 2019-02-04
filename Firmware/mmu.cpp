@@ -1356,8 +1356,10 @@ void mmu_eject_filament(uint8_t filament, bool recover)
 void mmu_continue_loading() 
 {
 
-	if (mmu_idler_sensor_detected) {
-		for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++) {
+	if (mmu_idler_sensor_detected)
+	{
+		for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++)
+		{
 			if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) return;
 #ifdef MMU_DEBUG
 			printf_P(PSTR("Additional load attempt nr. %d\n"), i);
@@ -1365,7 +1367,8 @@ void mmu_continue_loading()
 			mmu_command(MMU_CMD_C0);
 			manage_response(true, true, MMU_LOAD_MOVE);
 		}
-		if (PIN_GET(MMU_IDLER_SENSOR_PIN) != 0) {
+		if (PIN_GET(MMU_IDLER_SENSOR_PIN) != 0)
+		{
 			uint8_t mmu_load_fail = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
 			uint16_t mmu_load_fail_tot = eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT);
 			if(mmu_load_fail < 255) eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, mmu_load_fail + 1);
