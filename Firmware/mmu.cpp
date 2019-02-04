@@ -1385,7 +1385,10 @@ void mmu_continue_loading()
 			current_position[Y_AXIS] = Y_PAUSE_POS;
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
 			st_synchronize();
-			//set nozzle target temperature to 0
+
+			mmu_command(MMU_CMD_U0);
+			manage_response(false, true, MMU_UNLOAD_MOVE);
+
 			setAllTargetHotends(0);
 			lcd_setstatuspgm(_i("MMU load failed     "));////MSG_RECOVERING_PRINT c=20 r=1
 			mmu_fil_loaded = false; //so we can retry same T-code again
