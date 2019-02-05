@@ -142,7 +142,10 @@ static volatile bool temp_meas_ready = false;
 #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
     (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
     (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
-  static unsigned long extruder_autofan_last_check;
+  unsigned long extruder_autofan_last_check = _millis();
+  uint8_t fanSpeedBckp = 255;
+  bool fan_measuring = false;
+
 #endif  
 
 
@@ -484,6 +487,16 @@ extern bool fans_check_enabled;
 
 void checkFanSpeed()
 {
+	uint8_t max_print_fan_errors = 0;
+	uint8_t max_extruder_fan_errors = 0;
+#ifdef FAN_SOFT_PWM
+	max_print_fan_errors = 3; //15 seconds
+	max_extruder_fan_errors = 2; //10seconds
+#else //FAN_SOFT_PWM
+	max_print_fan_errors = 15; //15 seconds
+	max_extruder_fan_errors = 5; //5 seconds
+#endif //FAN_SOFT_PWM
+
 	fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
@@ -491,15 +504,15 @@ void checkFanSpeed()
 	else fan_speed_errors[0] = 0;
 #endif
 #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
-	if ((fan_speed[1] == 0) && ((blocks_queued() ? block_buffer[block_buffer_tail].fan_speed : fanSpeed) > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
+	if ((fan_speed[1] < 5) && ((blocks_queued() ? block_buffer[block_buffer_tail].fan_speed : fanSpeed) > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
 	else fan_speed_errors[1] = 0;
 #endif
 
-	if ((fan_speed_errors[0] > 5) && fans_check_enabled) {
+	if ((fan_speed_errors[0] > max_extruder_fan_errors) && fans_check_enabled) {
 		fan_speed_errors[0] = 0;
 		fanSpeedError(0); //extruder fan
 	}
-	if ((fan_speed_errors[1] > 15) && fans_check_enabled) {
+	if ((fan_speed_errors[1] > max_print_fan_errors) && fans_check_enabled) {
 		fan_speed_errors[1] = 0;
 		fanSpeedError(1); //print fan
 	}
@@ -734,10 +747,36 @@ void manage_heater()
     #endif
   } // End extruder for loop
 
+#define FAN_CHECK_PERIOD 5000 //5s
+#define FAN_CHECK_DURATION 100 //100ms
+
 #ifndef DEBUG_DISABLE_FANCHECK
   #if (defined(EXTRUDER_0_AUTO_FAN_PIN) && EXTRUDER_0_AUTO_FAN_PIN > -1) || \
       (defined(EXTRUDER_1_AUTO_FAN_PIN) && EXTRUDER_1_AUTO_FAN_PIN > -1) || \
       (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
+
+#ifdef FAN_SOFT_PWM
+  if ((_millis() - extruder_autofan_last_check > FAN_CHECK_PERIOD) && (!fan_measuring)) {
+	  extruder_autofan_last_check = _millis();
+	  fanSpeedBckp = fanSpeed;
+	  if (fanSpeed > MIN_PRINT_FAN_SPEED) {
+		  fanSpeed = 255;
+	  }
+	 // fanSpeedBckp = fanSpeedSoftPwm;
+	 // fanSpeedSoftPwm = 255;
+	  fan_measuring = true;
+  }
+  if ((_millis() - extruder_autofan_last_check > FAN_CHECK_DURATION) && (fan_measuring)) {
+	  countFanSpeed();
+	  checkFanSpeed();
+	  fanSpeed = fanSpeedBckp;
+	 // fanSpeedSoftPwm = fanSpeedBckp;
+	  printf_P(PSTR("fan PWM: %d; extr fanSpeed measured: %d; print fan speed measured: %d \n"), fanSpeedBckp, fan_speed[0], fan_speed[1]);
+	  extruder_autofan_last_check = _millis();
+	  fan_measuring = false;
+  }
+  checkExtruderAutoFans();
+#else //FAN_SOFT_PWM
   if(_millis() - extruder_autofan_last_check > 1000)  // only need to check fan state very infrequently
   {
 #if (defined(FANCHECK) && ((defined(TACH_0) && (TACH_0 >-1)) || (defined(TACH_1) && (TACH_1 > -1))))
@@ -747,7 +786,9 @@ void manage_heater()
     checkExtruderAutoFans();
     extruder_autofan_last_check = _millis();
   }  
-  #endif       
+#endif //FAN_SOFT_PWM
+
+  #endif  
 #endif //DEBUG_DISABLE_FANCHECK
   
   #ifndef PIDTEMPBED

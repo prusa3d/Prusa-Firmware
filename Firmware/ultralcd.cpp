@@ -7350,9 +7350,21 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		fanSpeed = 0;
 		manage_heater();			//turn off fan
 		setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, 1); //extruder fan
+#ifdef FAN_SOFT_PWM
+		extruder_autofan_last_check = _millis();
+#endif //FAN_SOFT_PWM
 		_delay(2000);				//delay_keep_alive would turn off extruder fan, because temerature is too low
+#ifdef FAN_SOFT_PWM
+		countFanSpeed();
+		if (!fan_speed[0]) _result = false;
+#else //FAN_SOFT_PWM
 		manage_heater();			//count average fan speed from 2s delay and turn off fans
 		if (!fan_speed[0]) _result = false;
+#endif //FAN_SOFT_PWM
+		
+		printf_P(PSTR("Test 1:\n"));
+		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
+		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
 		//SERIAL_ECHOPGM("Extruder fan speed: ");
 		//MYSERIAL.println(fan_speed[0]);
 		//SERIAL_ECHOPGM("Print fan speed: ");
@@ -7361,7 +7373,12 @@ static bool lcd_selftest_fan_dialog(int _fan)
 
 	case 1:
 		//will it work with Thotend > 50 C ?
+#ifdef FAN_SOFT_PWM
+		extruder_autofan_last_check = _millis();
+		fanSpeed = 255;				
+#else //FAN_SOFT_PWM
 		fanSpeed = 150;				//print fan
+#endif //FAN_SOFT_PWM
 		for (uint8_t i = 0; i < 5; i++) {
 			delay_keep_alive(1000);
 			lcd_set_cursor(18, 3);
@@ -7370,15 +7387,26 @@ static bool lcd_selftest_fan_dialog(int _fan)
 			lcd_set_cursor(18, 3);
 			lcd_print("|");
 		}
+#ifdef FAN_SOFT_PWM
+		countFanSpeed();
+		fanSpeed = 0;
+#else //FAN_SOFT_PWM
 		fanSpeed = 0;
 		manage_heater();			//turn off fan
 		manage_inactivity(true);	//to turn off print fan
+#endif //FAN_SOFT_PWM
+		printf_P(PSTR("Test 2:\n"));
+		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
+		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
 		if (!fan_speed[1]) {
 			_result = false; _errno = 6; //print fan not spinning
 		}
+#ifdef FAN_SOFT_PWM 
+		else {
+#else //FAN_SOFT_PWM
 		else if (fan_speed[1] < 34) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
+#endif //FAN_SOFT_PWM
 			//check fans manually
-
 			_result = lcd_selftest_manual_fan_check(1, true); //turn on print fan and check that left extruder fan is not spinning
 			if (_result) {
 				_result = lcd_selftest_manual_fan_check(1, false); //print fan is stil turned on; check that it is spinning
