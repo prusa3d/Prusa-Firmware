@@ -1990,7 +1990,7 @@ if(current_temperature_raw_ambient>(OVERSAMPLENR*MINTEMP_MINAMBIENT_RAW)) // the
 // * nozzle checking
 if(target_temperature[active_extruder]>minttemp[active_extruder])
      {                                            // ~ nozzle heating is on
-     //bCheckingOnHeater=bCheckingOnHeater||(current_temperature[active_extruder]>=minttemp[active_extruder]); // for eventually delay cutting
+     bCheckingOnHeater=bCheckingOnHeater||(current_temperature[active_extruder]>(minttemp[active_extruder]+TEMP_HYSTERESIS)); // for eventually delay cutting
      if(oTimer4minTempHeater.expired(HEATER_MINTEMP_DELAY)||(!oTimer4minTempHeater.running())||bCheckingOnHeater)
           {
           bCheckingOnHeater=true;                 // not necessary
@@ -2004,7 +2004,7 @@ else {                                            // ~ nozzle heating is off
 // * bed checking
 if(target_temperature_bed>BED_MINTEMP)
      {                                            // ~ bed heating is on
-     //bCheckingOnBed=bCheckingOnBed||(current_temperature_bed>=BED_MINTEMP); // for eventually delay cutting
+     bCheckingOnBed=bCheckingOnBed||(current_temperature_bed>(BED_MINTEMP+TEMP_HYSTERESIS)); // for eventually delay cutting
      if(oTimer4minTempBed.expired(BED_MINTEMP_DELAY)||(!oTimer4minTempBed.running())||bCheckingOnBed)
           {
           bCheckingOnBed=true;                    // not necessary
