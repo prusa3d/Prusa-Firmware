@@ -758,19 +758,16 @@ void manage_heater()
 #ifdef FAN_SOFT_PWM
   if ((_millis() - extruder_autofan_last_check > FAN_CHECK_PERIOD) && (!fan_measuring)) {
 	  extruder_autofan_last_check = _millis();
-	  fanSpeedBckp = fanSpeed;
-	  if (fanSpeed > MIN_PRINT_FAN_SPEED) {
-		  fanSpeed = 255;
+	  fanSpeedBckp = fanSpeedSoftPwm;
+	  if (fanSpeedSoftPwm > MIN_PRINT_FAN_SPEED) {
+		  fanSpeedSoftPwm = 255;
 	  }
-	 // fanSpeedBckp = fanSpeedSoftPwm;
-	 // fanSpeedSoftPwm = 255;
 	  fan_measuring = true;
   }
   if ((_millis() - extruder_autofan_last_check > FAN_CHECK_DURATION) && (fan_measuring)) {
 	  countFanSpeed();
 	  checkFanSpeed();
-	  fanSpeed = fanSpeedBckp;
-	 // fanSpeedSoftPwm = fanSpeedBckp;
+	  fanSpeedSoftPwm = fanSpeedBckp;
 	  printf_P(PSTR("fan PWM: %d; extr fanSpeed measured: %d; print fan speed measured: %d \n"), fanSpeedBckp, fan_speed[0], fan_speed[1]);
 	  extruder_autofan_last_check = _millis();
 	  fan_measuring = false;
