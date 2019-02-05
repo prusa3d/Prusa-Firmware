@@ -8521,7 +8521,7 @@ ISR(INT7_vect) {
 	//measuring speed now works for fanSpeed > 18 (approximately), which is sufficient because MIN_PRINT_FAN_SPEED is higher
 #ifdef FAN_SOFT_PWM
 	//if (fanSpeedSoftPwm != 255) return;
-	if ((fanSpeed != 255) || (fanSpeed < MIN_PRINT_FAN_SPEED)) return;
+	if (!fan_measuring || (fanSpeed < MIN_PRINT_FAN_SPEED)) return;
 #else //FAN_SOFT_PWM
 	if (fanSpeed < MIN_PRINT_FAN_SPEED) return;
 #endif //FAN_SOFT_PWM
