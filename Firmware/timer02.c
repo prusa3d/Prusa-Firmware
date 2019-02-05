@@ -4,8 +4,10 @@
 // original OVF handler is disabled
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <Arduino.h>
+#include "Arduino.h"
+#include "io_atmega2560.h"
 
+#define BEEPER              84
 
 uint8_t timer02_pwm0 = 0;
 
@@ -153,4 +155,14 @@ void delay2(unsigned long ms)
 			start += 1000;
 		}
 	}
+}
+
+void tone2(uint8_t _pin, unsigned int frequency/*, unsigned long duration*/)
+{
+	PIN_SET(BEEPER);
+}
+
+void noTone2(uint8_t _pin)
+{
+	PIN_CLR(BEEPER);
 }
