@@ -8518,8 +8518,13 @@ void setup_fan_interrupt() {
 // and it takes 4.24 us to process (the interrupt invocation overhead not taken into account).
 ISR(INT7_vect) {
 	//measuring speed now works for fanSpeed > 18 (approximately), which is sufficient because MIN_PRINT_FAN_SPEED is higher
-
+#ifdef FAN_SOFT_PWM
+	//if (fanSpeedSoftPwm != 255) return;
+	if ((fanSpeed != 255) || (fanSpeed < MIN_PRINT_FAN_SPEED)) return;
+#else //FAN_SOFT_PWM
 	if (fanSpeed < MIN_PRINT_FAN_SPEED) return;
+#endif //FAN_SOFT_PWM
+
 	if ((1 << 6) & EICRB) { //interrupt was triggered by rising edge
 		t_fan_rising_edge = millis_nc();
 	}
@@ -8886,6 +8891,9 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
 	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
 	saved_fanSpeed = fanSpeed;
+#ifdef FAN_SOFT_PWM
+	if (fan_measuring) saved_fanSpeed = fanSpeedBckp;
+#endif //FAN_SOFT_PWM
 	cmdqueue_reset(); //empty cmdqueue
 	card.sdprinting = false;
 //	card.closefile();
