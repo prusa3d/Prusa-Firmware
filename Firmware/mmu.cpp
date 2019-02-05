@@ -1353,49 +1353,61 @@ void mmu_eject_filament(uint8_t filament, bool recover)
 	}
 }
 
+void load_more()
+{
+    for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++)
+    {
+        if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) return;
+#ifdef MMU_DEBUG
+        printf_P(PSTR("Additional load attempt nr. %d\n"), i);
+#endif // MMU_DEBUG
+        mmu_command(MMU_CMD_C0);
+        manage_response(true, true, MMU_LOAD_MOVE);
+    }
+}
+
 void mmu_continue_loading() 
 {
-
 	if (mmu_idler_sensor_detected)
 	{
-		for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++)
-		{
-			if (PIN_GET(MMU_IDLER_SENSOR_PIN) == 0) return;
-#ifdef MMU_DEBUG
-			printf_P(PSTR("Additional load attempt nr. %d\n"), i);
-#endif // MMU_DEBUG
-			mmu_command(MMU_CMD_C0);
-			manage_response(true, true, MMU_LOAD_MOVE);
-		}
+	    load_more();
+
 		if (PIN_GET(MMU_IDLER_SENSOR_PIN) != 0)
 		{
 			uint8_t mmu_load_fail = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
 			uint16_t mmu_load_fail_tot = eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT);
 			if(mmu_load_fail < 255) eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, mmu_load_fail + 1);
 			if(mmu_load_fail_tot < 65535) eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, mmu_load_fail_tot + 1);
-			char cmd[3];
-			//pause print, show error message and then repeat last T-code
-			stop_and_save_print_to_ram(0, 0);
 
-			//lift z
-			current_position[Z_AXIS] += Z_PAUSE_LIFT;
-			if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
-			st_synchronize();
+			mmu_command(MMU_CMD_T0 + tmp_extruder);
+			manage_response(true, true, MMU_TCODE_MOVE);
+			load_more();
 
-			//Move XY to side
-			current_position[X_AXIS] = X_PAUSE_POS;
-			current_position[Y_AXIS] = Y_PAUSE_POS;
-			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
-			st_synchronize();
+	        if (PIN_GET(MMU_IDLER_SENSOR_PIN) != 0)
+	        {
+                //pause print, show error message and then repeat last T-code
+                stop_and_save_print_to_ram(0, 0);
 
-			mmu_command(MMU_CMD_U0);
-			manage_response(false, true, MMU_UNLOAD_MOVE);
+                //lift z
+                current_position[Z_AXIS] += Z_PAUSE_LIFT;
+                if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
+                st_synchronize();
 
-			setAllTargetHotends(0);
-			lcd_setstatuspgm(_i("MMU load failed     "));////MSG_RECOVERING_PRINT c=20 r=1
-			mmu_fil_loaded = false; //so we can retry same T-code again
-			isPrintPaused = true;
+                //Move XY to side
+                current_position[X_AXIS] = X_PAUSE_POS;
+                current_position[Y_AXIS] = Y_PAUSE_POS;
+                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+                st_synchronize();
+
+                mmu_command(MMU_CMD_U0);
+                manage_response(false, true, MMU_UNLOAD_MOVE); //first parameter is don't care, as we already moved axis in previous failure
+
+                setAllTargetHotends(0);
+                lcd_setstatuspgm(_i("MMU load failed     "));////MSG_RECOVERING_PRINT c=20 r=1
+                mmu_fil_loaded = false; //so we can retry same T-code again
+                isPrintPaused = true;
+	        }
 		}
 	}
 	else { //mmu_idler_sensor_detected == false
