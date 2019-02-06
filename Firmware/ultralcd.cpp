@@ -7352,15 +7352,13 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, 1); //extruder fan
 #ifdef FAN_SOFT_PWM
 		extruder_autofan_last_check = _millis();
+		fan_measuring = true;
 #endif //FAN_SOFT_PWM
 		_delay(2000);				//delay_keep_alive would turn off extruder fan, because temerature is too low
-#ifdef FAN_SOFT_PWM
-		countFanSpeed();
-		if (!fan_speed[0]) _result = false;
-#else //FAN_SOFT_PWM
+
 		manage_heater();			//count average fan speed from 2s delay and turn off fans
 		if (!fan_speed[0]) _result = false;
-#endif //FAN_SOFT_PWM
+
 		
 		printf_P(PSTR("Test 1:\n"));
 		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
