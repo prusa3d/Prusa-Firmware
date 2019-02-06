@@ -759,7 +759,9 @@ void manage_heater()
   if ((_millis() - extruder_autofan_last_check > FAN_CHECK_PERIOD) && (!fan_measuring)) {
 	  extruder_autofan_last_check = _millis();
 	  fanSpeedBckp = fanSpeedSoftPwm;
-	  if (fanSpeedSoftPwm > MIN_PRINT_FAN_SPEED) {
+	  
+	  if (fanSpeedSoftPwm >= MIN_PRINT_FAN_SPEED) { //if we are in rage where we are doing fan check, set full PWM range for a short time to measure fan RPM by reading tacho signal without modulation by PWM signal
+		//  printf_P(PSTR("fanSpeedSoftPwm 1: %d\n"), fanSpeedSoftPwm);
 		  fanSpeedSoftPwm = 255;
 	  }
 	  fan_measuring = true;
@@ -767,8 +769,9 @@ void manage_heater()
   if ((_millis() - extruder_autofan_last_check > FAN_CHECK_DURATION) && (fan_measuring)) {
 	  countFanSpeed();
 	  checkFanSpeed();
+	  //printf_P(PSTR("fanSpeedSoftPwm 1: %d\n"), fanSpeedSoftPwm);
 	  fanSpeedSoftPwm = fanSpeedBckp;
-	  printf_P(PSTR("fan PWM: %d; extr fanSpeed measured: %d; print fan speed measured: %d \n"), fanSpeedBckp, fan_speed[0], fan_speed[1]);
+	  //printf_P(PSTR("fan PWM: %d; extr fanSpeed measured: %d; print fan speed measured: %d \n"), fanSpeedBckp, fan_speed[0], fan_speed[1]);
 	  extruder_autofan_last_check = _millis();
 	  fan_measuring = false;
   }

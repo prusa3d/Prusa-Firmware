@@ -7372,9 +7372,11 @@ static bool lcd_selftest_fan_dialog(int _fan)
 
 	case 1:
 		//will it work with Thotend > 50 C ?
-#ifdef FAN_SOFT_PWM
-		extruder_autofan_last_check = _millis();
-		fanSpeed = 255;				
+#ifdef FAN_SOFT_PWM		
+		fanSpeed = 255;	
+		fanSpeedSoftPwm = 255;	
+		extruder_autofan_last_check = _millis(); //store time when measurement starts
+		fan_measuring = true; //start fan measuring, rest is on manage_heater
 #else //FAN_SOFT_PWM
 		fanSpeed = 150;				//print fan
 #endif //FAN_SOFT_PWM
@@ -7387,8 +7389,8 @@ static bool lcd_selftest_fan_dialog(int _fan)
 			lcd_print("|");
 		}
 #ifdef FAN_SOFT_PWM
-		countFanSpeed();
 		fanSpeed = 0;
+		fanSpeedSoftPwm = 0;	
 #else //FAN_SOFT_PWM
 		fanSpeed = 0;
 		manage_heater();			//turn off fan
