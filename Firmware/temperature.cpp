@@ -2070,10 +2070,17 @@ else {                                            // ambient temperature is stan
  
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
 void check_fans() {
+#ifdef FAN_SOFT_PWM
+	if (READ(TACH_0) != fan_state[0]) {
+		if(fan_measuring) fan_edge_counter[0] ++;
+		fan_state[0] = !fan_state[0];
+	}
+#else //FAN_SOFT_PWM
 	if (READ(TACH_0) != fan_state[0]) {
 		fan_edge_counter[0] ++;
 		fan_state[0] = !fan_state[0];
 	}
+#endif
 	//if (READ(TACH_1) != fan_state[1]) {
 	//	fan_edge_counter[1] ++;
 	//	fan_state[1] = !fan_state[1];
