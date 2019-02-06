@@ -252,3 +252,7 @@ void check_max_temp();
 
 #endif
 
+extern unsigned long extruder_autofan_last_check;
+extern uint8_t fanSpeedBckp;
+extern bool fan_measuring;
+

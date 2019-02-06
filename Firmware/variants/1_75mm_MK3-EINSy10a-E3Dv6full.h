@@ -133,8 +133,8 @@
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
 
 // Filament sensor
-#define PAT9125
 #define FILAMENT_SENSOR
+#define PAT9125
 
 // Backlash - 
 //#define BACKLASH_X
@@ -412,6 +412,9 @@
 #define MESH_MEAS_NUM_X_POINTS 3
 #define MESH_MEAS_NUM_Y_POINTS 3
 
+// Maximum bed level correction value
+#define BED_ADJUSTMENT_UM_MAX 100
+
 #define MESH_HOME_Z_CALIB 0.2
 #define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.
 
@@ -623,7 +626,6 @@
 #define MMU_REQUIRED_FW_BUILDNR 83
 #define MMU_HWRESET
 #define MMU_DEBUG //print communication between MMU2 and printer on serial
-
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
 #endif //__CONFIGURATION_PRUSA_H

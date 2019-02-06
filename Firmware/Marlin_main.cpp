@@ -142,6 +142,7 @@
 
 #define PRINTING_TYPE_SD 0
 #define PRINTING_TYPE_USB 1
+#define PRINTING_TYPE_NONE 2
 
 //filament types 
 #define FILAMENT_DEFAULT 0
@@ -991,6 +992,10 @@ void setup()
 	
 	ultralcd_init();
 
+#if (LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
+	analogWrite(LCD_BL_PIN, 255); //set full brightnes
+#endif //(LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
+
 	spi_init();
 
 	lcd_splash();
@@ -1478,9 +1483,9 @@ void setup()
 	setup_fan_interrupt();
 #endif //DEBUG_DISABLE_FANCHECK
 
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	fsensor_setup_interrupt();
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
 	for (int i = 0; i<4; i++) EEPROM_read_B(EEPROM_BOWDEN_LENGTH + i * 2, &bowden_length[i]); 
 	
 #ifndef DEBUG_DISABLE_STARTMSGS
@@ -1612,7 +1617,6 @@ void setup()
 	   
   }
 #endif //UVLO_SUPPORT
-
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
@@ -2089,8 +2093,8 @@ bool calibrate_z_auto()
 {
 	//lcd_display_message_fullscreen_P(_T(MSG_CALIBRATE_Z_AUTO));
 	lcd_clear();
-	lcd_puts_at_P(0,1, _T(MSG_CALIBRATE_Z_AUTO));
-	bool endstops_enabled  = enable_endstops(true);
+	lcd_puts_at_P(0, 1, _T(MSG_CALIBRATE_Z_AUTO));
+	bool endstops_enabled = enable_endstops(true);
 	int axis_up_dir = -home_dir(Z_AXIS);
 	tmc2130_home_enter(Z_AXIS_MASK);
 	current_position[Z_AXIS] = 0;
@@ -2098,21 +2102,26 @@ bool calibrate_z_auto()
 	set_destination_to_current();
 	destination[Z_AXIS] += (1.1 * max_length(Z_AXIS) * axis_up_dir);
 	feedrate = homing_feedrate[Z_AXIS];
-	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate / 60, active_extruder);
 	st_synchronize();
-//	current_position[axis] = 0;
-//	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	//	current_position[axis] = 0;
+	//	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	tmc2130_home_exit();
-    enable_endstops(false);
+	enable_endstops(false);
 	current_position[Z_AXIS] = 0;
 	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	set_destination_to_current();
 	destination[Z_AXIS] += 10 * axis_up_dir; //10mm up
 	feedrate = homing_feedrate[Z_AXIS] / 2;
-	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate/60, active_extruder);
+	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate / 60, active_extruder);
 	st_synchronize();
-    enable_endstops(endstops_enabled);
-    current_position[Z_AXIS] = Z_MAX_POS+2.0;
+	enable_endstops(endstops_enabled);
+	if (PRINTER_TYPE == PRINTER_MK3) {
+		current_position[Z_AXIS] = Z_MAX_POS + 2.0;
+	}
+	else {
+		current_position[Z_AXIS] = Z_MAX_POS + 9.0;
+	}
     plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 	return true;
 }
@@ -2316,9 +2325,9 @@ void refresh_cmd_timeout(void)
 
 void trace() {
 //if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-    tone(BEEPER, 440);
+    _tone(BEEPER, 440);
     _delay(25);
-    noTone(BEEPER);
+    _noTone(BEEPER);
     _delay(20);
 }
 /*
@@ -3073,6 +3082,11 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     sprintf_P(cmd, PSTR("M220 S%i"), feedmultiplyBckp);
     enquecommand(cmd);
 
+#ifdef IR_SENSOR
+	//this will set fsensor_watch_autoload to correct value and prevent possible M701 gcode enqueuing when M600 is finished
+	fsensor_check_autoload();
+#endif //IR_SENSOR
+
     lcd_setstatuspgm(_T(WELCOME_MSG));
     custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 }
@@ -3110,9 +3124,9 @@ void gcode_M701()
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
 
-		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)) tone(BEEPER, 500);
+		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)) _tone(BEEPER, 500);
 		delay_keep_alive(50);
-		noTone(BEEPER);
+		_noTone(BEEPER);
 
 		if (!farm_mode && loading_flag) {
 			lcd_load_filament_color_check();
@@ -3175,9 +3189,9 @@ static void gcode_PRUSA_SN()
         putchar('\n');
 #if 0
         for (int b = 0; b < 3; b++) {
-            tone(BEEPER, 110);
+            _tone(BEEPER, 110);
             _delay(50);
-            noTone(BEEPER);
+            _noTone(BEEPER);
             _delay(50);
         }
 #endif
@@ -3450,11 +3464,11 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-#ifdef PAT9125
+#ifdef FILAMENT_SENSOR
 	else if (code_seen("FSENSOR_RECOVER")) { //! FSENSOR_RECOVER
 		fsensor_restore_print_and_continue();
   }
-#endif //PAT9125
+#endif //FILAMENT_SENSOR
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //! PRUSA Ping
 			if (farm_mode) {
@@ -4606,14 +4620,15 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			}
 			if (correction == 0)
 				continue;
-			float offset = float(correction) * 0.001f;
-			if (fabs(offset) > 0.101f) {
+			
+			if (labs(correction) > BED_ADJUSTMENT_UM_MAX) {
 				SERIAL_ERROR_START;
 				SERIAL_ECHOPGM("Excessive bed leveling correction: ");
-				SERIAL_ECHO(offset);
+				SERIAL_ECHO(correction);
 				SERIAL_ECHOLNPGM(" microns");
 			}
 			else {
+				float offset = float(correction) * 0.001f;
 				switch (i) {
 				case 0:
 					for (uint8_t row = 0; row < 3; ++row) {
@@ -6253,9 +6268,9 @@ Sigma_Exit:
       {
         #if BEEPER > 0
 if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-          tone(BEEPER, beepS);
+          _tone(BEEPER, beepS);
           _delay(beepP);
-          noTone(BEEPER);
+          _noTone(BEEPER);
         #endif
       }
       else
@@ -7105,7 +7120,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		dcode_8(); break;
 	case 9: //! D9 - Read/Write ADC
 		dcode_9(); break;
-
 	case 10: //! D10 - XYZ calibration = OK
 		dcode_10(); break;
     
@@ -7474,13 +7488,15 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			{
 				if (fsensor_check_autoload())
 				{
+#ifdef PAT9125
 					fsensor_autoload_check_stop();
+#endif //PAT9125
 					if (degHotend0() > EXTRUDE_MINTEMP)
 					{
 						if ((eSoundMode == e_SOUND_MODE_LOUD) || (eSoundMode == e_SOUND_MODE_ONCE))
-							tone(BEEPER, 1000);
+							_tone(BEEPER, 1000);
 						delay_keep_alive(50);
-						noTone(BEEPER);
+						_noTone(BEEPER);
 						loading_flag = true;
 						enquecommand_front_P((PSTR("M701")));
 					}
@@ -7504,7 +7520,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 			}
 			else
 			{
+#ifdef PAT9125
 				fsensor_autoload_check_stop();
+#endif //PAT9125
 				fsensor_update();
 			}
 		}
@@ -8339,8 +8357,8 @@ void uvlo_()
     // are in action.
     planner_abort_hard();
 
-    // Store the current extruder position.
-    eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
+	// Store the current extruder position.
+	eeprom_update_float((float*)(EEPROM_UVLO_CURRENT_POSITION_E), st_get_position_mm(E_AXIS));
 	eeprom_update_byte((uint8_t*)EEPROM_UVLO_E_ABS, axis_relative_modes[3]?0:1);
 
     // Clean the input command queue.
@@ -8511,8 +8529,12 @@ void setup_fan_interrupt() {
 // and it takes 4.24 us to process (the interrupt invocation overhead not taken into account).
 ISR(INT7_vect) {
 	//measuring speed now works for fanSpeed > 18 (approximately), which is sufficient because MIN_PRINT_FAN_SPEED is higher
-
+#ifdef FAN_SOFT_PWM
+	if (!fan_measuring || (fanSpeedSoftPwm < MIN_PRINT_FAN_SPEED)) return;
+#else //FAN_SOFT_PWM
 	if (fanSpeed < MIN_PRINT_FAN_SPEED) return;
+#endif //FAN_SOFT_PWM
+
 	if ((1 << 6) & EICRB) { //interrupt was triggered by rising edge
 		t_fan_rising_edge = millis_nc();
 	}
@@ -8696,8 +8718,7 @@ void restore_print_from_eeprom() {
 	enquecommand(cmd);
 	uint32_t position = eeprom_read_dword((uint32_t*)(EEPROM_FILE_POSITION));
 	SERIAL_ECHOPGM("Position read from eeprom:");
-	MYSERIAL.println(position);
-
+	MYSERIAL.println(position);	
   // E axis relative mode.
 	enquecommand_P(PSTR("M83"));
   // Move to the XY print position in logical coordinates, where the print has been killed.
@@ -8772,7 +8793,8 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 		 saved_printing_type = PRINTING_TYPE_USB;
 	}
 	else {
-		//not sd printing nor usb printing
+		 saved_printing_type = PRINTING_TYPE_NONE;
+		 //not sd printing nor usb printing
 	}
 
 #if 0
@@ -8937,10 +8959,12 @@ void restore_print_from_ram_and_continue(float e_move)
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
-	setTargetHotendSafe(saved_extruder_temperature,saved_active_extruder);
-	heating_status = 1;
-	wait_for_heater(_millis(),saved_active_extruder);
-	heating_status = 2;
+	if (saved_extruder_temperature) {
+		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
+		heating_status = 1;
+		wait_for_heater(_millis(), saved_active_extruder);
+		heating_status = 2;
+	}
 	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
 	fanSpeed = saved_fanSpeed;
@@ -9198,9 +9222,9 @@ void M600_load_filament() {
 	//load_filament_time = _millis();
 	KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	fsensor_autoload_check_start();
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
 	while(!lcd_clicked())
 	{
 		manage_heater();
@@ -9209,16 +9233,16 @@ void M600_load_filament() {
 		if (fsensor_check_autoload())
 		{
 if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-			tone(BEEPER, 1000);
+			_tone(BEEPER, 1000);
 			delay_keep_alive(50);
-			noTone(BEEPER);
+			_noTone(BEEPER);
 			break;
 		}
 #endif //FILAMENT_SENSOR
 	}
-#ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 	fsensor_autoload_check_stop();
-#endif //FILAMENT_SENSOR
+#endif //PAT9125
 	KEEPALIVE_STATE(IN_HANDLER);
 
 #ifdef FSENSOR_QUALITY
@@ -9228,9 +9252,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	M600_load_filament_movements();
 
 if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-	tone(BEEPER, 500);
+	_tone(BEEPER, 500);
 	delay_keep_alive(50);
-	noTone(BEEPER);
+	_noTone(BEEPER);
 
 #ifdef FSENSOR_QUALITY
 	fsensor_oq_meassure_stop();

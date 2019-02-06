@@ -545,7 +545,13 @@ void check_axes_activity()
     }
   #endif//FAN_KICKSTART_TIME
   #ifdef FAN_SOFT_PWM
-  fanSpeedSoftPwm = tail_fan_speed;
+	if (fan_measuring) { //if measurement is currently in process, fanSpeedSoftPwm must remain set to 255, but we must update fanSpeedBckp value
+		fanSpeedBckp = tail_fan_speed;
+	}
+	else {
+		fanSpeedSoftPwm = tail_fan_speed;
+	}
+  //printf_P(PSTR("fanspeedsoftPWM %d \n"), fanSpeedSoftPwm);
   #else
   analogWrite(FAN_PIN,tail_fan_speed);
   #endif//!FAN_SOFT_PWM

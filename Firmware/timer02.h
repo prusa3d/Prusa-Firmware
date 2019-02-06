@@ -24,6 +24,10 @@ extern unsigned long micros2(void);
 
 extern void delay2(unsigned long ms);
 
+extern void tone2(uint8_t _pin, unsigned int frequency/*, unsigned long duration*/);
+
+extern void noTone2(uint8_t _pin);
+
 
 #if defined(__cplusplus)
 }
