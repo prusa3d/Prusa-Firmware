@@ -2264,7 +2264,7 @@ static void lcd_support_menu()
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_SUBMENU_P(_i("XYZ cal. details"), lcd_menu_xyz_y_min);////MSG_XYZ_DETAILS c=19 r=1
   MENU_ITEM_SUBMENU_P(_i("Extruder info"), lcd_menu_extruder_info);////MSG_INFO_EXTRUDER c=18 r=1
-  MENU_ITEM_SUBMENU_P(_i("Sensors info"), lcd_menu_show_sensors_state);////MSG_INFO_SENSORS c=18 r=1
+  MENU_ITEM_SUBMENU_P(_i("Sensor info"), lcd_menu_show_sensors_state);////MSG_INFO_SENSORS c=18 r=1
 
 #ifdef TMC2130
   MENU_ITEM_SUBMENU_P(_i("Belt status"), lcd_menu_belt_status);////MSG_MENU_BELT_STATUS c=18 r=1
@@ -7352,15 +7352,13 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		setExtruderAutoFanState(EXTRUDER_0_AUTO_FAN_PIN, 1); //extruder fan
 #ifdef FAN_SOFT_PWM
 		extruder_autofan_last_check = _millis();
+		fan_measuring = true;
 #endif //FAN_SOFT_PWM
 		_delay(2000);				//delay_keep_alive would turn off extruder fan, because temerature is too low
-#ifdef FAN_SOFT_PWM
-		countFanSpeed();
-		if (!fan_speed[0]) _result = false;
-#else //FAN_SOFT_PWM
+
 		manage_heater();			//count average fan speed from 2s delay and turn off fans
 		if (!fan_speed[0]) _result = false;
-#endif //FAN_SOFT_PWM
+
 		
 		printf_P(PSTR("Test 1:\n"));
 		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
