@@ -756,6 +756,7 @@ void manage_heater()
       (defined(EXTRUDER_2_AUTO_FAN_PIN) && EXTRUDER_2_AUTO_FAN_PIN > -1)
 
 #ifdef FAN_SOFT_PWM
+#ifdef FANCHECK
   if ((_millis() - extruder_autofan_last_check > FAN_CHECK_PERIOD) && (!fan_measuring)) {
 	  extruder_autofan_last_check = _millis();
 	  fanSpeedBckp = fanSpeedSoftPwm;
@@ -775,6 +776,7 @@ void manage_heater()
 	  extruder_autofan_last_check = _millis();
 	  fan_measuring = false;
   }
+#endif //FANCHECK
   checkExtruderAutoFans();
 #else //FAN_SOFT_PWM
   if(_millis() - extruder_autofan_last_check > 1000)  // only need to check fan state very infrequently
