@@ -2325,9 +2325,9 @@ void refresh_cmd_timeout(void)
 
 void trace() {
 //if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-    tone(BEEPER, 440);
+    _tone(BEEPER, 440);
     _delay(25);
-    noTone(BEEPER);
+    _noTone(BEEPER);
     _delay(20);
 }
 /*
@@ -3124,9 +3124,9 @@ void gcode_M701()
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
 
-		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)) tone(BEEPER, 500);
+		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)) _tone(BEEPER, 500);
 		delay_keep_alive(50);
-		noTone(BEEPER);
+		_noTone(BEEPER);
 
 		if (!farm_mode && loading_flag) {
 			lcd_load_filament_color_check();
@@ -3189,9 +3189,9 @@ static void gcode_PRUSA_SN()
         putchar('\n');
 #if 0
         for (int b = 0; b < 3; b++) {
-            tone(BEEPER, 110);
+            _tone(BEEPER, 110);
             _delay(50);
-            noTone(BEEPER);
+            _noTone(BEEPER);
             _delay(50);
         }
 #endif
@@ -6268,9 +6268,9 @@ Sigma_Exit:
       {
         #if BEEPER > 0
 if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-          tone(BEEPER, beepS);
+          _tone(BEEPER, beepS);
           _delay(beepP);
-          noTone(BEEPER);
+          _noTone(BEEPER);
         #endif
       }
       else
@@ -7494,9 +7494,9 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 					if (degHotend0() > EXTRUDE_MINTEMP)
 					{
 						if ((eSoundMode == e_SOUND_MODE_LOUD) || (eSoundMode == e_SOUND_MODE_ONCE))
-							tone(BEEPER, 1000);
+							_tone(BEEPER, 1000);
 						delay_keep_alive(50);
-						noTone(BEEPER);
+						_noTone(BEEPER);
 						loading_flag = true;
 						enquecommand_front_P((PSTR("M701")));
 					}
@@ -9233,9 +9233,9 @@ void M600_load_filament() {
 		if (fsensor_check_autoload())
 		{
 if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-			tone(BEEPER, 1000);
+			_tone(BEEPER, 1000);
 			delay_keep_alive(50);
-			noTone(BEEPER);
+			_noTone(BEEPER);
 			break;
 		}
 #endif //FILAMENT_SENSOR
@@ -9252,9 +9252,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	M600_load_filament_movements();
 
 if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
-	tone(BEEPER, 500);
+	_tone(BEEPER, 500);
 	delay_keep_alive(50);
-	noTone(BEEPER);
+	_noTone(BEEPER);
 
 #ifdef FSENSOR_QUALITY
 	fsensor_oq_meassure_stop();
