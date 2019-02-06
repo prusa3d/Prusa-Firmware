@@ -18,10 +18,6 @@
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 "\x1b[2JPOZOR:\x1b[1;0HCrash detekce\x1b[2;0Hdeaktivovana ve\x1b[3;0HStealth modu"
 
-#
-">Cancel"
-"\x00"
-
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 "Dostavovani Z"
@@ -121,10 +117,6 @@
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
 "Detekovan vypadek proudu.Obnovit tisk?"
-
-#
-"Calibrating home"
-"\x00"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -316,10 +308,6 @@
 
 #MSG_MOVE_E c=0 r=0
 "Extruder"
-"\x00"
-
-#
-"Fail stats MMU"
 "\x00"
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
@@ -658,14 +646,6 @@
 "Measured skew"
 "Merene zkoseni"
 
-#
-"MMU fails"
-"\x00"
-
-#
-"MMU load fails"
-"\x00"
-
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 "MMU OK. Pokracuji..."
@@ -681,10 +661,6 @@
 #
 "MMU needs user attention."
 "MMU potrebuje zasah uzivatele."
-
-#
-"MMU power fails"
-"\x00"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -729,10 +705,6 @@
 #MSG_NO_CARD c=0 r=0
 "No SD card"
 "Zadna SD karta"
-
-#
-"N/A"
-"\x00"
 
 #MSG_NO c=0 r=0
 "No"
@@ -898,14 +870,6 @@
 "Print aborted"
 "Tisk prerusen"
 
-#
-"Preheating to load"
-"\x00"
-
-#
-"Preheating to unload"
-"\x00"
-
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
 "Tiskovy vent.:"
@@ -913,10 +877,6 @@
 #MSG_CARD_MENU c=0 r=0
 "Print from SD"
 "Tisk z SD"
-
-#
-"Press the knob"
-"\x00"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -957,10 +917,6 @@
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
 "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
-
-#
-"Prusa i3 MK3S OK."
-"\x00"
 
 #
 "Prusa i3 MK2 ready."
@@ -1061,14 +1017,6 @@
 #MSG_SHOW_END_STOPS c=17 r=1
 "Show end stops"
 "Stav konc. spin."
-
-#
-"Sensor state"
-"\x00"
-
-#
-"Sensors info"
-"\x00"
 
 #
 "Show pinda state"
@@ -1212,14 +1160,6 @@
 
 #
 "Total failures"
-"\x00"
-
-#
-"to load filament"
-"\x00"
-
-#
-"to unload filament"
 "\x00"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
