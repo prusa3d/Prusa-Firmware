@@ -1782,6 +1782,7 @@ void lcd_return_to_status()
 	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, false, true);
 	menu_depth = 0;
+     bFilamentAutoloadFlag=false;
 }
 
 //! @brief Pause print, disable nozzle heater, move to park position
@@ -2300,6 +2301,7 @@ void lcd_set_filament_oq_meass()
 bool bFilamentFirstRun;
 bool bFilamentLoad;
 bool bFilamentPreheatState;
+bool bFilamentAutoloadFlag;
 
 static void mFilamentPrompt()
 {
@@ -2327,9 +2329,11 @@ if(lcd_clicked())
           }
      else enquecommand_P(PSTR("M702"));           // unload filament
      }
+if(bFilamentLoad)                                 // i.e. not necessary for preHeat @ unload
+     bFilamentAutoloadFlag=false;
 }
 
-static void mFilamentItem(uint16_t nTemp)
+void mFilamentItem(uint16_t nTemp)
 {
 static int nTargetOld;
 
@@ -2354,6 +2358,8 @@ if(lcd_clicked())
           }
      else setTargetHotend0((float)nTargetOld);
      menu_back();
+     if(bFilamentLoad)                            // i.e. not necessary for preHeat @ unload
+          bFilamentAutoloadFlag=false;
      }
 else if(!isHeatingHotend0())
           {
@@ -2399,10 +2405,17 @@ mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP);
 }
 
 
-static void mFilamentMenu()
+void mFilamentBack()
+{
+menu_back();
+if(bFilamentLoad)                                 // i.e. not necessary for preHeat @ unload
+     bFilamentAutoloadFlag=false;
+}
+
+void mFilamentMenu()
 {
 MENU_BEGIN();
-MENU_ITEM_BACK_P(_T(MSG_MAIN));
+MENU_ITEM_FUNCTION_P(_T(MSG_MAIN),mFilamentBack);
 MENU_ITEM_SUBMENU_P(PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)),mFilamentItem_PLA);
 MENU_ITEM_SUBMENU_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP)),mFilamentItem_PET);
 MENU_ITEM_SUBMENU_P(PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP)),mFilamentItem_ABS);
@@ -2636,23 +2649,9 @@ void lcd_load_filament_color_check()
 #ifdef FILAMENT_SENSOR
 static void lcd_menu_AutoLoadFilament()
 {
-    if (degHotend0() > EXTRUDE_MINTEMP)
-    {
-        uint8_t nlines;
-        lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament is active, just press the knob and insert filament..."),nlines);////MSG_AUTOLOADING_ENABLED c=20 r=4
-    }
-    else
-    {
-        static_assert(sizeof(menu_data)>=sizeof(ShortTimer), "ShortTimer doesn't fit into menu_data");
-		ShortTimer* ptimer = (ShortTimer*)&(menu_data[0]);
-        if (!ptimer->running()) ptimer->start();
-        lcd_set_cursor(0, 0);
-        lcd_puts_P(_T(MSG_ERROR));
-        lcd_set_cursor(0, 2);
-        lcd_puts_P(_T(MSG_PREHEAT_NOZZLE));
-        if (ptimer->expired(2000ul)) menu_back();
-    }
-    menu_back_if_clicked();
+     uint8_t nlines;
+     lcd_display_message_fullscreen_nonBlocking_P(_i("Autoloading filament is active, just press the knob and insert filament..."),nlines);////MSG_AUTOLOADING_ENABLED c=20 r=4
+     menu_back_if_clicked();
 }
 #endif //FILAMENT_SENSOR
 
