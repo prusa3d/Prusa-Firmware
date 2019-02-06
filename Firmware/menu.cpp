@@ -120,7 +120,7 @@ void menu_back_if_clicked_fb(void)
 
 void menu_submenu(menu_func_t submenu)
 {
-	if (menu_depth <= MENU_DEPTH_MAX)
+	if (menu_depth < MENU_DEPTH_MAX)
 	{
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
@@ -130,7 +130,7 @@ void menu_submenu(menu_func_t submenu)
 
 static void menu_submenu_no_reset(menu_func_t submenu)
 {
-	if (menu_depth <= MENU_DEPTH_MAX)
+	if (menu_depth < MENU_DEPTH_MAX)
 	{
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
