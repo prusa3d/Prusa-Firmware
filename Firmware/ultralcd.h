@@ -133,6 +133,12 @@ void extr_unload_used();
 #endif //SNMM
 void extr_unload();
 
+extern bool bFilamentFirstRun;
+extern bool bFilamentLoad;
+extern bool bFilamentPreheatState;
+extern bool bFilamentAutoloadFlag;
+void mFilamentItem(uint16_t nTemp);
+void mFilamentMenu();
 void unload_filament();
 
 void stack_error();

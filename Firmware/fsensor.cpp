@@ -13,6 +13,7 @@
 #include "ultralcd.h"
 #include "ConfigurationStore.h"
 #include "mmu.h"
+#include "cardreader.h"
 
 //! @name Basic parameters
 //! @{
@@ -120,17 +121,20 @@ void fsensor_stop_and_save_print(void)
 void fsensor_restore_print_and_continue(void)
 {
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
-    fsensor_watch_runout = true;
-    fsensor_err_cnt = 0;
+	fsensor_watch_runout = true;
+	fsensor_err_cnt = 0;
     restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
 }
 
 void fsensor_init(void)
 {
+#ifdef PAT9125
 	uint8_t pat9125 = pat9125_init();
     printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
+#endif //PAT9125
 	uint8_t fsensor = eeprom_read_byte((uint8_t*)EEPROM_FSENSOR);
 	fsensor_autoload_enabled=eeprom_read_byte((uint8_t*)EEPROM_FSENS_AUTOLOAD_ENABLED);
+#ifdef PAT9125
 	uint8_t oq_meassure_enabled = eeprom_read_byte((uint8_t*)EEPROM_FSENS_OQ_MEASS_ENABLED);
 	fsensor_oq_meassure_enabled = (oq_meassure_enabled == 1)?true:false;
 	fsensor_chunk_len = (int16_t)(FSENSOR_CHUNK_LEN * cs.axis_steps_per_unit[E_AXIS]);
@@ -142,15 +146,19 @@ void fsensor_init(void)
 	}
 	else
 		fsensor_not_responding = false;
+#endif //PAT9125
 	if (fsensor)
 		fsensor_enable();
 	else
 		fsensor_disable();
 	printf_P(PSTR("FSensor %S\n"), (fsensor_enabled?PSTR("ENABLED"):PSTR("DISABLED\n")));
+	if (check_for_ir_sensor()) ir_sensor_detected = true;
+
 }
 
 bool fsensor_enable(void)
 {
+#ifdef PAT9125
 	if (mmu_enabled == false) { //filament sensor is pat9125, enable only if it is working
 		uint8_t pat9125 = pat9125_init();
 		printf_P(PSTR("PAT9125_init:%hhu\n"), pat9125);
@@ -172,6 +180,11 @@ bool fsensor_enable(void)
 		eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x01);
 		FSensorStateMenu = 1;
 	}
+#else // PAT9125
+	fsensor_enabled = true;
+	eeprom_update_byte((uint8_t*)EEPROM_FSENSOR, 0x01);
+	FSensorStateMenu = 1;
+#endif // PAT9125
 	return fsensor_enabled;
 }
 
@@ -184,7 +197,9 @@ void fsensor_disable(void)
 
 void fsensor_autoload_set(bool State)
 {
+#ifdef PAT9125
 	if (!State) fsensor_autoload_check_stop();
+#endif //PAT9125
 	fsensor_autoload_enabled = State;
 	eeprom_update_byte((unsigned char *)EEPROM_FSENS_AUTOLOAD_ENABLED, fsensor_autoload_enabled);
 }
@@ -197,6 +212,7 @@ void pciSetup(byte pin)
 	PCICR |= bit (digitalPinToPCICRbit(pin)); // enable interrupt for the group 
 }
 
+#ifdef PAT9125
 void fsensor_autoload_check_start(void)
 {
 //	puts_P(_N("fsensor_autoload_check_start\n"));
@@ -215,7 +231,7 @@ void fsensor_autoload_check_start(void)
 	fsensor_autoload_y = pat9125_y; //save current y value
 	fsensor_autoload_c = 0; //reset number of changes counter
 	fsensor_autoload_sum = 0;
-	fsensor_autoload_last_millis = millis();
+	fsensor_autoload_last_millis = _millis();
 	fsensor_watch_runout = false;
 	fsensor_watch_autoload = true;
 	fsensor_err_cnt = 0;
@@ -223,6 +239,7 @@ void fsensor_autoload_check_start(void)
 
 void fsensor_autoload_check_stop(void)
 {
+
 //	puts_P(_N("fsensor_autoload_check_stop\n"));
 	if (!fsensor_enabled) return;
 //	puts_P(_N("fsensor_autoload_check_stop 1\n"));
@@ -235,11 +252,22 @@ void fsensor_autoload_check_stop(void)
 	fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
 }
+#endif //PAT9125
 
 bool fsensor_check_autoload(void)
 {
 	if (!fsensor_enabled) return false;
 	if (!fsensor_autoload_enabled) return false;
+	if (ir_sensor_detected) {
+		if (digitalRead(IR_SENSOR_PIN) == 1) {
+			fsensor_watch_autoload = true;
+		}
+		else if (fsensor_watch_autoload == true) {
+			fsensor_watch_autoload = false;
+			return true;
+		}
+	}
+#ifdef PAT9125
 	if (!fsensor_watch_autoload)
 	{
 		fsensor_autoload_check_start();
@@ -248,8 +276,8 @@ bool fsensor_check_autoload(void)
 #if 0
 	uint8_t fsensor_autoload_c_old = fsensor_autoload_c;
 #endif
-	if ((millis() - fsensor_autoload_last_millis) < 25) return false;
-	fsensor_autoload_last_millis = millis();
+	if ((_millis() - fsensor_autoload_last_millis) < 25) return false;
+	fsensor_autoload_last_millis = _millis();
 	if (!pat9125_update_y()) //update sensor
 	{
 		fsensor_disable();
@@ -283,6 +311,7 @@ bool fsensor_check_autoload(void)
 //		puts_P(_N("fsensor_check_autoload = true !!!\n"));
 		return true;
 	}
+#endif //PAT9125
 	return false;
 }
 
@@ -359,10 +388,10 @@ bool fsensor_oq_result(void)
 	printf_P(_N("fsensor_oq_result %S\n"), (res?_OK:_NG));
 	return res;
 }
-
+#ifdef PAT9125
 ISR(FSENSOR_INT_PIN_VECT)
 {
-	if (mmu_enabled) return;
+	if (mmu_enabled || ir_sensor_detected) return;
 	if (!((fsensor_int_pin_old ^ FSENSOR_INT_PIN_PIN_REG) & FSENSOR_INT_PIN_MASK)) return;
 	fsensor_int_pin_old = FSENSOR_INT_PIN_PIN_REG;
 	static bool _lock = false;
@@ -446,6 +475,23 @@ ISR(FSENSOR_INT_PIN_VECT)
 	return;
 }
 
+void fsensor_setup_interrupt(void)
+{
+
+	pinMode(FSENSOR_INT_PIN, OUTPUT);
+	digitalWrite(FSENSOR_INT_PIN, LOW);
+	fsensor_int_pin_old = 0;
+
+	//pciSetup(FSENSOR_INT_PIN);
+// !!! "pciSetup()" does not provide the correct results for some MCU pins
+// so interrupt registers settings:
+     FSENSOR_INT_PIN_PCMSK_REG |= bit(FSENSOR_INT_PIN_PCMSK_BIT); // enable corresponding PinChangeInterrupt (individual pin)
+     PCIFR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // clear previous occasional interrupt (set of pins)
+     PCICR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // enable corresponding PinChangeInterrupt (set of pins)
+}
+
+#endif //PAT9125
+
 void fsensor_st_block_begin(block_t* bl)
 {
 	if (!fsensor_enabled) return;
@@ -477,17 +523,18 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 //! If there is still no plausible signal from filament sensor plans M600 (Filament change).
 void fsensor_update(void)
 {
-	if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
-	{
-        bool autoload_enabled_tmp = fsensor_autoload_enabled;
-        fsensor_autoload_enabled = false;
-        bool oq_meassure_enabled_tmp = fsensor_oq_meassure_enabled;
-		fsensor_oq_meassure_enabled = true;
+#ifdef PAT9125
+		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
+		{
+			bool autoload_enabled_tmp = fsensor_autoload_enabled;
+			fsensor_autoload_enabled = false;
+			bool oq_meassure_enabled_tmp = fsensor_oq_meassure_enabled;
+			fsensor_oq_meassure_enabled = true;
 
-        fsensor_stop_and_save_print();
+			fsensor_stop_and_save_print();
 
-        fsensor_err_cnt = 0;
-        fsensor_oq_meassure_start(0);
+			fsensor_err_cnt = 0;
+			fsensor_oq_meassure_start(0);
 
 			enquecommand_front_P((PSTR("G1 E-3 F200")));
 			process_commands();
@@ -495,51 +542,47 @@ void fsensor_update(void)
 			cmdqueue_pop_front();
 			st_synchronize();
 
-        enquecommand_front_P((PSTR("G1 E3 F200")));
-        process_commands();
-		KEEPALIVE_STATE(IN_HANDLER);
-        cmdqueue_pop_front();
-        st_synchronize();
+			enquecommand_front_P((PSTR("G1 E3 F200")));
+			process_commands();
+			KEEPALIVE_STATE(IN_HANDLER);
+			cmdqueue_pop_front();
+			st_synchronize();
 
-		uint8_t err_cnt = fsensor_err_cnt;
-        fsensor_oq_meassure_stop();
+			uint8_t err_cnt = fsensor_err_cnt;
+			fsensor_oq_meassure_stop();
 
-        bool err = false;
-        err |= (err_cnt > 1);
+			bool err = false;
+			err |= (err_cnt > 1);
 
-		err |= (fsensor_oq_er_sum > 2);
-		err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
+			err |= (fsensor_oq_er_sum > 2);
+			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
 
-		if (!err)
-        {
-            printf_P(PSTR("fsensor_err_cnt = 0\n"));
-            fsensor_restore_print_and_continue();
-        }
-        else
-        {
-            printf_P(PSTR("fsensor_update - M600\n"));
-            eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
-            eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-            enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
-            enquecommand_front_P((PSTR("M600")));
-            fsensor_watch_runout = false;
-        }
-        fsensor_autoload_enabled = autoload_enabled_tmp;
-		fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
-	}
-}
-
-void fsensor_setup_interrupt(void)
-{
-
-	pinMode(FSENSOR_INT_PIN, OUTPUT);
-	digitalWrite(FSENSOR_INT_PIN, LOW);
-	fsensor_int_pin_old = 0;
-
-	//pciSetup(FSENSOR_INT_PIN);
-// !!! "pciSetup()" does not provide the correct results for some MCU pins
-// so interrupt registers settings:
-     FSENSOR_INT_PIN_PCMSK_REG |= bit(FSENSOR_INT_PIN_PCMSK_BIT); // enable corresponding PinChangeInterrupt (individual pin)
-     PCIFR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // clear previous occasional interrupt (set of pins)
-     PCICR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // enable corresponding PinChangeInterrupt (set of pins)
+			if (!err)
+			{
+				printf_P(PSTR("fsensor_err_cnt = 0\n"));
+				fsensor_restore_print_and_continue();
+			}
+			else
+			{
+				printf_P(PSTR("fsensor_update - M600\n"));
+				eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+				eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
+				enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
+				enquecommand_front_P((PSTR("M600")));
+				fsensor_watch_runout = false;
+			}
+			fsensor_autoload_enabled = autoload_enabled_tmp;
+			fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
+		}
+#else //PAT9125
+		if ((digitalRead(IR_SENSOR_PIN) == 1) && CHECK_FSENSOR && fsensor_enabled && ir_sensor_detected)
+		{
+			fsensor_stop_and_save_print();
+			printf_P(PSTR("fsensor_update - M600\n"));
+			eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+			eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
+			enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
+			enquecommand_front_P((PSTR("M600")));
+		}
+#endif //PAT9125
 }

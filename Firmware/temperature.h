@@ -27,8 +27,19 @@
   #include "stepper.h"
 #endif
 
+
+#ifdef SYSTEM_TIMER_2
+
+#define ENABLE_TEMPERATURE_INTERRUPT()  TIMSK2 |= (1<<OCIE2B)
+#define DISABLE_TEMPERATURE_INTERRUPT() TIMSK2 &= ~(1<<OCIE2B)
+
+#else //SYSTEM_TIMER_2
+
 #define ENABLE_TEMPERATURE_INTERRUPT()  TIMSK0 |= (1<<OCIE0B)
 #define DISABLE_TEMPERATURE_INTERRUPT() TIMSK0 &= ~(1<<OCIE0B)
+
+#endif //SYSTEM_TIMER_2
+
 
 // public functions
 void tp_init();  //initialize the heating
@@ -87,6 +98,8 @@ extern int current_voltage_raw_bed;
   extern volatile int babystepsTodo[3];
 #endif
 
+void resetPID(uint8_t extruder);
+
 inline void babystepsTodoZadd(int n)
 {
     if (n != 0) {
@@ -137,11 +150,15 @@ FORCE_INLINE float degTargetBed() {
 
 FORCE_INLINE void setTargetHotend(const float &celsius, uint8_t extruder) {  
   target_temperature[extruder] = celsius;
+  resetPID(extruder);
 };
 
 static inline void setTargetHotendSafe(const float &celsius, uint8_t extruder)
 {
-    if (extruder<EXTRUDERS) target_temperature[extruder] = celsius;
+    if (extruder<EXTRUDERS) {
+      target_temperature[extruder] = celsius;
+      resetPID(extruder);
+    }
 }
 
 static inline void setAllTargetHotends(const float &celsius)
@@ -234,4 +251,8 @@ void check_max_temp();
 
 
 #endif
+
+extern unsigned long extruder_autofan_last_check;
+extern uint8_t fanSpeedBckp;
+extern bool fan_measuring;
 

@@ -152,9 +152,9 @@ bool xyzcal_lineXYZ_to(int16_t x, int16_t y, int16_t z, uint16_t delay_us, int8_
 	sm4_set_dir_bits(xyzcal_dm);
 	sm4_stop_cb = check_pinda?((check_pinda<0)?check_pinda_0:check_pinda_1):0;
 	xyzcal_sm4_delay = delay_us;
-//	uint32_t u = micros();
+//	uint32_t u = _micros();
 	bool ret = sm4_line_xyze_ui(abs(x), abs(y), abs(z), 0)?true:false;
-//	u = micros() - u;
+//	u = _micros() - u;
 	return ret;
 }
 

@@ -1,5 +1,8 @@
 //! @file
 
+#ifndef MMU_H
+#define MMU_H
+
 #include <inttypes.h>
 
 
@@ -11,7 +14,7 @@ extern uint8_t mmu_extruder;
 extern uint8_t tmp_extruder;
 
 extern int8_t mmu_finda;
-extern bool mmu_idler_sensor_detected;
+extern bool ir_sensor_detected;
 extern bool mmu_loading_flag;
 
 extern int16_t mmu_version;
@@ -56,7 +59,7 @@ extern int mmu_printf_P(const char* format, ...);
 
 extern int8_t mmu_rx_ok(void);
 
-extern bool check_for_idler_sensor();
+extern bool check_for_ir_sensor();
 
 extern void mmu_init(void);
 
@@ -71,7 +74,7 @@ extern void mmu_command(uint8_t cmd);
 
 extern bool mmu_get_response(uint8_t move = 0);
 
-extern void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move = 0);
+extern void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move = MMU_NO_MOVE);
 
 extern void mmu_load_to_nozzle();
 
@@ -119,3 +122,8 @@ extern void mmu_eject_fil_2();
 extern void mmu_eject_fil_3();
 extern void mmu_eject_fil_4();
 extern void mmu_continue_loading();
+extern void mmu_filament_ramming();
+extern void mmu_wait_for_heater_blocking();
+extern void mmu_load_step(bool synchronize = true);
+
+#endif //MMU_H
