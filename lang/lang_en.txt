@@ -13,6 +13,9 @@
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 
+#
+">Cancel"
+
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 
@@ -87,6 +90,9 @@
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
+
+#
+"Calibrating home"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -231,6 +237,9 @@
 
 #MSG_MOVE_E c=0 r=0
 "Extruder"
+
+#
+"Fail stats MMU"
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
@@ -484,6 +493,15 @@
 #
 "Measured skew"
 
+#
+"MMU fails"
+
+#
+"MMU load failed     "
+
+#
+"MMU load fails"
+
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 
@@ -495,6 +513,9 @@
 
 #
 "MMU needs user attention."
+
+#
+"MMU power fails"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -528,6 +549,9 @@
 
 #MSG_NO_CARD c=0 r=0
 "No SD card"
+
+#
+"N/A"
 
 #MSG_NO c=0 r=0
 "No"
@@ -652,11 +676,20 @@
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
 
+#
+"Preheating to load"
+
+#
+"Preheating to unload"
+
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
 
 #MSG_CARD_MENU c=0 r=0
 "Print from SD"
+
+#
+"Press the knob"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -687,6 +720,9 @@
 
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
+
+#
+"Prusa i3 MK3S OK."
 
 #
 "Prusa i3 MK2 ready."
@@ -762,6 +798,12 @@
 
 #MSG_SHOW_END_STOPS c=17 r=1
 "Show end stops"
+
+#
+"Sensor state"
+
+#
+"Sensors info"
 
 #
 "Show pinda state"
@@ -870,6 +912,12 @@
 
 #
 "Total failures"
+
+#
+"to load filament"
+
+#
+"to unload filament"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
