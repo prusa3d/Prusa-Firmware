@@ -18,6 +18,10 @@
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 "\x1b[2JATTENTION :\x1b[1;0H Detection de crash\x1b[2;0H desactivee en mode\x1b[3;0H Furtif"
 
+#
+">Cancel"
+"\x00"
+
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 "Ajustement de Z"
@@ -117,6 +121,10 @@
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
 "Coupure detectee. Recup. impression ?"
+
+#
+"Calibrating home"
+"\x00"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -309,6 +317,10 @@
 #MSG_MOVE_E c=0 r=0
 "Extruder"
 "Extrudeur"
+
+#
+"Fail stats MMU"
+"\x00"
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
@@ -646,6 +658,18 @@
 "Measured skew"
 "Deviation mesuree"
 
+#
+"MMU fails"
+"\x00"
+
+#
+"MMU load failed     "
+"\x00"
+
+#
+"MMU load fails"
+"\x00"
+
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 "MMU OK. Reprise ..."
@@ -661,6 +685,10 @@
 #
 "MMU needs user attention."
 "Le MMU necessite l'attention de l'utilisateur."
+
+#
+"MMU power fails"
+"\x00"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -705,6 +733,10 @@
 #MSG_NO_CARD c=0 r=0
 "No SD card"
 "Pas de carte SD"
+
+#
+"N/A"
+"\x00"
 
 #MSG_NO c=0 r=0
 "No"
@@ -870,6 +902,14 @@
 "Print aborted"
 "Impression annulee"
 
+#
+"Preheating to load"
+"\x00"
+
+#
+"Preheating to unload"
+"\x00"
+
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
 "Ventilo impr. :"
@@ -877,6 +917,10 @@
 #MSG_CARD_MENU c=0 r=0
 "Print from SD"
 "Impr depuis la SD"
+
+#
+"Press the knob"
+"\x00"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -917,6 +961,10 @@
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
 "Retirez l'ancien filament puis appuyez sur le bouton pour charger le nouveau."
+
+#
+"Prusa i3 MK3S OK."
+"\x00"
 
 #
 "Prusa i3 MK2 ready."
@@ -1017,6 +1065,14 @@
 #MSG_SHOW_END_STOPS c=17 r=1
 "Show end stops"
 "Afficher butees"
+
+#
+"Sensor state"
+"\x00"
+
+#
+"Sensors info"
+"\x00"
 
 #
 "Show pinda state"
@@ -1161,6 +1217,14 @@
 #
 "Total failures"
 "Echecs au total"
+
+#
+"to load filament"
+"\x00"
+
+#
+"to unload filament"
+"\x00"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"

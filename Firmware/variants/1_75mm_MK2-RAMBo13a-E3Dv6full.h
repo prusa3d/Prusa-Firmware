@@ -1,6 +1,7 @@
 #ifndef CONFIGURATION_PRUSA_H
 #define CONFIGURATION_PRUSA_H
 
+#include <limits.h>
 /*------------------------------------
 GENERAL SETTINGS
 *------------------------------------*/
@@ -102,10 +103,18 @@ EXTRUDER SETTINGS
 *------------------------------------*/
 
 // Mintemps
-#define HEATER_0_MINTEMP 15
+#define HEATER_0_MINTEMP 30
 #define HEATER_1_MINTEMP 5
 #define HEATER_2_MINTEMP 5
-#define BED_MINTEMP 15
+#define HEATER_MINTEMP_DELAY 15000                // [ms] ! if changed, check maximal allowed value @ ShortTimer
+#if HEATER_MINTEMP_DELAY>USHRT_MAX
+#error "Check maximal allowed value @ ShortTimer (see HEATER_MINTEMP_DELAY definition)"
+#endif
+#define BED_MINTEMP 30
+#define BED_MINTEMP_DELAY 50000                   // [ms] ! if changed, check maximal allowed value @ ShortTimer
+#if BED_MINTEMP_DELAY>USHRT_MAX
+#error "Check maximal allowed value @ ShortTimer (see BED_MINTEMP_DELAY definition)"
+#endif
 
 // Maxtemps
 #if defined(E3D_PT100_EXTRUDER_WITH_AMP) || defined(E3D_PT100_EXTRUDER_NO_AMP)
@@ -236,6 +245,9 @@ BED SETTINGS
 // Mesh measure definition
 #define MESH_MEAS_NUM_X_POINTS 3
 #define MESH_MEAS_NUM_Y_POINTS 3
+
+// Maximum bed level correction value
+#define BED_ADJUSTMENT_UM_MAX 100
 
 #define MESH_HOME_Z_CALIB 0.2
 #define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.
@@ -431,5 +443,7 @@ THERMISTORS SETTINGS
 #ifndef SNMM
 //#define SUPPORT_VERBOSITY
 #endif
+
+#define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
 #endif //__CONFIGURATION_PRUSA_H

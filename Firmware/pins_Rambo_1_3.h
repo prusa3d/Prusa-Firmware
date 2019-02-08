@@ -102,7 +102,7 @@
 
 #define SDCARDDETECT           15
 
-
+#define IR_SENSOR_PIN 23 // idler sensor @PA1 (digital pin 23, "Z-MAX" connector)
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.
