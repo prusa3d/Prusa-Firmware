@@ -12,7 +12,7 @@ if [ ! -f "PF-build-env-Linux64-$BUILD_ENV.zip" ]; then
 fi
 
 if [ ! -d "../../PF-build-env-$BUILD_ENV" ]; then
-    unzip PF-build-env-Linux64-$BUILD_ENV.zip -d ../../PF-build-env-$BUILD_ENV || exit 4
+    unzip -q PF-build-env-Linux64-$BUILD_ENV.zip -d ../../PF-build-env-$BUILD_ENV || exit 4
 fi
 
 cd ../../PF-build-env-$BUILD_ENV || exit 5
