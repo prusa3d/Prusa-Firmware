@@ -90,7 +90,7 @@ msgstr "Tout est correct"
 # MSG_WIZARD_DONE c=20 r=8
 #: messages.c:95
 msgid "All is done. Happy printing!"
-msgstr "Tout est prêt. Bonne\nimpression !"
+msgstr "Tout est pret. Bonne\nimpression !"
 
 # 
 #: ultralcd.cpp:2109
