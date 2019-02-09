@@ -36,7 +36,6 @@ BUILD_ENV="1.0.1"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Select which varaint of the Prusa Firmware will be compiled, like
-unset options i
 PS3="Select a variant: "
 while IFS= read -r -d $'\0' f; do
 	  options[i++]="$f"
@@ -87,7 +86,7 @@ echo "Dev Check  :" $DEV_CHECK
 echo "DEV Status :" $DEV_STATUS
 echo "Motherboard:" $MOTHERBOARD
 echo "OS         :" $OS
-echo "OS type    :"  $OSTYPE
+echo "OS type    :" $OSTYPE
 echo $2
 
 #### Start prepare building
