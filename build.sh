@@ -72,7 +72,25 @@ fi
 
 # NOT IMPLEMENTED YET. Second argument defines if it is an english only version. Known values EN_ONLY / / ALL
 if [ -z "$2" ] ; then
+	echo
 	echo "Which lang-build do you want?"
+	select yn in "All" "English only"; do
+		case $yn in
+			"All")
+				LANGUAGES="ALL"
+				sed -i -- "s/#define LANG_MODE              0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
+				break
+				;;
+			"English only") 
+				LANGUAGES="EN_ONLY"
+				sed -i -- "s/#define LANG_MODE              1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
+				break
+				;;
+			*)
+				echo "This is not a valid language"
+				;;
+		esac
+	done
 else
 	LANGUAGES=$2
 fi
@@ -202,7 +220,7 @@ do
 	sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 	#Prepare english only or multilanguage version to be build
-	if [ ! -z "$LANGUAGES" ] ; then
+	if [ $LANGUAGES == "ALL" ]; then
 		echo
 		echo "Multi-language firmware will be build"
 		echo
@@ -263,7 +281,7 @@ do
 	# Check if it is NOT english only build
 	MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "\/\/\#define LANG_MODE" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
 
-	if [ "$MULTI_LANGUAGE_CHECK" ==  "0" ]; then
+	if [ $LANGUAGES ==  "ALL" ]; then
 		echo
 		echo "Building mutli language firmware" $MULTI_LANGUAGE_CHECK
 		echo ""
