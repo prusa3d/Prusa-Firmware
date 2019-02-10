@@ -72,18 +72,19 @@ fi
 
 # NOT IMPLEMENTED YET. Second argument defines if it is an english only version. Known values EN_ONLY / / ALL
 if [ -z "$2" ] ; then
+	PS3="Select a language: "
 	echo
 	echo "Which lang-build do you want?"
 	select yn in "All" "English only"; do
 		case $yn in
 			"All")
 				LANGUAGES="ALL"
-				sed -i -- "s/#define LANG_MODE              0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
+				sed -i -- "s/^#define LANG_MODE              0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
 				break
 				;;
 			"English only") 
 				LANGUAGES="EN_ONLY"
-				sed -i -- "s/#define LANG_MODE              1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
+				sed -i -- "s/^#define LANG_MODE              1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
 				break
 				;;
 			*)
@@ -317,8 +318,8 @@ do
 
 	# Cleanup Firmware
 	rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 17
-	sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
-	sed -i -- 's/#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
+	sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
+	sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 	# Cleanup compiler flags are set to Prusa specific needs for the rambo board.
 	echo ""
