@@ -79,12 +79,12 @@ if [ -z "$2" ] ; then
 		case $yn in
 			"All")
 				LANGUAGES="ALL"
-				sed -i -- "s/^#define LANG_MODE              0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
+				sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
 				break
 				;;
 			"English only") 
 				LANGUAGES="EN_ONLY"
-				sed -i -- "s/^#define LANG_MODE              1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
+				sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
 				break
 				;;
 			*)
