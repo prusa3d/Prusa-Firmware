@@ -68,7 +68,12 @@ if [ -z "$1" ] ; then
 	done
 else
 	VARIANT=$1
-	VARIANTS[i++]="$VARIANT"
+	if [ ! -f "$SCRIPT_PATH/Firmware/variants/$VARIANT.h" ]; then
+		echo "Variant $SCRIPT_PATH/Firmware/variants/$VARIANT.h does not exist"
+		exit
+	else
+		VARIANTS[i++]="$VARIANT"
+	fi
 
 fi
 
@@ -81,12 +86,10 @@ if [ -z "$2" ] ; then
 		case $yn in
 			"All")
 				LANGUAGES="ALL"
-				sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
 				break
 				;;
 			"English only") 
 				LANGUAGES="EN_ONLY"
-				sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
 				break
 				;;
 			*)
@@ -97,14 +100,14 @@ if [ -z "$2" ] ; then
 else
 	# must be "ALL" or "EN_ONLY"
 	LANGUAGES=$2
-	if [ $LANGUAGES == "ALL" ]; then
-		sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
-	elif [ $LANGUAGES == "EN_ONLY" ]; then
-		sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
-	else 
-		echo "Unknown language"
-		exit
-	fi
+fi
+if [ $LANGUAGES == "ALL" ]; then
+	sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
+elif [ $LANGUAGES == "EN_ONLY" ]; then
+	sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
+else 
+	echo "Unknown language"
+	exit
 fi
 
 # Find firmware version in Configuration.h file and use it to generate the hex filename
