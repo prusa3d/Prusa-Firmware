@@ -31,20 +31,46 @@
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is uknown
 # 17 Jan 2019, 3d-gussner, Build_3, Check for OS Windows or Linux and use the right build enviroment
+# 10 Feb 2019, ropaha, Pull Request, Select variant from list while using build.sh
+# 10 Feb 2019, ropaha, change FW_DEV_VERSION automatically depending on FW_VERSION RC/BETA/ALPHA
+# 10 Feb 2019, 3d-gussner, 1st tests with english only 
 
 BUILD_ENV="1.0.1"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
-# First argument defines which varaint of the Prusa Firmware will be compiled, like
-# 
-if [ -z "$1" ]
- then
-	echo "You have too choose a variant or ALL to compile all existing varaints."
-	exit 0
- else
+
+# First argument defines which varaint of the Prusa Firmware will be compiled 
+if [ -z "$1" ] ; then
+	# Select which varaint of the Prusa Firmware will be compiled, like
+	PS3="Select a variant: "
+	while IFS= read -r -d $'\0' f; do
+		options[i++]="$f"
+	done < <(find Firmware/variants/ -maxdepth 1 -type f -name "*.h" -print0 )
+	select opt in "${options[@]}" "Quit"; do
+		case $opt in
+			*.h)
+				VARIANT=$(basename "$opt" ".h")
+				break
+				;;
+			"Quit")
+				echo "You chose to stop"
+					exit
+					;;
+			*)
+				echo "This is not a valid variant"
+				;;
+		esac
+	done
+else
 	VARIANT=$1
 fi
-# NOT IMPLEMENTED YET. Second argument defines if it is an english only version. Format EN_ONLY
-EN_ONLY=$2
+
+# NOT IMPLEMENTED YET. Second argument defines if it is an english only version. Known values EN_ONLY / / ALL
+if [ -z "$2" ] ; then
+	echo "Which lang-build do you want?"
+else
+	LANGUAGES=$2
+fi
+
 # Find firmware version in Configuration.h file and use it to generate the hex filename
 FW=$(grep --max-count=1 "\bFW_VERSION\b" Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g')
 # Find build version in Configuration.h file and use it to generate the hex filename
@@ -53,26 +79,19 @@ BUILD=$(grep --max-count=1 "\bFW_COMMIT_NR\b" Firmware/Configuration.h | sed -e'
 MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
 # Check development status
 DEV_CHECK=$(grep --max-count=1 "\bFW_VERSION\b" Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g'|cut -d '-' -f2)
-if [ "$DEV_CHECK" == "$FW" ] ; then
-	DEV_STATUS="GOLD"
-else 
-	if [[ "$DEV_CHECK" == "RC1"  ||  "$DEV_CHECK" == "RC2" ]] ; then
-		DEV_STATUS="RC"
-	else
-		DEV_STATUS="UNKNOWN"
-	fi
-fi
 
 # List few useful data
-echo $SCRIPT_PATH
-echo $VARIANT
-echo "Firmware: " $FW
-echo "Build #" $BUILD
-echo "Dev Check:" $DEV_CHECK
-echo "DEV Status:" $DEV_STATUS
-echo $MOTHERBOARD
-echo $OS " :  " $OSTYPE
-echo $2
+echo
+echo "Script path:" $SCRIPT_PATH
+echo "Variant    :" $VARIANT
+echo "Firmware   :" $FW
+echo "Build #    :" $BUILD
+echo "Dev Check  :" $DEV_CHECK
+echo "DEV Status :" $DEV_STATUS
+echo "Motherboard:" $MOTHERBOARD
+echo "OS         :" $OS
+echo "OS type    :" $OSTYPE
+echo "Languages  :" $LANGUAGES
 
 #### Start prepare building
 
@@ -107,10 +126,10 @@ if [ $OS == "Linux" ]; then
 		wget https://github.com/mkbel/PF-build-env/releases/download/$BUILD_ENV/PF-build-env-Linux64-$BUILD_ENV.zip || exit 3
 	fi
 
-	if [ ! -d "../../PF-build-env-$BUILD_ENV" ]; then
+	if [ ! -d "../PF-build-env-$BUILD_ENV" ]; then
 		echo "Unzipping Linux build enviroment..."
 		sleep 5
-		unzip PF-build-env-Linux64-$BUILD_ENV.zip -d ../../PF-build-env-$BUILD_ENV || exit 4
+		unzip PF-build-env-Linux64-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV || exit 4
 	fi
 fi	
 
@@ -134,9 +153,33 @@ BUILD_PATH="$( pwd -P )"
 if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
     cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 8
 fi
-	#if [ ! -z "$EN_ONLY" ]; then
+#Prepare Configuration.h to use the correct FW_DEV_VERSION to prevent LCD messages when connecting with OctoPrint
+if [ "$DEV_CHECK" == "$FW" ] ; then
+	DEV_STATUS="GOLD"
+else 
+	if [[ "$DEV_CHECK" == "RC1"  ||  "$DEV_CHECK" == "RC2" ]] ; then
+		DEV_STATUS="RC"
+		sed -i -- 's/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_RC/g' $SCRIPT_PATH/Firmware/Configuration.h
+		
+	else
+		DEV_STATUS="UNKNOWN"
+	fi
+fi
 
-	#Set FW_DEV_VERSION to development status
+#Prepare english only or multilanguage version to be build
+if [ ! -z "$LANGUAGES" ] ; then
+	echo
+	echo "Multi-language firmware will be build"
+	echo
+else
+	echo
+	echo "English language firmware will be build"
+	echo
+fi
+
+
+#Set FW_DEV_VERSION to development status
+
 	
 #Check if compiler flags are set to Prusa specific needs for the rambo board.
 if [ $OS == "Windows_NT" ]; then
@@ -164,8 +207,9 @@ export ARDUINO=$BUILD_ENV_PATH
 echo $BUILD_ENV_PATH
 export BUILDER=$ARDUINO/arduino-builder
 
-sleep 5
-#read -p "Press any Enter..."
+echo
+read -t 10 -p "Press any Enter..."
+echo 
 
 if [ $OS == "Windows_NT" ]; then
 	echo "Start to build Prusa Firmware under Windows..."
@@ -221,6 +265,7 @@ echo ""
 echo "Restore platform.txt"
 echo ""
 cp -f $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE.bck $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE
+sed -i -- 's/#define FW_DEV_VERSION FW_VERSION_*/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 # Switch to hex path and list build files
 cd $SCRIPT_PATH
