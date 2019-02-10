@@ -34,15 +34,28 @@
 
 BUILD_ENV="1.0.1"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
-# First argument defines which varaint of the Prusa Firmware will be compiled, like
-# 
-if [ -z "$1" ]
- then
-	echo "You have too choose a variant or ALL to compile all existing varaints."
-	exit 0
- else
-	VARIANT=$1
-fi
+
+# Select which varaint of the Prusa Firmware will be compiled, like
+PS3="Select a variant: "
+while IFS= read -r -d $'\0' f; do
+	  options[i++]="$f"
+done < <(find Firmware/variants/ -maxdepth 1 -type f -name "*.h" -print0 )
+select opt in "${options[@]}" "Quiet"; do
+	case $opt in
+		*.h)
+			VARIANT=$(basename "$opt" ".h")
+			break
+			;;
+		"Quiet")
+			echo "You chose to stop"
+		        exit
+		        ;;
+		*)
+			echo "This is not a valid variant"
+			;;
+	esac
+done
+
 # NOT IMPLEMENTED YET. Second argument defines if it is an english only version. Format EN_ONLY
 EN_ONLY=$2
 # Find firmware version in Configuration.h file and use it to generate the hex filename
@@ -64,14 +77,16 @@ else
 fi
 
 # List few useful data
-echo $SCRIPT_PATH
-echo $VARIANT
-echo "Firmware: " $FW
-echo "Build #" $BUILD
-echo "Dev Check:" $DEV_CHECK
-echo "DEV Status:" $DEV_STATUS
-echo $MOTHERBOARD
-echo $OS " :  " $OSTYPE
+echo
+echo "Script path:" $SCRIPT_PATH
+echo "Variant    :" $VARIANT
+echo "Firmware   :" $FW
+echo "Build #    :" $BUILD
+echo "Dev Check  :" $DEV_CHECK
+echo "DEV Status :" $DEV_STATUS
+echo "Motherboard:" $MOTHERBOARD
+echo "OS         :" $OS
+echo "OS type    :" $OSTYPE
 echo $2
 
 #### Start prepare building
@@ -107,10 +122,10 @@ if [ $OS == "Linux" ]; then
 		wget https://github.com/mkbel/PF-build-env/releases/download/$BUILD_ENV/PF-build-env-Linux64-$BUILD_ENV.zip || exit 3
 	fi
 
-	if [ ! -d "../../PF-build-env-$BUILD_ENV" ]; then
+	if [ ! -d "../PF-build-env-$BUILD_ENV" ]; then
 		echo "Unzipping Linux build enviroment..."
 		sleep 5
-		unzip PF-build-env-Linux64-$BUILD_ENV.zip -d ../../PF-build-env-$BUILD_ENV || exit 4
+		unzip PF-build-env-Linux64-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV || exit 4
 	fi
 fi	
 
