@@ -159,12 +159,45 @@ if [ "$DEV_CHECK" == "$FW" ] ; then
 else 
 	if [[ "$DEV_CHECK" == "RC1"  ||  "$DEV_CHECK" == "RC2" ]] ; then
 		DEV_STATUS="RC"
-		sed -i -- 's/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_RC/g' $SCRIPT_PATH/Firmware/Configuration.h
-		
+		sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
+	elif [[ "$DEV_CHECK" == "ALPHA" ]]; then
+		DEV_STATUS="ALPHA"
+		sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
+	elif [[ "$DEV_CHECK" == "BETA" ]]; then
+		DEV_STATUS="BETA"
+		sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
+	elif [[ "$DEV_CHECK" == "DEVEL" ]]; then
+		DEV_STATUS="DEVEL"
+		sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
+	elif [[ "$DEV_CHECK" == "DEBUG" ]]; then
+		DEV_STATUS="DEBUG"
+		sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
 	else
 		DEV_STATUS="UNKNOWN"
+		echo
+		echo "DEV_STATUS is UNKNOWN. Do you wish to set DEV_STATUS to GOLD?"
+		select yn in "Yes" "No"; do
+			case $yn in
+				Yes)
+					DEV_STATUS="GOLD"
+					sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
+					break
+					;;
+				No) 
+					DEV_STATUS="UNKNOWN"
+					sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
+					break
+					;;
+				*)
+					echo "This is not a valid DEV_STATUS"
+					;;
+			esac
+		done
 	fi
 fi
+
+# set FW_REPOSITORY
+sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 #Prepare english only or multilanguage version to be build
 if [ ! -z "$LANGUAGES" ] ; then
@@ -259,13 +292,14 @@ else
 fi
 # Cleanup Firmware
 rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 17
+sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
+sed -i -- 's/#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 # Cleanup compiler flags are set to Prusa specific needs for the rambo board.
 echo ""
 echo "Restore platform.txt"
 echo ""
 cp -f $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE.bck $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE
-sed -i -- 's/#define FW_DEV_VERSION FW_VERSION_*/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 # Switch to hex path and list build files
 cd $SCRIPT_PATH
