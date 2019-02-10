@@ -31,6 +31,7 @@
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is uknown
 # 17 Jan 2019, 3d-gussner, Build_3, Check for OS Windows or Linux and use the right build enviroment
+# 10 Feb 2019, ropaha, Pull Request, Select variant from list while using build.sh
 
 BUILD_ENV="1.0.1"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
