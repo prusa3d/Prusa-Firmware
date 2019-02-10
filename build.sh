@@ -274,6 +274,8 @@ do
 		./lang-build.sh || exit 12
 		# Combine compiled firmware with languages 
 		./fw-build.sh || exit 13
+		# Check if the motherboard is an EINSY and if so the only one hex file will generated
+		MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
 		# If the motherboard is an EINSY just copy one hexfile
 		if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
 			echo "Build multi language firmware for MK3/Einsy board"
