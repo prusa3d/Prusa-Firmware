@@ -68,6 +68,8 @@ if [ -z "$1" ] ; then
 	done
 else
 	VARIANT=$1
+	VARIANTS[i++]="$VARIANT"
+
 fi
 
 # NOT IMPLEMENTED YET. Second argument defines if it is an english only version. Known values EN_ONLY / / ALL
@@ -93,7 +95,16 @@ if [ -z "$2" ] ; then
 		esac
 	done
 else
+	# must be "ALL" or "EN_ONLY"
 	LANGUAGES=$2
+	if [ $LANGUAGES == "ALL" ]; then
+		sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              1/g" $SCRIPT_PATH/Firmware/config.h
+	elif [ $LANGUAGES == "EN_ONLY" ]; then
+		sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              0/g" $SCRIPT_PATH/Firmware/config.h
+	else 
+		echo "Unknown language"
+		exit
+	fi
 fi
 
 # Find firmware version in Configuration.h file and use it to generate the hex filename
@@ -280,11 +291,11 @@ do
 	fi
 
 	# Check if it is NOT english only build
-	MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "\/\/\#define LANG_MODE" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
+	#MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "\/\/\#define LANG_MODE" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
 
 	if [ $LANGUAGES ==  "ALL" ]; then
 		echo
-		echo "Building mutli language firmware" $MULTI_LANGUAGE_CHECK
+		echo "Building mutli language firmware" #$MULTI_LANGUAGE_CHECK
 		echo ""
 		sleep 5
 		cd $SCRIPT_PATH/lang
@@ -312,7 +323,9 @@ do
 		./fw-clean.sh || exit 14
 		./lang-clean.sh || exit 15
 	else
+		echo
 		echo "English only firmware build."
+		echo
 		cp -f $BUILD_PATH/Firmware.ino.hex ../FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 16
 	fi
 
