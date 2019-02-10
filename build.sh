@@ -99,6 +99,7 @@ echo "Languages  :" $LANGUAGES
 if [ ! -d "../build-env" ]; then
     mkdir ../build-env || exit 1
 fi
+
 cd ../build-env || exit 2
 
 # Check if PF-build-env-<version> exists and downloads + creates it if not
@@ -153,18 +154,42 @@ BUILD_PATH="$( pwd -P )"
 if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
     cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 8
 fi
+
 #Prepare Configuration.h to use the correct FW_DEV_VERSION to prevent LCD messages when connecting with OctoPrint
-if [ "$DEV_CHECK" == "$FW" ] ; then
-	DEV_STATUS="GOLD"
-else 
-	if [[ "$DEV_CHECK" == "RC1"  ||  "$DEV_CHECK" == "RC2" ]] ; then
-		DEV_STATUS="RC"
-		sed -i -- 's/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_RC/g' $SCRIPT_PATH/Firmware/Configuration.h
-		
-	else
-		DEV_STATUS="UNKNOWN"
-	fi
+if [[ "$DEV_CHECK" == "RC1"  ||  "$DEV_CHECK" == "RC2" ]] ; then
+	DEV_STATUS="RC"
+elif [[ "$DEV_CHECK" == "ALPHA" ]]; then
+	DEV_STATUS="ALPHA"
+elif [[ "$DEV_CHECK" == "BETA" ]]; then
+	DEV_STATUS="BETA"
+elif [[ "$DEV_CHECK" == "DEVEL" ]]; then
+	DEV_STATUS="DEVEL"
+elif [[ "$DEV_CHECK" == "DEBUG" ]]; then
+	DEV_STATUS="DEBUG"
+else
+	DEV_STATUS="UNKNOWN"
+	echo
+	echo "DEV_STATUS is UNKNOWN. Do you wish to set DEV_STATUS to GOLD?"
+	select yn in "Yes" "No"; do
+		case $yn in
+			Yes)
+				DEV_STATUS="GOLD"
+				break
+				;;
+			No) 
+				DEV_STATUS="UNKNOWN"
+				break
+				;;
+			*)
+				echo "This is not a valid DEV_STATUS"
+				;;
+		esac
+	done
 fi
+sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
+
+# set FW_REPOSITORY
+sed -i -- 's/#define FW_REPOSITORY "Unknown"/#define FW_REPOSITORY "Prusa3d"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 #Prepare english only or multilanguage version to be build
 if [ ! -z "$LANGUAGES" ] ; then
@@ -227,8 +252,8 @@ fi
 MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "\/\/\#define LANG_MODE" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
 
 if [ "$MULTI_LANGUAGE_CHECK" ==  "0" ]; then
-	echo $MULTI_LANGUAGE_CHECK
-	echo "Building mutli language firmware"
+	echo
+	echo "Building mutli language firmware" $MULTI_LANGUAGE_CHECK
 	echo ""
 	sleep 5
 	cd $SCRIPT_PATH/lang
@@ -257,15 +282,17 @@ else
 	echo "English only firmware build."
 	cp -f $BUILD_PATH/Firmware.ino.hex ../FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 16
 fi
+
 # Cleanup Firmware
 rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 17
+sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
+sed -i -- 's/#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 # Cleanup compiler flags are set to Prusa specific needs for the rambo board.
 echo ""
 echo "Restore platform.txt"
 echo ""
 cp -f $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE.bck $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE
-sed -i -- 's/#define FW_DEV_VERSION FW_VERSION_*/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g' $SCRIPT_PATH/Firmware/Configuration.h
 
 # Switch to hex path and list build files
 cd $SCRIPT_PATH
