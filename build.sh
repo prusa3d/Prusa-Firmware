@@ -35,26 +35,31 @@
 BUILD_ENV="1.0.1"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
-# Select which varaint of the Prusa Firmware will be compiled, like
-PS3="Select a variant: "
-while IFS= read -r -d $'\0' f; do
-	  options[i++]="$f"
-done < <(find Firmware/variants/ -maxdepth 1 -type f -name "*.h" -print0 )
-select opt in "${options[@]}" "Quiet"; do
-	case $opt in
-		*.h)
-			VARIANT=$(basename "$opt" ".h")
-			break
-			;;
-		"Quiet")
-			echo "You chose to stop"
-		        exit
-		        ;;
-		*)
-			echo "This is not a valid variant"
-			;;
-	esac
-done
+# First argument defines which varaint of the Prusa Firmware will be compiled 
+if [ -z "$1" ] ; then
+	# Select which varaint of the Prusa Firmware will be compiled, like
+	PS3="Select a variant: "
+	while IFS= read -r -d $'\0' f; do
+		options[i++]="$f"
+	done < <(find Firmware/variants/ -maxdepth 1 -type f -name "*.h" -print0 )
+	select opt in "${options[@]}" "Quit"; do
+		case $opt in
+			*.h)
+				VARIANT=$(basename "$opt" ".h")
+				break
+				;;
+			"Quit")
+				echo "You chose to stop"
+					exit
+					;;
+			*)
+				echo "This is not a valid variant"
+				;;
+		esac
+	done
+else
+	VARIANT=$1
+fi
 
 # NOT IMPLEMENTED YET. Second argument defines if it is an english only version. Format EN_ONLY
 EN_ONLY=$2
