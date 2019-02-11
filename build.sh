@@ -61,7 +61,7 @@ if [ -z "$1" ] ; then
 				;;
 			"Quit")
 				echo "You chose to stop"
-					exit
+					exit 1
 					;;
 			*)
 				echo "This is not a valid variant"
@@ -72,7 +72,10 @@ else
 	VARIANT=$1
 fi
 
-# NOT IMPLEMENTED YET. Second argument defines if it is an english only version. Known values EN_ONLY / / ALL
+#Second argument defines if it is an english only version. Known values EN_ONLY / ALL
+#Check default language mode
+MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "^#define LANG_MODE *" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
+
 if [ -z "$2" ] ; then
 	PS3="Select a language: "
 	echo
@@ -108,10 +111,10 @@ echo "OS type    :" $OSTYPE
 
 #Check if build exists and creates it if not
 if [ ! -d "../build-env" ]; then
-    mkdir ../build-env || exit 1
+    mkdir ../build-env || exit 2
 fi
 
-cd ../build-env || exit 2
+cd ../build-env || exit 3
 
 # Check if PF-build-env-<version> exists and downloads + creates it if not
 # The build enviroment is based on the Arduino IDE 1.8.5 portal vesion with some changes
@@ -120,8 +123,8 @@ if [ $OS == "Windows_NT" ]; then
 	if [ ! -f "PF-build-env-Win-$BUILD_ENV.zip" ]; then
 		echo "Downloding Windows build enviroment..."
 		sleep 2
-		wget https://github.com/3d-gussner/PF-build-env/releases/download/Win-$BUILD_ENV/PF-build-env-Win-$BUILD_ENV.zip || exit 3
-		#cp -f ../../PF-build-env/PF-build-env-Win-$BUILD_ENV.zip PF-build-env-Win-$BUILD_ENV.zip || exit3
+		wget https://github.com/3d-gussner/PF-build-env/releases/download/Win-$BUILD_ENV/PF-build-env-Win-$BUILD_ENV.zip || exit 4
+		#cp -f ../../PF-build-env/PF-build-env-Win-$BUILD_ENV.zip PF-build-env-Win-$BUILD_ENV.zip || exit4
 	fi
 	if [ ! -d "../PF-build-env-$BUILD_ENV" ]; then
 		echo "Unzipping Windows build enviroment..."
@@ -172,22 +175,6 @@ do
 	MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
 	# Check development status
 	DEV_CHECK=$(grep --max-count=1 "\bFW_VERSION\b" $SCRIPT_PATH/Firmware/Configuration.h | sed -e's/  */ /g'|cut -d '"' -f2|sed 's/\.//g'|cut -d '-' -f2)
-	echo
-	echo "Variant    :" $VARIANT
-	echo "Firmware   :" $FW
-	echo "Build #    :" $BUILD
-	echo "Dev Check  :" $DEV_CHECK
-	echo "DEV Status :" $DEV_STATUS
-	echo "Motherboard:" $MOTHERBOARD
-	echo "Languages  :" $LANGUAGES
-	
-
-	#Prepare Firmware to be compiled by copying variant as Configuration_prusa.h
-	if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
-		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 8
-	fi
-
-	#Prepare Configuration.h to use the correct FW_DEV_VERSION to prevent LCD messages when connecting with OctoPrint
 	if [[ "$DEV_CHECK" == "RC1"  ||  "$DEV_CHECK" == "RC2" ]] ; then
 		DEV_STATUS="RC"
 	elif [[ "$DEV_CHECK" == "ALPHA" ]]; then
@@ -218,6 +205,47 @@ do
 			esac
 		done
 	fi
+
+	#Prepare hex files folders
+	if [ ! -d "../Hex-files" ]; then
+		mkdir ../Hex-files || exit 8
+	fi
+	if [ ! -d "../Hex-files/FW$FW-Build$BUILD" ]; then
+		mkdir ../Hex-files/FW$FW-Build$BUILD || exit 9
+	fi
+	if [ ! -d "../Hex-files/FW$FW-Build$BUILD/$MOTHERBOARD" ]; then
+		mkdir ../Hex-files/FW$FW-Build$BUILD/$MOTHERBOARD || exit 10
+	fi
+	OUTPUT_FOLDER="Hex-files/FW$FW-Build$BUILD/$MOTHERBOARD"
+	
+	#Check if exacly the same hexfile already exsits
+	if [ -f "../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex" ]; then
+		ls ../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+		read -t 5 -p "This hex file to be comiled already exsits! To cancle this process press CRTL+C and rename existing hex file."
+	fi
+	
+	#echo $OUTPUT_FOLDER
+	#ls ../$OUTPUT_FOLDER
+	#sleep 2
+	
+	#List some useful data
+	echo " "
+	echo "Variant    :" $VARIANT
+	echo "Firmware   :" $FW
+	echo "Build #    :" $BUILD
+	echo "Dev Check  :" $DEV_CHECK
+	echo "DEV Status :" $DEV_STATUS
+	echo "Motherboard:" $MOTHERBOARD
+	echo "Languages  :" $LANGUAGES
+	echo "Hex-file Folder:" $OUTPUT_FOLDER
+	echo " "
+
+	#Prepare Firmware to be compiled by copying variant as Configuration_prusa.h
+	if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
+		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 11
+	fi
+
+	#Prepare Configuration.h to use the correct FW_DEV_VERSION to prevent LCD messages when connecting with OctoPrint
 	sed -i -- "s/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/g" $SCRIPT_PATH/Firmware/Configuration.h
 
 	# set FW_REPOSITORY
@@ -225,18 +253,14 @@ do
 
 	#Prepare english only or multilanguage version to be build
 	if [ $LANGUAGES == "ALL" ]; then
-		echo
+		echo " "
 		echo "Multi-language firmware will be build"
-		echo
+		echo " "
 	else
-		echo
+		echo " "
 		echo "English language firmware will be build"
-		echo
+		echo " "
 	fi
-
-
-	#Set FW_DEV_VERSION to development status
-
 		
 	#Check if compiler flags are set to Prusa specific needs for the rambo board.
 	if [ $OS == "Windows_NT" ]; then
@@ -255,21 +279,6 @@ do
 			echo "Compiler flags are set in rambo platform.txt" $CHECK_FLAGS
 		fi
 	fi	
-	#Prepare hex files folders
-	if [ ! -d "../Hex-files" ]; then
-		mkdir ../Hex-files || exit 1
-	fi
-	if [ ! -d "../Hex-files/FW$FW-Build$BUILD" ]; then
-		mkdir ../Hex-files/FW$FW-Build$BUILD || exit 1
-	fi
-	if [ ! -d "../Hex-files/FW$FW-Build$BUILD/$MOTHERBOARD" ]; then
-		mkdir ../Hex-files/FW$FW-Build$BUILD/$MOTHERBOARD || exit 1
-	fi
-	OUTPUT_FOLDER="Hex-files/FW$FW-Build$BUILD/$MOTHERBOARD"
-
-	#echo $OUTPUT_FOLDER
-	#ls ../$OUTPUT_FOLDER
-	#sleep 2
 	
 	#### End of Prepare building
 		
@@ -287,31 +296,28 @@ do
 		echo "Start to build Prusa Firmware under Windows..."
 		echo "Using variant $VARIANT"
 		sleep 2
-		#$BUILDER -dump-prefs -logger=machine -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 9
-		#$BUILDER -compile -logger=machine -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 10
-		$BUILDER -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 10
+		#$BUILDER -dump-prefs -logger=machine -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 12
+		#$BUILDER -compile -logger=machine -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 13
+		$BUILDER -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
 	fi
 	if [ $OS == "Linux" ] ; then
 		echo "Start to build Prusa Firmware under Linux 64..."
 		echo "Using variant $VARIANT"
 		sleep 2
-		$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board rambo:avr:rambo --pref build.path=$BUILD_PATH || exit 9
+		$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board rambo:avr:rambo --pref build.path=$BUILD_PATH || exit 14
 	fi
 
-	# Check if it is NOT english only build
-	MULTI_LANGUAGE_CHECK=$(grep --max-count=1 "\/\/\#define LANG_MODE" $SCRIPT_PATH/Firmware/config.h|sed -e's/  */ /g'|cut -d ' ' -f3)
-
 	if [ $LANGUAGES ==  "ALL" ]; then
-		echo
+		echo " "
 		echo "Building mutli language firmware" $MULTI_LANGUAGE_CHECK
-		echo ""
+		echo " "
 		sleep 2
 		cd $SCRIPT_PATH/lang
-		./config.sh || exit 11
+		./config.sh || exit 15
 		# build languages
-		./lang-build.sh || exit 12
+		./lang-build.sh || exit 16
 		# Combine compiled firmware with languages 
-		./fw-build.sh || exit 13
+		./fw-build.sh || exit 17
 		# Check if the motherboard is an EINSY and if so the only one hex file will generated
 		MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
 		# If the motherboard is an EINSY just copy one hexfile
@@ -328,34 +334,36 @@ do
 			cp -f firmware_pl.hex ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-pl.hex
 		fi
 		# Cleanup after build
-		./fw-clean.sh || exit 14
-		./lang-clean.sh || exit 15
+		./fw-clean.sh || exit 18
+		./lang-clean.sh || exit 19
 	else
 		echo "English only firmware build."
-		cp -f $BUILD_PATH/Firmware.ino.hex ../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 16
+		cp -f $BUILD_PATH/Firmware.ino.hex ../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 20
 	fi
 
 	# Cleanup Firmware
 	rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 17
 	sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
 	sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
-
+	echo $MULTI_LANGUAGE_CHECK
+	sed -i -- 's/^#define LANG_MODE */#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g' $SCRIPT_PATH/Firmware/config.h
+	sleep 2
 done
 
 # Cleanup compiler flags are set to Prusa specific needs for the rambo board.
-echo ""
+echo " "
 echo "Restore platform.txt"
-echo ""
+echo " "
 cp -f $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE.bck $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE
 
 # Switch to hex path and list build files
 cd $SCRIPT_PATH
 cd ..
-echo ""
+echo " "
 echo "List all build hex files:"
 ls $OUTPUT_FOLDER/FW*.hex
-echo ""
-echo ""
+echo " "
+echo " "
 echo "Build done, please use Slic3rPE > 1.41.0 to upload the firmware"
 echo "more information how to flash firmware https://www.prusa3d.com/drivers/"
 #### End building
