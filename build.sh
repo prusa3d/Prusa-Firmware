@@ -36,6 +36,8 @@
 # 10 Feb 2019, 3d-gussner, 1st tests with english only 
 # 10 Feb 2019, ropaha, added compiling of all variants and english only
 # 10 Feb 2019, 3d-gussner, Set OUTPUT_FOLDER for hex files
+# 11 Feb 2019, 3d-gussner/ropaha, Minor changes and fixes
+# 11 Feb 2019, 3d-gussner, Ready for RC
 
 BUILD_ENV="1.0.1"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
