@@ -9,7 +9,11 @@
 # To excecute this sciprt you gonna need few things on your Windows machine
 # 1. Download and install the correct (64bit or 32bit) Git version https://git-scm.com/download/win
 # 2. Also follow these instructions https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058
-# 3. 
+# 3. Download and install 7z-zip from its official website.
+#    By default, it is installed under the directory /c/Program Files/7-Zip in Windows 10 as my case.
+# 4. Run git Bash under Administrator privilege and navigate to the directory /c/Program Files/Git/mingw64/bin,
+#    you can run the command ln -s /c/Program Files/7-Zip/7z.exe zip.exe
+#
 # Usefull things to edit and compare your custom Firmware
 # 1. Download and install current and correct (64bit or 32bit) Notepad++ version https://notepad-plus-plus.org/download
 # 2. Another great tool to compare your custom mod and stock firmware is WinMerge http://winmerge.org/downloads/?lang=en
