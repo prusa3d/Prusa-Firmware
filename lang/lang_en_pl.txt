@@ -12,11 +12,11 @@
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-"\x1b[2JWykrywanie zderzen moze\x1b[1;0Hbyc wlaczone tylko w\x1b[2;0Htrybie Normalnym"
+"[2JWykrywanie zderzen moze [1;0Hbyc wlaczone tylko w [2;0Htrybie Normalnym"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
-"\x1b[2JUWAGA:\x1b[1;0HWykrywanie zderzen\x1b[2;0Hwylaczone w\x1b[3;0Htrybie Stealth"
+"[2JUWAGA:[1;0HWykrywanie zderzen[2;0Hwylaczone w[3;0Htrybie Stealth"
 
 #
 ">Cancel"
@@ -48,15 +48,15 @@
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "SpoolJoin    [on]"
-"SpoolJoin    [wl]"
+"\x00"
 
 #
 "SpoolJoin   [N/A]"
-"SpoolJoin    [nd]"
+"\x00"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "SpoolJoin   [off]"
-"SpoolJoin   [wyl]"
+"\x00"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
@@ -180,19 +180,19 @@
 
 #
 "Copy selected language?"
-"Skopiowac wybrany jezyk?"
+"\x00"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Wykr.zderzen [wl]"
+"Wykr. zderzen [wl]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Wykr.zderzen[n/d]"
+"Wykr. zderzen [n/d]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Wykr.zderzen[wyl]"
+"Wykr. zderzen [wyl]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -324,15 +324,15 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"Autolad. fil [wl]"
+"Autolad. fil[wl]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
-"Autolad.fil.[N/D]"
+"Autoladowanie fil. [N/D]"
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
-"Autolad.fil.[wyl]"
+"Autolad. fil[wyl]"
 
 #
 "Fail stats"
@@ -348,15 +348,15 @@
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Sprawd.went. [wl]"
+"Sprawdzanie wentylatorow [wl]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Sprawd.went.[wyl]"
+"Sprawdzanie wentylatorow [wyl]"
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
-"Czuj. filam. [wl]"
+"Czuj. filamentu. [wl]"
 
 #MSG_RESPONSE_POOR c=20 r=2
 "Fil. sensor response is poor, disable it?"
@@ -364,11 +364,11 @@
 
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
-"Czuj. filam.[N/D]"
+"Czuj. filamentu [N/D]"
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
-"Czuj. filam.[wyl]"
+"Czuj. fil. [wyl]"
 
 #
 "Filam. runouts"
@@ -457,6 +457,10 @@
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Czesc, jestem Twoja drukarka Original Prusa i3. Czy potrzebujesz pomocy z ustawieniem?"
+
+#MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
+"\x00"
 
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
@@ -676,11 +680,11 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Tryb   [normalny]"
+"Tryb [normalny]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Tryb      [cichy]"
+"Tryb [cichy]"
 
 #
 "MMU needs user attention."
@@ -692,15 +696,15 @@
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
-"Tryb    [Stealth]"
+"Tryb [Stealth]"
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
-"Tryb [automatycz]"
+"Tryb [automatyczny]"
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Tryb[wysoka wyd.]"
+"Tryb [wysoka wydajnosc]"
 
 #
 "MMU2 connected"
@@ -939,12 +943,28 @@
 "\x00"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 ready."
-"Prusa i3 MK2.5 gotowa"
+"Prusa i3 MK2.5 OK."
+"\x00"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 ready."
-"Prusa i3 MK3 gotowa"
+"Prusa i3 MK3 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-320 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-220 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-320 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-220 OK."
+"\x00"
 
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
@@ -967,8 +987,8 @@
 "\x00"
 
 #
-"Prusa i3 MK2 ready."
-"Prusa i3 MK2 gotowa"
+"Prusa i3 MK2 OK."
+"\x00"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -992,11 +1012,11 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"Port RPi     [wl]"
+"Port RPi [wl]"
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"Port RPi    [wyl]"
+"Port RPi [wyl]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -1004,11 +1024,11 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 "SD card  [normal]"
-"Karta SD [normal]"
+"Karta SD [normalna]"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
-"Karta SD[FlshAir]"
+"Karta SD [FlashAir]"
 
 #
 "Right"
@@ -1076,7 +1096,7 @@
 
 #
 "Show pinda state"
-"Stan sondy PINDA"
+"Stan sondy P.I.N.D.A."
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
@@ -1084,11 +1104,11 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort:      [none]"
-"Sortuj:    [brak]"
+"Sortuj: [brak]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"Sortuj:    [czas]"
+"Sortuj: [czas]"
 
 #
 "Severe skew"
@@ -1096,7 +1116,7 @@
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
-"Sortuj: [alfabet]"
+"Sortuj:[alfabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
@@ -1104,7 +1124,7 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Dzwiek   [Glosny]"
+"Dzwiek [Glosny]"
 
 #
 "Slight skew"
@@ -1112,7 +1132,7 @@
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Dzwiek[Wylaczony]"
+"Dzwiek [Wylaczony]"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
@@ -1120,11 +1140,11 @@
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
-"Dzwiek    [1-raz]"
+"Dzwiek [1-raz]"
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Dzwiek    [Cichy]"
+"Dzwiek [Cichy]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -1164,11 +1184,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Kalibr. temp.[wl]"
+"Kalibr. temp. [wl]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Kalibr.temp.[wyl]"
+"Kalibr. temp. [wyl]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1384,4 +1404,4 @@
 
 #MSG_OFF c=0 r=0
 " [off]"
-" [wyl]"
+"\x00"

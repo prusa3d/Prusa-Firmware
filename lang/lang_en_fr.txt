@@ -36,7 +36,7 @@
 
 #
 "Ambient"
-"Ambiant"
+"\x00"
 
 #MSG_PRESS c=20 r=0
 "and press the knob"
@@ -48,19 +48,19 @@
 
 #MSG_AUTO_DEPLETE_ON c=17 r=1
 "SpoolJoin    [on]"
-"SpoolJoin    [on]"
+"\x00"
 
 #
 "SpoolJoin   [N/A]"
-"SpoolJoin   [N/A]"
+"\x00"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "SpoolJoin   [off]"
-"SpoolJoin   [off]"
+"\x00"
 
 #MSG_AUTO_HOME c=0 r=0
 "Auto home"
-"Mise a 0 des axes"
+"Origine automatique"
 
 #MSG_AUTOLOAD_FILAMENT c=17 r=0
 "AutoLoad filament"
@@ -96,7 +96,7 @@
 
 #MSG_BED_CORRECTION_MENU c=0 r=0
 "Bed level correct"
-"Cor courbure du lit"
+"Correction niveau lit"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -156,7 +156,7 @@
 
 #MSG_MENU_CALIBRATION c=0 r=0
 "Calibration"
-"Calibration"
+"\x00"
 
 #
 "Cancel"
@@ -180,19 +180,19 @@
 
 #
 "Copy selected language?"
-"Copier la langue selectionne?"
+"\x00"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Detect. crash[on]"
+"Detect. crash [on]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Detect.crash[N/A]"
+"Detect. crash [N/A]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Detect.crash[off]"
+"Detect. crash [off]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -204,7 +204,7 @@
 
 #
 "Crash"
-"Colision"
+"\x00"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -232,11 +232,11 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-"Ejecter le fil"
+"Ejecter le filament"
 
 #MSG_EJECT_FILAMENT1 c=17 r=1
 "Eject filament 1"
-"Ejecter fil. 1"
+"Ejecter le filament 1"
 
 #MSG_EJECT_FILAMENT2 c=17 r=1
 "Eject filament 2"
@@ -324,7 +324,7 @@
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"AutoCharg F  [on]"
+"AutoCharg F [on]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
@@ -336,7 +336,7 @@
 
 #
 "Fail stats"
-"Statist. d'echec"
+"\x00"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -348,7 +348,7 @@
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Verif venti  [on]"
+"Verif venti [on]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
@@ -364,15 +364,15 @@
 
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
-"Capteur Fil.[N/A]"
+"Capteur Fil. [N/A]"
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
-"Capteur Fil.[off]"
+"Capteur Fil. [off]"
 
 #
 "Filam. runouts"
-"Manque de flm"
+"\x00"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -458,6 +458,10 @@
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Bonjour, je suis votre imprimante Original Prusa i3. Voulez-vous que je vous guide a travers le processus d'installation ?"
 
+#MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
+"\x00"
+
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
 "\x00"
@@ -536,7 +540,7 @@
 
 #MSG_WATCH c=0 r=0
 "Info screen"
-"Ecran d'info"
+"Ecran d'informations"
 
 #MSG_FILAMENT_LOADING_T0 c=20 r=4
 "Insert filament into extruder 1. Click when done."
@@ -584,11 +588,11 @@
 
 #
 "Last print failures"
-"Echecs d'impr. dern."
+"\x00"
 
 #
 "Last print"
-"Derniere impress."
+"\x00"
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
@@ -608,7 +612,7 @@
 
 #MSG_BABYSTEP_Z c=0 r=0
 "Live adjust Z"
-"Ajuster Z en dir"
+"Ajustement Z en direct"
 
 #MSG_LOAD_FILAMENT c=17 r=0
 "Load filament"
@@ -628,7 +632,7 @@
 
 #
 "Load to nozzle"
-"Charger le fil"
+"Charger dans la buse"
 
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
@@ -644,7 +648,7 @@
 
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
-"Nivelage du lit"
+"Nivelage du lit par maillage"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -676,7 +680,7 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Mode     [Normal]"
+"Mode [Normal]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
@@ -692,19 +696,19 @@
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
-"Mode     [Furtif]"
+"Mode [Furtif]"
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
-"Mode[puissan.aut]"
+"Mode [puissance auto]"
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Mode[haute puiss]"
+"Mode [haute puissance]"
 
 #
 "MMU2 connected"
-"MMU2 connecte"
+"\x00"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -780,11 +784,11 @@
 
 #
 "Nozzle FAN"
-"Vent buse"
+"\x00"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
-"Pause de l'impres"
+"Mettre en pause l'impression"
 
 #MSG_PID_RUNNING c=20 r=1
 "PID cal.           "
@@ -896,7 +900,7 @@
 
 #
 "Power failures"
-"Coupures"
+"\x00"
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
@@ -916,7 +920,7 @@
 
 #MSG_CARD_MENU c=0 r=0
 "Print from SD"
-"Impr depuis la SD"
+"Imprimer depuis la SD"
 
 #
 "Press the knob"
@@ -936,15 +940,31 @@
 
 #
 "Print FAN"
-"Vent extru"
+"\x00"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 ready."
-"Prusa i3 MK2.5 prete."
+"Prusa i3 MK2.5 OK."
+"\x00"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 ready."
-"Prusa i3 MK3 prete."
+"Prusa i3 MK3 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-320 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-220 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-320 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-220 OK."
+"\x00"
 
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
@@ -967,8 +987,8 @@
 "\x00"
 
 #
-"Prusa i3 MK2 ready."
-"Prusa i3 MK2 prete."
+"Prusa i3 MK2 OK."
+"\x00"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -992,11 +1012,11 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"Port RPi     [on]"
+"Port RPi [on]"
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"Port RPi    [off]"
+"Port RPi [off]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -1008,7 +1028,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
-"Carte SD[flshAir]"
+"Carte SD [flashAir]"
 
 #
 "Right"
@@ -1076,7 +1096,7 @@
 
 #
 "Show pinda state"
-"Etat de la PINDA"
+"Afficher l'etat de la pinda"
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
@@ -1096,7 +1116,7 @@
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
-"Tri :  [alphabet]"
+"Tri : [alphabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
@@ -1104,7 +1124,7 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Son        [fort]"
+"Son [fort]"
 
 #
 "Slight skew"
@@ -1112,7 +1132,7 @@
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Son        [muet]"
+"Son [muet]"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
@@ -1120,11 +1140,11 @@
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
-"Son    [une fois]"
+"Son [une fois]"
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Son  [silencieux]"
+"Son [silencieux]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -1168,7 +1188,7 @@
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Calib. Temp.[off]"
+"Calib. Temp. [off]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1200,7 +1220,7 @@
 
 #
 "Total print time"
-"Temps total"
+"Temps d'impression total"
 
 #MSG_TUNE c=0 r=0
 "Tune"
@@ -1216,7 +1236,7 @@
 
 #
 "Total failures"
-"Echecs au total"
+"\x00"
 
 #
 "to load filament"
@@ -1236,7 +1256,7 @@
 
 #
 "Total"
-"Total"
+"\x00"
 
 #MSG_USED c=19 r=1
 "Used during print"

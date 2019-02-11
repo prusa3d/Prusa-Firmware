@@ -20,7 +20,7 @@
 
 #
 ">Cancel"
-"\x00"
+">Abbruch"
 
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
@@ -36,7 +36,7 @@
 
 #
 "Ambient"
-"\x00"
+"Umgebung"
 
 #MSG_PRESS c=20 r=0
 "and press the knob"
@@ -124,7 +124,7 @@
 
 #
 "Calibrating home"
-"\x00"
+"Kalib. Startpos"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -208,7 +208,7 @@
 
 #MSG_CURRENT c=19 r=1
 "Current"
-"Aktuelles"
+"Aktuell"
 
 #MSG_DATE c=17 r=1
 "Date:"
@@ -232,11 +232,11 @@
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
-"Filamentauswurf"
+"Fil. auswerfen"
 
 #MSG_EJECT_FILAMENT1 c=17 r=1
 "Eject filament 1"
-"Filamentauswurf 1"
+"Fil.1 auswerfen"
 
 #MSG_EJECT_FILAMENT2 c=17 r=1
 "Eject filament 2"
@@ -320,7 +320,7 @@
 
 #
 "Fail stats MMU"
-"\x00"
+"MMU Fehlerstats"
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
@@ -336,7 +336,7 @@
 
 #
 "Fail stats"
-"\x00"
+"Fehlerstats"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -348,11 +348,11 @@
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
-"Luefter Chk. [an]"
+"Luefter Ktr. [an]"
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Luefter Chk.[aus]"
+"Luefter Ktr.[aus]"
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
@@ -372,7 +372,7 @@
 
 #
 "Filam. runouts"
-"\x00"
+"Fil. Auslaeufe"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -457,6 +457,10 @@
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Hallo, ich bin Ihr Original Prusa i3 Drucker. Moechten Sie, dass ich Sie durch den Einrich- tungsablauf fuehre?"
+
+#MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
+"Hallo, ich bin Ihr Zaribo Drucker. Moechten Sie, dass ich Sie durch den Einrich- tungsablauf fuehre?"
 
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
@@ -580,15 +584,15 @@
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 "Iteration "
-"\x00"
+"Iteration"
 
 #
 "Last print failures"
-"\x00"
+"Letzte Druckfehler"
 
 #
 "Last print"
-"\x00"
+"Letzter Druck"
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
@@ -660,15 +664,15 @@
 
 #
 "MMU fails"
-"\x00"
+"MMU scheitert"
 
 #
 "MMU load failed     "
-"\x00"
+"MMU laden gescheitert"
 
 #
 "MMU load fails"
-"\x00"
+"MMU laden scheitert"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -688,7 +692,7 @@
 
 #
 "MMU power fails"
-"\x00"
+"MMU Strom fehler"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -704,7 +708,7 @@
 
 #
 "MMU2 connected"
-"\x00"
+"MMU2 verbunden"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -736,7 +740,7 @@
 
 #
 "N/A"
-"\x00"
+"NV"
 
 #MSG_NO c=0 r=0
 "No"
@@ -780,7 +784,7 @@
 
 #
 "Nozzle FAN"
-"\x00"
+"Duesen Luefter"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -896,7 +900,7 @@
 
 #
 "Power failures"
-"\x00"
+"Stromausfaelle"
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
@@ -904,11 +908,11 @@
 
 #
 "Preheating to load"
-"\x00"
+"Vorheizen u.z. laden"
 
 #
 "Preheating to unload"
-"\x00"
+"Vorheizen u.z. entladen"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
@@ -920,7 +924,7 @@
 
 #
 "Press the knob"
-"\x00"
+"Druecke Knopf"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -936,15 +940,31 @@
 
 #
 "Print FAN"
+"Teileluefter"
+
+#WELCOME_MSG c=20 r=0
+"Prusa i3 MK2.5 OK."
 "\x00"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 ready."
-"Prusa i3 MK2.5 bereit."
+"Prusa i3 MK3 OK."
+"\x00"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 ready."
-"Prusa i3 MK3 bereit."
+"Zaribo MK2.5-320 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-220 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-320 OK."
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-220 OK."
+"\x00"
 
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
@@ -967,8 +987,8 @@
 "\x00"
 
 #
-"Prusa i3 MK2 ready."
-"Prusa i3 MK2 bereit."
+"Prusa i3 MK2 OK."
+"\x00"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -1068,7 +1088,7 @@
 
 #
 "Sensor state"
-"\x00"
+"Sensor status"
 
 #
 "Sensors info"
@@ -1088,7 +1108,7 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"Sort.:     [Zeit]"
+"Sort.:    [Zeit]"
 
 #
 "Severe skew"
@@ -1216,15 +1236,15 @@
 
 #
 "Total failures"
-"\x00"
+"Fehler Total"
 
 #
 "to load filament"
-"\x00"
+"um Filament zu laden"
 
 #
 "to unload filament"
-"\x00"
+"um Filament zu entladen"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -1248,7 +1268,7 @@
 
 #
 "unknown"
-"\x00"
+"unbekannt"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."
@@ -1384,4 +1404,4 @@
 
 #MSG_OFF c=0 r=0
 " [off]"
-" [AUS]"
+"\x00"

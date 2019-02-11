@@ -707,22 +707,22 @@
 "Print FAN"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 ready."
+"Prusa i3 MK2.5 OK."
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 ready."
+"Prusa i3 MK3 OK."
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK2.5-320 ready."
+"Zaribo MK2.5-320 OK."
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK2.5-220 ready."
+"Zaribo MK2.5-220 OK."
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK3-320 ready."
+"Zaribo MK3-320 OK."
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK3-220 ready."
+"Zaribo MK3-220 OK."
 
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
@@ -740,7 +740,7 @@
 "Prusa i3 MK3S OK."
 
 #
-"Prusa i3 MK2 ready."
+"Prusa i3 MK2 OK."
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
