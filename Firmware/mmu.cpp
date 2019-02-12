@@ -78,6 +78,23 @@ uint8_t mmu_last_cmd = 0;
 uint16_t mmu_power_failures = 0;
 
 
+#ifdef MMU_DEBUG
+static const auto DEBUG_PUTS_P = puts_P;
+static const auto DEBUG_PRINTF_P = printf_P;
+#else //MMU_DEBUG
+#define DEBUG_PUTS_P(str)
+#define DEBUG_PRINTF_P( __fmt, ... )
+#endif //MMU_DEBUG
+
+#if defined(MMU_FINDA_DEBUG) && defined(MMU_DEBUG)
+static const auto FDEBUG_PUTS_P = puts_P;
+static const auto FDEBUG_PRINTF_P = printf_P;
+#else
+#define FDEBUG_PUTS_P(str)
+#define FDEBUG_PRINTF_P( __fmt, ... )
+#endif //defined(MMU_FINDA_DEBUG) && defined(MMU_DEBUG)
+
+
 //clear rx buffer
 void mmu_clr_rx_buf(void)
 {
@@ -136,7 +153,6 @@ void mmu_init(void)
 	PIN_SET(IR_SENSOR_PIN); //pullup
 }
 
-
 //if IR_SENSOR defined, always returns true
 //otherwise check for ir sensor and returns true if idler IR sensor was detected, otherwise returns false
 bool check_for_ir_sensor() 
@@ -177,10 +193,8 @@ void mmu_loop(void)
 	case S::Init:
 		if (mmu_rx_start() > 0)
 		{
-#ifdef MMU_DEBUG
-			puts_P(PSTR("MMU => 'start'"));
-			puts_P(PSTR("MMU <= 'S1'"));
-#endif //MMU_DEBUG
+		    DEBUG_PUTS_P(PSTR("MMU => 'start'"));
+		    DEBUG_PUTS_P(PSTR("MMU <= 'S1'"));
 		    mmu_puts_P(PSTR("S1\n")); //send 'read version' request
 			mmu_state = S::GetVersion;
 		}
@@ -194,10 +208,8 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%u"), &mmu_version); //scan version from buffer
-#ifdef MMU_DEBUG
-			printf_P(PSTR("MMU => '%dok'\n"), mmu_version);
-			puts_P(PSTR("MMU <= 'S2'"));
-#endif //MMU_DEBUG
+			DEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_version);
+			DEBUG_PUTS_P(PSTR("MMU <= 'S2'"));
 			mmu_puts_P(PSTR("S2\n")); //send 'read buildnr' request
 			mmu_state = S::GetBuildNr;
 		}
@@ -206,26 +218,20 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%u"), &mmu_buildnr); //scan buildnr from buffer
-#ifdef MMU_DEBUG
-			printf_P(PSTR("MMU => '%dok'\n"), mmu_buildnr);
-#endif //MMU_DEBUG
+			DEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_buildnr);
 			bool version_valid = mmu_check_version();
 			if (!version_valid) mmu_show_warning();
 			else puts_P(PSTR("MMU version valid"));
 
 			if ((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3_SNMM))
 			{
-#if defined MMU_DEBUG && defined MMU_FINDA_DEBUG
-				puts_P(PSTR("MMU <= 'P0'"));
-#endif //MMU_DEBUG && MMU_FINDA_DEBUG
+				FDEBUG_PUTS_P(PSTR("MMU <= 'P0'"));
 				mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 				mmu_state = S::GetFindaInit;
 			}
 			else
 			{
-#ifdef MMU_DEBUG
-				puts_P(PSTR("MMU <= 'M1'"));
-#endif //MMU_DEBUG
+				DEBUG_PUTS_P(PSTR("MMU <= 'M1'"));
 				mmu_puts_P(PSTR("M1\n")); //set mmu mode to stealth
 				mmu_state = S::WaitStealthMode;
 			}
@@ -235,9 +241,7 @@ void mmu_loop(void)
 	case S::WaitStealthMode:
 		if (mmu_rx_ok() > 0)
 		{
-#if defined MMU_DEBUG && defined MMU_FINDA_DEBUG
-			puts_P(PSTR("MMU <= 'P0'"));
-#endif //MMU_DEBUG && MMU_FINDA_DEBUG
+			FDEBUG_PUTS_P(PSTR("MMU <= 'P0'"));
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = S::GetFindaInit;
 		}
@@ -246,9 +250,7 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
-#if defined MMU_DEBUG && defined MMU_FINDA_DEBUG 
-			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
-#endif //MMU_DEBUG && MMU_FINDA_DEBUG
+			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
 			mmu_state = S::Idle;
@@ -260,9 +262,7 @@ void mmu_loop(void)
 			if ((mmu_cmd >= MMU_CMD_T0) && (mmu_cmd <= MMU_CMD_T4))
 			{
 				filament = mmu_cmd - MMU_CMD_T0;
-#ifdef MMU_DEBUG
-				printf_P(PSTR("MMU <= 'T%d'\n"), filament);
-#endif //MMU_DEBUG
+				DEBUG_PRINTF_P(PSTR("MMU <= 'T%d'\n"), filament);
 				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = S::WaitCmd; // wait for response
 				mmu_fil_loaded = true;
@@ -271,26 +271,20 @@ void mmu_loop(void)
 			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
 			{
 			    filament = mmu_cmd - MMU_CMD_L0;
-#ifdef MMU_DEBUG
-			    printf_P(PSTR("MMU <= 'L%d'\n"), filament);
-#endif //MMU_DEBUG
+			    DEBUG_PRINTF_P(PSTR("MMU <= 'L%d'\n"), filament);
 			    mmu_printf_P(PSTR("L%d\n"), filament);
 			    mmu_state = S::WaitCmd; // wait for response
 			}
 			else if (mmu_cmd == MMU_CMD_C0)
 			{
-#ifdef MMU_DEBUG
-				printf_P(PSTR("MMU <= 'C0'\n"));
-#endif //MMU_DEBUG
+			    DEBUG_PRINTF_P(PSTR("MMU <= 'C0'\n"));
 				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = S::WaitCmd;
 				mmu_idl_sens = 1;
 			}
 			else if (mmu_cmd == MMU_CMD_U0)
 			{
-#ifdef MMU_DEBUG
-				printf_P(PSTR("MMU <= 'U0'\n"));
-#endif //MMU_DEBUG
+			    DEBUG_PRINTF_P(PSTR("MMU <= 'U0'\n"));
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
 				mmu_fil_loaded = false;
 				mmu_state = S::WaitCmd;
@@ -298,26 +292,20 @@ void mmu_loop(void)
 			else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
 			{
 				int filament = mmu_cmd - MMU_CMD_E0;
-#ifdef MMU_DEBUG				
-				printf_P(PSTR("MMU <= 'E%d'\n"), filament);
-#endif //MMU_DEBUG
+				DEBUG_PRINTF_P(PSTR("MMU <= 'E%d'\n"), filament);
 				mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
 				mmu_fil_loaded = false;
 				mmu_state = S::WaitCmd;
 			}
 			else if (mmu_cmd == MMU_CMD_R0)
 			{
-#ifdef MMU_DEBUG
-				printf_P(PSTR("MMU <= 'R0'\n"));
-#endif //MMU_DEBUG
+			    DEBUG_PRINTF_P(PSTR("MMU <= 'R0'\n"));
 				mmu_puts_P(PSTR("R0\n")); //send recover after eject
 				mmu_state = S::WaitCmd;
 			}
 			else if (mmu_cmd == MMU_CMD_S3)
 			{
-#ifdef MMU_DEBUG
-				printf_P(PSTR("MMU <= 'S3'\n"));
-#endif //MMU_DEBUG
+			    DEBUG_PRINTF_P(PSTR("MMU <= 'S3'\n"));
 				mmu_puts_P(PSTR("S3\n")); //send power failures request
 				mmu_state = S::GetDrvError;
 			}
@@ -329,9 +317,7 @@ void mmu_loop(void)
 #ifndef IR_SENSOR
 			if(check_for_ir_sensor()) ir_sensor_detected = true;
 #endif //IR_SENSOR not defined
-#if defined MMU_DEBUG && defined MMU_FINDA_DEBUG
-			puts_P(PSTR("MMU <= 'P0'"));
-#endif //MMU_DEBUG && MMU_FINDA_DEBUG
+			FDEBUG_PUTS_P(PSTR("MMU <= 'P0'"));
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
 			mmu_state = S::GetFinda;
 		}
@@ -340,9 +326,7 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
-#if defined MMU_DEBUG && MMU_FINDA_DEBUG
-			printf_P(PSTR("MMU => '%dok'\n"), mmu_finda);
-#endif //MMU_DEBUG && MMU_FINDA_DEBUG
+			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
 				fsensor_stop_and_save_print();
@@ -371,9 +355,7 @@ void mmu_loop(void)
         {
             if (PIN_GET(IR_SENSOR_PIN) == 0 && mmu_loading_flag)
             {
-#ifdef MMU_DEBUG
-                printf_P(PSTR("MMU <= 'A'\n"));
-#endif //MMU_DEBUG  
+                DEBUG_PRINTF_P(PSTR("MMU <= 'A'\n"));
                 mmu_puts_P(PSTR("A\n")); //send 'abort' request
                 mmu_idl_sens = 0;
                 //printf_P(PSTR("MMU IDLER_SENSOR = 0 - ABORT\n"));
@@ -383,9 +365,7 @@ void mmu_loop(void)
         }
 		if (mmu_rx_ok() > 0)
 		{
-#ifdef MMU_DEBUG
-			printf_P(PSTR("MMU => 'ok'\n"));
-#endif //MMU_DEBUG
+		    DEBUG_PRINTF_P(PSTR("MMU => 'ok'\n"));
 			mmu_attempt_nr = 0;
 			mmu_last_cmd = 0;
 			mmu_ready = true;
@@ -396,9 +376,7 @@ void mmu_loop(void)
 			if (mmu_last_cmd)
 			{
 				if (mmu_attempt_nr++ < MMU_MAX_RESEND_ATTEMPTS) {
-#ifdef MMU_DEBUG
-					printf_P(PSTR("MMU retry attempt nr. %d\n"), mmu_attempt_nr - 1);
-#endif //MMU_DEBUG
+				    DEBUG_PRINTF_P(PSTR("MMU retry attempt nr. %d\n"), mmu_attempt_nr - 1);
 					mmu_cmd = mmu_last_cmd;
 				}
 				else {
@@ -414,9 +392,7 @@ void mmu_loop(void)
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%d"), &mmu_power_failures); //scan power failures
-#ifdef MMU_DEBUG
-			printf_P(PSTR("MMU => 'ok'\n"));
-#endif //MMU_DEBUG
+			DEBUG_PRINTF_P(PSTR("MMU => 'ok'\n"));
 			mmu_last_cmd = 0;
 			mmu_ready = true;
 			mmu_state = S::Idle;
@@ -1384,9 +1360,7 @@ static void load_more()
     for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++)
     {
         if (PIN_GET(IR_SENSOR_PIN) == 0) return;
-#ifdef MMU_DEBUG
-        printf_P(PSTR("Additional load attempt nr. %d\n"), i);
-#endif // MMU_DEBUG
+        DEBUG_PRINTF_P(PSTR("Additional load attempt nr. %d\n"), i);
         mmu_command(MMU_CMD_C0);
         manage_response(true, true, MMU_LOAD_MOVE);
     }
