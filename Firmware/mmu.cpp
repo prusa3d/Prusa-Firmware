@@ -32,9 +32,9 @@
 
 namespace
 {
-    enum class S
+    enum class S : uint_least8_t
     {
-        WaitStealthMode = -5,
+        WaitStealthMode,
         GetFindaInit,
         GetBuildNr,
         GetVersion,
