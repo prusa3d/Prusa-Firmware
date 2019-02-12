@@ -42,6 +42,24 @@
 # 10 Feb 2019, 3d-gussner, Set OUTPUT_FOLDER for hex files
 # 11 Feb 2019, 3d-gussner/ropaha, Minor changes and fixes
 # 11 Feb 2019, 3d-gussner, Ready for RC
+# 12 Feb 2019, 3d-gussner, Check if wget and zip are installed. Thanks to Bernd to point it out
+
+###Prepare bash enviroment and check if wget and zip are availible
+if ! type wget > /dev/null; then
+	echo "Missing 'wget' which is important to run this script"
+	echo "Please follow these instructions https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058 to install wget"
+	exit
+fi
+if ! type zip > /dev/null; then
+	echo "Missing 'zip' which is important to run this script"
+	echo "Download and install 7z-zip from its official website https://www.7-zip.org/"
+	echo "By default, it is installed under the directory /c/Program Files/7-Zip in Windows 10 as my case."
+	echo "Run git Bash under Administrator privilege and"
+	echo "navigate to the directory /c/Program Files/Git/mingw64/bin,"
+	echo "you can run the command ln -s /c/Program Files/7-Zip/7z.exe zip.exe"
+	exit
+fi
+###End prepare bash enviroment
 
 BUILD_ENV="1.0.1"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
