@@ -7,6 +7,20 @@
 #
 # Windows:
 # To excecute this sciprt you gonna need few things on your Windows machine
+#
+# Linux Subsystem Ubuntu
+# 1. Follow these instructions
+# 2. Open Ubuntu bash and get latest updates with 'apt-get upgate'
+# 3. Install zip with 'apt-get install zip'
+# 4. Add at top of ~/.bashrc following lines by using 'sudo nano ~/.bashrc'
+#
+#    export OS="Linux"
+#    export JAVA_TOOL_OPTIONS="-Djava.net.preferIPv4Stack=true"
+#    export GPG_TTY=$(tty)
+#
+#    and confirm them. Restart Ubuntu bash
+#
+# Or GIT-BASH
 # 1. Download and install the correct (64bit or 32bit) Git version https://git-scm.com/download/win
 # 2. Also follow these instructions https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058
 # 3. Download and install 7z-zip from its official website.
@@ -43,7 +57,28 @@
 # 11 Feb 2019, 3d-gussner/ropaha, Minor changes and fixes
 # 11 Feb 2019, 3d-gussner, Ready for RC
 # 12 Feb 2019, 3d-gussner, Check if wget and zip are installed. Thanks to Bernd to point it out
+# 12 Feb 2019, 3d-gussner, Changed OS check to OSTYPE as it is not supported on Ubuntu
+#                          Also added different BUILD_ENV folders depending on OS used so Windows
+#                          Users can use git-bash AND Windows Linux Subsystems at the same time
+#                          Cleanup compiler flags is only depends on OS version.
+# 12 Feb 2019, 3d-gussner, Added additional OSTYPE check
 
+###Check if OSTYPE is supported
+if [ $OSTYPE == "msys" ]; then
+	if [ $(uname -m) == "x86_64" ]; then
+		echo "Windows 64-bit found"
+	fi
+elif [ $OSTYPE == "linux-gnu" ]; then
+	if [ $(uname -m) == "x86_64" ]; then
+		echo "Linux 64-bit found"
+	fi
+else
+	echo "This script doesn't support your Operating system!"
+	echo "Please use Linux 64-bit or Windows 10 64-bit with Linux subsystem / git-bash"
+	echo "Read the notes of build.sh"
+	exit
+fi
+sleep 2
 ###Prepare bash enviroment and check if wget and zip are availible
 if ! type wget > /dev/null; then
 	echo "Missing 'wget' which is important to run this script"
@@ -51,13 +86,19 @@ if ! type wget > /dev/null; then
 	exit
 fi
 if ! type zip > /dev/null; then
-	echo "Missing 'zip' which is important to run this script"
-	echo "Download and install 7z-zip from its official website https://www.7-zip.org/"
-	echo "By default, it is installed under the directory /c/Program Files/7-Zip in Windows 10 as my case."
-	echo "Run git Bash under Administrator privilege and"
-	echo "navigate to the directory /c/Program Files/Git/mingw64/bin,"
-	echo "you can run the command ln -s /c/Program Files/7-Zip/7z.exe zip.exe"
-	exit
+	if [ $OSTYPE == "msys" ]; then
+		echo "Missing 'zip' which is important to run this script"
+		echo "Download and install 7z-zip from its official website https://www.7-zip.org/"
+		echo "By default, it is installed under the directory /c/Program Files/7-Zip in Windows 10 as my case."
+		echo "Run git Bash under Administrator privilege and"
+		echo "navigate to the directory /c/Program Files/Git/mingw64/bin,"
+		echo "you can run the command ln -s /c/Program Files/7-Zip/7z.exe zip.exe"
+		exit
+	elif [ $OSTYPE == "linux-gnu" ]; then
+		echo "Missing 'zip' which is important to run this script"
+		echo "install it with the command 'sudo apt-get install zip'"
+		exit
+	fi
 fi
 ###End prepare bash enviroment
 
@@ -142,42 +183,47 @@ cd ../build-env || exit 3
 
 # Check if PF-build-env-<version> exists and downloads + creates it if not
 # The build enviroment is based on the Arduino IDE 1.8.5 portal vesion with some changes
+if [ ! -d "../PF-build-env-$BUILD_ENV" ]; then
+	echo "PF-build-env-$BUILD_ENV is missing ... creating it now for you"
+	mkdir ../PF-build-env-$BUILD_ENV
+	sleep 5
+fi
 
-if [ $OS == "Windows_NT" ]; then
+if [ $OSTYPE == "msys" ]; then
 	if [ ! -f "PF-build-env-Win-$BUILD_ENV.zip" ]; then
 		echo "Downloding Windows build enviroment..."
 		sleep 2
 		wget https://github.com/3d-gussner/PF-build-env/releases/download/Win-$BUILD_ENV/PF-build-env-Win-$BUILD_ENV.zip || exit 4
 		#cp -f ../../PF-build-env/PF-build-env-Win-$BUILD_ENV.zip PF-build-env-Win-$BUILD_ENV.zip || exit4
 	fi
-	if [ ! -d "../PF-build-env-$BUILD_ENV" ]; then
+	if [ ! -d "../PF-build-env-$BUILD_ENV/$OSTYPE" ]; then
 		echo "Unzipping Windows build enviroment..."
 		sleep 2
-		unzip PF-build-env-Win-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV || exit 4
+		unzip PF-build-env-Win-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV/$OSTYPE || exit 4
 	fi
 	
 fi
 
-if [ $OS == "Linux" ]; then
+if [ $OSTYPE == "linux-gnu" ]; then
 	if [ ! -f "PF-build-env-Linux64-$BUILD_ENV.zip" ]; then
 		echo "Downloading Linux 64 build enviroment..."
 		sleep 2
 		wget https://github.com/mkbel/PF-build-env/releases/download/$BUILD_ENV/PF-build-env-Linux64-$BUILD_ENV.zip || exit 3
 	fi
 
-	if [ ! -d "../PF-build-env-$BUILD_ENV" ]; then
+	if [ ! -d "../PF-build-env-$BUILD_ENV/$OSTYPE" ]; then
 		echo "Unzipping Linux build enviroment..."
 		sleep 2
-		unzip PF-build-env-Linux64-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV || exit 4
+		unzip PF-build-env-Linux64-$BUILD_ENV.zip -d ../PF-build-env-$BUILD_ENV/$OSTYPE || exit 4
 	fi
 fi	
 
 
 #Set BUILD_ENV_PATH
-cd ../PF-build-env-$BUILD_ENV || exit 5
+cd ../PF-build-env-$BUILD_ENV/$OSTYPE || exit 5
 BUILD_ENV_PATH="$( pwd -P )"
 
-cd ..
+cd ../..
 
 #Checkif BUILD_PATH exisits and if not creates it
 if [ ! -d "Prusa-Firmware-build" ]; then
@@ -282,12 +328,12 @@ do
 		echo " "
 	else
 		echo " "
-		echo "English language firmware will be build"
+		echo "English only language firmware will be build"
 		echo " "
 	fi
 		
 	#Check if compiler flags are set to Prusa specific needs for the rambo board.
-	if [ $OS == "Windows_NT" ]; then
+	if [ $OSTYPE == "msys" ]; then
 		RAMBO_PLATFORM_FILE="rambo/hardware/avr/1.0.1/platform.txt"
 		COMP_FLAGS="compiler.c.elf.flags={compiler.warning_flags} -Os -g -flto -fuse-linker-plugin -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"
 		CHECK_FLAGS=$(grep --max-count=1 "$COMP_FLAGS" $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE)
@@ -316,7 +362,7 @@ do
 	#read -t 5 -p "Press any key..."
 	echo 
 
-	if [ $OS == "Windows_NT" ]; then
+	if [ $OSTYPE == "msys" ]; then
 		echo "Start to build Prusa Firmware under Windows..."
 		echo "Using variant $VARIANT"
 		sleep 2
@@ -324,7 +370,7 @@ do
 		#$BUILDER -compile -logger=machine -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 13
 		$BUILDER -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
 	fi
-	if [ $OS == "Linux" ] ; then
+	if [ $OSTYPE == "linux-gnu" ] ; then
 		echo "Start to build Prusa Firmware under Linux 64..."
 		echo "Using variant $VARIANT"
 		sleep 2
@@ -346,10 +392,10 @@ do
 		MOTHERBOARD=$(grep --max-count=1 "\bMOTHERBOARD\b" $SCRIPT_PATH/Firmware/variants/$VARIANT.h | sed -e's/  */ /g' |cut -d ' ' -f3)
 		# If the motherboard is an EINSY just copy one hexfile
 		if [ "$MOTHERBOARD" = "BOARD_EINSY_1_0a" ]; then
-			echo "Build multi language firmware for MK3/Einsy board"
+			echo "Copying multi language firmware for MK3/Einsy board to Hex-files folder"
 			cp -f firmware.hex ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
 		else
-			echo "Building multi language firmware for MK2.5/miniRAMbo board"
+			echo "Copying multi language firmware for MK2.5/miniRAMbo board to Hex-files folder"
 			cp -f firmware_cz.hex ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-cz.hex
 			cp -f firmware_de.hex ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-de.hex
 			cp -f firmware_es.hex ../../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-es.hex
@@ -361,7 +407,7 @@ do
 		./fw-clean.sh || exit 18
 		./lang-clean.sh || exit 19
 	else
-		echo "English only firmware build."
+		echo "Copying English only firmware to Hex-files folder"
 		cp -f $BUILD_PATH/Firmware.ino.hex ../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 20
 	fi
 
@@ -377,10 +423,12 @@ do
 done
 
 # Cleanup compiler flags are set to Prusa specific needs for the rambo board.
-echo " "
-echo "Restore platform.txt"
-echo " "
-cp -f $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE.bck $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE
+if [ $OSTYPE == "msys" ]; then
+	echo " "
+	echo "Restore Windows platform.txt"
+	echo " "
+	cp -f $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE.bck $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE
+fi
 
 # Switch to hex path and list build files
 cd $SCRIPT_PATH
