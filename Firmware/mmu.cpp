@@ -30,11 +30,28 @@
 #define MMU_RST_PIN 76
 #endif //MMU_HWRESET
 
+namespace
+{
+    enum class S
+    {
+        WaitStealthMode = -5,
+        GetFindaInit,
+        GetBuildNr,
+        GetVersion,
+        Init,
+        Disabled,
+        Idle,
+        GetFinda,
+        WaitCmd, //!< wait for command response
+        GetDrvError, //!< get power failures count
+    };
+}
+
 bool mmu_enabled = false;
 bool mmu_ready = false;
 bool mmu_fil_loaded = false; //if true: blocks execution of duplicit T-codes
 
-static int8_t mmu_state = 0;
+static S mmu_state = S::Disabled;
 
 uint8_t mmu_cmd = 0;
 
@@ -114,7 +131,7 @@ void mmu_init(void)
 	uart2_init();                              //init uart2
 	_delay_ms(10);                             //wait 10ms for sure
 	mmu_reset();                               //reset mmu (HW or SW), do not wait for response
-	mmu_state = -1;
+	mmu_state = S::Init;
 	PIN_INP(IR_SENSOR_PIN); //input mode
 	PIN_SET(IR_SENSOR_PIN); //pullup
 }
@@ -155,9 +172,9 @@ void mmu_loop(void)
 //	printf_P(PSTR("MMU loop, state=%d\n"), mmu_state);
 	switch (mmu_state)
 	{
-	case 0:
+	case S::Disabled:
 		return;
-	case -1:
+	case S::Init:
 		if (mmu_rx_start() > 0)
 		{
 #ifdef MMU_DEBUG
@@ -165,15 +182,15 @@ void mmu_loop(void)
 			puts_P(PSTR("MMU <= 'S1'"));
 #endif //MMU_DEBUG
 		    mmu_puts_P(PSTR("S1\n")); //send 'read version' request
-			mmu_state = -2;
+			mmu_state = S::GetVersion;
 		}
 		else if (_millis() > 30000) //30sec after reset disable mmu
 		{
 			puts_P(PSTR("MMU not responding - DISABLED"));
-			mmu_state = 0;
+			mmu_state = S::Disabled;
 		}
 		return;
-	case -2:
+	case S::GetVersion:
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%u"), &mmu_version); //scan version from buffer
@@ -182,10 +199,10 @@ void mmu_loop(void)
 			puts_P(PSTR("MMU <= 'S2'"));
 #endif //MMU_DEBUG
 			mmu_puts_P(PSTR("S2\n")); //send 'read buildnr' request
-			mmu_state = -3;
+			mmu_state = S::GetBuildNr;
 		}
 		return;
-	case -3:
+	case S::GetBuildNr:
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%u"), &mmu_buildnr); //scan buildnr from buffer
@@ -202,7 +219,7 @@ void mmu_loop(void)
 				puts_P(PSTR("MMU <= 'P0'"));
 #endif //MMU_DEBUG && MMU_FINDA_DEBUG
 				mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
-				mmu_state = -4;
+				mmu_state = S::GetFindaInit;
 			}
 			else
 			{
@@ -210,22 +227,22 @@ void mmu_loop(void)
 				puts_P(PSTR("MMU <= 'M1'"));
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("M1\n")); //set mmu mode to stealth
-				mmu_state = -5;
+				mmu_state = S::WaitStealthMode;
 			}
 
 		}
 		return;
-	case -5:
+	case S::WaitStealthMode:
 		if (mmu_rx_ok() > 0)
 		{
 #if defined MMU_DEBUG && defined MMU_FINDA_DEBUG
 			puts_P(PSTR("MMU <= 'P0'"));
 #endif //MMU_DEBUG && MMU_FINDA_DEBUG
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
-			mmu_state = -4;
+			mmu_state = S::GetFindaInit;
 		}
 		return;
-	case -4:
+	case S::GetFindaInit:
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
@@ -234,10 +251,10 @@ void mmu_loop(void)
 #endif //MMU_DEBUG && MMU_FINDA_DEBUG
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
-			mmu_state = 1;
+			mmu_state = S::Idle;
 		}
 		return;
-	case 1:
+	case S::Idle:
 		if (mmu_cmd) //command request ?
 		{
 			if ((mmu_cmd >= MMU_CMD_T0) && (mmu_cmd <= MMU_CMD_T4))
@@ -247,7 +264,7 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'T%d'\n"), filament);
 #endif //MMU_DEBUG
 				mmu_printf_P(PSTR("T%d\n"), filament);
-				mmu_state = 3; // wait for response
+				mmu_state = S::WaitCmd; // wait for response
 				mmu_fil_loaded = true;
 				mmu_idl_sens = 1;
 			}
@@ -258,7 +275,7 @@ void mmu_loop(void)
 			    printf_P(PSTR("MMU <= 'L%d'\n"), filament);
 #endif //MMU_DEBUG
 			    mmu_printf_P(PSTR("L%d\n"), filament);
-			    mmu_state = 3; // wait for response
+			    mmu_state = S::WaitCmd; // wait for response
 			}
 			else if (mmu_cmd == MMU_CMD_C0)
 			{
@@ -266,7 +283,7 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'C0'\n"));
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
-				mmu_state = 3;
+				mmu_state = S::WaitCmd;
 				mmu_idl_sens = 1;
 			}
 			else if (mmu_cmd == MMU_CMD_U0)
@@ -276,7 +293,7 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
 				mmu_fil_loaded = false;
-				mmu_state = 3;
+				mmu_state = S::WaitCmd;
 			}
 			else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
 			{
@@ -286,7 +303,7 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
 				mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
 				mmu_fil_loaded = false;
-				mmu_state = 3; // wait for response
+				mmu_state = S::WaitCmd;
 			}
 			else if (mmu_cmd == MMU_CMD_R0)
 			{
@@ -294,7 +311,7 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'R0'\n"));
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("R0\n")); //send recover after eject
-				mmu_state = 3; // wait for response
+				mmu_state = S::WaitCmd;
 			}
 			else if (mmu_cmd == MMU_CMD_S3)
 			{
@@ -302,7 +319,7 @@ void mmu_loop(void)
 				printf_P(PSTR("MMU <= 'S3'\n"));
 #endif //MMU_DEBUG
 				mmu_puts_P(PSTR("S3\n")); //send power failures request
-				mmu_state = 4; // power failures response
+				mmu_state = S::GetDrvError;
 			}
 			mmu_last_cmd = mmu_cmd;
 			mmu_cmd = 0;
@@ -316,10 +333,10 @@ void mmu_loop(void)
 			puts_P(PSTR("MMU <= 'P0'"));
 #endif //MMU_DEBUG && MMU_FINDA_DEBUG
 		    mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
-			mmu_state = 2;
+			mmu_state = S::GetFinda;
 		}
 		return;
-	case 2: //response to command P0
+	case S::GetFinda: //response to command P0
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
@@ -340,16 +357,16 @@ void mmu_loop(void)
 				    enquecommand_front_P(PSTR("M600")); //save print and run M600 command
 				}
 			}
-			mmu_state = 1;
+			mmu_state = S::Idle;
 			if (mmu_cmd == 0)
 				mmu_ready = true;
 		}
 		else if ((mmu_last_request + MMU_P0_TIMEOUT) < _millis())
 		{ //resend request after timeout (30s)
-			mmu_state = 1;
+			mmu_state = S::Idle;
 		}
 		return;
-	case 3: //response to mmu commands
+	case S::WaitCmd: //response to mmu commands
         if (mmu_idl_sens)
         {
             if (PIN_GET(IR_SENSOR_PIN) == 0 && mmu_loading_flag)
@@ -372,7 +389,7 @@ void mmu_loop(void)
 			mmu_attempt_nr = 0;
 			mmu_last_cmd = 0;
 			mmu_ready = true;
-			mmu_state = 1;
+			mmu_state = S::Idle;
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
 		{ //resend request after timeout (5 min)
@@ -390,10 +407,10 @@ void mmu_loop(void)
 					mmu_attempt_nr = 0;
 				}
 			}
-			mmu_state = 1;
+			mmu_state = S::Idle;
 		}
 		return;
-	case 4:
+	case S::GetDrvError:
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%d"), &mmu_power_failures); //scan power failures
@@ -402,11 +419,11 @@ void mmu_loop(void)
 #endif //MMU_DEBUG
 			mmu_last_cmd = 0;
 			mmu_ready = true;
-			mmu_state = 1;
+			mmu_state = S::Idle;
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
 		{ //resend request after timeout (5 min)
-			mmu_state = 1;
+			mmu_state = S::Idle;
 		}
 	}
 }
@@ -502,7 +519,7 @@ bool mmu_get_response(uint8_t move)
 
 	while (!mmu_ready)
 	{
-		if ((mmu_state != 3) && (mmu_last_cmd == 0))
+		if ((mmu_state != S::WaitCmd) && (mmu_last_cmd == 0))
 			break;
 
 		switch (move) {
