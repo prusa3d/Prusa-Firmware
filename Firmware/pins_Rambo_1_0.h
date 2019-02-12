@@ -102,7 +102,7 @@
 
 #define SDCARDDETECT           72
 
-#define IR_SENSOR_PIN 62 //idler sensor @PK0 (digital pin 62/A8)
+#define IR_SENSOR_PIN 20 //idler sensor 
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.

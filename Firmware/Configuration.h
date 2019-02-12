@@ -7,13 +7,13 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.5.2-RC1"
-#define FW_COMMIT_NR   1993
+#define FW_VERSION "3.5.3"
+#define FW_COMMIT_NR   1990
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
 #define FW_REPOSITORY "Unknown"
-#define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
+#define FW_VERSION_FULL FW_VERSION // "-" STR(FW_COMMIT_NR)
 
 // Debug version has debugging enabled (the symbol DEBUG_BUILD is set).
 // The debug build may be a bit slower than the non-debug build, therefore the debug build should
