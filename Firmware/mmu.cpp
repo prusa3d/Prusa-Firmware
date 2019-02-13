@@ -184,7 +184,6 @@ bool check_for_ir_sensor()
 void mmu_loop(void)
 {
 	static uint8_t mmu_attempt_nr = 0;
-	int filament = 0;
 //	printf_P(PSTR("MMU loop, state=%d\n"), mmu_state);
 	switch (mmu_state)
 	{
@@ -261,7 +260,7 @@ void mmu_loop(void)
 		{
 			if ((mmu_cmd >= MmuCmd::T0) && (mmu_cmd <= MmuCmd::T4))
 			{
-				filament = mmu_cmd - MmuCmd::T0;
+				const uint8_t filament = mmu_cmd - MmuCmd::T0;
 				DEBUG_PRINTF_P(PSTR("MMU <= 'T%d'\n"), filament);
 				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = S::WaitCmd; // wait for response
@@ -270,7 +269,7 @@ void mmu_loop(void)
 			}
 			else if ((mmu_cmd >= MmuCmd::L0) && (mmu_cmd <= MmuCmd::L4))
 			{
-			    filament = mmu_cmd - MmuCmd::L0;
+			    const uint8_t filament = mmu_cmd - MmuCmd::L0;
 			    DEBUG_PRINTF_P(PSTR("MMU <= 'L%d'\n"), filament);
 			    mmu_printf_P(PSTR("L%d\n"), filament);
 			    mmu_state = S::WaitCmd; // wait for response
@@ -291,7 +290,7 @@ void mmu_loop(void)
 			}
 			else if ((mmu_cmd >= MmuCmd::E0) && (mmu_cmd <= MmuCmd::E4))
 			{
-				int filament = mmu_cmd - MmuCmd::E0;
+			    const uint8_t filament = mmu_cmd - MmuCmd::E0;
 				DEBUG_PRINTF_P(PSTR("MMU <= 'E%d'\n"), filament);
 				mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
 				mmu_fil_loaded = false;
