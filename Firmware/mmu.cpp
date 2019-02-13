@@ -43,6 +43,7 @@ namespace
         Idle,
         GetFinda,
         WaitCmd, //!< wait for command response
+        Pause,
         GetDrvError, //!< get power failures count
     };
 }
@@ -308,6 +309,12 @@ void mmu_loop(void)
 				mmu_puts_P(PSTR("S3\n")); //send power failures request
 				mmu_state = S::GetDrvError;
 			}
+			else if (mmu_cmd == MmuCmd::W0)
+			{
+			    DEBUG_PRINTF_P(PSTR("MMU <= 'W0'\n"));
+			    mmu_puts_P(PSTR("W0\n"));
+			    mmu_state = S::Pause;
+			}
 			mmu_last_cmd = mmu_cmd;
 			mmu_cmd = MmuCmd::None;
 		}
@@ -387,6 +394,21 @@ void mmu_loop(void)
 			mmu_state = S::Idle;
 		}
 		return;
+	case S::Pause:
+        if (mmu_rx_ok() > 0)
+        {
+            DEBUG_PRINTF_P(PSTR("MMU => 'ok', resume print\n"));
+            mmu_attempt_nr = 0;
+            mmu_last_cmd = MmuCmd::None;
+            mmu_ready = true;
+            mmu_state = S::Idle;
+            lcd_resume_print();
+        }
+        if (mmu_cmd != MmuCmd::None)
+        {
+            mmu_state = S::Idle;
+        }
+	    return;
 	case S::GetDrvError:
 		if (mmu_rx_ok() > 0)
 		{
@@ -1405,6 +1427,7 @@ void mmu_continue_loading()
                 lcd_setstatuspgm(_i("MMU load failed     "));////MSG_RECOVERING_PRINT c=20 r=1
                 mmu_fil_loaded = false; //so we can retry same T-code again
                 isPrintPaused = true;
+                mmu_command(MmuCmd::W0);
             }
 		}
 	}

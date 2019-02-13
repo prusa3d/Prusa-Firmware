@@ -54,6 +54,7 @@ enum class MmuCmd : uint_least8_t
     E4,
     R0,
     S3,
+    W0,
 };
 
 inline MmuCmd operator+ (MmuCmd cmd, uint8_t filament)
