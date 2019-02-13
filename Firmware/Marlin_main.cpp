@@ -6933,7 +6933,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				return; //dont execute the same T-code twice in a row
 			}
 			st_synchronize();
-			mmu_command(static_cast<MmuCmd>(MmuCmd::T0 + tmp_extruder));
+			mmu_command(MmuCmd::T0 + tmp_extruder);
 			manage_response(true, true, MMU_TCODE_MOVE);
 		}
 	  }
@@ -6974,7 +6974,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                   printf_P(PSTR("Duplicit T-code ignored.\n"));
                   return; //dont execute the same T-code twice in a row
               }
-              mmu_command(static_cast<MmuCmd>(MmuCmd::T0 + tmp_extruder));
+              mmu_command(MmuCmd::T0 + tmp_extruder);
 
 			  manage_response(true, true, MMU_TCODE_MOVE);
 			  mmu_continue_loading();

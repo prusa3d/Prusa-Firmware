@@ -32,7 +32,7 @@ extern uint16_t mmu_power_failures;
 #define MMU_LOAD_FEEDRATE 19.02f //mm/s
 #define MMU_LOAD_TIME_MS 2000 //should be fine tuned to load time for shortest allowed PTFE tubing and maximum loading speed
 
-enum MmuCmd : uint_least8_t
+enum class MmuCmd : uint_least8_t
 {
     None,
     T0,
@@ -55,6 +55,16 @@ enum MmuCmd : uint_least8_t
     R0,
     S3,
 };
+
+inline MmuCmd operator+ (MmuCmd cmd, uint8_t filament)
+{
+    return static_cast<MmuCmd>(static_cast<uint8_t>(cmd) + filament );
+}
+
+inline uint8_t operator- (MmuCmd cmda, MmuCmd cmdb)
+{
+    return (static_cast<uint8_t>(cmda) - static_cast<uint8_t>(cmdb));
+}
 
 extern int mmu_puts_P(const char* str);
 

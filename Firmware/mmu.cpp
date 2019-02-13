@@ -256,7 +256,7 @@ void mmu_loop(void)
 		}
 		return;
 	case S::Idle:
-		if (mmu_cmd) //command request ?
+		if (mmu_cmd != MmuCmd::None) //command request ?
 		{
 			if ((mmu_cmd >= MmuCmd::T0) && (mmu_cmd <= MmuCmd::T4))
 			{
@@ -341,7 +341,7 @@ void mmu_loop(void)
 				}
 			}
 			mmu_state = S::Idle;
-			if (mmu_cmd == 0)
+			if (mmu_cmd == MmuCmd::None)
 				mmu_ready = true;
 		}
 		else if ((mmu_last_request + MMU_P0_TIMEOUT) < _millis())
@@ -372,7 +372,7 @@ void mmu_loop(void)
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
 		{ //resend request after timeout (5 min)
-			if (mmu_last_cmd)
+			if (mmu_last_cmd != MmuCmd::None)
 			{
 				if (mmu_attempt_nr++ < MMU_MAX_RESEND_ATTEMPTS) {
 				    DEBUG_PRINTF_P(PSTR("MMU retry attempt nr. %d\n"), mmu_attempt_nr - 1);
@@ -487,14 +487,14 @@ bool mmu_get_response(uint8_t move)
 
 	printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
 	KEEPALIVE_STATE(IN_PROCESS);
-	while (mmu_cmd != 0)
+	while (mmu_cmd != MmuCmd::None)
 	{
 		delay_keep_alive(100);
 	}
 
 	while (!mmu_ready)
 	{
-		if ((mmu_state != S::WaitCmd) && (mmu_last_cmd == 0))
+		if ((mmu_state != S::WaitCmd) && (mmu_last_cmd == MmuCmd::None))
 			break;
 
 		switch (move) {
@@ -786,7 +786,7 @@ void mmu_M600_load_filament(bool automatic)
 
 //		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
 //		  mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
-		  mmu_command(static_cast<MmuCmd>(MmuCmd::T0 + tmp_extruder));
+		  mmu_command(MmuCmd::T0 + tmp_extruder);
 
 		  manage_response(false, true, MMU_LOAD_MOVE);
 		  mmu_continue_loading();
@@ -877,7 +877,7 @@ void display_loading()
 void extr_adj(int extruder) //loading filament for SNMM
 {
 #ifndef SNMM
-    MmuCmd cmd = static_cast<MmuCmd>(MmuCmd::L0 + extruder);
+    MmuCmd cmd = MmuCmd::L0 + extruder;
     if (cmd > MmuCmd::L4)
     {
         printf_P(PSTR("Filament out of range %d \n"),extruder);
@@ -1295,7 +1295,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
 	lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 	lcd_print(" ");
 	lcd_print(tmp_extruder + 1);
-	mmu_command(static_cast<MmuCmd>(MmuCmd::T0 + tmp_extruder));
+	mmu_command(MmuCmd::T0 + tmp_extruder);
 	manage_response(true, true, MMU_TCODE_MOVE);
 	mmu_continue_loading();
 	mmu_extruder = tmp_extruder; //filament change is finished
@@ -1332,7 +1332,7 @@ void mmu_eject_filament(uint8_t filament, bool recover)
                 current_position[E_AXIS] -= 80;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
                 st_synchronize();
-                mmu_command(static_cast<MmuCmd>(MmuCmd::E0 + filament));
+                mmu_command(MmuCmd::E0 + filament);
                 manage_response(false, false, MMU_UNLOAD_MOVE);
                 if (recover)
                 {
@@ -1377,7 +1377,7 @@ void mmu_continue_loading()
 			if(mmu_load_fail < 255) eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, mmu_load_fail + 1);
 			if(mmu_load_fail_tot < 65535) eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, mmu_load_fail_tot + 1);
 
-            mmu_command(static_cast<MmuCmd>(MmuCmd::T0 + tmp_extruder));
+            mmu_command(MmuCmd::T0 + tmp_extruder);
             manage_response(true, true, MMU_TCODE_MOVE);
             load_more();
 
