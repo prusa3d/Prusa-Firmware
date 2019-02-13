@@ -111,8 +111,9 @@
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
 
 // Filament sensor
-#define PAT9125
 #define FILAMENT_SENSOR
+#define PAT9125
+
 
 #define DEBUG_DCODE3
 
@@ -300,6 +301,9 @@
 // Mesh measure definition
 #define MESH_MEAS_NUM_X_POINTS 3
 #define MESH_MEAS_NUM_Y_POINTS 3
+
+// Maximum bed level correction value
+#define BED_ADJUSTMENT_UM_MAX 100
 
 #define MESH_HOME_Z_CALIB 0.2
 #define MESH_HOME_Z_SEARCH 5 //Z lift for homing, mesh bed leveling etc.

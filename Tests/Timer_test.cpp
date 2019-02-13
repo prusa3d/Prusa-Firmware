@@ -15,6 +15,11 @@ unsigned long millis()
     return now;
 }
 
+unsigned long millis2()
+{
+    return now;
+}
+
 static void basicTimer()
 {
     LongTimer timer;

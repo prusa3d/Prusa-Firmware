@@ -18,6 +18,10 @@
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 "\x1b[2JPOZOR:\x1b[1;0HCrash detekce\x1b[2;0Hdeaktivovana ve\x1b[3;0HStealth modu"
 
+#
+">Cancel"
+">Zrusit"
+
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 "Dostavovani Z"
@@ -32,7 +36,7 @@
 
 #
 "Ambient"
-"\x00"
+"Okoli"
 
 #MSG_PRESS c=20 r=0
 "and press the knob"
@@ -48,7 +52,7 @@
 
 #
 "SpoolJoin   [N/A]"
-"SpoolJoin   [N/A]"
+"\x00"
 
 # MSG_AUTO_DEPLETE_OFF c=17 r=1
 "SpoolJoin   [off]"
@@ -118,6 +122,10 @@
 "Blackout occurred. Recover print?"
 "Detekovan vypadek proudu.Obnovit tisk?"
 
+#
+"Calibrating home"
+"Kalibruji vychozi poz."
+
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
 "Kalibrace XYZ"
@@ -180,7 +188,7 @@
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Crash det.  [N/A]"
+"\x00"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
@@ -196,7 +204,7 @@
 
 #
 "Crash"
-"\x00"
+"Naraz"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -310,6 +318,10 @@
 "Extruder"
 "\x00"
 
+#
+"Fail stats MMU"
+"Selhani MMU"
+
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
 "F. autozav. [zap]"
@@ -324,7 +336,7 @@
 
 #
 "Fail stats"
-"\x00"
+"Selhani"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -360,7 +372,7 @@
 
 #
 "Filam. runouts"
-"\x00"
+"Vypadky filamentu"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -572,11 +584,11 @@
 
 #
 "Last print failures"
-"\x00"
+"Selhani posl. tisku"
 
 #
 "Last print"
-"\x00"
+"Posledni tisk"
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
@@ -646,6 +658,18 @@
 "Measured skew"
 "Merene zkoseni"
 
+#
+"MMU fails"
+"Selhani MMU"
+
+#
+"MMU load failed     "
+"Zavedeni MMU selhalo"
+
+#
+"MMU load fails"
+"MMU selhani zavadeni"
+
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 "MMU OK. Pokracuji..."
@@ -662,6 +686,10 @@
 "MMU needs user attention."
 "MMU potrebuje zasah uzivatele."
 
+#
+"MMU power fails"
+"MMU vypadky proudu"
+
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
 "Mod       [tichy]"
@@ -676,7 +704,7 @@
 
 #
 "MMU2 connected"
-"\x00"
+"MMU2 pripojeno"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -705,6 +733,10 @@
 #MSG_NO_CARD c=0 r=0
 "No SD card"
 "Zadna SD karta"
+
+#
+"N/A"
+"\x00"
 
 #MSG_NO c=0 r=0
 "No"
@@ -748,7 +780,7 @@
 
 #
 "Nozzle FAN"
-"\x00"
+"Trysk. vent."
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -864,11 +896,19 @@
 
 #
 "Power failures"
-"\x00"
+"Vypadky proudu"
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
 "Tisk prerusen"
+
+#
+"Preheating to load"
+"Predehrivam k zavedeni"
+
+#
+"Preheating to unload"
+"Predehrivam k vyjmuti"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
@@ -877,6 +917,10 @@
 #MSG_CARD_MENU c=0 r=0
 "Print from SD"
 "Tisk z SD"
+
+#
+"Press the knob"
+"Stisknete hl. tlacitko"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -892,7 +936,7 @@
 
 #
 "Print FAN"
-"\x00"
+"Tiskovy vent."
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."
@@ -917,6 +961,10 @@
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
 "Vyjmete stary filament a stisknete tlacitko pro zavedeni noveho."
+
+#
+"Prusa i3 MK3S OK."
+"\x00"
 
 #
 "Prusa i3 MK2 ready."
@@ -956,7 +1004,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
 "SD card  [normal]"
-"SD card  [normal]"
+"\x00"
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
@@ -1017,6 +1065,14 @@
 #MSG_SHOW_END_STOPS c=17 r=1
 "Show end stops"
 "Stav konc. spin."
+
+#
+"Sensor state"
+"Stav senzoru"
+
+#
+"Sensors info"
+"Senzor info"
 
 #
 "Show pinda state"
@@ -1160,7 +1216,15 @@
 
 #
 "Total failures"
-"\x00"
+"Celkem selhani"
+
+#
+"to load filament"
+"k zavedeni filamentu"
+
+#
+"to unload filament"
+"k vyjmuti filamentu"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -1172,7 +1236,7 @@
 
 #
 "Total"
-"\x00"
+"Celkem"
 
 #MSG_USED c=19 r=1
 "Used during print"
@@ -1184,7 +1248,7 @@
 
 #
 "unknown"
-"\x00"
+"neznamy"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."
@@ -1320,4 +1384,4 @@
 
 #MSG_OFF c=0 r=0
 " [off]"
-" [vyp]"
+"\x00"

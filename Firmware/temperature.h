@@ -27,8 +27,19 @@
   #include "stepper.h"
 #endif
 
+
+#ifdef SYSTEM_TIMER_2
+
+#define ENABLE_TEMPERATURE_INTERRUPT()  TIMSK2 |= (1<<OCIE2B)
+#define DISABLE_TEMPERATURE_INTERRUPT() TIMSK2 &= ~(1<<OCIE2B)
+
+#else //SYSTEM_TIMER_2
+
 #define ENABLE_TEMPERATURE_INTERRUPT()  TIMSK0 |= (1<<OCIE0B)
 #define DISABLE_TEMPERATURE_INTERRUPT() TIMSK0 &= ~(1<<OCIE0B)
+
+#endif //SYSTEM_TIMER_2
+
 
 // public functions
 void tp_init();  //initialize the heating
@@ -240,4 +251,8 @@ void check_max_temp();
 
 
 #endif
+
+extern unsigned long extruder_autofan_last_check;
+extern uint8_t fanSpeedBckp;
+extern bool fan_measuring;
 
