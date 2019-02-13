@@ -379,7 +379,7 @@ void mmu_loop(void)
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
 		{ //resend request after timeout (5 min)
-			if (mmu_last_cmd != MmuCmd::None)
+			if (mmu_last_cmd >= MmuCmd::T0 && mmu_last_cmd <= MmuCmd::T4)
 			{
 				if (mmu_attempt_nr++ < MMU_MAX_RESEND_ATTEMPTS) {
 				    DEBUG_PRINTF_P(PSTR("MMU retry attempt nr. %d\n"), mmu_attempt_nr - 1);
