@@ -53,7 +53,7 @@ bool mmu_fil_loaded = false; //if true: blocks execution of duplicit T-codes
 
 static S mmu_state = S::Disabled;
 
-uint8_t mmu_cmd = 0;
+MmuCmd mmu_cmd = MmuCmd::None;
 
 //idler ir sensor
 uint8_t mmu_idl_sens = 0;
@@ -74,7 +74,7 @@ int16_t mmu_buildnr = -1;
 uint32_t mmu_last_request = 0;
 uint32_t mmu_last_response = 0;
 
-uint8_t mmu_last_cmd = 0;
+MmuCmd mmu_last_cmd = MmuCmd::None;
 uint16_t mmu_power_failures = 0;
 
 
@@ -259,58 +259,58 @@ void mmu_loop(void)
 	case S::Idle:
 		if (mmu_cmd) //command request ?
 		{
-			if ((mmu_cmd >= MMU_CMD_T0) && (mmu_cmd <= MMU_CMD_T4))
+			if ((mmu_cmd >= MmuCmd::T0) && (mmu_cmd <= MmuCmd::T4))
 			{
-				filament = mmu_cmd - MMU_CMD_T0;
+				filament = mmu_cmd - MmuCmd::T0;
 				DEBUG_PRINTF_P(PSTR("MMU <= 'T%d'\n"), filament);
 				mmu_printf_P(PSTR("T%d\n"), filament);
 				mmu_state = S::WaitCmd; // wait for response
 				mmu_fil_loaded = true;
 				mmu_idl_sens = 1;
 			}
-			else if ((mmu_cmd >= MMU_CMD_L0) && (mmu_cmd <= MMU_CMD_L4))
+			else if ((mmu_cmd >= MmuCmd::L0) && (mmu_cmd <= MmuCmd::L4))
 			{
-			    filament = mmu_cmd - MMU_CMD_L0;
+			    filament = mmu_cmd - MmuCmd::L0;
 			    DEBUG_PRINTF_P(PSTR("MMU <= 'L%d'\n"), filament);
 			    mmu_printf_P(PSTR("L%d\n"), filament);
 			    mmu_state = S::WaitCmd; // wait for response
 			}
-			else if (mmu_cmd == MMU_CMD_C0)
+			else if (mmu_cmd == MmuCmd::C0)
 			{
 			    DEBUG_PRINTF_P(PSTR("MMU <= 'C0'\n"));
 				mmu_puts_P(PSTR("C0\n")); //send 'continue loading'
 				mmu_state = S::WaitCmd;
 				mmu_idl_sens = 1;
 			}
-			else if (mmu_cmd == MMU_CMD_U0)
+			else if (mmu_cmd == MmuCmd::U0)
 			{
 			    DEBUG_PRINTF_P(PSTR("MMU <= 'U0'\n"));
 				mmu_puts_P(PSTR("U0\n")); //send 'unload current filament'
 				mmu_fil_loaded = false;
 				mmu_state = S::WaitCmd;
 			}
-			else if ((mmu_cmd >= MMU_CMD_E0) && (mmu_cmd <= MMU_CMD_E4))
+			else if ((mmu_cmd >= MmuCmd::E0) && (mmu_cmd <= MmuCmd::E4))
 			{
-				int filament = mmu_cmd - MMU_CMD_E0;
+				int filament = mmu_cmd - MmuCmd::E0;
 				DEBUG_PRINTF_P(PSTR("MMU <= 'E%d'\n"), filament);
 				mmu_printf_P(PSTR("E%d\n"), filament); //send eject filament
 				mmu_fil_loaded = false;
 				mmu_state = S::WaitCmd;
 			}
-			else if (mmu_cmd == MMU_CMD_R0)
+			else if (mmu_cmd == MmuCmd::R0)
 			{
 			    DEBUG_PRINTF_P(PSTR("MMU <= 'R0'\n"));
 				mmu_puts_P(PSTR("R0\n")); //send recover after eject
 				mmu_state = S::WaitCmd;
 			}
-			else if (mmu_cmd == MMU_CMD_S3)
+			else if (mmu_cmd == MmuCmd::S3)
 			{
 			    DEBUG_PRINTF_P(PSTR("MMU <= 'S3'\n"));
 				mmu_puts_P(PSTR("S3\n")); //send power failures request
 				mmu_state = S::GetDrvError;
 			}
 			mmu_last_cmd = mmu_cmd;
-			mmu_cmd = 0;
+			mmu_cmd = MmuCmd::None;
 		}
 		else if ((mmu_last_response + 300) < _millis()) //request every 300ms
 		{
@@ -367,7 +367,7 @@ void mmu_loop(void)
 		{
 		    DEBUG_PRINTF_P(PSTR("MMU => 'ok'\n"));
 			mmu_attempt_nr = 0;
-			mmu_last_cmd = 0;
+			mmu_last_cmd = MmuCmd::None;
 			mmu_ready = true;
 			mmu_state = S::Idle;
 		}
@@ -380,8 +380,8 @@ void mmu_loop(void)
 					mmu_cmd = mmu_last_cmd;
 				}
 				else {
-					mmu_cmd = 0;
-					mmu_last_cmd = 0; //check
+					mmu_cmd = MmuCmd::None;
+					mmu_last_cmd = MmuCmd::None; //check
 					mmu_attempt_nr = 0;
 				}
 			}
@@ -393,7 +393,7 @@ void mmu_loop(void)
 		{
 			fscanf_P(uart2io, PSTR("%d"), &mmu_power_failures); //scan power failures
 			DEBUG_PRINTF_P(PSTR("MMU => 'ok'\n"));
-			mmu_last_cmd = 0;
+			mmu_last_cmd = MmuCmd::None;
 			mmu_ready = true;
 			mmu_state = S::Idle;
 		}
@@ -430,20 +430,20 @@ int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament)
 //! Call manage_response() after enqueuing to process command.
 //! If T command is enqueued, it disables current for extruder motor if TMC2130 driver present.
 //! If T or L command is enqueued, it marks filament loaded in AutoDeplete module.
-void mmu_command(uint8_t cmd)
+void mmu_command(MmuCmd cmd)
 {
-	if ((cmd >= MMU_CMD_T0) && (cmd <= MMU_CMD_T4))
+	if ((cmd >= MmuCmd::T0) && (cmd <= MmuCmd::T4))
 	{
 		//disable extruder motor
 #ifdef TMC2130
 		tmc2130_set_pwr(E_AXIS, 0);
 #endif //TMC2130
 		//printf_P(PSTR("E-axis disabled\n"));
-		ad_markLoaded(cmd - MMU_CMD_T0);
+		ad_markLoaded(cmd - MmuCmd::T0);
 	}
-    if ((cmd >= MMU_CMD_L0) && (cmd <= MMU_CMD_L4))
+    if ((cmd >= MmuCmd::L0) && (cmd <= MmuCmd::L4))
     {
-        ad_markLoaded(cmd - MMU_CMD_L0);
+        ad_markLoaded(cmd - MmuCmd::L0);
     }
 
 	mmu_cmd = cmd;
@@ -787,7 +787,7 @@ void mmu_M600_load_filament(bool automatic)
 
 //		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
 //		  mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
-		  mmu_command(MMU_CMD_T0 + tmp_extruder);
+		  mmu_command(static_cast<MmuCmd>(MmuCmd::T0 + tmp_extruder));
 
 		  manage_response(false, true, MMU_LOAD_MOVE);
 		  mmu_continue_loading();
@@ -878,8 +878,8 @@ void display_loading()
 void extr_adj(int extruder) //loading filament for SNMM
 {
 #ifndef SNMM
-    uint8_t cmd = MMU_CMD_L0 + extruder;
-    if (cmd > MMU_CMD_L4)
+    MmuCmd cmd = static_cast<MmuCmd>(MmuCmd::L0 + extruder);
+    if (cmd > MmuCmd::L4)
     {
         printf_P(PSTR("Filament out of range %d \n"),extruder);
         return;
@@ -999,7 +999,7 @@ void extr_unload()
 
 		mmu_filament_ramming();
 
-		mmu_command(MMU_CMD_U0);
+		mmu_command(MmuCmd::U0);
 		// get response
 		manage_response(false, true, MMU_UNLOAD_MOVE);
 
@@ -1296,7 +1296,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
 	lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
 	lcd_print(" ");
 	lcd_print(tmp_extruder + 1);
-	mmu_command(MMU_CMD_T0 + tmp_extruder);
+	mmu_command(static_cast<MmuCmd>(MmuCmd::T0 + tmp_extruder));
 	manage_response(true, true, MMU_TCODE_MOVE);
 	mmu_continue_loading();
 	mmu_extruder = tmp_extruder; //filament change is finished
@@ -1333,12 +1333,12 @@ void mmu_eject_filament(uint8_t filament, bool recover)
                 current_position[E_AXIS] -= 80;
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
                 st_synchronize();
-                mmu_command(MMU_CMD_E0 + filament);
+                mmu_command(static_cast<MmuCmd>(MmuCmd::E0 + filament));
                 manage_response(false, false, MMU_UNLOAD_MOVE);
                 if (recover)
                 {
                     lcd_show_fullscreen_message_and_wait_P(_i("Please remove filament and then press the knob."));
-                    mmu_command(MMU_CMD_R0);
+                    mmu_command(MmuCmd::R0);
                     manage_response(false, false);
                 }
 
@@ -1361,7 +1361,7 @@ static void load_more()
     {
         if (PIN_GET(IR_SENSOR_PIN) == 0) return;
         DEBUG_PRINTF_P(PSTR("Additional load attempt nr. %d\n"), i);
-        mmu_command(MMU_CMD_C0);
+        mmu_command(MmuCmd::C0);
         manage_response(true, true, MMU_LOAD_MOVE);
     }
 }
@@ -1378,7 +1378,7 @@ void mmu_continue_loading()
 			if(mmu_load_fail < 255) eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, mmu_load_fail + 1);
 			if(mmu_load_fail_tot < 65535) eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, mmu_load_fail_tot + 1);
 
-            mmu_command(MMU_CMD_T0 + tmp_extruder);
+            mmu_command(static_cast<MmuCmd>(MmuCmd::T0 + tmp_extruder));
             manage_response(true, true, MMU_TCODE_MOVE);
             load_more();
 
@@ -1399,7 +1399,7 @@ void mmu_continue_loading()
                 plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
                 st_synchronize();
 
-                mmu_command(MMU_CMD_U0);
+                mmu_command(MmuCmd::U0);
                 manage_response(false, true, MMU_UNLOAD_MOVE);
 
                 setAllTargetHotends(0);
@@ -1410,6 +1410,6 @@ void mmu_continue_loading()
 		}
 	}
 	else { //mmu_ir_sensor_detected == false
-		mmu_command(MMU_CMD_C0);
+		mmu_command(MmuCmd::C0);
 	}
 }

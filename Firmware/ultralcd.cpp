@@ -1986,7 +1986,7 @@ static void lcd_menu_fails_stats_mmu_total()
 // MMU load fails  000
 //
 //////////////////////
-	mmu_command(MMU_CMD_S3);
+	mmu_command(MmuCmd::S3);
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
@@ -7208,7 +7208,7 @@ static bool selftest_irsensor()
         mmu_filament_ramming();
     }
     progress = lcd_selftest_screen(testScreen::fsensor, progress, 1, true, 0);
-    mmu_command(MMU_CMD_U0);
+    mmu_command(MmuCmd::U0);
     manage_response(false, false);
 
     for(uint_least8_t i = 0; i < 200; ++i)
