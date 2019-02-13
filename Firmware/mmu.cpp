@@ -1057,7 +1057,13 @@ void extr_unload()
 	}
 	else
 	{
-		show_preheat_nozzle_warning();
+          eFilamentAction=e_FILAMENT_ACTION_mmuUnLoad;
+          bFilamentFirstRun=false;
+          if(target_temperature[0]>=EXTRUDE_MINTEMP) {
+               bFilamentPreheatState=true;
+               mFilamentItem(target_temperature[0]);
+          }
+          else menu_submenu(mFilamentMenu);
 	}
 	//lcd_return_to_status();
 }
