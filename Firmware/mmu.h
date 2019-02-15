@@ -32,26 +32,40 @@ extern uint16_t mmu_power_failures;
 #define MMU_LOAD_FEEDRATE 19.02f //mm/s
 #define MMU_LOAD_TIME_MS 2000 //should be fine tuned to load time for shortest allowed PTFE tubing and maximum loading speed
 
-#define MMU_CMD_NONE 0
-#define MMU_CMD_T0   0x10
-#define MMU_CMD_T1   0x11
-#define MMU_CMD_T2   0x12
-#define MMU_CMD_T3   0x13
-#define MMU_CMD_T4   0x14
-#define MMU_CMD_L0   0x20
-#define MMU_CMD_L1   0x21
-#define MMU_CMD_L2   0x22
-#define MMU_CMD_L3   0x23
-#define MMU_CMD_L4   0x24
-#define MMU_CMD_C0   0x30
-#define MMU_CMD_U0   0x40
-#define MMU_CMD_E0   0x50
-#define MMU_CMD_E1   0x51
-#define MMU_CMD_E2   0x52
-#define MMU_CMD_E3   0x53
-#define MMU_CMD_E4   0x54
-#define MMU_CMD_R0   0x60
-#define MMU_CMD_S3	 0x73
+enum class MmuCmd : uint_least8_t
+{
+    None,
+    T0,
+    T1,
+    T2,
+    T3,
+    T4,
+    L0,
+    L1,
+    L2,
+    L3,
+    L4,
+    C0,
+    U0,
+    E0,
+    E1,
+    E2,
+    E3,
+    E4,
+    R0,
+    S3,
+    W0,
+};
+
+inline MmuCmd operator+ (MmuCmd cmd, uint8_t filament)
+{
+    return static_cast<MmuCmd>(static_cast<uint8_t>(cmd) + filament );
+}
+
+inline uint8_t operator- (MmuCmd cmda, MmuCmd cmdb)
+{
+    return (static_cast<uint8_t>(cmda) - static_cast<uint8_t>(cmdb));
+}
 
 extern int mmu_puts_P(const char* str);
 
@@ -70,7 +84,7 @@ extern void mmu_reset(void);
 
 extern int8_t mmu_set_filament_type(uint8_t extruder, uint8_t filament);
 
-extern void mmu_command(uint8_t cmd);
+extern void mmu_command(MmuCmd cmd);
 
 extern bool mmu_get_response(uint8_t move = 0);
 

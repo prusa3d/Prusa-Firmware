@@ -142,6 +142,9 @@ static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
 static void lcd_menu_show_sensors_state();
 
+static void mmu_fil_eject_menu();
+static void mmu_load_to_nozzle_menu();
+
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats();
 #endif //TMC2130 or FILAMENT_SENSOR
@@ -1784,7 +1787,7 @@ void lcd_return_to_status()
 	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, false, true);
 	menu_depth = 0;
-     bFilamentAutoloadFlag=false;
+     eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
 }
 
 //! @brief Pause print, disable nozzle heater, move to park position
@@ -1986,7 +1989,7 @@ static void lcd_menu_fails_stats_mmu_total()
 // MMU load fails  000
 //
 //////////////////////
-	mmu_command(MMU_CMD_S3);
+	mmu_command(MmuCmd::S3);
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
@@ -2300,21 +2303,32 @@ void lcd_set_filament_oq_meass()
 }
 
 
+eFILAMENT_ACTION eFilamentAction=e_FILAMENT_ACTION_none; // must be initialized as 'non-autoLoad'
 bool bFilamentFirstRun;
-bool bFilamentLoad;
 bool bFilamentPreheatState;
-bool bFilamentAutoloadFlag;
 
 static void mFilamentPrompt()
 {
 lcd_set_cursor(0,0);
 lcdui_print_temp(LCD_STR_THERMOMETER[0],(int)degHotend(0),(int)degTargetHotend(0));
 lcd_set_cursor(0,2);
-lcd_puts_P(_i("Press the knob"));
+lcd_puts_P(_i("Press the knob"));                 ////MSG_ c=20 r=1
 lcd_set_cursor(0,3);
-if(bFilamentLoad)
-     lcd_puts_P(_i("to load filament"));
-else lcd_puts_P(_i("to unload filament"));
+switch(eFilamentAction)
+     {
+     case e_FILAMENT_ACTION_Load:
+     case e_FILAMENT_ACTION_autoLoad:
+     case e_FILAMENT_ACTION_mmuLoad:
+          lcd_puts_P(_i("to load filament"));     ////MSG_ c=20 r=1
+          break;
+     case e_FILAMENT_ACTION_unLoad:
+     case e_FILAMENT_ACTION_mmuUnLoad:
+          lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20 r=1
+          break;
+     case e_FILAMENT_ACTION_mmuEject:
+          lcd_puts_P(_i("to eject filament"));    ////MSG_ c=20 r=1
+          break;
+     }
 if(lcd_clicked())
      {
      menu_back();
@@ -2322,17 +2336,31 @@ if(lcd_clicked())
      if(!bFilamentPreheatState)
           {
           menu_back();
-          setTargetHotend0(0.0);
+//-//          setTargetHotend0(0.0);
           }
-     if(bFilamentLoad)
+     switch(eFilamentAction)
           {
-          loading_flag = true;
-          enquecommand_P(PSTR("M701"));           // load filament
+          case e_FILAMENT_ACTION_Load:
+          case e_FILAMENT_ACTION_autoLoad:
+               loading_flag = true;
+               enquecommand_P(PSTR("M701"));      // load filament
+               break;
+          case e_FILAMENT_ACTION_unLoad:
+               enquecommand_P(PSTR("M702"));      // unload filament
+               break;
+          case e_FILAMENT_ACTION_mmuLoad:
+               menu_submenu(mmu_load_to_nozzle_menu);
+               break;
+          case e_FILAMENT_ACTION_mmuUnLoad:
+               extr_unload();
+               break;
+          case e_FILAMENT_ACTION_mmuEject:
+               menu_submenu(mmu_fil_eject_menu);
+               break;
           }
-     else enquecommand_P(PSTR("M702"));           // unload filament
+     if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
+          eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
      }
-if(bFilamentLoad)                                 // i.e. not necessary for preHeat @ unload
-     bFilamentAutoloadFlag=false;
 }
 
 void mFilamentItem(uint16_t nTemp)
@@ -2346,11 +2374,23 @@ lcd_timeoutToStatus.stop();
 lcd_set_cursor(0,0);
 lcdui_print_temp(LCD_STR_THERMOMETER[0],(int)degHotend(0),(int)degTargetHotend(0));
 lcd_set_cursor(0,1);
-if(bFilamentLoad)
-     lcd_puts_P(_i("Preheating to load"));
-else lcd_puts_P(_i("Preheating to unload"));
+switch(eFilamentAction)
+     {
+     case e_FILAMENT_ACTION_Load:
+     case e_FILAMENT_ACTION_autoLoad:
+     case e_FILAMENT_ACTION_mmuLoad:
+          lcd_puts_P(_i("Preheating to load"));   ////MSG_ c=20 r=1
+          break;
+     case e_FILAMENT_ACTION_unLoad:
+     case e_FILAMENT_ACTION_mmuUnLoad:
+          lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20 r=1
+          break;
+     case e_FILAMENT_ACTION_mmuEject:
+          lcd_puts_P(_i("Preheating to eject"));  ////MSG_ c=20 r=1
+          break;
+     }
 lcd_set_cursor(0,3);
-lcd_puts_P(_i(">Cancel"));
+lcd_puts_P(_i(">Cancel"));                        ////MSG_ c=20 r=1
 if(lcd_clicked())
      {
      if(!bFilamentPreheatState)
@@ -2360,8 +2400,8 @@ if(lcd_clicked())
           }
      else setTargetHotend0((float)nTargetOld);
      menu_back();
-     if(bFilamentLoad)                            // i.e. not necessary for preHeat @ unload
-          bFilamentAutoloadFlag=false;
+     if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
+          eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
      }
 else if(!isHeatingHotend0())
           {
@@ -2410,8 +2450,8 @@ mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP);
 void mFilamentBack()
 {
 menu_back();
-if(bFilamentLoad)                                 // i.e. not necessary for preHeat @ unload
-     bFilamentAutoloadFlag=false;
+if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
+     eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
 }
 
 void mFilamentMenu()
@@ -2436,7 +2476,7 @@ if((degHotend0()>EXTRUDE_MINTEMP)&&bFilamentFirstRun)
      enquecommand_P(PSTR("M702"));                // unload filament
      }
 else {
-     bFilamentLoad=false;                         // i.e. filament unloading mode
+     eFilamentAction=e_FILAMENT_ACTION_unLoad;
      bFilamentFirstRun=false;
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
@@ -2670,7 +2710,7 @@ static void lcd_LoadFilament()
   }
   else
   {
-     bFilamentLoad=true;                          // i.e. filament loading mode
+     eFilamentAction=e_FILAMENT_ACTION_Load;
      bFilamentFirstRun=false;
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
@@ -5586,6 +5626,8 @@ static void fil_load_menu()
 
 static void mmu_load_to_nozzle_menu()
 {
+if (degHotend0() > EXTRUDE_MINTEMP)
+{
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_FUNCTION_P(_i("Load filament 1"), mmu_load_to_nozzle_0);
@@ -5595,8 +5637,21 @@ static void mmu_load_to_nozzle_menu()
 	MENU_ITEM_FUNCTION_P(_i("Load filament 5"), mmu_load_to_nozzle_4);
 	MENU_END();
 }
+else {
+     eFilamentAction=e_FILAMENT_ACTION_mmuLoad;
+     bFilamentFirstRun=false;
+     if(target_temperature[0]>=EXTRUDE_MINTEMP)
+          {
+          bFilamentPreheatState=true;
+          mFilamentItem(target_temperature[0]);
+          }
+     else mFilamentMenu();
+     }
+}
 
 static void mmu_fil_eject_menu()
+{
+if (degHotend0() > EXTRUDE_MINTEMP)
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
@@ -5605,8 +5660,18 @@ static void mmu_fil_eject_menu()
 	MENU_ITEM_FUNCTION_P(_i("Eject filament 3"), mmu_eject_fil_2);
 	MENU_ITEM_FUNCTION_P(_i("Eject filament 4"), mmu_eject_fil_3);
 	MENU_ITEM_FUNCTION_P(_i("Eject filament 5"), mmu_eject_fil_4);
-
 	MENU_END();
+}
+else {
+     eFilamentAction=e_FILAMENT_ACTION_mmuEject;
+     bFilamentFirstRun=false;
+     if(target_temperature[0]>=EXTRUDE_MINTEMP)
+          {
+          bFilamentPreheatState=true;
+          mFilamentItem(target_temperature[0]);
+          }
+     else mFilamentMenu();
+     }
 }
 
 #ifdef SNMM
@@ -6077,8 +6142,8 @@ static void lcd_main_menu()
 	{
 		MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
 		MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);
-		MENU_ITEM_GCODE_P(_T(MSG_UNLOAD_FILAMENT), PSTR("M702 C"));
-		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);		
+    MENU_ITEM_FUNCTION_P(_T(MSG_UNLOAD_FILAMENT), extr_unload);
+		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
 	}
 	else
 	{
@@ -7209,7 +7274,7 @@ static bool selftest_irsensor()
         mmu_filament_ramming();
     }
     progress = lcd_selftest_screen(testScreen::fsensor, progress, 1, true, 0);
-    mmu_command(MMU_CMD_U0);
+    mmu_command(MmuCmd::U0);
     manage_response(false, false);
 
     for(uint_least8_t i = 0; i < 200; ++i)

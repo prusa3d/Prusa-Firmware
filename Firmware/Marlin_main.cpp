@@ -3038,7 +3038,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                 lcd_set_cursor(0, 2);
                 lcd_puts_P(_T(MSG_PLEASE_WAIT));
 
-                mmu_command(MMU_CMD_R0);
+                mmu_command(MmuCmd::R0);
                 manage_response(false, false);
             }
         }
@@ -6934,7 +6934,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				return; //dont execute the same T-code twice in a row
 			}
 			st_synchronize();
-			mmu_command(MMU_CMD_T0 + tmp_extruder);
+			mmu_command(MmuCmd::T0 + tmp_extruder);
 			manage_response(true, true, MMU_TCODE_MOVE);
 		}
 	  }
@@ -6975,7 +6975,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                   printf_P(PSTR("Duplicit T-code ignored.\n"));
                   return; //dont execute the same T-code twice in a row
               }
-              mmu_command(MMU_CMD_T0 + tmp_extruder);
+              mmu_command(MmuCmd::T0 + tmp_extruder);
 
 			  manage_response(true, true, MMU_TCODE_MOVE);
 			  mmu_continue_loading();
@@ -7483,7 +7483,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 #ifdef FILAMENT_SENSOR
 	if (mmu_enabled == false)
 	{
-		if ((mcode_in_progress != 600) && (!bFilamentAutoloadFlag)) //M600 not in progress, preHeat @ autoLoad menu not active
+          if ((mcode_in_progress != 600) && (eFilamentAction != e_FILAMENT_ACTION_autoLoad)) //M600 not in progress, preHeat @ autoLoad menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active)
 			{
@@ -7503,9 +7503,8 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 					}
 					else
 					{
-                              bFilamentLoad=true; // i.e. filament loading mode
+                              eFilamentAction=e_FILAMENT_ACTION_autoLoad;
                               bFilamentFirstRun=false;
-                              bFilamentAutoloadFlag=true;
                               if(target_temperature[0]>=EXTRUDE_MINTEMP)
                               {
                                    bFilamentPreheatState=true;
