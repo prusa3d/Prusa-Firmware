@@ -7482,7 +7482,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 #ifdef FILAMENT_SENSOR
 	if (mmu_enabled == false)
 	{
-		if ((mcode_in_progress != 600) && (!bFilamentAutoloadFlag)) //M600 not in progress, preHeat @ autoLoad menu not active
+          if ((mcode_in_progress != 600) && (eFilamentAction != e_FILAMENT_ACTION_autoLoad)) //M600 not in progress, preHeat @ autoLoad menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active)
 			{
@@ -7502,9 +7502,8 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 					}
 					else
 					{
-                              bFilamentLoad=true; // i.e. filament loading mode
+                              eFilamentAction=e_FILAMENT_ACTION_autoLoad;
                               bFilamentFirstRun=false;
-                              bFilamentAutoloadFlag=true;
                               if(target_temperature[0]>=EXTRUDE_MINTEMP)
                               {
                                    bFilamentPreheatState=true;
