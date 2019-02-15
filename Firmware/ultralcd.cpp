@@ -2336,7 +2336,7 @@ if(lcd_clicked())
      if(!bFilamentPreheatState)
           {
           menu_back();
-          setTargetHotend0(0.0);
+//-//          setTargetHotend0(0.0);
           }
      switch(eFilamentAction)
           {
