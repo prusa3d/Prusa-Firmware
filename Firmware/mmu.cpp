@@ -320,7 +320,7 @@ void mmu_loop(void)
 		}
 		return;
 	case 2: //response to command P0
-		if (mmu_idl_sens)
+        if (mmu_idl_sens)
         {
             if (PIN_GET(IR_SENSOR_PIN) == 0 && mmu_loading_flag)
             {
