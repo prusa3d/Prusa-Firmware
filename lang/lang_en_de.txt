@@ -20,7 +20,7 @@
 
 #
 ">Cancel"
-"\x00"
+">Abbruch"
 
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
@@ -36,7 +36,7 @@
 
 #
 "Ambient"
-"\x00"
+"Raumtemp."
 
 #MSG_PRESS c=20 r=0
 "and press the knob"
@@ -124,7 +124,7 @@
 
 #
 "Calibrating home"
-"\x00"
+"Kalibriere Start"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -320,7 +320,7 @@
 
 #
 "Fail stats MMU"
-"\x00"
+"MMU-Fehler"
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
@@ -336,7 +336,7 @@
 
 #
 "Fail stats"
-"\x00"
+"Fehlerstatistik"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -372,7 +372,7 @@
 
 #
 "Filam. runouts"
-"\x00"
+"Filam. Maengel"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -584,11 +584,11 @@
 
 #
 "Last print failures"
-"\x00"
+"Letzte Druckfehler"
 
 #
 "Last print"
-"\x00"
+"Letzter Druck"
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
@@ -660,15 +660,15 @@
 
 #
 "MMU fails"
-"\x00"
+"MMU Fehler"
 
 #
 "MMU load failed     "
-"\x00"
+"MMU Ladefehler"
 
 #
 "MMU load fails"
-"\x00"
+"MMU Ladefehler"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -688,7 +688,7 @@
 
 #
 "MMU power fails"
-"\x00"
+"MMU Netzfehler"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -704,7 +704,7 @@
 
 #
 "MMU2 connected"
-"\x00"
+"MMU2 verbunden"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -736,7 +736,7 @@
 
 #
 "N/A"
-"\x00"
+"N.V."
 
 #MSG_NO c=0 r=0
 "No"
@@ -780,7 +780,7 @@
 
 #
 "Nozzle FAN"
-"\x00"
+"Duesen Luefter"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -896,7 +896,7 @@
 
 #
 "Power failures"
-"\x00"
+"Netzfehler"
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
@@ -904,11 +904,11 @@
 
 #
 "Preheating to load"
-"\x00"
+"Heizen zum Laden"
 
 #
 "Preheating to unload"
-"\x00"
+"Heizen zum Entladen"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
@@ -920,7 +920,7 @@
 
 #
 "Press the knob"
-"\x00"
+"Knopf druecken"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -936,7 +936,7 @@
 
 #
 "Print FAN"
-"\x00"
+"Druckluefter"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."
@@ -1068,11 +1068,11 @@
 
 #
 "Sensor state"
-"\x00"
+"Sensorstatus"
 
 #
 "Sensors info"
-"\x00"
+"Sensoren Info"
 
 #
 "Show pinda state"
@@ -1216,15 +1216,15 @@
 
 #
 "Total failures"
-"\x00"
+"Gesamte Fehler"
 
 #
 "to load filament"
-"\x00"
+"zum Filament laden"
 
 #
 "to unload filament"
-"\x00"
+"zum Filament entladen"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -1236,7 +1236,7 @@
 
 #
 "Total"
-"\x00"
+"Gesamt"
 
 #MSG_USED c=19 r=1
 "Used during print"
@@ -1248,7 +1248,7 @@
 
 #
 "unknown"
-"\x00"
+"unbekannt"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."
@@ -1384,4 +1384,4 @@
 
 #MSG_OFF c=0 r=0
 " [off]"
-" [AUS]"
+"\x00"
