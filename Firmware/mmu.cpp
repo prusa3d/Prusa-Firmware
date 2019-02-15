@@ -22,7 +22,7 @@
 
 #define MMU_TODELAY 100
 #define MMU_TIMEOUT 10
-#define MMU_CMD_TIMEOUT 45000ul //5min timeout for mmu commands (except P0)
+#define MMU_CMD_TIMEOUT 45000ul //45s timeout for mmu commands (except P0)
 #define MMU_P0_TIMEOUT 3000ul //timeout for P0 command: 3seconds
 #define MMU_MAX_RESEND_ATTEMPTS 2
 
@@ -41,7 +41,7 @@ uint8_t mmu_cmd = 0;
 //idler ir sensor
 uint8_t mmu_idl_sens = 0;
 bool ir_sensor_detected = false; 
-bool mmu_loading_flag = false;
+bool mmu_loading_flag = false; //when set to true, we assume that mmu2 unload was finished and loading phase is now performed; printer can send 'A' to mmu2 to abort loading process
 
 uint8_t mmu_extruder = MMU_FILAMENT_UNKNOWN;
 
@@ -258,7 +258,7 @@ void mmu_loop(void)
 			    printf_P(PSTR("MMU <= 'L%d'\n"), filament);
 #endif //MMU_DEBUG
 			    mmu_printf_P(PSTR("L%d\n"), filament);
-			    mmu_state = 3; // wait for response
+				mmu_state = 3; // wait for response
 			}
 			else if (mmu_cmd == MMU_CMD_C0)
 			{
@@ -320,6 +320,20 @@ void mmu_loop(void)
 		}
 		return;
 	case 2: //response to command P0
+		if (mmu_idl_sens)
+        {
+            if (PIN_GET(IR_SENSOR_PIN) == 0 && mmu_loading_flag)
+            {
+#ifdef MMU_DEBUG
+                printf_P(PSTR("MMU <= 'A'\n"));
+#endif //MMU_DEBUG  
+                mmu_puts_P(PSTR("A\n")); //send 'abort' request
+                mmu_idl_sens = 0;
+                //printf_P(PSTR("MMU IDLER_SENSOR = 0 - ABORT\n"));
+            }
+            //else
+                //printf_P(PSTR("MMU IDLER_SENSOR = 1 - WAIT\n"));
+        }
 		if (mmu_rx_ok() > 0)
 		{
 			fscanf_P(uart2io, PSTR("%hhu"), &mmu_finda); //scan finda from buffer
@@ -489,11 +503,21 @@ bool can_extrude()
     return true;
 }
 
+static void get_response_print_info(uint8_t move) {
+	printf_P(PSTR("mmu_get_response - begin move: "), move);
+	switch (move) {
+		case MMU_LOAD_MOVE: printf_P(PSTR("load\n")); break;
+		case MMU_UNLOAD_MOVE: printf_P(PSTR("unload\n")); break;
+		case MMU_TCODE_MOVE: printf_P(PSTR("T-code\n")); break;
+		case MMU_NO_MOVE: printf_P(PSTR("no move\n")); break;
+		default: printf_P(PSTR("error: unknown move\n")); break;
+	}
+}
+
 bool mmu_get_response(uint8_t move)
 {
-    mmu_loading_flag = false;
 
-	printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
+	get_response_print_info(move);
 	KEEPALIVE_STATE(IN_PROCESS);
 	while (mmu_cmd != 0)
 	{
@@ -547,7 +571,7 @@ bool mmu_get_response(uint8_t move)
 					disable_e0(); //turn off E-stepper to prevent overheating and alow filament pull-out if necessary
 					delay_keep_alive(MMU_LOAD_TIME_MS);
 					move = MMU_LOAD_MOVE;
-					printf_P(PSTR("mmu_get_response - begin move:%d\n"), move);
+					get_response_print_info(move);
 				}
 				break;
 			case MMU_NO_MOVE:
@@ -586,7 +610,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 	float x_position_bckp = current_position[X_AXIS];
 	float y_position_bckp = current_position[Y_AXIS];	
 	uint8_t screen = 0; //used for showing multiscreen messages
-
+	mmu_loading_flag = false;
 	while(!response)
 	{
 		  response = mmu_get_response(move); //wait for "ok" from mmu
@@ -661,6 +685,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU starts responding\n"));
+			  mmu_loading_flag = false;
 			  if (turn_off_nozzle) 
 			  {
 				lcd_clear();
