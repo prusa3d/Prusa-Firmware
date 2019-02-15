@@ -12,15 +12,15 @@
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-"[2JRilev. impatto [1;0Hattivabile solo [2;0Hin Modalita normale"
+"\x1b[2JRilev. impatto\x1b[1;0Hattivabile solo\x1b[2;0Hin Modalita normale"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
-"[2JATTENZIONE: [1;0HRilev. impatto [2;0Hdisattivato in [3;0HModalita silenziosa"
+"\x1b[2JATTENZIONE:\x1b[1;0HRilev. impatto\x1b[2;0Hdisattivato in\x1b[3;0HModalita silenziosa"
 
 #
 ">Cancel"
-"\x00"
+">Annulla"
 
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
@@ -36,7 +36,7 @@
 
 #
 "Ambient"
-"\x00"
+"Ambiente"
 
 #MSG_PRESS c=20 r=0
 "and press the knob"
@@ -124,7 +124,7 @@
 
 #
 "Calibrating home"
-"\x00"
+"Calibrazione Home"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -180,19 +180,19 @@
 
 #
 "Copy selected language?"
-"\x00"
+"Copiare la lingua selezionata?"
 
 #MSG_CRASHDETECT_ON c=0 r=0
 "Crash det.   [on]"
-"Rilevamento imp. [on]"
+"Rilevam.imp. [on]"
 
 #MSG_CRASHDETECT_NA c=0 r=0
 "Crash det.  [N/A]"
-"Rilevamento imp. [N/A]"
+"Rilevam.imp.[N/A]"
 
 #MSG_CRASHDETECT_OFF c=0 r=0
 "Crash det.  [off]"
-"Rilevamento imp. [off]"
+"Rilevam.imp.[off]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
@@ -204,7 +204,7 @@
 
 #
 "Crash"
-"\x00"
+"Impatto"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -280,7 +280,7 @@
 
 #MSG_FSENS_NOT_RESPONDING c=20 r=4
 "ERROR: Filament sensor is not responding, please check connection."
-"ERRORE: il sensore filam. non risponde, Controllare conness."
+"ERRORE: il sensore filam. non risponde,Controllare conness."
 
 #MSG_ERROR c=0 r=0
 "ERROR:"
@@ -320,23 +320,23 @@
 
 #
 "Fail stats MMU"
-"\x00"
+"Statistiche fallimenti MMU"
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
-"Autocaric. filam. [on]"
+"Autocar.filam[on]"
 
 #MSG_FSENS_AUTOLOAD_NA c=17 r=1
 "F. autoload [N/A]"
-"Autocaric. filam.[N/A]"
+"Autocar.fil.[N/A]"
 
 #MSG_FSENS_AUTOLOAD_OFF c=17 r=1
 "F. autoload [off]"
-"Autocaric. filam. [off]"
+"Autocar.fil.[off]"
 
 #
 "Fail stats"
-"\x00"
+"Statistiche fallimenti"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -352,11 +352,11 @@
 
 #MSG_FANS_CHECK_OFF c=17 r=1
 "Fans check  [off]"
-"Controllo ventole [off]"
+"Control.vent[off]"
 
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
-"Sensore filam. [On]"
+"Sensor filam.[On]"
 
 #MSG_RESPONSE_POOR c=20 r=2
 "Fil. sensor response is poor, disable it?"
@@ -364,15 +364,15 @@
 
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
-"Sensore filam. [N/A]"
+"Sensor filam[N/A]"
 
 #MSG_FSENSOR_OFF c=0 r=0
 "Fil. sensor [off]"
-"Sensore filam. [off]"
+"Sensor filam[off]"
 
 #
 "Filam. runouts"
-"\x00"
+"Filam. esauriti"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -460,7 +460,7 @@
 
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
-"\x00"
+"Ciao, sono la tua stampante Zaribo. Gradiresti un aiuto nel processo di configurazione?"
 
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
@@ -588,11 +588,11 @@
 
 #
 "Last print failures"
-"\x00"
+"Fallimenti ultima stampa"
 
 #
 "Last print"
-"\x00"
+"Ultima stampa"
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
@@ -664,15 +664,15 @@
 
 #
 "MMU fails"
-"\x00"
+"Fallimenti MMU"
 
 #
 "MMU load failed     "
-"\x00"
+"Caricamento MMU fallito"
 
 #
 "MMU load fails"
-"\x00"
+"Caricamenti MMU falliti"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -680,7 +680,7 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Modo [normale]"
+"Modo    [normale]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
@@ -692,7 +692,7 @@
 
 #
 "MMU power fails"
-"\x00"
+"Mancanza corrente MMU"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -700,15 +700,15 @@
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
-"Modo [auto]"
+"Modo       [auto]"
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-"Mode [forte]"
+"Mode      [forte]"
 
 #
 "MMU2 connected"
-"\x00"
+"MMU2 connessa"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -784,7 +784,7 @@
 
 #
 "Nozzle FAN"
-"\x00"
+"Ventola estrusore"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -900,7 +900,7 @@
 
 #
 "Power failures"
-"\x00"
+"Mancanza corrente"
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
@@ -908,11 +908,11 @@
 
 #
 "Preheating to load"
-"\x00"
+"Preriscaldamento per caricare"
 
 #
 "Preheating to unload"
-"\x00"
+"Preriscaldamento per scaricare"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
@@ -924,7 +924,7 @@
 
 #
 "Press the knob"
-"\x00"
+"Premere la manopola"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -940,7 +940,7 @@
 
 #
 "Print FAN"
-"\x00"
+"Ventola di stampa"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 OK."
@@ -1012,11 +1012,11 @@
 
 #MSG_SECOND_SERIAL_ON c=17 r=1
 "RPi port     [on]"
-"Porta RPi [on]"
+"Porta RPi    [on]"
 
 #MSG_SECOND_SERIAL_OFF c=17 r=1
 "RPi port    [off]"
-"Porta RPi [off]"
+"Porta RPi   [off]"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
@@ -1028,7 +1028,7 @@
 
 #MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
 "SD card [flshAir]"
-"scheda SD [flshAir]"
+"Mem. SD [flshAir]"
 
 #
 "Right"
@@ -1088,11 +1088,11 @@
 
 #
 "Sensor state"
-"\x00"
+"Stato sensore"
 
 #
 "Sensors info"
-"\x00"
+"Info Sensori"
 
 #
 "Show pinda state"
@@ -1104,11 +1104,11 @@
 
 #MSG_SORT_NONE c=17 r=1
 "Sort:      [none]"
-"Ordina: [none]"
+"Ordina:    [none]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"Ordina: [time]"
+"Ordina:    [time]"
 
 #
 "Severe skew"
@@ -1116,7 +1116,7 @@
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
-"Ordine:[alfabetico]"
+"Ordine: [alfabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
@@ -1124,7 +1124,7 @@
 
 #MSG_SOUND_LOUD c=17 r=1
 "Sound      [loud]"
-"Suono [forte]"
+"Suono     [forte]"
 
 #
 "Slight skew"
@@ -1132,7 +1132,7 @@
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
-"Suono [mute]"
+"Suono      [mute]"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
@@ -1140,11 +1140,11 @@
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
-"Suono [singolo]"
+"Suono   [singolo]"
 
 #MSG_SOUND_SILENT c=17 r=1
 "Sound    [silent]"
-"Suono [silenzioso]"
+"Suono[silenzioso]"
 
 #MSG_SPEED c=0 r=0
 "Speed"
@@ -1188,7 +1188,7 @@
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Calib. temp. [OFF]"
+"Calib. temp.[OFF]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1236,15 +1236,15 @@
 
 #
 "Total failures"
-"\x00"
+"Totale fallimenti"
 
 #
 "to load filament"
-"\x00"
+"per caricare il filamento"
 
 #
 "to unload filament"
-"\x00"
+"per scaricare il filamento"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -1256,7 +1256,7 @@
 
 #
 "Total"
-"\x00"
+"Totale"
 
 #MSG_USED c=19 r=1
 "Used during print"
@@ -1268,7 +1268,7 @@
 
 #
 "unknown"
-"\x00"
+"sconosciuto"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."

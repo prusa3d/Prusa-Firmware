@@ -36,7 +36,7 @@
 
 #
 "Ambient"
-"Umgebung"
+"Raumtemp."
 
 #MSG_PRESS c=20 r=0
 "and press the knob"
@@ -320,7 +320,7 @@
 
 #
 "Fail stats MMU"
-"MMU Fehlerstats"
+"MMU-Fehler"
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
@@ -584,7 +584,7 @@
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 "Iteration "
-"Iteration"
+"\x00"
 
 #
 "Last print failures"
@@ -668,11 +668,11 @@
 
 #
 "MMU load failed     "
-"MMU laden gescheitert"
+"MMU Ladefehler"
 
 #
 "MMU load fails"
-"MMU laden scheitert"
+"MMU Ladefehler"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -692,7 +692,7 @@
 
 #
 "MMU power fails"
-"MMU Strom fehler"
+"MMU Netzfehler"
 
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
@@ -740,7 +740,7 @@
 
 #
 "N/A"
-"NV"
+"N.V."
 
 #MSG_NO c=0 r=0
 "No"
@@ -900,7 +900,7 @@
 
 #
 "Power failures"
-"Stromausfaelle"
+"Netzfehler"
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
@@ -908,11 +908,11 @@
 
 #
 "Preheating to load"
-"Vorheizen u.z. laden"
+"Heizen zum Laden"
 
 #
 "Preheating to unload"
-"Vorheizen u.z. entladen"
+"Heizen zum Entladen"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
@@ -924,7 +924,7 @@
 
 #
 "Press the knob"
-"Druecke Knopf"
+"Knopf druecken"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -940,7 +940,7 @@
 
 #
 "Print FAN"
-"Teileluefter"
+"Druckluefter"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 OK."
@@ -1088,11 +1088,11 @@
 
 #
 "Sensor state"
-"Sensor status"
+"Sensorstatus"
 
 #
 "Sensors info"
-"\x00"
+"Sensoren Info"
 
 #
 "Show pinda state"
@@ -1108,7 +1108,7 @@
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"Sort.:    [Zeit]"
+"Sort.:     [Zeit]"
 
 #
 "Severe skew"
@@ -1240,11 +1240,11 @@
 
 #
 "to load filament"
-"um Filament zu laden"
+"zum Filament laden"
 
 #
 "to unload filament"
-"um Filament zu entladen"
+"zum Filament entladen"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -1256,7 +1256,7 @@
 
 #
 "Total"
-"\x00"
+"Gesamt"
 
 #MSG_USED c=19 r=1
 "Used during print"
