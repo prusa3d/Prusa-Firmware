@@ -3037,7 +3037,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                 lcd_set_cursor(0, 2);
                 lcd_puts_P(_T(MSG_PLEASE_WAIT));
 
-                mmu_command(MMU_CMD_R0);
+                mmu_command(MmuCmd::R0);
                 manage_response(false, false);
             }
         }
@@ -6933,7 +6933,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				return; //dont execute the same T-code twice in a row
 			}
 			st_synchronize();
-			mmu_command(MMU_CMD_T0 + tmp_extruder);
+			mmu_command(MmuCmd::T0 + tmp_extruder);
 			manage_response(true, true, MMU_TCODE_MOVE);
 		}
 	  }
@@ -6974,7 +6974,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                   printf_P(PSTR("Duplicit T-code ignored.\n"));
                   return; //dont execute the same T-code twice in a row
               }
-              mmu_command(MMU_CMD_T0 + tmp_extruder);
+              mmu_command(MmuCmd::T0 + tmp_extruder);
 
 			  manage_response(true, true, MMU_TCODE_MOVE);
 			  mmu_continue_loading();
