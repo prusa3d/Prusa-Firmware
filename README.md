@@ -46,7 +46,7 @@ Now your Ubuntu subsystem is ready to use the automatic `build.sh` script and co
 #### Compile Prusa-firmware with Ubuntu Linux subsystem installed
 - open Ubuntu bash
 - change to your source code folder (case sensitive)
-- run `./build.sh`
+- run `./PF-build.sh`
 - follow the instructions
 
 ### Steps for Git-bash under Windows 10 64-bit:
@@ -61,7 +61,7 @@ Now your Ubuntu subsystem is ready to use the automatic `build.sh` script and co
 #### Compile Prusa-firmware with Git-bash installed
 - open Git-bash
 - change to your source code folder
-- run `bash build.sh`
+- run `bash PF-build.sh`
 - follow the instructions
 
 
