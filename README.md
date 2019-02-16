@@ -18,7 +18,7 @@ The script downloads Arduino with our modifications and Rambo board support inst
 ## Windows
 ### If you want to use the automated `build.sh` you gonna need to install on you Windows a Linux subsystem or Git-bash
 
-###Steps for Linux subsystem und Windows 10 64-bit:
+### Steps for Linux subsystem und Windows 10 64-bit:
 - follow the Microsoft guide https://docs.microsoft.com/en-us/windows/wsl/install-win10
   You can also use the 'prepare_winbuild.ps1' powershell script with Administrator rights
 - Tested versions are at this moment
@@ -36,20 +36,20 @@ The script downloads Arduino with our modifications and Rambo board support inst
   - restart Ubuntu bash
 Now your Ubuntu subsystem is ready to use the automatic `build.sh` script and compile your firmware correctly
 
-####Some Tips for Ubuntu
+#### Some Tips for Ubuntu
 - Linux is case sensetive so please don't forget to use capital letters where needed, like changing to a directory
 - To change the path to your Prusa-Firmware location you downloaded and unzipped
   - Example: You files are under `C:\Users\<your-username>\Downloads\Prusa-Firmware-MK3`
   - use under Ubuntu the following command `cd /mnt/c/Users/<your-username>/Downloads/Prusa-Firmware-MK3`
     to change to the right folder
 
-####Compile Prusa-firmware with Ubuntu Linux subsystem installed
+#### Compile Prusa-firmware with Ubuntu Linux subsystem installed
 - open Ubuntu bash
 - change to your source code folder (case sensitive)
 - run `./build.sh`
 - follow the instructions
 
-###Steps for Git-bash under Windows 10 64-bit:
+### Steps for Git-bash under Windows 10 64-bit:
 - Download and install the 64bit Git version https://git-scm.com/download/win
 - Also follow these instructions https://gist.github.com/evanwill/0207876c3243bbb6863e65ec5dc3f058
 - Download and install 7z-zip from its official website https://www.7-zip.org/
@@ -58,7 +58,7 @@ Now your Ubuntu subsystem is ready to use the automatic `build.sh` script and co
 - navigate to the directory /c/Program Files/Git/mingw64/bin
 - run `ln -s /c/Program Files/7-Zip/7z.exe zip.exe`
 
-####Compile Prusa-firmware with Git-bash installed
+#### Compile Prusa-firmware with Git-bash installed
 - open Git-bash
 - change to your source code folder
 - run `bash build.sh`
