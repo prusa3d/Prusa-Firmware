@@ -16,7 +16,7 @@ If you wish to flash from Arduino, follow step [2.c](#2c) from Windows build fir
 
 The script downloads Arduino with our modifications and Rambo board support installed, unpacks it into folder PF-build-env-\<version\> on the same level, as your Prusa-Firmware folder is located, builds firmware for MK3 using that Arduino in Prusa-Firmware-build folder on the same level as Prusa-Firmware, runs secondary language support scripts. Firmware with secondary language support is generated in lang subfolder. Use firmware.hex for MK3 variant. Use firmware_\<lang\>.hex for other printers. Don't forget to follow step [2.b](#2b) first for non-MK3 printers.
 ## Windows
-### If you want to use the automated `build.sh` you gonna need to install on you Windows a Linux subsystem or Git-bash
+### If you want to use the automated `PF-build.sh` you gonna need to install on you Windows a Linux subsystem or Git-bash
 
 ### Steps for Linux subsystem und Windows 10 64-bit:
 - follow the Microsoft guide https://docs.microsoft.com/en-us/windows/wsl/install-win10
@@ -34,7 +34,7 @@ The script downloads Arduino with our modifications and Rambo board support inst
 	
 	use `CRTL-X` to close nano and confirm to write the new entries
   - restart Ubuntu bash
-Now your Ubuntu subsystem is ready to use the automatic `build.sh` script and compile your firmware correctly
+Now your Ubuntu subsystem is ready to use the automatic `PF-build.sh` script and compile your firmware correctly
 
 #### Some Tips for Ubuntu
 - Linux is case sensetive so please don't forget to use capital letters where needed, like changing to a directory
