@@ -71,7 +71,11 @@
 # 15 Feb 2019, 3d-gussner, Fixed selction GOLD/UNKNOWN DEV_STATUS for ALL variants builds, so you have to choose only once
 # 15 Feb 2019, 3d-gussner, Added some colored output
 # 15 Feb 2019, 3d-gussner, troubleshooting and minor fixes
-
+# 16 Feb 2019, 3d-gussner, Script can be run using arguments
+#                          $1 = variant, example "1_75mm_MK3-EINSy10a-E3Dv6full.h" at this moment it is not possible to use ALL
+#                          $2 = multi language OR english only [ALL/EN_ONLY]
+#                          $3 = development status [GOLD/RC/BETA/ALPHA/DEVEL/DEBUG]
+#                          If one argument is wrong a list of valid one will be shown
 
 
 ###Check if OSTYPE is supported
@@ -203,7 +207,14 @@ if [ -z "$1" ] ; then
 		esac
 	done
 else
-	VARIANT=$1
+	if [ -f "$SCRIPT_PATH/Firmware/variants/$1" ] ; then 
+		VARIANTS=$1
+	else
+		echo "$(tput setaf 1)$1 could not be found in Firmware/variants please choose a valid one$(tput setaf 2)"
+		ls -1 $SCRIPT_PATH/Firmware/variants/*.h | xargs -n1 basename
+		echo "$(tput sgr0)"
+		exit
+	fi
 fi
 
 #Second argument defines if it is an english only version. Known values EN_ONLY / ALL
@@ -232,7 +243,23 @@ if [ -z "$2" ] ; then
 		esac
 	done
 else
-	LANGUAGES=$2
+	if [[ "$2" == "ALL" || "$2" == "EN_ONLY" ]] ; then
+		LANGUAGES=$2
+	else
+		echo "$(tput setaf 1)Language agrument is wrong!$(tput sgr0)"
+		echo "Only $(tput setaf 2)'ALL'$(tput sgr0) or $(tput setaf 2)'EN_ONLY'$(tput sgr0) are allowed as 2nd argument!"
+		exit
+	fi
+fi
+#Check if DEV_STATUS is selected via argument 3
+if [ ! -z "$3" ] ; then
+	if [[ "$3" == "GOLD" || "$3" == "RC" || "$3" == "BETA" || "$3" == "ALPHA" || "$3" == "DEVEL" || "$3" == "DEBUG" ]] ; then
+		DEV_STATUS_SELECTED=$3
+	else
+		echo "$(tput setaf 1)Development argument is wrong!$(tput sgr0)"
+		echo "Only $(tput setaf 2)'GOLD', 'RC', 'BETA', 'ALPHA', 'DEVEL' or 'DEBUG'$(tput sgr0) are allowed as 3rd argument!$(tput sgr0)"
+		exit
+	fi
 fi
 
 #Set BUILD_ENV_PATH
@@ -307,20 +334,20 @@ do
 	#Check if exacly the same hexfile already exsits
 	if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex"  &&  "$LANGUAGES" == "ALL" ]]; then
 		echo ""
-		ls $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex
+		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.hex | xargs -n1 basename
 		echo "$(tput setaf 6)This hex file to be comiled already exsits! To cancle this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
-		read -t 10 -p "Press any key to continue..."
+		read -t 10 -p "Press Enter to continue..."
 	elif [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex"  &&  "$LANGUAGES" == "EN_ONLY" ]]; then
 		echo ""
-		ls $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex
+		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex | xargs -n1 basename
 		echo "$(tput setaf 6)This hex file to be comiled already exsits! To cancle this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
-		read -t 10 -p "Press any key to continue..."
+		read -t 10 -p "Press Enter to continue..."
 	fi
 	if [[ -f "$SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip"  &&  "$LANGUAGES" == "ALL" ]]; then
 		echo ""
-		ls $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip
+		ls -1 $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT.zip | xargs -n1 basename
 		echo "$(tput setaf 6)This zip file to be comiled already exsits! To cancle this process press CRTL+C and rename existing hex file.$(tput sgr 0)"
-		read -t 10 -p "Press any key to continue..."
+		read -t 10 -p "Press Enter to continue..."
 	fi
 	
 	#List some useful data
@@ -340,7 +367,7 @@ do
 		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 11
 	else
 		echo "$(tput setaf 6)Configuration_prusa.h already exist it will be overwritten in 10 seconds by the chosen variant.$(tput sgr 0)"
-		read -t 10 -p "Press any key to continue..."
+		read -t 10 -p "Press Enter to continue..."
 		cp -f $SCRIPT_PATH/Firmware/variants/$VARIANT.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 11
 	fi
 
@@ -370,7 +397,7 @@ do
 			echo "Compiler flags not found, adding flags"
 			if [ ! -f $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE.bck ]; then
 				echo "making a backup"
-				ls $BUILD_ENV_PATH/portable/packages/rambo/hardware/avr/1.0.1/
+				ls -1 $BUILD_ENV_PATH/portable/packages/rambo/hardware/avr/1.0.1/
 				cp -f $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE.bck
 			fi
 			echo $COMP_FLAGS >> $BUILD_ENV_PATH/portable/packages/$RAMBO_PLATFORM_FILE
@@ -388,7 +415,7 @@ do
 	export BUILDER=$ARDUINO/arduino-builder
 
 	echo
-	#read -t 5 -p "Press any key..."
+	#read -t 5 -p "Press Enter..."
 	echo 
 
 	if [ $OSTYPE == "msys" ]; then
@@ -421,7 +448,7 @@ do
 		if [ -f "lang_en.tmp" ]; then
 			echo ""
 			echo "$(tput setaf 6)Previous lang build files already exist these will be cleaned up in 10 seconds.$(tput sgr 0)"
-			read -t 10 -p "Press any key to continue..."
+			read -t 10 -p "Press Enter to continue..."
 			echo "$(tput setaf 3)"
 			./lang-clean.sh
 			echo "$(tput sgr 0)"
@@ -429,7 +456,7 @@ do
 		if [ -f "progmem.out" ]; then
 			echo ""
 			echo "$(tput setaf 6)Previous firmware build files already exist these will be cleaned up in 10 seconds.$(tput sgr 0)"
-			read -t 10 -p "Press any key to continue..."
+			read -t 10 -p "Press Enter to continue..."
 			echo "$(tput setaf 3)"
 			./fw-clean.sh
 			echo "$(tput sgr 0)"
