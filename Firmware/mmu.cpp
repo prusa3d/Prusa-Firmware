@@ -1030,8 +1030,11 @@ void extr_unload()
 	uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 #endif
 
-	if (degHotend0() > EXTRUDE_MINTEMP)
+//-//	if (degHotend0() > EXTRUDE_MINTEMP)
+//if(current_temperature[0]>(target_temperature[0]*0.95))
+if(bFilamentAction)
 	{
+bFilamentAction=false;
 #ifndef SNMM
 		st_synchronize();
 		
@@ -1109,7 +1112,7 @@ void extr_unload()
           bFilamentFirstRun=false;
           if(target_temperature[0]>=EXTRUDE_MINTEMP) {
                bFilamentPreheatState=true;
-               mFilamentItem(target_temperature[0]);
+               mFilamentItem(target_temperature[0],target_temperature_bed);
           }
           else menu_submenu(mFilamentMenu);
 	}
@@ -1340,6 +1343,8 @@ void mmu_show_warning()
 
 void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
 {
+//-//
+bFilamentAction=false;
   if (degHotend0() > EXTRUDE_MINTEMP)
   {
 	tmp_extruder = filament_nr;
@@ -1371,6 +1376,8 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
 
 void mmu_eject_filament(uint8_t filament, bool recover)
 {
+//-//
+bFilamentAction=false;
 	if (filament < 5) 
 	{
 

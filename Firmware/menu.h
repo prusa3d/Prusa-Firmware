@@ -54,6 +54,7 @@ void menu_start(void);
 extern void menu_end(void);
 
 extern void menu_back(void);
+extern void menu_back(uint8_t nLevel);
 
 extern void menu_back_if_clicked(void);
 
