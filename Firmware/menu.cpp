@@ -85,6 +85,19 @@ void menu_end(void)
 	}
 }
 
+//-//
+void menu_back(uint8_t nLevel)
+{
+     menu_depth = ((menu_depth > nLevel) ? (menu_depth - nLevel) : 0);
+     menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, true);
+}
+
+void menu_back(void)
+{
+menu_back(1);
+}
+
+/*
 void menu_back(void)
 {
 	if (menu_depth > 0)
@@ -93,6 +106,7 @@ void menu_back(void)
 		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, true);
 	}
 }
+*/
 
 static void menu_back_no_reset(void)
 {

@@ -7507,7 +7507,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
                               if(target_temperature[0]>=EXTRUDE_MINTEMP)
                               {
                                    bFilamentPreheatState=true;
-                                   mFilamentItem(target_temperature[0]);
+                                   mFilamentItem(target_temperature[0],target_temperature_bed);
                               }
                               else
                               {
