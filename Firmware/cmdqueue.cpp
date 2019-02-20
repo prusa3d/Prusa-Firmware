@@ -94,7 +94,7 @@ void cmdqueue_reset()
     bufindr = 0;
     bufindw = 0;
     buflen = 0;
-    cmdbuffer_front_already_processed = false;
+    cmdbuffer_front_already_processed = true;
 }
 
 // How long a string could be pushed to the front of the command queue?
