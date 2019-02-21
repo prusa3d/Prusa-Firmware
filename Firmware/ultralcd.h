@@ -138,7 +138,8 @@ typedef enum
 extern eFILAMENT_ACTION eFilamentAction;
 extern bool bFilamentFirstRun;
 extern bool bFilamentPreheatState;
-void mFilamentItem(uint16_t nTemp);
+extern bool bFilamentAction;
+void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
 void mFilamentMenu();
 void unload_filament();
 
