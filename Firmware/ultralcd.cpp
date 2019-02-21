@@ -2306,9 +2306,12 @@ void lcd_set_filament_oq_meass()
 eFILAMENT_ACTION eFilamentAction=e_FILAMENT_ACTION_none; // must be initialized as 'non-autoLoad'
 bool bFilamentFirstRun;
 bool bFilamentPreheatState;
+bool bFilamentAction=false;
 
 static void mFilamentPrompt()
 {
+uint8_t nLevel;
+
 lcd_set_cursor(0,0);
 lcdui_print_temp(LCD_STR_THERMOMETER[0],(int)degHotend(0),(int)degTargetHotend(0));
 lcd_set_cursor(0,2);
@@ -2331,13 +2334,13 @@ switch(eFilamentAction)
      }
 if(lcd_clicked())
      {
-     menu_back();
-     menu_back();
+     nLevel=2;
      if(!bFilamentPreheatState)
           {
-          menu_back();
-//-//          setTargetHotend0(0.0);
+          nLevel++;
+//          setTargetHotend0(0.0);                  // uncoment if return to base state is required
           }
+     menu_back(nLevel);
      switch(eFilamentAction)
           {
           case e_FILAMENT_ACTION_Load:
@@ -2348,28 +2351,44 @@ if(lcd_clicked())
           case e_FILAMENT_ACTION_unLoad:
                enquecommand_P(PSTR("M702"));      // unload filament
                break;
+/*
           case e_FILAMENT_ACTION_mmuLoad:
+//./  MYSERIAL.println("mFilamentPrompt - mmuLoad");
+               bFilamentAction=true;
                menu_submenu(mmu_load_to_nozzle_menu);
                break;
+*/
+/*
           case e_FILAMENT_ACTION_mmuUnLoad:
+//./  MYSERIAL.println("mFilamentPrompt - mmuUnLoad");
+               bFilamentAction=true;
                extr_unload();
                break;
+*/
+/*
           case e_FILAMENT_ACTION_mmuEject:
-               menu_submenu(mmu_fil_eject_menu);
+  MYSERIAL.println("mFilamentPrompt - mmuEject");
+               bFilamentAction=true;
+//               menu_submenu(mmu_fil_eject_menu);
                break;
+*/
           }
      if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
           eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
      }
 }
 
-void mFilamentItem(uint16_t nTemp)
+void mFilamentItem(uint16_t nTemp,uint16_t nTempBed)
 {
-static int nTargetOld;
+static int nTargetOld,nTargetBedOld;
+uint8_t nLevel;
+static bool bBeep=false;
 
 //if(bPreheatState)                                 // not necessary
      nTargetOld=target_temperature[0];
+     nTargetBedOld=target_temperature_bed;
 setTargetHotend0((float)nTemp);
+setTargetBed((float)nTempBed);
 lcd_timeoutToStatus.stop();
 lcd_set_cursor(0,0);
 lcdui_print_temp(LCD_STR_THERMOMETER[0],(int)degHotend(0),(int)degTargetHotend(0));
@@ -2396,54 +2415,94 @@ if(lcd_clicked())
      if(!bFilamentPreheatState)
           {
           setTargetHotend0(0.0);
+          setTargetBed(0.0);
           menu_back();
           }
-     else setTargetHotend0((float)nTargetOld);
+     else {
+          setTargetHotend0((float)nTargetOld);
+          setTargetBed((float)nTargetBedOld);
+          }
      menu_back();
      if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
           eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
      }
-else if(!isHeatingHotend0())
+else {
+     if(current_temperature[0]>(target_temperature[0]*0.95))
           {
-          menu_submenu(mFilamentPrompt);
-          Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
+          switch(eFilamentAction)
+               {
+               case e_FILAMENT_ACTION_Load:
+               case e_FILAMENT_ACTION_autoLoad:
+               case e_FILAMENT_ACTION_unLoad:
+                    menu_submenu(mFilamentPrompt);
+                    break;
+               case e_FILAMENT_ACTION_mmuLoad:
+                    nLevel=1;
+                    if(!bFilamentPreheatState)
+                         nLevel++;
+                    bFilamentAction=true;
+                    menu_back(nLevel);
+                    menu_submenu(mmu_load_to_nozzle_menu);
+                    break;
+               case e_FILAMENT_ACTION_mmuUnLoad:
+                    nLevel=1;
+                    if(!bFilamentPreheatState)
+                         nLevel++;
+                    bFilamentAction=true;
+                    menu_back(nLevel);
+                    extr_unload();
+                    break;
+               case e_FILAMENT_ACTION_mmuEject:
+                    nLevel=1;
+                    if(!bFilamentPreheatState)
+                         nLevel++;
+                    bFilamentAction=true;
+                    menu_back(nLevel);
+                    menu_submenu(mmu_fil_eject_menu);
+                    break;
+               }
+          if(bBeep)
+               Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
+          bBeep=false;
           }
+     else bBeep=true;
+     }
 }
 
 static void mFilamentItem_PLA()
 {
 bFilamentPreheatState=false;
-mFilamentItem(PLA_PREHEAT_HOTEND_TEMP);
+mFilamentItem(PLA_PREHEAT_HOTEND_TEMP,PLA_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_PET()
 {
 bFilamentPreheatState=false;
-mFilamentItem(PET_PREHEAT_HOTEND_TEMP);
+mFilamentItem(PET_PREHEAT_HOTEND_TEMP,PET_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_ABS()
 {
 bFilamentPreheatState=false;
-mFilamentItem(ABS_PREHEAT_HOTEND_TEMP);
+mFilamentItem(ABS_PREHEAT_HOTEND_TEMP,ABS_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_HIPS()
 {
 bFilamentPreheatState=false;
-mFilamentItem(HIPS_PREHEAT_HOTEND_TEMP);
+mFilamentItem(HIPS_PREHEAT_HOTEND_TEMP,HIPS_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_PP()
 {
 bFilamentPreheatState=false;
-mFilamentItem(PP_PREHEAT_HOTEND_TEMP);
+mFilamentItem(PP_PREHEAT_HOTEND_TEMP,PP_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_FLEX()
 {
 bFilamentPreheatState=false;
-mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP);
+mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP,FLEX_PREHEAT_HPB_TEMP);
 }
 
 
@@ -2458,19 +2517,20 @@ void mFilamentMenu()
 {
 MENU_BEGIN();
 MENU_ITEM_FUNCTION_P(_T(MSG_MAIN),mFilamentBack);
-MENU_ITEM_SUBMENU_P(PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)),mFilamentItem_PLA);
-MENU_ITEM_SUBMENU_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP)),mFilamentItem_PET);
-MENU_ITEM_SUBMENU_P(PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP)),mFilamentItem_ABS);
-MENU_ITEM_SUBMENU_P(PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP)),mFilamentItem_HIPS);
-MENU_ITEM_SUBMENU_P(PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP)),mFilamentItem_PP);
-MENU_ITEM_SUBMENU_P(PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP)),mFilamentItem_FLEX);
+MENU_ITEM_SUBMENU_P(PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)),mFilamentItem_PLA);
+MENU_ITEM_SUBMENU_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)),mFilamentItem_PET);
+MENU_ITEM_SUBMENU_P(PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)),mFilamentItem_ABS);
+MENU_ITEM_SUBMENU_P(PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(HIPS_PREHEAT_HPB_TEMP)),mFilamentItem_HIPS);
+MENU_ITEM_SUBMENU_P(PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)),mFilamentItem_PP);
+MENU_ITEM_SUBMENU_P(PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FLEX_PREHEAT_HPB_TEMP)),mFilamentItem_FLEX);
 MENU_END();
 }
 
 
 void lcd_unLoadFilament()
 {
-if((degHotend0()>EXTRUDE_MINTEMP)&&bFilamentFirstRun)
+//./if((degHotend0()>EXTRUDE_MINTEMP)&&bFilamentFirstRun)
+if(0)
      {
      menu_back();
      enquecommand_P(PSTR("M702"));                // unload filament
@@ -2481,7 +2541,7 @@ else {
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
           bFilamentPreheatState=true;
-          mFilamentItem(target_temperature[0]);
+          mFilamentItem(target_temperature[0],target_temperature_bed);
           }
      else mFilamentMenu();
      }
@@ -2699,7 +2759,8 @@ static void lcd_menu_AutoLoadFilament()
 
 static void lcd_LoadFilament()
 {
-  if (degHotend0() > EXTRUDE_MINTEMP)
+//-//  if (degHotend0() > EXTRUDE_MINTEMP)
+if(0)
   {
 //      menu_back();                                // not necessary (see "lcd_return_to_status()" below)
       custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
@@ -2715,7 +2776,7 @@ static void lcd_LoadFilament()
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
           bFilamentPreheatState=true;
-          mFilamentItem(target_temperature[0]);
+          mFilamentItem(target_temperature[0],target_temperature_bed);
           }
      else mFilamentMenu();
   }
@@ -5626,7 +5687,8 @@ static void fil_load_menu()
 
 static void mmu_load_to_nozzle_menu()
 {
-if (degHotend0() > EXTRUDE_MINTEMP)
+//-//if (degHotend0() > EXTRUDE_MINTEMP)
+if(bFilamentAction)
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
@@ -5643,7 +5705,7 @@ else {
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
           bFilamentPreheatState=true;
-          mFilamentItem(target_temperature[0]);
+          mFilamentItem(target_temperature[0],target_temperature_bed);
           }
      else mFilamentMenu();
      }
@@ -5651,7 +5713,8 @@ else {
 
 static void mmu_fil_eject_menu()
 {
-if (degHotend0() > EXTRUDE_MINTEMP)
+//-//if (degHotend0() > EXTRUDE_MINTEMP)
+if(bFilamentAction)
 {
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
@@ -5668,7 +5731,7 @@ else {
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
           bFilamentPreheatState=true;
-          mFilamentItem(target_temperature[0]);
+          mFilamentItem(target_temperature[0],target_temperature_bed);
           }
      else mFilamentMenu();
      }
@@ -6142,7 +6205,9 @@ static void lcd_main_menu()
 	{
 		MENU_ITEM_SUBMENU_P(_T(MSG_LOAD_FILAMENT), fil_load_menu);
 		MENU_ITEM_SUBMENU_P(_i("Load to nozzle"), mmu_load_to_nozzle_menu);
-    MENU_ITEM_FUNCTION_P(_T(MSG_UNLOAD_FILAMENT), extr_unload);
+//-//          MENU_ITEM_FUNCTION_P(_T(MSG_UNLOAD_FILAMENT), extr_unload);
+//bFilamentFirstRun=true;
+          MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), extr_unload_);
 		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
 	}
 	else
