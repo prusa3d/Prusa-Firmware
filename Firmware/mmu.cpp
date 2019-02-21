@@ -1414,6 +1414,12 @@ bFilamentAction=false;
 	}
 }
 
+//! @brief load more
+//!
+//! Try to feed more filament from MMU if it is not detected by filament sensor.
+//! Move filament back and forth to nozzle in order to detect jam.
+//! If PTFE tube is jammed, this cause filament to be unloaded and no longer
+//! detected by pulley IR sensor in next step.
 static void load_more()
 {
     for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++)
