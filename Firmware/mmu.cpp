@@ -1411,7 +1411,6 @@ void mmu_eject_filament(uint8_t filament, bool recover)
 {
 //-//
 bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu()"
-return;
 	if (filament < 5) 
 	{
 
