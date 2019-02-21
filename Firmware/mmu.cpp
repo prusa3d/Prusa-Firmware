@@ -1022,6 +1022,28 @@ void mmu_filament_ramming()
     }
 }
 
+//-//
+void extr_unload_()
+{
+//if(bFilamentAction)
+if(0)
+	{
+     bFilamentAction=false;
+     extr_unload();
+     }
+else	{
+     eFilamentAction=e_FILAMENT_ACTION_mmuUnLoad;
+     bFilamentFirstRun=false;
+     if(target_temperature[0]>=EXTRUDE_MINTEMP)
+          {
+          bFilamentPreheatState=true;
+          mFilamentItem(target_temperature[0],target_temperature_bed);
+          }
+//     else menu_submenu(mFilamentMenu);
+     else mFilamentMenu();
+	}
+}
+
 void extr_unload()
 { //unload just current filament for multimaterial printers
 #ifdef SNMM
@@ -1030,11 +1052,8 @@ void extr_unload()
 	uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 #endif
 
-//-//	if (degHotend0() > EXTRUDE_MINTEMP)
-//if(current_temperature[0]>(target_temperature[0]*0.95))
-if(bFilamentAction)
+	if (degHotend0() > EXTRUDE_MINTEMP)
 	{
-bFilamentAction=false;
 #ifndef SNMM
 		st_synchronize();
 		
@@ -1108,13 +1127,7 @@ bFilamentAction=false;
 	}
 	else
 	{
-          eFilamentAction=e_FILAMENT_ACTION_mmuUnLoad;
-          bFilamentFirstRun=false;
-          if(target_temperature[0]>=EXTRUDE_MINTEMP) {
-               bFilamentPreheatState=true;
-               mFilamentItem(target_temperature[0],target_temperature_bed);
-          }
-          else menu_submenu(mFilamentMenu);
+		show_preheat_nozzle_warning();
 	}
 	//lcd_return_to_status();
 }
@@ -1172,51 +1185,71 @@ void extr_adj_4()
 
 void mmu_load_to_nozzle_0() 
 {
+//-//
+     menu_back();
 	lcd_mmu_load_to_nozzle(0);
 }
 
 void mmu_load_to_nozzle_1() 
 {
+//-//
+     menu_back();
 	lcd_mmu_load_to_nozzle(1);
 }
 
 void mmu_load_to_nozzle_2() 
 {
+//-//
+     menu_back();
 	lcd_mmu_load_to_nozzle(2);
 }
 
 void mmu_load_to_nozzle_3() 
 {
+//-//
+     menu_back();
 	lcd_mmu_load_to_nozzle(3);
 }
 
 void mmu_load_to_nozzle_4() 
 {
+//-//
+     menu_back();
 	lcd_mmu_load_to_nozzle(4);
 }
 
 void mmu_eject_fil_0()
 {
+//-//
+     menu_back();
 	mmu_eject_filament(0, true);
 }
 
 void mmu_eject_fil_1()
 {
+//-//
+     menu_back();
 	mmu_eject_filament(1, true);
 }
 
 void mmu_eject_fil_2()
 {
+//-//
+     menu_back();
 	mmu_eject_filament(2, true);
 }
 
 void mmu_eject_fil_3()
 {
+//-//
+     menu_back();
 	mmu_eject_filament(3, true);
 }
 
 void mmu_eject_fil_4()
 {
+//-//
+     menu_back();
 	mmu_eject_filament(4, true);
 }
 
@@ -1344,7 +1377,7 @@ void mmu_show_warning()
 void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
 {
 //-//
-bFilamentAction=false;
+bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_menu()"
   if (degHotend0() > EXTRUDE_MINTEMP)
   {
 	tmp_extruder = filament_nr;
@@ -1377,7 +1410,8 @@ bFilamentAction=false;
 void mmu_eject_filament(uint8_t filament, bool recover)
 {
 //-//
-bFilamentAction=false;
+bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu()"
+return;
 	if (filament < 5) 
 	{
 
