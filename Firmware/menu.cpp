@@ -16,7 +16,7 @@
 
 extern int32_t lcd_encoder;
 
-#define MENU_DEPTH_MAX       4
+#define MENU_DEPTH_MAX       6
 
 static menu_record_t menu_stack[MENU_DEPTH_MAX];
 
@@ -85,7 +85,6 @@ void menu_end(void)
 	}
 }
 
-//-//
 void menu_back(uint8_t nLevel)
 {
      menu_depth = ((menu_depth > nLevel) ? (menu_depth - nLevel) : 0);
@@ -96,17 +95,6 @@ void menu_back(void)
 {
 menu_back(1);
 }
-
-/*
-void menu_back(void)
-{
-	if (menu_depth > 0)
-	{
-		menu_depth--;		
-		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, true);
-	}
-}
-*/
 
 static void menu_back_no_reset(void)
 {
@@ -394,8 +382,3 @@ template uint8_t menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int1
 template uint8_t menu_item_edit_P<uint8_t*>(const char* str, uint8_t *pval, int16_t min_val, int16_t max_val);
 
 #undef _menu_data
-
-
-
-
-
