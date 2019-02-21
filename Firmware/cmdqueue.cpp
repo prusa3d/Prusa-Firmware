@@ -94,7 +94,11 @@ void cmdqueue_reset()
     bufindr = 0;
     bufindw = 0;
     buflen = 0;
-    cmdbuffer_front_already_processed = false;
+
+	//commands are removed from command queue after process_command() function is finished
+	//reseting command queue and enqueing new commands during some (usually long running) command processing would cause that new commands are immediately removed from queue (or damaged)
+	//this will ensure that all new commands which are enqueued after cmdqueue reset, will be always executed
+    cmdbuffer_front_already_processed = true; 
 }
 
 // How long a string could be pushed to the front of the command queue?
