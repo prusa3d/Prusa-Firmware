@@ -707,22 +707,22 @@
 "Print FAN"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 OK."
+"Prusa i3 MK2.5"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 OK."
+"Prusa i3 MK3"
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK2.5-320 OK."
+"Zaribo MK2.5-320"
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK2.5-220 OK."
+"Zaribo MK2.5-220"
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK3-320 OK."
+"Zaribo MK3-320"
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK3-220 OK."
+"Zaribo MK3-220"
 
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
@@ -737,10 +737,10 @@
 "Remove old filament and press the knob to start loading new filament."
 
 #
-"Prusa i3 MK3S OK."
+"Prusa i3 MK3S"
 
 #
-"Prusa i3 MK2 OK."
+"Prusa i3 MK2"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
