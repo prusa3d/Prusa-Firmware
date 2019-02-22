@@ -223,7 +223,12 @@ void mmu_loop(void)
 			if (!version_valid) mmu_show_warning();
 			else puts_P(PSTR("MMU version valid"));
 
-			if ((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3_SNMM))
+			bool activate_stealth_mode = (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_STEALTH);
+#ifdef MMU_STEALTH_MODE
+			activate_stealth_mode = true;
+#endif //MMU_STEALTH_MODE
+
+			if (!activate_stealth_mode)
 			{
 				FDEBUG_PUTS_P(PSTR("MMU <= 'P0'"));
 				mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
