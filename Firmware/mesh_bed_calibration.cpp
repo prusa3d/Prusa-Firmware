@@ -2937,7 +2937,7 @@ bool scan_bed_induction_points(int8_t verbosity_level)
 		uint8_t iy = mesh_point / MESH_MEAS_NUM_X_POINTS;
 		if (iy & 1) ix = (MESH_MEAS_NUM_X_POINTS - 1) - ix;
 		float bedX = BED_X(ix, MESH_MEAS_NUM_X_POINTS);
-		float bedY = BED_Y(iy, MESH_MEAS_NUM_X_POINTS);
+		float bedY = BED_Y(iy, MESH_MEAS_NUM_Y_POINTS);
         current_position[X_AXIS] = vec_x[0] * bedX + vec_y[0] * bedY + cntr[0];
         current_position[Y_AXIS] = vec_x[1] * bedX + vec_y[1] * bedY + cntr[1];
         // The calibration points are very close to the min Y.
