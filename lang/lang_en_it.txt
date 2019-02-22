@@ -943,27 +943,27 @@
 "Ventola di stampa"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 OK."
+"Prusa i3 MK2.5"
 "\x00"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 OK."
+"Prusa i3 MK3"
 "\x00"
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK2.5-320 OK."
+"Zaribo MK2.5-320"
 "\x00"
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK2.5-220 OK."
+"Zaribo MK2.5-220"
 "\x00"
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK3-320 OK."
+"Zaribo MK3-320"
 "\x00"
 
 #WELCOME_MSG c=20 r=0
-"Zaribo MK3-220 OK."
+"Zaribo MK3-220"
 "\x00"
 
 #MSG_PRUSA3D c=0 r=0
@@ -983,11 +983,11 @@
 "Rimuovi il filamento precedente e premi la manopola per caricare il nuovo filamento. "
 
 #
-"Prusa i3 MK3S OK."
+"Prusa i3 MK3S"
 "\x00"
 
 #
-"Prusa i3 MK2 OK."
+"Prusa i3 MK2"
 "\x00"
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
