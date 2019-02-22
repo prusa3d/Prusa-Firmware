@@ -181,6 +181,18 @@ bool check_for_ir_sensor()
 #endif //IR_SENSOR
 }
 
+static bool activate_stealth_mode()
+{
+	bool activate_stealth_mode = false;
+#ifdef SILENT_MODE_STEALTH
+	activate_stealth_mode = (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_STEALTH);
+#endif //SILENT_MODE_STEALTH
+#ifdef MMU_STEALTH_MODE
+	activate_stealth_mode = true;
+#endif //MMU_STEALTH_MODE
+	return activate_stealth_mode;
+}
+
 //mmu main loop - state machine processing
 void mmu_loop(void)
 {
@@ -222,13 +234,8 @@ void mmu_loop(void)
 			bool version_valid = mmu_check_version();
 			if (!version_valid) mmu_show_warning();
 			else puts_P(PSTR("MMU version valid"));
-
-			bool activate_stealth_mode = (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_STEALTH);
-#ifdef MMU_STEALTH_MODE
-			activate_stealth_mode = true;
-#endif //MMU_STEALTH_MODE
-
-			if (!activate_stealth_mode)
+			
+			if (!activate_stealth_mode())
 			{
 				FDEBUG_PUTS_P(PSTR("MMU <= 'P0'"));
 				mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
