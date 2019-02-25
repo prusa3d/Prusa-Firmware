@@ -101,6 +101,8 @@ extern int get_ext_nr();
 extern void display_loading();
 extern void extr_adj(int extruder);
 extern void extr_unload();
+//-//
+extern void extr_unload_();
 extern void extr_adj_0();
 extern void extr_adj_1();
 extern void extr_adj_2();
