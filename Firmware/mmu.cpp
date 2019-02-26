@@ -1422,9 +1422,7 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 			    LcdUpdateDisabler disableLcdUpdate;
                 lcd_clear();
                 lcd_set_cursor(0, 1); lcd_puts_P(_i("Ejecting filament"));
-                current_position[E_AXIS] -= 80;
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-                st_synchronize();
+                mmu_filament_ramming();
                 mmu_command(MmuCmd::E0 + filament);
                 manage_response(false, false, MMU_UNLOAD_MOVE);
                 if (recover)
