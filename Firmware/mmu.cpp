@@ -1183,40 +1183,6 @@ void extr_adj_4()
 #endif
 }
 
-void mmu_load_to_nozzle_0() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(0);
-}
-
-void mmu_load_to_nozzle_1() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(1);
-}
-
-void mmu_load_to_nozzle_2() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(2);
-}
-
-void mmu_load_to_nozzle_3() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(3);
-}
-
-void mmu_load_to_nozzle_4() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(4);
-}
 
 void mmu_eject_fil_0()
 {
