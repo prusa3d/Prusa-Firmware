@@ -1183,42 +1183,6 @@ void extr_adj_4()
 #endif
 }
 
-
-void mmu_eject_fil_0()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(0, true);
-}
-
-void mmu_eject_fil_1()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(1, true);
-}
-
-void mmu_eject_fil_2()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(2, true);
-}
-
-void mmu_eject_fil_3()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(3, true);
-}
-
-void mmu_eject_fil_4()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(4, true);
-}
-
 void load_all()
 {
 #ifndef SNMM

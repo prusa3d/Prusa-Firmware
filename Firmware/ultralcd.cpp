@@ -4745,7 +4745,7 @@ static void lcd_wizard_unload()
 		} 
 		else
 		{
-			mmu_eject_fil_0();
+		    mmu_eject_filament(0, true);
 		}
 	} 
 	else
@@ -5717,30 +5717,37 @@ else {
      }
 }
 
+template <uint8_t filament>
+static void mmu_eject_filament()
+{
+    menu_back();
+    mmu_eject_filament(filament, true);
+}
+
 static void mmu_fil_eject_menu()
 {
-//-//if (degHotend0() > EXTRUDE_MINTEMP)
-if(bFilamentAction)
-{
-	MENU_BEGIN();
-	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_FUNCTION_P(_i("Eject filament 1"), mmu_eject_fil_0);
-	MENU_ITEM_FUNCTION_P(_i("Eject filament 2"), mmu_eject_fil_1);
-	MENU_ITEM_FUNCTION_P(_i("Eject filament 3"), mmu_eject_fil_2);
-	MENU_ITEM_FUNCTION_P(_i("Eject filament 4"), mmu_eject_fil_3);
-	MENU_ITEM_FUNCTION_P(_i("Eject filament 5"), mmu_eject_fil_4);
-	MENU_END();
-}
-else {
-     eFilamentAction=e_FILAMENT_ACTION_mmuEject;
-     bFilamentFirstRun=false;
-     if(target_temperature[0]>=EXTRUDE_MINTEMP)
-          {
-          bFilamentPreheatState=true;
-          mFilamentItem(target_temperature[0],target_temperature_bed);
-          }
-     else mFilamentMenu();
-     }
+    if(bFilamentAction)
+    {
+        MENU_BEGIN();
+        MENU_ITEM_BACK_P(_T(MSG_MAIN));
+        MENU_ITEM_FUNCTION_P(_i("Eject filament 1"), mmu_eject_filament<0>);
+        MENU_ITEM_FUNCTION_P(_i("Eject filament 2"), mmu_eject_filament<1>);
+        MENU_ITEM_FUNCTION_P(_i("Eject filament 3"), mmu_eject_filament<2>);
+        MENU_ITEM_FUNCTION_P(_i("Eject filament 4"), mmu_eject_filament<3>);
+        MENU_ITEM_FUNCTION_P(_i("Eject filament 5"), mmu_eject_filament<4>);
+        MENU_END();
+    }
+    else
+    {
+        eFilamentAction=e_FILAMENT_ACTION_mmuEject;
+        bFilamentFirstRun=false;
+        if(target_temperature[0]>=EXTRUDE_MINTEMP)
+        {
+            bFilamentPreheatState=true;
+            mFilamentItem(target_temperature[0],target_temperature_bed);
+        }
+        else mFilamentMenu();
+    }
 }
 
 #ifdef SNMM
