@@ -144,6 +144,7 @@ static void lcd_menu_show_sensors_state();
 
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
+static void mmu_cut_filament_menu();
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats();
@@ -2407,6 +2408,9 @@ switch(eFilamentAction)
      case e_FILAMENT_ACTION_mmuEject:
           lcd_puts_P(_i("Preheating to eject"));  ////MSG_ c=20 r=1
           break;
+     case e_FILAMENT_ACTION_mmuCut:
+          lcd_puts_P(_i("Preheating to cut"));  ////MSG_ c=20 r=1
+          break;
      }
 lcd_set_cursor(0,3);
 lcd_puts_P(_i(">Cancel"));                        ////MSG_ c=20 r=1
@@ -2459,6 +2463,14 @@ else {
                     bFilamentAction=true;
                     menu_back(nLevel);
                     menu_submenu(mmu_fil_eject_menu);
+                    break;
+               case e_FILAMENT_ACTION_mmuCut:
+                    nLevel=1;
+                    if(!bFilamentPreheatState)
+                         nLevel++;
+                    bFilamentAction=true;
+                    menu_back(nLevel);
+                    menu_submenu(mmu_cut_filament_menu);
                     break;
                }
           if(bBeep)
@@ -5750,6 +5762,38 @@ static void mmu_fil_eject_menu()
     }
 }
 
+template <uint8_t filament>
+static void mmu_cut_filament()
+{
+    menu_back();
+    mmu_cut_filament(filament);
+}
+
+static void mmu_cut_filament_menu()
+{
+if(bFilamentAction)
+{
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_MAIN));
+    MENU_ITEM_FUNCTION_P(_i("Cut filament 1"), mmu_cut_filament<0>);
+    MENU_ITEM_FUNCTION_P(_i("Cut filament 2"), mmu_cut_filament<1>);
+    MENU_ITEM_FUNCTION_P(_i("Cut filament 3"), mmu_cut_filament<2>);
+    MENU_ITEM_FUNCTION_P(_i("Cut filament 4"), mmu_cut_filament<3>);
+    MENU_ITEM_FUNCTION_P(_i("Cut filament 5"), mmu_cut_filament<4>);
+    MENU_END();
+}
+else {
+     eFilamentAction=e_FILAMENT_ACTION_mmuCut;
+     bFilamentFirstRun=false;
+     if(target_temperature[0]>=EXTRUDE_MINTEMP)
+          {
+          bFilamentPreheatState=true;
+          mFilamentItem(target_temperature[0],target_temperature_bed);
+          }
+     else mFilamentMenu();
+     }
+}
+
 #ifdef SNMM
 static void fil_unload_menu()
 {
@@ -6222,6 +6266,7 @@ static void lcd_main_menu()
 //bFilamentFirstRun=true;
           MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), extr_unload_);
 		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
+        MENU_ITEM_SUBMENU_P(_i("Cut filament"), mmu_cut_filament_menu);
 	}
 	else
 	{

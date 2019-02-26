@@ -52,6 +52,11 @@ enum class MmuCmd : uint_least8_t
     E2,
     E3,
     E4,
+    K0,
+    K1,
+    K2,
+    K3,
+    K4,
     R0,
     S3,
     W0,
@@ -127,6 +132,7 @@ extern bool mmu_check_version();
 extern void mmu_show_warning();
 extern void lcd_mmu_load_to_nozzle(uint8_t filament_nr);
 extern void mmu_eject_filament(uint8_t filament, bool recover);
+extern void mmu_cut_filament(uint8_t filament_nr);
 extern void mmu_continue_loading();
 extern void mmu_filament_ramming();
 extern void mmu_wait_for_heater_blocking();

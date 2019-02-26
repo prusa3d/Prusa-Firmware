@@ -142,6 +142,7 @@ typedef enum
     e_FILAMENT_ACTION_mmuLoad,
     e_FILAMENT_ACTION_mmuUnLoad,
     e_FILAMENT_ACTION_mmuEject,
+    e_FILAMENT_ACTION_mmuCut,
 } eFILAMENT_ACTION;
 extern eFILAMENT_ACTION eFilamentAction;
 extern bool bFilamentFirstRun;
