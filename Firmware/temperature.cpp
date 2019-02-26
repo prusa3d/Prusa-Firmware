@@ -483,8 +483,6 @@ void countFanSpeed()
 	fan_edge_counter[1] = 0;
 }
 
-extern bool fans_check_enabled;
-
 void checkFanSpeed()
 {
 	uint8_t max_print_fan_errors = 0;

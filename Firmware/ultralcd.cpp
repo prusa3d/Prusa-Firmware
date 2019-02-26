@@ -41,8 +41,6 @@
 #include "static_assert.h"
 #include "io_atmega2560.h"
 
-extern bool fans_check_enabled;
-
 
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
