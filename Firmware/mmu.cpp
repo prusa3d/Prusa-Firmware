@@ -1054,11 +1054,11 @@ void extr_unload()
 
 	if (degHotend0() > EXTRUDE_MINTEMP)
 	{
+	    LcdUpdateDisabler lcdUpdateDisabler;
 #ifndef SNMM
 		st_synchronize();
 		
 		//show which filament is currently unloaded
-		lcd_update_enable(false);
 		lcd_clear();
 		lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
 		lcd_print(" ");
@@ -1071,7 +1071,6 @@ void extr_unload()
 		// get response
 		manage_response(false, true, MMU_UNLOAD_MOVE);
 
-		lcd_update_enable(true);
 #else //SNMM
 
 		lcd_clear();
@@ -1120,7 +1119,6 @@ void extr_unload()
 		//st_current_init();
 		if (SilentMode != SILENT_MODE_OFF) st_current_set(2, tmp_motor[2]); //set back to normal operation currents
 		else st_current_set(2, tmp_motor_loud[2]);
-		lcd_update_enable(true);
 		lcd_return_to_status();
 		max_feedrate[E_AXIS] = 50;
 #endif //SNMM
