@@ -140,6 +140,7 @@ extern bool bFilamentFirstRun;
 extern bool bFilamentPreheatState;
 extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
+void mFilamentItemForce();
 void mFilamentMenu();
 void unload_filament();
 

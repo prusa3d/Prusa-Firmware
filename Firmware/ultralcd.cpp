@@ -2499,12 +2499,12 @@ if(current_temperature[0]>(target_temperature[0]*0.95))
                          {
                          loading_flag=true;
                          enquecommand_P(PSTR("M701")); // load filament
+                         if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
+                              eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
                          }
                     if(eFilamentAction==e_FILAMENT_ACTION_unLoad)
                          enquecommand_P(PSTR("M702")); // unload filament
                     }
-//./if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
-//./     eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
                break;
           case e_FILAMENT_ACTION_mmuLoad:
                nLevel=bFilamentPreheatState?1:2;
@@ -2626,6 +2626,11 @@ MENU_ITEM_SUBMENU_P(PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRI
 MENU_ITEM_SUBMENU_P(PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)),mFilamentItem_PP);
 MENU_ITEM_SUBMENU_P(PSTR("FLEX -  " STRINGIFY(FLEX_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FLEX_PREHEAT_HPB_TEMP)),mFilamentItem_FLEX);
 MENU_END();
+}
+
+void mFilamentItemForce()
+{
+mFilamentItem(target_temperature[0],target_temperature_bed);
 }
 
 
