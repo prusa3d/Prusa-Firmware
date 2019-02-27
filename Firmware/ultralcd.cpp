@@ -2293,8 +2293,16 @@ void lcd_set_fan_check() {
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
 }
 
-void lcd_cutter_enabled() {
-    cutter_enabled = !cutter_enabled;
+void lcd_cutter_enabled()
+{
+    if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    {
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
+    }
+    else
+    {
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 1);
+    }
 }
 
 void lcd_set_filament_autoload() {
@@ -5212,10 +5220,10 @@ static void lcd_settings_menu()
 
 	SETTINGS_AUTO_DEPLETE;
 
-    if (cutter_enabled == true)
-        MENU_ITEM_FUNCTION_P(_i("Cutter       [on]"), lcd_cutter_enabled);////MSG_FANS_CHECK_ON c=17 r=1
+    if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+        MENU_ITEM_FUNCTION_P(_i("Cutter       [on]"), lcd_cutter_enabled);//// c=17 r=1
     else
-        MENU_ITEM_FUNCTION_P(_i("Cutter      [off]"), lcd_cutter_enabled);////MSG_FANS_CHECK_OFF c=17 r=1
+        MENU_ITEM_FUNCTION_P(_i("Cutter      [off]"), lcd_cutter_enabled);//// c=17 r=1
 
 	if (fans_check_enabled == true)
 		MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1

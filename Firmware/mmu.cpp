@@ -1439,7 +1439,7 @@ void mmu_continue_loading()
 			if(mmu_load_fail < 255) eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, mmu_load_fail + 1);
 			if(mmu_load_fail_tot < 65535) eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, mmu_load_fail_tot + 1);
 
-			if (cutter_enabled)
+			if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
 			{
 			    mmu_command(MmuCmd::K0 + tmp_extruder);
 			    manage_response(true, true, MMU_UNLOAD_MOVE);

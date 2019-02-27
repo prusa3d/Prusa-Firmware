@@ -285,7 +285,6 @@ void setPwmFrequency(uint8_t pin, int val);
 #endif //CRITICAL_SECTION_START
 
 extern bool fans_check_enabled;
-extern bool cutter_enabled;
 extern float homing_feedrate[];
 extern bool axis_relative_modes[];
 extern int feedmultiply;
