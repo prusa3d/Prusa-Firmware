@@ -5097,6 +5097,29 @@ do\
 }\
 while(0)\
 
+static bool settingsCutter()
+{
+    if (mmu_enabled)
+    {
+        if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+        {
+            if (menu_item_function_P(_i("Cutter       [on]"), lcd_cutter_enabled)) return true;//// c=17 r=1
+        }
+        else
+        {
+            if (menu_item_function_P(_i("Cutter      [off]"), lcd_cutter_enabled)) return true;//// c=17 r=1
+        }
+    }
+    return false;
+}
+
+#define SETTINGS_CUTTER \
+do\
+{\
+    if(settingsCutter()) return;\
+}\
+while(0)\
+
 #ifdef TMC2130
 #define SETTINGS_SILENT_MODE \
 do\
@@ -5220,10 +5243,7 @@ static void lcd_settings_menu()
 
 	SETTINGS_AUTO_DEPLETE;
 
-    if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
-        MENU_ITEM_FUNCTION_P(_i("Cutter       [on]"), lcd_cutter_enabled);//// c=17 r=1
-    else
-        MENU_ITEM_FUNCTION_P(_i("Cutter      [off]"), lcd_cutter_enabled);//// c=17 r=1
+	SETTINGS_CUTTER;
 
 	if (fans_check_enabled == true)
 		MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
@@ -6421,6 +6441,8 @@ static void lcd_tune_menu()
 #endif //FILAMENT_SENSOR
 
 	SETTINGS_AUTO_DEPLETE;
+
+	SETTINGS_CUTTER;
 
 #ifdef TMC2130
      if(!farm_mode)
