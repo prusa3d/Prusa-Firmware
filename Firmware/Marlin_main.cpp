@@ -510,6 +510,7 @@ void servo_init()
 
 
 bool fans_check_enabled = true;
+bool cutter_enabled = false;
 
 
 #ifdef TMC2130

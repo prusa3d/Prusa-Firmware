@@ -199,6 +199,7 @@ static void fil_unload_menu();
 #endif // SNMM || SNMM_V2
 static void lcd_disable_farm_mode();
 static void lcd_set_fan_check();
+static void lcd_cutter_enabled();
 static char snmm_stop_print_menu();
 #ifdef SDCARD_SORT_ALPHA
  static void lcd_sort_type_set();
@@ -2290,6 +2291,10 @@ static void lcd_support_menu()
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
+}
+
+void lcd_cutter_enabled() {
+    cutter_enabled = !cutter_enabled;
 }
 
 void lcd_set_filament_autoload() {
@@ -5206,6 +5211,11 @@ static void lcd_settings_menu()
 	SETTINGS_FILAMENT_SENSOR;
 
 	SETTINGS_AUTO_DEPLETE;
+
+    if (cutter_enabled == true)
+        MENU_ITEM_FUNCTION_P(_i("Cutter       [on]"), lcd_cutter_enabled);////MSG_FANS_CHECK_ON c=17 r=1
+    else
+        MENU_ITEM_FUNCTION_P(_i("Cutter      [off]"), lcd_cutter_enabled);////MSG_FANS_CHECK_OFF c=17 r=1
 
 	if (fans_check_enabled == true)
 		MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
