@@ -1472,7 +1472,7 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_SD_SORT) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_SD_SORT, 0);
 	}
-
+	mbl_mode_init();
 	check_babystep(); //checking if Z babystep is in allowed range
 
 #ifdef UVLO_SUPPORT

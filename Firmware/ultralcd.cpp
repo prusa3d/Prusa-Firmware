@@ -5265,6 +5265,28 @@ do\
 while (0)
 #endif // SDCARD_SORT_ALPHA
 
+#define SETTINGS_MBL_MODE \
+do\
+{\
+    switch(e_mbl_type)\
+    {\
+    case e_MBL_FAST:\
+        MENU_ITEM_FUNCTION_P(_i("MBL mode    [Fast]"),mbl_mode_set);\ 
+         break; \
+    case e_MBL_OPTIMAL:\
+	    MENU_ITEM_FUNCTION_P(_i("MBL mode [Optimal]"), mbl_mode_set); \ 
+	     break; \
+    case e_MBL_PREC:\
+	     MENU_ITEM_FUNCTION_P(_i("MBL mode [Precise]"), mbl_mode_set); \
+	     break; \
+    default:\
+	     MENU_ITEM_FUNCTION_P(_i("MBL mode [Optimal]"), mbl_mode_set); \
+	     break; \
+    }\
+}\
+while (0)
+
+
 #define SETTINGS_SOUND \
 do\
 {\
@@ -5310,6 +5332,8 @@ static void lcd_settings_menu()
 		MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
 
 	SETTINGS_SILENT_MODE;
+
+	SETTINGS_MBL_MODE;
 
 #if defined (TMC2130) && defined (LINEARITY_CORRECTION)
     MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);

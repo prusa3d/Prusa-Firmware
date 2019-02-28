@@ -201,4 +201,13 @@ extern void babystep_reset();
 extern void count_xyz_details(float (&distanceMin)[2]);
 extern bool sample_z();
 
+typedef enum
+{
+	e_MBL_FAST, e_MBL_OPTIMAL, e_MBL_PREC
+} e_MBL_TYPE;
+
+extern e_MBL_TYPE e_mbl_type;
+extern void mbl_mode_set();
+extern void mbl_mode_init();
+
 #endif /* MESH_BED_CALIBRATION_H */
