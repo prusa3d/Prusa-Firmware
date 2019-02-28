@@ -1,10 +1,31 @@
 #ifndef MESH_BED_CALIBRATION_H
 #define MESH_BED_CALIBRATION_H
 
+#define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER) // -22 + 23 = 1
+#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER + 4.f) // -0.6 + 5 + 4 = 8.4
+
+#ifdef HEATBED_V2
+
+#define BED_X0 (13.f - BED_ZERO_REF_X)
+#define BED_Y0 (10.4f - BED_ZERO_REF_Y)
+#define BED_Xn (216.f - BED_ZERO_REF_X)
+#define BED_Yn (202.4f - BED_ZERO_REF_Y)
+
+#else
+
+#define BED_X0 (13.f - BED_ZERO_REF_X)
+#define BED_Y0 (8.4f - BED_ZERO_REF_Y)
+#define BED_Xn (216.f - BED_ZERO_REF_X)
+#define BED_Yn (202.4f - BED_ZERO_REF_Y)
+
+#endif //not HEATBED_V2
+
+#define BED_X(i, n) ((float)i * (BED_Xn - BED_X0) / (n - 1) + BED_X0)
+#define BED_Y(i, n)  ((float)i * (BED_Yn - BED_Y0) / (n - 1) + BED_Y0)
+
 // Exact positions of the print head above the bed reference points, in the world coordinates.
 // The world coordinates match the machine coordinates only in case, when the machine
 // is built properly, the end stops are at the correct positions and the axes are perpendicular.
-extern const float bed_ref_points[] PROGMEM;
 extern const float bed_ref_points_4[] PROGMEM;
 
 extern const float bed_skew_angle_mild;
