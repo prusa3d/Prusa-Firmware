@@ -511,7 +511,6 @@ void servo_init()
 
 bool fans_check_enabled = true;
 
-
 #ifdef TMC2130
 
 extern int8_t CrashDetectMenu;

@@ -41,8 +41,6 @@
 #include "static_assert.h"
 #include "io_atmega2560.h"
 
-extern bool fans_check_enabled;
-
 
 int scrollstuff = 0;
 char longFilenameOLD[LONG_FILENAME_LENGTH];
@@ -201,6 +199,7 @@ static void fil_unload_menu();
 #endif // SNMM || SNMM_V2
 static void lcd_disable_farm_mode();
 static void lcd_set_fan_check();
+static void lcd_cutter_enabled();
 static char snmm_stop_print_menu();
 #ifdef SDCARD_SORT_ALPHA
  static void lcd_sort_type_set();
@@ -2292,6 +2291,18 @@ static void lcd_support_menu()
 void lcd_set_fan_check() {
 	fans_check_enabled = !fans_check_enabled;
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
+}
+
+void lcd_cutter_enabled()
+{
+    if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    {
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
+    }
+    else
+    {
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 1);
+    }
 }
 
 void lcd_set_filament_autoload() {
@@ -5193,6 +5204,29 @@ do\
 }\
 while(0)\
 
+static bool settingsCutter()
+{
+    if (mmu_enabled)
+    {
+        if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+        {
+            if (menu_item_function_P(_i("Cutter       [on]"), lcd_cutter_enabled)) return true;//// c=17 r=1
+        }
+        else
+        {
+            if (menu_item_function_P(_i("Cutter      [off]"), lcd_cutter_enabled)) return true;//// c=17 r=1
+        }
+    }
+    return false;
+}
+
+#define SETTINGS_CUTTER \
+do\
+{\
+    if(settingsCutter()) return;\
+}\
+while(0)\
+
 #ifdef TMC2130
 #define SETTINGS_SILENT_MODE \
 do\
@@ -5315,6 +5349,8 @@ static void lcd_settings_menu()
 	SETTINGS_FILAMENT_SENSOR;
 
 	SETTINGS_AUTO_DEPLETE;
+
+	SETTINGS_CUTTER;
 
 	if (fans_check_enabled == true)
 		MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
@@ -6512,6 +6548,8 @@ static void lcd_tune_menu()
 #endif //FILAMENT_SENSOR
 
 	SETTINGS_AUTO_DEPLETE;
+
+	SETTINGS_CUTTER;
 
 #ifdef TMC2130
      if(!farm_mode)
