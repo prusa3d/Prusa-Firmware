@@ -154,6 +154,8 @@
 #define EEPROM_MMU_LOAD_FAIL_TOT (EEPROM_MMU_FAIL - 2) //uint16_t
 #define EEPROM_MMU_LOAD_FAIL (EEPROM_MMU_LOAD_FAIL_TOT - 1) //uint8_t
 
+#define EEPROM_UVLO_MESH_BED_LEVELING_FULL     (EEPROM_MMU_LOAD_FAIL - 1000 - 12*12*2) //allow 12 calibration points for future expansion
+//-1000 is to be compatible with future updates from prusa if it not merged, real value is 2503 so there is space
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
