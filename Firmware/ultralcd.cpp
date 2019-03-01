@@ -2344,6 +2344,8 @@ switch(eFilamentAction)
           lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20 r=1
           break;
      case e_FILAMENT_ACTION_mmuEject:
+     case e_FILAMENT_ACTION_mmuCut:
+     case e_FILAMENT_ACTION_none:
           break;
      }
 if(lcd_clicked())
@@ -2357,38 +2359,23 @@ if(lcd_clicked())
      menu_back(nLevel);
      switch(eFilamentAction)
           {
-          case e_FILAMENT_ACTION_Load:
           case e_FILAMENT_ACTION_autoLoad:
+               eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
+               // no break
+          case e_FILAMENT_ACTION_Load:
                loading_flag=true;
                enquecommand_P(PSTR("M701"));      // load filament
                break;
           case e_FILAMENT_ACTION_unLoad:
                enquecommand_P(PSTR("M702"));      // unload filament
                break;
-/*
           case e_FILAMENT_ACTION_mmuLoad:
-//./  MYSERIAL.println("mFilamentPrompt - mmuLoad");
-               bFilamentAction=true;
-               menu_submenu(mmu_load_to_nozzle_menu);
-               break;
-*/
-/*
           case e_FILAMENT_ACTION_mmuUnLoad:
-//./  MYSERIAL.println("mFilamentPrompt - mmuUnLoad");
-               bFilamentAction=true;
-               extr_unload();
-               break;
-*/
-/*
           case e_FILAMENT_ACTION_mmuEject:
-  MYSERIAL.println("mFilamentPrompt - mmuEject");
-               bFilamentAction=true;
-//               menu_submenu(mmu_fil_eject_menu);
+          case e_FILAMENT_ACTION_mmuCut:
+          case e_FILAMENT_ACTION_none:
                break;
-*/
           }
-     if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
-          eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
      }
 }
 
