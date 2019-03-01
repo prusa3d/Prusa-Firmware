@@ -4035,7 +4035,6 @@ static void lcd_print_state(uint8_t state)
 static void lcd_show_sensors_state()
 {
 	//0: N/A; 1: OFF; 2: ON
-	uint8_t chars = 0;
 	uint8_t pinda_state = STATE_NA;
 	uint8_t finda_state = STATE_NA;
 	uint8_t idler_state = STATE_NA;
