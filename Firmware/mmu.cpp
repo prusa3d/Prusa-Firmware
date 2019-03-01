@@ -297,6 +297,14 @@ void mmu_loop(void)
 				mmu_fil_loaded = false;
 				mmu_state = S::WaitCmd;
 			}
+			else if ((mmu_cmd >= MmuCmd::K0) && (mmu_cmd <= MmuCmd::K4))
+            {
+                const uint8_t filament = mmu_cmd - MmuCmd::K0;
+                DEBUG_PRINTF_P(PSTR("MMU <= 'K%d'\n"), filament);
+                mmu_printf_P(PSTR("K%d\n"), filament); //send eject filament
+                mmu_fil_loaded = false;
+                mmu_state = S::WaitCmd;
+            }
 			else if (mmu_cmd == MmuCmd::R0)
 			{
 			    DEBUG_PRINTF_P(PSTR("MMU <= 'R0'\n"));
@@ -1197,76 +1205,6 @@ void extr_adj_4()
 #endif
 }
 
-void mmu_load_to_nozzle_0() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(0);
-}
-
-void mmu_load_to_nozzle_1() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(1);
-}
-
-void mmu_load_to_nozzle_2() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(2);
-}
-
-void mmu_load_to_nozzle_3() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(3);
-}
-
-void mmu_load_to_nozzle_4() 
-{
-//-//
-     menu_back();
-	lcd_mmu_load_to_nozzle(4);
-}
-
-void mmu_eject_fil_0()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(0, true);
-}
-
-void mmu_eject_fil_1()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(1, true);
-}
-
-void mmu_eject_fil_2()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(2, true);
-}
-
-void mmu_eject_fil_3()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(3, true);
-}
-
-void mmu_eject_fil_4()
-{
-//-//
-     menu_back();
-	mmu_eject_filament(4, true);
-}
-
 void load_all()
 {
 #ifndef SNMM
@@ -1418,6 +1356,26 @@ bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_
   else
   {
 	  show_preheat_nozzle_warning();
+  }
+}
+
+void mmu_cut_filament(uint8_t filament_nr)
+{
+bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_menu()"
+  if (degHotend0() > EXTRUDE_MINTEMP)
+  {
+    LcdUpdateDisabler disableLcdUpdate;
+    lcd_clear();
+    lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18 r=1
+    lcd_print(" ");
+    lcd_print(filament_nr + 1);
+    mmu_filament_ramming();
+    mmu_command(MmuCmd::K0 + filament_nr);
+    manage_response(false, false, MMU_UNLOAD_MOVE);
+  }
+  else
+  {
+      show_preheat_nozzle_warning();
   }
 }
 
