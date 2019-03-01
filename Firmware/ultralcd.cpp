@@ -2579,6 +2579,11 @@ else {
           case e_FILAMENT_ACTION_mmuEject:
                lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20 r=1
                break;
+          case e_FILAMENT_ACTION_mmuCut:
+               lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20 r=1
+               break;
+          case e_FILAMENT_ACTION_none:
+               break;
           }
      lcd_set_cursor(0,3);
      lcd_puts_P(_i(">Cancel"));                   ////MSG_ c=20 r=1
