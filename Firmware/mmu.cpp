@@ -1052,6 +1052,16 @@ else	{
 	}
 }
 
+//-//
+void extr_unload_view()
+{
+lcd_clear();
+lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
+lcd_print(" ");
+if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
+else lcd_print(mmu_extruder + 1);
+}
+
 void extr_unload()
 { //unload just current filament for multimaterial printers
 #ifdef SNMM
@@ -1066,12 +1076,15 @@ void extr_unload()
 		st_synchronize();
 		
 		//show which filament is currently unloaded
-		lcd_update_enable(false);
+//-//		lcd_update_enable(false);
+menu_submenu(extr_unload_view);
+/*
 		lcd_clear();
 		lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
 		lcd_print(" ");
 		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
 		else lcd_print(mmu_extruder + 1);
+*/
 
 		mmu_filament_ramming();
 
@@ -1079,7 +1092,8 @@ void extr_unload()
 		// get response
 		manage_response(false, true, MMU_UNLOAD_MOVE);
 
-		lcd_update_enable(true);
+//-//		lcd_update_enable(true);
+menu_back();
 #else //SNMM
 
 		lcd_clear();
@@ -1380,9 +1394,7 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 			    LcdUpdateDisabler disableLcdUpdate;
                 lcd_clear();
                 lcd_set_cursor(0, 1); lcd_puts_P(_i("Ejecting filament"));
-                current_position[E_AXIS] -= 80;
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 2500 / 60, active_extruder);
-                st_synchronize();
+                mmu_filament_ramming();
                 mmu_command(MmuCmd::E0 + filament);
                 manage_response(false, false, MMU_UNLOAD_MOVE);
                 if (recover)
