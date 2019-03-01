@@ -186,7 +186,9 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite);
 #ifdef FANCHECK
 static bool lcd_selftest_fan_dialog(int _fan);
 #endif //FANCHECK
+#ifdef PAT9125
 static bool lcd_selftest_fsensor();
+#endif //PAT9125
 static bool selftest_irsensor();
 static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
@@ -7494,6 +7496,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 }
 
 #ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 static bool lcd_selftest_fsensor(void)
 {
 	fsensor_init();
@@ -7503,6 +7506,7 @@ static bool lcd_selftest_fsensor(void)
 	}
 	return (!fsensor_not_responding);
 }
+#endif //PAT9125
 
 //! @brief Self-test of infrared barrier filament sensor mounted on MK3S with MMUv2 printer
 //!
