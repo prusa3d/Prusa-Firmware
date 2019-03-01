@@ -1461,15 +1461,26 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 	}
 }
 
+//! @brief load more
+//!
+//! Try to feed more filament from MMU if it is not detected by filament sensor.
+//! Move filament back and forth to nozzle in order to detect jam.
+//! If PTFE tube is jammed, this cause filament to be unloaded and no longer
+//! detected by pulley IR sensor in next step.
 static void load_more()
 {
     for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++)
     {
-        if (PIN_GET(IR_SENSOR_PIN) == 0) return;
+        if (PIN_GET(IR_SENSOR_PIN) == 0) break;
         DEBUG_PRINTF_P(PSTR("Additional load attempt nr. %d\n"), i);
         mmu_command(MmuCmd::C0);
         manage_response(true, true, MMU_LOAD_MOVE);
     }
+    current_position[E_AXIS] += 60;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+    current_position[E_AXIS] -= 58;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+    st_synchronize();
 }
 
 void mmu_continue_loading() 
