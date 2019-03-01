@@ -2344,7 +2344,6 @@ switch(eFilamentAction)
           lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20 r=1
           break;
      case e_FILAMENT_ACTION_mmuEject:
-          lcd_puts_P(_i("to eject filament"));    ////MSG_ c=20 r=1
           break;
      }
 if(lcd_clicked())
