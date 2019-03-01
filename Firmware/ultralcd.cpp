@@ -2547,6 +2547,14 @@ if(current_temperature[0]>(target_temperature[0]*0.95))
                menu_back(nLevel);
                menu_submenu(mmu_fil_eject_menu);
                break;
+          case e_FILAMENT_ACTION_mmuCut:
+               nLevel=bFilamentPreheatState?1:2;
+               bFilamentAction=true;
+               menu_back(nLevel);
+               menu_submenu(mmu_cut_filament_menu);
+               break;
+          case e_FILAMENT_ACTION_none:
+               break;
           }
      if(bFilamentWaitingFlag)
           Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
