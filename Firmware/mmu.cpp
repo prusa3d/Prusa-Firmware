@@ -1052,14 +1052,14 @@ else	{
 	}
 }
 
-//-//
+//! @brief show which filament is currently unloaded
 void extr_unload_view()
 {
-lcd_clear();
-lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-lcd_print(" ");
-if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
-else lcd_print(mmu_extruder + 1);
+    lcd_clear();
+    lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
+    lcd_print(" ");
+    if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
+    else lcd_print(mmu_extruder + 1);
 }
 
 void extr_unload()
@@ -1074,17 +1074,8 @@ void extr_unload()
 	{
 #ifndef SNMM
 		st_synchronize();
-		
-		//show which filament is currently unloaded
-//-//		lcd_update_enable(false);
-menu_submenu(extr_unload_view);
-/*
-		lcd_clear();
-		lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-		lcd_print(" ");
-		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
-		else lcd_print(mmu_extruder + 1);
-*/
+
+        menu_submenu(extr_unload_view);
 
 		mmu_filament_ramming();
 
@@ -1092,8 +1083,7 @@ menu_submenu(extr_unload_view);
 		// get response
 		manage_response(false, true, MMU_UNLOAD_MOVE);
 
-//-//		lcd_update_enable(true);
-menu_back();
+        menu_back();
 #else //SNMM
 
 		lcd_clear();
@@ -1151,7 +1141,6 @@ menu_back();
 	{
 		show_preheat_nozzle_warning();
 	}
-	//lcd_return_to_status();
 }
 
 //wrapper functions for loading filament
