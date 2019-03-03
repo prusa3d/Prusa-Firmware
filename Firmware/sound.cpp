@@ -16,6 +16,7 @@ eSOUND_MODE eSoundMode; //=e_SOUND_MODE_DEFAULT;
 static void Sound_SaveMode(void);
 static void Sound_DoSound_Echo(void);
 static void Sound_DoSound_Prompt(void);
+static void Sound_DoSound_Alert(bool bOnce);
 
 
 void Sound_Init(void)
@@ -59,7 +60,7 @@ switch(eSoundMode)
 Sound_SaveMode();
 }
 
-void Sound_MakeSound(eSOUND_CLASS eSoundClass,eSOUND_TYPE eSoundType)
+void Sound_MakeSound(eSOUND_TYPE eSoundType)
 {
 switch(eSoundMode)
      {
@@ -68,14 +69,20 @@ switch(eSoundMode)
                Sound_DoSound_Echo();
           if(eSoundType==e_SOUND_TYPE_StandardPrompt)
                Sound_DoSound_Prompt();
+          if(eSoundType==e_SOUND_TYPE_StandardAlert)
+               Sound_DoSound_Alert(false);
           break;
      case e_SOUND_MODE_ONCE:
           if(eSoundType==e_SOUND_TYPE_ButtonEcho)
               Sound_DoSound_Echo();
           if(eSoundType==e_SOUND_TYPE_StandardPrompt)
                Sound_DoSound_Prompt();
+          if(eSoundType==e_SOUND_TYPE_StandardAlert)
+               Sound_DoSound_Alert(true);
           break;
      case e_SOUND_MODE_SILENT:
+          if(eSoundType==e_SOUND_TYPE_StandardAlert)
+               Sound_DoSound_Alert(true);
           break;
      case e_SOUND_MODE_MUTE:
           break;
@@ -103,4 +110,18 @@ static void Sound_DoSound_Prompt(void)
 WRITE(BEEPER,HIGH);
 delay_keep_alive(500);
 WRITE(BEEPER,LOW);
+}
+
+static void Sound_DoSound_Alert(bool bOnce)
+{
+uint8_t nI,nMax;
+
+nMax=bOnce?1:3;
+for(nI=0;nI<nMax;nI++)
+     {
+     WRITE(BEEPER,HIGH);
+     delay_keep_alive(200);
+     WRITE(BEEPER,LOW);
+     delay_keep_alive(500);
+     }
 }

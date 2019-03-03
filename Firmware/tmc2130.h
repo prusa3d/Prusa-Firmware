@@ -53,7 +53,7 @@ extern tmc2130_chopper_config_t tmc2130_chopper_config[4];
 //initialize tmc2130
 extern void tmc2130_init();
 //check diag pins (called from stepper isr)
-extern void tmc2130_st_isr(uint8_t last_step_mask);
+extern void tmc2130_st_isr();
 //update stall guard (called from st_synchronize inside the loop)
 extern bool tmc2130_update_sg();
 //temperature watching (called from )
@@ -105,5 +105,8 @@ extern void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream);
 extern void tmc2130_set_wave(uint8_t axis, uint8_t amp, uint8_t fac1000);
 
 extern bool tmc2130_home_calibrate(uint8_t axis);
+
+extern uint8_t tmc2130_cur2val(float cur);
+extern float tmc2130_val2cur(uint8_t val);
 
 #endif //TMC2130_H

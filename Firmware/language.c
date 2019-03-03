@@ -207,6 +207,7 @@ const char* lang_get_name_by_code(uint16_t code)
 	case LANG_CODE_CZ: return _n("Cestina");
 	case LANG_CODE_DE: return _n("Deutsch");
 	case LANG_CODE_ES: return _n("Espanol");
+	case LANG_CODE_FR: return _n("Francais");
 	case LANG_CODE_IT: return _n("Italiano");
 	case LANG_CODE_PL: return _n("Polski");
 	}
@@ -226,6 +227,7 @@ uint8_t lang_is_selected(void)
 }
 
 #ifdef DEBUG_SEC_LANG
+#include <stdio.h>
 const char* lang_get_sec_lang_str_by_id(uint16_t id)
 {
 	uint16_t ui = _SEC_LANG_TABLE; //table pointer

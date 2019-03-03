@@ -25,13 +25,9 @@ const char MSG_CRASH_DETECTED[] PROGMEM_I1 = ISTR("Crash detected."); ////c=20 r
 const char MSG_CRASHDETECT_NA[] PROGMEM_I1 = ISTR("Crash det.  [N/A]"); ////c=0 r=0
 const char MSG_CRASHDETECT_OFF[] PROGMEM_I1 = ISTR("Crash det.  [off]"); ////c=0 r=0
 const char MSG_CRASHDETECT_ON[] PROGMEM_I1 = ISTR("Crash det.   [on]"); ////c=0 r=0
-const char MSG_ENDSTOP_HIT[] PROGMEM_I1 = ISTR("TRIGGERED"); ////c=0 r=0
-const char MSG_ENDSTOP_OPEN[] PROGMEM_I1 = ISTR("open"); ////c=0 r=0
-const char MSG_ENDSTOPS_HIT[] PROGMEM_I1 = ISTR("endstops hit: "); ////c=0 r=0
-const char MSG_Enqueing[] PROGMEM_I1 = ISTR("enqueing \""); ////c=0 r=0
-const char MSG_ERR_STOPPED[] PROGMEM_I1 = ISTR("Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"); ////c=0 r=0
 const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////c=0 r=0
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17 r=1
+const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17 r=1
 const char MSG_FAN_SPEED[] PROGMEM_I1 = ISTR("Fan speed"); ////c=14 r=0
 const char MSG_FILAMENT_CLEAN[] PROGMEM_I1 = ISTR("Filament extruding & with correct color?"); ////c=20 r=2
 const char MSG_FILAMENT_LOADING_T0[] PROGMEM_I1 = ISTR("Insert filament into extruder 1. Click when done."); ////c=20 r=4
@@ -43,6 +39,7 @@ const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE1[] PROGMEM_I1 = ISTR("Searching bed
 const char MSG_FIND_BED_OFFSET_AND_SKEW_LINE2[] PROGMEM_I1 = ISTR(" of 4"); ////c=14 r=0
 const char MSG_FINISHING_MOVEMENTS[] PROGMEM_I1 = ISTR("Finishing movements"); ////c=20 r=1
 const char MSG_FOLLOW_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("Printer has not been calibrated yet. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=8
+const char MSG_FOLLOW_Z_CALIBRATION_FLOW[] PROGMEM_I1 = ISTR("There is still a need to make Z calibration. Please follow the manual, chapter First steps, section Calibration flow."); ////c=20 r=8
 const char MSG_FSENS_AUTOLOAD_NA[] PROGMEM_I1 = ISTR("F. autoload [N/A]"); ////c=17 r=1
 const char MSG_FSENSOR_OFF[] PROGMEM_I1 = ISTR("Fil. sensor [off]"); ////c=0 r=0
 const char MSG_FSENSOR_ON[] PROGMEM_I1 = ISTR("Fil. sensor  [on]"); ////c=0 r=0
@@ -50,6 +47,7 @@ const char MSG_HEATING[] PROGMEM_I1 = ISTR("Heating"); ////c=0 r=0
 const char MSG_HEATING_COMPLETE[] PROGMEM_I1 = ISTR("Heating done."); ////c=20 r=0
 const char MSG_HOMEYZ[] PROGMEM_I1 = ISTR("Calibrate Z"); ////c=0 r=0
 const char MSG_CHOOSE_EXTRUDER[] PROGMEM_I1 = ISTR("Choose extruder:"); ////c=20 r=1
+const char MSG_CHOOSE_FILAMENT[] PROGMEM_I1 = ISTR("Choose filament:"); ////c=20 r=1
 const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); ////c=17 r=0
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////c=20 r=0
 const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal."); ////c=25 r=1
@@ -59,11 +57,9 @@ const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); 
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////c=0 r=0
 const char MSG_NO[] PROGMEM_I1 = ISTR("No"); ////c=0 r=0
 const char MSG_NOZZLE[] PROGMEM_I1 = ISTR("Nozzle"); ////c=0 r=0
-const char MSG_OK[] PROGMEM_I1 = ISTR("ok"); ////c=0 r=0
 const char MSG_PAPER[] PROGMEM_I1 = ISTR("Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."); ////c=20 r=8
 const char MSG_PLACE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please place steel sheet on heatbed."); ////c=20 r=4
 const char MSG_PLEASE_WAIT[] PROGMEM_I1 = ISTR("Please wait"); ////c=20 r=0
-const char MSG_POWERUP[] PROGMEM_I1 = ISTR("PowerUp"); ////c=0 r=0
 const char MSG_PREHEAT_NOZZLE[] PROGMEM_I1 = ISTR("Preheat the nozzle!"); ////c=20 r=0
 const char MSG_PRESS_TO_UNLOAD[] PROGMEM_I1 = ISTR("Please press the knob to unload filament"); ////c=20 r=4
 const char MSG_PRINT_ABORTED[] PROGMEM_I1 = ISTR("Print aborted"); ////c=20 r=0
@@ -72,9 +68,6 @@ const char MSG_RECOVER_PRINT[] PROGMEM_I1 = ISTR("Blackout occurred. Recover pri
 const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\xF8" "Refresh"); ////c=0 r=0
 const char MSG_RESUMING_PRINT[] PROGMEM_I1 = ISTR("Resuming print"); ////c=0 r=0
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////c=20 r=4
-const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_I1 = ISTR("error writing to file"); ////c=0 r=0
-const char MSG_SD_OPEN_FILE_FAIL[] PROGMEM_I1 = ISTR("open failed, File: "); ////c=0 r=0
-const char MSG_SD_WORKDIR_FAIL[] PROGMEM_I1 = ISTR("workDir open failed"); ////c=0 r=0
 const char MSG_SELFTEST_COOLING_FAN[] PROGMEM_I1 = ISTR("Front print fan?"); ////c=20 r=0
 const char MSG_SELFTEST_EXTRUDER_FAN[] PROGMEM_I1 = ISTR("Left hotend fan?"); ////c=20 r=0
 const char MSG_SELFTEST_FAILED[] PROGMEM_I1 = ISTR("Selftest failed  "); ////c=20 r=0
@@ -103,8 +96,9 @@ const char MSG_WIZARD_DONE[] PROGMEM_I1 = ISTR("All is done. Happy printing!"); 
 const char MSG_WIZARD_HEATING[] PROGMEM_I1 = ISTR("Preheating nozzle. Please wait."); ////c=20 r=3
 const char MSG_WIZARD_QUIT[] PROGMEM_I1 = ISTR("You can always resume the Wizard from Calibration -> Wizard."); ////c=20 r=8
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////c=0 r=0
-const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " ready."); ////c=20 r=0
+const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20 r=0
 //not internationalized messages
+const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////c=0 r=0
 const char MSG_BROWNOUT_RESET[] PROGMEM_N1 = " Brown out Reset"; ////c=0 r=0
 const char MSG_EXTERNAL_RESET[] PROGMEM_N1 = " External Reset"; ////c=0 r=0
 const char MSG_FILE_SAVED[] PROGMEM_N1 = "Done saving file."; ////c=0 r=0
@@ -119,3 +113,12 @@ const char MSG_Z_MIN[] PROGMEM_N1 = "z_min: "; ////c=0 r=0
 const char MSG_ZPROBE_OUT[] PROGMEM_N1 = "Z probe out. bed"; ////c=0 r=0
 const char MSG_ZPROBE_ZOFFSET[] PROGMEM_N1 = "Z Offset"; ////c=0 r=0
 const char MSG_TMC_OVERTEMP[] PROGMEM_N1 = "TMC DRIVER OVERTEMP"; ////c=0 r=0
+const char MSG_Enqueing[] PROGMEM_N1 = "enqueing \""; ////c=0 r=0
+const char MSG_ENDSTOPS_HIT[] PROGMEM_N1 = "endstops hit: "; ////c=0 r=0
+const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_N1 = "error writing to file"; ////c=0 r=0
+const char MSG_OK[] PROGMEM_N1 = "ok"; ////c=0 r=0
+const char MSG_SD_OPEN_FILE_FAIL[] PROGMEM_N1 = "open failed, File: "; ////c=0 r=0
+const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////c=0 r=0
+const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////c=0 r=0
+const char MSG_ERR_STOPPED[] PROGMEM_N1 = "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"; ////c=0 r=0
+const char MSG_ENDSTOP_HIT[] PROGMEM_N1 = "TRIGGERED"; ////c=0 r=0

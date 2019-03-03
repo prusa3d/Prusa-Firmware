@@ -22,8 +22,8 @@ int serial_count = 0;  //index of character read from serial line
 boolean comment_mode = false;
 char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
-unsigned long TimeSent = millis();
-unsigned long TimeNow = millis();
+unsigned long TimeSent = _millis();
+unsigned long TimeNow = _millis();
 
 long gcode_N = 0;
 long gcode_LastN = 0;
@@ -94,7 +94,11 @@ void cmdqueue_reset()
     bufindr = 0;
     bufindw = 0;
     buflen = 0;
-    cmdbuffer_front_already_processed = false;
+
+	//commands are removed from command queue after process_command() function is finished
+	//reseting command queue and enqueing new commands during some (usually long running) command processing would cause that new commands are immediately removed from queue (or damaged)
+	//this will ensure that all new commands which are enqueued after cmdqueue reset, will be always executed
+    cmdbuffer_front_already_processed = true; 
 }
 
 // How long a string could be pushed to the front of the command queue?
@@ -286,7 +290,7 @@ void enquecommand(const char *cmd, bool from_progmem)
         else
             strcpy(cmdbuffer + bufindw + CMDHDRSIZE, cmd);
         SERIAL_ECHO_START;
-        SERIAL_ECHORPGM(_T(MSG_Enqueing));
+        SERIAL_ECHORPGM(MSG_Enqueing);
         SERIAL_ECHO(cmdbuffer + bufindw + CMDHDRSIZE);
         SERIAL_ECHOLNPGM("\"");
         bufindw += len + (CMDHDRSIZE + 1);
@@ -298,7 +302,7 @@ void enquecommand(const char *cmd, bool from_progmem)
 #endif /* CMDBUFFER_DEBUG */
     } else {
         SERIAL_ERROR_START;
-        SERIAL_ECHORPGM(_T(MSG_Enqueing));
+        SERIAL_ECHORPGM(MSG_Enqueing);
         if (from_progmem)
             SERIAL_PROTOCOLRPGM(cmd);
         else
@@ -382,7 +386,7 @@ void get_command()
 	}
 
   // start of serial line processing loop
-  while (MYSERIAL.available() > 0 && !saved_printing) {  //is print is saved (crash detection or filament detection), dont process data from serial line
+  while ((MYSERIAL.available() > 0 && !saved_printing) || (MYSERIAL.available() > 0 && isPrintPaused)) {  //is print is saved (crash detection or filament detection), dont process data from serial line
 	
     char serial_char = MYSERIAL.read();
 /*    if (selectedSerialPort == 1)
@@ -391,8 +395,8 @@ void get_command()
         MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
         selectedSerialPort = 1; 
     } */ //RP - removed
-      TimeSent = millis();
-      TimeNow = millis();
+      TimeSent = _millis();
+      TimeNow = _millis();
 
     if (serial_char < 0)
         // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
@@ -441,7 +445,7 @@ void get_command()
 					  checksum = checksum^(*p++);
 				  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
 					  SERIAL_ERROR_START;
-					  SERIAL_ERRORRPGM(_i("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
+					  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
 					  SERIAL_ERRORLN(gcode_LastN);
 					  FlushSerialRequestResend();
 					  serial_count = 0;
@@ -453,7 +457,7 @@ void get_command()
 			  else
 			  {
 				  SERIAL_ERROR_START;
-				  SERIAL_ERRORRPGM(_i("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM c=0 r=0
+				  SERIAL_ERRORRPGM(_n("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM c=0 r=0
 				  SERIAL_ERRORLN(gcode_LastN);
 				  FlushSerialRequestResend();
 				  serial_count = 0;
@@ -484,7 +488,7 @@ void get_command()
             if (Stopped == true) {
                 int gcode = strtol(strchr_pointer+1, NULL, 10);
                 if (gcode >= 0 && gcode <= 3) {
-                    SERIAL_ERRORLNRPGM(_T(MSG_ERR_STOPPED));
+                    SERIAL_ERRORLNRPGM(MSG_ERR_STOPPED);
                     LCD_MESSAGERPGM(_T(MSG_STOPPED));
                 }
             }
@@ -527,7 +531,7 @@ void get_command()
   } // end of serial line processing loop
 
     if(farm_mode){
-        TimeNow = millis();
+        TimeNow = _millis();
         if ( ((TimeNow - TimeSent) > 800) && (serial_count > 0) ) {
             cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0;
             
@@ -576,7 +580,7 @@ void get_command()
     {
       if(card.eof()){
         SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED c=0 r=0
-        stoptime=millis();
+        stoptime=_millis();
         char time[30];
         unsigned long t=(stoptime-starttime-pause_time)/1000;
         pause_time = 0;
