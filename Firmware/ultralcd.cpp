@@ -186,7 +186,9 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite);
 #ifdef FANCHECK
 static bool lcd_selftest_fan_dialog(int _fan);
 #endif //FANCHECK
+#ifdef PAT9125
 static bool lcd_selftest_fsensor();
+#endif //PAT9125
 static bool selftest_irsensor();
 static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
@@ -2342,7 +2344,8 @@ switch(eFilamentAction)
           lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20 r=1
           break;
      case e_FILAMENT_ACTION_mmuEject:
-          lcd_puts_P(_i("to eject filament"));    ////MSG_ c=20 r=1
+     case e_FILAMENT_ACTION_mmuCut:
+     case e_FILAMENT_ACTION_none:
           break;
      }
 if(lcd_clicked())
@@ -2356,38 +2359,23 @@ if(lcd_clicked())
      menu_back(nLevel);
      switch(eFilamentAction)
           {
-          case e_FILAMENT_ACTION_Load:
           case e_FILAMENT_ACTION_autoLoad:
+               eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
+               // no break
+          case e_FILAMENT_ACTION_Load:
                loading_flag=true;
                enquecommand_P(PSTR("M701"));      // load filament
                break;
           case e_FILAMENT_ACTION_unLoad:
                enquecommand_P(PSTR("M702"));      // unload filament
                break;
-/*
           case e_FILAMENT_ACTION_mmuLoad:
-//./  MYSERIAL.println("mFilamentPrompt - mmuLoad");
-               bFilamentAction=true;
-               menu_submenu(mmu_load_to_nozzle_menu);
-               break;
-*/
-/*
           case e_FILAMENT_ACTION_mmuUnLoad:
-//./  MYSERIAL.println("mFilamentPrompt - mmuUnLoad");
-               bFilamentAction=true;
-               extr_unload();
-               break;
-*/
-/*
           case e_FILAMENT_ACTION_mmuEject:
-  MYSERIAL.println("mFilamentPrompt - mmuEject");
-               bFilamentAction=true;
-//               menu_submenu(mmu_fil_eject_menu);
+          case e_FILAMENT_ACTION_mmuCut:
+          case e_FILAMENT_ACTION_none:
                break;
-*/
           }
-     if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
-          eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
      }
 }
 
@@ -4035,7 +4023,6 @@ static void lcd_print_state(uint8_t state)
 static void lcd_show_sensors_state()
 {
 	//0: N/A; 1: OFF; 2: ON
-	uint8_t chars = 0;
 	uint8_t pinda_state = STATE_NA;
 	uint8_t finda_state = STATE_NA;
 	uint8_t idler_state = STATE_NA;
@@ -7495,6 +7482,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 }
 
 #ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 static bool lcd_selftest_fsensor(void)
 {
 	fsensor_init();
@@ -7504,6 +7492,7 @@ static bool lcd_selftest_fsensor(void)
 	}
 	return (!fsensor_not_responding);
 }
+#endif //PAT9125
 
 //! @brief Self-test of infrared barrier filament sensor mounted on MK3S with MMUv2 printer
 //!
