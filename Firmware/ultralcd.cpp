@@ -133,7 +133,7 @@ static void prusa_stat_farm_number();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
-static void lcd_menu_extruder_info();
+void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
@@ -1899,7 +1899,7 @@ void lcd_cooldown()
 }
 
 
-static void lcd_menu_extruder_info()
+void lcd_menu_extruder_info()                     // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
 //|01234567890123456789|
 //|Nozzle FAN:      RPM|
