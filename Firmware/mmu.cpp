@@ -830,9 +830,10 @@ void mmu_M600_wait_and_beep() {
 		WRITE(BEEPER, LOW);
 }
 
-void mmu_M600_load_filament(bool automatic)
+//! @brief load filament for mmu v2
+//! @par nozzle_temp nozzle temperature to load filament
+void mmu_M600_load_filament(bool automatic, float nozzle_temp)
 { 
-	//load filament for mmu v2
 		  tmp_extruder = mmu_extruder;
 		  if (!automatic) {
 #ifdef MMU_M600_SWITCH_EXTRUDER
@@ -852,6 +853,9 @@ void mmu_M600_load_filament(bool automatic)
 
 //		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
 //		  mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
+		  setTargetHotend(nozzle_temp,active_extruder);
+		  mmu_wait_for_heater_blocking();
+
 		  mmu_command(MmuCmd::T0 + tmp_extruder);
 
 		  manage_response(false, true, MMU_LOAD_MOVE);

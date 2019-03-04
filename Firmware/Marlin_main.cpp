@@ -3040,12 +3040,12 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                 manage_response(false, false);
             }
         }
-        mmu_M600_load_filament(automatic);
+        mmu_M600_load_filament(automatic, HotendTempBckp);
     }
     else
         M600_load_filament();
 
-    if (!automatic) M600_check_state();
+    if (!automatic) M600_check_state(HotendTempBckp);
 
 		lcd_update_enable(true);
 
@@ -9090,7 +9090,8 @@ void load_filament_final_feed()
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED_FINAL, active_extruder);
 }
 
-void M600_check_state()
+//! @par nozzle_temp nozzle temperature to load filament
+void M600_check_state(float nozzle_temp)
 {
 		//Wait for user to check the state
 		lcd_change_fil_state = 0;
@@ -9103,7 +9104,7 @@ void M600_check_state()
 				// Filament failed to load so load it again
 				case 2:
 					if (mmu_enabled)
-						mmu_M600_load_filament(false); //nonautomatic load; change to "wrong filament loaded" option?
+						mmu_M600_load_filament(false, nozzle_temp); //nonautomatic load; change to "wrong filament loaded" option?
 					else
 						M600_load_filament_movements();
 					break;
