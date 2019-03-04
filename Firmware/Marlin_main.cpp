@@ -4461,7 +4461,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		}
 		#endif // SUPPORT_VERBOSITY
 		int l_feedmultiply = setup_for_endstop_move(false); //save feedrate and feedmultiply, sets feedmultiply to 100
-
+		const char *kill_message = NULL;
 		while (mesh_point != nMeasPoints * nMeasPoints) {
 			// Get coords of a measuring point.
 			uint8_t ix = mesh_point % nMeasPoints; // from 0 to MESH_NUM_X_POINTS - 1
@@ -4511,15 +4511,15 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// Go down until endstop is hit
 			const float Z_CALIBRATION_THRESHOLD = 1.f;
 			if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
-				//Bed leveling failed. Sensor didnt trigger. Debris on nozzle?
+				kill_message = _T(MSG_BED_LEVELING_FAILED_POINT_LOW);
 				break;
 			}
 			if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
-				//Bed leveling failed. Sensor disconnected or cable broken.
+				kill_message = _i("Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.");////MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
 				break;
 			}
 			if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) { //if we have data from z calibration, max. allowed difference is 1mm for each point
-				//Bed leveling failed. Sensor triggered too high.
+				kill_message = _i("Bed leveling failed. Sensor triggered too high. Waiting for reset.");////MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
 				break;
 			}
 			#ifdef SUPPORT_VERBOSITY
