@@ -55,7 +55,8 @@ int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
 
 #ifdef PINDA_THERMISTOR
-int current_temperature_raw_pinda =  0 ;
+uint16_t current_temperature_raw_pinda =  0 ; //value with more averaging applied
+uint16_t current_temperature_raw_pinda_fast = 0; //value read from adc
 float current_temperature_pinda = 0.0;
 #endif //PINDA_THERMISTOR
 
@@ -483,8 +484,6 @@ void countFanSpeed()
 	fan_edge_counter[1] = 0;
 }
 
-extern bool fans_check_enabled;
-
 void checkFanSpeed()
 {
 	uint8_t max_print_fan_errors = 0;
@@ -662,9 +661,9 @@ void manage_heater()
           iState_sum[e] += pid_error[e];
           iState_sum[e] = constrain(iState_sum[e], iState_sum_min[e], iState_sum_max[e]);
           iTerm[e] = cs.Ki * iState_sum[e];
-          // K1 defined in Configuration.h in the PID settings
-          #define K2 (1.0-K1)
-          dTerm[e] = (cs.Kd * (pid_input - dState_last[e]))*K2 + (K1 * dTerm[e]); // e.g. digital filtration of derivative term changes
+          // PID_K1 defined in Configuration.h in the PID settings
+          #define K2 (1.0-PID_K1)
+          dTerm[e] = (cs.Kd * (pid_input - dState_last[e]))*K2 + (PID_K1 * dTerm[e]); // e.g. digital filtration of derivative term changes
           pid_output = pTerm[e] + iTerm[e] - dTerm[e]; // subtraction due to "Derivative on Measurement" method (i.e. derivative of input instead derivative of error is used)
           if (pid_output > PID_MAX) {
             if (pid_error[e] > 0 ) iState_sum[e] -= pid_error[e]; // conditional un-integration
@@ -811,9 +810,9 @@ void manage_heater()
 		  temp_iState_bed = constrain(temp_iState_bed, temp_iState_min_bed, temp_iState_max_bed);
 		  iTerm_bed = cs.bedKi * temp_iState_bed;
 
-		  //K1 defined in Configuration.h in the PID settings
-		  #define K2 (1.0-K1)
-		  dTerm_bed= (cs.bedKd * (pid_input - temp_dState_bed))*K2 + (K1 * dTerm_bed);
+		  //PID_K1 defined in Configuration.h in the PID settings
+		  #define K2 (1.0-PID_K1)
+		  dTerm_bed= (cs.bedKd * (pid_input - temp_dState_bed))*K2 + (PID_K1 * dTerm_bed);
 		  temp_dState_bed = pid_input;
 
 		  pid_output = pTerm_bed + iTerm_bed - dTerm_bed;
@@ -1031,6 +1030,7 @@ static void updateTemperaturesFromRawValues()
     }
 
 #ifdef PINDA_THERMISTOR
+	current_temperature_raw_pinda = (uint16_t)((uint32_t)current_temperature_raw_pinda * 3 + current_temperature_raw_pinda_fast) >> 2;
 	current_temperature_pinda = analog2tempBed(current_temperature_raw_pinda);
 #endif
 
@@ -1596,7 +1596,7 @@ extern "C" {
 void adc_ready(void) //callback from adc when sampling finished
 {
 	current_temperature_raw[0] = adc_values[ADC_PIN_IDX(TEMP_0_PIN)]; //heater
-	current_temperature_raw_pinda = adc_values[ADC_PIN_IDX(TEMP_PINDA_PIN)];
+	current_temperature_raw_pinda_fast = adc_values[ADC_PIN_IDX(TEMP_PINDA_PIN)];
 	current_temperature_bed_raw = adc_values[ADC_PIN_IDX(TEMP_BED_PIN)];
 #ifdef VOLT_PWR_PIN
 	current_voltage_raw_pwr = adc_values[ADC_PIN_IDX(VOLT_PWR_PIN)];
