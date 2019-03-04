@@ -4515,6 +4515,7 @@ static void lcd_silent_mode_set() {
 	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
+  lcd_display_message_fullscreen_P(_i("Mode change in progress ..."));
   // Wait until the planner queue is drained and the stepper routine achieves
   // an idle state.
   st_synchronize();
@@ -4535,6 +4536,7 @@ static void lcd_silent_mode_set() {
 #ifdef TMC2130
   if (CrashDetectMenu && (SilentModeMenu != SILENT_MODE_NORMAL))
 	  menu_submenu(lcd_crash_mode_info2);
+  lcd_encoder_diff=0;                             // reset 'encoder buffer'
 #endif //TMC2130
 }
 
