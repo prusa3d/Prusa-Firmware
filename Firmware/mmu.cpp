@@ -183,14 +183,13 @@ bool check_for_ir_sensor()
 
 static bool activate_stealth_mode()
 {
-	bool activate_stealth_mode = false;
-#ifdef SILENT_MODE_STEALTH
-	activate_stealth_mode = (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_STEALTH);
-#endif //SILENT_MODE_STEALTH
-#ifdef MMU_STEALTH_MODE
-	activate_stealth_mode = true;
-#endif //MMU_STEALTH_MODE
-	return activate_stealth_mode;
+#if defined (MMU_FORCE_STEALTH_MODE)
+	return true;
+#elif defined (SILENT_MODE_STEALTH)
+	return (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_STEALTH);
+#else
+	return false;
+#endif
 }
 
 //mmu main loop - state machine processing
