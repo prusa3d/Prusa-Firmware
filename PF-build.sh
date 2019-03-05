@@ -434,7 +434,7 @@ do
 		$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board rambo:avr:rambo --pref build.path=$BUILD_PATH || exit 14
 		echo "$(tput sgr 0)"
 	fi
-
+	read -p "Press enter to continue with languages"
 	if [ $LANGUAGES ==  "ALL" ]; then
 		echo "$(tput setaf 2)"
 		echo "Building mutli language firmware" $MULTI_LANGUAGE_CHECK

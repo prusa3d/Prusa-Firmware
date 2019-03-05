@@ -6,7 +6,8 @@
 #
 # Arduino main folder:
 if [ -z "$ARDUINO" ]; then
-    export ARDUINO=C:/arduino-1.8.5
+    #export ARDUINO=C:/arduino-1.8.5
+	export ARDUINO=G:/Data/3d/Github/Prusa-Firmware/PF-build-env-1.0.1/msys
 fi
 #
 # Arduino builder:
