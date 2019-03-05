@@ -4467,12 +4467,12 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// Get coords of a measuring point.
 			uint8_t ix = mesh_point % nMeasPoints; // from 0 to MESH_NUM_X_POINTS - 1
 			uint8_t iy = mesh_point / nMeasPoints;
-			if (!mbl_point_measurement_valid(ix, iy, nMeasPoints)) {
+			/*if (!mbl_point_measurement_valid(ix, iy, nMeasPoints, true)) {
 				printf_P(PSTR("Skipping point [%d;%d] \n"), ix, iy);
 				custom_message_state--;
 				mesh_point++;
 				continue; //skip
-			}
+			}*/
 			if (iy & 1) ix = (nMeasPoints - 1) - ix; // Zig zag
 			float z0 = 0.f;
 			if (has_z && (mesh_point > 0)) {
@@ -4693,6 +4693,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 //		SERIAL_ECHOLNPGM("Bed leveling correction finished");
 		if (nMeasPoints == 3) {
 			mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
+		}
+		if (nMeasPoints == 7) {
+			mbl_interpolation(nMeasPoints);
 		}
 //		SERIAL_ECHOLNPGM("Upsample finished");
 		mbl.active = 1; //activate mesh bed leveling

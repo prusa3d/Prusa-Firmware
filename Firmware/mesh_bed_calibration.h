@@ -210,6 +210,6 @@ extern e_MBL_TYPE e_mbl_type;
 extern void mbl_mode_set();
 extern void mbl_mode_init();
 
-extern bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points);
-
+extern bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag);
+extern void mbl_interpolation(uint8_t meas_points);
 #endif /* MESH_BED_CALIBRATION_H */

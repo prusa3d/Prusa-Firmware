@@ -3067,11 +3067,13 @@ void mbl_mode_init() {
 	else e_mbl_type = mbl_type;
 }
 
-bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points) {
+bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag) {
 	    //"human readable" heatbed plan
 		//magnet proximity influence Z coordinate measurements significantly (40 - 100 um)
 		//0 - measurement point is above magnet and Z coordinate can be influenced negatively
 		//1 - we should be in safe distance from magnets, measurement should be accurate
+		if ((ix >= meas_points) || (iy >= meas_points)) return false;
+
 		uint8_t valid_points_mask[7] = {
 					//[X_MAX,Y_MAX]
 			0b1111101,
@@ -3089,4 +3091,24 @@ bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points) {
 		}
 		if((iy%2) == 0)	return (valid_points_mask[6 - iy] & (1 << (6 - ix)));
 		else return (valid_points_mask[6 - iy] & (1 << ix));
+}
+
+void mbl_single_point_interpolation(uint8_t x, uint8_t y, uint8_t meas_points) {
+		uint8_t count = 0;
+		float z = 0;
+		if(mbl_point_measurement_valid(x, y+1, meas_points, false)) { z += mbl.z_values[x][y+1]; count++; }
+		if(mbl_point_measurement_valid(x, y-1, meas_points, false)) { z += mbl.z_values[x][y-1]; count++; }
+		if(mbl_point_measurement_valid(x+1, y, meas_points, false)) { z += mbl.z_values[x+1][y]; count++; }
+		if(mbl_point_measurement_valid(x-1, y, meas_points, false)) { z += mbl.z_values[x+1][y]; count++; }
+		if(count != 0) mbl.z_values[x][y] = z / count; //if we have at least one valid point in surrounding area use average value, otherwise use inaccurately measured Z-coordinate
+}
+
+void mbl_interpolation(uint8_t meas_points) {
+	for (uint8_t x = 0; x < meas_points; x++) {
+		for (uint8_t y = 0; y < meas_points; y++) {
+			if (!mbl_point_measurement_valid(x, y, meas_points, false)) {
+				mbl_single_point_interpolation(x, y, meas_points);
+			}
+		}
+	}
 }
