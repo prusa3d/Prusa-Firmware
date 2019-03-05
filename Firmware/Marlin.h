@@ -297,8 +297,13 @@ extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
-extern void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 extern int8_t lcd_change_fil_state;
+
+#ifdef TMC2130
+void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
+#else
+void homeaxis(int axis, uint8_t cnt = 1);
+#endif //TMC2130
 
 
 #ifdef FAN_SOFT_PWM
