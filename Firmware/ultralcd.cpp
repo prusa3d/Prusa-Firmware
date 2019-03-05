@@ -4080,7 +4080,25 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 	{
 
 	case 0: // default message
-		if (IS_SD_PRINTING)
+		if (busy_state == PAUSED_FOR_USER) 
+		{
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(15);
+			prusa_stat_farm_number();
+			prusa_stat_printinfo();
+			SERIAL_ECHOLN("}");
+			status_number = 15;
+		}
+		else if (isPrintPaused || card.paused) 
+		{
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(14);
+			prusa_stat_farm_number();
+			prusa_stat_printinfo();
+			SERIAL_ECHOLN("}");
+			status_number = 14;
+		}
+		else if (IS_SD_PRINTING)
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(4);
