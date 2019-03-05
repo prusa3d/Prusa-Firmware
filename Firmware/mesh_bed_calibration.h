@@ -6,9 +6,9 @@
 
 #ifdef HEATBED_V2
 
-#define BED_X0 (13.f - BED_ZERO_REF_X)
+#define BED_X0 (3.f - BED_ZERO_REF_X)
 #define BED_Y0 (10.4f - BED_ZERO_REF_Y)
-#define BED_Xn (216.f - BED_ZERO_REF_X)
+#define BED_Xn (206.f - BED_ZERO_REF_X)
 #define BED_Yn (202.4f - BED_ZERO_REF_Y)
 
 #else
@@ -209,5 +209,7 @@ typedef enum
 extern e_MBL_TYPE e_mbl_type;
 extern void mbl_mode_set();
 extern void mbl_mode_init();
+
+extern bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points);
 
 #endif /* MESH_BED_CALIBRATION_H */

@@ -3066,3 +3066,27 @@ void mbl_mode_init() {
 	if (mbl_type == 0xFF) e_mbl_type = e_MBL_OPTIMAL;
 	else e_mbl_type = mbl_type;
 }
+
+bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points) {
+	    //"human readable" heatbed plan
+		//magnet proximity influence Z coordinate measurements significantly (40 - 100 um)
+		//0 - measurement point is above magnet and Z coordinate can be influenced negatively
+		//1 - we should be in safe distance from magnets, measurement should be accurate
+		uint8_t valid_points_mask[7] = {
+					//[X_MAX,Y_MAX]
+			0b1111101,
+			0b1110111,
+			0b1111111,
+			0b0111011,
+			0b1110111,
+			0b1111111,
+			0b1110111,
+		//[0,0]
+		};
+		if (meas_points == 3) {
+			ix *= 3;
+			iy *= 3;
+		}
+		if((iy%2) == 0)	return (valid_points_mask[6 - iy] & (1 << (6 - ix)));
+		else return (valid_points_mask[6 - iy] & (1 << ix));
+}
