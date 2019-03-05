@@ -4392,7 +4392,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (code_seen('R')) {
 			nProbeRetry = code_value_uint8();
 			if (nProbeRetry > 10) {
-				nProbeRetry = 3;
+				nProbeRetry = 10;
 			}
 		}
 		
