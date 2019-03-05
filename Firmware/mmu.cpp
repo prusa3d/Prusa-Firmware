@@ -358,7 +358,7 @@ void mmu_loop(void)
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
 				fsensor_stop_and_save_print();
-				enquecommand_front_P(PSTR("FSENSOR_RECOVER")); //then recover
+				enquecommand_front_P(PSTR("PRUSA fsensor_recover")); //then recover
 				ad_markDepleted(mmu_extruder);
 				if (lcd_autoDepleteEnabled() && !ad_allDepleted())
 				{
