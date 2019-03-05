@@ -2439,11 +2439,12 @@ void force_high_power_mode(bool start_high_power_section) {
 }
 #endif //TMC2130
 
-void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis) {
-	gcode_G28(home_x_axis, 0, home_y_axis, 0, home_z_axis, 0, false, true);
-}
-
-void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl) {
+#ifdef TMC2130
+static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl)
+#else
+static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool without_mbl)
+#endif //TMC2130
+{
 	st_synchronize();
 
 #if 0
@@ -2726,6 +2727,15 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
       SERIAL_ECHOPGM("G28, final ");  print_physical_coordinates();
       SERIAL_ECHOPGM("G28, final ");  print_mesh_bed_leveling_table();
 #endif
+}
+
+static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
+{
+#ifdef TMC2130
+    gcode_G28(home_x_axis, 0, home_y_axis, 0, home_z_axis, 0, false, true);
+#else
+    gcode_G28(home_x_axis, 0, home_y_axis, 0, home_z_axis, 0, true);
+#endif //TMC2130
 }
 
 void adjust_bed_reset()
@@ -3834,8 +3844,12 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       home_z_value = code_value_long();
       bool without_mbl = code_seen('W');
       // calibrate?
+#ifdef TMC2130
       bool calib = code_seen('C');
       gcode_G28(home_x, home_x_value, home_y, home_y_value, home_z, home_z_value, calib, without_mbl);
+#else
+      gcode_G28(home_x, home_x_value, home_y, home_y_value, home_z, home_z_value, without_mbl);
+#endif //TMC2130
       if ((home_x || home_y || without_mbl || home_z) == false) {
          // Push the commands to the front of the message queue in the reverse order!
          // There shall be always enough space reserved for these commands.
