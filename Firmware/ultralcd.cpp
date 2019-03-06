@@ -5271,16 +5271,16 @@ do\
     switch(e_mbl_type)\
     {\
     case e_MBL_FAST:\
-        MENU_ITEM_FUNCTION_P(_i("MBL mode    [Fast]"),mbl_mode_set);\ 
+        MENU_ITEM_FUNCTION_P(_i("Mode    [Fast]"),mbl_mode_set);\ 
          break; \
     case e_MBL_OPTIMAL:\
-	    MENU_ITEM_FUNCTION_P(_i("MBL mode [Optimal]"), mbl_mode_set); \ 
+	    MENU_ITEM_FUNCTION_P(_i("Mode [Optimal]"), mbl_mode_set); \ 
 	     break; \
     case e_MBL_PREC:\
-	     MENU_ITEM_FUNCTION_P(_i("MBL mode [Precise]"), mbl_mode_set); \
+	     MENU_ITEM_FUNCTION_P(_i("Mode [Precise]"), mbl_mode_set); \
 	     break; \
     default:\
-	     MENU_ITEM_FUNCTION_P(_i("MBL mode [Optimal]"), mbl_mode_set); \
+	     MENU_ITEM_FUNCTION_P(_i("Mode [Optimal]"), mbl_mode_set); \
 	     break; \
     }\
 }\
@@ -5333,7 +5333,7 @@ static void lcd_settings_menu()
 
 	SETTINGS_SILENT_MODE;
 
-	SETTINGS_MBL_MODE;
+	MENU_ITEM_SUBMENU_P(_i("Mesh bed leveling"), lcd_mesh_bed_leveling_settings);////MSG_TEMPERATURE c=0 r=0
 
 #if defined (TMC2130) && defined (LINEARITY_CORRECTION)
     MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
@@ -6522,6 +6522,12 @@ static void lcd_tune_menu()
           }
 
 	MENU_END();
+}
+
+static void mesh_bed_leveling_menu()
+{
+
+	SETTINGS_MBL_MODE;
 }
 
 static void lcd_control_temperature_menu()
