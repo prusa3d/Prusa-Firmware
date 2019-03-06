@@ -484,8 +484,6 @@ void countFanSpeed()
 	fan_edge_counter[1] = 0;
 }
 
-extern bool fans_check_enabled;
-
 void checkFanSpeed()
 {
 	uint8_t max_print_fan_errors = 0;
@@ -663,9 +661,9 @@ void manage_heater()
           iState_sum[e] += pid_error[e];
           iState_sum[e] = constrain(iState_sum[e], iState_sum_min[e], iState_sum_max[e]);
           iTerm[e] = cs.Ki * iState_sum[e];
-          // K1 defined in Configuration.h in the PID settings
-          #define K2 (1.0-K1)
-          dTerm[e] = (cs.Kd * (pid_input - dState_last[e]))*K2 + (K1 * dTerm[e]); // e.g. digital filtration of derivative term changes
+          // PID_K1 defined in Configuration.h in the PID settings
+          #define K2 (1.0-PID_K1)
+          dTerm[e] = (cs.Kd * (pid_input - dState_last[e]))*K2 + (PID_K1 * dTerm[e]); // e.g. digital filtration of derivative term changes
           pid_output = pTerm[e] + iTerm[e] - dTerm[e]; // subtraction due to "Derivative on Measurement" method (i.e. derivative of input instead derivative of error is used)
           if (pid_output > PID_MAX) {
             if (pid_error[e] > 0 ) iState_sum[e] -= pid_error[e]; // conditional un-integration
@@ -812,9 +810,9 @@ void manage_heater()
 		  temp_iState_bed = constrain(temp_iState_bed, temp_iState_min_bed, temp_iState_max_bed);
 		  iTerm_bed = cs.bedKi * temp_iState_bed;
 
-		  //K1 defined in Configuration.h in the PID settings
-		  #define K2 (1.0-K1)
-		  dTerm_bed= (cs.bedKd * (pid_input - temp_dState_bed))*K2 + (K1 * dTerm_bed);
+		  //PID_K1 defined in Configuration.h in the PID settings
+		  #define K2 (1.0-PID_K1)
+		  dTerm_bed= (cs.bedKd * (pid_input - temp_dState_bed))*K2 + (PID_K1 * dTerm_bed);
 		  temp_dState_bed = pid_input;
 
 		  pid_output = pTerm_bed + iTerm_bed - dTerm_bed;
@@ -890,9 +888,7 @@ void manage_heater()
 	  }
   #endif
   
-#ifdef HOST_KEEPALIVE_FEATURE
   host_keepalive();
-#endif
 }
 
 #define PGM_RD_W(x)   (short)pgm_read_word(&x)

@@ -284,6 +284,7 @@ void setPwmFrequency(uint8_t pin, int val);
   #define CRITICAL_SECTION_END    SREG = _sreg;
 #endif //CRITICAL_SECTION_START
 
+extern bool fans_check_enabled;
 extern float homing_feedrate[];
 extern bool axis_relative_modes[];
 extern int feedmultiply;
@@ -296,8 +297,13 @@ extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
-extern void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 extern int8_t lcd_change_fil_state;
+
+#ifdef TMC2130
+void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
+#else
+void homeaxis(int axis, uint8_t cnt = 1);
+#endif //TMC2130
 
 
 #ifdef FAN_SOFT_PWM
@@ -310,9 +316,9 @@ extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
 
-#ifdef HOST_KEEPALIVE_FEATURE
+
 extern uint8_t host_keepalive_interval;
-#endif
+
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
@@ -396,13 +402,12 @@ extern void check_babystep();
 extern void long_pause();
 extern void crashdet_stop_and_save_print();
 
-#ifdef DIS
-
+#ifdef HEATBED_ANALYSIS
 void d_setup();
 float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
-
-#endif
+void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
+#endif //HEATBED_ANALYSIS
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
@@ -442,7 +447,7 @@ extern void restore_print_from_ram_and_continue(float e_move);
 extern uint16_t print_time_remaining();
 extern uint8_t calc_percent_done();
 
-#ifdef HOST_KEEPALIVE_FEATURE
+
 
 // States for managing Marlin and host communication
 // Marlin sends messages if blocked or busy
@@ -465,7 +470,6 @@ extern void host_keepalive();
 //extern MarlinBusyState busy_state;
 extern int busy_state;
 
-#endif //HOST_KEEPALIVE_FEATURE
 
 #ifdef TMC2130
 
@@ -477,8 +481,6 @@ void force_high_power_mode(bool start_high_power_section);
 #endif //TMC2130
 
 // G-codes
-void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl);
-void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();

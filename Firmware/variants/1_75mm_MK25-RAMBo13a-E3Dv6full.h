@@ -499,8 +499,12 @@
 //#define SUPPORT_VERBOSITY
 
 #define MMU_REQUIRED_FW_BUILDNR 132
-//#define MMU_DEBUG //print communication between MMU2 and printer on serial
+#define MMU_FORCE_STEALTH_MODE
+#define MMU_DEBUG //print communication between MMU2 and printer on serial
 
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
+
+//#define HEATBED_ANALYSIS //for meash bed leveling and heatbed analysis D-codes D80 and D81
+//#define MICROMETER_LOGGING //related to D-codes D80 and D81, currently works on MK2.5 only (MK3 board pin definitions missing)
 
 #endif //__CONFIGURATION_PRUSA_H
