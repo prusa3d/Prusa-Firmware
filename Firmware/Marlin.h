@@ -311,9 +311,9 @@ extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
 
-#ifdef HOST_KEEPALIVE_FEATURE
+
 extern uint8_t host_keepalive_interval;
-#endif
+
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
@@ -397,13 +397,12 @@ extern void check_babystep();
 extern void long_pause();
 extern void crashdet_stop_and_save_print();
 
-#ifdef DIS
-
+#ifdef HEATBED_ANALYSIS
 void d_setup();
 float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
-
-#endif
+void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
+#endif //HEATBED_ANALYSIS
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
@@ -443,7 +442,7 @@ extern void restore_print_from_ram_and_continue(float e_move);
 extern uint16_t print_time_remaining();
 extern uint8_t calc_percent_done();
 
-#ifdef HOST_KEEPALIVE_FEATURE
+
 
 // States for managing Marlin and host communication
 // Marlin sends messages if blocked or busy
@@ -466,7 +465,6 @@ extern void host_keepalive();
 //extern MarlinBusyState busy_state;
 extern int busy_state;
 
-#endif //HOST_KEEPALIVE_FEATURE
 
 #ifdef TMC2130
 
