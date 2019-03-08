@@ -967,15 +967,29 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 #endif //TMC2130
     for (uint8_t i = 0; i < n_iter; ++ i)
 	{
-        // Move up the retract distance.
-        current_position[Z_AXIS] += .5f;
-        go_to_current(homing_feedrate[Z_AXIS]/60);
-        // Move back down slowly to find bed.
+		
+		current_position[Z_AXIS] += 0.15;
+		float z_bckp = current_position[Z_AXIS];
+		go_to_current(homing_feedrate[Z_AXIS]/60);
+		// Move back down slowly to find bed.
         current_position[Z_AXIS] = minimum_z;
         go_to_current(homing_feedrate[Z_AXIS]/(4*60));
         // we have to let the planner know where we are right now as it is not where we said to go.
         update_current_position_z();
-        if (! endstop_z_hit_on_purpose())
+		//printf_P(PSTR("Zs: %f, Z: %f, delta Z: %f"), z_bckp, current_position[Z_AXIS], (z_bckp - current_position[Z_AXIS]));
+		if (abs(current_position[Z_AXIS] - z_bckp) < 0.025) {
+			printf_P(PSTR("PINDA triggered immediately, move Z higher and repeat measurement\n")); 
+			current_position[Z_AXIS] += 0.5;
+			go_to_current(homing_feedrate[Z_AXIS]/60);
+			current_position[Z_AXIS] = minimum_z;
+            go_to_current(homing_feedrate[Z_AXIS]/(4*60));
+            // we have to let the planner know where we are right now as it is not where we said to go.
+			update_current_position_z();
+		}
+
+
+
+		if (! endstop_z_hit_on_purpose())
             goto error;
 #ifdef TMC2130
 		if (READ(Z_TMC2130_DIAG) != 0) goto error; //crash Z detected
@@ -2748,7 +2762,7 @@ void go_home_with_z_lift()
     current_position[Y_AXIS] = Y_MIN_POS+0.2;
     // Clamp to the physical coordinates.
     world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
-    go_to_current(homing_feedrate[X_AXIS]/60);
+	go_to_current(homing_feedrate[X_AXIS]/20);
     // Third move up to a safe height.
     current_position[Z_AXIS] = Z_MIN_POS;
     go_to_current(homing_feedrate[Z_AXIS]/60);    
