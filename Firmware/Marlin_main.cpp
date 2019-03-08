@@ -4378,7 +4378,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			}
 		}
 		else {
-			nProbeRetry = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR) - 1;
+			nProbeRetry = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
 		}
 		bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 		
