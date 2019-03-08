@@ -157,12 +157,12 @@ void delay2(unsigned long ms)
 	}
 }
 
-void tone2(uint8_t _pin, unsigned int frequency/*, unsigned long duration*/)
+void tone2(__attribute__((unused)) uint8_t _pin, __attribute__((unused)) unsigned int frequency/*, unsigned long duration*/)
 {
 	PIN_SET(BEEPER);
 }
 
-void noTone2(uint8_t _pin)
+void noTone2(__attribute__((unused)) uint8_t _pin)
 {
 	PIN_CLR(BEEPER);
 }
