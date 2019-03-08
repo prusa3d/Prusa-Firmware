@@ -985,7 +985,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 //        SERIAL_ECHOLNPGM("");
 		float dz = i?abs(current_position[Z_AXIS] - (z / i)):0;
         z += current_position[Z_AXIS];
-//		printf_P(PSTR(" Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
+		printf_P(PSTR("Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
 		if (dz > 0.05) goto error;//deviation > 50um
     }
     current_position[Z_AXIS] = z;
@@ -3048,7 +3048,7 @@ void count_xyz_details(float (&distanceMin)[2]) {
 		distanceMin[mesh_point] = (y - Y_MIN_POS_CALIBRATION_POINT_OUT_OF_REACH);
 	}
 }
-
+/*
 e_MBL_TYPE e_mbl_type = e_MBL_OPTIMAL;
 
 void mbl_mode_set() {
@@ -3065,6 +3065,24 @@ void mbl_mode_init() {
 	uint8_t mbl_type = eeprom_read_byte((uint8_t*)EEPROM_MBL_TYPE);
 	if (mbl_type == 0xFF) e_mbl_type = e_MBL_OPTIMAL;
 	else e_mbl_type = mbl_type;
+}
+*/
+
+void mbl_settings_init() {
+//3x3 mesh; 3 Z-probes on each point, magnet elimination on
+//magnet elimination: use aaproximate Z-coordinate instead of measured values for points which are near magnets
+	if (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) == 0xFF) {
+		eeprom_update_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION, 1);
+	}
+	if (eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR) == 0xFF) {
+		eeprom_update_byte((uint8_t*)EEPROM_MBL_PROBE_NR, 3);
+	}
+	mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+	if (mbl_z_probe_nr == 0xFF) {
+		mbl_z_probe_nr = 4;
+		eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, mbl_z_probe_nr);
+	}
+	
 }
 
 bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag) {

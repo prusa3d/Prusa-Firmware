@@ -167,6 +167,7 @@ CardReader card;
 unsigned long PingTime = _millis();
 unsigned long NcTime;
 
+int mbl_z_probe_nr = 4; //numer of Z measurements for each point in mesh bed leveling calibration
 
 //used for PINDA temp calibration and pause print
 #define DEFAULT_RETRACTION    1
@@ -1465,7 +1466,8 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_SD_SORT) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_SD_SORT, 0);
 	}
-	mbl_mode_init();
+	//mbl_mode_init();
+	mbl_settings_init();
 	check_babystep(); //checking if Z babystep is in allowed range
 
 #ifdef UVLO_SUPPORT
@@ -4325,6 +4327,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	*/
 
 	case 80:
+
 #ifdef MK1BP
 		break;
 #endif //MK1BP
@@ -4363,6 +4366,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				nMeasPoints = 3;
 			}
 		}
+		else {
+			nMeasPoints = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+		}
 
 		uint8_t nProbeRetry = 3;
 		if (code_seen('R')) {
@@ -4371,6 +4377,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				nProbeRetry = 10;
 			}
 		}
+		else {
+			nProbeRetry = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR) - 1;
+		}
+		bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 		
 		bool temp_comp_start = true;
 #ifdef PINDA_THERMISTOR
@@ -4670,7 +4680,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (nMeasPoints == 3) {
 			mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 		}
-		if (nMeasPoints == 7) {
+		if (nMeasPoints == 7 && magnet_elimination) {
 			mbl_interpolation(nMeasPoints);
 		}
 //		SERIAL_ECHOLNPGM("Upsample finished");

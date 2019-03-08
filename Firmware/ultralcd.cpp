@@ -47,6 +47,7 @@ char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 
 static void lcd_sd_updir();
+static void lcd_mesh_bed_leveling_settings();
 
 int8_t ReInitLCD = 0;
 
@@ -5325,6 +5326,7 @@ do\
 while (0)
 #endif // SDCARD_SORT_ALPHA
 
+/*
 #define SETTINGS_MBL_MODE \
 do\
 {\
@@ -5345,7 +5347,7 @@ do\
     }\
 }\
 while (0)
-
+*/
 
 #define SETTINGS_SOUND \
 do\
@@ -5395,7 +5397,7 @@ static void lcd_settings_menu()
 
 	SETTINGS_SILENT_MODE;
 
-	MENU_ITEM_SUBMENU_P(_i("Mesh bed leveling"), lcd_mesh_bed_leveling_settings);////MSG_TEMPERATURE c=0 r=0
+	MENU_ITEM_SUBMENU_P(_i("Mesh bed leveling"), lcd_mesh_bed_leveling_settings);////MSG_MBL_SETTINGS c=18 r=1
 
 #if defined (TMC2130) && defined (LINEARITY_CORRECTION)
     MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
@@ -6632,10 +6634,46 @@ static void lcd_tune_menu()
 	MENU_END();
 }
 
-static void mesh_bed_leveling_menu()
-{
+static void mbl_magnets_elimination_set() {
+	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
+	magnet_elimination = !magnet_elimination;
+	eeprom_update_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION, (uint8_t)magnet_elimination);
+}
 
-	SETTINGS_MBL_MODE;
+static void mbl_mesh_set() {
+	uint8_t mesh_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+	if(mesh_nr == 3) mesh_nr = 7;
+	else mesh_nr = 3;
+	eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, mesh_nr);
+}
+
+static void lcd_mesh_bed_leveling_settings()
+{
+	
+	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
+	uint8_t points_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+
+	MENU_BEGIN();
+	// leaving menu - this condition must be immediately before MENU_ITEM_BACK_P
+	if (((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving)
+	{
+		eeprom_update_byte((uint8_t*)EEPROM_MBL_PROBE_NR, (uint8_t)mbl_z_probe_nr);
+	}
+	MENU_ITEM_BACK_P(_T(MSG_SETTINGS)); 
+	if(points_nr == 3) MENU_ITEM_FUNCTION_P(_i("Mesh [3x3]"), mbl_mesh_set);
+	else MENU_ITEM_FUNCTION_P(_i("Mesh [7x7]"), mbl_mesh_set);
+	MENU_ITEM_EDIT_int3_P(_i("Probe nr."), &mbl_z_probe_nr, 1, 5);
+	if (points_nr == 7) {
+		if (magnet_elimination) MENU_ITEM_FUNCTION_P(_i("Magnets eli [On]"), mbl_magnets_elimination_set);
+		else MENU_ITEM_FUNCTION_P(_i("Magnets eli [Off]"), mbl_magnets_elimination_set);
+	}
+	else menu_item_text_P(_i("MAgnets eli [N/A]"));
+	MENU_END();
+	/*if(menu_leaving)
+	{
+	    eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, mbl_z_probe_nr);
+	}*/
+	//SETTINGS_MBL_MODE;
 }
 
 static void lcd_control_temperature_menu()
