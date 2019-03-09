@@ -109,10 +109,6 @@
 #include "Wire.h"
 #endif
 
-#ifdef ULTRALCD
-#include "ultralcd.h"
-#endif
-
 #if NUM_SERVOS > 0
 #include "Servo.h"
 #endif
