@@ -24,11 +24,11 @@
 
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
-"Z wurde eingestellt"
+"Z einstellen"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20 r=0
 "All correct      "
-"Alles richtig "
+"Alles richtig    "
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -112,11 +112,11 @@
 
 #MSG_BED c=0 r=0
 "Bed"
-"Bett"
+"Bett     "
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
-"Gurtstatus"
+"Riemstatus"
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
@@ -712,7 +712,7 @@
 
 #MSG_MOVE_AXIS c=0 r=0
 "Move axis"
-"Achse bewegen"
+"Achsen bewegen"
 
 #MSG_MOVE_X c=0 r=0
 "Move X"
@@ -768,7 +768,7 @@
 
 #MSG_NOZZLE c=0 r=0
 "Nozzle"
-"Duese"
+"Duese    "
 
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
@@ -1092,7 +1092,7 @@
 
 #
 "Severe skew"
-"Schwerer Schraeglauf"
+"Sehr schraeg"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
@@ -1108,7 +1108,7 @@
 
 #
 "Slight skew"
-"Leichter Schraeglauf"
+"Etwas schraeg"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
