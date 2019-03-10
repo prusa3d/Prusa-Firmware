@@ -712,7 +712,7 @@
 
 #MSG_MOVE_AXIS c=0 r=0
 "Move axis"
-"Achsen bewegen"
+"Achse bewegen"
 
 #MSG_MOVE_X c=0 r=0
 "Move X"
@@ -768,7 +768,7 @@
 
 #MSG_NOZZLE c=0 r=0
 "Nozzle"
-"Duese    "
+"Duese"
 
 #MSG_DEFAULT_SETTINGS_LOADED c=20 r=4
 "Old settings found. Default PID, Esteps etc. will be set."
