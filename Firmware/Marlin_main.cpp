@@ -167,7 +167,7 @@ CardReader card;
 unsigned long PingTime = _millis();
 unsigned long NcTime;
 
-int mbl_z_probe_nr = 4; //numer of Z measurements for each point in mesh bed leveling calibration
+int mbl_z_probe_nr = 3; //numer of Z measurements for each point in mesh bed leveling calibration
 
 //used for PINDA temp calibration and pause print
 #define DEFAULT_RETRACTION    1
@@ -1468,6 +1468,11 @@ void setup()
 	}
 	//mbl_mode_init();
 	mbl_settings_init();
+	SilentModeMenu_MMU = eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH);
+	if (SilentModeMenu_MMU == 255) {
+		SilentModeMenu_MMU = 1;
+		eeprom_write_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
+	}
 	check_babystep(); //checking if Z babystep is in allowed range
 
 #ifdef UVLO_SUPPORT

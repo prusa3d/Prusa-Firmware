@@ -53,6 +53,7 @@ int8_t ReInitLCD = 0;
 
 
 int8_t SilentModeMenu = SILENT_MODE_OFF;
+uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
 
@@ -4515,6 +4516,12 @@ static void lcd_sound_state_set(void)
 Sound_CycleState();
 }
 
+static void lcd_silent_mode_mmu_set() {
+	if (SilentModeMenu_MMU == 1) SilentModeMenu_MMU = 0;
+	else SilentModeMenu_MMU = 1;
+	eeprom_update_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
+}
+
 static void lcd_silent_mode_set() {
 	switch (SilentModeMenu) {
 #ifdef TMC2130
@@ -5288,6 +5295,13 @@ do\
             break; /* (probably) not needed*/\
         }\
     }\
+#ifndef MMU_FORCE_STEALTH_MODE
+	if(mmu_enabled)\
+	{\
+		if (SilentModeMenu_MMU == 0) MENU_ITEM_FUNCTION_P(_i("MMU Mode [Fast]"), lcd_silent_mode_mmu_set);\
+		else MENU_ITEM_FUNCTION_P(_i("MMU Mode [Stealth]"), lcd_silent_mode_mmu_set);\
+	}\
+#endif //MMU_FORCE_STEALTH_MODE
 }\
 while (0)
 #endif //TMC2130

@@ -185,10 +185,8 @@ static bool activate_stealth_mode()
 {
 #if defined (MMU_FORCE_STEALTH_MODE)
 	return true;
-#elif defined (SILENT_MODE_STEALTH)
-	return (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_STEALTH);
-#else
-	return false;
+#elif
+	return (eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH) == 1);
 #endif
 }
 
