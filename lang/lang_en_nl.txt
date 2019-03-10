@@ -124,7 +124,7 @@
 
 #
 "Calibrating home"
-"Kalibreren start positie"
+"Kalibreren start"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -376,7 +376,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filament extrudeert en met de juiste kleur?"
+"Filament extrudeert met de juiste kleur?"
 
 #MSG_NOT_LOADED c=19 r=0
 "Filament not loaded"
@@ -436,11 +436,11 @@
 
 #MSG_SELFTEST_FANS c=0 r=0
 "Front/left fans"
-"Fans voorkant/linkerkant"
+"Fans voor/links"
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=0 r=0
 "Heater/Thermistor"
-"Verwarming/Thermistor"
+"Verwarmer/Therm."
 
 #MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
 "Heating disabled by safety timer."
@@ -676,11 +676,11 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Stand    [Normaal]"
+"Stand   [Normaal]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Stand       [stil]"
+"Stand      [stil]"
 
 #
 "MMU needs user attention."
@@ -904,11 +904,11 @@
 
 #
 "Preheating to load"
-"Om in te voeren voorverwarmen"
+"Opwarmen invoeren"
 
 #
 "Preheating to unload"
-"Om te verwijderen voorverwarmen"
+"Opwarmen uitwerpen"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
@@ -920,7 +920,7 @@
 
 #
 "Press the knob"
-"Druk op de knop"
+"Druk op knop"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -1228,11 +1228,11 @@
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
-"Filament verwijderen"
+"Filament uitwerpen"
 
 #MSG_UNLOADING_FILAMENT c=20 r=1
 "Unloading filament"
-"Verwijderen filament"
+"Uitwerpen filament"
 
 #
 "Total"
