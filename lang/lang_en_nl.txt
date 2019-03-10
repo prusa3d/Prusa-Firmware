@@ -124,7 +124,7 @@
 
 #
 "Calibrating home"
-"Kalibrere start"
+"Kalibreren start"
 
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
@@ -220,11 +220,11 @@
 
 #MSG_BABYSTEP_Z_NOT_SET c=20 r=12
 "Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."
-"Afstand tussen tip van het tuit en het print oppervlak nog niet vastgesteld. Volg de handleiding, First steps, sectie First layer calibration."
+"Afstand tussen tip van de tuit en het print oppervlak is nog niet vastgesteld. Volg de handleiding, First steps, sectie First layer calibration."
 
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
-"Wilt u de laatste stap herhalen om de afstand tussen de nozzle en de bed opnieuw in te stellen?"
+"Wilt u de laatste stap herhalen om de afstand tussen de tuit en de bed opnieuw in te stellen?"
 
 #MSG_EXTRUDER_CORRECTION c=9 r=0
 "E-correct"
@@ -376,7 +376,7 @@
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
-"Filament extrudeerd + en de juiste kleur?"
+"Filament extrudeert met de juiste kleur?"
 
 #MSG_NOT_LOADED c=19 r=0
 "Filament not loaded"
@@ -392,7 +392,7 @@
 
 #MSG_FILAMENT_USED c=19 r=1
 "Filament used"
-"Filament gebruikt"
+"Gebruikte filament"
 
 #MSG_PRINT_TIME c=19 r=1
 "Print time"
@@ -400,11 +400,11 @@
 
 #MSG_FILE_INCOMPLETE c=20 r=2
 "File incomplete. Continue anyway?"
-"Bestand onvolledig. Maar toch doorgaan?"
+"Bestand onvolledig. Toch doorgaan?"
 
 #MSG_FINISHING_MOVEMENTS c=20 r=1
 "Finishing movements"
-"Bewegingen afwerken"
+"Voortgang afwerken"
 
 #MSG_V2_CALIBRATION c=17 r=1
 "First layer cal."
@@ -428,7 +428,7 @@
 
 #MSG_SELFTEST_COOLING_FAN c=20 r=0
 "Front print fan?"
-"Voordere fan?"
+"Voorzijde fan?"
 
 #MSG_BED_CORRECTION_FRONT c=14 r=1
 "Front side[um]"
@@ -436,11 +436,11 @@
 
 #MSG_SELFTEST_FANS c=0 r=0
 "Front/left fans"
-""
+"Fans voor/links"
 
 #MSG_SELFTEST_HEATERTHERMISTOR c=0 r=0
 "Heater/Thermistor"
-""
+"Verwarmer/Therm."
 
 #MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
 "Heating disabled by safety timer."
@@ -528,7 +528,7 @@
 
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
-"Begin de Kal.-Linie te printen, draai de knop tot je de optimale hoogte bereikt. Controleer de afbeeldingen in ons handboek in hoofdstuk Calibration."
+"Begin de Kal.-lijn te printen, draai de knop tot je de optimale hoogte bereikt. Controleer de afbeeldingen in ons handboek in hoofdstuk Calibration."
 
 #MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Improving bed calibration point"
@@ -540,19 +540,19 @@
 
 #MSG_FILAMENT_LOADING_T0 c=20 r=4
 "Insert filament into extruder 1. Click when done."
-"Leeg filament in extruder 1 in en druk de knop."
+"Voer filament in extruder 1 in en druk de knop."
 
 #MSG_FILAMENT_LOADING_T1 c=20 r=4
 "Insert filament into extruder 2. Click when done."
-"Leeg filament in extruder 2 in en druk de knop."
+"Voer filament in extruder 2 in en druk de knop."
 
 #MSG_FILAMENT_LOADING_T2 c=20 r=4
 "Insert filament into extruder 3. Click when done."
-"Leeg filament in extruder 3 in en druk de knop."
+"Voer filament in extruder 3 in en druk de knop."
 
 #MSG_FILAMENT_LOADING_T3 c=20 r=4
 "Insert filament into extruder 4. Click when done."
-"Leeg filament in extruder 4 in en druk de knop."
+"Voer filament in extruder 4 in en druk de knop."
 
 #
 "Is filament 1 loaded?"
@@ -560,7 +560,7 @@
 
 #MSG_INSERT_FILAMENT c=20 r=0
 "Insert filament"
-"Leeg filament in"
+"Voer filament in"
 
 #MSG_WIZARD_FILAMENT_LOADED c=20 r=2
 "Is filament loaded?"
@@ -568,7 +568,7 @@
 
 #MSG_WIZARD_PLA_FILAMENT c=20 r=2
 "Is it PLA filament?"
-"Is het PLA filanent?"
+"Is het PLA filament?"
 
 #MSG_PLA_FILAMENT_LOADED c=20 r=2
 "Is PLA filament loaded?"
@@ -576,7 +576,7 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-"is de staalplaat op het bed?"
+"Ligt de staalplaat op het bed?"
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
 "Iteration "
@@ -592,7 +592,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
-"Linke hotend fan?"
+"Linker hotend fan?"
 
 #
 "Left"
@@ -616,19 +616,19 @@
 
 #MSG_LOADING_COLOR c=0 r=0
 "Loading color"
-"Lade kleur"
+"Laden kleur"
 
 #MSG_LOADING_FILAMENT c=20 r=0
 "Loading filament"
-"Lade filament"
+"Laden filament"
 
 #MSG_LOOSE_PULLEY c=20 r=1
 "Loose pulley"
-"Losse rienschijf"
+"Losse riemschijf"
 
 #
 "Load to nozzle"
-"In tuit laden"
+"Tot tuit laden"
 
 #MSG_M117_V2_CALIBRATION c=25 r=1
 "M117 First layer cal."
@@ -640,7 +640,7 @@
 
 #MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60 r=0
 "Measuring reference height of calibration point"
-"Meten van reference hoogte van de kalibratiepunt"
+"Referentie hoogte van het kalibratiepunt meten"
 
 #MSG_MESH_BED_LEVELING c=0 r=0
 "Mesh Bed Leveling"
@@ -668,7 +668,7 @@
 
 #
 "MMU load fails"
-"MMU ladefout"
+"MMU laadfout"
 
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
@@ -676,11 +676,11 @@
 
 #MSG_STEALTH_MODE_OFF c=0 r=0
 "Mode     [Normal]"
-"Mode    [Normaal]"
+"Stand   [Normaal]"
 
 #MSG_SILENT_MODE_ON c=0 r=0
 "Mode     [silent]"
-"Mode       [stil]"
+"Stand      [stil]"
 
 #
 "MMU needs user attention."
@@ -696,11 +696,11 @@
 
 #MSG_AUTO_MODE_ON c=0 r=0
 "Mode [auto power]"
-""
+"Mode [automatisch]"
 
 #MSG_SILENT_MODE_OFF c=0 r=0
 "Mode [high power]"
-""
+"Stand [hoog]"
 
 #
 "MMU2 connected"
@@ -756,11 +756,11 @@
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
-"Roteert niet"
+"Beweegt niet"
 
 #MSG_WIZARD_V2_CAL c=20 r=8
 "Now I will calibrate distance between tip of the nozzle and heatbed surface."
-"Begin met kalibratie tussen tuit en bed."
+"Begin met kalibratie tussen de tuit en het bed."
 
 #MSG_WIZARD_WILL_PREHEAT c=20 r=4
 "Now I will preheat nozzle for PLA."
@@ -804,15 +804,15 @@
 
 #MSG_PAPER c=20 r=8
 "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
-"Leg een vel papier onder het tuit tijdens de kalibratie van de eerste 4 punten. Als het tuit het papier vangt, Printer onmiddellijk uitschakelen."
+"Leg een vel papier onder de tuit tijdens de kalibratie van de eerste 4 punten. Als de tuit het papier beweegt, de printer onmiddellijk uitschakelen."
 
 #MSG_WIZARD_CLEAN_HEATBED c=20 r=8
 "Please clean heatbed and then press the knob."
-"Maak de bed schoon en druk de knop."
+"Maak het bed schoon en druk op de knop."
 
 #MSG_CONFIRM_NOZZLE_CLEAN c=20 r=8
 "Please clean the nozzle for calibration. Click when done."
-"Reinig het tuit voor de kalibratie aub. Druk knop als klaar."
+"Reinig de tuit voor de kalibratie. Druk op de knop wanneer gereed."
 
 #MSG_SELFTEST_PLEASECHECK c=0 r=0
 "Please check :"
@@ -820,7 +820,7 @@
 
 #MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
 "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
-"Controleer alstublieft ons handboek en los het probleem op. Vervolgens hervat de wizard door de printer opnieuw te starten."
+"Controleer aub ons handboek en los het probleem op. Hervat vervolgens de wizard door de printer opnieuw te starten."
 
 #MSG_WIZARD_LOAD_FILAMENT c=20 r=8
 "Please insert PLA filament to the extruder, then press knob to load it."
@@ -828,7 +828,7 @@
 
 #MSG_PLEASE_LOAD_PLA c=20 r=4
 "Please load PLA filament first."
-"Laad eerst PLA filament aub."
+"Voer eerst PLA filament aub."
 
 #MSG_CHECK_IDLER c=20 r=4
 "Please open idler and remove filament manually."
@@ -840,7 +840,7 @@
 
 #MSG_PRESS_TO_UNLOAD c=20 r=4
 "Please press the knob to unload filament"
-"Druk op de knop om filament te ontladen"
+"Druk op de knop om filament te verwijderen"
 
 #
 "Please insert PLA filament to the first tube of MMU, then press the knob to load it."
@@ -856,7 +856,7 @@
 
 #MSG_REMOVE_STEEL_SHEET c=20 r=4
 "Please remove steel sheet from heatbed."
-"Verwijder staalplaat van de bed."
+"Verwijder staalplaat van het bed."
 
 #MSG_RUN_XYZ c=20 r=4
 "Please run XYZ calibration first."
@@ -872,7 +872,7 @@
 
 #
 "Please remove shipping helpers first."
-"Verwijder eerst de scheepvaart helpers."
+"Verwijder eerst de transport beschermers."
 
 #MSG_PREHEAT_NOZZLE c=20 r=0
 "Preheat the nozzle!"
@@ -892,7 +892,7 @@
 
 #MSG_PRESS_TO_PREHEAT c=20 r=4
 "Press knob to preheat nozzle and continue."
-"Druk op de knop om het tuit voor te verwarmen en door te gaan."
+"Druk op de knop om de tuit voor te verwarmen en door te gaan."
 
 #
 "Power failures"
@@ -904,11 +904,11 @@
 
 #
 "Preheating to load"
-"Voorverwarmen om te laden"
+"Opwarmen invoeren"
 
 #
 "Preheating to unload"
-"Voorverwarmen om te ontladen"
+"Opwarmen uitwerpen"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
@@ -920,11 +920,11 @@
 
 #
 "Press the knob"
-"Druk de knop"
+"Druk op knop"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
-"Druck pauzeren"
+"Print pauzeren"
 
 #
 "Press the knob to resume nozzle temperature."
@@ -984,7 +984,7 @@
 
 #MSG_RESUMING_PRINT c=20 r=1
 "Resuming print"
-"Hervatte print"
+"Hervatten print"
 
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
@@ -1016,7 +1016,7 @@
 
 #MSG_FIND_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
 "Searching bed calibration point"
-"Zoeke bed kalibratiepunt"
+"Zoeken bed kalibratiepunt"
 
 #MSG_LANGUAGE_SELECT c=0 r=0
 "Select language"
@@ -1024,7 +1024,7 @@
 
 #MSG_SELFTEST_OK c=0 r=0
 "Self test OK"
-"Zalftest OK"
+"Zelftest OK"
 
 #MSG_SELFTEST_START c=20 r=0
 "Self test start  "
@@ -1044,11 +1044,11 @@
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."
-"Zelftest zal worden uitgevoerd om nauwkeurige sensorloze rehoming kalibreren."
+"Zelftest zal worden uitgevoerd om nauwkeurige sensorloze auto positie te kalibreren."
 
 #
 "Select nozzle preheat temperature which matches your material."
-"Selecteer de voorverwarmingstemperatuur van het tuit die overeenkomt met uw materiaal."
+"Selecteer de voorverwarmingstemperatuur van de tuit die overeenkomt met uw materiaal."
 
 #
 "Select PLA filament:"
@@ -1080,15 +1080,15 @@
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
-"Sommige bestanden worden niet gesorteerd omdat de max. 100 bestanden per map is."
+"Sommige bestanden worden niet gesorteerd omdat het maximum aantal bestanden per map 100 is."
 
 #MSG_SORT_NONE c=17 r=1
 "Sort:      [none]"
-"Sort:      [geen]"
+"Sortering: [geen]"
 
 #MSG_SORT_TIME c=17 r=1
 "Sort:      [time]"
-"Sort:      [tijd]"
+"Sortering: [tijd]"
 
 #
 "Severe skew"
@@ -1116,7 +1116,7 @@
 
 #
 "Some problem encountered, Z-leveling enforced ..."
-"Er is een probleem opgetreden, Z-nivelleren afgedwongen ..."
+"Er is een probleem opgetreden, Z-kalibratie afgedwongen ..."
 
 #MSG_SOUND_ONCE c=17 r=1
 "Sound      [once]"
@@ -1136,7 +1136,7 @@
 
 #MSG_TEMP_CAL_WARNING c=20 r=4
 "Stable ambient temperature 21-26C is needed a rigid stand is required."
-"Stabiele omgevingstemperatuur 21-26C is nodig, een stijve stand is vereist."
+"Stabiele omgevingstemperatuur van 21-26C is nodig, een stevige stand is vereist."
 
 #MSG_STATISTICS c=0 r=0
 "Statistics  "
@@ -1204,19 +1204,19 @@
 
 #MSG_TUNE c=0 r=0
 "Tune"
-"Feininstellingen"
+"Fijnafstemming"
 
 #
 "Unload"
-"Ontladen"
+"Verwijderen"
 
 #
 "Unload all"
-"Alles ontladen"
+"Alles verwijderen"
 
 #
 "Total failures"
-"Totaalfouten"
+"Totaal fouten"
 
 #
 "to load filament"
@@ -1228,11 +1228,11 @@
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
-"Filament ontladen"
+"Filament uitwerpen"
 
 #MSG_UNLOADING_FILAMENT c=20 r=1
 "Unloading filament"
-"Ontlade Filament"
+"Uitwerpen filament"
 
 #
 "Total"
@@ -1280,11 +1280,11 @@
 
 #MSG_UNLOAD_SUCCESSFUL c=20 r=2
 "Was filament unload successful?"
-"Werd filament succesvol ontladen?"
+"Is filament succesvol verwijderd?"
 
 #MSG_SELFTEST_WIRINGERROR c=0 r=0
 "Wiring error"
-"Bedradingsfout"
+"Aansluitingsfout"
 
 #MSG_WIZARD c=17 r=1
 "Wizard"
@@ -1296,7 +1296,7 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_FITTING_FAILED c=20 r=8
 "XYZ calibration failed. Please consult the manual."
-"XYZ-kalibratie mislukt. Kijk in de handleiding aub."
+"XYZ-kalibratie mislukt. Raadpleeg de handleiding aub."
 
 #MSG_YES c=0 r=0
 "Yes"
@@ -1324,19 +1324,19 @@
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_BOTH_FAR c=20 r=8
 "XYZ calibration compromised. Front calibration points not reachable."
-"XYZ-kalibratie is gecompromitteerd. Voorste kalibratiepunten niet bereikbaar."
+"XYZ-kalibratie niet gelukt. Voorste kalibratiepunten niet bereikbaar."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 "XYZ calibration compromised. Right front calibration point not reachable."
-"XYZ-kalibratie is gecompromitteerd. Rechter voor kalibratiepunt niet bereikbaar."
+"XYZ-kalibratie niet gelukt. Rechter voor kalibratiepunt niet bereikbaar."
 
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
 "XYZ calibration compromised. Left front calibration point not reachable."
-"XYZ-kalibratie is gecompromitteerd. Linker voor kalibratiepunt niet bereikbaar."
+"XYZ-kalibratie niet gelukt. Linker voor kalibratiepunt niet bereikbaar."
 
 #MSG_LOAD_ALL c=17 r=0
 "Load all"
-"Ontlaad alle"
+"Laad alle"
 
 #MSG_LOAD_FILAMENT_1 c=17 r=0
 "Load filament 1"
@@ -1344,7 +1344,7 @@
 
 #
 "XYZ calibration failed. Bed calibration point was not found."
-"XYZ-kalibratie mislukt. Bedijkpunt niet gevonden."
+"XYZ-kalibratie mislukt. Bed ijkpunt niet gevonden."
 
 #
 "XYZ calibration failed. Front calibration points not reachable."
