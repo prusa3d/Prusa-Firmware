@@ -7745,22 +7745,18 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
 		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
 		if (!fan_speed[1]) {
-			_result = false; _errno = 6; //print fan not spinning
+                _result = false; _errno = 6; //print fan not spinning
+		}		
+                else if (fan_speed[1] < 34) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
+		//check fans manually
+		_result = lcd_selftest_manual_fan_check(1, true); //turn on print fan and check that left extruder fan is not spinning
+		if (_result) {
+		_result = lcd_selftest_manual_fan_check(1, false); //print fan is stil turned on; check that it is spinning
+		if (!_result) _errno = 6; //print fan not spinning
 		}
-#ifdef FAN_SOFT_PWM 
 		else {
-#else //FAN_SOFT_PWM
-		else if (fan_speed[1] < 34) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
-#endif //FAN_SOFT_PWM
-			//check fans manually
-			_result = lcd_selftest_manual_fan_check(1, true); //turn on print fan and check that left extruder fan is not spinning
-			if (_result) {
-				_result = lcd_selftest_manual_fan_check(1, false); //print fan is stil turned on; check that it is spinning
-				if (!_result) _errno = 6; //print fan not spinning
-			}
-			else {
-				_errno = 10; //swapped fans
-			}
+		_errno = 10; //swapped fans
+		}
 		}
 
 		//SERIAL_ECHOPGM("Extruder fan speed: ");
