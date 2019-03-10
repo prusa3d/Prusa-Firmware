@@ -45,6 +45,8 @@ extern bool lcd_selftest();
 
 void lcd_menu_statistics(); 
 
+void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
+
 extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
 
@@ -134,12 +136,22 @@ void extr_unload_used();
 void extr_unload();
 
 typedef enum
-     {e_FILAMENT_ACTION_none,e_FILAMENT_ACTION_Load,e_FILAMENT_ACTION_autoLoad,e_FILAMENT_ACTION_unLoad,e_FILAMENT_ACTION_mmuLoad,e_FILAMENT_ACTION_mmuUnLoad,e_FILAMENT_ACTION_mmuEject} eFILAMENT_ACTION; // 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
+{
+    e_FILAMENT_ACTION_none, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
+    e_FILAMENT_ACTION_Load,
+    e_FILAMENT_ACTION_autoLoad,
+    e_FILAMENT_ACTION_unLoad,
+    e_FILAMENT_ACTION_mmuLoad,
+    e_FILAMENT_ACTION_mmuUnLoad,
+    e_FILAMENT_ACTION_mmuEject,
+    e_FILAMENT_ACTION_mmuCut,
+} eFILAMENT_ACTION;
 extern eFILAMENT_ACTION eFilamentAction;
 extern bool bFilamentFirstRun;
 extern bool bFilamentPreheatState;
 extern bool bFilamentAction;
 void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
+void mFilamentItemForce();
 void mFilamentMenu();
 void unload_filament();
 

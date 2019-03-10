@@ -92,10 +92,15 @@ bool abort_on_endstop_hit = false;
   int motor_current_setting_loud[3] = DEFAULT_PWM_MOTOR_CURRENT_LOUD;
 #endif
 
-static bool old_x_min_endstop=false;
+#if ( (defined(X_MAX_PIN) && (X_MAX_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_XMAXLIMIT)
 static bool old_x_max_endstop=false;
-static bool old_y_min_endstop=false;
+#endif
+#if ( (defined(Y_MAX_PIN) && (Y_MAX_PIN > -1)) || defined(TMC2130_SG_HOMING) ) && !defined(DEBUG_DISABLE_YMAXLIMIT)
 static bool old_y_max_endstop=false;
+#endif
+
+static bool old_x_min_endstop=false;
+static bool old_y_min_endstop=false;
 static bool old_z_min_endstop=false;
 static bool old_z_max_endstop=false;
 

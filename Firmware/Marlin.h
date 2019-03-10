@@ -284,6 +284,7 @@ void setPwmFrequency(uint8_t pin, int val);
   #define CRITICAL_SECTION_END    SREG = _sreg;
 #endif //CRITICAL_SECTION_START
 
+extern bool fans_check_enabled;
 extern float homing_feedrate[];
 extern bool axis_relative_modes[];
 extern int feedmultiply;
@@ -296,8 +297,13 @@ extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
-extern void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 extern int8_t lcd_change_fil_state;
+
+#ifdef TMC2130
+void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
+#else
+void homeaxis(int axis, uint8_t cnt = 1);
+#endif //TMC2130
 
 
 #ifdef FAN_SOFT_PWM
@@ -477,8 +483,6 @@ void force_high_power_mode(bool start_high_power_section);
 #endif //TMC2130
 
 // G-codes
-void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl);
-void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
