@@ -3134,10 +3134,10 @@ void mbl_single_point_interpolation(uint8_t x, uint8_t y, uint8_t meas_points) {
 	printf_P(PSTR("x = %d; y = %d \n"), x, y);
 		uint8_t count = 0;
 		float z = 0;
-		if (mbl_point_measurement_valid(x, y + 1, meas_points, false)) { z += mbl.z_values[y + 1][x]; /*printf_P(PSTR("x; y+1: Z = %f \n")*/, mbl.z_values[y + 1][x]); count++; }
-		if (mbl_point_measurement_valid(x, y - 1, meas_points, false)) { z += mbl.z_values[y - 1][x]; /*printf_P(PSTR("x; y-1: Z = %f \n")*/, mbl.z_values[y - 1][x]); count++; }
-		if (mbl_point_measurement_valid(x + 1, y, meas_points, false)) { z += mbl.z_values[y][x + 1]; /*printf_P(PSTR("x+1; y: Z = %f \n")*/, mbl.z_values[y][x + 1]); count++; }
-		if (mbl_point_measurement_valid(x - 1, y, meas_points, false)) { z += mbl.z_values[y][x - 1]; /*printf_P(PSTR("x-1; y: Z = %f \n")*/, mbl.z_values[y][x - 1]); count++; }
+		if (mbl_point_measurement_valid(x, y + 1, meas_points, false)) { z += mbl.z_values[y + 1][x]; /*printf_P(PSTR("x; y+1: Z = %f \n"), mbl.z_values[y + 1][x]);*/ count++; }
+		if (mbl_point_measurement_valid(x, y - 1, meas_points, false)) { z += mbl.z_values[y - 1][x]; /*printf_P(PSTR("x; y-1: Z = %f \n"), mbl.z_values[y - 1][x]);*/ count++; }
+		if (mbl_point_measurement_valid(x + 1, y, meas_points, false)) { z += mbl.z_values[y][x + 1]; /*printf_P(PSTR("x+1; y: Z = %f \n"), mbl.z_values[y][x + 1]);*/ count++; }
+		if (mbl_point_measurement_valid(x - 1, y, meas_points, false)) { z += mbl.z_values[y][x - 1]; /*printf_P(PSTR("x-1; y: Z = %f \n"), mbl.z_values[y][x - 1]);*/ count++; }
 		if(count != 0) mbl.z_values[y][x] = z / count; //if we have at least one valid point in surrounding area use average value, otherwise use inaccurately measured Z-coordinate
 		//printf_P(PSTR("result: Z = %f \n\n"), mbl.z_values[y][x]);
 }
