@@ -24,11 +24,11 @@
 
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
-"Z wurde eingestellt"
+"Z einstellen"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20 r=0
 "All correct      "
-"Alles richtig "
+"Alles richtig    "
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -112,11 +112,11 @@
 
 #MSG_BED c=0 r=0
 "Bed"
-"Bett"
+"Bett     "
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
-"Gurtstatus"
+"Riemstatus"
 
 #MSG_RECOVER_PRINT c=20 r=2
 "Blackout occurred. Recover print?"
@@ -1112,7 +1112,7 @@
 
 #
 "Severe skew"
-"Schwerer Schraeglauf"
+"Sehr schraeg"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort:  [alphabet]"
@@ -1128,7 +1128,7 @@
 
 #
 "Slight skew"
-"Leichter Schraeglauf"
+"Etwas schraeg"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"

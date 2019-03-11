@@ -131,7 +131,7 @@ static void prusa_stat_farm_number();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
-static void lcd_menu_extruder_info();
+void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
@@ -186,7 +186,9 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite);
 #ifdef FANCHECK
 static bool lcd_selftest_fan_dialog(int _fan);
 #endif //FANCHECK
+#ifdef PAT9125
 static bool lcd_selftest_fsensor();
+#endif //PAT9125
 static bool selftest_irsensor();
 static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
@@ -1899,7 +1901,7 @@ void lcd_cooldown()
 }
 
 
-static void lcd_menu_extruder_info()
+void lcd_menu_extruder_info()                     // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
 //|01234567890123456789|
 //|Nozzle FAN:      RPM|
@@ -2342,7 +2344,8 @@ switch(eFilamentAction)
           lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20 r=1
           break;
      case e_FILAMENT_ACTION_mmuEject:
-          lcd_puts_P(_i("to eject filament"));    ////MSG_ c=20 r=1
+     case e_FILAMENT_ACTION_mmuCut:
+     case e_FILAMENT_ACTION_none:
           break;
      }
 if(lcd_clicked())
@@ -2356,38 +2359,23 @@ if(lcd_clicked())
      menu_back(nLevel);
      switch(eFilamentAction)
           {
-          case e_FILAMENT_ACTION_Load:
           case e_FILAMENT_ACTION_autoLoad:
+               eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
+               // no break
+          case e_FILAMENT_ACTION_Load:
                loading_flag=true;
                enquecommand_P(PSTR("M701"));      // load filament
                break;
           case e_FILAMENT_ACTION_unLoad:
                enquecommand_P(PSTR("M702"));      // unload filament
                break;
-/*
           case e_FILAMENT_ACTION_mmuLoad:
-//./  MYSERIAL.println("mFilamentPrompt - mmuLoad");
-               bFilamentAction=true;
-               menu_submenu(mmu_load_to_nozzle_menu);
-               break;
-*/
-/*
           case e_FILAMENT_ACTION_mmuUnLoad:
-//./  MYSERIAL.println("mFilamentPrompt - mmuUnLoad");
-               bFilamentAction=true;
-               extr_unload();
-               break;
-*/
-/*
           case e_FILAMENT_ACTION_mmuEject:
-  MYSERIAL.println("mFilamentPrompt - mmuEject");
-               bFilamentAction=true;
-//               menu_submenu(mmu_fil_eject_menu);
+          case e_FILAMENT_ACTION_mmuCut:
+          case e_FILAMENT_ACTION_none:
                break;
-*/
           }
-     if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
-          eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
      }
 }
 
@@ -2547,6 +2535,14 @@ if(current_temperature[0]>(target_temperature[0]*0.95))
                menu_back(nLevel);
                menu_submenu(mmu_fil_eject_menu);
                break;
+          case e_FILAMENT_ACTION_mmuCut:
+               nLevel=bFilamentPreheatState?1:2;
+               bFilamentAction=true;
+               menu_back(nLevel);
+               menu_submenu(mmu_cut_filament_menu);
+               break;
+          case e_FILAMENT_ACTION_none:
+               break;
           }
      if(bFilamentWaitingFlag)
           Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
@@ -2570,6 +2566,11 @@ else {
                break;
           case e_FILAMENT_ACTION_mmuEject:
                lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20 r=1
+               break;
+          case e_FILAMENT_ACTION_mmuCut:
+               lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20 r=1
+               break;
+          case e_FILAMENT_ACTION_none:
                break;
           }
      lcd_set_cursor(0,3);
@@ -3517,7 +3518,6 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
 
     // Until confirmed by the confirmation dialog.
     for (;;) {
-        unsigned long previous_millis_cmd = _millis();
         const char   *msg                 = only_z ? _i("Calibrating Z. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.") : _i("Calibrating XYZ. Rotate the knob to move the Z carriage up to the end stoppers. Click when done.");////MSG_MOVE_CARRIAGE_TO_THE_TOP c=20 r=8////MSG_MOVE_CARRIAGE_TO_THE_TOP_Z c=20 r=8
         const char   *msg_next            = lcd_display_message_fullscreen_P(msg);
         const bool    multi_screen        = msg_next != NULL;
@@ -3526,13 +3526,10 @@ bool lcd_calibrate_z_end_stop_manual(bool only_z)
         lcd_encoder_diff = 0;
         lcd_encoder = 0;
         for (;;) {
-//          if (_millis() - previous_millis_cmd > LCD_TIMEOUT_TO_STATUS)
-//             goto canceled;
             manage_heater();
             manage_inactivity(true);
             if (abs(lcd_encoder_diff) >= ENCODER_PULSES_PER_STEP) {
                 _delay(50);
-                previous_millis_cmd = _millis();
                 lcd_encoder += abs(lcd_encoder_diff / ENCODER_PULSES_PER_STEP);
                 lcd_encoder_diff = 0;
                 if (! planner_queue_full()) {
@@ -4035,7 +4032,6 @@ static void lcd_print_state(uint8_t state)
 static void lcd_show_sensors_state()
 {
 	//0: N/A; 1: OFF; 2: ON
-	uint8_t chars = 0;
 	uint8_t pinda_state = STATE_NA;
 	uint8_t finda_state = STATE_NA;
 	uint8_t idler_state = STATE_NA;
@@ -4080,7 +4076,25 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 	{
 
 	case 0: // default message
-		if (IS_SD_PRINTING)
+		if (busy_state == PAUSED_FOR_USER) 
+		{
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(15);
+			prusa_stat_farm_number();
+			prusa_stat_printinfo();
+			SERIAL_ECHOLN("}");
+			status_number = 15;
+		}
+		else if (isPrintPaused || card.paused) 
+		{
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(14);
+			prusa_stat_farm_number();
+			prusa_stat_printinfo();
+			SERIAL_ECHOLN("}");
+			status_number = 14;
+		}
+		else if (IS_SD_PRINTING)
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(4);
@@ -5404,10 +5418,9 @@ static void lcd_ustep_linearity_menu_save()
 }
 #endif //TMC2130
 
-
+#ifdef TMC2130
 static void lcd_settings_linearity_correction_menu_save()
 {
-#ifdef TMC2130
     bool changed = false;
     if (tmc2130_wave_fac[X_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[X_AXIS] = 0;
     if (tmc2130_wave_fac[Y_AXIS] < TMC2130_WAVE_FAC1000_MIN) tmc2130_wave_fac[Y_AXIS] = 0;
@@ -5419,9 +5432,8 @@ static void lcd_settings_linearity_correction_menu_save()
     changed |= (eeprom_read_byte((uint8_t*)EEPROM_TMC2130_WAVE_E_FAC) != tmc2130_wave_fac[E_AXIS]);
     lcd_ustep_linearity_menu_save();
     if (changed) tmc2130_init();
-#endif //TMC2130
 }
-
+#endif //TMC2130
 
 static void lcd_calibration_menu()
 {
@@ -6808,8 +6820,7 @@ bool lcd_selftest()
 		_result = lcd_selftest_manual_fan_check(1, false);
 		if (!_result)
 		{			
-			const char *_err;
-			lcd_selftest_error(6, _err, _err); //print fan not spinning
+			lcd_selftest_error(6, 0, 0); //print fan not spinning
 		}
 
 #endif //defined(TACH_1)
@@ -7496,6 +7507,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 }
 
 #ifdef FILAMENT_SENSOR
+#ifdef PAT9125
 static bool lcd_selftest_fsensor(void)
 {
 	fsensor_init();
@@ -7505,6 +7517,7 @@ static bool lcd_selftest_fsensor(void)
 	}
 	return (!fsensor_not_responding);
 }
+#endif //PAT9125
 
 //! @brief Self-test of infrared barrier filament sensor mounted on MK3S with MMUv2 printer
 //!
