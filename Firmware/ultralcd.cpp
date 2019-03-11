@@ -4516,11 +4516,13 @@ static void lcd_sound_state_set(void)
 Sound_CycleState();
 }
 
+#ifndef MMU_FORCE_STEALTH_MODE
 static void lcd_silent_mode_mmu_set() {
 	if (SilentModeMenu_MMU == 1) SilentModeMenu_MMU = 0;
 	else SilentModeMenu_MMU = 1;
-	eeprom_update_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
+	//saving to eeprom is done in mmu_loop() after mmu actually switches state and confirms with "ok"
 }
+#endif //MMU_FORCE_STEALTH_MODE
 
 static void lcd_silent_mode_set() {
 	switch (SilentModeMenu) {
@@ -5295,16 +5297,25 @@ do\
             break; /* (probably) not needed*/\
         }\
     }\
-#ifndef MMU_FORCE_STEALTH_MODE
-	if(mmu_enabled)\
-	{\
-		if (SilentModeMenu_MMU == 0) MENU_ITEM_FUNCTION_P(_i("MMU Mode [Fast]"), lcd_silent_mode_mmu_set);\
-		else MENU_ITEM_FUNCTION_P(_i("MMU Mode [Stealth]"), lcd_silent_mode_mmu_set);\
-	}\
-#endif //MMU_FORCE_STEALTH_MODE
+
 }\
 while (0)
 #endif //TMC2130
+
+#ifndef MMU_FORCE_STEALTH_MODE
+#define SETTINGS_MMU_MODE \
+do\
+{\
+	if (mmu_enabled)\
+	{\
+		if (SilentModeMenu_MMU == 0) MENU_ITEM_FUNCTION_P(_i("MMU Mode  [Fast]"), lcd_silent_mode_mmu_set); \
+		else MENU_ITEM_FUNCTION_P(_i("MMU Mode[Stealth]"), lcd_silent_mode_mmu_set); \
+	}\
+}\
+while (0) 
+#else //MMU_FORCE_STEALTH_MODE
+#define SETTINGS_MMU_MODE
+#endif //MMU_FORCE_STEALTH_MODE
 
 #ifdef SDCARD_SORT_ALPHA
 #define SETTINGS_SD \
@@ -5410,6 +5421,7 @@ static void lcd_settings_menu()
 		MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
 
 	SETTINGS_SILENT_MODE;
+	SETTINGS_MMU_MODE;
 
 	MENU_ITEM_SUBMENU_P(_i("Mesh bed leveling"), lcd_mesh_bed_leveling_settings);////MSG_MBL_SETTINGS c=18 r=1
 
@@ -6626,7 +6638,7 @@ static void lcd_tune_menu()
 		}
 	}
 #endif //TMC2130
-
+	 SETTINGS_MMU_MODE;
      switch(eSoundMode)
           {
           case e_SOUND_MODE_LOUD:
