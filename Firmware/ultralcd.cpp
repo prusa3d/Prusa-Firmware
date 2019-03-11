@@ -5297,7 +5297,6 @@ do\
             break; /* (probably) not needed*/\
         }\
     }\
-
 }\
 while (0)
 #endif //TMC2130
