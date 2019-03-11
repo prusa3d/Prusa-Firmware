@@ -3121,18 +3121,25 @@ bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bo
 			ix *= 3;
 			iy *= 3;
 		}
-		if((iy%2) == 0)	return (valid_points_mask[6 - iy] & (1 << (6 - ix)));
-		else return (valid_points_mask[6 - iy] & (1 << ix));
+		if (zigzag) {
+			if ((iy % 2) == 0)	return (valid_points_mask[6 - iy] & (1 << (6 - ix)));
+			else return (valid_points_mask[6 - iy] & (1 << ix));
+		}
+		else {
+			return (valid_points_mask[6 - iy] & (1 << (6 - ix)));
+		}
 }
 
 void mbl_single_point_interpolation(uint8_t x, uint8_t y, uint8_t meas_points) {
+	printf_P(PSTR("x = %d; y = %d \n"), x, y);
 		uint8_t count = 0;
 		float z = 0;
-		if(mbl_point_measurement_valid(x, y+1, meas_points, false)) { z += mbl.z_values[x][y+1]; count++; }
-		if(mbl_point_measurement_valid(x, y-1, meas_points, false)) { z += mbl.z_values[x][y-1]; count++; }
-		if(mbl_point_measurement_valid(x+1, y, meas_points, false)) { z += mbl.z_values[x+1][y]; count++; }
-		if(mbl_point_measurement_valid(x-1, y, meas_points, false)) { z += mbl.z_values[x+1][y]; count++; }
-		if(count != 0) mbl.z_values[x][y] = z / count; //if we have at least one valid point in surrounding area use average value, otherwise use inaccurately measured Z-coordinate
+		if (mbl_point_measurement_valid(x, y + 1, meas_points, false)) { z += mbl.z_values[y + 1][x]; /*printf_P(PSTR("x; y+1: Z = %f \n")*/, mbl.z_values[y + 1][x]); count++; }
+		if (mbl_point_measurement_valid(x, y - 1, meas_points, false)) { z += mbl.z_values[y - 1][x]; /*printf_P(PSTR("x; y-1: Z = %f \n")*/, mbl.z_values[y - 1][x]); count++; }
+		if (mbl_point_measurement_valid(x + 1, y, meas_points, false)) { z += mbl.z_values[y][x + 1]; /*printf_P(PSTR("x+1; y: Z = %f \n")*/, mbl.z_values[y][x + 1]); count++; }
+		if (mbl_point_measurement_valid(x - 1, y, meas_points, false)) { z += mbl.z_values[y][x - 1]; /*printf_P(PSTR("x-1; y: Z = %f \n")*/, mbl.z_values[y][x - 1]); count++; }
+		if(count != 0) mbl.z_values[y][x] = z / count; //if we have at least one valid point in surrounding area use average value, otherwise use inaccurately measured Z-coordinate
+		//printf_P(PSTR("result: Z = %f \n\n"), mbl.z_values[y][x]);
 }
 
 void mbl_interpolation(uint8_t meas_points) {

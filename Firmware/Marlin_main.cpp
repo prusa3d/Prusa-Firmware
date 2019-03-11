@@ -4685,9 +4685,41 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (nMeasPoints == 3) {
 			mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 		}
+/*
+		        SERIAL_PROTOCOLPGM("Num X,Y: ");
+                SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
+                SERIAL_PROTOCOLPGM(",");
+                SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
+                SERIAL_PROTOCOLPGM("\nZ search height: ");
+                SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
+                SERIAL_PROTOCOLLNPGM("\nMeasured points:");
+                for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
+                    for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
+                        SERIAL_PROTOCOLPGM("  ");
+                        SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
+                    }
+                    SERIAL_PROTOCOLPGM("\n");
+                }
+*/
 		if (nMeasPoints == 7 && magnet_elimination) {
 			mbl_interpolation(nMeasPoints);
 		}
+/*
+		        SERIAL_PROTOCOLPGM("Num X,Y: ");
+                SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
+                SERIAL_PROTOCOLPGM(",");
+                SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
+                SERIAL_PROTOCOLPGM("\nZ search height: ");
+                SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
+                SERIAL_PROTOCOLLNPGM("\nMeasured points:");
+                for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
+                    for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
+                        SERIAL_PROTOCOLPGM("  ");
+                        SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
+                    }
+                    SERIAL_PROTOCOLPGM("\n");
+                }
+*/
 //		SERIAL_ECHOLNPGM("Upsample finished");
 		mbl.active = 1; //activate mesh bed leveling
 //		SERIAL_ECHOLNPGM("Mesh bed leveling activated");
