@@ -133,14 +133,14 @@ static void prusa_stat_farm_number();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
-void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
+//static void lcd_menu_extruder_info();           // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
 static void lcd_menu_fails_stats_mmu();
 static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
-static void lcd_menu_show_sensors_state();
+//static void lcd_menu_show_sensors_state();      // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
@@ -4038,7 +4038,7 @@ static void lcd_show_sensors_state()
 	lcd_print_state(idler_state);
 }
 
-static void lcd_menu_show_sensors_state()
+void lcd_menu_show_sensors_state()                // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
 	lcd_timeoutToStatus.stop();
 	lcd_show_sensors_state();
