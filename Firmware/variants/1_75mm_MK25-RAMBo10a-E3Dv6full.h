@@ -497,7 +497,7 @@
 
 //#define SUPPORT_VERBOSITY
 
-#define MMU_REQUIRED_FW_BUILDNR 132
+#define MMU_REQUIRED_FW_BUILDNR 310
 #define MMU_FORCE_STEALTH_MODE
 #define MMU_DEBUG //print communication between MMU2 and printer on serial
 
