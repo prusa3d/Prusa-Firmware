@@ -369,7 +369,7 @@ void mmu_loop(void)
 			//printf_P(PSTR("Eact: %d\n"), int(e_active()));
 			if (!mmu_finda && CHECK_FSENSOR && fsensor_enabled) {
 				fsensor_stop_and_save_print();
-				enquecommand_front_P(PSTR("FSENSOR_RECOVER")); //then recover
+				enquecommand_front_P(PSTR("PRUSA fsensor_recover")); //then recover
 				ad_markDepleted(mmu_extruder);
 				if (lcd_autoDepleteEnabled() && !ad_allDepleted())
 				{
@@ -830,37 +830,43 @@ void mmu_M600_wait_and_beep() {
 		WRITE(BEEPER, LOW);
 }
 
-void mmu_M600_load_filament(bool automatic)
+//! @brief load filament for mmu v2
+//! @par nozzle_temp nozzle temperature to load filament
+void mmu_M600_load_filament(bool automatic, float nozzle_temp)
 { 
-	//load filament for mmu v2
-		  tmp_extruder = mmu_extruder;
-		  if (!automatic) {
-#ifdef MMU_M600_SWITCH_EXTRUDER
-		      bool yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
-			  if(yes) tmp_extruder = choose_extruder_menu();
-#endif //MMU_M600_SWITCH_EXTRUDER
-		  }
-		  else {
-			  tmp_extruder = ad_getAlternative(tmp_extruder);
-		  }
-		  lcd_update_enable(false);
-		  lcd_clear();
-		  lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
-		  lcd_print(" ");
-		  lcd_print(tmp_extruder + 1);
-		  snmm_filaments_used |= (1 << tmp_extruder); //for stop print
+    tmp_extruder = mmu_extruder;
+    if (!automatic)
+    {
+    #ifdef MMU_M600_SWITCH_EXTRUDER
+        bool yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
+        if(yes) tmp_extruder = choose_extruder_menu();
+    #endif //MMU_M600_SWITCH_EXTRUDER
+    }
+    else
+    {
+        tmp_extruder = ad_getAlternative(tmp_extruder);
+    }
+    lcd_update_enable(false);
+    lcd_clear();
+    lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
+    lcd_print(" ");
+    lcd_print(tmp_extruder + 1);
+    snmm_filaments_used |= (1 << tmp_extruder); //for stop print
 
-//		  printf_P(PSTR("T code: %d \n"), tmp_extruder);
-//		  mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
-		  mmu_command(MmuCmd::T0 + tmp_extruder);
+    //printf_P(PSTR("T code: %d \n"), tmp_extruder);
+    //mmu_printf_P(PSTR("T%d\n"), tmp_extruder);
+    setTargetHotend(nozzle_temp,active_extruder);
+    mmu_wait_for_heater_blocking();
 
-		  manage_response(false, true, MMU_LOAD_MOVE);
-		  mmu_continue_loading();
-    	  mmu_extruder = tmp_extruder; //filament change is finished
-		  
-		  mmu_load_to_nozzle();
-		  load_filament_final_feed();
-		  st_synchronize();
+    mmu_command(MmuCmd::T0 + tmp_extruder);
+
+    manage_response(false, true, MMU_LOAD_MOVE);
+    mmu_continue_loading();
+    mmu_extruder = tmp_extruder; //filament change is finished
+
+    mmu_load_to_nozzle();
+    load_filament_final_feed();
+    st_synchronize();
 }
 
 
