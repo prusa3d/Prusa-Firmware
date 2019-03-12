@@ -3478,11 +3478,6 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-#ifdef FILAMENT_SENSOR
-	else if (code_seen("FSENSOR_RECOVER")) { //! FSENSOR_RECOVER
-		fsensor_restore_print_and_continue();
-  }
-#endif //FILAMENT_SENSOR
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //! PRUSA Ping
 			if (farm_mode) {
@@ -3513,6 +3508,12 @@ void process_commands()
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
+#ifdef FILAMENT_SENSOR
+		else if (code_seen("fsensor_recover")) //! PRUSA fsensor_recover
+		{
+               fsensor_restore_print_and_continue();
+		}	
+#endif //FILAMENT_SENSOR
 		else if (code_seen("MMURES")) //! PRUSA MMURES
 		{
 			mmu_reset();
