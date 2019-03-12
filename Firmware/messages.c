@@ -38,6 +38,7 @@ const char MSG_ERROR[] PROGMEM_I1 = ISTR("ERROR:"); ////c=0 r=0
 const char MSG_EXTRUDER[] PROGMEM_I1 = ISTR("Extruder"); ////c=17 r=1
 const char MSG_FILAMENT[] PROGMEM_I1 = ISTR("Filament"); ////c=17 r=1
 const char MSG_FAN_SPEED[] PROGMEM_I1 = ISTR("Fan speed"); ////c=14 r=0
+const char MSG_FILE_CNT[] PROGMEM_I1 = ISTR("Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."); ////c=20 r=4
 const char MSG_FILAMENT_CLEAN[] PROGMEM_I1 = ISTR("Filament extruding & with correct color?"); ////c=20 r=2
 const char MSG_FILAMENT_LOADING_T0[] PROGMEM_I1 = ISTR("Insert filament into extruder 1. Click when done."); ////c=20 r=4
 const char MSG_FILAMENT_LOADING_T1[] PROGMEM_I1 = ISTR("Insert filament into extruder 2. Click when done."); ////c=20 r=4
@@ -86,6 +87,10 @@ const char MSG_RECOVER_PRINT[] PROGMEM_I1 = ISTR("Blackout occurred. Recover pri
 const char MSG_REFRESH[] PROGMEM_I1 = ISTR("\xF8" "Refresh"); ////c=0 r=0
 const char MSG_RESUMING_PRINT[] PROGMEM_I1 = ISTR("Resuming print"); ////c=0 r=0
 const char MSG_REMOVE_STEEL_SHEET[] PROGMEM_I1 = ISTR("Please remove steel sheet from heatbed."); ////c=20 r=4
+const char MSG_SD_CARD_OK[] PROGMEM_I1 = ISTR("SD card ok"); ////MSG_SD_CARD_OK c=0 r=0
+const char MSG_SD_INIT_FAIL[] PROGMEM_I1 = ISTR("SD init fail"); ////MSG_SD_INIT_FAIL c=0 r=0
+const char MSG_SD_OPENROOT_FAIL[] PROGMEM_I1 = ISTR("openRoot failed"); ////MSG_SD_OPENROOT_FAIL c=0 r=0
+const char MSG_SD_VOL_INIT_FAIL[] PROGMEM_I1 = ISTR("volume.init failed"); ////MSG_SD_VOL_INIT_FAIL c=0 r=0
 const char MSG_SELFTEST_COOLING_FAN[] PROGMEM_I1 = ISTR("Front print fan?"); ////c=20 r=0
 const char MSG_SELFTEST_EXTRUDER_FAN[] PROGMEM_I1 = ISTR("Left hotend fan?"); ////c=20 r=0
 const char MSG_SELFTEST_FAILED[] PROGMEM_I1 = ISTR("Selftest failed  "); ////c=20 r=0
@@ -100,6 +105,7 @@ const char MSG_SET_TEMPERATURE[] PROGMEM_I1 = ISTR("Set temperature:"); ////c=19
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////c=0 r=0
 const char MSG_SILENT_MODE_OFF[] PROGMEM_I1 = ISTR("Mode [high power]"); ////c=0 r=0
 const char MSG_SILENT_MODE_ON[] PROGMEM_I1 = ISTR("Mode     [silent]"); ////c=0 r=0
+const char MSG_SORTING[] PROGMEM_I1 = " Sorting files"; ////c=20 r=1
 const char MSG_STEALTH_MODE_OFF[] PROGMEM_I1 = ISTR("Mode     [Normal]"); ////c=0 r=0
 const char MSG_STEALTH_MODE_ON[] PROGMEM_I1 = ISTR("Mode    [Stealth]"); ////c=0 r=0
 const char MSG_STEEL_SHEET_CHECK[] PROGMEM_I1 = ISTR("Is steel sheet on heatbed?"); ////c=20 r=2
@@ -121,27 +127,33 @@ const char MSG_WIZARD_Z_CAL_3[] PROGMEM_I1 = ISTR("I will run z calibration now.
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////c=0 r=0
 const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20 r=0
 //not internationalized messages
-const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////c=0 r=0
 const char MSG_BROWNOUT_RESET[] PROGMEM_N1 = " Brown out Reset"; ////c=0 r=0
+const char MSG_ENDSTOP_HIT[] PROGMEM_N1 = "TRIGGERED"; ////c=0 r=0
+const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////c=0 r=0
+const char MSG_ENDSTOPS_HIT[] PROGMEM_N1 = "endstops hit: "; ////c=0 r=0
+const char MSG_Enqueing[] PROGMEM_N1 = "enqueing \""; ////c=0 r=0
+const char MSG_ERR_STOPPED[] PROGMEM_N1 = "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"; ////c=0 r=0
 const char MSG_EXTERNAL_RESET[] PROGMEM_N1 = " External Reset"; ////c=0 r=0
 const char MSG_FILE_SAVED[] PROGMEM_N1 = "Done saving file."; ////c=0 r=0
 const char MSG_OFF[] PROGMEM_N1 = "Off"; ////c=0 r=0
+const char MSG_OK[] PROGMEM_N1 = "ok"; ////c=0 r=0
 const char MSG_ON[] PROGMEM_N1 = "On "; ////c=0 r=0
 const char MSG_POSITION_UNKNOWN[] PROGMEM_N1 = "Home X/Y before Z"; ////c=0 r=0
+const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////c=0 r=0
+const char MSG_SD_CANT_ENTER_SUBDIR[] PROGMEM_N1 = "Cannot enter subdir: "; ////c=0 r=0
+const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_N1 = "error writing to file"; ////c=0 r=0
+const char MSG_SD_FILE_OPENED[] PROGMEM_N1 = "File opened: "; ////c=0 r=0
+const char MSG_SD_FILE_SELECTED[] PROGMEM_N1 = "File selected"; ////c=0 r=0
+const char MSG_SD_OPEN_FILE_FAIL[] PROGMEM_N1 = "open failed, File: "; ////c=0 r=0
+const char MSG_SD_PRINTING_BYTE[] PROGMEM_N1 = "SD printing byte "; ////c=0 r=0
+const char MSG_SD_SIZE[] PROGMEM_N1 = " Size: ";////c=0 r=0
+const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////c=0 r=0
+const char MSG_SD_WRITE_TO_FILE[] PROGMEM_N1 = "Writing to file: ";////c=0 r=0
 const char MSG_SOFTWARE_RESET[] PROGMEM_N1 = " Software Reset"; ////c=0 r=0
+const char MSG_TMC_OVERTEMP[] PROGMEM_N1 = "TMC DRIVER OVERTEMP"; ////c=0 r=0
 const char MSG_UNKNOWN_COMMAND[] PROGMEM_N1 = "Unknown command: \""; ////c=0 r=0
 const char MSG_WATCHDOG_RESET[] PROGMEM_N1 = " Watchdog Reset"; ////c=0 r=0
-const char MSG_Z_MAX[] PROGMEM_N1 = "z_max: "; ////c=0 r=0
 const char MSG_Z_MIN[] PROGMEM_N1 = "z_min: "; ////c=0 r=0
+const char MSG_Z_MAX[] PROGMEM_N1 = "z_max: "; ////c=0 r=0
 const char MSG_ZPROBE_OUT[] PROGMEM_N1 = "Z probe out. bed"; ////c=0 r=0
 const char MSG_ZPROBE_ZOFFSET[] PROGMEM_N1 = "Z Offset"; ////c=0 r=0
-const char MSG_TMC_OVERTEMP[] PROGMEM_N1 = "TMC DRIVER OVERTEMP"; ////c=0 r=0
-const char MSG_Enqueing[] PROGMEM_N1 = "enqueing \""; ////c=0 r=0
-const char MSG_ENDSTOPS_HIT[] PROGMEM_N1 = "endstops hit: "; ////c=0 r=0
-const char MSG_SD_ERR_WRITE_TO_FILE[] PROGMEM_N1 = "error writing to file"; ////c=0 r=0
-const char MSG_OK[] PROGMEM_N1 = "ok"; ////c=0 r=0
-const char MSG_SD_OPEN_FILE_FAIL[] PROGMEM_N1 = "open failed, File: "; ////c=0 r=0
-const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////c=0 r=0
-const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////c=0 r=0
-const char MSG_ERR_STOPPED[] PROGMEM_N1 = "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"; ////c=0 r=0
-const char MSG_ENDSTOP_HIT[] PROGMEM_N1 = "TRIGGERED"; ////c=0 r=0
