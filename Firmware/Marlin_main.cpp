@@ -214,8 +214,6 @@ static LongTimer crashDetTimer;
 bool mesh_bed_leveling_flag = false;
 bool mesh_bed_run_from_menu = false;
 
-int8_t FarmMode = 0;
-
 bool prusa_sd_card_upload = false;
 
 unsigned int status_number = 0;
@@ -1617,6 +1615,7 @@ void setup()
 	   
   }
 #endif //UVLO_SUPPORT
+  fCheckModeInit();
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
@@ -3578,7 +3577,39 @@ void process_commands()
     } else if(code_seen("FR")) { //! PRUSA FR
         // Factory full reset
         factory_reset(0);
-    }
+
+//-//
+/*
+    } else if(code_seen("qqq")) {
+MYSERIAL.println("=== checking ===");
+MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODE),DEC);
+MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER),DEC);
+MYSERIAL.println(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM),DEC);
+MYSERIAL.println(farm_mode,DEC);
+MYSERIAL.println(eCheckMode,DEC);
+    } else if(code_seen("www")) {
+MYSERIAL.println("=== @ FF ===");
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,0xFF);
+eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,0xFF);
+eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
+*/
+    } else if (code_seen("nozzle")) { //! PRUSA nozzle
+          uint16_t nDiameter;
+          if(code_seen('D'))
+               {
+               nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
+               nozzle_diameter_check(nDiameter);
+               }
+          else if(code_seen("set") && farm_mode)
+               {
+               strchr_pointer++;                  // skip 2nd char (~ 'e')
+               strchr_pointer++;                  // skip 3rd char (~ 't')
+               nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
+               eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)e_NOZZLE_DIAMETER_NULL); // for correct synchronization after farm-mode exiting
+               eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+               }
+          else SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
+	}	
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
 	  // }
@@ -4854,6 +4885,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
           SilentModeMenu = SILENT_MODE_OFF;
           eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+          fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 
 	case 99: //! G99 (deactivate farm mode)
@@ -4861,6 +4893,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		lcd_printer_connected();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
 		lcd_update(2);
+          fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 	default:
 		printf_P(PSTR("Unknown G code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);

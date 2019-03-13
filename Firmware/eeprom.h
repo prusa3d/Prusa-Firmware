@@ -156,6 +156,10 @@
 #define EEPROM_MMU_CUTTER_ENABLED (EEPROM_MMU_LOAD_FAIL - 1)
 #define EEPROM_UVLO_MESH_BED_LEVELING_FULL     (EEPROM_MMU_CUTTER_ENABLED - 12*12*2) //allow 12 calibration points for future expansion
 
+#define EEPROM_CHECK_MODE (EEPROM_UVLO_MESH_BED_LEVELING_FULL-1) // uint8
+#define EEPROM_NOZZLE_DIAMETER (EEPROM_CHECK_MODE-1) // uint8
+#define EEPROM_NOZZLE_DIAMETER_uM (EEPROM_NOZZLE_DIAMETER-2) // uint16
+
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!

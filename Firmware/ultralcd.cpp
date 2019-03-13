@@ -5350,6 +5350,101 @@ do\
 }\
 while (0)
 
+//-//
+static void lcd_check_mode_set(void)
+{
+switch(eCheckMode)
+     {
+     case e_CHECK_MODE_none:
+          eCheckMode=e_CHECK_MODE_warn;
+          break;
+     case e_CHECK_MODE_warn:
+          eCheckMode=e_CHECK_MODE_strict;
+          break;
+     case e_CHECK_MODE_strict:
+          eCheckMode=e_CHECK_MODE_none;
+          break;
+     default:
+          eCheckMode=e_CHECK_MODE_none;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)eCheckMode);
+}
+
+static void lcd_nozzle_diameter_set(void)
+{
+uint16_t nDiameter;
+
+switch(eNozzleDiameter)
+     {
+     case e_NOZZLE_DIAMETER_250:
+          eNozzleDiameter=e_NOZZLE_DIAMETER_400;
+          nDiameter=400;
+          break;
+     case e_NOZZLE_DIAMETER_400:
+          eNozzleDiameter=e_NOZZLE_DIAMETER_600;
+          nDiameter=600;
+          break;
+     case e_NOZZLE_DIAMETER_600:
+          eNozzleDiameter=e_NOZZLE_DIAMETER_250;
+          nDiameter=250;
+          break;
+     default:
+          eNozzleDiameter=e_NOZZLE_DIAMETER_400;
+          nDiameter=400;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)eNozzleDiameter);
+eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+}
+
+#define SETTINGS_MODE \
+do\
+{\
+    switch(eCheckMode)\
+         {\
+         case e_CHECK_MODE_none:\
+              MENU_ITEM_FUNCTION_P(_i("Action     [none]"),lcd_check_mode_set);\
+              break;\
+         case e_CHECK_MODE_warn:\
+              MENU_ITEM_FUNCTION_P(_i("Action     [warn]"),lcd_check_mode_set);\
+              break;\
+         case e_CHECK_MODE_strict:\
+              MENU_ITEM_FUNCTION_P(_i("Action   [strict]"),lcd_check_mode_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Action     [none]"),lcd_check_mode_set);\
+         }\
+}\
+while (0)
+
+#define SETTINGS_NOZZLE \
+do\
+{\
+    switch(eNozzleDiameter)\
+         {\
+         case e_NOZZLE_DIAMETER_250:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.25]"),lcd_nozzle_diameter_set);\
+              break;\
+         case e_NOZZLE_DIAMETER_400:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.40]"),lcd_nozzle_diameter_set);\
+              break;\
+         case e_NOZZLE_DIAMETER_600:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.60]"),lcd_nozzle_diameter_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.40]"),lcd_nozzle_diameter_set);\
+         }\
+}\
+while (0)
+
+static void lcd_checking_menu()
+{
+MENU_BEGIN();
+MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+SETTINGS_MODE;
+SETTINGS_NOZZLE;
+MENU_END();
+}
+
 static void lcd_settings_menu()
 {
 	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -5397,6 +5492,9 @@ static void lcd_settings_menu()
 #if (LANG_MODE != 0)
 	MENU_ITEM_SUBMENU_P(_i("Select language"), lcd_language_menu);////MSG_LANGUAGE_SELECT c=0 r=0
 #endif //(LANG_MODE != 0)
+
+	if (!farm_mode)
+          MENU_ITEM_SUBMENU_P(_i("Print checking"), lcd_checking_menu);
 
 	SETTINGS_SD;
 	SETTINGS_SOUND;
@@ -6660,6 +6758,12 @@ static void lcd_sd_updir()
 
 void lcd_print_stop()
 {
+//-//
+     if(!card.sdprinting)
+          {
+          SERIAL_ECHOLNPGM("// action:cancel");   // for Octoprint
+          return;
+          }
 	saved_printing = false;
 	cancel_heatup = true;
 #ifdef MESH_BED_LEVELING
