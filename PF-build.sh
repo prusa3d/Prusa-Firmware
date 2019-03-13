@@ -117,7 +117,7 @@ if ! type zip > /dev/null; then
 fi
 ###End prepare bash enviroment
 
-BUILD_ENV="1.0.1"
+BUILD_ENV="1.0.2"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # List few useful data
