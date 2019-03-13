@@ -3055,12 +3055,12 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
                 manage_response(false, false);
             }
         }
-        mmu_M600_load_filament(automatic);
+        mmu_M600_load_filament(automatic, HotendTempBckp);
     }
     else
         M600_load_filament();
 
-    if (!automatic) M600_check_state();
+    if (!automatic) M600_check_state(HotendTempBckp);
 
 		lcd_update_enable(true);
 
@@ -3478,11 +3478,6 @@ void process_commands()
 	}
 #endif //BACKLASH_Y
 #endif //TMC2130
-#ifdef FILAMENT_SENSOR
-	else if (code_seen("FSENSOR_RECOVER")) { //! FSENSOR_RECOVER
-		fsensor_restore_print_and_continue();
-  }
-#endif //FILAMENT_SENSOR
   else if(code_seen("PRUSA")){
 		if (code_seen("Ping")) {  //! PRUSA Ping
 			if (farm_mode) {
@@ -3513,6 +3508,12 @@ void process_commands()
                eeprom_update_byte((uint8_t*)EEPROM_UVLO,0); 
                enquecommand_P(PSTR("M24")); 
 		}	
+#ifdef FILAMENT_SENSOR
+		else if (code_seen("fsensor_recover")) //! PRUSA fsensor_recover
+		{
+               fsensor_restore_print_and_continue();
+		}	
+#endif //FILAMENT_SENSOR
 		else if (code_seen("MMURES")) //! PRUSA MMURES
 		{
 			mmu_reset();
@@ -6520,7 +6521,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		float e_shift_init = 0;
 		float e_shift_late = 0;
 		bool automatic = false;
-		bool suppressInitialMessage = false;
 		
         //Retract extruder
         if(code_seen('E'))
@@ -6579,16 +6579,11 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             y_position = FILAMENTCHANGE_YPOS ;
           #endif
         }
-		
-	if(code_seen('Q'))
-       	{
-          suppressInitialMessage = true;
-       	}
 
-	if (mmu_enabled && code_seen("AUTO"))
-		automatic = true;
+		if (mmu_enabled && code_seen("AUTO"))
+			automatic = true;
 
-	gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late, suppressInitialMessage);
+		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
 	
 	}
     break;
@@ -7520,11 +7515,18 @@ static void handleSafetyTimer()
 
 void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument set in Marlin.h
 {
+bool bInhibitFlag;
 #ifdef FILAMENT_SENSOR
 	if (mmu_enabled == false)
 	{
 //-//		if (mcode_in_progress != 600) //M600 not in progress
-          if ((mcode_in_progress != 600) && (eFilamentAction != e_FILAMENT_ACTION_autoLoad) && (menu_menu!=lcd_menu_extruder_info)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo menu not active
+#ifdef PAT9125
+          bInhibitFlag=(menu_menu==lcd_menu_extruder_info); // Support::ExtruderInfo menu active
+#endif // PAT9125
+#ifdef IR_SENSOR
+          bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
+#endif // IR_SENSOR
+          if ((mcode_in_progress != 600) && (eFilamentAction != e_FILAMENT_ACTION_autoLoad) && (!bInhibitFlag)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active)
 			{
@@ -9115,38 +9117,41 @@ void load_filament_final_feed()
 	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], FILAMENTCHANGE_EFEED_FINAL, active_extruder);
 }
 
-void M600_check_state()
+//! @brief Wait for user to check the state
+//! @par nozzle_temp nozzle temperature to load filament
+void M600_check_state(float nozzle_temp)
 {
-		//Wait for user to check the state
-		lcd_change_fil_state = 0;
-		while (lcd_change_fil_state != 1){
-			lcd_change_fil_state = 0;
-			KEEPALIVE_STATE(PAUSED_FOR_USER);
-			lcd_alright();
-			KEEPALIVE_STATE(IN_HANDLER);
-			switch(lcd_change_fil_state){
-				// Filament failed to load so load it again
-				case 2:
-					if (mmu_enabled)
-						mmu_M600_load_filament(false); //nonautomatic load; change to "wrong filament loaded" option?
-					else
-						M600_load_filament_movements();
-					break;
+    lcd_change_fil_state = 0;
+    while (lcd_change_fil_state != 1)
+    {
+        lcd_change_fil_state = 0;
+        KEEPALIVE_STATE(PAUSED_FOR_USER);
+        lcd_alright();
+        KEEPALIVE_STATE(IN_HANDLER);
+        switch(lcd_change_fil_state)
+        {
+        // Filament failed to load so load it again
+        case 2:
+            if (mmu_enabled)
+                mmu_M600_load_filament(false, nozzle_temp); //nonautomatic load; change to "wrong filament loaded" option?
+            else
+                M600_load_filament_movements();
+            break;
 
-				// Filament loaded properly but color is not clear
-				case 3:
-					st_synchronize();
-					load_filament_final_feed();
-					lcd_loading_color();
-					st_synchronize();
-					break;
-                 
-				// Everything good             
-				default:
-					lcd_change_success();
-					break;
-			}
-		}
+        // Filament loaded properly but color is not clear
+        case 3:
+            st_synchronize();
+            load_filament_final_feed();
+            lcd_loading_color();
+            st_synchronize();
+            break;
+
+        // Everything good
+        default:
+            lcd_change_success();
+            break;
+        }
+    }
 }
 
 //! @brief Wait for user action
@@ -9163,8 +9168,8 @@ void M600_wait_for_user(float HotendTempBckp, bool suppressInitialMessage) {
 		unsigned long waiting_start_time = _millis();
 		uint8_t wait_for_user_state = 0;
 		if (!suppressInitialMessage) lcd_display_message_fullscreen_P(_T(MSG_PRESS_TO_UNLOAD));
-	
 		bool bFirst=true;
+
 		while (!(wait_for_user_state == 0 && lcd_clicked())){
 			manage_heater();
 			manage_inactivity(true);
