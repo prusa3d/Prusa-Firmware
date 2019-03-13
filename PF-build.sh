@@ -76,6 +76,8 @@
 #                          $2 = multi language OR english only [ALL/EN_ONLY]
 #                          $3 = development status [GOLD/RC/BETA/ALPHA/DEVEL/DEBUG]
 #                          If one argument is wrong a list of valid one will be shown
+# 13 Mar 2019, 3d-gussner, MKbel updated the linux build enviromentto version 1.0.2 with an Fix maximum firmware flash size.
+#                          So did I
 
 
 ###Check if OSTYPE is supported
