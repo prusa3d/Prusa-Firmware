@@ -6521,6 +6521,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		float e_shift_init = 0;
 		float e_shift_late = 0;
 		bool automatic = false;
+		bool suppressInitialMessage = false;
 		
         //Retract extruder
         if(code_seen('E'))
@@ -6580,10 +6581,15 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           #endif
         }
 
-		if (mmu_enabled && code_seen("AUTO"))
-			automatic = true;
+	if(code_seen('Q'))
+        {
+          	suppressInitialMessage = true;
+        }
+	
+	if (mmu_enabled && code_seen("AUTO"))
+		automatic = true;
 
-		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
+	gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late, suppressInitialMessage);
 	
 	}
     break;
