@@ -2972,7 +2972,7 @@ void gcode_M114()
 	SERIAL_PROTOCOLLN("");
 }
 
-static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/, bool suppressInitialMessage)
+static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float e_shift_late, bool suppressInitialMessage)
 {
     st_synchronize();
     float lastpos[4];
