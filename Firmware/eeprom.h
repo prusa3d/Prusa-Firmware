@@ -158,7 +158,7 @@
 #define EEPROM_MBL_TYPE	(EEPROM_UVLO_MESH_BED_LEVELING_FULL-1) //uint8_t for mesh bed leveling precision
 #define EEPROM_MBL_MAGNET_ELIMINATION (EEPROM_MBL_TYPE -1)  
 #define EEPROM_MBL_POINTS_NR (EEPROM_MBL_MAGNET_ELIMINATION -1) //uint8_t number of points in one exis for mesh bed leveling
-#define EEPROM_MBL_PROBE_NR (EEPROM_MBL_POINTS_NR-1)
+#define EEPROM_MBL_PROBE_NR (EEPROM_MBL_POINTS_NR-1) //number of measurements for each point
 #define EEPROM_MMU_STEALTH (EEPROM_MBL_PROBE_NR-1)
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!

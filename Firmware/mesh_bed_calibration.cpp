@@ -3088,15 +3088,14 @@ void mbl_settings_init() {
 	if (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) == 0xFF) {
 		eeprom_update_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION, 1);
 	}
-	if (eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR) == 0xFF) {
-		eeprom_update_byte((uint8_t*)EEPROM_MBL_PROBE_NR, 3);
+	if (eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR) == 0xFF) {
+		eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, 3);
 	}
-	mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+	mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
 	if (mbl_z_probe_nr == 0xFF) {
 		mbl_z_probe_nr = 3;
-		eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, mbl_z_probe_nr);
+		eeprom_update_byte((uint8_t*)EEPROM_MBL_PROBE_NR, mbl_z_probe_nr);
 	}
-	
 }
 
 bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag) {
