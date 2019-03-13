@@ -4447,7 +4447,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 		int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
 		int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
-		bool has_z = (nMeasPoints == 3) && is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
+		bool has_z = is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 1) {
 			has_z ? SERIAL_PROTOCOLPGM("Z jitter data from Z cal. valid.\n") : SERIAL_PROTOCOLPGM("Z jitter data from Z cal. not valid.\n");
@@ -4466,11 +4466,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				continue; //skip
 			}*/
 			if (iy & 1) ix = (nMeasPoints - 1) - ix; // Zig zag
+			if (nMeasPoints == 7) //if we have 7x7 mesh, compare with Z-calibration for points which are in 3x3 mesh
+			{
+				has_z = ((ix % 3 == 0) && (iy % 3 == 0)) && is_bed_z_jitter_data_valid(); 
+			}
 			float z0 = 0.f;
 			if (has_z && (mesh_point > 0)) {
 				uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
 				z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
-				//#if 0
 				#ifdef SUPPORT_VERBOSITY
 				if (verbosity_level >= 1) {
 					SERIAL_ECHOLNPGM("");
@@ -4481,7 +4484,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 					SERIAL_ECHOLNPGM("");
 				}
 				#endif // SUPPORT_VERBOSITY
-				//#endif
 			}
 
 			// Move Z up to MESH_HOME_Z_SEARCH.
@@ -4511,7 +4513,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// Go down until endstop is hit
 			const float Z_CALIBRATION_THRESHOLD = 1.f;
 			if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
-				kill_message = _T(MSG_BED_LEVELING_FAILED_POINT_LOW);
+				printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 				break;
 			}
 			if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
@@ -4521,16 +4523,16 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				st_synchronize();
 
 				if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
-					kill_message = _T(MSG_BED_LEVELING_FAILED_POINT_LOW);
+					printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 					break;
 				}
 				if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
-					kill_message = _i("Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.");////MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
+					printf_P(PSTR("Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.\n"));
 					break;
 				}
 			}
 			if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) { //if we have data from z calibration, max. allowed difference is 1mm for each point
-				kill_message = _i("Bed leveling failed. Sensor triggered too high. Waiting for reset.");////MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
+				printf_P(PSTR("Bed leveling failed. Sensor triggered too high. Waiting for reset.\n"));
 				break;
 			}
 			#ifdef SUPPORT_VERBOSITY
