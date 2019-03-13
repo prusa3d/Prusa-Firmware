@@ -52,6 +52,7 @@ const char MSG_LOAD_FILAMENT[] PROGMEM_I1 = ISTR("Load filament"); ////c=17 r=0
 const char MSG_LOADING_FILAMENT[] PROGMEM_I1 = ISTR("Loading filament"); ////c=20 r=0
 const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal."); ////c=25 r=1
 const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////c=0 r=0
+const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////c=0 r=0
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[] PROGMEM_I1 = ISTR("Measuring reference height of calibration point"); ////c=60 r=0
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); ////c=14 r=0
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////c=0 r=0

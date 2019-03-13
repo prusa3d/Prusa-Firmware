@@ -97,7 +97,7 @@ extern void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move =
 
 extern void mmu_load_to_nozzle();
 
-extern void mmu_M600_load_filament(bool automatic);
+extern void mmu_M600_load_filament(bool automatic, float nozzle_temp);
 extern void mmu_M600_wait_and_beep();
 
 extern void extr_mov(float shift, float feed_rate);
