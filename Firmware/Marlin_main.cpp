@@ -4472,16 +4472,17 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			}
 			float z0 = 0.f;
 			if (has_z && (mesh_point > 0)) {
-				uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
+				uint16_t z_offset_u = 0;
+				if (nMeasPoints == 7) {
+					z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * ((ix/3) + iy - 1)));
+				}
+				else {
+					z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
+				}
 				z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
 				#ifdef SUPPORT_VERBOSITY
 				if (verbosity_level >= 1) {
-					SERIAL_ECHOLNPGM("");
-					SERIAL_ECHOPGM("Bed leveling, point: ");
-					MYSERIAL.print(mesh_point);
-					SERIAL_ECHOPGM(", calibration z: ");
-					MYSERIAL.print(z0, 5);
-					SERIAL_ECHOLNPGM("");
+					printf_P(PSTR("Bed leveling, point: %d, calibration Z stored in eeprom: %d, calibration z: %f \n"), mesh_point, z_offset_u, z0);
 				}
 				#endif // SUPPORT_VERBOSITY
 			}
