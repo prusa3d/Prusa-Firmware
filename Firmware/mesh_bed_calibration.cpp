@@ -968,7 +968,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     for (uint8_t i = 0; i < n_iter; ++ i)
 	{
 		
-		current_position[Z_AXIS] += 0.15;
+		current_position[Z_AXIS] += 0.2;
 		float z_bckp = current_position[Z_AXIS];
 		go_to_current(homing_feedrate[Z_AXIS]/60);
 		// Move back down slowly to find bed.
