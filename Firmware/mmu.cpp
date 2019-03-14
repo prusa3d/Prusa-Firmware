@@ -339,7 +339,6 @@ void mmu_loop(void)
 		else if ((eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH) != SilentModeMenu_MMU) && mmu_ready) {
 				DEBUG_PRINTF_P(PSTR("MMU <= 'M%d'\n"), SilentModeMenu_MMU);
 				mmu_printf_P(PSTR("M%d\n"), SilentModeMenu_MMU);
-				mmu_ready = false;
 				mmu_state = S::SwitchMode;
 		}
 		else if ((mmu_last_response + 300) < _millis()) //request every 300ms
@@ -466,7 +465,6 @@ void mmu_loop(void)
 		{
 			DEBUG_PRINTF_P(PSTR("MMU => 'ok'\n"));
 			eeprom_update_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
-			mmu_ready = true;
 			mmu_state = S::Idle;
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
