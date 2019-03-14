@@ -978,7 +978,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
         update_current_position_z();
 		//printf_P(PSTR("Zs: %f, Z: %f, delta Z: %f"), z_bckp, current_position[Z_AXIS], (z_bckp - current_position[Z_AXIS]));
 		if (abs(current_position[Z_AXIS] - z_bckp) < 0.025) {
-			printf_P(PSTR("PINDA triggered immediately, move Z higher and repeat measurement\n")); 
+			//printf_P(PSTR("PINDA triggered immediately, move Z higher and repeat measurement\n")); 
 			current_position[Z_AXIS] += 0.5;
 			go_to_current(homing_feedrate[Z_AXIS]/60);
 			current_position[Z_AXIS] = minimum_z;
@@ -999,7 +999,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 //        SERIAL_ECHOLNPGM("");
 		float dz = i?abs(current_position[Z_AXIS] - (z / i)):0;
         z += current_position[Z_AXIS];
-		printf_P(PSTR("Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
+		//printf_P(PSTR("Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
 		if (dz > 0.05) goto error;//deviation > 50um
     }
     current_position[Z_AXIS] = z;
@@ -3107,13 +3107,13 @@ bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bo
 
 		uint8_t valid_points_mask[7] = {
 					//[X_MAX,Y_MAX]
-			0b1111101,
-			0b1110111,
 			0b1111111,
-			0b0111011,
-			0b1110111,
 			0b1111111,
 			0b1110111,
+			0b1111011,
+			0b1110111,
+			0b1111111,
+			0b1111111,
 		//[0,0]
 		};
 		if (meas_points == 3) {
@@ -3130,7 +3130,7 @@ bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bo
 }
 
 void mbl_single_point_interpolation(uint8_t x, uint8_t y, uint8_t meas_points) {
-	printf_P(PSTR("x = %d; y = %d \n"), x, y);
+	//printf_P(PSTR("x = %d; y = %d \n"), x, y);
 		uint8_t count = 0;
 		float z = 0;
 		if (mbl_point_measurement_valid(x, y + 1, meas_points, false)) { z += mbl.z_values[y + 1][x]; /*printf_P(PSTR("x; y+1: Z = %f \n"), mbl.z_values[y + 1][x]);*/ count++; }

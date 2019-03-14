@@ -4496,7 +4496,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			current_position[X_AXIS] = BED_X(ix, nMeasPoints);
 			current_position[Y_AXIS] = BED_Y(iy, nMeasPoints);
 
-
+			//printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
 			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			#ifdef SUPPORT_VERBOSITY
