@@ -13,16 +13,13 @@ uint8_t timer02_pwm0 = 0;
 
 void timer02_set_pwm0(uint8_t pwm0)
 {
-	if (timer02_pwm0 == pwm0) return;
 	if (pwm0)
 	{
 		TCCR0A |= (2 << COM0B0);
-		OCR0B = pwm0 - 1;
 	}
 	else
 	{
 		TCCR0A &= ~(2 << COM0B0);
-		OCR0B = 0;
 	}
 	timer02_pwm0 = pwm0;
 }
@@ -93,6 +90,8 @@ ISR(TIMER2_OVF_vect)
 	// (volatile variables must be read from memory on every access)
 	unsigned long m = timer2_millis;
 	unsigned char f = timer2_fract;
+	static unsigned char slowPwm = 0;
+	static unsigned char up = 1;
 	m += MILLIS_INC;
 	f += FRACT_INC;
 	if (f >= FRACT_MAX)
@@ -103,6 +102,33 @@ ISR(TIMER2_OVF_vect)
 	timer2_fract = f;
 	timer2_millis = m;
 	timer2_overflow_count++;
+
+	if (timer02_pwm0 >= 254) OCR0B = 255;
+	else if (timer02_pwm0 == 0) OCR0B = 0;
+	else if (timer02_pwm0 < 128)
+	{
+	    if (slowPwm < (timer02_pwm0 << 1))
+	        OCR0B = 20;
+	    else
+	        OCR0B = 0;
+	}
+	else
+	{
+        if (slowPwm < ((timer02_pwm0 - 128) << 1))
+            OCR0B = 255;
+        else
+            OCR0B = 100;
+	}
+
+	slowPwm++;
+#if 0
+	if (slowPwm == 255) up = 0;
+	if (slowPwm == 15) up = 1;
+	if (up)
+	    slowPwm++;
+	else
+	    slowPwm--;
+#endif
 }
 
 unsigned long millis2(void)
