@@ -142,7 +142,9 @@ static void lcd_menu_fails_stats_mmu_total();
 
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
+#ifdef MMU_HAS_CUTTER
 static void mmu_cut_filament_menu();
+#endif //MMU_HAS_CUTTER
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats();
@@ -2295,6 +2297,7 @@ void lcd_set_fan_check() {
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
 }
 
+#ifdef MMU_HAS_CUTTER
 void lcd_cutter_enabled()
 {
     if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
@@ -2306,6 +2309,7 @@ void lcd_cutter_enabled()
         eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 1);
     }
 }
+#endif //MMU_HAS_CUTTER
 
 void lcd_set_filament_autoload() {
      fsensor_autoload_set(!fsensor_autoload_enabled);
@@ -2536,10 +2540,12 @@ if(current_temperature[0]>(target_temperature[0]*0.95))
                menu_submenu(mmu_fil_eject_menu);
                break;
           case e_FILAMENT_ACTION_mmuCut:
+#ifdef MMU_HAS_CUTTER
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
                menu_back(nLevel);
                menu_submenu(mmu_cut_filament_menu);
+#endif //MMU_HAS_CUTTER
                break;
           case e_FILAMENT_ACTION_none:
                break;
@@ -5220,6 +5226,7 @@ do\
 }\
 while(0)\
 
+#ifdef MMU_HAS_CUTTER
 static bool settingsCutter()
 {
     if (mmu_enabled)
@@ -5241,7 +5248,10 @@ do\
 {\
     if(settingsCutter()) return;\
 }\
-while(0)\
+while(0)
+#else
+#define SETTINGS_CUTTER
+#endif //MMU_HAS_CUTTER
 
 #ifdef TMC2130
 #define SETTINGS_SILENT_MODE \
@@ -5919,6 +5929,7 @@ static void mmu_fil_eject_menu()
     }
 }
 
+#ifdef MMU_HAS_CUTTER
 template <uint8_t filament>
 static void mmu_cut_filament()
 {
@@ -5950,6 +5961,7 @@ else {
      else mFilamentMenu();
      }
 }
+#endif //MMU_HAS_CUTTER
 
 #ifdef SNMM
 static void fil_unload_menu()
@@ -6423,7 +6435,9 @@ static void lcd_main_menu()
 //bFilamentFirstRun=true;
           MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), extr_unload_);
 		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
+#ifdef  MMU_HAS_CUTTER
         MENU_ITEM_SUBMENU_P(_i("Cut filament"), mmu_cut_filament_menu);
+#endif //MMU_HAS_CUTTER
 	}
 	else
 	{
