@@ -50,3 +50,4 @@ Firmware/Doc
 /lang/textaddr.txt
 /build-env/
 /Firmware/Firmware.vcxproj
+/Firmware/Configuration_prusa_bckp.h

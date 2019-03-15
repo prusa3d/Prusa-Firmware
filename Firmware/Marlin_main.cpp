@@ -167,6 +167,7 @@ CardReader card;
 unsigned long PingTime = _millis();
 unsigned long NcTime;
 
+int mbl_z_probe_nr = 3; //numer of Z measurements for each point in mesh bed leveling calibration
 
 //used for PINDA temp calibration and pause print
 #define DEFAULT_RETRACTION    1
@@ -302,16 +303,9 @@ int fanSpeed=0;
 
 bool cancel_heatup = false ;
 
-#ifdef HOST_KEEPALIVE_FEATURE
-  
-  int busy_state = NOT_BUSY;
-  static long prev_busy_signal_ms = -1;
-  uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
-#else
-  #define host_keepalive();
-  #define KEEPALIVE_STATE(n);
-#endif
-
+int busy_state = NOT_BUSY;
+static long prev_busy_signal_ms = -1;
+uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
 
 const char errormagic[] PROGMEM = "Error:";
 const char echomagic[] PROGMEM = "echo:";
@@ -1472,7 +1466,13 @@ void setup()
 	if (eeprom_read_byte((uint8_t*)EEPROM_SD_SORT) == 255) {
 		eeprom_write_byte((uint8_t*)EEPROM_SD_SORT, 0);
 	}
-
+	//mbl_mode_init();
+	mbl_settings_init();
+	SilentModeMenu_MMU = eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH);
+	if (SilentModeMenu_MMU == 255) {
+		SilentModeMenu_MMU = 1;
+		eeprom_write_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
+	}
 	check_babystep(); //checking if Z babystep is in allowed range
 
 #ifdef UVLO_SUPPORT
@@ -1697,12 +1697,14 @@ void serial_read_stream() {
     }
 }
 
-#ifdef HOST_KEEPALIVE_FEATURE
 /**
 * Output a "busy" message at regular intervals
 * while the machine is not accepting commands.
 */
 void host_keepalive() {
+#ifndef HOST_KEEPALIVE_FEATURE
+  return;
+#endif //HOST_KEEPALIVE_FEATURE
   if (farm_mode) return;
   long ms = _millis();
   if (host_keepalive_interval && busy_state != NOT_BUSY) {
@@ -1727,7 +1729,7 @@ void host_keepalive() {
   }
   prev_busy_signal_ms = ms;
 }
-#endif
+
 
 // The loop() function is called in an endless loop by the Arduino framework from the default main() routine.
 // Before loop(), the setup() function is called by the main() routine.
@@ -4315,44 +4317,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	}
 	break;
 
-#ifdef DIS
-	case 77:
-	{
-		//! G77 X200 Y150 XP100 YP15 XO10 Y015
-		//! for 9 point mesh bed leveling G77 X203 Y196 XP3 YP3 XO0 YO0
-		//! G77 X232 Y218 XP116 YP109 XO-11 YO0
 
-		float dimension_x = 40;
-		float dimension_y = 40;
-		int points_x = 40;
-		int points_y = 40;
-		float offset_x = 74;
-		float offset_y = 33;
-
-		if (code_seen('X')) dimension_x = code_value();
-		if (code_seen('Y')) dimension_y = code_value();
-		if (code_seen("XP")) { strchr_pointer+=1; points_x = code_value(); }
-		if (code_seen("YP")) { strchr_pointer+=1; points_y = code_value(); }
-		if (code_seen("XO")) { strchr_pointer+=1; offset_x = code_value(); }
-		if (code_seen("YO")) { strchr_pointer+=1; offset_y = code_value(); }
-		
-		bed_analysis(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
-		
-	} break;
-	
-#endif
-
-	case 79: {
-		for (int i = 255; i > 0; i = i - 5) {
-			fanSpeed = i;
-			//delay_keep_alive(2000);
-			for (int j = 0; j < 100; j++) {
-				delay_keep_alive(100);
-
-			}
-			printf_P(_N("%d: %d\n"), i, fan_speed[1]);
-		}
-	}break;
 
 	/**
 	* G80: Mesh-based Z probe, probes a grid and produces a
@@ -4368,6 +4333,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	*/
 
 	case 80:
+
 #ifdef MK1BP
 		break;
 #endif //MK1BP
@@ -4406,14 +4372,21 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				nMeasPoints = 3;
 			}
 		}
+		else {
+			nMeasPoints = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+		}
 
 		uint8_t nProbeRetry = 3;
 		if (code_seen('R')) {
 			nProbeRetry = code_value_uint8();
 			if (nProbeRetry > 10) {
-				nProbeRetry = 3;
+				nProbeRetry = 10;
 			}
 		}
+		else {
+			nProbeRetry = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+		}
+		bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
 		
 		bool temp_comp_start = true;
 #ifdef PINDA_THERMISTOR
@@ -4474,7 +4447,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 		int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
 		int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
-		bool has_z = (nMeasPoints == 3) && is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
+		bool has_z = is_bed_z_jitter_data_valid(); //checks if we have data from Z calibration (offsets of the Z heiths of the 8 calibration points from the first point)
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 1) {
 			has_z ? SERIAL_PROTOCOLPGM("Z jitter data from Z cal. valid.\n") : SERIAL_PROTOCOLPGM("Z jitter data from Z cal. not valid.\n");
@@ -4486,27 +4459,37 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// Get coords of a measuring point.
 			uint8_t ix = mesh_point % nMeasPoints; // from 0 to MESH_NUM_X_POINTS - 1
 			uint8_t iy = mesh_point / nMeasPoints;
+			/*if (!mbl_point_measurement_valid(ix, iy, nMeasPoints, true)) {
+				printf_P(PSTR("Skipping point [%d;%d] \n"), ix, iy);
+				custom_message_state--;
+				mesh_point++;
+				continue; //skip
+			}*/
 			if (iy & 1) ix = (nMeasPoints - 1) - ix; // Zig zag
+			if (nMeasPoints == 7) //if we have 7x7 mesh, compare with Z-calibration for points which are in 3x3 mesh
+			{
+				has_z = ((ix % 3 == 0) && (iy % 3 == 0)) && is_bed_z_jitter_data_valid(); 
+			}
 			float z0 = 0.f;
 			if (has_z && (mesh_point > 0)) {
-				uint16_t z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
+				uint16_t z_offset_u = 0;
+				if (nMeasPoints == 7) {
+					z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * ((ix/3) + iy - 1)));
+				}
+				else {
+					z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
+				}
 				z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
-				//#if 0
 				#ifdef SUPPORT_VERBOSITY
 				if (verbosity_level >= 1) {
-					SERIAL_ECHOLNPGM("");
-					SERIAL_ECHOPGM("Bed leveling, point: ");
-					MYSERIAL.print(mesh_point);
-					SERIAL_ECHOPGM(", calibration z: ");
-					MYSERIAL.print(z0, 5);
-					SERIAL_ECHOLNPGM("");
+					printf_P(PSTR("Bed leveling, point: %d, calibration Z stored in eeprom: %d, calibration z: %f \n"), mesh_point, z_offset_u, z0);
 				}
 				#endif // SUPPORT_VERBOSITY
-				//#endif
 			}
 
 			// Move Z up to MESH_HOME_Z_SEARCH.
-			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+			if((ix == 0) && (iy == 0)) current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+			else current_position[Z_AXIS] += 2.f / nMeasPoints; //use relative movement from Z coordinate where PINDa triggered on previous point. This makes calibration faster.
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
 			st_synchronize();
 
@@ -4514,7 +4497,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			current_position[X_AXIS] = BED_X(ix, nMeasPoints);
 			current_position[Y_AXIS] = BED_Y(iy, nMeasPoints);
 
-
+			//printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
 			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			#ifdef SUPPORT_VERBOSITY
@@ -4531,15 +4514,26 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// Go down until endstop is hit
 			const float Z_CALIBRATION_THRESHOLD = 1.f;
 			if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
-				kill_message = _T(MSG_BED_LEVELING_FAILED_POINT_LOW);
+				printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 				break;
 			}
-			if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
-				kill_message = _i("Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.");////MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
-				break;
+			if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
+
+				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
+				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+				st_synchronize();
+
+				if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
+					printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
+					break;
+				}
+				if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
+					printf_P(PSTR("Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.\n"));
+					break;
+				}
 			}
 			if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) { //if we have data from z calibration, max. allowed difference is 1mm for each point
-				kill_message = _i("Bed leveling failed. Sensor triggered too high. Waiting for reset.");////MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
+				printf_P(PSTR("Bed leveling failed. Sensor triggered too high. Waiting for reset.\n"));
 				break;
 			}
 			#ifdef SUPPORT_VERBOSITY
@@ -4693,8 +4687,43 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		}
 //		SERIAL_ECHOLNPGM("Bed leveling correction finished");
 		if (nMeasPoints == 3) {
-			mbl.upsample_3x3(); //bilinear interpolation from 3x3 to 7x7 points while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
+			mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 		}
+/*
+		        SERIAL_PROTOCOLPGM("Num X,Y: ");
+                SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
+                SERIAL_PROTOCOLPGM(",");
+                SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
+                SERIAL_PROTOCOLPGM("\nZ search height: ");
+                SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
+                SERIAL_PROTOCOLLNPGM("\nMeasured points:");
+                for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
+                    for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
+                        SERIAL_PROTOCOLPGM("  ");
+                        SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
+                    }
+                    SERIAL_PROTOCOLPGM("\n");
+                }
+*/
+		if (nMeasPoints == 7 && magnet_elimination) {
+			mbl_interpolation(nMeasPoints);
+		}
+/*
+		        SERIAL_PROTOCOLPGM("Num X,Y: ");
+                SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
+                SERIAL_PROTOCOLPGM(",");
+                SERIAL_PROTOCOL(MESH_NUM_Y_POINTS);
+                SERIAL_PROTOCOLPGM("\nZ search height: ");
+                SERIAL_PROTOCOL(MESH_HOME_Z_SEARCH);
+                SERIAL_PROTOCOLLNPGM("\nMeasured points:");
+                for (int y = MESH_NUM_Y_POINTS-1; y >= 0; y--) {
+                    for (int x = 0; x < MESH_NUM_X_POINTS; x++) {
+                        SERIAL_PROTOCOLPGM("  ");
+                        SERIAL_PROTOCOL_F(mbl.z_values[y][x], 5);
+                    }
+                    SERIAL_PROTOCOLPGM("\n");
+                }
+*/
 //		SERIAL_ECHOLNPGM("Upsample finished");
 		mbl.active = 1; //activate mesh bed leveling
 //		SERIAL_ECHOLNPGM("Mesh bed leveling activated");
@@ -5812,7 +5841,6 @@ Sigma_Exit:
       if (code_seen('N'))
 	    gcode_LastN = code_value_long();
     break;
-#ifdef HOST_KEEPALIVE_FEATURE
 	case 113: // M113 - Get or set Host Keepalive interval
 		if (code_seen('S')) {
 			host_keepalive_interval = (uint8_t)code_value_short();
@@ -5824,7 +5852,6 @@ Sigma_Exit:
 			SERIAL_PROTOCOLLN("");
 		}
 		break;
-#endif
     case 115: // M115
       if (code_seen('V')) {
           // Report the Prusa version number.
@@ -7158,7 +7185,66 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		dcode_9(); break;
 	case 10: //! D10 - XYZ calibration = OK
 		dcode_10(); break;
-    
+#endif //DEBUG_DCODES
+#ifdef HEATBED_ANALYSIS
+	case 80:
+	{
+		float dimension_x = 40;
+		float dimension_y = 40;
+		int points_x = 40;
+		int points_y = 40;
+		float offset_x = 74;
+		float offset_y = 33;
+
+		if (code_seen('E')) dimension_x = code_value();
+		if (code_seen('F')) dimension_y = code_value();
+		if (code_seen('G')) {points_x = code_value(); }
+		if (code_seen('H')) {points_y = code_value(); }
+		if (code_seen('I')) {offset_x = code_value(); }
+		if (code_seen('J')) {offset_y = code_value(); }
+		printf_P(PSTR("DIM X: %f\n"), dimension_x);
+		printf_P(PSTR("DIM Y: %f\n"), dimension_y);
+		printf_P(PSTR("POINTS X: %d\n"), points_x);
+		printf_P(PSTR("POINTS Y: %d\n"), points_y);
+		printf_P(PSTR("OFFSET X: %f\n"), offset_x);
+		printf_P(PSTR("OFFSET Y: %f\n"), offset_y);
+ 		bed_check(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
+	}break;
+
+	case 81:
+	{
+		float dimension_x = 40;
+		float dimension_y = 40;
+		int points_x = 40;
+		int points_y = 40;
+		float offset_x = 74;
+		float offset_y = 33;
+
+		if (code_seen('E')) dimension_x = code_value();
+		if (code_seen('F')) dimension_y = code_value();
+		if (code_seen("G")) { strchr_pointer+=1; points_x = code_value(); }
+		if (code_seen("H")) { strchr_pointer+=1; points_y = code_value(); }
+		if (code_seen("I")) { strchr_pointer+=1; offset_x = code_value(); }
+		if (code_seen("J")) { strchr_pointer+=1; offset_y = code_value(); }
+		
+		bed_analysis(dimension_x,dimension_y,points_x,points_y,offset_x,offset_y);
+		
+	} break;
+	
+#endif //HEATBED_ANALYSIS
+#ifdef DEBUG_DCODES
+	case 106: //D106 print measured fan speed for different pwm values
+	{
+		for (int i = 255; i > 0; i = i - 5) {
+			fanSpeed = i;
+			//delay_keep_alive(2000);
+			for (int j = 0; j < 100; j++) {
+				delay_keep_alive(100);
+
+			}
+			printf_P(_N("%d: %d\n"), i, fan_speed[1]);
+		}
+	}break;
 
 #ifdef TMC2130
 	case 2130: //! D2130 - TMC2130
@@ -7961,7 +8047,7 @@ void check_babystep()
 		lcd_update_enable(true);		
 	}	
 }
-#ifdef DIS
+#ifdef HEATBED_ANALYSIS
 void d_setup()
 {	
 	pinMode(D_DATACLOCK, INPUT_PULLUP);
@@ -8008,6 +8094,199 @@ float d_ReadData()
 	}
 
 	return output;
+
+}
+
+void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y) {
+	int t1 = 0;
+	int t_delay = 0;
+	int digit[13];
+	int m;
+	char str[3];
+	//String mergeOutput;
+	char mergeOutput[15];
+	float output;
+
+	int mesh_point = 0; //index number of calibration point
+	float bed_zero_ref_x = (-22.f + X_PROBE_OFFSET_FROM_EXTRUDER); //shift between zero point on bed and target and between probe and nozzle
+	float bed_zero_ref_y = (-0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER);
+
+	float mesh_home_z_search = 4;
+	float measure_z_heigth = 0.2f;
+	float row[x_points_num];
+	int ix = 0;
+	int iy = 0;
+
+	const char* filename_wldsd = "mesh.txt";
+	char data_wldsd[x_points_num * 7 + 1]; //6 chars(" -A.BCD")for each measurement + null 
+	char numb_wldsd[8]; // (" -A.BCD" + null)
+#ifdef MICROMETER_LOGGING
+	d_setup();
+#endif //MICROMETER_LOGGING
+
+	int XY_AXIS_FEEDRATE = homing_feedrate[X_AXIS] / 20;
+	int Z_LIFT_FEEDRATE = homing_feedrate[Z_AXIS] / 40;
+
+	unsigned int custom_message_type_old = custom_message_type;
+	unsigned int custom_message_state_old = custom_message_state;
+	custom_message_type = CUSTOM_MSG_TYPE_MESHBL;
+	custom_message_state = (x_points_num * y_points_num) + 10;
+	lcd_update(1);
+
+	//mbl.reset();
+	babystep_undo();
+
+	card.openFile(filename_wldsd, false);
+
+	/*destination[Z_AXIS] = mesh_home_z_search;
+	//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+
+	plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+	for(int8_t i=0; i < NUM_AXIS; i++) {
+		current_position[i] = destination[i];
+	}
+	st_synchronize();
+	*/
+		destination[Z_AXIS] = measure_z_heigth;
+		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+		for(int8_t i=0; i < NUM_AXIS; i++) {
+			current_position[i] = destination[i];
+		}
+		st_synchronize();
+	/*int l_feedmultiply = */setup_for_endstop_move(false);
+
+	SERIAL_PROTOCOLPGM("Num X,Y: ");
+	SERIAL_PROTOCOL(x_points_num);
+	SERIAL_PROTOCOLPGM(",");
+	SERIAL_PROTOCOL(y_points_num);
+	SERIAL_PROTOCOLPGM("\nZ search height: ");
+	SERIAL_PROTOCOL(mesh_home_z_search);
+	SERIAL_PROTOCOLPGM("\nDimension X,Y: ");
+	SERIAL_PROTOCOL(x_dimension);
+	SERIAL_PROTOCOLPGM(",");
+	SERIAL_PROTOCOL(y_dimension);
+	SERIAL_PROTOCOLLNPGM("\nMeasured points:");
+
+	while (mesh_point != x_points_num * y_points_num) {
+		ix = mesh_point % x_points_num; // from 0 to MESH_NUM_X_POINTS - 1
+		iy = mesh_point / x_points_num;
+		if (iy & 1) ix = (x_points_num - 1) - ix; // Zig zag
+		float z0 = 0.f;
+		/*destination[Z_AXIS] = mesh_home_z_search;
+		//plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+
+		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
+		for(int8_t i=0; i < NUM_AXIS; i++) {
+			current_position[i] = destination[i];
+		}
+		st_synchronize();*/
+
+
+		//current_position[X_AXIS] = 13.f + ix * (x_dimension / (x_points_num - 1)) - bed_zero_ref_x + shift_x;
+		//current_position[Y_AXIS] = 6.4f + iy * (y_dimension / (y_points_num - 1)) - bed_zero_ref_y + shift_y;
+
+		destination[X_AXIS] = ix * (x_dimension / (x_points_num - 1)) + shift_x;
+		destination[Y_AXIS] = iy * (y_dimension / (y_points_num - 1)) + shift_y;
+
+		mesh_plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], XY_AXIS_FEEDRATE/6, active_extruder);
+		for(int8_t i=0; i < NUM_AXIS; i++) {
+			current_position[i] = destination[i];
+		}
+		st_synchronize();
+
+	//	printf_P(PSTR("X = %f; Y= %f \n"), current_position[X_AXIS], current_position[Y_AXIS]);
+
+		delay_keep_alive(1000);
+#ifdef MICROMETER_LOGGING
+
+		//memset(numb_wldsd, 0, sizeof(numb_wldsd));
+		//dtostrf(d_ReadData(), 8, 5, numb_wldsd);
+		//strcat(data_wldsd, numb_wldsd);
+
+
+		
+		//MYSERIAL.println(data_wldsd);
+		//delay(1000);
+		//delay(3000);
+		//t1 = millis();
+		
+		//while (digitalRead(D_DATACLOCK) == LOW) {}
+		//while (digitalRead(D_DATACLOCK) == HIGH) {}
+		memset(digit, 0, sizeof(digit));
+		//cli();
+		digitalWrite(D_REQUIRE, LOW);	
+		
+		for (int i = 0; i<13; i++)
+		{
+			//t1 = millis();
+			for (int j = 0; j < 4; j++)
+			{
+				while (digitalRead(D_DATACLOCK) == LOW) {}				
+				while (digitalRead(D_DATACLOCK) == HIGH) {}
+				//printf_P(PSTR("Done %d\n"), j);
+				bitWrite(digit[i], j, digitalRead(D_DATA));
+			}
+			//t_delay = (millis() - t1);
+			//SERIAL_PROTOCOLPGM(" ");
+			//SERIAL_PROTOCOL_F(t_delay, 5);
+			//SERIAL_PROTOCOLPGM(" ");
+
+		}
+		//sei();
+		digitalWrite(D_REQUIRE, HIGH);
+		mergeOutput[0] = '\0';
+		output = 0;
+		for (int r = 5; r <= 10; r++) //Merge digits
+		{			
+			sprintf(str, "%d", digit[r]);
+			strcat(mergeOutput, str);
+		}
+		
+		output = atof(mergeOutput);
+
+		if (digit[4] == 8) //Handle sign
+		{
+			output *= -1;
+		}
+
+		for (int i = digit[11]; i > 0; i--) //Handle floating point
+		{
+			output *= 0.1;
+		}
+		
+
+		//output = d_ReadData();
+
+		//row[ix] = current_position[Z_AXIS];
+
+
+		
+		//row[ix] = d_ReadData();
+		
+		row[ix] = output;
+
+		if (iy % 2 == 1 ? ix == 0 : ix == x_points_num - 1) {
+			memset(data_wldsd, 0, sizeof(data_wldsd));
+			for (int i = 0; i < x_points_num; i++) {
+				SERIAL_PROTOCOLPGM(" ");
+				SERIAL_PROTOCOL_F(row[i], 5);
+				memset(numb_wldsd, 0, sizeof(numb_wldsd));
+				dtostrf(row[i], 7, 3, numb_wldsd);
+				strcat(data_wldsd, numb_wldsd);
+			}
+			card.write_command(data_wldsd);
+			SERIAL_PROTOCOLPGM("\n");
+
+		}
+
+		custom_message_state--;
+		mesh_point++;
+		lcd_update(1);
+
+	}
+	#endif //MICROMETER_LOGGING
+	card.closefile();
+	//clean_up_after_endstop_move(l_feedmultiply);
 
 }
 
@@ -8194,7 +8473,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	card.closefile();
 	clean_up_after_endstop_move(l_feedmultiply);
 }
-#endif
+#endif //HEATBED_ANALYSIS
 
 void temp_compensation_start() {
 	

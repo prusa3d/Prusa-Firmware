@@ -47,11 +47,13 @@ char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 
 static void lcd_sd_updir();
+static void lcd_mesh_bed_leveling_settings();
 
 int8_t ReInitLCD = 0;
 
 
 int8_t SilentModeMenu = SILENT_MODE_OFF;
+uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
 
@@ -4520,6 +4522,14 @@ static void lcd_sound_state_set(void)
 Sound_CycleState();
 }
 
+#ifndef MMU_FORCE_STEALTH_MODE
+static void lcd_silent_mode_mmu_set() {
+	if (SilentModeMenu_MMU == 1) SilentModeMenu_MMU = 0;
+	else SilentModeMenu_MMU = 1;
+	//saving to eeprom is done in mmu_loop() after mmu actually switches state and confirms with "ok"
+}
+#endif //MMU_FORCE_STEALTH_MODE
+
 static void lcd_silent_mode_set() {
 	switch (SilentModeMenu) {
 #ifdef TMC2130
@@ -5303,6 +5313,21 @@ do\
 while (0)
 #endif //TMC2130
 
+#ifndef MMU_FORCE_STEALTH_MODE
+#define SETTINGS_MMU_MODE \
+do\
+{\
+	if (mmu_enabled)\
+	{\
+		if (SilentModeMenu_MMU == 0) MENU_ITEM_FUNCTION_P(_i("MMU Mode   [Fast]"), lcd_silent_mode_mmu_set); \
+		else MENU_ITEM_FUNCTION_P(_i("MMU Mode[Stealth]"), lcd_silent_mode_mmu_set); \
+	}\
+}\
+while (0) 
+#else //MMU_FORCE_STEALTH_MODE
+#define SETTINGS_MMU_MODE
+#endif //MMU_FORCE_STEALTH_MODE
+
 #ifdef SDCARD_SORT_ALPHA
 #define SETTINGS_SD \
 do\
@@ -5336,6 +5361,29 @@ do\
 }\
 while (0)
 #endif // SDCARD_SORT_ALPHA
+
+/*
+#define SETTINGS_MBL_MODE \
+do\
+{\
+    switch(e_mbl_type)\
+    {\
+    case e_MBL_FAST:\
+        MENU_ITEM_FUNCTION_P(_i("Mode    [Fast]"),mbl_mode_set);\ 
+         break; \
+    case e_MBL_OPTIMAL:\
+	    MENU_ITEM_FUNCTION_P(_i("Mode [Optimal]"), mbl_mode_set); \ 
+	     break; \
+    case e_MBL_PREC:\
+	     MENU_ITEM_FUNCTION_P(_i("Mode [Precise]"), mbl_mode_set); \
+	     break; \
+    default:\
+	     MENU_ITEM_FUNCTION_P(_i("Mode [Optimal]"), mbl_mode_set); \
+	     break; \
+    }\
+}\
+while (0)
+*/
 
 #define SETTINGS_SOUND \
 do\
@@ -5384,6 +5432,9 @@ static void lcd_settings_menu()
 		MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
 
 	SETTINGS_SILENT_MODE;
+	SETTINGS_MMU_MODE;
+
+	MENU_ITEM_SUBMENU_P(_i("Mesh bed leveling"), lcd_mesh_bed_leveling_settings);////MSG_MBL_SETTINGS c=18 r=1
 
 #if defined (TMC2130) && defined (LINEARITY_CORRECTION)
     MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
@@ -6602,7 +6653,7 @@ static void lcd_tune_menu()
 		}
 	}
 #endif //TMC2130
-
+	 SETTINGS_MMU_MODE;
      switch(eSoundMode)
           {
           case e_SOUND_MODE_LOUD:
@@ -6622,6 +6673,48 @@ static void lcd_tune_menu()
           }
 
 	MENU_END();
+}
+
+static void mbl_magnets_elimination_set() {
+	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
+	magnet_elimination = !magnet_elimination;
+	eeprom_update_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION, (uint8_t)magnet_elimination);
+}
+
+static void mbl_mesh_set() {
+	uint8_t mesh_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+	if(mesh_nr == 3) mesh_nr = 7;
+	else mesh_nr = 3;
+	eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, mesh_nr);
+}
+
+static void lcd_mesh_bed_leveling_settings()
+{
+	
+	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
+	uint8_t points_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+
+	MENU_BEGIN();
+	// leaving menu - this condition must be immediately before MENU_ITEM_BACK_P
+	if (((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving)
+	{
+		eeprom_update_byte((uint8_t*)EEPROM_MBL_PROBE_NR, (uint8_t)mbl_z_probe_nr);
+	}
+	MENU_ITEM_BACK_P(_T(MSG_SETTINGS)); 
+	if(points_nr == 3) MENU_ITEM_FUNCTION_P(_i("Mesh         [3x3]"), mbl_mesh_set);
+	else			   MENU_ITEM_FUNCTION_P(_i("Mesh         [7x7]"), mbl_mesh_set);
+	MENU_ITEM_EDIT_int3_P(_i("Z-probe nr."), &mbl_z_probe_nr, 1, 5);
+	if (points_nr == 7) {
+		if (magnet_elimination) MENU_ITEM_FUNCTION_P(_i("Magnets comp. [On]"), mbl_magnets_elimination_set);
+		else				    MENU_ITEM_FUNCTION_P(_i("Magnets comp.[Off]"), mbl_magnets_elimination_set);
+	}
+	else					        menu_item_text_P(_i("Magnets comp.[N/A]"));
+	MENU_END();
+	/*if(menu_leaving)
+	{
+	    eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, mbl_z_probe_nr);
+	}*/
+	//SETTINGS_MBL_MODE;
 }
 
 static void lcd_control_temperature_menu()

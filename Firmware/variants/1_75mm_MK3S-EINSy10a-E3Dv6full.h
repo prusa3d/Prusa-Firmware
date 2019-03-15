@@ -400,10 +400,10 @@
 #define MBL_Z_STEP 0.01
 
 // Mesh definitions
-#define MESH_MIN_X 35
-#define MESH_MAX_X 238
+#define MESH_MIN_X 24
+#define MESH_MAX_X 228
 #define MESH_MIN_Y 6
-#define MESH_MAX_Y 202
+#define MESH_MAX_Y 210
 
 // Mesh upsample definition
 #define MESH_NUM_X_POINTS 7

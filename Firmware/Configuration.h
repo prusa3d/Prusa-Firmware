@@ -446,7 +446,9 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // When enabled Marlin will send a busy status message to the host
 // every couple of seconds when it can't accept commands.
 //
+#ifndef HEATBED_ANALYSIS
 #define HOST_KEEPALIVE_FEATURE    // Disable this if your host doesn't like keepalive messages
+#endif //HEATBED_ANALYSIS
 #define HOST_KEEPALIVE_INTERVAL 2 // Number of seconds between "busy" messages. Set with M113.
 
 //LCD and SD support
