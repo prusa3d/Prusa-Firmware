@@ -6,6 +6,7 @@
 #include <avr/interrupt.h>
 #include "Arduino.h"
 #include "io_atmega2560.h"
+extern int target_temperature_bed;
 
 #define BEEPER              84
 
@@ -91,7 +92,9 @@ ISR(TIMER2_OVF_vect)
 	unsigned long m = timer2_millis;
 	unsigned char f = timer2_fract;
 	static unsigned char slowPwm = 0;
-	static unsigned char up = 1;
+	static unsigned char prescaler = 0;
+	static unsigned char pwm = 0;
+
 	m += MILLIS_INC;
 	f += FRACT_INC;
 	if (f >= FRACT_MAX)
@@ -103,31 +106,51 @@ ISR(TIMER2_OVF_vect)
 	timer2_millis = m;
 	timer2_overflow_count++;
 
-	if (timer02_pwm0 >= 254) OCR0B = 255;
-	else if (timer02_pwm0 == 0) OCR0B = 0;
-	else if (timer02_pwm0 < 128)
+	if (prescaler == 0)
 	{
-	    if (slowPwm < (timer02_pwm0 << 1))
-	        OCR0B = 20;
-	    else
-	        OCR0B = 0;
-	}
-	else
-	{
-        if (slowPwm < ((timer02_pwm0 - 128) << 1))
-            OCR0B = 255;
+        if (pwm >= 254) OCR0B = 255;
+        else if (pwm == 0) OCR0B = 0;
+        else if (pwm < 128)
+        {
+            if (slowPwm < (pwm << 1))
+                OCR0B = 90;
+            else
+                OCR0B = 0;
+        }
         else
-            OCR0B = 100;
-	}
-
-	slowPwm++;
-#if 0
-	if (slowPwm == 255) up = 0;
-	if (slowPwm == 15) up = 1;
-	if (up)
+        {
+            if (slowPwm < ((pwm - 128) << 1))
+                OCR0B = 255;
+            else
+                OCR0B = 150;
+        }
 	    slowPwm++;
+	    if (slowPwm == 0) pwm = timer02_pwm0;
+	}
+	prescaler++;
+    if (prescaler >= 10) prescaler = 0;
+
+
+#if 0
+	if (slowPwm == 135) up = 0;
+	if (slowPwm == 0) up = 1;
+	if (up)
+	{
+	    slowPwm++;
+	    //OCR0B = 255;
+	    //OCR0B = 0;
+	}
 	else
+	{
 	    slowPwm--;
+	    //OCR0B = 150;// neklika
+	    //OCR0B = 100;// klika
+	    //OCR0B = 125;// klika
+	    //OCR0B = 135;// dolu klika, nahoru bziká
+	    //OCR0B = 86;//  nahoru nebziká
+	    //OCR0B = 142;// klika sporadicky
+	}
+	OCR0B = target_temperature_bed;
 #endif
 }
 
