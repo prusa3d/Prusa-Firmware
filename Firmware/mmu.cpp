@@ -45,6 +45,7 @@ namespace
         WaitCmd, //!< wait for command response
         Pause,
         GetDrvError, //!< get power failures count
+		SwitchMode //switch mmu between stealth and normal mode 
     };
 }
 
@@ -183,12 +184,10 @@ bool check_for_ir_sensor()
 
 static bool activate_stealth_mode()
 {
-#if defined (MMU_FORCE_STEALTH_MODE)
+#ifdef MMU_FORCE_STEALTH_MODE
 	return true;
-#elif defined (SILENT_MODE_STEALTH)
-	return (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_STEALTH);
 #else
-	return false;
+	return (eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH) == 1);
 #endif
 }
 
@@ -337,6 +336,11 @@ void mmu_loop(void)
 			mmu_last_cmd = mmu_cmd;
 			mmu_cmd = MmuCmd::None;
 		}
+		else if ((eeprom_read_byte((uint8_t*)EEPROM_MMU_STEALTH) != SilentModeMenu_MMU) && mmu_ready) {
+				DEBUG_PRINTF_P(PSTR("MMU <= 'M%d'\n"), SilentModeMenu_MMU);
+				mmu_printf_P(PSTR("M%d\n"), SilentModeMenu_MMU);
+				mmu_state = S::SwitchMode;
+		}
 		else if ((mmu_last_response + 300) < _millis()) //request every 300ms
 		{
 #ifndef IR_SENSOR
@@ -452,9 +456,22 @@ void mmu_loop(void)
 			mmu_state = S::Idle;
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
-		{ //resend request after timeout (5 min)
+		{ //timeout 45 s
 			mmu_state = S::Idle;
 		}
+		return;
+	case S::SwitchMode:
+		if (mmu_rx_ok() > 0)
+		{
+			DEBUG_PRINTF_P(PSTR("MMU => 'ok'\n"));
+			eeprom_update_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
+			mmu_state = S::Idle;
+		}
+		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
+		{ //timeout 45 s
+			mmu_state = S::Idle;
+		}
+		return;		
 	}
 }
 
@@ -1365,25 +1382,27 @@ bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_
   }
 }
 
+#ifdef MMU_HAS_CUTTER
 void mmu_cut_filament(uint8_t filament_nr)
 {
-bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_menu()"
-  if (degHotend0() > EXTRUDE_MINTEMP)
-  {
-    LcdUpdateDisabler disableLcdUpdate;
-    lcd_clear();
-    lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18 r=1
-    lcd_print(" ");
-    lcd_print(filament_nr + 1);
-    mmu_filament_ramming();
-    mmu_command(MmuCmd::K0 + filament_nr);
-    manage_response(false, false, MMU_UNLOAD_MOVE);
-  }
-  else
-  {
-      show_preheat_nozzle_warning();
-  }
+    bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_menu()"
+    if (degHotend0() > EXTRUDE_MINTEMP)
+    {
+        LcdUpdateDisabler disableLcdUpdate;
+        lcd_clear();
+        lcd_set_cursor(0, 1); lcd_puts_P(_i("Cutting filament")); //// c=18 r=1
+        lcd_print(" ");
+        lcd_print(filament_nr + 1);
+        mmu_filament_ramming();
+        mmu_command(MmuCmd::K0 + filament_nr);
+        manage_response(false, false, MMU_UNLOAD_MOVE);
+    }
+    else
+    {
+        show_preheat_nozzle_warning();
+    }
 }
+#endif //MMU_HAS_CUTTER
 
 void mmu_eject_filament(uint8_t filament, bool recover)
 {
@@ -1457,11 +1476,13 @@ void mmu_continue_loading()
 			if(mmu_load_fail < 255) eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, mmu_load_fail + 1);
 			if(mmu_load_fail_tot < 65535) eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, mmu_load_fail_tot + 1);
 
+#ifdef MMU_HAS_CUTTER
 			if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
 			{
 			    mmu_command(MmuCmd::K0 + tmp_extruder);
 			    manage_response(true, true, MMU_UNLOAD_MOVE);
 			}
+#endif //MMU_HAS_CUTTER
 
             mmu_command(MmuCmd::T0 + tmp_extruder);
             manage_response(true, true, MMU_TCODE_MOVE);

@@ -6,10 +6,10 @@
 
 #ifdef HEATBED_V2
 
-#define BED_X0 (13.f - BED_ZERO_REF_X)
-#define BED_Y0 (10.4f - BED_ZERO_REF_Y)
-#define BED_Xn (216.f - BED_ZERO_REF_X)
-#define BED_Yn (202.4f - BED_ZERO_REF_Y)
+#define BED_X0 (2.f - BED_ZERO_REF_X) //1
+#define BED_Y0 (9.4f - BED_ZERO_REF_Y) //1
+#define BED_Xn (206.f - BED_ZERO_REF_X) //205
+#define BED_Yn (213.4f - BED_ZERO_REF_Y) //205
 
 #else
 
@@ -200,5 +200,17 @@ extern void babystep_reset();
 
 extern void count_xyz_details(float (&distanceMin)[2]);
 extern bool sample_z();
+/*
+typedef enum
+{
+	e_MBL_FAST, e_MBL_OPTIMAL, e_MBL_PREC
+} e_MBL_TYPE;
+*/
+//extern e_MBL_TYPE e_mbl_type;
+//extern void mbl_mode_set();
+//extern void mbl_mode_init();
+extern void mbl_settings_init();
 
+extern bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag);
+extern void mbl_interpolation(uint8_t meas_points);
 #endif /* MESH_BED_CALIBRATION_H */
