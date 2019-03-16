@@ -6,11 +6,10 @@
 #include <avr/interrupt.h>
 #include "Arduino.h"
 #include "io_atmega2560.h"
-extern int target_temperature_bed;
 
 #define BEEPER              84
 
-uint8_t timer02_pwm0 = 0;
+static uint8_t timer02_pwm0 = 0;
 
 void timer02_set_pwm0(uint8_t pwm0)
 {
@@ -58,6 +57,65 @@ void timer02_init(void)
 	SREG = _sreg;
 }
 
+//! @brief Slow PWM modulated fast PWM for bed switching
+//!
+//! This nested PWM modulation is dedicated to reduce
+//! transistor switching loses. It inserts long periods
+//! of fully open or fully closed transistor.
+//!
+//! It is controlled by timer02_pwm0 variable.
+//! timer02_pwm0 == 0        - always off
+//! timer02_pwm0 == 1..127   - 0.3 .. 35% effective duty cycle
+//! timer02_pwm0 == 128..254 - 58  .. 99.5% effective duty cycle
+//! timer02_pwm0 == 255      - always on
+//!
+//! It alternates between 0% and 35% fast PWM duty cycle in lower half of range.
+//! And between 58% and 100% fast PWM duty cycle in higher half of range.
+//! There is supposed to be no clicking noise from power supply when switching inside
+//! lower and inside higher range.
+//!
+//! It controls OCR0B register.
+//! It buffers input variable in the end of cycle to avoid multiple switches when
+//! input variable is asynchronously updated.
+//!
+static inline void isr_slow_bed_pwm(void)
+{
+    static unsigned char slowPwm = 0;
+    static unsigned char prescaler = 0;
+    static unsigned char pwm = 0;
+
+    if (prescaler == 0)
+    {
+        if (pwm == 255 || pwm == 0) OCR0B = pwm;
+        else if (pwm < 128)
+        {
+            if (slowPwm < (pwm << 1))
+            {
+                OCR0B = 90;
+            }
+            else
+            {
+                OCR0B = 0;
+            }
+        }
+        else
+        {
+            if (slowPwm < ((pwm - 128) << 1))
+            {
+                OCR0B = 255;
+            }
+            else
+            {
+                OCR0B = 150;
+            }
+        }
+        slowPwm++;
+        if (slowPwm == 0) pwm = timer02_pwm0;
+    }
+    prescaler++;
+    if (prescaler >= 10) prescaler = 0;
+}
+
 
 //following code is OVF handler for timer 2
 //it is copy-paste from wiring.c and modified for timer2
@@ -85,73 +143,31 @@ volatile unsigned long timer2_overflow_count;
 volatile unsigned long timer2_millis;
 unsigned char timer2_fract = 0;
 
+
+static inline void isr_millis2(void)
+{
+    // copy these to local variables so they can be stored in registers
+    // (volatile variables must be read from memory on every access)
+    unsigned long m = timer2_millis;
+    unsigned char f = timer2_fract;
+
+    m += MILLIS_INC;
+    f += FRACT_INC;
+    if (f >= FRACT_MAX)
+    {
+        f -= FRACT_MAX;
+        m += 1;
+    }
+    timer2_fract = f;
+    timer2_millis = m;
+    timer2_overflow_count++;
+}
+
+
 ISR(TIMER2_OVF_vect)
 {
-	// copy these to local variables so they can be stored in registers
-	// (volatile variables must be read from memory on every access)
-	unsigned long m = timer2_millis;
-	unsigned char f = timer2_fract;
-	static unsigned char slowPwm = 0;
-	static unsigned char prescaler = 0;
-	static unsigned char pwm = 0;
-
-	m += MILLIS_INC;
-	f += FRACT_INC;
-	if (f >= FRACT_MAX)
-	{
-		f -= FRACT_MAX;
-		m += 1;
-	}
-	timer2_fract = f;
-	timer2_millis = m;
-	timer2_overflow_count++;
-
-	if (prescaler == 0)
-	{
-        if (pwm >= 254) OCR0B = 255;
-        else if (pwm == 0) OCR0B = 0;
-        else if (pwm < 128)
-        {
-            if (slowPwm < (pwm << 1))
-                OCR0B = 90;
-            else
-                OCR0B = 0;
-        }
-        else
-        {
-            if (slowPwm < ((pwm - 128) << 1))
-                OCR0B = 255;
-            else
-                OCR0B = 150;
-        }
-	    slowPwm++;
-	    if (slowPwm == 0) pwm = timer02_pwm0;
-	}
-	prescaler++;
-    if (prescaler >= 10) prescaler = 0;
-
-
-#if 0
-	if (slowPwm == 135) up = 0;
-	if (slowPwm == 0) up = 1;
-	if (up)
-	{
-	    slowPwm++;
-	    //OCR0B = 255;
-	    //OCR0B = 0;
-	}
-	else
-	{
-	    slowPwm--;
-	    //OCR0B = 150;// neklika
-	    //OCR0B = 100;// klika
-	    //OCR0B = 125;// klika
-	    //OCR0B = 135;// dolu klika, nahoru bziká
-	    //OCR0B = 86;//  nahoru nebziká
-	    //OCR0B = 142;// klika sporadicky
-	}
-	OCR0B = target_temperature_bed;
-#endif
+    isr_millis2();
+    isr_slow_bed_pwm();
 }
 
 unsigned long millis2(void)

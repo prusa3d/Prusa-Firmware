@@ -831,7 +831,7 @@ void manage_heater()
 	  if(current_temperature_bed < BED_MAXTEMP)
 	  {
 	    soft_pwm_bed = (int)pid_output >> 1;
-		timer02_set_pwm0(soft_pwm_bed << 1);
+		timer02_set_pwm0(pid_output);
 	  }
 	  else {
 	    soft_pwm_bed = 0;
