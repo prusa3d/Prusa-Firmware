@@ -132,7 +132,9 @@ extern bool mmu_check_version();
 extern void mmu_show_warning();
 extern void lcd_mmu_load_to_nozzle(uint8_t filament_nr);
 extern void mmu_eject_filament(uint8_t filament, bool recover);
+#ifdef MMU_HAS_CUTTER
 extern void mmu_cut_filament(uint8_t filament_nr);
+#endif //MMU_HAS_CUTTER
 extern void mmu_continue_loading();
 extern void mmu_filament_ramming();
 extern void mmu_wait_for_heater_blocking();
