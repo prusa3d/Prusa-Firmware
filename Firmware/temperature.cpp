@@ -888,9 +888,7 @@ void manage_heater()
 	  }
   #endif
   
-#ifdef HOST_KEEPALIVE_FEATURE
   host_keepalive();
-#endif
 }
 
 #define PGM_RD_W(x)   (short)pgm_read_word(&x)

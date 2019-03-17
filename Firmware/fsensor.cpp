@@ -567,7 +567,7 @@ void fsensor_update(void)
 				printf_P(PSTR("fsensor_update - M600\n"));
 				eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 				eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-				enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
+				enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
 				enquecommand_front_P((PSTR("M600")));
 				fsensor_watch_runout = false;
 			}
@@ -581,7 +581,7 @@ void fsensor_update(void)
 			printf_P(PSTR("fsensor_update - M600\n"));
 			eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 			eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-			enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
+			enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
 			enquecommand_front_P((PSTR("M600")));
 		}
 #endif //PAT9125
