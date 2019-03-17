@@ -45,6 +45,8 @@ extern bool lcd_selftest();
 
 void lcd_menu_statistics(); 
 
+void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
+
 extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
 

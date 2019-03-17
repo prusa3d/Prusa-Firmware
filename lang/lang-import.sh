@@ -52,6 +52,14 @@ if [ "$LNG" = "de" ]; then
  sed -i 's/\xc3\xbc/ue/g' $LNG'_filtered.po'
  #replace 'ö' with 'oe'
  sed -i 's/\xc3\xb6/oe/g' $LNG'_filtered.po'
+ #replace 'Ä' with 'Ae'
+ sed -i 's/\xc3\x84/Ae/g' $LNG'_filtered.po'
+ #replace 'Ü' with 'Ue'
+ sed -i 's/\xc3\x9c/Ue/g' $LNG'_filtered.po'
+ #replace 'Ö' with 'Oe'
+ sed -i 's/\xc3\x96/Oe/g' $LNG'_filtered.po'
+ #replace 'ß' with 'ss'
+ sed -i 's/\xc3\x9f/ss/g' $LNG'_filtered.po'
 fi
 
 #replace in spain translation

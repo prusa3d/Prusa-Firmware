@@ -181,6 +181,17 @@ bool check_for_ir_sensor()
 #endif //IR_SENSOR
 }
 
+static bool activate_stealth_mode()
+{
+#if defined (MMU_FORCE_STEALTH_MODE)
+	return true;
+#elif defined (SILENT_MODE_STEALTH)
+	return (eeprom_read_byte((uint8_t*)EEPROM_SILENT) == SILENT_MODE_STEALTH);
+#else
+	return false;
+#endif
+}
+
 //mmu main loop - state machine processing
 void mmu_loop(void)
 {
@@ -222,8 +233,8 @@ void mmu_loop(void)
 			bool version_valid = mmu_check_version();
 			if (!version_valid) mmu_show_warning();
 			else puts_P(PSTR("MMU version valid"));
-
-			if ((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3_SNMM))
+			
+			if (!activate_stealth_mode())
 			{
 				FDEBUG_PUTS_P(PSTR("MMU <= 'P0'"));
 				mmu_puts_P(PSTR("P0\n")); //send 'read finda' request
@@ -1052,14 +1063,14 @@ else	{
 	}
 }
 
-//-//
+//! @brief show which filament is currently unloaded
 void extr_unload_view()
 {
-lcd_clear();
-lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-lcd_print(" ");
-if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
-else lcd_print(mmu_extruder + 1);
+    lcd_clear();
+    lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
+    lcd_print(" ");
+    if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
+    else lcd_print(mmu_extruder + 1);
 }
 
 void extr_unload()
@@ -1074,17 +1085,8 @@ void extr_unload()
 	{
 #ifndef SNMM
 		st_synchronize();
-		
-		//show which filament is currently unloaded
-//-//		lcd_update_enable(false);
-menu_submenu(extr_unload_view);
-/*
-		lcd_clear();
-		lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_UNLOADING_FILAMENT));
-		lcd_print(" ");
-		if (mmu_extruder == MMU_FILAMENT_UNKNOWN) lcd_print(" ");
-		else lcd_print(mmu_extruder + 1);
-*/
+
+        menu_submenu(extr_unload_view);
 
 		mmu_filament_ramming();
 
@@ -1092,8 +1094,7 @@ menu_submenu(extr_unload_view);
 		// get response
 		manage_response(false, true, MMU_UNLOAD_MOVE);
 
-//-//		lcd_update_enable(true);
-menu_back();
+        menu_back();
 #else //SNMM
 
 		lcd_clear();
@@ -1151,7 +1152,6 @@ menu_back();
 	{
 		show_preheat_nozzle_warning();
 	}
-	//lcd_return_to_status();
 }
 
 //wrapper functions for loading filament

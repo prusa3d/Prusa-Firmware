@@ -407,6 +407,7 @@ static void get_arc_coordinates();
 static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
+static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
 
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
@@ -2127,7 +2128,11 @@ bool calibrate_z_auto()
 }
 #endif //TMC2130
 
+#ifdef TMC2130
 void homeaxis(int axis, uint8_t cnt, uint8_t* pstep)
+#else
+void homeaxis(int axis, uint8_t cnt)
+#endif //TMC2130
 {
 	bool endstops_enabled  = enable_endstops(true); //RP: endstops should be allways enabled durring homing
 #define HOMEAXIS_DO(LETTER) \
@@ -2436,11 +2441,12 @@ void force_high_power_mode(bool start_high_power_section) {
 }
 #endif //TMC2130
 
-void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis) {
-	gcode_G28(home_x_axis, 0, home_y_axis, 0, home_z_axis, 0, false, true);
-}
-
-void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl) {
+#ifdef TMC2130
+static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl)
+#else
+static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool without_mbl)
+#endif //TMC2130
+{
 	st_synchronize();
 
 #if 0
@@ -2723,6 +2729,15 @@ void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_
       SERIAL_ECHOPGM("G28, final ");  print_physical_coordinates();
       SERIAL_ECHOPGM("G28, final ");  print_mesh_bed_leveling_table();
 #endif
+}
+
+static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
+{
+#ifdef TMC2130
+    gcode_G28(home_x_axis, 0, home_y_axis, 0, home_z_axis, 0, false, true);
+#else
+    gcode_G28(home_x_axis, 0, home_y_axis, 0, home_z_axis, 0, true);
+#endif //TMC2130
 }
 
 void adjust_bed_reset()
@@ -3831,8 +3846,12 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       home_z_value = code_value_long();
       bool without_mbl = code_seen('W');
       // calibrate?
+#ifdef TMC2130
       bool calib = code_seen('C');
       gcode_G28(home_x, home_x_value, home_y, home_y_value, home_z, home_z_value, calib, without_mbl);
+#else
+      gcode_G28(home_x, home_x_value, home_y, home_y_value, home_z, home_z_value, without_mbl);
+#endif //TMC2130
       if ((home_x || home_y || without_mbl || home_z) == false) {
          // Push the commands to the front of the message queue in the reverse order!
          // There shall be always enough space reserved for these commands.
@@ -7500,7 +7519,7 @@ void manage_inactivity(bool ignore_stepper_queue/*=false*/) //default argument s
 	if (mmu_enabled == false)
 	{
 //-//		if (mcode_in_progress != 600) //M600 not in progress
-          if ((mcode_in_progress != 600) && (eFilamentAction != e_FILAMENT_ACTION_autoLoad)) //M600 not in progress, preHeat @ autoLoad menu not active
+          if ((mcode_in_progress != 600) && (eFilamentAction != e_FILAMENT_ACTION_autoLoad) && (menu_menu!=lcd_menu_extruder_info)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo menu not active
 		{
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active)
 			{
