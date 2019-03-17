@@ -39,6 +39,7 @@ extern const char MSG_ERROR[];
 extern const char MSG_EXTRUDER[];
 extern const char MSG_FILAMENT[];
 extern const char MSG_FAN_SPEED[];
+extern const char MSG_FILE_CNT[];
 extern const char MSG_FILAMENT_CLEAN[];
 extern const char MSG_FILAMENT_LOADING_T0[];
 extern const char MSG_FILAMENT_LOADING_T1[];
