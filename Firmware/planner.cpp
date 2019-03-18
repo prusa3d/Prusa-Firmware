@@ -127,7 +127,7 @@ float extrude_min_temp=EXTRUDE_MINTEMP;
 
 #ifdef LIN_ADVANCE
 float extruder_advance_K = LIN_ADVANCE_K;
-float position_float[NUM_AXIS] = { 0 };
+float position_float[NUM_AXIS] = { 0, 0, 0, 0 };
 #endif
 
 // Returns the index of the next block in the ring buffer
@@ -403,7 +403,7 @@ void planner_recalculate(const float &safe_final_speed)
                 calculate_trapezoid_for_block(prev, prev->entry_speed, current->entry_speed);
                 #ifdef LIN_ADVANCE
                 if (current->use_advance_lead) {
-                  const float comp = current->e_D_ratio * extruder_advance_K * axis_steps_per_unit[E_AXIS];
+                  const float comp = current->e_D_ratio * extruder_advance_K * cs.axis_steps_per_unit[E_AXIS];
                   current->max_adv_steps = current->nominal_speed * comp;
                   current->final_adv_steps = next->entry_speed * comp;
                 }
@@ -423,7 +423,7 @@ void planner_recalculate(const float &safe_final_speed)
     calculate_trapezoid_for_block(current, current->entry_speed, safe_final_speed);
     #ifdef LIN_ADVANCE
     if (current->use_advance_lead) {
-      const float comp = current->e_D_ratio * extruder_advance_K * axis_steps_per_unit[E_AXIS];
+      const float comp = current->e_D_ratio * extruder_advance_K * cs.axis_steps_per_unit[E_AXIS];
       current->max_adv_steps = current->nominal_speed * comp;
       current->final_adv_steps = safe_final_speed * comp;
     }
@@ -1023,7 +1023,7 @@ Having the real displacement of the head, we can calculate the total movement le
      * extruder_advance_K    : There is an advance factor set.
      * delta_mm[E_AXIS] > 0  : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
      */
-    block->use_advance_lead =  block->steps_e
+    block->use_advance_lead =  block->steps_e.wide
 			    && extruder_advance_K
 			    && delta_mm[E_AXIS] > 0;
     if (block->use_advance_lead) {
@@ -1037,12 +1037,13 @@ Having the real displacement of the head, we can calculate the total movement le
       if (block->e_D_ratio > 3.0)
         block->use_advance_lead = false;
       else {
-        const uint32_t max_accel_steps_per_s2 = max_jerk[E_AXIS] / (extruder_advance_K * block->e_D_ratio) * steps_per_mm;
+        const uint32_t max_accel_steps_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * block->e_D_ratio) * steps_per_mm;
+        if (block->acceleration_st > max_accel_steps_per_s2) {
+	  block->acceleration_st = max_accel_steps_per_s2;
         #ifdef LA_DEBUG
-        if (block->acceleration_st > max_accel_steps_per_s2)
           SERIAL_ECHOLNPGM("Acceleration limited.");
         #endif
-        NOMORE(block->acceleration_st, max_accel_steps_per_s2);
+	}
       }
     }
     #endif
@@ -1081,7 +1082,7 @@ Having the real displacement of the head, we can calculate the total movement le
 
   #ifdef LIN_ADVANCE
   if (block->use_advance_lead) {
-    block->advance_speed = (F_CPU / 8.0) / (extruder_advance_K * block->e_D_ratio * block->acceleration * axis_steps_per_unit[E_AXIS]);
+    block->advance_speed = (F_CPU / 8.0) / (extruder_advance_K * block->e_D_ratio * block->acceleration * cs.axis_steps_per_unit[E_AXIS]);
     #ifdef LA_DEBUG
     if (extruder_advance_K * block->e_D_ratio * block->acceleration * 2 < block->nominal_speed * block->e_D_ratio)
       SERIAL_ECHOLNPGM("More than 2 steps per eISR loop executed.");
