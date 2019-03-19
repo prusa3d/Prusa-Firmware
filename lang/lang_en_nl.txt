@@ -36,7 +36,7 @@
 
 #
 "Ambient"
-"Kamertemp"
+"EINSY  "
 
 #MSG_PRESS c=20 r=0
 "and press the knob"
@@ -766,7 +766,7 @@
 "Now I will preheat nozzle for PLA."
 "Opwarmen van de tuit voor PLA voor."
 
-#MSG_NOZZLE c=0 r=0
+#MSG_NOZZLE c=7 r=0
 "Nozzle"
 "Tuit"
 
@@ -936,7 +936,7 @@
 
 #
 "Print FAN"
-""
+"Print fan"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."

@@ -72,7 +72,7 @@ CNTNT=$(grep '^\"\\x00\"' -c $INFILE)
 echo " $CNTTXT texts, $CNTNT not translated"
 
 # list .cpp, .c and .h files from source folder
-SRCFILES=$(ls "$SRCDIR"/*.cpp "$SRCDIR"/*.c "$SRCDIR"/*.h)
+SRCFILES=$(ls "$SRCDIR"/*.cpp "$SRCDIR"/*.c "$SRCDIR"/*.h "$SRCDIR"/variants/*.h)
 
 echo " selected language=$LNGNAME"
 

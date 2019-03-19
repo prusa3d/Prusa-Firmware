@@ -42,7 +42,7 @@ lang_code_hex_data()
   *es*) echo '\x73\x65' ;;
   *fr*) echo '\x72\x66' ;;
   *it*) echo '\x74\x69' ;;
-  *nl*) echo '\x70\x6e' ;;
+  *nl*) echo '\x6c\x6e' ;;
   *pl*) echo '\x6c\x70' ;;
  esac
  echo '??'
