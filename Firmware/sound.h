@@ -2,10 +2,10 @@
 #define SOUND_H
 
 
-#define MSG_SOUND_MODE_LOUD "Sound      [loud]"
-#define MSG_SOUND_MODE_ONCE "Sound      [once]"
-#define MSG_SOUND_MODE_SILENT "Sound    [silent]"
-#define MSG_SOUND_MODE_MUTE "Sound      [mute]"
+#define MSG_SOUND_MODE_LOUD "Sound      [long]"
+#define MSG_SOUND_MODE_ONCE "Sound      [short]"
+#define MSG_SOUND_MODE_SILENT "Sound    [mute menu]"
+#define MSG_SOUND_MODE_MUTE "Sound      [mute all]"
 
 
 #define e_SOUND_MODE_NULL 0xFF
