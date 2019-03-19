@@ -53,6 +53,7 @@ extern const char MSG_LOAD_FILAMENT[];
 extern const char MSG_LOADING_FILAMENT[];
 extern const char MSG_M117_V2_CALIBRATION[];
 extern const char MSG_MAIN[];
+extern const char MSG_BACK[];
 extern const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[];
 extern const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[];
 extern const char MSG_MENU_CALIBRATION[];
