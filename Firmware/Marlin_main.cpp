@@ -7251,7 +7251,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		dcode_2130(); break;
 #endif //TMC2130
 
-#ifdef FILAMENT_SENSOR
+#if (defined (FILAMENT_SENSOR) && defined(PAT9125))
 	case 9125: //! D9125 - FILAMENT_SENSOR
 		dcode_9125(); break;
 #endif //FILAMENT_SENSOR
