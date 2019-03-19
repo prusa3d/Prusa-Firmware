@@ -2167,7 +2167,6 @@ static void lcd_preheat_menu()
 	  MENU_ITEM_FUNCTION_P(PSTR("farm   -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FARM_PREHEAT_HPB_TEMP)), lcd_preheat_farm);
 	  MENU_ITEM_FUNCTION_P(PSTR("nozzle -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/0"), lcd_preheat_farm_nozzle);
 	  MENU_ITEM_FUNCTION_P(_T(MSG_COOLDOWN), lcd_cooldown);
-	  MENU_ITEM_FUNCTION_P(PSTR("ABS    -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
   } else {
 	  MENU_ITEM_FUNCTION_P(PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)), lcd_preheat_pla);
 	  MENU_ITEM_FUNCTION_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)), lcd_preheat_pet);
@@ -6317,10 +6316,11 @@ void lcd_confirm_print()
 		}
 		if (lcd_clicked())
 		{
+               filament_type = FARM_FILAMENT_COLOR_NONE;
 			if (cursor_pos == 1)
 			{
 				_ret = 1;
-				filament_type = lcd_choose_color();
+//				filament_type = lcd_choose_color();
 				prusa_statistics(4, filament_type);
 				no_response = true; //we need confirmation by recieving PRUSA thx
 				important_status = 4;
@@ -6330,7 +6330,7 @@ void lcd_confirm_print()
 			if (cursor_pos == 2)
 			{
 				_ret = 2;
-				filament_type = lcd_choose_color();
+//				filament_type = lcd_choose_color();
 				prusa_statistics(5, filament_type);
 				no_response = true; //we need confirmation by recieving PRUSA thx
 				important_status = 5;				
@@ -6662,6 +6662,14 @@ static void lcd_tune_menu()
 	SETTINGS_AUTO_DEPLETE;
 
 	SETTINGS_CUTTER;
+
+     if(farm_mode)
+     {
+          if (fans_check_enabled == true)
+               MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
+          else
+               MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
+     }
 
 #ifdef TMC2130
      if(!farm_mode)
