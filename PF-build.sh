@@ -463,6 +463,7 @@ do
 			echo "$(tput sgr 0)"
 		fi
 		# build languages
+		read -t 5 -p "Building languages press Enter to continue..."
 		echo "$(tput setaf 3)"
 		./lang-build.sh || exit 16
 		# Combine compiled firmware with languages 
