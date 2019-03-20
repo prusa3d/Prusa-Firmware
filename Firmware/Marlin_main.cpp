@@ -9602,3 +9602,46 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 }
 
 #define FIL_LOAD_LENGTH 60
+
+#ifdef PSU_Delta
+void disable_force_z()
+{
+uint16_t z_microsteps=0;
+
+#ifdef TMC2130
+z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
+#endif //TMC2130
+/*
+//planner_abort_hard();
+//sei();
+plan_buffer_line(
+     current_position[X_AXIS]+10, 
+     current_position[Y_AXIS]+20, 
+//     current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/axis_steps_per_unit[Z_AXIS], 
+current_position[Z_AXIS]+0.026, //0.025, 
+     current_position[E_AXIS],
+     40, active_extruder);
+st_synchronize();
+ z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
+ MYSERIAL.println(z_microsteps,DEC);
+
+  MYSERIAL.println(current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/cs.axis_steps_per_unit[Z_AXIS],DEC);
+  MYSERIAL.println(current_position[Z_AXIS],DEC);
+  MYSERIAL.println(z_microsteps,DEC);
+  MYSERIAL.println(cs.axis_steps_per_unit[Z_AXIS],DEC);
+  MYSERIAL.println(float((1024-z_microsteps+7)>>4)/cs.axis_steps_per_unit[Z_AXIS],DEC);
+*/
+planner_abort_hard();
+sei();
+plan_buffer_line(
+     current_position[X_AXIS], 
+     current_position[Y_AXIS], 
+     current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/cs.axis_steps_per_unit[Z_AXIS], 
+     current_position[E_AXIS],
+     40, active_extruder);
+st_synchronize();
+
+WRITE(Z_ENABLE_PIN,!Z_ENABLE_ON);
+axis_known_position[Z_AXIS]=false; 
+}
+#endif // PSU_Delta

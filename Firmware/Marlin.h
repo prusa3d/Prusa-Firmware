@@ -172,6 +172,12 @@ void manage_inactivity(bool ignore_stepper_queue=false);
   #define disable_z() {}
 #endif
 
+#ifdef PSU_Delta
+#undef disable_z()
+#define disable_z() disable_force_z()
+void disable_force_z();
+#endif // PSU_Delta
+
 
 
 
