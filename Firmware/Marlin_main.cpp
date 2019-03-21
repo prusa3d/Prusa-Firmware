@@ -6993,6 +6993,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
 			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) {
 				printf_P(PSTR("Duplicit T-code ignored.\n"));
+				KEEPALIVE_STATE(NOT_BUSY);
+				ClearToSend();
 				return; //dont execute the same T-code twice in a row
 			}
 			st_synchronize();
@@ -7035,6 +7037,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           {
               if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) {
                   printf_P(PSTR("Duplicit T-code ignored.\n"));
+				  KEEPALIVE_STATE(NOT_BUSY);
+				  ClearToSend();
                   return; //dont execute the same T-code twice in a row
               }
               mmu_command(MmuCmd::T0 + tmp_extruder);
