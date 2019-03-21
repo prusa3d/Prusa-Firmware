@@ -6921,14 +6921,13 @@ bool lcd_selftest()
 	KEEPALIVE_STATE(IN_HANDLER);
 
 	_progress = lcd_selftest_screen(testScreen::extruderFan, _progress, 3, true, 2000);
-#if (defined(FANCHECK) && defined(TACH_0)) 		
+#if (defined(FANCHECK) && defined(TACH_0))
 	_result = lcd_selftest_fan_dialog(0);
 #else //defined(TACH_0)
 	_result = lcd_selftest_manual_fan_check(0, false);
 	if (!_result)
 	{
-		const char *_err;
-		lcd_selftest_error(7, _err, _err); //extruder fan not spinning
+		lcd_selftest_error(TestError::extruderFan, "", "");
 	}
 #endif //defined(TACH_0)
 	
