@@ -186,7 +186,6 @@ enum class testScreen : uint_least8_t
 
 enum class TestError : uint_least8_t
 {
-    unused,
     heater,
     bed,
     endstops,
