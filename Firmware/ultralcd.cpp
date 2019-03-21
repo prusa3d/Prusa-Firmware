@@ -7428,7 +7428,7 @@ static bool lcd_selfcheck_endstops()
 		if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "X");
 		if ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Y");
 		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Z");
-		lcd_selftest_error(3, _error, "");
+		lcd_selftest_error(TestError::endstops, _error, "");
 	}
 	manage_heater();
 	manage_inactivity(true);
