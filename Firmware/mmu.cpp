@@ -829,7 +829,7 @@ void mmu_M600_wait_and_beep() {
 			}
 			SET_OUTPUT(BEEPER);
 			if (counterBeep == 0) {
-				if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
+				if((eAlertMode==e_ALERT_MODE_REPEAT)||((eAlertMode==e_ALERT_MODE_ONCE)&&bFirst))
 				{
 					bFirst=false;
 					WRITE(BEEPER, HIGH);

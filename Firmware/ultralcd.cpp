@@ -4522,6 +4522,12 @@ static void lcd_sound_state_set(void)
 Sound_CycleState();
 }
 
+//-//
+static void lcd_alert_state_set(void)
+{
+Alert_CycleState();
+}
+
 #ifndef MMU_FORCE_STEALTH_MODE
 static void lcd_silent_mode_mmu_set() {
 	if (SilentModeMenu_MMU == 1) SilentModeMenu_MMU = 0;
@@ -5390,20 +5396,34 @@ do\
 {\
     switch(eSoundMode)\
          {\
-         case e_SOUND_MODE_LOUD:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);\
+         case e_SOUND_MODE_ON:\
+              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ON),lcd_sound_state_set);\
               break;\
-         case e_SOUND_MODE_ONCE:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ONCE),lcd_sound_state_set);\
-              break;\
-         case e_SOUND_MODE_SILENT:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);\
-              break;\
-         case e_SOUND_MODE_MUTE:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_MUTE),lcd_sound_state_set);\
+         case e_SOUND_MODE_OFF:\
+              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_OFF),lcd_sound_state_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);\
+              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ON),lcd_sound_state_set);\
+         }\
+}\
+while (0)
+
+#define SETTINGS_ALERT \
+do\
+{\
+    switch(eAlertMode)\
+         {\
+         case e_ALERT_MODE_REPEAT:\
+              MENU_ITEM_FUNCTION_P(_i(MSG_ALERT_MODE_REPEAT),lcd_alert_state_set);\
+              break;\
+         case e_ALERT_MODE_ONCE:\
+              MENU_ITEM_FUNCTION_P(_i(MSG_ALERT_MODE_ONCE),lcd_alert_state_set);\
+              break;\
+         case e_ALERT_MODE_OFF:\
+              MENU_ITEM_FUNCTION_P(_i(MSG_ALERT_MODE_OFF),lcd_alert_state_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i(MSG_ALERT_MODE_REPEAT),lcd_alert_state_set);\
          }\
 }\
 while (0)
@@ -5461,6 +5481,7 @@ static void lcd_settings_menu()
 
 	SETTINGS_SD;
 	SETTINGS_SOUND;
+	SETTINGS_ALERT;
 
 	if (farm_mode)
 	{
@@ -6535,7 +6556,7 @@ static void lcd_main_menu()
 
 void stack_error() {
 	SET_OUTPUT(BEEPER);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
+if(eAlertMode!=e_ALERT_MODE_OFF)
 	WRITE(BEEPER, HIGH);
 	_delay(1000);
 	WRITE(BEEPER, LOW);
@@ -6656,20 +6677,23 @@ static void lcd_tune_menu()
 	 SETTINGS_MMU_MODE;
      switch(eSoundMode)
           {
-          case e_SOUND_MODE_LOUD:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
+          case e_SOUND_MODE_ON:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ON),lcd_sound_state_set);
                break;
-          case e_SOUND_MODE_ONCE:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ONCE),lcd_sound_state_set);
-               break;
-          case e_SOUND_MODE_SILENT:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);
-               break;
-          case e_SOUND_MODE_MUTE:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_MUTE),lcd_sound_state_set);
+          case e_SOUND_MODE_OFF:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_OFF),lcd_sound_state_set);
                break;
           default:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ON),lcd_sound_state_set);
+          }
+     switch(eAlertMode)
+          {
+          case e_ALERT_MODE_REPEAT:
+               MENU_ITEM_FUNCTION_P(_i(MSG_ALERT_MODE_REPEAT),lcd_sound_state_set);
+    	  case e_ALERT_MODE_ONCE:
+               MENU_ITEM_FUNCTION_P(_i(MSG_ALERT_MODE_ONCE),lcd_sound_state_set);
+          case e_ALERT_MODE_OFF:
+               MENU_ITEM_FUNCTION_P(_i(MSG_ALERT_MODE_OFF),lcd_sound_state_set);
           }
 
 	MENU_END();
