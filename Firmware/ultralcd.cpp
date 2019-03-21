@@ -7640,7 +7640,7 @@ static bool lcd_selftest_fsensor(void)
 	fsensor_init();
 	if (fsensor_not_responding)
 	{
-		lcd_selftest_error(11, NULL, NULL);
+		lcd_selftest_error(TestError::wiringFsensor, NULL, NULL);
 	}
 	return (!fsensor_not_responding);
 }
