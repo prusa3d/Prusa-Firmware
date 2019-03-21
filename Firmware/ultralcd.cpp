@@ -7368,7 +7368,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 		st_synchronize();
 		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
-			lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
+			lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
 			return(false);
 		}
 	}
@@ -7386,7 +7386,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 				return(true);
 			}
 			else {
-				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
+				lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
 		}
@@ -7395,7 +7395,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 			st_synchronize();
 			if (_millis() > timeout_counter) {
-				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
+				lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
 		}
