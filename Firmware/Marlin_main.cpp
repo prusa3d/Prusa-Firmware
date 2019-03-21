@@ -7037,8 +7037,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           {
               if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) {
                   printf_P(PSTR("Duplicit T-code ignored.\n"));
-				  KEEPALIVE_STATE(NOT_BUSY);
-				  ClearToSend();
+                  KEEPALIVE_STATE(NOT_BUSY);
+                  ClearToSend();
                   return; //dont execute the same T-code twice in a row
               }
               mmu_command(MmuCmd::T0 + tmp_extruder);
