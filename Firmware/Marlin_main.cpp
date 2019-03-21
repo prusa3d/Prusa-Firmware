@@ -7037,7 +7037,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           if (mmu_enabled)
           {
               if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
-			  {
+              {
                   printf_P(PSTR("Duplicate T-code ignored.\n"));
               }
 			  else
