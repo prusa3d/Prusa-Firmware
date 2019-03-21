@@ -197,6 +197,7 @@ enum class TestError : uint_least8_t
     axis,
     swappedFan,
     wiringFsensor,
+    triggeringFsensor,
 };
 
 static int  lcd_selftest_screen(testScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
@@ -7606,10 +7607,16 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		break;
 	case TestError::wiringFsensor:
 		lcd_set_cursor(0, 2);
-		lcd_puts_P(_i("Filament sensor"));////MSG_FILAMENT_SENSOR c=20 r=0
+		lcd_puts_P(_T(MSG_SELFTEST_FILAMENT_SENSOR));
 		lcd_set_cursor(0, 3);
 		lcd_puts_P(_T(MSG_SELFTEST_WIRINGERROR));
 		break;
+	case TestError::triggeringFsensor:
+	    lcd_set_cursor(0, 2);
+        lcd_puts_P(_T(MSG_SELFTEST_FILAMENT_SENSOR));
+        lcd_set_cursor(0, 3);
+        lcd_puts_P(_i("False triggering"));////c=20 r=0
+        break;
 	}
 
 	_delay(1000);
@@ -7685,7 +7692,11 @@ static bool selftest_irsensor()
         mmu_load_step(false);
         while (blocks_queued())
         {
-            if (PIN_GET(IR_SENSOR_PIN) == 0) return false;
+            if (PIN_GET(IR_SENSOR_PIN) == 0)
+            {
+                lcd_selftest_error(TestError::triggeringFsensor, "", "");
+                return false;
+            }
 #ifdef TMC2130
             manage_heater();
             // Vojtech: Don't disable motors inside the planner!
@@ -7941,7 +7952,8 @@ static int lcd_selftest_screen(testScreen screen, int _progress, int _progress_s
 	}
 	else if (screen >= testScreen::fsensor && screen <= testScreen::fsensorOk)
 	{
-		lcd_puts_at_P(0, 2, _i("Filament sensor:"));////MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
+		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));
+		lcd_putc(':');
 		lcd_set_cursor(18, 2);
 		(screen == testScreen::fsensor) ? lcd_print(_indicator) : lcd_print("OK");
 	}
