@@ -6941,7 +6941,7 @@ bool lcd_selftest()
 		_result = lcd_selftest_manual_fan_check(1, false);
 		if (!_result)
 		{			
-			lcd_selftest_error(6, 0, 0); //print fan not spinning
+			lcd_selftest_error(TestError::printFan, "", ""); //print fan not spinning
 		}
 
 #endif //defined(TACH_1)
