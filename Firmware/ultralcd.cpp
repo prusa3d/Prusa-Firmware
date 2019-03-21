@@ -7199,7 +7199,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(TestError::axis, _error_1, NULL);
+			lcd_selftest_error(TestError::axis, _error_1, "");
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -7217,7 +7217,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(TestError::pulley, _error_1, NULL);
+			lcd_selftest_error(TestError::pulley, _error_1, "");
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -7639,7 +7639,7 @@ static bool lcd_selftest_fsensor(void)
 	fsensor_init();
 	if (fsensor_not_responding)
 	{
-		lcd_selftest_error(TestError::wiringFsensor, NULL, NULL);
+		lcd_selftest_error(TestError::wiringFsensor, "", "");
 	}
 	return (!fsensor_not_responding);
 }
@@ -7902,7 +7902,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 	}
 	if (!_result)
 	{
-		lcd_selftest_error(testError, NULL, NULL);
+		lcd_selftest_error(testError, "", "");
 	}
 	return _result;
 }
