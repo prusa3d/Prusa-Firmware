@@ -5,9 +5,9 @@
 #define MSG_SOUND_MODE_ON  "Menu beep    [on]"
 #define MSG_SOUND_MODE_OFF "Menu beep   [off]"
 
-#define MSG_ALERT_MODE_REPEAT "Alert [repeating]"
-#define MSG_ALERT_MODE_ONCE   "Alert      [once]"
-#define MSG_ALERT_MODE_OFF    "Alert       [off]"
+#define MSG_ALERT_MODE_REPEAT "Alerts   [repeat]"
+#define MSG_ALERT_MODE_ONCE   "Alerts     [once]"
+#define MSG_ALERT_MODE_OFF    "Alerts      [off]"
 
 
 #define e_SOUND_MODE_NULL 0xFF
