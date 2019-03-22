@@ -27,6 +27,7 @@ typedef enum
 
 
 extern eSOUND_MODE eSoundMode;
+extern eALERT_MODE eAlertMode;
 
 
 extern void Sound_Init(void);

@@ -27,7 +27,7 @@ SET_OUTPUT(BEEPER);
 eSoundMode=(eSOUND_MODE)eeprom_read_byte((uint8_t*)EEPROM_SOUND_MODE);
 if(eSoundMode==e_SOUND_MODE_NULL)
      Sound_Default();                             // je potreba provest i ulozeni do EEPROM
-eAlertMode=(eAlert_MODE)eeprom_read_byte((uint8_t*)EEPROM_ALERT_MODE);
+eAlertMode=(eALERT_MODE)eeprom_read_byte((uint8_t*)EEPROM_ALERT_MODE);
 if(eAlertMode==e_ALERT_MODE_NULL)
      Alert_Default();                             // je potreba provest i ulozeni do EEPROM
 }
@@ -41,7 +41,7 @@ Sound_SaveMode();
 void Alert_Default(void)
 {
 eAlertMode=e_ALERT_MODE_DEFAULT;
-Sound_AlertMode();
+Alert_SaveMode();
 }
 
 void Sound_SaveMode(void)
@@ -94,15 +94,15 @@ void Sound_MakeSound(eSOUND_TYPE eSoundType)
 switch(eSoundType)
      {
      case e_SOUND_TYPE_ButtonEcho:
-          if eSoundMode==e_SOUND_MODE_ON:
+          if (eSoundMode==e_SOUND_MODE_ON)
                Sound_DoSound_Echo();
           break;
      case e_SOUND_TYPE_StandardPrompt:
-          if eSoundMode==e_SOUND_MODE_ON:
+          if (eSoundMode==e_SOUND_MODE_ON)
                Sound_DoSound_Prompt();
           break;
      case e_SOUND_TYPE_StandardAlert:
-          if eAlertMode!=e_ALERT_MODE_OFF:
+          if (eAlertMode!=e_ALERT_MODE_OFF)
                Sound_DoSound_Alert(eAlertMode==e_ALERT_MODE_ONCE);
           break;
      default:
