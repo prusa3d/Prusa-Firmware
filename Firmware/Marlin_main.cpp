@@ -1316,7 +1316,7 @@ void setup()
   }
 #endif //TMC2130
 
-#if defined(Z_AXIS_ALWAYS_ON)
+#if defined(Z_AXIS_ALWAYS_ON) && !defined(PSU_Delta)
 	enable_z();
 #endif
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
@@ -9608,6 +9608,8 @@ void disable_force_z()
 {
 uint16_t z_microsteps=0;
 
+if(PIN_INQ(Z_ENABLE_PIN)!=Z_ENABLE_ON)
+     return;                                      // motor already disabled (may be ;-p )
 #ifdef TMC2130
 z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
 #endif //TMC2130

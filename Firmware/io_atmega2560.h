@@ -368,6 +368,7 @@
 #define PIN_SET(pin) PORT(pin) |= __MSK(pin)
 #define PIN_VAL(pin, val) if (val) PIN_SET(pin); else PIN_CLR(pin);
 #define PIN_GET(pin) (PIN(pin) & __MSK(pin))
+#define PIN_INQ(pin) (PORT(pin) & __MSK(pin))
 
 
 #endif //_IO_ATMEGA2560
