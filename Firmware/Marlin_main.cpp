@@ -6991,13 +6991,16 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (mmu_enabled)
 		{
 			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
-			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) {
-				printf_P(PSTR("Duplicit T-code ignored.\n"));
-				return; //dont execute the same T-code twice in a row
+			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
+			{
+				printf_P(PSTR("Duplicate T-code ignored.\n"));
 			}
-			st_synchronize();
-			mmu_command(MmuCmd::T0 + tmp_extruder);
-			manage_response(true, true, MMU_TCODE_MOVE);
+			else
+			{
+				st_synchronize();
+				mmu_command(MmuCmd::T0 + tmp_extruder);
+				manage_response(true, true, MMU_TCODE_MOVE);
+			}
 		}
 	  }
 	  else if (*(strchr_pointer + index) == 'c') { //load to from bondtech gears to nozzle (nozzle should be preheated)
@@ -7033,20 +7036,23 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
           if (mmu_enabled)
           {
-              if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) {
-                  printf_P(PSTR("Duplicit T-code ignored.\n"));
-                  return; //dont execute the same T-code twice in a row
-              }
-              mmu_command(MmuCmd::T0 + tmp_extruder);
-
-			  manage_response(true, true, MMU_TCODE_MOVE);
-			  mmu_continue_loading();
-			  mmu_extruder = tmp_extruder; //filament change is finished
-
-              if (load_to_nozzle)// for single material usage with mmu
+              if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
               {
-                  mmu_load_to_nozzle();
+                  printf_P(PSTR("Duplicate T-code ignored.\n"));
               }
+			  else
+			  {
+				  mmu_command(MmuCmd::T0 + tmp_extruder);
+
+				  manage_response(true, true, MMU_TCODE_MOVE);
+				  mmu_continue_loading();
+				  mmu_extruder = tmp_extruder; //filament change is finished
+
+				  if (load_to_nozzle)// for single material usage with mmu
+				  {
+					  mmu_load_to_nozzle();
+				  }
+			  }
           }
           else
           {
