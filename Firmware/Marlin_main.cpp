@@ -4478,18 +4478,16 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				uint16_t z_offset_u = 0;
 				if (nMeasPoints == 7) {
 					z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * ((ix/3) + iy - 1)));
-					printf_P(PSTR("[%d;%d]: Z_offset = %d \n"), ix, iy, z_offset_u);
 				}
 				else {
 					z_offset_u = eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + 2 * (ix + iy * 3 - 1)));
-					printf_P(PSTR("[%d;%d]: Z_offset = %d \n"), ix, iy, z_offset_u);
 				}
 				z0 = mbl.z_values[0][0] + *reinterpret_cast<int16_t*>(&z_offset_u) * 0.01;
-				//#ifdef SUPPORT_VERBOSITY
-				//if (verbosity_level >= 1) {
+				#ifdef SUPPORT_VERBOSITY
+				if (verbosity_level >= 1) {
 					printf_P(PSTR("Bed leveling, point: %d, calibration Z stored in eeprom: %d, calibration z: %f \n"), mesh_point, z_offset_u, z0);
-				//}
-				//#endif // SUPPORT_VERBOSITY
+				}
+				#endif // SUPPORT_VERBOSITY
 			}
 
 			// Move Z up to MESH_HOME_Z_SEARCH.
@@ -4503,7 +4501,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			current_position[X_AXIS] = BED_X(ix, nMeasPoints);
 			current_position[Y_AXIS] = BED_Y(iy, nMeasPoints);
 
-			printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
+			//printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
 			
 			#ifdef SUPPORT_VERBOSITY
@@ -4516,26 +4514,24 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			#endif // SUPPORT_VERBOSITY
 
-			printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
+			//printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
 			st_synchronize();
 
 			// Go down until endstop is hit
 			const float Z_CALIBRATION_THRESHOLD = 1.f;
 			if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
-				//printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-				printf_P("Point too low 1 \n");
+				printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 				break;
 			}
 			if (init_z_bckp - current_position[Z_AXIS] < 0.1f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
-				printf_P(PSTR("Another attempt! Current Z position: %f\n"), current_position[Z_AXIS]);
+				//printf_P(PSTR("Another attempt! Current Z position: %f\n"), current_position[Z_AXIS]);
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
 				st_synchronize();
 
 				if (!find_bed_induction_sensor_point_z((has_z && mesh_point > 0) ? z0 - Z_CALIBRATION_THRESHOLD : -10.f, nProbeRetry)) { //if we have data from z calibration max allowed difference is 1mm for each point, if we dont have data max difference is 10mm from initial point  
-					//printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
-					printf_P("Point too low 2 \n");
+					printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 					break;
 				}
 				if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
