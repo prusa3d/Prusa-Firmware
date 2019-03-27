@@ -945,6 +945,7 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 #endif //SUPPORT_VERBOSITY
         )
 {
+	bool high_deviation_occured = false; 
 #ifdef TMC2130
 	FORCE_HIGH_POWER_START;
 #endif
@@ -977,12 +978,12 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     for (uint8_t i = 0; i < n_iter; ++ i)
 	{
 		
-		current_position[Z_AXIS] += 0.2;
+		current_position[Z_AXIS] += high_deviation_occured ? 0.5 : 0.2;
 		float z_bckp = current_position[Z_AXIS];
 		go_to_current(homing_feedrate[Z_AXIS]/60);
 		// Move back down slowly to find bed.
         current_position[Z_AXIS] = minimum_z;
-		printf_P(PSTR("init Z = %f, min_z = %f\n"), z_bckp, minimum_z);
+		printf_P(PSTR("init Z = %f, min_z = %f, i = %d\n"), z_bckp, minimum_z, i);
         go_to_current(homing_feedrate[Z_AXIS]/(4*60));
         // we have to let the planner know where we are right now as it is not where we said to go.
         update_current_position_z();
@@ -1016,9 +1017,19 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 		float dz = i?abs(current_position[Z_AXIS] - (z / i)):0;
         z += current_position[Z_AXIS];
 		//printf_P(PSTR("Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
-		if (dz > 0.05) {
-			printf_P(PSTR("big deviation \n"));
-			goto error;//deviation > 50um
+		printf_P(PSTR("Z- measurement deviation from avg value %f um\n"), dz);
+		if (dz > 0.05) { //deviation > 50um
+			if (high_deviation_occured == false) { //first occurence may be caused in some cases by mechanic resonance probably especially if printer is placed on unstable surface 
+				printf_P(PSTR("high dev. first occurence\n"));
+				delay_keep_alive(500); //damping
+				//start measurement from the begining, but this time with higher movements in Z axis which should help to reduce mechanical resonance
+				high_deviation_occured = true;
+				i = -1; 
+				z = 0;
+			}
+			else {
+				goto error;
+			}
 		}
 		printf_P(PSTR("PINDA triggered at %f\n"), current_position[Z_AXIS]);
     }
