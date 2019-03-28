@@ -6715,10 +6715,10 @@ static void lcd_mesh_bed_leveling_settings()
 		default: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [3]"), mbl_probe_nr_set); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
 	}
 	if (points_nr == 7) {
-		if (magnet_elimination) MENU_ITEM_FUNCTION_P(_i("Magnets comp. [On]"), mbl_magnets_elimination_set);
-		else				    MENU_ITEM_FUNCTION_P(_i("Magnets comp.[Off]"), mbl_magnets_elimination_set);
+		if (magnet_elimination) MENU_ITEM_FUNCTION_P(_i("Magnets comp. [On]"), mbl_magnets_elimination_set); ////MSG_MAGNETS_COMP_ON c=18 r=0
+		else				    MENU_ITEM_FUNCTION_P(_i("Magnets comp.[Off]"), mbl_magnets_elimination_set); ////MSG_MAGNETS_COMP_OFF c=18 r=0
 	}
-	else					        menu_item_text_P(_i("Magnets comp.[N/A]"));
+	else					        menu_item_text_P(_i("Magnets comp.[N/A]")); ////MSG_MAGNETS_COMP_NA c=18 r=0
 	MENU_END();
 	//SETTINGS_MBL_MODE;
 }
