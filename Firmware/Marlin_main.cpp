@@ -167,7 +167,7 @@ CardReader card;
 unsigned long PingTime = _millis();
 unsigned long NcTime;
 
-int mbl_z_probe_nr = 3; //numer of Z measurements for each point in mesh bed leveling calibration
+uint8_t mbl_z_probe_nr = 3; //numer of Z measurements for each point in mesh bed leveling calibration
 
 //used for PINDA temp calibration and pause print
 #define DEFAULT_RETRACTION    1
