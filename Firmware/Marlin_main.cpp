@@ -167,7 +167,7 @@ CardReader card;
 unsigned long PingTime = _millis();
 unsigned long NcTime;
 
-int mbl_z_probe_nr = 3; //numer of Z measurements for each point in mesh bed leveling calibration
+uint8_t mbl_z_probe_nr = 3; //numer of Z measurements for each point in mesh bed leveling calibration
 
 //used for PINDA temp calibration and pause print
 #define DEFAULT_RETRACTION    1
@@ -4438,7 +4438,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		    bool clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			clamped ? SERIAL_PROTOCOLPGM("First calibration point clamped.\n") : SERIAL_PROTOCOLPGM("No clamping for first calibration point.\n");
 		}
-		#endif //SUPPORT_VERBOSITY          
+		#else //SUPPORT_VERBOSITY
+			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+		#endif //SUPPORT_VERBOSITY
+
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], homing_feedrate[X_AXIS] / 30, active_extruder);
 		// Wait until the move is finished.
 		st_synchronize();
@@ -4490,6 +4493,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// Move Z up to MESH_HOME_Z_SEARCH.
 			if((ix == 0) && (iy == 0)) current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 			else current_position[Z_AXIS] += 2.f / nMeasPoints; //use relative movement from Z coordinate where PINDa triggered on previous point. This makes calibration faster.
+			float init_z_bckp = current_position[Z_AXIS];
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
 			st_synchronize();
 
@@ -4499,15 +4503,18 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 			//printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
-			world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+			
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 1) {
-
+				clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 				SERIAL_PROTOCOL(mesh_point);
 				clamped ? SERIAL_PROTOCOLPGM(": xy clamped.\n") : SERIAL_PROTOCOLPGM(": no xy clamping\n");
 			}
+			#else //SUPPORT_VERBOSITY
+				world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			#endif // SUPPORT_VERBOSITY
 
+			//printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
 			st_synchronize();
 
@@ -4517,8 +4524,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				printf_P(_T(MSG_BED_LEVELING_FAILED_POINT_LOW));
 				break;
 			}
-			if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
-
+			if (init_z_bckp - current_position[Z_AXIS] < 0.1f) { //broken cable or initial Z coordinate too low. Go to MESH_HOME_Z_SEARCH and repeat last step (z-probe) again to distinguish between these two cases.
+				//printf_P(PSTR("Another attempt! Current Z position: %f\n"), current_position[Z_AXIS]);
 				current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
 				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
 				st_synchronize();
@@ -4528,12 +4535,12 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 					break;
 				}
 				if (MESH_HOME_Z_SEARCH - current_position[Z_AXIS] < 0.1f) {
-					printf_P(PSTR("Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset.\n"));
+					printf_P(PSTR("Bed leveling failed. Sensor disconnected or cable broken.\n"));
 					break;
 				}
 			}
 			if (has_z && fabs(z0 - current_position[Z_AXIS]) > Z_CALIBRATION_THRESHOLD) { //if we have data from z calibration, max. allowed difference is 1mm for each point
-				printf_P(PSTR("Bed leveling failed. Sensor triggered too high. Waiting for reset.\n"));
+				printf_P(PSTR("Bed leveling failed. Sensor triggered too high.\n"));
 				break;
 			}
 			#ifdef SUPPORT_VERBOSITY
@@ -6991,13 +6998,16 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (mmu_enabled)
 		{
 			tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
-			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) {
-				printf_P(PSTR("Duplicit T-code ignored.\n"));
-				return; //dont execute the same T-code twice in a row
+			if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
+			{
+				printf_P(PSTR("Duplicate T-code ignored.\n"));
 			}
-			st_synchronize();
-			mmu_command(MmuCmd::T0 + tmp_extruder);
-			manage_response(true, true, MMU_TCODE_MOVE);
+			else
+			{
+				st_synchronize();
+				mmu_command(MmuCmd::T0 + tmp_extruder);
+				manage_response(true, true, MMU_TCODE_MOVE);
+			}
 		}
 	  }
 	  else if (*(strchr_pointer + index) == 'c') { //load to from bondtech gears to nozzle (nozzle should be preheated)
@@ -7033,20 +7043,23 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
           if (mmu_enabled)
           {
-              if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) {
-                  printf_P(PSTR("Duplicit T-code ignored.\n"));
-                  return; //dont execute the same T-code twice in a row
-              }
-              mmu_command(MmuCmd::T0 + tmp_extruder);
-
-			  manage_response(true, true, MMU_TCODE_MOVE);
-			  mmu_continue_loading();
-			  mmu_extruder = tmp_extruder; //filament change is finished
-
-              if (load_to_nozzle)// for single material usage with mmu
+              if ((tmp_extruder == mmu_extruder) && mmu_fil_loaded) //dont execute the same T-code twice in a row
               {
-                  mmu_load_to_nozzle();
+                  printf_P(PSTR("Duplicate T-code ignored.\n"));
               }
+			  else
+			  {
+				  mmu_command(MmuCmd::T0 + tmp_extruder);
+
+				  manage_response(true, true, MMU_TCODE_MOVE);
+				  mmu_continue_loading();
+				  mmu_extruder = tmp_extruder; //filament change is finished
+
+				  if (load_to_nozzle)// for single material usage with mmu
+				  {
+					  mmu_load_to_nozzle();
+				  }
+			  }
           }
           else
           {
@@ -7251,7 +7264,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		dcode_2130(); break;
 #endif //TMC2130
 
-#ifdef FILAMENT_SENSOR
+#if (defined (FILAMENT_SENSOR) && defined(PAT9125))
 	case 9125: //! D9125 - FILAMENT_SENSOR
 		dcode_9125(); break;
 #endif //FILAMENT_SENSOR
