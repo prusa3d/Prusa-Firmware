@@ -58,9 +58,9 @@ static S mmu_state = S::Disabled;
 MmuCmd mmu_cmd = MmuCmd::None;
 
 //idler ir sensor
-uint8_t mmu_idl_sens = 0;
+static uint8_t mmu_idl_sens = 0;
 bool ir_sensor_detected = false; 
-bool mmu_loading_flag = false; //when set to true, we assume that mmu2 unload was finished and loading phase is now performed; printer can send 'A' to mmu2 to abort loading process
+static bool mmu_loading_flag = false; //when set to true, we assume that mmu2 unload was finished and loading phase is now performed; printer can send 'A' to mmu2 to abort loading process
 
 uint8_t mmu_extruder = MMU_FILAMENT_UNKNOWN;
 
