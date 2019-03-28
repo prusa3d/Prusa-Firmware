@@ -6688,7 +6688,7 @@ static void mbl_mesh_toggle() {
 	eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, mesh_nr);
 }
 
-static void mbl_probe_nr_set() {
+static void mbl_probe_nr_toggle() {
 	mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
 	switch (mbl_z_probe_nr) {
 		case 1: mbl_z_probe_nr = 3; break;
@@ -6710,9 +6710,9 @@ static void lcd_mesh_bed_leveling_settings()
 	if(points_nr == 3) MENU_ITEM_FUNCTION_P(_i("Mesh         [3x3]"), mbl_mesh_toggle); ////MSG_MESH_3x3 c=18 r=0
 	else			   MENU_ITEM_FUNCTION_P(_i("Mesh         [7x7]"), mbl_mesh_toggle); ////MSG_MESH_7x7 c=18 r=0
 	switch (mbl_z_probe_nr) {
-		case 1: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [1]"), mbl_probe_nr_set); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
-		case 5: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [5]"), mbl_probe_nr_set); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
-		default: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [3]"), mbl_probe_nr_set); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
+		case 1: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [1]"), mbl_probe_nr_toggle); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
+		case 5: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [5]"), mbl_probe_nr_toggle); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
+		default: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [3]"), mbl_probe_nr_toggle); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
 	}
 	if (points_nr == 7) {
 		if (magnet_elimination) MENU_ITEM_FUNCTION_P(_i("Magnets comp. [On]"), mbl_magnets_elimination_toggle); ////MSG_MAGNETS_COMP_ON c=18 r=0
