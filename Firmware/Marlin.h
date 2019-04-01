@@ -21,7 +21,7 @@
 #include "Configuration.h"
 #include "pins.h"
 #include "Timer.h"
-extern int mbl_z_probe_nr;
+extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
 #define  HardwareSerial_h // trick to disable the standard HWserial

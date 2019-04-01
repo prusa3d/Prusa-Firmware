@@ -678,11 +678,13 @@ void reset_bed_offset_and_skew()
 
 bool is_bed_z_jitter_data_valid()
 // offsets of the Z heiths of the calibration points from the first point are saved as 16bit signed int, scaled to tenths of microns
-{
-    for (int8_t i = 0; i < 8; ++ i)
-        if (eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER+i*2)) == 0x0FFFF)
-            return false;
-    return true;
+// if at least one 16bit integer has different value then -1 (0x0FFFF), data are considered valid and function returns true, otherwise it returns false
+{	
+	bool data_valid = false;
+	for (int8_t i = 0; i < 8; ++i) {
+		if (eeprom_read_word((uint16_t*)(EEPROM_BED_CALIBRATION_Z_JITTER + i * 2)) != 0x0FFFF) data_valid = true;
+	}
+    return data_valid;
 }
 
 static void world2machine_update(const float vec_x[2], const float vec_y[2], const float cntr[2])
@@ -943,10 +945,11 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 #endif //SUPPORT_VERBOSITY
         )
 {
+	bool high_deviation_occured = false; 
 #ifdef TMC2130
 	FORCE_HIGH_POWER_START;
 #endif
-
+	//printf_P(PSTR("Min. Z: %f\n"), minimum_z);
 	#ifdef SUPPORT_VERBOSITY
     if(verbosity_level >= 10) SERIAL_ECHOLNPGM("find bed induction sensor point z");
 	#endif // SUPPORT_VERBOSITY
@@ -961,18 +964,26 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
     // we have to let the planner know where we are right now as it is not where we said to go.
     update_current_position_z();
     if (! endstop_z_hit_on_purpose())
-        goto error;
+	{
+		//printf_P(PSTR("endstop not hit 1, current_pos[Z]: %f \n"), current_position[Z_AXIS]);
+		goto error;
+	}
 #ifdef TMC2130
-	if (READ(Z_TMC2130_DIAG) != 0) goto error; //crash Z detected
+	if (READ(Z_TMC2130_DIAG) != 0)
+	{
+		//printf_P(PSTR("crash detected 1, current_pos[Z]: %f \n"), current_position[Z_AXIS]);
+		goto error; //crash Z detected
+	}
 #endif //TMC2130
     for (uint8_t i = 0; i < n_iter; ++ i)
 	{
 		
-		current_position[Z_AXIS] += 0.2;
+		current_position[Z_AXIS] += high_deviation_occured ? 0.5 : 0.2;
 		float z_bckp = current_position[Z_AXIS];
 		go_to_current(homing_feedrate[Z_AXIS]/60);
 		// Move back down slowly to find bed.
         current_position[Z_AXIS] = minimum_z;
+		//printf_P(PSTR("init Z = %f, min_z = %f, i = %d\n"), z_bckp, minimum_z, i);
         go_to_current(homing_feedrate[Z_AXIS]/(4*60));
         // we have to let the planner know where we are right now as it is not where we said to go.
         update_current_position_z();
@@ -989,10 +1000,16 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 
 
 
-		if (! endstop_z_hit_on_purpose())
-            goto error;
+		if (!endstop_z_hit_on_purpose())
+		{
+			//printf_P(PSTR("i = %d, endstop not hit 2, current_pos[Z]: %f \n"), i, current_position[Z_AXIS]);
+			goto error;
+		}
 #ifdef TMC2130
-		if (READ(Z_TMC2130_DIAG) != 0) goto error; //crash Z detected
+		if (READ(Z_TMC2130_DIAG) != 0) {
+			//printf_P(PSTR("crash detected 2, current_pos[Z]: %f \n"), current_position[Z_AXIS]);
+			goto error; //crash Z detected
+		}
 #endif //TMC2130
 //        SERIAL_ECHOPGM("Bed find_bed_induction_sensor_point_z low, height: ");
 //        MYSERIAL.print(current_position[Z_AXIS], 5);
@@ -1000,7 +1017,21 @@ inline bool find_bed_induction_sensor_point_z(float minimum_z, uint8_t n_iter, i
 		float dz = i?abs(current_position[Z_AXIS] - (z / i)):0;
         z += current_position[Z_AXIS];
 		//printf_P(PSTR("Z[%d] = %d, dz=%d\n"), i, (int)(current_position[Z_AXIS] * 1000), (int)(dz * 1000));
-		if (dz > 0.05) goto error;//deviation > 50um
+		//printf_P(PSTR("Z- measurement deviation from avg value %f um\n"), dz);
+		if (dz > 0.05) { //deviation > 50um
+			if (high_deviation_occured == false) { //first occurence may be caused in some cases by mechanic resonance probably especially if printer is placed on unstable surface 
+				//printf_P(PSTR("high dev. first occurence\n"));
+				delay_keep_alive(500); //damping
+				//start measurement from the begining, but this time with higher movements in Z axis which should help to reduce mechanical resonance
+				high_deviation_occured = true;
+				i = -1; 
+				z = 0;
+			}
+			else {
+				goto error;
+			}
+		}
+		//printf_P(PSTR("PINDA triggered at %f\n"), current_position[Z_AXIS]);
     }
     current_position[Z_AXIS] = z;
     if (n_iter > 1)
@@ -3098,6 +3129,11 @@ void mbl_settings_init() {
 	}
 }
 
+//parameter ix: index of mesh bed leveling point in X-axis (for meas_points == 7 is valid range from 0 to 6; for meas_points == 3 is valid range from 0 to 2 )  
+//parameter iy: index of mesh bed leveling point in Y-axis (for meas_points == 7 is valid range from 0 to 6; for meas_points == 3 is valid range from 0 to 2 ) 
+//parameter meas_points: number of mesh bed leveling points in one axis; currently designed and tested for values 3 and 7
+//parameter zigzag: false if ix is considered 0 on left side of bed and ix rises with rising X coordinate; true if ix is considered 0 on the right side of heatbed for odd iy values (zig zag mesh bed leveling movements)  
+//function returns true if point is considered valid (typicaly in safe distance from magnet or another object which inflences PINDA measurements)
 bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag) {
 	    //"human readable" heatbed plan
 		//magnet proximity influence Z coordinate measurements significantly (40 - 100 um)
@@ -3107,13 +3143,14 @@ bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bo
 
 		uint8_t valid_points_mask[7] = {
 					//[X_MAX,Y_MAX]
-			0b1111111,
-			0b1111111,
-			0b1110111,
-			0b1111011,
-			0b1110111,
-			0b1111111,
-			0b1111111,
+			//0123456
+			0b1111111,//6
+			0b1111111,//5
+			0b1110111,//4
+			0b1111011,//3
+			0b1110111,//2
+			0b1111111,//1
+			0b1111111,//0
 		//[0,0]
 		};
 		if (meas_points == 3) {
