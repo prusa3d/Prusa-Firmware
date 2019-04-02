@@ -417,7 +417,7 @@ do
 	export BUILDER=$ARDUINO/arduino-builder
 
 	echo
-	#read -t 5 -p "Press Enter..."
+	#read -t 5 -p "Firmware build ... Press Enter..."
 	echo 
 
 	if [ $OSTYPE == "msys" ]; then
@@ -463,7 +463,7 @@ do
 			echo "$(tput sgr 0)"
 		fi
 		# build languages
-		read -t 5 -p "Building languages press Enter to continue..."
+		#read -t 5 -p "Building languages press Enter to continue..."
 		echo "$(tput setaf 3)"
 		./lang-build.sh || exit 16
 		# Combine compiled firmware with languages 
@@ -491,6 +491,7 @@ do
 			fi
 		fi
 		# Cleanup after build
+		#read -t 5 -p "Cleanup after build press Enter to continue..."
 		echo "$(tput setaf 3)"
 		./fw-clean.sh || exit 18
 		./lang-clean.sh || exit 19

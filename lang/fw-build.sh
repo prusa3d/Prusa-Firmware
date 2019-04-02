@@ -159,7 +159,7 @@ else
   if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
  fi
  if [ -e lang_nl.bin ]; then
-  echo -n " Dutch : " >&2
+  echo -n " Dutch  : " >&2
   ./update_lang.sh nl 2>./update_lang_nl.out 1>/dev/null
   if [ $? -eq 0 ]; then echo 'OK' >&2; else echo 'NG!' >&2; fi
  fi

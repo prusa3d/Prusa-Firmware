@@ -94,8 +94,6 @@ echo " selected language=$LNGNAME"
  echo '"X-Poedit-SourceCharset: UTF-8\n"'
  echo '"Last-Translator: \n"'
  echo '"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"'
- echo '"X-Poedit-Basepath: ../../Firmware"'
- echo '"X-Poedit-SearchPath-0: ."'
  echo
 ) >$OUTFILE
 
