@@ -3129,6 +3129,11 @@ void mbl_settings_init() {
 	}
 }
 
+//parameter ix: index of mesh bed leveling point in X-axis (for meas_points == 7 is valid range from 0 to 6; for meas_points == 3 is valid range from 0 to 2 )  
+//parameter iy: index of mesh bed leveling point in Y-axis (for meas_points == 7 is valid range from 0 to 6; for meas_points == 3 is valid range from 0 to 2 ) 
+//parameter meas_points: number of mesh bed leveling points in one axis; currently designed and tested for values 3 and 7
+//parameter zigzag: false if ix is considered 0 on left side of bed and ix rises with rising X coordinate; true if ix is considered 0 on the right side of heatbed for odd iy values (zig zag mesh bed leveling movements)  
+//function returns true if point is considered valid (typicaly in safe distance from magnet or another object which inflences PINDA measurements)
 bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag) {
 	    //"human readable" heatbed plan
 		//magnet proximity influence Z coordinate measurements significantly (40 - 100 um)
@@ -3138,13 +3143,14 @@ bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bo
 
 		uint8_t valid_points_mask[7] = {
 					//[X_MAX,Y_MAX]
-			0b1111111,
-			0b1111111,
-			0b1110111,
-			0b1111011,
-			0b1110111,
-			0b1111111,
-			0b1111111,
+			//0123456
+			0b1111111,//6
+			0b1111111,//5
+			0b1110111,//4
+			0b1111011,//3
+			0b1110111,//2
+			0b1111111,//1
+			0b1111111,//0
 		//[0,0]
 		};
 		if (meas_points == 3) {
