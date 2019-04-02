@@ -291,10 +291,10 @@
 #define MBL_Z_STEP 0.01
 
 // Mesh definitions
-#define MESH_MIN_X 35
-#define MESH_MAX_X 238
+#define MESH_MIN_X 24
+#define MESH_MAX_X 228
 #define MESH_MIN_Y 6
-#define MESH_MAX_Y 202
+#define MESH_MAX_Y 210
 
 // Mesh upsample definition
 #define MESH_NUM_X_POINTS 7
@@ -499,7 +499,9 @@
 //#define SUPPORT_VERBOSITY
 
 #define MMU_REQUIRED_FW_BUILDNR 132
-//#define MMU_DEBUG //print communication between MMU2 and printer on serial
+#define MMU_FORCE_STEALTH_MODE
+#define MMU_DEBUG //print communication between MMU2 and printer on serial
+//#define MMU_HAS_CUTTER
 
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 

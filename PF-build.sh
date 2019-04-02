@@ -80,6 +80,10 @@
 #                          So did I
 
 
+###PreCompile set to 1 waits for Enter between differ sections to test and debug. Default value = 0
+PreCompile="1"
+
+
 ###Check if OSTYPE is supported
 if [ $OSTYPE == "msys" ]; then
 	if [ $(uname -m) == "x86_64" ]; then
@@ -417,7 +421,9 @@ do
 	export BUILDER=$ARDUINO/arduino-builder
 
 	echo
-	#read -t 5 -p "Press Enter..."
+	if [ $PreCompile == "1" ] ; then
+		read -t 5 -p "Firmware build. Press Enter..."
+	fi
 	echo 
 
 	if [ $OSTYPE == "msys" ]; then
@@ -436,7 +442,9 @@ do
 		$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board rambo:avr:rambo --pref build.path=$BUILD_PATH || exit 14
 		echo "$(tput sgr 0)"
 	fi
-
+	if [ $PreCompile == "1" ] ; then
+		read -t 5 -p "Language build. Press Enter..."
+	fi
 	if [ $LANGUAGES ==  "ALL" ]; then
 		echo "$(tput setaf 2)"
 		echo "Building mutli language firmware" $MULTI_LANGUAGE_CHECK
@@ -491,6 +499,9 @@ do
 			fi
 		fi
 		# Cleanup after build
+		if [ $PreCompile == "1" ] ; then
+			read -t 5 -p "Cleanup Firmware and Language build. Press Enter..."
+		fi
 		echo "$(tput setaf 3)"
 		./fw-clean.sh || exit 18
 		./lang-clean.sh || exit 19
@@ -501,6 +512,9 @@ do
 	fi
 
 	# Cleanup Firmware
+	if [ $PreCompile == "1" ] ; then
+		read -t 5 -p "Cleanup Firmware changes. Press Enter..."
+	fi
 	rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 17
 	sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
 	sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
@@ -520,8 +534,8 @@ done
 #fi
 
 # Switch to hex path and list build files
-cd $SCRIPT_PATH
-cd ..
+cd $SCRIPT_PATH/../$OUTPUT_FOLDER
+ls
 echo "$(tput setaf 2) "
 echo " "
 echo "Build done, please use Slic3rPE > 1.41.0 to upload the firmware"
