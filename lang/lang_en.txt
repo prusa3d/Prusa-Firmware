@@ -739,6 +739,15 @@
 #WELCOME_MSG c=20 r=0
 "Zaribo MK3S-420"
 
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-BMG-220"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-BMG-320"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-BMG-420"
+
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
 

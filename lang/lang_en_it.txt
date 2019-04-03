@@ -986,6 +986,18 @@
 "Zaribo MK3S-420"
 "\x00"
 
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-BMG-220"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-BMG-320"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-BMG-420"
+"\x00"
+
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
 "\x00"
