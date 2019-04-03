@@ -1973,45 +1973,45 @@ static void lcd_menu_fails_stats_mmu()
 
 static void lcd_menu_fails_stats_mmu_print()
 {
-//01234567890123456789
-//Last print failures
-// MMU fails  000
-// MMU load fails  000
+//|01234567890123456789|
+//|Last print failures | c=20
+//| MMU fails:      000| c=15
+//| MMU load fails: 000| c=15
 //
 //////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
 //	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3)), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S:" ESC_H(17,1) "%-3d" ESC_H(1,2) "%S:" ESC_H(17,2) "%-3d" ESC_H(1,3)), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
 	menu_back_if_clicked_fb();
 }
 
 static void lcd_menu_fails_stats_mmu_total()
 {
-//01234567890123456789
-//Last print failures
-// MMU fails  000
-// MMU load fails  000
-//
+//|01234567890123456789|
+//|Total failures      | c=20
+//| MMU fails:      000| c=15
+//| MMU load fails: 000| c=15
+//| MMU power fails:000| c=15
 //////////////////////
 	mmu_command(MmuCmd::S3);
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
 //	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S %-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S:" ESC_H(17,1) "%-3d" ESC_H(1,2) "%S:" ESC_H(17,2) "%-3d" ESC_H(1,3) "%S" ESC_H(17,3) "%-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);
 	menu_back_if_clicked_fb();
 }
 
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats_total()
 {
-//01234567890123456789
-//Total failures
-// Power failures  000
-// Filam. runouts  000
-// Crash  X 000  Y 000
+//|01234567890123456789|
+//|Total failures      | c=20
+//| Power failures: 000| c=14
+//| Filam. runouts: 000| c=14
+//| Crash   X:000 Y:000| c=7 for Crash
 //////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint16_t power = eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
@@ -2019,17 +2019,17 @@ static void lcd_menu_fails_stats_total()
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
 //	lcd_printf_P(PSTR(ESC_H(0,0) "Total failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S  X %-3d  Y %-3d"), _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S" ESC_H(17,1) "%-3d" ESC_H(1,2) "%S" ESC_H(17,2) "%-3d" ESC_H(1,3) "%S" ESC_H(9,3) "X %-3d Y %-3d"), _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
 	menu_back_if_clicked_fb();
 }
 
 static void lcd_menu_fails_stats_print()
 {
-//01234567890123456789
-//Last print failures
-// Power failures  000
-// Filam. runouts  000
-// Crash  X 000  Y 000
+//|01234567890123456789|
+//|Last print failures | c=20
+//| Power failures: 000| c=14
+//| Filam. runouts: 000| c=14
+//| Crash   X:000 Y:000| c=7 for Crash
 //////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t power = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
@@ -2037,7 +2037,7 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
 //	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S" ESC_H(17,1) "%-3d" ESC_H(1,2) "%S" ESC_H(17,2) "%-3d" ESC_H(1,3) "%S" ESC_H(9,3) "X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
 	menu_back_if_clicked_fb();
 }
 
@@ -2075,10 +2075,16 @@ static void lcd_menu_fails_stats()
  */
 static void lcd_menu_fails_stats()
 {
+//|01234567890123456789|
+//|Last print failures | c=20
+//| Filam. runouts: 000| c=15
+//|Total failures      | c=20
+//| Filam. runouts: 000| c=15
+//////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
-    lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Filam. runouts  %-3d" ESC_H(0,2) "Total failures" ESC_H(1,3) "Filam. runouts  %-3d"), filamentLast, filamentTotal);
+    lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S"  ESC_H(17,1) "%-3d" ESC_H(0,2) "%S" ESC_H(1,3) "%S" ESC_H(17,3) "%-3d"), _i("Last print failures"), _i("Filam. runouts"), filamentLast, _i("Total failures"), _i("Filam. runouts"), filamentTotal);
     menu_back_if_clicked();
 }
 #else
@@ -2111,13 +2117,19 @@ static void lcd_menu_debug()
 
 static void lcd_menu_temperatures()
 {
+//|01234567890123456789|
+//| Nozzle:        000°| c=14
+//| Bed:           000°| c=14
+//| Ambient:       000°| c=14
+//| PINDA:         000°| c=14
+//////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
 
-	lcd_printf_P(PSTR(ESC_H(1,0) "%S:   %d%c" ESC_H(1,1) "%S:      %d%c"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
+	lcd_printf_P(PSTR(ESC_H(1,0) "%S:" ESC_H(16,0) "%-3d%c" ESC_H(1,1) "%S:" ESC_H(16,1) "%-3d%c"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
-	lcd_printf_P(PSTR(ESC_H(1,2) "%S:  %d%c" ESC_H(1,3) "PINDA:    %d%c"), _i("Ambient"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
+	lcd_printf_P(PSTR(ESC_H(1,2) "%S:" ESC_H(16,2) "%-3d%c" ESC_H(1,3) "%S:" ESC_H(16,3) "%-3d%c"), _i("Ambient"), (int)current_temperature_ambient, '\x01', _i("PINDA"), (int)current_temperature_pinda, '\x01');
 #else //AMBIENT_THERMISTOR
-	lcd_printf_P(PSTR(ESC_H(1,2) "PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
+	lcd_printf_P(PSTR(ESC_H(1,2) "%S:" ESC_H(16,2) "%-3d%c"), _i("PINDA"), (int)current_temperature_pinda, '\x01');
 #endif //AMBIENT_THERMISTOR
 
     menu_back_if_clicked();
@@ -2130,10 +2142,16 @@ static void lcd_menu_temperatures()
 #define VOLT_DIV_REF 5
 static void lcd_menu_voltages()
 {
+//|01234567890123456789|
+//|                    |
+//| PWR:         00.0V | c=12
+//| Bed:         00.0V | c=12
+//|                    | 
+//////////////////////
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
-	lcd_printf_P(PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
+	lcd_printf_P(PSTR(ESC_H(1,1) "%S:" ESC_H(14,1) "%d.%01dV" ESC_H(1,2) "%S:" ESC_H(14,2) "%d.%01dV"), _i("PWR"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), _i("BED"), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
     menu_back_if_clicked();
 }
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
@@ -2141,7 +2159,13 @@ static void lcd_menu_voltages()
 #ifdef TMC2130
 static void lcd_menu_belt_status()
 {
-    lcd_printf_P(PSTR(ESC_H(1,0) "%S" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
+//|01234567890123456789|
+//| Belt status        | c=19
+//|  X:            000 | c=13
+//|  Y:            000 | c=13
+//|                    | 
+//////////////////////
+    lcd_printf_P(PSTR(ESC_H(1,0) "%S" ESC_H(2,1) "%S:" ESC_H(16,1) "%-3d" ESC_H(2,2) "%S:" ESC_H(16,2) "%-3d" ), _i("Belt status"), _i("X"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), _i("Y"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     menu_back_if_clicked();
 }
 #endif //TMC2130
@@ -3120,28 +3144,17 @@ float _deg(float rad)
 static void lcd_menu_xyz_skew()
 {
 //|01234567890123456789|
-//|Measured skew:  N/A |
+//|Measured skew:  N/A | c=13
 //|--------------------|
-//|Slight skew:   0.12d|
-//|Severe skew:   0.25d|
+//|Slight skew:  0.12d | c=13
+//|Severe skew:  0.25d | c=13
 //----------------------
     float angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
-	lcd_printf_P(_N(
-	  ESC_H(0,0)
-	  "%S:\n"
-	  "%S\n"
-	  "%S:  %5.2f\x01\n"
-	  "%S:  %5.2f\x01"
-	 ),
-	 _i("Measured skew"),
-	 separator,
-	 _i("Slight skew"), _deg(bed_skew_angle_mild),
-	 _i("Severe skew"), _deg(bed_skew_angle_extreme)
-	);
+	lcd_printf_P(_N(ESC_H(0,0) "%S:" ESC_H(0,1) "%S" ESC_H(0,2) "%S:" ESC_H(14,2) "%5.2f\x01" ESC_H(0,3) "%S:" ESC_H(14,3) "%5.2f\x01" ), _i("Measured skew"), separator, _i("Slight skew"), _deg(bed_skew_angle_mild), _i("Severe skew"), _deg(bed_skew_angle_extreme));
 	if (angleDiff < 100)
-		lcd_printf_P(_N(ESC_H(15,0)"%4.2f\x01"), _deg(angleDiff));
+		lcd_printf_P(_N(ESC_H(14,0)"%4.2f\x01"), _deg(angleDiff));
 	else
-		lcd_puts_P(_N(ESC_H(15,0)"N/A"));
+		lcd_puts_P(_N(ESC_H(14,0)"N/A"));
     if (lcd_clicked())
         menu_goto(lcd_menu_xyz_offset, 0, true, true);
 }
