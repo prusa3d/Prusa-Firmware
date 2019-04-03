@@ -1083,20 +1083,20 @@
 "Einige Dateien wur- den nicht sortiert. Max. Dateien pro Verzeichnis = 100."
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [none]"
-"Sort.:    [Keine]"
+"Sort       [none]"
+"Sort.     [Keine]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [time]"
-"Sort.:     [Zeit]"
+"Sort       [time]"
+"Sort.      [Zeit]"
 
 #
 "Severe skew"
 "Schwerer Schraeglauf"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [alphabet]"
-"Sort.: [Alphabet]"
+"Sort   [alphabet]"
+"Sort.  [Alphabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"

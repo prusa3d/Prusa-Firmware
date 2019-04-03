@@ -1083,20 +1083,20 @@
 "Niektore pliki nie zostana posortowane. Max. liczba plikow w 1 folderze = 100."
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [none]"
-"Sortuj:    [brak]"
+"Sort       [none]"
+"Sortuj     [brak]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [time]"
-"Sortuj:    [czas]"
+"Sort       [time]"
+"Sortuj     [czas]"
 
 #
 "Severe skew"
 "Znaczny skos"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [alphabet]"
-"Sortuj: [alfabet]"
+"Sort   [alphabet]"
+"Sortuj  [alfabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"

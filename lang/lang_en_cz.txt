@@ -1083,19 +1083,19 @@
 "Nektere soubory nebudou setrideny. Maximalni pocet souboru ve slozce pro setrideni je 100."
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [none]"
+"Sort       [none]"
 "Trideni   [Zadne]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [time]"
-"Trideni:    [cas]"
+"Sort       [time]"
+"Trideni     [cas]"
 
 #
 "Severe skew"
 "Tezke zkoseni"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [alphabet]"
+"Sort   [alphabet]"
 "Trideni [Abeceda]"
 
 #MSG_SORTING c=20 r=1
