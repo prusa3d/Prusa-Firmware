@@ -81,7 +81,7 @@
 
 
 ###PreCompile set to 1 waits for Enter between differ sections to test and debug. Default value = 0
-PreCompile="1"
+PreCompile="0"
 
 
 ###Check if OSTYPE is supported
@@ -472,6 +472,7 @@ do
 			echo "$(tput sgr 0)"
 		fi
 		# build languages
+		#read -t 5 -p "Building languages press Enter to continue..."
 		echo "$(tput setaf 3)"
 		./lang-build.sh || exit 16
 		# Combine compiled firmware with languages 

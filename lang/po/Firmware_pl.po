@@ -14,6 +14,8 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Last-Translator: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Poedit-Basepath: ../../Firmware"
+"X-Poedit-SearchPath-0: ."
 
 # MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE2 c=14
 #: messages.c:39
@@ -21,7 +23,7 @@ msgid " of 4"
 msgstr " z 4"
 
 # MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2 c=14
-#: messages.c:56
+#: messages.c:57
 msgid " of 9"
 msgstr " z 9"
 
@@ -56,7 +58,7 @@ msgid "All correct      "
 msgstr "Wszystko OK "
 
 # MSG_WIZARD_DONE c=20 r=8
-#: messages.c:95
+#: messages.c:96
 msgid "All is done. Happy printing!"
 msgstr "Gotowe. Udanego drukowania!"
 
@@ -166,7 +168,7 @@ msgid "Belt status"
 msgstr "Stan paskow"
 
 # MSG_RECOVER_PRINT c=20 r=2
-#: messages.c:67
+#: messages.c:68
 msgid "Blackout occurred. Recover print?"
 msgstr "Wykryto zanik napiecia. Kontynowac?"
 
@@ -211,7 +213,7 @@ msgid "Calibration done"
 msgstr "Kalibracja OK"
 
 # MSG_MENU_CALIBRATION
-#: messages.c:57
+#: messages.c:58
 msgid "Calibration"
 msgstr "Kalibracja"
 
@@ -266,7 +268,7 @@ msgid "Crash detected."
 msgstr "Zderzenie wykryte"
 
 # 
-#: Marlin_main.cpp:608
+#: Marlin_main.cpp:602
 msgid "Crash detected. Resume print?"
 msgstr "Wykryto zderzenie. Wznowic druk?"
 
@@ -446,7 +448,7 @@ msgid "Fan speed"
 msgstr "Predkosc went."
 
 # MSG_SELFTEST_FAN c=20
-#: messages.c:74
+#: messages.c:75
 msgid "Fan test"
 msgstr "Test wentylatora"
 
@@ -551,7 +553,7 @@ msgid "forum.prusa3d.com"
 msgstr ""
 
 # MSG_SELFTEST_COOLING_FAN c=20
-#: messages.c:71
+#: messages.c:72
 msgid "Front print fan?"
 msgstr "Przedni went. druku?"
 
@@ -621,7 +623,7 @@ msgid "Changed correctly?"
 msgstr "Wymiana ok?"
 
 # MSG_SELFTEST_CHECK_BED c=20
-#: messages.c:77
+#: messages.c:78
 msgid "Checking bed     "
 msgstr "Kontrola stolu"
 
@@ -636,7 +638,7 @@ msgid "Checking hotend  "
 msgstr "Kontrola hotendu"
 
 # MSG_SELFTEST_CHECK_FSENSOR c=20
-#: messages.c:78
+#: messages.c:79
 msgid "Checking sensors "
 msgstr "Sprawdzanie czujnikow"
 
@@ -686,12 +688,12 @@ msgid "I will start to print line and you will gradually lower the nozzle by rot
 msgstr "Zaczne drukowac linie. Stopniowo opuszczaj dysze przekrecajac pokretlo, poki nie uzyskasz optymalnej wysokosci. Sprawdz obrazki w naszym Podreczniku w rozdz. Kalibracja"
 
 # MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60
-#: mesh_bed_calibration.cpp:2481
+#: mesh_bed_calibration.cpp:2472
 msgid "Improving bed calibration point"
 msgstr "Poprawiam precyzje punktu kalibracyjnego"
 
 # MSG_WATCH
-#: messages.c:93
+#: messages.c:94
 msgid "Info screen"
 msgstr "Ekran informacyjny"
 
@@ -741,12 +743,12 @@ msgid "Is PLA filament loaded?"
 msgstr "Fialment PLA jest zaladowany?"
 
 # MSG_STEEL_SHEET_CHECK c=20 r=2
-#: messages.c:86
+#: messages.c:87
 msgid "Is steel sheet on heatbed?"
 msgstr "Czy plyta stal. jest na podgrzew. stole?"
 
 # MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20
-#: mesh_bed_calibration.cpp:2223
+#: mesh_bed_calibration.cpp:2211
 msgid "Iteration "
 msgstr "Iteracja "
 
@@ -761,7 +763,7 @@ msgid "Last print"
 msgstr "Ost. wydruk"
 
 # MSG_SELFTEST_EXTRUDER_FAN c=20
-#: messages.c:72
+#: messages.c:73
 msgid "Left hotend fan?"
 msgstr "Lewy went hotendu?"
 
@@ -821,7 +823,7 @@ msgid "Main"
 msgstr "Menu glowne"
 
 # MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1 c=60
-#: messages.c:55
+#: messages.c:56
 msgid "Measuring reference height of calibration point"
 msgstr "Okreslam wysokosc odniesienia punktu kalibracyjnego"
 
@@ -866,12 +868,12 @@ msgid "MMU OK. Resuming..."
 msgstr "MMU OK. Wznawianie..."
 
 # MSG_STEALTH_MODE_OFF
-#: messages.c:84
+#: messages.c:85
 msgid "Mode     [Normal]"
 msgstr "Tryb   [normalny]"
 
 # MSG_SILENT_MODE_ON
-#: messages.c:83
+#: messages.c:84
 msgid "Mode     [silent]"
 msgstr "Tryb      [cichy]"
 
@@ -886,7 +888,7 @@ msgid "MMU power fails"
 msgstr "Zaniki zasil. MMU"
 
 # MSG_STEALTH_MODE_ON
-#: messages.c:85
+#: messages.c:86
 msgid "Mode    [Stealth]"
 msgstr "Tryb    [Stealth]"
 
@@ -896,7 +898,7 @@ msgid "Mode [auto power]"
 msgstr "Tryb [automatycz]"
 
 # MSG_SILENT_MODE_OFF
-#: messages.c:82
+#: messages.c:83
 msgid "Mode [high power]"
 msgstr "Tryb[wysoka wyd.]"
 
@@ -906,7 +908,7 @@ msgid "MMU2 connected"
 msgstr "MMU podlaczone"
 
 # MSG_SELFTEST_MOTOR
-#: messages.c:79
+#: messages.c:80
 msgid "Motor"
 msgstr "Silnik"
 
@@ -946,7 +948,7 @@ msgid "N/A"
 msgstr "N/D"
 
 # MSG_NO
-#: messages.c:58
+#: messages.c:59
 msgid "No"
 msgstr "Nie"
 
@@ -966,7 +968,7 @@ msgid "No "
 msgstr "Nie"
 
 # MSG_SELFTEST_FAN_NO c=19
-#: messages.c:75
+#: messages.c:76
 msgid "Not spinning"
 msgstr "Nie kreci sie"
 
@@ -981,7 +983,7 @@ msgid "Now I will preheat nozzle for PLA."
 msgstr "Nagrzewam dysze dla PLA."
 
 # MSG_NOZZLE
-#: messages.c:59
+#: messages.c:60
 msgid "Nozzle"
 msgstr "Dysza"
 
@@ -1026,7 +1028,7 @@ msgid "PINDA Heating"
 msgstr "Grzanie sondy PINDA"
 
 # MSG_PAPER c=20 r=8
-#: messages.c:60
+#: messages.c:61
 msgid "Place a sheet of paper under the nozzle during the calibration of first 4 points. If the nozzle catches the paper, power off the printer immediately."
 msgstr "Umiesc kartke papieru na stole roboczym i podczas pomiaru pierwszych 4 punktow. Jesli dysza zahaczy o papier, natychmiast wylacz drukarke."
 
@@ -1046,7 +1048,7 @@ msgid "Please check :"
 msgstr "Sprawdz :"
 
 # MSG_WIZARD_CALIBRATION_FAILED c=20 r=8
-#: messages.c:94
+#: messages.c:95
 msgid "Please check our handbook and fix the problem. Then resume the Wizard by rebooting the printer."
 msgstr "Przeczytaj nasz Podrecznik druku 3D aby naprawic problem. Potem wznow Asystenta przez restart drukarki."
 
@@ -1066,12 +1068,12 @@ msgid "Please open idler and remove filament manually."
 msgstr "Prosze odciagnac dzwignie dociskowa ekstrudera i recznie usunac filament."
 
 # MSG_PLACE_STEEL_SHEET c=20 r=4
-#: messages.c:61
+#: messages.c:62
 msgid "Please place steel sheet on heatbed."
 msgstr "Prosze umiescic plyte stalowa na stole podgrzewanym."
 
 # MSG_PRESS_TO_UNLOAD c=20 r=4
-#: messages.c:64
+#: messages.c:65
 msgid "Please press the knob to unload filament"
 msgstr "Nacisnij pokretlo aby rozladowac filament"
 
@@ -1081,7 +1083,7 @@ msgid "Please insert PLA filament to the first tube of MMU, then press the knob 
 msgstr "Wsun filament PLA do pierwszej rurki MMU i nacisnij pokretlo aby go zaladowac."
 
 # MSG_PULL_OUT_FILAMENT c=20 r=4
-#: messages.c:66
+#: messages.c:67
 msgid "Please pull out filament immediately"
 msgstr "Wyciagnij filament teraz"
 
@@ -1091,7 +1093,7 @@ msgid "Please remove filament and then press the knob."
 msgstr "Wyciagnij filament i wcisnij pokretlo."
 
 # MSG_REMOVE_STEEL_SHEET c=20 r=4
-#: messages.c:70
+#: messages.c:71
 msgid "Please remove steel sheet from heatbed."
 msgstr "Prosze zdjac plyte stalowa z podgrzewanego stolu."
 
@@ -1106,7 +1108,7 @@ msgid "Please update firmware in your MMU2. Waiting for reset."
 msgstr "Prosze zaktualizowac Firmware MMU2. Czekam na reset."
 
 # MSG_PLEASE_WAIT c=20
-#: messages.c:62
+#: messages.c:63
 msgid "Please wait"
 msgstr "Prosze czekac"
 
@@ -1116,7 +1118,7 @@ msgid "Please remove shipping helpers first."
 msgstr "Najpierw usun zabezpieczenia transportowe"
 
 # MSG_PREHEAT_NOZZLE c=20
-#: messages.c:63
+#: messages.c:64
 msgid "Preheat the nozzle!"
 msgstr "Nagrzej dysze!"
 
@@ -1126,7 +1128,7 @@ msgid "Preheat"
 msgstr "Grzanie"
 
 # MSG_WIZARD_HEATING c=20 r=3
-#: messages.c:96
+#: messages.c:97
 msgid "Preheating nozzle. Please wait."
 msgstr "Nagrzewanie dyszy. Prosze czekac."
 
@@ -1136,7 +1138,7 @@ msgid "Please upgrade."
 msgstr "Prosze zaktualizowac."
 
 # MSG_PRESS_TO_PREHEAT c=20 r=4
-#: Marlin_main.cpp:9150
+#: Marlin_main.cpp:9480
 msgid "Press knob to preheat nozzle and continue."
 msgstr "Wcisnij pokretlo aby rozgrzac dysze i kontynuowac."
 
@@ -1146,7 +1148,7 @@ msgid "Power failures"
 msgstr "Zaniki zasilania"
 
 # MSG_PRINT_ABORTED c=20
-#: messages.c:65
+#: messages.c:66
 msgid "Print aborted"
 msgstr "Druk przerwany"
 
@@ -1192,9 +1194,6 @@ msgstr "Drukarka nie zostala jeszcze skalibrowana. Kieruj sie Samouczkiem: rozdz
 
 # 
 #: ultralcd.cpp:1924
-msgid "Print FAN"
-msgstr "Went. wydruku"
-
 # WELCOME_MSG c=20
 #: 
 msgid "Prusa i3 MK2.5 OK."
@@ -1209,6 +1208,11 @@ msgstr ""
 #: 
 msgid "Zaribo MK2.5-320 OK."
 msgstr ""
+=======
+#: ultralcd.cpp:1930
+msgid "Print FAN"
+msgstr "Went. wydruku"
+>>>>>>> e065bd54cad09bc2504e39625365c2fdd178fe96
 
 # WELCOME_MSG c=20
 #: 
@@ -1236,7 +1240,7 @@ msgid "Rear side [um]"
 msgstr "Tyl [um]"
 
 # MSG_RECOVERING_PRINT c=20 r=1
-#: Marlin_main.cpp:8575
+#: Marlin_main.cpp:8904
 msgid "Recovering print    "
 msgstr "Wznawianie wydruku"
 
@@ -1271,7 +1275,7 @@ msgid "Resume print"
 msgstr "Wznowic wydruk"
 
 # MSG_RESUMING_PRINT c=20 r=1
-#: messages.c:69
+#: messages.c:70
 msgid "Resuming print"
 msgstr "Wznawianie druku"
 
@@ -1341,7 +1345,7 @@ msgid "Selftest error !"
 msgstr "Blad selftest !"
 
 # MSG_SELFTEST_FAILED c=20
-#: messages.c:73
+#: messages.c:74
 msgid "Selftest failed  "
 msgstr "Selftest nieudany"
 
@@ -1366,7 +1370,7 @@ msgid "Set temperature:"
 msgstr "Ustaw. temperatury:"
 
 # MSG_SETTINGS
-#: messages.c:81
+#: messages.c:82
 msgid "Settings"
 msgstr "Ustawienia"
 
@@ -1456,7 +1460,7 @@ msgid "Speed"
 msgstr "Predkosc"
 
 # MSG_SELFTEST_FAN_YES c=19
-#: messages.c:76
+#: messages.c:77
 msgid "Spinning"
 msgstr "Kreci sie"
 
@@ -1471,12 +1475,12 @@ msgid "Statistics  "
 msgstr "Statystyki"
 
 # MSG_STOP_PRINT
-#: messages.c:87
+#: messages.c:88
 msgid "Stop print"
 msgstr "Zatrzymac druk"
 
 # MSG_STOPPED
-#: messages.c:88
+#: messages.c:89
 msgid "STOPPED. "
 msgstr "ZATRZYMANO."
 
@@ -1491,7 +1495,7 @@ msgid "Swapped"
 msgstr "Zamieniono"
 
 # MSG_TEMP_CALIBRATION c=20 r=1
-#: messages.c:89
+#: messages.c:90
 msgid "Temp. cal.          "
 msgstr "Kalibracja temp."
 
@@ -1516,7 +1520,7 @@ msgid "Temperature calibration failed"
 msgstr "Kalibracja temperaturowa nieudana"
 
 # MSG_TEMP_CALIBRATION_DONE c=20 r=12
-#: messages.c:90
+#: messages.c:91
 msgid "Temperature calibration is finished and active. Temp. calibration can be disabled in menu Settings->Temp. cal."
 msgstr "Kalibracja temperaturowa zakonczona i wlaczona. Moze byc wylaczona z menu Ustawienia -> Kalibracja temp."
 
@@ -1576,12 +1580,12 @@ msgid "to unload filament"
 msgstr "aby rozlad. filament"
 
 # MSG_UNLOAD_FILAMENT c=17
-#: messages.c:91
+#: messages.c:92
 msgid "Unload filament"
 msgstr "Rozladowanie fil."
 
 # MSG_UNLOADING_FILAMENT c=20 r=1
-#: messages.c:92
+#: messages.c:93
 msgid "Unloading filament"
 msgstr "Rozladowuje filament"
 
@@ -1646,7 +1650,7 @@ msgid "Was filament unload successful?"
 msgstr "Rozladowanie fil. ok?"
 
 # MSG_SELFTEST_WIRINGERROR
-#: messages.c:80
+#: messages.c:81
 msgid "Wiring error"
 msgstr "Blad polaczenia"
 
@@ -1666,12 +1670,12 @@ msgid "XYZ calibration failed. Please consult the manual."
 msgstr "Kalibracja XYZ nieudana. Sprawdz przyczyny i rozwiazania w instrukcji."
 
 # MSG_YES
-#: messages.c:98
+#: messages.c:99
 msgid "Yes"
 msgstr "Tak"
 
 # MSG_WIZARD_QUIT c=20 r=8
-#: messages.c:97
+#: messages.c:98
 msgid "You can always resume the Wizard from Calibration -> Wizard."
 msgstr "Zawsze mozesz uruchomic Asystenta ponownie przez Kalibracja -> Asystent."
 
@@ -1766,7 +1770,5 @@ msgid "Load filament 4"
 msgstr "Zaladuj fil. 4"
 
 # MSG_LOAD_FILAMENT_5 c=17
-#: ultralcd.cpp:5622
-msgid "Load filament 5"
-msgstr "Laduj filament 5"
-
+#: ultralcd.cpp:5622sgid "Load filament 5"
+msgstr "Laduj filame
