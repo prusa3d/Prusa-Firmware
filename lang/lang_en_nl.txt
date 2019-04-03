@@ -458,6 +458,10 @@
 "Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
 "Hallo, ik ben uw originele Prusa i3 printer. Zullen we beginnen met het installatieproces?"
 
+#MSG_WIZARD_WELCOME c=20 r=7
+"Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
+"Hallo, ik ben uw Zaribo printer. Zullen we beginnen met het installatieproces?"
+
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
 ""
@@ -939,16 +943,52 @@
 "Print fan"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 ready."
-"Prusa i3 MK2.5 klaar."
+"Prusa i3 MK2.5"
+"\x00"
 
 #WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 ready."
-"Prusa i3 MK3 klaar."
+"Prusa i3 MK3"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-320"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-220"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-320"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-220"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK2.5-420"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3-420"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3S-220"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3S-320"
+"\x00"
+
+#WELCOME_MSG c=20 r=0
+"Zaribo MK3S-420"
+"\x00"
 
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
-""
+"\x00"
 
 #MSG_BED_CORRECTION_REAR c=14 r=1
 "Rear side [um]"
