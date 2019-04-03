@@ -1135,20 +1135,20 @@
 "Sommige bestanden worden niet gesorteerd omdat het maximum aantal bestanden per map 100 is."
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [none]"
-"Sortering: [geen]"
+"Sort       [none]"
+"Sortering  [geen]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [time]"
-"Sortering: [tijd]"
+"Sort       [time]"
+"Sortering  [tijd]"
 
 #
 "Severe skew"
 "Erg scheef"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [alphabet]"
-"Sort:   [alfabet]"
+"Sort   [alphabet]"
+"Sort    [alfabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
