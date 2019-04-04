@@ -349,7 +349,7 @@ extern uint16_t print_time_remaining_silent;
 
 #define PRINT_TIME_REMAINING_INIT 0xffff
 #define PRINT_PERCENT_DONE_INIT   0xff
-#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
+#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused)
 
 extern void calculate_extruder_multipliers();
 
