@@ -807,7 +807,7 @@ static void lcd_implementation_status_screen()
     lcd.setCursor(0, 2);
 	lcd_print_percent_done();
 
-}
+
 
 	// Farm number display
 	if (farm_mode)
