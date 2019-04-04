@@ -7026,12 +7026,7 @@ void serialecho_temperatures() {
 
 uint16_t print_time_remaining() {
 	uint16_t print_t = PRINT_TIME_REMAINING_INIT;
-#ifdef TMC2130 
-	if (SilentModeMenu == SILENT_MODE_OFF) print_t = print_time_remaining_normal;
-	else print_t = print_time_remaining_silent;
-#else
 	print_t = print_time_remaining_normal;
-#endif //TMC2130
 	if ((print_t != PRINT_TIME_REMAINING_INIT) && (feedmultiply != 0)) print_t = 100ul * print_t / feedmultiply;
 	return print_t;
 }
@@ -7039,18 +7034,9 @@ uint16_t print_time_remaining() {
 uint8_t print_percent_done() {
 	//in case that we have information from M73 gcode return percentage counted by slicer, else return percentage counted as byte_printed/filesize
 	uint8_t percent_done = 0;
-#ifdef TMC2130
-	if (SilentModeMenu == SILENT_MODE_OFF && print_percent_done_normal <= 100) {
-		percent_done = print_percent_done_normal;
-	}
-	else if (print_percent_done_silent <= 100) {
-		percent_done = print_percent_done_silent;
-	}
-#else
 	if (print_percent_done_normal <= 100) {
 		percent_done = print_percent_done_normal;
 	}
-#endif //TMC2130
 	else {
 		percent_done = card.percentDone();
 	}
