@@ -7014,7 +7014,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	  	if (mmu_enabled) 
 		{
 			st_synchronize();
-			mmu_continue_loading();
+			mmu_continue_loading(is_usb_printing);
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
 		}
@@ -7052,7 +7052,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				  mmu_command(MmuCmd::T0 + tmp_extruder);
 
 				  manage_response(true, true, MMU_TCODE_MOVE);
-				  mmu_continue_loading();
+		          mmu_continue_loading(is_usb_printing);
+
 				  mmu_extruder = tmp_extruder; //filament change is finished
 
 				  if (load_to_nozzle)// for single material usage with mmu

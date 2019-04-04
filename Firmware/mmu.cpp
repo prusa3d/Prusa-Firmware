@@ -878,7 +878,7 @@ void mmu_M600_load_filament(bool automatic, float nozzle_temp)
     mmu_command(MmuCmd::T0 + tmp_extruder);
 
     manage_response(false, true, MMU_LOAD_MOVE);
-    mmu_continue_loading();
+    mmu_continue_loading(is_usb_printing);
     mmu_extruder = tmp_extruder; //filament change is finished
 
     mmu_load_to_nozzle();
@@ -1363,7 +1363,7 @@ bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_
 	lcd_print(tmp_extruder + 1);
 	mmu_command(MmuCmd::T0 + tmp_extruder);
 	manage_response(true, true, MMU_TCODE_MOVE);
-	mmu_continue_loading();
+	mmu_continue_loading(false);
 	mmu_extruder = tmp_extruder; //filament change is finished
 	mmu_load_to_nozzle();
 	load_filament_final_feed();
@@ -1464,7 +1464,10 @@ static void load_more()
     st_synchronize();
 }
 
-void mmu_continue_loading() 
+//! @par blocking
+//!  * true blocking
+//!  * false non-blocking
+void mmu_continue_loading(bool blocking)
 {
 	if (ir_sensor_detected)
 	{
@@ -1510,9 +1513,28 @@ void mmu_continue_loading()
 
                 setAllTargetHotends(0);
                 lcd_setstatuspgm(_i("MMU load failed     "));////MSG_RECOVERING_PRINT c=20 r=1
-                mmu_fil_loaded = false; //so we can retry same T-code again
-                isPrintPaused = true;
-                mmu_command(MmuCmd::W0);
+
+                if (blocking)
+                {
+                    KEEPALIVE_STATE(PAUSED_FOR_USER);
+                    lcd_consume_click();
+                    while(!lcd_clicked()){
+                        manage_heater();
+                        manage_inactivity(true);
+                        lcd_update(0);
+                    }
+                    KEEPALIVE_STATE(IN_HANDLER);
+                    restore_print_from_ram_and_continue(0);
+                    mmu_command(MmuCmd::T0 + tmp_extruder);
+                    manage_response(true, true, MMU_TCODE_MOVE);
+                    load_more();
+                }
+                else
+                {
+                    mmu_fil_loaded = false; //so we can retry same T-code again
+                    isPrintPaused = true;
+                    mmu_command(MmuCmd::W0);
+                }
             }
 		}
 	}
