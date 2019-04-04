@@ -509,6 +509,8 @@ static int saved_feedmultiply_mm = 100;
 //=============================Routines======================================
 //===========================================================================
 
+static void print_time_remaining_init();
+
 void get_arc_coordinates();
 bool setTargetedHotend(int code);
 
