@@ -405,7 +405,7 @@ THERMISTORS SETTINGS
 #define DEFAULT_RETRACTION 1 //used for PINDA temp calibration and pause print
 #endif
 
-#define END_FILE_SECTION 10000 //number of bytes from end of file used for checking if file is complete
+#define END_FILE_SECTION 20000 //number of bytes from end of file used for checking if file is complete
 
 #ifndef SNMM
 #define SUPPORT_VERBOSITY
