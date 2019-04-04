@@ -679,6 +679,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  st_synchronize();
 				  mmu_print_saved = true;
 				  printf_P(PSTR("MMU not responding\n"));
+				  KEEPALIVE_STATE(PAUSED_FOR_USER);
 				  hotend_temp_bckp = degTargetHotend(active_extruder);
 				  if (move_axes) {
 					  z_position_bckp = current_position[Z_AXIS];
@@ -735,6 +736,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU starts responding\n"));
+			  KEEPALIVE_STATE(IN_HANDLER);
 			  mmu_loading_flag = false;
 			  if (turn_off_nozzle) 
 			  {
