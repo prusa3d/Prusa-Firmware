@@ -469,7 +469,7 @@ extern uint8_t calc_percent_done();
 #define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
 extern void host_keepalive();
 //extern MarlinBusyState busy_state;
-extern int busy_state;
+extern int8_t busy_state;
 
 
 #ifdef TMC2130

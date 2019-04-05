@@ -303,7 +303,7 @@ int fanSpeed=0;
 
 bool cancel_heatup = false ;
 
-int busy_state = NOT_BUSY;
+int8_t busy_state = NOT_BUSY;
 static long prev_busy_signal_ms = -1;
 uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
 
@@ -9615,7 +9615,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 //! Set
 void marlin_wait_for_click()
 {
-    int busy_state_backup = busy_state;
+    int8_t busy_state_backup = busy_state;
     KEEPALIVE_STATE(PAUSED_FOR_USER);
     lcd_consume_click();
     while(!lcd_clicked())
