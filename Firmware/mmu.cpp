@@ -1518,14 +1518,7 @@ void mmu_continue_loading(bool blocking)
 
                 if (blocking)
                 {
-                    KEEPALIVE_STATE(PAUSED_FOR_USER);
-                    lcd_consume_click();
-                    while(!lcd_clicked()){
-                        manage_heater();
-                        manage_inactivity(true);
-                        lcd_update(0);
-                    }
-                    KEEPALIVE_STATE(IN_HANDLER);
+                    marlin_wait_for_click();
                     restore_print_from_ram_and_continue(0);
                     mmu_command(MmuCmd::T0 + tmp_extruder);
                     manage_response(true, true, MMU_TCODE_MOVE);

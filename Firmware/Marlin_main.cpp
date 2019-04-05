@@ -4962,13 +4962,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		KEEPALIVE_STATE(IN_HANDLER);
         lcd_ignore_click(false);
       }else{
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-        while(!lcd_clicked()){
-          manage_heater();
-          manage_inactivity(true);
-          lcd_update(0);
-        }
-		KEEPALIVE_STATE(IN_HANDLER);
+        marlin_wait_for_click();
       }
       if (IS_SD_PRINTING)
         LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
@@ -9613,6 +9607,24 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	}
 #endif //FSENSOR_QUALITY
 	lcd_update_enable(false);
+}
+
+
+//! @brief Wait for click
+//!
+//! Set
+void marlin_wait_for_click()
+{
+    int busy_state_backup = busy_state;
+    KEEPALIVE_STATE(PAUSED_FOR_USER);
+    lcd_consume_click();
+    while(!lcd_clicked())
+    {
+        manage_heater();
+        manage_inactivity(true);
+        lcd_update(0);
+    }
+    KEEPALIVE_STATE(busy_state);
 }
 
 #define FIL_LOAD_LENGTH 60
