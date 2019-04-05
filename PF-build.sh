@@ -148,7 +148,7 @@ fi
 
 if [ $OSTYPE == "msys" ]; then
 	if [ ! -f "PF-build-env-Win-$BUILD_ENV.zip" ]; then
-		echo "$(tput setaf 6)Downlaoding Windows build environment...$(tput setaf 2)"
+		echo "$(tput setaf 6)Downloading Windows build environment...$(tput setaf 2)"
 		sleep 2
 		wget https://github.com/3d-gussner/PF-build-env/releases/download/Win-$BUILD_ENV/PF-build-env-Win-$BUILD_ENV.zip || exit 4
 		#cp -f ../../PF-build-env/PF-build-env-Win-$BUILD_ENV.zip PF-build-env-Win-$BUILD_ENV.zip || exit4
