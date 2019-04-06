@@ -7011,12 +7011,16 @@ bool lcd_selftest()
 #ifdef TMC2130
 		tmc2130_home_exit();
 		enable_endstops(false);
-		current_position[X_AXIS] = current_position[X_AXIS] + 14;
-		current_position[Y_AXIS] = current_position[Y_AXIS] + 12;
 #endif
 
 		//homeaxis(X_AXIS);
 		//homeaxis(Y_AXIS);
+		current_position[X_AXIS] = current_position[X_AXIS] + pgm_read_float(bed_ref_points_4);
+		current_position[Y_AXIS] = current_position[Y_AXIS] + pgm_read_float(bed_ref_points_4+1);
+#ifdef TMC2130
+		//current_position[X_AXIS] += 0;
+		current_position[Y_AXIS] += 4;
+#endif
 		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
@@ -7256,7 +7260,10 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 	}
 
 	do {
-		current_position[_axis] = current_position[_axis] - 1;
+		if (_axis == Z_AXIS)
+			current_position[_axis] -= 0.5;
+		else
+			current_position[_axis] = current_position[_axis] - 1;
 
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
@@ -7386,9 +7393,6 @@ static bool lcd_selfcheck_pulleys(int axis)
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
 			endstop_triggered = true;
 			if (current_position_init - 1 <= current_position[axis] && current_position_init + 1 >= current_position[axis]) {
-				current_position[axis] += (axis == X_AXIS) ? 13 : 9;
-				plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
-				st_synchronize();
 				return(true);
 			}
 			else {
