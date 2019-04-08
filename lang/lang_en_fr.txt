@@ -1083,20 +1083,20 @@
 "Certains fichiers ne seront pas tries. Max 100 fichiers tries par dossier."
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [none]"
+"Sort       [none]"
 "Tri :     [aucun]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [time]"
-"Tri :     [heure]"
+"Sort       [time]"
+"Tri       [heure]"
 
 #
 "Severe skew"
 "Deviation severe"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [alphabet]"
-"Tri : [alphabet]"
+"Sort   [alphabet]"
+"Tri    [alphabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"

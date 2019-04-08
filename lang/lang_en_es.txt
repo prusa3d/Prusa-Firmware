@@ -1083,20 +1083,20 @@
 "Algunos archivos no se ordenaran. Maximo 100 archivos por carpeta para ordenar. "
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [none]"
-"Ordenar:   [nada]"
+"Sort       [none]"
+"Ordenar    [nada]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [time]"
-"Orden:    [Fecha]"
+"Sort       [time]"
+"Ordenar   [Fecha]"
 
 #
 "Severe skew"
 "Inclinacion severa"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [alphabet]"
-"Ordenar:[alfabet]"
+"Sort   [alphabet]"
+"Ordenar [alfabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"

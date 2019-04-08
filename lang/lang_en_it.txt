@@ -1083,20 +1083,20 @@
 "Alcuni file non saranno ordinati. Il numero massimo di file in una cartella e 100 perche siano ordinati."
 
 #MSG_SORT_NONE c=17 r=1
-"Sort:      [none]"
-"Ordina:    [none]"
+"Sort       [none]"
+"Ordina     [none]"
 
 #MSG_SORT_TIME c=17 r=1
-"Sort:      [time]"
-"Ordina:    [time]"
+"Sort       [time]"
+"Ordina     [time]"
 
 #
 "Severe skew"
 "Disassamento grave"
 
 #MSG_SORT_ALPHA c=17 r=1
-"Sort:  [alphabet]"
-"Ordine: [alfabet]"
+"Sort   [alphabet]"
+"Ordine  [alfabet]"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
