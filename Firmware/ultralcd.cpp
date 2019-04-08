@@ -4838,6 +4838,25 @@ static void lcd_tune_menu()
 	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune); break;
 	  }
   }
+
+  switch(eSoundMode)
+       {
+       case e_SOUND_MODE_LOUD:
+            MENU_ITEM(function,MSG_SOUND_MODE_LOUD,lcd_sound_state_set);
+            break;
+       case e_SOUND_MODE_ONCE:
+            MENU_ITEM(function,MSG_SOUND_MODE_ONCE,lcd_sound_state_set);
+            break;
+       case e_SOUND_MODE_SILENT:
+            MENU_ITEM(function,MSG_SOUND_MODE_SILENT,lcd_sound_state_set);
+            break;
+       case e_SOUND_MODE_MUTE:
+            MENU_ITEM(function,MSG_SOUND_MODE_MUTE,lcd_sound_state_set);
+            break;
+        default:
+            MENU_ITEM(function,MSG_SOUND_MODE_LOUD,lcd_sound_state_set);
+       }
+
   END_MENU();
 }
 
