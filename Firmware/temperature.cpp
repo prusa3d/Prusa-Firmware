@@ -396,7 +396,7 @@ void updatePID()
 {
 #ifdef PIDTEMP
   for(int e = 0; e < EXTRUDERS; e++) { 
-     iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;  
+     iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / Ki;  
   }
 #endif
 #ifdef PIDTEMPBED
@@ -525,13 +525,13 @@ void manage_heater()
             pid_reset[e] = false;
           }
 #ifndef PonM
-          pTerm[e] = cs.Kp * pid_error[e];
+          pTerm[e] = Kp * pid_error[e];
           iState_sum[e] += pid_error[e];
           iState_sum[e] = constrain(iState_sum[e], iState_sum_min[e], iState_sum_max[e]);
-          iTerm[e] = cs.Ki * iState_sum[e];
+          iTerm[e] = Ki * iState_sum[e];
           // K1 defined in Configuration.h in the PID settings
           #define K2 (1.0-K1)
-          dTerm[e] = (cs.Kd * (pid_input - dState_last[e]))*K2 + (K1 * dTerm[e]); // e.g. digital filtration of derivative term changes
+          dTerm[e] = (Kd * (pid_input - dState_last[e]))*K2 + (K1 * dTerm[e]); // e.g. digital filtration of derivative term changes
           pid_output = pTerm[e] + iTerm[e] - dTerm[e]; // subtraction due to "Derivative on Measurement" method (i.e. derivative of input instead derivative of error is used)
           if (pid_output > PID_MAX) {
             if (pid_error[e] > 0 ) iState_sum[e] -= pid_error[e]; // conditional un-integration
@@ -541,10 +541,10 @@ void manage_heater()
             pid_output=0;
           }
 #else // PonM ("Proportional on Measurement" method)
-          iState_sum[e] += cs.Ki * pid_error[e];
-          iState_sum[e] -= cs.Kp * (pid_input - dState_last[e]);
+          iState_sum[e] += Ki * pid_error[e];
+          iState_sum[e] -= Kp * (pid_input - dState_last[e]);
           iState_sum[e] = constrain(iState_sum[e], 0, PID_INTEGRAL_DRIVE_MAX);
-          dTerm[e] = cs.Kd * (pid_input - dState_last[e]);
+          dTerm[e] = Kd * (pid_input - dState_last[e]);
           pid_output = iState_sum[e] - dTerm[e];  // subtraction due to "Derivative on Measurement" method (i.e. derivative of input instead derivative of error is used)
           pid_output = constrain(pid_output, 0, PID_MAX);
 #endif // PonM
@@ -906,7 +906,7 @@ void tp_init()
     maxttemp[e] = maxttemp[0];
 #ifdef PIDTEMP
     iState_sum_min[e] = 0.0;
-    iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;
+    iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / Ki;
 #endif //PIDTEMP
 #ifdef PIDTEMPBED
     temp_iState_min_bed = 0.0;
