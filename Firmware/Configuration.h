@@ -9,58 +9,8 @@
 
 #define FW_PRUSA3D_MAGIC "PRUSA3DFW"
 #define FW_PRUSA3D_MAGIC_LEN 10
-// The total size of the EEPROM is
-// 4096 for the Atmega2560
-#define EEPROM_TOP 4096
-#define EEPROM_SILENT 4095
-#define EEPROM_LANG 4094
-#define EEPROM_BABYSTEP_X 4092
-#define EEPROM_BABYSTEP_Y 4090
-#define EEPROM_BABYSTEP_Z 4088
-#define EEPROM_CALIBRATION_STATUS 4087
-#define EEPROM_BABYSTEP_Z0 4085
-#define EEPROM_FILAMENTUSED 4081
-// uint32_t
-#define EEPROM_TOTALTIME 4077
 
-#define EEPROM_BED_CALIBRATION_CENTER     (EEPROM_TOTALTIME-2*4)
-#define EEPROM_BED_CALIBRATION_VEC_X      (EEPROM_BED_CALIBRATION_CENTER-2*4)
-#define EEPROM_BED_CALIBRATION_VEC_Y      (EEPROM_BED_CALIBRATION_VEC_X-2*4)
-
-// Offsets of the Z heiths of the calibration points from the first point.
-// The offsets are saved as 16bit signed int, scaled to tenths of microns.
-#define EEPROM_BED_CALIBRATION_Z_JITTER   (EEPROM_BED_CALIBRATION_VEC_Y-2*8)
-#define EEPROM_FARM_MODE (EEPROM_BED_CALIBRATION_Z_JITTER-1)
-#define EEPROM_FARM_NUMBER (EEPROM_FARM_MODE-3)
-
-// Correction of the bed leveling, in micrometers.
-// Maximum 50 micrometers allowed.
-// Bed correction is valid if set to 1. If set to zero or 255, the successive 4 bytes are invalid.
-#define EEPROM_BED_CORRECTION_VALID (EEPROM_FARM_NUMBER-1)
-#define EEPROM_BED_CORRECTION_LEFT  (EEPROM_BED_CORRECTION_VALID-1)
-#define EEPROM_BED_CORRECTION_RIGHT (EEPROM_BED_CORRECTION_LEFT-1)
-#define EEPROM_BED_CORRECTION_FRONT (EEPROM_BED_CORRECTION_RIGHT-1)
-#define EEPROM_BED_CORRECTION_REAR  (EEPROM_BED_CORRECTION_FRONT-1)
-#define EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY (EEPROM_BED_CORRECTION_REAR-1)
-#define EEPROM_PRINT_FLAG (EEPROM_TOSHIBA_FLASH_AIR_COMPATIBLITY-1)
-#define EEPROM_PROBE_TEMP_SHIFT (EEPROM_PRINT_FLAG - 2*5) //5 x int for storing pinda probe temp shift relative to 50 C; unit: motor steps 
-#define EEPROM_TEMP_CAL_ACTIVE (EEPROM_PROBE_TEMP_SHIFT - 1)
-#define EEPROM_BOWDEN_LENGTH (EEPROM_TEMP_CAL_ACTIVE - 2*4) //4 x int for bowden lengths for multimaterial
-#define EEPROM_CALIBRATION_STATUS_PINDA (EEPROM_BOWDEN_LENGTH - 1) //0 - not calibrated; 1 - calibrated
-#define EEPROM_SD_SORT (EEPROM_CALIBRATION_STATUS_PINDA - 1) //0 -time, 1-alpha, 2-none
-#define EEPROM_XYZ_CAL_SKEW (EEPROM_SD_SORT - 4)
-#define EEPROM_WIZARD_ACTIVE (EEPROM_XYZ_CAL_SKEW - 1)
-
-// Currently running firmware, each digit stored as uint16_t.
-// The flavor differentiates a dev, alpha, beta, release candidate or a release version.
-#define EEPROM_FIRMWARE_VERSION_END       (FW_PRUSA3D_MAGIC_LEN+8)
-#define EEPROM_FIRMWARE_VERSION_FLAVOR    (FW_PRUSA3D_MAGIC_LEN+6)
-#define EEPROM_FIRMWARE_VERSION_REVISION  (FW_PRUSA3D_MAGIC_LEN+4)
-#define EEPROM_FIRMWARE_VERSION_MINOR     (FW_PRUSA3D_MAGIC_LEN+2)
-#define EEPROM_FIRMWARE_VERSION_MAJOR     FW_PRUSA3D_MAGIC_LEN
-// Magic string, indicating that the current or the previous firmware running was the Prusa3D firmware.
-#define EEPROM_FIRMWARE_PRUSA_MAGIC 0
-
+#include "eeprom.h"
 
 // This configuration file contains the basic settings.
 // Advanced settings can be found in Configuration_adv.h

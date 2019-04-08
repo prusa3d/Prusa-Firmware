@@ -78,6 +78,7 @@
 
 
 #include "ultralcd.h"
+#include "sound.h"
 
 // Macros for bit masks
 #define BIT(b) (1<<(b))
@@ -1021,6 +1022,7 @@ void factory_reset(char level, bool quiet)
 void setup()
 {
 	lcd_init();
+     Sound_Init();
 	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
 	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	setup_killpin();
@@ -5476,6 +5478,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lcd_wait_interact();
 		load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
+        bool bFirst=true;
         while(!lcd_clicked()){
 
 		  cnt++;
@@ -5496,7 +5499,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             }
             SET_OUTPUT(BEEPER);
             if (counterBeep== 0){
-              WRITE(BEEPER,HIGH);
+              if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
+              {
+                   bFirst=false;
+                   WRITE(BEEPER, HIGH);
+              }
             }			
             if (counterBeep== 20){
               WRITE(BEEPER,LOW);

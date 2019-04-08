@@ -7,6 +7,8 @@ char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 #include "Configuration_prusa.h"
 #include "Marlin.h"
+
+#include "sound.h"
 /**
 * Implementation of the LCD display routines for a Hitachi HD44780 display. These are common LCD character displays.
 * When selecting the Russian language, a slightly different LCD implementation is used to handle UTF8 characters.
@@ -1325,6 +1327,8 @@ static void lcd_implementation_quick_feedback()
 	#endif
 #elif defined(BEEPER) && BEEPER > -1
     SET_OUTPUT(BEEPER);
+    Sound_MakeSound(e_SOUND_CLASS_Echo,e_SOUND_TYPE_ButtonEcho);
+/*
 	#if !defined(LCD_FEEDBACK_FREQUENCY_HZ) || !defined(LCD_FEEDBACK_FREQUENCY_DURATION_MS)
     for(int8_t i=0;i<10;i++)
     {
@@ -1342,6 +1346,7 @@ static void lcd_implementation_quick_feedback()
       delayMicroseconds(1000000 / LCD_FEEDBACK_FREQUENCY_HZ / 2);
     }
     #endif
+*/
 #endif
 }
 
