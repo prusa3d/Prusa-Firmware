@@ -4779,6 +4779,7 @@ static void lcd_main_menu()
 
 void stack_error() {
 	SET_OUTPUT(BEEPER);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
 	WRITE(BEEPER, HIGH);
 	delay(1000);
 	WRITE(BEEPER, LOW);

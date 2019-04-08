@@ -937,6 +937,7 @@ void factory_reset(char level, bool quiet)
                    
         // Level 0: Language reset
         case 0:
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
@@ -946,6 +947,7 @@ void factory_reset(char level, bool quiet)
          
 		//Level 1: Reset statistics
 		case 1:
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			WRITE(BEEPER, HIGH);
 			_delay_ms(100);
 			WRITE(BEEPER, LOW);
@@ -969,6 +971,7 @@ void factory_reset(char level, bool quiet)
             eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
                        
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
@@ -981,6 +984,7 @@ void factory_reset(char level, bool quiet)
 			lcd_printPGM(PSTR("Factory RESET"));
 			lcd_print_at_PGM(1, 2, PSTR("ERASING all data"));
 
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			WRITE(BEEPER, HIGH);
 			_delay_ms(100);
 			WRITE(BEEPER, LOW);
@@ -1117,6 +1121,7 @@ void setup()
 
 
 			SET_OUTPUT(BEEPER);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			WRITE(BEEPER, HIGH);
 
 			while (!READ(BTN_ENC));
@@ -5076,6 +5081,7 @@ Sigma_Exit:
       if (beepS > 0)
       {
         #if BEEPER > 0
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           tone(BEEPER, beepS);
           delay(beepP);
           noTone(BEEPER);

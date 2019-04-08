@@ -1,6 +1,7 @@
 #include "Configuration.h"
 
 #include "ultralcd.h"
+#include "sound.h"
 #include "language.h"
 #include "util.h"
 
@@ -256,10 +257,12 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
         for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
             lcd_implementation_write(*c);
         lcd_print_at_PGM(0, 3, MSG_NEW_FIRMWARE_PLEASE_UPGRADE);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         tone(BEEPER, 1000);
         delay_keep_alive(50);
         noTone(BEEPER);
         delay_keep_alive(500);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         tone(BEEPER, 1000);
         delay_keep_alive(50);
         noTone(BEEPER);
