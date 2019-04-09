@@ -1113,6 +1113,7 @@ void setWatch()
 #if (defined (TEMP_RUNAWAY_BED_HYSTERESIS) && TEMP_RUNAWAY_BED_TIMEOUT > 0) || (defined (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS) && TEMP_RUNAWAY_EXTRUDER_TIMEOUT > 0)
 void temp_runaway_check(int _heater_id, float _target_temperature, float _current_temperature, float _output, bool _isbed)
 {
+     float __delta;
 	float __hysteresis = 0;
 	int __timeout = 0;
 	bool temp_runaway_check_active = false;
@@ -1172,9 +1173,20 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 				SERIAL_ECHOPGM(" T:");
 				MYSERIAL.print(_current_temperature);
 				SERIAL_ECHOPGM(" Tstart:");
-				MYSERIAL.print(__preheat_start[_heater_id]);*/
+				MYSERIAL.print(__preheat_start[_heater_id]);
+				SERIAL_ECHOPGM(" delta:");
+				MYSERIAL.print(_current_temperature-__preheat_start[_heater_id]);*/
 				
-				if (_current_temperature - __preheat_start[_heater_id] < ((_isbed &&(_current_temperature>105.0))?0.6:2.0)) {
+//-//				if (_current_temperature - __preheat_start[_heater_id] < 2) {
+//-//				if (_current_temperature - __preheat_start[_heater_id] < ((_isbed && (_current_temperature>105.0))?0.6:2.0)) {
+                    __delta=2.0;
+                    if(_isbed)
+                         {
+                         __delta=3.0;
+                         if(_current_temperature>90.0) __delta=2.0;
+                         if(_current_temperature>105.0) __delta=0.6;
+                         }
+				if (_current_temperature - __preheat_start[_heater_id] < __delta) {
 					__preheat_errors[_heater_id]++;
 					/*SERIAL_ECHOPGM(" Preheat errors:");
 					MYSERIAL.println(__preheat_errors[_heater_id]);*/
@@ -1195,10 +1207,15 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 			}
 		}
 
-		if (_current_temperature >= _target_temperature  && temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
+//-//		if (_current_temperature >= _target_temperature  && temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
+		if ((_current_temperature > (_target_temperature - __hysteresis))  && temp_runaway_status[_heater_id] == TempRunaway_PREHEAT)
 		{
+			/*SERIAL_ECHOPGM("Heater:");
+			MYSERIAL.print(_heater_id);
+			MYSERIAL.println(" ->tempRunaway");*/
 			temp_runaway_status[_heater_id] = TempRunaway_ACTIVE;
 			temp_runaway_check_active = false;
+			temp_runaway_error_counter[_heater_id] = 0;
 		}
 
 		if (_output > 0)
