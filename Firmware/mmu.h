@@ -58,7 +58,7 @@ enum class MmuCmd : uint_least8_t
     K4,
     R0,
     S3,
-    W0,
+    W0, //!< Wait and signal load error
 };
 
 inline MmuCmd operator+ (MmuCmd cmd, uint8_t filament)
