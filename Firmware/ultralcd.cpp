@@ -128,6 +128,7 @@ static void lcd_control_volumetric_menu();
 static void lcd_settings_linearity_correction_menu_save();
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
+static void prusa_stat_diameter();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
@@ -4107,6 +4108,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(1);
 			prusa_stat_farm_number();
+			prusa_stat_diameter();
 			SERIAL_ECHOLN("}");
 			status_number = 1;
 		}
@@ -4261,6 +4263,12 @@ static void prusa_stat_farm_number() {
 	SERIAL_ECHO("]");
 }
 
+static void prusa_stat_diameter() {
+	SERIAL_ECHO("[DIA:");
+	SERIAL_ECHO(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM));
+	SERIAL_ECHO("]");
+}
+
 static void prusa_stat_temperatures()
 {
 	SERIAL_ECHO("[ST0:");
@@ -4296,6 +4304,7 @@ static void prusa_stat_printinfo()
 	SERIAL_ECHO("][FWR:");
 	SERIAL_ECHO(FW_VERSION);
 	SERIAL_ECHO("]");
+     prusa_stat_diameter();
 }
 
 /*
