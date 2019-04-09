@@ -76,6 +76,8 @@ extern float current_temperature_bed;
   extern volatile int babystepsTodo[3];
 #endif
 
+void resetPID(uint8_t extruder);
+
 inline void babystepsTodoZadd(int n)
 {
     if (n != 0) {
@@ -126,7 +128,21 @@ FORCE_INLINE float degTargetBed() {
 
 FORCE_INLINE void setTargetHotend(const float &celsius, uint8_t extruder) {  
   target_temperature[extruder] = celsius;
+  resetPID(extruder);
 };
+
+static inline void setTargetHotendSafe(const float &celsius, uint8_t extruder)
+{
+    if (extruder<EXTRUDERS) {
+      target_temperature[extruder] = celsius;
+      resetPID(extruder);
+    }
+}
+
+static inline void setAllTargetHotends(const float &celsius)
+{
+    for(int i=0;i<EXTRUDERS;i++) setTargetHotend(celsius,i);
+}
 
 FORCE_INLINE void setTargetBed(const float &celsius) {  
   target_temperature_bed = celsius;

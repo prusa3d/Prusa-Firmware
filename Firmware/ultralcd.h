@@ -31,6 +31,7 @@
   unsigned char lcd_choose_color();
   void lcd_mylang();
   bool lcd_detected(void);
+  void lcd_print_stop();
 
   
   void lcd_menu_statistics();
