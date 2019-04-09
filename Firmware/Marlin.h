@@ -340,6 +340,19 @@ extern bool sortAlpha;
 
 extern void calculate_volumetric_multipliers();
 
+
+//estimated time to end of the print
+extern uint8_t print_percent_done_normal;
+extern uint16_t print_time_remaining_normal;
+extern uint8_t print_percent_done_silent;
+extern uint16_t print_time_remaining_silent;
+
+#define PRINT_TIME_REMAINING_INIT 0xffff
+#define PRINT_PERCENT_DONE_INIT   0xff
+#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == 4) || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused)
+
+extern void calculate_extruder_multipliers();
+
 // Similar to the default Arduino delay function, 
 // but it keeps the background tasks running.
 extern void delay_keep_alive(unsigned int ms);
@@ -363,6 +376,10 @@ void wait_for_heater(long codenum);
 void serialecho_temperatures();
 void proc_commands();
 bool check_commands();
+
+//estimated time to end of the print
+extern uint16_t print_time_remaining();
+extern uint8_t print_percent_done();
 
 #ifdef HOST_KEEPALIVE_FEATURE
 

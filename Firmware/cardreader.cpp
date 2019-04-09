@@ -24,6 +24,7 @@ CardReader::CardReader()
    sdpos = 0;
    sdprinting = false;
    cardOK = false;
+   paused = false;
    saving = false;
    logging = false;
    autostart_atmillis=0;
@@ -243,9 +244,10 @@ void CardReader::startFileprint()
   if(cardOK)
   {
     sdprinting = true;
-    #ifdef SDCARD_SORT_ALPHA
-	 // flush_presort();
-    #endif
+	paused = false;
+	#ifdef SDCARD_SORT_ALPHA
+		//flush_presort();
+	#endif
   }
 }
 
@@ -254,6 +256,7 @@ void CardReader::pauseSDPrint()
   if(sdprinting)
   {
     sdprinting = false;
+	paused = true;
   }
 }
 
@@ -327,6 +330,7 @@ void CardReader::openFile(char* name,bool read, bool replace_current/*=true*/)
     SERIAL_ECHOLN(name);
   }
   sdprinting = false;
+  paused = false;
   
  
   SdFile myDir;
@@ -513,8 +517,11 @@ void CardReader::getStatus()
     SERIAL_PROTOCOL(itostr2(time%60));
     SERIAL_PROTOCOLPGM("\n");
   }
+  else if (paused) {
+	SERIAL_PROTOCOLLNPGM("SD print paused");
+  }
   else{
-    SERIAL_PROTOCOLLNRPGM("Not printing");
+    SERIAL_PROTOCOLLNPGM("Not SD printing");
   }
 }
 void CardReader::write_command(char *buf)
