@@ -6093,6 +6093,7 @@ void clamp_to_software_endstops(float target[3])
             float de = e - current_position[E_AXIS];
             for (int i = 1; i < n_segments; ++ i) {
                 float t = float(i) / float(n_segments);
+				if (mbl.active == false) return;
                 plan_buffer_line(
                                  current_position[X_AXIS] + t * dx,
                                  current_position[Y_AXIS] + t * dy,
