@@ -65,6 +65,11 @@
 #define Z_MAX_POS 210
 #define Z_MIN_POS 0.15
 
+// Uncomment Z_MAX_POS_XYZ_CALIBRATION_CORRECTION define for using the MK3S and MK2.5S firmware 
+//                                                in combination with an extruder different from Prusa.
+// This is only relevant for "S" firmware and an extruder like the Bondtech BMG or Bear extruders.
+// #define Z_MAX_POS_XYZ_CALIBRATION_CORRECTION 2.0 // This represents the correction as needed for MK3 and BMG (not MK3S) extruder 
+
 // Canceled home position
 #define X_CANCEL_POS 50
 #define Y_CANCEL_POS 190
