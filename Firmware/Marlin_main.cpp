@@ -63,6 +63,7 @@
 
 
 #include "ultralcd.h"
+#include "sound.h"
 
 // Macros for bit masks
 #define BIT(b) (1<<(b))
@@ -931,6 +932,7 @@ void factory_reset(char level, bool quiet)
                    
         // Level 0: Language reset
         case 0:
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
@@ -940,6 +942,7 @@ void factory_reset(char level, bool quiet)
          
 		//Level 1: Reset statistics
 		case 1:
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			WRITE(BEEPER, HIGH);
 			_delay_ms(100);
 			WRITE(BEEPER, LOW);
@@ -963,6 +966,7 @@ void factory_reset(char level, bool quiet)
             eeprom_update_byte((uint8_t*)EEPROM_FARM_MODE, farm_mode);
             EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
                        
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
@@ -975,6 +979,7 @@ void factory_reset(char level, bool quiet)
 			lcd_printPGM(PSTR("Factory RESET"));
 			lcd_print_at_PGM(1, 2, PSTR("ERASING all data"));
 
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			WRITE(BEEPER, HIGH);
 			_delay_ms(100);
 			WRITE(BEEPER, LOW);
@@ -1016,6 +1021,7 @@ void factory_reset(char level, bool quiet)
 void setup()
 {
 	lcd_init();
+     Sound_Init();
 	lcd_print_at_PGM(0, 1, PSTR("   Original Prusa   "));
 	lcd_print_at_PGM(0, 2, PSTR("    3D  Printers    "));
 	setup_killpin();
@@ -1110,6 +1116,7 @@ void setup()
 
 
 			SET_OUTPUT(BEEPER);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			WRITE(BEEPER, HIGH);
 
 			while (!READ(BTN_ENC));
@@ -5087,6 +5094,7 @@ Sigma_Exit:
       if (beepS > 0)
       {
         #if BEEPER > 0
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
           tone(BEEPER, beepS);
           delay(beepP);
           noTone(BEEPER);
@@ -5489,6 +5497,7 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
         lcd_wait_interact();
 		load_filament_time = millis();
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
+        bool bFirst=true;
         while(!lcd_clicked()){
 
 		  cnt++;
@@ -5509,7 +5518,11 @@ case 404:  //M404 Enter the nominal filament width (3mm, 1.75mm ) N<3.0> or disp
             }
             SET_OUTPUT(BEEPER);
             if (counterBeep== 0){
-              WRITE(BEEPER,HIGH);
+              if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
+              {
+                   bFirst=false;
+                   WRITE(BEEPER, HIGH);
+              }
             }			
             if (counterBeep== 20){
               WRITE(BEEPER,LOW);

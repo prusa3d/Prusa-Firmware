@@ -1,4 +1,5 @@
 /**
+/**
  * English
  *
  * LCD Menu Messages
@@ -274,8 +275,8 @@
 
 #define MSG_MESH_BED_LEVELING									"Mesh Bed Leveling"
 #define MSG_MENU_CALIBRATION									"Calibration"
-#define(length=19, lines=1) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card [normal]"
-#define(length=19, lines=1) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [FlshAir]"
+#define(length=17, lines=1) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF					"SD card  [normal]"
+#define(length=17, lines=1) MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON					"SD card [flshAir]"
 #define(length=20, lines=1) MSG_PRINTER_DISCONNECTED			"Printer disconnected"
 #define(length=20, lines=1) MSG_FINISHING_MOVEMENTS				"Finishing movements"
 #define(length=20, lines=1) MSG_PRINT_PAUSED					"Print paused"
@@ -313,10 +314,14 @@
 #define(length=15, lines=1) MSG_SLIGHT_SKEW						"Slight skew:"
 #define(length=15, lines=1) MSG_SEVERE_SKEW						"Severe skew:"
 #define(length=20, lines=4) MSG_DEFAULT_SETTINGS_LOADED			"Default settings loaded"
-#define(length=17, lines=1) MSG_SORT_TIME						"Sort: [Time]"
-#define(length=17, lines=1) MSG_SORT_ALPHA						"Sort: [Alphabet]"
-#define(length=17, lines=1) MSG_SORT_NONE						"Sort: [None]"
+#define(length=17, lines=1) MSG_SORT_TIME						"Sort       [time]"
+#define(length=17, lines=1) MSG_SORT_ALPHA						"Sort   [alphabet]"
+#define(length=17, lines=1) MSG_SORT_NONE						"Sort       [none]"
 #define(length=20, lines=1) MSG_SORTING							"Sorting files"
+#define(length=17, lines=1) MSG_SOUND_MODE_LOUD                       "Sound      [loud]"
+#define(length=17, lines=1) MSG_SOUND_MODE_ONCE                       "Sound      [once]"
+#define(length=17, lines=1) MSG_SOUND_MODE_SILENT                     "Sound    [silent]"
+#define(length=17, lines=1) MSG_SOUND_MODE_MUTE                       "Sound      [mute]"
 #define(length=20, lines=2) MSG_FILE_INCOMPLETE					"File incomplete. Continue anyway?"
 #define(length=17, lines=1) MSG_WIZARD							"Wizard"
 #define(length=20, lines=7)	MSG_WIZARD_WELCOME					"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"

@@ -15,6 +15,8 @@
 
 #include "SdFatUtil.h"
 
+#include "sound.h"
+
 #define _STRINGIFY(s) #s
 
 
@@ -3056,6 +3058,11 @@ static void lcd_sort_type_set() {
 }
 #endif //SDCARD_SORT_ALPHA
 
+static void lcd_sound_state_set(void)
+{
+Sound_CycleState();
+}
+
 static void lcd_silent_mode_set() {
 	switch (SilentModeMenu) {
 	case 0: SilentModeMenu = 1; break;
@@ -3514,6 +3521,24 @@ static void lcd_settings_menu()
 	  }
   }
 #endif // SDCARD_SORT_ALPHA
+
+switch(eSoundMode)
+     {
+     case e_SOUND_MODE_LOUD:
+            MENU_ITEM(function,MSG_SOUND_MODE_LOUD,lcd_sound_state_set);
+          break;
+     case e_SOUND_MODE_ONCE:
+          MENU_ITEM(function,MSG_SOUND_MODE_ONCE,lcd_sound_state_set);
+          break;
+     case e_SOUND_MODE_SILENT:
+          MENU_ITEM(function,MSG_SOUND_MODE_SILENT,lcd_sound_state_set);
+          break;
+     case e_SOUND_MODE_MUTE:
+          MENU_ITEM(function,MSG_SOUND_MODE_MUTE,lcd_sound_state_set);
+          break;
+     default:
+          MENU_ITEM(function,MSG_SOUND_MODE_LOUD,lcd_sound_state_set);
+     }
     
     if (farm_mode)
     {
@@ -4754,6 +4779,7 @@ static void lcd_main_menu()
 
 void stack_error() {
 	SET_OUTPUT(BEEPER);
+if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
 	WRITE(BEEPER, HIGH);
 	delay(1000);
 	WRITE(BEEPER, LOW);
@@ -4812,6 +4838,25 @@ static void lcd_tune_menu()
 	  default: MENU_ITEM(function, MSG_SILENT_MODE_OFF, lcd_silent_mode_set_tune); break;
 	  }
   }
+
+  switch(eSoundMode)
+       {
+       case e_SOUND_MODE_LOUD:
+            MENU_ITEM(function,MSG_SOUND_MODE_LOUD,lcd_sound_state_set);
+            break;
+       case e_SOUND_MODE_ONCE:
+            MENU_ITEM(function,MSG_SOUND_MODE_ONCE,lcd_sound_state_set);
+            break;
+       case e_SOUND_MODE_SILENT:
+            MENU_ITEM(function,MSG_SOUND_MODE_SILENT,lcd_sound_state_set);
+            break;
+       case e_SOUND_MODE_MUTE:
+            MENU_ITEM(function,MSG_SOUND_MODE_MUTE,lcd_sound_state_set);
+            break;
+        default:
+            MENU_ITEM(function,MSG_SOUND_MODE_LOUD,lcd_sound_state_set);
+       }
+
   END_MENU();
 }
 
