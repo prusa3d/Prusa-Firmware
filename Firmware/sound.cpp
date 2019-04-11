@@ -47,9 +47,6 @@ switch(eSoundMode)
           eSoundMode=e_SOUND_MODE_SILENT;
           break;
      case e_SOUND_MODE_SILENT:
-          eSoundMode=e_SOUND_MODE_MUTE;
-          break;
-     case e_SOUND_MODE_MUTE:
           eSoundMode=e_SOUND_MODE_LOUD;
           break;
      default:
@@ -75,8 +72,6 @@ switch(eSoundMode)
                Sound_DoSound_Prompt();
           break;
      case e_SOUND_MODE_SILENT:
-          break;
-     case e_SOUND_MODE_MUTE:
           break;
      default:
           ;

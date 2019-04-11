@@ -3533,9 +3533,6 @@ switch(eSoundMode)
      case e_SOUND_MODE_SILENT:
           MENU_ITEM(function,MSG_SOUND_MODE_SILENT,lcd_sound_state_set);
           break;
-     case e_SOUND_MODE_MUTE:
-          MENU_ITEM(function,MSG_SOUND_MODE_MUTE,lcd_sound_state_set);
-          break;
      default:
           MENU_ITEM(function,MSG_SOUND_MODE_LOUD,lcd_sound_state_set);
      }
@@ -4779,7 +4776,6 @@ static void lcd_main_menu()
 
 void stack_error() {
 	SET_OUTPUT(BEEPER);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
 	WRITE(BEEPER, HIGH);
 	delay(1000);
 	WRITE(BEEPER, LOW);
@@ -4849,9 +4845,6 @@ static void lcd_tune_menu()
             break;
        case e_SOUND_MODE_SILENT:
             MENU_ITEM(function,MSG_SOUND_MODE_SILENT,lcd_sound_state_set);
-            break;
-       case e_SOUND_MODE_MUTE:
-            MENU_ITEM(function,MSG_SOUND_MODE_MUTE,lcd_sound_state_set);
             break;
         default:
             MENU_ITEM(function,MSG_SOUND_MODE_LOUD,lcd_sound_state_set);
