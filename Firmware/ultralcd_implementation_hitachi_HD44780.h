@@ -715,15 +715,24 @@ static inline void lcd_print_time() {
 	else if(starttime != 0){
 		print_t = millis() / 60000 - starttime / 60000;	
 	}
-	lcd.print(LCD_STR_CLOCK[0]);
+	uint16_t print_hours = print_t / 60;
+	uint8_t print_minutes = print_t % 60;
 	if((PRINTER_ACTIVE) && ((print_time_remaining_normal != PRINT_TIME_REMAINING_INIT)||(starttime != 0)))
 	{
-		lcd.print(itostr2(print_t/60));
+		if (print_hours > 99) {
+			if (print_hours > 999) print_hours = 999;
+			lcd.print(itostr3(print_hours));
+		}
+		else {
+			lcd.print(LCD_STR_CLOCK[0]);
+			lcd.print(itostr2(print_hours));
+		}
         lcd.print(':');
-        lcd.print(itostr2(print_t%60));	
+        lcd.print(itostr2(print_minutes));	
 		(print_time_remaining_normal != PRINT_TIME_REMAINING_INIT) ? lcd.print('R') : lcd.print(' ');
 		(feedmultiply == 100) ? lcd.print(' ') : lcd.print('?');
     }else{
+		lcd.print(LCD_STR_CLOCK[0]);
         lcd_printPGM(PSTR("--:--  "));
     }
 }
