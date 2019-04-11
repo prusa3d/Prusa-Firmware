@@ -733,7 +733,7 @@ static inline void lcd_print_time() {
 		(feedmultiply == 100) ? lcd.print(' ') : lcd.print('?');
     }else{
 		lcd.print(LCD_STR_CLOCK[0]);
-        lcd_printPGM(PSTR("--:--  "));
+		lcd_printPGM(PSTR("--:--  "));
     }
 }
 
