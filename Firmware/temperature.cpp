@@ -1129,6 +1129,8 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
           if (_isbed)
           {
                __hysteresis = TEMP_RUNAWAY_BED_HYSTERESIS;
+               if(_target_temperature>105.0)
+                    __hysteresis = TEMP_RUNAWAY_BED_HYSTERESIS * 3.0;
                __timeout = TEMP_RUNAWAY_BED_TIMEOUT;
           }
 #endif
