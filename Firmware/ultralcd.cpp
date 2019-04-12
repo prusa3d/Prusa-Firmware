@@ -47,11 +47,13 @@ char longFilenameOLD[LONG_FILENAME_LENGTH];
 
 
 static void lcd_sd_updir();
+static void lcd_mesh_bed_leveling_settings();
 
 int8_t ReInitLCD = 0;
 
 
 int8_t SilentModeMenu = SILENT_MODE_OFF;
+uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
 
@@ -131,18 +133,20 @@ static void prusa_stat_farm_number();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
-void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
+//static void lcd_menu_extruder_info();           // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 static void lcd_menu_xyz_y_min();
 static void lcd_menu_xyz_skew();
 static void lcd_menu_xyz_offset();
 static void lcd_menu_fails_stats_mmu();
 static void lcd_menu_fails_stats_mmu_print();
 static void lcd_menu_fails_stats_mmu_total();
-static void lcd_menu_show_sensors_state();
+//static void lcd_menu_show_sensors_state();      // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
 static void mmu_fil_eject_menu();
 static void mmu_load_to_nozzle_menu();
+#ifdef MMU_HAS_CUTTER
 static void mmu_cut_filament_menu();
+#endif //MMU_HAS_CUTTER
 
 #if defined(TMC2130) || defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats();
@@ -161,7 +165,7 @@ static bool lcd_selfcheck_pulleys(int axis);
 #endif //TMC2130
 
 static bool lcd_selfcheck_check_heater(bool _isbed);
-enum class testScreen
+enum class testScreen : uint_least8_t
 {
     extruderFan,
     printFan,
@@ -180,6 +184,22 @@ enum class testScreen
     home,
 };
 
+enum class TestError : uint_least8_t
+{
+    heater,
+    bed,
+    endstops,
+    motor,
+    endstop,
+    printFan,
+    extruderFan,
+    pulley,
+    axis,
+    swappedFan,
+    wiringFsensor,
+    triggeringFsensor,
+};
+
 static int  lcd_selftest_screen(testScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
 static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite);
@@ -190,7 +210,7 @@ static bool lcd_selftest_fan_dialog(int _fan);
 static bool lcd_selftest_fsensor();
 #endif //PAT9125
 static bool selftest_irsensor();
-static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2);
+static void lcd_selftest_error(TestError error, const char *_error_1, const char *_error_2);
 static void lcd_colorprint_change();
 #ifdef SNMM
 static int get_ext_nr();
@@ -2295,6 +2315,7 @@ void lcd_set_fan_check() {
 	eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED, fans_check_enabled);
 }
 
+#ifdef MMU_HAS_CUTTER
 void lcd_cutter_enabled()
 {
     if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
@@ -2306,6 +2327,7 @@ void lcd_cutter_enabled()
         eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 1);
     }
 }
+#endif //MMU_HAS_CUTTER
 
 void lcd_set_filament_autoload() {
      fsensor_autoload_set(!fsensor_autoload_enabled);
@@ -2536,10 +2558,12 @@ if(current_temperature[0]>(target_temperature[0]*0.95))
                menu_submenu(mmu_fil_eject_menu);
                break;
           case e_FILAMENT_ACTION_mmuCut:
+#ifdef MMU_HAS_CUTTER
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
                menu_back(nLevel);
                menu_submenu(mmu_cut_filament_menu);
+#endif //MMU_HAS_CUTTER
                break;
           case e_FILAMENT_ACTION_none:
                break;
@@ -4057,7 +4081,7 @@ static void lcd_show_sensors_state()
 	lcd_print_state(idler_state);
 }
 
-static void lcd_menu_show_sensors_state()
+void lcd_menu_show_sensors_state()                // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
 	lcd_timeoutToStatus.stop();
 	lcd_show_sensors_state();
@@ -4514,6 +4538,14 @@ static void lcd_sound_state_set(void)
 Sound_CycleState();
 }
 
+#ifndef MMU_FORCE_STEALTH_MODE
+static void lcd_silent_mode_mmu_set() {
+	if (SilentModeMenu_MMU == 1) SilentModeMenu_MMU = 0;
+	else SilentModeMenu_MMU = 1;
+	//saving to eeprom is done in mmu_loop() after mmu actually switches state and confirms with "ok"
+}
+#endif //MMU_FORCE_STEALTH_MODE
+
 static void lcd_silent_mode_set() {
 	switch (SilentModeMenu) {
 #ifdef TMC2130
@@ -4529,6 +4561,7 @@ static void lcd_silent_mode_set() {
 	}
   eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
 #ifdef TMC2130
+  lcd_display_message_fullscreen_P(_i("Mode change in progress ..."));
   // Wait until the planner queue is drained and the stepper routine achieves
   // an idle state.
   st_synchronize();
@@ -4549,6 +4582,7 @@ static void lcd_silent_mode_set() {
 #ifdef TMC2130
   if (CrashDetectMenu && (SilentModeMenu != SILENT_MODE_NORMAL))
 	  menu_submenu(lcd_crash_mode_info2);
+  lcd_encoder_diff=0;                             // reset 'encoder buffer'
 #endif //TMC2130
 }
 
@@ -5218,6 +5252,7 @@ do\
 }\
 while(0)\
 
+#ifdef MMU_HAS_CUTTER
 static bool settingsCutter()
 {
     if (mmu_enabled)
@@ -5239,7 +5274,10 @@ do\
 {\
     if(settingsCutter()) return;\
 }\
-while(0)\
+while(0)
+#else
+#define SETTINGS_CUTTER
+#endif //MMU_HAS_CUTTER
 
 #ifdef TMC2130
 #define SETTINGS_SILENT_MODE \
@@ -5291,6 +5329,21 @@ do\
 while (0)
 #endif //TMC2130
 
+#ifndef MMU_FORCE_STEALTH_MODE
+#define SETTINGS_MMU_MODE \
+do\
+{\
+	if (mmu_enabled)\
+	{\
+		if (SilentModeMenu_MMU == 0) MENU_ITEM_FUNCTION_P(_i("MMU Mode [Normal]"), lcd_silent_mode_mmu_set); \
+		else MENU_ITEM_FUNCTION_P(_i("MMU Mode[Stealth]"), lcd_silent_mode_mmu_set); \
+	}\
+}\
+while (0) 
+#else //MMU_FORCE_STEALTH_MODE
+#define SETTINGS_MMU_MODE
+#endif //MMU_FORCE_STEALTH_MODE
+
 #ifdef SDCARD_SORT_ALPHA
 #define SETTINGS_SD \
 do\
@@ -5306,9 +5359,9 @@ do\
         EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));\
         switch (sdSort)\
         {\
-          case SD_SORT_TIME: MENU_ITEM_FUNCTION_P(_i("Sort:      [time]"), lcd_sort_type_set); break;/*////MSG_SORT_TIME c=17 r=1*/\
-          case SD_SORT_ALPHA: MENU_ITEM_FUNCTION_P(_i("Sort:  [alphabet]"), lcd_sort_type_set); break;/*////MSG_SORT_ALPHA c=17 r=1*/\
-          default: MENU_ITEM_FUNCTION_P(_i("Sort:      [none]"), lcd_sort_type_set);/*////MSG_SORT_NONE c=17 r=1*/\
+          case SD_SORT_TIME: MENU_ITEM_FUNCTION_P(_i("Sort       [time]"), lcd_sort_type_set); break;/*////MSG_SORT_TIME c=17 r=1*/\
+          case SD_SORT_ALPHA: MENU_ITEM_FUNCTION_P(_i("Sort   [alphabet]"), lcd_sort_type_set); break;/*////MSG_SORT_ALPHA c=17 r=1*/\
+          default: MENU_ITEM_FUNCTION_P(_i("Sort       [none]"), lcd_sort_type_set);/*////MSG_SORT_NONE c=17 r=1*/\
         }\
     }\
 }\
@@ -5324,6 +5377,29 @@ do\
 }\
 while (0)
 #endif // SDCARD_SORT_ALPHA
+
+/*
+#define SETTINGS_MBL_MODE \
+do\
+{\
+    switch(e_mbl_type)\
+    {\
+    case e_MBL_FAST:\
+        MENU_ITEM_FUNCTION_P(_i("Mode    [Fast]"),mbl_mode_set);\ 
+         break; \
+    case e_MBL_OPTIMAL:\
+	    MENU_ITEM_FUNCTION_P(_i("Mode [Optimal]"), mbl_mode_set); \ 
+	     break; \
+    case e_MBL_PREC:\
+	     MENU_ITEM_FUNCTION_P(_i("Mode [Precise]"), mbl_mode_set); \
+	     break; \
+    default:\
+	     MENU_ITEM_FUNCTION_P(_i("Mode [Optimal]"), mbl_mode_set); \
+	     break; \
+    }\
+}\
+while (0)
+*/
 
 #define SETTINGS_SOUND \
 do\
@@ -5372,6 +5448,9 @@ static void lcd_settings_menu()
 		MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
 
 	SETTINGS_SILENT_MODE;
+	SETTINGS_MMU_MODE;
+
+	MENU_ITEM_SUBMENU_P(_i("Mesh bed leveling"), lcd_mesh_bed_leveling_settings);////MSG_MBL_SETTINGS c=18 r=1
 
 #if defined (TMC2130) && defined (LINEARITY_CORRECTION)
     MENU_ITEM_SUBMENU_P(_i("Lin. correction"), lcd_settings_linearity_correction_menu);
@@ -5917,6 +5996,7 @@ static void mmu_fil_eject_menu()
     }
 }
 
+#ifdef MMU_HAS_CUTTER
 template <uint8_t filament>
 static void mmu_cut_filament()
 {
@@ -5948,6 +6028,7 @@ else {
      else mFilamentMenu();
      }
 }
+#endif //MMU_HAS_CUTTER
 
 #ifdef SNMM
 static void fil_unload_menu()
@@ -6421,7 +6502,9 @@ static void lcd_main_menu()
 //bFilamentFirstRun=true;
           MENU_ITEM_SUBMENU_P(_T(MSG_UNLOAD_FILAMENT), extr_unload_);
 		MENU_ITEM_SUBMENU_P(_i("Eject filament"), mmu_fil_eject_menu);
+#ifdef  MMU_HAS_CUTTER
         MENU_ITEM_SUBMENU_P(_i("Cut filament"), mmu_cut_filament_menu);
+#endif //MMU_HAS_CUTTER
 	}
 	else
 	{
@@ -6586,7 +6669,7 @@ static void lcd_tune_menu()
 		}
 	}
 #endif //TMC2130
-
+	 SETTINGS_MMU_MODE;
      switch(eSoundMode)
           {
           case e_SOUND_MODE_LOUD:
@@ -6606,6 +6689,54 @@ static void lcd_tune_menu()
           }
 
 	MENU_END();
+}
+
+static void mbl_magnets_elimination_toggle() {
+	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
+	magnet_elimination = !magnet_elimination;
+	eeprom_update_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION, (uint8_t)magnet_elimination);
+}
+
+static void mbl_mesh_toggle() {
+	uint8_t mesh_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+	if(mesh_nr == 3) mesh_nr = 7;
+	else mesh_nr = 3;
+	eeprom_update_byte((uint8_t*)EEPROM_MBL_POINTS_NR, mesh_nr);
+}
+
+static void mbl_probe_nr_toggle() {
+	mbl_z_probe_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_PROBE_NR);
+	switch (mbl_z_probe_nr) {
+		case 1: mbl_z_probe_nr = 3; break;
+		case 3: mbl_z_probe_nr = 5; break;
+		case 5: mbl_z_probe_nr = 1; break;
+		default: mbl_z_probe_nr = 3; break;
+	}
+	eeprom_update_byte((uint8_t*)EEPROM_MBL_PROBE_NR, mbl_z_probe_nr);
+}
+
+static void lcd_mesh_bed_leveling_settings()
+{
+	
+	bool magnet_elimination = (eeprom_read_byte((uint8_t*)EEPROM_MBL_MAGNET_ELIMINATION) > 0);
+	uint8_t points_nr = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
+
+	MENU_BEGIN();
+	MENU_ITEM_BACK_P(_T(MSG_SETTINGS)); 
+	if(points_nr == 3) MENU_ITEM_FUNCTION_P(_i("Mesh         [3x3]"), mbl_mesh_toggle); ////MSG_MESH_3x3 c=18 r=0
+	else			   MENU_ITEM_FUNCTION_P(_i("Mesh         [7x7]"), mbl_mesh_toggle); ////MSG_MESH_7x7 c=18 r=0
+	switch (mbl_z_probe_nr) {
+		case 1: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [1]"), mbl_probe_nr_toggle); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
+		case 5: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [5]"), mbl_probe_nr_toggle); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
+		default: MENU_ITEM_FUNCTION_P(_i("Z-probe nr.    [3]"), mbl_probe_nr_toggle); break; ////MSG_Z_PROBE_NR_1 c=18 r=0
+	}
+	if (points_nr == 7) {
+		if (magnet_elimination) MENU_ITEM_FUNCTION_P(_i("Magnets comp. [On]"), mbl_magnets_elimination_toggle); ////MSG_MAGNETS_COMP_ON c=18 r=0
+		else				    MENU_ITEM_FUNCTION_P(_i("Magnets comp.[Off]"), mbl_magnets_elimination_toggle); ////MSG_MAGNETS_COMP_OFF c=18 r=0
+	}
+	else					        menu_item_text_P(_i("Magnets comp.[N/A]")); ////MSG_MAGNETS_COMP_NA c=18 r=0
+	MENU_END();
+	//SETTINGS_MBL_MODE;
 }
 
 static void lcd_control_temperature_menu()
@@ -6737,10 +6868,7 @@ void lcd_sdcard_menu()
 
 
   MENU_BEGIN();
-  if(bMain)                                       // i.e. default menu-item
-    MENU_ITEM_BACK_P(_T(MSG_MAIN));
-  else                                            // i.e. menu-item after card insertion
-    MENU_ITEM_FUNCTION_P(_T(MSG_WATCH),lcd_return_to_status);
+  MENU_ITEM_BACK_P(_T(bMain?MSG_MAIN:MSG_BACK));  // i.e. default menu-item / menu-item after card insertion
   card.getWorkDirName();
   if (card.filename[0] == '/')
   {
@@ -6799,14 +6927,13 @@ bool lcd_selftest()
 	KEEPALIVE_STATE(IN_HANDLER);
 
 	_progress = lcd_selftest_screen(testScreen::extruderFan, _progress, 3, true, 2000);
-#if (defined(FANCHECK) && defined(TACH_0)) 		
+#if (defined(FANCHECK) && defined(TACH_0))
 	_result = lcd_selftest_fan_dialog(0);
 #else //defined(TACH_0)
 	_result = lcd_selftest_manual_fan_check(0, false);
 	if (!_result)
 	{
-		const char *_err;
-		lcd_selftest_error(7, _err, _err); //extruder fan not spinning
+		lcd_selftest_error(TestError::extruderFan, "", "");
 	}
 #endif //defined(TACH_0)
 	
@@ -6820,7 +6947,7 @@ bool lcd_selftest()
 		_result = lcd_selftest_manual_fan_check(1, false);
 		if (!_result)
 		{			
-			lcd_selftest_error(6, 0, 0); //print fan not spinning
+			lcd_selftest_error(TestError::printFan, "", ""); //print fan not spinning
 		}
 
 #endif //defined(TACH_1)
@@ -7078,7 +7205,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(9, _error_1, NULL);
+			lcd_selftest_error(TestError::axis, _error_1, "");
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -7096,7 +7223,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(8, _error_1, NULL);
+			lcd_selftest_error(TestError::pulley, _error_1, "");
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -7203,11 +7330,11 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 
 		if (_travel_done >= _travel)
 		{
-			lcd_selftest_error(5, _error_1, _error_2);
+			lcd_selftest_error(TestError::endstop, _error_1, _error_2);
 		}
 		else
 		{
-			lcd_selftest_error(4, _error_1, _error_2);
+			lcd_selftest_error(TestError::motor, _error_1, _error_2);
 		}
 	}
 
@@ -7247,7 +7374,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 		st_synchronize();
 		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
-			lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
+			lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
 			return(false);
 		}
 	}
@@ -7265,7 +7392,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 				return(true);
 			}
 			else {
-				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
+				lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
 		}
@@ -7274,7 +7401,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 			st_synchronize();
 			if (_millis() > timeout_counter) {
-				lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
+				lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
 		}
@@ -7307,7 +7434,7 @@ static bool lcd_selfcheck_endstops()
 		if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "X");
 		if ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Y");
 		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Z");
-		lcd_selftest_error(3, _error, "");
+		lcd_selftest_error(TestError::endstops, _error, "");
 	}
 	manage_heater();
 	manage_inactivity(true);
@@ -7373,12 +7500,12 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 		}
 		else
 		{
-			lcd_selftest_error(1, "", "");
+			lcd_selftest_error(TestError::heater, "", "");
 		}
 	}
 	else
 	{
-		lcd_selftest_error(2, "", "");
+		lcd_selftest_error(TestError::bed, "", "");
 	}
 
 	manage_heater();
@@ -7387,7 +7514,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 	return _stepresult;
 
 }
-static void lcd_selftest_error(int _error_no, const char *_error_1, const char *_error_2)
+static void lcd_selftest_error(TestError testError, const char *_error_1, const char *_error_2)
 {
 	lcd_beeper_quick_feedback();
 
@@ -7403,21 +7530,21 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 	lcd_set_cursor(0, 1);
 	lcd_puts_P(_i("Please check :"));////MSG_SELFTEST_PLEASECHECK c=0 r=0
 
-	switch (_error_no)
+	switch (testError)
 	{
-	case 1:
+	case TestError::heater:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Heater/Thermistor"));////MSG_SELFTEST_HEATERTHERMISTOR c=0 r=0
 		lcd_set_cursor(0, 3);
 		lcd_puts_P(_i("Not connected"));////MSG_SELFTEST_NOTCONNECTED c=0 r=0
 		break;
-	case 2:
+	case TestError::bed:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Bed / Heater"));////MSG_SELFTEST_BEDHEATER c=0 r=0
 		lcd_set_cursor(0, 3);
 		lcd_puts_P(_T(MSG_SELFTEST_WIRINGERROR));
 		break;
-	case 3:
+	case TestError::endstops:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Endstops"));////MSG_SELFTEST_ENDSTOPS c=0 r=0
 		lcd_set_cursor(0, 3);
@@ -7425,7 +7552,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd_set_cursor(17, 3);
 		lcd_print(_error_1);
 		break;
-	case 4:
+	case TestError::motor:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_T(MSG_SELFTEST_MOTOR));
 		lcd_set_cursor(18, 2);
@@ -7435,7 +7562,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_2);
 		break;
-	case 5:
+	case TestError::endstop:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Endstop not hit"));////MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 		lcd_set_cursor(0, 3);
@@ -7443,7 +7570,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case 6:
+	case TestError::printFan:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_T(MSG_SELFTEST_COOLING_FAN));
 		lcd_set_cursor(0, 3);
@@ -7451,7 +7578,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case 7:
+	case TestError::extruderFan:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_T(MSG_SELFTEST_EXTRUDER_FAN));
 		lcd_set_cursor(0, 3);
@@ -7459,7 +7586,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case 8:
+	case TestError::pulley:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Loose pulley"));////MSG_LOOSE_PULLEY c=20 r=1
 		lcd_set_cursor(0, 3);
@@ -7467,7 +7594,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case 9:
+	case TestError::axis:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Axis length"));////MSG_SELFTEST_AXIS_LENGTH c=0 r=0
 		lcd_set_cursor(0, 3);
@@ -7475,7 +7602,7 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case 10:
+	case TestError::swappedFan:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Front/left fans"));////MSG_SELFTEST_FANS c=0 r=0
 		lcd_set_cursor(0, 3);
@@ -7483,12 +7610,18 @@ static void lcd_selftest_error(int _error_no, const char *_error_1, const char *
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case 11: 
+	case TestError::wiringFsensor:
 		lcd_set_cursor(0, 2);
-		lcd_puts_P(_i("Filament sensor"));////MSG_FILAMENT_SENSOR c=20 r=0
+		lcd_puts_P(_T(MSG_SELFTEST_FILAMENT_SENSOR));
 		lcd_set_cursor(0, 3);
 		lcd_puts_P(_T(MSG_SELFTEST_WIRINGERROR));
 		break;
+	case TestError::triggeringFsensor:
+	    lcd_set_cursor(0, 2);
+        lcd_puts_P(_T(MSG_SELFTEST_FILAMENT_SENSOR));
+        lcd_set_cursor(0, 3);
+        lcd_puts_P(_i("False triggering"));////c=20 r=0
+        break;
 	}
 
 	_delay(1000);
@@ -7512,7 +7645,7 @@ static bool lcd_selftest_fsensor(void)
 	fsensor_init();
 	if (fsensor_not_responding)
 	{
-		lcd_selftest_error(11, NULL, NULL);
+		lcd_selftest_error(TestError::wiringFsensor, "", "");
 	}
 	return (!fsensor_not_responding);
 }
@@ -7564,7 +7697,11 @@ static bool selftest_irsensor()
         mmu_load_step(false);
         while (blocks_queued())
         {
-            if (PIN_GET(IR_SENSOR_PIN) == 0) return false;
+            if (PIN_GET(IR_SENSOR_PIN) == 0)
+            {
+                lcd_selftest_error(TestError::triggeringFsensor, "", "");
+                return false;
+            }
 #ifdef TMC2130
             manage_heater();
             // Vojtech: Don't disable motors inside the planner!
@@ -7690,7 +7827,7 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite)
 static bool lcd_selftest_fan_dialog(int _fan)
 {
 	bool _result = true;
-	int _errno = 7;
+	TestError testError = TestError::extruderFan;
 	switch (_fan) {
 	case 0:
 		fanSpeed = 0;
@@ -7745,7 +7882,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
 		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
 		if (!fan_speed[1]) {
-			_result = false; _errno = 6; //print fan not spinning
+			_result = false; testError = TestError::printFan;
 		}
 #ifdef FAN_SOFT_PWM 
 		else {
@@ -7756,10 +7893,10 @@ static bool lcd_selftest_fan_dialog(int _fan)
 			_result = lcd_selftest_manual_fan_check(1, true); //turn on print fan and check that left extruder fan is not spinning
 			if (_result) {
 				_result = lcd_selftest_manual_fan_check(1, false); //print fan is stil turned on; check that it is spinning
-				if (!_result) _errno = 6; //print fan not spinning
+				if (!_result) testError = TestError::printFan;
 			}
 			else {
-				_errno = 10; //swapped fans
+			    testError = TestError::swappedFan;
 			}
 		}
 
@@ -7771,7 +7908,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 	}
 	if (!_result)
 	{
-		lcd_selftest_error(_errno, NULL, NULL);
+		lcd_selftest_error(testError, "", "");
 	}
 	return _result;
 }
@@ -7820,7 +7957,8 @@ static int lcd_selftest_screen(testScreen screen, int _progress, int _progress_s
 	}
 	else if (screen >= testScreen::fsensor && screen <= testScreen::fsensorOk)
 	{
-		lcd_puts_at_P(0, 2, _i("Filament sensor:"));////MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
+		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));
+		lcd_putc(':');
 		lcd_set_cursor(18, 2);
 		(screen == testScreen::fsensor) ? lcd_print(_indicator) : lcd_print("OK");
 	}
@@ -8161,6 +8299,8 @@ void menu_lcd_lcdupdate_func(void)
 		}
 		else
 		{
+               if(menu_menu==lcd_sdcard_menu)
+                    menu_back();
 			card.release();
 			LCD_MESSAGERPGM(_i("Card removed"));////MSG_SD_REMOVED c=0 r=0
 		}
@@ -8205,4 +8345,3 @@ void menu_lcd_lcdupdate_func(void)
 	lcd_send_status();
 	if (lcd_commands_type == LCD_COMMAND_V2_CAL) lcd_commands();
 }
-
