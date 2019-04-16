@@ -77,7 +77,7 @@ public:
   bool cardOK ;
   bool paused ;
   char filename[13];
-  uint16_t creationTime, creationDate;
+  uint16_t modificationTime, modificationDate;
   uint32_t cluster, position;
   char longFilename[LONG_FILENAME_LENGTH];
   bool filenameIsDir;
@@ -114,8 +114,8 @@ private:
     #endif
   #elif !SDSORT_USES_STACK
     char sortnames[SDSORT_LIMIT][FILENAME_LENGTH];
-    uint16_t creation_time[SDSORT_LIMIT];
-    uint16_t creation_date[SDSORT_LIMIT];
+    uint16_t modification_time[SDSORT_LIMIT];
+    uint16_t modification_date[SDSORT_LIMIT];
   #endif
 
   // Folder sorting uses an isDir array when caching items.
