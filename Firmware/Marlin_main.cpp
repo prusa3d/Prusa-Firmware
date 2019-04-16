@@ -977,6 +977,12 @@ void list_sec_lang_from_external_flash()
 #endif //(LANG_MODE != 0)
 
 
+static void w25x20cl_err_msg()
+{
+    lcd_puts_P(_n(ESC_2J ESC_H(0,0) "External SPI flash" ESC_H(0,1) "W25X20CL is not res-"
+            ESC_H(0,2) "ponding. Language" ESC_H(0,3) "switch unavailable."));
+}
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -993,21 +999,25 @@ void setup()
 	spi_init();
 
 	lcd_splash();
-     Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
+    Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
 
 #ifdef W25X20CL
-	if (!w25x20cl_init())
-		kill(_i("External SPI flash W25X20CL not responding."));
-	// Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
-	optiboot_w25x20cl_enter();
-#endif
-
+    bool w25x20cl_success = w25x20cl_init();
+	if (w25x20cl_success)
+	{
+	    optiboot_w25x20cl_enter();
 #if (LANG_MODE != 0) //secondary language support
-#ifdef W25X20CL
-	if (w25x20cl_init())
-		update_sec_lang_from_external_flash();
-#endif //W25X20CL
+        update_sec_lang_from_external_flash();
 #endif //(LANG_MODE != 0)
+	}
+	else
+	{
+	    w25x20cl_err_msg();
+	}
+#else
+	const bool w25x20cl_success = true;
+#endif //W25X20CL
+
 
 	setup_killpin();
 	setup_powerhold();
@@ -1213,12 +1223,17 @@ void setup()
 
 	tp_init();    // Initialize temperature loop
 
-	lcd_splash(); // we need to do this again, because tp_init() kills lcd
+	if (w25x20cl_success) lcd_splash(); // we need to do this again, because tp_init() kills lcd
+	else
+	{
+	    w25x20cl_err_msg();
+	    printf_P(_n("W25X20CL not responding.\n"));
+	}
 
 	plan_init();  // Initialize planner;
 
 	factory_reset();
-     lcd_encoder_diff=0;
+    lcd_encoder_diff=0;
 
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
