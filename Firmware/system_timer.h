@@ -4,7 +4,9 @@
 #define FIRMWARE_SYSTEM_TIMER_H_
 
 #include "Arduino.h"
-//#define SYSTEM_TIMER_2
+#if MOTHERBOARD != BOARD_RAMPS_14_EFB
+	#define SYSTEM_TIMER_2
+#endif
 
 #ifdef SYSTEM_TIMER_2
 #include "timer02.h"

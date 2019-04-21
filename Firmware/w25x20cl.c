@@ -6,6 +6,7 @@
 #include "io_atmega2560.h"
 #include "spi.h"
 
+#if MOTHERBOARD != BOARD_RAMPS_14_EFB
 #define _MFRID             0xEF
 #define _DEVID             0x11
 
@@ -182,3 +183,4 @@ void w25x20cl_wait_busy(void)
 {
 	while (w25x20cl_rd_status_reg() & W25X20CL_STATUS_BUSY) ;
 }
+#endif 

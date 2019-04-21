@@ -46,7 +46,6 @@ extern bool lcd_selftest();
 void lcd_menu_statistics(); 
 
 void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
-void lcd_menu_show_sensors_state();               // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
 extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
@@ -118,7 +117,6 @@ extern int farm_status;
 #endif
 
 extern int8_t SilentModeMenu;
-extern uint8_t SilentModeMenu_MMU;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;

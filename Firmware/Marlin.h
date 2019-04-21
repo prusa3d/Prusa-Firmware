@@ -21,7 +21,6 @@
 #include "Configuration.h"
 #include "pins.h"
 #include "Timer.h"
-extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
 #define  HardwareSerial_h // trick to disable the standard HWserial
@@ -317,9 +316,9 @@ extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
 
-
+#ifdef HOST_KEEPALIVE_FEATURE
 extern uint8_t host_keepalive_interval;
-
+#endif
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
@@ -403,12 +402,13 @@ extern void check_babystep();
 extern void long_pause();
 extern void crashdet_stop_and_save_print();
 
-#ifdef HEATBED_ANALYSIS
+#ifdef DIS
+
 void d_setup();
 float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
-void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
-#endif //HEATBED_ANALYSIS
+
+#endif
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
@@ -448,7 +448,7 @@ extern void restore_print_from_ram_and_continue(float e_move);
 extern uint16_t print_time_remaining();
 extern uint8_t calc_percent_done();
 
-
+#ifdef HOST_KEEPALIVE_FEATURE
 
 // States for managing Marlin and host communication
 // Marlin sends messages if blocked or busy
@@ -469,8 +469,9 @@ extern uint8_t calc_percent_done();
 #define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
 extern void host_keepalive();
 //extern MarlinBusyState busy_state;
-extern int8_t busy_state;
+extern int busy_state;
 
+#endif //HOST_KEEPALIVE_FEATURE
 
 #ifdef TMC2130
 
@@ -482,12 +483,19 @@ void force_high_power_mode(bool start_high_power_section);
 #endif //TMC2130
 
 // G-codes
+#if MOTHERBOARD == BOARD_RAMPS_14_EFB
+void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl);
+void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
+#endif // MOTHERBOARD == BOARDS_RAMPS_14_EFB
+
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
 void gcode_M701();
 
-#define UVLO !(PINE & (1<<4))
+#ifdef UVLO_ENABLE
+	#define UVLO !(PINE & (1<<4))
+#endif
 
 void proc_commands();
 
@@ -495,6 +503,5 @@ void proc_commands();
 void M600_load_filament();
 void M600_load_filament_movements();
 void M600_wait_for_user(float HotendTempBckp);
-void M600_check_state(float nozzle_temp);
+void M600_check_state();
 void load_filament_final_feed();
-void marlin_wait_for_click();

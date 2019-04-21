@@ -236,7 +236,7 @@
 *  - SDSORT_DYNAMIC_RAM only uses RAM when the SD menu is visible. (Use with caution!)
 */
 	#define SDCARD_SORT_ALPHA //Alphabetical sorting of SD files menu
-	
+
 	// SD Card Sorting options
 	// In current firmware Prusa Firmware version,
 	// SDSORT_CACHE_NAMES and SDSORT_DYNAMIC_RAM is not supported and must be set to 0.
@@ -244,7 +244,7 @@
 	  #define SD_SORT_TIME 0
 	  #define SD_SORT_ALPHA 1
 	  #define SD_SORT_NONE 2
-	
+
 	  #define SDSORT_LIMIT       100    // Maximum number of sorted items (10-256).
 	  #define FOLDER_SORTING     -1     // -1=above  0=none  1=below
 	  #define SDSORT_GCODE       0  // Allow turning sorting on/off with LCD and M34 g-code.
@@ -253,7 +253,7 @@
 	  #define SDSORT_CACHE_NAMES 0  // Keep sorted items in RAM longer for speedy performance. Most expensive option.
 	  #define SDSORT_DYNAMIC_RAM 0  // Use dynamic allocation (within SD menus). Least expensive option. Set SDSORT_LIMIT before use!
 	#endif
-	
+
 	#if defined(SDCARD_SORT_ALPHA)
 	  #define HAS_FOLDER_SORTING (FOLDER_SORTING || SDSORT_GCODE)
 	#endif

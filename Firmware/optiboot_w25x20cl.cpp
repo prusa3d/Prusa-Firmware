@@ -1,4 +1,3 @@
-//! @file
 // Based on the OptiBoot project
 // https://github.com/Optiboot/optiboot
 // Licence GLP 2 or later.
@@ -98,7 +97,6 @@ static const char entry_magic_cfm    [] PROGMEM = "w25x20cl_cfm\n";
 struct block_t;
 extern struct block_t *block_buffer;
 
-//! @brief Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
 void optiboot_w25x20cl_enter()
 {
   if (boot_app_flags & BOOT_APP_FLG_USER0) return;

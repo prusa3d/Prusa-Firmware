@@ -7,7 +7,11 @@
 #include "Arduino.h"
 #include "io_atmega2560.h"
 
-#define BEEPER              84
+#if MOTHERBOARD == BOARD_RAMPS_14_EFB
+	#define BEEPER              33
+#else
+	#define BEEPER              84
+#endif
 
 uint8_t timer02_pwm0 = 0;
 
@@ -139,7 +143,7 @@ unsigned long micros2(void)
 	if ((TIFR & _BV(TOV2)) && (t < 255))
 		m++;
 #endif
-	SREG = oldSREG;	
+	SREG = oldSREG;
 	return ((m << 8) + t) * (64 / clockCyclesPerMicrosecond());
 }
 

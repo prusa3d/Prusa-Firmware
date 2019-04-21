@@ -206,7 +206,7 @@ void fsensor_autoload_set(bool State)
 
 void pciSetup(byte pin)
 {
-// !!! "digitalPinTo?????bit()" does not provide the correct results for some MCU pins
+// ! "digitalPinTo?????bit()" does not provide the correct results for some MCU pins
 	*digitalPinToPCMSK(pin) |= bit (digitalPinToPCMSKbit(pin)); // enable pin
 	PCIFR |= bit (digitalPinToPCICRbit(pin)); // clear any outstanding interrupt
 	PCICR |= bit (digitalPinToPCICRbit(pin)); // enable interrupt for the group 
@@ -308,7 +308,7 @@ bool fsensor_check_autoload(void)
 //	if ((fsensor_autoload_c >= 15) && (fsensor_autoload_sum > 30))
 	if ((fsensor_autoload_c >= 12) && (fsensor_autoload_sum > 20))
 	{
-//		puts_P(_N("fsensor_check_autoload = true !!!\n"));
+//		puts_P(_N("fsensor_check_autoload = true !\n"));
 		return true;
 	}
 #endif //PAT9125
@@ -483,7 +483,7 @@ void fsensor_setup_interrupt(void)
 	fsensor_int_pin_old = 0;
 
 	//pciSetup(FSENSOR_INT_PIN);
-// !!! "pciSetup()" does not provide the correct results for some MCU pins
+// ! "pciSetup()" does not provide the correct results for some MCU pins
 // so interrupt registers settings:
      FSENSOR_INT_PIN_PCMSK_REG |= bit(FSENSOR_INT_PIN_PCMSK_BIT); // enable corresponding PinChangeInterrupt (individual pin)
      PCIFR |= bit(FSENSOR_INT_PIN_PCICR_BIT);     // clear previous occasional interrupt (set of pins)
@@ -498,7 +498,7 @@ void fsensor_st_block_begin(block_t* bl)
 	if (((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8)) || 
 		((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8)))
 	{
-// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
+// ! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
 		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
 		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
 	}
@@ -510,7 +510,7 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
 	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
 	{
-// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
+// ! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
 		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
 		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
 	}
@@ -567,7 +567,7 @@ void fsensor_update(void)
 				printf_P(PSTR("fsensor_update - M600\n"));
 				eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 				eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-				enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
+				enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
 				enquecommand_front_P((PSTR("M600")));
 				fsensor_watch_runout = false;
 			}
@@ -581,7 +581,7 @@ void fsensor_update(void)
 			printf_P(PSTR("fsensor_update - M600\n"));
 			eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
 			eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-			enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
+			enquecommand_front_P(PSTR("FSENSOR_RECOVER"));
 			enquecommand_front_P((PSTR("M600")));
 		}
 #endif //PAT9125

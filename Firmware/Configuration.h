@@ -7,19 +7,19 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.7.0"
-#define FW_COMMIT_NR   2201
+#define FW_VERSION "3.6.0"
+#define FW_COMMIT_NR   2069
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
-#define FW_DEV_VERSION FW_VERSION_UNKNOWN
-#define FW_REPOSITORY "Unknown"
+#define FW_DEV_VERSION FW_VERSION_GOLD // FW_VERSION_UNKNOWN
+#define FW_REPOSITORY "cimoalpacino" // "Prusa3d"
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
 // Debug version has debugging enabled (the symbol DEBUG_BUILD is set).
 // The debug build may be a bit slower than the non-debug build, therefore the debug build should
 // not be shipped to a customer.
 #define FW_VERSION_DEBUG    6
-// This is a development build. A development build is either built from an unofficial git repository, 
+// This is a development build. A development build is either built from an unofficial git repository,
 // or from an unofficial branch, or it does not have a label set. Only the build server should set this build type.
 #define FW_VERSION_DEVEL    5
 // This is an alpha release. Only the build server should set this build type.
@@ -58,7 +58,7 @@
 //#define STRING_VERSION "1.0.2"
 
 #define STRING_VERSION_CONFIG_H __DATE__ " " __TIME__ // build date and time
-#define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "(cimoalpacino, RAMPS config)" // Who made the changes.
 
 // SERIAL_PORT selects which serial port should be used for communication with the host.
 // This allows the connection of wireless adapters (for instance) to non-default port pins.
@@ -137,7 +137,7 @@
 
 // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 // Ultimaker
-    
+
 
 // MakerGear
 //    #define  DEFAULT_Kp 7.0
@@ -173,15 +173,15 @@ The issue: If a thermistor come off, it will read a lower temperature than actua
 The system will turn the heater on forever, burning up the filament and anything
 else around.
 
-After the temperature reaches the target for the first time, this feature will 
-start measuring for how long the current temperature stays below the target 
+After the temperature reaches the target for the first time, this feature will
+start measuring for how long the current temperature stays below the target
 minus _HYSTERESIS (set_temperature - THERMAL_RUNAWAY_PROTECTION_HYSTERESIS).
 
 If it stays longer than _PERIOD, it means the thermistor temperature
 cannot catch up with the target, so something *may be* wrong. Then, to be on the
 safe side, the system will he halt.
 
-Bear in mind the count down will just start AFTER the first time the 
+Bear in mind the count down will just start AFTER the first time the
 thermistor temperature is over the target, so you will have no problem if
 your extruder heater takes 2 minutes to hit the target on heating.
 
@@ -274,7 +274,7 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 
 #define X_MAX_LENGTH (X_MAX_POS - X_MIN_POS)
-#define Y_MAX_LENGTH (Y_MAX_POS - Y_MIN_POS) 
+#define Y_MAX_LENGTH (Y_MAX_POS - Y_MIN_POS)
 #define Z_MAX_LENGTH (Z_MAX_POS - Z_MIN_POS)
 
 #define Z_HEIGHT_HIDE_LIVE_ADJUST_MENU 2.0f
@@ -391,9 +391,9 @@ your extruder heater takes 2 minutes to hit the target on heating.
 	  #endif
 	#endif
 
-	
+
   #endif
-  
+
 #endif // ENABLE_AUTO_BED_LEVELING
 
 
@@ -436,19 +436,17 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
 // M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
 //define this to enable EEPROM support
-//#define EEPROM_SETTINGS
+#define EEPROM_SETTINGS
 //to disable EEPROM Serial responses and decrease program space by ~1700 byte: comment this out:
 // please keep turned on if you can.
-//#define EEPROM_CHITCHAT
+#define EEPROM_CHITCHAT
 
 // Host Keepalive
 //
 // When enabled Marlin will send a busy status message to the host
 // every couple of seconds when it can't accept commands.
 //
-#ifndef HEATBED_ANALYSIS
 #define HOST_KEEPALIVE_FEATURE    // Disable this if your host doesn't like keepalive messages
-#endif //HEATBED_ANALYSIS
 #define HOST_KEEPALIVE_INTERVAL 2 // Number of seconds between "busy" messages. Set with M113.
 
 //LCD and SD support
@@ -477,8 +475,8 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
 // which is not ass annoying as with the hardware PWM. On the other hand, if this frequency
 // is too low, you should also increment SOFT_PWM_SCALE.
-#define FAN_SOFT_PWM
-#define FAN_SOFT_PWM_BITS 4 //PWM bit resolution = 4bits, freq = 62.5Hz
+///*RAMPS*/#define FAN_SOFT_PWM
+///*RAMPS*/#define FAN_SOFT_PWM_BITS 4 //PWM bit resolution = 4bits, freq = 62.5Hz
 
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
@@ -510,7 +508,7 @@ your extruder heater takes 2 minutes to hit the target on heating.
 //
 //#define NUM_SERVOS 3 // Servo index starts with 0 for M280 command
 
-#define DEFAULT_NOMINAL_FILAMENT_DIA  1.75  //Enter the diameter (in mm) of the filament generally used (3.0 mm or 1.75 mm). Used by the volumetric extrusion.
+///*RAMPS*/#define DEFAULT_NOMINAL_FILAMENT_DIA  1.75  //Enter the diameter (in mm) of the filament generally used (3.0 mm or 1.75 mm). Used by the volumetric extrusion.
 
 // Calibration status of the machine, to be stored into the EEPROM,
 // (unsigned char*)EEPROM_CALIBRATION_STATUS
@@ -533,7 +531,7 @@ enum CalibrationStatus
 
     // Legacy: resetted by issuing a G86 G-code.
     // This value can only be expected after an upgrade from the initial MK2 firmware releases.
-    // Currently the G86 sets the calibration status to 
+    // Currently the G86 sets the calibration status to
     CALIBRATION_STATUS_UNKNOWN = 0,
 };
 

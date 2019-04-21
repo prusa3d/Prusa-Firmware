@@ -5,9 +5,6 @@
 #include <stdio.h>
 #include <avr/pgmspace.h>
 
-#define SHOW_TEMP_ADC_VALUES
-#include "temperature.h"
-
 
 #define DBG(args...) printf_P(args)
 
@@ -153,11 +150,11 @@ void dcode_3()
 #include <avr/wdt.h>
 #include "bootapp.h"
 
-#if 0
+
 #define FLASHSIZE     0x40000
 
 #define RAMSIZE        0x2000
-#define boot_src_addr  (*((uint32_t*)(RAMSIZE - 16)))
+/*#define boot_src_addr  (*((uint32_t*)(RAMSIZE - 16)))
 #define boot_dst_addr  (*((uint32_t*)(RAMSIZE - 12)))
 #define boot_copy_size (*((uint16_t*)(RAMSIZE - 8)))
 #define boot_reserved  (*((uint8_t*)(RAMSIZE - 6)))
@@ -171,9 +168,9 @@ extern uint8_t fsensor_log;
 extern float current_temperature_pinda;
 extern float axis_steps_per_unit[NUM_AXIS];
 
+//#define LOG(args...) printf(args)
+*/
 
-#define LOG(args...) printf(args)
-#endif //0
 #define LOG(args...)
 
 #ifdef DEBUG_DCODES
@@ -231,7 +228,7 @@ void dcode_2()
 		count = parse_hex(strchr_pointer + 1, data, 16);
 		if (count > 0)
 		{
-			for (uint16_t i = 0; i < count; i++)
+			for (int i = 0; i < count; i++)
 				*((uint8_t*)(address + i)) =  data[i];
 			LOG("%d bytes written to RAM at address %04x", count, address);
 		}
@@ -384,7 +381,7 @@ void dcode_8()
 		{
 			uint16_t offs = 0;
 			if (i > 0) offs = eeprom_read_word(((uint16_t*)EEPROM_PROBE_TEMP_SHIFT) + (i - 1));
-			float foffs = ((float)offs) / cs.axis_steps_per_unit[Z_AXIS];
+			float foffs = ((float)offs) / axis_steps_per_unit[Z_AXIS];
 			offs = 1000 * foffs;
 			printf_P(PSTR("temp_pinda=%dC temp_shift=%dum\n"), 35 + i * 5, offs);
 		}
@@ -426,6 +423,10 @@ const char* dcode_9_ADC_name(uint8_t i)
 	}
 	return 0;
 }
+
+extern int current_temperature_raw[EXTRUDERS];
+extern int current_temperature_bed_raw;
+extern int current_temperature_raw_pinda;
 
 #ifdef AMBIENT_THERMISTOR
 extern int current_temperature_raw_ambient;
@@ -606,16 +607,16 @@ void dcode_2130()
 			else if (strncmp(strchr_pointer + 7, "mres", 4) == 0)
 			{
 				uint8_t mres = strchr_pointer[11] - '0';
-				if (mres <= 8)
+				if ((mres >= 0) && (mres <= 8))
 				{
 					st_synchronize();
 					uint16_t res = tmc2130_get_res(axis);
 					uint16_t res_new = tmc2130_mres2usteps(mres);
 					tmc2130_set_res(axis, res_new);
 					if (res_new > res)
-						cs.axis_steps_per_unit[axis] *= (res_new / res);
+						axis_steps_per_unit[axis] *= (res_new / res);
 					else
-						cs.axis_steps_per_unit[axis] /= (res / res_new);
+						axis_steps_per_unit[axis] /= (res / res_new);
 				}
 			}
 			else if (strncmp(strchr_pointer + 7, "wave", 4) == 0)

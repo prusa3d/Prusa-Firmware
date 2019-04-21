@@ -15,6 +15,7 @@ extern uint8_t tmp_extruder;
 
 extern int8_t mmu_finda;
 extern bool ir_sensor_detected;
+extern bool mmu_loading_flag;
 
 extern int16_t mmu_version;
 extern int16_t mmu_buildnr;
@@ -58,7 +59,7 @@ enum class MmuCmd : uint_least8_t
     K4,
     R0,
     S3,
-    W0, //!< Wait and signal load error
+    W0,
 };
 
 inline MmuCmd operator+ (MmuCmd cmd, uint8_t filament)
@@ -96,7 +97,7 @@ extern void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move =
 
 extern void mmu_load_to_nozzle();
 
-extern void mmu_M600_load_filament(bool automatic, float nozzle_temp);
+extern void mmu_M600_load_filament(bool automatic);
 extern void mmu_M600_wait_and_beep();
 
 extern void extr_mov(float shift, float feed_rate);
@@ -131,10 +132,8 @@ extern bool mmu_check_version();
 extern void mmu_show_warning();
 extern void lcd_mmu_load_to_nozzle(uint8_t filament_nr);
 extern void mmu_eject_filament(uint8_t filament, bool recover);
-#ifdef MMU_HAS_CUTTER
 extern void mmu_cut_filament(uint8_t filament_nr);
-#endif //MMU_HAS_CUTTER
-extern void mmu_continue_loading(bool blocking);
+extern void mmu_continue_loading();
 extern void mmu_filament_ramming();
 extern void mmu_wait_for_heater_blocking();
 extern void mmu_load_step(bool synchronize = true);

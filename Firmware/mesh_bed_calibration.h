@@ -2,22 +2,28 @@
 #define MESH_BED_CALIBRATION_H
 
 #define BED_ZERO_REF_X (- 22.f + X_PROBE_OFFSET_FROM_EXTRUDER) // -22 + 23 = 1
-#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER + 4.f) // -0.6 + 5 + 4 = 8.4
-
-#ifdef HEATBED_V2
-
-#define BED_X0 (2.f - BED_ZERO_REF_X) //1
-#define BED_Y0 (9.4f - BED_ZERO_REF_Y) //1
-#define BED_Xn (206.f - BED_ZERO_REF_X) //205
-#define BED_Yn (213.4f - BED_ZERO_REF_Y) //205
-
+#if MOTHERBOARD == BOARD_RAMPS_14_EFB
+	#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER + 2.f) //-0.6 + 4 + 4 = 7.4
 #else
+	#define BED_ZERO_REF_Y (- 0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER + 4.f) // -0.6 + 5 + 4 = 8.4
+#endif
 
-#define BED_X0 (13.f - BED_ZERO_REF_X)
-#define BED_Y0 (8.4f - BED_ZERO_REF_Y)
-#define BED_Xn (216.f - BED_ZERO_REF_X)
-#define BED_Yn (202.4f - BED_ZERO_REF_Y)
-
+///*RAMPS*/
+#if defined(HEATBED_V2) && (MOTHERBOARD == BOARD_RAMPS_14_EFB)
+	#define BED_X0 (13.f - BED_ZERO_REF_X)	//13 - 1 = 12
+	#define BED_Y0 (8.4f - BED_ZERO_REF_Y)	//8.4 - 6.4 = 2
+	#define BED_Xn (216.f - BED_ZERO_REF_X) //216 - 1 = 215
+	#define BED_Yn (204.4f - BED_ZERO_REF_Y)//204.4 - 6.4 = 198 
+#elif defined(HEATBED_V2)
+	#define BED_X0 (13.f - BED_ZERO_REF_X)
+	#define BED_Y0 (10.4f - BED_ZERO_REF_Y)
+	#define BED_Xn (216.f - BED_ZERO_REF_X)
+	#define BED_Yn (202.4f - BED_ZERO_REF_Y)
+#else
+	#define BED_X0 (13.f - BED_ZERO_REF_X)
+	#define BED_Y0 (8.4f - BED_ZERO_REF_Y)
+	#define BED_Xn (216.f - BED_ZERO_REF_X)
+	#define BED_Yn (202.4f - BED_ZERO_REF_Y)
 #endif //not HEATBED_V2
 
 #define BED_X(i, n) ((float)i * (BED_Xn - BED_X0) / (n - 1) + BED_X0)
@@ -161,7 +167,7 @@ enum BedSkewOffsetDetectionResultType {
 	// Detection failed, some point was not found.
 	BED_SKEW_OFFSET_DETECTION_POINT_NOT_FOUND   = -1, //!< Point not found.
 	BED_SKEW_OFFSET_DETECTION_FITTING_FAILED    = -2, //!< Fitting failed
-	
+
 	// Detection finished with success.
 	BED_SKEW_OFFSET_DETECTION_PERFECT 			= 0,  //!< Perfect.
 	BED_SKEW_OFFSET_DETECTION_SKEW_MILD			= 1,  //!< Mildly skewed.
@@ -183,7 +189,7 @@ extern bool is_bed_z_jitter_data_valid();
 // Useful for visualizing the behavior of the bed induction detector.
 extern bool scan_bed_induction_points(int8_t verbosity_level);
 
-// Load Z babystep value from the EEPROM into babystepLoadZ, 
+// Load Z babystep value from the EEPROM into babystepLoadZ,
 // but don't apply it through the planner. This is useful on wake up
 // after power panic, when it is expected, that the baby step has been already applied.
 extern void babystep_load();
@@ -200,17 +206,5 @@ extern void babystep_reset();
 
 extern void count_xyz_details(float (&distanceMin)[2]);
 extern bool sample_z();
-/*
-typedef enum
-{
-	e_MBL_FAST, e_MBL_OPTIMAL, e_MBL_PREC
-} e_MBL_TYPE;
-*/
-//extern e_MBL_TYPE e_mbl_type;
-//extern void mbl_mode_set();
-//extern void mbl_mode_init();
-extern void mbl_settings_init();
 
-extern bool mbl_point_measurement_valid(uint8_t ix, uint8_t iy, uint8_t meas_points, bool zigzag);
-extern void mbl_interpolation(uint8_t meas_points);
 #endif /* MESH_BED_CALIBRATION_H */
