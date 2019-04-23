@@ -5951,25 +5951,12 @@ else {
      }
 }
 
-template <uint8_t filament>
-static void mmu_eject_filament()
-{
-    menu_back();
-    mmu_eject_filament(filament, true);
-}
-
 static void mmu_fil_eject_menu()
 {
     if(bFilamentAction)
     {
-        MENU_BEGIN();
-        MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        MENU_ITEM_FUNCTION_P(_i("Eject filament 1"), mmu_eject_filament<0>);
-        MENU_ITEM_FUNCTION_P(_i("Eject filament 2"), mmu_eject_filament<1>);
-        MENU_ITEM_FUNCTION_P(_i("Eject filament 3"), mmu_eject_filament<2>);
-        MENU_ITEM_FUNCTION_P(_i("Eject filament 4"), mmu_eject_filament<3>);
-        MENU_ITEM_FUNCTION_P(_i("Eject filament 5"), mmu_eject_filament<4>);
-        MENU_END();
+        mmu_filament_action(mmu_eject_filament,
+                    choose_menu_P(_T(MSG_EJECT_FILAMENT),_T(MSG_EJECT_FILAMENT),_T(MSG_MAIN)));
     }
     else
     {

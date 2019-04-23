@@ -131,6 +131,10 @@ extern bool mmu_check_version();
 extern void mmu_show_warning();
 extern void lcd_mmu_load_to_nozzle(uint8_t filament_nr);
 extern void mmu_eject_filament(uint8_t filament, bool recover);
+inline void mmu_eject_filament(uint8_t filament)
+{
+    mmu_eject_filament(filament,true);
+}
 #ifdef MMU_HAS_CUTTER
 extern void mmu_cut_filament(uint8_t filament_nr);
 #endif //MMU_HAS_CUTTER
