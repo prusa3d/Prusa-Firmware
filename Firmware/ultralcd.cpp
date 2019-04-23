@@ -5913,28 +5913,23 @@ static void lcd_disable_farm_mode()
 	
 }
 
-
-
-static void fil_load_menu()
-{
-	MENU_BEGIN();
-	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_FUNCTION_P(_i("Load all"), load_all);////MSG_LOAD_ALL c=17 r=0
-	MENU_ITEM_FUNCTION_P(_i("Load filament 1"), extr_adj_0);////MSG_LOAD_FILAMENT_1 c=17 r=0
-	MENU_ITEM_FUNCTION_P(_i("Load filament 2"), extr_adj_1);////MSG_LOAD_FILAMENT_2 c=17 r=0
-	MENU_ITEM_FUNCTION_P(_i("Load filament 3"), extr_adj_2);////MSG_LOAD_FILAMENT_3 c=17 r=0
-	MENU_ITEM_FUNCTION_P(_i("Load filament 4"), extr_adj_3);////MSG_LOAD_FILAMENT_4 c=17 r=0
-
-	if (mmu_enabled)
-		MENU_ITEM_FUNCTION_P(_i("Load filament 5"), extr_adj_4);
-
-	MENU_END();
-}
-
 static void mmu_filament_action(void (& action)(uint8_t), uint8_t filament)
 {
     menu_back();
-    if (filament < 5) action(filament);
+    if (filament < (mmu_enabled?5:4))
+    {
+            action(filament);
+    }
+    else if (action == extr_adj)
+    {
+        load_all();
+    }
+}
+
+static void fil_load_menu()
+{
+    mmu_filament_action(extr_adj,
+            choose_menu_P(_T(MSG_LOAD_FILAMENT),_T(MSG_LOAD_FILAMENT),_i("Load all")));
 }
 
 static void mmu_load_to_nozzle_menu()
