@@ -2105,6 +2105,51 @@ bool check_commands() {
 	
 }
 
+
+// raise_z_above: slowly raise Z to the requested height
+//
+// contrarily to a simple move, this function will carefully plan a move
+// when the current Z position is unknown. In such cases, stallguard is
+// enabled and will prevent prolonged pushing against the Z tops
+void raise_z_above(float target)
+{
+    if (current_position[Z_AXIS] >= target)
+        return;
+
+    // Z needs raising
+    current_position[Z_AXIS] = target;
+
+    if (axis_known_position[Z_AXIS])
+    {
+        // current position is known, it's safe to raise Z
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+                         current_position[E_AXIS], homing_feedrate[Z_AXIS], active_extruder);
+    }
+    else
+    {
+        // rely on crashguard to limit damage
+        bool z_endstop_enabled = enable_z_endstop(true);
+#ifdef TMC2130
+		tmc2130_home_enter(Z_AXIS_MASK);
+#endif //TMC2130
+		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+                         current_position[E_AXIS], homing_feedrate[Z_AXIS] / 40, active_extruder);
+		st_synchronize();
+#ifdef TMC2130
+        if (endstop_z_hit_on_purpose())
+        {
+            // not necessarily true, but will avoid further vertical moves
+            current_position[Z_AXIS] = max_pos[Z_AXIS];
+            plan_set_position(current_position[X_AXIS], current_position[Y_AXIS],
+                              current_position[Z_AXIS], current_position[E_AXIS]);
+        }
+		tmc2130_home_exit();
+#endif //TMC2130
+		enable_z_endstop(z_endstop_enabled);
+    }
+}
+
+
 #ifdef TMC2130
 bool calibrate_z_auto()
 {
@@ -2486,10 +2531,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 
 	//if we are homing all axes, first move z higher to protect heatbed/steel sheet
 	if (home_all_axes) {
-		current_position[Z_AXIS] += MESH_HOME_Z_SEARCH;
-		feedrate = homing_feedrate[Z_AXIS];
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], feedrate / 60, active_extruder);
-		st_synchronize();
+        raise_z_above(MESH_HOME_Z_SEARCH);
 	}
 #ifdef ENABLE_AUTO_BED_LEVELING
       plan_bed_level_matrix.set_to_identity();  //Reset the plane ("erase" all leveling data)
@@ -2599,26 +2641,19 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
         #ifndef Z_SAFE_HOMING
           if(home_z) {
             #if defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
-              destination[Z_AXIS] = Z_RAISE_BEFORE_HOMING * home_dir(Z_AXIS) * (-1);    // Set destination away from bed
-              feedrate = max_feedrate[Z_AXIS];
-              plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], feedrate, active_extruder);
-              st_synchronize();
+              raise_z_above(Z_RAISE_BEFORE_HOMING);
             #endif // defined (Z_RAISE_BEFORE_HOMING) && (Z_RAISE_BEFORE_HOMING > 0)
             #if (defined(MESH_BED_LEVELING) && !defined(MK1BP))  // If Mesh bed leveling, move X&Y to safe position for home
-      			  if (!(axis_known_position[X_AXIS] && axis_known_position[Y_AXIS] )) 
-      			  {
-                homeaxis(X_AXIS);
-                homeaxis(Y_AXIS);
-      			  } 
+              raise_z_above(MESH_HOME_Z_SEARCH);
+              if (!axis_known_position[X_AXIS]) homeaxis(X_AXIS);
+              if (!axis_known_position[Y_AXIS]) homeaxis(Y_AXIS);
               // 1st mesh bed leveling measurement point, corrected.
               world2machine_initialize();
               world2machine(pgm_read_float(bed_ref_points_4), pgm_read_float(bed_ref_points_4+1), destination[X_AXIS], destination[Y_AXIS]);
               world2machine_reset();
               if (destination[Y_AXIS] < Y_MIN_POS)
                   destination[Y_AXIS] = Y_MIN_POS;
-              destination[Z_AXIS] = MESH_HOME_Z_SEARCH;    // Set destination away from bed
-              feedrate = homing_feedrate[Z_AXIS]/10;
-              current_position[Z_AXIS] = 0;
+              feedrate = homing_feedrate[X_AXIS] / 20;
               enable_endstops(false);
 #ifdef DEBUG_BUILD
               SERIAL_ECHOLNPGM("plan_set_position()");
@@ -3148,10 +3183,7 @@ void gcode_M701()
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
 		st_synchronize();
 
-		if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
-		current_position[E_AXIS] += 30;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
-		
+        raise_z_above(MIN_Z_FOR_LOAD);
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
 

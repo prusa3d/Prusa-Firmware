@@ -1853,6 +1853,7 @@ void lcd_preheat_farm_nozzle()
 
 void lcd_preheat_pla()
 {
+  raise_z_above(MIN_Z_FOR_PREHEAT);
   setTargetHotend0(PLA_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PLA_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
@@ -1863,6 +1864,7 @@ void lcd_preheat_pla()
 
 void lcd_preheat_abs()
 {
+  raise_z_above(MIN_Z_FOR_PREHEAT);
   setTargetHotend0(ABS_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(ABS_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
@@ -1873,6 +1875,7 @@ void lcd_preheat_abs()
 
 void lcd_preheat_pp()
 {
+  raise_z_above(MIN_Z_FOR_PREHEAT);
   setTargetHotend0(PP_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PP_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
@@ -1883,6 +1886,7 @@ void lcd_preheat_pp()
 
 void lcd_preheat_pet()
 {
+  raise_z_above(MIN_Z_FOR_PREHEAT);
   setTargetHotend0(PET_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PET_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
@@ -1893,6 +1897,7 @@ void lcd_preheat_pet()
 
 void lcd_preheat_hips()
 {
+  raise_z_above(MIN_Z_FOR_PREHEAT);
   setTargetHotend0(HIPS_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(HIPS_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
@@ -1903,6 +1908,7 @@ void lcd_preheat_hips()
 
 void lcd_preheat_flex()
 {
+  raise_z_above(MIN_Z_FOR_PREHEAT);
   setTargetHotend0(FLEX_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(FLEX_PREHEAT_HPB_TEMP);
   fanSpeed = 0;
@@ -6066,6 +6072,7 @@ void unload_filament()
 	custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
+    raise_z_above(MIN_Z_FOR_UNLOAD);
     mmu_filament_ramming();
 
 	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));

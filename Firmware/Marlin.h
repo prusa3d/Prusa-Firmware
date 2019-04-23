@@ -124,7 +124,7 @@ FORCE_INLINE void serialprintPGM(const char *str)
 bool is_buffer_empty();
 void get_command();
 void process_commands();
-void ramming();
+void raise_z_above(float target);
 
 void manage_inactivity(bool ignore_stepper_queue=false);
 
