@@ -8252,8 +8252,22 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
-	move_menu_scale = 1.0;
-	menu_submenu(lcd_move_z);
+    if (homing_flag || mesh_bed_leveling_flag)
+    {
+        // disable longpress while homing or calibration
+        return;
+    }
+
+    if (moves_planned() || IS_SD_PRINTING || is_usb_printing)
+    {
+        lcd_clear();
+        menu_submenu(lcd_babystep_z);
+    }
+    else
+    {
+        move_menu_scale = 1.0;
+        menu_submenu(lcd_move_z);
+    }
 }
 
 void menu_lcd_charsetup_func(void)
