@@ -6066,17 +6066,7 @@ void unload_filament()
 	custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
-	//		extr_unload2();
-
-	current_position[E_AXIS] -= 45;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 5200 / 60, active_extruder);
-	st_synchronize();
-	current_position[E_AXIS] -= 15;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
-	st_synchronize();
-	current_position[E_AXIS] -= 20;
-	plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 1000 / 60, active_extruder);
-	st_synchronize();
+    mmu_filament_ramming();
 
 	lcd_display_message_fullscreen_P(_T(MSG_PULL_OUT_FILAMENT));
 
