@@ -965,7 +965,7 @@ void display_loading()
 	}
 }
 
-void extr_adj(int extruder) //loading filament for SNMM
+void extr_adj(uint8_t extruder) //loading filament for SNMM
 {
 #ifndef SNMM
     MmuCmd cmd = MmuCmd::L0 + extruder;
