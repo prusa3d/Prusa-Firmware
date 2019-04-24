@@ -2127,6 +2127,9 @@ void raise_z_above(float target)
     }
     else
     {
+        // ensure Z is powered in normal mode to overcome initial load
+        enable_z();
+
         // rely on crashguard to limit damage
         bool z_endstop_enabled = enable_z_endstop(true);
 #ifdef TMC2130
