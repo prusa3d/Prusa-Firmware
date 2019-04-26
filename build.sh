@@ -1,6 +1,8 @@
 #!/bin/bash 
 BUILD_ENV="1.0.6"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
+DEFAULT_VARIANT="1_75mm_MK3-EINSy10a-E3Dv6full.h"
+VARIANT="${1:-$DEFAULT_VARIANT}"
 
 if [ ! -d "build-env" ]; then
     mkdir build-env || exit 1
@@ -27,8 +29,9 @@ fi
 cd Prusa-Firmware-build || exit 7
 BUILD_PATH="$( pwd -P )"
 
-if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
-    cp $SCRIPT_PATH/Firmware/variants/1_75mm_MK3-EINSy10a-E3Dv6full.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 8
+if ! cmp -s "$SCRIPT_PATH/Firmware/variants/$VARIANT" "$SCRIPT_PATH/Firmware/Configuration_prusa.h"; then
+    cp "$SCRIPT_PATH/Firmware/variants/$VARIANT" $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 8
+    rm -rf includes.cache sketch preproc
 fi
 
 $BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board PrusaResearchRambo:avr:rambo --pref build.path=$BUILD_PATH --pref compiler.warning_level=all || exit 9
