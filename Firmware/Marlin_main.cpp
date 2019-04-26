@@ -3757,7 +3757,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 
     //Retract E
     current_position[E_AXIS] += e_shift;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_RFEED);
+    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_RETRACT);
     st_synchronize();
 
     //Lift Z
@@ -3827,8 +3827,8 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     //Feed a little of filament to stabilize pressure
     if (!automatic)
     {
-        current_position[E_AXIS] += FILAMENTCHANGE_RECFEED;
-        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EXFEED);
+        current_position[E_AXIS] += FILAMENTCHANGE_PRIMEFEED;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
     }
 
     //Move XY back
@@ -11821,7 +11821,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	//then move Z
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
 	//and finaly unretract (35mm/s)
-	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_RFEED, active_extruder);
+	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], FILAMENTCHANGE_EFEED_RETRACT, active_extruder);
 	st_synchronize();
 
   #ifdef FANCHECK
