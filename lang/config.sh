@@ -5,17 +5,19 @@
 #  This file is 'included' in all scripts.
 #
 # Arduino main folder:
-export ARDUINO=C:/arduino-1.8.5
+if [ -z "$ARDUINO" ]; then
+    export ARDUINO=C:/arduino-1.8.5
+fi
 #
 # Arduino builder:
-export BUILDER=$ARDUINO/arduino_debug.exe
+export BUILDER=$ARDUINO/arduino-builder
 #
 # AVR gcc tools:
-export OBJCOPY=$ARDUINO/hardware/tools/avr/bin/avr-objcopy.exe
-export OBJDUMP=$ARDUINO/hardware/tools/avr/bin/avr-objdump.exe
+export OBJCOPY=$ARDUINO/hardware/tools/avr/bin/avr-objcopy
+export OBJDUMP=$ARDUINO/hardware/tools/avr/bin/avr-objdump
 #
 # Output folder:
-export OUTDIR="../../output"
+export OUTDIR="../../Prusa-Firmware-build"
 #
 # Objects folder:
 export OBJDIR="$OUTDIR/sketch"

@@ -18,6 +18,10 @@
 "\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
 "\x1b[2JUWAGA:\x1b[1;0HWykrywanie zderzen\x1b[2;0Hwylaczone w\x1b[3;0Htrybie Stealth"
 
+#
+">Cancel"
+">Anuluj"
+
 #MSG_BABYSTEPPING_Z c=20 r=0
 "Adjusting Z"
 "Dostrajanie Z"
@@ -32,7 +36,7 @@
 
 #
 "Ambient"
-"\x00"
+"Otoczenie"
 
 #MSG_PRESS c=20 r=0
 "and press the knob"
@@ -118,6 +122,10 @@
 "Blackout occurred. Recover print?"
 "Wykryto zanik napiecia. Kontynowac?"
 
+#
+"Calibrating home"
+"Zerowanie osi"
+
 #MSG_CALIBRATE_BED c=0 r=0
 "Calibrate XYZ"
 "Kalibracja XYZ"
@@ -196,7 +204,7 @@
 
 #
 "Crash"
-"\x00"
+"Zderzenie"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -310,6 +318,10 @@
 "Extruder"
 "Ekstruder"
 
+#
+"Fail stats MMU"
+"Bledy MMU"
+
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
 "Autolad. fil [wl]"
@@ -324,7 +336,7 @@
 
 #
 "Fail stats"
-"\x00"
+"Statystyki bledow"
 
 #MSG_FAN_SPEED c=14 r=0
 "Fan speed"
@@ -360,7 +372,7 @@
 
 #
 "Filam. runouts"
-"\x00"
+"Konc. filamentu"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -572,11 +584,11 @@
 
 #
 "Last print failures"
-"\x00"
+"Ostatnie bledy druku"
 
 #
 "Last print"
-"\x00"
+"Ost. wydruk"
 
 #MSG_SELFTEST_EXTRUDER_FAN c=20 r=0
 "Left hotend fan?"
@@ -646,6 +658,18 @@
 "Measured skew"
 "Zmierzony skos"
 
+#
+"MMU fails"
+"Bledy MMU"
+
+#
+"MMU load failed     "
+"Blad ladowania MMU"
+
+#
+"MMU load fails"
+"Bledy ladow. MMU"
+
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 "MMU OK. Wznawianie..."
@@ -662,6 +686,10 @@
 "MMU needs user attention."
 "MMU wymaga uwagi uzytkownika."
 
+#
+"MMU power fails"
+"Zaniki zasil. MMU"
+
 #MSG_STEALTH_MODE_ON c=0 r=0
 "Mode    [Stealth]"
 "Tryb    [Stealth]"
@@ -676,7 +704,7 @@
 
 #
 "MMU2 connected"
-"\x00"
+"MMU podlaczone"
 
 #MSG_SELFTEST_MOTOR c=0 r=0
 "Motor"
@@ -705,6 +733,10 @@
 #MSG_NO_CARD c=0 r=0
 "No SD card"
 "Brak karty SD"
+
+#
+"N/A"
+"N/D"
 
 #MSG_NO c=0 r=0
 "No"
@@ -748,7 +780,7 @@
 
 #
 "Nozzle FAN"
-"\x00"
+"Went. hotendu"
 
 #MSG_PAUSE_PRINT c=0 r=0
 "Pause print"
@@ -864,11 +896,19 @@
 
 #
 "Power failures"
-"\x00"
+"Zaniki zasilania"
 
 #MSG_PRINT_ABORTED c=20 r=0
 "Print aborted"
 "Druk przerwany"
+
+#
+"Preheating to load"
+"Nagrzew. do ladowania"
+
+#
+"Preheating to unload"
+"Nagrzew. do rozlad."
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18 r=0
 "Print fan:"
@@ -877,6 +917,10 @@
 #MSG_CARD_MENU c=0 r=0
 "Print from SD"
 "Druk z karty SD"
+
+#
+"Press the knob"
+"Wcisnij pokretlo"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -892,7 +936,7 @@
 
 #
 "Print FAN"
-"\x00"
+"Went. wydruku"
 
 #WELCOME_MSG c=20 r=0
 "Prusa i3 MK2.5 ready."
@@ -917,6 +961,10 @@
 #MSG_REMOVE_OLD_FILAMENT c=20 r=4
 "Remove old filament and press the knob to start loading new filament."
 "Wyciagnij poprzedni filament i nacisnij pokretlo aby zaladowac nowy."
+
+#
+"Prusa i3 MK3S OK."
+"Prusa i3 MK3S OK"
 
 #
 "Prusa i3 MK2 ready."
@@ -1017,6 +1065,14 @@
 #MSG_SHOW_END_STOPS c=17 r=1
 "Show end stops"
 "Pokaz krancowki"
+
+#
+"Sensor state"
+"Stan czujnikow"
+
+#
+"Sensors info"
+"Info o czujnikach"
 
 #
 "Show pinda state"
@@ -1160,7 +1216,15 @@
 
 #
 "Total failures"
-"\x00"
+"Suma bledow"
+
+#
+"to load filament"
+"aby zaladow. fil."
+
+#
+"to unload filament"
+"aby rozlad. filament"
 
 #MSG_UNLOAD_FILAMENT c=17 r=0
 "Unload filament"
@@ -1172,7 +1236,7 @@
 
 #
 "Total"
-"\x00"
+"Suma"
 
 #MSG_USED c=19 r=1
 "Used during print"
@@ -1184,7 +1248,7 @@
 
 #
 "unknown"
-"\x00"
+"nieznane"
 
 #MSG_USERWAIT c=0 r=0
 "Wait for user..."
@@ -1320,4 +1384,4 @@
 
 #MSG_OFF c=0 r=0
 " [off]"
-" [wyl]"
+"\x00"

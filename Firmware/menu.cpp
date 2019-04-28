@@ -16,7 +16,7 @@
 
 extern int32_t lcd_encoder;
 
-#define MENU_DEPTH_MAX       4
+#define MENU_DEPTH_MAX       6
 
 static menu_record_t menu_stack[MENU_DEPTH_MAX];
 
@@ -85,13 +85,15 @@ void menu_end(void)
 	}
 }
 
+void menu_back(uint8_t nLevel)
+{
+     menu_depth = ((menu_depth > nLevel) ? (menu_depth - nLevel) : 0);
+     menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, true);
+}
+
 void menu_back(void)
 {
-	if (menu_depth > 0)
-	{
-		menu_depth--;		
-		menu_goto(menu_stack[menu_depth].menu, menu_stack[menu_depth].position, true, true);
-	}
+menu_back(1);
 }
 
 static void menu_back_no_reset(void)
@@ -120,7 +122,7 @@ void menu_back_if_clicked_fb(void)
 
 void menu_submenu(menu_func_t submenu)
 {
-	if (menu_depth <= MENU_DEPTH_MAX)
+	if (menu_depth < MENU_DEPTH_MAX)
 	{
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
@@ -130,7 +132,7 @@ void menu_submenu(menu_func_t submenu)
 
 static void menu_submenu_no_reset(menu_func_t submenu)
 {
-	if (menu_depth <= MENU_DEPTH_MAX)
+	if (menu_depth < MENU_DEPTH_MAX)
 	{
 		menu_stack[menu_depth].menu = menu_menu;
 		menu_stack[menu_depth++].position = lcd_encoder;
@@ -284,7 +286,8 @@ void menu_draw_P<int16_t*>(char chr, const char* str, int16_t val)
 	if (text_len > 15) text_len = 15;
 	char spaces[21];
 	strcpy_P(spaces, menu_20x_space);
-	spaces[15 - text_len] = 0;
+	if (val <= -100) spaces[15 - text_len - 1] = 0;
+	else spaces[15 - text_len] = 0;
 	lcd_printf_P(menu_fmt_int3, chr, str, spaces, val);
 }
 
@@ -379,8 +382,3 @@ template uint8_t menu_item_edit_P<int16_t*>(const char* str, int16_t *pval, int1
 template uint8_t menu_item_edit_P<uint8_t*>(const char* str, uint8_t *pval, int16_t min_val, int16_t max_val);
 
 #undef _menu_data
-
-
-
-
-

@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
+
+set (CMAKE_CXX_STANDARD 11)
 
 project(cmake_test)
 
@@ -12,7 +14,9 @@ set(TEST_SOURCES
 	Tests/tests.cpp
 	Tests/Example_test.cpp
 	Tests/Timer_test.cpp
+	Tests/AutoDeplete_test.cpp
 	Firmware/Timer.cpp
+	Firmware/AutoDeplete.cpp
 )
 add_executable(tests ${TEST_SOURCES})
 target_include_directories(tests PRIVATE Tests)

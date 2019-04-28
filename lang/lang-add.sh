@@ -34,7 +34,7 @@ insert_xx()
 	#replace '[' and ']' in string with '\[' and '\]'
 	str=$(echo "$1" | sed "s/\[/\\\[/g;s/\]/\\\]/g")
 	# extract english texts, merge new text, grep line number
-	ln=$((cat lang_en_$2.txt; echo $1) | sed "/^$/d;/^#/d" | sed -n 'p;n' | sort | grep -n "$str" | sed "s/:.*//")
+	ln=$((cat lang_en_$2.txt; echo "$1") | sed "/^$/d;/^#/d" | sed -n 'p;n' | sort | grep -n "$str" | sed "s/:.*//")
 	# calculate position for insertion
 	ln=$((4*(ln-2)+1))
 	# insert new text

@@ -22,8 +22,8 @@ int serial_count = 0;  //index of character read from serial line
 boolean comment_mode = false;
 char *strchr_pointer; // just a pointer to find chars in the command string like X, Y, Z, E, etc
 
-unsigned long TimeSent = millis();
-unsigned long TimeNow = millis();
+unsigned long TimeSent = _millis();
+unsigned long TimeNow = _millis();
 
 long gcode_N = 0;
 long gcode_LastN = 0;
@@ -94,7 +94,11 @@ void cmdqueue_reset()
     bufindr = 0;
     bufindw = 0;
     buflen = 0;
-    cmdbuffer_front_already_processed = false;
+
+	//commands are removed from command queue after process_command() function is finished
+	//reseting command queue and enqueing new commands during some (usually long running) command processing would cause that new commands are immediately removed from queue (or damaged)
+	//this will ensure that all new commands which are enqueued after cmdqueue reset, will be always executed
+    cmdbuffer_front_already_processed = true; 
 }
 
 // How long a string could be pushed to the front of the command queue?
@@ -391,8 +395,8 @@ void get_command()
         MYSERIAL.write(serial_char); // for debuging serial line 2 in farm_mode
         selectedSerialPort = 1; 
     } */ //RP - removed
-      TimeSent = millis();
-      TimeNow = millis();
+      TimeSent = _millis();
+      TimeNow = _millis();
 
     if (serial_char < 0)
         // Ignore extended ASCII characters. These characters have no meaning in the G-code apart from the file names
@@ -527,7 +531,7 @@ void get_command()
   } // end of serial line processing loop
 
     if(farm_mode){
-        TimeNow = millis();
+        TimeNow = _millis();
         if ( ((TimeNow - TimeSent) > 800) && (serial_count > 0) ) {
             cmdbuffer[bufindw+serial_count+CMDHDRSIZE] = 0;
             
@@ -576,7 +580,7 @@ void get_command()
     {
       if(card.eof()){
         SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED c=0 r=0
-        stoptime=millis();
+        stoptime=_millis();
         char time[30];
         unsigned long t=(stoptime-starttime-pause_time)/1000;
         pause_time = 0;

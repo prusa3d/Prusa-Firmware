@@ -16,12 +16,12 @@
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
-
-
+#include "system_timer.h"
 #include "fastio.h"
 #include "Configuration.h"
 #include "pins.h"
 #include "Timer.h"
+extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
 #define  HardwareSerial_h // trick to disable the standard HWserial
@@ -259,10 +259,22 @@ void refresh_cmd_timeout(void);
 // The standard Arduino timer() function returns this value atomically
 // by disabling / enabling interrupts. This is costly, if the interrupts are known
 // to be disabled.
+#ifdef SYSTEM_TIMER_2
+extern volatile unsigned long timer2_millis;
+#else //SYSTEM_TIMER_2
 extern volatile unsigned long timer0_millis;
-// An unsynchronized equivalent to a standard Arduino millis() function.
+#endif //SYSTEM_TIMER_2
+
+// An unsynchronized equivalent to a standard Arduino _millis() function.
 // To be used inside an interrupt routine.
-FORCE_INLINE unsigned long millis_nc() { return timer0_millis; }
+
+FORCE_INLINE unsigned long millis_nc() { 
+#ifdef SYSTEM_TIMER_2
+	return timer2_millis;
+#else //SYSTEM_TIMER_2
+	return timer0_millis;
+#endif //SYSTEM_TIMER_2
+}
 
 #ifdef FAST_PWM_FAN
 void setPwmFrequency(uint8_t pin, int val);
@@ -273,6 +285,7 @@ void setPwmFrequency(uint8_t pin, int val);
   #define CRITICAL_SECTION_END    SREG = _sreg;
 #endif //CRITICAL_SECTION_START
 
+extern bool fans_check_enabled;
 extern float homing_feedrate[];
 extern bool axis_relative_modes[];
 extern int feedmultiply;
@@ -285,8 +298,13 @@ extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
 extern int fanSpeed;
-extern void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 extern int8_t lcd_change_fil_state;
+
+#ifdef TMC2130
+void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
+#else
+void homeaxis(int axis, uint8_t cnt = 1);
+#endif //TMC2130
 
 
 #ifdef FAN_SOFT_PWM
@@ -299,9 +317,9 @@ extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
 
-#ifdef HOST_KEEPALIVE_FEATURE
+
 extern uint8_t host_keepalive_interval;
-#endif
+
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
@@ -372,6 +390,7 @@ extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT   0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
+#define CHECK_FSENSOR ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
 extern void calculate_extruder_multipliers();
 
@@ -384,13 +403,12 @@ extern void check_babystep();
 extern void long_pause();
 extern void crashdet_stop_and_save_print();
 
-#ifdef DIS
-
+#ifdef HEATBED_ANALYSIS
 void d_setup();
 float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
-
-#endif
+void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
+#endif //HEATBED_ANALYSIS
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
@@ -430,7 +448,7 @@ extern void restore_print_from_ram_and_continue(float e_move);
 extern uint16_t print_time_remaining();
 extern uint8_t calc_percent_done();
 
-#ifdef HOST_KEEPALIVE_FEATURE
+
 
 // States for managing Marlin and host communication
 // Marlin sends messages if blocked or busy
@@ -453,7 +471,6 @@ extern void host_keepalive();
 //extern MarlinBusyState busy_state;
 extern int busy_state;
 
-#endif //HOST_KEEPALIVE_FEATURE
 
 #ifdef TMC2130
 
@@ -465,8 +482,6 @@ void force_high_power_mode(bool start_high_power_section);
 #endif //TMC2130
 
 // G-codes
-void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl);
-void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
@@ -480,5 +495,5 @@ void proc_commands();
 void M600_load_filament();
 void M600_load_filament_movements();
 void M600_wait_for_user(float HotendTempBckp);
-void M600_check_state();
+void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();

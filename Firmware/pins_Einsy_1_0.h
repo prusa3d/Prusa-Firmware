@@ -99,10 +99,7 @@
 
 //#define KILL_PIN            32
 
-
-//#define LCD_PWM_PIN         -1//32  // lcd backlight brightnes pwm control pin
-//#define LCD_PWM_MAX       0x0f  // lcd pwm maximum value (0x07=64Hz, 0x0f=32Hz, 0x1f=16Hz)
-
+//#define LCD_BL_PIN          5   //backlight control pin
 #define BEEPER              84  // Beeper on AUX-4
 #define LCD_PINS_RS         82
 #define LCD_PINS_ENABLE     61 // !!! changed from 18 (EINY03)
@@ -121,6 +118,7 @@
 #define TACH_0                 79 // !!! changed from 81 (EINY03)
 #define TACH_1                 80 
 
+#define IR_SENSOR_PIN 62 //idler sensor @PK0 (digital pin 62/A8)
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.
