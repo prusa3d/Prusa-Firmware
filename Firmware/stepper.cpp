@@ -352,6 +352,30 @@ FORCE_INLINE unsigned short calc_timer(uint16_t step_rate) {
   return timer;
 }
 
+
+#ifndef FILAMENT_SENSOR
+#define fsensor_step(cnt)
+#else
+FORCE_INLINE void fsensor_step(uint8_t cnt)
+{
+    if (READ(E0_DIR_PIN) == INVERT_E0_DIR)
+    {
+        if (count_direction[E_AXIS] == 1)
+            fsensor_counter -= cnt;
+        else
+            fsensor_counter += cnt;
+    }
+    else
+    {
+        if (count_direction[E_AXIS] == 1)
+            fsensor_counter += cnt;
+        else
+            fsensor_counter -= cnt;
+    }
+}
+#endif
+
+
 // "The Stepper Driver Interrupt" - This timer interrupt is the workhorse.
 // It pops blocks from the block_buffer and executes them by pulsing the stepper pins appropriately.
 ISR(TIMER1_COMPA_vect) {
@@ -372,22 +396,7 @@ ISR(TIMER1_COMPA_vect) {
 		cnt++;
         WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
     }
-#ifdef FILAMENT_SENSOR
-		if (READ(E0_DIR_PIN) == INVERT_E0_DIR)
-		{
-			if (count_direction[E_AXIS] == 1)
-				fsensor_counter -= cnt;
-			else
-				fsensor_counter += cnt;
-		}
-		else
-		{
-			if (count_direction[E_AXIS] == 1)
-				fsensor_counter += cnt;
-			else
-				fsensor_counter -= cnt;
-		}
-#endif //FILAMENT_SENSOR
+    fsensor_step(cnt);
     if (e_steps) {
       // Plan another Linear Advance tick.
       OCR1A = eISR_Rate;
@@ -916,22 +925,7 @@ FORCE_INLINE void isr() {
         estep_loops = (e_steps & 0x0ff00) ? 4 : e_steps;
         if (step_loops < estep_loops)
           estep_loops = step_loops;
-#ifdef FILAMENT_SENSOR
-		if (READ(E0_DIR_PIN) == INVERT_E0_DIR)
-		{
-			if (count_direction[E_AXIS] == 1)
-				fsensor_counter -= estep_loops;
-			else
-				fsensor_counter += estep_loops;
-		}
-		else
-		{
-			if (count_direction[E_AXIS] == 1)
-				fsensor_counter += estep_loops;
-			else
-				fsensor_counter -= estep_loops;
-		}
-#endif //FILAMENT_SENSOR
+        fsensor_step(estep_loops);
         do {
           WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
           -- e_steps;
@@ -1056,22 +1050,7 @@ FORCE_INLINE void isr() {
         // There is not enough time to fit even a single additional tick.
         // Tick all the extruder ticks now.
         MSerial.checkRx(); // Check for serial chars.
-#ifdef FILAMENT_SENSOR
-		if (READ(E0_DIR_PIN) == INVERT_E0_DIR)
-		{
-			if (count_direction[E_AXIS] == 1)
-				fsensor_counter -= e_steps;
-			else
-				fsensor_counter += e_steps;
-		}
-		else
-		{
-			if (count_direction[E_AXIS] == 1)
-				fsensor_counter += e_steps;
-			else
-				fsensor_counter -= e_steps;
-		}
-#endif //FILAMENT_SENSOR
+        fsensor_step(e_steps);
         do {
           WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
           -- e_steps;
