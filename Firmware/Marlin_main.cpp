@@ -3538,7 +3538,7 @@ void process_commands()
 		else if (code_seen("RESET")) { //! PRUSA RESET
             // careful!
             if (farm_mode) {
-#ifdef WATCHDOG
+#if (defined(WATCHDOG) && (MOTHERBOARD == BOARD_EINSY_1_0a))
                 boot_app_magic = BOOT_APP_MAGIC;
                 boot_app_flags = BOOT_APP_FLG_RUN;
 				wdt_enable(WDTO_15MS);
@@ -7174,9 +7174,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
   {
     switch((int)code_value())
     {
-#ifdef DEBUG_DCODES
 	case -1: //! D-1 - Endless loop
 		dcode__1(); break;
+#ifdef DEBUG_DCODES
 	case 0: //! D0 - Reset
 		dcode_0(); break;
 	case 1: //! D1 - Clear EEPROM

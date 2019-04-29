@@ -1046,11 +1046,6 @@ static void updateTemperaturesFromRawValues()
       redundant_temperature = analog2temp(redundant_temperature_raw, 1);
     #endif
 
-    //Reset the watchdog after we know we have a temperature measurement.
-#ifdef WATCHDOG
-    wdt_reset();
-#endif //WATCHDOG
-
     CRITICAL_SECTION_START;
     temp_meas_ready = false;
     CRITICAL_SECTION_END;
