@@ -535,7 +535,7 @@ FORCE_INLINE void stepper_next_block()
     }
   }
   else {
-    OCR1A = 2000; // 1kHz.
+      _NEXT_ISR(2000); // 1kHz.
   }
   //WRITE_NC(LOGIC_ANALYZER_CH2, false);
 }
@@ -1229,17 +1229,38 @@ void st_init()
   // create_speed_lookuptable.py
   TCCR1B = (TCCR1B & ~(0x07<<CS10)) | (2<<CS10);
 
-  // Plan the first interrupt after 8ms from now.
-  OCR1A = 0x4000;
-  TCNT1 = 0;
-  ENABLE_STEPPER_DRIVER_INTERRUPT();
-
 #ifdef LIN_ADVANCE
+  // Reset the state for the next advance scheduler as well
+  nextMainISR = 0;
+  nextAdvanceISR = ADV_NEVER;
+  eISR_Rate = ADV_NEVER;
   clear_current_adv_vars();
 #endif
 
+  st_reset_timer();
+
   enable_endstops(true); // Start with endstops active. After homing they can be disabled
+
+  ENABLE_STEPPER_DRIVER_INTERRUPT();
   sei();
+}
+
+
+void st_reset_timer()
+{
+  // Clear a possible pending interrupt on OCR1A overflow.
+  TIFR1 |= 1 << OCF1A;
+  // Reset the counter.
+  TCNT1 = 0;
+  // Wake up after 1ms from now.
+  OCR1A = 2000;
+
+#ifdef LIN_ADVANCE
+  // If an eISR was pending, reschedule too
+  if (nextAdvanceISR <= nextMainISR)
+      nextAdvanceISR = 0;
+  nextMainISR = 0;
+#endif
 }
 
 
