@@ -38,9 +38,7 @@ void st_init();
 void isr();
 
 #ifdef LIN_ADVANCE
-  void advance_isr();
-  void advance_isr_scheduler();
-  void clear_current_adv_vars(); //Used to reset the built up pretension and remaining esteps on filament change.
+void clear_current_adv_vars(); // Used to reset the built up pretension and remaining esteps on filament change.
 #endif
 
 // Block until all buffered steps are executed

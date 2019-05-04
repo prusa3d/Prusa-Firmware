@@ -292,6 +292,8 @@
  * Mention @Sebastianv650 on GitHub to alert the author of any issues.
  */
 #define LIN_ADVANCE
+#define LA_DEBUG
+#define DEBUG_STEPPER_TIMER_MISSED
 
 #ifdef LIN_ADVANCE
   #define LIN_ADVANCE_K 0 // Unit: mm compression per 1mm/s extruder speed

@@ -112,10 +112,10 @@ typedef struct {
   float speed_factor;
     
 #ifdef LIN_ADVANCE
-  bool use_advance_lead;
-  uint16_t advance_speed,                 // Timer value for extruder speed offset
-           max_adv_steps,                 // max. advance steps to get cruising speed pressure (not always nominal_speed!)
-           final_adv_steps;               // advance steps due to exit speed
+  bool use_advance_lead;            // Whether the current block uses LA
+  uint16_t advance_speed,           // Step-rate for extruder speed
+           max_adv_steps,           // max. advance steps to get cruising speed pressure (not always nominal_speed!)
+           final_adv_steps;         // advance steps due to exit speed
   float e_D_ratio;
 #endif
 
@@ -123,7 +123,7 @@ typedef struct {
 } block_t;
 
 #ifdef LIN_ADVANCE
-  extern float extruder_advance_K;
+extern float extruder_advance_K;    // Linear-advance K factor
 #endif
 
 #ifdef ENABLE_AUTO_BED_LEVELING

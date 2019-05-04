@@ -113,21 +113,24 @@ volatile long count_position[NUM_AXIS] = { 0, 0, 0, 0};
 volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
 
 #ifdef LIN_ADVANCE
+  void advance_isr_scheduler();
+  void advance_isr();
+
+  static const uint16_t ADV_NEVER = 0xFFFF;
 
   static uint16_t nextMainISR = 0;
-  static uint16_t eISR_Rate;
+  static uint16_t nextAdvanceISR = ADV_NEVER;
 
-  // Extrusion steps to be executed by the stepper.
-  // If set to non zero, the timer ISR routine will tick the Linear Advance extruder ticks first.
-  // If e_steps is zero, then the timer ISR routine will perform the usual DDA step.
-  static volatile int16_t e_steps = 0;
-  // How many extruder steps shall be ticked at a single ISR invocation?
-  static uint8_t          estep_loops;
-  // The current speed of the extruder, scaled by the linear advance constant, so it has the same measure
-  // as current_adv_steps.
-  static int              current_estep_rate;
-  // The current pretension of filament expressed in extruder micro steps.
-  static int              current_adv_steps;
+  static uint16_t eISR_Rate = ADV_NEVER;
+
+  static bool use_advance_lead;
+
+  static uint16_t current_adv_steps;
+  static uint16_t final_adv_steps;
+  static uint16_t max_adv_steps;
+  static uint32_t LA_decelerate_after;
+
+  static volatile int8_t e_steps;
 
   #define _NEXT_ISR(T)    nextMainISR = T
 #else
@@ -353,29 +356,6 @@ FORCE_INLINE unsigned short calc_timer(uint16_t step_rate) {
 }
 
 
-#ifndef FILAMENT_SENSOR
-#define fsensor_step(cnt)
-#else
-FORCE_INLINE void fsensor_step(uint8_t cnt)
-{
-    if (READ(E0_DIR_PIN) == INVERT_E0_DIR)
-    {
-        if (count_direction[E_AXIS] == 1)
-            fsensor_counter -= cnt;
-        else
-            fsensor_counter += cnt;
-    }
-    else
-    {
-        if (count_direction[E_AXIS] == 1)
-            fsensor_counter += cnt;
-        else
-            fsensor_counter -= cnt;
-    }
-}
-#endif
-
-
 // "The Stepper Driver Interrupt" - This timer interrupt is the workhorse.
 // It pops blocks from the block_buffer and executes them by pulsing the stepper pins appropriately.
 ISR(TIMER1_COMPA_vect) {
@@ -385,38 +365,10 @@ ISR(TIMER1_COMPA_vect) {
 #endif //DEBUG_STACK_MONITOR
 
 #ifdef LIN_ADVANCE
-  // If there are any e_steps planned, tick them.
-  bool run_main_isr = false;
-  if (e_steps) {
-    //WRITE_NC(LOGIC_ANALYZER_CH7, true);
-	uint8_t cnt = 0;
-    for (uint8_t i = estep_loops; e_steps && i --;) {
-        WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
-        -- e_steps;
-		cnt++;
-        WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
-    }
-    fsensor_step(cnt);
-    if (e_steps) {
-      // Plan another Linear Advance tick.
-      OCR1A = eISR_Rate;
-      nextMainISR -= eISR_Rate;
-    } else if (! (nextMainISR & 0x8000) || nextMainISR < 16) {
-      // The timer did not overflow and it is big enough, so it makes sense to plan it.
-      OCR1A = nextMainISR;
-    } else {
-      // The timer has overflown, or it is too small. Run the main ISR just after the Linear Advance routine
-      // in the current interrupt tick.
-      run_main_isr = true;
-      //FIXME pick the serial line.
-    }
-    //WRITE_NC(LOGIC_ANALYZER_CH7, false);
-  } else
-    run_main_isr = true;
-
-  if (run_main_isr)
-#endif
+    advance_isr_scheduler();
+#else
     isr();
+#endif
 
   // Don't run the ISR faster than possible
   // Is there a 8us time left before the next interrupt triggers?
@@ -517,9 +469,14 @@ FORCE_INLINE void stepper_next_block()
     step_loops_nominal = 0;
     acc_step_rate = uint16_t(current_block->initial_rate);
     acceleration_time = calc_timer(acc_step_rate);
+
 #ifdef LIN_ADVANCE
-    current_estep_rate = ((unsigned long)acc_step_rate * current_block->abs_adv_steps_multiplier8) >> 17;
-#endif /* LIN_ADVANCE */
+    if ((use_advance_lead = current_block->use_advance_lead)) {
+        LA_decelerate_after = current_block->decelerate_after;
+        final_adv_steps = current_block->final_adv_steps;
+        max_adv_steps = current_block->max_adv_steps;
+    }
+#endif
 
     if (current_block->flag & BLOCK_FLAG_DDA_LOWRES) {
       counter_x.lo = -(current_block->step_event_count.lo >> 1);
@@ -788,7 +745,7 @@ FORCE_INLINE void stepper_tick_lowres()
       counter_e.lo -= current_block->step_event_count.lo;
       count_position[E_AXIS] += count_direction[E_AXIS];
 #ifdef LIN_ADVANCE
-      ++ e_steps;
+      e_steps += count_direction[E_AXIS];
 #else
 	#ifdef FILAMENT_SENSOR
 	  ++ fsensor_counter;
@@ -850,11 +807,11 @@ FORCE_INLINE void stepper_tick_highres()
       counter_e.wide -= current_block->step_event_count.wide;
       count_position[E_AXIS]+=count_direction[E_AXIS];
 #ifdef LIN_ADVANCE
-      ++ e_steps;
+      e_steps += count_direction[E_AXIS];
 #else
-  #ifdef FILAMENT_SENSOR
+    #ifdef FILAMENT_SENSOR
       ++ fsensor_counter;
-  #endif //FILAMENT_SENSOR
+    #endif //FILAMENT_SENSOR
       WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #endif
     }
@@ -862,9 +819,6 @@ FORCE_INLINE void stepper_tick_highres()
       break;
   }
 }
-
-// 50us delay
-#define LIN_ADV_FIRST_TICK_DELAY 100
 
 FORCE_INLINE void isr() {
   //WRITE_NC(LOGIC_ANALYZER_CH0, true);
@@ -877,64 +831,10 @@ FORCE_INLINE void isr() {
   if (current_block != NULL) 
   {
     stepper_check_endstops();
-#ifdef LIN_ADVANCE
-      e_steps = 0;
-#endif /* LIN_ADVANCE */
     if (current_block->flag & BLOCK_FLAG_DDA_LOWRES)
       stepper_tick_lowres();
     else
       stepper_tick_highres();
-
-#ifdef LIN_ADVANCE
-      if (out_bits&(1<<E_AXIS))
-        // Move in negative direction.
-        e_steps = - e_steps;
-      if (current_block->use_advance_lead) {
-        //int esteps_inc = 0;
-        //esteps_inc = current_estep_rate - current_adv_steps;
-        //e_steps += esteps_inc;
-        e_steps += current_estep_rate - current_adv_steps;
-#if 0
-        if (abs(esteps_inc) > 4) {
-          LOGIC_ANALYZER_SERIAL_TX_WRITE(esteps_inc);
-          if (esteps_inc < -511 || esteps_inc > 511)
-            LOGIC_ANALYZER_SERIAL_TX_WRITE(esteps_inc >> 9);
-        }
-#endif
-        current_adv_steps = current_estep_rate;
-      }
-      // If we have esteps to execute, step some of them now.
-      if (e_steps) {
-        //WRITE_NC(LOGIC_ANALYZER_CH7, true);
-        // Set the step direction.
-		bool neg = e_steps < 0;
-        {
-          bool dir =
-        #ifdef SNMM
-            (neg == (mmu_extruder & 1))
-        #else
-            neg
-        #endif
-            ? INVERT_E0_DIR : !INVERT_E0_DIR; //If we have SNMM, reverse every second extruder.
-          WRITE_NC(E0_DIR_PIN, dir);
-          if (neg)
-            // Flip the e_steps counter to be always positive.
-            e_steps = - e_steps;
-        }
-        // Tick min(step_loops, abs(e_steps)).
-        estep_loops = (e_steps & 0x0ff00) ? 4 : e_steps;
-        if (step_loops < estep_loops)
-          estep_loops = step_loops;
-        fsensor_step(estep_loops);
-        do {
-          WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
-          -- e_steps;
-          WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
-        } while (-- estep_loops != 0);
-        //WRITE_NC(LOGIC_ANALYZER_CH7, false);
-        MSerial.checkRx(); // Check for serial chars.
-      }
-#endif
 
     // Calculare new timer value
     // 13.38-14.63us for steady state,
@@ -952,11 +852,18 @@ FORCE_INLINE void isr() {
         uint16_t timer = calc_timer(acc_step_rate);
         _NEXT_ISR(timer);
         acceleration_time += timer;
-  #ifdef LIN_ADVANCE
-        if (current_block->use_advance_lead)
-          // int32_t = (uint16_t * uint32_t) >> 17
-          current_estep_rate = ((uint32_t)acc_step_rate * current_block->abs_adv_steps_multiplier8) >> 17;
-  #endif
+#ifdef LIN_ADVANCE
+        if (current_block->use_advance_lead) {
+            if (step_events_completed.wide == (unsigned long int)step_loops || (e_steps && eISR_Rate != current_block->advance_speed)) {
+                nextAdvanceISR = 0; // Wake up eISR on first acceleration loop and fire ISR if final adv_rate is reached
+                eISR_Rate = current_block->advance_speed;
+            }
+        }
+        else {
+            eISR_Rate = ADV_NEVER;
+            if (e_steps) nextAdvanceISR = 0;
+        }
+#endif
       }
       else if (step_events_completed.wide > (unsigned long int)current_block->decelerate_after) {
         uint16_t step_rate;
@@ -970,102 +877,34 @@ FORCE_INLINE void isr() {
         uint16_t timer = calc_timer(step_rate);
         _NEXT_ISR(timer);
         deceleration_time += timer;
-  #ifdef LIN_ADVANCE
-        if (current_block->use_advance_lead)
-          current_estep_rate = ((uint32_t)step_rate * current_block->abs_adv_steps_multiplier8) >> 17;
-  #endif
+#ifdef LIN_ADVANCE
+        if (current_block->use_advance_lead) {
+            if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops || (e_steps && eISR_Rate != current_block->advance_speed)) {
+                nextAdvanceISR = 0; // Wake up eISR on first deceleration loop
+                eISR_Rate = current_block->advance_speed;
+            }
+        }
+        else {
+            eISR_Rate = ADV_NEVER;
+            if (e_steps) nextAdvanceISR = 0;
+        }
+#endif
       }
       else {
+#ifdef LIN_ADVANCE
+          // If we have esteps to execute, fire the next advance_isr "now"
+          if (e_steps && eISR_Rate != current_block->advance_speed) nextAdvanceISR = 0;
+#endif
         if (! step_loops_nominal) {
           // Calculation of the steady state timer rate has been delayed to the 1st tick of the steady state to lower
           // the initial interrupt blocking.
           OCR1A_nominal = calc_timer(uint16_t(current_block->nominal_rate));
           step_loops_nominal = step_loops;
-  #ifdef LIN_ADVANCE
-          if (current_block->use_advance_lead)
-            current_estep_rate = (current_block->nominal_rate * current_block->abs_adv_steps_multiplier8) >> 17;
-  #endif
         }
         _NEXT_ISR(OCR1A_nominal);
       }
       //WRITE_NC(LOGIC_ANALYZER_CH1, false);
     }
-
-#ifdef LIN_ADVANCE
-    if (e_steps && current_block->use_advance_lead) {
-      //WRITE_NC(LOGIC_ANALYZER_CH7, true);
-      MSerial.checkRx(); // Check for serial chars.
-      // Some of the E steps were not ticked yet. Plan additional interrupts.
-      uint16_t now = TCNT1;
-      // Plan the first linear advance interrupt after 50us from now.
-      uint16_t to_go = nextMainISR - now - LIN_ADV_FIRST_TICK_DELAY;
-      eISR_Rate = 0;
-      if ((to_go & 0x8000) == 0) {
-        // The to_go number is not negative.
-        // Count the number of 7812,5 ticks, that fit into to_go 2MHz ticks.
-        uint8_t ticks = to_go >> 8;
-        if (ticks == 1) {
-          // Avoid running the following loop for a very short interval.
-          estep_loops = 255;
-          eISR_Rate = 1;
-        } else if ((e_steps & 0x0ff00) == 0) {
-          // e_steps <= 0x0ff
-          if (uint8_t(e_steps) <= ticks) {
-            // Spread the e_steps along the whole go_to interval.
-            eISR_Rate = to_go / uint8_t(e_steps);
-            estep_loops = 1;
-          } else if (ticks != 0) {
-            // At least one tick fits into the to_go interval. Calculate the e-step grouping.
-            uint8_t e = uint8_t(e_steps) >> 1;
-            estep_loops = 2;
-            while (e > ticks) {
-              e >>= 1;
-              estep_loops <<= 1;
-            }
-            // Now the estep_loops contains the number of loops of power of 2, that will be sufficient
-            // to squeeze enough of Linear Advance ticks until nextMainISR.
-            // Calculate the tick rate.
-            eISR_Rate = to_go / ticks;          
-          }
-        } else {
-          // This is an exterme case with too many e_steps inserted by the linear advance.
-          // At least one tick fits into the to_go interval. Calculate the e-step grouping.
-          estep_loops = 2;
-          uint16_t e = e_steps >> 1;
-          while (e & 0x0ff00) {
-            e >>= 1;
-            estep_loops <<= 1;
-          }
-          while (uint8_t(e) > ticks) {
-            e >>= 1;
-            estep_loops <<= 1;
-          }
-          // Now the estep_loops contains the number of loops of power of 2, that will be sufficient
-          // to squeeze enough of Linear Advance ticks until nextMainISR.
-          // Calculate the tick rate.
-          eISR_Rate = to_go / ticks;
-        }
-      }
-      if (eISR_Rate == 0) {
-        // There is not enough time to fit even a single additional tick.
-        // Tick all the extruder ticks now.
-        MSerial.checkRx(); // Check for serial chars.
-        fsensor_step(e_steps);
-        do {
-          WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
-          -- e_steps;
-          WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
-        } while (e_steps);
-        OCR1A = nextMainISR;
-      } else {
-        // Tick the 1st Linear Advance interrupt after 50us from now.
-        nextMainISR -= LIN_ADV_FIRST_TICK_DELAY;
-        OCR1A = now + LIN_ADV_FIRST_TICK_DELAY;
-      }
-      //WRITE_NC(LOGIC_ANALYZER_CH7, false);
-    } else
-      OCR1A = nextMainISR;
-#endif
 
     // If current block is finished, reset pointer
     if (step_events_completed.wide >= current_block->step_event_count.wide) {
@@ -1094,14 +933,84 @@ FORCE_INLINE void isr() {
 }
 
 #ifdef LIN_ADVANCE
+// Timer interrupt for E. e_steps is set in the main routine.
+
+FORCE_INLINE void advance_isr() {
+    if (use_advance_lead) {
+        if (step_events_completed.wide > LA_decelerate_after && current_adv_steps > final_adv_steps) {
+            e_steps--;
+            current_adv_steps--;
+            nextAdvanceISR = eISR_Rate;
+        }
+        else if (step_events_completed.wide < LA_decelerate_after && current_adv_steps < max_adv_steps) {
+            e_steps++;
+            current_adv_steps++;
+            nextAdvanceISR = eISR_Rate;
+        }
+        else {
+            nextAdvanceISR = ADV_NEVER;
+            eISR_Rate = ADV_NEVER;
+        }
+    }
+    else
+        nextAdvanceISR = ADV_NEVER;
+
+    if (e_steps) {
+        MSerial.checkRx(); // Check for serial chars.
+
+        bool dir =
+#ifdef SNMM
+            ((e_steps < 0) == (snmm_extruder & 1))
+#else
+            (e_steps < 0)
+#endif
+            ? INVERT_E0_DIR : !INVERT_E0_DIR; //If we have SNMM, reverse every second extruder.
+        WRITE(E0_DIR_PIN, dir);
+
+        if(e_steps < 0) e_steps = -e_steps;
+        fsensor_counter += e_steps;
+        while (e_steps) {
+            WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
+            --e_steps;
+            WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
+        }
+    }
+}
+
+FORCE_INLINE void advance_isr_scheduler() {
+    // Run main stepping ISR if flagged
+    if (!nextMainISR) isr();
+
+    // Run Advance stepping ISR if flagged
+    if (!nextAdvanceISR) advance_isr();
+
+    // Is the next advance ISR scheduled before the next main ISR?
+    if (nextAdvanceISR <= nextMainISR) {
+        // Set up the next interrupt
+        OCR1A = nextAdvanceISR;
+        // New interval for the next main ISR
+        if (nextMainISR) nextMainISR -= nextAdvanceISR;
+        // Will call Stepper::advance_isr on the next interrupt
+        nextAdvanceISR = 0;
+    }
+    else {
+        // The next main ISR comes first
+        OCR1A = nextMainISR;
+        // New interval for the next advance ISR, if any
+        if (nextAdvanceISR && nextAdvanceISR != ADV_NEVER)
+            nextAdvanceISR -= nextMainISR;
+        // Will call Stepper::isr on the next interrupt
+        nextMainISR = 0;
+    }
+}
 
 void clear_current_adv_vars() {
-  e_steps = 0; //Should be already 0 at an filament change event, but just to be sure..
-  current_adv_steps = 0;
+    e_steps = 0;
+    current_adv_steps = 0;
 }
 
 #endif // LIN_ADVANCE
-      
+
 void st_init()
 {
 #ifdef TMC2130
@@ -1326,10 +1235,9 @@ void st_init()
   ENABLE_STEPPER_DRIVER_INTERRUPT();
 
 #ifdef LIN_ADVANCE
-    e_steps = 0;
-    current_adv_steps = 0;
+  clear_current_adv_vars();
 #endif
-    
+
   enable_endstops(true); // Start with endstops active. After homing they can be disabled
   sei();
 }
