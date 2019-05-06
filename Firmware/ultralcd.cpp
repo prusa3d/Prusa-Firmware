@@ -3352,7 +3352,7 @@ void lcd_adjust_bed(void)
         eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT, _md->front);
         eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR,  _md->rear);
         eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
-    )
+    );
     MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
 	MENU_ITEM_EDIT_int3_P(_i("Left side [um]"),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14 r=1
     MENU_ITEM_EDIT_int3_P(_i("Right side[um]"), &_md->right, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14 r=1
@@ -5161,7 +5161,7 @@ void lcd_settings_linearity_correction_menu(void)
 	MENU_BEGIN();
     ON_MENU_LEAVE(
         lcd_settings_linearity_correction_menu_save();
-    )
+    );
 	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
 	//tmc2130_wave_fac[X_AXIS]
