@@ -3346,15 +3346,14 @@ void lcd_adjust_bed(void)
     }
     MENU_BEGIN();
 	// leaving menu - this condition must be immediately before MENU_ITEM_BACK_P
-	if (((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving)
-	{
+    ON_MENU_LEAVE(
         eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_LEFT,  _md->left);
         eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, _md->right);
         eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_FRONT, _md->front);
         eeprom_update_int8((unsigned char*)EEPROM_BED_CORRECTION_REAR,  _md->rear);
         eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
-	}
-	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+    )
+    MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
 	MENU_ITEM_EDIT_int3_P(_i("Left side [um]"),  &_md->left,  -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_LEFT c=14 r=1
     MENU_ITEM_EDIT_int3_P(_i("Right side[um]"), &_md->right, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_RIGHT c=14 r=1
     MENU_ITEM_EDIT_int3_P(_i("Front side[um]"), &_md->front, -BED_ADJUSTMENT_UM_MAX, BED_ADJUSTMENT_UM_MAX);////MSG_BED_CORRECTION_FRONT c=14 r=1
@@ -5160,6 +5159,9 @@ void lcd_wizard(WizState state)
 void lcd_settings_linearity_correction_menu(void)
 {
 	MENU_BEGIN();
+    ON_MENU_LEAVE(
+        lcd_settings_linearity_correction_menu_save();
+    )
 	MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
 #ifdef TMC2130_LINEARITY_CORRECTION_XYZ
 	//tmc2130_wave_fac[X_AXIS]
@@ -5170,10 +5172,10 @@ void lcd_settings_linearity_correction_menu(void)
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
 	MENU_ITEM_EDIT_int3_P(_i("E-correct"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 	MENU_END();
-	if(menu_leaving)
-	{
-	    lcd_settings_linearity_correction_menu_save();
-	}
+//	if(menu_leaving)
+//	{
+//	    lcd_settings_linearity_correction_menu_save();
+//	}
 }
 #endif // TMC2130
 
