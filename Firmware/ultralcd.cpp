@@ -5172,10 +5172,6 @@ void lcd_settings_linearity_correction_menu(void)
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
 	MENU_ITEM_EDIT_int3_P(_i("E-correct"),  &tmc2130_wave_fac[E_AXIS],  TMC2130_WAVE_FAC1000_MIN-TMC2130_WAVE_FAC1000_STP, TMC2130_WAVE_FAC1000_MAX);////MSG_EXTRUDER_CORRECTION c=9 r=0
 	MENU_END();
-//	if(menu_leaving)
-//	{
-//	    lcd_settings_linearity_correction_menu_save();
-//	}
 }
 #endif // TMC2130
 
