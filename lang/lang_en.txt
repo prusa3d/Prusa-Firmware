@@ -76,12 +76,6 @@
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 
-#MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
-"Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
-
-#MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
-"Bed leveling failed. Sensor triggered too high. Waiting for reset."
-
 #MSG_BED c=0 r=0
 "Bed"
 
@@ -120,9 +114,6 @@
 
 #
 "Cancel"
-
-#MSG_SD_INSERTED c=0 r=0
-"Card inserted"
 
 #MSG_SD_REMOVED c=0 r=0
 "Card removed"
@@ -214,21 +205,6 @@
 #MSG_ERROR c=0 r=0
 "ERROR:"
 
-#
-"External SPI flash W25X20CL not responding."
-
-#
-"Extruder 1"
-
-#
-"Extruder 2"
-
-#
-"Extruder 3"
-
-#
-"Extruder 4"
-
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
 "Extruder fan:"
 
@@ -268,9 +244,6 @@
 #MSG_FSENSOR_ON c=0 r=0
 "Fil. sensor  [on]"
 
-#MSG_RESPONSE_POOR c=20 r=2
-"Fil. sensor response is poor, disable it?"
-
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
 
@@ -288,9 +261,6 @@
 
 #MSG_FILAMENT_SENSOR c=20 r=0
 "Filament sensor"
-
-#MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
-"Filament sensor:"
 
 #MSG_FILAMENT_USED c=19 r=1
 "Filament used"
@@ -346,9 +316,6 @@
 #MSG_PRUSA3D_HOWTO c=0 r=0
 "howto.prusa3d.com"
 
-#
-"Change extruder"
-
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
 
@@ -397,23 +364,8 @@
 #MSG_WIZARD_V2_CAL_2 c=20 r=12
 "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
 
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
-"Improving bed calibration point"
-
 #MSG_WATCH c=0 r=0
 "Info screen"
-
-#MSG_FILAMENT_LOADING_T0 c=20 r=4
-"Insert filament into extruder 1. Click when done."
-
-#MSG_FILAMENT_LOADING_T1 c=20 r=4
-"Insert filament into extruder 2. Click when done."
-
-#MSG_FILAMENT_LOADING_T2 c=20 r=4
-"Insert filament into extruder 3. Click when done."
-
-#MSG_FILAMENT_LOADING_T3 c=20 r=4
-"Insert filament into extruder 4. Click when done."
 
 #
 "Is filament 1 loaded?"
@@ -432,9 +384,6 @@
 
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
-
-#MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
-"Iteration "
 
 #
 "Last print failures"
@@ -561,9 +510,6 @@
 
 #
 "New firmware version available:"
-
-#
-"No "
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
@@ -703,12 +649,6 @@
 #
 "Print FAN"
 
-#WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 ready."
-
-#WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 ready."
-
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
 
@@ -723,9 +663,6 @@
 
 #
 "Prusa i3 MK3S OK."
-
-#
-"Prusa i3 MK2 ready."
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -801,12 +738,6 @@
 
 #
 "Sensor state"
-
-#
-"Sensors info"
-
-#
-"Show pinda state"
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
@@ -908,9 +839,6 @@
 "Unload"
 
 #
-"Unload all"
-
-#
 "Total failures"
 
 #
@@ -997,9 +925,6 @@
 #MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_RIGHT_FAR c=20 r=8
 "XYZ calibration compromised. Right front calibration point not reachable."
 
-#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
-"XYZ calibration compromised. Left front calibration point not reachable."
-
 #MSG_LOAD_ALL c=17 r=0
 "Load all"
 
@@ -1011,9 +936,6 @@
 
 #
 "XYZ calibration failed. Front calibration points not reachable."
-
-#
-"XYZ calibration failed. Left front calibration point not reachable."
 
 #MSG_LOAD_FILAMENT_2 c=17 r=0
 "Load filament 2"

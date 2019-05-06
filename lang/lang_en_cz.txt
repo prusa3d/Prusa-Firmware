@@ -102,14 +102,6 @@
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 "Kalibrace Z selhala. Sensor nesepnul. Znecistena tryska? Cekam na reset."
 
-#MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
-"Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
-"Kalibrace Z selhala. Sensor je odpojeny nebo preruseny kabel. Cekam na reset."
-
-#MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
-"Bed leveling failed. Sensor triggered too high. Waiting for reset."
-"Kalibrace Z selhala. Sensor sepnul prilis vysoko. Cekam na reset."
-
 #MSG_BED c=0 r=0
 "Bed"
 "Podlozka"
@@ -161,10 +153,6 @@
 #
 "Cancel"
 "Zrusit"
-
-#MSG_SD_INSERTED c=0 r=0
-"Card inserted"
-"Karta vlozena"
 
 #MSG_SD_REMOVED c=0 r=0
 "Card removed"
@@ -286,26 +274,6 @@
 "ERROR:"
 "CHYBA:"
 
-#
-"External SPI flash W25X20CL not responding."
-"Externi SPI flash W25X20CL neodpovida."
-
-#
-"Extruder 1"
-"\x00"
-
-#
-"Extruder 2"
-"\x00"
-
-#
-"Extruder 3"
-"\x00"
-
-#
-"Extruder 4"
-"\x00"
-
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
 "Extruder fan:"
 "Levy vent.:"
@@ -358,10 +326,6 @@
 "Fil. sensor  [on]"
 "Fil. senzor [zap]"
 
-#MSG_RESPONSE_POOR c=20 r=2
-"Fil. sensor response is poor, disable it?"
-"Senzor nerozpoznal filament, vypnout?"
-
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
 "Fil. senzor [N/A]"
@@ -385,10 +349,6 @@
 #MSG_FILAMENT_SENSOR c=20 r=0
 "Filament sensor"
 "Senzor filamentu"
-
-#MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
-"Filament sensor:"
-"Senzor filamentu:"
 
 #MSG_FILAMENT_USED c=19 r=1
 "Filament used"
@@ -462,10 +422,6 @@
 "howto.prusa3d.com"
 "\x00"
 
-#
-"Change extruder"
-"Zmenit extruder"
-
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
 "Vymenit filament"
@@ -530,29 +486,9 @@
 "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
 "Zacnu tisknout linku a Vy budete postupne snizovat trysku otacenim tlacitka dokud nedosahnete optimalni vysky. Prohlednete si obrazky v nasi prirucce v kapitole Kalibrace."
 
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
-"Improving bed calibration point"
-"Zlepsuji presnost kalibracniho bodu"
-
 #MSG_WATCH c=0 r=0
 "Info screen"
 "Informace"
-
-#MSG_FILAMENT_LOADING_T0 c=20 r=4
-"Insert filament into extruder 1. Click when done."
-"Vlozte filament do extruderu 1. Potvrdte tlacitkem."
-
-#MSG_FILAMENT_LOADING_T1 c=20 r=4
-"Insert filament into extruder 2. Click when done."
-"Vlozte filament do extruderu 2. Potvrdte tlacitkem."
-
-#MSG_FILAMENT_LOADING_T2 c=20 r=4
-"Insert filament into extruder 3. Click when done."
-"Vlozte filament do extruderu 3. Potvrdte tlacitkem."
-
-#MSG_FILAMENT_LOADING_T3 c=20 r=4
-"Insert filament into extruder 4. Click when done."
-"Vlozte filament do extruderu 4. Potvrdte tlacitkem."
 
 #
 "Is filament 1 loaded?"
@@ -577,10 +513,6 @@
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
 "Je tiskovy plat na podlozce?"
-
-#MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
-"Iteration "
-"Iterace "
 
 #
 "Last print failures"
@@ -749,10 +681,6 @@
 #
 "New firmware version available:"
 "Vysla nova verze firmware:"
-
-#
-"No "
-"Ne"
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
@@ -938,14 +866,6 @@
 "Print FAN"
 "Tiskovy vent."
 
-#WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 ready."
-"Prusa i3 MK2.5 ok."
-
-#WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 ready."
-"Prusa i3 MK3 ok."
-
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
 "\x00"
@@ -965,10 +885,6 @@
 #
 "Prusa i3 MK3S OK."
 "\x00"
-
-#
-"Prusa i3 MK2 ready."
-"Prusa i3 MK2 ok."
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -1069,14 +985,6 @@
 #
 "Sensor state"
 "Stav senzoru"
-
-#
-"Sensors info"
-"Senzor info"
-
-#
-"Show pinda state"
-"Zobrazit stav PINDA"
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
@@ -1211,10 +1119,6 @@
 "Vysunout"
 
 #
-"Unload all"
-"Vyjmout vse"
-
-#
 "Total failures"
 "Celkem selhani"
 
@@ -1330,10 +1234,6 @@
 "XYZ calibration compromised. Right front calibration point not reachable."
 "Kalibrace XYZ nepresna. Pravy predni bod moc vpredu."
 
-#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
-"XYZ calibration compromised. Left front calibration point not reachable."
-"Kalibrace XYZ nepresna. Levy predni bod moc vpredu."
-
 #MSG_LOAD_ALL c=17 r=0
 "Load all"
 "Zavest vse"
@@ -1349,10 +1249,6 @@
 #
 "XYZ calibration failed. Front calibration points not reachable."
 "Kalibrace XYZ selhala. Predni kalibracni body moc vpredu. Srovnejte tiskarnu."
-
-#
-"XYZ calibration failed. Left front calibration point not reachable."
-"Kalibrace XYZ selhala. Levy predni bod moc vpredu. Srovnejte tiskarnu."
 
 #MSG_LOAD_FILAMENT_2 c=17 r=0
 "Load filament 2"

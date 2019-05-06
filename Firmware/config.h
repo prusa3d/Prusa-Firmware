@@ -50,9 +50,9 @@
 #define LANG_MODE              1 // sec. language support
 
 #if (MOTHERBOARD == BOARD_EINSY_1_0a)
-#define LANG_SIZE_RESERVED     0x2b00 // reserved space for secondary language (11008 bytes)
+#define LANG_SIZE_RESERVED     0x2e00 // reserved space for secondary language (11776 bytes)
 #else //MOTHERBOARD == BOARD_EINSY_1_0a
-#define LANG_SIZE_RESERVED     0x2d00 // reserved space for secondary language (11520 bytes)
+#define LANG_SIZE_RESERVED     0x2e00 // reserved space for secondary language (11776 bytes)
 #endif //MOTHERBOARD == BOARD_EINSY_1_0a
 
 
