@@ -102,14 +102,6 @@
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
 "Z-Kal. fehlgeschlg. Sensor nicht ausgeloest. Schmutzige Duese? Warte auf Reset."
 
-#MSG_BED_LEVELING_FAILED_PROBE_DISCONNECTED c=20 r=4
-"Bed leveling failed. Sensor disconnected or cable broken. Waiting for reset."
-"Z-Kalibrierung fehl- geschlagen. Sensor getrennt/Kabelbruch? Warte auf Reset."
-
-#MSG_BED_LEVELING_FAILED_POINT_HIGH c=20 r=4
-"Bed leveling failed. Sensor triggered too high. Waiting for reset."
-"Z-Kalibrierung fehl- geschlagen. Sensor zu hoch ausgeloest. Warte auf Reset."
-
 #MSG_BED c=0 r=0
 "Bed"
 "Bett"
@@ -161,10 +153,6 @@
 #
 "Cancel"
 "Abbruch"
-
-#MSG_SD_INSERTED c=0 r=0
-"Card inserted"
-"SD Karte eingesetzt"
 
 #MSG_SD_REMOVED c=0 r=0
 "Card removed"
@@ -286,26 +274,6 @@
 "ERROR:"
 "FEHLER:"
 
-#
-"External SPI flash W25X20CL not responding."
-"Der externe SPI Flash W25X20CL antwortet nicht."
-
-#
-"Extruder 1"
-"\x00"
-
-#
-"Extruder 2"
-"\x00"
-
-#
-"Extruder 3"
-"\x00"
-
-#
-"Extruder 4"
-"\x00"
-
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18 r=0
 "Extruder fan:"
 "Extruder Luefter:"
@@ -358,10 +326,6 @@
 "Fil. sensor  [on]"
 "Fil. Sensor  [an]"
 
-#MSG_RESPONSE_POOR c=20 r=2
-"Fil. sensor response is poor, disable it?"
-"Fil. Sensorsignal ist schlecht, ausschalten?"
-
 #MSG_FSENSOR_NA c=0 r=0
 "Fil. sensor [N/A]"
 "Fil. Sensor  [nv]"
@@ -385,10 +349,6 @@
 #MSG_FILAMENT_SENSOR c=20 r=0
 "Filament sensor"
 "Filamentsensor"
-
-#MSG_SELFTEST_FILAMENT_SENSOR c=18 r=0
-"Filament sensor:"
-"Filamentsensor:"
 
 #MSG_FILAMENT_USED c=19 r=1
 "Filament used"
@@ -462,10 +422,6 @@
 "howto.prusa3d.com"
 "\x00"
 
-#
-"Change extruder"
-"Wechsel Extruder"
-
 #MSG_FILAMENTCHANGE c=0 r=0
 "Change filament"
 "Filament-Wechsel"
@@ -530,29 +486,9 @@
 "I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."
 "Ich werde jetzt eine Linie drucken. Waehrend des Druckes koennen Sie die Duese allmaehlich senken, indem Sie den Knopf drehen, bis Sie die optimale Hoehe erreichen. Sehen Sie sich die Bilder in unserem Handbuch im Kapitel Kalibrierung an."
 
-#MSG_IMPROVE_BED_OFFSET_AND_SKEW_LINE1 c=60 r=0
-"Improving bed calibration point"
-"Verbessere Bett Kalibrierpunkt"
-
 #MSG_WATCH c=0 r=0
 "Info screen"
 "Infoanzeige"
-
-#MSG_FILAMENT_LOADING_T0 c=20 r=4
-"Insert filament into extruder 1. Click when done."
-"Filament in Extruder 1 einlegen. Klicken wenn fertig."
-
-#MSG_FILAMENT_LOADING_T1 c=20 r=4
-"Insert filament into extruder 2. Click when done."
-"Filament in Extruder 2 einlegen. Klicken wenn fertig."
-
-#MSG_FILAMENT_LOADING_T2 c=20 r=4
-"Insert filament into extruder 3. Click when done."
-"Filament in Extruder 3 einlegen. Klicken wenn fertig."
-
-#MSG_FILAMENT_LOADING_T3 c=20 r=4
-"Insert filament into extruder 4. Click when done."
-"Filament in Extruder 4 einlegen. Klicken wenn fertig."
 
 #
 "Is filament 1 loaded?"
@@ -577,10 +513,6 @@
 #MSG_STEEL_SHEET_CHECK c=20 r=2
 "Is steel sheet on heatbed?"
 "Liegt das Stahlblech auf dem Heizbett?"
-
-#MSG_FIND_BED_OFFSET_AND_SKEW_ITERATION c=20 r=0
-"Iteration "
-"\x00"
 
 #
 "Last print failures"
@@ -749,10 +681,6 @@
 #
 "New firmware version available:"
 "Neue Firmware- Version verfuegbar:"
-
-#
-"No "
-"Nein"
 
 #MSG_SELFTEST_FAN_NO c=19 r=0
 "Not spinning"
@@ -938,14 +866,6 @@
 "Print FAN"
 "Druckluefter"
 
-#WELCOME_MSG c=20 r=0
-"Prusa i3 MK2.5 ready."
-"Prusa i3 MK2.5 bereit."
-
-#WELCOME_MSG c=20 r=0
-"Prusa i3 MK3 ready."
-"Prusa i3 MK3 bereit."
-
 #MSG_PRUSA3D c=0 r=0
 "prusa3d.com"
 "\x00"
@@ -965,10 +885,6 @@
 #
 "Prusa i3 MK3S OK."
 "\x00"
-
-#
-"Prusa i3 MK2 ready."
-"Prusa i3 MK2 bereit."
 
 #MSG_CALIBRATE_BED_RESET c=0 r=0
 "Reset XYZ calibr."
@@ -1069,14 +985,6 @@
 #
 "Sensor state"
 "Sensorstatus"
-
-#
-"Sensors info"
-"Sensoren Info"
-
-#
-"Show pinda state"
-"Pinda-Status anzeigen"
 
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
@@ -1211,10 +1119,6 @@
 "Entladen"
 
 #
-"Unload all"
-"Alles entladen"
-
-#
 "Total failures"
 "Gesamte Fehler"
 
@@ -1330,10 +1234,6 @@
 "XYZ calibration compromised. Right front calibration point not reachable."
 "XYZ-Kalibrierung beeintraechtigt. Rechter vorderer Kalibrierpunkt nicht erreichbar."
 
-#MSG_BED_SKEW_OFFSET_DETECTION_WARNING_FRONT_LEFT_FAR c=20 r=8
-"XYZ calibration compromised. Left front calibration point not reachable."
-"XYZ-Kalibrierung beeintraechtigt. Linker vorderer Kalibrierpunkt nicht erreichbar."
-
 #MSG_LOAD_ALL c=17 r=0
 "Load all"
 "Alle laden"
@@ -1349,10 +1249,6 @@
 #
 "XYZ calibration failed. Front calibration points not reachable."
 "XYZ-Kalibrierung fehlgeschlagen. Vordere Kalibrierpunkte nicht erreichbar."
-
-#
-"XYZ calibration failed. Left front calibration point not reachable."
-"XYZ-Kalibrierung fehlgeschlagen. Linker vorderer Kalibrierpunkt nicht erreichbar."
 
 #MSG_LOAD_FILAMENT_2 c=17 r=0
 "Load filament 2"
