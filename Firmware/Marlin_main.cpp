@@ -660,7 +660,7 @@ static void factory_reset(char level)
                    
         // Level 0: Language reset
         case 0:
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+if(eSoundMode==e_SOUND_MODE_ON)
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
@@ -669,7 +669,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
          
 		//Level 1: Reset statistics
 		case 1:
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+if(eSoundMode==e_SOUND_MODE_ON)
 			WRITE(BEEPER, HIGH);
 			_delay_ms(100);
 			WRITE(BEEPER, LOW);
@@ -728,7 +728,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
             fsensor_autoload_set(true);
 #endif //FILAMENT_SENSOR
                        
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+if(eSoundMode==e_SOUND_MODE_ON)
             WRITE(BEEPER, HIGH);
             _delay_ms(100);
             WRITE(BEEPER, LOW);
@@ -741,7 +741,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			lcd_puts_P(PSTR("Factory RESET"));
 			lcd_puts_at_P(1, 2, PSTR("ERASING all data"));
 
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+if(eSoundMode==e_SOUND_MODE_ON)
 			WRITE(BEEPER, HIGH);
 			_delay_ms(100);
 			WRITE(BEEPER, LOW);
@@ -815,7 +815,7 @@ void factory_reset()
 
 
 			SET_OUTPUT(BEEPER);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+if(eSoundMode==e_SOUND_MODE_ON)
 			WRITE(BEEPER, HIGH);
 
 			while (!READ(BTN_ENC));
@@ -2345,7 +2345,7 @@ void refresh_cmd_timeout(void)
 #endif //FWRETRACT
 
 void trace() {
-//if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+//if(eSoundMode==e_SOUND_MODE_ON)
     _tone(BEEPER, 440);
     _delay(25);
     _noTone(BEEPER);
@@ -3155,7 +3155,7 @@ void gcode_M701()
 		load_filament_final_feed(); //slow sequence
 		st_synchronize();
 
-		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)) _tone(BEEPER, 500);
+		if(eSoundMode==e_SOUND_MODE_ON) _tone(BEEPER, 500);
 		delay_keep_alive(50);
 		_noTone(BEEPER);
 
@@ -3680,7 +3680,7 @@ void process_commands()
                             
                             SET_OUTPUT(BEEPER);
                             if (counterBeep== 0){
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+if(eSoundMode==e_SOUND_MODE_ON)
                               WRITE(BEEPER,HIGH);
                             }
                             
@@ -6346,7 +6346,7 @@ Sigma_Exit:
       if (beepS > 0)
       {
         #if BEEPER > 0
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+if(eSoundMode==e_SOUND_MODE_ON)
           _tone(BEEPER, beepS);
           _delay(beepP);
           _noTone(BEEPER);
@@ -7647,7 +7647,7 @@ bool bInhibitFlag;
 //-//					if (degHotend0() > EXTRUDE_MINTEMP)
 if(0)
 					{
-						if ((eSoundMode == e_SOUND_MODE_LOUD) || (eSoundMode == e_SOUND_MODE_ONCE))
+						if (eSoundMode == e_SOUND_MODE_ON)
 							_tone(BEEPER, 1000);
 						delay_keep_alive(50);
 						_noTone(BEEPER);
@@ -9482,7 +9482,7 @@ void M600_wait_for_user(float HotendTempBckp) {
 			}
 			SET_OUTPUT(BEEPER);
 			if (counterBeep == 0) {
-				if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
+				if((eAlertMode==e_ALERT_MODE_REPEAT)||((eAlertMode==e_ALERT_MODE_ONCE)&&bFirst))
 				{
 					bFirst=false;
 					WRITE(BEEPER, HIGH);
@@ -9585,7 +9585,7 @@ void M600_load_filament() {
 #ifdef FILAMENT_SENSOR
 		if (fsensor_check_autoload())
 		{
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+if(eSoundMode==e_SOUND_MODE_ON)
 			_tone(BEEPER, 1000);
 			delay_keep_alive(50);
 			_noTone(BEEPER);
@@ -9604,7 +9604,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 	M600_load_filament_movements();
 
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
+if(eSoundMode==e_SOUND_MODE_ON)
 	_tone(BEEPER, 500);
 	delay_keep_alive(50);
 	_noTone(BEEPER);

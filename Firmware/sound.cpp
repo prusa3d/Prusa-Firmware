@@ -11,9 +11,11 @@
 // nema vyznam, pokud se bude volat Sound_Init (tzn. poc. hodnota je v EEPROM)
 // !?! eSOUND_MODE eSoundMode; v ultraldc.cpp :: cd_settings_menu() se takto jevi jako lokalni promenna
 eSOUND_MODE eSoundMode; //=e_SOUND_MODE_DEFAULT;
+eALERT_MODE eAlertMode; //=e_ALERT_MODE_DEFAULT;
 
 
 static void Sound_SaveMode(void);
+static void Alert_SaveMode(void);
 static void Sound_DoSound_Echo(void);
 static void Sound_DoSound_Prompt(void);
 static void Sound_DoSound_Alert(bool bOnce);
@@ -25,6 +27,9 @@ SET_OUTPUT(BEEPER);
 eSoundMode=(eSOUND_MODE)eeprom_read_byte((uint8_t*)EEPROM_SOUND_MODE);
 if(eSoundMode==e_SOUND_MODE_NULL)
      Sound_Default();                             // je potreba provest i ulozeni do EEPROM
+eAlertMode=(eALERT_MODE)eeprom_read_byte((uint8_t*)EEPROM_ALERT_MODE);
+if(eAlertMode==e_ALERT_MODE_NULL)
+     Alert_Default();                             // je potreba provest i ulozeni do EEPROM
 }
 
 void Sound_Default(void)
@@ -33,64 +38,77 @@ eSoundMode=e_SOUND_MODE_DEFAULT;
 Sound_SaveMode();
 }
 
+void Alert_Default(void)
+{
+eAlertMode=e_ALERT_MODE_DEFAULT;
+Alert_SaveMode();
+}
+
 void Sound_SaveMode(void)
 {
 eeprom_update_byte((uint8_t*)EEPROM_SOUND_MODE,(uint8_t)eSoundMode);
+}
+
+void Alert_SaveMode(void)
+{
+eeprom_update_byte((uint8_t*)EEPROM_ALERT_MODE,(uint8_t)eAlertMode);
 }
 
 void Sound_CycleState(void)
 {
 switch(eSoundMode)
      {
-     case e_SOUND_MODE_LOUD:
-          eSoundMode=e_SOUND_MODE_ONCE;
+     case e_SOUND_MODE_ON:
+          eSoundMode=e_SOUND_MODE_OFF;
           break;
-     case e_SOUND_MODE_ONCE:
-          eSoundMode=e_SOUND_MODE_SILENT;
-          break;
-     case e_SOUND_MODE_SILENT:
-          eSoundMode=e_SOUND_MODE_MUTE;
-          break;
-     case e_SOUND_MODE_MUTE:
-          eSoundMode=e_SOUND_MODE_LOUD;
+     case e_SOUND_MODE_OFF:
+          eSoundMode=e_SOUND_MODE_ON;
           break;
      default:
-          eSoundMode=e_SOUND_MODE_LOUD;
+          eSoundMode=e_SOUND_MODE_ON;
      }
 Sound_SaveMode();
 }
 
+void Alert_CycleState(void)
+{
+switch(eAlertMode)
+     {
+     case e_ALERT_MODE_REPEAT:
+          eAlertMode=e_ALERT_MODE_ONCE;
+          break;
+     case e_ALERT_MODE_ONCE:
+          eAlertMode=e_ALERT_MODE_OFF;
+          break;
+     case e_ALERT_MODE_OFF:
+          eAlertMode=e_ALERT_MODE_REPEAT;
+          break;
+     default:
+          eAlertMode=e_ALERT_MODE_REPEAT;
+     }
+Alert_SaveMode();
+}
+
 void Sound_MakeSound(eSOUND_TYPE eSoundType)
 {
-switch(eSoundMode)
+switch(eSoundType)
      {
-     case e_SOUND_MODE_LOUD:
-          if(eSoundType==e_SOUND_TYPE_ButtonEcho)
+     case e_SOUND_TYPE_ButtonEcho:
+          if (eSoundMode==e_SOUND_MODE_ON)
                Sound_DoSound_Echo();
-          if(eSoundType==e_SOUND_TYPE_StandardPrompt)
+          break;
+     case e_SOUND_TYPE_StandardPrompt:
+          if (eSoundMode==e_SOUND_MODE_ON)
                Sound_DoSound_Prompt();
-          if(eSoundType==e_SOUND_TYPE_StandardAlert)
-               Sound_DoSound_Alert(false);
           break;
-     case e_SOUND_MODE_ONCE:
-          if(eSoundType==e_SOUND_TYPE_ButtonEcho)
-              Sound_DoSound_Echo();
-          if(eSoundType==e_SOUND_TYPE_StandardPrompt)
-               Sound_DoSound_Prompt();
-          if(eSoundType==e_SOUND_TYPE_StandardAlert)
-               Sound_DoSound_Alert(true);
-          break;
-     case e_SOUND_MODE_SILENT:
-          if(eSoundType==e_SOUND_TYPE_StandardAlert)
-               Sound_DoSound_Alert(true);
-          break;
-     case e_SOUND_MODE_MUTE:
+     case e_SOUND_TYPE_StandardAlert:
+          if (eAlertMode!=e_ALERT_MODE_OFF)
+               Sound_DoSound_Alert(eAlertMode==e_ALERT_MODE_ONCE);
           break;
      default:
           ;
      }
 }
-
 
 static void Sound_DoSound_Echo(void)
 {
