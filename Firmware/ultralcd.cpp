@@ -572,8 +572,11 @@ void lcd_commands()
 			lcd_setstatuspgm(MSG_PRINT_PAUSED);
 			isPrintPaused = true;
 			long_pause();
-			lcd_commands_type = 0;
-			lcd_commands_step = 0;
+               if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE) // !!! because "lcd_commands_type" can be changed during/inside "long_pause()"
+               {
+                    lcd_commands_type = 0;
+                    lcd_commands_step = 0;
+               }
 		}
 
 	}
