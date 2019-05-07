@@ -303,7 +303,7 @@ int fanSpeed=0;
 
 bool cancel_heatup = false ;
 
-int busy_state = NOT_BUSY;
+int8_t busy_state = NOT_BUSY;
 static long prev_busy_signal_ms = -1;
 uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
 
@@ -977,6 +977,12 @@ void list_sec_lang_from_external_flash()
 #endif //(LANG_MODE != 0)
 
 
+static void w25x20cl_err_msg()
+{
+    lcd_puts_P(_n(ESC_2J ESC_H(0,0) "External SPI flash" ESC_H(0,1) "W25X20CL is not res-"
+            ESC_H(0,2) "ponding. Language" ESC_H(0,3) "switch unavailable."));
+}
+
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -993,21 +999,25 @@ void setup()
 	spi_init();
 
 	lcd_splash();
-     Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
+    Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
 
 #ifdef W25X20CL
-	if (!w25x20cl_init())
-		kill(_i("External SPI flash W25X20CL not responding."));
-	// Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
-	optiboot_w25x20cl_enter();
-#endif
-
+    bool w25x20cl_success = w25x20cl_init();
+	if (w25x20cl_success)
+	{
+	    optiboot_w25x20cl_enter();
 #if (LANG_MODE != 0) //secondary language support
-#ifdef W25X20CL
-	if (w25x20cl_init())
-		update_sec_lang_from_external_flash();
-#endif //W25X20CL
+        update_sec_lang_from_external_flash();
 #endif //(LANG_MODE != 0)
+	}
+	else
+	{
+	    w25x20cl_err_msg();
+	}
+#else
+	const bool w25x20cl_success = true;
+#endif //W25X20CL
+
 
 	setup_killpin();
 	setup_powerhold();
@@ -1184,9 +1194,9 @@ void setup()
 #ifdef STRING_VERSION_CONFIG_H
 #ifdef STRING_CONFIG_H_AUTHOR
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_n(" Last Updated: "));////MSG_CONFIGURATION_VER c=0 r=0
+	SERIAL_ECHORPGM(_n(" Last Updated: "));////MSG_CONFIGURATION_VER
 	SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
-	SERIAL_ECHORPGM(_n(" | Author: "));////MSG_AUTHOR c=0 r=0
+	SERIAL_ECHORPGM(_n(" | Author: "));////MSG_AUTHOR
 	SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
 	SERIAL_ECHOPGM("Compiled: ");
 	SERIAL_ECHOLNPGM(__DATE__);
@@ -1194,9 +1204,9 @@ void setup()
 #endif
 
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_n(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
+	SERIAL_ECHORPGM(_n(" Free Memory: "));////MSG_FREE_MEMORY
 	SERIAL_ECHO(freeMemory());
-	SERIAL_ECHORPGM(_n("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
+	SERIAL_ECHORPGM(_n("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
@@ -1213,12 +1223,17 @@ void setup()
 
 	tp_init();    // Initialize temperature loop
 
-	lcd_splash(); // we need to do this again, because tp_init() kills lcd
+	if (w25x20cl_success) lcd_splash(); // we need to do this again, because tp_init() kills lcd
+	else
+	{
+	    w25x20cl_err_msg();
+	    printf_P(_n("W25X20CL not responding.\n"));
+	}
 
 	plan_init();  // Initialize planner;
 
 	factory_reset();
-     lcd_encoder_diff=0;
+    lcd_encoder_diff=0;
 
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
@@ -2966,7 +2981,7 @@ void gcode_M114()
 	SERIAL_PROTOCOLPGM(" E:");
 	SERIAL_PROTOCOL(current_position[E_AXIS]);
 
-	SERIAL_PROTOCOLRPGM(_n(" Count X: "));////MSG_COUNT_X c=0 r=0
+	SERIAL_PROTOCOLRPGM(_n(" Count X: "));////MSG_COUNT_X
 	SERIAL_PROTOCOL(float(st_get_position(X_AXIS)) / cs.axis_steps_per_unit[X_AXIS]);
 	SERIAL_PROTOCOLPGM(" Y:");
 	SERIAL_PROTOCOL(float(st_get_position(Y_AXIS)) / cs.axis_steps_per_unit[Y_AXIS]);
@@ -3527,7 +3542,7 @@ void process_commands()
 		else if (code_seen("RESET")) { //! PRUSA RESET
             // careful!
             if (farm_mode) {
-#ifdef WATCHDOG
+#if (defined(WATCHDOG) && (MOTHERBOARD == BOARD_EINSY_1_0a))
                 boot_app_magic = BOOT_APP_MAGIC;
                 boot_app_flags = BOOT_APP_FLG_RUN;
 				wdt_enable(WDTO_15MS);
@@ -3811,7 +3826,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-	  if(codenum != 0) LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL c=0 r=0
+	  if(codenum != 0) LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL
       st_synchronize();
       codenum += _millis();  // keep track of when we started waiting
       previous_millis_cmd = _millis();
@@ -4949,7 +4964,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       if (!hasP && !hasS && *src != '\0') {
         lcd_setstatus(src);
       } else {
-        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT c=0 r=0
+        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
       }
 
       lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
@@ -4966,13 +4981,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		KEEPALIVE_STATE(IN_HANDLER);
         lcd_ignore_click(false);
       }else{
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-        while(!lcd_clicked()){
-          manage_heater();
-          manage_inactivity(true);
-          lcd_update(0);
-        }
-		KEEPALIVE_STATE(IN_HANDLER);
+        marlin_wait_for_click();
       }
       if (IS_SD_PRINTING)
         LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
@@ -4981,7 +4990,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
     case 17:
-        LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE c=0 r=0
+        LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
         enable_x();
         enable_y();
         enable_z();
@@ -4992,9 +5001,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 #ifdef SDSUPPORT
     case 20: // M20 - list SD card
-      SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST c=0 r=0
+      SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST
       card.ls();
-      SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST c=0 r=0
+      SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST
       break;
     case 21: // M21 - init SD card
 
@@ -5550,7 +5559,7 @@ Sigma_Exit:
         }
       #else
         SERIAL_ERROR_START;
-        SERIAL_ERRORLNRPGM(_i("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS c=0 r=0
+        SERIAL_ERRORLNRPGM(_i("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS
       #endif
 
         SERIAL_PROTOCOLPGM(" @:");
@@ -5900,10 +5909,10 @@ Sigma_Exit:
       enable_endstops(true) ;
       break;
     case 119: // M119
-    SERIAL_PROTOCOLRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT c=0 r=0
+    SERIAL_PROTOCOLRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT
     SERIAL_PROTOCOLLN("");
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
-        SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN c=0 r=0
+        SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN
         if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5912,7 +5921,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
-        SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX c=0 r=0
+        SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX
         if(READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5921,7 +5930,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
-        SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN c=0 r=0
+        SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN
         if(READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5930,7 +5939,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
-        SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX c=0 r=0
+        SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX
         if(READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5981,7 +5990,7 @@ Sigma_Exit:
           extruder = code_value();
 		  if(extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
-            SERIAL_ECHO(_n("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
+            SERIAL_ECHO(_n("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER
             break;
           }
         }
@@ -7018,7 +7027,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	  	if (mmu_enabled) 
 		{
 			st_synchronize();
-			mmu_continue_loading();
+			mmu_continue_loading(is_usb_printing);
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
 		}
@@ -7056,7 +7065,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				  mmu_command(MmuCmd::T0 + tmp_extruder);
 
 				  manage_response(true, true, MMU_TCODE_MOVE);
-				  mmu_continue_loading();
+		          mmu_continue_loading(is_usb_printing);
+
 				  mmu_extruder = tmp_extruder; //filament change is finished
 
 				  if (load_to_nozzle)// for single material usage with mmu
@@ -7119,7 +7129,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                   SERIAL_ECHO_START;
                   SERIAL_ECHOPGM("T");
                   SERIAL_PROTOCOLLN((int)tmp_extruder);
-                  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
+                  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER
               }
               else {
 #if EXTRUDERS > 1
@@ -7155,7 +7165,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                   }
 #endif
                   SERIAL_ECHO_START;
-                  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER c=0 r=0
+                  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER
                   SERIAL_PROTOCOLLN((int)active_extruder);
               }
 
@@ -7168,9 +7178,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
   {
     switch((int)code_value())
     {
-#ifdef DEBUG_DCODES
 	case -1: //! D-1 - Endless loop
 		dcode__1(); break;
+#ifdef DEBUG_DCODES
 	case 0: //! D0 - Reset
 		dcode_0(); break;
 	case 1: //! D1 - Clear EEPROM
@@ -7611,7 +7621,7 @@ static void handleSafetyTimer()
     {
         setTargetBed(0);
         setAllTargetHotends(0);
-        lcd_show_fullscreen_message_and_wait_P(_i("Heating disabled by safety timer."));////MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
+        lcd_show_fullscreen_message_and_wait_P(_i("Heating disabled by safety timer."));////MSG_BED_HEATING_SAFETY_DISABLED
     }
 }
 #endif //SAFETYTIMER
@@ -7790,12 +7800,12 @@ void kill(const char *full_screen_message, unsigned char id)
   pinMode(PS_ON_PIN,INPUT);
 #endif
   SERIAL_ERROR_START;
-  SERIAL_ERRORLNRPGM(_n("Printer halted. kill() called!"));////MSG_ERR_KILLED c=0 r=0
+  SERIAL_ERRORLNRPGM(_n("Printer halted. kill() called!"));////MSG_ERR_KILLED
   if (full_screen_message != NULL) {
       SERIAL_ERRORLNRPGM(full_screen_message);
       lcd_display_message_fullscreen_P(full_screen_message);
   } else {
-      LCD_ALERTMESSAGERPGM(_n("KILLED. "));////MSG_KILLED c=0 r=0
+      LCD_ALERTMESSAGERPGM(_n("KILLED. "));////MSG_KILLED
   }
 
   // FMC small patch to update the LCD before ending
@@ -7919,19 +7929,19 @@ bool setTargetedHotend(int code, uint8_t &extruder)
       SERIAL_ECHO_START;
       switch(code){
         case 104:
-          SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER
           break;
         case 105:
-          SERIAL_ECHO(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER
           break;
         case 109:
-          SERIAL_ECHO(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER
           break;
         case 218:
-          SERIAL_ECHO(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER
           break;
         case 221:
-          SERIAL_ECHO(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
+          SERIAL_ECHO(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER
           break;
       }
       SERIAL_PROTOCOLLN((int)extruder);
@@ -9616,6 +9626,24 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	}
 #endif //FSENSOR_QUALITY
 	lcd_update_enable(false);
+}
+
+
+//! @brief Wait for click
+//!
+//! Set
+void marlin_wait_for_click()
+{
+    int8_t busy_state_backup = busy_state;
+    KEEPALIVE_STATE(PAUSED_FOR_USER);
+    lcd_consume_click();
+    while(!lcd_clicked())
+    {
+        manage_heater();
+        manage_inactivity(true);
+        lcd_update(0);
+    }
+    KEEPALIVE_STATE(busy_state);
 }
 
 #define FIL_LOAD_LENGTH 60
