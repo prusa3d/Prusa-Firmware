@@ -1693,13 +1693,16 @@ ISR(TIMER0_COMPB_vect)
     soft_pwm_2 = soft_pwm[2];
     if(soft_pwm_2 > 0) WRITE(HEATER_2_PIN,1); else WRITE(HEATER_2_PIN,0);
 #endif
+  }
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
-    soft_pwm_b = soft_pwm_bed;
+  if ((pwm_count & ((1 << HEATER_BED_SOFT_PWM_BITS) - 1)) == 0)
+  {
+    soft_pwm_b = soft_pwm_bed >> (7 - HEATER_BED_SOFT_PWM_BITS);
 #ifndef SYSTEM_TIMER_2
 	if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1); else WRITE(HEATER_BED_PIN,0);
 #endif //SYSTEM_TIMER_2
-#endif
   }
+#endif
 #ifdef FAN_SOFT_PWM
   if ((pwm_count & ((1 << FAN_SOFT_PWM_BITS) - 1)) == 0)
   {
@@ -1722,7 +1725,7 @@ ISR(TIMER0_COMPB_vect)
   if(soft_pwm_2 < pwm_count) WRITE(HEATER_2_PIN,0);
 #endif
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
-  if(soft_pwm_b < pwm_count) WRITE(HEATER_BED_PIN,0);
+  if (soft_pwm_b < (pwm_count & ((1 << HEATER_BED_SOFT_PWM_BITS) - 1))) WRITE(HEATER_BED_PIN,0);
 #endif
 #ifdef FAN_SOFT_PWM
   if (soft_pwm_fan < (pwm_count & ((1 << FAN_SOFT_PWM_BITS) - 1))) WRITE(FAN_PIN,0);

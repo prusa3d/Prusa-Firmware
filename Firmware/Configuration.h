@@ -480,6 +480,9 @@ your extruder heater takes 2 minutes to hit the target on heating.
 #define FAN_SOFT_PWM
 #define FAN_SOFT_PWM_BITS 4 //PWM bit resolution = 4bits, freq = 62.5Hz
 
+// Bed soft pwm
+#define HEATER_BED_SOFT_PWM_BITS 5 //PWM bit resolution = 5bits, freq = 31.25Hz
+
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
 // However, control resolution will be halved for each increment;
