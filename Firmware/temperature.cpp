@@ -1467,8 +1467,19 @@ void disable_heater()
   #endif 
 }
 
+//! codes of alert messages for the LCD - it is shorter to compare an uin8_t
+//! than raw const char * of the messages themselves.
+//! Could be used for MAXTEMP situations too - after reaching MAXTEMP and turning off the heater automagically
+//! the heater/bed may cool down and a similar alert message like "MAXTERM fixed..." may be displayed.
+enum { LCDALERT_NONE = 0, LCDALERT_HEATERMINTEMP, LCDALERT_BEDMINTEMP, LCDALERT_MINTEMPFIXED, LCDALERT_PLEASERESTART };
+
+//! remember the last alert message sent to the LCD
+//! to prevent flicker and improve speed
+uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
+
 void max_temp_error(uint8_t e) {
   disable_heater();
+  
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
     SERIAL_ERRORLN((int)e);
@@ -1498,18 +1509,23 @@ void min_temp_error(uint8_t e) {
 	return;
 #endif
 //if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
-  disable_heater();
-  if(IsStopped() == false) {
-    SERIAL_ERROR_START;
-    SERIAL_ERRORLN((int)e);
-    SERIAL_ERRORLNPGM(": Extruder switched off. MINTEMP triggered !");
-    LCD_ALERTMESSAGEPGM("Err: MINTEMP");
-  }
-  #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
-  Stop();
-  #endif
-  if (farm_mode) { prusa_statistics(92); }
-
+	disable_heater();
+	static const char err[] PROGMEM = "Err: MINTEMP";
+	if( IsStopped() == false ) {
+		SERIAL_ERROR_START;
+		SERIAL_ERRORLN((int)e);
+		SERIAL_ERRORLNPGM(": Extruder switched off. MINTEMP triggered !");
+		lcd_setalertstatuspgm(err);
+		last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
+	} else if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time) 
+		// we are already stopped due to some error, only update the status message without flickering
+		lcd_updatestatuspgm(err);
+		last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
+	}
+#ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+	Stop();
+#endif
+	if (farm_mode) { prusa_statistics(92); }
 }
 
 void bed_max_temp_error(void) {
@@ -1533,15 +1549,21 @@ void bed_min_temp_error(void) {
 #endif
 //if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
 #if HEATER_BED_PIN > -1
-    WRITE(HEATER_BED_PIN, 0);
+	WRITE(HEATER_BED_PIN, 0);
 #endif
-    if(IsStopped() == false) {
-        SERIAL_ERROR_START;
-        SERIAL_ERRORLNPGM("Temperature heated bed switched off. MINTEMP triggered !");
-        LCD_ALERTMESSAGEPGM("Err: MINTEMP BED");
-    }
+	static const char err[] PROGMEM = "Err: MINTEMP BED";
+	if(IsStopped() == false) {
+		SERIAL_ERROR_START;
+		SERIAL_ERRORLNPGM("Temperature heated bed switched off. MINTEMP triggered !");
+		lcd_setalertstatuspgm(err);
+		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
+	} else if( last_alert_sent_to_lcd != LCDALERT_BEDMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time) 
+		// we are already stopped due to some error, only update the status message without flickering
+		lcd_updatestatuspgm(err);
+		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
+	}
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
-    Stop();
+	Stop();
 #endif
 }
 
@@ -2013,6 +2035,53 @@ void check_max_temp()
 
 }
 
+//! number of repeating the same state with consecutive step() calls
+//! used to slow down text switching
+struct alert_automaton_mintemp {
+	enum { ALERT_AUTOMATON_SPEED_DIV = 5 };
+	uint8_t state, repeat = ALERT_AUTOMATON_SPEED_DIV;
+	
+	void substep(uint8_t next_state){
+		if( repeat == 0 ){
+			state = next_state; // advance to the next state
+			repeat = ALERT_AUTOMATON_SPEED_DIV; // and prepare repeating for it too
+		} else {
+			--repeat;
+		}
+	}
+	
+	void step(float current_temp, float mintemp){
+		static const char m2[] PROGMEM = "MINTEMP fixed";
+		static const char m1[] PROGMEM = "Please restart";
+		switch(state){
+		case 0: // initial state - check hysteresis
+			if( current_temp > mintemp ){
+				state = 1;
+			}
+			// otherwise keep the Err MINTEMP alert message on the display,
+			// i.e. do not transfer to state 1
+			break;
+		case 1: // the temperature has risen above the hysteresis check
+			lcd_setalertstatuspgm(m2);
+			substep(3);
+			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
+			break;
+		case 2: // displaying "Please restart"
+			lcd_updatestatuspgm(m1);
+			substep(3);
+			last_alert_sent_to_lcd = LCDALERT_PLEASERESTART;
+			break;
+		case 3: // displaying "MINTEMP fixed"
+			lcd_updatestatuspgm(m2);
+			substep(2);
+			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
+			break;
+		}
+	}
+};
+
+static alert_automaton_mintemp aam[2];
+
 void check_min_temp_heater0()
 {
 //heater
@@ -2021,7 +2090,16 @@ void check_min_temp_heater0()
 #else
 	if (current_temperature_raw[0] <= minttemp_raw[0]) {
 #endif
+		menu_set_serious_error(SERIOUS_ERR_MINTEMP_HEATER);	
 		min_temp_error(0);
+	} else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_HEATER) ) {
+		// no recovery, just force the user to restart the printer
+		// which is a safer variant than just continuing printing
+		// The automaton also checks for hysteresis - the temperature must have reached a few degrees above the MINTEMP, before
+		// we shall signalize, that MINTEMP has been fixed
+		// Code notice: normally the aam instance would have been placed here as static alert_automaton_mintemp aam, but
+		// due to stupid compiler that takes 16 more bytes.
+		aam[0].step(current_temperature[0], minttemp[0] + 50); // @@TODO tady pak dat TEMP_HYSTERESIS
 	}
 }
 
@@ -2032,7 +2110,12 @@ void check_min_temp_bed()
 #else
 	if (current_temperature_bed_raw <= bed_minttemp_raw) {
 #endif
+		menu_set_serious_error(SERIOUS_ERR_MINTEMP_BED);	
 		bed_min_temp_error();
+	} else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_BED) ){
+		// no recovery, just force the user to restart the printer
+		// which is a safer variant than just continuing printing
+		aam[1].step(current_temperature_bed, BED_MINTEMP+TEMP_HYSTERESIS);
 	}
 }
 
