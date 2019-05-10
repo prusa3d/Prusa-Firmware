@@ -270,7 +270,7 @@ const char menu_20x_space[] PROGMEM = "                    ";
 
 const char menu_fmt_int3[] PROGMEM = "%c%.15S:%s%3d";
 
-const char menu_fmt_float31[] PROGMEM = "%c%.12S:%s%+06.1f";
+const char menu_fmt_float31[] PROGMEM = "%-12.12s%+8.1f";
 
 const char menu_fmt_float13[] PROGMEM = "%c%.12S:%s%+06.3f";
 
@@ -312,15 +312,28 @@ void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
     }
 }
 
-//draw up to 12 chars of text, ':' and float number in format +123.0
+//! Draw up to 10 chars of text, ':' and float number in format from +0.0 to +12345.0. The increased range is necessary
+//! for displaying large values of extruder positions, which caused text overflow in the previous implementation.
+//! @param chr first character to print on the line
+//! @param str string label to print, will be appended with ':' automatically inside the function
+//! @param val value to print aligned to the right side of the display  
+//! 
+//! Implementation comments:
+//! The text needs to be prerendered into the prerendered[] to enable left alignment of text str including the colon behind it.
+//! If we didn't want the colon behind it, the whole operation would have been solved with a single vsprintf call,
+//! but such line would look different compared to every other similar menu item
+//! So it is almost the same amount of code like before, but with added string prerendering 
 void menu_draw_float31(char chr, const char* str, float val)
 {
-	int text_len = strlen_P(str);
-	if (text_len > 12) text_len = 12;
-	char spaces[21];
-	strcpy_P(spaces, menu_20x_space);
-	spaces[12 - text_len] = 0;
-	lcd_printf_P(menu_fmt_float31, chr, str, spaces, val);
+	uint8_t txtlen = strlen_P(str);
+	if( txtlen > 10 )txtlen = 10;
+	char prerendered[21];
+	strcpy_P(prerendered, menu_20x_space);
+	prerendered[0] = chr;        // start with the initial byte/space for menu navigation
+	strncpy_P(prerendered+1, str, 10); // render the text and limit it to max 10 characters
+	prerendered[txtlen+1] = ':'; // put the colon behind it
+	prerendered[txtlen+2] = 0;   // terminate the string to be used inside the printf
+	lcd_printf_P(menu_fmt_float31, prerendered, val);	
 }
 
 //draw up to 12 chars of text, ':' and float number in format +1.234
