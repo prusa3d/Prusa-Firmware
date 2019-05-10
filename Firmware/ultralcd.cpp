@@ -1774,7 +1774,7 @@ void lcd_commands()
 			pid_tuning_finished = false;
 			custom_message_state = 0;
 			lcd_setstatuspgm(_i("PID cal. finished"));////MSG_PID_FINISHED c=20 r=1
-			setTargetHotend(0, 0);  // reset the target hotend temperature including the number displayed on the main screen
+			setAllTargetHotends(0);  // reset all hotends temperature including the number displayed on the main screen
 			if (_Kp != 0 || _Ki != 0 || _Kd != 0) {
 			strcpy(cmd1, "M301 P");
 			strcat(cmd1, ftostr32(_Kp));
