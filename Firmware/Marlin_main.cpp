@@ -865,6 +865,25 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
+//try to check if firmware is on right type of printer 
+void check_if_fw_is_on_right_printer(){
+  #ifdef FILAMENT_SENSOR
+    swi2c_init();
+    uint8_t pat9125_detected = swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
+    uint8_t ir_detected = !(PIN_GET(IR_SENSOR_PIN)); //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
+  
+    #ifdef IR_SENSOR
+      if (pat9125_detected){
+        lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}
+    #endif
+
+    #ifdef PAT9125
+      if (ir_detected){
+        lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}
+    #endif
+  #endif
+}
+
 uint8_t check_printer_version()
 {
 	uint8_t version_changed = 0;
@@ -1506,6 +1525,7 @@ void setup()
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
+  check_if_fw_is_on_right_printer();
   show_fw_version_warnings();
 
   switch (hw_changed) { 
