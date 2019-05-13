@@ -1242,7 +1242,12 @@ void setup()
 
 	tp_init();    // Initialize temperature loop
 
-	lcd_splash(); // we need to do this again, because tp_init() kills lcd
+	if (w25x20cl_success) lcd_splash(); // we need to do this again, because tp_init() kills lcd
+  else
+  {
+      w25x20cl_err_msg();
+      printf_P(_n("W25X20CL not responding.\n"));
+  }
 
 	plan_init();  // Initialize planner;
 
@@ -1520,6 +1525,7 @@ void setup()
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
+  check_if_fw_is_on_right_printer();
   show_fw_version_warnings();
 
   switch (hw_changed) { 
@@ -2770,7 +2776,6 @@ static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
 #endif //TMC2130
 }
 
-
 void adjust_bed_reset()
 {
 #ifndef HBL
@@ -2791,7 +2796,6 @@ void adjust_bed_reset()
   eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT, 0);
  #endif
 }
-
 
 //! @brief Calibrate XYZ
 //! @param onlyZ if true, calibrate only Z axis
@@ -3566,7 +3570,7 @@ void process_commands()
 		else if (code_seen("RESET")) { //! PRUSA RESET
             // careful!
             if (farm_mode) {
-#ifdef WATCHDOG
+#if (defined(WATCHDOG) && (MOTHERBOARD == BOARD_EINSY_1_0a))
                 boot_app_magic = BOOT_APP_MAGIC;
                 boot_app_flags = BOOT_APP_FLG_RUN;
 				wdt_enable(WDTO_15MS);
@@ -4400,7 +4404,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// There shall be always enough space reserved for these commands.
 			if (lcd_commands_type != LCD_COMMAND_STOP_PRINT) {
 				repeatcommand_front(); // repeat G80 with all its parameters
-				enquecommand_front_P((PSTR("G28 W0 (first)")));
+				enquecommand_front_P((PSTR("G28 W0")));
 			}
 			else {
 				mesh_bed_leveling_flag = false;
@@ -4557,7 +4561,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			current_position[X_AXIS] = BED_X(ix, nMeasPoints);
 			current_position[Y_AXIS] = BED_Y(iy, nMeasPoints);
 
-			printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
+//			printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
 			
 			#ifdef SUPPORT_VERBOSITY
@@ -4570,7 +4574,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			#endif // SUPPORT_VERBOSITY
 
-			printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
+//			printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
 			st_synchronize();
 
@@ -4615,14 +4619,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			offset_z = temp_compensation_pinda_thermistor_offset(current_temperature_pinda);
 #endif //PINDA_THERMISTOR
 //			#ifdef SUPPORT_VERBOSITY
-			if (verbosity_level >= 1)
+/*			if (verbosity_level >= 1)
 			{
 				SERIAL_ECHOPGM("mesh bed leveling: ");
 				MYSERIAL.print(current_position[Z_AXIS], 5);
 				SERIAL_ECHOPGM(" offset: ");
 				MYSERIAL.print(offset_z, 5);
 				SERIAL_ECHOLNPGM("");
-			}
+			}*/
 //			#endif // SUPPORT_VERBOSITY
 			mbl.set_z(ix, iy, current_position[Z_AXIS] - offset_z); //store measured z values z_values[iy][ix] = z - offset_z;
 
@@ -4677,7 +4681,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                break;
 		}
 		clean_up_after_endstop_move(l_feedmultiply);
-		SERIAL_ECHOLNPGM("clean up finished ");
+//		SERIAL_ECHOLNPGM("clean up finished ");
 
 		bool apply_temp_comp = true;
 #ifdef PINDA_THERMISTOR
@@ -5148,13 +5152,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		KEEPALIVE_STATE(IN_HANDLER);
         lcd_ignore_click(false);
       }else{
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-        while(!lcd_clicked()){
-          manage_heater();
-          manage_inactivity(true);
-          lcd_update(0);
-        }
-		KEEPALIVE_STATE(IN_HANDLER);
+		marlin_wait_for_click();
       }
       if (IS_SD_PRINTING)
         LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
@@ -7200,7 +7198,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	  	if (mmu_enabled) 
 		{
 			st_synchronize();
-			mmu_continue_loading();
+			mmu_continue_loading(is_usb_printing);
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
 		}
@@ -7238,7 +7236,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				  mmu_command(MmuCmd::T0 + tmp_extruder);
 
 				  manage_response(true, true, MMU_TCODE_MOVE);
-				  mmu_continue_loading();
+				  mmu_continue_loading(is_usb_printing);
 				  mmu_extruder = tmp_extruder; //filament change is finished
 
 				  if (load_to_nozzle)// for single material usage with mmu
@@ -7350,9 +7348,10 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
   {
     switch((int)code_value())
     {
-#ifdef DEBUG_DCODES
+
 	case -1: //! D-1 - Endless loop
 		dcode__1(); break;
+#ifdef DEBUG_DCODES
 	case 0: //! D0 - Reset
 		dcode_0(); break;
 	case 1: //! D1 - Clear EEPROM
@@ -9798,6 +9797,24 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	}
 #endif //FSENSOR_QUALITY
 	lcd_update_enable(false);
+}
+
+
+//! @brief Wait for click
+//!
+//! Set
+void marlin_wait_for_click()
+{
+    int8_t busy_state_backup = busy_state;
+    KEEPALIVE_STATE(PAUSED_FOR_USER);
+    lcd_consume_click();
+    while(!lcd_clicked())
+    {
+        manage_heater();
+        manage_inactivity(true);
+        lcd_update(0);
+    }
+    KEEPALIVE_STATE(busy_state);
 }
 
 #define FIL_LOAD_LENGTH 60
