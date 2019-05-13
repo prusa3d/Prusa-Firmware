@@ -171,7 +171,7 @@ int menu_draw_item_printf_P(char type_char, const char* format, ...)
 static int menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
-    int cnt = lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
+	int cnt = lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
 	return cnt;
 }
 
@@ -326,14 +326,14 @@ void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
 void menu_draw_float31(char chr, const char* str, float val)
 {
 	uint8_t txtlen = strlen_P(str);
-	if( txtlen > 10 )txtlen = 10;
-	char prerendered[21];
-	strcpy_P(prerendered, menu_20x_space);
-	prerendered[0] = chr;        // start with the initial byte/space for menu navigation
-	strncpy_P(prerendered+1, str, 10); // render the text and limit it to max 10 characters
-	prerendered[txtlen+1] = ':'; // put the colon behind it
-	prerendered[txtlen+2] = 0;   // terminate the string to be used inside the printf
-	lcd_printf_P(menu_fmt_float31, prerendered, val);	
+  if( txtlen > 10 )txtlen = 10;
+  char prerendered[21];
+  strcpy_P(prerendered, menu_20x_space);
+  prerendered[0] = chr;        // start with the initial byte/space for menu navigation
+  strncpy_P(prerendered+1, str, 10); // render the text and limit it to max 10 characters
+  prerendered[txtlen+1] = ':'; // put the colon behind it
+  prerendered[txtlen+2] = 0;   // terminate the string to be used inside the printf
+  lcd_printf_P(menu_fmt_float31, prerendered, val); 
 }
 
 //draw up to 12 chars of text, ':' and float number in format +1.234

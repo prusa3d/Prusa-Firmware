@@ -178,7 +178,7 @@ extern float axis_steps_per_unit[NUM_AXIS];
 
 void dcode__1()
 {
-	printf_P(PSTR("D-1 - Endless loop\n"));
+	printf("D-1 - Endless loop\n");
 //	cli();
 	while (1);
 }
