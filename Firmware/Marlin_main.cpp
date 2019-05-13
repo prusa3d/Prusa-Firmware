@@ -3148,12 +3148,7 @@ void gcode_M701()
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
 		st_synchronize();
 
-		if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
-		current_position[E_AXIS] += 30;
-		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
-		
-		load_filament_final_feed(); //slow sequence
-		st_synchronize();
+    load_filament_to_the_nozzle();
 
 		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)) _tone(BEEPER, 500);
 		delay_keep_alive(50);
@@ -9411,6 +9406,23 @@ static void print_time_remaining_init()
 	print_time_remaining_silent = PRINT_TIME_REMAINING_INIT;
 	print_percent_done_normal = PRINT_PERCENT_DONE_INIT;
 	print_percent_done_silent = PRINT_PERCENT_DONE_INIT;
+}
+
+void load_filament_to_the_nozzle(){
+  if (current_position[Z_AXIS] < 20){
+    current_position[Z_AXIS] += 30;
+  }
+
+  current_position[E_AXIS] += 30;
+  plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
+  st_synchronize();
+
+  if(mmu_enabled){
+    mmu_load_to_nozzle();
+  }  
+
+  load_filament_final_feed(); //slow sequence
+  st_synchronize();
 }
 
 void load_filament_final_feed()

@@ -1367,10 +1367,9 @@ bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_
 	manage_response(true, true, MMU_TCODE_MOVE);
 	mmu_continue_loading(false);
 	mmu_extruder = tmp_extruder; //filament change is finished
-	if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
-	mmu_load_to_nozzle();
-	load_filament_final_feed();
-	st_synchronize();
+	
+	load_filament_to_the_nozzle();
+
 	custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
 	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
 	lcd_return_to_status();
