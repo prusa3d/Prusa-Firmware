@@ -176,14 +176,14 @@ extern float axis_steps_per_unit[NUM_AXIS];
 #endif //0
 #define LOG(args...)
 
-#ifdef DEBUG_DCODES
-
 void dcode__1()
 {
 	printf("D-1 - Endless loop\n");
-	cli();
+//	cli();
 	while (1);
 }
+
+#ifdef DEBUG_DCODES
 
 void dcode_0()
 {

@@ -59,7 +59,7 @@
 
 #define STRING_VERSION_CONFIG_H __DATE__ " " __TIME__ // build date and time
 #define STRING_CONFIG_H_AUTHOR "(Thoffpau0,H)" // Who made the changes.
-// H = Hyperfine 
+// H = Hyperfine (Credit to waldemar-g. Started with https://github.com/3d-gussner/Prusa-Firmware/releases/tag/MK3-v3.1.3-HP)
 
 // SERIAL_PORT selects which serial port should be used for communication with the host.
 // This allows the connection of wireless adapters (for instance) to non-default port pins.
@@ -480,6 +480,9 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // is too low, you should also increment SOFT_PWM_SCALE.
 #define FAN_SOFT_PWM
 #define FAN_SOFT_PWM_BITS 4 //PWM bit resolution = 4bits, freq = 62.5Hz
+
+// Bed soft pwm
+#define HEATER_BED_SOFT_PWM_BITS 5 //PWM bit resolution = 5bits, freq = 31.25Hz
 
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
