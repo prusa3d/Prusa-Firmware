@@ -157,6 +157,7 @@
 //===========================================================================
 
 
+
 //===========================================================================
 //=============================public variables=============================
 //===========================================================================
@@ -303,7 +304,7 @@ int fanSpeed=0;
 
 bool cancel_heatup = false ;
 
-int8_t busy_state = NOT_BUSY;
+int busy_state = NOT_BUSY;
 static long prev_busy_signal_ms = -1;
 uint8_t host_keepalive_interval = HOST_KEEPALIVE_INTERVAL;
 
@@ -865,25 +866,6 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
-//try to check if firmware is on right type of printer 
-void check_if_fw_is_on_right_printer(){
-  #ifdef FILAMENT_SENSOR
-    swi2c_init();
-    uint8_t pat9125_detected = swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
-    uint8_t ir_detected = !(PIN_GET(IR_SENSOR_PIN)); //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
-  
-    #ifdef IR_SENSOR
-      if (pat9125_detected){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}
-    #endif
-
-    #ifdef PAT9125
-      if (ir_detected){
-        lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}
-    #endif
-  #endif
-}
-
 uint8_t check_printer_version()
 {
 	uint8_t version_changed = 0;
@@ -996,12 +978,6 @@ void list_sec_lang_from_external_flash()
 #endif //(LANG_MODE != 0)
 
 
-static void w25x20cl_err_msg()
-{
-    lcd_puts_P(_n(ESC_2J ESC_H(0,0) "External SPI flash" ESC_H(0,1) "W25X20CL is not res-"
-            ESC_H(0,2) "ponding. Language" ESC_H(0,3) "switch unavailable."));
-}
-
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
@@ -1018,25 +994,21 @@ void setup()
 	spi_init();
 
 	lcd_splash();
-    Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
+     Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
 
 #ifdef W25X20CL
-    bool w25x20cl_success = w25x20cl_init();
-	if (w25x20cl_success)
-	{
-	    optiboot_w25x20cl_enter();
-#if (LANG_MODE != 0) //secondary language support
-        update_sec_lang_from_external_flash();
-#endif //(LANG_MODE != 0)
-	}
-	else
-	{
-	    w25x20cl_err_msg();
-	}
-#else
-	const bool w25x20cl_success = true;
-#endif //W25X20CL
+	if (!w25x20cl_init())
+		kill(_i("External SPI flash W25X20CL not responding."));
+	// Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+	optiboot_w25x20cl_enter();
+#endif
 
+#if (LANG_MODE != 0) //secondary language support
+#ifdef W25X20CL
+	if (w25x20cl_init())
+		update_sec_lang_from_external_flash();
+#endif //W25X20CL
+#endif //(LANG_MODE != 0)
 
 	setup_killpin();
 	setup_powerhold();
@@ -1213,9 +1185,9 @@ void setup()
 #ifdef STRING_VERSION_CONFIG_H
 #ifdef STRING_CONFIG_H_AUTHOR
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_n(" Last Updated: "));////MSG_CONFIGURATION_VER
+	SERIAL_ECHORPGM(_n(" Last Updated: "));////MSG_CONFIGURATION_VER c=0 r=0
 	SERIAL_ECHOPGM(STRING_VERSION_CONFIG_H);
-	SERIAL_ECHORPGM(_n(" | Author: "));////MSG_AUTHOR
+	SERIAL_ECHORPGM(_n(" | Author: "));////MSG_AUTHOR c=0 r=0
 	SERIAL_ECHOLNPGM(STRING_CONFIG_H_AUTHOR);
 	SERIAL_ECHOPGM("Compiled: ");
 	SERIAL_ECHOLNPGM(__DATE__);
@@ -1223,9 +1195,9 @@ void setup()
 #endif
 
 	SERIAL_ECHO_START;
-	SERIAL_ECHORPGM(_n(" Free Memory: "));////MSG_FREE_MEMORY
+	SERIAL_ECHORPGM(_n(" Free Memory: "));////MSG_FREE_MEMORY c=0 r=0
 	SERIAL_ECHO(freeMemory());
-	SERIAL_ECHORPGM(_n("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES
+	SERIAL_ECHORPGM(_n("  PlannerBufferBytes: "));////MSG_PLANNER_BUFFER_BYTES c=0 r=0
 	SERIAL_ECHOLN((int)sizeof(block_t)*BLOCK_BUFFER_SIZE);
 	//lcd_update_enable(false); // why do we need this?? - andre
 	// loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
@@ -1242,17 +1214,12 @@ void setup()
 
 	tp_init();    // Initialize temperature loop
 
-	if (w25x20cl_success) lcd_splash(); // we need to do this again, because tp_init() kills lcd
-	else
-	{
-	    w25x20cl_err_msg();
-	    printf_P(_n("W25X20CL not responding.\n"));
-	}
+	lcd_splash(); // we need to do this again, because tp_init() kills lcd
 
 	plan_init();  // Initialize planner;
 
 	factory_reset();
-    lcd_encoder_diff=0;
+     lcd_encoder_diff=0;
 
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
@@ -1525,7 +1492,6 @@ void setup()
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-  check_if_fw_is_on_right_printer();
   show_fw_version_warnings();
 
   switch (hw_changed) { 
@@ -2776,14 +2742,28 @@ static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
 #endif //TMC2130
 }
 
+
 void adjust_bed_reset()
 {
+#ifndef HBL
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT, 0);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
 	eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR, 0);
+#else
+  eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID, 1);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT_LEFT , 0);
+  eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT, 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_FRONT_RIGHT , 0);
+  eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_RIGHT, 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR_RIGHT , 0);
+  eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR, 0);
+    eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_REAR_LEFT , 0);
+  eeprom_update_byte((unsigned char*)EEPROM_BED_CORRECTION_LEFT, 0);
+ #endif
 }
+
 
 //! @brief Calibrate XYZ
 //! @param onlyZ if true, calibrate only Z axis
@@ -2997,7 +2977,7 @@ void gcode_M114()
 	SERIAL_PROTOCOLPGM(" E:");
 	SERIAL_PROTOCOL(current_position[E_AXIS]);
 
-	SERIAL_PROTOCOLRPGM(_n(" Count X: "));////MSG_COUNT_X
+	SERIAL_PROTOCOLRPGM(_n(" Count X: "));////MSG_COUNT_X c=0 r=0
 	SERIAL_PROTOCOL(float(st_get_position(X_AXIS)) / cs.axis_steps_per_unit[X_AXIS]);
 	SERIAL_PROTOCOLPGM(" Y:");
 	SERIAL_PROTOCOL(float(st_get_position(Y_AXIS)) / cs.axis_steps_per_unit[Y_AXIS]);
@@ -3558,7 +3538,7 @@ void process_commands()
 		else if (code_seen("RESET")) { //! PRUSA RESET
             // careful!
             if (farm_mode) {
-#if (defined(WATCHDOG) && (MOTHERBOARD == BOARD_EINSY_1_0a))
+#ifdef WATCHDOG
                 boot_app_magic = BOOT_APP_MAGIC;
                 boot_app_flags = BOOT_APP_FLG_RUN;
 				wdt_enable(WDTO_15MS);
@@ -3842,7 +3822,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       codenum = 0;
       if(code_seen('P')) codenum = code_value(); // milliseconds to wait
       if(code_seen('S')) codenum = code_value() * 1000; // seconds to wait
-	  if(codenum != 0) LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL
+	  if(codenum != 0) LCD_MESSAGERPGM(_n("Sleep..."));////MSG_DWELL c=0 r=0
       st_synchronize();
       codenum += _millis();  // keep track of when we started waiting
       previous_millis_cmd = _millis();
@@ -4392,7 +4372,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// There shall be always enough space reserved for these commands.
 			if (lcd_commands_type != LCD_COMMAND_STOP_PRINT) {
 				repeatcommand_front(); // repeat G80 with all its parameters
-				enquecommand_front_P((PSTR("G28 W0")));
+				enquecommand_front_P((PSTR("G28 W0 (first)")));
 			}
 			else {
 				mesh_bed_leveling_flag = false;
@@ -4410,7 +4390,11 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		else {
 			nMeasPoints = eeprom_read_byte((uint8_t*)EEPROM_MBL_POINTS_NR);
 		}
-
+   
+   #ifdef SUPPORT_VERBOSITY
+    printf_P(PSTR("nMeasPoints = "), nMeasPoints);
+    #endif //SUPPORT_VERBOSITY
+    
 		uint8_t nProbeRetry = 3;
 		if (code_seen('R')) {
 			nProbeRetry = code_value_uint8();
@@ -4453,10 +4437,19 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		custom_message_state = (nMeasPoints * nMeasPoints) + 10;
 		lcd_update(1);
 
+#ifdef SUPPORT_VERBOSITY
+    printf_P(PSTR("about to do mbl.reset"));
+    #endif //SUPPORT_VERBOSITY
+    
 		mbl.reset(); //reset mesh bed leveling
 
 					 // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
 					 // consumed during the first movements following this statement.
+
+    #ifdef SUPPORT_VERBOSITY
+    printf_P(PSTR("about to do babystep_undo"));
+    #endif //SUPPORT_VERBOSITY
+    
 		babystep_undo();
 
 		// Cycle through all points and probe them
@@ -4536,12 +4529,12 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			current_position[X_AXIS] = BED_X(ix, nMeasPoints);
 			current_position[Y_AXIS] = BED_Y(iy, nMeasPoints);
 
-			//printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
+			printf_P(PSTR("[%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 
 			
 			#ifdef SUPPORT_VERBOSITY
 			if (verbosity_level >= 1) {
-				clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
+				bool clamped = world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 				SERIAL_PROTOCOL(mesh_point);
 				clamped ? SERIAL_PROTOCOLPGM(": xy clamped.\n") : SERIAL_PROTOCOLPGM(": no xy clamping\n");
 			}
@@ -4549,7 +4542,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				world2machine_clamp(current_position[X_AXIS], current_position[Y_AXIS]);
 			#endif // SUPPORT_VERBOSITY
 
-			//printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
+			printf_P(PSTR("after clamping: [%f;%f]\n"), current_position[X_AXIS], current_position[Y_AXIS]);
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], XY_AXIS_FEEDRATE, active_extruder);
 			st_synchronize();
 
@@ -4594,14 +4587,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			offset_z = temp_compensation_pinda_thermistor_offset(current_temperature_pinda);
 #endif //PINDA_THERMISTOR
 //			#ifdef SUPPORT_VERBOSITY
-/*			if (verbosity_level >= 1)
+			if (verbosity_level >= 1)
 			{
 				SERIAL_ECHOPGM("mesh bed leveling: ");
 				MYSERIAL.print(current_position[Z_AXIS], 5);
 				SERIAL_ECHOPGM(" offset: ");
 				MYSERIAL.print(offset_z, 5);
 				SERIAL_ECHOLNPGM("");
-			}*/
+			}
 //			#endif // SUPPORT_VERBOSITY
 			mbl.set_z(ix, iy, current_position[Z_AXIS] - offset_z); //store measured z values z_values[iy][ix] = z - offset_z;
 
@@ -4656,7 +4649,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                break;
 		}
 		clean_up_after_endstop_move(l_feedmultiply);
-//		SERIAL_ECHOLNPGM("clean up finished ");
+		SERIAL_ECHOLNPGM("clean up finished ");
 
 		bool apply_temp_comp = true;
 #ifdef PINDA_THERMISTOR
@@ -4665,7 +4658,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		if (apply_temp_comp)
 		if(temp_cal_active == true && calibration_status_pinda() == true) temp_compensation_apply(); //apply PINDA temperature compensation
 		babystep_apply(); // Apply Z height correction aka baby stepping before mesh bed leveing gets activated.
-//		SERIAL_ECHOLNPGM("babystep applied");
+		SERIAL_ECHOLNPGM("babystep applied");
 		bool eeprom_bed_correction_valid = eeprom_read_byte((unsigned char*)EEPROM_BED_CORRECTION_VALID) == 1;
 		#ifdef SUPPORT_VERBOSITY
 		if (verbosity_level >= 1) {
@@ -4673,20 +4666,68 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		}
 		#endif // SUPPORT_VERBOSITY
 
-		for (uint8_t i = 0; i < 4; ++i) {
-			unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
+//	 for (uint8_t i = 0; i < 4; ++i) {
+//			unsigned char codes[4] = { 'L', 'R', 'F', 'B' };
+    
+    // Hyperfine Bed Tuning
+      for (uint8_t i = 0; i < 8; ++i) {
+      unsigned char codes[8] = { 'a', 'b', 'c', 'd' , 'e' , 'f', 'g', 'h'};
 			long correction = 0;
 			if (code_seen(codes[i]))
 				correction = code_value_long();
 			else if (eeprom_bed_correction_valid) {
-				unsigned char *addr = (i < 2) ?
-					((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
-					((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
-				correction = eeprom_read_int8(addr);
+//				unsigned char *addr = (i < 2) ?
+//					((i == 0) ? (unsigned char*)EEPROM_BED_CORRECTION_LEFT : (unsigned char*)EEPROM_BED_CORRECTION_RIGHT) :
+//					((i == 2) ? (unsigned char*)EEPROM_BED_CORRECTION_FRONT : (unsigned char*)EEPROM_BED_CORRECTION_REAR);
+//				correction = eeprom_read_int8(addr);
+      switch (i) {
+      case 0:
+        {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT_LEFT;
+        correction = eeprom_read_int8(addr);            
+        }
+        break;
+      case 1:
+        {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT;
+        correction = eeprom_read_int8(addr);            
+        }
+        break;
+      case 2:
+        {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_FRONT_RIGHT;
+        correction = eeprom_read_int8(addr);            
+        }
+        break;
+      case 3:
+        {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_RIGHT;
+        correction = eeprom_read_int8(addr);            
+        }
+        break;
+      case 4:
+        {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_REAR_RIGHT;
+        correction = eeprom_read_int8(addr);            
+        }
+        break;
+      case 5:
+        {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_REAR;
+        correction = eeprom_read_int8(addr);            
+        }
+        break;
+      case 6:
+        {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_REAR_LEFT;
+        correction = eeprom_read_int8(addr);            
+        }
+        break;
+      case 7:
+        {unsigned char *addr = (unsigned char*)EEPROM_BED_CORRECTION_LEFT;
+        correction = eeprom_read_int8(addr);            
+        }
+        break;
 			}
-			if (correction == 0)
-				continue;
-			
+//			if (correction == 0)
+//				continue;
+			}
+      if (correction == 0) 
+      continue;
+      
 			if (labs(correction) > BED_ADJUSTMENT_UM_MAX) {
 				SERIAL_ERROR_START;
 				SERIAL_ECHOPGM("Excessive bed leveling correction: ");
@@ -4695,43 +4736,117 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			}
 			else {
 				float offset = float(correction) * 0.001f;
-				switch (i) {
-				case 0:
-					for (uint8_t row = 0; row < nMeasPoints; ++row) {						
-						for (uint8_t col = 0; col < nMeasPoints - 1; ++col) {
-							mbl.z_values[row][col] += offset * (nMeasPoints - 1 - col) / (nMeasPoints - 1);
-						}
-					}
-					break;
-				case 1:
-					for (uint8_t row = 0; row < nMeasPoints; ++row) {					
-						for (uint8_t col = 1; col < nMeasPoints; ++col) {
-							mbl.z_values[row][col] += offset * col / (nMeasPoints - 1);
-						}
-					}
-					break;
-				case 2:
-					for (uint8_t col = 0; col < nMeasPoints; ++col) {						
-						for (uint8_t row = 0; row < nMeasPoints; ++row) {
-							mbl.z_values[row][col] += offset * (nMeasPoints - 1 - row) / (nMeasPoints - 1);
-						}
-					}
-					break;
-				case 3:
-					for (uint8_t col = 0; col < nMeasPoints; ++col) {						
-						for (uint8_t row = 1; row < nMeasPoints; ++row) {
-							mbl.z_values[row][col] += offset * row / (nMeasPoints - 1);
-						}
-					}
-					break;
-				}
+//				switch (i) {
+//				case 0:
+//					for (uint8_t row = 0; row < nMeasPoints; ++row) {						
+//						for (uint8_t col = 0; col < nMeasPoints - 1; ++col) {
+//							mbl.z_values[row][col] += offset * (nMeasPoints - 1 - col) / (nMeasPoints - 1);
+//						}
+//					}
+//					break;
+//				case 1:
+//					for (uint8_t row = 0; row < nMeasPoints; ++row) {					
+//						for (uint8_t col = 1; col < nMeasPoints; ++col) {
+//							mbl.z_values[row][col] += offset * col / (nMeasPoints - 1);
+//						}
+//					}
+//					break;
+//				case 2:
+//					for (uint8_t col = 0; col < nMeasPoints; ++col) {						
+//						for (uint8_t row = 0; row < nMeasPoints; ++row) {
+//							mbl.z_values[row][col] += offset * (nMeasPoints - 1 - row) / (nMeasPoints - 1);
+//						}
+//					}
+//					break;
+//				case 3:
+//					for (uint8_t col = 0; col < nMeasPoints; ++col) {						
+//						for (uint8_t row = 1; row < nMeasPoints; ++row) {
+//							mbl.z_values[row][col] += offset * row / (nMeasPoints - 1);
+//						}
+//					}
+//					break;
+
+          switch (i) {
+            case 0:
+              {
+              mbl.z_values[0][0] += offset;
+              SERIAL_ECHOPGM("FrontLeft  a =");
+              SERIAL_ECHO(correction+0);
+              SERIAL_ECHOLNPGM(" microns.");
+              }
+              break;
+            case 1:
+              {
+              mbl.z_values[0][1] += offset;
+              SERIAL_ECHOPGM("FrontCentr b =");
+              SERIAL_ECHO(correction+0);
+              SERIAL_ECHOLNPGM(" microns.");
+              }
+              break;
+            case 2:
+              {
+              mbl.z_values[0][2] += offset;
+              SERIAL_ECHOPGM("FrontRight c =");
+              SERIAL_ECHO(correction+0);
+              SERIAL_ECHOLNPGM(" microns.");
+              }
+              break;
+            case 3:
+              {
+              mbl.z_values[1][2] += offset; 
+              SERIAL_ECHOPGM("MidRight   d =");
+              SERIAL_ECHO(correction+0);
+              SERIAL_ECHOLNPGM(" microns.");
+              }
+              break;
+            case 4:
+              {
+              mbl.z_values[2][2] += offset; 
+              SERIAL_ECHOPGM("RearRight  e =");
+              SERIAL_ECHO(correction+0);
+              SERIAL_ECHOLNPGM(" microns.");
+              }
+              break;
+            case 5:
+              {
+              mbl.z_values[2][1] += offset; 
+              SERIAL_ECHOPGM("RearCentr  f =");
+              SERIAL_ECHO(correction+0);
+              SERIAL_ECHOLNPGM(" microns.");
+              }
+              break;
+            case 6:
+              {
+              mbl.z_values[2][0] += offset; 
+              SERIAL_ECHOPGM("RearLeft   g =");
+              SERIAL_ECHO(correction+0);
+              SERIAL_ECHOLNPGM(" microns.");
+              }
+              break;
+            case 7:
+              {
+              mbl.z_values[1][0] += offset;
+              SERIAL_ECHOPGM("MidLeft  h =");
+              SERIAL_ECHO(correction+0);
+              SERIAL_ECHOLNPGM(" microns.");
+              }
+              break;
+				      }
 			}
 		}
-//		SERIAL_ECHOLNPGM("Bed leveling correction finished");
+   //}
+// End Hyperfine Bed Tuning
+
+		SERIAL_ECHOLNPGM("Bed leveling correction finished");
 		if (nMeasPoints == 3) {
+
+    #ifdef SUPPORT_VERBOSITY
+    printf_P(PSTR("about to do mbl.upsample_3x3"));
+    #endif //SUPPORT_VERBOSITY
+		
 			mbl.upsample_3x3(); //interpolation from 3x3 to 7x7 points using largrangian polynomials while using the same array z_values[iy][ix] for storing (just coppying measured data to new destination and interpolating between them)
 		}
-/*
+///*
 		        SERIAL_PROTOCOLPGM("Num X,Y: ");
                 SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
                 SERIAL_PROTOCOLPGM(",");
@@ -4746,11 +4861,11 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                     }
                     SERIAL_PROTOCOLPGM("\n");
                 }
-*/
+//*/
 		if (nMeasPoints == 7 && magnet_elimination) {
 			mbl_interpolation(nMeasPoints);
 		}
-/*
+///*
 		        SERIAL_PROTOCOLPGM("Num X,Y: ");
                 SERIAL_PROTOCOL(MESH_NUM_X_POINTS);
                 SERIAL_PROTOCOLPGM(",");
@@ -4765,12 +4880,17 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                     }
                     SERIAL_PROTOCOLPGM("\n");
                 }
-*/
-//		SERIAL_ECHOLNPGM("Upsample finished");
+//*/
+		SERIAL_ECHOLNPGM("Upsample finished");
+    
+    #ifdef SUPPORT_VERBOSITY
+    printf_P(PSTR("about to do mbl.active = 1"));
+    #endif //SUPPORT_VERBOSITY
+    
 		mbl.active = 1; //activate mesh bed leveling
-//		SERIAL_ECHOLNPGM("Mesh bed leveling activated");
+		SERIAL_ECHOLNPGM("Mesh bed leveling activated");
 		go_home_with_z_lift();
-//		SERIAL_ECHOLNPGM("Go home finished");
+		SERIAL_ECHOLNPGM("Go home finished");
 		//unretract (after PINDA preheat retraction)
 		if (degHotend(active_extruder) > EXTRUDE_MINTEMP && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
 			current_position[E_AXIS] += default_retraction;
@@ -4917,7 +5037,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         }
       }
       break;
-
+      
+#ifndef HBL //HBL needs fram mode to be deactivated due allocating same EEPROM space
 	case 98: //! G98 (activate farm mode)
 		farm_mode = 1;
 		PingTime = _millis();
@@ -4933,6 +5054,8 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
 		lcd_update(2);
 		break;
+#endif
+
 	default:
 		printf_P(PSTR("Unknown G code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
     }
@@ -4980,7 +5103,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
       if (!hasP && !hasS && *src != '\0') {
         lcd_setstatus(src);
       } else {
-        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
+        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT c=0 r=0
       }
 
       lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
@@ -4997,7 +5120,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		KEEPALIVE_STATE(IN_HANDLER);
         lcd_ignore_click(false);
       }else{
-        marlin_wait_for_click();
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
+        while(!lcd_clicked()){
+          manage_heater();
+          manage_inactivity(true);
+          lcd_update(0);
+        }
+		KEEPALIVE_STATE(IN_HANDLER);
       }
       if (IS_SD_PRINTING)
         LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
@@ -5006,7 +5135,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     }
     break;
     case 17:
-        LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
+        LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE c=0 r=0
         enable_x();
         enable_y();
         enable_z();
@@ -5017,9 +5146,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 #ifdef SDSUPPORT
     case 20: // M20 - list SD card
-      SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST
+      SERIAL_PROTOCOLLNRPGM(_N("Begin file list"));////MSG_BEGIN_FILE_LIST c=0 r=0
       card.ls();
-      SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST
+      SERIAL_PROTOCOLLNRPGM(_N("End file list"));////MSG_END_FILE_LIST c=0 r=0
       break;
     case 21: // M21 - init SD card
 
@@ -5575,7 +5704,7 @@ Sigma_Exit:
         }
       #else
         SERIAL_ERROR_START;
-        SERIAL_ERRORLNRPGM(_i("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS
+        SERIAL_ERRORLNRPGM(_i("No thermistors - no temperature"));////MSG_ERR_NO_THERMISTORS c=0 r=0
       #endif
 
         SERIAL_PROTOCOLPGM(" @:");
@@ -5925,10 +6054,10 @@ Sigma_Exit:
       enable_endstops(true) ;
       break;
     case 119: // M119
-    SERIAL_PROTOCOLRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT
+    SERIAL_PROTOCOLRPGM(_N("Reporting endstop status"));////MSG_M119_REPORT c=0 r=0
     SERIAL_PROTOCOLLN("");
       #if defined(X_MIN_PIN) && X_MIN_PIN > -1
-        SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN
+        SERIAL_PROTOCOLRPGM(_n("x_min: "));////MSG_X_MIN c=0 r=0
         if(READ(X_MIN_PIN)^X_MIN_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5937,7 +6066,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(X_MAX_PIN) && X_MAX_PIN > -1
-        SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX
+        SERIAL_PROTOCOLRPGM(_n("x_max: "));////MSG_X_MAX c=0 r=0
         if(READ(X_MAX_PIN)^X_MAX_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5946,7 +6075,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MIN_PIN) && Y_MIN_PIN > -1
-        SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN
+        SERIAL_PROTOCOLRPGM(_n("y_min: "));////MSG_Y_MIN c=0 r=0
         if(READ(Y_MIN_PIN)^Y_MIN_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -5955,7 +6084,7 @@ Sigma_Exit:
         SERIAL_PROTOCOLLN("");
       #endif
       #if defined(Y_MAX_PIN) && Y_MAX_PIN > -1
-        SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX
+        SERIAL_PROTOCOLRPGM(_n("y_max: "));////MSG_Y_MAX c=0 r=0
         if(READ(Y_MAX_PIN)^Y_MAX_ENDSTOP_INVERTING){
           SERIAL_PROTOCOLRPGM(MSG_ENDSTOP_HIT);
         }else{
@@ -6006,7 +6135,7 @@ Sigma_Exit:
           extruder = code_value();
 		  if(extruder >= EXTRUDERS) {
             SERIAL_ECHO_START;
-            SERIAL_ECHO(_n("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER
+            SERIAL_ECHO(_n("M200 Invalid extruder "));////MSG_M200_INVALID_EXTRUDER c=0 r=0
             break;
           }
         }
@@ -7043,7 +7172,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	  	if (mmu_enabled) 
 		{
 			st_synchronize();
-			mmu_continue_loading(is_usb_printing);
+			mmu_continue_loading();
 			mmu_extruder = tmp_extruder; //filament change is finished
 			mmu_load_to_nozzle();
 		}
@@ -7081,8 +7210,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 				  mmu_command(MmuCmd::T0 + tmp_extruder);
 
 				  manage_response(true, true, MMU_TCODE_MOVE);
-		          mmu_continue_loading(is_usb_printing);
-
+				  mmu_continue_loading();
 				  mmu_extruder = tmp_extruder; //filament change is finished
 
 				  if (load_to_nozzle)// for single material usage with mmu
@@ -7145,7 +7273,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                   SERIAL_ECHO_START;
                   SERIAL_ECHOPGM("T");
                   SERIAL_PROTOCOLLN((int)tmp_extruder);
-                  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER
+                  SERIAL_ECHOLNRPGM(_n("Invalid extruder"));////MSG_INVALID_EXTRUDER c=0 r=0
               }
               else {
 #if EXTRUDERS > 1
@@ -7181,7 +7309,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                   }
 #endif
                   SERIAL_ECHO_START;
-                  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER
+                  SERIAL_ECHORPGM(_n("Active Extruder: "));////MSG_ACTIVE_EXTRUDER c=0 r=0
                   SERIAL_PROTOCOLLN((int)active_extruder);
               }
 
@@ -7194,9 +7322,9 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
   {
     switch((int)code_value())
     {
+#ifdef DEBUG_DCODES
 	case -1: //! D-1 - Endless loop
 		dcode__1(); break;
-#ifdef DEBUG_DCODES
 	case 0: //! D0 - Reset
 		dcode_0(); break;
 	case 1: //! D1 - Clear EEPROM
@@ -7637,7 +7765,7 @@ static void handleSafetyTimer()
     {
         setTargetBed(0);
         setAllTargetHotends(0);
-        lcd_show_fullscreen_message_and_wait_P(_i("Heating disabled by safety timer."));////MSG_BED_HEATING_SAFETY_DISABLED
+        lcd_show_fullscreen_message_and_wait_P(_i("Heating disabled by safety timer."));////MSG_BED_HEATING_SAFETY_DISABLED c=0 r=0
     }
 }
 #endif //SAFETYTIMER
@@ -7816,12 +7944,12 @@ void kill(const char *full_screen_message, unsigned char id)
   pinMode(PS_ON_PIN,INPUT);
 #endif
   SERIAL_ERROR_START;
-  SERIAL_ERRORLNRPGM(_n("Printer halted. kill() called!"));////MSG_ERR_KILLED
+  SERIAL_ERRORLNRPGM(_n("Printer halted. kill() called!"));////MSG_ERR_KILLED c=0 r=0
   if (full_screen_message != NULL) {
       SERIAL_ERRORLNRPGM(full_screen_message);
       lcd_display_message_fullscreen_P(full_screen_message);
   } else {
-      LCD_ALERTMESSAGERPGM(_n("KILLED. "));////MSG_KILLED
+      LCD_ALERTMESSAGERPGM(_n("KILLED. "));////MSG_KILLED c=0 r=0
   }
 
   // FMC small patch to update the LCD before ending
@@ -7945,19 +8073,19 @@ bool setTargetedHotend(int code, uint8_t &extruder)
       SERIAL_ECHO_START;
       switch(code){
         case 104:
-          SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER
+          SERIAL_ECHORPGM(_n("M104 Invalid extruder "));////MSG_M104_INVALID_EXTRUDER c=0 r=0
           break;
         case 105:
-          SERIAL_ECHO(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER
+          SERIAL_ECHO(_n("M105 Invalid extruder "));////MSG_M105_INVALID_EXTRUDER c=0 r=0
           break;
         case 109:
-          SERIAL_ECHO(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER
+          SERIAL_ECHO(_n("M109 Invalid extruder "));////MSG_M109_INVALID_EXTRUDER c=0 r=0
           break;
         case 218:
-          SERIAL_ECHO(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER
+          SERIAL_ECHO(_n("M218 Invalid extruder "));////MSG_M218_INVALID_EXTRUDER c=0 r=0
           break;
         case 221:
-          SERIAL_ECHO(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER
+          SERIAL_ECHO(_n("M221 Invalid extruder "));////MSG_M221_INVALID_EXTRUDER c=0 r=0
           break;
       }
       SERIAL_PROTOCOLLN((int)extruder);
@@ -9642,24 +9770,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 	}
 #endif //FSENSOR_QUALITY
 	lcd_update_enable(false);
-}
-
-
-//! @brief Wait for click
-//!
-//! Set
-void marlin_wait_for_click()
-{
-    int8_t busy_state_backup = busy_state;
-    KEEPALIVE_STATE(PAUSED_FOR_USER);
-    lcd_consume_click();
-    while(!lcd_clicked())
-    {
-        manage_heater();
-        manage_inactivity(true);
-        lcd_update(0);
-    }
-    KEEPALIVE_STATE(busy_state);
 }
 
 #define FIL_LOAD_LENGTH 60

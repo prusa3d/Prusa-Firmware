@@ -2,11 +2,6 @@
 // use atmega timer2 as main system timer instead of timer0
 // timer0 is used for fast pwm (OC0B output)
 // original OVF handler is disabled
-
-#include "system_timer.h"
-
-#ifdef SYSTEM_TIMER_2
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "Arduino.h"
@@ -171,5 +166,3 @@ void noTone2(__attribute__((unused)) uint8_t _pin)
 {
 	PIN_CLR(BEEPER);
 }
-
-#endif //SYSTEM_TIMER_2

@@ -58,7 +58,7 @@ enum class MmuCmd : uint_least8_t
     K4,
     R0,
     S3,
-    W0, //!< Wait and signal load error
+    W0,
 };
 
 inline MmuCmd operator+ (MmuCmd cmd, uint8_t filament)
@@ -134,7 +134,7 @@ extern void mmu_eject_filament(uint8_t filament, bool recover);
 #ifdef MMU_HAS_CUTTER
 extern void mmu_cut_filament(uint8_t filament_nr);
 #endif //MMU_HAS_CUTTER
-extern void mmu_continue_loading(bool blocking);
+extern void mmu_continue_loading();
 extern void mmu_filament_ramming();
 extern void mmu_wait_for_heater_blocking();
 extern void mmu_load_step(bool synchronize = true);

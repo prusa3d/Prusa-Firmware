@@ -64,14 +64,20 @@ extern void lcd_print(long, int = 10);
 extern void lcd_print(unsigned long, int = 10);
 extern void lcd_print(double, int = 2);
 
-//! @brief Clear screen
 #define ESC_2J     "\x1b[2J"
 #define ESC_25h    "\x1b[?25h"
 #define ESC_25l    "\x1b[?25l"
-//! @brief Set cursor to
-//! @param c column
-//! @param r row
 #define ESC_H(c,r) "\x1b["#r";"#c"H"
+
+
+
+
+
+
+
+
+
+
 
 
 

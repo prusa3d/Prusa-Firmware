@@ -1,7 +1,9 @@
 //! @file
 #ifndef FSENSOR_H
 #define FSENSOR_H
-
+#define FILAMENT_PRESENT_STATE 1 //value of the filament sensor when filament is present
+#define DISTANCE_FROM_FILAMENT_TRIGGER_TO_BONDTECH 33 //number of milimeters from the filament triggering to the bondtech gears
+ 
 #include <inttypes.h>
 
 

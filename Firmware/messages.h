@@ -80,7 +80,6 @@ extern const char MSG_SELFTEST_FAN_YES[];
 extern const char MSG_SELFTEST_CHECK_BED[];
 extern const char MSG_SELFTEST_CHECK_FSENSOR[];
 extern const char MSG_SELFTEST_MOTOR[];
-extern const char MSG_SELFTEST_FILAMENT_SENSOR[];
 extern const char MSG_SELFTEST_WIRINGERROR[];
 extern const char MSG_SETTINGS[];
 extern const char MSG_SILENT_MODE_OFF[];
