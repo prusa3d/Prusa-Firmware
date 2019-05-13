@@ -206,8 +206,25 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	bool _default=false);
 
 #ifdef FANCHECK
-static bool lcd_selftest_fan_dialog(int _fan);
+/** Enumerate for lcd_selftest_fan_auto function.
+ */
+enum class FanCheck : uint_least8_t {
+    success,
+    printFan = TestError::printFan,
+    extruderFan = TestError::extruderFan,
+    swappedFan = TestError::swappedFan,
+};
+
+/**
+ * Try to check fan working and wiring.
+ *
+ * @param _fan i fan number 0 means extruder fan, 1 means print fan.
+ *
+ * @returns a TestError noerror, extruderFan, printFan or swappedFan.
+ */
+static FanCheck lcd_selftest_fan_auto(int _fan);
 #endif //FANCHECK
+
 #ifdef PAT9125
 static bool lcd_selftest_fsensor();
 #endif //PAT9125
@@ -6911,6 +6928,7 @@ bool lcd_selftest()
 {
 	int _progress = 0;
 	bool _result = true;
+	bool _swapped_fan = false;
 	lcd_wait_for_cool_down();
 	lcd_clear();
 	lcd_set_cursor(0, 0); lcd_puts_P(_i("Self test start  "));////MSG_SELFTEST_START c=20
@@ -6922,29 +6940,63 @@ bool lcd_selftest()
 
 	_progress = lcd_selftest_screen(testScreen::extruderFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_0))
-	_result = lcd_selftest_fan_dialog(0);
+	switch (lcd_selftest_fan_auto(0)){		// check extruder Fan
+		case FanCheck::extruderFan:
+			_result = false;
+			break;
+		case FanCheck::swappedFan:
+			_swapped_fan = true;
+			// no break
+		default:
+			_result = true;
+			break;
+	}
 #else //defined(TACH_0)
 	_result = lcd_selftest_manual_fan_check(0, false);
+#endif //defined(TACH_0)
 	if (!_result)
 	{
 		lcd_selftest_error(TestError::extruderFan, "", "");
 	}
-#endif //defined(TACH_0)
-
 
 	if (_result)
 	{
 		_progress = lcd_selftest_screen(testScreen::printFan, _progress, 3, true, 2000);
-#if (defined(FANCHECK) && defined(TACH_1)) 		
-		_result = lcd_selftest_fan_dialog(1);
+#if (defined(FANCHECK) && defined(TACH_1))
+	switch (lcd_selftest_fan_auto(1)){		// check print fan
+		case FanCheck::printFan:
+			_result = false;
+			break;
+		case FanCheck::swappedFan:
+			_swapped_fan = true;
+			// no break
+		default:
+			_result = true;
+			break;
+	}
 #else //defined(TACH_1)
 		_result = lcd_selftest_manual_fan_check(1, false);
+#endif //defined(TACH_1)
 		if (!_result)
-		{			
+		{
 			lcd_selftest_error(TestError::printFan, "", ""); //print fan not spinning
 		}
+	}
 
-#endif //defined(TACH_1)
+	if (_swapped_fan) {
+		//turn on print fan and check that left extruder fan is not spinning
+		_result = lcd_selftest_manual_fan_check(1, true);
+		if (_result) {
+			//print fan is stil turned on; check that it is spinning
+			_result = lcd_selftest_manual_fan_check(1, false, true);
+			if (!_result){
+				lcd_selftest_error(TestError::printFan, "", "");
+			}
+		}
+		else {
+			// fans are swapped
+			lcd_selftest_error(TestError::swappedFan, "", "");
+		}
 	}
 
 	if (_result)
@@ -7818,10 +7870,8 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 }
 
 #ifdef FANCHECK
-static bool lcd_selftest_fan_dialog(int _fan)
+static FanCheck lcd_selftest_fan_auto(int _fan)
 {
-	bool _result = true;
-	TestError testError = TestError::extruderFan;
 	switch (_fan) {
 	case 0:
 		fanSpeed = 0;
@@ -7834,16 +7884,20 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		_delay(2000);				//delay_keep_alive would turn off extruder fan, because temerature is too low
 
 		manage_heater();			//count average fan speed from 2s delay and turn off fans
-		if (!fan_speed[0]) _result = false;
 
 		printf_P(PSTR("Test 1:\n"));
 		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
 		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
-		//SERIAL_ECHOPGM("Extruder fan speed: ");
-		//MYSERIAL.println(fan_speed[0]);
-		//SERIAL_ECHOPGM("Print fan speed: ");
-		//MYSERIAL.print(fan_speed[1]);
+
+		if (!fan_speed[0]) {
+			return FanCheck::extruderFan;
+		}
+#ifdef FAN_SOFT_PWM
+		else if (fan_speed[0] > 50 ) { // printerFan is faster
+			return FanCheck::swappedFan;
+		}
 		break;
+#endif
 
 	case 1:
 		//will it work with Thotend > 50 C ?
@@ -7863,11 +7917,11 @@ static bool lcd_selftest_fan_dialog(int _fan)
 			lcd_set_cursor(18, 3);
 			lcd_print("|");
 		}
+		fanSpeed = 0;
+
 #ifdef FAN_SOFT_PWM
-		fanSpeed = 0;
-		fanSpeedSoftPwm = 0;	
+		fanSpeedSoftPwm = 0;
 #else //FAN_SOFT_PWM
-		fanSpeed = 0;
 		manage_heater();			//turn off fan
 		manage_inactivity(true);	//to turn off print fan
 #endif //FAN_SOFT_PWM
@@ -7875,36 +7929,37 @@ static bool lcd_selftest_fan_dialog(int _fan)
 		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
 		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
 		if (!fan_speed[1]) {
-			_result = false; testError = TestError::printFan;
-		}
-#ifdef FAN_SOFT_PWM 
-		else {
-#else //FAN_SOFT_PWM
-		else if (fan_speed[1] < 34) { //fan is spinning, but measured RPM are too low for print fan, it must be left extruder fan
-#endif //FAN_SOFT_PWM
-			//check fans manually
-			_result = lcd_selftest_manual_fan_check(1, true); //turn on print fan and check that left extruder fan is not spinning
-			if (_result) {
-				//print fan is stil turned on; check that it is spinning
-				_result = lcd_selftest_manual_fan_check(1, false, true);
-				if (!_result) testError = TestError::printFan;
-			}
-			else {
-			    testError = TestError::swappedFan;
-			}
+			return FanCheck::printFan;
 		}
 
-		//SERIAL_ECHOPGM("Extruder fan speed: ");
-		//MYSERIAL.println(fan_speed[0]);
-		//SERIAL_ECHOPGM("Print fan speed: ");
-		//MYSERIAL.println(fan_speed[1]);
+#ifdef FAN_SOFT_PWM
+		fanSpeed = 80;
+		fanSpeedSoftPwm = 80;
+
+		for (uint8_t i = 0; i < 5; i++) {
+			delay_keep_alive(1000);
+			lcd_set_cursor(18, 3);
+			lcd_print("-");
+			delay_keep_alive(1000);
+			lcd_set_cursor(18, 3);
+			lcd_print("|");
+		}
+		fanSpeed = 0;
+
+		// noctua speed is between 17 and 24, turbine more then 30
+		if (fan_speed[1] < 30) {
+			return FanCheck::swappedFan;
+		}
+#else
+		// fan is spinning, but measured RPM are too low for print fan, it must
+		// be left extruder fan
+		else if (fan_speed[1] < 34) {
+			return FanCheck::swappedFan;
+		}
+#endif //FAN_SOFT_PWM
 		break;
 	}
-	if (!_result)
-	{
-		lcd_selftest_error(testError, "", "");
-	}
-	return _result;
+	return FanCheck::success;
 }
 
 #endif //FANCHECK
