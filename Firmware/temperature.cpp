@@ -1311,7 +1311,6 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
                          if(_current_temperature>105.0) __delta=0.6;
                          }
         if (_current_temperature - __preheat_start[_heater_id] < __delta) {
-        
 					__preheat_errors[_heater_id]++;
 					/*SERIAL_ECHOPGM(" Preheat errors:");
 					MYSERIAL.println(__preheat_errors[_heater_id]);*/
@@ -1703,7 +1702,7 @@ ISR(TIMER0_COMPB_vect)
     soft_pwm_b = soft_pwm_bed >> (7 - HEATER_BED_SOFT_PWM_BITS);
 #ifndef SYSTEM_TIMER_2
 	if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1); else WRITE(HEATER_BED_PIN,0);
-#endif //
+#endif //SYSTEM_TIMER_2
   }
 #endif
 #ifdef FAN_SOFT_PWM

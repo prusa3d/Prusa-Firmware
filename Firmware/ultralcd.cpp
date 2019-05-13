@@ -7485,7 +7485,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 		st_synchronize();
 		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
-			lcd_selftest_error(8, (axis == 0) ? "X" : "Y", "");
+			lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
 			return(false);
 		}
 	}
@@ -8004,7 +8004,7 @@ static bool lcd_selftest_fan_dialog(int _fan)
 			_result = lcd_selftest_manual_fan_check(1, true); //turn on print fan and check that left extruder fan is not spinning
 			if (_result) {
 				_result = lcd_selftest_manual_fan_check(1, false); //print fan is stil turned on; check that it is spinning
-				if (!_result) _errno = 6; //print fan not spinning
+				if (!_result) testError = TestError::printFan;
 			}
 			else {
 				testError = TestError::swappedFan;
