@@ -9652,7 +9652,7 @@ void marlin_wait_for_click()
         manage_inactivity(true);
         lcd_update(0);
     }
-    KEEPALIVE_STATE(busy_state);
+    KEEPALIVE_STATE(busy_state_backup);
 }
 
 #define FIL_LOAD_LENGTH 60
