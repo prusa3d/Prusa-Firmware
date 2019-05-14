@@ -5992,12 +5992,6 @@ static void mmu_fil_eject_menu()
 }
 
 #ifdef MMU_HAS_CUTTER
-template <uint8_t filament>
-static void mmu_cut_filament()
-{
-    menu_back();
-    mmu_cut_filament(filament);
-}
 
 static void mmu_cut_filament_menu()
 {
@@ -6005,11 +5999,11 @@ if(bFilamentAction)
 {
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
-    MENU_ITEM_FUNCTION_P(_i("Cut filament 1"), mmu_cut_filament<0>);
-    MENU_ITEM_FUNCTION_P(_i("Cut filament 2"), mmu_cut_filament<1>);
-    MENU_ITEM_FUNCTION_P(_i("Cut filament 3"), mmu_cut_filament<2>);
-    MENU_ITEM_FUNCTION_P(_i("Cut filament 4"), mmu_cut_filament<3>);
-    MENU_ITEM_FUNCTION_P(_i("Cut filament 5"), mmu_cut_filament<4>);
+    MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), 1, mmu_cut_filament, 0);
+    MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), 2, mmu_cut_filament, 1);
+    MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), 3, mmu_cut_filament, 2);
+    MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), 4, mmu_cut_filament, 3);
+    MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), 5, mmu_cut_filament, 4);
     MENU_END();
 }
 else {

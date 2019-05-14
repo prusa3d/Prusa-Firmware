@@ -1387,6 +1387,7 @@ bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_
 #ifdef MMU_HAS_CUTTER
 void mmu_cut_filament(uint8_t filament_nr)
 {
+    menu_back();
     bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_menu()"
     if (degHotend0() > EXTRUDE_MINTEMP)
     {
