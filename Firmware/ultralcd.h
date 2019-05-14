@@ -129,7 +129,6 @@ void lcd_commands();
 
 
 void change_extr(int extr);
-void extr_adj(int extruder);
 
 #ifdef SNMM
 void extr_unload_all(); 
