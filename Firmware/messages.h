@@ -125,6 +125,8 @@ extern const char MSG_ENDSTOP_OPEN[];
 extern const char MSG_POWERUP[];
 extern const char MSG_ERR_STOPPED[];
 extern const char MSG_ENDSTOP_HIT[];
+extern const char MSG_EJECT_FILAMENT[];
+extern const char MSG_CUT_FILAMENT[];
 
 #if defined(__cplusplus)
 }

@@ -222,26 +222,6 @@
 "Eject filament"
 "Wysun filament"
 
-#MSG_EJECT_FILAMENT1 c=17 r=1
-"Eject filament 1"
-"Wysun filament 1"
-
-#MSG_EJECT_FILAMENT2 c=17 r=1
-"Eject filament 2"
-"Wysun filament 2"
-
-#MSG_EJECT_FILAMENT3 c=17 r=1
-"Eject filament 3"
-"Wysun filament 3"
-
-#MSG_EJECT_FILAMENT4 c=17 r=1
-"Eject filament 4"
-"Wysun filament 4"
-
-#MSG_EJECT_FILAMENT5 c=17 r=1
-"Eject filament 5"
-"Wysun filament 5"
-
 #
 "Eject"
 "Wysun"
@@ -1238,10 +1218,6 @@
 "Load all"
 "Zalad. wszystkie"
 
-#MSG_LOAD_FILAMENT_1 c=17
-"Load filament 1"
-"Zaladuj fil. 1"
-
 #
 "XYZ calibration failed. Bed calibration point was not found."
 "Kalibracja XYZ nieudana. Nie znaleziono punktow kalibracyjnych."
@@ -1250,17 +1226,9 @@
 "XYZ calibration failed. Front calibration points not reachable."
 "Kalibr. XYZ nieudana. Przednie punkty kalibr. nieosiagalne. Nalezy poprawic montaz drukarki."
 
-#MSG_LOAD_FILAMENT_2 c=17
-"Load filament 2"
-"Zaladuj fil. 2"
-
 #
 "XYZ calibration failed. Right front calibration point not reachable."
 "Kalibr. XYZ nieudana. Prawy przedni punkt nieosiagalny. Nalezy poprawic montaz drukarki."
-
-#MSG_LOAD_FILAMENT_3 c=17
-"Load filament 3"
-"Zaladuj fil. 3"
 
 #
 "Y distance from min"
@@ -1269,14 +1237,6 @@
 #
 "Y-correct"
 "Korekcja Y"
-
-#MSG_LOAD_FILAMENT_4 c=17
-"Load filament 4"
-"Zaladuj fil. 4"
-
-#MSG_LOAD_FILAMENT_5 c=17
-"Load filament 5"
-"Laduj filament 5"
 
 #MSG_OFF
 " [off]"

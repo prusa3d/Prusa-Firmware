@@ -168,11 +168,19 @@ int menu_draw_item_printf_P(char type_char, const char* format, ...)
 }
 */
 
-static int menu_draw_item_puts_P(char type_char, const char* str)
+static void menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
-    int cnt = lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
-	return cnt;
+    lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
+}
+
+static int menu_draw_item_puts_P(char type_char, const char* str, char num)
+{
+    lcd_set_cursor(0, menu_row);
+    lcd_printf_P(PSTR("%c%-.16S "), (lcd_encoder == menu_item)?'>':' ', str);
+    lcd_putc(num);
+    lcd_set_cursor(19, menu_row);
+    lcd_putc(type_char);
 }
 
 /*
@@ -248,6 +256,34 @@ uint8_t menu_item_function_P(const char* str, menu_func_t func)
 	}
 	menu_item++;
 	return 0;
+}
+
+//! @brief Menu item function taking single parameter
+//!
+//! Ideal for numbered lists calling functions with number parameter.
+//! @param str Item caption
+//! @param number aditional character to be added after str, e.g. number
+//! @param func pointer to function taking uint8_t with no return value
+//! @param fn_par value to be passed to function
+//! @retval 0
+//! @retval 1 Item was clicked
+uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t), uint8_t fn_par)
+{
+    if (menu_item == menu_line)
+    {
+        if (lcd_draw_update) menu_draw_item_puts_P(' ', str, number);
+        if (menu_clicked && (lcd_encoder == menu_item))
+        {
+            menu_clicked = false;
+            lcd_consume_click();
+            lcd_update_enabled = 0;
+            if (func) func(fn_par);
+            lcd_update_enabled = 1;
+            return menu_item_ret();
+        }
+    }
+    menu_item++;
+    return 0;
 }
 
 uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
