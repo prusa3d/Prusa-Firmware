@@ -1353,7 +1353,7 @@ void mmu_show_warning()
 
 void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
 {
-//-//
+menu_back();
 bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_menu()"
   if (degHotend0() > EXTRUDE_MINTEMP)
   {

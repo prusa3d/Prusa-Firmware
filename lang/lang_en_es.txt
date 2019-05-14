@@ -222,26 +222,6 @@
 "Eject filament"
 "Expulsar filamento"
 
-#MSG_EJECT_FILAMENT1 c=17 r=1
-"Eject filament 1"
-"Expulsar filamento 1"
-
-#MSG_EJECT_FILAMENT2 c=17 r=1
-"Eject filament 2"
-"Expulsar filamento 2"
-
-#MSG_EJECT_FILAMENT3 c=17 r=1
-"Eject filament 3"
-"Expulsar filamento 3"
-
-#MSG_EJECT_FILAMENT4 c=17 r=1
-"Eject filament 4"
-"Expulsar filamento 4"
-
-#MSG_EJECT_FILAMENT5 c=17 r=1
-"Eject filament 5"
-"Expulsar filamento 5"
-
 #
 "Eject"
 "Expulsar"
@@ -1238,10 +1218,6 @@
 "Load all"
 "Intr. todos fil."
 
-#MSG_LOAD_FILAMENT_1 c=17
-"Load filament 1"
-"Introducir fil. 1"
-
 #
 "XYZ calibration failed. Bed calibration point was not found."
 "Calibracion XYZ fallada. Puntos de calibracion en la base no encontrados."
@@ -1250,17 +1226,9 @@
 "XYZ calibration failed. Front calibration points not reachable."
 "Calibracion XYZ fallada. Puntos frontales no alcanzables."
 
-#MSG_LOAD_FILAMENT_2 c=17
-"Load filament 2"
-"Introducir fil. 2"
-
 #
 "XYZ calibration failed. Right front calibration point not reachable."
 "Calibracion XYZ fallad. Punto frontal derecho no alcanzable."
-
-#MSG_LOAD_FILAMENT_3 c=17
-"Load filament 3"
-"Introducir fil. 3"
 
 #
 "Y distance from min"
@@ -1269,14 +1237,6 @@
 #
 "Y-correct"
 "Y-correcion"
-
-#MSG_LOAD_FILAMENT_4 c=17
-"Load filament 4"
-"Introducir fil. 4"
-
-#MSG_LOAD_FILAMENT_5 c=17
-"Load filament 5"
-"Cargar filamento 5"
 
 #MSG_OFF
 " [off]"
