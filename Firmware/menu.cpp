@@ -174,7 +174,7 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
     lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
 }
 
-static int menu_draw_item_puts_P(char type_char, const char* str, char num)
+static void menu_draw_item_puts_P(char type_char, const char* str, char num)
 {
     lcd_set_cursor(0, menu_row);
     lcd_printf_P(PSTR("%c%-.16S "), (lcd_encoder == menu_item)?'>':' ', str);
