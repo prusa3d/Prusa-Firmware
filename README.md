@@ -110,6 +110,9 @@ Now your Ubuntu subsystem is ready to use the automatic `PF-build.sh` script and
   - Example: You files are under `C:\Users\<your-username>\Downloads\Prusa-Firmware-MK3`
   - use under Ubuntu the following command `cd /mnt/c/Users/<your-username>/Downloads/Prusa-Firmware-MK3`
     to change to the right folder
+- Unix and windows have different line endings (LF vs CRLF), try dos2unix to convert
+  - This should fix the `"$'\r': command not found"` error
+  - to install run `apt-get install dos2unix`
 
 #### Compile Prusa-firmware with Ubuntu Linux subsystem installed
 - open Ubuntu bash
