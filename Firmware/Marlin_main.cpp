@@ -3091,7 +3091,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
                 current_position[E_AXIS], FILAMENTCHANGE_EXFEED, active_extruder);
     }
-
+	
     //Move XY back
     plan_buffer_line(lastpos[X_AXIS], lastpos[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS],
             FILAMENTCHANGE_XYFEED, active_extruder);
@@ -3526,9 +3526,13 @@ void process_commands()
                enquecommand_P(PSTR("M24")); 
 		}	
 #ifdef FILAMENT_SENSOR
+		else if (code_seen("fsensor_recover_IR")) //! PRUSA fsensor_recover_IR
+		{
+			fsensor_restore_print_and_continue_IR();
+		}
 		else if (code_seen("fsensor_recover")) //! PRUSA fsensor_recover
 		{
-               fsensor_restore_print_and_continue();
+			fsensor_restore_print_and_continue();
 		}	
 #endif //FILAMENT_SENSOR
 		else if (code_seen("MMURES")) //! PRUSA MMURES
