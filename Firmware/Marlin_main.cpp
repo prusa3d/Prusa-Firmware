@@ -865,23 +865,23 @@ void show_fw_version_warnings() {
 	lcd_update_enable(true);
 }
 
-//try to check if firmware is on right type of printer 
-void check_if_fw_is_on_right_printer(){
-  #ifdef FILAMENT_SENSOR
-    swi2c_init();
-    uint8_t pat9125_detected = swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
-    uint8_t ir_detected = !(PIN_GET(IR_SENSOR_PIN)); //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
-  
+//! @brief try to check if firmware is on right type of printer
+static void check_if_fw_is_on_right_printer(){
+#ifdef FILAMENT_SENSOR
     #ifdef IR_SENSOR
+    swi2c_init();
+    const uint8_t pat9125_detected = swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
       if (pat9125_detected){
         lcd_show_fullscreen_message_and_wait_P(_i("MK3S firmware detected on MK3 printer"));}
-    #endif
+    #endif //IR_SENSOR
 
     #ifdef PAT9125
+      //will return 1 only if IR can detect filament in bondtech extruder so this may fail even when we have IR sensor
+      const uint8_t ir_detected = !(PIN_GET(IR_SENSOR_PIN));
       if (ir_detected){
         lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}
-    #endif
-  #endif
+    #endif //PAT9125
+#endif //FILAMENT_SENSOR
 }
 
 uint8_t check_printer_version()
@@ -9652,7 +9652,7 @@ void marlin_wait_for_click()
         manage_inactivity(true);
         lcd_update(0);
     }
-    KEEPALIVE_STATE(busy_state);
+    KEEPALIVE_STATE(busy_state_backup);
 }
 
 #define FIL_LOAD_LENGTH 60
