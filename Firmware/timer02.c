@@ -3,6 +3,8 @@
 // timer0 is used for fast pwm (OC0B output)
 // original OVF handler is disabled
 
+#include "system_timer.h"
+
 #ifdef SYSTEM_TIMER_2
 
 #include <avr/io.h>

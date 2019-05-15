@@ -264,11 +264,13 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
      soft_pwm_bed = (MAX_BED_POWER)/2;
 	 timer02_set_pwm0(soft_pwm_bed << 1);
      bias = d = (MAX_BED_POWER)/2;
+     target_temperature_bed = (int)temp; // to display the requested target bed temperature properly on the main screen
    }
    else
    {
      soft_pwm[extruder] = (PID_MAX)/2;
      bias = d = (PID_MAX)/2;
+     target_temperature[extruder] = (int)temp; // to display the requested target extruder temperature properly on the main screen
   }
 
 
@@ -1046,11 +1048,6 @@ static void updateTemperaturesFromRawValues()
       redundant_temperature = analog2temp(redundant_temperature_raw, 1);
     #endif
 
-    //Reset the watchdog after we know we have a temperature measurement.
-#ifdef WATCHDOG
-    wdt_reset();
-#endif //WATCHDOG
-
     CRITICAL_SECTION_START;
     temp_meas_ready = false;
     CRITICAL_SECTION_END;
@@ -1698,13 +1695,16 @@ ISR(TIMER0_COMPB_vect)
     soft_pwm_2 = soft_pwm[2];
     if(soft_pwm_2 > 0) WRITE(HEATER_2_PIN,1); else WRITE(HEATER_2_PIN,0);
 #endif
+  }
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
-    soft_pwm_b = soft_pwm_bed;
+  if ((pwm_count & ((1 << HEATER_BED_SOFT_PWM_BITS) - 1)) == 0)
+  {
+    soft_pwm_b = soft_pwm_bed >> (7 - HEATER_BED_SOFT_PWM_BITS);
 #ifndef SYSTEM_TIMER_2
 	if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1); else WRITE(HEATER_BED_PIN,0);
 #endif //SYSTEM_TIMER_2
-#endif
   }
+#endif
 #ifdef FAN_SOFT_PWM
   if ((pwm_count & ((1 << FAN_SOFT_PWM_BITS) - 1)) == 0)
   {
@@ -1727,7 +1727,7 @@ ISR(TIMER0_COMPB_vect)
   if(soft_pwm_2 < pwm_count) WRITE(HEATER_2_PIN,0);
 #endif
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
-  if(soft_pwm_b < pwm_count) WRITE(HEATER_BED_PIN,0);
+  if (soft_pwm_b < (pwm_count & ((1 << HEATER_BED_SOFT_PWM_BITS) - 1))) WRITE(HEATER_BED_PIN,0);
 #endif
 #ifdef FAN_SOFT_PWM
   if (soft_pwm_fan < (pwm_count & ((1 << FAN_SOFT_PWM_BITS) - 1))) WRITE(FAN_PIN,0);

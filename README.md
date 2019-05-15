@@ -53,6 +53,9 @@ _(after installation, the item is labeled as `"INSTALLED"` and can then be used 
 add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags=" before existing flag "-Wl,--gc-sections"  
 example:  
 `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
+The file can be found in Arduino instalation directory, or after Arduino has been updated at:  
+"C:\Users\(user)\AppData\Local\Arduino15\packages\arduino\hardware\avr\(version)"
+If you can locate the file in both places, file from user profile is probably used.
 
 #### 2. Source code compilation
 

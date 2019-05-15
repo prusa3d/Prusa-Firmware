@@ -81,8 +81,14 @@ extern uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu);
 #define MENU_ITEM_BACK_P(str) do { if (menu_item_back_P(str)) return; } while (0)
 extern uint8_t menu_item_back_P(const char* str);
 
+// leaving menu - this condition must be immediately before MENU_ITEM_BACK_P
+#define ON_MENU_LEAVE(func) do { if (((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving){ func } } while (0)
+
 #define MENU_ITEM_FUNCTION_P(str, func) do { if (menu_item_function_P(str, func)) return; } while (0)
 extern uint8_t menu_item_function_P(const char* str, menu_func_t func);
+
+#define MENU_ITEM_FUNCTION_NR_P(str, number, func, fn_par) do { if (menu_item_function_P(str, number, func, fn_par)) return; } while (0)
+extern uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t), uint8_t fn_par);
 
 #define MENU_ITEM_GCODE_P(str, str_gcode) do { if (menu_item_gcode_P(str, str_gcode)) return; } while (0)
 extern uint8_t menu_item_gcode_P(const char* str, const char* str_gcode);

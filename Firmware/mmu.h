@@ -103,7 +103,7 @@ extern void extr_mov(float shift, float feed_rate);
 extern void change_extr(int extr);
 extern int get_ext_nr();
 extern void display_loading();
-extern void extr_adj(int extruder);
+extern void extr_adj(uint8_t extruder);
 extern void extr_unload();
 //-//
 extern void extr_unload_();
