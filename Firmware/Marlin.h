@@ -498,3 +498,4 @@ void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
 void marlin_wait_for_click();
+void marlin_rise_z(void);

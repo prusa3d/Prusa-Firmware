@@ -3135,7 +3135,14 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 }
 
 
-
+//! @brief Rise Z if too low to avoid blob/jam before filament loading
+//!
+//! It doesn't plan_buffer_line(), as it expects plan_buffer_line() to be called after
+//! during extruding (loading) filament.
+void marlin_rise_z(void)
+{
+    if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
+}
 
 void gcode_M701()
 {
@@ -3160,7 +3167,7 @@ void gcode_M701()
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
 		st_synchronize();
 
-		if (current_position[Z_AXIS] < 20) current_position[Z_AXIS] += 30;
+		marlin_rise_z();
 		current_position[E_AXIS] += 30;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 400 / 60, active_extruder); //fast sequence
 		

@@ -1368,6 +1368,7 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
         manage_response(true, true, MMU_TCODE_MOVE);
         mmu_continue_loading(false);
         mmu_extruder = tmp_extruder; //filament change is finished
+        marlin_rise_z();
         mmu_load_to_nozzle();
         load_filament_final_feed();
         st_synchronize();
