@@ -3324,7 +3324,7 @@ static void _lcd_babystep(int axis, const char *msg)
 
 static void lcd_babystep_z()
 {
-	_lcd_babystep(Z_AXIS, (_i("Adjusting Z:")));////MSG_BABYSTEPPING_Z c=20 Beware: must include the ':' as its last character
+	_lcd_babystep(Z_AXIS, (_i("Adjusting Z:")));////MSG_BABYSTEPPING_Z c=15 Beware: must include the ':' as its last character
 }
 
 

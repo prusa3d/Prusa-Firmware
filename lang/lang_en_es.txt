@@ -22,7 +22,7 @@
 ">Cancel"
 ">Cancelar"
 
-#MSG_BABYSTEPPING_Z c=20
+#MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
 "Ajustar Z:"
 
