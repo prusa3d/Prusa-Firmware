@@ -365,7 +365,6 @@ void menu_draw_float31(const char* str, float val)
 
 //! @brief Draw up to 12 chars of text and a float number in format +1.234
 //! 
-//! @param chr first character to print on the line
 //! @param str string label to print
 //! @param val value to print aligned to the right side of the display  
 //! 
