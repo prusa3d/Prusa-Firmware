@@ -351,7 +351,6 @@ void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
 //! @brief Draw up to 10 chars of text and a float number in format from +0.0 to +12345.0. The increased range is necessary
 //! for displaying large values of extruder positions, which caused text overflow in the previous implementation.
 //! 
-//! @param chr first character to print on the line
 //! @param str string label to print
 //! @param val value to print aligned to the right side of the display  
 //! 
