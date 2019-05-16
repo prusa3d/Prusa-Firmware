@@ -22,9 +22,9 @@
 ">Cancel"
 ">Anuluj"
 
-#MSG_BABYSTEPPING_Z c=20
-"Adjusting Z"
-"Dostrajanie Z"
+#MSG_BABYSTEPPING_Z c=15
+"Adjusting Z:"
+"Dostrajanie Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "

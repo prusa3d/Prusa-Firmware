@@ -16,8 +16,8 @@
 #
 ">Cancel"
 
-#MSG_BABYSTEPPING_Z c=20
-"Adjusting Z"
+#MSG_BABYSTEPPING_Z c=15
+"Adjusting Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "

@@ -22,9 +22,9 @@
 ">Cancel"
 ">Annulla"
 
-#MSG_BABYSTEPPING_Z c=20
-"Adjusting Z"
-"Compensazione Z"
+#MSG_BABYSTEPPING_Z c=15
+"Adjusting Z:"
+"Compensaz. Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "

@@ -3079,7 +3079,7 @@ static void _lcd_move(const char *name, int axis, int min, int max)
 	if (lcd_draw_update)
 	{
 	    lcd_set_cursor(0, 1);
-		menu_draw_float31(' ', name, current_position[axis]);
+		menu_draw_float31(name, current_position[axis]);
 	}
 	if (menu_leaving || LCD_CLICKED) (void)enable_endstops(_md->endstopsEnabledPrevious);
 	if (LCD_CLICKED) menu_back();
@@ -3104,7 +3104,9 @@ static void lcd_move_e()
 		if (lcd_draw_update)
 		{
 		    lcd_set_cursor(0, 1);
-			menu_draw_float31(' ', PSTR("Extruder"), current_position[E_AXIS]);
+			// Note: the colon behind the text is necessary to greatly shorten
+			// the implementation of menu_draw_float31
+			menu_draw_float31(PSTR("Extruder:"), current_position[E_AXIS]);
 		}
 		if (LCD_CLICKED) menu_back();
 	}
@@ -3224,14 +3226,16 @@ void EEPROM_read_B(int pos, int* value)
 }
 
 
+// Note: the colon behind the text (X, Y, Z) is necessary to greatly shorten
+// the implementation of menu_draw_float31
 static void lcd_move_x() {
-  _lcd_move(PSTR("X"), X_AXIS, X_MIN_POS, X_MAX_POS);
+  _lcd_move(PSTR("X:"), X_AXIS, X_MIN_POS, X_MAX_POS);
 }
 static void lcd_move_y() {
-  _lcd_move(PSTR("Y"), Y_AXIS, Y_MIN_POS, Y_MAX_POS);
+  _lcd_move(PSTR("Y:"), Y_AXIS, Y_MIN_POS, Y_MAX_POS);
 }
 static void lcd_move_z() {
-  _lcd_move(PSTR("Z"), Z_AXIS, Z_MIN_POS, Z_MAX_POS);
+  _lcd_move(PSTR("Z:"), Z_AXIS, Z_MIN_POS, Z_MAX_POS);
 }
 
 
@@ -3304,7 +3308,7 @@ static void _lcd_babystep(int axis, const char *msg)
 	if (lcd_draw_update)
 	{
 	    lcd_set_cursor(0, 1);
-		menu_draw_float13(' ', msg, _md->babystepMemMM[axis]);
+		menu_draw_float13(msg, _md->babystepMemMM[axis]);
 	}
 	if (LCD_CLICKED || menu_leaving)
 	{
@@ -3320,7 +3324,7 @@ static void _lcd_babystep(int axis, const char *msg)
 
 static void lcd_babystep_z()
 {
-	_lcd_babystep(Z_AXIS, (_i("Adjusting Z")));////MSG_BABYSTEPPING_Z c=20
+	_lcd_babystep(Z_AXIS, (_i("Adjusting Z:")));////MSG_BABYSTEPPING_Z c=15 Beware: must include the ':' as its last character
 }
 
 
