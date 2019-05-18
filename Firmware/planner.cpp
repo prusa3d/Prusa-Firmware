@@ -404,7 +404,6 @@ void planner_recalculate(const float &safe_final_speed)
                 #ifdef LIN_ADVANCE
                 if (prev->use_advance_lead) {
                   const float comp = prev->e_D_ratio * extruder_advance_K * cs.axis_steps_per_unit[E_AXIS];
-                  prev->max_adv_steps = prev->nominal_speed * comp;
                   prev->final_adv_steps = current->entry_speed * comp;
                 }
                 #endif
