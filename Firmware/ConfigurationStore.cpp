@@ -165,8 +165,8 @@ void Config_PrintSettings(uint8_t level)
 #endif
 	if (level >= 10) {
 #ifdef LIN_ADVANCE
-		printf_P(PSTR("%SLinear advance settings:\n   M900 K%.2f\n"),
-			echomagic, extruder_advance_K);
+		printf_P(PSTR("%SLinear advance settings:%S   M900 K%.2f\n"),
+                 echomagic, echomagic, extruder_advance_K);
 #endif //LIN_ADVANCE
 	}
 }
