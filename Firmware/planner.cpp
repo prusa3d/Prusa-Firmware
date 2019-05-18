@@ -58,6 +58,7 @@
 #include "ultralcd.h"
 #include "language.h"
 #include "ConfigurationStore.h"
+#include "speed_lookuptable.h"
 
 #ifdef MESH_BED_LEVELING
 #include "mesh_bed_leveling.h"
@@ -1023,27 +1024,27 @@ Having the real displacement of the head, we can calculate the total movement le
      * delta_mm[E_AXIS] > 0  : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
      */
     block->use_advance_lead =  block->steps_e.wide
-			    && extruder_advance_K
-			    && delta_mm[E_AXIS] > 0;
+                               && extruder_advance_K
+                               && delta_mm[E_AXIS] > 0;
     if (block->use_advance_lead) {
-      block->e_D_ratio = (e - position_float[E_AXIS]) /
-          sqrt(sq(x - position_float[X_AXIS])
-             + sq(y - position_float[Y_AXIS])
-             + sq(z - position_float[Z_AXIS]));
+        block->e_D_ratio = (e - position_float[E_AXIS]) /
+                           sqrt(sq(x - position_float[X_AXIS])
+                                + sq(y - position_float[Y_AXIS])
+                                + sq(z - position_float[Z_AXIS]));
 
-      // Check for unusual high e_D ratio to detect if a retract move was combined with the last print move due to min. steps per segment. Never execute this with advance!
-      // This assumes no one will use a retract length of 0mm < retr_length < ~0.2mm and no one will print 100mm wide lines using 3mm filament or 35mm wide lines using 1.75mm filament.
-      if (block->e_D_ratio > 3.0)
-        block->use_advance_lead = false;
-      else {
-        const uint32_t max_accel_steps_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * block->e_D_ratio) * steps_per_mm;
-        if (block->acceleration_st > max_accel_steps_per_s2) {
-	  block->acceleration_st = max_accel_steps_per_s2;
-        #ifdef LA_DEBUG
-          SERIAL_ECHOLNPGM("Acceleration limited.");
-        #endif
-	}
-      }
+        // Check for unusual high e_D ratio to detect if a retract move was combined with the last print move due to min. steps per segment. Never execute this with advance!
+        // This assumes no one will use a retract length of 0mm < retr_length < ~0.2mm and no one will print 100mm wide lines using 3mm filament or 35mm wide lines using 1.75mm filament.
+        if (block->e_D_ratio > 3.0)
+            block->use_advance_lead = false;
+        else {
+            const uint32_t max_accel_steps_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * block->e_D_ratio) * steps_per_mm;
+            if (block->acceleration_st > max_accel_steps_per_s2) {
+                block->acceleration_st = max_accel_steps_per_s2;
+                #ifdef LA_DEBUG
+                SERIAL_ECHOLNPGM("Acceleration limited.");
+                #endif
+            }
+        }
     }
     #endif
 
@@ -1081,13 +1082,13 @@ Having the real displacement of the head, we can calculate the total movement le
 
   #ifdef LIN_ADVANCE
   if (block->use_advance_lead) {
-    block->advance_speed = (F_CPU / 8.0) / (extruder_advance_K * block->e_D_ratio * block->acceleration * cs.axis_steps_per_unit[E_AXIS]);
-    #ifdef LA_DEBUG
-    if (extruder_advance_K * block->e_D_ratio * block->acceleration * 2 < block->nominal_speed * block->e_D_ratio)
-      SERIAL_ECHOLNPGM("More than 2 steps per eISR loop executed.");
-    if (block->advance_speed < 200)
-      SERIAL_ECHOLNPGM("eISR running at > 10kHz.");
-    #endif
+      float advance_speed = (extruder_advance_K * block->e_D_ratio * block->acceleration * cs.axis_steps_per_unit[E_AXIS]);
+      block->advance_rate = calc_timer(advance_speed, block->advance_step_loops);
+
+      #ifdef LA_DEBUG
+      if (block->advance_step_loops > 2)
+          SERIAL_ECHOLNPGM("More than 2 steps per eISR loop executed.");
+      #endif
   }
   #endif
 

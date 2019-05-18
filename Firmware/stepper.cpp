@@ -117,22 +117,24 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
   void advance_isr();
 
   static const uint16_t ADV_NEVER = 0xFFFF;
-
-  static uint16_t nextMainISR = 0;
-  static uint16_t nextAdvanceISR = ADV_NEVER;
-
-  static uint16_t eISR_Rate = ADV_NEVER;
-
   static bool use_advance_lead;
 
-  static uint16_t current_adv_steps;
+  static uint16_t nextMainISR;
+  static uint16_t nextAdvanceISR;
+
+  static uint16_t main_Rate;
+  static uint16_t eISR_Rate;
+
+  static volatile uint16_t current_adv_steps;
   static uint16_t final_adv_steps;
   static uint16_t max_adv_steps;
   static uint32_t LA_decelerate_after;
 
-  static volatile int8_t e_steps;
+  static int8_t e_steps;
+  static uint8_t e_step_loops;
+  static int8_t LA_phase;
 
-  #define _NEXT_ISR(T)    nextMainISR = T
+  #define _NEXT_ISR(T)    main_Rate = nextMainISR = T
 #else
   #define _NEXT_ISR(T)    OCR1A = T
 #endif
@@ -352,6 +354,13 @@ FORCE_INLINE void stepper_next_block()
         LA_decelerate_after = current_block->decelerate_after;
         final_adv_steps = current_block->final_adv_steps;
         max_adv_steps = current_block->max_adv_steps;
+        e_step_loops = current_block->advance_step_loops;
+        LA_phase = -1;
+    } else {
+        nextAdvanceISR = ADV_NEVER;
+        eISR_Rate = ADV_NEVER;
+        e_step_loops = 1;
+        LA_phase = -1;
     }
 #endif
 
@@ -731,14 +740,11 @@ FORCE_INLINE void isr() {
         acceleration_time += timer;
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-            if (step_events_completed.wide == (unsigned long int)step_loops || (e_steps && eISR_Rate != current_block->advance_speed)) {
-                nextAdvanceISR = 0; // Wake up eISR on first acceleration loop and fire ISR if final adv_rate is reached
-                eISR_Rate = current_block->advance_speed;
+            if (step_events_completed.wide <= (unsigned long int)step_loops) {
+                // First acceleration loop
+                eISR_Rate = current_block->advance_rate;
+                nextAdvanceISR = 0;
             }
-        }
-        else {
-            eISR_Rate = ADV_NEVER;
-            if (e_steps) nextAdvanceISR = 0;
         }
 #endif
       }
@@ -756,22 +762,15 @@ FORCE_INLINE void isr() {
         deceleration_time += timer;
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-            if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops || (e_steps && eISR_Rate != current_block->advance_speed)) {
-                nextAdvanceISR = 0; // Wake up eISR on first deceleration loop
-                eISR_Rate = current_block->advance_speed;
+            if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops) {
+                // First deceleration loop
+                eISR_Rate = current_block->advance_rate;
+                nextAdvanceISR = 0;
             }
-        }
-        else {
-            eISR_Rate = ADV_NEVER;
-            if (e_steps) nextAdvanceISR = 0;
         }
 #endif
       }
       else {
-#ifdef LIN_ADVANCE
-          // If we have esteps to execute, fire the next advance_isr "now"
-          if (e_steps && eISR_Rate != current_block->advance_speed) nextAdvanceISR = 0;
-#endif
         if (! step_loops_nominal) {
           // Calculation of the steady state timer rate has been delayed to the 1st tick of the steady state to lower
           // the initial interrupt blocking.
@@ -813,76 +812,111 @@ FORCE_INLINE void isr() {
 // Timer interrupt for E. e_steps is set in the main routine.
 
 FORCE_INLINE void advance_isr() {
-    if (use_advance_lead) {
-        if (step_events_completed.wide > LA_decelerate_after && current_adv_steps > final_adv_steps) {
-            e_steps--;
-            current_adv_steps--;
-            nextAdvanceISR = eISR_Rate;
+    if (step_events_completed.wide > LA_decelerate_after && current_adv_steps > final_adv_steps) {
+        // decompression
+        e_steps -= e_step_loops;
+        current_adv_steps -= e_step_loops;
+        nextAdvanceISR = eISR_Rate;
+        if(nextAdvanceISR == ADV_NEVER)
+        {
+            LA_phase = 1;
+            e_step_loops = 1;
         }
-        else if (step_events_completed.wide < LA_decelerate_after && current_adv_steps < max_adv_steps) {
-            e_steps++;
-            current_adv_steps++;
-            nextAdvanceISR = eISR_Rate;
-        }
-        else {
-            nextAdvanceISR = ADV_NEVER;
-            eISR_Rate = ADV_NEVER;
+        else
+        {
+            if (step_loops == e_step_loops)
+                LA_phase = (eISR_Rate > main_Rate);
+            else
+            {
+                // avoid overflow through division (TODO: this can be
+                // improved as both step_loops and e_step_loops are
+                // guaranteed to be powers of two)
+                LA_phase = (eISR_Rate / step_loops > main_Rate / e_step_loops);
+            }
         }
     }
-    else
+    else if (step_events_completed.wide < LA_decelerate_after && current_adv_steps < max_adv_steps) {
+        // compression
+        e_steps += e_step_loops;
+        current_adv_steps += e_step_loops;
+        nextAdvanceISR = eISR_Rate;
+        LA_phase = -1;
+        if(nextAdvanceISR == ADV_NEVER)
+            e_step_loops = 1;
+    }
+    else {
+        // advance steps completed
         nextAdvanceISR = ADV_NEVER;
-
-    if (e_steps) {
-        MSerial.checkRx(); // Check for serial chars.
-
-        bool dir =
-#ifdef SNMM
-            ((e_steps < 0) == (snmm_extruder & 1))
-#else
-            (e_steps < 0)
-#endif
-            ? INVERT_E0_DIR : !INVERT_E0_DIR; //If we have SNMM, reverse every second extruder.
-        WRITE(E0_DIR_PIN, dir);
-
-        if(e_steps < 0) e_steps = -e_steps;
-        fsensor_counter += e_steps;
-        while (e_steps) {
-            WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
-            --e_steps;
-            WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
-        }
+        eISR_Rate = ADV_NEVER;
+        LA_phase = -1;
+        e_step_loops = 1;
     }
 }
 
 FORCE_INLINE void advance_isr_scheduler() {
-    // Run main stepping ISR if flagged
-    if (!nextMainISR) isr();
-
-    // Run Advance stepping ISR if flagged
-    if (!nextAdvanceISR) advance_isr();
-
-    // Is the next advance ISR scheduled before the next main ISR?
-    if (nextAdvanceISR <= nextMainISR) {
-        // Set up the next interrupt
-        OCR1A = nextAdvanceISR;
-        // New interval for the next main ISR
-        if (nextMainISR) nextMainISR -= nextAdvanceISR;
-        // Will call Stepper::advance_isr on the next interrupt
-        nextAdvanceISR = 0;
+    // Integrate the final timer value, accounting for scheduling adjustments
+    if(nextAdvanceISR && nextAdvanceISR != ADV_NEVER)
+    {
+        if(nextAdvanceISR > OCR1A)
+            nextAdvanceISR -= OCR1A;
+        else
+            nextAdvanceISR = 0;
     }
-    else {
-        // The next main ISR comes first
-        OCR1A = nextMainISR;
-        // New interval for the next advance ISR, if any
-        if (nextAdvanceISR && nextAdvanceISR != ADV_NEVER)
-            nextAdvanceISR -= nextMainISR;
-        // Will call Stepper::isr on the next interrupt
+    if(nextMainISR > OCR1A)
+        nextMainISR -= OCR1A;
+    else
         nextMainISR = 0;
+
+    // Run main stepping ISR if flagged
+    if (!nextMainISR)
+    {
+#ifdef LA_DEBUG_LOGIC
+        WRITE_NC(LOGIC_ANALYZER_CH0, true);
+#endif
+        isr();
+#ifdef LA_DEBUG_LOGIC
+        WRITE_NC(LOGIC_ANALYZER_CH0, false);
+#endif
     }
+
+    // Run the next advance isr if triggered now or soon enough
+    bool eisr = nextAdvanceISR < (TCNT1 + nextAdvanceISR / 8);
+    if (eisr)
+    {
+#ifdef LA_DEBUG_LOGIC
+        WRITE_NC(LOGIC_ANALYZER_CH1, true);
+#endif
+        advance_isr();
+#ifdef LA_DEBUG_LOGIC
+        WRITE_NC(LOGIC_ANALYZER_CH1, false);
+#endif
+    }
+
+    // Tick E steps if any
+    if (e_steps && (LA_phase < 0 || LA_phase == eisr)) {
+        uint8_t max_ticks = max(e_step_loops, step_loops);
+        max_ticks = min(abs(e_steps), max_ticks);
+#ifdef FILAMENT_SENSOR
+        fsensor_counter += max_ticks;
+#endif
+        WRITE(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
+        while(max_ticks--)
+        {
+            WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
+            e_steps += (e_steps < 0)? 1: -1;
+            WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
+        }
+    }
+
+    // Schedule the next closest tick, ignoring advance if scheduled to
+    // soon in order to avoid skewing the regular stepper acceleration
+    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + TCNT1 + nextAdvanceISR / 8) < nextMainISR)
+        OCR1A = nextAdvanceISR;
+    else
+        OCR1A = nextMainISR;
 }
 
 void clear_current_adv_vars() {
-    e_steps = 0;
     current_adv_steps = 0;
 }
 
@@ -1106,15 +1140,28 @@ void st_init()
   // create_speed_lookuptable.py
   TCCR1B = (TCCR1B & ~(0x07<<CS10)) | (2<<CS10);
 
+  // Plan the first interrupt after 8ms from now.
+  OCR1A = 0x4000;
+  TCNT1 = 0;
+
 #ifdef LIN_ADVANCE
-  // Reset the state for the next advance scheduler as well
-  nextMainISR = 0;
-  nextAdvanceISR = ADV_NEVER;
-  eISR_Rate = ADV_NEVER;
-  clear_current_adv_vars();
+#ifdef LA_DEBUG_LOGIC
+  LOGIC_ANALYZER_CH0_ENABLE;
+  LOGIC_ANALYZER_CH1_ENABLE;
+  WRITE_NC(LOGIC_ANALYZER_CH0, false);
+  WRITE_NC(LOGIC_ANALYZER_CH1, false);
 #endif
 
-  st_reset_timer();
+  // Initialize state for the linear advance scheduler
+  use_advance_lead = false;
+  nextMainISR = 0;
+  nextAdvanceISR = ADV_NEVER;
+  main_Rate = ADV_NEVER;
+  eISR_Rate = ADV_NEVER;
+  e_steps = 0;
+  e_step_loops = 1;
+  LA_phase = -1;
+#endif
 
   enable_endstops(true); // Start with endstops active. After homing they can be disabled
 
@@ -1133,10 +1180,9 @@ void st_reset_timer()
   OCR1A = 2000;
 
 #ifdef LIN_ADVANCE
-  // If an eISR was pending, reschedule too
-  if (nextAdvanceISR <= nextMainISR)
-      nextAdvanceISR = 0;
   nextMainISR = 0;
+  if(nextAdvanceISR && nextAdvanceISR != ADV_NEVER)
+      nextAdvanceISR = 0;
 #endif
 }
 
