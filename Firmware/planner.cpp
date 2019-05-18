@@ -402,10 +402,10 @@ void planner_recalculate(const float &safe_final_speed)
                 // NOTE: Entry and exit factors always > 0 by all previous logic operations.
                 calculate_trapezoid_for_block(prev, prev->entry_speed, current->entry_speed);
                 #ifdef LIN_ADVANCE
-                if (current->use_advance_lead) {
-                  const float comp = current->e_D_ratio * extruder_advance_K * cs.axis_steps_per_unit[E_AXIS];
-                  current->max_adv_steps = current->nominal_speed * comp;
-                  current->final_adv_steps = next->entry_speed * comp;
+                if (prev->use_advance_lead) {
+                  const float comp = prev->e_D_ratio * extruder_advance_K * cs.axis_steps_per_unit[E_AXIS];
+                  prev->max_adv_steps = prev->nominal_speed * comp;
+                  prev->final_adv_steps = current->entry_speed * comp;
                 }
                 #endif
                 // Reset current only to ensure next trapezoid is computed.
