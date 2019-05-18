@@ -233,43 +233,6 @@ void invert_z_endstop(bool endstop_invert)
 //  step_events_completed reaches block->decelerate_after after which it decelerates until the trapezoid generator is reset.
 //  The slope of acceleration is calculated with the leib ramp alghorithm.
 
-FORCE_INLINE unsigned short calc_timer(uint16_t step_rate) {
-  unsigned short timer;
-  if(step_rate > MAX_STEP_FREQUENCY) step_rate = MAX_STEP_FREQUENCY;
-
-  if(step_rate > 20000) { // If steprate > 20kHz >> step 4 times
-    step_rate = (step_rate >> 2)&0x3fff;
-    step_loops = 4;
-  }
-  else if(step_rate > 10000) { // If steprate > 10kHz >> step 2 times
-    step_rate = (step_rate >> 1)&0x7fff;
-    step_loops = 2;
-  }
-  else {
-    step_loops = 1;
-  }
-//    step_loops = 1;
-
-  if(step_rate < (F_CPU/500000)) step_rate = (F_CPU/500000);
-  step_rate -= (F_CPU/500000); // Correct for minimal speed
-  if(step_rate >= (8*256)){ // higher step rate
-    unsigned short table_address = (unsigned short)&speed_lookuptable_fast[(unsigned char)(step_rate>>8)][0];
-    unsigned char tmp_step_rate = (step_rate & 0x00ff);
-    unsigned short gain = (unsigned short)pgm_read_word_near(table_address+2);
-    MultiU16X8toH16(timer, tmp_step_rate, gain);
-    timer = (unsigned short)pgm_read_word_near(table_address) - timer;
-  }
-  else { // lower step rates
-    unsigned short table_address = (unsigned short)&speed_lookuptable_slow[0][0];
-    table_address += ((step_rate)>>1) & 0xfffc;
-    timer = (unsigned short)pgm_read_word_near(table_address);
-    timer -= (((unsigned short)pgm_read_word_near(table_address+2) * (unsigned char)(step_rate & 0x0007))>>3);
-  }
-  if(timer < 100) { timer = 100; MYSERIAL.print(_N("Steprate too high: ")); MYSERIAL.println(step_rate); }//(20kHz this should never happen)////MSG_STEPPER_TOO_HIGH
-  return timer;
-}
-
-
 // "The Stepper Driver Interrupt" - This timer interrupt is the workhorse.
 // It pops blocks from the block_buffer and executes them by pulsing the stepper pins appropriately.
 ISR(TIMER1_COMPA_vect) {
@@ -382,7 +345,7 @@ FORCE_INLINE void stepper_next_block()
     // state is reached.
     step_loops_nominal = 0;
     acc_step_rate = uint16_t(current_block->initial_rate);
-    acceleration_time = calc_timer(acc_step_rate);
+    acceleration_time = calc_timer(acc_step_rate, step_loops);
 
 #ifdef LIN_ADVANCE
     if ((use_advance_lead = current_block->use_advance_lead)) {
@@ -763,7 +726,7 @@ FORCE_INLINE void isr() {
         if(acc_step_rate > uint16_t(current_block->nominal_rate))
           acc_step_rate = current_block->nominal_rate;
         // step_rate to timer interval
-        uint16_t timer = calc_timer(acc_step_rate);
+        uint16_t timer = calc_timer(acc_step_rate, step_loops);
         _NEXT_ISR(timer);
         acceleration_time += timer;
 #ifdef LIN_ADVANCE
@@ -788,7 +751,7 @@ FORCE_INLINE void isr() {
           step_rate = uint16_t(current_block->final_rate);
         }
         // Step_rate to timer interval.
-        uint16_t timer = calc_timer(step_rate);
+        uint16_t timer = calc_timer(step_rate, step_loops);
         _NEXT_ISR(timer);
         deceleration_time += timer;
 #ifdef LIN_ADVANCE
@@ -812,7 +775,7 @@ FORCE_INLINE void isr() {
         if (! step_loops_nominal) {
           // Calculation of the steady state timer rate has been delayed to the 1st tick of the steady state to lower
           // the initial interrupt blocking.
-          OCR1A_nominal = calc_timer(uint16_t(current_block->nominal_rate));
+          OCR1A_nominal = calc_timer(uint16_t(current_block->nominal_rate), step_loops);
           step_loops_nominal = step_loops;
         }
         _NEXT_ISR(OCR1A_nominal);

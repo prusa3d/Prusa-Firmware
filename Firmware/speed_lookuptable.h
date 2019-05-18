@@ -86,4 +86,40 @@ void MultiU24X24toH16(uint16_t& intRes, int32_t& longIn1, long& longIn2);
 
 #endif //_NO_ASM
 
+
+FORCE_INLINE unsigned short calc_timer(uint16_t step_rate, uint8_t& step_loops) {
+  unsigned short timer;
+  if(step_rate > MAX_STEP_FREQUENCY) step_rate = MAX_STEP_FREQUENCY;
+
+  if(step_rate > 20000) { // If steprate > 20kHz >> step 4 times
+    step_rate = (step_rate >> 2)&0x3fff;
+    step_loops = 4;
+  }
+  else if(step_rate > 10000) { // If steprate > 10kHz >> step 2 times
+    step_rate = (step_rate >> 1)&0x7fff;
+    step_loops = 2;
+  }
+  else {
+    step_loops = 1;
+  }
+
+  if(step_rate < (F_CPU/500000)) step_rate = (F_CPU/500000);
+  step_rate -= (F_CPU/500000); // Correct for minimal speed
+  if(step_rate >= (8*256)){ // higher step rate
+    unsigned short table_address = (unsigned short)&speed_lookuptable_fast[(unsigned char)(step_rate>>8)][0];
+    unsigned char tmp_step_rate = (step_rate & 0x00ff);
+    unsigned short gain = (unsigned short)pgm_read_word_near(table_address+2);
+    MultiU16X8toH16(timer, tmp_step_rate, gain);
+    timer = (unsigned short)pgm_read_word_near(table_address) - timer;
+  }
+  else { // lower step rates
+    unsigned short table_address = (unsigned short)&speed_lookuptable_slow[0][0];
+    table_address += ((step_rate)>>1) & 0xfffc;
+    timer = (unsigned short)pgm_read_word_near(table_address);
+    timer -= (((unsigned short)pgm_read_word_near(table_address+2) * (unsigned char)(step_rate & 0x0007))>>3);
+  }
+  if(timer < 100) { timer = 100; }//(20kHz this should never happen)////MSG_STEPPER_TOO_HIGH c=0 r=0
+  return timer;
+}
+
 #endif
