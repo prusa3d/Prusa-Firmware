@@ -885,7 +885,7 @@ FORCE_INLINE void advance_isr_scheduler() {
     }
 
     // Run the next advance isr if triggered now or soon enough
-    bool eisr = nextAdvanceISR < (TCNT1 + nextAdvanceISR / LA_FREQ_MDIV);
+    bool eisr = nextAdvanceISR < (TCNT1 + eISR_Rate / LA_FREQ_MDIV);
     if (eisr)
     {
 #ifdef LA_DEBUG_LOGIC
@@ -915,7 +915,7 @@ FORCE_INLINE void advance_isr_scheduler() {
 
     // Schedule the next closest tick, ignoring advance if scheduled too
     // soon in order to avoid skewing the regular stepper acceleration
-    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + TCNT1 + nextAdvanceISR / LA_FREQ_MDIV) < nextMainISR)
+    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + TCNT1 + eISR_Rate / LA_FREQ_MDIV) < nextMainISR)
         OCR1A = nextAdvanceISR;
     else
         OCR1A = nextMainISR;
