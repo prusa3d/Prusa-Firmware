@@ -1019,21 +1019,23 @@ Having the real displacement of the head, we can calculate the total movement le
     /**
      * Use LIN_ADVANCE for blocks if all these are true:
      *
-     * block->steps_e        : This is a print move, because we checked for X, Y, Z steps before.
-     * extruder_advance_K    : There is an advance factor set.
-     * delta_mm[E_AXIS] > 0  : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
+     * block->steps_e       : This is a print move, because we checked for X, Y, Z steps before.
+     * extruder_advance_K   : There is an advance factor set.
+     * delta_mm[E_AXIS] > 0 : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
      */
-    block->use_advance_lead =  block->steps_e.wide
-                               && extruder_advance_K
-                               && delta_mm[E_AXIS] > 0;
+    block->use_advance_lead = block->steps_e.wide
+                              && extruder_advance_K
+                              && delta_mm[E_AXIS] > 0;
     if (block->use_advance_lead) {
         block->e_D_ratio = (e - position_float[E_AXIS]) /
                            sqrt(sq(x - position_float[X_AXIS])
                                 + sq(y - position_float[Y_AXIS])
                                 + sq(z - position_float[Z_AXIS]));
 
-        // Check for unusual high e_D ratio to detect if a retract move was combined with the last print move due to min. steps per segment. Never execute this with advance!
-        // This assumes no one will use a retract length of 0mm < retr_length < ~0.2mm and no one will print 100mm wide lines using 3mm filament or 35mm wide lines using 1.75mm filament.
+        // Check for unusual high e_D ratio to detect if a retract move was combined with the last
+        // print move due to min. steps per segment. Never execute this with advance! This assumes
+        // no one will use a retract length of 0mm < retr_length < ~0.2mm and no one will print
+        // 100mm wide lines using 3mm filament or 35mm wide lines using 1.75mm filament.
         if (block->e_D_ratio > 3.0)
             block->use_advance_lead = false;
         else {
