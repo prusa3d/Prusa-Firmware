@@ -853,6 +853,10 @@ FORCE_INLINE void advance_isr() {
     }
 }
 
+#define LA_FREQ_MDIV 8 // divider for the advance frequency for maximum
+                       // time allotted to merge regular and advance
+                       // ticks (stick to a power-of-two)
+
 FORCE_INLINE void advance_isr_scheduler() {
     // Integrate the final timer value, accounting for scheduling adjustments
     if(nextAdvanceISR && nextAdvanceISR != ADV_NEVER)
@@ -880,7 +884,7 @@ FORCE_INLINE void advance_isr_scheduler() {
     }
 
     // Run the next advance isr if triggered now or soon enough
-    bool eisr = nextAdvanceISR < (TCNT1 + nextAdvanceISR / 8);
+    bool eisr = nextAdvanceISR < (TCNT1 + nextAdvanceISR / LA_FREQ_MDIV);
     if (eisr)
     {
 #ifdef LA_DEBUG_LOGIC
@@ -910,7 +914,7 @@ FORCE_INLINE void advance_isr_scheduler() {
 
     // Schedule the next closest tick, ignoring advance if scheduled to
     // soon in order to avoid skewing the regular stepper acceleration
-    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + TCNT1 + nextAdvanceISR / 8) < nextMainISR)
+    if (nextAdvanceISR != ADV_NEVER && (nextAdvanceISR + TCNT1 + nextAdvanceISR / LA_FREQ_MDIV) < nextMainISR)
         OCR1A = nextAdvanceISR;
     else
         OCR1A = nextMainISR;
