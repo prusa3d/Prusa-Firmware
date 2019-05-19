@@ -361,6 +361,7 @@ FORCE_INLINE void stepper_next_block()
         eISR_Rate = ADV_NEVER;
         e_step_loops = 1;
         LA_phase = -1;
+        current_adv_steps = 0;
     }
 #endif
 
@@ -1165,6 +1166,7 @@ void st_init()
   e_steps = 0;
   e_step_loops = 1;
   LA_phase = -1;
+  current_adv_steps = 0;
 #endif
 
   enable_endstops(true); // Start with endstops active. After homing they can be disabled
