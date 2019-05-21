@@ -1047,7 +1047,7 @@ Having the real displacement of the head, we can calculate the total movement le
             if (block->acceleration_st > max_accel_steps_per_s2) {
                 block->acceleration_st = max_accel_steps_per_s2;
                 #ifdef LA_DEBUG
-                SERIAL_ECHOLNPGM("Acceleration limited.");
+                SERIAL_ECHOLNPGM("LA: Block acceleration limited due to max E-jerk");
                 #endif
             }
         }
@@ -1093,7 +1093,11 @@ Having the real displacement of the head, we can calculate the total movement le
 
       #ifdef LA_DEBUG
       if (block->advance_step_loops > 2)
-          SERIAL_ECHOLNPGM("More than 2 steps per eISR loop executed.");
+          // @wavexx: we should really check for the difference between step_loops and
+          //          advance_step_loops instead. A difference of more than 1 will lead
+          //          to uneven speed and *should* be adjusted here by furthermore
+          //          reducing the speed.
+          SERIAL_ECHOLNPGM("LA: More than 2 steps per eISR loop executed.");
       #endif
   }
   #endif
