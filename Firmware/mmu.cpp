@@ -679,6 +679,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 				  st_synchronize();
 				  mmu_print_saved = true;
 				  printf_P(PSTR("MMU not responding\n"));
+				  KEEPALIVE_STATE(PAUSED_FOR_USER);
 				  hotend_temp_bckp = degTargetHotend(active_extruder);
 				  if (move_axes) {
 					  z_position_bckp = current_position[Z_AXIS];
@@ -735,6 +736,7 @@ void manage_response(bool move_axes, bool turn_off_nozzle, uint8_t move)
 		  }
 		  else if (mmu_print_saved) {
 			  printf_P(PSTR("MMU starts responding\n"));
+			  KEEPALIVE_STATE(IN_HANDLER);
 			  mmu_loading_flag = false;
 			  if (turn_off_nozzle) 
 			  {
@@ -878,7 +880,7 @@ void mmu_M600_load_filament(bool automatic, float nozzle_temp)
     mmu_command(MmuCmd::T0 + tmp_extruder);
 
     manage_response(false, true, MMU_LOAD_MOVE);
-    mmu_continue_loading();
+    mmu_continue_loading(is_usb_printing);
     mmu_extruder = tmp_extruder; //filament change is finished
 
     mmu_load_to_nozzle();
@@ -963,7 +965,7 @@ void display_loading()
 	}
 }
 
-void extr_adj(int extruder) //loading filament for SNMM
+void extr_adj(uint8_t extruder) //loading filament for SNMM
 {
 #ifndef SNMM
     MmuCmd cmd = MmuCmd::L0 + extruder;
@@ -1351,40 +1353,43 @@ void mmu_show_warning()
 
 void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
 {
-//-//
-bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_menu()"
-  if (degHotend0() > EXTRUDE_MINTEMP)
-  {
-	tmp_extruder = filament_nr;
-	lcd_update_enable(false);
-	lcd_clear();
-	lcd_set_cursor(0, 1); lcd_puts_P(_T(MSG_LOADING_FILAMENT));
-	lcd_print(" ");
-	lcd_print(tmp_extruder + 1);
-	mmu_command(MmuCmd::T0 + tmp_extruder);
-	manage_response(true, true, MMU_TCODE_MOVE);
-	mmu_continue_loading();
-	mmu_extruder = tmp_extruder; //filament change is finished
-	mmu_load_to_nozzle();
-	load_filament_final_feed();
-	st_synchronize();
-	custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
-	lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
-	lcd_return_to_status();
-	lcd_update_enable(true);	
-	lcd_load_filament_color_check();
-	lcd_setstatuspgm(_T(WELCOME_MSG));
-	custom_message_type = CUSTOM_MSG_TYPE_STATUS;
-  }
-  else
-  {
-	  show_preheat_nozzle_warning();
-  }
+    menu_back();
+    bFilamentAction = false;                            // NOT in "mmu_load_to_nozzle_menu()"
+    if (degHotend0() > EXTRUDE_MINTEMP)
+    {
+        tmp_extruder = filament_nr;
+        lcd_update_enable(false);
+        lcd_clear();
+        lcd_set_cursor(0, 1);
+        lcd_puts_P(_T(MSG_LOADING_FILAMENT));
+        lcd_print(" ");
+        lcd_print(tmp_extruder + 1);
+        mmu_command(MmuCmd::T0 + tmp_extruder);
+        manage_response(true, true, MMU_TCODE_MOVE);
+        mmu_continue_loading(false);
+        mmu_extruder = tmp_extruder; //filament change is finished
+        marlin_rise_z();
+        mmu_load_to_nozzle();
+        load_filament_final_feed();
+        st_synchronize();
+        custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
+        lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
+        lcd_return_to_status();
+        lcd_update_enable(true);
+        lcd_load_filament_color_check();
+        lcd_setstatuspgm(_T(WELCOME_MSG));
+        custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+    }
+    else
+    {
+        show_preheat_nozzle_warning();
+    }
 }
 
 #ifdef MMU_HAS_CUTTER
 void mmu_cut_filament(uint8_t filament_nr)
 {
+    menu_back();
     bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_menu()"
     if (degHotend0() > EXTRUDE_MINTEMP)
     {
@@ -1464,59 +1469,109 @@ static void load_more()
     st_synchronize();
 }
 
-void mmu_continue_loading() 
+static void increment_load_fail()
 {
-	if (ir_sensor_detected)
+    uint8_t mmu_load_fail = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
+    uint16_t mmu_load_fail_tot = eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT);
+    if(mmu_load_fail < 255) eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, mmu_load_fail + 1);
+    if(mmu_load_fail_tot < 65535) eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, mmu_load_fail_tot + 1);
+}
+
+//! @brief continue loading filament
+//! @par blocking
+//!  * true blocking - do not return until successful load
+//!  * false non-blocking - pause print and return on load failure
+//!
+//! @startuml
+//! [*] --> [*] : !ir_sensor_detected /\n send MmuCmd::C0
+//! [*] --> LoadMore
+//! LoadMore --> [*] : filament \ndetected
+//! LoadMore --> Retry : !filament detected /\n increment load fail
+//! Retry --> [*] : filament \ndetected
+//! Retry --> Unload : !filament \ndetected
+//! Unload --> [*] : non-blocking
+//! Unload --> Retry : button \nclicked
+//!
+//! Retry : Cut filament if enabled
+//! Retry : repeat last T-code
+//! Unload : unload filament
+//! Unload : pause print
+//! Unload : show error message
+//!
+//! @enduml
+void mmu_continue_loading(bool blocking)
+{
+	if (!ir_sensor_detected)
 	{
-	    load_more();
+	    mmu_command(MmuCmd::C0);
+	    return;
+	}
 
-		if (PIN_GET(IR_SENSOR_PIN) != 0) {
-			uint8_t mmu_load_fail = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
-			uint16_t mmu_load_fail_tot = eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT);
-			if(mmu_load_fail < 255) eeprom_update_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL, mmu_load_fail + 1);
-			if(mmu_load_fail_tot < 65535) eeprom_update_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT, mmu_load_fail_tot + 1);
+    load_more();
 
+    enum class Ls : uint_least8_t
+    {
+        enter,
+        retry,
+        unload,
+    };
+    Ls state = Ls::enter;
+
+    while (PIN_GET(IR_SENSOR_PIN) != 0)
+    {
+        switch (state)
+        {
+        case Ls::enter:
+            increment_load_fail();
+            // no break
+        case Ls::retry:
 #ifdef MMU_HAS_CUTTER
-			if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
-			{
-			    mmu_command(MmuCmd::K0 + tmp_extruder);
-			    manage_response(true, true, MMU_UNLOAD_MOVE);
-			}
+            if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+            {
+                mmu_command(MmuCmd::K0 + tmp_extruder);
+                manage_response(true, true, MMU_UNLOAD_MOVE);
+            }
 #endif //MMU_HAS_CUTTER
-
             mmu_command(MmuCmd::T0 + tmp_extruder);
             manage_response(true, true, MMU_TCODE_MOVE);
             load_more();
+            state = Ls::unload;
+            break;
+        case Ls::unload:
+            stop_and_save_print_to_ram(0, 0);
 
-            if (PIN_GET(IR_SENSOR_PIN) != 0)
+            //lift z
+            current_position[Z_AXIS] += Z_PAUSE_LIFT;
+            if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
+            st_synchronize();
+
+            //Move XY to side
+            current_position[X_AXIS] = X_PAUSE_POS;
+            current_position[Y_AXIS] = Y_PAUSE_POS;
+            plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
+            st_synchronize();
+
+            mmu_command(MmuCmd::U0);
+            manage_response(false, true, MMU_UNLOAD_MOVE);
+
+            setAllTargetHotends(0);
+            lcd_setstatuspgm(_i("MMU load failed     "));////c=20 r=1
+
+            if (blocking)
             {
-                //pause print, show error message and then repeat last T-code
-                stop_and_save_print_to_ram(0, 0);
-
-                //lift z
-                current_position[Z_AXIS] += Z_PAUSE_LIFT;
-                if (current_position[Z_AXIS] > Z_MAX_POS) current_position[Z_AXIS] = Z_MAX_POS;
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 15, active_extruder);
-                st_synchronize();
-
-                //Move XY to side
-                current_position[X_AXIS] = X_PAUSE_POS;
-                current_position[Y_AXIS] = Y_PAUSE_POS;
-                plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], 50, active_extruder);
-                st_synchronize();
-
-                mmu_command(MmuCmd::U0);
-                manage_response(false, true, MMU_UNLOAD_MOVE);
-
-                setAllTargetHotends(0);
-                lcd_setstatuspgm(_i("MMU load failed     "));////MSG_RECOVERING_PRINT c=20 r=1
+                marlin_wait_for_click();
+                restore_print_from_ram_and_continue(0);
+                state = Ls::retry;
+            }
+            else
+            {
                 mmu_fil_loaded = false; //so we can retry same T-code again
                 isPrintPaused = true;
                 mmu_command(MmuCmd::W0);
+                return;
             }
-		}
-	}
-	else { //mmu_ir_sensor_detected == false
-		mmu_command(MmuCmd::C0);
-	}
+            break;
+        }
+    }
 }

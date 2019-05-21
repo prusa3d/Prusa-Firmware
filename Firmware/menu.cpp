@@ -168,11 +168,19 @@ int menu_draw_item_printf_P(char type_char, const char* format, ...)
 }
 */
 
-static int menu_draw_item_puts_P(char type_char, const char* str)
+static void menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
-	int cnt = lcd_printf_P(PSTR("%c%-18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
-	return cnt;
+    lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
+}
+
+static void menu_draw_item_puts_P(char type_char, const char* str, char num)
+{
+    lcd_set_cursor(0, menu_row);
+    lcd_printf_P(PSTR("%c%-.16S "), (lcd_encoder == menu_item)?'>':' ', str);
+    lcd_putc(num);
+    lcd_set_cursor(19, menu_row);
+    lcd_putc(type_char);
 }
 
 /*
@@ -250,6 +258,34 @@ uint8_t menu_item_function_P(const char* str, menu_func_t func)
 	return 0;
 }
 
+//! @brief Menu item function taking single parameter
+//!
+//! Ideal for numbered lists calling functions with number parameter.
+//! @param str Item caption
+//! @param number aditional character to be added after str, e.g. number
+//! @param func pointer to function taking uint8_t with no return value
+//! @param fn_par value to be passed to function
+//! @retval 0
+//! @retval 1 Item was clicked
+uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t), uint8_t fn_par)
+{
+    if (menu_item == menu_line)
+    {
+        if (lcd_draw_update) menu_draw_item_puts_P(' ', str, number);
+        if (menu_clicked && (lcd_encoder == menu_item))
+        {
+            menu_clicked = false;
+            lcd_consume_click();
+            lcd_update_enabled = 0;
+            if (func) func(fn_par);
+            lcd_update_enabled = 1;
+            return menu_item_ret();
+        }
+    }
+    menu_item++;
+    return 0;
+}
+
 uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
 {
 	if (menu_item == menu_line)
@@ -270,9 +306,9 @@ const char menu_20x_space[] PROGMEM = "                    ";
 
 const char menu_fmt_int3[] PROGMEM = "%c%.15S:%s%3d";
 
-const char menu_fmt_float31[] PROGMEM = "%c%.12S:%s%+06.1f";
+const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
 
-const char menu_fmt_float13[] PROGMEM = "%c%.12S:%s%+06.3f";
+const char menu_fmt_float13[] PROGMEM = "%-15.15S%+5.3f";
 
 const char menu_fmt_float13off[] PROGMEM = "%c%.12S:%s%";
 
@@ -312,26 +348,34 @@ void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
     }
 }
 
-//draw up to 12 chars of text, ':' and float number in format +123.0
-void menu_draw_float31(char chr, const char* str, float val)
+//! @brief Draw up to 10 chars of text and a float number in format from +0.0 to +12345.0. The increased range is necessary
+//! for displaying large values of extruder positions, which caused text overflow in the previous implementation.
+//! 
+//! @param str string label to print
+//! @param val value to print aligned to the right side of the display  
+//! 
+//! Implementation comments:
+//! The text needs to come with a colon ":", this function does not append it anymore.
+//! That resulted in a much shorter implementation (234628B -> 234476B)
+//! There are similar functions around which may be shortened in a similar way
+void menu_draw_float31(const char* str, float val)
 {
-	int text_len = strlen_P(str);
-	if (text_len > 12) text_len = 12;
-	char spaces[21];
-	strcpy_P(spaces, menu_20x_space);
-	spaces[12 - text_len] = 0;
-	lcd_printf_P(menu_fmt_float31, chr, str, spaces, val);
+	lcd_printf_P(menu_fmt_float31, str, val);	
 }
 
-//draw up to 12 chars of text, ':' and float number in format +1.234
-void menu_draw_float13(char chr, const char* str, float val)
+//! @brief Draw up to 12 chars of text and a float number in format +1.234
+//! 
+//! @param str string label to print
+//! @param val value to print aligned to the right side of the display  
+//! 
+//! Implementation comments:
+//! This function uses similar optimization principles as menu_draw_float31
+//! (i.e. str must include a ':' at its end)
+//! FLASH usage dropped 234476B -> 234392B
+//! Moreover, this function gets inlined in the final code, so removing it doesn't really help ;)
+void menu_draw_float13(const char* str, float val)
 {
-	int text_len = strlen_P(str);
-	if (text_len > 12) text_len = 12;
-	char spaces[21];
-	strcpy_P(spaces, menu_20x_space);
-	spaces[12 - text_len] = 0;
-	lcd_printf_P(menu_fmt_float13, chr, str, spaces, val);
+	lcd_printf_P(menu_fmt_float13, str, val);
 }
 
 template <typename T>
