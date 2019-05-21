@@ -222,26 +222,6 @@
 "Eject filament"
 "Ejecter le fil."
 
-#MSG_EJECT_FILAMENT1 c=17 r=1
-"Eject filament 1"
-"Ejecter fil. 1"
-
-#MSG_EJECT_FILAMENT2 c=17 r=1
-"Eject filament 2"
-"Ejecter fil. 2"
-
-#MSG_EJECT_FILAMENT3 c=17 r=1
-"Eject filament 3"
-"Ejecter fil. 3"
-
-#MSG_EJECT_FILAMENT4 c=17 r=1
-"Eject filament 4"
-"Ejecter fil. 4"
-
-#MSG_EJECT_FILAMENT5 c=17 r=1
-"Eject filament 5"
-"Ejecter fil. 5"
-
 #
 "Eject"
 "Ejecter"
@@ -870,59 +850,59 @@
 "Print FAN"
 "Ventilo impression"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Prusa i3 MK2.5"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Prusa i3 MK3"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK2.5-320"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK2.5-220"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK3-320"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK3-220"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK2.5-420"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK3-420"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK3S-220"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK3S-320"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK3S-420"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK3-BMG-220"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK3-BMG-320"
 "\x00"
 
-#WELCOME_MSG c=20 r=0
+#WELCOME_MSG c=20
 "Zaribo MK3-BMG-420"
 "\x00"
 
@@ -1302,10 +1282,6 @@
 "Load all"
 "Tout charger"
 
-#MSG_LOAD_FILAMENT_1 c=17
-"Load filament 1"
-"Charger fil. 1"
-
 #
 "XYZ calibration failed. Bed calibration point was not found."
 "Echec calibration XYZ. Le point de calibration du plateau n'a pas ete trouve."
@@ -1314,17 +1290,9 @@
 "XYZ calibration failed. Front calibration points not reachable."
 "Echec calibration XYZ. Les points de calibration avant ne sont pas atteignables."
 
-#MSG_LOAD_FILAMENT_2 c=17
-"Load filament 2"
-"Charger fil. 2"
-
 #
 "XYZ calibration failed. Right front calibration point not reachable."
 "Echec calibration XYZ. Le point de calibration avant droit n'est pas atteignable."
-
-#MSG_LOAD_FILAMENT_3 c=17
-"Load filament 3"
-"Charger fil. 3"
 
 #
 "Y distance from min"
@@ -1333,14 +1301,6 @@
 #
 "Y-correct"
 "Correction-Y"
-
-#MSG_LOAD_FILAMENT_4 c=17
-"Load filament 4"
-"Charger fil. 4"
-
-#MSG_LOAD_FILAMENT_5 c=17
-"Load filament 5"
-"Charger fil. 5"
 
 #MSG_OFF
 " [off]"
