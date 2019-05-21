@@ -22,9 +22,9 @@
 ">Cancel"
 ">Annuleren"
 
-#MSG_BABYSTEPPING_Z c=20 r=0
-"Adjusting Z"
-"Z is ingesteld"
+#MSG_BABYSTEPPING_Z c=15
+"Adjusting Z:"
+"Z is ingesteld:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20 r=0
 "All correct      "
