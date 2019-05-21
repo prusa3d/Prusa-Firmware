@@ -400,14 +400,18 @@ void planner_recalculate(const float &safe_final_speed)
             }
             // Recalculate if current block entry or exit junction speed has changed.
             if ((prev->flag | current->flag) & BLOCK_FLAG_RECALCULATE) {
-                // NOTE: Entry and exit factors always > 0 by all previous logic operations.
-                calculate_trapezoid_for_block(prev, prev->entry_speed, current->entry_speed);
-                #ifdef LIN_ADVANCE
-                if (prev->use_advance_lead) {
-                  const float comp = prev->e_D_ratio * extruder_advance_K * cs.axis_steps_per_unit[E_AXIS];
-                  prev->final_adv_steps = current->entry_speed * comp;
+                // @wavexx: FIXME: the following check is not really enough. calculate_trapezoid does block
+                //          the isr to update the rates, but we don't. we should update atomically
+                if (!prev->busy) {
+                    // NOTE: Entry and exit factors always > 0 by all previous logic operations.
+                    calculate_trapezoid_for_block(prev, prev->entry_speed, current->entry_speed);
+                    #ifdef LIN_ADVANCE
+                    if (prev->use_advance_lead) {
+                        const float comp = prev->e_D_ratio * extruder_advance_K * cs.axis_steps_per_unit[E_AXIS];
+                        prev->final_adv_steps = current->entry_speed * comp;
+                    }
+                    #endif
                 }
-                #endif
                 // Reset current only to ensure next trapezoid is computed.
                 prev->flag &= ~BLOCK_FLAG_RECALCULATE;
             }
