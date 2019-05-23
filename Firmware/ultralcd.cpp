@@ -252,6 +252,7 @@ static void lcd_send_status();
 static void lcd_connect_printer();
 #endif //FARM_CONNECT_MESSAGE
 
+//! Beware: has side effects - forces lcd_draw_update to 2, which means clear the display
 void lcd_finishstatus();
 
 static void lcd_sdcard_menu();
@@ -1018,7 +1019,10 @@ static void lcd_status_screen()
 		}
 	}
 
-	if (current_click && (lcd_commands_type != LCD_COMMAND_STOP_PRINT)) //click is aborted unless stop print finishes
+	if (current_click
+		&& (lcd_commands_type != LCD_COMMAND_STOP_PRINT) //click is aborted unless stop print finishes
+		&& ( menu_block_entering_on_serious_errors == SERIOUS_ERR_NONE ) // or a serious error blocks entering the menu
+	)
 	{
 		menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
 		menu_submenu(lcd_main_menu);
@@ -8276,13 +8280,19 @@ void lcd_setstatus(const char* message)
   strncpy(lcd_status_message, message, LCD_WIDTH);
   lcd_finishstatus();
 }
+void lcd_updatestatuspgm(const char *message){
+	strncpy_P(lcd_status_message, message, LCD_WIDTH);
+	lcd_status_message[LCD_WIDTH] = 0;
+	lcd_finishstatus();
+	// hack lcd_draw_update to 1, i.e. without clear
+	lcd_draw_update = 1;
+}
+
 void lcd_setstatuspgm(const char* message)
 {
   if (lcd_status_message_level > 0)
     return;
-  strncpy_P(lcd_status_message, message, LCD_WIDTH);
-  lcd_status_message[LCD_WIDTH] = 0;
-  lcd_finishstatus();
+  lcd_updatestatuspgm(message);
 }
 void lcd_setalertstatuspgm(const char* message)
 {
