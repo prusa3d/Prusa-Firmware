@@ -867,6 +867,7 @@ void show_fw_version_warnings() {
 //! @brief try to check if firmware is on right type of printer
 static void check_if_fw_is_on_right_printer(){
 #ifdef FILAMENT_SENSOR
+  if((PRINTER_TYPE == PRINTER_MK3) || (PRINTER_TYPE == PRINTER_MK3S)){
     #ifdef IR_SENSOR
     swi2c_init();
     const uint8_t pat9125_detected = swi2c_readByte_A8(PAT9125_I2C_ADDR,0x00,NULL);
@@ -880,6 +881,7 @@ static void check_if_fw_is_on_right_printer(){
       if (ir_detected){
         lcd_show_fullscreen_message_and_wait_P(_i("MK3 firmware detected on MK3S printer"));}
     #endif //PAT9125
+  }
 #endif //FILAMENT_SENSOR
 }
 
