@@ -214,9 +214,9 @@
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 "Chcete opakovat posledni krok a pozmenit vzdalenost mezi tryskou a podlozkou?"
 
-#MSG_EXTRUDER_CORRECTION c=9
-"E-correct"
-"Korekce E"
+#MSG_EXTRUDER_CORRECTION c=10
+"E-correct:"
+"Korekce E:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
@@ -1199,8 +1199,8 @@
 "Kalibrace XYZ v poradku. X/Y osy mirne zkosene. Dobra prace!"
 
 #
-"X-correct"
-"Korekce X"
+"X-correct:"
+"Korekce X:"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
@@ -1235,8 +1235,8 @@
 "Y vzdalenost od min"
 
 #
-"Y-correct"
-"Korekce Y"
+"Y-correct:"
+"Korekce Y:"
 
 #MSG_OFF
 " [off]"

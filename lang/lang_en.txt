@@ -160,8 +160,8 @@
 #MSG_WIZARD_REPEAT_V2_CAL c=20 r=7
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 
-#MSG_EXTRUDER_CORRECTION c=9
-"E-correct"
+#MSG_EXTRUDER_CORRECTION c=10
+"E-correct:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
@@ -899,7 +899,7 @@
 "XYZ calibration all right. X/Y axes are slightly skewed. Good job!"
 
 #
-"X-correct"
+"X-correct:"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
@@ -926,7 +926,7 @@
 "Y distance from min"
 
 #
-"Y-correct"
+"Y-correct:"
 
 #MSG_OFF
 " [off]"
