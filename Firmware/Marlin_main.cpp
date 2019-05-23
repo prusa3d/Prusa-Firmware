@@ -156,7 +156,6 @@
 //=============================imported variables============================
 //===========================================================================
 
-
 //===========================================================================
 //=============================public variables=============================
 //===========================================================================
@@ -3389,6 +3388,14 @@ extern uint8_t st_backlash_y;
 //!@n M999 - Restart after being stopped by error
 void process_commands()
 {
+  #ifdef FANCHECK
+  if (fan_check_error){
+    fan_check_error = false;
+    lcd_pause_print();
+    return;
+  }
+  #endif
+
 	if (!buflen) return; //empty command
   #ifdef FILAMENT_RUNOUT_SUPPORT
     SET_INPUT(FR_SENS);

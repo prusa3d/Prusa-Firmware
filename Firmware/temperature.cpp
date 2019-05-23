@@ -94,6 +94,9 @@ float current_temperature_bed = 0.0;
   unsigned char fanSpeedSoftPwm;
 #endif
 
+#ifdef FANCHECK
+  volatile bool fan_check_error = false;
+#endif
 
 unsigned char soft_pwm_bed;
 
@@ -527,7 +530,7 @@ void fanSpeedError(unsigned char _fan) {
 			lcd_print_stop();
 		}
 		else {
-			lcd_pause_print();
+			fan_check_error = true;
 		}
 	}
 	else {
