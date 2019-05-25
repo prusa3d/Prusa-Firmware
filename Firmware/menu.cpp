@@ -96,7 +96,7 @@ void menu_back(void)
 menu_back(1);
 }
 
-static void menu_back_no_reset(void)
+void menu_back_no_reset(void)
 {
 	if (menu_depth > 0)
 	{
@@ -130,7 +130,7 @@ void menu_submenu(menu_func_t submenu)
 	}
 }
 
-static void menu_submenu_no_reset(menu_func_t submenu)
+void menu_submenu_no_reset(menu_func_t submenu)
 {
 	if (menu_depth < MENU_DEPTH_MAX)
 	{
