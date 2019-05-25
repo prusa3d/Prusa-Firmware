@@ -734,7 +734,14 @@ FORCE_INLINE void advance_spread(uint16_t timer)
     else
         eISR_Err -= timer - block;
 
-    eISR_Rate = timer / ticks;
+    if (ticks == 1)
+        eISR_Rate = timer;
+    else if (ticks == 2)
+        eISR_Rate = timer / 2;
+    else if (ticks == 4)
+        eISR_Rate = timer / 4;
+    else
+        eISR_Rate = timer / ticks;
     nextAdvanceISR = eISR_Rate / 2;
 }
 #endif
@@ -822,9 +829,8 @@ FORCE_INLINE void isr() {
         }
         _NEXT_ISR(OCR1A_nominal);
 #ifdef LIN_ADVANCE
-        if (current_block->use_advance_lead && nextAdvanceISR != ADV_NEVER) {
+        if (current_block->use_advance_lead && nextAdvanceISR != ADV_NEVER)
             advance_spread(OCR1A_nominal);
-        }
 #endif
       }
       //WRITE_NC(LOGIC_ANALYZER_CH1, false);
