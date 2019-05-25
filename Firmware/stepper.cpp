@@ -830,6 +830,12 @@ FORCE_INLINE void isr() {
       //WRITE_NC(LOGIC_ANALYZER_CH1, false);
     }
 
+#ifdef LIN_ADVANCE
+    // Check for serial chars. This executes roughtly between 50-60% of the total length of the isr,
+    // making this spot a much better choice than checking during esteps
+    MSerial.checkRx();
+#endif
+
     // If current block is finished, reset pointer
     if (step_events_completed.wide >= current_block->step_event_count.wide) {
 #ifdef FILAMENT_SENSOR
