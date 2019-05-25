@@ -941,7 +941,7 @@ FORCE_INLINE void advance_isr_scheduler() {
 #ifdef FILAMENT_SENSOR
         fsensor_counter += (e_steps < 0? -max_ticks: max_ticks);
 #endif
-        WRITE(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
+        WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
         do
         {
             WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
