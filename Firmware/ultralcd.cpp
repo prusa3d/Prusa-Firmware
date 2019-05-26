@@ -6607,7 +6607,7 @@ static void lcd_colorprint_change() {
 }
 
 
-#ifdef LIN_ADVANCE
+#ifdef LA_LIVE_K
 // @wavexx: looks like there's no generic float editing function in menu.cpp so we
 //          redefine our custom handling functions to mimick other tunables
 #define MSG_ADVANCE_K PSTR("Advance K:")
@@ -6698,7 +6698,7 @@ static void lcd_tune_menu()
 
 	MENU_ITEM_EDIT_int3_P(_T(MSG_FAN_SPEED), &fanSpeed, 0, 255);//5
 	MENU_ITEM_EDIT_int3_P(_i("Flow"), &extrudemultiply, 10, 999);//6////MSG_FLOW
-#ifdef LIN_ADVANCE
+#ifdef LA_LIVE_K
 	MENU_ITEM_EDIT_advance_K();//7
 #endif
 #ifdef FILAMENTCHANGEENABLE
