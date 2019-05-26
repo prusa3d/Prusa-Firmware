@@ -6380,22 +6380,25 @@ static void change_extr_menu(){
 #endif //SNMM
 
 //unload filament for single material printer (used in M702 gcode)
-void unload_filament()
+void unload_filament(bool runout)
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
-    raise_z_above(MIN_Z_FOR_UNLOAD);
+    if (!runout)
+    {
+        raise_z_above(MIN_Z_FOR_UNLOAD);
 
-    // extrude slowly
-    current_position[E_AXIS] += FILAMENTCHANGE_UNLOADFEED;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
-    st_synchronize();
+        // extrude slowly
+        current_position[E_AXIS] += FILAMENTCHANGE_UNLOADFEED;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
+        st_synchronize();
 
-    // relieve leftover pressure
-    current_position[E_AXIS] += 0.1;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME / 2);
-    st_synchronize();
+        // relieve leftover pressure
+        current_position[E_AXIS] += 0.1;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME / 2);
+        st_synchronize();
+    }
 
     // retract & eject
     current_position[E_AXIS] += FILAMENTCHANGE_FIRSTRETRACT;
