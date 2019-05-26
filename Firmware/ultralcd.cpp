@@ -6612,6 +6612,18 @@ static void lcd_colorprint_change() {
 //          redefine our custom handling functions to mimick other tunables
 #define MSG_ADVANCE_K PSTR("Advance K:")
 
+#if FW_COMMIT_NR <= 2266
+// TODO: this is a stub to be removed for FW >3.7.1
+const static char menu_fmt_float13_k[] PROGMEM = "%c%-13.13S%+5.3f";
+const static char menu_fmt_float13off_k[] PROGMEM = "%c%-13.13S%6.6s";
+static void lcd_advance_draw_K(char chr, float val)
+{
+    if (val <= 0)
+        lcd_printf_P(menu_fmt_float13off_k, chr, MSG_ADVANCE_K, " [off]");
+    else
+        lcd_printf_P(menu_fmt_float13_k, chr, MSG_ADVANCE_K, val);
+}
+#else
 static void lcd_advance_draw_K(char chr, float val)
 {
     if (val <= 0)
@@ -6619,6 +6631,7 @@ static void lcd_advance_draw_K(char chr, float val)
     else
         lcd_printf_P(menu_fmt_float13, chr, MSG_ADVANCE_K, val);
 }
+#endif
 
 static void lcd_advance_edit_K(void)
 {
