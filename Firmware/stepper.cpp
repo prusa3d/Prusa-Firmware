@@ -779,7 +779,7 @@ FORCE_INLINE void isr() {
     uint8_t la_state = 0;
 #endif
 
-    // Calculare new timer value
+    // Calculate new timer value
     // 13.38-14.63us for steady state,
     // 25.12us for acceleration / deceleration.
     {
@@ -850,8 +850,8 @@ FORCE_INLINE void isr() {
         }
     }
 
-    // Check for serial chars. This executes roughtly between 50-60% of the total length of the isr,
-    // making this spot a much better choice than checking during esteps
+    // Check for serial chars. This executes roughtly inbetween 50-60% of the total runtime of the
+    // entire isr, making this spot a much better choice than checking during esteps
     MSerial.checkRx();
 #endif
 

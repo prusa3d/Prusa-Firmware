@@ -281,7 +281,7 @@
  * Assumption: advance [steps] = k * (delta velocity [steps/s])
  * K=0 means advance disabled.
  *
- * NOTE: K values for LIN_ADVANCE 1.5 differ from earlier versions!
+ * NOTE: K values for LIN_ADVANCE 1.5 differs from earlier versions!
  *
  * Set K around 0.22 for 3mm PLA Direct Drive with ~6.5cm between the drive gear and heatbreak.
  * Larger K values will be needed for flexible filament and greater distances.
