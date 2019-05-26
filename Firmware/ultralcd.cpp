@@ -4966,7 +4966,7 @@ void lcd_wizard(WizState state)
 				lcd_display_message_fullscreen_P(_i("Now I will preheat nozzle for PLA."));
 				wait_preheat();
 				//unload current filament
-				unload_filament(true);
+				unload_filament();
 				//load filament
 				lcd_wizard_load();
 				setTargetHotend(0, 0); //we are finished, cooldown nozzle
@@ -6282,23 +6282,24 @@ static void change_extr_menu(){
 #endif //SNMM
 
 // unload filament for single material printer (used in M702 gcode)
-// @param automatic: If true, unload_filament is part of a unload+load sequence (M600)
-void unload_filament(bool automatic)
+void unload_filament(UnloadType unload)
 {
 	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
-    raise_z_above(automatic? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
+    raise_z_above(unload == UnloadType::Swap? MIN_Z_FOR_SWAP: MIN_Z_FOR_UNLOAD);
+    if (unload != UnloadType::Runout)
+    {
+        // extrude slowly
+        current_position[E_AXIS] += FILAMENTCHANGE_UNLOADFEED;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
+        st_synchronize();
 
-    // extrude slowly
-    current_position[E_AXIS] += FILAMENTCHANGE_UNLOADFEED;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME);
-    st_synchronize();
-
-    // relieve leftover pressure
-    current_position[E_AXIS] += 0.1;
-    plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME / 2);
-    st_synchronize();
+        // relieve leftover pressure
+        current_position[E_AXIS] += 0.1;
+        plan_buffer_line_curposXYZE(FILAMENTCHANGE_EFEED_PRIME / 2);
+        st_synchronize();
+    }
 
     // retract & eject
     current_position[E_AXIS] += FILAMENTCHANGE_FIRSTRETRACT;

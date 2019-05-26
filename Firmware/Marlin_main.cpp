@@ -3735,7 +3735,7 @@ static T gcode_M600_filament_change_z_shift()
 #endif
 }	
 
-static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
+static void gcode_M600(bool automatic, bool runout, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
 {
     st_synchronize();
     float lastpos[4];
@@ -3777,8 +3777,17 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
     lcd_change_fil_state = 0;
 
     // Unload filament
-    if (mmu_enabled) extr_unload();	//unload just current filament for multimaterial printers (used also in M702)
-    else unload_filament(true); //unload filament for single material (used also in M702)
+    if (mmu_enabled)
+    {
+        // unload just current filament for multimaterial printers (used also in M702)
+        extr_unload();
+    }
+    else
+    {
+        // unload filament for single material (used also in M702)
+        unload_filament(runout? UnloadType::Runout: UnloadType::Swap);
+    }
+
     //finish moves
     st_synchronize();
 
@@ -8184,7 +8193,8 @@ Sigma_Exit:
 		float e_shift_init = 0;
 		float e_shift_late = 0;
 		bool automatic = false;
-		
+		bool runout = false;
+
         //Retract extruder
         if(code_seen('E'))
         {
@@ -8242,8 +8252,13 @@ Sigma_Exit:
 
 		if (mmu_enabled && code_seen_P(PSTR("AUTO")))
 			automatic = true;
+        if (code_seen('R'))
+        {
+            // Code 'R' is supported internally to indicate filament change due to a runout condition
+            runout = true;
+        }
 
-		gcode_M600(automatic, x_position, y_position, z_shift, e_shift_init, e_shift_late);
+		gcode_M600(automatic, runout, x_position, y_position, z_shift, e_shift_init, e_shift_late);
 	
 	}
     break;
