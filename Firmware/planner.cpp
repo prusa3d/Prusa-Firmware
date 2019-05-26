@@ -1093,10 +1093,14 @@ Having the real displacement of the head, we can calculate the total movement le
       float advance_speed = (extruder_advance_K * block->e_D_ratio * block->acceleration * cs.axis_steps_per_unit[E_AXIS]);
       if (advance_speed > MAX_STEP_FREQUENCY) advance_speed = MAX_STEP_FREQUENCY;
       block->advance_rate = (F_CPU / 8.0) / advance_speed;
-      if (block->advance_rate > 20000)
+      if (block->advance_rate > 20000) {
+          block->advance_rate = (block->advance_rate >> 2)&0x3fff;
           block->advance_step_loops = 4;
-      else if (block->advance_rate > 10000)
+      }
+      else if (block->advance_rate > 10000) {
+          block->advance_rate = (block->advance_rate >> 1)&0x7fff;
           block->advance_step_loops = 2;
+      }
       else
           block->advance_step_loops = 1;
 
