@@ -116,7 +116,10 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
   void advance_isr_scheduler();
   void advance_isr();
 
-  static const uint16_t ADV_NEVER = 0xFFFF;
+  static const uint16_t ADV_NEVER      = 0xFFFF;
+  static const uint8_t  ADV_INIT       = 0b01;
+  static const uint8_t  ADV_DECELERATE = 0b10;
+
   static bool use_advance_lead;
 
   static uint16_t nextMainISR;
@@ -771,6 +774,11 @@ FORCE_INLINE void isr() {
     else
       stepper_tick_highres();
 
+
+#ifdef LIN_ADVANCE
+    uint8_t la_state = 0;
+#endif
+
     // Calculare new timer value
     // 13.38-14.63us for steady state,
     // 25.12us for acceleration / deceleration.
@@ -789,10 +797,8 @@ FORCE_INLINE void isr() {
         acceleration_time += timer;
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-            bool first = (step_events_completed.wide <= (unsigned long int)step_loops);
-            if (first) eISR_Err = current_block->advance_rate / 2;
-            if (first || nextAdvanceISR != ADV_NEVER)
-                advance_spread(timer);
+            if (step_events_completed.wide <= (unsigned long int)step_loops)
+                la_state = ADV_INIT;
         }
 #endif
       }
@@ -810,20 +816,8 @@ FORCE_INLINE void isr() {
         deceleration_time += timer;
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
-            bool first = (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops);
-            if (first) eISR_Err = current_block->advance_rate / 2;
-            if (first || nextAdvanceISR != ADV_NEVER)
-            {
-                advance_spread(timer);
-                if (step_loops == e_step_loops)
-                    LA_phase = (eISR_Rate > main_Rate);
-                else
-                {
-                    // avoid overflow through division. warning: we need to _guarantee_ step_loops
-                    // and e_step_loops are <= 4 due to fastdiv's limit
-                    LA_phase = (fastdiv(eISR_Rate, step_loops) > fastdiv(main_Rate, e_step_loops));
-                }
-            }
+            if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops)
+                la_state = ADV_INIT | ADV_DECELERATE;
         }
 #endif
       }
@@ -835,15 +829,26 @@ FORCE_INLINE void isr() {
           step_loops_nominal = step_loops;
         }
         _NEXT_ISR(OCR1A_nominal);
-#ifdef LIN_ADVANCE
-        if (current_block->use_advance_lead && nextAdvanceISR != ADV_NEVER)
-            advance_spread(OCR1A_nominal);
-#endif
       }
       //WRITE_NC(LOGIC_ANALYZER_CH1, false);
     }
 
 #ifdef LIN_ADVANCE
+    // avoid multiple instances or function calls to advance_spread
+    if (la_state & ADV_INIT) eISR_Rate = current_block->advance_rate;
+    if (la_state & ADV_INIT || nextAdvanceISR != ADV_NEVER) {
+        advance_spread(main_Rate);
+        if (la_state & ADV_DECELERATE) {
+            if (step_loops == e_step_loops)
+                LA_phase = (eISR_Rate > main_Rate);
+            else {
+                // avoid overflow through division. warning: we need to _guarantee_ step_loops
+                // and e_step_loops are <= 4 due to fastdiv's limit
+                LA_phase = (fastdiv(eISR_Rate, step_loops) > fastdiv(main_Rate, e_step_loops));
+            }
+        }
+    }
+
     // Check for serial chars. This executes roughtly between 50-60% of the total length of the isr,
     // making this spot a much better choice than checking during esteps
     MSerial.checkRx();
