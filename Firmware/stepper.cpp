@@ -939,7 +939,7 @@ FORCE_INLINE void advance_isr_scheduler() {
         uint8_t max_ticks = (eisr? e_step_loops: step_loops);
         max_ticks = min(abs(e_steps), max_ticks);
 #ifdef FILAMENT_SENSOR
-        fsensor_counter += (e_steps < 0? -max_ticks: max_ticks);
+        fsensor_counter += max_ticks;
 #endif
         WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
         do
