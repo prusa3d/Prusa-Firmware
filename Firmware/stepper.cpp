@@ -816,8 +816,9 @@ FORCE_INLINE void isr() {
         deceleration_time += timer;
 #ifdef LIN_ADVANCE
         if (current_block->use_advance_lead) {
+            la_state = ADV_DECELERATE;
             if (step_events_completed.wide <= (unsigned long int)current_block->decelerate_after + step_loops)
-                la_state = ADV_INIT | ADV_DECELERATE;
+                la_state |= ADV_INIT;
         }
 #endif
       }
