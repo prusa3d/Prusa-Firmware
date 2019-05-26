@@ -951,14 +951,18 @@ FORCE_INLINE void advance_isr_scheduler() {
     if (e_steps && (LA_phase < 0 || LA_phase == eisr)) {
         uint8_t max_ticks = (eisr? e_step_loops: step_loops);
         max_ticks = min(abs(e_steps), max_ticks);
+        bool rev = (e_steps < 0);
 #ifdef FILAMENT_SENSOR
-        fsensor_counter += max_ticks;
+        if (count_direction[E_AXIS] == 1)
+            fsensor_counter += (rev? -max_ticks: max_ticks);
+        else
+            fsensor_counter -= (rev? -max_ticks: max_ticks);
 #endif
-        WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
+        WRITE_NC(E0_DIR_PIN, rev? INVERT_E0_DIR: !INVERT_E0_DIR);
         do
         {
             WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
-            e_steps += (e_steps < 0)? 1: -1;
+            e_steps += (rev? 1: -1);
             WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
         }
         while(--max_ticks);
