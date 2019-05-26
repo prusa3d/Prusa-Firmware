@@ -1088,8 +1088,17 @@ Having the real displacement of the head, we can calculate the total movement le
 
   #ifdef LIN_ADVANCE
   if (block->use_advance_lead) {
+      // to save more space we avoid another copy of calc_timer and go through slow division, but we
+      // still need to replicate the *exact* same step grouping policy (see below)
       float advance_speed = (extruder_advance_K * block->e_D_ratio * block->acceleration * cs.axis_steps_per_unit[E_AXIS]);
-      block->advance_rate = calc_timer(advance_speed, block->advance_step_loops);
+      if (advance_speed > MAX_STEP_FREQUENCY) advance_speed = MAX_STEP_FREQUENCY;
+      block->advance_rate = (F_CPU / 8.0) / advance_speed;
+      if (block->advance_rate > 20000)
+          block->advance_step_loops = 4;
+      else if (block->advance_rate > 10000)
+          block->advance_step_loops = 2;
+      else
+          block->advance_step_loops = 1;
 
       #ifdef LA_DEBUG
       if (block->advance_step_loops > 2)
