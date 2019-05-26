@@ -709,6 +709,14 @@ FORCE_INLINE void stepper_tick_highres()
 
 
 #ifdef LIN_ADVANCE
+// @wavexx: fast uint16_t division for small dividends<5
+//          q/3 based on "Hacker's delight" formula
+FORCE_INLINE uint16_t fastdiv(uint16_t q, uint8_t d)
+{
+    if(d != 3) return q >> (d / 2);
+    else return ((uint32_t)0xAAAB * q) >> 17;
+}
+
 FORCE_INLINE void advance_spread(uint16_t timer)
 {
     if(eISR_Err > timer)
@@ -734,14 +742,14 @@ FORCE_INLINE void advance_spread(uint16_t timer)
     else
         eISR_Err -= timer - block;
 
-    if (ticks == 1)
-        eISR_Rate = timer;
-    else if (ticks == 2)
-        eISR_Rate = timer / 2;
-    else if (ticks == 4)
-        eISR_Rate = timer / 4;
+    if (ticks <= 4)
+        eISR_Rate = fastdiv(timer, ticks);
     else
+    {
+        // >4 ticks are still possible on slow moves
         eISR_Rate = timer / ticks;
+    }
+
     nextAdvanceISR = eISR_Rate / 2;
 }
 #endif
@@ -811,10 +819,9 @@ FORCE_INLINE void isr() {
                     LA_phase = (eISR_Rate > main_Rate);
                 else
                 {
-                    // avoid overflow through division (TODO: this can be
-                    // improved as both step_loops and e_step_loops are
-                    // currently guaranteed to be powers of two)
-                    LA_phase = (eISR_Rate / step_loops > main_Rate / e_step_loops);
+                    // avoid overflow through division. warning: we need to _guarantee_ step_loops
+                    // and e_step_loops are <= 4 due to fastdiv's limit
+                    LA_phase = (fastdiv(eISR_Rate, step_loops) > fastdiv(main_Rate, e_step_loops));
                 }
             }
         }
