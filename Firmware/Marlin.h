@@ -469,7 +469,7 @@ extern uint8_t calc_percent_done();
 #define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
 extern void host_keepalive();
 //extern MarlinBusyState busy_state;
-extern int busy_state;
+extern int8_t busy_state;
 
 
 #ifdef TMC2130
@@ -497,3 +497,4 @@ void M600_load_filament_movements();
 void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
+void marlin_wait_for_click();
