@@ -3554,6 +3554,10 @@ void process_commands()
                enquecommand_P(PSTR("M24")); 
 		}	
 #ifdef FILAMENT_SENSOR
+		else if (code_seen("fsensor_recover_IR")) //! PRUSA fsensor_recover_IR
+		{
+			fsensor_restore_print_and_continue_IR();
+		}
 		else if (code_seen("fsensor_recover")) //! PRUSA fsensor_recover
 		{
                fsensor_restore_print_and_continue();
