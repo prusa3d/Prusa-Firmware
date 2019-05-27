@@ -99,7 +99,8 @@
 
 //#define KILL_PIN            32
 
-//#define LCD_BL_PIN          5   //backlight control pin
+// LCD backlight pin may interfere with something, this is yet to be found out correctly
+#define LCD_BL_PIN          5   //backlight control pin
 #define BEEPER              84  // Beeper on AUX-4
 #define LCD_PINS_RS         82
 #define LCD_PINS_ENABLE     61 // !!! changed from 18 (EINY03)
