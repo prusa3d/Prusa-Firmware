@@ -2045,11 +2045,11 @@ void check_max_temp()
 struct alert_automaton_mintemp {
 private:
 	enum { ALERT_AUTOMATON_SPEED_DIV = 5 };
-	enum class STATES : uint8_t { INIT = 0, TEMP_ABOVE_MINTEMP, SHOW_PLEASE_RESTART, SHOW_MINTEMP };
-	STATES state = STATES::INIT;
+	enum class States : uint8_t { INIT = 0, TEMP_ABOVE_MINTEMP, SHOW_PLEASE_RESTART, SHOW_MINTEMP };
+	States state = States::INIT;
 	uint8_t repeat = ALERT_AUTOMATON_SPEED_DIV;
 
-	void substep(STATES next_state){
+	void substep(States next_state){
 		if( repeat == 0 ){
 			state = next_state; // advance to the next state
 			repeat = ALERT_AUTOMATON_SPEED_DIV; // and prepare repeating for it too
@@ -2065,26 +2065,26 @@ public:
 		static const char m2[] PROGMEM = "MINTEMP fixed";
 		static const char m1[] PROGMEM = "Please restart";
 		switch(state){
-		case STATES::INIT: // initial state - check hysteresis
+		case States::INIT: // initial state - check hysteresis
 			if( current_temp > mintemp ){
-				state = STATES::TEMP_ABOVE_MINTEMP;
+				state = States::TEMP_ABOVE_MINTEMP;
 			}
 			// otherwise keep the Err MINTEMP alert message on the display,
 			// i.e. do not transfer to state 1
 			break;
-		case STATES::TEMP_ABOVE_MINTEMP: // the temperature has risen above the hysteresis check
+		case States::TEMP_ABOVE_MINTEMP: // the temperature has risen above the hysteresis check
 			lcd_setalertstatuspgm(m2);
-			substep(STATES::SHOW_MINTEMP);
+			substep(States::SHOW_MINTEMP);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
-		case STATES::SHOW_PLEASE_RESTART: // displaying "Please restart"
+		case States::SHOW_PLEASE_RESTART: // displaying "Please restart"
 			lcd_updatestatuspgm(m1);
-			substep(STATES::SHOW_MINTEMP);
+			substep(States::SHOW_MINTEMP);
 			last_alert_sent_to_lcd = LCDALERT_PLEASERESTART;
 			break;
-		case STATES::SHOW_MINTEMP: // displaying "MINTEMP fixed"
+		case States::SHOW_MINTEMP: // displaying "MINTEMP fixed"
 			lcd_updatestatuspgm(m2);
-			substep(STATES::SHOW_PLEASE_RESTART);
+			substep(States::SHOW_PLEASE_RESTART);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
 		}
