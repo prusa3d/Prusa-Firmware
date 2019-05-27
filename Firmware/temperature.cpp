@@ -2043,10 +2043,13 @@ void check_max_temp()
 //! number of repeating the same state with consecutive step() calls
 //! used to slow down text switching
 struct alert_automaton_mintemp {
+private:
 	enum { ALERT_AUTOMATON_SPEED_DIV = 5 };
-	uint8_t state, repeat = ALERT_AUTOMATON_SPEED_DIV;
+	enum class STATES : uint8_t { INIT = 0, TEMP_ABOVE_MINTEMP, SHOW_PLEASE_RESTART, SHOW_MINTEMP };
+	STATES state = STATES::INIT;
+	uint8_t repeat = ALERT_AUTOMATON_SPEED_DIV;
 
-	void substep(uint8_t next_state){
+	void substep(STATES next_state){
 		if( repeat == 0 ){
 			state = next_state; // advance to the next state
 			repeat = ALERT_AUTOMATON_SPEED_DIV; // and prepare repeating for it too
@@ -2054,38 +2057,41 @@ struct alert_automaton_mintemp {
 			--repeat;
 		}
 	}
-
+public:
+	//! brief state automaton step routine
+	//! @param current_temp current hotend/bed temperature (for computing simple hysteresis)
+	//! @param mintemp minimal temperature including hysteresis to check current_temp against
 	void step(float current_temp, float mintemp){
 		static const char m2[] PROGMEM = "MINTEMP fixed";
 		static const char m1[] PROGMEM = "Please restart";
 		switch(state){
-		case 0: // initial state - check hysteresis
+		case STATES::INIT: // initial state - check hysteresis
 			if( current_temp > mintemp ){
-				state = 1;
+				state = STATES::TEMP_ABOVE_MINTEMP;
 			}
 			// otherwise keep the Err MINTEMP alert message on the display,
 			// i.e. do not transfer to state 1
 			break;
-		case 1: // the temperature has risen above the hysteresis check
+		case STATES::TEMP_ABOVE_MINTEMP: // the temperature has risen above the hysteresis check
 			lcd_setalertstatuspgm(m2);
-			substep(3);
+			substep(STATES::SHOW_MINTEMP);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
-		case 2: // displaying "Please restart"
+		case STATES::SHOW_PLEASE_RESTART: // displaying "Please restart"
 			lcd_updatestatuspgm(m1);
-			substep(3);
+			substep(STATES::SHOW_MINTEMP);
 			last_alert_sent_to_lcd = LCDALERT_PLEASERESTART;
 			break;
-		case 3: // displaying "MINTEMP fixed"
+		case STATES::SHOW_MINTEMP: // displaying "MINTEMP fixed"
 			lcd_updatestatuspgm(m2);
-			substep(2);
+			substep(STATES::SHOW_PLEASE_RESTART);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
 		}
 	}
 };
 
-static alert_automaton_mintemp aam[2];
+static alert_automaton_mintemp alert_automaton_hotend, alert_automaton_bed;
 
 void check_min_temp_heater0()
 {
@@ -2102,9 +2108,10 @@ void check_min_temp_heater0()
 		// which is a safer variant than just continuing printing
 		// The automaton also checks for hysteresis - the temperature must have reached a few degrees above the MINTEMP, before
 		// we shall signalize, that MINTEMP has been fixed
-		// Code notice: normally the aam instance would have been placed here as static alert_automaton_mintemp aam, but
+		// Code notice: normally the alert_automaton instance would have been placed here 
+		// as static alert_automaton_mintemp alert_automaton_hotend, but
 		// due to stupid compiler that takes 16 more bytes.
-		aam[0].step(current_temperature[0], minttemp[0] + TEMP_HYSTERESIS);
+		alert_automaton_hotend.step(current_temperature[0], minttemp[0] + TEMP_HYSTERESIS);
 	}
 }
 
@@ -2120,7 +2127,7 @@ void check_min_temp_bed()
 	} else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_BED) ){
 		// no recovery, just force the user to restart the printer
 		// which is a safer variant than just continuing printing
-		aam[1].step(current_temperature_bed, BED_MINTEMP + TEMP_HYSTERESIS);
+		alert_automaton_bed.step(current_temperature_bed, BED_MINTEMP + TEMP_HYSTERESIS);
 	}
 }
 
