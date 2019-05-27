@@ -8927,7 +8927,6 @@ void recover_print(uint8_t automatic) {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
-  printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
      bool bTiny=(eeprom_read_byte((uint8_t*)EEPROM_UVLO)==2);
      recover_machine_state_after_power_panic(bTiny); //recover position, temperatures and extrude_multipliers
   // Lift the print head, so one may remove the excess priming material.
