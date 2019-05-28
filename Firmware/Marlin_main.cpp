@@ -9571,7 +9571,7 @@ void M600_load_filament_movements()
 	st_synchronize();
 }
 
-void M600_load_filament() { //TODO: -----
+void M600_load_filament() {
 	//load filament for single material and SNMM 
 	lcd_wait_interact();
 
