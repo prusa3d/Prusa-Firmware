@@ -1008,6 +1008,10 @@ void setup()
 {
 	mmu_init();
 	
+  #ifdef UVLO_SUPPORT
+    setup_uvlo_interrupt();
+  #endif //UVLO_SUPPORT
+
 	ultralcd_init();
 
 #if (LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
@@ -1295,10 +1299,6 @@ void setup()
 #endif //TMC2130_VARIABLE_RESOLUTION
 
 #endif //TMC2130
-
- #ifdef UVLO_SUPPORT
-    setup_uvlo_interrupt();
-  #endif //UVLO_SUPPORT
 
 	st_init();    // Initialize stepper, this enables interrupts!
   
@@ -8686,7 +8686,6 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");
 }
-
 extern uint32_t sdpos_atomic;
 #ifdef UVLO_SUPPORT
 
@@ -8850,9 +8849,11 @@ disable_z();
 
 // Finaly store the "power outage" flag.
 //if(sd_print)
-     eeprom_update_byte((uint8_t*)EEPROM_UVLO,2);
-
-eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS),z_microsteps);
+if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)==1){
+  eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), current_position[Z_AXIS]);
+  eeprom_update_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS),z_microsteps);
+}
+eeprom_update_byte((uint8_t*)EEPROM_UVLO,2);
 
 // Increment power failure counter
 eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
@@ -8923,10 +8924,11 @@ ISR(INT4_vect) {
      if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)) uvlo_tiny();
 }
 
-void recover_print(uint8_t automatic) { 
+void recover_print(uint8_t automatic) {
 	char cmd[30];
 	lcd_update_enable(true);
 	lcd_update(2);
+  lcd_setstatuspgm(_i("Recovering print    "));////MSG_RECOVERING_PRINT c=20 r=1
      bool bTiny=(eeprom_read_byte((uint8_t*)EEPROM_UVLO)==2);
      recover_machine_state_after_power_panic(bTiny); //recover position, temperatures and extrude_multipliers
   // Lift the print head, so one may remove the excess priming material.
@@ -8964,8 +8966,7 @@ void recover_machine_state_after_power_panic(bool bTiny)
   // Recover the logical coordinate of the Z axis at the time of the power panic.
   // The current position after power panic is moved to the next closest 0th full step.
   if(bTiny){
-    current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
-    UVLO_Z_AXIS_SHIFT + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS];
+    current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z)) + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS];
   }
   else{
     current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) + 
@@ -9078,7 +9079,7 @@ void restore_print_from_eeprom() {
 	strcat_P(cmd, PSTR(" F2000"));
 	enquecommand(cmd);
   // Move the Z axis down to the print, in logical coordinates.
-	strcpy_P(cmd, PSTR("G1 Z")); strcat(cmd, ftostr32(current_position[Z_AXIS] - (UVLO_Z_AXIS_SHIFT + 
+	strcpy_P(cmd, PSTR("G1 Z")); strcat(cmd, ftostr32( eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z)) - (UVLO_Z_AXIS_SHIFT + 
   float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_Z_MICROSTEPS)) + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS])));
 	enquecommand(cmd);
   // Unretract.
@@ -9570,7 +9571,7 @@ void M600_load_filament_movements()
 	st_synchronize();
 }
 
-void M600_load_filament() {
+void M600_load_filament() { //TODO: -----
 	//load filament for single material and SNMM 
 	lcd_wait_interact();
 
