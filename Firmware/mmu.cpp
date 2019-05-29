@@ -812,13 +812,17 @@ void mmu_load_to_nozzle()
 	if (!saved_e_relative_mode) axis_relative_modes[E_AXIS] = false;
 }
 
-void mmu_M600_wait_and_beep() {
+void mmu_M600_wait_and_beep(bool saved_printing) {
 		//Beep and wait for user to remove old filament and prepare new filament for load
 
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 
 		int counterBeep = 0;
-		lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament."));
+                if (saved_printing) {
+                    lcd_display_message_fullscreen_P(_i("Remove old filament and press the knob to start loading new filament."));
+                } else {
+                    lcd_display_message_fullscreen_P(_i("Press the knob to select next color."));
+                }
 		bool bFirst=true;
 
 		while (!lcd_clicked()){
@@ -856,10 +860,7 @@ void mmu_M600_load_filament(bool automatic, float nozzle_temp)
     tmp_extruder = mmu_extruder;
     if (!automatic)
     {
-    #ifdef MMU_M600_SWITCH_EXTRUDER
-        bool yes = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Do you want to switch extruder?"), false);
-        if(yes) tmp_extruder = choose_extruder_menu();
-    #endif //MMU_M600_SWITCH_EXTRUDER
+        tmp_extruder = choose_menu_P(_T(MSG_CHOOSE_FILAMENT), _T(MSG_FILAMENT));
     }
     else
     {
