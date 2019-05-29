@@ -572,11 +572,8 @@ void lcd_commands()
 			lcd_setstatuspgm(MSG_PRINT_PAUSED);
 			isPrintPaused = true;
 			long_pause();
-               if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE) // !!! because "lcd_commands_type" can be changed during/inside "long_pause()"
-               {
-                    lcd_commands_type = 0;
-                    lcd_commands_step = 0;
-               }
+               lcd_commands_type = 0;
+               lcd_commands_step = 0;
 		}
 
 	}
@@ -4938,6 +4935,7 @@ void lcd_print_stop() {
 		save_statistics(total_filament_used, t);
 		lcd_return_to_status();
 		lcd_ignore_click(true);
+          lcd_commands_step = 0;
 		lcd_commands_type = LCD_COMMAND_STOP_PRINT;
 		if (farm_mode) prusa_statistics(7);
 		// Turn off the print fan
