@@ -432,14 +432,14 @@ do
 		sleep 2
 		#$BUILDER -dump-prefs -logger=machine -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 12
 		#$BUILDER -compile -logger=machine -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=none -quiet $SCRIPT_PATH/Firmware/Firmware.ino || exit 13
-		$BUILDER -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=default $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
+		$BUILDER -compile -hardware $ARDUINO/hardware -hardware $ARDUINO/portable/packages -tools $ARDUINO/tools-builder -tools $ARDUINO/hardware/tools/avr -tools $ARDUINO/portable/packages -built-in-libraries $ARDUINO/libraries -libraries $ARDUINO/portable/sketchbook/libraries -fqbn=rambo:avr:rambo -ide-version=10805 -build-path=$BUILD_PATH -warnings=all $SCRIPT_PATH/Firmware/Firmware.ino || exit 14
 		echo "$(tput sgr 0)"
 	fi
 	if [ $OSTYPE == "linux-gnu" ] ; then
 		echo "Start to build Prusa Firmware under Linux 64..."
 		echo "Using variant $VARIANT$(tput setaf 3)"
 		sleep 2
-		$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board rambo:avr:rambo --pref build.path=$BUILD_PATH || exit 14
+		$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board rambo:avr:rambo --pref build.path=$BUILD_PATH --pref compiler.warning_level=all || exit 14
 		echo "$(tput sgr 0)"
 	fi
 	if [ $PreCompile == "1" ] ; then
@@ -512,12 +512,12 @@ do
 		echo "$(tput setaf 2)Copying English only firmware to Hex-files folder$(tput sgr 0)"
 		cp -f $BUILD_PATH/Firmware.ino.hex $SCRIPT_PATH/../$OUTPUT_FOLDER/FW$FW-Build$BUILD-$VARIANT-EN_ONLY.hex || exit 20
 	fi
-
+	rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 17
+done
 	# Cleanup Firmware
 	if [ $PreCompile == "1" ] ; then
 		read -t 5 -p "Cleanup Firmware changes. Press Enter..."
 	fi
-	rm $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 17
 	sed -i -- "s/^#define FW_DEV_VERSION FW_VERSION_$DEV_STATUS/#define FW_DEV_VERSION FW_VERSION_UNKNOWN/g" $SCRIPT_PATH/Firmware/Configuration.h
 	sed -i -- 's/^#define FW_REPOSITORY "Prusa3d"/#define FW_REPOSITORY "Unknown"/g' $SCRIPT_PATH/Firmware/Configuration.h
 	echo $MULTI_LANGUAGE_CHECK
@@ -525,7 +525,7 @@ do
 	sed -i -- "s/^#define LANG_MODE *1/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
 	sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
 	sleep 5
-done
+
 
 # Cleanup compiler flags are set to Prusa specific needs for the rambo board.
 #if [ $OSTYPE == "msys" ]; then
