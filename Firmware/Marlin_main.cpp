@@ -7090,8 +7090,11 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
               }
 			  else
 			  {
+#if defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
+			      mmu_command(MmuCmd::K0 + tmp_extruder);
+                  manage_response(true, true, MMU_UNLOAD_MOVE);
+#endif //defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
 				  mmu_command(MmuCmd::T0 + tmp_extruder);
-
 				  manage_response(true, true, MMU_TCODE_MOVE);
 		          mmu_continue_loading(is_usb_printing);
 

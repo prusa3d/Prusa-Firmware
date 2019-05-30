@@ -201,5 +201,11 @@
 static M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf*>(20); //offset for storing settings using M500
 #endif
 
+enum
+{
+    EEPROM_MMU_CUTTER_ENABLED_enabled = 1,
+    EEPROM_MMU_CUTTER_ENABLED_always = 2,
+};
+
 
 #endif // EEPROM_H
