@@ -7091,8 +7091,11 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			  else
 			  {
 #if defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
-			      mmu_command(MmuCmd::K0 + tmp_extruder);
-                  manage_response(true, true, MMU_UNLOAD_MOVE);
+			      if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+                  {
+                      mmu_command(MmuCmd::K0 + tmp_extruder);
+                      manage_response(true, true, MMU_UNLOAD_MOVE);
+                  }
 #endif //defined(MMU_HAS_CUTTER) && defined(MMU_ALWAYS_CUT)
 				  mmu_command(MmuCmd::T0 + tmp_extruder);
 				  manage_response(true, true, MMU_TCODE_MOVE);
