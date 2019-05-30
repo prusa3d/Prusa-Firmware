@@ -18,7 +18,16 @@ extern void menu_lcd_lcdupdate_func(void);
 void ultralcd_init();
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);
+//! return to the main status screen and display the alert message
+//! Beware - it has sideeffects:
+//! - always returns the display to the main status screen
+//! - always makes lcd_reset (which is slow and causes flicker)
+//! - does not update the message if there is already one (i.e. lcd_status_message_level > 0)
 void lcd_setalertstatuspgm(const char* message);
+//! only update the alert message on the main status screen
+//! has no sideeffects, may be called multiple times
+void lcd_updatestatuspgm(const char *message);
+
 void lcd_reset_alert_level();
 uint8_t get_message_level();
 void lcd_adjust_z();
@@ -129,7 +138,6 @@ void lcd_commands();
 
 
 void change_extr(int extr);
-void extr_adj(int extruder);
 
 #ifdef SNMM
 void extr_unload_all(); 

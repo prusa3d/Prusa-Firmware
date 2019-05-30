@@ -229,7 +229,7 @@ inline bool parse_version_P(const char *str, uint16_t version[4])
 // 1 - yes, 0 - false, -1 - error;
 inline int8_t is_provided_version_newer(const char *version_string)
 {
-    uint16_t ver_gcode[3], ver_current[3];
+    uint16_t ver_gcode[4], ver_current[4];
     if (! parse_version(version_string, ver_gcode))
         return -1;
     if (! parse_version_P(FW_VERSION_STR, ver_current))
@@ -294,7 +294,7 @@ bool show_upgrade_dialog_if_version_newer(const char *version_string)
         lcd_puts_at_P(0, 2, PSTR(""));
         for (const char *c = version_string; ! is_whitespace_or_nl_or_eol(*c); ++ c)
             lcd_putc(*c);
-        lcd_puts_at_P(0, 3, _i("Please upgrade."));////MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20 r=0
+        lcd_puts_at_P(0, 3, _i("Please upgrade."));////MSG_NEW_FIRMWARE_PLEASE_UPGRADE c=20
 if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         _tone(BEEPER, 1000);
         delay_keep_alive(50);
