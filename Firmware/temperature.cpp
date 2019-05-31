@@ -95,7 +95,7 @@ float current_temperature_bed = 0.0;
 #endif
 
 #ifdef FANCHECK
-  volatile bool fan_check_error = false;
+  volatile uint8_t fan_check_error = EFCE_OK;
 #endif
 
 unsigned char soft_pwm_bed;
@@ -489,6 +489,38 @@ void countFanSpeed()
 	fan_edge_counter[1] = 0;
 }
 
+//#define SIMULATE_FAN_ERRORS
+#ifdef SIMULATE_FAN_ERRORS
+struct FanSpeedErrorSimulator {
+	unsigned long lastMillis = 0;
+	bool state = false; // zatim mam 0 - klid, 1 reportuju chybu
+	//! @return pocet simulovanych chyb
+	inline uint8_t step(){
+		unsigned long ms = _millis();
+		switch(state){
+		case false:
+			if( (ms - lastMillis) > 120000UL ){ // funkcni ventilator chci 2 minuty
+				state = true;
+				lastMillis = ms;
+				SERIAL_ECHOLNPGM("SIM Fan error");
+			}
+			break;
+		case true:
+			if( (ms - lastMillis) > 20000UL ){ // vypadek ventilatoru chci uz 20s,
+				//abych stihl udelat pokusnej resume print, kdyz jeste jsou rozbity vetraky
+				state = false;
+				lastMillis = ms;
+				SERIAL_ECHOLNPGM("SIM Fan ok");
+			}
+			break;
+		}
+		return state ? 20 : 0;
+	}
+};
+
+static FanSpeedErrorSimulator fanSpeedErrorSimulator;
+#endif
+
 void checkFanSpeed()
 {
 	uint8_t max_print_fan_errors = 0;
@@ -512,6 +544,16 @@ void checkFanSpeed()
 	else fan_speed_errors[1] = 0;
 #endif
 
+#ifdef SIMULATE_FAN_ERRORS
+	fan_speed_errors[0] = fanSpeedErrorSimulator.step();
+#endif
+
+	// drop the fan_check_error flag when both fans are ok
+	if( fan_speed_errors[0] == 0 && fan_speed_errors[1] == 0 && fan_check_error == EFCE_REPORTED){
+		// we may even send some info to the LCD from here
+		fan_check_error = EFCE_OK;
+	}
+
 	if ((fan_speed_errors[0] > max_extruder_fan_errors) && fans_check_enabled) {
 		fan_speed_errors[0] = 0;
 		fanSpeedError(0); //extruder fan
@@ -519,6 +561,19 @@ void checkFanSpeed()
 	if ((fan_speed_errors[1] > max_print_fan_errors) && fans_check_enabled) {
 		fan_speed_errors[1] = 0;
 		fanSpeedError(1); //print fan
+	}
+}
+
+void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
+	SERIAL_ECHOLNRPGM(serialMsg);
+	if (get_message_level() == 0) {
+		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT)){
+			WRITE(BEEPER, HIGH);
+			delayMicroseconds(200);
+			WRITE(BEEPER, LOW);
+			delayMicroseconds(100); // what is this wait for?
+		}
+		LCD_ALERTMESSAGERPGM(lcdMsg);
 	}
 }
 
@@ -530,7 +585,8 @@ void fanSpeedError(unsigned char _fan) {
 			lcd_print_stop();
 		}
 		else {
-			fan_check_error = true;
+			fan_check_error = EFCE_DETECTED;
+
 		}
 	}
 	else {
@@ -538,27 +594,11 @@ void fanSpeedError(unsigned char _fan) {
 			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
 	}
 	switch (_fan) {
-	case 0:
-			SERIAL_ECHOLNPGM("Extruder fan speed is lower then expected");
-			if (get_message_level() == 0) {
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-				WRITE(BEEPER, HIGH);
-				delayMicroseconds(200);
-				WRITE(BEEPER, LOW);
-				delayMicroseconds(100);
-				LCD_ALERTMESSAGEPGM("Err: EXTR. FAN ERROR");
-			}
+	case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B
+		fanSpeedErrorBeep(PSTR("Extruder fan speed is lower than expected"), PSTR("Err: EXTR. FAN ERROR") );
 		break;
 	case 1:
-			SERIAL_ECHOLNPGM("Print fan speed is lower then expected");
-			if (get_message_level() == 0) {
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-				WRITE(BEEPER, HIGH);
-				delayMicroseconds(200);
-				WRITE(BEEPER, LOW);
-				delayMicroseconds(100);
-				LCD_ALERTMESSAGEPGM("Err: PRINT FAN ERROR");
-			}
+		fanSpeedErrorBeep(PSTR("Print fan speed is lower than expected"), PSTR("Err: PRINT FAN ERROR") );
 		break;
 	}
 }
