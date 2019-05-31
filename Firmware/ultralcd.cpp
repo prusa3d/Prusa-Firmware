@@ -2346,13 +2346,22 @@ void lcd_set_fan_check() {
 #ifdef MMU_HAS_CUTTER
 void lcd_cutter_enabled()
 {
-    if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    {
+#ifndef MMU_ALWAYS_CUT
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
+    }
+#else //MMU_ALWAYS_CUT
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, EEPROM_MMU_CUTTER_ENABLED_always);
+    }
+    else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
     {
         eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
     }
+#endif //MMU_ALWAYS_CUT
     else
     {
-        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 1);
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, EEPROM_MMU_CUTTER_ENABLED_enabled);
     }
 }
 #endif //MMU_HAS_CUTTER
@@ -5287,10 +5296,16 @@ static bool settingsCutter()
 {
     if (mmu_enabled)
     {
-        if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+        if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
         {
             if (menu_item_function_P(_i("Cutter       [on]"), lcd_cutter_enabled)) return true;//// c=17 r=1
         }
+#ifdef MMU_ALWAYS_CUT
+        else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+        {
+            if (menu_item_function_P(_i("Cutter   [always]"), lcd_cutter_enabled)) return true;//// c=17 r=1
+        }
+#endif
         else
         {
             if (menu_item_function_P(_i("Cutter      [off]"), lcd_cutter_enabled)) return true;//// c=17 r=1
