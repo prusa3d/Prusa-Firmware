@@ -2346,13 +2346,22 @@ void lcd_set_fan_check() {
 #ifdef MMU_HAS_CUTTER
 void lcd_cutter_enabled()
 {
-    if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+    {
+#ifndef MMU_ALWAYS_CUT
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
+    }
+#else //MMU_ALWAYS_CUT
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, EEPROM_MMU_CUTTER_ENABLED_always);
+    }
+    else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
     {
         eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 0);
     }
+#endif //MMU_ALWAYS_CUT
     else
     {
-        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, 1);
+        eeprom_update_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED, EEPROM_MMU_CUTTER_ENABLED_enabled);
     }
 }
 #endif //MMU_HAS_CUTTER
@@ -5287,10 +5296,16 @@ static bool settingsCutter()
 {
     if (mmu_enabled)
     {
-        if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+        if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
         {
             if (menu_item_function_P(_i("Cutter       [on]"), lcd_cutter_enabled)) return true;//// c=17 r=1
         }
+#ifdef MMU_ALWAYS_CUT
+        else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
+        {
+            if (menu_item_function_P(_i("Cutter   [always]"), lcd_cutter_enabled)) return true;//// c=17 r=1
+        }
+#endif
         else
         {
             if (menu_item_function_P(_i("Cutter      [off]"), lcd_cutter_enabled)) return true;//// c=17 r=1
@@ -6028,11 +6043,11 @@ static void mmu_cut_filament_menu()
     {
         MENU_BEGIN();
         MENU_ITEM_BACK_P(_T(MSG_MAIN));
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '1', mmu_cut_filament, 0);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '2', mmu_cut_filament, 1);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '3', mmu_cut_filament, 2);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '4', mmu_cut_filament, 3);
-        MENU_ITEM_FUNCTION_NR_P(_T(MSG_EJECT_FILAMENT), '5', mmu_cut_filament, 4);
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '1', mmu_cut_filament, 0);
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '2', mmu_cut_filament, 1);
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '3', mmu_cut_filament, 2);
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '4', mmu_cut_filament, 3);
+        MENU_ITEM_FUNCTION_NR_P(_T(MSG_CUT_FILAMENT), '5', mmu_cut_filament, 4);
         MENU_END();
     }
     else
