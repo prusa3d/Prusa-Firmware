@@ -489,38 +489,6 @@ void countFanSpeed()
 	fan_edge_counter[1] = 0;
 }
 
-//#define SIMULATE_FAN_ERRORS
-#ifdef SIMULATE_FAN_ERRORS
-struct FanSpeedErrorSimulator {
-	unsigned long lastMillis = 0;
-	bool state = false; // zatim mam 0 - klid, 1 reportuju chybu
-	//! @return pocet simulovanych chyb
-	inline uint8_t step(){
-		unsigned long ms = _millis();
-		switch(state){
-		case false:
-			if( (ms - lastMillis) > 120000UL ){ // funkcni ventilator chci 2 minuty
-				state = true;
-				lastMillis = ms;
-				SERIAL_ECHOLNPGM("SIM Fan error");
-			}
-			break;
-		case true:
-			if( (ms - lastMillis) > 20000UL ){ // vypadek ventilatoru chci uz 20s,
-				//abych stihl udelat pokusnej resume print, kdyz jeste jsou rozbity vetraky
-				state = false;
-				lastMillis = ms;
-				SERIAL_ECHOLNPGM("SIM Fan ok");
-			}
-			break;
-		}
-		return state ? 20 : 0;
-	}
-};
-
-static FanSpeedErrorSimulator fanSpeedErrorSimulator;
-#endif
-
 void checkFanSpeed()
 {
 	uint8_t max_print_fan_errors = 0;
@@ -542,10 +510,6 @@ void checkFanSpeed()
 #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 	if ((fan_speed[1] < 5) && ((blocks_queued() ? block_buffer[block_buffer_tail].fan_speed : fanSpeed) > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
 	else fan_speed_errors[1] = 0;
-#endif
-
-#ifdef SIMULATE_FAN_ERRORS
-	fan_speed_errors[0] = fanSpeedErrorSimulator.step();
 #endif
 
 	// drop the fan_check_error flag when both fans are ok
