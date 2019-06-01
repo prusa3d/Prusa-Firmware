@@ -19,7 +19,7 @@
 //! @name Basic parameters
 //! @{
 #define FSENSOR_CHUNK_LEN    0.64F  //!< filament sensor chunk length 0.64mm
-#define FSENSOR_ERR_MAX         17  //!< filament sensor maximum error count for runout detection
+#define FSENSOR_ERR_MAX          9  //!< filament sensor maximum error count for runout detection
 //! @}
 
 //! @name Optical quality measurement parameters
@@ -453,10 +453,7 @@ ISR(FSENSOR_INT_PIN_VECT)
 		{
 			if (pat9125_y < 0)
 			{
-				if (fsensor_err_cnt)
-					fsensor_err_cnt += 2;
-				else
-					fsensor_err_cnt++;
+                fsensor_err_cnt++;
 			}
 			else if (pat9125_y > 0)
 			{
