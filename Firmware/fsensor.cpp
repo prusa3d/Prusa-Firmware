@@ -6,12 +6,9 @@
 #include <avr/pgmspace.h>
 #include "pat9125.h"
 #include "stepper.h"
-#include "planner.h"
-#include "fastio.h"
 #include "io_atmega2560.h"
 #include "cmdqueue.h"
 #include "ultralcd.h"
-#include "ConfigurationStore.h"
 #include "mmu.h"
 #include "cardreader.h"
 

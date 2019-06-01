@@ -56,8 +56,6 @@ extern void fsensor_oq_meassure_stop(void);
 extern bool fsensor_oq_result(void);
 //! @}
 
-
-#include "planner.h"
 //! @name callbacks from stepper
 //! @{
 extern void fsensor_st_block_begin(bool rev);
