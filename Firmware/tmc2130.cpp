@@ -715,6 +715,9 @@ uint8_t tmc2130_get_pwr(uint8_t axis)
 	return 0;
 }
 
+//! @par pwr motor power
+//!  * 0 disabled
+//!  * non-zero enabled
 void tmc2130_set_pwr(uint8_t axis, uint8_t pwr)
 {
 	switch (axis)

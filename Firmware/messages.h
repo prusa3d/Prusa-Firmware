@@ -80,6 +80,7 @@ extern const char MSG_SELFTEST_FAN_YES[];
 extern const char MSG_SELFTEST_CHECK_BED[];
 extern const char MSG_SELFTEST_CHECK_FSENSOR[];
 extern const char MSG_SELFTEST_MOTOR[];
+extern const char MSG_SELFTEST_FILAMENT_SENSOR[];
 extern const char MSG_SELFTEST_WIRINGERROR[];
 extern const char MSG_SETTINGS[];
 extern const char MSG_SILENT_MODE_OFF[];
@@ -124,6 +125,8 @@ extern const char MSG_ENDSTOP_OPEN[];
 extern const char MSG_POWERUP[];
 extern const char MSG_ERR_STOPPED[];
 extern const char MSG_ENDSTOP_HIT[];
+extern const char MSG_EJECT_FILAMENT[];
+extern const char MSG_CUT_FILAMENT[];
 
 #if defined(__cplusplus)
 }

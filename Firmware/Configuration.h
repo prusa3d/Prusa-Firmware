@@ -7,8 +7,8 @@
 #define STR(x) STR_HELPER(x)
 
 // Firmware version
-#define FW_VERSION "3.7.0-RC1"
-#define FW_COMMIT_NR   2175
+#define FW_VERSION "3.7.1"
+#define FW_COMMIT_NR   2266
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
@@ -479,6 +479,9 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // is too low, you should also increment SOFT_PWM_SCALE.
 #define FAN_SOFT_PWM
 #define FAN_SOFT_PWM_BITS 4 //PWM bit resolution = 4bits, freq = 62.5Hz
+
+// Bed soft pwm
+#define HEATER_BED_SOFT_PWM_BITS 5 //PWM bit resolution = 5bits, freq = 31.25Hz
 
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.

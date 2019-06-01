@@ -390,6 +390,13 @@ extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT   0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
+//! Beware - mcode_in_progress is set as soon as the command gets really processed,
+//! which is not the same as posting the M600 command into the command queue
+//! There can be a considerable lag between posting M600 and its real processing which might result
+//! in posting multiple M600's into the command queue
+//! Instead, the fsensor uses another state variable :( , which is set to true, when the M600 command is enqued
+//! and is reset to false when the fsensor returns into its filament runout finished handler
+//! I'd normally change this macro, but who knows what would happen in the MMU :)
 #define CHECK_FSENSOR ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
 extern void calculate_extruder_multipliers();
@@ -469,7 +476,7 @@ extern uint8_t calc_percent_done();
 #define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
 extern void host_keepalive();
 //extern MarlinBusyState busy_state;
-extern int busy_state;
+extern int8_t busy_state;
 
 
 #ifdef TMC2130
@@ -497,3 +504,5 @@ void M600_load_filament_movements();
 void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
+void marlin_wait_for_click();
+void marlin_rise_z(void);
