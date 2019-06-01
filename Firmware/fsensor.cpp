@@ -492,11 +492,10 @@ void fsensor_setup_interrupt(void)
 
 #endif //PAT9125
 
-void fsensor_st_block_begin(block_t* bl)
+void fsensor_st_block_begin(bool rev)
 {
 	if (!fsensor_enabled) return;
-	if (((fsensor_st_cnt > 0) && (bl->direction_bits & 0x8)) || 
-		((fsensor_st_cnt < 0) && !(bl->direction_bits & 0x8)))
+	if (fsensor_st_cnt && ((fsensor_st_cnt > 0) ^ rev))
 	{
 // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
 		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
@@ -504,11 +503,11 @@ void fsensor_st_block_begin(block_t* bl)
 	}
 }
 
-void fsensor_st_block_chunk(block_t* bl, int cnt)
+void fsensor_st_block_chunk(int cnt)
 {
 	if (!fsensor_enabled) return;
-	fsensor_st_cnt += (bl->direction_bits & 0x8)?-cnt:cnt;
-	if ((fsensor_st_cnt >= fsensor_chunk_len) || (fsensor_st_cnt <= -fsensor_chunk_len))
+	fsensor_st_cnt += cnt;
+	if (abs(fsensor_st_cnt) >= fsensor_chunk_len)
 	{
 // !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
 		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}

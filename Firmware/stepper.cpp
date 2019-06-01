@@ -339,7 +339,7 @@ FORCE_INLINE void stepper_next_block()
 
 #ifdef FILAMENT_SENSOR
 	fsensor_counter = 0;
-	fsensor_st_block_begin(current_block);
+	fsensor_st_block_begin(count_direction[E_AXIS] < 0);
 #endif //FILAMENT_SENSOR
     // The busy flag is set by the plan_get_current_block() call.
     // current_block->busy = true;
@@ -638,7 +638,7 @@ FORCE_INLINE void stepper_tick_lowres()
       e_steps += count_direction[E_AXIS];
 #else
 	#ifdef FILAMENT_SENSOR
-	  ++ fsensor_counter;
+	  fsensor_counter += count_direction[E_AXIS];
 	#endif //FILAMENT_SENSOR
       WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #endif
@@ -700,7 +700,7 @@ FORCE_INLINE void stepper_tick_highres()
       e_steps += count_direction[E_AXIS];
 #else
     #ifdef FILAMENT_SENSOR
-      ++ fsensor_counter;
+      fsensor_counter += count_direction[E_AXIS];
     #endif //FILAMENT_SENSOR
       WRITE(E0_STEP_PIN, INVERT_E_STEP_PIN);
 #endif
@@ -857,18 +857,18 @@ FORCE_INLINE void isr() {
 
     // If current block is finished, reset pointer
     if (step_events_completed.wide >= current_block->step_event_count.wide) {
-#ifdef FILAMENT_SENSOR
-		fsensor_st_block_chunk(current_block, fsensor_counter);
+#if !defined(LIN_ADVANCE) && defined(FILAMENT_SENSOR)
+		fsensor_st_block_chunk(fsensor_counter);
 		fsensor_counter = 0;
 #endif //FILAMENT_SENSOR
 
       current_block = NULL;
       plan_discard_current_block();
     }
-#ifdef FILAMENT_SENSOR
-  	else if ((fsensor_counter >= fsensor_chunk_len))
+#if !defined(LIN_ADVANCE) && defined(FILAMENT_SENSOR)
+	else if ((abs(fsensor_counter) >= fsensor_chunk_len))
   	{
-      fsensor_st_block_chunk(current_block, fsensor_counter);
+      fsensor_st_block_chunk(fsensor_counter);
   	  fsensor_counter = 0;
   	}
 #endif //FILAMENT_SENSOR
@@ -952,20 +952,25 @@ FORCE_INLINE void advance_isr_scheduler() {
         uint8_t max_ticks = (eisr? e_step_loops: step_loops);
         max_ticks = min(abs(e_steps), max_ticks);
         bool rev = (e_steps < 0);
-#ifdef FILAMENT_SENSOR
-        if (count_direction[E_AXIS] == 1)
-            fsensor_counter += (rev? -max_ticks: max_ticks);
-        else
-            fsensor_counter -= (rev? -max_ticks: max_ticks);
-#endif
         WRITE_NC(E0_DIR_PIN, rev? INVERT_E0_DIR: !INVERT_E0_DIR);
         do
         {
             WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
             e_steps += (rev? 1: -1);
             WRITE_NC(E0_STEP_PIN, INVERT_E_STEP_PIN);
+#ifdef FILAMENT_SENSOR
+            fsensor_counter += (rev? -1: 1);
+#endif
         }
         while(--max_ticks);
+
+#ifdef FILAMENT_SENSOR
+        if (!current_block || (abs(fsensor_counter) >= fsensor_chunk_len))
+        {
+            fsensor_st_block_chunk(fsensor_counter);
+            fsensor_counter = 0;
+        }
+#endif
     }
 
     // Schedule the next closest tick, ignoring advance if scheduled too
