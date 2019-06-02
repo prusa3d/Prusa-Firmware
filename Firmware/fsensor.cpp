@@ -489,15 +489,13 @@ void fsensor_setup_interrupt(void)
 
 #endif //PAT9125
 
-void fsensor_st_block_begin(bool rev)
+void fsensor_st_block_begin(bool rev __attribute__((unused)))
 {
-	if (!fsensor_enabled) return;
-	if (fsensor_st_cnt && ((fsensor_st_cnt > 0) ^ rev))
-	{
-// !!! bit toggling (PINxn <- 1) (for PinChangeInterrupt) does not work for some MCU pins
-		if (PIN_GET(FSENSOR_INT_PIN)) {PIN_VAL(FSENSOR_INT_PIN, LOW);}
-		else {PIN_VAL(FSENSOR_INT_PIN, HIGH);}
-	}
+    // There's really nothing to do here: the stepper ISR likely has called us
+    // already at the end of the last block, making this integration redundant.
+    // LA1.5 might not always do that during a coasting move, so attempt to drain
+    // fsensor_st_cnt anyway at the beginning of the new block.
+    fsensor_st_block_chunk(0);
 }
 
 void fsensor_st_block_chunk(int cnt)
