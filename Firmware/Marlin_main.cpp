@@ -634,6 +634,7 @@ void crashdet_cancel()
 
 void failstats_reset_print()
 {
+    fsensor_softfail = 0;
 	eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_X, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_CRASH_COUNT_Y, 0);
 	eeprom_update_byte((uint8_t *)EEPROM_FERROR_COUNT, 0);

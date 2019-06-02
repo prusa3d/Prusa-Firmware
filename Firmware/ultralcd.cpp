@@ -1796,11 +1796,14 @@ static void lcd_menu_fails_stats_print()
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
     lcd_home();
-    lcd_printf_P(failStatsFmt,
-        _i("Last print failures"),  ////c=20 r=1
-        _i("Power failures"), power,  ////c=14 r=1
-        _i("Filam. runouts"), filam,  ////c=14 r=1
-        _i("Crash"), crashX, crashY);  ////c=7 r=1
+    lcd_printf_P(PSTR("%S\n"
+                  " %S  %-3d\n"
+                  " %S H %-3d S %-3d\n"
+                  " %S   X %-3d Y %-3d"),
+             _i("Last print failures"),
+             _i("Power failures"), power,
+             _i("Runouts"), filam, fsensor_softfail,
+             _i("Crash"), crashX, crashY);
     menu_back_if_clicked_fb();
 }
 

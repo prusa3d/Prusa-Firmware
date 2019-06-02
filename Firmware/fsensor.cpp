@@ -83,6 +83,8 @@ uint8_t fsensor_autoload_c;
 uint32_t fsensor_autoload_last_millis;
 //
 uint8_t fsensor_autoload_sum;
+//
+uint8_t fsensor_softfail = 0;
 //! @}
 
 
@@ -598,7 +600,10 @@ void fsensor_update(void)
 			fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
 
 			if (!err)
+            {
 				printf_P(PSTR("fsensor_err_cnt = 0\n"));
+                ++fsensor_softfail;
+			}
 			else
 				fsensor_enque_M600();
 		}
