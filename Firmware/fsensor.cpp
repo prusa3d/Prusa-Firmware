@@ -20,6 +20,9 @@
 //! @{
 #define FSENSOR_CHUNK_LEN    0.64F  //!< filament sensor chunk length 0.64mm
 #define FSENSOR_ERR_MAX          9  //!< filament sensor maximum error count for runout detection
+
+#define FSENSOR_SOFTERR_CMAX      3 //!< number of contiguous soft failures before a triggering a runout
+#define FSENSOR_SOFTERR_DELTA 30000 //!< maximum interval (ms) to consider soft failures contiguous
 //! @}
 
 //! @name Optical quality measurement parameters
@@ -85,6 +88,8 @@ uint32_t fsensor_autoload_last_millis;
 uint8_t fsensor_autoload_sum;
 //
 uint8_t fsensor_softfail = 0;
+uint8_t fsensor_softfail_ccnt = 0;
+unsigned long fsensor_softfail_last = 0;
 //! @}
 
 
@@ -596,16 +601,25 @@ void fsensor_update(void)
 			err |= (fsensor_oq_yd_sum < (4 * FSENSOR_OQ_MIN_YD));
 
             fsensor_restore_print_and_continue();
-			fsensor_autoload_enabled = autoload_enabled_tmp;
-			fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
+            fsensor_autoload_enabled = autoload_enabled_tmp;
+            fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
 
-			if (!err)
+            unsigned long now = _millis();
+            if (!err && (now - fsensor_softfail_last) > FSENSOR_SOFTERR_DELTA)
+                fsensor_softfail_ccnt = 0;
+            if (!err && fsensor_softfail_ccnt <= FSENSOR_SOFTERR_CMAX)
             {
-				printf_P(PSTR("fsensor_err_cnt = 0\n"));
+                printf_P(PSTR("fsensor_err_cnt = 0\n"));
                 ++fsensor_softfail;
-			}
-			else
-				fsensor_enque_M600();
+                ++fsensor_softfail_ccnt;
+                fsensor_softfail_last = now;
+            }
+            else
+            {
+                fsensor_softfail_ccnt = 0;
+                fsensor_softfail_last = 0;
+                fsensor_enque_M600();
+            }
 		}
 #else //PAT9125
 		if (CHECK_FSENSOR && ir_sensor_detected)
