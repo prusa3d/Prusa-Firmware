@@ -216,7 +216,7 @@ void fsensor_autoload_check_start(void)
 	if (!fsensor_enabled) return;
 	if (!fsensor_autoload_enabled) return;
 	if (fsensor_watch_autoload) return;
-	if (!pat9125_update_y()) //update sensor
+	if (!pat9125_update()) //update sensor
 	{
 		fsensor_disable();
 		fsensor_not_responding = true;
