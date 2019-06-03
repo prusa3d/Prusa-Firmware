@@ -1023,13 +1023,15 @@ Having the real displacement of the head, we can calculate the total movement le
     /**
      * Use LIN_ADVANCE for blocks if all these are true:
      *
-     * block->steps_e       : This is a print move, because we checked for X, Y, Z steps before.
-     * extruder_advance_K   : There is an advance factor set.
-     * delta_mm[E_AXIS] > 0 : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
+     * block->steps_e           : This is a print move, because we checked for X, Y, Z steps before.
+     * extruder_advance_K       : There is an advance factor set.
+     * delta_mm[E_AXIS] > 0     : Extruder is running forward (e.g., for "Wipe while retracting" (Slic3r) or "Combing" (Cura) moves)
+     * |delta_mm[Z_AXIS]| < 0.5 : Z is only moved for leveling (_not_ for priming)
      */
     block->use_advance_lead = block->steps_e.wide
                               && extruder_advance_K
-                              && delta_mm[E_AXIS] > 0;
+                              && delta_mm[E_AXIS] > 0
+                              && abs(delta_mm[Z_AXIS]) < 0.5;
     if (block->use_advance_lead) {
         block->e_D_ratio = (e - position_float[E_AXIS]) /
                            sqrt(sq(x - position_float[X_AXIS])
