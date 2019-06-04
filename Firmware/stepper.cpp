@@ -965,7 +965,7 @@ FORCE_INLINE void advance_isr_scheduler() {
         while(--max_ticks);
 
 #ifdef FILAMENT_SENSOR
-        if (!current_block || (abs(fsensor_counter) >= fsensor_chunk_len))
+        if (abs(fsensor_counter) >= fsensor_chunk_len)
         {
             fsensor_st_block_chunk(fsensor_counter);
             fsensor_counter = 0;
