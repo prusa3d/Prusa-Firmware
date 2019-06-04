@@ -356,10 +356,6 @@ unsigned long starttime=0;
 unsigned long stoptime=0;
 unsigned long _usb_timer = 0;
 
-
-bool extruder_under_pressure = true;
-
-
 bool Stopped=false;
 
 #if NUM_SERVOS > 0
@@ -385,7 +381,6 @@ static float saved_pos[4] = { 0, 0, 0, 0 };
 static float saved_feedrate2 = 0;
 static uint8_t saved_active_extruder = 0;
 static float saved_extruder_temperature = 0.0; //!< Active extruder temperature
-static bool saved_extruder_under_pressure = false;
 static bool saved_extruder_relative_mode = false;
 static int saved_fanSpeed = 0; //!< Print fan speed
 //! @}
@@ -9270,8 +9265,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	memcpy(saved_pos, current_position, sizeof(saved_pos));
 	saved_active_extruder = active_extruder; //save active_extruder
 	saved_extruder_temperature = degTargetHotend(active_extruder);
-
-	saved_extruder_under_pressure = extruder_under_pressure; //extruder under pressure flag - currently unused
 	saved_extruder_relative_mode = axis_relative_modes[E_AXIS];
 	saved_fanSpeed = fanSpeed;
 	cmdqueue_reset(); //empty cmdqueue
