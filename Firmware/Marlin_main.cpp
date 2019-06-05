@@ -3001,6 +3001,32 @@ void gcode_M114()
 	SERIAL_PROTOCOLLN("");
 }
 
+//! extracted code to compute z_shift for M600 in case of filament change operation 
+//! requested from fsensors.
+//! The function ensures, that the printhead lifts to at least 25mm above the heat bed
+//! unlike the previous implementation, which was adding 25mm even when the head was
+//! printing at e.g. 24mm height.
+//! A safety margin of FILAMENTCHANGE_ZADD is added in all cases to avoid touching
+//! the printout.
+//! This function is templated to enable fast change of computation data type.
+//! @return new z_shift value
+template<typename T>
+static T gcode_M600_filament_change_z_shift()
+{
+#ifdef FILAMENTCHANGE_ZADD
+	static_assert(Z_MAX_POS < (255 - FILAMENTCHANGE_ZADD), "Z-range too high, change the T type from uint8_t to uint16_t");
+	// avoid floating point arithmetics when not necessary - results in shorter code
+	T ztmp = T( current_position[Z_AXIS] );
+	T z_shift = 0;
+	if(ztmp < T(25)){
+		z_shift = T(25) - ztmp; // make sure to be at least 25mm above the heat bed
+	} 
+	return z_shift + T(FILAMENTCHANGE_ZADD); // always move above printout
+#else
+	return T(0);
+#endif
+}	
+
 static void gcode_M600(bool automatic, float x_position, float y_position, float z_shift, float e_shift, float /*e_shift_late*/)
 {
     st_synchronize();
@@ -6623,15 +6649,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         }
         else
         {
-          #ifdef FILAMENTCHANGE_ZADD
-			static_assert(Z_MAX_POS < (255 - FILAMENTCHANGE_ZADD), "Z-range too high, change the following code from uint8_t to uint16_t");
-			// avoid floating point arithmetics when not necessary - results in shorter code
-			uint8_t ztmp = uint8_t( current_position[Z_AXIS] );
-			if(ztmp < uint8_t(25)){
-				z_shift = uint8_t(25) - ztmp; // make sure to be at least 25mm above the heat bed
-			}
-			z_shift += FILAMENTCHANGE_ZADD ; // always move above printout
-          #endif
+			z_shift = gcode_M600_filament_change_z_shift<uint8_t>();
         }
 		//Move XY to side
         if(code_seen('X'))
