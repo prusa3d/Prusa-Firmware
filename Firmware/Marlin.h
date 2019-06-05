@@ -174,6 +174,7 @@ void manage_inactivity(bool ignore_stepper_queue=false);
 
 #ifdef PSU_Delta
 void init_force_z();
+void check_force_z();
 #undef disable_z()
 #define disable_z() disable_force_z()
 void disable_force_z();

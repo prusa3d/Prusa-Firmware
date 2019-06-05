@@ -1279,6 +1279,9 @@ void setup()
 	update_mode_profile();
 	tmc2130_init();
 #endif //TMC2130
+#ifdef PSU_Delta
+     init_force_z();                              // ! important for correct Z-axis initialization
+#endif // PSU_Delta
     
 	setup_photpin();
 
@@ -9613,6 +9616,12 @@ bEnableForce_z=true;                              // "true"-value enforce "disab
 disable_force_z();
 }
 
+void check_force_z()
+{
+if(!(bEnableForce_z||eeprom_read_byte((uint8_t*)EEPROM_SILENT)))
+     init_force_z();                              // causes enforced switching into disable-state
+}
+
 void disable_force_z()
 {
 uint16_t z_microsteps=0;
@@ -9639,7 +9648,7 @@ st_synchronize();
 #ifdef TMC2130
 tmc2130_mode=TMC2130_MODE_SILENT;
 update_mode_profile();
-tmc2130_init();
+tmc2130_init(true);
 #endif // TMC2130
 
 axis_known_position[Z_AXIS]=false; 
@@ -9656,7 +9665,7 @@ bEnableForce_z=true;
 #ifdef TMC2130
 tmc2130_mode=eeprom_read_byte((uint8_t*)EEPROM_SILENT)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
 update_mode_profile();
-tmc2130_init();
+tmc2130_init(true);
 #endif // TMC2130
 
 WRITE(Z_ENABLE_PIN,Z_ENABLE_ON);                  // slightly redundant ;-p
