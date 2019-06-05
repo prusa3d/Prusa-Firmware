@@ -8860,7 +8860,7 @@ if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)!=2){
   eeprom_update_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS),z_microsteps);
 }
 
-//after multiples power panics current Z axis is unknow
+//after multiple power panics current Z axis is unknow
 //in this case we set EEPROM_UVLO_TINY_CURRENT_POSITION_Z to last know position which is EEPROM_UVLO_CURRENT_POSITION_Z 
 if(eeprom_read_float((float*)EEPROM_UVLO_TINY_CURRENT_POSITION_Z) < 0.001f){
   eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), eeprom_read_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z));
@@ -9002,7 +9002,7 @@ void recover_machine_state_after_power_panic(bool bTiny)
      + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS)) 
     + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS];
 
-    //after multiples power panics the print is slightly in the air so get it little bit down. 
+    //after multiple power panics the print is slightly in the air so get it little bit down. 
     //Not exactly sure why is this happening, but it has something to do with bed leveling and world2machine coordinates 
     current_position[Z_AXIS] -= 0.4*mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]); 
   }
@@ -9104,7 +9104,7 @@ void restore_print_from_eeprom() {
 	strcat_P(cmd, PSTR(" Y"));   strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4))));
 	strcat_P(cmd, PSTR(" F2000"));
 	enquecommand(cmd);
-  //moving on Z axis ahed, set EEPROM_UVLO to 1, so normal uvlo can fire
+  //moving on Z axis ahead, set EEPROM_UVLO to 1, so normal uvlo can fire
   eeprom_update_byte((uint8_t*)EEPROM_UVLO,1);
   // Move the Z axis down to the print, in logical coordinates.
 	strcpy_P(cmd, PSTR("G1 Z")); strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z))));
