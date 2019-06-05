@@ -304,7 +304,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         _tone(BEEPER, 1000);
         delay_keep_alive(50);
         _noTone(BEEPER);
-        lcd_wait_for_click();
+        lcd_wait_for_click_delay(30);
         lcd_update_enable(true);
         lcd_clear();
         lcd_update(0);
