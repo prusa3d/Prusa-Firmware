@@ -8690,7 +8690,6 @@ extern uint32_t sdpos_atomic;
 
 void uvlo_()
 {
-  printf_P(_N("******* UVLo 0 Current pos Z_AXIS:%.3f\nCurrent pos Z_AXIS:%.3f\n pos Z_AXIS:%.3f\n"), current_position[Z_AXIS], eeprom_read_float((float*)EEPROM_UVLO_TINY_CURRENT_POSITION_Z),eeprom_read_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z));
 	unsigned long time_start = _millis();
 	bool sd_print = card.sdprinting;
     // Conserve power as soon as possible.
@@ -8854,18 +8853,21 @@ z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
 planner_abort_hard();
 disable_z();
 
-// Finaly store the "power outage" flag.
-//if(sd_print)
+//save current position only in case, where the printer is moving on Z axis, which is only when EEPROM_UVLO is 1
+//EEPROM_UVLO is 1 after normal uvlo or after recover_print(), when the extruder is moving on Z axis after rehome
 if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)!=2){
   eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), current_position[Z_AXIS]);
   eeprom_update_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS),z_microsteps);
 }
 
+//after multiples power panics current Z axis is unknow
+//in this case we set EEPROM_UVLO_TINY_CURRENT_POSITION_Z to last know position which is EEPROM_UVLO_CURRENT_POSITION_Z 
 if(eeprom_read_float((float*)EEPROM_UVLO_TINY_CURRENT_POSITION_Z) < 0.001f){
   eeprom_update_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z), eeprom_read_float((float*)EEPROM_UVLO_CURRENT_POSITION_Z));
   eeprom_update_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS), eeprom_read_word((uint16_t*)EEPROM_UVLO_Z_MICROSTEPS));
 }
 
+// Finaly store the "power outage" flag.
 eeprom_update_byte((uint8_t*)EEPROM_UVLO,2);
 
 // Increment power failure counter
@@ -8932,6 +8934,8 @@ void setup_uvlo_interrupt() {
 ISR(INT4_vect) {
 	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
 	SERIAL_ECHOLNPGM("INT4");
+    //fire normal uvlo only in case where EEPROM_UVLO is 0 or if IS_SD_PRINTING is 1. 
+    //Don't change || to && because in some case the printer can be moving although IS_SD_PRINTING is zero
      if((IS_SD_PRINTING ) || (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))) uvlo_();
      if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)) uvlo_tiny();
 }
@@ -8997,6 +9001,9 @@ void recover_machine_state_after_power_panic(bool bTiny)
     current_position[Z_AXIS] = eeprom_read_float((float*)(EEPROM_UVLO_TINY_CURRENT_POSITION_Z))
      + float((1024 - eeprom_read_word((uint16_t*)(EEPROM_UVLO_TINY_Z_MICROSTEPS)) 
     + 7) >> 4) / cs.axis_steps_per_unit[Z_AXIS];
+
+    //after multiples power panics the print is slightly in the air so get it little bit down. 
+    //Not exactly sure why is this happening, but it has something to do with bed leveling and world2machine coordinates 
     current_position[Z_AXIS] -= 0.4*mbl.get_z(current_position[X_AXIS], current_position[Y_AXIS]); 
   }
   else{
@@ -9097,8 +9104,9 @@ void restore_print_from_eeprom() {
 	strcat_P(cmd, PSTR(" Y"));   strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION + 4))));
 	strcat_P(cmd, PSTR(" F2000"));
 	enquecommand(cmd);
-  // Move the Z axis down to the print, in logical coordinates.
+  //moving on Z axis ahed, set EEPROM_UVLO to 1, so normal uvlo can fire
   eeprom_update_byte((uint8_t*)EEPROM_UVLO,1);
+  // Move the Z axis down to the print, in logical coordinates.
 	strcpy_P(cmd, PSTR("G1 Z")); strcat(cmd, ftostr32(eeprom_read_float((float*)(EEPROM_UVLO_CURRENT_POSITION_Z))));
 	enquecommand(cmd);
   // Unretract.
