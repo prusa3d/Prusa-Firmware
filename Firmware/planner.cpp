@@ -127,7 +127,7 @@ float extrude_min_temp=EXTRUDE_MINTEMP;
 
 #ifdef LIN_ADVANCE
 float extruder_advance_K = LIN_ADVANCE_K;
-float position_float[NUM_AXIS] = { 0, 0, 0, 0 };
+float position_float[NUM_AXIS];
 #endif
 
 // Returns the index of the next block in the ring buffer
@@ -441,7 +441,7 @@ void plan_init() {
   block_buffer_tail = 0;
   memset(position, 0, sizeof(position)); // clear position
   #ifdef LIN_ADVANCE
-  memset(position_float, 0, sizeof(position)); // clear position
+  memset(position_float, 0, sizeof(position_float)); // clear position
   #endif
   previous_speed[0] = 0.0;
   previous_speed[1] = 0.0;
@@ -655,7 +655,9 @@ void planner_abort_hard()
     // Apply inverse world correction matrix.
     machine2world(current_position[X_AXIS], current_position[Y_AXIS]);
     memcpy(destination, current_position, sizeof(destination));
-
+#ifdef LIN_ADVANCE
+    memcpy(position_float, current_position, sizeof(position_float));
+#endif
     // Resets planner junction speeds. Assumes start from rest.
     previous_nominal_speed = 0.0;
     previous_speed[0] = 0.0;
