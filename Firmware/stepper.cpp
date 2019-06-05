@@ -120,8 +120,6 @@ volatile signed char count_direction[NUM_AXIS] = { 1, 1, 1, 1};
   static const uint8_t  ADV_INIT       = 0b01;
   static const uint8_t  ADV_DECELERATE = 0b10;
 
-  static bool use_advance_lead;
-
   static uint16_t nextMainISR;
   static uint16_t nextAdvanceISR;
 
@@ -354,7 +352,7 @@ FORCE_INLINE void stepper_next_block()
     acceleration_time = calc_timer(acc_step_rate, step_loops);
 
 #ifdef LIN_ADVANCE
-    if ((use_advance_lead = current_block->use_advance_lead)) {
+    if (current_block->use_advance_lead) {
         LA_decelerate_after = current_block->decelerate_after;
         final_adv_steps = current_block->final_adv_steps;
         max_adv_steps = current_block->max_adv_steps;
@@ -1227,7 +1225,6 @@ void st_init()
 #endif
 
   // Initialize state for the linear advance scheduler
-  use_advance_lead = false;
   nextMainISR = 0;
   nextAdvanceISR = ADV_NEVER;
   main_Rate = ADV_NEVER;
