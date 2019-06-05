@@ -58,7 +58,6 @@
 #include "ultralcd.h"
 #include "language.h"
 #include "ConfigurationStore.h"
-#include "speed_lookuptable.h"
 
 #ifdef MESH_BED_LEVELING
 #include "mesh_bed_leveling.h"
