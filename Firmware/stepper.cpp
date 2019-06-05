@@ -430,7 +430,8 @@ FORCE_INLINE void stepper_next_block()
       nextAdvanceISR = ADV_NEVER;
       e_steps = 0;
 
-      // incrementally lose pressure
+      // incrementally lose pressure to give a chance for
+      // a new LA block to be scheduled and recover
       if(current_adv_steps)
           --current_adv_steps;
 #endif

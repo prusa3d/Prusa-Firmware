@@ -117,7 +117,7 @@ typedef struct {
            max_adv_steps,           // max. advance steps to get cruising speed pressure (not always nominal_speed!)
            final_adv_steps;         // advance steps due to exit speed
   uint8_t advance_step_loops;       // Number of stepper ticks for each advance isr
-  float e_D_ratio;
+  float adv_comp;                   // Precomputed E compression factor
 #endif
 
   uint16_t sdlen;

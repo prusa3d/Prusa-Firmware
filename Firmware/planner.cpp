@@ -261,6 +261,13 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
     }
   }
 
+#ifdef LIN_ADVANCE
+  uint16_t final_adv_steps = 0;
+  if (block->use_advance_lead) {
+      final_adv_steps = exit_speed * block->adv_comp;
+  }
+#endif
+
   CRITICAL_SECTION_START;  // Fill variables used by the stepper in a critical section
   // This block locks the interrupts globally for 4.38 us,
   // which corresponds to a maximum repeat frequency of 228.57 kHz.
@@ -271,6 +278,9 @@ void calculate_trapezoid_for_block(block_t *block, float entry_speed, float exit
     block->decelerate_after = accelerate_steps+plateau_steps;
     block->initial_rate = initial_rate;
     block->final_rate = final_rate;
+#ifdef LIN_ADVANCE
+    block->final_adv_steps = final_adv_steps;
+#endif
   }
   CRITICAL_SECTION_END;
 }
@@ -399,18 +409,8 @@ void planner_recalculate(const float &safe_final_speed)
             }
             // Recalculate if current block entry or exit junction speed has changed.
             if ((prev->flag | current->flag) & BLOCK_FLAG_RECALCULATE) {
-                // @wavexx: FIXME: the following check is not really enough. calculate_trapezoid does block
-                //          the isr to update the rates, but we don't. we should update atomically
-                if (!prev->busy) {
-                    // NOTE: Entry and exit factors always > 0 by all previous logic operations.
-                    calculate_trapezoid_for_block(prev, prev->entry_speed, current->entry_speed);
-                    #ifdef LIN_ADVANCE
-                    if (prev->use_advance_lead) {
-                        const float comp = prev->e_D_ratio * extruder_advance_K * cs.axis_steps_per_unit[E_AXIS];
-                        prev->final_adv_steps = current->entry_speed * comp;
-                    }
-                    #endif
-                }
+                // NOTE: Entry and exit factors always > 0 by all previous logic operations.
+                calculate_trapezoid_for_block(prev, prev->entry_speed, current->entry_speed);
                 // Reset current only to ensure next trapezoid is computed.
                 prev->flag &= ~BLOCK_FLAG_RECALCULATE;
             }
@@ -424,13 +424,6 @@ void planner_recalculate(const float &safe_final_speed)
     // Last/newest block in buffer. Exit speed is set with safe_final_speed. Always recalculated.
     current = block_buffer + prev_block_index(block_buffer_head);
     calculate_trapezoid_for_block(current, current->entry_speed, safe_final_speed);
-    #ifdef LIN_ADVANCE
-    if (current->use_advance_lead) {
-      const float comp = current->e_D_ratio * extruder_advance_K * cs.axis_steps_per_unit[E_AXIS];
-      current->max_adv_steps = current->nominal_speed * comp;
-      current->final_adv_steps = safe_final_speed * comp;
-    }
-    #endif
     current->flag &= ~BLOCK_FLAG_RECALCULATE;
 
 //    SERIAL_ECHOLNPGM("planner_recalculate - 4");
@@ -1005,6 +998,9 @@ Having the real displacement of the head, we can calculate the total movement le
     block->nominal_rate *= speed_factor;
   }
 
+#ifdef LIN_ADVANCE
+  float e_D_ratio = 0;
+#endif
   // Compute and limit the acceleration rate for the trapezoid generator.  
   // block->step_event_count ... event count of the fastest axis
   // block->millimeters ... Euclidian length of the XYZ movement or the E length, if no XYZ movement.
@@ -1022,7 +1018,7 @@ Having the real displacement of the head, we can calculate the total movement le
 
     #ifdef LIN_ADVANCE
     /**
-     * Use LIN_ADVANCE for blocks if all these are true:
+     * Use LIN_ADVANCE within this block if all these are true:
      *
      * block->steps_e           : This is a print move, because we checked for X, Y, Z steps before.
      * extruder_advance_K       : There is an advance factor set.
@@ -1034,19 +1030,19 @@ Having the real displacement of the head, we can calculate the total movement le
                               && delta_mm[E_AXIS] > 0
                               && abs(delta_mm[Z_AXIS]) < 0.5;
     if (block->use_advance_lead) {
-        block->e_D_ratio = (e - position_float[E_AXIS]) /
-                           sqrt(sq(x - position_float[X_AXIS])
-                                + sq(y - position_float[Y_AXIS])
-                                + sq(z - position_float[Z_AXIS]));
+        e_D_ratio = (e - position_float[E_AXIS]) /
+                    sqrt(sq(x - position_float[X_AXIS])
+                         + sq(y - position_float[Y_AXIS])
+                         + sq(z - position_float[Z_AXIS]));
 
         // Check for unusual high e_D ratio to detect if a retract move was combined with the last
         // print move due to min. steps per segment. Never execute this with advance! This assumes
         // no one will use a retract length of 0mm < retr_length < ~0.2mm and no one will print
         // 100mm wide lines using 3mm filament or 35mm wide lines using 1.75mm filament.
-        if (block->e_D_ratio > 3.0)
+        if (e_D_ratio > 3.0)
             block->use_advance_lead = false;
         else {
-            const uint32_t max_accel_steps_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * block->e_D_ratio) * steps_per_mm;
+            const uint32_t max_accel_steps_per_s2 = cs.max_jerk[E_AXIS] / (extruder_advance_K * e_D_ratio) * steps_per_mm;
             if (block->acceleration_st > max_accel_steps_per_s2) {
                 block->acceleration_st = max_accel_steps_per_s2;
                 #ifdef LA_DEBUG
@@ -1089,11 +1085,16 @@ Having the real displacement of the head, we can calculate the total movement le
 
   block->acceleration_rate = (long)((float)block->acceleration_st * (16777216.0 / (F_CPU / 8.0)));
 
-  #ifdef LIN_ADVANCE
+#ifdef LIN_ADVANCE
   if (block->use_advance_lead) {
+      // the nominal speed doesn't change past this point: calculate the compression ratio for the
+      // segment and the required advance steps
+      block->adv_comp = extruder_advance_K * e_D_ratio * cs.axis_steps_per_unit[E_AXIS];
+      block->max_adv_steps = block->nominal_speed * block->adv_comp;
+
       // to save more space we avoid another copy of calc_timer and go through slow division, but we
       // still need to replicate the *exact* same step grouping policy (see below)
-      float advance_speed = (extruder_advance_K * block->e_D_ratio * block->acceleration * cs.axis_steps_per_unit[E_AXIS]);
+      float advance_speed = (extruder_advance_K * e_D_ratio * block->acceleration * cs.axis_steps_per_unit[E_AXIS]);
       if (advance_speed > MAX_STEP_FREQUENCY) advance_speed = MAX_STEP_FREQUENCY;
       block->advance_rate = (F_CPU / 8.0) / advance_speed;
       if (block->advance_rate > 20000) {
@@ -1116,7 +1117,7 @@ Having the real displacement of the head, we can calculate the total movement le
           SERIAL_ECHOLNPGM("LA: More than 2 steps per eISR loop executed.");
       #endif
   }
-  #endif
+#endif
 
   // Start with a safe speed.
   // Safe speed is the speed, from which the machine may halt to stop immediately.
