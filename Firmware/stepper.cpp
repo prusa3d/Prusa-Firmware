@@ -426,10 +426,13 @@ FORCE_INLINE void stepper_next_block()
       _NEXT_ISR(2000); // 1kHz.
 
 #ifdef LIN_ADVANCE
-      // reset LA state and pressure when there's no block
+      // reset LA state when there's no block
       nextAdvanceISR = ADV_NEVER;
       e_steps = 0;
-      current_adv_steps = 0;
+
+      // incrementally lose pressure
+      if(current_adv_steps)
+          --current_adv_steps;
 #endif
   }
   //WRITE_NC(LOGIC_ANALYZER_CH2, false);
@@ -985,13 +988,6 @@ FORCE_INLINE void advance_isr_scheduler() {
     else
         OCR1A = nextMainISR;
 }
-
-void clear_current_adv_vars() {
-    nextAdvanceISR = ADV_NEVER;
-    e_steps = 0;
-    current_adv_steps = 0;
-}
-
 #endif // LIN_ADVANCE
 
 void st_init()
@@ -1343,7 +1339,8 @@ void quickStop()
   while (blocks_queued()) plan_discard_current_block(); 
   current_block = NULL;
 #ifdef LIN_ADVANCE
-  clear_current_adv_vars();
+  nextAdvanceISR = ADV_NEVER;
+  current_adv_steps = 0;
 #endif
   st_reset_timer();
   ENABLE_STEPPER_DRIVER_INTERRUPT();
