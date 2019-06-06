@@ -238,7 +238,11 @@ void checkExtruderAutoFans();
 
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
 
-enum { EFCE_OK = 0, EFCE_DETECTED, EFCE_REPORTED };
+enum { 
+	EFCE_OK = 0,   //!< normal operation, both fans are ok
+	EFCE_DETECTED, //!< fan error detected, but not reported yet
+	EFCE_REPORTED  //!< fan error detected and reported to LCD and serial
+};
 extern volatile uint8_t fan_check_error;
 
 void countFanSpeed();

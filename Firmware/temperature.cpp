@@ -528,7 +528,11 @@ void checkFanSpeed()
 	}
 }
 
-void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
+//! Prints serialMsg to serial port, displays lcdMsg onto the LCD and beeps.
+//! Extracted from fanSpeedError to save some space.
+//! @param serialMsg pointer into PROGMEM, this text will be printed to the serial port
+//! @param lcdMsg pointer into PROGMEM, this text will be printed onto the LCD
+static void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
 	SERIAL_ECHOLNRPGM(serialMsg);
 	if (get_message_level() == 0) {
 		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT)){
