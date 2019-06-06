@@ -123,17 +123,12 @@ void fsensor_stop_and_save_print(void)
     stop_and_save_print_to_ram(0, 0); //XYZE - no change
 }
 
-void fsensor_restore_print_and_continue_IR(void)
-{
-	fsensor_watch_runout = true;
-	fsensor_err_cnt = 0;
-	fsensor_m600_enqueued = false;
-}
-
 void fsensor_restore_print_and_continue(void)
 {
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
-    fsensor_restore_print_and_continue_IR();
+	fsensor_watch_runout = true;
+	fsensor_err_cnt = 0;
+	fsensor_m600_enqueued = false;
     restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
 }
 
@@ -527,6 +522,47 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	}
 }
 
+//! This ensures generating z-position at least 25mm above the heat bed.
+//! Making this a template enables changing the computation data type easily at all spots where necessary.
+//! @param current_z current z-position
+//! @return z-position at least 25mm above the heat bed plus FILAMENTCHANGE_ZADD 
+template <typename T>
+inline T fsensor_clamp_z(float current_z){
+	T z( current_z );
+	if(z < T(25)){ // make sure the compiler understands, that the constant 25 is of correct type
+		// - necessary for uint8_t -> results in shorter code
+		z = T(25); // move to at least 25mm above heat bed
+	}
+	return z + T(FILAMENTCHANGE_ZADD); // always move above the printout by FILAMENTCHANGE_ZADD (default 2mm)	
+}
+
+//! Common code for enqueing M600 and supplemental codes into the command queue.
+//! Used both for the IR sensor and the PAT9125
+void fsensor_enque_M600(){
+	printf_P(PSTR("fsensor_update - M600\n"));
+	eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+	eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
+	enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
+	fsensor_m600_enqueued = true;
+	enquecommand_front_P((PSTR("M600")));
+#define xstr(a) str(a)
+#define str(a) #a
+	static const char gcodeMove[] PROGMEM = 
+			"G1 X" xstr(FILAMENTCHANGE_XPOS) 
+			" Y" xstr(FILAMENTCHANGE_YPOS) 
+			" Z%u";
+#undef str
+#undef xstr
+	char buf[32];
+	// integer arithmetics is far shorter, I don't need a precise float position here, just move a bit above
+	// 8bit arithmetics in fsensor_clamp_z is 10B shorter than 16bit (not talking about float ;) ) 
+	// The compile-time static_assert here ensures, that the computation gets enough bits in case of Z-range too high,
+	// i.e. makes the user change the data type, which also results in larger code
+	static_assert(Z_MAX_POS < (255 - FILAMENTCHANGE_ZADD), "Z-range too high, change fsensor_clamp_z<uint8_t> to <uint16_t>");
+	sprintf_P(buf, gcodeMove, fsensor_clamp_z<uint8_t>(current_position[Z_AXIS]) );
+	enquecommand_front(buf, false);
+}
+
 //! @brief filament sensor update (perform M600 on filament runout)
 //!
 //! Works only if filament sensor is enabled.
@@ -535,7 +571,7 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 void fsensor_update(void)
 {
 #ifdef PAT9125
-		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
+		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX) && ( ! fsensor_m600_enqueued) )
 		{
 			bool autoload_enabled_tmp = fsensor_autoload_enabled;
 			fsensor_autoload_enabled = false;
@@ -575,11 +611,7 @@ void fsensor_update(void)
 			}
 			else
 			{
-				printf_P(PSTR("fsensor_update - M600\n"));
-				eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
-				eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-				enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
-				enquecommand_front_P((PSTR("M600")));
+				fsensor_enque_M600();
 				fsensor_watch_runout = false;
 			}
 			fsensor_autoload_enabled = autoload_enabled_tmp;
@@ -587,14 +619,9 @@ void fsensor_update(void)
 		}
 #else //PAT9125
 		if ((digitalRead(IR_SENSOR_PIN) == 1) && CHECK_FSENSOR && fsensor_enabled && ir_sensor_detected && ( ! fsensor_m600_enqueued) )
-		{	// just plan a simple M600 without any additional position save/restore,
-			// which caused weird heating issues standing directly over the print
-			printf_P(PSTR("fsensor_update - M600\n"));
-			eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
-			eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-			enquecommand_front_P(PSTR("PRUSA fsensor_recover_IR"));
-			fsensor_m600_enqueued = true;
-			enquecommand_front_P((PSTR("M600")));
+		{
+			fsensor_stop_and_save_print();
+			fsensor_enque_M600();
 		}
 #endif //PAT9125
 }
