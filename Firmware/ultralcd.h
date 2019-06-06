@@ -106,6 +106,8 @@ extern int8_t FSensorStateMenu;
 #define CUSTOM_MSG_TYPE_PIDCAL 3 // PID tuning in progress
 #define CUSTOM_MSG_TYPE_TEMCAL 4 // PINDA temp calibration
 #define CUSTOM_MSG_TYPE_TEMPRE 5 // Temp compensation preheat
+#define CUSTOM_MSG_TYPE_M0WAIT 6 // M0/M1 Wait command working even from SD
+#define CUSTOM_MSG_TYPE_MSGUPD 7 // Short message even while printing from SD
 
 extern unsigned int custom_message_type;
 extern unsigned int custom_message_state;

@@ -794,7 +794,10 @@ void lcdui_print_status_line(void)
 	{ // Otherwise check for other special events
    		switch (custom_message_type)
 		{
+		case CUSTOM_MSG_TYPE_MSGUPD:
+			custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 		case CUSTOM_MSG_TYPE_STATUS: // Nothing special, print status message normally
+		case CUSTOM_MSG_TYPE_M0WAIT:
 			lcd_print(lcd_status_message);
 			break;
 		case CUSTOM_MSG_TYPE_MESHBL: // If mesh bed leveling in progress, show the status
