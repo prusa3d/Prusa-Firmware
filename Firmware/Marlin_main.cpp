@@ -3432,6 +3432,52 @@ void process_commands()
 	  lcd_setstatus(strchr_pointer + 5);
   }
 
+  else if (code_seen("M0 ") || code_seen("M1 ")) { // M0 and M1 - (Un)conditional stop - Wait for user buttn press on LCD
+
+      char *src = strchr_pointer + 2;
+
+      codenum = 0;
+
+      bool hasP = false, hasS = false;
+      if (code_seen('P')) {
+        codenum = code_value(); // milliseconds to wait
+        hasP = codenum > 0;
+      }
+      if (code_seen('S')) {
+        codenum = code_value() * 1000; // seconds to wait
+        hasS = codenum > 0;
+      }
+      starpos = strchr(src, '*');
+      if (starpos != NULL) *(starpos) = '\0';
+      while (*src == ' ') ++src;
+      if (!hasP && !hasS && *src != '\0') {
+        lcd_setstatus(src);
+      } else {
+        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
+      }
+
+      lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
+      st_synchronize();
+      previous_millis_cmd = _millis();
+      if (codenum > 0){
+        codenum += _millis();  // keep track of when we started waiting
+		KEEPALIVE_STATE(PAUSED_FOR_USER);
+        while(_millis() < codenum && !lcd_clicked()){
+          manage_heater();
+          manage_inactivity(true);
+          lcd_update(0);
+        }
+		KEEPALIVE_STATE(IN_HANDLER);
+        lcd_ignore_click(false);
+      }else{
+        marlin_wait_for_click();
+      }
+      if (IS_SD_PRINTING)
+        LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
+      else
+        LCD_MESSAGERPGM(_T(WELCOME_MSG));
+    }
+
 #ifdef TMC2130
 	else if (strncmp_P(CMDBUFFER_CURRENT_STRING, PSTR("CRASH_"), 6) == 0)
 	{
@@ -4968,53 +5014,6 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
     switch(mcode_in_progress)
     {
 
-    case 0: // M0 - Unconditional stop - Wait for user button press on LCD
-    case 1: // M1 - Conditional stop - Wait for user button press on LCD
-    {
-      char *src = strchr_pointer + 2;
-
-      codenum = 0;
-
-      bool hasP = false, hasS = false;
-      if (code_seen('P')) {
-        codenum = code_value(); // milliseconds to wait
-        hasP = codenum > 0;
-      }
-      if (code_seen('S')) {
-        codenum = code_value() * 1000; // seconds to wait
-        hasS = codenum > 0;
-      }
-      starpos = strchr(src, '*');
-      if (starpos != NULL) *(starpos) = '\0';
-      while (*src == ' ') ++src;
-      if (!hasP && !hasS && *src != '\0') {
-        lcd_setstatus(src);
-      } else {
-        LCD_MESSAGERPGM(_i("Wait for user..."));////MSG_USERWAIT
-      }
-
-      lcd_ignore_click();				//call lcd_ignore_click aslo for else ???
-      st_synchronize();
-      previous_millis_cmd = _millis();
-      if (codenum > 0){
-        codenum += _millis();  // keep track of when we started waiting
-		KEEPALIVE_STATE(PAUSED_FOR_USER);
-        while(_millis() < codenum && !lcd_clicked()){
-          manage_heater();
-          manage_inactivity(true);
-          lcd_update(0);
-        }
-		KEEPALIVE_STATE(IN_HANDLER);
-        lcd_ignore_click(false);
-      }else{
-        marlin_wait_for_click();
-      }
-      if (IS_SD_PRINTING)
-        LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
-      else
-        LCD_MESSAGERPGM(_T(WELCOME_MSG));
-    }
-    break;
     case 17:
         LCD_MESSAGERPGM(_i("No move."));////MSG_NO_MOVE
         enable_x();
