@@ -3416,8 +3416,10 @@ void process_commands()
 {
   #ifdef FANCHECK
   if (fan_check_error){
-    fan_check_error = false;
-    lcd_pause_print();
+	if( fan_check_error == EFCE_DETECTED ){
+		fan_check_error = EFCE_REPORTED;
+		lcd_pause_print();
+	} // otherwise it has already been reported, so just ignore further processing
     return;
   }
   #endif
