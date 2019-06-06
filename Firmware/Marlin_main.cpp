@@ -3430,6 +3430,7 @@ void process_commands()
 	  if (starpos != NULL)
 		  *(starpos) = '\0';
 	  lcd_setstatus(strchr_pointer + 5);
+	  custom_message_type = CUSTOM_MSG_TYPE_MSGUPD;
   }
 
   else if (code_seen("M0 ") || code_seen("M1 ")) { // M0 and M1 - (Un)conditional stop - Wait for user buttn press on LCD
@@ -3450,6 +3451,7 @@ void process_commands()
       starpos = strchr(src, '*');
       if (starpos != NULL) *(starpos) = '\0';
       while (*src == ' ') ++src;
+	  custom_message_type = CUSTOM_MSG_TYPE_M0WAIT;
       if (!hasP && !hasS && *src != '\0') {
         lcd_setstatus(src);
       } else {
@@ -3476,6 +3478,7 @@ void process_commands()
         LCD_MESSAGERPGM(_T(MSG_RESUMING_PRINT));
       else
         LCD_MESSAGERPGM(_T(WELCOME_MSG));
+	  custom_message_type = CUSTOM_MSG_TYPE_MSGUPD;
     }
 
 #ifdef TMC2130
