@@ -129,7 +129,7 @@ float extrude_min_temp=EXTRUDE_MINTEMP;
 #ifdef LIN_ADVANCE
   float extruder_advance_k = LIN_ADVANCE_K,
         advance_ed_ratio = LIN_ADVANCE_E_D_RATIO,
-        position_float[NUM_AXIS] = { 0 };
+        position_float[NUM_AXIS];
 #endif
 
 // Returns the index of the next block in the ring buffer
@@ -418,7 +418,7 @@ void plan_init() {
   block_buffer_tail = 0;
   memset(position, 0, sizeof(position)); // clear position
   #ifdef LIN_ADVANCE
-    memset(position_float, 0, sizeof(position)); // clear position
+    memset(position_float, 0, sizeof(position_float)); // clear position
   #endif
   previous_speed[0] = 0.0;
   previous_speed[1] = 0.0;

@@ -1128,8 +1128,8 @@ int8_t SdBaseFile::readDir(dir_t* dir, char* longFilename) {
     if (n != sizeof(dir_t)) return n == 0 ? 0 : -1;
     // last entry if DIR_NAME_FREE
 	if (dir->name[0] == DIR_NAME_FREE) {
+		//SERIAL_ECHOLNPGM("DIR_NAME_FREE");
 		return 0;
-		SERIAL_ECHOLNPGM("DIR_NAME_FREE");
 	}
     // skip empty entries and entry for .  and ..
 	if (dir->name[0] == DIR_NAME_DELETED || dir->name[0] == '.') {
@@ -1222,7 +1222,6 @@ bool SdBaseFile::remove() {
 
   // write entry to SD
   return vol_->cacheFlush();
-  return true;
 
  fail:
   return false;
