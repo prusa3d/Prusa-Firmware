@@ -541,22 +541,14 @@ void fanSpeedError(unsigned char _fan) {
 	case 0:
 			SERIAL_ECHOLNPGM("Extruder fan speed is lower then expected");
 			if (get_message_level() == 0) {
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-				WRITE(BEEPER, HIGH);
-				delayMicroseconds(200);
-				WRITE(BEEPER, LOW);
-				delayMicroseconds(100);
+        Sound_MakeCustom(200,0,true);
 				LCD_ALERTMESSAGEPGM("Err: EXTR. FAN ERROR");
 			}
 		break;
 	case 1:
 			SERIAL_ECHOLNPGM("Print fan speed is lower then expected");
 			if (get_message_level() == 0) {
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-				WRITE(BEEPER, HIGH);
-				delayMicroseconds(200);
-				WRITE(BEEPER, LOW);
-				delayMicroseconds(100);
+        Sound_MakeCustom(200,0,true);
 				LCD_ALERTMESSAGEPGM("Err: PRINT FAN ERROR");
 			}
 		break;
@@ -1398,13 +1390,9 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 	disable_e2();
 	manage_heater();
 	lcd_update(0);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-	WRITE(BEEPER, HIGH);
-	delayMicroseconds(500);
-	WRITE(BEEPER, LOW);
-	delayMicroseconds(100);
-
-	if (isPreheat)
+  Sound_MakeCustom(200,0,true);
+	
+  if (isPreheat)
 	{
 		Stop();
 		isBed ? LCD_ALERTMESSAGEPGM("BED PREHEAT ERROR") : LCD_ALERTMESSAGEPGM("PREHEAT ERROR");
@@ -1489,7 +1477,6 @@ void max_temp_error(uint8_t e) {
     SET_OUTPUT(BEEPER);
     WRITE(FAN_PIN, 1);
     WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
     WRITE(BEEPER, 1);
     // fanSpeed will consumed by the check_axes_activity() routine.
     fanSpeed=255;

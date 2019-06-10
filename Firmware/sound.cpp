@@ -17,7 +17,8 @@ static void Sound_SaveMode(void);
 static void Sound_DoSound_Echo(void);
 static void Sound_DoSound_Prompt(void);
 static void Sound_DoSound_Alert(bool bOnce);
-
+static void Sound_DoSound_Encoder_Move(void);
+static void Sound_DoSound_Blind_Alert(void);
 
 void Sound_Init(void)
 {
@@ -49,15 +50,45 @@ switch(eSoundMode)
           eSoundMode=e_SOUND_MODE_SILENT;
           break;
      case e_SOUND_MODE_SILENT:
-          eSoundMode=e_SOUND_MODE_MUTE;
+          eSoundMode=e_SOUND_MODE_BLIND;
           break;
-     case e_SOUND_MODE_MUTE:
+     case e_SOUND_MODE_BLIND:
           eSoundMode=e_SOUND_MODE_LOUD;
           break;
      default:
           eSoundMode=e_SOUND_MODE_LOUD;
      }
 Sound_SaveMode();
+}
+
+void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
+     if (!critical){
+          if (eSoundMode != e_SOUND_MODE_SILENT){
+               if(!tone_){
+                    WRITE(BEEPER, HIGH);
+                    delayMicroseconds(ms);
+                    WRITE(BEEPER, LOW);
+               }
+               else{
+                    _tone(BEEPER, tone_);
+                    delay_keep_alive(ms);
+                    _noTone(BEEPER);
+               }
+          }
+     }
+     else{
+          if(!tone_){
+               WRITE(BEEPER, HIGH);
+               delayMicroseconds(ms);
+               WRITE(BEEPER, LOW);
+               delayMicroseconds(100);
+          }
+          else{
+               _tone(BEEPER, tone_);
+               delay_keep_alive(ms);
+               _noTone(BEEPER);
+          }
+     }
 }
 
 void Sound_MakeSound(eSOUND_TYPE eSoundType)
@@ -84,13 +115,43 @@ switch(eSoundMode)
           if(eSoundType==e_SOUND_TYPE_StandardAlert)
                Sound_DoSound_Alert(true);
           break;
-     case e_SOUND_MODE_MUTE:
-          break;
+     case e_SOUND_MODE_BLIND:
+          if(eSoundType==e_SOUND_TYPE_ButtonEcho)
+               Sound_DoSound_Echo();
+          if(eSoundType==e_SOUND_TYPE_StandardPrompt)
+               Sound_DoSound_Prompt();
+          if(eSoundType==e_SOUND_TYPE_StandardAlert)
+               Sound_DoSound_Alert(false);
+          if(eSoundType==e_SOUND_TYPE_EncoderMove)
+               Sound_DoSound_Encoder_Move();
+          if(eSoundType==e_SOUND_TYPE_BlindAlert)
+               Sound_DoSound_Blind_Alert();
+               break;
      default:
-          ;
+          break;
      }
 }
 
+static void Sound_DoSound_Blind_Alert(void)
+{
+     _tone(BEEPER,100);
+     delay_keep_alive(50);
+     _noTone(BEEPER);
+     delay_keep_alive(200);
+}
+
+ static void Sound_DoSound_Encoder_Move(void)
+{
+uint8_t nI;
+
+ for(nI=0;nI<5;nI++)
+     {
+     WRITE(BEEPER,HIGH);
+     delayMicroseconds(75);
+     WRITE(BEEPER,LOW);
+     delayMicroseconds(75);
+     }
+}
 
 static void Sound_DoSound_Echo(void)
 {

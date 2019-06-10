@@ -2867,10 +2867,12 @@ void lcd_alright() {
 
         if (cursor_pos > 3) {
           cursor_pos = 3;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
         }
 
         if (cursor_pos < 1) {
           cursor_pos = 1;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
         }
         lcd_set_cursor(0, 1);
         lcd_print(" ");
@@ -2881,6 +2883,7 @@ void lcd_alright() {
         lcd_set_cursor(0, cursor_pos);
         lcd_print(">");
         enc_dif = lcd_encoder_diff;
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
         _delay(100);
       }
 
@@ -2888,7 +2891,7 @@ void lcd_alright() {
 
 
     if (lcd_clicked()) {
-
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
       lcd_change_fil_state = cursor_pos;
       _delay(500);
 
@@ -3845,20 +3848,24 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 						lcd_set_cursor(7, 3);
 						lcd_puts_P((PSTR(">")));
 						yes = false;
+						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
 					else if (enc_dif > lcd_encoder_diff && !yes) {
 						lcd_puts_P((PSTR(">")));
 						lcd_set_cursor(7, 3);
 						lcd_puts_P((PSTR(" ")));
 						yes = true;
+						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
 					enc_dif = lcd_encoder_diff;
 				}
 				else {
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					break; //turning knob skips waiting loop
 				}
 			}
 			if (lcd_clicked()) {
+				Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 				if (msg_next == NULL) {
 					//KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
@@ -3931,16 +3938,20 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 					lcd_set_cursor(0, 3);
 					lcd_puts_P((PSTR(">")));
 					yes = false;
+					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+
 				}
 				else if (enc_dif > lcd_encoder_diff && !yes) {
 					lcd_puts_P((PSTR(">")));
 					lcd_set_cursor(0, 3);
 					lcd_puts_P((PSTR(" ")));
 					yes = true;
+					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				}
 				enc_dif = lcd_encoder_diff;
 		}
 		if (lcd_clicked()) {
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			KEEPALIVE_STATE(IN_HANDLER);
 			return yes;
 		}
@@ -5441,8 +5452,8 @@ do\
          case e_SOUND_MODE_SILENT:\
               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);\
               break;\
-         case e_SOUND_MODE_MUTE:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_MUTE),lcd_sound_state_set);\
+         case e_SOUND_MODE_BLIND:\
+              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_BLIND),lcd_sound_state_set);\
               break;\
          default:\
               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);\
@@ -5620,10 +5631,12 @@ void bowden_menu() {
 
 				if (cursor_pos > 3) {
 					cursor_pos = 3;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 				}
 
 				if (cursor_pos < 0) {
 					cursor_pos = 0;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 				}
 
 				lcd_set_cursor(0, 0);
@@ -5636,13 +5649,13 @@ void bowden_menu() {
 				lcd_print(" ");
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
-
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
 		}
 
 		if (lcd_clicked()) {
-
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			lcd_clear();
 			while (1) {
 
@@ -5673,6 +5686,7 @@ void bowden_menu() {
 				}
 				_delay(100);
 				if (lcd_clicked()) {
+					Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
 					if (lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Continue with another bowden?"))) {
 						lcd_update_enable(true);
@@ -5718,8 +5732,14 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 			if ((abs(enc_dif - lcd_encoder_diff)) > 1) {
 				if (enc_dif > lcd_encoder_diff) cursor_pos--;
 				if (enc_dif < lcd_encoder_diff) cursor_pos++;
-				if (cursor_pos > 3) cursor_pos = 3;
-				if (cursor_pos < 1) cursor_pos = 1;
+				if (cursor_pos > 3) {
+					cursor_pos = 3;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+				}
+				if (cursor_pos < 1){
+					cursor_pos = 1;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+				}	
 
 				lcd_set_cursor(0, 1);
 				lcd_print(" ");
@@ -5730,10 +5750,12 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
 				enc_dif = lcd_encoder_diff;
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				_delay(100);
 			}
 		}
 		if (lcd_clicked()) {
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			KEEPALIVE_STATE(IN_HANDLER);
 			return(cursor_pos - 1);
 		}
@@ -5785,7 +5807,8 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 		}
 
 		if (cursor_pos > 3)
-		{
+		{		
+			Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             cursor_pos = 3;
             if (first < items_no - 3)
             {
@@ -5796,6 +5819,7 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 
         if (cursor_pos < 1)
         {
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             cursor_pos = 1;
             if (first > 0)
             {
@@ -5830,11 +5854,12 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
         lcd_print(" ");
         lcd_set_cursor(0, cursor_pos);
         lcd_print(">");
-
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
         _delay(100);
 
 		if (lcd_clicked())
 		{
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 		    KEEPALIVE_STATE(IN_HANDLER);
 			lcd_encoder_diff = 0;
 			return(cursor_pos + first - 1);
@@ -5889,6 +5914,7 @@ char reset_menu() {
 
 				if (cursor_pos > 3) {
 					cursor_pos = 3;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					if (first < items_no - 4) {
 						first++;
 						lcd_clear();
@@ -5897,6 +5923,7 @@ char reset_menu() {
 
 				if (cursor_pos < 0) {
 					cursor_pos = 0;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					if (first > 0) {
 						first--;
 						lcd_clear();
@@ -5912,6 +5939,7 @@ char reset_menu() {
 				lcd_print(" ");
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
 			}
@@ -5919,6 +5947,7 @@ char reset_menu() {
 		}
 
 		if (lcd_clicked()) {
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			return(cursor_pos + first);
 		}
 
@@ -6227,6 +6256,7 @@ unsigned char lcd_choose_color() {
 				
 				if (cursor_pos > active_rows) {
 					cursor_pos = active_rows;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					if (first < items_no - active_rows) {
 						first++;
 						lcd_clear();
@@ -6235,6 +6265,7 @@ unsigned char lcd_choose_color() {
 
 				if (cursor_pos < 1) {
 					cursor_pos = 1;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					if (first > 0) {
 						first--;
 						lcd_clear();
@@ -6248,12 +6279,14 @@ unsigned char lcd_choose_color() {
 				lcd_print(" ");
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
 
 		}
 
 		if (lcd_clicked()) {
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			switch(cursor_pos + first - 1) {
 			case 0: return 1; break;
 			case 1: return 0; break;
@@ -6565,11 +6598,7 @@ static void lcd_main_menu()
 }
 
 void stack_error() {
-	SET_OUTPUT(BEEPER);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-	WRITE(BEEPER, HIGH);
-	_delay(1000);
-	WRITE(BEEPER, LOW);
+	Sound_MakeCustom(1000,0,true);
 	lcd_display_message_fullscreen_P(_i("Error - static memory has been overwritten"));////MSG_STACK_ERROR c=20 r=4
 	//err_triggered = 1;
 	 while (1) delay_keep_alive(1000);
@@ -6696,8 +6725,8 @@ static void lcd_tune_menu()
           case e_SOUND_MODE_SILENT:
                MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);
                break;
-          case e_SOUND_MODE_MUTE:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_MUTE),lcd_sound_state_set);
+          case e_SOUND_MODE_BLIND:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_BLIND),lcd_sound_state_set);
                break;
           default:
                MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
@@ -6856,6 +6885,7 @@ void lcd_sdcard_stop()
 
 	if (lcd_clicked())
 	{
+		Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 		if ((int32_t)lcd_encoder == 1)
 		{
 			lcd_return_to_status();
@@ -8366,6 +8396,7 @@ void menu_lcd_lcdupdate_func(void)
 			if (lcd_draw_update == 0)
 			lcd_draw_update = 1;
 			lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
+			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 			lcd_encoder_diff = 0;
 			lcd_timeoutToStatus.start();
 		}
