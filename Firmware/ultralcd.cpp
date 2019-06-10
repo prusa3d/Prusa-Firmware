@@ -40,6 +40,7 @@
 
 #include "static_assert.h"
 #include "io_atmega2560.h"
+#include "first_lay_cal.h"
 
 
 int scrollstuff = 0;
@@ -1386,15 +1387,10 @@ void lcd_commands()
 
 		if (lcd_commands_step == 10)
 		{
-			enquecommand_P(PSTR("M107"));
-			enquecommand_P(PSTR("M104 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
-			enquecommand_P(PSTR("M140 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
-			enquecommand_P(PSTR("M190 S" STRINGIFY(PLA_PREHEAT_HPB_TEMP)));
-            enquecommand_P(PSTR("M109 S" STRINGIFY(PLA_PREHEAT_HOTEND_TEMP)));
-			enquecommand_P(_T(MSG_M117_V2_CALIBRATION));
-			enquecommand_P(PSTR("G28"));
-			enquecommand_P(PSTR("G92 E0.0"));
-
+		    for (uint8_t i = 0; i < (sizeof(layer1_cal)/sizeof(layer1_cal[0])); ++i)
+		    {
+		        enquecommand_P(static_cast<char*>(pgm_read_ptr(&layer1_cal[i])));
+		    }
             lcd_commands_step = 9;
 		}
         if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
