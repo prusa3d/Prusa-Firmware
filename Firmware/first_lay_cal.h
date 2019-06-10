@@ -7,10 +7,9 @@
 
 #ifndef FIRMWARE_FIRST_LAY_CAL_H_
 #define FIRMWARE_FIRST_LAY_CAL_H_
-#include <avr/pgmspace.h>
 
+void lay1cal_preheat();
 
-extern const char * const layer1_cal[8] PROGMEM;
 
 
 #endif /* FIRMWARE_FIRST_LAY_CAL_H_ */

@@ -1387,10 +1387,7 @@ void lcd_commands()
 
 		if (lcd_commands_step == 10)
 		{
-		    for (uint8_t i = 0; i < (sizeof(layer1_cal)/sizeof(layer1_cal[0])); ++i)
-		    {
-		        enquecommand_P(static_cast<char*>(pgm_read_ptr(&layer1_cal[i])));
-		    }
+            lay1cal_preheat();
             lcd_commands_step = 9;
 		}
         if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
