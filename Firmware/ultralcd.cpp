@@ -75,7 +75,7 @@ bool presort_flag = false;
 #endif
 
 uint8_t lcd_commands_type = LCD_COMMAND_IDLE;
-uint8_t lcd_commands_step = 0;
+static uint8_t lcd_commands_step = 0;
 
 unsigned int custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 unsigned int custom_message_state = 0;
