@@ -1396,30 +1396,7 @@ void lcd_commands()
             menu_depth = 0;
             menu_submenu(lcd_babystep_z);
 
-            if (mmu_enabled)
-            {
-                enquecommand_P(PSTR("M83")); //intro line
-                enquecommand_P(PSTR("G1 Y-3.0 F1000.0")); //intro line
-                enquecommand_P(PSTR("G1 Z0.4 F1000.0")); //intro line
-                strcpy(cmd1, "T");
-                strcat(cmd1, itostr3left(filament));
-                enquecommand(cmd1);
-                enquecommand_P(PSTR("G1 X55.0 E32.0 F1073.0")); //intro line
-                enquecommand_P(PSTR("G1 X5.0 E32.0 F1800.0")); //intro line
-                enquecommand_P(PSTR("G1 X55.0 E8.0 F2000.0")); //intro line
-                enquecommand_P(PSTR("G1 Z0.3 F1000.0")); //intro line
-                enquecommand_P(PSTR("G92 E0.0")); //intro line
-                enquecommand_P(PSTR("G1 X240.0 E25.0  F2200.0")); //intro line
-                enquecommand_P(PSTR("G1 Y-2.0 F1000.0")); //intro line
-                enquecommand_P(PSTR("G1 X55.0 E25 F1400.0")); //intro line
-                enquecommand_P(PSTR("G1 Z0.20 F1000.0")); //intro line
-                enquecommand_P(PSTR("G1 X5.0 E4.0 F1000.0")); //intro line
-
-            } else
-            {
-                enquecommand_P(PSTR("G1 X60.0 E9.0 F1000.0")); //intro line
-                enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0")); //intro line
-            }
+            lay1cal_intro_line(cmd1, filament);
 
             lcd_commands_step = 8;
         }
