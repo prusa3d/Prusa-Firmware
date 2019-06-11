@@ -1414,9 +1414,7 @@ void lcd_commands()
                 break;
             case 7:
                 lay1cal_meander();
-
-                strcpy(cmd1, "G1 X50 Y35 E");
-                strcat(cmd1, ftostr43(extr));
+                sprintf_P(cmd1, PSTR("G1 X50 Y35 E%-.3f"), extr);
                 enquecommand(cmd1);
 
                 lcd_commands_step = 6;
