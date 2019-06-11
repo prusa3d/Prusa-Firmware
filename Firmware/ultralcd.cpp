@@ -246,7 +246,6 @@ static char snmm_stop_print_menu();
 #ifdef SDCARD_SORT_ALPHA
  static void lcd_sort_type_set();
 #endif
-static constexpr float count_e(float layer_heigth, float extrusion_width, float extrusion_length);
 static void lcd_babystep_z();
 static void lcd_send_status();
 #ifdef FARM_CONNECT_MESSAGE
@@ -1061,21 +1060,6 @@ static void lcd_status_screen()
 		feedmultiply = 999;
 }
 
-//! extracted common code from lcd_commands into a separate function
-//! along with the sprintf_P optimization this change gained more than 1.6KB
-static void lcd_commands_func1(char *cmd1, uint8_t i, float width, float extr, float extr_short_segment){
-	static const char fmt1[] PROGMEM = "G1 X%d Y%-.2f E%-.3f";
-	static const char fmt2[] PROGMEM = "G1 Y%-.2f E%-.3f";
-	sprintf_P(cmd1, fmt1, 70, (35 - i*width * 2), extr); 
-	enquecommand(cmd1);
-	sprintf_P(cmd1, fmt2, (35 - (2 * i + 1)*width), extr_short_segment);
-	enquecommand(cmd1);
-	sprintf_P(cmd1, fmt1, 50, (35 - (2 * i + 1)*width), extr);
-	enquecommand(cmd1);
-	sprintf_P(cmd1, fmt2, (35 - (i + 1)*width * 2), extr_short_segment); 
-	enquecommand(cmd1);
-}
-
 void lcd_commands()
 {	
 	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
@@ -1363,10 +1347,6 @@ void lcd_commands()
 	{
 		char cmd1[30];
 		static uint8_t filament = 0;
-		const float width = 0.4;
-		const float length = 20 - width;
-		const float extr = count_e(0.2, width, length);
-		const float extr_short_segment = count_e(0.2, width, width);
 
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 
@@ -1413,37 +1393,34 @@ void lcd_commands()
                 lcd_commands_step = 7;
                 break;
             case 7:
-                lay1cal_meander();
-                sprintf_P(cmd1, PSTR("G1 X50 Y35 E%-.3f"), extr);
-                enquecommand(cmd1);
-
+                lay1cal_meander(cmd1);
                 lcd_commands_step = 6;
                 break;
             case 6:
                 for (uint8_t i = 0; i < 4; i++)
                 {
-                    lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
+                    lay1cal_square(cmd1, i);
                 }
                 lcd_commands_step = 5;
                 break;
             case 5:
                 for (uint8_t i = 4; i < 8; i++)
                 {
-                    lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
+                    lay1cal_square(cmd1, i);
                 }
                 lcd_commands_step = 4;
                 break;
             case 4:
                 for (uint8_t i = 8; i < 12; i++)
                 {
-                    lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
+                    lay1cal_square(cmd1, i);
                 }
                 lcd_commands_step = 3;
                 break;
             case 3:
                 for (uint8_t i = 12; i < 16; i++)
                 {
-                    lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
+                    lay1cal_square(cmd1, i);
                 }
                 lcd_commands_step = 2;
                 break;
@@ -1661,11 +1638,6 @@ void lcd_commands()
 	}
 
 
-}
-
-static constexpr float count_e(float layer_heigth, float extrusion_width, float extrusion_length) {
-	//returns filament length in mm which needs to be extrude to form line with extrusion_length * extrusion_width * layer heigth dimensions
-	return (extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4));
 }
 
 void lcd_return_to_status()

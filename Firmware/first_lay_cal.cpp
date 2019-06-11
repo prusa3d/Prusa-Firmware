@@ -160,10 +160,49 @@ static const char * const cmd_meander[] PROGMEM =
     cmd_meander_15,
 };
 
-void lay1cal_meander()
+//! @brief Count extrude length
+//!
+//! @param layer_heigth layer heigth in mm
+//! @param extrusion_width extrusion width in mm
+//! @param extrusion_length extrusion length in mm
+//! @return filament length in mm which needs to be extruded to form line
+static constexpr float count_e(float layer_heigth, float extrusion_width, float extrusion_length)
+{
+    return (extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4));
+}
+
+static const float width = 0.4;
+static const float length = 20 - width;
+static const float extr = count_e(0.2, width, length);
+
+void lay1cal_meander(char *cmd_buffer)
 {
     for (uint8_t i = 0; i < (sizeof(cmd_meander)/sizeof(cmd_meander[0])); ++i)
     {
         enquecommand_P(static_cast<char*>(pgm_read_ptr(&cmd_meander[i])));
     }
+    sprintf_P(cmd_buffer, PSTR("G1 X50 Y35 E%-.3f"), extr);
+    enquecommand(cmd_buffer);
+}
+
+//! @brief Print square
+//!
+//! This function needs to be called 16 times for i from 0 to 15.
+//!
+//! @par cmd_buffer character buffer needed to format gcodes
+//! @par i iteration
+void lay1cal_square(char *cmd_buffer, uint8_t i)
+{
+    const float extr_short_segment = count_e(0.2, width, width);
+
+    static const char fmt1[] PROGMEM = "G1 X%d Y%-.2f E%-.3f";
+    static const char fmt2[] PROGMEM = "G1 Y%-.2f E%-.3f";
+    sprintf_P(cmd_buffer, fmt1, 70, (35 - i*width * 2), extr);
+    enquecommand(cmd_buffer);
+    sprintf_P(cmd_buffer, fmt2, (35 - (2 * i + 1)*width), extr_short_segment);
+    enquecommand(cmd_buffer);
+    sprintf_P(cmd_buffer, fmt1, 50, (35 - (2 * i + 1)*width), extr);
+    enquecommand(cmd_buffer);
+    sprintf_P(cmd_buffer, fmt2, (35 - (i + 1)*width * 2), extr_short_segment);
+    enquecommand(cmd_buffer);
 }
