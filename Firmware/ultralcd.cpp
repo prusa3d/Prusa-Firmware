@@ -1363,10 +1363,10 @@ void lcd_commands()
 	{
 		char cmd1[30];
 		static uint8_t filament = 0;
-		float width = 0.4;
-		float length = 20 - width;
-		float extr = count_e(0.2, width, length);
-		float extr_short_segment = count_e(0.2, width, width);
+		const float width = 0.4;
+		const float length = 20 - width;
+		const float extr = count_e(0.2, width, length);
+		const float extr_short_segment = count_e(0.2, width, width);
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 
 		if (lcd_commands_step == 0 && !blocks_queued() && cmd_buffer_empty())
