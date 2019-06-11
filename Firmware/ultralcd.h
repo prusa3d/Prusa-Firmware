@@ -97,7 +97,7 @@ extern void lcd_diag_show_end_stops();
 #define LCD_COMMAND_PID_EXTRUDER 7 
 #define LCD_COMMAND_V2_CAL 8
 
-extern int lcd_commands_type;
+extern uint8_t lcd_commands_type;
 extern int8_t FSensorStateMenu;
 
 #define CUSTOM_MSG_TYPE_STATUS 0 // status message from lcd_status_message variable

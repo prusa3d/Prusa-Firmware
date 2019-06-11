@@ -74,8 +74,8 @@ extern void crashdet_disable();
 bool presort_flag = false;
 #endif
 
-int lcd_commands_type = LCD_COMMAND_IDLE;
-int lcd_commands_step = 0;
+uint8_t lcd_commands_type = LCD_COMMAND_IDLE;
+uint8_t lcd_commands_step = 0;
 
 unsigned int custom_message_type = CUSTOM_MSG_TYPE_STATUS;
 unsigned int custom_message_state = 0;
@@ -1061,6 +1061,20 @@ static void lcd_status_screen()
 		feedmultiply = 999;
 }
 
+//! extracted common code from lcd_commands into a separate function
+//! along with the sprintf_P optimization this change gained more than 1.6KB
+static void lcd_commands_func1(char *cmd1, uint8_t i, float width, float extr, float extr_short_segment){
+	static const char fmt1[] PROGMEM = "G1 X%d Y%-.2f E%-.3f";
+	static const char fmt2[] PROGMEM = "G1 Y%-.2f E%-.3f";
+	sprintf_P(cmd1, fmt1, 70, (35 - i*width * 2), extr); 
+	enquecommand(cmd1);
+	sprintf_P(cmd1, fmt2, (35 - (2 * i + 1)*width), extr_short_segment);
+	enquecommand(cmd1);
+	sprintf_P(cmd1, fmt1, 50, (35 - (2 * i + 1)*width), extr);
+	enquecommand(cmd1);
+	sprintf_P(cmd1, fmt2, (35 - (i + 1)*width * 2), extr_short_segment); 
+	enquecommand(cmd1);
+}
 
 void lcd_commands()
 {	
@@ -1466,27 +1480,8 @@ void lcd_commands()
 
 			lcd_timeoutToStatus.start();
 
-			for (int i = 0; i < 4; i++) {
-				strcpy(cmd1, "G1 X70 Y");
-				strcat(cmd1, ftostr32(35 - i*width * 2));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr_short_segment));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 X50 Y");
-				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr_short_segment));
-				enquecommand(cmd1);
+			for (uint8_t i = 0; i < 4; i++) {
+				lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
 			}
 
 			lcd_commands_step = 5;
@@ -1495,56 +1490,18 @@ void lcd_commands()
 		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus.start();
-			for (int i = 4; i < 8; i++) {
-				strcpy(cmd1, "G1 X70 Y");
-				strcat(cmd1, ftostr32(35 - i*width * 2));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr_short_segment));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 X50 Y");
-				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr_short_segment));
-				enquecommand(cmd1);
+			for (uint8_t i = 4; i < 8; i++) {
+				lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
 			}
 
 			lcd_commands_step = 4;
 		}
-
+		
 		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty())
 		{
-			lcd_timeoutToStatus.start();
-			for (int i = 8; i < 12; i++) {
-				strcpy(cmd1, "G1 X70 Y");
-				strcat(cmd1, ftostr32(35 - i*width * 2));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr_short_segment));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 X50 Y");
-				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr_short_segment));
-				enquecommand(cmd1);
+			lcd_timeoutToStatus.start();			
+			for (uint8_t i = 8; i < 12; i++) {
+				lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
 			}
 
 			lcd_commands_step = 3;
@@ -1553,27 +1510,8 @@ void lcd_commands()
 		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
 		{
 			lcd_timeoutToStatus.start();
-			for (int i = 12; i < 16; i++) {
-				strcpy(cmd1, "G1 X70 Y");
-				strcat(cmd1, ftostr32(35 - i*width * 2));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr_short_segment));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 X50 Y");
-				strcat(cmd1, ftostr32(35 - (2 * i + 1)*width));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr));
-				enquecommand(cmd1);
-				strcpy(cmd1, "G1 Y");
-				strcat(cmd1, ftostr32(35 - (i + 1)*width * 2));
-				strcat(cmd1, " E");
-				strcat(cmd1, ftostr43(extr_short_segment));
-				enquecommand(cmd1);
+			for (uint8_t i = 12; i < 16; i++) {
+				lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
 			}
 
 			lcd_commands_step = 2;
