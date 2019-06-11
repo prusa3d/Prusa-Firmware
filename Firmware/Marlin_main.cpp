@@ -9324,8 +9324,10 @@ void restore_print_from_ram_and_continue(float e_move)
 {
 	if (!saved_printing) return;
 	
+#ifdef FANCHECK
 	// Do not allow resume printing if fans are still not ok
 	if( fan_check_error != EFCE_OK )return;
+#endif
 	
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 //	    current_position[axis] = st_get_position_mm(axis);
