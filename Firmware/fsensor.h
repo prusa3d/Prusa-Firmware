@@ -18,9 +18,7 @@ extern bool fsensor_oq_meassure_enabled;
 //! @name save restore printing
 //! @{
 extern void fsensor_stop_and_save_print(void);
-//! special handling for the IR sensor (no restore position and heating, since this is already correctly handled in the M600 itself)
-extern void fsensor_restore_print_and_continue_IR(void);
-//! legacy restore print - restore position and heatup to original temperature - for the MMU and the optical fsensor
+//! restore print - restore position and heatup to original temperature
 extern void fsensor_restore_print_and_continue(void);
 //! @}
 
