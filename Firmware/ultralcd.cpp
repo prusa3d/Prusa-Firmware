@@ -1367,180 +1367,133 @@ void lcd_commands()
 		const float length = 20 - width;
 		const float extr = count_e(0.2, width, length);
 		const float extr_short_segment = count_e(0.2, width, width);
+
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 
-		if (lcd_commands_step == 0 && !blocks_queued() && cmd_buffer_empty())
-		{
-			lcd_commands_step = 10;
-		}
-		if (lcd_commands_step == 20 && !blocks_queued() && cmd_buffer_empty())
-		{
-            filament = 0;
-            lcd_commands_step = 10;
-		}
-        if (lcd_commands_step == 21 && !blocks_queued() && cmd_buffer_empty())
+        if (!blocks_queued() && cmd_buffer_empty())
         {
-            filament = 1;
-            lcd_commands_step = 10;
+            switch(lcd_commands_step)
+            {
+            case 0:
+                lcd_commands_step = 10;
+                break;
+            case 20:
+                filament = 0;
+                lcd_commands_step = 10;
+                break;
+            case 21:
+                filament = 1;
+                lcd_commands_step = 10;
+                break;
+            case 22:
+                filament = 2;
+                lcd_commands_step = 10;
+                break;
+            case 23:
+                filament = 3;
+                lcd_commands_step = 10;
+                break;
+            case 24:
+                filament = 4;
+                lcd_commands_step = 10;
+                break;
+            case 10:
+                lay1cal_preheat();
+                lcd_commands_step = 9;
+                break;
+            case 9:
+                lcd_clear();
+                menu_depth = 0;
+                menu_submenu(lcd_babystep_z);
+                lay1cal_intro_line(cmd1, filament);
+                lcd_commands_step = 8;
+                break;
+            case 8:
+                enquecommand_P(PSTR("G92 E0.0"));
+                enquecommand_P(PSTR("G21")); //set units to millimeters
+                enquecommand_P(PSTR("G90")); //use absolute coordinates
+                enquecommand_P(PSTR("M83")); //use relative distances for extrusion
+                enquecommand_P(PSTR("G1 E-1.50000 F2100.00000"));
+                enquecommand_P(PSTR("G1 Z5 F7200.000"));
+                enquecommand_P(PSTR("M204 S1000")); //set acceleration
+                enquecommand_P(PSTR("G1 F4000"));
+                lcd_commands_step = 7;
+                break;
+            case 7:
+                enquecommand_P(PSTR("G1 X50 Y155"));
+                enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
+                enquecommand_P(PSTR("G1 F1080"));
+                enquecommand_P(PSTR("G1 X75 Y155 E2.5"));
+                enquecommand_P(PSTR("G1 X100 Y155 E2"));
+                enquecommand_P(PSTR("G1 X200 Y155 E2.62773"));
+                enquecommand_P(PSTR("G1 X200 Y135 E0.66174"));
+                enquecommand_P(PSTR("G1 X50 Y135 E3.62773"));
+                enquecommand_P(PSTR("G1 X50 Y115 E0.49386"));
+                enquecommand_P(PSTR("G1 X200 Y115 E3.62773"));
+                enquecommand_P(PSTR("G1 X200 Y95 E0.49386"));
+                enquecommand_P(PSTR("G1 X50 Y95 E3.62773"));
+                enquecommand_P(PSTR("G1 X50 Y75 E0.49386"));
+                enquecommand_P(PSTR("G1 X200 Y75 E3.62773"));
+                enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
+                enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
+
+                strcpy(cmd1, "G1 X50 Y35 E");
+                strcat(cmd1, ftostr43(extr));
+                enquecommand(cmd1);
+
+                lcd_commands_step = 6;
+                break;
+            case 6:
+                for (uint8_t i = 0; i < 4; i++)
+                {
+                    lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
+                }
+                lcd_commands_step = 5;
+                break;
+            case 5:
+                for (uint8_t i = 4; i < 8; i++)
+                {
+                    lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
+                }
+                lcd_commands_step = 4;
+                break;
+            case 4:
+                for (uint8_t i = 8; i < 12; i++)
+                {
+                    lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
+                }
+                lcd_commands_step = 3;
+                break;
+            case 3:
+                for (uint8_t i = 12; i < 16; i++)
+                {
+                    lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
+                }
+                lcd_commands_step = 2;
+                break;
+            case 2:
+                enquecommand_P(PSTR("M107")); //turn off printer fan
+                enquecommand_P(PSTR("G1 E-0.07500 F2100.00000")); //retract
+                enquecommand_P(PSTR("M104 S0")); // turn off temperature
+                enquecommand_P(PSTR("M140 S0")); // turn off heatbed
+                enquecommand_P(PSTR("G1 Z10 F1300.000")); //lift Z
+                enquecommand_P(PSTR("G1 X10 Y180 F4000")); //Go to parking position
+                if (mmu_enabled) enquecommand_P(PSTR("M702 C")); //unload from nozzle
+                enquecommand_P(PSTR("M84"));// disable motors
+                forceMenuExpire = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
+                lcd_commands_step = 1;
+                break;
+            case 1:
+                lcd_setstatuspgm(_T(WELCOME_MSG));
+                lcd_commands_step = 0;
+                lcd_commands_type = 0;
+                if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1)
+                {
+                    lcd_wizard(WizState::RepeatLay1Cal);
+                }
+                break;
+            }
         }
-        if (lcd_commands_step == 22 && !blocks_queued() && cmd_buffer_empty())
-        {
-            filament = 2;
-            lcd_commands_step = 10;
-        }
-        if (lcd_commands_step == 23 && !blocks_queued() && cmd_buffer_empty())
-        {
-            filament = 3;
-            lcd_commands_step = 10;
-        }
-        if (lcd_commands_step == 24 && !blocks_queued() && cmd_buffer_empty())
-        {
-            filament = 4;
-            lcd_commands_step = 10;
-        }
-
-		if (lcd_commands_step == 10)
-		{
-            lay1cal_preheat();
-            lcd_commands_step = 9;
-		}
-        if (lcd_commands_step == 9 && !blocks_queued() && cmd_buffer_empty())
-        {
-            lcd_clear();
-            menu_depth = 0;
-            menu_submenu(lcd_babystep_z);
-
-            lay1cal_intro_line(cmd1, filament);
-
-            lcd_commands_step = 8;
-        }
-		if (lcd_commands_step == 8 && !blocks_queued() && cmd_buffer_empty())
-		{
-
-			enquecommand_P(PSTR("G92 E0.0"));
-			enquecommand_P(PSTR("G21")); //set units to millimeters
-			enquecommand_P(PSTR("G90")); //use absolute coordinates
-			enquecommand_P(PSTR("M83")); //use relative distances for extrusion
-			enquecommand_P(PSTR("G1 E-1.50000 F2100.00000"));
-			enquecommand_P(PSTR("G1 Z5 F7200.000"));
-			enquecommand_P(PSTR("M204 S1000")); //set acceleration
-			enquecommand_P(PSTR("G1 F4000"));
-			lcd_commands_step = 7;
-		}
-		if (lcd_commands_step == 7 && !blocks_queued() && cmd_buffer_empty()) //draw meander
-		{
-			lcd_timeoutToStatus.start();
-
-
-			//just opposite direction
-			/*enquecommand_P(PSTR("G1 X50 Y55"));
-			enquecommand_P(PSTR("G1 F1080"));
-			enquecommand_P(PSTR("G1 X200 Y55 E3.62773"));
-			enquecommand_P(PSTR("G1 X200 Y75 E0.49386"));
-			enquecommand_P(PSTR("G1 X50 Y75 E3.62773"));
-			enquecommand_P(PSTR("G1 X50 Y95 E0.49386"));
-			enquecommand_P(PSTR("G1 X200 Y95 E3.62773"));
-			enquecommand_P(PSTR("G1 X200 Y115 E0.49386"));
-			enquecommand_P(PSTR("G1 X50 Y115 E3.62773"));
-			enquecommand_P(PSTR("G1 X50 Y135 E0.49386"));
-			enquecommand_P(PSTR("G1 X200 Y135 E3.62773"));
-			enquecommand_P(PSTR("G1 X200 Y155 E0.66174"));
-			enquecommand_P(PSTR("G1 X100 Y155 E2.62773"));
-			enquecommand_P(PSTR("G1 X75 Y155 E2"));
-			enquecommand_P(PSTR("G1 X50 Y155 E2.5"));
-			enquecommand_P(PSTR("G1 E - 0.07500 F2100.00000"));*/
-
-
-			enquecommand_P(PSTR("G1 X50 Y155"));
-			enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
-			enquecommand_P(PSTR("G1 F1080"));
-			enquecommand_P(PSTR("G1 X75 Y155 E2.5"));
-			enquecommand_P(PSTR("G1 X100 Y155 E2"));
-			enquecommand_P(PSTR("G1 X200 Y155 E2.62773"));
-			enquecommand_P(PSTR("G1 X200 Y135 E0.66174"));
-			enquecommand_P(PSTR("G1 X50 Y135 E3.62773"));
-			enquecommand_P(PSTR("G1 X50 Y115 E0.49386"));
-			enquecommand_P(PSTR("G1 X200 Y115 E3.62773"));
-			enquecommand_P(PSTR("G1 X200 Y95 E0.49386"));
-			enquecommand_P(PSTR("G1 X50 Y95 E3.62773"));
-			enquecommand_P(PSTR("G1 X50 Y75 E0.49386"));
-			enquecommand_P(PSTR("G1 X200 Y75 E3.62773"));
-			enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
-			enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
-
-			strcpy(cmd1, "G1 X50 Y35 E");
-			strcat(cmd1, ftostr43(extr));
-			enquecommand(cmd1);
-
-			lcd_commands_step = 6;
-		}
-
-		if (lcd_commands_step == 6 && !blocks_queued() && cmd_buffer_empty())
-		{
-
-			lcd_timeoutToStatus.start();
-
-			for (uint8_t i = 0; i < 4; i++) {
-				lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
-			}
-
-			lcd_commands_step = 5;
-		}
-
-		if (lcd_commands_step == 5 && !blocks_queued() && cmd_buffer_empty())
-		{
-			lcd_timeoutToStatus.start();
-			for (uint8_t i = 4; i < 8; i++) {
-				lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
-			}
-
-			lcd_commands_step = 4;
-		}
-		
-		if (lcd_commands_step == 4 && !blocks_queued() && cmd_buffer_empty())
-		{
-			lcd_timeoutToStatus.start();			
-			for (uint8_t i = 8; i < 12; i++) {
-				lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
-			}
-
-			lcd_commands_step = 3;
-		}
-
-		if (lcd_commands_step == 3 && !blocks_queued() && cmd_buffer_empty())
-		{
-			lcd_timeoutToStatus.start();
-			for (uint8_t i = 12; i < 16; i++) {
-				lcd_commands_func1(cmd1, i, width, extr, extr_short_segment );
-			}
-
-			lcd_commands_step = 2;
-		}
-
-		if (lcd_commands_step == 2 && !blocks_queued() && cmd_buffer_empty())
-		{
-			lcd_timeoutToStatus.start();
-			enquecommand_P(PSTR("M107")); //turn off printer fan			
-			enquecommand_P(PSTR("G1 E-0.07500 F2100.00000")); //retract
-			enquecommand_P(PSTR("M104 S0")); // turn off temperature
-			enquecommand_P(PSTR("M140 S0")); // turn off heatbed
-			enquecommand_P(PSTR("G1 Z10 F1300.000")); //lift Z
-			enquecommand_P(PSTR("G1 X10 Y180 F4000")); //Go to parking position
-			if (mmu_enabled) enquecommand_P(PSTR("M702 C")); //unload from nozzle
-			enquecommand_P(PSTR("M84"));// disable motors
-			forceMenuExpire = true; //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
-			lcd_commands_step = 1;
-		}
-		if (lcd_commands_step == 1 && !blocks_queued() && cmd_buffer_empty())
-		{
-			lcd_setstatuspgm(_T(WELCOME_MSG));
-			lcd_commands_step = 0;
-			lcd_commands_type = 0;			
-			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
-				lcd_wizard(WizState::RepeatLay1Cal);
-			}
-		}
-
 	}
 
 #endif // not SNMM
