@@ -1413,22 +1413,7 @@ void lcd_commands()
                 lcd_commands_step = 7;
                 break;
             case 7:
-                enquecommand_P(PSTR("G1 X50 Y155"));
-                enquecommand_P(PSTR("G1 Z0.150 F7200.000"));
-                enquecommand_P(PSTR("G1 F1080"));
-                enquecommand_P(PSTR("G1 X75 Y155 E2.5"));
-                enquecommand_P(PSTR("G1 X100 Y155 E2"));
-                enquecommand_P(PSTR("G1 X200 Y155 E2.62773"));
-                enquecommand_P(PSTR("G1 X200 Y135 E0.66174"));
-                enquecommand_P(PSTR("G1 X50 Y135 E3.62773"));
-                enquecommand_P(PSTR("G1 X50 Y115 E0.49386"));
-                enquecommand_P(PSTR("G1 X200 Y115 E3.62773"));
-                enquecommand_P(PSTR("G1 X200 Y95 E0.49386"));
-                enquecommand_P(PSTR("G1 X50 Y95 E3.62773"));
-                enquecommand_P(PSTR("G1 X50 Y75 E0.49386"));
-                enquecommand_P(PSTR("G1 X200 Y75 E3.62773"));
-                enquecommand_P(PSTR("G1 X200 Y55 E0.49386"));
-                enquecommand_P(PSTR("G1 X50 Y55 E3.62773"));
+                lay1cal_meander();
 
                 strcpy(cmd1, "G1 X50 Y35 E");
                 strcat(cmd1, ftostr43(extr));

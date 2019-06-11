@@ -122,3 +122,48 @@ void lay1cal_before_meander()
         enquecommand_P(static_cast<char*>(pgm_read_ptr(&cmd_pre_meander[i])));
     }
 }
+
+static const char cmd_meander_0[] PROGMEM = "G1 X50 Y155";
+static const char cmd_meander_1[] PROGMEM = "G1 Z0.150 F7200.000";
+static const char cmd_meander_2[] PROGMEM = "G1 F1080";
+static const char cmd_meander_3[] PROGMEM = "G1 X75 Y155 E2.5";
+static const char cmd_meander_4[] PROGMEM = "G1 X100 Y155 E2";
+static const char cmd_meander_5[] PROGMEM = "G1 X200 Y155 E2.62773";
+static const char cmd_meander_6[] PROGMEM = "G1 X200 Y135 E0.66174";
+static const char cmd_meander_7[] PROGMEM = "G1 X50 Y135 E3.62773";
+static const char cmd_meander_8[] PROGMEM = "G1 X50 Y115 E0.49386";
+static const char cmd_meander_9[] PROGMEM = "G1 X200 Y115 E3.62773";
+static const char cmd_meander_10[] PROGMEM = "G1 X200 Y95 E0.49386";
+static const char cmd_meander_11[] PROGMEM = "G1 X50 Y95 E3.62773";
+static const char cmd_meander_12[] PROGMEM = "G1 X50 Y75 E0.49386";
+static const char cmd_meander_13[] PROGMEM = "G1 X200 Y75 E3.62773";
+static const char cmd_meander_14[] PROGMEM = "G1 X200 Y55 E0.49386";
+static const char cmd_meander_15[] PROGMEM = "G1 X50 Y55 E3.62773";
+
+static const char * const cmd_meander[] PROGMEM =
+{
+    cmd_meander_0,
+    cmd_meander_1,
+    cmd_meander_2,
+    cmd_meander_3,
+    cmd_meander_4,
+    cmd_meander_5,
+    cmd_meander_6,
+    cmd_meander_7,
+    cmd_meander_8,
+    cmd_meander_9,
+    cmd_meander_10,
+    cmd_meander_11,
+    cmd_meander_12,
+    cmd_meander_13,
+    cmd_meander_14,
+    cmd_meander_15,
+};
+
+void lay1cal_meander()
+{
+    for (uint8_t i = 0; i < (sizeof(cmd_meander)/sizeof(cmd_meander[0])); ++i)
+    {
+        enquecommand_P(static_cast<char*>(pgm_read_ptr(&cmd_meander[i])));
+    }
+}

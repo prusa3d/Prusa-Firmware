@@ -12,6 +12,7 @@
 void lay1cal_preheat();
 void lay1cal_intro_line(char *cmd_buffer, uint8_t filament);
 void lay1cal_before_meander();
+void lay1cal_meander();
 
 
 
