@@ -1409,14 +1409,7 @@ void lcd_commands()
                 lcd_commands_step = 8;
                 break;
             case 8:
-                enquecommand_P(PSTR("G92 E0.0"));
-                enquecommand_P(PSTR("G21")); //set units to millimeters
-                enquecommand_P(PSTR("G90")); //use absolute coordinates
-                enquecommand_P(PSTR("M83")); //use relative distances for extrusion
-                enquecommand_P(PSTR("G1 E-1.50000 F2100.00000"));
-                enquecommand_P(PSTR("G1 Z5 F7200.000"));
-                enquecommand_P(PSTR("M204 S1000")); //set acceleration
-                enquecommand_P(PSTR("G1 F4000"));
+                lay1cal_before_meander();
                 lcd_commands_step = 7;
                 break;
             case 7:

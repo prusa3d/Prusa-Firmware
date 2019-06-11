@@ -93,3 +93,32 @@ void lay1cal_intro_line(char *cmd_buffer, uint8_t filament)
         enquecommand_P(PSTR("G1 X100.0 E12.5 F1000.0"));
     }
 }
+
+static const char cmd_pre_meander_0[] PROGMEM = "G92 E0.0";
+static const char cmd_pre_meander_1[] PROGMEM = "G21"; //set units to millimeters TODO unsupported command
+static const char cmd_pre_meander_2[] PROGMEM = "G90"; //use absolute coordinates
+static const char cmd_pre_meander_3[] PROGMEM = "M83"; //use relative distances for extrusion TODO: duplicate
+static const char cmd_pre_meander_4[] PROGMEM = "G1 E-1.50000 F2100.00000";
+static const char cmd_pre_meander_5[] PROGMEM = "G1 Z5 F7200.000";
+static const char cmd_pre_meander_6[] PROGMEM = "M204 S1000"; //set acceleration
+static const char cmd_pre_meander_7[] PROGMEM = "G1 F4000";
+
+static const char * const cmd_pre_meander[] PROGMEM =
+{
+        cmd_pre_meander_0,
+        cmd_pre_meander_1,
+        cmd_pre_meander_2,
+        cmd_pre_meander_3,
+        cmd_pre_meander_4,
+        cmd_pre_meander_5,
+        cmd_pre_meander_6,
+        cmd_pre_meander_7,
+};
+
+void lay1cal_before_meander()
+{
+    for (uint8_t i = 0; i < (sizeof(cmd_pre_meander)/sizeof(cmd_pre_meander[0])); ++i)
+    {
+        enquecommand_P(static_cast<char*>(pgm_read_ptr(&cmd_pre_meander[i])));
+    }
+}
