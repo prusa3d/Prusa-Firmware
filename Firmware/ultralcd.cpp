@@ -246,7 +246,7 @@ static char snmm_stop_print_menu();
 #ifdef SDCARD_SORT_ALPHA
  static void lcd_sort_type_set();
 #endif
-static float count_e(float layer_heigth, float extrusion_width, float extrusion_length);
+static constexpr float count_e(float layer_heigth, float extrusion_width, float extrusion_length);
 static void lcd_babystep_z();
 static void lcd_send_status();
 #ifdef FARM_CONNECT_MESSAGE
@@ -1680,10 +1680,9 @@ void lcd_commands()
 
 }
 
-static float count_e(float layer_heigth, float extrusion_width, float extrusion_length) {
+static constexpr float count_e(float layer_heigth, float extrusion_width, float extrusion_length) {
 	//returns filament length in mm which needs to be extrude to form line with extrusion_length * extrusion_width * layer heigth dimensions
-	float extr = extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4);
-	return extr;
+	return (extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4));
 }
 
 void lcd_return_to_status()
