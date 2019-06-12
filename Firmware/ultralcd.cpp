@@ -166,23 +166,23 @@ static bool lcd_selfcheck_pulleys(int axis);
 #endif //TMC2130
 
 static bool lcd_selfcheck_check_heater(bool _isbed);
-enum class testScreen : uint_least8_t
+enum class TestScreen : uint_least8_t
 {
-    extruderFan,
-    printFan,
-    fansOk,
-    endStops,
-    axisX,
-    axisY,
-    axisZ,
-    bed,
-    hotend,
-    hotendOk,
-    fsensor,
-    fsensorOk,
-    allCorrect,
-    failed,
-    home,
+    ExtruderFan,
+    PrintFan,
+    FansOk,
+    EndStops,
+    AxisX,
+    AxisY,
+    AxisZ,
+    Bed,
+    Hotend,
+    HotendOk,
+    Fsensor,
+    FsensorOk,
+    AllCorrect,
+    Failed,
+    Home,
 };
 
 enum class TestError : uint_least8_t
@@ -201,7 +201,7 @@ enum class TestError : uint_least8_t
     triggeringFsensor,
 };
 
-static int  lcd_selftest_screen(testScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
+static int  lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
 static void lcd_selftest_screen_step(int _row, int _col, int _state, const char *_name, const char *_indicator);
 static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 	bool _default=false);
@@ -6769,7 +6769,7 @@ bool lcd_selftest()
 	_delay(2000);
 	KEEPALIVE_STATE(IN_HANDLER);
 
-	_progress = lcd_selftest_screen(testScreen::extruderFan, _progress, 3, true, 2000);
+	_progress = lcd_selftest_screen(TestScreen::ExtruderFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_0))
 	switch (lcd_selftest_fan_auto(0)){		// check extruder Fan
 		case FanCheck::extruderFan:
@@ -6792,7 +6792,7 @@ bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(testScreen::printFan, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(TestScreen::PrintFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_1))
 	switch (lcd_selftest_fan_auto(1)){		// check print fan
 		case FanCheck::printFan:
@@ -6832,7 +6832,7 @@ bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(testScreen::fansOk, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(TestScreen::FansOk, _progress, 3, true, 2000);
 #ifndef TMC2130
 		_result = lcd_selfcheck_endstops();
 #else
@@ -6843,7 +6843,7 @@ bool lcd_selftest()
 	if (_result)
 	{
 		//current_position[Z_AXIS] += 15;									//move Z axis higher to avoid false triggering of Z end stop in case that we are very low - just above heatbed
-		_progress = lcd_selftest_screen(testScreen::axisX, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(TestScreen::AxisX, _progress, 3, true, 2000);
 #ifdef TMC2130
         _result = lcd_selfcheck_axis_sg(X_AXIS);
 #else
@@ -6856,7 +6856,7 @@ bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(testScreen::axisX, _progress, 3, true, 0);
+		_progress = lcd_selftest_screen(TestScreen::AxisX, _progress, 3, true, 0);
 
 #ifndef TMC2130
 		_result = lcd_selfcheck_pulleys(X_AXIS);
@@ -6866,7 +6866,7 @@ bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(testScreen::axisY, _progress, 3, true, 1500);
+		_progress = lcd_selftest_screen(TestScreen::AxisY, _progress, 3, true, 1500);
 #ifdef TMC2130
 		_result = lcd_selfcheck_axis_sg(Y_AXIS);
 #else
@@ -6876,7 +6876,7 @@ bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(testScreen::axisZ, _progress, 3, true, 0);
+		_progress = lcd_selftest_screen(TestScreen::AxisZ, _progress, 3, true, 0);
 #ifndef TMC2130
 		_result = lcd_selfcheck_pulleys(Y_AXIS);
 #endif // TMC2130
@@ -6897,7 +6897,7 @@ bool lcd_selftest()
 		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
-		_progress = lcd_selftest_screen(testScreen::axisZ, _progress, 3, true, 1500);
+		_progress = lcd_selftest_screen(TestScreen::AxisZ, _progress, 3, true, 1500);
 		_result = lcd_selfcheck_axis(2, Z_MAX_POS);
 		if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) != 1) {
 			enquecommand_P(PSTR("G28 W"));
@@ -6911,11 +6911,11 @@ bool lcd_selftest()
 		current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
-		_progress = lcd_selftest_screen(testScreen::home, 0, 2, true, 0);
+		_progress = lcd_selftest_screen(TestScreen::Home, 0, 2, true, 0);
 		bool bres = tmc2130_home_calibrate(X_AXIS);
-		_progress = lcd_selftest_screen(testScreen::home, 1, 2, true, 0);
+		_progress = lcd_selftest_screen(TestScreen::Home, 1, 2, true, 0);
 		bres &= tmc2130_home_calibrate(Y_AXIS);
-		_progress = lcd_selftest_screen(testScreen::home, 2, 2, true, 0);
+		_progress = lcd_selftest_screen(TestScreen::Home, 2, 2, true, 0);
 		if (bres)
 			eeprom_update_byte((uint8_t*)EEPROM_TMC2130_HOME_ENABLED, 1);
 		_result = bres;
@@ -6924,18 +6924,18 @@ bool lcd_selftest()
 
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(testScreen::bed, _progress, 3, true, 2000);
+		_progress = lcd_selftest_screen(TestScreen::Bed, _progress, 3, true, 2000);
 		_result = lcd_selfcheck_check_heater(true);
 	}
 
     if (_result)
     {
-        _progress = lcd_selftest_screen(testScreen::hotend, _progress, 3, true, 1000);
+        _progress = lcd_selftest_screen(TestScreen::Hotend, _progress, 3, true, 1000);
         _result = lcd_selfcheck_check_heater(false);
     }
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(testScreen::hotendOk, _progress, 3, true, 2000); //nozzle ok
+		_progress = lcd_selftest_screen(TestScreen::HotendOk, _progress, 3, true, 2000); //nozzle ok
 	}
 #ifdef FILAMENT_SENSOR
     if (_result)
@@ -6943,20 +6943,20 @@ bool lcd_selftest()
 
         if (mmu_enabled)
         {        
-			_progress = lcd_selftest_screen(testScreen::fsensor, _progress, 3, true, 2000); //check filaments sensor
+			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filaments sensor
             _result = selftest_irsensor();
 		    if (_result)
 			{
-				_progress = lcd_selftest_screen(testScreen::fsensorOk, _progress, 3, true, 2000); //fil sensor OK
+				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
         } else
         {
 #ifdef PAT9125
-			_progress = lcd_selftest_screen(testScreen::fsensor, _progress, 3, true, 2000); //check filaments sensor
+			_progress = lcd_selftest_screen(TestScreen::Fsensor, _progress, 3, true, 2000); //check filaments sensor
             _result = lcd_selftest_fsensor();
 			if (_result)
 			{
-				_progress = lcd_selftest_screen(testScreen::fsensorOk, _progress, 3, true, 2000); //fil sensor OK
+				_progress = lcd_selftest_screen(TestScreen::FsensorOk, _progress, 3, true, 2000); //fil sensor OK
 			}
 #endif //PAT9125
         }
@@ -6964,11 +6964,11 @@ bool lcd_selftest()
 #endif //FILAMENT_SENSOR
 	if (_result)
 	{
-		_progress = lcd_selftest_screen(testScreen::allCorrect, _progress, 3, true, 5000); //all correct
+		_progress = lcd_selftest_screen(TestScreen::AllCorrect, _progress, 3, true, 5000); //all correct
 	}
 	else
 	{
-		_progress = lcd_selftest_screen(testScreen::failed, _progress, 3, true, 5000);
+		_progress = lcd_selftest_screen(TestScreen::Failed, _progress, 3, true, 5000);
 	}
 	lcd_reset_alert_level();
 	enquecommand_P(PSTR("M84"));
@@ -7175,7 +7175,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		}
 		else
 		{
-			_progress = lcd_selftest_screen(static_cast<testScreen>(static_cast<int>(testScreen::axisX) + _axis), _progress, 3, false, 0);
+			_progress = lcd_selftest_screen(static_cast<TestScreen>(static_cast<int>(TestScreen::AxisX) + _axis), _progress, 3, false, 0);
 			_lcd_refresh = 0;
 		}
 
@@ -7342,7 +7342,7 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 
 		manage_heater();
 		manage_inactivity(true);
-		_progress = (_isbed) ? lcd_selftest_screen(testScreen::bed, _progress, 2, false, 400) : lcd_selftest_screen(testScreen::hotend, _progress, 2, false, 400);
+		_progress = (_isbed) ? lcd_selftest_screen(TestScreen::Bed, _progress, 2, false, 400) : lcd_selftest_screen(TestScreen::Hotend, _progress, 2, false, 400);
 		/*if (_isbed) {
 			MYSERIAL.print("Bed temp:");
 			MYSERIAL.println(degBed());
@@ -7560,16 +7560,16 @@ static bool selftest_irsensor()
         TempBackup tempBackup;
         setTargetHotend(ABS_PREHEAT_HOTEND_TEMP,active_extruder);
         mmu_wait_for_heater_blocking();
-        progress = lcd_selftest_screen(testScreen::fsensor, 0, 1, true, 0);
+        progress = lcd_selftest_screen(TestScreen::Fsensor, 0, 1, true, 0);
         mmu_filament_ramming();
     }
-    progress = lcd_selftest_screen(testScreen::fsensor, progress, 1, true, 0);
+    progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
     mmu_command(MmuCmd::U0);
     manage_response(false, false);
 
     for(uint_least8_t i = 0; i < 200; ++i)
     {
-        if (0 == (i % 32)) progress = lcd_selftest_screen(testScreen::fsensor, progress, 1, true, 0);
+        if (0 == (i % 32)) progress = lcd_selftest_screen(TestScreen::Fsensor, progress, 1, true, 0);
 
         mmu_load_step(false);
         while (blocks_queued())
@@ -7795,7 +7795,7 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 
 #endif //FANCHECK
 
-static int lcd_selftest_screen(testScreen screen, int _progress, int _progress_scale, bool _clear, int _delay)
+static int lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay)
 {
 
     lcd_update_enable(false);
@@ -7807,58 +7807,58 @@ static int lcd_selftest_screen(testScreen screen, int _progress, int _progress_s
 
 	lcd_set_cursor(0, 0);
 
-	if (screen == testScreen::extruderFan) lcd_puts_P(_T(MSG_SELFTEST_FAN));
-	if (screen == testScreen::printFan) lcd_puts_P(_T(MSG_SELFTEST_FAN));
-	if (screen == testScreen::fansOk) lcd_puts_P(_T(MSG_SELFTEST_FAN));
-	if (screen == testScreen::endStops) lcd_puts_P(_i("Checking endstops"));////MSG_SELFTEST_CHECK_ENDSTOPS c=20
-	if (screen == testScreen::axisX) lcd_puts_P(_i("Checking X axis  "));////MSG_SELFTEST_CHECK_X c=20
-	if (screen == testScreen::axisY) lcd_puts_P(_i("Checking Y axis  "));////MSG_SELFTEST_CHECK_Y c=20
-	if (screen == testScreen::axisZ) lcd_puts_P(_i("Checking Z axis  "));////MSG_SELFTEST_CHECK_Z c=20
-	if (screen == testScreen::bed) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
-	if (screen == testScreen::hotend
-	    || screen == testScreen::hotendOk) lcd_puts_P(_i("Checking hotend  "));////MSG_SELFTEST_CHECK_HOTEND c=20
-	if (screen == testScreen::fsensor) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
-	if (screen == testScreen::fsensorOk) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
-	if (screen == testScreen::allCorrect) lcd_puts_P(_i("All correct      "));////MSG_SELFTEST_CHECK_ALLCORRECT c=20
-	if (screen == testScreen::failed) lcd_puts_P(_T(MSG_SELFTEST_FAILED));
-	if (screen == testScreen::home) lcd_puts_P(_i("Calibrating home"));////c=20 r=1
+	if (screen == TestScreen::ExtruderFan) lcd_puts_P(_T(MSG_SELFTEST_FAN));
+	if (screen == TestScreen::PrintFan) lcd_puts_P(_T(MSG_SELFTEST_FAN));
+	if (screen == TestScreen::FansOk) lcd_puts_P(_T(MSG_SELFTEST_FAN));
+	if (screen == TestScreen::EndStops) lcd_puts_P(_i("Checking endstops"));////MSG_SELFTEST_CHECK_ENDSTOPS c=20
+	if (screen == TestScreen::AxisX) lcd_puts_P(_i("Checking X axis  "));////MSG_SELFTEST_CHECK_X c=20
+	if (screen == TestScreen::AxisY) lcd_puts_P(_i("Checking Y axis  "));////MSG_SELFTEST_CHECK_Y c=20
+	if (screen == TestScreen::AxisZ) lcd_puts_P(_i("Checking Z axis  "));////MSG_SELFTEST_CHECK_Z c=20
+	if (screen == TestScreen::Bed) lcd_puts_P(_T(MSG_SELFTEST_CHECK_BED));
+	if (screen == TestScreen::Hotend
+	    || screen == TestScreen::HotendOk) lcd_puts_P(_i("Checking hotend  "));////MSG_SELFTEST_CHECK_HOTEND c=20
+	if (screen == TestScreen::Fsensor) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
+	if (screen == TestScreen::FsensorOk) lcd_puts_P(_T(MSG_SELFTEST_CHECK_FSENSOR));
+	if (screen == TestScreen::AllCorrect) lcd_puts_P(_i("All correct      "));////MSG_SELFTEST_CHECK_ALLCORRECT c=20
+	if (screen == TestScreen::Failed) lcd_puts_P(_T(MSG_SELFTEST_FAILED));
+	if (screen == TestScreen::Home) lcd_puts_P(_i("Calibrating home"));////c=20 r=1
 
 	lcd_set_cursor(0, 1);
 	lcd_puts_P(separator);
-	if ((screen >= testScreen::extruderFan) && (screen <= testScreen::fansOk))
+	if ((screen >= TestScreen::ExtruderFan) && (screen <= TestScreen::FansOk))
 	{
 		//SERIAL_ECHOLNPGM("Fan test");
 		lcd_puts_at_P(0, 2, _i("Extruder fan:"));////MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 		lcd_set_cursor(18, 2);
-		(screen < testScreen::printFan) ? lcd_print(_indicator) : lcd_print("OK");
+		(screen < TestScreen::PrintFan) ? lcd_print(_indicator) : lcd_print("OK");
 		lcd_puts_at_P(0, 3, _i("Print fan:"));////MSG_SELFTEST_PRINT_FAN_SPEED c=18
 		lcd_set_cursor(18, 3);
-		(screen < testScreen::fansOk) ? lcd_print(_indicator) : lcd_print("OK");
+		(screen < TestScreen::FansOk) ? lcd_print(_indicator) : lcd_print("OK");
 	}
-	else if (screen >= testScreen::fsensor && screen <= testScreen::fsensorOk)
+	else if (screen >= TestScreen::Fsensor && screen <= TestScreen::FsensorOk)
 	{
 		lcd_puts_at_P(0, 2, _T(MSG_SELFTEST_FILAMENT_SENSOR));
 		lcd_putc(':');
 		lcd_set_cursor(18, 2);
-		(screen == testScreen::fsensor) ? lcd_print(_indicator) : lcd_print("OK");
+		(screen == TestScreen::Fsensor) ? lcd_print(_indicator) : lcd_print("OK");
 	}
-	else if (screen < testScreen::fsensor)
+	else if (screen < TestScreen::Fsensor)
 	{
 		//SERIAL_ECHOLNPGM("Other tests");
 
-	    testScreen _step_block = testScreen::axisX;
+	    TestScreen _step_block = TestScreen::AxisX;
 		lcd_selftest_screen_step(2, 2, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "X", _indicator);
 
-		_step_block = testScreen::axisY;
+		_step_block = TestScreen::AxisY;
 		lcd_selftest_screen_step(2, 8, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "Y", _indicator);
 
-		_step_block = testScreen::axisZ;
+		_step_block = TestScreen::AxisZ;
 		lcd_selftest_screen_step(2, 14, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "Z", _indicator);
 
-		_step_block = testScreen::bed;
+		_step_block = TestScreen::Bed;
 		lcd_selftest_screen_step(3, 0, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "Bed", _indicator);
 
-        _step_block = testScreen::hotend;
+        _step_block = TestScreen::Hotend;
         lcd_selftest_screen_step(3, 9, ((screen == _step_block) ? 1 : (screen < _step_block) ? 0 : 2), "Hotend", _indicator);
 	}
 
