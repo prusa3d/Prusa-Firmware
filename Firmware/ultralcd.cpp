@@ -1640,7 +1640,7 @@ void lcd_return_to_status()
 	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, false, true);
 	menu_depth = 0;
-     eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
+     eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
 }
 
 //! @brief Pause print, disable nozzle heater, move to park position
@@ -2179,7 +2179,7 @@ void lcd_set_filament_oq_meass()
 }
 
 
-eFILAMENT_ACTION eFilamentAction=eFILAMENT_ACTION::none; // must be initialized as 'non-autoLoad'
+FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as 'non-autoLoad'
 bool bFilamentFirstRun;
 bool bFilamentPreheatState;
 bool bFilamentAction=false;
@@ -2196,18 +2196,18 @@ lcd_puts_P(_i("Press the knob"));                 ////MSG_ c=20 r=1
 lcd_set_cursor(0,3);
 switch(eFilamentAction)
      {
-     case eFILAMENT_ACTION::load:
-     case eFILAMENT_ACTION::autoLoad:
-     case eFILAMENT_ACTION::mmuLoad:
+     case FilamentAction::Load:
+     case FilamentAction::AutoLoad:
+     case FilamentAction::MmuLoad:
           lcd_puts_P(_i("to load filament"));     ////MSG_ c=20 r=1
           break;
-     case eFILAMENT_ACTION::unLoad:
-     case eFILAMENT_ACTION::mmuUnLoad:
+     case FilamentAction::UnLoad:
+     case FilamentAction::MmuUnLoad:
           lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20 r=1
           break;
-     case eFILAMENT_ACTION::mmuEject:
-     case eFILAMENT_ACTION::mmuCut:
-     case eFILAMENT_ACTION::none:
+     case FilamentAction::MmuEject:
+     case FilamentAction::MmuCut:
+     case FilamentAction::None:
           break;
      }
 if(lcd_clicked())
@@ -2221,21 +2221,21 @@ if(lcd_clicked())
      menu_back(nLevel);
      switch(eFilamentAction)
           {
-          case eFILAMENT_ACTION::autoLoad:
-               eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
+          case FilamentAction::AutoLoad:
+               eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
                // no break
-          case eFILAMENT_ACTION::load:
+          case FilamentAction::Load:
                loading_flag=true;
                enquecommand_P(PSTR("M701"));      // load filament
                break;
-          case eFILAMENT_ACTION::unLoad:
+          case FilamentAction::UnLoad:
                enquecommand_P(PSTR("M702"));      // unload filament
                break;
-          case eFILAMENT_ACTION::mmuLoad:
-          case eFILAMENT_ACTION::mmuUnLoad:
-          case eFILAMENT_ACTION::mmuEject:
-          case eFILAMENT_ACTION::mmuCut:
-          case eFILAMENT_ACTION::none:
+          case FilamentAction::MmuLoad:
+          case FilamentAction::MmuUnLoad:
+          case FilamentAction::MmuEject:
+          case FilamentAction::MmuCut:
+          case FilamentAction::None:
                break;
           }
      }
@@ -2360,44 +2360,44 @@ if(current_temperature[0]>(target_temperature[0]*0.95))
      {
      switch(eFilamentAction)
           {
-          case eFILAMENT_ACTION::load:
-          case eFILAMENT_ACTION::autoLoad:
-          case eFILAMENT_ACTION::unLoad:
+          case FilamentAction::Load:
+          case FilamentAction::AutoLoad:
+          case FilamentAction::UnLoad:
                if(bFilamentWaitingFlag)
                     menu_submenu(mFilamentPrompt);
                else {
                     nLevel=bFilamentPreheatState?1:2;
                     menu_back(nLevel);
-                    if((eFilamentAction==eFILAMENT_ACTION::load)||(eFilamentAction==eFILAMENT_ACTION::autoLoad))
+                    if((eFilamentAction==FilamentAction::Load)||(eFilamentAction==FilamentAction::AutoLoad))
                          {
                          loading_flag=true;
                          enquecommand_P(PSTR("M701")); // load filament
-                         if(eFilamentAction==eFILAMENT_ACTION::autoLoad)
-                              eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
+                         if(eFilamentAction==FilamentAction::AutoLoad)
+                              eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
                          }
-                    if(eFilamentAction==eFILAMENT_ACTION::unLoad)
+                    if(eFilamentAction==FilamentAction::UnLoad)
                          enquecommand_P(PSTR("M702")); // unload filament
                     }
                break;
-          case eFILAMENT_ACTION::mmuLoad:
+          case FilamentAction::MmuLoad:
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
                menu_back(nLevel);
                menu_submenu(mmu_load_to_nozzle_menu);
                break;
-          case eFILAMENT_ACTION::mmuUnLoad:
+          case FilamentAction::MmuUnLoad:
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
                menu_back(nLevel);
                extr_unload();
                break;
-          case eFILAMENT_ACTION::mmuEject:
+          case FilamentAction::MmuEject:
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
                menu_back(nLevel);
                menu_submenu(mmu_fil_eject_menu);
                break;
-          case eFILAMENT_ACTION::mmuCut:
+          case FilamentAction::MmuCut:
 #ifdef MMU_HAS_CUTTER
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
@@ -2405,7 +2405,7 @@ if(current_temperature[0]>(target_temperature[0]*0.95))
                menu_submenu(mmu_cut_filament_menu);
 #endif //MMU_HAS_CUTTER
                break;
-          case eFILAMENT_ACTION::none:
+          case FilamentAction::None:
                break;
           }
      if(bFilamentWaitingFlag)
@@ -2419,22 +2419,22 @@ else {
      lcd_set_cursor(0,1);
      switch(eFilamentAction)
           {
-          case eFILAMENT_ACTION::load:
-          case eFILAMENT_ACTION::autoLoad:
-          case eFILAMENT_ACTION::mmuLoad:
+          case FilamentAction::Load:
+          case FilamentAction::AutoLoad:
+          case FilamentAction::MmuLoad:
                lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20 r=1
                break;
-          case eFILAMENT_ACTION::unLoad:
-          case eFILAMENT_ACTION::mmuUnLoad:
+          case FilamentAction::UnLoad:
+          case FilamentAction::MmuUnLoad:
                lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20 r=1
                break;
-          case eFILAMENT_ACTION::mmuEject:
+          case FilamentAction::MmuEject:
                lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20 r=1
                break;
-          case eFILAMENT_ACTION::mmuCut:
+          case FilamentAction::MmuCut:
                lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20 r=1
                break;
-          case eFILAMENT_ACTION::none:
+          case FilamentAction::None:
                break;
           }
      lcd_set_cursor(0,3);
@@ -2453,8 +2453,8 @@ else {
                setTargetBed((float)nTargetBedOld);
                }
           menu_back();
-          if(eFilamentAction==eFILAMENT_ACTION::autoLoad)
-               eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
+          if(eFilamentAction==FilamentAction::AutoLoad)
+               eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
           }
      }
 }
@@ -2499,8 +2499,8 @@ mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP,FLEX_PREHEAT_HPB_TEMP);
 void mFilamentBack()
 {
 menu_back();
-if(eFilamentAction==eFILAMENT_ACTION::autoLoad)
-     eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
+if(eFilamentAction==FilamentAction::AutoLoad)
+     eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
 }
 
 void mFilamentMenu()
@@ -2531,7 +2531,7 @@ if(0)
      enquecommand_P(PSTR("M702"));                // unload filament
      }
 else {
-     eFilamentAction=eFILAMENT_ACTION::unLoad;
+     eFilamentAction=FilamentAction::UnLoad;
      bFilamentFirstRun=false;
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
@@ -2766,7 +2766,7 @@ if(0)
   }
   else
   {
-     eFilamentAction=eFILAMENT_ACTION::load;
+     eFilamentAction=FilamentAction::Load;
      bFilamentFirstRun=false;
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
@@ -5795,7 +5795,7 @@ static void mmu_load_to_nozzle_menu()
     }
     else
     {
-        eFilamentAction = eFILAMENT_ACTION::mmuLoad;
+        eFilamentAction = FilamentAction::MmuLoad;
         bFilamentFirstRun = false;
         if (target_temperature[0] >= EXTRUDE_MINTEMP)
         {
@@ -5827,7 +5827,7 @@ static void mmu_fil_eject_menu()
     }
     else
     {
-        eFilamentAction = eFILAMENT_ACTION::mmuEject;
+        eFilamentAction = FilamentAction::MmuEject;
         bFilamentFirstRun = false;
         if (target_temperature[0] >= EXTRUDE_MINTEMP)
         {
@@ -5855,7 +5855,7 @@ static void mmu_cut_filament_menu()
     }
     else
     {
-        eFilamentAction=eFILAMENT_ACTION::mmuCut;
+        eFilamentAction=FilamentAction::MmuCut;
         bFilamentFirstRun=false;
         if(target_temperature[0]>=EXTRUDE_MINTEMP)
         {

@@ -151,18 +151,19 @@ void extr_unload_used();
 #endif //SNMM
 void extr_unload();
 
-enum class eFILAMENT_ACTION : uint8_t {
-    none, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
-    load,
-    autoLoad,
-    unLoad,
-    mmuLoad,
-    mmuUnLoad,
-    mmuEject,
-    mmuCut,
+enum class FilamentAction : uint_least8_t
+{
+    None, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
+    Load,
+    AutoLoad,
+    UnLoad,
+    MmuLoad,
+    MmuUnLoad,
+    MmuEject,
+    MmuCut,
 };
 
-extern eFILAMENT_ACTION eFilamentAction;
+extern FilamentAction eFilamentAction;
 extern bool bFilamentFirstRun;
 extern bool bFilamentPreheatState;
 extern bool bFilamentAction;

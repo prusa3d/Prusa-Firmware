@@ -1076,7 +1076,7 @@ if(0)
      extr_unload();
      }
 else	{
-     eFilamentAction=eFILAMENT_ACTION::mmuUnLoad;
+     eFilamentAction=FilamentAction::MmuUnLoad;
      bFilamentFirstRun=false;
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
