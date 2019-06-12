@@ -2053,8 +2053,8 @@ void check_max_temp()
 struct alert_automaton_mintemp {
 private:
 	enum { ALERT_AUTOMATON_SPEED_DIV = 5 };
-	enum class States : uint8_t { INIT = 0, TEMP_ABOVE_MINTEMP, SHOW_PLEASE_RESTART, SHOW_MINTEMP };
-	States state = States::INIT;
+	enum class States : uint8_t { Init = 0, TempAboveMintemp, ShowPleaseRestart, ShowMintemp };
+	States state = States::Init;
 	uint8_t repeat = ALERT_AUTOMATON_SPEED_DIV;
 
 	void substep(States next_state){
@@ -2073,26 +2073,26 @@ public:
 		static const char m2[] PROGMEM = "MINTEMP fixed";
 		static const char m1[] PROGMEM = "Please restart";
 		switch(state){
-		case States::INIT: // initial state - check hysteresis
+		case States::Init: // initial state - check hysteresis
 			if( current_temp > mintemp ){
-				state = States::TEMP_ABOVE_MINTEMP;
+				state = States::TempAboveMintemp;
 			}
 			// otherwise keep the Err MINTEMP alert message on the display,
 			// i.e. do not transfer to state 1
 			break;
-		case States::TEMP_ABOVE_MINTEMP: // the temperature has risen above the hysteresis check
+		case States::TempAboveMintemp: // the temperature has risen above the hysteresis check
 			lcd_setalertstatuspgm(m2);
-			substep(States::SHOW_MINTEMP);
+			substep(States::ShowMintemp);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
-		case States::SHOW_PLEASE_RESTART: // displaying "Please restart"
+		case States::ShowPleaseRestart: // displaying "Please restart"
 			lcd_updatestatuspgm(m1);
-			substep(States::SHOW_MINTEMP);
+			substep(States::ShowMintemp);
 			last_alert_sent_to_lcd = LCDALERT_PLEASERESTART;
 			break;
-		case States::SHOW_MINTEMP: // displaying "MINTEMP fixed"
+		case States::ShowMintemp: // displaying "MINTEMP fixed"
 			lcd_updatestatuspgm(m2);
-			substep(States::SHOW_PLEASE_RESTART);
+			substep(States::ShowPleaseRestart);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
 		}

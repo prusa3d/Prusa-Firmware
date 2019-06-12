@@ -1511,20 +1511,20 @@ void mmu_continue_loading(bool blocking)
 
     enum class Ls : uint_least8_t
     {
-        enter,
-        retry,
-        unload,
+        Enter,
+        Retry,
+        Unload,
     };
-    Ls state = Ls::enter;
+    Ls state = Ls::Enter;
 
     while (PIN_GET(IR_SENSOR_PIN) != 0)
     {
         switch (state)
         {
-        case Ls::enter:
+        case Ls::Enter:
             increment_load_fail();
             // no break
-        case Ls::retry:
+        case Ls::Retry:
 #ifdef MMU_HAS_CUTTER
             if (1 == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
             {
@@ -1535,9 +1535,9 @@ void mmu_continue_loading(bool blocking)
             mmu_command(MmuCmd::T0 + tmp_extruder);
             manage_response(true, true, MMU_TCODE_MOVE);
             load_more();
-            state = Ls::unload;
+            state = Ls::Unload;
             break;
-        case Ls::unload:
+        case Ls::Unload:
             stop_and_save_print_to_ram(0, 0);
 
             //lift z
@@ -1562,7 +1562,7 @@ void mmu_continue_loading(bool blocking)
             {
                 marlin_wait_for_click();
                 restore_print_from_ram_and_continue(0);
-                state = Ls::retry;
+                state = Ls::Retry;
             }
             else
             {
