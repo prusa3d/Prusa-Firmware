@@ -97,6 +97,8 @@ AXIS SETTINGS
 // New XYZ calibration
 //#define NEW_XYZCAL
 
+// Watchdog support
+#define WATCHDOG
 
 /*------------------------------------
 EXTRUDER SETTINGS

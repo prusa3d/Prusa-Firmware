@@ -8,6 +8,7 @@
      * [Using Git-bash](#using-git-bash-under-windows-10-64-bit)
    * [Automated tests](#3-automated-tests)
    * [Documentation](#4-documentation)
+   * [FAQ](#5-faq)
 <!--te-->
 
 
@@ -52,6 +53,9 @@ _(after installation, the item is labeled as `"INSTALLED"` and can then be used 
 add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags=" before existing flag "-Wl,--gc-sections"  
 example:  
 `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
+The file can be found in Arduino instalation directory, or after Arduino has been updated at:  
+"C:\Users\(user)\AppData\Local\Arduino15\packages\arduino\hardware\avr\(version)"
+If you can locate the file in both places, file from user profile is probably used.
 
 #### 2. Source code compilation
 
@@ -106,6 +110,9 @@ Now your Ubuntu subsystem is ready to use the automatic `PF-build.sh` script and
   - Example: You files are under `C:\Users\<your-username>\Downloads\Prusa-Firmware-MK3`
   - use under Ubuntu the following command `cd /mnt/c/Users/<your-username>/Downloads/Prusa-Firmware-MK3`
     to change to the right folder
+- Unix and windows have different line endings (LF vs CRLF), try dos2unix to convert
+  - This should fix the `"$'\r': command not found"` error
+  - to install run `apt-get install dos2unix`
 
 #### Compile Prusa-firmware with Ubuntu Linux subsystem installed
 - open Ubuntu bash
@@ -170,3 +177,20 @@ Example:
 
 # 4. Documentation
 run [doxygen](http://www.doxygen.nl/) in Firmware folder
+
+# 5. FAQ
+Q:I built firmware using Arduino and I see "?" instead of numbers in printer user interface.
+
+A:Step 1.c was ommited or you updated Arduino and now platform.txt located somewhere in your user profile is used.
+
+Q:I built firmware using Arduino and printer now speaks Klingon (nonsense characters and symbols are displayed @^#$&*°;~ÿ)
+
+A:Step 2.c was omitted.
+
+Q:What environment does Prusa use to build the firmware in the first place?
+
+A:Our production builds are 99.9% equivalent to https://github.com/prusa3d/Prusa-Firmware#linux this is also easiest way to build as only one step is needed - run single script, which downloads patched Arduino from github, builds using it, then extracts translated strings and creates language variants (for MK2x) or language hex file for external SPI flash (MK3x). But you need Linux or Linux in virtual machine. This is also what happens when you open pull request to our repository - all variants are built by Travis http://travis-ci.org/ (to check for compilation errors). You can see, what is happening in .travis.yml. It would be also possible to get hex built by travis, only deploy step is missing in .travis.yml. You can get inspiration how to deploy hex by travis and how to setup travis in https://github.com/prusa3d/MM-control-01/ repository. Final hex is located in ./lang/firmware.hex Community reproduced this for Windows in https://github.com/prusa3d/Prusa-Firmware#using-linux-subsystem-under-windows-10-64-bit or https://github.com/prusa3d/Prusa-Firmware#using-git-bash-under-windows-10-64-bit .
+
+Q:Why are build instructions for Arduino mess.
+
+Y:We are too lazy to ship proper board definition for Arduino. We plan to swich to cmake + ninja to be inherently multiplatform, easily integrate build tools, suport more IDEs, get 10 times shorter build times and be able to update compiler whenewer we want.

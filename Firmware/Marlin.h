@@ -21,6 +21,7 @@
 #include "Configuration.h"
 #include "pins.h"
 #include "Timer.h"
+extern uint8_t mbl_z_probe_nr;
 
 #ifndef AT90USB
 #define  HardwareSerial_h // trick to disable the standard HWserial
@@ -319,9 +320,9 @@ extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
 
-#ifdef HOST_KEEPALIVE_FEATURE
+
 extern uint8_t host_keepalive_interval;
-#endif
+
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
@@ -392,6 +393,13 @@ extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT   0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CUSTOM_MSG_TYPE_TEMCAL) || saved_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL) || card.paused || mmu_print_saved)
+//! Beware - mcode_in_progress is set as soon as the command gets really processed,
+//! which is not the same as posting the M600 command into the command queue
+//! There can be a considerable lag between posting M600 and its real processing which might result
+//! in posting multiple M600's into the command queue
+//! Instead, the fsensor uses another state variable :( , which is set to true, when the M600 command is enqued
+//! and is reset to false when the fsensor returns into its filament runout finished handler
+//! I'd normally change this macro, but who knows what would happen in the MMU :)
 #define CHECK_FSENSOR ((IS_SD_PRINTING || is_usb_printing) && (mcode_in_progress != 600) && !saved_printing && e_active())
 
 extern void calculate_extruder_multipliers();
@@ -405,13 +413,12 @@ extern void check_babystep();
 extern void long_pause();
 extern void crashdet_stop_and_save_print();
 
-#ifdef DIS
-
+#ifdef HEATBED_ANALYSIS
 void d_setup();
 float d_ReadData();
 void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
-
-#endif
+void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_points_num, float shift_x, float shift_y);
+#endif //HEATBED_ANALYSIS
 float temp_comp_interpolation(float temperature);
 void temp_compensation_apply();
 void temp_compensation_start();
@@ -451,7 +458,7 @@ extern void restore_print_from_ram_and_continue(float e_move);
 extern uint16_t print_time_remaining();
 extern uint8_t calc_percent_done();
 
-#ifdef HOST_KEEPALIVE_FEATURE
+
 
 // States for managing Marlin and host communication
 // Marlin sends messages if blocked or busy
@@ -472,9 +479,8 @@ extern uint8_t calc_percent_done();
 #define KEEPALIVE_STATE(n) do { busy_state = n;} while (0)
 extern void host_keepalive();
 //extern MarlinBusyState busy_state;
-extern int busy_state;
+extern int8_t busy_state;
 
-#endif //HOST_KEEPALIVE_FEATURE
 
 #ifdef TMC2130
 
@@ -501,3 +507,5 @@ void M600_load_filament_movements();
 void M600_wait_for_user(float HotendTempBckp);
 void M600_check_state(float nozzle_temp);
 void load_filament_final_feed();
+void marlin_wait_for_click();
+void marlin_rise_z(void);

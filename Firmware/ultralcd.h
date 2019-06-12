@@ -18,7 +18,16 @@ extern void menu_lcd_lcdupdate_func(void);
 void ultralcd_init();
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);
+//! return to the main status screen and display the alert message
+//! Beware - it has sideeffects:
+//! - always returns the display to the main status screen
+//! - always makes lcd_reset (which is slow and causes flicker)
+//! - does not update the message if there is already one (i.e. lcd_status_message_level > 0)
 void lcd_setalertstatuspgm(const char* message);
+//! only update the alert message on the main status screen
+//! has no sideeffects, may be called multiple times
+void lcd_updatestatuspgm(const char *message);
+
 void lcd_reset_alert_level();
 uint8_t get_message_level();
 void lcd_adjust_z();
@@ -88,7 +97,7 @@ extern void lcd_diag_show_end_stops();
 #define LCD_COMMAND_PID_EXTRUDER 7 
 #define LCD_COMMAND_V2_CAL 8
 
-extern int lcd_commands_type;
+extern uint8_t lcd_commands_type;
 extern int8_t FSensorStateMenu;
 
 #define CUSTOM_MSG_TYPE_STATUS 0 // status message from lcd_status_message variable
@@ -118,6 +127,7 @@ extern int farm_status;
 #endif
 
 extern int8_t SilentModeMenu;
+extern uint8_t SilentModeMenu_MMU;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;
@@ -128,7 +138,6 @@ void lcd_commands();
 
 
 void change_extr(int extr);
-void extr_adj(int extruder);
 
 #ifdef SNMM
 void extr_unload_all(); 
