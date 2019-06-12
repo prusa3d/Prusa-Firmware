@@ -147,14 +147,14 @@ void extr_unload();
 
 typedef enum
 {
-    e_FILAMENT_ACTION_none, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
+    e_FILAMENT_ACTION_none,                       //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
     e_FILAMENT_ACTION_Load,
     e_FILAMENT_ACTION_autoLoad,
     e_FILAMENT_ACTION_unLoad,
     e_FILAMENT_ACTION_mmuLoad,
     e_FILAMENT_ACTION_mmuUnLoad,
     e_FILAMENT_ACTION_mmuEject,
-    e_FILAMENT_ACTION_mmuCut,
+    e_FILAMENT_ACTION_mmuCut
 } eFILAMENT_ACTION;
 extern eFILAMENT_ACTION eFilamentAction;
 extern bool bFilamentFirstRun;

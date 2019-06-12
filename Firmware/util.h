@@ -33,4 +33,29 @@ inline void eeprom_update_int8(unsigned char* addr, int8_t v) {
 	eeprom_update_byte(addr, *reinterpret_cast<uint8_t*>(&v));
 }
 
+
+//-//
+#define e_CHECK_MODE_NULL 0xFF
+#define e_NOZZLE_DIAMETER_NULL 0xFF
+
+typedef enum
+{
+    e_NOZZLE_DIAMETER_250,
+    e_NOZZLE_DIAMETER_400,
+    e_NOZZLE_DIAMETER_600
+} eNOZZLE_DIAMETER;
+
+typedef enum
+{
+    e_CHECK_MODE_none,
+    e_CHECK_MODE_warn,
+    e_CHECK_MODE_strict
+} eCHECK_MODE;
+
+extern eNOZZLE_DIAMETER eNozzleDiameter;
+extern eCHECK_MODE eCheckMode;
+
+void fCheckModeInit();
+void nozzle_diameter_check(uint16_t nDiameter);
+
 #endif /* UTIL_H */
