@@ -89,7 +89,7 @@ extern void lcd_diag_show_end_stops();
 
 
 // To be used in lcd_commands_type.
-enum class LcdCommands : uint8_t
+enum class LcdCommands : uint_least8_t
 {
 	Idle,
 	LoadFilament,
@@ -103,16 +103,17 @@ enum class LcdCommands : uint8_t
 extern LcdCommands lcd_commands_type;
 extern int8_t FSensorStateMenu;
 
-enum class CustomMsgTypes : uint8_t {
-	STATUS = 0, //!< status message from lcd_status_message variable
-	MESHBL = 1, //!< Mesh bed leveling in progress
-	F_LOAD = 2, //!< Loading filament in progress
-	PIDCAL = 3, //!< PID tuning in progress
-	TEMCAL = 4, //!< PINDA temp calibration
-	TEMPRE = 5, //!< Temp compensation preheat
+enum class CustomMsg : uint_least8_t
+{
+	Status,          //!< status message from lcd_status_message variable
+	MeshBedLeveling, //!< Mesh bed leveling in progress
+	FilamentLoading, //!< Loading filament in progress
+	PidCal,          //!< PID tuning in progress
+	TempCal,         //!< PINDA temperature calibration
+	TempCompPreheat, //!< Temperature compensation preheat
 };
 
-extern CustomMsgTypes custom_message_type;
+extern CustomMsg custom_message_type;
 extern unsigned int custom_message_state;
 
 extern uint8_t farm_mode;

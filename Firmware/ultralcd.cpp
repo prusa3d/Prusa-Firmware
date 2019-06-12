@@ -77,7 +77,7 @@ bool presort_flag = false;
 LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 
-CustomMsgTypes custom_message_type = CustomMsgTypes::STATUS;
+CustomMsg custom_message_type = CustomMsg::Status;
 unsigned int custom_message_state = 0;
 
 
@@ -565,7 +565,7 @@ void lcdui_print_temp(char type, int val_current, int val_target)
 // Print Z-coordinate (8 chars total)
 void lcdui_print_Z_coord(void)
 {
-    if (custom_message_type == CustomMsgTypes::MESHBL)
+    if (custom_message_type == CustomMsg::MeshBedLeveling)
         lcd_puts_P(_N("Z   --- "));
     else
 		lcd_printf_P(_N("Z%6.2f "), current_position[Z_AXIS]);
@@ -760,7 +760,7 @@ void lcdui_print_status_line(void)
 			break;
 		}
 	}
-	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsgTypes::STATUS))
+	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status))
 	{ // If printing from SD, show what we are printing
 		if(strlen(card.longFilename) > LCD_WIDTH)
 		{
@@ -794,10 +794,10 @@ void lcdui_print_status_line(void)
 	{ // Otherwise check for other special events
    		switch (custom_message_type)
 		{
-		case CustomMsgTypes::STATUS: // Nothing special, print status message normally
+		case CustomMsg::Status: // Nothing special, print status message normally
 			lcd_print(lcd_status_message);
 			break;
-		case CustomMsgTypes::MESHBL: // If mesh bed leveling in progress, show the status
+		case CustomMsg::MeshBedLeveling: // If mesh bed leveling in progress, show the status
 			if (custom_message_state > 10)
 			{
 				lcd_set_cursor(0, 3);
@@ -813,7 +813,7 @@ void lcdui_print_status_line(void)
 				{
 					lcd_puts_P(_T(WELCOME_MSG));
 					lcd_setstatuspgm(_T(WELCOME_MSG));
-					custom_message_type = CustomMsgTypes::STATUS;
+					custom_message_type = CustomMsg::Status;
 				}
 				if (custom_message_state > 3 && custom_message_state <= 10 )
 				{
@@ -825,10 +825,10 @@ void lcdui_print_status_line(void)
 				}
 			}
 			break;
-		case CustomMsgTypes::F_LOAD: // If loading filament, print status
+		case CustomMsg::FilamentLoading: // If loading filament, print status
 			lcd_print(lcd_status_message);
 			break;
-		case CustomMsgTypes::PIDCAL: // PID tuning in progress
+		case CustomMsg::PidCal: // PID tuning in progress
 			lcd_print(lcd_status_message);
 			if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0)
 			{
@@ -838,7 +838,7 @@ void lcdui_print_status_line(void)
 				lcd_print(itostr3left(pid_number_of_cycles));
 			}
 			break;
-		case CustomMsgTypes::TEMCAL: // PINDA temp calibration in progress
+		case CustomMsg::TempCal: // PINDA temp calibration in progress
 			{
 				char progress[4];
 				lcd_set_cursor(0, 3);
@@ -848,7 +848,7 @@ void lcdui_print_status_line(void)
 				lcd_print(progress);
 			}
 			break;
-		case CustomMsgTypes::TEMPRE: // temp compensation preheat
+		case CustomMsg::TempCompPreheat: // temp compensation preheat
 			lcd_set_cursor(0, 3);
 			lcd_puts_P(_i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
 			if (custom_message_state <= PINDA_HEAT_T)
@@ -1465,7 +1465,7 @@ void lcd_commands()
 			lcd_commands_step = 0;
 			lcd_commands_type = LcdCommands::Idle;
 			lcd_setstatuspgm(_T(WELCOME_MSG));
-			custom_message_type = CustomMsgTypes::STATUS;
+			custom_message_type = CustomMsg::Status;
 			isPrintPaused = false;
 		}
 		if (lcd_commands_step == 2 && !blocks_queued())
@@ -1521,7 +1521,7 @@ void lcd_commands()
 			if (mmu_enabled)
 				setAllTargetHotends(0);
 			manage_heater();
-			custom_message_type = CustomMsgTypes::F_LOAD;
+			custom_message_type = CustomMsg::FilamentLoading;
 			lcd_commands_step = 5;
 		}
 		if (lcd_commands_step == 7 && !blocks_queued())
@@ -1589,7 +1589,7 @@ void lcd_commands()
 		char cmd1[30];
 		
 		if (lcd_commands_step == 0) {
-			custom_message_type = CustomMsgTypes::PIDCAL;
+			custom_message_type = CustomMsg::PidCal;
 			custom_message_state = 1;
 			lcd_draw_update = 3;
 			lcd_commands_step = 3;
@@ -1625,7 +1625,7 @@ void lcd_commands()
 		}
 		if ((lcd_commands_step == 1) && ((_millis()- display_time)>2000)) { //calibration finished message
 			lcd_setstatuspgm(_T(WELCOME_MSG));
-			custom_message_type = CustomMsgTypes::STATUS;
+			custom_message_type = CustomMsg::Status;
 			pid_temp = DEFAULT_PID_TEMP;
 			lcd_commands_step = 0;
 			lcd_commands_type = LcdCommands::Idle;
@@ -2758,7 +2758,7 @@ static void lcd_LoadFilament()
 if(0)
   {
 //      menu_back();                                // not necessary (see "lcd_return_to_status()" below)
-      custom_message_type = CustomMsgTypes::F_LOAD;
+      custom_message_type = CustomMsg::FilamentLoading;
       loading_flag = true;
       enquecommand_P(PSTR("M701")); //load filament
       SERIAL_ECHOLN("Loading filament");
@@ -3817,7 +3817,7 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
 
 void lcd_temp_cal_show_result(bool result) {
 	
-	custom_message_type = CustomMsgTypes::STATUS;
+	custom_message_type = CustomMsg::Status;
 	disable_x();
 	disable_y();
 	disable_z();
@@ -5900,7 +5900,7 @@ static void change_extr_menu(){
 //unload filament for single material printer (used in M702 gcode)
 void unload_filament()
 {
-	custom_message_type = CustomMsgTypes::F_LOAD;
+	custom_message_type = CustomMsg::FilamentLoading;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
 	//		extr_unload2();
@@ -5935,7 +5935,7 @@ void unload_filament()
 	lcd_update_enable(true);
 
 	lcd_setstatuspgm(_T(WELCOME_MSG));
-	custom_message_type = CustomMsgTypes::STATUS;
+	custom_message_type = CustomMsg::Status;
 
 }
 
@@ -6422,7 +6422,7 @@ static void lcd_colorprint_change() {
 	
 	enquecommand_P(PSTR("M600"));
 	
-	custom_message_type = CustomMsgTypes::F_LOAD; //just print status message
+	custom_message_type = CustomMsg::FilamentLoading; //just print status message
 	lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
 	lcd_return_to_status();
 	lcd_draw_update = 3;
