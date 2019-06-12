@@ -317,7 +317,7 @@ static void lcd_implementation_drawmenu_sdfile_selected(uint8_t row, char* longF
     char c;
     int enc_dif = lcd_encoder_diff;
     uint8_t n = LCD_WIDTH - 1;
-    for(int g = 0; g<4;g++){
+    for(uint8_t g = 0; g<4;g++){
       lcd_set_cursor(0, g);
     lcd_print(' ');
     }
@@ -2578,11 +2578,11 @@ void lcd_change_success() {
 
 static void lcd_loading_progress_bar(uint16_t loading_time_ms) { 
 	
-	for (int i = 0; i < 20; i++) {
+	for (uint8_t i = 0; i < 20; i++) {
 		lcd_set_cursor(i, 3);
 		lcd_print(".");
 		//loading_time_ms/20 delay
-		for (int j = 0; j < 5; j++) {
+		for (uint8_t j = 0; j < 5; j++) {
 			delay_keep_alive(loading_time_ms / 100);
 		}
 	}
@@ -3024,7 +3024,7 @@ static void lcd_menu_xyz_offset()
     float cntr[2];
     world2machine_read_valid(vec_x, vec_y, cntr);
 
-    for (int i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         lcd_puts_at_P(11, i + 2, PSTR(""));
         lcd_print(cntr[i]);
@@ -4692,7 +4692,7 @@ void lcd_v2_calibration()
 		else {
 			lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
 			lcd_consume_click();
-			for (int i = 0; i < 20; i++) { //wait max. 2s
+			for (uint8_t i = 0; i < 20; i++) { //wait max. 2s
 				delay_keep_alive(100);
 				if (lcd_clicked()) {
 					break;
@@ -5419,7 +5419,7 @@ void bowden_menu() {
 	lcd_clear();
 	lcd_set_cursor(0, 0);
 	lcd_print(">");
-	for (int i = 0; i < 4; i++) {
+	for (uint8_t i = 0; i < 4; i++) {
 		lcd_set_cursor(1, i);
 		lcd_print("Extruder ");
 		lcd_print(i);
@@ -5507,7 +5507,7 @@ void bowden_menu() {
 						enc_dif = lcd_encoder_diff;
 						lcd_set_cursor(0, cursor_pos);
 						lcd_print(">");
-						for (int i = 0; i < 4; i++) {
+						for (uint8_t i = 0; i < 4; i++) {
 							lcd_set_cursor(1, i);
 							lcd_print("Extruder ");
 							lcd_print(i);
@@ -5634,14 +5634,14 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
         if (header) lcd_puts_at_P(0,0,header);
 
         const bool last_visible = (first == items_no - 3);
-        const int8_t ordinary_items = (last_item&&last_visible)?2:3;
+        const uint8_t ordinary_items = (last_item&&last_visible)?2:3;
 
-        for (int i = 0; i < ordinary_items; i++)
+        for (uint8_t i = 0; i < ordinary_items; i++)
         {
             if (item) lcd_puts_at_P(1, i + 1, item);
         }
 
-        for (int i = 0; i < ordinary_items; i++)
+        for (uint8_t i = 0; i < ordinary_items; i++)
         {
             lcd_set_cursor(2 + item_len, i+1);
             lcd_print(first + i + 1);
@@ -5695,7 +5695,7 @@ char reset_menu() {
 	lcd_consume_click();
 	while (1) {		
 
-		for (int i = 0; i < 4; i++) {
+		for (uint8_t i = 0; i < 4; i++) {
 			lcd_set_cursor(1, i);
 			lcd_print(item[first + i]);
 		}
@@ -6021,7 +6021,7 @@ unsigned char lcd_choose_color() {
 	item[0] = "Orange";
 	item[1] = "Black";
 	//-----------------------------------------------------
-	unsigned char active_rows;
+	uint8_t active_rows;
 	static int first = 0;
 	int enc_dif = 0;
 	unsigned char cursor_pos = 1;
@@ -6034,7 +6034,7 @@ unsigned char lcd_choose_color() {
 	lcd_consume_click();
 	while (1) {
 		lcd_puts_at_P(0, 0, PSTR("Choose color:"));
-		for (int i = 0; i < active_rows; i++) {
+		for (uint8_t i = 0; i < active_rows; i++) {
 			lcd_set_cursor(1, i+1);
 			lcd_print(item[first + i]);
 		}
@@ -7071,7 +7071,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 
 //end of second measurement, now check for possible errors:
 
-	for(int i = 0; i < 2; i++){ //check if measured axis length corresponds to expected length
+	for(uint8_t i = 0; i < 2; i++){ //check if measured axis length corresponds to expected length
 		printf_P(_N("Measured axis length:%.3f\n"), measured_axis_length[i]);
 		if (abs(measured_axis_length[i] - axis_length) > max_error_mm) {
 			enable_endstops(false);
@@ -7935,7 +7935,7 @@ static void menu_action_sdfile(const char* filename)
   const char end[5] = ".gco";
 
   //we are storing just first 8 characters of 8.3 filename assuming that extension is always ".gco"
-  for (int i = 0; i < 8; i++) {
+  for (uint8_t i = 0; i < 8; i++) {
 	  if (strcmp((cmd + i + 4), end) == 0) { 
 		  //filename is shorter then 8.3, store '\0' character on position where ".gco" string was found to terminate stored string properly
  		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, '\0');
@@ -7950,7 +7950,7 @@ static void menu_action_sdfile(const char* filename)
   eeprom_write_byte((uint8_t*)EEPROM_DIR_DEPTH, depth);
 
   for (uint8_t i = 0; i < depth; i++) {
-	  for (int j = 0; j < 8; j++) {
+	  for (uint8_t j = 0; j < 8; j++) {
 		  eeprom_write_byte((uint8_t*)EEPROM_DIRS + j + 8 * i, dir_names[i][j]);
 	  }
   }
