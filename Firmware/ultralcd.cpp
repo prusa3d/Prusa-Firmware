@@ -131,6 +131,7 @@ static void lcd_control_volumetric_menu();
 static void lcd_settings_linearity_correction_menu_save();
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
+static void prusa_stat_diameter();
 static void prusa_stat_temperatures();
 static void prusa_stat_printinfo();
 static void lcd_farm_no();
@@ -2018,7 +2019,6 @@ static void lcd_preheat_menu()
 	  MENU_ITEM_FUNCTION_P(PSTR("farm   -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(FARM_PREHEAT_HPB_TEMP)), lcd_preheat_farm);
 	  MENU_ITEM_FUNCTION_P(PSTR("nozzle -  " STRINGIFY(FARM_PREHEAT_HOTEND_TEMP) "/0"), lcd_preheat_farm_nozzle);
 	  MENU_ITEM_FUNCTION_P(_T(MSG_COOLDOWN), lcd_cooldown);
-	  MENU_ITEM_FUNCTION_P(PSTR("ABS    -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
   } else {
 	  MENU_ITEM_FUNCTION_P(PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)), lcd_preheat_pla);
 	  MENU_ITEM_FUNCTION_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)), lcd_preheat_pet);
@@ -3975,6 +3975,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(1);
 			prusa_stat_farm_number();
+			prusa_stat_diameter();
 			SERIAL_ECHOLN("}");
 			status_number = 1;
 		}
@@ -4129,6 +4130,12 @@ static void prusa_stat_farm_number() {
 	SERIAL_ECHO("]");
 }
 
+static void prusa_stat_diameter() {
+	SERIAL_ECHO("[DIA:");
+	SERIAL_ECHO(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM));
+	SERIAL_ECHO("]");
+}
+
 static void prusa_stat_temperatures()
 {
 	SERIAL_ECHO("[ST0:");
@@ -4164,6 +4171,7 @@ static void prusa_stat_printinfo()
 	SERIAL_ECHO("][FWR:");
 	SERIAL_ECHO(FW_VERSION);
 	SERIAL_ECHO("]");
+     prusa_stat_diameter();
 }
 
 /*
@@ -5272,6 +5280,101 @@ do\
 }\
 while (0)
 
+//-//
+static void lcd_check_mode_set(void)
+{
+switch(eCheckMode)
+     {
+     case e_CHECK_MODE_none:
+          eCheckMode=e_CHECK_MODE_warn;
+          break;
+     case e_CHECK_MODE_warn:
+          eCheckMode=e_CHECK_MODE_strict;
+          break;
+     case e_CHECK_MODE_strict:
+          eCheckMode=e_CHECK_MODE_none;
+          break;
+     default:
+          eCheckMode=e_CHECK_MODE_none;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)eCheckMode);
+}
+
+static void lcd_nozzle_diameter_set(void)
+{
+uint16_t nDiameter;
+
+switch(eNozzleDiameter)
+     {
+     case e_NOZZLE_DIAMETER_250:
+          eNozzleDiameter=e_NOZZLE_DIAMETER_400;
+          nDiameter=400;
+          break;
+     case e_NOZZLE_DIAMETER_400:
+          eNozzleDiameter=e_NOZZLE_DIAMETER_600;
+          nDiameter=600;
+          break;
+     case e_NOZZLE_DIAMETER_600:
+          eNozzleDiameter=e_NOZZLE_DIAMETER_250;
+          nDiameter=250;
+          break;
+     default:
+          eNozzleDiameter=e_NOZZLE_DIAMETER_400;
+          nDiameter=400;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)eNozzleDiameter);
+eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+}
+
+#define SETTINGS_MODE \
+do\
+{\
+    switch(eCheckMode)\
+         {\
+         case e_CHECK_MODE_none:\
+              MENU_ITEM_FUNCTION_P(_i("Action     [none]"),lcd_check_mode_set);\
+              break;\
+         case e_CHECK_MODE_warn:\
+              MENU_ITEM_FUNCTION_P(_i("Action     [warn]"),lcd_check_mode_set);\
+              break;\
+         case e_CHECK_MODE_strict:\
+              MENU_ITEM_FUNCTION_P(_i("Action   [strict]"),lcd_check_mode_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Action     [none]"),lcd_check_mode_set);\
+         }\
+}\
+while (0)
+
+#define SETTINGS_NOZZLE \
+do\
+{\
+    switch(eNozzleDiameter)\
+         {\
+         case e_NOZZLE_DIAMETER_250:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.25]"),lcd_nozzle_diameter_set);\
+              break;\
+         case e_NOZZLE_DIAMETER_400:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.40]"),lcd_nozzle_diameter_set);\
+              break;\
+         case e_NOZZLE_DIAMETER_600:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.60]"),lcd_nozzle_diameter_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.40]"),lcd_nozzle_diameter_set);\
+         }\
+}\
+while (0)
+
+static void lcd_checking_menu()
+{
+MENU_BEGIN();
+MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+SETTINGS_MODE;
+SETTINGS_NOZZLE;
+MENU_END();
+}
+
 static void lcd_settings_menu()
 {
 	EEPROM_read(EEPROM_SILENT, (uint8_t*)&SilentModeMenu, sizeof(SilentModeMenu));
@@ -5322,6 +5425,9 @@ static void lcd_settings_menu()
 #if (LANG_MODE != 0)
 	MENU_ITEM_SUBMENU_P(_i("Select language"), lcd_language_menu);////MSG_LANGUAGE_SELECT
 #endif //(LANG_MODE != 0)
+
+	if (!farm_mode)
+          MENU_ITEM_SUBMENU_P(_i("Print checking"), lcd_checking_menu);
 
 	SETTINGS_SD;
 	SETTINGS_SOUND;
@@ -6135,10 +6241,11 @@ void lcd_confirm_print()
 		}
 		if (lcd_clicked())
 		{
+               filament_type = FARM_FILAMENT_COLOR_NONE;
 			if (cursor_pos == 1)
 			{
 				_ret = 1;
-				filament_type = lcd_choose_color();
+//				filament_type = lcd_choose_color();
 				prusa_statistics(4, filament_type);
 				no_response = true; //we need confirmation by recieving PRUSA thx
 				important_status = 4;
@@ -6148,7 +6255,7 @@ void lcd_confirm_print()
 			if (cursor_pos == 2)
 			{
 				_ret = 2;
-				filament_type = lcd_choose_color();
+//				filament_type = lcd_choose_color();
 				prusa_statistics(5, filament_type);
 				no_response = true; //we need confirmation by recieving PRUSA thx
 				important_status = 5;				
@@ -6483,6 +6590,14 @@ static void lcd_tune_menu()
 
 	SETTINGS_CUTTER;
 
+     if(farm_mode)
+     {
+          if (fans_check_enabled == true)
+               MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
+          else
+               MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
+     }
+
 #ifdef TMC2130
      if(!farm_mode)
      {
@@ -6626,6 +6741,12 @@ static void lcd_sd_updir()
 
 void lcd_print_stop()
 {
+//-//
+     if(!card.sdprinting)
+          {
+          SERIAL_ECHOLNPGM("// action:cancel");   // for Octoprint
+          return;
+          }
 	saved_printing = false;
 	cancel_heatup = true;
 #ifdef MESH_BED_LEVELING
