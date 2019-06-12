@@ -434,7 +434,7 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
 void updatePID()
 {
 #ifdef PIDTEMP
-  for(int e = 0; e < EXTRUDERS; e++) { 
+  for(uint_least8_t e = 0; e < EXTRUDERS; e++) {
      iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;  
   }
 #endif
