@@ -210,10 +210,10 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
 /** Enumerate for lcd_selftest_fan_auto function.
  */
 enum class FanCheck : uint_least8_t {
-    success,
-    printFan,
-    extruderFan,
-    swappedFan,
+    Success,
+    PrintFan,
+    ExtruderFan,
+    SwappedFan,
 };
 
 /**
@@ -6772,10 +6772,10 @@ bool lcd_selftest()
 	_progress = lcd_selftest_screen(TestScreen::ExtruderFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_0))
 	switch (lcd_selftest_fan_auto(0)){		// check extruder Fan
-		case FanCheck::extruderFan:
+		case FanCheck::ExtruderFan:
 			_result = false;
 			break;
-		case FanCheck::swappedFan:
+		case FanCheck::SwappedFan:
 			_swapped_fan = true;
 			// no break
 		default:
@@ -6795,10 +6795,10 @@ bool lcd_selftest()
 		_progress = lcd_selftest_screen(TestScreen::PrintFan, _progress, 3, true, 2000);
 #if (defined(FANCHECK) && defined(TACH_1))
 	switch (lcd_selftest_fan_auto(1)){		// check print fan
-		case FanCheck::printFan:
+		case FanCheck::PrintFan:
 			_result = false;
 			break;
-		case FanCheck::swappedFan:
+		case FanCheck::SwappedFan:
 			_swapped_fan = true;
 			// no break
 		default:
@@ -7721,11 +7721,11 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
 
 		if (!fan_speed[0]) {
-			return FanCheck::extruderFan;
+			return FanCheck::ExtruderFan;
 		}
 #ifdef FAN_SOFT_PWM
 		else if (fan_speed[0] > 50 ) { // printerFan is faster
-			return FanCheck::swappedFan;
+			return FanCheck::SwappedFan;
 		}
 		break;
 #endif
@@ -7760,7 +7760,7 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 		printf_P(PSTR("Print fan speed: %d \n"), fan_speed[1]);
 		printf_P(PSTR("Extr fan speed: %d \n"), fan_speed[0]);
 		if (!fan_speed[1]) {
-			return FanCheck::printFan;
+			return FanCheck::PrintFan;
 		}
 
 #ifdef FAN_SOFT_PWM
@@ -7779,18 +7779,18 @@ static FanCheck lcd_selftest_fan_auto(int _fan)
 
 		// noctua speed is between 17 and 24, turbine more then 30
 		if (fan_speed[1] < 30) {
-			return FanCheck::swappedFan;
+			return FanCheck::SwappedFan;
 		}
 #else
 		// fan is spinning, but measured RPM are too low for print fan, it must
 		// be left extruder fan
 		else if (fan_speed[1] < 34) {
-			return FanCheck::swappedFan;
+			return FanCheck::SwappedFan;
 		}
 #endif //FAN_SOFT_PWM
 		break;
 	}
-	return FanCheck::success;
+	return FanCheck::Success;
 }
 
 #endif //FANCHECK
