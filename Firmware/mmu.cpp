@@ -1076,7 +1076,7 @@ if(0)
      extr_unload();
      }
 else	{
-     eFilamentAction=e_FILAMENT_ACTION_mmuUnLoad;
+     eFilamentAction=eFILAMENT_ACTION::mmuUnLoad;
      bFilamentFirstRun=false;
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
@@ -1372,13 +1372,13 @@ void lcd_mmu_load_to_nozzle(uint8_t filament_nr)
         mmu_load_to_nozzle();
         load_filament_final_feed();
         st_synchronize();
-        custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
+        custom_message_type = CustomMsgTypes::F_LOAD;
         lcd_setstatuspgm(_T(MSG_LOADING_FILAMENT));
         lcd_return_to_status();
         lcd_update_enable(true);
         lcd_load_filament_color_check();
         lcd_setstatuspgm(_T(WELCOME_MSG));
-        custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+        custom_message_type = CustomMsgTypes::STATUS;
     }
     else
     {
