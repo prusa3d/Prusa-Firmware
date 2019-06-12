@@ -1,9 +1,8 @@
-/*
- * first_lay_cal.cpp
- *
- *  Created on: Jun 10, 2019
- *      Author: marek
- */
+//! @file
+//! @date Jun 10, 2019
+//! @author Marek Bel
+//! @brief First layer (Z offset) calibration
+
 #include "first_lay_cal.h"
 #include "Configuration_prusa.h"
 #include "language.h"
@@ -32,6 +31,7 @@ static const char * const preheat_cmd[] PROGMEM =
     cmd_preheat_6,
 };
 
+//! @brief Preheat
 void lay1cal_preheat()
 {
     for (uint8_t i = 0; i < (sizeof(preheat_cmd)/sizeof(preheat_cmd[0])); ++i)
@@ -73,6 +73,9 @@ static const char * const intro_mmu_cmd[] PROGMEM =
     cmd_intro_mmu_12,
 };
 
+//! @brief Print intro line
+//! @param cmd_buffer character buffer needed to format gcodes
+//! @param filament filament to use (applies for MMU only)
 void lay1cal_intro_line(char *cmd_buffer, uint8_t filament)
 {
     if (mmu_enabled)
@@ -115,6 +118,7 @@ static const char * const cmd_pre_meander[] PROGMEM =
         cmd_pre_meander_7,
 };
 
+//! @brief Setup for printing meander
 void lay1cal_before_meander()
 {
     for (uint8_t i = 0; i < (sizeof(cmd_pre_meander)/sizeof(cmd_pre_meander[0])); ++i)
@@ -171,11 +175,13 @@ static constexpr float count_e(float layer_heigth, float extrusion_width, float 
     return (extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4));
 }
 
-static const float width = 0.4;
-static const float length = 20 - width;
-static const float heigth = 0.2; //!< TODO This is wrong, as current Z height is 0.15 mm
-static const float extr = count_e(heigth, width, length);
+static const float width = 0.4; //!< line width
+static const float length = 20 - width; //!< line length
+static const float heigth = 0.2; //!< layer height TODO This is wrong, as current Z height is 0.15 mm
+static const float extr = count_e(heigth, width, length); //!< E axis movement needed to print line
 
+//! @brief Print meander
+//! @param cmd_buffer character buffer needed to format gcodes
 void lay1cal_meander(char *cmd_buffer)
 {
     for (uint8_t i = 0; i < (sizeof(cmd_meander)/sizeof(cmd_meander[0])); ++i)
@@ -190,8 +196,8 @@ void lay1cal_meander(char *cmd_buffer)
 //!
 //! This function needs to be called 16 times for i from 0 to 15.
 //!
-//! @par cmd_buffer character buffer needed to format gcodes
-//! @par i iteration
+//! @param cmd_buffer character buffer needed to format gcodes
+//! @param i iteration
 void lay1cal_square(char *cmd_buffer, uint8_t i)
 {
     const float extr_short_segment = count_e(heigth, width, width);

@@ -1,9 +1,6 @@
-/*
- * first_lay_cal.h
- *
- *  Created on: Jun 10, 2019
- *      Author: marek
- */
+//! @file
+//! @date Jun 10, 2019
+//! @author Marek Bel
 
 #ifndef FIRMWARE_FIRST_LAY_CAL_H_
 #define FIRMWARE_FIRST_LAY_CAL_H_
