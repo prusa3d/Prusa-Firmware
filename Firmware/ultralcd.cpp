@@ -1543,11 +1543,6 @@ void lcd_commands()
 		}
 	}
 
-	if (lcd_commands_type == LcdCommands::Unknown3)
-	{
-		lcd_commands_type = LcdCommands::Idle;
-	}
-
 	if (lcd_commands_type == LcdCommands::FarmModeConfirm)   /// farm mode confirm
 	{
 
