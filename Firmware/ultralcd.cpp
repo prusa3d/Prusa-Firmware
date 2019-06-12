@@ -73,10 +73,10 @@ extern void crashdet_disable();
 bool presort_flag = false;
 #endif
 
-uint8_t lcd_commands_type = LCD_COMMAND_IDLE;
+LcdCommands lcd_commands_type = LcdCommands::IDLE;
 uint8_t lcd_commands_step = 0;
 
-unsigned int custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+CustomMsgTypes custom_message_type = CustomMsgTypes::STATUS;
 unsigned int custom_message_state = 0;
 
 
@@ -84,7 +84,7 @@ bool isPrintPaused = false;
 uint8_t farm_mode = 0;
 int farm_no = 0;
 int farm_timer = 8;
-int farm_status = 0;
+uint8_t farm_status = 0;
 bool printer_connected = true;
 
 unsigned long display_time; //just timer for showing pid finished message on lcd;
@@ -565,7 +565,7 @@ void lcdui_print_temp(char type, int val_current, int val_target)
 // Print Z-coordinate (8 chars total)
 void lcdui_print_Z_coord(void)
 {
-    if (custom_message_type == CUSTOM_MSG_TYPE_MESHBL)
+    if (custom_message_type == CustomMsgTypes::MESHBL)
         lcd_puts_P(_N("Z   --- "));
     else
 		lcd_printf_P(_N("Z%6.2f "), current_position[Z_AXIS]);
@@ -760,7 +760,7 @@ void lcdui_print_status_line(void)
 			break;
 		}
 	}
-	else if ((IS_SD_PRINTING) && (custom_message_type == CUSTOM_MSG_TYPE_STATUS))
+	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsgTypes::STATUS))
 	{ // If printing from SD, show what we are printing
 		if(strlen(card.longFilename) > LCD_WIDTH)
 		{
@@ -794,10 +794,10 @@ void lcdui_print_status_line(void)
 	{ // Otherwise check for other special events
    		switch (custom_message_type)
 		{
-		case CUSTOM_MSG_TYPE_STATUS: // Nothing special, print status message normally
+		case CustomMsgTypes::STATUS: // Nothing special, print status message normally
 			lcd_print(lcd_status_message);
 			break;
-		case CUSTOM_MSG_TYPE_MESHBL: // If mesh bed leveling in progress, show the status
+		case CustomMsgTypes::MESHBL: // If mesh bed leveling in progress, show the status
 			if (custom_message_state > 10)
 			{
 				lcd_set_cursor(0, 3);
@@ -813,7 +813,7 @@ void lcdui_print_status_line(void)
 				{
 					lcd_puts_P(_T(WELCOME_MSG));
 					lcd_setstatuspgm(_T(WELCOME_MSG));
-					custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+					custom_message_type = CustomMsgTypes::STATUS;
 				}
 				if (custom_message_state > 3 && custom_message_state <= 10 )
 				{
@@ -825,10 +825,10 @@ void lcdui_print_status_line(void)
 				}
 			}
 			break;
-		case CUSTOM_MSG_TYPE_F_LOAD: // If loading filament, print status
+		case CustomMsgTypes::F_LOAD: // If loading filament, print status
 			lcd_print(lcd_status_message);
 			break;
-		case CUSTOM_MSG_TYPE_PIDCAL: // PID tuning in progress
+		case CustomMsgTypes::PIDCAL: // PID tuning in progress
 			lcd_print(lcd_status_message);
 			if (pid_cycle <= pid_number_of_cycles && custom_message_state > 0)
 			{
@@ -838,7 +838,7 @@ void lcdui_print_status_line(void)
 				lcd_print(itostr3left(pid_number_of_cycles));
 			}
 			break;
-		case CUSTOM_MSG_TYPE_TEMCAL: // PINDA temp calibration in progress
+		case CustomMsgTypes::TEMCAL: // PINDA temp calibration in progress
 			{
 				char progress[4];
 				lcd_set_cursor(0, 3);
@@ -848,7 +848,7 @@ void lcdui_print_status_line(void)
 				lcd_print(progress);
 			}
 			break;
-		case CUSTOM_MSG_TYPE_TEMPRE: // temp compensation preheat
+		case CustomMsgTypes::TEMPRE: // temp compensation preheat
 			lcd_set_cursor(0, 3);
 			lcd_puts_P(_i("PINDA Heating"));////MSG_PINDA_PREHEAT c=20 r=1
 			if (custom_message_state <= PINDA_HEAT_T)
@@ -996,7 +996,7 @@ static void lcd_status_screen()
 		} // end of farm_mode
 
 		lcd_status_update_delay = 10;   /* redraw the main screen every second. This is easier then trying keep track of all things that change on the screen */
-		if (lcd_commands_type != LCD_COMMAND_IDLE)
+		if (lcd_commands_type != LcdCommands::IDLE)
 			lcd_commands();
 	} // end of lcd_draw_update
 
@@ -1020,7 +1020,7 @@ static void lcd_status_screen()
 	}
 
 	if (current_click
-		&& (lcd_commands_type != LCD_COMMAND_STOP_PRINT) //click is aborted unless stop print finishes
+		&& (lcd_commands_type != LcdCommands::STOP_PRINT) //click is aborted unless stop print finishes
 		&& ( menu_block_entering_on_serious_errors == SERIOUS_ERR_NONE ) // or a serious error blocks entering the menu
 	)
 	{
@@ -1077,15 +1077,15 @@ static void lcd_commands_func1(char *cmd1, uint8_t i, float width, float extr, f
 
 void lcd_commands()
 {	
-	if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE)
+	if (lcd_commands_type == LcdCommands::LONG_PAUSE)
 	{
 		if (!blocks_queued() && !homing_flag)
 		{
 			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
 			long_pause();
-               if (lcd_commands_type == LCD_COMMAND_LONG_PAUSE) // !!! because "lcd_commands_type" can be changed during/inside "long_pause()"
+               if (lcd_commands_type == LcdCommands::LONG_PAUSE) // !!! because "lcd_commands_type" can be changed during/inside "long_pause()"
                {
-                    lcd_commands_type = 0;
+                    lcd_commands_type = LcdCommands::IDLE;
                     lcd_commands_step = 0;
                }
 		}
@@ -1093,7 +1093,7 @@ void lcd_commands()
 
 
 #ifdef SNMM
-	if (lcd_commands_type == LCD_COMMAND_V2_CAL)
+	if (lcd_commands_type == LcdCommands::V2_CAL)
 	{
 		char cmd1[30];
 		float width = 0.4;
@@ -1358,7 +1358,7 @@ void lcd_commands()
 
 #else //if not SNMM
 
-	if (lcd_commands_type == LCD_COMMAND_V2_CAL)
+	if (lcd_commands_type == LcdCommands::V2_CAL)
 	{
 		char cmd1[30];
 		static uint8_t filament = 0;
@@ -1565,7 +1565,7 @@ void lcd_commands()
 		{
 			lcd_setstatuspgm(_T(WELCOME_MSG));
 			lcd_commands_step = 0;
-			lcd_commands_type = 0;			
+			lcd_commands_type = LcdCommands::IDLE;			
 			if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1) {
 				lcd_wizard(WizState::RepeatLay1Cal);
 			}
@@ -1575,7 +1575,7 @@ void lcd_commands()
 
 #endif // not SNMM
 
-	if (lcd_commands_type == LCD_COMMAND_STOP_PRINT)   /// stop print
+	if (lcd_commands_type == LcdCommands::STOP_PRINT)   /// stop print
 	{
 		
 
@@ -1587,9 +1587,9 @@ void lcd_commands()
 		if (lcd_commands_step == 1 && !blocks_queued())
 		{
 			lcd_commands_step = 0;
-			lcd_commands_type = 0;
+			lcd_commands_type = LcdCommands::IDLE;
 			lcd_setstatuspgm(_T(WELCOME_MSG));
-			custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+			custom_message_type = CustomMsgTypes::STATUS;
 			isPrintPaused = false;
 		}
 		if (lcd_commands_step == 2 && !blocks_queued())
@@ -1645,7 +1645,7 @@ void lcd_commands()
 			if (mmu_enabled)
 				setAllTargetHotends(0);
 			manage_heater();
-			custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
+			custom_message_type = CustomMsgTypes::F_LOAD;
 			lcd_commands_step = 5;
 		}
 		if (lcd_commands_step == 7 && !blocks_queued())
@@ -1667,12 +1667,12 @@ void lcd_commands()
 		}
 	}
 
-	if (lcd_commands_type == 3)
+	if (lcd_commands_type == LcdCommands::UNKNOWN3)
 	{
-		lcd_commands_type = 0;
+		lcd_commands_type = LcdCommands::IDLE;
 	}
 
-	if (lcd_commands_type == LCD_COMMAND_FARM_MODE_CONFIRM)   /// farm mode confirm
+	if (lcd_commands_type == LcdCommands::FARM_MODE_CONFIRM)   /// farm mode confirm
 	{
 
 		if (lcd_commands_step == 0) { lcd_commands_step = 6; }
@@ -1681,7 +1681,7 @@ void lcd_commands()
 		{
 			lcd_confirm_print();
 			lcd_commands_step = 0;
-			lcd_commands_type = 0;
+			lcd_commands_type = LcdCommands::IDLE;
 		}
 		if (lcd_commands_step == 2 && !blocks_queued())
 		{
@@ -1714,11 +1714,11 @@ void lcd_commands()
 		}
 
 	}
-	if (lcd_commands_type == LCD_COMMAND_PID_EXTRUDER) {
+	if (lcd_commands_type == LcdCommands::PID_EXTRUDER) {
 		char cmd1[30];
 		
 		if (lcd_commands_step == 0) {
-			custom_message_type = CUSTOM_MSG_TYPE_PIDCAL;
+			custom_message_type = CustomMsgTypes::PIDCAL;
 			custom_message_state = 1;
 			lcd_draw_update = 3;
 			lcd_commands_step = 3;
@@ -1754,10 +1754,10 @@ void lcd_commands()
 		}
 		if ((lcd_commands_step == 1) && ((_millis()- display_time)>2000)) { //calibration finished message
 			lcd_setstatuspgm(_T(WELCOME_MSG));
-			custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+			custom_message_type = CustomMsgTypes::STATUS;
 			pid_temp = DEFAULT_PID_TEMP;
 			lcd_commands_step = 0;
-			lcd_commands_type = 0;
+			lcd_commands_type = LcdCommands::IDLE;
 		}
 	}
 
@@ -1775,7 +1775,7 @@ void lcd_return_to_status()
 	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, false, true);
 	menu_depth = 0;
-     eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
+     eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
 }
 
 //! @brief Pause print, disable nozzle heater, move to park position
@@ -1785,9 +1785,9 @@ void lcd_pause_print()
     stop_and_save_print_to_ram(0.0,0.0);
     setAllTargetHotends(0);
     isPrintPaused = true;
-    if (LCD_COMMAND_IDLE == lcd_commands_type)
+    if (LcdCommands::IDLE == lcd_commands_type)
     {
-        lcd_commands_type = LCD_COMMAND_LONG_PAUSE;
+        lcd_commands_type = LcdCommands::LONG_PAUSE;
     }
 }
 
@@ -1928,7 +1928,7 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 			lcd_puts_P(_N("Filament sensor\n" "is disabled."));
 		else
 		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::V2_CAL))
 				pat9125_update();
 			lcd_printf_P(_N(
 				"Fil. Xd:%3d Yd:%3d\n"
@@ -2314,7 +2314,7 @@ void lcd_set_filament_oq_meass()
 }
 
 
-eFILAMENT_ACTION eFilamentAction=e_FILAMENT_ACTION_none; // must be initialized as 'non-autoLoad'
+eFILAMENT_ACTION eFilamentAction=eFILAMENT_ACTION::none; // must be initialized as 'non-autoLoad'
 bool bFilamentFirstRun;
 bool bFilamentPreheatState;
 bool bFilamentAction=false;
@@ -2331,18 +2331,18 @@ lcd_puts_P(_i("Press the knob"));                 ////MSG_ c=20 r=1
 lcd_set_cursor(0,3);
 switch(eFilamentAction)
      {
-     case e_FILAMENT_ACTION_Load:
-     case e_FILAMENT_ACTION_autoLoad:
-     case e_FILAMENT_ACTION_mmuLoad:
+     case eFILAMENT_ACTION::load:
+     case eFILAMENT_ACTION::autoLoad:
+     case eFILAMENT_ACTION::mmuLoad:
           lcd_puts_P(_i("to load filament"));     ////MSG_ c=20 r=1
           break;
-     case e_FILAMENT_ACTION_unLoad:
-     case e_FILAMENT_ACTION_mmuUnLoad:
+     case eFILAMENT_ACTION::unLoad:
+     case eFILAMENT_ACTION::mmuUnLoad:
           lcd_puts_P(_i("to unload filament"));   ////MSG_ c=20 r=1
           break;
-     case e_FILAMENT_ACTION_mmuEject:
-     case e_FILAMENT_ACTION_mmuCut:
-     case e_FILAMENT_ACTION_none:
+     case eFILAMENT_ACTION::mmuEject:
+     case eFILAMENT_ACTION::mmuCut:
+     case eFILAMENT_ACTION::none:
           break;
      }
 if(lcd_clicked())
@@ -2356,21 +2356,21 @@ if(lcd_clicked())
      menu_back(nLevel);
      switch(eFilamentAction)
           {
-          case e_FILAMENT_ACTION_autoLoad:
-               eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
+          case eFILAMENT_ACTION::autoLoad:
+               eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
                // no break
-          case e_FILAMENT_ACTION_Load:
+          case eFILAMENT_ACTION::load:
                loading_flag=true;
                enquecommand_P(PSTR("M701"));      // load filament
                break;
-          case e_FILAMENT_ACTION_unLoad:
+          case eFILAMENT_ACTION::unLoad:
                enquecommand_P(PSTR("M702"));      // unload filament
                break;
-          case e_FILAMENT_ACTION_mmuLoad:
-          case e_FILAMENT_ACTION_mmuUnLoad:
-          case e_FILAMENT_ACTION_mmuEject:
-          case e_FILAMENT_ACTION_mmuCut:
-          case e_FILAMENT_ACTION_none:
+          case eFILAMENT_ACTION::mmuLoad:
+          case eFILAMENT_ACTION::mmuUnLoad:
+          case eFILAMENT_ACTION::mmuEject:
+          case eFILAMENT_ACTION::mmuCut:
+          case eFILAMENT_ACTION::none:
                break;
           }
      }
@@ -2394,19 +2394,19 @@ lcdui_print_temp(LCD_STR_THERMOMETER[0],(int)degHotend(0),(int)degTargetHotend(0
 lcd_set_cursor(0,1);
 switch(eFilamentAction)
      {
-     case e_FILAMENT_ACTION_Load:
-     case e_FILAMENT_ACTION_autoLoad:
-     case e_FILAMENT_ACTION_mmuLoad:
+     case eFILAMENT_ACTION::load:
+     case eFILAMENT_ACTION::autoLoad:
+     case eFILAMENT_ACTION::mmuLoad:
           lcd_puts_P(_i("Preheating to load"));   ////MSG_ c=20 r=1
           break;
-     case e_FILAMENT_ACTION_unLoad:
-     case e_FILAMENT_ACTION_mmuUnLoad:
+     case eFILAMENT_ACTION::unLoad:
+     case eFILAMENT_ACTION::mmuUnLoad:
           lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20 r=1
           break;
-     case e_FILAMENT_ACTION_mmuEject:
+     case eFILAMENT_ACTION::mmuEject:
           lcd_puts_P(_i("Preheating to eject"));  ////MSG_ c=20 r=1
           break;
-     case e_FILAMENT_ACTION_mmuCut:
+     case eFILAMENT_ACTION::mmuCut:
           lcd_puts_P(_i("Preheating to cut"));  ////MSG_ c=20 r=1
           break;
      }
@@ -2425,20 +2425,20 @@ if(lcd_clicked())
           setTargetBed((float)nTargetBedOld);
           }
      menu_back();
-     if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
-          eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
+     if(eFilamentAction==eFILAMENT_ACTION::autoLoad)
+          eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
      }
 else {
      if(current_temperature[0]>(target_temperature[0]*0.95))
           {
           switch(eFilamentAction)
                {
-               case e_FILAMENT_ACTION_Load:
-               case e_FILAMENT_ACTION_autoLoad:
-               case e_FILAMENT_ACTION_unLoad:
+               case eFILAMENT_ACTION::load:
+               case eFILAMENT_ACTION::autoLoad:
+               case eFILAMENT_ACTION::unLoad:
                     menu_submenu(mFilamentPrompt);
                     break;
-               case e_FILAMENT_ACTION_mmuLoad:
+               case eFILAMENT_ACTION::mmuLoad:
                     nLevel=1;
                     if(!bFilamentPreheatState)
                          nLevel++;
@@ -2446,7 +2446,7 @@ else {
                     menu_back(nLevel);
                     menu_submenu(mmu_load_to_nozzle_menu);
                     break;
-               case e_FILAMENT_ACTION_mmuUnLoad:
+               case eFILAMENT_ACTION::mmuUnLoad:
                     nLevel=1;
                     if(!bFilamentPreheatState)
                          nLevel++;
@@ -2454,7 +2454,7 @@ else {
                     menu_back(nLevel);
                     extr_unload();
                     break;
-               case e_FILAMENT_ACTION_mmuEject:
+               case eFILAMENT_ACTION::mmuEject:
                     nLevel=1;
                     if(!bFilamentPreheatState)
                          nLevel++;
@@ -2462,7 +2462,7 @@ else {
                     menu_back(nLevel);
                     menu_submenu(mmu_fil_eject_menu);
                     break;
-               case e_FILAMENT_ACTION_mmuCut:
+               case eFILAMENT_ACTION::mmuCut:
                     nLevel=1;
                     if(!bFilamentPreheatState)
                          nLevel++;
@@ -2495,44 +2495,44 @@ if(current_temperature[0]>(target_temperature[0]*0.95))
      {
      switch(eFilamentAction)
           {
-          case e_FILAMENT_ACTION_Load:
-          case e_FILAMENT_ACTION_autoLoad:
-          case e_FILAMENT_ACTION_unLoad:
+          case eFILAMENT_ACTION::load:
+          case eFILAMENT_ACTION::autoLoad:
+          case eFILAMENT_ACTION::unLoad:
                if(bFilamentWaitingFlag)
                     menu_submenu(mFilamentPrompt);
                else {
                     nLevel=bFilamentPreheatState?1:2;
                     menu_back(nLevel);
-                    if((eFilamentAction==e_FILAMENT_ACTION_Load)||(eFilamentAction==e_FILAMENT_ACTION_autoLoad))
+                    if((eFilamentAction==eFILAMENT_ACTION::load)||(eFilamentAction==eFILAMENT_ACTION::autoLoad))
                          {
                          loading_flag=true;
                          enquecommand_P(PSTR("M701")); // load filament
-                         if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
-                              eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
+                         if(eFilamentAction==eFILAMENT_ACTION::autoLoad)
+                              eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
                          }
-                    if(eFilamentAction==e_FILAMENT_ACTION_unLoad)
+                    if(eFilamentAction==eFILAMENT_ACTION::unLoad)
                          enquecommand_P(PSTR("M702")); // unload filament
                     }
                break;
-          case e_FILAMENT_ACTION_mmuLoad:
+          case eFILAMENT_ACTION::mmuLoad:
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
                menu_back(nLevel);
                menu_submenu(mmu_load_to_nozzle_menu);
                break;
-          case e_FILAMENT_ACTION_mmuUnLoad:
+          case eFILAMENT_ACTION::mmuUnLoad:
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
                menu_back(nLevel);
                extr_unload();
                break;
-          case e_FILAMENT_ACTION_mmuEject:
+          case eFILAMENT_ACTION::mmuEject:
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
                menu_back(nLevel);
                menu_submenu(mmu_fil_eject_menu);
                break;
-          case e_FILAMENT_ACTION_mmuCut:
+          case eFILAMENT_ACTION::mmuCut:
 #ifdef MMU_HAS_CUTTER
                nLevel=bFilamentPreheatState?1:2;
                bFilamentAction=true;
@@ -2540,7 +2540,7 @@ if(current_temperature[0]>(target_temperature[0]*0.95))
                menu_submenu(mmu_cut_filament_menu);
 #endif //MMU_HAS_CUTTER
                break;
-          case e_FILAMENT_ACTION_none:
+          case eFILAMENT_ACTION::none:
                break;
           }
      if(bFilamentWaitingFlag)
@@ -2554,22 +2554,22 @@ else {
      lcd_set_cursor(0,1);
      switch(eFilamentAction)
           {
-          case e_FILAMENT_ACTION_Load:
-          case e_FILAMENT_ACTION_autoLoad:
-          case e_FILAMENT_ACTION_mmuLoad:
+          case eFILAMENT_ACTION::load:
+          case eFILAMENT_ACTION::autoLoad:
+          case eFILAMENT_ACTION::mmuLoad:
                lcd_puts_P(_i("Preheating to load")); ////MSG_ c=20 r=1
                break;
-          case e_FILAMENT_ACTION_unLoad:
-          case e_FILAMENT_ACTION_mmuUnLoad:
+          case eFILAMENT_ACTION::unLoad:
+          case eFILAMENT_ACTION::mmuUnLoad:
                lcd_puts_P(_i("Preheating to unload")); ////MSG_ c=20 r=1
                break;
-          case e_FILAMENT_ACTION_mmuEject:
+          case eFILAMENT_ACTION::mmuEject:
                lcd_puts_P(_i("Preheating to eject")); ////MSG_ c=20 r=1
                break;
-          case e_FILAMENT_ACTION_mmuCut:
+          case eFILAMENT_ACTION::mmuCut:
                lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20 r=1
                break;
-          case e_FILAMENT_ACTION_none:
+          case eFILAMENT_ACTION::none:
                break;
           }
      lcd_set_cursor(0,3);
@@ -2588,8 +2588,8 @@ else {
                setTargetBed((float)nTargetBedOld);
                }
           menu_back();
-          if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
-               eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
+          if(eFilamentAction==eFILAMENT_ACTION::autoLoad)
+               eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
           }
      }
 }
@@ -2634,8 +2634,8 @@ mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP,FLEX_PREHEAT_HPB_TEMP);
 void mFilamentBack()
 {
 menu_back();
-if(eFilamentAction==e_FILAMENT_ACTION_autoLoad)
-     eFilamentAction=e_FILAMENT_ACTION_none; // i.e. non-autoLoad
+if(eFilamentAction==eFILAMENT_ACTION::autoLoad)
+     eFilamentAction=eFILAMENT_ACTION::none; // i.e. non-autoLoad
 }
 
 void mFilamentMenu()
@@ -2666,7 +2666,7 @@ if(0)
      enquecommand_P(PSTR("M702"));                // unload filament
      }
 else {
-     eFilamentAction=e_FILAMENT_ACTION_unLoad;
+     eFilamentAction=eFILAMENT_ACTION::unLoad;
      bFilamentFirstRun=false;
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
@@ -2893,7 +2893,7 @@ static void lcd_LoadFilament()
 if(0)
   {
 //      menu_back();                                // not necessary (see "lcd_return_to_status()" below)
-      custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
+      custom_message_type = CustomMsgTypes::F_LOAD;
       loading_flag = true;
       enquecommand_P(PSTR("M701")); //load filament
       SERIAL_ECHOLN("Loading filament");
@@ -2901,7 +2901,7 @@ if(0)
   }
   else
   {
-     eFilamentAction=e_FILAMENT_ACTION_Load;
+     eFilamentAction=eFILAMENT_ACTION::load;
      bFilamentFirstRun=false;
      if(target_temperature[0]>=EXTRUDE_MINTEMP)
           {
@@ -3350,7 +3350,7 @@ void pid_extruder()
 	lcd_set_cursor(1, 2);
 	lcd_print(ftostr3(pid_temp));
 	if (lcd_clicked()) {
-		lcd_commands_type = LCD_COMMAND_PID_EXTRUDER;
+		lcd_commands_type = LcdCommands::PID_EXTRUDER;
 		lcd_return_to_status();
 		lcd_update(2);
 	}
@@ -3952,7 +3952,7 @@ void lcd_bed_calibration_show_result(BedSkewOffsetDetectionResultType result, ui
 
 void lcd_temp_cal_show_result(bool result) {
 	
-	custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+	custom_message_type = CustomMsgTypes::STATUS;
 	disable_x();
 	disable_y();
 	disable_z();
@@ -4573,7 +4573,7 @@ static void lcd_crash_mode_set()
     }else{
         crashdet_enable();
     }
-	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) menu_goto(lcd_tune_menu, 9, true, true);
+	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::V2_CAL)) menu_goto(lcd_tune_menu, 9, true, true);
 	else menu_goto(lcd_settings_menu, 9, true, true);
     
 }
@@ -4810,14 +4810,14 @@ void lcd_v2_calibration()
 	    if (filament < 5)
 	    {
 	        lcd_commands_step = 20 + filament;
-	        lcd_commands_type = LCD_COMMAND_V2_CAL;
+	        lcd_commands_type = LcdCommands::V2_CAL;
 	    }
 	}
 	else
 	{
 		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
 		if (loaded) {
-			lcd_commands_type = LCD_COMMAND_V2_CAL;
+			lcd_commands_type = LcdCommands::V2_CAL;
 		}
 		else {
 			lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
@@ -5077,7 +5077,7 @@ void lcd_wizard(WizState state)
 		case S::Lay1Cal:
 			lcd_show_fullscreen_message_and_wait_P(_i("Now I will calibrate distance between tip of the nozzle and heatbed surface."));////MSG_WIZARD_V2_CAL c=20 r=8
 			lcd_show_fullscreen_message_and_wait_P(_i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."));////MSG_WIZARD_V2_CAL_2 c=20 r=12
-			lcd_commands_type = LCD_COMMAND_V2_CAL;
+			lcd_commands_type = LcdCommands::V2_CAL;
 			lcd_return_to_status();
 			end = true;
 			break;
@@ -5930,7 +5930,7 @@ static void mmu_load_to_nozzle_menu()
     }
     else
     {
-        eFilamentAction = e_FILAMENT_ACTION_mmuLoad;
+        eFilamentAction = eFILAMENT_ACTION::mmuLoad;
         bFilamentFirstRun = false;
         if (target_temperature[0] >= EXTRUDE_MINTEMP)
         {
@@ -5962,7 +5962,7 @@ static void mmu_fil_eject_menu()
     }
     else
     {
-        eFilamentAction = e_FILAMENT_ACTION_mmuEject;
+        eFilamentAction = eFILAMENT_ACTION::mmuEject;
         bFilamentFirstRun = false;
         if (target_temperature[0] >= EXTRUDE_MINTEMP)
         {
@@ -5990,7 +5990,7 @@ static void mmu_cut_filament_menu()
     }
     else
     {
-        eFilamentAction=e_FILAMENT_ACTION_mmuCut;
+        eFilamentAction=eFILAMENT_ACTION::mmuCut;
         bFilamentFirstRun=false;
         if(target_temperature[0]>=EXTRUDE_MINTEMP)
         {
@@ -6035,7 +6035,7 @@ static void change_extr_menu(){
 //unload filament for single material printer (used in M702 gcode)
 void unload_filament()
 {
-	custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
+	custom_message_type = CustomMsgTypes::F_LOAD;
 	lcd_setstatuspgm(_T(MSG_UNLOADING_FILAMENT));
 
 	//		extr_unload2();
@@ -6070,7 +6070,7 @@ void unload_filament()
 	lcd_update_enable(true);
 
 	lcd_setstatuspgm(_T(WELCOME_MSG));
-	custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+	custom_message_type = CustomMsgTypes::STATUS;
 
 }
 
@@ -6397,13 +6397,13 @@ static void lcd_main_menu()
         
     }*/
  
-  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
+  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::V2_CAL)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
 	MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
   }
 
 
-  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL))
+  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::V2_CAL))
   {
     MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE
   } else 
@@ -6412,7 +6412,7 @@ static void lcd_main_menu()
   }
 
 #ifdef SDSUPPORT
-  if (card.cardOK || lcd_commands_type == LCD_COMMAND_V2_CAL)
+  if (card.cardOK || lcd_commands_type == LcdCommands::V2_CAL)
   {
     if (card.isFileOpen())
     {
@@ -6428,12 +6428,12 @@ static void lcd_main_menu()
 			MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
 		}
 	}
-	else if (lcd_commands_type == LCD_COMMAND_V2_CAL && mesh_bed_leveling_flag == false && homing_flag == false) {
+	else if (lcd_commands_type == LcdCommands::V2_CAL && mesh_bed_leveling_flag == false && homing_flag == false) {
 		//MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
 	}
 	else
 	{
-		if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+		if (!is_usb_printing && (lcd_commands_type != LcdCommands::V2_CAL))
 		{
 			//if (farm_mode) MENU_ITEM_SUBMENU_P(MSG_FARM_CARD_MENU, lcd_farm_sdcard_menu);
 			/*else*/ {
@@ -6457,7 +6457,7 @@ static void lcd_main_menu()
 #endif
 
 
-  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LCD_COMMAND_V2_CAL))
+  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::V2_CAL))
   {
 	  if (farm_mode)
 	  {
@@ -6501,7 +6501,7 @@ static void lcd_main_menu()
 
   }
 
-  if (!is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL))
+  if (!is_usb_printing && (lcd_commands_type != LcdCommands::V2_CAL))
   {
 	  MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS
   }
@@ -6557,7 +6557,7 @@ static void lcd_colorprint_change() {
 	
 	enquecommand_P(PSTR("M600"));
 	
-	custom_message_type = CUSTOM_MSG_TYPE_F_LOAD; //just print status message
+	custom_message_type = CustomMsgTypes::F_LOAD; //just print status message
 	lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
 	lcd_return_to_status();
 	lcd_draw_update = 3;
@@ -6786,7 +6786,7 @@ void lcd_print_stop()
 	lcd_return_to_status();
 	lcd_ignore_click(true);
 	lcd_commands_step = 0;
-	lcd_commands_type = LCD_COMMAND_STOP_PRINT;
+	lcd_commands_type = LcdCommands::STOP_PRINT;
 	// Turn off the print fan
 	SET_OUTPUT(FAN_PIN);
 	WRITE(FAN_PIN, 0);
@@ -8359,5 +8359,5 @@ void menu_lcd_lcdupdate_func(void)
 	if (!SdFatUtil::test_stack_integrity()) stack_error();
 	lcd_ping(); //check that we have received ping command if we are in farm mode
 	lcd_send_status();
-	if (lcd_commands_type == LCD_COMMAND_V2_CAL) lcd_commands();
+	if (lcd_commands_type == LcdCommands::V2_CAL) lcd_commands();
 }
