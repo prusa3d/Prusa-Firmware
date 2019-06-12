@@ -389,7 +389,7 @@ extern bool wizard_active; //autoload temporarily disabled during wizard
 extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT   0xff
-#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CustomMsgTypes::TEMCAL) || saved_printing || (lcd_commands_type == LcdCommands::V2_CAL) || card.paused || mmu_print_saved)
+#define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CustomMsgTypes::TEMCAL) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || card.paused || mmu_print_saved)
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
 //! There can be a considerable lag between posting M600 and its real processing which might result

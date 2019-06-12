@@ -90,14 +90,14 @@ extern void lcd_diag_show_end_stops();
 
 // To be used in lcd_commands_type.
 enum class LcdCommands : uint8_t {
-	IDLE = 0,
-	LOAD_FILAMENT = 1,
-	STOP_PRINT = 2,
-	UNKNOWN3 = 3,
-	FARM_MODE_CONFIRM = 4,
-	LONG_PAUSE = 5,
-	PID_EXTRUDER = 7, 
-	V2_CAL = 8,
+	Idle = 0,
+	LoadFilament = 1,
+	StopPrint = 2,
+	Unknown3 = 3,
+	FarmModeConfirm = 4,
+	LongPause = 5,
+	PidExtruder = 7, 
+	Layer1Cal = 8,
 };
 
 extern LcdCommands lcd_commands_type;

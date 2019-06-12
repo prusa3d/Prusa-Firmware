@@ -74,7 +74,7 @@ extern void crashdet_disable();
 bool presort_flag = false;
 #endif
 
-LcdCommands lcd_commands_type = LcdCommands::IDLE;
+LcdCommands lcd_commands_type = LcdCommands::Idle;
 static uint8_t lcd_commands_step = 0;
 
 CustomMsgTypes custom_message_type = CustomMsgTypes::STATUS;
@@ -996,7 +996,7 @@ static void lcd_status_screen()
 		} // end of farm_mode
 
 		lcd_status_update_delay = 10;   /* redraw the main screen every second. This is easier then trying keep track of all things that change on the screen */
-		if (lcd_commands_type != LcdCommands::IDLE)
+		if (lcd_commands_type != LcdCommands::Idle)
 			lcd_commands();
 	} // end of lcd_draw_update
 
@@ -1020,7 +1020,7 @@ static void lcd_status_screen()
 	}
 
 	if (current_click
-		&& (lcd_commands_type != LcdCommands::STOP_PRINT) //click is aborted unless stop print finishes
+		&& (lcd_commands_type != LcdCommands::StopPrint) //click is aborted unless stop print finishes
 		&& ( menu_block_entering_on_serious_errors == SERIOUS_ERR_NONE ) // or a serious error blocks entering the menu
 	)
 	{
@@ -1062,15 +1062,15 @@ static void lcd_status_screen()
 
 void lcd_commands()
 {	
-	if (lcd_commands_type == LcdCommands::LONG_PAUSE)
+	if (lcd_commands_type == LcdCommands::LongPause)
 	{
 		if (!blocks_queued() && !homing_flag)
 		{
 			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
 			long_pause();
-               if (lcd_commands_type == LcdCommands::LONG_PAUSE) // !!! because "lcd_commands_type" can be changed during/inside "long_pause()"
+               if (lcd_commands_type == LcdCommands::LongPause) // !!! because "lcd_commands_type" can be changed during/inside "long_pause()"
                {
-                    lcd_commands_type = LcdCommands::IDLE;
+                    lcd_commands_type = LcdCommands::Idle;
                     lcd_commands_step = 0;
                }
 		}
@@ -1078,7 +1078,7 @@ void lcd_commands()
 
 
 #ifdef SNMM
-	if (lcd_commands_type == LcdCommands::V2_CAL)
+	if (lcd_commands_type == LcdCommands::Layer1Cal)
 	{
 		char cmd1[30];
 		float width = 0.4;
@@ -1343,7 +1343,7 @@ void lcd_commands()
 
 #else //if not SNMM
 
-	if (lcd_commands_type == LcdCommands::V2_CAL)
+	if (lcd_commands_type == LcdCommands::Layer1Cal)
 	{
 		char cmd1[30];
 		static uint8_t filament = 0;
@@ -1439,7 +1439,7 @@ void lcd_commands()
             case 1:
                 lcd_setstatuspgm(_T(WELCOME_MSG));
                 lcd_commands_step = 0;
-                lcd_commands_type = LcdCommands::IDLE;
+                lcd_commands_type = LcdCommands::Idle;
                 if (eeprom_read_byte((uint8_t*)EEPROM_WIZARD_ACTIVE) == 1)
                 {
                     lcd_wizard(WizState::RepeatLay1Cal);
@@ -1451,7 +1451,7 @@ void lcd_commands()
 
 #endif // not SNMM
 
-	if (lcd_commands_type == LcdCommands::STOP_PRINT)   /// stop print
+	if (lcd_commands_type == LcdCommands::StopPrint)   /// stop print
 	{
 		
 
@@ -1463,7 +1463,7 @@ void lcd_commands()
 		if (lcd_commands_step == 1 && !blocks_queued())
 		{
 			lcd_commands_step = 0;
-			lcd_commands_type = LcdCommands::IDLE;
+			lcd_commands_type = LcdCommands::Idle;
 			lcd_setstatuspgm(_T(WELCOME_MSG));
 			custom_message_type = CustomMsgTypes::STATUS;
 			isPrintPaused = false;
@@ -1543,12 +1543,12 @@ void lcd_commands()
 		}
 	}
 
-	if (lcd_commands_type == LcdCommands::UNKNOWN3)
+	if (lcd_commands_type == LcdCommands::Unknown3)
 	{
-		lcd_commands_type = LcdCommands::IDLE;
+		lcd_commands_type = LcdCommands::Idle;
 	}
 
-	if (lcd_commands_type == LcdCommands::FARM_MODE_CONFIRM)   /// farm mode confirm
+	if (lcd_commands_type == LcdCommands::FarmModeConfirm)   /// farm mode confirm
 	{
 
 		if (lcd_commands_step == 0) { lcd_commands_step = 6; }
@@ -1557,7 +1557,7 @@ void lcd_commands()
 		{
 			lcd_confirm_print();
 			lcd_commands_step = 0;
-			lcd_commands_type = LcdCommands::IDLE;
+			lcd_commands_type = LcdCommands::Idle;
 		}
 		if (lcd_commands_step == 2 && !blocks_queued())
 		{
@@ -1590,7 +1590,7 @@ void lcd_commands()
 		}
 
 	}
-	if (lcd_commands_type == LcdCommands::PID_EXTRUDER) {
+	if (lcd_commands_type == LcdCommands::PidExtruder) {
 		char cmd1[30];
 		
 		if (lcd_commands_step == 0) {
@@ -1633,7 +1633,7 @@ void lcd_commands()
 			custom_message_type = CustomMsgTypes::STATUS;
 			pid_temp = DEFAULT_PID_TEMP;
 			lcd_commands_step = 0;
-			lcd_commands_type = LcdCommands::IDLE;
+			lcd_commands_type = LcdCommands::Idle;
 		}
 	}
 
@@ -1655,9 +1655,9 @@ void lcd_pause_print()
     stop_and_save_print_to_ram(0.0,0.0);
     setAllTargetHotends(0);
     isPrintPaused = true;
-    if (LcdCommands::IDLE == lcd_commands_type)
+    if (LcdCommands::Idle == lcd_commands_type)
     {
-        lcd_commands_type = LcdCommands::LONG_PAUSE;
+        lcd_commands_type = LcdCommands::LongPause;
     }
 }
 
@@ -1798,7 +1798,7 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 			lcd_puts_P(_N("Filament sensor\n" "is disabled."));
 		else
 		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::V2_CAL))
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
 				pat9125_update();
 			lcd_printf_P(_N(
 				"Fil. Xd:%3d Yd:%3d\n"
@@ -3220,7 +3220,7 @@ void pid_extruder()
 	lcd_set_cursor(1, 2);
 	lcd_print(ftostr3(pid_temp));
 	if (lcd_clicked()) {
-		lcd_commands_type = LcdCommands::PID_EXTRUDER;
+		lcd_commands_type = LcdCommands::PidExtruder;
 		lcd_return_to_status();
 		lcd_update(2);
 	}
@@ -4443,7 +4443,7 @@ static void lcd_crash_mode_set()
     }else{
         crashdet_enable();
     }
-	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::V2_CAL)) menu_goto(lcd_tune_menu, 9, true, true);
+	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) menu_goto(lcd_tune_menu, 9, true, true);
 	else menu_goto(lcd_settings_menu, 9, true, true);
     
 }
@@ -4680,14 +4680,14 @@ void lcd_v2_calibration()
 	    if (filament < 5)
 	    {
 	        lcd_commands_step = 20 + filament;
-	        lcd_commands_type = LcdCommands::V2_CAL;
+	        lcd_commands_type = LcdCommands::Layer1Cal;
 	    }
 	}
 	else
 	{
 		bool loaded = lcd_show_fullscreen_message_yes_no_and_wait_P(_i("Is PLA filament loaded?"), false, true);////MSG_PLA_FILAMENT_LOADED c=20 r=2
 		if (loaded) {
-			lcd_commands_type = LcdCommands::V2_CAL;
+			lcd_commands_type = LcdCommands::Layer1Cal;
 		}
 		else {
 			lcd_display_message_fullscreen_P(_i("Please load PLA filament first."));////MSG_PLEASE_LOAD_PLA c=20 r=4
@@ -4947,7 +4947,7 @@ void lcd_wizard(WizState state)
 		case S::Lay1Cal:
 			lcd_show_fullscreen_message_and_wait_P(_i("Now I will calibrate distance between tip of the nozzle and heatbed surface."));////MSG_WIZARD_V2_CAL c=20 r=8
 			lcd_show_fullscreen_message_and_wait_P(_i("I will start to print line and you will gradually lower the nozzle by rotating the knob, until you reach optimal height. Check the pictures in our handbook in chapter Calibration."));////MSG_WIZARD_V2_CAL_2 c=20 r=12
-			lcd_commands_type = LcdCommands::V2_CAL;
+			lcd_commands_type = LcdCommands::Layer1Cal;
 			lcd_return_to_status();
 			end = true;
 			break;
@@ -6267,13 +6267,13 @@ static void lcd_main_menu()
         
     }*/
  
-  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::V2_CAL)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
+  if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
 	MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);//8
   }
 
 
-  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::V2_CAL))
+  if ( moves_planned() || IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal))
   {
     MENU_ITEM_SUBMENU_P(_i("Tune"), lcd_tune_menu);////MSG_TUNE
   } else 
@@ -6282,7 +6282,7 @@ static void lcd_main_menu()
   }
 
 #ifdef SDSUPPORT
-  if (card.cardOK || lcd_commands_type == LcdCommands::V2_CAL)
+  if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal)
   {
     if (card.isFileOpen())
     {
@@ -6298,12 +6298,12 @@ static void lcd_main_menu()
 			MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
 		}
 	}
-	else if (lcd_commands_type == LcdCommands::V2_CAL && mesh_bed_leveling_flag == false && homing_flag == false) {
+	else if (lcd_commands_type == LcdCommands::Layer1Cal && mesh_bed_leveling_flag == false && homing_flag == false) {
 		//MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
 	}
 	else
 	{
-		if (!is_usb_printing && (lcd_commands_type != LcdCommands::V2_CAL))
+		if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
 		{
 			//if (farm_mode) MENU_ITEM_SUBMENU_P(MSG_FARM_CARD_MENU, lcd_farm_sdcard_menu);
 			/*else*/ {
@@ -6327,7 +6327,7 @@ static void lcd_main_menu()
 #endif
 
 
-  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::V2_CAL))
+  if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal))
   {
 	  if (farm_mode)
 	  {
@@ -6371,7 +6371,7 @@ static void lcd_main_menu()
 
   }
 
-  if (!is_usb_printing && (lcd_commands_type != LcdCommands::V2_CAL))
+  if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
   {
 	  MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS
   }
@@ -6656,7 +6656,7 @@ void lcd_print_stop()
 	lcd_return_to_status();
 	lcd_ignore_click(true);
 	lcd_commands_step = 0;
-	lcd_commands_type = LcdCommands::STOP_PRINT;
+	lcd_commands_type = LcdCommands::StopPrint;
 	// Turn off the print fan
 	SET_OUTPUT(FAN_PIN);
 	WRITE(FAN_PIN, 0);
@@ -8229,5 +8229,5 @@ void menu_lcd_lcdupdate_func(void)
 	if (!SdFatUtil::test_stack_integrity()) stack_error();
 	lcd_ping(); //check that we have received ping command if we are in farm mode
 	lcd_send_status();
-	if (lcd_commands_type == LcdCommands::V2_CAL) lcd_commands();
+	if (lcd_commands_type == LcdCommands::Layer1Cal) lcd_commands();
 }
