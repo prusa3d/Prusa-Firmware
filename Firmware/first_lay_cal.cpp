@@ -173,7 +173,8 @@ static constexpr float count_e(float layer_heigth, float extrusion_width, float 
 
 static const float width = 0.4;
 static const float length = 20 - width;
-static const float extr = count_e(0.2, width, length);
+static const float heigth = 0.2; //!< TODO This is wrong, as current Z height is 0.15 mm
+static const float extr = count_e(heigth, width, length);
 
 void lay1cal_meander(char *cmd_buffer)
 {
@@ -193,7 +194,7 @@ void lay1cal_meander(char *cmd_buffer)
 //! @par i iteration
 void lay1cal_square(char *cmd_buffer, uint8_t i)
 {
-    const float extr_short_segment = count_e(0.2, width, width);
+    const float extr_short_segment = count_e(heigth, width, width);
 
     static const char fmt1[] PROGMEM = "G1 X%d Y%-.2f E%-.3f";
     static const char fmt2[] PROGMEM = "G1 Y%-.2f E%-.3f";
