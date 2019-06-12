@@ -158,7 +158,7 @@ void tmc2130_init()
 	SET_INPUT(Y_TMC2130_DIAG);
 	SET_INPUT(Z_TMC2130_DIAG);
 	SET_INPUT(E0_TMC2130_DIAG);
-	for (int axis = 0; axis < 2; axis++) // X Y axes
+	for (uint_least8_t axis = 0; axis < 2; axis++) // X Y axes
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
@@ -169,7 +169,7 @@ void tmc2130_init()
 		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
 		//tmc2130_wr_THIGH(axis, TMC2130_THIGH);
 	}
-	for (int axis = 2; axis < 3; axis++) // Z axis
+	for (uint_least8_t axis = 2; axis < 3; axis++) // Z axis
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
@@ -183,7 +183,7 @@ void tmc2130_init()
 		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
 #endif //TMC2130_STEALTH_Z
 	}
-	for (int axis = 3; axis < 4; axis++) // E axis
+	for (uint_least8_t axis = 3; axis < 4; axis++) // E axis
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
@@ -383,7 +383,7 @@ void tmc2130_check_overtemp()
 	static uint32_t checktime = 0;
 	if (_millis() - checktime > 1000 )
 	{
-		for (int i = 0; i < 4; i++)
+		for (uint_least8_t i = 0; i < 4; i++)
 		{
 			uint32_t drv_status = 0;
 			skip_debug_msg = true;
@@ -392,7 +392,7 @@ void tmc2130_check_overtemp()
 			{ // BIT 26 - over temp prewarning ~120C (+-20C)
 				SERIAL_ERRORRPGM(MSG_TMC_OVERTEMP);
 				SERIAL_ECHOLN(i);
-				for (int j = 0; j < 4; j++)
+				for (uint_least8_t j = 0; j < 4; j++)
 					tmc2130_wr(j, TMC2130_REG_CHOPCONF, 0x00010000);
 				kill(MSG_TMC_OVERTEMP);
 			}
