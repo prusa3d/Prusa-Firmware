@@ -187,18 +187,18 @@ enum class TestScreen : uint_least8_t
 
 enum class TestError : uint_least8_t
 {
-    heater,
-    bed,
-    endstops,
-    motor,
-    endstop,
-    printFan,
-    extruderFan,
-    pulley,
-    axis,
-    swappedFan,
-    wiringFsensor,
-    triggeringFsensor,
+    Heater,
+    Bed,
+    Endstops,
+    Motor,
+    Endstop,
+    PrintFan,
+    ExtruderFan,
+    Pulley,
+    Axis,
+    SwappedFan,
+    WiringFsensor,
+    TriggeringFsensor,
 };
 
 static int  lcd_selftest_screen(TestScreen screen, int _progress, int _progress_scale, bool _clear, int _delay);
@@ -211,9 +211,9 @@ static bool lcd_selftest_manual_fan_check(int _fan, bool check_opposite,
  */
 enum class FanCheck : uint_least8_t {
     success,
-    printFan = TestError::printFan,
-    extruderFan = TestError::extruderFan,
-    swappedFan = TestError::swappedFan,
+    printFan,
+    extruderFan,
+    swappedFan,
 };
 
 /**
@@ -6787,7 +6787,7 @@ bool lcd_selftest()
 #endif //defined(TACH_0)
 	if (!_result)
 	{
-		lcd_selftest_error(TestError::extruderFan, "", "");
+		lcd_selftest_error(TestError::ExtruderFan, "", "");
 	}
 
 	if (_result)
@@ -6810,7 +6810,7 @@ bool lcd_selftest()
 #endif //defined(TACH_1)
 		if (!_result)
 		{
-			lcd_selftest_error(TestError::printFan, "", ""); //print fan not spinning
+			lcd_selftest_error(TestError::PrintFan, "", ""); //print fan not spinning
 		}
 	}
 
@@ -6821,12 +6821,12 @@ bool lcd_selftest()
 			//print fan is stil turned on; check that it is spinning
 			_result = lcd_selftest_manual_fan_check(1, false, true);
 			if (!_result){
-				lcd_selftest_error(TestError::printFan, "", "");
+				lcd_selftest_error(TestError::PrintFan, "", "");
 			}
 		}
 		else {
 			// fans are swapped
-			lcd_selftest_error(TestError::swappedFan, "", "");
+			lcd_selftest_error(TestError::SwappedFan, "", "");
 		}
 	}
 
@@ -7082,7 +7082,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(TestError::axis, _error_1, "");
+			lcd_selftest_error(TestError::Axis, _error_1, "");
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -7100,7 +7100,7 @@ static bool lcd_selfcheck_axis_sg(unsigned char axis) {
 			if (axis == Y_AXIS) _error_1 = "Y";
 			if (axis == Z_AXIS) _error_1 = "Z";
 
-			lcd_selftest_error(TestError::pulley, _error_1, "");
+			lcd_selftest_error(TestError::Pulley, _error_1, "");
 			current_position[axis] = 0;
 			plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
 			reset_crash_det(axis);
@@ -7207,11 +7207,11 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 
 		if (_travel_done >= _travel)
 		{
-			lcd_selftest_error(TestError::endstop, _error_1, _error_2);
+			lcd_selftest_error(TestError::Endstop, _error_1, _error_2);
 		}
 		else
 		{
-			lcd_selftest_error(TestError::motor, _error_1, _error_2);
+			lcd_selftest_error(TestError::Motor, _error_1, _error_2);
 		}
 	}
 
@@ -7251,7 +7251,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 		st_synchronize();
 		if (((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) ||
 			((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1)) {
-			lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
+			lcd_selftest_error(TestError::Pulley, (axis == 0) ? "X" : "Y", "");
 			return(false);
 		}
 	}
@@ -7269,7 +7269,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 				return(true);
 			}
 			else {
-				lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
+				lcd_selftest_error(TestError::Pulley, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
 		}
@@ -7278,7 +7278,7 @@ static bool lcd_selfcheck_pulleys(int axis)
 			plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 			st_synchronize();
 			if (_millis() > timeout_counter) {
-				lcd_selftest_error(TestError::pulley, (axis == 0) ? "X" : "Y", "");
+				lcd_selftest_error(TestError::Pulley, (axis == 0) ? "X" : "Y", "");
 				return(false);
 			}
 		}
@@ -7311,7 +7311,7 @@ static bool lcd_selfcheck_endstops()
 		if ((READ(X_MIN_PIN) ^ X_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "X");
 		if ((READ(Y_MIN_PIN) ^ Y_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Y");
 		if ((READ(Z_MIN_PIN) ^ Z_MIN_ENDSTOP_INVERTING) == 1) strcat(_error, "Z");
-		lcd_selftest_error(TestError::endstops, _error, "");
+		lcd_selftest_error(TestError::Endstops, _error, "");
 	}
 	manage_heater();
 	manage_inactivity(true);
@@ -7377,12 +7377,12 @@ static bool lcd_selfcheck_check_heater(bool _isbed)
 		}
 		else
 		{
-			lcd_selftest_error(TestError::heater, "", "");
+			lcd_selftest_error(TestError::Heater, "", "");
 		}
 	}
 	else
 	{
-		lcd_selftest_error(TestError::bed, "", "");
+		lcd_selftest_error(TestError::Bed, "", "");
 	}
 
 	manage_heater();
@@ -7409,19 +7409,19 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 
 	switch (testError)
 	{
-	case TestError::heater:
+	case TestError::Heater:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Heater/Thermistor"));////MSG_SELFTEST_HEATERTHERMISTOR
 		lcd_set_cursor(0, 3);
 		lcd_puts_P(_i("Not connected"));////MSG_SELFTEST_NOTCONNECTED
 		break;
-	case TestError::bed:
+	case TestError::Bed:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Bed / Heater"));////MSG_SELFTEST_BEDHEATER
 		lcd_set_cursor(0, 3);
 		lcd_puts_P(_T(MSG_SELFTEST_WIRINGERROR));
 		break;
-	case TestError::endstops:
+	case TestError::Endstops:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Endstops"));////MSG_SELFTEST_ENDSTOPS
 		lcd_set_cursor(0, 3);
@@ -7429,7 +7429,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_set_cursor(17, 3);
 		lcd_print(_error_1);
 		break;
-	case TestError::motor:
+	case TestError::Motor:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_T(MSG_SELFTEST_MOTOR));
 		lcd_set_cursor(18, 2);
@@ -7439,7 +7439,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_2);
 		break;
-	case TestError::endstop:
+	case TestError::Endstop:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Endstop not hit"));////MSG_SELFTEST_ENDSTOP_NOTHIT c=20 r=1
 		lcd_set_cursor(0, 3);
@@ -7447,7 +7447,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case TestError::printFan:
+	case TestError::PrintFan:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_T(MSG_SELFTEST_COOLING_FAN));
 		lcd_set_cursor(0, 3);
@@ -7455,7 +7455,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case TestError::extruderFan:
+	case TestError::ExtruderFan:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_T(MSG_SELFTEST_EXTRUDER_FAN));
 		lcd_set_cursor(0, 3);
@@ -7463,7 +7463,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case TestError::pulley:
+	case TestError::Pulley:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Loose pulley"));////MSG_LOOSE_PULLEY c=20 r=1
 		lcd_set_cursor(0, 3);
@@ -7471,7 +7471,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case TestError::axis:
+	case TestError::Axis:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Axis length"));////MSG_SELFTEST_AXIS_LENGTH
 		lcd_set_cursor(0, 3);
@@ -7479,7 +7479,7 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case TestError::swappedFan:
+	case TestError::SwappedFan:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_i("Front/left fans"));////MSG_SELFTEST_FANS
 		lcd_set_cursor(0, 3);
@@ -7487,13 +7487,13 @@ static void lcd_selftest_error(TestError testError, const char *_error_1, const 
 		lcd_set_cursor(18, 3);
 		lcd_print(_error_1);
 		break;
-	case TestError::wiringFsensor:
+	case TestError::WiringFsensor:
 		lcd_set_cursor(0, 2);
 		lcd_puts_P(_T(MSG_SELFTEST_FILAMENT_SENSOR));
 		lcd_set_cursor(0, 3);
 		lcd_puts_P(_T(MSG_SELFTEST_WIRINGERROR));
 		break;
-	case TestError::triggeringFsensor:
+	case TestError::TriggeringFsensor:
 	    lcd_set_cursor(0, 2);
         lcd_puts_P(_T(MSG_SELFTEST_FILAMENT_SENSOR));
         lcd_set_cursor(0, 3);
@@ -7522,7 +7522,7 @@ static bool lcd_selftest_fsensor(void)
 	fsensor_init();
 	if (fsensor_not_responding)
 	{
-		lcd_selftest_error(TestError::wiringFsensor, "", "");
+		lcd_selftest_error(TestError::WiringFsensor, "", "");
 	}
 	return (!fsensor_not_responding);
 }
@@ -7576,7 +7576,7 @@ static bool selftest_irsensor()
         {
             if (PIN_GET(IR_SENSOR_PIN) == 0)
             {
-                lcd_selftest_error(TestError::triggeringFsensor, "", "");
+                lcd_selftest_error(TestError::TriggeringFsensor, "", "");
                 return false;
             }
 #ifdef TMC2130
