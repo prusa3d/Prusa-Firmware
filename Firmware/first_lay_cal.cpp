@@ -128,19 +128,19 @@ void lay1cal_before_meander()
 
 //! @brief Count extrude length
 //!
-//! @param layer_heigth layer heigth in mm
+//! @param layer_height layer height in mm
 //! @param extrusion_width extrusion width in mm
 //! @param extrusion_length extrusion length in mm
 //! @return filament length in mm which needs to be extruded to form line
-static constexpr float count_e(float layer_heigth, float extrusion_width, float extrusion_length)
+static constexpr float count_e(float layer_height, float extrusion_width, float extrusion_length)
 {
-    return (extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4));
+    return (extrusion_length * layer_height * extrusion_width / (M_PI * pow(1.75, 2) / 4));
 }
 
 static const float width = 0.4; //!< line width
 static const float length = 20 - width; //!< line length
-static const float heigth = 0.2; //!< layer height TODO This is wrong, as current Z height is 0.15 mm
-static const float extr = count_e(heigth, width, length); //!< E axis movement needed to print line
+static const float height = 0.2; //!< layer height TODO This is wrong, as current Z height is 0.15 mm
+static const float extr = count_e(height, width, length); //!< E axis movement needed to print line
 
 //! @brief Print meander
 //! @param cmd_buffer character buffer needed to format gcodes
@@ -199,7 +199,7 @@ void lay1cal_meander(char *cmd_buffer)
 //! @param i iteration
 void lay1cal_square(char *cmd_buffer, uint8_t i)
 {
-    const float extr_short_segment = count_e(heigth, width, width);
+    const float extr_short_segment = count_e(height, width, width);
 
     static const char fmt1[] PROGMEM = "G1 X%d Y%-.2f E%-.3f";
     static const char fmt2[] PROGMEM = "G1 Y%-.2f E%-.3f";
