@@ -26,7 +26,7 @@ uint8_t menu_data[MENU_DATA_SIZE];
 #endif
 
 uint8_t menu_depth = 0;
-
+uint8_t menu_block_entering_on_serious_errors = SERIOUS_ERR_NONE;
 uint8_t menu_line = 0;
 uint8_t menu_item = 0;
 uint8_t menu_row = 0;
