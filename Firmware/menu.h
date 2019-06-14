@@ -28,6 +28,27 @@ extern uint8_t menu_data[MENU_DATA_SIZE];
 
 extern uint8_t menu_depth;
 
+//! definition of serious errors possibly blocking the main menu
+//! Use them as bit mask, so that the code may set various errors at the same time
+enum ESeriousErrors {
+	SERIOUS_ERR_NONE            = 0,
+	SERIOUS_ERR_MINTEMP_HEATER  = 0x01,
+	SERIOUS_ERR_MINTEMP_BED     = 0x02
+}; // and possibly others in the future.
+
+//! this is a flag for disabling entering the main menu. If this is set
+//! to anything != 0, the only the main status screen will be shown on the
+//! LCD and the user will be prevented from entering the menu.
+//! Now used only to block doing anything with the printer when there is
+//! the infamous MINTEMP error (SERIOUS_ERR_MINTEMP).
+extern uint8_t menu_block_entering_on_serious_errors;
+
+//! a pair of macros for manipulating the serious errors
+//! a c++ class would have been better
+#define menu_set_serious_error(x) menu_block_entering_on_serious_errors |= x;
+#define menu_unset_serious_error(x) menu_block_entering_on_serious_errors &= ~x;
+#define menu_is_serious_error(x) (menu_block_entering_on_serious_errors & x) != 0
+
 extern uint8_t menu_line;
 extern uint8_t menu_item;
 extern uint8_t menu_row;
@@ -81,8 +102,14 @@ extern uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu);
 #define MENU_ITEM_BACK_P(str) do { if (menu_item_back_P(str)) return; } while (0)
 extern uint8_t menu_item_back_P(const char* str);
 
+// leaving menu - this condition must be immediately before MENU_ITEM_BACK_P
+#define ON_MENU_LEAVE(func) do { if (((menu_item == menu_line) && menu_clicked && (lcd_encoder == menu_item)) || menu_leaving){ func } } while (0)
+
 #define MENU_ITEM_FUNCTION_P(str, func) do { if (menu_item_function_P(str, func)) return; } while (0)
 extern uint8_t menu_item_function_P(const char* str, menu_func_t func);
+
+#define MENU_ITEM_FUNCTION_NR_P(str, number, func, fn_par) do { if (menu_item_function_P(str, number, func, fn_par)) return; } while (0)
+extern uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t), uint8_t fn_par);
 
 #define MENU_ITEM_GCODE_P(str, str_gcode) do { if (menu_item_gcode_P(str, str_gcode)) return; } while (0)
 extern uint8_t menu_item_gcode_P(const char* str, const char* str_gcode);
@@ -91,11 +118,12 @@ extern uint8_t menu_item_gcode_P(const char* str, const char* str_gcode);
 extern const char menu_fmt_int3[];
 
 extern const char menu_fmt_float31[];
+extern const char menu_fmt_float13[];
 
 
-extern void menu_draw_float31(char chr, const char* str, float val);
+extern void menu_draw_float31(const char* str, float val);
 
-extern void menu_draw_float13(char chr, const char* str, float val);
+extern void menu_draw_float13(const char* str, float val);
 
 
 #define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)
