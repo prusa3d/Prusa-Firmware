@@ -3175,6 +3175,11 @@ void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
 
+	if (farm_mode)
+	{
+		prusa_statistics(22);
+	}
+
 	if (mmu_enabled) 
 	{
 		extr_adj(tmp_extruder);//loads current extruder
@@ -5964,7 +5969,7 @@ Sigma_Exit:
           SERIAL_PROTOCOLLNRPGM(FW_VERSION_STR_P());
       } else if (code_seen('U')) {
           // Check the firmware version provided. If the firmware version provided by the U code is higher than the currently running firmware,
-          // pause the print and ask the user to upgrade the firmware.
+          // pause the print for 30s and ask the user to upgrade the firmware.
           show_upgrade_dialog_if_version_newer(++ strchr_pointer);
       } else {
           SERIAL_ECHOPGM("FIRMWARE_NAME:Prusa-Firmware ");
