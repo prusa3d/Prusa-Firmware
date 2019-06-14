@@ -3146,9 +3146,10 @@ void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
 
-  if (farm_mode){
-    prusa_statistics(22);
-  }
+	if (farm_mode)
+	{
+		prusa_statistics(22);
+	}
 
 	if (mmu_enabled) 
 	{
