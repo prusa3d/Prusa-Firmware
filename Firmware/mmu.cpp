@@ -1462,11 +1462,20 @@ static void load_more()
         mmu_command(MmuCmd::C0);
         manage_response(true, true, MMU_LOAD_MOVE);
     }
-//    current_position[E_AXIS] += 60;
-//    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
-//    current_position[E_AXIS] -= 58;
-//    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
-    st_synchronize();
+    uint8_t retries = 3;
+    do
+    {//We will retry the load to nozzle three times since it most of the time fails due to a bad tip and not a clog
+       current_position[E_AXIS] += 60;
+       plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+       current_position[E_AXIS] -= 58;
+       plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+       st_synchronize();
+       if(PIN_GET(IR_SENSOR_PIN) != 0)
+       {//Adjust position so we are back at zero if sensor isn't detecting filament but dont do the actual movement
+          current_position[E_AXIS] -= 2;
+          plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);        
+       }
+    }while(PIN_GET(IR_SENSOR_PIN) != 0 && retries-- > 0);
 }
 
 static void increment_load_fail()
