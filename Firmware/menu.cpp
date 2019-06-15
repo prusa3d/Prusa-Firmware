@@ -26,7 +26,7 @@ uint8_t menu_data[MENU_DATA_SIZE];
 #endif
 
 uint8_t menu_depth = 0;
-
+uint8_t menu_block_entering_on_serious_errors = SERIOUS_ERR_NONE;
 uint8_t menu_line = 0;
 uint8_t menu_item = 0;
 uint8_t menu_row = 0;
@@ -308,9 +308,9 @@ const char menu_fmt_int3[] PROGMEM = "%c%.15S:%s%3d";
 
 const char menu_fmt_float31[] PROGMEM = "%-12.12S%+8.1f";
 
-const char menu_fmt_float13[] PROGMEM = "%-15.15S%+5.3f";
+const char menu_fmt_float13[] PROGMEM = "%c%-13.13S%+5.3f";
 
-const char menu_fmt_float13off[] PROGMEM = "%c%.12S:%s%";
+const char menu_fmt_float13off[] PROGMEM = "%c%-13.13S%6.6s";
 
 template<typename T>
 static void menu_draw_P(char chr, const char* str, int16_t val);
@@ -331,20 +331,14 @@ template<>
 void menu_draw_P<uint8_t*>(char chr, const char* str, int16_t val)
 {
     menu_data_edit_t* _md = (menu_data_edit_t*)&(menu_data[0]);
-    int text_len = strlen_P(str);
-    if (text_len > 15) text_len = 15;
-    char spaces[21];
-    strcpy_P(spaces, menu_20x_space);
-    spaces[12 - text_len] = 0;
-    float factor = 1.0 + static_cast<float>(val) / 1000.0;
+    float factor = 1.0f + static_cast<float>(val) / 1000.0f;
     if (val <= _md->minEditValue)
     {
-        lcd_printf_P(menu_fmt_float13off, chr, str, spaces);
-        lcd_puts_P(_i(" [off]"));
+        lcd_printf_P(menu_fmt_float13off, chr, str, " [off]");
     }
     else
     {
-        lcd_printf_P(menu_fmt_float13, chr, str, spaces, factor);
+        lcd_printf_P(menu_fmt_float13, chr, str, factor);
     }
 }
 
@@ -363,7 +357,7 @@ void menu_draw_float31(const char* str, float val)
 	lcd_printf_P(menu_fmt_float31, str, val);	
 }
 
-//! @brief Draw up to 12 chars of text and a float number in format +1.234
+//! @brief Draw up to 14 chars of text and a float number in format +1.234
 //! 
 //! @param str string label to print
 //! @param val value to print aligned to the right side of the display  
@@ -375,7 +369,7 @@ void menu_draw_float31(const char* str, float val)
 //! Moreover, this function gets inlined in the final code, so removing it doesn't really help ;)
 void menu_draw_float13(const char* str, float val)
 {
-	lcd_printf_P(menu_fmt_float13, str, val);
+	lcd_printf_P(menu_fmt_float13, ' ', str, val);
 }
 
 template <typename T>
