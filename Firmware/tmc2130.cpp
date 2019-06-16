@@ -437,6 +437,9 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 	uint8_t tbl = tmc2130_chopper_config[axis].tbl; //blanking time, original value = 2
 	if (axis == E_AXIS)
 	{
+#if defined(TMC2130_INTPOL_E) && (TMC2130_INTPOL_E == 0)
+        intpol = 0;
+#endif
 #ifdef TMC2130_CNSTOFF_E
 		// fd = 0 (slow decay only)
 		hstrt = 0; //fd0..2
@@ -447,6 +450,16 @@ void tmc2130_setup_chopper(uint8_t axis, uint8_t mres, uint8_t current_h, uint8_
 //		toff = TMC2130_TOFF_E; // toff = 3-5
 //		rndtf = 1;
 	}
+#if defined(TMC2130_INTPOL_XY) && (TMC2130_INTPOL_XY == 0)
+    else if (axis == X_AXIS || axis == Y_AXIS) {
+        intpol = 0;
+    }
+#endif
+#if defined(TMC2130_INTPOL_Z) && (TMC2130_INTPOL_Z == 0)
+    else if (axis == Z_AXIS) {
+        intpol = 0;
+    }
+#endif
 //	DBG(_n("tmc2130_setup_chopper(axis=%hhd, mres=%hhd, curh=%hhd, curr=%hhd\n"), axis, mres, current_h, current_r);
 //	DBG(_n(" toff=%hhd, hstr=%hhd, hend=%hhd, tbl=%hhd\n"), toff, hstrt, hend, tbl);
 	if (current_r <= 31)
