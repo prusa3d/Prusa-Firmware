@@ -97,6 +97,9 @@ AXIS SETTINGS
 // New XYZ calibration
 //#define NEW_XYZCAL
 
+// Watchdog support
+#define WATCHDOG
+
 
 /*------------------------------------
 EXTRUDER SETTINGS
@@ -312,7 +315,7 @@ PREHEAT SETTINGS
 *------------------------------------*/
 
 #define FARM_PREHEAT_HOTEND_TEMP 250
-#define FARM_PREHEAT_HPB_TEMP 40
+#define FARM_PREHEAT_HPB_TEMP 80
 #define FARM_PREHEAT_FAN_SPEED 0
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
@@ -435,6 +438,7 @@ THERMISTORS SETTINGS
 // Safety timer
 #define SAFETYTIMER
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
+#define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
 #define M600_TIMEOUT 600  //seconds
 
