@@ -43,7 +43,7 @@
 
 #include "Timer.h"
 #include "Configuration_prusa.h"
-
+#include "language.h"
 
 
 //===========================================================================
@@ -532,9 +532,9 @@ void checkFanSpeed()
 //! Extracted from fanSpeedError to save some space.
 //! @param serialMsg pointer into PROGMEM, this text will be printed to the serial port
 //! @param lcdMsg pointer into PROGMEM, this text will be printed onto the LCD
-static void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
+void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
 	SERIAL_ECHOLNRPGM(serialMsg);
-	if (get_message_level() == 0) {
+	//if (get_message_level() == 0) {
 		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT)){
 			WRITE(BEEPER, HIGH);
 			delayMicroseconds(200);
@@ -542,7 +542,7 @@ static void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
 			delayMicroseconds(100); // what is this wait for?
 		}
 		LCD_ALERTMESSAGERPGM(lcdMsg);
-	}
+	//}
 }
 
 void fanSpeedError(unsigned char _fan) {
@@ -558,12 +558,13 @@ void fanSpeedError(unsigned char _fan) {
 		}
 	}
 	else {
+      heating_status = 5;
 			setTargetHotend0(0);
 			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
 	}
 	switch (_fan) {
 	case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B
-		fanSpeedErrorBeep(PSTR("Extruder fan speed is lower than expected"), PSTR("Err: EXTR. FAN ERROR") );
+    fanSpeedErrorBeep(PSTR("Extruder fan speed is lower than expected"), PSTR("Err: EXTR. FAN ERROR") );
 		break;
 	case 1:
 		fanSpeedErrorBeep(PSTR("Print fan speed is lower than expected"), PSTR("Err: PRINT FAN ERROR") );

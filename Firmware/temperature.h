@@ -255,7 +255,7 @@ void check_fans();
 
 void check_min_temp();
 void check_max_temp();
-
+void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg);
 
 #endif
 
