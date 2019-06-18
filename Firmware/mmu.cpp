@@ -1451,8 +1451,8 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 
 //! @brief Fits filament tip into heatbreak?
 //!
-//! If PTFE tube is jammed, this cause filament to be unloaded and no longer
-//! detected by pulley IR sensor.
+//! If PTFE tube is jammed, this causes filament to be unloaded and no longer
+//! being detected by the pulley IR sensor.
 //! @retval true Fits
 //! @retval false Doesn't fit
 static bool can_load()
