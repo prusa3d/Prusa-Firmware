@@ -304,7 +304,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
         _tone(BEEPER, 1000);
         delay_keep_alive(50);
         _noTone(BEEPER);
-        lcd_wait_for_click();
+        lcd_wait_for_click_delay(30);
         lcd_update_enable(true);
         lcd_clear();
         lcd_update(0);
@@ -326,4 +326,47 @@ void update_current_firmware_version_to_eeprom()
         // See FirmwareRevisionFlavorType for the definition of firmware flavors.
         eeprom_update_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR,   ver_current[3]);
     }
+}
+
+
+//-//
+eNOZZLE_DIAMETER eNozzleDiameter=e_NOZZLE_DIAMETER_400;
+eCHECK_MODE eCheckMode=e_CHECK_MODE_none;
+
+void fCheckModeInit()
+{
+eCheckMode=(eCHECK_MODE)eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODE);
+if(eCheckMode==e_CHECK_MODE_NULL)
+     {
+     eCheckMode=e_CHECK_MODE_warn;
+     eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)eCheckMode);
+     }
+if(farm_mode)
+     eCheckMode=e_CHECK_MODE_strict;
+eNozzleDiameter=(eNOZZLE_DIAMETER)eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER);
+if((eNozzleDiameter==e_NOZZLE_DIAMETER_NULL)&& !farm_mode)
+     {
+     eNozzleDiameter=e_NOZZLE_DIAMETER_400;
+     eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)eNozzleDiameter);
+     eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,400);
+     }
+}
+
+void nozzle_diameter_check(uint16_t nDiameter)
+{
+uint16_t nDiameter_um;
+
+nDiameter_um=eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM);
+if(nDiameter==nDiameter_um)
+     return;
+switch(eCheckMode)
+     {
+     case e_CHECK_MODE_warn:
+          lcd_show_fullscreen_message_and_wait_P(_i("Nozzle diameter doesn't match! Press the knob to continue."));
+          break;
+     case e_CHECK_MODE_strict:
+          lcd_show_fullscreen_message_and_wait_P(_i("Nozzle diameter doesn't match! Print is aborted, press the knob."));
+          lcd_print_stop();
+          break;
+     }
 }

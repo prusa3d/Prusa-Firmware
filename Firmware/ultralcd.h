@@ -89,31 +89,37 @@ extern void lcd_diag_show_end_stops();
 
 
 // To be used in lcd_commands_type.
-#define LCD_COMMAND_IDLE 0
-#define LCD_COMMAND_LOAD_FILAMENT 1
-#define LCD_COMMAND_STOP_PRINT 2
-#define LCD_COMMAND_FARM_MODE_CONFIRM 4
-#define LCD_COMMAND_LONG_PAUSE 5
-#define LCD_COMMAND_PID_EXTRUDER 7 
-#define LCD_COMMAND_V2_CAL 8
+enum class LcdCommands : uint_least8_t
+{
+	Idle,
+	LoadFilament,
+	StopPrint,
+	FarmModeConfirm,
+	LongPause,
+	PidExtruder,
+	Layer1Cal,
+};
 
-extern int lcd_commands_type;
+extern LcdCommands lcd_commands_type;
 extern int8_t FSensorStateMenu;
 
-#define CUSTOM_MSG_TYPE_STATUS 0 // status message from lcd_status_message variable
-#define CUSTOM_MSG_TYPE_MESHBL 1 // Mesh bed leveling in progress
-#define CUSTOM_MSG_TYPE_F_LOAD 2 // Loading filament in progress
-#define CUSTOM_MSG_TYPE_PIDCAL 3 // PID tuning in progress
-#define CUSTOM_MSG_TYPE_TEMCAL 4 // PINDA temp calibration
-#define CUSTOM_MSG_TYPE_TEMPRE 5 // Temp compensation preheat
+enum class CustomMsg : uint_least8_t
+{
+	Status,          //!< status message from lcd_status_message variable
+	MeshBedLeveling, //!< Mesh bed leveling in progress
+	FilamentLoading, //!< Loading filament in progress
+	PidCal,          //!< PID tuning in progress
+	TempCal,         //!< PINDA temperature calibration
+	TempCompPreheat, //!< Temperature compensation preheat
+};
 
-extern unsigned int custom_message_type;
+extern CustomMsg custom_message_type;
 extern unsigned int custom_message_state;
 
 extern uint8_t farm_mode;
 extern int farm_no;
 extern int farm_timer;
-extern int farm_status;
+extern uint8_t farm_status;
 
 #ifdef TMC2130
 #define SILENT_MODE_NORMAL 0
@@ -145,18 +151,19 @@ void extr_unload_used();
 #endif //SNMM
 void extr_unload();
 
-typedef enum
+enum class FilamentAction : uint_least8_t
 {
-    e_FILAMENT_ACTION_none, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
-    e_FILAMENT_ACTION_Load,
-    e_FILAMENT_ACTION_autoLoad,
-    e_FILAMENT_ACTION_unLoad,
-    e_FILAMENT_ACTION_mmuLoad,
-    e_FILAMENT_ACTION_mmuUnLoad,
-    e_FILAMENT_ACTION_mmuEject,
-    e_FILAMENT_ACTION_mmuCut,
-} eFILAMENT_ACTION;
-extern eFILAMENT_ACTION eFilamentAction;
+    None, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
+    Load,
+    AutoLoad,
+    UnLoad,
+    MmuLoad,
+    MmuUnLoad,
+    MmuEject,
+    MmuCut,
+};
+
+extern FilamentAction eFilamentAction;
 extern bool bFilamentFirstRun;
 extern bool bFilamentPreheatState;
 extern bool bFilamentAction;

@@ -214,8 +214,6 @@ static LongTimer crashDetTimer;
 bool mesh_bed_leveling_flag = false;
 bool mesh_bed_run_from_menu = false;
 
-int8_t FarmMode = 0;
-
 bool prusa_sd_card_upload = false;
 
 unsigned int status_number = 0;
@@ -1065,6 +1063,9 @@ void setup()
 		//disabled filament autoload (PFW360)
 		fsensor_autoload_set(false);
 #endif //FILAMENT_SENSOR
+          // ~ FanCheck -> on
+          if(!(eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED)))
+               eeprom_update_byte((unsigned char *)EEPROM_FAN_CHECK_ENABLED,true);
 	}
 	MYSERIAL.begin(BAUDRATE);
 	fdev_setup_stream(uartout, uart_putchar, NULL, _FDEV_SETUP_WRITE); //setup uart out stream
@@ -1644,6 +1645,7 @@ void setup()
 	   
   }
 #endif //UVLO_SUPPORT
+  fCheckModeInit();
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
@@ -3157,7 +3159,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 #endif //IR_SENSOR
 
     lcd_setstatuspgm(_T(WELCOME_MSG));
-    custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+    custom_message_type = CustomMsg::Status;
 }
 
 //! @brief Rise Z if too low to avoid blob/jam before filament loading
@@ -3173,6 +3175,11 @@ void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
 
+	if (farm_mode)
+	{
+		prusa_statistics(22);
+	}
+
 	if (mmu_enabled) 
 	{
 		extr_adj(tmp_extruder);//loads current extruder
@@ -3181,7 +3188,7 @@ void gcode_M701()
 	else
 	{
 		enable_z();
-		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
+		custom_message_type = CustomMsg::FilamentLoading;
 
 #ifdef FSENSOR_QUALITY
 		fsensor_oq_meassure_start(40);
@@ -3211,7 +3218,7 @@ void gcode_M701()
 		lcd_setstatuspgm(_T(WELCOME_MSG));
 		disable_z();
 		loading_flag = false;
-		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+		custom_message_type = CustomMsg::Status;
 
 #ifdef FSENSOR_QUALITY
         fsensor_oq_meassure_stop();
@@ -3649,7 +3656,39 @@ void process_commands()
     } else if(code_seen("FR")) { //! PRUSA FR
         // Factory full reset
         factory_reset(0);
-    }
+
+//-//
+/*
+    } else if(code_seen("qqq")) {
+MYSERIAL.println("=== checking ===");
+MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODE),DEC);
+MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER),DEC);
+MYSERIAL.println(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM),DEC);
+MYSERIAL.println(farm_mode,DEC);
+MYSERIAL.println(eCheckMode,DEC);
+    } else if(code_seen("www")) {
+MYSERIAL.println("=== @ FF ===");
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,0xFF);
+eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,0xFF);
+eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
+*/
+    } else if (code_seen("nozzle")) { //! PRUSA nozzle
+          uint16_t nDiameter;
+          if(code_seen('D'))
+               {
+               nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
+               nozzle_diameter_check(nDiameter);
+               }
+          else if(code_seen("set") && farm_mode)
+               {
+               strchr_pointer++;                  // skip 2nd char (~ 'e')
+               strchr_pointer++;                  // skip 3rd char (~ 't')
+               nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
+               eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)e_NOZZLE_DIAMETER_NULL); // for correct synchronization after farm-mode exiting
+               eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+               }
+          else SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
+	}	
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
 	  // }
@@ -4194,7 +4233,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 //			setTargetHotend(200, 0);
 			setTargetBed(70 + (start_temp - 30));
 
-			custom_message_type = CUSTOM_MSG_TYPE_TEMCAL;
+			custom_message_type = CustomMsg::TempCal;
 			custom_message_state = 1;
 			lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
 			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -4296,7 +4335,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			break;
 		}
 		puts_P(_N("PINDA probe calibration start"));
-		custom_message_type = CUSTOM_MSG_TYPE_TEMCAL;
+		custom_message_type = CustomMsg::TempCal;
 		custom_message_state = 1;
 		lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
 		current_position[X_AXIS] = PINDA_PREHEAT_X;
@@ -4364,7 +4403,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			
 		
 		}
-		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+		custom_message_type = CustomMsg::Status;
 
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 		puts_P(_N("Temperature calibration done."));
@@ -4424,7 +4463,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// We don't know where we are! HOME!
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
-			if (lcd_commands_type != LCD_COMMAND_STOP_PRINT) {
+			if (lcd_commands_type != LcdCommands::StopPrint) {
 				repeatcommand_front(); // repeat G80 with all its parameters
 				enquecommand_front_P((PSTR("G28 W0")));
 			}
@@ -4464,7 +4503,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 		if (temp_comp_start)
 		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
-			if (lcd_commands_type != LCD_COMMAND_STOP_PRINT) {
+			if (lcd_commands_type != LcdCommands::StopPrint) {
 				temp_compensation_start();
 				run = true;
 				repeatcommand_front(); // repeat G80 with all its parameters
@@ -4476,14 +4515,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			break;
 		}
 		run = false;
-		if (lcd_commands_type == LCD_COMMAND_STOP_PRINT) {
+		if (lcd_commands_type == LcdCommands::StopPrint) {
 			mesh_bed_leveling_flag = false;
 			break;
 		}
 		// Save custom message state, set a new custom message state to display: Calibrating point 9.
-		unsigned int custom_message_type_old = custom_message_type;
+		CustomMsg custom_message_type_old = custom_message_type;
 		unsigned int custom_message_state_old = custom_message_state;
-		custom_message_type = CUSTOM_MSG_TYPE_MESHBL;
+		custom_message_type = CustomMsg::MeshBedLeveling;
 		custom_message_state = (nMeasPoints * nMeasPoints) + 10;
 		lcd_update(1);
 
@@ -4683,7 +4722,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                     enable_z_endstop(bState);
                     } while (st_get_position_mm(Z_AXIS) > MESH_HOME_Z_SEARCH); // i.e. Z-leveling not o.k.
 //               plan_set_z_position(MESH_HOME_Z_SEARCH); // is not necessary ('do-while' loop always ends at the expected Z-position)
-               custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
+               custom_message_type=CustomMsg::Status; // display / status-line recovery
                lcd_update_enable(true);           // display / status-line recovery
                gcode_G28(true, true, true);       // X & Y & Z-homing (must be after individual Z-homing (problem with spool-holder)!)
                repeatcommand_front();             // re-run (i.e. of "G80")
@@ -4959,6 +4998,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		EEPROM_save_B(EEPROM_FARM_NUMBER, &farm_no);
           SilentModeMenu = SILENT_MODE_OFF;
           eeprom_update_byte((unsigned char *)EEPROM_SILENT, SilentModeMenu);
+          fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 
 	case 99: //! G99 (deactivate farm mode)
@@ -4966,6 +5006,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		lcd_printer_connected();
 		eeprom_update_byte((unsigned char *)EEPROM_FARM_MODE, farm_mode);
 		lcd_update(2);
+          fCheckModeInit();                       // alternatively invoke printer reset
 		break;
 	default:
 		printf_P(PSTR("Unknown G code: %s \n"), cmdbuffer + bufindr + CMDHDRSIZE);
@@ -5928,7 +5969,7 @@ Sigma_Exit:
           SERIAL_PROTOCOLLNRPGM(FW_VERSION_STR_P());
       } else if (code_seen('U')) {
           // Check the firmware version provided. If the firmware version provided by the U code is higher than the currently running firmware,
-          // pause the print and ask the user to upgrade the firmware.
+          // pause the print for 30s and ask the user to upgrade the firmware.
           show_upgrade_dialog_if_version_newer(++ strchr_pointer);
       } else {
           SERIAL_ECHOPGM("FIRMWARE_NAME:Prusa-Firmware ");
@@ -7671,7 +7712,7 @@ static void handleSafetyTimer()
     {
         safetyTimer.start();
     }
-    else if (safetyTimer.expired(safetytimer_inactive_time))
+    else if (safetyTimer.expired(farm_mode?FARM_DEFAULT_SAFETYTIMER_TIME_ms:safetytimer_inactive_time))
     {
         setTargetBed(0);
         setAllTargetHotends(0);
@@ -7693,9 +7734,9 @@ bool bInhibitFlag;
 #ifdef IR_SENSOR
           bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
 #endif // IR_SENSOR
-          if ((mcode_in_progress != 600) && (eFilamentAction != e_FILAMENT_ACTION_autoLoad) && (!bInhibitFlag)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
+          if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
 		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active)
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && !wizard_active)
 			{
 				if (fsensor_check_autoload())
 				{
@@ -7719,7 +7760,7 @@ if(0)
 						show_preheat_nozzle_warning();
 						lcd_update_enable(true);
 */
-                              eFilamentAction=e_FILAMENT_ACTION_autoLoad;
+                              eFilamentAction=FilamentAction::AutoLoad;
                               bFilamentFirstRun=false;
                               if(target_temperature[0]>=EXTRUDE_MINTEMP)
                               {
@@ -8193,7 +8234,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 	float bed_zero_ref_y = (-0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER);
 
 	float mesh_home_z_search = 4;
-	float measure_z_heigth = 0.2f;
+	float measure_z_height = 0.2f;
 	float row[x_points_num];
 	int ix = 0;
 	int iy = 0;
@@ -8210,7 +8251,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 
 	unsigned int custom_message_type_old = custom_message_type;
 	unsigned int custom_message_state_old = custom_message_state;
-	custom_message_type = CUSTOM_MSG_TYPE_MESHBL;
+	custom_message_type = CustomMsg::MeshBedLeveling;
 	custom_message_state = (x_points_num * y_points_num) + 10;
 	lcd_update(1);
 
@@ -8228,7 +8269,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 	}
 	st_synchronize();
 	*/
-		destination[Z_AXIS] = measure_z_heigth;
+		destination[Z_AXIS] = measure_z_height;
 		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
 		for(int8_t i=0; i < NUM_AXIS; i++) {
 			current_position[i] = destination[i];
@@ -8408,7 +8449,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	}
 	unsigned int custom_message_type_old = custom_message_type;
 	unsigned int custom_message_state_old = custom_message_state;
-	custom_message_type = CUSTOM_MSG_TYPE_MESHBL;
+	custom_message_type = CustomMsg::MeshBedLeveling;
 	custom_message_state = (x_points_num * y_points_num) + 10;
 	lcd_update(1);
 
@@ -8558,7 +8599,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 
 void temp_compensation_start() {
 	
-	custom_message_type = CUSTOM_MSG_TYPE_TEMPRE;
+	custom_message_type = CustomMsg::TempCompPreheat;
 	custom_message_state = PINDA_HEAT_T + 1;
 	lcd_update(2);
 	if (degHotend(active_extruder) > EXTRUDE_MINTEMP) {
@@ -8579,7 +8620,7 @@ void temp_compensation_start() {
 		if (custom_message_state == 99 || custom_message_state == 9) lcd_update(2); //force whole display redraw if number of digits changed
 		else lcd_update(1);
 	}	
-	custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+	custom_message_type = CustomMsg::Status;
 	custom_message_state = 0;
 }
 
