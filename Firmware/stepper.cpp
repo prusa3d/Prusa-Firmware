@@ -785,6 +785,7 @@ FORCE_INLINE void isr() {
 
 
 #ifdef LIN_ADVANCE
+    WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
     uint8_t la_state = 0;
 #endif
 
@@ -897,6 +898,7 @@ FORCE_INLINE void advance_isr() {
     if (step_events_completed.wide > LA_decelerate_after && current_adv_steps > final_adv_steps) {
         // decompression
         e_steps -= e_step_loops;
+        WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
         if(current_adv_steps > e_step_loops)
             current_adv_steps -= e_step_loops;
         else
@@ -906,6 +908,7 @@ FORCE_INLINE void advance_isr() {
     else if (step_events_completed.wide < LA_decelerate_after && current_adv_steps < max_adv_steps) {
         // compression
         e_steps += e_step_loops;
+        WRITE_NC(E0_DIR_PIN, e_steps < 0? INVERT_E0_DIR: !INVERT_E0_DIR);
         current_adv_steps += e_step_loops;
         nextAdvanceISR = eISR_Rate;
     }
@@ -961,7 +964,6 @@ FORCE_INLINE void advance_isr_scheduler() {
         uint8_t max_ticks = (eisr? e_step_loops: step_loops);
         max_ticks = min(abs(e_steps), max_ticks);
         bool rev = (e_steps < 0);
-        WRITE_NC(E0_DIR_PIN, rev? INVERT_E0_DIR: !INVERT_E0_DIR);
         do
         {
             WRITE_NC(E0_STEP_PIN, !INVERT_E_STEP_PIN);
