@@ -152,6 +152,7 @@ static void mmu_cut_filament_menu();
 static void lcd_menu_fails_stats();
 #endif //TMC2130 or FILAMENT_SENSOR
 
+static void lcd_belttest_v();
 static void lcd_selftest_v();
 
 #ifdef TMC2130
@@ -5568,6 +5569,9 @@ static void lcd_calibration_menu()
 	MENU_ITEM_FUNCTION_P(_i("Wizard"), lcd_wizard);////MSG_WIZARD c=17 r=1
 	MENU_ITEM_SUBMENU_P(_i("First layer cal."), lcd_v2_calibration);////MSG_V2_CALIBRATION c=17 r=1
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
+#ifdef TMC2130
+	MENU_ITEM_FUNCTION_P(_i("Belt test        "), lcd_belttest_v);////MSG_BELTTEST
+#endif //TMC2130
 	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST
 #ifdef MK1BP
     // MK1
@@ -6940,6 +6944,62 @@ void lcd_sdcard_menu()
     }
   }
   MENU_END();
+}
+
+static void lcd_belttest_v()
+{
+    lcd_belttest();
+    menu_back_if_clicked();
+}
+void lcd_belttest_print(const char* msg, uint16_t X, uint16_t Y)
+{
+    lcd_clear();
+    lcd_printf_P(
+              _N(
+                 ESC_H(0,0)
+                 "%S:\n"
+                 "%S\n"
+                 "X:%d\n"
+                 "Y:%d"
+                 ),
+              _i("Belt status"),
+              msg,
+              X,Y
+            );
+}
+void lcd_belttest()
+{
+    int _progress = 0;
+    bool _result = true;
+    uint16_t   X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
+    uint16_t   Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
+    lcd_belttest_print(_i("Checking X..."), X, Y);
+
+    _delay(2000);
+    KEEPALIVE_STATE(IN_HANDLER);
+
+    _result = lcd_selfcheck_axis_sg(X_AXIS);
+    X = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X));
+    if (!_result){
+        lcd_belttest_print(_i("Error"), X, Y);
+        return;
+    }
+
+    lcd_belttest_print(_i("Checking Y..."), X, Y);
+    _result = lcd_selfcheck_axis_sg(Y_AXIS);
+    Y = eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y));
+
+    if (!_result){
+        lcd_belttest_print(_i("Error"), X, Y);
+        lcd_clear();
+        return;
+    }
+
+
+    lcd_belttest_print(_i("Done"), X, Y);
+
+    KEEPALIVE_STATE(NOT_BUSY);
+    _delay(3000);
 }
 
 static void lcd_selftest_v()
