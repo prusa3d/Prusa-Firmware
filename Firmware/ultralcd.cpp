@@ -6321,55 +6321,6 @@ static void lcd_main_menu()
  MENU_ITEM_FUNCTION_P(PSTR("recover print"), recover_print);
  MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
 #endif //TMC2130_DEBUG
-
- /* if (farm_mode && !IS_SD_PRINTING )
-    {
-    
-        int tempScrool = 0;
-        if (lcd_draw_update == 0 && LCD_CLICKED == 0)
-            //_delay(100);
-            return; // nothing to do (so don't thrash the SD card)
-        uint16_t fileCnt = card.getnrfilenames();
-        
-        card.getWorkDirName();
-        if (card.filename[0] == '/')
-        {
-#if SDCARDDETECT == -1
-            MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh);
-#endif
-        } else {
-            MENU_ITEM_FUNCTION_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir);
-        }
-        
-        for (uint16_t i = 0; i < fileCnt; i++)
-        {
-            if (menu_item == menu_line)
-            {
-#ifndef SDCARD_RATHERRECENTFIRST
-                card.getfilename(i);
-#else
-                card.getfilename(fileCnt - 1 - i);
-#endif
-                if (card.filenameIsDir)
-                {
-                    MENU_ITEM_SDDIR(_T(MSG_CARD_MENU), card.filename, card.longFilename);
-                } else {
-                    
-                    MENU_ITEM_SDFILE(_T(MSG_CARD_MENU), card.filename, card.longFilename);
-                    
-                    
-                    
-                    
-                }
-            } else {
-                MENU_ITEM_DUMMY();
-            }
-        }
-        
-        MENU_ITEM_BACK_P(PSTR("- - - - - - - - -"));
-    
-        
-    }*/
  
   if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
