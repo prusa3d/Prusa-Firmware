@@ -167,9 +167,13 @@
 #define EEPROM_NOZZLE_DIAMETER (EEPROM_CHECK_MODE-1) // uint8
 #define EEPROM_NOZZLE_DIAMETER_uM (EEPROM_NOZZLE_DIAMETER-2) // uint16
 
+//This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
+#define EEPROM_LAST_ITEM EEPROM_NOZZLE_DIAMETER_uM
+
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
+
 
 
 // Currently running firmware, each digit stored as uint16_t.
@@ -184,7 +188,9 @@
 
 #ifdef __cplusplus
 #include "ConfigurationStore.h"
+static_assert(EEPROM_FIRMWARE_VERSION_END < 20, "Firmware version EEPROM address conflicts with EEPROM_M500_base");
 static M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf*>(20); //offset for storing settings using M500
+static_assert(((sizeof(M500_conf) + 20) < EEPROM_LAST_ITEM), "M500_conf address space conflicts with previous items.");
 #endif
 
 enum
