@@ -95,7 +95,7 @@ float current_temperature_bed = 0.0;
 #endif
 
 #ifdef FANCHECK
-  volatile bool fan_check_error = false;
+  volatile uint8_t fan_check_error = EFCE_OK;
 #endif
 
 unsigned char soft_pwm_bed;
@@ -434,7 +434,7 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
 void updatePID()
 {
 #ifdef PIDTEMP
-  for(int e = 0; e < EXTRUDERS; e++) { 
+  for(uint_least8_t e = 0; e < EXTRUDERS; e++) {
      iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;  
   }
 #endif
@@ -512,6 +512,12 @@ void checkFanSpeed()
 	else fan_speed_errors[1] = 0;
 #endif
 
+	// drop the fan_check_error flag when both fans are ok
+	if( fan_speed_errors[0] == 0 && fan_speed_errors[1] == 0 && fan_check_error == EFCE_REPORTED){
+		// we may even send some info to the LCD from here
+		fan_check_error = EFCE_OK;
+	}
+
 	if ((fan_speed_errors[0] > max_extruder_fan_errors) && fans_check_enabled) {
 		fan_speed_errors[0] = 0;
 		fanSpeedError(0); //extruder fan
@@ -519,6 +525,23 @@ void checkFanSpeed()
 	if ((fan_speed_errors[1] > max_print_fan_errors) && fans_check_enabled) {
 		fan_speed_errors[1] = 0;
 		fanSpeedError(1); //print fan
+	}
+}
+
+//! Prints serialMsg to serial port, displays lcdMsg onto the LCD and beeps.
+//! Extracted from fanSpeedError to save some space.
+//! @param serialMsg pointer into PROGMEM, this text will be printed to the serial port
+//! @param lcdMsg pointer into PROGMEM, this text will be printed onto the LCD
+static void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
+	SERIAL_ECHOLNRPGM(serialMsg);
+	if (get_message_level() == 0) {
+		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT)){
+			WRITE(BEEPER, HIGH);
+			delayMicroseconds(200);
+			WRITE(BEEPER, LOW);
+			delayMicroseconds(100); // what is this wait for?
+		}
+		LCD_ALERTMESSAGERPGM(lcdMsg);
 	}
 }
 
@@ -530,7 +553,8 @@ void fanSpeedError(unsigned char _fan) {
 			lcd_print_stop();
 		}
 		else {
-			fan_check_error = true;
+			fan_check_error = EFCE_DETECTED;
+
 		}
 	}
 	else {
@@ -538,27 +562,11 @@ void fanSpeedError(unsigned char _fan) {
 			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
 	}
 	switch (_fan) {
-	case 0:
-			SERIAL_ECHOLNPGM("Extruder fan speed is lower then expected");
-			if (get_message_level() == 0) {
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-				WRITE(BEEPER, HIGH);
-				delayMicroseconds(200);
-				WRITE(BEEPER, LOW);
-				delayMicroseconds(100);
-				LCD_ALERTMESSAGEPGM("Err: EXTR. FAN ERROR");
-			}
+	case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B
+		fanSpeedErrorBeep(PSTR("Extruder fan speed is lower than expected"), PSTR("Err: EXTR. FAN ERROR") );
 		break;
 	case 1:
-			SERIAL_ECHOLNPGM("Print fan speed is lower then expected");
-			if (get_message_level() == 0) {
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-				WRITE(BEEPER, HIGH);
-				delayMicroseconds(200);
-				WRITE(BEEPER, LOW);
-				delayMicroseconds(100);
-				LCD_ALERTMESSAGEPGM("Err: PRINT FAN ERROR");
-			}
+		fanSpeedErrorBeep(PSTR("Print fan speed is lower than expected"), PSTR("Err: PRINT FAN ERROR") );
 		break;
 	}
 }
@@ -2045,8 +2053,8 @@ void check_max_temp()
 struct alert_automaton_mintemp {
 private:
 	enum { ALERT_AUTOMATON_SPEED_DIV = 5 };
-	enum class States : uint8_t { INIT = 0, TEMP_ABOVE_MINTEMP, SHOW_PLEASE_RESTART, SHOW_MINTEMP };
-	States state = States::INIT;
+	enum class States : uint8_t { Init = 0, TempAboveMintemp, ShowPleaseRestart, ShowMintemp };
+	States state = States::Init;
 	uint8_t repeat = ALERT_AUTOMATON_SPEED_DIV;
 
 	void substep(States next_state){
@@ -2065,26 +2073,26 @@ public:
 		static const char m2[] PROGMEM = "MINTEMP fixed";
 		static const char m1[] PROGMEM = "Please restart";
 		switch(state){
-		case States::INIT: // initial state - check hysteresis
+		case States::Init: // initial state - check hysteresis
 			if( current_temp > mintemp ){
-				state = States::TEMP_ABOVE_MINTEMP;
+				state = States::TempAboveMintemp;
 			}
 			// otherwise keep the Err MINTEMP alert message on the display,
 			// i.e. do not transfer to state 1
 			break;
-		case States::TEMP_ABOVE_MINTEMP: // the temperature has risen above the hysteresis check
+		case States::TempAboveMintemp: // the temperature has risen above the hysteresis check
 			lcd_setalertstatuspgm(m2);
-			substep(States::SHOW_MINTEMP);
+			substep(States::ShowMintemp);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
-		case States::SHOW_PLEASE_RESTART: // displaying "Please restart"
+		case States::ShowPleaseRestart: // displaying "Please restart"
 			lcd_updatestatuspgm(m1);
-			substep(States::SHOW_MINTEMP);
+			substep(States::ShowMintemp);
 			last_alert_sent_to_lcd = LCDALERT_PLEASERESTART;
 			break;
-		case States::SHOW_MINTEMP: // displaying "MINTEMP fixed"
+		case States::ShowMintemp: // displaying "MINTEMP fixed"
 			lcd_updatestatuspgm(m2);
-			substep(States::SHOW_PLEASE_RESTART);
+			substep(States::ShowPleaseRestart);
 			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
 			break;
 		}
