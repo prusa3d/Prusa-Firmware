@@ -237,7 +237,6 @@ void set_extrude_min_temp(float temp);
 #endif
 
 void reset_acceleration_rates();
-#endif
 
 void update_mode_profile();
 
@@ -254,3 +253,9 @@ extern void planner_queue_min_reset();
 extern void planner_add_sd_length(uint16_t sdlen);
 
 extern uint16_t planner_calc_sd_length();
+
+// Return a rough, optimistic estimate of the total time (s) for the planned moves
+// This function takes in the order of 50us
+float planned_time();
+
+#endif

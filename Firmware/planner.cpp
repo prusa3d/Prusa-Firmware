@@ -1369,3 +1369,23 @@ uint16_t planner_calc_sd_length()
 	}
 	return sdlen;
 }
+
+float planned_time()
+{
+    unsigned char _block_buffer_head = block_buffer_head;
+    unsigned char _block_buffer_tail = block_buffer_tail;
+
+    unsigned char n = 0;
+    float mm = 0;
+    float speed = 0;
+
+    while (_block_buffer_head != _block_buffer_tail)
+    {
+        mm += block_buffer[_block_buffer_tail].millimeters;
+        speed += block_buffer[_block_buffer_tail].nominal_speed;
+        ++n;
+
+        _block_buffer_tail = (_block_buffer_tail + 1) & (BLOCK_BUFFER_SIZE - 1);
+    }
+    return mm * ((float)n / speed);
+}

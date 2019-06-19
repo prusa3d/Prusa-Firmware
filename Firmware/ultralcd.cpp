@@ -936,6 +936,45 @@ void lcdui_print_status_screen(void)
 
 }
 
+
+// Attempt to occasionally reinit to revive the LCD if static electricity killed it
+#define LCD_REINIT_FULL 30 // time between full reinitializations
+#define LCD_REINIT_FAST 10 // time between fast reinitializations
+#define LCD_REINIT_OVR   1 // check frequency for overdue full refreshes
+
+static_assert((LCD_REINIT_FULL % LCD_REINIT_FAST) == 0, "FULL should be a multiple of FAST");
+
+static void lcd_attempt_refresh()
+{
+    ++ReInitLCD;
+
+    if ((ReInitLCD % LCD_REINIT_FAST) == 0)
+    {
+        // limit LCD reinitialization while printing as it can starve the planner in tight situations
+        if (!(IS_SD_PRINTING || is_usb_printing) || !blocks_queued() || planned_time() > 0.25)
+        {
+            if (ReInitLCD == LCD_REINIT_FULL)
+            {
+                // full reset
+                lcd_refresh();
+                ReInitLCD = 0;
+            }
+            else
+            {
+                // just reinitialize
+                lcd_refresh_noclear();
+            }
+        }
+        else
+        {
+            // Full refresh is overdue: increase the frequency of probing attempts
+            if (ReInitLCD == LCD_REINIT_FULL)
+                ReInitLCD = LCD_REINIT_FULL - LCD_REINIT_OVR;
+        }
+    }
+}
+
+
 // Main status screen. It's up to the implementation specific part to show what is needed. As this is very display dependent
 static void lcd_status_screen()
 {
@@ -962,18 +1001,7 @@ static void lcd_status_screen()
 
 	if (lcd_draw_update)
 	{
-		ReInitLCD++;
-		if (ReInitLCD == 30)
-		{
-			lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-			ReInitLCD = 0 ;
-		}
-		else
-		{
-			if ((ReInitLCD % 10) == 0)
-				lcd_refresh_noclear(); //to maybe revive the LCD if static electricity killed it.
-		}
-
+		lcd_attempt_refresh();
 		lcdui_print_status_screen();
 
 		if (farm_mode)
