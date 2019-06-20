@@ -152,7 +152,10 @@ static void mmu_cut_filament_menu();
 static void lcd_menu_fails_stats();
 #endif //TMC2130 or FILAMENT_SENSOR
 
+#ifdef TMC2130
 static void lcd_belttest_v();
+#endif //TMC2130
+
 static void lcd_selftest_v();
 
 #ifdef TMC2130
@@ -6945,7 +6948,7 @@ void lcd_sdcard_menu()
   }
   MENU_END();
 }
-
+#ifdef TMC2130
 static void lcd_belttest_v()
 {
     lcd_belttest();
@@ -7001,6 +7004,7 @@ void lcd_belttest()
     KEEPALIVE_STATE(NOT_BUSY);
     _delay(3000);
 }
+#endif //TMC2130
 
 static void lcd_selftest_v()
 {
