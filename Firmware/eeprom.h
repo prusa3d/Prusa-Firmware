@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+void eeprom_init();
+
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
