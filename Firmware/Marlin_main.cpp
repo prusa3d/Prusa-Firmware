@@ -1076,6 +1076,7 @@ void setup()
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
+	//SERIAL_ECHOPAIR("Active sheet before:", static_cast<unsigned long int>(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
 
 #ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;
@@ -1437,6 +1438,20 @@ void setup()
 	if (eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) == 0xffff) eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
 	if (eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
 	if (eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
+	if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == 0xff) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
+	for (uint_least8_t i = 0; i < (sizeof(Sheets::s)/sizeof(Sheets::s[0])); ++i)
+	{
+	    bool is_uninitialized = true;
+	    for (uint_least8_t j = 0; j < (sizeof(Sheet::name)/sizeof(Sheet::name[0])); ++j)
+	    {
+	        if (0xff != eeprom_read_byte(&(EEPROM_Sheets_base->s[i].name[j]))) is_uninitialized = false;
+	    }
+	    if(is_uninitialized)
+	    {
+	        eeprom_write_byte(&(EEPROM_Sheets_base->s[i].name[0]), i + '1');
+	        eeprom_write_byte(&(EEPROM_Sheets_base->s[i].name[1]), '\0');
+	    }
+	}
 
 #ifdef SNMM
 	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
@@ -1650,7 +1665,6 @@ void setup()
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
 #endif //WATCHDOG
-
 }
 
 

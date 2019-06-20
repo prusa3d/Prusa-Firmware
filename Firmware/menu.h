@@ -3,6 +3,7 @@
 #define _MENU_H
 
 #include <inttypes.h>
+#include "eeprom.h"
 
 #define MENU_DATA_SIZE      32
 
@@ -98,6 +99,10 @@ extern uint8_t menu_item_text_P(const char* str);
 
 #define MENU_ITEM_SUBMENU_P(str, submenu) do { if (menu_item_submenu_P(str, submenu)) return; } while (0)
 extern uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu);
+
+#define MENU_ITEM_SUBMENU_P_E(str_P, eeprom_address_7b, submenu) do { if (menu_item_submenu_P(str_P, eeprom_address_7b, submenu)) return; } while (0)
+extern uint8_t menu_item_submenu_P(const char *str_P, const Sheet &sheet, menu_func_t submenu);
+
 
 #define MENU_ITEM_BACK_P(str) do { if (menu_item_back_P(str)) return; } while (0)
 extern uint8_t menu_item_back_P(const char* str);

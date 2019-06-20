@@ -1,6 +1,8 @@
 #ifndef EEPROM_H
 #define EEPROM_H
 
+#include <stdint.h>
+
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
@@ -167,8 +169,28 @@
 #define EEPROM_NOZZLE_DIAMETER (EEPROM_CHECK_MODE-1) // uint8
 #define EEPROM_NOZZLE_DIAMETER_uM (EEPROM_NOZZLE_DIAMETER-2) // uint16
 
+typedef struct
+{
+    char name[7];
+} Sheet;
+
+typedef struct
+{
+    Sheet s[3];
+    uint8_t active_sheet;
+} Sheets;
+// sizeof(Sheets). Do not change it unless EEPROM_Sheets_base is last item in EEPROM.
+// Otherwise it would move following items.
+#define EEPROM_SHEETS_SIZEOF 22
+
+static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_NOZZLE_DIAMETER - EEPROM_SHEETS_SIZEOF);
+
+#ifdef __cplusplus
+static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEPROM_SHEETS_SIZEOF.");
+#endif
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_NOZZLE_DIAMETER_uM
+#define EEPROM_LAST_ITEM ((uint16_t)EEPROM_Sheets_base)
 
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
@@ -189,7 +211,7 @@
 #ifdef __cplusplus
 #include "ConfigurationStore.h"
 static_assert(EEPROM_FIRMWARE_VERSION_END < 20, "Firmware version EEPROM address conflicts with EEPROM_M500_base");
-static M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf*>(20); //offset for storing settings using M500
+static constexpr M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf*>(20); //offset for storing settings using M500
 static_assert(((sizeof(M500_conf) + 20) < EEPROM_LAST_ITEM), "M500_conf address space conflicts with previous items.");
 #endif
 

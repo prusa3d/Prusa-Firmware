@@ -174,6 +174,17 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
     lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
 }
 
+static void menu_draw_item_puts_P(char type_char, const char *str_P, const Sheet &sheet)
+{
+    lcd_set_cursor(0, menu_row);
+    char buffer[19];
+    uint_least8_t index = sprintf_P(buffer, PSTR("%.10S "), str_P);
+    eeprom_read_block(&(buffer[index]), sheet.name, 7);
+    index += 7;
+    buffer[index] = '\0';
+    lcd_printf_P(PSTR("%c%-18.18s%c"), (lcd_encoder == menu_item)?'>':' ', buffer, type_char);
+}
+
 static void menu_draw_item_puts_P(char type_char, const char* str, char num)
 {
     lcd_set_cursor(0, menu_row);
@@ -222,6 +233,21 @@ uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu)
 	}
 	menu_item++;
 	return 0;
+}
+
+uint8_t menu_item_submenu_P(const char* str_P, const Sheet &sheet, menu_func_t submenu)
+{
+    if (menu_item == menu_line)
+    {
+        if (lcd_draw_update) menu_draw_item_puts_P(LCD_STR_ARROW_RIGHT[0], str_P, sheet);
+        if (menu_clicked && (lcd_encoder == menu_item))
+        {
+            menu_submenu(submenu);
+            return menu_item_ret();
+        }
+    }
+    menu_item++;
+    return 0;
 }
 
 uint8_t menu_item_back_P(const char* str)

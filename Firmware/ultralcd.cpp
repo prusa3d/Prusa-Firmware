@@ -6300,6 +6300,15 @@ void lcd_resume_print()
     isPrintPaused = false;
 }
 
+static void lcd_sheet_menu()
+{
+    uint_least8_t sheet_index = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+    sheet_index++;
+    if (sheet_index >= (sizeof(Sheets::s)/sizeof(Sheets::s[0]))) sheet_index = 0;
+    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet_index);
+    menu_back();
+}
+
 static void lcd_main_menu()
 {
 
@@ -6334,7 +6343,13 @@ static void lcd_main_menu()
   } else 
   {
     MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT
+    do
+    {
+        if (menu_item_submenu_P(_i("Sheet"), EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu)) return;
+    } while (0);
   }
+
+
 
 #ifdef SDSUPPORT
   if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal)
