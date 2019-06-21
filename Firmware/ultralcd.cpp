@@ -6300,13 +6300,39 @@ void lcd_resume_print()
     isPrintPaused = false;
 }
 
+static void lcd_select_sheet_0_menu()
+{
+    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
+    menu_back(3);
+}
+static void lcd_select_sheet_1_menu()
+{
+    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 1);
+    menu_back(3);
+}
+static void lcd_select_sheet_2_menu()
+{
+    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 2);
+    menu_back(3);
+}
+
+static void lcd_select_sheet_menu()
+{
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_SHEET));
+    MENU_ITEM_SUBMENU_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
+    MENU_ITEM_SUBMENU_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
+    MENU_ITEM_SUBMENU_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
+    MENU_END();
+}
+
 static void lcd_sheet_menu()
 {
-    uint_least8_t sheet_index = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
-    sheet_index++;
-    if (sheet_index >= (sizeof(Sheets::s)/sizeof(Sheets::s[0]))) sheet_index = 0;
-    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet_index);
-    menu_back();
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_MAIN));
+    MENU_ITEM_SUBMENU_P(_i("Select"), lcd_select_sheet_menu);
+
+    MENU_END();
 }
 
 static void lcd_main_menu()
@@ -6343,10 +6369,7 @@ static void lcd_main_menu()
   } else 
   {
     MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT
-    do
-    {
-        if (menu_item_submenu_P(_i("Sheet"), EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu)) return;
-    } while (0);
+    MENU_ITEM_SUBMENU_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu);
   }
 
 
