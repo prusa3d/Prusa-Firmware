@@ -53,6 +53,7 @@ int target_temperature[EXTRUDERS] = { 0 };
 int target_temperature_bed = 0;
 int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
+bool resume_print = true;
 
 #ifdef PINDA_THERMISTOR
 uint16_t current_temperature_raw_pinda =  0 ; //value with more averaging applied
@@ -501,8 +502,10 @@ void checkFanSpeed()
 	max_extruder_fan_errors = 5; //5 seconds
 #endif //FAN_SOFT_PWM
 
-	fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
-	static unsigned char fan_speed_errors[2] = { 0,0 };
+  if(fans_check_enabled != false)
+	  fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
+	
+  static unsigned char fan_speed_errors[2] = { 0,0 };
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
 	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
 	else fan_speed_errors[0] = 0;
@@ -534,7 +537,7 @@ void checkFanSpeed()
 //! @param lcdMsg pointer into PROGMEM, this text will be printed onto the LCD
 void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
 	SERIAL_ECHOLNRPGM(serialMsg);
-	//if (get_message_level() == 0) {
+	if (get_message_level() == 0) {
 		if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT)){
 			WRITE(BEEPER, HIGH);
 			delayMicroseconds(200);
@@ -542,7 +545,7 @@ void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
 			delayMicroseconds(100); // what is this wait for?
 		}
 		LCD_ALERTMESSAGERPGM(lcdMsg);
-	//}
+	}
 }
 
 void fanSpeedError(unsigned char _fan) {
@@ -554,13 +557,14 @@ void fanSpeedError(unsigned char _fan) {
 		}
 		else {
 			fan_check_error = EFCE_DETECTED;
-
 		}
+    resume_print = true;
 	}
 	else {
-      heating_status = 5;
 			setTargetHotend0(0);
 			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
+      heating_status = 0;
+      resume_print = false;
 	}
 	switch (_fan) {
 	case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B

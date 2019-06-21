@@ -722,49 +722,43 @@ void lcdui_print_status_line(void)
 
 	if (heating_status)
 	{ // If heating flag, show progress of heating
-		if(heating_status < 5){
-			heating_status_counter++;
-			if (heating_status_counter > 13)
-			{
-				heating_status_counter = 0;
-			}
-			lcd_set_cursor(7, 3);
-			lcd_puts_P(PSTR("             "));
-
-			for (unsigned int dots = 0; dots < heating_status_counter; dots++)
-			{
-				lcd_set_cursor(7 + dots, 3);
-				lcd_print('.');
-			}
-			switch (heating_status)
-			{
-			case 1:
-				lcd_set_cursor(0, 3);
-				lcd_puts_P(_T(MSG_HEATING));
-				break;
-			case 2:
-				lcd_set_cursor(0, 3);
-				lcd_puts_P(_T(MSG_HEATING_COMPLETE));
-				heating_status = 0;
-				heating_status_counter = 0;
-				break;
-			case 3:
-				lcd_set_cursor(0, 3);
-				lcd_puts_P(_T(MSG_BED_HEATING));
-				break;
-			case 4:
-				lcd_set_cursor(0, 3);
-				lcd_puts_P(_T(MSG_BED_DONE));
-				heating_status = 0;
-				heating_status_counter = 0;
-				break;
-			default:
-				break;
-			}
+		heating_status_counter++;
+		if (heating_status_counter > 13)
+		{
+			heating_status_counter = 0;
 		}
-		else{
+		lcd_set_cursor(7, 3);
+		lcd_puts_P(PSTR("             "));
+
+		for (unsigned int dots = 0; dots < heating_status_counter; dots++)
+		{
+			lcd_set_cursor(7 + dots, 3);
+			lcd_print('.');
+		}
+		switch (heating_status)
+		{
+		case 1:
 			lcd_set_cursor(0, 3);
-			fanSpeedErrorBeep(PSTR("Extruder fan speed is lower than expected"), PSTR("Err: EXTR. FAN ERROR") );
+			lcd_puts_P(_T(MSG_HEATING));
+			break;
+		case 2:
+			lcd_set_cursor(0, 3);
+			lcd_puts_P(_T(MSG_HEATING_COMPLETE));
+			heating_status = 0;
+			heating_status_counter = 0;
+			break;
+		case 3:
+			lcd_set_cursor(0, 3);
+			lcd_puts_P(_T(MSG_BED_HEATING));
+			break;
+		case 4:
+			lcd_set_cursor(0, 3);
+			lcd_puts_P(_T(MSG_BED_DONE));
+			heating_status = 0;
+			heating_status_counter = 0;
+			break;
+		default:
+			break;
 		}
 	}
 	else if ((IS_SD_PRINTING) && (custom_message_type == CustomMsg::Status))
@@ -6297,14 +6291,16 @@ static void lcd_test_menu()
 //! as restore_print_from_ram_and_continue() calls lcd_update() internally.
 void lcd_resume_print()
 {
-    lcd_return_to_status();
-    lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
-    lcd_reset_alert_level(); //for fan speed error
-    restore_print_from_ram_and_continue(0.0);
-	pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
-	refresh_cmd_timeout();
-	isPrintPaused = false;
-	lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
+	lcd_return_to_status();
+	if(resume_print){
+		lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
+		lcd_reset_alert_level(); //for fan speed error
+		restore_print_from_ram_and_continue(0.0);
+		pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
+		refresh_cmd_timeout();
+		isPrintPaused = false;
+	}
+	resume_print = true;
 }
 
 static void lcd_main_menu()

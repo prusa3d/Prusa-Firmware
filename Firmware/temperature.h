@@ -262,4 +262,4 @@ void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg);
 extern unsigned long extruder_autofan_last_check;
 extern uint8_t fanSpeedBckp;
 extern bool fan_measuring;
-
+extern bool resume_print;
