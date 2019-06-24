@@ -9359,7 +9359,7 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	card.sdprinting = false;
 //	card.closefile();
 	saved_printing = true;
-  resume_print = true;
+  can_resume_print = true;
   // We may have missed a stepper timer interrupt. Be safe than sorry, reset the stepper timer before re-enabling interrupts.
   st_reset_timer();
 	sei();
@@ -9460,7 +9460,6 @@ void restore_print_from_ram_and_continue(float e_move)
 		//not sd printing nor usb printing
 	}
 	lcd_setstatuspgm(_T(WELCOME_MSG));
-  
   saved_printing = false;
   
   #ifdef FANCHECK

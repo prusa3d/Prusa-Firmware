@@ -255,11 +255,10 @@ void check_fans();
 
 void check_min_temp();
 void check_max_temp();
-void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg);
 
 #endif
 
 extern unsigned long extruder_autofan_last_check;
 extern uint8_t fanSpeedBckp;
 extern bool fan_measuring;
-extern bool resume_print;
+extern bool can_resume_print; //use for block resume print in menu. Is false when printer is recovering from fan error and card.sdprinting is still false

@@ -53,7 +53,7 @@ int target_temperature[EXTRUDERS] = { 0 };
 int target_temperature_bed = 0;
 int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
-bool resume_print = true;
+bool can_resume_print = true;
 
 #ifdef PINDA_THERMISTOR
 uint16_t current_temperature_raw_pinda =  0 ; //value with more averaging applied
@@ -558,13 +558,13 @@ void fanSpeedError(unsigned char _fan) {
 		else {
 			fan_check_error = EFCE_DETECTED;
 		}
-    resume_print = true;
+    can_resume_print = true;
 	}
 	else {
 			setTargetHotend0(0);
 			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
       heating_status = 0;
-      resume_print = false;
+      can_resume_print = false; //block resume print from menu
 	}
 	switch (_fan) {
 	case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B

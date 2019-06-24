@@ -6292,7 +6292,7 @@ static void lcd_test_menu()
 void lcd_resume_print()
 {
 	lcd_return_to_status();
-	if(resume_print){
+	if(can_resume_print){ //check if fan speed error is resolved
 		lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
 		lcd_reset_alert_level(); //for fan speed error
 		restore_print_from_ram_and_continue(0.0);
@@ -6300,7 +6300,7 @@ void lcd_resume_print()
 		refresh_cmd_timeout();
 		isPrintPaused = false;
 	}
-	resume_print = true;
+	can_resume_print = true; //if fan speed error still occurd this will be set to false later
 }
 
 static void lcd_main_menu()
