@@ -6486,9 +6486,14 @@ static void lcd_main_menu()
 			}
 			else
 			{
-				checkFanSpeed(); //Check manually to get most recent fan speed status
-				if(fan_check_error == EFCE_OK)
-			    	MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+				#ifdef FANCHECK
+					checkFanSpeed(); //Check manually to get most recent fan speed status
+					if(fan_check_error == EFCE_OK)
+							MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+				#else
+					MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+				#endif
+
 			}
 			MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
 		}
