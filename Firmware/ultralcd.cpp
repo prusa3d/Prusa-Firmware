@@ -6292,15 +6292,13 @@ static void lcd_test_menu()
 void lcd_resume_print()
 {
 	lcd_return_to_status();
-	if(can_resume_print){ //check if fan speed error is resolved
-		lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
-		lcd_reset_alert_level(); //for fan speed error
-		restore_print_from_ram_and_continue(0.0);
-		pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
-		refresh_cmd_timeout();
-		isPrintPaused = false;
-	}
-	can_resume_print = true; //if fan speed error still occurd this will be set to false later
+	lcd_reset_alert_level();
+	lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));
+	lcd_reset_alert_level(); //for fan speed error
+	restore_print_from_ram_and_continue(0.0);
+	pause_time += (_millis() - start_pause_print); //accumulate time when print is paused for correct statistics calculation
+	refresh_cmd_timeout();
+	isPrintPaused = false;
 }
 
 static void lcd_main_menu()
@@ -6400,7 +6398,9 @@ static void lcd_main_menu()
 			}
 			else
 			{
-			    MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+				checkFanSpeed(); //Check manually to get most recent fan speed status
+				if(fan_check_error == EFCE_OK)
+			    	MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
 			}
 			MENU_ITEM_SUBMENU_P(_T(MSG_STOP_PRINT), lcd_sdcard_stop);
 		}

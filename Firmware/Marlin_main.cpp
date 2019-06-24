@@ -9359,7 +9359,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	card.sdprinting = false;
 //	card.closefile();
 	saved_printing = true;
-  can_resume_print = true;
   // We may have missed a stepper timer interrupt. Be safe than sorry, reset the stepper timer before re-enabling interrupts.
   st_reset_timer();
 	sei();
@@ -9424,9 +9423,6 @@ void restore_print_from_ram_and_continue(float e_move)
 		wait_for_heater(_millis(), saved_active_extruder);
 		heating_status = 2;
 	}
-  #ifdef FANCHECK
-    fans_check_enabled = false;
-  #endif
 
 	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
@@ -9461,12 +9457,6 @@ void restore_print_from_ram_and_continue(float e_move)
 	}
 	lcd_setstatuspgm(_T(WELCOME_MSG));
   saved_printing = false;
-  
-  #ifdef FANCHECK
-    fans_check_enabled = true;
-    if( fan_check_error == EFCE_OK ){lcd_setstatuspgm(_T(MSG_RESUMING_PRINT));}
-    else {lcd_setstatuspgm(PSTR("Err: PRINT FAN ERROR"));}
-  #endif
 }
 
 void print_world_coordinates()

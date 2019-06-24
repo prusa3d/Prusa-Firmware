@@ -261,4 +261,3 @@ void check_max_temp();
 extern unsigned long extruder_autofan_last_check;
 extern uint8_t fanSpeedBckp;
 extern bool fan_measuring;
-extern bool can_resume_print; //use for block resume print in menu. Is false when printer is recovering from fan error and card.sdprinting is still false

@@ -53,7 +53,6 @@ int target_temperature[EXTRUDERS] = { 0 };
 int target_temperature_bed = 0;
 int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
-bool can_resume_print = true;
 
 #ifdef PINDA_THERMISTOR
 uint16_t current_temperature_raw_pinda =  0 ; //value with more averaging applied
@@ -502,7 +501,6 @@ void checkFanSpeed()
 	max_extruder_fan_errors = 5; //5 seconds
 #endif //FAN_SOFT_PWM
 
-  if(fans_check_enabled != false)
 	  fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	
   static unsigned char fan_speed_errors[2] = { 0,0 };
@@ -558,13 +556,12 @@ void fanSpeedError(unsigned char _fan) {
 		else {
 			fan_check_error = EFCE_DETECTED;
 		}
-    can_resume_print = true;
 	}
 	else {
 			setTargetHotend0(0);
 			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
       heating_status = 0;
-      can_resume_print = false; //block resume print from menu
+      fan_check_error = EFCE_REPORTED;
 	}
 	switch (_fan) {
 	case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B
