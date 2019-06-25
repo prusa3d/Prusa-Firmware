@@ -66,12 +66,12 @@ void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
           if (eSoundMode != e_SOUND_MODE_SILENT){
                if(!tone_){
                     WRITE(BEEPER, HIGH);
-                    delayMicroseconds(ms);
+                    delay_keep_alive_no_lcd_update(ms);
                     WRITE(BEEPER, LOW);
                }
                else{
                     _tone(BEEPER, tone_);
-                    delay_keep_alive(ms);
+                    delay_keep_alive_no_lcd_update(ms);
                     _noTone(BEEPER);
                }
           }
@@ -79,13 +79,13 @@ void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
      else{
           if(!tone_){
                WRITE(BEEPER, HIGH);
-               delayMicroseconds(ms);
+               delay_keep_alive_no_lcd_update(ms);
                WRITE(BEEPER, LOW);
-               delayMicroseconds(100);
+               delay_keep_alive_no_lcd_update(100);
           }
           else{
                _tone(BEEPER, tone_);
-               delay_keep_alive(ms);
+               delay_keep_alive_no_lcd_update(ms);
                _noTone(BEEPER);
           }
      }
@@ -97,7 +97,7 @@ switch(eSoundMode)
      {
      case e_SOUND_MODE_LOUD:
           if(eSoundType==e_SOUND_TYPE_ButtonEcho)
-               Sound_DoSound_Echo();
+               delay_keep_alive_no_lcd_update();
           if(eSoundType==e_SOUND_TYPE_StandardPrompt)
                Sound_DoSound_Prompt();
           if(eSoundType==e_SOUND_TYPE_StandardAlert)
@@ -135,9 +135,9 @@ switch(eSoundMode)
 static void Sound_DoSound_Blind_Alert(void)
 {
      _tone(BEEPER,100);
-     delay_keep_alive(50);
+     delay_keep_alive_no_lcd_update(50);
      _noTone(BEEPER);
-     delay_keep_alive(200);
+     delay_keep_alive_no_lcd_update(200);
 }
 
  static void Sound_DoSound_Encoder_Move(void)
@@ -147,9 +147,9 @@ uint8_t nI;
  for(nI=0;nI<5;nI++)
      {
      WRITE(BEEPER,HIGH);
-     delayMicroseconds(75);
+     delay_keep_alive_no_lcd_update(75);
      WRITE(BEEPER,LOW);
-     delayMicroseconds(75);
+     delay_keep_alive_no_lcd_update(75);
      }
 }
 
@@ -160,16 +160,16 @@ uint8_t nI;
 for(nI=0;nI<10;nI++)
      {
      WRITE(BEEPER,HIGH);
-     delayMicroseconds(100);
+     delay_keep_alive_no_lcd_update(100);
      WRITE(BEEPER,LOW);
-     delayMicroseconds(100);
+     delay_keep_alive_no_lcd_update(100);
      }
 }
 
 static void Sound_DoSound_Prompt(void)
 {
 WRITE(BEEPER,HIGH);
-delay_keep_alive(500);
+delay_keep_alive_no_lcd_update(500);
 WRITE(BEEPER,LOW);
 }
 
@@ -181,8 +181,8 @@ nMax=bOnce?1:3;
 for(nI=0;nI<nMax;nI++)
      {
      WRITE(BEEPER,HIGH);
-     delay_keep_alive(200);
+     delay_keep_alive_no_lcd_update(200);
      WRITE(BEEPER,LOW);
-     delay_keep_alive(500);
+     delay_keep_alive_no_lcd_update(500);
      }
 }

@@ -8078,6 +8078,24 @@ void delay_keep_alive(unsigned int ms)
     }
 }
 
+void delay_keep_alive_no_lcd_update(unsigned int ms)
+{
+    for (;;) {
+        manage_heater();
+        // Manage inactivity, but don't disable steppers on timeout.
+        manage_inactivity(true);
+        if (ms == 0)
+            break;
+        else if (ms >= 50) {
+            _delay(50);
+            ms -= 50;
+        } else {
+			_delay(ms);
+            ms = 0;
+        }
+    }
+}
+
 static void wait_for_heater(long codenum, uint8_t extruder) {
 
 #ifdef TEMP_RESIDENCY_TIME
