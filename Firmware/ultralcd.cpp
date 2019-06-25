@@ -6376,6 +6376,7 @@ static void lcd_sheet_menu()
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     MENU_ITEM_SUBMENU_P(_i("Select"), lcd_select_sheet_menu); //// c=18
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z); //TODO show value associated with sheet, not global legacy value
 
     MENU_END();
 }
