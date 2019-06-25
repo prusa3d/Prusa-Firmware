@@ -3068,13 +3068,13 @@ static void lcd_move_z() {
  * other value leads to storing Z_AXIS
  * @param msg text to be displayed
  */
-static void _lcd_babystep(int axis, const char *msg) 
+static void lcd_babystep_z()
 {
 	typedef struct
-	{	// 19bytes total
-		int8_t status;                 // 1byte
-		int babystepMem[3];            // 6bytes
-		float babystepMemMM[3];        // 12bytes
+	{
+		int8_t status;
+		int babystepMemZ;
+		float babystepMemMMZ;
 	} _menu_data_t;
 	static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
@@ -3085,17 +3085,13 @@ static void _lcd_babystep(int axis, const char *msg)
 		_md->status = 1;
 		check_babystep();
 
-		EEPROM_read_B(EEPROM_BABYSTEP_X, &_md->babystepMem[0]);
-		EEPROM_read_B(EEPROM_BABYSTEP_Y, &_md->babystepMem[1]);
-		EEPROM_read_B(EEPROM_BABYSTEP_Z, &_md->babystepMem[2]);
+		EEPROM_read_B(EEPROM_BABYSTEP_Z, &_md->babystepMemZ);
 
 		// same logic as in babystep_load
 	    if (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST)
-			_md->babystepMem[2] = 0;
+			_md->babystepMemZ = 0;
 
-		_md->babystepMemMM[0] = _md->babystepMem[0]/cs.axis_steps_per_unit[X_AXIS];
-		_md->babystepMemMM[1] = _md->babystepMem[1]/cs.axis_steps_per_unit[Y_AXIS];
-		_md->babystepMemMM[2] = _md->babystepMem[2]/cs.axis_steps_per_unit[Z_AXIS];
+		_md->babystepMemMMZ = _md->babystepMemZ/cs.axis_steps_per_unit[Z_AXIS];
 		lcd_draw_update = 1;
 		//SERIAL_ECHO("Z baby step: ");
 		//SERIAL_ECHO(_md->babystepMem[2]);
@@ -3106,19 +3102,18 @@ static void _lcd_babystep(int axis, const char *msg)
 	if (lcd_encoder != 0) 
 	{
 		if (homing_flag) lcd_encoder = 0;
-		_md->babystepMem[axis] += (int)lcd_encoder;
-		if (axis == 2)
-		{
-			if (_md->babystepMem[axis] < Z_BABYSTEP_MIN) _md->babystepMem[axis] = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
-			else if (_md->babystepMem[axis] > Z_BABYSTEP_MAX) _md->babystepMem[axis] = Z_BABYSTEP_MAX; //0
-			else
-			{
-				CRITICAL_SECTION_START
-				babystepsTodo[axis] += (int)lcd_encoder;
-				CRITICAL_SECTION_END		
-			}
-		}
-		_md->babystepMemMM[axis] = _md->babystepMem[axis]/cs.axis_steps_per_unit[axis]; 
+		_md->babystepMemZ += (int)lcd_encoder;
+
+        if (_md->babystepMemZ < Z_BABYSTEP_MIN) _md->babystepMemZ = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
+        else if (_md->babystepMemZ > Z_BABYSTEP_MAX) _md->babystepMemZ = Z_BABYSTEP_MAX; //0
+        else
+        {
+            CRITICAL_SECTION_START
+            babystepsTodo[Z_AXIS] += (int)lcd_encoder;
+            CRITICAL_SECTION_END
+        }
+
+		_md->babystepMemMMZ = _md->babystepMemZ/cs.axis_steps_per_unit[Z_AXIS];
 		_delay(50);
 		lcd_encoder = 0;
 		lcd_draw_update = 1;
@@ -3126,23 +3121,15 @@ static void _lcd_babystep(int axis, const char *msg)
 	if (lcd_draw_update)
 	{
 	    lcd_set_cursor(0, 1);
-		menu_draw_float13(msg, _md->babystepMemMM[axis]);
+		menu_draw_float13(_i("Adjusting Z:"), _md->babystepMemMMZ); ////MSG_BABYSTEPPING_Z c=15 Beware: must include the ':' as its last character
 	}
 	if (LCD_CLICKED || menu_leaving)
 	{
 		// Only update the EEPROM when leaving the menu.
-		EEPROM_save_B(
-		(axis == X_AXIS) ? EEPROM_BABYSTEP_X : ((axis == Y_AXIS) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z),
-		&_md->babystepMem[axis]);
-		if(Z_AXIS == axis) calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+		EEPROM_save_B(EEPROM_BABYSTEP_Z, &_md->babystepMemZ);
+		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 	}
 	if (LCD_CLICKED) menu_back();
-}
-
-
-static void lcd_babystep_z()
-{
-	_lcd_babystep(Z_AXIS, (_i("Adjusting Z:")));////MSG_BABYSTEPPING_Z c=15 Beware: must include the ':' as its last character
 }
 
 
