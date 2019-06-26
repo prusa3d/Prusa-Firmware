@@ -178,7 +178,7 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
 //!
 //! @param[in] sheet_E Sheet in EEPROM
 //! @param[out] buffer for formatted output
-void menu_format_sheet_P_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
+void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 {
     uint_least8_t index = sprintf_P(buffer.c, PSTR("%.10S "), _T(MSG_SHEET));
     eeprom_read_block(&(buffer.c[index]), sheet_E.name, 7);
@@ -186,11 +186,11 @@ void menu_format_sheet_P_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
     buffer.c[index] = '\0';
 }
 
-static void menu_draw_item_puts_P(char type_char, const Sheet &sheet)
+static void menu_draw_item_puts_E(char type_char, const Sheet &sheet)
 {
     lcd_set_cursor(0, menu_row);
     SheetFormatBuffer buffer;
-    menu_format_sheet_P_E(sheet, buffer);
+    menu_format_sheet_E(sheet, buffer);
     lcd_printf_P(PSTR("%c%-18.18s%c"), (lcd_encoder == menu_item)?'>':' ', buffer.c, type_char);
 }
 
@@ -244,11 +244,11 @@ uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu)
 	return 0;
 }
 
-uint8_t menu_item_submenu_P(const Sheet &sheet, menu_func_t submenu)
+uint8_t menu_item_submenu_E(const Sheet &sheet, menu_func_t submenu)
 {
     if (menu_item == menu_line)
     {
-        if (lcd_draw_update) menu_draw_item_puts_P(LCD_STR_ARROW_RIGHT[0], sheet);
+        if (lcd_draw_update) menu_draw_item_puts_E(LCD_STR_ARROW_RIGHT[0], sheet);
         if (menu_clicked && (lcd_encoder == menu_item))
         {
             menu_submenu(submenu);
