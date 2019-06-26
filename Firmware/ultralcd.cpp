@@ -3073,7 +3073,7 @@ static void lcd_babystep_z()
 	typedef struct
 	{
 		int8_t status;
-		int babystepMemZ;
+		int16_t babystepMemZ;
 		float babystepMemMMZ;
 	} _menu_data_t;
 	static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
@@ -3085,7 +3085,8 @@ static void lcd_babystep_z()
 		_md->status = 1;
 		check_babystep();
 
-		EEPROM_read_B(EEPROM_BABYSTEP_Z, &_md->babystepMemZ);
+		_md->babystepMemZ = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+		        s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)));
 
 		// same logic as in babystep_load
 	    if (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST)
@@ -3126,7 +3127,15 @@ static void lcd_babystep_z()
 	if (LCD_CLICKED || menu_leaving)
 	{
 		// Only update the EEPROM when leaving the menu.
-		EEPROM_save_B(EEPROM_BABYSTEP_Z, &_md->babystepMemZ);
+		eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+                s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),
+		        _md->babystepMemZ);
+		eeprom_update_byte(&(EEPROM_Sheets_base->s[(eeprom_read_byte(
+		        &(EEPROM_Sheets_base->active_sheet)))].bed_temp),
+		        target_temperature_bed);
+		eeprom_update_byte(&(EEPROM_Sheets_base->s[(eeprom_read_byte(
+		        &(EEPROM_Sheets_base->active_sheet)))].pinda_temp),
+		        current_temperature_pinda);
 		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 	}
 	if (LCD_CLICKED) menu_back();

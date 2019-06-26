@@ -173,7 +173,10 @@ void eeprom_init();
 
 typedef struct
 {
-    char name[7];
+    char name[7];     //!< Can be null terminated, doesn't need to be null terminated
+    int16_t z_offset; //!< Z_BABYSTEP_MIN .. Z_BABYSTEP_MAX = Z_BABYSTEP_MIN*2/1000 [mm] .. Z_BABYSTEP_MAX*2/1000 [mm]
+    uint8_t bed_temp; //!< 0 .. 254 [°C]
+    uint8_t pinda_temp; //!< 0 .. 254 [°C]
 } Sheet;
 
 typedef struct
@@ -183,7 +186,7 @@ typedef struct
 } Sheets;
 // sizeof(Sheets). Do not change it unless EEPROM_Sheets_base is last item in EEPROM.
 // Otherwise it would move following items.
-#define EEPROM_SHEETS_SIZEOF 22
+#define EEPROM_SHEETS_SIZEOF 34
 
 static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_NOZZLE_DIAMETER - EEPROM_SHEETS_SIZEOF);
 

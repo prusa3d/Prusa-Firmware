@@ -1492,7 +1492,6 @@ void setup()
 		SilentModeMenu_MMU = 1;
 		eeprom_write_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
 	}
-	check_babystep(); //checking if Z babystep is in allowed range
 
 #if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
 	setup_fan_interrupt();
@@ -8146,12 +8145,15 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 
 void check_babystep()
 {
-	int babystep_z;
-	EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystep_z);
+	int babystep_z = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+            s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)));
+
 	if ((babystep_z < Z_BABYSTEP_MIN) || (babystep_z > Z_BABYSTEP_MAX)) {
 		babystep_z = 0; //if babystep value is out of min max range, set it to 0
 		SERIAL_ECHOLNPGM("Z live adjust out of range. Setting to 0");
-		EEPROM_save_B(EEPROM_BABYSTEP_Z, &babystep_z);
+		eeprom_write_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+            s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),
+                    babystep_z);
 		lcd_show_fullscreen_message_and_wait_P(PSTR("Z live adjust out of range. Setting to 0. Click to continue."));
 		lcd_update_enable(true);		
 	}	

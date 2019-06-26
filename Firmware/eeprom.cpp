@@ -3,6 +3,7 @@
 //! @author Marek Běl
 
 #include "eeprom.h"
+#include "Marlin.h"
 
 #include <avr/eeprom.h>
 #include <stdint.h>
@@ -66,7 +67,7 @@ void eeprom_init()
             eeprom_write(&(EEPROM_Sheets_base->s[i].name[1]), '\0');
         }
     }
-
+    check_babystep();
 }
 
 
