@@ -3122,7 +3122,7 @@ static void lcd_babystep_z()
 	if (lcd_draw_update)
 	{
 	    SheetFormatBuffer buffer;
-	    menu_format_sheet_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], buffer);
+	    menu_format_sheet_P_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], buffer);
 	    lcd_set_cursor(0, 0);
 	    lcd_print(buffer.c);
 	    lcd_set_cursor(0, 1);
@@ -6320,9 +6320,9 @@ static void lcd_select_sheet_menu()
 {
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_SHEET));
-    MENU_ITEM_SUBMENU_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
-    MENU_ITEM_SUBMENU_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
-    MENU_ITEM_SUBMENU_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
+    MENU_ITEM_SUBMENU_P_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
+    MENU_ITEM_SUBMENU_P_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
+    MENU_ITEM_SUBMENU_P_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
     MENU_END();
 }
 
@@ -6415,7 +6415,7 @@ static void lcd_main_menu()
   } else 
   {
     MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT
-    MENU_ITEM_SUBMENU_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu);
+    MENU_ITEM_SUBMENU_P_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu);
   }
 
 
