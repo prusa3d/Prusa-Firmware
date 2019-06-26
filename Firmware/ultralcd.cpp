@@ -3121,6 +3121,10 @@ static void lcd_babystep_z()
 	}
 	if (lcd_draw_update)
 	{
+	    SheetFormatBuffer buffer;
+	    menu_format_sheet_P_E(_T(MSG_SHEET), EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], buffer);
+	    lcd_set_cursor(0, 0);
+	    lcd_print(buffer.c);
 	    lcd_set_cursor(0, 1);
 		menu_draw_float13(_i("Adjusting Z:"), _md->babystepMemMMZ); ////MSG_BABYSTEPPING_Z c=15 Beware: must include the ':' as its last character
 	}
@@ -6372,7 +6376,7 @@ static void lcd_sheet_menu()
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     MENU_ITEM_SUBMENU_P(_i("Select"), lcd_select_sheet_menu); //// c=18
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
-    MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z); //TODO show value associated with sheet, not global legacy value
+    MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);
 
     MENU_END();
 }

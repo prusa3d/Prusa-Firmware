@@ -174,15 +174,25 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
     lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
 }
 
+//! @brief Format sheet name after PROGMEM text
+//!
+//! @param[in] str_P Pointer to string in PROGMEM
+//! @param[in] sheet_E Sheet in EEPROM
+//! @param[out] buffer for formatted output
+void menu_format_sheet_P_E(const char *str_P, const Sheet &sheet_E, SheetFormatBuffer &buffer)
+{
+    uint_least8_t index = sprintf_P(buffer.c, PSTR("%.10S "), str_P);
+    eeprom_read_block(&(buffer.c[index]), sheet_E.name, 7);
+    index += 7;
+    buffer.c[index] = '\0';
+}
+
 static void menu_draw_item_puts_P(char type_char, const char *str_P, const Sheet &sheet)
 {
     lcd_set_cursor(0, menu_row);
-    char buffer[19];
-    uint_least8_t index = sprintf_P(buffer, PSTR("%.10S "), str_P);
-    eeprom_read_block(&(buffer[index]), sheet.name, 7);
-    index += 7;
-    buffer[index] = '\0';
-    lcd_printf_P(PSTR("%c%-18.18s%c"), (lcd_encoder == menu_item)?'>':' ', buffer, type_char);
+    SheetFormatBuffer buffer;
+    menu_format_sheet_P_E(str_P, sheet, buffer);
+    lcd_printf_P(PSTR("%c%-18.18s%c"), (lcd_encoder == menu_item)?'>':' ', buffer.c, type_char);
 }
 
 static void menu_draw_item_puts_P(char type_char, const char* str, char num)
