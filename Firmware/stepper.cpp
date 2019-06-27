@@ -846,7 +846,7 @@ FORCE_INLINE void isr() {
 
 #ifdef LIN_ADVANCE
     // avoid multiple instances or function calls to advance_spread
-    if (la_state & ADV_INIT) eISR_Rate = current_block->advance_rate / 2;
+    if (la_state & ADV_INIT) eISR_Err = current_block->advance_rate / 4;
     if (la_state & ADV_INIT || nextAdvanceISR != ADV_NEVER) {
         advance_spread(main_Rate);
         if (la_state & ADV_DECELERATE) {
