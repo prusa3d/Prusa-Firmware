@@ -354,7 +354,6 @@ unsigned long starttime=0;
 unsigned long stoptime=0;
 unsigned long _usb_timer = 0;
 
-
 bool extruder_under_pressure = true;
 
 
@@ -9009,8 +9008,7 @@ ISR(INT4_vect) {
 	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
 	SERIAL_ECHOLNPGM("INT4");
     //fire normal uvlo only in case where EEPROM_UVLO is 0 or if IS_SD_PRINTING is 1. 
-    //Don't change || to && because in some case the printer can be moving although IS_SD_PRINTING is zero
-     if((IS_SD_PRINTING ) || (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))) uvlo_();
+     if(PRINTER_ACTIVE && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))) uvlo_();
      if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)) uvlo_tiny();
 }
 
