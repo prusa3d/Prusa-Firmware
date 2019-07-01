@@ -1393,7 +1393,7 @@ void mmu_cut_filament(uint8_t filament_nr)
 {
     menu_back();
     bFilamentAction=false;                            // NOT in "mmu_load_to_nozzle_menu()"
-    if (degHotend0() > EXTRUDE_MINTEMP)
+    if (!mmu_fil_loaded || degHotend0() > EXTRUDE_MINTEMP)
     {
         LcdUpdateDisabler disableLcdUpdate;
         lcd_clear();
@@ -1418,7 +1418,7 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 	if (filament < 5) 
 	{
 
-		if (degHotend0() > EXTRUDE_MINTEMP)
+		if (!mmu_fil_loaded || degHotend0() > EXTRUDE_MINTEMP)
 		{
 			st_synchronize();
 
