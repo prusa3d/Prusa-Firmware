@@ -5,6 +5,72 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include "Timer.h"
+#include "Marlin.h"
+
+#if (defined(LCD_PINS_D0) && defined(LCD_PINS_D1) && defined(LCD_PINS_D2) && defined(LCD_PINS_D3))
+	#define LCD_8BIT
+#endif
+
+#define ENABLE_LCD_TIMER() do {\
+	TCNT3 = 0;\
+	TCCR3B |= 0x02;\
+} while(0)
+
+#define DISABLE_LCD_TIMER() TCCR3B = (TCCR3B & ~(0x07<<CS30))
+
+#define LCD_BLOCK_BUFFER_SIZE 8
+#define LCD_COMMAND_DELAY 100
+
+typedef struct {
+	uint8_t data;
+	uint8_t flag;
+	uint16_t command_delay_us;
+} lcd_block_t;
+
+void lcd_plan_init();
+
+void lcd_plan_data(uint8_t data, bool RS, uint16_t command_delay_us = LCD_COMMAND_DELAY,
+#ifndef LCD_8BIT
+bool half = 1,
+#endif
+uint8_t flag = 0);
+
+extern lcd_block_t lcd_block_buffer[LCD_BLOCK_BUFFER_SIZE];
+extern volatile unsigned char lcd_block_buffer_head;
+extern volatile unsigned char lcd_block_buffer_tail;
+
+FORCE_INLINE void lcd_plan_discard_current_block()  
+{
+	if (lcd_block_buffer_head != lcd_block_buffer_tail)
+		lcd_block_buffer_tail = (lcd_block_buffer_tail + 1) & (LCD_BLOCK_BUFFER_SIZE - 1); //tail++
+}
+
+FORCE_INLINE lcd_block_t *lcd_plan_get_current_block() 
+{
+	if (lcd_block_buffer_head == lcd_block_buffer_tail)
+		return(NULL);
+	lcd_block_t *block = &lcd_block_buffer[lcd_block_buffer_tail];
+	return(block);
+}
+
+FORCE_INLINE bool lcd_blocks_queued() {
+return (lcd_block_buffer_head != lcd_block_buffer_tail); 
+}
+
+FORCE_INLINE uint8_t lcd_data_planned() {
+	return (lcd_block_buffer_head + LCD_BLOCK_BUFFER_SIZE - lcd_block_buffer_tail) & (LCD_BLOCK_BUFFER_SIZE - 1);
+}
+
+FORCE_INLINE bool lcd_planner_queue_full() {
+    unsigned char next_block_index = lcd_block_buffer_head;
+	if (++ next_block_index == LCD_BLOCK_BUFFER_SIZE)
+		next_block_index = 0;
+	return lcd_block_buffer_tail == next_block_index;
+}
+
+
+
+
 
 
 

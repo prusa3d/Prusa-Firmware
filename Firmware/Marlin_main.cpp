@@ -1011,7 +1011,8 @@ void setup()
 	ultralcd_init();
 
 #if (LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
-	analogWrite(LCD_BL_PIN, 255); //set full brightnes
+	//analogWrite(LCD_BL_PIN, 255); //set full brightnes
+	WRITE(LCD_BL_PIN, HIGH); //LCD_PLANNER needs a dedicated timer. On the MiniRambo timer3 is free, but timer5 is used by the stepper drivers. On the einsyRambo timer3 could be used by the lcd backlight pwm, however this is not implemented fully as of yet. Timer5 on the other hand is free on this board, so this could be a sollution to the conflict. For now we use Timer3 on all boards and write directly to the pin.
 #endif //(LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
 
 	spi_init();
