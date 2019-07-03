@@ -15,6 +15,9 @@
 #define FW_REPOSITORY "Unknown"
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
+// G-code language level
+#define GCODE_LEVEL 1
+
 // Debug version has debugging enabled (the symbol DEBUG_BUILD is set).
 // The debug build may be a bit slower than the non-debug build, therefore the debug build should
 // not be shipped to a customer.

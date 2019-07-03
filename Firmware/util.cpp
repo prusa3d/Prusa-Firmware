@@ -330,25 +330,48 @@ void update_current_firmware_version_to_eeprom()
 
 
 //-//
-eNOZZLE_DIAMETER eNozzleDiameter=e_NOZZLE_DIAMETER_400;
-eCHECK_MODE eCheckMode=e_CHECK_MODE_none;
+void lcd_checking_menu(void);
+
+ClNozzleDiameter oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
+ClCheckMode oCheckMode=ClCheckMode::_None;
+ClCheckModel oCheckModel=ClCheckModel::_None;
+ClCheckVersion oCheckVersion=ClCheckVersion::_None;
+ClCheckGcode oCheckGcode=ClCheckGcode::_None;
 
 void fCheckModeInit()
 {
-eCheckMode=(eCHECK_MODE)eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODE);
-if(eCheckMode==e_CHECK_MODE_NULL)
+oCheckMode=(ClCheckMode)eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODE);
+if(oCheckMode==ClCheckMode::_Undef)
      {
-     eCheckMode=e_CHECK_MODE_warn;
-     eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)eCheckMode);
+     oCheckMode=ClCheckMode::_Warn;
+     eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)oCheckMode);
      }
 if(farm_mode)
-     eCheckMode=e_CHECK_MODE_strict;
-eNozzleDiameter=(eNOZZLE_DIAMETER)eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER);
-if((eNozzleDiameter==e_NOZZLE_DIAMETER_NULL)&& !farm_mode)
+     oCheckMode=ClCheckMode::_Strict;
+oNozzleDiameter=(ClNozzleDiameter)eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER);
+if((oNozzleDiameter==ClNozzleDiameter::_Diameter_Undef)&& !farm_mode)
      {
-     eNozzleDiameter=e_NOZZLE_DIAMETER_400;
-     eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)eNozzleDiameter);
+     oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
+     eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
      eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,400);
+     }
+oCheckModel=(ClCheckModel)eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODEL);
+if(oCheckModel==ClCheckModel::_Undef)
+     {
+     oCheckModel=ClCheckModel::_Warn;
+//     eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODEL,(uint8_t)oCheckModel);
+     }
+oCheckVersion=(ClCheckVersion)eeprom_read_byte((uint8_t*)EEPROM_CHECK_VERSION);
+if(oCheckVersion==ClCheckVersion::_Undef)
+     {
+     oCheckVersion=ClCheckVersion::_Warn;
+//     eeprom_update_byte((uint8_t*)EEPROM_CHECK_VERSION,(uint8_t)oCheckVersion);
+     }
+oCheckGcode=(ClCheckGcode)eeprom_read_byte((uint8_t*)EEPROM_CHECK_GCODE);
+if(oCheckGcode==ClCheckGcode::_Undef)
+     {
+     oCheckGcode=ClCheckGcode::_Warn;
+//     eeprom_update_byte((uint8_t*)EEPROM_CHECK_GCODE,(uint8_t)oCheckGcode);
      }
 }
 
@@ -356,16 +379,194 @@ void nozzle_diameter_check(uint16_t nDiameter)
 {
 uint16_t nDiameter_um;
 
+if(oCheckMode==ClCheckMode::_None)
+     return;
 nDiameter_um=eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM);
 if(nDiameter==nDiameter_um)
      return;
-switch(eCheckMode)
+SERIAL_ECHO_START;
+SERIAL_ECHOLNPGM("Nozzle diameter doesn't match ...");
+SERIAL_ECHOPGM("actual  : ");
+SERIAL_ECHOLN((float)(nDiameter_um/1000.0));
+SERIAL_ECHOPGM("expected: ");
+SERIAL_ECHOLN((float)(nDiameter/1000.0));
+switch(oCheckMode)
      {
-     case e_CHECK_MODE_warn:
+     case ClCheckMode::_Warn:
           lcd_show_fullscreen_message_and_wait_P(_i("Nozzle diameter doesn't match! Press the knob to continue."));
           break;
-     case e_CHECK_MODE_strict:
+     case ClCheckMode::_Strict:
           lcd_show_fullscreen_message_and_wait_P(_i("Nozzle diameter doesn't match! Print is aborted, press the knob."));
+          lcd_print_stop();
+          break;
+     }
+menu_submenu(lcd_checking_menu);
+}
+
+void printer_model_check(uint16_t nPrinterModel)
+{
+if(oCheckModel==ClCheckModel::_None)
+     return;
+if(nPrinterModel==(uint16_t)PRINTER_TYPE)
+     return;
+SERIAL_ECHO_START;
+SERIAL_ECHOLNPGM("Printer model doesn't match ...");
+SERIAL_ECHOPGM("actual  : ");
+SERIAL_ECHOLN(PRINTER_TYPE);
+SERIAL_ECHOPGM("expected: ");
+SERIAL_ECHOLN(nPrinterModel);
+switch(oCheckModel)
+     {
+     case ClCheckModel::_Warn:
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Press the knob to continue."));
+          break;
+     case ClCheckModel::_Strict:
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Print is aborted, press the knob."));
+          lcd_print_stop();
+          break;
+     }
+}
+
+int8_t mCmp(uint16_t nX,uint16_t nY)
+{
+if(nX>nY)
+     return(1);
+if(nX<nY)
+     return(-1);
+return(0);
+}
+
+void fw_version_check(const char *pVersion)
+{
+uint16_t aVersion[4];
+bool bMatch;
+parse_version(pVersion,aVersion);
+
+if(oCheckVersion==ClCheckVersion::_None)
+     return;
+bMatch=(aVersion[0]==eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR));
+bMatch=bMatch&&(aVersion[1]==eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR));
+bMatch=bMatch&&(aVersion[2]==eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION));
+bMatch=bMatch&&(aVersion[3]==eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR));
+if(bMatch)
+     return;
+
+bMatch=(aVersion[0]>eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR));
+bMatch=!bMatch||(aVersion[1]>eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR));
+bMatch=!bMatch||(aVersion[2]>eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION));
+bMatch=!bMatch||(aVersion[3]>eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR));
+if(!bMatch&&oCheckVersion==ClCheckVersion::_Warn)
+     return;
+/*
+if((aVersion[0]<eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MAJOR))&&(oCheckVersion==ClCheckVersion::_Warn))
+     return;
+else if((aVersion[1]<eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_MINOR))&&(oCheckVersion==ClCheckVersion::_Warn))
+     return;
+else if((aVersion[2]<eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_REVISION))&&(oCheckVersion==ClCheckVersion::_Warn))
+     return;
+else if((aVersion[3]<eeprom_read_word((uint16_t*)EEPROM_FIRMWARE_VERSION_FLAVOR))&&(oCheckVersion==ClCheckVersion::_Warn))
+     return;
+*/
+
+SERIAL_ECHO_START;
+SERIAL_ECHOLNPGM("FW version doesn't match ...");
+SERIAL_ECHOPGM("actual  : ");
+SERIAL_ECHOLN(FW_VERSION);
+SERIAL_ECHOPGM("expected: ");
+SERIAL_ECHOLN(pVersion);
+switch(oCheckVersion)
+     {
+     case ClCheckVersion::_Warn:
+          lcd_show_fullscreen_message_and_wait_P(_i("FW version doesn't match! Press the knob to continue."));
+          break;
+     case ClCheckVersion::_Strict:
+          lcd_show_fullscreen_message_and_wait_P(_i("FW version doesn't match! Print is aborted, press the knob."));
+          lcd_print_stop();
+          break;
+     }
+}
+
+void gcode_level_check(uint16_t nGcodeLevel)
+{
+if(oCheckGcode==ClCheckGcode::_None)
+     return;
+if(nGcodeLevel==(uint16_t)GCODE_LEVEL)
+     return;
+if((nGcodeLevel<(uint16_t)GCODE_LEVEL)&&(oCheckGcode==ClCheckGcode::_Warn))
+     return;
+if(oCheckGcode==ClCheckGcode::_None)
+     return;
+SERIAL_ECHO_START;
+SERIAL_ECHOLNPGM("G-code level doesn't match ...");
+SERIAL_ECHOPGM("actual  : ");
+SERIAL_ECHOLN(GCODE_LEVEL);
+SERIAL_ECHOPGM("expected: ");
+SERIAL_ECHOLN(nGcodeLevel);
+switch(oCheckGcode)
+     {
+     case ClCheckGcode::_Warn:
+          lcd_show_fullscreen_message_and_wait_P(_i("G-code level doesn't match! Press the knob to continue."));
+          break;
+     case ClCheckGcode::_Strict:
+          lcd_show_fullscreen_message_and_wait_P(_i("G-code level doesn't match! Print is aborted, press the knob."));
+          lcd_print_stop();
+          break;
+     }
+}
+
+//-// -> cmdqueue ???
+#define PRINTER_NAME_LENGTH (sizeof(PRINTER_NAME)-1)
+#define GCODE_DELIMITER '"'
+#define ELLIPSIS "..."
+
+char* code_string(char* pStr,size_t* nLength)
+{
+char* pStrBegin;
+char* pStrEnd;
+
+pStrBegin=strchr(pStr,GCODE_DELIMITER);
+if(!pStrBegin)
+     return(NULL);
+pStrBegin++;
+pStrEnd=strchr(pStrBegin,GCODE_DELIMITER);
+if(!pStrEnd)
+     return(NULL);
+*nLength=pStrEnd-pStrBegin;
+return(pStrBegin);
+}
+
+void printer_smodel_check(char* pStrPos)
+{
+char* pResult;
+size_t nLength;
+bool bCheckOK;
+char sPrinterName[PRINTER_NAME_LENGTH+sizeof(ELLIPSIS)-1+1]="";
+
+pResult=code_string(pStrPos,&nLength);
+if(pResult!=NULL)
+     {
+     strlcpy(sPrinterName,pResult,min(PRINTER_NAME_LENGTH,nLength)+1);
+     if(nLength>PRINTER_NAME_LENGTH)
+          strcat(sPrinterName,ELLIPSIS);
+     bCheckOK=(nLength==PRINTER_NAME_LENGTH);
+     if(bCheckOK&&(!strncasecmp(pResult,PRINTER_NAME,nLength))) // i.e. string compare execute only if lengths are same
+          return;
+     }
+SERIAL_ECHO_START;
+SERIAL_ECHOLNPGM("Printer model doesn't match ...");
+SERIAL_ECHOPGM("actual  : \"");
+SERIAL_ECHO(PRINTER_NAME);
+SERIAL_ECHOLNPGM("\"");
+SERIAL_ECHOPGM("expected: \"");
+SERIAL_ECHO(sPrinterName);
+SERIAL_ECHOLNPGM("\"");
+switch(oCheckModel)
+     {
+     case ClCheckModel::_Warn:
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Press the knob to continue."));
+          break;
+     case ClCheckModel::_Strict:
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Print is aborted, press the knob."));
           lcd_print_stop();
           break;
      }
