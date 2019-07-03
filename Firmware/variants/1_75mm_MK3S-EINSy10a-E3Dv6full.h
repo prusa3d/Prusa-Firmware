@@ -2,6 +2,7 @@
 #define CONFIGURATION_PRUSA_H
 
 #include <limits.h>
+#include "printers.h"
 /*------------------------------------
  GENERAL SETTINGS
  *------------------------------------*/
