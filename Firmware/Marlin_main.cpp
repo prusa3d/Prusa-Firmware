@@ -8143,6 +8143,11 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 	}
 }
 
+bool is_sheet_inicialized(){
+  return (0xffff != eeprom_read_word(reinterpret_cast<uint16_t*>(&(EEPROM_Sheets_base->
+  s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].z_offset))));
+}
+
 void check_babystep()
 {
 	int babystep_z = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->

@@ -3084,9 +3084,14 @@ static void lcd_babystep_z()
 		// Initialize its status.
 		_md->status = 1;
 		check_babystep();
-
-		_md->babystepMemZ = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
-		        s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)));
+		
+		if(!is_sheet_inicialized()){
+			_md->babystepMemZ = 0;
+		}
+		else{
+			_md->babystepMemZ = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+					s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)));
+		}
 
 		// same logic as in babystep_load
 	    if (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST)
@@ -6300,26 +6305,34 @@ void lcd_resume_print()
     isPrintPaused = false;
 }
 
+static void sheet_check(uint8_t sheet_num)
+{
+	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet_num);
+	if(is_sheet_inicialized())
+		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+	else
+		calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+
+    menu_back(3);
+}
+
 static void lcd_select_sheet_0_menu()
 {
-    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
-    menu_back(3);
+	sheet_check(0);
 }
 static void lcd_select_sheet_1_menu()
 {
-    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 1);
-    menu_back(3);
+	sheet_check(1);
 }
 static void lcd_select_sheet_2_menu()
 {
-    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 2);
-    menu_back(3);
+	sheet_check(2);
 }
 
 static void lcd_select_sheet_menu()
 {
     MENU_BEGIN();
-    MENU_ITEM_BACK_P(_T(MSG_SHEET));
+    MENU_ITEM_BACK_P(_T(MSG_BACK));
     MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
     MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
     MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
@@ -6376,7 +6389,7 @@ static void lcd_sheet_menu()
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
     MENU_ITEM_SUBMENU_P(_i("Select"), lcd_select_sheet_menu); //// c=18
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
-    MENU_ITEM_SUBMENU_P(_T(MSG_BABYSTEP_Z), lcd_babystep_z);
+    MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration); ////MSG_V2_CALIBRATION c=17 r=1
 
     MENU_END();
 }
@@ -6415,7 +6428,6 @@ static void lcd_main_menu()
   } else 
   {
     MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT
-    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu);
   }
 
 
@@ -6510,6 +6522,8 @@ static void lcd_main_menu()
 
   }
 
+  if(!isPrintPaused)MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu);
+  
   if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
   {
 	  MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS
