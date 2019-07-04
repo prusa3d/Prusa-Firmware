@@ -41,6 +41,11 @@ bool eeprom_is_uninitialized<char>(char *address)
     return (0xff == eeprom_read_byte(reinterpret_cast<uint8_t*>(address)));
 }
 
+bool is_sheet_initialized(){
+  return (0xffff != eeprom_read_word(reinterpret_cast<uint16_t*>(&(EEPROM_Sheets_base->
+  s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].z_offset))));
+}
+
 void eeprom_init()
 {
     if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);

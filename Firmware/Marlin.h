@@ -323,8 +323,6 @@ extern float retract_recover_length_swap;
 
 extern uint8_t host_keepalive_interval;
 
-extern bool is_sheet_inicialized();
-
 extern unsigned long starttime;
 extern unsigned long stoptime;
 extern int bowden_length[4];

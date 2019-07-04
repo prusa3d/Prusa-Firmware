@@ -191,6 +191,7 @@ typedef struct
 static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_NOZZLE_DIAMETER - EEPROM_SHEETS_SIZEOF);
 
 #ifdef __cplusplus
+extern bool is_sheet_initialized();
 static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEPROM_SHEETS_SIZEOF.");
 #endif
 

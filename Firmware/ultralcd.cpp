@@ -3085,7 +3085,7 @@ static void lcd_babystep_z()
 		_md->status = 1;
 		check_babystep();
 		
-		if(!is_sheet_inicialized()){
+		if(!is_sheet_initialized()){
 			_md->babystepMemZ = 0;
 		}
 		else{
@@ -6305,10 +6305,10 @@ void lcd_resume_print()
     isPrintPaused = false;
 }
 
-static void sheet_check(uint8_t sheet_num)
+static void change_sheet(uint8_t sheet_num)
 {
 	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet_num);
-	if(is_sheet_inicialized())
+	if(is_sheet_initialized())
 		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 	else
 		calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
@@ -6318,15 +6318,15 @@ static void sheet_check(uint8_t sheet_num)
 
 static void lcd_select_sheet_0_menu()
 {
-	sheet_check(0);
+	change_sheet(0);
 }
 static void lcd_select_sheet_1_menu()
 {
-	sheet_check(1);
+	change_sheet(1);
 }
 static void lcd_select_sheet_2_menu()
 {
-	sheet_check(2);
+	change_sheet(2);
 }
 
 static void lcd_select_sheet_menu()
