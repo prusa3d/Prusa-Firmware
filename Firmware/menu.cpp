@@ -168,10 +168,14 @@ int menu_draw_item_printf_P(char type_char, const char* format, ...)
 }
 */
 
+static char menu_selection_mark(){
+	return (lcd_encoder == menu_item)?'>':' ';
+}
+
 static void menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
-    lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
+    lcd_printf_P(PSTR("%c%-18.18S%c"), menu_selection_mark(), str, type_char);
 }
 
 //! @brief Format sheet name
@@ -182,8 +186,9 @@ void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 {
     uint_least8_t index = sprintf_P(buffer.c, PSTR("%.10S "), _T(MSG_SHEET));
     eeprom_read_block(&(buffer.c[index]), sheet_E.name, 7);
-    index += 7;
-    buffer.c[index] = '\0';
+    //index += 7;
+    buffer.c[index + 7] = '\0'; // tohle vyjde vyrazne lepe, nez inkrementovat promennou index - o celych 12B kratsi
+	// compiler totiz pochopi, ze tu promennou nechci, cili si ji necha v registru
 }
 
 static void menu_draw_item_puts_E(char type_char, const Sheet &sheet)
@@ -191,13 +196,13 @@ static void menu_draw_item_puts_E(char type_char, const Sheet &sheet)
     lcd_set_cursor(0, menu_row);
     SheetFormatBuffer buffer;
     menu_format_sheet_E(sheet, buffer);
-    lcd_printf_P(PSTR("%c%-18.18s%c"), (lcd_encoder == menu_item)?'>':' ', buffer.c, type_char);
+    lcd_printf_P(PSTR("%c%-18.18s%c"), menu_selection_mark(), buffer.c, type_char);
 }
 
 static void menu_draw_item_puts_P(char type_char, const char* str, char num)
 {
     lcd_set_cursor(0, menu_row);
-    lcd_printf_P(PSTR("%c%-.16S "), (lcd_encoder == menu_item)?'>':' ', str);
+    lcd_printf_P(PSTR("%c%-.16S "), menu_selection_mark(), str);
     lcd_putc(num);
     lcd_set_cursor(19, menu_row);
     lcd_putc(type_char);
@@ -434,7 +439,7 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 		if (lcd_draw_update) 
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_P<T>((lcd_encoder == menu_item)?'>':' ', str, *pval);
+			menu_draw_P<T>(menu_selection_mark(), str, *pval);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
