@@ -6387,8 +6387,8 @@ static void lcd_sheet_menu()
 {
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_MAIN));
-    MENU_ITEM_SUBMENU_P(_i("Select"), lcd_select_sheet_menu); //// c=18
-    MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_SELECT), lcd_select_sheet_menu); //// c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_RENAME), lcd_rename_sheet_menu); //// c=18
     MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration); ////MSG_V2_CALIBRATION c=17 r=1
 
     MENU_END();

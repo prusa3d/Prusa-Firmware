@@ -73,7 +73,6 @@ void eeprom_init()
         {
             eeprom_write(&(EEPROM_Sheets_base->s[i].name[0]), static_cast<char>(i + '1'));
             eeprom_write(&(EEPROM_Sheets_base->s[i].name[1]), '\0');
-            //eeprom_write_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[i].z_offset)),0); //TODO: nedavat dalsi
         }
     }
     check_babystep();

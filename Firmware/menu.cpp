@@ -187,8 +187,7 @@ void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
     uint_least8_t index = sprintf_P(buffer.c, PSTR("%.10S "), _T(MSG_SHEET));
     eeprom_read_block(&(buffer.c[index]), sheet_E.name, 7);
     //index += 7;
-    buffer.c[index + 7] = '\0'; // tohle vyjde vyrazne lepe, nez inkrementovat promennou index - o celych 12B kratsi
-	// compiler totiz pochopi, ze tu promennou nechci, cili si ji necha v registru
+    buffer.c[index + 7] = '\0';
 }
 
 static void menu_draw_item_puts_E(char type_char, const Sheet &sheet)
