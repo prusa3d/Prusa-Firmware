@@ -83,7 +83,7 @@ static int8_t lcd_next_block_index(int8_t block_index) {
 }
 
 uint16_t lcd_plan_calculate_timer_delay(uint32_t us) {
-	return ((us * 32)/(F_CPU/1000000)) - 1;
+	return (us*(F_CPU/1000000/8)) - 1;
 }
 
 void lcd_plan_init() {
