@@ -1,0 +1,32 @@
+{
+  "build": {
+    "core": "arduino",
+    "extra_flags": "-DARDUINO_AVR_RAMBO",
+    "f_cpu": "16000000L",
+    "mcu": "atmega2560",
+    "variant": "rambo"
+  },
+  "frameworks": [
+    "arduino"
+  ],
+  "fuses": {
+    "lfuse": "0xFF",
+    "hfuse": "0xD8",
+    "efuse": "0xFD",
+    "lock": "0x3F"
+  },
+  "hwids": [
+    "0x27b1",
+    "0x0001"
+  ],
+  "name": "Prusa (EINSy)RAMBo",
+  "upload": {
+    "maximum_ram_size": 8192,
+    "maximum_size": 258048,
+    "protocol": "stk500v2",
+    "require_upload_port": true,
+    "speed": 115200
+  },
+  "url": "http://reprap.org/wiki/EinsyRambo",
+  "vendor": "Prusa"
+}
