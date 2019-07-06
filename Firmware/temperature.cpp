@@ -500,8 +500,9 @@ void checkFanSpeed()
 	max_print_fan_errors = 15; //15 seconds
 	max_extruder_fan_errors = 5; //5 seconds
 #endif //FAN_SOFT_PWM
-
-	fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
+  
+  if(fans_check_enabled != false)
+	  fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
 	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
@@ -560,6 +561,8 @@ void fanSpeedError(unsigned char _fan) {
 	else {
 			setTargetHotend0(0);
 			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
+      heating_status = 0;
+      fan_check_error = EFCE_REPORTED;
 	}
 	switch (_fan) {
 	case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B
