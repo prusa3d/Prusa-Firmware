@@ -55,9 +55,11 @@
 #define LCD_5x10DOTS 0x04
 #define LCD_5x8DOTS 0x00
 
-#define LCD_RS_FLAG 0
-#define LCD_HALF_FLAG 1
+// bitmasks for flag argument settings for lcd_planner
+#define LCD_RS_FLAG 0x01
+#define LCD_HALF_FLAG 0x02
 #define LCD_WAIT_FLAG 0x04
+#define LCD_WAIT_UPDATE_BACKUP_FLAG 0x08
 
 FILE _lcdout; // = {0}; Global variable is always zero initialized, no need to explicitly state that.
 
@@ -120,17 +122,20 @@ ISR(TIMER3_COMPA_vect)
 	if(lcd_current_block == NULL)
 		return;
 	uint8_t flag = lcd_current_block->flag;
-	if (flag & LCD_WAIT_FLAG) lcd_update_enabled = 1;
+	if (flag & LCD_WAIT_FLAG) {
+		if (!lcd_update_enabled) // in case the update was enabled while the lcd was initializing so not to disable it
+			lcd_update_enabled = lcd_current_block->flag & LCD_WAIT_UPDATE_BACKUP_FLAG;
+	}
 	else
 	{
-		WRITE(LCD_PINS_RS, flag & (1 << LCD_RS_FLAG));
+		WRITE(LCD_PINS_RS, flag & LCD_RS_FLAG);
 		_delay_us(5);
 		lcd_writebits(lcd_current_block->data);
 	}
 #ifndef LCD_8BIT
-	if (flag & (1 << LCD_HALF_FLAG)){
+	if (flag & LCD_HALF_FLAG){
 		lcd_current_block->data = lcd_current_block->data<<4;
-		flag &= ~(1 << LCD_HALF_FLAG);
+		flag &= ~LCD_HALF_FLAG;
 		lcd_current_block->flag = flag;
 		OCR3A = lcd_plan_calculate_timer_delay(LCD_COMMAND_DELAY);
 	}
@@ -151,7 +156,10 @@ void _lcd_plan_data(uint8_t data, uint8_t flag, uint16_t command_delay_us) {
 	block->data = data;
 	block->flag = flag;
 	block->command_delay_us = command_delay_us;
-	if (flag & LCD_WAIT_FLAG) lcd_update_enabled = 0;
+	if (flag & LCD_WAIT_FLAG) {
+		block->flag ^= (-lcd_update_enabled ^ block->flag) & LCD_WAIT_UPDATE_BACKUP_FLAG;
+		lcd_update_enabled = 0;
+	}
 	lcd_block_buffer_head = next_buffer_head;
 	if ((TCCR3B & 0x02) == 0) {
 		OCR3A = lcd_plan_calculate_timer_delay(command_delay_us);
@@ -170,9 +178,9 @@ void lcd_plan_data
 	,uint8_t flag
 )
 {
-	flag |= (RS << LCD_RS_FLAG);
+	flag ^= (-RS ^ flag) & LCD_RS_FLAG;
 #ifndef LCD_8BIT
-	flag |= (half << LCD_HALF_FLAG);
+	flag ^= (-half ^ flag) & LCD_HALF_FLAG;
 #endif
 
 	_lcd_plan_data(data, flag, command_delay_us);
@@ -267,7 +275,7 @@ static void lcd_begin(uint8_t clear)
 	// set the entry mode
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode, 60);
 	lcd_escape[0] = 0;
-	lcd_plan_data(0x00, LOW, 0, 0, LCD_WAIT_FLAG); // special lcd begin flag
+	lcd_plan_data(0x00, LOW, 0, 0, LCD_WAIT_FLAG); // special flag that disables lcd_update() to not block the loop with the status screen update during lcd_begin()
 }
 
 int lcd_putchar(char c, FILE *)
