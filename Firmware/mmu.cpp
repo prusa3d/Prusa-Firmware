@@ -81,9 +81,11 @@ uint16_t mmu_power_failures = 0;
 
 
 #ifdef MMU_DEBUG
+static const auto DEBUG_PUTCHAR = putchar;
 static const auto DEBUG_PUTS_P = puts_P;
 static const auto DEBUG_PRINTF_P = printf_P;
 #else //MMU_DEBUG
+#define DEBUG_PUTCHAR(c)
 #define DEBUG_PUTS_P(str)
 #define DEBUG_PRINTF_P( __fmt, ... )
 #endif //MMU_DEBUG
@@ -1447,26 +1449,69 @@ bFilamentAction=false;                            // NOT in "mmu_fil_eject_menu(
 	}
 }
 
+//! @brief Fits filament tip into heatbreak?
+//!
+//! If PTFE tube is jammed, this causes filament to be unloaded and no longer
+//! being detected by the pulley IR sensor.
+//! @retval true Fits
+//! @retval false Doesn't fit
+static bool can_load()
+{
+    current_position[E_AXIS] += 60;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+            current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+    current_position[E_AXIS] -= 52;
+    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+            current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+    st_synchronize();
+
+    uint_least8_t filament_detected_count = 0;
+    const float e_increment = 0.2;
+    const uint_least8_t steps = 6.0 / e_increment;
+    DEBUG_PUTS_P(PSTR("MMU can_load:"));
+    for(uint_least8_t i = 0; i < steps; ++i)
+    {
+        current_position[E_AXIS] -= e_increment;
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS],
+                current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
+        st_synchronize();
+        if(0 == PIN_GET(IR_SENSOR_PIN))
+        {
+            ++filament_detected_count;
+            DEBUG_PUTCHAR('O');
+        }
+        else
+        {
+            DEBUG_PUTCHAR('o');
+        }
+    }
+    if (filament_detected_count > steps - 4)
+    {
+        DEBUG_PUTS_P(PSTR(" succeeded."));
+        return true;
+    }
+    else
+    {
+        DEBUG_PUTS_P(PSTR(" failed."));
+        return false;
+    }
+}
+
 //! @brief load more
 //!
 //! Try to feed more filament from MMU if it is not detected by filament sensor.
-//! Move filament back and forth to nozzle in order to detect jam.
-//! If PTFE tube is jammed, this cause filament to be unloaded and no longer
-//! detected by pulley IR sensor in next step.
-static void load_more()
+//! @retval true Success, filament detected by IR sensor
+//! @retval false Failed, filament not detected by IR sensor after maximum number of attempts
+static bool load_more()
 {
     for (uint8_t i = 0; i < MMU_IDLER_SENSOR_ATTEMPTS_NR; i++)
     {
-        if (PIN_GET(IR_SENSOR_PIN) == 0) break;
+        if (PIN_GET(IR_SENSOR_PIN) == 0) return true;
         DEBUG_PRINTF_P(PSTR("Additional load attempt nr. %d\n"), i);
         mmu_command(MmuCmd::C0);
         manage_response(true, true, MMU_LOAD_MOVE);
     }
-    current_position[E_AXIS] += 60;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
-    current_position[E_AXIS] -= 58;
-    plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], MMU_LOAD_FEEDRATE, active_extruder);
-    st_synchronize();
+    return false;
 }
 
 static void increment_load_fail()
@@ -1507,7 +1552,8 @@ void mmu_continue_loading(bool blocking)
 	    return;
 	}
 
-    load_more();
+    bool success = load_more();
+    if (success) success = can_load();
 
     enum class Ls : uint_least8_t
     {
@@ -1517,7 +1563,10 @@ void mmu_continue_loading(bool blocking)
     };
     Ls state = Ls::Enter;
 
-    while (PIN_GET(IR_SENSOR_PIN) != 0)
+    const uint_least8_t max_retry = 2;
+    uint_least8_t retry = 0;
+
+    while (!success)
     {
         switch (state)
         {
@@ -1534,8 +1583,10 @@ void mmu_continue_loading(bool blocking)
 #endif //MMU_HAS_CUTTER
             mmu_command(MmuCmd::T0 + tmp_extruder);
             manage_response(true, true, MMU_TCODE_MOVE);
-            load_more();
-            state = Ls::Unload;
+            success = load_more();
+            if (success) success = can_load();
+            ++retry; // overflow not handled, as it is not dangerous.
+            if (retry >= max_retry) state = Ls::Unload;
             break;
         case Ls::Unload:
             stop_and_save_print_to_ram(0, 0);
