@@ -31,7 +31,8 @@ if [ ! -f "$SCRIPT_PATH/Firmware/Configuration_prusa.h" ]; then
     cp $SCRIPT_PATH/Firmware/variants/1_75mm_MK3-EINSy10a-E3Dv6full.h $SCRIPT_PATH/Firmware/Configuration_prusa.h || exit 8
 fi
 
-$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board rambo:avr:rambo --pref build.path=$BUILD_PATH --pref compiler.warning_level=all || exit 9
+$BUILD_ENV_PATH/arduino --pref boardsmanager.additional.urls=https://raw.githubusercontent.com/DRracer/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json
+$BUILD_ENV_PATH/arduino $SCRIPT_PATH/Firmware/Firmware.ino --verify --board PrusaResearchRambo:avr:rambo --pref build.path=$BUILD_PATH --pref compiler.warning_level=all || exit
 
 export ARDUINO=$BUILD_ENV_PATH
 
