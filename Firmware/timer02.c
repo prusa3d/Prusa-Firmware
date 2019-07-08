@@ -9,48 +9,27 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "Arduino.h"
 #include "io_atmega2560.h"
 
 #define BEEPER              84
 
-uint8_t timer02_pwm0 = 0;
-
-void timer02_set_pwm0(uint8_t pwm0)
-{
-	if (timer02_pwm0 == pwm0) return;
-	if (pwm0)
-	{
-		TCCR0A |= (2 << COM0B0);
-		OCR0B = pwm0 - 1;
-	}
-	else
-	{
-		TCCR0A &= ~(2 << COM0B0);
-		OCR0B = 0;
-	}
-	timer02_pwm0 = pwm0;
-}
-
-void timer02_init(void)
+void timer0_init(void)
 {
 	//save sreg
 	uint8_t _sreg = SREG;
 	//disable interrupts for sure
 	cli();
-	//mask timer0 interrupts - disable all
-	TIMSK0 &= ~(1<<TOIE0);
-	TIMSK0 &= ~(1<<OCIE0A);
-	TIMSK0 &= ~(1<<OCIE0B);
-	//setup timer0
-	TCCR0A = 0x00; //COM_A-B=00, WGM_0-1=00
-	TCCR0B = (1 << CS00); //WGM_2=0, CS_0-2=011
-	//switch timer0 to fast pwm mode
-	TCCR0A |= (3 << WGM00); //WGM_0-1=11
-	//set OCR0B register to zero
-	OCR0B = 0;
-	//disable OCR0B output (will be enabled in timer02_set_pwm0)
-	TCCR0A &= ~(2 << COM0B0);
+
+	TCNT0  = 0;
+	// Fast PWM duty (0-255). 
+	// Due to invert mode (following rows) the duty is set to 255, which means zero all the time (bed not heating)
+	OCR0B = 255;
+	// Set fast PWM mode and inverting mode.
+	TCCR0A = (1 << WGM01) | (1 << WGM00) | (1 << COM0B1) | (1 << COM0B0);  
+	TCCR0B = (1 << CS00);    // no clock prescaling
+	TIMSK0 |= (1 << TOIE0);  // enable timer overflow interrupt
+	
+	// Everything, that used to be on timer0 was moved to timer2 (delay, beeping, millis etc.)
 	//setup timer2
 	TCCR2A = 0x00; //COM_A-B=00, WGM_0-1=00
 	TCCR2B = (4 << CS20); //WGM_2=0, CS_0-2=011
@@ -66,11 +45,9 @@ void timer02_init(void)
 }
 
 
-//following code is OVF handler for timer 2
-//it is copy-paste from wiring.c and modified for timer2
-//variables timer0_overflow_count and timer0_millis are declared in wiring.c
-
-
+// The following code is OVF handler for timer 2
+// it was copy-pasted from wiring.c and modified for timer2
+// variables timer0_overflow_count and timer0_millis are declared in wiring.c
 
 // the prescaler is set so that timer0 ticks every 64 clock cycles, and the
 // the overflow handler is called every 256 ticks.
@@ -85,9 +62,6 @@ void timer02_init(void)
 #define FRACT_INC ((MICROSECONDS_PER_TIMER0_OVERFLOW % 1000) >> 3)
 #define FRACT_MAX (1000 >> 3)
 
-//extern volatile unsigned long timer0_overflow_count;
-//extern volatile unsigned long timer0_millis;
-//unsigned char timer0_fract = 0;
 volatile unsigned long timer2_overflow_count;
 volatile unsigned long timer2_millis;
 unsigned char timer2_fract = 0;
