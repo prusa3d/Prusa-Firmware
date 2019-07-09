@@ -6613,8 +6613,7 @@ static void lcd_main_menu()
   if (mmu_enabled) {
 	  MENU_ITEM_SUBMENU_P(_i("Fail stats MMU"), lcd_menu_fails_stats_mmu);
   }
-//-//
-//  MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT
+  MENU_ITEM_SUBMENU_P(_i("Support"), lcd_support_menu);////MSG_SUPPORT
 #ifdef LCD_TEST
     MENU_ITEM_SUBMENU_P(_i("W25x20CL init"), lcd_test_menu);////MSG_SUPPORT
 #endif //LCD_TEST
