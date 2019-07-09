@@ -27,20 +27,6 @@ enum class States : uint8_t {
   FALL = 3
 };
 
-///! State table for the inner part of the finite automaton
-///! Basically it specifies what shall happen if the outer automaton is requesting setting the heat pin to 0 (OFF) or 1 (ON)
-///! ZERO: steady 0 (OFF), no change for the whole period
-///! RISE: 8 (16) fast PWM cycles with increasing duty up to steady ON
-///! ONE:  steady 1 (ON), no change for the whole period 
-///! FALL: 8 (16) fast PWM cycles with decreasing duty down to steady OFF
-///! @@TODO move it into progmem
-static States stateTable[4*2] = {
-// off             on
-States::ZERO,      States::RISE, // ZERO
-States::FALL,      States::ONE,  // RISE
-States::FALL,      States::ONE,  // ONE
-States::ZERO,      States::RISE  // FALL
-};
 
 ///! Inner states of the finite automaton
 static States state = States::ZERO;
@@ -97,11 +83,26 @@ ISR(TIMER0_OVF_vect)          // timer compare interrupt service routine
       pwm = soft_pwm_bed << 1;
     }
 	if( pwm > outer || pwm >= 254 ){
+	  // switch ON
       // soft_pwm_bed has a range of 0-127, that why a <<1 is done here. That also means that we may get only up to 254 which we want to be full-time 1 (ON)
-      state = stateTable[ uint8_t(state) * 2 + 1 ];
+      if (state == States::ZERO)
+      {
+          state = States::RISE;
+      }
+      else if (state == States::RISE)
+      {
+          state = States::ONE;
+      }
     } else {
       // switch OFF
-      state = stateTable[ uint8_t(state) * 2 + 0 ];
+        if (state == States::ONE)
+        {
+            state = States::FALL;
+        }
+        else if (state == States::FALL)
+        {
+            state = States::ZERO;
+        }
     }
     ++outer;
     inner = innerMax;
