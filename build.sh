@@ -1,5 +1,5 @@
 #!/bin/bash 
-BUILD_ENV="1.0.5"
+BUILD_ENV="1.0.6"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 if [ ! -d "build-env" ]; then
