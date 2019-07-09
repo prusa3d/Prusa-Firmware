@@ -101,6 +101,7 @@ const char MSG_WIZARD_DONE[] PROGMEM_I1 = ISTR("All is done. Happy printing!"); 
 const char MSG_WIZARD_HEATING[] PROGMEM_I1 = ISTR("Preheating nozzle. Please wait."); ////c=20 r=3
 const char MSG_WIZARD_QUIT[] PROGMEM_I1 = ISTR("You can always resume the Wizard from Calibration -> Wizard."); ////c=20 r=8
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////
+const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////c=17 r=1
 const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
@@ -127,6 +128,3 @@ const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////
 const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////
 const char MSG_ERR_STOPPED[] PROGMEM_N1 = "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"; ////
 const char MSG_ENDSTOP_HIT[] PROGMEM_N1 = "TRIGGERED"; ////
-const char MSG_V2_CALIBRATION[] PROGMEM_N1 = "First layer cal."; ////c=17 r=1
-const char MSG_SELECT[] PROGMEM_N1 = "Select"; ////
-const char MSG_RENAME[] PROGMEM_N1 = "Rename"; ////
