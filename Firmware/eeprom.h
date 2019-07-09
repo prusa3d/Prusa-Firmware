@@ -3,7 +3,32 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
 void eeprom_init();
+extern bool is_sheet_initialized();
+#endif
+
+
+typedef struct
+{
+    char name[7];     //!< Can be null terminated, doesn't need to be null terminated
+    int16_t z_offset; //!< Z_BABYSTEP_MIN .. Z_BABYSTEP_MAX = Z_BABYSTEP_MIN*2/1000 [mm] .. Z_BABYSTEP_MAX*2/1000 [mm]
+    uint8_t bed_temp; //!< 0 .. 254 [°C]
+    uint8_t pinda_temp; //!< 0 .. 254 [°C]
+} Sheet;
+
+typedef struct
+{
+    Sheet s[3];
+    uint8_t active_sheet;
+} Sheets;
+// sizeof(Sheets). Do not change it unless EEPROM_Sheets_base is last item in EEPROM.
+// Otherwise it would move following items.
+#define EEPROM_SHEETS_SIZEOF 34
+
+#ifdef __cplusplus
+static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEPROM_SHEETS_SIZEOF.");
+#endif
 
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
@@ -171,29 +196,7 @@ void eeprom_init();
 #define EEPROM_NOZZLE_DIAMETER (EEPROM_CHECK_MODE-1) // uint8
 #define EEPROM_NOZZLE_DIAMETER_uM (EEPROM_NOZZLE_DIAMETER-2) // uint16
 
-typedef struct
-{
-    char name[7];     //!< Can be null terminated, doesn't need to be null terminated
-    int16_t z_offset; //!< Z_BABYSTEP_MIN .. Z_BABYSTEP_MAX = Z_BABYSTEP_MIN*2/1000 [mm] .. Z_BABYSTEP_MAX*2/1000 [mm]
-    uint8_t bed_temp; //!< 0 .. 254 [°C]
-    uint8_t pinda_temp; //!< 0 .. 254 [°C]
-} Sheet;
-
-typedef struct
-{
-    Sheet s[3];
-    uint8_t active_sheet;
-} Sheets;
-// sizeof(Sheets). Do not change it unless EEPROM_Sheets_base is last item in EEPROM.
-// Otherwise it would move following items.
-#define EEPROM_SHEETS_SIZEOF 34
-
-static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_NOZZLE_DIAMETER - EEPROM_SHEETS_SIZEOF);
-
-#ifdef __cplusplus
-extern bool is_sheet_initialized();
-static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEPROM_SHEETS_SIZEOF.");
-#endif
+static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_NOZZLE_DIAMETER_uM - EEPROM_SHEETS_SIZEOF);
 
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
 #define EEPROM_LAST_ITEM ((uint16_t)EEPROM_Sheets_base)
