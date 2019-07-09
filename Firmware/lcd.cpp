@@ -16,6 +16,12 @@
 //-//
 #include "sound.h"
 
+#define LCD_BLOCK_BUFFER_SIZE 8
+#define LCD_COMMAND_DELAY 100
+
+#if (defined(LCD_PINS_D0) && defined(LCD_PINS_D1) && defined(LCD_PINS_D2) && defined(LCD_PINS_D3))
+	#define LCD_8BIT
+#endif
 
 // commands
 #define LCD_CLEARDISPLAY 0x01
@@ -73,6 +79,19 @@ uint8_t lcd_escape[8];
 
 void lcd_writebits(uint8_t value);
 
+typedef struct {
+	uint8_t data;
+	uint8_t flag;
+	uint16_t command_delay_us;
+} lcd_block_t;
+
+#define ENABLE_LCD_TIMER() do {\
+	TCNT3 = 0;\
+	TCCR3B |= 0x02;\
+} while(0)
+
+#define DISABLE_LCD_TIMER() TCCR3B = (TCCR3B & ~(0x07<<CS30))
+
 lcd_block_t lcd_block_buffer[LCD_BLOCK_BUFFER_SIZE];          // A ring buffer for lcd data blocks
 volatile unsigned char lcd_block_buffer_head;                 // Index of the next block to be pushed
 volatile unsigned char lcd_block_buffer_tail;                 // Index of the block to process now
@@ -82,6 +101,20 @@ static int8_t lcd_next_block_index(int8_t block_index) {
 	if (++ block_index == LCD_BLOCK_BUFFER_SIZE)
 		block_index = 0;
 	return block_index;
+}
+
+lcd_block_t *lcd_plan_get_current_block() 
+{
+	if (lcd_block_buffer_head == lcd_block_buffer_tail)
+		return(NULL);
+	lcd_block_t *block = &lcd_block_buffer[lcd_block_buffer_tail];
+	return(block);
+}
+
+void lcd_plan_discard_current_block()
+{
+	if (lcd_block_buffer_head != lcd_block_buffer_tail)
+		lcd_block_buffer_tail = (lcd_block_buffer_tail + 1) & (LCD_BLOCK_BUFFER_SIZE - 1); //tail++
 }
 
 uint16_t lcd_plan_calculate_timer_delay(uint32_t us) {
@@ -171,11 +204,11 @@ void lcd_plan_data
 (
 	uint8_t data
 	,bool RS
-	,uint16_t command_delay_us
+	,uint16_t command_delay_us = LCD_COMMAND_DELAY
 #ifndef LCD_8BIT
-	,bool half
+	,bool half = 1
 #endif
-	,uint8_t flag
+	,uint8_t flag = 0
 )
 {
 	flag ^= (-RS ^ flag) & LCD_RS_FLAG;
