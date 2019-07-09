@@ -5311,16 +5311,16 @@ do\
     switch(oCheckMode)\
          {\
          case ClCheckMode::_None:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle Ch. [none]"),lcd_check_mode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [none]"),lcd_check_mode_set);\
               break;\
          case ClCheckMode::_Warn:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle Ch. [warn]"),lcd_check_mode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [warn]"),lcd_check_mode_set);\
               break;\
          case ClCheckMode::_Strict:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle Ch[strict]"),lcd_check_mode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle   [strict]"),lcd_check_mode_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle Ch. [none]"),lcd_check_mode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [none]"),lcd_check_mode_set);\
          }\
 }\
 while (0)
@@ -5396,16 +5396,16 @@ do\
     switch(oCheckModel)\
          {\
          case ClCheckModel::_None:\
-              MENU_ITEM_FUNCTION_P(_i("Model Ch.  [none]"),lcd_check_model_set);\
+              MENU_ITEM_FUNCTION_P(_i("Model      [none]"),lcd_check_model_set);\
               break;\
          case ClCheckModel::_Warn:\
-              MENU_ITEM_FUNCTION_P(_i("Model Ch.  [warn]"),lcd_check_model_set);\
+              MENU_ITEM_FUNCTION_P(_i("Model      [warn]"),lcd_check_model_set);\
               break;\
          case ClCheckModel::_Strict:\
-              MENU_ITEM_FUNCTION_P(_i("Model Ch.[strict]"),lcd_check_model_set);\
+              MENU_ITEM_FUNCTION_P(_i("Model    [strict]"),lcd_check_model_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Model Ch.  [none]"),lcd_check_model_set);\
+              MENU_ITEM_FUNCTION_P(_i("Model      [none]"),lcd_check_model_set);\
          }\
 }\
 while (0)
@@ -5435,16 +5435,16 @@ do\
     switch(oCheckVersion)\
          {\
          case ClCheckVersion::_None:\
-              MENU_ITEM_FUNCTION_P(_i("FW Ch.     [none]"),lcd_check_version_set);\
+              MENU_ITEM_FUNCTION_P(_i("Firmware   [none]"),lcd_check_version_set);\
               break;\
          case ClCheckVersion::_Warn:\
-              MENU_ITEM_FUNCTION_P(_i("FW Ch.     [warn]"),lcd_check_version_set);\
+              MENU_ITEM_FUNCTION_P(_i("Firmware   [warn]"),lcd_check_version_set);\
               break;\
          case ClCheckVersion::_Strict:\
-              MENU_ITEM_FUNCTION_P(_i("FW Ch.   [strict]"),lcd_check_version_set);\
+              MENU_ITEM_FUNCTION_P(_i("Firmware [strict]"),lcd_check_version_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("FW Ch.     [none]"),lcd_check_version_set);\
+              MENU_ITEM_FUNCTION_P(_i("Firmware   [none]"),lcd_check_version_set);\
          }\
 }\
 while (0)
@@ -5474,25 +5474,26 @@ do\
     switch(oCheckGcode)\
          {\
          case ClCheckGcode::_None:\
-              MENU_ITEM_FUNCTION_P(_i("Gcode Ch.  [none]"),lcd_check_gcode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Gcode      [none]"),lcd_check_gcode_set);\
               break;\
          case ClCheckGcode::_Warn:\
-              MENU_ITEM_FUNCTION_P(_i("Gcode Ch.  [warn]"),lcd_check_gcode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Gcode      [warn]"),lcd_check_gcode_set);\
               break;\
          case ClCheckGcode::_Strict:\
-              MENU_ITEM_FUNCTION_P(_i("Gcode Ch.[strict]"),lcd_check_gcode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Gcode    [strict]"),lcd_check_gcode_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Gcode Ch.  [none]"),lcd_check_gcode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Gcode      [none]"),lcd_check_gcode_set);\
          }\
 }\
 while (0)
 
-//static void lcd_checking_menu()
+//-//static void lcd_checking_menu()
 void lcd_checking_menu()
 {
 MENU_BEGIN();
-MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+//-//MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
+MENU_ITEM_BACK_P(_T(MSG_BACK));
 SETTINGS_NOZZLE;
 MENU_ITEM_TEXT_P(STR_SEPARATOR);
 MENU_ITEM_TEXT_P(_i("Checks:"));

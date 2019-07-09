@@ -6,6 +6,15 @@
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
+//-//
+#include <avr/pgmspace.h>
+extern const uint16_t _nPrinterType;
+extern const char _sPrinterName[] PROGMEM;
+extern const uint16_t _nPrinterMmuType;
+extern const char _sPrinterMmuName[] PROGMEM;
+extern uint16_t nPrinterType;
+extern PGM_P sPrinterName;
+
 // Firmware version
 #define FW_VERSION "3.7.1"
 #define FW_COMMIT_NR   2266

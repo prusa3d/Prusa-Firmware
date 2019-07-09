@@ -84,6 +84,14 @@ enum class ClCheckGcode:uint_least8_t
     _Undef=EEPROM_EMPTY_VALUE
 };
 
+#define COMPARE_VALUE_EQUAL (((uint8_t)ClCompareValue::_Equal<<6)+((uint8_t)ClCompareValue::_Equal<<4)+((uint8_t)ClCompareValue::_Equal<<2)+((uint8_t)ClCompareValue::_Equal))
+enum class ClCompareValue:uint_least8_t
+{
+    _Less=0,
+    _Equal=1,
+    _Greater=2
+};
+
 extern ClNozzleDiameter oNozzleDiameter;
 extern ClCheckMode oCheckMode;
 extern ClCheckModel oCheckModel;
@@ -96,5 +104,7 @@ void printer_model_check(uint16_t nPrinterModel);
 void printer_smodel_check(char* pStrPos);
 void fw_version_check(const char *pVersion);
 void gcode_level_check(uint16_t nGcodeLevel);
+
+void fSetMmuMode(bool bMMu);
 
 #endif /* UTIL_H */

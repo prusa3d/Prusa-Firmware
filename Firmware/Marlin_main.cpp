@@ -43,8 +43,10 @@
  *
  */
 
+//-//
+#include "Configuration.h"
 #include "Marlin.h"
-
+  
 #ifdef ENABLE_AUTO_BED_LEVELING
 #include "vector_3.h"
   #ifdef AUTO_BED_LEVELING_GRID
@@ -1646,11 +1648,11 @@ void setup()
   }
 #endif //UVLO_SUPPORT
   fCheckModeInit();
+  fSetMmuMode(mmu_enabled);
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
 #endif //WATCHDOG
-
 }
 
 
@@ -6894,12 +6896,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                          nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
                          nozzle_diameter_check(nDiameter);
                          }
+/*
                     else if(code_seen('S')&&farm_mode)
                          {
                          nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
                          eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)ClNozzleDiameter::_Diameter_Undef); // for correct synchronization after farm-mode exiting
                          eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
                          }
+*/
                     else if(code_seen('Q'))
                          SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
                     break;
@@ -6911,13 +6915,13 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                          printer_model_check(nPrinterModel);
                          }
                     else if(code_seen('Q'))
-                         SERIAL_PROTOCOLLN(PRINTER_TYPE);
+                         SERIAL_PROTOCOLLN(nPrinterType);
                     break;
                case ClPrintChecking::_Smodel:     // ~ .3
                     if(code_seen('P'))
                          printer_smodel_check(strchr_pointer);
                     else if(code_seen('Q'))
-                         SERIAL_PROTOCOLLN(PRINTER_NAME);
+                         SERIAL_PROTOCOLLNRPGM(sPrinterName);
                     break;
                case ClPrintChecking::_Version:    // ~ .4
                     if(code_seen('P'))
