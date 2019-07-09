@@ -201,7 +201,6 @@ static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
 #define EEPROM_LAST_ITEM EEPROM_SHEETS_BASE
-
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
@@ -224,6 +223,8 @@ static_assert(EEPROM_FIRMWARE_VERSION_END < 20, "Firmware version EEPROM address
 static constexpr M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf*>(20); //offset for storing settings using M500
 static_assert(((sizeof(M500_conf) + 20) < EEPROM_LAST_ITEM), "M500_conf address space conflicts with previous items.");
 #endif
+
+#undef EEPROM_SHEETS_BASE
 
 enum
 {
