@@ -196,15 +196,16 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_CHECK_MODE (EEPROM_MMU_STEALTH-1) // uint8
 #define EEPROM_NOZZLE_DIAMETER (EEPROM_CHECK_MODE-1) // uint8
 #define EEPROM_NOZZLE_DIAMETER_uM (EEPROM_NOZZLE_DIAMETER-2) // uint16
-#define EEPROM_CHECK_MODEL (EEPROM_NOZZLE_DIAMETER_uM-1) // uint8
-#define EEPROM_CHECK_VERSION (EEPROM_CHECK_MODEL-1) // uint8
-#define EEPROM_CHECK_GCODE (EEPROM_CHECK_VERSION-1) // uint8
 
 #define EEPROM_SHEETS_BASE (EEPROM_NOZZLE_DIAMETER_uM - EEPROM_SHEETS_SIZEOF) // Sheets
 static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
 
+#define EEPROM_CHECK_MODEL (EEPROM_SHEETS_BASE-1) // uint8
+#define EEPROM_CHECK_VERSION (EEPROM_CHECK_MODEL-1) // uint8
+#define EEPROM_CHECK_GCODE (EEPROM_CHECK_VERSION-1) // uint8
+
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
-#define EEPROM_LAST_ITEM EEPROM_SHEETS_BASE
+#define EEPROM_LAST_ITEM EEPROM_CHECK_GCODE
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
