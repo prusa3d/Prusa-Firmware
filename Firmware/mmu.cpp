@@ -267,9 +267,9 @@ void mmu_loop(void)
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
-//-//
-// ... PrinterType/Name
-fSetMmuMode(true);
+            //-//
+            // ... PrinterType/Name
+            fSetMmuMode(true);
 			mmu_state = S::Idle;
 		}
 		return;
