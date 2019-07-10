@@ -143,6 +143,9 @@ void lcd_ignore_click(bool b=true);
 void lcd_commands();
 
 
+extern bool bSettings;                            // flag (i.e. 'fake parameter') for 'lcd_checkink_menu()' function
+
+
 void change_extr(int extr);
 
 #ifdef SNMM

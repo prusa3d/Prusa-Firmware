@@ -15,6 +15,8 @@
 #include <avr/pgmspace.h>
 #include "io_atmega2560.h"
 #include "AutoDeplete.h"
+//-//
+#include "util.h"
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -265,6 +267,9 @@ void mmu_loop(void)
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
+            //-//
+            // ... PrinterType/Name
+            fSetMmuMode(true);
 			mmu_state = S::Idle;
 		}
 		return;
@@ -833,7 +838,7 @@ void mmu_M600_wait_and_beep() {
 			}
 			SET_OUTPUT(BEEPER);
 			if (counterBeep == 0) {
-				if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
+				if((eSoundMode==e_SOUND_MODE_BLIND)|| (eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
 				{
 					bFirst=false;
 					WRITE(BEEPER, HIGH);

@@ -11,8 +11,7 @@
 #include "ultralcd.h"
 #include "language.h"
 #include "static_assert.h"
-
-
+#include "sound.h"
 
 extern int32_t lcd_encoder;
 
@@ -65,7 +64,11 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 void menu_start(void)
 {
     if (lcd_encoder > 0x8000) lcd_encoder = 0;
-    if (lcd_encoder < 0) lcd_encoder = 0;
+    if (lcd_encoder < 0)
+    {
+        lcd_encoder = 0;
+		Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+    }
     if (lcd_encoder < menu_top)
 		menu_top = lcd_encoder;
     menu_line = menu_top;
@@ -75,7 +78,10 @@ void menu_start(void)
 void menu_end(void)
 {
 	if (lcd_encoder >= menu_item)
+	{
 		lcd_encoder = menu_item - 1;
+		Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+	}
 	if (((uint8_t)lcd_encoder) >= menu_top + LCD_HEIGHT)
 	{
 		menu_top = lcd_encoder - LCD_HEIGHT + 1;

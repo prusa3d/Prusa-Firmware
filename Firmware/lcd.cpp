@@ -772,7 +772,15 @@ uint8_t lcd_clicked(void)
 
 void lcd_beeper_quick_feedback(void)
 {
-	Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+//-//
+Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
+/*
+	for(int8_t i = 0; i < 10; i++)
+	{
+		Sound_MakeCustom(100,0,false);
+		delayMicroseconds(100);
+	}
+*/
 }
 
 void lcd_quick_feedback(void)
