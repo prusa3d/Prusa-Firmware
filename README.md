@@ -14,8 +14,8 @@
 
 # Build
 ## Linux
-Run shell script build.sh to build for MK3 and flash with Sli3er.  
-If you have different printel model, follow step [2.b](#2b) from Windows build first.  
+Run shell script build.sh to build for MK3 and flash with Slic3er.  
+If you have a different printer model, follow step [2.b](#2b) from Windows build first.  
 If you wish to flash from Arduino, follow step [2.c](#2c) from Windows build first.  
 
 The script downloads Arduino with our modifications and Rambo board support installed, unpacks it into folder PF-build-env-\<version\> on the same level, as your Prusa-Firmware folder is located, builds firmware for MK3 using that Arduino in Prusa-Firmware-build folder on the same level as Prusa-Firmware, runs secondary language support scripts. Firmware with secondary language support is generated in lang subfolder. Use firmware.hex for MK3 variant. Use firmware_\<lang\>.hex for other printers. Don't forget to follow step [2.b](#2b) first for non-MK3 printers.
@@ -40,11 +40,11 @@ type location
 or you can 'manually' modify the item  
 `"boardsmanager.additional.urls=....."`  
 at the file `"preferences.txt"` (this parameter allows you to write a comma-separated list of addresses)  
-_note: you can find location of this file on your disk by following way:  
+_note: you can find location of this file on your disk by doing the following:  
 `File->Preferences->Settings`  (`"More preferences can be edited in file ..."`)_  
-than do it  
+then choose 
 `Tools->Board->BoardsManager`  
-from viewed list select an item `"RAMBo"` (will probably be labeled as `"RepRap Arduino-compatible Mother Board (RAMBo) by UltiMachine"`  
+from viewed list and select the item labeled `"RAMBo"` (will probably be labeled as `"RepRap Arduino-compatible Mother Board (RAMBo) by UltiMachine"`  
 _note: select this item for any variant of board used in printers `'Prusa i3 MKx'`, that is for `RAMBo-mini x.y` and `EINSy x.y` to_  
 'clicking' the item will display the installation button; select choice `"1.0.1"` from the list(last known version as of the date of issue of this document)  
 _(after installation, the item is labeled as `"INSTALLED"` and can then be used for target board selection)_  
@@ -66,7 +66,7 @@ b.<a name="2b"></a> In the subdirectory `"Firmware/variants/"` select the config
 
 c.<a name="2c"></a> In file `"Firmware/config.h"` set LANG_MODE to 0.
 
-run `"Arduino IDE"`; select the file `"Firmware.ino"` from the subdirectory `"Firmware/"` at the location, where you placed the source codes  
+run `"Arduino IDE"`; select the file `"Firmware.ino"` from the subdirectory `"Firmware/"` at the location, where you placed the source code  
 `File->Open`  
 make the desired code customizations; **all changes are on your own risk!**  
 
@@ -146,7 +146,7 @@ cmake
 build system - ninja or gnu make
 
 ## Building
-Create folder where you want to build tests.
+Create a folder where you want to build tests.
 
 Example:
 

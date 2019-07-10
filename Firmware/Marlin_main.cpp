@@ -356,7 +356,6 @@ unsigned long starttime=0;
 unsigned long stoptime=0;
 unsigned long _usb_timer = 0;
 
-
 bool extruder_under_pressure = true;
 
 
@@ -1078,6 +1077,7 @@ void setup()
 	SERIAL_ECHO_START;
 	printf_P(PSTR(" " FW_VERSION_FULL "\n"));
 
+	//SERIAL_ECHOPAIR("Active sheet before:", static_cast<unsigned long int>(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))));
 
 #ifdef DEBUG_SEC_LANG
 	lang_table_header_t header;
@@ -1426,20 +1426,7 @@ void setup()
 		printf_P(PSTR("Card NG!\n"));
 #endif //DEBUG_SD_SPEED_TEST
 
-	if (eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_POWER_COUNT, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_X, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_CRASH_COUNT_Y, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) == 0xff) eeprom_write_byte((uint8_t*)EEPROM_FERROR_COUNT, 0);
-	if (eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_POWER_COUNT_TOT, 0);
-	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT, 0);
-	if (eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT, 0);
-	if (eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) == 0xffff) eeprom_write_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, 0);
-
-	if (eeprom_read_word((uint16_t*)EEPROM_MMU_FAIL_TOT) == 0xffff) eeprom_update_word((uint16_t *)EEPROM_MMU_FAIL_TOT, 0);
-	if (eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) == 0xffff) eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
-	if (eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
-
+    eeprom_init();
 #ifdef SNMM
 	if (eeprom_read_dword((uint32_t*)EEPROM_BOWDEN_LENGTH) == 0x0ffffffff) { //bowden length used for SNMM
 	  int _z = BOWDEN_LENGTH;
@@ -1506,7 +1493,6 @@ void setup()
 		SilentModeMenu_MMU = 1;
 		eeprom_write_byte((uint8_t*)EEPROM_MMU_STEALTH, SilentModeMenu_MMU);
 	}
-	check_babystep(); //checking if Z babystep is in allowed range
 
 #if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1
 	setup_fan_interrupt();
@@ -3161,7 +3147,7 @@ static void gcode_M600(bool automatic, float x_position, float y_position, float
 #endif //IR_SENSOR
 
     lcd_setstatuspgm(_T(WELCOME_MSG));
-    custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+    custom_message_type = CustomMsg::Status;
 }
 
 //! @brief Rise Z if too low to avoid blob/jam before filament loading
@@ -3177,6 +3163,11 @@ void gcode_M701()
 {
 	printf_P(PSTR("gcode_M701 begin\n"));
 
+	if (farm_mode)
+	{
+		prusa_statistics(22);
+	}
+
 	if (mmu_enabled) 
 	{
 		extr_adj(tmp_extruder);//loads current extruder
@@ -3185,7 +3176,7 @@ void gcode_M701()
 	else
 	{
 		enable_z();
-		custom_message_type = CUSTOM_MSG_TYPE_F_LOAD;
+		custom_message_type = CustomMsg::FilamentLoading;
 
 #ifdef FSENSOR_QUALITY
 		fsensor_oq_meassure_start(40);
@@ -3215,7 +3206,7 @@ void gcode_M701()
 		lcd_setstatuspgm(_T(WELCOME_MSG));
 		disable_z();
 		loading_flag = false;
-		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+		custom_message_type = CustomMsg::Status;
 
 #ifdef FSENSOR_QUALITY
         fsensor_oq_meassure_stop();
@@ -4264,7 +4255,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 //			setTargetHotend(200, 0);
 			setTargetBed(70 + (start_temp - 30));
 
-			custom_message_type = CUSTOM_MSG_TYPE_TEMCAL;
+			custom_message_type = CustomMsg::TempCal;
 			custom_message_state = 1;
 			lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
 			current_position[Z_AXIS] = MESH_HOME_Z_SEARCH;
@@ -4366,7 +4357,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			break;
 		}
 		puts_P(_N("PINDA probe calibration start"));
-		custom_message_type = CUSTOM_MSG_TYPE_TEMCAL;
+		custom_message_type = CustomMsg::TempCal;
 		custom_message_state = 1;
 		lcd_setstatuspgm(_T(MSG_TEMP_CALIBRATION));
 		current_position[X_AXIS] = PINDA_PREHEAT_X;
@@ -4434,7 +4425,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			
 		
 		}
-		custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+		custom_message_type = CustomMsg::Status;
 
 		eeprom_update_byte((uint8_t*)EEPROM_CALIBRATION_STATUS_PINDA, 1);
 		puts_P(_N("Temperature calibration done."));
@@ -4494,7 +4485,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			// We don't know where we are! HOME!
 			// Push the commands to the front of the message queue in the reverse order!
 			// There shall be always enough space reserved for these commands.
-			if (lcd_commands_type != LCD_COMMAND_STOP_PRINT) {
+			if (lcd_commands_type != LcdCommands::StopPrint) {
 				repeatcommand_front(); // repeat G80 with all its parameters
 				enquecommand_front_P((PSTR("G28 W0")));
 			}
@@ -4534,7 +4525,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 
 		if (temp_comp_start)
 		if (run == false && temp_cal_active == true && calibration_status_pinda() == true && target_temperature_bed >= 50) {
-			if (lcd_commands_type != LCD_COMMAND_STOP_PRINT) {
+			if (lcd_commands_type != LcdCommands::StopPrint) {
 				temp_compensation_start();
 				run = true;
 				repeatcommand_front(); // repeat G80 with all its parameters
@@ -4546,14 +4537,14 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 			break;
 		}
 		run = false;
-		if (lcd_commands_type == LCD_COMMAND_STOP_PRINT) {
+		if (lcd_commands_type == LcdCommands::StopPrint) {
 			mesh_bed_leveling_flag = false;
 			break;
 		}
 		// Save custom message state, set a new custom message state to display: Calibrating point 9.
-		unsigned int custom_message_type_old = custom_message_type;
+		CustomMsg custom_message_type_old = custom_message_type;
 		unsigned int custom_message_state_old = custom_message_state;
-		custom_message_type = CUSTOM_MSG_TYPE_MESHBL;
+		custom_message_type = CustomMsg::MeshBedLeveling;
 		custom_message_state = (nMeasPoints * nMeasPoints) + 10;
 		lcd_update(1);
 
@@ -4753,7 +4744,7 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
                     enable_z_endstop(bState);
                     } while (st_get_position_mm(Z_AXIS) > MESH_HOME_Z_SEARCH); // i.e. Z-leveling not o.k.
 //               plan_set_z_position(MESH_HOME_Z_SEARCH); // is not necessary ('do-while' loop always ends at the expected Z-position)
-               custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
+               custom_message_type=CustomMsg::Status; // display / status-line recovery
                lcd_update_enable(true);           // display / status-line recovery
                gcode_G28(true, true, true);       // X & Y & Z-homing (must be after individual Z-homing (problem with spool-holder)!)
                repeatcommand_front();             // re-run (i.e. of "G80")
@@ -6000,7 +5991,7 @@ Sigma_Exit:
           SERIAL_PROTOCOLLNRPGM(FW_VERSION_STR_P());
       } else if (code_seen('U')) {
           // Check the firmware version provided. If the firmware version provided by the U code is higher than the currently running firmware,
-          // pause the print and ask the user to upgrade the firmware.
+          // pause the print for 30s and ask the user to upgrade the firmware.
           show_upgrade_dialog_if_version_newer(++ strchr_pointer);
       } else {
           SERIAL_ECHOPGM("FIRMWARE_NAME:Prusa-Firmware ");
@@ -7824,9 +7815,9 @@ bool bInhibitFlag;
 #ifdef IR_SENSOR
           bInhibitFlag=(menu_menu==lcd_menu_show_sensors_state); // Support::SensorInfo menu active
 #endif // IR_SENSOR
-          if ((mcode_in_progress != 600) && (eFilamentAction != e_FILAMENT_ACTION_autoLoad) && (!bInhibitFlag)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
+          if ((mcode_in_progress != 600) && (eFilamentAction != FilamentAction::AutoLoad) && (!bInhibitFlag)) //M600 not in progress, preHeat @ autoLoad menu not active, Support::ExtruderInfo/SensorInfo menu not active
 		{
-			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LCD_COMMAND_V2_CAL) && !wizard_active)
+			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal) && !wizard_active)
 			{
 				if (fsensor_check_autoload())
 				{
@@ -7850,7 +7841,7 @@ if(0)
 						show_preheat_nozzle_warning();
 						lcd_update_enable(true);
 */
-                              eFilamentAction=e_FILAMENT_ACTION_autoLoad;
+                              eFilamentAction=FilamentAction::AutoLoad;
                               bFilamentFirstRun=false;
                               if(target_temperature[0]>=EXTRUDE_MINTEMP)
                               {
@@ -8249,12 +8240,15 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
 
 void check_babystep()
 {
-	int babystep_z;
-	EEPROM_read_B(EEPROM_BABYSTEP_Z, &babystep_z);
+	int babystep_z = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+            s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)));
+
 	if ((babystep_z < Z_BABYSTEP_MIN) || (babystep_z > Z_BABYSTEP_MAX)) {
 		babystep_z = 0; //if babystep value is out of min max range, set it to 0
 		SERIAL_ECHOLNPGM("Z live adjust out of range. Setting to 0");
-		EEPROM_save_B(EEPROM_BABYSTEP_Z, &babystep_z);
+		eeprom_write_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+            s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),
+                    babystep_z);
 		lcd_show_fullscreen_message_and_wait_P(PSTR("Z live adjust out of range. Setting to 0. Click to continue."));
 		lcd_update_enable(true);		
 	}	
@@ -8324,7 +8318,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 	float bed_zero_ref_y = (-0.6f + Y_PROBE_OFFSET_FROM_EXTRUDER);
 
 	float mesh_home_z_search = 4;
-	float measure_z_heigth = 0.2f;
+	float measure_z_height = 0.2f;
 	float row[x_points_num];
 	int ix = 0;
 	int iy = 0;
@@ -8341,7 +8335,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 
 	unsigned int custom_message_type_old = custom_message_type;
 	unsigned int custom_message_state_old = custom_message_state;
-	custom_message_type = CUSTOM_MSG_TYPE_MESHBL;
+	custom_message_type = CustomMsg::MeshBedLeveling;
 	custom_message_state = (x_points_num * y_points_num) + 10;
 	lcd_update(1);
 
@@ -8359,7 +8353,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 	}
 	st_synchronize();
 	*/
-		destination[Z_AXIS] = measure_z_heigth;
+		destination[Z_AXIS] = measure_z_height;
 		plan_buffer_line(destination[X_AXIS], destination[Y_AXIS], destination[Z_AXIS], destination[E_AXIS], Z_LIFT_FEEDRATE, active_extruder);
 		for(int8_t i=0; i < NUM_AXIS; i++) {
 			current_position[i] = destination[i];
@@ -8539,7 +8533,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	}
 	unsigned int custom_message_type_old = custom_message_type;
 	unsigned int custom_message_state_old = custom_message_state;
-	custom_message_type = CUSTOM_MSG_TYPE_MESHBL;
+	custom_message_type = CustomMsg::MeshBedLeveling;
 	custom_message_state = (x_points_num * y_points_num) + 10;
 	lcd_update(1);
 
@@ -8689,7 +8683,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 
 void temp_compensation_start() {
 	
-	custom_message_type = CUSTOM_MSG_TYPE_TEMPRE;
+	custom_message_type = CustomMsg::TempCompPreheat;
 	custom_message_state = PINDA_HEAT_T + 1;
 	lcd_update(2);
 	if (degHotend(active_extruder) > EXTRUDE_MINTEMP) {
@@ -8710,7 +8704,7 @@ void temp_compensation_start() {
 		if (custom_message_state == 99 || custom_message_state == 9) lcd_update(2); //force whole display redraw if number of digits changed
 		else lcd_update(1);
 	}	
-	custom_message_type = CUSTOM_MSG_TYPE_STATUS;
+	custom_message_type = CustomMsg::Status;
 	custom_message_state = 0;
 }
 
@@ -9099,8 +9093,7 @@ ISR(INT4_vect) {
 	EIMSK &= ~(1 << 4); //disable INT4 interrupt to make sure that this code will be executed just once 
 	SERIAL_ECHOLNPGM("INT4");
     //fire normal uvlo only in case where EEPROM_UVLO is 0 or if IS_SD_PRINTING is 1. 
-    //Don't change || to && because in some case the printer can be moving although IS_SD_PRINTING is zero
-     if((IS_SD_PRINTING ) || (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))) uvlo_();
+     if(PRINTER_ACTIVE && (!(eeprom_read_byte((uint8_t*)EEPROM_UVLO)))) uvlo_();
      if(eeprom_read_byte((uint8_t*)EEPROM_UVLO)) uvlo_tiny();
 }
 

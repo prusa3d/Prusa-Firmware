@@ -598,7 +598,7 @@ void get_command()
         if (farm_mode)
         {
             prusa_statistics(6);
-            lcd_commands_type = LCD_COMMAND_FARM_MODE_CONFIRM;
+            lcd_commands_type = LcdCommands::FarmModeConfirm;
         }
 
       }
