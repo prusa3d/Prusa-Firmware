@@ -407,8 +407,6 @@ extern void calculate_extruder_multipliers();
 // Similar to the default Arduino delay function, 
 // but it keeps the background tasks running.
 extern void delay_keep_alive(unsigned int ms);
-// same but this need to be used when calling delay from lcd_update() else stack owerflow can occur
-extern void delay_keep_alive_no_lcd_update(unsigned int ms);
 
 extern void check_babystep();
 
