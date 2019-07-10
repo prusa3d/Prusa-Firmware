@@ -229,8 +229,6 @@ static constexpr M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf
 static_assert(((sizeof(M500_conf) + 20) < EEPROM_LAST_ITEM), "M500_conf address space conflicts with previous items.");
 #endif
 
-#undef EEPROM_SHEETS_BASE
-
 enum
 {
     EEPROM_MMU_CUTTER_ENABLED_enabled = 1,
