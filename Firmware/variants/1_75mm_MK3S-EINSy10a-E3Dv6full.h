@@ -2,12 +2,16 @@
 #define CONFIGURATION_PRUSA_H
 
 #include <limits.h>
+#include "printers.h"
 /*------------------------------------
  GENERAL SETTINGS
  *------------------------------------*/
 
 // Printer revision
 #define PRINTER_TYPE PRINTER_MK3S
+#define PRINTER_NAME PRINTER_MK3S_NAME
+#define PRINTER_MMU_TYPE PRINTER_MK3S_MMU2
+#define PRINTER_MMU_NAME PRINTER_MK3S_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK3"
 #define NOZZLE_TYPE "E3Dv6full"
 
@@ -131,6 +135,7 @@
 // Safety timer
 #define SAFETYTIMER
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
+#define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
 // Filament sensor
 #define FILAMENT_SENSOR
@@ -190,7 +195,7 @@
 #define LINEARITY_CORRECTION
 #define TMC2130_LINEARITY_CORRECTION
 #define TMC2130_LINEARITY_CORRECTION_XYZ
-//#define TMC2130_VARIABLE_RESOLUTION
+#define TMC2130_VARIABLE_RESOLUTION
 
 
 
@@ -480,7 +485,7 @@
  *------------------------------------*/
 
 #define FARM_PREHEAT_HOTEND_TEMP 250
-#define FARM_PREHEAT_HPB_TEMP 60
+#define FARM_PREHEAT_HPB_TEMP 80
 #define FARM_PREHEAT_FAN_SPEED 0
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
@@ -627,6 +632,14 @@
 #define MMU_HWRESET
 #define MMU_DEBUG //print communication between MMU2 and printer on serial
 //#define MMU_HAS_CUTTER
+
+// This is experimental feature requested by our test department.
+// There is no known use for ordinary user. If enabled by this macro
+// and enabled from printer menu (not enabled by default). It cuts filament
+// every time when switching filament from gcode. MMU_HAS_CUTTER needs to be
+// defined.
+
+//#define MMU_ALWAYS_CUT
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
 
 #endif //__CONFIGURATION_PRUSA_H

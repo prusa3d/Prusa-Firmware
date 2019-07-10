@@ -8,13 +8,14 @@
      * [Using Git-bash](#using-git-bash-under-windows-10-64-bit)
    * [Automated tests](#3-automated-tests)
    * [Documentation](#4-documentation)
+   * [FAQ](#5-faq)
 <!--te-->
 
 
 # Build
 ## Linux
-Run shell script build.sh to build for MK3 and flash with Sli3er.  
-If you have different printel model, follow step [2.b](#2b) from Windows build first.  
+Run shell script build.sh to build for MK3 and flash with Slic3er.  
+If you have a different printer model, follow step [2.b](#2b) from Windows build first.  
 If you wish to flash from Arduino, follow step [2.c](#2c) from Windows build first.  
 
 The script downloads Arduino with our modifications and Rambo board support installed, unpacks it into folder PF-build-env-\<version\> on the same level, as your Prusa-Firmware folder is located, builds firmware for MK3 using that Arduino in Prusa-Firmware-build folder on the same level as Prusa-Firmware, runs secondary language support scripts. Firmware with secondary language support is generated in lang subfolder. Use firmware.hex for MK3 variant. Use firmware_\<lang\>.hex for other printers. Don't forget to follow step [2.b](#2b) first for non-MK3 printers.
@@ -39,11 +40,11 @@ type location
 or you can 'manually' modify the item  
 `"boardsmanager.additional.urls=....."`  
 at the file `"preferences.txt"` (this parameter allows you to write a comma-separated list of addresses)  
-_note: you can find location of this file on your disk by following way:  
+_note: you can find location of this file on your disk by doing the following:  
 `File->Preferences->Settings`  (`"More preferences can be edited in file ..."`)_  
-than do it  
+then choose 
 `Tools->Board->BoardsManager`  
-from viewed list select an item `"RAMBo"` (will probably be labeled as `"RepRap Arduino-compatible Mother Board (RAMBo) by UltiMachine"`  
+from viewed list and select the item labeled `"RAMBo"` (will probably be labeled as `"RepRap Arduino-compatible Mother Board (RAMBo) by UltiMachine"`  
 _note: select this item for any variant of board used in printers `'Prusa i3 MKx'`, that is for `RAMBo-mini x.y` and `EINSy x.y` to_  
 'clicking' the item will display the installation button; select choice `"1.0.1"` from the list(last known version as of the date of issue of this document)  
 _(after installation, the item is labeled as `"INSTALLED"` and can then be used for target board selection)_  
@@ -52,6 +53,9 @@ _(after installation, the item is labeled as `"INSTALLED"` and can then be used 
 add "-Wl,-u,vfprintf -lprintf_flt -lm" to "compiler.c.elf.flags=" before existing flag "-Wl,--gc-sections"  
 example:  
 `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
+The file can be found in Arduino instalation directory, or after Arduino has been updated at:  
+"C:\Users\(user)\AppData\Local\Arduino15\packages\arduino\hardware\avr\(version)"
+If you can locate the file in both places, file from user profile is probably used.
 
 #### 2. Source code compilation
 
@@ -62,7 +66,7 @@ b.<a name="2b"></a> In the subdirectory `"Firmware/variants/"` select the config
 
 c.<a name="2c"></a> In file `"Firmware/config.h"` set LANG_MODE to 0.
 
-run `"Arduino IDE"`; select the file `"Firmware.ino"` from the subdirectory `"Firmware/"` at the location, where you placed the source codes  
+run `"Arduino IDE"`; select the file `"Firmware.ino"` from the subdirectory `"Firmware/"` at the location, where you placed the source code  
 `File->Open`  
 make the desired code customizations; **all changes are on your own risk!**  
 
@@ -106,6 +110,9 @@ Now your Ubuntu subsystem is ready to use the automatic `PF-build.sh` script and
   - Example: You files are under `C:\Users\<your-username>\Downloads\Prusa-Firmware-MK3`
   - use under Ubuntu the following command `cd /mnt/c/Users/<your-username>/Downloads/Prusa-Firmware-MK3`
     to change to the right folder
+- Unix and windows have different line endings (LF vs CRLF), try dos2unix to convert
+  - This should fix the `"$'\r': command not found"` error
+  - to install run `apt-get install dos2unix`
 
 #### Compile Prusa-firmware with Ubuntu Linux subsystem installed
 - open Ubuntu bash
@@ -139,7 +146,7 @@ cmake
 build system - ninja or gnu make
 
 ## Building
-Create folder where you want to build tests.
+Create a folder where you want to build tests.
 
 Example:
 
@@ -170,3 +177,20 @@ Example:
 
 # 4. Documentation
 run [doxygen](http://www.doxygen.nl/) in Firmware folder
+
+# 5. FAQ
+Q:I built firmware using Arduino and I see "?" instead of numbers in printer user interface.
+
+A:Step 1.c was ommited or you updated Arduino and now platform.txt located somewhere in your user profile is used.
+
+Q:I built firmware using Arduino and printer now speaks Klingon (nonsense characters and symbols are displayed @^#$&*°;~ÿ)
+
+A:Step 2.c was omitted.
+
+Q:What environment does Prusa use to build the firmware in the first place?
+
+A:Our production builds are 99.9% equivalent to https://github.com/prusa3d/Prusa-Firmware#linux this is also easiest way to build as only one step is needed - run single script, which downloads patched Arduino from github, builds using it, then extracts translated strings and creates language variants (for MK2x) or language hex file for external SPI flash (MK3x). But you need Linux or Linux in virtual machine. This is also what happens when you open pull request to our repository - all variants are built by Travis http://travis-ci.org/ (to check for compilation errors). You can see, what is happening in .travis.yml. It would be also possible to get hex built by travis, only deploy step is missing in .travis.yml. You can get inspiration how to deploy hex by travis and how to setup travis in https://github.com/prusa3d/MM-control-01/ repository. Final hex is located in ./lang/firmware.hex Community reproduced this for Windows in https://github.com/prusa3d/Prusa-Firmware#using-linux-subsystem-under-windows-10-64-bit or https://github.com/prusa3d/Prusa-Firmware#using-git-bash-under-windows-10-64-bit .
+
+Q:Why are build instructions for Arduino mess.
+
+Y:We are too lazy to ship proper board definition for Arduino. We plan to swich to cmake + ninja to be inherently multiplatform, easily integrate build tools, suport more IDEs, get 10 times shorter build times and be able to update compiler whenewer we want.

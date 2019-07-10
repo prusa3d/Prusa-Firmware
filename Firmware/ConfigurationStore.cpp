@@ -11,6 +11,11 @@
 #include "mesh_bed_leveling.h"
 #endif
 
+#ifdef TMC2130
+#include "tmc2130.h"
+#endif
+
+
 M500_conf cs;
 
 //! @brief Write data to EEPROM
@@ -86,6 +91,7 @@ void Config_PrintSettings(uint8_t level)
 #ifdef TMC2130
 	printf_P(PSTR(
 		"%SSteps per unit:\n%S  M92 X%.2f Y%.2f Z%.2f E%.2f\n"
+        "%SUStep resolution: \n%S M350 X%d Y%d Z%d E%d\n"
 		"%SMaximum feedrates - normal (mm/s):\n%S  M203 X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SMaximum feedrates - stealth (mm/s):\n%S  M203 X%.2f Y%.2f Z%.2f E%.2f\n"
 		"%SMaximum acceleration - normal (mm/s2):\n%S  M201 X%lu Y%lu Z%lu E%lu\n"
@@ -95,6 +101,7 @@ void Config_PrintSettings(uint8_t level)
 		"%SHome offset (mm):\n%S  M206 X%.2f Y%.2f Z%.2f\n"
 		),
 		echomagic, echomagic, cs.axis_steps_per_unit[X_AXIS], cs.axis_steps_per_unit[Y_AXIS], cs.axis_steps_per_unit[Z_AXIS], cs.axis_steps_per_unit[E_AXIS],
+		echomagic, echomagic, cs.axis_ustep_resolution[X_AXIS], cs.axis_ustep_resolution[Y_AXIS], cs.axis_ustep_resolution[Z_AXIS], cs.axis_ustep_resolution[E_AXIS],
 		echomagic, echomagic, cs.max_feedrate_normal[X_AXIS], cs.max_feedrate_normal[Y_AXIS], cs.max_feedrate_normal[Z_AXIS], cs.max_feedrate_normal[E_AXIS],
 		echomagic, echomagic, cs.max_feedrate_silent[X_AXIS], cs.max_feedrate_silent[Y_AXIS], cs.max_feedrate_silent[Z_AXIS], cs.max_feedrate_silent[E_AXIS],
 		echomagic, echomagic, cs.max_acceleration_units_per_sq_second_normal[X_AXIS], cs.max_acceleration_units_per_sq_second_normal[Y_AXIS], cs.max_acceleration_units_per_sq_second_normal[Z_AXIS], cs.max_acceleration_units_per_sq_second_normal[E_AXIS],
@@ -177,7 +184,7 @@ static_assert (false, "zprobe_zoffset was not initialized in printers in field t
         "0.0, if this is not acceptable, increment EEPROM_VERSION to force use default_conf");
 #endif
 
-static_assert (sizeof(M500_conf) == 188, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
+static_assert (sizeof(M500_conf) == 192, "sizeof(M500_conf) has changed, ensure that EEPROM_VERSION has been incremented, "
         "or if you added members in the end of struct, ensure that historically uninitialized values will be initialized."
         "If this is caused by change to more then 8bit processor, decide whether make this struct packed to save EEPROM,"
         "leave as it is to keep fast code, or reorder struct members to pack more tightly.");
@@ -220,6 +227,11 @@ static const M500_conf default_conf PROGMEM =
     },
     DEFAULT_MAX_FEEDRATE_SILENT,
     DEFAULT_MAX_ACCELERATION_SILENT,
+#ifdef TMC2130
+    { TMC2130_USTEPS_XY, TMC2130_USTEPS_XY, TMC2130_USTEPS_Z, TMC2130_USTEPS_E },
+#else // TMC2130
+    {16,16,16,16},
+#endif
 };
 
 //! @brief Read M500 configuration
@@ -269,6 +281,16 @@ bool Config_RetrieveSettings()
 			if (cs.max_acceleration_units_per_sq_second_silent[j] > SILENT_MAX_ACCEL_XY)
 				cs.max_acceleration_units_per_sq_second_silent[j] = SILENT_MAX_ACCEL_XY;
 		}
+        
+		if(cs.axis_ustep_resolution[X_AXIS] == 0xff){ cs.axis_ustep_resolution[X_AXIS] = TMC2130_USTEPS_XY; }
+		if(cs.axis_ustep_resolution[Y_AXIS] == 0xff){ cs.axis_ustep_resolution[Y_AXIS] = TMC2130_USTEPS_XY; }
+		if(cs.axis_ustep_resolution[Z_AXIS] == 0xff){ cs.axis_ustep_resolution[Z_AXIS] = TMC2130_USTEPS_Z; }
+		if(cs.axis_ustep_resolution[E_AXIS] == 0xff){ cs.axis_ustep_resolution[E_AXIS] = TMC2130_USTEPS_E; }
+
+		tmc2130_set_res(X_AXIS, cs.axis_ustep_resolution[X_AXIS]);
+		tmc2130_set_res(Y_AXIS, cs.axis_ustep_resolution[Y_AXIS]);
+		tmc2130_set_res(Z_AXIS, cs.axis_ustep_resolution[Z_AXIS]);
+		tmc2130_set_res(E_AXIS, cs.axis_ustep_resolution[E_AXIS]);
 #endif //TMC2130
 
 		reset_acceleration_rates();

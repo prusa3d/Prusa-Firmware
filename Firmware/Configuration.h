@@ -6,14 +6,26 @@
 #define STR_HELPER(x) #x
 #define STR(x) STR_HELPER(x)
 
+//-//
+#include <avr/pgmspace.h>
+extern const uint16_t _nPrinterType;
+extern const char _sPrinterName[] PROGMEM;
+extern const uint16_t _nPrinterMmuType;
+extern const char _sPrinterMmuName[] PROGMEM;
+extern uint16_t nPrinterType;
+extern PGM_P sPrinterName;
+
 // Firmware version
-#define FW_VERSION "3.7.0"
-#define FW_COMMIT_NR   2201
+#define FW_VERSION "3.7.2-RC1"
+#define FW_COMMIT_NR   2359
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
 #define FW_DEV_VERSION FW_VERSION_UNKNOWN
 #define FW_REPOSITORY "Unknown"
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
+
+// G-code language level
+#define GCODE_LEVEL 1
 
 // Debug version has debugging enabled (the symbol DEBUG_BUILD is set).
 // The debug build may be a bit slower than the non-debug build, therefore the debug build should
@@ -479,6 +491,9 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // is too low, you should also increment SOFT_PWM_SCALE.
 #define FAN_SOFT_PWM
 #define FAN_SOFT_PWM_BITS 4 //PWM bit resolution = 4bits, freq = 62.5Hz
+
+// Bed soft pwm
+#define HEATER_BED_SOFT_PWM_BITS 5 //PWM bit resolution = 5bits, freq = 31.25Hz
 
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
