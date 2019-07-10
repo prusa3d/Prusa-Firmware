@@ -54,6 +54,7 @@ extern const char MSG_LOADING_FILAMENT[];
 extern const char MSG_M117_V2_CALIBRATION[];
 extern const char MSG_MAIN[];
 extern const char MSG_BACK[];
+extern const char MSG_SHEET[];
 extern const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[];
 extern const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[];
 extern const char MSG_MENU_CALIBRATION[];
@@ -100,6 +101,7 @@ extern const char MSG_WIZARD_DONE[];
 extern const char MSG_WIZARD_HEATING[];
 extern const char MSG_WIZARD_QUIT[];
 extern const char MSG_YES[];
+extern const char MSG_V2_CALIBRATION[];
 extern const char WELCOME_MSG[];
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];

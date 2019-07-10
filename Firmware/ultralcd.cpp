@@ -307,6 +307,7 @@ bool wait_for_unclick;
 #endif
 
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_checkink_menu()' function
 
 
 
@@ -988,6 +989,8 @@ static void lcd_status_screen()
 			{
 			case 8:
 				prusa_statistics(21);
+				if(loading_flag)
+					prusa_statistics(22);
 				break;
 			case 5:
 				if (IS_SD_PRINTING)
@@ -2683,10 +2686,12 @@ void lcd_alright() {
 
         if (cursor_pos > 3) {
           cursor_pos = 3;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
         }
 
         if (cursor_pos < 1) {
           cursor_pos = 1;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
         }
         lcd_set_cursor(0, 1);
         lcd_print(" ");
@@ -2697,6 +2702,7 @@ void lcd_alright() {
         lcd_set_cursor(0, cursor_pos);
         lcd_print(">");
         enc_dif = lcd_encoder_diff;
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
         _delay(100);
       }
 
@@ -2704,7 +2710,7 @@ void lcd_alright() {
 
 
     if (lcd_clicked()) {
-
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
       lcd_change_fil_state = cursor_pos;
       _delay(500);
 
@@ -3066,13 +3072,13 @@ static void lcd_move_z() {
  * other value leads to storing Z_AXIS
  * @param msg text to be displayed
  */
-static void _lcd_babystep(int axis, const char *msg) 
+static void lcd_babystep_z()
 {
 	typedef struct
-	{	// 19bytes total
-		int8_t status;                 // 1byte
-		int babystepMem[3];            // 6bytes
-		float babystepMemMM[3];        // 12bytes
+	{
+		int8_t status;
+		int16_t babystepMemZ;
+		float babystepMemMMZ;
 	} _menu_data_t;
 	static_assert(sizeof(menu_data)>= sizeof(_menu_data_t),"_menu_data_t doesn't fit into menu_data");
 	_menu_data_t* _md = (_menu_data_t*)&(menu_data[0]);
@@ -3082,18 +3088,20 @@ static void _lcd_babystep(int axis, const char *msg)
 		// Initialize its status.
 		_md->status = 1;
 		check_babystep();
-
-		EEPROM_read_B(EEPROM_BABYSTEP_X, &_md->babystepMem[0]);
-		EEPROM_read_B(EEPROM_BABYSTEP_Y, &_md->babystepMem[1]);
-		EEPROM_read_B(EEPROM_BABYSTEP_Z, &_md->babystepMem[2]);
+		
+		if(!is_sheet_initialized()){
+			_md->babystepMemZ = 0;
+		}
+		else{
+			_md->babystepMemZ = eeprom_read_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+					s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)));
+		}
 
 		// same logic as in babystep_load
 	    if (calibration_status() >= CALIBRATION_STATUS_LIVE_ADJUST)
-			_md->babystepMem[2] = 0;
+			_md->babystepMemZ = 0;
 
-		_md->babystepMemMM[0] = _md->babystepMem[0]/cs.axis_steps_per_unit[X_AXIS];
-		_md->babystepMemMM[1] = _md->babystepMem[1]/cs.axis_steps_per_unit[Y_AXIS];
-		_md->babystepMemMM[2] = _md->babystepMem[2]/cs.axis_steps_per_unit[Z_AXIS];
+		_md->babystepMemMMZ = _md->babystepMemZ/cs.axis_steps_per_unit[Z_AXIS];
 		lcd_draw_update = 1;
 		//SERIAL_ECHO("Z baby step: ");
 		//SERIAL_ECHO(_md->babystepMem[2]);
@@ -3104,43 +3112,46 @@ static void _lcd_babystep(int axis, const char *msg)
 	if (lcd_encoder != 0) 
 	{
 		if (homing_flag) lcd_encoder = 0;
-		_md->babystepMem[axis] += (int)lcd_encoder;
-		if (axis == 2)
-		{
-			if (_md->babystepMem[axis] < Z_BABYSTEP_MIN) _md->babystepMem[axis] = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
-			else if (_md->babystepMem[axis] > Z_BABYSTEP_MAX) _md->babystepMem[axis] = Z_BABYSTEP_MAX; //0
-			else
-			{
-				CRITICAL_SECTION_START
-				babystepsTodo[axis] += (int)lcd_encoder;
-				CRITICAL_SECTION_END		
-			}
-		}
-		_md->babystepMemMM[axis] = _md->babystepMem[axis]/cs.axis_steps_per_unit[axis]; 
+		_md->babystepMemZ += (int)lcd_encoder;
+
+        if (_md->babystepMemZ < Z_BABYSTEP_MIN) _md->babystepMemZ = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
+        else if (_md->babystepMemZ > Z_BABYSTEP_MAX) _md->babystepMemZ = Z_BABYSTEP_MAX; //0
+        else
+        {
+            CRITICAL_SECTION_START
+            babystepsTodo[Z_AXIS] += (int)lcd_encoder;
+            CRITICAL_SECTION_END
+        }
+
+		_md->babystepMemMMZ = _md->babystepMemZ/cs.axis_steps_per_unit[Z_AXIS];
 		_delay(50);
 		lcd_encoder = 0;
 		lcd_draw_update = 1;
 	}
 	if (lcd_draw_update)
 	{
+	    SheetFormatBuffer buffer;
+	    menu_format_sheet_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], buffer);
+	    lcd_set_cursor(0, 0);
+	    lcd_print(buffer.c);
 	    lcd_set_cursor(0, 1);
-		menu_draw_float13(msg, _md->babystepMemMM[axis]);
+		menu_draw_float13(_i("Adjusting Z:"), _md->babystepMemMMZ); ////MSG_BABYSTEPPING_Z c=15 Beware: must include the ':' as its last character
 	}
 	if (LCD_CLICKED || menu_leaving)
 	{
 		// Only update the EEPROM when leaving the menu.
-		EEPROM_save_B(
-		(axis == X_AXIS) ? EEPROM_BABYSTEP_X : ((axis == Y_AXIS) ? EEPROM_BABYSTEP_Y : EEPROM_BABYSTEP_Z),
-		&_md->babystepMem[axis]);
-		if(Z_AXIS == axis) calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+		eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->
+                s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].z_offset)),
+		        _md->babystepMemZ);
+		eeprom_update_byte(&(EEPROM_Sheets_base->s[(eeprom_read_byte(
+		        &(EEPROM_Sheets_base->active_sheet)))].bed_temp),
+		        target_temperature_bed);
+		eeprom_update_byte(&(EEPROM_Sheets_base->s[(eeprom_read_byte(
+		        &(EEPROM_Sheets_base->active_sheet)))].pinda_temp),
+		        current_temperature_pinda);
+		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 	}
 	if (LCD_CLICKED) menu_back();
-}
-
-
-static void lcd_babystep_z()
-{
-	_lcd_babystep(Z_AXIS, (_i("Adjusting Z:")));////MSG_BABYSTEPPING_Z c=15 Beware: must include the ':' as its last character
 }
 
 
@@ -3664,20 +3675,24 @@ int8_t lcd_show_multiscreen_message_two_choices_and_wait_P(const char *msg, bool
 						lcd_set_cursor(7, 3);
 						lcd_puts_P((PSTR(">")));
 						yes = false;
+						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
 					else if (enc_dif > lcd_encoder_diff && !yes) {
 						lcd_puts_P((PSTR(">")));
 						lcd_set_cursor(7, 3);
 						lcd_puts_P((PSTR(" ")));
 						yes = true;
+						Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 					}
 					enc_dif = lcd_encoder_diff;
 				}
 				else {
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					break; //turning knob skips waiting loop
 				}
 			}
 			if (lcd_clicked()) {
+				Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 				if (msg_next == NULL) {
 					//KEEPALIVE_STATE(IN_HANDLER);
 					lcd_set_custom_characters();
@@ -3750,16 +3765,20 @@ int8_t lcd_show_fullscreen_message_yes_no_and_wait_P(const char *msg, bool allow
 					lcd_set_cursor(0, 3);
 					lcd_puts_P((PSTR(">")));
 					yes = false;
+					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
+
 				}
 				else if (enc_dif > lcd_encoder_diff && !yes) {
 					lcd_puts_P((PSTR(">")));
 					lcd_set_cursor(0, 3);
 					lcd_puts_P((PSTR(" ")));
 					yes = true;
+					Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				}
 				enc_dif = lcd_encoder_diff;
 		}
 		if (lcd_clicked()) {
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			KEEPALIVE_STATE(IN_HANDLER);
 			return yes;
 		}
@@ -3964,7 +3983,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 			SERIAL_ECHOLN("}");
 			status_number = 14;
 		}
-		else if (IS_SD_PRINTING)
+		else if (IS_SD_PRINTING || loading_flag)
 		{
 			SERIAL_ECHO("{");
 			prusa_stat_printerstatus(4);
@@ -4003,7 +4022,7 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		status_number = 3;
 		farm_timer = 1;
 
-		if (IS_SD_PRINTING)
+		if (IS_SD_PRINTING || loading_flag)
 		{
 			farm_status = 4;
 			SERIAL_ECHO("{");
@@ -5274,8 +5293,8 @@ do\
          case e_SOUND_MODE_SILENT:\
               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);\
               break;\
-         case e_SOUND_MODE_MUTE:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_MUTE),lcd_sound_state_set);\
+         case e_SOUND_MODE_BLIND:\
+              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_BLIND),lcd_sound_state_set);\
               break;\
          default:\
               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);\
@@ -5286,95 +5305,218 @@ while (0)
 //-//
 static void lcd_check_mode_set(void)
 {
-switch(eCheckMode)
+switch(oCheckMode)
      {
-     case e_CHECK_MODE_none:
-          eCheckMode=e_CHECK_MODE_warn;
+     case ClCheckMode::_None:
+          oCheckMode=ClCheckMode::_Warn;
           break;
-     case e_CHECK_MODE_warn:
-          eCheckMode=e_CHECK_MODE_strict;
+     case ClCheckMode::_Warn:
+          oCheckMode=ClCheckMode::_Strict;
           break;
-     case e_CHECK_MODE_strict:
-          eCheckMode=e_CHECK_MODE_none;
+     case ClCheckMode::_Strict:
+          oCheckMode=ClCheckMode::_None;
           break;
      default:
-          eCheckMode=e_CHECK_MODE_none;
+          oCheckMode=ClCheckMode::_None;
      }
-eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)eCheckMode);
-}
-
-static void lcd_nozzle_diameter_set(void)
-{
-uint16_t nDiameter;
-
-switch(eNozzleDiameter)
-     {
-     case e_NOZZLE_DIAMETER_250:
-          eNozzleDiameter=e_NOZZLE_DIAMETER_400;
-          nDiameter=400;
-          break;
-     case e_NOZZLE_DIAMETER_400:
-          eNozzleDiameter=e_NOZZLE_DIAMETER_600;
-          nDiameter=600;
-          break;
-     case e_NOZZLE_DIAMETER_600:
-          eNozzleDiameter=e_NOZZLE_DIAMETER_250;
-          nDiameter=250;
-          break;
-     default:
-          eNozzleDiameter=e_NOZZLE_DIAMETER_400;
-          nDiameter=400;
-     }
-eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)eNozzleDiameter);
-eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)oCheckMode);
 }
 
 #define SETTINGS_MODE \
 do\
 {\
-    switch(eCheckMode)\
+    switch(oCheckMode)\
          {\
-         case e_CHECK_MODE_none:\
-              MENU_ITEM_FUNCTION_P(_i("Action     [none]"),lcd_check_mode_set);\
+         case ClCheckMode::_None:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [none]"),lcd_check_mode_set);\
               break;\
-         case e_CHECK_MODE_warn:\
-              MENU_ITEM_FUNCTION_P(_i("Action     [warn]"),lcd_check_mode_set);\
+         case ClCheckMode::_Warn:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [warn]"),lcd_check_mode_set);\
               break;\
-         case e_CHECK_MODE_strict:\
-              MENU_ITEM_FUNCTION_P(_i("Action   [strict]"),lcd_check_mode_set);\
+         case ClCheckMode::_Strict:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle   [strict]"),lcd_check_mode_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Action     [none]"),lcd_check_mode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [none]"),lcd_check_mode_set);\
          }\
 }\
 while (0)
+
+static void lcd_nozzle_diameter_set(void)
+{
+uint16_t nDiameter;
+
+switch(oNozzleDiameter)
+     {
+     case ClNozzleDiameter::_Diameter_250:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
+          nDiameter=400;
+          break;
+     case ClNozzleDiameter::_Diameter_400:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_600;
+          nDiameter=600;
+          break;
+     case ClNozzleDiameter::_Diameter_600:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_250;
+          nDiameter=250;
+          break;
+     default:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
+          nDiameter=400;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
+eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+}
 
 #define SETTINGS_NOZZLE \
 do\
 {\
-    switch(eNozzleDiameter)\
+    switch(oNozzleDiameter)\
          {\
-         case e_NOZZLE_DIAMETER_250:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.25]"),lcd_nozzle_diameter_set);\
+         case ClNozzleDiameter::_Diameter_250:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.25]"),lcd_nozzle_diameter_set);\
               break;\
-         case e_NOZZLE_DIAMETER_400:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.40]"),lcd_nozzle_diameter_set);\
+         case ClNozzleDiameter::_Diameter_400:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.40]"),lcd_nozzle_diameter_set);\
               break;\
-         case e_NOZZLE_DIAMETER_600:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.60]"),lcd_nozzle_diameter_set);\
+         case ClNozzleDiameter::_Diameter_600:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.60]"),lcd_nozzle_diameter_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.40]"),lcd_nozzle_diameter_set);\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.40]"),lcd_nozzle_diameter_set);\
          }\
 }\
 while (0)
 
-static void lcd_checking_menu()
+static void lcd_check_model_set(void)
+{
+switch(oCheckModel)
+     {
+     case ClCheckModel::_None:
+          oCheckModel=ClCheckModel::_Warn;
+          break;
+     case ClCheckModel::_Warn:
+          oCheckModel=ClCheckModel::_Strict;
+          break;
+     case ClCheckModel::_Strict:
+          oCheckModel=ClCheckModel::_None;
+          break;
+     default:
+          oCheckModel=ClCheckModel::_None;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODEL,(uint8_t)oCheckModel);
+}
+
+#define SETTINGS_MODEL \
+do\
+{\
+    switch(oCheckModel)\
+         {\
+         case ClCheckModel::_None:\
+              MENU_ITEM_FUNCTION_P(_i("Model      [none]"),lcd_check_model_set);\
+              break;\
+         case ClCheckModel::_Warn:\
+              MENU_ITEM_FUNCTION_P(_i("Model      [warn]"),lcd_check_model_set);\
+              break;\
+         case ClCheckModel::_Strict:\
+              MENU_ITEM_FUNCTION_P(_i("Model    [strict]"),lcd_check_model_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Model      [none]"),lcd_check_model_set);\
+         }\
+}\
+while (0)
+
+static void lcd_check_version_set(void)
+{
+switch(oCheckVersion)
+     {
+     case ClCheckVersion::_None:
+          oCheckVersion=ClCheckVersion::_Warn;
+          break;
+     case ClCheckVersion::_Warn:
+          oCheckVersion=ClCheckVersion::_Strict;
+          break;
+     case ClCheckVersion::_Strict:
+          oCheckVersion=ClCheckVersion::_None;
+          break;
+     default:
+          oCheckVersion=ClCheckVersion::_None;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_VERSION,(uint8_t)oCheckVersion);
+}
+
+#define SETTINGS_VERSION \
+do\
+{\
+    switch(oCheckVersion)\
+         {\
+         case ClCheckVersion::_None:\
+              MENU_ITEM_FUNCTION_P(_i("Firmware   [none]"),lcd_check_version_set);\
+              break;\
+         case ClCheckVersion::_Warn:\
+              MENU_ITEM_FUNCTION_P(_i("Firmware   [warn]"),lcd_check_version_set);\
+              break;\
+         case ClCheckVersion::_Strict:\
+              MENU_ITEM_FUNCTION_P(_i("Firmware [strict]"),lcd_check_version_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Firmware   [none]"),lcd_check_version_set);\
+         }\
+}\
+while (0)
+
+static void lcd_check_gcode_set(void)
+{
+switch(oCheckGcode)
+     {
+     case ClCheckGcode::_None:
+          oCheckGcode=ClCheckGcode::_Warn;
+          break;
+     case ClCheckGcode::_Warn:
+          oCheckGcode=ClCheckGcode::_Strict;
+          break;
+     case ClCheckGcode::_Strict:
+          oCheckGcode=ClCheckGcode::_None;
+          break;
+     default:
+          oCheckGcode=ClCheckGcode::_None;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_GCODE,(uint8_t)oCheckGcode);
+}
+
+#define SETTINGS_GCODE \
+do\
+{\
+    switch(oCheckGcode)\
+         {\
+         case ClCheckGcode::_None:\
+              MENU_ITEM_FUNCTION_P(_i("Gcode      [none]"),lcd_check_gcode_set);\
+              break;\
+         case ClCheckGcode::_Warn:\
+              MENU_ITEM_FUNCTION_P(_i("Gcode      [warn]"),lcd_check_gcode_set);\
+              break;\
+         case ClCheckGcode::_Strict:\
+              MENU_ITEM_FUNCTION_P(_i("Gcode    [strict]"),lcd_check_gcode_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Gcode      [none]"),lcd_check_gcode_set);\
+         }\
+}\
+while (0)
+
+//-//static void lcd_checking_menu()
+void lcd_checking_menu()
 {
 MENU_BEGIN();
-MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-SETTINGS_MODE;
+MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
 SETTINGS_NOZZLE;
+MENU_ITEM_TEXT_P(STR_SEPARATOR);
+MENU_ITEM_TEXT_P(_i("Checks:"));
+SETTINGS_MODE;
+SETTINGS_MODEL;
+SETTINGS_VERSION;
+SETTINGS_GCODE;
 MENU_END();
 }
 
@@ -5430,7 +5572,10 @@ static void lcd_settings_menu()
 #endif //(LANG_MODE != 0)
 
 	if (!farm_mode)
+          {
+          bSettings=true;                         // flag ('fake parameter') for 'lcd_checking_menu()' function
           MENU_ITEM_SUBMENU_P(_i("Print checking"), lcd_checking_menu);
+          }
 
 	SETTINGS_SD;
 	SETTINGS_SOUND;
@@ -5478,7 +5623,7 @@ static void lcd_calibration_menu()
   if (!isPrintPaused)
   {
 	MENU_ITEM_FUNCTION_P(_i("Wizard"), lcd_wizard);////MSG_WIZARD c=17 r=1
-	MENU_ITEM_SUBMENU_P(_i("First layer cal."), lcd_v2_calibration);////MSG_V2_CALIBRATION c=17 r=1
+	MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
 	MENU_ITEM_GCODE_P(_T(MSG_AUTO_HOME), PSTR("G28 W"));
 	MENU_ITEM_FUNCTION_P(_i("Selftest         "), lcd_selftest_v);////MSG_SELFTEST
 #ifdef MK1BP
@@ -5551,10 +5696,12 @@ void bowden_menu() {
 
 				if (cursor_pos > 3) {
 					cursor_pos = 3;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 				}
 
 				if (cursor_pos < 0) {
 					cursor_pos = 0;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 				}
 
 				lcd_set_cursor(0, 0);
@@ -5567,13 +5714,13 @@ void bowden_menu() {
 				lcd_print(" ");
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
-
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
 		}
 
 		if (lcd_clicked()) {
-
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			lcd_clear();
 			while (1) {
 
@@ -5604,6 +5751,7 @@ void bowden_menu() {
 				}
 				_delay(100);
 				if (lcd_clicked()) {
+					Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 					EEPROM_save_B(EEPROM_BOWDEN_LENGTH + cursor_pos * 2, &bowden_length[cursor_pos]);
 					if (lcd_show_fullscreen_message_yes_no_and_wait_P(PSTR("Continue with another bowden?"))) {
 						lcd_update_enable(true);
@@ -5649,8 +5797,14 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 			if ((abs(enc_dif - lcd_encoder_diff)) > 1) {
 				if (enc_dif > lcd_encoder_diff) cursor_pos--;
 				if (enc_dif < lcd_encoder_diff) cursor_pos++;
-				if (cursor_pos > 3) cursor_pos = 3;
-				if (cursor_pos < 1) cursor_pos = 1;
+				if (cursor_pos > 3) {
+					cursor_pos = 3;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+				}
+				if (cursor_pos < 1){
+					cursor_pos = 1;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+				}	
 
 				lcd_set_cursor(0, 1);
 				lcd_print(" ");
@@ -5661,10 +5815,12 @@ static char snmm_stop_print_menu() { //menu for choosing which filaments will be
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
 				enc_dif = lcd_encoder_diff;
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				_delay(100);
 			}
 		}
 		if (lcd_clicked()) {
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			KEEPALIVE_STATE(IN_HANDLER);
 			return(cursor_pos - 1);
 		}
@@ -5716,7 +5872,8 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 		}
 
 		if (cursor_pos > 3)
-		{
+		{		
+			Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             cursor_pos = 3;
             if (first < items_no - 3)
             {
@@ -5727,6 +5884,7 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 
         if (cursor_pos < 1)
         {
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             cursor_pos = 1;
             if (first > 0)
             {
@@ -5761,11 +5919,12 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
         lcd_print(" ");
         lcd_set_cursor(0, cursor_pos);
         lcd_print(">");
-
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
         _delay(100);
 
 		if (lcd_clicked())
 		{
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 		    KEEPALIVE_STATE(IN_HANDLER);
 			lcd_encoder_diff = 0;
 			return(cursor_pos + first - 1);
@@ -5820,6 +5979,7 @@ char reset_menu() {
 
 				if (cursor_pos > 3) {
 					cursor_pos = 3;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					if (first < items_no - 4) {
 						first++;
 						lcd_clear();
@@ -5828,6 +5988,7 @@ char reset_menu() {
 
 				if (cursor_pos < 0) {
 					cursor_pos = 0;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					if (first > 0) {
 						first--;
 						lcd_clear();
@@ -5843,6 +6004,7 @@ char reset_menu() {
 				lcd_print(" ");
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
 			}
@@ -5850,6 +6012,7 @@ char reset_menu() {
 		}
 
 		if (lcd_clicked()) {
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			return(cursor_pos + first);
 		}
 
@@ -6158,6 +6321,7 @@ unsigned char lcd_choose_color() {
 				
 				if (cursor_pos > active_rows) {
 					cursor_pos = active_rows;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					if (first < items_no - active_rows) {
 						first++;
 						lcd_clear();
@@ -6166,6 +6330,7 @@ unsigned char lcd_choose_color() {
 
 				if (cursor_pos < 1) {
 					cursor_pos = 1;
+					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
 					if (first > 0) {
 						first--;
 						lcd_clear();
@@ -6179,12 +6344,14 @@ unsigned char lcd_choose_color() {
 				lcd_print(" ");
 				lcd_set_cursor(0, cursor_pos);
 				lcd_print(">");
+				Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 				enc_dif = lcd_encoder_diff;
 				_delay(100);
 
 		}
 
 		if (lcd_clicked()) {
+			Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 			switch(cursor_pos + first - 1) {
 			case 0: return 1; break;
 			case 1: return 0; break;
@@ -6301,6 +6468,95 @@ void lcd_resume_print()
     isPrintPaused = false;
 }
 
+static void change_sheet(uint8_t sheet_num)
+{
+	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet_num);
+	if(is_sheet_initialized())
+		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
+	else
+		calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+
+    menu_back(3);
+}
+
+static void lcd_select_sheet_0_menu()
+{
+	change_sheet(0);
+}
+static void lcd_select_sheet_1_menu()
+{
+	change_sheet(1);
+}
+static void lcd_select_sheet_2_menu()
+{
+	change_sheet(2);
+}
+
+static void lcd_select_sheet_menu()
+{
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_BACK));
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
+    MENU_END();
+}
+
+static void lcd_rename_sheet_menu()
+{
+    struct MenuData
+    {
+        bool initialized;
+        uint8_t selected;
+        char name[sizeof(Sheet::name)];
+    };
+    static_assert(sizeof(menu_data)>= sizeof(MenuData),"MenuData doesn't fit into menu_data");
+    MenuData* menuData = (MenuData*)&(menu_data[0]);
+
+    if (!menuData->initialized)
+    {
+        eeprom_read_block(menuData->name, EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, sizeof(Sheet::name));
+        lcd_encoder = menuData->name[0];
+        menuData->initialized = true;
+    }
+    if (lcd_encoder < '\x20') lcd_encoder = '\x20';
+    if (lcd_encoder > '\x7F') lcd_encoder = '\x7F';
+
+    menuData->name[menuData->selected] = lcd_encoder;
+    lcd_set_cursor(0,0);
+    for (uint_least8_t i = 0; i < sizeof(Sheet::name); ++i)
+    {
+        lcd_putc(menuData->name[i]);
+    }
+    lcd_set_cursor(menuData->selected, 1);
+    lcd_putc('^');
+    if (lcd_clicked())
+    {
+        if ((menuData->selected + 1u) < sizeof(Sheet::name))
+        {
+            lcd_encoder = menuData->name[++(menuData->selected)];
+        }
+        else
+        {
+            eeprom_update_block(menuData->name,
+                EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name,
+                sizeof(Sheet::name));
+            menu_back();
+        }
+    }
+}
+
+static void lcd_sheet_menu()
+{
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(MSG_MAIN));
+    MENU_ITEM_SUBMENU_P(_i("Select"), lcd_select_sheet_menu); //// c=18
+    MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
+    MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
+
+    MENU_END();
+}
+
 static void lcd_main_menu()
 {
 
@@ -6322,55 +6578,6 @@ static void lcd_main_menu()
  MENU_ITEM_FUNCTION_P(PSTR("recover print"), recover_print);
  MENU_ITEM_FUNCTION_P(PSTR("power panic"), uvlo_);
 #endif //TMC2130_DEBUG
-
- /* if (farm_mode && !IS_SD_PRINTING )
-    {
-    
-        int tempScrool = 0;
-        if (lcd_draw_update == 0 && LCD_CLICKED == 0)
-            //_delay(100);
-            return; // nothing to do (so don't thrash the SD card)
-        uint16_t fileCnt = card.getnrfilenames();
-        
-        card.getWorkDirName();
-        if (card.filename[0] == '/')
-        {
-#if SDCARDDETECT == -1
-            MENU_ITEM_FUNCTION_P(_T(MSG_REFRESH), lcd_sd_refresh);
-#endif
-        } else {
-            MENU_ITEM_FUNCTION_P(PSTR(LCD_STR_FOLDER ".."), lcd_sd_updir);
-        }
-        
-        for (uint16_t i = 0; i < fileCnt; i++)
-        {
-            if (menu_item == menu_line)
-            {
-#ifndef SDCARD_RATHERRECENTFIRST
-                card.getfilename(i);
-#else
-                card.getfilename(fileCnt - 1 - i);
-#endif
-                if (card.filenameIsDir)
-                {
-                    MENU_ITEM_SDDIR(_T(MSG_CARD_MENU), card.filename, card.longFilename);
-                } else {
-                    
-                    MENU_ITEM_SDFILE(_T(MSG_CARD_MENU), card.filename, card.longFilename);
-                    
-                    
-                    
-                    
-                }
-            } else {
-                MENU_ITEM_DUMMY();
-            }
-        }
-        
-        MENU_ITEM_BACK_P(PSTR("- - - - - - - - -"));
-    
-        
-    }*/
  
   if ( ( IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) && (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU) && !homing_flag && !mesh_bed_leveling_flag)
   {
@@ -6385,6 +6592,8 @@ static void lcd_main_menu()
   {
     MENU_ITEM_SUBMENU_P(_i("Preheat"), lcd_preheat_menu);////MSG_PREHEAT
   }
+
+
 
 #ifdef SDSUPPORT
   if (card.cardOK || lcd_commands_type == LcdCommands::Layer1Cal)
@@ -6476,6 +6685,8 @@ static void lcd_main_menu()
 
   }
 
+  if(!isPrintPaused)MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu);
+  
   if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
   {
 	  MENU_ITEM_SUBMENU_P(_i("Statistics  "), lcd_menu_statistics);////MSG_STATISTICS
@@ -6497,11 +6708,7 @@ static void lcd_main_menu()
 }
 
 void stack_error() {
-	SET_OUTPUT(BEEPER);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-	WRITE(BEEPER, HIGH);
-	_delay(1000);
-	WRITE(BEEPER, LOW);
+	Sound_MakeCustom(1000,0,true);
 	lcd_display_message_fullscreen_P(_i("Error - static memory has been overwritten"));////MSG_STACK_ERROR c=20 r=4
 	//err_triggered = 1;
 	 while (1) delay_keep_alive(1000);
@@ -6636,8 +6843,8 @@ static void lcd_tune_menu()
           case e_SOUND_MODE_SILENT:
                MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);
                break;
-          case e_SOUND_MODE_MUTE:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_MUTE),lcd_sound_state_set);
+          case e_SOUND_MODE_BLIND:
+               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_BLIND),lcd_sound_state_set);
                break;
           default:
                MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
@@ -6802,6 +7009,7 @@ void lcd_sdcard_stop()
 
 	if (lcd_clicked())
 	{
+		Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 		if ((int32_t)lcd_encoder == 1)
 		{
 			lcd_return_to_status();
@@ -8318,6 +8526,7 @@ void menu_lcd_lcdupdate_func(void)
 			if (lcd_draw_update == 0)
 			lcd_draw_update = 1;
 			lcd_encoder += lcd_encoder_diff / ENCODER_PULSES_PER_STEP;
+			Sound_MakeSound(e_SOUND_TYPE_EncoderMove);
 			lcd_encoder_diff = 0;
 			lcd_timeoutToStatus.start();
 		}
