@@ -1,6 +1,4 @@
-#include <stdint.h>
-#include <avr/pgmspace.h>
-//!?! #include "Configuration.h"
+#include "Configuration.h"
 #include "Configuration_prusa.h"
 
 const uint16_t _nPrinterType PROGMEM=PRINTER_TYPE;

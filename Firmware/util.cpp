@@ -384,12 +384,12 @@ if(oCheckMode==ClCheckMode::_None)
 nDiameter_um=eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM);
 if(nDiameter==nDiameter_um)
      return;
-SERIAL_ECHO_START;
-SERIAL_ECHOLNPGM("Nozzle diameter doesn't match ...");
-SERIAL_ECHOPGM("actual  : ");
-SERIAL_ECHOLN((float)(nDiameter_um/1000.0));
-SERIAL_ECHOPGM("expected: ");
-SERIAL_ECHOLN((float)(nDiameter/1000.0));
+//SERIAL_ECHO_START;
+//SERIAL_ECHOLNPGM("Nozzle diameter doesn't match ...");
+//SERIAL_ECHOPGM("actual  : ");
+//SERIAL_ECHOLN((float)(nDiameter_um/1000.0));
+//SERIAL_ECHOPGM("expected: ");
+//SERIAL_ECHOLN((float)(nDiameter/1000.0));
 switch(oCheckMode)
      {
      case ClCheckMode::_Warn:
@@ -400,6 +400,7 @@ switch(oCheckMode)
           lcd_print_stop();
           break;
      }
+bSettings=false;                                  // flag ('fake parameter') for 'lcd_checking_menu()' function
 menu_submenu(lcd_checking_menu);
 }
 
@@ -409,12 +410,12 @@ if(oCheckModel==ClCheckModel::_None)
      return;
 if(nPrinterModel==nPrinterType)
      return;
-SERIAL_ECHO_START;
-SERIAL_ECHOLNPGM("Printer model doesn't match ...");
-SERIAL_ECHOPGM("actual  : ");
-SERIAL_ECHOLN(nPrinterType);
-SERIAL_ECHOPGM("expected: ");
-SERIAL_ECHOLN(nPrinterModel);
+//SERIAL_ECHO_START;
+//SERIAL_ECHOLNPGM("Printer model doesn't match ...");
+//SERIAL_ECHOPGM("actual  : ");
+//SERIAL_ECHOLN(nPrinterType);
+//SERIAL_ECHOPGM("expected: ");
+//SERIAL_ECHOLN(nPrinterModel);
 switch(oCheckModel)
      {
      case ClCheckModel::_Warn:
@@ -452,12 +453,12 @@ if(nCompareValueResult==COMPARE_VALUE_EQUAL)
      return;
 if((nCompareValueResult<COMPARE_VALUE_EQUAL)&&oCheckVersion==ClCheckVersion::_Warn)
      return;
-SERIAL_ECHO_START;
-SERIAL_ECHOLNPGM("FW version doesn't match ...");
-SERIAL_ECHOPGM("actual  : ");
-SERIAL_ECHOLN(FW_VERSION);
-SERIAL_ECHOPGM("expected: ");
-SERIAL_ECHOLN(pVersion);
+//SERIAL_ECHO_START;
+//SERIAL_ECHOLNPGM("FW version doesn't match ...");
+//SERIAL_ECHOPGM("actual  : ");
+//SERIAL_ECHOLN(FW_VERSION);
+//SERIAL_ECHOPGM("expected: ");
+//SERIAL_ECHOLN(pVersion);
 switch(oCheckVersion)
      {
      case ClCheckVersion::_Warn:
@@ -478,12 +479,12 @@ if(nGcodeLevel==(uint16_t)GCODE_LEVEL)
      return;
 if((nGcodeLevel<(uint16_t)GCODE_LEVEL)&&(oCheckGcode==ClCheckGcode::_Warn))
      return;
-SERIAL_ECHO_START;
-SERIAL_ECHOLNPGM("G-code level doesn't match ...");
-SERIAL_ECHOPGM("actual  : ");
-SERIAL_ECHOLN(GCODE_LEVEL);
-SERIAL_ECHOPGM("expected: ");
-SERIAL_ECHOLN(nGcodeLevel);
+//SERIAL_ECHO_START;
+//SERIAL_ECHOLNPGM("G-code level doesn't match ...");
+//SERIAL_ECHOPGM("actual  : ");
+//SERIAL_ECHOLN(GCODE_LEVEL);
+//SERIAL_ECHOPGM("expected: ");
+//SERIAL_ECHOLN(nGcodeLevel);
 switch(oCheckGcode)
      {
      case ClCheckGcode::_Warn:
@@ -535,14 +536,14 @@ if(pResult!=NULL)
      if(bCheckOK&&(!strncasecmp_P(pResult,::sPrinterName,nLength))) // i.e. string compare execute only if lengths are same
           return;
      }
-SERIAL_ECHO_START;
-SERIAL_ECHOLNPGM("Printer model doesn't match ...");
-SERIAL_ECHOPGM("actual  : \"");
-serialprintPGM(::sPrinterName);
-SERIAL_ECHOLNPGM("\"");
-SERIAL_ECHOPGM("expected: \"");
-SERIAL_ECHO(sPrinterName);
-SERIAL_ECHOLNPGM("\"");
+//SERIAL_ECHO_START;
+//SERIAL_ECHOLNPGM("Printer model doesn't match ...");
+//SERIAL_ECHOPGM("actual  : \"");
+//serialprintPGM(::sPrinterName);
+//SERIAL_ECHOLNPGM("\"");
+//SERIAL_ECHOPGM("expected: \"");
+////SERIAL_ECHO(sPrinterName);
+//SERIAL_ECHOLNPGM("\"");
 switch(oCheckModel)
      {
      case ClCheckModel::_Warn:

@@ -307,6 +307,7 @@ bool wait_for_unclick;
 #endif
 
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_checkink_menu()' function
 
 
 
@@ -5492,8 +5493,7 @@ while (0)
 void lcd_checking_menu()
 {
 MENU_BEGIN();
-//-//MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-MENU_ITEM_BACK_P(_T(MSG_BACK));
+MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
 SETTINGS_NOZZLE;
 MENU_ITEM_TEXT_P(STR_SEPARATOR);
 MENU_ITEM_TEXT_P(_i("Checks:"));
@@ -5556,7 +5556,10 @@ static void lcd_settings_menu()
 #endif //(LANG_MODE != 0)
 
 	if (!farm_mode)
+          {
+          bSettings=true;                         // flag ('fake parameter') for 'lcd_checking_menu()' function
           MENU_ITEM_SUBMENU_P(_i("Print checking"), lcd_checking_menu);
+          }
 
 	SETTINGS_SD;
 	SETTINGS_SOUND;
