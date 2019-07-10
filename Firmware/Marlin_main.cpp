@@ -43,8 +43,10 @@
  *
  */
 
+//-//
+#include "Configuration.h"
 #include "Marlin.h"
-
+  
 #ifdef ENABLE_AUTO_BED_LEVELING
 #include "vector_3.h"
   #ifdef AUTO_BED_LEVELING_GRID
@@ -1632,6 +1634,7 @@ void setup()
   }
 #endif //UVLO_SUPPORT
   fCheckModeInit();
+  fSetMmuMode(mmu_enabled);
   KEEPALIVE_STATE(NOT_BUSY);
 #ifdef WATCHDOG
   wdt_enable(WDTO_4S);
@@ -3644,7 +3647,7 @@ void process_commands()
 
 //-//
 /*
-    } else if(code_seen("qqq")) {
+    } else if(code_seen("rrr")) {
 MYSERIAL.println("=== checking ===");
 MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_CHECK_MODE),DEC);
 MYSERIAL.println(eeprom_read_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER),DEC);
@@ -3666,13 +3669,47 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,0xFFFF);
                }
           else if(code_seen("set") && farm_mode)
                {
+               strchr_pointer++;                  // skip 1st char (~ 's')
                strchr_pointer++;                  // skip 2nd char (~ 'e')
-               strchr_pointer++;                  // skip 3rd char (~ 't')
                nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
-               eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)e_NOZZLE_DIAMETER_NULL); // for correct synchronization after farm-mode exiting
+               eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)ClNozzleDiameter::_Diameter_Undef); // for correct synchronization after farm-mode exiting
                eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
                }
           else SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
+
+//-// !!! SupportMenu
+/*
+// musi byt PRED "PRUSA model"
+    } else if (code_seen("smodel")) { //! PRUSA smodel
+          size_t nOffset;
+// ! -> "l"
+          strchr_pointer+=5*sizeof(*strchr_pointer); // skip 1st - 5th char (~ 'smode')
+          nOffset=strspn(strchr_pointer+1," \t\n\r\v\f");
+          if(*(strchr_pointer+1+nOffset))
+               printer_smodel_check(strchr_pointer);
+          else SERIAL_PROTOCOLLN(PRINTER_NAME);
+    } else if (code_seen("model")) { //! PRUSA model
+          uint16_t nPrinterModel;
+          strchr_pointer+=4*sizeof(*strchr_pointer); // skip 1st - 4th char (~ 'mode')
+          nPrinterModel=(uint16_t)code_value_long();
+          if(nPrinterModel!=0)
+               printer_model_check(nPrinterModel);
+          else SERIAL_PROTOCOLLN(PRINTER_TYPE);
+    } else if (code_seen("version")) { //! PRUSA version
+          strchr_pointer+=7*sizeof(*strchr_pointer); // skip 1st - 7th char (~ 'version')
+          while(*strchr_pointer==' ')             // skip leading spaces
+               strchr_pointer++;
+          if(*strchr_pointer!=0)
+               fw_version_check(strchr_pointer);
+          else SERIAL_PROTOCOLLN(FW_VERSION);
+    } else if (code_seen("gcode")) { //! PRUSA gcode
+          uint16_t nGcodeLevel;
+          strchr_pointer+=4*sizeof(*strchr_pointer); // skip 1st - 4th char (~ 'gcod')
+          nGcodeLevel=(uint16_t)code_value_long();
+          if(nGcodeLevel!=0)
+               gcode_level_check(nGcodeLevel);
+          else SERIAL_PROTOCOLLN(GCODE_LEVEL);
+*/
 	}	
     //else if (code_seen('Cal')) {
 		//  lcd_calibration();
@@ -6836,6 +6873,65 @@ if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE))
 		break;
 
 #endif //PINDA_THERMISTOR
+
+    case 862: // M862: print checking
+          float nDummy;
+          uint8_t nCommand;
+          nCommand=(uint8_t)(modff(code_value_float(),&nDummy)*10.0+0.5);
+          switch((ClPrintChecking)nCommand)
+               {
+               case ClPrintChecking::_Nozzle:     // ~ .1
+                    uint16_t nDiameter;
+                    if(code_seen('P'))
+                         {
+                         nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
+                         nozzle_diameter_check(nDiameter);
+                         }
+/*
+                    else if(code_seen('S')&&farm_mode)
+                         {
+                         nDiameter=(uint16_t)(code_value()*1000.0+0.5); // [,um]
+                         eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)ClNozzleDiameter::_Diameter_Undef); // for correct synchronization after farm-mode exiting
+                         eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+                         }
+*/
+                    else if(code_seen('Q'))
+                         SERIAL_PROTOCOLLN((float)eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM)/1000.0);
+                    break;
+               case ClPrintChecking::_Model:      // ~ .2
+                    if(code_seen('P'))
+                         {
+                         uint16_t nPrinterModel;
+                         nPrinterModel=(uint16_t)code_value_long();
+                         printer_model_check(nPrinterModel);
+                         }
+                    else if(code_seen('Q'))
+                         SERIAL_PROTOCOLLN(nPrinterType);
+                    break;
+               case ClPrintChecking::_Smodel:     // ~ .3
+                    if(code_seen('P'))
+                         printer_smodel_check(strchr_pointer);
+                    else if(code_seen('Q'))
+                         SERIAL_PROTOCOLLNRPGM(sPrinterName);
+                    break;
+               case ClPrintChecking::_Version:    // ~ .4
+                    if(code_seen('P'))
+                         fw_version_check(++strchr_pointer);
+                    else if(code_seen('Q'))
+                         SERIAL_PROTOCOLLN(FW_VERSION);
+                    break;
+               case ClPrintChecking::_Gcode:      // ~ .5
+                    if(code_seen('P'))
+                         {
+                         uint16_t nGcodeLevel;
+                         nGcodeLevel=(uint16_t)code_value_long();
+                         gcode_level_check(nGcodeLevel);
+                         }
+                    else if(code_seen('Q'))
+                         SERIAL_PROTOCOLLN(GCODE_LEVEL);
+                    break;
+               }
+    break;
 
 #ifdef LIN_ADVANCE
     case 900: // M900: Set LIN_ADVANCE options.

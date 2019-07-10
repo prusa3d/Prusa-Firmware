@@ -307,6 +307,7 @@ bool wait_for_unclick;
 #endif
 
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
+bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_checkink_menu()' function
 
 
 
@@ -5290,95 +5291,218 @@ while (0)
 //-//
 static void lcd_check_mode_set(void)
 {
-switch(eCheckMode)
+switch(oCheckMode)
      {
-     case e_CHECK_MODE_none:
-          eCheckMode=e_CHECK_MODE_warn;
+     case ClCheckMode::_None:
+          oCheckMode=ClCheckMode::_Warn;
           break;
-     case e_CHECK_MODE_warn:
-          eCheckMode=e_CHECK_MODE_strict;
+     case ClCheckMode::_Warn:
+          oCheckMode=ClCheckMode::_Strict;
           break;
-     case e_CHECK_MODE_strict:
-          eCheckMode=e_CHECK_MODE_none;
+     case ClCheckMode::_Strict:
+          oCheckMode=ClCheckMode::_None;
           break;
      default:
-          eCheckMode=e_CHECK_MODE_none;
+          oCheckMode=ClCheckMode::_None;
      }
-eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)eCheckMode);
-}
-
-static void lcd_nozzle_diameter_set(void)
-{
-uint16_t nDiameter;
-
-switch(eNozzleDiameter)
-     {
-     case e_NOZZLE_DIAMETER_250:
-          eNozzleDiameter=e_NOZZLE_DIAMETER_400;
-          nDiameter=400;
-          break;
-     case e_NOZZLE_DIAMETER_400:
-          eNozzleDiameter=e_NOZZLE_DIAMETER_600;
-          nDiameter=600;
-          break;
-     case e_NOZZLE_DIAMETER_600:
-          eNozzleDiameter=e_NOZZLE_DIAMETER_250;
-          nDiameter=250;
-          break;
-     default:
-          eNozzleDiameter=e_NOZZLE_DIAMETER_400;
-          nDiameter=400;
-     }
-eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)eNozzleDiameter);
-eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODE,(uint8_t)oCheckMode);
 }
 
 #define SETTINGS_MODE \
 do\
 {\
-    switch(eCheckMode)\
+    switch(oCheckMode)\
          {\
-         case e_CHECK_MODE_none:\
-              MENU_ITEM_FUNCTION_P(_i("Action     [none]"),lcd_check_mode_set);\
+         case ClCheckMode::_None:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [none]"),lcd_check_mode_set);\
               break;\
-         case e_CHECK_MODE_warn:\
-              MENU_ITEM_FUNCTION_P(_i("Action     [warn]"),lcd_check_mode_set);\
+         case ClCheckMode::_Warn:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [warn]"),lcd_check_mode_set);\
               break;\
-         case e_CHECK_MODE_strict:\
-              MENU_ITEM_FUNCTION_P(_i("Action   [strict]"),lcd_check_mode_set);\
+         case ClCheckMode::_Strict:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle   [strict]"),lcd_check_mode_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Action     [none]"),lcd_check_mode_set);\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle     [none]"),lcd_check_mode_set);\
          }\
 }\
 while (0)
+
+static void lcd_nozzle_diameter_set(void)
+{
+uint16_t nDiameter;
+
+switch(oNozzleDiameter)
+     {
+     case ClNozzleDiameter::_Diameter_250:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
+          nDiameter=400;
+          break;
+     case ClNozzleDiameter::_Diameter_400:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_600;
+          nDiameter=600;
+          break;
+     case ClNozzleDiameter::_Diameter_600:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_250;
+          nDiameter=250;
+          break;
+     default:
+          oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
+          nDiameter=400;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_NOZZLE_DIAMETER,(uint8_t)oNozzleDiameter);
+eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
+}
 
 #define SETTINGS_NOZZLE \
 do\
 {\
-    switch(eNozzleDiameter)\
+    switch(oNozzleDiameter)\
          {\
-         case e_NOZZLE_DIAMETER_250:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.25]"),lcd_nozzle_diameter_set);\
+         case ClNozzleDiameter::_Diameter_250:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.25]"),lcd_nozzle_diameter_set);\
               break;\
-         case e_NOZZLE_DIAMETER_400:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.40]"),lcd_nozzle_diameter_set);\
+         case ClNozzleDiameter::_Diameter_400:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.40]"),lcd_nozzle_diameter_set);\
               break;\
-         case e_NOZZLE_DIAMETER_600:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.60]"),lcd_nozzle_diameter_set);\
+         case ClNozzleDiameter::_Diameter_600:\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.60]"),lcd_nozzle_diameter_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [0.40]"),lcd_nozzle_diameter_set);\
+              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.40]"),lcd_nozzle_diameter_set);\
          }\
 }\
 while (0)
 
-static void lcd_checking_menu()
+static void lcd_check_model_set(void)
+{
+switch(oCheckModel)
+     {
+     case ClCheckModel::_None:
+          oCheckModel=ClCheckModel::_Warn;
+          break;
+     case ClCheckModel::_Warn:
+          oCheckModel=ClCheckModel::_Strict;
+          break;
+     case ClCheckModel::_Strict:
+          oCheckModel=ClCheckModel::_None;
+          break;
+     default:
+          oCheckModel=ClCheckModel::_None;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_MODEL,(uint8_t)oCheckModel);
+}
+
+#define SETTINGS_MODEL \
+do\
+{\
+    switch(oCheckModel)\
+         {\
+         case ClCheckModel::_None:\
+              MENU_ITEM_FUNCTION_P(_i("Model      [none]"),lcd_check_model_set);\
+              break;\
+         case ClCheckModel::_Warn:\
+              MENU_ITEM_FUNCTION_P(_i("Model      [warn]"),lcd_check_model_set);\
+              break;\
+         case ClCheckModel::_Strict:\
+              MENU_ITEM_FUNCTION_P(_i("Model    [strict]"),lcd_check_model_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Model      [none]"),lcd_check_model_set);\
+         }\
+}\
+while (0)
+
+static void lcd_check_version_set(void)
+{
+switch(oCheckVersion)
+     {
+     case ClCheckVersion::_None:
+          oCheckVersion=ClCheckVersion::_Warn;
+          break;
+     case ClCheckVersion::_Warn:
+          oCheckVersion=ClCheckVersion::_Strict;
+          break;
+     case ClCheckVersion::_Strict:
+          oCheckVersion=ClCheckVersion::_None;
+          break;
+     default:
+          oCheckVersion=ClCheckVersion::_None;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_VERSION,(uint8_t)oCheckVersion);
+}
+
+#define SETTINGS_VERSION \
+do\
+{\
+    switch(oCheckVersion)\
+         {\
+         case ClCheckVersion::_None:\
+              MENU_ITEM_FUNCTION_P(_i("Firmware   [none]"),lcd_check_version_set);\
+              break;\
+         case ClCheckVersion::_Warn:\
+              MENU_ITEM_FUNCTION_P(_i("Firmware   [warn]"),lcd_check_version_set);\
+              break;\
+         case ClCheckVersion::_Strict:\
+              MENU_ITEM_FUNCTION_P(_i("Firmware [strict]"),lcd_check_version_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Firmware   [none]"),lcd_check_version_set);\
+         }\
+}\
+while (0)
+
+static void lcd_check_gcode_set(void)
+{
+switch(oCheckGcode)
+     {
+     case ClCheckGcode::_None:
+          oCheckGcode=ClCheckGcode::_Warn;
+          break;
+     case ClCheckGcode::_Warn:
+          oCheckGcode=ClCheckGcode::_Strict;
+          break;
+     case ClCheckGcode::_Strict:
+          oCheckGcode=ClCheckGcode::_None;
+          break;
+     default:
+          oCheckGcode=ClCheckGcode::_None;
+     }
+eeprom_update_byte((uint8_t*)EEPROM_CHECK_GCODE,(uint8_t)oCheckGcode);
+}
+
+#define SETTINGS_GCODE \
+do\
+{\
+    switch(oCheckGcode)\
+         {\
+         case ClCheckGcode::_None:\
+              MENU_ITEM_FUNCTION_P(_i("Gcode      [none]"),lcd_check_gcode_set);\
+              break;\
+         case ClCheckGcode::_Warn:\
+              MENU_ITEM_FUNCTION_P(_i("Gcode      [warn]"),lcd_check_gcode_set);\
+              break;\
+         case ClCheckGcode::_Strict:\
+              MENU_ITEM_FUNCTION_P(_i("Gcode    [strict]"),lcd_check_gcode_set);\
+              break;\
+         default:\
+              MENU_ITEM_FUNCTION_P(_i("Gcode      [none]"),lcd_check_gcode_set);\
+         }\
+}\
+while (0)
+
+//-//static void lcd_checking_menu()
+void lcd_checking_menu()
 {
 MENU_BEGIN();
-MENU_ITEM_BACK_P(_T(MSG_SETTINGS));
-SETTINGS_MODE;
+MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
 SETTINGS_NOZZLE;
+MENU_ITEM_TEXT_P(STR_SEPARATOR);
+MENU_ITEM_TEXT_P(_i("Checks:"));
+SETTINGS_MODE;
+SETTINGS_MODEL;
+SETTINGS_VERSION;
+SETTINGS_GCODE;
 MENU_END();
 }
 
@@ -5434,7 +5558,10 @@ static void lcd_settings_menu()
 #endif //(LANG_MODE != 0)
 
 	if (!farm_mode)
+          {
+          bSettings=true;                         // flag ('fake parameter') for 'lcd_checking_menu()' function
           MENU_ITEM_SUBMENU_P(_i("Print checking"), lcd_checking_menu);
+          }
 
 	SETTINGS_SD;
 	SETTINGS_SOUND;

@@ -51,3 +51,4 @@ Firmware/Doc
 /build-env/
 /Firmware/Firmware.vcxproj
 /Firmware/Configuration_prusa_bckp.h
+/Firmware/variants/printers.h

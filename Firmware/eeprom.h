@@ -30,6 +30,7 @@ typedef struct
 static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEPROM_SHEETS_SIZEOF.");
 #endif
 
+#define EEPROM_EMPTY_VALUE 0xFF
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
@@ -195,6 +196,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_CHECK_MODE (EEPROM_MMU_STEALTH-1) // uint8
 #define EEPROM_NOZZLE_DIAMETER (EEPROM_CHECK_MODE-1) // uint8
 #define EEPROM_NOZZLE_DIAMETER_uM (EEPROM_NOZZLE_DIAMETER-2) // uint16
+#define EEPROM_CHECK_MODEL (EEPROM_NOZZLE_DIAMETER_uM-1) // uint8
+#define EEPROM_CHECK_VERSION (EEPROM_CHECK_MODEL-1) // uint8
+#define EEPROM_CHECK_GCODE (EEPROM_CHECK_VERSION-1) // uint8
 
 #define EEPROM_SHEETS_BASE (EEPROM_NOZZLE_DIAMETER_uM - EEPROM_SHEETS_SIZEOF) // Sheets
 static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
