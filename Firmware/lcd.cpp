@@ -23,6 +23,8 @@
 	#define LCD_8BIT
 #endif
 
+// #define VT100
+
 // commands
 #define LCD_CLEARDISPLAY 0x01
 #define LCD_RETURNHOME 0x02
@@ -75,7 +77,9 @@ uint8_t lcd_displaymode;
 
 uint8_t lcd_currline;
 
+#ifdef VT100
 uint8_t lcd_escape[8];
+#endif
 
 void lcd_writebits(uint8_t value);
 
@@ -264,20 +268,24 @@ void lcd_no_autoscroll(void);
 void lcd_set_cursor(uint8_t col, uint8_t row);
 void lcd_createChar_P(uint8_t location, const uint8_t* charmap);
 
-uint8_t lcd_escape_write(uint8_t chr);
+#ifdef VT100
+void lcd_escape_write(uint8_t chr);
+#endif
 
-uint8_t lcd_write(uint8_t value)
+void lcd_write(uint8_t value)
 {
 	if (value == '\n')
 	{
 		if (lcd_currline > 3) lcd_currline = -1;
 		lcd_set_cursor(0, lcd_currline + 1); // LF
-		return 1;
 	}
-	if (lcd_escape[0] || (value == 0x1b))
-		return lcd_escape_write(value);
+	#ifdef VT100
+	if (lcd_escape[0] || (value == 0x1b)){
+		lcd_escape_write(value);
+		return;
+	}
+	#endif
 	lcd_plan_data(value, HIGH);
-	return 1; // assume sucess
 }
 
 static void lcd_begin(uint8_t clear)
@@ -307,7 +315,11 @@ static void lcd_begin(uint8_t clear)
 	lcd_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
 	// set the entry mode
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode, 60);
+	
+	#ifdef VT100
 	lcd_escape[0] = 0;
+	#endif
+	
 	lcd_plan_data(0x00, LOW, 0, 0, LCD_WAIT_FLAG); // special flag that disables lcd_update() to not block the loop with the status screen update during lcd_begin()
 }
 
@@ -453,12 +465,14 @@ void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
     lcd_plan_data(pgm_read_byte(&charmap[i]), HIGH);
 }
 
+#ifdef VT100
+
 //Supported VT100 escape codes:
 //EraseScreen  "\x1b[2J"
 //CursorHome   "\x1b[%d;%dH"
 //CursorShow   "\x1b[?25h"
 //CursorHide   "\x1b[?25l"
-uint8_t lcd_escape_write(uint8_t chr)
+void lcd_escape_write(uint8_t chr)
 {
 #define escape_cnt (lcd_escape[0])        //escape character counter
 #define is_num_msk (lcd_escape[1])        //numeric character bit mask
@@ -488,26 +502,26 @@ uint8_t lcd_escape_write(uint8_t chr)
 	switch (escape_cnt++)
 	{
 	case 0:
-		if (chr == 0x1b) return 1;  // escape = "\x1b"
+		if (chr == 0x1b) return;  // escape = "\x1b"
 		break;
 	case 1:
 		is_num_msk = 0x00; // reset 'is number' bit mask
-		if (chr == '[') return 1; // escape = "\x1b["
+		if (chr == '[') return; // escape = "\x1b["
 		break;
 	case 2:
 		switch (chr)
 		{
-		case '2': return 1; // escape = "\x1b[2"
-		case '?': return 1; // escape = "\x1b[?"
+		case '2': return; // escape = "\x1b[2"
+		case '?': return; // escape = "\x1b[?"
 		default:
-			if (chr_is_num) return 1; // escape = "\x1b[%1d"
+			if (chr_is_num) return; // escape = "\x1b[%1d"
 		}
 		break;
 	case 3:
 		switch (lcd_escape[2])
 		{
 		case '?': // escape = "\x1b[?"
-			if (chr == '2') return 1; // escape = "\x1b[?2"
+			if (chr == '2') return; // escape = "\x1b[?2"
 			break;
 		case '2':
 			if (chr == 'J') // escape = "\x1b[2J"
@@ -516,20 +530,20 @@ uint8_t lcd_escape_write(uint8_t chr)
 			if (e_2_is_num && // escape = "\x1b[%1d"
 				((chr == ';') || // escape = "\x1b[%1d;"
 				chr_is_num)) // escape = "\x1b[%2d"
-				return 1;
+				return;
 		}
 		break;
 	case 4:
 		switch (lcd_escape[2])
 		{
 		case '?': // "\x1b[?"
-			if ((lcd_escape[3] == '2') && (chr == '5')) return 1; // escape = "\x1b[?25"
+			if ((lcd_escape[3] == '2') && (chr == '5')) return; // escape = "\x1b[?25"
 			break;
 		default:
 			if (e_2_is_num) // escape = "\x1b[%1d"
 			{
-				if ((lcd_escape[3] == ';') && chr_is_num) return 1; // escape = "\x1b[%1d;%1d"
-				else if (e_3_is_num && (chr == ';')) return 1; // escape = "\x1b[%2d;"
+				if ((lcd_escape[3] == ';') && chr_is_num) return; // escape = "\x1b[%1d;%1d"
+				else if (e_3_is_num && (chr == ';')) return; // escape = "\x1b[%2d;"
 			}
 		}
 		break;
@@ -556,10 +570,10 @@ uint8_t lcd_escape_write(uint8_t chr)
 					if (chr == 'H') // escape = "\x1b%1d;%1dH"
 						lcd_set_cursor(e4_num, e2_num); // CursorHome
 					else if (chr_is_num)
-						return 1; // escape = "\x1b%1d;%2d"
+						return; // escape = "\x1b%1d;%2d"
 				}
 				else if (e_3_is_num && (lcd_escape[4] == ';') && chr_is_num)
-					return 1; // escape = "\x1b%2d;%1d"
+					return; // escape = "\x1b%2d;%1d"
 			}
 		}
 		break;
@@ -573,7 +587,7 @@ uint8_t lcd_escape_write(uint8_t chr)
 				if (chr == 'H') // escape = "\x1b%2d;%1dH"
 					lcd_set_cursor(e5_num, e23_num); // CursorHome
 				else if (chr_is_num) // "\x1b%2d;%2d"
-					return 1;
+					return;
 			}
 		}
 		break;
@@ -584,10 +598,9 @@ uint8_t lcd_escape_write(uint8_t chr)
 		break;
 	}
 	escape_cnt = 0; // reset escape
-	return 1; // assume sucess
 }
 
-
+#endif //VT100
 
 
 int lcd_putc(int c)
