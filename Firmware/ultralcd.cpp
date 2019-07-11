@@ -7452,10 +7452,12 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 	bool _stepdone = false;
 	bool _stepresult = false;
 	int _progress = 0;
-	int _travel_done = 0;
+	float _travel_done = 0;
 	int _err_endstop = 0;
 	int _lcd_refresh = 0;
+	float _step_len = 1;
 	_travel = _travel + (_travel / 10);
+	if (_axis == Z_AXIS) _step_len = 0.5;
 
 	if (_axis == X_AXIS) {
 		current_position[Z_AXIS] += 17;
@@ -7463,10 +7465,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 	}
 
 	do {
-		if (_axis == Z_AXIS)
-			current_position[_axis] -= 0.5;
-		else
-			current_position[_axis] = current_position[_axis] - 1;
+		current_position[_axis] -= _step_len;
 
 		plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], manual_feedrate[0] / 60, active_extruder);
 		st_synchronize();
@@ -7516,7 +7515,7 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 		manage_inactivity(true);
 
 		//_delay(100);
-		(_travel_done <= _travel) ? _travel_done++ : _stepdone = true;
+		(_travel_done <= _travel) ? _travel_done + _step_len : _stepdone = true;
 
 	} while (!_stepdone);
 
