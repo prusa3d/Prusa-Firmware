@@ -1972,7 +1972,7 @@ static void lcd_menu_temperatures()
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	
 	lcd_home();
-	lcd_printf_P(PSTR("\n%S:   %d%c " "\n " "%S:      %d%c "), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
+	lcd_printf_P(PSTR(" %S:   %d%c " "\n " "%S:      %d%c "), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
 	lcd_printf_P(PSTR("\n " "%S:  %d%c" "\n " "PINDA:    %d%c"), _i("Ambient"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
 #else //AMBIENT_THERMISTOR
@@ -2002,7 +2002,7 @@ static void lcd_menu_voltages()
 static void lcd_menu_belt_status()
 {
 	lcd_home();
-    lcd_printf_P(PSTR(" %S" "\n  " "X %d" "\n  " "Y %d" ), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
+    lcd_printf_P(PSTR("%S" "\n " "X %d" "\n " "Y %d" ), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     menu_back_if_clicked();
 }
 #endif //TMC2130
@@ -4361,7 +4361,8 @@ static void lcd_crash_mode_info()
 	static uint32_t tim = 0;
 	if ((tim + 1000) < _millis())
 	{
-		fputs_P(_i("\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"), lcdout);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
+		lcd_clear();
+		fputs_P(_i("Crash detection can\nbe turned on only in\nNormal mode"), lcdout);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 		tim = _millis();
 	}
     menu_back_if_clicked();
@@ -4373,7 +4374,8 @@ static void lcd_crash_mode_info2()
 	static uint32_t tim = 0;
 	if ((tim + 1000) < _millis())
 	{
-		fputs_P(_i("\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"), lcdout);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+		lcd_clear();
+		fputs_P(_i("WARNING:\nCrash detection\ndisabled in\nStealth mode"), lcdout);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 		tim = _millis();
 	}
     menu_back_if_clicked();

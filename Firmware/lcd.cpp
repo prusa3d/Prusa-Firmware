@@ -278,6 +278,7 @@ void lcd_write(uint8_t value)
 	{
 		if (lcd_currline > 3) lcd_currline = -1;
 		lcd_set_cursor(0, lcd_currline + 1); // LF
+		return;
 	}
 	#ifdef VT100
 	if (lcd_escape[0] || (value == 0x1b)){
@@ -361,11 +362,13 @@ void lcd_refresh_noclear(void)
 void lcd_clear(void)
 {
 	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
+	lcd_currline = 0;
 }
 
 void lcd_home(void)
 {
 	lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero
+	lcd_currline = 0;
 }
 
 // Turn the display on/off (quickly)
