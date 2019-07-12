@@ -3954,6 +3954,13 @@ void lcd_menu_show_sensors_state()                // NOT static due to using ins
 	}
 }
 
+void prusa_statistics_err(char c){
+	SERIAL_ECHO("{[ERR:");
+	SERIAL_ECHO(c);
+	SERIAL_ECHO(']');
+	prusa_stat_farm_number();
+}
+
 void prusa_statistics(int _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
 	return;
@@ -3963,114 +3970,93 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 
 	case 0: // default message
 		if (busy_state == PAUSED_FOR_USER) 
-		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(15);
-			prusa_stat_farm_number();
-			prusa_stat_printinfo();
-			SERIAL_ECHOLN("}");
+		{   
 			status_number = 15;
 		}
 		else if (isPrintPaused || card.paused) 
 		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(14);
-			prusa_stat_farm_number();
-			prusa_stat_printinfo();
-			SERIAL_ECHOLN("}");
 			status_number = 14;
 		}
 		else if (IS_SD_PRINTING || loading_flag)
 		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(4);
-			prusa_stat_farm_number();
-			prusa_stat_printinfo();
-			SERIAL_ECHOLN("}");
 			status_number = 4;
 		}
 		else
 		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(1);
-			prusa_stat_farm_number();
-			prusa_stat_diameter();
-			SERIAL_ECHOLN("}");
 			status_number = 1;
 		}
+		SERIAL_ECHO('{');
+		prusa_stat_printerstatus(status_number);
+		prusa_stat_farm_number();
+		prusa_stat_printinfo();
 		break;
 
 	case 1:		// 1 heating
 		farm_status = 2;
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(2);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 2;
 		farm_timer = 1;
 		break;
 
 	case 2:		// heating done
 		farm_status = 3;
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(3);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		SERIAL_ECHOLN('}');
 		status_number = 3;
 		farm_timer = 1;
 
 		if (IS_SD_PRINTING || loading_flag)
 		{
 			farm_status = 4;
-			SERIAL_ECHO("{");
+			SERIAL_ECHO('{');
 			prusa_stat_printerstatus(4);
 			prusa_stat_farm_number();
-			SERIAL_ECHOLN("}");
 			status_number = 4;
 		}
 		else
 		{
-			SERIAL_ECHO("{");
+			SERIAL_ECHO('{');
 			prusa_stat_printerstatus(3);
 			prusa_stat_farm_number();
-			SERIAL_ECHOLN("}");
 			status_number = 3;
 		}
 		farm_timer = 1;
 		break;
 
 	case 3:		// filament change
-
+		// must do a return here to prevent doing SERIAL_ECHOLN("}") at the very end of this function
+		// saved a considerable amount of FLASH
+		return;
 		break;
 	case 4:		// print succesfull
 		SERIAL_ECHO("{[RES:1][FIL:");
 		MYSERIAL.print(int(_fil_nr));
-		SERIAL_ECHO("]");
+		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 5:		// print not succesfull
 		SERIAL_ECHO("{[RES:0][FIL:");
 		MYSERIAL.print(int(_fil_nr));
-		SERIAL_ECHO("]");
+		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 6:		// print done
 		SERIAL_ECHO("{[PRN:8]");
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 8;
 		farm_timer = 2;
 		break;
 	case 7:		// print done - stopped
 		SERIAL_ECHO("{[PRN:9]");
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 9;
 		farm_timer = 2;
 		break;
@@ -4078,49 +4064,38 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		SERIAL_ECHO("{[PRN:0][PFN:");
 		status_number = 0;
 		SERIAL_ECHO(farm_no);
-		SERIAL_ECHOLN("]}");
+		SERIAL_ECHO(']');
 		farm_timer = 2;
 		break;
 	case 20:		// echo farm no
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		farm_timer = 4;
 		break;
 	case 21: // temperatures
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_temperatures();
 		prusa_stat_farm_number();
 		prusa_stat_printerstatus(status_number);
-		SERIAL_ECHOLN("}");
 		break;
     case 22: // waiting for filament change
         SERIAL_ECHO("{[PRN:5]");
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 5;
         break;
 	
 	case 90: // Error - Thermal Runaway
-		SERIAL_ECHO("{[ERR:1]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('1');
 		break;
 	case 91: // Error - Thermal Runaway Preheat
-		SERIAL_ECHO("{[ERR:2]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('2');
 		break;
 	case 92: // Error - Min temp
-		SERIAL_ECHO("{[ERR:3]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('3');
 		break;
 	case 93: // Error - Max temp
-		SERIAL_ECHO("{[ERR:4]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('4');
 		break;
 
     case 99:		// heartbeat
@@ -4128,11 +4103,11 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
         prusa_stat_temperatures();
 		SERIAL_ECHO("[PFN:");
 		SERIAL_ECHO(farm_no);
-		SERIAL_ECHO("]");
-        SERIAL_ECHOLN("}");
+		SERIAL_ECHO(']');
             
         break;
 	}
+	SERIAL_ECHOLN('}');	
 
 }
 
@@ -4140,19 +4115,19 @@ static void prusa_stat_printerstatus(int _status)
 {
 	SERIAL_ECHO("[PRN:");
 	SERIAL_ECHO(_status);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_farm_number() {
 	SERIAL_ECHO("[PFN:");
 	SERIAL_ECHO(farm_no);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_diameter() {
 	SERIAL_ECHO("[DIA:");
 	SERIAL_ECHO(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM));
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_temperatures()
@@ -4165,7 +4140,7 @@ static void prusa_stat_temperatures()
 	SERIAL_ECHO(current_temperature[0]);
 	SERIAL_ECHO("][ATB:");
 	SERIAL_ECHO(current_temperature_bed);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_printinfo()
@@ -4189,7 +4164,7 @@ static void prusa_stat_printinfo()
 	}
 	SERIAL_ECHO("][FWR:");
 	SERIAL_ECHO(FW_VERSION);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
      prusa_stat_diameter();
 }
 

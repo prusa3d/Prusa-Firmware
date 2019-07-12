@@ -411,6 +411,24 @@ void serial_echopair_P(const char *s_P, double v)
 void serial_echopair_P(const char *s_P, unsigned long v)
     { serialprintPGM(s_P); SERIAL_ECHO(v); }
 
+/*FORCE_INLINE*/ void serialprintPGM(const char *str)
+{
+#if 0
+  char ch=pgm_read_byte(str);
+  while(ch)
+  {
+    MYSERIAL.write(ch);
+    ch=pgm_read_byte(++str);
+  }
+#else
+	// hmm, same size as the above version, the compiler did a good job optimizing the above
+	while( uint8_t ch = pgm_read_byte(str) ){
+	  MYSERIAL.write((char)ch);
+	  ++str;
+	}
+#endif
+}
+
 #ifdef SDSUPPORT
   #include "SdFatUtil.h"
   int freeMemory() { return SdFatUtil::FreeRam(); }
