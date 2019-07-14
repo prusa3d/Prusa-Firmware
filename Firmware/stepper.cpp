@@ -72,6 +72,14 @@ uint16_t SP_min = 0x21FF;
 #define _STEP_PIN_Z2_AXIS Z2_STEP_PIN
 #endif
 
+#ifdef TMC2130
+#define STEPPER_MINIMUM_PULSE TMC2130_MINIMUM_PULSE
+#define STEPPER_SET_DIR_DELAY TMC2130_SET_DIR_DELAY
+#else
+#define STEPPER_MINIMUM_PULSE 2
+#define STEPPER_SET_DIR_DELAY 100
+#endif
+
 #ifdef TMC2130_DEDGE_STEPPING
 #define STEP_NC_HI(axis) TOGGLE(_STEP_PIN_##axis)
 #define STEP_NC_LO(axis) //NOP
@@ -1416,89 +1424,112 @@ void quickStop()
 #ifdef BABYSTEPPING
 void babystep(const uint8_t axis,const bool direction)
 {
-  //MUST ONLY BE CALLED BY A ISR, it depends on that no other ISR interrupts this
-    //store initial pin states
-  switch(axis)
-  {
-  case X_AXIS:
-  {
-    enable_x();   
-    uint8_t old_x_dir_pin= READ(X_DIR_PIN);  //if dualzstepper, both point to same direction.
-   
-    //setup new step
-    WRITE(X_DIR_PIN,(INVERT_X_DIR)^direction);
-    
-    //perform step 
-    STEP_NC_HI(X_AXIS);
+    // MUST ONLY BE CALLED BY A ISR as stepper pins are manipulated directly.
+    // note: when switching direction no delay is inserted at the end when the
+    //       original is restored. We assume enough time passes as the function
+    //       returns and the stepper is manipulated again (to avoid dead times)
+    switch(axis)
+    {
+    case X_AXIS:
+    {
+        enable_x();
+        uint8_t old_x_dir_pin = READ(X_DIR_PIN);  //if dualzstepper, both point to same direction.
+        uint8_t new_x_dir_pin = (INVERT_X_DIR)^direction;
+
+        //setup new step
+        if (new_x_dir_pin != old_x_dir_pin) {
+            WRITE_NC(X_DIR_PIN, new_x_dir_pin);
+            delayMicroseconds(STEPPER_SET_DIR_DELAY);
+        }
+
+        //perform step
+        STEP_NC_HI(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
-    STEP_NC_HI(X_DUP_AXIS);
-#endif //DEBUG_XSTEP_DUP_PIN
-    delayMicroseconds(1);
-    STEP_NC_LO(X_AXIS);
+        STEP_NC_HI(X_DUP_AXIS);
+#endif
+#ifndef TMC2130_DEDGE_STEPPING
+        delayMicroseconds(STEPPER_MINIMUM_PULSE);
+        STEP_NC_LO(X_AXIS);
 #ifdef DEBUG_XSTEP_DUP_PIN
-    STEP_NC_LO(X_DUP_AXIS);
-#endif //DEBUG_XSTEP_DUP_PIN
+        STEP_NC_LO(X_DUP_AXIS);
+#endif
+#endif
 
-    //get old pin state back.
-    WRITE(X_DIR_PIN,old_x_dir_pin);
-  }
-  break;
-  case Y_AXIS:
-  {
-    enable_y();   
-    uint8_t old_y_dir_pin= READ(Y_DIR_PIN);  //if dualzstepper, both point to same direction.
-   
-    //setup new step
-    WRITE(Y_DIR_PIN,(INVERT_Y_DIR)^direction);
-    
-    //perform step 
-    STEP_NC_HI(Y_AXIS);
+        //get old pin state back.
+        WRITE_NC(X_DIR_PIN, old_x_dir_pin);
+    }
+    break;
+
+    case Y_AXIS:
+    {
+        enable_y();
+        uint8_t old_y_dir_pin = READ(Y_DIR_PIN);  //if dualzstepper, both point to same direction.
+        uint8_t new_y_dir_pin = (INVERT_Y_DIR)^direction;
+
+        //setup new step
+        if (new_y_dir_pin != old_y_dir_pin) {
+            WRITE_NC(Y_DIR_PIN, new_y_dir_pin);
+            delayMicroseconds(STEPPER_SET_DIR_DELAY);
+        }
+
+        //perform step
+        STEP_NC_HI(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
-    STEP_NC_HI(Y_DUP_AXIS);
-#endif //DEBUG_YSTEP_DUP_PIN
-    delayMicroseconds(1);
-    STEP_NC_LO(Y_AXIS);
+        STEP_NC_HI(Y_DUP_AXIS);
+#endif
+#ifndef TMC2130_DEDGE_STEPPING
+        delayMicroseconds(STEPPER_MINIMUM_PULSE);
+        STEP_NC_LO(Y_AXIS);
 #ifdef DEBUG_YSTEP_DUP_PIN
-    STEP_NC_LO(Y_DUP_AXIS);
-#endif //DEBUG_YSTEP_DUP_PIN
+        STEP_NC_LO(Y_DUP_AXIS);
+#endif
+#endif
 
-    //get old pin state back.
-    WRITE(Y_DIR_PIN,old_y_dir_pin);
+        //get old pin state back.
+        WRITE_NC(Y_DIR_PIN, old_y_dir_pin);
+    }
+    break;
 
-  }
-  break;
- 
-  case Z_AXIS:
-  {
-    enable_z();
-    uint8_t old_z_dir_pin= READ(Z_DIR_PIN);  //if dualzstepper, both point to same direction.
-    //setup new step
-    WRITE(Z_DIR_PIN,(INVERT_Z_DIR)^direction^BABYSTEP_INVERT_Z);
-    #ifdef Z_DUAL_STEPPER_DRIVERS
-      WRITE(Z2_DIR_PIN,(INVERT_Z_DIR)^direction^BABYSTEP_INVERT_Z);
-    #endif
-    //perform step 
-    STEP_NC_HI(Z_AXIS);
-    #ifdef Z_DUAL_STEPPER_DRIVERS
-      STEP_NC_HI(Z2_AXIS);
-    #endif
-    delayMicroseconds(1);
-    STEP_NC_LO(Z_AXIS);
-    #ifdef Z_DUAL_STEPPER_DRIVERS
-      STEP_NC_LO(Z2_AXIS);
-    #endif
+    case Z_AXIS:
+    {
+        enable_z();
+        uint8_t old_z_dir_pin = READ(Z_DIR_PIN);  //if dualzstepper, both point to same direction.
+        uint8_t new_z_dir_pin = (INVERT_Z_DIR)^direction^BABYSTEP_INVERT_Z;
 
-    //get old pin state back.
-    WRITE(Z_DIR_PIN,old_z_dir_pin);
-    #ifdef Z_DUAL_STEPPER_DRIVERS
-      WRITE(Z2_DIR_PIN,old_z_dir_pin);
-    #endif
+        //setup new step
+        if (new_z_dir_pin != old_z_dir_pin) {
+            WRITE_NC(Z_DIR_PIN, new_z_dir_pin);
+#ifdef Z_DUAL_STEPPER_DRIVERS
+            WRITE_NC(Z2_DIR_PIN, new_z_dir_pin);
+#endif
+            delayMicroseconds(STEPPER_SET_DIR_DELAY);
+        }
 
-  }
-  break;
- 
-  default:    break;
-  }
+        //perform step
+        STEP_NC_HI(Z_AXIS);
+#ifdef Z_DUAL_STEPPER_DRIVERS
+        STEP_NC_HI(Z2_AXIS);
+#endif
+#ifndef TMC2130_DEDGE_STEPPING
+        delayMicroseconds(STEPPER_MINIMUM_PULSE);
+        STEP_NC_LO(Z_AXIS);
+#ifdef Z_DUAL_STEPPER_DRIVERS
+        STEP_NC_LO(Z2_AXIS);
+#endif
+#endif
+
+        //get old pin state back.
+        if (new_z_dir_pin != old_z_dir_pin) {
+            WRITE_NC(Z_DIR_PIN, old_z_dir_pin);
+#ifdef Z_DUAL_STEPPER_DRIVERS
+            WRITE_NC(Z2_DIR_PIN, old_z_dir_pin);
+#endif
+        }
+    }
+    break;
+
+    default: break;
+    }
 }
 #endif //BABYSTEPPING
 
