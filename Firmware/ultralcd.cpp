@@ -1771,8 +1771,8 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 
 	lcd_timeoutToStatus.stop(); //infinite timeout
 
+	lcd_home();
 	lcd_printf_P(_N(
-	  ESC_H(0,0)
 	  "%S: %4d RPM\n"
 	  "%S:  %4d RPM\n"
 	 ),
@@ -1833,8 +1833,8 @@ static void lcd_menu_fails_stats_mmu_print()
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
-//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3)), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
+	lcd_home();
+	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d"), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
 	menu_back_if_clicked_fb();
 }
 
@@ -1850,8 +1850,8 @@ static void lcd_menu_fails_stats_mmu_total()
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
-//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S %-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);
+	lcd_home();
+	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S %-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);
 	menu_back_if_clicked_fb();
 }
 
@@ -1869,8 +1869,8 @@ static void lcd_menu_fails_stats_total()
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
-//	lcd_printf_P(PSTR(ESC_H(0,0) "Total failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S  X %-3d  Y %-3d"), _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+	lcd_home();
+	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S  X %-3d  Y %-3d"), _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
 	menu_back_if_clicked_fb();
 }
 
@@ -1887,8 +1887,8 @@ static void lcd_menu_fails_stats_print()
     uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
-//	lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Power failures  %-3d" ESC_H(1,2) "Filam. runouts  %-3d" ESC_H(1,3) "Crash  X %-3d  Y %-3d"), power, filam, crashX, crashY);
-	lcd_printf_P(PSTR(ESC_H(0,0) "%S" ESC_H(1,1) "%S  %-3d" ESC_H(1,2) "%S  %-3d" ESC_H(1,3) "%S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+	lcd_home();
+	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
 	menu_back_if_clicked_fb();
 }
 
@@ -1929,7 +1929,8 @@ static void lcd_menu_fails_stats()
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
-    lcd_printf_P(PSTR(ESC_H(0,0) "Last print failures" ESC_H(1,1) "Filam. runouts  %-3d" ESC_H(0,2) "Total failures" ESC_H(1,3) "Filam. runouts  %-3d"), filamentLast, filamentTotal);
+	lcd_home();
+    lcd_printf_P(PSTR("Last print failures\n" " Filam. runouts  %-3d\n" "Total failures\n" " Filam. runouts  %-3d"), filamentLast, filamentTotal);
     menu_back_if_clicked();
 }
 #else
@@ -1953,7 +1954,8 @@ extern char* __malloc_heap_end;
 static void lcd_menu_debug()
 {
 #ifdef DEBUG_STACK_MONITOR
-	lcd_printf_P(PSTR(ESC_H(1,1) "RAM statistics" ESC_H(5,1) "SP_min: 0x%04x" ESC_H(1,2) "heap_start: 0x%04x" ESC_H(3,3) "heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
+	lcd_home();
+	lcd_printf_P(PSTR("RAM statistics\n" " SP_min: 0x%04x\n" " heap_start: 0x%04x\n" " heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
 #endif //DEBUG_STACK_MONITOR
 
 	menu_back_if_clicked_fb();
@@ -1963,12 +1965,13 @@ static void lcd_menu_debug()
 static void lcd_menu_temperatures()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
-
-	lcd_printf_P(PSTR(ESC_H(1,0) "%S:   %d%c" ESC_H(1,1) "%S:      %d%c"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
+	
+	lcd_home();
+	lcd_printf_P(PSTR(" %S:   %d%c \n" " %S:      %d%c \n"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
-	lcd_printf_P(PSTR(ESC_H(1,2) "%S:  %d%c" ESC_H(1,3) "PINDA:    %d%c"), _i("Ambient"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
+	lcd_printf_P(PSTR(" %S:  %d%c\n" " PINDA:    %d%c"), _i("Ambient"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
 #else //AMBIENT_THERMISTOR
-	lcd_printf_P(PSTR(ESC_H(1,2) "PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
+	lcd_printf_P(PSTR(" PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
 #endif //AMBIENT_THERMISTOR
 
     menu_back_if_clicked();
@@ -1984,7 +1987,8 @@ static void lcd_menu_voltages()
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
-	lcd_printf_P(PSTR(ESC_H(1,1)"PWR:      %d.%01dV" ESC_H(1,2)"BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
+	lcd_home();
+	lcd_printf_P(PSTR(" PWR:      %d.%01dV\n" " BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
     menu_back_if_clicked();
 }
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
@@ -1992,7 +1996,8 @@ static void lcd_menu_voltages()
 #ifdef TMC2130
 static void lcd_menu_belt_status()
 {
-    lcd_printf_P(PSTR(ESC_H(1,0) "%S" ESC_H(2,1) "X %d" ESC_H(2,2) "Y %d" ), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
+	lcd_home();
+    lcd_printf_P(PSTR("%S\n" " X %d\n" " Y %d"), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     menu_back_if_clicked();
 }
 #endif //TMC2130
@@ -2817,18 +2822,14 @@ void lcd_menu_statistics()
 		const int _m = (_t - (_h * 3600ul)) / 60ul;
 		const int _s = _t - ((_h * 3600ul) + (_m * 60ul));
 
+		lcd_clear();
 		lcd_printf_P(_N(
-		  ESC_2J
-		  "%S:"
-		  ESC_H(6,1) "%8.2fm \n"
-		  "%S :"
-		  ESC_H(8,3) "%2dh %02dm %02ds"
-		  ),
-		 _i("Filament used"),
-		 _met,
-		 _i("Print time"),
-		 _h, _m, _s
-		);
+			"%S:\n"
+			"%8.2fm\n"
+			"%S:\n"
+			"%2dh %02dm %02ds"
+		),_i("Filament used"), _met, _i("Print time"), _h, _m, _s);
+		
 		menu_back_if_clicked_fb();
 	}
 	else
@@ -2844,18 +2845,14 @@ void lcd_menu_statistics()
 		_hours = (_time - (_days * 1440)) / 60;
 		_minutes = _time - ((_days * 1440) + (_hours * 60));
 
+		lcd_clear();
 		lcd_printf_P(_N(
-		  ESC_2J
-		  "%S :"
-		  ESC_H(9,1) "%8.2f m\n"
-		  "%S :\n"
-		  "%7ldd :%2hhdh :%02hhd m"
-		 ),
-		 _i("Total filament"),
-		 _filament_m,
-		 _i("Total print time"),
-		 _days, _hours, _minutes
-		);
+			"%S:\n"
+			"%8.2fm\n"
+			"%S:\n"
+			"%7ldd :%2hhdh :%02hhdm"
+		), _i("Total filament"), _filament_m, _i("Total print time"), _days, _hours, _minutes);
+		
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 		while (!lcd_clicked())
 		{
@@ -2953,8 +2950,8 @@ static void lcd_menu_xyz_y_min()
 //----------------------
 	float distanceMin[2];
     count_xyz_details(distanceMin);
+	lcd_home();
 	lcd_printf_P(_N(
-	  ESC_H(0,0)
 	  "%S:\n"
 	  "%S\n"
 	  "%S:\n"
@@ -2990,8 +2987,8 @@ static void lcd_menu_xyz_skew()
 //|Severe skew:   0.25d|
 //----------------------
     float angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
+	lcd_home();
 	lcd_printf_P(_N(
-	  ESC_H(0,0)
 	  "%S:\n"
 	  "%S\n"
 	  "%S:  %5.2f\x01\n"
@@ -3002,10 +2999,14 @@ static void lcd_menu_xyz_skew()
 	 _i("Slight skew"), _deg(bed_skew_angle_mild),
 	 _i("Severe skew"), _deg(bed_skew_angle_extreme)
 	);
-	if (angleDiff < 100)
-		lcd_printf_P(_N(ESC_H(15,0)"%4.2f\x01"), _deg(angleDiff));
-	else
-		lcd_puts_P(_N(ESC_H(15,0)"N/A"));
+	if (angleDiff < 100){
+		lcd_set_cursor(15,0);
+		lcd_printf_P(_N("%4.2f\x01"), _deg(angleDiff));
+	}
+	else{
+		lcd_set_cursor(15,0);
+		lcd_puts_P(_N("N/A"));
+	}
     if (lcd_clicked())
         menu_goto(lcd_menu_xyz_offset, 0, true, true);
 }
@@ -4355,7 +4356,8 @@ static void lcd_crash_mode_info()
 	static uint32_t tim = 0;
 	if ((tim + 1000) < _millis())
 	{
-		fputs_P(_i("\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"), lcdout);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
+		lcd_clear();
+		fputs_P(_i("Crash detection can\rbe turned on only in\rNormal mode"), lcdout);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 		tim = _millis();
 	}
     menu_back_if_clicked();
@@ -4367,7 +4369,8 @@ static void lcd_crash_mode_info2()
 	static uint32_t tim = 0;
 	if ((tim + 1000) < _millis())
 	{
-		fputs_P(_i("\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"), lcdout);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+		lcd_clear();
+		fputs_P(_i("WARNING:\rCrash detection\rdisabled in\rStealth mode"), lcdout);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 		tim = _millis();
 	}
     menu_back_if_clicked();

@@ -775,12 +775,8 @@ int uart_putchar(char c, FILE *)
 
 void lcd_splash()
 {
-//	lcd_puts_at_P(0, 1, PSTR("   Original Prusa   "));
-//	lcd_puts_at_P(0, 2, PSTR("    3D  Printers    "));
-//	lcd_puts_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
-//    fputs_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"), lcdout);
-    lcd_puts_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"));
-//	lcd_printf_P(_N(ESC_2J "x:%.3f\ny:%.3f\nz:%.3f\ne:%.3f"), _x, _y, _z, _e);
+	lcd_clear(); // clears display and homes screen
+	lcd_puts_P(PSTR("\n Original Prusa i3\n   Prusa Research"));
 }
 
 
@@ -910,7 +906,7 @@ void update_sec_lang_from_external_flash()
 		uint32_t src_addr;
 		if (lang_get_header(lang, &header, &src_addr))
 		{
-			fputs_P(PSTR(ESC_H(1,3) "Language update."), lcdout);
+			lcd_puts_at_P(1,3,PSTR("Language update."));
 			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
 			_delay(100);
 			boot_reserved = (state + 1) | (lang << 4);
@@ -984,8 +980,8 @@ void list_sec_lang_from_external_flash()
 
 static void w25x20cl_err_msg()
 {
-    lcd_puts_P(_n(ESC_2J ESC_H(0,0) "External SPI flash" ESC_H(0,1) "W25X20CL is not res-"
-            ESC_H(0,2) "ponding. Language" ESC_H(0,3) "switch unavailable."));
+	lcd_clear();
+	lcd_puts_P(_n("External SPI flash\nW25X20CL is not res-\nponding. Language\nswitch unavailable."));
 }
 
 // "Setup" function is called by the Arduino framework on startup.
