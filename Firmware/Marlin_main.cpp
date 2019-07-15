@@ -9476,7 +9476,8 @@ void restore_print_from_ram_and_continue(float e_move)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
 	fanSpeed = saved_fanSpeed;
-	if (saved_extruder_temperature) {
+	if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
+	{
 		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
 		heating_status = 1;
 		wait_for_heater(_millis(), saved_active_extruder);
