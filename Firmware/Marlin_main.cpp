@@ -6734,6 +6734,10 @@ Sigma_Exit:
 	}
 	break;
 
+  case 603: { //! M603 - Stop print
+		lcd_print_stop();
+	}
+
 #ifdef PINDA_THERMISTOR
 	case 860: // M860 - Wait for PINDA thermistor to reach target temperature.
 	{
@@ -9501,7 +9505,6 @@ void restore_print_from_ram_and_continue(float e_move)
 		card.setIndex(saved_sdpos);
 		sdpos_atomic = saved_sdpos;
 		card.sdprinting = true;
-		printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 	}
 	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
 		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
@@ -9511,6 +9514,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	else {
 		//not sd printing nor usb printing
 	}
+	printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
 	saved_printing = false;
 }

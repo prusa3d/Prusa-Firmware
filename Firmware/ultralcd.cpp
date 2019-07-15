@@ -6952,7 +6952,6 @@ void lcd_print_stop()
      if(!card.sdprinting)
           {
           SERIAL_ECHOLNPGM("// action:cancel");   // for Octoprint
-          return;
           }
 	saved_printing = false;
 	cancel_heatup = true;
