@@ -9456,10 +9456,11 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 
 //! @brief Restore print from ram
 //!
-//! Restore print saved by stop_and_save_print_to_ram(). Is blocking,
-//! waits for extruder temperature restore, then restores position and continues
-//! print moves.
-//! Internaly lcd_update() is called by wait_for_heater().
+//! Restore print saved by stop_and_save_print_to_ram(). Is blocking, restores
+//! print fan speed, waits for extruder temperature restore, then restores
+//! position and continues print moves.
+//!
+//! Internally lcd_update() is called by wait_for_heater().
 //!
 //! @param e_move
 void restore_print_from_ram_and_continue(float e_move)
@@ -9474,6 +9475,7 @@ void restore_print_from_ram_and_continue(float e_move)
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
+	fanSpeed = saved_fanSpeed;
 	if (saved_extruder_temperature) {
 		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
 		heating_status = 1;
@@ -9482,7 +9484,6 @@ void restore_print_from_ram_and_continue(float e_move)
 	}
 	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
-	fanSpeed = saved_fanSpeed;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
 	//first move print head in XY to the saved position:
