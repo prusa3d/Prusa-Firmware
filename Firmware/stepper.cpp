@@ -335,10 +335,6 @@ FORCE_INLINE void stepper_next_block()
 	}
 #endif
 
-#ifdef FILAMENT_SENSOR
-	fsensor_counter = 0;
-	fsensor_st_block_begin(count_direction[E_AXIS] < 0);
-#endif //FILAMENT_SENSOR
     // The busy flag is set by the plan_get_current_block() call.
     // current_block->busy = true;
     // Initializes the trapezoid generator from the current block. Called whenever a new
@@ -421,6 +417,10 @@ FORCE_INLINE void stepper_next_block()
 #endif /* LIN_ADVANCE */
       count_direction[E_AXIS] = 1;
     }
+#ifdef FILAMENT_SENSOR
+	fsensor_counter = 0;
+	fsensor_st_block_begin(count_direction[E_AXIS] < 0);
+#endif //FILAMENT_SENSOR
   }
   else {
       _NEXT_ISR(2000); // 1kHz.
