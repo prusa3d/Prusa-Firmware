@@ -11,8 +11,6 @@
 extern FILE _lcdout;
 
 #define lcdout (&_lcdout)
-extern int lcd_putchar(char c, FILE *stream);
-
 
 extern void lcd_init(void);
 
@@ -20,12 +18,9 @@ extern void lcd_refresh(void);
 
 extern void lcd_refresh_noclear(void);
 
-
-
 extern void lcd_clear(void);
 
 extern void lcd_home(void);
-
 
 /*extern void lcd_no_display(void);
 extern void lcd_display(void);
@@ -43,7 +38,6 @@ extern void lcd_no_autoscroll(void);*/
 extern void lcd_set_cursor(uint8_t col, uint8_t row);
 
 extern void lcd_createChar_P(uint8_t, const uint8_t*);
-
 
 
 extern int lcd_putc(int c);
@@ -66,7 +60,9 @@ extern void lcd_print(double, int = 2);
 
 //! @brief Clear screen
 #define ESC_2J     "\x1b[2J"
+//! @brief Show cursor
 #define ESC_25h    "\x1b[?25h"
+//! @brief Hide cursor
 #define ESC_25l    "\x1b[?25l"
 //! @brief Set cursor to
 //! @param c column
@@ -118,22 +114,12 @@ extern lcd_lcdupdate_func_t lcd_lcdupdate_func;
 
 
 
-
-
-
 extern uint8_t lcd_clicked(void);
 
 extern void lcd_beeper_quick_feedback(void);
 
 //Cause an LCD refresh, and give the user visual or audible feedback that something has happened
 extern void lcd_quick_feedback(void);
-
-
-
-
-
-
-
 
 extern void lcd_update(uint8_t lcdDrawUpdateOverride);
 
@@ -163,29 +149,6 @@ public:
 private:
     bool m_updateEnabled;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
-* Implementation of the LCD display routines for a Hitachi HD44780 display. These are common LCD character displays.
-* When selecting the Russian language, a slightly different LCD implementation is used to handle UTF8 characters.
-**/
 
 
 ////////////////////////////////////
@@ -221,8 +184,6 @@ private:
 #define encrot1 2
 #define encrot2 3
 #define encrot3 1
-
-
 
 
 //Custom characters defined in the first 8 characters of the LCD

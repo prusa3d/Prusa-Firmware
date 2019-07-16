@@ -7,9 +7,6 @@
 #include "menu.h"
 #include "mesh_bed_calibration.h"
 
-extern int lcd_puts_P(const char* str);
-extern int lcd_printf_P(const char* format, ...);
-
 extern void menu_lcd_longpress_func(void);
 extern void menu_lcd_charsetup_func(void);
 extern void menu_lcd_lcdupdate_func(void);
