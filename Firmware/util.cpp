@@ -330,7 +330,7 @@ void update_current_firmware_version_to_eeprom()
 
 
 //-//
-void lcd_checking_menu(void);
+#define MSG_PRINT_CHECKING_FAILED_TIMEOUT 30
 
 ClNozzleDiameter oNozzleDiameter=ClNozzleDiameter::_Diameter_400;
 ClCheckMode oCheckMode=ClCheckMode::_None;
@@ -385,7 +385,7 @@ nDiameter_um=eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM);
 if(nDiameter==nDiameter_um)
      return;
 //SERIAL_ECHO_START;
-//SERIAL_ECHOLNPGM("Nozzle diameter doesn't match ...");
+//SERIAL_ECHOLNPGM("Printer nozzle diameter differs from the G-code ...");
 //SERIAL_ECHOPGM("actual  : ");
 //SERIAL_ECHOLN((float)(nDiameter_um/1000.0));
 //SERIAL_ECHOPGM("expected: ");
@@ -393,15 +393,19 @@ if(nDiameter==nDiameter_um)
 switch(oCheckMode)
      {
      case ClCheckMode::_Warn:
-          lcd_show_fullscreen_message_and_wait_P(_i("Nozzle diameter doesn't match! Press the knob to continue."));
+//          lcd_show_fullscreen_message_and_wait_P(_i("Printer nozzle diameter differs from the G-code. Continue?"));
+lcd_display_message_fullscreen_P(_i("Printer nozzle diameter differs from the G-code. Continue?"));
+lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
+//???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
+lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckMode::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("Nozzle diameter doesn't match! Print is aborted, press the knob."));
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."));
           lcd_print_stop();
           break;
      }
-bSettings=false;                                  // flag ('fake parameter') for 'lcd_checking_menu()' function
-menu_submenu(lcd_checking_menu);
+bSettings=false;                                  // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
+menu_submenu(lcd_hw_setup_menu);
 }
 
 void printer_model_check(uint16_t nPrinterModel)
@@ -411,7 +415,7 @@ if(oCheckModel==ClCheckModel::_None)
 if(nPrinterModel==nPrinterType)
      return;
 //SERIAL_ECHO_START;
-//SERIAL_ECHOLNPGM("Printer model doesn't match ...");
+//SERIAL_ECHOLNPGM("Printer model differs from the G-code ...");
 //SERIAL_ECHOPGM("actual  : ");
 //SERIAL_ECHOLN(nPrinterType);
 //SERIAL_ECHOPGM("expected: ");
@@ -419,10 +423,14 @@ if(nPrinterModel==nPrinterType)
 switch(oCheckModel)
      {
      case ClCheckModel::_Warn:
-          lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Press the knob to continue."));
+//          lcd_show_fullscreen_message_and_wait_P(_i("Printer model differs from the G-code. Continue?"));
+lcd_display_message_fullscreen_P(_i("Printer model differs from the G-code. Continue?"));
+lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
+//???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
+lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckModel::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Print is aborted, press the knob."));
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer model differs from the G-code. Please check the value in settings. Print cancelled."));
           lcd_print_stop();
           break;
      }
@@ -454,7 +462,7 @@ if(nCompareValueResult==COMPARE_VALUE_EQUAL)
 if((nCompareValueResult<COMPARE_VALUE_EQUAL)&&oCheckVersion==ClCheckVersion::_Warn)
      return;
 //SERIAL_ECHO_START;
-//SERIAL_ECHOLNPGM("FW version doesn't match ...");
+//SERIAL_ECHOLNPGM("Printer FW version differs from the G-code ...");
 //SERIAL_ECHOPGM("actual  : ");
 //SERIAL_ECHOLN(FW_VERSION);
 //SERIAL_ECHOPGM("expected: ");
@@ -462,10 +470,14 @@ if((nCompareValueResult<COMPARE_VALUE_EQUAL)&&oCheckVersion==ClCheckVersion::_Wa
 switch(oCheckVersion)
      {
      case ClCheckVersion::_Warn:
-          lcd_show_fullscreen_message_and_wait_P(_i("FW version doesn't match! Press the knob to continue."));
+//          lcd_show_fullscreen_message_and_wait_P(_i("Printer FW version differs from the G-code. Continue?"));
+lcd_display_message_fullscreen_P(_i("Printer FW version differs from the G-code. Continue?"));
+lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
+//???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
+lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckVersion::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("FW version doesn't match! Print is aborted, press the knob."));
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer FW version differs from the G-code. Please check the value in settings. Print cancelled."));
           lcd_print_stop();
           break;
      }
@@ -480,7 +492,7 @@ if(nGcodeLevel==(uint16_t)GCODE_LEVEL)
 if((nGcodeLevel<(uint16_t)GCODE_LEVEL)&&(oCheckGcode==ClCheckGcode::_Warn))
      return;
 //SERIAL_ECHO_START;
-//SERIAL_ECHOLNPGM("G-code level doesn't match ...");
+//SERIAL_ECHOLNPGM("Printer G-code level differs from the G-code ...");
 //SERIAL_ECHOPGM("actual  : ");
 //SERIAL_ECHOLN(GCODE_LEVEL);
 //SERIAL_ECHOPGM("expected: ");
@@ -488,10 +500,14 @@ if((nGcodeLevel<(uint16_t)GCODE_LEVEL)&&(oCheckGcode==ClCheckGcode::_Warn))
 switch(oCheckGcode)
      {
      case ClCheckGcode::_Warn:
-          lcd_show_fullscreen_message_and_wait_P(_i("G-code level doesn't match! Press the knob to continue."));
+//          lcd_show_fullscreen_message_and_wait_P(_i("Printer G-code level differs from the G-code. Continue?"));
+lcd_display_message_fullscreen_P(_i("Printer G-code level differs from the G-code. Continue?"));
+lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
+//???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
+lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckGcode::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("G-code level doesn't match! Print is aborted, press the knob."));
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer G-code level differs from the G-code. Please check the value in settings. Print cancelled."));
           lcd_print_stop();
           break;
      }
@@ -537,7 +553,7 @@ if(pResult!=NULL)
           return;
      }
 //SERIAL_ECHO_START;
-//SERIAL_ECHOLNPGM("Printer model doesn't match ...");
+//SERIAL_ECHOLNPGM("Printer model differs from the G-code ...");
 //SERIAL_ECHOPGM("actual  : \"");
 //serialprintPGM(::sPrinterName);
 //SERIAL_ECHOLNPGM("\"");
@@ -547,10 +563,14 @@ if(pResult!=NULL)
 switch(oCheckModel)
      {
      case ClCheckModel::_Warn:
-          lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Press the knob to continue."));
+//          lcd_show_fullscreen_message_and_wait_P(_i("Printer model differs from the G-code. Continue?"));
+lcd_display_message_fullscreen_P(_i("Printer model differs from the G-code. Continue?"));
+lcd_wait_for_click_delay(MSG_PRINT_CHECKING_FAILED_TIMEOUT);
+//???custom_message_type=CUSTOM_MSG_TYPE_STATUS; // display / status-line recovery
+lcd_update_enable(true);           // display / status-line recovery
           break;
      case ClCheckModel::_Strict:
-          lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Print is aborted, press the knob."));
+          lcd_show_fullscreen_message_and_wait_P(_i("Printer model differs from the G-code. Please check the value in settings. Print cancelled."));
           lcd_print_stop();
           break;
      }
