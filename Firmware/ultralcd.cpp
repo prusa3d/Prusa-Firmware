@@ -8258,7 +8258,7 @@ void menu_lcd_longpress_func(void)
         return;
     }
 
-    if (moves_planned() || IS_SD_PRINTING || is_usb_printing)
+    if (current_position[Z_AXIS] < Z_HEIGHT_HIDE_LIVE_ADJUST_MENU && (moves_planned() || IS_SD_PRINTING || is_usb_printing ))
     {
         lcd_clear();
         menu_submenu(lcd_babystep_z);
