@@ -1298,6 +1298,9 @@ void setup()
 	update_mode_profile();
 	tmc2130_init();
 #endif //TMC2130
+#ifdef PSU_Delta
+     init_force_z();                              // ! important for correct Z-axis initialization
+#endif // PSU_Delta
     
 	setup_photpin();
 
@@ -1335,7 +1338,7 @@ void setup()
   }
 #endif //TMC2130
 
-#if defined(Z_AXIS_ALWAYS_ON)
+#if defined(Z_AXIS_ALWAYS_ON) && !defined(PSU_Delta)
 	enable_z();
 #endif
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
@@ -9813,3 +9816,69 @@ void marlin_wait_for_click()
 }
 
 #define FIL_LOAD_LENGTH 60
+
+#ifdef PSU_Delta
+bool bEnableForce_z;
+
+void init_force_z()
+{
+WRITE(Z_ENABLE_PIN,Z_ENABLE_ON);
+bEnableForce_z=true;                              // "true"-value enforce "disable_force_z()" executing
+disable_force_z();
+}
+
+void check_force_z()
+{
+if(!(bEnableForce_z||eeprom_read_byte((uint8_t*)EEPROM_SILENT)))
+     init_force_z();                              // causes enforced switching into disable-state
+}
+
+void disable_force_z()
+{
+uint16_t z_microsteps=0;
+
+if(!bEnableForce_z)
+     return;                                      // motor already disabled (may be ;-p )
+bEnableForce_z=false;
+
+// alignment to full-step
+#ifdef TMC2130
+z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
+#endif // TMC2130
+planner_abort_hard();
+sei();
+plan_buffer_line(
+     current_position[X_AXIS], 
+     current_position[Y_AXIS], 
+     current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/cs.axis_steps_per_unit[Z_AXIS], 
+     current_position[E_AXIS],
+     40, active_extruder);
+st_synchronize();
+
+// switching to silent mode
+#ifdef TMC2130
+tmc2130_mode=TMC2130_MODE_SILENT;
+update_mode_profile();
+tmc2130_init(true);
+#endif // TMC2130
+
+axis_known_position[Z_AXIS]=false; 
+}
+
+
+void enable_force_z()
+{
+if(bEnableForce_z)
+     return;                                      // motor already enabled (may be ;-p )
+bEnableForce_z=true;
+
+// mode recovering
+#ifdef TMC2130
+tmc2130_mode=eeprom_read_byte((uint8_t*)EEPROM_SILENT)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+update_mode_profile();
+tmc2130_init(true);
+#endif // TMC2130
+
+WRITE(Z_ENABLE_PIN,Z_ENABLE_ON);                  // slightly redundant ;-p
+}
+#endif // PSU_Delta
