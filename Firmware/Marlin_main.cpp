@@ -9432,7 +9432,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	if(!saved_extruder_relative_mode){
 		enquecommand(PSTR("M83"), true);
 	}
-	
 	//retract 45mm/s
 	// A single sprintf may not be faster, but is definitely 20B shorter
 	// than a sequence of commands building the string piece by piece
