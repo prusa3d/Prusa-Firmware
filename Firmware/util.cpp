@@ -393,6 +393,9 @@ switch(oCheckMode)
           lcd_show_fullscreen_message_and_wait_P(_i("Nozzle diameter doesn't match! Print is aborted, press the knob."));
           lcd_print_stop();
           break;
+     case ClCheckMode::_None:
+     case ClCheckMode::_Undef:
+          break;
      }
 bSettings=false;                                  // flag ('fake parameter') for 'lcd_checking_menu()' function
 menu_submenu(lcd_checking_menu);
@@ -418,6 +421,9 @@ switch(oCheckModel)
      case ClCheckModel::_Strict:
           lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Print is aborted, press the knob."));
           lcd_print_stop();
+          break;
+     case ClCheckModel::_None:
+     case ClCheckModel::_Undef:
           break;
      }
 }
@@ -462,6 +468,9 @@ switch(oCheckVersion)
           lcd_show_fullscreen_message_and_wait_P(_i("FW version doesn't match! Print is aborted, press the knob."));
           lcd_print_stop();
           break;
+     case ClCheckVersion::_None:
+     case ClCheckVersion::_Undef:
+          break;
      }
 }
 
@@ -487,6 +496,9 @@ switch(oCheckGcode)
      case ClCheckGcode::_Strict:
           lcd_show_fullscreen_message_and_wait_P(_i("G-code level doesn't match! Print is aborted, press the knob."));
           lcd_print_stop();
+          break;
+     case ClCheckGcode::_None:
+     case ClCheckGcode::_Undef:
           break;
      }
 }
@@ -546,6 +558,9 @@ switch(oCheckModel)
      case ClCheckModel::_Strict:
           lcd_show_fullscreen_message_and_wait_P(_i("Printer model doesn't match! Print is aborted, press the knob."));
           lcd_print_stop();
+          break;
+     case ClCheckModel::_None:
+     case ClCheckModel::_Undef:
           break;
      }
 }
