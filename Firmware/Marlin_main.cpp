@@ -4753,6 +4753,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     */
     case 30: 
         {
+            homing_flag = true;
             st_synchronize();
             // TODO: make sure the bed_level_rotation_matrix is identity or the planner will get set incorectly
             int l_feedmultiply = setup_for_endstop_move();
@@ -4764,6 +4765,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 			printf_P(_N("%S X: %.5f Y: %.5f Z: %.5f\n"), _T(MSG_BED), _x, _y, _z);
 
             clean_up_after_endstop_move(l_feedmultiply);
+            homing_flag = false;
         }
         break;
 	
@@ -4854,6 +4856,8 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
                 break;
             }
         }
+
+        homing_flag = true; // keep homing on to avoid babystepping while the LCD is enabled
         lcd_update_enable(true);
         KEEPALIVE_STATE(NOT_BUSY); //no need to print busy messages as we print current temperatures periodicaly
         SERIAL_ECHOLNPGM("PINDA probe calibration start");
@@ -4898,6 +4902,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
         bool find_z_result = find_bed_induction_sensor_point_z(-1.f);
         if (find_z_result == false) {
             lcd_temp_cal_show_result(find_z_result);
+            homing_flag = false;
             break;
         }
         zero_z = current_position[Z_AXIS];
@@ -4948,9 +4953,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
             printf_P(_N("\nPINDA temperature: %.1f Z shift (mm): %.3f"), current_temperature_pinda, current_position[Z_AXIS] - zero_z);
 
             EEPROM_save_B(EEPROM_PROBE_TEMP_SHIFT + i * 2, &z_shift);
-
         }
         lcd_temp_cal_show_result(true);
+        homing_flag = false;
 
 #else //PINDA_THERMISTOR
 

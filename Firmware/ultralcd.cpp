@@ -3108,7 +3108,7 @@ static void lcd_babystep_z()
 
 	if (lcd_encoder != 0) 
 	{
-		if (homing_flag) lcd_encoder = 0;
+		if (homing_flag || mesh_bed_leveling_flag) lcd_encoder = 0;
 		_md->babystepMemZ += (int)lcd_encoder;
 
         if (_md->babystepMemZ < Z_BABYSTEP_MIN) _md->babystepMemZ = Z_BABYSTEP_MIN; //-3999 -> -9.99 mm
