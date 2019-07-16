@@ -10,7 +10,7 @@
 #include "Configuration.h"
 #include "pins.h"
 #include <binary.h>
-//#include <Arduino.h>
+#include <Arduino.h>
 #include "Marlin.h"
 #include "fastio.h"
 //-//
@@ -78,14 +78,34 @@ uint8_t lcd_currline;
 uint8_t lcd_escape[8];
 #endif
 
-void lcd_pulseEnable(void)
+static void lcd_display(void);
+
+#if 0
+static void lcd_no_display(void);
+static void lcd_no_cursor(void);
+static void lcd_cursor(void);
+static void lcd_no_blink(void);
+static void lcd_blink(void);
+static void lcd_scrollDisplayLeft(void);
+static void lcd_scrollDisplayRight(void);
+static void lcd_leftToRight(void);
+static void lcd_rightToLeft(void);
+static void lcd_autoscroll(void);
+static void lcd_no_autoscroll(void);
+#endif
+
+#ifdef VT100
+void lcd_escape_write(uint8_t chr);
+#endif
+
+static void lcd_pulseEnable(void)
 {  
 	WRITE(LCD_PINS_ENABLE,HIGH);
 	_delay_us(1);    // enable pulse must be >450ns
 	WRITE(LCD_PINS_ENABLE,LOW);
 }
 
-void lcd_writebits(uint8_t value)
+static void lcd_writebits(uint8_t value)
 {
 #ifdef LCD_8BIT
 	WRITE(LCD_PINS_D0, value & 0x01);
@@ -101,7 +121,7 @@ void lcd_writebits(uint8_t value)
 	lcd_pulseEnable();
 }
 
-void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAULT_DELAY)
+static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAULT_DELAY)
 {
 	WRITE(LCD_PINS_RS,flags&LCD_RS_FLAG);
 	_delay_us(5);
@@ -116,33 +136,12 @@ void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAULT_DELAY
 	delayMicroseconds(duration);
 }
 
-void lcd_command(uint8_t value, uint16_t delayExtra = 0)
+static void lcd_command(uint8_t value, uint16_t delayExtra = 0)
 {
 	lcd_send(value, LOW, LCD_DEFAULT_DELAY + delayExtra);
 }
 
-void lcd_clear(void);
-void lcd_home(void);
-void lcd_no_display(void);
-void lcd_display(void);
-void lcd_no_cursor(void);
-void lcd_cursor(void);
-void lcd_no_blink(void);
-void lcd_blink(void);
-void lcd_scrollDisplayLeft(void);
-void lcd_scrollDisplayRight(void);
-void lcd_leftToRight(void);
-void lcd_rightToLeft(void);
-void lcd_autoscroll(void);
-void lcd_no_autoscroll(void);
-void lcd_set_cursor(uint8_t col, uint8_t row);
-void lcd_createChar_P(uint8_t location, const uint8_t* charmap);
-
-#ifdef VT100
-void lcd_escape_write(uint8_t chr);
-#endif
-
-void lcd_write(uint8_t value)
+static void lcd_write(uint8_t value)
 {
 	if (value == '\n' || value == '\r')
 	{
@@ -190,7 +189,7 @@ static void lcd_begin(uint8_t clear)
 	#endif
 }
 
-int lcd_putchar(char c, FILE *)
+static int lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
 }
@@ -233,15 +232,16 @@ void lcd_home(void)
 }
 
 // Turn the display on/off (quickly)
+void lcd_display(void)
+{
+    lcd_displaycontrol |= LCD_DISPLAYON;
+    lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
+}
+
+#if 0
 void lcd_no_display(void)
 {
 	lcd_displaycontrol &= ~LCD_DISPLAYON;
-	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
-}
-
-void lcd_display(void)
-{
-	lcd_displaycontrol |= LCD_DISPLAYON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
 
@@ -309,6 +309,7 @@ void lcd_no_autoscroll(void)
 	lcd_displaymode &= ~LCD_ENTRYSHIFTINCREMENT;
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode);
 }
+#endif
 
 void lcd_set_cursor(uint8_t col, uint8_t row)
 {
