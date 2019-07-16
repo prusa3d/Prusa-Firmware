@@ -3021,8 +3021,6 @@ static void shift_z(float delta)
     plan_set_z_position(current_position[Z_AXIS]);
 }
 
-#define BABYSTEP_LOADZ_BY_PLANNER
-
 // Number of baby steps applied
 static int babystepLoadZ = 0;
 
@@ -3053,20 +3051,12 @@ void babystep_load()
 void babystep_apply()
 {
     babystep_load();
-#ifdef BABYSTEP_LOADZ_BY_PLANNER
     shift_z(- float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
-#else
-    babystepsTodoZadd(babystepLoadZ);
-#endif /* BABYSTEP_LOADZ_BY_PLANNER */
 }
 
 void babystep_undo()
 {
-#ifdef BABYSTEP_LOADZ_BY_PLANNER
       shift_z(float(babystepLoadZ) / float(cs.axis_steps_per_unit[Z_AXIS]));
-#else
-      babystepsTodoZsubtract(babystepLoadZ);
-#endif /* BABYSTEP_LOADZ_BY_PLANNER */
       babystepLoadZ = 0;
 }
 
