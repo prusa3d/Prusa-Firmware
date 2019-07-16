@@ -192,6 +192,7 @@ static void lcd_begin(uint8_t clear)
 static int lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
+  	return c;
 }
 
 void lcd_init(void)
