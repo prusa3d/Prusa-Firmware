@@ -2722,8 +2722,7 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
       current_position[Z_AXIS] = st_get_position_mm(Z_AXIS);
 #endif
 
-      // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
-      // consumed during the first movements following this statement.
+      // Reset baby stepping to zero, if the babystepping has already been loaded before.
       if (home_z)
         babystep_undo();
 
@@ -5161,8 +5160,7 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
 
 		mbl.reset(); //reset mesh bed leveling
 
-					 // Reset baby stepping to zero, if the babystepping has already been loaded before. The babystepsTodo value will be
-					 // consumed during the first movements following this statement.
+		// Reset baby stepping to zero, if the babystepping has already been loaded before.
 		babystep_undo();
 
 		// Cycle through all points and probe them
