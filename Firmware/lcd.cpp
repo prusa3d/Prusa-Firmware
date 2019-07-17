@@ -322,7 +322,7 @@ void lcd_set_cursor(uint8_t col, uint8_t row)
 
 // Allows us to fill the first 8 CGRAM locations
 // with custom characters
-void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
+static void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
 {
   location &= 0x7; // we only have 8 locations 0-7
   lcd_command(LCD_SETCGRAMADDR | (location << 3));

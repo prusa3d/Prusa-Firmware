@@ -37,8 +37,6 @@ extern void lcd_no_autoscroll(void);*/
 
 extern void lcd_set_cursor(uint8_t col, uint8_t row);
 
-extern void lcd_createChar_P(uint8_t, const uint8_t*);
-
 
 extern int lcd_putc(int c);
 extern int lcd_puts_P(const char* str);
