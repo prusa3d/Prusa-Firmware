@@ -140,7 +140,8 @@ void lcd_ignore_click(bool b=true);
 void lcd_commands();
 
 
-extern bool bSettings;                            // flag (i.e. 'fake parameter') for 'lcd_checkink_menu()' function
+extern bool bSettings;                            // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
+void lcd_hw_setup_menu(void);                     // NOT static due to using inside "util" module ("nozzle_diameter_check()")
 
 
 void change_extr(int extr);
