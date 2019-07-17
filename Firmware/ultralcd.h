@@ -202,10 +202,7 @@ void lcd_temp_calibration_set();
 
 void display_loading();
 
-#if !SDSORT_USES_RAM
 void lcd_set_degree();
-void lcd_set_progress();
-#endif
 
 void lcd_language();
 

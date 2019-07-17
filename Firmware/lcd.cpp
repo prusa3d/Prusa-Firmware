@@ -927,7 +927,7 @@ void lcd_set_custom_characters(void)
 	lcd_createChar_P(LCD_STR_DEGREE[0], lcd_chardata_degree);
 	lcd_createChar_P(LCD_STR_THERMOMETER[0], lcd_chardata_thermometer);
 	lcd_createChar_P(LCD_STR_UPLEVEL[0], lcd_chardata_uplevel);
-	lcd_createChar_P(LCD_STR_REFRESH[0], lcd_chardata_refresh);
+	lcd_createChar_P(LCD_STR_REFRESH[0], lcd_chardata_refresh); //unused?
 	lcd_createChar_P(LCD_STR_FOLDER[0], lcd_chardata_folder);
 	lcd_createChar_P(LCD_STR_FEEDRATE[0], lcd_chardata_feedrate);
 	lcd_createChar_P(LCD_STR_CLOCK[0], lcd_chardata_clock);
@@ -938,21 +938,6 @@ void lcd_set_custom_characters(void)
 void lcd_set_custom_characters_arrows(void)
 {
 	lcd_createChar_P(1, lcd_chardata_arrdown);
-}
-
-const uint8_t lcd_chardata_progress[8] PROGMEM = {
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111};
-
-void lcd_set_custom_characters_progress(void)
-{
-	lcd_createChar_P(1, lcd_chardata_progress);
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
