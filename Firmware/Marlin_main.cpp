@@ -775,12 +775,8 @@ int uart_putchar(char c, FILE *)
 
 void lcd_splash()
 {
-//	lcd_puts_at_P(0, 1, PSTR("   Original Prusa   "));
-//	lcd_puts_at_P(0, 2, PSTR("    3D  Printers    "));
-//	lcd_puts_P(PSTR("\x1b[1;3HOriginal Prusa\x1b[2;4H3D  Printers"));
-//    fputs_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"), lcdout);
-    lcd_puts_P(PSTR(ESC_2J ESC_H(1,1) "Original Prusa i3" ESC_H(3,2) "Prusa Research"));
-//	lcd_printf_P(_N(ESC_2J "x:%.3f\ny:%.3f\nz:%.3f\ne:%.3f"), _x, _y, _z, _e);
+	lcd_clear(); // clears display and homes screen
+	lcd_puts_P(PSTR("\n Original Prusa i3\n   Prusa Research"));
 }
 
 
@@ -910,7 +906,7 @@ void update_sec_lang_from_external_flash()
 		uint32_t src_addr;
 		if (lang_get_header(lang, &header, &src_addr))
 		{
-			fputs_P(PSTR(ESC_H(1,3) "Language update."), lcdout);
+			lcd_puts_at_P(1,3,PSTR("Language update."));
 			for (uint8_t i = 0; i < state; i++) fputc('.', lcdout);
 			_delay(100);
 			boot_reserved = (state + 1) | (lang << 4);
@@ -984,8 +980,8 @@ void list_sec_lang_from_external_flash()
 
 static void w25x20cl_err_msg()
 {
-    lcd_puts_P(_n(ESC_2J ESC_H(0,0) "External SPI flash" ESC_H(0,1) "W25X20CL is not res-"
-            ESC_H(0,2) "ponding. Language" ESC_H(0,3) "switch unavailable."));
+	lcd_clear();
+	lcd_puts_P(_n("External SPI flash\nW25X20CL is not res-\nponding. Language\nswitch unavailable."));
 }
 
 // "Setup" function is called by the Arduino framework on startup.
@@ -1298,6 +1294,9 @@ void setup()
 	update_mode_profile();
 	tmc2130_init();
 #endif //TMC2130
+#ifdef PSU_Delta
+     init_force_z();                              // ! important for correct Z-axis initialization
+#endif // PSU_Delta
     
 	setup_photpin();
 
@@ -1335,7 +1334,7 @@ void setup()
   }
 #endif //TMC2130
 
-#if defined(Z_AXIS_ALWAYS_ON)
+#if defined(Z_AXIS_ALWAYS_ON) && !defined(PSU_Delta)
 	enable_z();
 #endif
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
@@ -9466,10 +9465,11 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 
 //! @brief Restore print from ram
 //!
-//! Restore print saved by stop_and_save_print_to_ram(). Is blocking,
-//! waits for extruder temperature restore, then restores position and continues
-//! print moves.
-//! Internaly lcd_update() is called by wait_for_heater().
+//! Restore print saved by stop_and_save_print_to_ram(). Is blocking, restores
+//! print fan speed, waits for extruder temperature restore, then restores
+//! position and continues print moves.
+//!
+//! Internally lcd_update() is called by wait_for_heater().
 //!
 //! @param e_move
 void restore_print_from_ram_and_continue(float e_move)
@@ -9484,7 +9484,9 @@ void restore_print_from_ram_and_continue(float e_move)
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
-	if (saved_extruder_temperature) {
+	fanSpeed = saved_fanSpeed;
+	if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
+	{
 		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
 		heating_status = 1;
 		wait_for_heater(_millis(), saved_active_extruder);
@@ -9492,9 +9494,13 @@ void restore_print_from_ram_and_continue(float e_move)
 	}
 	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
-	fanSpeed = saved_fanSpeed;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
+  
+  #ifdef FANCHECK
+    fans_check_enabled = false;
+  #endif
+
 	//first move print head in XY to the saved position:
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
 	st_synchronize();
@@ -9504,6 +9510,10 @@ void restore_print_from_ram_and_continue(float e_move)
 	//and finaly unretract (35mm/s)
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], 35, active_extruder);
 	st_synchronize();
+
+  #ifdef FANCHECK
+    fans_check_enabled = true;
+  #endif
 
 	memcpy(current_position, saved_pos, sizeof(saved_pos));
 	memcpy(destination, current_position, sizeof(destination));
@@ -9812,3 +9822,69 @@ void marlin_wait_for_click()
 }
 
 #define FIL_LOAD_LENGTH 60
+
+#ifdef PSU_Delta
+bool bEnableForce_z;
+
+void init_force_z()
+{
+WRITE(Z_ENABLE_PIN,Z_ENABLE_ON);
+bEnableForce_z=true;                              // "true"-value enforce "disable_force_z()" executing
+disable_force_z();
+}
+
+void check_force_z()
+{
+if(!(bEnableForce_z||eeprom_read_byte((uint8_t*)EEPROM_SILENT)))
+     init_force_z();                              // causes enforced switching into disable-state
+}
+
+void disable_force_z()
+{
+uint16_t z_microsteps=0;
+
+if(!bEnableForce_z)
+     return;                                      // motor already disabled (may be ;-p )
+bEnableForce_z=false;
+
+// alignment to full-step
+#ifdef TMC2130
+z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
+#endif // TMC2130
+planner_abort_hard();
+sei();
+plan_buffer_line(
+     current_position[X_AXIS], 
+     current_position[Y_AXIS], 
+     current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/cs.axis_steps_per_unit[Z_AXIS], 
+     current_position[E_AXIS],
+     40, active_extruder);
+st_synchronize();
+
+// switching to silent mode
+#ifdef TMC2130
+tmc2130_mode=TMC2130_MODE_SILENT;
+update_mode_profile();
+tmc2130_init(true);
+#endif // TMC2130
+
+axis_known_position[Z_AXIS]=false; 
+}
+
+
+void enable_force_z()
+{
+if(bEnableForce_z)
+     return;                                      // motor already enabled (may be ;-p )
+bEnableForce_z=true;
+
+// mode recovering
+#ifdef TMC2130
+tmc2130_mode=eeprom_read_byte((uint8_t*)EEPROM_SILENT)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+update_mode_profile();
+tmc2130_init(true);
+#endif // TMC2130
+
+WRITE(Z_ENABLE_PIN,Z_ENABLE_ON);                  // slightly redundant ;-p
+}
+#endif // PSU_Delta

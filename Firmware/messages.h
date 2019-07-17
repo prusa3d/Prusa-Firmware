@@ -84,6 +84,7 @@ extern const char MSG_SELFTEST_MOTOR[];
 extern const char MSG_SELFTEST_FILAMENT_SENSOR[];
 extern const char MSG_SELFTEST_WIRINGERROR[];
 extern const char MSG_SETTINGS[];
+extern const char MSG_HW_SETUP[];
 extern const char MSG_SILENT_MODE_OFF[];
 extern const char MSG_SILENT_MODE_ON[];
 extern const char MSG_STEALTH_MODE_OFF[];

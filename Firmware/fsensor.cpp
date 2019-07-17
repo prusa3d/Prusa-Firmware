@@ -522,19 +522,6 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	}
 }
 
-//! This ensures generating z-position at least 25mm above the heat bed.
-//! Making this a template enables changing the computation data type easily at all spots where necessary.
-//! @param current_z current z-position
-//! @return z-position at least 25mm above the heat bed plus FILAMENTCHANGE_ZADD 
-template <typename T>
-inline T fsensor_clamp_z(float current_z){
-	T z( current_z );
-	if(z < T(25)){ // make sure the compiler understands, that the constant 25 is of correct type
-		// - necessary for uint8_t -> results in shorter code
-		z = T(25); // move to at least 25mm above heat bed
-	}
-	return z + T(FILAMENTCHANGE_ZADD); // always move above the printout by FILAMENTCHANGE_ZADD (default 2mm)	
-}
 
 //! Common code for enqueing M600 and supplemental codes into the command queue.
 //! Used both for the IR sensor and the PAT9125
@@ -545,22 +532,6 @@ void fsensor_enque_M600(){
 	enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
 	fsensor_m600_enqueued = true;
 	enquecommand_front_P((PSTR("M600")));
-#define xstr(a) str(a)
-#define str(a) #a
-	static const char gcodeMove[] PROGMEM = 
-			"G1 X" xstr(FILAMENTCHANGE_XPOS) 
-			" Y" xstr(FILAMENTCHANGE_YPOS) 
-			" Z%u";
-#undef str
-#undef xstr
-	char buf[32];
-	// integer arithmetics is far shorter, I don't need a precise float position here, just move a bit above
-	// 8bit arithmetics in fsensor_clamp_z is 10B shorter than 16bit (not talking about float ;) ) 
-	// The compile-time static_assert here ensures, that the computation gets enough bits in case of Z-range too high,
-	// i.e. makes the user change the data type, which also results in larger code
-	static_assert(Z_MAX_POS < (255 - FILAMENTCHANGE_ZADD), "Z-range too high, change fsensor_clamp_z<uint8_t> to <uint16_t>");
-	sprintf_P(buf, gcodeMove, fsensor_clamp_z<uint8_t>(current_position[Z_AXIS]) );
-	enquecommand_front(buf, false);
 }
 
 //! @brief filament sensor update (perform M600 on filament runout)
