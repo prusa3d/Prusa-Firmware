@@ -3393,8 +3393,15 @@ void process_commands()
   if (fan_check_error){
 	if( fan_check_error == EFCE_DETECTED ){
 		fan_check_error = EFCE_REPORTED;
-		lcd_pause_print();
-	} // otherwise it has already been reported, so just ignore further processing
+      
+      if(is_usb_printing){
+        SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
+      }
+      else{
+        lcd_pause_print();
+      }
+
+    } // otherwise it has already been reported, so just ignore further processing
     return;
   }
   #endif

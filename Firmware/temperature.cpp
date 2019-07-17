@@ -524,6 +524,8 @@ void checkFanSpeed()
 		fan_speed_errors[1] = 0;
 		fanSpeedError(1); //print fan
 	}
+
+  SERIAL_PROTOCOLLNRPGM(MSG_OK); //for octoprint
 }
 
 //! Prints serialMsg to serial port, displays lcdMsg onto the LCD and beeps.
@@ -547,7 +549,6 @@ void fanSpeedError(unsigned char _fan) {
 		}
 		else {
 			fan_check_error = EFCE_DETECTED;
-      SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
 		}
 	}
 	else {
