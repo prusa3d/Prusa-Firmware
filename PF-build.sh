@@ -85,7 +85,7 @@
 #                          $2 = multi language OR english only [ALL/EN_ONLY]
 #                          $3 = development status [GOLD/RC/BETA/ALPHA/DEVEL/DEBUG]
 #                          If one argument is wrong a list of valid one will be shown
-# 13 Mar 2019, 3d-gussner, MKbel updated the linux build environmentto version 1.0.2 with an Fix maximum firmware flash size.
+# 13 Mar 2019, 3d-gussner, MKbel updated the linux build environment to version 1.0.2 with an Fix maximum firmware flash size.
 #                          So did I
 # 11 Jul 2019, deliopoulos,Updated to v1.0.6 as Prusa needs a new board definition for Firmware 3.8.x86_64
 #						   - Splitted the Download of Windows Arduino IDE 1.8.5 and Prusa specific part
@@ -204,7 +204,7 @@ cd ../build-env || exit 3
 BUILD_ENV_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Check if PF-build-env-<version> exists and downloads + creates it if not
-# The build environment is based on the supported Arduino IDE portablel version with some changes
+# The build environment is based on the supported Arduino IDE portable version with some changes
 if [ ! -d "../PF-build-env-$BUILD_ENV" ]; then
 	echo "$(tput setaf 6)PF-build-env-$BUILD_ENV is missing ... creating it now for you$(tput sgr 0)"
 	mkdir ../PF-build-env-$BUILD_ENV
@@ -647,14 +647,6 @@ do
 	sed -i -- "s/^#define LANG_MODE *0/#define LANG_MODE              ${MULTI_LANGUAGE_CHECK}/g" $SCRIPT_PATH/Firmware/config.h
 	sleep 5
 done
-
-# Cleanup compiler flags are set to Prusa specific needs for the rambo board.
-#if [ $OSTYPE == "msys" ]; then
-#	echo " "
-#	echo "Restore Windows platform.txt"
-#	echo " "
-#	cp -f $BUILD_ENV_PATH/hardware/$RAMBO_PLATFORM_FILE.bck $BUILD_ENV_PATH/hardware/$RAMBO_PLATFORM_FILE
-#fi
 
 # Switch to hex path and list build files
 cd $SCRIPT_PATH
