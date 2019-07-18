@@ -61,17 +61,18 @@ switch(eSoundMode)
 Sound_SaveMode();
 }
 
+//if critical is true then silend and once mode is ignored
 void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
      if (!critical){
           if (eSoundMode != e_SOUND_MODE_SILENT){
                if(!tone_){
                     WRITE(BEEPER, HIGH);
-                    delayMicroseconds(ms);
+                    _delay(ms);
                     WRITE(BEEPER, LOW);
                }
                else{
                     _tone(BEEPER, tone_);
-                    delayMicroseconds(ms);
+                    _delay(ms);
                     _noTone(BEEPER);
                }
           }
@@ -79,13 +80,13 @@ void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical){
      else{
           if(!tone_){
                WRITE(BEEPER, HIGH);
-               delayMicroseconds(ms);
+               _delay(ms);
                WRITE(BEEPER, LOW);
-               delayMicroseconds(100);
+               _delay(ms);
           }
           else{
                _tone(BEEPER, tone_);
-               delayMicroseconds(ms);
+               _delay(ms);
                _noTone(BEEPER);
           }
      }
@@ -134,10 +135,10 @@ switch(eSoundMode)
 
 static void Sound_DoSound_Blind_Alert(void)
 {
-     _tone(BEEPER,100);
-     delayMicroseconds(50);
+     _tone(BEEPER,300);
+     _delay_ms(75);
      _noTone(BEEPER);
-     delayMicroseconds(200);
+     _delay_ms(75);
 }
 
  static void Sound_DoSound_Encoder_Move(void)
@@ -169,7 +170,7 @@ for(nI=0;nI<10;nI++)
 static void Sound_DoSound_Prompt(void)
 {
 WRITE(BEEPER,HIGH);
-delayMicroseconds(500);
+_delay_ms(500);
 WRITE(BEEPER,LOW);
 }
 
