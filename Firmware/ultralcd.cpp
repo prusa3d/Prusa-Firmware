@@ -1658,6 +1658,7 @@ void lcd_pause_print()
     {
         lcd_commands_type = LcdCommands::LongPause;
     }
+	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //pause for octoprint
 }
 
 
@@ -6970,7 +6971,6 @@ void lcd_print_stop()
      if(!card.sdprinting)
           {
           SERIAL_ECHOLNPGM("// action:cancel");   // for Octoprint
-          return;
           }
 	saved_printing = false;
 	cancel_heatup = true;
