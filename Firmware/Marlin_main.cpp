@@ -3392,8 +3392,15 @@ void process_commands()
   if (fan_check_error){
 	if( fan_check_error == EFCE_DETECTED ){
 		fan_check_error = EFCE_REPORTED;
-		lcd_pause_print();
-	} // otherwise it has already been reported, so just ignore further processing
+      
+      if(is_usb_printing){
+        SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
+      }
+      else{
+        lcd_pause_print();
+      }
+
+    } // otherwise it has already been reported, so just ignore further processing
     return;
   }
   #endif
@@ -6733,6 +6740,10 @@ Sigma_Exit:
 	}
 	break;
 
+  case 603: { //! M603 - Stop print
+		lcd_print_stop();
+	}
+
 #ifdef PINDA_THERMISTOR
 	case 860: // M860 - Wait for PINDA thermistor to reach target temperature.
 	{
@@ -9427,7 +9438,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	if(!saved_extruder_relative_mode){
 		enquecommand(PSTR("M83"), true);
 	}
-	
 	//retract 45mm/s
 	// A single sprintf may not be faster, but is definitely 20B shorter
 	// than a sequence of commands building the string piece by piece
@@ -9511,7 +9521,6 @@ void restore_print_from_ram_and_continue(float e_move)
 		card.setIndex(saved_sdpos);
 		sdpos_atomic = saved_sdpos;
 		card.sdprinting = true;
-		printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 	}
 	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
 		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
@@ -9521,6 +9530,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	else {
 		//not sd printing nor usb printing
 	}
+	printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
 	saved_printing = false;
 }

@@ -40,7 +40,7 @@
 #include <avr/wdt.h>
 #include "adc.h"
 #include "ConfigurationStore.h"
-
+#include "messages.h"
 #include "Timer.h"
 #include "Configuration_prusa.h"
 
@@ -525,6 +525,8 @@ void checkFanSpeed()
 		fan_speed_errors[1] = 0;
 		fanSpeedError(1); //print fan
 	}
+
+  SERIAL_PROTOCOLLNRPGM(MSG_OK); //for octoprint
 }
 
 //! Prints serialMsg to serial port, displays lcdMsg onto the LCD and beeps.
@@ -542,18 +544,17 @@ static void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
 void fanSpeedError(unsigned char _fan) {
 	if (get_message_level() != 0 && isPrintPaused) return; 
 	//to ensure that target temp. is not set to zero in case taht we are resuming print 
-	if (card.sdprinting) {
+	if (card.sdprinting || is_usb_printing) {
 		if (heating_status != 0) {
 			lcd_print_stop();
 		}
 		else {
 			fan_check_error = EFCE_DETECTED;
-
 		}
 	}
 	else {
+			SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //for octoprint
 			setTargetHotend0(0);
-			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
       heating_status = 0;
       fan_check_error = EFCE_REPORTED;
 	}
@@ -565,6 +566,7 @@ void fanSpeedError(unsigned char _fan) {
 		fanSpeedErrorBeep(PSTR("Print fan speed is lower than expected"), PSTR("Err: PRINT FAN ERROR") );
 		break;
 	}
+  SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 #endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 
