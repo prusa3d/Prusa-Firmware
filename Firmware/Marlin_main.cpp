@@ -1294,6 +1294,9 @@ void setup()
 	update_mode_profile();
 	tmc2130_init();
 #endif //TMC2130
+#ifdef PSU_Delta
+     init_force_z();                              // ! important for correct Z-axis initialization
+#endif // PSU_Delta
     
 	setup_photpin();
 
@@ -1331,7 +1334,7 @@ void setup()
   }
 #endif //TMC2130
 
-#if defined(Z_AXIS_ALWAYS_ON)
+#if defined(Z_AXIS_ALWAYS_ON) && !defined(PSU_Delta)
 	enable_z();
 #endif
 	farm_mode = eeprom_read_byte((uint8_t*)EEPROM_FARM_MODE);
@@ -3389,8 +3392,15 @@ void process_commands()
   if (fan_check_error){
 	if( fan_check_error == EFCE_DETECTED ){
 		fan_check_error = EFCE_REPORTED;
-		lcd_pause_print();
-	} // otherwise it has already been reported, so just ignore further processing
+      
+      if(is_usb_printing){
+        SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE);
+      }
+      else{
+        lcd_pause_print();
+      }
+
+    } // otherwise it has already been reported, so just ignore further processing
     return;
   }
   #endif
@@ -6730,6 +6740,10 @@ Sigma_Exit:
 	}
 	break;
 
+  case 603: { //! M603 - Stop print
+		lcd_print_stop();
+	}
+
 #ifdef PINDA_THERMISTOR
 	case 860: // M860 - Wait for PINDA thermistor to reach target temperature.
 	{
@@ -9424,7 +9438,6 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 	if(!saved_extruder_relative_mode){
 		enquecommand(PSTR("M83"), true);
 	}
-	
 	//retract 45mm/s
 	// A single sprintf may not be faster, but is definitely 20B shorter
 	// than a sequence of commands building the string piece by piece
@@ -9452,10 +9465,11 @@ void stop_and_save_print_to_ram(float z_move, float e_move)
 
 //! @brief Restore print from ram
 //!
-//! Restore print saved by stop_and_save_print_to_ram(). Is blocking,
-//! waits for extruder temperature restore, then restores position and continues
-//! print moves.
-//! Internaly lcd_update() is called by wait_for_heater().
+//! Restore print saved by stop_and_save_print_to_ram(). Is blocking, restores
+//! print fan speed, waits for extruder temperature restore, then restores
+//! position and continues print moves.
+//!
+//! Internally lcd_update() is called by wait_for_heater().
 //!
 //! @param e_move
 void restore_print_from_ram_and_continue(float e_move)
@@ -9470,7 +9484,9 @@ void restore_print_from_ram_and_continue(float e_move)
 //	for (int axis = X_AXIS; axis <= E_AXIS; axis++)
 //	    current_position[axis] = st_get_position_mm(axis);
 	active_extruder = saved_active_extruder; //restore active_extruder
-	if (saved_extruder_temperature) {
+	fanSpeed = saved_fanSpeed;
+	if (degTargetHotend(saved_active_extruder) != saved_extruder_temperature)
+	{
 		setTargetHotendSafe(saved_extruder_temperature, saved_active_extruder);
 		heating_status = 1;
 		wait_for_heater(_millis(), saved_active_extruder);
@@ -9478,9 +9494,13 @@ void restore_print_from_ram_and_continue(float e_move)
 	}
 	feedrate = saved_feedrate2; //restore feedrate
 	axis_relative_modes[E_AXIS] = saved_extruder_relative_mode;
-	fanSpeed = saved_fanSpeed;
 	float e = saved_pos[E_AXIS] - e_move;
 	plan_set_e_position(e);
+  
+  #ifdef FANCHECK
+    fans_check_enabled = false;
+  #endif
+
 	//first move print head in XY to the saved position:
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], current_position[Z_AXIS], saved_pos[E_AXIS] - e_move, homing_feedrate[Z_AXIS]/13, active_extruder);
 	st_synchronize();
@@ -9491,13 +9511,16 @@ void restore_print_from_ram_and_continue(float e_move)
 	plan_buffer_line(saved_pos[X_AXIS], saved_pos[Y_AXIS], saved_pos[Z_AXIS], saved_pos[E_AXIS], 35, active_extruder);
 	st_synchronize();
 
+  #ifdef FANCHECK
+    fans_check_enabled = true;
+  #endif
+
 	memcpy(current_position, saved_pos, sizeof(saved_pos));
 	memcpy(destination, current_position, sizeof(destination));
 	if (saved_printing_type == PRINTING_TYPE_SD) { //was sd printing
 		card.setIndex(saved_sdpos);
 		sdpos_atomic = saved_sdpos;
 		card.sdprinting = true;
-		printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 	}
 	else if (saved_printing_type == PRINTING_TYPE_USB) { //was usb printing
 		gcode_LastN = saved_sdpos; //saved_sdpos was reused for storing line number when usb printing
@@ -9507,6 +9530,7 @@ void restore_print_from_ram_and_continue(float e_move)
 	else {
 		//not sd printing nor usb printing
 	}
+	printf_P(PSTR("ok\n")); //dummy response because of octoprint is waiting for this
 	lcd_setstatuspgm(_T(WELCOME_MSG));
 	saved_printing = false;
 }
@@ -9798,3 +9822,69 @@ void marlin_wait_for_click()
 }
 
 #define FIL_LOAD_LENGTH 60
+
+#ifdef PSU_Delta
+bool bEnableForce_z;
+
+void init_force_z()
+{
+WRITE(Z_ENABLE_PIN,Z_ENABLE_ON);
+bEnableForce_z=true;                              // "true"-value enforce "disable_force_z()" executing
+disable_force_z();
+}
+
+void check_force_z()
+{
+if(!(bEnableForce_z||eeprom_read_byte((uint8_t*)EEPROM_SILENT)))
+     init_force_z();                              // causes enforced switching into disable-state
+}
+
+void disable_force_z()
+{
+uint16_t z_microsteps=0;
+
+if(!bEnableForce_z)
+     return;                                      // motor already disabled (may be ;-p )
+bEnableForce_z=false;
+
+// alignment to full-step
+#ifdef TMC2130
+z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
+#endif // TMC2130
+planner_abort_hard();
+sei();
+plan_buffer_line(
+     current_position[X_AXIS], 
+     current_position[Y_AXIS], 
+     current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/cs.axis_steps_per_unit[Z_AXIS], 
+     current_position[E_AXIS],
+     40, active_extruder);
+st_synchronize();
+
+// switching to silent mode
+#ifdef TMC2130
+tmc2130_mode=TMC2130_MODE_SILENT;
+update_mode_profile();
+tmc2130_init(true);
+#endif // TMC2130
+
+axis_known_position[Z_AXIS]=false; 
+}
+
+
+void enable_force_z()
+{
+if(bEnableForce_z)
+     return;                                      // motor already enabled (may be ;-p )
+bEnableForce_z=true;
+
+// mode recovering
+#ifdef TMC2130
+tmc2130_mode=eeprom_read_byte((uint8_t*)EEPROM_SILENT)?TMC2130_MODE_SILENT:TMC2130_MODE_NORMAL;
+update_mode_profile();
+tmc2130_init(true);
+#endif // TMC2130
+
+WRITE(Z_ENABLE_PIN,Z_ENABLE_ON);                  // slightly redundant ;-p
+}
+#endif // PSU_Delta

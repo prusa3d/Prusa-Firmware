@@ -51,7 +51,11 @@ typedef struct
 extern tmc2130_chopper_config_t tmc2130_chopper_config[4];
 
 //initialize tmc2130
+#ifdef PSU_Delta
+extern void tmc2130_init(bool bSupressFlag=false);
+#else
 extern void tmc2130_init();
+#endif
 //check diag pins (called from stepper isr)
 extern void tmc2130_st_isr();
 //update stall guard (called from st_synchronize inside the loop)
