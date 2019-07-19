@@ -143,7 +143,7 @@ static void lcd_command(uint8_t value, uint16_t delayExtra = 0)
 
 static void lcd_write(uint8_t value)
 {
-	if (value == '\n')
+	if (value == '\n' || value == '\t')
 	{
 		if (lcd_currline > 3) lcd_currline = -1;
 		lcd_set_cursor(0, lcd_currline + 1); // LF

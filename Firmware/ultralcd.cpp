@@ -4370,7 +4370,7 @@ uint8_t nlines;
 	static uint32_t tim = 0;
 	if ((tim + 1000) < _millis())
 	{
-		lcd_display_message_fullscreen_nonBlocking_P(_i("WARNING:        Crash detection disabled in Stealth mode"), nlines);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+		lcd_display_message_fullscreen_nonBlocking_P(_i("WARNING:	Crash detection disabled in Stealth mode"), nlines);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 		tim = _millis();
 	}
     menu_back_if_clicked();

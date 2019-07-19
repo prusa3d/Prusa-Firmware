@@ -15,8 +15,8 @@
 "La detection de crash peut etre active seulement en mode Normal"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:        Crash detection disabled in Stealth mode"
-"ATTENTION:  Detection de crash  desactivee en mode Furtif"
+"WARNING:	Crash detection disabled in Stealth mode"
+"ATTENTION:	Detection de crash  desactivee en mode Furtif"
 
 #
 ">Cancel"

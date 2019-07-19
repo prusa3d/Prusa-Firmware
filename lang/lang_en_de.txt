@@ -15,8 +15,8 @@
 "Crash Erkennung kann nur im Modus Normal genutzt werden"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:        Crash detection disabled in Stealth mode"
-"WARNUNG:        Crash Erkennung deaktiviert im Stealth Modus"
+"WARNING:	Crash detection disabled in Stealth mode"
+"WARNUNG:	Crash Erkennung deaktiviert im Stealth Modus"
 
 #
 ">Cancel"

@@ -11,7 +11,7 @@
 "Crash detection can be turned on only in Normal mode"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:        Crash detection disabled in Stealth mode"
+"WARNING:	Crash detection disabled in Stealth mode"
 
 #
 ">Cancel"

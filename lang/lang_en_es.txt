@@ -15,8 +15,8 @@
 "Dec. choque puede ser activada solo en Modo normal"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:        Crash detection disabled in Stealth mode"
-"ATENCION:         Dec. choque desactivada en Modo silencio"
+"WARNING:	Crash detection disabled in Stealth mode"
+"ATENCION:	Dec. choque desactivada en Modo silencio"
 
 #
 ">Cancel"

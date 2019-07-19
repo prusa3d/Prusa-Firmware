@@ -15,8 +15,8 @@
 "Rilev. impatto attivabile solo in Modalita normale"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:        Crash detection disabled in Stealth mode"
-"ATTENZIONE:     Rilev. impatto disattivato in Modalita silenziosa"
+"WARNING:	Crash detection disabled in Stealth mode"
+"ATTENZIONE:	Rilev. impatto disattivato in Modalita silenziosa"
 
 #
 ">Cancel"

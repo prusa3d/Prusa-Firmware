@@ -15,8 +15,8 @@
 "Crash detekce muze byt zapnuta pouze v Normal modu"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:        Crash detection disabled in Stealth mode"
-"POZOR:          Crash detekce deaktivovana ve Stealth modu"
+"WARNING:	Crash detection disabled in Stealth mode"
+"POZOR:	Crash detekce deaktivovana ve Stealth modu"
 
 #
 ">Cancel"

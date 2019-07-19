@@ -15,8 +15,8 @@
 "Wykrywanie zderzen moze byc wlaczone tylko w trybie Normalnym"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:        Crash detection disabled in Stealth mode"
-"UWAGA:     Wykrywanie zderzen wylaczone w trybie Stealth"
+"WARNING:	Crash detection disabled in Stealth mode"
+"UWAGA:	Wykrywanie zderzen wylaczone w trybie Stealth"
 
 #
 ">Cancel"
