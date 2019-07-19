@@ -257,6 +257,7 @@ static void lcd_connect_printer();
 void lcd_finishstatus();
 
 static void lcd_sdcard_menu();
+static void lcd_sheet_menu();
 
 #ifdef DELTA_CALIBRATION_MENU
 static void lcd_delta_calibrate_menu();
@@ -5517,15 +5518,41 @@ SETTINGS_VERSION;
 MENU_END();
 }
 
+//TODO: ---------- HW menu
 void lcd_hw_setup_menu(void)                      // can not be "static"
 {
 MENU_BEGIN();
 MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
-if(!farm_mode)
+
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_sheet_menu);
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_sheet_menu);
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_sheet_menu);
+
+char buffer[] = "work cunt";
+//strncpy(buffer,_i("Sheet"),sizeof(buffer));
+//strncpy(buffer,_i(" "),sizeof(buffer));
+//strncpy(buffer,EEPROM_Sheets_base->s[0].name,sizeof(buffer));
+
+//const char* menu = EEPROM_Sheets_base->s[0].name.c_str();
+
+//const char *b = new char(buffer);
+//const char *b = const char *b = new char(buffer);(buffer);
+//printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
+//SERIAL_ECHOPGM(buffer);
+//SERIAL_ECHOPGM(reinterpret_cast<const char*>(buffer));
+//SERIAL_ECHOPGM("lakdjushasdjaljsdakjsdn");
+//char* p = &buffer[0];
+
+//MENU_ITEM_SUBMENU_P(reinterpret_cast<const char*>(p),lcd_sheet_menu);
+
+//delete(b);
+
+if(!farm_mode){
      SETTINGS_NOZZLE;
 // ... a sem prijdou 'plechy'
 if(!farm_mode)
      MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
+}
 MENU_END();
 }
 
@@ -6500,14 +6527,14 @@ static void lcd_select_sheet_2_menu()
 	change_sheet(2);
 }
 
-static void lcd_select_sheet_menu()
+static void lcd_select_sheet_menu() //TODO: -----------------sheet menu 
 {
-    MENU_BEGIN();
+    /*MENU_BEGIN();
     MENU_ITEM_BACK_P(_T(MSG_BACK));
     MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
     MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
     MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
-    MENU_END();
+    MENU_END();*/
 }
 
 static void lcd_rename_sheet_menu()
@@ -6554,13 +6581,59 @@ static void lcd_rename_sheet_menu()
     }
 }
 
+static void lcd_reset_sheet()
+{
+    struct MenuData
+    {
+        bool initialized;
+        uint8_t selected;
+        char name[sizeof(Sheet::name)];
+    };
+    static_assert(sizeof(menu_data)>= sizeof(MenuData),"MenuData doesn't fit into menu_data");
+    MenuData* menuData = (MenuData*)&(menu_data[0]);
+
+    if (!menuData->initialized)
+    {
+        eeprom_read_block(menuData->name, EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, sizeof(Sheet::name));
+        lcd_encoder = menuData->name[0];
+        menuData->initialized = true;
+    }
+    if (lcd_encoder < '\x20') lcd_encoder = '\x20';
+    if (lcd_encoder > '\x7F') lcd_encoder = '\x7F';
+
+    menuData->name[menuData->selected] = lcd_encoder;
+    lcd_set_cursor(0,0);
+    for (uint_least8_t i = 0; i < sizeof(Sheet::name); ++i)
+    {
+        lcd_putc(menuData->name[i]);
+    }
+    lcd_set_cursor(menuData->selected, 1);
+    lcd_putc('^');
+    if (lcd_clicked())
+    {
+        if ((menuData->selected + 1u) < sizeof(Sheet::name))
+        {
+            lcd_encoder = menuData->name[++(menuData->selected)];
+        }
+        else
+        {
+            eeprom_update_block(menuData->name,
+                EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name,
+                sizeof(Sheet::name));
+            menu_back();
+        }
+    }
+}
+
 static void lcd_sheet_menu()
 {
     MENU_BEGIN();
-    MENU_ITEM_BACK_P(_T(MSG_MAIN));
+    MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
+	//if()
     MENU_ITEM_SUBMENU_P(_i("Select"), lcd_select_sheet_menu); //// c=18
-    MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
     MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
+    MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
+	MENU_ITEM_SUBMENU_P(_i("Reset"), lcd_reset_sheet); //// c=18
 
     MENU_END();
 }
@@ -6700,7 +6773,7 @@ static void lcd_main_menu()
 
   }
 
-  if(!isPrintPaused)MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu);
+  if(!isPrintPaused)MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu);
   
   if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
   {
