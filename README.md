@@ -14,11 +14,24 @@
 
 # Build
 ## Linux
-Run shell script build.sh to build for MK3 and flash with Slic3er.  
-If you have a different printer model, follow step [2.b](#2b) from Windows build first.  
-If you wish to flash from Arduino, follow step [2.c](#2c) from Windows build first.  
 
-The script downloads Arduino with our modifications and Rambo board support installed, unpacks it into folder PF-build-env-\<version\> on the same level, as your Prusa-Firmware folder is located, builds firmware for MK3 using that Arduino in Prusa-Firmware-build folder on the same level as Prusa-Firmware, runs secondary language support scripts. Firmware with secondary language support is generated in lang subfolder. Use firmware.hex for MK3 variant. Use firmware_\<lang\>.hex for other printers. Don't forget to follow step [2.b](#2b) first for non-MK3 printers.
+1. Clone this repository and checkout the correct branch for your desired release version.
+
+2. Set your printer model. 
+   - For MK3 --> skip to step 3. 
+   - If you have a different printer model, follow step [2.b](#2b) from Windows build
+   
+3. Run `sudo ./build.sh`
+   - Output hex file is at `"PrusaFirmware/lang/firmware.hex"` . In the same folder you can hex files for other languages as well.
+
+4. Connect your printer and flash with PrusaSlicer ( Configuration --> Flash printer firmware ) or Slic3r PE.
+   - If you wish to flash from Arduino, follow step [2.c](#2c) from Windows build first.
+
+
+_Notes:_
+
+The script downloads Arduino with our modifications and Rambo board support installed, unpacks it into folder `PF-build-env-\<version\>` on the same level, as your Prusa-Firmware folder is located, builds firmware for MK3 using that Arduino in Prusa-Firmware-build folder on the same level as Prusa-Firmware, runs secondary language support scripts. Firmware with secondary language support is generated in lang subfolder. Use firmware.hex for MK3 variant. Use `firmware_\<lang\>.hex` for other printers. Don't forget to follow step [2.b](#2b) first for non-MK3 printers.
+
 ## Windows
 ### Using Arduino
 note: Multi language build is not supported.
