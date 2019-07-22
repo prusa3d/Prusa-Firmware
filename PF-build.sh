@@ -348,7 +348,7 @@ fi
 # Check if User updated Arduino IDE 1.8.5 boardsmanager and tools
 if [ -d "../PF-build-env-$BUILD_ENV/$OSTYPE-$Processor/portable/packages/arduino/tools" ]; then
 	echo "$(tput setaf 6)Arduino IDE boards / tools have been manually updated...$"
-	echo "Please don't update the 'Arduino AVR boards' as this will prevent running this script(tput setaf 2)"
+	echo "Please don't update the 'Arduino AVR boards' as this will prevent running this script (tput setaf 2)"
 	sleep 2
 fi	
 if [ -d "../PF-build-env-$BUILD_ENV/$OSTYPE-$Processor/portable/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2" ]; then
