@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_2
+# Version: 1.0.6-Build_7
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -107,6 +107,7 @@
 # 22 Jul 2019, 3d-gussner, Modiffied checks to check folder and/or installation output exists.
 # 22 Jul 2019, 3d-gussner, Added check if Arduino IDE 1.8.5 boards have been updated
 # 22 Jul 2019, 3d-gussner, Changed exit numbers 1-13 for prepare build env 21-28 for prepare compiling 31-36 compiling
+# 22 Jul 2019, 3d-gussner, Changed BOARD_URL to DRracers respository after he pulled my PR https://github.com/DRracer/Arduino_Boards/pull/1
 
 #### Start check if OSTYPE is supported
 # Windows
@@ -186,9 +187,9 @@ ARDUINO_ENV="1.8.5"
 BUILD_ENV="1.0.6"
 BOARD="PrusaResearchRambo"
 BOARD_VERSION="1.0.1"
-BOARD_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/Fix_maximum_firmware_flash_size/IDE_Board_Manager/package_prusa3d_index.json"
+BOARD_URL="https://raw.githubusercontent.com/DRracer/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json"
 BOARD_FILENAME="prusa3drambo"
-BOARD_FILE_URL="https://raw.githubusercontent.com/3d-gussner/Arduino_Boards/Fix_maximum_firmware_flash_size/IDE_Board_Manager/prusa3drambo-1.0.1.tar.bz2"
+BOARD_FILE_URL="https://raw.githubusercontent.com/DRracer/Arduino_Boards/master/IDE_Board_Manager/prusa3drambo-1.0.1.tar.bz2"
 PF_BUILD_FILE_URL="https://github.com/3d-gussner/PF-build-env/releases/download/$BUILD_ENV/PF-build-env-$BUILD_ENV.zip"
 LIB="PrusaLibrary"
 SCRIPT_PATH="$( cd "$(dirname "$0")" ; pwd -P )"
