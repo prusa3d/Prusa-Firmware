@@ -1065,7 +1065,7 @@ static void lcd_status_screen()
 }
 
 void lcd_commands()
-{	
+{
 	if (lcd_commands_type == LcdCommands::LongPause)
 	{
 		if (!blocks_queued() && !homing_flag)
@@ -1449,9 +1449,9 @@ void lcd_commands()
                     lcd_wizard(WizState::RepeatLay1Cal);
                 }
                 break;
-            }
-        }
-	}
+		}
+			}
+		}
 
 #endif // not SNMM
 
@@ -1966,7 +1966,6 @@ static void lcd_menu_debug()
 static void lcd_menu_temperatures()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
-	
 	lcd_home();
 	lcd_printf_P(PSTR(" %S:   %d%c \n" " %S:      %d%c \n"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
@@ -2581,7 +2580,7 @@ void lcd_change_success() {
 }
 
 static void lcd_loading_progress_bar(uint16_t loading_time_ms) { 
-	
+
 	for (uint_least8_t i = 0; i < 20; i++) {
 		lcd_set_cursor(i, 3);
 		lcd_print(".");
@@ -2830,7 +2829,6 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%2dh %02dm %02ds"
 		),_i("Filament used"), _met, _i("Print time"), _h, _m, _s);
-		
 		menu_back_if_clicked_fb();
 	}
 	else
@@ -2853,7 +2851,6 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%7ldd :%2hhdh :%02hhdm"
 		), _i("Total filament"), _filament_m, _i("Total print time"), _days, _hours, _minutes);
-		
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 		while (!lcd_clicked())
 		{
@@ -3956,6 +3953,20 @@ void lcd_menu_show_sensors_state()                // NOT static due to using ins
 	}
 }
 
+void prusa_statistics_err(char c){
+	SERIAL_ECHO("{[ERR:");
+	SERIAL_ECHO(c);
+	SERIAL_ECHO(']');
+	prusa_stat_farm_number();
+}
+
+static void prusa_statistics_case0(uint8_t statnr){
+	SERIAL_ECHO("{");
+	prusa_stat_printerstatus(statnr);
+	prusa_stat_farm_number();
+	prusa_stat_printinfo();
+}
+
 void prusa_statistics(int _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
 	return;
@@ -3965,31 +3976,16 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 
 	case 0: // default message
 		if (busy_state == PAUSED_FOR_USER) 
-		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(15);
-			prusa_stat_farm_number();
-			prusa_stat_printinfo();
-			SERIAL_ECHOLN("}");
-			status_number = 15;
+		{   
+			prusa_statistics_case0(15);
 		}
 		else if (isPrintPaused || card.paused) 
 		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(14);
-			prusa_stat_farm_number();
-			prusa_stat_printinfo();
-			SERIAL_ECHOLN("}");
-			status_number = 14;
+			prusa_statistics_case0(14);
 		}
 		else if (IS_SD_PRINTING || loading_flag)
 		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(4);
-			prusa_stat_farm_number();
-			prusa_stat_printinfo();
-			SERIAL_ECHOLN("}");
-			status_number = 4;
+			prusa_statistics_case0(4);
 		}
 		else
 		{
@@ -3997,82 +3993,76 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 			prusa_stat_printerstatus(1);
 			prusa_stat_farm_number();
 			prusa_stat_diameter();
-			SERIAL_ECHOLN("}");
 			status_number = 1;
 		}
 		break;
 
 	case 1:		// 1 heating
 		farm_status = 2;
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(2);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 2;
 		farm_timer = 1;
 		break;
 
 	case 2:		// heating done
 		farm_status = 3;
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(3);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		SERIAL_ECHOLN('}');
 		status_number = 3;
 		farm_timer = 1;
 
 		if (IS_SD_PRINTING || loading_flag)
 		{
 			farm_status = 4;
-			SERIAL_ECHO("{");
+			SERIAL_ECHO('{');
 			prusa_stat_printerstatus(4);
 			prusa_stat_farm_number();
-			SERIAL_ECHOLN("}");
 			status_number = 4;
 		}
 		else
 		{
-			SERIAL_ECHO("{");
+			SERIAL_ECHO('{');
 			prusa_stat_printerstatus(3);
 			prusa_stat_farm_number();
-			SERIAL_ECHOLN("}");
 			status_number = 3;
 		}
 		farm_timer = 1;
 		break;
 
 	case 3:		// filament change
-
+		// must do a return here to prevent doing SERIAL_ECHOLN("}") at the very end of this function
+		// saved a considerable amount of FLASH
+		return;
 		break;
 	case 4:		// print succesfull
 		SERIAL_ECHO("{[RES:1][FIL:");
 		MYSERIAL.print(int(_fil_nr));
-		SERIAL_ECHO("]");
+		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 5:		// print not succesfull
 		SERIAL_ECHO("{[RES:0][FIL:");
 		MYSERIAL.print(int(_fil_nr));
-		SERIAL_ECHO("]");
+		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 6:		// print done
 		SERIAL_ECHO("{[PRN:8]");
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 8;
 		farm_timer = 2;
 		break;
 	case 7:		// print done - stopped
 		SERIAL_ECHO("{[PRN:9]");
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 9;
 		farm_timer = 2;
 		break;
@@ -4080,49 +4070,38 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		SERIAL_ECHO("{[PRN:0][PFN:");
 		status_number = 0;
 		SERIAL_ECHO(farm_no);
-		SERIAL_ECHOLN("]}");
+		SERIAL_ECHO(']');
 		farm_timer = 2;
 		break;
 	case 20:		// echo farm no
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		farm_timer = 4;
 		break;
 	case 21: // temperatures
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_temperatures();
 		prusa_stat_farm_number();
 		prusa_stat_printerstatus(status_number);
-		SERIAL_ECHOLN("}");
 		break;
     case 22: // waiting for filament change
         SERIAL_ECHO("{[PRN:5]");
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 5;
         break;
 	
 	case 90: // Error - Thermal Runaway
-		SERIAL_ECHO("{[ERR:1]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('1');
 		break;
 	case 91: // Error - Thermal Runaway Preheat
-		SERIAL_ECHO("{[ERR:2]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('2');
 		break;
 	case 92: // Error - Min temp
-		SERIAL_ECHO("{[ERR:3]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('3');
 		break;
 	case 93: // Error - Max temp
-		SERIAL_ECHO("{[ERR:4]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('4');
 		break;
 
     case 99:		// heartbeat
@@ -4130,11 +4109,11 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
         prusa_stat_temperatures();
 		SERIAL_ECHO("[PFN:");
 		SERIAL_ECHO(farm_no);
-		SERIAL_ECHO("]");
-        SERIAL_ECHOLN("}");
+		SERIAL_ECHO(']');
             
         break;
 	}
+	SERIAL_ECHOLN('}');	
 
 }
 
@@ -4142,19 +4121,19 @@ static void prusa_stat_printerstatus(int _status)
 {
 	SERIAL_ECHO("[PRN:");
 	SERIAL_ECHO(_status);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_farm_number() {
 	SERIAL_ECHO("[PFN:");
 	SERIAL_ECHO(farm_no);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_diameter() {
 	SERIAL_ECHO("[DIA:");
 	SERIAL_ECHO(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM));
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_temperatures()
@@ -4167,7 +4146,7 @@ static void prusa_stat_temperatures()
 	SERIAL_ECHO(current_temperature[0]);
 	SERIAL_ECHO("][ATB:");
 	SERIAL_ECHO(current_temperature_bed);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_printinfo()
@@ -4191,7 +4170,7 @@ static void prusa_stat_printinfo()
 	}
 	SERIAL_ECHO("][FWR:");
 	SERIAL_ECHO(FW_VERSION);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
      prusa_stat_diameter();
 }
 
@@ -6754,7 +6733,7 @@ void stepper_timer_overflow() {
 static void lcd_colorprint_change() {
 	
 	enquecommand_P(PSTR("M600"));
-	
+
 	custom_message_type = CustomMsg::FilamentLoading; //just print status message
 	lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
 	lcd_return_to_status();
@@ -8278,7 +8257,7 @@ static void menu_action_sdfile(const char* filename)
 
   //we are storing just first 8 characters of 8.3 filename assuming that extension is always ".gco"
   for (uint_least8_t i = 0; i < 8; i++) {
-	  if (strcmp((cmd + i + 4), end) == 0) { 
+	  if (strcmp((cmd + i + 4), end) == 0) {
 		  //filename is shorter then 8.3, store '\0' character on position where ".gco" string was found to terminate stored string properly
  		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, '\0');
 		  break;
