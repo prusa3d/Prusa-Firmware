@@ -6600,11 +6600,7 @@ static void lcd_main_menu()
 					if(fan_check_error == EFCE_OK)
 							MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
 				#else
-<<<<<<< HEAD
-			    MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
-=======
 					MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
->>>>>>> upstream/MK3
 				#endif
 
 			}

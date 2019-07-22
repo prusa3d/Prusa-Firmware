@@ -8943,11 +8943,7 @@ void bed_check(float x_dimension, float y_dimension, int x_points_num, int y_poi
 
 	unsigned int custom_message_type_old = custom_message_type;
 	unsigned int custom_message_state_old = custom_message_state;
-<<<<<<< HEAD
 	custom_message_type = CustomMsg::MeshBedLeveling;
-=======
-	custom_message_type = CustomMsgTypes::MESHBL;
->>>>>>> origin/code-size-reduction
 	custom_message_state = (x_points_num * y_points_num) + 10;
 	lcd_update(1);
 
@@ -9145,11 +9141,7 @@ void bed_analysis(float x_dimension, float y_dimension, int x_points_num, int y_
 	}
 	unsigned int custom_message_type_old = custom_message_type;
 	unsigned int custom_message_state_old = custom_message_state;
-<<<<<<< HEAD
 	custom_message_type = CustomMsg::MeshBedLeveling;
-=======
-	custom_message_type = CustomMsgTypes::MESHBL;
->>>>>>> origin/code-size-reduction
 	custom_message_state = (x_points_num * y_points_num) + 10;
 	lcd_update(1);
 
