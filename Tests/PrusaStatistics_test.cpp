@@ -13,41 +13,42 @@ std::string itostr3(int i){
 	return std::to_string(i);
 }
 
-std::string eeprom_read_word(uint16_t* i){
+std::string eeprom_read_word(uint16_t* /*i*/){
 	return "eeprom_read";
 }
 
 int _millis(){return 10000;}
 
-int farm_no;
-int busy_state;
-int PAUSED_FOR_USER;
-int status_number;
-int total_filament_used;
-int feedmultiply;
-int longFilenameOLD;
-int starttime;
-int isPrintPaused;
-int IS_SD_PRINTING;
-int farm_status;
-int farm_timer;
-int loading_flag;
+static int farm_no;
+static int busy_state;
+static int PAUSED_FOR_USER;
+static int status_number;
+static int total_filament_used;
+static int feedmultiply;
+static int longFilenameOLD;
+static int starttime;
+static int isPrintPaused;
+static int IS_SD_PRINTING;
+static int farm_status;
+static int farm_timer;
+static int loading_flag;
 
-int target_temperature[1];
-int current_temperature[1];
-int target_temperature_bed;
-int current_temperature_bed;
+static int target_temperature[1];
+static int current_temperature[1];
+static int target_temperature_bed;
+static int current_temperature_bed;
 
-uint16_t nozzle_diameter;
-uint16_t* EEPROM_NOZZLE_DIAMETER_uM;
+static uint16_t nozzle_diameter;
+static uint16_t* EEPROM_NOZZLE_DIAMETER_uM;
 
-std::string FW_VERSION;
+static std::string FW_VERSION;
 
 struct Card {
 	int paused = 0;
 	int percentDone(){ return 50; }
-} card;
+};
 
+static Card card;
 
 void setup_mockups(){
 	farm_no = 0;
@@ -85,7 +86,7 @@ namespace old_code
 {
 
 // Mocking Serial line
-std::string SERIAL_BUFFER = "";
+static std::string SERIAL_BUFFER = "";
 
 void SERIAL_ECHO(std::string s){
 	SERIAL_BUFFER += s; 
@@ -115,8 +116,12 @@ struct MySerial {
 	void print(int i){
 		SERIAL_ECHO(i);
 	}
-} MYSERIAL;
+	void println(){
+		SERIAL_ECHO("\n");
+	}
+};
 
+static MySerial MYSERIAL;
 
 static void prusa_stat_printerstatus(int _status)
 {
@@ -363,7 +368,7 @@ namespace new_code
 {
 
 // Mocking Serial line
-std::string SERIAL_BUFFER = "";
+static std::string SERIAL_BUFFER = "";
 
 void SERIAL_ECHO(std::string s){
 	SERIAL_BUFFER += s; 
@@ -383,6 +388,7 @@ void SERIAL_ECHOLN(std::string s){
 
 void SERIAL_ECHOLN(char c){
 	SERIAL_BUFFER += char(c);
+	SERIAL_BUFFER += "\n";
 }
 
 void SERIAL_RESET(){
@@ -393,7 +399,12 @@ struct MySerial {
 	void print(int i){
 		SERIAL_ECHO(i);
 	}
-} MYSERIAL;
+	void println(){
+		SERIAL_ECHO("\n");
+	}
+};
+
+static MySerial MYSERIAL;
 
 static void prusa_stat_printerstatus(int _status)
 {
@@ -459,6 +470,12 @@ void prusa_statistics_err(char c){
 	prusa_stat_farm_number();
 }
 
+void prusa_statistics_case0(uint8_t statnr){
+	SERIAL_ECHO("{");
+	prusa_stat_printerstatus(statnr);
+	prusa_stat_farm_number();
+	prusa_stat_printinfo();
+}
 
 void prusa_statistics(int _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
@@ -470,24 +487,24 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 	case 0: // default message
 		if (busy_state == PAUSED_FOR_USER) 
 		{   
-			status_number = 15;
+			prusa_statistics_case0(15);
 		}
 		else if (isPrintPaused || card.paused) 
 		{
-			status_number = 14;
+			prusa_statistics_case0(14);
 		}
 		else if (IS_SD_PRINTING || loading_flag)
 		{
-			status_number = 4;
+			prusa_statistics_case0(4);
 		}
 		else
 		{
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(1);
+			prusa_stat_farm_number();
+			prusa_stat_diameter();
 			status_number = 1;
 		}
-		SERIAL_ECHO('{');
-		prusa_stat_printerstatus(status_number);
-		prusa_stat_farm_number();
-		prusa_stat_printinfo();
 		break;
 
 	case 1:		// 1 heating
@@ -530,7 +547,6 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		// must do a return here to prevent doing SERIAL_ECHOLN("}") at the very end of this function
 		// saved a considerable amount of FLASH
 		return;
-		break;
 	case 4:		// print succesfull
 		SERIAL_ECHO("{[RES:1][FIL:");
 		MYSERIAL.print(int(_fil_nr));
