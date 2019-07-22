@@ -202,7 +202,7 @@ void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 //! @param[out] buffer for formatted output
 void menu_format_sheet_select_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 {
-    uint_least8_t index = sprintf_P(buffer.c,PSTR("%.10S    ["), _T(MSG_SHEET));
+    uint_least8_t index = sprintf_P(buffer.c,PSTR("%-9.10S["), _T(MSG_SHEET));
     eeprom_read_block(&(buffer.c[index]), sheet_E.name, 7);
 	buffer.c[index + 7] = ']';
     buffer.c[index + 8] = '\0';
