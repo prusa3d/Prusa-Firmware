@@ -307,7 +307,7 @@ bool wait_for_unclick;
 #endif
 
 bool bMain;                                       // flag (i.e. 'fake parameter') for 'lcd_sdcard_menu()' function
-bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_checkink_menu()' function
+bool bSettings;                                   // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
 
 
 
@@ -1658,6 +1658,7 @@ void lcd_pause_print()
     {
         lcd_commands_type = LcdCommands::LongPause;
     }
+	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //pause for octoprint
 }
 
 
@@ -1965,7 +1966,6 @@ static void lcd_menu_debug()
 static void lcd_menu_temperatures()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
-
 	lcd_home();
 	lcd_printf_P(PSTR(" %S:   %d%c \n" " %S:      %d%c \n"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
@@ -2829,7 +2829,6 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%2dh %02dm %02ds"
 		),_i("Filament used"), _met, _i("Print time"), _h, _m, _s);
-
 		menu_back_if_clicked_fb();
 	}
 	else
@@ -2849,10 +2848,9 @@ void lcd_menu_statistics()
 		lcd_printf_P(_N(
 			"%S:\n"
 			"%8.2fm\n"
-		  "%S :\n"
-		  "%7ldd :%2hhdh :%02hhd m"
+			"%S:\n"
+			"%7ldd :%2hhdh :%02hhdm"
 		), _i("Total filament"), _filament_m, _i("Total print time"), _days, _hours, _minutes);
-
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 		while (!lcd_clicked())
 		{
@@ -5487,18 +5485,27 @@ do\
 }\
 while (0)
 
-//-//static void lcd_checking_menu()
-void lcd_checking_menu()
+static void lcd_checking_menu(void)
 {
 MENU_BEGIN();
-MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
-SETTINGS_NOZZLE;
-MENU_ITEM_TEXT_P(STR_SEPARATOR);
-MENU_ITEM_TEXT_P(_i("Checks:"));
+MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
 SETTINGS_MODE;
 SETTINGS_MODEL;
 SETTINGS_VERSION;
-SETTINGS_GCODE;
+//-// temporarily disabled
+//SETTINGS_GCODE;
+MENU_END();
+}
+
+void lcd_hw_setup_menu(void)                      // can not be "static"
+{
+MENU_BEGIN();
+MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
+if(!farm_mode)
+     SETTINGS_NOZZLE;
+// ... a sem prijdou 'plechy'
+if(!farm_mode)
+     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
 MENU_END();
 }
 
@@ -5526,6 +5533,10 @@ static void lcd_settings_menu()
 		MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
 
 	SETTINGS_SILENT_MODE;
+
+     bSettings=true;                              // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
+	MENU_ITEM_SUBMENU_P(_i("HW Setup"), lcd_hw_setup_menu);////MSG_HW_SETUP
+
 	SETTINGS_MMU_MODE;
 
 	MENU_ITEM_SUBMENU_P(_i("Mesh bed leveling"), lcd_mesh_bed_leveling_settings);////MSG_MBL_SETTINGS c=18 r=1
@@ -5552,12 +5563,6 @@ static void lcd_settings_menu()
 #if (LANG_MODE != 0)
 	MENU_ITEM_SUBMENU_P(_i("Select language"), lcd_language_menu);////MSG_LANGUAGE_SELECT
 #endif //(LANG_MODE != 0)
-
-	if (!farm_mode)
-          {
-          bSettings=true;                         // flag ('fake parameter') for 'lcd_checking_menu()' function
-          MENU_ITEM_SUBMENU_P(_i("Print checking"), lcd_checking_menu);
-          }
 
 	SETTINGS_SD;
 	SETTINGS_SOUND;
@@ -6595,7 +6600,11 @@ static void lcd_main_menu()
 					if(fan_check_error == EFCE_OK)
 							MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
 				#else
+<<<<<<< HEAD
 			    MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+=======
+					MENU_ITEM_SUBMENU_P(_i("Resume print"), lcd_resume_print);////MSG_RESUME_PRINT
+>>>>>>> upstream/MK3
 				#endif
 
 			}
@@ -6945,7 +6954,6 @@ void lcd_print_stop()
      if(!card.sdprinting)
           {
           SERIAL_ECHOLNPGM("// action:cancel");   // for Octoprint
-          return;
           }
 	saved_printing = false;
 	cancel_heatup = true;

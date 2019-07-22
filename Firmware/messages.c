@@ -84,6 +84,7 @@ const char MSG_SELFTEST_MOTOR[] PROGMEM_I1 = ISTR("Motor"); ////
 const char MSG_SELFTEST_FILAMENT_SENSOR[] PROGMEM_I1 = ISTR("Filament sensor"); ////c=17
 const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////
+const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////
 const char MSG_SILENT_MODE_OFF[] PROGMEM_I1 = ISTR("Mode [high power]"); ////
 const char MSG_SILENT_MODE_ON[] PROGMEM_I1 = ISTR("Mode     [silent]"); ////
 const char MSG_STEALTH_MODE_OFF[] PROGMEM_I1 = ISTR("Mode     [Normal]"); ////
@@ -128,3 +129,4 @@ const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////
 const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////
 const char MSG_ERR_STOPPED[] PROGMEM_N1 = "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"; ////
 const char MSG_ENDSTOP_HIT[] PROGMEM_N1 = "TRIGGERED"; ////
+const char MSG_OCTOPRINT_PAUSE[] PROGMEM_N1 = "// action:pause"; ////
