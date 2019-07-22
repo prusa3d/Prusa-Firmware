@@ -5,7 +5,7 @@
 
 #ifdef __cplusplus
 void eeprom_init();
-extern bool is_sheet_initialized();
+extern bool is_sheet_initialized(uint8_t sheet_num);
 #endif
 
 
