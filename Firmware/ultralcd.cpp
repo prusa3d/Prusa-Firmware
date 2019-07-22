@@ -3962,6 +3962,13 @@ void prusa_statistics_err(char c){
 	prusa_stat_farm_number();
 }
 
+static void prusa_statistics_case0(uint8_t statnr){
+	SERIAL_ECHO("{");
+	prusa_stat_printerstatus(statnr);
+	prusa_stat_farm_number();
+	prusa_stat_printinfo();
+}
+
 void prusa_statistics(int _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
 	return;
@@ -3972,24 +3979,24 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 	case 0: // default message
 		if (busy_state == PAUSED_FOR_USER) 
 		{   
-			status_number = 15;
+			prusa_statistics_case0(15);
 		}
 		else if (isPrintPaused || card.paused) 
 		{
-			status_number = 14;
+			prusa_statistics_case0(14);
 		}
 		else if (IS_SD_PRINTING || loading_flag)
 		{
-			status_number = 4;
+			prusa_statistics_case0(4);
 		}
 		else
 		{
+			SERIAL_ECHO("{");
+			prusa_stat_printerstatus(1);
+			prusa_stat_farm_number();
+			prusa_stat_diameter();
 			status_number = 1;
 		}
-		SERIAL_ECHO('{');
-		prusa_stat_printerstatus(status_number);
-		prusa_stat_farm_number();
-		prusa_stat_printinfo();
 		break;
 
 	case 1:		// 1 heating
