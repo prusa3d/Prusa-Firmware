@@ -72,10 +72,18 @@ void eeprom_init()
         }
         if(is_uninitialized)
         {
+
             char sheet_PROGMEM_buffer[8];
             strcpy_P(sheet_PROGMEM_buffer, (char *)pgm_read_word(&(defaultSheetNames[i])));
             for (uint_least8_t a = 0; a < sizeof(Sheet::name); ++a){
                 eeprom_write(&(EEPROM_Sheets_base->s[i].name[a]), sheet_PROGMEM_buffer[a]);
+            }
+          
+            // When upgrading from version older version (before multiple sheets were implemented in v3.8.0)
+	    // Sheet 1 uses the previous Live adjust Z (@EEPROM_BABYSTEP_Z)
+            if(i == 0){
+                int last_babystep = eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z);
+                eeprom_write_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[i].z_offset)), last_babystep);
             }
         }
     }
