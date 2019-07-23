@@ -63,7 +63,6 @@ void eeprom_init()
     if (eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
     if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == 0xff) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
     
-    char defaultSheetNames[3][8] = {"Smooth1","Smooth2","Textur1"};
     for (uint_least8_t i = 0; i < (sizeof(Sheets::s)/sizeof(Sheets::s[0])); ++i)
     {
         bool is_uninitialized = true;
@@ -73,8 +72,10 @@ void eeprom_init()
         }
         if(is_uninitialized)
         {
+            char sheet_PROGMEM_buffer[8];
+            strcpy_P(sheet_PROGMEM_buffer, (char *)pgm_read_word(&(defaultSheetNames[i])));
             for (uint_least8_t a = 0; a < sizeof(Sheet::name); ++a){
-                eeprom_write(&(EEPROM_Sheets_base->s[i].name[a]), defaultSheetNames[i][a]);
+                eeprom_write(&(EEPROM_Sheets_base->s[i].name[a]), sheet_PROGMEM_buffer[a]);
             }
         }
     }
