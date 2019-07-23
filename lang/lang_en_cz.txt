@@ -828,7 +828,7 @@
 
 #
 "Press the knob"
-"Stisknete hl. tlacitko"
+"Stisknete tlacitko"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"

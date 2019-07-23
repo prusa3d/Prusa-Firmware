@@ -129,3 +129,4 @@ const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////
 const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////
 const char MSG_ERR_STOPPED[] PROGMEM_N1 = "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"; ////
 const char MSG_ENDSTOP_HIT[] PROGMEM_N1 = "TRIGGERED"; ////
+const char MSG_OCTOPRINT_PAUSE[] PROGMEM_N1 = "// action:pause"; ////
