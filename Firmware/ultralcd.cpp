@@ -304,6 +304,7 @@ bool lcd_oldcardstatus;
 #endif
 
 uint8_t selected_sheet = 0;
+char defaultSheetNames[3][8] = {"Smooth1","Smooth2","Textur1"};
 
 bool ignore_click = false;
 bool wait_for_unclick;
@@ -6595,7 +6596,9 @@ static void lcd_reset_sheet()
     eeprom_read_block(menuData->name, EEPROM_Sheets_base->s[selected_sheet].name, sizeof(Sheet::name));
     
 	menuData->initialized = false;
-    strcpy_P(menuData->name, (char *)pgm_read_word(&(defaultSheetNames[selected_sheet])));
+	for (uint_least8_t i = 0; i < sizeof(Sheet::name); ++i){
+		menuData->name[i] = defaultSheetNames[selected_sheet][i];
+    }
 
 	eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),0xffff);
 	eeprom_update_block(menuData->name,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));

@@ -331,10 +331,6 @@ extern float retract_length_swap;
 extern float retract_recover_length_swap;
 #endif
 
-const char smooth1[] PROGMEM = "Smooth1";
-const char smooth2[] PROGMEM = "Smooth2";
-const char textured[] PROGMEM = "Textur1";
-const char *const defaultSheetNames[] PROGMEM = {smooth1,smooth2,textured};
 
 extern uint8_t host_keepalive_interval;
 
