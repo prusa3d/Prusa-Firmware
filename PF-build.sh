@@ -138,18 +138,23 @@ if [ $TARGET_OS == "windows" ]; then
 	elif [ $(uname -m) == "i386" ]; then
 		echo "$(tput setaf 2)Windows 32-bit found$(tput sgr0)"
 		Processor="32"
+	else
+		echo "$(tput setaf 1)Unsupported OS: Windows $(uname -m)"
+		echo "Please refer to the notes of build.sh$(tput sgr0)"
+		exit 1
 	fi
-# Linux 64-bit
+# Linux
 elif [ $TARGET_OS == "linux" ]; then
 	if [ $(uname -m) == "x86_64" ]; then
 		echo "$(tput setaf 2)Linux 64-bit found$(tput sgr0)"
 		Processor="64"
-	fi
-# Linux 32-bit
-elif [  $TARGET_OS == "linux" ]; then
-	if [[ $(uname -m) == "i386" || $(uname -m) == "i686" ]]; then
+	elif [[ $(uname -m) == "i386" || $(uname -m) == "i686" ]]; then
 		echo "$(tput setaf 2)Linux 32-bit found$(tput sgr0)"
 		Processor="32"
+	else
+		echo "$(tput setaf 1)Unsupported OS: Linux $(uname -m)"
+		echo "Please refer to the notes of build.sh$(tput sgr0)"
+		exit 1
 	fi
 else
 	echo "$(tput setaf 1)This script doesn't support your Operating system!"
