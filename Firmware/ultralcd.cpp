@@ -6494,10 +6494,19 @@ static void change_sheet()
 
 static void change_sheet_from_menu(){
 	uint8_t next_sheet = selected_sheet+1;
-	if(next_sheet > 2) next_sheet = 0;
-	if(is_sheet_initialized(next_sheet)){
-		eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), next_sheet);
-		selected_sheet = next_sheet;
+	while(true){
+		if(next_sheet > 2) next_sheet = 0;
+		if(is_sheet_initialized(next_sheet)){
+			eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), next_sheet);
+			selected_sheet = next_sheet;
+			break;
+		}
+		else if (next_sheet == selected_sheet){
+			break;
+		}
+		else{
+			next_sheet++;
+		}
 	}
 	menu_back();
 }
