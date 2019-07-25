@@ -74,8 +74,7 @@ _Name collision for `"LiquidCrystal"` library known from previous versions is no
 
 **d.** Run `"Arduino IDE"`; select the file `"Firmware.ino"` from the subdirectory `"Firmware/"` at the location, where you placed the source code `File->Open` Make the desired code customizations; **all changes are on your own risk!**  
 
-**e.** Select the target board `"Tools->Board->PrusaResearch EINSY RAMBo"`  
-	_note: It is not possible to use any of the variants `"Arduino Mega …"`, even though it is the same MCU_  
+**e.** Select the target board `"Tools->Board->PrusaResearch Einsy RAMBo"`  
 
 **f.** Run the compilation `Sketch->Verify/Compile`  
 
