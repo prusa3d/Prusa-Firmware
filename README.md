@@ -44,15 +44,15 @@ _Note: Multi language build is not supported._
 
 **b.** Setup Arduino to use Prusa Rambo board definition
 
-    * Open Arduino and navigate to File -> Preferences -> Settings
-    * To the text field `"Additional Boards Manager URLSs"` add `https://raw.githubusercontent.com/DRracer/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json`
-    * Open Board manager (`Tools->Board->Board manager`), and install `Prusa Research AVR MK3 RAMBo EINSy board`
+* Open Arduino and navigate to File -> Preferences -> Settings
+* To the text field `"Additional Boards Manager URLSs"` add `https://raw.githubusercontent.com/prusa3d/Arduino_Boards/master/IDE_Board_Manager/package_prusa3d_index.json`
+* Open Board manager (`Tools->Board->Board manager`), and install `Prusa Research AVR MK3 RAMBo EINSy board`
 
 **c.** Modify compiler flags in `platform.txt` file
      
-    * The platform.txt file can be found in Arduino instalation directory, or after Arduino has been updated at: `"C:\Users\(user)\AppData\Local\Arduino15\packages\arduino\hardware\avr\(version)"` If you can locate the file in both places, file from user profile is probably used.
+* The platform.txt file can be found in Arduino instalation directory, or after Arduino has been updated at: `"C:\Users\(user)\AppData\Local\Arduino15\packages\arduino\hardware\avr\(version)"` If you can locate the file in both places, file from user profile is probably used.
        
-    * Add `"-Wl,-u,vfprintf -lprintf_flt -lm"` to `"compiler.c.elf.flags="` before existing flag "-Wl,--gc-sections"  
+* Add `"-Wl,-u,vfprintf -lprintf_flt -lm"` to `"compiler.c.elf.flags="` before existing flag "-Wl,--gc-sections"  
 
     For example:  `"compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections"`
    
@@ -138,11 +138,9 @@ _notes: Script and instructions contributed by 3d-gussner. Use at your own risk.
 
 # 3. Automated tests
 ## Prerequisites
-c++11 compiler e.g. g++ 6.3.1
-
-cmake
-
-build system - ninja or gnu make
+* c++11 compiler e.g. g++ 6.3.1
+* cmake
+* build system - ninja or gnu make
 
 ## Building
 Create a folder where you want to build tests.
