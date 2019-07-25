@@ -7,9 +7,6 @@
 #include "menu.h"
 #include "mesh_bed_calibration.h"
 
-extern int lcd_puts_P(const char* str);
-extern int lcd_printf_P(const char* format, ...);
-
 extern void menu_lcd_longpress_func(void);
 extern void menu_lcd_charsetup_func(void);
 extern void menu_lcd_lcdupdate_func(void);
@@ -18,7 +15,16 @@ extern void menu_lcd_lcdupdate_func(void);
 void ultralcd_init();
 void lcd_setstatus(const char* message);
 void lcd_setstatuspgm(const char* message);
+//! return to the main status screen and display the alert message
+//! Beware - it has sideeffects:
+//! - always returns the display to the main status screen
+//! - always makes lcd_reset (which is slow and causes flicker)
+//! - does not update the message if there is already one (i.e. lcd_status_message_level > 0)
 void lcd_setalertstatuspgm(const char* message);
+//! only update the alert message on the main status screen
+//! has no sideeffects, may be called multiple times
+void lcd_updatestatuspgm(const char *message);
+
 void lcd_reset_alert_level();
 uint8_t get_message_level();
 void lcd_adjust_z();
@@ -44,6 +50,9 @@ void lcd_load_filament_color_check();
 extern bool lcd_selftest();
 
 void lcd_menu_statistics(); 
+
+void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
+void lcd_menu_show_sensors_state();               // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 
 extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
@@ -77,31 +86,37 @@ extern void lcd_diag_show_end_stops();
 
 
 // To be used in lcd_commands_type.
-#define LCD_COMMAND_IDLE 0
-#define LCD_COMMAND_LOAD_FILAMENT 1
-#define LCD_COMMAND_STOP_PRINT 2
-#define LCD_COMMAND_FARM_MODE_CONFIRM 4
-#define LCD_COMMAND_LONG_PAUSE 5
-#define LCD_COMMAND_PID_EXTRUDER 7 
-#define LCD_COMMAND_V2_CAL 8
+enum class LcdCommands : uint_least8_t
+{
+	Idle,
+	LoadFilament,
+	StopPrint,
+	FarmModeConfirm,
+	LongPause,
+	PidExtruder,
+	Layer1Cal,
+};
 
-extern int lcd_commands_type;
+extern LcdCommands lcd_commands_type;
 extern int8_t FSensorStateMenu;
 
-#define CUSTOM_MSG_TYPE_STATUS 0 // status message from lcd_status_message variable
-#define CUSTOM_MSG_TYPE_MESHBL 1 // Mesh bed leveling in progress
-#define CUSTOM_MSG_TYPE_F_LOAD 2 // Loading filament in progress
-#define CUSTOM_MSG_TYPE_PIDCAL 3 // PID tuning in progress
-#define CUSTOM_MSG_TYPE_TEMCAL 4 // PINDA temp calibration
-#define CUSTOM_MSG_TYPE_TEMPRE 5 // Temp compensation preheat
+enum class CustomMsg : uint_least8_t
+{
+	Status,          //!< status message from lcd_status_message variable
+	MeshBedLeveling, //!< Mesh bed leveling in progress
+	FilamentLoading, //!< Loading filament in progress
+	PidCal,          //!< PID tuning in progress
+	TempCal,         //!< PINDA temperature calibration
+	TempCompPreheat, //!< Temperature compensation preheat
+};
 
-extern unsigned int custom_message_type;
+extern CustomMsg custom_message_type;
 extern unsigned int custom_message_state;
 
 extern uint8_t farm_mode;
 extern int farm_no;
 extern int farm_timer;
-extern int farm_status;
+extern uint8_t farm_status;
 
 #ifdef TMC2130
 #define SILENT_MODE_NORMAL 0
@@ -115,6 +130,7 @@ extern int farm_status;
 #endif
 
 extern int8_t SilentModeMenu;
+extern uint8_t SilentModeMenu_MMU;
 
 extern bool cancel_heatup;
 extern bool isPrintPaused;
@@ -124,8 +140,11 @@ void lcd_ignore_click(bool b=true);
 void lcd_commands();
 
 
+extern bool bSettings;                            // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
+void lcd_hw_setup_menu(void);                     // NOT static due to using inside "util" module ("nozzle_diameter_check()")
+
+
 void change_extr(int extr);
-void extr_adj(int extruder);
 
 #ifdef SNMM
 void extr_unload_all(); 
@@ -133,11 +152,24 @@ void extr_unload_used();
 #endif //SNMM
 void extr_unload();
 
+enum class FilamentAction : uint_least8_t
+{
+    None, //!< 'none' state is used as flag for (filament) autoLoad (i.e. opposite for 'autoLoad' state)
+    Load,
+    AutoLoad,
+    UnLoad,
+    MmuLoad,
+    MmuUnLoad,
+    MmuEject,
+    MmuCut,
+};
+
+extern FilamentAction eFilamentAction;
 extern bool bFilamentFirstRun;
-extern bool bFilamentLoad;
 extern bool bFilamentPreheatState;
-extern bool bFilamentAutoloadFlag;
-void mFilamentItem(uint16_t nTemp);
+extern bool bFilamentAction;
+void mFilamentItem(uint16_t nTemp,uint16_t nTempBed);
+void mFilamentItemForce();
 void mFilamentMenu();
 void unload_filament();
 

@@ -14,6 +14,12 @@
 #define SWI2C_SDA      20 //SDA on P3
 #define SWI2C_SCL      21 //SCL on P3
 
+#ifdef MICROMETER_LOGGING
+#define D_DATACLOCK		24	//Y_MAX (green)
+#define D_DATA			30	//X_MAX (blue)
+#define D_REQUIRE		23	//Z_MAX (white)
+#endif //MICROMETER_LOGGING
+
 
 
 #define X_STEP_PIN             37
@@ -102,7 +108,7 @@
 
 #define SDCARDDETECT           15
 
-#define IR_SENSOR_PIN 23 // idler sensor @PA1 (digital pin 23, "Z-MAX" connector)
+#define IR_SENSOR_PIN 20 //idler sensor
 
 // Support for an 8 bit logic analyzer, for example the Saleae.
 // Channels 0-2 are fast, they could generate 2.667Mhz waveform with a software loop.

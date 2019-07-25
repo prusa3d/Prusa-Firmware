@@ -94,7 +94,11 @@ void cmdqueue_reset()
     bufindr = 0;
     bufindw = 0;
     buflen = 0;
-    cmdbuffer_front_already_processed = false;
+
+	//commands are removed from command queue after process_command() function is finished
+	//reseting command queue and enqueing new commands during some (usually long running) command processing would cause that new commands are immediately removed from queue (or damaged)
+	//this will ensure that all new commands which are enqueued after cmdqueue reset, will be always executed
+    cmdbuffer_front_already_processed = true; 
 }
 
 // How long a string could be pushed to the front of the command queue?
@@ -425,7 +429,7 @@ void get_command()
 				  // M110 - set current line number.
 				  // Line numbers not sent in succession.
 				  SERIAL_ERROR_START;
-				  SERIAL_ERRORRPGM(_n("Line Number is not Last Line Number+1, Last Line: "));////MSG_ERR_LINE_NO c=0 r=0
+				  SERIAL_ERRORRPGM(_n("Line Number is not Last Line Number+1, Last Line: "));////MSG_ERR_LINE_NO
 				  SERIAL_ERRORLN(gcode_LastN);
 				  //Serial.println(gcode_N);
 				  FlushSerialRequestResend();
@@ -441,7 +445,7 @@ void get_command()
 					  checksum = checksum^(*p++);
 				  if (int(strtol(strchr_pointer+1, NULL, 10)) != int(checksum)) {
 					  SERIAL_ERROR_START;
-					  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH c=0 r=0
+					  SERIAL_ERRORRPGM(_n("checksum mismatch, Last Line: "));////MSG_ERR_CHECKSUM_MISMATCH
 					  SERIAL_ERRORLN(gcode_LastN);
 					  FlushSerialRequestResend();
 					  serial_count = 0;
@@ -453,7 +457,7 @@ void get_command()
 			  else
 			  {
 				  SERIAL_ERROR_START;
-				  SERIAL_ERRORRPGM(_n("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM c=0 r=0
+				  SERIAL_ERRORRPGM(_n("No Checksum with line number, Last Line: "));////MSG_ERR_NO_CHECKSUM
 				  SERIAL_ERRORLN(gcode_LastN);
 				  FlushSerialRequestResend();
 				  serial_count = 0;
@@ -470,7 +474,7 @@ void get_command()
         {
 
             SERIAL_ERROR_START;
-            SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM c=0 r=0
+            SERIAL_ERRORRPGM(_n("No Line Number with checksum, Last Line: "));////MSG_ERR_NO_LINENUMBER_WITH_CHECKSUM
             SERIAL_ERRORLN(gcode_LastN);
 			FlushSerialRequestResend();
             serial_count = 0;
@@ -575,7 +579,7 @@ void get_command()
        serial_count >= (MAX_CMD_SIZE - 1) || n==-1)
     {
       if(card.eof()){
-        SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED c=0 r=0
+        SERIAL_PROTOCOLLNRPGM(_n("Done printing file"));////MSG_FILE_PRINTED
         stoptime=_millis();
         char time[30];
         unsigned long t=(stoptime-starttime-pause_time)/1000;
@@ -594,7 +598,7 @@ void get_command()
         if (farm_mode)
         {
             prusa_statistics(6);
-            lcd_commands_type = LCD_COMMAND_FARM_MODE_CONFIRM;
+            lcd_commands_type = LcdCommands::FarmModeConfirm;
         }
 
       }

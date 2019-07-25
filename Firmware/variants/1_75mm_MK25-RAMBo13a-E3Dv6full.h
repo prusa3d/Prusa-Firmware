@@ -2,12 +2,16 @@
 #define CONFIGURATION_PRUSA_H
 
 #include <limits.h>
+#include "printers.h"
 /*------------------------------------
  GENERAL SETTINGS
  *------------------------------------*/
 
 // Printer revision
 #define PRINTER_TYPE PRINTER_MK25
+#define PRINTER_NAME PRINTER_MK25_NAME
+#define PRINTER_MMU_TYPE PRINTER_MK25_MMU2
+#define PRINTER_MMU_NAME PRINTER_MK25_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK25"
 #define NOZZLE_TYPE "E3Dv6full"
 
@@ -104,12 +108,16 @@
 // New XYZ calibration
 #define NEW_XYZCAL
 
+// Watchdog support
+#define WATCHDOG
+
 // Fan check
 #define FANCHECK
 
 // Safety timer
 #define SAFETYTIMER
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
+#define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
 // Filament sensor
 #define FILAMENT_SENSOR
@@ -291,10 +299,10 @@
 #define MBL_Z_STEP 0.01
 
 // Mesh definitions
-#define MESH_MIN_X 35
-#define MESH_MAX_X 238
+#define MESH_MIN_X 24
+#define MESH_MAX_X 228
 #define MESH_MIN_Y 6
-#define MESH_MAX_Y 202
+#define MESH_MAX_Y 210
 
 // Mesh upsample definition
 #define MESH_NUM_X_POINTS 7
@@ -369,7 +377,7 @@
  *------------------------------------*/
 
 #define FARM_PREHEAT_HOTEND_TEMP 250
-#define FARM_PREHEAT_HPB_TEMP 40
+#define FARM_PREHEAT_HPB_TEMP 80
 #define FARM_PREHEAT_FAN_SPEED 0
 
 #define PLA_PREHEAT_HOTEND_TEMP 215
@@ -499,8 +507,13 @@
 //#define SUPPORT_VERBOSITY
 
 #define MMU_REQUIRED_FW_BUILDNR 132
-//#define MMU_DEBUG //print communication between MMU2 and printer on serial
+#define MMU_FORCE_STEALTH_MODE
+#define MMU_DEBUG //print communication between MMU2 and printer on serial
+//#define MMU_HAS_CUTTER
 
 #define MMU_IDLER_SENSOR_ATTEMPTS_NR 21 //max. number of attempts to load filament if first load failed; value for max bowden length and case when loading fails right at the beginning
+
+//#define HEATBED_ANALYSIS //for meash bed leveling and heatbed analysis D-codes D80 and D81
+//#define MICROMETER_LOGGING //related to D-codes D80 and D81, currently works on MK2.5 only (MK3 board pin definitions missing)
 
 #endif //__CONFIGURATION_PRUSA_H
