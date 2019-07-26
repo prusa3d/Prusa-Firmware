@@ -8,6 +8,7 @@
 #include "catch.hpp"
 #include <iostream>
 
+static bool VERBOSE_MODE = false;	// If true - output additional info to std:cout
 
 std::string itostr3(int i){
 	return std::to_string(i);
@@ -652,10 +653,12 @@ int SERIALS_COMPARE(){
 		new_code::SERIAL_BUFFER.pop_back();
 	}
 
-	std::cout << "Comparing: \n";
-	std::cout << old_code::SERIAL_BUFFER << "\n";
-	std::cout << new_code::SERIAL_BUFFER << "\n";
-
+	if(VERBOSE_MODE){
+		std::cout << "Comparing: \n";
+		std::cout << old_code::SERIAL_BUFFER << "\n";
+		std::cout << new_code::SERIAL_BUFFER << "\n";	
+	}
+	
 	return old_code::SERIAL_BUFFER.compare(new_code::SERIAL_BUFFER);
 }
 
@@ -726,7 +729,10 @@ TEST_CASE("Prusa_statistics test", "[prusa_stats]")
 	int size = sizeof(test_codes)/sizeof(test_codes[0]);
 
 	for(int i = 0; i < size; i++){
-		std::cout << "Testing prusa_statistics(" << std::to_string(i) << ")\n";
+
+		if(VERBOSE_MODE){
+			std::cout << "Testing prusa_statistics(" << std::to_string(i) << ")\n";	
+		}
 		
 		switch(i)
 		{
