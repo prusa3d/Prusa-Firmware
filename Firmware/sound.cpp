@@ -69,14 +69,22 @@ void Sound_MakeCustom(uint16_t ms,uint16_t tone_,bool critical)
 		if (tone_ == 0)
 		{
 			WRITE(BEEPER,HIGH);
-			if (ms > 100) delay_keep_alive(ms); //use delay_keep_alive if the delay is long as to manage heaters and prevent WDT reset
+			if (ms > 100)
+			{
+				LcdUpdateDisabler disableLcdUpdate;
+				delay_keep_alive(ms); //use delay_keep_alive if the delay is long as to manage heaters and prevent WDT reset. Don't update lcd.
+			}
 			else _delay(ms);
 			WRITE(BEEPER,LOW);
 		}
 		else
 		{
 			_tone(BEEPER, tone_);
-			if (ms > 100) delay_keep_alive(ms);
+			if (ms > 100)
+			{
+				LcdUpdateDisabler disableLcdUpdate;
+				delay_keep_alive(ms); //use delay_keep_alive if the delay is long as to manage heaters and prevent WDT reset. Don't update lcd.
+			}
 			else _delay(ms);
 			_noTone(BEEPER);
 		}
