@@ -23,6 +23,7 @@
 #endif
 
 // #define VT100
+// #define LCD_SCROLL_SUPPORT
 
 // commands
 #define LCD_CLEARDISPLAY 0x01
@@ -76,6 +77,10 @@ uint8_t lcd_currline;
 
 #ifdef VT100
 uint8_t lcd_escape[8];
+#endif
+
+#ifdef LCD_SCROLL_SUPPORT
+int8_t lcd_scrollposition = 0;
 #endif
 
 static void lcd_display(void);
@@ -241,7 +246,17 @@ void lcd_clear(void)
 
 void lcd_home(void)
 {
-	lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero
+#ifdef LCD_SCROLL_SUPPORT
+	if (lcd_scrollposition != 0)
+	{
+		lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero. Also unshifts the display.
+		lcd_scrollposition = 0; //reset scroll
+	}
+	else
+#endif
+	{
+		lcd_set_cursor(0,0); //this is faster than the builtin home as it doesn't have to unshift the display
+	}
 	lcd_currline = 0;
 }
 
@@ -284,18 +299,24 @@ void lcd_blink(void)
 	lcd_displaycontrol |= LCD_BLINKON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
+#endif
 
+#ifdef LCD_SCROLL_SUPPORT
 // These commands scroll the display without changing the RAM
 void lcd_scrollDisplayLeft(void)
 {
 	lcd_command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT);
+	lcd_scrollposition--;
 }
 
 void lcd_scrollDisplayRight(void)
 {
 	lcd_command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);
+	lcd_scrollposition++;
 }
+#endif
 
+#if 0
 // This is for text that flows Left to Right
 void lcd_leftToRight(void)
 {
