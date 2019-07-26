@@ -269,7 +269,9 @@ void lcd_no_display(void)
 	lcd_displaycontrol &= ~LCD_DISPLAYON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
+#endif
 
+#ifdef VT100 //required functions for VT100
 // Turns the underline cursor on/off
 void lcd_no_cursor(void)
 {
@@ -282,7 +284,9 @@ void lcd_cursor(void)
 	lcd_displaycontrol |= LCD_CURSORON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
+#endif
 
+#if 0
 // Turn on and off the blinking cursor
 void lcd_no_blink(void)
 {
