@@ -11,12 +11,12 @@
 "Offset point [0;0]"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"Crash detection can\rbe turned on only in\rNormal mode"
-"La detection de crash peut etre\ractive seulement\ren mode Normal"
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
+"La detection de\x0acrash peut etre\x0aactive seulement en\x0amode Normal"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:\rCrash detection\rdisabled in\rStealth mode"
-"ATTENTION :\rDetection de crash\r desactivee en\rmode Furtif"
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+"ATTENTION:\x0aDetection de crash\x0adesactivee en\x0amode Furtif"
 
 #
 ">Cancel"
