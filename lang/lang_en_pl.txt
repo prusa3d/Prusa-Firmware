@@ -11,12 +11,12 @@
 "[0;0] przesuniecie punktu"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"Crash detection can\rbe turned on only in\rNormal mode"
-"Wykrywanie zderzen moze\rbyc wlaczone tylko w\rtrybie Normalnym"
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
+"Wykrywanie zderzen\x0amoze byc wlaczone\x0atylko w\x0atrybie Normalnym"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:\rCrash detection\rdisabled in\rStealth mode"
-"UWAGA:\rWykrywanie zderzen\rwylaczone w\rtrybie Stealth"
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+"UWAGA:\x0aWykrywanie zderzen\x0awylaczone w\x0atrybie Stealth"
 
 #
 ">Cancel"
