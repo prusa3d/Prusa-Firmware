@@ -41,9 +41,9 @@ bool eeprom_is_uninitialized<char>(char *address)
     return (0xff == eeprom_read_byte(reinterpret_cast<uint8_t*>(address)));
 }
 
-bool is_sheet_initialized(){
+bool is_sheet_initialized(uint8_t sheet_num){
   return (0xffff != eeprom_read_word(reinterpret_cast<uint16_t*>(&(EEPROM_Sheets_base->
-  s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].z_offset))));
+  s[sheet_num].z_offset))));
 }
 
 void eeprom_init()
@@ -62,6 +62,7 @@ void eeprom_init()
     if (eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
     if (eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
     if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == 0xff) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
+    
     for (uint_least8_t i = 0; i < (sizeof(Sheets::s)/sizeof(Sheets::s[0])); ++i)
     {
         bool is_uninitialized = true;
@@ -71,8 +72,19 @@ void eeprom_init()
         }
         if(is_uninitialized)
         {
-            eeprom_write(&(EEPROM_Sheets_base->s[i].name[0]), static_cast<char>(i + '1'));
-            eeprom_write(&(EEPROM_Sheets_base->s[i].name[1]), '\0');
+
+            char sheet_PROGMEM_buffer[8];
+            strcpy_P(sheet_PROGMEM_buffer, (char *)pgm_read_word(&(defaultSheetNames[i])));
+            for (uint_least8_t a = 0; a < sizeof(Sheet::name); ++a){
+                eeprom_write(&(EEPROM_Sheets_base->s[i].name[a]), sheet_PROGMEM_buffer[a]);
+            }
+          
+            // When upgrading from version older version (before multiple sheets were implemented in v3.8.0)
+	    // Sheet 1 uses the previous Live adjust Z (@EEPROM_BABYSTEP_Z)
+            if(i == 0){
+                int last_babystep = eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z);
+                eeprom_write_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[i].z_offset)), last_babystep);
+            }
         }
     }
     check_babystep();

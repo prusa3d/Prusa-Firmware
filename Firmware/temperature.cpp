@@ -40,7 +40,7 @@
 #include <avr/wdt.h>
 #include "adc.h"
 #include "ConfigurationStore.h"
-
+#include "messages.h"
 #include "Timer.h"
 #include "Configuration_prusa.h"
 
@@ -503,8 +503,11 @@ void checkFanSpeed()
 	  fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
-	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
-	else fan_speed_errors[0] = 0;
+	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)){ fan_speed_errors[0]++;}
+	else{
+    fan_speed_errors[0] = 0;
+    host_keepalive();
+  }
 #endif
 #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 	if ((fan_speed[1] < 5) && ((blocks_queued() ? block_buffer[block_buffer_tail].fan_speed : fanSpeed) > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
@@ -542,18 +545,17 @@ static void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
 void fanSpeedError(unsigned char _fan) {
 	if (get_message_level() != 0 && isPrintPaused) return; 
 	//to ensure that target temp. is not set to zero in case taht we are resuming print 
-	if (card.sdprinting) {
+	if (card.sdprinting || is_usb_printing) {
 		if (heating_status != 0) {
 			lcd_print_stop();
 		}
 		else {
 			fan_check_error = EFCE_DETECTED;
-
 		}
 	}
 	else {
+			SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //for octoprint
 			setTargetHotend0(0);
-			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
       heating_status = 0;
       fan_check_error = EFCE_REPORTED;
 	}
@@ -565,6 +567,7 @@ void fanSpeedError(unsigned char _fan) {
 		fanSpeedErrorBeep(PSTR("Print fan speed is lower than expected"), PSTR("Err: PRINT FAN ERROR") );
 		break;
 	}
+  SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 #endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 

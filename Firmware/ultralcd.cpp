@@ -257,6 +257,11 @@ static void lcd_connect_printer();
 void lcd_finishstatus();
 
 static void lcd_sdcard_menu();
+static void lcd_sheet_menu();
+
+static void lcd_select_sheet_0_menu();
+static void lcd_select_sheet_1_menu();
+static void lcd_select_sheet_2_menu();
 
 #ifdef DELTA_CALIBRATION_MENU
 static void lcd_delta_calibrate_menu();
@@ -297,6 +302,8 @@ static void menu_action_sddirectory(const char* filename);
 #if (SDCARDDETECT > 0)
 bool lcd_oldcardstatus;
 #endif
+
+uint8_t selected_sheet = 0;
 
 bool ignore_click = false;
 bool wait_for_unclick;
@@ -1065,7 +1072,7 @@ static void lcd_status_screen()
 }
 
 void lcd_commands()
-{	
+{
 	if (lcd_commands_type == LcdCommands::LongPause)
 	{
 		if (!blocks_queued() && !homing_flag)
@@ -1449,9 +1456,9 @@ void lcd_commands()
                     lcd_wizard(WizState::RepeatLay1Cal);
                 }
                 break;
-            }
-        }
-	}
+		}
+			}
+		}
 
 #endif // not SNMM
 
@@ -1658,6 +1665,7 @@ void lcd_pause_print()
     {
         lcd_commands_type = LcdCommands::LongPause;
     }
+	SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //pause for octoprint
 }
 
 
@@ -1965,7 +1973,6 @@ static void lcd_menu_debug()
 static void lcd_menu_temperatures()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
-	
 	lcd_home();
 	lcd_printf_P(PSTR(" %S:   %d%c \n" " %S:      %d%c \n"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
 #ifdef AMBIENT_THERMISTOR
@@ -2580,7 +2587,7 @@ void lcd_change_success() {
 }
 
 static void lcd_loading_progress_bar(uint16_t loading_time_ms) { 
-	
+
 	for (uint_least8_t i = 0; i < 20; i++) {
 		lcd_set_cursor(i, 3);
 		lcd_print(".");
@@ -2829,7 +2836,6 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%2dh %02dm %02ds"
 		),_i("Filament used"), _met, _i("Print time"), _h, _m, _s);
-		
 		menu_back_if_clicked_fb();
 	}
 	else
@@ -2852,7 +2858,6 @@ void lcd_menu_statistics()
 			"%S:\n"
 			"%7ldd :%2hhdh :%02hhdm"
 		), _i("Total filament"), _filament_m, _i("Total print time"), _days, _hours, _minutes);
-		
 		KEEPALIVE_STATE(PAUSED_FOR_USER);
 		while (!lcd_clicked())
 		{
@@ -3090,7 +3095,7 @@ static void lcd_babystep_z()
 		_md->status = 1;
 		check_babystep();
 		
-		if(!is_sheet_initialized()){
+		if(!is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))){
 			_md->babystepMemZ = 0;
 		}
 		else{
@@ -3955,6 +3960,20 @@ void lcd_menu_show_sensors_state()                // NOT static due to using ins
 	}
 }
 
+void prusa_statistics_err(char c){
+	SERIAL_ECHO("{[ERR:");
+	SERIAL_ECHO(c);
+	SERIAL_ECHO(']');
+	prusa_stat_farm_number();
+}
+
+static void prusa_statistics_case0(uint8_t statnr){
+	SERIAL_ECHO("{");
+	prusa_stat_printerstatus(statnr);
+	prusa_stat_farm_number();
+	prusa_stat_printinfo();
+}
+
 void prusa_statistics(int _message, uint8_t _fil_nr) {
 #ifdef DEBUG_DISABLE_PRUSA_STATISTICS
 	return;
@@ -3964,31 +3983,16 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 
 	case 0: // default message
 		if (busy_state == PAUSED_FOR_USER) 
-		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(15);
-			prusa_stat_farm_number();
-			prusa_stat_printinfo();
-			SERIAL_ECHOLN("}");
-			status_number = 15;
+		{   
+			prusa_statistics_case0(15);
 		}
 		else if (isPrintPaused || card.paused) 
 		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(14);
-			prusa_stat_farm_number();
-			prusa_stat_printinfo();
-			SERIAL_ECHOLN("}");
-			status_number = 14;
+			prusa_statistics_case0(14);
 		}
 		else if (IS_SD_PRINTING || loading_flag)
 		{
-			SERIAL_ECHO("{");
-			prusa_stat_printerstatus(4);
-			prusa_stat_farm_number();
-			prusa_stat_printinfo();
-			SERIAL_ECHOLN("}");
-			status_number = 4;
+			prusa_statistics_case0(4);
 		}
 		else
 		{
@@ -3996,82 +4000,76 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 			prusa_stat_printerstatus(1);
 			prusa_stat_farm_number();
 			prusa_stat_diameter();
-			SERIAL_ECHOLN("}");
 			status_number = 1;
 		}
 		break;
 
 	case 1:		// 1 heating
 		farm_status = 2;
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(2);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 2;
 		farm_timer = 1;
 		break;
 
 	case 2:		// heating done
 		farm_status = 3;
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(3);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		SERIAL_ECHOLN('}');
 		status_number = 3;
 		farm_timer = 1;
 
 		if (IS_SD_PRINTING || loading_flag)
 		{
 			farm_status = 4;
-			SERIAL_ECHO("{");
+			SERIAL_ECHO('{');
 			prusa_stat_printerstatus(4);
 			prusa_stat_farm_number();
-			SERIAL_ECHOLN("}");
 			status_number = 4;
 		}
 		else
 		{
-			SERIAL_ECHO("{");
+			SERIAL_ECHO('{');
 			prusa_stat_printerstatus(3);
 			prusa_stat_farm_number();
-			SERIAL_ECHOLN("}");
 			status_number = 3;
 		}
 		farm_timer = 1;
 		break;
 
 	case 3:		// filament change
-
+		// must do a return here to prevent doing SERIAL_ECHOLN("}") at the very end of this function
+		// saved a considerable amount of FLASH
+		return;
 		break;
 	case 4:		// print succesfull
 		SERIAL_ECHO("{[RES:1][FIL:");
 		MYSERIAL.print(int(_fil_nr));
-		SERIAL_ECHO("]");
+		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 5:		// print not succesfull
 		SERIAL_ECHO("{[RES:0][FIL:");
 		MYSERIAL.print(int(_fil_nr));
-		SERIAL_ECHO("]");
+		SERIAL_ECHO(']');
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		farm_timer = 2;
 		break;
 	case 6:		// print done
 		SERIAL_ECHO("{[PRN:8]");
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 8;
 		farm_timer = 2;
 		break;
 	case 7:		// print done - stopped
 		SERIAL_ECHO("{[PRN:9]");
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 9;
 		farm_timer = 2;
 		break;
@@ -4079,49 +4077,38 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
 		SERIAL_ECHO("{[PRN:0][PFN:");
 		status_number = 0;
 		SERIAL_ECHO(farm_no);
-		SERIAL_ECHOLN("]}");
+		SERIAL_ECHO(']');
 		farm_timer = 2;
 		break;
 	case 20:		// echo farm no
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_printerstatus(status_number);
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		farm_timer = 4;
 		break;
 	case 21: // temperatures
-		SERIAL_ECHO("{");
+		SERIAL_ECHO('{');
 		prusa_stat_temperatures();
 		prusa_stat_farm_number();
 		prusa_stat_printerstatus(status_number);
-		SERIAL_ECHOLN("}");
 		break;
     case 22: // waiting for filament change
         SERIAL_ECHO("{[PRN:5]");
 		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
 		status_number = 5;
         break;
 	
 	case 90: // Error - Thermal Runaway
-		SERIAL_ECHO("{[ERR:1]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('1');
 		break;
 	case 91: // Error - Thermal Runaway Preheat
-		SERIAL_ECHO("{[ERR:2]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('2');
 		break;
 	case 92: // Error - Min temp
-		SERIAL_ECHO("{[ERR:3]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('3');
 		break;
 	case 93: // Error - Max temp
-		SERIAL_ECHO("{[ERR:4]");
-		prusa_stat_farm_number();
-		SERIAL_ECHOLN("}");
+		prusa_statistics_err('4');
 		break;
 
     case 99:		// heartbeat
@@ -4129,11 +4116,11 @@ void prusa_statistics(int _message, uint8_t _fil_nr) {
         prusa_stat_temperatures();
 		SERIAL_ECHO("[PFN:");
 		SERIAL_ECHO(farm_no);
-		SERIAL_ECHO("]");
-        SERIAL_ECHOLN("}");
+		SERIAL_ECHO(']');
             
         break;
 	}
+	SERIAL_ECHOLN('}');	
 
 }
 
@@ -4141,19 +4128,19 @@ static void prusa_stat_printerstatus(int _status)
 {
 	SERIAL_ECHO("[PRN:");
 	SERIAL_ECHO(_status);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_farm_number() {
 	SERIAL_ECHO("[PFN:");
 	SERIAL_ECHO(farm_no);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_diameter() {
 	SERIAL_ECHO("[DIA:");
 	SERIAL_ECHO(eeprom_read_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM));
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_temperatures()
@@ -4166,7 +4153,7 @@ static void prusa_stat_temperatures()
 	SERIAL_ECHO(current_temperature[0]);
 	SERIAL_ECHO("][ATB:");
 	SERIAL_ECHO(current_temperature_bed);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
 }
 
 static void prusa_stat_printinfo()
@@ -4190,7 +4177,7 @@ static void prusa_stat_printinfo()
 	}
 	SERIAL_ECHO("][FWR:");
 	SERIAL_ECHO(FW_VERSION);
-	SERIAL_ECHO("]");
+	SERIAL_ECHO(']');
      prusa_stat_diameter();
 }
 
@@ -4699,6 +4686,7 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 
 void lcd_v2_calibration()
 {
+	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
 	if (mmu_enabled)
 	{
 	    const uint8_t filament = choose_menu_P(_i("Select PLA filament:"),_T(MSG_FILAMENT),_i("Cancel")); ////c=20 r=1  ////c=19 r=1
@@ -5521,11 +5509,33 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 {
 MENU_BEGIN();
 MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
-if(!farm_mode)
+
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
+
+//strncpy(buffer,_i("Sheet"),sizeof(buffer));
+//strncpy(buffer,_i(" "),sizeof(buffer));
+//strncpy(buffer,EEPROM_Sheets_base->s[0].name,sizeof(buffer));
+
+//const char* menu = EEPROM_Sheets_base->s[0].name.c_str();
+
+//const char *b = new char(buffer);
+//const char *b = const char *b = new char(buffer);(buffer);
+//printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
+//SERIAL_ECHOPGM(buffer);
+//SERIAL_ECHOPGM(reinterpret_cast<const char*>(buffer));
+//SERIAL_ECHOPGM("lakdjushasdjaljsdakjsdn");
+//char* p = &buffer[0];
+
+//MENU_ITEM_SUBMENU_P(reinterpret_cast<const char*>(p),lcd_sheet_menu);
+
+//delete(b);
+
+if(!farm_mode){
      SETTINGS_NOZZLE;
-// ... a sem prijdou 'plechy'
-if(!farm_mode)
      MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
+}
 MENU_END();
 }
 
@@ -6476,38 +6486,45 @@ void lcd_resume_print()
     isPrintPaused = false;
 }
 
-static void change_sheet(uint8_t sheet_num)
+static void change_sheet()
 {
-	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet_num);
-	if(is_sheet_initialized())
-		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
-	else
-		calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
-
+	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
     menu_back(3);
+}
+
+static void change_sheet_from_menu(){
+	uint8_t next_sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))+1;
+	while(true){
+		if(next_sheet > 2) next_sheet = 0;
+		if(is_sheet_initialized(next_sheet)){
+			eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), next_sheet);
+			selected_sheet = next_sheet;
+			break;
+		}
+		else if (next_sheet == selected_sheet){
+			break;
+		}
+		else{
+			next_sheet++;
+		}
+	}
+	menu_back();
 }
 
 static void lcd_select_sheet_0_menu()
 {
-	change_sheet(0);
+	selected_sheet = 0;
+	lcd_sheet_menu();
 }
 static void lcd_select_sheet_1_menu()
 {
-	change_sheet(1);
+	selected_sheet = 1;
+	lcd_sheet_menu();
 }
 static void lcd_select_sheet_2_menu()
 {
-	change_sheet(2);
-}
-
-static void lcd_select_sheet_menu()
-{
-    MENU_BEGIN();
-    MENU_ITEM_BACK_P(_T(MSG_BACK));
-    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
-    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
-    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
-    MENU_END();
+	selected_sheet = 2;
+	lcd_sheet_menu();
 }
 
 static void lcd_rename_sheet_menu()
@@ -6523,7 +6540,7 @@ static void lcd_rename_sheet_menu()
 
     if (!menuData->initialized)
     {
-        eeprom_read_block(menuData->name, EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name, sizeof(Sheet::name));
+        eeprom_read_block(menuData->name, EEPROM_Sheets_base->s[selected_sheet].name, sizeof(Sheet::name));
         lcd_encoder = menuData->name[0];
         menuData->initialized = true;
     }
@@ -6547,20 +6564,46 @@ static void lcd_rename_sheet_menu()
         else
         {
             eeprom_update_block(menuData->name,
-                EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))].name,
+                EEPROM_Sheets_base->s[selected_sheet].name,
                 sizeof(Sheet::name));
             menu_back();
         }
     }
 }
 
+static void lcd_reset_sheet()
+{
+    struct MenuData
+    {
+        bool initialized;
+        uint8_t selected;
+        char name[sizeof(Sheet::name)];
+    };
+    static_assert(sizeof(menu_data)>= sizeof(MenuData),"MenuData doesn't fit into menu_data");
+    MenuData* menuData = (MenuData*)&(menu_data[0]);
+    eeprom_read_block(menuData->name, EEPROM_Sheets_base->s[selected_sheet].name, sizeof(Sheet::name));
+    
+	menuData->initialized = false;
+    strcpy_P(menuData->name, (char *)pgm_read_word(&(defaultSheetNames[selected_sheet])));
+
+
+	eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),0xffff);
+	eeprom_update_block(menuData->name,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
+	menu_back(2);
+}
+
 static void lcd_sheet_menu()
 {
     MENU_BEGIN();
-    MENU_ITEM_BACK_P(_T(MSG_MAIN));
-    MENU_ITEM_SUBMENU_P(_i("Select"), lcd_select_sheet_menu); //// c=18
-    MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
+    MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
+
+	if(is_sheet_initialized(selected_sheet)){
+	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); //// c=18
+	}
+
     MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
+    MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
+	MENU_ITEM_SUBMENU_P(_i("Reset"), lcd_reset_sheet); //// c=18
 
     MENU_END();
 }
@@ -6700,7 +6743,10 @@ static void lcd_main_menu()
 
   }
 
-  if(!isPrintPaused)MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))], lcd_sheet_menu);
+  if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
+  {
+	MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))], change_sheet_from_menu);
+  }
   
   if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
   {
@@ -6753,7 +6799,7 @@ void stepper_timer_overflow() {
 static void lcd_colorprint_change() {
 	
 	enquecommand_P(PSTR("M600"));
-	
+
 	custom_message_type = CustomMsg::FilamentLoading; //just print status message
 	lcd_setstatuspgm(_T(MSG_FINISHING_MOVEMENTS));
 	lcd_return_to_status();
@@ -6970,7 +7016,6 @@ void lcd_print_stop()
      if(!card.sdprinting)
           {
           SERIAL_ECHOLNPGM("// action:cancel");   // for Octoprint
-          return;
           }
 	saved_printing = false;
 	cancel_heatup = true;
@@ -8278,7 +8323,7 @@ static void menu_action_sdfile(const char* filename)
 
   //we are storing just first 8 characters of 8.3 filename assuming that extension is always ".gco"
   for (uint_least8_t i = 0; i < 8; i++) {
-	  if (strcmp((cmd + i + 4), end) == 0) { 
+	  if (strcmp((cmd + i + 4), end) == 0) {
 		  //filename is shorter then 8.3, store '\0' character on position where ".gco" string was found to terminate stored string properly
  		  eeprom_write_byte((uint8_t*)EEPROM_FILENAME + i, '\0');
 		  break;
