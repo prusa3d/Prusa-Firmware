@@ -56,7 +56,7 @@
 #   Some may argue that this is only used by a script, BUT as soon someone accidentally or on purpose starts Arduino IDE
 #   it will use the default Arduino IDE folders and so can corrupt the build environment.
 #
-# Version: 1.0.6-Build_8
+# Version: 1.0.6-Build_9
 # Change log:
 # 12 Jan 2019, 3d-gussner, Fixed "compiler.c.elf.flags=-w -Os -Wl,-u,vfprintf -lprintf_flt -lm -Wl,--gc-sections" in 'platform.txt'
 # 16 Jan 2019, 3d-gussner, Build_2, Added development check to modify 'Configuration.h' to prevent unwanted LCD messages that Firmware is unknown
@@ -111,6 +111,7 @@
 # 23 Jul 2019, 3d-gussner, Changed Build-env path to "PF-build-dl" as requested in PR https://github.com/prusa3d/Prusa-Firmware/pull/2028
 #                          Changed Hex-files folder to PF-build-hex as requested in PR
 # 23 Jul 2019, 3d-gussner, Added Finding OS version routine so supporting new OS should get easier
+# 26 Jul 2019, 3d-gussner, Change JSON repository to prusa3d after PR https://github.com/prusa3d/Arduino_Boards/pull/1 was merged
 
 #### Start check if OSTYPE is supported
 OS_FOUND=$( command -v uname)
