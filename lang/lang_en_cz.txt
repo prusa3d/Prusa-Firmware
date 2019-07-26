@@ -11,12 +11,12 @@
 "[0;0] odsazeni bodu"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"Crash detection can\x1b[Ebe turned on only in\x1b[ENormal mode"
-"Crash detekce muze\x1b[Ebyt zapnuta pouze v\x1b[ENormal modu"
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
+"Crash detekce muze\x0abyt zapnuta pouze v\x0aNormal modu"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:\x1b[ECrash detection\x1b[Edisabled in\x1b[EStealth mode"
-"POZOR:\x1b[ECrash detekce\x1b[Edeaktivovana ve\x1b[EStealth modu"
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+"POZOR:\x0aCrash detekce\x0adeaktivovana ve\x0aStealth modu"
 
 #
 ">Cancel"

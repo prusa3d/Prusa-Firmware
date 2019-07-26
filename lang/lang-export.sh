@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # lang-export.sh - multi-language support script
 #  for generating lang_xx.po
