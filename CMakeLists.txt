@@ -15,6 +15,7 @@ set(TEST_SOURCES
 	Tests/Example_test.cpp
 	Tests/Timer_test.cpp
 	Tests/AutoDeplete_test.cpp
+	Tests/PrusaStatistics_test.cpp
 	Firmware/Timer.cpp
 	Firmware/AutoDeplete.cpp
 )

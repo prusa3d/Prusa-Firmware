@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # progmem.sh - multi-language support script
 #  Examine content of progmem sections (default is progmem1).
@@ -104,6 +104,7 @@ cat $PROGMEM.chr | \
  sed 's/\\x1b/\\\\\\x1b/g;' | \
  sed 's/\\x01/\\\\\\x01/g;' | \
  sed 's/\\xf8/\\\\\\xf8/g;' | \
+ sed 's/\\x0a/\\\\\\x0a/g;' | \
  sed 's/\\x00$/\n/;s/^/\"/;s/$/\"\\/'; \
 ) | sh > $PROGMEM.var
 

@@ -11,12 +11,12 @@
 "[0;0] punto offset"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-"\x1b[2JDec. choque\x1b[1;0Hpuede ser activada solo en\x1b[2;0HModo normal"
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
+"Dec. choque puede\x0aser activada solo en\x0aModo normal"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
-"\x1b[2JATENCION:\x1b[1;0HDec. choque\x1b[2;0Hdesactivada en\x1b[3;0HModo silencio"
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+"ATENCION:\x0aDec. choque\x0adesactivada en\x0aModo silencio"
 
 #
 ">Cancel"
