@@ -11,12 +11,12 @@
 "[0;0] Punktversatz"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"Crash detection can be turned on only in Normal mode"
-"Crash Erkennung kann nur im Modus Normal genutzt werden"
+"Crash detection can\x1b[Ebe turned on only in\x1b[ENormal mode"
+"Crash Erkennung kann\x1b[Enur im Modus Normal\x1b[Egenutzt werden"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"WARNING:	Crash detection disabled in Stealth mode"
-"WARNUNG:	Crash Erkennung deaktiviert im Stealth Modus"
+"WARNING:\x1b[ECrash detection\x1b[Edisabled in\x1b[EStealth mode"
+"WARNUNG:\x1b[ECrash Erkennung\x1b[Edeaktiviert im\x1b[EStealth Modus"
 
 #
 ">Cancel"

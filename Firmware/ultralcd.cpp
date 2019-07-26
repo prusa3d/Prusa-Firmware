@@ -4339,12 +4339,12 @@ static void lcd_sort_type_set() {
 #ifdef TMC2130
 static void lcd_crash_mode_info()
 {
-uint8_t nlines;
 	lcd_update_enable(true);
 	static uint32_t tim = 0;
 	if ((tim + 1000) < _millis())
 	{
-		lcd_display_message_fullscreen_nonBlocking_P(_i("Crash detection can be turned on only in Normal mode"), nlines);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
+		lcd_clear();
+		fputs_P(_i("Crash detection can\x1b[Ebe turned on only in\x1b[ENormal mode"), lcdout);////MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 		tim = _millis();
 	}
     menu_back_if_clicked();
@@ -4352,12 +4352,12 @@ uint8_t nlines;
 
 static void lcd_crash_mode_info2()
 {
-uint8_t nlines;
 	lcd_update_enable(true);
 	static uint32_t tim = 0;
 	if ((tim + 1000) < _millis())
 	{
-		lcd_display_message_fullscreen_nonBlocking_P(_i("WARNING:	Crash detection disabled in Stealth mode"), nlines);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
+		lcd_clear();
+		fputs_P(_i("WARNING:\x1b[ECrash detection\x1b[Edisabled in\x1b[EStealth mode"), lcdout);////MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
 		tim = _millis();
 	}
     menu_back_if_clicked();

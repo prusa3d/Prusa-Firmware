@@ -22,7 +22,7 @@
 	#define LCD_8BIT
 #endif
 
-// #define VT100
+// #define VT100 //if it is disabled, only \x1b[E will be processed because of compatibility with some messages
 
 // commands
 #define LCD_CLEARDISPLAY 0x01
@@ -76,6 +76,8 @@ uint8_t lcd_currline;
 
 #ifdef VT100
 uint8_t lcd_escape[8];
+#else
+uint8_t lcd_escape[1];
 #endif
 
 static void lcd_display(void);
@@ -141,20 +143,32 @@ static void lcd_command(uint8_t value, uint16_t delayExtra = 0)
 	lcd_send(value, LOW, LCD_DEFAULT_DELAY + delayExtra);
 }
 
+static void lcd_linefeed()
+{
+	if (lcd_currline > 3) lcd_currline = -1;
+	lcd_set_cursor(0, lcd_currline + 1); // LF
+}
+
 static void lcd_write(uint8_t value)
 {
-	if (value == '\n' || value == '\t')
+	if (value == '\n')
 	{
-		if (lcd_currline > 3) lcd_currline = -1;
-		lcd_set_cursor(0, lcd_currline + 1); // LF
+		lcd_linefeed();
 		return;
 	}
-	#ifdef VT100
 	if (lcd_escape[0] || (value == 0x1b)){
+#ifdef VT100
 		lcd_escape_write(value);
+#else
+		if (value == 0x1b) 
+		{
+			lcd_escape[0] = 3;
+			lcd_linefeed();
+		}
+		lcd_escape[0]--;
+#endif
 		return;
 	}
-	#endif
 	lcd_send(value, HIGH);
 }
 
@@ -184,9 +198,7 @@ static void lcd_begin(uint8_t clear)
 	// set the entry mode
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode);
 	
-	#ifdef VT100
 	lcd_escape[0] = 0;
-	#endif
 }
 
 static void lcd_putchar(char c, FILE *)
@@ -350,6 +362,7 @@ void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
 //CursorHome   "\x1b[%d;%dH"
 //CursorShow   "\x1b[?25h"
 //CursorHide   "\x1b[?25l"
+//LineFeed     "\x1b[E"
 void lcd_escape_write(uint8_t chr)
 {
 #define escape_cnt (lcd_escape[0])        //escape character counter
@@ -391,6 +404,9 @@ void lcd_escape_write(uint8_t chr)
 		{
 		case '2': return; // escape = "\x1b[2"
 		case '?': return; // escape = "\x1b[?"
+		case 'E':
+			lcd_linefeed();// escape = "\x1b[E"
+			break;
 		default:
 			if (chr_is_num) return; // escape = "\x1b[%1d"
 		}

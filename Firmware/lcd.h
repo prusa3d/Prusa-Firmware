@@ -69,6 +69,8 @@ extern void lcd_print(double, int = 2);
 //! @param c column
 //! @param r row
 #define ESC_H(c,r) "\x1b["#r";"#c"H"
+//! @brief Linefeed
+#define ESC_E      "\x1b[E"
 
 
 
