@@ -6486,11 +6486,20 @@ static void change_sheet()
 }
 
 static void change_sheet_from_menu(){
-	uint8_t next_sheet = selected_sheet+1;
-	if(next_sheet > 2) next_sheet = 0;
-	if(is_sheet_initialized(next_sheet)){
-		eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), next_sheet);
-		selected_sheet = next_sheet;
+	uint8_t next_sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))+1;
+	while(true){
+		if(next_sheet > 2) next_sheet = 0;
+		if(is_sheet_initialized(next_sheet)){
+			eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), next_sheet);
+			selected_sheet = next_sheet;
+			break;
+		}
+		else if (next_sheet == selected_sheet){
+			break;
+		}
+		else{
+			next_sheet++;
+		}
 	}
 	menu_back();
 }
@@ -6729,7 +6738,7 @@ static void lcd_main_menu()
 
   if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
   {
-	MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[selected_sheet], change_sheet_from_menu);
+	MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))], change_sheet_from_menu);
   }
   
   if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
