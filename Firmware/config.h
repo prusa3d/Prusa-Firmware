@@ -46,8 +46,8 @@
 #include "Configuration_prusa.h"
 
 //LANG - Multi-language support
-//#define LANG_MODE              0 // primary language only
-#define LANG_MODE              1 // sec. language support
+#define LANG_MODE              0 // primary language only
+//#define LANG_MODE              1 // sec. language support
 
 #define LANG_SIZE_RESERVED     0x2800 // reserved space for secondary language (10240 bytes)
 
