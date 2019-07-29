@@ -6,6 +6,7 @@
 #include "conv2str.h"
 #include "menu.h"
 #include "mesh_bed_calibration.h"
+#include "config.h"
 
 extern void menu_lcd_longpress_func(void);
 extern void menu_lcd_charsetup_func(void);
@@ -208,7 +209,9 @@ void lcd_set_degree();
 void lcd_set_progress();
 #endif
 
+#if (LANG_MODE != 0)
 void lcd_language();
+#endif
 
 void lcd_wizard();
 bool lcd_autoDepleteEnabled();
