@@ -7538,27 +7538,34 @@ Sigma_Exit:
     case 350: 
     {
 	#ifdef TMC2130
-		if(code_seen('E'))
+		for (int i=0; i<NUM_AXIS; i++) 
 		{
-			uint16_t res_new = code_value();
-			if ((res_new == 8) || (res_new == 16) || (res_new == 32) || (res_new == 64) || (res_new == 128))
+			if(code_seen(axis_codes[i]))
 			{
-				st_synchronize();
-				uint8_t axis = E_AXIS;
-				uint16_t res = tmc2130_get_res(axis);
-				tmc2130_set_res(axis, res_new);
-				cs.axis_ustep_resolution[axis] = res_new;
-				if (res_new > res)
+				uint16_t res_new = code_value();
+				bool res_valid = (res_new == 8) || (res_new == 16) || (res_new == 32); // resolutions valid for all axis
+				res_valid |= (i != E_AXIS) && ((res_new == 1) || (res_new == 2) || (res_new == 4)); // resolutions valid for X Y Z only
+				res_valid |= (i == E_AXIS) && ((res_new == 64) || (res_new == 128)); // resolutions valid for E only
+				if (res_valid)
 				{
-					uint16_t fac = (res_new / res);
-					cs.axis_steps_per_unit[axis] *= fac;
-					position[E_AXIS] *= fac;
-				}
-				else
-				{
-					uint16_t fac = (res / res_new);
-					cs.axis_steps_per_unit[axis] /= fac;
-					position[E_AXIS] /= fac;
+					
+					st_synchronize();
+					uint16_t res = tmc2130_get_res(i);
+					tmc2130_set_res(i, res_new);
+					cs.axis_ustep_resolution[i] = res_new;
+					uint16_t fac;
+					if (res_new > res)
+					{
+						fac = (res_new / res);
+						cs.axis_steps_per_unit[i] *= fac;
+						position[i] *= fac;
+					}
+					else
+					{
+						fac = (res / res_new);
+						cs.axis_steps_per_unit[i] /= fac;
+						position[i] /= fac;
+					}
 				}
 			}
 		}
