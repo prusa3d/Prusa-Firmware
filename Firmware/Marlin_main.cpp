@@ -9722,6 +9722,7 @@ static void wait_for_heater(long codenum, uint8_t extruder) {
     cancel_heatup = false;
 	while ((!cancel_heatup) && ((residencyStart == -1) ||
 		(residencyStart >= 0 && (((unsigned int)(_millis() - residencyStart)) < (TEMP_RESIDENCY_TIME * 1000UL))))) {
+		if ((CooldownNoWait == true) && !target_direction) break;
 #else
 	while (target_direction ? (isHeatingHotend(tmp_extruder)) : (isCoolingHotend(tmp_extruder) && (CooldownNoWait == false))) {
 #endif //TEMP_RESIDENCY_TIME
