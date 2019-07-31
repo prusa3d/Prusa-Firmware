@@ -27,7 +27,7 @@ const char STR_REVISION_RC   [] PROGMEM = "rc";
 
 inline bool is_whitespace_or_nl(char c)
 {
-    return c == ' ' || c == '\t' || c == '\n' || c == 'r';
+    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
 inline bool is_whitespace_or_nl_or_eol(char c)
