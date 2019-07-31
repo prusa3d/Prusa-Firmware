@@ -23,6 +23,7 @@
 #endif
 
 // #define VT100
+// #define LCD_SCROLL_SUPPORT
 
 // commands
 #define LCD_CLEARDISPLAY 0x01
@@ -76,6 +77,10 @@ uint8_t lcd_currline;
 
 #ifdef VT100
 uint8_t lcd_escape[8];
+#endif
+
+#ifdef LCD_SCROLL_SUPPORT
+int8_t lcd_scrollposition = 0;
 #endif
 
 static void lcd_display(void);
@@ -189,9 +194,10 @@ static void lcd_begin(uint8_t clear)
 	#endif
 }
 
-static void lcd_putchar(char c, FILE *)
+static int lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
+	return 0;
 }
 
 void lcd_init(void)
@@ -240,7 +246,17 @@ void lcd_clear(void)
 
 void lcd_home(void)
 {
-	lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero
+#ifdef LCD_SCROLL_SUPPORT
+	if (lcd_scrollposition != 0)
+	{
+		lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero. Also unshifts the display.
+		lcd_scrollposition = 0; //reset scroll
+	}
+	else
+#endif
+	{
+		lcd_set_cursor(0,0); //this is faster than the builtin home as it doesn't have to unshift the display
+	}
 	lcd_currline = 0;
 }
 
@@ -287,18 +303,24 @@ void lcd_blink(void)
 	lcd_displaycontrol |= LCD_BLINKON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
+#endif
 
+#ifdef LCD_SCROLL_SUPPORT
 // These commands scroll the display without changing the RAM
 void lcd_scrollDisplayLeft(void)
 {
 	lcd_command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT);
+	lcd_scrollposition--;
 }
 
 void lcd_scrollDisplayRight(void)
 {
 	lcd_command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);
+	lcd_scrollposition++;
 }
+#endif
 
+#if 0
 // This is for text that flows Left to Right
 void lcd_leftToRight(void)
 {
@@ -339,7 +361,7 @@ void lcd_set_cursor(uint8_t col, uint8_t row)
 
 // Allows us to fill the first 8 CGRAM locations
 // with custom characters
-void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
+static void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
 {
   location &= 0x7; // we only have 8 locations 0-7
   lcd_command(LCD_SETCGRAMADDR | (location << 3));
@@ -944,7 +966,7 @@ void lcd_set_custom_characters(void)
 	lcd_createChar_P(LCD_STR_DEGREE[0], lcd_chardata_degree);
 	lcd_createChar_P(LCD_STR_THERMOMETER[0], lcd_chardata_thermometer);
 	lcd_createChar_P(LCD_STR_UPLEVEL[0], lcd_chardata_uplevel);
-	lcd_createChar_P(LCD_STR_REFRESH[0], lcd_chardata_refresh);
+	lcd_createChar_P(LCD_STR_REFRESH[0], lcd_chardata_refresh); //unused?
 	lcd_createChar_P(LCD_STR_FOLDER[0], lcd_chardata_folder);
 	lcd_createChar_P(LCD_STR_FEEDRATE[0], lcd_chardata_feedrate);
 	lcd_createChar_P(LCD_STR_CLOCK[0], lcd_chardata_clock);
@@ -955,21 +977,6 @@ void lcd_set_custom_characters(void)
 void lcd_set_custom_characters_arrows(void)
 {
 	lcd_createChar_P(1, lcd_chardata_arrdown);
-}
-
-const uint8_t lcd_chardata_progress[8] PROGMEM = {
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111,
-	B11111};
-
-void lcd_set_custom_characters_progress(void)
-{
-	lcd_createChar_P(1, lcd_chardata_progress);
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {

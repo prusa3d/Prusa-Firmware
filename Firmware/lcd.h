@@ -11,7 +11,6 @@
 extern FILE _lcdout;
 
 #define lcdout (&_lcdout)
-extern void lcd_putchar(char c, FILE *stream);
 
 extern void lcd_init(void);
 
@@ -37,8 +36,6 @@ extern void lcd_autoscroll(void);
 extern void lcd_no_autoscroll(void);*/
 
 extern void lcd_set_cursor(uint8_t col, uint8_t row);
-
-extern void lcd_createChar_P(uint8_t, const uint8_t*);
 
 
 extern int lcd_putc(int c);
@@ -202,7 +199,6 @@ private:
 
 extern void lcd_set_custom_characters(void);
 extern void lcd_set_custom_characters_arrows(void);
-extern void lcd_set_custom_characters_progress(void);
 extern void lcd_set_custom_characters_nextpage(void);
 extern void lcd_set_custom_characters_degree(void);
 

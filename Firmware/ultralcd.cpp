@@ -4479,16 +4479,9 @@ static void lcd_fsensor_state_set()
 }
 #endif //FILAMENT_SENSOR
 
-
-#if !SDSORT_USES_RAM
 void lcd_set_degree() {
 	lcd_set_custom_characters_degree();
 }
-
-void lcd_set_progress() {
-	lcd_set_custom_characters_progress();
-}
-#endif
 
 #if (LANG_MODE != 0)
 
@@ -8425,7 +8418,6 @@ static void lcd_connect_printer() {
 	
 	int i = 0;
 	int t = 0;
-	lcd_set_custom_characters_progress();
 	lcd_puts_at_P(0, 0, _i("Connect printer to")); 
 	lcd_puts_at_P(0, 1, _i("monitoring or hold"));
 	lcd_puts_at_P(0, 2, _i("the knob to continue"));
@@ -8442,12 +8434,11 @@ static void lcd_connect_printer() {
 			i = 0; 
 			lcd_puts_at_P(0, 3, PSTR("                    "));
 		}
-		if (i!=0) lcd_puts_at_P((i * 20) / (NC_BUTTON_LONG_PRESS * 10), 3, "\x01");
+		if (i!=0) lcd_puts_at_P((i * 20) / (NC_BUTTON_LONG_PRESS * 10), 3, "\xFF");
 		if (i == NC_BUTTON_LONG_PRESS * 10) {
 			no_response = false;
 		}
 	}
-	lcd_set_custom_characters_degree();
 	lcd_update_enable(true);
 	lcd_update(2);
 }
