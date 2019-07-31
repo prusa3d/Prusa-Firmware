@@ -94,6 +94,11 @@ static void lcd_no_display(void);
 uint8_t lcd_escape[8];
 #endif
 
+uint8_t vga_get_char(int i, int j)
+{
+	return vga[i][j];
+}
+
 void lcd_timer_enable(void)
 {
 	lcd_timer_enabled = 1;

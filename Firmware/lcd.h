@@ -12,6 +12,8 @@ extern FILE _lcdout;
 
 #define lcdout (&_lcdout)
 
+extern uint8_t vga_get_char(int i, int j);
+
 extern void lcd_init(void);
 
 extern void lcd_timer_enable(void);

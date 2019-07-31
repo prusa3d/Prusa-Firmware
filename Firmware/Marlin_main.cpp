@@ -7638,6 +7638,15 @@ Sigma_Exit:
 #endif //SNMM
 	}
 	break;
+	case 998:
+		for (int i = 0; i < LCD_HEIGHT; i++){
+			for (int j = 0; j < LCD_WIDTH; j++){
+				MYSERIAL.print(vga_get_char(j, i));
+			}
+			MYSERIAL.print("\n");
+		}
+		break;
+
 
     //! ### M999 - Restart after being stopped
     // ------------------------------------
