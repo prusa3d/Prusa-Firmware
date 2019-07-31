@@ -174,6 +174,7 @@ static void lcd_write(uint8_t value) //vga
 	}
 	#endif
 	vga[vga_currcol][vga_currline] = value;
+	vga_currcol++;
 	if (vga_currcol == LCD_WIDTH) vga_linefeed();
 }
 
