@@ -4798,6 +4798,7 @@ static void lcd_wizard_load()
 	if (mmu_enabled)
 	{
 		lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
+		tmp_extruder = 0;
 	} 
 	else
 	{
