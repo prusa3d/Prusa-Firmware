@@ -14,6 +14,10 @@ extern FILE _lcdout;
 
 extern void lcd_init(void);
 
+extern void lcd_timer_enable(void);
+
+extern void lcd_timer_disable(void);
+
 extern void lcd_refresh(void);
 
 extern void lcd_refresh_noclear(void);
@@ -23,17 +27,7 @@ extern void lcd_clear(void);
 extern void lcd_home(void);
 
 /*extern void lcd_no_display(void);
-extern void lcd_display(void);
-extern void lcd_no_blink(void);
-extern void lcd_blink(void);
-extern void lcd_no_cursor(void);
-extern void lcd_cursor(void);
-extern void lcd_scrollDisplayLeft(void);
-extern void lcd_scrollDisplayRight(void);
-extern void lcd_leftToRight(void);
-extern void lcd_rightToLeft(void);
-extern void lcd_autoscroll(void);
-extern void lcd_no_autoscroll(void);*/
+extern void lcd_display(void);*/
 
 extern void lcd_set_cursor(uint8_t col, uint8_t row);
 
@@ -98,6 +92,8 @@ extern uint8_t lcd_button_pressed;
 
 extern uint8_t lcd_update_enabled;
 
+extern uint8_t lcd_timer_enabled;
+
 extern LongTimer lcd_timeoutToStatus;
 
 extern uint32_t lcd_next_update_millis;
@@ -148,6 +144,23 @@ private:
     bool m_updateEnabled;
 };
 
+
+class LcdTimerDisabler
+{
+public:
+	LcdTimerDisabler(): m_timerEnabled(lcd_timer_enabled)
+	{
+		lcd_timer_disable();
+	}
+	~LcdTimerDisabler()
+	{
+		if (m_timerEnabled)
+		lcd_timer_enable();
+	}
+
+private:
+	bool m_timerEnabled;
+};
 
 ////////////////////////////////////
 // Setup button and encode mappings for each panel (into 'lcd_buttons' variable
