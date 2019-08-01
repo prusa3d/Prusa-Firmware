@@ -3607,7 +3607,9 @@ void process_commands()
       - `Lz` 
       - `Beat` - Kick farm link timer
       - `FR` - Full factory reset
-      - `nozzle D<diameter` - Set the nozzle diameter
+      - `nozzle set <diameter>` - set nozzle diameter (farm mode only), e.g. `PRUSA nozzle set 0.4`
+      - `nozzle D<diameter>` - check the nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle D0.4`
+      - `nozzle` - prints nozzle diameter (farm mode only), works like M862.1 P, e.g. `PRUSA nozzle`
     *
     */
 
@@ -7305,21 +7307,34 @@ Sigma_Exit:
     // ----------------------------------------------
     /*!     
         Checks the parameters of the printer and gcode and performs compatibility check
-
           - M862.1 [ P<nozzle_diameter> | Q ]
-
           - M862.2 [ P<model_code> | Q ]
-
           - M862.3 [ P<model_name> | Q ]
-
           - M862.4 [ P<fw_version> | Q]
-
           - M862.5 [ P<gcode_level> | Q]
 
-
-          When run with P<> argument, the check is performed against the input value.
-          When run with Q argument, the current value is shown.
-
+        When run with P<> argument, the check is performed against the input value.
+        When run with Q argument, the current value is shown.
+		  
+        M862.3 accepts text identifiers of printer types too.
+        The syntax of M862.3 is (note the space between P and the printer type name and the quotes around the type):
+		
+                M862.3 P "MK3S"
+		  
+        Accepted printer type identifiers and their numeric counterparts:
+          - MK1         (100)
+          - MK2         (200)       
+          - MK2MM       (201)     
+          - MK2S        (202)      
+          - MK2SMM      (203)    
+          - MK2.5       (250)     
+          - MK2.5MMU2   (20250) 
+          - MK2.5S      (252)    
+          - MK2.5SMMU2S (20252)
+          - MK3         (300)
+          - MK3MMU2     (20300)
+          - MK3S        (302)
+          - MK3SMMU2S	(20302)
     */
     case 862: // M862: print checking
           float nDummy;
