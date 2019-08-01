@@ -94,6 +94,24 @@ static void lcd_no_display(void);
 uint8_t lcd_escape[8];
 #endif
 
+#if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
+	#define TCCRxA TCCR3A
+	#define TCCRxB TCCR3B
+	#define TCCRxC TCCR3C
+	#define TCNTx TCNT3
+	#define OCRxA OCR3A
+	#define TIMSKx TIMSK3
+	#define TIFRx TIFR3
+#elif ((MOTHERBOARD == BOARD_EINSY_1_0a))
+	#define TCCRxA TCCR5A
+	#define TCCRxB TCCR5B
+	#define TCCRxC TCCR5C
+	#define TCNTx TCNT5
+	#define OCRxA OCR5A
+	#define TIMSKx TIMSK5
+	#define TIFRx TIFR5
+#endif
+
 uint8_t vga_get_char(int i, int j)
 {
 	return vga[i][j];
