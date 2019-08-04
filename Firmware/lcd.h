@@ -22,8 +22,6 @@ extern void lcd_timer_disable(void);
 
 extern void lcd_refresh(void);
 
-extern void lcd_refresh_noclear(void);
-
 extern void lcd_clear(void);
 
 extern void lcd_home(void);
@@ -94,8 +92,6 @@ extern uint8_t lcd_button_pressed;
 
 extern uint8_t lcd_update_enabled;
 
-extern uint8_t lcd_timer_enabled;
-
 extern LongTimer lcd_timeoutToStatus;
 
 extern uint32_t lcd_next_update_millis;
@@ -146,23 +142,11 @@ private:
     bool m_updateEnabled;
 };
 
+#define LcdTimerDisabler_START bool oldTimerStatus = lcd_timer_status & 0x01; lcd_timer_disable();
+#define LcdTimerDisabler_END if (oldTimerStatus) lcd_timer_enable();
 
-class LcdTimerDisabler
-{
-public:
-	LcdTimerDisabler(): m_timerEnabled(lcd_timer_enabled)
-	{
-		lcd_timer_disable();
-	}
-	~LcdTimerDisabler()
-	{
-		if (m_timerEnabled)
-		lcd_timer_enable();
-	}
+extern void lcd_debug();
 
-private:
-	bool m_timerEnabled;
-};
 
 ////////////////////////////////////
 // Setup button and encode mappings for each panel (into 'lcd_buttons' variable
