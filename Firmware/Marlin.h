@@ -79,9 +79,9 @@ extern FILE _uartout;
 #define SERIAL_PROTOCOL_F(x,y) (MYSERIAL.print(x,y))
 #define SERIAL_PROTOCOLPGM(x) (serialprintPGM(PSTR(x)))
 #define SERIAL_PROTOCOLRPGM(x) (serialprintPGM((x)))
-#define SERIAL_PROTOCOLLN(x) (MYSERIAL.print(x),MYSERIAL.write('\n'))
-#define SERIAL_PROTOCOLLNPGM(x) (serialprintPGM(PSTR(x)),MYSERIAL.write('\n'))
-#define SERIAL_PROTOCOLLNRPGM(x) (serialprintPGM((x)),MYSERIAL.write('\n'))
+#define SERIAL_PROTOCOLLN(x) (MYSERIAL.println(x)/*,MYSERIAL.write('\n')*/)
+#define SERIAL_PROTOCOLLNPGM(x) (serialprintPGM(PSTR(x)),MYSERIAL.println()/*write('\n')*/)
+#define SERIAL_PROTOCOLLNRPGM(x) (serialprintPGM((x)),MYSERIAL.println()/*write('\n')*/)
 
 
 extern const char errormagic[] PROGMEM;
@@ -111,15 +111,9 @@ void serial_echopair_P(const char *s_P, unsigned long v);
 
 
 //Things to write to serial from Program memory. Saves 400 to 2k of RAM.
-FORCE_INLINE void serialprintPGM(const char *str)
-{
-  char ch=pgm_read_byte(str);
-  while(ch)
-  {
-    MYSERIAL.write(ch);
-    ch=pgm_read_byte(++str);
-  }
-}
+// Making this FORCE_INLINE is not a good idea when running out of FLASH
+// I'd rather skip a few CPU ticks than 5.5KB (!!) of FLASH
+void serialprintPGM(const char *str);
 
 bool is_buffer_empty();
 void get_command();
@@ -171,6 +165,17 @@ void manage_inactivity(bool ignore_stepper_queue=false);
   #define enable_z() {}
   #define disable_z() {}
 #endif
+
+#ifdef PSU_Delta
+    void init_force_z();
+    void check_force_z();
+    #undef disable_z
+    #define disable_z() disable_force_z()
+    void disable_force_z();
+    #undef enable_z
+    #define enable_z() enable_force_z()
+    void enable_force_z();
+#endif // PSU_Delta
 
 
 
@@ -303,6 +308,11 @@ extern bool axis_known_position[3];
 extern int fanSpeed;
 extern int8_t lcd_change_fil_state;
 
+const char smooth1[] PROGMEM = "Smooth1";
+const char smooth2[] PROGMEM = "Smooth2";
+const char textured[] PROGMEM = "Textur1";
+const char *const defaultSheetNames[] PROGMEM = {smooth1,smooth2,textured};
+
 #ifdef TMC2130
 void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 #else
@@ -322,7 +332,6 @@ extern float retract_recover_length_swap;
 
 
 extern uint8_t host_keepalive_interval;
-
 
 extern unsigned long starttime;
 extern unsigned long stoptime;
@@ -393,6 +402,7 @@ extern LongTimer safetyTimer;
 
 #define PRINT_PERCENT_DONE_INIT   0xff
 #define PRINTER_ACTIVE (IS_SD_PRINTING || is_usb_printing || isPrintPaused || (custom_message_type == CustomMsg::TempCal) || saved_printing || (lcd_commands_type == LcdCommands::Layer1Cal) || card.paused || mmu_print_saved)
+
 //! Beware - mcode_in_progress is set as soon as the command gets really processed,
 //! which is not the same as posting the M600 command into the command queue
 //! There can be a considerable lag between posting M600 and its real processing which might result

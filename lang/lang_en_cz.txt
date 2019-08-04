@@ -11,12 +11,12 @@
 "[0;0] odsazeni bodu"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-"\x1b[2JCrash detekce muze\x1b[1;0Hbyt zapnuta pouze v\x1b[2;0HNormal modu"
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
+"Crash detekce muze\x0abyt zapnuta pouze v\x0aNormal modu"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
-"\x1b[2JPOZOR:\x1b[1;0HCrash detekce\x1b[2;0Hdeaktivovana ve\x1b[3;0HStealth modu"
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+"POZOR:\x0aCrash detekce\x0adeaktivovana ve\x0aStealth modu"
 
 #
 ">Cancel"
@@ -828,7 +828,7 @@
 
 #
 "Press the knob"
-"Stisknete hl. tlacitko"
+"Stisknete tlacitko"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"

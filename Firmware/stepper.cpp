@@ -1176,6 +1176,9 @@ void st_init()
       SET_OUTPUT(Z2_STEP_PIN);
       WRITE(Z2_STEP_PIN,INVERT_Z_STEP_PIN);
     #endif
+    #ifdef PSU_Delta
+      init_force_z();
+    #endif // PSU_Delta
     disable_z();
   #endif
   #if defined(E0_STEP_PIN) && (E0_STEP_PIN > -1)

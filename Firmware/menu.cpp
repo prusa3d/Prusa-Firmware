@@ -11,8 +11,7 @@
 #include "ultralcd.h"
 #include "language.h"
 #include "static_assert.h"
-
-
+#include "sound.h"
 
 extern int32_t lcd_encoder;
 
@@ -65,7 +64,11 @@ void menu_goto(menu_func_t menu, const uint32_t encoder, const bool feedback, bo
 void menu_start(void)
 {
     if (lcd_encoder > 0x8000) lcd_encoder = 0;
-    if (lcd_encoder < 0) lcd_encoder = 0;
+    if (lcd_encoder < 0)
+    {
+        lcd_encoder = 0;
+		Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+    }
     if (lcd_encoder < menu_top)
 		menu_top = lcd_encoder;
     menu_line = menu_top;
@@ -75,7 +78,10 @@ void menu_start(void)
 void menu_end(void)
 {
 	if (lcd_encoder >= menu_item)
+	{
 		lcd_encoder = menu_item - 1;
+		Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
+	}
 	if (((uint8_t)lcd_encoder) >= menu_top + LCD_HEIGHT)
 	{
 		menu_top = lcd_encoder - LCD_HEIGHT + 1;
@@ -168,16 +174,61 @@ int menu_draw_item_printf_P(char type_char, const char* format, ...)
 }
 */
 
+static char menu_selection_mark(){
+	return (lcd_encoder == menu_item)?'>':' ';
+}
+
 static void menu_draw_item_puts_P(char type_char, const char* str)
 {
     lcd_set_cursor(0, menu_row);
-    lcd_printf_P(PSTR("%c%-18.18S%c"), (lcd_encoder == menu_item)?'>':' ', str, type_char);
+    lcd_printf_P(PSTR("%c%-18.18S%c"), menu_selection_mark(), str, type_char);
+}
+
+//! @brief Format sheet name
+//!
+//! @param[in] sheet_E Sheet in EEPROM
+//! @param[out] buffer for formatted output
+void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
+{
+    uint_least8_t index = sprintf_P(buffer.c, PSTR("%.10S "), _T(MSG_SHEET));
+    eeprom_read_block(&(buffer.c[index]), sheet_E.name, 7);
+    //index += 7;
+    buffer.c[index + 7] = '\0';
+}
+
+//! @brief Format sheet name in select menu
+//!
+//! @param[in] sheet_E Sheet in EEPROM
+//! @param[out] buffer for formatted output
+void menu_format_sheet_select_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
+{
+    uint_least8_t index = sprintf_P(buffer.c,PSTR("%-9.9S["), _T(MSG_SHEET));
+    eeprom_read_block(&(buffer.c[index]), sheet_E.name, 7);
+	buffer.c[index + 7] = ']';
+    buffer.c[index + 8] = '\0';
+}
+
+static void menu_draw_item_select_sheet_E(char type_char, const Sheet &sheet)
+{
+    lcd_set_cursor(0, menu_row);
+    SheetFormatBuffer buffer;
+    menu_format_sheet_select_E(sheet, buffer);
+    lcd_printf_P(PSTR("%c%-18.18s%c"), menu_selection_mark(), buffer.c, type_char);
+}
+
+
+static void menu_draw_item_puts_E(char type_char, const Sheet &sheet)
+{
+    lcd_set_cursor(0, menu_row);
+    SheetFormatBuffer buffer;
+    menu_format_sheet_E(sheet, buffer);
+    lcd_printf_P(PSTR("%c%-18.18s%c"), menu_selection_mark(), buffer.c, type_char);
 }
 
 static void menu_draw_item_puts_P(char type_char, const char* str, char num)
 {
     lcd_set_cursor(0, menu_row);
-    lcd_printf_P(PSTR("%c%-.16S "), (lcd_encoder == menu_item)?'>':' ', str);
+    lcd_printf_P(PSTR("%c%-.16S "), menu_selection_mark(), str);
     lcd_putc(num);
     lcd_set_cursor(19, menu_row);
     lcd_putc(type_char);
@@ -222,6 +273,36 @@ uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu)
 	}
 	menu_item++;
 	return 0;
+}
+
+uint8_t menu_item_submenu_E(const Sheet &sheet, menu_func_t submenu)
+{
+    if (menu_item == menu_line)
+    {
+        if (lcd_draw_update) menu_draw_item_puts_E(LCD_STR_ARROW_RIGHT[0], sheet);
+        if (menu_clicked && (lcd_encoder == menu_item))
+        {
+            menu_submenu(submenu);
+            return menu_item_ret();
+        }
+    }
+    menu_item++;
+    return 0;
+}
+
+uint8_t menu_item_submenu_select_sheet_E(const Sheet &sheet, menu_func_t submenu)
+{
+    if (menu_item == menu_line)
+    {
+        if (lcd_draw_update) menu_draw_item_select_sheet_E(LCD_STR_ARROW_RIGHT[0], sheet);
+        if (menu_clicked && (lcd_encoder == menu_item))
+        {
+            menu_submenu(submenu);
+            return menu_item_ret();
+        }
+    }
+    menu_item++;
+    return 0;
 }
 
 uint8_t menu_item_back_P(const char* str)
@@ -399,7 +480,7 @@ uint8_t menu_item_edit_P(const char* str, T pval, int16_t min_val, int16_t max_v
 		if (lcd_draw_update) 
 		{
 			lcd_set_cursor(0, menu_row);
-			menu_draw_P<T>((lcd_encoder == menu_item)?'>':' ', str, *pval);
+			menu_draw_P<T>(menu_selection_mark(), str, *pval);
 		}
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{

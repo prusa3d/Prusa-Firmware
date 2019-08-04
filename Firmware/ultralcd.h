@@ -7,9 +7,6 @@
 #include "menu.h"
 #include "mesh_bed_calibration.h"
 
-extern int lcd_puts_P(const char* str);
-extern int lcd_printf_P(const char* format, ...);
-
 extern void menu_lcd_longpress_func(void);
 extern void menu_lcd_charsetup_func(void);
 extern void menu_lcd_lcdupdate_func(void);
@@ -141,6 +138,10 @@ extern bool isPrintPaused;
 
 void lcd_ignore_click(bool b=true);
 void lcd_commands();
+
+
+extern bool bSettings;                            // flag (i.e. 'fake parameter') for 'lcd_hw_setup_menu()' function
+void lcd_hw_setup_menu(void);                     // NOT static due to using inside "util" module ("nozzle_diameter_check()")
 
 
 void change_extr(int extr);
