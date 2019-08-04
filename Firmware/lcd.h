@@ -142,7 +142,7 @@ private:
     bool m_updateEnabled;
 };
 
-#define LcdTimerDisabler_START bool oldTimerStatus = lcd_timer_status & 0x01; lcd_timer_disable();
+#define LcdTimerDisabler_START bool oldTimerStatus = lcd_status & 0x01; lcd_timer_disable();
 #define LcdTimerDisabler_END if (oldTimerStatus) lcd_timer_enable();
 
 extern void lcd_debug();
