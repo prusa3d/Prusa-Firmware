@@ -320,7 +320,7 @@ static void vga_init(void) //vga
 	TCCRxA &= ~(3<<COM3A0);
 	TCCRxA &= ~(3<<COM3B0);
 	TCCRxA &= ~(3<<COM3C0);
-	OCRxA = (LCD_DEFAULT_DELAY* 6 *(F_CPU/1000000/8)) - 1; //set timer TOP value with an 8x prescaler
+	OCRxA = (LCD_DEFAULT_DELAY* 4 *(F_CPU/1000000/8)) - 1; //set timer TOP value with an 8x prescaler
 	
 	lcd_status &= ~0x0f;
 	lcd_status |= 0x04;
