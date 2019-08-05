@@ -185,6 +185,7 @@ static void lcd_write(uint8_t value) //vga
 		vga_linefeed();
 		return;
 	}
+	if (vga_currcol == LCD_WIDTH) vga_linefeed();
 	#ifdef VT100
 	if (lcd_escape[0] || (value == 0x1b)){
 		lcd_escape_write(value);
@@ -193,7 +194,6 @@ static void lcd_write(uint8_t value) //vga
 	#endif
 	vga[vga_currcol][vga_currline] = value;
 	vga_currcol++;
-	if (vga_currcol == LCD_WIDTH) vga_linefeed();
 }
 
 static void lcd_begin(uint8_t clear)
