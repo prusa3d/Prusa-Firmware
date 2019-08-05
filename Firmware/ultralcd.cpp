@@ -5529,15 +5529,13 @@ MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item
 
 //delete(b);
 
-if(!farm_mode)
-{
-    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
-    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
-    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);   
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);   
 
-    SETTINGS_NOZZLE;
-    MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
-}
+SETTINGS_NOZZLE;
+MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
+
 MENU_END();
 }
 
@@ -5566,9 +5564,12 @@ static void lcd_settings_menu()
 
 	SETTINGS_SILENT_MODE;
 
-     bSettings=true;                              // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
-	MENU_ITEM_SUBMENU_P(_i("HW Setup"), lcd_hw_setup_menu);////MSG_HW_SETUP
-
+    if(!farm_mode)
+    {
+        bSettings=true;                              // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
+        MENU_ITEM_SUBMENU_P(_i("HW Setup"), lcd_hw_setup_menu);////MSG_HW_SETUP
+    }
+    
 	SETTINGS_MMU_MODE;
 
 	MENU_ITEM_SUBMENU_P(_i("Mesh bed leveling"), lcd_mesh_bed_leveling_settings);////MSG_MBL_SETTINGS c=18 r=1
