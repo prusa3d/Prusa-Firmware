@@ -137,7 +137,7 @@ static void Sound_DoSound_Blind_Alert(void)
 {
      uint8_t nI;
 
-     for(nI=0; nI<50; nI++)
+     for(nI=0; nI<20; nI++)
      {
          WRITE(BEEPER,HIGH);
          delayMicroseconds(94);
