@@ -1509,8 +1509,10 @@ void setup()
 #ifndef DEBUG_DISABLE_STARTMSGS
   KEEPALIVE_STATE(PAUSED_FOR_USER);
 
-  check_if_fw_is_on_right_printer();
-  show_fw_version_warnings();
+  if (!farm_mode) {
+    check_if_fw_is_on_right_printer();
+    show_fw_version_warnings();    
+  }
 
   switch (hw_changed) { 
 	  //if motherboard or printer type was changed inform user as it can indicate flashing wrong firmware version
