@@ -23,7 +23,7 @@
 #endif
 
 // #define VT100
-// #define LCD_SCROLL_SUPPORT
+// #define LCD_DEBUG
 
 // commands
 #define LCD_CLEARDISPLAY 0x01
@@ -75,7 +75,11 @@ uint8_t lcd_displaycontrol = 0;
 uint8_t lcd_displaymode = 0;
 
 #define VGA_MAP_SIZE ((LCD_WIDTH * LCD_HEIGHT) / 8)
-#define DEBUG(x) MYSERIAL.println(x);
+#ifdef LCD_DEBUG
+	#define DEBUG(x) MYSERIAL.println(x);
+#else
+	#define DEBUG(x)
+#endif
 
 volatile uint8_t lcd_curpos;
 //xbbbbaaa: cursor position from 0 to (LCD_WIDTH * LCD_HEIGHT)
@@ -209,7 +213,7 @@ static void lcd_writebits(uint8_t value) //lcd
 static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAULT_DELAY) //lcd
 {
 	WRITE(LCD_PINS_RS,flags&LCD_RS_FLAG);
-	// _delay_us(5);
+	_delay_us(5);
 	lcd_writebits(data);
 #ifndef LCD_8BIT
 	if (!(flags & LCD_HALF_FLAG))
@@ -219,7 +223,9 @@ static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAUL
 	}
 #endif
 	delayMicroseconds(duration);
-	MYSERIAL.print("SEND:"); MYSERIAL.print((flags&LCD_RS_FLAG)?1:0, BIN); MYSERIAL.print(' '); MYSERIAL.println(data);
+#ifdef LCD_DEBUG
+	MYSERIAL.print("SEND:"); MYSERIAL.print((flags&LCD_RS_FLAG)?1:0, BIN); MYSERIAL.print(' '); MYSERIAL.println(data, HEX);
+#endif
 }
 
 static void lcd_command(uint8_t value, uint16_t delayExtra = 0) //lcd
@@ -317,6 +323,7 @@ static void vga_init(void) //vga
 	OCRxA = (LCD_DEFAULT_DELAY* 6 *(F_CPU/1000000/8)) - 1; //set timer TOP value with an 8x prescaler
 	
 	lcd_status &= ~0x0f;
+	lcd_status |= 0x04;
 	lcd_timer_disable();
 	
 	// enable interrupt
@@ -372,8 +379,9 @@ static void lcd_clear_hardware(void) //lcd
 {
 	LcdTimerDisabler_START;
 	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
+	lcd_curpos = 0;
 	for (int i = 0; i < VGA_MAP_SIZE; i++) vga_map[i] = 0xff; //force entire screen update.
-	lcd_status |= 0x08; //since lcd was homed we can start printing characters right away.
+	lcd_status &= ~0x08;
 	LcdTimerDisabler_END;
 	lcd_timer_enable();
 }
@@ -457,18 +465,27 @@ ISR(TIMERx_COMPA_vect)
 		
 		if ((distance_to_next_char == 0) && !(!(lcd_status & 0x08) && (lcd_curpos % LCD_WIDTH == 0))) //print current char and last char was jump
 		{
+#ifdef LCD_DEBUG
+			MYSERIAL.print("ISR:print: "); MYSERIAL.println(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
+#endif
 			lcd_send(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH], HIGH | LCD_HALF_FLAG, 0);
 			vga_map[lcd_curpos >> 3] &= ~(1 << (7 - (lcd_curpos & 0x07))); //clear bit in vga_map
 			lcd_status &= ~0x08; //this char is data
 		}
 		else if (distance_to_next_char == LCD_WIDTH * LCD_HEIGHT) //no character to print was found. vga_map is empty. disable timer.
 		{
+#ifdef LCD_DEBUG
+			MYSERIAL.println("ISR:disable");
+#endif
 			lcd_status &= ~0x01;
 			lcd_timer_disable();
 			return;
 		}
 		else //a jump command is required to the destination lcd_curpos
 		{
+#ifdef LCD_DEBUG
+			MYSERIAL.print("ISR:jump: "); MYSERIAL.println(lcd_curpos, DEC);
+#endif
 			lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH);
 			lcd_status |= 0x08; // the data is jump
 		}
@@ -485,6 +502,7 @@ ISR(TIMERx_COMPA_vect)
 		}
 		lcd_status |= 0x04; //set nibble
 	}
+	TCNTx = 0; //clear timer value to make sure timing is correct
 }
 
 #ifdef VT100
