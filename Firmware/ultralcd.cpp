@@ -8361,6 +8361,7 @@ void ultralcd_init()
 
     }
 	lcd_init();
+	lcd_refresh();
 	lcd_longpress_func = menu_lcd_longpress_func;
 	lcd_charsetup_func = menu_lcd_charsetup_func;
 	lcd_lcdupdate_func = menu_lcd_lcdupdate_func;
