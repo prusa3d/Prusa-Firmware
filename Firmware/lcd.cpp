@@ -82,7 +82,7 @@ uint8_t lcd_displaymode = 0;
 #endif
 
 volatile uint8_t lcd_curpos;
-//xbbbbaaa: cursor position from 0 to (LCD_WIDTH * LCD_HEIGHT)
+//xbbbbaaa: cursor position from 0 to (LCD_WIDTH * LCD_HEIGHT)-1
 //bbbb: index of the cluster in vga_map to search. From 0 to VGA_MAP_SIZE-1
 //aaa: Rshift value for the bit to search. From 0 to 7
 //x: unused. Leave it clear.
@@ -96,10 +96,10 @@ volatile uint8_t vga_map[VGA_MAP_SIZE]; //bitmap for changes on the display. Ind
 // 3  77778888888899999999
 
 volatile uint8_t lcd_status = 0;
-//xxxxxcba
+//xxxxdcba
 //a: timer enabled status
 //b: bit is set only if the timer is enabled and is used in the ISR to disable itself after required time has passed to send commands to it. ie: lcd_refresh();
-//c: nibble
+//c: nibble: it is used for the 4bit lcd interface to keep track of what part of the byte has to be sent on the next ISR
 //d: current command type. 1=lcd_set_cursor (jump); 0=character. Used by the ISR for the second nibble and also to decide whether a jump command is necessary (eg. next character is on the next line).
 
 //vga
