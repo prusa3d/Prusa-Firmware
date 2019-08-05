@@ -3298,15 +3298,15 @@ static void gcode_PRUSA_BadRAMBoFanTest(){
 		//printf_P(PSTR("TACH_1: %d\n"), tach1cntr);
 		SET_OUTPUT(TACH_1);
 		WRITE(TACH_1, LOW);
-		delay(20); // the delay may be lower
-		unsigned long tachMeasure = micros();
+		_delay(20); // the delay may be lower
+		unsigned long tachMeasure = _micros();
 		cli();
 		SET_INPUT(TACH_1);
 		// just wait brutally in an endless cycle until we reach HIGH
 		// if this becomes a problem it may be improved to non-endless cycle
 		while( READ(TACH_1) == 0 ) ;
 		sei();
-		tachMeasure = micros() - tachMeasure;
+		tachMeasure = _micros() - tachMeasure;
 		if( tach1max < tachMeasure )
 		tach1max = tachMeasure;
 		//printf_P(PSTR("TACH_1: %d: capacitor check time=%lu us\n"), (int)tach1cntr, tachMeasure);
