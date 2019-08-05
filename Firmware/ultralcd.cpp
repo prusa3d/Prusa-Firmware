@@ -8252,9 +8252,10 @@ uint8_t get_message_level()
 
 void menu_lcd_longpress_func(void)
 {
-    if (homing_flag || mesh_bed_leveling_flag)
+    if (homing_flag || mesh_bed_leveling_flag || menu_menu == lcd_babystep_z || menu_menu == lcd_move_z)
     {
-        // disable longpress while homing or calibration
+        // disable longpress during re-entry, while homing or calibration
+        lcd_quick_feedback();
         return;
     }
 
