@@ -4942,6 +4942,9 @@ void lcd_print_stop() {
 		SET_OUTPUT(FAN_PIN);
 		WRITE(FAN_PIN, 0);
 		fanSpeed=0;
+#ifdef TEMP_RUNAWAY_SAFETY_NET
+		fanSpeedReduce = 0;
+#endif
 }
 
 

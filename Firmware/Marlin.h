@@ -260,6 +260,9 @@ extern float max_pos[3];
 extern bool axis_known_position[3];
 extern float zprobe_zoffset;
 extern int fanSpeed;
+#ifdef TEMP_RUNAWAY_SAFETY_NET
+extern unsigned char fanSpeedReduce;	// reduction of fan speed due to "safety net"
+#endif
 extern void homeaxis(int axis);
 
 

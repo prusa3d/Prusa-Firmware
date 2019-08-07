@@ -320,6 +320,9 @@ float extruder_offset[NUM_EXTRUDER_OFFSETS][EXTRUDERS] = {
 
 uint8_t active_extruder = 0;
 int fanSpeed=0;
+#ifdef TEMP_RUNAWAY_SAFETY_NET
+unsigned char fanSpeedReduce=0; // reduction of fan speed due to "safety net"
+#endif
 
 #ifdef FWRETRACT
   bool autoretract_enabled=false;

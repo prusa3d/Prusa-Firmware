@@ -505,6 +505,10 @@ void check_axes_activity()
     disable_e1();
     disable_e2(); 
   }
+#ifdef TEMP_RUNAWAY_SAFETY_NET
+  if (tail_fan_speed >= fanSpeedReduce) tail_fan_speed -= fanSpeedReduce;
+  else tail_fan_speed = 0;
+#endif
 #if defined(FAN_PIN) && FAN_PIN > -1
 #ifdef FAN_KICK_START_TIME
 	static bool fan_kick = false;

@@ -1136,6 +1136,9 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
           {
                __hysteresis = TEMP_RUNAWAY_EXTRUDER_HYSTERESIS;
                __timeout = TEMP_RUNAWAY_EXTRUDER_TIMEOUT;
+#ifdef TEMP_RUNAWAY_SAFETY_NET
+               fanSpeedReduce = 0; // default assumption is no reduction in fan speed
+#endif
           }
 #endif
 
@@ -1215,6 +1218,30 @@ void temp_runaway_check(int _heater_id, float _target_temperature, float _curren
 
 		if (temp_runaway_check_active)
 		{			
+#if defined(TEMP_RUNAWAY_SAFETY_NET) && TEMP_RUNAWAY_SAFETY_NET < TEMP_RUNAWAY_EXTRUDER_HYSTERESIS
+		   if (!_isbed)
+		   {
+			   if (fanSpeed > 0 && _current_temperature < (_target_temperature - TEMP_RUNAWAY_SAFETY_NET))
+			 {
+			     // into safety net and beyond.
+			     // implement trivial P regulator of fan speed against temperature
+			     // over 60% of temperature span where runaway shutdown kicks in.
+			     // this will reduce actual filament temperature when this mechanism is triggered
+			     // which may happen to be not a bad thing for instance when bridging.
+			     int reduce = (255.0 * (_target_temperature - TEMP_RUNAWAY_SAFETY_NET - _current_temperature)) /
+						   (0.6 * (TEMP_RUNAWAY_EXTRUDER_HYSTERESIS - TEMP_RUNAWAY_SAFETY_NET));
+			     fanSpeedReduce = (reduce < 255) ? reduce : 255;
+#if 0 // DEBUG
+			     static unsigned char did_warn; // reset when?
+			     if (!did_warn)
+			     {
+				     LCD_ALERTMESSAGEPGM("FAN THROTTLED");
+				     did_warn = 1;
+			     }
+#endif
+			   }
+		   }
+#endif
 			//	we are in range
 			if ((_isbed && (_target_temperature > TEMP_MAX_CHECKED_BED) && (_current_temperature > TEMP_MAX_CHECKED_BED)) || ((_current_temperature > (_target_temperature - __hysteresis)) && (_current_temperature < (_target_temperature + __hysteresis))))
 			{
@@ -1324,6 +1351,10 @@ void disable_heater()
       WRITE(HEATER_BED_PIN,LOW);
     #endif
   #endif 
+
+  #ifdef TEMP_RUNAWAY_SAFETY_NET
+    fanSpeedReduce = 0;
+  #endif
 }
 
 void max_temp_error(uint8_t e) {
