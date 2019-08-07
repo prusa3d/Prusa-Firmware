@@ -401,8 +401,11 @@ lcd_update_enable(true);           // display / status-line recovery
      case ClCheckMode::_Undef:
           break;
      }
-bSettings=false;                                  // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
-menu_submenu(lcd_hw_setup_menu);
+if(!farm_mode)
+     {
+     bSettings=false;                             // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
+     menu_submenu(lcd_hw_setup_menu);
+     }
 }
 
 void printer_model_check(uint16_t nPrinterModel)
