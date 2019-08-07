@@ -54,7 +54,7 @@
 "SpoolJoin   [N/A]"
 "SpoolJoin   [N/V]"
 
-# MSG_AUTO_DEPLETE_OFF c=17 r=1
+#MSG_AUTO_DEPLETE_OFF c=17 r=1
 "SpoolJoin   [off]"
 "SpoolJoin   [uit]"
 
@@ -393,10 +393,6 @@
 #MSG_HEATING
 "Heating"
 "Opwarmen"
-
-#MSG_WIZARD_WELCOME c=20 r=7
-"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
-"Hallo, ik ben uw originele Prusa i3 printer. Zullen we beginnen met het installatieproces?"
 
 #MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"

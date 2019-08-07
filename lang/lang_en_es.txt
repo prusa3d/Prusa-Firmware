@@ -395,10 +395,6 @@
 "Calentando..."
 
 #MSG_WIZARD_WELCOME c=20 r=7
-"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
-"Hola, soy tu impresora Original Prusa i3. Quieres que te guie a traves de la configuracion?"
-
-#MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
 "Hola, soy tu impresora Zaribo. Quieres que te guie a traves de la configuracion?"
 

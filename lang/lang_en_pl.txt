@@ -395,10 +395,6 @@
 "Grzanie..."
 
 #MSG_WIZARD_WELCOME c=20 r=7
-"Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"
-"Czesc, jestem Twoja drukarka Original Prusa i3. Czy potrzebujesz pomocy z ustawieniem?"
-
-#MSG_WIZARD_WELCOME c=20 r=7
 "Hi, I am your Zaribo printer. Would you like me to guide you through the setup process?"
 "Czesc, jestem Twoja drukarka Zaribo. Czy potrzebujesz pomocy z ustawieniem?"
 
