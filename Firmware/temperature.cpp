@@ -40,11 +40,9 @@
 #include <avr/wdt.h>
 #include "adc.h"
 #include "ConfigurationStore.h"
-
+#include "messages.h"
 #include "Timer.h"
 #include "Configuration_prusa.h"
-
-
 
 //===========================================================================
 //=============================public variables============================
@@ -94,6 +92,9 @@ float current_temperature_bed = 0.0;
   unsigned char fanSpeedSoftPwm;
 #endif
 
+#ifdef FANCHECK
+  volatile uint8_t fan_check_error = EFCE_OK;
+#endif
 
 unsigned char soft_pwm_bed;
 
@@ -264,11 +265,13 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
      soft_pwm_bed = (MAX_BED_POWER)/2;
 	 timer02_set_pwm0(soft_pwm_bed << 1);
      bias = d = (MAX_BED_POWER)/2;
+     target_temperature_bed = (int)temp; // to display the requested target bed temperature properly on the main screen
    }
    else
    {
      soft_pwm[extruder] = (PID_MAX)/2;
      bias = d = (PID_MAX)/2;
+     target_temperature[extruder] = (int)temp; // to display the requested target extruder temperature properly on the main screen
   }
 
 
@@ -429,7 +432,7 @@ static void temp_runaway_stop(bool isPreheat, bool isBed);
 void updatePID()
 {
 #ifdef PIDTEMP
-  for(int e = 0; e < EXTRUDERS; e++) { 
+  for(uint_least8_t e = 0; e < EXTRUDERS; e++) {
      iState_sum_max[e] = PID_INTEGRAL_DRIVE_MAX / cs.Ki;  
   }
 #endif
@@ -495,17 +498,27 @@ void checkFanSpeed()
 	max_print_fan_errors = 15; //15 seconds
 	max_extruder_fan_errors = 5; //5 seconds
 #endif //FAN_SOFT_PWM
-
-	fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
+  
+  if(fans_check_enabled != false)
+	  fans_check_enabled = (eeprom_read_byte((uint8_t*)EEPROM_FAN_CHECK_ENABLED) > 0);
 	static unsigned char fan_speed_errors[2] = { 0,0 };
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 >-1))
-	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)) fan_speed_errors[0]++;
-	else fan_speed_errors[0] = 0;
+	if ((fan_speed[0] == 0) && (current_temperature[0] > EXTRUDER_AUTO_FAN_TEMPERATURE)){ fan_speed_errors[0]++;}
+	else{
+    fan_speed_errors[0] = 0;
+    host_keepalive();
+  }
 #endif
 #if (defined(FANCHECK) && defined(TACH_1) && (TACH_1 >-1))
 	if ((fan_speed[1] < 5) && ((blocks_queued() ? block_buffer[block_buffer_tail].fan_speed : fanSpeed) > MIN_PRINT_FAN_SPEED)) fan_speed_errors[1]++;
 	else fan_speed_errors[1] = 0;
 #endif
+
+	// drop the fan_check_error flag when both fans are ok
+	if( fan_speed_errors[0] == 0 && fan_speed_errors[1] == 0 && fan_check_error == EFCE_REPORTED){
+		// we may even send some info to the LCD from here
+		fan_check_error = EFCE_OK;
+	}
 
 	if ((fan_speed_errors[0] > max_extruder_fan_errors) && fans_check_enabled) {
 		fan_speed_errors[0] = 0;
@@ -517,45 +530,44 @@ void checkFanSpeed()
 	}
 }
 
+//! Prints serialMsg to serial port, displays lcdMsg onto the LCD and beeps.
+//! Extracted from fanSpeedError to save some space.
+//! @param serialMsg pointer into PROGMEM, this text will be printed to the serial port
+//! @param lcdMsg pointer into PROGMEM, this text will be printed onto the LCD
+static void fanSpeedErrorBeep(const char *serialMsg, const char *lcdMsg){
+	SERIAL_ECHOLNRPGM(serialMsg);
+	if (get_message_level() == 0) {
+		Sound_MakeCustom(200,0,true);
+		LCD_ALERTMESSAGERPGM(lcdMsg);
+	}
+}
+
 void fanSpeedError(unsigned char _fan) {
 	if (get_message_level() != 0 && isPrintPaused) return; 
 	//to ensure that target temp. is not set to zero in case taht we are resuming print 
-	if (card.sdprinting) {
+	if (card.sdprinting || is_usb_printing) {
 		if (heating_status != 0) {
 			lcd_print_stop();
 		}
 		else {
-			lcd_pause_print();
+			fan_check_error = EFCE_DETECTED;
 		}
 	}
 	else {
+			SERIAL_PROTOCOLLNRPGM(MSG_OCTOPRINT_PAUSE); //for octoprint
 			setTargetHotend0(0);
-			SERIAL_ECHOLNPGM("// action:pause"); //for octoprint
+      heating_status = 0;
+      fan_check_error = EFCE_REPORTED;
 	}
 	switch (_fan) {
-	case 0:
-			SERIAL_ECHOLNPGM("Extruder fan speed is lower then expected");
-			if (get_message_level() == 0) {
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-				WRITE(BEEPER, HIGH);
-				delayMicroseconds(200);
-				WRITE(BEEPER, LOW);
-				delayMicroseconds(100);
-				LCD_ALERTMESSAGEPGM("Err: EXTR. FAN ERROR");
-			}
+	case 0:	// extracting the same code from case 0 and case 1 into a function saves 72B
+		fanSpeedErrorBeep(PSTR("Extruder fan speed is lower than expected"), PSTR("Err: EXTR. FAN ERROR") );
 		break;
 	case 1:
-			SERIAL_ECHOLNPGM("Print fan speed is lower then expected");
-			if (get_message_level() == 0) {
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-				WRITE(BEEPER, HIGH);
-				delayMicroseconds(200);
-				WRITE(BEEPER, LOW);
-				delayMicroseconds(100);
-				LCD_ALERTMESSAGEPGM("Err: PRINT FAN ERROR");
-			}
+		fanSpeedErrorBeep(PSTR("Print fan speed is lower than expected"), PSTR("Err: PRINT FAN ERROR") );
 		break;
 	}
+  SERIAL_PROTOCOLLNRPGM(MSG_OK);
 }
 #endif //(defined(TACH_0) && TACH_0 >-1) || (defined(TACH_1) && TACH_1 > -1)
 
@@ -1117,18 +1129,9 @@ void tp_init()
 
   adc_init();
 
-#ifdef SYSTEM_TIMER_2
-  timer02_init();
+  timer0_init();
   OCR2B = 128;
   TIMSK2 |= (1<<OCIE2B);  
-#else //SYSTEM_TIMER_2
-  // Use timer0 for temperature measurement
-  // Interleave temperature interrupt with millies interrupt
-  OCR0B = 128;
-  TIMSK0 |= (1<<OCIE0B);  
-#endif //SYSTEM_TIMER_2
-
-
   
   // Wait for temperature measurement to settle
   _delay(250);
@@ -1393,13 +1396,9 @@ void temp_runaway_stop(bool isPreheat, bool isBed)
 	disable_e2();
 	manage_heater();
 	lcd_update(0);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
-	WRITE(BEEPER, HIGH);
-	delayMicroseconds(500);
-	WRITE(BEEPER, LOW);
-	delayMicroseconds(100);
-
-	if (isPreheat)
+  Sound_MakeCustom(200,0,true);
+	
+  if (isPreheat)
 	{
 		Stop();
 		isBed ? LCD_ALERTMESSAGEPGM("BED PREHEAT ERROR") : LCD_ALERTMESSAGEPGM("PREHEAT ERROR");
@@ -1459,11 +1458,20 @@ void disable_heater()
     target_temperature_bed=0;
     soft_pwm_bed=0;
 	timer02_set_pwm0(soft_pwm_bed << 1);
-    #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1  
-      WRITE(HEATER_BED_PIN,LOW);
+    #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
+      //WRITE(HEATER_BED_PIN,LOW);
     #endif
   #endif 
 }
+//! codes of alert messages for the LCD - it is shorter to compare an uin8_t
+//! than raw const char * of the messages themselves.
+//! Could be used for MAXTEMP situations too - after reaching MAXTEMP and turning off the heater automagically
+//! the heater/bed may cool down and a similar alert message like "MAXTERM fixed..." may be displayed.
+enum { LCDALERT_NONE = 0, LCDALERT_HEATERMINTEMP, LCDALERT_BEDMINTEMP, LCDALERT_MINTEMPFIXED, LCDALERT_PLEASERESTART };
+
+//! remember the last alert message sent to the LCD
+//! to prevent flicker and improve speed
+uint8_t last_alert_sent_to_lcd = LCDALERT_NONE;
 
 void max_temp_error(uint8_t e) {
   disable_heater();
@@ -1484,7 +1492,6 @@ void max_temp_error(uint8_t e) {
     SET_OUTPUT(BEEPER);
     WRITE(FAN_PIN, 1);
     WRITE(EXTRUDER_0_AUTO_FAN_PIN, 1);
-if((eSoundMode==e_SOUND_MODE_LOUD)||(eSoundMode==e_SOUND_MODE_ONCE)||(eSoundMode==e_SOUND_MODE_SILENT))
     WRITE(BEEPER, 1);
     // fanSpeed will consumed by the check_axes_activity() routine.
     fanSpeed=255;
@@ -1497,13 +1504,23 @@ void min_temp_error(uint8_t e) {
 #endif
 //if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
   disable_heater();
+	static const char err[] PROGMEM = "Err: MINTEMP";
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
     SERIAL_ERRORLN((int)e);
     SERIAL_ERRORLNPGM(": Extruder switched off. MINTEMP triggered !");
-    LCD_ALERTMESSAGEPGM("Err: MINTEMP");
+    lcd_setalertstatuspgm(err);
+    last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
+  } else if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
+	// we are already stopped due to some error, only update the status message without flickering
+	lcd_updatestatuspgm(err);
+	last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
   }
   #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+//	if( last_alert_sent_to_lcd != LCDALERT_HEATERMINTEMP ){
+//		last_alert_sent_to_lcd = LCDALERT_HEATERMINTEMP;
+//		lcd_print_stop();
+//	}
   Stop();
   #endif
   if (farm_mode) { prusa_statistics(92); }
@@ -1512,7 +1529,7 @@ void min_temp_error(uint8_t e) {
 
 void bed_max_temp_error(void) {
 #if HEATER_BED_PIN > -1
-  WRITE(HEATER_BED_PIN, 0);
+  //WRITE(HEATER_BED_PIN, 0);
 #endif
   if(IsStopped() == false) {
     SERIAL_ERROR_START;
@@ -1531,12 +1548,18 @@ void bed_min_temp_error(void) {
 #endif
 //if (current_temperature_ambient < MINTEMP_MINAMBIENT) return;
 #if HEATER_BED_PIN > -1
-    WRITE(HEATER_BED_PIN, 0);
+    //WRITE(HEATER_BED_PIN, 0);
 #endif
+	static const char err[] PROGMEM = "Err: MINTEMP BED";
     if(IsStopped() == false) {
         SERIAL_ERROR_START;
         SERIAL_ERRORLNPGM("Temperature heated bed switched off. MINTEMP triggered !");
-        LCD_ALERTMESSAGEPGM("Err: MINTEMP BED");
+		lcd_setalertstatuspgm(err);
+		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
+	} else if( last_alert_sent_to_lcd != LCDALERT_BEDMINTEMP ){ // only update, if the lcd message is to be changed (i.e. not the same as last time)
+		// we are already stopped due to some error, only update the status message without flickering
+		lcd_updatestatuspgm(err);
+		last_alert_sent_to_lcd = LCDALERT_BEDMINTEMP;
     }
 #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
     Stop();
@@ -1622,7 +1645,6 @@ void adc_ready(void) //callback from adc when sampling finished
 
 } // extern "C"
 
-
 // Timer2 (originaly timer0) is shared with millies
 #ifdef SYSTEM_TIMER_2
 ISR(TIMER2_COMPB_vect)
@@ -1638,8 +1660,8 @@ ISR(TIMER0_COMPB_vect)
 	if (!temp_meas_ready) adc_cycle();
 	lcd_buttons_update();
 
-  static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
-  static unsigned char soft_pwm_0;
+  static uint8_t pwm_count = (1 << SOFT_PWM_SCALE);
+  static uint8_t soft_pwm_0;
 #ifdef SLOW_PWM_HEATERS
   static unsigned char slow_pwm_count = 0;
   static unsigned char state_heater_0 = 0;
@@ -1660,7 +1682,7 @@ ISR(TIMER0_COMPB_vect)
 #endif 
 #endif
 #if HEATER_BED_PIN > -1
-  static unsigned char soft_pwm_b;
+  // @@DR static unsigned char soft_pwm_b;
 #ifdef SLOW_PWM_HEATERS
   static unsigned char state_heater_b = 0;
   static unsigned char state_timer_heater_b = 0;
@@ -1695,14 +1717,25 @@ ISR(TIMER0_COMPB_vect)
 #endif
   }
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
+  
+#if 0  // @@DR vypnuto pro hw pwm bedu
+  // tuhle prasarnu bude potreba poustet ve stanovenych intervalech, jinak nemam moc sanci zareagovat
+  // teoreticky by se tato cast uz vubec nemusela poustet
   if ((pwm_count & ((1 << HEATER_BED_SOFT_PWM_BITS) - 1)) == 0)
   {
     soft_pwm_b = soft_pwm_bed >> (7 - HEATER_BED_SOFT_PWM_BITS);
-#ifndef SYSTEM_TIMER_2
-	if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1); else WRITE(HEATER_BED_PIN,0);
-#endif //SYSTEM_TIMER_2
+#  ifndef SYSTEM_TIMER_2
+	// tady budu krokovat pomalou frekvenci na automatu - tohle je rizeni spinani a rozepinani
+	// jako ridici frekvenci mam 2khz, jako vystupni frekvenci mam 30hz
+	// 2kHz jsou ovsem ve slysitelnem pasmu, mozna bude potreba jit s frekvenci nahoru (a tomu taky prizpusobit ostatni veci)
+	// Teoreticky bych mohl stahnout OCR0B citac na 6, cimz bych se dostal nekam ke 40khz a tady potom honit PWM rychleji nebo i pomaleji
+	// to nicemu nevadi. Soft PWM scale by se 20x zvetsilo (no dobre, 16x), cimz by se to posunulo k puvodnimu 30Hz PWM
+	//if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1); else WRITE(HEATER_BED_PIN,0);
+#  endif //SYSTEM_TIMER_2
   }
 #endif
+#endif
+  
 #ifdef FAN_SOFT_PWM
   if ((pwm_count & ((1 << FAN_SOFT_PWM_BITS) - 1)) == 0)
   {
@@ -1724,8 +1757,14 @@ ISR(TIMER0_COMPB_vect)
 #if EXTRUDERS > 2
   if(soft_pwm_2 < pwm_count) WRITE(HEATER_2_PIN,0);
 #endif
+
+#if 0 // @@DR  
 #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
-  if (soft_pwm_b < (pwm_count & ((1 << HEATER_BED_SOFT_PWM_BITS) - 1))) WRITE(HEATER_BED_PIN,0);
+  if (soft_pwm_b < (pwm_count & ((1 << HEATER_BED_SOFT_PWM_BITS) - 1))){
+	  //WRITE(HEATER_BED_PIN,0);
+  }
+  //WRITE(HEATER_BED_PIN, pwm_count & 1 );
+#endif
 #endif
 #ifdef FAN_SOFT_PWM
   if (soft_pwm_fan < (pwm_count & ((1 << FAN_SOFT_PWM_BITS) - 1))) WRITE(FAN_PIN,0);
@@ -2010,6 +2049,58 @@ void check_max_temp()
 #endif
 
 }
+//! number of repeating the same state with consecutive step() calls
+//! used to slow down text switching
+struct alert_automaton_mintemp {
+private:
+	enum { ALERT_AUTOMATON_SPEED_DIV = 5 };
+	enum class States : uint8_t { Init = 0, TempAboveMintemp, ShowPleaseRestart, ShowMintemp };
+	States state = States::Init;
+	uint8_t repeat = ALERT_AUTOMATON_SPEED_DIV;
+
+	void substep(States next_state){
+		if( repeat == 0 ){
+			state = next_state; // advance to the next state
+			repeat = ALERT_AUTOMATON_SPEED_DIV; // and prepare repeating for it too
+		} else {
+			--repeat;
+		}
+	}
+public:
+	//! brief state automaton step routine
+	//! @param current_temp current hotend/bed temperature (for computing simple hysteresis)
+	//! @param mintemp minimal temperature including hysteresis to check current_temp against
+	void step(float current_temp, float mintemp){
+		static const char m2[] PROGMEM = "MINTEMP fixed";
+		static const char m1[] PROGMEM = "Please restart";
+		switch(state){
+		case States::Init: // initial state - check hysteresis
+			if( current_temp > mintemp ){
+				state = States::TempAboveMintemp;
+			}
+			// otherwise keep the Err MINTEMP alert message on the display,
+			// i.e. do not transfer to state 1
+			break;
+		case States::TempAboveMintemp: // the temperature has risen above the hysteresis check
+			lcd_setalertstatuspgm(m2);
+			substep(States::ShowMintemp);
+			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
+			break;
+		case States::ShowPleaseRestart: // displaying "Please restart"
+			lcd_updatestatuspgm(m1);
+			substep(States::ShowMintemp);
+			last_alert_sent_to_lcd = LCDALERT_PLEASERESTART;
+			break;
+		case States::ShowMintemp: // displaying "MINTEMP fixed"
+			lcd_updatestatuspgm(m2);
+			substep(States::ShowPleaseRestart);
+			last_alert_sent_to_lcd = LCDALERT_MINTEMPFIXED;
+			break;
+		}
+	}
+};
+
+static alert_automaton_mintemp alert_automaton_hotend, alert_automaton_bed;
 
 void check_min_temp_heater0()
 {
@@ -2019,7 +2110,17 @@ void check_min_temp_heater0()
 #else
 	if (current_temperature_raw[0] <= minttemp_raw[0]) {
 #endif
+		menu_set_serious_error(SERIOUS_ERR_MINTEMP_HEATER);
 		min_temp_error(0);
+	} else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_HEATER) ) {
+		// no recovery, just force the user to restart the printer
+		// which is a safer variant than just continuing printing
+		// The automaton also checks for hysteresis - the temperature must have reached a few degrees above the MINTEMP, before
+		// we shall signalize, that MINTEMP has been fixed
+		// Code notice: normally the alert_automaton instance would have been placed here 
+		// as static alert_automaton_mintemp alert_automaton_hotend, but
+		// due to stupid compiler that takes 16 more bytes.
+		alert_automaton_hotend.step(current_temperature[0], minttemp[0] + TEMP_HYSTERESIS);
 	}
 }
 
@@ -2030,7 +2131,12 @@ void check_min_temp_bed()
 #else
 	if (current_temperature_bed_raw <= bed_minttemp_raw) {
 #endif
+		menu_set_serious_error(SERIOUS_ERR_MINTEMP_BED);
 		bed_min_temp_error();
+	} else if( menu_is_serious_error(SERIOUS_ERR_MINTEMP_BED) ){
+		// no recovery, just force the user to restart the printer
+		// which is a safer variant than just continuing printing
+		alert_automaton_bed.step(current_temperature_bed, BED_MINTEMP + TEMP_HYSTERESIS);
 	}
 }
 

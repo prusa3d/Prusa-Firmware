@@ -11,12 +11,12 @@
 "[0;0] punt offset"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal stand"
-"\x1b[2JCrashdetectie kan\x1b[1;0Halleen in stand normaal\x1b[2;0Hgebruikt worden"
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
+"Crashdetectie kan\x0aalleen in normaal\x0astand aan staan"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth stand"
-"\x1b[2JWARNING:\x1b[1;0HCrashdetectie\x1b[2;0Huitgeschakeld in\x1b[3;0HStealth stand"
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+"WARNING:\x0aCrashdetectie\x0auitgeschakeld in\x0aStealth stand"
 
 #
 ">Cancel"
@@ -84,19 +84,19 @@
 
 #MSG_SELFTEST_BEDHEATER
 "Bed / Heater"
-""
+"Bed / Verwarming"
 
 #MSG_BED_DONE
 "Bed done"
-""
+"Bed klaar"
 
 #MSG_BED_HEATING
 "Bed Heating"
-""
+"Bed opwarmen"
 
 #MSG_BED_CORRECTION_MENU
 "Bed level correct"
-""
+"Bed niveau correct"
 
 #MSG_BED_LEVELING_FAILED_POINT_LOW c=20 r=4
 "Bed leveling failed. Sensor didnt trigger. Debris on nozzle? Waiting for reset."
@@ -104,7 +104,7 @@
 
 #MSG_BED
 "Bed"
-""
+"Bed"
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
@@ -192,7 +192,7 @@
 
 #
 "Crash"
-""
+"\x00"
 
 #MSG_CURRENT c=19 r=1
 "Current"
@@ -214,9 +214,9 @@
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 "Wilt u de laatste stap herhalen om de afstand tussen de tuit en de bed opnieuw in te stellen?"
 
-#MSG_EXTRUDER_CORRECTION c=9
-"E-correct"
-"E-correctie"
+#MSG_EXTRUDER_CORRECTION c=10
+"E-correct:"
+"E-correctie:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
@@ -236,11 +236,11 @@
 
 #MSG_SELFTEST_ENDSTOP
 "Endstop"
-""
+"Eindstop"
 
 #MSG_SELFTEST_ENDSTOPS
 "Endstops"
-""
+"Eindstops"
 
 #MSG_STACK_ERROR c=20 r=4
 "Error - static memory has been overwritten"
@@ -256,15 +256,15 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
-""
+"Extruder fan:"
 
 #MSG_INFO_EXTRUDER c=15 r=1
 "Extruder info"
-""
+"Extruder Info"
 
 #MSG_MOVE_E
 "Extruder"
-""
+"Extruder"
 
 #
 "Fail stats MMU"
@@ -292,7 +292,7 @@
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
-""
+"Fan test"
 
 #MSG_FANS_CHECK_ON c=17 r=1
 "Fans check   [on]"
@@ -316,7 +316,7 @@
 
 #
 "Filam. runouts"
-""
+"Fil. fouten"
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -364,7 +364,7 @@
 
 #MSG_PRUSA3D_FORUM
 "forum.prusa3d.com"
-""
+"\x00"
 
 #MSG_SELFTEST_COOLING_FAN c=20
 "Front print fan?"
@@ -404,7 +404,7 @@
 
 #MSG_PRUSA3D_HOWTO
 "howto.prusa3d.com"
-""
+"\x00"
 
 #MSG_FILAMENTCHANGE
 "Change filament"
@@ -456,7 +456,7 @@
 
 #MSG_FILAMENT c=17 r=1
 "Filament"
-""
+"\x00"
 
 #MSG_WIZARD_XYZ_CAL c=20 r=8
 "I will run xyz calibration now. It will take approx. 12 mins."
@@ -560,7 +560,7 @@
 
 #MSG_MESH_BED_LEVELING
 "Mesh Bed Leveling"
-""
+"Mesh bed Leveling"
 
 #MSG_MMU_OK_RESUMING_POSITION c=20 r=4
 "MMU OK. Resuming position..."
@@ -624,7 +624,7 @@
 
 #MSG_SELFTEST_MOTOR
 "Motor"
-""
+"\x00"
 
 #MSG_MOVE_AXIS
 "Move axis"
@@ -678,7 +678,7 @@
 "Now I will preheat nozzle for PLA."
 "Opwarmen van de tuit voor PLA voor."
 
-#MSG_NOZZLE c=7
+#MSG_NOZZLE
 "Nozzle"
 "Tuit"
 
@@ -824,7 +824,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-""
+"Print fan:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -935,12 +935,8 @@
 "Verwijder de oude filament en druk op de knop om nieuwe filament te laden."
 
 #
-"Prusa i3 MK3S OK."
-""
-
-#
-"Prusa i3 MK2 ready."
-"Prusa i3 MK2 klaar."
+"Prusa i3 MK3S"
+"\x00"
 
 #MSG_CALIBRATE_BED_RESET
 "Reset XYZ calibr."
@@ -948,7 +944,7 @@
 
 #MSG_BED_CORRECTION_RESET
 "Reset"
-""
+"\x00"
 
 #MSG_RESUME_PRINT
 "Resume print"
@@ -1108,7 +1104,7 @@
 
 #MSG_STOP_PRINT
 "Stop print"
-""
+"Print stoppen"
 
 #MSG_STOPPED
 "STOPPED. "
@@ -1116,7 +1112,7 @@
 
 #MSG_SUPPORT
 "Support"
-""
+"\x00"
 
 #MSG_SELFTEST_SWAPPED
 "Swapped"
@@ -1248,7 +1244,7 @@
 
 #MSG_WIZARD c=17 r=1
 "Wizard"
-""
+"Wizard"
 
 #MSG_XYZ_DETAILS c=19 r=1
 "XYZ cal. details"
@@ -1275,8 +1271,8 @@
 "XYZ-kalibratie in orde. X / Y-assen zijn licht scheef. Goed gedaan!"
 
 #
-"X-correct"
-"X-correctie"
+"X-correct:"
+"X-correctie:"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
@@ -1311,8 +1307,8 @@
 "Y afstand van min"
 
 #
-"Y-correct"
-"Y-correctie"
+"Y-correct:"
+"Y-correctie:"
 
 #MSG_OFF
 " [off]"

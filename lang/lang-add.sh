@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # lang-add.sh - multi-language support script
 #  add new texts from list (lang_add.txt) to all dictionary files

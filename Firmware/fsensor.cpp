@@ -57,6 +57,11 @@ bool fsensor_not_responding = false;
 bool fsensor_printing_saved = false;
 //! enable/disable quality meassurement
 bool fsensor_oq_meassure_enabled = false;
+//! as explained in the CHECK_FSENSOR macro: this flag is set to true when fsensor posts
+//! the M600 into the command queue, which elliminates the hazard of having posted multiple M600's
+//! before the first one gets read and started processing.
+//! Btw., the IR fsensor could do up to 6 posts before the command queue managed to start processing the first M600 ;)
+static bool fsensor_m600_enqueued = false;
 
 //! number of errors, updated in ISR
 uint8_t fsensor_err_cnt = 0;
@@ -123,6 +128,7 @@ void fsensor_restore_print_and_continue(void)
     printf_P(PSTR("fsensor_restore_print_and_continue\n"));
 	fsensor_watch_runout = true;
 	fsensor_err_cnt = 0;
+	fsensor_m600_enqueued = false;
     restore_print_from_ram_and_continue(0); //XYZ = orig, E - no change
 }
 
@@ -516,6 +522,18 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 	}
 }
 
+
+//! Common code for enqueing M600 and supplemental codes into the command queue.
+//! Used both for the IR sensor and the PAT9125
+void fsensor_enque_M600(){
+	printf_P(PSTR("fsensor_update - M600\n"));
+	eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
+	eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
+	enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
+	fsensor_m600_enqueued = true;
+	enquecommand_front_P((PSTR("M600")));
+}
+
 //! @brief filament sensor update (perform M600 on filament runout)
 //!
 //! Works only if filament sensor is enabled.
@@ -524,7 +542,7 @@ void fsensor_st_block_chunk(block_t* bl, int cnt)
 void fsensor_update(void)
 {
 #ifdef PAT9125
-		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX))
+		if (fsensor_enabled && fsensor_watch_runout && (fsensor_err_cnt > FSENSOR_ERR_MAX) && ( ! fsensor_m600_enqueued) )
 		{
 			bool autoload_enabled_tmp = fsensor_autoload_enabled;
 			fsensor_autoload_enabled = false;
@@ -564,25 +582,17 @@ void fsensor_update(void)
 			}
 			else
 			{
-				printf_P(PSTR("fsensor_update - M600\n"));
-				eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
-				eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-				enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
-				enquecommand_front_P((PSTR("M600")));
+				fsensor_enque_M600();
 				fsensor_watch_runout = false;
 			}
 			fsensor_autoload_enabled = autoload_enabled_tmp;
 			fsensor_oq_meassure_enabled = oq_meassure_enabled_tmp;
 		}
 #else //PAT9125
-		if ((digitalRead(IR_SENSOR_PIN) == 1) && CHECK_FSENSOR && fsensor_enabled && ir_sensor_detected)
+		if ((digitalRead(IR_SENSOR_PIN) == 1) && CHECK_FSENSOR && fsensor_enabled && ir_sensor_detected && ( ! fsensor_m600_enqueued) )
 		{
 			fsensor_stop_and_save_print();
-			printf_P(PSTR("fsensor_update - M600\n"));
-			eeprom_update_byte((uint8_t*)EEPROM_FERROR_COUNT, eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT) + 1);
-			eeprom_update_word((uint16_t*)EEPROM_FERROR_COUNT_TOT, eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT) + 1);
-			enquecommand_front_P(PSTR("PRUSA fsensor_recover"));
-			enquecommand_front_P((PSTR("M600")));
+			fsensor_enque_M600();
 		}
 #endif //PAT9125
 }

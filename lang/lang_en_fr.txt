@@ -11,12 +11,12 @@
 "Offset point [0;0]"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-"\x1b[2JLa detection de crash peut etre\x1b[1;0Hactive seulement\x1b[2;0Hen mode Normal"
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
+"La detection de\x0acrash peut etre\x0aactive seulement en\x0amode Normal"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
-"\x1b[2JATTENTION :\x1b[1;0HDetection de crash\x1b[2;0H desactivee en\x1b[3;0Hmode Furtif"
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+"ATTENTION:\x0aDetection de crash\x0adesactivee en\x0amode Furtif"
 
 #
 ">Cancel"
@@ -214,9 +214,9 @@
 "Do you want to repeat last step to readjust distance between nozzle and heatbed?"
 "Voulez-vous repeter la derniere etape pour reajuster la distance entre la buse et le plateau chauffant ?"
 
-#MSG_EXTRUDER_CORRECTION c=9
-"E-correct"
-"Correct-E"
+#MSG_EXTRUDER_CORRECTION c=10
+"E-correct:"
+"Correct-E:"
 
 #MSG_EJECT_FILAMENT c=17 r=1
 "Eject filament"
@@ -938,10 +938,6 @@
 "Prusa i3 MK3S"
 "\x00"
 
-#
-"Prusa i3 MK2"
-"\x00"
-
 #MSG_CALIBRATE_BED_RESET
 "Reset XYZ calibr."
 "Reinit. calibr. XYZ"
@@ -1275,8 +1271,8 @@
 "Calibration XYZ OK. Les axes X/Y sont legerement non perpendiculaires. Bon boulot !"
 
 #
-"X-correct"
-"Correction-X"
+"X-correct:"
+"Correct-X:"
 
 #MSG_BED_SKEW_OFFSET_DETECTION_PERFECT c=20 r=8
 "XYZ calibration ok. X/Y axes are perpendicular. Congratulations!"
@@ -1311,8 +1307,8 @@
 "Distance Y du min"
 
 #
-"Y-correct"
-"Correction-Y"
+"Y-correct:"
+"Correct-Y:"
 
 #MSG_OFF
 " [off]"

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # postbuild.sh - multi-language support script
 #  Generate binary with secondary language.

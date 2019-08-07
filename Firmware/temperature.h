@@ -122,6 +122,7 @@ inline void babystepsTodoZsubtract(int n)
 //inline so that there is no performance decrease.
 //deg=degreeCelsius
 
+// Doesn't save FLASH when FORCE_INLINE removed.
 FORCE_INLINE float degHotend(uint8_t extruder) {  
   return current_temperature[extruder];
 };
@@ -140,6 +141,7 @@ FORCE_INLINE float degBed() {
   return current_temperature_bed;
 };
 
+// Doesn't save FLASH when FORCE_INLINE removed.
 FORCE_INLINE float degTargetHotend(uint8_t extruder) {  
   return target_temperature[extruder];
 };
@@ -148,11 +150,13 @@ FORCE_INLINE float degTargetBed() {
   return target_temperature_bed;
 };
 
+// Doesn't save FLASH when FORCE_INLINE removed.
 FORCE_INLINE void setTargetHotend(const float &celsius, uint8_t extruder) {  
   target_temperature[extruder] = celsius;
   resetPID(extruder);
 };
 
+// Doesn't save FLASH when not inlined.
 static inline void setTargetHotendSafe(const float &celsius, uint8_t extruder)
 {
     if (extruder<EXTRUDERS) {
@@ -161,6 +165,7 @@ static inline void setTargetHotendSafe(const float &celsius, uint8_t extruder)
     }
 }
 
+// Doesn't save FLASH when not inlined.
 static inline void setAllTargetHotends(const float &celsius)
 {
     for(int i=0;i<EXTRUDERS;i++) setTargetHotend(celsius,i);
@@ -237,6 +242,13 @@ void checkExtruderAutoFans();
 
 
 #if (defined(FANCHECK) && defined(TACH_0) && (TACH_0 > -1))
+
+enum { 
+	EFCE_OK = 0,   //!< normal operation, both fans are ok
+	EFCE_DETECTED, //!< fan error detected, but not reported yet
+	EFCE_REPORTED  //!< fan error detected and reported to LCD and serial
+};
+extern volatile uint8_t fan_check_error;
 
 void countFanSpeed();
 void checkFanSpeed();

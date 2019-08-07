@@ -1,6 +1,36 @@
 #ifndef EEPROM_H
 #define EEPROM_H
 
+#include <stdint.h>
+
+#ifdef __cplusplus
+void eeprom_init();
+extern bool is_sheet_initialized(uint8_t sheet_num);
+#endif
+
+
+typedef struct
+{
+    char name[7];     //!< Can be null terminated, doesn't need to be null terminated
+    int16_t z_offset; //!< Z_BABYSTEP_MIN .. Z_BABYSTEP_MAX = Z_BABYSTEP_MIN*2/1000 [mm] .. Z_BABYSTEP_MAX*2/1000 [mm]
+    uint8_t bed_temp; //!< 0 .. 254 [°C]
+    uint8_t pinda_temp; //!< 0 .. 254 [°C]
+} Sheet;
+
+typedef struct
+{
+    Sheet s[3];
+    uint8_t active_sheet;
+} Sheets;
+// sizeof(Sheets). Do not change it unless EEPROM_Sheets_base is last item in EEPROM.
+// Otherwise it would move following items.
+#define EEPROM_SHEETS_SIZEOF 34
+
+#ifdef __cplusplus
+static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEPROM_SHEETS_SIZEOF.");
+#endif
+
+#define EEPROM_EMPTY_VALUE 0xFF
 // The total size of the EEPROM is
 // 4096 for the Atmega2560
 #define EEPROM_TOP 4096
@@ -155,36 +185,32 @@
 #define EEPROM_MMU_LOAD_FAIL (EEPROM_MMU_LOAD_FAIL_TOT - 1) //uint8_t
 #define EEPROM_MMU_CUTTER_ENABLED (EEPROM_MMU_LOAD_FAIL - 1)
 #define EEPROM_UVLO_MESH_BED_LEVELING_FULL     (EEPROM_MMU_CUTTER_ENABLED - 12*12*2) //allow 12 calibration points for future expansion
+
 #define EEPROM_MBL_TYPE	(EEPROM_UVLO_MESH_BED_LEVELING_FULL-1) //uint8_t for mesh bed leveling precision
 #define EEPROM_MBL_MAGNET_ELIMINATION (EEPROM_MBL_TYPE -1)  
 #define EEPROM_MBL_POINTS_NR (EEPROM_MBL_MAGNET_ELIMINATION -1) //uint8_t number of points in one exis for mesh bed leveling
 #define EEPROM_MBL_PROBE_NR (EEPROM_MBL_POINTS_NR-1) //number of measurements for each point
+
 #define EEPROM_MMU_STEALTH (EEPROM_MBL_PROBE_NR-1)
+
+#define EEPROM_CHECK_MODE (EEPROM_MMU_STEALTH-1) // uint8
+#define EEPROM_NOZZLE_DIAMETER (EEPROM_CHECK_MODE-1) // uint8
+#define EEPROM_NOZZLE_DIAMETER_uM (EEPROM_NOZZLE_DIAMETER-2) // uint16
+#define EEPROM_CHECK_MODEL (EEPROM_NOZZLE_DIAMETER_uM-1) // uint8
+#define EEPROM_CHECK_VERSION (EEPROM_CHECK_MODEL-1) // uint8
+#define EEPROM_CHECK_GCODE (EEPROM_CHECK_VERSION-1) // uint8
+
+#define EEPROM_SHEETS_BASE (EEPROM_CHECK_GCODE - EEPROM_SHEETS_SIZEOF) // Sheets
+static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
+
+
+//This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
+#define EEPROM_LAST_ITEM EEPROM_SHEETS_BASE
 // !!!!!
 // !!!!! this is end of EEPROM section ... all updates MUST BE inserted before this mark !!!!!
 // !!!!!
 
-//TMC2130 configuration
-#define EEPROM_TMC_AXIS_SIZE  //axis configuration block size
-#define EEPROM_TMC_X (EEPROM_TMC + 0 * EEPROM_TMC_AXIS_SIZE) //X axis configuration blok
-#define EEPROM_TMC_Y (EEPROM_TMC + 1 * EEPROM_TMC_AXIS_SIZE) //Y axis
-#define EEPROM_TMC_Z (EEPROM_TMC + 2 * EEPROM_TMC_AXIS_SIZE) //Z axis
-#define EEPROM_TMC_E (EEPROM_TMC + 3 * EEPROM_TMC_AXIS_SIZE) //E axis
-//TMC2130 - X axis
-#define EEPROM_TMC_X_USTEPS_INTPOL   (EEPROM_TMC_X +  0) // 1byte, bit 0..4 USTEPS, bit 7 INTPOL
-#define EEPROM_TMC_X_PWM_AMPL        (EEPROM_TMC_X +  1) // 1byte (0..255)
-#define EEPROM_TMC_X_PWM_GRAD_FREQ   (EEPROM_TMC_X +  2) // 1byte, bit 0..3 GRAD, bit 4..5 FREQ
-#define EEPROM_TMC_X_TCOOLTHRS       (EEPROM_TMC_X +  3) // 2bytes (0..)
-#define EEPROM_TMC_X_SG_THRS         (EEPROM_TMC_X +  5) // 1byte, (-64..+63)
-#define EEPROM_TMC_X_CURRENT_H       (EEPROM_TMC_X +  6) // 1byte, (0..63)
-#define EEPROM_TMC_X_CURRENT_R       (EEPROM_TMC_X +  7) // 1byte, (0..63)
-#define EEPROM_TMC_X_HOME_SG_THRS    (EEPROM_TMC_X +  8) // 1byte, (-64..+63)
-#define EEPROM_TMC_X_HOME_CURRENT_R  (EEPROM_TMC_X +  9) // 1byte, (-64..+63)
-#define EEPROM_TMC_X_HOME_DTCOOLTHRS (EEPROM_TMC_X + 10) // 1byte (-128..+127)
-#define EEPROM_TMC_X_DTCOOLTHRS_LOW  (EEPROM_TMC_X + 11) // 1byte (-128..+127)
-#define EEPROM_TMC_X_DTCOOLTHRS_HIGH (EEPROM_TMC_X + 12) // 1byte (-128..+127)
-#define EEPROM_TMC_X_SG_THRS_LOW     (EEPROM_TMC_X + 13) // 1byte, (-64..+63)
-#define EEPROM_TMC_X_SG_THRS_HIGH    (EEPROM_TMC_X + 14) // 1byte, (-64..+63)
+
 
 // Currently running firmware, each digit stored as uint16_t.
 // The flavor differentiates a dev, alpha, beta, release candidate or a release version.
@@ -198,8 +224,16 @@
 
 #ifdef __cplusplus
 #include "ConfigurationStore.h"
-static M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf*>(20); //offset for storing settings using M500
+static_assert(EEPROM_FIRMWARE_VERSION_END < 20, "Firmware version EEPROM address conflicts with EEPROM_M500_base");
+static constexpr M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf*>(20); //offset for storing settings using M500
+static_assert(((sizeof(M500_conf) + 20) < EEPROM_LAST_ITEM), "M500_conf address space conflicts with previous items.");
 #endif
+
+enum
+{
+    EEPROM_MMU_CUTTER_ENABLED_enabled = 1,
+    EEPROM_MMU_CUTTER_ENABLED_always = 2,
+};
 
 
 #endif // EEPROM_H
