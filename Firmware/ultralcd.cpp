@@ -4853,9 +4853,21 @@ void lcd_wizard(WizState state)
 	int wizard_event;
 	const char *msg = NULL;
 	while (!end) {
-		printf_P(PSTR("Wizard state: %d"), state);
+		printf_P(PSTR("Wizard state: %d\n"), state);
 		switch (state) {
 		case S::Run: //Run wizard?
+			
+			// 2019-08-07 brutal hack - solving the "viper" situation.
+			// It is caused by the fact, that tmc2130_st_isr makes a crash detection before the printers really starts.
+			// And thus it calles stop_and_save_print_to_ram which sets the saved_printing flag.
+			// Having this flag set during normal printing is lethal - mesh_plan_buffer_line exist in the middle of planning long travels
+			// which results in distorted print.
+			// This primarily happens when the printer is new and parked in 0,0
+			// So any new printer will fail the first layer calibration unless being reset or the Stop function gets called.
+			// We really must find a way to prevent the crash from happening before the printer is started - that would be the correct solution.
+			// Btw. the flag may even trigger the viper situation on normal start this way and the user won't be able to find out why.			
+			saved_printing = false;
+			
 			wizard_active = true;
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
