@@ -108,6 +108,7 @@ uint8_t const SD_CARD_ERROR_CRC = 0X20;
 /** no response to sent 0xFF */
 uint8_t const SD_CARD_ERROR_FF_TIMEOUT = 0X21;
 
+
 /** Toshiba FlashAir: iSDIO */
 uint8_t const SD_CARD_ERROR_CMD48 = 0x80;
 /** Toshiba FlashAir: iSDIO */
