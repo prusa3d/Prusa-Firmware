@@ -161,6 +161,7 @@ private:
   void flush_presort();
 #endif
 };
+extern bool Stopped;
 extern CardReader card;
 #define IS_SD_PRINTING (card.sdprinting)
 
