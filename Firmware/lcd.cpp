@@ -213,7 +213,7 @@ static void lcd_writebits(uint8_t value) //lcd
 static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAULT_DELAY) //lcd
 {
 	WRITE(LCD_PINS_RS,flags&LCD_RS_FLAG);
-	_delay_us(5);
+	// _delay_us(5);
 	lcd_writebits(data);
 #ifndef LCD_8BIT
 	if (!(flags & LCD_HALF_FLAG))
@@ -362,8 +362,10 @@ void lcd_init(void) //lcd
 
 void lcd_refresh(void)
 {
+	lcd_timer_disable();
     lcd_begin();
     lcd_set_custom_characters();
+	lcd_timer_enable();
 }
 
 void lcd_clear(void) //vga
@@ -377,13 +379,10 @@ void lcd_clear(void) //vga
 
 static void lcd_clear_hardware(void) //lcd
 {
-	LcdTimerDisabler_START;
 	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
 	lcd_curpos = 0;
 	for (int i = 0; i < VGA_MAP_SIZE; i++) vga_map[i] = 0xff; //force entire screen update.
 	lcd_status &= ~0x08;
-	LcdTimerDisabler_END;
-	lcd_timer_enable();
 }
 
 void lcd_home(void) //vga
@@ -417,12 +416,14 @@ void lcd_set_cursor(uint8_t col, uint8_t row) //vga
 	vga_currline = (uint8_t)(constrain((int8_t)(row), 0, LCD_HEIGHT));
 }
 
-static void lcd_set_cursor_hardware(uint8_t col, uint8_t row) //lcd
+static void lcd_set_cursor_hardware(uint8_t col, uint8_t row, bool nibbleLess = 0) //lcd
 {
 	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
-#ifdef LCD_8BIT
+#ifndef LCD_8BIT
+	if (nibbleLess)
+#endif
 	lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), LOW, 0);
-#else
+#ifndef LCD_8BIT
 	lcd_send((lcd_status & 0x04)?(LCD_SETDDRAMADDR | (col + row_offsets[row])):((LCD_SETDDRAMADDR | (col + row_offsets[row])) << 4), LOW | LCD_HALF_FLAG, 0);
 #endif
 }
@@ -448,22 +449,34 @@ ISR(TIMERx_COMPA_vect)
 	if (lcd_status & 0x04) //nibble is set. Start new command.
 	{
 /* 		uint8_t distance_to_next_char = 0;
-		for (; distance_to_next_char <= LCD_WIDTH * LCD_HEIGHT; distance_to_next_char++)
-		{
-			if (vga_map[lcd_curpos >> 3] & (1 << (7 - (lcd_curpos & 0x07)))) break; //next character found	
-			lcd_curpos++;
-			if (lcd_curpos == LCD_WIDTH * LCD_HEIGHT) lcd_curpos = 0;
-		} */
-		uint8_t distance_to_next_char = 0;
 		while (distance_to_next_char < LCD_WIDTH * LCD_HEIGHT)
 		{
 			if (vga_map[lcd_curpos >> 3] & (1 << (7 - (lcd_curpos & 0x07)))) break; //next character found
 			lcd_curpos++;
 			if (lcd_curpos == LCD_WIDTH * LCD_HEIGHT) lcd_curpos = 0;
 			distance_to_next_char++;
+		} */
+		uint8_t next_command_type = 0; //0: no char found; 1: lcd_curpos needs to be printed; 2: mandatory jump
+		if (vga_map[lcd_curpos >> 3] & (1 << (7 - (lcd_curpos & 0x07)))) next_command_type = 1;
+		else
+		{
+			for (int i = 0; (i < VGA_MAP_SIZE) && (next_command_type == 0); i++)
+			{
+				if (vga_map[i] != 0)
+				{
+					for (int j = 0; (j < 8) && (next_command_type == 0); j++)
+					{
+						if (vga_map[i] & (1 << (7 - j)))
+						{
+							lcd_curpos = (i << 3) + j;
+							next_command_type = 2;
+						}
+					}
+				}
+			}
 		}
 		
-		if ((distance_to_next_char == 0) && !(!(lcd_status & 0x08) && (lcd_curpos % LCD_WIDTH == 0))) //print current char and last char was jump
+		if ((next_command_type == 1) && !(!(lcd_status & 0x08) && (lcd_curpos % LCD_WIDTH == 0))) //print current char and last char was jump
 		{
 #ifdef LCD_DEBUG
 			MYSERIAL.print("ISR:print: "); MYSERIAL.println(vga[lcd_curpos % LCD_WIDTH][lcd_curpos / LCD_WIDTH]);
@@ -472,7 +485,7 @@ ISR(TIMERx_COMPA_vect)
 			vga_map[lcd_curpos >> 3] &= ~(1 << (7 - (lcd_curpos & 0x07))); //clear bit in vga_map
 			lcd_status &= ~0x08; //this char is data
 		}
-		else if (distance_to_next_char == LCD_WIDTH * LCD_HEIGHT) //no character to print was found. vga_map is empty. disable timer.
+		else if (next_command_type == 0) //no character to print was found. vga_map is empty. disable timer.
 		{
 #ifdef LCD_DEBUG
 			MYSERIAL.println("ISR:disable");
@@ -1110,14 +1123,16 @@ void lcd_set_custom_characters(void)
 	lcd_createChar_P(LCD_STR_CLOCK[0], lcd_chardata_clock);
 	//lcd_createChar_P(LCD_STR_ARROW_UP[0], lcd_chardata_arrup);
 	//lcd_createChar_P(LCD_STR_ARROW_DOWN[0], lcd_chardata_arrdown);
+	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
 	LcdTimerDisabler_END;
 }
 
 void lcd_set_custom_characters_arrows(void)
 {
-	LcdTimerDisabler_START;
+	lcd_timer_disable();
 	lcd_createChar_P(1, lcd_chardata_arrdown);
-	LcdTimerDisabler_END;
+	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
+	lcd_timer_enable();
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
@@ -1141,16 +1156,18 @@ const uint8_t lcd_chardata_confirm[8] PROGMEM = {
 
 void lcd_set_custom_characters_nextpage(void)
 {
-	LcdTimerDisabler_START;
+	lcd_timer_disable();
 	lcd_createChar_P(1, lcd_chardata_arr2down);
 	lcd_createChar_P(2, lcd_chardata_confirm);
-	LcdTimerDisabler_END;
+	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
+	lcd_timer_enable();
 }
 
 void lcd_set_custom_characters_degree(void)
 {
-	LcdTimerDisabler_START;
+	lcd_timer_disable();
 	lcd_createChar_P(1, lcd_chardata_degree);
-	LcdTimerDisabler_END;
+	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
+	lcd_timer_enable();
 }
 
