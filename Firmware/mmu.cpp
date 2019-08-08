@@ -978,7 +978,7 @@ void extr_adj(uint8_t extruder) //loading filament for SNMM
 {
 #ifndef SNMM
     MmuCmd cmd = MmuCmd::L0 + extruder;
-    if (cmd > MmuCmd::L4)
+    if (extruder > (MmuCmd::L4 - MmuCmd::L0))
     {
         printf_P(PSTR("Filament out of range %d \n"),extruder);
         return;
