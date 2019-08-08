@@ -321,17 +321,17 @@ bool Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
   }
 
    // send 0xFF until 0xFF received to give card some clock cycles
-  spiSend(0XFF);
-  while ((status_ = spiRec()) != 0xFF)
-  {
-    spiSend(0XFF);
-    if (((uint16_t)_millis() - t0) > SD_INIT_TIMEOUT)
-    {
-      error(SD_CARD_ERROR_FF_TIMEOUT);
-      SERIAL_ECHOLNRPGM(PSTR("No 0xFF received for 0xFF sent"));
-      goto fail;
-    }
-  }
+  // spiSend(0XFF);
+  // while ((status_ = spiRec()) != 0xFF)
+  // {
+  //   spiSend(0XFF);
+  //   if (((uint16_t)_millis() - t0) > SD_INIT_TIMEOUT)
+  //   {
+  //     error(SD_CARD_ERROR_FF_TIMEOUT);
+  //     SERIAL_ECHOLNRPGM(PSTR("No 0xFF received for 0xFF sent"));
+  //     goto fail;
+  //   }
+  // }
 
   // check SD version
   if ((cardCommand(CMD8, 0x1AA) & R1_ILLEGAL_COMMAND)) {
