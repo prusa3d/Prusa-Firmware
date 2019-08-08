@@ -419,12 +419,16 @@ void lcd_set_cursor(uint8_t col, uint8_t row) //vga
 static void lcd_set_cursor_hardware(uint8_t col, uint8_t row, bool nibbleLess = 0) //lcd
 {
 	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
-#ifndef LCD_8BIT
+#ifdef LCD_8BIT
 	if (nibbleLess)
-#endif
-	lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), LOW, 0);
-#ifndef LCD_8BIT
-	lcd_send((lcd_status & 0x04)?(LCD_SETDDRAMADDR | (col + row_offsets[row])):((LCD_SETDDRAMADDR | (col + row_offsets[row])) << 4), LOW | LCD_HALF_FLAG, 0);
+		lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), LOW, 100);
+	else
+		lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), LOW, 0);
+#else
+	if (nibbleLess)
+		lcd_send(LCD_SETDDRAMADDR | (col + row_offsets[row]), LOW, 100);
+	else
+		lcd_send((lcd_status & 0x04)?(LCD_SETDDRAMADDR | (col + row_offsets[row])):((LCD_SETDDRAMADDR | (col + row_offsets[row])) << 4), LOW | LCD_HALF_FLAG, 0);
 #endif
 }
 
@@ -1129,10 +1133,10 @@ void lcd_set_custom_characters(void)
 
 void lcd_set_custom_characters_arrows(void)
 {
-	lcd_timer_disable();
+	LcdTimerDisabler_START;
 	lcd_createChar_P(1, lcd_chardata_arrdown);
 	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
-	lcd_timer_enable();
+	LcdTimerDisabler_END;
 }
 
 const uint8_t lcd_chardata_arr2down[8] PROGMEM = {
@@ -1156,18 +1160,18 @@ const uint8_t lcd_chardata_confirm[8] PROGMEM = {
 
 void lcd_set_custom_characters_nextpage(void)
 {
-	lcd_timer_disable();
+	LcdTimerDisabler_START;
 	lcd_createChar_P(1, lcd_chardata_arr2down);
 	lcd_createChar_P(2, lcd_chardata_confirm);
 	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
-	lcd_timer_enable();
+	LcdTimerDisabler_END;
 }
 
 void lcd_set_custom_characters_degree(void)
 {
-	lcd_timer_disable();
+	LcdTimerDisabler_START;
 	lcd_createChar_P(1, lcd_chardata_degree);
 	lcd_set_cursor_hardware(lcd_curpos % LCD_WIDTH, lcd_curpos / LCD_WIDTH, true);
-	lcd_timer_enable();
+	LcdTimerDisabler_END;
 }
 
