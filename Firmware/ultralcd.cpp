@@ -4784,6 +4784,7 @@ static void lcd_wizard_load()
 	if (mmu_enabled)
 	{
 		lcd_show_fullscreen_message_and_wait_P(_i("Please insert PLA filament to the first tube of MMU, then press the knob to load it."));////c=20 r=8
+		tmp_extruder = 0;
 	} 
 	else
 	{
@@ -4838,9 +4839,21 @@ void lcd_wizard(WizState state)
 	int wizard_event;
 	const char *msg = NULL;
 	while (!end) {
-		printf_P(PSTR("Wizard state: %d"), state);
+		printf_P(PSTR("Wizard state: %d\n"), state);
 		switch (state) {
 		case S::Run: //Run wizard?
+			
+			// 2019-08-07 brutal hack - solving the "viper" situation.
+			// It is caused by the fact, that tmc2130_st_isr makes a crash detection before the printers really starts.
+			// And thus it calles stop_and_save_print_to_ram which sets the saved_printing flag.
+			// Having this flag set during normal printing is lethal - mesh_plan_buffer_line exist in the middle of planning long travels
+			// which results in distorted print.
+			// This primarily happens when the printer is new and parked in 0,0
+			// So any new printer will fail the first layer calibration unless being reset or the Stop function gets called.
+			// We really must find a way to prevent the crash from happening before the printer is started - that would be the correct solution.
+			// Btw. the flag may even trigger the viper situation on normal start this way and the user won't be able to find out why.			
+			saved_printing = false;
+			
 			wizard_active = true;
 			wizard_event = lcd_show_multiscreen_message_yes_no_and_wait_P(_i("Hi, I am your Original Prusa i3 printer. Would you like me to guide you through the setup process?"), false, true);////MSG_WIZARD_WELCOME c=20 r=7
 			if (wizard_event) {
@@ -5496,10 +5509,6 @@ void lcd_hw_setup_menu(void)                      // can not be "static"
 MENU_BEGIN();
 MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
 
-MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
-MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
-MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
-
 //strncpy(buffer,_i("Sheet"),sizeof(buffer));
 //strncpy(buffer,_i(" "),sizeof(buffer));
 //strncpy(buffer,EEPROM_Sheets_base->s[0].name,sizeof(buffer));
@@ -5518,10 +5527,13 @@ MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);
 
 //delete(b);
 
-if(!farm_mode){
-     SETTINGS_NOZZLE;
-     MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
-}
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
+MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);   
+
+SETTINGS_NOZZLE;
+MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
+
 MENU_END();
 }
 
@@ -5550,9 +5562,12 @@ static void lcd_settings_menu()
 
 	SETTINGS_SILENT_MODE;
 
-     bSettings=true;                              // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
-	MENU_ITEM_SUBMENU_P(_i("HW Setup"), lcd_hw_setup_menu);////MSG_HW_SETUP
-
+    if(!farm_mode)
+    {
+        bSettings=true;                              // flag ('fake parameter') for 'lcd_hw_setup_menu()' function
+        MENU_ITEM_SUBMENU_P(_i("HW Setup"), lcd_hw_setup_menu);////MSG_HW_SETUP
+    }
+    
 	SETTINGS_MMU_MODE;
 
 	MENU_ITEM_SUBMENU_P(_i("Mesh bed leveling"), lcd_mesh_bed_leveling_settings);////MSG_MBL_SETTINGS c=18 r=1
@@ -6731,7 +6746,10 @@ static void lcd_main_menu()
 
   if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
   {
-	MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))], change_sheet_from_menu);
+    if (!farm_mode)
+    {
+	  MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))], change_sheet_from_menu);
+    }
   }
   
   if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
