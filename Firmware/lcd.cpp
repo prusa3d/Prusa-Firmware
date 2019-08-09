@@ -412,8 +412,8 @@ void lcd_no_display(void)
 
 void lcd_set_cursor(uint8_t col, uint8_t row) //vga
 {
-	vga_currcol = (uint8_t)(constrain((int8_t)(col), 0, LCD_WIDTH));
-	vga_currline = (uint8_t)(constrain((int8_t)(row), 0, LCD_HEIGHT));
+	vga_currcol = (uint8_t)(constrain((int8_t)(col), 0, LCD_WIDTH-1));
+	vga_currline = (uint8_t)(constrain((int8_t)(row), 0, LCD_HEIGHT-1));
 }
 
 static void lcd_set_cursor_hardware(uint8_t col, uint8_t row, bool nibbleLess = 0) //lcd
