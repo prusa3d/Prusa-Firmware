@@ -565,7 +565,7 @@ const short temptable_10[][2] PROGMEM = {
 };
 #endif
 
-#if (THERMISTORHEATER_0 == 11) || (THERMISTORHEATER_1 == 11) || (THERMISTORHEATER_2 == 11) || (THERMISTORBED == 11) 
+#if (THERMISTORHEATER_0 == 11) || (THERMISTORHEATER_1 == 11) || (THERMISTORHEATER_2 == 11) || (THERMISTORBED == 11)
 // QU-BD silicone bed QWG-104F-3950 thermistor
 
 const short temptable_11[][2] PROGMEM = {
@@ -825,7 +825,7 @@ const short temptable_51[][2] PROGMEM = {
 };
 #endif
 
-#if (THERMISTORHEATER_0 == 52) || (THERMISTORHEATER_1 == 52) || (THERMISTORHEATER_2 == 52) || (THERMISTORBED == 52) 
+#if (THERMISTORHEATER_0 == 52) || (THERMISTORHEATER_1 == 52) || (THERMISTORHEATER_2 == 52) || (THERMISTORBED == 52)
 // 200k ATC Semitec 204GT-2 (WITH 1kohm RESISTOR FOR PULLUP, R9 ON SANGUINOLOLU! NOT FOR 4.7kohm PULLUP! THIS IS NOT NORMAL!)
 // Verified by linagee. Source: http://shop.arcol.hu/static/datasheets/thermistors.pdf
 // Calculated using 1kohm pullup, voltage divider math, and manufacturer provided temp/resistance
@@ -866,7 +866,7 @@ const short temptable_52[][2] PROGMEM = {
 };
 #endif
 
-#if (THERMISTORHEATER_0 == 55) || (THERMISTORHEATER_1 == 55) || (THERMISTORHEATER_2 == 55) || (THERMISTORBED == 55) 
+#if (THERMISTORHEATER_0 == 55) || (THERMISTORHEATER_1 == 55) || (THERMISTORHEATER_2 == 55) || (THERMISTORBED == 55)
 // 100k ATC Semitec 104GT-2 (Used on ParCan) (WITH 1kohm RESISTOR FOR PULLUP, R9 ON SANGUINOLOLU! NOT FOR 4.7kohm PULLUP! THIS IS NOT NORMAL!)
 // Verified by linagee. Source: http://shop.arcol.hu/static/datasheets/thermistors.pdf
 // Calculated using 1kohm pullup, voltage divider math, and manufacturer provided temp/resistance
@@ -908,7 +908,7 @@ const short temptable_55[][2] PROGMEM = {
 #endif
 
 #if (THERMISTORHEATER_0 == 60) || (THERMISTORHEATER_1 == 60) || (THERMISTORHEATER_2 == 60) || (THERMISTORBED == 60) // Maker's Tool Works Kapton Bed Thermister
-// ./createTemperatureLookup.py --r0=100000 --t0=25 --r1=0 --r2=4700 --beta=3950 
+// ./createTemperatureLookup.py --r0=100000 --t0=25 --r1=0 --r2=4700 --beta=3950
 // r0: 100000
 // t0: 25
 // r1: 0 (parallel with rTherm)
@@ -991,7 +991,69 @@ const short temptable_60[][2] PROGMEM = {
    {1008*OVERSAMPLENR, 0},
 };
 #endif
-#if (THERMISTORBED == 12) 
+
+#if (THERMISTORHEATER_0 == 67) || (THERMISTORHEATER_1 == 67) || (THERMISTORHEATER_2 == 67) || (THERMISTORBED == 67)
+// R25 = 500 KOhm, beta25 = 3800 K, 4.7 kOhm pull-up, SliceEngineering 450 °C Thermistor
+const short temptable_67[][2] PROGMEM = {
+  {   22*OVERSAMPLENR,  500 },
+  {   23*OVERSAMPLENR,  490 },
+  {   25*OVERSAMPLENR,  480 },
+  {   27*OVERSAMPLENR,  470 },
+  {   29*OVERSAMPLENR,  460 },
+  {   32*OVERSAMPLENR,  450 },
+  {   35*OVERSAMPLENR,  440 },
+  {   38*OVERSAMPLENR,  430 },
+  {   41*OVERSAMPLENR,  420 },
+  {   45*OVERSAMPLENR,  410 },
+  {   50*OVERSAMPLENR,  400 },
+  {   55*OVERSAMPLENR,  390 },
+  {   60*OVERSAMPLENR,  380 },
+  {   67*OVERSAMPLENR,  370 },
+  {   74*OVERSAMPLENR,  360 },
+  {   82*OVERSAMPLENR,  350 },
+  {   91*OVERSAMPLENR,  340 },
+  {  102*OVERSAMPLENR,  330 },
+  {  114*OVERSAMPLENR,  320 },
+  {  127*OVERSAMPLENR,  310 },
+  {  143*OVERSAMPLENR,  300 },
+  {  161*OVERSAMPLENR,  290 },
+  {  181*OVERSAMPLENR,  280 },
+  {  204*OVERSAMPLENR,  270 },
+  {  229*OVERSAMPLENR,  260 },
+  {  259*OVERSAMPLENR,  250 },
+  {  290*OVERSAMPLENR,  240 },
+  {  325*OVERSAMPLENR,  230 },
+  {  364*OVERSAMPLENR,  220 },
+  {  407*OVERSAMPLENR,  210 },
+  {  453*OVERSAMPLENR,  200 },
+  {  501*OVERSAMPLENR,  190 },
+  {  551*OVERSAMPLENR,  180 },
+  {  603*OVERSAMPLENR,  170 },
+  {  655*OVERSAMPLENR,  160 },
+  {  706*OVERSAMPLENR,  150 },
+  {  755*OVERSAMPLENR,  140 },
+  {  801*OVERSAMPLENR,  130 },
+  {  842*OVERSAMPLENR,  120 },
+  {  879*OVERSAMPLENR,  110 },
+  {  910*OVERSAMPLENR,  100 },
+  {  936*OVERSAMPLENR,   90 },
+  {  948*OVERSAMPLENR,   85 },
+  {  958*OVERSAMPLENR,   80 },
+  {  975*OVERSAMPLENR,   70 },
+  {  988*OVERSAMPLENR,   60 },
+  {  998*OVERSAMPLENR,   50 },
+  { 1006*OVERSAMPLENR,   40 },
+  { 1011*OVERSAMPLENR,   30 },
+  { 1013*OVERSAMPLENR,   25 },
+  { 1015*OVERSAMPLENR,   20 },
+  { 1018*OVERSAMPLENR,   10 },
+  { 1020*OVERSAMPLENR,    0 },
+  { 1021*OVERSAMPLENR,  -10 },
+  { 1022*OVERSAMPLENR,  -20 }
+};
+#endif
+
+#if (THERMISTORBED == 12)
 //100k 0603 SMD Vishay NTCS0603E3104FXT (4.7k pullup) (calibrated for Makibox hot bed)
 const short temptable_12[][2] PROGMEM = {
    {35*OVERSAMPLENR, 180}, //top rating 180C
@@ -1028,7 +1090,7 @@ const short temptable_12[][2] PROGMEM = {
 #endif
 
 // Pt1000 and Pt100 handling
-// 
+//
 // Rt=R0*(1+a*T+b*T*T) [for T>0]
 // a=3.9083E-3, b=-5.775E-7
 
@@ -1042,7 +1104,7 @@ const short temptable_12[][2] PROGMEM = {
 
 #if (THERMISTORHEATER_0 == 110) || (THERMISTORHEATER_1 == 110) || (THERMISTORHEATER_2 == 110) || (THERMISTORBED == 110) // Pt100 with 1k0 pullup
 const short temptable_110[][2] PROGMEM = {
-// only few values are needed as the curve is very flat  
+// only few values are needed as the curve is very flat
   PtLine(0,100,1000)
   PtLine(50,100,1000)
   PtLine(100,100,1000)
@@ -1054,7 +1116,7 @@ const short temptable_110[][2] PROGMEM = {
 #endif
 #if (THERMISTORHEATER_0 == 147) || (THERMISTORHEATER_1 == 147) || (THERMISTORHEATER_2 == 147) || (THERMISTORBED == 147) // Pt100 with 4k7 pullup
 const short temptable_147[][2] PROGMEM = {
-// only few values are needed as the curve is very flat  
+// only few values are needed as the curve is very flat
   PtLine(0,100,4700)
   PtLine(50,100,4700)
   PtLine(100,100,4700)
@@ -1201,7 +1263,7 @@ const short temptable_1010[][2] PROGMEM = {
 #endif
 #if (THERMISTORHEATER_0 == 1047) || (THERMISTORHEATER_1 == 1047) || (THERMISTORHEATER_2 == 1047) || (THERMISTORBED == 1047) // Pt1000 with 4k7 pullup
 const short temptable_1047[][2] PROGMEM = {
-// only few values are needed as the curve is very flat  
+// only few values are needed as the curve is very flat
   PtLine(0,1000,4700)
   PtLine(50,1000,4700)
   PtLine(100,1000,4700)
