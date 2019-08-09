@@ -7627,7 +7627,10 @@ static bool lcd_selfcheck_axis(int _axis, int _travel)
 			lcd_selftest_error(TestError::Motor, _error_1, _error_2);
 		}
 	}
-
+	
+	current_position[_axis] = 0; //simulate axis home to avoid negative numbers for axis position, especially Z.
+	plan_set_position(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS]);
+	
 	return _stepresult;
 }
 
