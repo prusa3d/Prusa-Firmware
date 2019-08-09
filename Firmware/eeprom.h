@@ -5,7 +5,7 @@
 
 #ifdef __cplusplus
 void eeprom_init();
-extern bool is_sheet_initialized();
+extern bool is_sheet_initialized(uint8_t sheet_num);
 #endif
 
 
@@ -200,8 +200,9 @@ static_assert(sizeof(Sheets) == EEPROM_SHEETS_SIZEOF, "Sizeof(Sheets) is not EEP
 #define EEPROM_CHECK_VERSION (EEPROM_CHECK_MODEL-1) // uint8
 #define EEPROM_CHECK_GCODE (EEPROM_CHECK_VERSION-1) // uint8
 
-#define EEPROM_SHEETS_BASE (EEPROM_NOZZLE_DIAMETER_uM - EEPROM_SHEETS_SIZEOF) // Sheets
+#define EEPROM_SHEETS_BASE (EEPROM_CHECK_GCODE - EEPROM_SHEETS_SIZEOF) // Sheets
 static Sheets * const EEPROM_Sheets_base = (Sheets*)(EEPROM_SHEETS_BASE);
+
 
 //This is supposed to point to last item to allow EEPROM overrun check. Please update when adding new items.
 #define EEPROM_LAST_ITEM EEPROM_SHEETS_BASE
@@ -227,8 +228,6 @@ static_assert(EEPROM_FIRMWARE_VERSION_END < 20, "Firmware version EEPROM address
 static constexpr M500_conf * const EEPROM_M500_base = reinterpret_cast<M500_conf*>(20); //offset for storing settings using M500
 static_assert(((sizeof(M500_conf) + 20) < EEPROM_LAST_ITEM), "M500_conf address space conflicts with previous items.");
 #endif
-
-#undef EEPROM_SHEETS_BASE
 
 enum
 {
