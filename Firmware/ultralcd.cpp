@@ -5569,10 +5569,7 @@ static void lcd_settings_menu()
 
 	SETTINGS_CUTTER;
 
-	if (fans_check_enabled == true)
-		MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
-	else
-		MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
+	MENU_ITEM_TOGGLE_P(_i("Fans check"), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
 
 	SETTINGS_SILENT_MODE;
 
@@ -6881,10 +6878,7 @@ static void lcd_tune_menu()
 
      if(farm_mode)
      {
-          if (fans_check_enabled == true)
-               MENU_ITEM_FUNCTION_P(_i("Fans check   [on]"), lcd_set_fan_check);////MSG_FANS_CHECK_ON c=17 r=1
-          else
-               MENU_ITEM_FUNCTION_P(_i("Fans check  [off]"), lcd_set_fan_check);////MSG_FANS_CHECK_OFF c=17 r=1
+       MENU_ITEM_TOGGLE_P(_i("Fans check"), fans_check_enabled ? _T(MSG_ON) : _T(MSG_OFF), lcd_set_fan_check);
      }
 
 #ifdef TMC2130

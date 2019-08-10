@@ -294,13 +294,9 @@
 "Fan test"
 "Test ventilateur"
 
-#MSG_FANS_CHECK_ON c=17 r=1
-"Fans check   [on]"
-"Verif ventilo[on]"
-
-#MSG_FANS_CHECK_OFF c=17 r=1
-"Fans check  [off]"
-"Verif venti [off]"
+#MSG_FANS_CHECK
+"Fans check"
+"Verif ventilo"
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
@@ -1239,5 +1235,9 @@
 "Correct-Y:"
 
 #MSG_OFF
-" [off]"
+"Off"
+"\x00"
+
+#MSG_ON
+"On"
 "\x00"

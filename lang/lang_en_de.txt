@@ -294,13 +294,9 @@
 "Fan test"
 "Lueftertest"
 
-#MSG_FANS_CHECK_ON c=17 r=1
-"Fans check   [on]"
-"Luefter Chk. [an]"
-
-#MSG_FANS_CHECK_OFF c=17 r=1
-"Fans check  [off]"
-"Luefter Chk.[aus]"
+#MSG_FANS_CHECK
+"Fans check"
+"Luefter Chk."
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
@@ -1240,5 +1236,9 @@
 "Y-Korrektur:"
 
 #MSG_OFF
-" [off]"
-"\x00"
+"Off"
+"Aus"
+
+#MSG_ON
+"On"
+"An"

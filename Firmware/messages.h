@@ -104,12 +104,12 @@ extern const char MSG_WIZARD_QUIT[];
 extern const char MSG_YES[];
 extern const char MSG_V2_CALIBRATION[];
 extern const char WELCOME_MSG[];
+extern const char MSG_OFF[];
+extern const char MSG_ON[];
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
 extern const char MSG_EXTERNAL_RESET[];
 extern const char MSG_FILE_SAVED[];
-extern const char MSG_OFF[];
-extern const char MSG_ON[];
 extern const char MSG_POSITION_UNKNOWN[];
 extern const char MSG_SOFTWARE_RESET[];
 extern const char MSG_UNKNOWN_COMMAND[];

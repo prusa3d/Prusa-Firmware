@@ -294,13 +294,9 @@
 "Fan test"
 "Test wentylatora"
 
-#MSG_FANS_CHECK_ON c=17 r=1
-"Fans check   [on]"
-"Sprawd.went. [wl]"
-
-#MSG_FANS_CHECK_OFF c=17 r=1
-"Fans check  [off]"
-"Sprawd.went.[wyl]"
+#MSG_FANS_CHECK
+"Fans check"
+"Sprawd.went."
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
@@ -1239,5 +1235,9 @@
 "Korekcja Y:"
 
 #MSG_OFF
-" [off]"
-"\x00"
+"Off"
+"Wyl"
+
+#MSG_ON
+"On"
+"Wl"

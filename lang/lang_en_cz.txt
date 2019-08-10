@@ -294,13 +294,9 @@
 "Fan test"
 "Test ventilatoru"
 
-#MSG_FANS_CHECK_ON c=17 r=1
-"Fans check   [on]"
-"Kontr. vent.[zap]"
-
-#MSG_FANS_CHECK_OFF c=17 r=1
-"Fans check  [off]"
-"Kontr. vent.[vyp]"
+#MSG_FANS_CHECK
+"Fans check"
+"Kontr. vent."
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
@@ -1239,5 +1235,9 @@
 "Korekce Y:"
 
 #MSG_OFF
-" [off]"
-"\x00"
+"Off"
+"Vyp"
+
+#MSG_ON
+"On"
+"Zap"

@@ -220,11 +220,8 @@
 #MSG_SELFTEST_FAN c=20
 "Fan test"
 
-#MSG_FANS_CHECK_ON c=17 r=1
-"Fans check   [on]"
-
-#MSG_FANS_CHECK_OFF c=17 r=1
-"Fans check  [off]"
+#MSG_FANS_CHECK
+"Fans check"
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
@@ -929,4 +926,7 @@
 "Y-correct:"
 
 #MSG_OFF
-" [off]"
+"Off"
+
+#MSG_ON
+"On"
