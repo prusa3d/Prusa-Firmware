@@ -184,6 +184,17 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
     lcd_printf_P(PSTR("%c%-18.18S%c"), menu_selection_mark(), str, type_char);
 }
 
+static void menu_draw_toggle_puts_P(const char* str, const char* toggle)
+{
+	menu_draw_item_puts_P(LCD_STR_REFRESH[0], str);
+	lcd_set_cursor(LCD_WIDTH - 4 - strlen_P(toggle), menu_row);
+	lcd_putc('[');
+	lcd_puts_P(toggle);
+	lcd_putc(']');
+	
+	// lcd_printf_P(PSTR("[%s]"), toggle);
+}
+
 //! @brief Format sheet name
 //!
 //! @param[in] sheet_E Sheet in EEPROM
@@ -365,6 +376,25 @@ uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t)
     }
     menu_item++;
     return 0;
+}
+
+uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func)
+{
+	if (menu_item == menu_line)
+	{
+		if (lcd_draw_update) menu_draw_toggle_puts_P(str, toggle);
+		if (menu_clicked && (lcd_encoder == menu_item))
+		{
+			menu_clicked = false;
+			lcd_consume_click();
+			lcd_update_enabled = 0;
+			if (func) func();
+			lcd_update_enabled = 1;
+			return menu_item_ret();
+		}
+	}
+	menu_item++;
+	return 0;
 }
 
 uint8_t menu_item_gcode_P(const char* str, const char* str_gcode)
