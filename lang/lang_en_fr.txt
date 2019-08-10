@@ -1234,10 +1234,10 @@
 "Y-correct:"
 "Correct-Y:"
 
-#
+#MSG_OFF
 "Off"
 "\x00"
 
-#
+#MSG_ON
 "On"
 "\x00"

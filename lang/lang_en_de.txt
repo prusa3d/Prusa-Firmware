@@ -1235,10 +1235,10 @@
 "Y-correct:"
 "Y-Korrektur:"
 
-#
+#MSG_OFF
 "Off"
 "Aus"
 
-#
+#MSG_ON
 "On"
 "An"

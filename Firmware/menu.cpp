@@ -188,11 +188,7 @@ static void menu_draw_toggle_puts_P(const char* str, const char* toggle)
 {
 	menu_draw_item_puts_P(LCD_STR_REFRESH[0], str);
 	lcd_set_cursor(LCD_WIDTH - 4 - strlen_P(toggle), menu_row);
-	lcd_putc('[');
-	lcd_puts_P(toggle);
-	lcd_putc(']');
-	
-	// lcd_printf_P(PSTR("[%s]"), toggle);
+	lcd_printf_P(PSTR("[%S]"), toggle);
 }
 
 //! @brief Format sheet name

@@ -925,8 +925,8 @@
 #
 "Y-correct:"
 
-#
+#MSG_OFF
 "Off"
 
-#
+#MSG_ON
 "On"
