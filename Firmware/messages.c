@@ -104,8 +104,6 @@ const char MSG_WIZARD_QUIT[] PROGMEM_I1 = ISTR("You can always resume the Wizard
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////
 const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////c=17 r=1
 const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
-const char MSG_OFF[] PROGMEM_I1 = "Off"; ////c=3 r=1
-const char MSG_ON[] PROGMEM_I1 = "On"; ////c=2 r=1
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
 const char MSG_BROWNOUT_RESET[] PROGMEM_N1 = " Brown out Reset"; ////

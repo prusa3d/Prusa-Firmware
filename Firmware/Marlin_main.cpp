@@ -6131,7 +6131,7 @@ Sigma_Exit:
         WRITE(PS_ON_PIN, PS_ON_ASLEEP);
       #endif
         powersupply = false;
-        LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),MSG_OFF,PSTR(".")));
+        LCD_MESSAGERPGM(CAT4(CUSTOM_MENDEL_NAME,PSTR(" "),_i("Off"),PSTR(".")));
         lcd_update(0);
 	  break;
 

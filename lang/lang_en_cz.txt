@@ -1234,10 +1234,10 @@
 "Y-correct:"
 "Korekce Y:"
 
-#MSG_OFF
+#
 "Off"
 "Vyp"
 
-#MSG_ON
+#
 "On"
 "Zap"

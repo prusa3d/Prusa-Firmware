@@ -1234,10 +1234,10 @@
 "Y-correct:"
 "Y-correcion:"
 
-#MSG_OFF
+#
 "Off"
 "Ina"
 
-#MSG_ON
+#
 "On"
 "Act"
