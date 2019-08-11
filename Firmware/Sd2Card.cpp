@@ -321,6 +321,7 @@ bool Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
   }
 
   // send 0xFF until 0xFF received to give card some clock cycles
+  t0 = (uint16_t)_millis();
   SERIAL_ECHOLNRPGM(PSTR("Sending 0xFF"));
   spiSend(0XFF);
   while ((status_ = spiRec()) != 0xFF)
