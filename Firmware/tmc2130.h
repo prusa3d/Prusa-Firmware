@@ -51,7 +51,7 @@ typedef struct
 extern tmc2130_chopper_config_t tmc2130_chopper_config[4];
 
 //initialize tmc2130
-extern void tmc2130_init(bool bSupressFlag=false);
+extern void tmc2130_init();
 //check diag pins (called from stepper isr)
 extern void tmc2130_st_isr();
 //update stall guard (called from st_synchronize inside the loop)

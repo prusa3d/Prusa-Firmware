@@ -143,7 +143,7 @@ uint16_t __tcoolthrs(uint8_t axis)
 	return 0;
 }
 
-void tmc2130_init(bool bSupressFlag=false)
+void tmc2130_init()
 {
 //	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
 	WRITE(X_TMC2130_CS, HIGH);
@@ -215,11 +215,6 @@ void tmc2130_init(bool bSupressFlag=false)
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
 	tmc2130_set_wave(E_AXIS, 247, tmc2130_wave_fac[E_AXIS]);
 #endif //TMC2130_LINEARITY_CORRECTION
-
-#ifdef PSU_Delta
-     if(!bSupressFlag)
-          check_force_z();
-#endif // PSU_Delta
 
 }
 
