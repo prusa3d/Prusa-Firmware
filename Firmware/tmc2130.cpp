@@ -142,11 +142,8 @@ uint16_t __tcoolthrs(uint8_t axis)
 	}
 	return 0;
 }
-#ifdef PSU_Delta
-void tmc2130_init(bool bSupressFlag)
-#else
-void tmc2130_init()
-#endif
+
+void tmc2130_init(bool bSupressFlag=false)
 {
 //	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
 	WRITE(X_TMC2130_CS, HIGH);
