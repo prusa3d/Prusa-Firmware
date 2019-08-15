@@ -3268,6 +3268,56 @@ static void gcode_PRUSA_SN()
         puts_P(_N("Not in farm mode."));
     }
 }
+//! Detection of faulty RAMBo 1.1b boards equipped with bigger capacitors
+//! at the TACH_1 pin, which causes bad detection of print fan speed.
+//! Warning: This function is not to be used by ordinary users, it is here only for automated testing purposes,
+//!   it may even interfere with other functions of the printer! You have been warned!
+//! The test idea is to measure the time necessary to charge the capacitor.
+//! So the algorithm is as follows:
+//! 1. Set TACH_1 pin to INPUT mode and LOW
+//! 2. Wait a few ms
+//! 3. disable interrupts and measure the time until the TACH_1 pin reaches HIGH
+//! Repeat 1.-3. several times
+//! Good RAMBo's times are in the range of approx. 260-320 us
+//! Bad RAMBo's times are approx. 260-1200 us
+//! So basically we are interested in maximum time, the minima are mostly the same.
+//! May be that's why the bad RAMBo's still produce some fan RPM reading, but not corresponding to reality
+static void gcode_PRUSA_BadRAMBoFanTest(){
+    //printf_P(PSTR("Enter fan pin test\n"));
+#if !defined(DEBUG_DISABLE_FANCHECK) && defined(FANCHECK) && defined(TACH_1) && TACH_1 >-1 && defined(IR_SENSOR)
+	fan_measuring = false; // prevent EXTINT7 breaking into the measurement
+	unsigned long tach1max = 0;
+	uint8_t tach1cntr = 0;
+	for( /* nothing */; tach1cntr < 100; ++tach1cntr){
+		//printf_P(PSTR("TACH_1: %d\n"), tach1cntr);
+		SET_OUTPUT(TACH_1);
+		WRITE(TACH_1, LOW);
+		_delay(20); // the delay may be lower
+		unsigned long tachMeasure = _micros();
+		cli();
+		SET_INPUT(TACH_1);
+		// just wait brutally in an endless cycle until we reach HIGH
+		// if this becomes a problem it may be improved to non-endless cycle
+		while( READ(TACH_1) == 0 ) ;
+		sei();
+		tachMeasure = _micros() - tachMeasure;
+		if( tach1max < tachMeasure )
+		tach1max = tachMeasure;
+		//printf_P(PSTR("TACH_1: %d: capacitor check time=%lu us\n"), (int)tach1cntr, tachMeasure);
+	}	
+	//printf_P(PSTR("TACH_1: max=%lu us\n"), tach1max);
+	SERIAL_PROTOCOLPGM("RAMBo FAN ");
+	if( tach1max > 500 ){
+		// bad RAMBo
+		SERIAL_PROTOCOLLNPGM("BAD");
+	} else {
+		SERIAL_PROTOCOLLNPGM("OK");
+    }
+	// cleanup after the test function
+	SET_INPUT(TACH_1);
+	WRITE(TACH_1, HIGH);
+#endif
+}
 
 #ifdef BACKLASH_X
 extern uint8_t st_backlash_x;
@@ -3625,7 +3675,9 @@ void process_commands()
 		else if (code_seen("PRN")) { // PRUSA PRN
 		  printf_P(_N("%d"), status_number);
 
-        }else if (code_seen("FAN")) { // PRUSA FAN
+        } else if( code_seen("FANPINTST") ){
+            gcode_PRUSA_BadRAMBoFanTest();
+        }else if (code_seen("FAN")) { //! PRUSA FAN
 			printf_P(_N("E0:%d RPM\nPRN0:%d RPM\n"), 60*fan_speed[0], 60*fan_speed[1]);
 		}else if (code_seen("fn")) { // PRUSA fn
 		  if (farm_mode) {
