@@ -2,12 +2,16 @@
 #define CONFIGURATION_PRUSA_H
 
 #include <limits.h>
+#include "printers.h"
 /*------------------------------------
  GENERAL SETTINGS
  *------------------------------------*/
 
 // Printer revision
 #define PRINTER_TYPE PRINTER_MK25
+#define PRINTER_NAME PRINTER_MK25_NAME
+#define PRINTER_MMU_TYPE PRINTER_MK25_MMU2
+#define PRINTER_MMU_NAME PRINTER_MK25_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK25"
 #define NOZZLE_TYPE "E3Dv6full"
 
@@ -112,6 +116,7 @@
 // Safety timer
 #define SAFETYTIMER
 #define DEFAULT_SAFETYTIMER_TIME_MINS 30
+#define FARM_DEFAULT_SAFETYTIMER_TIME_ms (45*60*1000ul)
 
 // Filament sensor
 #define FILAMENT_SENSOR
@@ -371,7 +376,7 @@
  *------------------------------------*/
 
 #define FARM_PREHEAT_HOTEND_TEMP 250
-#define FARM_PREHEAT_HPB_TEMP 40
+#define FARM_PREHEAT_HPB_TEMP 80
 #define FARM_PREHEAT_FAN_SPEED 0
 
 #define PLA_PREHEAT_HOTEND_TEMP 215

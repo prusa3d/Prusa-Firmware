@@ -10,12 +10,19 @@
 #include "Configuration.h"
 #include "pins.h"
 #include <binary.h>
-//#include <Arduino.h>
+#include <Arduino.h>
 #include "Marlin.h"
 #include "fastio.h"
 //-//
 #include "sound.h"
 
+#define LCD_DEFAULT_DELAY 100
+
+#if (defined(LCD_PINS_D0) && defined(LCD_PINS_D1) && defined(LCD_PINS_D2) && defined(LCD_PINS_D3))
+	#define LCD_8BIT
+#endif
+
+// #define VT100
 
 // commands
 #define LCD_CLEARDISPLAY 0x01
@@ -55,242 +62,204 @@
 #define LCD_5x10DOTS 0x04
 #define LCD_5x8DOTS 0x00
 
+// bitmasks for flag argument settings
+#define LCD_RS_FLAG 0x01
+#define LCD_HALF_FLAG 0x02
 
 FILE _lcdout; // = {0}; Global variable is always zero initialized, no need to explicitly state that.
 
+uint8_t lcd_displayfunction = 0;
+uint8_t lcd_displaycontrol = 0;
+uint8_t lcd_displaymode = 0;
 
-uint8_t lcd_rs_pin; // LOW: command.  HIGH: character.
-uint8_t lcd_rw_pin; // LOW: write to LCD.  HIGH: read from LCD.
-uint8_t lcd_enable_pin; // activated by a HIGH pulse.
-uint8_t lcd_data_pins[8];
-
-uint8_t lcd_displayfunction;
-uint8_t lcd_displaycontrol;
-uint8_t lcd_displaymode;
-
-uint8_t lcd_numlines;
 uint8_t lcd_currline;
 
+#ifdef VT100
 uint8_t lcd_escape[8];
+#endif
 
+static void lcd_display(void);
 
-void lcd_pulseEnable(void)
-{
-	digitalWrite(lcd_enable_pin, LOW);
-	delayMicroseconds(1);    
-	digitalWrite(lcd_enable_pin, HIGH);
-	delayMicroseconds(1);    // enable pulse must be >450ns
-	digitalWrite(lcd_enable_pin, LOW);
-	delayMicroseconds(100);   // commands need > 37us to settle
+#if 0
+static void lcd_no_display(void);
+static void lcd_no_cursor(void);
+static void lcd_cursor(void);
+static void lcd_no_blink(void);
+static void lcd_blink(void);
+static void lcd_scrollDisplayLeft(void);
+static void lcd_scrollDisplayRight(void);
+static void lcd_leftToRight(void);
+static void lcd_rightToLeft(void);
+static void lcd_autoscroll(void);
+static void lcd_no_autoscroll(void);
+#endif
+
+#ifdef VT100
+void lcd_escape_write(uint8_t chr);
+#endif
+
+static void lcd_pulseEnable(void)
+{  
+	WRITE(LCD_PINS_ENABLE,HIGH);
+	_delay_us(1);    // enable pulse must be >450ns
+	WRITE(LCD_PINS_ENABLE,LOW);
 }
 
-void lcd_write4bits(uint8_t value)
+static void lcd_writebits(uint8_t value)
 {
-	for (int i = 0; i < 4; i++)
-	{
-		pinMode(lcd_data_pins[i], OUTPUT);
-		digitalWrite(lcd_data_pins[i], (value >> i) & 0x01);
-	}
+#ifdef LCD_8BIT
+	WRITE(LCD_PINS_D0, value & 0x01);
+	WRITE(LCD_PINS_D1, value & 0x02);
+	WRITE(LCD_PINS_D2, value & 0x04);
+	WRITE(LCD_PINS_D3, value & 0x08);
+#endif
+	WRITE(LCD_PINS_D4, value & 0x10);
+	WRITE(LCD_PINS_D5, value & 0x20);
+	WRITE(LCD_PINS_D6, value & 0x40);
+	WRITE(LCD_PINS_D7, value & 0x80);
+	
 	lcd_pulseEnable();
 }
 
-void lcd_write8bits(uint8_t value)
+static void lcd_send(uint8_t data, uint8_t flags, uint16_t duration = LCD_DEFAULT_DELAY)
 {
-	for (int i = 0; i < 8; i++)
+	WRITE(LCD_PINS_RS,flags&LCD_RS_FLAG);
+	_delay_us(5);
+	lcd_writebits(data);
+#ifndef LCD_8BIT
+	if (!(flags & LCD_HALF_FLAG))
 	{
-		pinMode(lcd_data_pins[i], OUTPUT);
-		digitalWrite(lcd_data_pins[i], (value >> i) & 0x01);
+		_delay_us(LCD_DEFAULT_DELAY);
+		lcd_writebits(data<<4);
 	}
-	lcd_pulseEnable();
+#endif
+	delayMicroseconds(duration);
 }
 
-// write either command or data, with automatic 4/8-bit selection
-void lcd_send(uint8_t value, uint8_t mode)
+static void lcd_command(uint8_t value, uint16_t delayExtra = 0)
 {
-	digitalWrite(lcd_rs_pin, mode);
-	// if there is a RW pin indicated, set it low to Write
-	if (lcd_rw_pin != 255) digitalWrite(lcd_rw_pin, LOW);
-	if (lcd_displayfunction & LCD_8BITMODE)
-		lcd_write8bits(value); 
-	else
-	{
-		lcd_write4bits(value>>4);
-		lcd_write4bits(value);
-	}
+	lcd_send(value, LOW, LCD_DEFAULT_DELAY + delayExtra);
 }
 
-void lcd_command(uint8_t value)
-{
-	lcd_send(value, LOW);
-}
-
-void lcd_clear(void);
-void lcd_home(void);
-void lcd_no_display(void);
-void lcd_display(void);
-void lcd_no_cursor(void);
-void lcd_cursor(void);
-void lcd_no_blink(void);
-void lcd_blink(void);
-void lcd_scrollDisplayLeft(void);
-void lcd_scrollDisplayRight(void);
-void lcd_leftToRight(void);
-void lcd_rightToLeft(void);
-void lcd_autoscroll(void);
-void lcd_no_autoscroll(void);
-void lcd_set_cursor(uint8_t col, uint8_t row);
-void lcd_createChar_P(uint8_t location, const uint8_t* charmap);
-
-uint8_t lcd_escape_write(uint8_t chr);
-
-uint8_t lcd_write(uint8_t value)
+static void lcd_write(uint8_t value)
 {
 	if (value == '\n')
 	{
 		if (lcd_currline > 3) lcd_currline = -1;
 		lcd_set_cursor(0, lcd_currline + 1); // LF
-		return 1;
+		return;
 	}
-	if (lcd_escape[0] || (value == 0x1b))
-		return lcd_escape_write(value);
+	#ifdef VT100
+	if (lcd_escape[0] || (value == 0x1b)){
+		lcd_escape_write(value);
+		return;
+	}
+	#endif
 	lcd_send(value, HIGH);
-	return 1; // assume sucess
 }
 
-static void lcd_begin(uint8_t lines, uint8_t dotsize, uint8_t clear)
+static void lcd_begin(uint8_t clear)
 {
-	if (lines > 1) lcd_displayfunction |= LCD_2LINE;
-	lcd_numlines = lines;
 	lcd_currline = 0;
-	// for some 1 line displays you can select a 10 pixel high font
-	if ((dotsize != 0) && (lines == 1)) lcd_displayfunction |= LCD_5x10DOTS;
-	// SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
-	// according to datasheet, we need at least 40ms after power rises above 2.7V
-	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
-	_delay_us(50000); 
-	// Now we pull both RS and R/W low to begin commands
-	digitalWrite(lcd_rs_pin, LOW);
-	digitalWrite(lcd_enable_pin, LOW);
-	if (lcd_rw_pin != 255)
-		digitalWrite(lcd_rw_pin, LOW);
-	//put the LCD into 4 bit or 8 bit mode
-	if (!(lcd_displayfunction & LCD_8BITMODE))
-	{
-		// this is according to the hitachi HD44780 datasheet
-		// figure 24, pg 46
-		// we start in 8bit mode, try to set 4 bit mode
-		lcd_write4bits(0x03);
-		_delay_us(4500); // wait min 4.1ms
-		// second try
-		lcd_write4bits(0x03);
-		_delay_us(4500); // wait min 4.1ms
-		// third go!
-		lcd_write4bits(0x03); 
-		_delay_us(150);
-		// finally, set to 4-bit interface
-		lcd_write4bits(0x02); 
-	}
-	else
-	{
-		// this is according to the hitachi HD44780 datasheet
-		// page 45 figure 23
-		// Send function set command sequence
-		lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);
-		_delay_us(4500);  // wait more than 4.1ms
-		// second try
-		lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);
-		_delay_us(150);
-		// third go
-		lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);
-	}
-	// finally, set # lines, font size, etc.
-	lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);  
-	_delay_us(60);
+
+	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 4500); // wait min 4.1ms
+	// second try
+	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 150);
+	// third go!
+	lcd_send(LCD_FUNCTIONSET | LCD_8BITMODE, LOW | LCD_HALF_FLAG, 150);
+#ifndef LCD_8BIT
+	// set to 4-bit interface
+	lcd_send(LCD_FUNCTIONSET | LCD_4BITMODE, LOW | LCD_HALF_FLAG, 150);
+#endif
+
+	// finally, set # lines, font size, etc.0
+	lcd_command(LCD_FUNCTIONSET | lcd_displayfunction);
 	// turn the display on with no cursor or blinking default
-	lcd_displaycontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;  
+	lcd_displaycontrol = LCD_CURSOROFF | LCD_BLINKOFF;  
 	lcd_display();
-	_delay_us(60);
 	// clear it off
 	if (clear) lcd_clear();
-	_delay_us(3000);
 	// Initialize to default text direction (for romance languages)
 	lcd_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
 	// set the entry mode
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode);
-	_delay_us(60);
+	
+	#ifdef VT100
 	lcd_escape[0] = 0;
+	#endif
 }
 
-int lcd_putchar(char c, FILE *)
+static void lcd_putchar(char c, FILE *)
 {
 	lcd_write(c);
-	return 0;
 }
 
 void lcd_init(void)
 {
-	uint8_t fourbitmode = 1;
-	lcd_rs_pin = LCD_PINS_RS;
-	lcd_rw_pin = 255;
-	lcd_enable_pin = LCD_PINS_ENABLE;
-	lcd_data_pins[0] = LCD_PINS_D4;
-	lcd_data_pins[1] = LCD_PINS_D5;
-	lcd_data_pins[2] = LCD_PINS_D6;
-	lcd_data_pins[3] = LCD_PINS_D7; 
-	lcd_data_pins[4] = 0;
-	lcd_data_pins[5] = 0;
-	lcd_data_pins[6] = 0;
-	lcd_data_pins[7] = 0;
-	pinMode(lcd_rs_pin, OUTPUT);
-	// we can save 1 pin by not using RW. Indicate by passing 255 instead of pin#
-	if (lcd_rw_pin != 255) pinMode(lcd_rw_pin, OUTPUT);
-	pinMode(lcd_enable_pin, OUTPUT);
-	if (fourbitmode) lcd_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
-	else lcd_displayfunction = LCD_8BITMODE | LCD_1LINE | LCD_5x8DOTS;
-	lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 1);
-	//lcd_clear();
+	WRITE(LCD_PINS_ENABLE,LOW);
+	SET_OUTPUT(LCD_PINS_RS);
+	SET_OUTPUT(LCD_PINS_ENABLE);
+
+#ifdef LCD_8BIT
+	SET_OUTPUT(LCD_PINS_D0);
+	SET_OUTPUT(LCD_PINS_D1);
+	SET_OUTPUT(LCD_PINS_D2);
+	SET_OUTPUT(LCD_PINS_D3);
+#endif
+	SET_OUTPUT(LCD_PINS_D4);
+	SET_OUTPUT(LCD_PINS_D5);
+	SET_OUTPUT(LCD_PINS_D6);
+	SET_OUTPUT(LCD_PINS_D7);
+	
+#ifdef LCD_8BIT
+	lcd_displayfunction |= LCD_8BITMODE;
+#endif
+	lcd_displayfunction |= LCD_2LINE;
+	_delay_us(50000); 
+	lcd_begin(1); //first time init
 	fdev_setup_stream(lcdout, lcd_putchar, NULL, _FDEV_SETUP_WRITE); //setup lcdout stream
 }
 
 void lcd_refresh(void)
 {
-    lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 1);
+    lcd_begin(1);
     lcd_set_custom_characters();
 }
 
 void lcd_refresh_noclear(void)
 {
-    lcd_begin(LCD_HEIGHT, LCD_5x8DOTS, 0);
+    lcd_begin(0);
     lcd_set_custom_characters();
 }
 
-
-
 void lcd_clear(void)
 {
-	lcd_command(LCD_CLEARDISPLAY);  // clear display, set cursor position to zero
-	_delay_us(1600);  // this command takes a long time
+	lcd_command(LCD_CLEARDISPLAY, 1600);  // clear display, set cursor position to zero
+	lcd_currline = 0;
 }
 
 void lcd_home(void)
 {
-	lcd_command(LCD_RETURNHOME);  // set cursor position to zero
-	_delay_us(1600);  // this command takes a long time!
+	lcd_command(LCD_RETURNHOME, 1600);  // set cursor position to zero
+	lcd_currline = 0;
 }
 
 // Turn the display on/off (quickly)
+void lcd_display(void)
+{
+    lcd_displaycontrol |= LCD_DISPLAYON;
+    lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
+}
+
+#if 0
 void lcd_no_display(void)
 {
 	lcd_displaycontrol &= ~LCD_DISPLAYON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
+#endif
 
-void lcd_display(void)
-{
-	lcd_displaycontrol |= LCD_DISPLAYON;
-	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
-}
-
+#ifdef VT100 //required functions for VT100
 // Turns the underline cursor on/off
 void lcd_no_cursor(void)
 {
@@ -303,7 +272,9 @@ void lcd_cursor(void)
 	lcd_displaycontrol |= LCD_CURSORON;
 	lcd_command(LCD_DISPLAYCONTROL | lcd_displaycontrol);
 }
+#endif
 
+#if 0
 // Turn on and off the blinking cursor
 void lcd_no_blink(void)
 {
@@ -355,12 +326,13 @@ void lcd_no_autoscroll(void)
 	lcd_displaymode &= ~LCD_ENTRYSHIFTINCREMENT;
 	lcd_command(LCD_ENTRYMODESET | lcd_displaymode);
 }
+#endif
 
 void lcd_set_cursor(uint8_t col, uint8_t row)
 {
 	int row_offsets[] = { 0x00, 0x40, 0x14, 0x54 };
-	if ( row >= lcd_numlines )
-		row = lcd_numlines-1;    // we count rows starting w/0
+	if (row >= LCD_HEIGHT)
+		row = LCD_HEIGHT - 1;    // we count rows starting w/0
 	lcd_currline = row;  
 	lcd_command(LCD_SETDDRAMADDR | (col + row_offsets[row]));
 }
@@ -375,12 +347,14 @@ void lcd_createChar_P(uint8_t location, const uint8_t* charmap)
     lcd_send(pgm_read_byte(&charmap[i]), HIGH);
 }
 
+#ifdef VT100
+
 //Supported VT100 escape codes:
 //EraseScreen  "\x1b[2J"
 //CursorHome   "\x1b[%d;%dH"
 //CursorShow   "\x1b[?25h"
 //CursorHide   "\x1b[?25l"
-uint8_t lcd_escape_write(uint8_t chr)
+void lcd_escape_write(uint8_t chr)
 {
 #define escape_cnt (lcd_escape[0])        //escape character counter
 #define is_num_msk (lcd_escape[1])        //numeric character bit mask
@@ -410,26 +384,26 @@ uint8_t lcd_escape_write(uint8_t chr)
 	switch (escape_cnt++)
 	{
 	case 0:
-		if (chr == 0x1b) return 1;  // escape = "\x1b"
+		if (chr == 0x1b) return;  // escape = "\x1b"
 		break;
 	case 1:
 		is_num_msk = 0x00; // reset 'is number' bit mask
-		if (chr == '[') return 1; // escape = "\x1b["
+		if (chr == '[') return; // escape = "\x1b["
 		break;
 	case 2:
 		switch (chr)
 		{
-		case '2': return 1; // escape = "\x1b[2"
-		case '?': return 1; // escape = "\x1b[?"
+		case '2': return; // escape = "\x1b[2"
+		case '?': return; // escape = "\x1b[?"
 		default:
-			if (chr_is_num) return 1; // escape = "\x1b[%1d"
+			if (chr_is_num) return; // escape = "\x1b[%1d"
 		}
 		break;
 	case 3:
 		switch (lcd_escape[2])
 		{
 		case '?': // escape = "\x1b[?"
-			if (chr == '2') return 1; // escape = "\x1b[?2"
+			if (chr == '2') return; // escape = "\x1b[?2"
 			break;
 		case '2':
 			if (chr == 'J') // escape = "\x1b[2J"
@@ -438,20 +412,20 @@ uint8_t lcd_escape_write(uint8_t chr)
 			if (e_2_is_num && // escape = "\x1b[%1d"
 				((chr == ';') || // escape = "\x1b[%1d;"
 				chr_is_num)) // escape = "\x1b[%2d"
-				return 1;
+				return;
 		}
 		break;
 	case 4:
 		switch (lcd_escape[2])
 		{
 		case '?': // "\x1b[?"
-			if ((lcd_escape[3] == '2') && (chr == '5')) return 1; // escape = "\x1b[?25"
+			if ((lcd_escape[3] == '2') && (chr == '5')) return; // escape = "\x1b[?25"
 			break;
 		default:
 			if (e_2_is_num) // escape = "\x1b[%1d"
 			{
-				if ((lcd_escape[3] == ';') && chr_is_num) return 1; // escape = "\x1b[%1d;%1d"
-				else if (e_3_is_num && (chr == ';')) return 1; // escape = "\x1b[%2d;"
+				if ((lcd_escape[3] == ';') && chr_is_num) return; // escape = "\x1b[%1d;%1d"
+				else if (e_3_is_num && (chr == ';')) return; // escape = "\x1b[%2d;"
 			}
 		}
 		break;
@@ -478,10 +452,10 @@ uint8_t lcd_escape_write(uint8_t chr)
 					if (chr == 'H') // escape = "\x1b%1d;%1dH"
 						lcd_set_cursor(e4_num, e2_num); // CursorHome
 					else if (chr_is_num)
-						return 1; // escape = "\x1b%1d;%2d"
+						return; // escape = "\x1b%1d;%2d"
 				}
 				else if (e_3_is_num && (lcd_escape[4] == ';') && chr_is_num)
-					return 1; // escape = "\x1b%2d;%1d"
+					return; // escape = "\x1b%2d;%1d"
 			}
 		}
 		break;
@@ -495,7 +469,7 @@ uint8_t lcd_escape_write(uint8_t chr)
 				if (chr == 'H') // escape = "\x1b%2d;%1dH"
 					lcd_set_cursor(e5_num, e23_num); // CursorHome
 				else if (chr_is_num) // "\x1b%2d;%2d"
-					return 1;
+					return;
 			}
 		}
 		break;
@@ -506,10 +480,9 @@ uint8_t lcd_escape_write(uint8_t chr)
 		break;
 	}
 	escape_cnt = 0; // reset escape
-	return 1; // assume sucess
 }
 
-
+#endif //VT100
 
 
 int lcd_putc(int c)
@@ -648,16 +621,6 @@ void lcd_printFloat(double number, uint8_t digits)
 }
 
 
-
-
-
-
-
-
-
-
-
-
 uint8_t lcd_draw_update = 2;
 int32_t lcd_encoder = 0;
 uint8_t lcd_encoder_bits = 0;
@@ -704,16 +667,13 @@ uint8_t lcd_clicked(void)
 
 void lcd_beeper_quick_feedback(void)
 {
-	SET_OUTPUT(BEEPER);
 //-//
 Sound_MakeSound(e_SOUND_TYPE_ButtonEcho);
 /*
 	for(int8_t i = 0; i < 10; i++)
 	{
-		WRITE(BEEPER,HIGH);
-		delayMicroseconds(100);
-		WRITE(BEEPER,LOW);
-		delayMicroseconds(100);
+		Sound_MakeCustom(100,0,false);
+		_delay_us(100);
 	}
 */
 }
@@ -724,13 +684,6 @@ void lcd_quick_feedback(void)
   lcd_button_pressed = false;
   lcd_beeper_quick_feedback();
 }
-
-
-
-
-
-
-
 
 void lcd_update(uint8_t lcdDrawUpdateOverride)
 {

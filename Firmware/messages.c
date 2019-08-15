@@ -10,7 +10,7 @@
 //internationalized messages
 const char MSG_AUTO_HOME[] PROGMEM_I1 = ISTR("Auto home"); ////
 const char MSG_AUTO_MODE_ON[] PROGMEM_I1 = ISTR("Mode [auto power]"); ////
-const char MSG_BABYSTEP_Z[] PROGMEM_I1 = ISTR("Live adjust Z"); ////
+const char MSG_BABYSTEP_Z[] PROGMEM_I1 = ISTR("Live adjust Z"); //// c=18
 const char MSG_BABYSTEP_Z_NOT_SET[] PROGMEM_I1 = ISTR("Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."); ////c=20 r=12
 const char MSG_BED[] PROGMEM_I1 = ISTR("Bed"); ////
 const char MSG_BED_DONE[] PROGMEM_I1 = ISTR("Bed done"); ////
@@ -55,6 +55,7 @@ const char MSG_CUT_FILAMENT[] PROGMEM_I1 = ISTR("Cut filament"); //// Number 1 t
 const char MSG_M117_V2_CALIBRATION[] PROGMEM_I1 = ISTR("M117 First layer cal."); ////c=25 r=1
 const char MSG_MAIN[] PROGMEM_I1 = ISTR("Main"); ////
 const char MSG_BACK[] PROGMEM_I1 = ISTR("Back"); ////
+const char MSG_SHEET[] PROGMEM_I1 = ISTR("Sheet"); ////c=10
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE1[] PROGMEM_I1 = ISTR("Measuring reference height of calibration point"); ////c=60
 const char MSG_MEASURE_BED_REFERENCE_HEIGHT_LINE2[] PROGMEM_I1 = ISTR(" of 9"); ////c=14
 const char MSG_MENU_CALIBRATION[] PROGMEM_I1 = ISTR("Calibration"); ////
@@ -83,6 +84,7 @@ const char MSG_SELFTEST_MOTOR[] PROGMEM_I1 = ISTR("Motor"); ////
 const char MSG_SELFTEST_FILAMENT_SENSOR[] PROGMEM_I1 = ISTR("Filament sensor"); ////c=17
 const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////
+const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////
 const char MSG_SILENT_MODE_OFF[] PROGMEM_I1 = ISTR("Mode [high power]"); ////
 const char MSG_SILENT_MODE_ON[] PROGMEM_I1 = ISTR("Mode     [silent]"); ////
 const char MSG_STEALTH_MODE_OFF[] PROGMEM_I1 = ISTR("Mode     [Normal]"); ////
@@ -100,6 +102,7 @@ const char MSG_WIZARD_DONE[] PROGMEM_I1 = ISTR("All is done. Happy printing!"); 
 const char MSG_WIZARD_HEATING[] PROGMEM_I1 = ISTR("Preheating nozzle. Please wait."); ////c=20 r=3
 const char MSG_WIZARD_QUIT[] PROGMEM_I1 = ISTR("You can always resume the Wizard from Calibration -> Wizard."); ////c=20 r=8
 const char MSG_YES[] PROGMEM_I1 = ISTR("Yes"); ////
+const char MSG_V2_CALIBRATION[] PROGMEM_I1 = ISTR("First layer cal."); ////c=17 r=1
 const char WELCOME_MSG[] PROGMEM_I1 = ISTR(CUSTOM_MENDEL_NAME " OK."); ////c=20
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////
@@ -126,3 +129,4 @@ const char MSG_ENDSTOP_OPEN[] PROGMEM_N1 = "open"; ////
 const char MSG_POWERUP[] PROGMEM_N1 = "PowerUp"; ////
 const char MSG_ERR_STOPPED[] PROGMEM_N1 = "Printer stopped due to errors. Fix the error and use M999 to restart. (Temperature is reset. Set it after restarting)"; ////
 const char MSG_ENDSTOP_HIT[] PROGMEM_N1 = "TRIGGERED"; ////
+const char MSG_OCTOPRINT_PAUSE[] PROGMEM_N1 = "// action:pause"; ////
