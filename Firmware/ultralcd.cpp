@@ -120,14 +120,7 @@ static void lcd_tune_menu();
 //static void lcd_move_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
-#ifdef LINEARITY_CORRECTION
-static void lcd_settings_menu_back();
-#endif //LINEARITY_CORRECTION
 static void lcd_control_temperature_menu();
-static void lcd_control_temperature_preheat_pla_settings_menu();
-static void lcd_control_temperature_preheat_abs_settings_menu();
-static void lcd_control_motion_menu();
-static void lcd_control_volumetric_menu();
 static void lcd_settings_linearity_correction_menu_save();
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
