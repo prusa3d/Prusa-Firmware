@@ -120,14 +120,7 @@ static void lcd_tune_menu();
 //static void lcd_move_menu();
 static void lcd_settings_menu();
 static void lcd_calibration_menu();
-#ifdef LINEARITY_CORRECTION
-static void lcd_settings_menu_back();
-#endif //LINEARITY_CORRECTION
 static void lcd_control_temperature_menu();
-static void lcd_control_temperature_preheat_pla_settings_menu();
-static void lcd_control_temperature_preheat_abs_settings_menu();
-static void lcd_control_motion_menu();
-static void lcd_control_volumetric_menu();
 static void lcd_settings_linearity_correction_menu_save();
 static void prusa_stat_printerstatus(int _status);
 static void prusa_stat_farm_number();
@@ -1676,7 +1669,7 @@ static void lcd_move_menu_axis();
 
 /* Menu implementation */
 
-void lcd_preheat_farm()
+static void lcd_preheat_farm()
 {
   setTargetHotend0(FARM_PREHEAT_HOTEND_TEMP);
   setTargetBed(FARM_PREHEAT_HPB_TEMP);
@@ -1685,7 +1678,7 @@ void lcd_preheat_farm()
   setWatch(); // heater sanity check timer
 }
 
-void lcd_preheat_farm_nozzle()
+static void lcd_preheat_farm_nozzle()
 {
 	setTargetHotend0(FARM_PREHEAT_HOTEND_TEMP);
 	setTargetBed(0);
@@ -1694,68 +1687,78 @@ void lcd_preheat_farm_nozzle()
 	setWatch(); // heater sanity check timer
 }
 
-void lcd_preheat_pla()
+static void lcd_preheat_pla()
 {
   setTargetHotend0(PLA_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PLA_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = PLA_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_abs()
+static void lcd_preheat_asa()
+{
+  setTargetHotend0(ASA_PREHEAT_HOTEND_TEMP);
+  if (!wizard_active) setTargetBed(ASA_PREHEAT_HPB_TEMP);
+  fanSpeed = ASA_PREHEAT_FAN_SPEED;
+  lcd_return_to_status();
+  setWatch(); // heater sanity check timer
+  if (wizard_active) lcd_wizard(WizState::Unload);
+}
+
+static void lcd_preheat_abs()
 {
   setTargetHotend0(ABS_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(ABS_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = ABS_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_pp()
+static void lcd_preheat_pp()
 {
   setTargetHotend0(PP_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PP_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = PP_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_pet()
+static void lcd_preheat_pet()
 {
   setTargetHotend0(PET_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PET_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = PET_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_hips()
+static void lcd_preheat_hips()
 {
   setTargetHotend0(HIPS_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(HIPS_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = HIPS_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_flex()
+static void lcd_preheat_flex()
 {
   setTargetHotend0(FLEX_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(FLEX_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = FLEX_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
 
-void lcd_cooldown()
+static void lcd_cooldown()
 {
   setAllTargetHotends(0);
   setTargetBed(0);
@@ -2037,6 +2040,7 @@ static void lcd_preheat_menu()
   } else {
 	  MENU_ITEM_FUNCTION_P(PSTR("PLA  -  " STRINGIFY(PLA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PLA_PREHEAT_HPB_TEMP)), lcd_preheat_pla);
 	  MENU_ITEM_FUNCTION_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)), lcd_preheat_pet);
+	  MENU_ITEM_FUNCTION_P(PSTR("ASA  -  " STRINGIFY(ASA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ASA_PREHEAT_HPB_TEMP)), lcd_preheat_asa);
 	  MENU_ITEM_FUNCTION_P(PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
 	  MENU_ITEM_FUNCTION_P(PSTR("HIPS -  " STRINGIFY(HIPS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(HIPS_PREHEAT_HPB_TEMP)), lcd_preheat_hips);
 	  MENU_ITEM_FUNCTION_P(PSTR("PP   -  " STRINGIFY(PP_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PP_PREHEAT_HPB_TEMP)), lcd_preheat_pp);
