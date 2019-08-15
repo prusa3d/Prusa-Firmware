@@ -1691,7 +1691,7 @@ void lcd_preheat_pla()
 {
   setTargetHotend0(PLA_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PLA_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = PLA_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
@@ -1711,7 +1711,7 @@ void lcd_preheat_abs()
 {
   setTargetHotend0(ABS_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(ABS_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = ABS_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
@@ -1721,7 +1721,7 @@ void lcd_preheat_pp()
 {
   setTargetHotend0(PP_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PP_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = PP_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
@@ -1731,7 +1731,7 @@ void lcd_preheat_pet()
 {
   setTargetHotend0(PET_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PET_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = PET_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
@@ -1741,7 +1741,7 @@ void lcd_preheat_hips()
 {
   setTargetHotend0(HIPS_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(HIPS_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = HIPS_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
@@ -1751,7 +1751,7 @@ void lcd_preheat_flex()
 {
   setTargetHotend0(FLEX_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(FLEX_PREHEAT_HPB_TEMP);
-  fanSpeed = 0;
+  fanSpeed = FLEX_PREHEAT_FAN_SPEED;
   lcd_return_to_status();
   setWatch(); // heater sanity check timer
   if (wizard_active) lcd_wizard(WizState::Unload);
