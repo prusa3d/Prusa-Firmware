@@ -1669,7 +1669,7 @@ static void lcd_move_menu_axis();
 
 /* Menu implementation */
 
-void lcd_preheat_farm()
+static void lcd_preheat_farm()
 {
   setTargetHotend0(FARM_PREHEAT_HOTEND_TEMP);
   setTargetBed(FARM_PREHEAT_HPB_TEMP);
@@ -1678,7 +1678,7 @@ void lcd_preheat_farm()
   setWatch(); // heater sanity check timer
 }
 
-void lcd_preheat_farm_nozzle()
+static void lcd_preheat_farm_nozzle()
 {
 	setTargetHotend0(FARM_PREHEAT_HOTEND_TEMP);
 	setTargetBed(0);
@@ -1687,7 +1687,7 @@ void lcd_preheat_farm_nozzle()
 	setWatch(); // heater sanity check timer
 }
 
-void lcd_preheat_pla()
+static void lcd_preheat_pla()
 {
   setTargetHotend0(PLA_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PLA_PREHEAT_HPB_TEMP);
@@ -1697,7 +1697,7 @@ void lcd_preheat_pla()
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_asa()
+static void lcd_preheat_asa()
 {
   setTargetHotend0(ASA_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(ASA_PREHEAT_HPB_TEMP);
@@ -1707,7 +1707,7 @@ void lcd_preheat_asa()
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_abs()
+static void lcd_preheat_abs()
 {
   setTargetHotend0(ABS_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(ABS_PREHEAT_HPB_TEMP);
@@ -1717,7 +1717,7 @@ void lcd_preheat_abs()
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_pp()
+static void lcd_preheat_pp()
 {
   setTargetHotend0(PP_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PP_PREHEAT_HPB_TEMP);
@@ -1727,7 +1727,7 @@ void lcd_preheat_pp()
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_pet()
+static void lcd_preheat_pet()
 {
   setTargetHotend0(PET_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(PET_PREHEAT_HPB_TEMP);
@@ -1737,7 +1737,7 @@ void lcd_preheat_pet()
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_hips()
+static void lcd_preheat_hips()
 {
   setTargetHotend0(HIPS_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(HIPS_PREHEAT_HPB_TEMP);
@@ -1747,7 +1747,7 @@ void lcd_preheat_hips()
   if (wizard_active) lcd_wizard(WizState::Unload);
 }
 
-void lcd_preheat_flex()
+static void lcd_preheat_flex()
 {
   setTargetHotend0(FLEX_PREHEAT_HOTEND_TEMP);
   if (!wizard_active) setTargetBed(FLEX_PREHEAT_HPB_TEMP);
@@ -1758,7 +1758,7 @@ void lcd_preheat_flex()
 }
 
 
-void lcd_cooldown()
+static void lcd_cooldown()
 {
   setAllTargetHotends(0);
   setTargetBed(0);
