@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # fw-clean.sh - multi-language support script
 #  Remove all firmware output files from lang folder.

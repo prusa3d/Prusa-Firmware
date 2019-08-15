@@ -96,7 +96,7 @@ class MarlinSerial //: public Stream
     static int read(void);
     static void flush(void);
     
-    static FORCE_INLINE int available(void)
+    static /*FORCE_INLINE*/ int available(void)
     {
       return (unsigned int)(RX_BUFFER_SIZE + rx_buffer.head - rx_buffer.tail) % RX_BUFFER_SIZE;
     }
@@ -184,14 +184,14 @@ class MarlinSerial //: public Stream
     
   public:
     
-    static FORCE_INLINE void write(const char *str)
+    static /*FORCE_INLINE*/ void write(const char *str)
     {
       while (*str)
         write(*str++);
     }
 
 
-    static FORCE_INLINE void write(const uint8_t *buffer, size_t size)
+    static /*FORCE_INLINE*/ void write(const uint8_t *buffer, size_t size)
     {
       while (size--)
         write(*buffer++);

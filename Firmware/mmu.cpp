@@ -15,6 +15,8 @@
 #include <avr/pgmspace.h>
 #include "io_atmega2560.h"
 #include "AutoDeplete.h"
+//-//
+#include "util.h"
 
 #ifdef TMC2130
 #include "tmc2130.h"
@@ -265,6 +267,9 @@ void mmu_loop(void)
 			FDEBUG_PRINTF_P(PSTR("MMU => '%dok'\n"), mmu_finda);
 			puts_P(PSTR("MMU - ENABLED"));
 			mmu_enabled = true;
+            //-//
+            // ... PrinterType/Name
+            fSetMmuMode(true);
 			mmu_state = S::Idle;
 		}
 		return;
@@ -418,9 +423,11 @@ void mmu_loop(void)
 		}
 		else if ((mmu_last_request + MMU_CMD_TIMEOUT) < _millis())
 		{ //resend request after timeout (5 min)
-			if (mmu_last_cmd >= MmuCmd::T0 && mmu_last_cmd <= MmuCmd::T4)
+			if (mmu_last_cmd != MmuCmd::None)
 			{
-				if (mmu_attempt_nr++ < MMU_MAX_RESEND_ATTEMPTS) {
+				if (mmu_attempt_nr++ < MMU_MAX_RESEND_ATTEMPTS &&
+				    mmu_last_cmd >= MmuCmd::T0 && mmu_last_cmd <= MmuCmd::T4)
+				{
 				    DEBUG_PRINTF_P(PSTR("MMU retry attempt nr. %d\n"), mmu_attempt_nr - 1);
 					mmu_cmd = mmu_last_cmd;
 				}
@@ -833,7 +840,7 @@ void mmu_M600_wait_and_beep() {
 			}
 			SET_OUTPUT(BEEPER);
 			if (counterBeep == 0) {
-				if((eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
+				if((eSoundMode==e_SOUND_MODE_BLIND)|| (eSoundMode==e_SOUND_MODE_LOUD)||((eSoundMode==e_SOUND_MODE_ONCE)&&bFirst))
 				{
 					bFirst=false;
 					WRITE(BEEPER, HIGH);
@@ -971,7 +978,7 @@ void extr_adj(uint8_t extruder) //loading filament for SNMM
 {
 #ifndef SNMM
     MmuCmd cmd = MmuCmd::L0 + extruder;
-    if (cmd > MmuCmd::L4)
+    if (extruder > (MmuCmd::L4 - MmuCmd::L0))
     {
         printf_P(PSTR("Filament out of range %d \n"),extruder);
         return;

@@ -3,6 +3,7 @@
 #define _MENU_H
 
 #include <inttypes.h>
+#include "eeprom.h"
 
 #define MENU_DATA_SIZE      32
 
@@ -99,6 +100,12 @@ extern uint8_t menu_item_text_P(const char* str);
 #define MENU_ITEM_SUBMENU_P(str, submenu) do { if (menu_item_submenu_P(str, submenu)) return; } while (0)
 extern uint8_t menu_item_submenu_P(const char* str, menu_func_t submenu);
 
+#define MENU_ITEM_SUBMENU_E(sheet, submenu) do { if (menu_item_submenu_E(sheet, submenu)) return; } while (0)
+extern uint8_t menu_item_submenu_E(const Sheet &sheet, menu_func_t submenu);
+
+#define MENU_ITEM_SUBMENU_SELECT_SHEET_E(sheet, submenu) do { if (menu_item_submenu_select_sheet_E(sheet, submenu)) return; } while (0)
+extern uint8_t menu_item_submenu_select_sheet_E(const Sheet &sheet, menu_func_t submenu);
+
 #define MENU_ITEM_BACK_P(str) do { if (menu_item_back_P(str)) return; } while (0)
 extern uint8_t menu_item_back_P(const char* str);
 
@@ -124,6 +131,13 @@ extern const char menu_fmt_float13[];
 extern void menu_draw_float31(const char* str, float val);
 
 extern void menu_draw_float13(const char* str, float val);
+
+struct SheetFormatBuffer
+{
+    char c[19];
+};
+
+extern void menu_format_sheet_E(const Sheet &sheet_E, SheetFormatBuffer &buffer);
 
 
 #define MENU_ITEM_EDIT_int3_P(str, pval, minval, maxval) do { if (menu_item_edit_P(str, pval, minval, maxval)) return; } while (0)

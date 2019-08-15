@@ -11,12 +11,12 @@
 "[0;0] Punktversatz"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
-"\x1b[2JCrash Erkennung kann\x1b[1;0Hnur im Modus Normal\x1b[2;0Hgenutzt werden"
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
+"Crash Erkennung kann\x0anur im Modus Normal\x0agenutzt werden"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
-"\x1b[2JWARNUNG:\x1b[1;0HCrash Erkennung\x1b[2;0Hdeaktiviert im\x1b[3;0HStealth Modus"
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
+"WARNUNG:\x0aCrash Erkennung\x0adeaktiviert im\x0aStealth Modus"
 
 #
 ">Cancel"
@@ -936,7 +936,7 @@
 
 #MSG_SELFTEST_FAILED c=20
 "Selftest failed  "
-"Selbsttest misslung  "
+"Selbsttest misslang  "
 
 #MSG_FORCE_SELFTEST c=20 r=8
 "Selftest will be run to calibrate accurate sensorless rehoming."

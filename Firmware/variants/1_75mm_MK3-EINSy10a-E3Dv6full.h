@@ -2,12 +2,17 @@
 #define CONFIGURATION_PRUSA_H
 
 #include <limits.h>
+//-//
+#include "printers.h"
 /*------------------------------------
  GENERAL SETTINGS
  *------------------------------------*/
 
 // Printer revision
 #define PRINTER_TYPE PRINTER_MK3
+#define PRINTER_NAME PRINTER_MK3_NAME
+#define PRINTER_MMU_TYPE PRINTER_MK3_MMU2
+#define PRINTER_MMU_NAME PRINTER_MK3_MMU2_NAME
 #define FILAMENT_SIZE "1_75mm_MK3"
 #define NOZZLE_TYPE "E3Dv6full"
 

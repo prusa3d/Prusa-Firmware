@@ -8,10 +8,10 @@
 "[0;0] point offset"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
-"\x1b[2JCrash detection can\x1b[1;0Hbe turned on only in\x1b[2;0HNormal mode"
+"Crash detection can\x0abe turned on only in\x0aNormal mode"
 
 #MSG_CRASH_DET_STEALTH_FORCE_OFF c=20 r=4
-"\x1b[2JWARNING:\x1b[1;0HCrash detection\x1b[2;0Hdisabled in\x1b[3;0HStealth mode"
+"WARNING:\x0aCrash detection\x0adisabled in\x0aStealth mode"
 
 #
 ">Cancel"
