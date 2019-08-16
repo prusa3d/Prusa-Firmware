@@ -1354,7 +1354,7 @@ void lcd_commands()
 
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 
-        if (!blocks_queued() && cmd_buffer_empty())
+        if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
         {
             switch(lcd_commands_step)
             {
