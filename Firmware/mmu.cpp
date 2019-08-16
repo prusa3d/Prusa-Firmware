@@ -889,7 +889,7 @@ void mmu_M600_load_filament(bool automatic, float nozzle_temp)
     mmu_command(MmuCmd::T0 + tmp_extruder);
 
     manage_response(false, true, MMU_LOAD_MOVE);
-    mmu_continue_loading(is_usb_printing);
+    mmu_continue_loading(is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal));
     mmu_extruder = tmp_extruder; //filament change is finished
 
     mmu_load_to_nozzle();
