@@ -1354,42 +1354,46 @@ void lcd_commands()
 
 		if(lcd_commands_step>1) lcd_timeoutToStatus.start(); //if user dont confirm live adjust Z value by pressing the knob, we are saving last value by timeout to status screen
 
-        if (!blocks_queued() && cmd_buffer_empty())
+        if (!blocks_queued() && cmd_buffer_empty() && !saved_printing)
         {
             switch(lcd_commands_step)
             {
             case 0:
-                lcd_commands_step = 10;
+                lcd_commands_step = 11;
                 break;
             case 20:
                 filament = 0;
-                lcd_commands_step = 10;
+                lcd_commands_step = 11;
                 break;
             case 21:
                 filament = 1;
-                lcd_commands_step = 10;
+                lcd_commands_step = 11;
                 break;
             case 22:
                 filament = 2;
-                lcd_commands_step = 10;
+                lcd_commands_step = 11;
                 break;
             case 23:
                 filament = 3;
-                lcd_commands_step = 10;
+                lcd_commands_step = 11;
                 break;
             case 24:
                 filament = 4;
+                lcd_commands_step = 11;
+                break;
+            case 11:
+                lay1cal_preheat();
                 lcd_commands_step = 10;
                 break;
             case 10:
-                lay1cal_preheat();
+                lay1cal_load_filament(cmd1, filament);
                 lcd_commands_step = 9;
                 break;
             case 9:
                 lcd_clear();
                 menu_depth = 0;
                 menu_submenu(lcd_babystep_z);
-                lay1cal_intro_line(cmd1, filament);
+                lay1cal_intro_line();
                 lcd_commands_step = 8;
                 break;
             case 8:
