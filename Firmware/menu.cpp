@@ -184,10 +184,11 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
     lcd_printf_P(PSTR("%c%-18.18S%c"), menu_selection_mark(), str, type_char);
 }
 
-static void menu_draw_toggle_puts_P(const char* str, const char* toggle)
+static void menu_draw_toggle_puts_P(const char* str, char* toggle)
 {
-	menu_draw_item_puts_P(LCD_STR_REFRESH[0], str);
-	lcd_set_cursor(LCD_WIDTH - 4 - strlen_P(toggle), menu_row);
+	menu_draw_item_puts_P((toggle == NULL)?LCD_STR_ARROW_RIGHT[0]:LCD_STR_REFRESH[0], str);
+	if (toggle == NULL) toggle = _T(MSG_NA);
+	lcd_set_cursor(LCD_WIDTH - 3 - strlen_P(toggle), menu_row);
 	lcd_printf_P(PSTR("[%S]"), toggle);
 }
 
@@ -381,12 +382,20 @@ uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func
 		if (lcd_draw_update) menu_draw_toggle_puts_P(str, toggle);
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
-			menu_clicked = false;
-			lcd_consume_click();
-			lcd_update_enabled = 0;
-			if (func) func();
-			lcd_update_enabled = 1;
-			return menu_item_ret();
+			if (toggle == NULL) // print N/A warning message
+			{
+				menu_submenu(func);
+				return menu_item_ret();
+			}
+			else // do the actual toggling
+			{
+				menu_clicked = false;
+				lcd_consume_click();
+				lcd_update_enabled = 0;
+				if (func) func();
+				lcd_update_enabled = 1;
+				return menu_item_ret();
+			}
 		}
 	}
 	menu_item++;

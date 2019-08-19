@@ -481,7 +481,7 @@
 #MSG_NO_CARD
 "No SD card"
 
-#
+#MSG_NA
 "N/A"
 
 #MSG_NO

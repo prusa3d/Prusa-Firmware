@@ -642,9 +642,9 @@
 "No SD card"
 "No hay tarjeta SD"
 
-#
+#MSG_NA
 "N/A"
-"No disponible"
+"N/D"
 
 #MSG_NO
 "No"

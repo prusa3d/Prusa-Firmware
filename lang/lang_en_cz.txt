@@ -642,7 +642,7 @@
 "No SD card"
 "Zadna SD karta"
 
-#
+#MSG_NA
 "N/A"
 "\x00"
 

@@ -642,7 +642,7 @@
 "No SD card"
 "Nessuna SD"
 
-#
+#MSG_NA
 "N/A"
 "\x00"
 

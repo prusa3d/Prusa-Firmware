@@ -2970,7 +2970,7 @@ static void lcd_menu_xyz_y_min()
 	for (uint8_t i = 0; i < 2; i++)
 	{
 		lcd_set_cursor(11,2+i);
-		if (distanceMin[i] >= 200) lcd_puts_P(_N("N/A"));
+		if (distanceMin[i] >= 200) lcd_puts_P(_T(MSG_NA));
 		else lcd_printf_P(_N("%6.2fmm"), distanceMin[i]);
 	}
     if (lcd_clicked())
@@ -3010,7 +3010,7 @@ static void lcd_menu_xyz_skew()
 	}
 	else{
 		lcd_set_cursor(15,0);
-		lcd_puts_P(_N("N/A"));
+		lcd_puts_P(_T(MSG_NA));
 	}
     if (lcd_clicked())
         menu_goto(lcd_menu_xyz_offset, 0, true, true);
@@ -3910,13 +3910,13 @@ static void lcd_print_state(uint8_t state)
 {
 	switch (state) {
 		case STATE_ON:
-			lcd_puts_P(_i("  1"));
+			lcd_puts_P(_N("  1"));
 		break;
 		case STATE_OFF:
-			lcd_puts_P(_i("  0"));
+			lcd_puts_P(_N("  0"));
 		break;
 		default: 
-			lcd_puts_P(_i("N/A"));
+			lcd_puts_P(_T(MSG_NA));
 		break;
 	}
 }

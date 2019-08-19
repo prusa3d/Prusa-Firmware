@@ -642,7 +642,7 @@
 "No SD card"
 "Keine SD Karte"
 
-#
+#MSG_NA
 "N/A"
 "N.V."
 
