@@ -24,8 +24,9 @@ The reset of this explanation is devoted to `LANG_MODE==1`:
 #define _T(s) lang_get_translation(s)
 ```
 That explains the macros:
-- `_i` expands into `lang_get_translation((__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff" s; &__c[0];})))` . Note the two 0xff's in the beginning of the string.
-- `_T` expands into `lang_get_translation(s)` without the two 0xff's at the beginning.
+- `_i` expands into `lang_get_translation((__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff" s; &__c[0];})))` . Note the two 0xff's in the beginning of the string. `_i` allows for declaring a string directly inplace of C++ code, no string table is used. The downside of this approach is obvious - the compiler is not able/willing to merge duplicit strings into one.
+- `_T` expands into `lang_get_translation(s)` without the two 0xff's at the beginning. Must be used in conjunction with MSG tables in `messages.h`. Allows to declare a string only once and use many times.
+- `_N` means not-translated. These strings reside in a different segment of memory.
 
 The two 0xff's are somehow magically replaced by real string ID's where the translations are available (still don't know where).
 ```C++
