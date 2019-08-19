@@ -184,12 +184,11 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
     lcd_printf_P(PSTR("%c%-18.18S%c"), menu_selection_mark(), str, type_char);
 }
 
-static void menu_draw_toggle_puts_P(const char* str, char* toggle)
+static void menu_draw_toggle_puts_P(const char* str, const char* toggle)
 {
 	menu_draw_item_puts_P((toggle == NULL)?LCD_STR_ARROW_RIGHT[0]:LCD_STR_REFRESH[0], str);
-	if (toggle == NULL) toggle = _T(MSG_NA);
-	lcd_set_cursor(LCD_WIDTH - 3 - strlen_P(toggle), menu_row);
-	lcd_printf_P(PSTR("[%S]"), toggle);
+	lcd_set_cursor(LCD_WIDTH - 3 - strlen_P((toggle == NULL)?_T(MSG_NA):toggle), menu_row);
+	lcd_printf_P(PSTR("[%S]"), (toggle == NULL)?_T(MSG_NA):toggle);
 }
 
 //! @brief Format sheet name
