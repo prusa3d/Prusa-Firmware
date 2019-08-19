@@ -9607,7 +9607,6 @@ void uvlo_()
     st_synchronize();
 
     disable_e0();
-    disable_z();
     // Move Z up to the next 0th full step.
     // Write the file position.
     eeprom_update_dword((uint32_t*)(EEPROM_FILE_POSITION), sd_position);
@@ -9646,8 +9645,6 @@ void uvlo_()
 
     st_synchronize();
     printf_P(_N("stps%d\n"), tmc2130_rd_MSCNT(Z_AXIS));
-
-    disable_z();
     
     // Increment power failure counter
 	eeprom_update_byte((uint8_t*)EEPROM_POWER_COUNT, eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT) + 1);
@@ -9686,7 +9683,6 @@ tmc2130_set_current_r(Z_AXIS, 20);
 z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
 #endif //TMC2130
 planner_abort_hard();
-disable_z();
 
 //save current position only in case, where the printer is moving on Z axis, which is only when EEPROM_UVLO is 1
 //EEPROM_UVLO is 1 after normal uvlo or after recover_print(), when the extruder is moving on Z axis after rehome
@@ -10534,34 +10530,20 @@ if(!(bEnableForce_z||eeprom_read_byte((uint8_t*)EEPROM_SILENT)))
 
 void disable_force_z()
 {
-uint16_t z_microsteps=0;
+    uint16_t z_microsteps=0;
 
-if(!bEnableForce_z)
-     return;                                      // motor already disabled (may be ;-p )
-bEnableForce_z=false;
+    if(!bEnableForce_z) return;   // motor already disabled (may be ;-p )
 
-// alignment to full-step
+    bEnableForce_z=false;
+
+    // switching to silent mode
 #ifdef TMC2130
-z_microsteps=tmc2130_rd_MSCNT(Z_TMC2130_CS);
-#endif // TMC2130
-planner_abort_hard();
-sei();
-plan_buffer_line(
-     current_position[X_AXIS], 
-     current_position[Y_AXIS], 
-     current_position[Z_AXIS]+float((1024-z_microsteps+7)>>4)/cs.axis_steps_per_unit[Z_AXIS], 
-     current_position[E_AXIS],
-     40, active_extruder);
-st_synchronize();
-
-// switching to silent mode
-#ifdef TMC2130
-tmc2130_mode=TMC2130_MODE_SILENT;
-update_mode_profile();
-tmc2130_init(true);
+    tmc2130_mode=TMC2130_MODE_SILENT;
+    update_mode_profile();
+    tmc2130_init(true);
 #endif // TMC2130
 
-axis_known_position[Z_AXIS]=false; 
+    axis_known_position[Z_AXIS]=false;
 }
 
 
