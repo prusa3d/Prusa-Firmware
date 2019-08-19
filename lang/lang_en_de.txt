@@ -628,7 +628,7 @@
 
 #MSG_NA
 "N/A"
-"N.V."
+"N/V"
 
 #MSG_NO
 "No"
