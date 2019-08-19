@@ -270,17 +270,9 @@
 "Fail stats MMU"
 "Statistiche fallimenti MMU"
 
-#MSG_FSENS_AUTOLOAD_ON c=17 r=1
-"F. autoload  [on]"
-"Autocar.filam[on]"
-
-#MSG_FSENS_AUTOLOAD_NA c=17 r=1
-"F. autoload [N/A]"
-"Autocar.fil.[N/A]"
-
-#MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-"F. autoload [off]"
-"Autocar.fil.[off]"
+#MSG_FSENSOR_AUTOLOAD
+"F. autoload"
+"Autocar.filam"
 
 #
 "Fail stats"
@@ -298,17 +290,9 @@
 "Fans check"
 "Control.vent"
 
-#MSG_FSENSOR_ON
-"Fil. sensor  [on]"
-"Sensor filam.[On]"
-
-#MSG_FSENSOR_NA
-"Fil. sensor [N/A]"
-"Sensor filam[N/A]"
-
-#MSG_FSENSOR_OFF
-"Fil. sensor [off]"
-"Sensor filam[off]"
+#MSG_FSENSOR
+"Fil. sensor"
+"Sensor filam."
 
 #
 "Filam. runouts"

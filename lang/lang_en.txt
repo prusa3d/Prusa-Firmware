@@ -202,14 +202,8 @@
 #
 "Fail stats MMU"
 
-#MSG_FSENS_AUTOLOAD_ON c=17 r=1
-"F. autoload  [on]"
-
-#MSG_FSENS_AUTOLOAD_NA c=17 r=1
-"F. autoload [N/A]"
-
-#MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-"F. autoload [off]"
+#MSG_FSENSOR_AUTOLOAD
+"F. autoload"
 
 #
 "Fail stats"
@@ -223,14 +217,8 @@
 #MSG_FANS_CHECK
 "Fans check"
 
-#MSG_FSENSOR_ON
-"Fil. sensor  [on]"
-
-#MSG_FSENSOR_NA
-"Fil. sensor [N/A]"
-
-#MSG_FSENSOR_OFF
-"Fil. sensor [off]"
+#MSG_FSENSOR
+"Fil. sensor"
 
 #
 "Filam. runouts"

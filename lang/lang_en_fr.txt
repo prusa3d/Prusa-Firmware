@@ -270,17 +270,9 @@
 "Fail stats MMU"
 "Stat. echecs MMU"
 
-#MSG_FSENS_AUTOLOAD_ON c=17 r=1
-"F. autoload  [on]"
-"ChargAuto f. [on]"
-
-#MSG_FSENS_AUTOLOAD_NA c=17 r=1
-"F. autoload [N/A]"
-"AutoCharg F [N/A]"
-
-#MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-"F. autoload [off]"
-"AutoCharg F [off]"
+#MSG_FSENSOR_AUTOLOAD
+"F. autoload"
+"Charg.auto.F."
 
 #
 "Fail stats"
@@ -298,17 +290,9 @@
 "Fans check"
 "Verif ventilo"
 
-#MSG_FSENSOR_ON
-"Fil. sensor  [on]"
-"Capteur Fil. [on]"
-
-#MSG_FSENSOR_NA
-"Fil. sensor [N/A]"
-"Capteur Fil. [N/A]"
-
-#MSG_FSENSOR_OFF
-"Fil. sensor [off]"
-"Capteur Fil.[off]"
+#MSG_FSENSOR
+"Fil. sensor"
+"Capteur Fil."
 
 #
 "Filam. runouts"

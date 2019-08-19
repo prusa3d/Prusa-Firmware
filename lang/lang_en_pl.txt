@@ -270,17 +270,9 @@
 "Fail stats MMU"
 "Bledy MMU"
 
-#MSG_FSENS_AUTOLOAD_ON c=17 r=1
-"F. autoload  [on]"
-"Autolad. fil [wl]"
-
-#MSG_FSENS_AUTOLOAD_NA c=17 r=1
-"F. autoload [N/A]"
-"Autolad.fil.[N/D]"
-
-#MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-"F. autoload [off]"
-"Autolad.fil.[wyl]"
+#MSG_FSENSOR_AUTOLOAD
+"F. autoload"
+"Autolad. fil."
 
 #
 "Fail stats"
@@ -298,17 +290,9 @@
 "Fans check"
 "Sprawd.went."
 
-#MSG_FSENSOR_ON
-"Fil. sensor  [on]"
-"Czuj. filam. [wl]"
-
-#MSG_FSENSOR_NA
-"Fil. sensor [N/A]"
-"Czuj. filam.[N/D]"
-
-#MSG_FSENSOR_OFF
-"Fil. sensor [off]"
-"Czuj. filam.[wyl]"
+#MSG_FSENSOR
+"Fil. sensor"
+"Czuj. filam."
 
 #
 "Filam. runouts"

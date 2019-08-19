@@ -270,17 +270,9 @@
 "Fail stats MMU"
 "Selhani MMU"
 
-#MSG_FSENS_AUTOLOAD_ON c=17 r=1
-"F. autoload  [on]"
-"F. autozav. [zap]"
-
-#MSG_FSENS_AUTOLOAD_NA c=17 r=1
-"F. autoload [N/A]"
-"F. autozav. [N/A]"
-
-#MSG_FSENS_AUTOLOAD_OFF c=17 r=1
-"F. autoload [off]"
-"F. autozav. [vyp]"
+#MSG_FSENSOR_AUTOLOAD
+"F. autoload"
+"F. autozav."
 
 #
 "Fail stats"
@@ -298,17 +290,9 @@
 "Fans check"
 "Kontr. vent."
 
-#MSG_FSENSOR_ON
-"Fil. sensor  [on]"
-"Fil. senzor [zap]"
-
-#MSG_FSENSOR_NA
-"Fil. sensor [N/A]"
-"Fil. senzor [N/A]"
-
-#MSG_FSENSOR_OFF
-"Fil. sensor [off]"
-"Fil. senzor [vyp]"
+#MSG_FSENSOR
+"Fil. sensor"
+"Fil. senzor"
 
 #
 "Filam. runouts"
