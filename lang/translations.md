@@ -13,6 +13,7 @@ The reset of this explanation is devoted to `LANG_MODE==1`:
 
 `language.h`:
 ```C++
+// section .loc_sec (originaly .progmem0) will be used for localized translated strings
 #define PROGMEM_I2 __attribute__((section(".loc_sec")))
 // section .loc_pri (originaly .progmem1) will be used for localized strings in english
 #define PROGMEM_I1 __attribute__((section(".loc_pri")))
