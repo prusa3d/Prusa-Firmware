@@ -7,6 +7,40 @@
 - export PO files for translation: `lang-export.sh`
 - when translators finish their work use `lang-import.sh`
 
+## Code / usage
+There are 2 modes of operation. If `LANG_MODE==0`, only one language is being used (the default compilation approach from plain Arduino IDE).
+The reset of this explanation is devoted to `LANG_MODE==1`:
+
+`language.h`:
+```C++
+#define PROGMEM_I2 __attribute__((section(".loc_sec")))
+// section .loc_pri (originaly .progmem1) will be used for localized strings in english
+#define PROGMEM_I1 __attribute__((section(".loc_pri")))
+// section .noloc (originaly progmem2) will be used for not localized strings in english
+#define PROGMEM_N1 __attribute__((section(".noloc")))
+#define _I(s) (__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff" s; &__c[0];}))
+#define ISTR(s) "\xff\xff" s
+#define _i(s) lang_get_translation(_I(s))
+#define _T(s) lang_get_translation(s)
+```
+That explains the macros:
+- `_i` expands into `lang_get_translation((__extension__({static const char __c[] PROGMEM_I1 = "\xff\xff" s; &__c[0];})))` . Note the two 0xff's in the beginning of the string.
+- `_T` expands into `lang_get_translation(s)` without the two 0xff's at the beginning.
+
+The two 0xff's are somehow magically replaced by real string ID's where the translations are available (still don't know where).
+```C++
+const char* lang_get_translation(const char* s){
+	if (lang_selected == 0) return s + 2; //primary language selected, return orig. str.
+	if (lang_table == 0) return s + 2; //sec. lang table not found, return orig. str.
+	uint16_t ui = pgm_read_word(((uint16_t*)s)); //read string id
+	if (ui == 0xffff) return s + 2; //translation not found, return orig. str.
+	ui = pgm_read_word(((uint16_t*)(((char*)lang_table + 16 + ui*2)))); //read relative offset
+	if (pgm_read_byte(((uint8_t*)((char*)lang_table + ui))) == 0) //read first character
+		return s + 2;//zero length string == not translated, return orig. str.
+	return (const char*)((char*)lang_table + ui); //return calculated pointer
+}
+```
+
 ## Files
 
 ### `lang_en.txt`
