@@ -58,16 +58,8 @@ uint8_t SilentModeMenu_MMU = 1; //activate mmu unit stealth mode
 
 int8_t FSensorStateMenu = 1;
 
-int8_t CrashDetectMenu = 1;
-
-
 extern bool fsensor_enable();
 extern void fsensor_disable();
-
-#ifdef TMC2130
-extern void crashdet_enable();
-extern void crashdet_disable();
-#endif //TMC2130
 
 
 #ifdef SDCARD_SORT_ALPHA
@@ -4448,24 +4440,25 @@ static void lcd_silent_mode_set() {
 #endif //TMC2130
   st_current_init();
 #ifdef TMC2130
-  if (CrashDetectMenu && (SilentModeMenu != SILENT_MODE_NORMAL))
+  if (lcd_crash_detect_enabled() && (SilentModeMenu != SILENT_MODE_NORMAL))
 	  menu_submenu(lcd_crash_mode_info2);
   lcd_encoder_diff=0;                             // reset 'encoder buffer'
 #endif //TMC2130
 }
 
 #ifdef TMC2130
-static void lcd_crash_mode_set()
+static void crash_mode_switch()
 {
-	CrashDetectMenu = !CrashDetectMenu; //set also from crashdet_enable() and crashdet_disable()
-    if (CrashDetectMenu==0) {
-        crashdet_disable();
-    }else{
-        crashdet_enable();
+    if (lcd_crash_detect_enabled())
+    {
+        lcd_crash_detect_disable();
+    }
+    else
+    {
+        lcd_crash_detect_enable();
     }
 	if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal)) menu_goto(lcd_tune_menu, 9, true, true);
 	else menu_goto(lcd_settings_menu, 9, true, true);
-    
 }
 #endif //TMC2130
  
@@ -5179,11 +5172,11 @@ do\
         else MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_ON), lcd_silent_mode_set);\
         if (SilentModeMenu == SILENT_MODE_NORMAL)\
         {\
-            if (CrashDetectMenu == 0)\
+            if (lcd_crash_detect_enabled())\
             {\
-                MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_OFF), lcd_crash_mode_set);\
+                MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_ON), crash_mode_switch);\
             }\
-            else MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_ON), lcd_crash_mode_set);\
+            else MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_OFF), crash_mode_switch);\
         }\
         else MENU_ITEM_SUBMENU_P(_T(MSG_CRASHDETECT_NA), lcd_crash_mode_info);\
     }\
@@ -6903,8 +6896,8 @@ static void lcd_tune_menu()
 
           if (SilentModeMenu == SILENT_MODE_NORMAL)
           {
-               if (CrashDetectMenu == 0) MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_OFF), lcd_crash_mode_set);
-               else MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_ON), lcd_crash_mode_set);
+               if (lcd_crash_detect_enabled()) MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_ON), crash_mode_switch);
+               else MENU_ITEM_FUNCTION_P(_T(MSG_CRASHDETECT_OFF), crash_mode_switch);
           }
           else MENU_ITEM_SUBMENU_P(_T(MSG_CRASHDETECT_NA), lcd_crash_mode_info);
      }
@@ -8645,3 +8638,27 @@ void menu_lcd_lcdupdate_func(void)
 	lcd_send_status();
 	if (lcd_commands_type == LcdCommands::Layer1Cal) lcd_commands();
 }
+
+#ifdef TMC2130
+//! @brief Is crash detection enabled?
+//!
+//! @retval true crash detection enabled
+//! @retval false crash detection disabled
+bool lcd_crash_detect_enabled()
+{
+    return eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
+}
+
+void lcd_crash_detect_enable()
+{
+    tmc2130_sg_stop_on_crash = true;
+    eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0xFF);
+}
+
+void lcd_crash_detect_disable()
+{
+    tmc2130_sg_stop_on_crash = false;
+    tmc2130_sg_crash = 0;
+    eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00);
+}
+#endif
