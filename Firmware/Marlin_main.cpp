@@ -613,7 +613,7 @@ void crashdet_detected(uint8_t mask)
 void crashdet_recover()
 {
 	crashdet_restore_print_and_continue();
-	tmc2130_sg_stop_on_crash = true;
+	if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
 }
 
 void crashdet_cancel()
