@@ -4,7 +4,19 @@
 #  for importing translated xx.po
 
 LNG=$1
-if [ -z "$LNG" ]; then exit -1; fi
+# if no arguments, 'all' is selected (all po and also pot will be generated)
+if [ -z "$LNG" ]; then LNG=all; fi
+
+# if 'all' is selected, script will generate all po files and also pot file
+if [ "$LNG" = "all" ]; then
+ ./lang-import.sh cz
+ ./lang-import.sh de
+ ./lang-import.sh es
+ ./lang-import.sh fr
+ ./lang-import.sh it
+ ./lang-import.sh pl
+ exit 0
+fi
 
 # language code (iso639-1) is equal to LNG
 LNGISO=$LNG
@@ -28,43 +40,43 @@ sed -i 's/ \\n/ /g;s/\\n/ /g' $LNG'_filtered.po'
 
 #replace in czech translation
 if [ "$LNG" = "cz" ]; then
- #replace 'ž' with 'z'
+ #replace 'Å¾' with 'z'
  sed -i 's/\xc5\xbe/z/g' $LNG'_filtered.po'
- #replace 'ì' with 'e'
+ #replace 'Ã¬' with 'e'
  sed -i 's/\xc4\x9b/e/g' $LNG'_filtered.po'
- #replace 'í' with 'i'
+ #replace 'Ã­' with 'i'
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
- #replace 'ø' with 'r'
+ #replace 'Ã¸' with 'r'
  sed -i 's/\xc5\x99/r/g' $LNG'_filtered.po'
- #replace 'è' with 'c'
+ #replace 'Ã¨' with 'c'
  sed -i 's/\xc4\x8d/c/g' $LNG'_filtered.po'
- #replace 'á' with 'a'
+ #replace 'Ã¡' with 'a'
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
 #replace in german translation
 if [ "$LNG" = "de" ]; then
- #replace 'ä' with 'ae'
+ #replace 'Ã¤' with 'ae'
  sed -i 's/\xc3\xa4/ae/g' $LNG'_filtered.po'
- #replace 'ü' with 'ue'
+ #replace 'Ã¼' with 'ue'
  sed -i 's/\xc3\xbc/ue/g' $LNG'_filtered.po'
- #replace 'ö' with 'oe'
+ #replace 'Ã¶' with 'oe'
  sed -i 's/\xc3\xb6/oe/g' $LNG'_filtered.po'
 fi
 
 #replace in spain translation
 if [ "$LNG" = "es" ]; then
- #replace 'á' with 'a'
+ #replace 'Ã¡' with 'a'
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
  #replace '?' with '?'
  sed -i 's/\xc2\xbf/?/g' $LNG'_filtered.po'
- #replace 'ó' with 'o'
+ #replace 'Ã³' with 'o'
  sed -i 's/\xc3\xb3/o/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace 'í' with 'i'
+ #replace 'Ã­' with 'i'
  sed -i 's/\xc3\xad/i/g' $LNG'_filtered.po'
  #replace '!' with '!'
  sed -i 's/\xc2\xa1/!/g' $LNG'_filtered.po'
@@ -74,29 +86,29 @@ fi
 
 #replace in french translation
 if [ "$LNG" = "fr" ]; then
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace 'É' with 'E'
+ #replace 'Ã‰' with 'E'
  sed -i 's/\xc3\x89/E/g' $LNG'_filtered.po'
- #replace 'é' with 'e' (left)
+ #replace 'Ã©' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace 'á' with 'a' (left)
+ #replace 'Ã¡' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
 fi
 
 #replace in italian translation
 if [ "$LNG" = "it" ]; then
- #replace 'é' with 'e' (left)
+ #replace 'Ã©' with 'e' (left)
  sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace 'á' with 'a' (left)
+ #replace 'Ã¡' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
- #replace 'ó' with 'o' (left)
+ #replace 'Ã³' with 'o' (left)
  sed -i 's/\xc3\xb2/o/g' $LNG'_filtered.po'
- #replace 'ú' with 'u' (left)
+ #replace 'Ãº' with 'u' (left)
  sed -i 's/\xc3\xb9/u/g' $LNG'_filtered.po'
- #replace 'é' with 'e'
+ #replace 'Ã©' with 'e'
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace 'É' with 'E' (left)
+ #replace 'Ã‰' with 'E' (left)
  sed -i 's/\xc3\x88/E/g' $LNG'_filtered.po'
 fi
 
