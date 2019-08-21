@@ -1826,6 +1826,12 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 
 static void lcd_menu_fails_stats_mmu()
 {
+//|01234567890123456789|
+//| Main               | c=18
+//| Last print         | c=18
+//| Total              | c=18
+//|                    |
+//----------------------
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_mmu_print);
@@ -1835,12 +1841,12 @@ static void lcd_menu_fails_stats_mmu()
 
 static void lcd_menu_fails_stats_mmu_print()
 {
-//01234567890123456789
-//Last print failures
-// MMU fails  000
-// MMU load fails  000
-//
-//////////////////////
+//|01234567890123456789|
+//|Last print failures | c=20
+//| MMU fails:      000| c=15
+//| MMU load fails: 000| c=15
+//|                    |
+//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
@@ -1851,12 +1857,12 @@ static void lcd_menu_fails_stats_mmu_print()
 
 static void lcd_menu_fails_stats_mmu_total()
 {
-//01234567890123456789
-//Last print failures
-// MMU fails  000
-// MMU load fails  000
-//
-//////////////////////
+//|01234567890123456789|
+//|Total failures      | c=20
+//| MMU fails:      000| c=15
+//| MMU load fails: 000| c=15
+//| MMU power fails:000| c=15
+//----------------------
 	mmu_command(MmuCmd::S3);
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
@@ -1869,12 +1875,12 @@ static void lcd_menu_fails_stats_mmu_total()
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
 static void lcd_menu_fails_stats_total()
 {
-//01234567890123456789
-//Total failures
-// Power failures  000
-// Filam. runouts  000
-// Crash  X 000  Y 000
-//////////////////////
+//|01234567890123456789|
+//|Last print failures | c=20
+//| Power failures: 000| c=14
+//| Filam. runouts: 000| c=14
+//| Crash   X:000 Y:000| c=7 for Crash
+//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint16_t power = eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
@@ -1887,12 +1893,12 @@ static void lcd_menu_fails_stats_total()
 
 static void lcd_menu_fails_stats_print()
 {
-//01234567890123456789
-//Last print failures
-// Power failures  000
-// Filam. runouts  000
-// Crash  X 000  Y 000
-//////////////////////
+//|01234567890123456789|
+//|Last print failures | c=20
+//| Power failures: 000| c=14
+//| Filam. runouts: 000| c=14
+//| Crash   X:000 Y:000| c=7 for Crash
+//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t power = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
     uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
@@ -1912,6 +1918,12 @@ static void lcd_menu_fails_stats_print()
  */
 static void lcd_menu_fails_stats()
 {
+//|01234567890123456789|
+//| Main               | c=18
+//| Last print         | c=18
+//| Total              | c=18
+//|                    |
+//----------------------
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
 	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_print);
@@ -1937,6 +1949,12 @@ static void lcd_menu_fails_stats()
  */
 static void lcd_menu_fails_stats()
 {
+//|01234567890123456789|
+//|Last print failures | c=20
+//| Filam. runouts: 000| c=15
+//|Total failures      | c=20
+//| Filam. runouts: 000| c=15
+//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
@@ -1947,6 +1965,11 @@ static void lcd_menu_fails_stats()
 #else
 static void lcd_menu_fails_stats()
 {
+//|01234567890123456789|
+//| Main               | c=18
+//|                    |
+//|                    |
+//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
@@ -1964,6 +1987,12 @@ extern char* __malloc_heap_end;
 
 static void lcd_menu_debug()
 {
+//|01234567890123456789|
+//|RAM statistics      | c=20
+//| SP_min:        0000| c=14
+//| heap_start:    0000| c=14
+//| heap_end:      0000| c=14
+//----------------------
 #ifdef DEBUG_STACK_MONITOR
 	lcd_home();
 	lcd_printf_P(PSTR("RAM statistics\n" " SP_min: 0x%04x\n" " heap_start: 0x%04x\n" " heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
@@ -1975,6 +2004,12 @@ static void lcd_menu_debug()
 
 static void lcd_menu_temperatures()
 {
+//|01234567890123456789|
+//| Nozzle:        000°| c=14
+//| Bed:           000°| c=14
+//| Ambient:       000°| c=14
+//| PINDA:         000°| c=14
+//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	lcd_home();
 	lcd_printf_P(PSTR(" %S:   %d%c \n" " %S:      %d%c \n"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
@@ -1994,6 +2029,12 @@ static void lcd_menu_temperatures()
 #define VOLT_DIV_REF 5
 static void lcd_menu_voltages()
 {
+//|01234567890123456789|
+//|                    |
+//| PWR:         00.0V | c=12
+//| Bed:         00.0V | c=12
+//|                    | 
+//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
@@ -2006,6 +2047,12 @@ static void lcd_menu_voltages()
 #ifdef TMC2130
 static void lcd_menu_belt_status()
 {
+//|01234567890123456789|
+//| Belt status        | c=19
+//|  X:            000 | c=13
+//|  Y:            000 | c=13
+//|                    | 
+//----------------------
 	lcd_home();
     lcd_printf_P(PSTR("%S\n" " X %d\n" " Y %d"), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
     menu_back_if_clicked();
@@ -2827,6 +2874,12 @@ void lcd_menu_statistics()
 {
 	if (IS_SD_PRINTING)
 	{
+	//|01234567890123456789|
+	//|Filament used:      | c=19
+	//|    0000.00m        |
+	//|Print time:         | c=19
+	//|    00h : 00m : 00s | 
+	//----------------------
 		const float _met = ((float)total_filament_used) / (100000.f);
 		const uint32_t _t = (_millis() - starttime) / 1000ul;
 		const int _h = _t / 3600;
@@ -2844,6 +2897,12 @@ void lcd_menu_statistics()
 	}
 	else
 	{
+	//|01234567890123456789|
+	//|Total filament:     | c=19
+	//|    0000.00m        |
+	//|Total print time    | c=19
+	//|    00d : 00h : 00m | 
+	//----------------------
 		unsigned long _filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED);
 		unsigned long _time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME); //in minutes
 		uint8_t _hours, _minutes;
@@ -2952,10 +3011,10 @@ static void lcd_move_e()
 static void lcd_menu_xyz_y_min()
 {
 //|01234567890123456789|
-//|Y distance from min:|
+//|Y distance from min | c=19
 //|--------------------|
-//|Left:      N/A      |
-//|Right:     N/A      |
+//|Left:       00.00mm | c=10
+//|Right:      00.00mm | c=10
 //----------------------
 	float distanceMin[2];
     count_xyz_details(distanceMin);
@@ -3024,6 +3083,12 @@ static void lcd_menu_xyz_skew()
  */
 static void lcd_menu_xyz_offset()
 {
+//|01234567890123456789|
+//|[0;0] point offset  | c=20
+//|--------------------|
+//|X:          000.00mm| c=10
+//|Y:          000.00mm| c=10
+//----------------------
     lcd_set_cursor(0,0);
     lcd_puts_P(_i("[0;0] point offset"));////MSG_MEASURED_OFFSET
     lcd_puts_at_P(0, 1, separator);
