@@ -56,21 +56,29 @@ if [ "$LNG" = "cz" ]; then
  sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
 fi
 
-#replace in german translation
+#replace in german translation https://en.wikipedia.org/wiki/German_orthography
 if [ "$LNG" = "de" ]; then
  #replace 'ä' with 'ae'
  sed -i 's/\xc3\xa4/ae/g' $LNG'_filtered.po'
+ #replace 'Ä' with 'Ae'
+ sed -i 's/\xc3\x84/Ae/g' $LNG'_filtered.po'
  #replace 'ü' with 'ue'
  sed -i 's/\xc3\xbc/ue/g' $LNG'_filtered.po'
+ #replace 'Ü' with 'Ue'
+ sed -i 's/\xc3\x9c/Ue/g' $LNG'_filtered.po'
  #replace 'ö' with 'oe'
  sed -i 's/\xc3\xb6/oe/g' $LNG'_filtered.po'
+ #replace 'Ö' with 'Oe'
+ sed -i 's/\xc3\x96/Oe/g' $LNG'_filtered.po'
+ #replace 'ß' with 'ss'
+ sed -i 's/\xc3\x9f/ss/g' $LNG'_filtered.po'
 fi
 
 #replace in spain translation
 if [ "$LNG" = "es" ]; then
  #replace 'á' with 'a'
  sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
- #replace '?' with '?'
+ #replace '¿' with '?'
  sed -i 's/\xc2\xbf/?/g' $LNG'_filtered.po'
  #replace 'ó' with 'o'
  sed -i 's/\xc3\xb3/o/g' $LNG'_filtered.po'
@@ -84,16 +92,24 @@ if [ "$LNG" = "es" ]; then
  sed -i 's/\xc3\xb1/n/g' $LNG'_filtered.po'
 fi
 
-#replace in french translation
+#replace in french translation https://en.wikipedia.org/wiki/French_orthography
 if [ "$LNG" = "fr" ]; then
- #replace 'é' with 'e'
- sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
- #replace 'É' with 'E'
- sed -i 's/\xc3\x89/E/g' $LNG'_filtered.po'
- #replace 'é' with 'e' (left)
- sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
- #replace 'á' with 'a' (left)
+ #replace 'á' with 'a' (right)
+ sed -i 's/\xc3\xa1/a/g' $LNG'_filtered.po'
+ #replace 'Á' with 'A' (right)
+ sed -i 's/\xc3\x81/A/g' $LNG'_filtered.po'
+ #replace 'à' with 'a' (left)
  sed -i 's/\xc3\xa0/a/g' $LNG'_filtered.po'
+ #replace 'À' with 'A' (left)
+ sed -i 's/\xc3\x80/A/g' $LNG'_filtered.po'
+ #replace 'é' with 'e' (right)
+ sed -i 's/\xc3\xa9/e/g' $LNG'_filtered.po'
+ #replace 'É' with 'E' (right)
+ sed -i 's/\xc3\x89/E/g' $LNG'_filtered.po'
+ #replace 'è' with 'e' (left)
+ sed -i 's/\xc3\xa8/e/g' $LNG'_filtered.po'
+ #replace 'È' with 'E' (left)
+ sed -i 's/\xc3\x88/E/g' $LNG'_filtered.po'
 fi
 
 #replace in italian translation
