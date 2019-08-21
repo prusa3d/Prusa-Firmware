@@ -524,24 +524,6 @@ bool fans_check_enabled = true;
 
 #ifdef TMC2130
 
-extern int8_t CrashDetectMenu;
-
-void crashdet_enable()
-{
-	tmc2130_sg_stop_on_crash = true;
-	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0xFF); 
-	CrashDetectMenu = 1;
-
-}
-
-void crashdet_disable()
-{
-	tmc2130_sg_stop_on_crash = false;
-	tmc2130_sg_crash = 0;
-	eeprom_update_byte((uint8_t*)EEPROM_CRASH_DET, 0x00); 
-	CrashDetectMenu = 0;
-}
-
 void crashdet_stop_and_save_print()
 {
 	stop_and_save_print_to_ram(10, -default_retraction); //XY - no change, Z 10mm up, E -1mm retract
@@ -631,7 +613,7 @@ void crashdet_detected(uint8_t mask)
 void crashdet_recover()
 {
 	crashdet_restore_print_and_continue();
-	tmc2130_sg_stop_on_crash = true;
+	if (lcd_crash_detect_enabled()) tmc2130_sg_stop_on_crash = true;
 }
 
 void crashdet_cancel()
@@ -1262,15 +1244,15 @@ void setup()
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
 	if (silentMode == 0xff) silentMode = 0;
 	tmc2130_mode = TMC2130_MODE_NORMAL;
-	uint8_t crashdet = eeprom_read_byte((uint8_t*)EEPROM_CRASH_DET);
-	if (crashdet && !farm_mode)
+
+	if (lcd_crash_detect_enabled() && !farm_mode)
 	{
-		crashdet_enable();
+		lcd_crash_detect_enable();
 	    puts_P(_N("CrashDetect ENABLED!"));
 	}
 	else
 	{
-		crashdet_disable();
+	    lcd_crash_detect_disable();
 	    puts_P(_N("CrashDetect DISABLED"));
 	}
 
