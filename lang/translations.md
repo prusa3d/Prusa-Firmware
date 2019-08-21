@@ -2,10 +2,43 @@
 
 ## Workflow
 
-- Build firmware using build.sh. That creates necessary files in the `lang` dir.
-- add messages that are new: investigate not-tran.txt, copy selected strings into `lang_add.txt` and run lang-add.sh
-- export PO files for translation: `lang-export.sh`
-- when translators finish their work use `lang-import.sh`
+- Build firmware
+  - using `build.sh`
+  - using `PF-build.sh` with a `break` before `# build languages`
+- change to `lang` folder
+- check if lang scripts being able to run with `config.sh`
+  - if you get `Arduino main folder: NG` message change in `config.sh` `export ARDUINO=C:/arduino-1.8.5` to `export ARDUINO=<Path to your Arduino IDE folder>`
+    -example: `export ARDUINO=D:/Github/Prusa-Firmware/PF-build-env-1.0.6/windows-64`
+- run `lang-build.sh en` to create english `lang_en.tmp`, `lang_en.dat` and `lang_en.bin` files
+- change in `fw-build.sh` `IGNORE_MISSING_TEXT=1` to `IGNORE_MISSING_TEXT=0` so it stops with error and generates `not_used.txt` and `not_tran.txt`
+- run modified `fw-build.sh`
+  - `not_tran.txt` should be reviewed and added as these are potential missing translations
+    - copy `not_tran.txt` as `lang_add.txt` 
+	  - check if there are things you don't want to translate or must be modifed
+	  - als check that the strings do not start with `spaces` as the scripts doesn't handle these well at this moment.
+	  - run `lang-add.sh lang_add.txt` to add the missing translations to `lang_en.txt` and `lang_en_??.txt`
+  - `not_used.txt` should only contain mesages that aren't used in this variant like MK2.5 vs MK3
+- run `fw-clean.sh` to cleanup firmware related files
+- delete `not_used.txt` and `not_tran.txt`
+- run `lang-clean.sh` to cleanup language related files
+- run `lang-export.sh all` to create PO files for translation these are stored in `/lang/po` folder
+  - Send them to translators and reviewers or
+  - copy these to `/lang/po/new` and 
+  - translate these with POEdit the newly added messages
+    - easiest way is to choose `Validate`in POEdit as it shows you `errors` and the `missing transalations` / most likely the newly added at the top.
+- The new translated files are expected in `/lang/po/new` folder so store the received files these
+- run `lang-import.sh <language code (iso639-1)>` for each newly translated language
+  - script improvement to import "all" and other things would be great.
+- Double check if something is missing or faulty
+  - run `lang-build.sh` to to create `lang_en.tmp/.dat/.bin` and `lang_en_??.tmp/.dat/.bin` files
+  - run `fw-build.sh` and check if there are still some messages in `not_tran.txt` that need attention
+- After approval
+  - run `fw-clean.sh` to cleanup firmware related files
+  - run `lang-clean.sh` to cleanup language related files
+  - change in `fw-build.sh` back to `IGNORE_MISSING_TEXT=1`
+  - remove `break` from `PF-build.sh` script if that has been modified
+  - build your firmware with `build.sh`, `PF-build.sh` or how you normally do it.
+  - Check/Test firmware on printer
 
 ## Code / usage
 There are 2 modes of operation. If `LANG_MODE==0`, only one language is being used (the default compilation approach from plain Arduino IDE).
@@ -65,7 +98,8 @@ const char* lang_get_translation(const char* s){
 A simple list of strings that are not translated yet.
 
 ### `not_used.txt`
-A list os strings not currently used in the firmware. May be removed from `lang_en_*.txt` files by hand.
+A list os strings not currently used in this variant of the firmware or are obsolete.
+Example: There are MK2.5 specific messages that aren't used when you compile a MK3 variant and vice versa. So be carefull and double check the code if this message is obsolete or just not used due to the chosen variant.
 
 ## Scripts
 
@@ -138,7 +172,25 @@ Removes all language output files from lang folder. That means deleting:
 Exports PO (gettext) for external translators.
 
 ### `lang-import.sh`
-Import from PO
+Import from PO.
+
+Arguments:
+- `$1` : language code (`en`, `cz`, `de`, `es`, `fr`, `it`, `pl`)
+- empty/no arguments quits the script
+
+Input files: `<language code>.po` files like `de.po`, `es.po`, etc.
+
+Input folder: ´/lang/po/new´
+
+Output files:
+
+Output foler: ´/lang/po/new´
+
+Needed improments to scrpit:
+ - add `all` argument
+ - update `replace in <language> translations` to all known special characters the LCD display with Japanese ROM cannot display
+ - move `lang_en_<language code>.txt` to folder `/lang`
+ - cleanup `<language code>_filtered.po`, `<language code>_new.po` and `nonasci.txt`
 
 ### `progmem.sh`
 

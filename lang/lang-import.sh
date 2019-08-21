@@ -4,7 +4,19 @@
 #  for importing translated xx.po
 
 LNG=$1
-if [ -z "$LNG" ]; then exit -1; fi
+# if no arguments, 'all' is selected (all po and also pot will be generated)
+if [ -z "$LNG" ]; then LNG=all; fi
+
+# if 'all' is selected, script will generate all po files and also pot file
+if [ "$LNG" = "all" ]; then
+ ./lang-import.sh cz
+ ./lang-import.sh de
+ ./lang-import.sh es
+ ./lang-import.sh fr
+ ./lang-import.sh it
+ ./lang-import.sh pl
+ exit 0
+fi
 
 # language code (iso639-1) is equal to LNG
 LNGISO=$LNG
