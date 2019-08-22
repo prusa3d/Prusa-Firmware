@@ -140,7 +140,14 @@ void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate
 // Get the position applying the bed level matrix if enabled
 vector_3 plan_get_position();
 #else
-void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, const uint8_t &extruder);
+
+/// Extracting common call of 
+/// plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[3], ...
+/// saves almost 5KB.
+/// The performance penalty is negligible, since these planned lines are usually maintenance moves with the extruder.
+void plan_buffer_line_curposXYZE(float feed_rate, uint8_t extruder);
+
+void plan_buffer_line(float x, float y, float z, const float &e, float feed_rate, uint8_t extruder);
 //void plan_buffer_line(const float &x, const float &y, const float &z, const float &e, float feed_rate, const uint8_t &extruder);
 #endif // ENABLE_AUTO_BED_LEVELING
 
