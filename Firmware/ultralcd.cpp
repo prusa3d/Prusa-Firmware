@@ -869,18 +869,23 @@ void lcdui_print_status_line(void)
 			lcd_print(' ');
 }
 
+//! @brief Show Status Screen
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |N 000/000D  Z000.0  |
+//! |B 000/000D  F100%   |
+//! |USB100% T0  t--:--  |
+//! |Status line.........|
+//! ----------------------
+//! N - nozzle temp symbol	LCD_STR_THERMOMETER
+//! D - Degree sysmbol		LCD_STR_DEGREE
+//! B - bed temp symbol 	LCD_STR_BEDTEMP
+//! F - feedrate symbol 	LCD_STR_FEEDRATE
+//! t - clock symbol 		LCD_STR_THERMOMETER
+//! @endcode
 void lcdui_print_status_screen(void)
 {
-//|01234567890123456789|
-//|N 000/000D  Z000.0  |
-//|B 000/000D  F100%   |
-//|USB100% T0  t--:--  |
-//|Status line.........|
-//----------------------
-//N - nozzle temp symbol LCD_STR_THERMOMETER
-//B - bed temp symbol LCD_STR_BEDTEMP
-//F - feedrate symbol LCD_STR_FEEDRATE
-//t - clock symbol LCD_STR_THERMOMETER
 
     lcd_set_cursor(0, 0); //line 0
 
@@ -1767,14 +1772,18 @@ static void lcd_cooldown()
 }
 
 
+//! @brief Show Extruder Info
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Nozzle FAN: 0000 RPM|	FAN c=10 r=1  SPEED c=3 r=1
+//! |Print FAN:  0000 RPM|	FAN c=10 r=1  SPEED c=3 r=1
+//! |Fil. Xd:000 Yd:000  |	Fil. c=4 r=1
+//! |Int:  000 Shut: 000 |	Int: c=4 r=1  Shut: c=4 r=1
+//! ----------------------
+//! @endcode
 void lcd_menu_extruder_info()                     // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
-//|01234567890123456789|
-//|Nozzle FAN:      RPM|
-//|Print FAN:       RPM|
-//|Fil. Xd:    Yd:     |
-//|Int:      Shut:     |
-//----------------------
 	int fan_speed_RPM[2];
 	// Display Nozzle fan RPM
 	fan_speed_RPM[0] = 60*fan_speed[0];
@@ -1787,9 +1796,9 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 	  "%S: %4d RPM\n"
 	  "%S:  %4d RPM\n"
 	 ),
-	 _i("Nozzle FAN"),
+	 _i("Nozzle FAN"), ////c=10 r=1
 	 fan_speed_RPM[0],
-	 _i("Print FAN"),
+	 _i("Print FAN"), ////c=10 r=1
 	 fan_speed_RPM[1]
 	);
 
@@ -1811,8 +1820,8 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
 			if (!moves_planned() && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
 				pat9125_update();
 			lcd_printf_P(_N(
-				"Fil. Xd:%3d Yd:%3d\n"
-				"Int: %3d  Shut: %3d"
+				"Fil. Xd:%3d Yd:%3d\n" ////c=4 r=1
+				"Int: %3d  Shut: %3d" ////c=4 r=1  ////c=4 r=1
 			),
 				pat9125_x, pat9125_y,
 				pat9125_b, pat9125_s
@@ -1824,152 +1833,163 @@ void lcd_menu_extruder_info()                     // NOT static due to using ins
     menu_back_if_clicked();
 }
 
+//! @brief Show Fails Statistics MMU
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! | Main               |	c=18 r=1
+//! | Last print         |	c=18 r=1
+//! | Total              |	c=18 r=1
+//! |                    |
+//! ----------------------
+//! @endcode
 static void lcd_menu_fails_stats_mmu()
 {
-//|01234567890123456789|
-//| Main               | c=18
-//| Last print         | c=18
-//| Total              | c=18
-//|                    |
-//----------------------
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_mmu_print);
-	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_mmu_total);
+	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_mmu_print); ////c=18 r=1
+	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_mmu_total); ////c=18 r=1
 	MENU_END();
 }
 
+//! @brief Show Last Print Failures Statistics MMU
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Last print failures |	c=20 r=1
+//! | MMU fails:      000|	c=14 r=1
+//! | MMU load fails: 000|	c=14 r=1
+//! |                    |
+//! ----------------------
+//! @endcode
 static void lcd_menu_fails_stats_mmu_print()
 {
-//|01234567890123456789|
-//|Last print failures | c=20
-//| MMU fails:      000| c=15
-//| MMU load fails: 000| c=15
-//|                    |
-//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL);
 	lcd_home();
-	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d"), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);
+	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d"), _i("Last print failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails);  ////c=20 r=1  ////c=14 r=1 ////c=14 r=1
 	menu_back_if_clicked_fb();
 }
 
+//! @brief Show Total Failures Statistics MMU
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Total failures      |	c=20 r=1
+//! | MMU fails:      000|	c=14 r=1
+//! | MMU load fails: 000|	c=14 r=1
+//! | MMU power fails:000|	c=14 r=1
+//! ----------------------
+//! @endcode
 static void lcd_menu_fails_stats_mmu_total()
 {
-//|01234567890123456789|
-//|Total failures      | c=20
-//| MMU fails:      000| c=15
-//| MMU load fails: 000| c=15
-//| MMU power fails:000| c=15
-//----------------------
 	mmu_command(MmuCmd::S3);
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL_TOT);
     uint16_t load_fails = eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL_TOT);
 	lcd_home();
-	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S %-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);
+	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S %-3d"), _i("Total failures"), _i("MMU fails"), fails, _i("MMU load fails"), load_fails, _i("MMU power fails"), mmu_power_failures);  ////c=20 r=1  ////c=14 r=1  ////c=14 r=1  ////c=14 r=1
 	menu_back_if_clicked_fb();
 }
 
 #if defined(TMC2130) && defined(FILAMENT_SENSOR)
+//! @brief Show Total Failures Statistics MMU
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Total failures      |	c=20 r=1
+//! | Power failures: 000|	c=14 r=1
+//! | Filam. runouts: 000|	c=14 r=1
+//! | Crash   X:000 Y:000|	c=7 r=1
+//! ----------------------
+//! @endcode
 static void lcd_menu_fails_stats_total()
 {
-//|01234567890123456789|
-//|Last print failures | c=20
-//| Power failures: 000| c=14
-//| Filam. runouts: 000| c=14
-//| Crash   X:000 Y:000| c=7 for Crash
-//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint16_t power = eeprom_read_word((uint16_t*)EEPROM_POWER_COUNT_TOT);
     uint16_t filam = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
     uint16_t crashX = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_X_TOT);
     uint16_t crashY = eeprom_read_word((uint16_t*)EEPROM_CRASH_COUNT_Y_TOT);
 	lcd_home();
-	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S  X %-3d  Y %-3d"), _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S  X %-3d  Y %-3d"), _i("Total failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);  ////c=20 r=1  ////c=14 r=1  ////c=14 r=1  ////c=7 r=1
 	menu_back_if_clicked_fb();
 }
 
+//! @brief Show Last Print Failures Statistics
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Last print failures |	c=20 r=1
+//! | Power failures: 000|	c=14 r=1
+//! | Filam. runouts: 000|	c=14 r=1
+//! | Crash   X:000 Y:000|	c=7 r=1
+//! ----------------------
+//! @endcode
 static void lcd_menu_fails_stats_print()
 {
-//|01234567890123456789|
-//|Last print failures | c=20
-//| Power failures: 000| c=14
-//| Filam. runouts: 000| c=14
-//| Crash   X:000 Y:000| c=7 for Crash
-//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t power = eeprom_read_byte((uint8_t*)EEPROM_POWER_COUNT);
     uint8_t filam = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint8_t crashX = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_X);
     uint8_t crashY = eeprom_read_byte((uint8_t*)EEPROM_CRASH_COUNT_Y);
 	lcd_home();
-	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);
+	lcd_printf_P(PSTR("%S\n" " %S  %-3d\n" " %S  %-3d\n" " %S  X %-3d  Y %-3d"), _i("Last print failures"), _i("Power failures"), power, _i("Filam. runouts"), filam, _i("Crash"), crashX, crashY);  ////c=20 r=1  ////c=14 r=1  ////c=14 r=1  ////c=7 r=1
 	menu_back_if_clicked_fb();
 }
 
-/**
- * @brief Open fail statistics menu
- *
- * This version of function is used, when there is filament sensor,
- * power failure and crash detection.
- * There are Last print and Total menu items.
- */
+//! @brief Open fail statistics menu
+//! 
+//! This version of function is used, when there is filament sensor,
+//! power failure and crash detection.
+//! There are Last print and Total menu items.
+//! 
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! | Main               |	c=18 r=1
+//! | Last print         |	c=18 r=1
+//! | Total              |	c=18 r=1
+//! |                    |
+//! ----------------------
+//! @endcode
+
 static void lcd_menu_fails_stats()
 {
-//|01234567890123456789|
-//| Main               | c=18
-//| Last print         | c=18
-//| Total              | c=18
-//|                    |
-//----------------------
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
-	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_print);
-	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_total);
+	MENU_ITEM_SUBMENU_P(_i("Last print"), lcd_menu_fails_stats_print);  ////c=18 r=1
+	MENU_ITEM_SUBMENU_P(_i("Total"), lcd_menu_fails_stats_total);  ////c=18 r=1
 	MENU_END();
 }
 
 #elif defined(FILAMENT_SENSOR)
-/**
- * @brief Print last print and total filament run outs
- *
- * This version of function is used, when there is filament sensor,
- * but no other sensors (e.g. power failure, crash detection).
- *
- * Example screen:
- * @code
- * 01234567890123456789
- * Last print failures
- *  Filam. runouts  0
- * Total failures
- *  Filam. runouts  5
- * @endcode
- */
+//! 
+//! @brief Print last print and total filament run outs
+//! 
+//! This version of function is used, when there is filament sensor,
+//! but no other sensors (e.g. power failure, crash detection).
+//! 
+//! Example screen:
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Last print failures |	c=20 r=1
+//! | Filam. runouts: 000|	c=14 r=1
+//! |Total failures      |	c=20 r=1
+//! | Filam. runouts: 000|	c=14 r=1
+//! ----------------------
+//! @endcode
 static void lcd_menu_fails_stats()
 {
-//|01234567890123456789|
-//|Last print failures | c=20
-//| Filam. runouts: 000| c=15
-//|Total failures      | c=20
-//| Filam. runouts: 000| c=15
-//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
     uint8_t filamentLast = eeprom_read_byte((uint8_t*)EEPROM_FERROR_COUNT);
     uint16_t filamentTotal = eeprom_read_word((uint16_t*)EEPROM_FERROR_COUNT_TOT);
 	lcd_home();
-    lcd_printf_P(PSTR("Last print failures\n" " Filam. runouts  %-3d\n" "Total failures\n" " Filam. runouts  %-3d"), filamentLast, filamentTotal);
+    lcd_printf_P(PSTR("Last print failures\n" " Filam. runouts  %-3d\n" "Total failures\n" " Filam. runouts  %-3d"), filamentLast, filamentTotal);  ////c=20 r=1  ////c=14 r=1  ////c=20 r=1  ////c=14 r=1
     menu_back_if_clicked();
 }
 #else
 static void lcd_menu_fails_stats()
 {
-//|01234567890123456789|
-//| Main               | c=18
-//|                    |
-//|                    |
-//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	MENU_BEGIN();
 	MENU_ITEM_BACK_P(_T(MSG_MAIN));
@@ -1985,38 +2005,47 @@ extern char* __malloc_heap_start;
 extern char* __malloc_heap_end;
 #endif //DEBUG_STACK_MONITOR
 
+//! @brief Show Debug Information
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |RAM statistics      |	c=20 r=1
+//! | SP_min:        0000|	c=14 r=1
+//! | heap_start:    0000|	c=14 r=1
+//! | heap_end:      0000|	c=14 r=1
+//! ----------------------
+//! @endcode
 static void lcd_menu_debug()
 {
-//|01234567890123456789|
-//|RAM statistics      | c=20
-//| SP_min:        0000| c=14
-//| heap_start:    0000| c=14
-//| heap_end:      0000| c=14
-//----------------------
 #ifdef DEBUG_STACK_MONITOR
 	lcd_home();
-	lcd_printf_P(PSTR("RAM statistics\n" " SP_min: 0x%04x\n" " heap_start: 0x%04x\n" " heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);
+	lcd_printf_P(PSTR("RAM statistics\n" " SP_min: 0x%04x\n" " heap_start: 0x%04x\n" " heap_end: 0x%04x"), SP_min, __malloc_heap_start, __malloc_heap_end);  ////c=20 r=1  ////c=14 r=1  ////c=14 r=1  ////c=14 r=1
 #endif //DEBUG_STACK_MONITOR
 
 	menu_back_if_clicked_fb();
 }
 #endif /* DEBUG_BUILD */
 
+//! @brief Show Temperatures
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! | Nozzle:        000D|	c=14 r=1
+//! | Bed:           000D|	c=14 r=1
+//! | Ambient:       000D|	c=14 r=1
+//! | PINDA:         000D|	c=14 r=1
+//! ----------------------
+//! D - Degree sysmbol		LCD_STR_DEGREE
+//! @endcode
 static void lcd_menu_temperatures()
 {
-//|01234567890123456789|
-//| Nozzle:        000°| c=14
-//| Bed:           000°| c=14
-//| Ambient:       000°| c=14
-//| PINDA:         000°| c=14
-//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	lcd_home();
-	lcd_printf_P(PSTR(" %S:   %d%c \n" " %S:      %d%c \n"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');
+	lcd_printf_P(PSTR(" %S:   %d%c \n" " %S:      %d%c \n"), _i("Nozzle"), (int)current_temperature[0], '\x01', _i("Bed"), (int)current_temperature_bed, '\x01');  ////c=14 r=1  ////c=14 r=1
 #ifdef AMBIENT_THERMISTOR
-	lcd_printf_P(PSTR(" %S:  %d%c\n" " PINDA:    %d%c"), _i("Ambient"), (int)current_temperature_ambient, '\x01', (int)current_temperature_pinda, '\x01');
+	lcd_printf_P(PSTR(" %S:  %d%c\n" " %S:    %d%c"), _i("Ambient"), (int)current_temperature_ambient, '\x01', _i("PINDA"), (int)current_temperature_pinda, '\x01');  ////c=14 r=1
 #else //AMBIENT_THERMISTOR
-	lcd_printf_P(PSTR(" PINDA:    %d%c"), (int)current_temperature_pinda, '\x01');
+	lcd_printf_P(PSTR(" %S:    %d%c"), _i("PINDA"), (int)current_temperature_pinda, '\x01');  ////c=14 r=1
 #endif //AMBIENT_THERMISTOR
 
     menu_back_if_clicked();
@@ -2027,34 +2056,43 @@ static void lcd_menu_temperatures()
 #define VOLT_DIV_R2 2370
 #define VOLT_DIV_FAC ((float)VOLT_DIV_R2 / (VOLT_DIV_R2 + VOLT_DIV_R1))
 #define VOLT_DIV_REF 5
+//! @brief Show Voltages
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |                    |
+//! | PWR:         00.0V |	c=12 r=1
+//! | Bed:         00.0V |	c=12 r=1
+//! |                    |
+//! ----------------------
+//! @endcode
+
 static void lcd_menu_voltages()
 {
-//|01234567890123456789|
-//|                    |
-//| PWR:         00.0V | c=12
-//| Bed:         00.0V | c=12
-//|                    | 
-//----------------------
 	lcd_timeoutToStatus.stop(); //infinite timeout
 	float volt_pwr = VOLT_DIV_REF * ((float)current_voltage_raw_pwr / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 	float volt_bed = VOLT_DIV_REF * ((float)current_voltage_raw_bed / (1023 * OVERSAMPLENR)) / VOLT_DIV_FAC;
 	lcd_home();
-	lcd_printf_P(PSTR(" PWR:      %d.%01dV\n" " BED:      %d.%01dV"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));
+	lcd_printf_P(PSTR(" $S:      %d.%01dV\n" " $S:      %d.%01dV"), _i("PWR"), (int)volt_pwr, (int)(10*fabs(volt_pwr - (int)volt_pwr)), _i("Bed"), (int)volt_bed, (int)(10*fabs(volt_bed - (int)volt_bed)));  ////c=12 r=1  ////c=12 r=1
     menu_back_if_clicked();
 }
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 #ifdef TMC2130
+//! @brief Show Belt Status
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! | Belt status        |	c=18 r=1
+//! |  X:            000 |
+//! |  Y:            000 |
+//! |                    |
+//! ----------------------
+//! @endcode
 static void lcd_menu_belt_status()
 {
-//|01234567890123456789|
-//| Belt status        | c=19
-//|  X:            000 | c=13
-//|  Y:            000 | c=13
-//|                    | 
-//----------------------
 	lcd_home();
-    lcd_printf_P(PSTR("%S\n" " X %d\n" " Y %d"), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));
+    lcd_printf_P(PSTR("%S\n" " X %d\n" " Y %d"), _i("Belt status"), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_X)), eeprom_read_word((uint16_t*)(EEPROM_BELTSTATUS_Y)));  ////c=18 r=1
     menu_back_if_clicked();
 }
 #endif //TMC2130
@@ -2074,6 +2112,7 @@ static void lcd_menu_test_restore()
 }
 #endif //RESUME_DEBUG 
 
+//! @brief Show Preheat Menu
 static void lcd_preheat_menu()
 {
   MENU_BEGIN();
@@ -2099,6 +2138,78 @@ static void lcd_preheat_menu()
   MENU_END();
 }
 
+//! @brief Show Support Menu
+//!
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! | Main               |
+//! | Firmware:          |	c=18 r=1
+//! |  3.7.2.-2363       |	c=16 r=1
+//! | prusa3d.com        |	MSG_PRUSA3D
+//! | forum.prusa3d.com  |	MSG_PRUSA3D_FORUM
+//! | howto.prusa3d.com  |	MSG_PRUSA3D_HOWTO
+//! | --------------     |	STR_SEPARATOR
+//! | 1_75mm_MK3         |	FILAMENT_SIZE
+//! | howto.prusa3d.com  |	ELECTRONICS
+//! | howto.prusa3d.com  |	NOZZLE_TYPE
+//! | --------------     |	STR_SEPARATOR
+//! | Date:              |	c=17 r=1
+//! | MMM DD YYYY        |	__DATE__
+//! | --------------     |	STR_SEPARATOR
+//! @endcode
+//! 
+//! If MMU is connected
+//! 
+//! 	@code{.unparsed}
+//! 	| MMU2 connected     |	c=18 r=1
+//! 	|  FW: 1.0.6-7064523 |
+//! 	@endcode
+//! 
+//! If MMU is not connected
+//! 
+//! 	@code{.unparsed}
+//! 	| MMU2       N/A     |	c=18 r=1
+//! 	@endcode
+//! 
+//! If Flash Air is connected
+//! 
+//! 	@code{.unparsed}
+//! 	| --------------     |	STR_SEPARATOR
+//! 	| FlashAir IP Addr:  |	c=18 r=1
+//! 	|  192.168.1.100     |
+//! 	@endcode
+//! 
+//! @code{.unparsed}
+//! | --------------     |	STR_SEPARATOR
+//! | XYZ cal. details   |	MSG_XYZ_DETAILS
+//! | Extruder info      |	MSG_INFO_EXTRUDER
+//! | XYZ cal. details   |	MSG_INFO_SENSORS
+//! @endcode
+//! 
+//! If TMC2130 defined
+//! 
+//! 	@code{.unparsed}
+//! 	| Belt status        |	MSG_MENU_BELT_STATUS
+//! @endcode
+//! 
+//! @code{.unparsed}
+//! | Temperatures       |	MSG_MENU_TEMPERATURES
+//! @endcode
+//! 
+//! If Voltage Bed and PWR Pin are defined
+//! 
+//! 	@code{.unparsed}
+//! 	| Voltages           |	MSG_MENU_VOLTAGES
+//! 	@endcode
+//! 
+//! 
+//! If DEBUG_BUILD is defined
+//! 
+//! 	@code{.unparsed}
+//! 	| Debug              |	c=18 r=1
+//! 	@endcode
+//! ----------------------
+//! @endcode
 static void lcd_support_menu()
 {
 	typedef struct
@@ -2160,8 +2271,8 @@ static void lcd_support_menu()
 	MENU_ITEM_BACK_P(STR_SEPARATOR);
 	if (mmu_enabled)
 	{
-		MENU_ITEM_BACK_P(_i("MMU2 connected"));
-		MENU_ITEM_BACK_P(PSTR(" FW:"));
+		MENU_ITEM_BACK_P(_i("MMU2 connected"));  ////c=18 r=1
+		MENU_ITEM_BACK_P(PSTR(" FW:"));  ////c=17 r=1
 		if (((menu_item - 1) == menu_line) && lcd_draw_update)
 		{
 		    lcd_set_cursor(6, menu_row);
@@ -2178,7 +2289,7 @@ static void lcd_support_menu()
   // Show the FlashAir IP address, if the card is available.
   if (_md->is_flash_air) {
       MENU_ITEM_BACK_P(STR_SEPARATOR);
-      MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));
+      MENU_ITEM_BACK_P(PSTR("FlashAir IP Addr:"));  //c=18 r=1
 ///!      MENU_ITEM(back_RAM, _md->ip_str, 0);
   }
 
@@ -2199,7 +2310,7 @@ static void lcd_support_menu()
 #endif //defined VOLT_BED_PIN || defined VOLT_PWR_PIN
 
 #ifdef DEBUG_BUILD
-  MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);
+  MENU_ITEM_SUBMENU_P(PSTR("Debug"), lcd_menu_debug);////c=18 r=1
 #endif /* DEBUG_BUILD */
 
   #endif //MK1BP
@@ -2853,9 +2964,9 @@ if(0)
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Filament used:      |
+//! |Filament used:      | c=18 r=1
 //! |         00.00m     |
-//! |Print time:         |
+//! |Print time:         | c=18 r=1
 //! |        00h 00m 00s |
 //! ----------------------
 //! @endcode
@@ -2864,9 +2975,9 @@ if(0)
 //!
 //! @code{.unparsed}
 //! |01234567890123456789|
-//! |Total filament :    |
+//! |Total filament :    | c=18 r=1
 //! |           000.00 m |
-//! |Total print time :  |
+//! |Total print time :  | c=18 r=1
 //! |     00d :00h :00 m |
 //! ----------------------
 //! @endcode
@@ -2874,12 +2985,6 @@ void lcd_menu_statistics()
 {
 	if (IS_SD_PRINTING)
 	{
-	//|01234567890123456789|
-	//|Filament used:      | c=19
-	//|    0000.00m        |
-	//|Print time:         | c=19
-	//|    00h : 00m : 00s | 
-	//----------------------
 		const float _met = ((float)total_filament_used) / (100000.f);
 		const uint32_t _t = (_millis() - starttime) / 1000ul;
 		const int _h = _t / 3600;
@@ -2892,17 +2997,11 @@ void lcd_menu_statistics()
 			"%8.2fm\n"
 			"%S:\n"
 			"%2dh %02dm %02ds"
-		),_i("Filament used"), _met, _i("Print time"), _h, _m, _s);
+		),_i("Filament used"), _met, _i("Print time"), _h, _m, _s);  ////c=18 r=1  ////c=18 r=1
 		menu_back_if_clicked_fb();
 	}
 	else
 	{
-	//|01234567890123456789|
-	//|Total filament:     | c=19
-	//|    0000.00m        |
-	//|Total print time    | c=19
-	//|    00d : 00h : 00m | 
-	//----------------------
 		unsigned long _filament = eeprom_read_dword((uint32_t *)EEPROM_FILAMENTUSED);
 		unsigned long _time = eeprom_read_dword((uint32_t *)EEPROM_TOTALTIME); //in minutes
 		uint8_t _hours, _minutes;
@@ -3005,17 +3104,20 @@ static void lcd_move_e()
 }
 
 
-//@brief Show measured Y distance of front calibration points from Y_MIN_POS
-//If those points are detected too close to edge of reachable area, their confidence is lowered.
-//This functionality is applied more often for MK2 printers.
+//! @brief Show measured Y distance of front calibration points from Y_MIN_POS
+//! If those points are detected too close to edge of reachable area, their confidence is lowered.
+//! This functionality is applied more often for MK2 printers.
+
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Y distance from min |	c=19 r=1
+//! | --------------     |	STR_SEPARATOR
+//! |Left:       00.00mm |	c=11 r=1
+//! |Right:      00.00mm |	c=11 r=1
+//! ----------------------
+//! @endcode
 static void lcd_menu_xyz_y_min()
 {
-//|01234567890123456789|
-//|Y distance from min | c=19
-//|--------------------|
-//|Left:       00.00mm | c=10
-//|Right:      00.00mm | c=10
-//----------------------
 	float distanceMin[2];
     count_xyz_details(distanceMin);
 	lcd_home();
@@ -3025,15 +3127,15 @@ static void lcd_menu_xyz_y_min()
 	  "%S:\n"
 	  "%S:"
 	 ),
-	 _i("Y distance from min"),
+	 _i("Y distance from min"),  ////c=19 r=1
 	 separator,
-	 _i("Left"),
-	 _i("Right")
+	 _i("Left"),  ////c=11 r=1
+	 _i("Right")  ////c=11 r=1
 	);
 	for (uint8_t i = 0; i < 2; i++)
 	{
 		lcd_set_cursor(11,2+i);
-		if (distanceMin[i] >= 200) lcd_puts_P(_N("N/A"));
+		if (distanceMin[i] >= 200) lcd_puts_P(_N("N/A"));  ////c=3 r=1
 		else lcd_printf_P(_N("%6.2fmm"), distanceMin[i]);
 	}
     if (lcd_clicked())
@@ -3046,14 +3148,19 @@ float _deg(float rad)
 	return rad * 180 / M_PI;
 }
 
+//! @brief Show Measured XYZ Skew
+//! 
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Measured skew: 0.00D|	c=13 r=1
+//! | --------------     |	STR_SEPARATOR
+//! |Slight skew:   0.12D|	c=13 r=1  c=4 r=1
+//! |Severe skew:   0.25D|	c=13 r=1  c=4 r=1
+//! ----------------------
+//! D - Degree sysmbol		LCD_STR_DEGREE
+//! @endcode
 static void lcd_menu_xyz_skew()
 {
-//|01234567890123456789|
-//|Measured skew:  N/A |
-//|--------------------|
-//|Slight skew:   0.12d|
-//|Severe skew:   0.25d|
-//----------------------
     float angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
 	lcd_home();
 	lcd_printf_P(_N(
@@ -3062,10 +3169,10 @@ static void lcd_menu_xyz_skew()
 	  "%S:  %5.2f\x01\n"
 	  "%S:  %5.2f\x01"
 	 ),
-	 _i("Measured skew"),
+	 _i("Measured skew"),  ////c=13 r=1
 	 separator,
-	 _i("Slight skew"), _deg(bed_skew_angle_mild),
-	 _i("Severe skew"), _deg(bed_skew_angle_extreme)
+	 _i("Slight skew"), _deg(bed_skew_angle_mild),  ////c=13 r=1  c=4 r=1
+	 _i("Severe skew"), _deg(bed_skew_angle_extreme)  ////c=13 r=1  c=4 r=1
 	);
 	if (angleDiff < 100){
 		lcd_set_cursor(15,0);
@@ -3078,22 +3185,23 @@ static void lcd_menu_xyz_skew()
     if (lcd_clicked())
         menu_goto(lcd_menu_xyz_offset, 0, true, true);
 }
-/**
- * @brief Show measured bed offset from expected position
- */
+//! @brief Show measured bed offset from expected position
+//! 
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |[0;0] point offset  |	c=20 r=1
+//! | --------------     |	STR_SEPARATOR
+//! |X:          000.00mm|	c=10 r=1
+//! |Y:          000.00mm|	c=10 r=1
+//! ----------------------
+//! @endcode
 static void lcd_menu_xyz_offset()
 {
-//|01234567890123456789|
-//|[0;0] point offset  | c=20
-//|--------------------|
-//|X:          000.00mm| c=10
-//|Y:          000.00mm| c=10
-//----------------------
     lcd_set_cursor(0,0);
     lcd_puts_P(_i("[0;0] point offset"));////MSG_MEASURED_OFFSET
     lcd_puts_at_P(0, 1, separator);
-    lcd_puts_at_P(0, 2, PSTR("X"));
-    lcd_puts_at_P(0, 3, PSTR("Y"));
+    lcd_puts_at_P(0, 2, PSTR("X"));  ////c=10 r=1
+    lcd_puts_at_P(0, 3, PSTR("Y"));  ////c=10 r=1
 
     float vec_x[2];
     float vec_y[2];
@@ -3252,6 +3360,18 @@ void lcd_adjust_bed_reset(void)
 	_md->status = 0;
 }
 
+//! @brief Show Bed level correct
+//! 
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! |Settings:           |	MSG_SETTINGS
+//! |Left side [um]:     |	MSG_BED_CORRECTION_LEFT
+//! |Right side[um]:     |	MSG_BED_CORRECTION_RIGHT
+//! |Front side[um]:     |	MSG_BED_CORRECTION_FRONT
+//! |Rear side [um]:     |	MSG_BED_CORRECTION_REAR
+//! |Reset               |	MSG_BED_CORRECTION_RESET
+//! ----------------------
+//! @endcode
 void lcd_adjust_bed(void)
 {
 	_menu_data_adjust_bed_t* _md = (_menu_data_adjust_bed_t*)&(menu_data[0]);
@@ -3289,6 +3409,16 @@ void lcd_adjust_bed(void)
     MENU_END();
 }
 
+//! @brief Show PID Extruder
+//! 
+//! @code{.unparsed}
+//! |01234567890123456789|
+//! | Set temperature:   |	MSG_SET_TEMPERATURE
+//! |                    |
+//! | 210                |
+//! |                    |
+//! ----------------------
+//! @endcode
 void pid_extruder()
 {
 	lcd_clear();
