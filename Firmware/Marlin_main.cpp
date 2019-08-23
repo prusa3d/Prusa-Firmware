@@ -5343,7 +5343,9 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
     // ----------------------------------
     case 26: 
       if(card.cardOK && code_seen('S')) {
-        card.setIndex(code_value_long());
+        long index = code_value_long();
+        card.setIndex(index);
+        sdpos_atomic = index;
       }
       break;
 
@@ -9497,7 +9499,7 @@ void serialecho_temperatures() {
 	SERIAL_PROTOCOL_F(degBed(), 1);
 	SERIAL_PROTOCOLLN("");
 }
-extern uint32_t sdpos_atomic;
+
 #ifdef UVLO_SUPPORT
 
 void uvlo_()
