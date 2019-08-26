@@ -5339,12 +5339,17 @@ if(eSoundMode!=e_SOUND_MODE_SILENT)
       card.pauseSDPrint();
       break;
 
-    //! ### M26 - Set SD index
+    //! ### M26 S\<index\> - Set SD index
+    //! Set position in SD card file to index in bytes.
+    //! This command is expected to be called after M23 and before M24.
+    //! Otherwise effect of this command is undefined.
     // ----------------------------------
     case 26: 
       if(card.cardOK && code_seen('S')) {
         long index = code_value_long();
         card.setIndex(index);
+        // We don't disable interrupt during update of sdpos_atomic
+        // as we expect, that SD card print is not active in this moment
         sdpos_atomic = index;
       }
       break;
