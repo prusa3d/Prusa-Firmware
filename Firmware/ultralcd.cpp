@@ -2465,52 +2465,50 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 
 static void mFilamentItem_PLA()
 {
-bFilamentPreheatState=false;
-mFilamentItem(PLA_PREHEAT_HOTEND_TEMP,PLA_PREHEAT_HPB_TEMP);
+    bFilamentPreheatState = false;
+    mFilamentItem(PLA_PREHEAT_HOTEND_TEMP, PLA_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_PET()
 {
-bFilamentPreheatState=false;
-mFilamentItem(PET_PREHEAT_HOTEND_TEMP,PET_PREHEAT_HPB_TEMP);
+    bFilamentPreheatState = false;
+    mFilamentItem(PET_PREHEAT_HOTEND_TEMP, PET_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_ASA()
 {
-bFilamentPreheatState=false;
-mFilamentItem(ASA_PREHEAT_HOTEND_TEMP,ASA_PREHEAT_HPB_TEMP);
+    bFilamentPreheatState = false;
+    mFilamentItem(ASA_PREHEAT_HOTEND_TEMP, ASA_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_ABS()
 {
-bFilamentPreheatState=false;
-mFilamentItem(ABS_PREHEAT_HOTEND_TEMP,ABS_PREHEAT_HPB_TEMP);
+    bFilamentPreheatState = false;
+    mFilamentItem(ABS_PREHEAT_HOTEND_TEMP, ABS_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_HIPS()
 {
-bFilamentPreheatState=false;
-mFilamentItem(HIPS_PREHEAT_HOTEND_TEMP,HIPS_PREHEAT_HPB_TEMP);
+    bFilamentPreheatState = false;
+    mFilamentItem(HIPS_PREHEAT_HOTEND_TEMP, HIPS_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_PP()
 {
-bFilamentPreheatState=false;
-mFilamentItem(PP_PREHEAT_HOTEND_TEMP,PP_PREHEAT_HPB_TEMP);
+    bFilamentPreheatState = false;
+    mFilamentItem(PP_PREHEAT_HOTEND_TEMP, PP_PREHEAT_HPB_TEMP);
 }
 
 static void mFilamentItem_FLEX()
 {
-bFilamentPreheatState=false;
-mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP,FLEX_PREHEAT_HPB_TEMP);
+    bFilamentPreheatState = false;
+    mFilamentItem(FLEX_PREHEAT_HOTEND_TEMP, FLEX_PREHEAT_HPB_TEMP);
 }
-
 
 void mFilamentBack()
 {
-menu_back();
-if(eFilamentAction==FilamentAction::AutoLoad)
-     eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
+    menu_back();
+    if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
 }
 
 void mFilamentMenu()
