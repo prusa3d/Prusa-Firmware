@@ -1727,6 +1727,7 @@ static void lcd_cooldown()
   setAllTargetHotends(0);
   setTargetBed(0);
   fanSpeed = 0;
+  eFilamentAction = FilamentAction::None;
   lcd_return_to_status();
 }
 
@@ -2383,7 +2384,11 @@ static void mFilamentItem_FLEX()
 void mFilamentBack()
 {
     menu_back();
-    if (eFilamentAction == FilamentAction::AutoLoad) eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
+    if (eFilamentAction == FilamentAction::AutoLoad ||
+            eFilamentAction == FilamentAction::Preheat)
+    {
+        eFilamentAction = FilamentAction::None; // i.e. non-autoLoad
+    }
 }
 
 void mFilamentMenu()
