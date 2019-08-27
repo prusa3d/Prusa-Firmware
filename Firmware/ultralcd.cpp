@@ -2116,6 +2116,7 @@ switch(eFilamentAction)
      case FilamentAction::MmuEject:
      case FilamentAction::MmuCut:
      case FilamentAction::None:
+     case FilamentAction::Preheat:
           break;
      }
 if(lcd_clicked())
@@ -2144,6 +2145,7 @@ if(lcd_clicked())
           case FilamentAction::MmuEject:
           case FilamentAction::MmuCut:
           case FilamentAction::None:
+          case FilamentAction::Preheat:
                break;
           }
      }
@@ -2219,6 +2221,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
 #endif //MMU_HAS_CUTTER
             break;
         case FilamentAction::None:
+        case FilamentAction::Preheat:
             break;
         }
         if (bFilamentWaitingFlag) Sound_MakeSound(e_SOUND_TYPE_StandardPrompt);
@@ -2248,6 +2251,7 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
             lcd_puts_P(_i("Preheating to cut")); ////MSG_ c=20 r=1
             break;
         case FilamentAction::None:
+        case FilamentAction::Preheat:
             break;
         }
         lcd_set_cursor(0, 3);
