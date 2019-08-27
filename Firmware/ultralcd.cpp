@@ -2091,7 +2091,7 @@ FilamentAction eFilamentAction=FilamentAction::None; // must be initialized as '
 bool bFilamentFirstRun;
 bool bFilamentPreheatState;
 bool bFilamentAction=false;
-bool bFilamentWaitingFlag=false;
+static bool bFilamentWaitingFlag=false;
 
 static void mFilamentPrompt()
 {
