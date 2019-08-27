@@ -2305,6 +2305,12 @@ static void mFilamentItem_ASA()
     mFilamentItem(ASA_PREHEAT_HOTEND_TEMP, ASA_PREHEAT_HPB_TEMP);
 }
 
+static void mFilamentItem_ASA()
+{
+    bFilamentPreheatState=false;
+    mFilamentItem(ASA_PREHEAT_HOTEND_TEMP,ASA_PREHEAT_HPB_TEMP);
+}
+
 static void mFilamentItem_ABS()
 {
     bFilamentPreheatState = false;
