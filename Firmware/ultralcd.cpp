@@ -1665,63 +1665,6 @@ static void lcd_move_menu_axis();
 
 /* Menu implementation */
 
-static void lcd_preheat_pla()
-{
-  setTargetHotend0(PLA_PREHEAT_HOTEND_TEMP);
-  if (!wizard_active) setTargetBed(PLA_PREHEAT_HPB_TEMP);
-  lcd_return_to_status();
-  if (wizard_active) lcd_wizard(WizState::Unload);
-}
-
-static void lcd_preheat_asa()
-{
-  setTargetHotend0(ASA_PREHEAT_HOTEND_TEMP);
-  if (!wizard_active) setTargetBed(ASA_PREHEAT_HPB_TEMP);
-  lcd_return_to_status();
-  if (wizard_active) lcd_wizard(WizState::Unload);
-}
-
-static void lcd_preheat_abs()
-{
-  setTargetHotend0(ABS_PREHEAT_HOTEND_TEMP);
-  if (!wizard_active) setTargetBed(ABS_PREHEAT_HPB_TEMP);
-  lcd_return_to_status();
-  if (wizard_active) lcd_wizard(WizState::Unload);
-}
-
-static void lcd_preheat_pp()
-{
-  setTargetHotend0(PP_PREHEAT_HOTEND_TEMP);
-  if (!wizard_active) setTargetBed(PP_PREHEAT_HPB_TEMP);
-  lcd_return_to_status();
-  if (wizard_active) lcd_wizard(WizState::Unload);
-}
-
-static void lcd_preheat_pet()
-{
-  setTargetHotend0(PET_PREHEAT_HOTEND_TEMP);
-  if (!wizard_active) setTargetBed(PET_PREHEAT_HPB_TEMP);
-  lcd_return_to_status();
-  if (wizard_active) lcd_wizard(WizState::Unload);
-}
-
-static void lcd_preheat_hips()
-{
-  setTargetHotend0(HIPS_PREHEAT_HOTEND_TEMP);
-  if (!wizard_active) setTargetBed(HIPS_PREHEAT_HPB_TEMP);
-  lcd_return_to_status();
-  if (wizard_active) lcd_wizard(WizState::Unload);
-}
-
-static void lcd_preheat_flex()
-{
-  setTargetHotend0(FLEX_PREHEAT_HOTEND_TEMP);
-  if (!wizard_active) setTargetBed(FLEX_PREHEAT_HPB_TEMP);
-  lcd_return_to_status();
-  if (wizard_active) lcd_wizard(WizState::Unload);
-}
-
-
 static void lcd_cooldown()
 {
   setAllTargetHotends(0);
@@ -2215,12 +2158,13 @@ void mFilamentItem(uint16_t nTemp, uint16_t nTempBed)
     nTargetOld = target_temperature[0];
     nTargetBedOld = target_temperature_bed;
     setTargetHotend0((float )nTemp);
-    setTargetBed((float) nTempBed);
+    if (!wizard_active) setTargetBed((float) nTempBed);
 
     if (eFilamentAction == FilamentAction::Preheat)
     {
         eFilamentAction = FilamentAction::None;
         lcd_return_to_status();
+        if (wizard_active) lcd_wizard(WizState::Unload);
         return;
     }
 
