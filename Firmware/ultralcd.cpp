@@ -6515,22 +6515,31 @@ static void change_sheet()
     menu_back(3);
 }
 
-static void change_sheet_from_menu(){
-	uint8_t next_sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))+1;
-	while(true){
-		if(next_sheet > 2) next_sheet = 0;
-		if(is_sheet_initialized(next_sheet)){
-			eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), next_sheet);
-			selected_sheet = next_sheet;
-			break;
-		}
-		else if (next_sheet == selected_sheet){
-			break;
-		}
-		else{
-			next_sheet++;
-		}
-	}
+//! @brief Get next initialized sheet
+//!
+//! If current sheet is the only sheet initialized, current sheet is returned.
+//!
+//! @param sheet Current sheet
+//! @return next initialized sheet
+//! @retval -1 no sheet is initialized
+static int8_t next_initialized_sheet(int8_t sheet)
+{
+    for (int8_t i = 0; i < static_cast<int8_t>(sizeof(Sheets::s)/sizeof(Sheet)); ++i)
+    {
+        ++sheet;
+        if (sheet >= static_cast<int8_t>(sizeof(Sheets::s)/sizeof(Sheet))) sheet = 0;
+        if (is_sheet_initialized(sheet)) return sheet;
+    }
+    return -1;
+}
+
+static void change_sheet_from_menu()
+{
+	int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+
+	sheet = next_initialized_sheet(sheet);
+	if (sheet >= 0) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet);
+
 	menu_back();
 }
 
