@@ -6719,6 +6719,14 @@ static void lcd_main_menu()
   }
 #endif
 
+  if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
+  {
+    if (!farm_mode)
+    {
+      MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))], change_sheet_from_menu);
+    }
+  }
+
 
   if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal))
   {
@@ -6762,14 +6770,6 @@ static void lcd_main_menu()
 	MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
 
-  }
-
-  if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
-  {
-    if (!farm_mode)
-    {
-	  MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))], change_sheet_from_menu);
-    }
   }
   
   if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
