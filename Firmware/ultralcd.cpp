@@ -6723,7 +6723,12 @@ static void lcd_main_menu()
   {
     if (!farm_mode)
     {
-      MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))], change_sheet_from_menu);
+        const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+        const int8_t nextSheet = next_initialized_sheet(sheet);
+        if ((nextSheet >= 0) && (sheet != nextSheet)) // show menu only if we have 2 or more sheets initialized
+        {
+            MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[sheet], change_sheet_from_menu);
+        }
     }
   }
 
