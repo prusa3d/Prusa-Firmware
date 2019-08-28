@@ -5907,23 +5907,25 @@ uint8_t choose_menu_P(const char *header, const char *item, const char *last_ite
 
 		if (cursor_pos > 3)
 		{		
-			Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             cursor_pos = 3;
             if (first < items_no - 3)
             {
                 first++;
                 lcd_clear();
+            } else { // here we are at the very end of the list
+				Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             }
         }
 
         if (cursor_pos < 1)
         {
-					Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             cursor_pos = 1;
             if (first > 0)
             {
                 first--;
                 lcd_clear();
+            } else { // here we are at the very end of the list
+				Sound_MakeSound(e_SOUND_TYPE_BlindAlert);
             }
         }
 
