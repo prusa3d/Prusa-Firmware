@@ -6596,22 +6596,11 @@ static void lcd_rename_sheet_menu()
 
 static void lcd_reset_sheet()
 {
-    struct MenuData
-    {
-        bool initialized;
-        uint8_t selected;
-        char name[sizeof(Sheet::name)];
-    };
-    static_assert(sizeof(menu_data)>= sizeof(MenuData),"MenuData doesn't fit into menu_data");
-    MenuData* menuData = (MenuData*)&(menu_data[0]);
-    eeprom_read_block(menuData->name, EEPROM_Sheets_base->s[selected_sheet].name, sizeof(Sheet::name));
+    char name[sizeof(Sheet::name)];
     
-	menuData->initialized = false;
-    strcpy_P(menuData->name, (char *)pgm_read_word(&(defaultSheetNames[selected_sheet])));
-
-
+    strcpy_P(name, (char *)pgm_read_word(&(defaultSheetNames[selected_sheet])));
 	eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),0xffff);
-	eeprom_update_block(menuData->name,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
+	eeprom_update_block(name,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
 	menu_back(2);
 }
 
