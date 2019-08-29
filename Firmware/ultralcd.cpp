@@ -6597,7 +6597,7 @@ static void lcd_reset_sheet()
         }
 	}
 
-	menu_back(2);
+	menu_back();
 }
 
 static void lcd_sheet_menu()
@@ -6611,7 +6611,7 @@ static void lcd_sheet_menu()
 
     MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
-	MENU_ITEM_SUBMENU_P(_i("Reset"), lcd_reset_sheet); //// c=18
+	MENU_ITEM_FUNCTION_P(_i("Reset"), lcd_reset_sheet); //// c=18
 
     MENU_END();
 }
