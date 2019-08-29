@@ -162,17 +162,9 @@
 "Copy selected language?"
 "Kopirovat vybrany jazyk?"
 
-#MSG_CRASHDETECT_ON
-"Crash det.   [on]"
-"Crash det.  [zap]"
-
-#MSG_CRASHDETECT_NA
-"Crash det.  [N/A]"
+#MSG_CRASHDETECT
+"Crash det."
 "\x00"
-
-#MSG_CRASHDETECT_OFF
-"Crash det.  [off]"
-"Crash det.  [vyp]"
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."

@@ -162,17 +162,9 @@
 "Copy selected language?"
 "Gewaehlte Sprache kopieren?"
 
-#MSG_CRASHDETECT_ON
-"Crash det.   [on]"
-"Crash Erk.   [an]"
-
-#MSG_CRASHDETECT_NA
-"Crash det.  [N/A]"
-"Crash Erk.   [nv]"
-
-#MSG_CRASHDETECT_OFF
-"Crash det.  [off]"
-"Crash Erk.  [aus]"
+#MSG_CRASHDETECT
+"Crash det."
+"Crash Erk."
 
 #MSG_CRASH_DETECTED c=20 r=1
 "Crash detected."
