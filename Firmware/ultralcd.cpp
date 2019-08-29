@@ -5133,7 +5133,7 @@ do\
 while(0)\
 
 #ifdef MMU_HAS_CUTTER
-static bool settingsCutter()
+static void settingsCutter()
 {
     if (mmu_enabled)
     {
@@ -5152,7 +5152,6 @@ static bool settingsCutter()
             MENU_ITEM_TOGGLE_P(_i("Cutter"), _T(MSG_OFF), lcd_cutter_enabled);
         }
     }
-    return false;
 }
 
 #define SETTINGS_CUTTER \
