@@ -6603,7 +6603,7 @@ static void lcd_reset_sheet()
 static void lcd_sheet_menu()
 {
     MENU_BEGIN();
-    MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
+    MENU_ITEM_BACK_P(_i("Steel sheets"));
 
 	if(is_sheet_initialized(selected_sheet)){
 	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); //// c=18
