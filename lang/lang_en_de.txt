@@ -46,17 +46,9 @@
 "Are left and right Z~carriages all up?"
 "Sind linke+rechte Z- Schlitten ganz oben?"
 
-#MSG_AUTO_DEPLETE_ON c=17 r=1
-"SpoolJoin    [on]"
-"SpoolJoin    [an]"
-
-#
-"SpoolJoin   [N/A]"
-"SpoolJoin   [N/V]"
-
-#MSG_AUTO_DEPLETE_OFF c=17 r=1
-"SpoolJoin   [off]"
-"SpoolJoin   [aus]"
+#MSG_AUTO_DEPLETE c=17 r=1
+"SpoolJoin"
+"\x00"
 
 #MSG_AUTO_HOME
 "Auto home"

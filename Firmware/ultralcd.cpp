@@ -5106,30 +5106,29 @@ static void auto_deplete_switch()
     eeprom_update_byte((unsigned char *)EEPROM_AUTO_DEPLETE, lcd_autoDeplete);
 }
 
-static bool settingsAutoDeplete()
+static void settingsAutoDeplete()
 {
     if (mmu_enabled)
     {
         if (!fsensor_enabled)
         {
-            if (menu_item_text_P(_i("SpoolJoin   [N/A]"))) return true;
+            MENU_ITEM_TOGGLE_P(_i("SpoolJoin"), _T(MSG_NA), NULL);
         }
         else if (lcd_autoDeplete)
         {
-            if (menu_item_function_P(_i("SpoolJoin    [on]"), auto_deplete_switch)) return true;
+            MENU_ITEM_TOGGLE_P(_i("SpoolJoin"), _T(MSG_ON), auto_deplete_switch);
         }
         else
         {
-            if (menu_item_function_P(_i("SpoolJoin   [off]"), auto_deplete_switch)) return true;
+            MENU_ITEM_TOGGLE_P(_i("SpoolJoin"), _T(MSG_OFF), auto_deplete_switch);
         }
     }
-    return false;
 }
 
 #define SETTINGS_AUTO_DEPLETE \
 do\
 {\
-    if(settingsAutoDeplete()) return;\
+    settingsAutoDeplete();\
 }\
 while(0)\
 
