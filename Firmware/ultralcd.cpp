@@ -5112,15 +5112,15 @@ static void settingsAutoDeplete()
     {
         if (!fsensor_enabled)
         {
-            MENU_ITEM_TOGGLE_P(_i("SpoolJoin"), _T(MSG_NA), NULL);
+            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_NA), NULL);
         }
         else if (lcd_autoDeplete)
         {
-            MENU_ITEM_TOGGLE_P(_i("SpoolJoin"), _T(MSG_ON), auto_deplete_switch);
+            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_ON), auto_deplete_switch);
         }
         else
         {
-            MENU_ITEM_TOGGLE_P(_i("SpoolJoin"), _T(MSG_OFF), auto_deplete_switch);
+            MENU_ITEM_TOGGLE_P(_T(MSG_AUTO_DEPLETE), _T(MSG_OFF), auto_deplete_switch);
         }
     }
 }
@@ -5139,17 +5139,17 @@ static void settingsCutter()
     {
         if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
         {
-            MENU_ITEM_TOGGLE_P(_i("Cutter"), _T(MSG_ON), lcd_cutter_enabled);
+            MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_ON), lcd_cutter_enabled);
         }
 #ifdef MMU_ALWAYS_CUT
         else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
         {
-            MENU_ITEM_TOGGLE_P(_i("Cutter"), _i("Always"), lcd_cutter_enabled);
+            MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _i("Always"), lcd_cutter_enabled);
         }
 #endif
         else
         {
-            MENU_ITEM_TOGGLE_P(_i("Cutter"), _T(MSG_OFF), lcd_cutter_enabled);
+            MENU_ITEM_TOGGLE_P(_T(MSG_CUTTER), _T(MSG_OFF), lcd_cutter_enabled);
         }
     }
 }

@@ -106,6 +106,8 @@ extern const char WELCOME_MSG[];
 extern const char MSG_OFF[];
 extern const char MSG_ON[];
 extern const char MSG_NA[];
+extern const char MSG_AUTO_DEPLETE[];
+extern const char MSG_CUTTER[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
