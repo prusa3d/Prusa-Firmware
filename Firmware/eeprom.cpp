@@ -61,7 +61,14 @@ void eeprom_init()
     if (eeprom_read_word((uint16_t*)EEPROM_MMU_LOAD_FAIL_TOT) == 0xffff) eeprom_update_word((uint16_t *)EEPROM_MMU_LOAD_FAIL_TOT, 0);
     if (eeprom_read_byte((uint8_t*)EEPROM_MMU_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_FAIL, 0);
     if (eeprom_read_byte((uint8_t*)EEPROM_MMU_LOAD_FAIL) == 0xff) eeprom_update_byte((uint8_t *)EEPROM_MMU_LOAD_FAIL, 0);
-    if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == 0xff) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
+    if (eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)) == 0xff)
+    {
+        eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), 0);
+        // When upgrading from version older version (before multiple sheets were implemented in v3.8.0)
+        // Sheet 1 uses the previous Live adjust Z (@EEPROM_BABYSTEP_Z)
+        int last_babystep = eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z);
+        eeprom_write_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[0].z_offset)), last_babystep);
+    }
     
     for (uint_least8_t i = 0; i < (sizeof(Sheets::s)/sizeof(Sheets::s[0])); ++i)
     {
@@ -77,13 +84,6 @@ void eeprom_init()
 
             for (uint_least8_t a = 0; a < sizeof(Sheet::name); ++a){
                 eeprom_write(&(EEPROM_Sheets_base->s[i].name[a]), sheetName.c[a]);
-            }
-          
-            // When upgrading from version older version (before multiple sheets were implemented in v3.8.0)
-	    // Sheet 1 uses the previous Live adjust Z (@EEPROM_BABYSTEP_Z)
-            if(i == 0){
-                int last_babystep = eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z);
-                eeprom_write_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[i].z_offset)), last_babystep);
             }
         }
     }
