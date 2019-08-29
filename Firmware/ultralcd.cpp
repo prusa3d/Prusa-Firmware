@@ -5139,17 +5139,17 @@ static bool settingsCutter()
     {
         if (EEPROM_MMU_CUTTER_ENABLED_enabled == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
         {
-            if (menu_item_function_P(_i("Cutter       [on]"), lcd_cutter_enabled)) return true;//// c=17 r=1
+            MENU_ITEM_TOGGLE_P(_i("Cutter"), _T(MSG_ON), lcd_cutter_enabled);
         }
 #ifdef MMU_ALWAYS_CUT
         else if (EEPROM_MMU_CUTTER_ENABLED_always == eeprom_read_byte((uint8_t*)EEPROM_MMU_CUTTER_ENABLED))
         {
-            if (menu_item_function_P(_i("Cutter   [always]"), lcd_cutter_enabled)) return true;//// c=17 r=1
+            MENU_ITEM_TOGGLE_P(_i("Cutter"), _i("Always"), lcd_cutter_enabled);
         }
 #endif
         else
         {
-            if (menu_item_function_P(_i("Cutter      [off]"), lcd_cutter_enabled)) return true;//// c=17 r=1
+            MENU_ITEM_TOGGLE_P(_i("Cutter"), _T(MSG_OFF), lcd_cutter_enabled);
         }
     }
     return false;
@@ -5158,7 +5158,7 @@ static bool settingsCutter()
 #define SETTINGS_CUTTER \
 do\
 {\
-    if(settingsCutter()) return;\
+    settingsCutter();\
 }\
 while(0)
 #else
