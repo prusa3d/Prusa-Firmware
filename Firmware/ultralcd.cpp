@@ -244,10 +244,6 @@ void lcd_finishstatus();
 static void lcd_sdcard_menu();
 static void lcd_sheet_menu();
 
-static void lcd_select_sheet_0_menu();
-static void lcd_select_sheet_1_menu();
-static void lcd_select_sheet_2_menu();
-
 #ifdef DELTA_CALIBRATION_MENU
 static void lcd_delta_calibrate_menu();
 #endif // DELTA_CALIBRATION_MENU
@@ -5526,37 +5522,38 @@ SETTINGS_VERSION;
 MENU_END();
 }
 
+template <uint8_t number>
+static void select_sheet_menu()
+{
+    selected_sheet = number;
+    lcd_sheet_menu();
+}
+
+static void sheets_menu()
+{
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_i("HW Setup"));
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], select_sheet_menu<0>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], select_sheet_menu<1>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], select_sheet_menu<2>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[3], select_sheet_menu<3>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[4], select_sheet_menu<4>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[5], select_sheet_menu<5>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[6], select_sheet_menu<6>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[7], select_sheet_menu<7>);
+    MENU_END();
+}
+
 void lcd_hw_setup_menu(void)                      // can not be "static"
 {
-MENU_BEGIN();
-MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
 
-//strncpy(buffer,_i("Sheet"),sizeof(buffer));
-//strncpy(buffer,_i(" "),sizeof(buffer));
-//strncpy(buffer,EEPROM_Sheets_base->s[0].name,sizeof(buffer));
+    MENU_ITEM_SUBMENU_P(_i("Steel sheets"), sheets_menu);
+    SETTINGS_NOZZLE;
+    MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
 
-//const char* menu = EEPROM_Sheets_base->s[0].name.c_str();
-
-//const char *b = new char(buffer);
-//const char *b = const char *b = new char(buffer);(buffer);
-//printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
-//SERIAL_ECHOPGM(buffer);
-//SERIAL_ECHOPGM(reinterpret_cast<const char*>(buffer));
-//SERIAL_ECHOPGM("lakdjushasdjaljsdakjsdn");
-//char* p = &buffer[0];
-
-//MENU_ITEM_SUBMENU_P(reinterpret_cast<const char*>(p),lcd_sheet_menu);
-
-//delete(b);
-
-MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
-MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
-MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);   
-
-SETTINGS_NOZZLE;
-MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
-
-MENU_END();
+    MENU_END();
 }
 
 static void lcd_settings_menu()
@@ -6543,22 +6540,6 @@ static void change_sheet_from_menu()
 	menu_back();
 }
 
-static void lcd_select_sheet_0_menu()
-{
-	selected_sheet = 0;
-	lcd_sheet_menu();
-}
-static void lcd_select_sheet_1_menu()
-{
-	selected_sheet = 1;
-	lcd_sheet_menu();
-}
-static void lcd_select_sheet_2_menu()
-{
-	selected_sheet = 2;
-	lcd_sheet_menu();
-}
-
 static void lcd_rename_sheet_menu()
 {
     struct MenuData
@@ -6605,11 +6586,10 @@ static void lcd_rename_sheet_menu()
 
 static void lcd_reset_sheet()
 {
-    char name[sizeof(Sheet::name)];
-    
-    strcpy_P(name, (char *)pgm_read_word(&(defaultSheetNames[selected_sheet])));
+    SheetName sheetName;
+    default_sheet_name(selected_sheet, sheetName);
 	eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),0xffff);
-	eeprom_update_block(name,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
+	eeprom_update_block(sheetName.c,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
 	if (selected_sheet == eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))
 	{
         change_sheet_from_menu();

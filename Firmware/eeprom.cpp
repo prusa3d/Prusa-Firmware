@@ -72,11 +72,11 @@ void eeprom_init()
         }
         if(is_uninitialized)
         {
+            SheetName sheetName;
+            default_sheet_name(i,sheetName);
 
-            char sheet_PROGMEM_buffer[8];
-            strcpy_P(sheet_PROGMEM_buffer, (char *)pgm_read_word(&(defaultSheetNames[i])));
             for (uint_least8_t a = 0; a < sizeof(Sheet::name); ++a){
-                eeprom_write(&(EEPROM_Sheets_base->s[i].name[a]), sheet_PROGMEM_buffer[a]);
+                eeprom_write(&(EEPROM_Sheets_base->s[i].name[a]), sheetName.c[a]);
             }
           
             // When upgrading from version older version (before multiple sheets were implemented in v3.8.0)
@@ -90,6 +90,15 @@ void eeprom_init()
     check_babystep();
 }
 
-
-
-
+//! @brief Get default sheet name for index
+//!
+//! @param[in] index
+//! @param[out] sheetName
+void default_sheet_name(uint8_t index, SheetName &sheetName)
+{
+    sheetName.c[0] = '1' + index;
+    for (uint8_t i = 1; i < (sizeof(sheetName.c)/sizeof(sheetName.c[0])); ++i)
+    {
+        sheetName.c[i] = '\0';
+    }
+}
