@@ -6536,8 +6536,6 @@ static void change_sheet_from_menu()
 
 	sheet = next_initialized_sheet(sheet);
 	if (sheet >= 0) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet);
-
-	menu_back();
 }
 
 static void lcd_rename_sheet_menu()
@@ -6716,7 +6714,7 @@ static void lcd_main_menu()
         const int8_t nextSheet = next_initialized_sheet(sheet);
         if ((nextSheet >= 0) && (sheet != nextSheet)) // show menu only if we have 2 or more sheets initialized
         {
-            MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[sheet], change_sheet_from_menu);
+            MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], change_sheet_from_menu);
         }
     }
   }
