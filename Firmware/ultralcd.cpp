@@ -6610,6 +6610,15 @@ static void lcd_reset_sheet()
     strcpy_P(name, (char *)pgm_read_word(&(defaultSheetNames[selected_sheet])));
 	eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),0xffff);
 	eeprom_update_block(name,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
+	if (selected_sheet == eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))
+	{
+        change_sheet_from_menu();
+        if((-1 == next_initialized_sheet(0)) && (CALIBRATION_STATUS_CALIBRATED == calibration_status()))
+        {
+            calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+        }
+	}
+
 	menu_back(2);
 }
 
