@@ -412,11 +412,14 @@
 #MSG_MMU_OK_RESUMING c=20 r=4
 "MMU OK. Resuming..."
 
-#MSG_STEALTH_MODE_OFF
-"Mode     [Normal]"
+#MSG_MODE
+"Mode"
 
-#MSG_SILENT_MODE_ON
-"Mode     [silent]"
+#MSG_NORMAL
+"Normal"
+
+#MSG_SILENT
+"Silent"
 
 #
 "MMU needs user attention."
@@ -424,14 +427,14 @@
 #
 "MMU power fails"
 
-#MSG_STEALTH_MODE_ON
-"Mode    [Stealth]"
+#MSG_STEALTH
+"Stealth"
 
-#MSG_AUTO_MODE_ON
-"Mode [auto power]"
+#MSG_AUTO_POWER
+"Auto power"
 
-#MSG_SILENT_MODE_OFF
-"Mode [high power]"
+#MSG_HIGH_POWER
+"High power"
 
 #
 "MMU2 connected"

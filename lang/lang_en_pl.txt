@@ -550,13 +550,17 @@
 "MMU OK. Resuming..."
 "MMU OK. Wznawianie..."
 
-#MSG_STEALTH_MODE_OFF
-"Mode     [Normal]"
-"Tryb   [normalny]"
+#MSG_MODE
+"Mode"
+"Tryb"
 
-#MSG_SILENT_MODE_ON
-"Mode     [silent]"
-"Tryb      [cichy]"
+#MSG_NORMAL
+"Normal"
+"Normalny"
+
+#MSG_SILENT
+"Silent"
+"Cichy"
 
 #
 "MMU needs user attention."
@@ -566,17 +570,17 @@
 "MMU power fails"
 "Zaniki zasil. MMU"
 
-#MSG_STEALTH_MODE_ON
-"Mode    [Stealth]"
-"Tryb    [Stealth]"
+#MSG_STEALTH
+"Stealth"
+"\x00"
 
-#MSG_AUTO_MODE_ON
-"Mode [auto power]"
-"Tryb [automatycz]"
+#MSG_AUTO_POWER
+"Auto power"
+"Automatycz"
 
-#MSG_SILENT_MODE_OFF
-"Mode [high power]"
-"Tryb[wysoka wyd.]"
+#MSG_HIGH_POWER
+"High power"
+"Wysoka wyd."
 
 #
 "MMU2 connected"

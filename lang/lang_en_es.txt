@@ -550,13 +550,17 @@
 "MMU OK. Resuming..."
 "MMU OK. Resumiendo..."
 
-#MSG_STEALTH_MODE_OFF
-"Mode     [Normal]"
-"Modo     [Normal]"
+#MSG_MODE
+"Mode"
+"Modo"
 
-#MSG_SILENT_MODE_ON
-"Mode     [silent]"
-"Modo   [silencio]"
+#MSG_NORMAL
+"Normal"
+"\x00"
+
+#MSG_SILENT
+"Silent"
+"Silencio"
 
 #
 "MMU needs user attention."
@@ -566,17 +570,17 @@
 "MMU power fails"
 "Fallo de energia en MMU"
 
-#MSG_STEALTH_MODE_ON
-"Mode    [Stealth]"
-"Modo   [Silencio]"
+#MSG_STEALTH
+"Stealth"
+"Silencio"
 
-#MSG_AUTO_MODE_ON
-"Mode [auto power]"
-"Modo[fuerza auto]"
+#MSG_AUTO_POWER
+"Auto power"
+"Fuerza auto"
 
-#MSG_SILENT_MODE_OFF
-"Mode [high power]"
-"Modo [rend.pleno]"
+#MSG_HIGH_POWER
+"High power"
+"Rend.pleno"
 
 #
 "MMU2 connected"

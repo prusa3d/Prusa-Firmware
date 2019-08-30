@@ -550,13 +550,17 @@
 "MMU OK. Resuming..."
 "MMU OK. Reprise ..."
 
-#MSG_STEALTH_MODE_OFF
-"Mode     [Normal]"
+#MSG_MODE
+"Mode"
 "\x00"
 
-#MSG_SILENT_MODE_ON
-"Mode     [silent]"
-"Mode [silencieux]"
+#MSG_NORMAL
+"Normal"
+"\x00"
+
+#MSG_SILENT
+"Silent"
+"Silencieux"
 
 #
 "MMU needs user attention."
@@ -566,17 +570,17 @@
 "MMU power fails"
 "Echecs alim. MMU"
 
-#MSG_STEALTH_MODE_ON
-"Mode    [Stealth]"
-"Mode [Furtif]"
+#MSG_STEALTH
+"Stealth"
+"Furtif"
 
-#MSG_AUTO_MODE_ON
-"Mode [auto power]"
-"Mode [puiss.auto]"
+#MSG_AUTO_POWER
+"Auto power"
+"Puiss.auto"
 
-#MSG_SILENT_MODE_OFF
-"Mode [high power]"
-"Mode [haute puiss]"
+#MSG_HIGH_POWER
+"High power"
+"Haute puiss"
 
 #
 "MMU2 connected"

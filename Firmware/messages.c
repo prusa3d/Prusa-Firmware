@@ -9,7 +9,6 @@
 
 //internationalized messages
 const char MSG_AUTO_HOME[] PROGMEM_I1 = ISTR("Auto home"); ////
-const char MSG_AUTO_MODE_ON[] PROGMEM_I1 = ISTR("Mode [auto power]"); ////
 const char MSG_BABYSTEP_Z[] PROGMEM_I1 = ISTR("Live adjust Z"); //// c=18
 const char MSG_BABYSTEP_Z_NOT_SET[] PROGMEM_I1 = ISTR("Distance between tip of the nozzle and the bed surface has not been set yet. Please follow the manual, chapter First steps, section First layer calibration."); ////c=20 r=12
 const char MSG_BED[] PROGMEM_I1 = ISTR("Bed"); ////
@@ -82,10 +81,12 @@ const char MSG_SELFTEST_FILAMENT_SENSOR[] PROGMEM_I1 = ISTR("Filament sensor"); 
 const char MSG_SELFTEST_WIRINGERROR[] PROGMEM_I1 = ISTR("Wiring error"); ////
 const char MSG_SETTINGS[] PROGMEM_I1 = ISTR("Settings"); ////
 const char MSG_HW_SETUP[] PROGMEM_I1 = ISTR("HW Setup"); ////
-const char MSG_SILENT_MODE_OFF[] PROGMEM_I1 = ISTR("Mode [high power]"); ////
-const char MSG_SILENT_MODE_ON[] PROGMEM_I1 = ISTR("Mode     [silent]"); ////
-const char MSG_STEALTH_MODE_OFF[] PROGMEM_I1 = ISTR("Mode     [Normal]"); ////
-const char MSG_STEALTH_MODE_ON[] PROGMEM_I1 = ISTR("Mode    [Stealth]"); ////
+const char MSG_MODE[] PROGMEM_I1 = ISTR("Mode"); ////
+const char MSG_HIGH_POWER[] PROGMEM_I1 = ISTR("High power"); ////
+const char MSG_AUTO_POWER[] PROGMEM_I1 = ISTR("Auto power"); ////
+const char MSG_SILENT[] PROGMEM_I1 = ISTR("Silent"); ////
+const char MSG_NORMAL[] PROGMEM_I1 = ISTR("Normal"); ////
+const char MSG_STEALTH[] PROGMEM_I1 = ISTR("Stealth"); ////
 const char MSG_STEEL_SHEET_CHECK[] PROGMEM_I1 = ISTR("Is steel sheet on heatbed?"); ////c=20 r=2
 const char MSG_STOP_PRINT[] PROGMEM_I1 = ISTR("Stop print"); ////
 const char MSG_STOPPED[] PROGMEM_I1 = ISTR("STOPPED. "); ////

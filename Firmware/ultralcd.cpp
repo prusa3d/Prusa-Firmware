@@ -5172,9 +5172,9 @@ do\
     {\
         if (SilentModeMenu == SILENT_MODE_NORMAL)\
         {\
-            MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_OFF), lcd_silent_mode_set);\
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);\
         }\
-        else MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_ON), lcd_silent_mode_set);\
+        else MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);\
         if (SilentModeMenu == SILENT_MODE_NORMAL)\
         {\
             if (lcd_crash_detect_enabled()) MENU_ITEM_TOGGLE_P(_T(MSG_CRASHDETECT), _T(MSG_ON), crash_mode_switch);\
@@ -5194,16 +5194,16 @@ do\
         switch (SilentModeMenu)\
         {\
         case SILENT_MODE_POWER:\
-            MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_OFF), lcd_silent_mode_set);\
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set);\
             break;\
         case SILENT_MODE_SILENT:\
-            MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_ON), lcd_silent_mode_set);\
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_SILENT), lcd_silent_mode_set);\
             break;\
         case SILENT_MODE_AUTO:\
-            MENU_ITEM_FUNCTION_P(_T(MSG_AUTO_MODE_ON), lcd_silent_mode_set);\
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_AUTO_POWER), lcd_silent_mode_set);\
             break;\
         default:\
-            MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_OFF), lcd_silent_mode_set);\
+            MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set);\
             break; /* (probably) not needed*/\
         }\
     }\
@@ -6887,8 +6887,8 @@ static void lcd_tune_menu()
 #ifdef TMC2130
      if(!farm_mode)
      {
-          if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_OFF), lcd_silent_mode_set);
-          else MENU_ITEM_FUNCTION_P(_T(MSG_STEALTH_MODE_ON), lcd_silent_mode_set);
+          if (SilentModeMenu == SILENT_MODE_NORMAL) MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_NORMAL), lcd_silent_mode_set);
+          else MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_STEALTH), lcd_silent_mode_set);
 
           if (SilentModeMenu == SILENT_MODE_NORMAL)
           {
@@ -6900,10 +6900,10 @@ static void lcd_tune_menu()
 #else //TMC2130
 	if (!farm_mode) { //dont show in menu if we are in farm mode
 		switch (SilentModeMenu) {
-		case SILENT_MODE_POWER: MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_OFF), lcd_silent_mode_set); break;
-		case SILENT_MODE_SILENT: MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_ON), lcd_silent_mode_set); break;
-		case SILENT_MODE_AUTO: MENU_ITEM_FUNCTION_P(_T(MSG_AUTO_MODE_ON), lcd_silent_mode_set); break;
-		default: MENU_ITEM_FUNCTION_P(_T(MSG_SILENT_MODE_OFF), lcd_silent_mode_set); break; // (probably) not needed
+		case SILENT_MODE_POWER: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break;
+		case SILENT_MODE_SILENT: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_SILENT), lcd_silent_mode_set); break;
+		case SILENT_MODE_AUTO: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_AUTO_POWER), lcd_silent_mode_set); break;
+		default: MENU_ITEM_TOGGLE_P(_T(MSG_MODE), _T(MSG_HIGH_POWER), lcd_silent_mode_set); break; // (probably) not needed
 		}
 	}
 #endif //TMC2130

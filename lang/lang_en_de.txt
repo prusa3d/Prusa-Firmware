@@ -550,13 +550,17 @@
 "MMU OK. Resuming..."
 "MMU OK.  Weiterdrucken..."
 
-#MSG_STEALTH_MODE_OFF
-"Mode     [Normal]"
-"Modus    [Normal]"
+#MSG_MODE
+"Mode"
+"Modus"
 
-#MSG_SILENT_MODE_ON
-"Mode     [silent]"
-"Modus     [leise]"
+#MSG_NORMAL
+"Normal"
+"\x00"
+
+#MSG_SILENT
+"Silent"
+"Leise"
 
 #
 "MMU needs user attention."
@@ -566,17 +570,17 @@
 "MMU power fails"
 "MMU Netzfehler"
 
-#MSG_STEALTH_MODE_ON
-"Mode    [Stealth]"
-"Modus   [Stealth]"
+#MSG_STEALTH
+"Stealth"
+"\x00"
 
-#MSG_AUTO_MODE_ON
-"Mode [auto power]"
-"Modus[Auto Power]"
+#MSG_AUTO_POWER
+"Auto power"
+"\x00"
 
-#MSG_SILENT_MODE_OFF
-"Mode [high power]"
-"Modus[Hohe Leist]"
+#MSG_HIGH_POWER
+"High power"
+"Hohe leist"
 
 #
 "MMU2 connected"

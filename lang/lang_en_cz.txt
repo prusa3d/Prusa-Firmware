@@ -550,13 +550,17 @@
 "MMU OK. Resuming..."
 "MMU OK. Pokracuji..."
 
-#MSG_STEALTH_MODE_OFF
-"Mode     [Normal]"
-"Mod      [Normal]"
+#MSG_MODE
+"Mode"
+"Mod"
 
-#MSG_SILENT_MODE_ON
-"Mode     [silent]"
-"Mod       [tichy]"
+#MSG_NORMAL
+"Normal"
+"\x00"
+
+#MSG_SILENT
+"Silent"
+"Tichy"
 
 #
 "MMU needs user attention."
@@ -566,17 +570,17 @@
 "MMU power fails"
 "MMU vypadky proudu"
 
-#MSG_STEALTH_MODE_ON
-"Mode    [Stealth]"
-"Mod       [tichy]"
+#MSG_STEALTH
+"Stealth"
+"Tichy"
 
-#MSG_AUTO_MODE_ON
-"Mode [auto power]"
-"Mod [automaticky]"
+#MSG_AUTO_POWER
+"Auto power"
+"Automaticky"
 
-#MSG_SILENT_MODE_OFF
-"Mode [high power]"
-"Mod  [vys. vykon]"
+#MSG_HIGH_POWER
+"High power"
+"Vys. vykon"
 
 #
 "MMU2 connected"
