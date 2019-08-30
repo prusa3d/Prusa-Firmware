@@ -101,11 +101,11 @@ void eeprom_init()
 //! @param[out] sheetName
 void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
 {
-    sheetName.c[0] = '1' + index;
-    for (uint8_t i = 1; i < (sizeof(sheetName.c)/sizeof(sheetName.c[0])); ++i)
-    {
-        sheetName.c[i] = '\0';
-    }
+    static_assert(8 == sizeof(SheetName),"Default sheet name needs to be adjusted.");
+    sprintf_P(sheetName.c, PSTR("%-6.6S"), _T(MSG_SHEET));
+
+    sheetName.c[6] = '1' + index;
+    sheetName.c[7] = '\0';
 }
 
 //! @brief Get next initialized sheet
