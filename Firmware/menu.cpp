@@ -204,7 +204,7 @@ void menu_format_sheet_select_E(const Sheet &sheet_E, SheetFormatBuffer &buffer)
 {
     uint_least8_t index = sprintf_P(buffer.c,PSTR("%-9.9S["), _T(MSG_SHEET));
     eeprom_read_block(&(buffer.c[index]), sheet_E.name, sizeof(sheet_E.name)/sizeof(sheet_E.name[0]));
-    for (const uint_least8_t start = index;index - start < sizeof(sheet_E.name)/sizeof(sheet_E.name[0]);++index)
+    for (const uint_least8_t start = index; static_cast<uint_least8_t>(index - start) < sizeof(sheet_E.name)/sizeof(sheet_E.name[0]); ++index)
     {
         if (buffer.c[index] == '\0') break;
     }
