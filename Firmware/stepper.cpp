@@ -1562,7 +1562,8 @@ void EEPROM_read_st(int pos, uint8_t* value, uint8_t size)
 
 void st_current_init() //Initialize Digipot Motor Current
 {  
-uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+  uint8_t SilentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
+  if (silentMode == 0xff) silentMode = SILENT_MODE_POWER;
   SilentModeMenu = SilentMode;
   #ifdef MOTOR_CURRENT_PWM_XY_PIN
     pinMode(MOTOR_CURRENT_PWM_XY_PIN, OUTPUT);
