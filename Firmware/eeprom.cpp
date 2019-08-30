@@ -67,7 +67,7 @@ void eeprom_init()
         // When upgrading from version older version (before multiple sheets were implemented in v3.8.0)
         // Sheet 1 uses the previous Live adjust Z (@EEPROM_BABYSTEP_Z)
         int last_babystep = eeprom_read_word((uint16_t *)EEPROM_BABYSTEP_Z);
-        eeprom_write_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[0].z_offset)), last_babystep);
+        eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[0].z_offset)), last_babystep);
     }
     
     for (uint_least8_t i = 0; i < (sizeof(Sheets::s)/sizeof(Sheets::s[0])); ++i)
