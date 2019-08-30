@@ -6580,6 +6580,15 @@ static void lcd_rename_sheet_menu()
         lcd_putc(menuData->name[i]);
     }
     lcd_set_cursor(menuData->selected, 1);
+    if (menuData->selected>0)
+    {
+	lcd_set_cursor(menuData->selected-1, 1);    
+	lcd_putc(' ');
+    }
+    else
+    {
+	lcd_set_cursor(menuData->selected, 1);
+    }
     lcd_putc('^');
     if (lcd_clicked())
     {
