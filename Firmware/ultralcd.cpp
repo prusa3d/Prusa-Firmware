@@ -5332,16 +5332,16 @@ do\
     switch(oCheckMode)\
          {\
          case ClCheckMode::_None:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [none]"),lcd_check_mode_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_NOZZLE), _T(MSG_NONE), lcd_check_mode_set);\
               break;\
          case ClCheckMode::_Warn:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [warn]"),lcd_check_mode_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_NOZZLE), _T(MSG_WARN), lcd_check_mode_set);\
               break;\
          case ClCheckMode::_Strict:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle   [strict]"),lcd_check_mode_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_NOZZLE), _T(MSG_STRICT), lcd_check_mode_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle     [none]"),lcd_check_mode_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_NOZZLE), _T(MSG_NONE), lcd_check_mode_set);\
          }\
 }\
 while (0)
@@ -5375,20 +5375,17 @@ eeprom_update_word((uint16_t*)EEPROM_NOZZLE_DIAMETER_uM,nDiameter);
 #define SETTINGS_NOZZLE \
 do\
 {\
+    char sNozzleDiam[5];/*enough for two decimals*/\
+    float fNozzleDiam;\
     switch(oNozzleDiameter)\
-         {\
-         case ClNozzleDiameter::_Diameter_250:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.25]"),lcd_nozzle_diameter_set);\
-              break;\
-         case ClNozzleDiameter::_Diameter_400:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.40]"),lcd_nozzle_diameter_set);\
-              break;\
-         case ClNozzleDiameter::_Diameter_600:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.60]"),lcd_nozzle_diameter_set);\
-              break;\
-         default:\
-              MENU_ITEM_FUNCTION_P(_i("Nozzle d.  [0.40]"),lcd_nozzle_diameter_set);\
-         }\
+    {\
+        case ClNozzleDiameter::_Diameter_250: fNozzleDiam = 0.25f; break;\
+        case ClNozzleDiameter::_Diameter_400: fNozzleDiam = 0.4f; break;\
+        case ClNozzleDiameter::_Diameter_600: fNozzleDiam = 0.6f; break;\
+        default: fNozzleDiam = 0.4f; break;\
+    }\
+    sprintf_P(sNozzleDiam, PSTR("%.2f"), fNozzleDiam);\
+    MENU_ITEM_TOGGLE(_T(MSG_NOZZLE_DIAMETER), sNozzleDiam, lcd_nozzle_diameter_set);\
 }\
 while (0)
 
@@ -5417,16 +5414,16 @@ do\
     switch(oCheckModel)\
          {\
          case ClCheckModel::_None:\
-              MENU_ITEM_FUNCTION_P(_i("Model      [none]"),lcd_check_model_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_MODEL), _T(MSG_NONE), lcd_check_model_set);\
               break;\
          case ClCheckModel::_Warn:\
-              MENU_ITEM_FUNCTION_P(_i("Model      [warn]"),lcd_check_model_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_MODEL), _T(MSG_WARN), lcd_check_model_set);\
               break;\
          case ClCheckModel::_Strict:\
-              MENU_ITEM_FUNCTION_P(_i("Model    [strict]"),lcd_check_model_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_MODEL), _T(MSG_STRICT), lcd_check_model_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Model      [none]"),lcd_check_model_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_MODEL), _T(MSG_NONE), lcd_check_model_set);\
          }\
 }\
 while (0)
@@ -5456,16 +5453,16 @@ do\
     switch(oCheckVersion)\
          {\
          case ClCheckVersion::_None:\
-              MENU_ITEM_FUNCTION_P(_i("Firmware   [none]"),lcd_check_version_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FIRMWARE), _T(MSG_NONE), lcd_check_version_set);\
               break;\
          case ClCheckVersion::_Warn:\
-              MENU_ITEM_FUNCTION_P(_i("Firmware   [warn]"),lcd_check_version_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FIRMWARE), _T(MSG_WARN), lcd_check_version_set);\
               break;\
          case ClCheckVersion::_Strict:\
-              MENU_ITEM_FUNCTION_P(_i("Firmware [strict]"),lcd_check_version_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FIRMWARE), _T(MSG_STRICT), lcd_check_version_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Firmware   [none]"),lcd_check_version_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_FIRMWARE), _T(MSG_NONE), lcd_check_version_set);\
          }\
 }\
 while (0)
@@ -5495,16 +5492,16 @@ do\
     switch(oCheckGcode)\
          {\
          case ClCheckGcode::_None:\
-              MENU_ITEM_FUNCTION_P(_i("Gcode      [none]"),lcd_check_gcode_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_GCODE), _T(MSG_NONE), lcd_check_gcode_set);\
               break;\
          case ClCheckGcode::_Warn:\
-              MENU_ITEM_FUNCTION_P(_i("Gcode      [warn]"),lcd_check_gcode_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_GCODE), _T(MSG_WARN), lcd_check_gcode_set);\
               break;\
          case ClCheckGcode::_Strict:\
-              MENU_ITEM_FUNCTION_P(_i("Gcode    [strict]"),lcd_check_gcode_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_GCODE), _T(MSG_STRICT), lcd_check_gcode_set);\
               break;\
          default:\
-              MENU_ITEM_FUNCTION_P(_i("Gcode      [none]"),lcd_check_gcode_set);\
+              MENU_ITEM_TOGGLE_P(_T(MSG_GCODE), _T(MSG_NONE), lcd_check_gcode_set);\
          }\
 }\
 while (0)

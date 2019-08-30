@@ -107,6 +107,13 @@ extern const char MSG_ON[];
 extern const char MSG_NA[];
 extern const char MSG_AUTO_DEPLETE[];
 extern const char MSG_CUTTER[];
+extern const char MSG_NONE[];
+extern const char MSG_WARN[];
+extern const char MSG_STRICT[];
+extern const char MSG_MODEL[];
+extern const char MSG_FIRMWARE[];
+extern const char MSG_GCODE[];
+extern const char MSG_NOZZLE_DIAMETER[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];

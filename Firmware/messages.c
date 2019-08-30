@@ -107,6 +107,13 @@ const char MSG_ON[] PROGMEM_I1 = ISTR("On"); ////
 const char MSG_NA[] PROGMEM_I1 = ISTR("N/A"); ////
 const char MSG_AUTO_DEPLETE[] PROGMEM_I1 = ISTR("SpoolJoin"); ////
 const char MSG_CUTTER[] PROGMEM_I1 = ISTR("Cutter"); ////
+const char MSG_NONE[] PROGMEM_I1 = ISTR("None"); ////
+const char MSG_WARN[] PROGMEM_I1 = ISTR("Warn"); ////
+const char MSG_STRICT[] PROGMEM_I1 = ISTR("Strict"); ////
+const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////
+const char MSG_FIRMWARE[] PROGMEM_I1 = ISTR("Firmware"); ////
+const char MSG_GCODE[] PROGMEM_I1 = ISTR("Gcode"); ////
+const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////
 
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////

@@ -184,11 +184,11 @@ static void menu_draw_item_puts_P(char type_char, const char* str)
     lcd_printf_P(PSTR("%c%-18.18S%c"), menu_selection_mark(), str, type_char);
 }
 
-static void menu_draw_toggle_puts_P(const char* str, const char* toggle)
+static void menu_draw_toggle_puts_P(const char* str, const char* toggle, const bool fromProgmem)
 {
 	menu_draw_item_puts_P((toggle == NULL)?LCD_STR_ARROW_RIGHT[0]:LCD_STR_REFRESH[0], str);
-	lcd_set_cursor(LCD_WIDTH - 3 - strlen_P((toggle == NULL)?_T(MSG_NA):toggle), menu_row);
-	lcd_printf_P(PSTR("[%S]"), (toggle == NULL)?_T(MSG_NA):toggle);
+	lcd_set_cursor(LCD_WIDTH - 3 - (fromProgmem?(strlen_P((toggle == NULL)?_T(MSG_NA):toggle)):(strlen(toggle))), menu_row);
+	lcd_printf_P(fromProgmem?PSTR("[%S]"):PSTR("[%s]"), (toggle == NULL)?_T(MSG_NA):toggle);
 }
 
 //! @brief Format sheet name
@@ -374,11 +374,11 @@ uint8_t menu_item_function_P(const char* str, char number, void (*func)(uint8_t)
     return 0;
 }
 
-uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func)
+uint8_t menu_item_toggle_P(const char* str, const char* toggle, menu_func_t func, const bool fromProgmem)
 {
 	if (menu_item == menu_line)
 	{
-		if (lcd_draw_update) menu_draw_toggle_puts_P(str, toggle);
+		if (lcd_draw_update) menu_draw_toggle_puts_P(str, toggle, fromProgmem);
 		if (menu_clicked && (lcd_encoder == menu_item))
 		{
 			if (toggle == NULL) // print N/A warning message
