@@ -244,10 +244,6 @@ void lcd_finishstatus();
 static void lcd_sdcard_menu();
 static void lcd_sheet_menu();
 
-static void lcd_select_sheet_0_menu();
-static void lcd_select_sheet_1_menu();
-static void lcd_select_sheet_2_menu();
-
 #ifdef DELTA_CALIBRATION_MENU
 static void lcd_delta_calibrate_menu();
 #endif // DELTA_CALIBRATION_MENU
@@ -3102,7 +3098,7 @@ static void lcd_babystep_z()
 		_md->status = 1;
 		check_babystep();
 		
-		if(!is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))){
+		if(!eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))){
 			_md->babystepMemZ = 0;
 		}
 		else{
@@ -4694,7 +4690,6 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 
 void lcd_v2_calibration()
 {
-	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
 	if (mmu_enabled)
 	{
 	    const uint8_t filament = choose_menu_P(_i("Select PLA filament:"),_T(MSG_FILAMENT),_i("Cancel")); ////c=20 r=1  ////c=19 r=1
@@ -5526,37 +5521,38 @@ SETTINGS_VERSION;
 MENU_END();
 }
 
+template <uint8_t number>
+static void select_sheet_menu()
+{
+    selected_sheet = number;
+    lcd_sheet_menu();
+}
+
+static void sheets_menu()
+{
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_i("HW Setup"));
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], select_sheet_menu<0>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], select_sheet_menu<1>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], select_sheet_menu<2>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[3], select_sheet_menu<3>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[4], select_sheet_menu<4>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[5], select_sheet_menu<5>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[6], select_sheet_menu<6>);
+    MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[7], select_sheet_menu<7>);
+    MENU_END();
+}
+
 void lcd_hw_setup_menu(void)                      // can not be "static"
 {
-MENU_BEGIN();
-MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
+    MENU_BEGIN();
+    MENU_ITEM_BACK_P(_T(bSettings?MSG_SETTINGS:MSG_BACK)); // i.e. default menu-item / menu-item after checking mismatch
 
-//strncpy(buffer,_i("Sheet"),sizeof(buffer));
-//strncpy(buffer,_i(" "),sizeof(buffer));
-//strncpy(buffer,EEPROM_Sheets_base->s[0].name,sizeof(buffer));
+    MENU_ITEM_SUBMENU_P(_i("Steel sheets"), sheets_menu);
+    SETTINGS_NOZZLE;
+    MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
 
-//const char* menu = EEPROM_Sheets_base->s[0].name.c_str();
-
-//const char *b = new char(buffer);
-//const char *b = const char *b = new char(buffer);(buffer);
-//printf_P(_N("UVLO - end %d\n"), _millis() - time_start);
-//SERIAL_ECHOPGM(buffer);
-//SERIAL_ECHOPGM(reinterpret_cast<const char*>(buffer));
-//SERIAL_ECHOPGM("lakdjushasdjaljsdakjsdn");
-//char* p = &buffer[0];
-
-//MENU_ITEM_SUBMENU_P(reinterpret_cast<const char*>(p),lcd_sheet_menu);
-
-//delete(b);
-
-MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[0], lcd_select_sheet_0_menu);
-MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[1], lcd_select_sheet_1_menu);
-MENU_ITEM_SUBMENU_E(EEPROM_Sheets_base->s[2], lcd_select_sheet_2_menu);   
-
-SETTINGS_NOZZLE;
-MENU_ITEM_SUBMENU_P(_i("Checks"), lcd_checking_menu);
-
-MENU_END();
+    MENU_END();
 }
 
 static void lcd_settings_menu()
@@ -6517,40 +6513,7 @@ static void change_sheet()
     menu_back(3);
 }
 
-static void change_sheet_from_menu(){
-	uint8_t next_sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))+1;
-	while(true){
-		if(next_sheet > 2) next_sheet = 0;
-		if(is_sheet_initialized(next_sheet)){
-			eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), next_sheet);
-			selected_sheet = next_sheet;
-			break;
-		}
-		else if (next_sheet == selected_sheet){
-			break;
-		}
-		else{
-			next_sheet++;
-		}
-	}
-	menu_back();
-}
 
-static void lcd_select_sheet_0_menu()
-{
-	selected_sheet = 0;
-	lcd_sheet_menu();
-}
-static void lcd_select_sheet_1_menu()
-{
-	selected_sheet = 1;
-	lcd_sheet_menu();
-}
-static void lcd_select_sheet_2_menu()
-{
-	selected_sheet = 2;
-	lcd_sheet_menu();
-}
 
 static void lcd_rename_sheet_menu()
 {
@@ -6598,37 +6561,41 @@ static void lcd_rename_sheet_menu()
 
 static void lcd_reset_sheet()
 {
-    struct MenuData
-    {
-        bool initialized;
-        uint8_t selected;
-        char name[sizeof(Sheet::name)];
-    };
-    static_assert(sizeof(menu_data)>= sizeof(MenuData),"MenuData doesn't fit into menu_data");
-    MenuData* menuData = (MenuData*)&(menu_data[0]);
-    eeprom_read_block(menuData->name, EEPROM_Sheets_base->s[selected_sheet].name, sizeof(Sheet::name));
-    
-	menuData->initialized = false;
-    strcpy_P(menuData->name, (char *)pgm_read_word(&(defaultSheetNames[selected_sheet])));
-
-
+    SheetName sheetName;
+    eeprom_default_sheet_name(selected_sheet, sheetName);
 	eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),0xffff);
-	eeprom_update_block(menuData->name,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
-	menu_back(2);
+	eeprom_update_block(sheetName.c,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
+	if (selected_sheet == eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))
+	{
+        eeprom_switch_to_next_sheet();
+        if((-1 == eeprom_next_initialized_sheet(0)) && (CALIBRATION_STATUS_CALIBRATED == calibration_status()))
+        {
+            calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
+        }
+	}
+
+	menu_back();
+}
+
+//! @brief Activate selected_sheet and run first layer calibration
+static void activate_calibrate_sheet()
+{
+    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
+    lcd_v2_calibration();
 }
 
 static void lcd_sheet_menu()
 {
     MENU_BEGIN();
-    MENU_ITEM_BACK_P(_T(MSG_HW_SETUP));
+    MENU_ITEM_BACK_P(_i("Steel sheets"));
 
-	if(is_sheet_initialized(selected_sheet)){
+	if(eeprom_is_sheet_initialized(selected_sheet)){
 	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); //// c=18
 	}
 
-    MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
+    MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
-	MENU_ITEM_SUBMENU_P(_i("Reset"), lcd_reset_sheet); //// c=18
+	MENU_ITEM_FUNCTION_P(_i("Reset"), lcd_reset_sheet); //// c=18
 
     MENU_END();
 }
@@ -6723,6 +6690,19 @@ static void lcd_main_menu()
   }
 #endif
 
+  if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
+  {
+    if (!farm_mode)
+    {
+        const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+        const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
+        if ((nextSheet >= 0) && (sheet != nextSheet)) // show menu only if we have 2 or more sheets initialized
+        {
+            MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], eeprom_switch_to_next_sheet);
+        }
+    }
+  }
+
 
   if (IS_SD_PRINTING || is_usb_printing || (lcd_commands_type == LcdCommands::Layer1Cal))
   {
@@ -6766,14 +6746,6 @@ static void lcd_main_menu()
 	MENU_ITEM_SUBMENU_P(_T(MSG_SETTINGS), lcd_settings_menu);
     if(!isPrintPaused) MENU_ITEM_SUBMENU_P(_T(MSG_MENU_CALIBRATION), lcd_calibration_menu);
 
-  }
-
-  if(!isPrintPaused && !IS_SD_PRINTING && !is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))
-  {
-    if (!farm_mode)
-    {
-	  MENU_ITEM_SUBMENU_SELECT_SHEET_E(EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))], change_sheet_from_menu);
-    }
   }
   
   if (!is_usb_printing && (lcd_commands_type != LcdCommands::Layer1Cal))

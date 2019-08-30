@@ -308,11 +308,6 @@ extern bool axis_known_position[3];
 extern int fanSpeed;
 extern int8_t lcd_change_fil_state;
 
-const char smooth1[] PROGMEM = "Smooth1";
-const char smooth2[] PROGMEM = "Smooth2";
-const char textured[] PROGMEM = "Textur1";
-const char *const defaultSheetNames[] PROGMEM = {smooth1,smooth2,textured};
-
 #ifdef TMC2130
 void homeaxis(int axis, uint8_t cnt = 1, uint8_t* pstep = 0);
 #else
