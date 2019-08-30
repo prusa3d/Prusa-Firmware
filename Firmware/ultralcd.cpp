@@ -3098,7 +3098,7 @@ static void lcd_babystep_z()
 		_md->status = 1;
 		check_babystep();
 		
-		if(!is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))){
+		if(!eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))){
 			_md->babystepMemZ = 0;
 		}
 		else{
@@ -6512,31 +6512,7 @@ static void change_sheet()
     menu_back(3);
 }
 
-//! @brief Get next initialized sheet
-//!
-//! If current sheet is the only sheet initialized, current sheet is returned.
-//!
-//! @param sheet Current sheet
-//! @return next initialized sheet
-//! @retval -1 no sheet is initialized
-static int8_t next_initialized_sheet(int8_t sheet)
-{
-    for (int8_t i = 0; i < static_cast<int8_t>(sizeof(Sheets::s)/sizeof(Sheet)); ++i)
-    {
-        ++sheet;
-        if (sheet >= static_cast<int8_t>(sizeof(Sheets::s)/sizeof(Sheet))) sheet = 0;
-        if (is_sheet_initialized(sheet)) return sheet;
-    }
-    return -1;
-}
 
-static void change_sheet_from_menu()
-{
-	int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
-
-	sheet = next_initialized_sheet(sheet);
-	if (sheet >= 0) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet);
-}
 
 static void lcd_rename_sheet_menu()
 {
@@ -6585,13 +6561,13 @@ static void lcd_rename_sheet_menu()
 static void lcd_reset_sheet()
 {
     SheetName sheetName;
-    default_sheet_name(selected_sheet, sheetName);
+    eeprom_default_sheet_name(selected_sheet, sheetName);
 	eeprom_update_word(reinterpret_cast<uint16_t *>(&(EEPROM_Sheets_base->s[selected_sheet].z_offset)),0xffff);
 	eeprom_update_block(sheetName.c,EEPROM_Sheets_base->s[selected_sheet].name,sizeof(Sheet::name));
 	if (selected_sheet == eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet)))
 	{
-        change_sheet_from_menu();
-        if((-1 == next_initialized_sheet(0)) && (CALIBRATION_STATUS_CALIBRATED == calibration_status()))
+        eeprom_switch_to_next_sheet();
+        if((-1 == eeprom_next_initialized_sheet(0)) && (CALIBRATION_STATUS_CALIBRATED == calibration_status()))
         {
             calibration_status_store(CALIBRATION_STATUS_LIVE_ADJUST);
         }
@@ -6605,7 +6581,7 @@ static void lcd_sheet_menu()
     MENU_BEGIN();
     MENU_ITEM_BACK_P(_i("Steel sheets"));
 
-	if(is_sheet_initialized(selected_sheet)){
+	if(eeprom_is_sheet_initialized(selected_sheet)){
 	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); //// c=18
 	}
 
@@ -6711,10 +6687,10 @@ static void lcd_main_menu()
     if (!farm_mode)
     {
         const int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
-        const int8_t nextSheet = next_initialized_sheet(sheet);
+        const int8_t nextSheet = eeprom_next_initialized_sheet(sheet);
         if ((nextSheet >= 0) && (sheet != nextSheet)) // show menu only if we have 2 or more sheets initialized
         {
-            MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], change_sheet_from_menu);
+            MENU_ITEM_FUNCTION_E(EEPROM_Sheets_base->s[sheet], eeprom_switch_to_next_sheet);
         }
     }
   }

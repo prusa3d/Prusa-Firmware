@@ -231,12 +231,14 @@ enum
 
 #ifdef __cplusplus
 void eeprom_init();
-bool is_sheet_initialized(uint8_t sheet_num);
+bool eeprom_is_sheet_initialized(uint8_t sheet_num);
 struct SheetName
 {
     char c[sizeof(Sheet::name) + 1];
 };
-void default_sheet_name(uint8_t index, SheetName &sheetName);
+void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName);
+int8_t eeprom_next_initialized_sheet(int8_t sheet);
+void eeprom_switch_to_next_sheet();
 #endif
 
 #endif // EEPROM_H

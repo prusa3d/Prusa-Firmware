@@ -41,7 +41,8 @@ bool eeprom_is_uninitialized<char>(char *address)
     return (0xff == eeprom_read_byte(reinterpret_cast<uint8_t*>(address)));
 }
 
-bool is_sheet_initialized(uint8_t sheet_num){
+bool eeprom_is_sheet_initialized(uint8_t sheet_num)
+{
   return (0xffff != eeprom_read_word(reinterpret_cast<uint16_t*>(&(EEPROM_Sheets_base->
   s[sheet_num].z_offset))));
 }
@@ -80,12 +81,16 @@ void eeprom_init()
         if(is_uninitialized)
         {
             SheetName sheetName;
-            default_sheet_name(i,sheetName);
+            eeprom_default_sheet_name(i,sheetName);
 
             for (uint_least8_t a = 0; a < sizeof(Sheet::name); ++a){
                 eeprom_write(&(EEPROM_Sheets_base->s[i].name[a]), sheetName.c[a]);
             }
         }
+    }
+    if(!eeprom_is_sheet_initialized(eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))))
+    {
+        eeprom_switch_to_next_sheet();
     }
     check_babystep();
 }
@@ -94,11 +99,37 @@ void eeprom_init()
 //!
 //! @param[in] index
 //! @param[out] sheetName
-void default_sheet_name(uint8_t index, SheetName &sheetName)
+void eeprom_default_sheet_name(uint8_t index, SheetName &sheetName)
 {
     sheetName.c[0] = '1' + index;
     for (uint8_t i = 1; i < (sizeof(sheetName.c)/sizeof(sheetName.c[0])); ++i)
     {
         sheetName.c[i] = '\0';
     }
+}
+
+//! @brief Get next initialized sheet
+//!
+//! If current sheet is the only sheet initialized, current sheet is returned.
+//!
+//! @param sheet Current sheet
+//! @return next initialized sheet
+//! @retval -1 no sheet is initialized
+int8_t eeprom_next_initialized_sheet(int8_t sheet)
+{
+    for (int8_t i = 0; i < static_cast<int8_t>(sizeof(Sheets::s)/sizeof(Sheet)); ++i)
+    {
+        ++sheet;
+        if (sheet >= static_cast<int8_t>(sizeof(Sheets::s)/sizeof(Sheet))) sheet = 0;
+        if (eeprom_is_sheet_initialized(sheet)) return sheet;
+    }
+    return -1;
+}
+
+void eeprom_switch_to_next_sheet()
+{
+    int8_t sheet = eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet));
+
+    sheet = eeprom_next_initialized_sheet(sheet);
+    if (sheet >= 0) eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), sheet);
 }
