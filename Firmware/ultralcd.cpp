@@ -4690,7 +4690,6 @@ void lcd_toshiba_flash_air_compatibility_toggle()
 
 void lcd_v2_calibration()
 {
-	eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
 	if (mmu_enabled)
 	{
 	    const uint8_t filament = choose_menu_P(_i("Select PLA filament:"),_T(MSG_FILAMENT),_i("Cancel")); ////c=20 r=1  ////c=19 r=1
@@ -6576,6 +6575,13 @@ static void lcd_reset_sheet()
 	menu_back();
 }
 
+//! @brief Activate selected_sheet and run first layer calibration
+static void activate_calibrate_sheet()
+{
+    eeprom_update_byte(&(EEPROM_Sheets_base->active_sheet), selected_sheet);
+    lcd_v2_calibration();
+}
+
 static void lcd_sheet_menu()
 {
     MENU_BEGIN();
@@ -6585,7 +6591,7 @@ static void lcd_sheet_menu()
 	    MENU_ITEM_SUBMENU_P(_i("Select"), change_sheet); //// c=18
 	}
 
-    MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), lcd_v2_calibration);
+    MENU_ITEM_SUBMENU_P(_T(MSG_V2_CALIBRATION), activate_calibrate_sheet);
     MENU_ITEM_SUBMENU_P(_i("Rename"), lcd_rename_sheet_menu); //// c=18
 	MENU_ITEM_FUNCTION_P(_i("Reset"), lcd_reset_sheet); //// c=18
 
