@@ -5593,10 +5593,7 @@ static void lcd_settings_menu()
 	  MENU_ITEM_FUNCTION_P(_i("Temp. cal.   [on]"), lcd_temp_calibration_set);////MSG_TEMP_CALIBRATION_ON c=20 r=1
 
 #ifdef HAS_SECOND_SERIAL_PORT
-	if (selectedSerialPort == 0)
-		MENU_ITEM_FUNCTION_P(_i("RPi port    [off]"), lcd_second_serial_set);////MSG_SECOND_SERIAL_OFF c=17 r=1
-	else
-		MENU_ITEM_FUNCTION_P(_i("RPi port     [on]"), lcd_second_serial_set);////MSG_SECOND_SERIAL_ON c=17 r=1
+    MENU_ITEM_TOGGLE_P(_T(MSG_RPI_PORT), (selectedSerialPort == 0) ? _T(MSG_OFF) : _T(MSG_ON), lcd_second_serial_set);
 #endif //HAS_SECOND_SERIAL
 
 	if (!isPrintPaused && !homing_flag)

@@ -640,11 +640,8 @@
 #MSG_BED_CORRECTION_RIGHT c=14 r=1
 "Right side[um]"
 
-#MSG_SECOND_SERIAL_ON c=17 r=1
-"RPi port     [on]"
-
-#MSG_SECOND_SERIAL_OFF c=17 r=1
-"RPi port    [off]"
+#MSG_RPI_PORT
+"RPi port"
 
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"

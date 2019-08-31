@@ -120,6 +120,7 @@ extern const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[];
 extern const char MSG_SORT[];
 extern const char MSG_SORT_TIME[];
 extern const char MSG_SORT_ALPHA[];
+extern const char MSG_RPI_PORT[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];
