@@ -9492,10 +9492,9 @@ void long_pause() //long pause print
 	current_position[Y_AXIS] = Y_PAUSE_POS;
 	plan_buffer_line_curposXYZE(50, active_extruder);
 
-	// Turn off the print fan
+	// Turn off the hotends and print fan
+    setAllTargetHotends(0);
 	fanSpeed = 0;
-
-	st_synchronize();
 }
 
 void serialecho_temperatures() {

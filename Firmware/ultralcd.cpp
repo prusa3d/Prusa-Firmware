@@ -1059,12 +1059,8 @@ void lcd_commands()
 		if (!blocks_queued() && !homing_flag)
 		{
 			lcd_setstatuspgm(_i("Print paused"));////MSG_PRINT_PAUSED c=20 r=1
-			long_pause();
-               if (lcd_commands_type == LcdCommands::LongPause) // !!! because "lcd_commands_type" can be changed during/inside "long_pause()"
-               {
-                    lcd_commands_type = LcdCommands::Idle;
-                    lcd_commands_step = 0;
-               }
+            lcd_commands_type = LcdCommands::Idle;
+            lcd_commands_step = 0;
 		}
 	}
 
@@ -1644,7 +1640,7 @@ void lcd_pause_print()
 {
     lcd_return_to_status();
     stop_and_save_print_to_ram(0.0,0.0);
-    setAllTargetHotends(0);
+    long_pause();
     isPrintPaused = true;
     if (LcdCommands::Idle == lcd_commands_type)
     {
