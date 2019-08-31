@@ -115,6 +115,11 @@ const char MSG_FIRMWARE[] PROGMEM_I1 = ISTR("Firmware"); ////
 const char MSG_GCODE[] PROGMEM_I1 = ISTR("Gcode"); ////
 const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////
 const char MSG_MMU_MODE[] PROGMEM_I1 = ISTR("MMU Mode"); ////
+const char MSG_SD_CARD[] PROGMEM_I1 = ISTR("SD card"); ////
+const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[] PROGMEM_I1 = ISTR("FlashAir"); ////
+const char MSG_SORT[] PROGMEM_I1 = ISTR("Sort"); ////
+const char MSG_SORT_TIME[] PROGMEM_I1 = ISTR("Time"); ////
+const char MSG_SORT_ALPHA[] PROGMEM_I1 = ISTR("Alphabet"); ////
 
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////

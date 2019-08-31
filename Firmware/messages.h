@@ -115,6 +115,11 @@ extern const char MSG_FIRMWARE[];
 extern const char MSG_GCODE[];
 extern const char MSG_NOZZLE_DIAMETER[];
 extern const char MSG_MMU_MODE[];
+extern const char MSG_SD_CARD[];
+extern const char MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY[];
+extern const char MSG_SORT[];
+extern const char MSG_SORT_TIME[];
+extern const char MSG_SORT_ALPHA[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];

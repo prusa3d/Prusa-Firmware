@@ -866,13 +866,13 @@
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 "Lancer l'Assistant supprimera les resultats actuels de calibration et commencera du debut. Continuer ?"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
-"SD card  [normal]"
-"Carte SD [normal]"
+#MSG_SD_CARD
+"SD card"
+"Carte SD"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-"SD card [flshAir]"
-"Carte SD [flashAir]"
+#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY
+"FlashAir"
+"\x00"
 
 #
 "Right"
@@ -938,21 +938,25 @@
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 "Certains fichiers ne seront pas tries. Max 100 fichiers tries par dossier."
 
-#MSG_SORT_NONE c=17 r=1
-"Sort       [none]"
-"Tri :     [aucun]"
+#MSG_SORT
+"Sort"
+"Tri"
 
-#MSG_SORT_TIME c=17 r=1
-"Sort       [time]"
-"Tri       [heure]"
+#MSG_NONE
+"None"
+"Aucun"
+
+#MSG_SORT_TIME
+"Time"
+"Heure"
 
 #
 "Severe skew"
 "Deviation severe"
 
-#MSG_SORT_ALPHA c=17 r=1
-"Sort   [alphabet]"
-"Tri    [alphabet]"
+#MSG_SORT_ALPHA
+"Alphabet"
+"\x00"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"

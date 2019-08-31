@@ -5231,9 +5231,9 @@ while (0)
 do\
 {\
     if (card.ToshibaFlashAir_isEnabled())\
-        MENU_ITEM_FUNCTION_P(_i("SD card [flshAir]"), lcd_toshiba_flash_air_compatibility_toggle);/*////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1*/\
+        MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY), lcd_toshiba_flash_air_compatibility_toggle);\
     else\
-        MENU_ITEM_FUNCTION_P(_i("SD card  [normal]"), lcd_toshiba_flash_air_compatibility_toggle);/*////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1*/\
+        MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_NORMAL), lcd_toshiba_flash_air_compatibility_toggle);\
 \
     if (!farm_mode)\
     {\
@@ -5241,9 +5241,9 @@ do\
         EEPROM_read(EEPROM_SD_SORT, (uint8_t*)&sdSort, sizeof(sdSort));\
         switch (sdSort)\
         {\
-          case SD_SORT_TIME: MENU_ITEM_FUNCTION_P(_i("Sort       [time]"), lcd_sort_type_set); break;/*////MSG_SORT_TIME c=17 r=1*/\
-          case SD_SORT_ALPHA: MENU_ITEM_FUNCTION_P(_i("Sort   [alphabet]"), lcd_sort_type_set); break;/*////MSG_SORT_ALPHA c=17 r=1*/\
-          default: MENU_ITEM_FUNCTION_P(_i("Sort       [none]"), lcd_sort_type_set);/*////MSG_SORT_NONE c=17 r=1*/\
+          case SD_SORT_TIME: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_TIME), lcd_sort_type_set); break;\
+          case SD_SORT_ALPHA: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_SORT_ALPHA), lcd_sort_type_set); break;\
+          default: MENU_ITEM_TOGGLE_P(_T(MSG_SORT), _T(MSG_NONE), lcd_sort_type_set);\
         }\
     }\
 }\
@@ -5253,9 +5253,9 @@ while (0)
 do\
 {\
     if (card.ToshibaFlashAir_isEnabled())\
-        MENU_ITEM_FUNCTION_P(_i("SD card [flshAir]"), lcd_toshiba_flash_air_compatibility_toggle);/*////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1*/\
+        MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY), lcd_toshiba_flash_air_compatibility_toggle);\
     else\
-        MENU_ITEM_FUNCTION_P(_i("SD card  [normal]"), lcd_toshiba_flash_air_compatibility_toggle);/*////MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1*/\
+        MENU_ITEM_TOGGLE_P(_T(MSG_SD_CARD), _T(MSG_NORMAL), lcd_toshiba_flash_air_compatibility_toggle);\
 }\
 while (0)
 #endif // SDCARD_SORT_ALPHA

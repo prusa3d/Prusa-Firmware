@@ -649,11 +649,11 @@
 #MSG_WIZARD_RERUN c=20 r=7
 "Running Wizard will delete current calibration results and start from the beginning. Continue?"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_OFF c=19 r=1
-"SD card  [normal]"
+#MSG_SD_CARD
+"SD card"
 
-#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY_ON c=19 r=1
-"SD card [flshAir]"
+#MSG_TOSHIBA_FLASH_AIR_COMPATIBILITY
+"FlashAir"
 
 #
 "Right"
@@ -703,17 +703,20 @@
 #MSG_FILE_CNT c=20 r=4
 "Some files will not be sorted. Max. No. of files in 1 folder for sorting is 100."
 
-#MSG_SORT_NONE c=17 r=1
-"Sort       [none]"
+#MSG_SORT
+"Sort"
 
-#MSG_SORT_TIME c=17 r=1
-"Sort       [time]"
+#MSG_NONE
+"None"
+
+#MSG_SORT_TIME
+"Time"
 
 #
 "Severe skew"
 
-#MSG_SORT_ALPHA c=17 r=1
-"Sort   [alphabet]"
+#MSG_SORT_ALPHA
+"Alphabet"
 
 #MSG_SORTING c=20 r=1
 "Sorting files"
