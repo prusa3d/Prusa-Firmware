@@ -114,6 +114,7 @@ extern const char MSG_MODEL[];
 extern const char MSG_FIRMWARE[];
 extern const char MSG_GCODE[];
 extern const char MSG_NOZZLE_DIAMETER[];
+extern const char MSG_MMU_MODE[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];

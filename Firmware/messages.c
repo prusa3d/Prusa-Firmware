@@ -114,6 +114,7 @@ const char MSG_MODEL[] PROGMEM_I1 = ISTR("Model"); ////
 const char MSG_FIRMWARE[] PROGMEM_I1 = ISTR("Firmware"); ////
 const char MSG_GCODE[] PROGMEM_I1 = ISTR("Gcode"); ////
 const char MSG_NOZZLE_DIAMETER[] PROGMEM_I1 = ISTR("Nozzle d."); ////
+const char MSG_MMU_MODE[] PROGMEM_I1 = ISTR("MMU Mode"); ////
 
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////

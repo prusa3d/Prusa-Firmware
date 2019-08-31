@@ -5217,8 +5217,8 @@ do\
 {\
 	if (mmu_enabled)\
 	{\
-		if (SilentModeMenu_MMU == 0) MENU_ITEM_FUNCTION_P(_i("MMU Mode [Normal]"), lcd_silent_mode_mmu_set); \
-		else MENU_ITEM_FUNCTION_P(_i("MMU Mode[Stealth]"), lcd_silent_mode_mmu_set); \
+		if (SilentModeMenu_MMU == 0) MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), _T(MSG_NORMAL), lcd_silent_mode_mmu_set);\
+		else MENU_ITEM_TOGGLE_P(_T(MSG_MMU_MODE), _T(MSG_STEALTH), lcd_silent_mode_mmu_set);\
 	}\
 }\
 while (0) 
