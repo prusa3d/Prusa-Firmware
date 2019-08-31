@@ -958,29 +958,25 @@
 "Sorting files"
 "Ordinando i file"
 
-#MSG_SOUND_LOUD c=17 r=1
-"Sound      [loud]"
-"Suono     [forte]"
+#MSG_SOUND_LOUD
+"Loud"
+"Forte"
 
 #
 "Slight skew"
 "Disassamento lieve"
 
-#MSG_SOUND_MUTE c=17 r=1
-"Sound      [mute]"
-"Suono      [mute]"
+#MSG_SOUND
+"Sound"
+"Suono"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
 "Sono stati rilevati problemi, avviato livellamento Z ..."
 
-#MSG_SOUND_ONCE c=17 r=1
-"Sound      [once]"
-"Suono   [singolo]"
-
-#MSG_SOUND_SILENT c=17 r=1
-"Sound    [silent]"
-"Suono[silenzioso]"
+#MSG_SOUND_ONCE
+"Once"
+"Singolo"
 
 #MSG_SPEED
 "Speed"

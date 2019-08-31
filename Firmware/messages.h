@@ -121,6 +121,10 @@ extern const char MSG_SORT[];
 extern const char MSG_SORT_TIME[];
 extern const char MSG_SORT_ALPHA[];
 extern const char MSG_RPI_PORT[];
+extern const char MSG_SOUND[];
+extern const char MSG_SOUND_LOUD[];
+extern const char MSG_SOUND_ONCE[];
+extern const char MSG_SOUND_BLIND[];
 
 //not internationalized messages
 extern const char MSG_BROWNOUT_RESET[];

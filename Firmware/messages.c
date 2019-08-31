@@ -121,6 +121,10 @@ const char MSG_SORT[] PROGMEM_I1 = ISTR("Sort"); ////
 const char MSG_SORT_TIME[] PROGMEM_I1 = ISTR("Time"); ////
 const char MSG_SORT_ALPHA[] PROGMEM_I1 = ISTR("Alphabet"); ////
 const char MSG_RPI_PORT[] PROGMEM_I1 = ISTR("RPi port"); ////
+const char MSG_SOUND[] PROGMEM_I1 = ISTR("Sound"); ////
+const char MSG_SOUND_LOUD[] PROGMEM_I1 = ISTR("Loud"); ////
+const char MSG_SOUND_ONCE[] PROGMEM_I1 = ISTR("Once"); ////
+const char MSG_SOUND_BLIND[] PROGMEM_I1 = ISTR("Assist"); ////
 
 //not internationalized messages
 const char MSG_SD_WORKDIR_FAIL[] PROGMEM_N1 = "workDir open failed"; ////

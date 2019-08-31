@@ -958,29 +958,25 @@
 "Sorting files"
 "Trideni souboru"
 
-#MSG_SOUND_LOUD c=17 r=1
-"Sound      [loud]"
-"Zvuk    [hlasity]"
+#MSG_SOUND_LOUD
+"Loud"
+"Hlasity"
 
 #
 "Slight skew"
 "Lehke zkoseni"
 
-#MSG_SOUND_MUTE c=17 r=1
-"Sound      [mute]"
-"Zvuk    [vypnuto]"
+#MSG_SOUND
+"Sound"
+"Zvuk"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
 "Vyskytl se problem, srovnavam osu Z ..."
 
-#MSG_SOUND_ONCE c=17 r=1
-"Sound      [once]"
-"Zvuk     [jednou]"
-
-#MSG_SOUND_SILENT c=17 r=1
-"Sound    [silent]"
-"Zvuk      [tichy]"
+#MSG_SOUND_ONCE
+"Once"
+"Jednou"
 
 #MSG_SPEED
 "Speed"

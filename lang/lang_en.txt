@@ -718,23 +718,20 @@
 #MSG_SORTING c=20 r=1
 "Sorting files"
 
-#MSG_SOUND_LOUD c=17 r=1
-"Sound      [loud]"
+#MSG_SOUND_LOUD
+"Loud"
 
 #
 "Slight skew"
 
-#MSG_SOUND_MUTE c=17 r=1
-"Sound      [mute]"
+#MSG_SOUND
+"Sound"
 
 #
 "Some problem encountered, Z-leveling enforced ..."
 
-#MSG_SOUND_ONCE c=17 r=1
-"Sound      [once]"
-
-#MSG_SOUND_SILENT c=17 r=1
-"Sound    [silent]"
+#MSG_SOUND_ONCE
+"Once"
 
 #MSG_SPEED
 "Speed"

@@ -5282,22 +5282,22 @@ while (0)
 do\
 {\
     switch(eSoundMode)\
-         {\
-         case e_SOUND_MODE_LOUD:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);\
-              break;\
-         case e_SOUND_MODE_ONCE:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ONCE),lcd_sound_state_set);\
-              break;\
-         case e_SOUND_MODE_SILENT:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);\
-              break;\
-         case e_SOUND_MODE_BLIND:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_BLIND),lcd_sound_state_set);\
-              break;\
-         default:\
-              MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);\
-         }\
+    {\
+        case e_SOUND_MODE_LOUD:\
+            MENU_ITEM_TOGGLE_P(_T(MSG_SOUND), _T(MSG_SOUND_LOUD), lcd_sound_state_set);\
+            break;\
+        case e_SOUND_MODE_ONCE:\
+            MENU_ITEM_TOGGLE_P(_T(MSG_SOUND), _T(MSG_SOUND_ONCE), lcd_sound_state_set);\
+            break;\
+        case e_SOUND_MODE_SILENT:\
+            MENU_ITEM_TOGGLE_P(_T(MSG_SOUND), _T(MSG_SILENT), lcd_sound_state_set);\
+            break;\
+        case e_SOUND_MODE_BLIND:\
+            MENU_ITEM_TOGGLE_P(_T(MSG_SOUND), _T(MSG_SOUND_BLIND), lcd_sound_state_set);\
+            break;\
+        default:\
+            MENU_ITEM_TOGGLE_P(_T(MSG_SOUND), _T(MSG_SOUND_LOUD), lcd_sound_state_set);\
+    }\
 }\
 while (0)
 
@@ -6875,25 +6875,8 @@ static void lcd_tune_menu()
 		}
 	}
 #endif //TMC2130
-	 SETTINGS_MMU_MODE;
-     switch(eSoundMode)
-          {
-          case e_SOUND_MODE_LOUD:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
-               break;
-          case e_SOUND_MODE_ONCE:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_ONCE),lcd_sound_state_set);
-               break;
-          case e_SOUND_MODE_SILENT:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_SILENT),lcd_sound_state_set);
-               break;
-          case e_SOUND_MODE_BLIND:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_BLIND),lcd_sound_state_set);
-               break;
-          default:
-               MENU_ITEM_FUNCTION_P(_i(MSG_SOUND_MODE_LOUD),lcd_sound_state_set);
-          }
-
+	SETTINGS_MMU_MODE;
+    SETTINGS_SOUND;
 	MENU_END();
 }
 
