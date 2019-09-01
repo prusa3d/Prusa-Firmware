@@ -600,7 +600,7 @@ void lcdui_print_percent_done(void)
 	bool num = IS_SD_PRINTING || (PRINTER_ACTIVE && (print_percent_done_normal != PRINT_PERCENT_DONE_INIT));
 	if (!num || heating_status) // either not printing or heating
 	{
-		eeprom_read_block(sheet, EEPROM_Sheets_base->s[selected_sheet].name, 7);
+		eeprom_read_block(sheet, EEPROM_Sheets_base->s[eeprom_read_byte(&(EEPROM_Sheets_base->active_sheet))].name, 7);
 		sheet[7] = '\0';
 		lcd_printf_P(PSTR("%s"),sheet);
 	}
