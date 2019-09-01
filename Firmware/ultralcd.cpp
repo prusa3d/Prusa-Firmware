@@ -1,4 +1,7 @@
 //! @file
+//! @date Aug 28, 2019
+//! @author mkbel
+//! @brief LCD
 
 #include "temperature.h"
 #include "ultralcd.h"
@@ -1782,6 +1785,7 @@ static void lcd_cooldown()
 //! |Int:  000 Shut: 000 |	Int: c=4 r=1  Shut: c=4 r=1
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 void lcd_menu_extruder_info()                     // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 {
 	int fan_speed_RPM[2];
@@ -1862,6 +1866,7 @@ static void lcd_menu_fails_stats_mmu()
 //! |                    |
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_mmu_print()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -1882,6 +1887,7 @@ static void lcd_menu_fails_stats_mmu_print()
 //! | MMU power fails:000|	c=14 r=1
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_mmu_total()
 {
 	mmu_command(MmuCmd::S3);
@@ -1904,6 +1910,7 @@ static void lcd_menu_fails_stats_mmu_total()
 //! | Crash   X:000 Y:000|	c=7 r=1
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_total()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -1926,6 +1933,7 @@ static void lcd_menu_fails_stats_total()
 //! | Crash   X:000 Y:000|	c=7 r=1
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats_print()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -1978,6 +1986,7 @@ static void lcd_menu_fails_stats()
 //! | Filam. runouts: 000|	c=14 r=1
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_fails_stats()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -2015,6 +2024,7 @@ extern char* __malloc_heap_end;
 //! | heap_end:      0000|	c=14 r=1
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_debug()
 {
 #ifdef DEBUG_STACK_MONITOR
@@ -2037,6 +2047,7 @@ static void lcd_menu_debug()
 //! ----------------------
 //! D - Degree sysmbol		LCD_STR_DEGREE
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_temperatures()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -2066,7 +2077,7 @@ static void lcd_menu_temperatures()
 //! |                    |
 //! ----------------------
 //! @endcode
-
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_voltages()
 {
 	lcd_timeoutToStatus.stop(); //infinite timeout
@@ -2089,6 +2100,7 @@ static void lcd_menu_voltages()
 //! |                    |
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_belt_status()
 {
 	lcd_home();
@@ -2981,6 +2993,7 @@ if(0)
 //! |     00d :00h :00 m |
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations. Translations missing for "d"days, "h"ours, "m"inutes", "s"seconds".
 void lcd_menu_statistics()
 {
 	if (IS_SD_PRINTING)
@@ -3107,7 +3120,6 @@ static void lcd_move_e()
 //! @brief Show measured Y distance of front calibration points from Y_MIN_POS
 //! If those points are detected too close to edge of reachable area, their confidence is lowered.
 //! This functionality is applied more often for MK2 printers.
-
 //! @code{.unparsed}
 //! |01234567890123456789|
 //! |Y distance from min |	c=19 r=1
@@ -3116,6 +3128,7 @@ static void lcd_move_e()
 //! |Right:      00.00mm |	c=11 r=1
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_xyz_y_min()
 {
 	float distanceMin[2];
@@ -3159,6 +3172,7 @@ float _deg(float rad)
 //! ----------------------
 //! D - Degree sysmbol		LCD_STR_DEGREE
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_xyz_skew()
 {
     float angleDiff = eeprom_read_float((float*)(EEPROM_XYZ_CAL_SKEW));
@@ -3195,6 +3209,7 @@ static void lcd_menu_xyz_skew()
 //! |Y:          000.00mm|	c=10 r=1
 //! ----------------------
 //! @endcode
+//! @todo Positioning of the messages and values on LCD aren't fixed to their exact place. This causes issues with translations.
 static void lcd_menu_xyz_offset()
 {
     lcd_set_cursor(0,0);
