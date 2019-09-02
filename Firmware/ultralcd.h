@@ -53,6 +53,11 @@ void lcd_menu_statistics();
 
 void lcd_menu_extruder_info();                    // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
 void lcd_menu_show_sensors_state();               // NOT static due to using inside "Marlin_main" module ("manage_inactivity()")
+#ifdef TMC2130
+bool lcd_crash_detect_enabled();
+void lcd_crash_detect_enable();
+void lcd_crash_detect_disable();
+#endif
 
 extern const char* lcd_display_message_fullscreen_P(const char *msg, uint8_t &nlines);
 extern const char* lcd_display_message_fullscreen_P(const char *msg);
