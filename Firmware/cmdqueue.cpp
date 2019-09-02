@@ -224,9 +224,13 @@ void cmdqueue_dump_to_serial_single_line(int nr, const char *p)
     SERIAL_ECHOPGM("Entry nr: ");
     SERIAL_ECHO(nr);
     SERIAL_ECHOPGM(", type: ");
-    SERIAL_ECHO(int(*p));
+    int type = *p;
+    SERIAL_ECHO(type);
+    SERIAL_ECHOPGM(", size: ");
+    unsigned int size = *(unsigned int*)(p + 1);
+    SERIAL_ECHO(size);
     SERIAL_ECHOPGM(", cmd: ");
-    SERIAL_ECHO(p+1);  
+    SERIAL_ECHO(p + CMDHDRSIZE);
     SERIAL_ECHOLNPGM("");
 }
 
@@ -247,7 +251,7 @@ void cmdqueue_dump_to_serial()
             for (const char *p = cmdbuffer + bufindr; p < cmdbuffer + bufindw; ++ nr) {
                 cmdqueue_dump_to_serial_single_line(nr, p);
                 // Skip the command.
-                for (++p; *p != 0; ++ p);
+                for (p += CMDHDRSIZE; *p != 0; ++ p);
                 // Skip the gaps.
                 for (++p; p < cmdbuffer + bufindw && *p == 0; ++ p);
             }
@@ -255,14 +259,14 @@ void cmdqueue_dump_to_serial()
             for (const char *p = cmdbuffer + bufindr; p < cmdbuffer + sizeof(cmdbuffer); ++ nr) {
                 cmdqueue_dump_to_serial_single_line(nr, p);
                 // Skip the command.
-                for (++p; *p != 0; ++ p);
+                for (p += CMDHDRSIZE; *p != 0; ++ p);
                 // Skip the gaps.
                 for (++p; p < cmdbuffer + sizeof(cmdbuffer) && *p == 0; ++ p);
             }
             for (const char *p = cmdbuffer; p < cmdbuffer + bufindw; ++ nr) {
                 cmdqueue_dump_to_serial_single_line(nr, p);
                 // Skip the command.
-                for (++p; *p != 0; ++ p);
+                for (p += CMDHDRSIZE; *p != 0; ++ p);
                 // Skip the gaps.
                 for (++p; p < cmdbuffer + bufindw && *p == 0; ++ p);
             }
