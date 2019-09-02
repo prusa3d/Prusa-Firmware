@@ -7696,12 +7696,7 @@ Sigma_Exit:
 	}
 	break;
 	case 998:
-		for (int i = 0; i < LCD_HEIGHT; i++){
-			for (int j = 0; j < LCD_WIDTH; j++){
-				MYSERIAL.print(vga_get_char(j, i));
-			}
-			MYSERIAL.print("\n");
-		}
+		lcd_debug();
 		break;
 
 

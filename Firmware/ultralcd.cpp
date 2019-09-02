@@ -952,15 +952,10 @@ static void lcd_status_screen()
 	if (lcd_draw_update)
 	{
 		ReInitLCD++;
-		if (ReInitLCD == 30)
+		if (ReInitLCD == 15)
 		{
 			lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
-			ReInitLCD = 0 ;
-		}
-		else
-		{
-			if ((ReInitLCD % 10) == 0)
-				lcd_refresh_noclear(); //to maybe revive the LCD if static electricity killed it.
+			ReInitLCD = 0;
 		}
 
 		lcdui_print_status_screen();
@@ -1018,7 +1013,6 @@ static void lcd_status_screen()
 	{
 		menu_depth = 0; //redundant, as already done in lcd_return_to_status(), just to be sure
 		menu_submenu(lcd_main_menu);
-		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	}
 
 #ifdef ULTIPANEL_FEEDMULTIPLY
@@ -1633,7 +1627,6 @@ void lcd_commands()
 
 void lcd_return_to_status()
 {
-	lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 	menu_goto(lcd_status_screen, 0, false, true);
 	menu_depth = 0;
      eFilamentAction=FilamentAction::None; // i.e. non-autoLoad
@@ -8552,7 +8545,6 @@ void menu_lcd_lcdupdate_func(void)
 	{
 		lcd_draw_update = 2;
 		lcd_oldcardstatus = IS_SD_INSERTED;
-		lcd_refresh(); // to maybe revive the LCD if static electricity killed it.
 		if (lcd_oldcardstatus)
 		{
 			card.initsd();
