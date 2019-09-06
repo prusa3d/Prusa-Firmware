@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Trysk. vent."
+"Tryska V."
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -820,7 +820,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Tiskovy vent.:"
+"Tiskovy v:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Tiskovy vent."
+"Tiskovy v"
 
 #MSG_PRUSA3D
 "prusa3d.com"
