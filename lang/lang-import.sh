@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # lang-import.sh - multi-language support script
 #  for importing translated xx.po
