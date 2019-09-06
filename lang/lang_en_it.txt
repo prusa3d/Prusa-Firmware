@@ -256,7 +256,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
-"Ventola estrusore:"
+"Ventola estr:"
 
 #MSG_INFO_EXTRUDER c=15 r=1
 "Extruder info"
@@ -268,7 +268,7 @@
 
 #
 "Fail stats MMU"
-"Statistiche fallimenti MMU"
+"Stat.fall. MMU"
 
 #MSG_FSENS_AUTOLOAD_ON c=17 r=1
 "F. autoload  [on]"
@@ -284,11 +284,11 @@
 
 #
 "Fail stats"
-"Statistiche fallimenti"
+"Stat. fallimenti"
 
 #MSG_FAN_SPEED c=14
 "Fan speed"
-"Velocita ventola"
+"Velocita vent."
 
 #MSG_SELFTEST_FAN c=20
 "Fan test"
@@ -304,7 +304,7 @@
 
 #MSG_FSENSOR_ON
 "Fil. sensor  [on]"
-"Sensor filam.[On]"
+"Sensor filam.[on]"
 
 #MSG_FSENSOR_NA
 "Fil. sensor [N/A]"
@@ -568,7 +568,7 @@
 
 #
 "Measured skew"
-"Deviazione misurata"
+"Deviazione mis"
 
 #
 "MMU fails"
@@ -600,7 +600,7 @@
 
 #
 "MMU power fails"
-"Mancanza corrente MMU"
+"Manc. corr. MMU"
 
 #MSG_STEALTH_MODE_ON
 "Mode    [Stealth]"
@@ -820,7 +820,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Ventola di stampa:"
+"Vent.stam:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -980,7 +980,7 @@
 
 #
 "Severe skew"
-"Deviazione grave"
+"Devia.grave"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -996,7 +996,7 @@
 
 #
 "Slight skew"
-"Deviazione lieve"
+"Devia.lieve"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1052,11 +1052,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Calib. temp. [ON]"
+"Calib. temp. [on]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Calib. temp.[OFF]"
+"Calib. temp.[off]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1088,7 +1088,7 @@
 
 #
 "Total print time"
-"Tempo di stampa totale"
+"Tempo stampa totale"
 
 #MSG_TUNE
 "Tune"

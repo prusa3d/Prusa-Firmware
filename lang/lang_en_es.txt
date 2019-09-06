@@ -104,7 +104,7 @@
 
 #MSG_BED
 "Bed"
-"Base calefactable "
+"Base"
 
 #MSG_MENU_BELT_STATUS c=15 r=1
 "Belt status"
@@ -256,7 +256,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
-"Ventilador del extrusor:"
+"Vent.extrusor:"
 
 #MSG_INFO_EXTRUDER c=15 r=1
 "Extruder info"
@@ -568,7 +568,7 @@
 
 #
 "Measured skew"
-"Desviacion medida:"
+"Desviacion med:"
 
 #
 "MMU fails"
@@ -648,7 +648,7 @@
 
 #
 "N/A"
-"No disponible"
+"N/A"
 
 #MSG_NO
 "No"
@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Ventilador de capa"
+"Vent. capa"
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -820,7 +820,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Ventilador del fusor:"
+"Vent.fusor:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Ventilador del extrusor"
+"Vent.extr"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -980,7 +980,7 @@
 
 #
 "Severe skew"
-"Inclinacion severa"
+"Incl.severa"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -996,7 +996,7 @@
 
 #
 "Slight skew"
-"Ligeramente inclinado"
+"Liger.incl."
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1052,11 +1052,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Cal. temp.   [ON]"
+"Cal. temp.   [on]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Cal. temp.  [OFF]"
+"Cal. temp.  [off]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1256,7 +1256,7 @@
 
 #
 "FINDA:"
-"\x00"
+"FINDA:"
 
 #
 "Firmware   [none]"
@@ -1380,7 +1380,7 @@
 
 #
 "PINDA:"
-"\x00"
+"PINDA:"
 
 #
 "Preheating to cut"

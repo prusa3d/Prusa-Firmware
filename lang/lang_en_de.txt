@@ -28,7 +28,7 @@
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "
-"Alles richtig "
+"Alles richtig    "
 
 #MSG_WIZARD_DONE c=20 r=8
 "All is done. Happy printing!"
@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Duesen Luefter"
+"Duesevent."
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Druckluefter"
+"Druckvent"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -980,7 +980,7 @@
 
 #
 "Severe skew"
-"Schwerer Schraeglauf"
+"Schwer.Schr"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -996,7 +996,7 @@
 
 #
 "Slight skew"
-"Leichter Schraeglauf"
+"Leicht.Schr"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
@@ -1052,11 +1052,11 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Temp. Kal.   [AN]"
+"Temp. Kal.   [an]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
-"Temp. Kal.  [AUS]"
+"Temp. Kal.  [aus]"
 
 #MSG_CALIBRATION_PINDA_MENU c=17 r=1
 "Temp. calibration"
@@ -1417,7 +1417,7 @@
 
 #
 "Sound     [assist]"
-"\x00"
+"Sound     [Assist]"
 
 #
 "Steel sheets"

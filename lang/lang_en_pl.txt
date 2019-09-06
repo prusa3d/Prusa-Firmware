@@ -8,7 +8,7 @@
 
 #MSG_MEASURED_OFFSET
 "[0;0] point offset"
-"[0;0] przesuniecie punktu"
+"[0;0] przesun.punktu"
 
 #MSG_CRASH_DET_ONLY_IN_NORMAL c=20 r=4
 "Crash detection can\x0abe turned on only in\x0aNormal mode"
@@ -256,7 +256,7 @@
 
 #MSG_SELFTEST_EXTRUDER_FAN_SPEED c=18
 "Extruder fan:"
-"Went. ekstrudera:"
+"Went. ekstr:"
 
 #MSG_INFO_EXTRUDER c=15 r=1
 "Extruder info"
@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Went. hotendu"
+"Went. Hotend"
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -820,7 +820,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Went. wydruku:"
+"Went.wydr:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Went. wydruku"
+"Went.wydr"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -980,7 +980,7 @@
 
 #
 "Severe skew"
-"Znaczny skos"
+"ZnacznySkos"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -1052,7 +1052,7 @@
 
 #MSG_TEMP_CALIBRATION_ON c=20 r=1
 "Temp. cal.   [on]"
-"Kalibr. temp.[wl]"
+"Kalibr.temp. [wl]"
 
 #MSG_TEMP_CALIBRATION_OFF c=20 r=1
 "Temp. cal.  [off]"
