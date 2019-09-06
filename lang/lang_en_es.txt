@@ -820,7 +820,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Ventilador del fusor:"
+"Vent.fusor:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Ventilador del extrusor"
+"Vent.extr"
 
 #MSG_PRUSA3D
 "prusa3d.com"
