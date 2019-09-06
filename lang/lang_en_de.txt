@@ -980,7 +980,7 @@
 
 #
 "Severe skew"
-"Schwerer Schraeglauf"
+"Schwer.Schr"
 
 #MSG_SORT_ALPHA c=17 r=1
 "Sort   [alphabet]"
@@ -996,7 +996,7 @@
 
 #
 "Slight skew"
-"Leichter Schraeglauf"
+"Leicht.Schr"
 
 #MSG_SOUND_MUTE c=17 r=1
 "Sound      [mute]"
