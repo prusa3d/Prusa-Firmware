@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Ventilateur buse"
+"Vent. buse"
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -820,7 +820,7 @@
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Ventilo impr. :"
+"Vent.impr:"
 
 #MSG_CARD_MENU
 "Print from SD"
