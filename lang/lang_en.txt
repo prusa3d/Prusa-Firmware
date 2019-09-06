@@ -930,3 +930,147 @@
 
 #MSG_OFF
 " [off]"
+
+#
+"Back"
+
+#
+"Checks"
+
+#
+"False triggering"
+
+#
+"FINDA:"
+
+#
+"Firmware   [none]"
+
+#
+"Firmware [strict]"
+
+#
+"Firmware   [warn]"
+
+#
+"HW Setup"
+
+#
+"IR:"
+
+#
+"Magnets comp.[N/A]"
+
+#
+"Magnets comp.[Off]"
+
+#
+"Magnets comp. [On]"
+
+#
+"Mesh         [3x3]"
+
+#
+"Mesh         [7x7]"
+
+#
+"Mesh bed leveling"
+
+#
+"MK3S firmware detected on MK3 printer"
+
+#
+"MMU Mode [Normal]"
+
+#
+"MMU Mode[Stealth]"
+
+#
+"Mode change in progress ..."
+
+#
+"Model      [none]"
+
+#
+"Model    [strict]"
+
+#
+"Model      [warn]"
+
+#
+"Nozzle d.  [0.25]"
+
+#
+"Nozzle d.  [0.40]"
+
+#
+"Nozzle d.  [0.60]"
+
+#
+"Nozzle     [none]"
+
+#
+"Nozzle   [strict]"
+
+#
+"Nozzle     [warn]"
+
+#
+"G-code sliced for a different level. Continue?"
+
+#
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+
+#
+"G-code sliced for a different printer type. Continue?"
+
+#
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+
+#
+"G-code sliced for a newer firmware. Continue?"
+
+#
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+
+#
+"PINDA:"
+
+#
+"Preheating to cut"
+
+#
+"Preheating to eject"
+
+#
+"Printer nozzle diameter differs from the G-code. Continue?"
+
+#
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+
+#
+"Rename"
+
+#
+"Select"
+
+#
+"Sensor info"
+
+#
+"Sheet"
+
+#
+"Sound     [assist]"
+
+#
+"Steel sheets"
+
+#
+"Z-correct:"
+
+#
+"Z-probe nr.    [1]"
+
+#
+"Z-probe nr.    [3]"
