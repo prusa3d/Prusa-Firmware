@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Druckluefter"
+"Druckvent"
 
 #MSG_PRUSA3D
 "prusa3d.com"
