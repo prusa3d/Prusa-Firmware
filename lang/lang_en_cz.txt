@@ -24,7 +24,7 @@
 
 #MSG_BABYSTEPPING_Z c=15
 "Adjusting Z:"
-"Dostavovani Z:"
+"Doladeni Z:"
 
 #MSG_SELFTEST_CHECK_ALLCORRECT c=20
 "All correct      "
@@ -316,7 +316,7 @@
 
 #
 "Filam. runouts"
-"Vypadky filamentu"
+"Vypadky filam."
 
 #MSG_FILAMENT_CLEAN c=20 r=2
 "Filament extruding & with correct color?"
@@ -688,7 +688,7 @@
 
 #
 "Nozzle FAN"
-"Trysk. vent."
+"Tryska V."
 
 #MSG_PAUSE_PRINT
 "Pause print"
@@ -792,7 +792,7 @@
 
 #MSG_WIZARD_HEATING c=20 r=3
 "Preheating nozzle. Please wait."
-"Predehrivam trysku. Prosim cekejte."
+"Predehrev trysky. Prosim cekejte."
 
 #
 "Please upgrade."
@@ -812,15 +812,15 @@
 
 #
 "Preheating to load"
-"Predehrivam k zavedeni"
+"Predehrev k zavedeni"
 
 #
 "Preheating to unload"
-"Predehrivam k vyjmuti"
+"Predehrev k vyjmuti"
 
 #MSG_SELFTEST_PRINT_FAN_SPEED c=18
 "Print fan:"
-"Tiskovy vent.:"
+"Tiskovy v:"
 
 #MSG_CARD_MENU
 "Print from SD"
@@ -828,7 +828,7 @@
 
 #
 "Press the knob"
-"Stisknete tlacitko"
+"Stisknete hl. tlacitko"
 
 #MSG_PRINT_PAUSED c=20 r=1
 "Print paused"
@@ -844,7 +844,7 @@
 
 #
 "Print FAN"
-"Tiskovy vent."
+"Tiskovy v"
 
 #MSG_PRUSA3D
 "prusa3d.com"
@@ -1240,4 +1240,196 @@
 
 #MSG_OFF
 " [off]"
+" [vyp]"
+
+#
+"Back"
+"Zpet"
+
+#
+"Checks"
+"Kontrola"
+
+#
+"False triggering"
+"Falesne spusteni"
+
+#
+"FINDA:"
 "\x00"
+
+#
+"Firmware   [none]"
+"Firmware  [Zadne]"
+
+#
+"Firmware [strict]"
+"Firmware [Prisne]"
+
+#
+"Firmware   [warn]"
+"Firmware[Varovat]"
+
+#
+"HW Setup"
+"HW nastaveni"
+
+#
+"IR:"
+"\x00"
+
+#
+"Magnets comp.[N/A]"
+"Komp. magnetu[N/A]"
+
+#
+"Magnets comp.[Off]"
+"Komp. magnetu[Vyp]"
+
+#
+"Magnets comp. [On]"
+"Komp. magnetu[Zap]"
+
+#
+"Mesh         [3x3]"
+"Mesh         [3x3]"
+
+#
+"Mesh         [7x7]"
+"Mesh         [7x7]"
+
+#
+"Mesh bed leveling"
+"Mesh Bed Leveling"
+
+#
+"MK3S firmware detected on MK3 printer"
+"MK3S firmware detekovan na tiskarne MK3"
+
+#
+"MMU Mode [Normal]"
+"MMU mod  [Normal]"
+
+#
+"MMU Mode[Stealth]"
+"MMU Mod   [Tichy]"
+
+#
+"Mode change in progress ..."
+"Probiha zmena modu..."
+
+#
+"Model      [none]"
+"Model     [Zadne]"
+
+#
+"Model    [strict]"
+"Model    [Prisne]"
+
+#
+"Model      [warn]"
+"Model   [Varovat]"
+
+#
+"Nozzle d.  [0.25]"
+"Tryska     [0.25]"
+
+#
+"Nozzle d.  [0.40]"
+"Tryska     [0.40]"
+
+#
+"Nozzle d.  [0.60]"
+"Tryska     [0.60]"
+
+#
+"Nozzle     [none]"
+"Tryska    [Zadne]"
+
+#
+"Nozzle   [strict]"
+"Tryska   [Prisne]"
+
+#
+"Nozzle     [warn]"
+"Tryska  [Varovat]"
+
+#
+"G-code sliced for a different level. Continue?"
+"\x00"
+
+#
+"G-code sliced for a different level. Please re-slice the model again. Print cancelled."
+"\x00"
+
+#
+"G-code sliced for a different printer type. Continue?"
+"G-code je pripraven pro jiny typ tiskarny. Pokracovat?"
+
+#
+"G-code sliced for a different printer type. Please re-slice the model again. Print cancelled."
+"G-code je pripraven pro jiny typ tiskarny. Prosim preslicujte model znovu. Tisk zrusen."
+
+#
+"G-code sliced for a newer firmware. Continue?"
+"G-code je pripraven pro novejsi firmware. Pokracovat?"
+
+#
+"G-code sliced for a newer firmware. Please update the firmware. Print cancelled."
+"G-code je pripraven pro novejsi firmware. Prosim aktualizujte firmware. Tisk zrusen."
+
+#
+"PINDA:"
+"\x00"
+
+#
+"Preheating to cut"
+"Predehrev k ustrizeni"
+
+#
+"Preheating to eject"
+"Predehrev k vysunuti"
+
+#
+"Printer nozzle diameter differs from the G-code. Continue?"
+"Prumer trysky tiskarny se lisi od G-code. Pokracovat?"
+
+#
+"Printer nozzle diameter differs from the G-code. Please check the value in settings. Print cancelled."
+"Prumer trysky tiskarny se lisi od G-code. Prosim zkontrolujte nastaveni. Tisk zrusen."
+
+#
+"Rename"
+"Prejmenovat"
+
+#
+"Select"
+"Vybrat"
+
+#
+"Sensor info"
+"Senzor info"
+
+#
+"Sheet"
+"Plat"
+
+#
+"Sound     [assist]"
+"Zvuk      [Asist.]"
+
+#
+"Steel sheets"
+"Tiskove platy"
+
+#
+"Z-correct:"
+"Korekce Z:"
+
+#
+"Z-probe nr.    [1]"
+"Pocet mereni Z [1]"
+
+#
+"Z-probe nr.    [3]"
+"Pocet mereni Z [3]"
