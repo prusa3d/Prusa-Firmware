@@ -1,7 +1,7 @@
 #ifndef CONFIGURATION_PRUSA_H
 #define CONFIGURATION_PRUSA_H
 
-#include <limits.h>		   
+#include <limits.h>
 //-//
 #include "printers.h"
 /*------------------------------------
@@ -140,7 +140,7 @@
 
 // Filament sensor
 #define FILAMENT_SENSOR
-#define PAT9125	   
+#define PAT9125
 
 // Backlash - 
 //#define BACKLASH_X

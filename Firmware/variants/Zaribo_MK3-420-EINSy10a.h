@@ -394,7 +394,7 @@
 
 // Motor Current settings for Einsy/tmc = 0..63
 #define MOTOR_CURRENT_PWM_RANGE 63
-															  
+
 /*------------------------------------
  BED SETTINGS
  *------------------------------------*/
